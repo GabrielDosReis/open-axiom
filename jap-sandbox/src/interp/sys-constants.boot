@@ -343,6 +343,15 @@ $SideEffectFreeFunctionList ==
 $Field ==
   '(Field)
 
+$DivisionRing ==
+  '(DivisionRing)
+
+$CombinatorialFunctionCategory ==
+  '(CombinatorialFunctionCategory)
+
+$Group ==
+  '(Group)
+
 ++ The Void domain constructor form
 $Void ==
   '(Void)
@@ -364,9 +373,16 @@ $Boolean ==
   '(Boolean)
 
 $Byte == '(Byte)
+
+++ Sized integer types, mostly for system-level programming.
 $Int16 == '(Int16)
+$UInt16 == '(UInt16)
+
 $Int32 == '(Int32)
+$UInt32 == '(UInt32)
+
 $Int64 == '(Int64)
+$UInt64 == '(UInt64)
 
 ++ The SmallInteger domain constructor form
 $SmallInteger ==
@@ -473,6 +489,10 @@ $NoValueMode ==
 $ExitMode ==
   "$ExitMode"
 
+++ A domain form for the OpenAxiom system-level pointer datatype.  
+$SystemPointer ==
+  '(SystemPointer)
+
 --%
   
 ++ Category constructor form
@@ -561,6 +581,7 @@ $SystemInlinableConstructorNames ==
     PositiveInteger    _
     NonNegativeInteger _
     SingleInteger      _
+    SystemPointer      _
     String             _
     Boolean            _
     Identifier         _

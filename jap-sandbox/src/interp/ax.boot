@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -61,14 +61,14 @@ makeAxFile(filename, constructors) ==
   axForms :=
      [modemapToAx(modemap) for cname in constructors |
             (modemap:=getConstructorModemapFromDB cname) and
-              (not cname in '(Tuple Exit Type)) and
+              not (cname in '(Tuple Exit Type)) and
                 not isDefaultPackageName cname]
   if $baseForms then
      axForms := [:$baseForms, :axForms]
   if $defaultFlag then
      axForms :=
         [['Foreign, ['Declare, 'dummyDefault, 'Exit], 'Lisp], :axForms]
-  axForms := APPEND(axDoLiterals(), axForms)
+  axForms := append(axDoLiterals(), axForms)
   axForm := ['Sequence, _
                ['Import, [], 'AxiomLib], ['Import, [], 'Boolean], :axForms]
   st := MAKE_-OUTSTREAM(filename)
@@ -81,14 +81,14 @@ makeAxExportForm(filename, constructors) ==
   axForms :=
      [modemapToAx(modemap) for cname in constructors |
             (modemap:=getConstructorModemapFromDB cname) and
-              (not cname in '(Tuple Exit Type)) and
+              not (cname in '(Tuple Exit Type)) and
                 not isDefaultPackageName cname]
   if $baseForms then
      axForms := [:$baseForms, :axForms]
   if $defaultFlag then
      axForms :=
         [['Foreign, ['Declare, 'dummyDefault, 'Exit], 'Lisp], :axForms]
-  axForms := APPEND(axDoLiterals(), axForms)
+  axForms := append(axDoLiterals(), axForms)
   axForm := ['Sequence, _
                ['Import, [], 'AxiomLib], ['Import, [], 'Boolean], :axForms]
   axForm
@@ -127,7 +127,7 @@ modemapToAx(modemap) ==
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]
 --        cosigs := rest getDualSignatureFromDB constructor
 --        exportargs := [['Export, [], arg, []] for arg in args for p in cosigs | p]
---        resultType := ['With,a,['Sequence,:APPEND(exportargs, withseq)]]
+--        resultType := ['With,a,['Sequence,:append(exportargs, withseq)]]
      consdef := ['Define,
         ['Declare, conscat, ['Apply, "->", optcomma argdecls, 'Category]],
           ['Lambda, argdecls, 'Category, ['Label, conscat, resultType]]]
@@ -143,7 +143,7 @@ modemapToAx(modemap) ==
 --     if not(b is ['Sequence,:withseq]) then withseq := [b]
 --     cosigs := rest getDualSignatureFromDB constructor
 --     exportargs := [['Export, [], arg, []] for arg in args for p in cosigs | p]
---     resultType := ['With,a,['Sequence,:APPEND(exportargs, withseq)]]
+--     resultType := ['With,a,['Sequence,:append(exportargs, withseq)]]
   ['Export, ['Declare, constructor, ['Apply, "->", optcomma argdecls, resultType]],[],[]]
 
 optcomma [op,:args] ==
@@ -194,7 +194,7 @@ axFormatType(typeform) ==
       lastcat is ['CATEGORY,type,:ops] =>
          ['With, [],
             makeTypeSequence(
-               APPEND([axFormatType c for c in cats],
+               append([axFormatType c for c in cats],
                         [axFormatOp op for op in ops]))]
       ['With, [], makeTypeSequence([axFormatType c for c in rest typeform])]
   typeform is ['CATEGORY, type, :ops] =>
@@ -220,18 +220,18 @@ axFormatType(typeform) ==
                                 for type in args]]
   typeform is ['Dictionary,['Record,:args]] =>
       ['Apply, 'Dictionary,
-          ['PretendTo, axFormatType CADR typeform, 'SetCategory]]
+          ['PretendTo, axFormatType second typeform, 'SetCategory]]
   typeform is ['FileCategory,xx,['Record,:args]] =>
       ['Apply, 'FileCategory, axFormatType xx,
-          ['PretendTo, axFormatType CADDR typeform, 'SetCategory]]
+          ['PretendTo, axFormatType third typeform, 'SetCategory]]
   typeform is [op,:args] =>
       $pretendFlag and constructor? op and
         getConstructorModemapFromDB op is [[.,target,:argtypes],.] =>
           ['Apply, op,
                :[['PretendTo, axFormatType a, axFormatType t]
                      for a in args for t in argtypes]]
-      MEMQ(op, '(SquareMatrix SquareMatrixCategory DirectProduct
-         DirectProductCategory RadixExpansion)) and
+      op in '(SquareMatrix SquareMatrixCategory DirectProduct
+         DirectProductCategory RadixExpansion) and
             getConstructorModemapFromDB op is [[.,target,arg1type,:restargs],.] =>
                ['Apply, op,
                   ['PretendTo, axFormatType first args, axFormatType arg1type],
@@ -265,7 +265,7 @@ axFormatPred pred ==
    atom pred => pred
    [op,:args] := pred
    op = 'IF => axFormatOp pred
-   op = 'has =>
+   op = "has" =>
       [name,type] := args
       if name = '$ then name := '%
       else name := axFormatOp name

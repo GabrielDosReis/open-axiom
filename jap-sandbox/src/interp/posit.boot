@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ $nopos ==
 poNoPosition()    == $nopos
 pfNoPosition() == poNoPosition()
  
-poNoPosition? pos == EQCAR(pos,'noposition)
+poNoPosition? pos == pos is ["noposition",:.]
 pfNoPosition? pos == poNoPosition? pos
  
 pfSourceText pf ==
@@ -57,7 +57,7 @@ pfPosOrNopos pf ==
     poNoPosition()
  
 poIsPos? pos ==
-    PAIRP pos and PAIRP first pos and #first pos = 5
+    CONSP pos and CONSP first pos and #first pos = 5
  
 lnCreate(extBl, st, gNo, :optFileStuff) ==
     lNo :=
@@ -141,9 +141,9 @@ pfAbSynOp?(form, op) ==
     EQ(hd, op) or EQCAR(hd, op)
 
 pfLeaf? form ==
-  MEMQ(pfAbSynOp form,
+  pfAbSynOp form in
        '(id idsy symbol string char float expression integer
-          Document error))
+          Document error)
 
 pfLeaf(x,y,:z)      == tokConstruct(x,y, IFCAR z or pfNoPosition())
 pfLeafToken form    == tokPart form

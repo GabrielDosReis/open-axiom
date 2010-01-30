@@ -56,7 +56,7 @@ dbDoesOneOpHaveParameters? opAlist ==
 dbShowOps(htPage,which,key,:options) ==
   --NEXT LINE SHOULD BE REMOVED if we are sure that which is a string
   which := STRINGIMAGE which
-  if MEMQ(key,'(extended basic all)) then
+  if key in '(extended basic all) then
     $groupChoice := key
     key := htpProperty(htPage,'key) or 'names
   opAlist  :=
@@ -84,7 +84,7 @@ dbShowOps(htPage,which,key,:options) ==
       dbResetOpAlistCondition(htPage,which,opAlist)
     dbShowOps(htPage,which,htpProperty(htPage,'exclusion))
   htpSetProperty(htPage,'key,key)
-  if MEMQ(key,'(exposureOn exposureOff)) then
+  if key in '(exposureOn exposureOff) then
     $exposedOnlyIfTrue :=
        key = 'exposureOn => 'T
        nil
@@ -125,7 +125,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
         acc := nil
         for x in items | x.3 repeat acc:= [x,:acc]
         null acc => nil
-        [op,:NREVERSE acc]
+        [op,:nreverse acc]
   $conformsAreDomains : local := htpProperty(htPage,'domname)
   opCount := opAlistCount(opAlist, which)
   branch :=
@@ -219,7 +219,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   [op1,:args] := form
   op := IFCAR HGET($lowerCaseConTb,op1) or op1
   null args => APPLY(opFn,[op])
-  special := MEMQ(op,'(Union Record Mapping))
+  special := op in '(Union Record Mapping)
   cosig :=
     special => ['T for x in args]
     rest getDualSignatureFromDB op
@@ -351,7 +351,7 @@ dbGatherData(htPage,opAlist,which,key) ==
         exposureFlag => op
         [op,nil]
       acc := [node,:acc]
-    NREVERSE acc
+    nreverse acc
   data := nil
   dbExpandOpAlistIfNecessary(htPage,opAlist,which,key in '(origins documentation),false)
   --create data, a list of the form ((entry,exposeFlag,:entries)...)
@@ -366,14 +366,14 @@ dbGatherData(htPage,opAlist,which,key) ==
         nil
       newEntry :=
         u := assoc(entry,data) =>           --key seen before? look on DATA
-          RPLACA(CDR u,CADR u or exposeFlag)--yes, expose if any 1 is exposed
+          RPLACA(rest u,second u or exposeFlag)--yes, expose if any 1 is exposed
           u
         data := [y := [entry,exposeFlag,:tail],:data]
         y                                   --no, create new entry in DATA
       if member(key,'(origins conditions)) then
         r := CDDR newEntry
         if atom r then r := nil             --clear out possible 'ASCONST
-        RPLACD(CDR newEntry,                --store op/sigs under key if needed
+        RPLACD(rest newEntry,               --store op/sigs under key if needed
           insert([dbMakeSignature(op,item),exposeFlag,:tail],r))
   if member(key,'(origins conditions)) then
     for entry in data repeat   --sort list of entries (after the 2nd)
@@ -381,7 +381,7 @@ dbGatherData(htPage,opAlist,which,key) ==
       tail :=
         atom tail => tail
         listSort(function LEXLESSEQP,tail)
-      RPLACD(CDR entry,tail)
+      RPLACD(rest entry,tail)
   data := listSort(function LEXLESSEQP,data)
   data
 
@@ -406,27 +406,27 @@ dbGatherDataImplementation(htPage,opAlist) ==
     key = 'nowhere => nowheres := [x,:nowheres]
     key = 'constant =>constants := [x,:constants]
     others := [x,:others]   --add chain domains go here
-  fn [nowheres,constants,domexports,SORTBY('CDDR,NREVERSE others),SORTBY('CDDR,
-               NREVERSE defexports),SORTBY('CDDR,NREVERSE unexports)] where
+  fn [nowheres,constants,domexports,SORTBY('CDDR,nreverse others),SORTBY('CDDR,
+               nreverse defexports),SORTBY('CDDR,nreverse unexports)] where
     fn l ==
       alist := nil
       for u in l repeat
         while u repeat
           key := CDDAR u  --implementor
           entries :=
-            [[CAR u,true],:[u and [CAR u,true] while key = CDDAR (u := rest u)]]
+            [[first u,true],:[u and [first u,true] while key = CDDAR (u := rest u)]]
           alist := [[key,gn key,:entries],:alist]
-      NREVERSE alist
+      nreverse alist
     gn key ==
       atom key => true
-      isExposedConstructor CAR key
+      isExposedConstructor first key
 
 dbSelectData(htPage,opAlist,key) ==
   branch := htpProperty(htPage,'branch)
   data   := htpProperty(htPage,'data)
-  MEMQ(branch,'(signatures parameters)) =>
+  branch in '(signatures parameters) =>
     dbReduceOpAlist(opAlist,data.key,branch)
-  MEMQ(branch,'(origins conditions implementation)) =>
+  branch in '(origins conditions implementation) =>
     key < 8192 => dbReduceOpAlist(opAlist,data.key,branch)
     [newkey,binkey] := DIVIDE(key,8192)  --newkey is 1 too large
     innerData := CDDR data.(newkey - 1)
@@ -435,10 +435,10 @@ dbSelectData(htPage,opAlist,key) ==
 
 dbReduceOpAlist(opAlist,data,branch) ==
   branch = 'signatures => dbReduceBySignature(opAlist,CAAR data,CADAR data)
-  branch = 'origins => dbReduceBySelection(opAlist,CAR data,function CADDR)
-  branch = 'conditions => dbReduceBySelection(opAlist,CAR data,function CADR)
+  branch = 'origins => dbReduceBySelection(opAlist,first data,function third)
+  branch = 'conditions => dbReduceBySelection(opAlist,first data,function second)
   branch = 'implementation => dbReduceByOpSignature(opAlist,CDDR data)
-  branch = 'parameters => dbReduceByForm(opAlist,CAR data)
+  branch = 'parameters => dbReduceByForm(opAlist,first data)
   systemError ['"Unexpected branch: ",branch]
 
 dbReduceByOpSignature(opAlist,datalist) ==
@@ -449,8 +449,8 @@ dbReduceByOpSignature(opAlist,datalist) ==
   for [op,:alist] in opAlist | MEMQ(op,ops) repeat
     entryList := [entry for (entry := [sig,:.]) in alist | test] where test() ==
       or/[x for x in datalist | x is [[=op,=sig,:.],:.]]
-    entryList => acc := [[op,:NREVERSE entryList],:acc]
-  NREVERSE acc
+    entryList => acc := [[op,:nreverse entryList],:acc]
+  nreverse acc
 
 dbReduceBySignature(opAlist,op,sig) ==
 --reduces opAlist to one with a fixed op and sig
@@ -461,14 +461,14 @@ dbReduceByForm(opAlist,form) ==
   for [op,:alist] in opAlist repeat
     items := [x for x in alist | dbContrivedForm(op,x) = form] =>
       acc := [[op,:items],:acc]
-  NREVERSE acc
+  nreverse acc
 
 dbReduceBySelection(opAlist,key,fn) ==
   acc := nil
   for [op,:alist] in opAlist repeat
     items := [x for x in alist | FUNCALL(fn,x) = key] =>
       acc := [[op,:items],:acc]
-  NREVERSE acc
+  nreverse acc
 
 dbContrivedForm(op,[sig,:.]) ==
   $which = '"attribute" => [op,sig]
@@ -524,7 +524,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
   domOriginAlist := nil --list of domain origins
   for [op,:items] in opAlist repeat
     for [.,predicate,origin,:.] in items repeat
-      conname := CAR origin
+      conname := first origin
       getConstructorKindFromDB conname = "category" =>
         pred := simpOrDumb(predicate,LASSQ(conname,catOriginAlist) or true)
         catOriginAlist := insertAlist(conname,pred,catOriginAlist)
@@ -532,7 +532,7 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
       domOriginAlist := insertAlist(conname,pred,domOriginAlist)
   --the following is similar to "domainsOf" but do not sort immediately
   u := [COPY key for key in HKEYS _*HASCATEGORY_-HASH_*
-          | LASSQ(CDR key,catOriginAlist)]
+          | LASSQ(rest key,catOriginAlist)]
   for pair in u repeat
     [dom,:cat] := pair
     LASSQ(cat,catOriginAlist) = 'etc => RPLACD(pair,'etc)
@@ -562,7 +562,7 @@ dbShowOpConditions(htPage,opAlist,which,data) ==
   dbGatherThenShow(htPage,opAlist,which,data,nil,nil,function bcPred)
 
 dbShowKind conform ==
-  conname := CAR conform
+  conname := first conform
   kind := getConstructorKindFromDB conname
   kind = "domain" =>
     (s := PNAME conname).(MAXINDEX s) = '_& => '"default package"
@@ -735,7 +735,7 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
   for pair in opAlist repeat
     RPLACD(pair,[test for item in rest pair | test]) where test() ==
       [head,:tail] := item
-      CAR tail = true => item
+      first tail = true => item
       pred := simpHasPred SUBLISLIS(form1,form2,QCAR tail)
       null pred => false
       RPLACD(item,[pred])
@@ -753,8 +753,8 @@ dbShowOperationLines(which,linelist) ==  --branch in with lines
     pile := [x]
     while (lines := rest lines) and name = dbName (x := first lines) repeat
       pile := [x,:pile]
-    opAlist := [[name,:NREVERSE pile],:opAlist]
-  opAlist := listSort(function LEXLESSEQP,NREVERSE opAlist)
+    opAlist := [[name,:nreverse pile],:opAlist]
+  opAlist := listSort(function LEXLESSEQP,nreverse opAlist)
   if which = '"operation"
     then htpSetProperty(htPage,'opAlist,opAlist)
     else htpSetProperty(htPage,'attrAlist,opAlist)
@@ -784,7 +784,7 @@ dbSetOpAlistCondition(htPage,opAlist,which) ==
 --called whenever a new opAlist is needed
 --property can only be inherited if 'no (a subset says NO if whole says NO)
   condition := htpProperty(htPage,'condition?)
-  MEMQ(condition,'(yes no)) => condition = 'yes
+  condition in '(yes no) => condition = 'yes
   value := dbExpandOpAlistIfNecessary(htPage,opAlist,which,false,true)
   htpSetProperty(htPage,'condition?,(value => 'yes; 'no))
   value
@@ -817,7 +817,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
         --Case 1: Already expanded; just cons it onto ACC
           null STRINGP line => --already expanded
             if condition? then --this could have been expanded at a lower level
-              if null atom (pred := CADR line) then value := pred
+              if null atom (pred := second line) then value := pred
             acc := [line,:acc] --this one is already expanded; record it anyway
         --Case 2: unexpanded; expand it then cons it onto ACC
           [name,nargs,xflag,sigs,conname,pred,comments] := dbParts(line,7,1)
@@ -833,7 +833,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           exposeFlag := dbExposed?(line,char 'o)
           acc := [[sig,predicate,origin,exposeFlag,comments],:acc]
         --always store the fruits of our labor:
-        RPLACD(pair,NREVERSE acc)             --at least partially expand it
+        RPLACD(pair,nreverse acc)             --at least partially expand it
         condition? and value => return value  --early exit
       value => value
       condition? => nil
@@ -846,13 +846,13 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then
          catname := intern SUBSTRING(s := PNAME opOf domform,0,MAXINDEX s)
-         packageSymbol := first rest domform
+         packageSymbol := second domform
          domform := [catname,:rest rest domform]  --skip first argument ($)
       docTable:= dbDocTable domform
       for [op,:alist] in opAlist repeat
         for [sig,:tail] in alist repeat
           condition? => --the only purpose here is to find a non-trivial pred
-            null atom (pred := CAR tail) => return ($value := pred)
+            null atom (pred := first tail) => return ($value := pred)
             'skip
           u :=
             tail is [.,origin,:.] and origin =>
@@ -863,7 +863,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
             dbGetDocTable(op,sig,docTable,which,nil)
           origin := IFCAR u or origin
           docCode := IFCDR u   --> (doc . code)
---        if null FIXP CDR docCode then harhar(op) -->
+--        if null FIXP rest docCode then harhar(op) -->
           if null doc and which = '"attribute" then doc := getRegistry(op,sig)
           RPLACD(tail,[origin,isExposedConstructor opOf origin,:docCode])
         $value => return $value
@@ -875,7 +875,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
 getRegistry(op,sig) ==
   u := getConstructorDocumentationFromDB "AttributeRegistry"
   v := LASSOC(op,u)
-  match := or/[y for y in v | y is [['attribute,: =sig],:.]] => CADR match
+  match := or/[y for y in v | y is [['attribute,: =sig],:.]] => second match
   '""
 
 evalableConstructor2HtString domform ==
@@ -931,7 +931,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
   $predEvalAlist : local := nil
   $returnNowhereFromGoGet: local := true
   domname := dom.0
-  conname := CAR domname
+  conname := first domname
   abb := getConstructorAbbreviation conname
   opAlist := getOperationAlistFromLisplib conname
   "append"/[REMDUP [[op1,:fn] for [sig,slot,pred,key,:.] in u
@@ -939,8 +939,8 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
                  for [op,:u] in opAlist] where
     memq(op,ops) ==   --dirty trick to get 0 and 1 instead of Zero and One
       MEMQ(op,ops) => op
-      EQ(op,'One)  => MEMQ(1,ops) and 1
-      EQ(op,'Zero) => MEMQ(0,ops) and 0
+      op = 'One  => MEMQ(1,ops) and 1
+      op = 'Zero => MEMQ(0,ops) and 0
       false
     fn() ==
       sig1 := sublisFormal(rest domname,sig)
@@ -954,7 +954,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
           f = 'nowhere => 'nowhere           --see replaceGoGetSlot
           f = 'makeSpadConstant => 'constant
           f = function IDENTITY => 'constant
-          f = 'newGoGet => substitute('_$,domname,devaluate CAR r)
+          f = 'newGoGet => substitute('_$,domname,devaluate first r)
           null VECP r => systemError devaluateList r
           substitute('_$,domname,devaluate r)
         'nowhere
@@ -967,10 +967,10 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     evpred(dom,u)
   convert(dom,pred) ==
     pred is [op,:argl] =>
-      MEMQ(op,'(AND and)) => ['AND,:[convert(dom,x) for x in argl]]
-      MEMQ(op,'(OR or))   => ['OR,:[convert(dom,x) for x in argl]]
-      MEMQ(op,'(NOT not)) => ['NOT,convert(dom,first argl)]
-      op = 'has =>
+      op in '(AND and) => ['AND,:[convert(dom,x) for x in argl]]
+      op in '(OR or)   => ['OR,:[convert(dom,x) for x in argl]]
+      op in '(NOT not) => ['NOT,convert(dom,first argl)]
+      op = "has" =>
         [arg,p] := argl
         p is ['ATTRIBUTE,a] => ['HasAttribute,arg,MKQ a]
         ['HasCategory,arg,convertCatArg p]
@@ -985,8 +985,8 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     evpred1(dom,pred)
   evpred1(dom,pred) ==
     pred is [op,:argl] =>
-      MEMQ(op,'(AND and)) => "and"/[evpred1(dom,x) for x in argl]
-      MEMQ(op,'(OR or))   =>  "or"/[evpred1(dom,x) for x in argl]
+      op in '(AND and) => "and"/[evpred1(dom,x) for x in argl]
+      op in '(OR or)   =>  "or"/[evpred1(dom,x) for x in argl]
       op = 'NOT => not evpred1(dom,first argl)
       k := POSN1(pred,$predicateList) => testBitVector(dom.3,k + 1)
       op = 'HasAttribute =>

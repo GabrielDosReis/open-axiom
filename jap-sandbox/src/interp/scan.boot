@@ -167,7 +167,7 @@ scanKeyWords == [ _
 scanKeyTableCons()==
    KeyTable:=MAKE_-HASHTABLE("CVEC",true)
    for st in scanKeyWords repeat
-      HPUT(KeyTable,CAR st,CADR st)
+      HPUT(KeyTable,first st,second st)
    KeyTable
 
 scanKeyTable:=scanKeyTableCons()
@@ -247,7 +247,7 @@ for i in   [ _
    ["LARROW"       ,"<-"], _
    ["BAR"       ,"|"], _
    ["SEG"       ,".."] _
-    ] repeat MAKEPROP(CAR i,'INFGENERIC,CADR i)
+    ] repeat MAKEPROP(first i,'INFGENERIC,second i)
 
 -- Scanner
 
@@ -269,9 +269,9 @@ nextline(s)==
      if npNull s
      then false
      else
-       $f:= CAR s
-       $r:= CDR s
-       $ln := CDR $f
+       $f:= first s
+       $r:= rest s
+       $ln := rest $f
        $linepos:=CAAR $f
        $n:=STRPOSL('" ",$ln,0,true)-- spaces at beginning
        $sz :=# $ln
@@ -512,7 +512,7 @@ scanS()==
                   CONCAT(str,b)
 scanTransform x==x
 
---idChar? x== scanLetter x or DIGITP x or MEMQ(x,'(_? _%))
+--idChar? x== scanLetter x or DIGITP x or x in '(_? _%)
 
 --scanLetter x==
 --   if not CHARP x
@@ -527,7 +527,7 @@ posend(line,n)==
 --     while n<#line and digit? line.n repeat n:=n+1
 --     n
 
---startsId? x==  scanLetter x or MEMQ(x,'(_? _%))
+--startsId? x==  scanLetter x or x in '(_? _%)
 digit? x== DIGITP x
 
 scanW(b)==             -- starts pointing to first char

@@ -152,7 +152,7 @@ ScanOrPairVec(f, ob) ==
     CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
         ScanOrInner(f, ob) ==
             HGET($seen, ob) => nil
-            PAIRP ob =>
+            CONSP ob =>
                 HPUT($seen, ob, true)
                 ScanOrInner(f, QCAR ob)
                 ScanOrInner(f, QCDR ob)
@@ -178,8 +178,8 @@ get(x,prop,e) ==
 
 get0(x,prop,e) ==
   not atom x => get(QCAR x,prop,e)
-  u:= QLASSQ(x,CAR QCAR e) => QLASSQ(prop,u)
-  (tail:= CDR QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+  u:= QLASSQ(x,first QCAR e) => QLASSQ(prop,u)
+  (tail:= rest QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
   nil
 
@@ -332,19 +332,19 @@ getUnionOrRecordTags u ==
 
 Identity x == x
 
-length1? l == PAIRP l and not PAIRP QCDR l
+length1? l == CONSP l and not CONSP QCDR l
 
-length2? l == PAIRP l and PAIRP (l := QCDR l) and not PAIRP QCDR l
+length2? l == CONSP l and CONSP (l := QCDR l) and not CONSP QCDR l
 
 pairList(u,v) == [[x,:y] for x in u for y in v]
 
 -- GETALIST(alist,prop) == IFCDR assoc(prop,alist)
-GETALIST(alist,prop) == CDR assoc(prop,alist)
+GETALIST(alist,prop) == rest assoc(prop,alist)
 
 PUTALIST(alist,prop,val) ==
   null alist => [[prop,:val]]
   pair := assoc(prop,alist) =>
-    CDR pair = val => alist
+    rest pair = val => alist
     -- else we fall over Lucid's read-only storage feature again
     QRPLACD(pair,val)
     alist
@@ -355,8 +355,8 @@ REMALIST(alist,prop) ==
   null alist => alist
   alist is [[ =prop,:.],:r] =>
     null r => NIL
-    QRPLACA(alist,CAR r)
-    QRPLACD(alist,CDR r)
+    QRPLACA(alist,first r)
+    QRPLACD(alist,rest r)
     alist
   null rest alist => alist
   l := alist
@@ -498,8 +498,8 @@ listOfPatternIds x ==
 
 isPatternVar v ==
   -- a pattern variable consists of a star followed by a star or digit(s)
-  IDENTP(v) and MEMQ(v,'(_*_* _*1 _*2 _*3 _*4 _*5 _*6 _*7 _*8 _*9 _*10
-    _*11 _*12 _*13 _*14 _*15 _*16 _*17 _*18 _*19 _*20)) and true
+  IDENTP(v) and v in '(_*_* _*1 _*2 _*3 _*4 _*5 _*6 _*7 _*8 _*9 _*10
+    _*11 _*12 _*13 _*14 _*15 _*16 _*17 _*18 _*19 _*20) and true
 
 removeZeroOne x ==
   -- replace all occurrences of (Zero) and (One) with
@@ -550,7 +550,7 @@ listSort(pred,list,:optional) ==
    NOT functionp pred => error "listSort: first arg must be a function"
    NOT LISTP list => error "listSort: second argument must be a list"
    NULL optional => mergeSort(pred,function Identity,list,LENGTH list)
-   key := CAR optional
+   key := first optional
    NOT functionp key => error "listSort: last arg must be a function"
    mergeSort(pred,key,list,LENGTH list)
 
@@ -715,7 +715,7 @@ augProplistOf(var,prop,val,e) ==
 semchkProplist(x,proplist,prop,val) ==
   prop="isLiteral" =>
     LASSOC("value",proplist) or LASSOC("mode",proplist) => warnLiteral x
-  MEMQ(prop,'(mode value)) =>
+  prop in '(mode value) =>
     LASSOC("isLiteral",proplist) => warnLiteral x
 
 addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
@@ -804,8 +804,8 @@ intern x ==
   x
 
 isDomain a ==
-  PAIRP a and VECP(CAR a) and
-    member(CAR(a).0, $domainTypeTokens)
+  CONSP a and VECP(first a) and
+    member(first(a).0, $domainTypeTokens)
 
 -- variables used by browser
 

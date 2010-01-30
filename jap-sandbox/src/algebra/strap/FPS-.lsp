@@ -12,7 +12,7 @@
       (|getShellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
-  (PROG (#0=#:G1402)
+  (PROG (#0=#:G1400)
     (RETURN
       (PROG1 (LETT #0#
                    (MAX 1

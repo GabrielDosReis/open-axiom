@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra poly.spad}
 \author{Dave Barton, James Davenport, Barry Trager, Patrizia Gianni, Marc Moreno Maza}

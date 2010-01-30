@@ -105,14 +105,14 @@ htSayValue t ==
       htSay '" to "
       htSayArgument target
   t = '(Category) => htSay('"a category")
-  t is [op,:.] and MEMQ(op,'(Join CATEGORY)) or constructor? opOf t =>
+  t is [op,:.] and op in '(Join CATEGORY) or constructor? opOf t =>
     htSayConstructor(nil,t)
   htSay('"an element of domain ")
   htSayArgument t                            --continue for operations
 
 htSayArgument t == --called only for operations not for constructors
   null $signature => htSay ['"{\em ",t,'"}"]
-  MEMQ(t, '(_$ _%)) =>
+  t in '(_$ _%) =>
     $conkind = '"category" and $conlength > 20 =>
       $generalSearch? => htSay '"{\em D} of the origin category"
       addWhereList("$",'is,nil)
@@ -261,7 +261,7 @@ whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
   for [op,:alist] in opAlist repeat
     for [sig,:.] in alist repeat
       opl := [[op,:SUBLISLIS($FormalMapVariableList,rest conform,sig)],:opl]
-  opl := NREVERSE opl
+  opl := nreverse opl
   u := whoUses(opl,conform)
   prefix := pluralSay(#u,'"constructor uses",'"constructors use")
   suffix :=
@@ -378,7 +378,7 @@ koOps(conform,domname,:options) == main where
 --      for x in relatives repeat
 --      or/[y for y in CDAR x | isSharpVar y] => 'skip
 --      acc := [x,:acc]
---      relatives := NREVERSE acc
+--      relatives := nreverse acc
 --      for (pair := [pakform,:.]) in relatives repeat
 --      $packageItem := sublisFormal(rest conform,pair)
 --      ours := merge(fn(pakform,nil),ours)
@@ -421,17 +421,17 @@ zeroOneConvert x ==
 
 kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   atom x => x
-  (op := CAR x) = '_$ => '_$
-  op = 'local => CADR x
-  op = ":" => [":",CADR x,fn CADDR x]
+  (op := first x) = '_$ => '_$
+  op = 'local => second x
+  op = ":" => [":",second x,fn third x]
   isConstructorName op => [fn y for y in x]
   INTEGERP op => op
-  op = 'QUOTE and atom CADR x => CADR x
+  op = 'QUOTE and atom second x => second x
   x
 
 koCatOps(conform,domname) ==
   conname := opOf conform
-  oplist := REVERSE getConstructorOperationsFromDB conname
+  oplist := reverse getConstructorOperationsFromDB conname
   oplist := sublisFormal(IFCDR domname or IFCDR conform ,oplist)
   --check below for INTEGERP key to avoid subsumed signatures
   [[zeroOneConvert op,:nalist] for [op,:alist] in oplist | nalist := koCatOps1(alist)]
@@ -459,12 +459,12 @@ hashTable2Alist tb ==
   [[op,:HGET(tb,op)] for op in listSort(function GLESSEQP,HKEYS $if)]
 
 koCatAttrsAdd(catform,pred) ==
-  for [name,argl,:p] in CAR getConstructorExports catform repeat
+  for [name,argl,:p] in first getConstructorExports catform repeat
     npred  := quickAnd(pred,p)
     exists := HGET($if,name)
     if existingPred := LASSOC(argl,exists)_
         then npred := quickOr(npred,existingPred)
-    if not MEMQ(name,'(nil nothing)) _
+    if not (name in '(nil nothing)) _
         then HPUT($if,name,[[argl,simpHasPred npred],:exists])
 
 --=======================================================================
@@ -525,7 +525,7 @@ koaPageFilterByCategory1(htPage,i) ==
         newOpAlist := insertAlist(op,newEntry,newOpAlist)
   falist := nil
   for [op,:alist] in newOpAlist repeat
-    falist := [[op,:NREVERSE alist],:falist]
+    falist := [[op,:nreverse alist],:falist]
   htpSetProperty(htPage,'fromcat,['" from category {\sf ",form2HtString ancestor,'"}"])
   dbShowOperationsFromConform(htPage,which,falist)
 
@@ -568,7 +568,7 @@ modemap2Sig(op,mm) ==
     target := dcSig . 1
     ntarget := ['Union, target, '"failed"]
     dcSig := substitute(ntarget, target, dcSig)
-  alist := findSubstitutionOrder? pairlis(vlist, flist) or systemError()
+  alist := findSubstitutionOrder? pairList(vlist, flist) or systemError()
   predList := substInOrder(alist, predList)
   nsig := substInOrder(alist, sig)
   if hasPatternVar nsig or hasPatternVar predList then
@@ -592,7 +592,7 @@ hasPatternVar x ==
 
 getDcForm(dc, condlist) ==
   [ofWord,id,cform] := or/[x for x in condlist | x is [k,=dc,:.]
-     and MEMQ(k, '(ofCategory isDomain))] or return nil
+     and k in '(ofCategory isDomain)] or return nil
   conform := getConstructorForm opOf cform
   ofWord = 'ofCategory =>
     [conform, ["*1", :rest cform], ["%", :rest conform]]
@@ -609,15 +609,7 @@ getSigSubst(u, pl, vl, fl) ==
     key = 'isDomain => getSigSubst(r, pl, [v, :vl], [f, :fl])
     key = 'ofCategory => getSigSubst(r, pl, ['D, :vl], [f, :fl])
     key = 'ofType    => getSigSubst(r, pl, vl, fl)
-    key = 'has => getSigSubst(r, [item, :pl], vl, fl)
+    key = "has" => getSigSubst(r, [item, :pl], vl, fl)
     key = 'not => getSigSubst(r, [item, :pl], vl, fl)
     systemError()
   [pl, vl, fl]
-
-
-pairlis(u,v) ==
-  null u or null v => nil
-  [[first u,:first v],:pairlis(rest u, rest v)]
-
-
-

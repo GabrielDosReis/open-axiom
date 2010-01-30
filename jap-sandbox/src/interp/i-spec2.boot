@@ -98,9 +98,10 @@ constantInDomain?(form,domainForm) ==
 ++ in the VAT `op'.
 findConstantInDomain(op,c,type,d) ==
   isPartialMode d => throwKeyedMsg("S2IS0020",NIL)
-  if $genValue then
-    val := wrap getConstantFromDomain([c],d)
-  else val := ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
+  val := 
+    $genValue => wrap getConstantFromDomain([c],d)
+    ["getConstantFromDomain",["LIST",MKQ c],MKQ d]
+  type := substitute(d,"$",type)
   putValue(op,objNew(val,type))
   putModeSet(op,[type])
 
@@ -137,7 +138,7 @@ upDollar t ==
       if x then putTarget(y,x)
   putAtree(first form,"dollar",t)
   ms := bottomUp form
-  f in '(One Zero) and PAIRP(ms) and CAR(ms) = $OutputForm =>
+  f in '(One Zero) and CONSP (ms) and first(ms) = $OutputForm =>
     throwKeyedMsg("S2IS0021",[f,t])
   putValue(op,getValue first form)
   putModeSet(op,ms)
@@ -265,7 +266,7 @@ compileIF(op,cond,a,b,t) ==
     -- if this was a return statement, we take the mode to be that
     -- of what is being returned.
     if getUnname a = 'return then
-      ms1 := bottomUp CADR a
+      ms1 := bottomUp second a
       [m1] := ms1
     evalIF(op,rest t,m1)
     putModeSet(op,ms1)
@@ -275,9 +276,9 @@ compileIF(op,cond,a,b,t) ==
     m2=m1 => m1
     m2 = $Exit => m1
     m1 = $Exit => m2
-    if EQCAR(m1,"Symbol") then
+    if m1 = $Symbol then
       m1:=getMinimalVarMode(getUnname a,$declaredMode)
-    if EQCAR(m2,"Symbol") then
+    if m2 = $Symbol then
       m2:=getMinimalVarMode(getUnname b,$declaredMode)
     (r := resolveTTAny(m2,m1)) => r
     rempropI($mapName,'localModemap)
@@ -398,7 +399,7 @@ compileIs(val,pattern) ==
   -- produce code for compiled "is" predicate.  makes pattern variables
   --  into local variables of the function
   vars:= NIL
-  for pat in CDR pattern repeat
+  for pat in rest pattern repeat
     IDENTP(pat) and isLocalVar(pat) => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
     pat is ["=",var] => vars:= [var,:vars]
@@ -431,8 +432,8 @@ removeConstruct pat ==
   if pat is ["construct",:p] then pat:=p
   if pat is ["cons", a, b] then pat := [a, [":", b]]
   atom pat => pat
-  RPLACA(pat,removeConstruct CAR pat)
-  RPLACD(pat,removeConstruct CDR pat)
+  RPLACA(pat,removeConstruct first pat)
+  RPLACD(pat,removeConstruct rest pat)
   pat
 
 isPatternMatch(l,pats) ==
@@ -456,7 +457,7 @@ isPatMatch(l,pats) ==
       isPatMatch(rest l,restPats)
     pat is ["=",var] =>
       p:=ASSQ(var,$subs) =>
-        CAR l = CDR p => isPatMatch(rest l, restPats)
+        first l = rest p => isPatMatch(rest l, restPats)
         $subs:="failed"
       $subs:="failed"
     pat is [":",var] =>
@@ -499,7 +500,7 @@ up%LET t ==
   -- binding
   t isnt [op,lhs,rhs] => nil
   $declaredMode: local := NIL
-  PAIRP lhs =>
+  CONSP lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
     var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
@@ -553,7 +554,7 @@ evalLET(lhs,rhs) ==
       $genValue => v
       objNew(getValueNormalForm v,objMode v)
     if isPartialMode t2 then
-      if EQCAR(t1,'Symbol) and $declaredMode then
+      if t1 = $Symbol and $declaredMode then
         t1:= getMinimalVarMode(objValUnwrap v,$declaredMode)
       t' := t2
       null (t2 := resolveTM(t1,t2)) =>
@@ -618,7 +619,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
 evalLETchangeValue(name,value) ==
   -- write the value of name into the environment, clearing dependent
   --  maps if its type changes from its last value
-  localEnv := PAIRP $env
+  localEnv := CONSP $env
   clearCompilationsFlag :=
     val:= (localEnv and get(name,'value,$env)) or get(name,'value,$e)
     null val =>
@@ -788,7 +789,7 @@ assignSymbol(symbol, value, domain) ==
 getInterpMacroNames() ==
   names := [n for [n,:.] in $InterpreterMacroAlist]
   if (e := CAAR $InteractiveFrame) and (m := assoc("--macros--",e)) then
-    names := append(names,[n for [n,:.] in CDR m])
+    names := append(names,[n for [n,:.] in rest m])
   MSORT names
 
 isInterpMacro name ==
@@ -799,7 +800,7 @@ isInterpMacro name ==
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
   -- $InterpreterMacroAlist will probably be phased out soon
-  (sv := assoc(name,$InterpreterMacroAlist)) => CONS(NIL,CDR sv)
+  (sv := assoc(name,$InterpreterMacroAlist)) => CONS(NIL,rest sv)
   NIL
 
 --% Handlers for prefix QUOTE
@@ -859,7 +860,7 @@ getReduceFunction(op,type,result, locale) ==
     (isHomogeneousArgs sig) and "and"/[null c for c in cond]]
   null mm => 'failed
   [[dc,:sig],fun,:.]:=mm
-  dc='local => [MKQ [fun,:'local],:CAR sig]
+  dc='local => [MKQ [fun,:'local],:first sig]
   dcVector := evalDomain dc
   $compilingMap =>
     k := NRTgetMinivectorIndex(
@@ -1074,11 +1075,11 @@ uptuple t ==
   null l => upNullTuple(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and PAIRP(tar) and not isPartialMode(tar) then
-    CAR(tar) in aggs =>
-      ud := CADR tar
+  if tar and CONSP(tar) and not isPartialMode(tar) then
+    first(tar) in aggs =>
+      ud := second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
-    CAR(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
+    first(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
       vec := ['List,underDomainOf tar]
       for x in l repeat if not getTarget(x) then putTarget(x,vec)
   argModeSetList:= [bottomUp x for x in l]
@@ -1146,7 +1147,7 @@ upwhere t ==
   tree := upwhereMkAtree(tree,env,e)
   if x := getAtree(op,'dollar) then
     atom tree => throwKeyedMsg("S2IS0048",NIL)
-    putAtree(CAR tree,'dollar,x)
+    putAtree(first tree,'dollar,x)
   upwhereMain(tree,env,e)
   val := getValue tree
   putValue(op,val)
@@ -1174,7 +1175,7 @@ copyHack(env) ==
   -- (localModemap . something)
   c:= CAAR env
   d:= [fn p for p in c] where fn(p) ==
-    CONS(CAR p,[(EQCAR(q,'localModemap) => q; copy q) for q in CDR p])
+    CONS(first p,[(q is ["localModemap",:.] => q; copy q) for q in rest p])
   [[d]]
 
 

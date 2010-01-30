@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ namespace BOOT
 -- the root of the first tree is concatenated with its forest.
 -- column t is the number of spaces before the first non-space in line t
  
-pileColumn t==CDR tokPosn CAAR t
+pileColumn t== rest tokPosn CAAR t
 pileComment t== EQ(tokType CAAR t,"negcomment")
 pilePlusComment t== EQ(tokType CAAR t,"comment")
  
@@ -84,9 +84,9 @@ pileTree(n,s)==
     then [false,n,[],s]
     else
         [h,t]:=[car s,cdr s]
-        hh:=pileColumn CAR h
+        hh:=pileColumn first h
         if hh > n
-        then pileForests(CAR h,hh,t)
+        then pileForests(first h,hh,t)
         else [false,n,[],s]
  
 eqpileTree(n,s)==
@@ -94,9 +94,9 @@ eqpileTree(n,s)==
     then [false,n,[],s]
     else
         [h,t]:=[car s,cdr s]
-        hh:=pileColumn CAR h
+        hh:=pileColumn first h
         if hh = n
-        then pileForests(CAR h,hh,t)
+        then pileForests(first h,hh,t)
         else [false,n,[],s]
  
 pileForest(n,s)==
@@ -137,7 +137,7 @@ pileCforest x==
         else enPile separatePiles x
  
 firstTokPosn t== tokPosn CAAR t
-lastTokPosn  t== tokPosn CADR t
+lastTokPosn  t== tokPosn second t
  
 separatePiles x==
   if null x

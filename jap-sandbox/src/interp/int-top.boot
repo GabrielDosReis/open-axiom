@@ -111,6 +111,16 @@ intloop () ==
       resetStackLimits()
       mode := CATCH($intTopLevel, SpadInterpretStream(1, nil, true))
 
+++ If the interpreter is spwan by the session manager, then
+++ each successful connection also creates its own frame.  
+++ In particular, the only time we get to do anything in the `initial'
+++ frame is when we get the first connection.  In that case, we would
+++ be asked by the session manager to create a frame.  The client is
+++ not aware of that,  It is therefore confusing to display a prompt,
+++ because all this horse-threading happens behind the client's back.
+printFirstPrompt?() ==
+  $interpreterFrameName ~= "initial" or
+    getOptionValue '"role" ~= '"server"
 
 SpadInterpretStream(str, source, interactive?) ==
     pile?                    := not interactive?
@@ -132,9 +142,9 @@ SpadInterpretStream(str, source, interactive?) ==
     $promptMsg             : local := 'S2CTP023
  
     interactive? =>
-                not $leanMode and printPrompt()
-                intloopReadConsole('"", str)
-                []
+      not $leanMode and printFirstPrompt?() and printPrompt()
+      intloopReadConsole('"", str)
+      []
     intloopInclude (source,0)
     []
  
@@ -179,21 +189,21 @@ intloopPrefix?(prefix,whole) ==
  
 intloopProcess(n,interactive,s)==
      StreamNull s => n
-     [lines,ptree]:=CAR s
+     [lines,ptree]:=first s
      pfAbSynOp?(ptree,"command")=>
             if interactive then setCurrentLine tokPart ptree
             FUNCALL($systemCommandFunction, tokPart ptree)
-            intloopProcess(n ,interactive ,CDR s)
+            intloopProcess(n ,interactive ,rest s)
      intloopProcess(intloopSpadProcess(n,lines,ptree,interactive)
-                 ,interactive ,CDR s)
+                 ,interactive ,rest s)
  
 intloopEchoParse s==
-         [dq,stream]:=CAR s
+         [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,$lines)
          setCurrentLine(mkLineList(lines))
          if $EchoLines then ncloopPrintLines lines
          $lines:=rest
-         cons([[lines,npParse dqToList dq]],CDR s)
+         cons([[lines,npParse dqToList dq]],rest s)
  
 intloopInclude0(st, name, n) ==
     $lines:local:=incStream(st,name)
@@ -265,8 +275,8 @@ phIntReportMsgs(carrier, interactive?) ==
     'OK
  
 mkLineList lines ==
-  l := [CDR line for line in lines | nonBlank CDR line]
-  #l = 1 => CAR l
+  l := [rest line for line in lines | nonBlank rest line]
+  #l = 1 => first l
   l
 
 nonBlank str ==
@@ -297,7 +307,7 @@ ncloopEscaped x==
 
 ncloopDQlines (dq,stream)==
         StreamNull stream
-        a:= poGlobalLinePosn tokPosn CADR dq
+        a:= poGlobalLinePosn tokPosn second dq
         b:= poGlobalLinePosn CAAR stream
         streamChop (a-b+1,stream)
  
@@ -309,12 +319,12 @@ streamChop(n,s)==
          else
             [a,b]:= streamChop(n-1,cdr s)
             line:=car s
-            c:=ncloopPrefix?('")command",CDR line)
+            c:=ncloopPrefix?('")command",rest line)
             d:= cons(car line,if c then c else cdr line)
             [cons(d,a),b]
  
 ncloopPrintLines lines ==
-        for line in lines repeat WRITE_-LINE CDR line
+        for line in lines repeat WRITE_-LINE rest line
         WRITE_-LINE '" "
  
 ncloopIncFileName string==
@@ -325,9 +335,9 @@ ncloopIncFileName string==
                 fn
 
 ncloopParse s==
-         [dq,stream]:=CAR s
+         [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,stream)
-         cons([[lines,npParse dqToList dq]],CDR s)
+         cons([[lines,npParse dqToList dq]],rest s)
  
 ncloopInclude0(st, name, n) ==
      $lines:local := incStream(st, name)
@@ -419,8 +429,8 @@ phBegin id ==
     if $ncmPhase then intSayKeyedMsg('S2CTP021,[id])
  
 PullAndExecuteSpadSystemCommand stream ==
-    ExecuteSpadSystemCommand CAR stream
-    CDR stream
+    ExecuteSpadSystemCommand first stream
+    rest stream
 
 ExecuteSpadSystemCommand string ==
   FUNCALL($systemCommandFunction, string)
@@ -435,6 +445,6 @@ getParserMacros() ==
 displayParserMacro m ==
   m := ASSQ(m, $pfMacros)
   null m => nil
-  pfPrintSrcLines CADDR m
+  pfPrintSrcLines third m
 
 

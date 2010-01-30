@@ -43,7 +43,7 @@
       (|getShellEntry| $ 19))) 
 
 (DEFUN |GCDDOM-;gcdPolynomial;3Sup;4| (|p1| |p2| $)
-  (PROG (|e2| |e1| |c1| |p| |c2| #0=#:G1419)
+  (PROG (|e2| |e1| |c1| |p| |c2| #0=#:G1417)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p1| (|getShellEntry| $ 24))

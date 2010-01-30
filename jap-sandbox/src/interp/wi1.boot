@@ -202,7 +202,7 @@ markWhereTran ["where",["DEF",form,sig,clist,body],:tail] ==
       a is ['LISTOF,:r] =>
         for y in r repeat decls := [[":",y,b],:decls]
       decls := [x,:decls]
-    x is [key,fn,p,q,bd] and MEMQ(key,'(DEF MDEF)) and p='(NIL) and q='(NIL) =>
+    x is [key,fn,p,q,bd] and key in '(DEF MDEF) and p='(NIL) and q='(NIL) =>
       fn = target or fn is [=target] => ttype := bd
       fn = body   or fn is [=body]   => body  := bd
       macros := [x,:macros]
@@ -214,7 +214,7 @@ markWhereTran ["where",["DEF",form,sig,clist,body],:tail] ==
   ntarget := ttype or target
   ndef := ['DEF,nform,[ntarget,:nargtypes],clist,body]
   result :=
-    REVERSE macros is [:m,e] =>
+    reverse macros is [:m,e] =>
       mpart :=
         m => ['SEQ,:m,['exit,1,e]]
         e
@@ -264,18 +264,18 @@ compNoStacking(xOrig,m,e) ==
 
 markKillAllRecursive x ==
   x is [op,:r] =>
---->op = 'PART => markKillAllRecursive CADR r
-    op = 'PART => ['PART, CAR r, markKillAllRecursive CADR r]
+--->op = 'PART => markKillAllRecursive second r
+    op = 'PART => ['PART, first r, markKillAllRecursive second r]
 ----------------------------------------------------------94/10/11
     constructor? op => markKillAll x
-    op = 'elt and constructor? opOf CAR r =>
-      ['elt,markKillAllRecursive CAR r,CADR r]
+    op = 'elt and constructor? opOf first r =>
+      ['elt,markKillAllRecursive first r,second r]
     x
   x
 
 compNoStackingAux($partExpression,m,e) ==
 -----------------not used---------------------94/10/11
-  x := CADDR $partExpression
+  x := third $partExpression
   T := compNoStacking0(x,m,e) or return nil
   markParts($partExpression,T)
 
@@ -344,7 +344,7 @@ compAtom(x,m,e) ==
       modeIsAggregateOf('Vector,m,e) is [.,R]=> compVector(x,['Vector,R],e)
     T => convert(T,m)
 -->
-  FIXP x and MEMQ(opOf m, '(Integer NonNegativeInteger PositiveInteger SmallInteger)) => markAt [x,m,e]
+  FIXP x and opOf m in '(Integer NonNegativeInteger PositiveInteger SmallInteger) => markAt [x,m,e]
 --  FIXP x and (T := [x, $Integer,e]) and (T' := convert(T,m)) => markAt(T, T')
   t:=
     isSymbol x =>
@@ -479,7 +479,7 @@ compWhere([.,form,:exprList],m,eInit) ==
 --    form is ['DEF,a,osig,:.] and osig is [otarget,:.] =>
 --      exprList is [['SEQ,:l,['exit,n,y]]] and (u := [:l,y]) and
 --        (ntarget := or/[def for x in u | x is [op,a',:.,def] and ([op,a',otarget]) and
---          MEMQ(op,'(DEF MDEF)) and (a' = otarget or a' is [=otarget])]) =>
+--          op in '(DEF MDEF) and (a' = otarget or a' is [=otarget])]) =>
 --            [ntarget,:rest osig]
 --      osig
 --    nil
@@ -576,7 +576,7 @@ setqSingle(id,val,m,E) ==
       'locals
     profileRecord(key,id,T.mode)
   newProplist:= consProplistOf(id,currentProplist,"value",markKillAll removeEnv T)
-  e':= (PAIRP id => e'; addBinding(id,newProplist,e'))
+  e':= (CONSP id => e'; addBinding(id,newProplist,e'))
   x1 := markKillAll x
   if isDomainForm(x1,e') then
     if isDomainInScope(id,e') then
@@ -593,7 +593,7 @@ setqSingle(id,val,m,E) ==
      else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
+            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
   [form,m',e']
 
 setqMultiple(nameList,val,m,e) ==
@@ -651,7 +651,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
   (op:= first expr)="QUOTE" => ValueFlag and level=exitCount
-  MEMQ(op,'(WI MI)) => canReturn(CADDR expr,level,count,ValueFlag)
+  op in '(WI MI) => canReturn(third expr,level,count,ValueFlag)
   op="TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
@@ -740,16 +740,16 @@ compConstruct(form,m,e) == (T := compConstruct1(form,m,e)) and markConstruct(for
   
 compConstruct1(form is ["construct",:l],m,e) ==
   y:= modeIsAggregateOf("List",m,e) =>
-    T:= compList(l,["List",CADR y],e) => convert(T,m)
+    T:= compList(l,["List",second y],e) => convert(T,m)
   y:= modeIsAggregateOf("Vector",m,e) =>
-    T:= compVector(l,["Vector",CADR y],e) => convert(T,m)
+    T:= compVector(l,["Vector",second y],e) => convert(T,m)
   T:= compForm(form,m,e) => T
   for D in getDomainsInScope e repeat
     (y:=modeIsAggregateOf("List",D,e)) and
-      (T:= compList(l,["List",CADR y],e)) and (T':= convert(T,m)) =>
+      (T:= compList(l,["List",second y],e)) and (T':= convert(T,m)) =>
          return T'
     (y:=modeIsAggregateOf("Vector",D,e)) and
-      (T:= compVector(l,["Vector",CADR y],e)) and (T':= convert(T,m)) =>
+      (T:= compVector(l,["Vector",second y],e)) and (T':= convert(T,m)) =>
          return T'
 
 compPretend(u := ["pretend",x,t],m,e) ==
@@ -811,7 +811,7 @@ coerce(T,m) ==
       '"function coerce called from the interpreter."])
 --==================> changes <======================
 --The following line is inappropriate for our needs:::
---rplac(CADR T,substitute("$",$Rep,CADR T))
+--rplac(second T,substitute("$",$Rep,second T))
   T' := coerce0(T,m) => T'
   T := [T.expr,fullSubstitute("$",$Representation,T.mode),T.env]
 --==================> changes <======================
@@ -901,7 +901,7 @@ compCoerce(u := ["::",x,m'],m,e) ==
   T:= compCoerce1(x,m',e) => coerce(T,m)
   T := comp(x,$EmptyMode,e) or return nil
   T.mode = $SmallInteger and
-    MEMQ(opOf m,'(NonNegativeInteger PositiveInteger)) =>
+    opOf m in '(NonNegativeInteger PositiveInteger) =>
       compCoerce(["::",["::",x,$Integer],m'],m,e)
 --------------> new code <-------------------
   getmode(m',e) is ["Mapping",["UnionCategory",:l]] =>
@@ -1213,8 +1213,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     if $extraParms then
       formals:=actuals:=nil
       for u in $extraParms repeat
-        formals:=[CAR u,:formals]
-        actuals:=[MKQ CDR u,:actuals]
+        formals:=[first u,:formals]
+        actuals:=[MKQ rest u,:actuals]
       body := ['sublisV,['PAIR,['QUOTE,formals],['LIST,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
@@ -1225,7 +1225,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     fun:= compile [op',['LAM,sargl,body]]
 
 --  5. give operator a 'modemap property
-    pairlis:= [[a,:v] for a in argl for v in $FormalMapVariableList]
+    pairlis:= pairList(argl,$FormalMapVariableList)
     parSignature:= SUBLIS(pairlis,signature')
     parForm:= SUBLIS(pairlis,form)
 ----    lisplibWrite('"compilerInfo",

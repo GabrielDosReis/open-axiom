@@ -78,7 +78,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     originale:= $e
     [$op,:argl]:= form
     $formalArgList:= [:argl,:$formalArgList]
-    $pairlis := [[a,:v] for a in argl for v in $FormalMapVariableList]
+    $pairlis := pairList(argl,$FormalMapVariableList)
     $mutableDomain: local :=
       -- all defaulting packages should have caching turned off
        isCategoryPackageName $op or   
@@ -108,7 +108,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $uncondAlist: local := nil
 -->>-- next global initialized here, reset by buildFunctor
     $NRTslot1PredicateList: local :=
-      REMDUP [CADR x for x in attributeList]
+      REMDUP [second x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local := nil --set in NRTmakeSlot1Info
@@ -125,14 +125,14 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     --The following loop sees if we can economise on ADDed operations
     --by using those of Rep, if that is the same. Example: DIRPROD
     if not $insideCategoryPackageIfTrue  then
-      if body is ['add,ab:=[fn,:.],['CAPSULE,:cb]] and MEMQ(fn,'(List Vector))
+      if body is ['add,ab:=[fn,:.],['CAPSULE,:cb]] and fn in '(List Vector)
          and FindRep(cb) = ab
                where FindRep cb ==
                  u:=
                    while cb repeat
                      ATOM cb => return nil
                      cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
-                     cb:=CDR cb
+                     cb:=rest cb
                  u
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
       else $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
@@ -236,14 +236,14 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
               findExtrasP(a,x) ==
                 x is ['AND,:l] => "union"/[findExtrasP(a,y) for y in l]
                 x is ['OR,:l] => "union"/[findExtrasP(a,y) for y in l]
-                x is ['has,=a,y] and y is ['SIGNATURE,:.] => [y]
+                x is ["has",=a,y] and y is ['SIGNATURE,:.] => [y]
                 nil
         nil
     augmentSig(s,ss) ==
        -- if we find something extra, add it to the signature
       null ss => s
       for u in ss repeat
-        $ConditionalOperators:=[CDR u,:$ConditionalOperators]
+        $ConditionalOperators:=[rest u,:$ConditionalOperators]
       s is ['Join,:sl] =>
         u:=ASSQ('CATEGORY,ss) =>
           SUBST([:u,:ss],u,s)
@@ -459,7 +459,7 @@ unLet x ==
 
 corrupted? u ==
   u is [op,:r] =>
-    MEMQ(op,'(WI MI PART)) => true
+    op in '(WI MI PART) => true
     or/[corrupted? x for x in r]
   false
 
@@ -470,7 +470,7 @@ applyMapping([op,:argl],m,e,ml) ==
   #argl~=#ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
-    pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+    pairlis:= pairList(argl,$FormalMapVariableList)
     ml' := SUBLIS(pairlis, ml)
     argl':=
       [T.expr for x in argl for m' in rest ml'] where
@@ -493,7 +493,7 @@ applyMapping([op,:argl],m,e,ml) ==
       [op',:argl',"$"] where
         op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
     ['call,['applyFun,op],:argl']
-  pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+  pairlis := pairList(argl',$FormalMapVariableList)
   convert([form,SUBLIS(pairlis,first ml),e],m)
  
 compFormWithModemap(form,m,e,modemap) ==
@@ -539,10 +539,10 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
         form':= [f,:[t.expr for t in Tl]]
         m'=$Category or isCategoryForm(m',e) => form'
         -- try to deal with new-style Unions where we know the conditions
-        op = "elt" and f is ['XLAM,:.] and IDENTP(z:=CAR argl) and
+        op = "elt" and f is ['XLAM,:.] and IDENTP(z:=first argl) and
           (c:=get(z,'condition,e)) and
             c is [["case",=z,c1]] and
-              (c1 is ['_:,=(CADR argl),=m] or EQ(c1,CADR argl) ) =>
+              (c1 is ['_:,=(second argl),=m] or EQ(c1,second argl) ) =>
 -- first is a full tag, as placed by getInverseEnvironment
 -- second is what getSuccessEnvironment will place there
                 ["CDR",z]
@@ -585,7 +585,7 @@ compElt(origForm,m,E) ==
 --+
     val := genDeltaEntry [opOf anOp,:modemap]
     x := markTran(origForm,[val],sig,[E])
-    [x,first rest sig,E] --implies fn calls used to access constants
+    [x,second sig,E] --implies fn calls used to access constants
   compForm(origForm,m,E)
  
 pause op == op
@@ -629,7 +629,7 @@ compApplyModemap(form,modemap,$e) ==
 --+ store the signature instead.
  
 --$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
-  f is [op1,d,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
+  f is [op1,d,.] and op1 in '(ELT CONST Subsumed) =>
     [genDeltaEntry [op,:modemap],lt',$bindings]
   markImport mc
   [f,lt',$bindings]
@@ -638,8 +638,8 @@ compMapCond''(cexpr,dc) ==
   cexpr=true => true
   --cexpr = "true" => true
 ---------------> new <----------------------
-  cexpr is [op,:l] and MEMQ(op,'(_and AND)) => and/[compMapCond''(u,dc) for u in l]
-  cexpr is [op,:l] and MEMQ(op,'(_or OR))   => or/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(_and AND) => and/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(_or OR)   => or/[compMapCond''(u,dc) for u in l]
 ---------------> new <----------------------
   cexpr is ["not",u] => not compMapCond''(u,dc)
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
@@ -768,7 +768,7 @@ makeSimplePredicateOrNil p == nil
 mkUserConstructorAbbreviation(c,a,type) ==
   if $AnalyzeOnly or $convert2NewCompiler then
     $abbreviationStack := [[type,a,:c],:$abbreviationStack]
-  if not atom c then c:= CAR c  --  Existing constructors will be wrapped
+  if not atom c then c:= first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)
@@ -855,7 +855,7 @@ compIterator(it,e) ==
           stackMessage ["final value of index: ",final," must be an integer"]
       optFinal:= [final]
     indexmode:=
-      comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
+      comp(third it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer
 --  markImport ['Segment,indexmode]
     if null get(index,"mode",e) then [.,.,e]:=
@@ -937,10 +937,10 @@ compRepeatOrCollect(form,m,e) ==
           repeatOrCollect="COLLECT" =>
             targetMode = '$EmptyMode => '$EmptyMode
             (u:=modeIsAggregateOf('List,targetMode,e)) =>
-              CADR u
+              second u
             (u:=modeIsAggregateOf('Vector,targetMode,e)) =>
               repeatOrCollect:='COLLECTV
-              CADR u
+              second u
             stackMessage('"Invalid collect bodytype")
             return nil
             -- If we're doing a collect, and the type isn't conformable
@@ -956,10 +956,10 @@ compRepeatOrCollect(form,m,e) ==
         form':= [repeatOrCollect,:itl',body']
         m'':=
           repeatOrCollect="COLLECT" =>
-            (u:=modeIsAggregateOf('List,targetMode,e)) => CAR u
+            (u:=modeIsAggregateOf('List,targetMode,e)) => first u
             ["List",m']
           repeatOrCollect="COLLECTV" =>
-            (u:=modeIsAggregateOf('Vector,targetMode,e)) => CAR u
+            (u:=modeIsAggregateOf('Vector,targetMode,e)) => first u
             ["Vector",m']
           m'
 --------> new <--------------
@@ -1037,8 +1037,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
             oldFLP':=oldFLP
             n:=0
             while oldFLP' repeat
-              oldFLP':=CDR oldFLP'
-              flp1:=CDR flp1
+              oldFLP':=rest oldFLP'
+              flp1:=rest flp1
               n:=n+1
             -- Now we have to add code to compile all the elements
             -- of functorLocalParameters that were added during the
@@ -1054,8 +1054,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
                   nils:=[gv,:nils]
               n:=n+1
 
-            $functorLocalParameters:=[:oldFLP,:REVERSE nils]
-            REVERSE ans
+            $functorLocalParameters:=[:oldFLP,:reverse nils]
+            reverse ans
   oldFLP:=$functorLocalParameters
   if y~="%noBranch" then
 --> new <-----------------------
@@ -1073,7 +1073,7 @@ doItSeq item ==
 doItDomain item ==
   -- convert naked top level domains to import
   u:= ["import", [first item,:rest item]]
-  markImport CADR u
+  markImport second u
   stackWarning ["Use: import ", [first item,:rest item]]
 --wiReplaceNode(item, u, 14)
   RPLACA(item, first u)
@@ -1134,7 +1134,7 @@ doItDef item ==
   chk(item,3)
   RPLACA(item,"CodeDefine")
         --Note that DescendCode, in CodeDefine, is looking for this
-  RPLACD(CADR item,[$signatureOfForm])
+  RPLACD(second item,[$signatureOfForm])
   chk(item,4)
       --This is how the signature is updated for buildFunctor to recognise
 --+
@@ -1162,13 +1162,13 @@ wiReplaceNode(node,ocode,key) ==
   chk(node, key + 1)
 
 replaceNodeInStructureBy(node, x) == 
-  $nodeCopy: local := [CAR node,:CDR node]
+  $nodeCopy: local := [first node,:rest node]
   replaceNodeBy(node, x)
   node
 
 replaceNodeBy(node, x) ==
   atom x => nil
-  for y in tails x | EQCAR(x,node) repeat RPLAC(CAR x, $nodeCopy)
+  for y in tails x | EQCAR(x,node) repeat RPLAC(first x, $nodeCopy)
   nil  
 
 chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==

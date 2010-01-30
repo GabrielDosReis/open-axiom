@@ -105,7 +105,7 @@ canRemoveIsDomain? pred ==
 findSubstitutionOrder? alist == fn(alist,nil) where
   -- returns NIL or an appropriate substituion order
   fn(alist,res) ==
-    null alist => NREVERSE res
+    null alist => nreverse res
     choice := or/[x for (x:=[a,:b]) in alist | null containedRight(a,alist)] =>
       fn(delete(choice,alist),[choice,:res])
     nil
@@ -182,7 +182,7 @@ reportOpSymbol op1 ==
     sayKeyedMsg("S2IF0010",[op1])
     if SIZE PNAME op1 < 3 then
       x := UPCASE queryUserKeyedMsg("S2IZ0060",[op1])
-      null MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+      null (STRING2ID_-N(x,1) in '(Y YES)) =>
         ok := nil
         sayKeyedMsg("S2IZ0061",[op1])
     ok => apropos [op1]
@@ -245,8 +245,8 @@ formatOpSymbol(op,sig) ==
   quad := specialChar 'quad
   n := #sig
   (op = 'elt) and (n = 3) =>
-    (CADR(sig) = '_$) =>
-      STRINGP (sel := CADDR(sig)) =>
+    (second(sig) = '_$) =>
+      STRINGP (sel := third(sig)) =>
         [quad,".",sel]
       [quad,".",quad]
     op
@@ -419,8 +419,8 @@ form2String1 u ==
       null argl => [ '":" ]
       null rest argl => [ '":", form2String1 first argl ]
       formDecl2String(argl.0,argl.1)
-  op = "#" and PAIRP argl and LISTP CAR argl =>
-    STRINGIMAGE SIZE CAR argl
+  op = "#" and CONSP argl and LISTP first argl =>
+    STRINGIMAGE SIZE first argl
   op = 'Join => formJoin2String argl
   op = "ATTRIBUTE" => form2String1 first argl
   op='Zero => 0
@@ -461,7 +461,7 @@ formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
     x=$EmptyMode or x=$quadSymbol => specialChar 'quad
     STRINGP(x) or IDENTP(x) => x
     x is [ ='_:,:.] => form2String1 x
-    isValidType(m) and PAIRP(m) and
+    isValidType(m) and CONSP(m) and
       (getConstructorKindFromDB first(m) = "domain") =>
         (x' := coerceInteractive(objNewWrap(x,m),$OutputForm)) =>
           form2String1 objValUnwrap x'
@@ -554,13 +554,13 @@ tuple2String argl ==
  where
   f x ==
     ATOM x => object2String x
-    -- [f CAR x,:f CDR x]
+    -- [f first x,:f rest x]
     [f y for y in x]
 
 script2String s ==
   null s => '""   -- just to be safe
-  if not PAIRP s then s := [s]
-  linearFormatForm(CAR s, CDR s)
+  if atom s then s := [s]
+  linearFormatForm(first s, rest s)
 
 linearFormatName x ==
   atom x => x
@@ -646,9 +646,9 @@ application2String(op,argl, linkInfo) ==
 --op='MP =>concat("P",concat(argl.0,argl.1))
   op='SEGMENT =>
     null argl => '".."
-    (null rest argl) or (null first rest argl) =>
+    (null rest argl) or (null second argl) =>
       concat(first argl, '"..")
-    concat(first argl, concat('"..", first rest argl))
+    concat(first argl, concat('"..", second argl))
   concat(app2StringWrap(formWrapId op, linkInfo) ,
                         concat("_(",concat(tuple2String argl,"_)")))
 
@@ -708,7 +708,7 @@ pred2English x ==
     concat(pred2English first l,tail)
   x is ['NOT,l] =>
     concat('"not ",pred2English l)
-  x is [op,a,b] and op in '(has ofCategory) =>
+  x is [op,a,b] and op in '(_has ofCategory) =>
     concat(pred2English a,'%b,'"has",'%d,form2String abbreviate b)
   x is [op,a,b] and op in '(HasSignature HasAttribute HasCategory) =>
     concat(prefix2String0 formatPredParts a,'%b,'"has",'%d,
@@ -734,7 +734,7 @@ object2String x ==
   STRINGP x => x
   IDENTP x  => PNAME x
   NULL x    => '""
-  PAIRP  x  => STRCONC(object2String first x, object2String rest x)
+  CONSP  x  => STRCONC(object2String first x, object2String rest x)
   WRITE_-TO_-STRING x
 
 object2Identifier x ==
@@ -745,7 +745,7 @@ object2Identifier x ==
 blankList x == "append"/[[BLANK,y] for y in x]
 
 pkey keyStuff ==
-    if not PAIRP keyStuff then keyStuff := [keyStuff]
+    if atom keyStuff then keyStuff := [keyStuff]
     allMsgs := ['" "]
     while not null keyStuff repeat
         dbN := NIL
@@ -753,8 +753,8 @@ pkey keyStuff ==
         key := first keyStuff
         keyStuff := IFCDR keyStuff
         next := IFCAR keyStuff
-        while PAIRP next repeat
-            if CAR next = 'dbN then dbN := CADR next
+        while CONSP next repeat
+            if first next = 'dbN then dbN := second next
             else argL := next
             keyStuff  := IFCDR keyStuff
             next      := IFCAR keyStuff

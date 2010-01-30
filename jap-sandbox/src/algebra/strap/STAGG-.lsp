@@ -50,7 +50,7 @@
   (SPADCALL |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
-  (PROG (#0=#:G1448 |i|)
+  (PROG (#0=#:G1446 |i|)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -94,7 +94,7 @@
        (EXIT (SPADCALL |x| (|getShellEntry| $ 22))))) 
 
 (DEFUN |STAGG-;elt;AUsA;6| (|x| |i| $)
-  (PROG (|l| |h| #0=#:G1418)
+  (PROG (|l| |h| #0=#:G1416)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 31))
@@ -195,7 +195,7 @@
        (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 48))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
-  (PROG (|l| |h| #0=#:G1438 |z| |y|)
+  (PROG (|l| |h| #0=#:G1436 |z| |y|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 31))

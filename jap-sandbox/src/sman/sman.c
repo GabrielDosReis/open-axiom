@@ -58,27 +58,26 @@
 #include "utils.h"
 
 static void process_arguments(openaxiom_command*, int, char**);
-static int should_I_clef(void);
 static int in_X(void);
 static void set_up_defaults(void);
 static void process_options(openaxiom_command*, int, char**);
 static void death_handler(int);
 static void sman_catch_signals(void);
-static void fix_env(char** , int);
+static void fix_env(int);
 static void init_term_io(void);
 static char* strPrefix(char* , char*);
 static void check_spad_proc(char* , char*);
 static void clean_up_old_sockets(void);
 static SpadProcess* fork_you(int);
-static void exec_command_env(char* , char**);
+static void exec_command_env(char*);
 static SpadProcess* spawn_of_hell(char* , int);
 static void start_the_spadclient(void);
 static void start_the_local_spadclient(void);
 static void start_the_session_manager(void);
 static void start_the_hypertex(void);
 static void start_the_graphics(void);
-static void fork_Axiom(void);
-static void start_the_Axiom(char**);
+static void fork_Axiom(openaxiom_command*);
+static void start_the_Axiom(openaxiom_command*);
 static void clean_up_sockets(void);
 static void clean_hypertex_socket(void);
 static void read_from_spad_io(int);
@@ -90,7 +89,9 @@ static void kill_all_children(void);
 static void clean_up_terminal(void);
 static void monitor_children(void);
 
-char *ws_path;                  /* location of the core executable */
+/* System defined pointer to array or environment variables.  */
+extern char** environ;
+
 int start_clef;                 /* start clef under spad */
 int start_graphics;             /* start the viewman */
 int start_ht;                   /* start hypertex */
@@ -140,7 +141,6 @@ unsigned char  _INTR, _QUIT, _ERASE, _KILL, _EOF, _EOL, _RES1, _RES2;
 int ptsNum, ptcNum;
 char ptsPath[20];
 
-char **new_envp;                /* new environment for the core executable */
 int child_pid;                  /* child's process id */
 struct termios oldbuf;           /* the original settings */
 struct termios childbuf;         /* terminal structure for user i/o */
@@ -186,8 +186,6 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
       start_local_spadclient = 0;
     else if (strcmp(argv[arg], "-noiw")        == 0)
       start_spadclient = 0;
-    else if (strcmp(argv[arg], "-comp")        == 0)
-      ws_path = "$AXIOM/etc/images/comp";
     else if (strcmp(argv[arg], "-nox") == 0
              || strcmp(argv[arg], "--no-gui") == 0) {
         use_X = 0;
@@ -211,8 +209,8 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
        argv[other++] = argv[arg];
   }
 
-  command->core_argv = argv;
-  command->core_argc = other;
+  command->core.argv = argv;
+  command->core.argc = other;
 
 /* If there were no X libraries
  * at build-time, we proceed to
@@ -229,12 +227,6 @@ process_arguments(openaxiom_command* command, int argc,char ** argv)
   }
 }
 
-static int
-should_I_clef(void)
-{
-  return(1);
-}
-
 static int 
 in_X(void)
 {
@@ -245,13 +237,12 @@ in_X(void)
 static  void
 set_up_defaults(void)
 {
-  start_clef = should_I_clef();
+  start_clef = 1;
   start_graphics = 1;
   start_ht = 1;
   start_spadclient = 0;
   start_local_spadclient = 1;
   use_X = isatty(0) && in_X();
-  ws_path = "$AXIOM/bin/AXIOMsys";
 }
 
 static void
@@ -260,10 +251,10 @@ process_options(openaxiom_command* command, int argc, char **argv)
   set_up_defaults();
   process_arguments(command, argc, argv);
    /* Complain about command line arguments unknown to Superman.  */
-   if (command->core_argc > 0) {
+   if (command->core.argc > 0) {
       int i;
-      for (i = 0; i < command->core_argc; ++i)
-         fprintf(stderr,"command line error: %s\n", command->core_argv[i]);
+      for (i = 0; i < command->core.argc; ++i)
+         fprintf(stderr,"command line error: %s\n", command->core.argv[i]);
       exit(-1);
    }
 }
@@ -300,18 +291,12 @@ sman_catch_signals(void)
 }
 
 static void
-fix_env(char **envp, int spadnum)
+fix_env(int spadnum)
 {
-  int len, i;
-  char *sn;
-  for(len = 0; envp[len] != NULL; len++);
-  new_envp = (char **) malloc((len + 3) * sizeof(char *));
-  new_envp[0] = "SPADSERVER=TRUE";
-  sn = (char *) malloc(20 * sizeof(char));
-  sprintf(sn, "SPADNUM=%d", spadnum);
-  new_envp[1] = sn;
-  for(i=0; i<=len; i++)
-    new_envp[i+2] = envp[i];
+  char sn[20];
+  sprintf(sn, "%d", spadnum);
+  oa_setenv("SPADNUM", sn);
+  oa_setenv("SPADSERVER", "TRUE");
 }
 
 static void
@@ -407,11 +392,11 @@ fork_you(int death_action)
 }
 
 static void
-exec_command_env(char *command,char ** env)
+exec_command_env(char *command)
 {
   char new_command[512];
   sprintf(new_command, "exec %s", command);
-  execle("/bin/sh","/bin/sh", "-c", new_command, (char*)NULL, env);
+  execle("/bin/sh","/bin/sh", "-c", new_command, (char*)NULL, environ);
 }
 
 static SpadProcess *
@@ -422,7 +407,7 @@ spawn_of_hell(char *command, int death_action)
     proc->command = command;
     return proc;
   }
-  exec_command_env(command, new_envp);
+  exec_command_env(command);
   return NULL;
 }
 
@@ -487,10 +472,8 @@ start_the_graphics(void)
 /* Start the core executable session in a separate process, */
 /* using a pseudo-terminal to catch all input and output */
 static void 
-fork_Axiom(void)
+fork_Axiom(openaxiom_command* cmd)
 {
-  char augmented_ws_path[256];  /* will append directory path */
-  char *tmp_pointer;
   SpadProcess *proc;
 
   proc =  fork_you(Die);
@@ -542,22 +525,18 @@ fork_Axiom(void)
       perror("setting the term buffer");
       exit(-1); 
     }
-    strcpy(augmented_ws_path,ws_path);          /* write the name    */
-    strcat(augmented_ws_path," ");              /* space             */
-    strcat(augmented_ws_path,ws_path);          /* name again        */
-    tmp_pointer = (char *)
-      strrchr(augmented_ws_path,'/');      /*pointer to last /  */
-    *(++tmp_pointer) = '\0';
-    exec_command_env(augmented_ws_path, new_envp);
 
-    /*    fprintf(stderr, "Cannot execute the %s system.\n", ws_path); */
-
-    exit(0);
+    /* Tell the Core that it is being invoked in server mode.   */
+    oa_allocate_process_argv(&cmd->core, 2);
+    cmd->core.argv[0] =
+       openaxiom_make_path_for(cmd->root_dir, openaxiom_core_driver);
+    cmd->core.argv[1] = "--role=server";
+    openaxiom_execute_core(cmd, openaxiom_core_driver);
   }
 }
 
 static void
-start_the_Axiom(char **envp)
+start_the_Axiom(openaxiom_command* cmd)
 {
   server_num = make_server_number();
   clean_up_old_sockets();
@@ -569,8 +548,8 @@ start_the_Axiom(char **envp)
     perror("start_the_Axiom: ptyopen failed");
     exit(-1);
   }
-  fix_env(envp, server_num);
-  fork_Axiom();
+  fix_env(server_num);
+  fork_Axiom(cmd);
   close(ptsNum);
 }
 
@@ -777,7 +756,7 @@ monitor_children(void)
 }
 
 int
-main(int argc, char *argv[],char *envp[])
+main(int argc, char *argv[])
 {
    openaxiom_command command = { };
    command.root_dir = openaxiom_get_systemdir(argc, argv);
@@ -788,7 +767,7 @@ main(int argc, char *argv[],char *envp[])
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();
   init_spad_process_list();
-  start_the_Axiom(envp);
+  start_the_Axiom(&command);
   if (open_server(SessionIOName) == -2) {
     fprintf(stderr, "Fatal error opening I/O socket\n");
     clean_up_sockets();

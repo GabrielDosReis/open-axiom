@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -50,8 +50,8 @@ buildWordTable u ==
   for key in HKEYS table repeat
     HPUT(table,key,
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function CAR),
-          function CADR))
+        listSort(function GLESSEQP, HGET(table,key),function first),
+          function second))
   table
 
 measureWordTable u ==
@@ -113,15 +113,15 @@ findWords(word,table) ==
     $countThreshold := $countThreshold + 2
     res := findApproximateWords(word,table) 
   $lastAlist := mySort res =>
---    $lastMinimum := CAR LAST $lastAlist
+--    $lastMinimum := first LAST $lastAlist
 --    $lastWords := wordSort CDAR $lastAlist
 --    $totalWords:= $lastWords
---    $lastAlist := CDR  $lastAlist
+--    $lastAlist := rest  $lastAlist
 --    $totalWords
       $lastMinimum := CAAR $lastAlist
       $lastWords := wordSort CDAR $lastAlist
       $totalWords:= $lastWords
-      $lastAlist := CDR  $lastAlist
+      $lastAlist := rest  $lastAlist
       $totalWords
   $lastWords := nil
 
@@ -131,7 +131,7 @@ more() == moreWords($lastWord,$lastTable)
 
 moreWords(word,table) ==
   $lastAlist =>
-     $lastMinimum := CAR LAST pp $lastAlist
+     $lastMinimum := first LAST pp $lastAlist
      numberOfLastWords := #$lastWords
      $lastWords := "append"/(ASSOCRIGHT $lastAlist)
      if #$lastWords > numberOfLastWords then 
@@ -182,7 +182,7 @@ findApproximateWords(word,table) ==
 
 consAlist(x,y,alist) ==
   u := ASSOC(x,alist) => 
-    RPLACD(u,[y,:CDR u])
+    RPLACD(u,[y,:rest u])
     alist
   [[x,y],:alist]
 
@@ -266,9 +266,9 @@ findApproxSimple(words,wordList,threshold) ==
       
 rotateWordList u ==
   v := u
-  p := CAR v
+  p := first v
   while QCDR v repeat
-    RPLACA(v,CADR v) 
+    RPLACA(v,second v) 
     v := QCDR v
   RPLACA(v,p)
   u

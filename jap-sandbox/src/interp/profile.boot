@@ -58,7 +58,7 @@ profileRecord(label,name,info) ==  --name: info is var: type or op: sig
 --    alist2    is ((name . info) ...)
   if $insideCapsuleFunctionIfTrue then
     op := $op
-    argl := CDR $form
+    argl := rest $form
     opSig := [$op,$signatureOfForm]
   else
     op := 'constructor
@@ -87,7 +87,7 @@ profileDisplayOp(op,alist1) ==
     sayBrightly '"  locals"
     for [x,:t] in MSORT LASSOC('locals,alist1) repeat 
       sayBrightly concat('"     ",x,": ",prefix2String t)
-  for [con,:alist2] in alist1 | not MEMQ(con,'(locals arguments)) repeat
+  for [con,:alist2] in alist1 | not (con in '(locals arguments)) repeat
     sayBrightly concat('"  ",prefix2String con)
     for [op1,:sig] in MSORT alist2 repeat
       sayBrightly ['"    ",:formatOpSignature(op1,sig)]

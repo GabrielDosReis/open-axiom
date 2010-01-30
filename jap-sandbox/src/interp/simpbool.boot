@@ -87,9 +87,9 @@ b2dnf x ==
   x = NIL => 'false
   atom x => bassert x
   [op,:argl] := x
-  MEMQ(op,'(AND and)) => band argl
-  MEMQ(op,'(OR or))   => bor argl
-  MEMQ(op,'(NOT not)) => bnot first argl
+  op in '(AND and) => band argl
+  op in '(OR or)   => bor argl
+  op in '(NOT not) => bnot first argl
   bassert x
 band x ==
   x is [h,:t] => andDnf(b2dnf h,band t)

@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra exposed.lsp}
 \author{Timothy Daly}
@@ -302,6 +302,7 @@
   (|Palette| . PALETTE)
   (|PartialFraction| . PFR)
   (|PatternFunctions2| . PATTERN2)
+  (|ParameterAst| . PARAMAST)
   (|ParametricPlaneCurve| . PARPCURV)
   (|ParametricSpaceCurve| . PARSCURV)
   (|ParametricSurface| . PARSURF)
@@ -350,6 +351,7 @@
   (|RadixExpansion| . RADIX)
   (|RadixUtilities| . RADUTIL)
   (|RandomNumberSource| . RANDSRC)
+  (|RangeBinding| . RNGBIND)
   (|RationalFunction| . RF)
   (|RationalFunctionDefiniteIntegration| . DEFINTRF)
   (|RationalFunctionFactor| . RFFACT)
@@ -401,6 +403,7 @@
   (|SquareFreeRegularTriangularSetGcdPackage| . SFRGCD)
   (|SquareFreeQuasiComponentPackage| . SFQCMPK)
   (|Stack| . STACK)
+  (|StepAst| . STEPAST)
   (|Stream| . STREAM)
   (|StreamFunctions1| . STREAM1)
   (|StreamFunctions2| . STREAM2)

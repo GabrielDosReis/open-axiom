@@ -265,15 +265,15 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
       keepList := nil
       for [item,:pred] in domainsOf(x,IFCAR domlist) repeat
         u := assoc(item,alist) =>
-          keepList := [[item,:quickAnd(CDR u,pred)],:keepList]
+          keepList := [[item,:quickAnd(rest u,pred)],:keepList]
       alist := keepList
-    for pair in alist repeat RPLACD(pair,simpHasPred CDR pair)
+    for pair in alist repeat RPLACD(pair,simpHasPred rest pair)
     listSort(function GLESSEQP, alist)
   catScreen(r,alist) ==
     for x in r repeat
-      x isnt [op1,:.] and MEMQ(op1,'(ATTRIBUTE SIGNATURE)) => systemError x
+      x isnt [op1,:.] and op1 in '(ATTRIBUTE SIGNATURE) => systemError x
       alist := [[item,:npred] for [item,:pred] in alist |
-        (pred1 := simpHasPred ['has,item,x]) and (npred := quickAnd(pred1,pred))]
+        (pred1 := simpHasPred ["has",item,x]) and (npred := quickAnd(pred1,pred))]
     alist
 
 --=======================================================================
@@ -306,7 +306,7 @@ kePage(htPage,junk) ==
                        getConstructorExports((domname or conform),true))
   [conlist,attrlist,:oplist] := data
   if domname then
-    for x in conlist repeat  RPLAC(CDR x,simpHasPred CDR x)
+    for x in conlist repeat  RPLAC(rest x,simpHasPred rest x)
     for x in attrlist repeat RPLAC(CDDR x,simpHasPred CDDR x)
     for x in oplist   repeat RPLAC(CDDR x,simpHasPred CDDR x)
   prefix := pluralSay(#conlist + #attrlist + #oplist,'"Export",'"Exports")
@@ -389,9 +389,9 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
   $predvec:=
     $domain => $domain . 3
     getConstructorPredicatesFromDB name
-  catpredvec := CAR u
-  catinfo    := CADR u
-  catvec     := CADDR u
+  catpredvec := first u
+  catinfo    := second u
+  catvec     := third u
   catforms := [[pakform,:pred] for i in 0..MAXINDEX catvec | test ] where
     test() ==
       pred := simpCatPredicate
@@ -510,7 +510,7 @@ kcpPage(htPage,junk) ==
 
 reduceAlistForDomain(alist,domform,conform) == --called from kccPage
   alist := SUBLISLIS(rest domform,rest conform,alist)
-  for pair in alist repeat RPLACD(pair,simpHasPred(CDR pair,domform))
+  for pair in alist repeat RPLACD(pair,simpHasPred(rest pair,domform))
   [pair for (pair := [.,:pred]) in alist | pred]
 
 kcaPage(htPage,junk) ==
@@ -695,7 +695,7 @@ parseNoMacroFromString(s) ==
    s := next(function ncloopParse,
         next(function lineoftoks,incString s))
    StreamNull s => nil
-   pf2Sex first rest first s
+   pf2Sex second first s
  
 
 
@@ -884,10 +884,10 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
       [origin,:doc]
     or/[gn x for x in HGET(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
-    $conform := CAR u              --origin
+    $conform := first u              --origin
     if ATOM $conform then $conform := [$conform]
     code     := LASTATOM u         --optional topic code
-    comments := or/[p for entry in CDR u | p := hn entry] or return nil
+    comments := or/[p for entry in rest u | p := hn entry] or return nil
     [$conform,first comments,:code]
   hn [sig,:doc] ==
     $which = '"attribute" => sig is ['attribute,: =$sig] and doc
@@ -945,7 +945,7 @@ dbShowCons(htPage,key,:options) ==
     htPage := htInitPageNoScroll(htCopyProplist htPage)
     htpSetProperty(htPage,'cAlist,u)
     dbShowCons(htPage,htpProperty(htPage,'exclusion))
-  if MEMQ(key,'(exposureOn exposureOff)) then
+  if key in '(exposureOn exposureOff) then
     $exposedOnlyIfTrue :=
       key = 'exposureOn => 'T
       NIL
@@ -959,7 +959,7 @@ conPageChoose conname ==
 dbShowCons1(htPage,cAlist,key) ==
   conlist := REMDUP [item for x in cAlist | pred] where
     pred() ==
-      item := CAR x
+      item := first x
       $exposedOnlyIfTrue => isExposedConstructor opOf item
       item
 --$searchFirstTime and (conlist is [.]) => conPage first conlist
@@ -992,7 +992,7 @@ dbShowCons1(htPage,cAlist,key) ==
       bcUnixTable(listSort(function GLESSEQP,REMDUP flist))
     key = 'documentation   => dbShowConsDoc(page,conlist)
     if $exposedOnlyIfTrue then
-      cAlist := [x for x in cAlist | isExposedConstructor opOf CAR x]
+      cAlist := [x for x in cAlist | isExposedConstructor opOf first x]
     key = 'conditions =>     dbShowConditions(page,cAlist,kind)
     key = 'parameters => bcConTable REMDUP ASSOCLEFT cAlist
     key = 'kinds => dbShowConsKinds cAlist
@@ -1017,7 +1017,7 @@ dbConsExposureMessage() ==
 --    kind = 'domain    => doms := [x,:doms]
 --    kind = 'package   => paks:= [x,:paks]
 --    defs := [x,:defs]
---  lists := [NREVERSE cats,NREVERSE doms,NREVERSE paks,NREVERSE defs]
+--  lists := [nreverse cats,nreverse doms,nreverse paks,nreverse defs]
 --  htBeginMenu(2)
 --  htSayStandard '"\indent{1}"
 --  kinds := +/[1 for x in lists | #x > 0]

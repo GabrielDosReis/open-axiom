@@ -57,7 +57,7 @@ getDoc(conName,op,modemap) ==
 ++ argument to the ofCategory predicate it contains.  Return
 ++ nil otherwise.
 getOfCategoryArgument pred ==
-  pred is [fn,:.] and MEMQ(fn,'(AND OR NOT)) =>
+  pred is [fn,:.] and fn in '(AND OR NOT) =>
     or/[getOfCategoryArgument x for x in rest pred]
   pred is ['ofCategory,'_*1,form] => form
   nil
@@ -102,7 +102,7 @@ recordDocumentation(key,lineno) ==
   --record NIL to mean "there was no documentation"
   $maxSignatureLineNumber := lineno
   $docList := [[key,:u],:$docList]
-  -- leave CAR of $docList alone as required by collectAndDeleteAssoc
+  -- leave first of $docList alone as required by collectAndDeleteAssoc
 
 recordHeaderDocumentation lineno ==
   if $maxSignatureLineNumber = 0 then
@@ -139,7 +139,7 @@ finalizeDocumentation() ==
       y is [x,b] and b is [='attribute,:r] =>
         attributes := [[x,:r],:attributes]
       signatures := [y,:signatures]
-    name := CAR $lisplibForm
+    name := first $lisplibForm
     if noHeading or signatures or attributes or unusedCommentLineNumbers then
       sayKeyedMsg("S2CD0001",NIL)
       bigcnt := 1
@@ -211,7 +211,7 @@ transDoc(conname,doclist) ==
 --$exposeFlag and not isExposedConstructor conname => nil
 --skip over unexposed constructors when checking system files
   $x: local := nil
-  rlist := REVERSE doclist
+  rlist := reverse doclist
   for [$x,:lines] in rlist repeat
     $attribute? : local := $x is [.,[key]] and key = 'attribute
     null lines =>
@@ -249,7 +249,7 @@ transDoc(conname,doclist) ==
         transformAndRecheckComments('constructor,v or u)
       transformAndRecheckComments($x,u)
     acc := [[$x,longline],:acc]  --processor assumes a list of lines
-  NREVERSE acc
+  nreverse acc
 
 checkExtractItemList l ==  --items are separated by commas or end of line
   acc := nil               --l is list of remaining lines
@@ -259,7 +259,7 @@ checkExtractItemList l ==  --items are separated by commas or end of line
     k <= m => return nil
     acc := [first l,:acc]
     l := rest l
-  "STRCONC"/[x for x in NREVERSE acc]
+  "STRCONC"/[x for x in nreverse acc]
 
 ++ Translate '%' in signature to '%%' for proper printing.
 escapePercent x ==
@@ -344,7 +344,7 @@ checkTexht u ==
         x :=  IFCAR (u := rest u)  --forget right brace: move to next char
     acc := [x,:acc]
     u := rest u
-  NREVERSE acc
+  nreverse acc
 
 checkRecordHash u ==
   while u repeat
@@ -448,7 +448,7 @@ checkGetStringBeforeRightBrace u ==
   acc := nil
   while u repeat
     x := first u
-    x = $charRbrace => return "STRCONC"/(NREVERSE acc)
+    x = $charRbrace => return "STRCONC"/(nreverse acc)
     acc := [x,:acc]
     u := rest u
 
@@ -462,7 +462,7 @@ checkGetStringBeforeRightBrace u ==
 --      if x = '"\spadcommand" then x := '"\spadpaste"
 --      acc := [x,:acc]
 --      u := rest u
---    NREVERSE acc
+--    nreverse acc
 --
 --  checkTranVerbatimMiddle u ==
 --      (y := IFCAR (v := IFCDR u)) = $charLbrace and
@@ -502,7 +502,7 @@ checkGetStringBeforeRightBrace u ==
 --      if x = '"\spadcommand" then x := '"\spadpaste"
 --      acc := [x,:acc]
 --      u := rest u
---    NREVERSE acc
+--    nreverse acc
 
 appendOver [head,:tail] ==
  acc := LASTNODE head
@@ -518,7 +518,7 @@ checkRemoveComments lines ==
       line := checkTrimCommented first lines
       if firstNonBlankPosition line >= 0 then acc := [line,:acc]
     lines := rest lines
-  NREVERSE acc
+  nreverse acc
 
 ++ return the part of `line' that is not a comment.  A comment
 ++ is introduced by a leading percent character (%), or a double
@@ -558,7 +558,7 @@ checkAddMacros u ==
       y := LASSOC(x,$HTmacs) => [:y,:acc]
       [x,:acc]
     u := rest u
-  NREVERSE acc
+  nreverse acc
 
 checkComments(nameSig,lines) == main where
   main() ==
@@ -659,7 +659,7 @@ checkGetArgs u ==
   while (k := charPosition($charComma,u,i + 1)) < m repeat
     acc := [trimString SUBSTRING(u,i + 1,k - i - 1),:acc]
     i := k
-  NREVERSE [SUBSTRING(u,i + 1,m - i - 1),:acc]
+  nreverse [SUBSTRING(u,i + 1,m - i - 1),:acc]
 
 checkGetMargin lines ==
   while lines repeat
@@ -743,7 +743,7 @@ checkExtract(header,lines) ==
       (i := charPosition(char '_ ,line,k+1)) < j => 'skip  --blank before colon
       return nil
     acc := [line,:acc]
-  NREVERSE acc
+  nreverse acc
 
 checkFixCommonProblem u ==
   acc := nil
@@ -756,7 +756,7 @@ checkFixCommonProblem u ==
       u := rest rest u
     acc := [x,:acc]
     u := rest u
-  NREVERSE acc
+  nreverse acc
 
 checkDecorate u ==
   count := 0           -- number of enclosing opening braces
@@ -827,7 +827,7 @@ checkDecorate u ==
              [$charRbrace,x,$charLbrace,'"\spad",:acc]
       [checkAddBackSlashes x,:acc]
     u := rest u
-  NREVERSE acc
+  nreverse acc
 
 hasNoVowels x ==
   max := MAXINDEX x
@@ -890,10 +890,10 @@ checkIeEg u ==
       x = '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
-      z := checkIeEgfun x => [:NREVERSE z,:acc]
+      z := checkIeEgfun x => [:nreverse z,:acc]
       [x,:acc]
     u := rest u
-  NREVERSE acc
+  nreverse acc
 
 checkIeEgfun x ==
   CHARP x => nil
@@ -920,10 +920,10 @@ checkSplit2Words u ==
       x = '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
-      z := checkSplitBrace x => [:NREVERSE z,:acc]
+      z := checkSplitBrace x => [:nreverse z,:acc]
       [x,:acc]
     u := rest u
-  NREVERSE acc
+  nreverse acc
 
 checkSplitBrace x ==
   CHARP x => [x]
@@ -1005,7 +1005,7 @@ checkBalance u ==
     do
       x := first u
       openClose := assoc(x,$checkPrenAlist)  --is it an open bracket?
-        => stack := [CAR openClose,:stack]   --yes, push the open bracket
+        => stack := [first openClose,:stack] --yes, push the open bracket
       open  := rassoc(x,$checkPrenAlist) =>  --it is a close bracket!
         stack is [top,:restStack] => --does corresponding open bracket match?
           if open ~= top then          --yes: just pop the stack
@@ -1015,7 +1015,7 @@ checkBalance u ==
         checkDocError ['"Missing left ",checkSayBracket open]
     u := rest u
   if stack then
-    for x in NREVERSE stack repeat
+    for x in nreverse stack repeat
       checkDocError ['"Missing right ",checkSayBracket x]
   u
 
@@ -1042,7 +1042,7 @@ checkBeginEnd u ==
       x = '"\beginitems" =>
         beginEndStack := ["items",:beginEndStack]
       x = '"\begin" =>
-        u is [.,=$charLbrace,y,:r] and CAR r = $charRbrace =>
+        u is [.,=$charLbrace,y,:r] and first r = $charRbrace =>
           if not member(y,$beginEndList) then
             checkDocError ['"Unknown begin type: \begin{",y,'"}"]
           beginEndStack := [y,:beginEndStack]
@@ -1054,7 +1054,7 @@ checkBeginEnd u ==
           checkDocError ['"\item appears outside a \begin-\end"]
         checkDocError ['"\item appears within a \begin{",IFCAR beginEndStack,'"}.."]
       x = '"\end" =>
-        u is [.,=$charLbrace,y,:r] and CAR r = $charRbrace =>
+        u is [.,=$charLbrace,y,:r] and first r = $charRbrace =>
           y = IFCAR beginEndStack =>
             beginEndStack := rest beginEndStack
             u := r

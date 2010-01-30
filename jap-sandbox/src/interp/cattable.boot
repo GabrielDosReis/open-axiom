@@ -95,20 +95,20 @@ simpHasPred(pred,:options) == main where
     simp pred
   simp pred ==
     pred is [op,:r] =>
-      op = "has" => simpHas(pred,first r,first rest r)
-      op = 'HasCategory => simp ['has,CAR r,simpDevaluate CADR r]
+      op = "has" => simpHas(pred,first r,second r)
+      op = 'HasCategory => simp ["has",first r,simpDevaluate second r]
       op = 'HasSignature =>
-         [op,sig] := simpDevaluate CADR r
-         ["has",CAR r,['SIGNATURE,op,sig]]
+         [op,sig] := simpDevaluate second r
+         ["has",first r,['SIGNATURE,op,sig]]
       op = 'HasAttribute =>
-        form := ['has,a := CAR r,['ATTRIBUTE,b := simpDevaluate CADR r]]
+        form := ["has",a := first r,['ATTRIBUTE,b := simpDevaluate second r]]
         simpHasAttribute(form,a,b)
-      MEMQ(op,'(AND OR NOT)) =>
+      op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil
         u is '(QUOTE T) => true
         simpBool u
       op = 'hasArgs => ($hasArgs => $hasArgs = r; pred)
-      null r and opOf op = 'has => simp first pred
+      null r and opOf op = "has" => simp first pred
       pred is '(QUOTE T) => true
       op1 := LASSOC(op,'((and . AND)(or . OR)(not . NOT))) => simp [op1,:r]
       simp first pred   --REMOVE THIS HACK !!!!
@@ -123,9 +123,9 @@ simpHasPred(pred,:options) == main where
     npred := eval pred
     IDENTP npred or null hasIdent npred => npred
     pred
-  eval (pred := ['has,d,cat]) ==
-    x := hasCat(CAR d,CAR cat)
-    y := CDR cat =>
+  eval (pred := ["has",d,cat]) ==
+    x := hasCat(first d,first cat)
+    y := rest cat =>
       npred := or/[p for [args,:p] in x | y = args] => simp npred
       false  --if not there, it is false
     x
@@ -233,7 +233,7 @@ encodeUnion(id,new:=[a,:b],alist) ==
 
 moreGeneralCategoryPredicate(id,new,old) ==
   old = 'T or new = 'T => 'T
-  old is ['has,a,b] and new is ['has,=a,c] =>
+  old is ["has",a,b] and new is ["has",=a,c] =>
     tempExtendsCat(b,c) => new
     tempExtendsCat(c,b) => old
     ['OR,old,new]
@@ -246,10 +246,10 @@ mkCategoryOr(new,old) ==
 simpCategoryOr(new,l) ==
   newExtendsAnOld:= false
   anOldExtendsNew:= false
-  ['has,a,b] := new
+  ["has",a,b] := new
   newList:= nil
   for pred in l repeat
-    pred is ['has,=a,c] =>
+    pred is ["has",=a,c] =>
       tempExtendsCat(c,b) => anOldExtendsNew:= true
       if tempExtendsCat(b,c) then newExtendsAnOld:= true
       newList:= [pred,:newList]
@@ -331,7 +331,7 @@ simpOrUnion1(x,l) ==
   [first l,:simpOrUnion1(x,rest l)]
 
 mergeOr(x,y) ==
-  x is ["has",a,b] and y is ['has,=a,c] =>
+  x is ["has",a,b] and y is ["has",=a,c] =>
     testExtend(b,c) => y
     testExtend(c,b) => x
     nil
@@ -356,12 +356,12 @@ getConstrCat(x) ==
 
 
 makeCatPred(zz, cats, thePred) ==
-  if zz is ['IF,curPred := ['has,z1,z2],ats,.] then
+  if zz is ['IF,curPred := ["has",z1,z2],ats,.] then
     ats := if ats is ['PROGN,:atl] then atl else [ats]
     for at in ats repeat
       if at is ['ATTRIBUTE,z3] and not atom z3 and
-        constructor? CAR z3 then
-          cats:= CONS(['IF,quickAnd(['has,z1,z2], thePred),z3,'%noBranch],cats)
+        constructor? first z3 then
+          cats:= CONS(['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],cats)
       at is ['IF, pred, :.] =>
         cats := makeCatPred(at, cats, curPred)
   cats
@@ -438,17 +438,17 @@ squeezeList(l) ==
 
 squeeze1(l) ==
 -- recursive version of squeezeList
-  x:= CAR l
+  x:= first l
   y:=
     atom x => x
-    z:= member(x,$found) => CAR z
+    z:= member(x,$found) => first z
     $found:= CONS(x,$found)
     squeeze1 x
   RPLACA(l,y)
-  x:= CDR l
+  x:= rest l
   y:=
     atom x => x
-    z:= member(x,$found) => CAR z
+    z:= member(x,$found) => first z
     $found:= CONS(x,$found)
     squeeze1 x
   RPLACD(l,y)
@@ -483,7 +483,7 @@ clearCategoryTable($cname) ==
   MAPHASH('clearCategoryTable1,_*HASCATEGORY_-HASH_*)
 
 clearCategoryTable1(key,val) ==
-  (CAR key=$cname)=> HREM(_*HASCATEGORY_-HASH_*,key)
+  (first key=$cname)=> HREM(_*HASCATEGORY_-HASH_*,key)
   nil
 
 clearTempCategoryTable(catNames) ==
@@ -492,7 +492,7 @@ clearTempCategoryTable(catNames) ==
     extensions:= nil
     for (extension:= [catForm,:.]) in getConstructorAncestorsFromDB key
       repeat
-        MEMQ(CAR catForm,catNames) => nil
+        MEMQ(first catForm,catNames) => nil
         extensions:= [extension,:extensions]
     HPUT(_*ANCESTORS_-HASH_*,key,extensions)
 

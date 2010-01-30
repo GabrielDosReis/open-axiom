@@ -53,7 +53,7 @@ grepConstruct(s,key,:options) == --key = a o c d p x k (all) . (aok) w (doc)
   lines := grepConstruct1(s,key)
   lines is ["error",:.] => lines
   IFCAR options => grepSplit(lines,key = 'w)    --leave now if a constructor
-  MEMQ(key,'(o a)) => dbScreenForDefaultFunctions lines --kill default lines if a/o
+  key in '(o a) => dbScreenForDefaultFunctions lines --kill default lines if a/o
   lines
 
 grepConstruct1(s,key) ==
@@ -151,7 +151,7 @@ checkPmParse parse ==
   STRINGP parse => parse
   (fn parse => parse) where fn(u) ==
     u is [op,:args] =>
-      MEMQ(op,'(and or not)) and "and"/[checkPmParse x for x in args]
+      op in '(and or not) and "and"/[checkPmParse x for x in args]
     STRINGP u => true
     false
   nil
@@ -227,12 +227,12 @@ grepSplit(lines,doc?) ==
       kind = char '_- => 'skip                --for now
       systemError 'kind
   if doc? then CLOSE instream2
-  [['"attribute",:NREVERSE atts],
-     ['"operation",:NREVERSE ops],
-       ['"category",:NREVERSE cats],
-         ['"domain",:NREVERSE doms],
-           ['"package",:NREVERSE paks]
---           ['"default_ package",:NREVERSE defs]   -- drop defaults
+  [['"attribute",:nreverse atts],
+     ['"operation",:nreverse ops],
+       ['"category",:nreverse cats],
+         ['"domain",:nreverse doms],
+           ['"package",:nreverse paks]
+--           ['"default_ package",:nreverse defs]   -- drop defaults
                ]
 
 mkUpDownPattern s == recurse(s,0,#s) where
@@ -265,10 +265,10 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
     h(sl,res) == --helper for wild cards
       sl is [s,:r] => h(r,[$wild1,s,:res])
       res := rest res
-      if not MEMQ('w,$options) then
+      if not ('w in $options) then
         if first res ~= '"" then res := ['"`",:res]
         else if res is [.,p,:r] and p = $wild1 then res := r
-      "STRCONC"/NREVERSE res
+      "STRCONC"/nreverse res
     remUnderscores s ==
       (k := charPosition(char $charUnderscore,s,0)) < MAXINDEX s =>
         STRCONC(SUBSTRING(s,0,k),'"[",s.(k + 1),'"]",
@@ -408,10 +408,10 @@ genSearch1(filter,reg,doc) ==
   count = 0 => emptySearchPage('"entry",filter,true)
   count = 1 =>
     alist := (regCount = 1 => regSearchAlist; docSearchAlist)
-    showNamedConstruct(or/[x for x in alist | CADR x])
+    showNamedConstruct(or/[x for x in alist | second x])
   summarize? :=
     docSearchAlist => true
-    nonEmpties := [pair for pair in regSearchAlist | #(CADR pair) > 0]
+    nonEmpties := [pair for pair in regSearchAlist | #(second pair) > 0]
     not(nonEmpties is [pair])
   not summarize? => showNamedConstruct pair
   -----------generate a summary page---------------------------
@@ -553,7 +553,7 @@ docSearch1(filter,doc) ==
   docSearchAlist := searchDropUnexposedLines doc
   count := searchCount docSearchAlist
   count = 0 => emptySearchPage('"entry",filter,true)
-  count = 1 => showNamedConstruct(or/[x for x in docSearchAlist | CADR x])
+  count = 1 => showNamedConstruct(or/[x for x in docSearchAlist | second x])
   prefix := pluralSay(count,'"entry matches",'"entries match")
   emfilter := ['"{\em ",escapeSpecialChars STRINGIMAGE filter,'"}"]
   header := [:prefix,'" ",:emfilter]
@@ -684,7 +684,7 @@ conSpecialString?(filter,:options) ==
     false
   null parse => nil
   form := conLowerCaseConTran parse
-  MEMQ(KAR form,'(and or not)) or CONTAINED("*",form) => nil
+  KAR form in '(and or not) or CONTAINED("*",form) => nil
   filter = '"Mapping" =>nil
   u := kisValidType form => u
   secondTime => false
@@ -844,7 +844,7 @@ generalSearchDo(htPage,flag) ==
   form := mkDetailedGrepPattern(kindCode,name,nargs,npat)
   lines := applyGrep(form,'libdb)
 --lines := dbReadLines resultFile
-  if MEMQ(which,'(ops attrs)) then lines := dbScreenForDefaultFunctions lines
+  if which in '(ops attrs) then lines := dbScreenForDefaultFunctions lines
   kind :=
     which = 'cons =>
       n = 1 =>
@@ -955,7 +955,7 @@ grepSource key ==
   key = 'gloss   => STRCONC(systemRootDirectory(),'"doc/glosskey.text")
   key = $localLibdb => $localLibdb
   mkGrepTextfile
-    MEMQ(key, '(_. a c d k o p x)) => 'libdb
+    key in '(_. a c d k o p x) => 'libdb
     'comdb
 
 mkGrepTextfile s == 
@@ -981,7 +981,7 @@ grepFile(pattern,:options) ==
     -----AIX Version----------
       target := getTempPath 'target
       casepart :=
-        MEMQ('iv,options)=> '"-vi"
+        'iv in options => '"-vi"
         '"-i"
       command := STRCONC('"grep ",casepart,'" _'",pattern,'"_' ",source)
       obey
@@ -990,7 +990,7 @@ grepFile(pattern,:options) ==
         STRCONC(command, '" > ",target)
       dbReadLines target
     ----Windows Version------
-    invert? := MEMQ('iv, options)
+    invert? := 'iv in options
     GREP(source, pattern, false, not invert?)
   dbUnpatchLines lines
 
@@ -1003,8 +1003,8 @@ dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
       line.0 = dash and line.1 = dash =>
         [STRCONC(first acc,SUBSTRING(line,2,nil)),:rest acc]
       [line,:acc]
-  -- following call to NREVERSE needed to keep lines properly sorted
-  NREVERSE acc  ------> added by BMT 12/95
+  -- following call to nreverse needed to keep lines properly sorted
+  nreverse acc  ------> added by BMT 12/95
 
 
 

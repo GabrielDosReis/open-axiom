@@ -120,7 +120,7 @@
 (DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
-  (PROG (#0=#:G1426 #1=#:G1427)
+  (PROG (#0=#:G1424 #1=#:G1425)
     (RETURN
       (COND
         ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 27))
@@ -279,7 +279,7 @@
                    ('T |c1|))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
-  (PROG (|y| #0=#:G1484 |z|)
+  (PROG (|y| #0=#:G1482 |z|)
     (RETURN
       (SEQ (EXIT (SEQ (COND
                         ((SPADCALL |x| (|getShellEntry| $ 85))

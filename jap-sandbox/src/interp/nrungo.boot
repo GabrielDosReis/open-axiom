@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -116,11 +116,11 @@ goGet(:l) ==
   lookupDomain :=
      domainSlot = 0 => thisDomain
      thisDomain.domainSlot -- where we look for the operation
-  if PAIRP lookupDomain then lookupDomain := NRTevalDomain lookupDomain
+  if CONSP lookupDomain then lookupDomain := NRTevalDomain lookupDomain
   dollar :=                             -- what matches $ in signatures
     explicitLookupDomainIfTrue => lookupDomain
     thisDomain
-  if PAIRP dollar then dollar := NRTevalDomain dollar
+  if CONSP dollar then dollar := NRTevalDomain dollar
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
   val:= APPLY(first fn,[:arglist,rest fn])
@@ -131,10 +131,10 @@ NRTreplaceLocalTypes(t,dom) ==
    atom t =>
      not INTEGERP t => t
      t:= dom.t
-     if PAIRP t then t:= NRTevalDomain t
+     if CONSP t then t:= NRTevalDomain t
      t.0
-   MEMQ(CAR t,'(Mapping Union Record _:)) =>
-      [CAR t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
+   first t in '(Mapping Union Record _:) =>
+      [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
    t
 
 substDomainArgs(domain,object) ==
@@ -165,7 +165,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
         someMatch := true
         nil
       slot := domain.loc
-      EQCAR(slot,'goGet) =>
+      slot is ["goGet",:.] =>
         lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       NULL slot =>
@@ -252,7 +252,7 @@ lookupPred(pred,dollar,domain) ==
     or/[lookupPred(p,dollar,domain) for p in pl]
   pred is ['NOT,p] or pred is ['not,p] => not lookupPred(p,dollar,domain)
   pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
-  pred is ['has,a,b] =>
+  pred is ["has",a,b] =>
     VECP a =>
       keyedSystemError("S2GE0016",['"lookupPred",
         '"vector as  first argument to has"])
@@ -275,9 +275,9 @@ compareSig(sig,tableSig,dollar,domain) ==
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot = '$ => s = "$" or s = devaluate dollar
-  INTEGERP tslot and PAIRP(lazyt:=domain.tslot) and PAIRP s =>
+  INTEGERP tslot and CONSP(lazyt:=domain.tslot) and CONSP s =>
       lazyt is [.,.,.,[.,item,.]] and
-        item is [.,[functorName,:.]] and functorName = CAR s =>
+        item is [.,[functorName,:.]] and functorName = first s =>
           compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
       nil
   compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
@@ -319,8 +319,8 @@ NRTcompiledLookup(op,sig,dom) ==
 
 NRTtypeHack t ==
   ATOM t => t
-  CAR t = '_# => # CADR t
-  [CAR t,:[NRTtypeHack tt for tt in CDR t]]
+  first t = '_# => # second t
+  [first t,:[NRTtypeHack tt for tt in rest t]]
 
 NRTgetMinivectorIndex(u,op,sig,domVector) ==
   s := # $minivector
@@ -340,8 +340,8 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   -- body should have a conditional expression which
   -- gives k boundary values, one general term plus possibly an
   -- "out of domain" condition
---pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
---  CONTAINED('throwKeyedMsg,mess)) => NIL
+  --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
+  --  CONTAINED('throwKeyedMsg,mess)) => NIL
   pcl := [x for x in pcl | not (x is [''T,:mess] and
     (CONTAINED('throwMessage,mess) or
       CONTAINED('throwKeyedMsg,mess)))]
@@ -401,7 +401,7 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   body:= generalTerm
   for [a,:b] in al repeat
     body:= substitute(b,a,body)
-  result:= [body,sharpArg,n-1,:NREVERSE [LASSOC(i,initList) or
+  result:= [body,sharpArg,n-1,:nreverse [LASSOC(i,initList) or
       systemErrorHere('"NRTisRecurrenceRelation")
         for i in minIndex..(n-1)]]
 

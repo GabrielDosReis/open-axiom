@@ -222,7 +222,7 @@ applyMapping([op,:argl],m,e,ml) ==
   #argl~=#ml-1 => nil
   isCategoryForm(first ml,e) =>
                                 --is op a functor?
-    pairlis:= [[v,:a] for a in argl for v in $FormalMapVariableList]
+    pairlis:= pairList($FormalMapVariableList,argl)
     ml' := SUBLIS(pairlis, ml)
     argl':=
       [T.expr for x in argl for m' in rest ml'] where
@@ -240,7 +240,7 @@ applyMapping([op,:argl],m,e,ml) ==
     -- Compiler synthetized operators are inline.
     u ~= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
     ['call,['applyFun,op],:argl']
-  pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
+  pairlis := pairList($FormalMapVariableList,argl')
   convert([form,SUBLIS(pairlis,first ml),e],m)
 
 -- This version tends to give problems with #1 and categories
@@ -539,7 +539,7 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
        (v:=assoc([dc,:nsig],modemapList)) and v is [.,[ncond,:.]] then
            deleteList:=[u,:deleteList]
            if not PredImplies(ncond,cond) then
-             newList := [[CAR u,[cond,['ELT,dc,nil]]],:newList]
+             newList := [[first u,[cond,['ELT,dc,nil]]],:newList]
   if deleteList then 
     modemapList := [u for u in modemapList | not MEMQ(u,deleteList)]
   -- We can use MEMQ since deleteList was built out of members of modemapList
@@ -620,8 +620,8 @@ compFormWithModemap(form,m,e,modemap) ==
           (c:=get(z,'condition,e)) and
             c is [["case",=z,c1]] and
               (c1 is [":",=(second argl),=m] or EQ(c1,second argl) ) =>
--- first is a full tag, as placed by getInverseEnvironment
--- second is what getSuccessEnvironment will place there
+      -- first is a full tag, as placed by getInverseEnvironment
+      -- second is what getSuccessEnvironment will place there
                 ["CDR",z]
         ["call",:form']
       e':=
@@ -647,7 +647,7 @@ getFormModemaps(form is [op,:argl],e) ==
      then modemapList:= eltModemapFilter(LAST argl,modemapList,e) or return nil
      else
       if op="setelt" then modemapList:=
-        seteltModemapFilter(CADR argl,modemapList,e) or return nil
+        seteltModemapFilter(second argl,modemapList,e) or return nil
   nargs:= #argl
   finalModemapList:= [mm for (mm:= [[.,.,:sig],:.]) in modemapList 
                        | enoughArguments(argl,sig)]
@@ -843,13 +843,12 @@ setqSingle(id,val,m,E) ==
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
---+
   if k := NRTassocIndex(id) then 
     form := ["setShellEntry","$",k,x]
   else form:=
          $QuickLet => ["%LET",id,x]
          ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];CAR outputComp(id,e'))]
+            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
   [form,m',e']
 
 assignError(val,m',form,m) ==
@@ -862,18 +861,18 @@ setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
     setqMultipleExplicit(nameList,uncons val,m,e)
   val is ["%Comma",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
-  1 --create a gensym, %add to local environment, compile and assign rhs
+  -- 1. create a gensym, %add to local environment, compile and assign rhs
   g:= genVariable()
   e:= addBinding(g,nil,e)
   T:= [.,m1,.]:= compSetq1(g,val,$EmptyMode,e) or return nil
   e:= put(g,"mode",m1,e)
   [x,m',e]:= convert(T,m) or return nil
-  1.1 --exit if result is a list
+  -- 1.1. exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat 
       e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
     convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
-  2 --verify that the #nameList = number of parts of right-hand-side
+  -- 2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
                                                 --list of modes
     decompose(m1,#nameList,e) or return nil where
@@ -884,7 +883,7 @@ setqMultiple(nameList,val,m,e) ==
         stackMessage('"no multiple assigns to mode: %1p",[t])
   #nameList~=#selectorModePairs =>
     stackMessage('"%1b must decompose into %2 components",[val,#nameList])
-  3 --generate code; return
+  -- 3. generate code; return
   assignList:=
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
@@ -1039,10 +1038,10 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
           rplac(first x,"THROW")
-          rplac(CADR x,tag)
-          rplac(CADDR x,(convertOrCroak(t,opMode)).expr)
-        true => rplac(CADR x,CADR x-1)
-      x is [key,n,t] and MEMQ(key,'(TAGGEDreturn TAGGEDexit)) =>
+          rplac(second x,tag)
+          rplac(third x,(convertOrCroak(t,opMode)).expr)
+        true => rplac(second x,second x-1)
+      x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
         rplac(first t,replaceExitEtc(first t,tag,opFlag,opMode))
       replaceExitEtc(first x,tag,opFlag,opMode)
       replaceExitEtc(rest x,tag,opFlag,opMode)
@@ -1161,7 +1160,7 @@ compElt(form,m,E) ==
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry [opOf anOp,:modemap]
-    convert([["call",val],first rest sig,E], m)
+    convert([["call",val],second sig,E], m)
   compForm(form,m,E)
 
 --% HAS
@@ -1306,7 +1305,7 @@ getUnionMode(x,e) ==
 
 isUnionMode(m,e) ==
   m is ["Union",:.] => m
-  (m':= getmode(m,e)) is ["Mapping",["UnionCategory",:.]] => CADR m'
+  (m':= getmode(m,e)) is ["Mapping",["UnionCategory",:.]] => second m'
   v:= get(RepIfRepHack m,"value",e) =>
     (v.expr is ["Union",:.] => v.expr; nil)
   nil
@@ -1331,17 +1330,31 @@ getBasicFFIType: %Mode -> %Symbol
 getBasicFFIType t ==
   t = $Byte => bootDenotation "byte"
   t = $Int16 => bootDenotation "int16"
+  t = $UInt16 => bootDenotation "uint16"
   t = $Int32 => bootDenotation "int32"
---  t = $Int64 => bootDenotation "int64"
+  t = $UInt32 => bootDenotation "uint32"
+  t = $Int64 => bootDenotation "int64"
+  t = $UInt64 => bootDenotation "uint64"
   t = $SingleInteger => bootDenotation "int"
   t = $SingleFloat =>  bootDenotation "float"
   t = $DoubleFloat => bootDenotation "double"
   t = $String => bootDenotation "string"
+  t = $SystemPointer => bootDenotation "pointer"
   nil
 
 
 ++ List of admissible type modifiers in an FFI import declaration.
 $FFITypeModifier == '(ReadOnly WriteOnly ReadWrite)
+
+++ List of admissible element types of contiguously stored
+++ homogeneous FFI aggregate types.
+$FFIAggregableDataType ==
+  [$Byte,
+    $Int16,$UInt16,
+      $Int32,$UInt32,
+        $Int64, $UInt64,
+          $SingleFloat,
+	    $DoubleFloat]
 
 ++ Return the Boot denotation of an FFI datatype.  This is either
 ++ a basic VM type, or a simple array of sized integer or floating
@@ -1350,7 +1363,7 @@ getFFIDatatype: %Mode -> %Form
 getFFIDatatype t ==
   x := getBasicFFIType t => x
   t is [m,["PrimitiveArray",t']] and m in $FFITypeModifier and
-    member(t',[$Byte,$Int16,$Int32,$SingleFloat,$DoubleFloat]) =>
+    member(t',$FFIAggregableDataType) =>
       m' := 
         m = "ReadOnly" => bootDenotation "readonly"
         m = "WriteOnly" => bootDenotation "writeonly"
@@ -1423,7 +1436,7 @@ compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
     stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
   not IDENTP lang =>
     stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
-  not MEMQ(lang, '(Builtin C)) =>
+  not (lang in '(Builtin C)) =>
     stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
   -- 2. Make sure this import is not subverting anything we know
   id' := checkExternalEntity(id,type,lang,e)
@@ -1610,7 +1623,7 @@ tryCourtesyCoercion(T,m) ==
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
-    rplac(CADR T,MSUBST("$",$Rep,CADR T))
+    rplac(second T,MSUBST("$",$Rep,second T))
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
@@ -1904,7 +1917,7 @@ compViableModemap(op,argTl,mm) ==
   -- an exterior domain (it is calculating the displacement based on view
   -- information which is no longer valid; thus ignore this index and
   -- store the signature instead.
-  f is [op1,.,.] and MEMQ(op1,'(ELT CONST Subsumed)) =>
+  f is [op1,.,.] and op1 in '(ELT CONST Subsumed) =>
     [genDeltaEntry [op,:mm],argTl]
   [f,argTl]
 
@@ -2335,7 +2348,7 @@ compRepeatOrCollect(form,m,e) ==
              ["%CollectV",localReferenceIfThere m',:itl',body']
            [repeatOrCollect,:itl',body']
         m'' := 
-          aggr is [c,.] and MEMQ(c,'(List PrimitiveArray Vector)) => [c,m']
+          aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']
           m'
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
@@ -2413,7 +2426,7 @@ compIterator(it,e) ==
           stackMessage('"final value of index: %1b must be an integer",[final])
       optFinal:= [final]
     indexmode:=
-      comp(CADDR it,$NonNegativeInteger,e) => $NonNegativeInteger
+      comp(third it,$NonNegativeInteger,e) => $NonNegativeInteger
       $Integer
     if null get(index,"mode",e) then [.,.,e]:=
       compMakeDeclaration(index,indexmode,e) or return nil
@@ -2433,12 +2446,12 @@ compIterator(it,e) ==
   nil
  
 --isAggregateMode(m,e) ==
---  m is [c,R] and MEMQ(c,'(Vector List)) => R
+--  m is [c,R] and c in '(Vector List) => R
 --  name:=
 --    m is [fn,:.] => fn
 --    m="$" => "Rep"
 --    m
---  get(name,"value",e) is [c,R] and MEMQ(c,'(Vector List)) => R
+--  get(name,"value",e) is [c,R] and c in '(Vector List) => R
  
 modeIsAggregateOf(agg,m,e) ==
   m is [ =agg,R] => [m,R]

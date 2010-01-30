@@ -267,7 +267,7 @@ bcLinearSolveMatrix1 htPage ==
       ("Not zero:" "the system is not homogeneous" bcLinearSolveMatrixInhomo nothomo)))
   htShowPage()
 
-bcLinearExtractMatrix htPage == REVERSE htpInputAreaAlist htPage
+bcLinearExtractMatrix htPage == reverse htpInputAreaAlist htPage
  
 bcLinearSolveMatrixInhomo(htPage,junk) ==
   nrows := htpProperty(htPage,'nrows)
@@ -301,7 +301,7 @@ bcLinearSolveMatrixHomo(htPage,key) == bcLinearMatrixGen(htPage,'homo)
 bcLinearMatrixGen(htPage,key) == 
   matform := bcMatrixGen htPage
   key = 'homo => bcFinish('"nullSpace",matform)
-  vector := [x.1 for x in REVERSE htpInputAreaAlist htPage]
+  vector := [x.1 for x in reverse htpInputAreaAlist htPage]
   vecform := bcVectorGen vector 
   form := bcMkFunction('"solve",matform,[vecform])
   bcGen

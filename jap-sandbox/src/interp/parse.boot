@@ -128,7 +128,7 @@ transIs1 u ==
   u is ["append",x,y] =>
     h:= [":",transIs x]
     (v:= transIs1 y) is [":",z] => [h,z]
-    v="nil" => first rest h
+    v="nil" => second h
     atom v => [h,[":",v]]
     [h,:v]
   u is ["cons",x,y] =>

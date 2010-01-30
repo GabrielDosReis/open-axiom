@@ -183,7 +183,7 @@ down() == displayComp ($level:= $level+1)
 displaySemanticErrors() ==
   n:= #($semanticErrorStack:= REMDUP $semanticErrorStack)
   n=0 => nil
-  l:= NREVERSE $semanticErrorStack
+  l:= nreverse $semanticErrorStack
   $semanticErrorStack:= nil
   sayBrightly bright '"  Semantic Errors:"
   displaySemanticError(l,$OutputStream)
@@ -198,7 +198,7 @@ displayWarnings() ==
   n:= #($warningStack:= REMDUP $warningStack)
   n=0 => nil
   sayBrightly bright '"  Warnings:"
-  l := NREVERSE $warningStack
+  l := nreverse $warningStack
   displayWarning(l,$OutputStream)
   $warningStack:= nil
   sayBrightly '" "
@@ -237,7 +237,7 @@ mkErrorExpr level ==
                 atom a => a
                 a is [ =b,:c] => [$bright,b,$dim,:c]
                 [highlight1(b,first a),:highlight1(b,rest a)]
-      substitute(bracket rest l,first rest l,first l)
+      substitute(bracket rest l,second l,first l)
  
 compAndTrace [x,m,e] ==
   SAY("tracing comp, compFormWithModemap of: ",x)
@@ -434,8 +434,8 @@ TrimCF() ==
       uold:= rest u
       unew:= nil
       for v in uold repeat if not ASSQ(first v,unew) then unew:= [v,:unew]
-      new:= [[first u,:NREVERSE unew],:new]
-  $CategoryFrame:= [[NREVERSE new]]
+      new:= [[first u,:nreverse unew],:new]
+  $CategoryFrame:= [[nreverse new]]
   nil
 
 --%
@@ -567,7 +567,7 @@ isDomainInScope(domain,e) ==
     false
   (name:= first domain)="Category" => true
   ASSQ(name,domainList) => true
---   null CDR domain or domainMember(domain,domainList) => true
+--   null rest domain or domainMember(domain,domainList) => true
 --   false
   isFunctor name => false
   true --is not a functor
@@ -618,10 +618,10 @@ decExitLevel u ==
  
 adjExitLevel(x,seqnum,inc) ==
   atom x => x
-  x is [op,:l] and MEMQ(op,'(SEQ REPEAT COLLECT)) =>
+  x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
-    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(CADR x,n+inc))
+    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(second x,n+inc))
   x is [op,:l] => for u in l repeat adjExitLevel(u,seqnum,inc)
  
 wrapSEQExit l ==
@@ -797,7 +797,7 @@ extendsCategoryForm(domain,form,form') ==
      member(form',SUBSTQ(domain,"$",first catvlist)) or
       (or/
         [extendsCategoryForm(domain,SUBSTQ(domain,"$",cat),form')
-          for [cat,:.] in CADR catvlist])
+          for [cat,:.] in second catvlist])
   nil
  
 getmode(x,e) ==
@@ -1441,7 +1441,7 @@ declareGlobalVariables vars ==
 
 simplifySEQ form ==
   isAtomicForm form => form
-  form is ["SEQ",[op,a]] and MEMQ(op, '(EXIT RETURN)) => simplifySEQ a
+  form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
     rplac(first stmts, simplifySEQ first stmts)
   form

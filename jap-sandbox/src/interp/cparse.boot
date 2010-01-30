@@ -57,7 +57,7 @@ npParse stream ==
                  ncSoftError(tokPosn $stok,'S2CY0009, [])
                  pfWrong(pfDocument ['"stack empty"],pfListOf [])
               else
-                 CAR $stack
+                 first $stack
 
 npItem()==
      npQualDef() =>
@@ -81,19 +81,19 @@ npFirstTok()==
       $stok:=
           if null $inputStream
           then tokConstruct("ERROR","NOMORE",tokPosn $stok)
-          else CAR $inputStream
+          else first $inputStream
       $ttok:=tokPart $stok
 
 npNext() ==
-     $inputStream := CDR($inputStream)
+     $inputStream := rest($inputStream)
      npFirstTok()
 
 npState()==cons($inputStream,$stack)
 
 npRestore(x)==
-      $inputStream:=CAR x
+      $inputStream:=first x
       npFirstTok()
-      $stack:=CDR x
+      $stack:=rest x
       true
 
 npPush x==$stack:=CONS(x,$stack)
@@ -105,18 +105,18 @@ npPushId()==
    npNext()
 
 npPop1()==
-       a:=CAR $stack
-       $stack:=CDR $stack
+       a:=first $stack
+       $stack:=rest $stack
        a
 
 npPop2()==
-       a:=CADR $stack
+       a:= second $stack
        RPLACD($stack,CDDR $stack)
        a
 
 npPop3()==
-       a:=CADDR $stack
-       RPLACD(CDR $stack,CDDDR $stack)
+       a:= third $stack
+       RPLACD(rest $stack,CDDDR $stack)
        a
 
 npParenthesized f==
@@ -175,7 +175,7 @@ npListofFun(f,h,g)==
           a:=$stack
           $stack:=nil
           while APPLY(h,nil) and (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          $stack:=cons(nreverse $stack,a)
           npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
         else
           true
@@ -191,7 +191,7 @@ npList(f,str1,g)== -- always produces a list, g is applied to it
           $stack:=nil
           while npEqKey str1 and (npEqKey "BACKSET" or true) and
                              (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(NREVERSE $stack,a)
+          $stack:=cons(nreverse $stack,a)
           npPush FUNCALL(g,  [npPop3(),npPop2(),:npPop1()])
         else
           npPush FUNCALL(g, [npPop1()])
@@ -372,7 +372,7 @@ npSymbolVariable()==
 npName()==npId() or npSymbolVariable()
 
 npConstTok() ==
-     MEMQ(tokType $stok, '(integer string char float command)) =>
+     tokType $stok in '(integer string char float command) =>
           npPush $stok
           npNext()
      npEqPeek "'" =>
@@ -564,7 +564,7 @@ npZeroOrMore f==
          a:=$stack
          $stack:=nil
          while APPLY(f,nil) repeat 0
-         $stack:=cons(NREVERSE $stack,a)
+         $stack:=cons(nreverse $stack,a)
          npPush cons(npPop2(),npPop1())
        npPush nil
        true
@@ -990,7 +990,7 @@ npListAndRecover(f)==
                 c:=$inputStream
      b:=cons(npPop1(),b)
    $stack:=a
-   npPush NREVERSE b
+   npPush nreverse b
  
 npMoveTo n==
       if null $inputStream

@@ -153,7 +153,7 @@ htPred2English(x,:options) ==
       IDENTP x and not MEMQ(x,$emList) => htSay escapeSpecialIds PNAME x
       htSay form2HtString(x,$emList)
     gn(x,op,l,prec) ==
-      MEMQ(op,'(NOT not)) =>
+      op in '(NOT not) =>
         htSay('"not ")
         fn(first l,0)
       op = 'HasCategory =>
@@ -164,7 +164,7 @@ htPred2English(x,:options) ==
         bcConform(first l,$emList)
         htSay('" has ")
         fnAttr CADADR l
-      MEMQ(op,'(has ofCategory)) =>
+      op in '(_has ofCategory) =>
         bcConform(first l,$emList)
         htSay('" has ")
         [a,b] := l
@@ -207,10 +207,10 @@ form2HtString(x,:options) ==
         MEMQ(x,$emList) => STRCONC('"{\em ",u,'"}")
         STRINGP x => STRCONC('"_"",u,'"_"")
         u
-      first x = 'QUOTE => STRCONC('"'",sexpr2HtString first rest x)
-      first x = ":" => STRCONC(fn first rest x,'": ",fn first rest rest x)
+      first x = 'QUOTE => STRCONC('"'",sexpr2HtString second x)
+      first x = ":" => STRCONC(fn second x,'": ",fn third x)
       first x = 'Mapping =>
-        STRCONC(fnTail(rest rest x,'"()"),'"->",fn first rest x)
+        STRCONC(fnTail(rest rest x,'"()"),'"->",fn second x)
       first x = 'construct => fnTail(rest x,'"[]")
       tail := fnTail(rest x,'"()")
       head := fn first x
@@ -278,7 +278,7 @@ getConstructorForm name ==
   name = 'Enumeration => '(Enumeration a b)
   getConstructorFormFromDB name
 
-getConstructorArgs conname == CDR getConstructorForm conname
+getConstructorArgs conname == rest getConstructorForm conname
 
 bcComments(comments,:options) ==
   italics? := not IFCAR options
@@ -446,7 +446,7 @@ extractHasArgs pred ==
   x := find pred or return nil where find x ==
     x is [op,:argl] =>
       op = 'hasArgs => x
-      MEMQ(op,'(AND OR NOT)) => or/[find y for y in argl]
+      op in '(AND OR NOT) => or/[find y for y in argl]
       nil
     nil
   [rest x,:simpBool substitute('T,x,pred)]
@@ -457,7 +457,7 @@ splitConTable cons ==
     null pred => 'skip
     pred = 'T or pred is ['hasArgs,:.]  => uncond := [pair,:uncond]
     cond := [pair,:cond]
-  [NREVERSE uncond,:NREVERSE cond]
+  [nreverse uncond,:nreverse cond]
 
 bcNameTable(u,fn,:option) ==   --option if * prefix
   htSay '"\newline"

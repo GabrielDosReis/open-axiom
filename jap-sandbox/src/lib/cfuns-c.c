@@ -526,6 +526,24 @@ oa_getpid(void)
 #endif
 }
 
+/* Concatenate two strings and return a pointer to the
+   newly allocate resulting string. */
+OPENAXIOM_EXPORT const char*
+oa_concatenate_string(const char* lhs, const char* rhs)
+{
+   if (lhs == NULL)
+      return rhs;
+   else if (rhs == NULL)
+      return lhs;
+   else {
+      const int lhs_length = strlen(lhs);
+      char* result = (char*) malloc(lhs_length + strlen(rhs) + 1);
+      strcpy(result, lhs);
+      strcpy(result + lhs_length, rhs);
+      return result;
+   }
+}
+
 /* Return the value of an environment variable.  */
 OPENAXIOM_EXPORT char*
 oa_getenv(const char* var)
@@ -549,6 +567,25 @@ oa_getenv(const char* var)
    return buf;
 #else
    return getenv(var);
+#endif   
+}
+
+/* Set the value of environment variable VAR to VAL.
+   Return 1 on success, and 0 otherwise.  */
+OPENAXIOM_EXPORT int
+oa_setenv(const char* var, const char* val)
+{
+#ifdef __WIN32__
+   return SetEnvironmentVariable(var, val);
+#else
+   const int var_length = strlen(var);
+   const int val_length = strlen(val);
+   char* str = (char*) malloc(var_length + 1 + val_length + 1);
+   strcpy(str, var);
+   str[var_length] = '=';
+   strcpy(str + var_length + 1, val);
+   str[var_length + 1 + val_length] = '\0';
+   return !putenv(str);
 #endif   
 }
 
@@ -698,79 +735,79 @@ oa_get_host_byteorder(void)
 #endif   
 }
 
-/* String manipulation functions */
 
-OPENAXIOM_EXPORT char* oa_strcat(const char* left, const char* right)
+OPENAXIOM_EXPORT void
+oa_allocate_process_argv(openaxiom_process* proc, int argc)
 {
-   int left_size = 0, right_size = 0;
-
-   left_size = strlen(left);
-   right_size = strlen(right);
-
-   int size = left_size + right_size;
-   char* buffer = malloc((size + 1) * sizeof(char));
-
-   memset(buffer,'\0',size+1);
-   memcpy(buffer, left, left_size);
-   memcpy(buffer+left_size, right, right_size);
-
-   return buffer;
+   proc->argc = argc;
+   proc->argv = (char**) malloc((1 + argc) * sizeof (char*));
+   proc->argv[argc] = NULL;
 }
 
-OPENAXIOM_EXPORT char* oa_substr(const char* str, const size_t begin, const size_t end)
+OPENAXIOM_EXPORT int
+oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
 {
-   char* substring;
-   int len;
+#ifdef __WIN32__
+   const char* path = NULL;
+   char* cmd_line = NULL;
+   int curpos = strlen(proc->argv[0]);
+   int cmd_line_length = curpos;
+   int i;
+   PROCESS_INFORMATION proc_info;
+   STARTUPINFO startup_info = { 0 };
+   DWORD status;
 
-   if (str == NULL || strlen(str) == 0 ||
-      strlen(str) < begin || end >= strlen(str) ||
-      begin > end || begin < 0 || end < 0)
-         return NULL;
+   for (i = 0; i < proc->argc; ++i)
+      cmd_line_length += 1 + strlen(proc->argv[i]);
 
-   len = (end - begin) + 2;
-   substring = malloc(len * sizeof(char));
-   memset(substring,'\0',len);
-   memcpy(substring, str+begin, len-1);
-
-   return substring;
-}
-
-OPENAXIOM_EXPORT void oa_insert(char** list, const char* element, int* size)
-{
-   char** temp = malloc((*size + 1) * sizeof(char*));
-
-   memcpy(temp,*list,*size * sizeof(char*));
-
-   *(temp + *size) = malloc(sizeof(element) * sizeof(char*));
-   *(temp + *size) = element;
-   *size = *size + 1;
-
-   free(*list);
-   *list = temp;
-}
-
-OPENAXIOM_EXPORT char** oa_split(const char* sequence, const char** delimiter, int* size)
-{
-   int sequence_length;
-   char* result;
-   char** list;
-   char* sequence_copy;
-
-   *size = 0;
-   list = malloc(sizeof(char*));
-   sequence_length = strlen(sequence);
-
-   sequence_copy = malloc((sequence_length + 1) * sizeof(char));
-   *(sequence_copy + (sequence_length)) = '\0';
-   memcpy(sequence_copy,sequence,sequence_length * sizeof(char));
-
-   result = strtok(sequence_copy, delimiter);
-   while (result != NULL) {
-      oa_insert(&list, result, size);
-      result = strtok (NULL, delimiter);
+   cmd_line = (char*) malloc(cmd_line_length + 1);
+   strcpy(cmd_line, proc->argv[0]);
+   for (i = 0; i < proc->argc; ++i) {
+      cmd_line[curpos++] = ' ';
+      strcpy(cmd_line + curpos, proc->argv[i]);
+      curpos += strlen(proc->argv[i]);
    }
+   cmd_line[curpos] = '\0';
 
-   return list;
+   if ((flags & openaxiom_spawn_search_path) == 0)
+      path = proc->argv[0];
+
+   if(CreateProcess(/* lpApplicationName */ path,
+                    /* lpCommandLine */ cmd_line,
+                    /* lpProcessAttributes */ NULL,
+                    /* lpThreadAttributes */ NULL,
+                    /* bInheritHandles */ TRUE,
+                    /* dwCreationFlags */ 0,
+                    /* lpEnvironment */ NULL,
+                    /* lpCurrentDirectory */ NULL,
+                    /* lpstartupInfo */ &startup_info,
+                    /* lpProcessInformation */ &proc_info) == 0) {
+      fprintf(stderr, "oa_spawn: error %d\n", GetLastError());
+      return proc->id = -1;
+   }
+   proc->id = proc_info.dwProcessId;
+   if ((flags & openaxiom_spawn_replace) == 0)
+      return proc->id;
+   WaitForSingleObject(proc_info.hProcess, INFINITE);
+   GetExitCodeProcess(proc_info.hProcess, &status);
+   CloseHandle(proc_info.hThread);
+   CloseHandle(proc_info.hProcess);
+   return status;
+
+#else
+   proc->id = 0;
+   if ((flags & openaxiom_spawn_replace) == 0)
+      proc->id = fork();
+   if (proc->id == 0) {
+      if (flags & openaxiom_spawn_search_path)
+         execvp(proc->argv[0], proc->argv);
+      else
+         execv(proc->argv[0], proc->argv);
+      perror(strerror(errno));
+      /* Don't keep useless clones around.  */
+      if ((flags & openaxiom_spawn_replace) == 0)
+         exit(-1);
+   }
+   return proc->id;
+#endif   
 }
-
-

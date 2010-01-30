@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ nakedEXIT? c ==
   IDENTP a =>
     a = 'EXIT  => true
     a = 'QUOTE => NIL
-    MEMQ(a,'(SEQ PROG LAMBDA MLAMBDA LAM)) => NIL
+    a in '(SEQ PROG LAMBDA MLAMBDA LAM) => NIL
     nakedEXIT?(d)
   nakedEXIT?(a) or nakedEXIT?(d)
  
@@ -68,8 +68,8 @@ mergeableCOND x ==
   ok := true
   while (cls and ok) repeat
     [[p,:r],:cls] := cls
-    PAIRP QCDR r => ok := NIL
-    CAR(r) isnt ['EXIT,.] => ok := NIL
+    CONSP QCDR r => ok := NIL
+    first(r) isnt ['EXIT,.] => ok := NIL
     NULL(cls) and ATOM(p) => ok := NIL
     NULL(cls) and (p = ''T) => ok := NIL
   ok
@@ -80,24 +80,24 @@ mergeCONDsWithEXITs l ==
   -- (COND (bar (EXIT b)))
   -- into one COND
   NULL l => NIL
-  ATOM l => l
-  NULL PAIRP QCDR l => l
+  atom l => l
+  atom QCDR l => l
   a := QCAR l
   if a is ['COND,:.] then a := flattenCOND a
   am := mergeableCOND a
-  CDR(l) is [b,:k] and am and mergeableCOND(b) =>
+  rest(l) is [b,:k] and am and mergeableCOND(b) =>
     b:= flattenCOND b
     c := ['COND,:QCDR a,:QCDR b]
     mergeCONDsWithEXITs [flattenCOND c,:k]
-  CDR(l) is [b] and am =>
+  rest(l) is [b] and am =>
     [removeEXITFromCOND flattenCOND ['COND,:QCDR a,[''T,b]]]
-  [a,:mergeCONDsWithEXITs CDR l]
+  [a,:mergeCONDsWithEXITs rest l]
  
 removeEXITFromCOND? c ==
   -- c is '(COND ...)
   -- only can do it if every clause simply EXITs
   ok := true
-  c := CDR c
+  c := rest c
   while ok and c repeat
     [[p,:r],:c] := c
     nakedEXIT? p => ok := NIL
@@ -110,20 +110,19 @@ removeEXITFromCOND? c ==
 removeEXITFromCOND c ==
   -- c is '(COND ...)
   z := NIL
-  for cl in CDR c repeat
+  for cl in rest c repeat
     ATOM cl => z := CONS(cl,z)
     cond := QCAR cl
     length1? cl =>
-      PAIRP(cond) and EQCAR(cond,'EXIT) =>
-        z := CONS(QCDR cond,z)
+      cond is ["EXIT",:.] => z := CONS(QCDR cond,z)
       z := CONS(cl,z)
-    cl' := REVERSE cl
+    cl' := reverse cl
     lastSE := QCAR cl'
     ATOM lastSE => z := CONS(cl,z)
-    EQCAR(lastSE,'EXIT) =>
-      z := CONS(REVERSE CONS(CADR lastSE,CDR cl'),z)
+    lastSE is ["EXIT",:.] =>
+      z := CONS(reverse CONS(second lastSE,rest cl'),z)
     z := CONS(cl,z)
-  CONS('COND,NREVERSE z)
+  CONS('COND,nreverse z)
  
 flattenCOND body ==
   -- transforms nested COND clauses to flat ones, if possible
@@ -149,7 +148,7 @@ bootIF c ==
  
 bootCOND c ==
   -- handles COND expressions: c is ['COND,:.]
-  cls := CDR c
+  cls := rest c
   NULL cls => NIL
   cls is [[''T,r],:.] => r
   [:icls,fcls] := cls
@@ -162,11 +161,11 @@ bootCOND c ==
   fcls := bootPushEXITintoCONDclause fcls
   ncls :=
     fcls is [''T,['COND,:mcls]] =>
-      APPEND(REVERSE mcls,ncls)
+      append(reverse mcls,ncls)
     fcls is [''T,['PROGN,:mcls]] =>
       CONS([''T,:mcls],ncls)
     CONS(fcls,ncls)
-  ['COND,:REVERSE ncls]
+  ['COND,:reverse ncls]
  
 bootPushEXITintoCONDclause e ==
   e isnt [''T,['EXIT,['COND,:cls]]] => e
@@ -177,7 +176,7 @@ bootPushEXITintoCONDclause e ==
       r is [['EXIT,:.]] => CONS(cl,ncls)
       r is [r1]           => CONS([p,['EXIT,r1]],ncls)
       CONS([p,['EXIT,bootTran ['PROGN,:r]]],ncls)
-  [''T,['COND,:NREVERSE ncls]]
+  [''T,['COND,:nreverse ncls]]
  
 --% SEQ and PROGN
  
@@ -209,20 +208,20 @@ bootAbsorbSEQsAndPROGNs e ==
       ATOM x => NIL
       x is ['PROGN,:pcls,lpcl] =>
         ATOM lpcl => pcls
-        CDR x
+        rest x
       -- next usually comes about from if foo then bar := zap
       x is ['COND,y,[''T,'NIL]] => [['COND,y]]
       [x]
   while lcl is ['EXIT,f] repeat
     lcl := f
-  lcl is ['PROGN,:pcls] => APPEND(g,pcls)
-  lcl is ['COND,[''T,:pcls]] => APPEND(g,pcls)
+  lcl is ['PROGN,:pcls] => append(g,pcls)
+  lcl is ['COND,[''T,:pcls]] => append(g,pcls)
   lcl is ['COND,[pred,['EXIT,h]]] =>
-    APPEND(g,[['COND,[pred,h]]])
-  APPEND(g,[lcl])
+    append(g,[['COND,[pred,h]]])
+  append(g,[lcl])
  
 bootSEQ e ==
-  e := ['SEQ,:mergeCONDsWithEXITs bootAbsorbSEQsAndPROGNs CDR e]
+  e := ['SEQ,:mergeCONDsWithEXITs bootAbsorbSEQsAndPROGNs rest e]
   if e is [.,:cls,lcl] and IDENTP lcl and not MEMQ(lcl,$labelsForGO) then
     e := ['SEQ,:cls,['EXIT,lcl]]
   cls := QCDR e
@@ -239,7 +238,7 @@ bootSEQ e ==
   tryToRemoveSEQ e
  
 bootPROGN e ==
-  e := ['PROGN,:bootAbsorbSEQsAndPROGNs CDR e]
+  e := ['PROGN,:bootAbsorbSEQsAndPROGNs rest e]
   [.,:cls] := e
   NULL cls => NIL
   cls is [body] => body
@@ -258,22 +257,22 @@ defLET1(lhs,rhs) ==
   IDENTP rhs and not CONTAINED(rhs,lhs) =>
     rhs' := defLET2(lhs,rhs)
     EQCAR(rhs',$LET) => MKPROGN [rhs',rhs]
-    EQCAR(rhs','PROGN) => APPEND(rhs',[rhs])
-    if IDENTP CAR rhs' then rhs' := CONS(rhs',NIL)
+    rhs' is ["PROGN",:.] => append(rhs',[rhs])
+    if IDENTP first rhs' then rhs' := CONS(rhs',NIL)
     MKPROGN [:rhs',rhs]
-  PAIRP(rhs) and EQCAR(rhs, $LET) and IDENTP(name := CADR rhs) =>
+  rhs is [=$LET,:.] and IDENTP(name := second rhs) =>
     -- handle things like [a] := x := foo
-    l1 := defLET1(name,CADDR rhs)
+    l1 := defLET1(name,third rhs)
     l2 := defLET1(lhs,name)
-    EQCAR(l2,'PROGN) => MKPROGN [l1,:CDR l2]
-    if IDENTP CAR l2 then l2 := cons(l2,nil)
+    l2 is ["PROGN",:.] => MKPROGN [l1,:rest l2]
+    if IDENTP first l2 then l2 := cons(l2,nil)
     MKPROGN [l1,:l2,name]
   g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs' := [$LET,g,rhs]
   let' := defLET1(lhs,g)
-  EQCAR(let','PROGN) => MKPROGN [rhs',:CDR let']
-  if IDENTP CAR let' then let' := CONS(let',NIL)
+  let' is ["PROGN",:.] => MKPROGN [rhs',:rest let']
+  if IDENTP first let' then let' := CONS(let',NIL)
   MKPROGN [rhs',:let',g]
  
 defLET2(lhs,rhs) ==
@@ -284,29 +283,29 @@ defLET2(lhs,rhs) ==
     a := defLET2(a,rhs)
     null (b := defLET2(b,rhs)) => a
     ATOM b => [a,b]
-    PAIRP QCAR b => CONS(a,b)
+    CONSP QCAR b => CONS(a,b)
     [a,b]
   lhs is ['CONS,var1,var2] =>
-    var1 = "." or (PAIRP(var1) and EQCAR(var1,'QUOTE)) =>
+    var1 = "." or (var1 is ["QUOTE",:.]) =>
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
-    MEMQ(var2,'(NIL _.)) => l1
-    if PAIRP l1 and ATOM CAR l1 then l1 := cons(l1,nil)
+    var2 in '(NIL _.) => l1
+    if CONSP l1 and ATOM first l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
-    if PAIRP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
-    APPEND(l1,l2)
+    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
+    append(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
     rev := ['REVERSE,rhs]
     g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
-    if PAIRP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
-      [[$LET,g,rev],:REVERSE CDR REVERSE l2,
+      [[$LET,g,rev],:reverse rest reverse l2,
        defLetForm(var1,['NREVERSE,val1])]
     [[$LET,g,rev],:l2,defLetForm(var1,['NREVERSE,var1])]
   lhs is ['EQUAL,var1] =>
@@ -323,8 +322,8 @@ defLET(lhs,rhs) ==
   defLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
-  NULL PAIRP expr => [acc,expr]
-  acc = 'CAR and EQCAR(expr,'REVERSE) =>
+  atom expr => [acc,expr]
+  acc = 'CAR and expr is ["REVERSE",:.] =>
     cons('last,QCDR expr)
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
             CDAAR CDDAR CDADR CDDDR)
@@ -344,9 +343,9 @@ defISReverse(x,a) ==
   -- reverses forms coming from APPENDs in patterns
   -- pretty much just a translation of DEF-IS-REV
   x is ['CONS,:.] =>
-    NULL CADDR x => ['CONS,CADR x, a]
-    y := defISReverse(CADDR x, NIL)
-    RPLAC(CADDR y,['CONS,CADR x,a])
+    NULL third x => ['CONS,second x, a]
+    y := defISReverse(third x, NIL)
+    RPLAC(third y,['CONS,second x,a])
     y
   ERRHUH()
  
@@ -369,35 +368,35 @@ defIS1(lhs,rhs) ==
     ['AND,defIS1(lhs,d),MKPROGN [l,''T]]
   rhs is ['EQUAL,a] =>
     ['EQUAL,lhs,a]
-  PAIRP lhs =>
+  CONSP lhs =>
     g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     MKPROGN [[$LET,g,lhs],defIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
     a = "." =>
       NULL b =>
-        ['AND,['PAIRP,lhs],
+        ['AND,['CONSP,lhs],
               ['EQ,['QCDR,lhs],'NIL]]
-      ['AND,['PAIRP,lhs],
+      ['AND,['CONSP,lhs],
             defIS1(['QCDR,lhs],b)]
     NULL b =>
-      ['AND,['PAIRP,lhs],
+      ['AND,['CONSP,lhs],
             ['EQ,['QCDR,lhs],'NIL],_
             defIS1(['QCAR,lhs],a)]
     b = "." =>
-      ['AND,['PAIRP,lhs],defIS1(['QCAR,lhs],a)]
+      ['AND,['CONSP,lhs],defIS1(['QCAR,lhs],a)]
     a1 := defIS1(['QCAR,lhs],a)
     b1 := defIS1(['QCDR,lhs],b)
     a1 is ['PROGN,c,''T] and b1 is ['PROGN,:cls] =>
-      ['AND,['PAIRP,lhs],MKPROGN [c,:cls]]
-    ['AND,['PAIRP,lhs],a1,b1]
+      ['AND,['CONSP,lhs],MKPROGN [c,:cls]]
+    ['AND,['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := defISReverse(b,a)
     g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
-    rev := ['AND,['PAIRP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
+    rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)
-    if PAIRP l2 and ATOM CAR l2 then l2 := cons(l2,nil)
+    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
     a = "." => ['AND,rev,:l2]
     ['AND,rev,:l2,['PROGN,defLetForm(a,['NREVERSE,a]),''T]]
   SAY '"WARNING (defIS1): possibly bad IS code being generated"
@@ -412,9 +411,9 @@ defIS(lhs,rhs) ==
  
 bootOR e ==
   -- flatten any contained ORs.
-  cls := CDR e
+  cls := rest e
   NULL cls => NIL
-  NULL CDR cls => CAR cls
+  NULL rest cls => first cls
   ncls := [:flatten(c) for c in cls] where
     flatten x ==
       x is ['OR,:.] => QCDR x
@@ -423,9 +422,9 @@ bootOR e ==
  
 bootAND e ==
   -- flatten any contained ANDs.
-  cls := CDR e
+  cls := rest e
   NULL cls => 'T
-  NULL CDR cls => CAR cls
+  NULL rest cls => first cls
   ncls := [:flatten(c) for c in cls] where
     flatten x ==
       x is ['AND,:.] => QCDR x
@@ -438,7 +437,7 @@ bootLabelsForGO e ==
   ATOM e => NIL
   [head,:tail] := e
   IDENTP head =>
-    head = 'GO => $labelsForGO := CONS(CAR tail,$labelsForGO)
+    head = 'GO => $labelsForGO := CONS(first tail,$labelsForGO)
     head = 'QUOTE => NIL
     bootLabelsForGO tail
   bootLabelsForGO head

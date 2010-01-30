@@ -44,15 +44,15 @@ minimalise x ==
     min x ==
       y:=HGET($hash,x)
       y => y
-      PAIRP x =>
+      CONSP x =>
         x = '(QUOTE T) => '(QUOTE T)
         -- copes with a particular Lucid-ism, God knows why
         -- This circular way of doing things is an attempt to deal with Lucid
         -- Who may place quoted cells in read-only memory
-        z:=min CAR x
-        if not EQ(z,CAR x) then RPLACA(x,z)
-        z:=min CDR x
-        if not EQ(z,CDR x) then RPLACD(x,z)
+        z:=min first x
+        if not EQ(z,first x) then RPLACA(x,z)
+        z:=min rest x
+        if not EQ(z,rest x) then RPLACD(x,z)
         HashCheck x
       REFVECP x =>
         for i in 0..MAXINDEX x repeat

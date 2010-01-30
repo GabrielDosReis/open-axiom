@@ -159,8 +159,8 @@ assocCircular(x,al) ==  --like ASSOC except that al is circular
   forwardPointer:= al
   val:= nil
   until EQ(forwardPointer,al) repeat
-    EQUAL(CAAR forwardPointer,x) => return (val:= CAR forwardPointer)
-    forwardPointer:= CDR forwardPointer
+    EQUAL(CAAR forwardPointer,x) => return (val:= first forwardPointer)
+    forwardPointer:= rest forwardPointer
   val
  
 compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
@@ -182,7 +182,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   decomposeCode:=
     [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]
-  gsRev:= REVERSE gsList
+  gsRev:= reverse gsList
   rotateCode:= [["%LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
   advanceCode:= ["%LET",gIndex,['ADD1,gIndex]]
  
@@ -220,7 +220,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
         tripleCode
       cacheResetCode := ["SETQ",stateNam,initialValueCode]
       ["COND",[["NULL",["AND",["BOUNDP",MKQ stateNam], _
-                          ["PAIRP",stateNam]]],    _
+                          ["CONSP",stateNam]]],    _
                  ["%LET",stateVar,cacheResetCode]], _
              [''T, ["%LET",stateVar,stateNam]]]
  
@@ -316,7 +316,7 @@ clearLocalModemaps x ==
 compileInteractive fn ==
   if $InteractiveMode then startTimingProcess 'compilation
   --following not used for common lisp
-  --removeUnnecessaryLastArguments CADR fn
+  --removeUnnecessaryLastArguments second fn
   if $reportCompilation then
     sayBrightlyI bright '"Generated LISP code for function:"
     pp fn

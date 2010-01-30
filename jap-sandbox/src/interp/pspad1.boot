@@ -94,8 +94,8 @@ lisp2Boot x ==
   $numberOfSpills:= 0
   $lineLength:= 80
   format x
-  formatOutput REVERSE $lineFragmentBuffer
-  [fragmentsToLine y for y in REVERSE $lineBuffer]
+  formatOutput reverse $lineFragmentBuffer
+  [fragmentsToLine y for y in reverse $lineBuffer]
  
 fragmentsToLine fragments ==
   string:= lispStringList2String fragments
@@ -106,13 +106,13 @@ fragmentsToLine fragments ==
 lispStringList2String x ==
   null x => '""
   atom x => STRINGIMAGE x
-  CDR x => APPLY(function STRCONC,MAPCAR(function lispStringList2String,x))
-  lispStringList2String CAR x
+  rest x => APPLY(function STRCONC,MAPCAR(function lispStringList2String,x))
+  lispStringList2String first x
  
 --% routines for buffer and margin adjustment
  
 formatOutput x ==
-  for [currentColumn,start,end,stack] in REVERSE $commentsToPrint repeat
+  for [currentColumn,start,end,stack] in reverse $commentsToPrint repeat
     startY:= rest start
     for [loc,comment] in stack repeat
       commentY:= rest loc
@@ -177,7 +177,7 @@ consBuffer item ==
   not isSpecialBufferItem item and (n>columnsLeft or columnsLeft < 0) =>
     $autoLine =>
                    --is true except within try
-      formatOutput REVERSE $lineFragmentBuffer
+      formatOutput reverse $lineFragmentBuffer
       $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
       $lineFragmentBuffer:= LIST nBlanks $c
       consBuffer item
@@ -204,7 +204,7 @@ isCloseDelimiter item ==   EQ(item,")") or EQ(item,"]") or EQ(item,"}")
 newLine() ==
   null $autoLine => nil
   $newLineWritten := true
-  formatOutput REVERSE $lineFragmentBuffer
+  formatOutput reverse $lineFragmentBuffer
   $lineFragmentBuffer:= LIST nBlanks $m
   $c:= $m
  
@@ -214,7 +214,7 @@ optNewLine() ==
 
 spillLine() ==
   null $autoLine => nil
-  formatOutput REVERSE $lineFragmentBuffer
+  formatOutput reverse $lineFragmentBuffer
   $c:= $m+2*($numberOfSpills:= $numberOfSpills+1)
   $lineFragmentBuffer:= LIST nBlanks $c
   $c
@@ -266,10 +266,10 @@ format(x,:options) ==
       op is ['elt,y,"construct"] => formatDollar(y,'construct,argl)
       op is ['elt,name,p] and UPPER_-CASE_-P (STRINGIMAGE opOf name).0 => 
         formatDollar(name,p,argl)
-      op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf CAR argl).0 => 
-        formatDollar1(CAR argl,CADR argl)
+      op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf first argl).0 => 
+        formatDollar1(first argl,second argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
-      if MEMQ(op,'(AND OR NOT)) then op:= DOWNCASE op
+      if op in '(AND OR NOT) then op:= DOWNCASE op
       n=1 and GETL(op,'Nud) and (lbp:= formatOpBindingPower(op,"Nud","left")) =>
         formatPrefix(op,first argl,lbp,formatOpBindingPower(op,"Nud","right"),qualification)
       n=2 and (op = '_$ or getOp(op,'Led)) and (lbp:= formatOpBindingPower(op,"Led","left")) =>
@@ -283,7 +283,7 @@ format(x,:options) ==
 
 getOp(op,kind) ==
   kind = 'Led =>
-    MEMQ(op,'(_div _exquo)) => nil
+    op in '(_div _exquo) => nil
     GETL(op,'Led)
   GETL(op,'Nud)
 
@@ -301,7 +301,7 @@ formatMacroCheck name ==
   u := or/[x for [x,:y] in $globalMacroStack | y = name] => u
   u := or/[x for [x,:y] in $localMacroStack  | y = name] => u
   [op,:argl] := name
-  MEMQ(op,'(Record Union)) => 
+  op in '(Record Union) => 
     pp ['"Cannot find: ",name]
     name
   [op,:[formatMacroCheck x for x in argl]]
@@ -363,10 +363,10 @@ formatElt(u) ==
  
 formatForm (u) ==
   [op,:argl] := u
-  if MEMQ(op, '(Record Union)) then 
+  if op in '(Record Union) then 
     $fieldNames := union(getFieldNames argl,$fieldNames)
   MEMQ(op,'((QUOTE T) true)) => format "true"
-  MEMQ(op,'(false nil)) => format op
+  op in '(false nil) => format op
   u='(Zero) => format 0
   u='(One) => format 1
   1=#argl => formatApplication u
@@ -428,7 +428,7 @@ formatApplication2 x ==
   leadOp := 
     x is [['elt,.,y],:.] => y
     opOf x
-  MEMQ(leadOp,'(COLLECT LIST construct)) or
+  leadOp in '(COLLECT LIST construct) or
     pspadBindingPowerOf("left",x)<1000 => formatPren x
   format x
 
@@ -542,7 +542,7 @@ pspadBindingPowerOf(key,x) ==
 
 pspadOpBindingPower(op,LedOrNud,leftOrRight) ==
   if op in '(SLASH OVER) then op := "/"
-  MEMQ(op,'(_:)) and LedOrNud = 'Led =>
+  op in '(_:) and LedOrNud = 'Led =>
     leftOrRight = 'left => 195
     196
   exception:=
@@ -557,10 +557,10 @@ pspadOpBindingPower(op,LedOrNud,leftOrRight) ==
 formatOpBindingPower(op,key,leftOrRight) ==
   if op in '(SLASH OVER) then op := "/"
   op = '_$ => 1002
-  MEMQ(op,'(_:)) and key = 'Led =>
+  op in '(_:) and key = 'Led =>
     leftOrRight = 'left => 195
     196
-  MEMQ(op,'(_~_= _>_=)) => 400
+  op in '(_~_= _>_=) => 400
   op = "not" and key = "Nud" =>
     leftOrRight = 'left => 1000
     1001
@@ -582,7 +582,7 @@ formatInfixOp(op,:options) ==
 formatDEF def == formatDEF0(def,$DEFdepth + 1)
 
 formatDEF0(["DEF",form,tlist,sclist,body],$DEFdepth) ==
-  if not MEMQ(KAR form,'(Exports Implementation)) then 
+  if not (KAR form in '(Exports Implementation)) then 
     $form := 
       form is [":",a,:.] => a
       form
@@ -727,7 +727,7 @@ formatImport ["import",a] ==
   format "import from " and formatLocal1 a
 
 addFieldNames a ==
-  a is [op,:r] and MEMQ(op,'(Record Union)) =>
+  a is [op,:r] and op in '(Record Union) =>
         $fieldNames := union(getFieldNames r,$fieldNames)
   a is ['List,:b] => addFieldNames b
   nil

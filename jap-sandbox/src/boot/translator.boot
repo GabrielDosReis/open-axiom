@@ -64,9 +64,6 @@ genOptimizeOptions stream ==
   REALLYPRETTYPRINT
     (["PROCLAIM",["QUOTE",["OPTIMIZE",:$LispOptimizeOptions]]],stream)
 
-+++ True if we are translating code written in Old Boot.
-$translatingOldBoot := false
-
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
   if %hasFeature KEYWORD::GCL then
@@ -76,8 +73,6 @@ AxiomCore::%sysInit() ==
       bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*"),false)
     SETF(SYMBOL_-VALUE 
       bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*"),true)
-  if rest ASSOC(Option '"boot", %systemOptions()) = '"old"
-  then $translatingOldBoot := true
 
 ++ Make x, the current package
 setCurrentPackage: %Thing -> %Thing
@@ -335,7 +330,7 @@ shoeFileLine(x, stream) ==
 shoeFileTrees(s,st)==
   while not bStreamNull s repeat
     a:= first s
-    if EQCAR (a,"+LINE")
+    if a is ["+LINE",:.]
     then shoeFileLine(second a,st)
     else 
       REALLYPRETTYPRINT(a,st)
@@ -380,7 +375,7 @@ shoeOutParse stream ==
  
 ++ Generate a global signature declaration for symbol `n'.
 genDeclaration(n,t) ==
-  t is ["Mapping",valType,argTypes] =>
+  t is ["%Mapping",valType,argTypes] =>
     if bfTupleP argTypes then argTypes := rest argTypes
     if not null argTypes and SYMBOLP argTypes 
     then argTypes := [argTypes]
@@ -391,7 +386,7 @@ genDeclaration(n,t) ==
 ++ Translate the signature declaration `d' to its Lisp equivalent.
 translateSignatureDeclaration d ==
   case d of 
-    Signature(n,t) => genDeclaration(n,t)
+    %Signature(n,t) => genDeclaration(n,t)
     otherwise => coreError '"signature expected"  
 
 ++ A non declarative expression `expr' appears at toplevel and its
@@ -409,16 +404,12 @@ translateToplevelExpression expr ==
   $InteractiveMode => expr'
   shoeEVALANDFILEACTQ expr'
 
-maybeExportDecl(d,export?) ==
-  export? => d
-  d
-
 translateToplevel(b,export?) ==
   atom b => [b]  -- generally happens in interactive mode.
-  b is ["TUPLE",:xs] => [maybeExportDecl(x,export?) for x in xs]
+  b is ["TUPLE",:xs] => coreError '"invalid AST"
   case b of
-    Signature(op,t) =>
-      [maybeExportDecl(genDeclaration(op,t),export?)]
+    %Signature(op,t) => [genDeclaration(op,t)]
+    %Definition(op,args,body) => rest bfDef(op,args,body)
 
     %Module(m,ds) =>
       $currentModuleName := m 
@@ -426,51 +417,46 @@ translateToplevel(b,export?) ==
       [["PROVIDE", STRING m],
         :[first translateToplevel(d,true) for d in ds]]
 
-    Import(m) => 
+    %Import(m) => 
       if getOptionValue "import" ~= '"skip" then
         bootImport STRING m
       [["IMPORT-MODULE", STRING m]]
 
-    ImportSignature(x, sig) =>
+    %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
 
-    %TypeAlias(lhs, rhs) => 
-      [maybeExportDecl(genTypeAlias(lhs,rhs),export?)]
+    %TypeAlias(lhs, rhs) => [genTypeAlias(lhs,rhs)]
 
-    ConstantDefinition(lhs,rhs) =>
+    %ConstantDefinition(lhs,rhs) =>
       sig := nil
       if lhs is ["%Signature",n,t] then
-        sig := maybeExportDecl(genDeclaration(n,t),export?)
+        sig := genDeclaration(n,t)
         lhs := n
-      [maybeExportDecl(["DEFCONSTANT",lhs,rhs],export?)]
+      $constantIdentifiers := [lhs,:$constantIdentifiers]
+      [["DEFCONSTANT",lhs,rhs]]
 
     %Assignment(lhs,rhs) =>
       sig := nil
       if lhs is ["%Signature",n,t] then
-        sig := maybeExportDecl(genDeclaration(n,t),export?)
+        sig := genDeclaration(n,t)
         lhs := n
       $InteractiveMode => [["SETF",lhs,rhs]]
-      [maybeExportDecl(["DEFPARAMETER",lhs,rhs],export?)]
+      [["DEFPARAMETER",lhs,rhs]]
 
-    namespace(n) =>
+    %Macro(op,args,body) => bfMDef(op,args,body)
+
+    %Structure(t,alts) => [bfCreateDef alt for alt in alts]
+
+    %Namespace n =>
       $activeNamespace := STRING n
       [["IN-PACKAGE",STRING n]]
+
+    %Lisp s => shoeReadLispString(s,0)
 
     otherwise =>
       [translateToplevelExpression b]
 
 
-bpOutItem()==
-  $op := nil
-  bpComma() or bpTrap()
-  b:=bpPop1()
-  bpPush 
-    EQCAR(b,"+LINE")=> [ b ]
-    b is ["L%T",l,r] and IDENTP l => 
-      $InteractiveMode => [["SETQ",l,r]]
-      [["DEFPARAMETER",l,r]]
-    translateToplevel(b,false)
- 
 shoeAddbootIfNec s == 
   shoeAddStringIfNec('".boot",s)
  
@@ -598,15 +584,12 @@ SSORT l ==
   SORT(l,function CLESSP)
  
 bootOutLines(l,outfn,s)==
-  if null l
-  then shoeFileLine(s,outfn)
-  else
-     a:=PNAME first l
-     if #s +#a > 70
-     then
-          shoeFileLine(s,outfn)
-          bootOutLines(l,outfn,'" ")
-     else bootOutLines(rest l,outfn,CONCAT(s,'" ",a))
+  null l => shoeFileLine(s,outfn)
+  a := PNAME first l
+  #s + #a > 70 =>
+    shoeFileLine(s,outfn)
+    bootOutLines(l,outfn,'" ")
+  bootOutLines(rest l,outfn,CONCAT(s,'" ",a))
  
  
 -- (xref "fn") produces a cross reference listing in "fn.xref"
@@ -618,19 +601,17 @@ XREF fn==
   shoeOpenInputFile(a,infn,shoeXref(a,fn))
  
 shoeXref(a,fn)==
-  if null a
-  then shoeNotFound fn
-  else
-     $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
-     DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
-     $bootDefined  :=MAKE_-HASHTABLE "EQ"
-     $bootUsed  :=MAKE_-HASHTABLE "EQ"
-     $GenVarCounter  :=0
-     $bfClamming :=false
-     shoeDefUse shoeTransformStream a
-     out:=CONCAT(fn,'".xref")
-     shoeOpenOutputFile(stream,out,shoeXReport stream)
-     out
+  null a => shoeNotFound fn
+  $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
+  DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
+  $bootDefined  :=MAKE_-HASHTABLE "EQ"
+  $bootUsed  :=MAKE_-HASHTABLE "EQ"
+  $GenVarCounter  :=0
+  $bfClamming :=false
+  shoeDefUse shoeTransformStream a
+  out:=CONCAT(fn,'".xref")
+  shoeOpenOutputFile(stream,out,shoeXReport stream)
+  out
  
  
 shoeXReport stream==
@@ -713,7 +694,7 @@ PSTTOMC string==
   $GenVarCounter := 0
   shoePCompileTrees shoeTransformString string
  
-BOOTLOOP ()==
+BOOTLOOP() ==
   a:=READ_-LINE()
   #a=0=>
        WRITE_-LINE '"Boot Loop; to exit type ] "
@@ -727,7 +708,7 @@ BOOTLOOP ()==
   PSTTOMC [a]
   BOOTLOOP()
  
-BOOTPO ()==
+BOOTPO() ==
   a:=READ_-LINE()
   #a=0=>
        WRITE_-LINE '"Boot Loop; to exit type ] "

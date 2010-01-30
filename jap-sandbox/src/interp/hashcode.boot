@@ -42,7 +42,7 @@ $DomainsWithoutLisplibs ==
 -- Type hasher for old compiler style type names which produces a hash code
 -- compatible with the asharp compiler.  Takes a hard error if the type
 -- is parameterized, but has no constructor modemap.
-getDomainHash dom == SPADCALL(CDR dom, (CAR dom).4)
+getDomainHash dom == SPADCALL(rest dom, (first dom).4)
 
 hashType(type, percentHash) ==
         SYMBOLP type  =>

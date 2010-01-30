@@ -4,7 +4,7 @@
 (DEFPARAMETER |Rng;AL| 'NIL) 
 
 (DEFUN |Rng;| ()
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1396)
     (RETURN
       (PROG1 (LETT #0# (|Join| (|AbelianGroup|) (|SemiGroup|)) |Rng|)
         (|setShellEntry| #0# 0 '(|Rng|)))))) 

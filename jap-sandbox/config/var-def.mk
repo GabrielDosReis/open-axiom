@@ -149,6 +149,7 @@ axiom_src_srcdir = $(top_srcdir)/src
 axiom_src_docdir = $(axiom_src_srcdir)/doc
 axiom_src_datadir = $(axiom_src_srcdir)/share
 axiom_src_algdir = $(axiom_src_srcdir)/algebra
+axiom_src_texdir =  $(axiom_src_datadir)/tex
 
 ## Where tools for the build machine are built
 # Tools that we occasionally build don't know
@@ -196,11 +197,9 @@ axiom_optional_srcdir = $(abs_top_srcdir)/zips
 open_axiom_installdir = @open_axiom_installdir@
 
 INC=$(top_srcdir)/src/include
-PLF=@PLF@
 CCF=@CCF@
-LDF=@LDF@ -lm
-LISP=@LISP@
 oa_c_runtime_extra = @LIBS@ @axiom_c_runtime_extra@ -lm
+oa_c_libs = -lopen-axiom-core $(oa_c_runtime_extra) -lm
 
 oa_yesno_to_lisp_boolean = $(subst yes,t,$(subst no,nil,$(1)))
 
@@ -249,6 +248,11 @@ LNKEXT = $(OBJEXT)
 else
 LNKEXT = $(FASLEXT)
 endif
+
+
+# Qt utilities
+OA_QT_MOC = @OA_QT_MOC@
+OA_QT_QMAKE = @OA_QT_QMAKE@
 
 ##
 AXIOMXLROOT=${AXIOM}/compiler

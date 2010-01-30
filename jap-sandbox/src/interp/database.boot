@@ -171,8 +171,7 @@ getConstructorKind ctor ==
 --% Functions for manipulating MODEMAP DATABASE
 
 augLisplibModemapsFromCategory(form is [op,:argl],body,signature) ==
-  sl := [["$",:"*1"],:[[a,:p] for a in argl
-    for p in rest $PatternVariableList]]
+  sl := [["$",:"*1"],:pairList(argl,rest $PatternVariableList)]
   form:= SUBLIS(sl,form)
   body:= SUBLIS(sl,body)
   signature:= SUBLIS(sl,signature)
@@ -297,7 +296,7 @@ orderPredTran(oldList,sig,skip) ==
   -----  (op *target ..) when *target does not appear later in sig
   -----  (isDomain *1 ..)
   for pred in oldList repeat
-    ((pred is [op,pvar,.] and MEMQ(op,'(isDomain ofCategory))
+    ((pred is [op,pvar,.] and op in '(isDomain ofCategory)
        and pvar=first sig and not (pvar in rest sig)) or
         (not skip and pred is ['isDomain,pvar,.] and pvar="*1")) =>
           oldList:=delete(pred,oldList)
@@ -387,7 +386,7 @@ isDomainSubst u == main where
     atom x =>
       IDENTP x and MEMQ(x,$PatternVariableList) and (s := findSub(x,alist)) => s
       x
-    [CAR x,:[fn(y,alist) for y in CDR x]]
+    [first x,:[fn(y,alist) for y in rest x]]
   findSub(x,alist) ==
     null alist => nil
     alist is [['isDomain,y,z],:.] and x = y => z
@@ -395,7 +394,7 @@ isDomainSubst u == main where
 
 signatureTran pred ==
   atom pred => pred
-  pred is ['has,D,catForm] and isCategoryForm(catForm,$e) =>
+  pred is ["has",D,catForm] and isCategoryForm(catForm,$e) =>
     ['ofCategory,D,catForm]
   [signatureTran p for p in pred]
 
@@ -440,7 +439,7 @@ modemapPattern(mmPattern,sig) ==
     patvars := rest patvars
     mmpat := [patvar,:mmpat]
     patternAlist := [[patvar,:x],:patternAlist]
-  [NREVERSE mmpat,patternAlist,partial,patvars]
+  [nreverse mmpat,patternAlist,partial,patvars]
 
 substVars(pred,patternAlist,patternVarList) ==
   --make pattern variable substitutions
@@ -465,9 +464,9 @@ fixUpPredicate(predClause, domainPreds, partial, sig) ==
   --  single predicate
   [predicate, fn, :skip] := predClause
   if first predicate = "AND" then
-    predicates := APPEND(domainPreds,rest predicate)
+    predicates := append(domainPreds,rest predicate)
   else if predicate ~= MKQ "T"
---was->then predicates:= REVERSE [predicate, :domainPreds]
+--was->then predicates:= reverse [predicate, :domainPreds]
        then predicates:= [predicate, :domainPreds]
        else predicates := domainPreds or [predicate]
   if #predicates > 1 then
@@ -484,7 +483,7 @@ moveORsOutside p ==
   p is ['AND,:q] =>
     q := [moveORsOutside r for r in q]
     x := or/[r for r in q | r is ['OR,:s]] =>
-      moveORsOutside(['OR,:[['AND,:SUBST(t,x,q)] for t in CDR x]])
+      moveORsOutside(['OR,:[['AND,:SUBST(t,x,q)] for t in rest x]])
     ['AND,:q]
   p
 
@@ -586,7 +585,7 @@ getSystemModemaps(op,nargs) ==
 
 getInCoreModemaps(modemapList,op,nargs) ==
   mml:= LASSOC (op,modemapList) =>
-    mml:= CAR mml
+    mml:= first mml
     [x for (x:= [[dc,:sig],.]) in mml |
       (NUMBERP nargs => nargs=#rest sig; true) and
         (cfn := abbreviate (domName := getDomainFromMm x)) and
@@ -651,7 +650,7 @@ updateDatabase(fname,cname,systemdir?) ==
 
 REMOVER(lst,item) ==
   --destructively removes item from lst
-  not PAIRP lst =>
+  atom lst =>
     lst=item => nil
     lst
   first lst=item => rest lst
@@ -662,7 +661,7 @@ allLASSOCs(op,alist) ==
 
 loadDependents fn ==
   isExistingFile [fn,$spadLibFT,"*"] =>
-    MEMQ("dependents",RKEYIDS(fn,$spadLibFT)) =>
+    "dependents" in RKEYIDS(fn,$spadLibFT) =>
       stream:= readLib1(fn,$spadLibFT,"*")
       l:= rread('dependents,stream,nil)
       RSHUT stream
@@ -703,7 +702,7 @@ getOperationAlistFromLisplib x ==
           else RPLACD(s,QCDDR f)
         else RPLACD(r,QCDR f)
       else RPLACD(first items,f)
-      RPLACA(items,addConsDB CAR items)
+      RPLACA(items,addConsDB first items)
   u and markUnique u
 
 getOplistForConstructorForm (form := [op,:argl]) ==
@@ -711,7 +710,7 @@ getOplistForConstructorForm (form := [op,:argl]) ==
   --    where signature-Alist has entries (<signature> . item)
   --      where item has form (<slotNumber> <condition> <kind>)
   --        where <kind> =  ELT | CONST | Subsumed | (XLAM..) ..
-  pairlis:= [[fv,:arg] for fv in $FormalMapVariableList for arg in argl]
+  pairlis := pairList($FormalMapVariableList,argl)
   opAlist := getOperationAlistFromLisplib op
   [:getOplistWithUniqueSignatures(op,pairlis,signatureAlist)
       for [op,:signatureAlist] in opAlist]
@@ -778,7 +777,7 @@ isExposedConstructor name ==
   --   slot 1: list of constructors explicitly exposed
   --   slot 2: list of constructors explicitly hidden
   -- check if it is explicitly hidden
-  MEMQ(name,'(Union Record Mapping)) => true
+  name in '(Union Record Mapping) => true
   MEMQ(name,$localExposureData.2) => false
   -- check if it is explicitly exposed
   MEMQ(name,$localExposureData.1) => true

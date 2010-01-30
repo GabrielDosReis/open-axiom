@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra draw.spad}
 \author{Clifton J. Williamson, Scott Morrison, Jon Steinbach, Mike Dewar}

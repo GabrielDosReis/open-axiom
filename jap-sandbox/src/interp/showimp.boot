@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ showImp(dom,:options) ==
   --first display those exported by the domain, then add chain guys
   u := [:domexports,:constants,:SORTBY('CDDR,others)]
   while u repeat
-    [.,.,:key] := CAR u
+    [.,.,:key] := first u
     sayBrightly
       key = 'constant => 
         ["Constants implemented by",:bright form2String key,'":"]
@@ -80,14 +80,14 @@ showImp(dom,:options) ==
     u := showDomainsOp1(u,key)
   u := SORTBY('CDDR,defexports)
   while u repeat
-    [.,.,:key] := CAR u
-    defop := INTERN(SUBSTRING((s := PNAME CAR key),0,MAXINDEX s))
+    [.,.,:key] := first u
+    defop := INTERN(SUBSTRING((s := PNAME first key),0,MAXINDEX s))
     domainForm := [defop,:CDDR key]
     sayBrightly ["Default functions from",:bright form2String domainForm,'":"]
     u := showDomainsOp1(u,key)
   u := SORTBY('CDDR,unexports)
   while u repeat
-    [.,.,:key] := CAR u
+    [.,.,:key] := first u
     sayBrightly ["Not exported: "]
     u := showDomainsOp1(u,key)
 
@@ -113,22 +113,22 @@ showFrom(D,:option) ==
 --=======================================================================
 getDomainOps D ==
   domname := D.0
-  conname := CAR domname
+  conname := first domname
   $predicateList: local := getConstructorPredicatesFromDB conname
   REMDUP listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
   domname := D.0
-  conname := CAR domname
+  conname := first domname
   $predicateList: local := getConstructorPredicatesFromDB conname
   getDomainSigs1(D,first option)
   
 getDomainSigs1(D,ops) == listSort(function GLESSEQP,u) where
-  u() == [x for x in getDomainOpTable(D,nil) | null ops or MEMQ(CAR x,ops)]
+  u() == [x for x in getDomainOpTable(D,nil) | null ops or MEMQ(first x,ops)]
  
 getDomainDocs(D,:option) ==
   domname := D.0
-  conname := CAR domname
+  conname := first domname
   $predicateList: local := getConstructorPredicatesFromDB conname
   ops := KAR option
   [[op,sig,:getInheritanceByDoc(D,op,sig)] for [op,sig] in getDomainSigs1(D,ops)]
@@ -163,7 +163,7 @@ devaluateSlotDomain(u,dollar) ==
  
 getCategoriesOfDomain domain ==
   predkeyVec := domain.4.0
-  catforms := CADR domain.4
+  catforms := second domain.4
   [fn for i in 0..MAXINDEX predkeyVec | test] where 
      test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
@@ -180,20 +180,20 @@ getInheritanceByDoc(D,op,sig,:options) ==
       where fn() == getDocDomainForOpSig(op,sig,substDomainArgs(D,x),D)
  
 getDocDomainForOpSig(op,sig,dollar,D) ==
-  (u := LASSOC(op,getConstructorDocumentationFromDB CAR dollar))
+  (u := LASSOC(op,getConstructorDocumentationFromDB first dollar))
     and (doc := or/[[d,dollar] for [s,:d] in u | compareSig(sig,s,D,dollar)])
  
 --=======================================================================
 --               Functions implementing showImp
 --=======================================================================
 showDomainsOp1(u,key) ==
-  while u and CAR u is [op,sig,: =key] repeat
+  while u and first u is [op,sig,: =key] repeat
     sayBrightly ['"   ",:formatOpSignature(op,sig)]
     u := rest u
   u
 
 getDomainRefName(dom,nam) ==
-  PAIRP nam => [getDomainRefName(dom,x) for x in nam]
+  CONSP nam => [getDomainRefName(dom,x) for x in nam]
   not FIXP nam => nam
   slot := dom.nam
   VECP slot => slot.0
@@ -208,7 +208,7 @@ getDomainSeteltForm ["setShellEntry",.,.,form] ==
  
 showPredicates dom ==
   sayBrightly '"--------------------Predicate summary-------------------"
-  conname := CAR dom.0
+  conname := first dom.0
   predvector := dom.3
   predicateList := getConstructorPredicatesFromDB conname
   for i in 1.. for p in predicateList repeat
@@ -219,7 +219,7 @@ showPredicates dom ==
  
 showAttributes dom ==
   sayBrightly '"--------------------Attribute summary-------------------"
-  conname := CAR dom.0
+  conname := first dom.0
   abb := getConstructorAbbreviation conname
   predvector := dom.3
   for [a,:p] in dom.2 repeat

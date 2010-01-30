@@ -45,12 +45,15 @@ shoeKeyWords == [  _
             ['"cross","CROSS"] , _
             ['"else", "ELSE"] , _
             ['"for",  "FOR"] , _
+            ['"has", "HAS"] , _
             ['"if", "IF"], _
             ['"import", "IMPORT"], _
             ['"in",  "IN" ], _
             ['"is", "IS"], _
             ['"isnt", "ISNT"] , _
+            ['"leave", "LEAVE"], _
             ['"module", "MODULE"], _
+            ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _
             ['"or",   "OR"] , _
             ['"repeat", "REPEAT"] , _
@@ -246,13 +249,9 @@ for i in [ _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
   ["genvar",    "GENVAR"]  , _
-  ["IN",        "MEMBER"]  , _
-  ["is",            "IS"]  , _
-  ["isnt",        "ISNT"]  , _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
---  ["member",        "MEMBER"]  , _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["nil"           ,NIL ]  , _
@@ -270,7 +269,6 @@ for i in [ _
   ["setIntersection", "INTERSECTION"]  , _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
-  ["size",        "SIZE"]  , _
   ["strconc",  "CONCAT"]  , _
   ["substitute", "SUBST"]  , _
   ["take",        "TAKE"]  , 
@@ -291,89 +289,6 @@ for i in [ _
                                 ]
        repeat SETF (GET(first i,'SHOERENAME),CDR i)
 
--- For code written in `Old Boot', we would like to warn about
--- the difference in renaming.
-for i in [ _
-  ["PLUS", "PLUS"], _
-  ["and", "AND"], _
-  ["append", "APPEND"], _
-  ["apply", "APPLY"], _
-  ["atom", "ATOM"], _
-  ["brace", "REMDUP"], _
-  ["car", "CAR"], _
-  ["cdr", "CDR"], _
-  ["cons", "CONS"], _
-  ["copy", "COPY"], _
-  ["croak", "CROAK"], _
-  ["drop", "DROP"], _
-  ["exit", "EXIT"], _
-  ["false", "NIL"], _
-  ["first", "CAR"], _
-  ["genvar", "GENVAR"], _
-  ["in", "member"], _
-  ["is", "IS"], _
-  ["lastNode", "LASTNODE"], _
-  ["list", "LIST"], _
-  ["mkpf", "MKPF"], _
-  ["nconc", "NCONC"], _
-  ["nil", "NIL"], _
-  ["not", "NOT"], _
-  ["nreverse", "NREVERSE"], _
-  ["null", "NULL"], _
-  ["or", "OR"], _
-  ["otherwise", "T"], _
-  ["removeDuplicates", "REMDUP"], _
-  ["rest", "CDR"], _
-  ["return", "RETURN"], _
-  ["reverse", "REVERSE"], _
-  ["setDifference", "SETDIFFERENCE"], _
-  ["setIntersection", "intersection"], _
-  ["setPart", "SETELT"], _
-  ["setUnion", "union"], _
-  ["size", "SIZE"], _
-  ["strconc", "STRCONC"], _
-  ["substitute", "MSUBST"], _
-  ["SUBST", "MSUBST"], _
-  ["take", "TAKE"], _
-  ["true", "T"], _
-  ["where", "WHERE"], _
-  ["TIMES", "TIMES"], _
-  ["POWER", "EXPT"], _
-  ["SHOENE", "NEQUAL"], _
-  ["MINUS", "SPADDIFFERENCE"], _
-  ["SLASH", "QUOTIENT"], _
-  ["=", "EQUAL"], _
-  ["SHOEEQ", "EQUAL"], _
-  ["ASSOC",  "assoc"], _
-  ["DELETE", "delete"], _
-  ["GET", "GETL"], _
-  ["INTERSECTION", "intersection"], _
-  ["LAST", "last"], _
-  ["MEMBER", "member"], _
-  ["RASSOC", "rassoc"], _
-  ["READ", "VMREAD"], _
-  ["READ-LINE", "read-line"], _
-  ["REDUCE", "SPADREDUCE"], _
-  ["REMOVE", "remove"], _
-  ["BAR", "SUCHTHAT"], _
-  ["T", "T$"], _
-  ["IN", "member"], _
-  ["UNION", "union"]_
-                     ]
-  repeat SETF (GET(first i,'OLD_-BOOT),CDR i)
-
--- The following difference in renaming are verified to be OK.
-for i in [ _
-  "LT", "LE", _
-  "GT", "GE", _
-  "SHOENE", _
-  "TIMES", "PLUS", _
-  "MINUS", "function",_
-  "PAIRP"
-   ]
-  repeat SETF(GET(i, 'RENAME_-OK), true)
-
-  
  
 for i in [ _
   ["setName",               0] , _

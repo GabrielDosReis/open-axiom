@@ -61,7 +61,7 @@ htShowSetTree(setTree) ==
   tabset1 := STRINGIMAGE (maxWidth1)
   tabset2 := STRINGIMAGE (maxWidth2 + maxWidth1 - 1)
   htSay('"\tab{2}\newline Variable\tab{",STRINGIMAGE (maxWidth1 + QUOTIENT(maxWidth2,3)),'"}Description\tab{",STRINGIMAGE(maxWidth2 + maxWidth1 + 2),'"}Value\newline\beginitems ")
-  for setData in REVERSE okList repeat
+  for setData in reverse okList repeat
       htSay '"\item"
       label := STRCONC('"\menuitemstyle{",setData.setName,'"}")
       links := [label,[['text,'"\tab{",tabset1,'"}",setData.setLabel,'"\tab{",tabset2,'"}{\em ",htShowSetTreeValue setData,'"}"]],
@@ -266,7 +266,7 @@ htSetNotAvailable(htPage,whatToType) ==
 htDoNothing(htPage,command) == nil
 
 htCheck(checker,value) ==
-  PAIRP checker => htCheckList(checker,parseWord value)
+  CONSP checker => htCheckList(checker,parseWord value)
   FUNCALL(checker,value)
 
 parseWord x ==

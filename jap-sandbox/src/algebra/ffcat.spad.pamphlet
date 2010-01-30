@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra ffcat.spad}
 \author{Johannes Grabmeier, Alfred Scheerhorn, Barry Trager, James Davenport}

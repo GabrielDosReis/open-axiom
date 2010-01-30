@@ -40,7 +40,7 @@ namespace BOOT
 
 $specialOps := '(
   ADEF AlgExtension _and _case COERCE COLLECT construct Declare DEF Dollar
-   equation error free has IF _is _isnt iterate _break %LET _local MDEF _or
+   equation error free _has IF _is _isnt iterate _break %LET _local MDEF _or
     pretend QUOTE REDUCE REPEAT _return SEQ TARGET tuple typeOf _where 
      _[_|_|_] %Macro %MLambda %Import %Export %Inline %With %Add %Match)
 
@@ -72,7 +72,7 @@ upADEF t ==
   -- we want everything to be declared or nothing. The exception is that
   -- we do not require a target type since we will compute one anyway.
   if null(m) and rest types then
-    m := first rest types
+    m := second types
     types' := rest rest types
   else
     types' := rest types
@@ -121,9 +121,9 @@ evalTargetedADEF(t,vars,types,body) ==
 
   sublist := [[var,:GENSYM()] for var in vars]
   body := sublisNQ(sublist,body)
-  vars := [CDR v for v in sublist]
+  vars := [rest v for v in sublist]
 
-  for m in CDR types for var in vars repeat
+  for m in rest types for var in vars repeat
     $env:= put(var,'mode,m,$env)
     mkLocalVar($mapName,var)
   for lvar in getLocalVars($mapName,body) repeat
@@ -145,7 +145,7 @@ mkInterpTargetedADEF(t,vars,types,oldBody) ==
   compileADEFBody(t,vars,types,body,first types)
 
 compileTargetedADEF(t,vars,types,body) ==
-  val := compileBody(body,CAR types)
+  val := compileBody(body,first types)
   computedResultType := objMode val
   body := wrapMapBodyWithCatch flattenCOND objVal val
   compileADEFBody(t,vars,types,body,computedResultType)
@@ -217,7 +217,7 @@ upAlgExtension t ==
     throwKeyedMsgCannotCoerceWithValue(objVal(triple),
       objMode(triple),upmode)
   newmode := objMode T
-  (field := resolveTCat(CADDR newmode,'(Field))) or
+  (field := resolveTCat(third newmode,'(Field))) or
     throwKeyedMsg("S2IS0002",[eq])
   pd:= ['UnivariatePolynomial,a,field]
   null (canonicalAE:= coerceInteractive(T,pd)) =>
@@ -513,8 +513,8 @@ upLoopIterIN(iter,index,s) ==
       NIL
     upLoopIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,CAR newIter)
-    RPLACD(iter,CDR newIter)
+    RPLACA(iter,first newIter)
+    RPLACD(iter,rest newIter)
 
   iterMs isnt [['List,ud]] => throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
@@ -686,8 +686,8 @@ upStreamIterIN(iter,index,s) ==
       NIL
     upStreamIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,CAR newIter)
-    RPLACD(iter,CDR newIter)
+    RPLACA(iter,first newIter)
+    RPLACD(iter,rest newIter)
 
   (iterMs isnt [['List,ud]]) and (iterMs isnt [['Stream,ud]])
     and (iterMs isnt [['InfinitTuple, ud]]) =>
@@ -741,7 +741,7 @@ collectOneStream(t,op,itrl,body) ==
   -- build stream collect for case of iterating over a single stream
   --  In this case we don't need to build records
   form := mkAndApplyPredicates itrl
-  bodyVec := mkIterFun(CAR $indexVars,body,$localVars)
+  bodyVec := mkIterFun(first $indexVars,body,$localVars)
   form := [mkAtreeNode 'map,bodyVec,form]
   bottomUp form
   val := getValue form
@@ -808,7 +808,7 @@ checkForFreeVariables(v,locals) ==
       ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
     v
   LISTP v =>
-    CDR(LASTTAIL v) => -- Must be a better way to check for a genuine list?
+    rest(LASTTAIL v) => -- Must be a better way to check for a genuine list?
       v
     [op,:args] := v
     LISTP op => 
@@ -877,17 +877,17 @@ mkZipCode indexList ==
   -- into a stream of nested record types.  returns [form,:recordType]
   #indexList = 2 =>
     [[.,:s2],[.,:s1]] := indexList
-    t1 := CADR objMode getValue s1
-    t2 := CADR objMode getValue s2
+    t1 := second objMode getValue s1
+    t2 := second objMode getValue s2
     zipType := ['Record,['_:,'part1,t1], ['_:,'part2,t2] ]
     zipFun := [mkAtreeNode 'Dollar, ['MakeRecord,mkEvalable t1,
                                      mkEvalable t2],
                mkAtreeNode 'makeRecord]
     form := [mkAtreeNode 'map,zipFun,s1,s2]
     [form,:zipType]
-  [form,:zipType] := mkZipCode CDR indexList
+  [form,:zipType] := mkZipCode rest indexList
   [[.,:s],:.] := indexList
-  t := CADR objMode getValue s
+  t := second objMode getValue s
   zipFun := [mkAtreeNode 'Dollar, ['MakeRecord,mkEvalable t,
                                    mkEvalable zipType],
              mkAtreeNode 'makeRecord]
@@ -935,7 +935,7 @@ subVecNodes(new,old,form) ==
   ATOM form =>
     (VECP form) and (form.0 = old) => new
     form
-  [subVecNodes(new,old,CAR form), :subVecNodes(new,old,CDR form)]
+  [subVecNodes(new,old,first form), :subVecNodes(new,old,rest form)]
 
 mkIterVarSub(var,numVars) ==
   n := iterVarPos var
@@ -965,13 +965,13 @@ upconstruct t ==
   tar is ['Record,:types] => upRecordConstruct(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and PAIRP(tar) and not isPartialMode(tar) then
-    CAR(tar) in aggs =>
+  if tar and CONSP(tar) and not isPartialMode(tar) then
+    first(tar) in aggs =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
-        CADR tar
+        second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
-    CAR(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
+    first(tar) in '(Matrix SquareMatrix RectangularMatrix) =>
       vec := ['List,underDomainOf tar]
       for x in l repeat if not getTarget(x) then putTarget(x,vec)
   nargs := #l
@@ -1150,7 +1150,7 @@ declare(var,mode) ==
     -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
-      PAIRP margs => -1 + #margs
+      CONSP margs => -1 + #margs
       1
     nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
@@ -1184,11 +1184,11 @@ replaceSharps(x,d) ==
   -- replaces all sharps in x by the arguments of domain d
   -- all replaces the triangle variables
   SL:= NIL
-  for e in CDR d for var in $FormalMapVariableList repeat
+  for e in rest d for var in $FormalMapVariableList repeat
     SL:= CONS(CONS(var,e),SL)
   x := subCopy(x,SL)
   SL:= NIL
-  for e in CDR d for var in $TriangleVariableList repeat
+  for e in rest d for var in $TriangleVariableList repeat
     SL:= CONS(CONS(var,e),SL)
   subCopy(x,SL)
 
@@ -1196,8 +1196,8 @@ isDomainValuedVariable form ==
   -- returns the value of form if form is a variable with a type value
   IDENTP form and (val := (
     get(form,'value,$InteractiveFrame) or _
-    (PAIRP($env) and get(form,'value,$env)) or _
-    (PAIRP($e) and get(form,'value,$e)))) and
+    (CONSP($env) and get(form,'value,$env)) or _
+    (CONSP($e) and get(form,'value,$e)))) and
       (member(m := objMode(val),'((Domain) (Category)))
           or conceptualType m = $Category) =>
         objValUnwrap(val)
@@ -1236,25 +1236,25 @@ isPolynomialMode m ==
   --  variables, and nil otherwise
   m is [op,a,:rargs] =>
     a := removeQuote a
-    MEMQ(op,'(Polynomial RationalFunction AlgebraicFunction Expression
+    op in '(Polynomial RationalFunction AlgebraicFunction Expression
       ElementaryFunction LiouvillianFunction FunctionalExpression
-        CombinatorialFunction ))=> 'all
+        CombinatorialFunction) => 'all
     op = 'UnivariatePolynomial => LIST a
     op = 'Variable       => LIST a
-    MEMQ(op,'(MultivariatePolynomial DistributedMultivariatePolynomial
-      HomogeneousDistributedMultivariatePolynomial)) => a
+    op in '(MultivariatePolynomial DistributedMultivariatePolynomial
+      HomogeneousDistributedMultivariatePolynomial) => a
     NIL
   NIL
 
 containsPolynomial m ==
-  not PAIRP(m) => NIL
+  atom m => NIL
   [d,:.] := m
   d in $univariateDomains or d in $multivariateDomains or
     d in '(Polynomial RationalFunction) => true
   (m' := underDomainOf m) and containsPolynomial m'
 
 containsVariables m ==
-  not PAIRP(m) => NIL
+  atom m => NIL
   [d,:.] := m
   d in $univariateDomains or d in $multivariateDomains => true
   (m' := underDomainOf m) and containsVariables m'
@@ -1268,6 +1268,6 @@ listOfDuplicates l ==
 
 deleteAll(x,l) ==
   null l => nil
-  x = CAR(l) => deleteAll(x,CDR l)
+  x = first(l) => deleteAll(x,rest l)
   [first l,:deleteAll(x,rest l)]
 

@@ -43,17 +43,17 @@ shoeInternFile(fn)==
  
 shoeIntern (s)==
    StreamNull s => nil
-   f:=CAR s
-   # f < 8 => shoeIntern CDR s
-   f.0=char " " =>shoeIntern CDR s
+   f:=first s
+   # f < 8 => shoeIntern rest s
+   f.0=char " " =>shoeIntern rest s
    a:=INTERN SUBSTRING (f,0,8)
-   [b,c]:= shoeStrings CDR s
+   [b,c]:= shoeStrings rest s
    SETF(GET (a,"MSGS"),b)
    shoeIntern c
  
 shoeStrings (stream)==
    StreamNull stream => ['"",stream]
-   a:=CAR stream
+   a:=first stream
    if a.0 ~= char " "
    then ['"",stream]
    else

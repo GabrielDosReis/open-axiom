@@ -84,8 +84,8 @@ NRTaddDeltaCode() ==
 --      now must all have slot numbers, represented by (QUOTE <entry>)
 --  (6) constants, like 0 and 1, represented by (CONS .. ) form
   kvec := first $catvecList
-  for i in $NRTbase.. for item in REVERSE $NRTdeltaList
-    for compItem in REVERSE $NRTdeltaListComp
+  for i in $NRTbase.. for item in reverse $NRTdeltaList
+    for compItem in reverse $NRTdeltaListComp
       |null (s:=kvec.i) repeat
         $template.i:= deltaTran(item,compItem)
   $template.5 :=
@@ -124,7 +124,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
         for [.,a,b] in rest x for [.,=a,c] in rest compForm]]
     (x' := isQuasiquote x) =>
       quasiquote encode(x',isQuasiquote compForm,false)
-    IDENTP op and (constructor? op or MEMQ(op,'(Union Mapping))) =>
+    IDENTP op and (constructor? op or op in '(Union Mapping)) =>
       [op,:[encode(y,z,false) for y in rest x for z in rest compForm]]
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
@@ -144,7 +144,7 @@ listOfBoundVars form ==
   form = '$ => []
   IDENTP form and (u:=get(form,'value,$e)) =>
     u:=u.expr
-    MEMQ(KAR u,'(Union Record)) => listOfBoundVars u
+    KAR u in '(Union Record) => listOfBoundVars u
     [form]
   atom form => []
   first form = 'QUOTE => []
@@ -264,7 +264,6 @@ NRTgetLocalIndex item ==
     -- ??? That we do is likely a bug.
     flag => item  
     (compOrCroak(item,$EmptyMode,$e)).expr
---    item
   RPLACA(saveNRTdeltaListComp,compEntry)
   saveIndex
 
@@ -363,7 +362,7 @@ consDomainForm(x,dc) ==
 NRTdescendCodeTran(u,condList) ==
   null u => nil
   u is ['LIST] => nil
-  u is [op,.,i,a] and MEMQ(op,'(setShellEntry SETELT QSETREFV)) =>
+  u is [op,.,i,a] and op in '(setShellEntry SETELT QSETREFV) =>
     null condList and a is ['CONS,fn,:.] =>
       RPLACA(u,'LIST)
       RPLACD(u,nil)
@@ -399,18 +398,13 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
   changeDirectoryInSlot1()  --this extends $NRTslot1PredicateList
 
-  --pp '"=================="
-  --for item in $NRTdeltaList repeat pp item
-
---LOCAL BOUND FLUID VARIABLES:
+  --LOCAL BOUND FLUID VARIABLES:
   $GENNO: local:= 0     --bound in compDefineFunctor1, then as parameter here
   $catvecList: local := nil   --list of vectors v1..vn for each view
   $hasCategoryAlist: local := nil  --list of GENSYMs bound to (HasCategory ..) items
   $catNames: local := nil      --list of names n1..nn for each view
   $catsig: local := nil        --target category (used in ProcessCond)
   $SetFunctions: local := nil  --copy of p view with preds telling when fnct defined
-  $MissingFunctionInfo: local := nil --now useless
-     --vector marking which functions are assigned
   $ConstantAssignments: local := nil --code for creation of constants
   $epilogue: local := nil     --code to set slot 5, things to be done last
   $HackSlot4: local := nil  --Invention of JHD 13/July/86-set in InvestigateConditions
@@ -420,7 +414,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $supplementaries: local := nil
    --set in InvestigateConditions to represent any additional
    --category membership tests that may be needed(see buildFunctor for details)
-------------------------
+
   oldtime:= TEMPUS_-FUGIT()
   [$catsig,:argsig]:= sig
   catvecListMaker:=REMDUP
@@ -439,12 +433,11 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $SetFunctions:= newShell SIZE domainShell
-  $MissingFunctionInfo:= newShell SIZE domainShell
   $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
   domname:='dv_$
 
--->  Do this now to create predicate vector; then DescendCode can refer
--->  to predicate vector if it can
+  -- Do this now to create predicate vector; then DescendCode can refer
+  -- to predicate vector if it can
   [$uncondAlist,:$condAlist] :=    --bound in compDefineFunctor1
       NRTsetVector4Part1($catNames,catvecListMaker,condCats)
   [$NRTslot1PredicateList,predBitVectorCode1,:predBitVectorCode2] :=
@@ -465,7 +458,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
        :predBitVectorCode2,storeOperationCode]
 
   $CheckVectorList := NRTcheckVector domainShell
---CODE: part 1
+  --CODE: part 1
   codePart1:= [:devaluateCode,createDomainCode,
                 createViewCode,setVector0Code, slot3Code,:slamCode] where
     devaluateCode:= [["%LET",b,['devaluate,a]] for [a,:b] in $devaluateList]
@@ -478,7 +471,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       isCategoryPackageName opOf $definition => nil
       [NRTaddToSlam($definition,'$)]
 
---CODE: part 3
+  --CODE: part 3
   $ConstantAssignments :=
       [NRTputInLocalReferences code for code in $ConstantAssignments]
   codePart3:= [:constantCode1,
@@ -489,7 +482,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
                       -- The above line is needed to get the recursion
                       -- Integer => FontTable => NonNegativeInteger  => Integer
                       -- right.  Otherwise NNI has 'unset' for 0 and 1
---  setVector4c:= setVector4part3($catNames,$catvecList)
+  --  setVector4c:= setVector4part3($catNames,$catvecList)
                       -- In particular, setVector4part3 and setVector5,
                       -- which generate calls to local domain-instantiators,
                       -- must come after operations are set in the vector.
@@ -516,14 +509,13 @@ NRTcheckVector domainShell ==
 -- (b) NIL         -- item is a domain; will be filled in by setVector4part3
 -- (c) categoryForm-- it was a domain view; now irrelevant
 -- (d) op-signature-- store missing function info in $CheckVectorList
-    v:= domainShell.i
+    v := domainShell.i
     v=true => nil  --item is marked; ignore
     v=nil => nil  --a domain, which setVector4part3 will fill in
     atom v => systemErrorHere '"CheckVector"
     atom first v => nil  --category form; ignore
     assoc(first v,alist) => nil
-    alist:=
-      [[first v,:$SetFunctions.i],:alist]
+    alist := [[first v,:$SetFunctions.i],:alist]
   alist
 
 mkDomainCatName id == INTERN STRCONC(id,";CAT")
@@ -537,7 +529,7 @@ NRTsetVector4(siglist,formlist,condlist) ==
                   NRTsetVector4a(sig,form,cond)
 
   $lisplibCategoriesExtended:= [$uncondList,:$condList]
-  code := ['mapConsDB,MKQ REVERSE REMDUP $uncondList]
+  code := ['mapConsDB,MKQ reverse REMDUP $uncondList]
   if $condList then
     localVariable := GENSYM()
     code := [["%LET",localVariable,code]]
@@ -577,7 +569,7 @@ reverseCondlist cl ==
 
 NRTsetVector4Part2(uncondList,condList) ==
   $lisplibCategoriesExtended:= [uncondList,:condList]
-  code := ['mapConsDB,MKQ REVERSE REMDUP uncondList]
+  code := ['mapConsDB,MKQ reverse REMDUP uncondList]
   if condList then
     localVariable := GENSYM()
     code := [["%LET",localVariable,code]]
@@ -607,11 +599,11 @@ NRTsetVector4a(sig,form,cond) ==
   sig = '$ =>
      domainList :=
        [optimize COPY KAR comp(d,$EmptyMode,$e) or d for d in $domainShell.4.0]
-     $uncondList := APPEND(domainList,$uncondList)
+     $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
      $uncondList
   evalform := eval mkEvalableCategoryForm form
-  cond = true => $uncondList := [form,:APPEND(evalform.4.0,$uncondList)]
+  cond = true => $uncondList := [form,:append(evalform.4.0,$uncondList)]
   $condList := [[cond,[form,:evalform.4.0]],:$condList]
 
 NRTmakeSlot1Info() ==
@@ -634,7 +626,7 @@ NRTmakeSlot1Info() ==
   [first $form,[addList,:opList]]
 
 mkSlot1sublis argl ==
-  [[a,:b] for a in argl for b in $FormalMapVariableList]
+  pairList(argl,$FormalMapVariableList)
 
 slot1Filter opList ==
 --include only those ops which are defined within the capsule
@@ -650,7 +642,7 @@ NRToptimizeHas u ==
     a='HasCategory => LASSOC(u,$hasCategoryAlist) or
       $hasCategoryAlist := [[u,:(y:=GENSYM())],:$hasCategoryAlist]
       y
-    a='has => NRToptimizeHas ['HasCategory,first b,MKQ first rest b]
+    a="has" => NRToptimizeHas ['HasCategory,first b,MKQ second b]
     a = 'QUOTE => u
     [NRToptimizeHas a,:NRToptimizeHas b]
   u
@@ -720,7 +712,7 @@ NRTsubstDelta(initSig) ==
           u:= $NRTdeltaList.($NRTdeltaLength+5-t)
           first u = 'domain => second u
           error "bad $NRTdeltaList entry"
-        MEMQ(first t,'(Mapping Union Record _:)) =>
+        first t in '(Mapping Union Record _:) =>
            [first t,:[replaceSlotTypes(x) for x in rest t]]
         t
 
@@ -763,7 +755,7 @@ NRTputInHead bod ==
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and not (dom='$) and MEMQ(elt,'(getShellEntry ELT QREFELT CONST)) =>
+    fn is [elt,dom,ind] and not (dom='$) and elt in '(getShellEntry ELT QREFELT CONST) =>
       k:= NRTassocIndex dom => RPLACA(LASTNODE bod,[$elt,'_$,k])
       nil
     NRTputInHead fn

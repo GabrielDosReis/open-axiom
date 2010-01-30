@@ -1,0 +1,12 @@
+-- test operations from builtin domains.
+
+T := Record(f: Integer)
+
+t0 := [9]@T
+
+t1 := [1]@T
+
+hash t0
+t0 ~= t1
+
+

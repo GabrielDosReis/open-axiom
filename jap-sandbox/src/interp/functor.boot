@@ -44,7 +44,7 @@ keyItem a ==
   --The item that domain checks on
  
 --Global strategy here is to maintain a list of substitutions
---  ( %in Sublis), of vectors and the names that they have,
+--  ( in $Sublis), of vectors and the names that they have,
 --  which may be either local names ('View1') or global names ('Where1')
 --  The global names are remembered on $Sublis from one
 --  invocation of DomainPrint1 to the next
@@ -135,7 +135,7 @@ PacPrint v ==
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:vv.j],:$WhereList]
       vv.j:= name
-    if PAIRP vv.j and REFVECP(u:=CDR vv.j) then
+    if CONSP vv.j and REFVECP(u:=rest vv.j) then
       l:= ASSQ(keyItem u,Sublis)
       if l
          then name:= rest l
@@ -211,7 +211,7 @@ compCategories u ==
     pp rest v
   -- the next line "fixes" a bad modemap which sometimes appears ....
   --
-  if rest v and NULL CAAAR v then v:=CDR v
+  if rest v and NULL CAAAR v then v:=rest v
   v:= CDDAAR v
   v:=resolvePatternVars(v, rest u) -- replaces #n forms
   -- select the modemap part of the first entry, and skip result etc.
@@ -228,7 +228,7 @@ compCategories1(u,v) ==
 NewbFVectorCopy(u,domName) ==
   v:= newShell SIZE u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | PAIRP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
+  for i in 6..MAXINDEX v | CONSP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
   v
  
 mkVector u ==
@@ -295,40 +295,18 @@ worthlessCode x ==
   false
  
 cons5(p,l) ==
-  l and (CAAR l = CAR p) => [p,: rest l]
+  l and (CAAR l = first p) => [p,: rest l]
   LENGTH l < 5 => [p,:l]
   RPLACD(QCDDDDR l,nil)
   [p,:l]
- 
--- TrimEnvironment e ==
---   [TrimLocalEnvironment u for u in e] where
---     TrimLocalEnvironment e ==
---       [TrimContour u for u in e] where
---         TrimContour e ==
---           [u for u in e | Interesting u] where Interesting u == nil
---                         --clearly a temporary definition
  
 setVector0(catNames,definition) ==
           --returns code to set element 0 of the vector
           --to the definition of the category
   definition:= mkTypeForm definition
--- If we call addMutableArg this early, then recurise calls to this domain
--- (e.g. while testing predicates) will generate new domains => trouble
---definition:= addMutableArg mkTypeForm definition
   for u in catNames repeat
     definition:= ["setShellEntry",u,0,definition]
   definition
- 
---presence of GENSYM in arg-list differentiates mutable-domains
--- addMutableArg nameFormer ==
---   $mutableDomain =>
---     nameFormer is ['LIST,:.] => [:nameFormer, '(GENSYM)]
---     ['APPEND,nameFormer,'(LIST (GENSYM))]
---   nameFormer
- 
---getname D ==
---  isDomain D or isCategory D => D.0
---  D
  
 setVector12 args ==
             --The purpose of this function is to replace place holders
@@ -340,15 +318,15 @@ setVector12 args ==
             --DomainSubstitutionFunction, would be (gensym) cons
             --(category parameter), e.g. DirectProduct(length vl,NNI)
             --as in DistributedMultivariatePolynomial
-    args1:=[CAR u,:args1]
-    args2:=[CDR u,:args2]
+    args1:=[first u,:args1]
+    args2:=[rest u,:args2]
   freeof($domainShell.1,args1) and
       freeof($domainShell.2,args1) and
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['LIST,:args2]]]
  where freeof(a,b) ==
          ATOM a => NULL MEMQ(a,b)
-         freeof(CAR a,b) => freeof(CDR a,b)
+         freeof(first a,b) => freeof(rest a,b)
          false
  
 SetDomainSlots124(vec,names,vals) ==
@@ -368,7 +346,7 @@ sublisProp(subst,props) ==
                         --keep original CONS
       cond is ['or,:x] =>
         (or/[inspect(u,subst) for u in x] => [a,true,:l]; nil)
-      cond is ['has,nam,b] and (val:= ASSQ(nam,subst)) =>
+      cond is ["has",nam,b] and (val:= ASSQ(nam,subst)) =>
         ev:=
           b is ['ATTRIBUTE,c] => HasAttribute(rest val,c)
           b is ['SIGNATURE,c] => HasSignature(rest val,c)
@@ -421,7 +399,7 @@ setVector4(catNames,catsig,conditions) ==
     for ["%LET",name,cond,:.] in $getDomainCode repeat
       $HackSlot4:=MSUSBT(name,cond,$HackSlot4)
   code := ["setShellEntry",'$,4,'TrueDomain]
-  code:=['(%LET TrueDomain (NREVERSE TrueDomain)),:$HackSlot4,code]
+  code:=['(%LET TrueDomain (nreverse TrueDomain)),:$HackSlot4,code]
   code:=
     [:
       [setVector4Onecat(u,v,w)
@@ -465,7 +443,7 @@ setVector4part3(catNames,catvecList) ==
     --the names are those that will be applied to the various vectors
   generated:= nil
   for u in catvecList for uname in catNames repeat
-    for v in CADDR u.4 repeat
+    for v in third u.4 repeat
       if w:= assoc(first v,generated)
          then RPLACD(w,[[rest v,:uname],:rest w])
          else generated:= [[first v,[rest v,:uname]],:generated]
@@ -486,7 +464,7 @@ setVector5(catNames,locals) ==
     if w:= assoc(u,generated)
        then RPLACD(w,[uname,:rest w])
        else generated:= [[u,uname],:generated]
-  [(w:= mkVectorWithDeferral(first u,first rest u);
+  [(w:= mkVectorWithDeferral(first u,second u);
       for v in rest u repeat
          w:= ["setShellEntry",v,5,w];
         w)
@@ -551,10 +529,10 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
       ATOM code =>nil
-      MEMQ(QCAR code,'(getShellEntry ELT QREFELT)) =>
-          copyvec.(CADDR code):=union(copyvec.(CADDR code), sofar)
+      QCAR code in '(getShellEntry ELT QREFELT) =>
+          copyvec.(third code):=union(copyvec.(third code), sofar)
           true
-      code is [x,name,number,u'] and MEMQ(x,'(setShellEntry SETELT QSETREFV)) =>
+      code is [x,name,number,u'] and x in '(setShellEntry SETELT QSETREFV) =>
         update(u',copyvec,[[name,:number],:sofar])
   for i in 6..n repeat
     for u in copyvec.i repeat
@@ -591,7 +569,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
   code is ['PROGN,:codelist] =>
     ['PROGN,:
             --Two REVERSEs leave original order, but ensure last guy wins
-      NREVERSE [v for u in REVERSE codelist |
+      nreverse [v for u in reverse codelist |
                     (v:= DescendCode(u,flag,viewAssoc,EnvToPass))~=nil]]
   code is ['COND,:condlist] =>
     c:= [[u2:= ProcessCond first u,:q] for u in condlist] where q() ==
@@ -611,7 +589,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
     while (c and (LAST c is [c1] or LAST c is [c1,[]]) and
             (c1 = '(QUOTE T) or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end
-        c:=NREVERSE CDR NREVERSE c
+        c:=nreverse rest nreverse c
     null c => '(LIST)
     ['COND,:c]
   code is ["%LET",name,body,:.] =>
@@ -683,88 +661,51 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
   for u in $catvecList for v in catNames repeat
     null body => return nil
     for catImplem in LookUpSigSlots(sig,u.1) repeat
-      if catImplem is [q,.,index] and (q='ELT or q='CONST)
-         then
-          if q is 'CONST and body is ['CONS,a,b] then
-             body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
-          body:= ["setShellEntry",v,index,body]
-          if REFVECP $SetFunctions and TruthP flag then u.index:= true
-                 --used by CheckVector to determine which ops are missing
-          if v='$ then  -- i.e. we are looking at the principal view
-            not REFVECP $SetFunctions => nil
-                    --packages don't set it
-            $MissingFunctionInfo.index:= flag
-            TruthP $SetFunctions.index => (body:= nil; return nil)
-                     -- the function was already assigned
-            $SetFunctions.index:=
-              TruthP flag => true
-              not $SetFunctions.index=>flag --JHD didn't set $SF on this branch
-              ["or",$SetFunctions.index,flag]
-       else
-        if catImplem is ['Subsumed,:truename]
-                  --a special marker generated by SigListUnion
-           then
-            if mode='original 
-               then if truename is [fn,:.] and MEMQ(fn,'(Zero One))
-                    then nil  --hack by RDJ 8/90
-                    else body:= SetFunctionSlots(truename,body,nil,mode)
-               else nil
-           else
-             keyedSystemError("S2OR0002",[catImplem])
+      catImplem is [q,.,index] and (q='ELT or q='CONST) =>
+        if q is 'CONST and body is ['CONS,a,b] then
+           body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
+        body:= ["setShellEntry",v,index,body]
+        if REFVECP $SetFunctions and TruthP flag then
+          u.index := true
+        v='$ =>            -- we are looking at the principal view
+          not REFVECP $SetFunctions => nil --packages don't set it
+          -- the function was already assigned
+          TruthP $SetFunctions.index => return body := nil
+          $SetFunctions.index :=
+            TruthP flag => true
+            not $SetFunctions.index => flag
+            ["or",$SetFunctions.index,flag]
+      catImplem is ['Subsumed,:truename] =>
+        mode='original =>
+          truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90
+          body := SetFunctionSlots(truename,body,nil,mode)
+      keyedSystemError("S2OR0002",[catImplem])
   body is ["setShellEntry",:.] => body
-  body is ['SETELT,:.] => systemErrorHere ["SetFunctionSlots",body]
-  body is ['QSETREFV,:.] => systemErrorHere ["SetFunctionSlots",body]
   nil
  
 LookUpSigSlots(sig,siglist) ==
 --+ must kill any implementations below of the form (ELT $ NIL)
   if $insideCategoryPackageIfTrue then
-           sig := substitute('$,CADR($functorForm),sig)
+           sig := substitute('$,second($functorForm),sig)
   siglist := $lisplibOperationAlist
-  REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=CADDR u)
+  REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
               and KADDR implem]
  
 SigSlotsMatch(sig,pattern,implem) ==
   sig=pattern => true
-  not (LENGTH CADR sig=LENGTH CADR pattern) => nil
-                       --CADR sig is the actual signature part
-  not (first sig=first pattern) => nil
-  pat' :=SUBSTQ($definition,'$,CADR pattern)
-  sig' :=SUBSTQ($definition,'$,CADR sig)
-  sig'=pat' => true
-  --If we don't have this next test, then we'll recurse in SetFunctionSlots
+  #second sig ~= # second pattern => nil
+                       --second sig is the actual signature part
+  first sig ~= first pattern => nil
+  pat' := substitute($definition,'$,second pattern)
+  sig' := substitute($definition,'$,second sig)
+  sig' = pat' => true
   implem is ['Subsumed,:.] => nil
   sig' = pat'
  
-CheckVector(vec,name,catvecListMaker) ==
-  code:= nil
-  condAlist :=
-      [[a,:first b] for [.,a,:b] in $getDomainCode]
-        -- used as substitution alist below
-  for i in 6..MAXINDEX vec repeat
-    v:= vec.i
-    v=true => nil
-    null v => nil
-            --a domain, which setVector4part3 will fill in
-    atom v => systemErrorHere ["CheckVector",v]
-    atom first v =>
-                  --It's a secondary view of a domain, which we
-                  --must generate code to fill in
-      for x in $catNames for y in catvecListMaker repeat
-        if y=v then code:=
-          [["setShellEntry",name,i,x],:code]
-    if name='$ then
-      assoc(first v,$CheckVectorList) => nil
-      $CheckVectorList:=
-        [[first v,:makeMissingFunctionEntry(condAlist,i)],:$CheckVectorList]
---  member(first v,$CheckVectorList) => nil
---  $CheckVectorList:= [first v,:$CheckVectorList]
-  code
- 
 makeMissingFunctionEntry(alist,i) ==
-  tran SUBLIS(alist,$MissingFunctionInfo.i) where
+  tran SUBLIS(alist,$SetFunctions.i) where
     tran x ==
-      x is ["HasCategory",a,["QUOTE",b]] => ['has,a,b]
+      x is ["HasCategory",a,["QUOTE",b]] => ["has",a,b]
       x is [op,:l] and op in '(AND OR NOT) => [op,:[tran y for y in l]]
       x
  
@@ -785,9 +726,9 @@ InvestigateConditions catvecListMaker ==
   if $principal is [op,:.] then
     [principal',:.]:=compMakeCategoryObject($principal,$e)
               --Rather like eval, but quotes parameters first
-    for u in CADR principal'.4 repeat
-      if not TruthP(cond:=CADR u) then
-        new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,CAR u], '%noBranch]]
+    for u in second principal'.4 repeat
+      if not TruthP(cond:=second u) then
+        new:=['CATEGORY,'domain,['IF,cond,['ATTRIBUTE,first u], '%noBranch]]
         $principal is ['Join,:l] =>
           not member(new,l) =>
             $principal:=['Join,:l,new]
@@ -803,15 +744,15 @@ InvestigateConditions catvecListMaker ==
         [pessimise first a,:pessimise rest a]
   null $Conditions => [true,:[true for u in secondaries]]
   PrincipalSecondaries:= getViewsConditions principal'
-  MinimalPrimary:= CAR first PrincipalSecondaries
+  MinimalPrimary:= first first PrincipalSecondaries
   MaximalPrimary:= CAAR $domainShell.4
   necessarySecondaries:= [first u for u in PrincipalSecondaries | rest u=true]
   and/[member(u,necessarySecondaries) for u in secondaries] =>
     [true,:[true for u in secondaries]]
   $HackSlot4:=
     MinimalPrimary=MaximalPrimary => nil
-    MaximalPrimaries:=[MaximalPrimary,:CAR (CatEval MaximalPrimary).4]
-    MinimalPrimaries:=[MinimalPrimary,:CAR (CatEval MinimalPrimary).4]
+    MaximalPrimaries:=[MaximalPrimary,:first (CatEval MaximalPrimary).4]
+    MinimalPrimaries:=[MinimalPrimary,:first (CatEval MinimalPrimary).4]
     MaximalPrimaries:=S_-(MaximalPrimaries,MinimalPrimaries)
     [[x] for x in MaximalPrimaries]
   ($Conditions:= Conds($principal,nil)) where
@@ -843,7 +784,7 @@ InvestigateConditions catvecListMaker ==
       LENGTH u=1 => first u
       ['AND,:u]
     for [v,:.] in newS repeat
-      for v' in [v,:CAR (CatEval v).4] repeat
+      for v' in [v,:first (CatEval v).4] repeat
         if (w:=assoc(v',$HackSlot4)) then
           RPLAC(rest w,if rest w then mkOr(u,rest w) else u)
     (list:= update(list,u,secondaries,newS)) where
@@ -862,9 +803,9 @@ InvestigateConditions catvecListMaker ==
         list2
   list:= [[sec,:ICformat u] for u in list for sec in secondaries]
   pv:= getPossibleViews $principal
--- $HackSlot4 is used in SetVector4 to ensure that conditional
--- extensions of the principal view are handles correctly
--- here we build the code necessary to remove spurious extensions
+  -- $HackSlot4 is used in SetVector4 to ensure that conditional
+  -- extensions of the principal view are handles correctly
+  -- here we build the code necessary to remove spurious extensions
   ($HackSlot4:= [reshape u for u in $HackSlot4]) where
     reshape u ==
       ['COND,[TryGDC ICformat rest u],
@@ -878,7 +819,7 @@ InvestigateConditions catvecListMaker ==
  
 ICformat u ==
       atom u => u
-      u is ['has,:.] => compHasFormat u
+      u is ["has",:.] => compHasFormat u
       u is ['AND,:l] or u is ['and,:l] =>
         l:= REMDUP [ICformat v for [v,:l'] in tails l | not member(v,l')]
              -- we could have duplicates after, even if not before
@@ -934,11 +875,11 @@ getPossibleViews u ==
   --returns a list of all the categories that can be views of this one
   [vec,:.]:= compMakeCategoryObject(u,$e) or
     systemErrorHere ["getPossibleViews",u]
-  views:= [first u for u in CADR vec.4]
+  views:= [first u for u in second vec.4]
   null vec.0 => [CAAR vec.4,:views] --*
   [vec.0,:views] --*
       --the two lines marked  ensure that the principal view comes first
-      --if you don't want it, CDR it off
+      --if you don't want it, rest it off
  
 getViewsConditions u ==
  
@@ -946,16 +887,16 @@ getViewsConditions u ==
   --paired with the condition under which they are such views
   [vec,:.]:= compMakeCategoryObject(u,$e) or
     systemErrorHere ["getViewsConditions",u]
-  views:= [[first u,:CADR u] for u in CADR vec.4]
+  views:= [[first u,:second u] for u in second vec.4]
   null vec.0 =>
-    null CAR vec.4 => views
+    null first vec.4 => views
     [[CAAR vec.4,:true],:views] --*
   [[vec.0,:true],:views] --*
       --the two lines marked  ensure that the principal view comes first
-      --if you don't want it, CDR it off
+      --if you don't want it, rest it off
  
 DescendCodeVarAdd(base,flag) ==
-   princview := CAR $catvecList
+   princview := first $catvecList
    [SetFunctionSlots(sig,substitute('ELT,'CONST,implem),flag,'adding) repeat
        for i in 6..MAXINDEX princview |
          princview.i is [sig:=[op,types],:.] and
@@ -965,23 +906,6 @@ DescendCodeVarAdd(base,flag) ==
 resolvePatternVars(p,args) ==
   p := SUBLISLIS(args, $TriangleVariableList, p)
   SUBLISLIS(args, $FormalMapVariableList, p)
-
---resolvePatternVars(p,args) ==
---  atom p =>
---    isSharpVarWithNum p => args.(position(p,$FormalMapVariableList))
---    p
---  [resolvePatternVars(CAR p,args),:resolvePatternVars(CDR p,args)]
- 
--- Mysterious JENKS definition follows:
---DescendCodeVarAdd(base,flag) ==
---  baseops := [(u:=LASSOC([base,:SUBST(base,'$,types)],
---                    get(op,'modemap,$e))) and [sig,:u]
---                       for (sig := [op,types]) in $CheckVectorList]
---  $CheckVectorList := [sig for sig in $CheckVectorList
---                           for op in baseops | null op]
---  [SetFunctionSlots(sig,implem,flag,'adding)
---                   for u in baseops | u is [sig,[pred,implem]]]
- 
 
 --% Code Processing Packages
 

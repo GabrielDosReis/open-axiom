@@ -210,18 +210,18 @@ htpSetPageDescription(htPage, pageDescription) ==
 iht line ==
 -- issue a single hyperteTeX line, or a group of lines
   $newPage => nil
-  PAIRP line =>
+  CONSP line =>
     $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 bcIssueHt line ==
-  PAIRP line => htMakePage1 line
+  CONSP line => htMakePage1 line
   iht line
 
 mapStringize l ==
   ATOM l => l
-  RPLACA(l, basicStringize CAR l)
-  RPLACD(l, mapStringize CDR l)
+  RPLACA(l, basicStringize first l)
+  RPLACD(l, mapStringize rest l)
   l
 
 basicStringize s ==
@@ -404,7 +404,7 @@ htMakeTemplates(templateList, numLabels) ==
   templateList := [templateParts template for template in templateList]
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
-      PAIRP template =>
+      CONSP template =>
         INTERN CONCAT(first template, PRINC_-TO_-STRING i, rest template)
       template
 
@@ -520,7 +520,7 @@ checkCondition(s1, string, condList) ==
 
 condErrorMsg type ==
   typeString := form2String type
-  if PAIRP typeString then typeString := APPLY(function CONCAT, typeString)
+  if CONSP typeString then typeString := APPLY(function CONCAT, typeString)
   CONCAT('"Error: Could not make your input into a ", typeString)
 
 parseAndEval string ==
@@ -534,14 +534,14 @@ parseAndEval1 string ==
   syntaxError := false
   pform :=
     v := applyWithOutputToString('ncParseFromString, [string])
-    CAR v => CAR v
+    first v => first v
     syntaxError := true
-    CDR v
+    rest v
   syntaxError =>
      '"Syntax Error "
   pform =>
     val := applyWithOutputToString('processInteractive, [pform, nil])
-    CAR val => CAR val
+    first val => first val
     '"Type Analysis Error"
   nil
 
@@ -582,8 +582,8 @@ unescapeStringsInForm form ==
     str := NSUBSTITUTE(char '_", $funnyQuote, form)
     NSUBSTITUTE(char '_\, $funnyBacks, str)
   CONSP form =>
-    unescapeStringsInForm CAR form
-    unescapeStringsInForm CDR form
+    unescapeStringsInForm first form
+    unescapeStringsInForm rest form
     form
   form
 

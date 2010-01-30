@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -120,8 +120,8 @@ mkAtree1 x ==
 
 mkAtree2(x,op,argl) ==
   nargl := #argl
-  (op= "-") and (nargl = 1) and (INTEGERP CAR argl) =>
-    mkAtree1(MINUS CAR argl)
+  (op= "-") and (nargl = 1) and (INTEGERP first argl) =>
+    mkAtree1(MINUS first argl)
   op=":" and argl is [y,z] => [mkAtreeNode "Declare",:argl]
   op="COLLECT" => [mkAtreeNode op,:transformCollect argl]
   op= "break" =>
@@ -134,7 +134,7 @@ mkAtree2(x,op,argl) ==
       if val = '$NoValue then val := '(void)
       [mkAtreeNode op,mkAtree1 val]
     [mkAtreeNode op,mkAtree1 '(void)]
-  op="exit" => mkAtree1 CADR argl
+  op="exit" => mkAtree1 second argl
   op = "QUOTE" => [mkAtreeNode op,:argl]
   op="SEGMENT" =>
     argl is [a] => [mkAtreeNode op, mkAtree1 a]
@@ -145,7 +145,7 @@ mkAtree2(x,op,argl) ==
   op in '(pretend is isnt) =>
     [mkAtreeNode op,mkAtree1 first argl,:rest argl]
   op =  "::" =>
-    [mkAtreeNode "COERCE",mkAtree1 first argl,CADR argl]
+    [mkAtreeNode "COERCE",mkAtree1 first argl,second argl]
   x is ["@", expr, type] =>
     t := evaluateType unabbrev type
     t = $DoubleFloat and expr is [['_$elt, =$Float, 'float], :args] =>
@@ -160,7 +160,7 @@ mkAtree2(x,op,argl) ==
         mkAtree1 ["::", expr, t]
     [mkAtreeNode 'TARGET,mkAtree1 expr, type]
   (op="case") and (nargl = 2)  =>
-    [mkAtreeNode "case",mkAtree1 first argl,unabbrev CADR argl]
+    [mkAtreeNode "case",mkAtree1 first argl,unabbrev second argl]
   op="REPEAT" => [mkAtreeNode op,:transformREPEAT argl]
   op="%LET" and argl is [['construct,:.],rhs] =>
     [mkAtreeNode "%LET",first argl,mkAtree1 rhs]
@@ -205,7 +205,7 @@ mkAtree3(x,op,argl) ==
       lowTest
     mkAtree1 z
   x is ["IF",p,"%noBranch",a] => mkAtree1 ["IF",["not",p],a,"%noBranch"]
-  x is ["RULEDEF",:.] => [mkAtreeNode "RULEDEF",:CDR x]
+  x is ["RULEDEF",:.] => [mkAtreeNode "RULEDEF",:rest x]
   x is ["MDEF",sym,junk1,junk2,val] =>
     -- new macros look like  macro f ==  or macro f(x) ===
     -- so transform into that format
@@ -223,7 +223,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     v :=
       null arg => VECTOR(NIL,NIL,NIL)
-      PAIRP arg and rest arg and first arg ~= "|" =>
+      CONSP arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
       collectDefTypesAndPreds arg
@@ -240,7 +240,7 @@ mkAtree3(x,op,argl) ==
     a is [op,:arg] =>
       v :=
         null arg => VECTOR(NIL,NIL,NIL)
-        PAIRP arg and rest arg and first arg ~= "|" =>
+        CONSP arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
         collectDefTypesAndPreds arg
@@ -259,7 +259,7 @@ mkAtree3(x,op,argl) ==
 --  a is [op,p1,:pr] =>
 --    null pr => mkAtree1 ['DEF,[op,["|",p1,pred]],:r]
 --    mkAtree1 ['DEF,[op,["|",["tuple",p1,:pr],pred]],:r]
---  [mkAtreeNode 'DEF, CDR y,pred,false]
+--  [mkAtreeNode 'DEF, rest y,pred,false]
 --x is ['otherwise,u] =>
 --  throwMessage '"   otherwise is no longer supported."
   z :=
@@ -395,7 +395,7 @@ getValueFromEnvironment(x,mode) ==
   objValUnwrap v
 
 getValueFromSpecificEnvironment(id,mode,e) ==
-  PAIRP e =>
+  CONSP e =>
     u := get(id,'value,e) =>
       objMode(u) = $EmptyMode =>
         systemErrorHere ["getValueFromSpecificEnvironment",id]
@@ -449,9 +449,9 @@ remprop(x,prop,e) ==
   e
 
 fastSearchCurrentEnv(x,currentEnv) ==
-  u:= QLASSQ(x,CAR currentEnv) => u
+  u:= QLASSQ(x,first currentEnv) => u
   while (currentEnv:= QCDR currentEnv) repeat
-    u:= QLASSQ(x,CAR currentEnv) => u
+    u:= QLASSQ(x,first currentEnv) => u
 
 transformCollect [:itrl,body] ==
   -- syntactic transformation for COLLECT form, called from mkAtree1

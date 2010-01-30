@@ -131,7 +131,7 @@ segmentedMsgPreprocess x ==
       [t,:tail] := tail
       member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
       y := CONS(segmentedMsgPreprocess t,y)
-    head1 := [(center => '"%ce"; '"%rj"),:NREVERSE y]
+    head1 := [(center => '"%ce"; '"%rj"),:nreverse y]
     NULL tail => [head1]
     [head1,:segmentedMsgPreprocess tail]
   head1 := segmentedMsgPreprocess head
@@ -159,18 +159,18 @@ substituteSegmentedMsg(msg,args) ==
   nargs := #args
   for x in segmentedMsgPreprocess msg repeat
     -- x is a list
-    PAIRP x =>
+    CONSP x =>
       l := cons(substituteSegmentedMsg(x,args),l)
     c := x.0
     n := STRINGLENGTH x
 
     -- x is a special case
     (n > 2) and (c = "%") and (x.1 = "k") =>
-        l := NCONC(NREVERSE pkey SUBSTRING(x,2,NIL),l)
+        l := NCONC(nreverse pkey SUBSTRING(x,2,NIL),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
     (x.0 = char "?") and n > 1 and (v := pushOrTypeFuture(INTERN x,nil)) =>
-      l := NCONC(NREVERSE v,l)
+      l := NCONC(nreverse v,l)
 
     -- x requires parameter substitution
     (x.0 = char "%") and (n > 1) and (DIGITP x.1) =>
@@ -184,7 +184,7 @@ substituteSegmentedMsg(msg,args) ==
       -- Note 'f processing must come first.
       if MEMQ(char 'f,q) then
           arg :=
-              PAIRP arg => APPLY(first arg, rest arg)
+              CONSP arg => APPLY(first arg, rest arg)
               arg
       if MEMQ(char 'm,q) then arg := [['"%m",:arg]]
       if MEMQ(char 's,q) then arg := [['"%s",:arg]]
@@ -206,12 +206,12 @@ substituteSegmentedMsg(msg,args) ==
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
-         PAIRP(arg) =>
-           MEMQ(char 'y,q) or (CAR arg = '"%y") or ((LENGTH arg) = 1)  =>
-             APPEND(REVERSE arg, l)
+         CONSP(arg) =>
+           MEMQ(char 'y,q) or (first arg = '"%y") or ((LENGTH arg) = 1)  =>
+             append(reverse arg, l)
            head := first arg
            tail := rest arg
-           ['"%y",:APPEND(REVERSE tail, ['"%n",head,:l ]) ]
+           ['"%y",:append(reverse tail, ['"%n",head,:l ]) ]
          cons(arg,l)
       if MEMQ(char 'b,q) then l := cons('"%d",l)
       for ch in '(_. _, _! _: _; _?) repeat
@@ -221,11 +221,11 @@ substituteSegmentedMsg(msg,args) ==
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
     l := cons(x,l)
-  addBlanks NREVERSE l
+  addBlanks nreverse l
 
 addBlanks msg ==
   -- adds proper blanks
-  null PAIRP msg => msg
+  atom msg => msg
   null msg => msg
   LENGTH msg = 1 => msg
   blanksOff := false
@@ -244,7 +244,7 @@ addBlanks msg ==
     else
        msg1 := [y,blank,:msg1]
     x := y
-  NREVERSE msg1
+  nreverse msg1
 
 
 $msgdbPrims =='( %b %d %l %i %u %U %n %x %ce %rj "%U" "%b" "%d" "%l" "%i" "%u" "%U" "%n" "%x" "%ce" "%rj")
@@ -259,7 +259,7 @@ noBlankBeforeP word==
     if CVECP word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
-    (PAIRP word) and member(CAR word,$msgdbListPrims) => true
+    (CONSP word) and member(first word,$msgdbListPrims) => true
     false
 
 $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
@@ -271,13 +271,13 @@ noBlankAfterP word==
     if CVECP word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
-    (PAIRP word) and member(CAR word, $msgdbListPrims) => true
+    (CONSP word) and member(first word, $msgdbListPrims) => true
     false
 
 cleanUpSegmentedMsg msg ==
   -- removes any junk like double blanks
   -- takes a reversed msg and puts it in the correct order
-  null PAIRP msg => msg
+  atom msg => msg
   blanks := ['" "," "]
   haveBlank := NIL
   prims :=
@@ -286,7 +286,7 @@ cleanUpSegmentedMsg msg ==
   msg1 := NIL
   for x in msg repeat
     if haveBlank and (member(x,blanks) or member(x,prims)) then
-      msg1 := CDR msg1
+      msg1 := rest msg1
     msg1 := cons(x,msg1)
     haveBlank := (member(x,blanks) => true; NIL)
   msg1
@@ -456,7 +456,7 @@ sayKeyedMsgFromDb(key,args,dbName) ==
 returnStLFromKey(key,argL,:optDbN) ==
     savedDbN := $msgDatabaseName
     if IFCAR optDbN then
-        $msgDatabaseName := pathname CAR optDbN
+        $msgDatabaseName := pathname first optDbN
     text := fetchKeyedMsg(key, false)
     $msgDatabaseName := savedDbN
     text := segmentKeyedMsg text
@@ -496,7 +496,7 @@ flowSegmentedMsg(msg, len, offset) ==
   off1:= (offset <= 1 => '""; fillerSpaces(offset-1,'" "))
   firstLine := true
 
-  PAIRP msg =>
+  CONSP msg =>
     lnl := offset
     if msg is [a,:.] and member(a,'(%b %d _  "%b" "%d" " ")) then
       nl :=  [off1]
@@ -507,15 +507,15 @@ flowSegmentedMsg(msg, len, offset) ==
         actualMarg := potentialMarg
         if lnl = 99999 then nl := ['%l,:nl]
         lnl := 99999
-      PAIRP(f) and member(CAR(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
+      CONSP(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
         nl := [f,'%l,:nl]
         lnl := 199999
       member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
         nl := [f,:nl]
-      PAIRP(f) and member(CAR(f),'("%t" %t)) =>
-        potentialMarg := potentialMarg + CDR f
+      CONSP(f) and member(first(f),'("%t" %t)) =>
+        potentialMarg := potentialMarg + rest f
         nl := [f,:nl]
       sbl := sayBrightlyLength f
       tot := lnl + offset + sbl + actualMarg
@@ -571,11 +571,11 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 
 --% Some Standard Message Printing Functions
 
-bright x == ['"%b",:(PAIRP(x) and NULL CDR LASTNODE x => x; [x]),'"%d"]
+bright x == ['"%b",:(CONSP(x) and NULL rest LASTNODE x => x; [x]),'"%d"]
 --bright x == ['%b,:(ATOM x => [x]; x),'%d]
 
 mkMessage msg ==
-  msg and (PAIRP msg) and member((first msg),'(%l "%l"))  and
+  msg and (CONSP msg) and member((first msg),'(%l "%l"))  and
     member((last msg),'(%l "%l")) => concat msg
   concat('%l,msg,'%l)
 
@@ -717,7 +717,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
   sayString('"(",out)
   brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
-    rst:=[CAR rst,CADR rst,CADDR rst, '"environment (omitted)"]
+    rst:=[first rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
     brightPrint1(y,out)
@@ -744,7 +744,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   sayString('"(",out)
   brightPrint1(key,out)
   if EQ(key,'TAGGEDreturn) then
-    rst:=[CAR rst,CADR rst,CADDR rst, '"environment (omitted)"]
+    rst:=[first rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
     brightPrint1(y,out)
@@ -772,10 +772,10 @@ brightPrintCenter(x,out == $OutputStream) ==
   y := NIL
   ok := true
   while x and ok repeat
-    if member(CAR(x),'(%l "%l")) then ok := NIL
-    else y := cons(CAR x, y)
-    x := CDR x
-  y := NREVERSE y
+    if member(first(x),'(%l "%l")) then ok := NIL
+    else y := cons(first x, y)
+    x := rest x
+  y := nreverse y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     f := DIVIDE($LINELENGTH - wid,2)
@@ -794,9 +794,9 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
   lst := x
   while lst repeat 
     words := nil
-    while lst and not CAR(lst) = "%l" repeat
-      words := [CAR lst,: words]
-      lst := CDR lst
+    while lst and not first(lst) = "%l" repeat
+      words := [first lst,: words]
+      lst := rest lst
     if lst then lst := cdr lst
     sayString('"\centerline{",out)
     words := nreverse words
@@ -819,10 +819,10 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   y := NIL
   ok := true
   while x and ok repeat
-    if member(CAR(x),'(%l "%l")) then ok := NIL
-    else y := cons(CAR x, y)
-    x := CDR x
-  y := NREVERSE y
+    if member(first(x),'(%l "%l")) then ok := NIL
+    else y := cons(first x, y)
+    x := rest x
+  y := nreverse y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     y := CONS(fillerSpaces($LINELENGTH-wid,'" "),y)
@@ -919,7 +919,7 @@ sayDisplayStringWidth x ==
   sayDisplayWidth x
 
 sayDisplayWidth x ==
-  PAIRP x =>
+  CONSP x =>
     +/[fn y for y in x] where fn y ==
       member(y,'(%b %d "%b" "%d")) or y=$quadSymbol => 1
       k := blankIndicator y => k
@@ -990,14 +990,14 @@ splitSayBrightly u ==
   while u and (width:= width + sayWidth first u) < $LINELENGTH repeat
     segment:= [first u,:segment]
     u := rest u
-  null u => NREVERSE segment
-  segment => [:NREVERSE segment,"%l",:splitSayBrightly(u)]
+  null u => nreverse segment
+  segment => [:nreverse segment,"%l",:splitSayBrightly(u)]
   u
 
 splitSayBrightlyArgument u ==
   atom u => nil
   while splitListSayBrightly u is [head,:u] repeat result:= [head,:result]
-  result => [:NREVERSE result,u]
+  result => [:nreverse result,u]
   [u]
 
 splitListSayBrightly u ==

@@ -331,7 +331,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
              [["$elt","Result","construct"],body]]
 
 stripNil u ==
-  [CAR(u), ["construct",:CADR(u)], if CADDR(u) then "true" else "false"]
+  [first(u), ["construct",:second(u)], if third(u) then "true" else "false"]
 
 makeUnion aspType ==
   -- The argument is the type of the asp to be generated.  We would like to
@@ -348,11 +348,11 @@ axiomType(a,decls,asps,aspInfo) ==
             "construct"]
     makeUnion ["FortranProgram",_
       a,_
-      CADR(entry),_
-      ["construct",:mkQuote CADDR entry], _
+      second(entry),_
+      ["construct",:mkQuote third entry], _
       [ ["$elt", "SymbolTable","symbolTable"],_
           ["construct",_
-            :[[rc,first(v),[ftc,:stripNil rest(v)]] for v in CADDDR entry]]_
+            :[[rc,first(v),[ftc,:stripNil rest(v)]] for v in fourth entry]]_
     ] ]
   spadTypeTTT(getFortranType(a,decls))
 
@@ -402,7 +402,7 @@ vec2Lists u == [vec2Lists1 ELT(u,i) for i in 0..#u-1]
 spad2lisp(u) ==
   -- Turn complexes into arrays of floats
   first first(u)="Complex" =>
-    makeVector([makeVector([CADR u,CDDR u],"%DoubleFloat")],NIL)
+    makeVector([makeVector([second u,CDDR u],"%DoubleFloat")],NIL)
   -- Turn arrays of complexes into arrays of floats so that tarnsposing
   -- them puts them in the correct fortran order
   first first(u)="Matrix" and first SECOND first(u) = "Complex" =>
@@ -463,14 +463,14 @@ spadify(l,results,decls,names,actual) ==
           for c in 0..(SECOND(dims) - 1) repeat
             offset := 2*(c*first(dims)+r)
             innerEls := [CONS(ELT(fort,offset),ELT(fort,offset+1)),:innerEls]
-          els := [makeVector(NREVERSE innerEls,nil),:els]
+          els := [makeVector(nreverse innerEls,nil),:els]
       else
          error ['"Can't cope with complex output dimensions higher than 2"]
-      spadForms := [makeResultRecord(name,ty,makeVector(NREVERSE els,nil)),
+      spadForms := [makeResultRecord(name,ty,makeVector(nreverse els,nil)),
                     :spadForms]
     -- Result is a Boolean vector or array
     LISTP(ty) and first(ty)="logical" and #ty=2 =>
-      dim := getVal(first rest ty,names,actual)
+      dim := getVal(second ty,names,actual)
       spadForms := [makeResultRecord(name,ty,_
                           [int2Bool ELT(fort,i) for i in 0..dim-1]), :spadForms]
     LISTP(ty) and first(ty)="logical" =>
@@ -481,10 +481,10 @@ spadify(l,results,decls,names,actual) ==
           innerEls := nil
           for c in 0..(SECOND(dims) - 1) repeat
             innerEls := [int2Bool ELT(fort,c*first(dims)+r),:innerEls]
-          els := [NREVERSE innerEls,:els]
+          els := [nreverse innerEls,:els]
       else
          error ['"Can't cope with logical output dimensions higher than 2"]
-      spadForms := [makeResultRecord(name,ty,NREVERSE els), :spadForms]
+      spadForms := [makeResultRecord(name,ty,nreverse els), :spadForms]
     -- Result is a vector or array
     VECTORP fort =>
       dims := [getVal(u,names,actual) for u in rest ty]
@@ -499,7 +499,7 @@ spadify(l,results,decls,names,actual) ==
           innerEls := nil
           for c in 0..(SECOND(dims) - 1) repeat
             innerEls := [ELT(fort,c*first(dims)+r),:innerEls]
-          els := [makeVector(NREVERSE innerEls,nil),:els]
+          els := [makeVector(nreverse innerEls,nil),:els]
       else if #dims=3 then
         iDim := first(dims)
         jDim := SECOND dims
@@ -511,11 +511,11 @@ spadify(l,results,decls,names,actual) ==
             for p in 0..(kDim - 1) repeat
               offset := p*jDim + c*kDim + r
               innerEls := [ELT(fort,offset),:innerEls]
-            middleEls := [makeVector(NREVERSE innerEls,nil),:middleEls]
-          els := [makeVector(NREVERSE middleEls,nil),:els]
+            middleEls := [makeVector(nreverse innerEls,nil),:middleEls]
+          els := [makeVector(nreverse middleEls,nil),:els]
       else
          error ['"Can't cope with output dimensions higher than 3"]
-      if not MEMQ(0,dims) then els := makeVector(NREVERSE els,nil)
+      if not MEMQ(0,dims) then els := makeVector(nreverse els,nil)
       spadForms := [makeResultRecord(name,ty,els), :spadForms]
     -- Result is a Boolean Scalar
     atom fort and ty="logical" =>
@@ -524,7 +524,7 @@ spadify(l,results,decls,names,actual) ==
     atom fort => 
       spadForms := [makeResultRecord(name,ty,fort),:spadForms]
     error ['"Unrecognised output format: ",fort]
-  NREVERSE spadForms
+  nreverse spadForms
 
 lispType u ==
   -- Return the lisp type equivalent to the given Fortran type.
@@ -588,24 +588,24 @@ prepareResults(results,args,dummies,values,decls) ==
         type = "complex" => makeVector([shortZero,shortZero],"%SingleFloat")
         type = "double complex" => makeVector([longZero,longZero],"%DoubleFloat")
         error ['"Unrecognised Fortran type: ",type]
-  NREVERSE data
+  nreverse data
 
 -- TTT this is dead code now
 --      transposeVector(u,type) ==
 --        -- Take a vector of vectors and return a single vector which is in column
 --        -- order (i.e. swap from C to Fortran order).
 --        els  := nil
---        rows := CAR ARRAY_-DIMENSIONS(u)-1
---        cols := CAR ARRAY_-DIMENSIONS(ELT(u,0))-1
+--        rows := first ARRAY_-DIMENSIONS(u)-1
+--        cols := first ARRAY_-DIMENSIONS(ELT(u,0))-1
 --        -- Could be a 3D Matrix
 --        if VECTORP ELT(ELT(u,0),0) then
---          planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
+--          planes := first ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
 --          for k in 0..planes repeat for j in 0..cols repeat for i in 0..rows repeat
 --            els := [ELT(ELT(ELT(u,i),j),k),:els]
 --        else
 --          for j in 0..cols repeat for i in 0..rows repeat
 --            els := [ELT(ELT(u,i),j),:els]
---        makeVector(NREVERSE els,type)
+--        makeVector(nreverse els,type)
 
 
 writeData(tmpFile,indata) ==
@@ -626,13 +626,13 @@ writeData(tmpFile,indata) ==
                 xdrWrite(xstr,v)
         -- some array
         VECTORP v =>  
-                rows := CAR ARRAY_-DIMENSIONS(v)
+                rows := first ARRAY_-DIMENSIONS(v)
                 -- is it 2d or more (most likely) ?
                 VECTORP ELT(v,0) =>     
-                        cols := CAR ARRAY_-DIMENSIONS(ELT(v,0))
+                        cols := first ARRAY_-DIMENSIONS(ELT(v,0))
                         -- is it 3d ?
                         VECTORP ELT(ELT(v,0),0) =>
-                                planes := CAR ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
+                                planes := first ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
                                 -- write 3d array
                                 xdrWrite(xstr,rows*cols*planes)
                                 for k in 0..planes-1 repeat 
@@ -750,11 +750,11 @@ multiToUnivariate f ==
   -- Take an AnonymousFunction, replace the bound variables by references to
   -- elements of a vector, and compile it.
   (first f) ~= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
-  if PAIRP CADR f then
+  if CONSP second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
-    vars := [CADR f]
-  body := COPY_-TREE CADDR f
+    vars := [second f]
+  body := COPY_-TREE third f
   newVariable := GENSYM()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
@@ -767,10 +767,10 @@ functionAndJacobian f ==
   -- Take a mapping into n functions of n variables, produce code which will
   -- evaluate function and jacobian values.
   (first f) ~= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
-  if PAIRP CADR f then
+  if CONSP second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
-    vars := [CADR f]
+    vars := [second f]
   #(vars) ~= #(CDADDR f) => 
     error "number of variables should equal number of functions"
   funBodies := COPY_-TREE CDADDR f
@@ -795,10 +795,10 @@ vectorOfFunctions f ==
   -- Take a mapping into n functions of m variables, produce code which will
   -- evaluate function values.
   (first f) ~= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
-  if PAIRP CADR f then
+  if CONSP second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
-    vars := [CADR f]
+    vars := [second f]
   funBodies := COPY_-TREE CDADDR f
   newVariable := GENSYM()
   for index in 0..#vars-1 repeat

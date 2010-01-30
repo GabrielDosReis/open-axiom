@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2009, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -85,10 +85,33 @@ typedef enum openaxiom_byteorder {
 } openaxiom_byteorder;
 
 
-/* Return the address of the data buffer `BUF'.  */
+/* Datatype for packaging information necessary tolaunch a process. */
+typedef struct openaxiom_process {
+   int argc;
+   char** argv;
+   int id;
+} openaxiom_process;
 
+typedef enum openaxiom_spawn_flags {
+   openaxiom_spawn_search_path = 0x01,
+   openaxiom_spawn_replace     = 0x02,
+} openaxiom_spawn_flags;
+
+   
+/* Return the address of the data buffer `BUF'.  */
 #define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
 
+/* Internal field separator character.  */
+#ifdef __WIN32__
+#  define openaxiom_ifs ';'
+#else
+#  define openaxiom_ifs ':'
+#endif   
+
+/* Paths to LaTeX input support file directories.
+   These paths are relative to system directory.  */
+#define OPENAXIOM_TEXINPUTS_PATH   "/share/texmf/tex"
+#define OPENAXIOM_BIBINPUTS_PATH   "/share/texmf/tex"
 
 /* The function sleep() is not available under Windows.  Instead, they
    have Sleep(); with capital S, please.  Furthermore, it does not
@@ -106,6 +129,10 @@ openaxiom_sleep(int n)
 #endif   
 }
 
+
+OPENAXIOM_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
+OPENAXIOM_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
+OPENAXIOM_EXPORT const char* oa_concatenate_string(const char*, const char*);
 
 #ifdef __cplusplus
 }

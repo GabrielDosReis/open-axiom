@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra si.spad}
 \author{Stephen M. Watt, Michael Monagan, James Davenport, Barry Trager}
@@ -58,7 +58,7 @@ IntegerNumberSystem(): Category ==
    random   : () -> %
       ++ random() creates a random element.
    random   : % -> %
-      ++ random(a) creates a random element from 0 to \spad{n-1}.
+      ++ random(a) creates a random element from 0 to \spad{a-1}.
    copy     : % -> %
       ++ copy(n) gives a copy of n.
    inc      : % -> %

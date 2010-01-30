@@ -202,7 +202,7 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
           return modemapList
         TruthP pred => mmtail:=rest mmtail
           --the thing we matched against is useless, by comparison
-      modemapList:= NCONC(NREVERSE newmm,[entry,:mmtail])
+      modemapList:= NCONC(nreverse newmm,[entry,:mmtail])
       entry:= nil
       return modemapList
   if entry then [:modemapList,entry] else modemapList
@@ -268,7 +268,7 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
     u:=assoc(substitute("Rep",domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
-      fnsel':=CADDR u
+      fnsel' := third u
       e:= addModemap(op,domainName,sig,cond,fnsel',e)
     e:= addModemap(op,domainName,sig,cond,fnsel,e)
   e
@@ -278,8 +278,8 @@ AMFCR_,redefinedList(op,l) == "OR"/[AMFCR_,redefined(op,u) for u in l]
 AMFCR_,redefined(opname,u) ==
   not(u is [op,:l]) => nil
   op = 'DEF => opname = CAAR l
-  MEMQ(op,'(PROGN SEQ)) => AMFCR_,redefinedList(opname,l)
-  op = 'COND => "OR"/[AMFCR_,redefinedList(opname,CDR u) for u in l]
+  op in '(PROGN SEQ) => AMFCR_,redefinedList(opname,l)
+  op = 'COND => "OR"/[AMFCR_,redefinedList(opname,rest u) for u in l]
  
 augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)
@@ -296,7 +296,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
 ---------conditions attached to each modemap being added, takes a very long time
 ---------instead conditions will be checked when maps are actually used
   --v:=ASSOC(cond,condlist) =>
-  --  e:= addModemapKnown(op,domainName,sig,CDR v,fnsel,e)
+  --  e:= addModemapKnown(op,domainName,sig,rest v,fnsel,e)
   --$e:local := e  -- $e is used by knownInfo
   --if knownInfo cond then cond1:=true else cond1:=cond
   --condlist:=[[cond,:cond1],:condlist]
@@ -338,7 +338,7 @@ getOperationAlist(name,functorForm,form) ==
 substNames(domainName,viewName,functorForm,opalist) ==
   functorForm := SUBSTQ("$$","$", functorForm)
   nameForDollar :=
-    isCategoryPackageName functorForm => CADR functorForm
+    isCategoryPackageName functorForm => second functorForm
     domainName
     
        -- following calls to SUBSTQ must copy to save RPLAC's in

@@ -44,7 +44,7 @@ $sourceFileTypes := '(INPUT SPAD BOOT LISP LISP370 META)
 
 $existingFiles := MAKE_-HASHTABLE "UEQUAL"
 
-$SYSCOMMANDS := [CAR x for x in $systemCommands]
+$SYSCOMMANDS := [first x for x in $systemCommands]
 
 $NonNullStream ==
   '"NonNullStream"
@@ -100,8 +100,8 @@ initializeSystemCommands() ==
   $SYSCOMMANDS := NIL
   while l repeat
     $SYSCOMMANDS := CONS(CAAR l, $SYSCOMMANDS)
-    l := CDR l
-  $SYSCOMMANDS := NREVERSE $SYSCOMMANDS
+    l := rest l
+  $SYSCOMMANDS := nreverse $SYSCOMMANDS
 
 systemCommand [[op,:argl],:options] ==
   $options: local:= options
@@ -125,7 +125,7 @@ synonymsForUserLevel l ==
   $UserLevel = 'development => l
   nl := NIL
   for syn in reverse l repeat
-    cmd := STRING2ID_-N(CDR syn,1)
+    cmd := STRING2ID_-N(rest syn,1)
     null selectOptionLC(cmd,commandsForUserLevel
       $systemCommands,NIL) => nil
     nl := [syn,:nl]
@@ -151,7 +151,7 @@ hasOption(al,opt) ==
   optPname:= PNAME opt
   found := NIL
   for pair in al while not found repeat
-    stringPrefix?(PNAME CAR pair,optPname) => found := pair
+    stringPrefix?(PNAME first pair,optPname) => found := pair
   found
 
 selectOptionLC(x,l,errorFunction) ==
@@ -227,7 +227,7 @@ abbreviationsSpad2Cmd l ==
     opt = 'quiet => quiet := true
 
   l is [opt,:al] =>
-    key := opOf CAR al
+    key := opOf first al
     type := selectOptionLC(opt,abopts,'optionError)
     type is 'query =>
       null al => listConstructorAbbreviations()
@@ -249,7 +249,7 @@ abbreviationsSpad2Cmd l ==
 
 listConstructorAbbreviations() ==
   x := UPCASE queryUserKeyedMsg("S2IZ0056",NIL)
-  MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+  STRING2ID_-N(x,1) in '(Y YES) =>
     whatSpad2Cmd '(categories)
     whatSpad2Cmd '(domains)
     whatSpad2Cmd '(packages)
@@ -362,15 +362,15 @@ clearCmdParts(l is [opt,:vl]) ==
       option='properties =>
         if isMap x then
           (lm := get(x,'localModemap,$InteractiveFrame)) =>
-            PAIRP lm => untraceMapSubNames [CADAR lm]
+            CONSP lm => untraceMapSubNames [CADAR lm]
           NIL
-        for p2 in CDR p1 repeat
-          prop:= CAR p2
-          recordOldValue(x,prop,CDR p2)
+        for p2 in rest p1 repeat
+          prop:= first p2
+          recordOldValue(x,prop,rest p2)
           recordNewValue(x,prop,NIL)
         SETF(CAAR $InteractiveFrame,deleteAssoc(x,CAAR $InteractiveFrame))
-      p2:= assoc(option,CDR p1) =>
-        recordOldValue(x,option,CDR p2)
+      p2:= assoc(option,rest p1) =>
+        recordOldValue(x,option,rest p2)
         recordNewValue(x,option,NIL)
         RPLACD(p2,NIL)
   nil
@@ -405,7 +405,7 @@ close args ==
     sockSendInt($SessionManager, $currentFrameNum)
     closeInterpreterFrame(NIL)
   x := UPCASE queryUserKeyedMsg('"S2IZ0072", nil)
-  MEMQ(STRING2ID_-N(x,1), '(YES Y)) =>
+  STRING2ID_-N(x,1) in '(YES Y) =>
     coreQuit()  -- ??? should be coreQuit errorCount()
   nil
 
@@ -833,7 +833,7 @@ compileSpad2Cmd args ==
         fullopt = "optimize" => setCompilerOptimizations first optargs
         fullopt = "report" =>
            null optargs => throwKeyedMsg("S2IZ0037",['")report"])
-           if MEMQ("insn",optargs) then
+           if "insn" in optargs then
              $reportOptimization := true
         throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
 
@@ -974,9 +974,9 @@ CREDITS := '(
   "Julian A. Padget       Bill Page              Susan Pelzel"
   "Michel Petitot         Didier Pinchon         Jose Alfredo Portes"
   "Claude Quitte"
-  "Norman Ramsey          Michael Richardson     Renaud Rioboo"
-  "Jean Rivlin            Nicolas Robidoux       Simon Robinson"
-  "Michael Rothstein      Martin Rubey"
+  "Norman Ramsey          Anatoly Raportirenko   Michael Richardson"
+  "Renaud Rioboo          Jean Rivlin            Nicolas Robidoux"
+  "Simon Robinson         Michael Rothstein      Martin Rubey"
   "Aleksej Saushev        Philip Santas          Alfred Scheerhorn"
   "William Schelter       Gerhard Schneider      Martin Schoenert"
   "Marshall Schor         Frithjof Schulze       Fritz Schwarz"
@@ -1048,7 +1048,7 @@ displayMacros names ==
   imacs := getInterpMacroNames()
   pmacs := getParserMacroNames()
   macros :=
-     null names => APPEND (imacs, pmacs)
+     null names => append (imacs, pmacs)
      names
   macros := REMDUP macros
 
@@ -1080,7 +1080,7 @@ displayMacros names ==
   NIL
 
 getParserMacroNames() ==
-  REMDUP [CAR mac for mac in getParserMacros()]
+  REMDUP [first mac for mac in getParserMacros()]
 
 clearParserMacro(macro) ==
   -- first see if it is one
@@ -1121,7 +1121,7 @@ getWorkspaceNames() ==
 displayOperations l ==
   null l =>
     x := UPCASE queryUserKeyedMsg("S2IZ0058",NIL)
-    if MEMQ(STRING2ID_-N(x,1),'(Y YES))
+    if STRING2ID_-N(x,1) in '(Y YES)
       then for op in allOperations() repeat reportOpSymbol op
       else sayKeyedMsg("S2IZ0059",NIL)
     nil
@@ -1282,7 +1282,7 @@ edit l == editSpad2Cmd l
 editSpad2Cmd l ==
   l:= 
     null l => _/EDITFILE
-    CAR l
+    first l
   l := pathname STRING l
   oldDir := pathnameDirectory l
   fileTypes :=
@@ -1350,7 +1350,7 @@ $previousBindings := nil
 
 frame l == frameSpad2Cmd l
 
-frameName(frame) == CAR frame
+frameName(frame) == first frame
 
 frameNames() == [frameName f for f in $interpreterFrameRing]
 
@@ -1364,7 +1364,7 @@ frameEnvironment fname ==
   while ifr repeat
     [f,:ifr] := ifr
     if fname = frameName f   then
-      e := CADR f
+      e := second f
       ifr := NIL
   e
 
@@ -1377,13 +1377,13 @@ frameSpad2Cmd args ==
   if args is [a] then args := a
   if ATOM args then args := object2Identifier args
   arg = 'drop  =>
-    args and PAIRP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
   arg = "import" =>  importFromFrame args
   arg = "last"  =>   previousInterpreterFrame()
   arg = "names" =>   displayFrameNames()
   arg = "new"   =>
-    args and PAIRP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
     addNewInterpreterFrame(args)
   arg = "next"  =>   nextInterpreterFrame()
 
@@ -1501,7 +1501,7 @@ changeToNamedInterpreterFrame(name) ==
 findFrameInRing(name) ==
   val := NIL
   for frame in $interpreterFrameRing repeat
-    CAR frame = name =>
+    first frame = name =>
       val := frame
       return frame
   val
@@ -1523,7 +1523,7 @@ importFromFrame args ==
   fenv := frameEnvironment fname
   null args =>
     x := UPCASE queryUserKeyedMsg("S2IZ0076",[fname])
-    MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+    STRING2ID_-N(x,1) in '(Y YES) =>
       vars := NIL
       for [v,:props] in CAAR fenv repeat
         v = "--macros" =>
@@ -1620,7 +1620,7 @@ historySpad2Cmd() ==
         initHistList()
         sayKeyedMsg("S2IH0008",NIL) 
       x := UPCASE queryUserKeyedMsg("S2IH0009",NIL) 
-      MEMQ(STRING2ID_-N(x,1),'(Y YES)) =>
+      STRING2ID_-N(x,1) in '(Y YES) =>
         histFileErase histFileName()
         $HiFiAccess:= true
         $options := nil
@@ -1682,7 +1682,7 @@ writeInputLines(fn,initial) ==
   maxn := 72
   breakChars := [" ","+"]
   for i in initial..$IOindex - 1 repeat
-    vecl := CAR readHiFi i
+    vecl := first readHiFi i
     if STRINGP vecl then vecl := [vecl]
     for vec in vecl repeat
       n := SIZE vec
@@ -1703,7 +1703,7 @@ writeInputLines(fn,initial) ==
   file := histInputFileName(fn)
   histFileErase file
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
-  for x in removeUndoLines NREVERSE lineList repeat WRITE_-LINE(x,inp)
+  for x in removeUndoLines nreverse lineList repeat WRITE_-LINE(x,inp)
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
@@ -1714,7 +1714,7 @@ resetInCoreHist() ==
   -- removes all pointers from $HistList
   $HistListAct:= 0
   for i in 1..$HistListLen repeat
-    $HistList:= CDR $HistList
+    $HistList:= rest $HistList
     RPLACA($HistList,NIL)
 
 changeHistListLen(n) ==
@@ -1722,11 +1722,11 @@ changeHistListLen(n) ==
   NULL INTEGERP n => sayKeyedMsg("S2IH0015",[n]) 
   dif:= n-$HistListLen
   $HistListLen:= n
-  l:= CDR $HistList
+  l:= rest $HistList
   if dif > 0 then
     for i in 1..dif repeat l:= CONS(NIL,l)
   if dif < 0 then
-    for i in 1..-dif repeat l:= CDR l
+    for i in 1..-dif repeat l:= rest l
     if $HistListAct > n then $HistListAct:= n
   RPLACD($HistList,l)
   'done
@@ -1747,7 +1747,7 @@ updateHist() ==
 
 updateInCoreHist() ==
   -- updates $HistList and $IOindex
-  $HistList:= CDR($HistList)
+  $HistList:= rest($HistList)
   RPLACA($HistList,NIL)
   if $HistListAct < $HistListLen then $HistListAct:= $HistListAct+1
 
@@ -1772,9 +1772,9 @@ recordNewValue0(x,prop,val) ==
   -- writes (prop . val) into $HistRecord
   -- updateHist writes this stuff out into the history file
   p1:= ASSQ(x,$HistRecord) =>
-    p2:= ASSQ(prop,CDR p1) =>
+    p2:= ASSQ(prop,rest p1) =>
       RPLACD(p2,val)
-    RPLACD(p1,CONS(CONS(prop,val),CDR p1))
+    RPLACD(p1,CONS(CONS(prop,val),rest p1))
   p:= CONS(x,list CONS(prop,val))
   $HistRecord:= CONS(p,$HistRecord)
 
@@ -1785,35 +1785,35 @@ recordOldValue(x,prop,val) ==
 
 recordOldValue0(x,prop,val) ==
   -- writes (prop . val) into $HistList
-  p1:= ASSQ(x,CAR $HistList) =>
-    not ASSQ(prop,CDR p1) =>
-      RPLACD(p1,CONS(CONS(prop,val),CDR p1))
+  p1:= ASSQ(x,first $HistList) =>
+    not ASSQ(prop,rest p1) =>
+      RPLACD(p1,CONS(CONS(prop,val),rest p1))
   p:= CONS(x,list CONS(prop,val))
-  RPLACA($HistList,CONS(p,CAR $HistList))
+  RPLACA($HistList,CONS(p,first $HistList))
 
 undoInCore(n) ==
   -- undoes the last n>0 steps using $HistList
   -- resets $InteractiveFrame
   li:= $HistList
-  for i in n..$HistListLen repeat li:= CDR li
+  for i in n..$HistListLen repeat li:= rest li
   undoChanges(li)
   n:= $IOindex-n-1
   n>0 and
     $HiFiAccess =>
-      vec:= CDR UNWIND_-PROTECT(readHiFi(n),disableHist())
-      val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,CDR p) ) and
-        CDR p1
+      vec:= rest UNWIND_-PROTECT(readHiFi(n),disableHist())
+      val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and
+        rest p1
     sayKeyedMsg("S2IH0019",[n])
   $InteractiveFrame:= putHist('%,'value,val,$InteractiveFrame)
   updateHist()
 
 undoChanges(li) ==
   -- undoes all changes of list 'li'
-  if not CDR li = $HistList then undoChanges CDR li
-  for p1 in CAR li repeat
-    x:= CAR p1
-    for p2 in CDR p1 repeat
-      putHist(x,CAR p2,CDR p2,$InteractiveFrame)
+  if not rest li = $HistList then undoChanges rest li
+  for p1 in first li repeat
+    x:= first p1
+    for p2 in rest p1 repeat
+      putHist(x,first p2,rest p2,$InteractiveFrame)
 
 undoFromFile(n) ==
   -- makes a clear and redoes all the assignments until step n
@@ -1825,12 +1825,12 @@ undoFromFile(n) ==
         if $HiFiAccess then recordNewValue(x,prop,val)
         RPLACD(p,NIL)
   for i in 1..n repeat
-    vec:= UNWIND_-PROTECT(CDR readHiFi(i),disableHist())
+    vec:= UNWIND_-PROTECT(rest readHiFi(i),disableHist())
     for p1 in vec repeat
-      x:= CAR p1
-      for p2 in CDR p1 repeat
-        $InteractiveFrame:= putHist(x,CAR p2,CDR p2,$InteractiveFrame)
-  val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,CDR p) ) and CDR p1
+      x:= first p1
+      for p2 in rest p1 repeat
+        $InteractiveFrame:= putHist(x,first p2,rest p2,$InteractiveFrame)
+  val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and rest p1
   $InteractiveFrame:= putHist('%,'value,val,$InteractiveFrame)
   updateHist()
 
@@ -1884,11 +1884,11 @@ restoreHistory(fn) ==
     vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
     if oldInternal then $internalHistoryTable :=
       CONS([i,:vec],$internalHistoryTable)
-    LINE:= CAR vec
-    for p1 in CDR vec repeat
-      x:= CAR p1
-      for p2 in CDR p1 repeat
-        $InteractiveFrame:= putHist(x,CAR p2,CDR p2,$InteractiveFrame)
+    LINE:= first vec
+    for p1 in rest vec repeat
+      x:= first p1
+      for p2 in rest p1 repeat
+        $InteractiveFrame:= putHist(x,first p2,rest p2,$InteractiveFrame)
     updateInCoreHist()
   $e := $InteractiveFrame
   for [a,:.] in CAAR $InteractiveFrame repeat
@@ -1923,11 +1923,11 @@ showHistory(arg) ==
   n := 20
   nset := nil
   if arg then
-    arg1 := CAR arg
+    arg1 := first arg
     if INTEGERP arg1 then
       n := arg1
       nset := true
-      KDR arg => arg1 := CADR arg
+      KDR arg => arg1 := second arg
       arg1 := NIL
     arg1 =>
       arg2 := selectOptionLC(arg1,'(input both),nil)
@@ -1951,9 +1951,9 @@ showInput(mini,maxi) ==
   for ind in mini..maxi repeat
     vec:= UNWIND_-PROTECT(readHiFi(ind),disableHist())
     if ind<10 then TAB 2 else if ind<100 then TAB 1
-    l := CAR vec
+    l := first vec
     STRINGP l =>
-      sayMSG ['"   [",ind,'"] ",CAR vec]
+      sayMSG ['"   [",ind,'"] ",first vec]
     sayMSG ['"   [",ind,'"] " ]
     for ln in l repeat
       sayMSG ['"      ", ln]
@@ -1962,9 +1962,9 @@ showInOut(mini,maxi) ==
   -- displays all steps from mini to maxi
   for ind in mini..maxi repeat
     vec:= UNWIND_-PROTECT(readHiFi(ind),disableHist())
-    sayMSG [CAR vec]
-    Alist:= ASSQ('%,CDR vec) =>
-      triple:= CDR ASSQ('value,CDR Alist)
+    sayMSG [first vec]
+    Alist:= ASSQ('%,rest vec) =>
+      triple:= rest ASSQ('value,rest Alist)
       $IOindex:= ind
       spadPrint(objValUnwrap triple,objMode triple)
 
@@ -1978,8 +1978,8 @@ fetchOutput(n) ==
     n >= $IOindex => throwKeyedMsg("S2IH0001",[n])
     n < 1        => throwKeyedMsg("S2IH0002",[n])
     vec:= UNWIND_-PROTECT(readHiFi(n),disableHist())
-    Alist:= ASSQ('%,CDR vec) =>
-      val:= CDR ASSQ('value,CDR Alist) => val
+    Alist:= ASSQ('%,rest vec) =>
+      val:= rest ASSQ('value,rest Alist) => val
       throwKeyedMsg("S2IH0003",[n])
     throwKeyedMsg("S2IH0003",[n])
   throwKeyedMsg("S2IH0004",NIL)
@@ -2054,7 +2054,7 @@ writify ob ==
             null ob                => nil
             (e := HGET($seen, ob)) => e
  
-            PAIRP ob =>
+            CONSP ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
                 (name := spadClosure? ob) =>
@@ -2127,7 +2127,7 @@ writify ob ==
 
 
 unwritable? ob ==
-    PAIRP  ob or VECP ob       => false   -- first for speed
+    CONSP  ob or VECP ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
     FLOATP ob => true
@@ -2161,7 +2161,7 @@ dewritify ob ==
             null ob => nil
             e := HGET($seen, ob) => e
  
-            PAIRP ob and CAR ob = 'WRITIFIED_!_! =>
+            CONSP ob and first ob = 'WRITIFIED_!_! =>
                 type := ob.1
                 type = 'SELF =>
                     'WRITIFIED_!_!
@@ -2213,7 +2213,7 @@ dewritify ob ==
                    fval
                 error '"Unknown type to de-writify."
  
-            PAIRP ob =>
+            CONSP ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
                 nob  := CONS(qcar, qcdr)
@@ -2321,7 +2321,7 @@ quitSpad2Cmd() ==
        '" Please select Exit from the File Menu instead."])
   $quitCommandType ~= 'protected => leaveScratchpad()
   x := UPCASE queryUserKeyedMsg("S2IZ0031",NIL)
-  MEMQ(STRING2ID_-N(x,1),'(Y YES)) => leaveScratchpad()
+  STRING2ID_-N(x,1) in '(Y YES) => leaveScratchpad()
   sayKeyedMsg("S2IZ0032",NIL)
   TERSYSCOMMAND ()
 
@@ -2473,9 +2473,9 @@ reportOpsFromLisplib1(unitForm,u)  ==
   editFile showFile
 
 reportOpsFromUnitDirectly unitForm ==
-  isRecordOrUnion := unitForm is [a,:.] and a in '(Record Union)
+  isRecordOrUnion := unitForm is [a,:.] and a in $DomainNames
   unit:= evalDomain unitForm
-  top:= CAR unitForm
+  top:= first unitForm
   kind:= getConstructorKindFromDB top
 
   sayBrightly concat('%b,formatOpType unitForm,
@@ -2514,8 +2514,9 @@ reportOpsFromUnitDirectly unitForm ==
             systemErrorHere ["reportOpsFromUnitDirectly",top]
           [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
             $CategoryFrame)
-          sigList := REMDUP MSORT [[[a,b],true,[c,0,1]] for
-            [a,b,c] in funlist]
+          sigList := REMDUP MSORT
+                      [[[a,b],true,slot c] for [a,b,c] in funlist]
+                             where slot c == (atom c => [c,0,1]; c)
         else
           sigList:= REMDUP MSORT getOplistForConstructorForm unitForm
       say2PerLine [formatOperation(x,unit) for x in sigList]
@@ -2620,7 +2621,7 @@ synonymSpad2Cmd() ==
   else
     pair := processSynonymLine line
     if $CommandSynonymAlist then
-      PUTALIST($CommandSynonymAlist,CAR pair, CDR pair)
+      PUTALIST($CommandSynonymAlist,first pair, rest pair)
     else $CommandSynonymAlist := [pair]
   terminateSystemCommand()
 
@@ -2676,7 +2677,7 @@ recordFrame(systemNormal) ==
     delta := ['systemCommand,:delta]
   $frameRecord := [delta,:$frameRecord]
   $previousBindings := --copy all but the individual properties
-    [CONS(CAR x,[CONS(CAR y,CDR y) for y in CDR x]) for x in CAAR $InteractiveFrame]
+    [CONS(first x,[CONS(first y,rest y) for y in rest x]) for x in CAAR $InteractiveFrame]
   first $frameRecord
 
 diffAlist(new,old) ==
@@ -2689,16 +2690,16 @@ diffAlist(new,old) ==
     --     a) for each property with a value: give the old value
     --     b) for each property missing:      give NIL as the old value
     oldPair := ASSQ(name,old) =>
-      null (oldProplist := CDR oldPair) =>
+      null (oldProplist := rest oldPair) =>
       --record old values of new properties as NIL
         acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
       deltas := nil
       for (propval := [prop,:val]) in proplist repeat
         null (oldPropval := assoc(prop,oldProplist)) => --missing property
           deltas := [[prop],:deltas]
-        EQ(CDR oldPropval,val) => 'skip
+        EQ(rest oldPropval,val) => 'skip
         deltas := [oldPropval,:deltas]
-      deltas => acc := [[name,:NREVERSE deltas],:acc]
+      deltas => acc := [[name,:nreverse deltas],:acc]
     acc := [[name,:[[prop] for [prop,:.] in proplist]],:acc]
 --record properties absent on new list (say, from a )cl all)
   for (oldPair := [name,:r]) in old repeat
@@ -2710,7 +2711,7 @@ diffAlist(new,old) ==
     --     (b) if the old world does not, record nothing
     -- (2) if the new world has a proplist for that variable, it has
     --     been handled by the first loop.
-  res := NREVERSE acc
+  res := nreverse acc
   if $reportUndo then reportUndo res
   res
 
@@ -2769,7 +2770,7 @@ undoSteps(m,beforeOrAfter) ==
        env := undoSingleStep(systemDelta,env)  --  before command line
     lastTailSeen := framelist
   if beforeOrAfter = 'before then  --do one additional undo for )before
-    env := undoSingleStep(first rest lastTailSeen,env)
+    env := undoSingleStep(second lastTailSeen,env)
   $frameRecord := rest $frameRecord --flush the effect of extra recordFrame
   $InteractiveFrame := LIST LIST env
 
@@ -2786,10 +2787,10 @@ undoSingleStep(changes,env) ==
     if LASSOC('localModemap,changeList) then
       changeList := undoLocalModemapHack changeList
     pairlist := ASSQ(name,env) =>
-      proplist := CDR pairlist =>
+      proplist := rest pairlist =>
         for (pair := [prop,:value]) in changeList repeat
           node := ASSQ(prop,proplist) => RPLACD(node,value)
-          RPLACD(proplist,[CAR proplist,:CDR proplist])
+          RPLACD(proplist,[first proplist,:rest proplist])
           RPLACA(proplist,pair)
       RPLACD(pairlist,changeList)
     env := [change,:env]
@@ -2803,7 +2804,7 @@ undoLocalModemapHack changeList ==
 removeUndoLines u == --called by writeInputLines
   xtra :=
     STRINGP $currentLine => [$currentLine]
-    REVERSE $currentLine
+    reverse $currentLine
   xtra := [x for x in xtra | not stringPrefix?('")history",x)]
   u := [:u, :xtra]
   not (or/[stringPrefix?('")undo",x) for x in u])  => u
@@ -2831,7 +2832,7 @@ removeUndoLines u == --called by writeInputLines
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil
-  for y in tails NREVERSE u repeat
+  for y in tails nreverse u repeat
     (x := first y).0 = char '_> =>
       code := x . 1                                 --code = a,b, or r
       n := PARSE_-INTEGER SUBSTRING(x,2,nil)        --n = number of undo steps
@@ -2867,7 +2868,7 @@ whatSpad2Cmd l ==
       DOWNCASE x
   key = 'things =>
     for opt in $whatOptions repeat
-      not MEMQ(opt,'(things)) => whatSpad2Cmd [opt,:args]
+      not (opt in '(things)) => whatSpad2Cmd [opt,:args]
   key = 'categories =>
     filterAndFormatConstructors('category,'"Categories",args)
   key = 'commands =>
@@ -2884,7 +2885,7 @@ whatSpad2Cmd l ==
 filterAndFormatConstructors(constrType,label,patterns) ==
   centerAndHighlight(label,$LINELENGTH,specialChar 'hbar)
   l := filterListOfStringsWithFn(patterns,whatConstructors constrType,
-        function CDR)
+        function rest)
   if patterns then
     null l =>
       sayMessage ['"   No ",label,'" with names matching patterns:",
@@ -2917,7 +2918,7 @@ printSynonyms(patterns) ==
   centerAndHighlight("System Command Synonyms",$LINELENGTH,specialChar 'hbar)
   ls := filterListOfStringsWithFn(patterns, [[STRINGIMAGE a,:eval b]
     for [a,:b] in synonymsForUserLevel $CommandSynonymAlist],
-      function CAR)
+      function first)
   printLabelledList(ls,'"user",'"synonyms",'")",patterns)
   nil
 
@@ -2979,7 +2980,7 @@ filterListOfStrings(patterns,names) ==
 
 filterListOfStringsWithFn(patterns,names,fn) ==
   -- names and patterns are lists of strings
-  -- fn is something like CAR or CADR
+  -- fn is something like first or second
   -- returns: list of strings in names that contains any of the strings
   -- in patterns
   (null patterns) or (null names) => names
@@ -3041,7 +3042,7 @@ zsystemdevelopment1(l,im) ==
     opt1 = 'from => fromopt := [['FROM,:optargs]]
   for [opt,:optargs] in $options repeat
     if null optargs then optargs := l
-    newopt := APPEND(optargs,fromopt)
+    newopt := append(optargs,fromopt)
     opt1 := selectOptionLC(opt,'(from),nil)
     opt1 = 'from => nil
     opt = "c"   => _/D_,1 (newopt ,_/COMP(),NIL,NIL)
@@ -3260,8 +3261,8 @@ dumbTokenize str ==
   nreverse tokenList
 
 handleParsedSystemCommands(unabr, optionList) ==
-  restOptionList := [dumbTokenize opt for opt in CDR optionList]
-  parcmd := [parseSystemCmd CAR optionList,
+  restOptionList := [dumbTokenize opt for opt in rest optionList]
+  parcmd := [parseSystemCmd first optionList,
              :[[tokTran tok for tok in opt] for opt in restOptionList]]
   systemCommand parcmd
 
@@ -3279,7 +3280,7 @@ parseFromString(s) ==
    s := next(function ncloopParse,
         next(function lineoftoks,incString s))
    StreamNull s => nil
-   pf2Sex macroExpanded first rest first s
+   pf2Sex macroExpanded second first s
 
 handleTokensizeSystemCommands(unabr, optionList) ==
   optionList := [dumbTokenize opt for opt in optionList]
@@ -3301,7 +3302,7 @@ npProcessSynonym(str) ==
   else
     pair := processSynonymLine str
     if $CommandSynonymAlist then
-      PUTALIST($CommandSynonymAlist,CAR pair, CDR pair)
+      PUTALIST($CommandSynonymAlist,first pair, rest pair)
     else $CommandSynonymAlist := [pair]
   terminateSystemCommand()
 

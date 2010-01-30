@@ -65,7 +65,7 @@ coerceConvertMmSelection(funName,m1,m2) ==
   l := selectMms1(funName,m2,[m1],[m1],NIL)
   mmS := [[sig,[targ,arg],:pred] for x in l | x is [sig,[.,arg],:pred] and
     hasCorrectTarget(m2,sig) and sig is [dc,targ,oarg] and oarg = m1]
-  mmS and CAR mmS
+  mmS and first mmS
 
 hasFileProperty(p,id,abbrev) == hasFilePropertyNoCache(p,id,abbrev)
 
@@ -133,7 +133,7 @@ selectMms1(op,tar,args1,args2,$Coerce) ==
     -- NEW COMPILER COMPATIBILITY ON
 
     op = "^" or op = "**" =>
-        APPEND(selectMms2("**",tar,args1,args2,$Coerce),
+        append(selectMms2("**",tar,args1,args2,$Coerce),
                selectMms2("^",tar,args1,args2,$Coerce))
 
     -- NEW COMPILER COMPATIBILITY OFF
@@ -180,7 +180,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
       listOfDuplicates vl => return false
       polyVarList:= union(vl,polyVarList)
     hasPolyMode => false
-    con := CAR t
+    con := first t
     poly? := (con = 'Polynomial or con = 'Expression)
     isLegitimateMode(underDomainOf t,poly?,polyVarList)
 
@@ -210,7 +210,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
 
 underDomainOf t ==
   t = $RationalNumber => $Integer
-  not PAIRP t => NIL
+  atom t => NIL
   d := deconstructT t
   1 = #d => NIL
   u := getUnderModeOf(t) => u

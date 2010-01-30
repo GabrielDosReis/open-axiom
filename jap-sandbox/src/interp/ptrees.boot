@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ structure %Ast ==
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)
 pfListOf? x         == pfAbSynOp?(x,'listOf)
-pfAppend list       == APPLY(function APPEND,list)
+pfAppend list       == APPLY(function append,list)
 
 pfNothing ()        == pfTree('nothing, [])
 pfNothing? form     == pfAbSynOp?(form, 'nothing)
@@ -71,13 +71,25 @@ pfSemiColon(pfbody) == pfTree('SemiColon, [pfbody])
 pfSemiColon?(pf)    == pfAbSynOp? (pf, 'SemiColon)
 pfSemiColonBody pf   == second pf       -- was ==>
 
+--% Renaming.
+--% We decided that the identifier "^" is syntactically synonymous to "**".
+--% We could have banned the later and support only the former.
+--% However, that would have made all exponentiation examples from
+--% the Jenks&Sutor book invalid.  Which would be infortunate.
+--% Rather, we opt to the renaming here.  This poses the danger that
+--% any other AST scheme would need to do the same work.
+--%     --gdr, 2009-10-08.
+pfRename x ==
+  x = "^" => "**"
+  x
+
 --% LEAVES
 pfId(expr)               == pfLeaf('id, expr)
 pfIdPos(expr,pos)        == pfLeaf('id,expr,pos)
 pfId? form               ==
         pfAbSynOp?(form,'id) or pfAbSynOp?(form,'idsy)
 pfSymbolVariable? form   == pfAbSynOp?(form,'idsy)
-pfIdSymbol form          == tokPart form
+pfIdSymbol form          == pfRename tokPart form
 --pfAmpersand(amptok,name) == name
 
 pfDocument strings       == pfLeaf('Document, strings)
@@ -85,8 +97,7 @@ pfDocument? form         == pfAbSynOp?(form, 'Document)
 pfDocumentText form      == tokPart form
 
 pfLiteral? form ==
-      MEMQ(pfAbSynOp form,'(integer symbol expression
-                    one zero char string float))
+  pfAbSynOp form in '(integer symbol expression one zero char string float)
 
 pfLiteralClass form      == pfAbSynOp form
 pfLiteralString form     == tokPart form
@@ -107,7 +118,8 @@ pfSymb(expr, :optpos) ==
 
 pfSymbol? form          == pfAbSynOp?(form, 'symbol)
 
-pfSymbolSymbol form     == tokPart form
+
+pfSymbolSymbol form     == pfRename tokPart form
 
 --% TREES
 -- parser interface functions
@@ -128,7 +140,7 @@ pfInfApplication(op,left,right)==
        pfWrong(pfDocument ['"infop as argument to infop"],pfListOf [])
    pfIdSymbol op = "and" => pfAnd (left,right)
    pfIdSymbol op = "or" => pfOr (left,right)
-   pfApplication(op,pfTuple pfListOf [left,right])
+   pfApplication(pfRename op,pfTuple pfListOf [left,right])
 
 pfCheckInfop form== false
 
@@ -276,7 +288,7 @@ pfAdd(pfbase, pfaddin,:addon) ==
 pfAdd?(pf) == pfAbSynOp? (pf, 'Add)
 pfAddBase pf == second pf       -- was ==>
 pfAddAddin pf == third pf       -- was ==>
-pfAddAddon pf == CADDDR pf       -- was ==>
+pfAddAddon pf == fourth pf       -- was ==>
 pf0AddBase pf == pfParts pfAddBase pf
 
 
@@ -297,7 +309,7 @@ pfWith(pfbase, pfwithin,pfwithon) ==
 pfWith?(pf) == pfAbSynOp? (pf, 'With)
 pfWithBase pf == second pf       -- was ==>
 pfWithWithin pf == third pf       -- was ==>
-pfWithWithon pf == CADDDR pf       -- was ==>
+pfWithWithon pf == fourth pf       -- was ==>
 pf0WithBase pf == pfParts pfWithBase pf
 pf0WithWithin pf == pfParts pfWithWithin pf
 
@@ -308,7 +320,7 @@ pfWIf(pfcond, pfthen, pfelse) == pfTree('WIf, [pfcond, pfthen, pfelse])
 pfWIf?(pf) == pfAbSynOp? (pf, 'WIf)
 pfWIfCond pf == second pf       -- was ==>
 pfWIfThen pf == third pf       -- was ==>
-pfWIfElse pf == CADDDR pf       -- was ==>
+pfWIfElse pf == fourth pf       -- was ==>
 
 -- WDeclare    := (Signature: Typed, Doc: ? Document)
 
@@ -405,7 +417,7 @@ pfbody])
 pfLambda?(pf) == pfAbSynOp? (pf, 'Lambda)
 pfLambdaArgs pf == second pf       -- was ==>
 pfLambdaRets pf == third pf       -- was ==>
-pfLambdaBody pf == CADDDR pf       -- was ==>
+pfLambdaBody pf == fourth pf       -- was ==>
 pf0LambdaArgs pf == pfParts pfLambdaArgs pf
 pfFix pf== pfApplication(pfId "Y",pf)
 
@@ -416,7 +428,7 @@ pfTLambda(pfargs, pfrets, pfbody) == pfTree('TLambda, [pfargs, pfrets, pfbody])
 pfTLambda?(pf) == pfAbSynOp? (pf, 'TLambda)
 pfTLambdaArgs pf == second pf       -- was ==>
 pfTLambdaRets pf == third pf       -- was ==>
-pfTLambdaBody pf == CADDDR pf       -- was ==>
+pfTLambdaBody pf == fourth pf       -- was ==>
 pf0TLambdaArgs pf == pfParts pfTLambdaArgs pf
 
 
@@ -444,7 +456,7 @@ pfIf(pfcond, pfthen, pfelse) == pfTree('If, [pfcond, pfthen, pfelse])
 pfIf?(pf) == pfAbSynOp? (pf, 'If)
 pfIfCond pf == second pf       -- was ==>
 pfIfThen pf == third pf       -- was ==>
-pfIfElse pf == CADDDR pf       -- was ==>
+pfIfElse pf == fourth pf       -- was ==>
 
 -- %Match := (Expr: Expr, Alts: [Exit])
 

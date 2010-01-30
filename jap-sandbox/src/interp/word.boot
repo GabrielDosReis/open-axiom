@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -45,8 +47,8 @@ buildWordTable u ==
   for key in HKEYS table repeat
     HPUT(table,key,
       listSort(function GLESSEQP,removeDupOrderedAlist
-        listSort(function GLESSEQP, HGET(table,key),function CAR),
-          function CADR))
+        listSort(function GLESSEQP, HGET(table,key),function first),
+          function second))
   table
  
 writeFunctionTables(filemode) ==
@@ -152,7 +154,7 @@ doYouWant? nam ==
   center80 ['"If so, type",:bright 'y,"or",:bright 'yes]
   center80 ['"Anything else means",:bright 'no]
   x := UPCASE queryUser nil
-  MEMQ(STRING2ID_-N(x,1),'(Y YES)) => nam
+  STRING2ID_-N(x,1) in '(Y YES) => nam
   nil
  
 pickANumber(word,list) ==

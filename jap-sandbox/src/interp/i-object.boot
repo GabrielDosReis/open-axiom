@@ -73,13 +73,13 @@ objNewCode(val, mode) == ["CONS", MKQ mode,val ]
 objSetVal(obj,val) == RPLACD(obj,val)
 objSetMode(obj,mode) == RPLACA(obj,mode)
 
-objVal obj == CDR obj
-objValUnwrap obj == unwrap CDR obj
-objMode obj == CAR obj
+objVal obj == rest obj
+objValUnwrap obj == unwrap rest obj
+objMode obj == first obj
 objEnv obj == $EmptyEnvironment
 
-objCodeVal obj == CADDR obj
-objCodeMode obj == CADR obj
+objCodeVal obj == third obj
+objCodeMode obj == second obj
 
 --% Utility Functions Used Only by the Intepreter
  
@@ -144,8 +144,8 @@ asTupleNewCode(eltType, size, listOfElts) ==
 asTupleNewCode0(eltType,listForm) == 
   ["asTupleNew0", quoteForm getVMType eltType, listForm]
 
-asTupleSize(at) == CAR at
-asTupleAsVector(at) == CDR at
+asTupleSize(at) == first at
+asTupleAsVector(at) == rest at
 asTupleAsList(at) == VEC2LIST asTupleAsVector at
 
 --% Basic Object Type Identification
@@ -288,7 +288,7 @@ getUnname1 x ==
 
 ++ returns the mode-set of VAT node x.
 getModeSet x ==
-  x and PAIRP x => getModeSet first x
+  x and CONSP x => getModeSet first x
   VECP x =>
     y:= x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
@@ -320,7 +320,7 @@ getModeOrFirstModeSetIfThere x ==
   NIL
 
 getModeSetUseSubdomain x ==
-  x and PAIRP x => getModeSetUseSubdomain first x
+  x and CONSP x => getModeSetUseSubdomain first x
   VECP(x) =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x

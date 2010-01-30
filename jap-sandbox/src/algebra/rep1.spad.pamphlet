@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{axiom}
+\usepackage{open-axiom}
 \begin{document}
 \title{\$SPAD/src/algebra rep1.spad}
 \author{Holger Gollan, Johannes Grabmeier, Thorsten Werther}

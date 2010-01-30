@@ -50,22 +50,16 @@
 
 static int build_ht_filename(char*, char*, char*);
 static int pathname(char*);
-static int strpostfix(char*, char*);
-
 
 char *gDatabasePath = NULL;
 
+/* Return non-zero if the string T is a postfix of S.  */
 static int
-strpostfix(char *s, char *t)
+strpostfix(const char *s, const char *t)
 {
-    int slen = strlen(s), tlen = strlen(t);
-
-    if (tlen > slen)
-        return 0;
-    while (tlen > 0)
-        if (s[--slen] != t[--tlen])
-            return 0;
-    return 1;
+    const int slen = strlen(s);
+    const int tlen = strlen(t);
+    return tlen <= slen && strcmp(s + slen - tlen, t) == 0;
 }
 
 /* extend_ht : just checks the name and adds a .ht if needed */

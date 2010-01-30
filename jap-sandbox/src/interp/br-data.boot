@@ -36,7 +36,7 @@ import bc_-util
 namespace BOOT
 
 lefts u ==
-   [x for x in HKEYS  _*HASCATEGORY_-HASH_* | CDR x = u]
+   [x for x in HKEYS  _*HASCATEGORY_-HASH_* | rest x = u]
 
 
 
@@ -234,11 +234,11 @@ dbAugmentConstructorDataTable() ==
     cname := INTERN dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
        [name,abb,:.] := entry
-       RPLACD(CDR entry,PUTALIST(CDDR entry,'dbLineNumber,fp))
+       RPLACD(rest entry,PUTALIST(CDDR entry,'dbLineNumber,fp))
 --     if xname := constructorHasExamplePage entry then
---       RPLACD(CDR entry,PUTALIST(CDDR entry,'dbExampleFile,xname))
+--       RPLACD(rest entry,PUTALIST(CDDR entry,'dbExampleFile,xname))
        args := IFCDR getConstructorFormFromDB name
-       if args then RPLACD(CDR entry,PUTALIST(CDDR entry,'constructorArgs,args))
+       if args then RPLACD(rest entry,PUTALIST(CDDR entry,'constructorArgs,args))
   'done
 
 dbHasExamplePage conname ==
@@ -268,7 +268,7 @@ dbReadComments(n) ==
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
         xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
   SHUT instream
-  STRCONC(line, "STRCONC"/NREVERSE xtralines)
+  STRCONC(line, "STRCONC"/nreverse xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -423,7 +423,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
   for x in allConstructors() repeat
     for conform in getImports x repeat
       name := opOf conform
-      if not MEMQ(name,'(QUOTE)) then
+      if not (name in '(QUOTE)) then
         HPUT($usersTb,name,insert(x,HGET($usersTb,name)))
   for k in HKEYS $usersTb repeat
     HPUT($usersTb,k,listSort(function GLESSEQP,HGET($usersTb,k)))
@@ -473,19 +473,19 @@ getImports conname == --called by mkUsersHashTable
   u := [doImport(i,template)
           for i in 5..(MAXINDEX template) | test]  where
     test() == template.i is [op,:.] and IDENTP op
-              and not MEMQ(op,'(Mapping Union Record Enumeration CONS QUOTE local))
+              and not (op in '(Mapping Union Record Enumeration CONS QUOTE local))
     doImport(x,template) ==
       x is [op,:args] =>
-        op = 'QUOTE or op = 'NRTEVAL => CAR args
+        op = 'QUOTE or op = 'NRTEVAL => first args
         op = 'local => first args
         op = 'Record =>
-          ['Record,:[[":",CADR y,doImport(CADDR y,template)] for y in args]]
+          ['Record,:[[":",second y,doImport(third y,template)] for y in args]]
 
 --TTT next three lines: handles some tagged/untagged Union case.
         op = 'Union=>
           args is [['_:,:x1],:x2] =>
 --          CAAR args = '_: => -- tagged!
-               ['Union,:[[":",CADR y,doImport(CADDR y,template)] for y in args]]
+               ['Union,:[[":",second y,doImport(third y,template)] for y in args]]
           [op,:[doImport(y,template) for y in args]]
 
         [op,:[doImport(y,template) for y in args]]
@@ -510,7 +510,7 @@ getParentsFor(cname,formalParams,constructorCategory) ==
     x := SUBLISLIS(IFCDR constructorForm,formalParams,x)
     x := substitute('Type,'Object,x)
     acc := [:explodeIfs x,:acc]
-  NREVERSE acc
+  nreverse acc
 
 $parentsCache := nil
 
@@ -536,7 +536,7 @@ getParentsForDomain domname  == --called by parentsOf
         sublisFormal(IFCDR getConstructorForm domname,x,$TriangleVariableList)
       sublisFormal(IFCDR getConstructorForm domname,x)
     acc := [:explodeIfs x,:acc]
-  NREVERSE acc
+  nreverse acc
 
 explodeIfs x == main where  --called by getParents, getParentsForDomain
   main() ==
@@ -550,12 +550,12 @@ explodeIfs x == main where  --called by getParents, getParentsForDomain
 
 folks u == --called by getParents and getParentsForDomain
   atom u => nil
-  u is [op,:v] and MEMQ(op,'(Join PROGN))
+  u is [op,:v] and op in '(Join PROGN)
     or u is ['CATEGORY,a,:v] => "append"/[folks x for x in v]
   u is ['SIGNATURE,:.] => nil
   u is ['TYPE,:.] => nil
   u is ['ATTRIBUTE,a] =>
-    PAIRP a and constructor? opOf a => folks a
+    CONSP a and constructor? opOf a => folks a
     nil
   u is ['IF,p,q,r] =>
     q1 := folks q
@@ -578,8 +578,8 @@ childrenOf conform ==
     childAssoc(conform,parentsOfForm first pair)]
 
 childAssoc(form,alist) ==
-  null (argl := CDR form) => assoc(form,alist)
-  u := assocCar(opOf form, alist) => childArgCheck(argl,rest CAR u) and u
+  null (argl := rest form) => assoc(form,alist)
+  u := assocCar(opOf form, alist) => childArgCheck(argl,rest first u) and u
   nil
 
 assocCar(x, al) == or/[pair for pair in al | x = CAAR pair]
@@ -623,7 +623,7 @@ computeAncestorsOf(conform,domform) ==
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
     for pair in HGET($if,op) repeat acc := [pair,:acc]
-  NREVERSE acc
+  nreverse acc
 
 ancestorsRecur(conform,domform,pred,firstTime?) == --called by ancestorsOf
   op      := opOf conform
@@ -651,7 +651,7 @@ ancestorsAdd(pred,form) == --called by ancestorsRecur
   op := IFCAR form or form
   alist := HGET($if,op)
   existingNode := assoc(form,alist) =>
-    RPLACD(existingNode,quickOr(CDR existingNode,pred))
+    RPLACD(existingNode,quickOr(rest existingNode,pred))
   HPUT($if,op,[[form,:pred],:alist])
 
 domainsOf(conform,domname,:options) ==
@@ -662,7 +662,7 @@ domainsOf(conform,domname,:options) ==
   --u is list of pairs (a . b) where b() = conname
   --we sort u then replace each b by the predicate for which this is true
   s := listSort(function GLESSEQP,COPY u)
-  s := [[CAR pair,:constructorHasCategoryFromDB pair] for pair in s]
+  s := [[first pair,:constructorHasCategoryFromDB pair] for pair in s]
   transKCatAlist(conform,domname,listSort(function GLESSEQP,s))
 
 catsOf(conform,domname,:options) ==
@@ -685,8 +685,8 @@ transKCatAlist(conform,domname,s) == main where
       acc := nil
       rest conform =>
         for pair in s repeat --pair has form [con,[conargs,:pred],...]]
-          leftForm := getConstructorForm CAR pair
-          for (ap := [args,:pred]) in CDR pair repeat
+          leftForm := getConstructorForm first pair
+          for (ap := [args,:pred]) in rest pair repeat
             match? :=
               domargs = args => true
               HAS__SHARP__VAR args => domargs = sublisFormal(KDR domname,args)
@@ -694,20 +694,20 @@ transKCatAlist(conform,domname,s) == main where
             null match? => 'skip
             npred := sublisFormal(KDR leftForm,pred)
             acc := [[leftForm,:npred],:acc]
-        NREVERSE acc
+        nreverse acc
       --conform has no arguments so each pair has form [con,:pred]
       for pair in s repeat
-        leftForm := getConstructorForm CAR pair or systemError nil
+        leftForm := getConstructorForm first pair or systemError nil
         RPLACA(pair,leftForm)
-        RPLACD(pair,sublisFormal(KDR leftForm,CDR pair))
+        RPLACD(pair,sublisFormal(KDR leftForm,rest pair))
       s
     --no domname, so look for special argument combinations
     acc := nil
     KDR conform =>
       farglist := TAKE(#rest conform,$FormalMapVariableList)
       for pair in s repeat --pair has form [con,[conargs,:pred],...]]
-        leftForm := getConstructorForm CAR pair
-        for (ap := [args,:pred]) in CDR pair repeat
+        leftForm := getConstructorForm first pair
+        for (ap := [args,:pred]) in rest pair repeat
           hasArgsForm? := args ~= farglist
           npred := sublisFormal(KDR leftForm,pred)
           if hasArgsForm? then
@@ -717,11 +717,11 @@ transKCatAlist(conform,domname,s) == main where
               ['hasArgs,:subargs]
             npred := quickAnd(hpred,npred)
           acc := [[leftForm,:npred],:acc]
-      NREVERSE acc
+      nreverse acc
     for pair in s repeat --pair has form [con,:pred]
-      leftForm := getConstructorForm CAR pair
+      leftForm := getConstructorForm first pair
       RPLACA(pair,leftForm)
-      RPLACD(pair,sublisFormal(KDR leftForm,CDR pair))
+      RPLACD(pair,sublisFormal(KDR leftForm,rest pair))
     s
 
 mkHasArgsPred subargs ==
@@ -742,7 +742,7 @@ sublisFormal(args,exp,:options) == main where
       while null atom y repeat
         acc := [sublisFormal1(args,QCAR y,n),:acc]
         y := QCDR y
-      r := NREVERSE acc
+      r := nreverse acc
       if y then
         nd := LASTNODE r
         RPLACD(nd,sublisFormal1(args,y,n))

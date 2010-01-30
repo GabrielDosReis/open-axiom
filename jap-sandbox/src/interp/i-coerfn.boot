@@ -303,7 +303,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
     y:= coerceInt(objNewWrap([[e1,:c]],S1),T) =>
       -- need to be careful about zeros
       p:= ASSQ(exp,x) =>
-        c' := SPADCALL(CDR p,objValUnwrap(y),plusfunc)
+        c' := SPADCALL(rest p,objValUnwrap(y),plusfunc)
         c' = zero => x := REMALIST(x,exp)
         RPLACD(p,c')
       zero = objValUnwrap(y) => 'iterate
@@ -316,8 +316,8 @@ removeVectorElt(v,pos) ==
   LIST2VEC [x for x in VEC2LIST v for y in 0.. | not (y=pos)]
 
 removeListElt(l,pos) ==
-  pos = 0 => CDR l
-  [CAR l, :removeListElt(CDR l,pos-1)]
+  pos = 0 => rest l
+  [first l, :removeListElt(rest l,pos-1)]
 
 NDmp2domain(u,source is [ndmp,x,S],target) ==
   -- a null NDMP = 0
@@ -386,7 +386,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
 
     null rest v2 =>
         for term in univ repeat
-            RPLACA(term, VECTOR CAR term)
+            RPLACA(term, VECTOR first term)
         univ
 
     -- more than one variable
@@ -447,11 +447,11 @@ Expr2Up(u,source is [Expr,S], target is [.,var,T]) ==
     sup        := ['SparseUnivariatePolynomial, source]
 
     fracUniv   := SPADCALL(u, varKernel, univFunc)
-    denom      := CDR fracUniv
+    denom      := rest fracUniv
 
     not equalOne(denom, sup) => coercionFailure()
 
-    numer      := CAR fracUniv
+    numer      := first fracUniv
     uniType := ['UnivariatePolynomial, var, source]
     (z := coerceInt(objNewWrap(numer, uniType), target)) => objValUnwrap z
     coercionFailure()
@@ -899,7 +899,7 @@ genMpFromDmpTerm(u, oldlen) ==
 Mp2P(u, source is [mp,vl, S], target is [p,R]) ==
   u = '_$fromCoerceable_$ => canCoerce(S,target)
   S is ['Polynomial,.] => MpP2P(u,vl,S,R)
-  vl' := REVERSE MSORT vl
+  vl' := reverse MSORT vl
   -- if Mp2Mp fails, a THROW will occur
   u' := Mp2Mp(u,source,[mp,vl',S])
   u' := translateMpVars2PVars (u',vl')
@@ -1155,7 +1155,7 @@ Qf2F(u,source is [.,D,:.],target) ==
   (unwrap num') * QUOTIENT(1.0, unwrap den')
 
 Rn2F(rnum, source, target) ==
-  float QUOTIENT(CAR rnum, CDR rnum)
+  float QUOTIENT(first rnum, rest rnum)
 
 -- next function is needed in RN algebra code
 --Rn2F([a,:b],source,target) ==
@@ -1247,9 +1247,9 @@ Rm2V(x,[.,.,.,R],target) == M2V(x,['Matrix,R],target)
 
 Scr2Scr(u, source is [.,S], target is [.,T]) ==
   u = '_$fromCoerceable_$ => canCoerce(S,T)
-  null (v := coerceInt(objNewWrap(CDR u,S),T)) =>
+  null (v := coerceInt(objNewWrap(rest u,S),T)) =>
     coercionFailure()
-  [CAR u, :objValUnwrap(v)]
+  [first u, :objValUnwrap(v)]
 
 --% SparseUnivariatePolynomialnimial
 
@@ -1533,13 +1533,13 @@ Un2E(x,source,target) ==
 --% Variable
 
 Var2OV(u,source,target is [.,vl]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl)
   member(sym,vl) => position1(sym,vl)
   coercionFailure()
 
 Var2Dmp(u,source,target is [dmp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
 
   len := #vl
@@ -1550,7 +1550,7 @@ Var2Dmp(u,source,target is [dmp,vl,S]) ==
   [[Zeros len,:objValUnwrap u]]
 
 Var2Gdmp(u,source,target is [dmp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
 
   len := #vl
@@ -1561,7 +1561,7 @@ Var2Gdmp(u,source,target is [dmp,vl,S]) ==
   [[Zeros len,:objValUnwrap u]]
 
 Var2Mp(u,source,target is [mp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
   (n:= position1(u,vl)) ~= 0 =>
     [1,n,[1,0,:getConstantFromDomain('(One),S)]]
@@ -1569,7 +1569,7 @@ Var2Mp(u,source,target is [mp,vl,S]) ==
   [0,:objValUnwrap u]
 
 Var2NDmp(u,source,target is [ndmp,vl,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
 
   len:= #vl
@@ -1580,7 +1580,7 @@ Var2NDmp(u,source,target is [ndmp,vl,S]) ==
   [[Zeros len,:objValUnwrap(u)]]
 
 Var2P(u,source,target is [poly,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => true
 
   -- first try to get it into an underdomain
@@ -1594,7 +1594,7 @@ Var2QF(u,source,target is [qf,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
 
   S = $Integer => coercionFailure()
-  sym := CADR source
+  sym := second source
   (u' := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [objValUnwrap u',:getConstantFromDomain('(One),S)]
 
@@ -1606,7 +1606,7 @@ Var2FS(u,source,target is [fs,S]) ==
   objValUnwrap v
 
 Var2Up(u,source,target is [up,x,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => (sym = x) or canCoerce(source,S)
 
   x=sym => [[1,:getConstantFromDomain('(One),S)]]
@@ -1614,7 +1614,7 @@ Var2Up(u,source,target is [up,x,S]) ==
   [[0,:objValUnwrap u]]
 
 Var2SUP(u,source,target is [sup,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => (sym = "?") or canCoerce(source,S)
 
   sym = "?" => [[1,:getConstantFromDomain('(One),S)]]
@@ -1622,7 +1622,7 @@ Var2SUP(u,source,target is [sup,S]) ==
   [[0,:objValUnwrap u]]
 
 Var2UpS(u,source,target is [ups,x,S]) ==
-  sym := CADR source
+  sym := second source
   u = '_$fromCoerceable_$ => (sym = x) or canCoerce(source,S)
 
   mid := ['UnivariatePolynomial,x,S]
@@ -1635,7 +1635,7 @@ Var2UpS(u,source,target is [ups,x,S]) ==
   objValUnwrap u
 
 Var2OtherPS(u,source,target is [.,x,S]) ==
-  sym := CADR source
+  sym := second source
   mid := ['UnivariatePowerSeries,x,S]
   u = '_$fromCoerceable_$ =>
     (sym = x) or (canCoerce(source,mid) and canCoerce(mid,target))
@@ -1711,8 +1711,8 @@ P2Us(u, source is [.,S], target is [.,T,var,cen], type) ==
   package := ['ExpressionToUnivariatePowerSeries, S, E]
   func := getFunctionFromDomain(type, package, [E, EQtype])
   newObj := SPADCALL(objValUnwrap(newU), eq, func)
-  newType := CAR newObj
-  newVal  := CDR newObj
+  newType := first newObj
+  newVal  := rest newObj
   newType = target => newVal
   finalObj := coerceInt(objNewWrap(newVal, newType), target)
   null finalObj => coercionFailure()
@@ -2079,7 +2079,7 @@ SETANDFILEQ($CoerceTable,NCONC($CoerceTable,'( _
     (OrderedVariableList                          partial    Sy2OV) _
     (Polynomial                                   total      Sy2P) _
     (UnivariatePolynomial                         indeterm   Sy2Up) _
-    (Variable                                     indeterm   Sy2Var) _
+    (Variable                                     partial    Sy2Var) _
     ) ) _
   (UnivariatePolynomial . ( _
     (DistributedMultivariatePolynomial            indeterm   Up2Dmp) _

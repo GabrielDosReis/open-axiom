@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2009, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -130,7 +130,7 @@ exp2Fort2(e,prec,oldOp) ==
   member(op,nonUnaryOps) =>
     if nargs > 0 then arg1 := first args
     nargs = 1 and member(op, '("+" "*")) => exp2Fort2(arg1,prec,op)
-    if nargs > 1 then arg2 := first rest args
+    if nargs > 1 then arg2 := second args
     p := position(op,binaryOps)
     if p = -1
       then
@@ -170,12 +170,12 @@ exp2FortOptimize e ==
   atom e => [e]
   $fortranOptimizationLevel = 0 =>
     e1 := exp2FortOptimizeArray e
-    NREVERSE [e1,:$exprStack]
+    nreverse [e1,:$exprStack]
   e := minimalise e
   for e1 in exp2FortOptimizeCS  e repeat
     e2 := exp2FortOptimizeArray e1
     $exprStack := [e2,:$exprStack]
-  NREVERSE $exprStack
+  nreverse $exprStack
 
  
 exp2FortOptimizeCS e ==
@@ -184,7 +184,7 @@ exp2FortOptimizeCS e ==
   $fortCsExprStack : local := NIL
   $fortCsFuncStack : local := NIL
   f := exp2FortOptimizeCS1 e
-  NREVERSE [f,:$fortCsList]
+  nreverse [f,:$fortCsList]
  
 -- bug fix to beenHere 
 -- Thu Nov 05 12:01:46 CUT 1992 , Author: TTT
@@ -199,12 +199,12 @@ beenHere(e,n) ==
 -- using COPY-TREE : RPLAC does not smash $fortCsList
 -- which led to inconsistencies in assignment of temp. vars.
       $fortCsList := COPY_-TREE [['"=",var,e],:$fortCsList]
-      loc := CAR exprStk
-      fun := CAR n.3
+      loc := first exprStk
+      fun := first n.3
       fun = 'CAR =>
         RPLACA(loc,var)
       fun = 'CDR =>
-        if PAIRP QCDR loc
+        if CONSP QCDR loc
           then RPLACD(loc,[var])
           else RPLACD(loc,var)
       SAY '"whoops"
@@ -362,7 +362,7 @@ fortexp0 x ==
   while p < 0 repeat
     [t,:f] := f
     l := [t,:l]
-  NREVERSE ['"...",:l]
+  nreverse ['"...",:l]
 
 ++ This formating routine is essentially used to print
 ++ values/expreions used to instantiate constructors.
@@ -433,8 +433,8 @@ $symbolTable := nil
 exp2FortSpecial(op,args,nargs) ==
   op = "CONCAT" and first args in ["<",">","<=",">=","~","and","or"] =>
     mkFortFn(first args,CDADAR rest args,#(CDADAR rest args))
-  op = "CONCAT" and CADR(args)="EQ" =>
-    mkFortFn("EQ",[first args, CADDR args],2)
+  op = "CONCAT" and second(args)="EQ" =>
+    mkFortFn("EQ",[first args, third args],2)
   --the next line is NEVER used by FORTRAN code but is needed when
   --  called to get a linearized form for the browser
   op = "QUOTE" =>
@@ -487,7 +487,7 @@ exp2FortSpecial(op,args,nargs) ==
 
 mkMat(args) ==
   $fortInts2Floats : fluid := nil
-  mkFortFn(first rest args,rest rest args,#(rest rest args))
+  mkFortFn(second args,rest rest args,#(rest rest args))
 
  
 mkFortFn(op,args,nargs) ==
@@ -597,7 +597,7 @@ fortFormatDo(var,lo,hi,incr,lab) ==
 fortFormatIfGoto(switch,label) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
   $fortError : fluid := nil
-  if first(switch) = "NULL" then switch := first rest switch
+  if first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label]
@@ -609,7 +609,7 @@ fortFormatIfGoto(switch,label) ==
 fortFormatLabelledIfGoto(switch,label1,label2) ==
   changeExprLength(-8) -- Leave room for IF( ... )GOTO
   $fortError : fluid := nil
-  if LISTP(switch) and first(switch) = "NULL" then switch := first rest switch
+  if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(8)
   l := ['")GOTO ",STRINGIMAGE label2]
@@ -625,7 +625,7 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
 fortFormatIf(switch) ==
   changeExprLength(-8) -- Leave room for IF( ... )THEN
   $fortError : fluid := nil
-  if LISTP(switch) and first(switch) = "NULL" then switch := first rest switch
+  if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(8)
   l := ['")THEN"]
@@ -638,7 +638,7 @@ fortFormatElseIf(switch) ==
   -- Leave room for IF( ... )THEN
   changeExprLength(-12)
   $fortError : fluid := nil
-  if LISTP(switch) and first(switch) = "NULL" then switch := first rest switch
+  if LISTP(switch) and first(switch) = "NULL" then switch := second switch
   r := nreverse statement2Fortran switch
   changeExprLength(12)
   l := ['")THEN"]
@@ -671,7 +671,7 @@ checkType ty ==
 mkParameterList l ==
   [par2string(u) for u in l] where par2string u ==
       atom(u) => STRINGIMAGE u
-      u := rest first rest u
+      u := rest second u
       apply('STRCONC,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
@@ -705,7 +705,7 @@ fortFormatTypes1(typeName,names) ==
 insertEntry(size,el,aList) ==
   entry := assoc(size,aList)
   null entry => CONS(CONS(size,LIST el),aList)
-  RPLACD(entry,CONS(el,CDR entry))
+  RPLACD(entry,CONS(el,rest entry))
   aList
 
 fortFormatCharacterTypes(names) ==
@@ -713,7 +713,7 @@ fortFormatCharacterTypes(names) ==
   genuineArrays  := []
   for u in names repeat
     ATOM u => sortedByLength := insertEntry(0,u,sortedByLength)
-    #u=2 => sortedByLength := insertEntry(CADR u,CAR u,sortedByLength)
+    #u=2 => sortedByLength := insertEntry(second u,first u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
     fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in cdr(u)]) where
@@ -807,7 +807,7 @@ fortPre1 e ==
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]
-    [ "**" , fortPreRoot first args , [ "/" , fortPreRoot(1), fortPreRoot first rest args] ]
+    [ "**" , fortPreRoot first args , [ "/" , fortPreRoot(1), fortPreRoot second args] ]
   if member(op,['"OVER", "OVER"]) then op := '"/"
   specialOps  := '(BRACKET BRACE SUB AGGLST SUPERSUB MATRIX SEGMENT ALTSUPERSUB
                    PAREN CONCAT CONCATB QUOTE STRING SIGMA  STEP IN SIGMA2

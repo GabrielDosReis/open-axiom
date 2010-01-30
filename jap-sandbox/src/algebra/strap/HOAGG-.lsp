@@ -45,7 +45,7 @@
   (LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
 
 (DEFUN |HOAGG-;any?;MAB;3| (|f| |c| $)
-  (PROG (|x| #0=#:G1429 #1=#:G1407 #2=#:G1405 #3=#:G1406)
+  (PROG (|x| #0=#:G1427 #1=#:G1405 #2=#:G1403 #3=#:G1404)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |HOAGG-;any?;MAB;3|)
@@ -73,7 +73,7 @@
              (COND (#3# #2#) ('T NIL))))))) 
 
 (DEFUN |HOAGG-;every?;MAB;4| (|f| |c| $)
-  (PROG (|x| #0=#:G1430 #1=#:G1412 #2=#:G1410 #3=#:G1411)
+  (PROG (|x| #0=#:G1428 #1=#:G1410 #2=#:G1408 #3=#:G1409)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |HOAGG-;every?;MAB;4|)
@@ -101,7 +101,7 @@
              (COND (#3# #2#) ('T T))))))) 
 
 (DEFUN |HOAGG-;count;MANni;5| (|f| |c| $)
-  (PROG (|x| #0=#:G1431 #1=#:G1416 #2=#:G1414 #3=#:G1415)
+  (PROG (|x| #0=#:G1429 #1=#:G1414 #2=#:G1412 #3=#:G1413)
     (RETURN
       (SEQ (PROGN
              (LETT #3# NIL |HOAGG-;count;MANni;5|)
@@ -150,8 +150,8 @@
       (|getShellEntry| (|getShellEntry| $$ 0) 30))) 
 
 (DEFUN |HOAGG-;=;2AB;9| (|x| |y| $)
-  (PROG (|b| #0=#:G1433 |a| #1=#:G1432 #2=#:G1423 #3=#:G1421
-             #4=#:G1422)
+  (PROG (|b| #0=#:G1431 |a| #1=#:G1430 #2=#:G1421 #3=#:G1419
+             #4=#:G1420)
     (RETURN
       (SEQ (COND
              ((SPADCALL |x| (SPADCALL |y| (|getShellEntry| $ 35))
@@ -195,7 +195,7 @@
              ('T NIL)))))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
-  (PROG (#0=#:G1434 |a| #1=#:G1435)
+  (PROG (#0=#:G1432 |a| #1=#:G1433)
     (RETURN
       (SEQ (SPADCALL
                (SPADCALL

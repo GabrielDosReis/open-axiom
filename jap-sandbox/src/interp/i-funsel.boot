@@ -163,25 +163,25 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     -- special case map for the time being
     $Coerce and (op = 'map) and (2 = nargs) and
       (first(args1) is ['Variable,fun]) =>
-        null (ud := underDomainOf CADR args1) => NIL
+        null (ud := underDomainOf second args1) => NIL
         if tar then ut := underDomainOf(tar)
         else ut := nil
         null (mapMms := selectMms1(fun,ut,[ud],[NIL],true)) => NIL
         mapMm := CDAAR mapMms
-        selectMms1(op,tar,[['Mapping,:mapMm],CADR args1],
-          [NIL,CADR args2],$Coerce)
+        selectMms1(op,tar,[['Mapping,:mapMm],second args1],
+          [NIL,second args2],$Coerce)
 
     $Coerce and (op = 'map) and (2 = nargs) and
       (first(args1) is ['FunctionCalled,fun]) =>
-        null (ud := underDomainOf CADR args1) => NIL
+        null (ud := underDomainOf second args1) => NIL
         if tar then ut := underDomainOf(tar)
         else ut := nil
         funNode := mkAtreeNode fun
         transferPropsToNode(fun,funNode)
         null (mapMms := selectLocalMms(funNode,fun,[ud],NIL)) => NIL
         mapMm := CDAAR mapMms
-        selectMms1(op,tar,[['Mapping,:mapMm],CADR args1],
-          [NIL,CADR args2],$Coerce)
+        selectMms1(op,tar,[['Mapping,:mapMm],second args1],
+          [NIL,second args2],$Coerce)
 
     -- get the argument domains and the target
     a := nil
@@ -197,7 +197,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     if tar and not isPartialMode tar then
       if xx := underDomainOf(tar) then a := cons(xx,a)
     for x in args1 repeat
-      PAIRP(x) and CAR(x) in '(List Vector Stream FiniteSet Array) =>
+      CONSP(x) and first(x) in '(List Vector Stream FiniteSet Array) =>
         xx := underDomainOf(x) => a := cons(xx,a)
 
     -- now extend this list with those from the arguments to
@@ -216,18 +216,18 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
         a' := append(reverse l,a')
       x is ['Mapping,:l] => a' := append(reverse l,a')
       x is ['Record,:l] =>
-        a' := append(reverse [CADDR s for s in l],a')
+        a' := append(reverse [third s for s in l],a')
       x is ['FunctionCalled,name] =>
         (xm := get(name,'mode,$e)) and not isPartialMode xm =>
           a' := cons(xm,a')
     a := append(a,REMDUP a')
-    a := [x for x in a | PAIRP(x)]
+    a := [x for x in a | CONSP(x)]
 
     -- step 1. see if we have one without coercing
     a' := a
     while a repeat
-      x:= CAR a
-      a:= CDR a
+      x:= first a
+      a:= rest a
       ATOM x => 'iterate
       mmS := append(mmS, findFunctionInDomain(op,x,tar,args1,args2,NIL,NIL))
 
@@ -237,8 +237,8 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     if null(mmS) and $Coerce then
       a := a'
       while a repeat
-        x:= CAR a
-        a:= CDR a
+        x:= first a
+        a:= rest a
         ATOM x => 'iterate
         mmS := append(mmS,
           findFunctionInDomain(op,x,tar,args1,args2,$Coerce,NIL))
@@ -273,7 +273,7 @@ defaultTarget(opNode,op,nargs,args) ==
       target
     target
 
-  a1 := CAR args
+  a1 := first args
   ATOM a1 => target
   a1f := QCAR a1
 
@@ -286,7 +286,7 @@ defaultTarget(opNode,op,nargs,args) ==
       target
     target
 
-  a2 := CADR args
+  a2 := second args
 
   nargs >= 2 and op = "draw" and a1 is ['FunctionCalled,sym] and a2 is ['Segment,.] =>
 
@@ -295,7 +295,7 @@ defaultTarget(opNode,op,nargs,args) ==
     symNode := mkAtreeNode sym
     transferPropsToNode(sym,symNode)
 
-    nargs >= 3 and CADDR args is ['Segment,.] =>
+    nargs >= 3 and third args is ['Segment,.] =>
       selectLocalMms(symNode,sym,[$DoubleFloat, $DoubleFloat],NIL)
       putTarget(opNode, target := '(ThreeDimensionalViewport))
       target
@@ -318,7 +318,7 @@ defaultTarget(opNode,op,nargs,args) ==
     symNode := mkAtreeNode sym
     transferPropsToNode(sym,symNode)
 
-    nargs >= 3 and CADDR args is ['Segment,.] =>
+    nargs >= 3 and third args is ['Segment,.] =>
       selectLocalMms(symNode,sym,[$DoubleFloat, $DoubleFloat],NIL)
       target
 
@@ -404,7 +404,7 @@ defaultTarget(opNode,op,nargs,args) ==
         putTarget(opNode, target := $RationalNumber)
         target
       a1 = a2 =>
-        if (target := resolveTCat(CAR args,'(Field))) then
+        if (target := resolveTCat(first args,'(Field))) then
           putTarget(opNode,target)
         target
       a1 is ['Variable,.] and a2 is ['Variable,.] =>
@@ -428,7 +428,7 @@ defaultTarget(opNode,op,nargs,args) ==
         target
       target
 
-  a3 := CADDR args
+  a3 := third args
   nargs = 3 =>
     op = "eval" =>
         a3 is ['List, a3e] =>
@@ -453,14 +453,14 @@ defaultTargetFE(a,:options) ==
           IFCAR options => [$FunctionalExpression, ['Complex, $Integer]]
           [$FunctionalExpression, $Integer]
   a is ['Complex,uD] => defaultTargetFE(uD, true)
-  a is [D,uD] and MEMQ(D, '(Polynomial RationalFunction Fraction)) =>
+  a is [D,uD] and D in '(Polynomial RationalFunction Fraction) =>
      defaultTargetFE(uD, IFCAR options)
   a is [=$FunctionalExpression,.] => a
   IFCAR options => [$FunctionalExpression, ['Complex, a]]
   [$FunctionalExpression, a]
 
 altTypeOf(type,val,$declaredMode) ==
-  (EQCAR(type,'Symbol) or EQCAR(type,'Variable)) and
+  (type = $Symbol or type is ["Variable",:.]) and
     (a := getMinimalVarMode(objValUnwrap getValue(val),$declaredMode)) =>
       a
   type is ['OrderedVariableList,vl] and
@@ -487,14 +487,14 @@ getOpArgTypes1(opname, args) ==
   null args => NIL
   -- special cases first
   opname = 'coef and args is [b,n] =>
-    [CAR getModeSet b, CAR getModeSetUseSubdomain n]
+    [first getModeSet b, first getModeSetUseSubdomain n]
   opname = 'monom and args is [d,c] =>
-    [CAR getModeSetUseSubdomain d,CAR getModeSet c]
+    [first getModeSetUseSubdomain d,first getModeSet c]
   opname = 'monom and args is [v,d,c] =>
-    [CAR getModeSet v,CAR getModeSetUseSubdomain d,CAR getModeSet c]
-  (opname = 'cons) and (2 = #args) and (CADR(args) = 'nil) =>
-    ms := [CAR getModeSet x for x in args]
-    if CADR(ms) = '(List (None)) then
+    [first getModeSet v,first getModeSetUseSubdomain d,first getModeSet c]
+  (opname = 'cons) and (2 = #args) and (second(args) = 'nil) =>
+    ms := [first getModeSet x for x in args]
+    if second(ms) = '(List (None)) then
       ms := [first ms,['List,first ms]]
     ms
   nargs := #args
@@ -502,8 +502,8 @@ getOpArgTypes1(opname, args) ==
   mss := NIL
   for i in 0..(nargs-1) for x in args repeat
     ms :=
-      v.i = 0 => CAR getModeSet x
-      CAR getModeSetUseSubdomain x
+      v.i = 0 => first getModeSet x
+      first getModeSetUseSubdomain x
     mss := [ms,:mss]
   nreverse mss
 
@@ -529,11 +529,11 @@ CONTAINEDisDomain(symbol,cond) ==
 -- looks for [isSubDomain,symbol,[domain]] in cond: returning T or NIL
 -- with domain being one of PositiveInteger and NonNegativeInteger
    ATOM cond => false
-   MEMQ(QCAR cond,'(AND OR and or)) =>
+   QCAR cond in '(AND OR and or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
    EQ(QCAR cond,'isDomain) =>
-       EQ(symbol,CADR cond) and PAIRP(dom:=CADDR cond) and
-         MEMQ(dom,'(PositiveInteger NonNegativeInteger))
+       EQ(symbol,second cond) and CONSP(dom:=third cond) and
+         dom in '(PositiveInteger NonNegativeInteger)
    false
 
 selectDollarMms(dc,name,types1,types2) ==
@@ -594,7 +594,7 @@ getLocalMms(name,types,tar) ==
 
 mmCost(name, sig,cond,tar,args1,args2) ==
   cost := mmCost0(name, sig,cond,tar,args1,args2)
-  res := CADR sig
+  res := second sig
   res = $PositiveInteger => cost - 2
   res = $NonNegativeInteger => cost - 1
   res = $DoubleFloat => cost + 1
@@ -609,7 +609,7 @@ mmCost0(name, sig,cond,tar,args1,args2) ==
 
   -- try to favor homogeneous multiplication
 
---if name = "*" and 2 = #sigArgs and first sigArgs ~= first rest sigArgs then n := n + 1
+--if name = "*" and 2 = #sigArgs and first sigArgs ~= second sigArgs then n := n + 1
 
   -- because of obscure problem in evalMm, sometimes we will have extra
   -- modemaps with the wrong number of arguments if we want to the one
@@ -622,11 +622,11 @@ mmCost0(name, sig,cond,tar,args1,args2) ==
         topcon := first deconstructT x1
         topcon2 := first deconstructT x3
         topcon = topcon2 => 3
-        CAR topcon2 = 'Mapping => 2
+        first topcon2 = 'Mapping => 2
         4
   else if sigArgs then n := n + 100000000000
 
-  res := CADR sig
+  res := second sig
   res=tar => 10000*n
   10000*n + 1000*domainDepth(res) + hitListOfTarget(res)
 
@@ -645,16 +645,16 @@ orderMms(name, mmS,args1,args2,tar) ==
       m < CAAR mS => CONS(p,mS)
       S:= mS
       until b repeat
-        b:= null CDR S or m < CAADR S =>
-          RPLACD(S,CONS(p,CDR S))
-        S:= CDR S
+        b:= null rest S or m < CAADR S =>
+          RPLACD(S,CONS(p,rest S))
+        S:= rest S
       mS
-  mmS and [CDR p for p in mS]
+  mmS and [rest p for p in mS]
 
 domainDepth(d) ==
   -- computes the depth of lisp structure d
   atom d => 0
-  MAX(domainDepth(CAR d)+1,domainDepth(CDR d))
+  MAX(domainDepth(first d)+1,domainDepth(rest d))
 
 hitListOfTarget(t) ==
   -- assigns a number between 1 and 998 to a type t
@@ -663,23 +663,23 @@ hitListOfTarget(t) ==
 
   t = '(Polynomial (Pi)) => 90000
 
-  CAR t ='Polynomial => 300
-  CAR t = 'List => 400
-  CAR t = 'Matrix => 910
-  CAR t = 'UniversalSegment => 501
-  CAR t = 'RationalFunction => 900
-  CAR t = 'Union => 999
-  CAR t = 'Expression => 1600
+  first t ='Polynomial => 300
+  first t = 'List => 400
+  first t = 'Matrix => 910
+  first t = 'UniversalSegment => 501
+  first t = 'RationalFunction => 900
+  first t = 'Union => 999
+  first t = 'Expression => 1600
   500
 
 getFunctionFromDomain(op,dc,args) ==
   -- finds the function op with argument types args in dc
   -- complains, if no function or ambiguous
   $reportBottomUpFlag:local:= NIL
-  member(CAR dc,$nonLisplibDomains) =>
-    throwKeyedMsg("S2IF0002",[CAR dc])
-  not constructor? CAR dc =>
-    throwKeyedMsg("S2IF0003",[CAR dc])
+  member(first dc,$nonLisplibDomains) =>
+    throwKeyedMsg("S2IF0002",[first dc])
+  not constructor? first dc =>
+    throwKeyedMsg("S2IF0003",[first dc])
   p:= findFunctionInDomain(op,dc,NIL,args,args,NIL,NIL) =>
 --+
     --sig := [NIL,:args]
@@ -693,13 +693,13 @@ getFunctionFromDomain(op,dc,args) ==
 isOpInDomain(opName,dom,nargs) ==
   -- returns true only if there is an op in the given domain with
   -- the given number of arguments
-  mmList := ASSQ(opName,getOperationAlistFromLisplib CAR dom)
+  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => NIL
   gotOne := NIL
   nargs := nargs + 1
-  for mm in CDR mmList while not gotOne repeat
-    nargs = #CAR mm => gotOne := [mm, :gotOne]
+  for mm in rest mmList while not gotOne repeat
+    nargs = #first mm => gotOne := [mm, :gotOne]
   gotOne
 
 findCommonSigInDomain(opName,dom,nargs) ==
@@ -707,17 +707,17 @@ findCommonSigInDomain(opName,dom,nargs) ==
   -- number of arguments. If no matches, returns NIL. Otherwise returns
   -- a "signature" where a type position is non-NIL only if all
   -- signatures shares that type .
-  CAR(dom) in '(Union Record Mapping) => NIL
-  mmList := ASSQ(opName,getOperationAlistFromLisplib CAR dom)
+  first(dom) in '(Union Record Mapping) => NIL
+  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => NIL
   gotOne := NIL
   nargs := nargs + 1
   vec := NIL
-  for mm in CDR mmList repeat
-    nargs = #CAR mm =>
-      null vec  => vec := LIST2VEC CAR mm
-      for i in 0.. for x in CAR mm repeat
+  for mm in rest mmList repeat
+    nargs = #first mm =>
+      null vec  => vec := LIST2VEC first mm
+      for i in 0.. for x in first mm repeat
         if vec.i and vec.i ~= x then vec.i := NIL
   VEC2LIST vec
 
@@ -757,13 +757,13 @@ selectMostGeneralMm mmList ==
   mml := mmList
   while mml repeat
     [mm,:mml] := mml
-    sz := #CAR mm
+    sz := #first mm
     if (met := ABS(sz - 3)) < min then
       min := met
       fsz := sz
-  mmList := [mm for mm in mmList | (#CAR mm) = fsz]
-  mml := CDR mmList
-  genMm := CAR mmList
+  mmList := [mm for mm in mmList | (#first mm) = fsz]
+  mml := rest mmList
+  genMm := first mmList
   while mml repeat
     [mm,:mml] := mml
     and/[canCoerceFrom(genMmArg,mmArg) for mmArg in CDAR mm
@@ -775,7 +775,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   --   in the domain of computation dc
   -- tar may be NIL (= unknown)
   null isLegitimateMode(tar, nil, nil) => nil
-  dcName:= CAR dc
+  dcName:= first dc
   member(dcName,'(Union Record Mapping Enumeration)) =>
     -- First cut code that ignores args2, $Coerce and $SubDom
     -- When domains no longer have to have Set, the hard coded 6 and 7
@@ -785,7 +785,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
         tar and tar ~= $Boolean => NIL
         [[[dc, $Boolean, dc, dc], [$Boolean,'$,'$], [NIL, NIL]]]
     op = 'coerce =>
-        #args1 ~= 1 
+        #args1 ~= 1 => nil
         dcName='Enumeration and (args1.0=$Symbol or tar=dc)=>
            [[[dc, dc, $Symbol], ['$,$Symbol], [NIL, NIL]]]
         args1.0 ~= dc => NIL
@@ -802,7 +802,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
     if isHomogeneousList args1 then
       q := NIL
       r := NIL
-      for mm in CDR p repeat
+      for mm in rest p repeat
         -- CDAR of mm is the signature argument list
         if isHomogeneousList CDAR mm then q := [mm,:q]
         else r := [mm,:r]
@@ -810,7 +810,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       for mm in q repeat
         fun:= nconc(fun,findFunctionInDomain1(mm,op,tar,args1,args2,SL))
       r := reverse r
-    else r := CDR p
+    else r := rest p
     r := allOrMatchingMms(r,args1,tar,dc)
     if not fun then    -- consider remaining modemaps
       for mm in r repeat
@@ -837,12 +837,12 @@ allOrMatchingMms(mms,args1,tar,dc) ==
 isHomogeneousList y ==
   y is [x] => true
   y and rest y =>
-    z := CAR y
-    "and"/[x = z for x in CDR y]
+    z := first y
+    "and"/[x = z for x in rest y]
   NIL
 
 findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
-  dc:= CDR (dollarPair := ASSQ('$,SL))
+  dc:= rest (dollarPair := ASSQ('$,SL))
   -- need to drop '$ from SL
   mm:= subCopy(omm, SL)
   -- tests whether modemap mm is appropriate for the function
@@ -861,7 +861,7 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
       -- Unions are subsumed by total modemaps which are in the
       -- mm list in findFunctionInDomain.
       y := 'ELT      -- if subsumed fails try it again
-      not $SubDom and CAR sig isnt ['Union,:.] and slot is [tar,:args] and
+      not $SubDom and first sig isnt ['Union,:.] and slot is [tar,:args] and
         (f := findFunctionInDomain(op,dc,tar,args,args,NIL,NIL)) => f
     y='ELT => [[CONS(dc,sig),osig,nreverse $RTC]]
     y='CONST => [[CONS(dc,sig),osig,nreverse $RTC]]
@@ -874,8 +874,8 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   -- looks for a modemap for op with signature  args1 -> tar
   --   in the domain of computation dc
   -- tar may be NIL (= unknown)
-  dcName:= CAR dc
-  not MEMQ(dcName,'(Record Union Enumeration)) => NIL
+  dcName:= first dc
+  not (dcName in '(Record Union Enumeration)) => NIL
   fun:= NIL
  --  cat := constructorCategory dc
   makeFunc := GETL(dcName,"makeFunctionList") or
@@ -887,11 +887,12 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   for [a,b,d] in funlist repeat
     not EQ(a,op) => nil
     d is ['XLAM,xargs,:.] =>
-      if PAIRP(xargs) then maxargs := MAX(maxargs,#xargs)
+      if CONSP(xargs) then maxargs := MAX(maxargs,#xargs)
       else maxargs := MAX(maxargs,1)
       impls := cons([b,nil,true,d],impls)
-    impls := cons([b,d,true,d],impls)
-  impls := NREVERSE impls
+    d isnt [k,"$",n] => systemErrorHere ["findFunctionInCategory",d]
+    impls := [[b,n,true,k],:impls]
+  impls := nreverse impls
   if maxargs ~= -1 then
     SL:= NIL
     for i in 1..maxargs repeat
@@ -915,7 +916,7 @@ matchMmCond(cond) ==
       and/[matchMmCond c for c in conds]
     cond is ['OR,:conds] or cond is ['or,:conds] =>
       or/[matchMmCond c for c in conds]
-    cond is ['has,dom,x] =>
+    cond is ["has",dom,x] =>
       hasCaty(dom,x,NIL) ~= 'failed
     cond is ['not,cond1] => not matchMmCond cond1
     keyedSystemError("S2GE0016",
@@ -928,16 +929,16 @@ matchMmSig(mm,tar,args1,args2) ==
   [sig,:.]:= mm
   if CONTAINED('_#, sig) then
     sig := [replaceSharpCalls COPY t for t in sig]
-  null args1 => matchMmSigTar(tar,CAR sig)
-  a:= CDR sig
+  null args1 => matchMmSigTar(tar,first sig)
+  a:= rest sig
   arg:= NIL
   for i in 1.. while args1 and args2 and a until not b repeat
-    x1:= CAR args1
-    args1:= CDR args1
-    x2:= CAR args2
-    args2:= CDR args2
-    x:= CAR a
-    a:= CDR a
+    x1:= first args1
+    args1:= rest args1
+    x2:= first args2
+    args2:= rest args2
+    x:= first a
+    a:= rest a
     rtc:= NIL
     if x is ['SubDomain,y,:.] then x:= y
     b := isEqualOrSubDomain(x1,x) or
@@ -946,7 +947,7 @@ matchMmSig(mm,tar,args1,args2) ==
         $Coerce => x2=x or canCoerceFrom(x1,x)
         x1 is ['Variable,:.] and x = $Symbol
     $RTC:= CONS(rtc,$RTC)
-  null args1 and null a and b and matchMmSigTar(tar,CAR sig)
+  null args1 and null a and b and matchMmSigTar(tar,first sig)
 
 matchMmSigTar(t1,t2) ==
   -- t1 is a target type specified by :: or by a declared variable
@@ -966,7 +967,7 @@ constructSubst(d) ==
   -- constructs a substitution which substitutes d for $
   -- and the arguments of d for #1, #2 ..
   SL:= list CONS('$,d)
-  for x in CDR d for i in 1.. repeat
+  for x in rest d for i in 1.. repeat
     SL:= CONS(CONS(INTERNL('"#",STRINGIMAGE i),x),SL)
   SL
 
@@ -988,7 +989,7 @@ filterModemapsFromPackages(mms, names, op) ==
     isFreeFunctionFromMm(mm) => bad := cons(mm, bad)
     type := getDomainFromMm mm
     null type => bad := cons(mm,bad)
-    if PAIRP type then type := first type
+    if CONSP type then type := first type
     getConstructorKindFromDB type = "category" => bad := cons(mm,bad)
     name := object2String type
     found := nil
@@ -1004,7 +1005,7 @@ filterModemapsFromPackages(mms, names, op) ==
 
 
 isTowerWithSubdomain(towerType,elem) ==
-  not PAIRP towerType => NIL
+  atom towerType => NIL
   dt := deconstructT towerType
   2 ~= #dt => NIL
   s := underDomainOf(towerType)
@@ -1021,9 +1022,9 @@ selectMmsGen(op,tar,args1,args2) ==
   null (S := getModemapsFromDatabase(op,QLENGTH args1)) => NIL
 
   if (op = 'map) and (2 = #args1) and
-    (CAR(args1) is ['Mapping,., elem]) and
-      (a := isTowerWithSubdomain(CADR args1,elem))
-        then args1 := [CAR args1,a]
+    (first(args1) is ['Mapping,., elem]) and
+      (a := isTowerWithSubdomain(second args1,elem))
+        then args1 := [first args1,a]
 
   -- we first split the modemaps into two groups:
   --   haves:    these are from packages that have one of the top level
@@ -1032,8 +1033,8 @@ selectMmsGen(op,tar,args1,args2) ==
 
   -- get top level constructor names for constructors with parameters
   conNames := nil
-  if op = 'reshape then args := APPEND(rest args1, rest args2)
-  else args := APPEND(args1,args2)
+  if op = 'reshape then args := append(rest args1, rest args2)
+  else args := append(args1,args2)
   if tar then args := [tar,:args]
   -- for common aggregates, use under domain also
   for a in REMDUP args repeat
@@ -1057,7 +1058,7 @@ selectMmsGen(op,tar,args1,args2) ==
   if haves then
     [havesExact,havesInexact] := exact?(haves,tar,args1)
     if $reportBottomUpFlag then
-      for mm in APPEND(havesExact,havesInexact) for i in 1.. repeat
+      for mm in append(havesExact,havesInexact) for i in 1.. repeat
         sayModemapWithNumber(mm,i)
     if havesExact then
       mmS := matchMms(havesExact,op,tar,args1,args2)
@@ -1076,7 +1077,7 @@ selectMmsGen(op,tar,args1,args2) ==
   if havenots then
     [havesNExact,havesNInexact] := exact?(havenots,tar,args1)
     if $reportBottomUpFlag then
-      for mm in APPEND(havesNExact,havesNInexact) for i in 1.. repeat
+      for mm in append(havesNExact,havesNInexact) for i in 1.. repeat
         sayModemapWithNumber(mm,i)
     if havesNExact then
       mmS := matchMms(havesNExact,op,tar,args1,args2)
@@ -1106,7 +1107,7 @@ selectMmsGen(op,tar,args1,args2) ==
         tar and not isPartialMode tar =>
           -- throw in the target if it is not the same as one
           -- of the arguments
-          res := CADR sig
+          res := second sig
           member(res,CDDR sig) => NIL
           [[res,:tar]]
         NIL
@@ -1122,20 +1123,20 @@ matchTypes(pm,args1,args2) ==
   -- the result is a match from pm to args, if one exists
   for v in pm for t1 in args1 for t2 in args2 until $Subst='failed repeat
     p:= ASSQ(v,$Subst) =>
-      t:= CDR p
-      t=t1 => $Coerce and EQCAR(t1,'Symbol) and
+      t:= rest p
+      t=t1 => $Coerce and t1 = $Symbol and
         (q := ASSQ(v,$SymbolType)) and t2 and
-          (t3 := resolveTT(CDR q, t2)) and
+          (t3 := resolveTT(rest q, t2)) and
             RPLACD(q, t3)
       $Coerce =>
-        if EQCAR(t,'Symbol) and (q := ASSQ(v,$SymbolType)) then
-          t := CDR q
-        if EQCAR(t1,'Symbol) and t2 then t1:= t2
+        if t = $Symbol and (q := ASSQ(v,$SymbolType)) then
+          t := rest q
+        if t1 = $Symbol and t2 then t1:= t2
         t0 := resolveTT(t,t1) => RPLACD(p,t0)
         $Subst:= 'failed
       $Subst:= 'failed
     $Subst:= CONS(CONS(v,t1),$Subst)
-    if EQCAR(t1,'Symbol) and t2 then $SymbolType:= CONS(CONS(v,t2),$SymbolType)
+    if t1 = $Symbol and t2 then $SymbolType:= CONS(CONS(v,t2),$SymbolType)
 
 evalMm(op,tar,sig,mmC) ==
   -- evaluates a modemap with signature sig and condition mmC
@@ -1174,8 +1175,8 @@ evalMmStack(mmC) ==
   mmC is ['ofCategory,pvar,cat] and cat is ['Join,:args] =>
     evalMmStack CONS('AND,[['ofCategory,pvar,c] for c in args])
   mmC is ['ofType,:.] => [NIL]
-  mmC is ['has,pat,x] =>
-    MEMQ(x,'(ATTRIBUTE SIGNATURE)) =>
+  mmC is ["has",pat,x] =>
+    x in '(ATTRIBUTE SIGNATURE) =>
       [[['ofCategory,pat,['CATEGORY,'unknown,x]]]]
     [['ofCategory,pat,x]]
   [[mmC]]
@@ -1189,8 +1190,8 @@ evalMmStackInner(mmC) ==
     [['ofCategory, pvar, c] for c in args]
   mmC is ['ofType,:.] => NIL
   mmC is ['isAsConstant] => NIL
-  mmC is ['has,pat,x] =>
-    MEMQ(x,'(ATTRIBUTE SIGNATURE)) =>
+  mmC is ["has",pat,x] =>
+    x in '(ATTRIBUTE SIGNATURE) =>
       [['ofCategory,pat,['CATEGORY,'unknown,x]]]
     [['ofCategory,pat,x]]
   [mmC]
@@ -1205,24 +1206,24 @@ evalMmCond0(op,sig,st) ==
   SL:= evalMmDom st
   SL='failed => 'failed
   for p in SL until p1 and not b repeat b:=
-    p1:= ASSQ(CAR p,$Subst)
+    p1:= ASSQ(first p,$Subst)
     p1 and
-      t1:= CDR p1
-      t:= CDR p
+      t1:= rest p1
+      t:= rest p
       t=t1 or
         containsVars t =>
-          if $Coerce and EQCAR(t1,'Symbol) then t1:= getSymbolType CAR p
+          if $Coerce and t1 = $Symbol then t1:= getSymbolType first p
           resolveTM1(t1,t)
         $Coerce and
           -- if we are looking at the result of a function, the coerce
           -- goes the opposite direction
           (t1 = $AnonymousFunction and t is ['Mapping, :.]) => t
-          CAR p = CADR sig and not member(CAR p, CDDR sig) =>
+          first p = second sig and not member(first p, CDDR sig) =>
             canCoerceFrom(t,t1) => 'T
             NIL
           canCoerceFrom(t1,t) => 'T
           isSubDomain(t,t1) => RPLACD(p,t1)
-          EQCAR(t1,'Symbol) and canCoerceFrom(getSymbolType CAR p,t)
+          t1 = $Symbol and canCoerceFrom(getSymbolType first p,t)
   ( SL and p1 and not b and 'failed ) or evalMmCat(op,sig,st,SL)
 
 fixUpTypeArgs SL ==
@@ -1240,11 +1241,11 @@ doReplaceSharpCalls t ==
   ATOM t => t
   t is ['_#, l] => #l
   t is ['construct,: l] => EVAL ['LIST,:l]
-  [CAR t,:[ doReplaceSharpCalls u for u in CDR t]]
+  [first t,:[ doReplaceSharpCalls u for u in rest t]]
 
 noSharpCallsHere t ==
   t isnt [con, :args] => true
-  MEMQ(con,'(construct _#)) => NIL
+  con in '(construct _#) => NIL
   and/[noSharpCallsHere u for u in args]
 
 coerceTypeArgs(t1, t2, SL) ==
@@ -1288,7 +1289,7 @@ evalMmDom(st) ==
   for mmC in st until SL='failed repeat
     mmC is ['isDomain,v,d] =>
       STRINGP d => SL:= 'failed
-      p:= ASSQ(v,SL) and not (d=CDR p) => SL:= 'failed
+      p:= ASSQ(v,SL) and not (d=rest p) => SL:= 'failed
       d1:= subCopy(d,SL)
       CONSP(d1) and MEMQ(v,d1) => SL:= 'failed
       SL:= augmentSub(v,d1,SL)
@@ -1300,12 +1301,12 @@ orderMmCatStack st ==
   -- tries to reorder stack so that free pattern variables appear
   -- as parameters first
   null(st) or null rest(st) => st
-  vars := DELETE_-DUPLICATES [CADR(s) for s in st | isPatternVar(CADR(s))]
+  vars := DELETE_-DUPLICATES [second(s) for s in st | isPatternVar(second(s))]
   null vars => st
   havevars := nil
   haventvars := nil
   for s in st repeat
-    cat := CADDR s
+    cat := third s
     mem := nil
     for v in vars while not mem repeat
       if MEMQ(v,cat) then
@@ -1317,8 +1318,8 @@ orderMmCatStack st ==
   SORT(st, function mmCatComp)
 
 mmCatComp(c1, c2) ==
-  b1 := ASSQ(CADR c1, $Subst)
-  b2 := ASSQ(CADR c2, $Subst)
+  b1 := ASSQ(second c1, $Subst)
+  b2 := ASSQ(second c2, $Subst)
   b1 and null(b2) => true
   false
 
@@ -1326,7 +1327,7 @@ evalMmCat(op,sig,stack,SL) ==
   -- evaluates all ofCategory's of stack as soon as possible
   $hope:local:= NIL
   numConds:= #stack
-  stack:= orderMmCatStack [mmC for mmC in stack | EQCAR(mmC,'ofCategory)]
+  stack:= orderMmCatStack [mmC for mmC in stack | mmC is ["ofCategory",:.]]
   while stack until not makingProgress repeat
     st := stack
     stack := NIL
@@ -1349,7 +1350,7 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
   $hope:= NIL
   NSL:= hasCate(d,c,SL)
   NSL='failed and isPatternVar d and $Coerce and ( p:= ASSQ(d,$Subst) )
-    and (EQCAR(CDR p,'Variable) or EQCAR(CDR p,'Symbol)) =>
+    and (rest(p) is ["Variable",:.] or rest(p) = $Symbol) =>
       RPLACD(p,getSymbolType d)
       hasCate(d,c,SL)
   NSL='failed and isPatternVar d =>
@@ -1367,8 +1368,8 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
       dom =>
         NSL := [CONS(d,dom)]
       op ~= 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
-    if containsVars dom then dom := resolveTM(CDR p, dom)
-    $Coerce and canCoerce(CDR p, dom) =>
+    if containsVars dom then dom := resolveTM(rest p, dom)
+    $Coerce and canCoerce(rest p, dom) =>
       NSL := [CONS(d,dom)]
     op ~= 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
   NSL
@@ -1378,13 +1379,13 @@ hasCate(dom,cat,SL) ==
   -- augments substitution SL or returns 'failed
   dom = $EmptyMode => NIL
   isPatternVar dom =>
-    (p:= ASSQ(dom,SL)) and ((NSL := hasCate(CDR p,cat,SL)) ~= 'failed) =>
+    (p:= ASSQ(dom,SL)) and ((NSL := hasCate(rest p,cat,SL)) ~= 'failed) =>
        NSL
     (p:= ASSQ(dom,$Subst)) or (p := ASSQ(dom, SL)) =>
---      S:= hasCate(CDR p,cat,augmentSub(CAR p,CDR p,copy SL))
-      S:= hasCate1(CDR p,cat,SL, dom)
+--      S:= hasCate(rest p,cat,augmentSub(first p,rest p,copy SL))
+      S:= hasCate1(rest p,cat,SL, dom)
       not (S='failed) => S
-      hasCateSpecial(dom,CDR p,cat,SL)
+      hasCateSpecial(dom,rest p,cat,SL)
     if SL ~= 'failed then $hope:= 'T
     'failed
   SL1 := [[v,:d] for [v,:d] in SL | not containsVariables d]
@@ -1405,7 +1406,7 @@ hasCateSpecial(v,dom,cat,SL) ==
     SL:= hasCate(arg,'(Ring),augmentSub(v,d,SL))
     SL = 'failed => 'failed
     hasCaty(d,cat,SL)
-  EQCAR(cat,'Field) or EQCAR(cat, 'DivisionRing) =>
+  cat = $Field or cat = $DivisionRing =>
     if isSubDomain(dom,$Integer) then dom := $Integer
     d:= eqType [$QuotientField, dom]
     hasCaty(dom,'(IntegralDomain),augmentSub(v,d,SL))
@@ -1430,15 +1431,15 @@ hasCateSpecialNew(v,dom,cat,SL) ==
            AlgebraicallyClosedFunctionSpace ExpressionSpace
              LiouvillianFunctionCategory FunctionSpace))
   alg := member(QCAR cat, '(RadicalCategory AlgebraicallyClosedField))
-  fefull := fe or alg or EQCAR(cat, 'CombinatorialFunctionCategory)
+  fefull := fe or alg or cat = $CombinatorialFunctionCategory
   partialResult :=
-    EQCAR(dom, 'Variable) or EQCAR(dom, 'Symbol) =>
-      CAR(cat) in
+    dom is ["Variable",:.] or dom = $Symbol =>
+      first(cat) in
        '(SemiGroup AbelianSemiGroup Monoid AbelianGroup AbelianMonoid
          PartialDifferentialRing Ring InputForm) =>
                 d := ['Polynomial, $Integer]
                 augmentSub(v, d, SL)
-      EQCAR(cat, 'Group) =>
+      cat = $Group =>
         d := ['Fraction, ['Polynomial, $Integer]]
         augmentSub(v, d, SL)
       fefull =>
@@ -1487,20 +1488,20 @@ hasCaty(d,cat,SL) ==
       for [z,:cond] in x until not (S1='failed) repeat
         S' := [[p, :mkDomPvar(p, d, z, y)] for [p,:d] in S]
         if $domPvar then
-          dom := [CAR d, :[domArg(arg, i, z, y) for i in 0..
-                           for arg in CDR d]]
+          dom := [first d, :[domArg(arg, i, z, y) for i in 0..
+                           for arg in rest d]]
           SL := augmentSub($domPvar, dom, copy SL)
         z' := [domArg2(a, S, S') for a in z]
         S1:= unifyStruct(y,z',copy SL)
         if not (S1='failed) then S1:=
           atom cond => S1
           ncond := subCopy(cond, S)
-          ncond is ['has, =d, =cat] => 'failed
+          ncond is ["has", =d, =cat] => 'failed
           hasCaty1(ncond,S1)
       S1
     atom x => SL
     ncond := subCopy(x, constructSubst d)
-    ncond is ['has, =d, =cat] => 'failed
+    ncond is ["has", =d, =cat] => 'failed
     hasCaty1(ncond, SL)
   'failed
 
@@ -1523,20 +1524,20 @@ hasCaty1(cond,SL) ==
   -- cond is either a (has a b) or an OR clause of such conditions
   -- SL is augmented, if cond is true, otherwise the result is 'failed
   $domPvar: local := NIL
-  cond is ['has,a,b] => hasCate(a,b,SL)
+  cond is ["has",a,b] => hasCate(a,b,SL)
   cond is ['AND,:args] =>
     for x in args while not (S='failed) repeat S:=
-      x is ['has,a,b] => hasCate(a,b, SL)
+      x is ["has",a,b] => hasCate(a,b, SL)
       -- next line is for an obscure bug in the table
-      x is [['has,a,b]] => hasCate(a,b, SL)
+      x is [["has",a,b]] => hasCate(a,b, SL)
       --'failed
       hasCaty1(x, SL)
     S
   cond is ['OR,:args] =>
     for x in args until not (S='failed) repeat S:=
-      x is ['has,a,b] => hasCate(a,b,copy SL)
+      x is ["has",a,b] => hasCate(a,b,copy SL)
       -- next line is for an obscure bug in the table
-      x is [['has,a,b]] => hasCate(a,b,copy SL)
+      x is [["has",a,b]] => hasCate(a,b,copy SL)
       --'failed
       hasCaty1(x, copy SL)
     S
@@ -1559,7 +1560,7 @@ hasSigAnd(andCls, S0, SL) ==
   for cls in andCls while not dead repeat
     SA :=
       atom cls => copy SL
-      cls is ['has,a,b] =>
+      cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
       keyedSystemError("S2GE0016",
         ['"hasSigAnd",'"unexpected condition for signature"])
@@ -1572,7 +1573,7 @@ hasSigOr(orCls, S0, SL) ==
   for cls in orCls until found repeat
     SA :=
       atom cls => copy SL
-      cls is ['has,a,b] =>
+      cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
       cls is ['AND,:andCls] or cls is ['and,:andCls] =>
         hasSigAnd(andCls, S0, SL)
@@ -1585,13 +1586,13 @@ hasSig(dom,foo,sig,SL) ==
   -- tests whether domain dom has function foo with signature sig
   -- under substitution SL
   $domPvar: local := nil
-  fun:= constructor? CAR dom =>
+  fun:= constructor? first dom =>
     S0:= constructSubst dom
-    p := ASSQ(foo,getOperationAlistFromLisplib CAR dom) =>
-      for [x,.,cond,.] in CDR p until not (S='failed) repeat
+    p := ASSQ(foo,getOperationAlistFromLisplib first dom) =>
+      for [x,.,cond,.] in rest p until not (S='failed) repeat
         S:=
           atom cond => copy SL
-          cond is ['has,a,b] =>
+          cond is ["has",a,b] =>
             hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
           cond is ['AND,:andCls] or cond is ['and,:andCls] =>
             hasSigAnd(andCls, S0, SL)
@@ -1608,9 +1609,9 @@ hasAtt(dom,att,SL) ==
   -- tests whether dom has attribute att under SL
   -- needs S0 similar to hasSig above ??
   $domPvar: local := nil
-  fun:= CAR dom =>
+  fun:= first dom =>
     atts:= subCopy(getConstructorAttributesFromDB fun,constructSubst dom) =>
-      PAIRP (u := getInfovec CAR dom) =>
+      CONSP (u := getInfovec first dom) =>
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until not (S='failed) repeat
           S:= unifyStruct(x,att,copy SL)
@@ -1638,16 +1639,16 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   if s1 is [":",x,.] then s1:= x
   if s2 is [":",x,.] then s2:= x
-  if not atom s1 and CAR s1 = '_# then s1:= LENGTH CADR s1
-  if not atom s2 and CAR s2 = '_# then s2:= LENGTH CADR s2
+  if not atom s1 and first s1 = '_# then s1:= LENGTH second s1
+  if not atom s2 and first s2 = '_# then s2:= LENGTH second s2
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
   atom s1 or atom s2 => 'failed
   until null s1 or null s2 or SL='failed repeat
-    SL:= unifyStruct(CAR s1,CAR s2,SL)
-    s1:= CDR s1
-    s2:= CDR s2
+    SL:= unifyStruct(first s1,first s2,SL)
+    s1:= rest s1
+    s2:= rest s2
   s1 or s2 => 'failed
   SL
 
@@ -1660,7 +1661,7 @@ unifyStructVar(v,s,SL) ==
   (s0 := LASSOC(v, SL)) or (s0 := LASSOC(v,$Subst)) =>
     S:= unifyStruct(s0,s1,copy SL)
     S='failed =>
-      $Coerce and not atom s0 and constructor? CAR s0 =>
+      $Coerce and not atom s0 and constructor? first s0 =>
         containsVars s0 or containsVars s1 =>
           ns0 := subCopy(s0, SL)
           ns1 := subCopy(s1, SL)
@@ -1704,14 +1705,14 @@ printMms(mmS) ==
   for [sig,imp,.] in mmS for i in 1.. repeat
     istr := STRCONC('"[",STRINGIMAGE i,'"]")
     if QCSIZE(istr) = 3 then istr := STRCONC(istr,'" ")
-    sayMSG [:bright istr,'"signature:   ",:formatSignature CDR sig]
-    CAR sig='local =>
+    sayMSG [:bright istr,'"signature:   ",:formatSignature rest sig]
+    first sig='local =>
       sayMSG ['"      implemented: local function ",imp]
     imp is ['XLAM,:.] =>
       sayMSG concat('"      implemented: XLAM from ",
-        prefix2String CAR sig)
+        prefix2String first sig)
     sayMSG concat('"      implemented: slot ",imp,
-      '" from ",prefix2String CAR sig)
+      '" from ",prefix2String first sig)
   sayMSG '" "
 
 containsVars(t) ==
@@ -1736,7 +1737,7 @@ isPartialMode m ==
 
 getSymbolType var ==
 -- var is a pattern variable
-  p:= ASSQ(var,$SymbolType) => CDR p
+  p:= ASSQ(var,$SymbolType) => rest p
   t:= '(Polynomial (Integer))
   $SymbolType:= CONS(CONS(var,t),$SymbolType)
   t
@@ -1753,9 +1754,9 @@ defaultTypeForCategory(cat, SL) ==
   -- might not want to use this result. For example, evalMmCat1
   -- calls this and should possibly fail in some cases.
   cat := subCopy(cat, SL)
-  c := CAR cat
+  c := first cat
   d := getConstructorDefaultFromDB c
-  d => [d, :CDR cat]
+  d => [d, :rest cat]
   cat is [c] =>
     c = 'Field => $RationalNumber
     c in '(Ring IntegralDomain EuclideanDomain GcdDomain

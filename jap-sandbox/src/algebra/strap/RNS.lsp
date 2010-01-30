@@ -4,12 +4,12 @@
 (DEFPARAMETER |RealNumberSystem;AL| 'NIL) 
 
 (DEFUN |RealNumberSystem;| ()
-  (PROG (#0=#:G1407)
+  (PROG (#0=#:G1405)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
-                       (PAIR '(#1=#:G1403 #2=#:G1404 #3=#:G1405
-                                  #4=#:G1406)
+                       (PAIR '(#1=#:G1401 #2=#:G1402 #3=#:G1403
+                                  #4=#:G1404)
                              (LIST '(|Integer|)
                                    '(|Fraction| (|Integer|))
                                    '(|Pattern| (|Float|)) '(|Float|)))

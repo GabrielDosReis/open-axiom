@@ -1,15 +1,36 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2009-08-17], 
+AC_INIT([OpenAxiom], [1.4.0-2010-01-30], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
 AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
 # AM_INIT_AUTOMAKE([foreign])
-AC_PREREQ([2.60])
-
+AC_PREREQ([2.62])
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
+AC_CANONICAL_SYSTEM
+
+open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
+AC_SUBST(open_axiom_installdir)
+
+if test $build != $target; then
+   AC_MSG_WARN([Cross build is not supported.])
+   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
+fi
+## Where tools for the build platform are sequestered
+axiom_build_sharedir=$axiom_builddir/share
+AC_PROG_CC
+AC_PROG_CXX
+
+## What is the extension of object and executable files on this platform?
+AC_OBJEXT
+AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
+                   [Extension of executable file.])
+
+## Byte order of the host.
+AC_C_BIGENDIAN
+
 
 oa_use_libtool_for_shared_lib=yes
 oa_shrobj_flags=
@@ -48,18 +69,6 @@ AC_SUBST(oa_shrlib_flags)
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
-AC_CANONICAL_SYSTEM
-
-open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
-AC_SUBST(open_axiom_installdir)
-
-if test $build != $target; then
-   AC_MSG_WARN([Cross build is not supported.])
-   AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
-fi
-## Where tools for the build platform are sequestered
-axiom_build_sharedir=$axiom_builddir/share
-
 ## On Windows system, we prefer the default installation
 ## location to be 'C:/Program Files/OpenAxiom', following Windows 
 ## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
@@ -96,23 +105,6 @@ case $build in
         ;;
 esac
 
-## Make sure the C compiler is from GCC
-AC_PROG_CC
-if test x$GCC != xyes; then
-    AC_MSG_ERROR([We need a C compiler from GCC])
-fi
-axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
-AC_SUBST(axiom_cflags)
-
-## What is the extension of object files on this platform?
-AC_OBJEXT
-
-AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
-                   [Extension of executable file.])
-
-## Byte order of the host.
-AC_C_BIGENDIAN
-
 
 AC_PROG_INSTALL
 # AC_PROG_LN_S
@@ -126,13 +118,13 @@ AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
-AC_PATH_PROG([LATEX], [latex])
-AC_CHECK_PROGS([MAKEINDEX], [makeindex])
-if test -n "$LATEX"; then \
-   :
-else
-    AC_MSG_NOTICE([Documentation is disabled.])
+AC_PATH_PROG([PDFLATEX], [pdflatex])
+if test -z "$PDFLATEX"; then
+   AC_PATH_PROG([LATEX], [latex],
+                [AC_MSG_NOTICE([Documentation is disabled.])])
 fi
+
+AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 
 ## ---------------------------------------
 ## Make sure noweb executable is available
@@ -174,7 +166,7 @@ if test -z $axiom_lisp; then
 fi
 ## We need to build our own GCL if none is avalaible.
 if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [gcl sbcl clisp])
+    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
@@ -293,6 +285,21 @@ case $axiom_lisp_flavor,$target in
         ;;
 esac
 AC_SUBST(axiom_gcl_rsym_hack)
+
+
+## If we are using GCL as the base runtime system, then we do really need
+# a C compiler from GNU.  Well, at least for the moment.
+case $axiom_lisp_flavor,$GCC in
+   gcl,yes)
+       axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
+       ;;
+   
+   gcl,*)
+       AC_MSG_ERROR([We need a GNU C compiler])
+       ;;
+esac
+AC_SUBST(axiom_cflags)
+
 ## Can we use dynamically linked libraries?  
 ## Tentatively answer `yes' -- this is modern time.
 oa_use_dynamic_lib=yes
@@ -428,8 +435,8 @@ fi
 case $host in
     *solaris*)
        AC_SEARCH_LIBS([accept], [socket],
-           [axiom_c_runtime_extra="-lsocket"],
-           [AC_MSG_ERROR([socket library not found])])
+           [], [AC_MSG_ERROR([socket library not found])])
+       AC_SEARCH_LIBS([gethostbyname], [nsl])
        ;;
     *) ;;
 esac
@@ -539,6 +546,21 @@ X_PRE_LIBS="-lXpm $X_PRE_LIBS"
 AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
+
+# Check for Qt utilities.
+AC_CHECK_PROGS([OA_QT_MOC], [moc])
+AC_CHECK_PROGS([OA_QT_QMAKE], [qmake])
+if test -n "$OA_QT_MOC"; then
+  AC_MSG_CHECKING([Qt version])
+  oa_qt_version=`"$OA_QT_MOC" -v 2>&1 | sed -e 's/^.*(\(.*\))$/\1/'`
+  AC_MSG_RESULT([$oa_qt_version])
+  case $oa_qt_version in
+    *[1-3]\.[0-9]+\.[0-9]+)
+       AC_MSG_WARN([This version of Qt is too old for OpenAxiom.])
+       ;;
+  esac
+fi
+
 axiom_use_x=no
 if test -z $no_x; then
     axiom_use_x=yes
@@ -585,28 +607,23 @@ esac
 axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
 axiom_gcl_emacs="--enable-emacs=correct"
 
-PFL=
-CCF="-O2 -Wall -D_GNU_SOURCE"
-LDF=
-LISP=lsp
+case $GCC in
+  yes)
+     CCF="-O2 -Wall -D_GNU_SOURCE"
+     ;;
+esac
 
 case $target in
     *bsd*|*dragonfly*)
-        AC_DEFINE([BSDplatform], [], [BSD flavour])
         CCF="-O2 -Wall"
         ;;
     windows)
-        AC_DEFINE([MSYSplatform], [], [MS])
         SRCDIRS=bootdir interpdir sharedir algebradir etcdir docdir inputdir
-        ;;
-    *linux*)
-        AC_DEFINE([LINUXplatform], [], [Linux flavour])
         ;;
     *solaris*)
         AC_DEFINE([SUNplatform], [], [SunOS flavour])
         ;;
     powerpc*darwin*)
-        AC_DEFINE([MACOSXplatform], [], [MACOX flavour])
         CCF="-O2 -Wall -D_GNU_SOURCE \
             -I/usr/include -I/usr/include/sys"
         axiom_gcl_bfd_option="--disable-statsysbfd \
@@ -617,10 +634,7 @@ esac
 
 GCLOPTS="$axiom_gcl_emacs $axiom_gcl_bfd_option $axiom_gcl_mm_option $axiom_gcl_x_option"
 
-AC_SUBST(PLF)
 AC_SUBST(CCF)
-AC_SUBST(LDF)
-AC_SUBST(LISP)
 AC_SUBST(GCLOPTS)
 case $axiom_lisp_flavor in
    gcl)
