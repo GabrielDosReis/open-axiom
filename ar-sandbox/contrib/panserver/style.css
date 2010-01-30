@@ -1,0 +1,167 @@
+#pageNav{
+    float: left;
+    width:125px;
+    padding: 0px;
+    background-color: #F5f7f7;
+    border-right: 1px solid #cccccc;
+    border-bottom: 1px solid #cccccc;
+    font: medium Verdana,sans-serif;
+}
+
+#sectionLinks{
+    margin: 0px;
+    padding: 0px;
+}
+
+#sectionLinks h3{
+    padding: 10px 0px 2px 10px;
+    border-bottom: 1px solid #cccccc;
+}
+
+#sectionLinks a:link, #sectionLinks a:visited {
+    display: block;
+    border-top: 1px solid #ffffff;
+    border-bottom: 1px solid #cccccc;
+    font-weight: bold;
+    padding: 3px 0px 3px 10px;
+    color: #21536A;
+}
+
+#sectionLinks a:hover{
+    border-top: 1px solid #cccccc;
+    background-color: #DDEEFF;
+    background-image: none;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:link, a:visited{
+    color: #005FA9;
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+div.content {
+  position: relative;
+  margin-right: 50px;
+  margin-left: 150px;
+
+}
+
+div.title{
+  font-weight: bold;
+  text-align: left;
+  font-size: 25px;
+}
+
+#aximg {
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.answer {
+  width:auto;
+  height:auto;
+  margin: 5px;
+  border-width: 2px;
+  border-color: #F5f7ff;
+  border-style: solid;
+}
+
+div.rootCompCell {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+div.compCell {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  padding-left: 2px;
+  padding-right: 2px;
+  padding-bottom: 4px;
+  margin-bottom: 1px;
+  margin-top: 1px;
+  position: relative;
+}
+
+div.inout {
+  margin-bottom: 10px;
+}
+
+div.stepnum {
+  display: none;
+}
+
+
+div.command {
+
+  color: #FF0000;
+  padding-bottom: 10px;
+}
+
+div.algebra {
+/*  border: solid 1px black; */
+  color: #0000FF;
+  padding-bottom: 10px;
+}
+
+div.mathml {
+/*  border: solid 1px black; */
+  color: #0000FF;
+  padding-bottom: 10px;
+  overflow: auto;
+}
+
+div.type {
+/*  border: solid 1px black; */
+  color: #0000FF;
+  padding-bottom: 10px;
+}
+
+.hide {
+  display: none;
+}
+
+
+input.showbranch {
+  background-color: white;
+  border-width: 2px;
+  border-style: outset;
+}
+
+.context-menu {
+  background-color: white;
+  border: outset 4px silver;
+  padding: 0px;
+  margin: 0px;
+}
+
+div.context-menu div:first-child {
+
+}
+
+div.context-menu div.context-item {
+  cursor: pointer;
+  margin-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+div.context-menu div.menuId {
+  margin-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+table.idTable td {
+/*  border: solid 1px blue; */
+}
+
+div.active {
+  background-color: yellow;
+}

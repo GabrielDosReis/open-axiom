@@ -1,0 +1,5 @@
+)set mes auto off
+)set out mathml on
+)lisp (load "panserver.lisp")
+)compile panserver.spad
+panServer(8085)
