@@ -49,6 +49,9 @@
 (defpackage "AxiomCore"
   #+:common-lisp (:use "COMMON-LISP")
   #-:common-lisp (:use "LISP" "USER")
+  #+(and :SBCL :SB-THREAD) (:use "SB-THREAD")
+  #+(and :ECL :THREADS) (:use "MP")
+  #+(and :CLISP :MT) (:use "THREADS")
   ;; For GCL we need to explicitly use the DEFPACKAGE, otherwise the
   ;; image obtained from compiler link will not work.  The root cause
   ;; is a non-ANSI compliant organization of GCL's implementation.
