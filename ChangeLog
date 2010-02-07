@@ -1,0 +1,4 @@
+2010-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Add support for --enable-threads.
+

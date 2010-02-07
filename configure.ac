@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-01-30], 
+AC_INIT([OpenAxiom], [1.4.0-2010-02-06], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -350,6 +350,22 @@ if test -z $axiom_fasl_type; then
     AC_MSG_RESULT([$axiom_fasl_type])
 fi
 AC_SUBST(axiom_fasl_type)
+
+## Does it make sense to pretend that we support multithreading?
+oa_enable_threads=no
+AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
+              [case $enableval in
+                  yes|no) oa_enable_threads=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
+               esac])
+
+# GNU compiler wants to have a hint about multithreading.
+case $GCC,$oa_enable_threads in
+   yes,yes)
+     axiom_cflags="$axiom_cflags -pthread"
+esac
+
+AC_SUBST(oa_enable_threads)
 
 AC_SUBST(axiom_all_prerequisites)
 axiom_optimize_options=speed
