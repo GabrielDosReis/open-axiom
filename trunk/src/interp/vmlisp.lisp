@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,6 @@
 (defmacro absval (x)
  `(abs ,x))
 
-#-:CCL
 (defmacro add1 (x)
  `(1+ ,x))
 
@@ -81,18 +80,12 @@
 (defmacro applx (&rest args)
  `(apply ,@args))
 
-#-(or LispM Lucid :CCL)
+#-(or LispM Lucid)
 (defmacro assq (a b)
  `(assoc ,a ,b :test #'eq))
 
-#+:CCL
-(defmacro assq (a b) `(atsoc ,a ,b))
-
-#-:CCL
 (defmacro bintp (n)
  `(typep ,n 'bignum))
-#+:CCL
-(defun bintp (n) (and (integerp n) (not (fixp n))))
 
 (defmacro closedfn (form)
  `(function ,form))
@@ -106,7 +99,6 @@
 (defmacro dcq (&rest args)
  (cons 'setqp args))
 
-#-:CCL
 (defmacro difference (&rest args)
  `(- ,@args))
 
@@ -125,7 +117,6 @@
        (and (consp x) (eq (car x) 'quote) 
             (symbolp (cadr x))))))
 
-#-:CCL
 (defmacro eqcar (x y)
  (let ((test
         (cond
@@ -156,11 +147,9 @@
 (defmacro fetchchar (x i)
  `(char ,x ,i))
 
-#-:CCL  ;; fixp in ccl tests for fixnum
 (defmacro fixp (x)
  `(integerp ,x))
 
-#-:CCL
 (defmacro greaterp (&rest args)
  `(> ,@args))
 
@@ -211,7 +200,6 @@
 (defmacro lastpair (l)
  `(last ,l))
 
-#-:CCL
 (defmacro lessp (&rest args)
  `(< ,@args))
 
@@ -226,11 +214,10 @@
 (defmacro maxindex (x)
  `(the fixnum (1- (the fixnum (length ,x)))))
 
-#-(or LispM Lucid :CCL)
+#-(or LispM Lucid)
 (defmacro memq (a b)
  `(member ,a ,b :test #'eq))
 
-#-:CCL
 (defmacro minus (x)
  `(- ,x))
 
@@ -243,11 +230,8 @@
 
 (defmacro ne (a b) `(not (equal ,a ,b)))
 
-;;; This may need adjustment in CCL where NEQ means (NOT (EQUAL ..)))
-#-:CCL
 (defmacro neq (a b) `(not (eq ,a ,b)))
 
-#-:CCL
 (defmacro nreverse0 (x)
   (if (atom x)
       `(if (atom ,x) ,x (nreverse ,x))
@@ -267,7 +251,6 @@
 (defmacro pairp (x)
  `(consp ,x)) 
 
-#-:CCL
 (defmacro plus (&rest args)
  `(+ ,@ args))
 
@@ -275,23 +258,21 @@
 ;  `(assoc ,a ,b :test #'eq))
 (defmacro qassq (a b) `(assq ,a ,b))
 
-#-:CCL
 (defmacro qcar (x)
  `(car (the cons ,x)))
-#-:CCL
+
 (defmacro qcdr (x)
  `(cdr (the cons ,x)))
 
-#-:CCL
 (defmacro qcaar (x)
  `(car (the cons (car (the cons ,x)))))
-#-:CCL
+
 (defmacro qcadr (x)
  `(car (the cons (cdr (the cons ,x)))))
-#-:CCL
+
 (defmacro qcdar (x)
  `(cdr (the cons (car (the cons ,x)))))
-#-:CCL
+
 (defmacro qcddr (x)
  `(cdr (the cons (cdr (the cons ,x)))))
 
@@ -447,11 +428,6 @@
 (defmacro qvsize (x)
  `(the fixnum (length (the simple-vector ,x))))
 
-; #-:CCL
-; (defmacro refvecp (v)
-;  `(typep ,v '(vector t)))
-; #+:CCL
-; (defun refvecp (v) (and (vectorp v) (not (stringp v))))
 (defmacro refvecp (v) `(simple-vector-p ,v))
 
 (defmacro resetq (a b)
@@ -475,7 +451,6 @@
    (setq ,id ,item)
    (lam\,fileactq ',id (list 'setq ',id (list 'quote ,id)))))
 
-#-:CCL
 (defmacro setelt (vec ind val)
  `(setf (elt ,vec ,ind) ,val))
 
@@ -491,17 +466,15 @@
 (defmacro sfp (x)
  `(special-form-p ,x))
 
-#-:CCL
 (defmacro sintp (n)
  `(typep ,n 'fixnum))
-#+:CCL
+
 (defmacro sintp (n)
   `(fixp ,n))
 
-#-:CCL
 (defmacro smintp (n)
  `(typep ,n 'fixnum))
-#+:CCL
+
 (defmacro smintp (n)
   `(fixp ,n))
 
@@ -514,24 +487,17 @@
 (defmacro throw-protect (exp1 exp2)
  `(unwind-protect ,exp1 ,exp2))
 
-#-:CCL
 (defmacro times (&rest args)
  `(* ,@args))
 
 (defmacro vec-setelt (vec ind val)
  `(setf (svref ,vec ,ind) ,val))
 
-; #-:CCL
-; (defmacro vecp (v)
-;  `(typep ,v '(vector t)))
-; #+:CCL
-; (defun vecp (v) (and (vectorp v) (not (stringp v))))
 (defmacro vecp (v) `(simple-vector-p ,v))
 
-#-:CCL
 (defmacro zero? (x)
   `(and (typep ,x 'fixnum) (zerop (the fixnum ,x))))
-#+:CCL
+
 (defmacro zero? (x) `(zerop ,x))
 
 ;; defuns
@@ -541,11 +507,8 @@
 (defun $TOTAL-ELAPSED-TIME ()
    (list (get-internal-run-time) (get-internal-real-time)))
 
-#-(OR IBCL KCL :CMULISP :CCL)
+#-(OR IBCL KCL :CMULISP)
 (defun $TOTAL-GC-TIME () (list 0 0))
-
-#+:CCL
-(defun $TOTAL-GC-TIME () (list (gctime) (gctime)))
 
 #+IBCL
 (defun $TOTAL-GC-TIME (&aux (gcruntime (system:gbc-time-report)))
@@ -635,8 +598,6 @@
   (cond ((atom (car fnlist)) (list (COMPILE1 fnlist)))
         (t (MAPCAR #'(lambda (x) (COMPILE1 x)) fnlist))))
 
-#+:CCL (proclaim '(special *vars* *decl*)) ;; declare not handled right
-
 (defun |compileLispDefinition| (name def)
   (when *COMP370-APPLY* 
     (funcall *COMP370-APPLY* name def)))
@@ -709,7 +670,6 @@
 
 ; 9.5 Identifiers
 
-#-:CCL
 (defun gensymp (x) (and (symbolp x) (null (symbol-package x))))
 
 (defun digitp (x)
@@ -722,9 +682,8 @@
     (digit-char-p (char (symbol-name x) 0))
     (digit-char-p x)))
 
-#-:CCL
 (defun LN (x) (LOG x))
-#-:CCL
+
 (defun LOG2 (x) (LOG x 2.0))
 (defun |log| (x) (LOG x 10.0))
 
@@ -743,7 +702,7 @@
        (eq (system:fp-output-stream stream)
            (system:fp-output-stream *terminal-io*))))
 
-#-(OR Lucid KCL :CCL)
+#-(OR Lucid KCL)
 (defun IS-CONSOLE (stream)
   (cond ((not (streamp stream))
 	 nil)
@@ -796,10 +755,8 @@
 ;; property lists in vmlisp are alists
 (defun PROPLIST (x)
   (if (symbolp x)
-#-:CCL
+
    (plist2alist (symbol-plist x))
-#+:CCL
-   (plist2alist (plist x))
     nil))
 
 (defun plist2alist (x)
@@ -830,13 +787,11 @@
 
 (define-function 'vm/ #'quotient)
 
-#-:CCL
 (defun REMAINDER (x y)
   (if (and (integerp x) (integerp y))
       (rem x y)
       (- x (* y (QUOTIENT x y)))))
 
-#-:CCL
 (defun DIVIDE (x y)
   (if (and (integerp x) (integerp y))
       (multiple-value-list (truncate x y))
@@ -898,8 +853,6 @@
 
 ; 14.3 Searching
 
-#+:CCL (DEFMACRO |assoc| (X Y) `(ASSOC** ,X ,Y))
-#-:CCL
 (DEFUN |assoc| (X Y)
   "Return the pair associated with key X in association list Y."
   ; ignores non-nil list terminators
@@ -972,9 +925,7 @@
 ;; is compiled and the latter is byte-coded!
 (defun size (l) 
   (cond ((vectorp l) (length l))
-#+:CCL  ((stringp l) (length l)) ;; Until ACN fixes his lisp -> C translator.
-#-:CCL  ((consp l)   (list-length l))
-#+:CCL  ((consp l)   (length l))
+        ((consp l)   (list-length l))
         (t           0)))
 
 (define-function 'MOVEVEC #'replace)
@@ -1540,9 +1491,7 @@
 (defun EMBEDDED () (mapcar #'car *embedded-functions*))
 
 (defun EMBED (CURRENT-BINDING NEW-DEFINITION)
-  (PROG
-#+:CCL (OP BV BODY OLD-DEF *COMP)
-#-:CCL (OP BV BODY OLD-DEF)
+  (PROG (OP BV BODY OLD-DEF)
       (COND
         ( (NOT (IDENTP CURRENT-BINDING))
           (SETQ CURRENT-BINDING
@@ -1566,17 +1515,13 @@
             ( 'T
               `((LAMBDA (,CURRENT-BINDING) ,NEW-DEFINITION) ',OLD-DEF)))
             ) )
-#+:CCL (IF (CONSP NEW-DEFINITION) (SETQ NEW-DEFINITION (CDR NEW-DEFINITION)))
       (push (LIST CURRENT-BINDING NEW-DEFINITION OLD-DEF) *embedded-functions*)
       (RETURN CURRENT-BINDING) ) )
 
 (defun UNEMBED (CURRENT-BINDING)
-    (PROG
-#+:CCL  (TMP E-LIST CUR-DEF *COMP)
-#-:CCL  (TMP E-LIST CUR-DEF)
+    (PROG (TMP E-LIST CUR-DEF)
       (SETQ E-LIST *embedded-functions*)
       (SETQ CUR-DEF (symbol-function CURRENT-BINDING))
-#+:CCL (IF (CONSP CUR-DEF) (SETQ CUR-DEF (CDR CUR-DEF)))
       (COND
         ( (NOT (consp E-LIST))
           NIL )
@@ -1768,8 +1713,6 @@
 (defun reclaim () (gbc t))
 #+:allegro
 (defun reclaim () (excl::gc t))
-#+:CCL
-(defun reclaim () (gc))
 
 #+Lucid
 (defun BPINAME (func)
@@ -1801,11 +1744,6 @@
 #+:allegro
 (defun bpiname (func)
  func)
-#+:CCL
-(defun bpiname (x)
-   (if (symbolp x)
-     (intern (symbol-name (symbol-function x)) "BOOT")
-    nil))
 
 #+(or :SBCL :clisp :ecl)
 (defun BPINAME (x)

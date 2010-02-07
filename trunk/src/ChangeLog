@@ -1,3 +1,16 @@
+2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/daase.lisp: Remove conditionals on :CCL.
+	* interp/fname.lisp: Likewise.
+	* interp/foam_l.lisp: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/nlib.lisp: Likewise.
+	* interp/patches.lisp: Likewise.
+	* interp/sfsfun-l.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+
 2010-01-03  Aleksej Saushev  <asau@inbox.ru>
 
 	* hyper/addfile.c (strpostfix): Simplify.

@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -442,27 +442,17 @@
 
 ;; function to create byte and half-word vectors in new runtime system 8/90
 
-#-:CCL
 (defun |makeByteWordVec| (initialvalue)
   (let ((n (cond ((null initialvalue) 7) ('t (reduce #'max initialvalue)))))
     (make-array (length initialvalue)
       :element-type (list 'mod (1+ n))
       :initial-contents initialvalue)))
 
-#+:CCL
-(defun |makeByteWordVec| (initialvalue)
-   (list-to-vector initialvalue))
-
-#-:CCL
 (defun |makeByteWordVec2| (maxelement initialvalue)
   (let ((n (cond ((null initialvalue) 7) ('t maxelement))))
     (make-array (length initialvalue)
       :element-type (list 'mod (1+ n))
       :initial-contents initialvalue)))
-
-#+:CCL
-(defun |makeByteWordVec2| (maxelement initialvalue)
-   (list-to-vector initialvalue))
 
 (defun |knownEqualPred| (dom)
   (let ((fun (|compiledLookup| '= '((|Boolean|) $ $) dom)))

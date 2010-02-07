@@ -442,27 +442,17 @@
 
 ;; function to create byte and half-word vectors in new runtime system 8/90
 
-#-:CCL
 (defun |makeByteWordVec| (initialvalue)
   (let ((n (cond ((null initialvalue) 7) ('t (reduce #'max initialvalue)))))
     (make-array (length initialvalue)
       :element-type (list 'mod (1+ n))
       :initial-contents initialvalue)))
 
-#+:CCL
-(defun |makeByteWordVec| (initialvalue)
-   (list-to-vector initialvalue))
-
-#-:CCL
 (defun |makeByteWordVec2| (maxelement initialvalue)
   (let ((n (cond ((null initialvalue) 7) ('t maxelement))))
     (make-array (length initialvalue)
       :element-type (list 'mod (1+ n))
       :initial-contents initialvalue)))
-
-#+:CCL
-(defun |makeByteWordVec2| (maxelement initialvalue)
-   (list-to-vector initialvalue))
 
 (defun |knownEqualPred| (dom)
   (let ((fun (|compiledLookup| '= '((|Boolean|) $ $) dom)))

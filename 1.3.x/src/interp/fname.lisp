@@ -84,8 +84,6 @@
   (if (probe-file (namestring f)) 't nil))
 
 (defun |fnameReadable?| (f)
-#+:CCL (file-readablep f)
-#-:CCL
   (let ((s (open f :direction :input :if-does-not-exist nil)))
     (cond (s (close s) 't) ('t nil)) )
   )
