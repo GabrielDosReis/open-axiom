@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -120,14 +120,6 @@
     (princ pos stream)
     (finish-output stream)))
 
-;;#+:ccl
-;;(defun putindextable (indextable dirname)
-;;  (with-open-file
-;;    (stream (concat dirname "/" |$IndexFilename|)
-;;             :direction :io :if-does-not-exist :create)
-;;    (file-position stream :end)
-;;    (write-indextable indextable stream)))
-;;#-:ccl
 (defun putindextable (indextable dirname)
   (with-open-file
     (stream (concat dirname "/" |$IndexFilename|)
@@ -351,12 +343,12 @@
         (copy-file name1 name2))))
 
 
-#+(OR :AKCL (AND :CCL :UNIX))
+#+ :AKCL
 (defun copy-lib-directory (name1 name2)
    (|checkMkdir| name2)
    (system (concat "sh -c 'cp " name1 "/* " name2 "'")))
 
-#+(OR :AKCL (AND :CCL :UNIX))
+#+ :AKCL
 (defun copy-file (namestring1 namestring2)
   (system (concat "cp " namestring1 " " namestring2)))
 

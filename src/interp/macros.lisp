@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -150,10 +150,6 @@
            ((eql n (qvmaxindex vec)) vec)
            (t (subseq vec 0 (+ n 1))))))
  
-;; In CCL ASH assumes a 2's complement machine.  We use ASH in Integer and
-;; assume we have a sign and magnitude setup.
-#+:CCL (defmacro ash (u v) `(lisp::ash1 ,u ,v))
-
 ; 14 SEQUENCES
  
 ; 14.1 Simple Sequence Functions
@@ -526,11 +522,11 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
  
 #+IBCL
 (defmacro |elapsedGcTime| () '(system:gbc-time-report))
+
 #+AKCL
 (defmacro |elapsedGcTime| () '(system:gbc-time))
-#+:CCL
-(defmacro |elapsedGcTime| () '(lisp:gctime))
-#-(OR :CCL IBCL AKCL)
+
+#-(OR IBCL AKCL)
 (defmacro |elapsedGcTime| () '0)
  
 (defmacro |do| (&rest args) (CONS 'PROGN args))
