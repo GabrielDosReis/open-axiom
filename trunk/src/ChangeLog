@@ -1,3 +1,7 @@
+2010-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in ("AxiomCore"): Use Clozure CL's package CCL.
+
 2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for CLozure CL.

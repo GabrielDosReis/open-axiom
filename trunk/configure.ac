@@ -166,7 +166,7 @@ if test -z $axiom_lisp; then
 fi
 ## We need to build our own GCL if none is avalaible.
 if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp])
+    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl ccl64])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
