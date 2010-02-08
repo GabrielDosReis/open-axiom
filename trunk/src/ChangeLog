@@ -1,5 +1,23 @@
 2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Add support for CLozure CL.
+	* lisp/core.lisp.in: Add support for Clozure CL.
+	(main): Remove as unused.
+	* driver/utils.h (openaxiom_runtime): Add openaxiom_clozure_runtime.
+	* boot/translator.boot (loadNativeModule): Handle Clozure CL.
+	* boot/ast.boot (nativeType): Handle Clozure's FFI types.
+	(nativeReturnType): Likewise.
+	(coerceToNativeType): Likewise.
+	(genCLOZUREnativeTranslation): New.
+	(genImportDeclaration): Use it.
+	* interp/vmlisp.lisp (SINTP): Remove duplicate definition.
+	(SMINTP): Likewise.
+	(ZERO?): Likewise.
+	(GCMSG): Reorganize definition.
+	(BPINAME): Likewise.
+
+2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/daase.lisp: Remove conditionals on :CCL.
 	* interp/fname.lisp: Likewise.
 	* interp/foam_l.lisp: Likewise.

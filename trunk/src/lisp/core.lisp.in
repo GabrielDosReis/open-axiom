@@ -3,7 +3,7 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
 ;; 
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -190,7 +190,9 @@
   #+:ecl #'si::top-level
   #+:gcl #'si::top-level
   #+:sbcl #'sb-impl::toplevel-init
-  #+clisp #'system::main-loop)
+  #+clisp #'system::main-loop
+  #+:clozure nil			; don't know, kept private
+  )
 
 ;; Lisp source file extension.
 (defconstant |$LispFileType| "lisp")
@@ -404,7 +406,6 @@
                           option)))))
     (values options-so-far argv)))
 
-
 ;; 
 ;; -*- Building New Lisp Images -*-
 ;; 
@@ -468,6 +469,12 @@
                                  :norc t
                                  ))
              (ext::quit))
+  #+:clozure (progn
+	       (ccl:save-application core-image
+				     :toplevel-function entry-point
+				     :error-handler :quit
+				     :prepend-kernel t)
+	       (return-from |saveCore|))
   (error "don't know how to save Lisp image"))
 
 
@@ -489,7 +496,8 @@
   #+:clisp (ext:quit status)
   #+:gcl (si::bye status)
   #+:ecl (ext:quit status)
-  #-(or :sbcl :clisp :gcl :ecl) 
+  #+:clozure (ccl:quit status)
+  #-(or :sbcl :clisp :gcl :ecl :clozure) 
   (error "`coreQuit' not implemented for this Lisp"))
 
 
@@ -592,40 +600,16 @@
 ;; Command line arguments: equivalent of traditional `argv[]' from
 ;;  systems programming world.
 (defun |getCommandLineArguments| nil
-  #-(or :gcl :sbcl :clisp :ecl) 
+  #-(or :gcl :sbcl :clisp :ecl :clozure) 
   (|fatalError| "don't know how to get command line args")
   (let* ((all-args  
+	  #+:clozure ccl:*command-line-argument-list*
           #+:ecl (ext:command-args)
           #+:gcl si::*command-args*
           #+:sbcl sb-ext::*posix-argv*
           #+:clisp (coerce (ext::argv) 'list))
          (args (member "--" all-args :test #'equal)))
     (cons (car all-args) (if args (cdr args) args))))
-
-
-;; 
-;; -*- Program Startup -*-
-;; 
-
-;; The top level entry point to most saved Lisp image.
-(defun |main| nil
-  (setq *package* (find-package "BOOT"))
-  ;; Existing system programming practive, and POSIX, have it
-  ;; that the first argument on the command line is the name
-  ;; of the current instantiation of the program.
-  ;; We require at least two arguments:
-  ;;    (0) the program name
-  ;;    (1) either one of --help or --version, or
-  ;;        a filename.
-  (let ((command-args (|getCommandLineArguments|)))
-    (when (null command-args) 
-      (|internalError| "empty command line args"))
-    (when (fboundp '|main|)
-      (|coreQuit| (funcall '|main| command-args)))
-
-    ;; Huh, the main entry point was not defined.
-    (|fatalError| "missing definition for main function")
-    (|coreQuit| 1)))
 
 
 ;; 
@@ -714,6 +698,7 @@
 	       (return nil))))))
 
 )
+
 
 ;; 
 ;; -*- --help Handler -*-
@@ -887,7 +872,7 @@
                         
      ;; Run the system-specific initialization.
      (when (fboundp '|%sysInit|)
-       (funcall '|%sysInit|))
+       (funcall (symbol-function '|%sysInit|)))
      
      (when (|handleCommandLine| (car command-args) options args)
        (|coreQuit| (if (> (|errorCount|) 0) 1 0))))))

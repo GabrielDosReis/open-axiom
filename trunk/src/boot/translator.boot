@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -771,6 +771,8 @@ loadNativeModule m ==
     EVAL [bfColonColon("FFI","DEFAULT-FOREIGN-LIBRARY"), m]
   %hasFeature KEYWORD::ECL =>
     EVAL [bfColonColon("FFI","LOAD-FOREIGN-LIBRARY"), m]
+  %hasFeature KEYWORD::CLOZURE =>
+    EVAL [bfColonColon("CCL","OPEN-SHARED-LIBRARY"), m]
   coreError '"don't know how to load a dynamically linked module"
 
 loadSystemRuntimeCore() ==

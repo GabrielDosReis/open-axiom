@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -469,14 +469,8 @@
 (defmacro sintp (n)
  `(typep ,n 'fixnum))
 
-(defmacro sintp (n)
-  `(fixp ,n))
-
 (defmacro smintp (n)
  `(typep ,n 'fixnum))
-
-(defmacro smintp (n)
-  `(fixp ,n))
 
 (defmacro stringlength (x)
  `(length (the string ,x)))
@@ -497,8 +491,6 @@
 
 (defmacro zero? (x)
   `(and (typep ,x 'fixnum) (zerop (the fixnum ,x))))
-
-(defmacro zero? (x) `(zerop ,x))
 
 ;; defuns
 
@@ -1693,66 +1685,50 @@
 (defun |read-line| (st &optional (eofval *read-place-holder*))
   (read-line st nil eofval))
 
-#+Lucid
 (defun gcmsg (x)
-   (prog1 (not system::*gc-silence*) (setq system::*gc-silence* (not x))))
-#+(OR IBCL KCL)
-(defun gcmsg (x)
-   (prog1 system:*gbc-message* (setq system:*gbc-message* x)))
-#+:cmulisp
-(defun gcmsg (x)
-   (prog1 ext:*gc-verbose* (setq ext:*gc-verbose* x)))
-#+ (or :allegro :sbcl :clisp :ecl)
-(defun gcmsg (x))
+  #+Lucid
+  (prog1 (not system::*gc-silence*) 
+    (setq system::*gc-silence* (not x)))
+  #+(OR IBCL KCL)
+  (prog1 system:*gbc-message* (setq system:*gbc-message* x))
+  #+:cmulisp
+  (prog1 ext:*gc-verbose* (setq ext:*gc-verbose* x))
+  #+ (or :allegro :sbcl :clisp :ecl :clozure) nil
+  )
 
-#+Lucid
-(defun reclaim () (system:gc))
-#+:cmulisp
-(defun reclaim () (ext:gc))
-#+(OR IBCL KCL)
-(defun reclaim () (gbc t))
-#+:allegro
-(defun reclaim () (excl::gc t))
-
-#+Lucid
 (defun BPINAME (func)
+  #+Lucid
   (if (functionp func)
       (if (symbolp func) func
         (let ((name (svref func 0)))
           (if (and (consp name) (eq (car name) 'SYSTEM::NAMED-LAMBDA))
               (cadr name)
-            name)) )))
+            name))))
 
-#+(OR IBCL KCL)
-(defun BPINAME (func)
+  #+(OR IBCL KCL)
   (if (functionp func)
       (cond ((symbolp func) func)
             ((and (consp func) (eq (car func) 'LAMBDA-BLOCK))
-              (cadr func))
+	     (cadr func))
             ((compiled-function-p func)
              (system:compiled-function-name func))
-            ('t func))))
-#+:cmulisp
-(defun BPINAME (func)
- (when (functionp func)
-  (cond
-    ((symbolp func) func)
-    ((and (consp func) (eq (car func) 'lambda)) (second (third func)))
-    ((compiled-function-p func)
+            ('t func)))
+  #+:cmulisp
+  (when (functionp func)
+    (cond
+     ((symbolp func) func)
+     ((and (consp func) (eq (car func) 'lambda)) (second (third func)))
+     ((compiled-function-p func)
       (system::%primitive header-ref func system::%function-name-slot))
-    ('else func))))
-#+:allegro
-(defun bpiname (func)
- func)
-
-#+(or :SBCL :clisp :ecl)
-(defun BPINAME (x)
-  (if (symbolp x)
-      x
+    ('else func)))
+  #+:allegro func
+  #+(or :SBCL :clisp :ecl :clozure)
+  (if (symbolp func)
+      func
     (multiple-value-bind (l c n)
-      (function-lambda-expression x)
-      (declare (ignore l c))
-      n)))
+       (function-lambda-expression func)
+       (declare (ignore l c))
+       n)))
 
   
 (defun RE-ENABLE-INT (number-of-handler) number-of-handler)

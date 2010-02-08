@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008-2009, Gabriel Dos Reis.
+   Copyright (C) 2008-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,7 @@ typedef enum openaxiom_runtime {
    openaxiom_sbcl_runtime,
    openaxiom_clisp_runtime,
    openaxiom_ecl_runtime,
+   openaxiom_clozure_runtime,
    openaxiom_bemol_runtime
 } openaxiom_runtime;
 
