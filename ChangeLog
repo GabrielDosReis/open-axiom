@@ -1,3 +1,7 @@
+2010-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac.pamphlet: Check for ccl and ccl64 too.
+
 2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Add support for Clozure CL.
