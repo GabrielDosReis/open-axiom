@@ -261,6 +261,9 @@ case $axiom_include_gcl,$axiom_lisp in
            *"Armed Bear Common Lisp"*) 
                axiom_lisp_flavor=abcl 
                ;;
+           *"Clozure Common Lisp"*)
+               axiom_lisp_flavor=clozure
+               ;;
        esac
        AC_MSG_RESULT([$axiom_lisp_flavor])
 esac
@@ -324,6 +327,10 @@ case $axiom_lisp_flavor in
     clisp) 
        axiom_quiet_flags='--quiet'
        axiom_eval_flags='-norc -x'
+       ;;
+    clozure)
+       axiom_quiet_flags='--quiet --no-init'
+       axiom_eval_flags='--eval'
        ;;
     *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $axiom_lisp]) ;;
 esac
@@ -684,6 +691,16 @@ case $axiom_lisp_flavor in
       float_type=':float'
       double_type=':double'
       string_type=':cstring'
+      ;;
+   clozure)
+      void_type=':void'
+      # FIXME: this is not really what we want, but good enough for now.
+      char_type=':unsigned-byte'
+      int_type=':signed-fullword'
+      float_type=':single-float'
+      double_type=':double-float'
+      # Clozure CL wants you to deal with your own mess
+      string_type=':address'
       ;;
    *)
       AC_MSG_ERROR([We do not know how to translate native types for this Lisp])

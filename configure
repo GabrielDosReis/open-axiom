@@ -16078,6 +16078,9 @@ $as_echo "$as_me: error: $axiom_lisp does not support Foreign Function Interface
            *"Armed Bear Common Lisp"*)
                axiom_lisp_flavor=abcl
                ;;
+           *"Clozure Common Lisp"*)
+               axiom_lisp_flavor=clozure
+               ;;
        esac
        { $as_echo "$as_me:$LINENO: result: $axiom_lisp_flavor" >&5
 $as_echo "$axiom_lisp_flavor" >&6; }
@@ -16146,6 +16149,10 @@ case $axiom_lisp_flavor in
     clisp)
        axiom_quiet_flags='--quiet'
        axiom_eval_flags='-norc -x'
+       ;;
+    clozure)
+       axiom_quiet_flags='--quiet --no-init'
+       axiom_eval_flags='--eval'
        ;;
     *) { { $as_echo "$as_me:$LINENO: error: We do not know how to build OpenAxiom this $axiom_lisp" >&5
 $as_echo "$as_me: error: We do not know how to build OpenAxiom this $axiom_lisp" >&2;}
@@ -20677,6 +20684,16 @@ case $axiom_lisp_flavor in
       float_type=':float'
       double_type=':double'
       string_type=':cstring'
+      ;;
+   clozure)
+      void_type=':void'
+      # FIXME: this is not really what we want, but good enough for now.
+      char_type=':unsigned-byte'
+      int_type=':signed-fullword'
+      float_type=':single-float'
+      double_type=':double-float'
+      # Clozure CL wants you to deal with your own mess
+      string_type=':address'
       ;;
    *)
       { { $as_echo "$as_me:$LINENO: error: We do not know how to translate native types for this Lisp" >&5

@@ -2380,7 +2380,7 @@ savesystem l ==
 )if not %hasFeature KEYWORD::ECL
   AxiomCore::saveCore SYMBOL_-NAME first l
 )else
-  fatalError '"don't know how to same image"
+  fatalError '"don't know how to save image"
 )endif
 
 --% )show
