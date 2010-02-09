@@ -221,9 +221,6 @@
 (defmacro minus (x)
  `(- ,x))
 
-(defmacro mrp (x)
- `(special-form-p ,x))
-
 (defmacro namederrset (id iexp &rest item)
  (declare (ignore item))
   `(catch ,id ,iexp))
@@ -462,9 +459,6 @@
          (val `(return-from seq ,(pop body))))
     (nsubstitute '(progn) nil body) ;don't treat NIL as a label
     `(block seq (tagbody ,@(nreverse body) ,val))))
-
-(defmacro sfp (x)
- `(special-form-p ,x))
 
 (defmacro sintp (n)
  `(typep ,n 'fixnum))

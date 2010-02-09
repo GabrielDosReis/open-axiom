@@ -588,7 +588,7 @@ compileAsharpCmd1 args ==
     if not beQuiet then sayKeyedMsg("S2IZ0038A",[namestring args, asharpArgs])
 
     command :=
-     STRCONC(STRCONC(GETENV('"ALDORROOT"),'"/bin/"),_
+     STRCONC(STRCONC(getEnv('"ALDORROOT"),'"/bin/"),_
                "aldor ", asharpArgs, '" ", namestring args)
     rc := runCommand command
 
