@@ -1,5 +1,11 @@
 2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (MRP): Remove.
+	(SFP): Likewise.
+	* interp/i-syscmd.boot (compileAsharpCmd1): Use getEnv, not GETENV.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-utility.boot (RECLAIM): Don't error.
 
 2010-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
