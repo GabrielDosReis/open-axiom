@@ -1,5 +1,9 @@
 2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/list.spad.pamphlet (IndexedList): Don't use NEQ.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (MRP): Remove.
 	(SFP): Likewise.
 	* interp/i-syscmd.boot (compileAsharpCmd1): Use getEnv, not GETENV.

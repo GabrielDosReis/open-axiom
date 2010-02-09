@@ -217,7 +217,7 @@
       (SEQ (LETT |y| NIL |ILIST;coerce;$Of;21|)
            (LETT |s| (SPADCALL |x| (|getShellEntry| $ 44))
                  |ILIST;coerce;$Of;21|)
-           (SEQ G190 (COND ((NULL (NEQ |x| |s|)) (GO G191)))
+           (SEQ G190 (COND ((NULL (NOT (EQ |x| |s|))) (GO G191)))
                 (SEQ (LETT |y|
                            (CONS (SPADCALL (|SPADfirst| |x|)
                                      (|getShellEntry| $ 45))
@@ -237,7 +237,8 @@
                                |ILIST;coerce;$Of;21|)
                          (SEQ G190
                               (COND
-                                ((NULL (NEQ |s| (CDR |x|))) (GO G191)))
+                                ((NULL (NOT (EQ |s| (CDR |x|))))
+                                 (GO G191)))
                               (SEQ (LETT |x| (CDR |x|)
                                     |ILIST;coerce;$Of;21|)
                                    (EXIT
