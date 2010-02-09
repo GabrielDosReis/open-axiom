@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -626,7 +626,7 @@ lassocShift(x,l) ==
     EQUAL(x,CAR QCAR y) => return (result := QCAR y)
     y:= QCDR y
   result =>
-    if NEQ(y,l) then
+    if not EQ(y,l) then
       QRPLACA(y,CAR l)
       QRPLACA(l,result)
     QCDR result
@@ -638,7 +638,7 @@ lassocShiftWithFunction(x,l,fn) ==
     FUNCALL(fn,x,CAR QCAR y) => return (result := QCAR y)
     y:= QCDR y
   result =>
-    if NEQ(y,l) then
+    if not EQ(y,l) then
       QRPLACA(y,CAR l)
       QRPLACA(l,result)
     QCDR result
@@ -650,7 +650,7 @@ lassocShiftQ(x,l) ==
     EQ(x,CAR CAR y) => return (result := CAR y)
     y:= CDR y
   result =>
-    if NEQ(y,l) then
+    if not EQ(y,l) then
       RPLACA(y,CAR l)
       RPLACA(l,result)
     CDR result
@@ -662,7 +662,7 @@ lassocShiftQ(x,l) ==
 --     EQ(x,CDR CAR y) => return (result := CAR y)
 --     y:= CDR y
 --   result =>
---     if NEQ(y,l) then
+--     if not EQ(y,l) then
 --       RPLACA(y,CAR l)
 --       RPLACA(l,result)
 --     CAR result
