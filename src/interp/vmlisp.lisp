@@ -227,8 +227,6 @@
 
 (defmacro ne (a b) `(not (equal ,a ,b)))
 
-(defmacro neq (a b) `(not (eq ,a ,b)))
-
 (defmacro nreverse0 (x)
   (if (atom x)
       `(if (atom ,x) ,x (nreverse ,x))
