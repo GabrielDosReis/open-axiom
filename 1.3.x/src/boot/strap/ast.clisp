@@ -2239,9 +2239,9 @@
         (LIST 'DEFTYPE |op| |args| (|backquote| |body| |args|))))))
 
 (DEFCONSTANT |$NativeSimpleDataTypes|
-    '(|char| |byte| |int| |int8| |uint8| |int16| |uint16| |int32|
-             |uint32| |int64| |uint64| |float| |float32| |double|
-             |float64|))
+    '(|char| |byte| |int| |pointer| |int8| |uint8| |int16| |uint16|
+             |int32| |uint32| |int64| |uint64| |float| |float32|
+             |double| |float64|))
 
 (DEFCONSTANT |$NativeSimpleReturnTypes|
     (APPEND |$NativeSimpleDataTypes| '(|void| |string|)))
@@ -2287,7 +2287,8 @@
               ((|%hasFeature| :SBCL)
                (LIST (|bfColonColon| 'SB-ALIEN 'UNSIGNED) 8))
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'UINT8))
-              ((|%hasFeature| :ECL) :UNSIGNED-BYTE)
+              ((OR (|%hasFeature| :ECL) (|%hasFeature| :CLOZURE))
+               :UNSIGNED-BYTE)
               (#0# (|nativeType| '|char|))))
            ((EQ |t| '|int16|)
             (COND
@@ -2296,6 +2297,7 @@
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'INT16))
               ((AND (|%hasFeature| :ECL) (|%hasFeature| :UINT16-T))
                :INT16-T)
+              ((|%hasFeature| :CLOZURE) :SIGNED-HALFWORD)
               (#0# (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|uint16|)
             (COND
@@ -2304,6 +2306,7 @@
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'UINT16))
               ((AND (|%hasFeature| :ECL) (|%hasFeature| :UINT16-T))
                :UINT16-T)
+              ((|%hasFeature| :CLOZURE) :UNSIGNED-HALFWORD)
               (#0# (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|int32|)
             (COND
@@ -2312,6 +2315,7 @@
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'INT32))
               ((AND (|%hasFeature| :ECL) (|%hasFeature| :UINT32-T))
                :INT32-T)
+              ((|%hasFeature| :CLOZURE) :SIGNED-FULLWORD)
               (#0# (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|uint32|)
             (COND
@@ -2320,6 +2324,7 @@
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'INT32))
               ((AND (|%hasFeature| :ECL) (|%hasFeature| :UINT32-T))
                :UINT32-T)
+              ((|%hasFeature| :CLOZURE) :UNSIGNED-FULLWORD)
               (#0# (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|int64|)
             (COND
@@ -2328,6 +2333,7 @@
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'INT64))
               ((AND (|%hasFeature| :ECL) (|%hasFeature| :UINT64-T))
                :INT64-T)
+              ((|%hasFeature| :CLOZURE) :SIGNED-DOUBLEWORD)
               (#0# (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|uint64|)
             (COND
@@ -2336,9 +2342,19 @@
               ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'UINT64))
               ((AND (|%hasFeature| :ECL) (|%hasFeature| :UINT64-T))
                :UINT64-T)
+              ((|%hasFeature| :CLOZURE) :UNSIGNED-DOUBLEWORD)
               (#0# (|unknownNativeTypeError| |t|))))
            ((EQ |t| '|float32|) (|nativeType| '|float|))
            ((EQ |t| '|float64|) (|nativeType| '|double|))
+           ((EQ |t| '|pointer|)
+            (COND
+              ((|%hasFeature| :GCL) '|fixnum|)
+              ((|%hasFeature| :ECL) :POINTER-VOID)
+              ((|%hasFeature| :SBCL)
+               (LIST '* (|bfColonColon| 'SB-ALIEN 'VOID)))
+              ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
+              ((|%hasFeature| :CLOZURE) :ADDRESS)
+              (#0# (|unknownNativeTypeError| |t|))))
            (#0# (|unknownNativeTypeError| |t|))))
         ((EQ (CAR |t|) '|buffer|)
          (COND
@@ -2346,14 +2362,10 @@
            ((|%hasFeature| :ECL) :OBJECT)
            ((|%hasFeature| :SBCL) (LIST '* (|nativeType| (CADR |t|))))
            ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
+           ((|%hasFeature| :CLOZURE)
+            (LIST :* (|nativeType| (CADR |t|))))
            (#0# (|unknownNativeTypeError| |t|))))
-        ((EQ (CAR |t|) '|buffer|)
-         (COND
-           ((|%hasFeature| :GCL) '|fixnum|)
-           ((|%hasFeature| :ECL) :OBJECT)
-           ((|%hasFeature| :SBCL) (LIST '* (|nativeType| (CADR |t|))))
-           ((|%hasFeature| :CLISP) (|bfColonColon| 'FFI 'C-POINTER))
-           (#0# (|unknownNativeTypeError| |t|))))
+        ((EQ (CAR |t|) '|pointer|) (|nativeType| '|pointer|))
         (#0# (|unknownNativeTypeError| |t|))))))
 
 (DEFUN |nativeReturnType| (|t|)
@@ -2383,7 +2395,7 @@
                   "missing modifier for argument type for a native function"))
              ((NOT (MEMBER |c| '(|buffer| |pointer|)))
               (|coreError|
-                  "expect 'buffer' or 'pointer' type instance"))
+                  "expected 'buffer' or 'pointer' type instance"))
              ((NOT (MEMBER |t'| |$NativeSimpleDataTypes|))
               (|coreError| "expected simple native data type"))
              (#0# (|nativeType| (CADR |t|))))))))))
@@ -2399,7 +2411,7 @@
     (RETURN
       (COND
         ((OR (|%hasFeature| :GCL) (|%hasFeature| :ECL)
-             (|%hasFeature| :CLISP))
+             (|%hasFeature| :CLISP) (|%hasFeature| :CLOZURE))
          |a|)
         ((|%hasFeature| :SBCL)
          (COND
@@ -2684,7 +2696,7 @@
                 (#0#
                  (|coreError|
                      "unknown argument to buffer type constructor"))))
-             ((EQ |c| '|pointer|) '||)
+             ((EQ |c| '|pointer|) "")
              (#0# (|coreError| "unknown type constructor")))))))))
 
 (DEFUN |genCLISPnativeTranslation| (|op| |s| |t| |op'|)
@@ -2964,17 +2976,22 @@
                     (SETQ |unstableArgs| (CONS |a| |unstableArgs|)))))))
             (SETQ |bfVar#174| (CDR |bfVar#174|))
             (SETQ |bfVar#175| (CDR |bfVar#175|))))
+        (SETQ |op'|
+              (COND
+                ((|%hasFeature| :WIN32)
+                 (CONCAT "_" (SYMBOL-NAME |op'|)))
+                (#1='T (SYMBOL-NAME |op'|))))
         (COND
           ((NULL |unstableArgs|)
            (LIST (LIST 'DEFUN |op| |args|
                        (CONS (INTERN "ALIEN-FUNCALL" "SB-ALIEN")
                              (CONS (LIST
                                     (INTERN "EXTERN-ALIEN" "SB-ALIEN")
-                                    (SYMBOL-NAME |op'|)
+                                    |op'|
                                     (CONS 'FUNCTION
                                      (CONS |rettype| |argtypes|)))
                                    |args|)))))
-          ('T
+          (#1#
            (LIST (LIST 'DEFUN |op| |args|
                        (LIST (|bfColonColon| 'SB-SYS
                                  'WITH-PINNED-OBJECTS)
@@ -2983,10 +3000,152 @@
                                    (CONS
                                     (LIST
                                      (INTERN "EXTERN-ALIEN" "SB-ALIEN")
-                                     (SYMBOL-NAME |op'|)
+                                     |op'|
                                      (CONS 'FUNCTION
                                       (CONS |rettype| |argtypes|)))
                                     (NREVERSE |newArgs|))))))))))))
+
+(DEFUN |genCLOZUREnativeTranslation| (|op| |s| |t| |op'|)
+  (PROG (|call| |p'| |ISTMP#3| |ISTMP#2| |ISTMP#1| |aryPairs|
+                |strPairs| |parms| |argtypes| |rettype|)
+    (RETURN
+      (PROGN
+        (SETQ |rettype| (|nativeReturnType| |t|))
+        (SETQ |argtypes|
+              (LET ((|bfVar#177| NIL) (|bfVar#176| |s|) (|x| NIL))
+                (LOOP
+                  (COND
+                    ((OR (ATOM |bfVar#176|)
+                         (PROGN (SETQ |x| (CAR |bfVar#176|)) NIL))
+                     (RETURN (NREVERSE |bfVar#177|)))
+                    (#0='T
+                     (SETQ |bfVar#177|
+                           (CONS (|nativeArgumentType| |x|)
+                                 |bfVar#177|))))
+                  (SETQ |bfVar#176| (CDR |bfVar#176|)))))
+        (SETQ |parms|
+              (LET ((|bfVar#179| NIL) (|bfVar#178| |s|) (|x| NIL))
+                (LOOP
+                  (COND
+                    ((OR (ATOM |bfVar#178|)
+                         (PROGN (SETQ |x| (CAR |bfVar#178|)) NIL))
+                     (RETURN (NREVERSE |bfVar#179|)))
+                    (#0#
+                     (SETQ |bfVar#179|
+                           (CONS (GENSYM "parm") |bfVar#179|))))
+                  (SETQ |bfVar#178| (CDR |bfVar#178|)))))
+        (SETQ |strPairs| NIL)
+        (SETQ |aryPairs| NIL)
+        (LET ((|bfVar#180| |parms|) (|p| NIL) (|bfVar#181| |s|)
+              (|x| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#180|)
+                   (PROGN (SETQ |p| (CAR |bfVar#180|)) NIL)
+                   (ATOM |bfVar#181|)
+                   (PROGN (SETQ |x| (CAR |bfVar#181|)) NIL))
+               (RETURN NIL))
+              (#0#
+               (COND
+                 ((EQ |x| '|string|)
+                  (SETQ |strPairs|
+                        (CONS (CONS |p| (GENSYM "loc")) |strPairs|)))
+                 ((AND (CONSP |x|)
+                       (PROGN
+                         (SETQ |ISTMP#1| (CDR |x|))
+                         (AND (CONSP |ISTMP#1|)
+                              (EQ (CDR |ISTMP#1|) NIL)
+                              (PROGN
+                                (SETQ |ISTMP#2| (CAR |ISTMP#1|))
+                                (AND (CONSP |ISTMP#2|)
+                                     (EQ (CAR |ISTMP#2|) '|buffer|)
+                                     (PROGN
+                                       (SETQ |ISTMP#3| (CDR |ISTMP#2|))
+                                       (AND (CONSP |ISTMP#3|)
+                                        (EQ (CDR |ISTMP#3|) NIL))))))))
+                  (SETQ |aryPairs|
+                        (CONS (CONS |p| (GENSYM "loc")) |aryPairs|))))))
+            (SETQ |bfVar#180| (CDR |bfVar#180|))
+            (SETQ |bfVar#181| (CDR |bfVar#181|))))
+        (COND
+          ((|%hasFeature| :DARWIN) (SETQ |op'| (CONCAT '_ |op'|))))
+        (SETQ |call|
+              (CONS (|bfColonColon| 'CCL 'EXTERNAL-CALL)
+                    (CONS (STRING |op'|)
+                          (APPEND (LET ((|bfVar#184| NIL)
+                                        (|bfVar#182| |argtypes|)
+                                        (|x| NIL) (|bfVar#183| |parms|)
+                                        (|p| NIL))
+                                    (LOOP
+                                      (COND
+                                        ((OR (ATOM |bfVar#182|)
+                                          (PROGN
+                                            (SETQ |x|
+                                             (CAR |bfVar#182|))
+                                            NIL)
+                                          (ATOM |bfVar#183|)
+                                          (PROGN
+                                            (SETQ |p|
+                                             (CAR |bfVar#183|))
+                                            NIL))
+                                         (RETURN
+                                           (NREVERSE |bfVar#184|)))
+                                        (#0#
+                                         (SETQ |bfVar#184|
+                                          (APPEND
+                                           (REVERSE
+                                            (LIST |x|
+                                             (COND
+                                               ((SETQ |p'|
+                                                 (ASSOC |p| |strPairs|))
+                                                (CDR |p'|))
+                                               ((SETQ |p'|
+                                                 (ASSOC |p| |aryPairs|))
+                                                (CDR |p'|))
+                                               ('T |p|))))
+                                           |bfVar#184|))))
+                                      (SETQ |bfVar#182|
+                                       (CDR |bfVar#182|))
+                                      (SETQ |bfVar#183|
+                                       (CDR |bfVar#183|))))
+                                  (CONS |rettype| NIL)))))
+        (COND
+          ((EQ |t| '|string|)
+           (SETQ |call|
+                 (LIST (|bfColonColon| 'CCL 'GET-CSTRING) |call|))))
+        (LET ((|bfVar#185| |aryPairs|) (|arg| NIL))
+          (LOOP
+            (COND
+              ((OR (ATOM |bfVar#185|)
+                   (PROGN (SETQ |arg| (CAR |bfVar#185|)) NIL))
+               (RETURN NIL))
+              (#0#
+               (SETQ |call|
+                     (LIST (|bfColonColon| 'CCL
+                               'WITH-POINTER-TO-IVECTOR)
+                           (LIST (CDR |arg|) (CAR |arg|)) |call|))))
+            (SETQ |bfVar#185| (CDR |bfVar#185|))))
+        (COND
+          (|strPairs|
+              (SETQ |call|
+                    (LIST (|bfColonColon| 'CCL 'WITH-CSTRS)
+                          (LET ((|bfVar#187| NIL)
+                                (|bfVar#186| |strPairs|) (|arg| NIL))
+                            (LOOP
+                              (COND
+                                ((OR (ATOM |bfVar#186|)
+                                     (PROGN
+                                       (SETQ |arg| (CAR |bfVar#186|))
+                                       NIL))
+                                 (RETURN (NREVERSE |bfVar#187|)))
+                                (#0#
+                                 (SETQ |bfVar#187|
+                                       (CONS
+                                        (LIST (CDR |arg|) (CAR |arg|))
+                                        |bfVar#187|))))
+                              (SETQ |bfVar#186| (CDR |bfVar#186|))))
+                          |call|))))
+        (LIST (LIST 'DEFUN |op| |parms| |call|))))))
 
 (DEFUN |genImportDeclaration| (|op| |sig|)
   (PROG (|s| |t| |m| |ISTMP#2| |op'| |ISTMP#1|)
@@ -3032,6 +3191,8 @@
               (|genCLISPnativeTranslation| |op| |s| |t| |op'|))
              ((|%hasFeature| :ECL)
               (|genECLnativeTranslation| |op| |s| |t| |op'|))
+             ((|%hasFeature| :CLOZURE)
+              (|genCLOZUREnativeTranslation| |op| |s| |t| |op'|))
              (#1#
               (|fatalError|
                   "import declaration not implemented for this Lisp")))))))))
