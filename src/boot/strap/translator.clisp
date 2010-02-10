@@ -1307,6 +1307,8 @@
      (EVAL (LIST (|bfColonColon| 'FFI 'DEFAULT-FOREIGN-LIBRARY) |m|)))
     ((|%hasFeature| :ECL)
      (EVAL (LIST (|bfColonColon| 'FFI 'LOAD-FOREIGN-LIBRARY) |m|)))
+    ((|%hasFeature| :CLOZURE)
+     (EVAL (LIST (|bfColonColon| 'CCL 'OPEN-SHARED-LIBRARY) |m|)))
     (T (|coreError|
            "don't know how to load a dynamically linked module"))))
 
