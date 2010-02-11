@@ -22,6 +22,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;~;2$;5|)) 
 
+(PUT '|BOOLEAN;~;2$;5| '|SPADreplace| 'NOT) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;and;3$;6|)) 
 
@@ -94,7 +96,7 @@
 
 (DEFUN |BOOLEAN;not;2$;4| (|b| $) (DECLARE (IGNORE $)) (NOT |b|)) 
 
-(DEFUN |BOOLEAN;~;2$;5| (|b| $) (COND (|b| NIL) ('T T))) 
+(DEFUN |BOOLEAN;~;2$;5| (|b| $) (DECLARE (IGNORE $)) (NOT |b|)) 
 
 (DEFUN |BOOLEAN;and;3$;6| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -184,15 +186,15 @@
                    (FUNCALL (|dispatchFunction| |BOOLEAN;true;$;2|) $))
              (CONS IDENTITY
                    (FUNCALL (|dispatchFunction| |BOOLEAN;false;$;3|) $))
-             |BOOLEAN;not;2$;4| (|Boolean|) (0 . |false|) (4 . |true|)
-             |BOOLEAN;~;2$;5| |BOOLEAN;and;3$;6| |BOOLEAN;/\\;3$;7|
-             |BOOLEAN;or;3$;8| |BOOLEAN;\\/;3$;9| |BOOLEAN;xor;3$;10|
-             |BOOLEAN;nor;3$;11| |BOOLEAN;nand;3$;12| |BOOLEAN;=;3$;13|
-             |BOOLEAN;implies;3$;14| |BOOLEAN;equiv;3$;15|
-             |BOOLEAN;<;3$;16| (|NonNegativeInteger|)
-             |BOOLEAN;size;Nni;17| (|Integer|) (8 . |even?|)
-             (|PositiveInteger|) |BOOLEAN;index;Pi$;18| (13 . |One|)
-             |BOOLEAN;lookup;$Pi;19| (17 . |random|)
+             |BOOLEAN;not;2$;4| |BOOLEAN;~;2$;5| |BOOLEAN;and;3$;6|
+             |BOOLEAN;/\\;3$;7| |BOOLEAN;or;3$;8| |BOOLEAN;\\/;3$;9|
+             |BOOLEAN;xor;3$;10| (|Boolean|) (0 . |false|)
+             |BOOLEAN;nor;3$;11| (4 . |true|) |BOOLEAN;nand;3$;12|
+             |BOOLEAN;=;3$;13| |BOOLEAN;implies;3$;14|
+             |BOOLEAN;equiv;3$;15| |BOOLEAN;<;3$;16|
+             (|NonNegativeInteger|) |BOOLEAN;size;Nni;17| (|Integer|)
+             (8 . |even?|) (|PositiveInteger|) |BOOLEAN;index;Pi$;18|
+             (13 . |One|) |BOOLEAN;lookup;$Pi;19| (17 . |random|)
              |BOOLEAN;random;$;20| (|InputForm|)
              |BOOLEAN;convert;$If;21| (|OutputForm|)
              |BOOLEAN;coerce;$Of;22| (|SingleInteger|) (|String|))
@@ -212,18 +214,18 @@
                                (|ConvertibleTo| 35) (|BasicType|)
                                (|CoercibleTo| 37))
                             (|makeByteWordVec2| 40
-                                '(0 10 0 11 0 10 0 12 1 27 10 0 28 0 29
-                                  0 31 0 27 0 33 2 0 10 0 0 1 1 0 0 0
-                                  13 2 0 0 0 0 18 0 0 0 7 1 0 0 0 6 0 0
-                                  25 26 0 0 0 34 2 0 0 0 0 16 1 0 0 0 9
-                                  2 0 0 0 0 19 2 0 0 0 0 20 0 0 0 1 2 0
+                                '(0 16 0 17 0 16 0 19 1 27 16 0 28 0 29
+                                  0 31 0 27 0 33 2 0 16 0 0 1 1 0 0 0
+                                  10 2 0 0 0 0 15 0 0 0 7 1 0 0 0 6 0 0
+                                  25 26 0 0 0 34 2 0 0 0 0 13 1 0 0 0 9
+                                  2 0 0 0 0 18 2 0 0 0 0 20 0 0 0 1 2 0
                                   0 0 0 1 0 0 0 1 2 0 0 0 0 1 1 0 29 0
                                   32 1 0 40 0 1 1 0 0 29 30 2 0 0 0 0
                                   22 1 0 39 0 1 0 0 0 8 2 0 0 0 0 23 1
-                                  0 35 0 36 1 0 37 0 38 2 0 10 0 0 1 2
-                                  0 0 0 0 14 2 0 0 0 0 17 2 0 10 0 0 1
-                                  2 0 10 0 0 1 2 0 10 0 0 21 2 0 10 0 0
-                                  1 2 0 10 0 0 24 2 0 0 0 0 15)))))
+                                  0 35 0 36 1 0 37 0 38 2 0 16 0 0 1 2
+                                  0 0 0 0 11 2 0 0 0 0 14 2 0 16 0 0 1
+                                  2 0 16 0 0 1 2 0 16 0 0 21 2 0 16 0 0
+                                  1 2 0 16 0 0 24 2 0 0 0 0 12)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Boolean| 'NILADIC T) 

@@ -326,7 +326,7 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
     false         == NIL$Foreign(Builtin)
     sample()      == true
     not b         == NOT b
-    ~ b           == (b => false; true)
+    ~ b           == NOT b
     a and b       == AND(a,b)
     a /\ b        == AND(a,b)
     a or b        == OR(a,b)
