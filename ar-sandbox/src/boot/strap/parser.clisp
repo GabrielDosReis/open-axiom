@@ -758,6 +758,10 @@
   (AND (OR (|bpException|) (|bpTrap|))
        (|bpPush| (|%Catch| (|bpPop1|)))))
 
+(DEFUN |bpLeave| ()
+  (AND (|bpEqKey| 'LEAVE) (OR (|bpLogical|) (|bpTrap|))
+       (|bpPush| (|%LeaveAst| (|bpPop1|)))))
+
 (DEFUN |bpReturn| ()
   (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))
            (|bpPush| (|bfReturnNoName| (|bpPop1|))))

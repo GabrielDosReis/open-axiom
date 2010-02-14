@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-01-30], 
+AC_INIT([OpenAxiom], [1.4.0-2010-02-11], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -166,7 +166,7 @@ if test -z $axiom_lisp; then
 fi
 ## We need to build our own GCL if none is avalaible.
 if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp])
+    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl ccl64])
     ## A lisp may not be available AND the GCL source may also
     ## be missing.  Instruct user to either build one or get
     ## the dependencies from our website.
@@ -261,6 +261,9 @@ case $axiom_include_gcl,$axiom_lisp in
            *"Armed Bear Common Lisp"*) 
                axiom_lisp_flavor=abcl 
                ;;
+           *"Clozure Common Lisp"*)
+               axiom_lisp_flavor=clozure
+               ;;
        esac
        AC_MSG_RESULT([$axiom_lisp_flavor])
 esac
@@ -325,6 +328,10 @@ case $axiom_lisp_flavor in
        axiom_quiet_flags='--quiet'
        axiom_eval_flags='-norc -x'
        ;;
+    clozure)
+       axiom_quiet_flags='--quiet --no-init'
+       axiom_eval_flags='--eval'
+       ;;
     *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $axiom_lisp]) ;;
 esac
 AC_SUBST(axiom_quiet_flags)
@@ -350,6 +357,22 @@ if test -z $axiom_fasl_type; then
     AC_MSG_RESULT([$axiom_fasl_type])
 fi
 AC_SUBST(axiom_fasl_type)
+
+## Does it make sense to pretend that we support multithreading?
+oa_enable_threads=no
+AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
+              [case $enableval in
+                  yes|no) oa_enable_threads=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
+               esac])
+
+# GNU compiler wants to have a hint about multithreading.
+case $GCC,$oa_enable_threads in
+   yes,yes)
+     axiom_cflags="$axiom_cflags -pthread"
+esac
+
+AC_SUBST(oa_enable_threads)
 
 AC_SUBST(axiom_all_prerequisites)
 axiom_optimize_options=speed
@@ -668,6 +691,16 @@ case $axiom_lisp_flavor in
       float_type=':float'
       double_type=':double'
       string_type=':cstring'
+      ;;
+   clozure)
+      void_type=':void'
+      # FIXME: this is not really what we want, but good enough for now.
+      char_type=':unsigned-byte'
+      int_type=':signed-fullword'
+      float_type=':single-float'
+      double_type=':double-float'
+      # Clozure CL wants you to deal with your own mess
+      string_type=':address'
       ;;
    *)
       AC_MSG_ERROR([We do not know how to translate native types for this Lisp])

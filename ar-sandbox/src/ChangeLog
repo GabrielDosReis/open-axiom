@@ -1,3 +1,64 @@
+2010-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (~$Boolean): Work around silly bug
+	in CLisp-2.48.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (NEQ): Remove.
+	* interp/clam.boot (lassocShift): Don't use it.
+	(lassocShiftWithFunction): Likewise.
+	(lassocShiftQ): Likewise.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/list.spad.pamphlet (IndexedList): Don't use NEQ.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (MRP): Remove.
+	(SFP): Likewise.
+	* interp/i-syscmd.boot (compileAsharpCmd1): Use getEnv, not GETENV.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (RECLAIM): Don't error.
+
+2010-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in ("AxiomCore"): Use Clozure CL's package CCL.
+
+2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for CLozure CL.
+	* lisp/core.lisp.in: Add support for Clozure CL.
+	(main): Remove as unused.
+	* driver/utils.h (openaxiom_runtime): Add openaxiom_clozure_runtime.
+	* boot/translator.boot (loadNativeModule): Handle Clozure CL.
+	* boot/ast.boot (nativeType): Handle Clozure's FFI types.
+	(nativeReturnType): Likewise.
+	(coerceToNativeType): Likewise.
+	(genCLOZUREnativeTranslation): New.
+	(genImportDeclaration): Use it.
+	* interp/vmlisp.lisp (SINTP): Remove duplicate definition.
+	(SMINTP): Likewise.
+	(ZERO?): Likewise.
+	(GCMSG): Reorganize definition.
+	(BPINAME): Likewise.
+
+2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/daase.lisp: Remove conditionals on :CCL.
+	* interp/fname.lisp: Likewise.
+	* interp/foam_l.lisp: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/nlib.lisp: Likewise.
+	* interp/patches.lisp: Likewise.
+	* interp/sfsfun-l.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+
 2010-01-03  Aleksej Saushev  <asau@inbox.ru>
 
 	* hyper/addfile.c (strpostfix): Simplify.

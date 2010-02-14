@@ -588,7 +588,7 @@ compileAsharpCmd1 args ==
     if not beQuiet then sayKeyedMsg("S2IZ0038A",[namestring args, asharpArgs])
 
     command :=
-     STRCONC(STRCONC(GETENV('"ALDORROOT"),'"/bin/"),_
+     STRCONC(STRCONC(getEnv('"ALDORROOT"),'"/bin/"),_
                "aldor ", asharpArgs, '" ", namestring args)
     rc := runCommand command
 
@@ -2380,7 +2380,7 @@ savesystem l ==
 )if not %hasFeature KEYWORD::ECL
   AxiomCore::saveCore SYMBOL_-NAME first l
 )else
-  fatalError '"don't know how to same image"
+  fatalError '"don't know how to save image"
 )endif
 
 --% )show

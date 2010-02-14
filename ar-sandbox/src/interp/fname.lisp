@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -84,8 +84,6 @@
   (if (probe-file (namestring f)) 't nil))
 
 (defun |fnameReadable?| (f)
-#+:CCL (file-readablep f)
-#-:CCL
   (let ((s (open f :direction :input :if-does-not-exist nil)))
     (cond (s (close s) 't) ('t nil)) )
   )

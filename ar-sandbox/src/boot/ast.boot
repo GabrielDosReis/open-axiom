@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1275,43 +1275,50 @@ nativeType t ==
     t in '(byte uint8) =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),8]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT8")
-      %hasFeature KEYWORD::ECL => KEYWORD::UNSIGNED_-BYTE
+      %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::CLOZURE =>
+        KEYWORD::UNSIGNED_-BYTE
       nativeType "char"           -- approximate by 'char' for GCL
     t = "int16" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),16]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT16")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
          KEYWORD::INT16_-T
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-HALFWORD
       unknownNativeTypeError t
     t = "uint16" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),16]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT16")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT16_-T =>
          KEYWORD::UINT16_-T
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-HALFWORD
       unknownNativeTypeError t
     t = "int32" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),32]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
          KEYWORD::INT32_-T
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-FULLWORD
       unknownNativeTypeError t
     t = "uint32" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),32]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT32")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT32_-T =>
          KEYWORD::UINT32_-T
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-FULLWORD
       unknownNativeTypeError t
     t = "int64" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","SIGNED"),64]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","INT64")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
          KEYWORD::INT64_-T
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::SIGNED_-DOUBLEWORD
       unknownNativeTypeError t
     t = "uint64" =>
       %hasFeature KEYWORD::SBCL => [bfColonColon("SB-ALIEN","UNSIGNED"),64]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","UINT64")
       %hasFeature KEYWORD::ECL and %hasFeature KEYWORD::UINT64_-T =>
          KEYWORD::UINT64_-T
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::UNSIGNED_-DOUBLEWORD
       unknownNativeTypeError t
     t = "float32" => nativeType "float"
     t = "float64" => nativeType "double"
@@ -1320,6 +1327,7 @@ nativeType t ==
       %hasFeature KEYWORD::ECL => KEYWORD::POINTER_-VOID
       %hasFeature KEYWORD::SBCL => ["*",bfColonColon("SB-ALIEN","VOID")]
       %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
+      %hasFeature KEYWORD::CLOZURE => KEYWORD::ADDRESS
       unknownNativeTypeError t
     unknownNativeTypeError t
   -- composite, reference type.
@@ -1328,12 +1336,12 @@ nativeType t ==
     %hasFeature KEYWORD::ECL => KEYWORD::OBJECT
     %hasFeature KEYWORD::SBCL => ["*",nativeType second t]
     %hasFeature KEYWORD::CLISP => bfColonColon("FFI","C-POINTER")
+    %hasFeature KEYWORD::CLOZURE => [KEYWORD::_*, nativeType second t]
     unknownNativeTypeError t
   first t = "pointer" =>
     -- we don't bother looking at what the pointer points to.
     nativeType "pointer"
   unknownNativeTypeError t
-
 
 ++ Check that `t' is a valid return type for a native function, and
 ++ returns its translation
@@ -1341,7 +1349,6 @@ nativeReturnType t ==
   t in $NativeSimpleReturnTypes => nativeType t
   coreError strconc('"invalid return type for native function: ", 
               SYMBOL_-NAME t)
-
 
 ++ Check that `t' is a valid parameter type for a native function,
 ++ and returns its translation.
@@ -1363,7 +1370,6 @@ nativeArgumentType t ==
     coreError '"expected simple native data type"
   nativeType second t
   
-
 ++ True if objects of type native type `t' are sensible to GC.
 needsStableReference? t ==
   t is [m,:.] and m in '(readonly writeonly readwrite)
@@ -1371,9 +1377,9 @@ needsStableReference? t ==
 ++ coerce argument `a' to native type `t', in preparation for
 ++ a call to a native functions.
 coerceToNativeType(a,t) ==
-  -- GCL, ECL, and CLISP don't do it this way.
+  -- GCL, ECL, CLISP, and CLOZURE don't do it this way.
   %hasFeature KEYWORD::GCL or %hasFeature KEYWORD::ECL
-     or %hasFeature KEYWORD::CLISP  => a
+     or %hasFeature KEYWORD::CLISP or %hasFeature KEYWORD::CLOZURE => a
   %hasFeature KEYWORD::SBCL =>
     not needsStableReference? t => a
     [.,[c,y]] := t
@@ -1483,7 +1489,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   parms := [GENSYM '"parm" for x in s]  -- parameters of the forward decl.
 
   -- Now, separate non-simple data from the rest.  This is a triple-list
-  -- of the form ((parameter boot-time . ffi-type) ...)
+  -- of the form ((parameter boot-type . ffi-type) ...)
   unstableArgs := nil
   for p in parms for x in s for y in argtypes repeat
     needsStableReference? x =>
@@ -1563,6 +1569,57 @@ genSBCLnativeTranslation(op,s,t,op') ==
 	  ["FUNCTION",rettype,:argtypes]], :nreverse newArgs]]]]
 
 
+
+++ Generate Clozure CL's equivalent of import declaration
+genCLOZUREnativeTranslation(op,s,t,op') ==
+  -- check parameter types and return types.
+  rettype := nativeReturnType t
+  argtypes := [nativeArgumentType x for x in s]
+
+  -- Build parameter list for the forwarding function
+  parms := [GENSYM '"parm" for x in s]
+
+  -- Separate string arguments and array arguments from scalars.
+  -- These array arguments need to be pinned down, and the string
+  -- arguments need to stored in a stack-allocaed NTBS.
+  strPairs := nil 
+  aryPairs := nil
+  for p in parms for x in s repeat
+    x = "string" => strPairs := [[p,:GENSYM '"loc"], :strPairs]
+    x is [.,["buffer",.]] => aryPairs := [[p,:GENSYM '"loc"], :aryPairs]
+
+  -- Build the actual foreign function call.
+  -- Note that Clozure CL does not mangle foreign function call for
+  -- us, so we're left with more platform dependencies than needed.
+  if %hasFeature KEYWORD::DARWIN then
+    op' := strconc("__",op')
+  call := [bfColonColon("CCL","EXTERNAL-CALL"), STRING op', :args, rettype]
+            where
+              args() == [:[x, parm] for x in argtypes for p in parms]
+              parm() ==
+                    p' := ASSOC(p, strPairs) => rest p'
+                    p' := ASSOC(p, aryPairs) => rest p'
+                    p
+
+  -- If the foreign call returns a C-string, turn it into a Lisp string.
+  -- Note that if the C-string was malloc-ed, this will leak storage.
+  if t = "string" then
+    call := [bfColonColon("CCL","GET-CSTRING"), call]
+
+  -- If we have array arguments from Boot, bind pointers to initial data.
+  for arg in aryPairs repeat
+    call := [bfColonColon("CCL", "WITH-POINTER-TO-IVECTOR"),
+              [rest arg, first arg], call]
+
+  -- Finally, if we have string arguments from Boot, copy them to
+  -- stack-allocated NTBS.
+  if strPairs ~= nil then
+    call := [bfColonColon("CCL", "WITH-CSTRS"),
+              [[rest arg, first arg] for arg in strPairs], call]
+
+  -- Finally, return the definition form
+  [["DEFUN", op, parms, call]]
+
 ++ Generate an import declaration for `op' as equivalent of the
 ++ foreign signature `sig'.  Here, `foreign' operationally means that
 ++ the entity is from the C language world. 
@@ -1575,6 +1632,7 @@ genImportDeclaration(op, sig) ==
   %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::CLISP => genCLISPnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::ECL => genECLnativeTranslation(op,s,t,op')
+  %hasFeature KEYWORD::CLOZURE => genCLOZUREnativeTranslation(op,s,t,op')
   fatalError '"import declaration not implemented for this Lisp"
 
 

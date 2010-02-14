@@ -78,14 +78,6 @@
         (2 'EQUAL)
         (t "error unknown hash table class")))
 
-#+:CCL
-(defun HASHTABLE-CLASS (table)
-  (case (hashtable-flavour table)
-        (0 'EQ)
-        (1 'EQL)
-        (2 'EQUAL)
-        (t (format nil "error unknown hash table class ~a" (hashtable-flavour table)))))
-
 (define-function 'HCOUNT #'hash-table-count)
 
 ;17.4 Searching and Updating
