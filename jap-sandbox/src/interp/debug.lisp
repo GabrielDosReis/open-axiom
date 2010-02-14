@@ -1136,8 +1136,6 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 
 (defun lisp-break-from-axiom (&rest ignore) 
     (boot::|handleLispBreakLoop| boot::|$BreakMode|))
-#+:CCL (setq lisp:*break-loop* 'boot::lisp-break-from-axiom)
 
-#-:CCL
 (defun interrupt (&rest ignore))
 

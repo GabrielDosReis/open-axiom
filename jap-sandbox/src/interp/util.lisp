@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -208,19 +208,13 @@
 (defun compile-boot-file (file)
   "compile and load a boot file"
   (boot (concat file ".boot") (concat file ".lisp"))
-#-:ccl
   (compile-file (concat file ".lisp"))
-#-:ccl
   (load (concat file "." |$faslType|))
-#+:CCL
-  (load (concat file ".lisp"))
 )
 
 
 ;; Translate a single boot file to common lisp
 (defun translate (file) ;; translates a single boot file
-#+:CCL
-  (setq *package* (find-package "BOOT"))
 #+:AKCL
   (in-package "BOOT")
   (let (*print-level* *print-length* (fn (pathname-name file))
@@ -297,8 +291,6 @@
 (defun |setBootAutloadProperties| (fun-list file-list)
 #+:AKCL
   (mapc #'(lambda (fun) (|setBootAutoLoadProperty| fun file-list)) fun-list)
-#+:CCL
-  (mapc #'(lambda (fun) (lisp::set-autoload fun file-list)) fun-list)
 )
 
 

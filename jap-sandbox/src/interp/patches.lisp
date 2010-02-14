@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -97,14 +97,9 @@
      (type (pathname-type input-file)))
     (cond
      ((string= type "boot")
-#-:CCL
       (boot input-file
          (setq lfile (make-pathname :type "lisp"
                            :defaults input-file)))
-#+:CCL
-      (boot input-file
-         (setq lfile (make-pathname :name (pathname-name input-file)
-                                :type "lisp")))
       (load lfile))
      ((string= type "lisp") (load input-file))
      ((string= type "bbin") (load input-file))
@@ -222,22 +217,16 @@
            (name ))  ;; this is used for printing
 #+(and :gcl (not (or :dos :win32)))
 (defun |xdrOpen| (str dir) (make-xdr-stream :handle (system:xdr-open str) :name str))
-#+:CCL
-(defun |xdrOpen| (str dir) (xdr-open str dir) )
 #+(and :gcl (or :dos :win32))
 (defun |xdrOpen| (str dir) (format t "xdrOpen called"))
 
 #+(and :akcl (not (or :dos :win32)))
 (defun |xdrRead| (xstr r) (system:xdr-read (xdr-stream-handle xstr) r) )
-#+:CCL
-(defun |xdrRead| (xstr r) (xdr-read xstr r) )
 #+(and :gcl (or :dos :win32))
 (defun |xdrRead| (str) (format t "xdrRead called"))
 
 #+(and :akcl (not (or :dos :win32)))
 (defun |xdrWrite| (xstr d) (system:xdr-write (xdr-stream-handle xstr) d) )
-#+:CCL
-(defun |xdrWrite| (xstr d) (xdr-write xstr d) )
 #+(and :gcl (or :dos :win32))
 (defun |xdrWrite| (str) (format t "xdrWrite called"))
 
