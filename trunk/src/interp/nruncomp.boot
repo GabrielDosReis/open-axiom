@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -95,8 +95,8 @@ NRTaddDeltaCode() ==
     nil
 
 deltaTran(item,compItem) ==
-  item is ['domain,lhs,:.] => NRTencode(lhs,compItem)
-  --NOTE: all items but signatures are wrapped with domain forms
+  --NOTE: all items but signatures are wrapped with %domain forms
+  item is ["%domain",lhs,:.] => NRTencode(lhs,compItem)
   [op,:modemap] := item
   [dcSig,[.,[kind,:.]]] := modemap
   [dc,:sig] := dcSig
@@ -203,8 +203,8 @@ genDeltaEntry opMmPair ==
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or not atom dc) then
-    --create "domain" entry to $NRTdeltaList
-      $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
+    --create "%domain" entry to $NRTdeltaList
+      $NRTdeltaList:= [["%domain",NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:= (compOrCroak(odc,$EmptyMode,$e)).expr
@@ -229,7 +229,7 @@ NRTassocIndex x ==
   null x => x
   x = $NRTaddForm => 5
   k := or/[i for i in 1.. for y in $NRTdeltaList
-            | first y = "domain" and second y = x] =>
+            | first y = "%domain" and second y = x] =>
     $NRTbase + $NRTdeltaLength - k
   nil
 
@@ -243,7 +243,7 @@ NRTgetLocalIndex item ==
       MEMQ(item,$formalArgList) => item
     nil
   atom item and null value =>  --give slots to atoms
-    $NRTdeltaList:= [['domain,NRTaddInner item,:value],:$NRTdeltaList]
+    $NRTdeltaList:= [["%domain",NRTaddInner item,:value],:$NRTdeltaList]
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
     index := $NRTbase + $NRTdeltaLength      -- slot number to return
     $NRTdeltaLength := $NRTdeltaLength+1
@@ -251,7 +251,7 @@ NRTgetLocalIndex item ==
   -- when assigning slot to flag values, we don't really want to
   -- compile them.  Rather, we want to record them as if they were atoms.
   flag := isQuasiquote item
-  $NRTdeltaList:= [['domain, NRTaddInner item,:value], :$NRTdeltaList]
+  $NRTdeltaList:= [["%domain", NRTaddInner item,:value], :$NRTdeltaList]
   -- remember the item's place in the `delta list' and its slot number
   -- before the recursive call to the compiler, as that might generate
   -- more references that would extend the `delta list'.
@@ -710,7 +710,7 @@ NRTsubstDelta(initSig) ==
           t = 2 => '_$_$
           t = 5 => $NRTaddForm
           u:= $NRTdeltaList.($NRTdeltaLength+5-t)
-          first u = 'domain => second u
+          first u = "%domain" => second u
           error "bad $NRTdeltaList entry"
         first t in '(Mapping Union Record _:) =>
            [first t,:[replaceSlotTypes(x) for x in rest t]]

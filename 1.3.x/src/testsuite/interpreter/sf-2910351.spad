@@ -1,0 +1,17 @@
+
+)abbrev package BUG Bug
+Bug(): Public == Private where
+  Public == with
+    getCtorKindInString: Identifier -> String    
+    getCtorKind:         Identifier -> ConstructorKind
+  Private == add
+    getCtorKind(c: Identifier): ConstructorKind == 
+      kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
+
+    getCtorKindInString(c: Identifier): String ==
+      k : ConstructorKind := getCtorKind(c)
+      k = category$ConstructorKind =>  "Category"
+      k = package$ConstructorKind  =>  "Package"
+      k = domain$ConstructorKind   => "Domain"
+      "unknown constructor kind! "
+
