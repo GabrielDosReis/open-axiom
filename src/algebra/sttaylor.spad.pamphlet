@@ -111,7 +111,7 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
       ++ revert(a) computes the inverse of a power series \spad{a}
       ++ with respect to composition.
       ++ the series should have constant coefficient 0 and first
-      ++ order coefficient 1.
+      ++ order coefficient should be invertible.
     addiag       : ST ST A -> ST A
       ++ addiag(x) performs diagonal addition of a stream of streams. if x =
       ++ \spad{[[a<0,0>,a<0,1>,..],[a<1,0>,a<1,1>,..],[a<2,0>,a<2,1>,..],..]}
@@ -311,10 +311,11 @@ StreamTaylorSeriesOperations(A): Exports == Implementation where
 
     revert x ==
       empty? x => error "revert should start 0,1,..."
-      zero? frst x =>
-        empty? rst x => error "revert: should start 0,1,..."
-        one? frst rst x => lagrange(recip(rst x) :: (ST A))
-      error "revert:should start 0,1,..."
+      zero? frst x and not empty? rst x =>
+        case recip rst x is
+          y@ST(A) => lagrange y
+          otherwise => error "revert: should start 0,a,... with invertible a"
+      error "revert: argument is not reversible"
 
 --% lambert functions
 
