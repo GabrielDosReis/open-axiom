@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -717,8 +717,8 @@ genDeltaEntry opMmPair ==
     [op,[dc,:[genDeltaSig x for x in sig]],['T,cform]] -- force pred to T
   if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or null atom dc) then
-    --create "domain" entry to $NRTdeltaList
-      $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
+    --create "%domain" entry to $NRTdeltaList
+      $NRTdeltaList:= [["%domain",NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:=
