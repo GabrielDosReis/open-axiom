@@ -1,3 +1,8 @@
+2010-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (transImplementation): Loose last argument. 
+	(compAtomWithModemap): Adjust call.
+
 2010-02-14  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	Fix SF/2910351

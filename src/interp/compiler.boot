@@ -58,7 +58,6 @@ compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
 compString: (%Form,%Mode,%Env) -> %Maybe %Triple
-compAtomWithModemap: (%Form,%Mode,%Env,%Thing) -> %Maybe %Triple
 compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -77,7 +76,6 @@ modeEqual: (%Form,%Form) -> %Boolean
 hasUniqueCaseView: (%Form,%Mode,%Env) -> %Boolean
 convertOrCroak: (%Triple,%Mode) -> %Maybe %Triple
 getFormModemaps: (%Form,%Env) -> %List
-transImplementation: (%Form,%Modemap,%Thing) -> %Code
 reshapeArgumentList: (%Form,%Signature) -> %Form
 applyMapping: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 
@@ -382,24 +380,31 @@ compExpression(x,m,e) ==
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
+++ Subroutine of compAtomWithModemap.
+++ Record a local reference to an overload constant, and return
+++ corresponding middle-end form.
+transImplementation: (%Form,%Modemap) -> %Code
+transImplementation(op,map) ==
+  fn := genDeltaEntry [op,:map]
+  fn is ["XLAM",:.] => [fn]
+  ["call",fn]
+
+++ Subroutine of compAtom.
+++ Elaborate use of an overloaded constant.
+compAtomWithModemap: (%Symbol,%Mode,%Env,%List) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,v) ==
   Tl :=
-    [[transImplementation(x,map,fn),target,e]
+    [[transImplementation(x,map),target,e]
       for map in v | map is [[.,target],[.,fn]]] =>
                                          --accept only monadic operators
         T:= or/[t for (t:= [.,target,.]) in Tl | modeEqual(m,target)] => T
         1=#(Tl:= [y for t in Tl | (y:= convert(t,m))]) => first Tl
         nil
 
-transImplementation(op,map,fn) ==
-  fn := genDeltaEntry [op,:map]
-  fn is ["XLAM",:.] => [fn]
-  ["call",fn]
-
 compAtom(x,m,e) ==
   x = "break" => compBreak(x,m,e)
   x = "iterate" => compIterate(x,m,e)
-  T:= compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
+  T:= IDENTP x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   t:=
     isSymbol x => compSymbol(x,m,e) or return nil
     member(m,$IOFormDomains) and primitiveType x => [x,m,e]
