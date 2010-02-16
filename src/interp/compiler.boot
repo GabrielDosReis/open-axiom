@@ -380,26 +380,16 @@ compExpression(x,m,e) ==
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
-++ Subroutine of compAtomWithModemap.
-++ Record a local reference to an overload constant, and return
-++ corresponding middle-end form.
-transImplementation: (%Form,%Modemap) -> %Code
-transImplementation(op,map) ==
-  fn := genDeltaEntry [op,:map]
-  fn is ["XLAM",:.] => [fn]
-  ["call",fn]
-
 ++ Subroutine of compAtom.
 ++ Elaborate use of an overloaded constant.
 compAtomWithModemap: (%Symbol,%Mode,%Env,%List) -> %Maybe %Triple
-compAtomWithModemap(x,m,e,v) ==
-  Tl :=
-    [[transImplementation(x,map),target,e]
-      for map in v | map is [[.,target],[.,fn]]] =>
-                                         --accept only monadic operators
-        T:= or/[t for (t:= [.,target,.]) in Tl | modeEqual(m,target)] => T
-        1=#(Tl:= [y for t in Tl | (y:= convert(t,m))]) => first Tl
-        nil
+compAtomWithModemap(x,m,e,mmList) ==
+  -- 1. Get out of here f `x' cannot possibly be a constant.
+  null mmList => nil
+  -- FIXME: Reject niladic functions that are used as constants.
+  -- 2. If the context is not specified, give up on ambigiuity.
+  $compUniquelyIfTrue: local := m = $EmptyMode or m = $NoValueMode
+  CATCH("compUniquely", compForm3([x],m,e,mmList))
 
 compAtom(x,m,e) ==
   x = "break" => compBreak(x,m,e)

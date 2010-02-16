@@ -137,12 +137,12 @@
 (DEFUN |BOOLEAN;size;Nni;17| ($) (DECLARE (IGNORE $)) 2) 
 
 (DEFUN |BOOLEAN;index;Pi$;18| (|i| $)
-  (COND ((SPADCALL |i| (|getShellEntry| $ 28)) NIL) ('T T))) 
+  (COND ((SPADCALL |i| (|getShellEntry| $ 26)) NIL) ('T T))) 
 
 (DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) ('T 2))) 
 
 (DEFUN |BOOLEAN;random;$;20| ($)
-  (COND ((SPADCALL (|random|) (|getShellEntry| $ 28)) NIL) ('T T))) 
+  (COND ((SPADCALL (|random|) (|getShellEntry| $ 26)) NIL) ('T T))) 
 
 (DEFUN |BOOLEAN;convert;$If;21| (|x| $)
   (COND (|x| '|true|) ('T '|false|))) 
@@ -172,7 +172,7 @@
     (RETURN
       (PROGN
         (LETT |dv$| '(|Boolean|) . #0=(|Boolean|))
-        (LETT $ (|newShell| 41) . #0#)
+        (LETT $ (|newShell| 39) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -188,22 +188,22 @@
                    (FUNCALL (|dispatchFunction| |BOOLEAN;false;$;3|) $))
              |BOOLEAN;not;2$;4| |BOOLEAN;~;2$;5| |BOOLEAN;and;3$;6|
              |BOOLEAN;/\\;3$;7| |BOOLEAN;or;3$;8| |BOOLEAN;\\/;3$;9|
-             |BOOLEAN;xor;3$;10| (|Boolean|) (0 . |false|)
-             |BOOLEAN;nor;3$;11| (4 . |true|) |BOOLEAN;nand;3$;12|
-             |BOOLEAN;=;3$;13| |BOOLEAN;implies;3$;14|
-             |BOOLEAN;equiv;3$;15| |BOOLEAN;<;3$;16|
-             (|NonNegativeInteger|) |BOOLEAN;size;Nni;17| (|Integer|)
-             (8 . |even?|) (|PositiveInteger|) |BOOLEAN;index;Pi$;18|
-             (13 . |One|) |BOOLEAN;lookup;$Pi;19| (17 . |random|)
+             |BOOLEAN;xor;3$;10| |BOOLEAN;nor;3$;11|
+             |BOOLEAN;nand;3$;12| (|Boolean|) |BOOLEAN;=;3$;13|
+             |BOOLEAN;implies;3$;14| |BOOLEAN;equiv;3$;15|
+             |BOOLEAN;<;3$;16| (|NonNegativeInteger|)
+             |BOOLEAN;size;Nni;17| (|Integer|) (0 . |even?|)
+             (|PositiveInteger|) |BOOLEAN;index;Pi$;18| (5 . |One|)
+             |BOOLEAN;lookup;$Pi;19| (9 . |random|)
              |BOOLEAN;random;$;20| (|InputForm|)
              |BOOLEAN;convert;$If;21| (|OutputForm|)
              |BOOLEAN;coerce;$Of;22| (|SingleInteger|) (|String|))
-          '#(~= 21 ~ 27 |xor| 32 |true| 38 |test| 42 |size| 47 |random|
-             51 |or| 55 |not| 61 |nor| 66 |nand| 72 |min| 78 |max| 88
-             |lookup| 98 |latex| 103 |index| 108 |implies| 113 |hash|
-             119 |false| 124 |equiv| 128 |convert| 134 |coerce| 139
-             |before?| 144 |and| 150 |\\/| 156 >= 162 > 168 = 174 <=
-             180 < 186 |/\\| 192)
+          '#(~= 13 ~ 19 |xor| 24 |true| 30 |test| 34 |size| 39 |random|
+             43 |or| 47 |not| 53 |nor| 58 |nand| 64 |min| 70 |max| 80
+             |lookup| 90 |latex| 95 |index| 100 |implies| 105 |hash|
+             111 |false| 116 |equiv| 120 |convert| 126 |coerce| 131
+             |before?| 136 |and| 142 |\\/| 148 >= 154 > 160 = 166 <=
+             172 < 178 |/\\| 184)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL |OrderedSet&| NIL NIL |Logic&|
@@ -211,21 +211,21 @@
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|PropositionalLogic|) (|Finite|)
                                (|Logic|) (|SetCategory|)
-                               (|ConvertibleTo| 35) (|BasicType|)
-                               (|CoercibleTo| 37))
-                            (|makeByteWordVec2| 40
-                                '(0 16 0 17 0 16 0 19 1 27 16 0 28 0 29
-                                  0 31 0 27 0 33 2 0 16 0 0 1 1 0 0 0
-                                  10 2 0 0 0 0 15 0 0 0 7 1 0 0 0 6 0 0
-                                  25 26 0 0 0 34 2 0 0 0 0 13 1 0 0 0 9
-                                  2 0 0 0 0 18 2 0 0 0 0 20 0 0 0 1 2 0
-                                  0 0 0 1 0 0 0 1 2 0 0 0 0 1 1 0 29 0
-                                  32 1 0 40 0 1 1 0 0 29 30 2 0 0 0 0
-                                  22 1 0 39 0 1 0 0 0 8 2 0 0 0 0 23 1
-                                  0 35 0 36 1 0 37 0 38 2 0 16 0 0 1 2
-                                  0 0 0 0 11 2 0 0 0 0 14 2 0 16 0 0 1
-                                  2 0 16 0 0 1 2 0 16 0 0 21 2 0 16 0 0
-                                  1 2 0 16 0 0 24 2 0 0 0 0 12)))))
+                               (|ConvertibleTo| 33) (|BasicType|)
+                               (|CoercibleTo| 35))
+                            (|makeByteWordVec2| 38
+                                '(1 25 18 0 26 0 27 0 29 0 25 0 31 2 0
+                                  18 0 0 1 1 0 0 0 10 2 0 0 0 0 15 0 0
+                                  0 7 1 0 0 0 6 0 0 23 24 0 0 0 32 2 0
+                                  0 0 0 13 1 0 0 0 9 2 0 0 0 0 16 2 0 0
+                                  0 0 17 0 0 0 1 2 0 0 0 0 1 0 0 0 1 2
+                                  0 0 0 0 1 1 0 27 0 30 1 0 38 0 1 1 0
+                                  0 27 28 2 0 0 0 0 20 1 0 37 0 1 0 0 0
+                                  8 2 0 0 0 0 21 1 0 33 0 34 1 0 35 0
+                                  36 2 0 18 0 0 1 2 0 0 0 0 11 2 0 0 0
+                                  0 14 2 0 18 0 0 1 2 0 18 0 0 1 2 0 18
+                                  0 0 19 2 0 18 0 0 1 2 0 18 0 0 22 2 0
+                                  0 0 0 12)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Boolean| 'NILADIC T) 
