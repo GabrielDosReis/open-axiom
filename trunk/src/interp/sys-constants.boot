@@ -588,7 +588,8 @@ $SystemInlinableConstructorNames ==
     Symbol             _
     DoubleFloat        _
     PrimitiveArray     _
-    Vector)
+    Vector             _
+    Void)
 
 ++ FIXME
 $DomainsInScope == 
