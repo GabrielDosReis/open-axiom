@@ -175,7 +175,6 @@ ScriptFormulaFormat(): public == private where
       for s in f.formula repeat
         for t in splitLong(s, len) repeat sayFORMULA(t)$Lisp
       for s in f.epilog repeat sayFORMULA(s)$Lisp
-      void()$Void
 
     display(f : %) ==
       display(f, _$LINELENGTH$Lisp pretend I)

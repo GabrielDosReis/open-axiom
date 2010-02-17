@@ -68,7 +68,6 @@ UserDefinedPartialOrdering(S:SetCategory): with
   setOrder(l, h) ==
     setref(llow, removeDuplicates l)
     setref(lhigh, removeDuplicates h)
-    void()
  
   less?(a, b, f) ==
     (u := less?(a, b)) case "failed" => f(a, b)

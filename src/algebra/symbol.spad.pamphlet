@@ -273,7 +273,6 @@ Symbol(): Exports == Implementation where
     resetNew() ==
       count() := 0
       for k in keys xcount repeat remove!(k, xcount)
-      void()
 
     scripted? sy ==
       not ATOM(sy)$Lisp

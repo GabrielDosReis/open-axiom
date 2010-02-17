@@ -1,3 +1,34 @@
+2010-02-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet: Remove unnecessary call to void.
+	* algebra/algext.spad.pamphlet: Likewise.
+	* algebra/catdef.spad.pamphlet: Likewise.
+	* algebra/curve.spad.pamphlet: Likewise.
+	* algebra/d01agents.spad.pamphlet: Likewise.
+	* algebra/d02agents.spad.pamphlet: Likewise.
+	* algebra/ffcg.spad.pamphlet: Likewise.
+	* algebra/ffhom.spad.pamphlet: Likewise.
+	* algebra/ffnb.spad.pamphlet: Likewise.
+	* algebra/ffp.spad.pamphlet: Likewise.
+	* algebra/formula.spad.pamphlet: Likewise.
+	* algebra/fortmac.spad.pamphlet: Likewise.
+	* algebra/fortpak.spad.pamphlet: Likewise.
+	* algebra/fortran.spad.pamphlet: Likewise.
+	* algebra/forttyp.spad.pamphlet: Likewise.
+	* algebra/generic.spad.pamphlet: Likewise.
+	* algebra/kl.spad.pamphlet: Likewise.
+	* algebra/mathml.spad.pamphlet: Likewise.
+	* algebra/newdata.spad.pamphlet: Likewise.
+	* algebra/out.spad.pamphlet: Likewise.
+	* algebra/permgrps.spad.pamphlet: Likewise.
+	* algebra/pfo.spad.pamphlet: Likewise.
+	* algebra/regset.spad.pamphlet: Likewise.
+	* algebra/routines.spad.pamphlet: Likewise.
+	* algebra/setorder.spad.pamphlet: Likewise.
+	* algebra/sups.spad.pamphlet: Likewise.
+	* algebra/symbol.spad.pamphlet: Likewise.
+	* algebra/tex.spad.pamphlet: Likewise.
+
 2010-02-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compAtomWithModemap): Reject niladic

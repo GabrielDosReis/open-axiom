@@ -173,7 +173,6 @@ SquareFreeQuasiComponentPackage(R,E,V,P,TS): Exports == Implementation where
        initTable!()$H
        if (not empty? ok) and (not empty? ko) then printInfo!(ok,ko)$H
        if (not empty? domainName) then startStats!(domainName)$H
-       void()
 
      stopTable!(): Void ==   
        if makingStats?()$H then printStats!()$H
@@ -521,7 +520,6 @@ SquareFreeRegularTriangularSetGcdPackage(R,E,V,P,TS): Exports == Implementation 
        initTable!()$HGcd
        printInfo!(ok,ko)$HGcd
        startStats!(domainName)$HGcd
-       void()
 
      stopTableGcd!(): Void ==   
        if makingStats?()$HGcd then printStats!()$HGcd
@@ -531,7 +529,6 @@ SquareFreeRegularTriangularSetGcdPackage(R,E,V,P,TS): Exports == Implementation 
        initTable!()$HInvSet
        printInfo!(ok,ko)$HInvSet
        startStats!(domainName)$HInvSet
-       void()
 
      stopTableInvSet!(): Void ==   
        if makingStats?()$HInvSet then printStats!()$HInvSet
@@ -1100,7 +1097,6 @@ SquareFreeRegularSetDecompositionPackage(R,E,V,P,TS): Exports == Implementation 
          s := concat [s, ",", convert(lpwt)@String]
        s := concat [s, " -> |", string(m::Z), "|; {", string(n::Z),"}]"]
        iprint(s)$iprintpack
-       void()
 
      decompose(lp: LP, lts: Split, cleanW?: B, sqfr?: B, clos?: B, rem?: B, info?: B): Split ==
        -- if cleanW? then REMOVE REDUNDANT COMPONENTS in lts

@@ -202,7 +202,6 @@ GenericNonAssociativeAlgebra(R : CommutativeRing, n : PositiveInteger,_
         -- reset initialize flag
         initLeft?:=false
         leftRankPoly := leftMinimalPolynomial genericElement
-        void()$Void
 
       rightRankPoly : SparseUnivariatePolynomial FPR := 0
       initRight? : Boolean :=true
@@ -212,7 +211,6 @@ GenericNonAssociativeAlgebra(R : CommutativeRing, n : PositiveInteger,_
         -- reset initialize flag
         initRight?:=false
         rightRankPoly := rightMinimalPolynomial genericElement
-        void()$Void
 
       leftRankPolynomial(): SparseUnivariatePolynomial FPR ==
         if initLeft? then initializeLeft()

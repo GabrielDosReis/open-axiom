@@ -451,7 +451,6 @@ PermutationGroup(S:SetCategory): public == private where
           else
             i := i + 1
       if removedGenerator then orbitLength := computeOrbits ( kkk )
-      void()
 
 
     bsgs ( group : % ,maxLoops : I , diff : I ) : NNI ==
@@ -585,7 +584,6 @@ PermutationGroup(S:SetCategory): public == private where
         gporb       := result.orbs
         supp        := result.mp
         wordlist    := result.wd
-      void()
 
     subgroup ( gp1 : % , gp2 : % ) : B ==
       gpset1 := initialize gp1
@@ -770,7 +768,6 @@ PermutationGroup(S:SetCategory): public == private where
       wordProblem    := true
       ord            := bsgs ( gp , maxLoops , diff )
       gp.information := [ ord , sgs , baseOfGroup , gporb , supp , wordlist ]
-      void()
 
     initializeGroupForWordProblem ( gp ) == initializeGroupForWordProblem ( gp , 0 , 1 )
 
