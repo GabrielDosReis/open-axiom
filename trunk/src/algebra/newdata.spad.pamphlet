@@ -108,7 +108,7 @@ TabulatedComputationPackage(Key ,Entry): Exports == Implementation where
      initTable!(): Void ==
        table? := true
        t := empty()
-       void()
+
      printInfo!(s1: String, s2: String): Void ==
        (empty? s1) or (empty? s2) => void()
        not usingTable?() =>
@@ -116,7 +116,7 @@ TabulatedComputationPackage(Key ,Entry): Exports == Implementation where
        info? := true
        ok := s1
        ko := s2
-       void()
+
      startStats!(s: String): Void == 
        empty? s => void()
        not table? =>
@@ -124,7 +124,7 @@ TabulatedComputationPackage(Key ,Entry): Exports == Implementation where
        stats? := true
        used := 0
        domainName := s
-       void()
+
      printStats!(): Void == 
        not table? =>
          error "in printStats!()$TBCMPPK: not allowed to use hashtable"
@@ -144,7 +144,7 @@ TabulatedComputationPackage(Key ,Entry): Exports == Implementation where
        info? := false
        stats? := false
        domainName := empty()$String
-       void()
+
      usingTable?() == table?
      printingInfo?() == info?
      makingStats?() == stats?
@@ -160,7 +160,6 @@ TabulatedComputationPackage(Key ,Entry): Exports == Implementation where
        not table? => void()
        t.k := e
        if info? then iprint(ko)$iprintpack
-       void()
 
 @
 \section{domain SPLNODE SplittingNode}

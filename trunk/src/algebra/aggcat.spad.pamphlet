@@ -1040,7 +1040,6 @@ IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
       t := a.i
       qsetelt!(a, i, a.j)
       qsetelt!(a, j, t)
-      void()
 
 @
 

@@ -336,7 +336,6 @@ InnerNormalBasisFieldFunctions(GF): Exports == Implementation where
     setFieldInfo(m,n) ==
       multTable:=m
       trGen:=n
-      void()$Void
 
     minimalPolynomial(x) ==
       dx:=#x
@@ -600,14 +599,12 @@ FiniteFieldNormalBasisExtensionByPolynomial(GF,uni): Exports == _
       -- get a primitive element
       primitiveElt:=lookup(createPrimitiveElement())
       initelt?:=false
-      void()$Void
 
     initializeMult() ==
       multTable:=createMultiplicationTable(defpol)$FFF
       setFieldInfo(multTable,traceAlpha)$INBFF
       -- reset initialize flag
       initmult?:=false
-      void()$Void
 
     initializeLog() ==
       if initelt? then initializeElt()
@@ -634,7 +631,6 @@ FiniteFieldNormalBasisExtensionByPolynomial(GF,uni): Exports == _
       initlog?:=false
       -- tell user about initialization
       --print("discrete logarithm table initialized"::OUT)
-      void()$Void
 
     tableForDiscreteLogarithm(fac) ==
       if initlog? then initializeLog()

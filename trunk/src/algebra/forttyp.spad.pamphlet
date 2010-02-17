@@ -447,7 +447,6 @@ SymbolTable() : exports == implementation where
         fortFormatTypes(ty::OFORM,otl)$Lisp
       el : L OFORM := [u::OFORM for u in externalList(tab)]
       fortFormatTypes("EXTERNAL"::OFORM,el)$Lisp
-      void()$Void
 
 @
 \section{domain SYMS TheSymbolTable}
@@ -556,7 +555,6 @@ TheSymbolTable() : Exports == Implementation where
     checkIfEntryExists(name:Symbol,tab:$) : Void ==
       key?(name,tab) => void()$Void
       setelt(tab,name,newEntry())$Rep
-      void()$Void
 
     returnTypeOf(name:Symbol,tab:$):FSTU ==
       elt(elt(tab,name)$Rep,returnType)$Entry
@@ -575,11 +573,9 @@ TheSymbolTable() : Exports == Implementation where
 
     clearTheSymbolTable():Void ==
       theSymbolTable := empty()$Rep
-      void()$Void
 
     clearTheSymbolTable(u:Symbol):Void ==
       remove!(u,theSymbolTable)$Rep
-      void()$Void
 
     empty():$ ==
       empty()$Rep
@@ -596,7 +592,6 @@ TheSymbolTable() : Exports == Implementation where
     newSubProgram(u:Symbol):Void ==
       setelt(theSymbolTable,u,newEntry())$Rep
       currentSubProgramName := u
-      void()$Void
 
     argumentList!(u:Symbol,args:List Symbol,symbols:$):Void ==
       checkIfEntryExists(u,symbols)

@@ -185,7 +185,6 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
       zechlog:=createZechTable(defpol)$FFF
       -- set initialization flag
       initzech? := false
-      void()$Void
 
     basis(n:PI) ==
       extensionDegree() rem n ~= 0 =>
@@ -283,7 +282,6 @@ FiniteFieldCyclicGroupExtensionByPolynomial(GF,defpol):_
       facOfGroupSize := factors(factor(sizeCG)$Integer)
       normalElt:=createNormalElement() pretend SI
       initelt?:=false
-      void()$Void
 
     extensionDegree(): PositiveInteger == extdeg pretend PI
 

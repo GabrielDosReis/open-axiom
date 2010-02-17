@@ -528,7 +528,6 @@ AttributeButtons(): E == I where
 
     resetAttributeButtons():Void ==
       attributeButtons := buttons()
-      void()$Void
 
     setButtonValue(routineName:ST,attributeName:ST,n:F):F ==
       f := search(routineName attributeName,attributeButtons)$Rep

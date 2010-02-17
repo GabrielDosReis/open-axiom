@@ -219,7 +219,6 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
       normalElt:=lookup(nElt)
       -- set elements initialization flag
       initelt? := false
-      void()$Void
 
     initializeLog() ==
       if initelt? then initializeElt()
@@ -247,7 +246,6 @@ FiniteFieldExtensionByPolynomial(GF:FiniteFieldCategory,_
       initlog? := false
       -- tell user about initialization
       --print("discrete logarithm tables initialized"::OUT)
-      void()$Void
 
     coerce(e:$):OutputForm == outputForm(lift(e),alpha)
 

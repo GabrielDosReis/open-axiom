@@ -182,7 +182,7 @@ FiniteFieldHomomorphisms(F1,GF,F2): Exports == Implementation where
           conMat2to1:=copy(inverse(mat)$M :: M)
           --we finish the function for one case, hence reset initialization flag
           init? := false
-          void()$Void
+
           -- print("'normal' <=> 'polynomial' matrices initialized"::OUT)
         -- in the other case we have to change the matrices
         -- repType2 = "normal" and repType1 = "polynomial"
@@ -191,7 +191,7 @@ FiniteFieldHomomorphisms(F1,GF,F2): Exports == Implementation where
         -- print("'normal' <=> 'polynomial' matrices initialized"::OUT)
         --we finish the function for one case, hence reset initialization flag
         init? := false
-        void()$Void
+
       -- 2) in the case of different def. polynomials we have to order the
       --    fields to get the same isomorphism, if the package is called with
       --    the fields F1 and F2 swapped.
@@ -306,7 +306,7 @@ FiniteFieldHomomorphisms(F1,GF,F2): Exports == Implementation where
         -- print("conversion matrices initialized"::OUT)
         --we finish the function for one case, hence reset initialization flag
         init? := false
-        void()$Void
+
       conMat1to2 :=matbs
       conMat2to1 :=matsb
       -- print(conMat1to2::OUT)
@@ -314,7 +314,6 @@ FiniteFieldHomomorphisms(F1,GF,F2): Exports == Implementation where
       -- print("conversion matrices initialized"::OUT)
       --we finish the function for one case, hence reset initialization flag
       init? := false
-      void()$Void
       
  
     coerce(x:F1) ==

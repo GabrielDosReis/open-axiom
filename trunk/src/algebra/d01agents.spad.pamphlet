@@ -87,7 +87,6 @@ IntegrationFunctionsTable(): E == I where
 
     clearTheFTable():Void ==
       theFTable := empty()$Rep
-      void()$Void
 
     fTable(l:List Record(key:NIA,entry:ATT)):$ ==
       theFTable := table(l)$Rep

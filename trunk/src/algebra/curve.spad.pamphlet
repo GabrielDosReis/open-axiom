@@ -686,7 +686,6 @@ RadicalFunctionField(F, UP, UPUP, radicnd, n): Exports == Impl where
             qsetelt!(v, k, (qelt(ib.basis, i, j) / ib.basisDen) * a)
             qsetelt!(w, k, qelt(ib.basisInv, i, j) * inv a)
             a := a * c
-      void()
 
     charPStartUp() ==
       r      := mkIntegral modulus
@@ -704,7 +703,6 @@ RadicalFunctionField(F, UP, UPUP, radicnd, n): Exports == Impl where
                radicnd ** n1 *
                   */[qelt(ibasis, i) ** 2 for i in mini..maxIndex ibasis]
       discPoly() := primitivePart(numer dsc) / denom(dsc)
-      void()
 
     char0StartUp() ==
       rp          := rootPoly(radicnd, n)
@@ -719,7 +717,6 @@ RadicalFunctionField(F, UP, UPUP, radicnd, n): Exports == Impl where
         invden := invden / rp.coef        -- always equals 1/rp.coef**(i-mini)
         qsetelt!(infbasis, i, a := qelt(infb, i))
         qsetelt!(invinfbasis, i, inv a)
-      void()
 
     ramified?(p:UP) ==
       (r := retractIfCan(p)@Union(F, "failed")) case F =>
@@ -821,7 +818,6 @@ AlgebraicFunctionField(F, UP, UPUP, modulus): Exports == Impl where
           for j in minColIndex ib .. maxColIndex ib repeat
             infbasis(i, j)    := qelt(ib, i, j)
             invinfbasis(i, j) := invib(i, j)
-      void()
 
     getInfBasis() ==
       x           := inv(monomial(1, 1)$UP :: RF)
@@ -844,7 +840,6 @@ AlgebraicFunctionField(F, UP, UPUP, modulus): Exports == Impl where
         for j in minColIndex ibasis .. maxColIndex ibasis repeat
           infbasis(i, j)    := qelt(ib2, i, j)
           invinfbasis(i, j) := invib2(i, j)
-      void()
 
     startUp b ==
       brandNew?() := b
@@ -869,7 +864,6 @@ AlgebraicFunctionField(F, UP, UPUP, modulus): Exports == Impl where
       infBr?() := degree(numer dsc0) < degree(denom dsc0)
       dsc := dsc * determinant(ibasis) ** 2
       discPoly() := primitivePart(numer dsc) / denom(dsc)
-      void()
 
     integralDerivationMatrix d ==
       w := integralBasis()

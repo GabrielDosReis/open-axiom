@@ -250,7 +250,6 @@ TexFormat(): public == private where
       for s in f.TeX repeat
         for t in splitLong(s, len) repeat sayTeX$Lisp t
       for s in f.epilog repeat sayTeX$Lisp s
-      void()$Void
 
     display(f : $) ==
       display(f, _$LINELENGTH$Lisp pretend I)
