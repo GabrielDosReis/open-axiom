@@ -585,7 +585,7 @@ PermutationGroup(S:SetCategory): public == private where
         gporb       := result.orbs
         supp        := result.mp
         wordlist    := result.wd
-      void
+      void()
 
     subgroup ( gp1 : % , gp2 : % ) : B ==
       gpset1 := initialize gp1
@@ -770,7 +770,7 @@ PermutationGroup(S:SetCategory): public == private where
       wordProblem    := true
       ord            := bsgs ( gp , maxLoops , diff )
       gp.information := [ ord , sgs , baseOfGroup , gporb , supp , wordlist ]
-      void
+      void()
 
     initializeGroupForWordProblem ( gp ) == initializeGroupForWordProblem ( gp , 0 , 1 )
 
@@ -1153,6 +1153,8 @@ PermutationGroupExamples():public == private where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

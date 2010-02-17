@@ -449,7 +449,7 @@ Plot(): Exports == Implementation where
       nRange := intersect(tRange,nRange)
       curves: L C := [basicRefine(c,nRange) for c in p.functions]
       xRange := join(curves,1); yRange := join(curves,2)
-      if adaptive? then
+      if adaptive?() then
         tlimit := if parametric? p then 8 else 1
         curves := [adaptivePlot(c,nRange,xRange,yRange, _
                    tlimit) for c in curves]
@@ -464,7 +464,7 @@ Plot(): Exports == Implementation where
       NUMFUNEVALS := 0
       curves: L C := [rangeRefine(c,tRange) for c in p.functions]
       xRange := join(curves,1); yRange := join(curves,2)
-      if adaptive? then
+      if adaptive?() then
         tlimit := if parametric? p then 8 else 1
         curves := [adaptivePlot(c,tRange,xRange,yRange,tlimit) for c in curves]
         xRange := join(curves,1); yRange := join(curves,2)
@@ -486,7 +486,7 @@ Plot(): Exports == Implementation where
       p := basicPlot(pt(#1,myTrap(f,#1)),xRange)
       r := p.ranges
       NUMFUNEVALS := minPoints()
-      if adaptive? then
+      if adaptive?() then
         p := adaptivePlot(p,first r,second r,third r,1)
 	r := p.ranges
       [ false, rest r, r, nil(), [ p ] ]
@@ -500,7 +500,7 @@ Plot(): Exports == Implementation where
       p := basicPlot(pt(myTrap(f,#1),myTrap(g,#1)),tRange)
       r := p.ranges
       NUMFUNEVALS := minPoints()
-      if adaptive? then
+      if adaptive?() then
         p := adaptivePlot(p,first r,second r,third r,8)
 	r := p.ranges
       [ true, rest r, r, nil(), [ p ] ]
@@ -514,7 +514,7 @@ Plot(): Exports == Implementation where
       p := basicPlot(f,tRange)
       r := p.ranges
       NUMFUNEVALS := minPoints()
-      if adaptive? then
+      if adaptive?() then
         p := adaptivePlot(p,first r,second r,third r,8)
 	r := p.ranges
       [ true, rest r, r, nil(), [ p ] ]
@@ -529,7 +529,7 @@ Plot(): Exports == Implementation where
       t: L C := [ basicPlot(pt(#1,myTrap(f,#1)),xRange) for f in l ]
       yRange := join(t,2)
       NUMFUNEVALS := # l * minPoints()
-      if adaptive? then
+      if adaptive?() then
         t := [adaptivePlot(p,xRange,xRange,yRange,1) _
                 for f in l for p in t]
         yRange := join(t,2)
@@ -616,6 +616,8 @@ PlotFunctions1(S:ConvertibleTo InputForm): with
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

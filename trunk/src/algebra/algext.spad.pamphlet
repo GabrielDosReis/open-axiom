@@ -124,7 +124,7 @@ SimpleAlgebraicExtension(R:CommutativeRing,
     mkDisc b ==
       nodisc?() := b
       disc() := discriminant M
-      void
+      void()
 
     traceMatrix() ==
       if nodiscmat?() then mkDiscMat false
@@ -136,7 +136,7 @@ SimpleAlgebraicExtension(R:CommutativeRing,
       for i in 0..d1 repeat
         for j in 0..d1 repeat
           qsetelt!(discmat,mr + i,mc + j,trace reduce monomial(1,i + j))
-      void
+      void()
 
     trace x ==          --this could be coded perhaps more efficiently
       xn := x;  ans := coefficient(lift xn, 0)
@@ -200,6 +200,8 @@ SimpleAlgebraicExtension(R:CommutativeRing,
 
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

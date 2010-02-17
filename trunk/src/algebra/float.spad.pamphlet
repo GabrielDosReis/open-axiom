@@ -221,7 +221,7 @@ Float():
    OMwrite(x: %): String ==
       s: String := ""
       sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
       OMputObject(dev)
       writeOMFloat(dev, x)
       OMputEndObject(dev)
@@ -232,7 +232,7 @@ Float():
    OMwrite(x: %, wholeObj: Boolean): String ==
       s: String := ""
       sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+      dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
       if wholeObj then
          OMputObject(dev)
       writeOMFloat(dev, x)
@@ -290,7 +290,7 @@ Float():
          inc 4
          r := if zero? fractionPart x and x < [bits(),0] then atanInverse wholePart x
                  else atan(1/x)
-         r := pi/2 - r
+         r := pi()/2 - r
          dec 4
          return normalize r
       -- make |x| < O( 2**(-sqrt p) ) < 1/2 to speed series convergence
@@ -330,9 +330,9 @@ Float():
 
    sin x ==
       s := sign x; x := abs x; p := bits(); inc 4
-      if x > [6,0] then (inc p; x := 2*pi*fractionPart(x/pi/2); bits p)
-      if x > [3,0] then (inc p; s := -s; x := x - pi; bits p)
-      if x > [3,-1] then (inc p; x := pi - x; dec p)
+      if x > [6,0] then (inc p; x := 2*pi()*fractionPart(x/pi()/2); bits p)
+      if x > [3,0] then (inc p; s := -s; x := x - pi(); bits p)
+      if x > [3,-1] then (inc p; x := pi() - x; dec p)
       -- make |x| < O( 2**(-sqrt p) ) < 1/2 to speed series convergence
       -- by using the formula  sin(3*x/3) = 3 sin(x/3) - 4 sin(x/3)**3
       -- the running time is O( sqrt p M(p) ) assuming |x| < 1
@@ -359,11 +359,11 @@ Float():
 
    cos x ==
      s:I := 1; x := abs x; p := bits(); inc 4
-     if x > [6,0] then (inc p; x := 2*pi*fractionPart(x/pi/2); dec p)
-     if x > [3,0] then (inc p; s := -s; x := x-pi; dec p)
+     if x > [6,0] then (inc p; x := 2*pi()*fractionPart(x/pi()/2); dec p)
+     if x > [3,0] then (inc p; s := -s; x := x-pi(); dec p)
      if x > [1,0] then
          -- take care of the accuracy problem near pi/2
-         inc p; x := pi/2-x; bits p; x := normalize x
+         inc p; x := pi()/2-x; bits p; x := normalize x
          return (s * sin x)
       -- make |x| < O( 2**(-sqrt p) ) < 1/2 to speed series convergence
       -- by using the formula  cos(2*x/2) = 2 cos(x/2)**2 - 1
@@ -467,7 +467,7 @@ Float():
       p := bits(); inc 5
       -- apply  log(x) = n log 2 + log(x/2**n)  so that  1/2 < x < 2
       if (n := order x) < 0 then n := n+1
-      l := if n = 0 then 0 else (x := shift(x,-n); n * log2)
+      l := if n = 0 then 0 else (x := shift(x,-n); n * log2())
       -- speed the series convergence by finding m and k such that
       -- | exp(m/2**k) x - 1 |  <  1 / 2 ** O(sqrt p)
       -- write  log(exp(m/2**k) x) as m/2**k + log x
@@ -525,17 +525,17 @@ Float():
          s := s + t quo k
          t := t quo 81
       -- We have log 10 = log 5 + log 2 and log 5/4 = log 5 - 2 log 2
-      inc 2; L10 := [bits(),[s,-n] + 3*log2]; dec 2
+      inc 2; L10 := [bits(),[s,-n] + 3*log2()]; dec 2
       normalize L10.value
 
-   log2(x) == (inc 2; r := log(x)/log2; dec 2; normalize r)
-   log10(x) == (inc 2; r := log(x)/log10; dec 2; normalize r)
+   log2(x) == (inc 2; r := log(x)/log2(); dec 2; normalize r)
+   log10(x) == (inc 2; r := log(x)/log10(); dec 2; normalize r)
 
    exp(x) ==
       -- exp(n+x) = exp(1)**n exp(x) for n such that |x| < 1
       p := bits(); inc 5; e1:% := 1
       if (n := wholePart x) ~= 0 then
-         inc LENGTH n; e1 := exp1 ** n; dec LENGTH n
+         inc LENGTH n; e1 := exp1() ** n; dec LENGTH n
          x := fractionPart x
       if zero? x then (bits p; return normalize e1)
       -- make |x| < O( 2**(-sqrt p) ) < 1/2 to speed series convergence
@@ -865,13 +865,13 @@ Float():
       zero? exponent f =>
         padFromRight concat(convert(mantissa f)@S, ".0")
       negative? f => concat("-", fixed abs f)
-      d := if OUTPREC() = -1 then digits::I else OUTPREC()
+      d := if OUTPREC() = -1 then digits()::I else OUTPREC()
 --    g := convert10(abs f,digits); m := g.mantissa; e := g.exponent
       g := convert10(abs f,d); m := g.mantissa; e := g.exponent
       if OUTPREC() ~= -1 then
          -- round g to OUTPREC digits after the decimal point
          l := length10 m
-         if -e > OUTPREC() and -e < 2*digits::I then
+         if -e > OUTPREC() and -e < 2*digits()::I then
             g := normalize10(g,l+e+OUTPREC())
             m := g.mantissa; e := g.exponent
       s := convert(m)@S; n := #s; o := e+n
@@ -902,7 +902,7 @@ Float():
         s := convert(mantissa f)@S
         concat ["0.", padFromLeft s, t, convert(#s)@S]
       -- base conversion to decimal rounded to the requested precision
-      d := if OUTPREC() = -1 then digits::I else OUTPREC()
+      d := if OUTPREC() = -1 then digits()::I else OUTPREC()
       g := convert10(f,d); m := g.mantissa; e := g.exponent
       -- I'm assuming that length10 m = # s given n > 0
       s := convert(m)@S; n := #s; o := e+n
@@ -912,7 +912,7 @@ Float():
    general(f) ==
       zero? f => "0.0"
       negative? f => concat("-", general abs f)
-      d := if OUTPREC() = -1 then digits::I else OUTPREC()
+      d := if OUTPREC() = -1 then digits()::I else OUTPREC()
       zero? exponent f =>
         d := d + 1
         s := convert(mantissa f)@S
@@ -1020,7 +1020,7 @@ Float():
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

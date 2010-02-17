@@ -1,5 +1,45 @@
 2010-02-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compAtomWithModemap): Reject niladic
+	functions used as constants.
+	* algebra/aggcat.spad.pamphlet (IndexedAggregate): Add parenthesis
+	for call to niladic function 'void'.
+	* algebra/algext.spad.pamphlet (SimpleAlgebraicExtension): Likewise.
+	* algebra/curve.spad.pamphlet (RadicalFunctionField): Likewise.
+	(AlgebraicFunctionField): Likewise.
+	* algebra/permgrps.spad.pamphlet (PermutationGroup): Likewise.
+	* algebra/pfo.spad.pamphlet (FunctionSpaceReduce): Likewise.
+	* algebra/setorder.spad.pamphlet: Likewise.
+	* algebra/ffcat.spad.pamphlet (FiniteFieldCategory): Add
+	parenthesis for call to niladic function 'representationType'.
+	* algebra/ffnb.spad.pamphlet
+	(FiniteFieldNormalBasisExtensionByPolynomial): Likewise for
+	normalElement. 
+	* algebra/float.spad.pamphlet (Float): Likewise for OMencodingXML,
+	pi, log2, log10, digits.
+	* algebra/fnla.spad.pamphlet (FreeNilpotentLie): Likewise for
+	dimension. 
+	* algebra/fraction.spad.pamphlet (Fraction): Likewise for
+	OMencodingXML. 
+	* algebra/gaussian.spad.pamphlet (Complex): Likewise.
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	* algebra/list.spad.pamphlet (List): Likewise.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/string.spad.pamphlet (String): Likewise.
+	* algebra/symbol.spad.pamphlet (Symbol): Likewise.
+	* algebra/intrf.spad.pamphlet (TranscendentalIntegration):
+	Likewise for empty.
+	* algebra/kl.spad.pamphlet (SortedCache): Likewise for cache, void.
+	* algebra/newdata.spad.pamphlet (TabulatedComputationPackage):
+	Likewise for usingTable?.
+	* algebra/omserver.spad.pamphlet (OpenMathServerPackage): Likewise
+	for OMencodingUnknown.
+	* algebra/plot.spad.pamphlet (Plot): Likewise for adaptive?.
+	* algebra/plot3d.spad.pamphlet (Plot3D): Likewise for adaptive3D?.
+
+2010-02-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compAtomWithModemap): Rewrite.
 	(transImplementation): Remove.
 
