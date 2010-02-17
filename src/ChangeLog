@@ -1,5 +1,12 @@
 2010-02-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
+	Include Void.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include VOID.
+	(axiom_algebra_layer_14): Loose it.
+
+2010-02-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/aggcat.spad.pamphlet: Remove unnecessary call to void.
 	* algebra/algext.spad.pamphlet: Likewise.
 	* algebra/catdef.spad.pamphlet: Likewise.
