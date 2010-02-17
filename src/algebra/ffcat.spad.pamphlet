@@ -603,7 +603,7 @@ FiniteFieldCategory() : Category ==_
       start : Integer :=
         -- in the polynomial case, index from 1 to characteristic-1
         -- gives prime field elements
-        representationType = "polynomial" => characteristic$%
+        representationType() = "polynomial" => characteristic$%
         1
       found : Boolean := false
       e : $
@@ -775,6 +775,8 @@ FiniteFieldSolveLinearPolynomialEquation(F:FiniteFieldCategory,
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

@@ -402,7 +402,7 @@ Plot3D(): Exports == Implementation where
       xRange := join(curves,1); yRange := join(curves,2)
       zRange := join(curves,3)
       scrres := p.screenres
-      if adaptive3D? then
+      if adaptive3D?() then
         tlimit := 8
         curves := [adaptivePlot(c,nRange,xRange,yRange,zRange, _
                    tlimit,scrres := 2*scrres) for c in curves]
@@ -418,7 +418,7 @@ Plot3D(): Exports == Implementation where
       curves: L C := [rangeRefine(c,tRange) for c in p.functions]
       xRange := join(curves,1); yRange := join(curves,2)
       zRange := join(curves,3)
-      if adaptive3D? then
+      if adaptive3D?() then
         tlimit := 8
         curves := [adaptivePlot(c,tRange,xRange,yRange,zRange,tlimit, _
                       p.screenres) for c in curves]
@@ -432,7 +432,7 @@ Plot3D(): Exports == Implementation where
       p := basicPlot(f,tRange)
       r := p.ranges
       NUMFUNEVALS := MINPOINTS
-      if adaptive3D? then
+      if adaptive3D?() then
        p := adaptivePlot(p,first r,second r,third r,fourth r,8,SCREENRES)
 --      print(NUMFUNEVALS::OUT)
 --      print(p::OUT)
@@ -456,7 +456,7 @@ Plot3D(): Exports == Implementation where
       p := basicPlot(point(myTrap(f1,#1),myTrap(f2,#1),myTrap(f3,#1),col(#1)),tRange)
       r := p.ranges
       NUMFUNEVALS := MINPOINTS
-      if adaptive3D? then
+      if adaptive3D?() then
        p := adaptivePlot(p,first r,second r,third r,fourth r,8,SCREENRES)
 --      print(NUMFUNEVALS::OUT)
       [ rest r, r, SCREENRES, nil(), [ p ] ]
@@ -500,6 +500,8 @@ Plot3D(): Exports == Implementation where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -385,8 +385,8 @@ compExpression(x,m,e) ==
 compAtomWithModemap: (%Symbol,%Mode,%Env,%List) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,mmList) ==
   -- 1. Get out of here f `x' cannot possibly be a constant.
+  mmList := [mm for mm in mmList | second mm is [.,["CONST",:.]]]
   null mmList => nil
-  -- FIXME: Reject niladic functions that are used as constants.
   -- 2. If the context is not specified, give up on ambigiuity.
   $compUniquelyIfTrue: local := m = $EmptyMode or m = $NoValueMode
   CATCH("compUniquely", compForm3([x],m,e,mmList))

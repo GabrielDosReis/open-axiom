@@ -223,7 +223,7 @@ FreeNilpotentLie(n:NNI,class:NNI,R: CommutativeRing): Export == Implement where
      coms:VLI
      coms := generate(n,class)$HB
 
-     dimension == #coms
+     dimension() == #coms
 
      have : (I,I) -> %
        -- have(left,right) is a lookup function for basic commutators
@@ -233,7 +233,7 @@ FreeNilpotentLie(n:NNI,class:NNI,R: CommutativeRing): Export == Implement where
         wt:I := coms(i).2 + coms(j).2
         wt > class => 0
         lo:I := 1
-        hi:I := dimension
+        hi:I := dimension()
         while hi-lo > 1 repeat
           mid:I := (hi+lo) quo 2
           if coms(mid).2 < wt then lo := mid else hi := mid
@@ -242,7 +242,7 @@ FreeNilpotentLie(n:NNI,class:NNI,R: CommutativeRing): Export == Implement where
         monomial(1,hi::OSI)$FM
 
      generator(i) ==
-       i > dimension => 0$Rep
+       i > dimension() => 0$Rep
        monomial(1,i::OSI)$FM
 
      putIn : I -> %
@@ -300,6 +300,8 @@ FreeNilpotentLie(n:NNI,class:NNI,R: CommutativeRing): Export == Implement where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (c) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

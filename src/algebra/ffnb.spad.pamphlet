@@ -555,7 +555,7 @@ FiniteFieldNormalBasisExtensionByPolynomial(GF,uni): Exports == _
     generator() == normalElement(extdeg)$INBFF
     basis(n:PI) ==
       (extdeg rem n) ~= 0 => error "argument must divide extension degree"
-      [Frobenius(trace(normalElement,n),i) for i in 0..(n-1)]::(Vector $)
+      [Frobenius(trace(normalElement(),n),i) for i in 0..(n-1)]::(Vector $)
 
     a:GF * x:$ == a *$Rep x
 
@@ -842,6 +842,8 @@ FiniteFieldNormalBasis(p,extdeg):_
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
