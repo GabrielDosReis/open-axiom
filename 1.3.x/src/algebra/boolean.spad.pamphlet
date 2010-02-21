@@ -77,65 +77,77 @@ PropositionalFormula(T: SetCategory): Public == Private where
       ++ is an equivalence formula.
 
   Private == add
-    FORMULA ==> Union(base: T, unForm: %,
-                  binForm: Record(op: Symbol, lhs: %, rhs: %))
+    Rep == Union(T, Kernel %)
+    import Kernel %
+    import BasicOperator
+    import List %
 
-    Rep == FORMULA
+    -- Local names for proposition logical operators
+    macro NOT == '%not
+    macro AND == '%and
+    macro OR == '%OR
+    macro IMP == '%implies
+    macro EQV == '%equiv
 
-    coerce(t: T): % ==
-      per [t]$FORMULA
+    -- Return the nesting level of a formula
+    level(f: %): NonNegativeInteger ==
+      f' := rep f
+      f' case T => 0
+      height f'
+
+    -- A term is a formula
+    coerce(t: T): % == 
+      per t
 
     not p ==
-      per [p]$FORMULA
-
-    binaryForm(o: Symbol, l: %, r: %): % ==
-      per [[o, l, r]$Record(op: Symbol, lhs: %, rhs: %)]$FORMULA
+      per kernel(operator(NOT, 1::Arity), [p], 1 + level p)
 
     p and q ==
-      binaryForm('and, p, q)
+      per kernel(operator(AND, 2), [p, q], 1 + max(level p, level q))
 
     p or q ==
-      binaryForm('or, p, q)
+      per kernel(operator(OR, 2), [p, q], 1 + max(level p, level q))
 
     implies(p,q) ==
-      binaryForm('implies, p, q)
+      per kernel(operator(IMP, 2), [p, q], 1 + max(level p, level q))
 
     equiv(p,q) ==
-      binaryForm('equiv, p, q)
-
-    -- returns true if the proposition `p' is a formula of kind
-    -- indicated by `o'.
-    isBinaryNode?(p: %, o: Symbol): Boolean ==
-      p' := rep p
-      p' case binForm and p'.binForm.op = o
-
-    -- returns the operands of a binary formula node
-    binaryOperands(p: %): Pair(%,%) ==
-      p' := (rep p).binForm
-      pair(p'.lhs,p'.rhs)$Pair(%,%)
+      per kernel(operator(EQV, 2), [p, q], 1 + max(level p, level q))
 
     isTerm f ==
-      rep f case base => just rep(f).base
+      f' := rep f
+      f' case T => just(f'@T)
       nothing
 
     isNot f ==
-      rep f case unForm => just rep(f).unForm
+      f' := rep f
+      f' case Kernel(%) and is?(f', NOT) => just(first argument f')
       nothing
 
+    isBinaryOperator(f: Kernel %, op: Symbol): Maybe Pair(%, %) ==
+      not is?(f, op) => nothing
+      args := argument f
+      just pair(first args, second args)
+
     isAnd f ==
-      isBinaryNode?(f,'and) => just binaryOperands f
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', AND)
       nothing
 
     isOr f ==
-      isBinaryNode?(f,'or) => just binaryOperands f
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', OR)
       nothing
 
     isImplies f ==
-      isBinaryNode?(f, 'implies) => just binaryOperands f
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', IMP)
       nothing
 
+
     isEquiv f ==
-      isBinaryNode?(f,'equiv) => just binaryOperands f
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', EQV)
       nothing
 
     -- Unparsing grammar.
@@ -185,40 +197,40 @@ PropositionalFormula(T: SetCategory): Public == Private where
       formula p
 
     primaryFormula(p: %): OutputForm ==
-      (t := isTerm p) case T => t@T::OutputForm
-      if rep p case binForm then
-	 p' := (rep p).binForm
-	 p'.op = 'implies or p'.op = 'equiv =>
-	   return elt(outputForm p'.op, 
-		    [formula p'.lhs, formula p'.rhs])$OutputForm
+      p' := rep p
+      p' case T => p'@T::OutputForm
+      is?(p', IMP) or is?(p', EQV) =>
+        args := argument p'
+        elt(operator(p')::OutputForm, 
+		    [formula first args, formula second args])$OutputForm
       paren(formula p)$OutputForm
 
     notFormula(p: %): OutputForm ==
-      isNot p case % =>
-	elt(outputForm 'not, [notFormula((rep p).unForm)])$OutputForm
-      primaryFormula p
+      case isNot p is
+        f@% => elt(outputForm 'not, [formula f])$OutputForm
+        otherwise => primaryFormula p
 
-    andFormula(p: %): OutputForm ==
-      isAnd p case Pair(%,%) =>
-	p' := (rep p).binForm
-	-- ??? idealy, we should be using `and$OutputForm' but
-	-- ??? a bug in the compiler currently prevents that.
-	infix(outputForm 'and, notFormula p'.lhs, 
-	  andFormula p'.rhs)$OutputForm
-      notFormula p
+    andFormula(f: %): OutputForm ==
+      case isAnd f is
+	p@Pair(%,%) =>
+          -- ??? idealy, we should be using `and$OutputForm' but
+          -- ??? a bug in the compiler currently prevents that.
+          infix(outputForm 'and, notFormula first p,
+             andFormula second p)$OutputForm
+        otherwise => notFormula f
 
-    orFormula(p: %): OutputForm ==
-      isOr p case Pair(%,%) =>
-	p' := (rep p).binForm
-	-- ??? idealy, we should be using `or$OutputForm' but
-	-- ??? a bug in the compiler currently prevents that.
-	infix(outputForm 'or, andFormula p'.lhs, 
-	  orFormula p'.rhs)$OutputForm
-      andFormula p
+    orFormula(f: %): OutputForm ==
+      case isOr f is
+        p@Pair(%,%) => 
+          -- ??? idealy, we should be using `or$OutputForm' but
+          -- ??? a bug in the compiler currently prevents that.
+          infix(outputForm 'or, andFormula first p, 
+             orFormula second p)$OutputForm
+        otherwise => andFormula f
 
-    formula p ==
+    formula f ==
       -- Note: this should be equivFormula, but see the explanation above.
-      orFormula p
+      orFormula f
 
 @
 

@@ -478,6 +478,9 @@ axiom_algebra_layer_4_nrlibs = \
 axiom_algebra_layer_4_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_4)))
+
+$(OUT)/KERNEL.$(FASLEXT): $(OUT)/KERNEL2.$(FASLEXT)
+
 axiom_algebra_layer_5 = \
            CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
   ELEMFUN- ESTOOLS2 FCOMP    FPATMAB  IDPAM    IDPO     \
@@ -495,9 +498,10 @@ axiom_algebra_layer_5_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_5)))
 
 $(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
+$(OUT)PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
 
 axiom_algebra_layer_6 = \
-                   AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
+  PROPFRML         AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
   DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
   HYPCAT  HYPCAT-           MODRING NASRING  NASRING- \
   SORTPAK ZMOD                                        \
@@ -693,7 +697,7 @@ axiom_algebra_layer_14 = \
   TWOFACT  UNIFACT  UP       UPCDEN   \
   UPDECOMP UPDIVP   UPMP     UPOLYC2  \
   UPXSCAT  UPSQFREE VIEWDEF  VIEW2D   \
-  VOID     WEIER    WP       \
+           WEIER    WP       \
  EQTBL  GSTBL   HASHTBL \
   INTABL  INTFTBL  STBL    STRTBL\
   TABLE     FST SYMS     SYMTAB \
@@ -787,7 +791,7 @@ axiom_algebra_layer_19 = \
   SET      SPECOUT  SQMATRIX SWITCH  \
                     SYSSOLP  UTSCAT  \
   UTSCAT-  VARIABLE WFFINTBS SPADPRSR \
-  PARSER   PROPFRML TSETCAT  TSETCAT-
+  PARSER            TSETCAT  TSETCAT-
 
 axiom_algebra_layer_19_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_19))

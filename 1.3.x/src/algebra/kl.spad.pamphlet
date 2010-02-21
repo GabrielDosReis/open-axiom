@@ -119,12 +119,12 @@ SortedCache(S:CachableSet): Exports == Implementation where
 ++ A kernel over a set S is an operator applied to a given list
 ++ of arguments from S.
 Kernel(S: SetCategory): Exports == Implementation where
-  O  ==> OutputForm
-  N  ==> NonNegativeInteger
-  OP ==> BasicOperator
+  macro O  == OutputForm
+  macro N  == NonNegativeInteger
+  macro OP == BasicOperator
 
 
-  Exports ==> Join(CachableSet, OrderedSet, Patternable S) with
+  Exports == Join(CachableSet, OrderedSet, Patternable S) with
     operator: % -> OP
       ++ operator(op(a1,...,an)) returns the operator op.
     argument: % -> List S
@@ -157,7 +157,7 @@ Kernel(S: SetCategory): Exports == Implementation where
     macro SPECIALINPUT == '%specialInput
     import SortedCache(%)
 
-    Rep == Record(op:OP, arg:List S, nest:N, posit:N)
+    Rep == Record(op: OP, arg: List S, nest: N, posit: N)
 
     clearCache()
 
