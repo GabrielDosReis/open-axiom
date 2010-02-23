@@ -2230,10 +2230,8 @@ processInlineRequest(t,e) ==
     stackAndThrow('"%1b does not designate a domain",[t])
   atom T.expr =>
     stackWarning('"inline request for type variable %1bp is meaningless",[t])
-  T.expr is [ctor] =>
-    $optimizableConstructorNames := [ctor,:$optimizableConstructorNames]
-  -- Don't try too hard; the current domain evaluation is insane.
-  stackWarning('"Ignoring inline arequest for non-niladic type %1bp",[t])
+  [ctor,:.] := T.expr
+  $optimizableConstructorNames := [ctor,:$optimizableConstructorNames]
 
 
 --%
