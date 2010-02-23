@@ -161,16 +161,8 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     dc
   sig := MSUBST(ndc,dc,sig)
   not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
-  dcval := optCallEval ndc
-  -- MSUBST guarantees to use EQUAL testing
-  sig := MSUBST(devaluate dcval, ndc, sig)
-  if rest ndc then
-     for new in rest devaluate dcval for old in rest ndc repeat
-       sig := MSUBST(new,old,sig)
-     -- optCallEval sends (List X) to (LIst (Integer)) etc,
-     -- so we should make the same transformation
-  fn := compiledLookup(op,sig,dcval)
-  if null fn then
+  fun := lookupDefiningFunction(op,sig,ndc)
+  if fun = nil then
     -- following code is to handle selectors like first, rest
      nsig := [quoteSelector tt for tt in sig] where
        quoteSelector(x) ==
@@ -178,10 +170,12 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
          get(x,'value,$e) => x
          x='$ => x
          MKQ x
-     fn := compiledLookup(op,nsig,dcval)
-     if null fn then return nil
-  eltOrConst="CONST" => ['XLAM,'ignore, SPADCALL fn]
-  GETL(compileTimeBindingOf first fn,'SPADreplace)
+     fun := lookupDefiningFunction(op,nsig,ndc)
+  fun = nil => nil
+  if CONSP fun then
+    eltOrConst = "CONST" => return ['XLAM,'ignore, SPADCALL fun]
+    fun := first fun
+  GETL(compileTimeBindingOf fun,'SPADreplace)
 
 genDeltaEntry opMmPair ==
 --called from compApplyModemap

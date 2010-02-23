@@ -1,10 +1,25 @@
+2010-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Expand support for domain inlining to non-niladic functors.
+	* interp/compiler.boot (processInlineRequest): Now accept any
+	functor.
+	* interp/c-util.boot (lookupFunctionInstance): New.
+	(isFormal): Likewise.
+	(expandFormTemplate): Likewise.
+	(equalFormTemplate): Likewise.
+	(getFunctionTemplate): Likewise.
+	(lookupInheritedDefiningFunction): Likewise.
+	(lookupDefiningFunction): Likewise.
+	* interp/nruncomp.boot (optDeltaEntry): Tidy.  Use
+	lookupDefiningFunction. 
+
 2010-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (PropositionalFormula):
 	Reimplement in terms of kernels.
 	* algebra/Makefile.pamphlet ($(OUT)/KERNEL.$(FASLEXT)): New
 	dependence rule.
-	($(OUT)PROPFRML.$(FASLEXT)): Likewise.
+	($(OUT)/PROPFRML.$(FASLEXT)): Likewise.
 	(axiom_algebra_layer_19): Move PROPFRML to...
 	(axiom_algebra_layer_6): ...here.
 

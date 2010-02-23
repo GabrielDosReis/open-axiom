@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1529,3 +1529,147 @@ compileQuietly fn ==
   quietlyIfInteractive COMP370 fn
 
 
+
+--%
+--% Compile Time operation lookup for the benefit of domain inlining.
+--%
+
+++ Subroutine of lookupDefiningFunction.
+++ Called when the domain of computation `dc' is closed (this is the
+++ case of niladic constructors) to lookup up the definition function
+++ of the operation `op' with signature `sig'.
+lookupFunctionInstance(op,sig,dc) ==
+  dom := eval dc
+  sig := MSUBST(devaluate dom,dc,sig)
+  compiledLookup(op,sig,dom)
+
+++ If `x' is a formal map variable, returns its position.
+++ Otherwise return nil.
+isFormal: %Symbol -> %Maybe %Short
+isFormal x ==
+  POSITION(x,$FormalMapVariableList,KEYWORD::TEST, function EQ)
+
+++ Expand the form at position `slot' in the domain template `shell'
+++ with argument list `args'.
+expandFormTemplate(shell,args,slot) ==
+  FIXP slot =>
+    slot = 0 => "$"
+    slot = 2 => "$$"
+    expandFormTemplate(shell,args,getShellEntry(shell,slot))
+  atom slot => slot
+  slot is ["local",parm] and (n := isFormal parm) => 
+    args.n   -- FIXME: we should probably expand with dual signature
+  slot is ["NRTEVAL",val] => val
+  slot is ["QUOTE",val] => 
+    STRINGP val => val
+    slot
+  [expandFormTemplate(shell,args,i) for i in slot]
+
+++ Compare the form at `slot' in the domain templare `shell'
+++ for equality with `form'.
+equalFormTemplate(shell,args,slot,form) ==
+  FIXP slot =>
+    slot = 0 => form = "$"
+    slot = 2 => form = "$$"
+    equalFormTemplate(shell,args,getShellEntry(shell,slot),form)
+  slot is ["local",parm] and (n := isFormal parm) => 
+    equalFormTemplate(shell,args,args.n,form)
+  slot is ["NTREVAL",val] => form = val
+  slot is ["QUOTE",val] => 
+     STRINGP val => val = form
+     slot = form
+  atom slot or atom form => form = slot
+  #slot ~= #form => false
+  and/[equalFormTemplate(shell,args,i,x) for i in slot for x in form]
+
+++ Subroutine of lookupDefiningFunction.
+++ Return the location of function templates with signature `sig',
+++ descriptor address in the range [start,end), in the domain 
+++ template `shell' whose local reference vector is `funDesc'.
+++ Return value:
+++    nil         => function not defined by `shell'.
+++    "ambiguous" => too many candidates
+++    <number>    => slot number of unique matching function.
+getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
+  nargs := #rest sig
+  loc := nil                           -- candidate locations
+  while loc ~= "ambiguous" and start < end repeat
+    n := funDesc.start                 -- arity of current operator
+    PROGN
+      -- Skip if arity mismatch
+      i := start
+      n ~= nargs => nil
+      -- We are not interested in predicates, at this point.
+      -- Skip if this operator's signature does not match 
+      i := i + 2
+      or/[not equalFormTemplate(shell,args,funDesc.k,t) 
+           for k in i.. for t in sig] => nil
+      -- Grab the location of this match
+      loc := 
+        FIXP loc => "ambiguous"
+        funDesc.(i + n + 1)
+    start := start + n + 4
+  loc
+
+++ Subroutine of lookupDefiningFunction.
+lookupInheritedDefiningFunction(op,sig,shell,args,slot) ==
+  dom := expandFormTemplate(shell,args,slot)
+  atom dom or dom is ["local",:.] => nil
+  lookupDefiningFunction(op,sig,dom)
+
+++ Return the name of the function definition that explicitly implements
+++ the operation `op' with signature `sig' in the domain of 
+++ computation `dc'.  Otherwise, return nil.
+++ Note: Only a function defined by the domain template, or its add-chains,
+++       and that is unambiguous is returned.  In particular, this
+++       function defaulting packages.
+lookupDefiningFunction(op,sig,dc) ==
+  -- 1. Read domain information, if available.
+  [ctor,:args] := dc
+  -- 1.1. Niladic constructors don't need approximation.
+  null args => lookupFunctionInstance(op,sig,dc)
+  -- 1.2. Don't look into defaulting package
+  isDefaultPackageName ctor => nil
+  -- 1.2. Silently give up if the constructor is just not there
+  loadLibIfNotLoaded ctor
+  infovec := GET(ctor, "infovec") or return nil
+  -- 1.3. We need information about the original domain template
+  shell := first infovec               -- domain template
+  opTable := second infovec            -- operator-code table
+  opTableLength := #opTable
+  forgetful := infovec.4 = "lookupIncomplete"
+
+  -- 2. Get the address range of op's descriptor set
+  [.,.,.,:funDesc] := fourth infovec
+  index := getOpCode(op, opTable, opTableLength - 1)
+  -- 2.1. For a forgetful functor, try the add chain
+  index = nil =>
+    forgetful and lookupInheritedDefiningFunction(op,sig,shell,args,5)
+  -- 2.2. The operation is either defined here, or is available
+  --      from category package defaults.
+  limit := 
+    index + 2 < opTableLength => opTable.(index + 2)
+    #funDesc 
+
+  -- 3. Locate the descriptor with matching signature
+  loc := getFunctionTemplate(sig,opTable.index,limit,shell,args,funDesc)
+
+  -- 4. Look into the add-chain if necessary
+  loc = nil => lookupInheritedDefiningFunction(op,sig,shell,args,shell.5)
+
+  -- 5. Give up if the operation is overloaded on semantics predicates.
+  loc = "ambiguous" => nil
+
+  -- 6. We have a location to a function descriptor.
+  fun := shell.loc
+  -- 6.1. A constant producing functions?
+  fun is [.,.,[.,["dispatchFunction",fun'],.]] => fun'
+  -- 6.2. An inherited function?
+  fun is [idx,:.] => 
+    not FIXP idx => nil          -- a UFO?
+    loc := funDesc.(idx + 1)
+    if loc = 0 then loc := 5
+    shell.loc = nil => nil
+    lookupInheritedDefiningFunction(op,sig,shell,args,shell.loc)
+  -- 6.3. Whatever.
+  fun
