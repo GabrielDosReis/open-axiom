@@ -1,3 +1,9 @@
+2010-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (genDeltaEntry): Don't store extraneous
+	item on $NRTdeltaList.
+	(NRTgetLocalIndex): Likewise.  Tidy.
+
 2010-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Expand support for domain inlining to non-niladic functors.
