@@ -1,3 +1,9 @@
+2010-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (genDeltaEntry): Don't store extraneous
+	item on $NRTdeltaList.
+	(NRTgetLocalIndex): Likewise.  Tidy.
+
 2010-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (PropositionalFormula):

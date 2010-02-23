@@ -198,7 +198,7 @@ genDeltaEntry opMmPair ==
   if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or not atom dc) then
     --create "%domain" entry to $NRTdeltaList
-      $NRTdeltaList:= [["%domain",NRTaddInner dc,:dc],:$NRTdeltaList]
+      $NRTdeltaList:= [["%domain",NRTaddInner dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:= (compOrCroak(odc,$EmptyMode,$e)).expr
@@ -232,12 +232,8 @@ NRTgetLocalIndex item ==
   k := NRTassocIndex item => k
   item = "$" => 0
   item = "$$" => 2
-  value:=
-    atom item =>
-      MEMQ(item,$formalArgList) => item
-    nil
-  atom item and null value =>  --give slots to atoms
-    $NRTdeltaList:= [["%domain",NRTaddInner item,:value],:$NRTdeltaList]
+  atom item and not MEMQ(item,$formalArgList) =>  --give slots to atoms
+    $NRTdeltaList:= [["%domain",NRTaddInner item],:$NRTdeltaList]
     $NRTdeltaListComp:=[item,:$NRTdeltaListComp]
     index := $NRTbase + $NRTdeltaLength      -- slot number to return
     $NRTdeltaLength := $NRTdeltaLength+1
@@ -245,7 +241,7 @@ NRTgetLocalIndex item ==
   -- when assigning slot to flag values, we don't really want to
   -- compile them.  Rather, we want to record them as if they were atoms.
   flag := isQuasiquote item
-  $NRTdeltaList:= [["%domain", NRTaddInner item,:value], :$NRTdeltaList]
+  $NRTdeltaList:= [["%domain", NRTaddInner item], :$NRTdeltaList]
   -- remember the item's place in the `delta list' and its slot number
   -- before the recursive call to the compiler, as that might generate
   -- more references that would extend the `delta list'.
