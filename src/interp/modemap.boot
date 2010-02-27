@@ -264,7 +264,6 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
-  $base:= 4
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
     u:=assoc(substitute("Rep",domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
@@ -288,7 +287,6 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   --if not $InteractiveMode then
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
-  $base:= 4
   condlist:=[]
   for [[op,sig,:.],cond,fnsel] in fnAlist repeat
 --  e:= addModemap(op,domainName,sig,cond,fnsel,e)

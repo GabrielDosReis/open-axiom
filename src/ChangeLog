@@ -1,3 +1,9 @@
+2010-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/modemap.boot (augModemapsFromCategoryRep): Remove
+	assignment to $base.
+	(augModemapsFromCategory): Likewise.
+
 2010-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (genDeltaEntry): Don't store extraneous
