@@ -76,6 +76,14 @@ PropositionalFormula(T: SetCategory): Public == Private where
       ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
       ++ is an equivalence formula.
 
+    conjunction: (%,%) -> %
+      ++ \spad{conjunction(p,q)} returns a formula denoting the
+      ++ conjunction of \spad{p} and \spad{q}.
+
+    disjunction: (%,%) -> %
+      ++ \spad{disjunction(p,q)} returns a formula denoting the
+      ++ disjunction of \spad{p} and \spad{q}.
+
   Private == add
     Rep == Union(T, Kernel %)
     import Kernel %
@@ -85,7 +93,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
     -- Local names for proposition logical operators
     macro NOT == '%not
     macro AND == '%and
-    macro OR == '%OR
+    macro OR == '%or
     macro IMP == '%implies
     macro EQV == '%equiv
 
@@ -102,11 +110,15 @@ PropositionalFormula(T: SetCategory): Public == Private where
     not p ==
       per kernel(operator(NOT, 1::Arity), [p], 1 + level p)
 
-    p and q ==
+    conjunction(p,q) ==
       per kernel(operator(AND, 2), [p, q], 1 + max(level p, level q))
 
-    p or q ==
+    p and q == conjunction(p,q)
+
+    disjunction(p,q) ==
       per kernel(operator(OR, 2), [p, q], 1 + max(level p, level q))
+
+    p or q == disjunction(p,q)
 
     implies(p,q) ==
       per kernel(operator(IMP, 2), [p, q], 1 + max(level p, level q))
