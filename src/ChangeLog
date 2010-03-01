@@ -1,3 +1,7 @@
+2010-03-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/vector.spad.pamphlet (maxIndex$Vector): Define.
+
 2010-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet
