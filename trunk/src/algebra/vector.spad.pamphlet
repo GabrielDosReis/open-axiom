@@ -140,14 +140,18 @@ IndexedVector(R:Type, mn:Integer):
 ++ and indexed by a finite segment of integers starting at 1.
  
 Vector(R:Type): Exports == Implementation where
- VECTORMININDEX ==> 1       -- if you want to change this, be my guest
-
  Exports ==> VectorCategory R with 
    vector: List R -> %
      ++ vector(l) converts the list l to a vector.
  Implementation ==>
-  IndexedVector(R, VECTORMININDEX) add 
+  IndexedVector(R, 1) add 
      vector l == construct l
+     -- We want maxIndex to be inlined.  Ideally, the definition should
+     -- read
+     --      maxIndex x == # rep x
+     -- However, there is currently an infelicity in the compiler that
+     -- prevents good uses of dependent domains.  So, we fall back to
+     maxIndex x == sizeOfSimpleArray(x)$Foreign(Builtin)
      if R has ConvertibleTo InputForm then
        convert(x:%):InputForm ==
           convert [convert('vector)@InputForm,
