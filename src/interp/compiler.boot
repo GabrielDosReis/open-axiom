@@ -396,7 +396,7 @@ compAtom(x,m,e) ==
   x = "iterate" => compIterate(x,m,e)
   T:= IDENTP x and compAtomWithModemap(x,m,e,get(x,"modemap",e)) => T
   t:=
-    isSymbol x => compSymbol(x,m,e) or return nil
+    IDENTP x => compSymbol(x,m,e) or return nil
     member(m,$IOFormDomains) and primitiveType x => [x,m,e]
     STRINGP x => [x,x,e]
     [x,primitiveType x or return nil,e]
