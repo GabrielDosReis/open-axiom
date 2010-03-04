@@ -42,6 +42,8 @@ module c_-util where
   foldExportedFunctionReferences: %List -> %List
   diagnoseUnknownType: (%Mode,%Env) -> %Form
   declareUnusedParameters: (%List,%Code) -> %List
+  registerFunctionReplacement: (%Symbol,%Form) -> %Thing
+  getFunctionReplacement: %Symbol -> %Form
 
 
 --% 
@@ -85,6 +87,11 @@ $optReplaceSimpleFunctions := false
 $optExportedFunctionReference := false
 
 --%
+
+++ Quote form, if not a basic value.
+quoteMinimally form ==
+  FIXP form or STRINGP form or form = nil or form = true => form
+  ["QUOTE",form]
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
 ++ Otherwise, return `m'.
@@ -1034,6 +1041,10 @@ getFunctionReplacement name ==
 ++ remove any replacement info possibly associated with `name'.
 clearReplacement name ==
   REMPROP(name,"SPADreplace")
+
+++ Register the inlinable form of a function.
+registerFunctionReplacement(name,body) ==
+  LAM_,EVALANDFILEACTQ ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
 
 eqSubstAndCopy: (%List, %List, %Form) -> %Form
 eqSubstAndCopy(args,parms,body) ==

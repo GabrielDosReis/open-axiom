@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -215,7 +215,7 @@ optSpecialCall(x,y,n) ==
       keyedSystemError("S2GE0016",['"optSpecialCall",
         '"invalid constant"])
     MKQ yval.n
-  fn := GETL(compileTimeBindingOf first yval.n,'SPADreplace) =>
+  fn := getFunctionReplacement compileTimeBindingOf first yval.n =>
     rplac(rest x,CDAR x)
     rplac(first x,fn)
     if fn is ["XLAM",:.] then x:=first optimize [x]

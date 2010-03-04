@@ -175,7 +175,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
   if CONSP fun then
     eltOrConst = "CONST" => return ['XLAM,'ignore, SPADCALL fun]
     fun := first fun
-  GETL(compileTimeBindingOf fun,'SPADreplace)
+  getFunctionReplacement compileTimeBindingOf fun
 
 genDeltaEntry opMmPair ==
 --called from compApplyModemap
