@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1247,16 +1247,16 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
     body := replaceSimpleFunctions body
 
   if vl is [:vl',E] and body is [nam',: =vl'] then
-      LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
+      registerFunctionReplacement(nam,nam')
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
   else if (isAtomicForm body or and/[isAtomicForm x for x in body])
          and vl is [:vl',E] and not CONTAINED(E,body) then
            macform := ['XLAM,vl',body]
-           LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
+           registerFunctionReplacement(nam,macform)
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
 
   form := 
-    GET(nam,"SPADreplace") => [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
+    getFunctionReplacement nam => [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
     [nam,[lam,vl,body]]
 
   $insideCapsuleFunctionIfTrue => 
