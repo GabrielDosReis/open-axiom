@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -347,8 +347,7 @@ compAtom(x,m,e) ==
   FIXP x and opOf m in '(Integer NonNegativeInteger PositiveInteger SmallInteger) => markAt [x,m,e]
 --  FIXP x and (T := [x, $Integer,e]) and (T' := convert(T,m)) => markAt(T, T')
   t:=
-    isSymbol x =>
-      compSymbol(x,m,e) or return nil
+    IDENTP x => compSymbol(x,m,e) or return nil
     m = $Expression and primitiveType x => [x,m,e]
     STRINGP x => 
       x ~= '"failed" and (member($Symbol, $localImportStack) or

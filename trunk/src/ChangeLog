@@ -1,5 +1,11 @@
 2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (isSymbol): Remove.
+	* interp/compiler.boot (compAtom): Don't use it.
+	* interp/wi1.boot (compAtom): Likewise.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (quoteMinimally): New.
 	(registerFunctionReplacement): Likewise.
 	* interp/define.boot (spadCompileOrSetq): Use it.

@@ -579,8 +579,6 @@ isDomainInScope(domain,e) ==
   isFunctor name => false
   true --is not a functor
  
-isSymbol x == IDENTP x or x=nil
- 
 isSimple x ==
   atom x or $InteractiveMode => true
   x is [op,:argl] and
