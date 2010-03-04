@@ -39,6 +39,15 @@ namespace BOOT
 
 $optimizableConstructorNames := $SystemInlinableConstructorNames
 
+++ Return true if the domain `dom' is an instance of a functor
+++ that has been nominated for inlining.
+optimizableDomain? dom ==
+  opOf dom in $optimizableConstructorNames
+
+++ Register the domain `dom' for inlining.
+nominateForInlining dom ==
+  $optimizableConstructorNames := [opOf dom,:$optimizableConstructorNames]
+  
 --%
 
 ++ return the template of the instantiating functor for
@@ -174,9 +183,9 @@ optCall (x is ["call",:u]) ==
  
 optCallSpecially(q,x,n,R) ==
     y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)
-    MEMQ(KAR R,$optimizableConstructorNames) => optSpecialCall(x,R,n)
+    optimizableDomain? R => optSpecialCall(x,R,n)
     (y:= get(R,"value",$e)) and
-      MEMQ(opOf y.expr,$optimizableConstructorNames) =>
+      optimizableDomain? y.expr =>
         optSpecialCall(x,y.expr,n)
     (
       (y:= lookup(R,$getDomainCode)) and ([op,y,prop]:= y) and

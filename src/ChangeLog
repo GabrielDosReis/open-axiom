@@ -1,5 +1,14 @@
 2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (nominateForInlining): New.
+	(optimizableDomain?): Likewise.
+	(optCallSpecially): Use it
+	* interp/compiler.boot (processInlineRequest): Likewise.
+	* interp/nruncomp.boot (optDeltaEntry): Likewise.
+	* interp/wi2.boot (optDeltaEntry): Likewise.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (isSymbol): Remove.
 	* interp/compiler.boot (compAtom): Don't use it.
 	* interp/wi1.boot (compAtom): Likewise.

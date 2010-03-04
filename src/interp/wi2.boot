@@ -667,7 +667,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
 --   then ndc := dcval.expr
 --   else ndc := dc
   sig := SUBST(ndc,dc,sig)
-  not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
+  not optimizableDomain? ndc => nil
   dcval := optCallEval ndc
   -- MSUBST guarantees to use EQUAL testing
   sig := MSUBST(devaluate dcval, ndc, sig)
