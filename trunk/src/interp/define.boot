@@ -1443,8 +1443,10 @@ doIt(item,$predl) ==
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
     if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
       if lhs="Rep" then
-        $Representation:= getRepresentation $e
-           --$Representation bound by compDefineFunctor, used in compNoStacking
+        --$Representation bound by compDefineFunctor, used in compNoStacking
+        $Representation := getRepresentation $e
+        if $optimizeRep then
+          nominateForInlining $Representation
     code is ["%LET",:.] =>
       RPLACA(item,"setShellEntry")
       rhsCode := rhs'

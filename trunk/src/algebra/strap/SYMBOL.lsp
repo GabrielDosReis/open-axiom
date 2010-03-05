@@ -662,8 +662,7 @@
                              (|getShellEntry| $ 151))
                          |SYMBOL;scripts;$R;32|)
                    (LETT |allscripts|
-                         (SPADCALL (|SYMBOL;list;$L;34| |sy| $)
-                             (|getShellEntry| $ 152))
+                         (CDR (|SYMBOL;list;$L;34| |sy| $))
                          |SYMBOL;scripts;$R;32|)
                    (LETT |m|
                          (SPADCALL |lscripts| (|getShellEntry| $ 153))
@@ -679,9 +678,7 @@
                                  NIL))
                            (GO G191)))
                         (COND
-                          ((< (SPADCALL |allscripts|
-                                  (|getShellEntry| $ 154))
-                              |n|)
+                          ((< (LENGTH |allscripts|) |n|)
                            (|error| "Improper script count in symbol"))
                           ('T
                            (SEQ (SPADCALL |lscripts| |i|

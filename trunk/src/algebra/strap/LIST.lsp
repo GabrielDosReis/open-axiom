@@ -64,9 +64,10 @@
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 16))
        (SPADCALL |dev| "list1" "list" (|getShellEntry| $ 18))
        (SEQ G190 (COND ((NULL (NOT (NULL |x|))) (GO G191)))
-            (SEQ (SPADCALL |dev| (|SPADfirst| |x|) NIL
-                     (|getShellEntry| $ 22))
-                 (EXIT (LETT |x| (CDR |x|) |LIST;writeOMList|)))
+            (SEQ (SPADCALL |dev| (SPADCALL |x| (|getShellEntry| $ 20))
+                     NIL (|getShellEntry| $ 22))
+                 (EXIT (LETT |x| (SPADCALL |x| (|getShellEntry| $ 23))
+                             |LIST;writeOMList|)))
             NIL (GO G190) G191 (EXIT NIL))
        (EXIT (SPADCALL |dev| (|getShellEntry| $ 24))))) 
 
@@ -120,16 +121,25 @@
 (DEFUN |LIST;setIntersection;3$;11| (|l1| |l2| $)
   (PROG (|u|)
     (RETURN
-      (SEQ (LETT |u| NIL |LIST;setIntersection;3$;11|)
+      (SEQ (LETT |u| (SPADCALL (|getShellEntry| $ 38))
+                 |LIST;setIntersection;3$;11|)
            (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 36))
                  |LIST;setIntersection;3$;11|)
-           (SEQ G190 (COND ((NULL (NOT (NULL |l1|))) (GO G191)))
+           (SEQ G190
+                (COND
+                  ((NULL (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
+                   (GO G191)))
                 (SEQ (COND
-                       ((SPADCALL (|SPADfirst| |l1|) |l2|
+                       ((SPADCALL
+                            (SPADCALL |l1| (|getShellEntry| $ 20)) |l2|
                             (|getShellEntry| $ 40))
-                        (LETT |u| (CONS (|SPADfirst| |l1|) |u|)
+                        (LETT |u|
+                              (CONS (SPADCALL |l1|
+                                     (|getShellEntry| $ 20))
+                                    |u|)
                               |LIST;setIntersection;3$;11|)))
-                     (EXIT (LETT |l1| (CDR |l1|)
+                     (EXIT (LETT |l1|
+                                 (SPADCALL |l1| (|getShellEntry| $ 23))
                                  |LIST;setIntersection;3$;11|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |u|))))) 
@@ -139,17 +149,24 @@
     (RETURN
       (SEQ (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 36))
                  |LIST;setDifference;3$;12|)
-           (LETT |lu| NIL |LIST;setDifference;3$;12|)
-           (SEQ G190 (COND ((NULL (NOT (NULL |l1|))) (GO G191)))
+           (LETT |lu| (SPADCALL (|getShellEntry| $ 38))
+                 |LIST;setDifference;3$;12|)
+           (SEQ G190
+                (COND
+                  ((NULL (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
+                   (GO G191)))
                 (SEQ (LETT |l11|
                            (SPADCALL |l1| 1 (|getShellEntry| $ 42))
                            |LIST;setDifference;3$;12|)
                      (COND
                        ((NOT (SPADCALL |l11| |l2|
                                  (|getShellEntry| $ 40)))
-                        (LETT |lu| (CONS |l11| |lu|)
+                        (LETT |lu|
+                              (SPADCALL |l11| |lu|
+                                  (|getShellEntry| $ 43))
                               |LIST;setDifference;3$;12|)))
-                     (EXIT (LETT |l1| (CDR |l1|)
+                     (EXIT (LETT |l1|
+                                 (SPADCALL |l1| (|getShellEntry| $ 23))
                                  |LIST;setDifference;3$;12|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (EXIT |lu|))))) 
