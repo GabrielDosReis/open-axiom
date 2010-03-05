@@ -160,7 +160,9 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
   sig := MSUBST(ndc,dc,sig)
-  not optimizableDomain? ndc => nil
+  -- Don't bothe if the domain of computation is not an instantiation,
+  -- or is candidate for inlining.
+  atom ndc or not optimizableDomain? ndc => nil
   fun := lookupDefiningFunction(op,sig,ndc)
   if fun = nil then
     -- following code is to handle selectors like first, rest
