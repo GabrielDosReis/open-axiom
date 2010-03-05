@@ -1146,6 +1146,8 @@ setCompilerOptimizations level ==
       $optReplaceSimpleFunctions := true
     if level > 1 then
       $optExportedFunctionReference := true
+    if level > 2 then
+      $optimizeRep := true
   coreError '"unknown optimization level request"
 
 

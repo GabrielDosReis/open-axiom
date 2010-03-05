@@ -667,8 +667,7 @@
       (SEQ (LETT |c| 'CONCATB |OUTFORM;blankSeparate;L$;35|)
            (LETT |l1| NIL |OUTFORM;blankSeparate;L$;35|)
            (SEQ (LETT |u| NIL |OUTFORM;blankSeparate;L$;35|)
-                (LETT #0# (SPADCALL |l| (|getShellEntry| $ 63))
-                      |OUTFORM;blankSeparate;L$;35|)
+                (LETT #0# (REVERSE |l|) |OUTFORM;blankSeparate;L$;35|)
                 G190
                 (COND
                   ((OR (ATOM #0#)
@@ -679,9 +678,7 @@
                    (GO G191)))
                 (SEQ (EXIT (COND
                              ((EQCAR |u| |c|)
-                              (LETT |l1|
-                                    (SPADCALL (CDR |u|) |l1|
-                                     (|getShellEntry| $ 64))
+                              (LETT |l1| (APPEND (CDR |u|) |l1|)
                                     |OUTFORM;blankSeparate;L$;35|))
                              ('T
                               (LETT |l1| (CONS |u| |l1|)
@@ -729,18 +726,15 @@
 
 (DEFUN |OUTFORM;scripts;$L$;46| (|a| |l| $)
   (COND
-    ((SPADCALL |l| (|getShellEntry| $ 76)) |a|)
-    ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 77))
-         (|getShellEntry| $ 76))
+    ((NULL |l|) |a|)
+    ((NULL (CDR |l|))
      (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|getShellEntry| $ 78)) $))
     ('T (CONS 'SUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
-         ((ODDP (SPADCALL |l| (|getShellEntry| $ 80)))
-          (LETT |l|
-                (SPADCALL |l| (LIST (LIST 'NOTHING))
-                    (|getShellEntry| $ 64))
+         ((ODDP (LENGTH |l|))
+          (LETT |l| (APPEND |l| (LIST (LIST 'NOTHING)))
                 |OUTFORM;supersub;$L$;47|)))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
@@ -872,16 +866,13 @@
 
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
-    ((SPADCALL |l| (|getShellEntry| $ 76)) (LIST 'NOTHING))
-    ((SPADCALL (SPADCALL |l| (|getShellEntry| $ 77))
-         (|getShellEntry| $ 76))
-     (SPADCALL |l| (|getShellEntry| $ 78)))
+    ((NULL |l|) (LIST 'NOTHING))
+    ((NULL (CDR |l|)) (SPADCALL |l| (|getShellEntry| $ 78)))
     ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
     ('T
      (|OUTFORM;hconcat;L$;49|
          (LIST (SPADCALL |l| (|getShellEntry| $ 78)) |a|
-               (|OUTFORM;infix;$L$;77| |a|
-                   (SPADCALL |l| (|getShellEntry| $ 77)) $))
+               (|OUTFORM;infix;$L$;77| |a| (CDR |l|) $))
          $)))) 
 
 (DEFUN |OUTFORM;infix;4$;78| (|a| |b| |c| $)

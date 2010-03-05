@@ -425,8 +425,7 @@
                 (SEQ (EXIT 0))
                 (LETT |i| (+ |i| 1) |ISTRING;split;$CL;22|) (GO G190)
                 G191 (EXIT NIL))
-           (LETT |l| (SPADCALL (|getShellEntry| $ 72))
-                 |ISTRING;split;$CL;22|)
+           (LETT |l| NIL |ISTRING;split;$CL;22|)
            (SEQ G190
                 (COND
                   ((NULL (COND
@@ -469,7 +468,7 @@
                             $)
                         |l| (|getShellEntry| $ 73))
                     |ISTRING;split;$CL;22|)))
-           (EXIT (SPADCALL |l| (|getShellEntry| $ 74))))))) 
+           (EXIT (NREVERSE |l|)))))) 
 
 (DEFUN |ISTRING;split;$CcL;23| (|s| |cc| $)
   (PROG (|n| |j| |i| |l|)
@@ -487,8 +486,7 @@
                 (SEQ (EXIT 0))
                 (LETT |i| (+ |i| 1) |ISTRING;split;$CcL;23|) (GO G190)
                 G191 (EXIT NIL))
-           (LETT |l| (SPADCALL (|getShellEntry| $ 72))
-                 |ISTRING;split;$CcL;23|)
+           (LETT |l| NIL |ISTRING;split;$CcL;23|)
            (SEQ G190
                 (COND
                   ((NULL (COND
@@ -531,7 +529,7 @@
                             $)
                         |l| (|getShellEntry| $ 73))
                     |ISTRING;split;$CcL;23|)))
-           (EXIT (SPADCALL |l| (|getShellEntry| $ 74))))))) 
+           (EXIT (NREVERSE |l|)))))) 
 
 (DEFUN |ISTRING;leftTrim;$C$;24| (|s| |c| $)
   (PROG (|n| |i|)

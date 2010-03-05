@@ -1,5 +1,16 @@
 2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-globals.boot ($optimizeRep): Define.
+	* interp/sys-driver.boot (initializeGlobalState): Sey domain
+	representation inlining if requested.
+	* interp/c-util.boot (setCompilerOptimizations): Set domain
+	representation inlining if at optimization level 3.
+	* algebra/constant.spad.pamphlet (AlgebraicNumber): Remove
+	assignment to Rep.  Tidy.
+	* algebra/Makefile.pamphlet: Add dependencies.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (nominateForInlining): New.
 	(optimizableDomain?): Likewise.
 	(optCallSpecially): Use it

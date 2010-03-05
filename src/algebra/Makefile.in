@@ -402,7 +402,7 @@ $(OUT)/PATAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/BOOLEAN.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 $(OUT)/VECTCAT.$(FASLEXT): $(OUT)/RADCAT.$(FASLEXT)
 $(OUT)/IARRAY1.$(FASLEXT): $(OUT)/PRIMARR.$(FASLEXT)
-$(OUT)/PROPERTY.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
+$(OUT)/PROPERTY.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT) $(OUT)/PAIR.$(FASLEXT)
 $(OUT)/BINDING.$(FASLEXT): $(OUT)/PROPERTY.$(FASLEXT)
 $(OUT)/OPERCAT.$(FASLEXT): $(OUT)/ARITY.$(FASLEXT)
 $(OUT)/REF.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/IDENT.$(FASLEXT)
@@ -427,12 +427,11 @@ axiom_algebra_layer_1_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_1)))
 axiom_algebra_layer_2 = \
   SYNTAX   INTRET   SEGXCAT CONTOUR  LIST3   MKFUNC   \
-  COMMONOP KTVLOGIC FNCAT   SCACHE   BOP     BOP1     \
+  COMMONOP          FNCAT   SCACHE   BOP     BOP1     \
   DOMTMPLT FCTRDATA
 
 $(OUT)/FNCAT.$(FASLEXT): $(OUT)/HOMOTOP.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SYNTAX.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT)
-$(OUT/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT)
 $(OUT)/COMMONOP.$(FASLEXT): $(OUT)/BOP.$(FASLEXT)
 $(OUT)/DOMTMPLT.$(FASLEXT): $(OUT)/SYNTAX.$(FASLEXT)
 $(OUT)/FCTRDATA.$(FASLEXT): $(OUT)/DOMTMPLT.$(FASLEXT)
@@ -499,21 +498,23 @@ axiom_algebra_layer_5_objects = \
 
 $(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
 $(OUT)PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
+$(OUT)/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT) $(OUT)/BYTE.$(FASLEXT)
 
 axiom_algebra_layer_6 = \
   PROPFRML         AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
   DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
   HYPCAT  HYPCAT-           MODRING NASRING  NASRING- \
   SORTPAK ZMOD                                        \
-                   OAMONS   BYTE    SYSINT   SYSNNI
+  KTVLOGIC         OAMONS   BYTE    SYSINT   SYSNNI
 
 axiom_algebra_layer_6_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_6))
 axiom_algebra_layer_6_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_6)))
+$(OUT)/IFAMON.$(FASLEXT): $(OUT)/LMOPS.$(FASLEXT)
 axiom_algebra_layer_7 = \
-  BTCAT   BTCAT-                    FMCAT   IDPOAM   \
+  BTCAT   BTCAT-  LMOPS             FMCAT   IDPOAM   \
   IFAMON  GRALG   GRALG-                             \
   INT8    INT16   INT32    INT64    UINT8   UINT16   \
   UINT32  UINT64
@@ -524,11 +525,16 @@ axiom_algebra_layer_7_nrlibs = \
 axiom_algebra_layer_7_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_7)))
+
+$(OUT)/BSTREE.$(FASLEXT): $(OUT)/BTREE.$(FASLEXT)
+$(OUT)/ITAYLOR.$(FASLEXT): $(OUT)/STREAM.$(FASLEXT)
+$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
+
 axiom_algebra_layer_8 = \
   BSTREE  BTOURN   CARD     DRAWHACK  FACTFUNC FMTC  \
   FR2     FRAC2    FRUTIL   ITAYLOR   MLO      NAALG \
   NAALG-  OP       ORDCOMP2 RANDSRC   UNISEG2  XALG  \
-                                      ARR2CAT  ARR2CAT-
+  BTREE   STREAM   LZSTAGG  LZSTAGG-  ARR2CAT  ARR2CAT-
 
 axiom_algebra_layer_8_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_8))
@@ -536,13 +542,15 @@ axiom_algebra_layer_8_nrlibs = \
 axiom_algebra_layer_8_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_8)))
+$(OUT)/ODEIFTBL.$(FASLEXT): $(OUT)/TABLE.$(FASLEXT) $(OUT)/INTABL.$(FASLEXT)
+
 axiom_algebra_layer_9 = \
   AMR      AMR-     DEGRED   DLP      EAB      ESTOOLS1 \
   FAGROUP  FAMONOID FLINEXP  FLINEXP- FRETRCT  FRETRCT- \
   FSERIES  FT       IDPAG    IDPOAMS  INFINITY LA       \
   OMLO     ORTHPOL  PRODUCT  PADICCT  PMPRED   PMASS    \
   PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
-  XFALG    ZLINDEP  BBTREE                              \
+  XFALG    ZLINDEP  BBTREE   TABLE    INTABL            \
                     ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
   PDEPROB  COLOR    SIG      FMONCAT
 
@@ -553,16 +561,32 @@ axiom_algebra_layer_9_nrlibs = \
 axiom_algebra_layer_9_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_9)))
+$(OUT)/D01GBFA.$(FASLEXT): $(OUT)/RESULT.$(FASLEXT) $(OUT)/ANY.$(FASLEXT) \
+	$(OUT)/SEX.$(FASLEXT) $(OUT)/HASHTBL.$(FASLEXT)
+
+$(OUT)/SEX.$(FASLEXT): $(OUT)/SEXOF.$(FASLEXT)
+$(OUT)/LEXP.$(FASLEXT): $(OUT)/XPBWPOLY.$(FASLEXT)
+$(OUT)/XPBWPOLY.$(FASLEXT): $(OUT)/XPOLYC.$(FASLEXT)
+$(OUT)/PENDTREE.$(FASLEXT): $(OUT)/TREE.$(FASLEXT)
+$(OUT)/QFORM.$(FASLEXT): $(OUT)/SQMATRIX.$(FASLEXT)
+$(OUT)/SQMATRIX.$(FASLEXT): $(OUT)/SMATCAT.$(FASLEXT) \
+	$(OUT)/MATRIX.$(FASLEXT) $(OUT)/IIARRAY2.$(FASLEXT)
+$(OUT)/SMATCAT.$(FASLEXT): $(OUT)/RMATCAT.$(FASLEXT)
+$(OUT)/RMATCAT.$(FASLEXT): $(OUT)/DIRPROD.$(FASLEXT)
+$(OUT)/DIRPROD.$(FASLEXT): $(OUT)/DIRPCAT.$(FASLEXT)
+$(OUT)/DIRPCAT.$(FASLEXT): $(OUT)/VSPACE.$(FASLEXT) $(OUT)/IVECTOR.$(FASLEXT)
+$(OUT)/MATRIX.$(FASLEXT): $(OUT)/MATCAT.$(FASLEXT)
+
 axiom_algebra_layer_10 = \
-           BFUNCT   BPADIC   \
-  BTREE    CRAPACK  DEQUEUE  DLIST    \
+  RESULT   BFUNCT   BPADIC   ANY      \
+  SEXOF    CRAPACK  DEQUEUE  DLIST    \
   DRAWCX   D01GBFA  D02EJFA  D03FAFA  \
   DRAWPT   FAMR     FAMR-    FLASORT  \
   FLAGG2   FGROUP   FM       FM1      \
   FPC      FPC-     FMONOID  INDE     \
   IPADIC   IROOT    IR2      LEXP     \
   LIECAT   LIECAT-  LIST2    LIST2MAP \
-  LMOPS    LZSTAGG  LZSTAGG- MAGMA    \
+  SEX      HASHTBL  TREE     MAGMA    \
   MESH     MOEBIUS  MODFIELD MODOP    \
   MRING    MTHING   NCNTFRAC NCODIV   \
   NUMTUBE  ODR      OFMONOID ONECOMP  \
@@ -572,12 +596,15 @@ axiom_algebra_layer_10 = \
   PINTERP  PLOTTOOL PFR      PMDOWN   \
   PRTITION PMINS    PMLSAGG  PMTOOLS  \
   PSCAT    PSCAT-   QFORM    QUEUE    \
-           SEG      SEG2     SEXOF    \
+  SQMATRIX SEG      SEG2              \
   STACK    STTAYLOR TABLBUMP TABLEAU  \
   TOPSP    TRANFUN  TRANFUN- TUBE     \
   UDPO     UNISEG   VIEW     VSPACE   \
-  VSPACE-  XPOLYC   XPR    BTAGG    BTAGG-  \
-  FUNDESC
+  VSPACE-  XPOLYC   XPR      BTAGG    BTAGG-  \
+  FUNDESC  XPBWPOLY SMATCAT  SMATCAT- \
+  RMATRIX  RMATCAT  RMATCAT- DIRPROD \
+  DIRPCAT  DIRPCAT- IVECTOR  MATRIX  \
+  MATCAT   MATCAT-  IIARRAY2
 
 
 axiom_algebra_layer_10_nrlibs = \
@@ -586,6 +613,8 @@ axiom_algebra_layer_10_nrlibs = \
 axiom_algebra_layer_10_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_10)))
+$(OUT)/ARRAY2.$(FASLEXT): $(OUT)/IFARRAY.$(FASLEXT)
+
 axiom_algebra_layer_11 = \
   APPLYORE ARRAY1   ARRAY12  ARRAY2   \
   ASTACK   COMBINAT \
@@ -593,13 +622,13 @@ axiom_algebra_layer_11 = \
   FLALG    GALUTIL  HEAP              \
   IARRAY2  IFARRAY  INTCAT   INTHEORY \
   IRREDFFX LFCAT    LODOCAT  LODOCAT- \
-  LWORD    MATCAT   MATCAT-  MATSTOR  \
+  LWORD                      MATSTOR  \
   ORESUP   OREPCTO  OREUP    PLOT3D   \
   PR       PREASSOC PRIMARR2 REDORDER \
-  STREAM   SYMPOLY  \
+           SYMPOLY  \
   TS       TUPLE    UPSCAT   UPSCAT-  \
                     XDPOLY   XEXPPKG  \
-  XF       XF-      XPBWPOLY XPOLY    \
+  XF       XF-               XPOLY    \
   XRPOLY   
 
 axiom_algebra_layer_11_nrlibs = \
@@ -610,7 +639,7 @@ axiom_algebra_layer_11_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_11)))
 axiom_algebra_layer_12 = \
   ULSCAT                           BITS     DIRPROD2 IMATRIX \
-  IVECTOR  LPOLY   LSMP    LSMP1   MATCAT2  PTCAT    TRIMAT  \
+           LPOLY   LSMP    LSMP1   MATCAT2  PTCAT    TRIMAT  \
                    SYSTEM  HOSTNAME PORTNUM
 
 axiom_algebra_layer_12_nrlibs = \
@@ -626,13 +655,13 @@ axiom_algebra_layer_13 = \
   ASSOCEQ  CARTEN   CLIF     CLIP     \
   UPOLYC   UPOLYC-                    \
   COORDSYS DBASE    DHMATRIX DIOSP    \
-  DIRPCAT  DIRPCAT- D02BBFA  D02BHFA  \
+                    D02BBFA  D02BHFA  \
   D02CJFA  FAXF     FAXF-    FFPOLY2  \
   FNLA     GRAY     HB       IRSN     \
   MCALCFN  MHROWRED NUMODE   NUMQUAD  \
   ODESYS   ODETOOLS ORDFUNS  PERMAN   \
   PFECAT   PFECAT-  POINT    PSEUDLIN \
-  PTPACK   REP2     SETMN    SEX      \
+  PTPACK   REP2     SETMN             \
   SYMFUNC  VECTOR2     CHAR  \
   INBCON   INBCON-  OUTBCON  OUTBCON-
 
@@ -643,13 +672,14 @@ axiom_algebra_layer_13_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_13)))
 $(OUT)/FS.$(FASLEXT): $(OUT)/UPOLYC.$(FASLEXT)
+$(OUT)/FTEM.$(FASLEXT): $(OUT)/TEXTFILE.$(FASLEXT)
 
 axiom_algebra_layer_14 = \
   FS       FS-      ACF      ACF-     \
   ACFS    ACFS-    BALFACT  BEZOUT   BINARY   BINFILE  BOUNDZRO \
   BPADICRT BRILL    CDEN     CHVAR    \
   COMMUPC  CONTFRAC CVMP     CYCLOTOM \
-  CYCLES   DDFACT   DECIMAL  DIRPROD  DISPLAY  DMP      \
+  CYCLES   DDFACT   DECIMAL           DISPLAY  DMP      \
   DPMO     DPOLCAT  DPOLCAT- D01AJFA  \
   D01AKFA  D01ALFA  D01AMFA  D01APFA  \
   D01AQFA  EMR      EQ       ERROR    \
@@ -666,7 +696,7 @@ axiom_algebra_layer_14 = \
   GOSPER   GRIMAGE  GROEBSOL HDMP     \
   HDP      HEXADEC  HEUGCD   IBPTOOLS \
   IFF      IBITS    ICARD    ICDEN    \
-  IDECOMP  IIARRAY2 IMATLIN  IMATQF   \
+  IDECOMP           IMATLIN  IMATQF   \
   INMODGCD INNMFACT INPSIGN  INTHERTR \
   INTRAT   INTRF    INTSLPE  INTTR    \
   ISUMP    LAUPOL   LEADCDET LGROBP   \
@@ -688,20 +718,20 @@ axiom_algebra_layer_14 = \
   RATFACT  RCFIELD  RCFIELD- RDETR    \
   RDETRS   REAL0    REAL0Q   REALSOLV \
   RESRING  RETSOL   RF       RFFACTOR \
-  RMATCAT  RMATCAT- RRCC     RRCC-    \
+                    RRCC     RRCC-    \
   SCPKG    SHDP     SHP      SIGNRF   \
   SMITH    SMP      SMTS     SOLVEFOR \
   SPLTREE  STINPROD STTFNC   SUBRESP  \
   SUMRF    SUP      SUPFRACF TANEXP   \
-  TEMUTL   TEX      TEXTFILE TREE     \
+  TEMUTL   TEX      TEXTFILE          \
   TWOFACT  UNIFACT  UP       UPCDEN   \
   UPDECOMP UPDIVP   UPMP     UPOLYC2  \
   UPXSCAT  UPSQFREE VIEWDEF  VIEW2D   \
            WEIER    WP       \
- EQTBL  GSTBL   HASHTBL \
-  INTABL  INTFTBL  STBL    STRTBL\
-  TABLE     FST SYMS     SYMTAB \
-  IOBCON
+  EQTBL    GSTBL            \
+           INTFTBL  STBL     STRTBL\
+           FST      SYMS     SYMTAB \
+  IOBCON   
 
 
 axiom_algebra_layer_14_nrlibs = \
@@ -710,12 +740,22 @@ axiom_algebra_layer_14_nrlibs = \
 axiom_algebra_layer_14_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_14)))
+$(OUT)/EXPUPXS.$(FASLEXT): $(OUT)/UPXS.$(FASLEXT)
+$(OUT)/UPXS.$(FASLEXT): $(OUT)/UPXSCAT.$(FASLEXT) $(OUT)/UPXSCONS.$(FASLEXT) \
+	$(OUT)/ULS.$(FASLEXT)
+$(OUT)/UPXSCONS.$(FASLEXT): $(OUT)/UPXSCCA.$(FASLEXT)
+$(OUT)/ULS.$(FASLEXT): $(OUT)/ULSCONS.$(FASLEXT)
+$(OUT)/ULSCONS.$(FASLEXT): $(OUT)/ULSCCAT.$(FASLEXT)
+$(OUT)/ULSCCAT.$(FASLEXT): $(OUT)/UTS.$(FASLEXT)
+$(OUT)/UTS.$(FASLEXT): $(OUT)/UTSCAT.$(FASLEXT)
+
 axiom_algebra_layer_15 = \
-  DSMP     EXPUPXS                   \
+  DSMP     EXPUPXS  UPXS     UPXSCONS \
   FRAMALG  FRAMALG- MDAGG    ODPOL   \
   PLOT     RMCAT2   ROIRC    SDPOL   \
-  SMATCAT  SMATCAT- TUBETOOL UPXSCCA \
-  UPXSCCA- JAVACODE POLY       BYTEBUF    OVERSET
+  ULS      ULSCONS  TUBETOOL UPXSCCA \
+  UPXSCCA- JAVACODE POLY       BYTEBUF    OVERSET \
+  ULSCCAT  ULSCCAT- UTS      UTSCAT  UTSCAT-
 
 axiom_algebra_layer_15_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_15))
@@ -765,7 +805,7 @@ axiom_algebra_layer_18_objects = \
 $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
-  ACPLOT   ANTISYM  ANY      ATTRBUT \
+  ACPLOT   ANTISYM           ATTRBUT \
                              COMPCAT \
   COMPCAT- DRAW     DRAWCFUN DROPT   \
   DROPT0   D01ANFA  D01ASFA  D03AGNT \
@@ -776,7 +816,7 @@ axiom_algebra_layer_19 = \
            FUNCTION GDMP     HACKPI  \
   IDEAL    INFORM   INFORM1  IPRNTPK \
   IR       ISUPS             LIB     \
-  LMDICT   LODOOPS  MATRIX   MKFLCFN \
+  LMDICT   LODOOPS           MKFLCFN \
   MSET     M3D      NAGC02   NAGC05  \
   NAGC06   NAGD03   NAGE01   NAGE02  \
   NAGE04   NAGF07   NAGS     NAGSP   \
@@ -785,12 +825,12 @@ axiom_algebra_layer_19 = \
   OPTPACK  OSI      PATTERN  OVAR    \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
-  RESULT   QUATCAT  QUATCAT- RFFACT  \
-  RMATRIX  ROMAN    ROUTINE  RNGBIND \
+           QUATCAT  QUATCAT- RFFACT  \
+           ROMAN    ROUTINE  RNGBIND \
            RULECOLD SAOS     SEGBIND \
-  SET      SPECOUT  SQMATRIX SWITCH  \
-                    SYSSOLP  UTSCAT  \
-  UTSCAT-  VARIABLE WFFINTBS SPADPRSR \
+  SET      SPECOUT           SWITCH  \
+                    SYSSOLP          \
+           VARIABLE WFFINTBS SPADPRSR \
   PARSER            TSETCAT  TSETCAT-
 
 axiom_algebra_layer_19_nrlibs = \
@@ -799,6 +839,9 @@ axiom_algebra_layer_19_nrlibs = \
 axiom_algebra_layer_19_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_19)))
+$(OUT)/AN.$(FASLEXT): $(OUT)/IAN.$(FASLEXT)
+$(OUT)/IAN.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
+
 axiom_algebra_layer_20 = \
   AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
   ALGSC    AN       APPRULE  CINTSLPE COMPFACT COMPLEX  \
@@ -830,7 +873,7 @@ axiom_algebra_layer_20 = \
   SFORT    SOLVESER SUMFS    SUTS     \
   TOOLSIGN TRIGMNIP TRMANIP  ULSCCAT  \
   ULSCCAT- UPXSSING UTSODE   UTSODETL \
-  UTS2     WUTSET   
+  UTS2     WUTSET   EXPR
 
 axiom_algebra_layer_20_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_20))
@@ -838,15 +881,17 @@ axiom_algebra_layer_20_nrlibs = \
 axiom_algebra_layer_20_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_20)))
+$(OUT)/FDIV.$(FASLEXT): $(OUT)/HELLFDIV.$(FASLEXT)
+
 axiom_algebra_layer_21 = \
   DEFINTEF DFINTTLS DEFINTRF D01TRNS  \
-  EFULS    ESCONT   EXPR     EXPR2UPS \
+  EFULS    ESCONT            EXPR2UPS \
   FDIV     FSCINT   FSINT    FS2EXPXP \
   GSERIES  HELLFDIV INVLAPLA IR2F     \
   IRRF2F   LAPLACE  LIMITPS  LODEEF   \
   NODE1    ODECONST ODEINT   REP      \
-  SOLVERAD SULS     SUPXS    ULS      \
-  ULSCONS  UPXS     UPXSCONS UTS 
+  SOLVERAD SULS     SUPXS             \
+                    UPXSCONS 
 
 axiom_algebra_layer_21_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_21))
@@ -999,7 +1044,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 .PREVIOUS: %.spad
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
-	${INTERPSYS} --strap=strap --system-algebra --optimize=2 --compile $<
+	${INTERPSYS} --strap=strap --system-algebra --optimize=3 --compile $<
 
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
