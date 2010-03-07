@@ -1246,17 +1246,16 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
 
-  if vl is [:vl',E] and body is [nam',: =vl'] then
+  if nam' := forwardingCall?(vl,body) then
       registerFunctionReplacement(nam,nam')
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
-  else if (isAtomicForm body or and/[isAtomicForm x for x in body])
-         and vl is [:vl',E] and not CONTAINED(E,body) then
-           macform := ['XLAM,vl',body]
+  else if macform := expandableDefinition?(vl,body) then
            registerFunctionReplacement(nam,macform)
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
 
   form := 
-    getFunctionReplacement nam => [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
+    getFunctionReplacement nam => 
+      [nam,[lam,vl,["DECLARE",["IGNORE",last vl]],body]]
     [nam,[lam,vl,body]]
 
   $insideCapsuleFunctionIfTrue => 

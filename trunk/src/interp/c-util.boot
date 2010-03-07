@@ -1105,11 +1105,50 @@ replaceSimpleFunctions form ==
   form
 
 
+++ We are processing a function definition with parameter list `vars'
+++ and body given by `body'.  If `body' is a forwarding function call, 
+++ return the target function.  Otherwise, return nil.
+forwardingCall?(vars,body) ==
+  vars is [:vars',.] and body is [fun,: =vars'] and IDENTP fun => fun
+  nil
+
+
+++ Return true if `form' has a linear usage of all variables in `vars'.
+usesVariablesLinearly?(form,vars) ==
+  isAtomicForm form => true
+  and/[numOfOccurencesOf(var,form) < 2 for var in vars] 
+
+++ We are processing a function definition with parameter list `vars'
+++ and body given by `body'.  If `body' is a form that can be inlined,
+++ then return the inline form.  Otherwise, return nil.
+expandableDefinition?(vars,body) ==
+  expand? :=
+    -- We definitely don't want to expand a form that uses
+    -- the domain of computation environment.
+    vars isnt [:vars',env] or CONTAINED(env,body) => false
+
+    -- Constants are currently implemented as niladic functions, and
+    -- we want to avoid disturbing object identity, so we rule
+    -- out use of side-effect full operators.  
+    -- FIXME: This should be done only for constant creators.
+    null vars' => semiSimpleRelativeTo?(body,$VMsideEffectFreeOperators)
+
+    isAtomicForm body => true
+    [op,:args] := body
+    not IDENTP op => false
+    and/[isAtomicForm x for x in args] 
+      or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
+                usesVariablesLinearly?(body,vars')
+    false
+  expand? => ["XLAM",vars',body]
+  nil
+
 ++ Replace all SPADCALLs to operations defined in the current
 ++ domain.  Conditional operations are not folded.
 foldSpadcall: %Form -> %Form
 foldSpadcall form ==
-  isAtomicForm form => form
+  isAtomicForm form => form           -- leave atomic forms alone
+  form is ["DECLARE",:.] => form      -- don't walk declarations
   form is ["LET",inits,:body] =>
     mutateLETFormWithUnaryFunction(form,"foldSpadcall")
   form is ["COND",:stmts] =>
@@ -1129,8 +1168,13 @@ foldSpadcall form ==
 ++ with their corresponding linkage names.  
 foldExportedFunctionReferences defs ==
   for fun in defs repeat
-    foldSpadcall fun is [.,lamex] =>
-      rplac(third lamex, replaceSimpleFunctions third lamex)
+    fun isnt [name,lamex] => nil
+    lamex isnt ["LAM",vars,body] => nil
+    body := replaceSimpleFunctions foldSpadcall body
+    form := expandableDefinition?(vars,body) =>
+      registerFunctionReplacement(name,form)
+      rplac(second fun, ["LAM",vars,["DECLARE",["IGNORE",last vars]],body])
+    rplac(third lamex,body)
   defs
 
 ++ record optimizations permitted at level `level'.

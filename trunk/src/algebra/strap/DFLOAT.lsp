@@ -93,6 +93,9 @@
                     |%Boolean|)
                 |DFLOAT;<=;2$B;22|)) 
 
+(PUT '|DFLOAT;<=;2$B;22| '|SPADreplace|
+     '(XLAM (|x| |y|) (NOT (> |x| |y|)))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
                     |%Boolean|)
                 |DFLOAT;>=;2$B;23|)) 
@@ -504,7 +507,9 @@
 
 (DEFUN |DFLOAT;>;2$B;21| (|x| |y| $) (DECLARE (IGNORE $)) (> |x| |y|)) 
 
-(DEFUN |DFLOAT;<=;2$B;22| (|x| |y| $) (NOT (> |x| |y|))) 
+(DEFUN |DFLOAT;<=;2$B;22| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (> |x| |y|))) 
 
 (DEFUN |DFLOAT;>=;2$B;23| (|x| |y| $)
   (DECLARE (IGNORE $))

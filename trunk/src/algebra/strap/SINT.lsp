@@ -112,6 +112,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;<=;2$B;26|)) 
 
+(PUT '|SINT;<=;2$B;26| '|SPADreplace|
+     '(XLAM (|x| |y|) (NOT (> |x| |y|)))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;>=;2$B;27|)) 
 
@@ -239,11 +242,17 @@
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
                 |SINT;size;Nni;52|)) 
 
+(PUT '|SINT;size;Nni;52| '|SPADreplace|
+     '(XLAM NIL (+ (- |$ShortMaximum| |$ShortMinimum|) 1))) 
+
 (DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 1) |%Shell|) |%Short|)
                 |SINT;index;Pi$;53|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) (|%IntegerSection| 1))
                 |SINT;lookup;$Pi;54|)) 
+
+(PUT '|SINT;lookup;$Pi;54| '|SPADreplace|
+     '(XLAM (|x|) (+ (- |x| |$ShortMinimum|) 1))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| (|%Vector| *) |%Shell|) |%Pair|)
                 |SINT;reducedSystem;MVR;55|)) 
@@ -375,7 +384,9 @@
   (DECLARE (IGNORE $))
   (QSGREATERP |x| |y|)) 
 
-(DEFUN |SINT;<=;2$B;26| (|x| |y| $) (NOT (> |x| |y|))) 
+(DEFUN |SINT;<=;2$B;26| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (> |x| |y|))) 
 
 (DEFUN |SINT;>=;2$B;27| (|x| |y| $) (DECLARE (IGNORE $)) (>= |x| |y|)) 
 
@@ -458,6 +469,7 @@
   (QSMINUSP |x|)) 
 
 (DEFUN |SINT;size;Nni;52| ($)
+  (DECLARE (IGNORE $))
   (+ (- |$ShortMaximum| |$ShortMinimum|) 1)) 
 
 (DEFUN |SINT;index;Pi$;53| (|i| $)
@@ -467,7 +479,9 @@
                    |SINT;index;Pi$;53|)
         (|check-subtype| (SMINTP #0#) '(|SingleInteger|) #0#))))) 
 
-(DEFUN |SINT;lookup;$Pi;54| (|x| $) (+ (- |x| |$ShortMinimum|) 1)) 
+(DEFUN |SINT;lookup;$Pi;54| (|x| $)
+  (DECLARE (IGNORE $))
+  (+ (- |x| |$ShortMinimum|) 1)) 
 
 (DEFUN |SINT;reducedSystem;MVR;55| (|m| |v| $)
   (DECLARE (IGNORE $))

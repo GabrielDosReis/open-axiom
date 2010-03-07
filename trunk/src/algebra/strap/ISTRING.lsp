@@ -9,9 +9,6 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |ISTRING;empty;$;2|)) 
 
-(PUT '|ISTRING;empty;$;2| '|SPADreplace|
-     '(XLAM NIL (MAKE-FULL-CVEC 0))) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;empty?;$B;3|)) 
 
@@ -135,9 +132,7 @@
   (DECLARE (IGNORE $))
   (MAKE-FULL-CVEC |n| |c|)) 
 
-(DEFUN |ISTRING;empty;$;2| ($)
-  (DECLARE (IGNORE $))
-  (MAKE-FULL-CVEC 0)) 
+(DEFUN |ISTRING;empty;$;2| ($) (MAKE-FULL-CVEC 0)) 
 
 (DEFUN |ISTRING;empty?;$B;3| (|s| $) (EQL (QCSIZE |s|) 0)) 
 
