@@ -1,3 +1,17 @@
+2010-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): New.
+	($simpleVMoperators): Augment it.
+	(semiSimpleRelativeTo?): New.
+	(isSimpleVMForm): Use it.
+	* interp/c-util.boot (forwardingCall?): New.
+	(usesVariablesLinearly?): Likewise.
+	(expandableDefinition?): Likewise.
+	(foldSpadcall): Tidy.
+	(foldExportedFunctionReferences): If a function is discovered to
+	be expandable, make it so.
+	* interp/define.boot (spadCompileOrSetq): Tidy.
+
 2010-03-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (optDeltaEntry): Silently fail for domains

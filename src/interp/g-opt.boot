@@ -392,16 +392,31 @@ optLESSP u ==
     ['GREATERP,b,a]
   u
  
-$simpleVMoperators == 
-  '(CONS CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
-    SPADfirst QVELT _+ _- _* _< _= ASH INTEGER_-LENGTH
+++ List of VM side effect free operators.
+$VMsideEffectFreeOperators ==
+  '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
+    SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
-      MINUSP GREATERP)
+      MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
+       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL)
 
-isSimpleVMForm form ==
+++ List of simple VM operators
+$simpleVMoperators == 
+  append($VMsideEffectFreeOperators,
+    ["CONS","LIST","VECTOR","STRINGIMAGE",
+      "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
+
+++ Return true if the `form' is semi-simple with respect to
+++ to the list of operators `ops'.
+semiSimpleRelativeTo?(form,ops) ==
   isAtomicForm form => true
-  form is [op,:args] and MEMQ(op,$simpleVMoperators) 
-    and ("and"/[isAtomicForm arg for arg in args])
+  form isnt [op,:args] or not MEMQ(op,ops) => false
+  and/[semiSimpleRelativeTo?(f,ops) for f in args]
+
+++ Return true if `form' is a simple VM form.
+++ See $simpleVMoperators for the definition of simple operators.
+isSimpleVMForm form ==
+  semiSimpleRelativeTo?(form,$simpleVMoperators)
 
 ++ Return true if `form' is a VM form whose evaluation does not depend
 ++ on the program point where it is evaluated. 
