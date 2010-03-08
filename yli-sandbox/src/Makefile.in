@@ -1,0 +1,79 @@
+
+pamphlets = Makefile.pamphlet
+
+subdir = src/
+
+SUBDIRS = @axiom_src_subdirs@
+
+.PHONY: all all-ax all-src all-clef all-sman all-driver
+
+all: all-ax
+
+all-ax all-src: stamp
+	@echo finished $(builddir)
+
+stamp: @axiom_src_all@ all-driver
+	-rm -f stamp
+	$(STAMP) stamp
+
+all-driver: all-lib
+	@cd driver && $(MAKE) $@
+
+all-clef: all-lib
+	@$(mkdir_p) "$(axiom_target_bindir)"
+	cd clef && $(MAKE) $@
+all-sman: all-lib all-driver
+	$(mkdir_p) "$(axiom_target_bindir)"
+	$(mkdir_p) "$(axiom_target_libdir)"
+	cd sman && $(MAKE) $@
+all-hyper: all-lib
+	$(mkdir_p) "$(axiom_target_bindir)"
+	$(mkdir_p) "$(axiom_target_datadir)"
+	cd hyper && $(MAKE) $@
+all-share:
+	$(mkdir_p) "$(axiom_target_libdir)"
+	cd share && $(MAKE) $@
+all-doc:
+	$(mkdir_p) "$(axiom_target_docdir)"/help && cd doc && $(MAKE) $@
+all-lib:
+	@cd lib && $(MAKE) $@
+all-lisp: all-lib
+	cd lisp && $(MAKE) all-lisp
+all-boot: all-lisp
+	@cd boot && $(MAKE) $@
+all-interpsys: all-boot all-hyper-pre
+	cd interp && ${MAKE} all-interpsys
+
+all-axiomsys: all-asq
+	cd interp && $(MAKE) all-axiomsys
+all-algebra: all-interpsys all-share all-hyper-pre
+	@ $(mkdir_p) algebra/strap
+	cd algebra && $(MAKE) $@
+
+all-hyper-pre: all-lib
+	cd hyper && $(MAKE) all-hyper-pre
+all-input: all-axiomsys all-doc
+	cd input && ${MAKE}
+all-asq: all-hyper-post
+	cd etc && $(MAKE) $@
+
+.PHONY: all-databases
+all-databases:  all-interpsys all-doc
+	cd etc && $(MAKE) $@
+
+all-hyper-post: all-algebra  all-doc
+	cd hyper && $(MAKE) all-hyper-post
+all-graph: all-lib
+	cd graph && $(MAKE) $@
+
+.PHONY: all-check
+all-check:
+	cd input && $(MAKE) all-check
+
+mostlyclean-local:
+	-rm -f stamp
+
+clean-local: mostlyclean-local
+
+distclean-local: clean-local
+

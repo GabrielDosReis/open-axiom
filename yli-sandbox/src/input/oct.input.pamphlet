@@ -1,0 +1,37 @@
+\documentclass{article}
+\usepackage{axiom}
+\begin{document}
+\title{\$SPAD/src/input OCT.input}
+\author{The Axiom Team}
+\maketitle
+\begin{abstract}
+\end{abstract}
+\eject
+\tableofcontents
+\eject
+<<*>>=
+
+-- Input generated from OctonionXmpPage
+)clear all
+
+oci1 := octon(1,2,3,4,5,6,7,8)
+oci2 := octon(7,2,3,-4,5,6,-7,0)
+oci3 := octon(quatern(-7,-12,3,-10), quatern(5,6,9,0))
+(oci1 * oci2) * oci3 - oci1 * (oci2 * oci3)
+[real oci1, imagi oci1, imagj oci1, imagk oci1, imagE oci1, imagI oci1, imagJ oci1, imagK oci1]
+q : Quaternion Polynomial Integer := quatern(q1, qi, qj, qk)
+E : Octonion Polynomial Integer:= octon(0,0,0,0,1,0,0,0)
+q * E
+E * q
+q * 1$(Octonion Polynomial Integer)
+1$(Octonion Polynomial Integer) * q
+o : Octonion Polynomial Integer := octon(o1, oi, oj, ok, oE, oI, oJ, oK)
+norm o
+p : Octonion Polynomial Integer := octon(p1, pi, pj, pk, pE, pI, pJ, pK)
+norm(o*p)-norm(p)*norm(p)
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

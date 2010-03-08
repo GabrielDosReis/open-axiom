@@ -1,0 +1,583 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\title{src/algebra boolean.spad}
+\author{Stephen M. Watt, Michael Monagan, Gabriel Dos~Reis}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+\section{category PROPLOG PropositionalLogic}
+<<category PROPLOG PropositionalLogic>>=
+)abbrev category PROPLOG PropositionalLogic
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: May 27, 2009
+++ Description: This category declares the connectives of
+++ Propositional Logic.
+PropositionalLogic(): Category == SetCategory with
+  true: %
+    ++ true is a logical constant.
+  false: %
+    ++ false is a logical constant.
+  not: % -> %
+    ++ not p returns the logical negation of `p'.
+  and: (%, %) -> %
+    ++ p and q returns the logical conjunction of `p', `q'.
+  or: (%, %) -> %
+    ++ p or q returns the logical disjunction of `p', `q'.
+  implies: (%,%) -> %
+    ++ implies(p,q) returns the logical implication of `q' by `p'.
+  equiv: (%,%) -> %
+    ++ equiv(p,q) returns the logical equivalence of `p', `q'.
+@
+
+\section{domain PROPFRML PropositionalFormula}
+<<domain PROPFRML PropositionalFormula>>=
+)set mess autoload on
+)abbrev domain PROPFRML PropositionalFormula
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: May 11, 2009
+++ Description: This domain implements propositional formula build
+++ over a term domain, that itself belongs to PropositionalLogic
+PropositionalFormula(T: SetCategory): Public == Private where
+  Public == Join(PropositionalLogic, CoercibleFrom T) with
+    isTerm : % -> Maybe T
+      ++ \spad{isTerm f} returns a value \spad{v} such that
+      ++ \spad{v case T} holds if the formula \spad{f} is a term.
+
+    isNot : % -> Maybe %
+      ++ \spad{isNot f} returns a value \spad{v} such that
+      ++ \spad{v case %} holds if the formula \spad{f} is a negation.
+
+    isAnd : % -> Maybe Pair(%,%)
+      ++ \spad{isAnd f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is a conjunction formula.
+
+    isOr : % -> Maybe Pair(%,%)
+      ++ \spad{isOr f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is a disjunction formula.
+
+    isImplies : % -> Maybe Pair(%,%)
+      ++ \spad{isImplies f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is an implication formula.
+
+    isEquiv : % -> Maybe Pair(%,%)
+      ++ \spad{isEquiv f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is an equivalence formula.
+
+    conjunction: (%,%) -> %
+      ++ \spad{conjunction(p,q)} returns a formula denoting the
+      ++ conjunction of \spad{p} and \spad{q}.
+
+    disjunction: (%,%) -> %
+      ++ \spad{disjunction(p,q)} returns a formula denoting the
+      ++ disjunction of \spad{p} and \spad{q}.
+
+  Private == add
+    Rep == Union(T, Kernel %)
+    import Kernel %
+    import BasicOperator
+    import List %
+
+    -- Local names for proposition logical operators
+    macro NOT == '%not
+    macro AND == '%and
+    macro OR == '%or
+    macro IMP == '%implies
+    macro EQV == '%equiv
+
+    -- Return the nesting level of a formula
+    level(f: %): NonNegativeInteger ==
+      f' := rep f
+      f' case T => 0
+      height f'
+
+    -- A term is a formula
+    coerce(t: T): % == 
+      per t
+
+    not p ==
+      per kernel(operator(NOT, 1::Arity), [p], 1 + level p)
+
+    conjunction(p,q) ==
+      per kernel(operator(AND, 2), [p, q], 1 + max(level p, level q))
+
+    p and q == conjunction(p,q)
+
+    disjunction(p,q) ==
+      per kernel(operator(OR, 2), [p, q], 1 + max(level p, level q))
+
+    p or q == disjunction(p,q)
+
+    implies(p,q) ==
+      per kernel(operator(IMP, 2), [p, q], 1 + max(level p, level q))
+
+    equiv(p,q) ==
+      per kernel(operator(EQV, 2), [p, q], 1 + max(level p, level q))
+
+    isTerm f ==
+      f' := rep f
+      f' case T => just(f'@T)
+      nothing
+
+    isNot f ==
+      f' := rep f
+      f' case Kernel(%) and is?(f', NOT) => just(first argument f')
+      nothing
+
+    isBinaryOperator(f: Kernel %, op: Symbol): Maybe Pair(%, %) ==
+      not is?(f, op) => nothing
+      args := argument f
+      just pair(first args, second args)
+
+    isAnd f ==
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', AND)
+      nothing
+
+    isOr f ==
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', OR)
+      nothing
+
+    isImplies f ==
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', IMP)
+      nothing
+
+
+    isEquiv f ==
+      f' := rep f
+      f' case Kernel % => isBinaryOperator(f', EQV)
+      nothing
+
+    -- Unparsing grammar.
+    --
+    -- Ideally, the following syntax would the external form
+    -- Formula:
+    --   EquivFormula
+    --
+    -- EquivFormula:
+    --   ImpliesFormula
+    --   ImpliesFormula <=> EquivFormula
+    --
+    -- ImpliesFormula:
+    --   OrFormula
+    --   OrFormula => ImpliesFormula
+    --
+    -- OrFormula:
+    --   AndFormula
+    --   AndFormula or OrFormula 
+    -- 
+    -- AndFormula
+    --   NotFormula
+    --   NotFormula and AndFormula
+    --
+    -- NotFormula:
+    --   PrimaryFormula
+    --   not NotFormula
+    --
+    -- PrimaryFormula:
+    --   Term
+    --   ( Formula )
+    --
+    -- Note: Since the token '=>' already means a construct different
+    --       from what we would like to have as a notation for
+    --       propositional logic, we will output the formula `p => q'
+    --       as implies(p,q), which looks like a function call.
+    --       Similarly, we do not have the token `<=>' for logical
+    --       equivalence; so we unparser `p <=> q' as equiv(p,q).
+    --
+    --       So, we modify the nonterminal PrimaryFormula to read
+    --       PrimaryFormula:
+    --         Term
+    --         implies(Formula, Formula)
+    --         equiv(Formula, Formula)
+    formula: % -> OutputForm
+    coerce(p: %): OutputForm ==
+      formula p
+
+    primaryFormula(p: %): OutputForm ==
+      p' := rep p
+      p' case T => p'@T::OutputForm
+      is?(p', IMP) or is?(p', EQV) =>
+        args := argument p'
+        elt(operator(p')::OutputForm, 
+		    [formula first args, formula second args])$OutputForm
+      paren(formula p)$OutputForm
+
+    notFormula(p: %): OutputForm ==
+      case isNot p is
+        f@% => elt(outputForm 'not, [formula f])$OutputForm
+        otherwise => primaryFormula p
+
+    andFormula(f: %): OutputForm ==
+      case isAnd f is
+	p@Pair(%,%) =>
+          -- ??? idealy, we should be using `and$OutputForm' but
+          -- ??? a bug in the compiler currently prevents that.
+          infix(outputForm 'and, notFormula first p,
+             andFormula second p)$OutputForm
+        otherwise => notFormula f
+
+    orFormula(f: %): OutputForm ==
+      case isOr f is
+        p@Pair(%,%) => 
+          -- ??? idealy, we should be using `or$OutputForm' but
+          -- ??? a bug in the compiler currently prevents that.
+          infix(outputForm 'or, andFormula first p, 
+             orFormula second p)$OutputForm
+        otherwise => andFormula f
+
+    formula f ==
+      -- Note: this should be equivFormula, but see the explanation above.
+      orFormula f
+
+@
+
+\section{domain REF Reference}
+<<domain REF Reference>>=
+)abbrev domain REF Reference
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Date Last Changed: May 27, 2009
+++ Basic Operations: deref, elt, ref, setelt, setref, =
+++ Related Constructors:
+++ Keywords:  reference
+++ Description:  \spadtype{Reference} is for making a changeable instance
+++ of something.
+
+Reference(S:Type): Type with
+        ref   : S -> %
+          ++  ref(n) creates a pointer (reference) to the object n.
+        elt   : % -> S
+          ++ elt(n) returns the object n.
+        setelt: (%, S) -> S
+          ++ setelt(n,m) changes the value of the object n to m.
+        -- alternates for when bugs don't allow the above
+        deref : % -> S
+          ++ deref(n) is equivalent to \spad{elt(n)}.
+        setref: (%, S) -> S
+          ++ setref(n,m) same as \spad{setelt(n,m)}.
+        =   : (%, %) -> Boolean
+          ++ a=b tests if \spad{a} and b are equal.
+        if S has SetCategory then SetCategory
+
+    == add
+        Rep := Record(value: S)
+
+        p = q        == EQ(p, q)$Lisp
+        ref v        == [v]
+        elt p        == p.value
+        setelt(p, v) == p.value := v
+        deref p      == p.value
+        setref(p, v) == p.value := v
+
+        if S has SetCategory then
+          coerce p ==
+            prefix('ref::Identifier::OutputForm, [p.value::OutputForm])
+
+@
+
+\section{category LOGIC Logic}
+
+<<category LOGIC Logic>>=
+)abbrev category LOGIC Logic
+++ Author: 
+++ Date Created:
+++ Date Last Changed: May 27, 2009
+++ Basic Operations: ~, /\, \/
+++ Related Constructors:
+++ Keywords: boolean
+++ Description:  
+++ `Logic' provides the basic operations for lattices,
+++ e.g., boolean algebra.
+
+
+Logic: Category == BasicType with
+       ~:        % -> %
+	++ ~(x) returns the logical complement of x.
+       /\:       (%, %) -> %
+	++ \spadignore { /\ }returns the logical `meet', e.g. `and'.
+       \/:       (%, %) -> %
+	++ \spadignore{ \/ } returns the logical `join', e.g. `or'.
+  add
+    x \/ y == ~(~x /\ ~y)
+
+@
+\section{domain BOOLEAN Boolean}
+<<domain BOOLEAN Boolean>>=
+)abbrev domain BOOLEAN Boolean
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Date Last Changed: May 27, 2009
+++ Basic Operations: true, false, not, and, or, xor, nand, nor, implies
+++ Related Constructors:
+++ Keywords: boolean
+++ Description:  \spadtype{Boolean} is the elementary logic with 2 values:
+++ true and false
+
+Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputForm) with
+    xor    : (%, %) -> %
+      ++ xor(a,b) returns the logical exclusive {\em or}
+      ++ of Boolean \spad{a} and b.
+    nand   : (%, %) -> %
+      ++ nand(a,b) returns the logical negation of \spad{a} and b.
+    nor    : (%, %) -> %
+      ++ nor(a,b) returns the logical negation of \spad{a} or b.
+    test: % -> %
+      ++ test(b) returns b and is provided for compatibility with the new compiler.
+  == add
+    import EQ: (%,%) -> Boolean from Foreign Builtin
+    import AND: (%,%) -> % from Foreign Builtin
+    import OR: (%,%) -> % from Foreign Builtin
+    import NOT: % -> % from Foreign Builtin
+
+    test a        == a
+
+    true          == 'T pretend %
+    false         == NIL$Foreign(Builtin)
+    sample()      == true
+    not b         == NOT b
+    ~ b           == NOT b
+    a and b       == AND(a,b)
+    a /\ b        == AND(a,b)
+    a or b        == OR(a,b)
+    a \/ b        == OR(a,b)
+    xor(a, b)     == (a => NOT b; b)
+    nor(a, b)     == (a => false; NOT b)
+    nand(a, b)    == (a => NOT b; true)
+    a = b         == EQ(a, b)
+    implies(a, b) == (a => b; true)
+    equiv(a,b)    == EQ(a, b)
+    a < b         == (b => NOT a; false)
+
+    size()        == 2
+    index i       ==
+      even?(i::Integer) => false
+      true
+    lookup a      ==
+      a => 1
+      2
+    random()      ==
+      even?(random()$Integer) => false
+      true
+
+    convert(x:%):InputForm ==
+      x => 'true
+      'false
+
+    coerce(x:%):OutputForm ==
+      x => 'true
+      'false
+
+@
+
+\section{domain IBITS IndexedBits}
+<<domain IBITS IndexedBits>>=
+)abbrev domain IBITS IndexedBits
+++ Author: Stephen Watt and Michael Monagan
+++ Date Created:
+++   July 86
+++ Change History:
+++   Oct 87
+++ Basic Operations: range
+++ Related Constructors:
+++ Keywords: indexed bits
+++ Description: \spadtype{IndexedBits} is a domain to compactly represent
+++ large quantities of Boolean data.
+
+IndexedBits(mn:Integer): BitAggregate() with
+        -- temporaries until parser gets better
+        Not: % -> %
+            ++ Not(n) returns the bit-by-bit logical {\em Not} of n.
+        Or : (%, %) -> %
+            ++ Or(n,m)  returns the bit-by-bit logical {\em Or} of
+            ++ n and m.
+        And: (%, %) -> %
+            ++ And(n,m)  returns the bit-by-bit logical {\em And} of
+            ++ n and m.
+    == add
+
+        range: (%, Integer) -> Integer
+          --++ range(j,i) returnes the range i of the boolean j.
+
+        minIndex u  == mn
+
+        range(v, i) ==
+          i >= 0 and i < #v => i
+          error "Index out of range"
+
+        coerce(v):OutputForm ==
+            t:Character := char "1"
+            f:Character := char "0"
+            s := new(#v, space()$Character)$String
+            for i in minIndex(s)..maxIndex(s) for j in mn.. repeat
+              s.i := if v.j then t else f
+            s::OutputForm
+
+        new(n, b)       == BVEC_-MAKE_-FULL(n,TRUTH_-TO_-BIT(b)$Lisp)$Lisp
+        empty()         == BVEC_-MAKE_-FULL(0,0)$Lisp
+        copy v          == BVEC_-COPY(v)$Lisp
+        #v              == BVEC_-SIZE(v)$Lisp
+        v = u           == BVEC_-EQUAL(v, u)$Lisp
+        v < u           == BVEC_-GREATER(u, v)$Lisp
+        u and v         == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        u or v          == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+        xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
+        setelt(v:%, i:Integer, f:Boolean) ==
+          BIT_-TO_-TRUTH(BVEC_-SETELT(v, range(v, i-mn), 
+            TRUTH_-TO_-BIT(f)$Lisp)$Lisp)$Lisp
+        elt(v:%, i:Integer) ==
+          BIT_-TO_-TRUTH(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Lisp
+
+        Not v           == BVEC_-NOT(v)$Lisp
+        And(u, v)       == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        Or(u, v)        == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+
+@
+\section{domain BITS Bits}
+<<domain BITS Bits>>=
+)abbrev domain BITS Bits
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Change History:
+++ Basic Operations: And, Not, Or
+++ Related Constructors:
+++ Keywords: bits
+++ Description:  \spadtype{Bits} provides logical functions for Indexed Bits.
+
+Bits(): Exports == Implementation where
+  Exports == BitAggregate() with
+    bits: (NonNegativeInteger, Boolean) -> %
+	++ bits(n,b) creates bits with n values of b
+  Implementation == IndexedBits(1) add
+    bits(n,b)    == new(n,b)
+
+@
+
+
+\section{Kleene's Three-Valued Logic}
+<<domain KTVLOGIC KleeneTrivalentLogic>>=
+)abbrev domain KTVLOGIC KleeneTrivalentLogic
+++ Author: Gabriel Dos Reis
+++ Date Created: September 20, 2008
+++ Date Last Modified: May 27, 2009
+++ Description: 
+++   This domain implements Kleene's 3-valued propositional logic.
+KleeneTrivalentLogic(): Public == Private where
+  Public == PropositionalLogic with
+    unknown: %     ++ the indefinite `unknown' 
+    case: (%,[| false |]) -> Boolean
+      ++ x case false holds if the value of `x' is `false'
+    case: (%,[| unknown |]) -> Boolean
+      ++ x case unknown holds if the value of `x' is `unknown'
+    case: (%,[| true |]) -> Boolean
+      ++ s case true holds if the value of `x' is `true'.
+  Private == add
+    Rep == Byte    -- We need only 3 bits, in fact.
+    false == per(0::Byte)
+    unknown == per(1::Byte)
+    true == per(2::Byte)
+    x = y == rep x = rep y
+    x case true == x = true
+    x case false == x = false
+    x case unknown == x = unknown
+    not x ==
+      x case false => true
+      x case unknown => unknown
+      false
+    x and y ==
+      x case false => false
+      x case unknown =>
+        y case false => false
+        unknown
+      y
+    x or y ==
+      x case false => y
+      x case true => x
+      y case true => y
+      unknown
+    implies(x,y) ==
+      x case false => true
+      x case true => y
+      y case true => true
+      unknown
+    equiv(x,y) ==
+      x case unknown => x
+      x case true => y
+      not y
+    coerce(x: %): OutputForm ==
+      x case true => outputForm 'true
+      x case false => outputForm 'false
+      outputForm 'unknown
+@
+
+
+
+
+\section{License}
+
+<<license>>=
+--Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2009, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+<<*>>=
+<<license>>
+
+<<domain REF Reference>>
+<<category LOGIC Logic>>
+<<domain BOOLEAN Boolean>>
+<<domain IBITS IndexedBits>>
+<<domain BITS Bits>>
+<<category PROPLOG PropositionalLogic>>
+<<domain PROPFRML PropositionalFormula>>
+<<domain KTVLOGIC KleeneTrivalentLogic>>
+
+@
+\eject
+\begin{thebibliography}{99}
+\bibitem{1} nothing
+\end{thebibliography}
+\end{document}

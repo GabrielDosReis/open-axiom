@@ -1,0 +1,272 @@
+2010-03-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): New.
+	($simpleVMoperators): Augment it.
+	(semiSimpleRelativeTo?): New.
+	(isSimpleVMForm): Use it.
+	* interp/c-util.boot (forwardingCall?): New.
+	(usesVariablesLinearly?): Likewise.
+	(expandableDefinition?): Likewise.
+	(foldSpadcall): Tidy.
+	(foldExportedFunctionReferences): If a function is discovered to
+	be expandable, make it so.
+	* interp/define.boot (spadCompileOrSetq): Tidy.
+
+2010-03-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (optDeltaEntry): Silently fail for domains
+	that are not instantiations.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($optimizeRep): Define.
+	* interp/sys-driver.boot (initializeGlobalState): Sey domain
+	representation inlining if requested.
+	* interp/c-util.boot (setCompilerOptimizations): Set domain
+	representation inlining if at optimization level 3.
+	* algebra/constant.spad.pamphlet (AlgebraicNumber): Remove
+	assignment to Rep.  Tidy.
+	* algebra/Makefile.pamphlet: Add dependencies.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (nominateForInlining): New.
+	(optimizableDomain?): Likewise.
+	(optCallSpecially): Use it
+	* interp/compiler.boot (processInlineRequest): Likewise.
+	* interp/nruncomp.boot (optDeltaEntry): Likewise.
+	* interp/wi2.boot (optDeltaEntry): Likewise.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (isSymbol): Remove.
+	* interp/compiler.boot (compAtom): Don't use it.
+	* interp/wi1.boot (compAtom): Likewise.
+
+2010-03-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (quoteMinimally): New.
+	(registerFunctionReplacement): Likewise.
+	* interp/define.boot (spadCompileOrSetq): Use it.
+	* interp/g-opt.boot (optSpecialCall): Likewise.
+	* interp/nruncomp.boot (optDeltaEntry): Likewise.
+	* interp/spad.lisp (|knownEqualPred|): Likewise.
+	* interp/wi2.boot (optDeltaEntry): Likewise.
+
+2010-03-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/vector.spad.pamphlet (maxIndex$Vector): Define.
+
+2010-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet
+	(conjunction$PropositionalFormula): New exported function.
+	(disjunction$PropositionalFormula): Likewise.
+
+2010-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/modemap.boot (augModemapsFromCategoryRep): Remove
+	assignment to $base.
+	(augModemapsFromCategory): Likewise.
+
+2010-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (genDeltaEntry): Don't store extraneous
+	item on $NRTdeltaList.
+	(NRTgetLocalIndex): Likewise.  Tidy.
+
+2010-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Expand support for domain inlining to non-niladic functors.
+	* interp/compiler.boot (processInlineRequest): Now accept any
+	functor.
+	* interp/c-util.boot (lookupFunctionInstance): New.
+	(isFormal): Likewise.
+	(expandFormTemplate): Likewise.
+	(equalFormTemplate): Likewise.
+	(getFunctionTemplate): Likewise.
+	(lookupInheritedDefiningFunction): Likewise.
+	(lookupDefiningFunction): Likewise.
+	* interp/nruncomp.boot (optDeltaEntry): Tidy.  Use
+	lookupDefiningFunction. 
+
+2010-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (PropositionalFormula):
+	Reimplement in terms of kernels.
+	* algebra/Makefile.pamphlet ($(OUT)/KERNEL.$(FASLEXT)): New
+	dependence rule.
+	($(OUT)/PROPFRML.$(FASLEXT)): Likewise.
+	(axiom_algebra_layer_19): Move PROPFRML to...
+	(axiom_algebra_layer_6): ...here.
+
+2010-02-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
+	Include Void.
+	* algebra/Makefile.pamphlet (axiom_algebra_layer_0): Include VOID.
+	(axiom_algebra_layer_14): Loose it.
+
+2010-02-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/aggcat.spad.pamphlet: Remove unnecessary call to void.
+	* algebra/algext.spad.pamphlet: Likewise.
+	* algebra/catdef.spad.pamphlet: Likewise.
+	* algebra/curve.spad.pamphlet: Likewise.
+	* algebra/d01agents.spad.pamphlet: Likewise.
+	* algebra/d02agents.spad.pamphlet: Likewise.
+	* algebra/ffcg.spad.pamphlet: Likewise.
+	* algebra/ffhom.spad.pamphlet: Likewise.
+	* algebra/ffnb.spad.pamphlet: Likewise.
+	* algebra/ffp.spad.pamphlet: Likewise.
+	* algebra/formula.spad.pamphlet: Likewise.
+	* algebra/fortmac.spad.pamphlet: Likewise.
+	* algebra/fortpak.spad.pamphlet: Likewise.
+	* algebra/fortran.spad.pamphlet: Likewise.
+	* algebra/forttyp.spad.pamphlet: Likewise.
+	* algebra/generic.spad.pamphlet: Likewise.
+	* algebra/kl.spad.pamphlet: Likewise.
+	* algebra/mathml.spad.pamphlet: Likewise.
+	* algebra/newdata.spad.pamphlet: Likewise.
+	* algebra/out.spad.pamphlet: Likewise.
+	* algebra/permgrps.spad.pamphlet: Likewise.
+	* algebra/pfo.spad.pamphlet: Likewise.
+	* algebra/regset.spad.pamphlet: Likewise.
+	* algebra/routines.spad.pamphlet: Likewise.
+	* algebra/setorder.spad.pamphlet: Likewise.
+	* algebra/sups.spad.pamphlet: Likewise.
+	* algebra/symbol.spad.pamphlet: Likewise.
+	* algebra/tex.spad.pamphlet: Likewise.
+
+2010-02-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compAtomWithModemap): Reject niladic
+	functions used as constants.
+	* algebra/aggcat.spad.pamphlet (IndexedAggregate): Add parenthesis
+	for call to niladic function 'void'.
+	* algebra/algext.spad.pamphlet (SimpleAlgebraicExtension): Likewise.
+	* algebra/curve.spad.pamphlet (RadicalFunctionField): Likewise.
+	(AlgebraicFunctionField): Likewise.
+	* algebra/permgrps.spad.pamphlet (PermutationGroup): Likewise.
+	* algebra/pfo.spad.pamphlet (FunctionSpaceReduce): Likewise.
+	* algebra/setorder.spad.pamphlet: Likewise.
+	* algebra/ffcat.spad.pamphlet (FiniteFieldCategory): Add
+	parenthesis for call to niladic function 'representationType'.
+	* algebra/ffnb.spad.pamphlet
+	(FiniteFieldNormalBasisExtensionByPolynomial): Likewise for
+	normalElement. 
+	* algebra/float.spad.pamphlet (Float): Likewise for OMencodingXML,
+	pi, log2, log10, digits.
+	* algebra/fnla.spad.pamphlet (FreeNilpotentLie): Likewise for
+	dimension. 
+	* algebra/fraction.spad.pamphlet (Fraction): Likewise for
+	OMencodingXML. 
+	* algebra/gaussian.spad.pamphlet (Complex): Likewise.
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	* algebra/list.spad.pamphlet (List): Likewise.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/string.spad.pamphlet (String): Likewise.
+	* algebra/symbol.spad.pamphlet (Symbol): Likewise.
+	* algebra/intrf.spad.pamphlet (TranscendentalIntegration):
+	Likewise for empty.
+	* algebra/kl.spad.pamphlet (SortedCache): Likewise for cache, void.
+	* algebra/newdata.spad.pamphlet (TabulatedComputationPackage):
+	Likewise for usingTable?.
+	* algebra/omserver.spad.pamphlet (OpenMathServerPackage): Likewise
+	for OMencodingUnknown.
+	* algebra/plot.spad.pamphlet (Plot): Likewise for adaptive?.
+	* algebra/plot3d.spad.pamphlet (Plot3D): Likewise for adaptive3D?.
+
+2010-02-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compAtomWithModemap): Rewrite.
+	(transImplementation): Remove.
+
+2010-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (transImplementation): Loose last argument. 
+	(compAtomWithModemap): Adjust call.
+
+2010-02-14  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	Fix SF/2910351
+	* interp/nruncomp.boot (deltaTran): Avoid use of user-visible
+	names for compiler internal tags.
+	(genDeltaEntry): Likewise.
+	(NRTassocIndex): Likewise.
+	(NRTgetLocalIndex): Likewise.
+	(NRTsubstDelta): Likewise.
+	* interp/wi2.boot (genDeltaEntry): Likewise.
+
+2010-02-14  Waldek Hebisch <hebisch@math.uni.wroc.pl>
+	    Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/sttaylor.spad.pamphlet
+	(revert$StreamTaylorSeriesOperations):  Tidy.
+
+2010-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (~$Boolean): Work around silly bug
+	in CLisp-2.48.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (NEQ): Remove.
+	* interp/clam.boot (lassocShift): Don't use it.
+	(lassocShiftWithFunction): Likewise.
+	(lassocShiftQ): Likewise.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/list.spad.pamphlet (IndexedList): Don't use NEQ.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (MRP): Remove.
+	(SFP): Likewise.
+	* interp/i-syscmd.boot (compileAsharpCmd1): Use getEnv, not GETENV.
+
+2010-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (RECLAIM): Don't error.
+
+2010-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in ("AxiomCore"): Use Clozure CL's package CCL.
+
+2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for CLozure CL.
+	* lisp/core.lisp.in: Add support for Clozure CL.
+	(main): Remove as unused.
+	* driver/utils.h (openaxiom_runtime): Add openaxiom_clozure_runtime.
+	* boot/translator.boot (loadNativeModule): Handle Clozure CL.
+	* boot/ast.boot (nativeType): Handle Clozure's FFI types.
+	(nativeReturnType): Likewise.
+	(coerceToNativeType): Likewise.
+	(genCLOZUREnativeTranslation): New.
+	(genImportDeclaration): Use it.
+	* interp/vmlisp.lisp (SINTP): Remove duplicate definition.
+	(SMINTP): Likewise.
+	(ZERO?): Likewise.
+	(GCMSG): Reorganize definition.
+	(BPINAME): Likewise.
+
+2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/daase.lisp: Remove conditionals on :CCL.
+	* interp/fname.lisp: Likewise.
+	* interp/foam_l.lisp: Likewise.
+	* interp/macros.lisp: Likewise.
+	* interp/nlib.lisp: Likewise.
+	* interp/patches.lisp: Likewise.
+	* interp/sfsfun-l.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/util.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+
+2010-01-03  Aleksej Saushev  <asau@inbox.ru>
+
+	* hyper/addfile.c (strpostfix): Simplify.
+

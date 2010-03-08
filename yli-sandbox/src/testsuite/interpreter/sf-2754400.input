@@ -1,0 +1,6 @@
+++ Require: Nagman to succeed.
+
+-- Use to have the Lisp runtime balk at symbols uses as pathaname.
+
+answer:=c05adf(3.0,4.0,1.0e-5,0.0,-1,sin(X)::ASP1(F))
+

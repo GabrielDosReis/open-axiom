@@ -1,0 +1,63 @@
+Copyright The Numerical Algorithms Group Limited 1992-94. All rights reserved.
+Copyright (C) 2007-2009, Gabriel Dos Reis. All rights reserved.
+ 
+OpenAxiom Help Information.
+Section numbers refer to the on-line version of the book 
+AXIOM: The Scientific Computation System by Richard D. Jenks and Robert S. Sutor
+ 
+==============================================================================
+A.14.  )library
+==============================================================================
+ 
+User Level Required:  interpreter
+ 
+Command Syntax: 
+ 
+  - )library libName1  [libName2 ...]
+  - )library )dir dirName
+  - )library )only objName1  [objlib2 ...]
+  - )library )noexpose
+ 
+Command Description: 
+ 
+This command replaces the )load system command that was available in previous
+releases. The )library command makes available to OpenAxiom the compiled 
+objects in the libraries listed.
+ 
+For example, if you )compile dopler.spad in your home directory, issue
+)library dopler to have OpenAxiom look at the library, determine the 
+category and domain constructors present, update the internal database 
+with various properties of the constructors, and arrange for the 
+constructors to be automatically loaded when needed. If the )noexpose 
+option has not been given, the constructors will be exposed (that is, 
+available) in the current frame.
+ 
+If you compiled a file with the current system compiler, you will have an
+NRLIB present, for example, DOPLER.NRLIB, where DOPLER is a constructor
+abbreviation. The command )library DOPLER will then do the analysis and
+database updates as above.
+ 
+To tell the system about all libraries in a directory, use )library )dir
+dirName where dirName is an explicit directory. You may specify ``.'' as the
+directory, which means the current directory from which you started the
+system or the one you set via the )cd command. The directory name is required.
+ 
+You may only want to tell the system about particular constructors within a
+library. In this case, use the )only option. The command )library dopler
+)only Test1 will only cause the Test1 constructor to be analyzed, autoloaded,
+etc..
+ 
+Finally, each constructor in a library are usually automatically exposed when
+the )library command is used. Use the )noexpose option if you not want them
+exposed. At a later time you can use )set expose add constructor to expose
+any hidden constructors.
+ 
+Note for OpenAxiom beta testers: At various times this command was
+called )local and )with before the name )library became the official name.
+ 
+Also See: 
+o )cd
+o )compile
+o )frame
+o )set
+ 
