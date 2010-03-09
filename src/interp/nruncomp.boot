@@ -153,6 +153,15 @@ listOfBoundVars form ==
   first form = "Enumeration" => []
   "union"/[listOfBoundVars x for x in rest form]
 
+
+++ Subroutine of optDeltaEntry
+++ Return true if the signature `sig' contains flag types
+++ that need to be quoted.
+needToQuoteFlags?(sig,env) ==
+  or/[selector?(t,env) for t in sig] where
+    selector?(t,e) ==
+      IDENTP t and null get(t,"value",e)
+
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   $killOptimizeIfTrue = true => nil
   ndc :=
@@ -164,8 +173,8 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
   -- or is candidate for inlining.
   atom ndc or not optimizableDomain? ndc => nil
   fun := lookupDefiningFunction(op,sig,ndc)
-  if fun = nil then
-    -- following code is to handle selectors like first, rest
+  -- following code is to handle selectors like first, rest
+  if fun = nil and needToQuoteFlags?(sig,$e) then
      nsig := [quoteSelector tt for tt in sig] where
        quoteSelector(x) ==
          not(IDENTP x) => x
