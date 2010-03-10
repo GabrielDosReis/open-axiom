@@ -1154,7 +1154,7 @@ compElt(form,m,E) ==
       mmList.(0)
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
-    val := genDeltaEntry [opOf anOp,:modemap]
+    val := genDeltaEntry([opOf anOp,:modemap],E)
     convert([["call",val],second sig,E], m)
   compForm(form,m,E)
 
@@ -1515,7 +1515,7 @@ compCase1(x,m,e) ==
         | map is [.,=$Boolean,s,t] and modeEqual(maybeSpliceMode t,m) 
             and modeEqual(s,m')] or return nil
   fn:= (or/[mm for (mm := [.,[cond,selfn]]) in u | cond=true]) or return nil
-  fn := genDeltaEntry ["case",:fn]
+  fn := genDeltaEntry(["case",:fn],e)
   -- user-defined `case' functions really are binary, as opposed to
   -- the compiler-synthetized versions for Union instances.  
   not isUnionMode(m',e') => [["call",fn,x',MKQ m],$Boolean,e']
@@ -1798,8 +1798,7 @@ coerceByModemap([x,m,e],m') ==
 
   --mm:= (or/[mm for (mm:=[.,[cond,.]]) in u | cond=true]) or return nil
   mm:=first u  -- patch for non-trival conditons
-  fn :=
-    genDeltaEntry ['coerce,:mm]
+  fn := genDeltaEntry(['coerce,:mm],e)
   [["call",fn,x],m',e]
 
 autoCoerceByModemap([x,source,e],target) ==
@@ -1812,11 +1811,11 @@ autoCoerceByModemap([x,source,e],target) ==
 
   source is ["Union",:l] and member(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
-       => [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
+       => [["call",genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
     x="$fromCoerceable$" => nil
     stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
       [x,source,target])
-  [["call",genDeltaEntry ["autoCoerce", :fn],x],target,e]
+  [["call",genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
 
 
 ++ Compile a comma separated expression list. These typically are
@@ -1898,7 +1897,7 @@ compCat(form is [functorName,:argl],m,e) ==
 ++ `op' has been selected as a viable candidate exported operation, 
 ++ for argument triple list `argTl', modemap `mm'.
 ++ Return the most refined implementation that makes the call successful.
-compViableModemap(op,argTl,mm) ==
+compViableModemap(op,argTl,mm,e) ==
   [[dc,.,:margl],fnsel] := mm
   -- 1. Give up if the call is hopeless.
   argTl := [coerce(x,m) or return "failed" for x in argTl for m in margl]
@@ -1913,7 +1912,7 @@ compViableModemap(op,argTl,mm) ==
   -- information which is no longer valid; thus ignore this index and
   -- store the signature instead.
   f is [op1,.,.] and op1 in '(ELT CONST Subsumed) =>
-    [genDeltaEntry [op,:mm],argTl]
+    [genDeltaEntry([op,:mm],e),argTl]
   [f,argTl]
 
 compApplyModemap(form,modemap,$e) ==
@@ -1933,7 +1932,7 @@ compApplyModemap(form,modemap,$e) ==
   lt="failed" => return nil
 
   -- 2. Select viable modemap implementation.
-  compViableModemap(op,lt,modemap)
+  compViableModemap(op,lt,modemap,$e)
 
 compMapCond': (%Form,%Mode) -> %Boolean
 compMapCond'(cexpr,dc) ==
@@ -1965,7 +1964,7 @@ compResolveCall(op,argTs,m,$e) ==
     [t for mm in getModemapList(op,#argTs,$e) | t := tryMM] where
        tryMM() ==
          not coerceable(mm.mmTarget,m,$e) =>nil
-         compViableModemap(op,argTs,mm) isnt [f,Ts] => nil
+         compViableModemap(op,argTs,mm,$e) isnt [f,Ts] => nil
          coerce([["call",f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
   #outcomes ~= 1 => nil
   first outcomes
