@@ -1,0 +1,31 @@
+)abbrev category TRANFUN TranscendentalFunctionCategory
+++ Category for the transcendental elementary functions
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description: Category for the transcendental elementary functions;
+TranscendentalFunctionCategory(): Category ==
+    Join(TrigonometricFunctionCategory,ArcTrigonometricFunctionCategory,
+         HyperbolicFunctionCategory,ArcHyperbolicFunctionCategory,
+         ElementaryFunctionCategory) with
+           pi : () -> $        ++ pi() returns the constant pi.
+   add
+     if $ has Ring then
+       pi()   == 2*asin(1)
+       acsch x == 
+         (a := recip x) case "failed" => error "acsch: no reciprocal"
+         asinh(a::$)
+       asech x == 
+         (a := recip x) case "failed" => error "asech: no reciprocal"
+         acosh(a::$)
+       acoth x == 
+         (a := recip x) case "failed" => error "acoth: no reciprocal"
+         atanh(a::$)
+     if $ has Field and $ has sqrt: $ -> $ then
+       asin x == atan(x/sqrt(1-x**2))
+       acos x == pi()/2::$ - asin x
+       acot x == pi()/2::$ - atan x
+       asinh x == log(x + sqrt(x**2 + 1))
+       acosh x == 2*log(sqrt((x+1)/2::$) + sqrt((x-1)/2::$))
+       atanh x == (log(1+x)-log(1-x))/2::$
+

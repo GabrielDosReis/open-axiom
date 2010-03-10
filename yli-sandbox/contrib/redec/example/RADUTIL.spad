@@ -1,0 +1,21 @@
+)abbrev package RADUTIL RadixUtilities
+++ Author: Stephen M. Watt
+++ Date Created: October 1986
+++ Date Last Updated: May 15, 1991
+++ Basic Operations:
+++ Related Domains: RadixExpansion
+++ Also See:
+++ AMS Classifications:
+++ Keywords: radix, base, repeading decimal
+++ Examples:
+++ References:
+++ Description:
+++   This package provides tools for creating radix expansions.
+RadixUtilities: Exports == Implementation where
+  Exports ==> with
+    radix: (Fraction Integer,Integer) -> Any
+      ++ radix(x,b) converts x to a radix expansion in base b.
+  Implementation ==> add
+    radix(q, b) ==
+      coerce(q :: RadixExpansion(b))$AnyFunctions1(RadixExpansion b)
+

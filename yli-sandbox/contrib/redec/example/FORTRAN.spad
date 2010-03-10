@@ -1,0 +1,222 @@
+)abbrev domain FORTRAN FortranProgram
+++ Author: Mike Dewar
+++ Date Created: October 1992
+++ Date Last Updated: 13 January 1994
+++                    23 January 1995 Added support for intrinsic functions
+++ Basic Operations:
+++ Related Constructors: FortranType, FortranCode, Switch
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: \axiomType{FortranProgram} allows the user to build and manipulate simple 
+++ models of FORTRAN subprograms.  These can then be transformed into actual FORTRAN
+++ notation.
+FortranProgram(name,returnType,arguments,symbols): Exports == Implement where
+  name       : Symbol
+  returnType : Union(fst:FortranScalarType,void:"void")
+  arguments  : List Symbol
+  symbols    : SymbolTable
+
+  FC     ==> FortranCode
+  EXPR   ==> Expression
+  INT    ==> Integer
+  CMPX   ==> Complex
+  MINT   ==> MachineInteger
+  MFLOAT ==> MachineFloat
+  MCMPLX ==> MachineComplex
+  REP    ==> Record(localSymbols : SymbolTable, code : List FortranCode)
+
+  Exports ==> FortranProgramCategory with
+    coerce      : FortranCode -> $
+        ++ coerce(fc) \undocumented{}
+    coerce      : List FortranCode -> $
+        ++ coerce(lfc) \undocumented{}
+    coerce      : REP -> $
+        ++ coerce(r) \undocumented{}
+    coerce      : EXPR MINT -> $
+        ++ coerce(e) \undocumented{}
+    coerce      : EXPR MFLOAT -> $
+        ++ coerce(e) \undocumented{}
+    coerce      : EXPR MCMPLX -> $
+        ++ coerce(e) \undocumented{}
+    coerce      : Equation EXPR MINT -> $
+        ++ coerce(eq) \undocumented{}
+    coerce      : Equation EXPR MFLOAT -> $
+        ++ coerce(eq) \undocumented{}
+    coerce      : Equation EXPR MCMPLX -> $
+        ++ coerce(eq) \undocumented{}
+    coerce      : EXPR INT -> $
+        ++ coerce(e) \undocumented{}
+    coerce      : EXPR Float -> $
+        ++ coerce(e) \undocumented{}
+    coerce      : EXPR CMPX Float -> $
+        ++ coerce(e) \undocumented{}
+    coerce      : Equation EXPR INT -> $
+        ++ coerce(eq) \undocumented{}
+    coerce      : Equation EXPR Float -> $
+        ++ coerce(eq) \undocumented{}
+    coerce      : Equation EXPR CMPX Float -> $
+        ++ coerce(eq) \undocumented{}
+
+  Implement ==> add
+
+    Rep := REP
+
+    import SExpression
+    import TheSymbolTable
+    import FortranCode
+
+    makeRep(b:List FortranCode):$ ==
+      construct(empty()$SymbolTable,b)$REP
+
+    codeFrom(u:$):List FortranCode ==
+      elt(u::Rep,code)$REP
+
+    outputAsFortran(p:$):Void ==
+      setLabelValue(25000::SingleInteger)$FC
+      -- Do this first to catch any extra type declarations:
+      tempName := "FPTEMP"::Symbol
+      newSubProgram(tempName)
+      initialiseIntrinsicList()$Lisp
+      body : List SExpression := [getCode(l)$FortranCode for l in codeFrom(p)]
+      intrinsics : SExpression := getIntrinsicList()$Lisp
+      endSubProgram()
+      fortFormatHead(returnType::OutputForm, name::OutputForm, _
+                     arguments::OutputForm)$Lisp
+      printTypes(symbols)$SymbolTable
+      printTypes((p::Rep).localSymbols)$SymbolTable
+      printTypes(tempName)$TheSymbolTable
+      fortFormatIntrinsics(intrinsics)$Lisp
+      clearTheSymbolTable(tempName)
+      for expr in body repeat displayLines1(expr)$Lisp
+      dispStatement(END::OutputForm)$Lisp
+      void()$Void
+
+    mkString(l:List Symbol):String ==
+      unparse(convert(l::OutputForm)@InputForm)$InputForm
+
+    checkVariables(user:List Symbol,target:List Symbol):Void ==
+      -- We don't worry about whether the user has subscripted the
+      -- variables or not.
+      setDifference(map(name$Symbol,user),target) ~= empty()$List(Symbol) =>
+        s1 : String := mkString(user)
+        s2 : String := mkString(target)
+        error ["Incompatible variable lists:", s1, s2]
+      void()$Void
+
+    coerce(u:EXPR MINT) : $ ==
+      checkVariables(variables(u)$EXPR(MINT),arguments)
+      l : List(FC) := [assign(name,u)$FC,returns()$FC]
+      makeRep l
+
+    coerce(u:Equation EXPR MINT) : $ ==
+      retractIfCan(lhs u)@Union(Kernel(EXPR MINT),"failed") case "failed" =>
+        error "left hand side is not a kernel"
+      vList : List Symbol := variables lhs u
+      #vList ~= #arguments =>
+        error "Incorrect number of arguments"
+      veList : List EXPR MINT := [w::EXPR(MINT) for w in vList]
+      aeList : List EXPR MINT := [w::EXPR(MINT) for w in arguments]
+      eList : List Equation EXPR MINT := 
+        [equation(w,v) for w in veList for v in aeList]
+      (subst(rhs u,eList))::$
+
+    coerce(u:EXPR MFLOAT) : $ ==
+      checkVariables(variables(u)$EXPR(MFLOAT),arguments)
+      l : List(FC) := [assign(name,u)$FC,returns()$FC]
+      makeRep l 
+
+    coerce(u:Equation EXPR MFLOAT) : $ ==
+      retractIfCan(lhs u)@Union(Kernel(EXPR MFLOAT),"failed") case "failed" =>
+        error "left hand side is not a kernel"
+      vList : List Symbol := variables lhs u
+      #vList ~= #arguments =>
+        error "Incorrect number of arguments"
+      veList : List EXPR MFLOAT := [w::EXPR(MFLOAT) for w in vList]
+      aeList : List EXPR MFLOAT := [w::EXPR(MFLOAT) for w in arguments]
+      eList : List Equation EXPR MFLOAT := 
+        [equation(w,v) for w in veList for v in aeList]
+      (subst(rhs u,eList))::$
+
+    coerce(u:EXPR MCMPLX) : $ ==
+      checkVariables(variables(u)$EXPR(MCMPLX),arguments)
+      l : List(FC) := [assign(name,u)$FC,returns()$FC]
+      makeRep l
+
+    coerce(u:Equation EXPR MCMPLX) : $ ==
+      retractIfCan(lhs u)@Union(Kernel EXPR MCMPLX,"failed") case "failed"=>
+        error "left hand side is not a kernel"
+      vList : List Symbol := variables lhs u
+      #vList ~= #arguments =>
+        error "Incorrect number of arguments"
+      veList : List EXPR MCMPLX := [w::EXPR(MCMPLX) for w in vList]
+      aeList : List EXPR MCMPLX := [w::EXPR(MCMPLX) for w in arguments]
+      eList : List Equation EXPR MCMPLX := 
+        [equation(w,v) for w in veList for v in aeList]
+      (subst(rhs u,eList))::$
+
+
+    coerce(u:REP):$ ==
+      u@Rep
+
+    coerce(u:$):OutputForm ==
+      coerce(name)$Symbol
+
+    coerce(c:List FortranCode):$ ==
+      makeRep c
+
+    coerce(c:FortranCode):$ ==
+      makeRep [c]
+
+    coerce(u:EXPR INT) : $ ==
+      checkVariables(variables(u)$EXPR(INT),arguments)
+      l : List(FC) := [assign(name,u)$FC,returns()$FC]
+      makeRep l
+
+    coerce(u:Equation EXPR INT) : $ ==
+      retractIfCan(lhs u)@Union(Kernel(EXPR INT),"failed") case "failed" =>
+        error "left hand side is not a kernel"
+      vList : List Symbol := variables lhs u
+      #vList ~= #arguments =>
+        error "Incorrect number of arguments"
+      veList : List EXPR INT := [w::EXPR(INT) for w in vList]
+      aeList : List EXPR INT := [w::EXPR(INT) for w in arguments]
+      eList : List Equation EXPR INT := 
+        [equation(w,v) for w in veList for v in aeList]
+      (subst(rhs u,eList))::$
+
+    coerce(u:EXPR Float) : $ ==
+      checkVariables(variables(u)$EXPR(Float),arguments)
+      l : List(FC) := [assign(name,u)$FC,returns()$FC]
+      makeRep l 
+
+    coerce(u:Equation EXPR Float) : $ ==
+      retractIfCan(lhs u)@Union(Kernel(EXPR Float),"failed") case "failed" =>
+        error "left hand side is not a kernel"
+      vList : List Symbol := variables lhs u
+      #vList ~= #arguments =>
+        error "Incorrect number of arguments"
+      veList : List EXPR Float := [w::EXPR(Float) for w in vList]
+      aeList : List EXPR Float := [w::EXPR(Float) for w in arguments]
+      eList : List Equation EXPR Float := 
+        [equation(w,v) for w in veList for v in aeList]
+      (subst(rhs u,eList))::$
+
+    coerce(u:EXPR Complex Float) : $ ==
+      checkVariables(variables(u)$EXPR(Complex Float),arguments)
+      l : List(FC) := [assign(name,u)$FC,returns()$FC]
+      makeRep l
+
+    coerce(u:Equation EXPR CMPX Float) : $ ==
+      retractIfCan(lhs u)@Union(Kernel EXPR CMPX Float,"failed") case "failed"=>
+        error "left hand side is not a kernel"
+      vList : List Symbol := variables lhs u
+      #vList ~= #arguments =>
+        error "Incorrect number of arguments"
+      veList : List EXPR CMPX Float := [w::EXPR(CMPX Float) for w in vList]
+      aeList : List EXPR CMPX Float := [w::EXPR(CMPX Float) for w in arguments]
+      eList : List Equation EXPR CMPX Float := 
+        [equation(w,v) for w in veList for v in aeList]
+      (subst(rhs u,eList))::$
+

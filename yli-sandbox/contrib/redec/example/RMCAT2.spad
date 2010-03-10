@@ -1,0 +1,57 @@
+)abbrev package RMCAT2 RectangularMatrixCategoryFunctions2
+++ Author: Clifton J. Williamson
+++ Date Created: 21 November 1989
+++ Date Last Updated: 12 June 1991
+++ Basic Operations:
+++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
+++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Keywords: matrix, map, reduce
+++ Examples:
+++ References:
+++ Description:
+++ \spadtype{RectangularMatrixCategoryFunctions2} provides functions between
+++ two matrix domains.  The functions provided are \spadfun{map} and \spadfun{reduce}.
+
+RectangularMatrixCategoryFunctions2(m,n,R1,Row1,Col1,M1,R2,Row2,Col2,M2):_
+         Exports == Implementation where
+  m,n  : NonNegativeInteger
+  R1   : Ring
+  Row1 : DirectProductCategory(n, R1)
+  Col1 : DirectProductCategory(m, R1)
+  M1   : RectangularMatrixCategory(m,n,R1,Row1,Col1)
+  R2   : Ring
+  Row2 : DirectProductCategory(n, R2)
+  Col2 : DirectProductCategory(m, R2)
+  M2   : RectangularMatrixCategory(m,n,R2,Row2,Col2)
+
+  Exports ==> with
+    map: (R1 -> R2,M1) -> M2
+      ++ \spad{map(f,m)} applies the function \spad{f} to the elements of the
+      ++ matrix \spad{m}.
+    reduce: ((R1,R2) -> R2,M1,R2) -> R2
+      ++ \spad{reduce(f,m,r)} returns a matrix \spad{n} where
+      ++ \spad{n[i,j] = f(m[i,j],r)} for all indices spad{i} and \spad{j}.
+
+  Implementation ==> add
+    minr ==> minRowIndex
+    maxr ==> maxRowIndex
+    minc ==> minColIndex
+    maxc ==> maxColIndex
+
+    map(f,mat) ==
+      ans : M2 := new(m,n,0)$Matrix(R2) pretend M2
+      for i in minr(mat)..maxr(mat) for k in minr(ans)..maxr(ans) repeat
+        for j in minc(mat)..maxc(mat) for l in minc(ans)..maxc(ans) repeat
+          qsetelt_!(ans pretend Matrix R2,k,l,f qelt(mat,i,j))
+      ans
+
+    reduce(f,mat,ident) ==
+      s := ident
+      for i in minr(mat)..maxr(mat) repeat
+       for j in minc(mat)..maxc(mat) repeat
+         s := f(qelt(mat,i,j),s)
+      s
+

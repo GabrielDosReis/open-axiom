@@ -1,0 +1,24 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain MACROAST MacroAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a macro definition.
+MacroAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    head: % -> HeadAst
+      ++ head(m) returns the head of the macro definition `m'.  This is a 
+      ++ list of identifiers starting with the name of the macro
+      ++ followed by the name of the parameters, if any.
+    body: % -> SpadAst
+      ++ body(m) returns the right hand side of the definition `m'.
+  Private == add
+    Rep == List SpadAst
+    head x == (second rep x) : HeadAst
+    body x == last rep x
+    coerce(x: %): OutputForm ==
+     elt('MacroAst::OutputForm,
+       ['head::OutputForm = head(x)::OutputForm,
+         'body::OutputForm = body(x)::OutputForm])$OutputForm
+

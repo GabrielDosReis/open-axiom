@@ -1,0 +1,22 @@
+)abbrev package PATRES2 PatternMatchResultFunctions2
+++ Lifts maps to pattern matching results
+++ Author: Manuel Bronstein
+++ Date Created: 1 Dec 1989
+++ Date Last Updated: 14 Dec 1989
+++ Description: Lifts maps to pattern matching results.
+++ Keywords: pattern, matching.
+PatternMatchResultFunctions2(R, A, B): Exports == Implementation where
+  R: SetCategory
+  A: SetCategory
+  B: SetCategory
+
+  Exports ==> with
+    map: (A -> B, PatternMatchResult(R, A)) -> PatternMatchResult(R, B)
+      ++ map(f, [(v1,a1),...,(vn,an)]) returns the matching result
+      ++ [(v1,f(a1)),...,(vn,f(an))].
+
+  Implementation ==> add
+    map(f, r) ==
+      failed? r => failed()
+      construct [[rec.key, f(rec.entry)] for rec in destruct r]
+

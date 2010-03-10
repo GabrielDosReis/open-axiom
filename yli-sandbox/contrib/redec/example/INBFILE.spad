@@ -1,0 +1,59 @@
+)abbrev domain INBFILE InputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Modified: September 30, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for input operations.  `Binary' here means that the conduits
+++   do not interpret their contents.
+InputBinaryFile(): Public == Private where
+  Public == Join(InputByteConduit, CoercibleTo OutputForm) with
+    inputBinaryFile: FileName -> %
+      ++ inputBinaryFile(f) returns an input conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    inputBinaryFile: String -> %
+      ++ inputBinaryFile(f) returns an input conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    eof?: % -> Boolean
+      ++ eof?(ifile) holds when the last read reached end of file.
+    isOpen?: % -> Boolean
+      ++ isOpen?(ifile) holds if `ifile' is in open state.
+    position: % -> SingleInteger
+      ++ position(f) returns the current byte-position in the file `f'.
+    position!: (%,SingleInteger) -> SingleInteger
+      ++ position(f,p) sets the current byte-position to `i'.
+  Private == add
+    Rep == Record(stream: SExpression, filename: FileName, eof: Boolean)
+
+    inputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,input$IOMode)$Lisp,f,false]
+    inputBinaryFile(f: String) ==
+      per [openBinaryFile(f,input$IOMode)$Lisp,f::FileName,false]
+    isOpen? ifile ==
+      not null? rep(ifile).stream
+    readByte! ifile ==
+      isOpen? ifile => 
+        b: SingleInteger := readByteFromFile(rep(ifile).stream)$Lisp
+        if b < 0@SingleInteger then 
+          rep(ifile).eof := true
+        b
+      error "file is not open"
+    eof? ifile ==
+      isOpen? ifile => rep(ifile).eof
+      error "file is not open"
+    close! ifile ==
+      if isOpen? ifile then
+        rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+        rep(ifile).eof := true
+      ifile
+    position ifile ==
+      isOpen? ifile =>
+        FILE_-POSITION(rep(ifile).stream)$Lisp
+      error "file is not open"
+    position!(ifile,p) ==
+      isOpen? ifile =>
+        FILE_-POSITION(rep(ifile).stream,p)$Lisp
+        p
+      error "file is not open"
+    coerce(ifile: %): OutputForm ==
+      rep(ifile).filename::OutputForm

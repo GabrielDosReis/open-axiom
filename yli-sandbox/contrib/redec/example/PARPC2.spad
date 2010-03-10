@@ -1,0 +1,9 @@
+)abbrev package PARPC2 ParametricPlaneCurveFunctions2
+++ Description:
+++ This package \undocumented
+ParametricPlaneCurveFunctions2(CF1: Type, CF2:Type): with
+  map: (CF1 -> CF2, ParametricPlaneCurve(CF1)) -> ParametricPlaneCurve(CF2)
+        ++ map(f,x) \undocumented
+ == add
+  map(f, c) == curve(f coordinate(c,1), f coordinate(c, 2))
+

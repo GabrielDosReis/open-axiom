@@ -1,0 +1,215 @@
+)abbrev domain ASP41 Asp41
+++ Author: Mike Dewar, Godfrey Nolan
+++ Date Created: 
+++ Date Last Updated: 29 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranFunctionCategory, FortranProgramCategory.
+++ Description:
+++\spadtype{Asp41} produces Fortran for Type 41 ASPs, needed for NAG
+++routines \axiomOpFrom{d02raf}{d02Package} and \axiomOpFrom{d02saf}{d02Package}
+++in particular.  These ASPs are in fact 
+++three Fortran routines which return a vector of functions, and their
+++derivatives wrt Y(i) and also a continuation parameter EPS, for example:
+++\begin{verbatim}
+++      SUBROUTINE FCN(X,EPS,Y,F,N)
+++      DOUBLE PRECISION EPS,F(N),X,Y(N)
+++      INTEGER N
+++      F(1)=Y(2)
+++      F(2)=Y(3)
+++      F(3)=(-1.0D0*Y(1)*Y(3))+2.0D0*EPS*Y(2)**2+(-2.0D0*EPS)
+++      RETURN
+++      END
+++      SUBROUTINE JACOBF(X,EPS,Y,F,N)
+++      DOUBLE PRECISION EPS,F(N,N),X,Y(N)
+++      INTEGER N
+++      F(1,1)=0.0D0
+++      F(1,2)=1.0D0
+++      F(1,3)=0.0D0
+++      F(2,1)=0.0D0
+++      F(2,2)=0.0D0
+++      F(2,3)=1.0D0
+++      F(3,1)=-1.0D0*Y(3)
+++      F(3,2)=4.0D0*EPS*Y(2)
+++      F(3,3)=-1.0D0*Y(1)
+++      RETURN
+++      END
+++      SUBROUTINE JACEPS(X,EPS,Y,F,N)
+++      DOUBLE PRECISION EPS,F(N),X,Y(N)
+++      INTEGER N
+++      F(1)=0.0D0
+++      F(2)=0.0D0
+++      F(3)=2.0D0*Y(2)**2-2.0D0
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp41(nameOne,nameTwo,nameThree): Exports == Implementation where
+  nameOne : Symbol
+  nameTwo : Symbol
+  nameThree : Symbol
+
+  D      ==> differentiate
+  FST    ==> FortranScalarType
+  UFST   ==> Union(fst:FST,void:"void")
+  FT     ==> FortranType
+  FC     ==> FortranCode
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+  MFLOAT ==> MachineFloat
+  FEXPR  ==> FortranExpression(['X,'EPS],['Y],MFLOAT)
+  S      ==> Symbol
+  MF2    ==> MatrixCategoryFunctions2(FEXPR,VEC FEXPR,VEC FEXPR,Matrix FEXPR,
+                 EXPR MFLOAT,VEC EXPR MFLOAT,VEC EXPR MFLOAT,Matrix EXPR MFLOAT)
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : VEC FEXPR -> $
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+    real : UFST := ["real"::FST]$UFST
+
+    symOne : SYMTAB := empty()$SYMTAB
+    declare!(N,fortranInteger(),symOne)$SYMTAB
+    declare!(X,fortranReal(),symOne)$SYMTAB
+    declare!(EPS,fortranReal(),symOne)$SYMTAB
+    yType : FT := construct(real,[N],false)$FT
+    declare!(Y,yType,symOne)$SYMTAB
+    declare!(F,yType,symOne)$SYMTAB
+
+    symTwo : SYMTAB := empty()$SYMTAB
+    declare!(N,fortranInteger(),symTwo)$SYMTAB
+    declare!(X,fortranReal(),symTwo)$SYMTAB
+    declare!(EPS,fortranReal(),symTwo)$SYMTAB
+    declare!(Y,yType,symTwo)$SYMTAB
+    fType : FT := construct(real,[N,N],false)$FT
+    declare!(F,fType,symTwo)$SYMTAB
+
+    symThree : SYMTAB := empty()$SYMTAB
+    declare!(N,fortranInteger(),symThree)$SYMTAB
+    declare!(X,fortranReal(),symThree)$SYMTAB
+    declare!(EPS,fortranReal(),symThree)$SYMTAB
+    declare!(Y,yType,symThree)$SYMTAB
+    declare!(F,yType,symThree)$SYMTAB
+
+    R1 == FortranProgram(nameOne,["void"]$UFST,[X,EPS,Y,F,N],symOne)
+    R2 == FortranProgram(nameTwo,["void"]$UFST,[X,EPS,Y,F,N],symTwo)
+    R3 == FortranProgram(nameThree,["void"]$UFST,[X,EPS,Y,F,N],symThree)
+    Rep == Record(f:R1,fJacob:R2,eJacob:R3)
+    Fsym:Symbol:=coerce "F"
+
+    fexpr2expr(u:FEXPR):EXPR MFLOAT == coerce(u)$FEXPR
+
+    localAssign1(s:S,j:Matrix FEXPR):FC ==
+      j' : Matrix EXPR MFLOAT := map(fexpr2expr,j)$MF2
+      assign(s,j')$FC
+
+    localAssign2(s:S,j:VEC FEXPR):FC ==
+      j' : VEC EXPR MFLOAT := map(fexpr2expr,j)$VF2(FEXPR,EXPR MFLOAT)
+      assign(s,j')$FC
+
+    makeCodeOne(u:VEC FEXPR):FortranCode ==
+      -- simple assign
+      localAssign2(Fsym,u)
+
+    makeCodeThree(u:VEC FEXPR):FortranCode ==
+      -- compute jacobian wrt to eps
+      jacEps:VEC FEXPR := [D(v,EPS) for v in entries(u)]$VEC(FEXPR)
+      makeCodeOne(jacEps)
+
+    makeYList(n:Integer):List(Symbol) ==
+      j:Integer
+      y:Symbol := Y::Symbol
+      p:List(Symbol) := []
+      [subscript(y,[j::OutputForm])$Symbol for j in 1..n]
+
+    makeCodeTwo(u:VEC FEXPR):FortranCode ==
+      -- compute jacobian wrt to f
+      n:Integer := maxIndex(u)$VEC(FEXPR)
+      p:List(Symbol) := makeYList(n)
+      jac:Matrix(FEXPR) := _
+      jacobian(u,p)$MultiVariableCalculusFunctions(S,FEXPR,VEC FEXPR,List(S))
+      localAssign1(Fsym,jac)
+
+    coerce(u:VEC FEXPR):$ == 
+      aF:FortranCode := makeCodeOne(u)
+      bF:FortranCode := makeCodeTwo(u)
+      cF:FortranCode := makeCodeThree(u)
+      -- add returns() to complete subroutines
+      aLF:List(FortranCode) := [aF,returns()$FortranCode]$List(FortranCode)
+      bLF:List(FortranCode) := [bF,returns()$FortranCode]$List(FortranCode)
+      cLF:List(FortranCode) := [cF,returns()$FortranCode]$List(FortranCode)
+      [coerce(aLF)$R1,coerce(bLF)$R2,coerce(cLF)$R3]
+
+    coerce(u:$):OutputForm == 
+      bracket commaSeparate 
+        [nameOne::OutputForm,nameTwo::OutputForm,nameThree::OutputForm]
+
+    outputAsFortran(u:$):Void ==  
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran elt(u,f)$Rep
+      outputAsFortran elt(u,fJacob)$Rep
+      outputAsFortran elt(u,eJacob)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+

@@ -1,0 +1,38 @@
+import NonNegativeInteger
+import BagAggregate
+)abbrev category QUAGG QueueAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A queue is a bag where the first item inserted is the first item extracted.
+QueueAggregate(S:Type): Category == BagAggregate S with
+   finiteAggregate
+   enqueue_!: (S, %) -> S
+     ++ enqueue!(x,q) inserts x into the queue q at the back end.
+   dequeue_!: % -> S
+     ++ dequeue! s destructively extracts the first (top) element from queue q.
+     ++ The element previously second in the queue becomes the first element.
+     ++ Error: if q is empty.
+   rotate_!: % -> %
+     ++ rotate! q rotates queue q so that the element at the front of
+     ++ the queue goes to the back of the queue.
+     ++ Note: rotate! q is equivalent to enqueue!(dequeue!(q)).
+   length: % -> NonNegativeInteger
+     ++ length(q) returns the number of elements in the queue.
+     ++ Note: \axiom{length(q) = #q}.
+   front: % -> S
+     ++ front(q) returns the element at the front of the queue.
+     ++ The queue q is unchanged by this operation.
+     ++ Error: if q is empty.
+   back: % -> S
+     ++ back(q) returns the element at the back of the queue.
+     ++ The queue q is unchanged by this operation.
+     ++ Error: if q is empty.
+

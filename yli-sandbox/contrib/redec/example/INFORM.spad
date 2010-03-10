@@ -1,0 +1,184 @@
+)abbrev domain INFORM InputForm
+++ Parser forms
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: October 14, 2008
+++ Description:
+++   Domain of parsed forms which can be passed to the interpreter.
+++   This is also the interface between algebra code and facilities
+++   in the interpreter.
+
+--)boot $noSubsumption := true
+
+InputForm():
+  Join(SExpressionCategory(String,Symbol,Integer,DoubleFloat,OutputForm),
+       ConvertibleTo SExpression) with
+    interpret: % -> Any
+      ++ interpret(f) passes f to the interpreter.
+    convert  : SExpression -> %
+      ++ convert(s) makes s into an input form.
+    binary   : (%, List %) -> %
+      ++ \spad{binary(op, [a1,...,an])} returns the input form
+      ++ corresponding to  \spad{a1 op a2 op ... op an}.
+    function : (%, List Symbol, Symbol) -> %
+      ++ \spad{function(code, [x1,...,xn], f)} returns the input form
+      ++ corresponding to \spad{f(x1,...,xn) == code}.
+    lambda   : (%, List Symbol) -> %
+      ++ \spad{lambda(code, [x1,...,xn])} returns the input form
+      ++ corresponding to \spad{(x1,...,xn) +-> code} if \spad{n > 1},
+      ++ or to \spad{x1 +-> code} if \spad{n = 1}.
+    "+"      : (%, %) -> %
+      ++ \spad{a + b} returns the input form corresponding to \spad{a + b}.
+    "*"      : (%, %) -> %
+      ++ \spad{a * b} returns the input form corresponding to \spad{a * b}.
+    "/"      : (%, %) -> %
+      ++ \spad{a / b} returns the input form corresponding to \spad{a / b}.
+    "**"     : (%, NonNegativeInteger) -> %
+      ++ \spad{a ** b} returns the input form corresponding to \spad{a ** b}.
+    "**"     : (%, Integer) -> %
+      ++ \spad{a ** b} returns the input form corresponding to \spad{a ** b}.
+    0        : constant -> %
+      ++ \spad{0} returns the input form corresponding to 0.
+    1        : constant -> %
+      ++ \spad{1} returns the input form corresponding to 1.
+    flatten  : % -> %
+      ++ flatten(s) returns an input form corresponding to s with
+      ++ all the nested operations flattened to triples using new
+      ++ local variables.
+      ++ If s is a piece of code, this speeds up
+      ++ the compilation tremendously later on.
+    unparse  : % -> String
+      ++ unparse(f) returns a string s such that the parser
+      ++ would transform s to f.
+      ++ Error: if f is not the parsed form of a string.
+    parseString: String -> %
+      ++ parseString is the inverse of unparse.  It parses a 
+      ++ string to InputForm.
+    declare  : List %   -> Symbol
+      ++ declare(t) returns a name f such that f has been
+      ++ declared to the interpreter to be of type t, but has
+      ++ not been assigned a value yet.
+      ++ Note: t should be created as \spad{devaluate(T)$Lisp} where T is the
+      ++ actual type of f (this hack is required for the case where
+      ++ T is a mapping type).
+    compile  : (Symbol, List %) -> Symbol
+      ++ \spad{compile(f, [t1,...,tn])} forces the interpreter to compile
+      ++ the function f with signature \spad{(t1,...,tn) -> ?}.
+      ++ returns the symbol f if successful.
+      ++ Error: if f was not defined beforehand in the interpreter,
+      ++ or if the ti's are not valid types, or if the compiler fails.
+ == SExpression add
+    Rep := SExpression
+
+    strsym    : % -> String
+    tuplify   : List Symbol -> %
+    flatten0  : (%, Symbol, NonNegativeInteger) ->
+                                             Record(lst: List %, symb:%)
+
+    0                        == convert(0::Integer)
+    1                        == convert(1::Integer)
+    convert(x:%):SExpression == x pretend SExpression
+    convert(x:SExpression):% == x
+
+    conv(ll : List %): % ==
+      convert(ll pretend List SExpression)$SExpression pretend %
+
+    lambda(f,l) == conv([convert("+->"::Symbol),tuplify l,f]$List(%))
+
+    interpret x ==
+      v := interpret(x)$Lisp
+      objNew(unwrap(objVal(v)$Lisp)$Lisp, objMode(v)$Lisp)$Lisp
+
+    convert(x:DoubleFloat):% ==
+      zero? x => 0
+--      one? x => 1
+      (x = 1) => 1
+      convert(x)$Rep
+
+    flatten s ==
+      -- will not compile if I use 'or'
+      atom? s => s
+      every?(atom?,destruct s)$List(%) => s
+      sy := new()$Symbol
+      n:NonNegativeInteger := 0
+      l := destruct s
+      l2 := [flatten0(x, sy, n := n + 1) for x in rest l]
+      conv(concat(convert("SEQ"::Symbol)@%,
+        concat(concat [u.lst for u in l2], conv(
+           [convert("exit"::Symbol)@%, 1$%, conv(concat(first l,
+               [u.symb for u in l2]))@%]$List(%))@%)))@%
+
+    flatten0(s, sy, n) ==
+      atom? s => [nil(), s]
+      a := convert(concat(string sy, convert(n)@String)::Symbol)@%
+      l := destruct s
+      l2 := [flatten0(x, sy, n := n+1) for x in rest l]
+      [concat(concat [u.lst for u in l2], conv([convert(
+        "LET"::Symbol)@%, a, conv(concat(first l,
+             [u.symb for u in l2]))@%]$List(%))@%), a]
+
+    strsym s ==
+      string? s => string s
+      symbol? s => string symbol s
+      error ["strsym: form", s, "is neither a string or symbol"]
+
+    unparse x ==
+      inputForm2String(x)$Lisp
+
+    parseString x ==
+      ncParseFromString(x)$Lisp
+
+    declare signature ==
+      declare(name := new()$Symbol, signature)$Lisp
+      name
+
+    compile(name, types) ==
+      name' := convert(name)@%
+      symbol car cdr car
+        selectLocalMms(mkAtreeForToken(name')$Lisp, name',
+          types, nil$List(%))$Lisp
+
+    binary(op, args) ==
+      (n := #args) < 2 => error "Need at least 2 arguments"
+      n = 2 => convert([op, first args, last args]$List(%))
+      convert([op, first args, binary(op, rest args)]$List(%))
+
+    tuplify l ==
+      empty? rest l => convert first l
+      conv
+        concat(convert("tuple"::Symbol), [convert x for x in l]$List(%))
+
+    function(f, l, name) ==
+      nn := convert(new(1 + #l, convert(nil()$List(%)))$List(%))@%
+      conv([convert("DEF"::Symbol), conv(cons(convert(name)@%,
+                        [convert(x)@% for x in l])), nn, nn, f]$List(%))
+
+    s1 + s2 ==
+      s1 = 0 => s2
+      s2 = 0 => s1
+      conv [convert("+"::Symbol), s1, s2]$List(%)
+
+    s1 * s2 ==
+      s1 = 0 or s2 = 0 => 0
+      s1 = 1 => s2
+      s2 = 1 => s1
+      conv [convert("*"::Symbol), s1, s2]$List(%)
+
+    s1:% ** n:Integer ==
+      s1 = 0 and n > 0 => 0
+      s1 = 1 or zero? n => 1
+--      one? n => s1
+      (n = 1) => s1
+      conv [convert("**"::Symbol), s1, convert n]$List(%)
+
+    s1:% ** n:NonNegativeInteger == s1 ** (n::Integer)
+
+    s1 / s2 ==
+      s2 = 1 => s1
+      conv [convert("/"::Symbol), s1, s2]$List(%)
+
+    -- A displayed form of an InputForm should be suitable as
+    -- input to the interpreter parser.
+    coerce(x: %): OutputForm ==
+      inputForm2OutputForm(x)$Lisp
+

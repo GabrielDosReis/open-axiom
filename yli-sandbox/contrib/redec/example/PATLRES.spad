@@ -1,0 +1,45 @@
+)abbrev domain PATLRES PatternMatchListResult
+++ Result returned by the pattern matcher when using lists
+++ Author: Manuel Bronstein
+++ Date Created: 4 Dec 1989
+++ Date Last Updated: 4 Dec 1989
+++ Description:
+++   A PatternMatchListResult is an object internally returned by the
+++   pattern matcher when matching on lists.
+++   It is either a failed match, or a pair of PatternMatchResult,
+++   one for atoms (elements of the list), and one for lists.
+++ Keywords: pattern, matching, list.
+-- not exported
+PatternMatchListResult(R:SetCategory, S:SetCategory, L:ListAggregate S):
+  SetCategory with
+    failed?   : %  -> Boolean
+      ++ failed?(r) tests if r is a failed match.
+    failed    : () -> %
+      ++ failed() returns a failed match.
+    new       : () -> %
+      ++ new() returns a new empty match result.
+    makeResult: (PatternMatchResult(R,S), PatternMatchResult(R,L)) -> %
+      ++ makeResult(r1,r2) makes the combined result [r1,r2].
+    atoms     : %  -> PatternMatchResult(R, S)
+      ++ atoms(r) returns the list of matches that match atoms
+      ++ (elements of the lists).
+    lists     : %  -> PatternMatchResult(R, L)
+      ++ lists(r) returns the list of matches that match lists.
+ == add
+  Rep := Record(a:PatternMatchResult(R, S), l:PatternMatchResult(R, L))
+
+  new()              == [new(), new()]
+  atoms r            == r.a
+  lists r            == r.l
+  failed()           == [failed(), failed()]
+  failed? r          == failed?(atoms r)
+  x = y              == (atoms x = atoms y) and (lists x = lists y)
+
+  makeResult(r1, r2) ==
+    failed? r1 or failed? r2 => failed()
+    [r1, r2]
+
+  coerce(r:%):OutputForm ==
+    failed? r => atoms(r)::OutputForm
+    RecordPrint(r, Rep)$Lisp
+

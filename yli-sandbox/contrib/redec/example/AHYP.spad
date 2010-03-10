@@ -1,0 +1,15 @@
+)abbrev category AHYP ArcHyperbolicFunctionCategory
+++ Category for the inverse hyperbolic trigonometric functions
+++ Author: ???
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description:
+++ Category for the inverse hyperbolic trigonometric functions;
+ArcHyperbolicFunctionCategory(): Category == with
+    acosh: $ -> $ ++ acosh(x) returns the hyperbolic arc-cosine of x.
+    acoth: $ -> $ ++ acoth(x) returns the hyperbolic arc-cotangent of x.
+    acsch: $ -> $ ++ acsch(x) returns the hyperbolic arc-cosecant of x.
+    asech: $ -> $ ++ asech(x) returns the hyperbolic arc-secant of x.
+    asinh: $ -> $ ++ asinh(x) returns the hyperbolic arc-sine of x.
+    atanh: $ -> $ ++ atanh(x) returns the hyperbolic arc-tangent of x.
+

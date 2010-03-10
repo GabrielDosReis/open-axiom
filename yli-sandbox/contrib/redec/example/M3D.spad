@@ -1,0 +1,246 @@
+)abbrev domain M3D ThreeDimensionalMatrix
+++ Author: William Naylor
+++ Date Created: 20 October 1993
+++ Date Last Updated: 20 May 1994
+++ BasicFunctions:
+++ Related Constructors: Matrix
+++ Also See: PrimitiveArray
+++ AMS Classification:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain represents three dimensional matrices over a general object type
+ThreeDimensionalMatrix(R) : Exports == Implementation where
+
+  R : SetCategory
+  L ==> List
+  NNI ==> NonNegativeInteger
+  A1AGG ==> OneDimensionalArrayAggregate
+  ARRAY1 ==> OneDimensionalArray
+  PA ==> PrimitiveArray
+  INT ==> Integer
+  PI ==> PositiveInteger
+
+  Exports ==> HomogeneousAggregate(R) with
+
+    if R has Ring then
+      zeroMatrix : (NNI,NNI,NNI) -> $
+         ++ zeroMatrix(i,j,k) create a matrix with all zero terms
+      identityMatrix : (NNI) -> $
+         ++ identityMatrix(n) create an identity matrix
+         ++ we note that this must be square
+      plus : ($,$) -> $
+         ++ plus(x,y) adds two matrices, term by term
+         ++ we note that they must be the same size
+    construct : (L L L R) -> $
+       ++ construct(lll) creates a 3-D matrix from a List List List R lll
+    elt : ($,NNI,NNI,NNI) -> R
+       ++ elt(x,i,j,k) extract an element from the matrix x
+    setelt! :($,NNI,NNI,NNI,R) -> R
+       ++ setelt!(x,i,j,k,s) (or x.i.j.k:=s) sets a specific element of the array to some value of type R
+    coerce : (PA PA PA R) -> $
+       ++ coerce(p) moves from the representation type
+       ++ (PrimitiveArray  PrimitiveArray  PrimitiveArray R)
+       ++ to the domain
+    coerce : $ -> (PA PA PA R)
+        ++ coerce(x) moves from the domain to the representation type
+    matrixConcat3D : (Symbol,$,$) -> $
+         ++ matrixConcat3D(s,x,y) concatenates two 3-D matrices along a specified axis
+    matrixDimensions : $ -> Vector NNI
+         ++ matrixDimensions(x) returns the dimensions of a matrix
+
+  Implementation ==>  (PA PA PA R) add
+
+    import (PA PA PA R)
+    import (PA PA R)
+    import (PA R)
+    import R
+
+    matrix1,matrix2,resultMatrix : $
+
+    -- function to concatenate two matrices
+    -- the first argument must be a symbol, which is either i,j or k
+    -- to specify the direction in which the concatenation is to take place
+    matrixConcat3D(dir : Symbol,mat1 : $,mat2 : $) : $ ==
+      not ((dir = (i::Symbol)) or (dir = (j::Symbol)) or (dir = (k::Symbol)))_
+       => error "the axis of concatenation must be i,j or k"
+      mat1Dim := matrixDimensions(mat1)
+      mat2Dim := matrixDimensions(mat2)
+      iDim1 := mat1Dim.1
+      jDim1 := mat1Dim.2
+      kDim1 := mat1Dim.3
+      iDim2 := mat2Dim.1
+      jDim2 := mat2Dim.2
+      kDim2 := mat2Dim.3
+      matRep1 : (PA PA PA R) := copy(mat1 :: (PA PA PA R))$(PA PA PA R)
+      matRep2 : (PA PA PA R) := copy(mat2 :: (PA PA PA R))$(PA PA PA R)
+      retVal : $
+
+      if (dir = (i::Symbol)) then
+        -- j,k dimensions must agree
+        if (not ((jDim1 = jDim2) and (kDim1=kDim2)))
+        then
+          error "jxk do not agree"
+        else
+          retVal := (coerce(concat(matRep1,matRep2)$(PA PA PA R))$$)@$
+
+      if (dir = (j::Symbol)) then
+        -- i,k dimensions must agree
+        if (not ((iDim1 = iDim2) and (kDim1=kDim2)))
+        then
+          error "ixk do not agree"
+        else
+          for i in 0..(iDim1-1) repeat
+            setelt(matRep1,i,(concat(elt(matRep1,i)$(PA PA PA R)_
+             ,elt(matRep2,i)$(PA PA PA R))$(PA PA R))@(PA PA R))$(PA PA PA R)
+          retVal := (coerce(matRep1)$$)@$
+
+      if (dir = (k::Symbol)) then
+        temp : (PA PA R)
+        -- i,j dimensions must agree
+        if (not ((iDim1 = iDim2) and (jDim1=jDim2)))
+        then
+          error "ixj do not agree"
+        else
+          for i in 0..(iDim1-1) repeat
+            temp := copy(elt(matRep1,i)$(PA PA PA R))$(PA PA R)
+            for j in 0..(jDim1-1) repeat
+              setelt(temp,j,concat(elt(elt(matRep1,i)$(PA PA PA R)_
+              ,j)$(PA PA R),elt(elt(matRep2,i)$(PA PA PA R),j)$(PA PA R)_
+              )$(PA R))$(PA PA R)
+            setelt(matRep1,i,temp)$(PA PA PA R)
+          retVal := (coerce(matRep1)$$)@$
+
+      retVal
+
+    matrixDimensions(mat : $) : Vector NNI ==
+      matRep : (PA PA PA R) := mat :: (PA PA PA R)
+      iDim : NNI := (#matRep)$(PA PA PA R)
+      matRep2 : PA PA R := elt(matRep,0)$(PA PA PA R)
+      jDim : NNI := (#matRep2)$(PA PA R)
+      matRep3 : (PA R) := elt(matRep2,0)$(PA PA R)
+      kDim : NNI := (#matRep3)$(PA R)
+      retVal : Vector NNI := new(3,0)$(Vector NNI)
+      retVal.1 := iDim
+      retVal.2 := jDim
+      retVal.3 := kDim
+      retVal
+
+    coerce(matrixRep : (PA PA PA R)) : $ == matrixRep pretend $
+
+    coerce(mat : $) : (PA PA PA R) == mat pretend (PA PA PA R)
+
+    -- i,j,k must be with in the bounds of the matrix
+    elt(mat : $,i : NNI,j : NNI,k : NNI) : R ==
+      matDims := matrixDimensions(mat)
+      iLength := matDims.1
+      jLength := matDims.2
+      kLength := matDims.3
+      ((i > iLength) or (j > jLength) or (k > kLength) or (i=0) or (j=0) or_
+(k=0)) => error "coordinates must be within the bounds of the matrix"
+      matrixRep : PA PA PA R := mat :: (PA PA PA R)
+      elt(elt(elt(matrixRep,i-1)$(PA PA PA R),j-1)$(PA PA R),k-1)$(PA R)
+
+    setelt!(mat : $,i : NNI,j : NNI,k : NNI,val : R)_
+       : R ==
+      matDims := matrixDimensions(mat)
+      iLength := matDims.1
+      jLength := matDims.2
+      kLength := matDims.3
+      ((i > iLength) or (j > jLength) or (k > kLength) or (i=0) or (j=0) or_
+(k=0)) => error "coordinates must be within the bounds of the matrix"
+      matrixRep : PA PA PA R := mat :: (PA PA PA R)
+      row2 : PA PA R := copy(elt(matrixRep,i-1)$(PA PA PA R))$(PA PA R)
+      row1 : PA R := copy(elt(row2,j-1)$(PA PA R))$(PA R)
+      setelt(row1,k-1,val)$(PA R)
+      setelt(row2,j-1,row1)$(PA PA R)
+      setelt(matrixRep,i-1,row2)$(PA PA PA R)
+      val
+
+    if R has Ring then
+      zeroMatrix(iLength:NNI,jLength:NNI,kLength:NNI) : $ ==
+        (new(iLength,new(jLength,new(kLength,(0$R))$(PA R))$(PA PA R))$(PA PA PA R)) :: $
+
+      identityMatrix(iLength:NNI) : $ ==
+        retValueRep : PA PA PA R := zeroMatrix(iLength,iLength,iLength)$$ :: (PA PA PA R)
+        row1 : PA R
+        row2 : PA PA R
+        row1empty : PA R := new(iLength,0$R)$(PA R)
+        row2empty : PA PA R := new(iLength,copy(row1empty)$(PA R))$(PA PA R)
+        for count in 0..(iLength-1) repeat
+          row1 := copy(row1empty)$(PA R)
+          setelt(row1,count,1$R)$(PA R)
+          row2 := copy(row2empty)$(PA PA R)
+          setelt(row2,count,copy(row1)$(PA R))$(PA PA R)
+          setelt(retValueRep,count,copy(row2)$(PA PA R))$(PA PA PA R)
+        retValueRep :: $
+
+
+      plus(mat1 : $,mat2 :$) : $ ==
+
+        mat1Dims := matrixDimensions(mat1)
+        iLength1 := mat1Dims.1
+        jLength1 := mat1Dims.2
+        kLength1 := mat1Dims.3
+
+        mat2Dims := matrixDimensions(mat2)
+        iLength2 := mat2Dims.1
+        jLength2 := mat2Dims.2
+        kLength2 := mat2Dims.3
+
+        -- check that the dimensions are the same
+        (not (iLength1 = iLength2) or not (jLength1 = jLength2) or not(kLength1 = kLength2))_
+         => error "error the matrices are different sizes"
+
+        sum : R
+        row1 : (PA R) := new(kLength1,0$R)$(PA R)
+        row2 : (PA PA R) := new(jLength1,copy(row1)$(PA R))$(PA PA R)
+        row3 : (PA PA PA R) := new(iLength1,copy(row2)$(PA PA R))$(PA PA PA R)
+
+        for i in 1..iLength1 repeat
+          for j in 1..jLength1 repeat
+            for k in 1..kLength1 repeat
+              sum := (elt(mat1,i,j,k)::R +$R_
+                      elt(mat2,i,j,k)::R)
+              setelt(row1,k-1,sum)$(PA R)
+            setelt(row2,j-1,copy(row1)$(PA R))$(PA PA R)
+          setelt(row3,i-1,copy(row2)$(PA PA R))$(PA PA PA R)
+
+        resultMatrix := (row3 pretend $)
+
+        resultMatrix
+
+    construct(listRep : L L L R) : $ ==
+
+      (#listRep)$(L L L R) = 0 => error "empty list"
+      (#(listRep.1))$(L L R) = 0 => error "empty list"
+      (#((listRep.1).1))$(L R) = 0 => error "empty list"
+      iLength := (#listRep)$(L L L R)
+      jLength := (#(listRep.1))$(L L R)
+      kLength := (#((listRep.1).1))$(L R)
+
+      --first check that the matrix is in the correct form
+      for subList in listRep repeat
+        not((#subList)$(L L R) = jLength) => error_
+ "can not have an irregular shaped matrix"
+        for subSubList in subList repeat
+          not((#(subSubList))$(L R) = kLength) => error_
+ "can not have an irregular shaped matrix"
+
+      row1 : (PA R) := new(kLength,((listRep.1).1).1)$(PA R)
+      row2 : (PA PA R) := new(jLength,copy(row1)$(PA R))$(PA PA R)
+      row3 : (PA PA PA R) := new(iLength,copy(row2)$(PA PA R))$(PA PA PA R)
+         
+      for i in 1..iLength repeat
+        for j in 1..jLength repeat
+          for k in 1..kLength repeat
+
+            element := elt(elt(elt(listRep,i)$(L L L R),j)$(L L R),k)$(L R)
+            setelt(row1,k-1,element)$(PA R)
+          setelt(row2,j-1,copy(row1)$(PA R))$(PA PA R)
+        setelt(row3,i-1,copy(row2)$(PA PA R))$(PA PA PA R)
+
+      resultMatrix := (row3 pretend $)
+
+      resultMatrix
+

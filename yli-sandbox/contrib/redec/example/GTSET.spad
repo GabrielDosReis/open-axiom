@@ -1,0 +1,104 @@
+)abbrev domain GTSET GeneralTriangularSet
+++ Author: Marc Moreno Maza (marc@nag.co.uk)
+++ Date Created: 10/06/1995
+++ Date Last Updated: 06/12/1996
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: 
+++ A domain constructor of the category \axiomType{TriangularSetCategory}.
+++ The only requirement for a list of polynomials to be a member of such
+++ a domain is the following: no polynomial is constant and two distinct
+++ polynomials have distinct main variables. Such a triangular set may
+++ not be auto-reduced or consistent. Triangular sets are stored
+++ as sorted lists w.r.t. the main variables of their members but they
+++ are displayed in reverse order.\newline
+++ References :
+++  [1] P. AUBRY, D. LAZARD and M. MORENO MAZA "On the Theories
+++      of Triangular Sets" Journal of Symbol. Comp. (to appear)
+++ Version: 1
+
+GeneralTriangularSet(R,E,V,P) : Exports == Implementation where
+
+  R : IntegralDomain
+  E : OrderedAbelianMonoidSup
+  V : OrderedSet
+  P : RecursivePolynomialCategory(R,E,V)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  LP ==> List P
+  PtoP ==> P -> P
+
+  Exports ==  TriangularSetCategory(R,E,V,P)
+
+  Implementation == add
+
+     Rep == LP
+
+     copy ts ==
+       per(copy(rep(ts))$LP)
+     empty() ==
+       per([])
+     empty?(ts:$) ==
+       empty?(rep(ts))
+     parts ts ==
+       rep(ts)
+     members ts ==
+       rep(ts)
+     map (f : PtoP, ts : $) : $ ==
+       construct(map(f,rep(ts))$LP)$$
+     map! (f : PtoP, ts : $) : $  ==
+       construct(map!(f,rep(ts))$LP)$$
+     member? (p,ts) ==
+       member?(p,rep(ts))$LP
+
+     unitIdealIfCan():Union($, "failed") ==
+       "failed"::Union($,"failed")
+     roughUnitIdeal? ts ==
+       false
+
+     -- the following assume that rep(ts) is decreasingly sorted
+     -- w.r.t. the main variavles of the polynomials in rep(ts)
+     coerce(ts:$) : OutputForm ==
+       lp : List(P) := reverse(rep(ts))
+       brace([p::OutputForm for p in lp]$List(OutputForm))$OutputForm
+     mvar ts ==
+       empty? ts => error"failed in mvar : $ -> V from GTSET"
+       mvar(first(rep(ts)))$P
+     first ts ==
+       empty? ts => "failed"::Union(P,"failed")
+       first(rep(ts))::Union(P,"failed")
+     last ts ==
+       empty? ts => "failed"::Union(P,"failed")
+       last(rep(ts))::Union(P,"failed")
+     rest ts ==
+       empty? ts => "failed"::Union($,"failed")
+       per(rest(rep(ts)))::Union($,"failed")
+     coerce(ts:$) : (List P) ==
+       rep(ts)
+     collectUpper (ts,v) ==
+       empty? ts => ts
+       lp := rep(ts)
+       newlp : Rep := []
+       while (not empty? lp) and (mvar(first(lp)) > v) repeat
+         newlp := cons(first(lp),newlp)
+         lp := rest lp
+       per(reverse(newlp))
+     collectUnder (ts,v) ==
+       empty? ts => ts
+       lp := rep(ts)
+       while (not empty? lp) and (mvar(first(lp)) >= v) repeat
+         lp := rest lp
+       per(lp)
+
+     -- for another domain of TSETCAT build on this domain GTSET
+     -- the following operations must be redefined
+     extendIfCan(ts:$,p:P) ==
+       ground? p => "failed"::Union($,"failed")
+       empty? ts => (per([unitCanonical(p)]$LP))::Union($,"failed")
+       not (mvar(ts) < mvar(p)) => "failed"::Union($,"failed")
+       (per(cons(p,rep(ts))))::Union($,"failed")
+

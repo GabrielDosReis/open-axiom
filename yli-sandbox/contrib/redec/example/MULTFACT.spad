@@ -1,0 +1,53 @@
+)abbrev package MULTFACT MultivariateFactorize
+++ Author: P. Gianni
+++ Date Created: 1983
+++ Date Last Updated: Sept. 1990
+++ Basic Functions:
+++ Related Constructors: MultFiniteFactorize, AlgebraicMultFact, UnivariateFactorize
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This is the top level package for doing multivariate factorization
+++ over basic domains like \spadtype{Integer} or \spadtype{Fraction Integer}.
+
+MultivariateFactorize(OV,E,R,P) : C == T
+ where
+  R          :   Join(EuclideanDomain, CharacteristicZero)
+                    -- with factor on R[x]
+  OV         :   OrderedSet
+  E          :   OrderedAbelianMonoidSup
+  P          :   PolynomialCategory(R,E,OV)
+  Z            ==> Integer
+  MParFact     ==> Record(irr:P,pow:Z)
+  USP          ==> SparseUnivariatePolynomial P
+  SUParFact    ==> Record(irr:USP,pow:Z)
+  SUPFinalFact ==> Record(contp:R,factors:List SUParFact)
+  MFinalFact   ==> Record(contp:R,factors:List MParFact)
+ 
+                 --  contp   =  content,
+                 --  factors =  List of irreducible factors with exponent
+  L          ==> List
+
+  C == with
+    factor      :      P  ->  Factored P
+      ++ factor(p) factors the multivariate polynomial p over its coefficient
+      ++ domain
+    factor      :      USP  ->  Factored USP
+      ++ factor(p) factors the multivariate polynomial p over its coefficient
+      ++ domain where p is represented as a univariate polynomial with
+      ++ multivariate coefficients
+  T == add
+    factor(p:P) : Factored P ==
+      R is Fraction Integer =>
+         factor(p)$MRationalFactorize(E,OV,Integer,P)
+      R is Fraction Complex Integer =>
+         factor(p)$MRationalFactorize(E,OV,Complex Integer,P)
+      R is Fraction Polynomial Integer and OV has convert: % -> Symbol =>
+         factor(p)$MPolyCatRationalFunctionFactorizer(E,OV,Integer,P)
+      factor(p,factor$GenUFactorize(R))$InnerMultFact(OV,E,R,P)
+
+    factor(up:USP) : Factored USP ==
+      factor(up,factor$GenUFactorize(R))$InnerMultFact(OV,E,R,P)
+

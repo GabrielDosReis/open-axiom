@@ -1,0 +1,63 @@
+)abbrev category GCDDOM GcdDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References: Davenport & Trager 1
+++ Description:
+++ This category describes domains where
+++ \spadfun{gcd} can be computed but where there is no guarantee
+++ of the existence of \spadfun{factor} operation for factorisation into irreducibles.
+++ However, if such a \spadfun{factor} operation exist, factorization will be
+++ unique up to order and units.
+
+GcdDomain(): Category == IntegralDomain with
+    --operations
+      gcd: (%,%) -> %
+            ++ gcd(x,y) returns the greatest common divisor of x and y.
+            -- gcd(x,y) = gcd(y,x) in the presence of canonicalUnitNormal,
+            -- but not necessarily elsewhere
+      gcd: List(%) -> %
+            ++ gcd(l) returns the common gcd of the elements in the list l.
+      lcm: (%,%) -> %
+            ++ lcm(x,y) returns the least common multiple of x and y.
+            -- lcm(x,y) = lcm(y,x) in the presence of canonicalUnitNormal,
+            -- but not necessarily elsewhere
+      lcm: List(%) -> %
+            ++ lcm(l) returns the least common multiple of the elements of the list l.
+      gcdPolynomial: (SparseUnivariatePolynomial %, SparseUnivariatePolynomial %) ->
+           SparseUnivariatePolynomial %
+            ++ gcdPolynomial(p,q) returns the greatest common divisor (gcd) of 
+            ++ univariate polynomials over the domain
+    add
+      lcm(x: %,y: %) ==
+        y = 0 => 0
+        x = 0 => 0
+        LCM : Union(%,"failed") := y exquo gcd(x,y)
+        LCM case % =>  x * LCM
+        error "bad gcd in lcm computation"
+      lcm(l:List %) == reduce(lcm,l,1,0)
+      gcd(l:List %) == reduce(gcd,l,0,1)
+      SUP ==> SparseUnivariatePolynomial
+      gcdPolynomial(p1,p2) ==
+        zero? p1 => unitCanonical p2
+        zero? p2 => unitCanonical p1
+        c1:= content(p1); c2:= content(p2)
+        p1:= (p1 exquo c1)::SUP %
+        p2:= (p2 exquo c2)::SUP %
+        if (e1:=minimumDegree p1) > 0 then p1:=(p1 exquo monomial(1,e1))::SUP %
+        if (e2:=minimumDegree p2) > 0 then p2:=(p2 exquo monomial(1,e2))::SUP %
+        e1:=min(e1,e2); c1:=gcd(c1,c2)
+        p1:=
+           degree p1 = 0 or degree p2 = 0 => monomial(c1,0)
+           p:= subResultantGcd(p1,p2)
+           degree p = 0 => monomial(c1,0)
+           c2:= gcd(leadingCoefficient p1,leadingCoefficient p2)
+           unitCanonical(c1 * primitivePart(((c2*p) exquo leadingCoefficient p)::SUP %))
+        zero? e1 => p1
+        monomial(1,e1)*p1
+

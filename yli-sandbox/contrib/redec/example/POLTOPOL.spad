@@ -1,0 +1,69 @@
+)abbrev package POLTOPOL PolToPol
+++ Author : P.Gianni, Summer '88
+++ Description:
+++ Package with the conversion functions among different kind of polynomials
+PolToPol(lv,R) : C == T
+ 
+ where
+  R      :    Ring
+  lv     :    List Symbol
+  NNI    ==>  NonNegativeInteger
+  Ov     ==>  OrderedVariableList(lv)
+  IES    ==>  IndexedExponents Symbol
+ 
+  DP     ==>  DirectProduct(#lv,NonNegativeInteger)
+  DPoly  ==>  DistributedMultivariatePolynomial(lv,R)
+ 
+  HDP    ==>  HomogeneousDirectProduct(#lv,NonNegativeInteger)
+  HDPoly ==>  HomogeneousDistributedMultivariatePolynomial(lv,R)
+  P      ==>  Polynomial R
+  VV     ==>  Vector NNI
+  MPC3   ==>  MPolyCatFunctions3
+ 
+  C == with
+     dmpToHdmp    :    DPoly    -> HDPoly
+       ++ dmpToHdmp(p) converts p from a \spadtype{DMP} to a \spadtype{HDMP}.
+     hdmpToDmp    :   HDPoly    -> DPoly
+       ++ hdmpToDmp(p) converts p from a \spadtype{HDMP} to a \spadtype{DMP}.
+     pToHdmp      :     P       -> HDPoly
+       ++ pToHdmp(p) converts p from a \spadtype{POLY} to a \spadtype{HDMP}.
+     hdmpToP      :   HDPoly    -> P
+       ++ hdmpToP(p) converts p from a \spadtype{HDMP} to a \spadtype{POLY}.
+     dmpToP       :    DPoly    -> P
+       ++ dmpToP(p) converts p from a \spadtype{DMP} to a \spadtype{POLY}.
+     pToDmp       :     P       -> DPoly
+       ++ pToDmp(p) converts p from a \spadtype{POLY} to a \spadtype{DMP}.
+  T == add
+ 
+    variable1(xx:Symbol):Ov == variable(xx)::Ov
+ 
+   -- transform a P in a HDPoly --
+    pToHdmp(pol:P) : HDPoly ==
+      map(variable1,pol)$MPC3(Symbol,Ov,IES,HDP,R,P,HDPoly)
+ 
+   -- transform an HDPoly in a P --
+    hdmpToP(hdpol:HDPoly) : P ==
+      map(convert,hdpol)$MPC3(Ov,Symbol,HDP,IES,R,HDPoly,P)
+ 
+   -- transform an DPoly in a P --
+    dmpToP(dpol:DPoly) : P ==
+      map(convert,dpol)$MPC3(Ov,Symbol,DP,IES,R,DPoly,P)
+ 
+   -- transform a P in a DPoly --
+    pToDmp(pol:P) : DPoly ==
+      map(variable1,pol)$MPC3(Symbol,Ov,IES,DP,R,P,DPoly)
+ 
+   -- transform a DPoly in a HDPoly --
+    dmpToHdmp(dpol:DPoly) : HDPoly ==
+      dpol=0 => 0$HDPoly
+      monomial(leadingCoefficient dpol,
+               directProduct(degree(dpol)::VV)$HDP)$HDPoly+
+                                                 dmpToHdmp(reductum dpol)
+ 
+   -- transform a HDPoly in a DPoly --
+    hdmpToDmp(hdpol:HDPoly) : DPoly ==
+      hdpol=0 => 0$DPoly
+      dd:DP:= directProduct((degree hdpol)::VV)$DP
+      monomial(leadingCoefficient hdpol,dd)$DPoly+
+               hdmpToDmp(reductum hdpol)
+

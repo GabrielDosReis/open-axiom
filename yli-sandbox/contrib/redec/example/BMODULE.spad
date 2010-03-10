@@ -1,0 +1,21 @@
+)abbrev category BMODULE BiModule
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A \spadtype{BiModule} is both a left and right module with respect
+++ to potentially different rings.
+++
+++ Axiom:
+++   \spad{ r*(x*s) = (r*x)*s }
+BiModule(R:Ring,S:Ring):Category ==
+  Join(LeftModule(R),RightModule(S)) with
+     leftUnitary ++ \spad{1 * x = x}
+     rightUnitary ++ \spad{x * 1 = x}
+

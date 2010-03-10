@@ -1,0 +1,29 @@
+)abbrev domain TUPLE Tuple
+++ This domain is used to interface with the interpreter's notion
+++ of comma-delimited sequences of values.
+Tuple(S:Type): HomotopicTo (PrimitiveArray S) with
+  select: (%, NonNegativeInteger) -> S
+        ++ select(x,n) returns the n-th element of tuple x.
+        ++ tuples are 0-based
+  length: % -> NonNegativeInteger
+        ++ length(x) returns the number of elements in tuple x
+  if S has CoercibleTo(OutputForm) then CoercibleTo(OutputForm)
+  if S has SetCategory then SetCategory
+ == add
+  Rep := Record(len : NonNegativeInteger, elts : PrimitiveArray S)
+
+  coerce(x: PrimitiveArray S): %  == [#x, x]
+  coerce(x:%): PrimitiveArray(S) == x.elts
+  length x == x.len
+
+  select(x, n) ==
+    n >= x.len => error "Index out of bounds"
+    x.elts.n
+
+  if S has SetCategory then
+    x = y == (x.len = y.len) and (x.elts =$PrimitiveArray(S) y.elts)
+  if S has CoercibleTo(OutputForm) then
+    coerce(x : %): OutputForm ==
+      paren [(x.elts.i)::OutputForm
+             for i in minIndex x.elts .. maxIndex x.elts]$List(OutputForm)
+

@@ -1,0 +1,22 @@
+)abbrev category RETRACT RetractableTo
+++ Category for retract
+++ Author: ???
+++ Date Created: ???
+++ Date Last Updated: November 19, 2008
+++ Related Constructor: CoercibleFrom
+++ Description:
+++ A is retractable to B means that some elementsif A can be converted
+++ into elements of B and any element of B can be converted into an
+++ element of A.
+RetractableTo(S: Type): Category == CoercibleFrom S with
+    retractIfCan: % -> Union(S,"failed")
+      ++ retractIfCan(a) transforms a into an element of S if possible.
+      ++ Returns "failed" if a cannot be made into an element of S.
+    retract:      % -> S
+      ++ retract(a) transforms a into an element of S if possible.
+      ++ Error: if a cannot be made into an element of S.
+  add
+    retract(s) ==
+      (u:=retractIfCan s) case "failed" => error "not retractable"
+      u
+

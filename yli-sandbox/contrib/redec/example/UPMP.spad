@@ -1,0 +1,87 @@
+)abbrev package UPMP UnivariatePolynomialMultiplicationPackage
+++ Author: Marc Moreno Maza
+++ Date Created: 14.08.2000
+++ Description:
+++ This package implements Karatsuba's trick for multiplying
+++ (large) univariate polynomials. It could be improved with
+++ a version doing the work on place and also with a special
+++ case for squares. We've done this in Basicmath, but we
+++ believe that this out of the scope of AXIOM.
+
+UnivariatePolynomialMultiplicationPackage(R: Ring, U: UnivariatePolynomialCategory(R)): C == T
+  where
+    HL ==> Record(quotient:U,remainder:U)
+    C == with
+      noKaratsuba: (U, U) -> U
+        ++ \spad{noKaratsuba(a,b)} returns \spad{a*b} without
+        ++ using Karatsuba's trick at all.
+      karatsubaOnce: (U, U) -> U
+        ++ \spad{karatsuba(a,b)} returns \spad{a*b} by applying
+        ++ Karatsuba's trick once. The other multiplications
+        ++ are performed by calling \spad{*} from \spad{U}.
+      karatsuba: (U, U, NonNegativeInteger, NonNegativeInteger) -> U;
+        ++ \spad{karatsuba(a,b,l,k)} returns \spad{a*b} by applying
+        ++ Karatsuba's trick provided that both \spad{a} and \spad{b}
+        ++ have at least \spad{l} terms and \spad{k > 0} holds
+        ++ and by calling \spad{noKaratsuba} otherwise. The other
+        ++ multiplications are performed by recursive calls with
+        ++ the same third argument and \spad{k-1} as fourth argument.
+
+    T == add
+      noKaratsuba(a,b) ==
+        zero? a => a
+        zero? b => b
+        zero?(degree(a)) => leadingCoefficient(a) * b
+        zero?(degree(b)) => a * leadingCoefficient(b)
+        lu: List(U) := reverse monomials(a)
+        res: U := 0;
+        for u in lu repeat
+          res := pomopo!(res, leadingCoefficient(u), degree(u), b)
+        res
+      karatsubaOnce(a:U,b:U): U ==
+        da := minimumDegree(a)
+        db := minimumDegree(b)
+        if not zero? da then a := shiftRight(a,da)
+        if not zero? db then b := shiftRight(b,db)
+        d := da + db
+        n: NonNegativeInteger := min(degree(a),degree(b)) quo 2
+        rec: HL := karatsubaDivide(a, n)
+        ha := rec.quotient
+        la := rec.remainder
+        rec := karatsubaDivide(b, n)
+        hb := rec.quotient
+        lb := rec.remainder
+        w: U := (ha - la) * (lb - hb)
+        u: U := la * lb
+        v: U := ha * hb
+        w := w + (u + v)
+        w := shiftLeft(w,n) + u
+        zero? d => shiftLeft(v,2*n) + w
+        shiftLeft(v,2*n + d) + shiftLeft(w,d)
+      karatsuba(a:U,b:U,l:NonNegativeInteger,k:NonNegativeInteger): U ==
+        zero? k => noKaratsuba(a,b)
+        degree(a) < l => noKaratsuba(a,b)
+        degree(b) < l => noKaratsuba(a,b)
+        numberOfMonomials(a) < l => noKaratsuba(a,b)
+        numberOfMonomials(b) < l => noKaratsuba(a,b)
+        da := minimumDegree(a)
+        db := minimumDegree(b)
+        if not zero? da then a := shiftRight(a,da)
+        if not zero? db then b := shiftRight(b,db)
+        d := da + db
+        n: NonNegativeInteger := min(degree(a),degree(b)) quo 2
+        k := subtractIfCan(k,1)::NonNegativeInteger
+        rec: HL := karatsubaDivide(a, n)
+        ha := rec.quotient
+        la := rec.remainder
+        rec := karatsubaDivide(b, n)
+        hb := rec.quotient
+        lb := rec.remainder
+        w: U := karatsuba(ha - la, lb - hb, l, k)
+        u: U := karatsuba(la, lb, l, k)
+        v: U := karatsuba(ha, hb, l, k)
+        w := w + (u + v)
+        w := shiftLeft(w,n) + u
+        zero? d => shiftLeft(v,2*n) + w
+        shiftLeft(v,2*n + d) + shiftLeft(w,d)
+

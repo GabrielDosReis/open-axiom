@@ -1,0 +1,45 @@
+)abbrev domain MCMPLX MachineComplex
+++ Date Created:  December 1993
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Domains:
+++ Also See: FortranExpression, FortranMachineTypeCategory, MachineInteger,
+++  MachineFloat
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: A domain which models the complex number representation
+++ used by machines in the AXIOM-NAG link.
+MachineComplex():Exports == Implementation where
+
+  Exports ==> Join (FortranMachineTypeCategory,
+                    ComplexCategory(MachineFloat)) with
+    coerce : Complex Float -> $
+      ++ coerce(u) transforms u into a MachineComplex
+    coerce : Complex Integer -> $
+      ++ coerce(u) transforms u into a MachineComplex
+    coerce : Complex MachineFloat -> $
+      ++ coerce(u) transforms u into a MachineComplex
+    coerce : Complex MachineInteger -> $
+      ++ coerce(u) transforms u into a MachineComplex
+    coerce : $ -> Complex Float
+      ++ coerce(u) transforms u into a COmplex Float
+
+  Implementation ==> Complex MachineFloat add
+
+    coerce(u:Complex Float):$ == 
+      complex(real(u)::MachineFloat,imag(u)::MachineFloat)
+
+    coerce(u:Complex Integer):$ ==
+      complex(real(u)::MachineFloat,imag(u)::MachineFloat)
+
+    coerce(u:Complex MachineInteger):$ ==
+      complex(real(u)::MachineFloat,imag(u)::MachineFloat)
+
+    coerce(u:Complex MachineFloat):$ == 
+      complex(real(u),imag(u))
+
+    coerce(u:$):Complex Float ==
+      complex(real(u)::Float,imag(u)::Float)
+

@@ -1,0 +1,105 @@
+)abbrev domain ASP1 Asp1
+++ Author: Mike Dewar, Grant Keady, Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 18 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranFunctionCategory, FortranProgramCategory.
+++ Description: 
+++\spadtype{Asp1} produces Fortran for Type 1 ASPs, needed for various
+++NAG routines. Type 1 ASPs take a univariate expression (in the symbol
+++X) and turn it into a Fortran Function like the following:
+++\begin{verbatim}
+++      DOUBLE PRECISION FUNCTION F(X)
+++      DOUBLE PRECISION X
+++      F=DSIN(X)
+++      RETURN
+++      END
+++\end{verbatim}
+
+
+Asp1(name): Exports == Implementation where
+  name : Symbol
+
+  FEXPR  ==> FortranExpression
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+
+  Exports ==> FortranFunctionCategory with
+    coerce : FEXPR(['X],[],MachineFloat) -> $
+      ++coerce(f) takes an object from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns it into an ASP.
+
+  Implementation ==> add
+
+    -- Build Symbol Table for Rep
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(X,fortranReal()$FT,syms)$SYMTAB
+    real : FST := "real"::FST
+
+    Rep := FortranProgram(name,[real]$Union(fst:FST,void:"void"),[X],syms)
+
+    retract(u:FRAC POLY INT):$ == (retract(u)@FEXPR(['X],[],MachineFloat))::$
+    retractIfCan(u:FRAC POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR(['X],[],MachineFloat),"failed") 
+      foo := retractIfCan(u)$FEXPR(['X],[],MachineFloat)
+      foo case "failed" => "failed"
+      foo::FEXPR(['X],[],MachineFloat)::$
+
+    retract(u:FRAC POLY FLOAT):$ == (retract(u)@FEXPR(['X],[],MachineFloat))::$
+    retractIfCan(u:FRAC POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR(['X],[],MachineFloat),"failed") 
+      foo := retractIfCan(u)$FEXPR(['X],[],MachineFloat)
+      foo case "failed" => "failed"
+      foo::FEXPR(['X],[],MachineFloat)::$
+
+    retract(u:EXPR FLOAT):$ == (retract(u)@FEXPR(['X],[],MachineFloat))::$
+    retractIfCan(u:EXPR FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR(['X],[],MachineFloat),"failed") 
+      foo := retractIfCan(u)$FEXPR(['X],[],MachineFloat)
+      foo case "failed" => "failed"
+      foo::FEXPR(['X],[],MachineFloat)::$
+
+    retract(u:EXPR INT):$ == (retract(u)@FEXPR(['X],[],MachineFloat))::$
+    retractIfCan(u:EXPR INT):Union($,"failed") ==
+      foo : Union(FEXPR(['X],[],MachineFloat),"failed") 
+      foo := retractIfCan(u)$FEXPR(['X],[],MachineFloat)
+      foo case "failed" => "failed"
+      foo::FEXPR(['X],[],MachineFloat)::$
+
+    retract(u:POLY FLOAT):$ == (retract(u)@FEXPR(['X],[],MachineFloat))::$
+    retractIfCan(u:POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR(['X],[],MachineFloat),"failed") 
+      foo := retractIfCan(u)$FEXPR(['X],[],MachineFloat)
+      foo case "failed" => "failed"
+      foo::FEXPR(['X],[],MachineFloat)::$
+
+    retract(u:POLY INT):$ == (retract(u)@FEXPR(['X],[],MachineFloat))::$
+    retractIfCan(u:POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR(['X],[],MachineFloat),"failed") 
+      foo := retractIfCan(u)$FEXPR(['X],[],MachineFloat)
+      foo case "failed" => "failed"
+      foo::FEXPR(['X],[],MachineFloat)::$
+
+    coerce(u:FEXPR(['X],[],MachineFloat)):$ ==
+      coerce((u::Expression(MachineFloat))$FEXPR(['X],[],MachineFloat))$Rep
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void == 
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

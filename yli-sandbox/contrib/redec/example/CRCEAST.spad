@@ -1,0 +1,22 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain CRCEAST CoerceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents `coerce' expressions.
+CoerceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the expression being converted.
+    target: % -> TypeAst
+      ++ target(e) returns the target type of the conversion..
+  Private == add
+    Rep == List Syntax
+    expression x == (second rep x) : SpadAst
+    target x == (third rep x) : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('CoerceAst::OutputForm,
+        ['expression::OutputForm = expression(x)::OutputForm,
+          'target::OutputForm = target(x)::OutputForm])$OutputForm
+

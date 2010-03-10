@@ -1,0 +1,141 @@
+)abbrev package TRIGMNIP TrigonometricManipulations
+++ Trigs to/from exps and logs
+++ Author: Manuel Bronstein
+++ Date Created: 4 April 1988
+++ Date Last Updated: 14 February 1994
+++ Description:
+++   \spadtype{TrigonometricManipulations} provides transformations from
+++   trigonometric functions to complex exponentials and logarithms, and back.
+++ Keywords: trigonometric, function, manipulation.
+TrigonometricManipulations(R, F): Exports == Implementation where
+  R : Join(GcdDomain, OrderedSet, RetractableTo Integer,
+           LinearlyExplicitRingOver Integer)
+  F : Join(AlgebraicallyClosedField, TranscendentalFunctionCategory,
+           FunctionSpace R)
+
+  Z   ==> Integer
+  SY  ==> Symbol
+  K   ==> Kernel F
+  FG  ==> Expression Complex R
+
+  Exports ==> with
+    complexNormalize: F -> F
+      ++ complexNormalize(f) rewrites \spad{f} using the least possible number
+      ++ of complex independent kernels.
+    complexNormalize: (F, SY) -> F
+      ++ complexNormalize(f, x) rewrites \spad{f} using the least possible
+      ++ number of complex independent kernels involving \spad{x}.
+    complexElementary: F -> F
+      ++ complexElementary(f) rewrites \spad{f} in terms of the 2 fundamental
+      ++ complex transcendental elementary functions: \spad{log, exp}.
+    complexElementary: (F, SY) -> F
+      ++ complexElementary(f, x) rewrites the kernels of \spad{f} involving
+      ++ \spad{x} in terms of the 2 fundamental complex
+      ++ transcendental elementary functions: \spad{log, exp}.
+    trigs  : F -> F
+      ++ trigs(f) rewrites all the complex logs and exponentials
+      ++ appearing in \spad{f} in terms of trigonometric functions.
+    real   : F -> F
+      ++ real(f) returns the real part of \spad{f} where \spad{f} is a complex
+      ++ function.
+    imag   : F -> F
+      ++ imag(f) returns the imaginary part of \spad{f} where \spad{f}
+      ++ is a complex function.
+    real?  : F -> Boolean
+      ++ real?(f) returns \spad{true} if \spad{f = real f}.
+    complexForm: F -> Complex F
+      ++ complexForm(f) returns \spad{[real f, imag f]}.
+
+  Implementation ==> add
+    import ElementaryFunctionSign(R, F)
+    import InnerTrigonometricManipulations(R,F,FG)
+    import ElementaryFunctionStructurePackage(R, F)
+    import ElementaryFunctionStructurePackage(Complex R, FG)
+
+    s1  := sqrt(-1::F)
+    ipi := pi()$F * s1
+
+    K2KG          : K -> Kernel FG
+    kcomplex      : K -> Union(F, "failed")
+    locexplogs    : F -> FG
+    localexplogs  : (F, F, List SY) -> FG
+    complexKernels: F -> Record(ker: List K, val: List F)
+
+    K2KG k           == retract(tan F2FG first argument k)@Kernel(FG)
+    real? f          == empty?(complexKernels(f).ker)
+    real f           == real complexForm f
+    imag f           == imag complexForm f
+
+-- returns [[k1,...,kn], [v1,...,vn]] such that ki should be replaced by vi
+    complexKernels f ==
+      lk:List(K) := empty()
+      lv:List(F) := empty()
+      for k in tower f repeat
+        if (u := kcomplex k) case F then
+           lk := concat(k, lk)
+           lv := concat(u::F, lv)
+      [lk, lv]
+
+-- returns f if it is certain that k is not a real kernel and k = f,
+-- "failed" otherwise
+    kcomplex k ==
+      op := operator k
+      is?(k, "nthRoot"::SY) =>
+        arg := argument k
+        even?(retract(n := second arg)@Z) and ((u := sign(first arg)) case Z)
+          and (u::Z < 0) => op(s1, n / 2::F) * op(- first arg, n)
+        "failed"
+      is?(k, "log"::SY) and ((u := sign(a := first argument k)) case Z)
+          and (u::Z < 0) => op(- a) + ipi
+      "failed"
+
+    complexForm f ==
+      empty?((l := complexKernels f).ker) => complex(f, 0)
+      explogs2trigs locexplogs eval(f, l.ker, l.val)
+
+    locexplogs f ==
+      any?(has?(#1, "rtrig"),
+           operators(g := realElementary f))$List(BasicOperator) =>
+              localexplogs(f, g, variables g)
+      F2FG g
+
+    complexNormalize(f, x) ==
+      g : F
+      any?(has?(operator #1, "rtrig"),
+       [k for k in tower(g := realElementary(f, x))
+               | member?(x, variables(k::F))]$List(K))$List(K) =>
+                   FG2F(rischNormalize(localexplogs(f, g, [x]), x).func)
+      rischNormalize(g, x).func
+
+    complexNormalize f ==
+      l := variables(g := realElementary f)
+      any?(has?(#1, "rtrig"), operators g)$List(BasicOperator) =>
+        h := localexplogs(f, g, l)
+        for x in l repeat h := rischNormalize(h, x).func
+        FG2F h
+      for x in l repeat g := rischNormalize(g, x).func
+      g
+
+    complexElementary(f, x) ==
+      g : F
+      any?(has?(operator #1, "rtrig"),
+       [k for k in tower(g := realElementary(f, x))
+                 | member?(x, variables(k::F))]$List(K))$List(K) =>
+                     FG2F localexplogs(f, g, [x])
+      g
+
+    complexElementary f ==
+      any?(has?(#1, "rtrig"),
+        operators(g := realElementary f))$List(BasicOperator) =>
+          FG2F localexplogs(f, g, variables g)
+      g
+
+    localexplogs(f, g, lx) ==
+      trigs2explogs(F2FG g, [K2KG k for k in tower f
+                          | is?(k, "tan"::SY) or is?(k, "cot"::SY)], lx)
+
+    trigs f ==
+      real? f => f
+      g := explogs2trigs F2FG f
+      real g + s1 * imag g
+

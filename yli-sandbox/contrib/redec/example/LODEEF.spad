@@ -1,0 +1,254 @@
+)abbrev package LODEEF ElementaryFunctionLODESolver
+++ Author: Manuel Bronstein
+++ Date Created: 3 February 1994
+++ Date Last Updated: 9 March 1994
+++ Description:
+++ \spad{ElementaryFunctionLODESolver} provides the top-level
+++ functions for finding closed form solutions of linear ordinary
+++ differential equations and initial value problems.
+++ Keywords: differential equation, ODE
+ElementaryFunctionLODESolver(R, F, L): Exports == Implementation where
+  R: Join(OrderedSet, EuclideanDomain, RetractableTo Integer,
+          LinearlyExplicitRingOver Integer, CharacteristicZero)
+  F: Join(AlgebraicallyClosedFunctionSpace R, TranscendentalFunctionCategory,
+          PrimitiveFunctionCategory)
+  L: LinearOrdinaryDifferentialOperatorCategory F
+
+  SY  ==> Symbol
+  N   ==> NonNegativeInteger
+  K   ==> Kernel F
+  V   ==> Vector F
+  M   ==> Matrix F
+  UP  ==> SparseUnivariatePolynomial F
+  RF  ==> Fraction UP
+  UPUP==> SparseUnivariatePolynomial RF
+  P   ==> SparseMultivariatePolynomial(R, K)
+  P2  ==> SparseMultivariatePolynomial(P, K)
+  LQ  ==> LinearOrdinaryDifferentialOperator1 RF
+  REC ==> Record(particular: F, basis: List F)
+  U   ==> Union(REC, "failed")
+  ALGOP  ==> "%alg"
+
+  Exports ==> with
+    solve: (L, F, SY) -> U
+      ++ solve(op, g, x) returns either a solution of the ordinary differential
+      ++ equation \spad{op y = g} or "failed" if no non-trivial solution can be
+      ++ found; When found, the solution is returned in the form
+      ++ \spad{[h, [b1,...,bm]]} where \spad{h} is a particular solution and
+      ++ and \spad{[b1,...bm]} are linearly independent solutions of the
+      ++ associated homogenuous equation \spad{op y = 0}.
+      ++ A full basis for the solutions of the homogenuous equation
+      ++ is not always returned, only the solutions which were found;
+      ++ \spad{x} is the dependent variable.
+    solve: (L, F, SY, F, List F) -> Union(F, "failed")
+      ++ solve(op, g, x, a, [y0,...,ym]) returns either the solution
+      ++ of the initial value problem \spad{op y = g, y(a) = y0, y'(a) = y1,...}
+      ++ or "failed" if the solution cannot be found;
+      ++ \spad{x} is the dependent variable.
+
+  Implementation ==> add
+    import Kovacic(F, UP)
+    import ODETools(F, L)
+    import RationalLODE(F, UP)
+    import RationalRicDE(F, UP)
+    import ODEIntegration(R, F)
+    import ConstantLODE(R, F, L)
+    import IntegrationTools(R, F)
+    import ReductionOfOrder(F, L)
+    import ReductionOfOrder(RF, LQ)
+    import PureAlgebraicIntegration(R, F, L)
+    import FunctionSpacePrimitiveElement(R, F)
+    import LinearSystemMatrixPackage(F, V, V, M)
+    import SparseUnivariatePolynomialFunctions2(RF, F)
+    import FunctionSpaceUnivariatePolynomialFactor(R, F, UP)
+    import LinearOrdinaryDifferentialOperatorFactorizer(F, UP)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents K,
+                                                             K, R, P, F)
+
+    upmp       : (P, List K) -> P2
+    downmp     : (P2, List K, List P) -> P
+    xpart      : (F, SY) -> F
+    smpxpart   : (P, SY, List K, List P) -> P
+    multint    : (F, List F, SY) -> F
+    ulodo      : (L, K) -> LQ
+    firstOrder : (F, F, F, SY) -> REC
+    rfSolve    : (L, F, K, SY) -> U
+    ratlogsol  : (LQ, List RF, K, SY) -> List F
+    expsols    : (LQ, K, SY) -> List F
+    homosolve  : (L, LQ, List RF, K, SY) -> List F
+    homosolve1 : (L, List F, K, SY) -> List F
+    norf1      : (L, K, SY, N) -> List F
+    kovode     : (LQ, K, SY) -> List F
+    doVarParams: (L, F, List F, SY) -> U
+    localmap   : (F -> F, L) -> L
+    algSolve   : (L, F, K, List K, SY) -> U
+    palgSolve  : (L, F, K, K, SY) -> U
+    lastChance : (L, F, SY) -> U
+
+    diff := D()$L
+
+    smpxpart(p, x, l, lp) == downmp(primitivePart upmp(p, l), l, lp)
+    downmp(p, l, lp)      == ground eval(p, l, lp)
+    homosolve(lf, op, sols, k, x) == homosolve1(lf, ratlogsol(op,sols,k,x),k,x)
+
+-- left hand side has algebraic (not necessarily pure) coefficients
+    algSolve(op, g, k, l, x) ==
+      symbolIfCan(kx := ksec(k, l, x)) case SY => palgSolve(op, g, kx, k, x)
+      has?(operator kx, ALGOP) =>
+        rec := primitiveElement(kx::F, k::F)
+        z   := rootOf(rec.prim)
+        lk:List K := [kx, k]
+        lv:List F := [(rec.pol1) z, (rec.pol2) z]
+        (u := solve(localmap(eval(#1, lk, lv), op), eval(g, lk, lv), x))
+            case "failed" => "failed"
+        rc := u::REC
+        kz := retract(z)@K
+        [eval(rc.particular, kz, rec.primelt),
+            [eval(f, kz, rec.primelt) for f in rc.basis]]
+      lastChance(op, g, x)
+
+    doVarParams(eq, g, bas, x) ==
+      (u := particularSolution(eq, g, bas, int(#1, x))) case "failed" =>
+         lastChance(eq, g, x)
+      [u::F, bas]
+
+    lastChance(op, g, x) ==
+--      one? degree op => firstOrder(coefficient(op,0), leadingCoefficient op,g,x)
+      (degree op) = 1 => firstOrder(coefficient(op,0), leadingCoefficient op,g,x)
+      "failed"
+
+-- solves a0 y + a1 y' = g
+-- does not check whether there is a solution in the field generated by
+-- a0, a1 and g
+    firstOrder(a0, a1, g, x) ==
+      h := xpart(expint(- a0 / a1, x), x)
+      [h * int((g / h) / a1, x), [h]]
+
+-- xpart(f,x) removes any constant not involving x from f
+    xpart(f, x) ==
+      l  := reverse_! varselect(tower f, x)
+      lp := [k::P for k in l]
+      smpxpart(numer f, x, l, lp) / smpxpart(denom f, x, l, lp)
+
+    upmp(p, l) ==
+      empty? l => p::P2
+      up := univariate(p, k := first l)
+      l := rest l
+      ans:P2 := 0
+      while up ~= 0 repeat
+        ans := ans + monomial(upmp(leadingCoefficient up, l), k, degree up)
+        up  := reductum up
+      ans
+
+-- multint(a, [g1,...,gk], x) returns gk \int(g(k-1) \int(....g1 \int(a))...)
+    multint(a, l, x) ==
+       for g in l repeat a := g * xpart(int(a, x), x)
+       a
+
+    expsols(op, k, x) ==
+--      one? degree op =>
+      (degree op) = 1 =>
+          firstOrder(multivariate(coefficient(op, 0), k),
+                     multivariate(leadingCoefficient op, k), 0, x).basis
+      [xpart(expint(multivariate(h, k), x), x) for h in ricDsolve(op, ffactor)]
+
+-- Finds solutions with rational logarithmic derivative
+    ratlogsol(oper, sols, k, x) ==
+      bas := [xpart(multivariate(h, k), x) for h in sols]
+      degree(oper) = #bas => bas            -- all solutions are found already
+      rec := ReduceOrder(oper, sols)
+      le := expsols(rec.eq, k, x)
+      int:List(F) := [xpart(multivariate(h, k), x) for h in rec.op]
+      concat_!([xpart(multivariate(h, k), x) for h in sols],
+               [multint(e, int, x) for e in le])
+
+    homosolve1(oper, sols, k, x) ==
+      zero?(n := (degree(oper) - #sols)::N) => sols   -- all solutions found
+      rec := ReduceOrder(oper, sols)
+      int:List(F) := [xpart(h, x) for h in rec.op]
+      concat_!(sols, [multint(e, int, x) for e in norf1(rec.eq, k, x, n::N)])
+
+-- if the coefficients are rational functions, then the equation does not
+-- not have a proper 1st-order right factor over the rational functions
+    norf1(op, k, x, n) ==
+--      one? n => firstOrder(coefficient(op, 0), leadingCoefficient op,0,x).basis
+      (n = 1) => firstOrder(coefficient(op, 0), leadingCoefficient op,0,x).basis
+-- for order > 2, we check that the coeffs are still rational functions
+      symbolIfCan(kmax vark(coefficients op, x)) case SY =>
+        eq := ulodo(op, k)
+        n = 2 => kovode(eq, k, x)
+        eq := last factor1 eq        -- eq cannot have order 1
+        degree(eq) = 2 =>
+          empty?(bas := kovode(eq, k, x)) => empty()
+          homosolve1(op, bas, k, x)
+        empty()
+      empty()
+
+    kovode(op, k, x) ==
+      b := coefficient(op, 1)
+      a := coefficient(op, 2)
+      (u := kovacic(coefficient(op, 0), b, a, ffactor)) case "failed" => empty()
+      p := map(multivariate(#1, k), u::UPUP)
+      ba := multivariate(- b / a, k)
+-- if p has degree 2 (case 2), then it must be squarefree since the
+-- ode is irreducible over the rational functions, so the 2 roots of p
+-- are distinct and must yield 2 independent solutions.
+      degree(p) = 2 => [xpart(expint(ba/(2::F) + e, x), x) for e in zerosOf p]
+-- otherwise take 1 root of p and find the 2nd solution by reduction of order
+      y1 := xpart(expint(ba / (2::F) + zeroOf p, x), x)
+      [y1, y1 * xpart(int(expint(ba, x) / y1**2, x), x)]
+
+    solve(op:L, g:F, x:SY) ==
+      empty?(l := vark(coefficients op, x)) => constDsolve(op, g, x)
+      symbolIfCan(k := kmax l) case SY => rfSolve(op, g, k, x)
+      has?(operator k, ALGOP) => algSolve(op, g, k, l, x)
+      lastChance(op, g, x)
+
+    ulodo(eq, k) ==
+        op:LQ := 0
+        while eq ~= 0 repeat
+            op := op + monomial(univariate(leadingCoefficient eq, k), degree eq)
+            eq := reductum eq
+        op
+
+-- left hand side has rational coefficients
+    rfSolve(eq, g, k, x) ==
+      op := ulodo(eq, k)
+      empty? remove_!(k, varselect(kernels g, x)) =>  -- i.e. rhs is rational
+        rc := ratDsolve(op, univariate(g, k))
+        rc.particular case "failed" =>                -- this implies g ~= 0
+          doVarParams(eq, g, homosolve(eq, op, rc.basis, k, x), x)
+        [multivariate(rc.particular::RF, k), homosolve(eq, op, rc.basis, k, x)]
+      doVarParams(eq, g, homosolve(eq, op, ratDsolve(op, 0).basis, k, x), x)
+
+    solve(op, g, x, a, y0) ==
+      (u := solve(op, g, x)) case "failed" => "failed"
+      u := u::REC
+      hp := u.particular 
+      h := u.particular
+      b := u.basis
+      v:V := new(n := #y0, 0)
+      kx:K := kernel x
+      for i in minIndex v .. maxIndex v for yy in y0 repeat
+        v.i := yy - eval(h, kx, a)
+        h := diff h
+      (sol := particularSolution(map_!(eval(#1,kx,a),wronskianMatrix(b,n)), v))
+         case "failed" => "failed"
+      for f in b for i in minIndex(s := sol::V) .. repeat
+        hp := hp + s.i * f
+      hp
+
+    localmap(f, op) ==
+        ans:L := 0
+        while op ~= 0 repeat
+            ans := ans + monomial(f leadingCoefficient op, degree op)
+            op  := reductum op
+        ans
+
+-- left hand side has pure algebraic coefficients
+    palgSolve(op, g, kx, k, x) ==
+      rec := palgLODE(op, g, kx, k, x)   -- finds solutions in the coef. field
+      rec.particular case "failed" =>
+        doVarParams(op, g, homosolve1(op, rec.basis, k, x), x)
+      [(rec.particular)::F, homosolve1(op, rec.basis, k, x)]
+

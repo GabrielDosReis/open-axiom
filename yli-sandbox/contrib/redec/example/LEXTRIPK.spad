@@ -1,0 +1,225 @@
+import GcdDomain
+import Symbol
+--import List
+)abbrev package LEXTRIPK LexTriangularPackage
+++ Author: Marc Moreno Maza
+++ Date Created: 08/02/1999
+++ Date Last Updated: 08/02/1999
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: 
+++ A package for solving polynomial systems with finitely many solutions.
+++ The decompositions are given by means of regular triangular sets.
+++ The computations use lexicographical Groebner bases. 
+++ The main operations are \axiomOpFrom{lexTriangular}{LexTriangularPackage}
+++ and \axiomOpFrom{squareFreeLexTriangular}{LexTriangularPackage}.
+++ The second one provide decompositions by means of square-free regular triangular sets.
+++ Both are based on the {\em lexTriangular} method described in [1].
+++ They differ from the algorithm described in [2] by the fact that
+++ multiciplities of the roots are not kept.
+++ With the \axiomOpFrom{squareFreeLexTriangular}{LexTriangularPackage} operation
+++ all multiciplities are removed. With the other operation some multiciplities may remain. 
+++ Both operations admit an optional argument to produce normalized triangular sets.  \newline 
+++ References: \newline
+++ [1] D. LAZARD "Solving Zero-dimensional Algebraic Systems" 
+++ published in the J. of Symbol. Comput. (1992) 13, 117-131.\newline
+++ [2] M. MORENO MAZA and R. RIOBOO "Computations of gcd over
+++ algebraic towers of simple extensions" In proceedings of AAECC11, Paris, 1995.\newline
+++ Version: 2.
+
+LexTriangularPackage(R,ls): Exports == Implementation where
+
+  R: GcdDomain
+  ls: List Symbol
+  V ==> OrderedVariableList ls
+  E ==> IndexedExponents V
+  P ==> NewSparseMultivariatePolynomial(R,V)
+  TS  ==> RegularChain(R,ls)
+  ST ==> SquareFreeRegularTriangularSet(R,E,V,P)
+  Q1 ==> Polynomial R
+  PS ==> GeneralPolynomialSet(R,E,V,P)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  S ==> String
+  K ==> Fraction R
+  LP ==> List P
+  BWTS ==> Record(val : Boolean, tower : TS)
+  LpWTS ==> Record(val : (List P), tower : TS)
+  BWST ==> Record(val : Boolean, tower : ST)
+  LpWST ==> Record(val : (List P), tower : ST)
+  polsetpack ==> PolynomialSetUtilitiesPackage(R,E,V,P)
+  quasicomppackTS ==> QuasiComponentPackage(R,E,V,P,TS)
+  regsetgcdpackTS ==> SquareFreeRegularTriangularSetGcdPackage(R,E,V,P,TS)
+  normalizpackTS ==> NormalizationPackage(R,E,V,P,TS)
+  quasicomppackST ==> QuasiComponentPackage(R,E,V,P,ST)
+  regsetgcdpackST ==> SquareFreeRegularTriangularSetGcdPackage(R,E,V,P,ST)
+  normalizpackST ==> NormalizationPackage(R,E,V,P,ST)
+
+  Exports ==  with
+
+     zeroDimensional?: LP -> B
+         ++ \axiom{zeroDimensional?(lp)} returns true iff
+         ++ \axiom{lp} generates a zero-dimensional ideal
+         ++ w.r.t. the variables involved in \axiom{lp}.
+     fglmIfCan:  LP -> Union(LP, "failed")
+         ++ \axiom{fglmIfCan(lp)} returns the lexicographical Groebner 
+         ++ basis of \axiom{lp} by using the {\em FGLM} strategy,
+         ++ if \axiom{zeroDimensional?(lp)} holds .
+     groebner: LP -> LP
+         ++ \axiom{groebner(lp)} returns the lexicographical Groebner 
+         ++ basis of \axiom{lp}. If \axiom{lp} generates a zero-dimensional
+         ++ ideal then the {\em FGLM} strategy is used, otherwise
+         ++ the {\em Sugar} strategy is used.
+     lexTriangular: (LP, B) -> List TS
+         ++ \axiom{lexTriangular(base, norm?)} decomposes the variety
+         ++ associated with \axiom{base} into regular chains.
+         ++ Thus a point belongs to this variety iff it is a regular
+         ++ zero of a regular set in in the output.
+         ++ Note that \axiom{base} needs to be a lexicographical Groebner basis
+         ++ of a zero-dimensional ideal. If \axiom{norm?} is \axiom{true} 
+         ++ then the regular sets are normalized. 
+     squareFreeLexTriangular: (LP, B) -> List ST
+         ++ \axiom{squareFreeLexTriangular(base, norm?)} decomposes the variety
+         ++ associated with \axiom{base} into square-free regular chains.
+         ++ Thus a point belongs to this variety iff it is a regular
+         ++ zero of a regular set in in the output.
+         ++ Note that \axiom{base} needs to be a lexicographical Groebner basis
+         ++ of a zero-dimensional ideal. If \axiom{norm?} is \axiom{true} 
+         ++ then the regular sets are normalized. 
+     zeroSetSplit: (LP, B) -> List TS
+         ++ \axiom{zeroSetSplit(lp, norm?)} decomposes the variety
+         ++ associated with \axiom{lp} into regular chains.
+         ++ Thus a point belongs to this variety iff it is a regular
+         ++ zero of a regular set in in the output.
+         ++ Note that \axiom{lp} needs to generate a zero-dimensional ideal.
+         ++ If \axiom{norm?} is \axiom{true} then the regular sets are normalized.
+     zeroSetSplit: (LP, B) -> List ST
+         ++ \axiom{zeroSetSplit(lp, norm?)} decomposes the variety
+         ++ associated with \axiom{lp} into square-free regular chains.
+         ++ Thus a point belongs to this variety iff it is a regular
+         ++ zero of a regular set in in the output.
+         ++ Note that \axiom{lp} needs to generate a zero-dimensional ideal.
+         ++ If \axiom{norm?} is \axiom{true} then the regular sets are normalized.
+
+  Implementation == add
+
+     trueVariables(lp: List(P)): List Symbol ==
+       lv: List V := variables([lp]$PS)
+       truels: List Symbol := []
+       for s in ls repeat
+         if member?((variable(s)$V)::V, lv) then truels := cons(s,truels)
+       reverse truels
+
+     zeroDimensional?(lp:List(P)): Boolean ==
+       truels: List Symbol := trueVariables(lp)
+       fglmpack := FGLMIfCanPackage(R,truels)
+       lq1: List(Q1) := [p::Q1 for p in lp]
+       zeroDimensional?(lq1)$fglmpack
+
+     fglmIfCan(lp:List(P)): Union(List(P), "failed") ==
+       truels: List Symbol := trueVariables(lp)
+       fglmpack := FGLMIfCanPackage(R,truels)
+       lq1: List(Q1) := [p::Q1 for p in lp]
+       foo := fglmIfCan(lq1)$fglmpack
+       foo case "failed" => return("failed" :: Union(List(P), "failed"))
+       lp := [retract(q1)$P for q1 in (foo :: List(Q1))]
+       lp::Union(List(P), "failed")
+
+     groebner(lp:List(P)): List(P) ==
+       truels: List Symbol := trueVariables(lp)
+       fglmpack := FGLMIfCanPackage(R,truels)
+       lq1: List(Q1) := [p::Q1 for p in lp]
+       lq1 := groebner(lq1)$fglmpack
+       lp := [retract(q1)$P for q1 in lq1]
+
+     lexTriangular(base: List(P), norm?: Boolean): List(TS) ==
+       base := sort(infRittWu?,base)
+       base := remove(zero?, base)
+       any?(ground?, base) => []
+       ts: TS := empty()
+       toSee: List LpWTS := [[base,ts]$LpWTS]
+       toSave: List TS := []
+       while not empty? toSee repeat
+         lpwt := first toSee; toSee := rest toSee
+         lp := lpwt.val; ts := lpwt.tower
+         empty? lp => toSave := cons(ts, toSave)
+         p := first lp; lp := rest lp; v := mvar(p)
+         algebraic?(v,ts) =>
+           error "lexTriangular$LEXTRIPK: should never happen !"
+         norm? and zero? remainder(init(p),ts).polnum => 
+           toSee := cons([lp, ts]$LpWTS, toSee)
+         (not norm?) and zero? (initiallyReduce(init(p),ts)) => 
+           toSee := cons([lp, ts]$LpWTS, toSee)
+         lbwt: List BWTS := invertible?(init(p),ts)$TS
+         while (not empty? lbwt) repeat
+           bwt := first lbwt; lbwt := rest lbwt
+           b := bwt.val; us := bwt.tower
+           (not b) => toSee := cons([lp, us], toSee)
+           lus: List TS
+           if norm?
+             then 
+               newp := normalizedAssociate(p,us)$normalizpackTS
+               lus := [internalAugment(newp,us)$TS]
+             else 
+               newp := p
+               lus := augment(newp,us)$TS
+           newlp := lp 
+           while (not empty? newlp) and (mvar(first newlp) = v) repeat
+             newlp := rest newlp
+           for us in lus repeat
+             toSee := cons([newlp, us]$LpWTS, toSee)
+       algebraicSort(toSave)$quasicomppackTS
+
+     zeroSetSplit(lp:List(P), norm?:B): List TS ==
+       bar := fglmIfCan(lp)
+       bar case "failed" =>
+         error "zeroSetSplit$LEXTRIPK: #1 not zero-dimensional"
+       lexTriangular(bar::(List P),norm?)
+
+     squareFreeLexTriangular(base: List(P), norm?: Boolean): List(ST) ==
+       base := sort(infRittWu?,base)
+       base := remove(zero?, base)
+       any?(ground?, base) => []
+       ts: ST := empty()
+       toSee: List LpWST := [[base,ts]$LpWST]
+       toSave: List ST := []
+       while not empty? toSee repeat
+         lpwt := first toSee; toSee := rest toSee
+         lp := lpwt.val; ts := lpwt.tower
+         empty? lp => toSave := cons(ts, toSave)
+         p := first lp; lp := rest lp; v := mvar(p)
+         algebraic?(v,ts) =>
+           error "lexTriangular$LEXTRIPK: should never happen !"
+         norm? and zero? remainder(init(p),ts).polnum => 
+           toSee := cons([lp, ts]$LpWST, toSee)
+         (not norm?) and zero? (initiallyReduce(init(p),ts)) => 
+           toSee := cons([lp, ts]$LpWST, toSee)
+         lbwt: List BWST := invertible?(init(p),ts)$ST
+         while (not empty? lbwt) repeat
+           bwt := first lbwt; lbwt := rest lbwt
+           b := bwt.val; us := bwt.tower
+           (not b) => toSee := cons([lp, us], toSee)
+           lus: List ST
+           if norm?
+             then 
+               newp := normalizedAssociate(p,us)$normalizpackST
+               lus := augment(newp,us)$ST
+             else
+               lus := augment(p,us)$ST
+           newlp := lp 
+           while (not empty? newlp) and (mvar(first newlp) = v) repeat
+             newlp := rest newlp
+           for us in lus repeat
+             toSee := cons([newlp, us]$LpWST, toSee)
+       algebraicSort(toSave)$quasicomppackST
+
+     zeroSetSplit(lp:List(P), norm?:B): List ST ==
+       bar := fglmIfCan(lp)
+       bar case "failed" =>
+         error "zeroSetSplit$LEXTRIPK: #1 not zero-dimensional"
+       squareFreeLexTriangular(bar::(List P),norm?)
+

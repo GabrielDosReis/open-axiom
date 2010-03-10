@@ -1,0 +1,40 @@
+import Dictionary
+import List
+)abbrev category KDAGG KeyedDictionary
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A keyed dictionary is a dictionary of key-entry pairs for which there is
+++ a unique entry for each key.
+KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
+  Dictionary Record(key:Key,entry:Entry) with
+   key?: (Key, %) -> Boolean
+     ++ key?(k,t) tests if k is a key in table t.
+   keys: % -> List Key
+     ++ keys(t) returns the list the keys in table t.
+   -- to become keys: % -> Key* and keys: % -> Iterator(Entry,Entry)
+   remove_!: (Key, %) -> Union(Entry,"failed")
+     ++ remove!(k,t) searches the table t for the key k removing
+     ++ (and return) the entry if there.
+     ++ If t has no such key, \axiom{remove!(k,t)} returns "failed".
+   search: (Key, %) -> Union(Entry,"failed")
+     ++ search(k,t) searches the table t for the key k,
+     ++ returning the entry stored in t for key k.
+     ++ If t has no such key, \axiom{search(k,t)} returns "failed".
+ add
+   key?(k, t) == search(k, t) case Entry
+
+   member?(p, t) ==
+     r := search(p.key, t)
+     r case Entry and r::Entry = p.entry
+
+   if % has finiteAggregate then
+     keys t == [x.key for x in parts t]
+

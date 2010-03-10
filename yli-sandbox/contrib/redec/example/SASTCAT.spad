@@ -1,0 +1,6 @@
+)abbrev category SASTCAT SpadSyntaxCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 3, 2008
+++ Description: This is the category of Spad syntax objects.
+SpadSyntaxCategory(): Category == AbstractSyntaxCategory

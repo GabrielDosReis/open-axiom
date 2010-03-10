@@ -1,0 +1,150 @@
+)abbrev category SMATCAT SquareMatrixCategory
+++ Authors: Grabmeier, Gschnitzer, Williamson
+++ Date Created: 1987
+++ Date Last Updated: July 1990
+++ Basic Operations:
+++ Related Domains: SquareMatrix(ndim,R)
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{SquareMatrixCategory} is a general square matrix category which
+++   allows different representations and indexing schemes.  Rows and
+++   columns may be extracted with rows returned as objects of
+++   type Row and colums returned as objects of type Col.
+SquareMatrixCategory(ndim,R,Row,Col): Category == Definition where
+  ndim : NonNegativeInteger
+  R    : Ring
+  Row  : DirectProductCategory(ndim,R)
+  Col  : DirectProductCategory(ndim,R)
+  I ==> Integer
+
+  Definition ==> Join(DifferentialExtension R, BiModule(R, R),_
+                      RectangularMatrixCategory(ndim,ndim,R,Row,Col),_
+                      FullyRetractableTo R,_
+                      FullyLinearlyExplicitRingOver R) with
+    if R has CommutativeRing then Module(R)
+    scalarMatrix: R -> %
+      ++ \spad{scalarMatrix(r)} returns an n-by-n matrix with r's on the
+      ++ diagonal and zeroes elsewhere.
+    diagonalMatrix: List R -> %
+      ++ \spad{diagonalMatrix(l)} returns a diagonal matrix with the elements
+      ++ of l on the diagonal.
+    diagonal: % -> Row
+      ++ \spad{diagonal(m)} returns a row consisting of the elements on the
+      ++ diagonal of the matrix m.
+    trace: % -> R
+      ++ \spad{trace(m)} returns the trace of the matrix m. this is the sum
+      ++ of the elements on the diagonal of the matrix m.
+    diagonalProduct: % -> R
+      ++ \spad{diagonalProduct(m)} returns the product of the elements on the
+      ++ diagonal of the matrix m.
+    "*": (%,Col) -> Col
+      ++ \spad{x * c} is the product of the matrix x and the column vector c.
+      ++ Error: if the dimensions are incompatible.
+    "*": (Row,%) -> Row
+      ++ \spad{r * x} is the product of the row vector r and the matrix x.
+      ++ Error: if the dimensions are incompatible.
+
+--% Linear algebra
+
+    if R has commutative("*") then
+      Algebra R
+      determinant: % -> R
+        ++ \spad{determinant(m)} returns the determinant of the matrix m.
+      minordet: % -> R
+        ++ \spad{minordet(m)} computes the determinant of the matrix m
+        ++ using minors.
+    if R has Field then
+      inverse: % -> Union(%,"failed")
+        ++ \spad{inverse(m)} returns the inverse of the matrix m, if that
+        ++ matrix is invertible and returns "failed" otherwise.
+      "**": (%,Integer) -> %
+        ++ \spad{m**n} computes an integral power of the matrix m.
+        ++ Error: if the matrix is not invertible.
+
+   add
+    minr ==> minRowIndex
+    maxr ==> maxRowIndex
+    minc ==> minColIndex
+    maxc ==> maxColIndex
+    mini ==> minIndex
+    maxi ==> maxIndex
+
+    positivePower:(%,Integer) -> %
+    positivePower(x,n) ==
+--      one? n => x
+      (n = 1) => x
+      odd? n => x * positivePower(x,n - 1)
+      y := positivePower(x,n quo 2)
+      y * y
+
+    x:% ** n:NonNegativeInteger ==
+      zero? n => scalarMatrix 1
+      positivePower(x,n)
+
+    coerce(r:R) == scalarMatrix r
+
+    equation2R: Vector % -> Matrix R
+
+    differentiate(x:%,d:R -> R) == map(d,x)
+
+    diagonal x ==
+      v:Vector(R) := new(ndim,0)
+      for i in minr x .. maxr x
+        for j in minc x .. maxc x
+          for k in minIndex v .. maxIndex v repeat
+            qsetelt_!(v, k, qelt(x, i, j))
+      directProduct v
+
+    retract(x:%):R ==
+      diagonal? x => retract diagonal x
+      error "Not retractable"
+
+    retractIfCan(x:%):Union(R, "failed") ==
+      diagonal? x => retractIfCan diagonal x
+      "failed"
+
+    equation2R v ==
+      ans:Matrix(Col) := new(ndim,#v,0)
+      for i in minr ans .. maxr ans repeat
+        for j in minc ans .. maxc ans repeat
+          qsetelt_!(ans, i, j, column(qelt(v, j), i))
+      reducedSystem ans
+
+    reducedSystem(x:Matrix %):Matrix(R) ==
+      empty? x => new(0,0,0)
+      reduce(vertConcat, [equation2R row(x, i)
+                               for i in minr x .. maxr x])$List(Matrix R)
+
+    reducedSystem(m:Matrix %, v:Vector %):
+     Record(mat:Matrix R, vec:Vector R) ==
+      vh:Vector(R) :=
+        empty? v => new(0,0)
+        rh := reducedSystem(v::Matrix %)@Matrix(R)
+        column(rh, minColIndex rh)
+      [reducedSystem(m)@Matrix(R), vh]
+
+    trace x ==
+      tr : R := 0
+      for i in minr(x)..maxr(x) for j in minc(x)..maxc(x) repeat
+        tr := tr + x(i,j)
+      tr
+
+    diagonalProduct x ==
+      pr : R := 1
+      for i in minr(x)..maxr(x) for j in minc(x)..maxc(x) repeat
+        pr := pr * x(i,j)
+      pr
+
+    if R has Field then
+
+      x:% ** n:Integer ==
+        zero? n => scalarMatrix 1
+        positive? n => positivePower(x,n)
+        (xInv := inverse x) case "failed" =>
+          error "**: matrix must be invertible"
+        positivePower(xInv :: %,-n)
+

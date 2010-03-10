@@ -1,0 +1,163 @@
+import OrderedSet
+--import RetractableTo
+import Boolean
+--import Magma
+)abbrev domain LWORD LyndonWord
+++ Author: Michel Petitot (petitot@lifl.fr).
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References: Free Lie Algebras by C. Reutenauer (Oxford science publications).
+++ Description:
+++ Lyndon words over arbitrary (ordered) symbols:
+++ see Free Lie Algebras by C. Reutenauer (Oxford science publications).
+++ A Lyndon word is a word which is smaller than any of its right factors
+++ w.r.t. the pure lexicographical ordering.
+++ If \axiom{a} and \axiom{b} are two Lyndon words such that \axiom{a < b}
+++ holds w.r.t lexicographical ordering then \axiom{a*b} is a Lyndon word.
+++ Parenthesized Lyndon words can be generated from symbols by using the following
+++ rule: \axiom{[[a,b],c]} is a Lyndon word iff \axiom{a*b < c <= b} holds.
+++ Lyndon words are internally represented by binary trees using the
+++ \spadtype{Magma} domain constructor.
+++ Two ordering are provided: lexicographic and 
+++ length-lexicographic. \newline 
+++ Author : Michel Petitot (petitot@lifl.fr).
+
+LyndonWord(VarSet:OrderedSet):Public == Private where
+   OFMON ==> OrderedFreeMonoid(VarSet)
+   PI    ==> PositiveInteger
+   NNI   ==> NonNegativeInteger
+   I     ==> Integer
+   OF    ==> OutputForm
+   ARRAY1==> OneDimensionalArray
+
+   Public == Join(OrderedSet,RetractableTo VarSet) with
+      retractable?  : $ -> Boolean
+        ++ \axiom{retractable?(x)} tests if \axiom{x} is a tree with only one entry.
+      left          : $ -> $
+        ++ \axiom{left(x)} returns left subtree of \axiom{x} or
+        ++ error if \axiomOpFrom{retractable?}{LyndonWord}(\axiom{x}) is true.
+      right  :  $ -> $
+        ++ \axiom{right(x)} returns right subtree of \axiom{x} or
+        ++ error if \axiomOpFrom{retractable?}{LyndonWord}(\axiom{x}) is true.
+      length :  $ -> PI
+        ++ \axiom{length(x)} returns the number of entries in \axiom{x}.
+      lexico :  ($,$) -> Boolean 
+        ++ \axiom{lexico(x,y)} returns \axiom{true} iff  \axiom{x} is smaller than 
+        ++ \axiom{y} w.r.t. the lexicographical ordering induced by \axiom{VarSet}. 
+      coerce :  $ -> OFMON
+        ++ \axiom{coerce(x)} returns the element of \axiomType{OrderedFreeMonoid}(VarSet) 
+        ++ corresponding to \axiom{x}.
+      coerce :  $ -> Magma VarSet
+        ++ \axiom{coerce(x)} returns the element of \axiomType{Magma}(VarSet)
+        ++ corresponding to \axiom{x}.
+      factor :  OFMON -> List $  
+        ++ \axiom{factor(x)} returns the decreasing factorization into Lyndon words. 
+      lyndon?:  OFMON -> Boolean
+        ++ \axiom{lyndon?(w)} test if \axiom{w} is a Lyndon word.
+      lyndon :  OFMON -> $
+        ++ \axiom{lyndon(w)} convert \axiom{w} into a Lyndon word, 
+        ++ error if \axiom{w} is not a Lyndon word.
+      lyndonIfCan : OFMON -> Union($, "failed")
+        ++ \axiom{lyndonIfCan(w)} convert \axiom{w} into a Lyndon word.
+      varList     : $ -> List VarSet
+        ++ \axiom{varList(x)} returns the list of distinct entries of \axiom{x}.
+      LyndonWordsList1: (List VarSet, PI)  -> ARRAY1 List $
+        ++ \axiom{LyndonWordsList1(vl, n)} returns an array of lists of Lyndon
+        ++ words over the alphabet \axiom{vl}, up to order \axiom{n}.
+      LyndonWordsList : (List VarSet, PI)  -> List $
+        ++ \axiom{LyndonWordsList(vl, n)} returns the list of Lyndon
+        ++ words over the alphabet \axiom{vl}, up to order \axiom{n}.
+
+   Private == Magma(VarSet) add
+     -- Representation
+       Rep:= Magma(VarSet)
+
+     -- Fonctions locales
+       LetterList : OFMON -> List VarSet
+       factor1    : (List $, $, List $) -> List $
+
+     -- Definitions
+       lyndon? w ==
+         w = 1$OFMON => false
+         f: OFMON := rest w
+         while f ~= 1$OFMON repeat
+           not lexico(w,f) => return false
+           f := rest f
+         true
+
+       lyndonIfCan w ==
+         l: List $ := factor w
+         # l = 1 => first l
+         "failed"
+
+       lyndon w ==
+         l: List $ := factor w
+         # l = 1 => first l
+         error "This word is not a Lyndon word"
+
+       LetterList w ==
+         w = 1 => []
+         cons(first w , LetterList rest w)
+
+       factor1 (gauche, x, droite) == 
+         g: List $ := gauche; d: List $ := droite
+         while not null g repeat             ++ (l in g or l=x) et u in d 
+           lexico(  g.first , x ) =>         ++  => right(l) >= u 
+              x  := g.first *$Rep x          -- crochetage
+              null(d) => g := rest g
+              g := cons( x, rest g)          -- mouvement a droite
+              x  := first d
+              d := rest d
+           d := cons( x , d)                 -- mouvement a gauche
+           x  := first g
+           g := rest g
+         return cons(x, d)
+
+       factor w ==
+         w = 1 => []
+         l : List $ := reverse [ u::$ for u in LetterList w]
+         factor1( rest l, first l , [] )
+      
+       x < y ==                     -- lexicographique par longueur
+         lx,ly: PI
+         lx:= length x ; ly:= length y
+         lx = ly => lexico(x,y)
+         lx < ly
+ 
+       coerce(x:$):OF == bracket(x::OFMON::OF)
+       coerce(x:$):Magma VarSet == x::Rep
+
+       LyndonWordsList1 (vl,n) ==    -- a ameliorer !!!!!!!!!!!
+            null vl => error "empty list"
+            base: ARRAY1 List $ := new(n::I::NNI ,[])
+           
+           -- mots de longueur 1
+            lbase1:List $ := [w::$ for w in sort(vl)]
+            base.1 := lbase1
+
+           -- calcul des mots de longueur ll
+            for ll in 2..n:I  repeat 
+               lbase1 := []   
+               for a in base(1) repeat              -- lettre + mot
+                  for b in base(ll-1) repeat
+                     if lexico(a,b) then lbase1:=cons(a*b,lbase1)
+
+               for i in 2..ll-1 repeat              -- mot + mot
+                 for a in base(i) repeat             
+                   for b in base(ll-i) repeat
+                     if lexico(a,b) and (lexico(b,right a) or b = right a ) 
+                     then lbase1:=cons(a*b,lbase1)
+ 
+               base(ll):= sort_!(lexico, lbase1)
+            return base
+           
+       LyndonWordsList (vl,n) ==
+           v:ARRAY1 List $ := LyndonWordsList1(vl,n)
+           "append"/ [v.i for i in 1..n] 
+

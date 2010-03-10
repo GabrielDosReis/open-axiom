@@ -1,0 +1,52 @@
+)abbrev package NORMRETR NormRetractPackage
+++ Description:
+++ This package \undocumented
+NormRetractPackage(F, ExtF, SUEx, ExtP, n):C  == T where
+  F          :   FiniteFieldCategory
+  ExtF       :   FiniteAlgebraicExtensionField(F)
+  SUEx       :   UnivariatePolynomialCategory ExtF
+  ExtP       :   UnivariatePolynomialCategory SUEx
+  n          :   PositiveInteger
+  SUP       ==>  SparseUnivariatePolynomial
+  R         ==>  SUP F
+  P         ==>  SUP R
+
+  C  ==> with
+      normFactors : ExtP -> List ExtP
+        ++ normFactors(x) \undocumented
+      retractIfCan : ExtP -> Union(P, "failed")
+        ++ retractIfCan(x) \undocumented
+      Frobenius    : ExtP -> ExtP
+        ++ Frobenius(x) \undocumented
+
+  T  ==> add
+
+      normFactors(p:ExtP):List ExtP ==
+          facs : List ExtP := [p]
+          for i in 1..n-1 repeat 
+             member?((p := Frobenius p), facs) => return facs
+             facs := cons(p, facs)
+          facs
+
+      Frobenius(ff:ExtP):ExtP ==
+         fft:ExtP:=0
+         while ff~=0 repeat
+           fft:=fft + monomial(map(Frobenius, leadingCoefficient ff),
+                               degree ff)
+           ff:=reductum ff
+         fft
+
+      retractIfCan(ff:ExtP):Union(P, "failed") ==          
+         fft:P:=0
+         while ff ~= 0 repeat
+           lc : SUEx := leadingCoefficient ff
+           plc: SUP F := 0
+           while lc ~= 0 repeat
+              lclc:ExtF := leadingCoefficient lc
+              (retlc := retractIfCan lclc) case "failed" => return "failed"
+              plc := plc + monomial(retlc::F, degree lc)
+              lc := reductum lc
+           fft:=fft+monomial(plc, degree ff)
+           ff:=reductum ff
+         fft
+

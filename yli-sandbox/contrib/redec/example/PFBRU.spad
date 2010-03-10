@@ -1,0 +1,245 @@
+)abbrev package PFBRU PolynomialFactorizationByRecursionUnivariate
+++ PolynomialFactorizationByRecursionUnivariate
+++ R is a \spadfun{PolynomialFactorizationExplicit} domain,
+++ S is univariate polynomials over R
+++ We are interested in handling SparseUnivariatePolynomials over
+++ S, is a variable we shall call z
+PolynomialFactorizationByRecursionUnivariate(R, S): public == private where
+  R:PolynomialFactorizationExplicit
+  S:UnivariatePolynomialCategory(R)
+  PI ==> PositiveInteger
+  SupR ==> SparseUnivariatePolynomial R
+  SupSupR ==> SparseUnivariatePolynomial SupR
+  SupS ==> SparseUnivariatePolynomial S
+  SupSupS ==> SparseUnivariatePolynomial SupS
+  LPEBFS ==> LinearPolynomialEquationByFractions(S)
+  public ==  with
+     solveLinearPolynomialEquationByRecursion: (List SupS, SupS)  ->
+                                               Union(List SupS,"failed")
+        ++ \spad{solveLinearPolynomialEquationByRecursion([p1,...,pn],p)}
+        ++ returns the list of polynomials \spad{[q1,...,qn]}
+        ++ such that \spad{sum qi/pi = p / prod pi}, a
+        ++ recursion step for solveLinearPolynomialEquation
+        ++ as defined in \spadfun{PolynomialFactorizationExplicit} category
+        ++ (see \spadfun{solveLinearPolynomialEquation}).
+        ++ If no such list of qi exists, then "failed" is returned.
+     factorByRecursion:  SupS -> Factored SupS
+        ++ factorByRecursion(p) factors polynomial p. This function
+        ++ performs the recursion step for factorPolynomial,
+        ++ as defined in \spadfun{PolynomialFactorizationExplicit} category
+        ++ (see \spadfun{factorPolynomial})
+     factorSquareFreeByRecursion:  SupS -> Factored SupS
+        ++ factorSquareFreeByRecursion(p) returns the square free
+        ++ factorization of p. This functions performs
+        ++ the recursion step for factorSquareFreePolynomial,
+        ++ as defined in \spadfun{PolynomialFactorizationExplicit} category
+        ++ (see \spadfun{factorSquareFreePolynomial}).
+     randomR: -> R  -- has to be global, since has alternative definitions
+        ++ randomR() produces a random element of R
+     factorSFBRlcUnit: (SupS) -> Factored SupS
+        ++ factorSFBRlcUnit(p) returns the square free factorization of
+        ++ polynomial p
+        ++ (see \spadfun{factorSquareFreeByRecursion}{PolynomialFactorizationByRecursionUnivariate})
+        ++ in the case where the leading coefficient of p
+        ++ is a unit.
+  private  == add
+   supR: SparseUnivariatePolynomial R
+   pp: SupS
+   lpolys,factors: List SupS
+   r:R
+   lr:List R
+   import FactoredFunctionUtilities(SupS)
+   import FactoredFunctions2(SupR,SupS)
+   import FactoredFunctions2(S,SupS)
+   import UnivariatePolynomialCategoryFunctions2(S,SupS,R,SupR)
+   import UnivariatePolynomialCategoryFunctions2(R,SupR,S,SupS)
+   -- local function declarations
+   raise: SupR -> SupS
+   lower: SupS -> SupR
+   factorSFBRlcUnitInner: (SupS,R) -> Union(Factored SupS,"failed")
+   hensel: (SupS,R,List SupS) ->
+           Union(Record(fctrs:List SupS),"failed")
+   chooseFSQViableSubstitutions: (SupS) ->
+    Record(substnsField:R,ppRField:SupR)
+     --++ chooseFSQViableSubstitutions(p), p is a sup
+     --++ ("sparse univariate polynomial")
+     --++ over a sup over R, returns a record
+     --++ \spad{[substnsField: r, ppRField: q]} where r is a substitution point
+     --++ q is a sup over R so that the (implicit) variable in q
+     --++ does not drop in degree and remains square-free.
+   -- here for the moment, until it compiles
+   -- N.B., we know that R is NOT a FiniteField, since
+   -- that is meant to have a special implementation, to break the
+   -- recursion
+
+   solveLinearPolynomialEquationByRecursion(lpolys,pp) ==
+     lhsdeg:="max"/["max"/[degree v for v in coefficients u] for u in lpolys]
+     rhsdeg:="max"/[degree v for v in coefficients pp]
+     lhsdeg = 0 =>
+       lpolysLower:=[lower u for u in lpolys]
+       answer:List SupS := [0 for u in lpolys]
+       for i in 0..rhsdeg repeat
+         ppx:=map(coefficient(#1,i),pp)
+         zero? ppx => "next"
+         recAns:= solveLinearPolynomialEquation(lpolysLower,ppx)
+         recAns case "failed" => return "failed"
+         answer:=[monomial(1,i)$S * raise c + d
+                    for c in recAns@(List SupR) for d in answer]
+       answer
+     solveLinearPolynomialEquationByFractions(lpolys,pp)$LPEBFS
+
+
+   -- local function definitions
+   hensel(pp,r,factors) ==
+      -- factors is a relatively prime factorization of pp modulo the ideal
+      -- (x-r), with suitably imposed leading coefficients.
+      -- This is lifted, without re-combinations, to a factorization
+      -- return "failed" if this can't be done
+      origFactors:=factors
+      totdegree:Integer:=0
+      proddegree:Integer:=
+                   "max"/[degree(u) for u in coefficients pp]
+      n:PI:=1
+      pn:=prime:=monomial(1,1) - r::S
+      foundFactors:List SupS:=empty()
+      while (totdegree <= proddegree) repeat
+          Ecart:=(pp-*/factors) exquo  pn
+          Ecart case "failed" =>
+                error "failed lifting in hensel in PFBRU"
+          zero? Ecart =>
+             -- then we have all the factors
+             return [append(foundFactors, factors)]
+          step:=(solveLinearPolynomialEquation(origFactors,
+                                              map(elt(#1,r::S),
+                                                  Ecart)))@(List S)
+          step case "failed" => return "failed" -- must be a false split
+          factors:=[a+b*pn for a in factors for b in step]
+          for a in factors for c in origFactors repeat
+              pp1:= pp exquo a
+              pp1 case "failed" => "next"
+              pp:=pp1
+              proddegree := proddegree - "max"/[degree(u)
+                                                for u in coefficients a]
+              factors:=remove(a,factors)
+              origFactors:=remove(c,origFactors)
+              foundFactors:=[a,:foundFactors]
+          #factors < 2 =>
+             return [(empty? factors => foundFactors;
+                                     [pp,:foundFactors])]
+          totdegree:= +/["max"/[degree(u)
+                                for u in coefficients u1]
+                         for u1 in factors]
+          n:=n+1
+          pn:=pn*prime
+      "failed" -- must have been a false split
+   chooseFSQViableSubstitutions(pp) ==
+     substns:R
+     ppR: SupR
+     while true repeat
+        substns:= randomR()
+        zero? elt(leadingCoefficient pp,substns ) => "next"
+        ppR:=map( elt(#1,substns),pp)
+        degree gcd(ppR,differentiate ppR)>0 => "next"
+        leave
+     [substns,ppR]
+   raise(supR) == map(#1:R::S,supR)
+   lower(pp) == map(retract(#1)::R,pp)
+   factorSFBRlcUnitInner(pp,r) ==
+      -- pp is square-free as a Sup, but the Up  variable occurs.
+      -- Furthermore, its LC is a unit
+      -- returns "failed" if the substitution is bad, else a factorization
+      ppR:=map(elt(#1,r),pp)
+      degree ppR < degree pp => "failed"
+      degree gcd(ppR,differentiate ppR) >0 => "failed"
+      factors:=
+        fDown:=factorSquareFreePolynomial ppR
+        [raise (unit fDown * factorList(fDown).first.fctr),
+         :[raise u.fctr for u in factorList(fDown).rest]]
+      #factors = 1 => makeFR(1,[["irred",pp,1]])
+      hen:=hensel(pp,r,factors)
+      hen case "failed" => "failed"
+      makeFR(1,[["irred",u,1] for u in hen.fctrs])
+   -- exported function definitions
+   if R has StepThrough then
+     factorSFBRlcUnit(pp) ==
+       val:R := init()
+       while true repeat
+          tempAns:=factorSFBRlcUnitInner(pp,val)
+          not (tempAns case "failed") => return tempAns
+          val1:=nextItem val
+          val1 case "failed" =>
+            error "at this point, we know we have a finite field"
+          val:=val1
+   else
+     factorSFBRlcUnit(pp) ==
+       val:R := randomR()
+       while true repeat
+          tempAns:=factorSFBRlcUnitInner(pp,val)
+          not (tempAns case "failed") => return tempAns
+          val := randomR()
+   if R has StepThrough then
+      randomCount:R:= init()
+      randomR() ==
+        v:=nextItem(randomCount)
+        v case "failed" =>
+          SAY$Lisp "Taking another set of random values"
+          randomCount:=init()
+          randomCount
+        randomCount:=v
+        randomCount
+   else if R has random: -> R then
+      randomR() == random()
+   else randomR() == (random()$Integer rem 100)::R
+   factorByRecursion pp ==
+     and/[zero? degree u for u in coefficients pp] =>
+         map(raise,factorPolynomial lower pp)
+     c:=content pp
+     unit? c => refine(squareFree pp,factorSquareFreeByRecursion)
+     pp:=(pp exquo c)::SupS
+     mergeFactors(refine(squareFree pp,factorSquareFreeByRecursion),
+                  map(#1:S::SupS,factor(c)$S))
+
+   factorSquareFreeByRecursion pp ==
+     and/[zero? degree u for u in coefficients pp] =>
+        map(raise,factorSquareFreePolynomial lower pp)
+
+--     unit? (lcpp := leadingCoefficient pp) => factorSFBRlcUnit(pp)
+--     oldnfact:NonNegativeInteger:= 999999
+                       -- I hope we never have to factor a polynomial
+                       -- with more than this number of factors
+--     lcppPow:S
+--     while true repeat  -- a loop over possible false splits
+--       cVS:=chooseFSQViableSubstitutions(pp)
+--       newppR:=primitivePart cVS.ppRField
+--       factorsR:=factorSquareFreePolynomial(newppR)
+--       (nfact:=numberOfFactors factorsR) = 1 =>
+--                  return makeFR(1,[["irred",pp,1]])
+--       -- OK, force all leading coefficients to be equal to the leading
+--       -- coefficient of the input
+--       nfact > oldnfact => "next"   -- can't be a good reduction
+--       oldnfact:=nfact
+--       lcppR:=leadingCoefficient cVS.ppRField
+--       factors:=[raise((lcppR exquo leadingCoefficient u.fctr) ::R * u.fctr)
+--                  for u in factorList factorsR]
+--       -- factors now multiplies to give cVS.ppRField * lcppR^(#factors-1)
+--       -- Now change the leading coefficient to be lcpp
+--       factors:=[monomial(lcpp,degree u) + reductum u for u in factors]
+----     factors:=[(lcpp exquo leadingCoefficient u.fctr)::S * raise u.fctr
+----                for u in factorList factorsR]
+--       ppAdjust:=(lcppPow:=lcpp**#(rest factors)) * pp
+--       OK:=true
+--       hen:=hensel(ppAdjust,cVS.substnsField,factors)
+--       hen case "failed" => "next"
+--       factors:=hen.fctrs
+--       leave
+
+
+     factors:=[ (lc:=content w;
+                 lcppPow:=(lcppPow exquo lc)::S;
+                  (w exquo lc)::SupS)
+                for w in factors]
+     not unit? lcppPow =>
+         error "internal error in factorSquareFreeByRecursion"
+     makeFR((recip lcppPow)::S::SupS,
+             [["irred",w,1] for w in factors])
+

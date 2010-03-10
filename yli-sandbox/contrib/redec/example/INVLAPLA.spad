@@ -1,0 +1,87 @@
+)abbrev package INVLAPLA InverseLaplaceTransform
+++ Inverse Laplace transform
+++ Author: Barry Trager
+++ Date Created: 3 Sept 1991
+++ Date Last Updated: 3 Sept 1991
+++ Description: This package computes the inverse Laplace Transform.
+InverseLaplaceTransform(R, F): Exports == Implementation where
+  R : Join(EuclideanDomain, OrderedSet, CharacteristicZero,
+           RetractableTo Integer, LinearlyExplicitRingOver Integer)
+  F : Join(TranscendentalFunctionCategory, PrimitiveFunctionCategory,
+           SpecialFunctionCategory, AlgebraicallyClosedFunctionSpace R)
+
+  SE  ==> Symbol
+  PI  ==> PositiveInteger
+  N   ==> NonNegativeInteger
+  K   ==> Kernel F
+  UP  ==> SparseUnivariatePolynomial F
+  RF  ==> Fraction UP
+
+  Exports ==> with
+    inverseLaplace: (F, SE, SE) -> Union(F,"failed")
+      ++ inverseLaplace(f, s, t) returns the Inverse
+      ++ Laplace transform of \spad{f(s)}
+      ++ using t as the new variable or "failed" if unable to find
+      ++ a closed form.
+
+  Implementation ==> add
+
+    -- local ops --
+    ilt : (F,Symbol,Symbol) -> Union(F,"failed")
+    ilt1 : (RF,F) -> F
+    iltsqfr : (RF,F) -> F
+    iltirred: (UP,UP,F) -> F
+    freeOf?: (UP,Symbol) -> Boolean
+
+    inverseLaplace(expr,ivar,ovar) == ilt(expr,ivar,ovar)
+
+    freeOf?(p:UP,v:Symbol) ==
+      "and"/[freeOf?(c,v) for c in coefficients p]
+
+    ilt(expr,var,t) ==
+      expr = 0 => 0
+      r := univariate(expr,kernel(var))
+      not(numer(r) quo denom(r) = 0) => "failed"
+      not( freeOf?(numer r,var) and freeOf?(denom r,var)) => "failed"
+      ilt1(r,t::F)
+
+    hintpac == TranscendentalHermiteIntegration(F, UP)
+
+    ilt1(r,t) ==
+      r = 0 => 0
+      rsplit := HermiteIntegrate(r, differentiate)$hintpac
+      -t*ilt1(rsplit.answer,t) + iltsqfr(rsplit.logpart,t)
+
+    iltsqfr(r,t) ==
+       r = 0 => 0
+       p:=numer r
+       q:=denom r
+     --  ql := [qq.factor for qq in factors factor q]
+       ql := [qq.factor for qq in factors squareFree q]
+       # ql = 1 => iltirred(p,q,t)
+       nl := multiEuclidean(ql,p)::List(UP)
+       +/[iltirred(a,b,t) for a in nl for b in ql]
+
+    -- q is irreducible, monic, degree p < degree q
+    iltirred(p,q,t) ==
+      degree q = 1 =>
+        cp := coefficient(p,0)
+        (c:=coefficient(q,0))=0 => cp
+        cp*exp(-c*t)
+      degree q = 2 =>
+        a := coefficient(p,1)
+        b := coefficient(p,0)
+        c:=(-1/2)*coefficient(q,1)
+        d:= coefficient(q,0)
+        e := exp(c*t)
+        b := b+a*c
+        d := d-c**2
+        d > 0 =>
+            alpha:F := sqrt d
+            e*(a*cos(t*alpha) + b*sin(t*alpha)/alpha)
+        alpha :F := sqrt(-d)
+        e*(a*cosh(t*alpha) + b*sinh(t*alpha)/alpha)
+      roots:List F := zerosOf q
+      q1 := differentiate q
+      +/[p(root)/q1(root)*exp(root*t) for root in roots]
+

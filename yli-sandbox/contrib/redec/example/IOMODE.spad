@@ -1,0 +1,26 @@
+)abbrev domain IOMODE IOMode
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Updated: September 30, 2008
+++ Basic Operations: inputIOMode, outputIoMode, bothWayIOMode
+++ Description:
+++   This domain provides constants to describe directions of
+++   IO conduits (file, etc) mode of operations.
+IOMode(): Public == Private where
+  Public == SetCategory with
+    input: %
+      ++ `input' indicates that an IO conduit is for input.
+    output: %
+      ++ `output' indicates that an IO conduit is for output
+    bothWays: %
+      ++ `bothWays' indicates that an IO conduit is for both input and output.
+  Private == add
+    input == _$InputIOMode$Lisp
+    output == _$OutputIOMode$Lisp
+    bothWays == _$BothWaysIOmode$Lisp
+    x = y == EQ(x,y)$Lisp
+    coerce m ==
+      m = input => outputForm 'input
+      m = output => outputForm 'output
+      outputForm 'bothWays
+    

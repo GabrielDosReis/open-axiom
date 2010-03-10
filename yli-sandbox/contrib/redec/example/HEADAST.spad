@@ -1,0 +1,27 @@
+import AbstractSyntaxCategory
+import Symbol
+import List Symbol
+)abbrev domain HEADAST HeadAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the header of a definition.
+HeadAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    headAst: (Identifier,List Identifier) -> %
+      ++ headAst(f,[x1,..,xn]) constructs a function definition header.
+    name: % -> Identifier
+      ++ name(h) returns the name of the operation defined defined.
+    parameters: % -> List Identifier
+      ++ parameters(h) gives the parameters specified in the
+      ++ definition header `h'.
+  Private == add
+    Rep == List Identifier
+    headAst(op,args) == per cons(op,args)
+    name h == first rep h
+    parameters h == rest rep h
+    coerce(x: %): OutputForm ==
+      elt('HeadAst::OutputForm,
+        ['name::OutputForm = name(x)::OutputForm,
+          'parameters::OutputForm = parameters(x)::OutputForm])$OutputForm
+

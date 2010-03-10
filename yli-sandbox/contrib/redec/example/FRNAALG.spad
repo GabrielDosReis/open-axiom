@@ -1,0 +1,313 @@
+)abbrev category FRNAALG FramedNonAssociativeAlgebra
+++ Author: J. Grabmeier, R. Wisbauer
+++ Date Created: 01 March 1991
+++ Date Last Updated: 11 June 1991
+++ Basic Operations: +,-,*,**,basis
+++ Related Constructors: FiniteRankNonAssociativeAlgebra, FramedAlgebra,
+++   FiniteRankAssociativeAlgebra
+++ Also See:
+++ AMS Classifications:
+++ Keywords: nonassociative algebra, basis
+++ Reference:
+++  R.D. Schafer: An Introduction to Nonassociative Algebras
+++  Academic Press, New York, 1966
+++ Description:
+++   FramedNonAssociativeAlgebra(R) is a
+++   \spadtype{FiniteRankNonAssociativeAlgebra} (i.e. a non associative
+++   algebra over R which is a free \spad{R}-module of finite rank)
+++   over a commutative ring R together with a fixed \spad{R}-module basis.
+FramedNonAssociativeAlgebra(R:CommutativeRing):
+        Category == FiniteRankNonAssociativeAlgebra(R) with
+  --operations
+    basis: () -> Vector %
+      ++ basis() returns the fixed \spad{R}-module basis.
+    coordinates: % -> Vector R
+      ++ coordinates(a) returns the coordinates of \spad{a}
+      ++ with respect to the
+      ++ fixed \spad{R}-module basis.
+    coordinates: Vector % -> Matrix R
+      ++ coordinates([a1,...,am]) returns a matrix whose i-th row
+      ++ is formed by the coordinates of \spad{ai} with respect to the
+      ++ fixed \spad{R}-module basis.
+    elt : (%,Integer) -> R
+      ++ elt(a,i) returns the i-th coefficient of \spad{a} with respect to the
+      ++ fixed \spad{R}-module basis.
+    structuralConstants:() -> Vector Matrix R
+      ++ structuralConstants() calculates the structural constants
+      ++ \spad{[(gammaijk) for k in 1..rank()]} defined by
+      ++ \spad{vi * vj = gammaij1 * v1 + ... + gammaijn * vn},
+      ++ where \spad{v1},...,\spad{vn} is the fixed \spad{R}-module basis.
+    conditionsForIdempotents: () -> List Polynomial R
+      ++ conditionsForIdempotents() determines a complete list
+      ++ of polynomial equations for the coefficients of idempotents
+      ++ with respect to the fixed \spad{R}-module basis.
+    represents: Vector R -> %
+      ++ represents([a1,...,an]) returns \spad{a1*v1 + ... + an*vn},
+      ++ where \spad{v1}, ..., \spad{vn} are the elements of the
+      ++ fixed \spad{R}-module basis.
+    convert: % -> Vector R
+      ++ convert(a) returns the coordinates of \spad{a} with respect to the
+      ++ fixed \spad{R}-module basis.
+    convert: Vector R -> %
+      ++ convert([a1,...,an]) returns \spad{a1*v1 + ... + an*vn},
+      ++ where \spad{v1}, ..., \spad{vn} are the elements of the
+      ++ fixed \spad{R}-module basis.
+    leftDiscriminant : () -> R
+      ++ leftDiscriminant() returns the
+      ++ determinant of the \spad{n}-by-\spad{n}
+      ++ matrix whose element at the \spad{i}-th row and \spad{j}-th column is
+      ++ given by the left trace of the product \spad{vi*vj}, where
+      ++ \spad{v1},...,\spad{vn} are the
+      ++ elements of the fixed \spad{R}-module basis.
+      ++ Note: the same as \spad{determinant(leftTraceMatrix())}.
+    rightDiscriminant : () -> R
+      ++ rightDiscriminant() returns the determinant of the \spad{n}-by-\spad{n}
+      ++ matrix whose element at the \spad{i}-th row and \spad{j}-th column is
+      ++ given by the right trace of the product \spad{vi*vj}, where
+      ++ \spad{v1},...,\spad{vn} are the elements of
+      ++ the fixed \spad{R}-module basis.
+      ++ Note: the same as \spad{determinant(rightTraceMatrix())}.
+    leftTraceMatrix : () -> Matrix R
+      ++ leftTraceMatrix() is the \spad{n}-by-\spad{n}
+      ++ matrix whose element at the \spad{i}-th row and \spad{j}-th column is
+      ++ given by left trace of the product \spad{vi*vj},
+      ++ where \spad{v1},...,\spad{vn} are the
+      ++ elements of the fixed \spad{R}-module
+      ++ basis.
+    rightTraceMatrix : () -> Matrix R
+      ++ rightTraceMatrix() is the \spad{n}-by-\spad{n}
+      ++ matrix whose element at the \spad{i}-th row and \spad{j}-th column is
+      ++ given by the right trace of the product \spad{vi*vj}, where
+      ++ \spad{v1},...,\spad{vn} are the elements
+      ++ of the fixed \spad{R}-module basis.
+    leftRegularRepresentation : % -> Matrix R
+      ++ leftRegularRepresentation(a) returns the matrix of the linear
+      ++ map defined by left multiplication by \spad{a} with respect
+      ++ to the fixed \spad{R}-module basis.
+    rightRegularRepresentation : % -> Matrix R
+      ++ rightRegularRepresentation(a) returns the matrix of the linear
+      ++ map defined by right multiplication by \spad{a} with respect
+      ++ to the fixed \spad{R}-module basis.
+    if R has Field then
+      leftRankPolynomial : () -> SparseUnivariatePolynomial Polynomial R
+        ++ leftRankPolynomial() calculates the left minimal polynomial
+        ++ of the generic element in the algebra,
+        ++ defined by the same structural
+        ++ constants over the polynomial ring in symbolic coefficients with
+        ++ respect to the fixed basis.
+      rightRankPolynomial : () -> SparseUnivariatePolynomial Polynomial R
+        ++ rightRankPolynomial() calculates the right minimal polynomial
+        ++ of the generic element in the algebra,
+        ++ defined by the same structural
+        ++ constants over the polynomial ring in symbolic coefficients with
+        ++ respect to the fixed basis.
+    apply: (Matrix R, %) -> %
+      ++ apply(m,a) defines a left operation of n by n matrices
+      ++ where n is the rank of the algebra in terms of matrix-vector
+      ++ multiplication, this is a substitute for a left module structure.
+      ++ Error: if shape of matrix doesn't fit.
+    --attributes
+    --attributes
+      --separable <=> discriminant() ~= 0
+  add
+
+    V  ==> Vector
+    M  ==> Matrix
+    P  ==> Polynomial
+    F  ==> Fraction
+    REC  ==> Record(particular: Union(V R,"failed"),basis: List V R)
+    LSMP ==> LinearSystemMatrixPackage(R,V R,V R, M R)
+    CVMP ==> CoerceVectorMatrixPackage(R)
+
+    --GA ==> GenericNonAssociativeAlgebra(R,rank()$%,_
+    -- [random()$Character :: String :: Symbol for i in 1..rank()$%], _
+    -- structuralConstants()$%)
+    --y : GA := generic()
+    if R has Field then
+      leftRankPolynomial() ==
+        n := rank()
+        b := basis()
+        gamma : Vector Matrix R := structuralConstants b
+        listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
+        symbolsForCoef : Vector Symbol :=
+          [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
+        xx : M P R
+        mo : P R
+        x : M P R := new(1,n,0)
+        for i in 1..n repeat
+          mo := monomial(1, [symbolsForCoef.i], [1])$(P R)
+          qsetelt_!(x,1,i,mo)
+        y : M P R := copy x
+        k  : PositiveInteger := 1
+        cond : M P R := copy x
+        -- multiplication in the generic algebra means using
+        -- the structural matrices as bilinear forms.
+        -- left multiplication by x, we prepare for that:
+        genGamma : V M P R :=  coerceP$CVMP gamma
+        x := reduce(horizConcat,[x*genGamma(i) for i in 1..#genGamma])
+        while rank(cond) = k repeat
+          k := k+1
+          for i in 1..n repeat
+            setelt(xx,[1],[i],x*transpose y)
+          y := copy xx
+          cond := horizConcat(cond, xx)
+        vectorOfCoef : Vector P R := (nullSpace(cond)$Matrix(P R)).first
+        res : SparseUnivariatePolynomial P R := 0
+        for i in 1..k repeat
+         res := res+monomial(vectorOfCoef.i,i)$(SparseUnivariatePolynomial  P R)
+        res
+
+      rightRankPolynomial() ==
+        n := rank()
+        b := basis()
+        gamma : Vector Matrix R := structuralConstants b
+        listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
+        symbolsForCoef : Vector Symbol :=
+          [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
+        xx : M P R
+        mo : P R
+        x : M P R := new(1,n,0)
+        for i in 1..n repeat
+          mo := monomial(1, [symbolsForCoef.i], [1])$(P R)
+          qsetelt_!(x,1,i,mo)
+        y : M P R := copy x
+        k  : PositiveInteger := 1
+        cond : M P R := copy x
+        -- multiplication in the generic algebra means using
+        -- the structural matrices as bilinear forms.
+        -- left multiplication by x, we prepare for that:
+        genGamma : V M P R :=  coerceP$CVMP gamma
+        x := reduce(horizConcat,[genGamma(i)*transpose x for i in 1..#genGamma])
+        while rank(cond) = k repeat
+          k := k+1
+          for i in 1..n repeat
+            setelt(xx,[1],[i],y * transpose x)
+          y := copy xx
+          cond := horizConcat(cond, xx)
+        vectorOfCoef : Vector P R := (nullSpace(cond)$Matrix(P R)).first
+        res : SparseUnivariatePolynomial P R := 0
+        for i in 1..k repeat
+         res := res+monomial(vectorOfCoef.i,i)$(SparseUnivariatePolynomial  P R)
+        res
+
+      leftUnitsInternal : () -> REC
+      leftUnitsInternal() ==
+        n := rank()
+        b := basis()
+        gamma : Vector Matrix R := structuralConstants b
+        cond : Matrix(R) := new(n**2,n,0$R)$Matrix(R)
+        rhs : Vector(R) := new(n**2,0$R)$Vector(R)
+        z : Integer := 0
+        addOn : R := 0
+        for k in 1..n repeat
+         for i in 1..n repeat
+           z := z+1   -- index for the rows
+           addOn :=
+             k=i => 1
+             0
+           setelt(rhs,z,addOn)$Vector(R)
+           for j in 1..n repeat  -- index for the columns
+             setelt(cond,z,j,elt(gamma.k,j,i))$Matrix(R)
+        solve(cond,rhs)$LSMP
+
+
+      leftUnit() ==
+        res : REC := leftUnitsInternal()
+        res.particular case "failed" =>
+          messagePrint("this algebra has no left unit")$OutputForm
+          "failed"
+        represents (res.particular :: V R)
+
+      leftUnits() ==
+        res : REC := leftUnitsInternal()
+        res.particular case "failed" =>
+          messagePrint("this algebra has no left unit")$OutputForm
+          "failed"
+        [represents(res.particular :: V R)$%, _
+          map(represents, res.basis)$ListFunctions2(Vector R, %) ]
+
+      rightUnitsInternal : () -> REC
+      rightUnitsInternal() ==
+        n := rank()
+        b := basis()
+        gamma : Vector Matrix R := structuralConstants b
+        condo : Matrix(R) := new(n**2,n,0$R)$Matrix(R)
+        rhs : Vector(R) := new(n**2,0$R)$Vector(R)
+        z : Integer := 0
+        addOn : R := 0
+        for k in 1..n repeat
+         for i in 1..n repeat
+           z := z+1   -- index for the rows
+           addOn :=
+             k=i => 1
+             0
+           setelt(rhs,z,addOn)$Vector(R)
+           for j in 1..n repeat  -- index for the columns
+             setelt(condo,z,j,elt(gamma.k,i,j))$Matrix(R)
+        solve(condo,rhs)$LSMP
+
+      rightUnit() ==
+        res : REC := rightUnitsInternal()
+        res.particular case "failed" =>
+          messagePrint("this algebra has no right unit")$OutputForm
+          "failed"
+        represents (res.particular :: V R)
+
+      rightUnits() ==
+        res : REC := rightUnitsInternal()
+        res.particular case "failed" =>
+          messagePrint("this algebra has no right unit")$OutputForm
+          "failed"
+        [represents(res.particular :: V R)$%, _
+          map(represents, res.basis)$ListFunctions2(Vector R, %) ]
+
+      unit() ==
+        n := rank()
+        b := basis()
+        gamma : Vector Matrix R := structuralConstants b
+        cond : Matrix(R) := new(2*n**2,n,0$R)$Matrix(R)
+        rhs : Vector(R) := new(2*n**2,0$R)$Vector(R)
+        z : Integer := 0
+        u : Integer := n*n
+        addOn : R := 0
+        for k in 1..n repeat
+         for i in 1..n repeat
+           z := z+1   -- index for the rows
+           addOn :=
+             k=i => 1
+             0
+           setelt(rhs,z,addOn)$Vector(R)
+           setelt(rhs,u,addOn)$Vector(R)
+           for j in 1..n repeat  -- index for the columns
+             setelt(cond,z,j,elt(gamma.k,j,i))$Matrix(R)
+             setelt(cond,u,j,elt(gamma.k,i,j))$Matrix(R)
+        res : REC := solve(cond,rhs)$LSMP
+        res.particular case "failed" =>
+          messagePrint("this algebra has no unit")$OutputForm
+          "failed"
+        represents (res.particular :: V R)
+    apply(m:Matrix(R),a:%) ==
+      v : Vector R := coordinates(a)
+      v := m *$Matrix(R) v
+      convert v
+
+
+    structuralConstants()   == structuralConstants basis()
+    conditionsForIdempotents() == conditionsForIdempotents basis()
+    convert(x:%):Vector(R)  == coordinates(x, basis())
+    convert(v:Vector R):%   == represents(v, basis())
+    leftTraceMatrix()       == leftTraceMatrix basis()
+    rightTraceMatrix()      == rightTraceMatrix basis()
+    leftDiscriminant()      == leftDiscriminant basis()
+    rightDiscriminant()     == rightDiscriminant basis()
+    leftRegularRepresentation x == leftRegularRepresentation(x, basis())
+    rightRegularRepresentation x == rightRegularRepresentation(x, basis())
+    coordinates(x: %)       == coordinates(x, basis())
+    represents(v:Vector R):%== represents(v, basis())
+
+    coordinates(v:Vector %) ==
+      m := new(#v, rank(), 0)$Matrix(R)
+      for i in minIndex v .. maxIndex v for j in minRowIndex m .. repeat
+        setRow_!(m, j, coordinates qelt(v, i))
+      m
+

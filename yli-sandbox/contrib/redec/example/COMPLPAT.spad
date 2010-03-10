@@ -1,0 +1,28 @@
+)abbrev package COMPLPAT ComplexPattern
+++ Author: Barry Trager
+++ Date Created: 30 Nov 1995
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: complex, patterns
+++ References:
+++ Description:
+++ This package supports converting complex expressions to patterns
+ComplexPattern(R, S, CS) : C == T where
+    R: SetCategory
+    S: Join(ConvertibleTo Pattern R, CommutativeRing)
+    CS: ComplexCategory S
+    C == with
+       convert: CS -> Pattern R
+          ++ convert(cs) converts the complex expression cs to a pattern
+
+    T == add
+
+       ipat : Pattern R := patternVariable("%i"::Symbol, true, false, false)
+
+       convert(cs) ==
+          zero? imag cs => convert real cs
+          convert real cs + ipat * convert imag cs
+

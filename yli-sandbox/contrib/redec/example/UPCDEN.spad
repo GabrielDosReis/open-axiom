@@ -1,0 +1,39 @@
+)abbrev package UPCDEN UnivariatePolynomialCommonDenominator
+--% UnivariatePolynomialCommonDenominator
+++ Author: Manuel Bronstein
+++ Date Created: 2 May 1988
+++ Date Last Updated: 22 Feb 1990
+++ Description: UnivariatePolynomialCommonDenominator provides
+++ functions to compute the common denominator of the coefficients of
+++ univariate polynomials over the quotient field of a gcd domain.
+++ Keywords: gcd, quotient, common, denominator, polynomial.
+ 
+UnivariatePolynomialCommonDenominator(R, Q, UP): Exports == Impl where
+  R : IntegralDomain
+  Q : QuotientFieldCategory R
+  UP: UnivariatePolynomialCategory Q
+ 
+  Exports ==> with
+    commonDenominator: UP -> R
+      ++ commonDenominator(q) returns a common denominator d for
+      ++ the coefficients of q.
+    clearDenominator : UP -> UP
+      ++ clearDenominator(q) returns p such that \spad{q = p/d} where d is
+      ++ a common denominator for the coefficients of q.
+    splitDenominator : UP -> Record(num: UP, den: R)
+      ++ splitDenominator(q) returns \spad{[p, d]} such that \spad{q = p/d} and d
+      ++ is a common denominator for the coefficients of q.
+ 
+  Impl ==> add
+    import CommonDenominator(R, Q, List Q)
+ 
+    commonDenominator p == commonDenominator coefficients p
+ 
+    clearDenominator p ==
+      d := commonDenominator p
+      map(numer(d * #1)::Q, p)
+ 
+    splitDenominator p ==
+      d := commonDenominator p
+      [map(numer(d * #1)::Q, p), d]
+

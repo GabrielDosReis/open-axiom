@@ -1,0 +1,26 @@
+)abbrev domain DECIMAL DecimalExpansion
+++ Author: Stephen M. Watt
+++ Date Created: October, 1986
+++ Date Last Updated: May 15, 1991
+++ Basic Operations:
+++ Related Domains: RadixExpansion
+++ Also See:
+++ AMS Classifications:
+++ Keywords: radix, base, repeating decimal
+++ Examples:
+++ References:
+++ Description:
+++   This domain allows rational numbers to be presented as repeating
+++   decimal expansions.
+DecimalExpansion(): Exports == Implementation where
+  Exports == Join(QuotientFieldCategory(Integer),_
+              CoercibleTo Fraction Integer,CoercibleTo RadixExpansion 10) with
+    fractionPart: % -> Fraction Integer
+      ++ fractionPart(d) returns the fractional part of a decimal expansion.
+    decimal: Fraction Integer -> %
+      ++ decimal(r) converts a rational number to a decimal expansion.
+
+  Implementation ==> RadixExpansion(10) add
+    decimal r == r :: %
+    coerce(x:%): RadixExpansion(10) == rep x
+

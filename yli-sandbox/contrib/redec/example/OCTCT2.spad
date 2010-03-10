@@ -1,0 +1,32 @@
+)abbrev package OCTCT2 OctonionCategoryFunctions2
+--% OctonionCategoryFunctions2
+++ Author: Johannes Grabmeier
+++ Date Created: 10 September 1990
+++ Date Last Updated: 10 September 1990
+++ Basic Operations: map
+++ Related Constructors: 
+++ Also See: 
+++ AMS Classifications:
+++ Keywords: octonion, non-associative algebra, Cayley-Dixon  
+++ References:
+++ Description:
+++  OctonionCategoryFunctions2 implements functions between
+++  two octonion domains defined over different rings. 
+++  The function map is used 
+++  to coerce between octonion types.
+ 
+OctonionCategoryFunctions2(OR,R,OS,S) : Exports ==
+  Implementation where
+    R  : CommutativeRing
+    S  : CommutativeRing
+    OR : OctonionCategory R
+    OS : OctonionCategory S
+    Exports == with
+      map:     (R -> S, OR) -> OS
+        ++ map(f,u) maps f onto the component parts of the octonion
+        ++ u.
+    Implementation == add
+      map(fn : R -> S, u : OR): OS ==
+        octon(fn real u, fn imagi u, fn imagj u, fn imagk u,_
+        fn imagE u, fn imagI u, fn imagJ u, fn imagK u)$OS
+

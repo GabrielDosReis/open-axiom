@@ -1,0 +1,31 @@
+import OrderedSet
+import XFreeAlgebra
+)abbrev category XPOLYC XPolynomialsCat
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   The Category of polynomial rings with non-commutative variables.
+++   The coefficient ring may be non-commutative too. 
+++   However coefficients commute with vaiables.
+++ Author: Michel Petitot (petitot@lifl.fr)
+
+XPolynomialsCat(vl:OrderedSet,R:Ring):Category == Export where
+  WORD ==> OrderedFreeMonoid(vl)
+
+  Export == XFreeAlgebra(vl,R) with
+    maxdeg: % -> WORD 
+      ++ \spad{maxdeg(p)} returns the greatest leading word in the support of \spad{p}.
+    degree: % -> NonNegativeInteger 
+      ++ \spad{degree(p)} returns the degree of \spad{p}. 
+      ++  Note that the degree of a word is its length. 
+    trunc : (% , NonNegativeInteger) -> %
+      ++  \spad{trunc(p,n)} returns the polynomial \spad{p} truncated at order \spad{n}.
+

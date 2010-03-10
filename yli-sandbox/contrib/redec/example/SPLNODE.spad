@@ -1,0 +1,146 @@
+)abbrev domain SPLNODE SplittingNode
+++ Author: Marc Moereno Maza
+++ Date Created: 07/05/1996
+++ Date Last Updated:  07/19/1996
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ References:
+++ Description: 
+++    This domain exports a modest implementation for the
+++    vertices of splitting trees. These vertices are called
+++    here splitting nodes. Every of these nodes store 3 informations. 
+++    The first one is its value, that is the current expression 
+++    to evaluate. The second one is its condition, that is the 
+++    hypothesis under which the value has to be evaluated. 
+++    The last one is its status, that is a boolean flag
+++    which is true iff the value is the result of its
+++    evaluation under its condition. Two splitting vertices
+++    are equal iff they have the sane values and the same
+++    conditions (so their status do not matter).
+
+SplittingNode(V,C) : Exports == Implementation where
+
+  V:Join(SetCategory,Aggregate)
+  C:Join(SetCategory,Aggregate)
+  Z ==> Integer
+  B ==> Boolean
+  O ==> OutputForm
+  VT ==> Record(val:V, tower:C)
+  VTB ==> Record(val:V, tower:C, flag:B)
+
+  Exports ==  SetCategory with
+
+     empty : () -> %
+       ++ \axiom{empty()} returns the same as 
+       ++ \axiom{[empty()$V,empty()$C,false]$%}
+     empty? : % -> B
+       ++ \axiom{empty?(n)} returns true iff the node n is \axiom{empty()$%}.
+     value : % -> V
+       ++ \axiom{value(n)} returns the value of the node n.
+     condition : % -> C
+       ++ \axiom{condition(n)} returns the condition of the node n.
+     status : % -> B
+       ++ \axiom{status(n)} returns the status of the node n.
+     construct : (V,C,B) -> %
+       ++ \axiom{construct(v,t,b)} returns the non-empty node with
+       ++ value v, condition t and flag b
+     construct : (V,C) -> %
+       ++ \axiom{construct(v,t)} returns the same as
+       ++ \axiom{construct(v,t,false)}
+     construct : VT ->  %
+       ++ \axiom{construct(vt)} returns the same as
+       ++ \axiom{construct(vt.val,vt.tower)}
+     construct : List VT ->  List %
+       ++ \axiom{construct(lvt)} returns the same as
+       ++ \axiom{[construct(vt.val,vt.tower) for vt in lvt]}
+     construct : (V, List C) -> List %
+       ++ \axiom{construct(v,lt)} returns the same as
+       ++ \axiom{[construct(v,t) for t in lt]}
+     copy : % -> %
+       ++ \axiom{copy(n)} returns a copy of n.
+     setValue! : (%,V) -> %
+       ++ \axiom{setValue!(n,v)} returns n whose value
+       ++ has been replaced by v if it is not 
+       ++ empty, else an error is produced.
+     setCondition! : (%,C) -> %
+       ++ \axiom{setCondition!(n,t)} returns n whose condition
+       ++ has been replaced by t if it is not 
+       ++ empty, else an error is produced.
+     setStatus!: (%,B) -> %
+       ++ \axiom{setStatus!(n,b)} returns n whose status
+       ++ has been replaced by b if it is not 
+       ++ empty, else an error is produced.
+     setEmpty! : % -> %
+       ++ \axiom{setEmpty!(n)} replaces n by \axiom{empty()$%}.
+     infLex? : (%,%,(V,V) -> B,(C,C) -> B) -> B
+       ++ \axiom{infLex?(n1,n2,o1,o2)} returns true iff
+       ++ \axiom{o1(value(n1),value(n2))} or
+       ++ \axiom{value(n1) = value(n2)} and
+       ++ \axiom{o2(condition(n1),condition(n2))}.
+     subNode? : (%,%,(C,C) -> B) -> B
+       ++ \axiom{subNode?(n1,n2,o2)} returns true iff
+       ++ \axiom{value(n1) = value(n2)} and
+       ++ \axiom{o2(condition(n1),condition(n2))}
+
+  Implementation == add
+
+     Rep == VTB
+
+     empty() == per [empty()$V,empty()$C,false]$Rep
+     empty?(n:%) == empty?((rep n).val)$V and  empty?((rep n).tower)$C
+     value(n:%) == (rep n).val
+     condition(n:%) == (rep n).tower
+     status(n:%) == (rep n).flag
+     construct(v:V,t:C,b:B) ==  per [v,t,b]$Rep
+     construct(v:V,t:C) == [v,t,false]$%
+     construct(vt:VT) == [vt.val,vt.tower]$%
+     construct(lvt:List VT) == [[vt]$% for vt in lvt]
+     construct(v:V,lt: List C) == [[v,t]$% for t in lt]
+     copy(n:%) == per copy rep n
+     setValue!(n:%,v:V) == 
+        (rep n).val := v
+        n
+     setCondition!(n:%,t:C) ==
+        (rep n).tower := t
+        n
+     setStatus!(n:%,b:B) ==
+        (rep n).flag := b
+        n
+     setEmpty!(n:%) ==
+        (rep n).val := empty()$V
+        (rep n).tower := empty()$C
+        n
+     infLex?(n1,n2,o1,o2) ==
+        o1((rep n1).val,(rep n2).val) => true
+        (rep n1).val = (rep n2).val => 
+           o2((rep n1).tower,(rep n2).tower)
+        false
+     subNode?(n1,n2,o2) ==
+        (rep n1).val = (rep n2).val => 
+           o2((rep n1).tower,(rep n2).tower)
+        false
+     -- sample() == empty()
+     n1:% = n2:% ==
+        (rep n1).val ~= (rep n2).val => false
+        (rep n1).tower = (rep n2).tower
+     n1:% ~= n2:% ==
+        (rep n1).val = (rep n2).val => false
+        (rep n1).tower ~= (rep n2).tower
+     coerce(n:%):O ==
+        l1,l2,l3,l : List O
+        l1 := [message("value == "), ((rep n).val)::O]
+        o1 : O := blankSeparate l1
+        l2 := [message(" tower == "), ((rep n).tower)::O]
+        o2 : O := blankSeparate l2
+        if ((rep n).flag)
+          then
+            o3 := message(" closed == true")
+          else 
+            o3 := message(" closed == false")
+        l := [o1,o2,o3]
+        bracket commaSeparate l
+

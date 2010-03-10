@@ -1,0 +1,53 @@
+)abbrev domain LIE AssociatedLieAlgebra
+++ Author: J. Grabmeier
+++ Date Created: 07 March 1991
+++ Date Last Updated: 14 June 1991
+++ Basic Operations: *,**,+,-
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: associated Liealgebra
+++ References:
+++ Description:
+++  AssociatedLieAlgebra takes an algebra \spad{A}
+++  and uses \spadfun{*$A} to define the
+++  Lie bracket \spad{a*b := (a *$A b - b *$A a)} (commutator). Note that
+++  the notation \spad{[a,b]} cannot be used due to
+++  restrictions of the current compiler.
+++  This domain only gives a Lie algebra if the
+++  Jacobi-identity \spad{(a*b)*c + (b*c)*a + (c*a)*b = 0} holds
+++  for all \spad{a},\spad{b},\spad{c} in \spad{A}.
+++  This relation can be checked by
+++  \spad{lieAdmissible?()$A}.
+++
+++  If the underlying algebra is of type
+++  \spadtype{FramedNonAssociativeAlgebra(R)} (i.e. a non
+++  associative algebra over R which is a free \spad{R}-module of finite
+++  rank, together with a fixed \spad{R}-module basis), then the same
+++  is true for the associated Lie algebra.
+++  Also, if the underlying algebra is of type
+++  \spadtype{FiniteRankNonAssociativeAlgebra(R)} (i.e. a non
+++  associative algebra over R which is a free R-module of finite
+++  rank), then the same is true for the associated Lie algebra.
+
+AssociatedLieAlgebra(R:CommutativeRing,A:NonAssociativeAlgebra R):
+    public == private where
+  public ==> Join (NonAssociativeAlgebra R, CoercibleTo A)  with
+    coerce : A -> %
+      ++ coerce(a) coerces the element \spad{a} of the algebra \spad{A}
+      ++ to an element of the Lie
+      ++ algebra \spadtype{AssociatedLieAlgebra}(R,A).
+    if A has FramedNonAssociativeAlgebra(R) then 
+      FramedNonAssociativeAlgebra(R)
+    if A has FiniteRankNonAssociativeAlgebra(R) then 
+      FiniteRankNonAssociativeAlgebra(R)
+
+  private ==> A add
+    Rep := A
+    (a:%) * (b:%) == (a::Rep) * $Rep (b::Rep) -$Rep (b::Rep) * $Rep (a::Rep)
+    coerce(a:%):A == a :: Rep
+    coerce(a:A):% == a :: %
+    (a:%) ** (n:PositiveInteger) ==
+      n = 1 => a
+      0
+

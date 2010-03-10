@@ -1,0 +1,27 @@
+)abbrev domain FF FiniteField
+++ Author: ???
+++ Date Created: ???
+++ Date Last Updated: 29 May 1990
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: field, extension field, algebraic extension,
+++  finite extension, finite field, Galois field
+++ Reference:
+++  R.Lidl, H.Niederreiter: Finite Field, Encyclopedia of Mathematics an
+++   Its Applications, Vol. 20, Cambridge Univ. Press, 1983, ISBN 0 521 30240 4
+++  J. Grabmeier, A. Scheerhorn: Finite Fields in AXIOM.
+++   AXIOM Technical Report Series, ATR/5 NP2522.
+++ Description:
+++  FiniteField(p,n) implements finite fields with p**n elements.
+++  This packages checks that p is prime.
+++  For a non-checking version, see \spadtype{InnerFiniteField}.
+FiniteField(p:PositiveInteger, n:PositiveInteger): _
+   FiniteAlgebraicExtensionField(PrimeField p) ==_
+   FiniteFieldExtensionByPolynomial(PrimeField p,_
+       createIrreduciblePoly(n)$FiniteFieldPolynomialPackage(PrimeField p))
+  -- old code for generating irreducible polynomials:
+  -- now "better" order (sparse polys first)
+  -- generateIrredPoly(n)$IrredPolyOverFiniteField(GF))
+

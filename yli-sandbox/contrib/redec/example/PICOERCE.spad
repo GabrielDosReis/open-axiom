@@ -1,0 +1,22 @@
+)abbrev package PICOERCE PiCoercions
+++ Coercions from %pi to symbolic or numeric domains
+++ Author: Manuel Bronstein
+++ Description:
+++  Provides a coercion from the symbolic fractions in %pi with
+++ integer coefficients to any Expression type.
+++ Date Created: 21 Feb 1990
+++ Date Last Updated: 21 Feb 1990
+PiCoercions(R:Join(OrderedSet, IntegralDomain)): with
+  coerce: Pi -> Expression R
+    ++ coerce(f) returns f as an Expression(R).
+ == add
+  p2e: SparseUnivariatePolynomial Integer -> Expression R
+
+  coerce(x:Pi):Expression(R) ==
+    f := convert(x)@Fraction(SparseUnivariatePolynomial Integer)
+    p2e(numer f) / p2e(denom f)
+
+  p2e p ==
+    map(#1::Expression(R), p)$SparseUnivariatePolynomialFunctions2(
+        Integer, Expression R) (pi()$Expression(R))
+

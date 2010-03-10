@@ -1,0 +1,35 @@
+)abbrev package PMQFCAT PatternMatchQuotientFieldCategory
+++ Pattern matching on quotient objects
+++ Author: Manuel Bronstein
+++ Date Created: 1 Dec 1989
+++ Date Last Updated: 20 June 1991
+++ Description:
+++   This package provides pattern matching functions on quotients.
+++ Keywords: pattern, matching, quotient, field.
+PatternMatchQuotientFieldCategory(S,R,Q):Exports == Implementation where
+  S: SetCategory
+  R: Join(IntegralDomain, PatternMatchable S, ConvertibleTo Pattern S)
+  Q: QuotientFieldCategory R
+
+  PAT ==> Pattern S
+  PRQ ==> PatternMatchResult(S, Q)
+
+  Exports ==> with
+    patternMatch: (Q, PAT, PRQ) -> PRQ
+      ++ patternMatch(a/b, pat, res) matches the pattern pat to the
+      ++ quotient a/b; res contains the variables of pat which
+      ++ are already matched and their matches.
+
+  Implementation ==> add
+    import PatternMatchPushDown(S, R, Q)
+
+    patternMatch(x, p, l) ==
+      generic? p => addMatch(p, x, l)
+      (r := retractIfCan x)@Union(R, "failed") case R =>
+        patternMatch(r::R, p, l)
+      (u := isQuotient p) case Record(num:PAT, den:PAT) =>
+        ur := u::Record(num:PAT, den:PAT)
+        failed?(l := patternMatch(numer x, ur.num, l)) => l
+        patternMatch(denom x, ur.den, l)
+      failed()
+

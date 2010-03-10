@@ -1,0 +1,16 @@
+)abbrev category PATAB Patternable
+++ Category of sets that can be converted to useful patterns
+++ Author: Manuel Bronstein
+++ Date Created: 29 Nov 1989
+++ Date Last Updated: 29 Nov 1989
+++ Description:
+++   An object S is Patternable over an object R if S can
+++   lift the conversions from R into \spadtype{Pattern(Integer)} and
+++   \spadtype{Pattern(Float)} to itself;
+++ Keywords: pattern, matching.
+Patternable(R:Type): Category == with
+  if R has ConvertibleTo Pattern Integer then
+           ConvertibleTo Pattern Integer
+  if R has ConvertibleTo Pattern Float then
+           ConvertibleTo Pattern Float
+

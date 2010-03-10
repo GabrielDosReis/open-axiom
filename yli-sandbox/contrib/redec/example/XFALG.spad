@@ -1,0 +1,85 @@
+import OrderedSet
+import Ring
+import XAlgebra
+import RetractableTo
+)abbrev category XFALG XFreeAlgebra
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++    This category specifies opeations for  polynomials
+++    and formal series with non-commutative variables.
+++ Author: Michel Petitot (petitot@lifl.fr)
+
+XFreeAlgebra(vl:OrderedSet,R:Ring):Category == Catdef where
+   WORD   ==> OrderedFreeMonoid(vl)          -- monoide libre
+   NNI    ==> NonNegativeInteger
+   I      ==> Integer
+   TERM   ==> Record(k: WORD, c: R)
+
+   Catdef == Join(Ring, XAlgebra(R), RetractableTo WORD) 
+     with
+       "*": (vl,%) -> %
+         ++ \spad{v * x} returns the product of a variable \spad{x} by \spad{x}.
+       "*": (%, R) -> %                 
+         ++ \spad{x * r} returns the product of \spad{x} by \spad{r}.
+         ++ Usefull if \spad{R} is a non-commutative Ring.
+       mindeg: % -> WORD                
+         ++ \spad{mindeg(x)} returns the little word which appears in \spad{x}.
+         ++ Error if \spad{x=0}.
+       mindegTerm: % -> TERM 
+         ++ \spad{mindegTerm(x)} returns the term whose word is \spad{mindeg(x)}.
+       coef  : (%,WORD) -> R            
+         ++ \spad{coef(x,w)} returns the coefficient of the word \spad{w} in \spad{x}. 
+       coef  : (%,%) -> R
+         ++ \spad{coef(x,y)} returns scalar product of \spad{x} by \spad{y},
+         ++ the set of words being regarded as an orthogonal basis.
+       lquo  : (%,vl) -> %              
+         ++ \spad{lquo(x,v)} returns the left simplification of \spad{x} by the variable \spad{v}.
+       lquo  : (%,WORD) -> %            
+         ++ \spad{lquo(x,w)} returns the left simplification of \spad{x} by the word \spad{w}.
+       lquo  : (%,%) -> %
+         ++ \spad{lquo(x,y)} returns the left simplification of \spad{x} by \spad{y}.
+       rquo  : (%,vl) -> %
+         ++ \spad{rquo(x,v)} returns the right simplification of \spad{x} by the variable \spad{v}.
+       rquo  : (%,WORD) -> %
+         ++ \spad{rquo(x,w)} returns the right simplification of \spad{x} by \spad{w}.
+       rquo  : (%,%) -> %
+         ++ \spad{rquo(x,y)} returns the right simplification of \spad{x} by \spad{y}.
+       monom : (WORD , R) -> %
+         ++ \spad{monom(w,r)} returns the product of the word \spad{w} by the coefficient \spad{r}.
+       monomial? : % -> Boolean
+         ++ \spad{monomial?(x)} returns true if \spad{x} is a monomial
+       mirror: % -> %                   
+         ++ \spad{mirror(x)} returns \spad{Sum(r_i mirror(w_i))} if \spad{x} writes \spad{Sum(r_i w_i)}. 
+       coerce : vl -> %
+         ++ \spad{coerce(v)} returns \spad{v}.
+       constant?:% -> Boolean
+         ++ \spad{constant?(x)} returns true if \spad{x} is constant.
+       constant: % -> R   
+         ++ \spad{constant(x)} returns the constant term of \spad{x}.
+       quasiRegular? : % -> Boolean  
+         ++ \spad{quasiRegular?(x)} return true if \spad{constant(x)} is zero. 
+       quasiRegular : % -> %
+         ++ \spad{quasiRegular(x)} return \spad{x} minus its constant term.
+       if R has CommutativeRing then
+          sh :(%,%) -> %
+             ++ \spad{sh(x,y)} returns the shuffle-product of \spad{x} by \spad{y}.
+             ++ This multiplication is associative and commutative.
+          sh :(%,NNI) -> %
+             ++ \spad{sh(x,n)} returns the shuffle power of \spad{x} to the \spad{n}.
+       map   : (R -> R, %) -> %
+         ++ \spad{map(fn,x)} returns \spad{Sum(fn(r_i) w_i)} if \spad{x} writes \spad{Sum(r_i w_i)}.
+       varList: % -> List vl
+         ++ \spad{varList(x)} returns the list of variables which appear in \spad{x}.
+
+     -- Attributs
+       if R has noZeroDivisors then noZeroDivisors
+

@@ -1,0 +1,22 @@
+)abbrev category ENTIRER EntireRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Entire Rings (non-commutative Integral Domains), i.e. a ring
+++ not necessarily commutative which has no zero divisors.
+++
+++ Axioms:
+++   \spad{ab=0 => a=0 or b=0}  -- known as noZeroDivisors
+++   \spad{not(1=0)}
+--EntireRing():Category == Join(Ring,BiModule(%:Ring,%:Ring)) with
+EntireRing():Category == Join(Ring,BiModule(%,%)) with
+      noZeroDivisors  ++ if a product is zero then one of the factors
+                      ++ must be zero.
+

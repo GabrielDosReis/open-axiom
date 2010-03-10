@@ -1,0 +1,26 @@
+)abbrev package INFORM1 InputFormFunctions1
+--)boot $noSubsumption := false
+
+++ Tools for manipulating input forms
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 19 April 1991
+++ Description: Tools for manipulating input forms.
+
+InputFormFunctions1(R:Type):with
+  packageCall: Symbol -> InputForm
+    ++ packageCall(f) returns the input form corresponding to f$R.
+  interpret  : InputForm -> R
+    ++ interpret(f) passes f to the interpreter, and transforms
+    ++ the result into an object of type R.
+ == add
+  Rname := devaluate(R)$Lisp :: InputForm
+
+  packageCall name ==
+    convert([convert("$elt"::Symbol), Rname,
+                                convert name]$List(InputForm))@InputForm
+
+  interpret form ==
+    retract(interpret(convert([convert("@"::Symbol), form,
+          Rname]$List(InputForm))@InputForm)$InputForm)$AnyFunctions1(R)
+

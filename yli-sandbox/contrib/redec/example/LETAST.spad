@@ -1,0 +1,22 @@
+SpadAst(): SpadAstExports
+import List
+)abbrev domain LETAST LetAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents assignment expressions.
+LetAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the assignment expression `e'.
+    rhs: % -> SpadAst
+      ++ rhs(e) returns the right hand side of the assignment expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == second rep x
+    rhs x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('LetAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm,
+          'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm
+

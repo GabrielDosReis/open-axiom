@@ -1,0 +1,24 @@
+)abbrev category CABMON CancellationAbelianMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References: Davenport & Trager I
+++ Description:
+++ This is an \spadtype{AbelianMonoid} with the cancellation property, i.e.
+++ \spad{ a+b = a+c => b=c }.
+++ This is formalised by the partial subtraction operator,
+++ which satisfies the axioms listed below:
+++
+++ Axioms:
+++   \spad{c = a+b <=> c-b = a}
+CancellationAbelianMonoid(): Category == AbelianMonoid with
+    --operations
+      subtractIfCan: (%,%) -> Union(%,"failed")
+         ++ subtractIfCan(x, y) returns an element z such that \spad{z+y=x}
+         ++ or "failed" if no such element exists.
+

@@ -1,0 +1,40 @@
+)abbrev category ORDRING OrderedRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also rings, that is, domains where the ring
+++ operations are compatible with the ordering.
+++
+++ Axiom:
+++   \spad{0<a and b<c => ab< ac}
+
+OrderedRing(): Category == Join(OrderedAbelianGroup,Ring,Monoid) with
+     positive?: % -> Boolean
+       ++ positive?(x) tests whether x is strictly greater than 0.
+     negative?: % -> Boolean
+       ++ negative?(x) tests whether x is strictly less than 0.
+     sign     : % -> Integer
+       ++ sign(x) is 1 if x is positive, -1 if x is negative, 0 if x equals 0.
+     abs      : % -> %
+       ++ abs(x) returns the absolute value of x.
+  add
+     positive? x == x>0
+     negative? x == x<0
+     sign x ==
+       positive? x => 1
+       negative? x => -1
+       zero? x => 0
+       error "x satisfies neither positive?, negative? or zero?"
+     abs x ==
+       positive? x => x
+       negative? x => -x
+       zero? x => 0
+       error "x satisfies neither positive?, negative? or zero?"
+

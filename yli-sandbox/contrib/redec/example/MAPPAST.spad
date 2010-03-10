@@ -1,0 +1,31 @@
+)abbrev domain MAPPAST MappingAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a mapping type AST.  A mapping AST
+++   is a syntactic description of a function type, e.g. its result 
+++   type and the list of its argument types.
+MappingAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
+    coerce: Signature -> %
+      ++ sig::MappingAst builds a MappingAst from the Signature `sig'.
+    mappingAst: (List TypeAst, TypeAst) -> %
+      ++ mappingAst(s,t) builds the mapping AST s -> t
+    source: % -> List TypeAst
+      ++ source(s) returns the parameter type AST list of `s'.
+    target: % -> TypeAst
+      ++ target(s) returns the result type AST for `s'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,Signature)
+    coerce(sig: Signature): % == per pair('Mapping,sig)
+    mappingAst(s,t) == 
+      per pair('Mapping,cons(t,s) : Signature)
+    source x == source(second rep x)$Signature : List(TypeAst)
+    target x == target(second rep x)$Signature : TypeAst
+    coerce(x: %): TypeAst == x : TypeAst
+    coerce(x: %): OutputForm ==
+      elt('MappingAst::OutputForm,
+        ['source::OutputForm = source(x)::OutputForm,
+          'target::OutputForm = target(x)::OutputForm])$OutputForm
+

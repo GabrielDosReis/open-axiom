@@ -1,0 +1,58 @@
+)abbrev category PSCAT PowerSeriesCategory
+++ Author: Clifton J. Williamson
+++ Date Created: 21 December 1989
+++ Date Last Updated: 25 February 1990
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: power series
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{PowerSeriesCategory} is the most general power series
+++   category with exponents in an ordered abelian monoid.
+PowerSeriesCategory(Coef,Expon,Var): Category == Definition where
+  Coef  : Ring
+  Expon : OrderedAbelianMonoid
+  Var   : OrderedSet
+  I   ==> Integer
+  RN  ==> Fraction Integer
+
+  Definition ==> AbelianMonoidRing(Coef,Expon) with
+
+    monomial: (%,Var,Expon) -> %
+      ++ \spad{monomial(a,x,n)} computes \spad{a*x**n}.
+    monomial: (%,List Var,List Expon) -> %
+      ++ \spad{monomial(a,[x1,..,xk],[n1,..,nk])} computes
+      ++ \spad{a * x1**n1 * .. * xk**nk}.
+    leadingMonomial: % -> %
+      ++ leadingMonomial(f) returns the monomial of \spad{f} of lowest order.
+    leadingCoefficient: % -> Coef
+      ++ leadingCoefficient(f) returns the coefficient of the lowest order
+      ++ term of \spad{f}
+    degree : % -> Expon
+      ++ degree(f) returns the exponent of the lowest order term of \spad{f}.
+    variables: % -> List Var
+      ++ \spad{variables(f)} returns a list of the variables occuring in the
+      ++ power series f.
+    pole?: % -> Boolean
+      ++ \spad{pole?(f)} determines if the power series f has a pole.
+    complete: % -> %
+      ++ \spad{complete(f)} causes all terms of f to be computed.
+      ++ Note: this results in an infinite loop
+      ++ if f has infinitely many terms.
+
+   add
+    n:I    * ps:% == (zero? n => 0; map(n * #1,ps))
+    r:Coef * ps:% == (zero? r => 0; map(r * #1,ps))
+    ps:% * r:Coef == (zero? r => 0; map(#1 * r,ps))
+    - ps          == map(- #1,ps)
+
+    if Coef has Algebra Fraction Integer then
+      r:RN * ps:% == (zero? r => 0; map(r * #1,ps))
+      ps:% * r:RN == (zero? r => 0; map(#1 * r,ps))
+
+    if Coef has Field then
+      ps:% / r:Coef == map(#1 / r,ps)
+

@@ -1,0 +1,40 @@
+)abbrev package ODEPAL PureAlgebraicLODE
+++ Author: Manuel Bronstein
+++ Date Created: 21 August 1991
+++ Date Last Updated: 3 February 1994
+++ Description: In-field solution of an linear ordinary differential equation,
+++ pure algebraic case.
+PureAlgebraicLODE(F, UP, UPUP, R): Exports == Implementation where
+  F   : Join(Field, CharacteristicZero,
+             RetractableTo Integer, RetractableTo Fraction Integer)
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+  R   : FunctionFieldCategory(F, UP, UPUP)
+
+  RF  ==> Fraction UP
+  V   ==> Vector RF
+  U   ==> Union(R, "failed")
+  REC ==> Record(particular: Union(RF, "failed"), basis: List RF)
+  L   ==> LinearOrdinaryDifferentialOperator1 R
+  LQ  ==> LinearOrdinaryDifferentialOperator1 RF
+
+  Exports ==> with
+    algDsolve: (L, R) -> Record(particular: U, basis: List R)
+      ++ algDsolve(op, g) returns \spad{["failed", []]} if the equation
+      ++ \spad{op y = g} has no solution in \spad{R}. Otherwise, it returns
+      ++ \spad{[f, [y1,...,ym]]} where \spad{f} is a particular rational
+      ++ solution and the \spad{y_i's} form a basis for the solutions in
+      ++ \spad{R} of the homogeneous equation.
+
+  Implementation ==> add
+    import RationalLODE(F, UP)
+    import SystemODESolver(RF, LQ)
+    import ReduceLODE(RF, LQ, UPUP, R, L)
+
+    algDsolve(l, g) ==
+      rec := reduceLODE(l, g)
+      sol := solveInField(rec.mat, rec.vec, ratDsolve)
+      bas:List(R) := [represents v for v in sol.basis]
+      (u := sol.particular) case V => [represents(u::V), bas]
+      ["failed", bas]
+

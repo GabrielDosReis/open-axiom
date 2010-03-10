@@ -1,0 +1,26 @@
+)abbrev category OUTBCON OutputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ Description:
+++   This category describes output byte stream conduits.
+OutputByteConduit(): Category == Conduit with
+    --writeByteIfCan!: (%,Byte) -> SingleInteger
+      ++ writeByteIfCan!(c,b) attempts to write the byte `b' on
+      ++ the conduit `c'.  Returns the written byte if successful,
+      ++ otherwise, returns -1.
+      ++ Note: Ideally, the return value should have been of type
+      ++   Maybe Byte; but that would have implied allocating
+      ++   a cons cell for every write attempt, which is overkill.
+    writeBytes!: (%,ByteBuffer) -> SingleInteger
+      ++ writeBytes!(c,b) write bytes from buffer `b' 
+      ++ onto the conduit `c'.  The actual number of written 
+      ++ bytes is returned.
+  add
+    writeBytes!(cond,buf) ==
+      count: SingleInteger := 0
+      while count < capacity buf and 
+        writeByteIfCan!(cond,qelt(buf,count)) >= 0 repeat
+          count := count + 1
+      count
+

@@ -1,0 +1,33 @@
+)abbrev package RINTERP RationalInterpolation
+++ Description:
+++ This package exports rational interpolation algorithms
+RationalInterpolation(xx,F): Exports == Implementation  where
+    xx: Symbol
+    F: Field 
+    Exports == with
+        interpolate: (List F, List F, NonNegativeInteger, 
+                                NonNegativeInteger) -> Fraction Polynomial F
+    Implementation == add
+        interpolate(xlist, ylist, m, k) ==
+            #xlist ~= #ylist =>
+                error "Different number of points and values."
+            #xlist ~= m+k+1 =>
+                error "wrong number of points"
+            tempvec: List F := [1 for i in 1..(m+k+1)]
+
+            collist: List List F := cons(tempvec, 
+                                         [(tempvec := [tempvec.i * xlist.i _
+                                                       for i in 1..(m+k+1)]) _
+                                          for j in 1..max(m,k)])
+
+            collist := append([collist.j for j in 1..(m+1)], _
+                              [[- collist.j.i * ylist.i for i in 1..(m+k+1)] _
+                               for j in 1..(k+1)])
+            res: List Vector F := nullSpace((transpose matrix collist) _
+                                            ::Matrix F)
+            if #res~=1 then output("Warning: unattainable points!" _
+                                   ::OutputForm)$OutputPackage
+            reslist: List List Polynomial F := _
+                      [[(res.1).(i+1)*(xx::Polynomial F)**i for i in 0..m], _
+                      [(res.1).(i+m+2)*(xx::Polynomial F)**i for i in 0..k]] 
+            reduce((_+),reslist.1)/reduce((_+),reslist.2)

@@ -1,0 +1,57 @@
+)abbrev package FSRED FunctionSpaceReduce
+++ Reduction from a function space to the rational numbers
+++ Author: Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 11 Jul 1990
+++ Description:
+++ This package provides function which replaces transcendental kernels
+++ in a function space by random integers. The correspondence between
+++ the kernels and the integers is fixed between calls to new().
+++ Keywords: function, space, redcution.
+FunctionSpaceReduce(R, F): Exports == Implementation where
+  R: Join(OrderedSet, IntegralDomain, RetractableTo Integer)
+  F: FunctionSpace R
+
+  Z   ==> Integer
+  Q   ==> Fraction Integer
+  UP  ==> SparseUnivariatePolynomial Q
+  K   ==> Kernel F
+  ALGOP  ==> "%alg"
+
+  Exports ==> with
+    bringDown: F -> Q
+        ++ bringDown(f) \undocumented
+    bringDown: (F, K) -> UP
+        ++ bringDown(f,k) \undocumented
+    newReduc : () -> Void
+        ++ newReduc() \undocumented
+
+  Implementation ==> add
+    import SparseUnivariatePolynomialFunctions2(F, Q)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents K,
+                         K, R, SparseMultivariatePolynomial(R, K), F)
+
+    K2Z : K -> F
+
+    redmap := table()$AssociationList(K, Z)
+
+    newReduc() ==
+      for k in keys redmap repeat remove_!(k, redmap)
+      void
+
+    bringDown(f, k) ==
+      ff := univariate(f, k)
+      (bc := extendedEuclidean(map(bringDown, denom ff),
+                m := map(bringDown, minPoly k), 1)) case "failed" =>
+                     error "denominator is 0"
+      (map(bringDown, numer ff) * bc.coef1) rem m
+
+    bringDown f ==
+      retract(eval(f, lk := kernels f, [K2Z k for k in lk]))@Q
+
+    K2Z k ==
+      has?(operator k, ALGOP) => error "Cannot reduce constant field"
+      (u := search(k, redmap)) case "failed" =>
+                                      setelt(redmap, k, random()$Z)::F
+      u::Z::F
+

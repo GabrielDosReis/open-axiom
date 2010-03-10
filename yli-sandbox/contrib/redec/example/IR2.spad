@@ -1,0 +1,63 @@
+)abbrev package IR2 IntegrationResultFunctions2
+++ Internally used by the integration packages
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 12 August 1992
+++ Keywords: integration.
+IntegrationResultFunctions2(E, F): Exports == Implementation where
+  E : Field
+  F : Field
+
+  SE  ==> Symbol
+  Q   ==> Fraction Integer
+  IRE ==> IntegrationResult E
+  IRF ==> IntegrationResult F
+  UPE ==> SparseUnivariatePolynomial E
+  UPF ==> SparseUnivariatePolynomial F
+  NEE ==> Record(integrand:E, intvar:E)
+  NEF ==> Record(integrand:F, intvar:F)
+  LGE ==> Record(scalar:Q, coeff:UPE, logand:UPE)
+  LGF ==> Record(scalar:Q, coeff:UPF, logand:UPF)
+  NLE ==> Record(coeff:E, logand:E)
+  NLF ==> Record(coeff:F, logand:F)
+  UFE ==> Union(Record(mainpart:E, limitedlogs:List NLE), "failed")
+  URE ==> Union(Record(ratpart:E, coeff:E), "failed")
+  UE  ==> Union(E, "failed")
+
+  Exports ==> with
+    map: (E -> F, IRE) -> IRF
+        ++ map(f,ire) \undocumented
+    map: (E -> F, URE) -> Union(Record(ratpart:F, coeff:F), "failed")
+        ++ map(f,ure) \undocumented
+    map: (E -> F,  UE) -> Union(F, "failed")
+        ++ map(f,ue) \undocumented
+    map: (E -> F, UFE) ->
+               Union(Record(mainpart:F, limitedlogs:List NLF), "failed")
+        ++ map(f,ufe) \undocumented
+
+  Implementation ==> add
+    import SparseUnivariatePolynomialFunctions2(E, F)
+
+    NEE2F: (E -> F, NEE) -> NEF
+    LGE2F: (E -> F, LGE) -> LGF
+    NLE2F: (E -> F, NLE) -> NLF
+
+    NLE2F(func, r)         == [func(r.coeff), func(r.logand)]
+    NEE2F(func, n)         == [func(n.integrand), func(n.intvar)]
+    map(func:E -> F, u:UE) == (u case "failed" => "failed"; func(u::E))
+
+    map(func:E -> F, ir:IRE) ==
+      mkAnswer(func ratpart ir, [LGE2F(func, f) for f in logpart ir],
+                                   [NEE2F(func, g) for g in notelem ir])
+
+    map(func:E -> F, u:URE) ==
+      u case "failed" => "failed"
+      [func(u.ratpart), func(u.coeff)]
+
+    map(func:E -> F, u:UFE) ==
+      u case "failed" => "failed"
+      [func(u.mainpart), [NLE2F(func, f) for f in u.limitedlogs]]
+
+    LGE2F(func, lg) ==
+      [lg.scalar, map(func, lg.coeff), map(func, lg.logand)]
+

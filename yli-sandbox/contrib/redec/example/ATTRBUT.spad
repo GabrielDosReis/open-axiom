@@ -1,0 +1,210 @@
+)abbrev domain ATTRBUT AttributeButtons
+++ Author: Brian Dupee
+++ Date Created: April 1996
+++ Date Last Updated: December 1997
+++ Basic Operations: increase, decrease, getButtonValue, setButtonValue
+++ Related Constructors: Table(String,Float)
+++ Description:
+++ \axiomType{AttributeButtons} implements a database and associated
+++ adjustment mechanisms for a set of attributes.
+++
+++ For ODEs these attributes are "stiffness", "stability" (i.e. how much
+++ affect the cosine or sine component of the solution has on the stability of
+++ the result), "accuracy" and "expense" (i.e. how expensive is the evaluation
+++ of the ODE).  All these have bearing on the cost of calculating the 
+++ solution given that reducing the step-length to achieve greater accuracy 
+++ requires considerable number of evaluations and calculations.
+++
+++ The effect of each of these attributes can be altered by increasing or
+++ decreasing the button value.
+++
+++ For Integration there is a button for increasing and decreasing the preset
+++ number of function evaluations for each method.  This is automatically used
+++ by ANNA when a method fails due to insufficient workspace or where the
+++ limit of function evaluations has been reached before the required
+++ accuracy is achieved. 
+++ 
+AttributeButtons(): E == I where
+  F     ==> Float
+  ST    ==> String
+  LST   ==> List String
+  Rec   ==> Record(key:Symbol,entry:Any)
+  RList ==> List(Record(key:Symbol,entry:Any))
+  IFL   ==> List(Record(ifail:Integer,instruction:ST))
+  Entry ==> Record(chapter:ST, type:ST, domainName: ST, 
+                     defaultMin:F, measure:F, failList:IFL, explList:LST)
+
+
+  E ==> SetCategory with
+
+    increase:(ST,ST) -> F
+      ++ \axiom{increase(routineName,attributeName)} increases the value
+      ++ for the effect of the attribute \axiom{attributeName} with routine 
+      ++ \axiom{routineName}.
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    increase:(ST) -> F
+      ++ \axiom{increase(attributeName)} increases the value for the
+      ++ effect of the attribute \axiom{attributeName} with all routines.
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    decrease:(ST,ST) -> F
+      ++ \axiom{decrease(routineName,attributeName)} decreases the value
+      ++ for the effect of the attribute \axiom{attributeName} with routine
+      ++ \axiom{routineName}.
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    decrease:(ST) -> F
+      ++ \axiom{decrease(attributeName)} decreases the value for the
+      ++ effect of the attribute \axiom{attributeName} with all routines.
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    getButtonValue:(ST,ST) -> F
+      ++ \axiom{getButtonValue(routineName,attributeName)} returns the 
+      ++ current value for the effect of the attribute \axiom{attributeName}  
+      ++ with routine \axiom{routineName}.
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    resetAttributeButtons:() -> Void 
+      ++ \axiom{resetAttributeButtons()} resets the Attribute buttons to a 
+      ++ neutral level.
+    setAttributeButtonStep:(F) -> F
+      ++ \axiom{setAttributeButtonStep(n)} sets the value of the steps for 
+      ++ increasing and decreasing the button values. \axiom{n} must be 
+      ++ greater than 0 and less than 1.  The preset value is 0.5.
+    setButtonValue:(ST,F) -> F
+      ++ \axiom{setButtonValue(attributeName,n)} sets the
+      ++ value of all buttons of attribute \spad{attributeName}
+      ++ to \spad{n}. \spad{n} must be in the range [0..1].
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    setButtonValue:(ST,ST,F) -> F
+      ++ \axiom{setButtonValue(attributeName,routineName,n)} sets the
+      ++ value of the button of attribute \spad{attributeName} to routine
+      ++ \spad{routineName} to \spad{n}. \spad{n} must be in the range [0..1].
+      ++
+      ++ \axiom{attributeName} should be one of the values
+      ++ "stiffness", "stability", "accuracy", "expense" or
+      ++ "functionEvaluations".
+    finiteAggregate
+
+  I ==> add
+
+    Rep := StringTable(F)
+    import Rep
+
+    buttons:() -> $
+
+    buttons():$ == 
+      eList := empty()$List(Record(key:ST,entry:F))
+      l1:List String := ["stability","stiffness","accuracy","expense"]
+      l2:List String := ["functionEvaluations"]
+      ro1 := selectODEIVPRoutines(r := routines()$RoutinesTable)$RoutinesTable
+      ro2 := selectIntegrationRoutines(r)$RoutinesTable
+      k1:List String := [string(i)$Symbol for i in keys(ro1)$RoutinesTable]
+      k2:List String := [string(i)$Symbol for i in keys(ro2)$RoutinesTable]
+      for i in k1 repeat
+        for j in l1 repeat
+          e:Record(key:ST,entry:F) := [i j,0.5]
+          eList := cons(e,eList)$List(Record(key:ST,entry:F))
+      for i in k2 repeat
+        for j in l2 repeat
+          e:Record(key:ST,entry:F) := [i j,0.5]
+          eList := cons(e,eList)$List(Record(key:ST,entry:F))
+      construct(eList)$Rep
+
+    attributeButtons:$ := buttons()
+
+    attributeStep:F := 0.5
+
+    setAttributeButtonStep(n:F):F ==
+      positive?(n)$F and (n<1$F) => attributeStep:F := n
+      error("setAttributeButtonStep","New value must be in (0..1)")$ErrorFunctions
+
+    resetAttributeButtons():Void ==
+      attributeButtons := buttons()
+      void()$Void
+
+    setButtonValue(routineName:ST,attributeName:ST,n:F):F ==
+      f := search(routineName attributeName,attributeButtons)$Rep
+      f case Float => 
+        n>=0$F and n<=1$F => 
+          setelt(attributeButtons,routineName attributeName,n)$Rep
+        error("setAttributeButtonStep","New value must be in [0..1]")$ErrorFunctions
+      error("setButtonValue","attribute name " attributeName 
+             " not found for routine " routineName)$ErrorFunctions
+
+    setButtonValue(attributeName:ST,n:F):F ==
+      ro1 := selectODEIVPRoutines(r := routines()$RoutinesTable)$RoutinesTable
+      ro2 := selectIntegrationRoutines(r)$RoutinesTable
+      l1:List String := ["stability","stiffness","accuracy","expense"]
+      l2:List String := ["functionEvaluations"]
+      if attributeName="functionEvaluations" then
+        for i in keys(ro2)$RoutinesTable repeat
+          setButtonValue(string(i)$Symbol,attributeName,n)
+      else
+        for i in keys(ro1)$RoutinesTable repeat
+          setButtonValue(string(i)$Symbol,attributeName,n)
+      n
+
+    increase(routineName:ST,attributeName:ST):F ==
+      f := search(routineName attributeName,attributeButtons)$Rep
+      f case Float => 
+        newValue:F := (1$F-attributeStep)*f+attributeStep
+        setButtonValue(routineName,attributeName,newValue)
+      error("increase","attribute name " attributeName 
+             " not found for routine " routineName)$ErrorFunctions
+
+    increase(attributeName:ST):F ==
+      ro1 := selectODEIVPRoutines(r := routines()$RoutinesTable)$RoutinesTable
+      ro2 := selectIntegrationRoutines(r)$RoutinesTable
+      l1:List String := ["stability","stiffness","accuracy","expense"]
+      l2:List String := ["functionEvaluations"]
+      if attributeName="functionEvaluations" then
+        for i in keys(ro2)$RoutinesTable repeat
+          increase(string(i)$Symbol,attributeName)
+      else
+        for i in keys(ro1)$RoutinesTable repeat
+          increase(string(i)$Symbol,attributeName)
+      getButtonValue(string(i)$Symbol,attributeName)
+
+    decrease(routineName:ST,attributeName:ST):F ==
+      f := search(routineName attributeName,attributeButtons)$Rep
+      f case Float => 
+        newValue:F := (1$F-attributeStep)*f
+        setButtonValue(routineName,attributeName,newValue)
+      error("increase","attribute name " attributeName 
+             " not found for routine " routineName)$ErrorFunctions
+
+    decrease(attributeName:ST):F ==
+      ro1 := selectODEIVPRoutines(r := routines()$RoutinesTable)$RoutinesTable
+      ro2 := selectIntegrationRoutines(r)$RoutinesTable
+      l1:List String := ["stability","stiffness","accuracy","expense"]
+      l2:List String := ["functionEvaluations"]
+      if attributeName="functionEvaluations" then
+        for i in keys(ro2)$RoutinesTable repeat
+          decrease(string(i)$Symbol,attributeName)
+      else
+        for i in keys(ro1)$RoutinesTable repeat
+          decrease(string(i)$Symbol,attributeName)
+      getButtonValue(string(i)$Symbol,attributeName)
+
+
+    getButtonValue(routineName:ST,attributeName:ST):F == 
+      f := search(routineName attributeName,attributeButtons)$Rep
+      f case Float => f
+      error("getButtonValue","attribute name " attributeName 
+              " not found for routine " routineName)$ErrorFunctions
+

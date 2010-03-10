@@ -1,0 +1,23 @@
+)abbrev category RNG Rng
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of associative rings, not necessarily commutative, and not
+++ necessarily with a 1. This is a combination of an abelian group
+++ and a semigroup, with multiplication distributing over addition.
+++
+++ Axioms:
+++   \spad{ x*(y+z) = x*y + x*z}
+++   \spad{ (x+y)*z = x*z + y*z }
+++
+++ Conditional attributes:
+++   \spadnoZeroDivisors\tab{25}\spad{  ab = 0 => a=0 or b=0}
+Rng(): Category == Join(AbelianGroup,SemiGroup)
+

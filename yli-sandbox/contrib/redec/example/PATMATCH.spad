@@ -1,0 +1,70 @@
+)abbrev package PATMATCH PatternMatch
+++ Top-level pattern matching functions
+++ Author: Manuel Bronstein
+++ Date Created: 3 Dec 1989
+++ Date Last Updated: 29 Jun 1990
+++ Description:
+++   This package provides the top-level pattern macthing functions.
+++ Keywords: pattern, matching.
+PatternMatch(Base, Subject, Pat): Exports == Implementation where
+  Base   : SetCategory
+  Subject: PatternMatchable Base
+  Pat    : ConvertibleTo Pattern Base
+
+  Exports ==> with
+    is?: (Subject, Pat)      -> Boolean
+      ++ is?(expr, pat) tests if the expression expr matches
+      ++ the pattern pat.
+    is?: (List Subject, Pat) -> Boolean
+      ++ is?([e1,...,en], pat) tests if the list of
+      ++ expressions \spad{[e1,...,en]} matches
+      ++ the pattern pat.
+    Is : (List Subject, Pat) ->
+                     PatternMatchListResult(Base, Subject, List Subject)
+      ++ Is([e1,...,en], pat) matches the pattern pat on the list of
+      ++ expressions \spad{[e1,...,en]} and returns the result.
+    if Subject has RetractableTo(Symbol) then
+      Is: (Subject, Pat) -> List Equation Subject
+        ++ Is(expr, pat) matches the pattern pat on the expression
+        ++ expr and returns a list of matches \spad{[v1 = e1,...,vn = en]};
+        ++ returns an empty list if either expr is exactly equal to
+        ++ pat or if pat does not match expr.
+    else
+      if Subject has Ring then
+        Is: (Subject, Pat) -> List Equation Polynomial Subject
+          ++ Is(expr, pat) matches the pattern pat on the expression
+          ++ expr and returns a list of matches \spad{[v1 = e1,...,vn = en]};
+          ++ returns an empty list if either expr is exactly equal to
+          ++ pat or if pat does not match expr.
+      else
+        Is: (Subject, Pat) -> PatternMatchResult(Base, Subject)
+          ++ Is(expr, pat) matches the pattern pat on the expression
+          ++ expr and returns a match of the form \spad{[v1 = e1,...,vn = en]};
+          ++ returns an empty match if expr is exactly equal to pat.
+          ++ returns a \spadfun{failed} match if pat does not match expr.
+
+  Implementation ==> add
+    import PatternMatchListAggregate(Base, Subject, List Subject)
+
+    ist: (Subject, Pat) -> PatternMatchResult(Base, Subject)
+
+    ist(s, p)                  == patternMatch(s, convert p, new())
+    is?(s:     Subject, p:Pat) == not failed? ist(s, p)
+    is?(s:List Subject, p:Pat) == not failed? Is(s, p)
+    Is(s:List Subject,  p:Pat) == patternMatch(s, convert p, new())
+
+    if Subject has RetractableTo(Symbol) then
+      Is(s:Subject, p:Pat):List(Equation Subject) ==
+        failed?(r := ist(s, p)) => empty()
+        [rec.key::Subject = rec.entry for rec in destruct r]
+
+    else
+      if Subject has Ring then
+        Is(s:Subject, p:Pat):List(Equation Polynomial Subject) ==
+          failed?(r := ist(s, p)) => empty()
+          [rec.key::Polynomial(Subject) =$Equation(Polynomial Subject)
+           rec.entry::Polynomial(Subject) for rec in destruct r]
+
+      else
+        Is(s:Subject,p:Pat):PatternMatchResult(Base,Subject) == ist(s,p)
+

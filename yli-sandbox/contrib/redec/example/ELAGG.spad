@@ -1,0 +1,69 @@
+import Type
+import LinearAggregate
+import OrderedSet
+import Integer
+)abbrev category ELAGG ExtensibleLinearAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An extensible aggregate is one which allows insertion and deletion of entries.
+++ These aggregates are models of lists and streams which are represented
+++ by linked structures so as to make insertion, deletion, and
+++ concatenation efficient. However, access to elements of these
+++ extensible aggregates is generally slow since access is made from the end.
+++ See \spadtype{FlexibleArray} for an exception.
+ExtensibleLinearAggregate(S:Type):Category == LinearAggregate S with
+   shallowlyMutable
+   concat_!: (%,S) -> %
+     ++ concat!(u,x) destructively adds element x to the end of u.
+   concat_!: (%,%) -> %
+     ++ concat!(u,v) destructively appends v to the end of u.
+     ++ v is unchanged
+   delete_!: (%,Integer) -> %
+     ++ delete!(u,i) destructively deletes the \axiom{i}th element of u.
+   delete_!: (%,UniversalSegment(Integer)) -> %
+     ++ delete!(u,i..j) destructively deletes elements u.i through u.j.
+   remove_!: (S->Boolean,%) -> %
+     ++ remove!(p,u) destructively removes all elements x of
+     ++ u such that \axiom{p(x)} is true.
+   insert_!: (S,%,Integer) -> %
+     ++ insert!(x,u,i) destructively inserts x into u at position i.
+   insert_!: (%,%,Integer) -> %
+     ++ insert!(v,u,i) destructively inserts aggregate v into u at position i.
+   merge_!: ((S,S)->Boolean,%,%) -> %
+     ++ merge!(p,u,v) destructively merges u and v using predicate p.
+   select_!: (S->Boolean,%) -> %
+     ++ select!(p,u) destructively changes u by keeping only values x such that
+     ++ \axiom{p(x)}.
+   if S has SetCategory then
+     remove_!: (S,%) -> %
+       ++ remove!(x,u) destructively removes all values x from u.
+     removeDuplicates_!: % -> %
+       ++ removeDuplicates!(u) destructively removes duplicates from u.
+   if S has OrderedSet then merge_!: (%,%) -> %
+       ++ merge!(u,v) destructively merges u and v in ascending order.
+ add
+   delete(x:%, i:Integer)          == delete_!(copy x, i)
+   delete(x:%, i:UniversalSegment(Integer))        == delete_!(copy x, i)
+   remove(f:S -> Boolean, x:%)   == remove_!(f, copy x)
+   insert(s:S, x:%, i:Integer)   == insert_!(s, copy x, i)
+   insert(w:%, x:%, i:Integer)   == insert_!(copy w, copy x, i)
+   select(f, x)            == select_!(f, copy x)
+   concat(x:%, y:%)        == concat_!(copy x, y)
+   concat(x:%, y:S)        == concat_!(copy x, new(1, y))
+   concat_!(x:%, y:S)      == concat_!(x, new(1, y))
+   if S has SetCategory then
+     remove(s:S, x:%)        == remove_!(s, copy x)
+     remove_!(s:S, x:%)      == remove_!(#1 = s, x)
+     removeDuplicates(x:%)   == removeDuplicates_!(copy x)
+
+   if S has OrderedSet then
+     merge_!(x, y) == merge_!(_<$S, x, y)
+

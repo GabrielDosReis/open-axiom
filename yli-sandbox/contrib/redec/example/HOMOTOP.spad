@@ -1,0 +1,11 @@
+)abbrev category HOMOTOP HomotopicTo
+++ Author: Gabriel Dos Reis
+++ Date Create: November 19, 2008
+++ Date Last Modified: November 19, 2008
+++ See Also: CoercibleTo, CoercibleFrom
+++ Description:
+++   A is homotopic to B iff any element of domain B can be
+++   automically converted into an element of domain B, and nay
+++   element of domain B can be automatically converted into an A.
+HomotopicTo(S: Type): Category ==  Join(CoercibleTo S, CoercibleFrom S)
+

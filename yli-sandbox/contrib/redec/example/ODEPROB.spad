@@ -1,0 +1,43 @@
+)abbrev domain ODEPROB NumericalODEProblem
+++ Author: Brian Dupee
+++ Date Created: December 1997
+++ Date Last Updated: December 1997
+++ Basic Operations: coerce, retract
+++ Related Constructors: Union
+++ Description:
+++ \axiomType{NumericalODEProblem} is a \axiom{domain}
+++ for the representation of Numerical ODE problems for use
+++ by ANNA. 
+++
+++ The representation is of type: 
+++
+++ \axiomType{Record}(xinit:\axiomType{DoubleFloat},
+++ xend:\axiomType{DoubleFloat},
+++ fn:\axiomType{Vector Expression DoubleFloat},
+++ yinit:\axiomType{List DoubleFloat},intvals:\axiomType{List DoubleFloat},
+++ g:\axiomType{Expression DoubleFloat},abserr:\axiomType{DoubleFloat},
+++ relerr:\axiomType{DoubleFloat})
+++
+
+DFB   ==> DoubleFloat
+VEDFB ==> Vector Expression DoubleFloat
+LDFB  ==> List DoubleFloat
+EDFB  ==> Expression DoubleFloat
+ODEAB ==> Record(xinit:DFB,xend:DFB,fn:VEDFB,yinit:LDFB,intvals:LDFB,g:EDFB,abserr:DFB,relerr:DFB)
+NumericalODEProblem():SetCategory with
+
+    coerce: ODEAB -> %
+      ++ coerce(x) \undocumented{}
+    retract: % -> ODEAB
+      ++ retract(x) \undocumented{}
+
+  ==
+ 
+    add
+      Rep := ODEAB
+ 
+      coerce(s:ODEAB) == s
+      coerce(x:%):OutputForm ==
+        (retract(x))::OutputForm
+      retract(x:%):ODEAB == x :: Rep
+

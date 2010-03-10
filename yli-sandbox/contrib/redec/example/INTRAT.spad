@@ -1,0 +1,61 @@
+)abbrev package INTRAT RationalIntegration
+++ Rational function integration
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 24 October 1995
+++ Description:
+++   This package provides functions for the base
+++   case of the Risch algorithm.
+-- Used internally bt the integration packages
+RationalIntegration(F, UP): Exports == Implementation where
+  F : Join(Field, CharacteristicZero, RetractableTo Integer)
+  UP: UnivariatePolynomialCategory F
+
+  RF  ==> Fraction UP
+  IR  ==> IntegrationResult RF
+  LLG ==> List Record(coeff:RF, logand:RF)
+  URF ==> Union(Record(ratpart:RF, coeff:RF), "failed")
+  U   ==> Union(Record(mainpart:RF, limitedlogs:LLG), "failed")
+
+  Exports ==> with
+    integrate  : RF -> IR
+      ++ integrate(f) returns g such that \spad{g' = f}.
+    infieldint : RF -> Union(RF, "failed")
+      ++ infieldint(f) returns g such that \spad{g' = f} or "failed"
+      ++ if the integral of f is not a rational function.
+    extendedint: (RF, RF) -> URF
+       ++ extendedint(f, g) returns fractions \spad{[h, c]} such that
+       ++ \spad{c' = 0} and \spad{h' = f - cg},
+       ++ if \spad{(h, c)} exist, "failed" otherwise.
+    limitedint : (RF, List RF) -> U
+       ++ \spad{limitedint(f, [g1,...,gn])} returns
+       ++ fractions \spad{[h,[[ci, gi]]]}
+       ++ such that the gi's are among \spad{[g1,...,gn]}, \spad{ci' = 0}, and
+       ++ \spad{(h+sum(ci log(gi)))' = f}, if possible, "failed" otherwise.
+
+  Implementation ==> add
+    import TranscendentalIntegration(F, UP)
+
+    infieldint f ==
+      rec := baseRDE(0, f)$TranscendentalRischDE(F, UP)
+      rec.nosol => "failed"
+      rec.ans
+
+    integrate f ==
+      rec := monomialIntegrate(f, differentiate)
+      integrate(rec.polypart)::RF::IR + rec.ir
+
+    limitedint(f, lu) ==
+      quorem := divide(numer f, denom f)
+      (u := primlimintfrac(quorem.remainder / (denom f), differentiate,
+        lu)) case "failed" => "failed"
+      [u.mainpart + integrate(quorem.quotient)::RF, u.limitedlogs]
+
+    extendedint(f, g) ==
+      fqr := divide(numer f, denom f)
+      gqr := divide(numer g, denom g)
+      (i1 := primextintfrac(fqr.remainder / (denom f), differentiate,
+                   gqr.remainder / (denom g))) case "failed" => "failed"
+      i2:=integrate(fqr.quotient-retract(i1.coeff)@UP *gqr.quotient)::RF
+      [i2 + i1.ratpart, i1.coeff]
+

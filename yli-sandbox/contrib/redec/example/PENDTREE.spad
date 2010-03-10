@@ -1,0 +1,31 @@
+)abbrev domain PENDTREE PendantTree
+++ A PendantTree(S)is either a leaf? and is an S or has
+++ a left and a right both PendantTree(S)'s
+PendantTree(S: SetCategory): T == C where
+ T == Join(BinaryRecursiveAggregate(S),CoercibleTo Tree S) with
+     ptree : S->%
+       ++ ptree(s) is a leaf? pendant tree
+     ptree:(%, %)->%
+        ++ ptree(x,y) \undocumented
+ 
+ C == add
+     Rep := Tree S
+     import Tree S
+     coerce (t:%):Tree S == t pretend Tree S
+     ptree(n) == tree(n,[])$Rep pretend %
+     ptree(l,r) == tree(value(r:Rep)$Rep,cons(l,children(r:Rep)$Rep)):%
+     leaf? t == empty?(children(t)$Rep)
+     t1=t2 == (t1:Rep) = (t2:Rep)
+     left b ==
+       leaf? b => error "ptree:no left"
+       first(children(b)$Rep)
+     right b ==
+       leaf? b => error "ptree:no right"
+       tree(value(b)$Rep,rest (children(b)$Rep))
+     value b ==
+       leaf? b => value(b)$Rep
+       error "the pendant tree has no value"
+     coerce(b:%): OutputForm ==
+       leaf? b => value(b)$Rep :: OutputForm
+       paren blankSeparate [left b::OutputForm,right b ::OutputForm]
+

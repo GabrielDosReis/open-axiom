@@ -1,0 +1,224 @@
+)abbrev package TWOFACT TwoFactorize
+++ Authors : P.Gianni, J.H.Davenport
+++ Date Created : May 1990
+++ Date Last Updated: March 1992
+++ Description:
+++ A basic package for the factorization of bivariate polynomials 
+++ over a finite field.
+++ The functions here represent the base step for the multivariate factorizer.
+ 
+TwoFactorize(F) : C == T
+ where
+  F          :   FiniteFieldCategory
+  SUP       ==>  SparseUnivariatePolynomial
+  R         ==>  SUP F
+  P         ==>  SUP R
+  UPCF2     ==>  UnivariatePolynomialCategoryFunctions2
+ 
+  C == with
+    generalTwoFactor    : (P)  ->  Factored P 
+      ++ generalTwoFactor(p) returns the factorisation of polynomial p,
+      ++ a sparse univariate polynomial (sup) over a
+      ++ sup over F.
+    generalSqFr    : (P)  ->  Factored P 
+      ++ generalSqFr(p) returns the square-free factorisation of polynomial p,
+      ++ a sparse univariate polynomial (sup) over a
+      ++ sup over F.
+    twoFactor    : (P,Integer)  ->  Factored P 
+      ++ twoFactor(p,n) returns the factorisation of polynomial p,
+      ++ a sparse univariate polynomial (sup) over a
+      ++ sup over F. 
+      ++ Also, p is assumed primitive and square-free and n is the 
+      ++ degree of the inner variable of p (maximum of the degrees
+      ++ of the coefficients of p).
+ 
+  T == add
+    PI ==> PositiveInteger
+    NNI ==> NonNegativeInteger
+    import CommuteUnivariatePolynomialCategory(F,R,P)
+
+                   ----  Local Functions  ----
+    computeDegree  :  (P,Integer,Integer) -> PI
+    exchangeVars   :           P          -> P
+    exchangeVarTerm:        (R, NNI)      -> P
+    pthRoot        :     (R, NNI, NNI)    -> R
+ 
+    -- compute the degree of the extension to reduce the polynomial to a
+    -- univariate one
+    computeDegree(m : P,mx:Integer,q:Integer): PI ==
+      my:=degree m
+      n1:Integer:=length(10*mx*my)
+      n2:Integer:=length(q)-1
+      n:=(n1 quo n2)+1
+      n::PI
+--      n=1 => 1$PositiveInteger
+--      (nextPrime(max(n,min(mx,my)))$IntegerPrimesPackage(Integer))::PI
+ 
+    exchangeVars(p : P) : P ==
+       p = 0 => 0
+       exchangeVarTerm(leadingCoefficient p, degree p) +
+          exchangeVars(reductum p)
+
+    exchangeVarTerm(c:R, e:NNI) : P ==
+       c = 0 => 0
+       monomial(monomial(leadingCoefficient c, e)$R, degree c)$P + 
+          exchangeVarTerm(reductum c, e)
+
+    pthRoot(poly:R,p:NonNegativeInteger,PthRootPow:NonNegativeInteger):R ==
+       tmp:=divideExponents(map((#1::F)**PthRootPow,poly),p)
+       tmp case "failed" => error "consistency error in TwoFactor"
+       tmp
+ 
+    fUnion ==> Union("nil", "sqfr", "irred", "prime")
+    FF     ==> Record(flg:fUnion, fctr:P, xpnt:Integer)
+
+    generalSqFr(m:P): Factored P ==
+       m = 0 => 0
+       degree m = 0 =>
+         l:=squareFree(leadingCoefficient m)
+         makeFR(unit(l)::P,[[u.flg,u.fctr::P,u.xpnt] for u in factorList l])
+       cont := content m
+       m := (m exquo cont)::P
+       sqfrm := squareFree m
+       pfaclist : List FF := empty()
+       unitPart := unit sqfrm
+       for u in factorList sqfrm repeat
+          u.flg = "nil" =>
+             uexp:NNI:=(u.xpnt) pretend NNI
+             nfacs:=squareFree(exchangeVars u.fctr)
+             for v in factorList nfacs repeat
+                pfaclist:=cons([v.flg, exchangeVars v.fctr, v.xpnt*uexp],
+                              pfaclist)
+             unitPart := unit(nfacs)**uexp * unitPart
+          pfaclist := cons(u,pfaclist)
+       cont ~= 1 =>
+           sqp := squareFree cont
+           contlist:=[[w.flg,(w.fctr)::P,w.xpnt] for w in factorList sqp]
+           pfaclist:= append(contlist, pfaclist)
+           makeFR(unit(sqp)*unitPart,pfaclist)
+       makeFR(unitPart,pfaclist)
+
+        
+    generalTwoFactor(m:P): Factored P ==
+       m = 0 => 0
+       degree m = 0 =>
+         l:=factor(leadingCoefficient m)$DistinctDegreeFactorize(F,R)
+         makeFR(unit(l)::P,[[u.flg,u.fctr::P,u.xpnt] for u in factorList l])
+       ll:List FF
+       ll:=[]
+       unitPart:P
+       cont:=content m
+       if degree(cont)>0 then 
+          m1:=m exquo cont
+          m1 case "failed" => error "content doesn't divide"
+          m:=m1
+          contfact:=factor(cont)$DistinctDegreeFactorize(F,R)
+          unitPart:=(unit contfact)::P
+          ll:=[[w.flg,(w.fctr)::P,w.xpnt] for w in factorList contfact]
+       else
+          unitPart:=cont::P
+       sqfrm:=squareFree m
+       for u in factors sqfrm repeat
+           expo:=u.exponent
+           if expo < 0 then error "negative exponent in a factorisation"
+           expon:NonNegativeInteger:=expo::NonNegativeInteger
+           fac:=u.factor
+           degree fac = 1 => ll:=[["irred",fac,expon],:ll]
+           differentiate fac = 0 =>      
+              -- the polynomial is  inseparable w.r.t. its main variable
+              map(differentiate,fac) = 0 =>
+                p:=characteristic$F
+                PthRootPow:=(size$F exquo p)::NonNegativeInteger
+                m1:=divideExponents(map(pthRoot(#1,p,PthRootPow),fac),p)
+                m1 case "failed" => error "consistency error in TwoFactor"
+                res:=generalTwoFactor m1
+                unitPart:=unitPart*unit(res)**((p*expon)::NNI)
+                ll:=[:[[v.flg,v.fctr,expon *p*v.xpnt] for v in factorList res],:ll]
+              m2:=generalTwoFactor swap fac
+              unitPart:=unitPart*unit(m2)**(expon::NNI)
+              ll:=[:[[v.flg,swap v.fctr,expon*v.xpnt] for v in factorList m2],:ll]
+           ydeg:="max"/[degree w for w in coefficients fac]
+           twoF:=twoFactor(fac,ydeg)
+           unitPart:=unitPart*unit(twoF)**expon
+           ll:=[:[[v.flg,v.fctr,expon*v.xpnt] for v in factorList twoF],
+                :ll]
+       makeFR(unitPart,ll)
+ 
+    macro extField == FiniteFieldExtension(F,n)
+    macro SUEx == SUP extField
+    macro TP == SparseUnivariatePolynomial SUEx
+    macro Normp == NormRetractPackage(F, extField, SUEx, TP, n)
+
+ 
+   -- factorization of a primitive square-free bivariate polynomial --
+    twoFactor(m:P,dx:Integer):Factored P ==
+       -- choose the degree for the extension
+       n:PI:=computeDegree(m,dx,size()$F)
+       -- extend the field
+       -- find the substitution for x
+       look:Boolean:=true
+       dm:=degree m
+       try:Integer:=min(5,size()$F)
+       i:Integer:=0
+       lcm := leadingCoefficient m
+       umv : R
+       vval : F
+       while look and i < try repeat
+          vval := random()$F
+          i:=i+1
+          zero? elt(lcm, vval) => "next value"
+          umv := map(elt(#1,vval), m)$UPCF2(R, P, F, R)
+          degree(gcd(umv,differentiate umv))~=0 => "next val"
+          n := 1
+          look := false
+--     --  extField:=FiniteFieldExtension(F,n)
+       -- SUEx:=SUP extField
+       --TP:=SparseUnivariatePolynomial SUEx
+       mm:TP:=0
+       m1:=m
+       while m1~=0 repeat
+         mm:=mm+monomial(map(coerce,leadingCoefficient m1)$UPCF2(F,R,
+                extField,SUEx),degree m1)
+         m1:=reductum m1
+       lcmm := leadingCoefficient mm
+       val : extField
+       umex : SUEx
+       if not look then
+          val := vval :: extField
+          umex := map(coerce, umv)$UPCF2(F, R, extField, SUEx)
+       while look repeat
+         val:=random()$extField
+         i:=i+1
+         elt(lcmm,val)=0 => "next value"
+         umex := map(elt(#1,val), mm)$UPCF2(SUEx, TP, extField, SUEx)
+         degree(gcd(umex,differentiate umex))~=0 => "next val"
+         look:=false
+       prime:SUEx:=monomial(1,1)-monomial(val,0)
+       fumex:=factor(umex)$DistinctDegreeFactorize(extField,SUEx)
+       lfact1:=factors fumex
+
+       #lfact1=1 => primeFactor(m,1)
+       lfact : List TP :=
+          [map(coerce,lf.factor)$UPCF2(extField,SUEx,SUEx,TP)
+           for lf in lfact1]
+       lfact:=cons(map(coerce,unit fumex)$UPCF2(extField,SUEx,SUEx,TP),
+                   lfact)
+       import GeneralHenselPackage(SUEx,TP)
+       dx1:PI:=(dx+1)::PI
+       lfacth: List TP :=completeHensel(mm,lfact,prime,dx1)
+       lfactk: List P :=[]
+       --Normp := NormRetractPackage(F, extField, SUEx, TP, n)
+      
+       while not empty? lfacth repeat
+         ff := first lfacth
+         lfacth := rest lfacth
+         if ((c:=leadingCoefficient leadingCoefficient ff) ~=1)@Boolean then
+           ff:=((inv c)::SUEx)* ff
+         not ((ffu:= retractIfCan(ff)$Normp) case "failed") =>
+                    lfactk := cons(ffu::P, lfactk)
+         normfacs := normFactors(ff)$Normp
+         lfacth := [g for g in lfacth | not member?(g, normfacs)]
+         ffn := */normfacs
+         lfactk:=cons(retractIfCan(ffn)$Normp :: P, lfactk)
+       */[primeFactor(ff1,1) for ff1 in lfactk]
+

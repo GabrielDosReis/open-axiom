@@ -1,0 +1,22 @@
+)abbrev category ATRIG ArcTrigonometricFunctionCategory
+++ Category for the inverse trigonometric functions
+++ Author: ???
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description: Category for the inverse trigonometric functions;
+ArcTrigonometricFunctionCategory(): Category == with
+    acos: $ -> $       ++ acos(x) returns the arc-cosine of x.
+    acot: $ -> $       ++ acot(x) returns the arc-cotangent of x.
+    acsc: $ -> $       ++ acsc(x) returns the arc-cosecant of x.
+    asec: $ -> $       ++ asec(x) returns the arc-secant of x.
+    asin: $ -> $       ++ asin(x) returns the arc-sine of x.
+    atan: $ -> $       ++ atan(x) returns the arc-tangent of x.
+ add
+    if $ has Ring then
+       asec(x) ==
+         (a := recip x) case "failed" => error "asec: no reciprocal"
+         acos(a::$)
+       acsc(x) == 
+         (a := recip x) case "failed" => error "acsc: no reciprocal"
+         asin(a::$)
+

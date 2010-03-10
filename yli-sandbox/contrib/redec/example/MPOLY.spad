@@ -1,0 +1,22 @@
+)abbrev domain MPOLY MultivariatePolynomial
+++ Author: Dave Barton, Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: Ring, degree, eval, coefficient, monomial, differentiate,
+++ resultant, gcd
+++ Related Constructors: SparseMultivariatePolynomial, Polynomial
+++ Also See:
+++ AMS Classifications:
+++ Keywords: polynomial, multivariate
+++ References:
+++ Description:
+++   This type is the basic representation of sparse recursive multivariate
+++ polynomials whose variables are from a user specified list of symbols.
+++ The ordering is specified by the position of the variable in the list.
+++ The coefficient ring may be non commutative,
+++ but the variables are assumed to commute.
+
+MultivariatePolynomial(vl:List Symbol, R:Ring)
+   ==  SparseMultivariatePolynomial(--SparseUnivariatePolynomial,
+           R, OrderedVariableList vl)
+

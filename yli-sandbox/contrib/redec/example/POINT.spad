@@ -1,0 +1,27 @@
+)abbrev domain POINT Point
+++ Description:
+++ This domain implements points in coordinate space
+ 
+Point(R:Ring) : Exports == Implementation where
+  -- Domains for points, subspaces and properties of components in
+  -- a subspace
+ 
+  Exports ==> PointCategory(R)
+ 
+  Implementation ==> Vector (R) add
+    PI   ==> PositiveInteger
+
+    point(l:List R):% ==
+      pt := new(#l,R)
+      for x in l for i in minIndex(pt).. repeat
+        pt.i := x
+      pt
+    dimension p == (# p)::PI  -- Vector returns NonNegativeInteger...?
+    convert(l:List R):% == point(l)
+    cross(p0, p1) ==
+      #p0 ~=3 or #p1~=3 => error "Arguments to cross must be three dimensional"      
+      point [p0.2 * p1.3 - p1.2 * p0.3, _
+             p1.1 * p0.3 - p0.1 * p1.3, _
+             p0.1 * p1.2 - p1.1 * p0.2]
+    extend(p,l) == concat(p,point l)
+

@@ -1,0 +1,23 @@
+)abbrev domain LODO2 LinearOrdinaryDifferentialOperator2
+++ Author: Stephen M. Watt, Manuel Bronstein
+++ Date Created: 1986
+++ Date Last Updated: 1 February 1994
+++ Keywords: differential operator
+++ Description:
+++   \spad{LinearOrdinaryDifferentialOperator2} defines a ring of
+++   differential operators with coefficients in a differential ring A
+++   and acting on an A-module M.
+++   Multiplication of operators corresponds to functional composition:
+++       \spad{(L1 * L2).(f) = L1 L2 f}
+LinearOrdinaryDifferentialOperator2(A, M): Exports == Implementation where
+  A: DifferentialRing
+  M: LeftModule A with 
+        differentiate: $ -> $
+                ++ differentiate(x) returns the derivative of x
+
+  Exports ==> Join(LinearOrdinaryDifferentialOperatorCategory A, Eltable(M, M))
+
+  Implementation ==> LinearOrdinaryDifferentialOperator(A, differentiate$A) add
+      elt(p:%, m:M):M ==
+        apply(p, differentiate, m)$ApplyUnivariateSkewPolynomial(A, M, %)
+

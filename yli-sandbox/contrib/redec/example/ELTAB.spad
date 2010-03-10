@@ -1,0 +1,22 @@
+import Type
+import SetCategory
+)abbrev category ELTAB Eltable
+++ Author: Michael Monagan; revised by Manuel Bronstein and Manuel Bronstein
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An eltable over domains D and I is a structure which can be viewed
+++ as a function from D to I.
+++ Examples of eltable structures range from data structures, e.g. those
+++ of type \spadtype{List}, to algebraic structures, e.g. \spadtype{Polynomial}.
+Eltable(S:SetCategory, Index:Type): Category == with
+  elt : (%, S) -> Index
+     ++ elt(u,i) (also written: u . i) returns the element of u indexed by i.
+     ++ Error: if i is not an index of u.
+

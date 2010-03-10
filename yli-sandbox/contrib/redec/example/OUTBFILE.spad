@@ -1,0 +1,35 @@
+)abbrev domain OUTBFILE OutputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: September 30, 2008
+++ Date Last Modified: September 30, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for output operations.  `Binary' here means that the conduits
+++   do not interpret their contents.
+OutputBinaryFile(): Public == Private where
+  Public == Join(OutputByteConduit, CoercibleTo OutputForm) with
+    outputBinaryFile: FileName -> %
+      ++ outputBinaryFile(f) returns an output conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    outputBinaryFile: String -> %
+      ++ outputBinaryFile(f) returns an output conduit obtained by
+      ++ opening the file named by `f' as a binary file.
+    isOpen?: % -> Boolean
+      ++ open?(ifile) holds if `ifile' is in open state.
+  Private == add
+    Rep == Record(stream: SExpression, filename: FileName)
+    outputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,output$IOMode)$Lisp,f]
+    outputBinaryFile(f: String) ==
+      per [openBinaryFile(f,output$IOMode)$Lisp,f::FileName]
+    isOpen? ifile ==
+      not null? rep(ifile).stream
+    writeByte!(ifile,b) ==
+      isOpen? ifile => writeByteToFile(rep(ifile).stream,b)$Lisp
+      error "file is not open"
+    close! ifile ==
+      if isOpen? ifile then
+        rep(ifile).stream := closeFile(rep(ifile).stream)$Lisp
+      ifile
+    coerce(ifile: %): OutputForm ==
+      rep(ifile).filename::OutputForm

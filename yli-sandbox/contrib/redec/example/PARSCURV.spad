@@ -1,0 +1,39 @@
+)abbrev domain PARSCURV ParametricSpaceCurve
+++ Author: Clifton J. Williamson
+++ Date Created: 24 May 1990
+++ Date Last Updated: 24 May 1990
+++ Basic Operations: curve, coordinate
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: parametric curve, graphics
+++ References:
+++ Description: ParametricSpaceCurve is used for plotting parametric space 
+++ curves in affine 3-space.
+ 
+ParametricSpaceCurve(ComponentFunction): Exports == Implementation where
+  ComponentFunction : Type
+  NNI             ==> NonNegativeInteger
+ 
+  Exports ==> with
+    curve: (ComponentFunction,ComponentFunction,ComponentFunction) -> %
+      ++ curve(c1,c2,c3) creates a space curve from 3 component functions 
+      ++ \spad{c1}, \spad{c2}, and \spad{c3}.
+    coordinate: (%,NNI) -> ComponentFunction
+      ++ coordinate(c,i) returns a coordinate function of c using 1-based 
+      ++ indexing according to i. This indicates what the function for the
+      ++ coordinate component, i, of the space curve is.
+ 
+  Implementation ==> add
+ 
+    Rep := Record(xCoord:ComponentFunction,_
+                  yCoord:ComponentFunction,_
+                  zCoord:ComponentFunction)
+ 
+    curve(x,y,z) == [x,y,z]
+    coordinate(c,n) ==
+      n = 1 => c.xCoord
+      n = 2 => c.yCoord
+      n = 3 => c.zCoord
+      error "coordinate: index out of bounds"
+

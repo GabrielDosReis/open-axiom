@@ -1,0 +1,158 @@
+)abbrev domain ASP50 Asp50
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 23 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp50} produces Fortran for Type 50 ASPs, needed for NAG routine 
+++\axiomOpFrom{e04fdf}{e04Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE LSFUN1(M,N,XC,FVECC)
+++      DOUBLE PRECISION FVECC(M),XC(N)
+++      INTEGER I,M,N
+++      FVECC(1)=((XC(1)-2.4D0)*XC(3)+(15.0D0*XC(1)-36.0D0)*XC(2)+1.0D0)/(
+++     &XC(3)+15.0D0*XC(2))
+++      FVECC(2)=((XC(1)-2.8D0)*XC(3)+(7.0D0*XC(1)-19.6D0)*XC(2)+1.0D0)/(X
+++     &C(3)+7.0D0*XC(2))
+++      FVECC(3)=((XC(1)-3.2D0)*XC(3)+(4.333333333333333D0*XC(1)-13.866666
+++     &66666667D0)*XC(2)+1.0D0)/(XC(3)+4.333333333333333D0*XC(2))
+++      FVECC(4)=((XC(1)-3.5D0)*XC(3)+(3.0D0*XC(1)-10.5D0)*XC(2)+1.0D0)/(X
+++     &C(3)+3.0D0*XC(2))
+++      FVECC(5)=((XC(1)-3.9D0)*XC(3)+(2.2D0*XC(1)-8.579999999999998D0)*XC
+++     &(2)+1.0D0)/(XC(3)+2.2D0*XC(2))
+++      FVECC(6)=((XC(1)-4.199999999999999D0)*XC(3)+(1.666666666666667D0*X
+++     &C(1)-7.0D0)*XC(2)+1.0D0)/(XC(3)+1.666666666666667D0*XC(2))
+++      FVECC(7)=((XC(1)-4.5D0)*XC(3)+(1.285714285714286D0*XC(1)-5.7857142
+++     &85714286D0)*XC(2)+1.0D0)/(XC(3)+1.285714285714286D0*XC(2))
+++      FVECC(8)=((XC(1)-4.899999999999999D0)*XC(3)+(XC(1)-4.8999999999999
+++     &99D0)*XC(2)+1.0D0)/(XC(3)+XC(2))
+++      FVECC(9)=((XC(1)-4.699999999999999D0)*XC(3)+(XC(1)-4.6999999999999
+++     &99D0)*XC(2)+1.285714285714286D0)/(XC(3)+XC(2))
+++      FVECC(10)=((XC(1)-6.8D0)*XC(3)+(XC(1)-6.8D0)*XC(2)+1.6666666666666
+++     &67D0)/(XC(3)+XC(2))
+++      FVECC(11)=((XC(1)-8.299999999999999D0)*XC(3)+(XC(1)-8.299999999999
+++     &999D0)*XC(2)+2.2D0)/(XC(3)+XC(2))
+++      FVECC(12)=((XC(1)-10.6D0)*XC(3)+(XC(1)-10.6D0)*XC(2)+3.0D0)/(XC(3)
+++     &+XC(2))
+++      FVECC(13)=((XC(1)-1.34D0)*XC(3)+(XC(1)-1.34D0)*XC(2)+4.33333333333
+++     &3333D0)/(XC(3)+XC(2))
+++      FVECC(14)=((XC(1)-2.1D0)*XC(3)+(XC(1)-2.1D0)*XC(2)+7.0D0)/(XC(3)+X
+++     &C(2))
+++      FVECC(15)=((XC(1)-4.39D0)*XC(3)+(XC(1)-4.39D0)*XC(2)+15.0D0)/(XC(3
+++     &)+XC(2))
+++      END
+++\end{verbatim}
+
+Asp50(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  UFST   ==> Union(fst:FST,void:"void")
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+  FEXPR  ==> FortranExpression([],['XC],MFLOAT)
+  MFLOAT ==> MachineFloat
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : VEC FEXPR -> $
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+
+    real : UFST := ["real"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(M,fortranInteger(),syms)$SYMTAB
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    xcType : FT := construct(real,[N],false)$FT
+    declare!(XC,xcType,syms)$SYMTAB
+    fveccType : FT := construct(real,[M],false)$FT
+    declare!(FVECC,fveccType,syms)$SYMTAB
+    declare!(I,fortranInteger(),syms)$SYMTAB
+    tType : FT := construct(real,[M,N],false)$FT
+--    declare!(TC,tType,syms)$SYMTAB
+--    declare!(Y,fveccType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST, [M,N,XC,FVECC],syms)
+
+    fexpr2expr(u:FEXPR):EXPR MFLOAT == coerce(u)$FEXPR
+
+    coerce(u:VEC FEXPR):$ ==
+      u' : VEC EXPR MFLOAT := map(fexpr2expr,u)$VF2(FEXPR,EXPR MFLOAT)
+      assign(FVECC,u')$FortranCode::$
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

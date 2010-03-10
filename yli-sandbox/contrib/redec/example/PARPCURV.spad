@@ -1,0 +1,36 @@
+)abbrev domain PARPCURV ParametricPlaneCurve
+++ Author: Clifton J. Williamson
+++ Date Created: 24 May 1990
+++ Date Last Updated: 24 May 1990
+++ Basic Operations: curve, coordinate
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: parametric curve, graphics
+++ References:
+++ Description: ParametricPlaneCurve is used for plotting parametric plane 
+++ curves in the affine plane.
+ 
+ParametricPlaneCurve(ComponentFunction): Exports == Implementation where
+  ComponentFunction : Type
+  NNI             ==> NonNegativeInteger
+ 
+  Exports ==> with
+    curve: (ComponentFunction,ComponentFunction) -> %
+      ++ curve(c1,c2) creates a plane curve from 2 component functions \spad{c1}
+      ++ and \spad{c2}.
+    coordinate: (%,NNI) -> ComponentFunction
+      ++ coordinate(c,i) returns a coordinate function for c using 1-based 
+      ++ indexing according to i. This indicates what the function for the
+      ++ coordinate component i of the plane curve is.
+ 
+  Implementation ==> add
+ 
+    Rep := Record(xCoord:ComponentFunction,yCoord:ComponentFunction)
+ 
+    curve(x,y) == [x,y]
+    coordinate(c,n) ==
+      n = 1 => c.xCoord
+      n = 2 => c.yCoord
+      error "coordinate: index out of bounds"
+

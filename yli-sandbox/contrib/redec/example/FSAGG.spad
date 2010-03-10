@@ -1,0 +1,91 @@
+--import Dictionary
+--import SetAggregate
+)abbrev category FSAGG FiniteSetAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: 14 Oct, 1993 by RSS
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A finite-set aggregate models the notion of a finite set, that is,
+++ a collection of elements characterized by membership, but not
+++ by order or multiplicity.
+++ See \spadtype{Set} for an example.
+FiniteSetAggregate(S:SetCategory): Category ==
+  Join(Dictionary S, SetAggregate S) with
+    finiteAggregate
+    cardinality: % -> NonNegativeInteger
+      ++ cardinality(u) returns the number of elements of u.
+      ++ Note: \axiom{cardinality(u) = #u}.
+    if S has Finite then
+      Finite
+      complement: % -> %
+        ++ complement(u) returns the complement of the set u,
+        ++ i.e. the set of all values not in u.
+      universe: () -> %
+        ++ universe()$D returns the universal set for finite set aggregate D.
+    if S has OrderedSet then
+      max: % -> S
+        ++ max(u) returns the largest element of aggregate u.
+      min: % -> S
+        ++ min(u) returns the smallest element of aggregate u.
+
+ add
+   part?(s,t)      == #s < #t and s = intersect(s,t)
+   s = t           == #s = #t and empty? difference(s,t)
+   brace l         == construct l
+   set   l         == construct l
+   cardinality s   == #s
+   construct l     == (s := set(); for x in l repeat insert_!(x,s); s)
+   count(x:S, s:%) == (member?(x, s) => 1; 0)
+   subset?(s, t)   == #s < #t and _and/[member?(x, t) for x in parts s]
+
+   coerce(s:%):OutputForm ==
+     brace [x::OutputForm for x in parts s]$List(OutputForm)
+
+   intersect(s, t) ==
+     i := {}
+     for x in parts s | member?(x, t) repeat insert_!(x, i)
+     i
+
+   difference(s:%, t:%) ==
+     m := copy s
+     for x in parts t repeat remove_!(x, m)
+     m
+
+   symmetricDifference(s, t) ==
+     d := copy s
+     for x in parts t repeat
+       if member?(x, s) then remove_!(x, d) else insert_!(x, d)
+     d
+
+   union(s:%, t:%) ==
+      u := copy s
+      for x in parts t repeat insert_!(x, u)
+      u
+
+   if S has Finite then
+     universe()   == {index(i::PositiveInteger) for i in 1..size()$S}
+     complement s == difference(universe(), s )
+     size()       == 2 ** size()$S
+     index i     == {index(j::PositiveInteger)$S for j in 1..size()$S | bit?(i-1,j-1)}
+     random()     == index((random()$Integer rem (size()$% + 1))::PositiveInteger)
+
+     lookup s ==
+       n:PositiveInteger := 1
+       for x in parts s repeat n := n + 2 ** ((lookup(x) - 1)::NonNegativeInteger)
+       n
+
+   if S has OrderedSet then
+     max s ==
+       empty?(l := parts s) => error "Empty set"
+       reduce("max", l)
+
+     min s ==
+       empty?(l := parts s) => error "Empty set"
+       reduce("min", l)
+

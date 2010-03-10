@@ -1,0 +1,14 @@
+)abbrev package PCOMP PolynomialComposition
+++ Description:
+++ This package \undocumented
+PolynomialComposition(UP: UnivariatePolynomialCategory(R), R: Ring): with
+        compose: (UP, UP) -> UP
+                ++ compose(p,q) \undocumented
+    == add
+        compose(g, h) ==
+            r: UP := 0
+            while g ~= 0 repeat
+                r := leadingCoefficient(g)*h**degree(g) + r
+                g := reductum g
+            r
+

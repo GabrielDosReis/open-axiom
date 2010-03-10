@@ -1,0 +1,61 @@
+)abbrev package SUMRF RationalFunctionSum
+++ Summation of rational functions
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 19 April 1991
+++ Description: Computes sums of rational functions;
+RationalFunctionSum(R): Exports == Impl where
+    R: Join(IntegralDomain, OrderedSet, RetractableTo Integer)
+
+    P   ==> Polynomial R
+    RF  ==> Fraction P
+    FE  ==> Expression R
+    SE  ==> Symbol
+
+    Exports ==> with
+        sum: (P, SE) -> RF
+            ++ sum(a(n), n) returns \spad{A} which
+            ++ is the indefinite sum of \spad{a} with respect to
+            ++ upward difference on \spad{n}, i.e. \spad{A(n+1) - A(n) = a(n)}.
+        sum: (RF, SE) -> Union(RF, FE)
+            ++ sum(a(n), n) returns \spad{A} which
+            ++ is the indefinite sum of \spad{a} with respect to
+            ++ upward difference on \spad{n}, i.e. \spad{A(n+1) - A(n) = a(n)}.
+        sum: (P, SegmentBinding P) -> RF
+            ++ sum(f(n), n = a..b) returns \spad{f(a) + f(a+1) + ... f(b)}.
+        sum: (RF, SegmentBinding RF) -> Union(RF, FE)
+            ++ sum(f(n), n = a..b) returns \spad{f(a) + f(a+1) + ... f(b)}.
+
+    Impl ==> add
+      import RationalFunction R
+      import GosperSummationMethod(IndexedExponents SE, SE, R, P, RF)
+
+      innersum    : (RF, SE) -> Union(RF, "failed")
+      innerpolysum: (P, SE) -> RF
+
+      sum(f:RF, s:SegmentBinding RF) ==
+        (indef := innersum(f, v := variable s)) case "failed" =>
+          summation(f::FE,map(#1::FE,s)$SegmentBindingFunctions2(RF,FE))
+        eval(indef::RF, v, 1 + hi segment s)
+          - eval(indef::RF, v,lo segment s)
+
+      sum(an:RF, n:SE) ==
+        (u := innersum(an, n)) case "failed" => summation(an::FE, n)
+        u::RF
+
+      sum(p:P, s:SegmentBinding P) ==
+        f := sum(p, v := variable s)
+        eval(f, v, (1 + hi segment s)::RF) - eval(f,v,lo(segment s)::RF)
+
+      innersum(an, n) ==
+        (r := retractIfCan(an)@Union(P, "failed")) case "failed" =>
+           an1 := eval(an, n, -1 + n::RF)
+           (u := GospersMethod(an/an1, n, new$SE)) case "failed" =>
+             "failed"
+           an1 * eval(u::RF, n, -1 + n::RF)
+        sum(r::P, n)
+
+      sum(p:P, n:SE) ==
+        rec := sum(p, n)$InnerPolySum(IndexedExponents SE, SE, R, P)
+        rec.num / (rec.den :: P)
+

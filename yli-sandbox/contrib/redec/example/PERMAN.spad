@@ -1,0 +1,185 @@
+)abbrev package PERMAN Permanent
+++ Authors: Johannes Grabmeier, Oswald Gschnitzer
+++ Date Created: 7 August 1989
+++ Date Last Updated: 23 August 1990
+++ Basic Operations: permanent
+++ Related Constructors: GrayCode
+++ Also See: MatrixLinearAlgebraFunctions
+++ AMS Classifications:
+++ Keywords: permanent
+++ References:
+++  Henryk Minc: Evaluation of Permanents,
+++    Proc. of the Edinburgh Math. Soc.(1979), 22/1 pp 27-32.
+++  Nijenhuis and Wilf : Combinatorical Algorithms, Academic
+++    Press, New York 1978.
+++  S.G.Williamson, Combinatorics for Computer Science,
+++    Computer Science Press, 1985.
+++ Description:
+++  Permanent implements the functions {\em permanent}, the 
+++  permanent for square matrices.
+Permanent(n : PositiveInteger, R : Ring with commutative("*")):
+ public == private where
+  I  ==> Integer
+  L  ==> List
+  V  ==> Vector
+  SM  ==> SquareMatrix(n,R)
+  VECTPKG1 ==> VectorPackage1(I)
+  NNI ==> NonNegativeInteger
+  PI ==> PositiveInteger
+  GRAY ==> GrayCode
+ 
+  public ==> with
+ 
+    permanent:  SM  -> R
+      ++ permanent(x) computes the permanent of a square matrix x.
+      ++ The {\em permanent} is equivalent to 
+      ++ the \spadfun{determinant} except that coefficients have 
+      ++ no change of sign. This function
+      ++ is much more difficult to compute than the 
+      ++ {\em determinant}. The formula used is by H.J. Ryser,
+      ++ improved by [Nijenhuis and Wilf, Ch. 19].
+      ++ Note: permanent(x) choose one of three algorithms, depending
+      ++ on the underlying ring R and on n, the number of rows (and
+      ++ columns) of x:\begin{items}
+      ++ \item 1. if 2 has an inverse in R we can use the algorithm of
+      ++    [Nijenhuis and Wilf, ch.19,p.158]; if 2 has no inverse,
+      ++    some modifications are necessary:
+      ++ \item 2. if {\em n > 6} and R is an integral domain with characteristic
+      ++    different from 2 (the algorithm works if and only 2 is not a
+      ++    zero-divisor of R and {\em characteristic()$R ~= 2},
+      ++    but how to check that for any given R ?),
+      ++    the local function {\em permanent2} is called;
+      ++ \item 3. else, the local function {\em permanent3} is called
+      ++    (works for all commutative rings R).
+      ++ \end{items}
+ 
+  private ==> add
+ 
+    -- local functions:
+ 
+    permanent2:  SM  -> R
+ 
+    permanent3:  SM  -> R
+ 
+    x : SM
+    a,b : R
+    i,j,k,l : I
+ 
+    permanent3(x) ==
+      -- This algorithm is based upon the principle of inclusion-
+      -- exclusion. A Gray-code is used to generate the subsets of
+      -- 1,... ,n. This reduces the number of additions needed in
+      -- every step.
+      sgn : R := 1
+      k : R
+      a := 0$R
+      vv : V V I := firstSubsetGray(n)$GRAY
+        -- For the meaning of the elements of vv, see GRAY.
+      w : V R := new(n,0$R)
+      j := 1   -- Will be the number of the element changed in subset
+      while j ~= (n+1) repeat  -- we sum over all subsets of (1,...,n)
+        sgn := -sgn
+        b := sgn
+        if vv.1.j = 1 then k := -1
+        else k := 1  -- was that element deleted(k=-1) or added(k=1)?
+        for i in 1..(n::I) repeat
+          w.i :=  w.i +$R k *$R  x(i,j)
+          b := b *$R w.i
+        a := a +$R b
+        vv := nextSubsetGray(vv,n)$GRAY
+        j := vv.2.1
+      if odd?(n) then a := -a
+      a
+ 
+ 
+    permanent(x) ==
+      -- If 2 has an inverse in R, we can spare half of the calcu-
+      -- lation needed in "permanent3": This is the algorithm of
+      -- [Nijenhuis and Wilf, ch.19,p.158]
+      n = 1 => x(1,1)
+      two : R := (2:I) :: R
+      half : Union(R,"failed") := recip(two)
+      if (half case "failed") then
+        if n < 7 then return permanent3(x)
+        else return permanent2(x)
+      sgn : R := 1
+      a := 0$R
+      w : V R := new(n,0$R)
+      -- w.i will be at first x.i and later lambda.i in
+      -- [Nijenhuis and Wilf, p.158, (24a) resp.(26)].
+      rowi : V R := new(n,0$R)
+      for i in 1..n repeat
+        rowi := row(x,i) :: V R
+        b := 0$R
+        for j in 1..n repeat
+          b := b + rowi.j
+        w.i := rowi(n) - (half*b)$R
+      vv : V V I := firstSubsetGray((n-1): PI)$GRAY
+       -- For the meaning of the elements of vv, see GRAY.
+      n :: I
+      b := 1
+      for i in 1..n repeat
+        b := b * w.i
+      a := a+b
+      j := 1   -- Will be the number of the element changed in subset
+      while j ~= n repeat  -- we sum over all subsets of (1,...,n-1)
+        sgn := -sgn
+        b := sgn
+        if (vv.1.j = 1)@Boolean then k := -1
+        else k := 1  -- was that element deleted(k=-1) or added(k=1)?
+        for i in 1..n repeat
+          w.i :=  w.i +$R k *$R  x(i,j)
+          b := b *$R w.i
+        a := a +$R b
+        vv := nextSubsetGray(vv,(n-1) : PI)$GRAY
+        j := (vv.2.1)@Integer
+      if not odd?(n) then a := -a
+      two * a
+ 
+    permanent2(x) ==
+      c : R := 0
+      sgn : R := 1
+      if (not (R has IntegralDomain))
+        -- or (characteristic$R = (2:NNI))
+        -- compiler refuses to compile the line above !!
+        or  (sgn + sgn = c)
+      then return permanent3(x)
+      -- This is a slight modification of permanent which is
+      -- necessary if 2 is not zero or a zero-divisor in R, but has
+      -- no inverse in R.
+      n = 1 => x(1,1)
+      two : R := (2:I) :: R
+      a := 0$R
+      w : V R := new(n,0$R)
+      -- w.i will be at first x.i and later lambda.i in
+      -- [Nijenhuis and Wilf, p.158, (24a) resp.(26)].
+      rowi : V R := new(n,0$R)
+      for i in 1..n repeat
+        rowi := row(x,i) :: V R
+        b := 0$R
+        for j in 1..n repeat
+          b := b + rowi.j
+        w.i := (two*(rowi(n)))$R - b
+      vv : V V I := firstSubsetGray((n-1): PI)$GRAY
+      n :: I
+      b := 1
+      for i in 1..n repeat
+        b := b *$R w.i
+      a := a +$R b
+      j := 1   -- Will be the number of the element changed in subset
+      while j ~= n repeat  -- we sum over all subsets of (1,...,n-1)
+        sgn := -sgn
+        b := sgn
+        if (vv.1.j = 1)@Boolean then k := -1
+        else k := 1  -- was that element deleted(k=-1) or added(k=1)?
+        c := k * two
+        for i in 1..n repeat
+          w.i :=  w.i +$R c *$R x(i,j)
+          b := b *$R w.i
+        a := a +$R b
+        vv := nextSubsetGray(vv,(n-1)::PI)$GRAY
+        j := (vv.2.1)@Integer
+      if not odd?(n) then a := -a
+      b := two ** ((n-1)::NNI)
+      (a exquo b) :: R
+

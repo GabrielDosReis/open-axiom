@@ -1,0 +1,22 @@
+)abbrev category MODULE Module
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of modules over a commutative ring.
+++
+++ Axioms:
+++   \spad{1*x = x}
+++   \spad{(a*b)*x = a*(b*x)}
+++   \spad{(a+b)*x = (a*x)+(b*x)}
+++   \spad{a*(x+y) = (a*x)+(a*y)}
+Module(R:CommutativeRing): Category == BiModule(R,R)
+  add
+    if not(R is %) then x:%*r:R == r*x
+

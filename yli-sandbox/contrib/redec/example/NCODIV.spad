@@ -1,0 +1,93 @@
+)abbrev package NCODIV NonCommutativeOperatorDivision
+++ Author: Jean Della Dora, Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: May 30, 1991
+++ Basic Operations:
+++ Related Domains: LinearOrdinaryDifferentialOperator
+++ Also See:
+++ AMS Classifications:
+++ Keywords: gcd, lcm, division, non-commutative
+++ Examples:
+++ References:
+++ Description:
+++   This package provides a division and related operations for
+++   \spadtype{MonogenicLinearOperator}s over a \spadtype{Field}.
+++   Since the multiplication is in general non-commutative,
+++   these operations all have left- and right-hand versions.
+++   This package provides the operations based on left-division.
+            -- [q,r] = leftDivide(a,b) means a=b*q+r
+
+NonCommutativeOperatorDivision(P, F): PDcat == PDdef  where
+    P: MonogenicLinearOperator(F)
+    F: Field
+
+    PDcat == with
+        leftDivide:   (P, P) -> Record(quotient: P, remainder: P)
+            ++ leftDivide(a,b) returns the pair \spad{[q,r]} such that
+            ++ \spad{a = b*q + r} and the degree of \spad{r} is
+            ++ less than the degree of \spad{b}.
+            ++ This process is called ``left division''.
+        leftQuotient:  (P, P) -> P
+            ++ leftQuotient(a,b) computes the pair \spad{[q,r]} such that
+            ++ \spad{a = b*q + r} and the degree of \spad{r} is
+            ++ less than the degree of \spad{b}.
+            ++ The value \spad{q} is returned.
+        leftRemainder:  (P, P) -> P
+            ++ leftRemainder(a,b) computes the pair \spad{[q,r]} such that
+            ++ \spad{a = b*q + r} and the degree of \spad{r} is
+            ++ less than the degree of \spad{b}.
+            ++ The value \spad{r} is returned.
+        leftExactQuotient:(P, P) -> Union(P, "failed")
+            ++ leftExactQuotient(a,b) computes the value \spad{q}, if it exists,
+            ++  such that \spad{a = b*q}.
+
+        leftGcd:   (P, P) -> P
+            ++ leftGcd(a,b) computes the value \spad{g} of highest degree
+            ++ such that
+            ++    \spad{a = aa*g}
+            ++    \spad{b = bb*g}
+            ++ for some values \spad{aa} and \spad{bb}.
+            ++ The value \spad{g} is computed using left-division.
+        leftLcm:   (P, P) -> P
+            ++ leftLcm(a,b) computes the value \spad{m} of lowest degree
+            ++ such that \spad{m = a*aa = b*bb} for some values
+            ++ \spad{aa} and \spad{bb}.  The value \spad{m} is
+            ++ computed using left-division.
+
+    PDdef == add
+        leftDivide(a, b) ==
+            q: P := 0
+            r: P := a
+            iv:F := inv leadingCoefficient b
+            while degree r >= degree b and r ~= 0 repeat
+                h := monomial(iv*leadingCoefficient r,
+                                 (degree r - degree b)::NonNegativeInteger)$P
+                r := r - b*h
+                q := q + h
+            [q,r]
+
+        -- leftQuotient(a,b) is the quotient from left division, etc.
+        leftQuotient(a,b)   == leftDivide(a,b).quotient
+        leftRemainder(a,b)   == leftDivide(a,b).remainder
+        leftExactQuotient(a,b) ==
+             qr := leftDivide(a,b)
+             if qr.remainder = 0 then qr.quotient else "failed"
+        -- l = leftGcd(a,b) means  a = aa*l  b = bb*l.  Uses leftDivide.
+        leftGcd(a,b) ==
+             a = 0 =>b
+             b = 0 =>a
+             while degree b > 0 repeat (a,b) := (b, leftRemainder(a,b))
+             if b=0 then a else b
+        -- l = leftLcm(a,b) means  l = a*aa  l = b*bb   Uses leftDivide.
+        leftLcm(a,b) ==
+            a = 0 =>b
+            b = 0 =>a
+            b0 := b
+            u  := monomial(1,0)$P
+            v  := 0
+            while leadingCoefficient b ~= 0 repeat
+                qr     := leftDivide(a,b)
+                (a, b) := (b, qr.remainder)
+                (u, v) := (u*qr.quotient+v, u)
+            b0*u
+

@@ -1,0 +1,145 @@
+)abbrev package MPRFF MPolyCatRationalFunctionFactorizer
+++ Author: P. Gianni
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++    This package exports a factor operation for multivariate polynomials
+++ with coefficients which are rational functions over
+++ some ring R over which we can factor. It is used internally by packages
+++ such as primary decomposition which need to work with polynomials
+++ with rational function coefficients, i.e. themselves fractions of
+++ polynomials.
+
+MPolyCatRationalFunctionFactorizer(E,OV,R,PRF) : C == T
+ where
+  R     :   IntegralDomain
+  F     ==> Fraction Polynomial R
+  RN    ==> Fraction Integer
+  E     :   OrderedAbelianMonoidSup
+  OV    :   OrderedSet  with 
+                convert : % -> Symbol
+                  ++ convert(x) converts x to a symbol
+  PRF   :   PolynomialCategory(F,E,OV)
+  NNI   ==> NonNegativeInteger
+  P     ==> Polynomial R
+  ISE   ==> IndexedExponents  SE
+  SE    ==> Symbol
+  UP    ==> SparseUnivariatePolynomial P
+  UF    ==> SparseUnivariatePolynomial F
+  UPRF  ==> SparseUnivariatePolynomial PRF
+  QuoForm   ==> Record(sup:P,inf:P)
+
+  C  == with
+     totalfract  :        PRF             ->   QuoForm
+       ++ totalfract(prf) takes a polynomial whose coefficients are
+       ++ themselves fractions of polynomials and returns a record
+       ++ containing the numerator and denominator resulting from
+       ++ putting prf over a common denominator.
+     pushdown    :      (PRF,OV)          ->   PRF
+       ++ pushdown(prf,var) pushes all top level occurences of the
+       ++ variable var into the coefficient domain for the polynomial prf.
+     pushdterm   :      (UPRF,OV)         ->   PRF
+       ++ pushdterm(monom,var) pushes all top level occurences of the
+       ++ variable var into the coefficient domain for the monomial monom.
+     pushup      :      (PRF,OV)          ->   PRF
+       ++ pushup(prf,var) raises all occurences of the
+       ++ variable var in the coefficients of the polynomial prf
+       ++ back to the polynomial level.
+     pushucoef   :       (UP,OV)          ->   PRF
+       ++ pushucoef(upoly,var) converts the anonymous univariate
+       ++ polynomial upoly to a polynomial in var over rational functions.
+     pushuconst  :        (F,OV)          ->   PRF
+       ++ pushuconst(r,var) takes a rational function and raises
+       ++ all occurances of the variable var to the polynomial level.
+     factor      :        PRF             ->   Factored PRF
+       ++ factor(prf) factors a polynomial with rational function
+       ++ coefficients.
+
+             ---  Local Functions  ----
+  T  == add
+
+        ----  factorization of p ----
+     factor(p:PRF) : Factored PRF ==
+       truelist:List OV :=variables p
+       tp:=totalfract(p)
+       nump:P:= tp.sup
+       denp:F:=inv(tp.inf ::F)
+       ffact : List(Record(irr:PRF,pow:Integer))
+       flist:Factored P
+       if R is Fraction Integer then
+         flist:=
+           ((factor nump)$MRationalFactorize(ISE,SE,Integer,P))
+                          pretend (Factored P)
+       else
+         if R has FiniteFieldCategory  then
+            flist:= ((factor nump)$MultFiniteFactorize(SE,ISE,R,P))
+                    pretend (Factored P)
+
+         else
+            if R has Field then error "not done yet"
+
+            else
+              if R has CharacteristicZero then 
+                flist:= ((factor nump)$MultivariateFactorize(SE,ISE,R,P))
+                                                pretend (Factored P)
+              else error "can't happen"  
+       ffact:=[[u.factor::F::PRF,u.exponent] for u in factors flist]
+       fcont:=(unit flist)::F::PRF
+       for x in truelist repeat
+         fcont:=pushup(fcont,x)
+         ffact:=[[pushup(ff.irr,x),ff.pow] for ff in ffact]
+       (denp*fcont)*(_*/[primeFactor(ff.irr,ff.pow) for ff in ffact])
+
+
+-- the following functions are used to "push" x in the coefficient ring -
+
+        ----  push x in the coefficient domain for a polynomial ----
+     pushdown(g:PRF,x:OV) : PRF ==
+       ground? g => g
+       rf:PRF:=0$PRF
+       ug:=univariate(g,x)
+       while ug~=0 repeat
+         rf:=rf+pushdterm(ug,x)
+         ug := reductum ug
+       rf
+
+      ----  push x in the coefficient domain for a term ----
+     pushdterm(t:UPRF,x:OV):PRF ==
+       n:=degree(t)
+       cf:=monomial(1,convert x,n)$P :: F
+       cf * leadingCoefficient t
+
+               ----  push back the variable  ----
+     pushup(f:PRF,x:OV) :PRF ==
+       ground? f => pushuconst(retract f,x)
+       v:=mainVariable(f)::OV
+       g:=univariate(f,v)
+       multivariate(map(pushup(#1,x),g),v)
+
+      ----  push x back from the coefficient domain ----
+     pushuconst(r:F,x:OV):PRF ==
+       xs:SE:=convert x
+       degree(denom r,xs)>0 => error "bad polynomial form"
+       inv((denom r)::F)*pushucoef(univariate(numer r,xs),x)
+
+
+     pushucoef(c:UP,x:OV):PRF ==
+       c = 0 => 0
+       monomial((leadingCoefficient c)::F::PRF,x,degree c) +
+                 pushucoef(reductum c,x)
+
+
+           ----  write p with a common denominator  ----
+
+     totalfract(p:PRF) : QuoForm ==
+       p=0 => [0$P,1$P]$QuoForm
+       for x in variables p repeat p:=pushdown(p,x)
+       g:F:=retract p
+       [numer g,denom g]$QuoForm
+

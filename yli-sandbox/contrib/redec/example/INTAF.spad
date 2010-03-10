@@ -1,0 +1,73 @@
+)abbrev package INTAF AlgebraicIntegration
+++ Mixed algebraic integration;
+++ Author: Manuel Bronstein
+++ Date Created: 12 October 1988
+++ Date Last Updated: 4 June 1988
+++ Description:
+++ This package provides functions for the integration of
+++ algebraic integrands over transcendental functions;
+AlgebraicIntegration(R, F): Exports == Implementation where
+  R : Join(OrderedSet, IntegralDomain)
+  F : Join(AlgebraicallyClosedField, FunctionSpace R)
+
+  SY  ==> Symbol
+  N   ==> NonNegativeInteger
+  K   ==> Kernel F
+  P   ==> SparseMultivariatePolynomial(R, K)
+  UP  ==> SparseUnivariatePolynomial F
+  RF  ==> Fraction UP
+  UPUP==> SparseUnivariatePolynomial RF
+  IR  ==> IntegrationResult F
+  IR2 ==> IntegrationResultFunctions2(curve, F)
+  ALG ==> AlgebraicIntegrate(R, F, UP, UPUP, curve)
+  FAIL==> error "failed - cannot handle that integrand"
+
+  Exports ==> with
+    algint: (F, K, K, UP -> UP) -> IR
+      ++ algint(f, x, y, d) returns the integral of \spad{f(x,y)dx}
+      ++ where y is an algebraic function of x;
+      ++ d is the derivation to use on \spad{k[x]}.
+
+  Implementation ==> add
+    import ChangeOfVariable(F, UP, UPUP)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents K,
+                                                        K, R, P, F)
+
+    rootintegrate: (F, K, K, UP -> UP) -> IR
+    algintegrate : (F, K, K, UP -> UP) -> IR
+    UPUP2F       : (UPUP, RF, K, K) -> F
+    F2UPUP       : (F, K, K, UP) -> UPUP
+    UP2UPUP      : (UP, K) -> UPUP
+
+    F2UPUP(f, kx, k, p) == UP2UPUP(univariate(f, k, p), kx)
+
+    rootintegrate(f, t, k, derivation) ==
+      r1     := mkIntegral(modulus := UP2UPUP(p := minPoly k, t))
+      f1     := F2UPUP(f, t, k, p) monomial(inv(r1.coef), 1)
+      r      := radPoly(r1.poly)::Record(radicand:RF, deg:N)
+      q      := retract(r.radicand)
+      curve  := RadicalFunctionField(F, UP, UPUP, q::RF, r.deg)
+      map(UPUP2F(lift #1, r1.coef, t, k),
+                            algintegrate(reduce f1, derivation)$ALG)$IR2
+
+    algintegrate(f, t, k, derivation) ==
+      r1     := mkIntegral(modulus := UP2UPUP(p := minPoly k, t))
+      f1     := F2UPUP(f, t, k, p) monomial(inv(r1.coef), 1)
+      modulus:= UP2UPUP(p := minPoly k, t)
+      curve  := AlgebraicFunctionField(F, UP, UPUP, r1.poly)
+      map(UPUP2F(lift #1, r1.coef, t, k),
+                            algintegrate(reduce f1, derivation)$ALG)$IR2
+
+    UP2UPUP(p, k) ==
+      map(univariate(#1,k),p)$SparseUnivariatePolynomialFunctions2(F,RF)
+
+    UPUP2F(p, cf, t, k) ==
+      map(multivariate(#1, t),
+         p)$SparseUnivariatePolynomialFunctions2(RF, F)
+                                            (multivariate(cf, t) * k::F)
+
+    algint(f, t, y, derivation) ==
+      is?(y, "nthRoot"::SY) => rootintegrate(f, t, y, derivation)
+      is?(y, "rootOf"::SY)  => algintegrate(f, t, y, derivation)
+      FAIL
+

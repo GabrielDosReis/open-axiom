@@ -1,0 +1,29 @@
+import PositiveInteger
+)abbrev category SGROUP SemiGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ the class of all multiplicative semigroups, i.e. a set
+++ with an associative operation \spadop{*}.
+++
+++ Axioms:
+++    \spad{associative("*":(%,%)->%)}\tab{30}\spad{ (x*y)*z = x*(y*z)}
+++
+++ Conditional attributes:
+++    \spad{commutative("*":(%,%)->%)}\tab{30}\spad{ x*y = y*x }
+SemiGroup(): Category == SetCategory with
+    --operations
+      "*": (%,%) -> %                  ++ x*y returns the product of x and y.
+      "**": (%,PositiveInteger) -> %   ++ x**n returns the repeated product
+                                       ++ of x n times, i.e. exponentiation.
+    add
+      import RepeatedSquaring(%)
+      x:% ** n:PositiveInteger == expt(x,n)
+

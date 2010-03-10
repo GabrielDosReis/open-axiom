@@ -1,0 +1,133 @@
+import EuclideanDomain
+import CharacteristicZero
+import Symbol
+import List
+)abbrev package RURPK RationalUnivariateRepresentationPackage
+++ Author: Marc Moreno Maza
+++ Date Created: 01/1999
+++ Date Last Updated: 23/01/1999
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Description: 
+++   A package for computing the rational univariate representation
+++   of a zero-dimensional algebraic variety given by a regular
+++   triangular set. This package is essentially an interface for the
+++  \spadtype{InternalRationalUnivariateRepresentationPackage} constructor.
+++  It is used in the \spadtype{ZeroDimensionalSolvePackage}
+++  for solving polynomial systems with finitely many solutions.
+++ Version: 1.
+
+RationalUnivariateRepresentationPackage(R,ls): Exports == Implementation where
+  R : Join(EuclideanDomain,CharacteristicZero)
+  ls: List Symbol
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  P ==> Polynomial R
+  LP ==> List P
+  U ==> SparseUnivariatePolynomial(R)
+  RUR ==> Record(complexRoots: U, coordinates: LP) 
+
+  Exports ==  with
+
+     rur: (LP,Boolean) -> List RUR
+       ++ \spad{rur(lp,univ?)} returns a rational univariate representation
+       ++ of \spad{lp}. This assumes that \spad{lp} defines a regular 
+       ++ triangular \spad{ts} whose associated variety is zero-dimensional
+       ++ over \spad{R}. \spad{rur(lp,univ?)} returns a list of items
+       ++ \spad{[u,lc]} where \spad{u} is an irreducible univariate polynomial 
+       ++ and each \spad{c} in \spad{lc} involves two variables: one from \spad{ls},
+       ++ called the coordinate of \spad{c}, and an extra variable which 
+       ++ represents any root of \spad{u}. Every root of \spad{u} leads to
+       ++ a tuple of values for the coordinates of \spad{lc}. Moreover,
+       ++ a point \spad{x} belongs to the variety associated with \spad{lp} iff
+       ++ there exists an item \spad{[u,lc]} in \spad{rur(lp,univ?)} and
+       ++ a root \spad{r} of \spad{u} such that \spad{x} is given by the 
+       ++ tuple of values for the coordinates of \spad{lc} evaluated at \spad{r}.
+       ++ If \spad{univ?} is \spad{true} then each polynomial \spad{c}
+       ++ will have a constant leading coefficient w.r.t. its coordinate.
+       ++ See the example which illustrates the \spadtype{ZeroDimensionalSolvePackage}
+       ++ package constructor.
+     rur: (LP) -> List RUR
+       ++ \spad{rur(lp)} returns the same as \spad{rur(lp,true)} 
+     rur: (LP,Boolean,Boolean) -> List RUR
+       ++ \spad{rur(lp,univ?,check?)} returns the same as \spad{rur(lp,true)}.
+       ++ Moreover, if \spad{check?} is \spad{true} then the result is checked.
+
+  Implementation == add
+     news: Symbol := new()$Symbol
+     lv: List Symbol := concat(ls,news)
+     V ==> OrderedVariableList(lv)
+     Q ==> NewSparseMultivariatePolynomial(R,V)
+     E ==> IndexedExponents V
+     TS ==> SquareFreeRegularTriangularSet(R,E,V,Q)
+     QWT ==> Record(val: Q, tower: TS)
+     LQWT ==> Record(val: List Q, tower: TS)
+     polsetpack ==> PolynomialSetUtilitiesPackage(R,E,V,Q)
+     normpack ==> NormalizationPackage(R,E,V,Q,TS)
+     rurpack ==> InternalRationalUnivariateRepresentationPackage(R,E,V,Q,TS)
+     newv: V := variable(news)::V
+     newq : Q := newv :: Q
+     
+     rur(lp: List P, univ?: Boolean, check?: Boolean): List RUR ==
+       lp := remove(zero?,lp)
+       empty? lp =>
+         error "rur$RURPACK: #1 is empty"
+       any?(ground?,lp) =>
+         error "rur$RURPACK: #1 is not a triangular set"
+       ts: TS := [[newq]$(List Q)]       
+       lq: List Q := []
+       for p in lp repeat
+         rif: Union(Q,"failed") := retractIfCan(p)$Q
+         rif case "failed" =>
+           error "rur$RURPACK: #1 is not a subset of R[ls]"
+         q: Q := rif::Q
+         lq := cons(q,lq)
+       lq := sort(infRittWu?,lq)
+       toSee: List LQWT := [[lq,ts]$LQWT]
+       toSave: List TS := []
+       while not empty? toSee repeat
+         lqwt := first toSee; toSee := rest toSee
+         lq := lqwt.val; ts := lqwt.tower
+         empty? lq => 
+           -- output(ts::OutputForm)$OutputPackage
+           toSave := cons(ts,toSave)
+         q := first lq; lq := rest lq
+         not (mvar(q) > mvar(ts)) =>
+           error "rur$RURPACK: #1 is not a triangular set"
+         empty? (rest(ts)::TS) =>  
+           lfq := irreducibleFactors([q])$polsetpack 
+           for fq in lfq repeat
+             newts := internalAugment(fq,ts)
+             newlq := [remainder(q,newts).polnum for q in lq]
+             toSee := cons([newlq,newts]$LQWT,toSee)
+         lsfqwt: List QWT := squareFreePart(q,ts)
+         for qwt in lsfqwt repeat
+           q := qwt.val; ts := qwt.tower
+           if not ground? init(q)
+             then
+               q := normalizedAssociate(q,ts)$normpack
+           newts := internalAugment(q,ts)           
+           newlq := [remainder(q,newts).polnum for q in lq]
+           toSee := cons([newlq,newts]$LQWT,toSee)
+       toReturn: List RUR := []
+       for ts in toSave repeat
+         lus := rur(ts,univ?)$rurpack 
+         check? and (not checkRur(ts,lus)$rurpack) =>
+           output("RUR for: ")$OutputPackage
+           output(ts::OutputForm)$OutputPackage
+           output("Is: ")$OutputPackage
+           for us in lus repeat output(us::OutputForm)$OutputPackage
+           error "rur$RURPACK: bad result with function rur$IRURPK"
+         for us in lus repeat
+            g: U  := univariate(select(us,newv)::Q)$Q
+            lc: LP := [convert(q)@P for q in parts(collectUpper(us,newv))]
+            toReturn := cons([g,lc]$RUR, toReturn)
+       toReturn 
+
+     rur(lp: List P, univ?: Boolean): List RUR ==
+       rur(lp,univ?,false)
+
+     rur(lp: List P): List RUR == rur(lp,true)
+

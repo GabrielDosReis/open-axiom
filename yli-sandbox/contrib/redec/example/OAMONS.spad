@@ -1,0 +1,27 @@
+)abbrev category OAMONS OrderedAbelianMonoidSup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain is an OrderedAbelianMonoid with a \spadfun{sup} operation added.
+++ The purpose of the \spadfun{sup} operator in this domain is to act as a supremum
+++ with respect to the partial order imposed by \spadop{-}, rather than with respect to
+++ the total \spad{>} order (since that is "max").
+++
+++ Axioms:
+++   \spad{sup(a,b)-a \~~= "failed"}
+++   \spad{sup(a,b)-b \~~= "failed"}
+++   \spad{x-a \~~= "failed" and x-b \~~= "failed" => x >= sup(a,b)}
+
+OrderedAbelianMonoidSup(): Category == OrderedCancellationAbelianMonoid with
+    --operation
+      sup: (%,%) -> %
+        ++ sup(x,y) returns the least element from which both
+        ++ x and y can be subtracted.
+

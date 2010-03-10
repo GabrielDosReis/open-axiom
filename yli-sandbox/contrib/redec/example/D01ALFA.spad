@@ -1,0 +1,68 @@
+)abbrev domain D01ALFA d01alfAnnaType
+++ Author: Brian Dupee
+++ Date Created: March 1994
+++ Date Last Updated: December 1997
+++ Basic Operations: measure, numericalIntegration
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{d01alfAnnaType} is a domain of \axiomType{NumericalIntegrationCategory}
+++ for the NAG routine D01ALF, a general numerical integration routine which
+++ can handle a list of singularities.  The 
+++ function \axiomFun{measure} measures the usefulness of the routine D01ALF
+++ for the given problem.  The function \axiomFun{numericalIntegration}
+++ performs the integration by using \axiomType{NagIntegrationPackage}.
+
+d01alfAnnaType(): NumericalIntegrationCategory == Result add
+  EF2   ==> ExpressionFunctions2
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  SDF   ==> Stream DoubleFloat
+  DF    ==> DoubleFloat
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  NIA   ==> Record(var:Symbol,fn:EDF,range:SOCDF,abserr:DF,relerr:DF)
+  MDNIA ==> Record(fn:EDF,range:List SOCDF,abserr:DF,relerr:DF)
+  INT   ==> Integer
+  BOP   ==> BasicOperator
+  S     ==> Symbol
+  ST    ==> String
+  LST   ==> List String
+  RT    ==> RoutinesTable
+  Rep:=Result
+  import Rep, d01AgentsPackage, NagIntegrationPackage
+
+  measure(R:RT,args:NIA) ==
+    ext:Result := empty()$Result
+    streamOfZeros:SDF := singularitiesOf(args)
+    listOfZeros:LST := removeDuplicates!(sdf2lst(streamOfZeros))
+    numberOfZeros:INT := # listOfZeros
+    (numberOfZeros > 15)@Boolean => 
+      [0.0,"d01alf: The list of singularities is too long", ext]
+    positive?(numberOfZeros) =>
+      l:LDF := entries(complete(streamOfZeros)$SDF)$SDF
+      lany:Any := coerce(l)$AnyFunctions1(LDF)
+      ex:Record(key:S,entry:Any) := [d01alfextra@S,lany]
+      ext := insert!(ex,ext)$Result
+      st:ST := "Recommended is d01alf with the singularities "
+                     commaSeparate(listOfZeros)
+      m := 
+--        one?(numberOfZeros) => 0.4
+        (numberOfZeros = 1) => 0.4
+        getMeasure(R,d01alf@S)$RT
+      [m, st, ext]
+    [0.0, "d01alf: A list of suitable singularities has not been found", ext]
+
+  numericalIntegration(args:NIA,hints:Result) ==
+    la:Any := coerce(search((d01alfextra@S),hints)$Result)@Any
+    listOfZeros:LDF := retract(la)$AnyFunctions1(LDF)
+    l:= removeDuplicates(listOfZeros)$LDF
+    n:Integer := (#(l))$List(DF)
+    M:Matrix DF := matrix([l])$(Matrix DF)
+    b:Float := getButtonValue("d01alf","functionEvaluations")$AttributeButtons
+    fEvals:INT := wholePart exp(1.1513*(1.0/(2.0*(1.0-b))))
+    iw:INT := 75*fEvals
+    ArgsFn := map(convert(#1)$DF,args.fn)$EF2(DF,Float)
+    f : Union(fn:FileName,fp:Asp1(F)) := [retract(ArgsFn)$Asp1(F)]
+    d01alf(getlo(args.range),gethi(args.range),n,M,args.abserr,args.relerr,2*n*iw,n*iw,-1,f)
+

@@ -1,0 +1,47 @@
+)abbrev domain SHDP SplitHomogeneousDirectProduct
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: Vector, DirectProduct
+++ Also See: OrderedDirectProduct, HomogeneousDirectProduct
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This type represents the finite direct or cartesian product of an
+++ underlying ordered component type. The vectors are ordered as if
+++ they were split into two blocks. The dim1 parameter specifies the
+++ length of the first block. The ordering is lexicographic between
+++ the blocks but acts like \spadtype{HomogeneousDirectProduct}
+++ within each block. This type is a suitable third argument for
+++ \spadtype{GeneralDistributedMultivariatePolynomial}.
+
+SplitHomogeneousDirectProduct(dimtot,dim1,S) : T == C where
+   NNI ==> NonNegativeInteger
+   dim1,dimtot : NNI
+   S         : OrderedAbelianMonoidSup
+
+   T == DirectProductCategory(dimtot,S)
+   C == DirectProduct(dimtot,S) add
+        Rep:=Vector(S)
+        lessThanRlex(v1:%,v2:%,low:NNI,high:NNI):Boolean ==
+ -- reverse lexicographical ordering
+          n1:S:=0
+          n2:S:=0
+          for i in low..high repeat
+            n1:= n1+qelt(v1,i)
+            n2:=n2+qelt(v2,i)
+          n1<n2 => true
+          n2<n1 => false
+          for i in reverse(low..high) repeat
+            if qelt(v2,i) < qelt(v1,i) then return true
+            if qelt(v1,i) < qelt(v2,i) then return false
+          false
+
+        (v1:% < v2:%):Boolean ==
+          lessThanRlex(v1,v2,1,dim1) => true
+          for i in 1..dim1 repeat
+                if qelt(v1,i) ~= qelt(v2,i) then return false
+          lessThanRlex(v1,v2,dim1+1,dimtot)
+

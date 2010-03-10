@@ -1,0 +1,173 @@
+)abbrev domain MATRIX Matrix
+++ Author: Grabmeier, Gschnitzer, Williamson
+++ Date Created: 1987
+++ Date Last Updated: July 1990
+++ Basic Operations:
+++ Related Domains: IndexedMatrix, RectangularMatrix, SquareMatrix
+++ Also See:
+++ AMS Classifications:
+++ Keywords: matrix, linear algebra
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{Matrix} is a matrix domain where 1-based indexing is used
+++   for both rows and columns.
+Matrix(R): Exports == Implementation where
+  R : Ring
+  Row ==> Vector R
+  Col ==> Vector R
+  mnRow ==> 1
+  mnCol ==> 1
+  MATLIN ==> MatrixLinearAlgebraFunctions(R,Row,Col,$)
+  MATSTOR ==> StorageEfficientMatrixOperations(R)
+ 
+  Exports ==> MatrixCategory(R,Row,Col) with
+    diagonalMatrix: Vector R -> $
+      ++ \spad{diagonalMatrix(v)} returns a diagonal matrix where the elements
+      ++ of v appear on the diagonal.
+
+    if R has ConvertibleTo InputForm then ConvertibleTo InputForm
+
+    if R has Field then
+      inverse: $ -> Union($,"failed")
+        ++ \spad{inverse(m)} returns the inverse of the matrix m. 
+        ++ If the matrix is not invertible, "failed" is returned.
+        ++ Error: if the matrix is not square.
+--     matrix: Vector Vector R -> $
+--       ++ \spad{matrix(v)} converts the vector of vectors v to a matrix, where
+--       ++ the vector of vectors is viewed as a vector of the rows of the
+--       ++ matrix
+--     diagonalMatrix: Vector $ -> $
+--       ++ \spad{diagonalMatrix([m1,...,mk])} creates a block diagonal matrix
+--       ++ M with block matrices {\em m1},...,{\em mk} down the diagonal,
+--       ++ with 0 block matrices elsewhere.
+--     vectorOfVectors: $ -> Vector Vector R
+--       ++ \spad{vectorOfVectors(m)} returns the rows of the matrix m as a
+--       ++ vector of vectors
+ 
+  Implementation ==>
+   InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col) add
+    minr ==> minRowIndex
+    maxr ==> maxRowIndex
+    minc ==> minColIndex
+    maxc ==> maxColIndex
+    mini ==> minIndex
+    maxi ==> maxIndex
+ 
+    minRowIndex x == mnRow
+    minColIndex x == mnCol
+ 
+    swapRows_!(x,i1,i2) ==
+        (i1 < minRowIndex(x)) or (i1 > maxRowIndex(x)) or _
+           (i2 < minRowIndex(x)) or (i2 > maxRowIndex(x)) =>
+             error "swapRows!: index out of range"
+        i1 = i2 => x
+        minRow := minRowIndex x
+        xx := x pretend PrimitiveArray(PrimitiveArray(R))
+        n1 := i1 - minRow; n2 := i2 - minRow
+        row1 := qelt(xx,n1)
+        qsetelt_!(xx,n1,qelt(xx,n2))
+        qsetelt_!(xx,n2,row1)
+        xx pretend $
+ 
+    positivePower:($,Integer,NonNegativeInteger) -> $
+    positivePower(x,n,nn) ==
+--      one? n => x
+      (n = 1) => x
+      -- no need to allocate space for 3 additional matrices
+      n = 2 => x * x
+      n = 3 => x * x * x
+      n = 4 => (y := x * x; y * y)
+      a := new(nn,nn,0) pretend Matrix(R)
+      b := new(nn,nn,0) pretend Matrix(R)
+      c := new(nn,nn,0) pretend Matrix(R)
+      xx := x pretend Matrix(R)
+      power_!(a,b,c,xx,n :: NonNegativeInteger)$MATSTOR pretend $
+ 
+    x:$ ** n:NonNegativeInteger ==
+      not((nn := nrows x) = ncols x) =>
+        error "**: matrix must be square"
+      zero? n => scalarMatrix(nn,1)
+      positivePower(x,n,nn)
+ 
+    if R has commutative("*") then
+ 
+        determinant x == determinant(x)$MATLIN
+        minordet    x == minordet(x)$MATLIN
+ 
+    if R has EuclideanDomain then
+ 
+        rowEchelon  x == rowEchelon(x)$MATLIN
+ 
+    if R has IntegralDomain then
+ 
+        rank        x == rank(x)$MATLIN
+        nullity     x == nullity(x)$MATLIN
+        nullSpace   x == nullSpace(x)$MATLIN
+ 
+    if R has Field then
+ 
+        inverse     x == inverse(x)$MATLIN
+ 
+        x:$ ** n:Integer ==
+          nn := nrows x
+          not(nn = ncols x) =>
+            error "**: matrix must be square"
+          zero? n => scalarMatrix(nn,1)
+          positive? n => positivePower(x,n,nn)
+          (xInv := inverse x) case "failed" =>
+            error "**: matrix must be invertible"
+          positivePower(xInv :: $,-n,nn)
+ 
+--     matrix(v: Vector Vector R) ==
+--       (rows := # v) = 0 => new(0,0,0)
+--       -- error check: this is a top level function
+--       cols := # v.mini(v)
+--       for k in (mini(v) + 1)..maxi(v) repeat
+--         cols ~= # v.k => error "matrix: rows of different lengths"
+--       ans := new(rows,cols,0)
+--       for i in minr(ans)..maxr(ans) for k in mini(v)..maxi(v) repeat
+--         vv := v.k
+--         for j in minc(ans)..maxc(ans) for l in mini(vv)..maxi(vv) repeat
+--           ans(i,j) := vv.l
+--       ans
+ 
+    diagonalMatrix(v: Vector R) ==
+      n := #v; ans := zero(n,n)
+      for i in minr(ans)..maxr(ans) for j in minc(ans)..maxc(ans) _
+          for k in mini(v)..maxi(v) repeat qsetelt_!(ans,i,j,qelt(v,k))
+      ans
+ 
+--     diagonalMatrix(vec: Vector $) ==
+--       rows : NonNegativeInteger := 0
+--       cols : NonNegativeInteger := 0
+--       for r in mini(vec)..maxi(vec) repeat
+--         mat := vec.r
+--         rows := rows + nrows mat; cols := cols + ncols mat
+--       ans := zero(rows,cols)
+--       loR := minr ans; loC := minc ans
+--       for r in mini(vec)..maxi(vec) repeat
+--         mat := vec.r
+--         hiR := loR + nrows(mat) - 1; hiC := loC + nrows(mat) - 1
+--         for i in loR..hiR for k in minr(mat)..maxr(mat) repeat
+--           for j in loC..hiC for l in minc(mat)..maxc(mat) repeat
+--             ans(i,j) := mat(k,l)
+--         loR := hiR + 1; loC := hiC + 1
+--       ans
+ 
+--     vectorOfVectors x ==
+--       vv : Vector Vector R := new(nrows x,0)
+--       cols := ncols x
+--       for k in mini(vv)..maxi(vv) repeat
+--         vv.k := new(cols,0)
+--       for i in minr(x)..maxr(x) for k in mini(vv)..maxi(vv) repeat
+--         v := vv.k
+--         for j in minc(x)..maxc(x) for l in mini(v)..maxi(v) repeat
+--           v.l := x(i,j)
+--       vv
+ 
+    if R has ConvertibleTo InputForm then
+      convert(x:$):InputForm ==
+         convert [convert("matrix"::Symbol)@InputForm,
+                  convert listOfLists x]$List(InputForm)
+

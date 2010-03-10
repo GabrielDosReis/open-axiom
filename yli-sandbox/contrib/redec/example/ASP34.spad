@@ -1,0 +1,94 @@
+)abbrev domain ASP34 Asp34
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Nov 1993
+++ Date Last Updated: 14 June 1994 (Themos Tsikas)
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp34} produces Fortran for Type 34 ASPs, needed for NAG routine 
+++\axiomOpFrom{f04mbf}{f04Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE MSOLVE(IFLAG,N,X,Y,RWORK,LRWORK,IWORK,LIWORK)
+++      DOUBLE PRECISION RWORK(LRWORK),X(N),Y(N)
+++      INTEGER I,J,N,LIWORK,IFLAG,LRWORK,IWORK(LIWORK)
+++      DOUBLE PRECISION W1(3),W2(3),MS(3,3)
+++      IFLAG=-1
+++      MS(1,1)=2.0D0
+++      MS(1,2)=1.0D0
+++      MS(1,3)=0.0D0
+++      MS(2,1)=1.0D0
+++      MS(2,2)=2.0D0
+++      MS(2,3)=1.0D0
+++      MS(3,1)=0.0D0
+++      MS(3,2)=1.0D0
+++      MS(3,3)=2.0D0
+++      CALL F04ASF(MS,N,X,N,Y,W1,W2,IFLAG)
+++      IFLAG=-IFLAG
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp34(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  UFST   ==> Union(fst:FST,void:"void")
+  SYMTAB ==> SymbolTable
+  FC     ==> FortranCode
+  PI     ==> PositiveInteger
+  EXI    ==> Expression Integer
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+
+  Exports == FortranMatrixCategory 
+
+  Implementation == add
+
+    real : UFST := ["real"::FST]$UFST
+    integer : UFST := ["integer"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(IFLAG,fortranInteger(),syms)$SYMTAB
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    xType : FT := construct(real,[N],false)$FT
+    declare!(X,xType,syms)$SYMTAB
+    declare!(Y,xType,syms)$SYMTAB
+    declare!(LRWORK,fortranInteger(),syms)$SYMTAB
+    declare!(LIWORK,fortranInteger(),syms)$SYMTAB
+    rType : FT := construct(real,[LRWORK],false)$FT
+    declare!(RWORK,rType,syms)$SYMTAB
+    iType : FT := construct(integer,[LIWORK],false)$FT
+    declare!(IWORK,iType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,
+                          [IFLAG,N,X,Y,RWORK,LRWORK,IWORK,LIWORK],syms)
+
+    -- To help the poor old compiler
+    localAssign(s:Symbol,u:EXI):FC == assign(s,u)$FC
+
+    coerce(u:Matrix MachineFloat):$ == 
+      dimension := nrows(u) ::Polynomial Integer
+      locals : SYMTAB := empty()$SYMTAB
+      declare!(I,fortranInteger(),syms)$SYMTAB
+      declare!(J,fortranInteger(),syms)$SYMTAB
+      declare!(W1,[real,[dimension],false]$FT,locals)$SYMTAB
+      declare!(W2,[real,[dimension],false]$FT,locals)$SYMTAB
+      declare!(MS,[real,[dimension,dimension],false]$FT,locals)$SYMTAB
+      assign1 : FC := localAssign(IFLAG@Symbol,(-1)@EXI)
+      call : FC := call("F04ASF(MS,N,X,N,Y,W1,W2,IFLAG)")$FC
+      assign2 : FC := localAssign(IFLAG::Symbol,-(IFLAG@Symbol::EXI))
+      assign3 : FC := assign(MS,u)$FC
+      code' : List FC := [assign1,assign3,call,assign2,returns()]$List(FC)
+      ([locals,code']$RSFC)::$
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

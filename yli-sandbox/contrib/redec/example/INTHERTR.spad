@@ -1,0 +1,60 @@
+)abbrev package INTHERTR TranscendentalHermiteIntegration
+++ Hermite integration, transcendental case
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 12 August 1992
+++ Description: Hermite integration, transcendental case.
+TranscendentalHermiteIntegration(F, UP): Exports == Implementation where
+  F  : Field
+  UP : UnivariatePolynomialCategory F
+
+  N   ==> NonNegativeInteger
+  RF  ==> Fraction UP
+  REC ==> Record(answer:RF, lognum:UP, logden:UP)
+  HER ==> Record(answer:RF, logpart:RF, specpart:RF, polypart:UP)
+
+  Exports ==> with
+    HermiteIntegrate: (RF, UP -> UP) -> HER
+         ++ HermiteIntegrate(f, D) returns \spad{[g, h, s, p]}
+         ++ such that \spad{f = Dg + h + s + p},
+         ++ h has a squarefree denominator normal w.r.t. D,
+         ++ and all the squarefree factors of the denominator of s are
+         ++ special w.r.t. D. Furthermore, h and s have no polynomial parts.
+         ++ D is the derivation to use on \spadtype{UP}.
+
+  Implementation ==> add
+    import MonomialExtensionTools(F, UP)
+
+    normalHermiteIntegrate: (RF,UP->UP) -> Record(answer:RF,lognum:UP,logden:UP)
+
+    HermiteIntegrate(f, derivation) ==
+      rec := decompose(f, derivation)
+      hi  := normalHermiteIntegrate(rec.normal, derivation)
+      qr  := divide(hi.lognum, hi.logden)
+      [hi.answer, qr.remainder / hi.logden, rec.special, qr.quotient + rec.poly]
+
+-- Hermite Reduction on f, every squarefree factor of denom(f) is normal wrt D
+-- this is really a "parallel" Hermite reduction, in the sense that
+-- every multiple factor of the denominator gets reduced at each pass
+-- so if the denominator is P1 P2**2 ... Pn**n, this requires O(n)
+-- reduction steps instead of O(n**2), like Mack's algorithm
+-- (D.Mack, On Rational Integration, Univ. of Utah C.S. Tech.Rep. UCP-38,1975)
+-- returns [g, b, d] s.t. f = g' + b/d and d is squarefree and normal wrt D
+    normalHermiteIntegrate(f, derivation) ==
+      a := numer f
+      q := denom f
+      p:UP    := 0
+      mult:UP := 1
+      qhat := (q exquo (g0 := g := gcd(q, differentiate q)))::UP
+      while(degree(qbar := g) > 0) repeat
+        qbarhat := (qbar exquo (g := gcd(qbar, differentiate qbar)))::UP
+        qtil:= - ((qhat * (derivation qbar)) exquo qbar)::UP
+        bc :=
+         extendedEuclidean(qtil, qbarhat, a)::Record(coef1:UP, coef2:UP)
+        qr := divide(bc.coef1, qbarhat)
+        a  := bc.coef2 + qtil * qr.quotient - derivation(qr.remainder)
+               * (qhat exquo qbarhat)::UP
+        p  := p + mult * qr.remainder
+        mult:= mult * qbarhat
+      [p / g0, a, qhat]
+

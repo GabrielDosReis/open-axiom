@@ -1,0 +1,119 @@
+)abbrev package FLOATCP FloatingComplexPackage
+++ Author: P. Gianni
+++ Date Created: January 1990
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: SystemSolvePackage, RadicalSolvePackage,
+++ FloatingRealPackage
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++    This is a package for the approximation of complex solutions for
+++ systems of equations of rational functions with complex rational
+++ coefficients. The results are expressed as either complex rational
+++ numbers or complex floats depending on the type of the precision
+++ parameter which can be either a rational number or a floating point number.
+FloatingComplexPackage(Par): Cat == Cap where
+    Par : Join(Field, OrderedRing)
+    --K   ==> GI
+    --FPK ==> Fraction P K
+    C   ==> Complex
+    I        ==> Integer
+    NNI      ==> NonNegativeInteger
+    P        ==> Polynomial
+    EQ       ==> Equation
+    L        ==> List
+    SUP      ==> SparseUnivariatePolynomial
+    RN       ==> Fraction Integer
+    NF       ==> Float
+    CF       ==> Complex Float
+    GI       ==> Complex Integer
+    K        ==> GI
+    FPK      ==> Fraction P K 
+    GRN      ==> Complex RN
+    SE       ==> Symbol
+    RFI      ==> Fraction P I
+    INFSP ==> InnerNumericFloatSolvePackage
+
+
+    Cat == with
+
+       complexSolve:    (L FPK,Par) -> L L EQ P C Par
+         ++ complexSolve(lp,eps) finds all the complex solutions to
+         ++ precision eps of the system lp of rational functions
+         ++ over the complex rationals with respect to all the
+         ++ variables appearing in lp.
+
+       complexSolve:    (L EQ FPK,Par) -> L L EQ P C Par
+         ++ complexSolve(leq,eps) finds all the complex solutions
+         ++ to precision eps of the system leq of equations
+         ++ of rational functions over complex rationals
+         ++ with respect to all the variables appearing in lp.
+
+       complexSolve:    (FPK,Par) -> L EQ P C Par
+         ++ complexSolve(p,eps) find all the complex solutions of the
+         ++ rational function p with complex rational coefficients
+         ++ with respect to all the variables appearing in p,
+         ++ with precision eps.
+
+       complexSolve:    (EQ FPK,Par) ->  L EQ P C Par
+         ++ complexSolve(eq,eps) finds all the complex solutions of the
+         ++ equation eq of rational functions with rational rational coefficients
+         ++ with respect to all the variables appearing in eq,
+         ++ with precision eps.
+
+       complexRoots : (FPK,Par) -> L C Par
+         ++ complexRoots(rf, eps) finds all the complex solutions of a
+         ++ univariate rational function with rational number coefficients.
+         ++ The solutions are computed to precision eps.
+
+       complexRoots : (L FPK,L SE,Par) -> L L C Par
+         ++ complexRoots(lrf, lv, eps) finds all the complex solutions of a
+         ++ list of rational functions with rational number coefficients
+         ++ with respect the the variables appearing in lv.
+         ++ Each solution is computed to precision eps and returned as
+         ++ list corresponding to the order of variables in lv.
+
+    Cap == add
+
+       -- find the complex zeros of an univariate polynomial --
+       complexRoots(q:FPK,eps:Par) : L C Par ==
+         p:=numer q
+         complexZeros(univariate p,eps)$ComplexRootPackage(SUP GI, Par)
+
+       -- find the complex zeros of an univariate polynomial --
+       complexRoots(lp:L FPK,lv:L SE,eps:Par) : L L C Par ==
+         lnum:=[numer p for p in lp]
+         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         innerSolve(lnum,lden,lv,eps)$INFSP(K,C Par,Par)
+
+       complexSolve(lp:L FPK,eps : Par) : L L EQ  P C Par ==
+         lnum:=[numer p for p in lp]
+         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lv:="setUnion"/[variables np for np in lnum]
+         if lden~=[] then
+          lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
+         [[equation(x::(P C Par),r::(P C Par)) for x in lv for r in nres]
+           for nres in innerSolve(lnum,lden,lv,eps)$INFSP(K,C Par,Par)]
+
+       complexSolve(le:L EQ FPK,eps : Par) : L L EQ  P C Par ==
+         lp:=[lhs ep - rhs ep for ep in le]
+         lnum:=[numer p for p in lp]
+         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lv:="setUnion"/[variables np for np in lnum]
+         if lden~=[] then
+          lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
+         [[equation(x::(P C Par),r::(P C Par)) for x in lv for r in nres]
+           for nres in innerSolve(lnum,lden,lv,eps)$INFSP(K,C Par,Par)]
+
+       complexSolve(p : FPK,eps : Par) : L EQ  P C Par ==
+         (mvar := mainVariable numer p ) case "failed" =>
+                 error "no variable found"
+         x:P C Par:=mvar::SE::(P C Par)
+         [equation(x,val::(P C Par)) for val in complexRoots(p,eps)]
+
+       complexSolve(eq : EQ FPK,eps : Par) : L EQ  P C Par ==
+         complexSolve(lhs eq - rhs eq,eps)
+

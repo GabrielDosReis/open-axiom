@@ -1,0 +1,253 @@
+)abbrev domain NSUP NewSparseUnivariatePolynomial
+++ Author: Marc Moreno Maza
+++ Date Created: 23/07/98
+++ Date Last Updated: 14/12/98
+++ Basic Operations: 
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: 
+++ Examples:
+++ References: 
+++ Description: A post-facto extension for \axiomType{SUP} in order
+++ to speed up operations related to pseudo-division and gcd for
+++ both \axiomType{SUP} and, consequently, \axiomType{NSMP}.
+
+NewSparseUnivariatePolynomial(R): Exports == Implementation where
+
+  R:Ring
+  NNI ==> NonNegativeInteger
+  SUPR ==> SparseUnivariatePolynomial R
+
+  Exports == Join(UnivariatePolynomialCategory(R), 
+   CoercibleTo(SUPR),RetractableTo(SUPR)) with
+     fmecg : (%,NNI,R,%) -> %
+        ++ \axiom{fmecg(p1,e,r,p2)} returns \axiom{p1 - r * X**e * p2}
+        ++ where \axiom{X} is \axiom{monomial(1,1)}
+     monicModulo : ($, $) -> $ 
+        ++ \axiom{monicModulo(a,b)} returns \axiom{r} such that \axiom{r} is 
+        ++ reduced w.r.t. \axiom{b} and \axiom{b} divides \axiom{a -r}
+        ++ where \axiom{b} is monic.
+     lazyResidueClass: ($,$) -> Record(polnum:$, polden:R, power:NNI)
+        ++ \axiom{lazyResidueClass(a,b)} returns \axiom{[r,c,n]} such that 
+        ++ \axiom{r} is reduced w.r.t. \axiom{b} and \axiom{b} divides 
+        ++ \axiom{c^n * a - r} where \axiom{c} is \axiom{leadingCoefficient(b)} 
+        ++ and \axiom{n} is as small as possible with the previous properties.
+     lazyPseudoRemainder: ($,$) -> $
+        ++ \axiom{lazyPseudoRemainder(a,b)} returns \axiom{r} if \axiom{lazyResidueClass(a,b)}
+        ++ returns \axiom{[r,c,n]}. This lazy pseudo-remainder is computed by 
+        ++ means of the \axiomOpFrom{fmecg}{NewSparseUnivariatePolynomial} operation.
+     lazyPseudoDivide: ($,$) -> Record(coef:R, gap:NNI, quotient:$, remainder: $)
+        ++ \axiom{lazyPseudoDivide(a,b)} returns \axiom{[c,g,q,r]} such that 
+        ++ \axiom{c^n * a = q*b +r} and \axiom{lazyResidueClass(a,b)} returns \axiom{[r,c,n]}
+        ++ where \axiom{n + g = max(0, degree(b) - degree(a) + 1)}.
+     lazyPseudoQuotient: ($,$) -> $
+        ++ \axiom{lazyPseudoQuotient(a,b)} returns \axiom{q} if \axiom{lazyPseudoDivide(a,b)}
+        ++ returns \axiom{[c,g,q,r]} 
+     if R has IntegralDomain
+     then 
+       subResultantsChain: ($, $) -> List $
+         ++ \axiom{subResultantsChain(a,b)} returns the list of the non-zero
+         ++ sub-resultants of \axiom{a} and \axiom{b} sorted by increasing 
+         ++ degree.
+       lastSubResultant: ($, $) -> $
+         ++ \axiom{lastSubResultant(a,b)} returns \axiom{resultant(a,b)}
+         ++ if \axiom{a} and \axiom{b} has no non-trivial gcd in \axiom{R^(-1) P}
+         ++ otherwise the non-zero sub-resultant with smallest index.
+       extendedSubResultantGcd: ($, $) -> Record(gcd: $, coef1: $, coef2: $)
+         ++ \axiom{extendedSubResultantGcd(a,b)} returns \axiom{[g,ca, cb]} such
+         ++ that \axiom{g} is a gcd of \axiom{a} and \axiom{b} in \axiom{R^(-1) P}
+         ++ and \axiom{g = ca * a + cb * b}
+       halfExtendedSubResultantGcd1: ($, $) -> Record(gcd: $, coef1: $)
+         ++ \axiom{halfExtendedSubResultantGcd1(a,b)} returns \axiom{[g,ca]} such that
+         ++ \axiom{extendedSubResultantGcd(a,b)} returns \axiom{[g,ca, cb]}
+       halfExtendedSubResultantGcd2: ($, $) -> Record(gcd: $, coef2: $)
+         ++ \axiom{halfExtendedSubResultantGcd2(a,b)} returns \axiom{[g,cb]} such that
+         ++ \axiom{extendedSubResultantGcd(a,b)} returns \axiom{[g,ca, cb]}
+       extendedResultant: ($, $) -> Record(resultant: R, coef1: $, coef2: $)
+         ++ \axiom{extendedResultant(a,b)} returns  \axiom{[r,ca,cb]} such that 
+         ++ \axiom{r} is the resultant of \axiom{a} and \axiom{b} and
+         ++ \axiom{r = ca * a + cb * b}
+       halfExtendedResultant1: ($, $) -> Record(resultant: R, coef1: $)
+         ++ \axiom{halfExtendedResultant1(a,b)} returns \axiom{[r,ca]} such that 
+         ++ \axiom{extendedResultant(a,b)}  returns \axiom{[r,ca, cb]} 
+       halfExtendedResultant2: ($, $) -> Record(resultant: R, coef2: $)
+         ++ \axiom{halfExtendedResultant2(a,b)} returns \axiom{[r,ca]} such that 
+         ++ \axiom{extendedResultant(a,b)} returns \axiom{[r,ca, cb]} 
+
+  Implementation == SparseUnivariatePolynomial(R) add
+   
+     Term == Record(k:NonNegativeInteger,c:R)
+     Rep ==> List Term
+
+     rep(s:$):Rep == s pretend Rep
+     per(l:Rep):$ == l pretend $
+
+     coerce (p:$):SUPR == 
+       p pretend SUPR
+
+     coerce (p:SUPR):$ == 
+       p pretend $
+
+     retractIfCan (p:$) : Union(SUPR,"failed") == 
+       (p pretend SUPR)::Union(SUPR,"failed")
+
+     monicModulo(x,y) ==
+                zero? y => 
+                   error "in monicModulo$NSUP: division by 0"
+                ground? y =>
+                   error "in monicModulo$NSUP: ground? #2"
+                yy := rep y
+--                not one? (yy.first.c) => 
+                not ((yy.first.c) = 1) => 
+                   error "in monicModulo$NSUP: not monic #2"
+                xx := rep x; empty? xx => x
+                e := yy.first.k; y := per(yy.rest)                
+                -- while (not empty? xx) repeat
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  xx:= rep fmecg(per rest(xx), u, xx.first.c, y)
+                  if empty? xx then break
+                per xx
+
+     lazyResidueClass(x,y) ==
+                zero? y => 
+                   error "in lazyResidueClass$NSUP: division by 0"
+                ground? y =>
+                   error "in lazyResidueClass$NSUP: ground? #2"
+                yy := rep y; co := yy.first.c; xx: Rep := rep x
+                empty? xx => [x, co, 0]
+                pow: NNI := 0; e := yy.first.k; y := per(yy.rest); 
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  xx:= rep fmecg(co * per rest(xx), u, xx.first.c, y)
+                  pow := pow + 1
+                  if empty? xx then break
+                [per xx, co, pow]
+
+     lazyPseudoRemainder(x,y) ==
+                zero? y => 
+                   error "in lazyPseudoRemainder$NSUP: division by 0"
+                ground? y =>
+                   error "in lazyPseudoRemainder$NSUP: ground? #2"
+                ground? x => x
+                yy := rep y; co := yy.first.c
+--                one? co => monicModulo(x,y)
+                (co = 1) => monicModulo(x,y)
+                (co = -1) => - monicModulo(-x,-y)
+                xx:= rep x; e := yy.first.k; y := per(yy.rest)
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  xx:= rep fmecg(co * per rest(xx), u, xx.first.c, y)
+                  if empty? xx then break
+                per xx
+
+     lazyPseudoDivide(x,y) ==
+                zero? y => 
+                   error "in lazyPseudoDivide$NSUP: division by 0"
+                ground? y =>
+                   error "in lazyPseudoDivide$NSUP: ground? #2"
+                yy := rep y; e := yy.first.k; 
+                xx: Rep := rep x; co := yy.first.c
+                (empty? xx) or (xx.first.k < e) => [co,0,0,x]
+                pow: NNI := subtractIfCan(xx.first.k,e)::NNI + 1
+                qq: Rep := []; y := per(yy.rest)
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  qq := cons([u::NNI, xx.first.c]$Term, rep (co * per qq))
+                  xx := rep fmecg(co * per rest(xx), u, xx.first.c, y)
+                  pow := subtractIfCan(pow,1)::NNI
+                  if empty? xx then break
+                [co, pow, per reverse qq, per xx]
+
+     lazyPseudoQuotient(x,y) ==
+                zero? y => 
+                   error "in lazyPseudoQuotient$NSUP: division by 0"
+                ground? y =>
+                   error "in lazyPseudoQuotient$NSUP: ground? #2"
+                yy := rep y; e := yy.first.k; xx: Rep := rep x
+                (empty? xx) or (xx.first.k < e) => 0
+                qq: Rep := []; co := yy.first.c; y := per(yy.rest)
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  qq := cons([u::NNI, xx.first.c]$Term, rep (co * per qq))
+                  xx := rep fmecg(co * per rest(xx), u, xx.first.c, y)
+                  if empty? xx then break
+                per reverse qq
+
+     if R has IntegralDomain
+     then 
+       pack ==> PseudoRemainderSequence(R, %)
+
+       subResultantGcd(p1,p2) == subResultantGcd(p1,p2)$pack
+
+       subResultantsChain(p1,p2) == chainSubResultants(p1,p2)$pack
+
+       lastSubResultant(p1,p2) == lastSubResultant(p1,p2)$pack
+
+       resultant(p1,p2) == resultant(p1,p2)$pack
+
+       extendedResultant(p1,p2) == 
+          re: Record(coef1: $, coef2: $, resultant: R) := resultantEuclidean(p1,p2)$pack
+          [re.resultant, re.coef1, re.coef2]
+
+       halfExtendedResultant1(p1:$, p2: $): Record(resultant: R, coef1: $) ==
+          re: Record(coef1: $, resultant: R) := semiResultantEuclidean1(p1, p2)$pack
+          [re.resultant, re.coef1]
+
+       halfExtendedResultant2(p1:$, p2: $): Record(resultant: R, coef2: $) ==
+          re: Record(coef2: $, resultant: R) := semiResultantEuclidean2(p1, p2)$pack
+          [re.resultant, re.coef2]
+
+       extendedSubResultantGcd(p1,p2) == 
+          re: Record(coef1: $, coef2: $, gcd: $) := subResultantGcdEuclidean(p1,p2)$pack
+          [re.gcd, re.coef1, re.coef2]
+
+       halfExtendedSubResultantGcd1(p1:$, p2: $): Record(gcd: $, coef1: $) ==
+          re: Record(coef1: $, gcd: $) := semiSubResultantGcdEuclidean1(p1, p2)$pack
+          [re.gcd, re.coef1]
+
+       halfExtendedSubResultantGcd2(p1:$, p2: $): Record(gcd: $, coef2: $) ==
+          re: Record(coef2: $, gcd: $) := semiSubResultantGcdEuclidean2(p1, p2)$pack
+          [re.gcd, re.coef2]
+
+       pseudoDivide(x,y) ==
+                zero? y => 
+                   error "in pseudoDivide$NSUP: division by 0"
+                ground? y =>
+                   error "in pseudoDivide$NSUP: ground? #2"
+                yy := rep y; e := yy.first.k
+                xx: Rep := rep x; co := yy.first.c
+                (empty? xx) or (xx.first.k < e) => [co,0,x]
+                pow: NNI := subtractIfCan(xx.first.k,e)::NNI + 1
+                qq: Rep := []; y := per(yy.rest)
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  qq := cons([u::NNI, xx.first.c]$Term, rep (co * per qq))
+                  xx := rep fmecg(co * per rest(xx), u, xx.first.c, y)
+                  pow := subtractIfCan(pow,1)::NNI
+                  if empty? xx then break
+                zero? pow => [co, per reverse qq, per xx]
+                default: R := co ** pow
+                q := default * (per reverse qq)
+                x := default * (per xx)
+                [co, q, x]
+
+       pseudoQuotient(x,y) ==
+                zero? y => 
+                   error "in pseudoDivide$NSUP: division by 0"
+                ground? y =>
+                   error "in pseudoDivide$NSUP: ground? #2"
+                yy := rep y; e := yy.first.k; xx: Rep := rep x
+                (empty? xx) or (xx.first.k < e) => 0
+                pow: NNI := subtractIfCan(xx.first.k,e)::NNI + 1
+                qq: Rep := []; co := yy.first.c; y := per(yy.rest)
+                repeat
+                  if (u:=subtractIfCan(xx.first.k,e)) case "failed" then break
+                  qq := cons([u::NNI, xx.first.c]$Term, rep (co * per qq))
+                  xx := rep fmecg(co * per rest(xx), u, xx.first.c, y)
+                  pow := subtractIfCan(pow,1)::NNI
+                  if empty? xx then break
+                zero? pow => per reverse qq
+                (co ** pow) * (per reverse qq)
+

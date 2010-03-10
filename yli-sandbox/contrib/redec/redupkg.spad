@@ -1,0 +1,1352 @@
+import SYNHELP
+import TYPCHK
+import LPANL
+import REDANL
+import CHKASSMP
+
+)abbrev package REDUPKG ReductionAnalysisPackage
+++ Author: Yue Li
+++ Date Created: November 23, 2009
+++ Date Last Updated: December 17, 2009
+++ Description: This package provides preprocessing functions for semantic analysis
+++              of a package/domain/category
+ReductionAnalysisPackage(): Public == Private where
+  macro VTB    == Table(Syntax, Syntax)
+  macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
+  macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
+  macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature, tenv: VTB)
+  macro LTB    == Table(Pair(Identifier, Identifier), List RepeatAst)
+  macro FREC   == Record(funname: Identifier, signature: Signature, arity: Integer)
+  macro DREC   == Record(funname: Identifier, signature: Signature, body: DefinitionAst, typeenv: VTB, accumulations: List YREC)
+  macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
+  macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
+  macro RFREC  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List Syntax)
+  -- for storing reduce forms
+  macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature, tenv: VTB)
+  macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
+  -- for storing associative operator records
+  macro OPREC == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
+
+  Public == with
+    analyze: (Integer, Integer) -> Boolean
+    analyzeReduction: (String, Integer) -> Boolean
+    preproc: List Syntax -> Integer
+    preprocAll: Integer
+    viewImports: List ImportAst
+    viewMacros: VTB
+    viewCtorInfo: Void()
+    viewReplacedCtor: Syntax
+    viewExportedSig: List FREC
+    viewUnexportedSig: List FREC
+    viewReduceFuns: List RREC
+    viewReduceForms: List RFREC
+    viewFunDefs: List DREC
+    viewGlobalVars: VTB
+    viewStat: Void
+
+    ++ testing
+    T_defStmtStat: (SpadAst, Identifier, VTB) -> Integer
+    T_defStat: (DefinitionAst, Identifier, VTB) -> Integer
+
+    getCtorKindInString: Identifier -> String
+
+  Private == add
+    import SpadParser
+    --Global variables
+    reductionCounter : Integer := 0
+    fCount: Integer := 0
+    count: Integer := 0
+    defNo: Integer := 0
+    bugcounter : Integer := 0
+
+    -- reductino loop counter
+    totalcounter : Integer := 0
+    ptotalcounter : Integer := 0
+    pptotalcounter : Integer := 0
+    reductionFormCounter: Integer := 0
+    preductionFormCounter: Integer := 0
+    reductionFunctionCounter: Integer := 0
+    preductionFunctionCounter: Integer := 0
+
+    -- used for preprocessing
+    -- 0: extract reduction loops with functions used in the loop
+    -- 1: extract reduce function and reduce forms.
+    programOption : Integer := 0
+
+    -- for reduction loops
+    L_analysis_result: List ZREC                       := []
+    -- for reduce function calls
+    L_reduce: List RREC                                := []
+    -- no longer used 
+    L_reduce_form: List RFREC                          := []
+    -- the improved list for reduce forms
+    L_rform : List RFORM                          := []
+    L_import : List ImportAst                          := []
+    L_fundef : List DREC                               := []
+    S_category: Set Identifier                         := {}
+    S_package:  Set Identifier                         := {}
+    S_domain:   Set Identifier                         := {}
+
+    constructorName: Identifier                        := gensym()
+    constructorParameters: List Syntax                 := []
+    constructorParameterTypes: List Syntax             := []
+    constructorMacros: VTB                             := empty()
+    -- the whole constructor definition body with % replaced by the constructor call form
+    replacedConstructorDef : Syntax                    := gensym()::Syntax
+    localUnexportedSignatureDatabase : List FREC       := []
+    -- exported signatures with slot instantiated but without instantiating %
+    localExportedSignatureDatabase : List FREC         := [] 
+
+    -- Table for storing global variables such as constructor parameter, and global variable in capsule
+    -- this will become global type environment, storing global function declaration, global 
+    -- variable declaration including the immediate initialization
+    cgv: VTB := empty()
+
+    viewImports == L_import
+    viewFunDefs == L_fundef
+    viewMacros  == constructorMacros
+    viewCtorInfo ==
+      print(constructorName::OutputForm)
+      print(constructorParameters::OutputForm)
+      print(constructorParameterTypes::OutputForm)
+
+    viewReplacedCtor  == replacedConstructorDef
+    viewExportedSig   == localExportedSignatureDatabase
+    viewUnexportedSig == localUnexportedSignatureDatabase
+    viewGlobalVars    == cgv
+    viewReduceFuns    == L_reduce
+    viewReduceForms   == L_reduce_form
+    viewStat ==
+      if programOption = 0 then 
+        print("Reduction loop #:"::OutputForm)
+        print(totalcounter::OutputForm)
+      if programOption = 1 then
+        print("Reduction function call #:"::OutputForm)
+        print(reductionFunctionCounter::OutputForm)        
+        print("Reduction form #:"::OutputForm)
+        print(reductionFormCounter::OutputForm)      
+      print("Total function definition #:"::OutputForm)
+      print(defNo::OutputForm)
+      print("Total file #:"::OutputForm)
+      print(fCount::OutputForm)
+      print("Package #:"::OutputForm)
+      print((#S_package)::OutputForm)
+      print("Category #:"::OutputForm)
+      print((#S_category)::OutputForm)
+      print("Domain #:"::OutputForm)
+      print((#S_domain)::OutputForm)
+
+    unknownSyn: Syntax == '_?::Identifier::Syntax
+    makePercentage: Syntax   == '%::Identifier::Syntax
+    makeCase: Syntax                == 'case::Identifier::Syntax
+
+    cleanUpCtorInfo: Boolean ==
+      cgv := empty()
+      constructorName: Identifier := gensym()
+      replacedConstructorDef : Syntax := gensym()::Syntax
+      constructorParameters := []
+      constructorParameterTypes := []
+      constructorMacros := empty()
+      L_import := []
+      L_fundef := []
+      ctorExportedSignatures := []
+      localExportedSignatureDatabase := []  
+      localUnexportedSignatureDatabase := []
+      true
+
+    cleanUp():Boolean ==
+      fCount := 0
+      count := 0
+      defNo := 0
+      L_analysis_result := []
+      L_reduce          := []
+      L_reduce_form     := []
+      L_rform      := []
+      S_category        := {}
+      S_package         := {}
+      S_domain          := {}
+      cleanUpCtorInfo()
+      true
+
+    -- collect macros into table
+    collectMacroFromDefinitionAst(functionName: Identifier, definitionBody: SpadAst): Boolean ==
+      macroName := functionName::Syntax
+      macroBody := definitionBody::Syntax
+      constructorMacros.macroName := macroBody
+      true      
+
+    collectMacro(t: MacroAst): Boolean ==
+      macroHead := head(t)$MacroAst
+      macroBody := (body(t)$MacroAst)::Syntax
+      macroName := (name(macroHead)$HeadAst)::Syntax
+      constructorMacros.macroName := macroBody
+      true
+
+    -- does maco expansion
+    -- currently only for ColonAst, DefinitionAst before they are collected, and for global type environment before
+    -- passing it to typechecker.
+    macroExpansionForSyntax(s: SpadAst): SpadAst ==
+      s' := s::Syntax
+      for m in keys constructorMacros repeat
+        mac := constructorMacros.m
+        sub := m
+        --if compound? mac then
+        --  sub := buildSyntax(m, [])
+        s' := replace(sub, s', mac)$SyntaxHelper
+      s'::SpadAst
+
+    macroExpansionForTypeEnvironmentTable(gte: VTB): VTB ==
+      gte' := copy gte
+      for k in keys gte' repeat
+        gte'.k := macroExpansionForSyntax((gte'.k)::SpadAst)::Syntax
+      gte'
+
+    macroExpansionForImportList(): List ImportAst ==
+      L_import' := copy L_import
+      for i in 1..#L_import' repeat
+        L_import'.i := macroExpansionForSyntax((L_import'.i)::Syntax::SpadAst)::Syntax::ImportAst
+      L_import'
+
+    macroExpansion(defAst: SpadAst): SpadAst ==
+      defAst' := defAst
+      op       := getOperator(defAst'::Syntax)::Identifier
+      operands := getOperands(defAst'::Syntax)
+      bodySyntax := operands.last
+      -- from the last macro to the first macro
+      -- function keys returns this correct order
+      --bodySyntax := macroExpansionForSyntax(bodySyntax::SpadAst)::Syntax
+
+      for m in keys constructorMacros repeat
+        bodySyntax := replace(m, bodySyntax, constructorMacros.m)$SyntaxHelper
+
+      operands.last := bodySyntax
+      -- if this is definitionAst, we also need to expand its signature
+      if defAst case DefinitionAst then
+        --operands.2 := macroExpansionForSyntax((operands.2)::SpadAst)::Syntax
+        for m in keys constructorMacros repeat
+          operands.2 := replace(m, operands.2, constructorMacros.m)$SyntaxHelper
+      -- if this is a LetAst and the left hand side is a ColonAst
+      if defAst case LetAst and  compound?(lhs(defAst::Syntax::LetAst)::Syntax) and  (l := lhs(defAst::Syntax::LetAst)) case ColonAst then
+        operands.1 := macroExpansion(l)::Syntax
+      defAst' := buildSyntax(op, operands)::SpadAst
+      defAst'
+
+
+    -- filter out the import statement before the category definition
+    importFilter(l: List Syntax): Syntax ==
+      for s in l repeat
+        (s' := s::SpadAst) case ImportAst => L_import := concat(L_import, s::ImportAst)
+        s' case MacroAst => collectMacro(s::MacroAst)
+        s' case DefinitionAst or s' case WhereAst => return s
+      l.last
+
+    initVtWithGt(v: VTB, g: VTB): VTB ==
+      for k in keys(g) repeat
+        v.k := g.k
+      v
+
+    initGlobalVariableEnvironment(ctorName: Identifier, ctorPars: List Identifier, ctorTps: List Syntax): VTB ==
+      for p in ctorPars for t in ctorTps repeat
+        p' := p::Syntax
+        cgv.p'  := t
+      cgv
+
+    ctorCallForm: Syntax == buildSyntax(constructorName::Syntax, constructorParameters)
+
+    instantiatePercentage(sast: SpadAst): Syntax ==
+      sast_copy := sast::Syntax
+      replace(makePercentage(), sast_copy, ctorCallForm())$SyntaxHelper
+
+
+    -- update the global type environment
+    updateGlobalTypeEnv(gte: VTB, id: Syntax, tp: Syntax): VTB ==
+      qsetelt!(gte, id, tp)
+      gte
+
+    makeJoin: Syntax                   == 'Join::Identifier::Syntax
+    updateGlobalTypeEnvFromCondition(cond: SpadAst, gte: VTB): VTB ==
+      compound?(cond::Syntax) and cond case HasAst =>
+        cond := macroExpansionForSyntax(cond)
+        cond' := cond::Syntax::HasAst
+        v   := (lhs cond')::Syntax
+        cat := (rhs cond')::Syntax
+        key?(v, gte) => 
+          if isJoin?(tp := gte.v)$SyntaxHelper then 
+            gte.v := buildSyntax(makeJoin(), concat(getOperands tp, cat))
+          else
+            gte.v := buildSyntax(makeJoin(), [tp, cat])
+          gte
+        gte.v := cat
+        gte
+      gte
+
+    mappingAst2Signature(m: MappingAst): Signature ==
+      src : List Syntax := []
+      tar := (target m)::Syntax
+      for s in source m repeat
+        src := concat(src, s::Syntax)
+      signature(src, tar)
+
+    updateUnexportedSignatureDatabase(fn: Identifier, sig: Signature, a: Integer): Boolean ==
+      r: FREC := [fn, sig, a]
+      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
+      true
+
+    getFunSigFromColonAst(sa: SpadAst, gte: VTB): Boolean ==
+      sa'   := sa::Syntax::ColonAst
+      right := rhs(sa')::Syntax::SpadAst
+      left  := lhs(sa')::Syntax::SpadAst
+      if compound?(right::Syntax) and_ 
+         right case MappingAst and_
+         (left' := left::Syntax) case Identifier  then
+      -- if this is a function signature
+        right' := right::Syntax::MappingAst
+        updateUnexportedSignatureDatabase(left'::Identifier, mappingAst2Signature(right'),  #(source(right')$MappingAst))
+        gte := updateGlobalTypeEnv(gte, left::Syntax, right::Syntax) 
+      true
+
+    signatureComplete?(sig: Signature): Boolean ==
+      for t in concat(source sig, target sig) repeat
+        nil? t => return false
+      true
+
+    -- update local unexported signature database
+    -- skip those function definition which does not have a signature 
+    -- their signatures have already been shown in exported ones, or in the local declaration extracted already.
+
+    isRep?(fn: Identifier): Boolean == fn = 'Rep::Identifier
+
+    updateUnexportedDatabaseWhenMeetRep(bd: SpadAst): Boolean ==
+      rep_rec : FREC := ['rep::Identifier, signature([makePercentage()], bd::Syntax), 1]
+      per_rec : FREC := ['per::Identifier, signature([bd::Syntax], makePercentage()), 1]
+      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, [rep_rec, per_rec])
+      true
+      
+    updateUnexportedDatabaseWhenMeetFunDef(fn: Identifier, sig: Signature, a: Integer, bd: SpadAst): Boolean ==
+      isRep?(fn)                  => updateUnexportedDatabaseWhenMeetRep(bd)
+      not signatureComplete?(sig) => false
+      r : FREC := [fn, sig, a]
+      -- already in exported or unexported signature database?
+      member?(r, localExportedSignatureDatabase) or member?(r, localExportedSignatureDatabase) => false
+      -- otherwise, update the unexpoconstructorNamerted signature database with this entry
+      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
+      true
+
+    signatureMatch?(actual: Signature, expect: Signature): Boolean ==
+      l_actual := concat(source actual, target actual)
+      l_expect := concat(source expect, target expect)
+      for x in l_actual for y in l_expect repeat
+        not nil? x and not x = y => return false
+      true
+
+    searchInSignatureDatabase(fn: Identifier, sig: Signature, db: List FREC): Pair(Boolean, Signature) ==
+      for entry in db repeat
+        if entry.funname = fn and_ 
+           entry.arity = #source(sig) and_ 
+           signatureMatch?(sig, entry.signature) then 
+          return pair(true, entry.signature)
+      pair(false, sig)
+
+    updateParameterTypeFromTypeEnv(pars: List Syntax, sig: Signature, gte: VTB): Signature ==
+      src := source sig
+      tar := target sig
+      for i in 1..#src for p in pars repeat
+        if not (p case String) and key?(p, gte) then
+          src.i := gte.p
+      signature(src, tar)
+
+    getCompleteSignature(fn: Identifier, pars: List Syntax, sig: Signature, gte: VTB): Signature ==
+      -- search in global type environment first
+      if not (fn = makeCase()::Identifier) then 
+        sig := updateParameterTypeFromTypeEnv(pars, sig, gte)
+        signatureComplete?(sig) => return sig
+      -- after searching the global type environment, if the type is still incomplete
+      -- then search the two databases
+      first(x := searchInSignatureDatabase(fn, sig, localExportedSignatureDatabase))   => second x
+      first(y := searchInSignatureDatabase(fn, sig, localUnexportedSignatureDatabase)) => second y
+      print(fn::OutputForm)
+      print(sig::OutputForm)
+      print(constructorMacros::OutputForm)
+      userError "unexpected: the signature can not be found in any of the two databases."
+
+    -- should add exclamation.
+    instantiatePercentageInSource(src: List Syntax): List Syntax ==
+      for i in 1..#src repeat
+        src.i := replace(makePercentage(), src.i, ctorCallForm())$SyntaxHelper
+      src
+
+    instantiatePercentageForListSyntax(s: List Syntax): List Syntax ==
+      instantiatePercentageInSource(s)
+
+    instantiatePercentageInTarget(tar: Syntax): Syntax ==
+      replace(makePercentage(), tar, ctorCallForm())$SyntaxHelper
+
+    instantiatePercentageForSignature(s: Signature): Signature ==
+      src := instantiatePercentageInSource copy source s
+      tar := instantiatePercentageInTarget target s
+      signature(src, tar)
+
+    instantiatePercentageForLoops(l: List RepeatAst): List RepeatAst ==
+      result := copy l
+      for i in 1..#result repeat
+        result.i := (replace(makePercentage(), (result.i)::Syntax, ctorCallForm())$SyntaxHelper)::RepeatAst
+      result
+
+    filterOutMappingAst(gte: VTB): VTB == 
+      gte' := copy gte
+      for k in keys gte' repeat
+        if compound?(gte'.k) and (gte'.k)::SpadAst case MappingAst then
+          remove!(k, gte')
+      gte'  
+
+    collectReduceForms(r: List Syntax): Pair(List Syntax, List Syntax) ==
+      reduceFun : List Syntax := []
+      reduceForm: List Syntax := []
+      for e in r repeat
+        if getOperator(e) case Identifier then
+          getOperator(e)::Identifier = 'REDUCE::Identifier => reduceForm := concat(reduceForm, e)
+          getOperator(e)::Identifier = 'reduce::Identifier => reduceFun := concat(reduceFun, e)
+      pair(reduceFun, reduceForm)
+
+    -- collect all the function definitions in the capsule, attaching with its complete signature,
+    -- its complete AST, and an initialized type environment
+    -- Note that % in its signature is not replaced with the constructor call form
+    updateFunDefList(fn: Identifier, sig: Signature, defAst: DefinitionAst, bd: SpadAst, gte: VTB): Boolean ==
+      -- we don't do typechecking for rep and per. or Rep ==
+      -- because we generate its type, not user, therefore it is always correct.
+      isRep?(fn) => true
+
+      -- make a copy of the defintion ast
+      defAst' := defAst
+      gte' := macroExpansionForTypeEnvironmentTable(gte)
+      gte' := filterOutMappingAst(gte')
+      L_import' := macroExpansionForImportList()
+
+      if programOption = 0 then
+        -- analyze the loop, extracting reductions 
+        resultFromLoopAnalysis: Pair(LTB, List List Syntax) := extractReductionPatternFromFunctionDefinition(defAst', constructorName, copy gte')$LoopAnalysis 
+        loopTable: LTB := first resultFromLoopAnalysis
+        accVariables: List List Syntax := second resultFromLoopAnalysis
+
+        -- if there is no interesting loop, we do nothing.
+        empty? loopTable => return true
+        #keys(loopTable) > 1 => 
+          print(loopTable::OutputForm)
+          userError "unexpected results from analysis framework [has more than 1 entry in the table]"
+
+        print(" ")
+        print("-------------------------------------------------------------")
+        print("|  Encounter potential reduction, start doing typechecking  |")
+        print("-------------------------------------------------------------")
+        print(" ")     
+
+        k := first keys loopTable
+        loopList : List RepeatAst := loopTable.k
+        sig' := sig
+        -- sigh, the following code is due to the bug caused by "left", "last"
+        pars := getOperands(first(getOperands(defAst::Syntax)))
+        if not signatureComplete?(sig) then 
+          sig' := getCompleteSignature(fn, pars, sig, gte)
+        -- instantiate the % in the function body with the ctor call form
+        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        -- instantiate the % in the signature with the ctor call form
+        sig'    := instantiatePercentageForSignature(sig')
+
+        --instantiate the % in the collected potential repeatAsts
+        loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+
+        -- build the record
+        r : DREC := [fn, sig', defAst', copy gte', []]
+        -- typechecks the function definition body
+        resultFromTypeChecker : Pair(VTB, List YREC) := checkFunctionDefinition(r,_ 
+                                             constructorName, constructorParameters,_
+                                             localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
+                                             L_import', constructorMacros,_
+                                             loopList', accVariables)$TypeChecker
+
+        r.typeenv := first resultFromTypeChecker
+        r.accumulations := second resultFromTypeChecker
+        L_fundef := concat(L_fundef, r)
+        -- update the final result to be written into file
+        r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
+        L_analysis_result := concat(L_analysis_result, r')
+
+-------------------------------------------------------------------------------------------------------
+
+      if programOption = 1 then
+        -- analyze the loop, extracting reductions 
+        reduceForms : List Syntax := extractReduceFormsFromFunctionDefinition(defAst', constructorName)$ReduceAnalysis 
+        -- if there is no interesting loop, we do nothing.
+
+        reductionCounter := reductionCounter + #(reduceForms)
+        --k := first keys loopTable
+        --loopList : List RepeatAst := loopTable.k
+        sig' := sig
+        -- sigh, the following code is due to the bug caused by "left", "last"
+        pars := getOperands(first(getOperands(defAst::Syntax)))
+        if not signatureComplete?(sig) then 
+          sig' := getCompleteSignature(fn, pars, sig, gte)
+        -- instantiate the % in the function body with the ctor call form
+        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        -- instantiate the % in the signature with the ctor call form
+        sig'    := instantiatePercentageForSignature(sig')
+
+        --instantiate the % in the collected potential repeatAsts
+        reduceForms' : List Syntax := instantiatePercentageForListSyntax(reduceForms)
+
+        -- we don't divide them right now
+        --x := collectReduceForms(reduceForms')
+        --reduceFormList := second x
+        --reduceForms'   := first x
+
+        --if not empty? reduceFormList then
+        --  rec : RFREC := [constructorName, fn, sig', reduceFormList] 
+        --  L_reduce_form := concat(L_reduce_form, rec)
+
+        empty? reduceForms' => return true
+
+        print(" ")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print("$  Encounter potential reduce forms and expressions, start typechecking  $")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        print(" ")     
+
+        r : DREC := [fn, sig', defAst', copy gte', []]
+
+        -- typechecks the function definition body
+        resultFromTypeChecker : Pair(List REDU, List REDF) := checkFunctionDefinition2(r,_ 
+                                             constructorName, constructorParameters,_
+                                             localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
+                                             L_import', constructorMacros,_
+                                             reduceForms')$TypeChecker
+
+        r_fun : RREC := [constructorName, fn, sig', first resultFromTypeChecker]
+        r_form : RFORM := [constructorName, fn, sig', second resultFromTypeChecker]
+        L_reduce := concat(L_reduce, r_fun)
+        L_rform := concat(L_rform, r_form)
+
+      true
+
+    updateGlobalTypeEnvFromColonAst(cast: SpadAst, gte: VTB): VTB ==
+      getFunSigFromColonAst(cast, gte)
+      varLst := listColonAst(cast::Syntax::ColonAst)$SyntaxHelper
+      varTyp := (rhs(cast::Syntax::ColonAst))::Syntax
+      for v in varLst repeat
+        gte := updateGlobalTypeEnv(gte, v, varTyp)
+      gte
+
+    isTypeExpression?(s: SpadAst): Boolean ==
+      s' := s::Syntax
+      not compound? s' => false
+      (ctor := getOperator(s')) case Identifier => 
+         retractIfCan(findConstructor(ctor::Identifier)$Constructor)$(Maybe Constructor) case "failed" => false
+         true
+      false
+          
+    -- collect the loop ast from a statement
+    T_defStmtStat(dBody: SpadAst, ctor: Identifier, gte: VTB): Integer ==
+      if not compound?(dBody::Syntax) then
+        return count
+      dBody case ImportAst =>
+        L_import := concat(L_import, dBody::Syntax::ImportAst)        
+        count
+      dBody case SignatureAst =>
+        count
+      dBody case MacroAst => 
+        collectMacro(dBody::Syntax::MacroAst)
+        count
+      dBody case DefinitionAst => 
+        defNo := defNo + 1
+        T_defStat(dBody::Syntax::DefinitionAst, ctor, copy gte)
+        count
+      dBody case SequenceAst =>
+        stmtLst:= body(dBody::Syntax::SequenceAst)$SequenceAst
+        for stmt in stmtLst repeat
+          --print(stmt::Syntax::OutputForm)
+          --print(gte::OutputForm)
+          T_defStmtStat(stmt, ctor, gte)
+          --print(gte::OutputForm)
+        count
+      dBody case IfAst => 
+        dBody'   := dBody::Syntax::IfAst
+        thBranch := thenBranch(dBody')$IfAst
+        elBranch := elseBranch(dBody')$IfAst
+        cond     := condition(dBody')$IfAst
+        if compound?(thBranch::Syntax) then
+          gte' := copy gte
+          gte' := updateGlobalTypeEnvFromCondition(cond, gte')          
+          T_defStmtStat(thBranch, ctor, gte')
+        if compound?(elBranch::Syntax) then
+          T_defStmtStat(elBranch, ctor, copy gte)
+        count
+      dBody case ReturnAst =>
+        rtn := expression(dBody::Syntax::ReturnAst)$ReturnAst
+        if compound?(rtn::Syntax) then
+          T_defStmtStat(rtn, ctor, gte)
+        count
+      dBody case RepeatAst =>
+        b := dBody::Syntax::RepeatAst
+        --updateTable(ctor, functionName, b, lpTable)
+        count := count + 1
+        count
+      dBody case CoerceAst =>
+        coeast := dBody::Syntax::CoerceAst
+        tp := ((target(coeast))$CoerceAst)::Syntax
+        exp := (expression(coeast)$CoerceAst)::Syntax
+        coerExp := expression(dBody::Syntax::CoerceAst)$CoerceAst
+        if compound?(coerExp::Syntax) then
+          T_defStmtStat(coerExp, ctor, gte)
+        count
+      dBody case ExitAst =>
+        dbexp := expression(dBody::Syntax::ExitAst)$ExitAst
+        T_defStmtStat(dbexp, ctor, gte)
+      dBody case LetAst =>
+        dBody' := (macroExpansion dBody)::Syntax::LetAst        
+        id := getLhs(dBody')$SyntaxHelper
+        if not compound?((l := lhs(dBody'))::Syntax) and_
+           l case Identifier and_
+           (isRep?(l::Identifier) or isTypeExpression? rhs dBody') then
+          collectMacroFromDefinitionAst(l::Identifier, rhs(dBody'))  
+          updateUnexportedDatabaseWhenMeetRep(rhs(dBody'))
+        else if compound?((l := lhs(dBody'))::Syntax) and l case ColonAst then
+          tp := rhs(l::Syntax::ColonAst)::Syntax
+          gte := updateGlobalTypeEnv(gte, id, tp)
+        else
+          gte' := macroExpansionForTypeEnvironmentTable(gte)
+          gte' := filterOutMappingAst(gte') 
+          L_import' := macroExpansionForImportList()
+          tp   := checkGlobalLetAst(dBody',_ 
+                                    gte', constructorName, constructorParameters,_
+                                    localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
+                                    L_import')$TypeChecker
+          gte  := updateGlobalTypeEnv(gte, id, tp)  
+        count
+      dBody case WhileAst => count  
+      dBody case ColonAst => 
+        gte := updateGlobalTypeEnvFromColonAst(macroExpansion(dBody), gte)
+        count
+      dBody case ConstructAst => count
+      dBody case CollectAst => count
+      dBody case CaseAst => count
+      count
+
+    -- collects loop from one function definition
+    T_defStat(defAst: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
+      defAst' := (macroExpansion(defAst::Syntax::SpadAst))::DefinitionAst
+      hd := head(defAst')$DefinitionAst
+      functionName := name hd
+      ary := #(parameters(hd)$HeadAst)
+      sig := signature(defAst')$DefinitionAst
+      dBody := body(defAst')$DefinitionAst
+      if not isRep?(functionName) and ary = 0 and isTypeExpression?(dBody) then
+        -- treat this function abstraction as macro
+        -- or can I say this is inlining?
+        --print(defAst'::Syntax::OutputForm)
+        collectMacroFromDefinitionAst(functionName, dBody)
+      else
+        ---------------------- add two passes here ----
+        updateUnexportedDatabaseWhenMeetFunDef(functionName, sig, ary, dBody)
+        updateFunDefList(functionName, sig, defAst', dBody, gte)
+        --------------------------
+      -- terminate at each function definition level
+      count
+
+    -- analysis for T_TopLevel statements (definitions)
+    T_TopLevel(sa: SpadAst, ctor: Identifier, gte: VTB): Integer ==
+      sa case ColonAst => 
+        -- collect the global variable declared in the capsule
+        --print(sa::Syntax::OutputForm)
+        gte := updateGlobalTypeEnvFromColonAst(macroExpansion(sa), gte)
+        count
+      sa case SignatureAst => count
+      sa case MacroAst => 
+        collectMacro(sa::Syntax::MacroAst)
+        count
+      sa case ImportAst => 
+        L_import := concat(L_import, sa::Syntax::ImportAst)        
+        count
+      sa case DefinitionAst => 
+        defNo := defNo + 1
+        T_defStat(sa::Syntax::DefinitionAst, ctor, copy gte)
+        count
+      sa case SequenceAst => T_defStmtStat(sa, ctor, gte)
+      sa case LetAst => 
+        -- macroExpansion first
+        sa' := (macroExpansion sa)::Syntax::LetAst
+        id := getLhs(sa')$SyntaxHelper
+        if not compound?((l := lhs(sa'))::Syntax) and_
+           l case Identifier and_
+           (isRep?(l::Identifier) or isTypeExpression? rhs sa') then
+          collectMacroFromDefinitionAst(l::Identifier, rhs sa')  
+          updateUnexportedDatabaseWhenMeetRep rhs sa'
+        else if compound?((l := lhs(sa'))::Syntax) and l case ColonAst then
+          tp := rhs(l::Syntax::ColonAst)::Syntax
+          gte := updateGlobalTypeEnv(gte, id, tp)
+        else
+          gte' := macroExpansionForTypeEnvironmentTable gte
+          gte' := filterOutMappingAst gte'
+          L_import' := macroExpansionForImportList()
+          tp   := checkGlobalLetAst(sa', gte', constructorName, constructorParameters, localExportedSignatureDatabase, localUnexportedSignatureDatabase, L_import')$TypeChecker
+          gte := updateGlobalTypeEnv(gte, id, tp)
+        count  
+        --T_defStmtStat(sa, ctor, gte)
+        -- above two cases are for handling some weird parsing result (ZMOD)
+      sa case IfAst =>
+        sa' := sa::Syntax::IfAst
+        thBranch := thenBranch(sa')$IfAst
+        elBranch := elseBranch(sa')$IfAst
+        cond     := condition(sa')$IfAst
+        if compound?(thBranch::Syntax) then
+          gte' := copy gte
+          gte' := updateGlobalTypeEnvFromCondition(cond, gte')
+          T_TopLevel(thBranch, ctor, gte')
+        if compound?(elBranch::Syntax) then
+          T_TopLevel(elBranch, ctor, copy gte)
+        count
+      T_defStmtStat(sa, ctor, gte)
+
+    -- collect loops from a list of capsules
+    collectCapsule(sal: List SpadAst, ctor: Identifier): Integer ==
+      for sa in sal repeat
+        T_TopLevel(sa, ctor, cgv)
+      count
+
+    -- collect loops from a package
+    collectPackage(s: Syntax, ctor: Identifier): Integer ==
+      ctorPar : List Identifier := parameters(head(mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
+      qual := qualifier(s::WhereAst)$WhereAst
+      seq  := (qual::Syntax::SequenceAst)
+      seqBody := body(seq)$SequenceAst
+      wCapAl : List SpadAst := empty()      
+      b : List SpadAst
+      k : Integer := 0
+      for st in seqBody repeat
+        if (st case MacroAst) then
+          collectMacro(st::Syntax::MacroAst)
+        if (st case ColonAst) then
+          cgv := updateGlobalTypeEnvFromColonAst(macroExpansion(st), cgv)
+        if (st case ExitAst) then
+          a := expression(st::Syntax::ExitAst)$ExitAst
+          b := body(a::Syntax::CapsuleAst)$CapsuleAst
+        b
+      for x in b repeat
+        x' := x::Syntax
+        id := getOperator(x')
+        if (id case Identifier) then
+          id' := id::Identifier
+          if (id'::Symbol = 'add) then
+            wCapAl := body((body(x::Syntax::AddAst)$AddAst)::Syntax::CapsuleAst)$CapsuleAst
+            k := 1 
+        if (x case CapsuleAst) then
+          wCapAl := body(x::Syntax::CapsuleAst)$CapsuleAst
+      collectCapsule(wCapAl, ctor)
+      count
+
+    -- collects loops from a typical category, i.e.,  Cats():Category == Cat with ... add..
+    collectCategory(s: Syntax, ctor: Identifier): Integer == 
+      cDef := (s::DefinitionAst)
+      cBody := body(cDef)$DefinitionAst::Syntax
+      cb := cBody::SpadAst
+      id := getOperator(cBody)
+      id case Identifier =>
+        id' := id::Identifier
+        if (id'::Symbol = 'add) then 
+          cCap:=body(cBody::AddAst)$AddAst::Syntax
+          cCapAl : List SpadAst := body(cCap::CapsuleAst)$CapsuleAst
+          collectCapsule(cCapAl, ctor)
+        if (cb case CapsuleAst) then
+          cCapAl : List SpadAst := body(cBody::CapsuleAst)$CapsuleAst
+          collectCapsule(cCapAl, ctor)
+        count
+      -- this case handles a category which only has with capsule
+      cb case CategoryAst => count
+      count
+
+    -- analysis for typical domain only has add
+    collectDomain(s: Syntax, ctor: Identifier): Integer ==
+      domDef := body(s::DefinitionAst)$DefinitionAst
+      dDef := domDef::Syntax
+      id := getOperator(dDef)
+      if id case Identifier then
+        id' := id::Identifier
+        if (id'::Symbol = 'add) then 
+          t := body(domDef::Syntax::AddAst)$AddAst
+          if t case CapsuleAst then
+            domCap: List SpadAst := body(t::Syntax::CapsuleAst)$CapsuleAst
+            collectCapsule(domCap, ctor)
+        if (domDef case CapsuleAst) then
+          domCap: List SpadAst := body(domDef::Syntax::CapsuleAst)$CapsuleAst
+          collectCapsule(domCap, ctor)
+      count
+
+----------------------------------- for building local function database
+    makeNumberSlot(i: Integer): Syntax ==
+      x := concat("#", convert(i)@String)::Symbol
+      (x pretend Identifier)::Syntax
+
+    instantiateNumberSlots(current: Syntax, t: Syntax): Syntax ==
+      typeParameters := getOperands current
+      #typeParameters > 0 =>
+        for i in 1 .. #typeParameters repeat
+          t := replace(makeNumberSlot(i), t, typeParameters.i)$SyntaxHelper
+        t
+      t
+
+    instantiateTypeSyntax(current: Syntax, t: Syntax): Syntax ==
+      -- a little bit different here: we don't instantiate %
+      -- this makes later extract local function signatures easier
+      t' := instantiateNumberSlots(current, t)
+      t'
+
+    instantiateTarget(current: Syntax, tar: Syntax): Syntax ==
+      instantiateTypeSyntax(current, tar)
+
+    instantiateSource(current: Syntax, src: List Syntax): List Syntax ==
+      for i in 1..#src repeat
+        src.i := instantiateTypeSyntax(current, src.i)
+      src
+
+    instantiateSignature(current: Syntax, s: Signature): Signature ==
+      src := instantiateSource(current, copy source s)
+      tar := instantiateTarget(current, target s)
+      signature(src, tar)
+
+    createRecord(fn: Identifier, x: List FunctionDescriptor, current: Syntax): List FREC ==
+      result : List FREC := empty()
+      for x' in x repeat
+        s := signature x'
+        a := #(source s)
+        s' := instantiateSignature(current, s)
+        t : FREC := [fn, s', a]
+        result := concat(result, t)
+      result
+
+    instantiateFunctionDescriptor(current: Syntax, opList: List OverloadSet): List FREC ==
+      database: List FREC := empty()
+      for f in opList repeat
+        newRecord := createRecord(name f, members f, current)
+        database := concat(database, newRecord)
+      database
+----------------------------------------------------
+
+    getExportedSignatures(): List OverloadSet ==
+      --print(constructorName::OutputForm)
+      ctor := retract(findConstructor(constructorName)$Constructor)$(Maybe Constructor)
+      copy operations ctor
+
+    updateGlobalConstructorInformation(sast: SpadAst, ctorName: Identifier, ctorPar: List Identifier, ctorTps: List Syntax): Boolean ==
+      constructorName           := ctorName
+      for p in ctorPar repeat
+        constructorParameters   := concat(constructorParameters, p::Syntax)
+      constructorParameterTypes := ctorTps      
+      replacedConstructorDef := instantiatePercentage(sast)
+      localExportedSignatureDatabase := instantiateFunctionDescriptor(ctorCallForm(), getExportedSignatures())
+      initGlobalVariableEnvironment(ctorName, ctorPar, ctorTps)
+      true
+
+    getCtorKind(c: Identifier): ConstructorKind == 
+      kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
+
+    countDomPacCat(c: Identifier): Void ==
+      k : ConstructorKind := getCtorKind(c)
+      k = category$ConstructorKind =>  S_category := union(S_category, {c}) 
+      k = package$ConstructorKind  =>  S_package := union(S_package, {c}) 
+      S_domain := union(S_domain, {c})
+
+
+    preproc l == 
+      cleanUpCtorInfo()
+      -- clean the ctor global variable table
+      s := importFilter(l)
+      sast := s::SpadAst
+      -- if this is a package AST
+      sast case WhereAst => 
+        mainexp := mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst
+        ctorName : Identifier := name(head(mainexp)$DefinitionAst)$HeadAst
+        ctorPar  := parameters(head(mainexp)$DefinitionAst)$HeadAst
+        ctorSig  := signature(mainexp)$DefinitionAst
+        ctorTps  := source(ctorSig)
+        countDomPacCat(ctorName)
+        updateGlobalConstructorInformation(sast, ctorName, ctorPar, ctorTps)
+        collectPackage(s, ctorName)
+      -- if this is a domain or category
+      sast case DefinitionAst => 
+        ctorName : Identifier := name(head(sast::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
+        ctorPar  := parameters(head(sast::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
+        ctorSig  := signature(sast::Syntax::DefinitionAst)$DefinitionAst
+        ctorTps  := source(ctorSig)         
+        countDomPacCat(ctorName)
+        updateGlobalConstructorInformation(sast, ctorName, ctorPar, ctorTps)
+        sig := signature(sast::Syntax::DefinitionAst)$DefinitionAst
+        tar := target(sig)$Signature
+        if tar = buildSyntax('Category,[]) then
+          collectCategory(s, ctorName)
+        else
+          collectDomain(s, ctorName)
+        count
+      count
+
+--------------------------------------------------
+    getAllFileName: List FileName ==
+      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
+      sexLst := sex pretend List(FileName)
+      sexLst
+
+    sex2str(s: FileName): String ==
+      res := s::String
+
+    preprocAll: Integer ==
+      cleanUp()
+      sexls :List FileName := getAllFileName() 
+      for s in sexls repeat
+        fname := sex2str(s)
+        nm: List Syntax := parse(fname)
+        preproc(nm)
+        fCount := fCount + 1
+      fCount
+     
+    signatureToString(s: Signature): String ==
+      result : String := ""
+      src := source s
+      tar := target s
+      result := concat([result, "("]) 
+      for i in 1..#src repeat
+        str := toString(src.i)$SyntaxHelper
+        if i < #src then
+          result := concat([result, str, ", "])
+        else
+          result := concat([result, str])
+      result := concat([result, ") -> ", toString(tar)$SyntaxHelper])
+      result
+
+    tenvToString(tb: VTB): String ==
+      result : String := ""
+      for i in 1..#(ks := keys tb) repeat
+        k := toString(ks.i)$SyntaxHelper
+        t := toString(tb.(ks.i))$SyntaxHelper
+        if i < #ks then
+          result := concat([result, "      ", k, ": ", t, "\n\r"])
+        else
+          result := concat([result, "      ", k, ": ", t])
+      result
+
+    signaturelistToString(sl: List XREC): String ==
+      result : String := ""
+      totalcounter := totalcounter + 1
+      if empty? sl then
+        bugcounter := bugcounter + 1
+        result := concat([result, "    [Function signature is not available]"])
+
+      for i in 1..#sl repeat
+        f := string(((sl.i).funname)::Symbol)
+        s := signatureToString((sl.i).signature)
+        if i < #sl then
+          empty?(sl.i.tenv) => result := concat([result, "    ", f, ": ", s, "\n\r\n\r"])
+          stringOfTenv := tenvToString(sl.i.tenv)
+          result := concat([result, "    ", f, ": ", s, " where ", "\n\r", stringOfTenv, "\n\r\n\r"]) 
+        else
+          empty?(sl.i.tenv) => result := concat([result, "    ", f, ": ", s])
+          stringOfTenv := tenvToString(sl.i.tenv)
+          result := concat([result, "    ", f, ": ", s, " where ", "\n\r", stringOfTenv])
+      result
+
+    accumulationToString(al: List YREC): String ==
+      result : String := ""
+      for i in 1..#al repeat
+        loopStr   := toString(((al.i).loopcandidate)::Syntax)$SyntaxHelper
+        funsigStr := signaturelistToString((al.i).signaturelist)
+        if i < #al then
+          result := concat([result, "  Loop Body==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
+                             "\n\r\n\r", funsigStr, ",", "\n\r\n\r"])
+        else
+          result := concat([result, "  Loop Body==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
+                     "\n\r\n\r", funsigStr, "\n\r\n\r", "------------------------", "\n\r"])
+      result
+
+    reductionToString(al: List REDU): String == 
+      reductionFunctionCounter := reductionFunctionCounter + #al
+      result : String := ""
+      for i in 1..#al repeat
+        expStr   := toString((al.i.reduceexp)::Syntax)$SyntaxHelper
+        -- we don't differentiate annotated and unannotated.
+        -- therefore, the final result may contain $
+        binOp    := toString(al.i.reduceop)$SyntaxHelper
+        sigStr   := signatureToString(al.i.signature)
+        if i < #al then
+          empty?(al.i.tenv) =>
+            result := concat([result, "  Reduce function application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                               "\n\r\n\r", "    ", binOp, ": ", sigStr, ",", "\n\r\n\r"])
+          stringOfTenv := tenvToString(al.i.tenv)
+          result := concat([result, "  Reduce function application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                              "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r", stringOfTenv, "\n\r\n\r"])
+        else
+          empty?(al.i.tenv) =>
+            result := concat([result, "  Reduce functino application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                       "\n\r\n\r", "    ", binOp, ": ", sigStr, "\n\r\n\r", "------------------------", "\n\r"])
+          stringOfTenv := tenvToString(al.i.tenv)
+          result := concat([result, "  Reduce functino application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                        "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r", stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
+
+      result
+
+    -- no longer used
+    reductionFormsToString(al: List Syntax): String == 
+      reductionFormCounter := reductionFormCounter + #al
+      result : String := ""
+      for i in 1..#al repeat
+        expStr   := toString(al.i)$SyntaxHelper
+        if i < #al then
+          result := concat([result, "    ", expStr, ",", "\n\r\n\r"])
+        else
+          result := concat([result, "    ", expStr, ",", "\n\r\n\r", "------------------------", "\n\r"])
+      result
+
+    reductionFormsToString2(al: List REDF): String == 
+      reductionFormCounter := reductionFormCounter + #al
+      result : String := ""
+      for i in 1..#al repeat
+        expStr   := toString(al.i.reduceform)$SyntaxHelper
+        binOP    := string((al.i.reduceop)::Symbol)
+        opSig    := signatureToString((al.i).signature)
+        if i < #al then
+          empty?(al.i.tenv) =>
+            result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                               "\n\r\n\r", "    ", binOP, ": ", opSig, ",", "\n\r\n\r"])
+          stringOfTenv := tenvToString(al.i.tenv)
+          result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                             "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r", stringOfTenv, ",", "\n\r\n\r"])          
+
+
+        else
+          empty?(al.i.tenv) =>
+            result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                       "\n\r\n\r", "    ", binOP, ": ", opSig, "\n\r\n\r", "------------------------", "\n\r"])
+          stringOfTenv := tenvToString(al.i.tenv)
+          result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                      "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r", stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
+
+
+      result
+
+    getCtorKindInString(c: Identifier): String ==
+      k : ConstructorKind := getCtorKind(c)
+      k = category$ConstructorKind =>  "Category"
+      k = package$ConstructorKind  =>  "Package"
+      "Domain"
+
+    toString(rl: List ZREC): String ==
+      result : String := ""
+      for r in rl repeat
+        c := string((r.ctorname)::Symbol)
+        f := string((r.funname)::Symbol)
+        s := signatureToString(r.signature)
+        a := accumulationToString(r.accumulations)
+        k : String := getCtorKindInString(r.ctorname)
+        result := concat(result, concat([k, ": ", c, "\n\r",_ 
+                                         "Function: ", f,": ", s, "\n\r\n\r",_
+                                              a, "\n\r"]))
+
+      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
+      result
+
+    toString2(rl: List RREC): String ==
+      result : String := ""
+      for r in rl | not empty?(r.reductions) repeat
+        c := string((r.ctorname)::Symbol)
+        f := string((r.funname)::Symbol)
+        s := signatureToString(r.signature)
+        a := reductionToString(r.reductions)
+        k : String := getCtorKindInString(r.ctorname)
+        result := concat(result, concat([k, ": ", c, "\n\r",_ 
+                                         "Function: ", f,": ", s, "\n\r\n\r",_
+                                              a, "\n\r"]))
+
+      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
+      result
+
+    toString3(rl: List RFREC): String ==
+      result : String := ""
+      for r in rl | not empty?(r.reduceforms) repeat
+        c := string((r.ctorname)::Symbol)
+        f := string((r.funname)::Symbol)
+        s := signatureToString(r.signature)
+        a := reductionFormsToString(r.reduceforms)
+        k : String := getCtorKindInString(r.ctorname)
+        result := concat(result, concat([k, ": ", c, "\n\r",_ 
+                                         "Function: ", f,": ", s, "\n\r", "Reduce Forms==>\n\r\n\r",_
+                                              a, "\n\r"]))
+
+      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
+      result
+
+    toString4(rl: List RFORM): String ==
+      result : String := ""
+      for r in rl | not empty?(r.reduceforms) repeat
+        c := string((r.ctorname)::Symbol)
+        f := string((r.funname)::Symbol)
+        s := signatureToString(r.signature)
+        a := reductionFormsToString2(r.reduceforms)
+        k : String := getCtorKindInString(r.ctorname)
+        result := concat(result, concat([k, ": ", c, "\n\r",_ 
+                                         "Function: ", f,": ", s, "\n\r\n\r",_
+                                              a, "\n\r"]))
+
+      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
+      result
+
+    writeZRecordToFile(rl: List ZREC, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString rl)
+      true
+
+    writeRRecordToFile(rl: List RREC, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString2 rl)
+      true
+
+    writeRFRecordToFile(rl: List RFREC, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString3 rl)
+      true
+
+    writeRFORMToFile(rl: List RFORM, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString4 rl)
+      true
+
+    analyzeReduction(fileStr, option) == 
+      bugcounter := 0
+      reductionCounter := 0
+      programOption := option
+      preprocAll()
+      if programOption = 0 then
+        writeZRecordToFile(L_analysis_result, fileStr)
+        print(bugcounter::OutputForm)
+        print(totalcounter::OutputForm)
+      if programOption = 1 then
+        print(reductionCounter::OutputForm)
+      true
+    
+    macro TCR == Record(funname: Identifier, signature: Signature, tenv: VTB)
+
+    isTpVar?(tp: Syntax, env: VTB): Boolean == not compound? tp and tp case Identifier and key?(tp, env)
+
+    containTpVar?(cat: Syntax, env: VTB): Boolean ==
+      not compound? cat => isTpVar?(cat, env)
+      for opr in getOperands cat repeat
+        containTpVar?(opr, env) => return true
+      false 
+
+    rightHasLeft?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      isTpVar?(leftType, leftEnv) and not containTpVar?(cat:=leftEnv.leftType, leftEnv) =>
+        isTpVar?(rightType, rightEnv) => rightHasLeft?(leftType, leftEnv, rightEnv.rightType, rightEnv)
+        isJoin?(rightType)$SyntaxHelper =>
+          for c in getOperands rightType repeat
+            compound? c and c::SpadAst case CategoryAst => true -- skip if this is attribute
+            rightHasLeft?(leftType, leftEnv, c, rightEnv) => return true
+          false
+        (isDomain?(rightType)$CheckAssumption or isCategory?(rightType)$CheckAssumption) and not containTpVar?(rightType, rightEnv) =>
+          expression := buildSyntax('has::Syntax::Identifier, [rightType, cat])::InputForm
+          retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
+        false
+      isTpVar?(leftType, leftEnv) and containTpVar?(cat, leftEnv) =>
+        isTpVar?(rightType, rightEnv) => rightHasLeft?(leftType, leftEnv, rightEnv.rightType, rightEnv)
+        isJoin?(rightType)$SyntaxHelper =>
+          for c in getOperands rightType repeat
+            compound? c and c::SpadAst case CategoryAst => true -- skip if this is attribute
+            rightHasLeft?(leftType, leftEnv, c, rightEnv) => return true
+          false
+        isCategory?(rightType)$CheckAssumption =>
+          getOperator(cat)::Identifier = getOperator(rightType)::Identifier and #getOperands(cat) = #getOperands(rightType) =>
+            for rights in getOperands rightType for lefts in getOperands cat repeat
+              not rightHasLeft?(lefts, leftEnv, rights, rightEnv) => return false
+            true
+          false
+        false
+      isDomain?(leftType)$CheckAssumption and containTpVar?(leftType, leftEnv) =>
+        isDomain?(rightType)$CheckAssumption and getOperator(rightType)::Identifier = getOperator(leftType)::Identifier and #getOperands(leftType) = #getOperands(rightType) =>
+          for rights in getOperands rightType for lefts in getOperands leftType repeat
+            not rightHasLeft?(lefts, leftEnv, rights, rightEnv) => return false
+          true          
+        false
+      isDomain?(leftType)$CheckAssumption and not containTpVar?(leftType, leftEnv) => rightType = leftType
+      false
+    
+    typeMatch?(op: TCR, rec: TCR): Boolean ==
+      sig_assumption := op.signature
+      sig_actual     := rec.signature
+      for left in concat(source sig_assumption, target sig_assumption)_
+      for right in concat(source sig_actual, target sig_actual) repeat
+        not rightHasLeft?(left, op.tenv, right, rec.tenv) => return false
+      true
+
+    isInList?(rec: TCR, assocops: List TCR): Boolean ==
+      for r in assocops repeat
+        rec.funname = r.funname =>
+          empty?(r.tenv) =>
+            rec.signature = r.signature  => return true
+          typeMatch?(r, rec) => return true
+      false
+
+    matchesOne?(rec: TCR, assocops: List TCR): Boolean ==
+      empty?(rec.tenv) =>  isInList?(rec, assocops)  -- member? is buggy when there is a table in side a record
+      for op in assocops repeat
+        rec.funname = op.funname and typeMatch?(op, rec) => return true
+      false
+
+  --macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
+  --macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
+  --macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
+
+    formatConverterTCR(rs: List OPREC): List TCR ==
+      result : List TCR := []
+      for r in rs repeat
+        rec : TCR := [r.funname, r.signature, r.tenv]
+        result := concat(result, rec)
+      result
+
+    isFullyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
+      empty?(l.signaturelist) => false
+      assocops' := formatConverterTCR assocops
+      for f in l.signaturelist repeat
+        rec : TCR := [f.funname, f.signature, f.tenv]
+        not matchesOne?(rec, assocops') => return false
+      true
+
+    isPartiallyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
+      empty?(l.signaturelist) => false
+      assocops' := formatConverterTCR assocops
+      for f in l.signaturelist repeat
+        rec : TCR := [f.funname, f.signature, f.tenv]
+        matchesOne?(rec, assocops') => return true
+      false
+
+    extractParallelizableReductionLoop(assocops: List OPREC, recs: List ZREC): Pair(List ZREC, List ZREC)==
+      full :   List ZREC := []
+      partial: List ZREC := []
+      for rec in recs repeat
+        recf : ZREC := [rec.ctorname, rec.funname, rec.signature, []]
+        recp : ZREC := [rec.ctorname, rec.funname, rec.signature, []]
+        lps := rec.accumulations
+        for l in lps repeat
+          isFullyParallelizable?(l, assocops)     => 
+            ptotalcounter := ptotalcounter + 1
+            recf.accumulations := concat(recf.accumulations, l)
+          isPartiallyParallelizable?(l, assocops) => 
+            pptotalcounter := pptotalcounter + 1
+            recp.accumulations := concat(recp.accumulations, l)
+        if not empty?(recf.accumulations) then
+          full := concat(full, recf)
+        if not empty?(recp.accumulations) then
+          partial := concat(partial, recp)
+      pair(full, partial)
+
+  --macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature)
+  --macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
+
+    getOperatorName(op: Syntax): Identifier ==
+      compound? op =>
+        opr := getOperator op 
+        opr case Identifier and opr::Identifier = 'elt::Identifier => 
+          (second getOperands op)::Identifier
+        opr case Identifier and opr::Identifier = '_@::Identifier => 
+          getOperatorName(first getOperands op)
+        opr case Identifier and member?(char "#", entries(toString(op)$SyntaxHelper)) =>
+          opr::Identifier
+        print(op::Syntax::OutputForm)
+        userError "unexpected operator syntax"
+      op case String => (op::String::Symbol) pretend Identifier
+      op::Identifier
+
+    extractParallelizableReduceCall(assocops: List OPREC, recs: List RREC): List RREC ==
+      result : List RREC := []
+      assocops' := formatConverterTCR assocops
+      for rec in recs repeat
+        newrec : RREC := [rec.ctorname, rec.funname, rec.signature, []]
+        for r in rec.reductions repeat
+          rec : TCR := [getOperatorName(r.reduceop), r.signature, r.tenv]
+          matchesOne?(rec, assocops') => 
+            preductionFunctionCounter := preductionFunctionCounter + 1
+            newrec.reductions := concat(newrec.reductions, r)
+        not empty?(newrec.reductions) => result := concat(result, newrec)
+      result
+
+  --macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature)
+  --macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
+
+    extractParallelizableReduceForm(assocops: List OPREC, recs: List RFORM): List RFORM ==
+      result : List RFORM := []
+      assocops' := formatConverterTCR assocops
+      for rec in recs repeat
+        newrec : RFORM := [rec.ctorname, rec.funname, rec.signature, []]
+        for r in rec.reduceforms repeat
+          rec : TCR := [r.reduceop, r.signature, r.tenv]
+          matchesOne?(rec, assocops') =>
+            preductionFormCounter := preductionFormCounter + 1 
+            newrec.reduceforms := concat(newrec.reduceforms, r) 
+        not empty?(newrec.reduceforms) => result := concat(result, newrec)
+      result
+
+    printStatistics(option: Integer, assoc?: Integer, L_assocop: List OPREC): Void ==
+      viewStat()
+      if assoc? = 1 then 
+        print("Associative Operators (by User):"::OutputForm)
+        print(L_assocop::OutputForm)
+        if (option = 0) then
+          print("Partial parallelizable loop #:"::OutputForm)
+          print(pptotalcounter::OutputForm)
+          print("Fully parallelizable loop #:"::OutputForm)
+          print(ptotalcounter::OutputForm)    
+        else
+          print("Parallelizable reduce function application#:"::OutputForm)
+          print(preductionFunctionCounter::OutputForm)
+          print("Parallelizable reduce form #:"::OutputForm)
+          print(preductionFormCounter::OutputForm)
+      
+    analyze(option, assoc?) == 
+      --bugcounter := 0
+      reductionCounter := 0
+      programOption := option
+      L_assocop : List OPREC := []
+      if assoc? = 1 then
+        L_assocop := collectAssociativeOperator()$CheckAssumption
+      preprocAll()
+      if programOption = 0 then
+        writeZRecordToFile(L_analysis_result, "reduce-loops")
+        print("Results for reduction loops have been written into reduce-loops.txt"::OutputForm)
+        if assoc? = 1 then 
+          r : Pair(List ZREC, List ZREC)  := extractParallelizableReductionLoop(L_assocop, L_analysis_result)
+          L_parallel_reduction_loop         := first r
+          L_partial_parallel_reduction_loop := second r
+          writeZRecordToFile(L_parallel_reduction_loop, "parallel-reduce-loops")
+          print("Results for fully parallelizable reduction loops have been written into parallel-reduce-loops.txt"::OutputForm)
+          writeZRecordToFile(L_partial_parallel_reduction_loop, "partial-parallel-reduce-loops")
+          print("Results for partial parallelizable reduction loops have been written into partial-parallel-reduce-loops.txt"::OutputForm)
+
+      if programOption = 1 then
+        writeRRecordToFile(L_reduce, "reduce-functions")
+        print("Results for reduce function applications have been written into reduce-functions.txt"::OutputForm)
+        if assoc? = 1 then 
+          L_parallel_reduce := extractParallelizableReduceCall(L_assocop, L_reduce)
+          writeRRecordToFile(L_parallel_reduce, "parallel-reduce-functions")
+          print("Results for parallelizable reduce function applications have been written into parallel-reduce-functions.txt"::OutputForm)
+
+        writeRFORMToFile(L_rform, "reduce-forms")
+        print("Results for reduction forms have been written into reduce-forms.txt"::OutputForm)
+        if assoc? = 1 then
+          L_parallel_rform := extractParallelizableReduceForm(L_assocop, L_rform)
+          writeRFORMToFile(L_parallel_rform, "parallel-reduce-forms")
+          print("Results for parallelizable reduction forms have been written into reduce-forms.txt"::OutputForm)
+
+      printStatistics(option, assoc?, L_assocop)
+      true
+
+
+
+
+
+

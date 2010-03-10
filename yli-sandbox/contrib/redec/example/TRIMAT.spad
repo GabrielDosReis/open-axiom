@@ -1,0 +1,63 @@
+)abbrev package TRIMAT TriangularMatrixOperations
+++ Fraction free inverses of triangular matrices
+++ Author: Victor Miller
+++ Date Created:
+++ Date Last Updated: 24 Jul 1990
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++ This package provides functions that compute "fraction-free"
+++ inverses of upper and lower triangular matrices over a integral
+++ domain.  By "fraction-free inverses" we mean the following:
+++ given a matrix B with entries in R and an element d of R such that
+++ d * inv(B) also has entries in R, we return d * inv(B).  Thus,
+++ it is not necessary to pass to the quotient field in any of our
+++ computations.
+
+
+TriangularMatrixOperations(R,Row,Col,M): Exports == Implementation where
+  R   : IntegralDomain
+  Row : FiniteLinearAggregate R
+  Col : FiniteLinearAggregate R
+  M   : MatrixCategory(R,Row,Col)
+
+  Exports ==> with
+
+    UpTriBddDenomInv: (M,R) -> M
+      ++ UpTriBddDenomInv(B,d) returns M, where
+      ++ B is a non-singular upper triangular matrix and d is an
+      ++ element of R such that \spad{M = d * inv(B)} has entries in R.
+    LowTriBddDenomInv:(M,R) -> M
+      ++ LowTriBddDenomInv(B,d) returns M, where
+      ++ B is a non-singular lower triangular matrix and d is an
+      ++ element of R such that \spad{M = d * inv(B)} has entries in R.
+
+  Implementation ==> add
+
+    UpTriBddDenomInv(A,denom) ==
+      AI := zero(nrows A, nrows A)$M
+      offset := minColIndex AI - minRowIndex AI
+      for i in minRowIndex AI .. maxRowIndex AI
+        for j in minColIndex AI .. maxColIndex AI repeat
+          qsetelt_!(AI,i,j,(denom exquo qelt(A,i,j))::R)
+      for i in minRowIndex AI .. maxRowIndex AI repeat
+        for j in offset + i + 1 .. maxColIndex AI repeat
+          qsetelt_!(AI,i,j, - (((+/[qelt(AI,i,k) * qelt(A,k-offset,j)
+                                   for k in i+offset..(j-1)])
+                                     exquo qelt(A, j-offset, j))::R))
+      AI
+
+    LowTriBddDenomInv(A, denom) ==
+      AI := zero(nrows A, nrows A)$M
+      offset := minColIndex AI - minRowIndex AI
+      for i in minRowIndex AI .. maxRowIndex AI
+        for j in minColIndex AI .. maxColIndex AI repeat
+          qsetelt_!(AI,i,j,(denom exquo qelt(A,i,j))::R)
+      for i in minColIndex AI .. maxColIndex AI repeat
+        for j in i - offset + 1 .. maxRowIndex AI repeat
+          qsetelt_!(AI,j,i, - (((+/[qelt(A,j,k+offset) * qelt(AI,k,i)
+                                    for k in i-offset..(j-1)])
+                                      exquo qelt(A, j, j+offset))::R))
+      AI
+

@@ -1,0 +1,154 @@
+)abbrev package SYNHELP SyntaxHelper
+++ Authors: Yue Li, Jacob Smith
+++ Description:
+SyntaxHelper(): Public == Private where
+  Public == with
+    getLhs: LetAst -> Syntax
+      ++ returns the variable being assigned (the left hand side)
+    unlist: Syntax -> List Syntax
+    within?: (Syntax, Syntax) -> Boolean
+    listWithin?: (List Syntax, Syntax) -> Boolean
+    replace: (Syntax, Syntax, Syntax) -> Syntax
+      ++ replace(a, b, c)
+      ++ replace all occurrances of a in b with c
+    replaceLetRhs: (Syntax, LetAst, Syntax) -> LetAst
+      ++ replaceLetRhs(a, b, c)
+      ++ replaces all occurrances of a in the rhs(b) with c
+    toString: Syntax -> String
+    listColonAst: ColonAst -> List Syntax
+      ++ isListOf?(c)
+      ++ checks whether the left hand side of a ColonAst is a list such as x, y, z : Integer
+      ++ if so, return the list of elements.
+    isJoin?: Syntax -> Boolean
+    mappingAstToSignature: MappingAst -> Signature
+    isDomain?: Syntax -> Boolean
+    isCategory?: Syntax -> Boolean
+
+  Private == add
+    getLhs b ==
+      l := lhs b
+      r := rhs b
+      compound?(l::Syntax) and l case ColonAst =>
+        k := lhs(l::Syntax::ColonAst)::Syntax
+      l::Syntax      
+
+    within?(e: Syntax, set: Syntax): Boolean ==
+      e = set => true
+      compound? set =>
+        for u in unlist set repeat
+          if within?(e, u) then
+            return true
+        return false
+      false
+
+    listWithin?(vs: List Syntax, s: Syntax): Boolean ==
+      for v in vs repeat
+        if within?(v, s) then
+          return true
+      false
+
+    unlist(x: Syntax): List Syntax ==
+      compound? x =>
+        op := getOperator x
+        r : Syntax := convert(convert([])$SExpression)
+        if op case Integer then r := op::Integer::Syntax
+        if op case DoubleFloat then r := op::DoubleFloat::Syntax
+        if op case Identifier then r := op::Identifier::Syntax
+        if op case String then r := op::String::Syntax
+        if op case Syntax then r := op::Syntax
+        ops := getOperands x
+        concat(r, ops)
+      [x]
+
+    toString x ==
+      compound? x =>
+        uls : List Syntax := unlist x
+        bparts : List String := [toString opd for opd in rest uls]
+        body : String := ""
+        for bdx in 1..#bparts repeat
+          bpart := bparts.bdx
+          if bdx < #bparts then
+            body := concat([body, bpart, ", "])
+          else
+            body := concat([body, bpart])
+        concat([toString first uls, "(", body, ")"])
+      x case Integer => string(x::Integer)
+      x case DoubleFloat => userError "DoubleFloat conversion to string is not supported."
+      x case String => x::String
+      x case Identifier => string(x::Identifier::Symbol)
+
+    replace(needle, haystack, brick) ==
+      needle = haystack => brick
+      compound? haystack =>
+        haystacks : List Syntax := []
+        for straw in unlist haystack repeat
+          haystacks := concat(haystacks, replace(needle, straw, brick))
+        buildSyntax(first haystacks, rest haystacks)
+      haystack
+
+    replaceLetRhs(a, b, c) ==
+      s := b::Syntax
+      op := (getOperator s)::Identifier
+      l := first getOperands s
+      r := second getOperands s
+      r := replace(a, r, c)
+      s := buildSyntax(op, [l, r])
+      s::SpadAst::LetAst
+
+    makeLISTOF: Syntax                == 'LISTOF::Identifier::Syntax
+
+    listColonAst c ==
+      left := lhs(c)::Syntax
+      compound? left and_ 
+      (opr := getOperator(left)) case Identifier and_
+      opr::Identifier = makeLISTOF()::Identifier => getOperands left
+      [left]
+
+    makeJoin: Syntax                   == 'Join::Identifier::Syntax
+    isJoin?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeJoin() 
+        false
+      false
+
+    mappingAstToSignature(m: MappingAst): Signature ==
+      src : List Syntax := []
+      tar := (target m)::Syntax
+      for s in source m repeat
+        src := concat(src, s::Syntax)
+      signature(src, tar)
+
+
+    getCtorKind(c: Identifier): ConstructorKind == 
+      kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
+
+    isDomain?(c: Syntax): Boolean ==      
+      compound? c and (opr := getOperator c) case Identifier => 
+        not(getCtorKind(opr::Identifier) = category$ConstructorKind) and_
+        not(getCtorKind(opr::Identifier) = package$ConstructorKind)
+      false
+
+    isCategory?(c: Syntax): Boolean ==
+      compound? c and (opr := getOperator c) case Identifier => 
+        getCtorKind(opr::Identifier) = category$ConstructorKind
+      false
+
+
+
+    --alphaRename: (Syntax, Syntax, Syntax) -> Syntax
+      ++ rename(a, b, c)
+      ++ rename a to c in b, but first, it renames
+      ++ c in b to GENSYM()$Lisp
+    --alphaRename: (Table(Syntax, Syntax), Syntax) -> Syntax
+    --alphaRename: (Table(Symbol, Symbol), Syntax) -> Syntax
+    --alphaRename(needle, haystack, brick) ==
+    --  G : Syntax := GENSYM()$Lisp::Syntax
+    --  replace(needle, replace(brick, haystack, G), brick)
+    --alphaRename(Z : Table(Syntax, Syntax), haystack: Syntax) ==
+    --  for key in keys Z repeat
+    --    haystack := alphaRename(key, haystack, Z.key)
+    --  haystack
+    --alphaRename(Z : Table(Symbol, Symbol), haystack: Syntax) ==
+    --  for key in keys Z repeat
+    --    haystack := alphaRename(key::Syntax, haystack, (Z.key)::Syntax)
+    --  haystack

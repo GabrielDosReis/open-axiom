@@ -1,0 +1,23 @@
+import SetCategory
+)abbrev domain EXIT Exit
+++ Author: Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: May 30, 1991
+++ Basic Operations: 
+++ Related Domains: ErrorFunctions, ResolveLatticeCompletion, Void
+++ Also See:
+++ AMS Classifications:
+++ Keywords: exit, throw, error, non-local return
+++ Examples:
+++ References:
+++ Description:
+++   A function which does not return directly to its caller should
+++   have Exit as its return type.
+++
+++   Note: It is convenient to have a formal \spad{coerce} into each type from
+++   type Exit. This allows, for example, errors to be raised in 
+++   one half of a type-balanced \spad{if}.
+Exit: SetCategory == add
+        coerce(n:%) == error "Cannot use an Exit value."
+        n1 = n2     == error "Cannot use an Exit value."
+

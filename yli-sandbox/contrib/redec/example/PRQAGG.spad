@@ -1,0 +1,25 @@
+import BagAggregate
+)abbrev category PRQAGG PriorityQueueAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A priority queue is a bag of items from an ordered set where the item
+++ extracted is always the maximum element.
+PriorityQueueAggregate(S:OrderedSet): Category == BagAggregate S with
+   finiteAggregate
+   max: % -> S
+     ++ max(q) returns the maximum element of priority queue q.
+   merge: (%,%) -> %
+     ++ merge(q1,q2) returns combines priority queues q1 and q2 to return
+     ++ a single priority queue q.
+   merge_!: (%,%) -> %
+     ++ merge!(q,q1) destructively changes priority queue q to include the
+     ++ values from priority queue q1.
+

@@ -1,0 +1,33 @@
+import Void
+import Exit
+)abbrev package RESLATC ResolveLatticeCompletion
+++ Author: Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: May 30, 1991
+++ Basic Operations: 
+++ Related Domains: ErrorFunctions, Exit, Void
+++ Also See:
+++ AMS Classifications:
+++ Keywords: mode, resolve, type lattice
+++ Examples:
+++ References:
+++ Description:
+++   This package provides coercions for the special types \spadtype{Exit}
+++   and \spadtype{Void}.
+ResolveLatticeCompletion(S: Type): with
+        coerce: S -> Void 
+             ++ coerce(s) throws all information about s away.
+             ++ This coercion allows values of any type to appear
+             ++ in contexts where they will not be used.
+             ++ For example, it allows the resolution of different types in
+             ++ the \spad{then} and \spad{else} branches when an \spad{if}
+             ++ is in a context where the resulting value is not used.
+        coerce: Exit -> S
+             ++ coerce(e) is never really evaluated.  This coercion is 
+             ++ used for formal type correctness when a function will not
+             ++ return directly to its caller.
+    == add
+        coerce(s: S): Void == void()
+        coerce(e: Exit): S ==
+            error "Bug: Should not be able to obtain value of type Exit"
+

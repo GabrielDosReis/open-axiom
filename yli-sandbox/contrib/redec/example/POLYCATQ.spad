@@ -1,0 +1,130 @@
+)abbrev package POLYCATQ PolynomialCategoryQuotientFunctions
+++ Manipulations on polynomial quotients
+++ Author: Manuel Bronstein
+++ Date Created: March 1988
+++ Date Last Updated: 9 July 1990
+++ Description:
+++   This package transforms multivariate polynomials or fractions into
+++   univariate polynomials or fractions, and back.
+++ Keywords: polynomial, fraction, transformation
+PolynomialCategoryQuotientFunctions(E, V, R, P, F):
+ Exports == Implementation where
+  E: OrderedAbelianMonoidSup
+  V: OrderedSet
+  R: Ring
+  P: PolynomialCategory(R, E, V)
+  F: Field with
+    coerce: P -> %
+    numer : % -> P
+    denom : % -> P
+
+  UP  ==> SparseUnivariatePolynomial F
+  RF  ==> Fraction UP
+
+  Exports ==> with
+    variables   : F -> List V
+      ++ variables(f) returns the list of variables appearing
+      ++ in the numerator or the denominator of f.
+    mainVariable: F -> Union(V, "failed")
+      ++ mainVariable(f) returns the highest variable appearing
+      ++ in the numerator or the denominator of f, "failed" if
+      ++ f has no variables.
+    univariate  : (F, V) -> RF
+      ++ univariate(f, v) returns f viewed as a univariate
+      ++ rational function in v.
+    multivariate: (RF, V) -> F
+      ++ multivariate(f, v) applies both the numerator and
+      ++ denominator of f to v.
+    univariate  : (F, V, UP) -> UP
+      ++ univariate(f, x, p) returns f viewed as a univariate
+      ++ polynomial in x, using the side-condition \spad{p(x) = 0}.
+    isPlus      : F -> Union(List F, "failed")
+      ++ isPlus(p) returns [m1,...,mn] if \spad{p = m1 + ... + mn} and 
+      ++ \spad{n > 1}, "failed" otherwise.
+    isTimes     : F -> Union(List F, "failed")
+      ++ isTimes(p) returns \spad{[a1,...,an]} if 
+      ++ \spad{p = a1 ... an} and \spad{n > 1},
+      ++ "failed" otherwise.
+    isExpt      : F -> Union(Record(var:V, exponent:Integer), "failed")
+      ++ isExpt(p) returns \spad{[x, n]} if \spad{p = x**n} and \spad{n <> 0},
+      ++ "failed" otherwise.
+    isPower     : F -> Union(Record(val:F, exponent:Integer), "failed")
+      ++ isPower(p) returns \spad{[x, n]} if \spad{p = x**n} and \spad{n <> 0},
+      ++ "failed" otherwise.
+
+  Implementation ==> add
+    P2UP: (P, V) -> UP
+
+    univariate(f, x) == P2UP(numer f, x) / P2UP(denom f, x)
+
+    univariate(f, x, modulus) ==
+      (bc := extendedEuclidean(P2UP(denom f, x), modulus, 1))
+             case "failed" => error "univariate: denominator is 0 mod p"
+      (P2UP(numer f, x) * bc.coef1) rem modulus
+
+    multivariate(f, x) ==
+      v := x::P::F
+      ((numer f) v) / ((denom f) v)
+
+    mymerge:(List V,List V) ->List V 
+    mymerge(l:List V,m:List V):List V==
+         empty? l => m
+         empty? m => l
+         first l = first m => cons(first l,mymerge(rest l,rest m))
+         first l > first m => cons(first l,mymerge(rest l,m))
+         cons(first m,mymerge(l,rest m))
+
+    variables f ==
+      mymerge(variables numer f, variables denom f)
+
+    isPower f ==
+      (den := denom f) ~= 1 =>
+        numer f ~= 1 => "failed"
+        (ur := isExpt den) case "failed" => [den::F, -1]
+        r := ur::Record(var:V, exponent:NonNegativeInteger)
+        [r.var::P::F, - (r.exponent::Integer)]
+      (ur := isExpt numer f) case "failed" => "failed"
+      r := ur::Record(var:V, exponent:NonNegativeInteger)
+      [r.var::P::F, r.exponent::Integer]
+
+    isExpt f ==
+      (ur := isExpt numer f) case "failed" =>
+--        one? numer f =>
+        (numer f) = 1 =>
+          (ur := isExpt denom f) case "failed" => "failed"
+          r := ur::Record(var:V, exponent:NonNegativeInteger)
+          [r.var, - (r.exponent::Integer)]
+        "failed"
+      r := ur::Record(var:V, exponent:NonNegativeInteger)
+--      one? denom f => [r.var, r.exponent::Integer]
+      (denom f) = 1 => [r.var, r.exponent::Integer]
+      "failed"
+
+    isTimes f ==
+      t := isTimes(num := numer f)
+      l:Union(List F, "failed") :=
+        t case "failed" => "failed"
+        [x::F for x in t]
+--      one?(den := denom f) => l
+      ((den := denom f) = 1) => l
+--      one? num => "failed"
+      num = 1 => "failed"
+      d := inv(den::F)
+      l case "failed" => [num::F, d]
+      concat_!(l::List(F), d)
+
+    isPlus f ==
+      denom f ~= 1 => "failed"
+      (s := isPlus numer f) case "failed" => "failed"
+      [x::F for x in s]
+
+    mainVariable f ==
+      a := mainVariable numer f
+      (b := mainVariable denom f) case "failed" => a
+      a case "failed" => b
+      max(a::V, b::V)
+
+    P2UP(p, x) ==
+      map(#1::F,
+          univariate(p, x))$SparseUnivariatePolynomialFunctions2(P, F)
+

@@ -1,0 +1,258 @@
+)abbrev package INTG0 GenusZeroIntegration
+++ Rationalization of several types of genus 0 integrands;
+++ Author: Manuel Bronstein
+++ Date Created: 11 October 1988
+++ Date Last Updated: 24 June 1994
+++ Description:
+++ This internal package rationalises integrands on curves of the form:
+++   \spad{y\^2 = a x\^2 + b x + c}
+++   \spad{y\^2 = (a x + b) / (c x + d)}
+++   \spad{f(x, y) = 0} where f has degree 1 in x
+++ The rationalization is done for integration, limited integration,
+++ extended integration and the risch differential equation;
+GenusZeroIntegration(R, F, L): Exports == Implementation where
+  R: Join(GcdDomain, RetractableTo Integer, OrderedSet, CharacteristicZero,
+          LinearlyExplicitRingOver Integer)
+  F: Join(FunctionSpace R, AlgebraicallyClosedField,
+          TranscendentalFunctionCategory)
+  L: SetCategory
+
+  SY  ==> Symbol
+  Q   ==> Fraction Integer
+  K   ==> Kernel F
+  P   ==> SparseMultivariatePolynomial(R, K)
+  UP  ==> SparseUnivariatePolynomial F
+  RF  ==> Fraction UP
+  UPUP ==> SparseUnivariatePolynomial RF
+  IR  ==> IntegrationResult F
+  LOG ==> Record(coeff:F, logand:F)
+  U1  ==> Union(F, "failed")
+  U2  ==> Union(Record(ratpart:F, coeff:F),"failed")
+  U3  ==> Union(Record(mainpart:F, limitedlogs:List LOG), "failed")
+  REC ==> Record(coeff:F, var:List K, val:List F)
+  ODE ==> Record(particular: Union(F, "failed"), basis: List F)
+  LODO==> LinearOrdinaryDifferentialOperator1 RF
+
+  Exports ==> with
+    palgint0   : (F, K, K, F, UP)    -> IR
+      ++ palgint0(f, x, y, d, p) returns the integral of \spad{f(x,y)dx}
+      ++ where y is an algebraic function of x satisfying
+      ++ \spad{d(x)\^2 y(x)\^2 = P(x)}.
+    palgint0   : (F, K, K, K, F, RF) -> IR
+      ++ palgint0(f, x, y, z, t, c) returns the integral of \spad{f(x,y)dx}
+      ++ where y is an algebraic function of x satisfying
+      ++ \spad{f(x,y)dx = c f(t,y) dy}; c and t are rational functions of y.
+      ++ Argument z is a dummy variable not appearing in \spad{f(x,y)}.
+    palgextint0: (F, K, K, F, F, UP) -> U2
+      ++ palgextint0(f, x, y, g, d, p) returns functions \spad{[h, c]} such
+      ++ that \spad{dh/dx = f(x,y) - c g}, where y is an algebraic function
+      ++ of x satisfying \spad{d(x)\^2 y(x)\^2 = P(x)},
+      ++ or "failed" if no such functions exist.
+    palgextint0: (F, K, K, F, K, F, RF) -> U2
+      ++ palgextint0(f, x, y, g, z, t, c) returns functions \spad{[h, d]} such
+      ++ that \spad{dh/dx = f(x,y) - d g}, where y is an algebraic function
+      ++ of x satisfying \spad{f(x,y)dx = c f(t,y) dy}, and c and t are rational
+      ++ functions of y.
+      ++ Argument z is a dummy variable not appearing in \spad{f(x,y)}.
+      ++ The operation returns "failed" if no such functions exist.
+    palglimint0: (F, K, K, List F, F, UP) -> U3
+      ++ palglimint0(f, x, y, [u1,...,un], d, p) returns functions
+      ++ \spad{[h,[[ci, ui]]]} such that the ui's are among \spad{[u1,...,un]}
+      ++ and \spad{d(h + sum(ci log(ui)))/dx = f(x,y)} if such functions exist,
+      ++ and "failed" otherwise.
+      ++ Argument y is an algebraic function of x satisfying
+      ++ \spad{d(x)\^2y(x)\^2 = P(x)}.
+    palglimint0: (F, K, K, List F, K, F, RF) -> U3
+      ++ palglimint0(f, x, y, [u1,...,un], z, t, c) returns functions
+      ++ \spad{[h,[[ci, ui]]]} such that the ui's are among \spad{[u1,...,un]}
+      ++ and \spad{d(h + sum(ci log(ui)))/dx = f(x,y)} if such functions exist,
+      ++ and "failed" otherwise.
+      ++ Argument y is an algebraic function of x satisfying
+      ++ \spad{f(x,y)dx = c f(t,y) dy}; c and t are rational functions of y.
+    palgRDE0   : (F, F, K, K, (F, F, SY) -> U1, F, UP) -> U1
+      ++ palgRDE0(f, g, x, y, foo, d, p) returns a function \spad{z(x,y)}
+      ++ such that \spad{dz/dx + n * df/dx z(x,y) = g(x,y)} if such a z exists,
+      ++ and "failed" otherwise.
+      ++ Argument y is an algebraic function of x satisfying
+      ++ \spad{d(x)\^2y(x)\^2 = P(x)}.
+      ++ Argument foo, called by \spad{foo(a, b, x)}, is a function that solves
+      ++ \spad{du/dx + n * da/dx u(x) = u(x)}
+      ++ for an unknown \spad{u(x)} not involving y.
+    palgRDE0   : (F, F, K, K, (F, F, SY) -> U1, K, F, RF) -> U1
+      ++ palgRDE0(f, g, x, y, foo, t, c) returns a function \spad{z(x,y)}
+      ++ such that \spad{dz/dx + n * df/dx z(x,y) = g(x,y)} if such a z exists,
+      ++ and "failed" otherwise.
+      ++ Argument y is an algebraic function of x satisfying
+      ++ \spad{f(x,y)dx = c f(t,y) dy}; c and t are rational functions of y.
+      ++ Argument \spad{foo}, called by \spad{foo(a, b, x)}, is a function that
+      ++ solves \spad{du/dx + n * da/dx u(x) = u(x)}
+      ++ for an unknown \spad{u(x)} not involving y.
+    univariate: (F, K, K, UP) -> UPUP
+        ++ univariate(f,k,k,p) \undocumented
+    multivariate: (UPUP, K, F) -> F
+        ++ multivariate(u,k,f) \undocumented
+    lift: (UP, K) -> UPUP
+        ++ lift(u,k) \undocumented
+    if L has LinearOrdinaryDifferentialOperatorCategory F then
+      palgLODE0  : (L, F, K, K, F, UP) -> ODE
+        ++ palgLODE0(op, g, x, y, d, p) returns the solution of \spad{op f = g}.
+        ++ Argument y is an algebraic function of x satisfying
+        ++ \spad{d(x)\^2y(x)\^2 = P(x)}.
+      palgLODE0  : (L, F, K, K, K, F, RF) -> ODE
+        ++ palgLODE0(op,g,x,y,z,t,c) returns the solution of \spad{op f = g}
+        ++ Argument y is an algebraic function of x satisfying
+        ++ \spad{f(x,y)dx = c f(t,y) dy}; c and t are rational functions of y.
+
+  Implementation ==> add
+    import RationalIntegration(F, UP)
+    import AlgebraicManipulations(R, F)
+    import IntegrationResultFunctions2(RF, F)
+    import ElementaryFunctionStructurePackage(R, F)
+    import SparseUnivariatePolynomialFunctions2(F, RF)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents K,
+                                                        K, R, P, F)
+
+    mkRat    : (F, REC, List K) -> RF
+    mkRatlx  : (F, K, K, F, K, RF) -> RF
+    quadsubst: (K, K, F, UP) -> Record(diff:F, subs:REC, newk:List K)
+    kerdiff  : (F, F) -> List K
+    checkroot: (F, List K) -> F
+    univ     : (F, List K, K) -> RF
+
+    dummy := kernel(new()$SY)@K
+
+    kerdiff(sa, a)         == setDifference(kernels sa, kernels a)
+    checkroot(f, l)        == (empty? l => f; rootNormalize(f, first l))
+    univ(c, l, x)          == univariate(checkroot(c, l), x)
+    univariate(f, x, y, p) == lift(univariate(f, y, p), x)
+    lift(p, k)             == map(univariate(#1, k), p)
+
+    palgint0(f, x, y, den, radi) ==
+      -- y is a square root so write f as f1 y + f0 and integrate separately
+      ff := univariate(f, x, y, minPoly y)
+      f0 := reductum ff
+      pr := quadsubst(x, y, den, radi)
+      map(#1(x::F), integrate(retract(f0)@RF)) +
+        map(#1(pr.diff),
+            integrate
+              mkRat(multivariate(leadingMonomial ff,x,y::F), pr.subs, pr.newk))
+
+-- the algebraic relation is (den * y)**2 = p  where p is a * x**2 + b * x + c
+-- if p is squarefree, then parametrize in the following form:
+--     u  = y - x \sqrt{a}
+--     x  = (u^2 - c) / (b - 2 u \sqrt{a}) = h(u)
+--     dx = h'(u) du
+--     y  = (u + a h(u)) / den = g(u)
+-- if a is a perfect square,
+--     u  = (y - \sqrt{c}) / x
+--     x  = (b - 2 u \sqrt{c}) / (u^2 - a) = h(u)
+--     dx = h'(u) du
+--     y  = (u h(u) + \sqrt{c}) / den = g(u)
+-- otherwise.
+-- if p is a square p = a t^2, then we choose only one branch for now:
+--     u  = x
+--     x  = u = h(u)
+--     dx = du
+--     y  = t \sqrt{a} / den = g(u)
+-- returns [u(x,y), [h'(u), [x,y], [h(u), g(u)], l] in both cases,
+-- where l is empty if no new square root was needed,
+-- l := [k] if k is the new square root kernel that was created.
+    quadsubst(x, y, den, p) ==
+      u   := dummy::F
+      b   := coefficient(p, 1)
+      c   := coefficient(p, 0)
+      sa  := rootSimp sqrt(a := coefficient(p, 2))
+      zero?(b * b - 4 * a * c) =>    -- case where p = a (x + b/(2a))^2
+        [x::F, [1, [x, y], [u, sa * (u + b / (2*a)) / eval(den,x,u)]], empty()]
+      empty? kerdiff(sa, a) =>
+        bm2u := b - 2 * u * sa
+        q    := eval(den, x, xx := (u**2 - c) / bm2u)
+        yy   := (ua := u + xx * sa) / q
+        [y::F - x::F * sa, [2 * ua / bm2u, [x, y], [xx, yy]], empty()]
+      u2ma:= u**2 - a
+      sc  := rootSimp sqrt c
+      q   := eval(den, x, xx := (b - 2 * u * sc) / u2ma)
+      yy  := (ux := xx * u + sc) / q
+      [(y::F - sc) / x::F, [- 2 * ux / u2ma, [x ,y], [xx, yy]], kerdiff(sc, c)]
+
+    mkRatlx(f,x,y,t,z,dx) ==
+      rat := univariate(eval(f, [x, y], [t, z::F]), z) * dx
+      numer(rat) / denom(rat)
+
+    mkRat(f, rec, l) ==
+      rat:=univariate(checkroot(rec.coeff * eval(f,rec.var,rec.val), l), dummy)
+      numer(rat) / denom(rat)
+
+    palgint0(f, x, y, z, xx, dx) ==
+      map(multivariate(#1, y), integrate mkRatlx(f, x, y, xx, z, dx))
+
+    palgextint0(f, x, y, g, z, xx, dx) ==
+      map(multivariate(#1, y),
+            extendedint(mkRatlx(f,x,y,xx,z,dx), mkRatlx(g,x,y,xx,z,dx)))
+
+    palglimint0(f, x, y, lu, z, xx, dx) ==
+      map(multivariate(#1, y), limitedint(mkRatlx(f, x, y, xx, z, dx),
+                             [mkRatlx(u, x, y, xx, z, dx) for u in lu]))
+
+    palgRDE0(f, g, x, y, rischde, z, xx, dx) ==
+      (u := rischde(eval(f, [x, y], [xx, z::F]),
+                      multivariate(dx, z) * eval(g, [x, y], [xx, z::F]),
+                          symbolIfCan(z)::SY)) case "failed" => "failed"
+      eval(u::F, z, y::F)
+
+-- given p = sum_i a_i(X) Y^i, returns  sum_i a_i(x) y^i
+    multivariate(p, x, y) ==
+      (map(multivariate(#1, x),
+           p)$SparseUnivariatePolynomialFunctions2(RF, F))
+              (y)
+
+    palgextint0(f, x, y, g, den, radi) ==
+      pr := quadsubst(x, y, den, radi)
+      map(#1(pr.diff),
+          extendedint(mkRat(f, pr.subs, pr.newk), mkRat(g, pr.subs, pr.newk)))
+
+    palglimint0(f, x, y, lu, den, radi) ==
+      pr := quadsubst(x, y, den, radi)
+      map(#1(pr.diff),
+         limitedint(mkRat(f, pr.subs, pr.newk),
+                    [mkRat(u, pr.subs, pr.newk) for u in lu]))
+
+    palgRDE0(f, g, x, y, rischde, den, radi) ==
+      pr := quadsubst(x, y, den, radi)
+      (u := rischde(checkroot(eval(f, pr.subs.var, pr.subs.val), pr.newk),
+                    checkroot(pr.subs.coeff * eval(g, pr.subs.var, pr.subs.val),
+                              pr.newk), symbolIfCan(dummy)::SY)) case "failed"
+                                    => "failed"
+      eval(u::F, dummy, pr.diff)
+
+    if L has LinearOrdinaryDifferentialOperatorCategory F then
+      import RationalLODE(F, UP)
+
+      palgLODE0(eq, g, x, y, den, radi) ==
+        pr := quadsubst(x, y, den, radi)
+        d := monomial(univ(inv(pr.subs.coeff), pr.newk, dummy), 1)$LODO
+        di:LODO := 1                  -- will accumulate the powers of d
+        op:LODO := 0                  -- will accumulate the new LODO
+        for i in 0..degree eq repeat
+          op := op + univ(eval(coefficient(eq, i), pr.subs.var, pr.subs.val),
+                        pr.newk, dummy) * di
+          di := d * di
+        rec := ratDsolve(op,univ(eval(g,pr.subs.var,pr.subs.val),pr.newk,dummy))
+        bas:List(F) := [b(pr.diff) for b in rec.basis]
+        rec.particular case "failed" => ["failed", bas]
+        [((rec.particular)::RF) (pr.diff), bas]
+
+      palgLODE0(eq, g, x, y, kz, xx, dx) ==
+        d := monomial(univariate(inv multivariate(dx, kz), kz), 1)$LODO
+        di:LODO := 1                  -- will accumulate the powers of d
+        op:LODO := 0                  -- will accumulate the new LODO
+        lk:List(K) := [x, y]
+        lv:List(F) := [xx, kz::F]
+        for i in 0..degree eq repeat
+          op := op + univariate(eval(coefficient(eq, i), lk, lv), kz) * di
+          di := d * di
+        rec := ratDsolve(op, univariate(eval(g, lk, lv), kz))
+        bas:List(F) := [multivariate(b, y) for b in rec.basis]
+        rec.particular case "failed" => ["failed", bas]
+        [multivariate((rec.particular)::RF, y), bas]
+

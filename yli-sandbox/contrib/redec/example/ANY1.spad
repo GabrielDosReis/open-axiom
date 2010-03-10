@@ -1,0 +1,50 @@
+import Type
+import Boolean
+import Any
+)abbrev package ANY1 AnyFunctions1
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions:  coerce, retractIfCan, retractable?, retract
+++ Related Constructors: Any
+++ Also See:
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{AnyFunctions1} implements several utility functions for
+++   working with \spadtype{Any}. These functions are used to go back
+++   and forth between objects of \spadtype{Any} and objects of other
+++   types.
+
+AnyFunctions1(S:Type): with
+        coerce      : S -> Any
+          ++ coerce(s) creates an object of \spadtype{Any} from the
+          ++ object \spad{s} of type \spad{S}.
+        retractIfCan: Any -> Union(S, "failed")
+          ++ retractIfCan(a) tries change \spad{a} into an object
+          ++ of type \spad{S}. If it can, then such an object is
+          ++ returned. Otherwise, "failed" is returned.
+        retractable?: Any -> Boolean
+          ++ retractable?(a) tests if \spad{a} can be converted
+          ++ into an object of type \spad{S}.
+        retract     : Any -> S
+          ++ retract(a) tries to convert \spad{a} into an object of
+          ++ type \spad{S}. If possible, it returns the object.
+          ++ Error: if no such retraction is possible.
+
+    == add
+        import NoneFunctions1(S)
+
+        Sexpr:SExpression := devaluate(S)$Lisp
+
+        retractable? a  == dom(a) = Sexpr
+        coerce(s:S):Any == any(Sexpr, s::None)
+
+        retractIfCan a ==
+            retractable? a => obj(a) pretend S
+            "failed"
+
+        retract a ==
+            retractable? a => obj(a) pretend S
+            error "Cannot retract value."
+

@@ -1,0 +1,28 @@
+)abbrev domain LODO LinearOrdinaryDifferentialOperator
+++ Author: Manuel Bronstein
+++ Date Created: 9 December 1993
+++ Date Last Updated: 15 April 1994
+++ Keywords: differential operator
+++ Description:
+++   \spad{LinearOrdinaryDifferentialOperator} defines a ring of
+++   differential operators with coefficients in a ring A with a given
+++   derivation.
+++   Multiplication of operators corresponds to functional composition:
+++       \spad{(L1 * L2).(f) = L1 L2 f}
+LinearOrdinaryDifferentialOperator(A:Ring, diff: A -> A):
+    LinearOrdinaryDifferentialOperatorCategory A
+      == SparseUnivariateSkewPolynomial(A, 1, diff) add
+        Rep := SparseUnivariateSkewPolynomial(A, 1, diff)
+
+        outputD := "D"@String :: Symbol :: OutputForm
+
+        coerce(l:%):OutputForm == outputForm(l, outputD)
+        elt(p:%, a:A):A        == apply(p, 0, a)
+
+        if A has Field then
+            import LinearOrdinaryDifferentialOperatorsOps(A, %)
+
+            symmetricProduct(a, b) == symmetricProduct(a, b, diff)
+            symmetricPower(a, n)   == symmetricPower(a, n, diff)
+            directSum(a, b)        == directSum(a, b, diff)
+

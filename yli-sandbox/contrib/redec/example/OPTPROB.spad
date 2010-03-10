@@ -1,0 +1,62 @@
+)abbrev domain OPTPROB NumericalOptimizationProblem
+++ Author: Brian Dupee
+++ Date Created: December 1997
+++ Date Last Updated: December 1997
+++ Basic Operations: coerce, retract
+++ Related Constructors: Union
+++ Description:
+++ \axiomType{NumericalOptimizationProblem} is a \axiom{domain}
+++ for the representation of Numerical Optimization problems for use
+++ by ANNA. 
+++
+++ The representation is a Union of two record types - one for otimization of
+++ a single function of one or more variables:
+++
+++ \axiomType{Record}(
+++ fn:\axiomType{Expression DoubleFloat},
+++ init:\axiomType{List DoubleFloat},
+++ lb:\axiomType{List OrderedCompletion DoubleFloat},
+++ cf:\axiomType{List Expression DoubleFloat},
+++ ub:\axiomType{List OrderedCompletion DoubleFloat})
+++
+++ and one for least-squares problems i.e. optimization of a set of
+++ observations of a data set:
+++
+++ \axiomType{Record}(lfn:\axiomType{List Expression DoubleFloat},
+++ init:\axiomType{List DoubleFloat}).
+++
+
+LDFD     ==> List DoubleFloat
+LEDFD    ==> List Expression DoubleFloat
+LSAD     ==> Record(lfn:LEDFD, init:LDFD)
+-- UNOALSAD ==> Union(noa:NOAD,lsa:LSAD)
+EDFD     ==> Expression DoubleFloat
+LOCDFD   ==> List OrderedCompletion DoubleFloat
+NOAD     ==> Record(fn:EDFD, init:LDFD, lb:LOCDFD, cf:LEDFD, ub:LOCDFD)
+UNOALSAD ==> Union(noa:NOAD,lsa:LSAD)
+NumericalOptimizationProblem():SetCategory with
+
+    coerce: NOAD -> %
+      ++ coerce(x) \undocumented{}
+    coerce: LSAD -> %
+      ++ coerce(x) \undocumented{}
+    coerce: UNOALSAD -> %
+      ++ coerce(x) \undocumented{}
+    retract: % -> UNOALSAD
+      ++ retract(x) \undocumented{}
+
+  ==
+ 
+    add
+      Rep := UNOALSAD
+ 
+      coerce(s:NOAD) == [s]
+      coerce(s:LSAD) == [s]
+      coerce(x:UNOALSAD) == x
+      coerce(x:%):OutputForm ==
+        (x) case noa => (x.noa)::OutputForm
+        (x.lsa)::OutputForm
+      retract(x:%):UNOALSAD ==
+        (x) case noa => [x.noa]
+        [x.lsa]
+

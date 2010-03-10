@@ -1,0 +1,20 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain LSTAST ConstructAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents `literal sequence' syntax.
+ConstructAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    elements: % -> List SpadAst
+      ++ elements(e) returns the list of expressions in the
+      ++ `literal' list `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol, List SpadAst)
+    elements x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('ConstructAst::OutputForm,
+        ['elements::OutputForm = elements(x)::OutputForm])$OutputForm
+

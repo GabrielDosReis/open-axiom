@@ -1,0 +1,35 @@
+)abbrev domain GSTBL GeneralSparseTable
+++ Author: Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: June 21, 1991
+++ Basic Operations: 
+++ Related Domains: Table 
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   A sparse table has a default entry, which is returned if no other
+++   value has been explicitly stored for a key.
+GeneralSparseTable(Key, Entry, Tbl, dent): TableAggregate(Key, Entry) == Impl
+  where
+    Key, Entry: SetCategory
+    Tbl:  TableAggregate(Key, Entry)
+    dent: Entry
+
+    Impl ==> Tbl add
+        Rep := Tbl
+
+        elt(t:%, k:Key) ==
+            (u := search(k, t)$Rep) case "failed" => dent
+            u::Entry
+
+        setelt(t:%, k:Key, e:Entry) ==
+            e = dent => (remove_!(k, t); e)
+            setelt(t, k, e)$Rep
+
+        search(k:Key, t:%) ==
+            (u := search(k, t)$Rep) case "failed" => dent
+            u
+

@@ -1,0 +1,18 @@
+)abbrev domain HOSTNAME Hostname
+++ Author: Gabriel Dos Reis
+++ Date Created: August 23, 2008
+++ Date Last Modified: August 23, 2008
+++ References: RFC 1034, RFC 1035
+++ Description:  
+++   This domain represents hostnames on computer network.
+Hostname(): Public == Private where
+  Public == Join(SetCategory, CoercibleTo String) with
+    host: String -> %
+      ++ host(n) constructs a Hostname from the name `n'.
+  Private == add
+    Rep == String
+    host n == per n
+    x = y == rep x = rep y
+    coerce(x: %): String == rep x
+    coerce(x: %): OutputForm == rep(x)::OutputForm
+

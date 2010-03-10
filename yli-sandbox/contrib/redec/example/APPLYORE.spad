@@ -1,0 +1,22 @@
+)abbrev package APPLYORE ApplyUnivariateSkewPolynomial
+++ Author: Manuel Bronstein
+++ Date Created: 7 December 1993
+++ Date Last Updated: 1 February 1994
+++ Description:
+++   \spad{ApplyUnivariateSkewPolynomial} (internal) allows univariate
+++   skew polynomials to be applied to appropriate modules.
+ApplyUnivariateSkewPolynomial(R:Ring, M: LeftModule R,
+    P: UnivariateSkewPolynomialCategory R): with
+      apply: (P, M -> M, M) -> M
+        ++ apply(p, f, m) returns \spad{p(m)} where the action is given
+        ++ by \spad{x m = f(m)}.
+        ++ \spad{f} must be an R-pseudo linear map on M.
+   == add
+      apply(p, f, m) ==
+        w:M  := 0
+        mn:M := m
+        for i in 0..degree p repeat
+          w  := w + coefficient(p, i) * mn
+          mn := f mn
+        w
+

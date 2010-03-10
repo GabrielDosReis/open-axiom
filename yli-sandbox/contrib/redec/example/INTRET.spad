@@ -1,0 +1,22 @@
+import RetractableTo 
+import Boolean
+import Integer
+)abbrev package INTRET IntegerRetractions
+++ Author: Manuel Bronstein
+++ Description: Provides integer testing and retraction functions.
+++ Date Created: March 1990
+++ Date Last Updated: 9 April 1991
+IntegerRetractions(S:RetractableTo(Integer)): with
+    integer     : S -> Integer
+      ++ integer(x) returns x as an integer;
+      ++ error if x is not an integer;
+    integer?    : S -> Boolean
+      ++ integer?(x) is true if x is an integer, false otherwise;
+    integerIfCan: S -> Union(Integer, "failed")
+      ++ integerIfCan(x) returns x as an integer,
+      ++ "failed" if x is not an integer;
+  == add
+    integer s      == retract s
+    integer? s     == retractIfCan(s) case Integer
+    integerIfCan s == retractIfCan s
+

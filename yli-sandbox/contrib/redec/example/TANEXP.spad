@@ -1,0 +1,50 @@
+)abbrev package TANEXP TangentExpansions
+++ Expansions of tangents of sums and quotients
+++ Author: Manuel Bronstein
+++ Date Created: 13 Feb 1989
+++ Date Last Updated: 20 Apr 1990
+++ Description: Expands tangents of sums and scalar products.
+TangentExpansions(R:Field): Exports == Implementation where
+  PI ==> PositiveInteger
+  Z  ==> Integer
+  UP ==> SparseUnivariatePolynomial R
+  QF ==> Fraction UP
+
+  Exports ==> with
+    tanSum: List R -> R
+      ++ tanSum([a1,...,an]) returns \spad{f(a1,...,an)} such that
+      ++ if \spad{ai = tan(ui)} then \spad{f(a1,...,an) = tan(u1 + ... + un)}.
+    tanAn : (R, PI) -> UP
+      ++ tanAn(a, n) returns \spad{P(x)} such that
+      ++ if \spad{a = tan(u)} then \spad{P(tan(u/n)) = 0}.
+    tanNa : (R,  Z) -> R
+      ++ tanNa(a, n) returns \spad{f(a)} such that
+      ++ if \spad{a = tan(u)} then \spad{f(a) = tan(n * u)}.
+
+  Implementation ==> add
+    import SymmetricFunctions(R)
+    import SymmetricFunctions(UP)
+
+    m1toN : Integer -> Integer
+    tanPIa: PI -> QF
+
+    m1toN n     == (odd? n => -1; 1)
+    tanAn(a, n) == a * denom(q := tanPIa n) - numer q
+
+    tanNa(a, n) ==
+      zero? n => 0
+      negative? n => - tanNa(a, -n)
+      (numer(t := tanPIa(n::PI)) a) / ((denom t) a)
+
+    tanSum l ==
+      m := minIndex(v := symFunc l)
+      +/[m1toN(i+1) * v(2*i - 1 + m) for i in 1..(#v quo 2)]
+        / +/[m1toN(i) * v(2*i + m) for i in 0..((#v - 1) quo 2)]
+
+-- tanPIa(n) returns P(a)/Q(a) such that
+-- if a = tan(u) then P(a)/Q(a) = tan(n * u);
+    tanPIa n ==
+      m := minIndex(v := symFunc(monomial(1, 1)$UP, n))
+      +/[m1toN(i+1) * v(2*i - 1 + m) for i in 1..(#v quo 2)]
+        / +/[m1toN(i) * v(2*i + m) for i in 0..((#v - 1) quo 2)]
+

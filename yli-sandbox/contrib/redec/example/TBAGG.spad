@@ -1,0 +1,127 @@
+import SetCategory
+--import KeyedDictionary
+--import IndexedAggregate
+import Boolean
+import OutputForm
+--import List
+)abbrev category TBAGG TableAggregate
+++ Author: Michael Monagan, Stephen Watt; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A table aggregate is a model of a table, i.e. a discrete many-to-one
+++ mapping from keys to entries.
+TableAggregate(Key:SetCategory, Entry:SetCategory): Category ==
+  Join(KeyedDictionary(Key,Entry),IndexedAggregate(Key,Entry)) with
+   setelt: (%,Key,Entry) -> Entry          -- setelt_! later
+     ++ setelt(t,k,e) (also written \axiom{t.k := e}) is equivalent
+     ++ to \axiom{(insert([k,e],t); e)}.
+   table: () -> %
+     ++ table()$T creates an empty table of type T.
+   table: List Record(key:Key,entry:Entry) -> %
+     ++ table([x,y,...,z]) creates a table consisting of entries
+     ++ \axiom{x,y,...,z}.
+   -- to become table: Record(key:Key,entry:Entry)* -> %
+   map: ((Entry, Entry) -> Entry, %, %) -> %
+     ++ map(fn,t1,t2) creates a new table t from given tables t1 and t2 with
+     ++ elements fn(x,y) where x and y are corresponding elements from t1
+     ++ and t2 respectively.
+ add
+   table()             == empty()
+   table l             == dictionary l
+-- empty()             == dictionary()
+
+   insert_!(p, t)      == (t(p.key) := p.entry; t)
+   indices t           == keys t
+
+   coerce(t:%):OutputForm ==
+     prefix("table"::OutputForm,
+                    [k::OutputForm = (t.k)::OutputForm for k in keys t])
+
+   elt(t, k) ==
+      (r := search(k, t)) case Entry => r::Entry
+      error "key not in table"
+
+   elt(t, k, e) ==
+      (r := search(k, t)) case Entry => r::Entry
+      e
+
+   map_!(f: Entry->Entry, t: %) ==
+      for k in keys t repeat t.k := f t.k
+      t
+
+   map(f:(Entry, Entry) -> Entry, s:%, t:%) ==
+      z := table()
+      for k in keys s | key?(k, t) repeat z.k := f(s.k, t.k)
+      z
+
+-- map(f, s, t, x) ==
+--    z := table()
+--    for k in keys s repeat z.k := f(s.k, t(k, x))
+--    for k in keys t | not key?(k, s) repeat z.k := f(t.k, x)
+--    z
+
+   if % has finiteAggregate then
+     parts(t:%):List Record(key:Key,entry:Entry)             == [[k, t.k] for k in keys t]
+     parts(t:%):List Entry   == [t.k for k in keys t]
+     entries(t:%):List Entry == parts(t)
+
+     s:% = t:% ==
+       eq?(s,t) => true
+       #s ~= #t => false
+       for k in keys s repeat
+         (e := search(k, t)) case "failed" or (e::Entry) ~= s.k => 
+            return false
+       true
+
+     map(f: Record(key:Key,entry:Entry)->Record(key:Key,entry:Entry), t: %): % ==
+       z := table()
+       for k in keys t repeat
+         ke: Record(key:Key,entry:Entry) := f [k, t.k]
+         z ke.key := ke.entry
+       z
+     map_!(f: Record(key:Key,entry:Entry)->Record(key:Key,entry:Entry), t: %): % ==
+       lke: List Record(key:Key,entry:Entry) := nil()
+       for k in keys t repeat
+         lke := cons(f [k, remove_!(k,t)::Entry], lke)
+       for ke in lke repeat
+         t ke.key := ke.entry
+       t
+
+     inspect(t: %): Record(key:Key,entry:Entry) ==
+       ks := keys t
+       empty? ks => error "Cannot extract from an empty aggregate"
+       [first ks, t first ks]
+
+     find(f: Record(key:Key,entry:Entry)->Boolean, t:%): Union(Record(key:Key,entry:Entry), "failed") ==
+       for ke in parts(t)@List(Record(key:Key,entry:Entry)) repeat if f ke then return ke
+       "failed"
+
+     index?(k: Key, t: %): Boolean ==
+       search(k,t) case Entry
+
+     remove_!(x:Record(key:Key,entry:Entry), t:%) ==
+       if member?(x, t) then remove_!(x.key, t)
+       t
+     extract_!(t: %): Record(key:Key,entry:Entry) ==
+       k: Record(key:Key,entry:Entry) := inspect t
+       remove_!(k.key, t)
+       k
+
+     any?(f: Entry->Boolean, t: %): Boolean ==
+       for k in keys t | f t k repeat return true
+       false
+     every?(f: Entry->Boolean, t: %): Boolean ==
+       for k in keys t | not f t k repeat return false
+       true
+     count(f: Entry->Boolean, t: %): NonNegativeInteger ==
+       tally: NonNegativeInteger := 0
+       for k in keys t | f t k repeat tally := tally + 1
+       tally
+

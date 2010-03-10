@@ -1,0 +1,20 @@
+)abbrev category ORDMON OrderedMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated: May 28, 2008
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Ordered sets which are also monoids, such that multiplication
+++ preserves the ordering.
+++
+++ Axioms:
+++   \spad{x < y => x*z < y*z}
+++   \spad{x < y => z*x < z*y}
+
+OrderedMonoid(): Category == Join(OrderedSemiGroup, Monoid)
+

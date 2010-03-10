@@ -1,0 +1,23 @@
+import Type
+import SegmentBinding
+)abbrev package SEGBIND2 SegmentBindingFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated: June 4, 1991
+++ Basic Operations:
+++ Related Domains: SegmentBinding, Segment, Equation
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   This package provides operations for mapping functions onto
+++   \spadtype{SegmentBinding}s.
+SegmentBindingFunctions2(R:Type, S:Type): with
+  map: (R -> S, SegmentBinding R) -> SegmentBinding S
+      ++ map(f,v=a..b) returns the value given by \spad{v=f(a)..f(b)}.
+ == add
+  map(f, b) ==
+    equation(variable b, map(f, segment b)$SegmentFunctions2(R, S))
+

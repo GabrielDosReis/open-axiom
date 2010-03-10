@@ -1,0 +1,39 @@
+)abbrev package MAPPKG2 MappingPackage2
+++ Description: various Currying operations.
+MappingPackage2(A:SetCategory, C:SetCategory): MPcat == MPdef where
+    NNI   ==>  NonNegativeInteger
+ 
+    MPcat ==  with
+        const:   C           -> (A ->C)
+          ++\spad{const c} is a function which produces \spad{c} when
+          ++ applied to its argument.
+ 
+        curry:    (A ->C, A)    -> (()->C)
+          ++\spad{cu(f,a)} is the function \spad{g}
+          ++ such that \spad{g ()= f a}.
+        constant:    (()->C)       -> (A ->C)
+          ++\spad{vu(f)} is the function \spad{g}
+          ++ such that \spad{g a= f ()}.
+ 
+        diag:  ((A,A)->C)    -> (A->C)
+          ++\spad{diag(f)} is the function \spad{g}
+          ++ such that \spad{g a = f(a,a)}.
+ 
+ 
+    MPdef == add
+ 
+        import MappingPackageInternalHacks2(A, C)
+ 
+        a: A
+        c: C
+        faa:  A -> A
+        f0c:  ()-> C
+        fac:  A -> C
+        faac: (A,A)->C
+ 
+        const c     == arg2(#1, c)
+        curry(fac, a)  == fac a
+        constant f0c      == arg2(#1, f0c())
+ 
+        diag  faac  == faac(#1, #1)
+

@@ -1,0 +1,81 @@
+import Type
+import SetCategory
+import SegmentCategory
+import SegmentExpansionCategory
+import Integer
+import List
+)abbrev domain SEG Segment
+++ Author:  Stephen M. Watt
+++ Date Created:  December 1986
+++ Date Last Updated: June 3, 1991
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: range, segment
+++ Examples:
+++ References:
+++ Description:
+++   This type is used to specify a range of values from type \spad{S}.
+
+Segment(S:Type): SegmentCategory(S) with
+    if S has SetCategory then SetCategory
+    if S has OrderedRing then SegmentExpansionCategory(S, List S)
+  == add
+
+    Rep := Record(low: S, high: S, incr: Integer)
+
+    a..b == [a,b,1]
+    lo s == s.low
+    low s == s.low
+    hi s == s.high
+    high s == s.high
+    incr s == s.incr
+    segment(a,b) == [a,b,1]
+    BY(s, r) == [lo s, hi s, r]
+
+    if S has SetCategory then
+      (s1:%) = (s2:%) ==
+        s1.low = s2.low and s1.high=s2.high and s1.incr = s2.incr
+
+      coerce(s:%):OutputForm ==
+        seg := SEGMENT(s.low::OutputForm, s.high::OutputForm)
+        s.incr = 1 => seg
+        infix(" by "::OutputForm, seg, s.incr::OutputForm)
+
+    convert a == [a,a,1]
+
+    if S has OrderedRing then
+      expand(ls: List %):List S ==
+        lr := nil()$List(S)
+        for s in ls repeat
+          l := lo s
+          h := hi s
+          inc := (incr s)::S
+          zero? inc => error "Cannot expand a segment with an increment of zero"
+          if inc > 0 then
+            while l <= h repeat
+              lr := concat(l, lr)
+              l := l + inc
+          else 
+            while l >= h repeat
+              lr := concat(l, lr)
+              l := l + inc
+        reverse_! lr
+
+      expand(s : %) == expand([s]$List(%))$%
+      map(f : S->S, s : %): List S ==
+        lr := nil()$List(S)
+        l := lo s
+        h := hi s
+        inc := (incr s)::S
+        if inc > 0 then
+          while l <= h repeat
+            lr := concat(f l, lr)
+            l := l + inc
+        else
+          while l >= h repeat
+            lr := concat(f l, lr)
+            l := l + inc
+        reverse_! lr
+

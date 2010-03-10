@@ -1,0 +1,47 @@
+import Type
+import FiniteLinearAggregateFunctions2
+)abbrev package LIST2 ListFunctions2
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: map, reduce, scan
+++ Related Constructors: List
+++ Also See: ListFunctions3
+++ AMS Classification:
+++ Keywords: list, aggregate, map, reduce
+++ Description:
+++   \spadtype{ListFunctions2} implements utility functions that
+++   operate on two kinds of lists, each with a possibly different
+++   type of element.
+ListFunctions2(A:Type, B:Type): public == private where
+  LA     ==> List A
+  LB     ==> List B
+  O2     ==> FiniteLinearAggregateFunctions2(A, LA, B, LB)
+
+  public ==> with
+    scan:    ((A, B) -> B, LA, B) -> LB
+      ++ scan(fn,u,ident) successively uses the binary function
+      ++ \spad{fn} to reduce more and more of list \spad{u}.
+      ++ \spad{ident} is returned if the \spad{u} is empty.
+      ++ The result is a list of the reductions at each step. See
+      ++ \spadfun{reduce} for more information. Examples:
+      ++ \spad{scan(fn,[1,2],0) = [fn(2,fn(1,0)),fn(1,0)]} and
+      ++ \spad{scan(*,[2,3],1) = [2 * 1, 3 * (2 * 1)]}.
+    reduce:  ((A, B) -> B, LA, B) -> B
+      ++ reduce(fn,u,ident) successively uses the binary function
+      ++ \spad{fn} on the elements of list \spad{u} and the result
+      ++ of previous applications. \spad{ident} is returned if the
+      ++ \spad{u} is empty. Note the order of application in
+      ++ the following examples:
+      ++ \spad{reduce(fn,[1,2,3],0) = fn(3,fn(2,fn(1,0)))} and
+      ++ \spad{reduce(*,[2,3],1) = 3 * (2 * 1)}.
+    map:      (A -> B, LA) -> LB
+      ++ map(fn,u) applies \spad{fn} to each element of
+      ++ list \spad{u} and returns a new list with the results.
+      ++ For example \spad{map(square,[1,2,3]) = [1,4,9]}.
+
+  private ==> add
+    map(f, l)       == map(f, l)$O2
+    scan(f, l, b)   == scan(f, l, b)$O2
+    reduce(f, l, b) == reduce(f, l, b)$O2
+

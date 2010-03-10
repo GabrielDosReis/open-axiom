@@ -1,0 +1,36 @@
+)abbrev category ABELGRP AbelianGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of abelian groups, i.e. additive monoids where
+++ each element has an additive inverse.
+++
+++ Axioms:
+++   \spad{-(-x) = x}
+++   \spad{x+(-x) = 0}
+-- following domain must be compiled with subsumption disabled
+AbelianGroup(): Category == CancellationAbelianMonoid with
+    --operations
+      "-": % -> %                      ++ -x is the additive inverse of x.
+      "-": (%,%) -> %                  ++ x-y is the difference of x and y
+                                       ++ i.e. \spad{x + (-y)}.
+                       -- subsumes the partial subtraction from previous
+      "*": (Integer,%) -> %            ++ n*x is the product of x by the integer n.
+    add
+      (x:% - y:%):% == x+(-y)
+      subtractIfCan(x:%, y:%):Union(%, "failed") == (x-y) :: Union(%,"failed")
+      n:NonNegativeInteger * x:% == (n::Integer) * x
+      import RepeatedDoubling(%)
+      if not (% has Ring) then
+        n:Integer * x:% ==
+          zero? n => 0
+          n>0 => double(n pretend PositiveInteger,x)
+          double((-n) pretend PositiveInteger,-x)
+

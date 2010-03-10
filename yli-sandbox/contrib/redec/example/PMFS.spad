@@ -1,0 +1,72 @@
+)abbrev package PMFS PatternMatchFunctionSpace
+++ Pattern matching on function spaces
+++ Author: Manuel Bronstein
+++ Date Created: 15 Mar 1990
+++ Date Last Updated: 20 June 1991
+++ Description:
+++  This package provides pattern matching functions on function spaces.
+++ Keywords: pattern, matching, function, space.
+PatternMatchFunctionSpace(S, R, F): Exports== Implementation where
+  S: SetCategory
+  R: Join(IntegralDomain, OrderedSet, PatternMatchable S)
+  F: Join(FunctionSpace R, ConvertibleTo Pattern S, PatternMatchable S,
+          RetractableTo Kernel %)  -- that one is redundant but won't
+                                   -- compile without it
+
+  N   ==> NonNegativeInteger
+  K   ==> Kernel F
+  PAT ==> Pattern S
+  PRS ==> PatternMatchResult(S, F)
+  RCP ==> Record(val:PAT, exponent:N)
+  RCX ==> Record(var:K, exponent:Integer)
+
+  Exports ==> with
+    patternMatch: (F, PAT, PRS) -> PRS
+      ++ patternMatch(expr, pat, res) matches the pattern pat to the
+      ++ expression expr; res contains the variables of pat which
+      ++ are already matched and their matches.
+
+  Implementation ==> add
+    import PatternMatchKernel(S, F)
+    import PatternMatchTools(S, R, F)
+    import PatternMatchPushDown(S, R, F)
+
+    patternMatch(x, p, l) ==
+      generic? p => addMatch(p, x, l)
+      (r := retractIfCan(x)@Union(R, "failed")) case R =>
+        patternMatch(r::R, p, l)
+      (v := retractIfCan(x)@Union(K, "failed")) case K =>
+        patternMatch(v::K, p, l)
+      (q := isQuotient p) case Record(num:PAT, den:PAT) =>
+        uq := q::Record(num:PAT, den:PAT)
+        failed?(l := patternMatch(numer(x)::F, uq.num, l)) => l
+        patternMatch(denom(x)::F, uq.den, l)
+      (u := isPlus p) case List(PAT) =>
+        --(lx := isPlus x) case List(F) =>
+        --  patternMatch(lx::List(F), u::List(PAT), +/#1, l, patternMatch)
+        (u := optpair(u::List(PAT))) case List(PAT) =>
+          failed?(l := addMatch(first(u::List(PAT)), 0, l)) => failed()
+          patternMatch(x, second(u::List(PAT)), l)
+        failed()
+      (u := isTimes p) case List(PAT) =>
+        (lx := isTimes x) case List(F) =>
+          patternMatchTimes(lx::List(F), u::List(PAT), l, patternMatch)
+        (u := optpair(u::List(PAT))) case List(PAT) =>
+          failed?(l := addMatch(first(u::List(PAT)), 1, l)) => failed()
+          patternMatch(x, second(u::List(PAT)), l)
+        failed()
+      (uu := isPower p) case Record(val:PAT, exponent:PAT) =>
+        uur := uu::Record(val:PAT, exponent: PAT)
+        (ex := isExpt x) case RCX =>
+          failed?(l := patternMatch((ex::RCX).exponent::Integer::F,
+                                           uur.exponent, l)) => failed()
+          patternMatch((ex::RCX).var, uur.val, l)
+        optional?(uur.exponent) =>
+          failed?(l := addMatch(uur.exponent, 1, l)) => failed()
+          patternMatch(x, uur.val, l)
+        failed()
+      ((ep := isExpt p) case RCP) and ((ex := isExpt x) case RCX) and
+           (ex::RCX).exponent = ((ep::RCP).exponent)::Integer =>
+               patternMatch((ex::RCX).var, (ep::RCP).val, l)
+      failed()
+

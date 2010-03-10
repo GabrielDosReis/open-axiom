@@ -1,0 +1,30 @@
+)abbrev domain BTOURN BinaryTournament
+++ Description: \spadtype{BinaryTournament(S)} is the domain of
+++ binary trees where elements are ordered down the tree.
+++ A binary search tree is either empty or is a node containing a
+++ \spadfun{value} of type \spad{S}, and a \spadfun{right}
+++ and a \spadfun{left} which are both \spadtype{BinaryTree(S)}
+BinaryTournament(S: OrderedSet): Exports == Implementation where
+  Exports == BinaryTreeCategory(S) with
+    shallowlyMutable
+    binaryTournament: List S -> %
+      ++ binaryTournament(ls) creates a binary tournament with the
+      ++ elements of ls as values at the nodes.
+    insert_!: (S,%) -> %
+      ++ insert!(x,b) inserts element x as leaves into binary tournament b.
+  Implementation == BinaryTree(S) add
+    Rep := BinaryTree(S)
+    binaryTournament(u:List S) ==
+      null u => empty()
+      tree := binaryTree(first u)
+      for x in rest u repeat insert_!(x,tree)
+      tree
+    insert_!(x,t) ==
+      empty? t => binaryTree(x)
+      x > value t =>
+        setleft_!(t,copy t)
+        setvalue_!(t,x)
+        setright_!(t,empty())
+      setright_!(t,insert_!(x,right t))
+      t
+

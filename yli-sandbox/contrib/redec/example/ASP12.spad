@@ -1,0 +1,64 @@
+)abbrev domain ASP12 Asp12
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Oct 1993
+++ Date Last Updated: 18 March 1994
+++                    21 June 1994 Changed print to printStatement
+++ Related Constructors:
+++ Description:
+++\spadtype{Asp12} produces Fortran for Type 12 ASPs, needed for NAG routine 
+++\axiomOpFrom{d02kef}{d02Package} etc., for example: 
+++\begin{verbatim}
+++      SUBROUTINE MONIT (MAXIT,IFLAG,ELAM,FINFO)
+++      DOUBLE PRECISION ELAM,FINFO(15)
+++      INTEGER MAXIT,IFLAG
+++      IF(MAXIT.EQ.-1)THEN
+++        PRINT*,"Output from Monit"
+++      ENDIF
+++      PRINT*,MAXIT,IFLAG,ELAM,(FINFO(I),I=1,4)
+++      RETURN
+++      END
+++\end{verbatim}
+Asp12(name): Exports == Implementation where
+  name : Symbol
+
+  O      ==> OutputForm
+  S      ==> Symbol
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  FC     ==> FortranCode
+  SYMTAB ==> SymbolTable
+  EXI    ==> Expression Integer
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  U      ==> Union(I: Expression Integer,F: Expression Float,_
+                   CF: Expression Complex Float,switch:Switch)
+  UFST   ==> Union(fst:FST,void: void)
+
+  Exports ==> FortranProgramCategory with
+     outputAsFortran:() -> Void
+      ++outputAsFortran() generates the default code for \spadtype{ASP12}.
+    
+  Implementation ==> add
+
+    import FC
+    import Switch
+
+    real : FST := "real"::FST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(MAXIT,fortranInteger()$FT,syms)$SYMTAB
+    declare!(IFLAG,fortranInteger()$FT,syms)$SYMTAB
+    declare!(ELAM,fortranReal()$FT,syms)$SYMTAB
+    fType : FT := construct([real]$UFST,["15"::Symbol],false)$FT
+    declare!(FINFO,fType,syms)$SYMTAB
+--    Rep := FortranProgram(name,["void"]$UFST,[MAXIT,IFLAG,ELAM,FINFO],syms)
+
+    -- eqn : O := (I::O)=(1@Integer::EXI::O)
+--    code:=([cond(EQ([MAXIT@S::EXI]$U,[-1::EXI]$U),
+--                 printStatement(["_"Output from Monit_""::O])),
+--            printStatement([MAXIT::O,IFLAG::O,ELAM::O,subscript("(FINFO"::S,[I::O])::O,"I=1"::S::O,"4)"::S::O]), -- YUCK!
+--            returns()]$List(FortranCode))::Rep
+
+--    coerce(u:%):OutputForm == coerce(u)$Rep
+
+--    outputAsFortran(u:%):Void == outputAsFortran(u)$Rep
+--    outputAsFortran():Void == outputAsFortran(code)$Rep  
+

@@ -1,0 +1,26 @@
+)abbrev domain VOID Void
+-- These types act as the top and bottom of the type lattice
+-- and are known to the compiler and interpreter for type resolution.
+++ Author: Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: May 30, 1991
+++ Basic Operations: 
+++ Related Domains: ErrorFunctions, ResolveLatticeCompletion, Exit
+++ Also See:
+++ AMS Classifications:
+++ Keywords: type, mode, coerce, no value
+++ Examples:
+++ References:
+++ Description:
+++   This type is used when no value is needed, e.g., in the \spad{then}
+++   part of a one armed \spad{if}.
+++   All values can be coerced to type Void.  Once a value has been coerced
+++   to Void, it cannot be recovered.
+
+Void: CoercibleTo OutputForm with
+        void: () -> %            ++ void() produces a void object.
+    == add
+        Rep := String
+        void()      == voidValue()$Lisp
+        coerce(v:%) == coerce(v)$Rep
+

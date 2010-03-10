@@ -1,0 +1,47 @@
+)abbrev package PMPREDFS FunctionSpaceAttachPredicates
+++ Predicates for pattern-matching.
+++ Author: Manuel Bronstein
+++ Description: Attaching predicates to symbols for pattern matching.
+++ Date Created: 21 Mar 1989
+++ Date Last Updated: 23 May 1990
+++ Keywords: pattern, matching.
+FunctionSpaceAttachPredicates(R, F, D): Exports == Implementation where
+  R: OrderedSet
+  F: FunctionSpace R
+  D: Type
+
+  K  ==> Kernel F
+  PMPRED  ==> "%pmpredicate"
+
+  Exports ==> with
+    suchThat: (F, D -> Boolean) -> F
+      ++ suchThat(x, foo) attaches the predicate foo to x;
+      ++ error if x is not a symbol.
+    suchThat: (F, List(D -> Boolean)) -> F
+      ++ suchThat(x, [f1, f2, ..., fn]) attaches the predicate
+      ++ f1 and f2 and ... and fn to x.
+      ++ Error: if x is not a symbol.
+
+  Implementation ==> add
+    import AnyFunctions1(D -> Boolean)
+
+    st   : (K, List Any) -> F
+    preds: K -> List Any
+    mkk  : BasicOperator -> F
+
+    suchThat(p:F, f:D -> Boolean) == suchThat(p, [f])
+    mkk op                        == kernel(op, empty()$List(F))
+
+    preds k ==
+      (u := property(operator k, PMPRED)) case "failed" => empty()
+      (u::None) pretend List(Any)
+
+    st(k, l) ==
+      mkk assert(setProperty(copy operator k, PMPRED,
+                 concat(preds k, l) pretend None), string(new()$Symbol))
+
+    suchThat(p:F, l:List(D -> Boolean)) ==
+      retractIfCan(p)@Union(Symbol, "failed") case Symbol =>
+        st(retract(p)@K, [f::Any for f in l])
+      error "suchThat must be applied to symbols only"
+

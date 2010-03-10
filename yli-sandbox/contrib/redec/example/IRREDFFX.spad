@@ -1,0 +1,63 @@
+)abbrev package IRREDFFX IrredPolyOverFiniteField
+++ Author: Robert S. Sutor (original)
+++ Date Created: ???
+++ Date Last Updated: 29 May 1990
+++ Description:
+++ This package exports the function generateIrredPoly that computes
+++ a monic irreducible polynomial of degree n over a finite field.
+
+IrredPolyOverFiniteField(GF:FiniteFieldCategory): Exports == Impl where
+  N    ==> PositiveInteger
+  Z    ==> Integer
+  SUP  ==> SparseUnivariatePolynomial GF
+  QR   ==> Record(quotient: Z, remainder: Z)
+
+  Exports ==> with
+    generateIrredPoly: N -> SUP
+      ++ generateIrredPoly(n) generates an irreducible univariate
+      ++ polynomial of the given degree n over the finite field.
+
+  Impl ==> add
+    import DistinctDegreeFactorize(GF, SUP)
+
+    getIrredPoly  : (Z, N) -> SUP
+    qAdicExpansion: Z -> SUP
+
+    p := characteristic()$GF :: N
+    q := size()$GF :: N
+
+    qAdicExpansion(z : Z): SUP ==
+      -- expands z as a sum of powers of q, with coefficients in GF
+      -- z = HornerEval(qAdicExpansion z,q)
+      qr := divide(z, q)
+      zero?(qr.remainder) => monomial(1, 1) * qAdicExpansion(qr.quotient)
+      r := index(qr.remainder pretend N)$GF :: SUP
+      zero?(qr.quotient) => r
+      r + monomial(1, 1) * qAdicExpansion(qr.quotient)
+
+    getIrredPoly(start : Z, n : N) : SUP ==
+      -- idea is to iterate over possibly irreducible monic polynomials
+      -- until we find an irreducible one. The obviously reducible ones
+      -- are avoided.
+      mon := monomial(1, n)$SUP
+      pol: SUP := 0
+      found: Boolean := false
+      end: Z := q**n - 1
+      while not ((end < start) or found) repeat
+        if gcd(start, p) = 1 then
+          if irreducible?(pol := mon + qAdicExpansion(start)) then
+            found := true
+        start := start + 1
+      zero? pol => error "no irreducible poly found"
+      pol
+
+    generateIrredPoly(n : N) : SUP ==
+      -- want same poly every time
+--      one?(n) => monomial(1, 1)$SUP
+      (n = 1) => monomial(1, 1)$SUP
+--      one?(gcd(p, n)) or (n < q) =>
+      (gcd(p, n) = 1) or (n < q) =>
+        odd?(n) => getIrredPoly(2, n)
+        getIrredPoly(1, n)
+      getIrredPoly(q + 1, n)
+

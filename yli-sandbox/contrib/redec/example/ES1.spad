@@ -1,0 +1,23 @@
+)abbrev package ES1 ExpressionSpaceFunctions1
+++ Lifting of maps from expression spaces to kernels over them
+++ Author: Manuel Bronstein
+++ Date Created: 23 March 1988
+++ Date Last Updated: 19 April 1991
+++ Description:
+++   This package allows a map from any expression space into any object
+++   to be lifted to a kernel over the expression set, using a given
+++   property of the operator of the kernel.
+-- should not be exposed
+ExpressionSpaceFunctions1(F:ExpressionSpace, S:Type): with
+    map: (F -> S, String, Kernel F) -> S
+      ++ map(f, p, k) uses the property p of the operator
+      ++ of k, in order to lift f and apply it to k.
+
+  == add
+    --  prop  contains an evaluation function List S -> S
+    map(F2S, prop, k) ==
+      args := [F2S x for x in argument k]$List(S)
+      (p := property(operator k, prop)) case None =>
+                                  ((p::None) pretend (List S -> S)) args
+      error "Operator does not have required property"
+

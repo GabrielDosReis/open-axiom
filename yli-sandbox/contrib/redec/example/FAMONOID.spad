@@ -1,0 +1,13 @@
+)abbrev domain FAMONOID FreeAbelianMonoid
+++ Free abelian monoid on any set of generators
+++ Author: Manuel Bronstein
+++ Date Created: November 1989
+++ Date Last Updated: 6 June 1991
+++ Description:
+++ The free abelian monoid on a set S is the monoid of finite sums of
+++ the form \spad{reduce(+,[ni * si])} where the si's are in S, and the ni's
+++ are non-negative integers. The operation is commutative.
+FreeAbelianMonoid(S: SetCategory):
+  FreeAbelianMonoidCategory(S, NonNegativeInteger)
+    == InnerFreeAbelianMonoid(S, NonNegativeInteger, 1)
+

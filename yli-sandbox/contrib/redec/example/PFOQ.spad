@@ -1,0 +1,78 @@
+)abbrev package PFOQ PointsOfFiniteOrderRational
+++ Finds the order of a divisor on a rational curve
+++ Author: Manuel Bronstein
+++ Date Created: 25 Aug 1988
+++ Date Last Updated: 3 August 1993
+++ Description:
+++ This package provides function for testing whether a divisor on a
+++ curve is a torsion divisor.
+++ Keywords: divisor, algebraic, curve.
+++ Examples: )r PFOQ INPUT
+PointsOfFiniteOrderRational(UP, UPUP, R): Exports == Implementation where
+  UP   : UnivariatePolynomialCategory Fraction Integer
+  UPUP : UnivariatePolynomialCategory Fraction UP
+  R    : FunctionFieldCategory(Fraction Integer, UP, UPUP)
+
+  PI  ==> PositiveInteger
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  Q   ==> Fraction Integer
+  FD  ==> FiniteDivisor(Q, UP, UPUP, R)
+
+  Exports ==> with
+    order       : FD -> Union(N, "failed")
+        ++ order(f) \undocumented
+    torsion?    : FD -> Boolean
+        ++ torsion?(f) \undocumented
+    torsionIfCan: FD -> Union(Record(order:N, function:R), "failed")
+        ++ torsionIfCan(f) \undocumented
+
+  Implementation ==> add
+    import PointsOfFiniteOrderTools(UP, UPUP)
+
+    possibleOrder: FD -> N
+    ratcurve     : (FD, UPUP, Z) -> N
+    rat          : (UPUP, FD, PI) -> N
+
+    torsion? d  == order(d) case N
+
+-- returns the potential order of d, 0 if d is of infinite order
+    ratcurve(d, modulus, disc) ==
+      mn  := minIndex(nm := numer(i := ideal d))
+      h   := lift(hh := nm(mn + 1))
+      s   := separate(retract(norm hh)@UP,
+               b := retract(retract(nm.mn)@Fraction(UP))@UP).primePart
+      bd  := badNum denom i
+      r   := resultant(s, b)
+      bad := lcm [disc, numer r, denom r, bd.den * bd.gcdnum, badNum h]$List(Z)
+      n   := rat(modulus, d, p := getGoodPrime bad)
+-- if n > 1 then it is cheaper to compute the order modulo a second prime,
+-- since computing n * d could be very expensive
+--      one? n => n
+      (n = 1) => n
+      m   := rat(modulus, d, getGoodPrime(p * bad))
+      n = m => n
+      0
+
+    rat(pp, d, p) ==
+      gf := InnerPrimeField p
+      order(d, pp,
+        numer(#1)::gf / denom(#1)::gf)$ReducedDivisor(Q, UP, UPUP, R, gf)
+
+-- returns the potential order of d, 0 if d is of infinite order
+    possibleOrder d ==
+--      zero?(genus()) or one?(#(numer ideal d)) => 1
+      zero?(genus()) or (#(numer ideal d) = 1) => 1
+      r := polyred definingPolynomial()$R
+      ratcurve(d, r, doubleDisc r)
+
+    order d ==
+      zero?(n := possibleOrder(d := reduce d)) => "failed"
+      principal? reduce(n::Z * d) => n
+      "failed"
+
+    torsionIfCan d ==
+      zero?(n := possibleOrder(d := reduce d)) => "failed"
+      (g := generator reduce(n::Z * d)) case "failed" => "failed"
+      [n, g::R]
+

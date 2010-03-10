@@ -1,0 +1,59 @@
+)abbrev category PDECAT PartialDifferentialEquationsSolverCategory
+++ Author: Brian Dupee
+++ Date Created: February 1995
+++ Date Last Updated: June 1995
+++ Basic Operations: 
+++ Description:
+++ \axiomType{PartialDifferentialEquationsSolverCategory} is the 
+++ \axiom{category} for describing the set of PDE solver \axiom{domains} 
+++ with \axiomFun{measure} and \axiomFun{PDEsolve}.
+
+-- PDEA ==> Record(xmin:F,xmax:F,ymin:F,ymax:F,ngx:NNI,ngy:NNI,_
+--             pde:List Expression Float, bounds:List List Expression Float,_
+--             st:String, tol:DF)
+
+--  measure:(RoutinesTable,PDEA) -> Record(measure:F,explanations:String)
+--    ++ measure(R,args) calculates an estimate of the ability of a particular
+--    ++ method to solve a problem.  
+--    ++
+--    ++ This method may be either a specific NAG routine or a strategy (such
+--    ++ as transforming the function from one which is difficult to one which
+--    ++ is easier to solve).
+--    ++
+--    ++ It will call whichever agents are needed to perform analysis on the
+--    ++ problem in order to calculate the measure. There is a parameter,
+--    ++ labelled \axiom{sofar}, which would contain the best compatibility
+--    ++ found so far.
+
+--  PDESolve: PDEA -> Result
+--    ++ PDESolve(args) performs the integration of the
+--    ++ function given the strategy or method returned by \axiomFun{measure}.
+
+DFG   ==> DoubleFloat
+NNIG  ==> NonNegativeInteger
+INTG  ==> Integer
+MDFG  ==> Matrix DoubleFloat
+PDECG ==> Record(start:DFG, finish:DFG, grid:NNIG, boundaryType:INTG,
+                  dStart:MDFG, dFinish:MDFG)
+LEDFG ==> List Expression DoubleFloat
+PDEBG ==> Record(pde:LEDFG, constraints:List PDECG, f:List LEDFG, 
+                    st:String, tol:DFG)
+PartialDifferentialEquationsSolverCategory(): Category == SetCategory with
+
+  measure:(RoutinesTable,PDEBG) -> Record(measure:Float,explanations:String)
+    ++ measure(R,args) calculates an estimate of the ability of a particular
+    ++ method to solve a problem.  
+    ++
+    ++ This method may be either a specific NAG routine or a strategy (such
+    ++ as transforming the function from one which is difficult to one which
+    ++ is easier to solve).
+    ++
+    ++ It will call whichever agents are needed to perform analysis on the
+    ++ problem in order to calculate the measure. There is a parameter,
+    ++ labelled \axiom{sofar}, which would contain the best compatibility
+    ++ found so far.
+
+  PDESolve: PDEBG -> Result
+    ++ PDESolve(args) performs the integration of the
+    ++ function given the strategy or method returned by \axiomFun{measure}.
+

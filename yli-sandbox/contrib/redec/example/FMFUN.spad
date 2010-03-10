@@ -1,0 +1,61 @@
+)abbrev category FMFUN FortranMatrixFunctionCategory
+++ Author: Mike Dewar
+++ Date Created: March 18 1994
+++ Date Last Updated: 
+++ Related Constructors: FortranProgramCategory.
+++ Description:
+++ \axiomType{FortranMatrixFunctionCategory} provides support for
+++ producing Functions and Subroutines representing matrices of
+++ expressions.
+
+FortranMatrixFunctionCategory():Category == FortranProgramCategory with
+    coerce : List FortranCode -> $
+      ++ coerce(e) takes an object from \spadtype{List FortranCode} and
+      ++  uses it as the body of an ASP.
+    coerce : FortranCode -> $
+      ++ coerce(e) takes an object from \spadtype{FortranCode} and
+      ++  uses it as the body of an ASP.
+    coerce : Record(localSymbols:SymbolTable,code:List(FortranCode)) -> $
+      ++ coerce(e) takes the component of \spad{e} from
+      ++ \spadtype{List FortranCode} and uses it as the body of the ASP,
+      ++ making the declarations in the \spadtype{SymbolTable} component.
+    retract : Matrix Expression Float -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Matrix Expression Float -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Matrix Expression Integer -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Matrix Expression Integer -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Matrix Polynomial Float -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Matrix Polynomial Float -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Matrix Polynomial Integer -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Matrix Polynomial Integer -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Matrix Fraction Polynomial Float -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Matrix Fraction Polynomial Float -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Matrix Fraction Polynomial Integer -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Matrix Fraction Polynomial Integer -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+
+    -- NB: These ASPs also have a coerce from an appropriate instantiation
+    --     of Matrix FortranExpression.
+

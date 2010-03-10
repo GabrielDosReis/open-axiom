@@ -1,0 +1,115 @@
+)abbrev package BOP1 BasicOperatorFunctions1
+++ Tools to set/get common properties of operators
+++ Author: Manuel Bronstein
+++ Date Created: 28 Mar 1988
+++ Date Last Updated: 15 May 1990
+++ Description:
+++   This package exports functions to set some commonly used properties
+++   of operators, including properties which contain functions.
+++ Keywords: operator.
+BasicOperatorFunctions1(A:SetCategory): Exports == Implementation where
+  OP   ==> BasicOperator
+  EVAL    ==> "%eval"
+  CONST   ==> "%constant"
+  DIFF    ==> "%diff"
+
+  Exports ==> with
+    evaluate        : (OP, List A)      -> Union(A, "failed")
+      ++ evaluate(op, [a1,...,an]) checks if op has an "%eval"
+      ++ property f. If it has, then \spad{f(a1,...,an)} is returned, and
+      ++ "failed" otherwise.
+    evaluate        : (OP, List A -> A) -> OP
+      ++ evaluate(op, foo) attaches foo as the "%eval" property
+      ++ of op. If op has an "%eval" property f, then applying op
+      ++ to \spad{(a1,...,an)} returns the result of \spad{f(a1,...,an)}.
+    evaluate        : (OP, A -> A)      -> OP
+      ++ evaluate(op, foo) attaches foo as the "%eval" property
+      ++ of op. If op has an "%eval" property f, then applying op
+      ++ to a returns the result of \spad{f(a)}. Argument op must be unary.
+    evaluate        : OP                -> Union(List A -> A, "failed")
+      ++ evaluate(op) returns the value of the "%eval" property of
+      ++ op if it has one, and "failed" otherwise.
+    derivative      : (OP, List (List A -> A)) -> OP
+      ++ derivative(op, [foo1,...,foon]) attaches [foo1,...,foon] as
+      ++ the "%diff" property of op. If op has an "%diff" property
+      ++ \spad{[f1,...,fn]} then applying a derivation D to \spad{op(a1,...,an)}
+      ++ returns \spad{f1(a1,...,an) * D(a1) + ... + fn(a1,...,an) * D(an)}.
+    derivative      : (OP, A -> A) -> OP
+      ++ derivative(op, foo) attaches foo as the "%diff" property
+      ++ of op. If op has an "%diff" property f, then applying a
+      ++ derivation D to op(a) returns \spad{f(a) * D(a)}. Argument op must be unary.
+    derivative      : OP -> Union(List(List A -> A), "failed")
+      ++ derivative(op) returns the value of the "%diff" property of
+      ++ op if it has one, and "failed" otherwise.
+    if A has OrderedSet then
+      constantOperator: A -> OP
+        ++ constantOperator(a) returns a nullary operator op
+        ++ such that \spad{op()} always evaluate to \spad{a}.
+      constantOpIfCan : OP -> Union(A, "failed")
+        ++ constantOpIfCan(op) returns \spad{a} if op is the constant
+        ++ nullary operator always returning \spad{a}, "failed" otherwise.
+
+  Implementation ==> add
+    evaluate(op:OP, func:A -> A) == evaluate(op, func first #1)
+
+    evaluate op ==
+      (func := property(op, EVAL)) case "failed" => "failed"
+      (func::None) pretend (List A -> A)
+
+    evaluate(op:OP, args:List A) ==
+      (func := property(op, EVAL)) case "failed" => "failed"
+      ((func::None) pretend (List A -> A)) args
+
+    evaluate(op:OP, func:List A -> A) ==
+      setProperty(op, EVAL, func pretend None)
+
+    derivative op ==
+      (func := property(op, DIFF)) case "failed" => "failed"
+      ((func::None) pretend List(List A -> A))
+
+    derivative(op:OP, grad:List(List A -> A)) ==
+      setProperty(op, DIFF, grad pretend None)
+
+    derivative(op:OP, f:A -> A) ==
+      unary? op or nary? op =>
+        derivative(op, [f first #1]$List(List A -> A))
+      error "Operator is not unary"
+
+    if A has OrderedSet then
+      cdisp   : (OutputForm, List OutputForm) -> OutputForm
+      csex    : (InputForm,  List InputForm) -> InputForm
+      eqconst?: (OP, OP) -> Boolean
+      ltconst?: (OP, OP) -> Boolean
+      constOp : A -> OP
+
+      opconst:OP :=
+        comparison(equality(operator("constant"::Symbol, 0), eqconst?),
+                                                               ltconst?)
+
+      cdisp(a, l) == a
+      csex(a, l)  == a
+
+      eqconst?(a, b) ==
+        (va := property(a, CONST)) case "failed" => not has?(b, CONST)
+        ((vb := property(b, CONST)) case None) and
+           ((va::None) pretend A) = ((vb::None) pretend A)
+
+      ltconst?(a, b) ==
+        (va := property(a, CONST)) case "failed" => has?(b, CONST)
+        ((vb := property(b, CONST)) case None) and
+           ((va::None) pretend A) < ((vb::None) pretend A)
+
+      constOp a ==
+        setProperty(display(copy opconst, cdisp(a::OutputForm, #1)),
+                                                  CONST, a pretend None)
+
+      constantOpIfCan op ==
+        is?(op, "constant"::Symbol) and
+          ((u := property(op, CONST)) case None) => (u::None) pretend A
+        "failed"
+
+      if A has ConvertibleTo InputForm then
+        constantOperator a == input(constOp a, csex(convert a, #1))
+      else
+        constantOperator a == constOp a
+

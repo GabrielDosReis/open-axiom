@@ -1,0 +1,144 @@
+)abbrev domain EXPEXPAN ExponentialExpansion
+++ Author: Clifton J. Williamson
+++ Date Created: 13 August 1992
+++ Date Last Updated: 27 August 1992
+++ Basic Operations:
+++ Related Domains: UnivariatePuiseuxSeries(FE,var,cen),
+++                  ExponentialOfUnivariatePuiseuxSeries(FE,var,cen)
+++ Also See:
+++ AMS Classifications:
+++ Keywords: limit, functional expression, power series
+++ Examples:
+++ References:
+++ Description:
+++   UnivariatePuiseuxSeriesWithExponentialSingularity is a domain used to
+++   represent essential singularities of functions.  Objects in this domain
+++   are quotients of sums, where each term in the sum is a univariate Puiseux
+++   series times the exponential of a univariate Puiseux series.
+ExponentialExpansion(R,FE,var,cen): Exports == Implementation where
+  R   : Join(OrderedSet,RetractableTo Integer,_
+             LinearlyExplicitRingOver Integer,GcdDomain)
+  FE  : Join(AlgebraicallyClosedField,TranscendentalFunctionCategory,_
+             FunctionSpace R)
+  var : Symbol
+  cen : FE
+  RN       ==> Fraction Integer
+  UPXS     ==> UnivariatePuiseuxSeries(FE,var,cen)
+  EXPUPXS  ==> ExponentialOfUnivariatePuiseuxSeries(FE,var,cen)
+  UPXSSING ==> UnivariatePuiseuxSeriesWithExponentialSingularity(R,FE,var,cen)
+  OFE      ==> OrderedCompletion FE
+  Result   ==> Union(OFE,"failed")
+  PxRec    ==> Record(k: Fraction Integer,c:FE)
+  Term     ==> Record(%coef:UPXS,%expon:EXPUPXS,%expTerms:List PxRec)
+  TypedTerm ==> Record(%term:Term,%type:String)
+  SIGNEF   ==> ElementaryFunctionSign(R,FE)
+
+  Exports ==> Join(QuotientFieldCategory UPXSSING,RetractableTo UPXS) with
+    limitPlus : % -> Union(OFE,"failed")
+      ++ limitPlus(f(var)) returns \spad{limit(var -> a+,f(var))}.
+    coerce: UPXS -> %
+      ++ coerce(f) converts a \spadtype{UnivariatePuiseuxSeries} to
+      ++ an \spadtype{ExponentialExpansion}.
+
+  Implementation ==> Fraction(UPXSSING) add
+    coeff : Term -> UPXS
+    exponent : Term -> EXPUPXS
+    upxssingIfCan : % -> Union(UPXSSING,"failed")
+    seriesQuotientLimit: (UPXS,UPXS) -> Union(OFE,"failed")
+    seriesQuotientInfinity: (UPXS,UPXS) -> Union(OFE,"failed")
+
+    Rep := Fraction UPXSSING
+
+    ZEROCOUNT : RN := 1000/1
+
+    coeff term == term.%coef
+    exponent term == term.%expon
+
+    --!! why is this necessary?
+    --!! code can run forever in retractIfCan if original assignment
+    --!! for 'ff' is used
+    upxssingIfCan f ==
+--      one? denom f => numer f
+      (denom f = 1) => numer f
+      "failed"
+
+    retractIfCan(f:%):Union(UPXS,"failed") ==
+      --ff := (retractIfCan$Rep)(f)@Union(UPXSSING,"failed")
+      --ff case "failed" => "failed"
+      (ff := upxssingIfCan f) case "failed" => "failed"
+      (fff := retractIfCan(ff::UPXSSING)@Union(UPXS,"failed")) case "failed" =>
+        "failed"
+      fff :: UPXS
+
+    f:UPXSSING / g:UPXSSING ==
+      (rec := recip g) case "failed" => f /$Rep g
+      f * (rec :: UPXSSING) :: %
+
+    f:% / g:% ==
+      (rec := recip numer g) case "failed" => f /$Rep g
+      (rec :: UPXSSING) * (denom g) * f
+
+    coerce(f:UPXS) == f :: UPXSSING :: %
+
+    seriesQuotientLimit(num,den) ==
+      -- limit of the quotient of two series
+      series := num / den
+      (ord := order(series,1)) > 0 => 0
+      coef := coefficient(series,ord)
+      member?(var,variables coef) => "failed"
+      ord = 0 => coef :: OFE
+      (sig := sign(coef)$SIGNEF) case "failed" => return "failed"
+      (sig :: Integer) = 1 => plusInfinity()
+      minusInfinity()
+
+    seriesQuotientInfinity(num,den) ==
+      -- infinite limit: plus or minus?
+      -- look at leading coefficients of series to tell
+      (numOrd := order(num,ZEROCOUNT)) = ZEROCOUNT => "failed"
+      (denOrd := order(den,ZEROCOUNT)) = ZEROCOUNT => "failed"
+      cc := coefficient(num,numOrd)/coefficient(den,denOrd)
+      member?(var,variables cc) => "failed"
+      (sig := sign(cc)$SIGNEF) case "failed" => return "failed"
+      (sig :: Integer) = 1 => plusInfinity()
+      minusInfinity()
+
+    limitPlus f ==
+      zero? f => 0
+      (den := denom f) = 1 => limitPlus numer f
+      (numerTerm := dominantTerm(num := numer f)) case "failed" => "failed"
+      numType := (numTerm := numerTerm :: TypedTerm).%type
+      (denomTerm := dominantTerm den) case "failed" => "failed"
+      denType := (denTerm := denomTerm :: TypedTerm).%type
+      numExpon := exponent numTerm.%term; denExpon := exponent denTerm.%term
+      numCoef := coeff numTerm.%term; denCoef := coeff denTerm.%term
+      -- numerator tends to zero exponentially
+      (numType = "zero") =>
+        -- denominator tends to zero exponentially
+        (denType = "zero") =>
+          (exponDiff := numExpon - denExpon) = 0 =>
+            seriesQuotientLimit(numCoef,denCoef)
+          expCoef := coefficient(exponDiff,order exponDiff)
+          (sig := sign(expCoef)$SIGNEF) case "failed" => return "failed"
+          (sig :: Integer) = -1 => 0
+          seriesQuotientInfinity(numCoef,denCoef)
+        0 -- otherwise limit is zero
+      -- numerator is a Puiseux series
+      (numType = "series") =>
+        -- denominator tends to zero exponentially
+        (denType = "zero") =>
+          seriesQuotientInfinity(numCoef,denCoef)
+        -- denominator is a series
+        (denType = "series") => seriesQuotientLimit(numCoef,denCoef)
+        0
+      -- remaining case: numerator tends to infinity exponentially
+      -- denominator tends to infinity exponentially
+      (denType = "infinity") =>
+        (exponDiff := numExpon - denExpon) = 0 =>
+          seriesQuotientLimit(numCoef,denCoef)
+        expCoef := coefficient(exponDiff,order exponDiff)
+        (sig := sign(expCoef)$SIGNEF) case "failed" => return "failed"
+        (sig :: Integer) = -1 => 0
+        seriesQuotientInfinity(numCoef,denCoef)
+      -- denominator tends to zero exponentially or is a series
+      seriesQuotientInfinity(numCoef,denCoef)
+

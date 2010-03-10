@@ -1,0 +1,17 @@
+)abbrev domain PORTNUM PortNumber
+++ Author: Gabriel Dos Reis
+++ Date Created: August 23, 2008
+++ Date Last Modified: August 23, 2008
+++ Description:  
+++   This domain represents network port numbers (notable TCP and UDP).
+PortNumber(): Public == Private where
+  Public == Join(SetCategory,CoercibleTo SingleInteger) with
+    port: SingleInteger -> %
+      ++ port(n) constructs a PortNumber from the integer `n'.
+  Private == add
+    Rep == SingleInteger
+    port n == per n
+    x = y == rep x = rep y
+    coerce(x: %): SingleInteger == rep x
+    coerce(x: %): OutputForm == rep(x)::OutputForm
+

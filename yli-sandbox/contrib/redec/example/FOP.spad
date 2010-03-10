@@ -1,0 +1,80 @@
+)abbrev package FOP FortranOutputStackPackage
+-- Because of a bug in the compiler:
+)bo $noSubsumption:=false
+
+++ Author: Mike Dewar
+++ Date Created:  October 1992
+++ Date Last Updated: 
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: Code to manipulate Fortran Output Stack
+FortranOutputStackPackage() : specification == implementation where
+
+  specification == with
+
+    clearFortranOutputStack : () -> Stack String
+      ++ clearFortranOutputStack() clears the Fortran output stack
+    showFortranOutputStack : () -> Stack String
+      ++ showFortranOutputStack() returns the Fortran output stack
+    popFortranOutputStack : () -> Void
+      ++ popFortranOutputStack() pops the Fortran output stack
+    pushFortranOutputStack : FileName -> Void
+      ++ pushFortranOutputStack(f) pushes f onto the Fortran output stack
+    pushFortranOutputStack : String -> Void
+      ++ pushFortranOutputStack(f) pushes f onto the Fortran output stack
+    topFortranOutputStack : () -> String
+      ++ topFortranOutputStack() returns the top element of the Fortran
+      ++ output stack
+
+  implementation == add
+
+    import MoreSystemCommands
+
+    -- A stack of filenames for Fortran output.  We are sharing this with
+    -- the standard Fortran output code, so want to be a bit careful about
+    -- how we interact with what the user does independently.  We get round
+    -- potential problems by always examining the top element of the stack 
+    -- before we push.  If the user has redirected output then we alter our
+    -- top value accordingly.
+    fortranOutputStack : Stack String := empty()@(Stack String)
+
+    topFortranOutputStack():String == string(_$fortranOutputFile$Lisp)
+
+    pushFortranOutputStack(fn:FileName):Void ==
+      if empty? fortranOutputStack then
+        push!(string(_$fortranOutputFile$Lisp),fortranOutputStack)
+      else if not(top(fortranOutputStack)=string(_$fortranOutputFile$Lisp)) then
+        pop! fortranOutputStack
+        push!(string(_$fortranOutputFile$Lisp),fortranOutputStack)
+      push!( fn::String,fortranOutputStack)
+      systemCommand concat(["set output fortran quiet ", fn::String])$String
+      void()
+
+    pushFortranOutputStack(fn:String):Void ==
+      if empty? fortranOutputStack then
+        push!(string(_$fortranOutputFile$Lisp),fortranOutputStack)
+      else if not(top(fortranOutputStack)=string(_$fortranOutputFile$Lisp)) then
+        pop! fortranOutputStack
+        push!(string(_$fortranOutputFile$Lisp),fortranOutputStack)
+      push!( fn,fortranOutputStack)
+      systemCommand concat(["set output fortran quiet ", fn])$String
+      void()
+
+    popFortranOutputStack():Void ==
+      if not empty? fortranOutputStack then pop! fortranOutputStack
+      if empty? fortranOutputStack then push!("CONSOLE",fortranOutputStack)
+      systemCommand concat(["set output fortran quiet append ",_
+                           top fortranOutputStack])$String
+      void()
+
+    clearFortranOutputStack():Stack String ==
+      fortranOutputStack := empty()@(Stack String)
+
+    showFortranOutputStack():Stack String ==
+      fortranOutputStack
+

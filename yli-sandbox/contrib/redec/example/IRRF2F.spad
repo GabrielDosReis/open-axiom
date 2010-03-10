@@ -1,0 +1,63 @@
+)abbrev package IRRF2F IntegrationResultRFToFunction
+++ Conversion of integration results to top-level expressions
+++ Author: Manuel Bronstein
+++ Description:
+++   This package allows a sum of logs over the roots of a polynomial
+++   to be expressed as explicit logarithms and arc tangents, provided
+++   that the indexing polynomial can be factored into quadratics.
+++ Date Created: 21 August 1988
+++ Date Last Updated: 4 October 1993
+IntegrationResultRFToFunction(R): Exports == Implementation where
+  R: Join(GcdDomain, RetractableTo Integer, OrderedSet,
+           LinearlyExplicitRingOver Integer)
+
+  RF  ==> Fraction Polynomial R
+  F   ==> Expression R
+  IR  ==> IntegrationResult RF
+
+  Exports ==> with
+    split           : IR -> IR
+       ++ split(u(x) + sum_{P(a)=0} Q(a,x)) returns
+       ++ \spad{u(x) + sum_{P1(a)=0} Q(a,x) + ... + sum_{Pn(a)=0} Q(a,x)}
+       ++ where P1,...,Pn are the factors of P.
+    expand          : IR -> List F
+       ++ expand(i) returns the list of possible real functions
+       ++ corresponding to i.
+    complexExpand   : IR -> F
+       ++ complexExpand(i) returns the expanded complex function
+       ++ corresponding to i.
+    if R has CharacteristicZero then
+      integrate       : (RF, Symbol) -> Union(F, List F)
+        ++ integrate(f, x) returns the integral of \spad{f(x)dx}
+        ++ where x is viewed as a real variable..
+      complexIntegrate: (RF, Symbol) -> F
+        ++ complexIntegrate(f, x) returns the integral of \spad{f(x)dx}
+        ++ where x is viewed as a complex variable.
+
+  Implementation ==> add
+    import IntegrationTools(R, F)
+    import TrigonometricManipulations(R, F)
+    import IntegrationResultToFunction(R, F)
+
+    toEF: IR -> IntegrationResult F
+
+    toEF i          == map(#1::F, i)$IntegrationResultFunctions2(RF, F)
+    expand i        == expand toEF i
+    complexExpand i == complexExpand toEF i
+
+    split i ==
+      map(retract, split toEF i)$IntegrationResultFunctions2(F, RF)
+
+    if R has CharacteristicZero then
+      import RationalFunctionIntegration(R)
+
+      complexIntegrate(f, x) == complexExpand internalIntegrate(f, x)
+
+-- do not use real integration if R is complex
+      if R has imaginary: () -> R then integrate(f, x) == complexIntegrate(f, x)
+      else
+        integrate(f, x) ==
+          l := [mkPrim(real g, x) for g in expand internalIntegrate(f, x)]
+          empty? rest l => first l
+          l
+

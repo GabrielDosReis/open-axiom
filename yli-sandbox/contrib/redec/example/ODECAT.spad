@@ -1,0 +1,34 @@
+)abbrev category ODECAT OrdinaryDifferentialEquationsSolverCategory
+++ Author: Brian Dupee
+++ Date Created: February 1995
+++ Date Last Updated: June 1995
+++ Basic Operations: 
+++ Description:
+++ \axiomType{OrdinaryDifferentialEquationsSolverCategory} is the 
+++ \axiom{category} for describing the set of ODE solver \axiom{domains} 
+++ with \axiomFun{measure} and \axiomFun{ODEsolve}.
+
+DFF   ==> DoubleFloat
+VEDFF ==> Vector Expression DoubleFloat
+LDFF  ==> List DoubleFloat
+EDFF  ==> Expression DoubleFloat
+ODEAF ==> Record(xinit:DFF,xend:DFF,fn:VEDFF,yinit:LDFF,intvals:LDFF,g:EDFF,abserr:DFF,relerr:DFF)
+OrdinaryDifferentialEquationsSolverCategory(): Category == SetCategory with
+
+  measure:(RoutinesTable,ODEAF) -> Record(measure:Float,explanations:String)
+    ++ measure(R,args) calculates an estimate of the ability of a particular
+    ++ method to solve a problem.  
+    ++
+    ++ This method may be either a specific NAG routine or a strategy (such
+    ++ as transforming the function from one which is difficult to one which
+    ++ is easier to solve).
+    ++
+    ++ It will call whichever agents are needed to perform analysis on the
+    ++ problem in order to calculate the measure. There is a parameter,
+    ++ labelled \axiom{sofar}, which would contain the best compatibility
+    ++ found so far.
+
+  ODESolve: ODEAF -> Result
+    ++ ODESolve(args) performs the integration of the
+    ++ function given the strategy or method returned by \axiomFun{measure}.
+

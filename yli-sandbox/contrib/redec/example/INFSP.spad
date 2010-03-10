@@ -1,0 +1,195 @@
+)abbrev package INFSP InnerNumericFloatSolvePackage
+++ Author: P. Gianni
+++ Date Created: January 1990
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This is an internal package
+++ for computing approximate solutions to systems of polynomial equations.
+++ The parameter K specifies the coefficient field of the input polynomials
+++ and must be either \spad{Fraction(Integer)} or \spad{Complex(Fraction Integer)}.
+++ The parameter F specifies where the solutions must lie and can
+++ be one of the following: \spad{Float}, \spad{Fraction(Integer)}, \spad{Complex(Float)},
+++ \spad{Complex(Fraction Integer)}. The last parameter specifies the type
+++ of the precision operand and must be either \spad{Fraction(Integer)} or \spad{Float}.
+InnerNumericFloatSolvePackage(K,F,Par): Cat == Cap where
+    F    :   Field  -- this is the field where the answer will be
+    K    :   GcdDomain  -- type of the  input
+    Par  :   Join(Field, OrderedRing ) -- it will be NF or RN
+
+    I        ==> Integer
+    NNI      ==> NonNegativeInteger
+    P        ==> Polynomial
+    EQ       ==> Equation
+    L        ==> List
+    SUP      ==> SparseUnivariatePolynomial
+    RN       ==> Fraction Integer
+    NF       ==> Float
+    CF       ==> Complex Float
+    GI       ==> Complex Integer
+    GRN      ==> Complex RN
+    SE       ==> Symbol
+    RFI      ==> Fraction P I
+
+    Cat == with
+
+       innerSolve1   :  (SUP K,Par)  -> L F
+          ++ innerSolve1(up,eps) returns the list of the zeros
+          ++ of the univariate polynomial up with precision eps.
+       innerSolve1   :  (P K,Par)  -> L F
+          ++ innerSolve1(p,eps) returns the list of the zeros
+          ++ of the polynomial p with precision eps.
+       innerSolve    : (L P K,L P K,L SE,Par) -> L L F
+          ++ innerSolve(lnum,lden,lvar,eps) returns a list of
+          ++ solutions of the system of polynomials lnum, with
+          ++ the side condition that none of the members of lden
+          ++ vanish identically on any solution. Each solution
+          ++ is expressed as a list corresponding to the list of
+          ++ variables in lvar and with precision specified by eps.
+       makeEq        : (L F,L SE)     -> L EQ P F
+          ++ makeEq(lsol,lvar) returns a list of equations formed
+          ++ by corresponding members of lvar and lsol.
+
+    Cap == add
+
+                  ------  Local Functions  ------
+       isGeneric? : (L P K,L SE) -> Boolean
+       evaluate  : (P K,SE,SE,F) ->  F
+       numeric   :     K          -> F
+       oldCoord      : (L F,L I) -> L F
+       findGenZeros  : (L P K,L SE,Par) -> L L F
+       failPolSolve  : (L P K,L SE)  -> Union(L L P K,"failed")
+
+       numeric(r:K):F ==
+         K is I =>
+           F is Float => r::I::Float
+           F is RN    => r::I::RN
+           F is CF    => r::I::CF
+           F is GRN   => r::I::GRN
+         K is GI =>
+           gr:GI := r::GI
+           F is GRN => complex(real(gr)::RN,imag(gr)::RN)$GRN
+           F is CF  => convert(gr)
+         error "case not handled"
+
+       -- construct the equation
+       makeEq(nres:L F,lv:L SE) : L EQ P F ==
+           [equation(x::(P F),r::(P F)) for x in lv for r in nres]
+
+       evaluate(pol:P K,xvar:SE,zvar:SE,z:F):F ==
+         rpp:=map(numeric,pol)$PolynomialFunctions2(K,F)
+         rpp := eval(rpp,zvar,z)
+         upol:=univariate(rpp,xvar)
+         retract(-coefficient(upol,0))/retract(leadingCoefficient upol)
+
+       myConvert(eps:Par) : RN ==
+         Par is RN => eps
+         Par is NF => retract(eps)$NF
+
+       innerSolve1(pol:P K,eps:Par) : L F == innerSolve1(univariate pol,eps)
+
+       innerSolve1(upol:SUP K,eps:Par) : L F ==
+         K is GI and (Par is RN or Par is NF) =>
+             (complexZeros(upol,
+                        eps)$ComplexRootPackage(SUP K,Par)) pretend L(F)
+         K is I =>
+           F is Float =>
+             z:= realZeros(upol,myConvert eps)$RealZeroPackage(SUP I)
+             [convert((1/2)*(x.left+x.right))@Float for x in z] pretend L(F)
+
+           F is RN =>
+             z:= realZeros(upol,myConvert eps)$RealZeroPackage(SUP I)
+             [(1/2)*(x.left + x.right) for x in z] pretend L(F)
+           error "improper arguments to INFSP"
+         error "improper arguments to INFSP"
+
+
+       -- find the zeros of components in "generic" position --
+       findGenZeros(lp:L P K,rlvar:L SE,eps:Par) : L L F ==
+         rlp:=reverse lp
+         f:=rlp.first
+         zvar:= rlvar.first
+         rlp:=rlp.rest
+         lz:=innerSolve1(f,eps)
+         [reverse cons(z,[evaluate(pol,xvar,zvar,z) for pol in rlp
+                         for xvar in rlvar.rest]) for z in lz]
+
+       -- convert to the old coordinates --
+       oldCoord(numres:L F,lval:L I) : L F ==
+         rnumres:=reverse numres
+         rnumres.first:= rnumres.first +
+            (+/[n*nr for n in lval for nr in (rnumres.rest)@(List F)])
+         reverse rnumres
+
+       -- real zeros of a system of 2 polynomials lp (incomplete)
+       innerSolve2(lp:L P K,lv:L SE,eps: Par):L L F ==
+          mainvar := first lv
+          up1:=univariate(lp.1, mainvar)
+          up2:=univariate(lp.2, mainvar)
+          vec := subresultantVector(up1,up2)$SubResultantPackage(P K,SUP P K)
+          p0 := primitivePart multivariate(vec.0, mainvar)
+          p1 := primitivePart(multivariate(vec.1, mainvar),mainvar)
+          zero? p1 or
+            gcd(p0, leadingCoefficient(univariate(p1,mainvar))) ~=1 =>
+              innerSolve(cons(0,lp),empty(),lv,eps)
+          findGenZeros([p1, p0], reverse lv, eps)
+
+
+
+       macro OV == OrderedVariableList(lv)
+       macro DP == DirectProduct(#lv,NonNegativeInteger)
+       macro dmp == DistributedMultivariatePolynomial(lv,K)
+
+
+       -- real zeros of the system of polynomial lp --
+       innerSolve(lp:L P K,ld:L P K,lv:L SE,eps: Par) : L L F ==
+          -- empty?(ld) and (#lv = 2) and (# lp = 2) => innerSolve2(lp, lv, eps)
+           lnp:= [pToDmp(p)$PolToPol(lv,K) for p in lp]
+           --OV:=OrderedVariableList(lv)
+           lvv:L OV:= [variable(vv)::OV for vv in lv]
+           --DP:=DirectProduct(#lv,NonNegativeInteger)
+           --dmp:=DistributedMultivariatePolynomial(lv,K)
+           lq:L dmp:=[]
+           if ld~=[] then
+             lq:= [(pToDmp(q1)$PolToPol(lv,K)) pretend dmp for q1 in ld]
+           partRes:=groebSolve(lnp,lvv)$GroebnerSolve(lv,K,K) pretend (L L dmp)
+           partRes=list [] => []
+           -- remove components where denominators vanish
+           if lq~=[] then
+ --            gb:=GroebnerInternalPackage(K,DirectProduct(#lv,NNI),OV,dmp)
+             partRes:=[pr for pr in partRes|
+                       and/[(redPol(fq,pr pretend List(dmp))$GroebnerInternalPackage(K,DirectProduct(#lv,NNI),OV,dmp)) ~=0
+                         for fq in lq]]
+
+           -- select the components in "generic" form
+           rlv:=reverse lv
+           rrlvv:= rest reverse lvv
+
+           listGen:L L dmp:=[]
+           for res in partRes repeat
+             res1:=rest reverse res
+             "and"/[("max"/degree(f,rrlvv))=1  for f in res1] =>
+                      listGen:=concat(res pretend (L dmp),listGen)
+           result:L L F := []
+           if listGen~=[] then
+             listG :L L P K:=
+               [[dmpToP(pf)$PolToPol(lv,K) for pf in pr] for pr in listGen]
+             result:=
+               "append"/[findGenZeros(res,rlv,eps) for res in listG]
+             for gres in listGen repeat
+                partRes:=delete(partRes,position(gres,partRes))
+           -- adjust the non-generic components
+           for gres in partRes repeat
+               genRecord := genericPosition(gres,lvv)$GroebnerSolve(lv,K,K)
+               lgen := genRecord.dpolys
+               lval := genRecord.coords
+               lgen1:=[dmpToP(pf)$PolToPol(lv,K) for pf in lgen]
+               lris:=findGenZeros(lgen1,rlv,eps)
+               result:= append([oldCoord(r,lval) for r in lris],result)
+           result
+

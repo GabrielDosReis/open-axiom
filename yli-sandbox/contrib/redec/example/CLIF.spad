@@ -1,0 +1,208 @@
+)abbrev domain CLIF CliffordAlgebra
+++ Author: Stephen M. Watt
+++ Date Created: August 1988
+++ Date Last Updated: May 17, 1991
+++ Basic Operations: wholeRadix, fractRadix, wholeRagits, fractRagits
+++ Related Domains: QuadraticForm, Quaternion, Complex
+++ Also See:
+++ AMS Classifications:
+++ Keywords: clifford algebra, grassman algebra, spin algebra
+++ Examples:
+++ References:
+++
+++ Description:
+++  CliffordAlgebra(n, K, Q) defines a vector space of dimension \spad{2**n}
+++  over K, given a quadratic form Q on \spad{K**n}.
+++
+++  If \spad{e[i]}, \spad{1<=i<=n} is a basis for \spad{K**n} then
+++     1, \spad{e[i]} (\spad{1<=i<=n}), \spad{e[i1]*e[i2]} 
+++  (\spad{1<=i1<i2<=n}),...,\spad{e[1]*e[2]*..*e[n]}
+++  is a basis for the Clifford Algebra.
+++
+++  The algebra is defined by the relations
+++     \spad{e[i]*e[j] = -e[j]*e[i]}  (\spad{i \~~= j}),
+++     \spad{e[i]*e[i] = Q(e[i])}
+++
+++  Examples of Clifford Algebras are: gaussians, quaternions, exterior 
+++  algebras and spin algebras.
+ 
+CliffordAlgebra(n, K, Q): T == Impl where
+    n: PositiveInteger
+    K: Field
+    Q: QuadraticForm(n, K)
+ 
+    PI ==> PositiveInteger
+    NNI==> NonNegativeInteger
+ 
+    T ==> Join(Ring, Algebra(K), VectorSpace(K)) with
+        e: PI -> %
+          ++ e(n) produces the appropriate unit element.
+        monomial: (K, List PI) -> %
+          ++ monomial(c,[i1,i2,...,iN]) produces the value given by
+          ++ \spad{c*e(i1)*e(i2)*...*e(iN)}.
+        coefficient:  (%, List PI) -> K
+          ++ coefficient(x,[i1,i2,...,iN])  extracts the coefficient of
+          ++ \spad{e(i1)*e(i2)*...*e(iN)} in x.
+        recip: % -> Union(%, "failed")
+          ++ recip(x) computes the multiplicative inverse of x or "failed"
+          ++ if x is not invertible.
+ 
+    Impl ==> add
+        Qeelist :=  [Q (unitVector(i::PositiveInteger)$DirectProduct(n, K)) for i in 1..n]
+        dim     :=  2**n
+ 
+        Rep     := PrimitiveArray K
+ 
+        New     ==> new(dim, 0$K)$Rep
+ 
+        x, y, z: %
+        c: K
+        m: Integer
+ 
+        characteristic() == characteristic()$K
+        dimension()      == dim::CardinalNumber
+ 
+        x = y ==
+            for i in 0..dim-1 repeat
+                if x.i ~= y.i then return false
+            true
+ 
+        x + y == (z := New; for i in 0..dim-1 repeat z.i := x.i + y.i; z)
+        x - y == (z := New; for i in 0..dim-1 repeat z.i := x.i - y.i; z)
+        - x   == (z := New; for i in 0..dim-1 repeat z.i := - x.i; z)
+        m * x == (z := New; for i in 0..dim-1 repeat z.i := m*x.i; z)
+        c * x == (z := New; for i in 0..dim-1 repeat z.i := c*x.i; z)
+ 
+        -- 0            == New
+        -- 1            == (z := New; z.0 := 1; z)
+        coerce(m): % == (z := New; z.0 := m::K; z)
+        coerce(c): % == (z := New; z.0 := c; z)
+ 
+        e b ==
+            b::NNI > n => error "No such basis element"
+            iz := 2**((b-1)::NNI)
+            z := New; z.iz := 1; z
+ 
+        -- The ei*ej products could instead be precomputed in
+        -- a (2**n)**2 multiplication table.
+        addMonomProd(c1: K, b1: NNI, c2: K, b2: NNI, z: %): % ==
+            c  := c1 * c2
+            bz := b2
+            for i in 0@Integer..n-1@Integer | bit?(b1,i) repeat
+                -- Apply rule  ei*ej = -ej*ei for i~=j
+                k := 0@Integer
+                for j in i+1$Integer..n-1$Integer | bit?(b1, j)$Integer repeat k := k+1$Integer
+                for j in 0$Integer..i-1$Integer   | bit?(bz, j)$Integer repeat k := k+1$Integer
+         --       if odd? k then c := -c
+         --       -- Apply rule  ei**2 = Q(ei)
+         --       if bit?(bz,i) then
+         --           c := c * Qeelist.(i+1)
+         --           bz:= (bz - 2**i)::NNI
+         --       else
+         --           bz:= bz + 2**i
+            -- z.bz := z.bz + c
+            z
+         -- modified by yue.
+
+
+
+        x * y ==
+            z := New
+            for ix in 0..dim-1 repeat
+                if x.ix ~= 0 then for iy in 0..dim-1 repeat
+                    if y.iy ~= 0 then addMonomProd(x.ix,ix,y.iy,iy,z)
+            z
+ 
+        canonMonom(c: K, lb: List PI): Record(coef: K, basel: NNI) ==
+            -- 0. Check input
+            for b in lb repeat b > n => error "No such basis element"
+ 
+            -- 1. Apply identity ei*ej = -ej*ei, i~=j.
+            -- The Rep assumes n is small so bubble sort is ok.
+            -- Using bubble sort keeps the exchange info obvious.
+            wasordered   := false
+            exchanges := 0
+            while not wasordered repeat
+                wasordered := true
+                for i in 1..#lb-1 repeat
+                    if lb.i > lb.(i+1) then
+                        t := lb.i; lb.i := lb.(i+1); lb.(i+1) := t
+                        exchanges := exchanges + 1
+                        wasordered := false
+            if odd? exchanges then c := -c
+ 
+            -- 2. Prepare the basis element
+            -- Apply identity ei*ei = Q(ei).
+            bz := 0
+            for b in lb repeat
+                bn := (b-1)::NNI
+                if bit?(bz, bn) then
+                    c := c * Qeelist bn
+                    bz:= ( bz - 2**bn )::NNI
+                else
+                    bz:= bz + 2**bn
+            [c, bz::NNI]
+ 
+        monomial(c, lb) ==
+            r := canonMonom(c, lb)
+            z := New
+            z r.basel := r.coef
+            z
+        coefficient(z, lb) ==
+            r := canonMonom(1, lb)
+            r.coef = 0 => error "Cannot take coef of 0"
+            z r.basel/r.coef
+ 
+        Ex ==> OutputForm
+ 
+        coerceMonom(c: K, b: NNI): Ex ==
+            b = 0 => c::Ex
+            ml := [sub("e"::Ex, i::Ex) for i in 1..n | bit?(b,i-1)]
+            be := reduce("*", ml)
+            c = 1 => be
+            c::Ex * be
+
+        coerce(x): Ex ==
+            tl := [coerceMonom(rep(x).i,i) for i in 0..dim-1 | rep(x).i~=0]
+            null tl => "0"::Ex
+            reduce("+", tl)
+
+
+        localPowerSets(j:NNI): List(List(PI)) ==
+          l: List List PI := list []
+          j = 0$NNI => l
+          Sm := localPowerSets((j -$Integer 1$NNI)::NNI)
+          Sn: List List PI := []
+          for x in Sm repeat Sn := cons(cons(j pretend PI, x),Sn)
+          append(Sn, Sm)
+
+        powerSets(j:NNI):List List PI == map(reverse, localPowerSets j)
+
+        Pn:List List PI := powerSets(n)
+
+
+        -- modified by yue
+        recip(x: %): Union(%, "failed") ==
+          one:% := 1
+          -- tmp:c := x*yC - 1$C
+          rhsEqs : List K := []
+          lhsEqs: List List K := []
+          lhsEqi: List K
+          for pi in Pn repeat
+            rhsEqs := cons(coefficient(one, pi), rhsEqs)
+
+            lhsEqi := []
+            for pj in Pn repeat
+                lhsEqi := cons(coefficient(x*monomial(1$K,pj),pi),lhsEqi)
+            lhsEqs := cons(reverse(lhsEqi),lhsEqs)
+          ans := particularSolution(matrix(lhsEqs)$(Matrix K),
+            vector(rhsEqs)$(Vector K))$LinearSystemMatrixPackage(K, Vector K, Vector K, Matrix K)
+          --ans case "failed" => "failed"
+          ansP := parts(ans::(Vector K))
+          ansC:% := 0
+          for pj in Pn repeat
+            cj:= first ansP
+            ansP := rest ansP
+            ansC := ansC + cj*monomial(1$K,pj)
+          (ansC)@Union(%, "failed")
+

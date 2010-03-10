@@ -1,0 +1,32 @@
+)abbrev package FORMULA1 ScriptFormulaFormat1
+++ Author: Robert S. Sutor
+++ Date Created: 1987 through 1990
+++ Change History:
+++ Basic Operations: coerce
+++ Related Constructors: ScriptFormulaFormat
+++ Also See: TexFormat, TexFormat1
+++ AMS Classifications:
+++ Keywords: output, format, SCRIPT, BookMaster, formula
+++ References:
+++   SCRIPT Mathematical Formula Formatter User's Guide, SH20-6453,
+++   IBM Corporation, Publishing Systems Information Development,
+++   Dept. G68, P.O. Box 1900, Boulder, Colorado, USA 80301-9191.
+++ Description:
+++   \spadtype{ScriptFormulaFormat1} provides a utility coercion for
+++   changing to SCRIPT formula format anything that has a coercion to
+++   the standard output format.
+
+ScriptFormulaFormat1(S : SetCategory): public == private where
+  public  ==  with
+    coerce: S -> ScriptFormulaFormat()
+      ++ coerce(s) provides a direct coercion from an expression s of domain S to
+      ++ SCRIPT formula format. This allows the user to skip the step of
+      ++ first manually coercing the object to standard output format
+      ++ before it is coerced to SCRIPT formula format.
+
+  private == add
+    import ScriptFormulaFormat()
+
+    coerce(s : S): ScriptFormulaFormat ==
+      coerce(s :: OutputForm)$ScriptFormulaFormat
+

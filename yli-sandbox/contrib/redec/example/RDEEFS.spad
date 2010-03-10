@@ -1,0 +1,90 @@
+)abbrev package RDEEFS ElementaryRischDESystem
+++ Risch differential equation, elementary case.
+++ Author: Manuel Bronstein
+++ Date Created: 12 August 1992
+++ Date Last Updated: 17 August 1992
+++ Keywords: elementary, function, integration.
+ElementaryRischDESystem(R, F): Exports == Implementation where
+  R : Join(GcdDomain, OrderedSet, CharacteristicZero,
+           RetractableTo Integer, LinearlyExplicitRingOver Integer)
+  F : Join(TranscendentalFunctionCategory, AlgebraicallyClosedField,
+           FunctionSpace R)
+ 
+  Z   ==> Integer
+  SE  ==> Symbol
+  K   ==> Kernel F
+  P   ==> SparseMultivariatePolynomial(R, K)
+  UP  ==> SparseUnivariatePolynomial F
+  RF  ==> Fraction UP
+  NL  ==> Record(coeff:F,logand:F)
+  RRF ==> Record(mainpart:F,limitedlogs:List NL)
+  U   ==> Union(RRF, "failed")
+  ULF ==> Union(List F, "failed")
+  UEX ==> Union(Record(ratpart:F, coeff:F), "failed")
+ 
+  Exports ==> with
+    rischDEsys: (Z, F, F, F, SE, (F, List F) -> U, (F, F) -> UEX) -> ULF
+      ++ rischDEsys(n, f, g_1, g_2, x,lim,ext) returns \spad{y_1.y_2} such that
+      ++ \spad{(dy1/dx,dy2/dx) + ((0, - n df/dx),(n df/dx,0)) (y1,y2) = (g1,g2)}
+      ++ if \spad{y_1,y_2} exist, "failed" otherwise.
+      ++ lim is a limited integration function,
+      ++ ext is an extended integration function.
+ 
+  Implementation ==> add
+    import IntegrationTools(R, F)
+    import ElementaryRischDE(R, F)
+    import TranscendentalRischDESystem(F, UP)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents K,
+                                                             K, R, P, F)
+ 
+--  sm1 := sqrt(-1::F)
+--  ks1 := retract(sm1)@K
+ 
+--  gcoeffs    : P -> ULF
+--  gets1coeffs: F -> ULF
+--  cheat      : (Z, F, F, F, SE, (F, List F) -> U, (F, F) -> UEX) -> ULF
+    basecase   : (F, F, F, K) -> ULF
+ 
+-- solve (y1',y2') + ((0, -nfp), (nfp, 0)) (y1,y2) = (g1, g2), base case
+    basecase(nfp, g1, g2, k) ==
+      (ans := baseRDEsys(univariate(nfp, k), univariate(g1, k),
+                         univariate(g2, k))) case "failed" => "failed"
+      l := ans::List(RF)
+      [multivariate(first l, k), multivariate(second l, k)]
+ 
+-- returns [x,y] s.t. f = x + y %i
+-- f can be of the form (a + b %i) / (c + d %i)
+--  gets1coeffs f ==
+--    (lnum := gcoeffs(numer f)) case "failed" => "failed"
+--    (lden := gcoeffs(denom f)) case "failed" => "failed"
+--    a := first(lnum::List F)
+--    b := second(lnum::List F)
+--    c := first(lden::List F)
+--    zero?(d := second(lden::List F)) => [a/c, b/c]
+--    cd := c * c + d * d
+--    [(a * c + b * d) / cd, (b * c - a * d) / cd]
+ 
+--  gcoeffs p ==
+--    degree(q := univariate(p, ks1)) > 1 => "failed"
+--    [coefficient(q, 0)::F, coefficient(q, 1)::F]
+ 
+--  cheat(n, f, g1, g2, x, limint, extint) ==
+--    (u := rischDE(n, sm1 * f, g1 + sm1 * g2, x, limint, extint))
+--      case "failed" => "failed"
+--    (l := gets1coeffs(u::F)) case "failed" =>
+--      error "rischDEsys: expect linear result in sqrt(-1)"
+--    l::List F
+ 
+-- solve (y1',y2') + ((0, -n f'), (n f', 0)) (y1,y2) = (g1, g2)
+    rischDEsys(n, f, g1, g2, x, limint, extint) ==
+      zero? g1 and zero? g2 => [0, 0]
+      zero?(nfp := n * differentiate(f, x)) =>
+        ((u1 := limint(g1, empty())) case "failed") or
+          ((u2 := limint(g1, empty())) case "failed") => "failed"
+        [u1.mainpart, u2.mainpart]
+      freeOf?(y1 := g2 / nfp, x) and freeOf?(y2 := - g1 / nfp, x) => [y1, y2]
+      vl := varselect(union(kernels nfp, union(kernels g1, kernels g2)), x)
+      symbolIfCan(k := kmax vl) case SE => basecase(nfp, g1, g2, k)
+--    cheat(n, f, g1, g2, x, limint, extint)
+      error "rischDEsys: can only handle rational functions for now"
+

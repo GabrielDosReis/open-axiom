@@ -1,0 +1,22 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain WHEREAST WhereAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a `where' expression.
+WhereAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    mainExpression: % -> SpadAst
+      ++ mainExpression(e) returns the main expression of the 
+      ++ `where' expression `e'.
+    qualifier: % -> SpadAst
+      ++ qualifier(e) returns the qualifier of the expression `e'.
+  Private == add
+    Rep == List SpadAst
+    mainExpression x == second rep x
+    qualifier x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('WhereAst::OutputForm,
+        ['mainExpression::OutputForm = mainExpression(x)::OutputForm,
+          'qualifier::OutputForm = qualifier(x)::OutputForm])$OutputForm

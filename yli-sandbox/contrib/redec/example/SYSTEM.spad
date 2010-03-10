@@ -1,0 +1,35 @@
+)abbrev package SYSTEM System
+++ Author: Gabriel Dos Reis
+++ Date Created: April 2, 2008.
+++ Related Constructors:
+++ Description:
+++   The package \spadtype{System} provides information about 
+++   the runtime system and its characteristics.
+System(): Public == Private where
+  Public ==> with
+    rootDirectory: () -> String
+      ++ rootDirectory() returns the pathname of the root directory
+      ++ for the running OpenAxiom system.
+    hostPlatform: () -> String
+      ++ hostPlatform() returns a string `triplet' description 
+      ++ of the platform hosting the running OpenAxiom system.
+    nativeModuleExtension: () -> String
+      ++ nativeModuleExtension() returns a string representation
+      ++ of a filename extension for native modules.
+    loadNativeModule: String -> Void
+      ++ loadNativeModule(path) loads the native modile designated
+      ++ by \spadvar{path}.
+
+  Private ==> add
+    rootDirectory() ==
+      systemRootDirectory()$Lisp : String
+
+    hostPlatform() ==
+      _$hostPlatform$Lisp : String
+
+    nativeModuleExtension() ==
+      _$NativeModuleExt$Lisp : String
+
+    loadNativeModule(path) ==
+      loadNativeModule(path)$Lisp
+      

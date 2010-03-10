@@ -1,0 +1,124 @@
+)abbrev domain ASP8 Asp8
+++ Author: Godfrey Nolan and Mike Dewar
+++ Date Created: 11 February 1994
+++ Date Last Updated: 18 March 1994
+++                    31 May 1994 to use alternative interface. MCD
+++                    30 June 1994 to handle the end condition correctly. MCD
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp8} produces Fortran for Type 8 ASPs, needed for NAG routine
+++\axiomOpFrom{d02bbf}{d02Package}.  This ASP prints intermediate values of the computed solution of
+++an ODE and might look like:
+++\begin{verbatim}
+++      SUBROUTINE OUTPUT(XSOL,Y,COUNT,M,N,RESULT,FORWRD)
+++      DOUBLE PRECISION Y(N),RESULT(M,N),XSOL
+++      INTEGER M,N,COUNT
+++      LOGICAL FORWRD
+++      DOUBLE PRECISION X02ALF,POINTS(8)
+++      EXTERNAL X02ALF
+++      INTEGER I
+++      POINTS(1)=1.0D0
+++      POINTS(2)=2.0D0
+++      POINTS(3)=3.0D0
+++      POINTS(4)=4.0D0
+++      POINTS(5)=5.0D0
+++      POINTS(6)=6.0D0
+++      POINTS(7)=7.0D0
+++      POINTS(8)=8.0D0
+++      COUNT=COUNT+1
+++      DO 25001 I=1,N
+++        RESULT(COUNT,I)=Y(I)
+++25001 CONTINUE
+++      IF(COUNT.EQ.M)THEN
+++        IF(FORWRD)THEN
+++          XSOL=X02ALF()
+++        ELSE
+++          XSOL=-X02ALF()
+++        ENDIF
+++      ELSE
+++        XSOL=POINTS(COUNT)
+++      ENDIF
+++      END
+++\end{verbatim}
+
+Asp8(name): Exports == Implementation where
+  name : Symbol
+
+  O      ==> OutputForm
+  S      ==> Symbol
+  FST    ==> FortranScalarType
+  UFST   ==> Union(fst:FST,void:"void")
+  FT     ==> FortranType
+  FC     ==> FortranCode
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  EX     ==> Expression Integer
+  MFLOAT ==> MachineFloat
+  EXPR   ==> Expression
+  PI     ==> Polynomial Integer
+  EXU    ==> Union(I: EXPR Integer,F: EXPR Float,CF: EXPR Complex Float,
+                   switch: Switch)
+
+  Exports ==> FortranVectorCategory 
+
+  Implementation ==> add
+
+    real : UFST := ["real"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!([COUNT,M,N],fortranInteger(),syms)$SYMTAB
+    declare!(XSOL,fortranReal(),syms)$SYMTAB
+    yType : FT := construct(real,[N],false)$FT
+    declare!(Y,yType,syms)$SYMTAB
+    declare!(FORWRD,fortranLogical(),syms)$SYMTAB
+    declare!(RESULT,construct(real,[M,N],false)$FT,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,[XSOL,Y,COUNT,M,N,RESULT,FORWRD],syms)
+
+    coerce(c:List FC):% == coerce(c)$Rep
+
+    coerce(r:RSFC):% == coerce(r)$Rep
+
+    coerce(c:FC):% == coerce(c)$Rep
+
+    coerce(u:%):O == coerce(u)$Rep
+
+    outputAsFortran(u:%):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+
+
+    f2ex(u:MFLOAT):EXPR MFLOAT == (u::EXPR MFLOAT)$EXPR(MFLOAT)
+
+    coerce(points:Vector MFLOAT):% ==
+      import PI
+      import EXPR Integer
+      -- Create some extra declarations
+      locals : SYMTAB := empty()$SYMTAB
+      nPol : PI := "N"::S::PI
+      iPol : PI := "I"::S::PI
+      countPol : PI := "COUNT"::S::PI
+      pointsDim : PI := max(#points,1)::PI
+      declare!(POINTS,[real,[pointsDim],false]$FT,locals)$SYMTAB
+      declare!(X02ALF,[real,[],true]$FT,locals)$SYMTAB
+      -- Now build up the code fragments
+      index : SegmentBinding PI := equation(I@S,1::PI..nPol)$SegmentBinding(PI)
+      ySym : EX := (subscript("Y"::S,[I::O])$S)::EX
+      loop := forLoop(index,assign(RESULT,[countPol,iPol],ySym)$FC)$FC
+      v:Vector EXPR MFLOAT
+      v := map(f2ex,points)$VectorFunctions2(MFLOAT,EXPR MFLOAT)
+      assign1 : FC := assign(POINTS,v)$FC
+      countExp: EX := COUNT@S::EX
+      newValue: EX := 1 + countExp
+      assign2 : FC := assign(COUNT,newValue)$FC
+      newSymbol : S := subscript(POINTS,[COUNT]@List(O))$S
+      assign3 : FC := assign(XSOL, newSymbol::EX )$FC
+      fphuge : EX := kernel(operator X02ALF,empty()$List(EX))
+      assign4 : FC := assign(XSOL, fphuge)$FC
+      assign5 : FC := assign(XSOL, -fphuge)$FC
+      innerCond : FC := cond("FORWRD"::Symbol::Switch,assign4,assign5)
+      mExp : EX := M@S::EX
+      endCase : FC := cond(EQ([countExp]$EXU,[mExp]$EXU)$Switch,innerCond,assign3)
+      code' := [assign1, assign2, loop, endCase]$List(FC)
+      ([locals,code']$RSFC)::%
+

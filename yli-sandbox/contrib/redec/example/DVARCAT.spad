@@ -1,0 +1,109 @@
+)abbrev category DVARCAT DifferentialVariableCategory
+++ Author:  William Sit
+++ Date Created: 19 July 1990
+++ Date Last Updated: 13 September 1991
+++ Basic Operations:
+++ Related Constructors:DifferentialPolynomialCategory
+++ See Also:OrderedDifferentialVariable,
+++          SequentialDifferentialVariable,
+++          DifferentialSparseMultivariatePolynomial.
+++ AMS Classifications:12H05
+++ Keywords: differential indeterminates, ranking, order, weight
+++ References:Ritt, J.F. "Differential Algebra" (Dover, 1950).
+++ Description:
+++   \spadtype{DifferentialVariableCategory} constructs the
+++   set of derivatives of a given set of
+++   (ordinary) differential indeterminates.
+++   If x,...,y is an ordered set of differential indeterminates,
+++   and the prime notation is used for differentiation, then
+++   the set of derivatives (including
+++   zero-th order) of the differential indeterminates is
+++   x,\spad{x'},\spad{x''},..., y,\spad{y'},\spad{y''},...
+++   (Note: in the interpreter, the n-th derivative of y is displayed as
+++   y with a subscript n.)  This set is
+++   viewed as a set of algebraic indeterminates, totally ordered in a
+++   way compatible with differentiation and the given order on the
+++   differential indeterminates.  Such a total order is called a
+++   ranking of the differential indeterminates.
+++
+++   A domain in this category is needed to construct a differential
+++   polynomial domain.  Differential polynomials are ordered
+++   by a ranking on the derivatives,  and by an order (extending the
+++   ranking) on
+++   on the set of differential monomials.  One may thus associate
+++   a domain in this category with a ranking of the differential
+++   indeterminates, just as one associates a domain in the category
+++   \spadtype{OrderedAbelianMonoidSup} with an ordering of the set of
+++   monomials in a set of algebraic indeterminates.  The ranking
+++   is specified through the binary relation \spadfun{<}.
+++   For example, one may define
+++   one derivative to be less than another by lexicographically comparing
+++   first the \spadfun{order}, then the given order of the differential
+++   indeterminates appearing in the derivatives.  This is the default
+++   implementation.
+++
+++   The notion of weight generalizes that of degree.  A
+++   polynomial domain may be made into a graded ring
+++   if a weight function is given on the set of indeterminates,
+++   Very often, a grading is the first step in ordering the set of
+++   monomials.  For differential polynomial domains, this
+++   constructor provides a function \spadfun{weight}, which
+++   allows the assignment of a non-negative number to each derivative of a
+++   differential indeterminate.  For example, one may define
+++   the weight of a derivative to be simply its \spadfun{order}
+++   (this is the default assignment).
+++   This weight function can then be extended to the set of
+++   all differential polynomials, providing a graded ring
+++   structure.
+DifferentialVariableCategory(S:OrderedSet): Category ==
+  Join(OrderedSet, RetractableTo S) with
+    -- Examples:
+    -- v:=makeVariable('s,5)
+    makeVariable  : (S, NonNegativeInteger) -> $
+       ++ makeVariable(s, n) returns the n-th derivative of a
+       ++ differential indeterminate s as an algebraic indeterminate.
+       -- Example: makeVariable('s, 5)
+    order         : $ -> NonNegativeInteger
+       ++ order(v) returns n if v is the n-th derivative of any
+       ++ differential indeterminate.
+       -- Example: order(v)
+    variable      : $ -> S
+       ++ variable(v) returns s if v is any derivative of the differential
+       ++ indeterminate s.
+       -- Example: variable(v)
+          --  default implementation using above primitives --
+
+    weight        : $ -> NonNegativeInteger
+       ++ weight(v) returns the weight of the derivative v.
+       -- Example: weight(v)
+    differentiate : $ -> $
+       ++ differentiate(v) returns the derivative of v.
+       -- Example: differentiate(v)
+    differentiate : ($, NonNegativeInteger) -> $
+       ++ differentiate(v, n) returns the n-th derivative of v.
+       -- Example: differentiate(v,2)
+    coerce        : S  -> $
+       ++ coerce(s) returns s, viewed as the zero-th order derivative of s.
+       -- Example: coerce('s); differentiate(%,5)
+ add
+    import NumberFormats
+    coerce (s:S):$ == makeVariable(s, 0)
+    differentiate v     == differentiate(v, 1)
+    differentiate(v, n) == makeVariable(variable v, n + order v)
+    retractIfCan v == (zero?(order v) => variable v; "failed")
+    v = u      == (variable v = variable u) and (order v = order u)
+
+    coerce(v:$):OutputForm ==
+      a := variable(v)::OutputForm
+      zero?(nn := order v) => a
+      sub(a, outputForm nn)
+    retract v ==
+      zero?(order v) => variable v
+      error "Not retractable"
+    v < u ==
+      -- the ranking below is orderly, and is the default --
+      order v = order u => variable v < variable u
+      order v < order u
+    weight v == order v
+      --  the default weight is just the order
+

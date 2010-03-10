@@ -1,0 +1,16 @@
+)abbrev package ESTOOLS1 ExpertSystemToolsPackage1
+++ Author: Brian Dupee
+++ Date Created: February 1995
+++ Date Last Updated: February 1995
+++ Basic Operations: neglist
+++ Description:
+++ \axiom{ExpertSystemToolsPackage1} contains some useful functions for use
+++ by the computational agents of Ordinary Differential Equation solvers.
+ExpertSystemToolsPackage1(R1:OR): E == I where
+  OR    ==> OrderedRing
+  E ==>  with
+    neglist:List R1 -> List R1
+      ++ neglist(l) returns only the negative elements of the list \spad{l}
+  I ==> add
+    neglist(l:List R1):List R1 == [u for u in l | negative?(u)$R1]
+

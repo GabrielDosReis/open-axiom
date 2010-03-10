@@ -1,0 +1,129 @@
+import SYNHELP
+
+)abbrev package REDANL ReduceAnalysis 
+++ Author: Yue Li
+++ Date Created: October 27, 2009
+++ Date Last Updated: November 21, 2009
+++ Description: this category represents the set of algebraic wavelet filters
+ReduceAnalysis(): Public == Private where
+  Public == with
+    extractReduceFormsFromFunctionDefinition: (DefinitionAst, Identifier) -> List Syntax
+
+  Private == add
+    T_defStmtStat: (SpadAst, Identifier)       -> Integer
+    T_defStat:     (DefinitionAst, Identifier) -> Integer
+
+    --Global variables
+    count : Integer := 0
+    makeReduce:  Syntax                   == 'reduce::Identifier::Syntax
+    makeREDUCE:  Syntax                   == 'REDUCE::Identifier::Syntax
+    L_reduce: List Syntax := []
+
+
+    -- extracting reduce syntax form from expression
+    collectFromExpression(e: Syntax): List Syntax ==
+      result: List Syntax := []
+      compound? e =>
+        if (id:=getOperator e) case Identifier then
+          id'  := id::Identifier
+          ary  := #(getOperands  e) 
+          (id' = makeReduce()::Identifier) and_
+          (ary = 2 or ary = 3 or ary = 4) => result := concat(result, e)
+          id' = makeREDUCE()::Identifier => result := concat(result, e)
+        for u in (unlist e)$SyntaxHelper repeat 
+          result := concat(result, collectFromExpression u)
+        result
+      result
+
+    -- collect the loop ast from a statement
+    T_defStmtStat(dBody: SpadAst, ctor: Identifier): Integer ==
+      if not compound?(dBody::Syntax) then
+        return count
+      dBody case SignatureAst =>   count
+      dBody case MacroAst =>      count
+      dBody case DefinitionAst => 
+        T_defStat(dBody::Syntax::DefinitionAst, ctor)
+      dBody case SequenceAst =>
+        stmtLst:= body(dBody::Syntax::SequenceAst)
+        for stmt in stmtLst repeat
+          T_defStmtStat(stmt, ctor)
+        count
+      dBody case IfAst => 
+        thBranch :=  thenBranch(dBody::Syntax::IfAst)
+        elBranch := elseBranch(dBody::Syntax::IfAst)
+        T_defStmtStat(thBranch, ctor)
+        T_defStmtStat(elBranch, ctor)
+      dBody case ReturnAst =>
+        rtn := expression(dBody::Syntax::ReturnAst)
+        T_defStmtStat(rtn, ctor)
+      dBody case RepeatAst =>
+        lpbd := body(dBody::Syntax::RepeatAst)
+        T_defStmtStat(lpbd, ctor)
+      dBody case CoerceAst =>
+        coerExp := expression(dBody::Syntax::CoerceAst)
+        T_defStmtStat(coerExp, ctor)
+      dBody case ExitAst =>
+        dbexp := expression(dBody::Syntax::ExitAst)
+        T_defStmtStat(dbexp, ctor)
+      dBody case LetAst =>
+        right := rhs(dBody::Syntax::LetAst)
+        T_defStmtStat(right, ctor)
+      dBody case WhileAst => count  
+      dBody case ColonAst => count
+      dBody case ConstructAst => count
+      dBody case CollectAst => count
+      dBody case CaseAst => count
+      dBody case RestrictAst => 
+        e := expression(dBody::Syntax::RestrictAst)
+        T_defStmtStat(e, ctor)
+      --count := count + #collectFromExpression(dBody::Syntax)
+      L_reduce := concat(L_reduce, collectFromExpression(dBody::Syntax))
+      -- we currently don't handle $ annotated reduce or "/" form
+      count
+
+    -- collects loop from one function definition
+    T_defStat(defa: DefinitionAst, ctor: Identifier): Integer ==
+      hd := head(defa)$DefinitionAst
+      functionName := name hd
+      sig := signature(defa)$DefinitionAst
+      dBody := body(defa)$DefinitionAst
+      T_defStmtStat(dBody, ctor)
+      count
+
+    -- analysis for T_TopLevel statements (definitions)
+--    T_TopLevel(sa: SpadAst, ctor: Identifier): Integer ==
+--      sa case ColonAst => count
+--      sa case SignatureAst => count
+--      sa case MacroAst => count
+--      sa case ImportAst => count
+--      sa case DefinitionAst => T_defStat(sa::Syntax::DefinitionAst, ctor)
+--      sa case SequenceAst => T_defStmtStat(sa, ctor)
+--      sa case LetAst => T_defStmtStat(sa, ctor)
+--      sa case IfAst =>
+--        thBranch := thenBranch(sa::Syntax::IfAst)$IfAst
+--        elBranch := elseBranch(sa::Syntax::IfAst)$IfAst
+--        if compound?(thBranch::Syntax) then
+--          T_TopLevel(thBranch, ctor)
+--        if compound?(elBranch::Syntax) then
+--          T_TopLevel(elBranch, ctor)
+--        count
+--      T_defStmtStat(sa, ctor)
+
+
+    extractReduceFormsFromFunctionDefinition(d, ctor) ==
+      L_reduce := []
+      T_defStat(d, ctor)
+      copy L_reduce
+
+
+
+
+
+
+
+
+
+
+
+
+

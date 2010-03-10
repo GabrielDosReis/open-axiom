@@ -1,0 +1,284 @@
+)abbrev package PFO PointsOfFiniteOrder
+++ Finds the order of a divisor on a curve
+++ Author: Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 22 July 1998
+++ Description:
+++ This package provides function for testing whether a divisor on a
+++ curve is a torsion divisor.
+++ Keywords: divisor, algebraic, curve.
+++ Examples: )r PFO INPUT
+PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
+  R0   : Join(OrderedSet, IntegralDomain, RetractableTo Integer)
+  F    : FunctionSpace R0
+  UP   : UnivariatePolynomialCategory F
+  UPUP : UnivariatePolynomialCategory Fraction UP
+  R    : FunctionFieldCategory(F, UP, UPUP)
+
+  PI  ==> PositiveInteger
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  Q   ==> Fraction Integer
+  UPF ==> SparseUnivariatePolynomial F
+  UPQ ==> SparseUnivariatePolynomial Q
+  QF  ==> Fraction UP
+  UPUPQ ==> SparseUnivariatePolynomial Fraction UPQ
+  UP2 ==> SparseUnivariatePolynomial UPQ
+  UP3 ==> SparseUnivariatePolynomial UP2
+  FD  ==> FiniteDivisor(F, UP, UPUP, R)
+  K   ==> Kernel F
+  REC ==> Record(ncurve:UP3, disc:Z, dfpoly:UPQ)
+  RC0 ==> Record(ncurve:UPUPQ, disc:Z)
+  ID  ==> FractionalIdeal(UP, QF, UPUP, R)
+  SMP ==> SparseMultivariatePolynomial(R0,K)
+  ALGOP  ==> "%alg"
+
+  Exports ==> with
+    order        : FD -> Union(N, "failed")
+        ++ order(f) \undocumented
+    torsion?     : FD -> Boolean
+        ++ torsion?(f) \undocumented
+    torsionIfCan : FD -> Union(Record(order:N, function:R), "failed")
+        ++ torsionIfCan(f)\ undocumented
+
+  Implementation ==> add
+    import IntegerPrimesPackage(Z)
+    import PointsOfFiniteOrderTools(UPQ, UPUPQ)
+    import UnivariatePolynomialCommonDenominator(Z, Q, UPQ)
+
+    cmult: List SMP -> SMP
+    raise         : (UPQ, K) -> F
+    raise2        : (UP2, K) -> UP
+    qmod          : F     -> Q
+    fmod          : UPF   -> UPQ
+    rmod          : UP    -> UPQ
+    pmod          : UPUP  -> UPUPQ
+    kqmod         : (F,    K) -> UPQ
+    krmod         : (UP,   K) -> UP2
+    kpmod         : (UPUP, K) -> UP3
+    selectIntegers: K   -> REC
+    selIntegers:    ()  -> RC0
+    possibleOrder : FD -> N
+    ratcurve      : (FD, RC0)    -> N
+    algcurve      : (FD, REC, K) -> N
+    kbad3Num      : (UP3, UPQ) -> Z
+    kbadBadNum    : (UP2, UPQ) -> Z
+    kgetGoodPrime : (REC, UPQ, UP3, UP2,UP2) -> Record(prime:PI,poly:UPQ)
+    goodRed       : (REC, UPQ, UP3, UP2, UP2, PI) -> Union(UPQ, "failed")
+    good?         : (UPQ, UP3, UP2, UP2, PI, UPQ) -> Boolean
+    klist         : UP -> List K
+    aklist        : R  -> List K
+    alglist       : FD -> List K
+    notIrr?       : UPQ -> Boolean
+    rat           : (UPUP, FD, PI) -> N
+    toQ1          : (UP2, UPQ) -> UP
+    toQ2          : (UP3, UPQ) -> R
+    Q2F           : Q -> F
+    Q2UPUP        : UPUPQ -> UPUP
+
+    q := FunctionSpaceReduce(R0, F)
+
+    torsion? d == order(d) case N
+    Q2F x      == numer(x)::F / denom(x)::F
+    qmod x     == bringDown(x)$q
+    kqmod(x,k) == bringDown(x, k)$q
+    fmod p     == map(qmod, p)$SparseUnivariatePolynomialFunctions2(F, Q)
+    pmod p     == map(qmod, p)$MultipleMap(F, UP, UPUP, Q, UPQ, UPUPQ)
+    Q2UPUP p   == map(Q2F, p)$MultipleMap(Q, UPQ, UPUPQ, F, UP, UPUP)
+    klist d    == "setUnion"/[kernels c for c in coefficients d]
+    notIrr? d  == #(factors factor(d)$RationalFactorize(UPQ)) > 1
+    kbadBadNum(d, m) == mix [badNum(c rem m) for c in coefficients d]
+    kbad3Num(h, m)   == lcm [kbadBadNum(c, m) for c in coefficients h]
+    
+    torsionIfCan d ==
+      zero?(n := possibleOrder(d := reduce d)) => "failed"
+      (g := generator reduce(n::Z * d)) case "failed" => "failed"
+      [n, g::R]
+
+    UPQ2F(p:UPQ, k:K):F ==
+      map(Q2F, p)$UnivariatePolynomialCategoryFunctions2(Q, UPQ, F, UP) (k::F)
+
+    UP22UP(p:UP2, k:K):UP ==
+      map(UPQ2F(#1, k), p)$UnivariatePolynomialCategoryFunctions2(UPQ,UP2,F,UP)
+
+    UP32UPUP(p:UP3, k:K):UPUP ==
+      map(UP22UP(#1,k)::QF,
+          p)$UnivariatePolynomialCategoryFunctions2(UP2, UP3, QF, UPUP)
+
+    if R0 has GcdDomain then
+       cmult(l:List SMP):SMP == lcm l
+    else
+       cmult(l:List SMP):SMP == */l
+
+    doubleDisc(f:UP3):Z ==
+      d := discriminant f
+      g := gcd(d, differentiate d)
+      d := (d exquo g)::UP2
+      zero?(e := discriminant d) => 0
+      gcd [retract(c)@Z for c in coefficients e]
+
+    commonDen(p:UP):SMP ==
+      l1:List F := coefficients p
+      l2:List SMP := [denom c for c in l1]
+      cmult l2
+
+    polyred(f:UPUP):UPUP ==
+      cmult([commonDen(retract(c)@UP) for c in coefficients f])::F::UP::QF * f
+
+    aklist f ==
+      (r := retractIfCan(f)@Union(QF, "failed")) case "failed" =>
+        "setUnion"/[klist(retract(c)@UP) for c in coefficients lift f]
+      klist(retract(r::QF)@UP)
+
+    alglist d ==
+      n := numer(i := ideal d)
+      select_!(has?(operator #1, ALGOP),
+               setUnion(klist denom i,
+                 "setUnion"/[aklist qelt(n,i) for i in minIndex n..maxIndex n]))
+
+    krmod(p,k) ==
+       map(kqmod(#1, k),
+           p)$UnivariatePolynomialCategoryFunctions2(F, UP, UPQ, UP2)
+
+    rmod p ==
+       map(qmod, p)$UnivariatePolynomialCategoryFunctions2(F, UP, Q, UPQ)
+
+    raise(p, k) ==
+      (map(Q2F, p)$SparseUnivariatePolynomialFunctions2(Q, F)) (k::F)
+
+    raise2(p, k) ==
+      map(raise(#1, k),
+          p)$UnivariatePolynomialCategoryFunctions2(UPQ, UP2, F, UP)
+
+    algcurve(d, rc, k) ==
+      mn := minIndex(n := numer(i := minimize ideal d))
+      h  := kpmod(lift(hh := n(mn + 1)), k)
+      b2 := primitivePart
+                 raise2(b := krmod(retract(retract(n.mn)@QF)@UP, k), k)
+      s  := kqmod(resultant(primitivePart separate(raise2(krmod(
+                    retract(norm hh)@UP, k), k), b2).primePart, b2), k)
+      pr := kgetGoodPrime(rc, s, h, b, dd := krmod(denom i, k))
+      p  := pr.prime
+      pp := UP32UPUP(rc.ncurve, k)
+      mm := pr.poly
+      gf := InnerPrimeField p
+      m  := map(retract(#1)@Z :: gf,
+                         mm)$SparseUnivariatePolynomialFunctions2(Q, gf)
+--      one? degree m =>
+      (degree m = 1) =>
+        alpha := - coefficient(m, 0) / leadingCoefficient m
+        order(d, pp,
+           (map(numer(#1)::gf / denom(#1)::gf,
+            kqmod(#1,k))$SparseUnivariatePolynomialFunctions2(Q,gf))(alpha)
+                                   )$ReducedDivisor(F, UP, UPUP, R, gf)
+        -- d1 := toQ1(dd, mm)
+        -- rat(pp, divisor ideal([(toQ1(b, mm) / d1)::QF::R,
+                                       -- inv(d1::QF) * toQ2(h,mm)])$ID, p)
+      sae:= SimpleAlgebraicExtension(gf,SparseUnivariatePolynomial gf,m)
+      order(d, pp,
+           reduce(map(numer(#1)::gf / denom(#1)::gf,
+            kqmod(#1,k))$SparseUnivariatePolynomialFunctions2(Q,gf))$sae
+                                   )$ReducedDivisor(F, UP, UPUP, R, sae)
+
+-- returns the potential order of d, 0 if d is of infinite order
+    ratcurve(d, rc) ==
+      mn  := minIndex(nm := numer(i := minimize ideal d))
+      h   := pmod lift(hh := nm(mn + 1))
+      b   := rmod(retract(retract(nm.mn)@QF)@UP)
+      s   := separate(rmod(retract(norm hh)@UP), b).primePart
+      bd  := badNum rmod denom i
+      r   := resultant(s, b)
+      bad := lcm [rc.disc, numer r, denom r, bd.den*bd.gcdnum, badNum h]$List(Z)
+      pp  := Q2UPUP(rc.ncurve)
+      n   := rat(pp, d, p := getGoodPrime bad)
+-- if n > 1 then it is cheaper to compute the order modulo a second prime,
+-- since computing n * d could be very expensive
+--      one? n => n
+      (n = 1) => n
+      m   := rat(pp, d, getGoodPrime(p * bad))
+      n = m => n
+      0
+
+-- returns the order of d mod p
+    rat(pp, d, p) ==
+      gf := InnerPrimeField p
+      order(d, pp, (qq := qmod #1;numer(qq)::gf / denom(qq)::gf)
+                                    )$ReducedDivisor(F, UP, UPUP, R, gf)
+
+-- returns the potential order of d, 0 if d is of infinite order
+    possibleOrder d ==
+--      zero?(genus()) or one?(#(numer ideal d)) => 1
+      zero?(genus()) or (#(numer ideal d) = 1) => 1
+      empty?(la := alglist d) => ratcurve(d, selIntegers())
+      not(empty? rest la) =>
+           error "PFO::possibleOrder: more than 1 algebraic constant"
+      algcurve(d, selectIntegers first la, first la)
+
+    selIntegers():RC0 ==
+      f := definingPolynomial()$R
+      repeat
+        r := polyred pmod f
+        d := doubleDisc r
+        if zero? d then
+          newReduc()$q
+        else
+          return [r,d]
+
+    selectIntegers(k:K):REC ==
+      g := polyred(f := definingPolynomial()$R)
+      p := minPoly k
+      repeat
+        r := kpmod(g, k)
+        d := doubleDisc r
+        if zero? d or notIrr? fmod p then
+          newReduc()$q
+        else
+          return [r, d, splitDenominator(fmod p).num]
+
+    toQ1(p, d) ==
+      map(Q2F(retract(#1 rem d)@Q),
+          p)$UnivariatePolynomialCategoryFunctions2(UPQ, UP2, F, UP)
+
+    toQ2(p, d) ==
+      reduce map(toQ1(#1, d)::QF,
+        p)$UnivariatePolynomialCategoryFunctions2(UP2, UP3, QF, UPUP)
+
+    kpmod(p, k) ==
+      map(krmod(retract(#1)@UP, k),
+        p)$UnivariatePolynomialCategoryFunctions2(QF, UPUP, UP2, UP3)
+
+    order d ==
+      zero?(n := possibleOrder(d := reduce d)) => "failed"
+      principal? reduce(n::Z * d) => n
+      "failed"
+
+    kgetGoodPrime(rec, res, h, b, d) ==
+      p:PI := 3
+      u : Union(UPQ, "failed")
+      while (u := goodRed(rec, res, h, b, d, p)) case "failed" repeat
+        p := nextPrime(p::Z)::PI
+      [p, u::UPQ]
+
+    goodRed(rec, res, h, b, d, p) ==
+      zero?(rec.disc rem p) => "failed"
+      gf := InnerPrimeField p
+      l  := [f.factor for f in factors factor(map(retract(#1)@Z :: gf,
+               rec.dfpoly)$SparseUnivariatePolynomialFunctions2(Q,
+                 gf))$DistinctDegreeFactorize(gf,
+--                   SparseUnivariatePolynomial gf) | one?(f.exponent)]
+                   SparseUnivariatePolynomial gf) | (f.exponent = 1)]
+      empty? l => "failed"
+      mdg := first l
+      for ff in rest l repeat
+        if degree(ff) < degree(mdg) then mdg := ff
+      md := map(convert(#1)@Z :: Q,
+                 mdg)$SparseUnivariatePolynomialFunctions2(gf, Q)
+      good?(res, h, b, d, p, md) => md
+      "failed"
+
+    good?(res, h, b, d, p, m) ==
+      bd := badNum(res rem m)
+      not (zero?(bd.den rem p) or zero?(bd.gcdnum rem p) or
+        zero?(kbadBadNum(b,m) rem p) or zero?(kbadBadNum(d,m) rem p)
+              or zero?(kbad3Num(h, m) rem p))
+

@@ -1,0 +1,30 @@
+)abbrev package INTBIT IntegerBits
+----> Bug! Cannot precompute params and return a function which
+----> simpy computes the last call.  e.g. ridHack1, below.
+
+--% IntegerBits
+--  Functions related to the binary representation of integers.
+--  These functions directly access the bits in the big integer
+--  representation and so are much facter than using a quotient loop.
+--  SMW Sept 86.
+
+ 
+++ Description:
+++ This  package provides functions to lookup bits in integers 
+IntegerBits: with
+    --  bitLength(n)  == # of bits to represent abs(n)
+    --  bitCoef (n,i) == coef of 2**i in abs(n)
+    --  bitTruth(n,i) == true if coef of 2**i in abs(n) is 1
+ 
+        bitLength: Integer -> Integer
+                ++ bitLength(n) returns the number of bits to represent abs(n)
+        bitCoef:   (Integer, Integer) -> Integer
+                ++ bitCoef(n,m) returns the coefficient of 2**m  in abs(n)
+        bitTruth:  (Integer, Integer) -> Boolean
+                ++ bitTruth(n,m) returns true if coefficient of 2**m in abs(n) is 1
+ 
+    == add
+        bitLength n   == INTEGER_-LENGTH(n)$Lisp
+        bitCoef (n,i) == if INTEGER_-BIT(n,i)$Lisp then 1 else 0
+        bitTruth(n,i) == INTEGER_-BIT(n,i)$Lisp
+

@@ -1,0 +1,47 @@
+)abbrev package RDIV ReducedDivisor
+++ Finds the order of a divisor over a finite field
+++ Author: Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 8 November 1994
+ReducedDivisor(F1, UP, UPUP, R, F2): Exports == Implementation where
+  F1    : Field
+  UP    : UnivariatePolynomialCategory F1
+  UPUP  : UnivariatePolynomialCategory Fraction UP
+  R     : FunctionFieldCategory(F1, UP, UPUP)
+  F2    : Join(Finite, Field)
+
+  N     ==> NonNegativeInteger
+  FD    ==> FiniteDivisor(F1, UP, UPUP, R)
+  UP2   ==> SparseUnivariatePolynomial F2
+  UPUP2 ==> SparseUnivariatePolynomial Fraction UP2
+
+  Exports ==> with
+    order: (FD, UPUP, F1 -> F2) -> N
+        ++ order(f,u,g) \undocumented
+
+  Implementation ==> add
+    algOrder : (FD, UPUP, F1 -> F2)  -> N
+    rootOrder: (FD, UP, N, F1 -> F2) -> N
+
+-- pp is not necessarily monic
+    order(d, pp, f) ==
+      (r := retractIfCan(reductum pp)@Union(Fraction UP, "failed"))
+        case "failed" => algOrder(d, pp, f)
+      rootOrder(d, - retract(r::Fraction(UP) / leadingCoefficient pp)@UP,
+                degree pp, f)
+
+    algOrder(d, modulus, reduce) ==
+      redmod := map(reduce, modulus)$MultipleMap(F1,UP,UPUP,F2,UP2,UPUP2)
+      curve  := AlgebraicFunctionField(F2, UP2, UPUP2, redmod)
+      order(map(reduce,
+              d)$FiniteDivisorFunctions2(F1,UP,UPUP,R,F2,UP2,UPUP2,curve)
+                                 )$FindOrderFinite(F2, UP2, UPUP2, curve)
+
+    rootOrder(d, radicand, n, reduce) ==
+      redrad := map(reduce,
+           radicand)$UnivariatePolynomialCategoryFunctions2(F1,UP,F2,UP2)
+      curve  := RadicalFunctionField(F2, UP2, UPUP2, redrad::Fraction UP2, n)
+      order(map(reduce,
+              d)$FiniteDivisorFunctions2(F1,UP,UPUP,R,F2,UP2,UPUP2,curve)
+                                 )$FindOrderFinite(F2, UP2, UPUP2, curve)
+

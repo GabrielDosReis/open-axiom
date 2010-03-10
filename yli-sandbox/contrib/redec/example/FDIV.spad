@@ -1,0 +1,128 @@
+import Vector
+)abbrev domain FDIV FiniteDivisor
+++ Finite rational divisors on a curve
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 29 July 1993
+++ Description:
+++ This domains implements finite rational divisors on a curve, that
+++ is finite formal sums SUM(n * P) where the n's are integers and the
+++ P's are finite rational points on the curve.
+++ Keywords: divisor, algebraic, curve.
+++ Examples: )r FDIV INPUT
+FiniteDivisor(F, UP, UPUP, R): Exports == Implementation where
+  F   : Field
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+  R   : FunctionFieldCategory(F, UP, UPUP)
+
+  N   ==> NonNegativeInteger
+  RF  ==> Fraction UP
+  ID  ==> FractionalIdeal(UP, RF, UPUP, R)
+
+  Exports ==> FiniteDivisorCategory(F, UP, UPUP, R) with
+    finiteBasis: % -> Vector R
+      ++ finiteBasis(d) returns a basis for d as a module over {\em K[x]}.
+    lSpaceBasis: % -> Vector R
+      ++ lSpaceBasis(d) returns a basis for \spad{L(d) = {f | (f) >= -d}}
+      ++ as a module over \spad{K[x]}.
+
+  Implementation ==> add
+    if hyperelliptic()$R case UP then
+      Rep := HyperellipticFiniteDivisor(F, UP, UPUP, R)
+
+      0                       == 0$Rep
+      coerce(d:$):OutputForm  == coerce(d)$Rep
+      d1 = d2                 == d1 =$Rep d2
+      n:Integer * d:%         == n *$Rep d
+      d1 + d2                 == d1 +$Rep d2
+      - d                     == -$Rep d
+      ideal d                 == ideal(d)$Rep
+      reduce d                == reduce(d)$Rep
+      generator d             == generator(d)$Rep
+      decompose d             == decompose(d)$Rep
+      divisor(i:ID)           == divisor(i)$Rep
+      divisor(f:R)            == divisor(f)$Rep
+      divisor(a, b)           == divisor(a, b)$Rep
+      divisor(a, b, n)        == divisor(a, b, n)$Rep
+      divisor(h, d, dp, g, r) == divisor(h, d, dp, g, r)$Rep
+
+    else
+      Rep := Record(id:ID, fbasis:Vector(R))
+
+      import CommonDenominator(UP, RF, Vector RF)
+      import UnivariatePolynomialCommonDenominator(UP, RF, UPUP)
+
+      makeDivisor : (UP, UPUP, UP) -> %
+      intReduce   : (R, UP) -> R
+
+      ww := integralBasis()$R
+
+      0                       == [1, empty()]
+      divisor(i:ID)           == [i, empty()]
+      divisor(f:R)            == divisor ideal [f]
+      coerce(d:%):OutputForm  == ideal(d)::OutputForm
+      ideal d                 == d.id
+      decompose d             == [ideal d, 1]
+      d1 = d2                 == basis(ideal d1) = basis(ideal d2)
+      n: Integer * d:%        == divisor(ideal(d) ** n)
+      d1 + d2                 == divisor(ideal d1 * ideal d2)
+      - d                     == divisor inv ideal d
+      divisor(h, d, dp, g, r) == makeDivisor(d, lift h - (r * dp)::RF::UPUP, g)
+
+      intReduce(h, b) ==
+        v := integralCoordinates(h).num
+        integralRepresents(
+                      [qelt(v, i) rem b for i in minIndex v .. maxIndex v], 1)
+
+      divisor(a, b) ==
+        x := monomial(1, 1)$UP
+        not ground? gcd(d := x - a::UP, retract(discriminant())@UP) =>
+                                          error "divisor: point is singular"
+        makeDivisor(d, monomial(1, 1)$UPUP - b::UP::RF::UPUP, 1)
+
+      divisor(a, b, n) ==
+        not(ground? gcd(d := monomial(1, 1)$UP - a::UP,
+            retract(discriminant())@UP)) and
+                  ((n exquo rank()) case "failed") =>
+                                    error "divisor: point is singular"
+        m:N :=
+          n < 0 => (-n)::N
+          n::N
+        g := makeDivisor(d**m,(monomial(1,1)$UPUP - b::UP::RF::UPUP)**m,1)
+        n < 0 => -g
+        g
+
+      reduce d ==
+        (i := minimize(j := ideal d)) = j => d
+        #(n := numer i) ~= 2 => divisor i
+        cd := splitDenominator lift n(1 + minIndex n)
+        b  := gcd(cd.den * retract(retract(n minIndex n)@RF)@UP,
+                  retract(norm reduce(cd.num))@UP)
+        e  := cd.den * denom i
+        divisor ideal([(b / e)::R,
+                reduce map((retract(#1)@UP rem b) / e, cd.num)]$Vector(R))
+
+      finiteBasis d ==
+        if empty?(d.fbasis) then
+          d.fbasis := normalizeAtInfinity
+                        basis module(ideal d)$FramedModule(UP, RF, UPUP, R, ww)
+        d.fbasis
+
+      generator d ==
+        bsis := finiteBasis d
+        for i in minIndex bsis .. maxIndex bsis repeat
+          integralAtInfinity? qelt(bsis, i) =>
+            return primitivePart qelt(bsis,i)
+        "failed"
+
+      lSpaceBasis d ==
+        map_!(primitivePart, reduceBasisAtInfinity finiteBasis(-d))
+
+-- b = center, hh = integral function, g = gcd(b, discriminant)
+      makeDivisor(b, hh, g) ==
+        b := gcd(b, retract(norm(h := reduce hh))@UP)
+        h := intReduce(h, b)
+        if not ground? gcd(g, b) then h := intReduce(h ** rank(), b)
+        divisor ideal [b::RF::R, h]$Vector(R)
+

@@ -1,0 +1,81 @@
+)abbrev package BOUNDZRO BoundIntegerRoots
+++ Author: Manuel Bronstein
+++ Date Created: 11 March 1991
+++ Date Last Updated: 18 November 1991
+++ Description:
+++   \spadtype{BoundIntegerRoots} provides functions to
+++   find lower bounds on the integer roots of a polynomial.
+BoundIntegerRoots(F, UP): Exports == Implementation where
+  F  : Join(Field, RetractableTo Fraction Integer)
+  UP : UnivariatePolynomialCategory F
+
+  Z   ==> Integer
+  Q   ==> Fraction Z
+  K   ==> Kernel F
+  UPQ ==> SparseUnivariatePolynomial Q
+  ALGOP ==> "%alg"
+
+  Exports ==> with
+    integerBound: UP -> Z
+      ++ integerBound(p) returns a lower bound on the negative integer
+      ++ roots of p, and 0 if p has no negative integer roots.
+
+  Implementation ==> add
+    import RationalFactorize(UPQ)
+    import UnivariatePolynomialCategoryFunctions2(F, UP, Q, UPQ)
+
+    qbound : (UP, UPQ) -> Z
+    zroot1 : UP -> Z
+    qzroot1: UPQ -> Z
+    negint : Q -> Z
+
+-- returns 0 if p has no integer root < 0, its negative integer root otherwise
+    qzroot1 p == negint(- leadingCoefficient(reductum p) / leadingCoefficient p)
+
+-- returns 0 if p has no integer root < 0, its negative integer root otherwise
+    zroot1 p ==
+      z := - leadingCoefficient(reductum p) / leadingCoefficient p
+      (r := retractIfCan(z)@Union(Q, "failed")) case Q => negint(r::Q)
+      0
+
+-- returns 0 if r is not a negative integer, r otherwise
+    negint r ==
+      ((u := retractIfCan(r)@Union(Z, "failed")) case Z) and (u::Z < 0) => u::Z
+      0
+
+    if F has ExpressionSpace then
+      bringDown: F -> Q
+
+-- the random substitution used by bringDown is NOT always a ring-homorphism
+-- (because of potential algebraic kernels), but is ALWAYS a Z-linear map.
+-- this guarantees that bringing down the coefficients of (x + n) q(x) for an
+-- integer n yields a polynomial h(x) which is divisible by x + n
+-- the only problem is that evaluating with random numbers can cause a
+-- division by 0. We should really be able to trap this error later and
+-- reevaluate with a new set of random numbers    MB 11/91
+      bringDown f ==
+        t := tower f
+        retract eval(f, t, [random()$Q :: F for k in t])
+
+      integerBound p ==
+--        one? degree p => zroot1 p
+        (degree p) = 1 => zroot1 p
+        q1 := map(bringDown, p)
+        q2 := map(bringDown, p)
+        qbound(p, gcd(q1, q2))
+
+    else
+      integerBound p ==
+--        one? degree p => zroot1 p
+        (degree p) = 1 => zroot1 p
+        qbound(p, map(retract(#1)@Q, p))
+
+-- we can probably do better here (i.e. without factoring)
+    qbound(p, q) ==
+      bound:Z := 0
+      for rec in factors factor q repeat
+--        if one?(degree(rec.factor)) and ((r := qzroot1(rec.factor)) < bound)
+        if ((degree(rec.factor)) = 1) and ((r := qzroot1(rec.factor)) < bound)
+           and zero? p(r::Q::F) then bound := r
+      bound
+

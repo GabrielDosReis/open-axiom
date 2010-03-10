@@ -1,0 +1,28 @@
+)abbrev domain DPMO DirectProductModule
+++ Author:  Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: June 4, 1991
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   This constructor provides a direct product of R-modules
+++   with an R-module view.
+
+DirectProductModule(n, R, S): DPcategory == DPcapsule where
+    n: NonNegativeInteger
+    R: Ring
+    S: LeftModule(R)
+
+    DPcategory == Join(DirectProductCategory(n,S), LeftModule(R))
+    --  with if S has Algebra(R) then Algebra(R)
+    --  <above line leads to matchMmCond: unknown form of condition>
+
+    DPcapsule == DirectProduct(n,S) add
+        Rep := Vector(S)
+        r:R * x:$ == [r * x.i for i in 1..n]
+

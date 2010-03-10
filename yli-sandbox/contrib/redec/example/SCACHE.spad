@@ -1,0 +1,77 @@
+)abbrev package SCACHE SortedCache
+++ Cache of elements in a set
+++ Author: Manuel Bronstein
+++ Date Created: 31 Oct 1988
+++ Date Last Updated: 14 May 1991
+++   A sorted cache of a cachable set S is a dynamic structure that
+++   keeps the elements of S sorted and assigns an integer to each
+++   element of S once it is in the cache. This way, equality and ordering
+++   on S are tested directly on the integers associated with the elements
+++   of S, once they have been entered in the cache.
+SortedCache(S:CachableSet): Exports == Implementation where
+  N    ==> NonNegativeInteger
+  DIFF ==> 1024
+
+  Exports ==> with
+    clearCache  : () -> Void
+      ++ clearCache() empties the cache.
+    cache       : () -> List S
+      ++ cache() returns the current cache as a list.
+    enterInCache: (S, S -> Boolean) -> S
+      ++ enterInCache(x, f) enters x in the cache, calling \spad{f(y)} to
+      ++ determine whether x is equal to y. It returns x with an integer
+      ++ associated with it.
+    enterInCache: (S, (S, S) -> Integer) -> S
+      ++ enterInCache(x, f) enters x in the cache, calling \spad{f(x, y)} to
+      ++ determine whether \spad{x < y (f(x,y) < 0), x = y (f(x,y) = 0)}, or
+      ++ \spad{x > y (f(x,y) > 0)}.
+      ++ It returns x with an integer associated with it.
+
+  Implementation ==> add
+    shiftCache   : (List S, N) -> Void
+    insertInCache: (List S, List S, S, N) -> S
+
+    cach := [nil()]$Record(cche:List S)
+
+    cache() == cach.cche
+
+    shiftCache(l, n) ==
+      for x in l repeat setPosition(x, n + position x)
+      void
+
+    clearCache() ==
+      for x in cache repeat setPosition(x, 0)
+      cach.cche := nil()
+      void
+
+    enterInCache(x:S, equal?:S -> Boolean) ==
+      scan := cache()
+      while not null scan repeat
+        equal?(y := first scan) =>
+          setPosition(x, position y)
+          return y
+        scan := rest scan
+      setPosition(x, 1 + #cache())
+      cach.cche := concat(cache(), x)
+      x
+
+    enterInCache(x:S, triage:(S, S) -> Integer) ==
+      scan := cache()
+      pos:N:= 0
+      for i in 1..#scan repeat
+        zero?(n := triage(x, y := first scan)) =>
+          setPosition(x, position y)
+          return y
+        n<0 => return insertInCache(first(cache(),(i-1)::N),scan,x,pos)
+        scan := rest scan
+        pos  := position y
+      setPosition(x, pos + DIFF)
+      cach.cche := concat(cache(), x)
+      x
+
+    insertInCache(before, after, x, pos) ==
+      if ((pos+1) = position first after) then shiftCache(after, DIFF)
+      setPosition(x, pos + (((position first after) - pos)::N quo 2))
+      cach.cche := concat(before, concat(x, after))
+      x
+

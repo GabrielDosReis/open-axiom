@@ -1,0 +1,48 @@
+)abbrev package TOOLSIGN ToolsForSign
+++ Tools for the sign finding utilities
+++ Author: Manuel Bronstein
+++ Date Created: 25 August 1989
+++ Date Last Updated: 26 November 1991
+++ Description: Tools for the sign finding utilities.
+ToolsForSign(R:Ring): with
+    sign     : R      -> Union(Integer, "failed")
+        ++ sign(r) \undocumented
+    nonQsign : R      -> Union(Integer, "failed")
+        ++ nonQsign(r) \undocumented
+    direction: String -> Integer
+        ++ direction(s) \undocumented
+ == add
+ 
+    if R is AlgebraicNumber then
+      nonQsign r ==
+        sign((r pretend AlgebraicNumber)::Expression(
+                  Integer))$ElementaryFunctionSign(Integer, Expression Integer)
+    else
+      nonQsign r == "failed"
+ 
+    if R has RetractableTo Fraction Integer then
+      sign r ==
+        (u := retractIfCan(r)@Union(Fraction Integer, "failed"))
+          case Fraction(Integer) => sign(u::Fraction Integer)
+        nonQsign r
+ 
+    else
+      if R has RetractableTo Integer then
+        sign r ==
+          (u := retractIfCan(r)@Union(Integer, "failed"))
+            case "failed" => "failed"
+          sign(u::Integer)
+ 
+      else
+        sign r ==
+          zero? r => 0
+--          one? r => 1
+          r = 1 => 1
+          r = -1 => -1
+          "failed"
+ 
+    direction st ==
+      st = "right" => 1
+      st = "left" => -1
+      error "Unknown option"
+

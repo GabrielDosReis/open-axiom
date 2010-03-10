@@ -1,0 +1,74 @@
+)abbrev domain HEAP Heap
+++ Author: Michael Monagan and Stephen Watt
+++ Date Created:June 86 and July 87
+++ Date Last Updated:Feb 92
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+ 
+++ Heap implemented in a flexible array to allow for insertions
+++ Complexity: O(log n) insertion, extraction and O(n) construction
+--% Dequeue and Heap data types
+ 
+Heap(S:OrderedSet): Exports == Implementation where 
+  Exports == PriorityQueueAggregate S with
+    heap : List S -> %
+      ++ heap(ls) creates a heap of elements consisting of the 
+      ++ elements of ls.
+  Implementation == IndexedFlexibleArray(S,0) add
+    Rep := IndexedFlexibleArray( S,0)
+    empty() == empty()$Rep
+    heap l == 
+      n := #l
+      h := empty()
+      n = 0 => h
+      for x in l repeat insert_!(x,h)
+      h
+    siftUp: (%,Integer,Integer) -> Void
+    siftUp(r,i,n) ==
+       -- assertion 0 <= i < n
+       t := r.i
+       while (j := 2*i+1) < n repeat
+          if (k := j+1) < n and r.j < r.k then j := k
+          if t < r.j then (r.i := r.j; r.j := t; i := j) else leave
+ 
+    extract_! r ==
+       -- extract the maximum from the heap O(log n)
+       n := #r :: Integer
+       n = 0 => error "empty heap"
+       t := r(0)
+       r(0) := r(n-1)
+       delete_!(r,n-1)
+       n = 1 => t
+       siftUp(r,0,n-1)
+       t
+ 
+    insert_!(x,r) ==
+       -- Williams' insertion algorithm O(log n)
+       j := (#r) :: Integer
+       r:=concat_!(r,concat(x,empty()$Rep))
+       while j > 0 repeat
+          i := (j-1) quo 2
+          if r(i) >= x then leave
+          r(j) := r(i)
+          j := i
+       r(j):=x
+       r
+ 
+    max r == if #r = 0 then error "empty heap" else r.0
+    inspect r == max r
+ 
+    makeHeap(r:%):% ==
+       -- Floyd's heap construction algorithm O(n)
+       n := #r
+       for k in n quo 2 -1 .. 0 by -1 repeat siftUp(r,k,n)
+       r
+    bag l == makeHeap construct(l)$Rep
+    merge(a,b) == makeHeap concat(a,b)
+    merge_!(a,b) == makeHeap concat_!(a,b)
+

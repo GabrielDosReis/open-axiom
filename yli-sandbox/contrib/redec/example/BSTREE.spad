@@ -1,0 +1,45 @@
+)abbrev domain BSTREE BinarySearchTree
+++ Description: BinarySearchTree(S) is the domain of
+++ a binary trees where elements are ordered across the tree.
+++ A binary search tree is either empty or has
+++ a value which is an S, and a
+++ right and left which are both BinaryTree(S)
+++ Elements are ordered across the tree.
+BinarySearchTree(S: OrderedSet): Exports == Implementation where
+  Exports == BinaryTreeCategory(S) with
+    shallowlyMutable
+    finiteAggregate
+    binarySearchTree: List S -> %
+        ++ binarySearchTree(l) \undocumented
+    insert_!: (S,%) -> %
+      ++ insert!(x,b) inserts element x as leaves into binary search tree b.
+    insertRoot_!: (S,%) -> %
+      ++ insertRoot!(x,b) inserts element x as a root of binary search tree b.
+    split:      (S,%) -> Record(less: %, greater: %)
+      ++ split(x,b) splits binary tree b into two trees, one with elements greater
+      ++ than x, the other with elements less than x.
+  Implementation == BinaryTree(S) add
+    Rep := BinaryTree(S)
+    binarySearchTree(u:List S) ==
+      null u => empty()
+      tree := binaryTree(first u)
+      for x in rest u repeat insert_!(x,tree)
+      tree
+    insert_!(x,t) ==
+      empty? t => binaryTree(x)
+      x >= value t =>
+        setright_!(t,insert_!(x,right t))
+        t
+      setleft_!(t,insert_!(x,left t))
+      t
+    split(x,t) ==
+      empty? t => [empty(),empty()]
+      x > value t =>
+        a := split(x,right t)
+        [node(left t, value t, a.less), a.greater]
+      a := split(x,left t)
+      [a.less, node(a.greater, value t, right t)]
+    insertRoot_!(x,t) ==
+      a := split(x,t)
+      node(a.less, x, a.greater)
+

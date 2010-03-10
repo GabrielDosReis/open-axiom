@@ -1,0 +1,26 @@
+import MultisetAggregate
+import PriorityQueueAggregate
+import List
+)abbrev category OMSAGG OrderedMultisetAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An ordered-multiset aggregate is a multiset built over an ordered set S
+++ so that the relative sizes of its entries can be assessed.
+++ These aggregates serve as models for priority queues.
+OrderedMultisetAggregate(S:OrderedSet): Category ==
+   Join(MultisetAggregate S,PriorityQueueAggregate S) with
+   -- max: % -> S                     ++ smallest entry in the set
+   -- duplicates: % -> List Record(entry:S,count:NonNegativeInteger)
+        ++ to become an in order iterator
+   -- parts: % -> List S              ++ in order iterator
+      min: % -> S
+        ++ min(u) returns the smallest entry in the multiset aggregate u.
+

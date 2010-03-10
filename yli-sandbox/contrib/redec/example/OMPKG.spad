@@ -1,0 +1,75 @@
+)abbrev package OMPKG OpenMathPackage
+++ Author: Vilya Harvey
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: \spadtype{OpenMathPackage} provides some simple utilities 
+++ to make reading OpenMath objects easier.
+
+OpenMathPackage(): with
+  OMread            : OpenMathDevice -> Any
+  ++ OMread(dev) reads an OpenMath object from \axiom{dev} and passes it
+  ++ to AXIOM.
+  OMreadFile        : String -> Any
+  ++ OMreadFile(f) reads an OpenMath object from \axiom{f} and passes it
+  ++ to AXIOM.
+  OMreadStr         : String -> Any
+  ++ OMreadStr(f) reads an OpenMath object from \axiom{f} and passes it
+  ++ to AXIOM.
+  OMlistCDs         : () -> List(String)
+  ++ OMlistCDs() lists all the CDs supported by AXIOM.
+  OMlistSymbols     : String -> List(String)
+  ++ OMlistSymbols(cd) lists all the symbols in \axiom{cd}.
+  OMsupportsCD?      : String -> Boolean
+  ++ OMsupportsCD?(cd) returns true if AXIOM supports \axiom{cd}, false 
+  ++ otherwise.
+  OMsupportsSymbol? : (String, String) -> Boolean
+  ++ OMsupportsSymbol?(s,cd) returns true if AXIOM supports symbol \axiom{s}
+  ++ from CD \axiom{cd}, false otherwise.
+  OMunhandledSymbol : (String, String) -> Exit
+  ++ OMunhandledSymbol(s,cd) raises an error if AXIOM reads a symbol which it
+  ++ is unable to handle.  Note that this is different from an unexpected
+  ++ symbol.
+ == add
+  import OpenMathEncoding
+  import OpenMathDevice
+  import String
+
+  OMunhandledSymbol(u,v) ==
+    error concat ["AXIOM is unable to process the symbol ",u," from CD ",v,"."]
+
+  OMread(dev: OpenMathDevice): Any ==
+    interpret(OM_-READ(dev)$Lisp :: InputForm)
+
+  OMreadFile(filename: String): Any ==
+    dev := OMopenFile(filename, "r", OMencodingUnknown())
+    res: Any := interpret(OM_-READ(dev)$Lisp :: InputForm)
+    OMclose(dev)
+    res
+
+  OMreadStr(str: String): Any ==
+    strp := OM_-STRINGTOSTRINGPTR(str)$Lisp
+    dev := OMopenString(strp pretend String, OMencodingUnknown())
+    res: Any := interpret(OM_-READ(dev)$Lisp :: InputForm)
+    OMclose(dev)
+    res
+
+  OMlistCDs(): List(String) ==
+    OM_-LISTCDS()$Lisp pretend List(String)
+
+  OMlistSymbols(cd: String): List(String) ==
+    OM_-LISTSYMBOLS(cd)$Lisp pretend List(String)
+
+  import SExpression
+
+  OMsupportsCD?(cd: String): Boolean ==
+    not null? OM_-SUPPORTSCD(cd)$Lisp 
+
+  OMsupportsSymbol?(cd: String, name: String): Boolean ==
+    not null? OM_-SUPPORTSSYMBOL(cd, name)$Lisp
+

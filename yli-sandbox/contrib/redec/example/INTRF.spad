@@ -1,0 +1,60 @@
+)abbrev package INTRF RationalFunctionIntegration
+++ Integration of rational functions
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 29 Mar 1990
+++ Keywords: polynomial, fraction, integration.
+++ Description:
+++   This package provides functions for the integration
+++   of rational functions.
+++ Examples: )r INTRF INPUT
+RationalFunctionIntegration(F): Exports == Implementation where
+  F: Join(IntegralDomain, RetractableTo Integer, CharacteristicZero)
+
+  SE  ==> Symbol
+  P   ==> Polynomial F
+  Q   ==> Fraction P
+  UP  ==> SparseUnivariatePolynomial Q
+  QF  ==> Fraction UP
+  LGQ ==> List Record(coeff:Q, logand:Q)
+  UQ  ==> Union(Record(ratpart:Q, coeff:Q), "failed")
+  ULQ ==> Union(Record(mainpart:Q, limitedlogs:LGQ), "failed")
+
+  Exports ==> with
+    internalIntegrate: (Q, SE) -> IntegrationResult Q
+       ++ internalIntegrate(f, x) returns g such that \spad{dg/dx = f}.
+    infieldIntegrate : (Q, SE) -> Union(Q, "failed")
+       ++ infieldIntegrate(f, x) returns a fraction
+       ++ g such that \spad{dg/dx = f}
+       ++ if g exists, "failed" otherwise.
+    limitedIntegrate : (Q, SE, List Q) -> ULQ
+       ++ \spad{limitedIntegrate(f, x, [g1,...,gn])} returns fractions
+       ++ \spad{[h, [[ci,gi]]]} such that the gi's are among
+       ++ \spad{[g1,...,gn]},
+       ++ \spad{dci/dx = 0}, and  \spad{d(h + sum(ci log(gi)))/dx = f}
+       ++ if possible, "failed" otherwise.
+    extendedIntegrate: (Q, SE, Q) -> UQ
+       ++ extendedIntegrate(f, x, g) returns fractions \spad{[h, c]} such that
+       ++ \spad{dc/dx = 0} and \spad{dh/dx = f - cg}, if \spad{(h, c)} exist,
+       ++ "failed" otherwise.
+
+  Implementation ==> add
+    import RationalIntegration(Q, UP)
+    import IntegrationResultFunctions2(QF, Q)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents SE,
+                                                       SE, F, P, Q)
+
+    infieldIntegrate(f, x) ==
+      map(multivariate(#1, x), infieldint univariate(f, x))
+
+    internalIntegrate(f, x) ==
+      map(multivariate(#1, x), integrate univariate(f, x))
+
+    extendedIntegrate(f, x, g) ==
+      map(multivariate(#1, x),
+          extendedint(univariate(f, x), univariate(g, x)))
+
+    limitedIntegrate(f, x, lu) ==
+      map(multivariate(#1, x),
+          limitedint(univariate(f, x), [univariate(u, x) for u in lu]))
+

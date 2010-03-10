@@ -1,0 +1,32 @@
+)abbrev package FR2 FactoredFunctions2
+++ Author: Robert S. Sutor
+++ Date Created: 1987
+++ Change History:
+++ Basic Operations: map
+++ Related Constructors: Factored
+++ Also See:
+++ AMS Classifications: 11A51, 11Y05
+++ Keywords: map, factor
+++ References:
+++ Description:
+++   \spadtype{FactoredFunctions2} contains functions that involve
+++   factored objects whose underlying domains may not be the same.
+++   For example, \spadfun{map} might be used to coerce an object of
+++   type \spadtype{Factored(Integer)} to
+++   \spadtype{Factored(Complex(Integer))}.
+FactoredFunctions2(R, S): Exports == Implementation where
+  R: IntegralDomain
+  S: IntegralDomain
+
+  Exports ==> with
+    map: (R -> S, Factored R) -> Factored S
+      ++ map(fn,u) is used to apply the function \userfun{fn} to every
+      ++ factor of \spadvar{u}. The new factored object will have all its
+      ++ information flags set to "nil". This function is used, for
+      ++ example, to coerce every factor base to another type.
+
+  Implementation ==> add
+    map(func, f) ==
+      func(unit f) *
+             _*/[nilFactor(func(g.factor), g.exponent) for g in factors f]
+

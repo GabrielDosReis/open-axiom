@@ -1,0 +1,47 @@
+)abbrev domain OMERRK OpenMathErrorKind
+++ Author: Vilya Harvey
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: \spadtype{OpenMathErrorKind} represents different kinds
+++ of OpenMath errors: specifically parse errors, unknown CD or symbol 
+++ errors, and read errors.
+OpenMathErrorKind() : SetCategory with
+  coerce           : Symbol -> %
+  ++ coerce(u) creates an OpenMath error object of an appropriate type if
+  ++ \axiom{u} is one of \axiom{OMParseError}, \axiom{OMReadError},
+  ++ \axiom{OMUnknownCD} or \axiom{OMUnknownSymbol}, otherwise it
+  ++ raises a runtime error.
+  OMParseError?    : % -> Boolean
+  ++ OMParseError?(u) tests whether u is an OpenMath parsing error.
+  OMUnknownCD?     : % -> Boolean
+  ++ OMUnknownCD?(u) tests whether u is an OpenMath unknown CD error.
+  OMUnknownSymbol? : % -> Boolean
+  ++ OMUnknownSymbol?(u) tests whether u is an OpenMath unknown symbol error.
+  OMReadError?     : % -> Boolean
+  ++ OMReadError?(u) tests whether u is an OpenMath read error.
+ == add
+  Rep := Union(parseError:"OMParseError", unknownCD:"OMUnknownCD", 
+               unknownSymbol:"OMUnknownSymbol",readError:"OMReadError")
+
+  OMParseError?(u) == (u case parseError)$Rep
+  OMUnknownCD?(u) == (u case unknownCD)$Rep
+  OMUnknownSymbol?(u) == (u case unknownSymbol)$Rep
+  OMReadError?(u) == (u case readError)$Rep
+
+  coerce(s:Symbol):% == 
+    s = OMParseError    => ["OMParseError"]$Rep
+    s = OMUnknownCD     => ["OMUnknownCD"]$Rep
+    s = OMUnknownSymbol => ["OMUnknownSymbol"]$Rep
+    s = OMReadError     => ["OMReadError"]$Rep
+    error concat(string s, " is not a valid OpenMathErrorKind.")
+
+  a = b == (a=b)$Rep
+
+  coerce(e:%):OutputForm == coerce(e)$Rep
+

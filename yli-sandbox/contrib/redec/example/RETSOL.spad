@@ -1,0 +1,63 @@
+)abbrev package RETSOL RetractSolvePackage
+++ Author: Manuel Bronstein
+++ Date Created: 31 October 1991
+++ Date Last Updated: 31 October 1991
+++ Description:
+++ RetractSolvePackage is an interface to \spadtype{SystemSolvePackage}
+++ that attempts to retract the coefficients of the equations before
+++ solving.
+
+RetractSolvePackage(Q, R): Exports == Implementation where
+  Q: IntegralDomain
+  R: Join(IntegralDomain, RetractableTo Q)
+
+  PQ  ==> Polynomial Q
+  FQ  ==> Fraction PQ
+  SY  ==> Symbol
+  P   ==> Polynomial R
+  F   ==> Fraction P
+  EQ  ==> Equation
+  SSP ==> SystemSolvePackage
+
+  Exports ==> with
+    solveRetract: (List P, List SY) -> List List EQ F
+      ++ solveRetract(lp,lv) finds the solutions of the list lp of
+      ++ rational functions with respect to the list of symbols lv.
+      ++ The function tries to retract all the coefficients of the equations
+      ++ to Q before solving if possible.
+
+  Implementation ==> add
+    LEQQ2F : List EQ FQ -> List EQ F
+    FQ2F   : FQ -> F
+    PQ2P   : PQ -> P
+    QIfCan : List P -> Union(List FQ, "failed")
+    PQIfCan: P -> Union(FQ, "failed")
+
+    PQ2P p   == map(#1::R, p)$PolynomialFunctions2(Q, R)
+    FQ2F f   == PQ2P numer f / PQ2P denom f
+    LEQQ2F l == [equation(FQ2F lhs eq, FQ2F rhs eq) for eq in l]
+
+    solveRetract(lp, lv) ==
+      (u := QIfCan lp) case "failed" =>
+        solve([p::F for p in lp]$List(F), lv)$SSP(R)
+      [LEQQ2F l for l in solve(u::List(FQ), lv)$SSP(Q)]
+
+    QIfCan l ==
+      ans:List(FQ) := empty()
+      for p in l repeat
+        (u := PQIfCan p) case "failed" => return "failed"
+        ans := concat(u::FQ, ans)
+      ans
+
+    PQIfCan p ==
+      (u := mainVariable p) case "failed" =>
+        (r := retractIfCan(ground p)@Union(Q,"failed")) case Q => r::Q::PQ::FQ
+        "failed"
+      up := univariate(p, s := u::SY)
+      ans:FQ := 0
+      while up ~= 0 repeat
+        (v := PQIfCan leadingCoefficient up) case "failed" => return "failed"
+        ans := ans + monomial(1, s, degree up)$PQ * (v::FQ)
+        up  := reductum up
+      ans
+

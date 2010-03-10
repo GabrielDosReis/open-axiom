@@ -1,0 +1,35 @@
+)abbrev package FS2 FunctionSpaceFunctions2
+++ Lifting of maps to function spaces
+++ Author: Manuel Bronstein
+++ Date Created: 22 March 1988
+++ Date Last Updated: 3 May 1994
+++ Description:
+++   This package allows a mapping R -> S to be lifted to a mapping
+++   from a function space over R to a function space over S;
+FunctionSpaceFunctions2(R, A, S, B): Exports == Implementation where
+  R, S: Join(Ring, OrderedSet)
+  A   : FunctionSpace R
+  B   : FunctionSpace S
+
+  K  ==> Kernel A
+  P  ==> SparseMultivariatePolynomial(R, K)
+
+  Exports ==> with
+    map: (R -> S, A) -> B
+      ++ map(f, a) applies f to all the constants in R appearing in \spad{a}.
+
+  Implementation ==> add
+    smpmap: (R -> S, P) -> B
+
+    smpmap(fn, p) ==
+      map(map(map(fn, #1), #1)$ExpressionSpaceFunctions2(A,B),fn(#1)::B,
+        p)$PolynomialCategoryLifting(IndexedExponents K, K, R, P, B)
+
+    if R has IntegralDomain then
+      if S has IntegralDomain then
+        map(f, x) == smpmap(f, numer x) / smpmap(f, denom x)
+      else
+        map(f, x) == smpmap(f, numer x) * (recip(smpmap(f, denom x))::B)
+    else
+      map(f, x) == smpmap(f, numer x)
+

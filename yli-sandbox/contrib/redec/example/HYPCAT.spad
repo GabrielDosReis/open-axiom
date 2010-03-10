@@ -1,0 +1,31 @@
+)abbrev category HYPCAT HyperbolicFunctionCategory
+++ Category for the hyperbolic trigonometric functions
+++ Author: ???
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description: Category for the hyperbolic trigonometric functions;
+HyperbolicFunctionCategory(): Category == with
+    cosh: $ -> $       ++ cosh(x) returns the hyperbolic cosine of x.
+    coth: $ -> $       ++ coth(x) returns the hyperbolic cotangent of x.
+    csch: $ -> $       ++ csch(x) returns the hyperbolic cosecant of x.
+    sech: $ -> $       ++ sech(x) returns the hyperbolic secant of x.
+    sinh: $ -> $       ++ sinh(x) returns the hyperbolic sine of x.
+    tanh: $ -> $       ++ tanh(x) returns the hyperbolic tangent of x.
+ add
+    if $ has Ring then
+       csch x == 
+         (a := recip(sinh x)) case "failed" => error "csch: no reciprocal"
+         a::$
+       sech x == 
+         (a := recip(cosh x)) case "failed" => error "sech: no reciprocal"
+         a::$
+       tanh x == sinh x * sech x
+       coth x == cosh x * csch x
+       if $ has ElementaryFunctionCategory then
+         cosh x ==
+           e := exp x
+           (e + recip(e)::$) * recip(2::$)::$
+         sinh(x):$ ==
+           e := exp x
+           (e - recip(e)::$) * recip(2::$)::$
+

@@ -1,0 +1,6 @@
+)abbrev category OSGROUP OrderedSemiGroup
+++ Author: Gabriel Dos Reis
+++ Date Create May 25, 2008
+++ Date Last Updated: May 25, 2008
+++ Description:  Semigroups with compatible ordering.
+OrderedSemiGroup(): Category == Join(OrderedSet, SemiGroup)

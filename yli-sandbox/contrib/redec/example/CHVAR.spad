@@ -1,0 +1,128 @@
+)abbrev package CHVAR ChangeOfVariable
+++ Sends a point to infinity
+++ Author: Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 22 Feb 1990
+++ Description:
+++  Tools to send a point to infinity on an algebraic curve.
+ChangeOfVariable(F, UP, UPUP): Exports == Implementation where
+  F   : UniqueFactorizationDomain
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+
+  N  ==> NonNegativeInteger
+  Z  ==> Integer
+  Q  ==> Fraction Z
+  RF ==> Fraction UP
+
+  Exports ==> with
+    mkIntegral: UPUP -> Record(coef:RF, poly:UPUP)
+          ++ mkIntegral(p(x,y)) returns \spad{[c(x), q(x,z)]} such that
+          ++ \spad{z = c * y} is integral.
+          ++ The algebraic relation between x and y is \spad{p(x, y) = 0}.
+          ++ The algebraic relation between x and z is \spad{q(x, z) = 0}.
+    radPoly   : UPUP -> Union(Record(radicand:RF, deg:N), "failed")
+          ++ radPoly(p(x, y)) returns \spad{[c(x), n]} if p is of the form
+          ++ \spad{y**n - c(x)}, "failed" otherwise.
+    rootPoly  : (RF, N) -> Record(exponent: N, coef:RF, radicand:UP)
+          ++ rootPoly(g, n) returns \spad{[m, c, P]} such that
+          ++ \spad{c * g ** (1/n) = P ** (1/m)}
+          ++ thus if \spad{y**n = g}, then \spad{z**m = P}
+          ++ where \spad{z = c * y}.
+    goodPoint : (UPUP,UPUP) -> F
+          ++ goodPoint(p, q) returns an integer a such that a is neither
+          ++ a pole of \spad{p(x,y)} nor a branch point of \spad{q(x,y) = 0}.
+    eval      : (UPUP, RF, RF) -> UPUP
+          ++ eval(p(x,y), f(x), g(x)) returns \spad{p(f(x), y * g(x))}.
+    chvar : (UPUP,UPUP) -> Record(func:UPUP,poly:UPUP,c1:RF,c2:RF,deg:N)
+          ++ chvar(f(x,y), p(x,y)) returns
+          ++ \spad{[g(z,t), q(z,t), c1(z), c2(z), n]}
+          ++ such that under the change of variable
+          ++ \spad{x = c1(z)}, \spad{y = t * c2(z)},
+          ++ one gets \spad{f(x,y) = g(z,t)}.
+          ++ The algebraic relation between x and y is \spad{p(x, y) = 0}.
+          ++ The algebraic relation between z and t is \spad{q(z, t) = 0}.
+
+  Implementation ==> add
+    import UnivariatePolynomialCommonDenominator(UP, RF, UPUP)
+
+    algPoly     : UPUP           -> Record(coef:RF, poly:UPUP)
+    RPrim       : (UP, UP, UPUP) -> Record(coef:RF, poly:UPUP)
+    good?       : (F, UP, UP)    -> Boolean
+    infIntegral?: (UPUP, UPUP)   -> Boolean
+
+    eval(p, x, y)  == map(#1 x, p)  monomial(y, 1)
+    good?(a, p, q) == p(a) ~= 0 and q(a) ~= 0
+
+    algPoly p ==
+      ground?(a:= retract(leadingCoefficient(q:=clearDenominator p))@UP)
+        => RPrim(1, a, q)
+      c := d := squareFreePart a
+      q := clearDenominator q monomial(inv(d::RF), 1)
+      while not ground?(a := retract(leadingCoefficient q)@UP) repeat
+        c := c * (d := gcd(a, d))
+        q := clearDenominator q monomial(inv(d::RF), 1)
+      RPrim(c, a, q)
+
+    RPrim(c, a, q) ==
+--      one? a => [c::RF, q]
+      (a = 1) => [c::RF, q]
+      [(a * c)::RF, clearDenominator q monomial(inv(a::RF), 1)]
+
+-- always makes the algebraic integral, but does not send a point to infinity
+-- if the integrand does not have a pole there (in the case of an nth-root)
+    chvar(f, modulus) ==
+      r1 := mkIntegral modulus
+      f1 := f monomial(r1inv := inv(r1.coef), 1)
+      infIntegral?(f1, r1.poly) =>
+        [f1, r1.poly, monomial(1,1)$UP :: RF,r1inv,degree(retract(r1.coef)@UP)]
+      x  := (a:= goodPoint(f1,r1.poly))::UP::RF + inv(monomial(1,1)::RF)
+      r2c:= retract((r2 := mkIntegral map(#1 x, r1.poly)).coef)@UP
+      t  := inv((monomial(1, 1)$UP - a::UP)::RF)
+      [- inv(monomial(1, 2)$UP :: RF) * eval(f1, x, inv(r2.coef)),
+                                r2.poly, t, r1.coef * r2c t, degree r2c]
+
+-- returns true if y is an n-th root, and it can be guaranteed that p(x,y)dx
+-- is integral at infinity
+-- expects y to be integral.
+    infIntegral?(p, modulus) ==
+      (r := radPoly modulus) case "failed" => false
+      ninv := inv(r.deg::Q)
+      degy:Q := degree(retract(r.radicand)@UP) * ninv
+      degp:Q := 0
+      while p ~= 0 repeat
+        c := leadingCoefficient p
+        degp := max(degp,
+            (2 + degree(numer c)::Z - degree(denom c)::Z)::Q + degree(p) * degy)
+        p := reductum p
+      degp <= ninv
+
+    mkIntegral p ==
+      (r := radPoly p) case "failed" => algPoly p
+      rp := rootPoly(r.radicand, r.deg)
+      [rp.coef, monomial(1, rp.exponent)$UPUP - rp.radicand::RF::UPUP]
+
+    goodPoint(p, modulus) ==
+      q :=
+        (r := radPoly modulus) case "failed" =>
+                   retract(resultant(modulus, differentiate modulus))@UP
+        retract(r.radicand)@UP
+      d := commonDenominator p
+      for i in 0.. repeat
+        good?(a := i::F, q, d) => return a
+        good?(-a, q, d)        => return -a
+
+    radPoly p ==
+      (r := retractIfCan(reductum p)@Union(RF, "failed")) case "failed"
+        => "failed"
+      [- (r::RF), degree p]
+
+-- we have y**m = g(x) = n(x)/d(x), so if we can write
+-- (n(x) * d(x)**(m-1)) ** (1/m)  =  c(x) * P(x) ** (1/n)
+-- then z**q = P(x) where z = (d(x) / c(x)) * y
+    rootPoly(g, m) ==
+      zero? g => error "Should not happen"
+      pr := nthRoot(squareFree((numer g) * (d := denom g) ** (m-1)::N),
+                                                m)$FactoredFunctions(UP)
+      [pr.exponent, d / pr.coef, */(pr.radicand)]
+

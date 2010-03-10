@@ -1,0 +1,197 @@
+import OrderedSet
+import CommutativeRing
+import FreeLieAlgebra
+import FreeModuleCat
+import LyndonWord
+)abbrev domain LPOLY LiePolynomial
+++ Author: Michel Petitot (petitot@lifl.fr).
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:Free Lie Algebras by C. Reutenauer (Oxford science publications). 
+++ Description:
+++ This type supports Lie polynomials in Lyndon basis
+++ see Free Lie Algebras by C. Reutenauer 
+++ (Oxford science publications). \newline Author: Michel Petitot (petitot@lifl.fr).
+
+LiePolynomial(VarSet:OrderedSet, R:CommutativeRing) : Public == Private where
+   MAGMA   ==> Magma(VarSet)
+   LWORD   ==> LyndonWord(VarSet)
+   WORD    ==> OrderedFreeMonoid(VarSet)
+   XDPOLY  ==> XDistributedPolynomial(VarSet,R)
+   XRPOLY  ==> XRecursivePolynomial(VarSet,R)
+   NNI     ==> NonNegativeInteger
+   RN      ==> Fraction Integer
+   EX      ==> OutputForm
+   TERM    ==> Record(k: LWORD, c: R)
+
+   Public == Join(FreeLieAlgebra(VarSet,R), FreeModuleCat(R,LWORD)) with
+      LiePolyIfCan: XDPOLY -> Union($, "failed")
+        ++ \axiom{LiePolyIfCan(p)} returns \axiom{p} in Lyndon basis
+        ++ if \axiom{p} is a Lie polynomial, otherwise \axiom{"failed"}
+        ++ is returned.
+      construct: (LWORD, LWORD) -> $
+        ++ \axiom{construct(x,y)} returns the Lie bracket \axiom{[x,y]}.
+      construct: (LWORD, $) -> $
+        ++ \axiom{construct(x,y)} returns the Lie bracket \axiom{[x,y]}.
+      construct: ($, LWORD) -> $     
+        ++ \axiom{construct(x,y)} returns the Lie bracket \axiom{[x,y]}.
+
+   Private ==  FreeModule1(R, LWORD) add       
+        import(TERM)
+
+      --representation
+        Rep :=  List TERM
+
+      -- fonctions locales
+        cr1 : (LWORD, $    ) -> $
+        cr2 : ($, LWORD    ) -> $
+        crw : (LWORD, LWORD) -> $     -- crochet de 2 mots de Lyndon
+        DPoly: LWORD -> XDPOLY
+        lquo1: (XRPOLY , LWORD) -> XRPOLY
+        lyndon: (LWORD, LWORD) -> $
+        makeLyndon: (LWORD, LWORD) -> LWORD
+        rquo1: (XRPOLY , LWORD) -> XRPOLY
+        RPoly: LWORD -> XRPOLY
+        eval1: (LWORD, VarSet, $) -> $                     -- 08/03/98
+        eval2: (LWORD, List VarSet, List $) -> $           -- 08/03/98
+
+
+      -- Evaluation
+        eval1(lw,v,nv) ==                                  -- 08/03/98
+          not member?(v, varList(lw)$LWORD) => LiePoly lw
+          (s := retractIfCan(lw)$LWORD) case VarSet => 
+             if (s::VarSet) = v then nv else LiePoly lw 
+          l: LWORD := left lw
+          r: LWORD := right lw
+          construct(eval1(l,v,nv), eval1(r,v,nv))
+
+        eval2(lw,lv,lnv) ==                                -- 08/03/98
+          p: Integer
+          (s := retractIfCan(lw)$LWORD) case VarSet =>
+             p := position(s::VarSet, lv)$List(VarSet) 
+             if p=0 then lw::$ else elt(lnv,p)$List($)
+          l: LWORD := left lw
+          r: LWORD := right lw
+          construct(eval2(l,lv,lnv), eval2(r,lv,lnv))
+
+        eval(p:$, v: VarSet, nv: $): $ ==                  -- 08/03/98
+          +/ [t.c * eval1(t.k, v, nv) for t in p]
+
+        eval(p:$, lv: List(VarSet), lnv: List($)): $ ==    -- 08/03/98
+          +/ [t.c * eval2(t.k, lv, lnv) for t in p]
+
+        lquo1(p,lw) ==
+          constant? p => 0$XRPOLY
+          retractable? lw => lquo(p, retract lw)$XRPOLY
+          lquo1(lquo1(p, left lw),right lw) - lquo1(lquo1(p, right lw),left lw)  
+        rquo1(p,lw) ==
+          constant? p => 0$XRPOLY
+          retractable? lw => rquo(p, retract lw)$XRPOLY
+          rquo1(rquo1(p, left lw),right lw) - rquo1(rquo1(p, right lw),left lw)
+
+        coef(p, lp) == coef(p, lp::XRPOLY)$XRPOLY
+
+        lquo(p, lp) ==
+          lp = 0 => 0$XRPOLY
+          +/ [t.c * lquo1(p,t.k) for t in lp]
+ 
+        rquo(p, lp) ==
+          lp = 0 => 0$XRPOLY
+          +/ [t.c * rquo1(p,t.k) for t in lp] 
+
+        LiePolyIfCan p ==         -- inefficace a cause de la rep. de XDPOLY
+           not quasiRegular? p => "failed"
+           p1: XDPOLY := p ; r:$ := 0
+           while p1 ~= 0 repeat
+             t: Record(k:WORD, c:R) := mindegTerm p1
+             w: WORD := t.k; coef:R := t.c
+             (l := lyndonIfCan(w)$LWORD) case "failed" => return "failed"
+             lp:$ := coef * LiePoly(l::LWORD)
+             r := r + lp 
+             p1 := p1 - lp::XDPOLY 
+           r
+ 
+      --definitions locales
+        makeLyndon(u,v) == (u::MAGMA * v::MAGMA) pretend LWORD
+ 
+        crw(u,v) ==               -- u et v sont des mots de Lyndon
+          u = v => 0
+          lexico(u,v) => lyndon(u,v)
+          - lyndon (v,u)
+
+        lyndon(u,v) ==            -- u et v sont des mots de Lyndon tq u < v
+          retractable? u => monom(makeLyndon(u,v),1)
+          u1: LWORD := left u
+          u2: LWORD := right u
+          lexico(u2,v) => cr1(u1, lyndon(u2,v)) + cr2(lyndon(u1,v), u2)
+          monom(makeLyndon(u,v),1)
+           
+        cr1 (l, p) ==
+            +/[t.c * crw(l, t.k) for t in p]
+
+        cr2 (p, l) ==
+            +/[t.c * crw(t.k, l) for t in p]
+
+        DPoly w ==
+           retractable? w => retract(w) :: XDPOLY 
+           l:XDPOLY := DPoly left w
+           r:XDPOLY := DPoly right w
+           l*r - r*l
+
+        RPoly w ==
+           retractable? w => retract(w) :: XRPOLY 
+           l:XRPOLY := RPoly left w
+           r:XRPOLY := RPoly right w
+           l*r - r*l 
+    
+      -- definitions
+
+        coerce(v:VarSet) == monom(v::LWORD , 1)
+
+        construct(x:$ , y:$):$ ==
+            +/[t.c * cr1(t.k, y) for t in x]
+
+        construct(l:LWORD , p:$):$ == cr1(l,p) 
+        construct(p:$ , l:LWORD):$ == cr2(p,l)
+        construct(u:LWORD , v:LWORD):$ == crw(u,v)
+
+        coerce(p:$):XDPOLY ==
+            +/ [t.c * DPoly(t.k) for t in p]
+
+        coerce(p:$):XRPOLY ==
+            +/ [t.c * RPoly(t.k) for t in p]
+
+        LiePoly(l) == monom(l,1)
+
+        varList p ==
+          le : List VarSet := "setUnion"/[varList(t.k)$LWORD for t in p]
+          sort(le)$List(VarSet)
+
+        mirror p ==
+          [[t.k, (odd? length t.k => t.c; -t.c)]$TERM for t in p]
+
+        trunc(p, n) ==
+          degree(p) > n => trunc( reductum p , n)
+          p
+
+        degree p == 
+          null p => 0
+          length( p.first.k)$LWORD
+
+      --  ListOfTerms p == p pretend List TERM
+        
+--        coerce(x) : EX ==
+--           null x => (0$R) :: EX
+--           le : List EX := nil
+--           for rec in x repeat
+--             rec.c = 1$R => le := cons(rec.k :: EX, le)
+--             le := cons(mkBinary("*"::EX,  rec.c :: EX, rec.k :: EX), le)
+--           1 = #le => first le
+--           mkNary("+" :: EX,le)
+

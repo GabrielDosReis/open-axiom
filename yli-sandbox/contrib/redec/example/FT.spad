@@ -1,0 +1,102 @@
+)abbrev domain FT FortranType 
+++ Author: Mike Dewar
+++ Date Created:  October 1992
+++ Date Last Updated: 
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: Creates and manipulates objects which correspond to FORTRAN
+++ data types, including array dimensions.
+FortranType() : exports == implementation where
+
+  FST    ==> FortranScalarType
+  FSTU   ==> Union(fst:FST,void:"void")
+
+  exports == SetCategory with
+    coerce : FST -> $
+      ++ coerce(t) creates an element from a scalar type
+    scalarTypeOf : $ -> FSTU
+      ++ scalarTypeOf(t) returns the FORTRAN data type of t
+    dimensionsOf : $ -> List Polynomial Integer
+      ++ dimensionsOf(t) returns the dimensions of t
+    external? : $ -> Boolean
+      ++ external?(u) returns true if u is declared to be EXTERNAL
+    construct : (FSTU,List Symbol,Boolean) -> $
+      ++ construct(type,dims) creates an element of FortranType
+    construct : (FSTU,List Polynomial Integer,Boolean) -> $
+      ++ construct(type,dims) creates an element of FortranType
+    fortranReal : () -> $
+      ++ fortranReal() returns REAL, an element of FortranType
+    fortranDouble : () -> $
+      ++ fortranDouble() returns DOUBLE PRECISION, an element of FortranType
+    fortranInteger : () -> $
+      ++ fortranInteger() returns INTEGER, an element of FortranType
+    fortranLogical : () -> $
+      ++ fortranLogical() returns LOGICAL, an element of FortranType
+    fortranComplex : () -> $
+      ++ fortranComplex() returns COMPLEX, an element of FortranType
+    fortranDoubleComplex: () -> $
+      ++ fortranDoubleComplex() returns DOUBLE COMPLEX, an element of 
+      ++ FortranType
+    fortranCharacter : () -> $
+      ++ fortranCharacter() returns CHARACTER, an element of FortranType
+
+  implementation == add
+
+    Dims == List Polynomial Integer
+    Rep := Record(type : FSTU, dimensions : Dims, external : Boolean)
+
+    coerce(a:$):OutputForm ==
+     t : OutputForm
+     if external?(a) then
+      if scalarTypeOf(a) case void then
+        t := "EXTERNAL"::OutputForm
+      else
+        t := blankSeparate(["EXTERNAL"::OutputForm,
+                           coerce(scalarTypeOf a)$FSTU])$OutputForm
+     else
+      t := coerce(scalarTypeOf a)$FSTU
+     empty? dimensionsOf(a) => t
+     sub(t,
+         paren([u::OutputForm for u in dimensionsOf(a)])$OutputForm)$OutputForm
+
+    scalarTypeOf(u:$):FSTU ==
+      u.type
+
+    dimensionsOf(u:$):Dims ==
+      u.dimensions
+
+    external?(u:$):Boolean ==
+      u.external
+
+    construct(t:FSTU, d:List Symbol, e:Boolean):$ ==
+      e and not empty? d => error "EXTERNAL objects cannot have dimensions"
+      not(e) and t case void => error "VOID objects must be EXTERNAL"
+      construct(t,[l::Polynomial(Integer) for l in d],e)$Rep
+
+    construct(t:FSTU, d:List Polynomial Integer, e:Boolean):$ ==
+      e and not empty? d => error "EXTERNAL objects cannot have dimensions"
+      not(e) and t case void => error "VOID objects must be EXTERNAL"
+      construct(t,d,e)$Rep
+
+    coerce(u:FST):$ ==
+      construct([u]$FSTU,[]@List Polynomial Integer,false)
+
+    fortranReal():$ == ("real"::FST)::$
+
+    fortranDouble():$ == ("double precision"::FST)::$
+
+    fortranInteger():$ == ("integer"::FST)::$
+
+    fortranComplex():$ == ("complex"::FST)::$
+
+    fortranDoubleComplex():$ == ("double complex"::FST)::$
+
+    fortranCharacter():$ == ("character"::FST)::$
+
+    fortranLogical():$ == ("logical"::FST)::$
+

@@ -1,0 +1,41 @@
+)abbrev package FACTFUNC FactoredFunctions
+++ Author: Manuel Bronstein
+++ Date Created: 2 Feb 1988
+++ Date Last Updated: 25 Jun 1990
+++ Description: computes various functions on factored arguments.
+-- not visible to the user
+FactoredFunctions(M:IntegralDomain): Exports == Implementation where
+  N ==> NonNegativeInteger
+
+  Exports ==> with
+    nthRoot: (Factored M,N) -> Record(exponent:N,coef:M,radicand:List M)
+      ++ nthRoot(f, n) returns \spad{(p, r, [r1,...,rm])} such that
+      ++ the nth-root of f is equal to \spad{r * pth-root(r1 * ... * rm)},
+      ++ where r1,...,rm are distinct factors of f,
+      ++ each of which has an exponent smaller than p in f.
+    log : Factored M -> List Record(coef:N, logand:M)
+      ++ log(f) returns \spad{[(a1,b1),...,(am,bm)]} such that
+      ++ the logarithm of f is equal to \spad{a1*log(b1) + ... + am*log(bm)}.
+
+  Implementation ==> add
+    nthRoot(ff, n) ==
+      coeff:M       := 1
+--      radi:List(M)  := (one? unit ff => empty(); [unit ff])
+      radi:List(M)  := (((unit ff) = 1) => empty(); [unit ff])
+      lf            := factors ff
+      d:N :=
+        empty? radi => gcd(concat(n, [t.exponent::N for t in lf]))::N
+        1
+      n             := n quo d
+      for term in lf repeat
+        qr    := divide(term.exponent::N quo d, n)
+        coeff := coeff * term.factor ** qr.quotient
+        not zero?(qr.remainder) =>
+          radi := concat_!(radi, term.factor ** qr.remainder)
+      [n, coeff, radi]
+
+    log ff ==
+      ans := unit ff
+      concat([1, unit ff],
+             [[term.exponent::N, term.factor] for term in factors ff])
+

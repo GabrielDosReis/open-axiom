@@ -1,0 +1,120 @@
+)abbrev package DRAWCURV TopLevelDrawFunctionsForAlgebraicCurves
+++ Author: Clifton J. Williamson
+++ Date Created: 26 June 1990
+++ Date Last Updated:  October 1991 by Jon Steinbach
+++ Basic Operations: draw
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: TopLevelDrawFunctionsForAlgebraicCurves provides top level 
+++ functions for drawing non-singular algebraic curves.
+
+TopLevelDrawFunctionsForAlgebraicCurves(R,Ex): Exports == Implementation where
+  R  : Join(IntegralDomain, OrderedSet, RetractableTo Integer)
+  Ex : FunctionSpace(R)
+
+  ANY1  ==> AnyFunctions1
+  DROP  ==> DrawOption
+  EQ    ==> Equation
+  F     ==> Float
+  FRAC  ==> Fraction
+  I     ==> Integer
+  L     ==> List
+  P     ==> Polynomial
+  RN    ==> Fraction Integer
+  SEG   ==> Segment
+  SY    ==> Symbol
+  VIEW2 ==> TwoDimensionalViewport
+
+  Exports ==> with
+
+    draw: (EQ Ex,SY,SY,L DROP) -> VIEW2
+      ++ draw(f(x,y) = g(x,y),x,y,l) draws the graph of a polynomial
+      ++ equation.  The list l of draw options must specify a region
+      ++ in the plane in which the curve is to sketched.
+
+  Implementation ==> add
+    import ViewportPackage
+    import PlaneAlgebraicCurvePlot
+    import ViewDefaultsPackage
+    import GraphicsDefaults
+    import DrawOptionFunctions0
+    import SegmentFunctions2(RN,F)
+    import SegmentFunctions2(F,RN)
+    import AnyFunctions1(L SEG RN)
+
+    drawToScaleRanges: (SEG F,SEG F) -> L SEG F
+    drawToScaleRanges(xVals,yVals) ==
+      -- warning: assumes window is square
+      xHi := hi xVals; xLo := lo xVals
+      yHi := hi yVals; yLo := lo yVals
+      xDiff := xHi - xLo; yDiff := yHi - yLo
+      pad := abs(yDiff - xDiff)/2
+      yDiff > xDiff =>
+        [segment(xLo - pad,xHi + pad),yVals]
+      [xVals,segment(yLo - pad,yHi + pad)]
+
+    intConvert: R -> I
+    intConvert r ==
+      (nn := retractIfCan(r)@Union(I,"failed")) case "failed" =>
+        error "draw: polynomial must have rational coefficients"
+      nn :: I
+
+    polyEquation: EQ Ex -> P I
+    polyEquation eq ==
+      ff := lhs(eq) - rhs(eq)
+      (r := retractIfCan(ff)@Union(FRAC P R,"failed")) case "failed" =>
+        error "draw: not a polynomial equation"
+      rat := r :: FRAC P R
+      retractIfCan(denom rat)@Union(R,"failed") case "failed" =>
+        error "draw: non-constant denominator"
+      map(intConvert,numer rat)$PolynomialFunctions2(R,I)
+
+    draw(eq,x,y,l) ==
+      -- obtain polynomial equation
+      p := polyEquation eq
+      -- extract ranges from option list
+      floatRange := option(l,"rangeFloat" :: Symbol)
+      ratRange := option(l,"rangeRat" :: Symbol)
+      (floatRange case "failed") and (ratRange case "failed") =>
+        error "draw: you must specify ranges for an implicit plot"
+      ranges : L SEG RN := nil()             -- dummy value
+      floatRanges : L SEG F := nil()         -- dummy value
+      xRange : SEG RN := segment(0,0)        -- dummy value
+      yRange : SEG RN := segment(0,0)        -- dummy value
+      xRangeFloat : SEG F := segment(0,0)    -- dummy value
+      yRangeFloat : SEG F := segment(0,0)    -- dummy value
+      if not ratRange case "failed" then
+        ranges := retract(ratRange :: Any)$ANY1(L SEG RN)
+        not size?(ranges,2) => error "draw: you must specify two ranges"
+        xRange := first ranges; yRange := second ranges
+        xRangeFloat := map(convert(#1)@Float,xRange)@(SEG F)
+        yRangeFloat := map(convert(#1)@Float,yRange)@(SEG F)
+        floatRanges := [xRangeFloat,yRangeFloat]
+      else
+        floatRanges := retract(floatRange :: Any)$ANY1(L SEG F)
+        not size?(floatRanges,2) =>
+          error "draw: you must specify two ranges"
+        xRangeFloat := first floatRanges
+        yRangeFloat := second floatRanges
+        xRange := map(retract(#1)@RN,xRangeFloat)@(SEG RN)
+        yRange := map(retract(#1)@RN,yRangeFloat)@(SEG RN)
+        ranges := [xRange,yRange]
+      -- create curve plot
+      acplot := makeSketch(p,x,y,xRange,yRange)
+      -- process scaling information
+      if toScale(l,drawToScale()) then
+        scaledRanges := drawToScaleRanges(xRangeFloat,yRangeFloat)
+        -- add scaled ranges to list of options
+        l := concat(ranges scaledRanges,l)
+      else
+        -- add ranges to list of options
+        l := concat(ranges floatRanges,l)
+      -- process color information
+      ptCol := pointColorPalette(l,pointColorDefault())
+      crCol := curveColorPalette(l,lineColorDefault())
+      -- draw
+      drawCurves(listBranches acplot,ptCol,crCol,pointSizeDefault(),l)
+

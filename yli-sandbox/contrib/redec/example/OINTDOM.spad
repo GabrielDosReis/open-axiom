@@ -1,0 +1,17 @@
+)abbrev category OINTDOM OrderedIntegralDomain
+++ Author: JH Davenport (after L Gonzalez-Vega)
+++ Date Created: 30.1.96
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Description:
+++ The category of ordered commutative integral domains, where ordering
+++ and the arithmetic operations are compatible
+++
+
+OrderedIntegralDomain(): Category ==
+  Join(IntegralDomain, OrderedRing) 
+

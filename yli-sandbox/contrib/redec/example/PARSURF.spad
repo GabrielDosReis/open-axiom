@@ -1,0 +1,39 @@
+)abbrev domain PARSURF ParametricSurface
+++ Author: Clifton J. Williamson
+++ Date Created: 24 May 1990
+++ Date Last Updated: 24 May 1990
+++ Basic Operations: surface, coordinate
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: parametric surface, graphics
+++ References:
+++ Description: ParametricSurface is used for plotting parametric surfaces in 
+++ affine 3-space.
+ 
+ParametricSurface(ComponentFunction): Exports == Implementation where
+  ComponentFunction : Type
+  NNI             ==> NonNegativeInteger
+ 
+  Exports ==> with
+    surface: (ComponentFunction,ComponentFunction,ComponentFunction) -> %
+      ++ surface(c1,c2,c3) creates a surface from 3 parametric component 
+      ++ functions \spad{c1}, \spad{c2}, and \spad{c3}.
+    coordinate: (%,NNI) -> ComponentFunction
+      ++ coordinate(s,i) returns a coordinate function of s using 1-based 
+      ++ indexing according to i.  This indicates what the function for the
+      ++ coordinate component, i, of the surface is.
+ 
+  Implementation ==> add
+ 
+    Rep := Record(xCoord:ComponentFunction,_
+                  yCoord:ComponentFunction,_
+                  zCoord:ComponentFunction)
+ 
+    surface(x,y,z) == [x,y,z]
+    coordinate(c,n) ==
+      n = 1 => c.xCoord
+      n = 2 => c.yCoord
+      n = 3 => c.zCoord
+      error "coordinate: index out of bounds"
+

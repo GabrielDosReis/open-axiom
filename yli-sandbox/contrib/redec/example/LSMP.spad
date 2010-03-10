@@ -1,0 +1,92 @@
+)abbrev package LSMP LinearSystemMatrixPackage
+++ Author: P.Gianni, S.Watt
+++ Date Created: Summer 1985
+++ Date Last Updated:Summer 1990
+++ Basic Functions: solve, particularSolution, hasSolution?, rank
+++ Related Constructors: LinearSystemMatrixPackage1
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package solves linear system in the matrix form \spad{AX = B}.
+
+LinearSystemMatrixPackage(F, Row, Col, M): Cat == Capsule where
+    F: Field
+    Row: FiniteLinearAggregate F with shallowlyMutable
+    Col: FiniteLinearAggregate F with shallowlyMutable
+    M  : MatrixCategory(F, Row, Col)
+
+    N        ==> NonNegativeInteger
+    PartialV ==> Union(Col, "failed")
+    Both     ==> Record(particular: PartialV, basis: List Col)
+
+    Cat ==> with
+        solve       : (M, Col) -> Both
+          ++  solve(A,B) finds a particular solution of the system \spad{AX = B}
+          ++  and a basis of the associated homogeneous system \spad{AX = 0}.
+        solve       : (M, List Col) -> List Both
+          ++  solve(A,LB) finds a particular soln of the systems \spad{AX = B}
+          ++  and a basis of the associated homogeneous systems \spad{AX = 0}
+          ++  where B varies in the list of column vectors LB.
+
+        particularSolution: (M, Col) -> PartialV
+          ++ particularSolution(A,B) finds a particular solution of the linear
+          ++ system \spad{AX = B}.
+        hasSolution?: (M, Col) -> Boolean
+          ++ hasSolution?(A,B) tests if the linear system \spad{AX = B}
+          ++ has a solution.
+        rank        : (M, Col) -> N
+          ++ rank(A,B) computes the rank of the complete matrix \spad{(A|B)}
+          ++ of the linear system \spad{AX = B}.
+
+    Capsule ==> add
+      systemMatrix      : (M, Col) -> M
+      aSolution         :  M -> PartialV
+
+      -- rank theorem
+      hasSolution?(A, b) == rank A = rank systemMatrix(A, b)
+      systemMatrix(m, v) == horizConcat(m, -(v::M))
+      rank(A, b)         == rank systemMatrix(A, b)
+      particularSolution(A, b) == aSolution rowEchelon systemMatrix(A,b)
+
+      -- m should be in row-echelon form.
+      -- last column of m is -(right-hand-side of system)
+      aSolution m ==
+         nvar := (ncols m - 1)::N
+         rk := maxRowIndex m
+         while (rk >= minRowIndex m) and every?(zero?, row(m, rk))
+           repeat rk := dec rk
+         rk < minRowIndex m => new(nvar, 0)
+         ck := minColIndex m
+         while (ck < maxColIndex m) and zero? qelt(m, rk, ck) repeat
+           ck := inc ck
+         ck = maxColIndex m => "failed"
+         sol := new(nvar, 0)$Col
+         -- find leading elements of diagonal
+         v := new(nvar, minRowIndex m - 1)$PrimitiveArray(Integer)
+         for i in minRowIndex m .. rk repeat
+           j : Integer
+           for j in 0.. while zero? qelt(m, i, j+minColIndex m) repeat 0
+           v.j := i
+         for j in 0..nvar-1 repeat
+           if v.j >= minRowIndex m then
+             qsetelt_!(sol, j+minIndex sol, - qelt(m, v.j, maxColIndex m))
+         sol
+
+      solve(A:M, b:Col) ==
+          -- Special case for homogeneous systems.
+          every?(zero?, b) => [new(ncols A, 0), nullSpace A]
+          -- General case.
+          m   := rowEchelon systemMatrix(A, b)
+          [aSolution m,
+           nullSpace subMatrix(m, minRowIndex m, maxRowIndex m,
+                                      minColIndex m, maxColIndex m - 1)]
+
+      solve(A:M, l:List Col) ==
+          null l => [[new(ncols A, 0), nullSpace A]]
+          nl := (sol0 := solve(A, first l)).basis
+          cons(sol0,
+                 [[aSolution rowEchelon systemMatrix(A, b), nl]
+                                                       for b in rest l])
+

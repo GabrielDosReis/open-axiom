@@ -1,0 +1,79 @@
+)abbrev package DRAWPT TopLevelDrawFunctionsForPoints
+++ Author: Mike Dewar
+++ Date Created: 24 May 1995
+++ Date Last Updated: 25 November 1996
+++ Basic Operations: draw
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: TopLevelDrawFunctionsForPoints provides top level functions for 
+++ drawing curves and surfaces described by sets of points.
+ 
+TopLevelDrawFunctionsForPoints(): Exports == Implementation where
+
+  DROP  ==> DrawOption
+  L     ==> List
+  SF    ==> DoubleFloat
+  Pt    ==> Point SF
+  VIEW2 ==> TwoDimensionalViewport
+  VIEW3 ==> ThreeDimensionalViewport
+
+  Exports ==> with
+    draw: (L SF,L SF) -> VIEW2
+      ++ draw(lx,ly) plots the curve constructed of points (x,y) for x
+      ++ in \spad{lx} for y in \spad{ly}.
+    draw: (L SF,L SF,L DROP) -> VIEW2
+      ++ draw(lx,ly,l) plots the curve constructed of points (x,y) for x
+      ++ in \spad{lx} for y in \spad{ly}.
+      ++ The options contained in the list l of
+      ++ the domain \spad{DrawOption} are applied.
+    draw: (L Pt) -> VIEW2
+      ++ draw(lp) plots the curve constructed from the list of points lp.
+    draw: (L Pt,L DROP) -> VIEW2
+      ++ draw(lp,l) plots the curve constructed from the list of points lp.
+      ++ The options contained in the list l of the domain \spad{DrawOption}
+      ++ are applied.
+    draw: (L SF, L SF, L SF) -> VIEW3
+      ++ draw(lx,ly,lz) draws the surface constructed by projecting the values
+      ++ in the \axiom{lz} list onto the rectangular grid formed by the 
+      ++ \axiom{lx X ly}.
+    draw: (L SF, L SF, L SF, L DROP) -> VIEW3
+      ++ draw(lx,ly,lz,l) draws the surface constructed by projecting the values
+      ++ in the \axiom{lz} list onto the rectangular grid formed by the 
+      ++ The options contained in the list l of the domain \spad{DrawOption}
+      ++ are applied.
+
+  Implementation ==> add
+
+    draw(lp:L Pt,l:L DROP):VIEW2 ==
+      makeViewport2D(makeGraphImage([lp])$GraphImage,l)$VIEW2
+
+    draw(lp:L Pt):VIEW2 == draw(lp,[])
+
+    draw(lx: L SF, ly: L SF, l:L DROP):VIEW2 ==
+      draw([point([x,y])$Pt for x in lx for y in ly],l)
+
+    draw(lx: L SF, ly: L SF):VIEW2 == draw(lx,ly,[])
+
+    draw(x:L SF,y:L SF,z:L SF):VIEW3 == draw(x,y,z,[])
+
+    draw(x:L SF,y:L SF,z:L SF,l:L DROP):VIEW3 ==
+      m  : Integer := #x
+      zero? m => error "No X values"
+      n  : Integer := #y
+      zero? n => error "No Y values"
+      zLen : Integer := #z
+      zLen ~= (m*n) => 
+        zLen > (m*n) => error "Too many Z-values to fit grid"
+        error "Not enough Z-values to fit grid"
+      points : L L Pt := []
+      for j in n..1 by -1 repeat
+        row : L Pt := []
+        for i in m..1 by -1 repeat
+          zval := (j-1)*m+i
+          row := cons(point([x.i,y.j,z.zval,z.zval]),row)
+        points := cons(row,points)
+      makeViewport3D(mesh points,l)
+

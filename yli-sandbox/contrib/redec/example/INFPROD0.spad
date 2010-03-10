@@ -1,0 +1,48 @@
+)abbrev package INFPROD0 InfiniteProductCharacteristicZero
+++ Author: Clifton J. Williamson
+++ Date Created: 22 February 1990
+++ Date Last Updated: 23 February 1990
+++ Basic Operations: infiniteProduct, evenInfiniteProduct, oddInfiniteProduct,
+++   generalInfiniteProduct
+++ Related Domains: UnivariateTaylorSeriesCategory
+++ Also See:
+++ AMS Classifications:
+++ Keywords: Taylor series, infinite product
+++ Examples:
+++ References:
+++ Description: 
+++   This package computes infinite products of univariate Taylor series
+++   over an integral domain of characteristic 0.
+InfiniteProductCharacteristicZero(Coef,UTS):_
+ Exports == Implementation where
+  Coef : Join(IntegralDomain,CharacteristicZero)
+  UTS  : UnivariateTaylorSeriesCategory Coef
+  I  ==> Integer
+ 
+  Exports ==> with
+ 
+    infiniteProduct: UTS -> UTS
+      ++ infiniteProduct(f(x)) computes \spad{product(n=1,2,3...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    evenInfiniteProduct: UTS -> UTS
+      ++ evenInfiniteProduct(f(x)) computes \spad{product(n=2,4,6...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    oddInfiniteProduct: UTS -> UTS
+      ++ oddInfiniteProduct(f(x)) computes \spad{product(n=1,3,5...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    generalInfiniteProduct: (UTS,I,I) -> UTS
+      ++ generalInfiniteProduct(f(x),a,d) computes
+      ++ \spad{product(n=a,a+d,a+2*d,...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+ 
+  Implementation ==> add
+ 
+    import StreamInfiniteProduct Coef
+ 
+    infiniteProduct x     == series infiniteProduct coefficients x
+    evenInfiniteProduct x == series evenInfiniteProduct coefficients x
+    oddInfiniteProduct x  == series oddInfiniteProduct coefficients x
+ 
+    generalInfiniteProduct(x,a,d) ==
+      series generalInfiniteProduct(coefficients x,a,d)
+

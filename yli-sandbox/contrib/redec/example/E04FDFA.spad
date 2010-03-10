@@ -1,0 +1,93 @@
+)abbrev domain E04FDFA e04fdfAnnaType
+++ Author: Brian Dupee
+++ Date Created: February 1996
+++ Date Last Updated: February 1996
+++ Basic Operations: measure, numericalOptimization
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{e04fdfAnnaType} is a domain of \axiomType{NumericalOptimization}
+++ for the NAG routine E04FDF, a general optimization routine which
+++ can handle some singularities in the input function.  The function
+++ \axiomFun{measure} measures the usefulness of the routine E04FDF
+++ for the given problem.  The function \axiomFun{numericalOptimization}
+++ performs the optimization by using \axiomType{NagOptimisationPackage}.
+e04fdfAnnaType(): NumericalOptimizationCategory == Result add
+  DF    ==> DoubleFloat
+  EF    ==> Expression Float
+  EDF   ==> Expression DoubleFloat
+  PDF   ==> Polynomial DoubleFloat
+  VPDF  ==> Vector Polynomial DoubleFloat
+  LDF   ==> List DoubleFloat
+  LOCDF ==> List OrderedCompletion DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  MPDF  ==> Matrix Polynomial DoubleFloat
+  MF    ==> Matrix Float
+  MEF   ==> Matrix Expression Float
+  LEDF  ==> List Expression DoubleFloat
+  VEF   ==> Vector Expression Float
+  NOA   ==> Record(fn:EDF, init:LDF, lb:LOCDF, cf:LEDF, ub:LOCDF)
+  LSA   ==> Record(lfn:LEDF, init:LDF)
+  EF2   ==> ExpressionFunctions2
+  MI    ==> Matrix Integer
+  INT   ==> Integer
+  F     ==> Float
+  NNI   ==> NonNegativeInteger
+  S     ==> Symbol
+  LS    ==> List Symbol
+  MVCF  ==> MultiVariableCalculusFunctions
+  ESTOOLS2 ==> ExpertSystemToolsPackage2
+  SDF   ==> Stream DoubleFloat
+  LSDF  ==> List Stream DoubleFloat
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  OCDF  ==> OrderedCompletion DoubleFloat
+
+  Rep:=Result
+  import Rep, NagOptimisationPackage
+  import e04AgentsPackage,ExpertSystemToolsPackage
+
+  measure(R:RoutinesTable,args:NOA) ==
+    argsFn := args.fn
+    string:String := "e04fdf is "
+    positive?(#(args.cf) + #(args.lb) + #(args.ub)) =>
+      string := concat(string,"unsuitable for constrained problems. ")
+      [0.0,string]
+    n:NNI := #(variables(argsFn)$EDF)
+    (n>1)@Boolean => 
+      string := concat(string,"unsuitable for single instances of multivariate problems. ")
+      [0.0,string]
+    sumOfSquares(argsFn) case "failed" =>
+      string := concat(string,"unsuitable.")
+      [0.0,string]
+    string := concat(string,"recommended since the function is a sum of squares.")
+    [getMeasure(R,e04fdf@Symbol)$RoutinesTable, string]
+
+  measure(R:RoutinesTable,args:LSA) ==
+    string:String := "e04fdf is recommended"
+    [getMeasure(R,e04fdf@Symbol)$RoutinesTable, string]
+
+  numericalOptimization(args:NOA) ==
+    argsFn := args.fn
+    lw:INT := 14
+    x := mat(args.init,1)
+    (a := sumOfSquares(argsFn)) case EDF => 
+      ArgsFn := vector([edf2ef(a)])$VEF
+      f : Union(fn:FileName,fp:Asp50(LSFUN1)) := [retract(ArgsFn)$Asp50(LSFUN1)]
+      out:Result := e04fdf(1,1,1,lw,x,-1,f)
+      changeNameToObjf(fsumsq@Symbol,out)
+    empty()$Result
+
+  numericalOptimization(args:LSA) ==
+    argsFn := copy args.lfn
+    m:INT := #(argsFn)
+    n:NNI := #(variables(args))
+    nn:INT := n
+    lw:INT := 
+--      one?(nn) => 9+5*m
+      (nn = 1) => 9+5*m
+      nn*(7+n+2*m+((nn-1) quo 2)$INT)+3*m
+    x := mat(args.init,n)
+    ArgsFn := vector([edf2ef(i)$ExpertSystemToolsPackage for i in argsFn])$VEF
+    f : Union(fn:FileName,fp:Asp50(LSFUN1)) := [retract(ArgsFn)$Asp50(LSFUN1)]
+    out:Result := e04fdf(m,n,1,lw,x,-1,f)
+    changeNameToObjf(fsumsq@Symbol,out)
+

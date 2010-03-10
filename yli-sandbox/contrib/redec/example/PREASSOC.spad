@@ -1,0 +1,93 @@
+)abbrev package PREASSOC PrecomputedAssociatedEquations
+++ Author: Manuel Bronstein
+++ Date Created: 13 January 1994
+++ Date Last Updated: 3 February 1994
+++ Description:
+++ \spadtype{PrecomputedAssociatedEquations} stores some generic
+++ precomputations which speed up the computations of the
+++ associated equations needed for factoring operators.
+PrecomputedAssociatedEquations(R, L): Exports == Implementation where
+  R: IntegralDomain
+  L: LinearOrdinaryDifferentialOperatorCategory R
+ 
+  PI  ==> PositiveInteger
+  N   ==> NonNegativeInteger
+  A   ==> PrimitiveArray R
+  U   ==> Union(Matrix R, "failed")
+ 
+  Exports ==> with
+    firstUncouplingMatrix: (L, PI) -> U
+      ++ firstUncouplingMatrix(op, m) returns the matrix A such that
+      ++ \spad{A w = (W',W'',...,W^N)} in the corresponding associated
+      ++ equations for right-factors of order m of op.
+      ++ Returns "failed" if the matrix A has not been precomputed for
+      ++ the particular combination \spad{degree(L), m}.
+ 
+  Implementation ==> add
+    A32:  L -> U
+    A42:  L -> U
+    A425: (A, A, A) -> List R
+    A426: (A, A, A) -> List R
+    makeMonic: L -> Union(A, "failed")
+ 
+    diff:L := D()
+ 
+    firstUncouplingMatrix(op, m) ==
+      n := degree op
+      n = 3 and m = 2 => A32 op
+      n = 4 and m = 2 => A42 op
+      "failed"
+        
+    makeMonic op ==
+      lc := leadingCoefficient op
+      a:A := new(n := degree op, 0)
+      for i in 0..(n-1)::N repeat
+        (u := coefficient(op, i) exquo lc) case "failed" => return "failed"
+        a.i := - (u::R)
+      a
+    
+    A32 op ==
+      (u := makeMonic op) case "failed" => "failed"
+      a := u::A
+      matrix [[0, 1, 0], [a.1, a.2, 1],
+              [diff(a.1) + a.1 * a.2 - a.0, diff(a.2) + a.2**2 + a.1, 2 * a.2]]
+ 
+    A42 op ==
+      (u := makeMonic op) case "failed" => "failed"
+      a := u::A
+      a':A := new(4, 0)
+      a'':A := new(4, 0)
+      for i in 0..3 repeat
+        a'.i := diff(a.i)
+        a''.i := diff(a'.i)
+      matrix [[0, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0], [a.1,a.2,0,a.3,2::R,0],
+              [a'.1 + a.1 * a.3 - 2 * a.0, a'.2 + a.2 * a.3 + a.1, 3 * a.2,
+               a'.3 + a.3 ** 2 + a.2, 3 * a.3, 2::R],
+                A425(a, a', a''), A426(a, a', a'')]
+ 
+    A425(a, a', a'') ==
+      [a''.1 + 2 * a.1 * a'.3 + a.3 * a'.1 - 2 * a'.0 + a.1 * a.3 ** 2
+       - 3 * a.0 * a.3 + a.1 * a.2,
+        a''.2 + 2 * a.2 * a'.3 + a.3 * a'.2 + 2 * a'.1 + a.2 * a.3 ** 2
+         + a.1 * a.3 + a.2 ** 2 - 4 * a.0,
+          4 * a'.2 + 4 * a.2 * a.3 - a.1,
+           a''.3 + 3 * a.3 * a'.3 + 2 * a'.2 + a.3 ** 3 + 2 * a.2 * a.3 + a.1,
+            4 * a'.3 + 4 * a.3 ** 2 + 4 * a.2, 5 * a.3]
+              
+    A426(a, a', a'') ==
+      [diff(a''.1) + 3 * a.1 * a''.3 + a.3 * a''.1 - 2 * a''.0
+       + (3 * a'.1 + 5 * a.1 * a.3 - 7 * a.0) * a'.3 + 3 * a.1 * a'.2
+        + (a.3 ** 2 + a.2) * a'.1 - 3 * a.3 * a'.0 + a.1 * a.3 ** 3
+         - 4 * a.0 * a.3 ** 2 + 2 * a.1 * a.2 * a.3 - 4 * a.0 * a.2 + a.1 ** 2,
+          diff(a''.2) + 3 * a.2 * a''.3 + a.3 * a''.2 + 3 * a''.1
+           + (3*a'.2 + 5*a.2 * a.3 + 3 * a.1) * a'.3 + (a.3**2 + 4*a.2)*a'.2
+            + 2 * a.3 * a'.1 - 6 * a'.0 + a.2 * a.3 ** 3 + a.1 * a.3 ** 2
+             + (2 * a.2**2 - 8 * a.0) * a.3 + 2 * a.1 * a.2,
+              5 * a''.2 + 10 * a.2 * a'.3 + 5 * a.3 * a'.2 + a'.1
+               + 5 * a.2 * a.3 ** 2 - 4 * a.1 * a.3 + 5 * a.2**2 - 4 * a.0,
+                diff(a''.3) + 4 * a.3 * a''.3 + 3*a''.2 + 3 * a'.3**2
+                 + (6 * a.3**2 + 4 * a.2) * a'.3 + 5 * a.3 * a'.2 + 3 * a'.1
+                  + a.3**4 + 3 * a.2 * a.3**2 + 2 * a.1 * a.3 + a.2**2 - 4*a.0,
+                   5 * a''.3 + 15 * a.3 * a'.3 + 10 * a'.2 + 5 * a.3**3
+                    + 10 * a.2 * a.3, 9 * a'.3 + 9 * a.3**2 + 4 * a.2]
+

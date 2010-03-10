@@ -1,0 +1,68 @@
+)abbrev domain D03EEFA d03eefAnnaType
+++ Author: Brian Dupee
+++ Date Created: June 1996
+++ Date Last Updated: June 1996
+++ Basic Operations: 
+++ Description:
+++ \axiomType{d03eefAnnaType} is a domain of 
+++ \axiomType{PartialDifferentialEquationsSolverCategory}
+++ for the NAG routines D03EEF/D03EDF.
+d03eefAnnaType():PartialDifferentialEquationsSolverCategory == Result add  -- 2D Elliptic PDE
+  LEDF  ==> List Expression DoubleFloat
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  DF    ==> DoubleFloat
+  F     ==> Float
+  FI    ==> Fraction Integer
+  VEF   ==> Vector Expression Float
+  EF    ==> Expression Float
+  MEF   ==> Matrix Expression Float
+  NNI   ==> NonNegativeInteger
+  INT   ==> Integer
+  PDEC  ==> Record(start:DF, finish:DF, grid:NNI, boundaryType:INT,
+                      dStart:MDF, dFinish:MDF)
+  PDEB  ==> Record(pde:LEDF, constraints:List PDEC,
+                      f:List LEDF, st:String, tol:DF)
+
+  import d03AgentsPackage, NagPartialDifferentialEquationsPackage
+  import ExpertSystemToolsPackage
+
+  measure(R:RoutinesTable,args:PDEB) ==
+    (# (args.constraints) > 2)@Boolean =>
+      [0$F,"d03eef/d03edf is unsuitable for PDEs of order more than 2"]
+    elliptic?(args) => 
+      m := getMeasure(R,d03eef :: Symbol)$RoutinesTable
+      [m,"d03eef/d03edf is suitable"]
+    [0$F,"d03eef/d03edf is unsuitable for hyperbolic or parabolic PDEs"]
+
+  PDESolve(args:PDEB) ==
+    xcon := first(args.constraints)
+    ycon := second(args.constraints) 
+    nx := xcon.grid
+    ny := ycon.grid 
+    p := args.pde
+    x1 := xcon.start
+    x2 := xcon.finish
+    y1 := ycon.start
+    y2 := ycon.finish
+    lda := ((4*(nx+1)*(ny+1)+2) quo 3)$INT
+    scheme:String :=
+      central?((x2-x1)/2,(y2-y1)/2,args.pde) => "C"
+      "U"
+    asp73:Union(fn:FileName,fp:Asp73(PDEF)) :=
+      [retract(vector([edf2ef u for u in p])$VEF)$Asp73(PDEF)]
+    asp74:Union(fn:FileName,fp:Asp74(BNDY)) := 
+      [retract(matrix([[edf2ef v for v in w] for w in args.f])$MEF)$Asp74(BNDY)]
+    fde := d03eef(x1,x2,y1,y2,nx,ny,lda,scheme,-1,asp73,asp74)
+    ub := new(1,nx*ny,0$DF)$MDF
+    A := search(a::Symbol,fde)$Result
+    A case "failed" => empty()$Result
+    AA := A::Any
+    fdea := retract(AA)$AnyFunctions1(MDF)
+    r := search(rhs::Symbol,fde)$Result
+    r case "failed" => empty()$Result
+    rh := r::Any
+    fderhs := retract(rh)$AnyFunctions1(MDF)
+    d03edf(nx,ny,lda,15,args.tol,0,fdea,fderhs,ub,-1)
+

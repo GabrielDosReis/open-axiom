@@ -1,0 +1,55 @@
+)abbrev domain PDEPROB NumericalPDEProblem
+++ Author: Brian Dupee
+++ Date Created: December 1997
+++ Date Last Updated: December 1997
+++ Basic Operations: coerce, retract
+++ Related Constructors: Union
+++ Description:
+++ \axiomType{NumericalPDEProblem} is a \axiom{domain}
+++ for the representation of Numerical PDE problems for use
+++ by ANNA. 
+++
+++ The representation is of type: 
+++
+++ \axiomType{Record}(pde:\axiomType{List Expression DoubleFloat}, 
+++ constraints:\axiomType{List PDEC}, 
+++ f:\axiomType{List List Expression DoubleFloat},
+++ st:\axiomType{String},
+++ tol:\axiomType{DoubleFloat})
+++
+++ where \axiomType{PDEC} is of type:
+++
+++ \axiomType{Record}(start:\axiomType{DoubleFloat}, 
+++ finish:\axiomType{DoubleFloat},
+++ grid:\axiomType{NonNegativeInteger},
+++ boundaryType:\axiomType{Integer},
+++ dStart:\axiomType{Matrix DoubleFloat}, 
+++ dFinish:\axiomType{Matrix DoubleFloat})
+++
+
+DFC   ==> DoubleFloat
+NNIC  ==> NonNegativeInteger
+INTC  ==> Integer
+MDFC  ==> Matrix DoubleFloat
+PDECC ==> Record(start:DFC, finish:DFC, grid:NNIC, boundaryType:INTC,
+                dStart:MDFC, dFinish:MDFC)
+LEDFC ==> List Expression DoubleFloat
+PDEBC ==> Record(pde:LEDFC, constraints:List PDECC, f:List LEDFC, 
+                    st:String, tol:DFC)
+NumericalPDEProblem():SetCategory with
+
+    coerce: PDEBC -> %
+      ++ coerce(x) \undocumented{}
+    retract: % -> PDEBC
+      ++ retract(x) \undocumented{}
+
+  ==
+ 
+    add
+      Rep := PDEBC
+ 
+      coerce(s:PDEBC) == s
+      coerce(x:%):OutputForm ==
+        (retract(x))::OutputForm
+      retract(x:%):PDEBC == x :: Rep
+

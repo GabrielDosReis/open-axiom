@@ -1,0 +1,74 @@
+)abbrev package CRAPACK CRApackage
+ 
+++ This package \undocumented{}
+CRApackage(R:EuclideanDomain): Exports == Implementation where
+  Exports == with
+    modTree: (R,List R) -> List R
+        ++ modTree(r,l) \undocumented{}
+    chineseRemainder: (List R, List R) -> R
+    ++ chineseRemainder(lv,lm) returns a value \axiom{v} such that, if
+    ++ x is \axiom{lv.i} modulo \axiom{lm.i} for all \axiom{i}, then
+    ++ x is \axiom{v} modulo \axiom{lm(1)*lm(2)*...*lm(n)}.
+    chineseRemainder: (List List R, List R) -> List R
+    ++ chineseRemainder(llv,lm) returns a list of values, each of which
+    ++ corresponds to the Chinese remainder of the associated element of
+    ++ \axiom{llv} and axiom{lm}.  This is more efficient than applying
+    ++ chineseRemainder several times.
+    multiEuclideanTree: (List R, R) -> List R
+        ++ multiEuclideanTree(l,r) \undocumented{}
+  Implementation == add
+
+    BB==BalancedBinaryTree(R)
+    x:BB
+
+    -- Definition for modular reduction mapping with several moduli
+    modTree(a,lm) ==
+      t := balancedBinaryTree(#lm, 0$R)
+      setleaves_!(t,lm)
+      mapUp_!(t,"*")
+      leaves mapDown_!(t, a, "rem")
+
+    chineseRemainder(lv:List(R), lm:List(R)):R ==
+      #lm ~= #lv => error "lists of moduli and values not of same length"
+      x := balancedBinaryTree(#lm, 0$R)
+      x := setleaves_!(x, lm)
+      mapUp_!(x,"*")
+      y := balancedBinaryTree(#lm, 1$R)
+      y := mapUp_!(copy y,x,#1 * #4 + #2 * #3)
+      (u := extendedEuclidean(value y, value x,1)) case "failed" =>
+        error "moduli not relatively prime"
+      inv := u . coef1
+      linv := modTree(inv, lm)
+      l := [(u*v) rem m for v in lv for u in linv for m in lm]
+      y := setleaves_!(y,l)
+      value(mapUp_!(y, x, #1 * #4 + #2 * #3)) rem value(x)
+
+    chineseRemainder(llv:List List(R), lm:List(R)):List(R) ==
+      x := balancedBinaryTree(#lm, 0$R)
+      x := setleaves_!(x, lm)
+      mapUp_!(x,"*")
+      y := balancedBinaryTree(#lm, 1$R)
+      y := mapUp_!(copy y,x,#1 * #4 + #2 * #3)
+      (u := extendedEuclidean(value y, value x,1)) case "failed" =>
+        error "moduli not relatively prime"
+      inv := u . coef1
+      linv := modTree(inv, lm)
+      retVal:List(R) := []
+      for lv in llv repeat
+        l := [(u3*v) rem m for v in lv for u3 in linv for m in lm]
+        y := setleaves!(y,l)
+        retVal := cons(value(mapUp!(y, x, #1*#4+#2*#3)) rem value(x),retVal)
+      reverse retVal
+
+    extEuclidean: (R, R, R) -> List R
+    extEuclidean(a, b, c) ==
+      u := extendedEuclidean(a, b, c)
+      u case "failed" => error [c, " not spanned by ", a, " and ",b]
+      [u.coef2, u.coef1]
+
+    multiEuclideanTree(fl, rhs) ==
+      x := balancedBinaryTree(#fl, rhs)
+      x := setleaves_!(x, fl)
+      mapUp_!(x,"*")
+      leaves mapDown_!(x, rhs, extEuclidean)
+

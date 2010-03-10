@@ -1,0 +1,20 @@
+)abbrev domain CTORKIND ConstructorKind
+++ Author: Gabriel Dos Reis
+++ Date Create: October 07, 2008.
+++ Date Last Updated: October 07, 2008.
+++ Related Constructors: 
+++ Description:
+++   This domain enumerates the three kinds of constructors
+++   available in OpenAxiom: category constructors, domain
+++   constructors, and package constructors.
+ConstructorKind(): Public == Private where
+  Public == SetCategory with
+    category: % ++ `category' is the kind of category constructors
+    domain: %   ++ `domain' is the kind of domain constructors
+    package: %  ++ `package' is the kind of package constructors.
+  Private == add
+    category == 'category : %
+    domain == 'domain : %
+    package == 'package : %
+    k1 = k2 == EQ(k1,k2)$Lisp
+    coerce(k: %): OutputForm == k : OutputForm

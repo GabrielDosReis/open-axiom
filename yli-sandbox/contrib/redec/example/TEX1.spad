@@ -1,0 +1,30 @@
+)abbrev package TEX1 TexFormat1
+++ Author: Robert S. Sutor
+++ Date Created: 1987 through 1990
+++ Change History:
+++ Basic Operations: coerce
+++ Related Constructors: TexFormat
+++ Also See: ScriptFormulaFormat, ScriptFormulaFormat1
+++ AMS Classifications:
+++ Keywords: TeX, output, format
+++ References: \TeX{} is a trademark of the American Mathematical
+++   Society.
+++ Description:
+++   \spadtype{TexFormat1} provides a utility coercion for changing
+++   to TeX format anything that has a coercion to the standard output
+++   format.
+
+TexFormat1(S : SetCategory): public == private where
+  public  ==  with
+    coerce: S -> TexFormat()
+      ++ coerce(s) provides a direct coercion from a domain S to
+      ++ TeX format. This allows the user to skip the step of first
+      ++ manually coercing the object to standard output format before
+      ++ it is coerced to TeX format.
+
+  private == add
+    import TexFormat()
+
+    coerce(s : S): TexFormat ==
+      coerce(s :: OutputForm)$TexFormat
+

@@ -1,0 +1,21 @@
+import Type
+import Equation
+)abbrev package EQ2 EquationFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated: June 3, 1991
+++ Basic Operations:
+++ Related Domains: Equation
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   This package provides operations for mapping the sides of equations.
+EquationFunctions2(S: Type, R: Type): with
+    map: (S ->R ,Equation S) -> Equation R
+        ++ map(f,eq) returns an equation where f is applied to the sides of eq
+ == add
+    map(fn, eqn) == equation(fn lhs eqn, fn rhs eqn)
+

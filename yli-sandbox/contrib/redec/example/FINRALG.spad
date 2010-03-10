@@ -1,0 +1,81 @@
+import CommutativeRing
+import Algebra
+import UnivariatePolynomialCategory
+import PositiveInteger
+import Vector
+import Matrix
+)abbrev category FINRALG FiniteRankAlgebra
+++ Author: Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A FiniteRankAlgebra is an algebra over a commutative ring R which
+++ is a free R-module of finite rank.
+
+FiniteRankAlgebra(R:CommutativeRing, UP:UnivariatePolynomialCategory R):
+ Category == Algebra R with
+    rank                    : () -> PositiveInteger
+      ++ rank() returns the rank of the algebra.
+    regularRepresentation   : (% , Vector %) -> Matrix R
+      ++ regularRepresentation(a,basis) returns the matrix of the
+      ++ linear map defined by left multiplication by \spad{a} with respect
+      ++ to the basis \spad{basis}.
+    trace                   : %  -> R
+      ++ trace(a) returns the trace of the regular representation
+      ++ of \spad{a} with respect to any basis.
+    norm                    : %  -> R
+      ++ norm(a) returns the determinant of the regular representation
+      ++ of \spad{a} with respect to any basis.
+    coordinates             : (%, Vector %) -> Vector R
+      ++ coordinates(a,basis) returns the coordinates of \spad{a} with
+      ++ respect to the basis \spad{basis}.
+    coordinates             : (Vector %, Vector %) -> Matrix R
+      ++ coordinates([v1,...,vm], basis) returns the coordinates of the
+      ++ vi's with to the basis \spad{basis}.  The coordinates of vi are
+      ++ contained in the ith row of the matrix returned by this
+      ++ function.
+    represents              : (Vector R, Vector %) -> %
+      ++ represents([a1,..,an],[v1,..,vn]) returns \spad{a1*v1 + ... + an*vn}.
+    discriminant            : Vector % -> R
+      ++ discriminant([v1,..,vn]) returns
+      ++ \spad{determinant(traceMatrix([v1,..,vn]))}.
+    traceMatrix             : Vector % -> Matrix R
+      ++ traceMatrix([v1,..,vn]) is the n-by-n matrix ( Tr(vi * vj) )
+    characteristicPolynomial: % -> UP
+      ++ characteristicPolynomial(a) returns the characteristic
+      ++ polynomial of the regular representation of \spad{a} with respect
+      ++ to any basis.
+    if R has Field then minimalPolynomial : % -> UP
+      ++ minimalPolynomial(a) returns the minimal polynomial of \spad{a}.
+    if R has CharacteristicZero then CharacteristicZero
+    if R has CharacteristicNonZero then CharacteristicNonZero
+
+  add
+
+    discriminant v == determinant traceMatrix v
+
+    coordinates(v:Vector %, b:Vector %) ==
+      m := new(#v, #b, 0)$Matrix(R)
+      for i in minIndex v .. maxIndex v for j in minRowIndex m .. repeat
+        setRow_!(m, j, coordinates(qelt(v, i), b))
+      m
+
+    represents(v, b) ==
+      m := minIndex v - 1
+      _+/[v(i+m) * b(i+m) for i in 1..rank()]
+
+    traceMatrix v ==
+      matrix [[trace(v.i*v.j) for j in minIndex v..maxIndex v]$List(R)
+               for i in minIndex v .. maxIndex v]$List(List R)
+
+    regularRepresentation(x, b) ==
+      m := minIndex b - 1
+      matrix
+       [parts coordinates(x*b(i+m),b) for i in 1..rank()]$List(List R)
+

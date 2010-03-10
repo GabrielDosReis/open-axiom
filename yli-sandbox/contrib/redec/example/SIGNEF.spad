@@ -1,0 +1,188 @@
+)abbrev package SIGNEF ElementaryFunctionSign
+++ Author: Manuel Bronstein
+++ Date Created: 25 Aug 1989
+++ Date Last Updated: 4 May 1992
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: elementary function, sign
+++ Examples:
+++ References:
+++ Description:
+++   This package provides functions to determine the sign of an
+++   elementary function around a point or infinity.
+ElementaryFunctionSign(R,F): Exports == Implementation where
+  R : Join(IntegralDomain,OrderedSet,RetractableTo Integer,_
+           LinearlyExplicitRingOver Integer,GcdDomain)
+  F : Join(AlgebraicallyClosedField,TranscendentalFunctionCategory,_
+            FunctionSpace R)
+
+  N  ==> NonNegativeInteger
+  Z  ==> Integer
+  SY ==> Symbol
+  RF ==> Fraction Polynomial R
+  ORF ==> OrderedCompletion RF
+  OFE ==> OrderedCompletion F
+  K  ==> Kernel F
+  P  ==> SparseMultivariatePolynomial(R, K)
+  U  ==> Union(Z, "failed")
+  FS2 ==> FunctionSpaceFunctions2
+  POSIT ==> "positive"
+  NEGAT ==> "negative"
+
+  Exports ==> with
+    sign: F -> U
+      ++ sign(f) returns the sign of f if it is constant everywhere.
+    sign: (F, SY, OFE) -> U
+      ++ sign(f, x, a) returns the sign of f as x nears \spad{a}, from both
+      ++ sides if \spad{a} is finite.
+    sign: (F, SY, F, String) -> U
+      ++ sign(f, x, a, s) returns the sign of f as x nears \spad{a} from below
+      ++ if s is "left", or above if s is "right".
+
+  Implementation ==> add
+    import ToolsForSign R
+    import RationalFunctionSign(R)
+    import PowerSeriesLimitPackage(R, F)
+    import TrigonometricManipulations(R, F)
+
+    smpsign : P -> U
+    sqfrSign: P -> U
+    termSign: P -> U
+    kerSign : K -> U
+    listSign: (List P,Z) -> U
+    insign  : (F,SY,OFE, N) -> U
+    psign   : (F,SY,F,String, N) -> U
+    ofesign : OFE -> U
+    overRF  : OFE -> Union(ORF, "failed")
+
+    sign(f, x, a) ==
+      not real? f => "failed"
+      insign(f, x, a, 0)
+
+    sign(f, x, a, st) ==
+      not real? f => "failed"
+      psign(f, x, a, st, 0)
+
+    sign f ==
+      not real? f => "failed"
+      (u := retractIfCan(f)@Union(RF,"failed")) case RF => sign(u::RF)
+      (un := smpsign numer f) case Z and (ud := smpsign denom f) case Z =>
+        un::Z * ud::Z
+      --abort if there are any variables
+      not empty? variables f => "failed"
+      -- abort in the presence of algebraic numbers
+      member?(coerce("rootOf")::Symbol,map(name,operators f)$ListFunctions2(BasicOperator,Symbol)) => "failed"
+      -- In the last resort try interval evaluation where feasible.
+      if R has ConvertibleTo Float then
+        import Interval(Float)
+        import Expression(Interval Float)
+        mapfun : (R -> Interval(Float)) := interval(convert(#1)$R)
+        f2 : Expression(Interval Float) := map(mapfun,f)$FS2(R,F,Interval(Float),Expression(Interval Float))
+        r : Union(Interval(Float),"failed") := retractIfCan f2
+        if r case "failed" then  return "failed"
+        negative? r => return(-1)
+        positive? r => return 1
+        zero? r => return 0
+        "failed"
+      "failed"
+
+    overRF a ==
+      (n := whatInfinity a) = 0 =>
+        (u := retractIfCan(retract(a)@F)@Union(RF,"failed")) _
+               case "failed" => "failed"
+        u::RF::ORF
+      n * plusInfinity()$ORF
+
+    ofesign a ==
+      (n := whatInfinity a) ~= 0 => convert(n)@Z
+      sign(retract(a)@F)
+
+    insign(f, x, a, m) ==
+      m > 10 => "failed"                 -- avoid infinite loops for now
+      (uf := retractIfCan(f)@Union(RF,"failed")) case RF and
+                   (ua := overRF a) case ORF => sign(uf::RF, x, ua::ORF)
+      eq : Equation OFE := equation(x :: F :: OFE,a)
+      (u := limit(f,eq)) case "failed" => "failed"
+      u case OFE =>
+        (n := whatInfinity(u::OFE)) ~= 0 => convert(n)@Z
+        (v := retract(u::OFE)@F) = 0 =>
+          (s := insign(differentiate(f, x), x, a, m + 1)) case "failed"
+                                                             => "failed"
+          - s::Z * n
+        sign v
+      (u.leftHandLimit case "failed") or
+         (u.rightHandLimit case "failed") => "failed"
+      (ul := ofesign(u.leftHandLimit::OFE))  case "failed" => "failed"
+      (ur := ofesign(u.rightHandLimit::OFE)) case "failed" => "failed"
+      (ul::Z) = (ur::Z) => ul
+      "failed"
+
+    psign(f, x, a, st, m) ==
+      m > 10 => "failed"                 -- avoid infinite loops for now
+      f = 0 => 0
+      (uf := retractIfCan(f)@Union(RF,"failed")) case RF and
+           (ua := retractIfCan(a)@Union(RF,"failed")) case RF =>
+            sign(uf::RF, x, ua::RF, st)
+      eq : Equation F := equation(x :: F,a)
+      (u := limit(f,eq,st)) case "failed" => "failed"
+      u case OFE =>
+        (n := whatInfinity(u::OFE)) ~= 0 => convert(n)@Z
+        (v := retract(u::OFE)@F) = 0 =>
+          (s := psign(differentiate(f,x),x,a,st,m + 1)) case "failed"=>
+            "failed"
+          direction(st) * s::Z
+        sign v
+
+    smpsign p ==
+      (r := retractIfCan(p)@Union(R,"failed")) case R => sign(r::R)
+      (u := sign(retract(unit(s := squareFree p))@R)) case "failed" =>
+        "failed"
+      ans := u::Z
+      for term in factorList s | odd?(term.xpnt) repeat
+        (u := sqfrSign(term.fctr)) case "failed" => return "failed"
+        ans := ans * u::Z
+      ans
+
+    sqfrSign p ==
+      (u := termSign first(l := monomials p)) case "failed" => "failed"
+      listSign(rest l, u::Z)
+
+    listSign(l, s) ==
+      for term in l repeat
+        (u := termSign term) case "failed" => return "failed"
+        not(s = u::Z) => return "failed"
+      s
+
+    termSign term ==
+      (us := sign leadingCoefficient term) case "failed" => "failed"
+      for var in (lv := variables term) repeat
+        odd? degree(term, var) =>
+          empty? rest lv and (vs := kerSign first lv) case Z =>
+                                                   return(us::Z * vs::Z)
+          return "failed"
+      us::Z
+
+    kerSign k ==
+      has?(op := operator k, "NEGAT") => -1
+      has?(op, "POSIT") or is?(op,  "pi"::SY) or is?(op,"exp"::SY) or
+                           is?(op,"cosh"::SY) or is?(op,"sech"::SY) => 1
+      empty?(arg := argument k) => "failed"
+      (s := sign first arg) case "failed" =>
+        is?(op,"nthRoot" :: SY) =>
+          even?(retract(second arg)@Z) => 1
+          "failed"
+        "failed"
+      is?(op,"log" :: SY) =>
+        s::Z < 0 => "failed"
+        sign(first arg - 1)
+      is?(op,"tanh" :: SY) or is?(op,"sinh" :: SY) or
+                     is?(op,"csch" :: SY) or is?(op,"coth" :: SY) => s
+      is?(op,"nthRoot" :: SY) =>
+        even?(retract(second arg)@Z) =>
+          s::Z < 0 => "failed"
+          s
+        s
+      "failed"
+

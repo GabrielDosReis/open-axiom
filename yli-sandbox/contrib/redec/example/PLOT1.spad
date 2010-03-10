@@ -1,0 +1,39 @@
+import ConvertibleTo InputForm
+import Symbol
+import DoubleFloat
+import Segment
+import Plot
+)abbrev package PLOT1 PlotFunctions1
+++ Authors: R.T.M. Bronstein, C.J. Williamson
+++ Date Created: Jan 1989
+++ Date Last Updated: 4 Mar 1990
+++ Basic Operations: plot, plotPolar
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: PlotFunctions1 provides facilities for plotting curves
+++ where functions SF -> SF are specified by giving an expression
+PlotFunctions1(S:ConvertibleTo InputForm): with
+    plot : (S, Symbol, Segment DoubleFloat) -> Plot
+      ++ plot(fcn,x,seg) plots the graph of \spad{y = f(x)} on a interval
+    plot : (S, S, Symbol, Segment DoubleFloat) -> Plot
+      ++ plot(f,g,t,seg) plots the graph of \spad{x = f(t)}, \spad{y = g(t)} as t
+      ++ ranges over an interval.
+    plotPolar : (S, Symbol, Segment DoubleFloat) -> Plot
+      ++ plotPolar(f,theta,seg) plots the graph of \spad{r = f(theta)} as
+      ++ theta ranges over an interval
+    plotPolar : (S, Symbol) -> Plot
+      ++ plotPolar(f,theta) plots the graph of \spad{r = f(theta)} as
+      ++ theta ranges from 0 to 2 pi
+  == add
+    import MakeFloatCompiledFunction(S)
+
+    plot(f, x, xRange) == plot(makeFloatFunction(f, x), xRange)
+    plotPolar(f,theta) == plotPolar(makeFloatFunction(f,theta))
+    plot(f1, f2, t, tRange) ==
+      plot(makeFloatFunction(f1, t), makeFloatFunction(f2, t), tRange)
+    plotPolar(f,theta,thetaRange) ==
+      plotPolar(makeFloatFunction(f,theta),thetaRange)
+

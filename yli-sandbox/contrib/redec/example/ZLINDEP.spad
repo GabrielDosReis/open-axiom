@@ -1,0 +1,33 @@
+)abbrev package ZLINDEP IntegerLinearDependence
+++ Test for linear dependence over the integers
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description: Test for linear dependence over the integers.
+IntegerLinearDependence(R): Exports == Implementation where
+  R: LinearlyExplicitRingOver Integer
+
+  Z ==> Integer
+
+  Exports ==> with
+    linearlyDependentOverZ?: Vector R -> Boolean
+      ++ \spad{linearlyDependentOverZ?([v1,...,vn])} returns true if the
+      ++ vi's are linearly dependent over the integers, false otherwise.
+    linearDependenceOverZ  : Vector R -> Union(Vector Z, "failed")
+      ++ \spad{linearlyDependenceOverZ([v1,...,vn])} returns
+      ++ \spad{[c1,...,cn]} if
+      ++ \spad{c1*v1 + ... + cn*vn = 0} and not all the ci's are 0, "failed"
+      ++ if the vi's are linearly independent over the integers.
+    solveLinearlyOverQ     : (Vector R, R) ->
+                                      Union(Vector Fraction Z, "failed")
+      ++ \spad{solveLinearlyOverQ([v1,...,vn], u)} returns \spad{[c1,...,cn]}
+      ++ such that \spad{c1*v1 + ... + cn*vn = u},
+      ++ "failed" if no such rational numbers ci's exist.
+
+  Implementation ==> add
+    import LinearDependence(Z, R)
+
+    linearlyDependentOverZ? v == linearlyDependent? v
+    linearDependenceOverZ   v == linearDependence v
+    solveLinearlyOverQ(v, c)  == solveLinear(v, c)
+

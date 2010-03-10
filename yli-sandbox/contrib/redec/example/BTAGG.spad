@@ -1,0 +1,45 @@
+import OrderedSet
+import Logic
+import OneDimensionalArrayAggregate Boolean
+)abbrev category BTAGG BitAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The bit aggregate category models aggregates representing large
+++ quantities of Boolean data.
+BitAggregate(): Category ==
+  Join(OrderedSet, Logic, OneDimensionalArrayAggregate Boolean) with
+    "not": % -> %
+      ++ not(b) returns the logical {\em not} of bit aggregate 
+      ++ \axiom{b}.
+    nand : (%, %) -> %
+      ++ nand(a,b) returns the logical {\em nand} of bit aggregates \axiom{a}
+      ++ and \axiom{b}.
+    nor  : (%, %) -> %
+      ++ nor(a,b) returns the logical {\em nor} of bit aggregates \axiom{a} and 
+      ++ \axiom{b}.
+    _and : (%, %) -> %
+      ++ a and b returns the logical {\em and} of bit aggregates \axiom{a} and 
+      ++ \axiom{b}.
+    _or  : (%, %) -> %
+      ++ a or b returns the logical {\em or} of bit aggregates \axiom{a} and 
+      ++ \axiom{b}.
+    xor  : (%, %) -> %
+      ++ xor(a,b) returns the logical {\em exclusive-or} of bit aggregates
+      ++ \axiom{a} and \axiom{b}.
+
+ add
+   not v      == map(_not, v)
+   _~(v)      == map(_~, v)
+   _/_\(v, u) == map(_/_\, v, u)
+   _\_/(v, u) == map(_\_/, v, u)
+   nand(v, u) == map(nand, v, u)
+   nor(v, u)  == map(nor, v, u)
+

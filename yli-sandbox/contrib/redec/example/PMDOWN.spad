@@ -1,0 +1,97 @@
+)abbrev package PMDOWN PatternMatchPushDown
+++ Pattern matching in towers
+++ Author: Manuel Bronstein
+++ Date Created: 1 Dec 1989
+++ Date Last Updated: 16 August 1995
+++ Description:
+++   This packages provides tools for matching recursively
+++   in type towers.
+++ Keywords: pattern, matching, quotient, field.
+PatternMatchPushDown(S, A, B): Exports == Implementation where
+  S: SetCategory
+  A: PatternMatchable S
+  B: Join(SetCategory, RetractableTo A)
+
+  PAT ==> Pattern S
+  PRA ==> PatternMatchResult(S, A)
+  PRB ==> PatternMatchResult(S, B)
+  REC ==> Record(pat:PAT, res:PRA)
+
+  Exports ==> with
+    fixPredicate: (B -> Boolean) -> (A -> Boolean)
+      ++ fixPredicate(f) returns g defined by g(a) = f(a::B);
+    patternMatch: (A, PAT, PRB)  -> PRB
+      ++ patternMatch(expr, pat, res) matches the pattern pat to the
+      ++ expression expr; res contains the variables of pat which
+      ++ are already matched and their matches.
+      ++ Note: this function handles type towers by changing the predicates
+      ++ and calling the matching function provided by \spad{A}.
+
+  Implementation ==> add
+    import PatternMatchResultFunctions2(S, A, B)
+
+    fixPred      : Any -> Union(Any, "failed")
+    inA          : (PAT, PRB) -> Union(List A, "failed")
+    fixPredicates: (PAT, PRB, PRA) -> Union(REC, "failed")
+    fixList:(List PAT -> PAT, List PAT, PRB, PRA) -> Union(REC,"failed")
+
+    fixPredicate f == f(#1::B)
+
+    patternMatch(a, p, l) ==
+      (u := fixPredicates(p, l, new())) case "failed" => failed()
+      union(l, map(#1::B, patternMatch(a, (u::REC).pat, (u::REC).res)))
+
+    inA(p, l) ==
+      (u := getMatch(p, l)) case "failed" => empty()
+      (r := retractIfCan(u::B)@Union(A, "failed")) case A => [r::A]
+      "failed"
+
+    fixList(fn, l, lb, la) ==
+      ll:List(PAT) := empty()
+      for x in l repeat
+        (f := fixPredicates(x, lb, la)) case "failed" => return "failed"
+        ll := concat((f::REC).pat, ll)
+        la := (f::REC).res
+      [fn ll, la]
+
+    fixPred f ==
+      (u:= retractIfCan(f)$AnyFunctions1(B -> Boolean)) case "failed" =>
+                                                                "failed"
+      g := fixPredicate(u::(B -> Boolean))
+      coerce(g)$AnyFunctions1(A -> Boolean)
+
+    fixPredicates(p, lb, la) ==
+      (r:=retractIfCan(p)@Union(S,"failed")) case S or quoted? p =>[p,la]
+      --(u := isOp p) case Record(op:BasicOperator, arg:List PAT) =>
+      --  ur := u::Record(op:BasicOperator, arg:List PAT)
+      --  fixList((ur.op) #1, ur.arg, lb, la)
+      (us := isPlus p) case List(PAT) =>
+        fixList(reduce("+", #1), us::List(PAT), lb, la)
+      (us := isTimes p) case List(PAT) =>
+        fixList(reduce("*", #1), us::List(PAT), lb, la)
+      (v := isQuotient p) case Record(num:PAT, den:PAT) =>
+        vr := v::Record(num:PAT, den:PAT)
+        (fn := fixPredicates(vr.num, lb, la)) case "failed" => "failed"
+        la  := (fn::REC).res
+        (fd := fixPredicates(vr.den, lb, la)) case "failed" => "failed"
+        [(fn::REC).pat / (fd::REC).pat, (fd::REC).res]
+      (w:= isExpt p) case Record(val:PAT,exponent:NonNegativeInteger) =>
+        wr := w::Record(val:PAT, exponent: NonNegativeInteger)
+        (f := fixPredicates(wr.val, lb, la)) case "failed" => "failed"
+        [(f::REC).pat ** wr.exponent, (f::REC).res]
+      (uu := isPower p) case Record(val:PAT, exponent:PAT) =>
+        uur := uu::Record(val:PAT, exponent: PAT)
+        (fv := fixPredicates(uur.val, lb, la)) case "failed" => "failed"
+        la  := (fv::REC).res
+        (fe := fixPredicates(uur.exponent, lb, la)) case "failed" =>
+          "failed"
+        [(fv::REC).pat ** (fe::REC).pat, (fe::REC).res]
+      generic? p =>
+        (ua := inA(p, lb)) case "failed" => "failed"
+        lp := [if (h := fixPred g) case Any then h::Any else
+                        return "failed" for g in predicates p]$List(Any)
+        q := setPredicates(patternVariable(retract p, constant? p,
+                                           optional? p, multiple? p), lp)
+        [q, (empty?(ua::List A) => la; insertMatch(q,first(ua::List A), la))]
+      error "Should not happen"
+

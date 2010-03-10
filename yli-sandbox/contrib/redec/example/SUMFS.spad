@@ -1,0 +1,54 @@
+)abbrev package SUMFS FunctionSpaceSum
+++ Top-level sum function
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 19 April 1991
+++ Description: computes sums of top-level expressions;
+FunctionSpaceSum(R, F): Exports == Implementation where
+  R: Join(IntegralDomain, OrderedSet,
+          RetractableTo Integer, LinearlyExplicitRingOver Integer)
+  F: Join(FunctionSpace R, CombinatorialOpsCategory,
+          AlgebraicallyClosedField, TranscendentalFunctionCategory)
+
+  SE  ==> Symbol
+  K   ==> Kernel F
+
+  Exports ==> with
+    sum: (F, SE) -> F
+      ++ sum(a(n), n) returns A(n) such that A(n+1) - A(n) = a(n);
+    sum: (F, SegmentBinding F) -> F
+      ++ sum(f(n), n = a..b) returns f(a) + f(a+1) + ... + f(b);
+
+  Implementation ==> add
+    import ElementaryFunctionStructurePackage(R, F)
+    import GosperSummationMethod(IndexedExponents K, K, R,
+                                 SparseMultivariatePolynomial(R, K), F)
+
+    innersum: (F, K) -> Union(F, "failed")
+    notRF?  : (F, K) -> Boolean
+    newk    : () -> K
+
+    newk() == kernel(new()$SE)
+
+    sum(x:F, s:SegmentBinding F) ==
+      k := kernel(variable s)@K
+      (u := innersum(x, k)) case "failed" => summation(x, s)
+      eval(u::F, k, 1 + hi segment s) - eval(u::F, k, lo segment s)
+
+    sum(x:F, v:SE) ==
+      (u := innersum(x, kernel(v)@K)) case "failed" => summation(x,v)
+      u::F
+
+    notRF?(f, k) ==
+      for kk in tower f repeat
+        member?(k, tower(kk::F)) and (symbolIfCan(kk) case "failed") =>
+          return true
+      false
+
+    innersum(x, k) ==
+      zero? x => 0
+      notRF?(f := normalize(x / (x1 := eval(x, k, k::F - 1))), k) =>
+        "failed"
+      (u := GospersMethod(f, k, newk)) case "failed" => "failed"
+      x1 * eval(u::F, k, k::F - 1)
+

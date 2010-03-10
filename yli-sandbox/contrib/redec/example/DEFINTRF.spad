@@ -1,0 +1,90 @@
+)abbrev package DEFINTRF RationalFunctionDefiniteIntegration
+++ Definite integration of rational functions.
+++ Author: Manuel Bronstein
+++ Date Created: 2 October 1989
+++ Date Last Updated: 2 February 1993
+++ Description:
+++   \spadtype{RationalFunctionDefiniteIntegration} provides functions to
+++   compute definite integrals of rational functions.
+
+
+RationalFunctionDefiniteIntegration(R): Exports == Implementation where
+  R : Join(EuclideanDomain, OrderedSet, CharacteristicZero,
+           RetractableTo Integer, LinearlyExplicitRingOver Integer)
+
+  SE  ==> Symbol
+  RF  ==> Fraction Polynomial R
+  FE  ==> Expression R
+  ORF ==> OrderedCompletion RF
+  OFE ==> OrderedCompletion FE
+  U   ==> Union(f1:OFE, f2:List OFE, fail:"failed", pole:"potentialPole")
+
+  Exports ==> with
+    integrate: (RF, SegmentBinding OFE) -> U
+      ++ integrate(f, x = a..b) returns the integral of
+      ++ \spad{f(x)dx} from a to b.
+      ++ Error: if f has a pole for x between a and b.
+    integrate: (RF, SegmentBinding OFE, String) -> U
+      ++ integrate(f, x = a..b, "noPole") returns the
+      ++ integral of \spad{f(x)dx} from a to b.
+      ++ If it is not possible to check whether f has a pole for x
+      ++ between a and b (because of parameters), then this function
+      ++ will assume that f has no such pole.
+      ++ Error: if f has a pole for x between a and b or
+      ++ if the last argument is not "noPole".
+-- the following two are contained in the above, but they are for the
+-- interpreter... DO NOT COMMENT OUT UNTIL THE INTERPRETER IS BETTER!
+    integrate: (RF, SegmentBinding ORF) -> U
+      ++ integrate(f, x = a..b) returns the integral of
+      ++ \spad{f(x)dx} from a to b.
+      ++ Error: if f has a pole for x between a and b.
+    integrate: (RF, SegmentBinding ORF, String) -> U
+      ++ integrate(f, x = a..b, "noPole") returns the
+      ++ integral of \spad{f(x)dx} from a to b.
+      ++ If it is not possible to check whether f has a pole for x
+      ++ between a and b (because of parameters), then this function
+      ++ will assume that f has no such pole.
+      ++ Error: if f has a pole for x between a and b or
+      ++ if the last argument is not "noPole".
+
+  Implementation ==> add
+    import DefiniteIntegrationTools(R, FE)
+    import IntegrationResultRFToFunction(R)
+    import OrderedCompletionFunctions2(RF, FE)
+
+    int   : (RF, SE, OFE, OFE, Boolean) -> U
+    nopole: (RF, SE, OFE, OFE) -> U
+
+    integrate(f:RF, s:SegmentBinding OFE) ==
+      int(f, variable s, lo segment s, hi segment s, false)
+
+    nopole(f, x, a, b) ==
+      k := kernel(x)@Kernel(FE)
+      (u := integrate(f, x)) case FE =>
+        (v := computeInt(k, u::FE, a, b, true)) case "failed" => ["failed"]
+        [v::OFE]
+      ans := empty()$List(OFE)
+      for g in u::List(FE) repeat
+        (v := computeInt(k, g, a, b, true)) case "failed" => return ["failed"]
+        ans := concat_!(ans, [v::OFE])
+      [ans]
+
+    integrate(f:RF, s:SegmentBinding ORF) ==
+      int(f, variable s, map(#1::FE, lo segment s),
+                         map(#1::FE, hi segment s), false)
+
+    integrate(f:RF, s:SegmentBinding ORF, str:String) ==
+      int(f, variable s, map(#1::FE, lo segment s),
+                         map(#1::FE, hi segment s), ignore? str)
+
+    integrate(f:RF, s:SegmentBinding OFE, str:String) ==
+      int(f, variable s, lo segment s, hi segment s, ignore? str)
+
+    int(f, x, a, b, ignor?) ==
+      a = b => [0::OFE]
+      (z := checkForZero(denom f, x, a, b, true)) case "failed" =>
+        ignor? => nopole(f, x, a, b)
+        ["potentialPole"]
+      z::Boolean => error "integrate: pole in path of integration"
+      nopole(f, x, a, b)
+

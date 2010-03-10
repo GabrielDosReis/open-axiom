@@ -1,0 +1,37 @@
+)abbrev package FRNAAF2 FramedNonAssociativeAlgebraFunctions2
+++ Author: Johannes Grabmeier
+++ Date Created: 28 February 1992
+++ Date Last Updated: 28 February 1992
+++ Basic Operations: map
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: non-associative algebra
+++ References:
+++ Description:
+++  FramedNonAssociativeAlgebraFunctions2 implements functions between
+++  two framed non associative algebra domains defined over different rings.
+++  The function map is used to coerce between algebras over different
+++  domains having the same structural constants.
+
+FramedNonAssociativeAlgebraFunctions2(AR,R,AS,S) : Exports ==
+  Implementation where
+    R  : CommutativeRing
+    S  : CommutativeRing
+    AR : FramedNonAssociativeAlgebra R
+    AS : FramedNonAssociativeAlgebra S
+    V ==> Vector
+    Exports ==> with
+      map:     (R -> S, AR) -> AS
+        ++ map(f,u) maps f onto the coordinates of u to get an element
+        ++ in \spad{AS} via identification of the basis of \spad{AR}
+        ++ as beginning part of the basis of \spad{AS}.
+    Implementation ==> add
+      map(fn : R -> S, u : AR): AS ==
+        rank()$AR > rank()$AS => error("map: ranks of algebras do not fit")
+        vr : V R := coordinates u
+        vs : V S := map(fn,vr)$VectorFunctions2(R,S)
+        rank()$AR = rank()$AS => represents(vs)$AS
+        ba := basis()$AS
+        represents(vs,[ba.i for i in 1..rank()$AR])
+

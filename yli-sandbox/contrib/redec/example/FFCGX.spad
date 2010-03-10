@@ -1,0 +1,41 @@
+)abbrev domain FFCGX FiniteFieldCyclicGroupExtension
+++ Authors: J.Grabmeier, A.Scheerhorn
+++ Date Created: 04.04.1991
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Constructors:  FiniteFieldCyclicGroupExtensionByPolynomial,
+++  FiniteFieldPolynomialPackage
+++ Also See: FiniteFieldExtension, FiniteFieldNormalBasisExtension
+++ AMS Classifications:
+++ Keywords: finite field, primitive elements, cyclic group
+++ References:
+++  R.Lidl, H.Niederreiter: Finite Field, Encycoldia of Mathematics and
+++  Its Applications, Vol. 20, Cambridge Univ. Press, 1983, ISBN 0 521 30240 4
+++  J. Grabmeier, A. Scheerhorn: Finite Fields in AXIOM.
+++  AXIOM Technical Report Series, ATR/5 NP2522.
+++ Description:
+++  FiniteFieldCyclicGroupExtension(GF,n)  implements a extension of degree n
+++  over the ground field {\em GF}. Its elements are represented by powers of
+++  a primitive element, i.e. a generator of the multiplicative (cyclic) group.
+++  As primitive element we choose the root of the extension polynomial, which
+++  is created by {\em createPrimitivePoly} from
+++  \spadtype{FiniteFieldPolynomialPackage}. Zech logarithms are stored
+++  in a table of size half of the field size, and use \spadtype{SingleInteger}
+++  for representing field elements, hence, there are restrictions
+++  on the size of the field.
+
+
+FiniteFieldCyclicGroupExtension(GF,extdeg):_
+  Exports == Implementation where
+  GF       : FiniteFieldCategory
+  extdeg   : PositiveInteger
+  PI       ==> PositiveInteger
+  FFPOLY         ==> FiniteFieldPolynomialPackage(GF)
+  SI       ==> SingleInteger
+  Exports  ==> FiniteAlgebraicExtensionField(GF) with
+    getZechTable:() -> PrimitiveArray(SingleInteger)
+      ++ getZechTable() returns the zech logarithm table of the field.
+      ++ This table is used to perform additions in the field quickly.
+  Implementation ==> FiniteFieldCyclicGroupExtensionByPolynomial(GF,_
+                          createPrimitivePoly(extdeg)$FFPOLY)
+

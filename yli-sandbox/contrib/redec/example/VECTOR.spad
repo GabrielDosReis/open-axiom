@@ -1,0 +1,28 @@
+)abbrev domain VECTOR Vector
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: IndexedVector, DirectProduct
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This type represents vector like objects with varying lengths
+++ and indexed by a finite segment of integers starting at 1.
+ 
+Vector(R:Type): Exports == Implementation where
+ VECTORMININDEX ==> 1       -- if you want to change this, be my guest
+
+ Exports ==> VectorCategory R with 
+   vector: List R -> %
+     ++ vector(l) converts the list l to a vector.
+ Implementation ==>
+  IndexedVector(R, VECTORMININDEX) add 
+     vector l == construct l
+     if R has ConvertibleTo InputForm then
+       convert(x:%):InputForm ==
+          convert [convert("vector"::Symbol)@InputForm,
+                          convert(parts x)@InputForm]
+

@@ -1,0 +1,32 @@
+)abbrev package SYMFUNC SymmetricFunctions
+++ The elementary symmetric functions
+++ Author: Manuel Bronstein
+++ Date Created: 13 Feb 1989
+++ Date Last Updated: 28 Jun 1990
+++ Description: Computes all the symmetric functions in n variables.
+SymmetricFunctions(R:Ring): Exports == Implementation where
+  UP  ==> SparseUnivariatePolynomial R
+
+  Exports ==> with
+    symFunc: List R  -> Vector R
+      ++ symFunc([r1,...,rn]) returns the vector of the
+      ++ elementary symmetric functions in the \spad{ri's}:
+      ++ \spad{[r1 + ... + rn, r1 r2 + ... + r(n-1) rn, ..., r1 r2 ... rn]}.
+    symFunc: (R, PositiveInteger) -> Vector R
+      ++ symFunc(r, n) returns the vector of the elementary
+      ++ symmetric functions in \spad{[r,r,...,r]} \spad{n} times.
+
+  Implementation ==> add
+    signFix: (UP, NonNegativeInteger) -> Vector R
+
+    symFunc(x, n) == signFix((monomial(1, 1)$UP - x::UP) ** n, 1 + n)
+
+    symFunc l ==
+      signFix(*/[monomial(1, 1)$UP - a::UP for a in l], 1 + #l)
+
+    signFix(p, n) ==
+      m := minIndex(v := vectorise(p, n)) + 1
+      for i in 0..((#v quo 2) - 1)::NonNegativeInteger repeat
+        qsetelt_!(v, 2*i + m, - qelt(v, 2*i + m))
+      reverse_! v
+

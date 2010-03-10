@@ -1,0 +1,11 @@
+)abbrev category IOBCON InputOutputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ See Also: InputByteConduit, OutputByteConduit.
+++ Description:
+++   This category describes byte stream conduits supporting
+++   both input and output operations.
+InputOutputByteConduit(): Category ==
+    Join(InputByteConduit,OutputByteConduit)
+

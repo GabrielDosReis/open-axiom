@@ -1,0 +1,23 @@
+import SetCategory
+import TableAggregate
+import ListAggregate
+)abbrev category ALAGG AssociationListAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An association list is a list of key entry pairs which may be viewed
+++ as a table.  It is a poor mans version of a table:
+++ searching for a key is a linear operation.
+AssociationListAggregate(Key:SetCategory,Entry:SetCategory): Category ==
+   Join(TableAggregate(Key, Entry), ListAggregate Record(key:Key,entry:Entry)) with
+      assoc: (Key, %) -> Union(Record(key:Key,entry:Entry), "failed")
+        ++ assoc(k,u) returns the element x in association list u stored
+        ++ with key k, or "failed" if u has no key k.
+

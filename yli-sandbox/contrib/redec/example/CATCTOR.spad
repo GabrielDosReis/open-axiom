@@ -1,0 +1,12 @@
+)abbrev domain CATCTOR CategoryConstructor
+++ Author: Gabriel Dos Reis
+++ Date Create: December 17, 2008.
+++ Date Last Updated: December 20, 2008.
+++ Related Constructors: Domain, Category
+++ Description:
+++   This domain provides representations for category constructors.
+CategoryConstructor(): Public == Private where
+  Public == Join(ConstructorCategory, CoercibleTo Constructor)
+  Private == Constructor add
+    coerce(x: %): Constructor == rep x
+

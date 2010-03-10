@@ -1,0 +1,105 @@
+import OneDimensionalArrayAggregate Character
+import UniversalSegment
+import Boolean
+import Character
+import CharacterClass
+import Integer
+)abbrev category SRAGG StringAggregate
+++ Author: Stephen Watt and Michael Monagan. revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A string aggregate is a category for strings, that is,
+++ one dimensional arrays of characters.
+StringAggregate: Category == OneDimensionalArrayAggregate Character with
+    lowerCase       : % -> %
+      ++ lowerCase(s) returns the string with all characters in lower case.
+    lowerCase_!: % -> %
+      ++ lowerCase!(s) destructively replaces the alphabetic characters
+      ++ in s by lower case.
+    upperCase       : % -> %
+      ++ upperCase(s) returns the string with all characters in upper case.
+    upperCase_!: % -> %
+      ++ upperCase!(s) destructively replaces the alphabetic characters
+      ++ in s by upper case characters.
+    prefix?         : (%, %) -> Boolean
+      ++ prefix?(s,t) tests if the string s is the initial substring of t.
+      ++ Note: \axiom{prefix?(s,t) == reduce(and,[s.i = t.i for i in 0..maxIndex s])}.
+    suffix?         : (%, %) -> Boolean
+      ++ suffix?(s,t) tests if the string s is the final substring of t.
+      ++ Note: \axiom{suffix?(s,t) == reduce(and,[s.i = t.(n - m + i) for i in 0..maxIndex s])}
+      ++ where m and n denote the maxIndex of s and t respectively.
+    substring?: (%, %, Integer) -> Boolean
+      ++ substring?(s,t,i) tests if s is a substring of t beginning at
+      ++ index i.
+      ++ Note: \axiom{substring?(s,t,0) = prefix?(s,t)}.
+    match: (%, %, Character) -> NonNegativeInteger
+      ++ match(p,s,wc) tests if pattern \axiom{p} matches subject \axiom{s}
+      ++ where \axiom{wc} is a wild card character. If no match occurs,
+      ++ the index \axiom{0} is returned; otheriwse, the value returned
+      ++ is the first index of the first character in the subject matching
+      ++ the subject (excluding that matched by an initial wild-card).
+      ++ For example, \axiom{match("*to*","yorktown","*")} returns \axiom{5}
+      ++ indicating a successful match starting at index \axiom{5} of
+      ++ \axiom{"yorktown"}.
+    match?: (%, %, Character) -> Boolean
+      ++ match?(s,t,c) tests if s matches t except perhaps for
+      ++ multiple and consecutive occurrences of character c.
+      ++ Typically c is the blank character.
+    replace         : (%, UniversalSegment(Integer), %) -> %
+      ++ replace(s,i..j,t) replaces the substring \axiom{s(i..j)} of s by string t.
+    position        : (%, %, Integer) -> Integer
+      ++ position(s,t,i) returns the position j of the substring s in string t,
+      ++ where \axiom{j >= i} is required.
+    position        : (CharacterClass, %, Integer) -> Integer
+      ++ position(cc,t,i) returns the position \axiom{j >= i} in t of
+      ++ the first character belonging to cc.
+    coerce          : Character -> %
+      ++ coerce(c) returns c as a string s with the character c.
+
+    split: (%, Character) -> List %
+      ++ split(s,c) returns a list of substrings delimited by character c.
+    split: (%, CharacterClass) -> List %
+      ++ split(s,cc) returns a list of substrings delimited by characters in cc.
+
+    trim: (%, Character) -> %
+      ++ trim(s,c) returns s with all characters c deleted from right
+      ++ and left ends.
+      ++ For example, \axiom{trim(" abc ", char " ")} returns \axiom{"abc"}.
+    trim: (%, CharacterClass) -> %
+      ++ trim(s,cc) returns s with all characters in cc deleted from right
+      ++ and left ends.
+      ++ For example, \axiom{trim("(abc)", charClass "()")} returns \axiom{"abc"}.
+    leftTrim: (%, Character) -> %
+      ++ leftTrim(s,c) returns s with all leading characters c deleted.
+      ++ For example, \axiom{leftTrim("  abc  ", char " ")} returns \axiom{"abc  "}.
+    leftTrim: (%, CharacterClass) -> %
+      ++ leftTrim(s,cc) returns s with all leading characters in cc deleted.
+      ++ For example, \axiom{leftTrim("(abc)", charClass "()")} returns \axiom{"abc)"}.
+    rightTrim: (%, Character) -> %
+      ++ rightTrim(s,c) returns s with all trailing occurrences of c deleted.
+      ++ For example, \axiom{rightTrim("  abc  ", char " ")} returns \axiom{"  abc"}.
+    rightTrim: (%, CharacterClass) -> %
+      ++ rightTrim(s,cc) returns s with all trailing occurences of
+      ++ characters in cc deleted.
+      ++ For example, \axiom{rightTrim("(abc)", charClass "()")} returns \axiom{"(abc"}.
+    elt: (%, %) -> %
+      ++ elt(s,t) returns the concatenation of s and t. It is provided to
+      ++ allow juxtaposition of strings to work as concatenation.
+      ++ For example, \axiom{"smoo" "shed"} returns \axiom{"smooshed"}.
+ add
+   trim(s: %, c:  Character)      == leftTrim(rightTrim(s, c),  c)
+   trim(s: %, cc: CharacterClass) == leftTrim(rightTrim(s, cc), cc)
+
+   lowerCase s           == lowerCase_! copy s
+   upperCase s           == upperCase_! copy s
+   prefix?(s, t)         == substring?(s, t, minIndex t)
+   coerce(c:Character):% == new(1, c)
+   elt(s:%, t:%): %      == concat(s,t)$%
+

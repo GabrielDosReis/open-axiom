@@ -1,0 +1,56 @@
+)abbrev package UTSODETL UTSodetools
+++ Author: Manuel Bronstein
+++ Date Created: 31 January 1994
+++ Date Last Updated: 3 February 1994
+++ Description:
+++  \spad{RUTSodetools} provides tools to interface with the series
+++   ODE solver when presented with linear ODEs.
+UTSodetools(F, UP, L, UTS): Exports == Implementation where
+  F  : Ring
+  UP : UnivariatePolynomialCategory F
+  L  : LinearOrdinaryDifferentialOperatorCategory UP
+  UTS: UnivariateTaylorSeriesCategory F
+
+  Exports ==> with
+      UP2UTS:   UP -> UTS
+          ++ UP2UTS(p) converts \spad{p} to a Taylor series.
+      UTS2UP:   (UTS, NonNegativeInteger) -> UP
+          ++ UTS2UP(s, n) converts the first \spad{n} terms of \spad{s}
+          ++ to a univariate polynomial.
+      LODO2FUN: L -> (List UTS -> UTS)
+          ++ LODO2FUN(op) returns the function to pass to the series ODE
+          ++ solver in order to solve \spad{op y = 0}.
+      if F has IntegralDomain then
+          RF2UTS: Fraction UP -> UTS
+              ++ RF2UTS(f) converts \spad{f} to a Taylor series.
+
+  Implementation ==> add
+      fun: (Vector UTS, List UTS) -> UTS
+
+      UP2UTS p ==
+        q := p(monomial(1, 1) + center(0)::UP)
+        +/[monomial(coefficient(q, i), i)$UTS for i in 0..degree q]
+
+      UTS2UP(s, n) ==
+        xmc     := monomial(1, 1)$UP - center(0)::UP
+        xmcn:UP := 1
+        ans:UP  := 0
+        for i in 0..n repeat
+            ans  := ans + coefficient(s, i) * xmcn
+            xmcn := xmc * xmcn
+        ans
+
+      LODO2FUN op ==
+          a := recip(UP2UTS(- leadingCoefficient op))::UTS
+          n := (degree(op) - 1)::NonNegativeInteger
+          v := [a * UP2UTS coefficient(op, i) for i in 0..n]$Vector(UTS)
+          fun(v, #1)
+
+      fun(v, l) ==
+          ans:UTS := 0
+          for b in l for i in 1.. repeat ans := ans + v.i * b
+          ans
+
+      if F has IntegralDomain then
+          RF2UTS f == UP2UTS(numer f) * recip(UP2UTS denom f)::UTS
+

@@ -1,0 +1,207 @@
+import UnionType
+import SetCategory
+import Boolean
+import Integer
+import DoubleFloat
+import Symbol
+import SExpression
+)abbrev domain SYNTAX Syntax
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Updated: October 18, 2008
+++ Description:  This domain provides a simple domain, general enough for
+++   building complete representation of Spad programs as objects 
+++   of a term algebra built from ground terms of type integers, foats, 
+++   symbols, and strings.  
+++   This domain differs from InputForm in that it represents
+++   any entity in a Spad program, not just expressions.  Furthermore,
+++   while InputForm may contain atoms like vectors and other Lisp
+++   objects, the Syntax domain is supposed to contain only that
+++   initial algebra build from the primitives listed above.
+++ Related Constructors: Integer, DoubleFloat, Symbol, String, SExpression.
+++ See Also: SExpression.
+++ The equality supported by this domain is structural.
+Syntax(): Public == Private where
+  Public == Join(UnionType, SetCategory, RetractableTo Integer,
+              RetractableTo DoubleFloat, RetractableTo Symbol,
+                RetractableTo String, CoercibleTo InputForm) with
+    convert: % -> SExpression
+      ++ convert(s) returns the s-expression representation of a syntax.
+
+    convert: SExpression -> %
+      ++ convert(s) converts an s-expression to Syntax.  Note, when `s'
+      ++ is not an atom, it is expected that it designates a proper list,
+      ++ e.g. a sequence of cons cells ending with nil.
+
+    coerce: % -> Integer
+      ++ coerce(s) extracts and integer value from the syntax `s'
+    autoCoerce: % -> Integer
+      ++ autoCoerce(s) forcibly extracts an integer value from
+      ++ the syntax `s'; no check performed.  To be called only
+      ++ at the discretion of the compiler.
+
+    coerce: % -> DoubleFloat
+      ++ coerce(s) extracts a float value from the syntax `s'.
+    autoCoerce: % -> DoubleFloat
+      ++ autoCoerce(s) forcibly extracts a float value from the syntax `s';
+      ++ no check performed.  To be called only at the discretion of
+      ++ the compiler
+
+    coerce: % -> Symbol
+      ++ coerce(s) extracts a symbol from the syntax `s'.
+    autoCoerce: % -> Symbol
+      ++ autoCoerce(s) forcibly extracts a symbo from the Syntax
+      ++ domain `s'; no check performed.  To be called only at
+      ++ at the discretion of the compiler.
+
+    coerce: % -> String
+      ++ coerce(s) extracts a string value from the syntax `s'.
+    autoCoerce: % -> String
+      ++ autoCoerce(s) forcibly extracts a string value from
+      ++ the syntax `s'; no check performed.  To be called only at
+      ++ the discretion of the compiler.
+
+    buildSyntax: (Symbol, List %) -> %
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
+      ++ for op(a1,...,an).
+  
+    buildSyntax: (%, List %) -> %
+      ++ buildSyntax(op, [a1, ..., an]) builds a syntax object 
+      ++ for op(a1,...,an).
+
+    nil?: % -> Boolean
+      ++ nil?(s) is true when `s' is a syntax for the constant nil.
+
+    getOperator: % -> Union(Integer, DoubleFloat, Symbol, String, %)
+      ++ getOperator(x) returns the operator, or tag, of the syntax `x'.
+      ++ The value returned is itself a syntax if `x' really is an 
+      ++ application of a function symbol as opposed to being an
+      ++ atomic ground term.
+ 
+    getOperands: % -> List %
+      ++ getOperands(x) returns the list of operands to the operator in `x'.
+
+    compound?: % -> Boolean
+      ++ compound? x is true when `x' is not an atomic syntax.
+
+    _case: (%) -> Boolean
+      ++ x case Integer is true if `x' really is an Integer 
+
+    _case: (%, [|DoubleFloat|]) -> Boolean
+      ++ x case DoubleFloat is true if `x' really is a DoubleFloat
+
+    _case: (%, [|Symbol|]) -> Boolean
+      ++ x case Symbol is true if `x' really is a Symbol
+
+    _case: (%, [|String|]) -> Boolean
+      ++ x case String is true if `x' really is a String
+
+  Private == add
+    x = y ==
+      EQUAL(x,y)$Lisp
+   
+    --s case Integer ==
+      --INTEGERP(s)$Lisp
+
+    --s case DoubleFloat ==
+      --FLOATP(s)$Lisp
+
+    --s case String ==
+      --STRINGP(s)$Lisp
+
+    --s case Symbol ==
+      --IDENTP(s)$Lisp
+
+    coerce(x: %): OutputForm ==
+      -- For the moment, print syntax as s-expression.
+      import SExpression
+      (x pretend SExpression)::OutputForm
+
+    convert(x: %): SExpression ==
+      x : SExpression
+
+    convert(x: SExpression): % ==
+      x pretend %
+
+    coerce(i: Integer): % ==
+      i pretend %
+
+    autoCoerce(i: %): Integer ==                -- used for hard coercion
+      i : Integer
+
+    retractIfCan(x: %): Union(Integer,"failed") ==
+      x case Integer => x@Integer
+      "failed"
+
+    coerce(i: %): Integer == 
+      retract(i)@Integer
+
+    coerce(f: DoubleFloat): % ==
+      f pretend %
+
+    autoCoerce(f: %): DoubleFloat ==            -- used for hard coercion
+      f : DoubleFloat
+
+    retractIfCan(x: %): Union(DoubleFloat,"failed") ==
+      x case DoubleFloat => x@DoubleFloat
+      "failed"
+
+    coerce(f: %): DoubleFloat ==
+      retract(f)@DoubleFloat
+
+    coerce(s: Symbol): % ==
+      s pretend %
+
+    autoCoerce(s: %): Symbol ==                 -- used for hard coercion
+      s : Symbol
+
+    retractIfCan(x: %): Union(Symbol,"failed") ==
+      x case Symbol => x@Symbol
+      "failed"
+
+    coerce(s: %): Symbol ==
+      retract(s)@Symbol
+
+    coerce(s: String): % ==
+      s pretend %
+
+    autoCoerce(s: %): String ==                 -- used for hard coercion
+      s : String
+
+    retractIfCan(x: %): Union(String,"failed") ==
+      x case String => x@String
+      "failed"
+
+    coerce(s: %): String ==
+      retract(s)@String
+
+    buildSyntax(s: Symbol, l: List %): % ==
+      CONS(s,l)$Lisp
+
+    buildSyntax(op: %, l: List %): % ==
+      CONS(op,l)$Lisp
+
+    nil? x ==
+      NULL(x)$Lisp
+
+    atom?(x: %): Boolean ==
+      ATOM(x)$Lisp
+
+    getOperator x ==
+      atom? x => userError "atom as operand to getOperator"
+      op: % := CAR(x)$Lisp
+      op case Symbol => op pretend Symbol
+      op case Integer => op pretend Integer
+      op case DoubleFloat => op pretend DoubleFloat
+      op case String => op pretend String
+      op
+   
+    compound? x ==
+      CONSP(x)$Lisp
+
+    getOperands x ==
+      atom? x => []
+      CDR(x)$Lisp
+
+    coerce(x: %): InputForm ==
+      x : InputForm

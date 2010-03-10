@@ -1,0 +1,244 @@
+)abbrev package PWFFINTB PAdicWildFunctionFieldIntegralBasis
+++ Author: Clifton Williamson
+++ Date Created: 5 July 1993
+++ Date Last Updated: 17 August 1993
+++ Basic Operations: integralBasis, localIntegralBasis
+++ Related Domains: WildFunctionFieldIntegralBasis(K,R,UP,F)
+++ Also See: FunctionFieldIntegralBasis
+++ AMS Classifications:
+++ Keywords: function field, finite field, integral basis
+++ Examples:
+++ References:
+++ Description:
+++ In this package K is a finite field, R is a ring of univariate
+++ polynomials over K, and F is a monogenic algebra over R.
+++ We require that F is monogenic, i.e. that \spad{F = K[x,y]/(f(x,y))},
+++ because the integral basis algorithm used will factor the polynomial
+++ \spad{f(x,y)}.  The package provides a function to compute the integral
+++ closure of R in the quotient field of F as well as a function to compute
+++ a "local integral basis" at a specific prime.
+
+PAdicWildFunctionFieldIntegralBasis(K,R,UP,F): Exports == Implementation where
+  K  : FiniteFieldCategory
+  R  : UnivariatePolynomialCategory K
+  UP : UnivariatePolynomialCategory R
+  F  : MonogenicAlgebra(R,UP)
+
+  I        ==> Integer
+  L        ==> List
+  L2       ==> ListFunctions2
+  Mat      ==> Matrix R
+  NNI      ==> NonNegativeInteger
+  PI       ==> PositiveInteger
+  Q        ==> Fraction R
+  SAE      ==> SimpleAlgebraicExtension
+  SUP      ==> SparseUnivariatePolynomial
+  CDEN     ==> CommonDenominator
+  DDFACT   ==> DistinctDegreeFactorize
+  WFFINTBS ==> WildFunctionFieldIntegralBasis
+  Result   ==> Record(basis: Mat, basisDen: R, basisInv:Mat)
+  IResult  ==> Record(basis: Mat, basisDen: R, basisInv:Mat,discr: R)
+  IBPTOOLS ==> IntegralBasisPolynomialTools
+  IBACHIN  ==> ChineseRemainderToolsForIntegralBases
+  IRREDFFX ==> IrredPolyOverFiniteField
+  GHEN     ==> GeneralHenselPackage
+
+  Exports ==> with
+    integralBasis : () -> Result
+      ++ \spad{integralBasis()} returns a record
+      ++ \spad{[basis,basisDen,basisInv] } containing information regarding
+      ++ the integral closure of R in the quotient field of the framed
+      ++ algebra F.  F is a framed algebra with R-module basis
+      ++ \spad{w1,w2,...,wn}.
+      ++ If 'basis' is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of 'basis' contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix 'basisInv' contains the coordinates of \spad{wi} with respect
+      ++ to the basis \spad{v1,...,vn}: if 'basisInv' is the matrix
+      ++ \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+    localIntegralBasis : R -> Result
+      ++ \spad{integralBasis(p)} returns a record
+      ++ \spad{[basis,basisDen,basisInv] } containing information regarding
+      ++ the local integral closure of R at the prime \spad{p} in the quotient
+      ++ field of the framed algebra F.  F is a framed algebra with R-module
+      ++ basis \spad{w1,w2,...,wn}.
+      ++ If 'basis' is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the local integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of 'basis' contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix 'basisInv' contains the coordinates of \spad{wi} with respect
+      ++ to the basis \spad{v1,...,vn}: if 'basisInv' is the matrix
+      ++ \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+    reducedDiscriminant: UP -> R
+        ++ reducedDiscriminant(up) \undocumented
+
+  Implementation ==> add
+    import IntegralBasisTools(R, UP, F)
+    import GeneralHenselPackage(R,UP)
+    import ModularHermitianRowReduction(R)
+    import TriangularMatrixOperations(R, Vector R, Vector R, Matrix R)
+
+    reducedDiscriminant f ==
+      ff : SUP Q := mapUnivariate(#1 :: Q,f)$IBPTOOLS(R,UP,SUP UP,Q)
+      ee := extendedEuclidean(ff,differentiate ff)
+      cc := concat(coefficients(ee.coef1),coefficients(ee.coef2))
+      cden := splitDenominator(cc)$CDEN(R,Q,L Q)
+      denom := cden.den
+      gg := gcd map(numer,cden.num)$L2(Q,R)
+      (ans := denom exquo gg) case "failed" =>
+        error "PWFFINTB: error in reduced discriminant computation"
+      ans :: R
+
+    compLocalBasis: (UP,R) -> Result
+    compLocalBasis(poly,prime) ==
+      -- compute a local integral basis at 'prime' for k[x,y]/(poly(x,y)).
+      sae := SAE(R,UP,poly)
+      localIntegralBasis(prime)$WFFINTBS(K,R,UP,sae)
+
+    compLocalBasisOverExt: (UP,R,UP,NNI) -> Result
+    compLocalBasisOverExt(poly0,prime0,irrPoly0,k) ==
+      -- poly0 = irrPoly0**k (mod prime0)
+      n := degree poly0; disc0 := discriminant poly0
+      (disc0 exquo prime0) case "failed" =>
+        [scalarMatrix(n,1), 1, scalarMatrix(n,1)]
+      r := degree irrPoly0
+      -- extend scalars:
+      -- construct irreducible polynomial of degree r over K
+      irrPoly := generateIrredPoly(r :: PI)$IRREDFFX(K)
+      -- construct extension of degree r over K
+      E := SAE(K,SUP K,irrPoly)
+      -- lift coefficients to elements of E
+      poly := mapBivariate(#1 :: E,poly0)$IBPTOOLS(K,R,UP,E)
+      redDisc0 := reducedDiscriminant poly0
+      redDisc := mapUnivariate(#1 :: E,redDisc0)$IBPTOOLS(K,R,UP,E)
+      prime := mapUnivariate(#1 :: E,prime0)$IBPTOOLS(K,R,UP,E)
+      sae := SAE(E,SUP E,prime)
+      -- reduction (mod prime) of polynomial of which poly is the kth power
+      redIrrPoly :=
+        pp := mapBivariate(#1 :: E,irrPoly0)$IBPTOOLS(K,R,UP,E)
+        mapUnivariate(reduce,pp)$IBPTOOLS(SUP E,SUP SUP E,SUP SUP SUP E,sae)
+      -- factor the reduction
+      factorListSAE := factors factor(redIrrPoly)$DDFACT(sae,SUP sae)
+      -- list the 'primary factors' of the reduction of poly
+      redFactors : List SUP sae := [(f.factor)**k for f in factorListSAE]
+      -- lift these factors to elements of SUP SUP E
+      primaries : List SUP SUP E :=
+        [mapUnivariate(lift,ff)$IBPTOOLS(SUP E,SUP SUP E,SUP SUP SUP E,sae) _
+             for ff in redFactors]
+      -- lift the factors to factors modulo a suitable power of 'prime'
+      deg := (1 + order(redDisc,prime) * degree(prime)) :: PI
+      henselInfo := HenselLift(poly,primaries,prime,deg)$GHEN(SUP E,SUP SUP E)
+      henselFactors := henselInfo.plist
+      psi1 := first henselFactors
+      FF := SAE(SUP E,SUP SUP E,psi1)
+      factorIb := localIntegralBasis(prime)$WFFINTBS(E,SUP E,SUP SUP E,FF)
+      bs := listConjugateBases(factorIb,size()$K,r)$IBACHIN(E,SUP E,SUP SUP E)
+      ib := chineseRemainder(henselFactors,bs,n)$IBACHIN(E,SUP E,SUP SUP E)
+      b : Matrix R :=
+        bas := mapMatrixIfCan(retractIfCan,ib.basis)$IBPTOOLS(K,R,UP,E)
+        bas case "failed" => error "retraction of basis failed"
+        bas :: Matrix R
+      bInv : Matrix R :=
+        --bas := mapMatrixIfCan(ric,ib.basisInv)$IBPTOOLS(K,R,UP,E)
+        bas := mapMatrixIfCan(retractIfCan,ib.basisInv)$IBPTOOLS(K,R,UP,E)
+        bas case "failed" => error "retraction of basis inverse failed"
+        bas :: Matrix R
+      bDen : R :=
+        p := mapUnivariateIfCan(retractIfCan,ib.basisDen)$IBPTOOLS(K,R,UP,E)
+        p case "failed" => error "retraction of basis denominator failed"
+        p :: R
+      [b,bDen,bInv]
+
+    padicLocalIntegralBasis: (UP,R,R,R) -> IResult
+    padicLocalIntegralBasis(p,disc,redDisc,prime) ==
+      -- polynomials in x modulo 'prime'
+      sae := SAE(K,R,prime)
+      -- find the factorization of 'p' modulo 'prime' and lift the
+      -- prime powers to elements of UP:
+      -- reduce 'p' modulo 'prime'
+      reducedP := mapUnivariate(reduce,p)$IBPTOOLS(R,UP,SUP UP,sae)
+      -- factor the reduced polynomial
+      factorListSAE := factors factor(reducedP)$DDFACT(sae,SUP sae)
+      -- if only one prime factor, perform usual integral basis computation
+      (# factorListSAE) = 1 =>
+        ib := localIntegralBasis(prime)$WFFINTBS(K,R,UP,F)
+        index := diagonalProduct(ib.basisInv)
+        [ib.basis,ib.basisDen,ib.basisInv,disc quo (index * index)]
+      -- list the 'prime factors' of the reduced polynomial
+      redPrimes : List SUP sae :=
+        [f.factor for f in factorListSAE]
+      -- lift these factors to elements of UP
+      primes : List UP :=
+        [mapUnivariate(lift,ff)$IBPTOOLS(R,UP,SUP UP,sae) for ff in redPrimes]
+      -- list the exponents
+      expons : List NNI := [((f.exponent) :: NNI) for f in factorListSAE]
+      -- list the 'primary factors' of the reduced polynomial
+      redPrimaries : List SUP sae :=
+        [(f.factor) **((f.exponent) :: NNI) for f in factorListSAE]
+      -- lift these factors to elements of UP
+      primaries : List UP :=
+        [mapUnivariate(lift,ff)$IBPTOOLS(R,UP,SUP UP,sae) for ff in redPrimaries]
+      -- lift the factors to factors modulo a suitable power of 'prime'
+      deg := (1 + order(redDisc,prime) * degree(prime)) :: PI
+      henselInfo := HenselLift(p,primaries,prime,deg)
+      henselFactors := henselInfo.plist
+      -- compute integral bases for the factors
+      factorBases : List Result := empty(); degPrime := degree prime
+      for pp in primes for k in expons for qq in henselFactors repeat
+        base :=
+          degPp := degree pp
+          degPp > 1 and gcd(degPp,degPrime) = 1 =>
+            compLocalBasisOverExt(qq,prime,pp,k)
+          compLocalBasis(qq,prime)
+        factorBases := concat(base,factorBases)
+      factorBases := reverse_! factorBases
+      ib := chineseRemainder(henselFactors,factorBases,rank()$F)$IBACHIN(K,R,UP)
+      index := diagonalProduct(ib.basisInv)
+      [ib.basis,ib.basisDen,ib.basisInv,disc quo (index * index)]
+
+    localIntegralBasis prime ==
+      p := definingPolynomial()$F; disc := discriminant p
+      --disc := determinant traceMatrix()$F
+      redDisc := reducedDiscriminant p
+      ib := padicLocalIntegralBasis(p,disc,redDisc,prime)
+      [ib.basis,ib.basisDen,ib.basisInv]
+
+    listSquaredFactors: R -> List R
+    listSquaredFactors px ==
+      -- returns a list of the factors of px which occur with
+      -- exponent > 1
+      ans : List R := empty()
+      factored := factor(px)$DistinctDegreeFactorize(K,R)
+      for f in factors(factored) repeat
+        if f.exponent > 1 then ans := concat(f.factor,ans)
+      ans
+
+    integralBasis() ==
+      p := definingPolynomial()$F; disc := discriminant p; n := rank()$F
+      --traceMat := traceMatrix()$F; n := rank()$F
+      --disc := determinant traceMat        -- discriminant of current order
+      singList := listSquaredFactors disc -- singularities of relative Spec
+      redDisc := reducedDiscriminant p
+      runningRb := runningRbinv := scalarMatrix(n,1)$Mat
+      -- runningRb    = basis matrix of current order
+      -- runningRbinv = inverse basis matrix of current order
+      -- these are wrt the original basis for F
+      runningRbden : R := 1
+      -- runningRbden = denominator for current basis matrix
+      empty? singList => [runningRb, runningRbden, runningRbinv]
+      for prime in singList repeat
+        lb := padicLocalIntegralBasis(p,disc,redDisc,prime)
+        rb := lb.basis; rbinv := lb.basisInv; rbden := lb.basisDen
+        disc := lb.discr
+        mat := vertConcat(rbden * runningRb,runningRbden * rb)
+        runningRbden := runningRbden * rbden
+        runningRb := squareTop rowEchelon(mat,runningRbden)
+        --runningRb := squareTop rowEch mat
+        runningRbinv := UpTriBddDenomInv(runningRb,runningRbden)
+      [runningRb, runningRbden, runningRbinv]
+

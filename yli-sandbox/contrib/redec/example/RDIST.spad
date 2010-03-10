@@ -1,0 +1,47 @@
+)abbrev package RDIST RandomDistributions
+++ Description:
+++ This package exports random distributions
+RandomDistributions(S: SetCategory): with
+        uniform:  Set S -> (() -> S)
+                ++ uniform(s) \undocumented
+        weighted: List Record(value: S, weight: Integer) -> (()->S)
+                ++ weighted(l) \undocumented
+        rdHack1:  (Vector S,Vector Integer,Integer)->(()->S)
+                ++ rdHack1(v,u,n) \undocumented
+    == add
+        import RandomNumberSource()
+
+        weighted lvw ==
+            -- Collapse duplicates, adding weights.
+            t: Table(S, Integer) := table()
+            for r in lvw repeat
+                u := search(r.value,t)
+                w := (u case "failed" => 0; u::Integer)
+                t r.value := w + r.weight
+
+            -- Construct vectors of values and cumulative weights.
+            kl := keys t
+            n  := (#kl)::NonNegativeInteger
+            n = 0 => error "Cannot select from empty set"
+            kv: Vector(S)       := new(n, kl.0)
+            wv: Vector(Integer) := new(n, 0)
+
+            totwt: Integer := 0
+            for k in kl for i in 1..n repeat
+                kv.i := k
+                totwt:= totwt + t k
+                wv.i := totwt
+
+            -- Function to generate an integer and lookup.
+            rdHack1(kv, wv, totwt)
+
+        rdHack1(kv, wv, totwt) ==
+            w := randnum totwt
+            -- do binary search in wv
+            kv.1
+
+        uniform fset ==
+            l := members fset
+            n := #l
+            l.(randnum(n)+1)
+

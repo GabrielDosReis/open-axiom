@@ -1,0 +1,40 @@
+)abbrev domain FCOMP FourierComponent
+++ Author: James Davenport
+++ Date Created: 17 April 1992
+++ Date Last Updated: 12 June 1992
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+FourierComponent(E:OrderedSet):
+       OrderedSet with
+         sin: E -> $
+         ++ sin(x) makes a sin kernel for use in Fourier series
+         cos: E -> $
+         ++ cos(x) makes a cos kernel for use in Fourier series
+         sin?: $ -> Boolean
+         ++ sin?(x) returns true if term is a sin, otherwise false
+         argument: $ -> E
+         ++ argument(x) returns the argument of a given sin/cos expressions
+    ==
+  add
+   --representations
+   Rep:=Record(SinIfTrue:Boolean, arg:E)
+   e:E
+   x,y:$
+   sin e == [true,e]
+   cos e == [false,e]
+   sin? x == x.SinIfTrue
+   argument x == x.arg
+   coerce(x):OutputForm ==
+     hconcat((if x.SinIfTrue then "sin" else "cos")::OutputForm,
+              bracket((x.arg)::OutputForm))
+   x<y ==
+     x.arg < y.arg => true
+     y.arg < x.arg => false
+     x.SinIfTrue => false
+     y.SinIfTrue
+

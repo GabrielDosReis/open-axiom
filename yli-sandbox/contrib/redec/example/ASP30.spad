@@ -1,0 +1,124 @@
+)abbrev domain ASP30 Asp30
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Nov 1993
+++ Date Last Updated: 28 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp30} produces Fortran for Type 30 ASPs, needed for NAG routine
+++\axiomOpFrom{f04qaf}{f04Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE APROD(MODE,M,N,X,Y,RWORK,LRWORK,IWORK,LIWORK)
+++      DOUBLE PRECISION X(N),Y(M),RWORK(LRWORK)
+++      INTEGER M,N,LIWORK,IFAIL,LRWORK,IWORK(LIWORK),MODE
+++      DOUBLE PRECISION A(5,5)
+++      EXTERNAL F06PAF
+++      A(1,1)=1.0D0
+++      A(1,2)=0.0D0
+++      A(1,3)=0.0D0
+++      A(1,4)=-1.0D0
+++      A(1,5)=0.0D0
+++      A(2,1)=0.0D0
+++      A(2,2)=1.0D0
+++      A(2,3)=0.0D0
+++      A(2,4)=0.0D0
+++      A(2,5)=-1.0D0
+++      A(3,1)=0.0D0
+++      A(3,2)=0.0D0
+++      A(3,3)=1.0D0
+++      A(3,4)=-1.0D0
+++      A(3,5)=0.0D0
+++      A(4,1)=-1.0D0
+++      A(4,2)=0.0D0
+++      A(4,3)=-1.0D0
+++      A(4,4)=4.0D0
+++      A(4,5)=-1.0D0
+++      A(5,1)=0.0D0
+++      A(5,2)=-1.0D0
+++      A(5,3)=0.0D0
+++      A(5,4)=-1.0D0
+++      A(5,5)=4.0D0
+++      IF(MODE.EQ.1)THEN
+++        CALL F06PAF('N',M,N,1.0D0,A,M,X,1,1.0D0,Y,1)
+++      ELSEIF(MODE.EQ.2)THEN
+++        CALL F06PAF('T',M,N,1.0D0,A,M,Y,1,1.0D0,X,1)
+++      ENDIF
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp30(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  FC     ==> FortranCode
+  PI     ==> PositiveInteger
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  UFST   ==> Union(fst:FST,void:"void")
+  MAT    ==> Matrix
+  MFLOAT ==> MachineFloat
+  EXI    ==> Expression Integer
+  UEXPR  ==> Union(I:Expression Integer,F:Expression Float,_
+                   CF:Expression Complex Float,switch:Switch)
+  S      ==> Symbol
+
+  Exports == FortranMatrixCategory 
+
+  Implementation == add
+
+    import FC    
+    import FT    
+    import Switch
+
+    real : UFST := ["real"::FST]$UFST
+    integer : UFST := ["integer"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(MODE,fortranInteger()$FT,syms)$SYMTAB
+    declare!(M,fortranInteger()$FT,syms)$SYMTAB
+    declare!(N,fortranInteger()$FT,syms)$SYMTAB
+    declare!(LRWORK,fortranInteger()$FT,syms)$SYMTAB
+    declare!(LIWORK,fortranInteger()$FT,syms)$SYMTAB
+    xType : FT := construct(real,[N],false)$FT
+    declare!(X,xType,syms)$SYMTAB
+    yType : FT := construct(real,[M],false)$FT
+    declare!(Y,yType,syms)$SYMTAB
+    rType : FT := construct(real,[LRWORK],false)$FT
+    declare!(RWORK,rType,syms)$SYMTAB
+    iType : FT := construct(integer,[LIWORK],false)$FT
+    declare!(IWORK,iType,syms)$SYMTAB
+    declare!(IFAIL,fortranInteger()$FT,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,
+                          [MODE,M,N,X,Y,RWORK,LRWORK,IWORK,LIWORK],syms)
+
+    coerce(a:MAT MFLOAT):$ ==
+      locals : SYMTAB := empty()
+      numRows := nrows(a) :: Polynomial Integer
+      numCols := ncols(a) :: Polynomial Integer
+      declare!(A,[real,[numRows,numCols],false]$FT,locals)
+      declare!(F06PAF@S,construct(["void"]$UFST,[]@List(S),true)$FT,locals)
+      ptA:UEXPR := [("MODE"::S)::EXI]
+      ptB:UEXPR := [1::EXI]
+      ptC:UEXPR := [2::EXI]
+      sw1 : Switch := EQ(ptA,ptB)$Switch
+      sw2 : Switch := EQ(ptA,ptC)$Switch
+      callOne := call("F06PAF('N',M,N,1.0D0,A,M,X,1,1.0D0,Y,1)")
+      callTwo := call("F06PAF('T',M,N,1.0D0,A,M,Y,1,1.0D0,X,1)")
+      c : FC := cond(sw1,callOne,cond(sw2,callTwo))
+      code' : List FC := [assign(A,a),c,returns()]
+      ([locals,code']$RSFC)::$
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

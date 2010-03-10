@@ -1,0 +1,26 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain CLLCTAST CollectAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents list comprehension syntax.
+CollectAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterators: % -> List SpadAst
+      ++ iterators(e) returns the list of the iterators of
+      ++ the list comprehension `e'.
+    body: % -> SpadAst
+      ++ body(e) return the expression being
+      ++ collected by the list comprehension `e'.
+  Private == add
+    Rep == List SpadAst
+    body x == last rep x
+    iterators x ==
+      s := rep x
+      s.(2..(#s -1))
+    coerce(x: %): OutputForm ==
+      elt('CollectAst::OutputForm,
+        ['iterators::OutputForm = iterators(x)::OutputForm, 
+           'body::OutputForm = body(x)::OutputForm])$OutputForm
+

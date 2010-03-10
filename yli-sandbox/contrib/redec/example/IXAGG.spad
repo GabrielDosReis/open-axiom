@@ -1,0 +1,91 @@
+import Type
+import SetCategory
+import HomogeneousAggregate
+import EltableAggregate
+import List
+)abbrev category IXAGG IndexedAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An indexed aggregate is a many-to-one mapping of indices to entries.
+++ For example, a one-dimensional-array is an indexed aggregate where
+++ the index is an integer.  Also, a table is an indexed aggregate
+++ where the indices and entries may have any type.
+IndexedAggregate(Index: SetCategory, Entry: Type): Category ==
+  Join(HomogeneousAggregate(Entry), EltableAggregate(Index, Entry)) with
+   entries: % -> List Entry
+      ++ entries(u) returns a list of all the entries of aggregate u
+      ++ in no assumed order.
+      -- to become entries: % -> Entry* and entries: % -> Iterator(Entry,Entry)
+   index?: (Index,%) -> Boolean
+      ++ index?(i,u) tests if i is an index of aggregate u.
+   indices: % -> List Index
+      ++ indices(u) returns a list of indices of aggregate u in no
+      ++ particular order.
+      -- to become indices: % -> Index* and indices: % -> Iterator(Index,Index).
+-- map: ((Entry,Entry)->Entry,%,%,Entry) -> %
+--    ++ exists c = map(f,a,b,x), i:Index where
+--    ++    c.i = f(a(i,x),b(i,x)) | index?(i,a) or index?(i,b)
+   if Entry has SetCategory and % has finiteAggregate then
+      entry?: (Entry,%) -> Boolean
+        ++ entry?(x,u) tests if x equals \axiom{u . i} for some index i.
+   if Index has OrderedSet then
+      maxIndex: % -> Index
+        ++ maxIndex(u) returns the maximum index i of aggregate u.
+        ++ Note: in general,
+        ++ \axiom{maxIndex(u) = reduce(max,[i for i in indices u])};
+        ++ if u is a list, \axiom{maxIndex(u) = #u}.
+      minIndex: % -> Index
+        ++ minIndex(u) returns the minimum index i of aggregate u.
+        ++ Note: in general,
+        ++ \axiom{minIndex(a) = reduce(min,[i for i in indices a])};
+        ++ for lists, \axiom{minIndex(a) = 1}.
+      first   : % -> Entry
+        ++ first(u) returns the first element x of u.
+        ++ Note: for collections, \axiom{first([x,y,...,z]) = x}.
+        ++ Error: if u is empty.
+
+   if % has shallowlyMutable then
+      fill_!: (%,Entry) -> %
+        ++ fill!(u,x) replaces each entry in aggregate u by x.
+        ++ The modified u is returned as value.
+      swap_!: (%,Index,Index) -> Void
+        ++ swap!(u,i,j) interchanges elements i and j of aggregate u.
+        ++ No meaningful value is returned.
+ add
+  elt(a, i, x) == (index?(i, a) => qelt(a, i); x)
+
+  if % has finiteAggregate then
+    entries x == parts x
+    if Entry has SetCategory then
+      entry?(x, a) == member?(x, a)
+
+  if Index has OrderedSet then
+    maxIndex a == "max"/indices(a)
+    minIndex a == "min"/indices(a)
+    first a    == a minIndex a
+
+  if % has shallowlyMutable then
+    map(f, a) == map_!(f, copy a)
+
+    map_!(f, a) ==
+      for i in indices a repeat qsetelt_!(a, i, f qelt(a, i))
+      a
+
+    fill_!(a, x) ==
+      for i in indices a repeat qsetelt_!(a, i, x)
+      a
+
+    swap_!(a, i, j) ==
+      t := a.i
+      qsetelt_!(a, i, a.j)
+      qsetelt_!(a, j, t)
+      void
+

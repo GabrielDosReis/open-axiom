@@ -1,0 +1,31 @@
+import NonNegativeInteger
+import DictionaryOperations
+)abbrev category MDAGG MultiDictionary
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A multi-dictionary is a dictionary which may contain duplicates.
+++ As for any dictionary, its size is assumed large so that
+++ copying (non-destructive) operations are generally to be avoided.
+MultiDictionary(S:SetCategory): Category == DictionaryOperations S with
+-- count: (S,%) -> NonNegativeInteger                  ++ multiplicity count
+   insert_!: (S,%,NonNegativeInteger) -> %
+     ++ insert!(x,d,n) destructively inserts n copies of x into dictionary d.
+-- remove_!: (S,%,NonNegativeInteger) -> %
+--   ++ remove!(x,d,n) destructively removes (up to) n copies of x from
+--   ++ dictionary d.
+   removeDuplicates_!: % -> %
+     ++ removeDuplicates!(d) destructively removes any duplicate values
+     ++ in dictionary d.
+   duplicates: % -> List Record(entry:S,count:NonNegativeInteger)
+     ++ duplicates(d) returns a list of values which have duplicates in d
+--   ++ duplicates(d) returns a list of              ++ duplicates iterator
+-- to become duplicates: % -> Iterator(D,D)
+

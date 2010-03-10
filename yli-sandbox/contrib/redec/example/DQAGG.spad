@@ -1,0 +1,50 @@
+import StackAggregate
+import QueueAggregate
+)abbrev category DQAGG DequeueAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A dequeue is a doubly ended stack, that is, a bag where first items
+++ inserted are the first items extracted, at either the front or the back end
+++ of the data structure.
+DequeueAggregate(S:Type):
+ Category == Join(StackAggregate S,QueueAggregate S) with
+   dequeue: () -> %
+     ++ dequeue()$D creates an empty dequeue of type D.
+   dequeue: List S -> %
+     ++ dequeue([x,y,...,z]) creates a dequeue with first (top or front)
+     ++ element x, second element y,...,and last (bottom or back) element z.
+   height: % -> NonNegativeInteger
+     ++ height(d) returns the number of elements in dequeue d.
+     ++ Note: \axiom{height(d) = # d}.
+   top_!: % -> S
+     ++ top!(d) returns the element at the top (front) of the dequeue.
+   bottom_!: % -> S
+     ++ bottom!(d) returns the element at the bottom (back) of the dequeue.
+   insertTop_!: (S,%) -> S
+     ++ insertTop!(x,d) destructively inserts x into the dequeue d, that is,
+     ++ at the top (front) of the dequeue.
+     ++ The element previously at the top of the dequeue becomes the
+     ++ second in the dequeue, and so on.
+   insertBottom_!: (S,%) -> S
+     ++ insertBottom!(x,d) destructively inserts x into the dequeue d
+     ++ at the bottom (back) of the dequeue.
+   extractTop_!: % -> S
+     ++ extractTop!(d) destructively extracts the top (front) element
+     ++ from the dequeue d.
+     ++ Error: if d is empty.
+   extractBottom_!: % -> S
+     ++ extractBottom!(d) destructively extracts the bottom (back) element
+     ++ from the dequeue d.
+     ++ Error: if d is empty.
+   reverse_!: % -> %
+     ++ reverse!(d) destructively replaces d by its reverse dequeue, i.e.
+     ++ the top (front) element is now the bottom (back) element, and so on.
+

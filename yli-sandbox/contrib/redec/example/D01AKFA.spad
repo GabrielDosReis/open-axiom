@@ -1,0 +1,56 @@
+)abbrev domain D01AKFA d01akfAnnaType
+++ Author: Brian Dupee
+++ Date Created: March 1994
+++ Date Last Updated: December 1997
+++ Basic Operations: measure, numericalIntegration
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{d01akfAnnaType} is a domain of \axiomType{NumericalIntegrationCategory}
+++ for the NAG routine D01AKF, a numerical integration routine which is
+++ is suitable for oscillating, non-singular functions.  The function
+++ \axiomFun{measure} measures the usefulness of the routine D01AKF
+++ for the given problem.  The function \axiomFun{numericalIntegration}
+++ performs the integration by using \axiomType{NagIntegrationPackage}.
+
+d01akfAnnaType(): NumericalIntegrationCategory == Result add
+  EF2   ==> ExpressionFunctions2
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  SDF   ==> Stream DoubleFloat
+  DF    ==> DoubleFloat
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  NIA   ==> Record(var:Symbol,fn:EDF,range:SOCDF,abserr:DF,relerr:DF)
+  MDNIA ==> Record(fn:EDF,range:List SOCDF,abserr:DF,relerr:DF)
+  INT   ==> Integer
+  BOP   ==> BasicOperator
+  S     ==> Symbol
+  ST    ==> String
+  LST   ==> List String
+  RT    ==> RoutinesTable
+  Rep:=Result
+  import Rep, d01AgentsPackage, NagIntegrationPackage
+
+  measure(R:RT,args:NIA) ==
+    ext:Result := empty()$Result
+    pp:SDF := singularitiesOf(args)
+    not (empty?(pp)$SDF) =>
+      [0.0,"d01akf: There is a possible problem at the following point(s): "
+              commaSeparate(sdf2lst(pp)) ,ext]
+    o:Float := functionIsOscillatory(args)
+    one := 1.0
+    m:Float := (getMeasure(R,d01akf@S)$RT)*(one-one/(one+sqrt(o)))**2
+    m > 0.8 => [m,"d01akf: The expression shows much oscillation",ext]
+    m > 0.6 => [m,"d01akf: The expression shows some oscillation",ext]
+    m > 0.5 => [m,"d01akf: The expression shows little oscillation",ext]
+    [m,"d01akf: The expression shows little or no oscillation",ext]
+
+  numericalIntegration(args:NIA,hints:Result) ==
+    ArgsFn := map(convert(#1)$DF,args.fn)$EF2(DF,Float)
+    b:Float := getButtonValue("d01akf","functionEvaluations")$AttributeButtons
+    fEvals:INT := wholePart exp(1.1513*(1.0/(2.0*(1.0-b))))
+    iw:INT := 75*fEvals
+    f : Union(fn:FileName,fp:Asp1(F)) := [retract(ArgsFn)$Asp1(F)]
+    d01akf(getlo(args.range),gethi(args.range),args.abserr,args.relerr,4*iw,iw,-1,f)
+

@@ -1,0 +1,54 @@
+)abbrev package ODERED ReduceLODE
+++ Author: Manuel Bronstein
+++ Date Created: 19 August 1991
+++ Date Last Updated: 11 April 1994
+++ Description: Elimination of an algebraic from the coefficentss
+++ of a linear ordinary differential equation.
+ReduceLODE(F, L, UP, A, LO): Exports == Implementation where
+  F : Field
+  L : LinearOrdinaryDifferentialOperatorCategory F
+  UP: UnivariatePolynomialCategory F
+  A : MonogenicAlgebra(F, UP)
+  LO: LinearOrdinaryDifferentialOperatorCategory A
+
+  V ==> Vector F
+  M ==> Matrix L
+
+  Exports ==> with
+    reduceLODE: (LO, A) -> Record(mat:M, vec:V)
+      ++ reduceLODE(op, g) returns \spad{[m, v]} such that
+      ++ any solution in \spad{A} of \spad{op z = g}
+      ++ is of the form \spad{z = (z_1,...,z_m) . (b_1,...,b_m)} where
+      ++ the \spad{b_i's} are the basis of \spad{A} over \spad{F} returned
+      ++ by \spadfun{basis}() from \spad{A}, and the \spad{z_i's} satisfy the
+      ++ differential system \spad{M.z = v}.
+
+  Implementation ==> add
+    matF2L: Matrix F -> M
+
+    diff := D()$L
+
+-- coerces a matrix of elements of F into a matrix of (order 0) L.O.D.O's
+    matF2L m ==
+      map(#1::L, m)$MatrixCategoryFunctions2(F, V, V, Matrix F,
+                                                L, Vector L, Vector L, M)
+
+-- This follows the algorithm and notation of
+--  "The Risch Differential Equation on an Algebraic Curve", M. Bronstein,
+-- in 'Proceedings of ISSAC '91', Bonn, BRD, ACM Press, pp.241-246, July 1991.
+    reduceLODE(l, g) ==
+      n := rank()$A
+-- md is the basic differential matrix (D x I + Dy)
+      md := matF2L transpose derivationCoordinates(basis(), diff #1)
+      for i in minRowIndex md .. maxRowIndex md
+        for j in minColIndex md .. maxColIndex md repeat
+          md(i, j) := diff + md(i, j)
+-- mdi will go through the successive powers of md
+      mdi := copy md
+      sys := matF2L(transpose regularRepresentation coefficient(l, 0))
+      for i in 1..degree l repeat
+        sys := sys +
+                matF2L(transpose regularRepresentation coefficient(l, i)) * mdi
+        mdi := md * mdi
+      [sys, coordinates g]
+

@@ -1,0 +1,26 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain IFAST IfAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents AST for conditional expressions.
+IfAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    condition: % -> SpadAst
+      ++ condition(e) returns the condition of the if-expression `e'.
+    thenBranch: % -> SpadAst
+      ++ thenBranch(e) returns the `then-branch' of `e'.
+    elseBranch: % -> SpadAst
+      ++ thenBranch(e) returns the `else-branch' of `e'.
+  Private == add
+    Rep == List SpadAst
+    condition x == second rep x
+    thenBranch x == third rep x
+    elseBranch x == last rep x
+    coerce(x: %): OutputForm ==
+      elt('IfAst::OutputForm,
+        ['condition::OutputForm = condition(x)::OutputForm, 
+          'thenBranch::OutputForm = thenBranch(x)::OutputForm,
+           'elseBranch::OutputForm = elseBranch(x)::OutputForm])$OutputForm
+

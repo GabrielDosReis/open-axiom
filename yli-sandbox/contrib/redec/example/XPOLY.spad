@@ -1,0 +1,24 @@
+import XRecursivePolynomial
+)abbrev domain XPOLY XPolynomial
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++   extend renomme en expand
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This type supports multivariate polynomials
+++ whose set of variables is \spadtype{Symbol}.
+++ The representation is recursive.
+++ The coefficient ring may be non-commutative and the variables 
+++ do not commute.
+++ However, coefficients and variables commute.
+++ Author: Michel Petitot (petitot@lifl.fr)
+
+XPolynomial(R:Ring) == XRecursivePolynomial(Symbol, R)
+

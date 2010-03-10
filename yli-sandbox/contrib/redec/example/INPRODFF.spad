@@ -1,0 +1,108 @@
+)abbrev package INPRODFF InfiniteProductFiniteField
+++ Author: Clifton J. Williamson
+++ Date Created: 22 February 1990
+++ Date Last Updated: 23 February 1990
+++ Basic Operations: infiniteProduct, evenInfiniteProduct, oddInfiniteProduct,
+++   generalInfiniteProduct
+++ Related Domains: UnivariateTaylorSeriesCategory
+++ Also See:
+++ AMS Classifications:
+++ Keywords: Taylor series, infinite product
+++ Examples:
+++ References:
+++ Description: 
+++   This package computes infinite products of univariate Taylor series
+++   over an arbitrary finite field.
+InfiniteProductFiniteField(K,UP,Coef,UTS):_
+ Exports == Implementation where
+  K    :  Join(Field,Finite,ConvertibleTo Integer)
+  UP   :  UnivariatePolynomialCategory K
+  Coef :  MonogenicAlgebra(K,UP)
+  UTS  :  UnivariateTaylorSeriesCategory Coef
+  I   ==> Integer
+  RN  ==> Fraction Integer
+  SAE ==> SimpleAlgebraicExtension
+  ST  ==> Stream
+  STF ==> StreamTranscendentalFunctions
+  STT ==> StreamTaylorSeriesOperations
+  ST2 ==> StreamFunctions2
+  SUP ==> SparseUnivariatePolynomial
+ 
+  Exports ==> with
+ 
+    infiniteProduct: UTS -> UTS
+      ++ infiniteProduct(f(x)) computes \spad{product(n=1,2,3...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    evenInfiniteProduct: UTS -> UTS
+      ++ evenInfiniteProduct(f(x)) computes \spad{product(n=2,4,6...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    oddInfiniteProduct: UTS -> UTS
+      ++ oddInfiniteProduct(f(x)) computes \spad{product(n=1,3,5...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    generalInfiniteProduct: (UTS,I,I) -> UTS
+      ++ generalInfiniteProduct(f(x),a,d) computes
+      ++ \spad{product(n=a,a+d,a+2*d,...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+ 
+  Implementation ==> add
+ 
+    liftPoly: UP -> SUP RN
+    liftPoly poly ==
+      -- lift coefficients of 'poly' to integers
+      ans : SUP RN := 0
+      while not zero? poly repeat
+        coef := convert(leadingCoefficient poly)@I :: RN
+        ans := ans + monomial(coef,degree poly)
+        poly := reductum poly
+      ans
+ 
+    reducePoly: SUP RN -> UP
+    reducePoly poly ==
+      -- reduce coefficients of 'poly' to elements of K
+      ans : UP := 0
+      while not zero? poly repeat
+        coef := numer(leadingCoefficient(poly)) :: K
+        ans := ans + monomial(coef,degree poly)
+        poly := reductum poly
+      ans
+ 
+    POLY := liftPoly definingPolynomial()$Coef
+    ALG  == SAE(RN,SUP RN,POLY)
+ 
+    infiniteProduct x ==
+      stUP := map(lift,coefficients x)$ST2(Coef,UP)
+      stSUP := map(liftPoly,stUP)$ST2(UP,SUP RN)
+      stALG := map(reduce,stSUP)$ST2(SUP RN,ALG)
+      stALG := exp(lambert(log(stALG)$STF(ALG))$STT(ALG))$STF(ALG)
+      stSUP := map(lift,stALG)$ST2(ALG,SUP RN)
+      stUP := map(reducePoly,stSUP)$ST2(SUP RN,UP)
+      series map(reduce,stUP)$ST2(UP,Coef)
+ 
+    evenInfiniteProduct x ==
+      stUP := map(lift,coefficients x)$ST2(Coef,UP)
+      stSUP := map(liftPoly,stUP)$ST2(UP,SUP RN)
+      stALG := map(reduce,stSUP)$ST2(SUP RN,ALG)
+      stALG := exp(evenlambert(log(stALG)$STF(ALG))$STT(ALG))$STF(ALG)
+      stSUP := map(lift,stALG)$ST2(ALG,SUP RN)
+      stUP := map(reducePoly,stSUP)$ST2(SUP RN,UP)
+      series map(reduce,stUP)$ST2(UP,Coef)
+ 
+    oddInfiniteProduct x ==
+      stUP := map(lift,coefficients x)$ST2(Coef,UP)
+      stSUP := map(liftPoly,stUP)$ST2(UP,SUP RN)
+      stALG := map(reduce,stSUP)$ST2(SUP RN,ALG)
+      stALG := exp(oddlambert(log(stALG)$STF(ALG))$STT(ALG))$STF(ALG)
+      stSUP := map(lift,stALG)$ST2(ALG,SUP RN)
+      stUP := map(reducePoly,stSUP)$ST2(SUP RN,UP)
+      series map(reduce,stUP)$ST2(UP,Coef)
+ 
+    generalInfiniteProduct(x,a,d) ==
+      stUP := map(lift,coefficients x)$ST2(Coef,UP)
+      stSUP := map(liftPoly,stUP)$ST2(UP,SUP RN)
+      stALG := map(reduce,stSUP)$ST2(SUP RN,ALG)
+      stALG := generalLambert(log(stALG)$STF(ALG),a,d)$STT(ALG)
+      stALG := exp(stALG)$STF(ALG)
+      stSUP := map(lift,stALG)$ST2(ALG,SUP RN)
+      stUP := map(reducePoly,stSUP)$ST2(SUP RN,UP)
+      series map(reduce,stUP)$ST2(UP,Coef)
+

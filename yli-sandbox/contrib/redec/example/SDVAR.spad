@@ -1,0 +1,34 @@
+)abbrev domain SDVAR SequentialDifferentialVariable
+++ Author:  William Sit
+++ Date Created: 19 July 1990
+++ Date Last Updated: 13 September 1991
+++ Basic Operations:differentiate, order, variable, <
+++ Related Domains: OrderedVariableList,
+++                  OrderlyDifferentialVariable.
+++ See Also:DifferentialVariableCategory
+++ AMS Classifications:12H05
+++ Keywords: differential indeterminates, sequential ranking.
+++ References:Kolchin, E.R. "Differential Algebra and Algebraic Groups"
+++   (Academic Press, 1973).
+++ Description:
+++   \spadtype{OrderlyDifferentialVariable} adds a commonly used sequential
+++   ranking to the set of derivatives of an ordered list of differential
+++   indeterminates.  A sequential ranking is a ranking \spadfun{<} of the
+++   derivatives with the property that for any derivative v,
+++   there are only a finite number of derivatives u with u \spadfun{<} v.
+++   This domain belongs to \spadtype{DifferentialVariableCategory}.  It
+++   defines \spadfun{weight} to be just \spadfun{order}, and it
+++   defines a sequential ranking \spadfun{<} on derivatives u by the
+++   lexicographic order on the pair
+++   (\spadfun{variable}(u), \spadfun{order}(u)).
+
+SequentialDifferentialVariable(S:OrderedSet):DifferentialVariableCategory(S)
+  == add
+    Rep := Record(var:S, ord:NonNegativeInteger)
+    makeVariable(s,n) == [s, n]
+    variable v     == v.var
+    order v        == v.ord
+    v < u ==
+      variable v = variable u => order v < order u
+      variable v < variable u
+

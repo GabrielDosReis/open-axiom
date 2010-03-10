@@ -1,0 +1,222 @@
+)abbrev package IMATLIN InnerMatrixLinearAlgebraFunctions
+++ Author: Clifton J. Williamson, P.Gianni
+++ Date Created: 13 November 1989
+++ Date Last Updated: September 1993
+++ Basic Operations:
+++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
+++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Also See:
+++ AMS Classifications:
+++ Keywords: matrix, canonical forms, linear algebra
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{InnerMatrixLinearAlgebraFunctions} is an internal package
+++   which provides standard linear algebra functions on domains in
+++   \spad{MatrixCategory}
+InnerMatrixLinearAlgebraFunctions(R,Row,Col,M):_
+             Exports == Implementation where
+  R   : Field
+  Row : FiniteLinearAggregate R
+  Col : FiniteLinearAggregate R
+  M   : MatrixCategory(R,Row,Col)
+  I ==> Integer
+
+  Exports ==> with
+    rowEchelon: M -> M
+      ++ \spad{rowEchelon(m)} returns the row echelon form of the matrix m.
+    rank: M -> NonNegativeInteger
+      ++ \spad{rank(m)} returns the rank of the matrix m.
+    nullity: M -> NonNegativeInteger
+      ++ \spad{nullity(m)} returns the mullity of the matrix m. This is the
+      ++ dimension of the null space of the matrix m.
+    if Col has shallowlyMutable then
+      nullSpace: M -> List Col
+        ++ \spad{nullSpace(m)} returns a basis for the null space of the
+        ++ matrix m.
+    determinant: M -> R
+      ++ \spad{determinant(m)} returns the determinant of the matrix m.
+      ++ an error message is returned if the matrix is not square.
+    generalizedInverse: M -> M
+      ++ \spad{generalizedInverse(m)} returns the generalized (Moore--Penrose)
+      ++ inverse of the matrix m, i.e. the matrix h such that
+      ++ m*h*m=h, h*m*h=m, m*h and h*m are both symmetric matrices.
+    inverse: M -> Union(M,"failed")
+      ++ \spad{inverse(m)} returns the inverse of the matrix m.
+      ++ If the matrix is not invertible, "failed" is returned.
+      ++ Error: if the matrix is not square.
+
+  Implementation ==> add
+
+    rowAllZeroes?: (M,I) -> Boolean
+    rowAllZeroes?(x,i) ==
+      -- determines if the ith row of x consists only of zeroes
+      -- internal function: no check on index i
+      for j in minColIndex(x)..maxColIndex(x) repeat
+        qelt(x,i,j) ~= 0 => return false
+      true
+
+    colAllZeroes?: (M,I) -> Boolean
+    colAllZeroes?(x,j) ==
+      -- determines if the ith column of x consists only of zeroes
+      -- internal function: no check on index j
+      for i in minRowIndex(x)..maxRowIndex(x) repeat
+        qelt(x,i,j) ~= 0 => return false
+      true
+
+    rowEchelon y ==
+      -- row echelon form via Gaussian elimination
+      x := copy y
+      minR := minRowIndex x; maxR := maxRowIndex x
+      minC := minColIndex x; maxC := maxColIndex x
+      i := minR
+      n: I := minR - 1
+      for j in minC..maxC repeat
+        i > maxR => return x
+        n := minR - 1
+        -- n = smallest k such that k >= i and x(k,j) ~= 0
+        for k in i..maxR repeat
+          if qelt(x,k,j) ~= 0 then leave (n := k)
+        n = minR - 1 => "no non-zeroes"
+        -- put nth row in ith position
+        if i ~= n then swapRows_!(x,i,n)
+        -- divide ith row by its first non-zero entry
+        b := inv qelt(x,i,j)
+        qsetelt_!(x,i,j,1)
+        for k in (j+1)..maxC repeat qsetelt_!(x,i,k,b * qelt(x,i,k))
+        -- perform row operations so that jth column has only one 1
+        for k in minR..maxR repeat
+          if k ~= i and qelt(x,k,j) ~= 0 then
+            for k1 in (j+1)..maxC repeat
+              qsetelt_!(x,k,k1,qelt(x,k,k1) - qelt(x,k,j) * qelt(x,i,k1))
+            qsetelt_!(x,k,j,0)
+        -- increment i
+        i := i + 1
+      x
+
+    rank x ==
+      y :=
+        (rk := nrows x) > (rh := ncols x) =>
+          rk := rh
+          transpose x
+        copy x
+      y := rowEchelon y; i := maxRowIndex y
+      while rk > 0 and rowAllZeroes?(y,i) repeat
+        i := i - 1
+        rk := (rk - 1) :: NonNegativeInteger
+      rk :: NonNegativeInteger
+
+    nullity x == (ncols x - rank x) :: NonNegativeInteger
+
+    if Col has shallowlyMutable then
+
+      nullSpace y ==
+        x := rowEchelon y
+        minR := minRowIndex x; maxR := maxRowIndex x
+        minC := minColIndex x; maxC := maxColIndex x
+        nrow := nrows x; ncol := ncols x
+        basis : List Col := nil()
+        rk := nrow; row := maxR
+        -- compute rank = # rows - # rows of all zeroes
+        while rk > 0 and rowAllZeroes?(x,row) repeat
+          rk := (rk - 1) :: NonNegativeInteger
+          row := (row - 1) :: NonNegativeInteger
+        -- if maximal rank, return zero vector
+        ncol <= nrow and rk = ncol => [new(ncol,0)]
+        -- if rank = 0, return standard basis vectors
+        rk = 0 =>
+          for j in minC..maxC repeat
+            w : Col := new(ncol,0)
+            qsetelt_!(w,j,1)
+            basis := cons(w,basis)
+          basis
+        -- v contains information about initial 1's in the rows of x
+        -- if the ith row has an initial 1 in the jth column, then
+        -- v.j = i; v.j = minR - 1, otherwise
+        v : IndexedOneDimensionalArray(I,minC) := new(ncol,minR - 1)
+        j : Integer
+        for i in minR..(minR + rk - 1) repeat
+          for j in minC.. while qelt(x,i,j) = 0 repeat j
+          qsetelt_!(v,j,i)
+        j := maxC; l := minR + ncol - 1
+        while j >= minC repeat
+          w : Col := new(ncol,0)
+          -- if there is no row with an initial 1 in the jth column,
+          -- create a basis vector with a 1 in the jth row
+          if qelt(v,j) = minR - 1 then
+            colAllZeroes?(x,j) =>
+              qsetelt_!(w,l,1)
+              basis := cons(w,basis)
+            for k in minC..(j-1) for ll in minR..(l-1) repeat
+              if qelt(v,k) ~= minR - 1 then
+                qsetelt_!(w,ll,-qelt(x,qelt(v,k),j))
+            qsetelt_!(w,l,1)
+            basis := cons(w,basis)
+          j := j - 1; l := l - 1
+        basis
+
+    determinant y ==
+      (ndim := nrows y) ~= (ncols y) =>
+        error "determinant: matrix must be square"
+      -- Gaussian Elimination
+      ndim = 1 => qelt(y,minRowIndex y,minColIndex y)
+      x := copy y
+      minR := minRowIndex x; maxR := maxRowIndex x
+      minC := minColIndex x; maxC := maxColIndex x
+      ans : R := 1
+      for i in minR..(maxR - 1) for j in minC..(maxC - 1) repeat
+        if qelt(x,i,j) = 0 then
+          rown := minR - 1
+          for k in (i+1)..maxR repeat
+            qelt(x,k,j) ~= 0 => leave (rown := k)
+          if rown = minR - 1 then return 0
+          swapRows_!(x,i,rown); ans := -ans
+        ans := qelt(x,i,j) * ans; b := -inv qelt(x,i,j)
+        for l in (j+1)..maxC repeat qsetelt_!(x,i,l,b * qelt(x,i,l))
+        for k in (i+1)..maxR repeat
+          if (b := qelt(x,k,j)) ~= 0 then
+            for l in (j+1)..maxC repeat
+              qsetelt_!(x,k,l,qelt(x,k,l) + b * qelt(x,i,l))
+      qelt(x,maxR,maxC) * ans
+
+    generalizedInverse(x) ==
+      SUP:=SparseUnivariatePolynomial R
+      FSUP := Fraction SUP
+      VFSUP := Vector FSUP
+      MATCAT2 := MatrixCategoryFunctions2(R, Row, Col, M,
+                   FSUP, VFSUP, VFSUP, Matrix FSUP)
+      MATCAT22 := MatrixCategoryFunctions2(FSUP, VFSUP, VFSUP, Matrix FSUP,
+                   R, Row, Col, M)
+      y:= map(coerce(coerce(#1)$SUP)$(Fraction SUP),x)$MATCAT2
+      ty:=transpose y
+      yy:=ty*y
+      nc:=ncols yy
+      var:=monomial(1,1)$SUP ::(Fraction SUP)
+      yy:=inverse(yy+scalarMatrix(ncols yy,var))::Matrix(FSUP)*ty
+      map(elt(#1,0),yy)$MATCAT22
+
+    inverse x ==
+      (ndim := nrows x) ~= (ncols x) =>
+        error "inverse: matrix must be square"
+      ndim = 2 =>
+         ans2 : M := zero(ndim, ndim)
+         zero?(det :=  x(1,1)*x(2,2)-x(1,2)*x(2,1)) => "failed"
+         detinv := inv det
+         ans2(1,1) := x(2,2)*detinv
+         ans2(1,2) := -x(1,2)*detinv
+         ans2(2,1) := -x(2,1)*detinv
+         ans2(2,2) := x(1,1)*detinv
+         ans2
+      AB : M := zero(ndim,ndim + ndim)
+      minR := minRowIndex x; maxR := maxRowIndex x
+      minC := minColIndex x; maxC := maxColIndex x
+      kmin := minRowIndex AB; kmax := kmin + ndim - 1
+      lmin := minColIndex AB; lmax := lmin + ndim - 1
+      for i in minR..maxR for k in kmin..kmax repeat
+        for j in minC..maxC for l in lmin..lmax repeat
+          qsetelt_!(AB,k,l,qelt(x,i,j))
+        qsetelt_!(AB,k,lmin + ndim + k - kmin,1)
+      AB := rowEchelon AB
+      elt(AB,kmax,lmax) = 0 => "failed"
+      subMatrix(AB,kmin,kmax,lmin + ndim,lmax + ndim)
+

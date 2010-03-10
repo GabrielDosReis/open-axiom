@@ -1,0 +1,124 @@
+--Copyright The Numerical Algorithms Group Limited 1991.
+
+++ 4x4 Matrices for coordinate transformations
+++ Author: Timothy Daly
+++ Date Created: June 26, 1991
+++ Date Last Updated: 26 June 1991
+++ Description:
+++   This package contains functions to create 4x4 matrices
+++   useful for rotating and transforming coordinate systems.
+++   These matrices are useful for graphics and robotics.
+++   (Reference: Robot Manipulators Richard Paul MIT Press 1981) 
+ 
+ 
+)abbrev domain DHMATRIX DenavitHartenbergMatrix
+ 
+--% DHMatrix
+
+DenavitHartenbergMatrix(R): Exports == Implementation where
+  ++ A Denavit-Hartenberg Matrix is a 4x4 Matrix of the form:
+  ++  \spad{nx ox ax px}
+  ++  \spad{ny oy ay py}
+  ++  \spad{nz oz az pz}
+  ++   \spad{0  0  0  1}
+  ++ (n, o, and a are the direction cosines)
+  R : Join(Field,  TranscendentalFunctionCategory)
+
+-- for the implementation of dhmatrix
+  minrow ==> 1
+  mincolumn ==> 1
+--
+  nx ==> x(1,1)::R
+  ny ==> x(2,1)::R
+  nz ==> x(3,1)::R
+  ox ==> x(1,2)::R
+  oy ==> x(2,2)::R
+  oz ==> x(3,2)::R
+  ax ==> x(1,3)::R
+  ay ==> x(2,3)::R
+  az ==> x(3,3)::R
+  px ==> x(1,4)::R
+  py ==> x(2,4)::R
+  pz ==> x(3,4)::R
+  row ==> Vector(R)
+  col ==> Vector(R)
+  radians ==> pi()/180
+
+  Exports ==> MatrixCategory(R,row,col) with
+   "*": (%, Point R) -> Point R
+     ++ t*p applies the dhmatrix t to point p
+   identity: () -> %
+     ++ identity() create the identity dhmatrix
+   rotatex: R -> %
+     ++ rotatex(r) returns a dhmatrix for rotation about axis X for r degrees
+   rotatey: R -> %
+     ++ rotatey(r) returns a dhmatrix for rotation about axis Y for r degrees
+   rotatez: R -> %
+     ++ rotatez(r) returns a dhmatrix for rotation about axis Z for r degrees
+   scale: (R,R,R) -> %
+     ++ scale(sx,sy,sz) returns a dhmatrix for scaling in the X, Y and Z
+     ++ directions
+   translate: (R,R,R) -> %
+     ++ translate(X,Y,Z) returns a dhmatrix for translation by X, Y, and Z
+ 
+  Implementation ==> Matrix(R) add
+
+    identity() == matrix([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+
+--    inverse(x) == (inverse(x pretend (Matrix R))$Matrix(R)) pretend %
+--    dhinverse(x) == matrix( _
+--        [[nx,ny,nz,-(px*nx+py*ny+pz*nz)],_
+--         [ox,oy,oz,-(px*ox+py*oy+pz*oz)],_
+--         [ax,ay,az,-(px*ax+py*ay+pz*az)],_
+--         [ 0, 0, 0, 1]])
+
+    d:% * p: Point(R) ==
+       v := p pretend Vector R
+       v := concat(v, 1$R)
+       v := d * v
+       point ([v.1, v.2, v.3]$List(R))
+
+    rotatex(degree) ==
+     angle := degree * pi() / 180::R
+     cosAngle := cos(angle)
+     sinAngle := sin(angle)
+     matrix(_
+      [[1,     0,           0,      0], _
+       [0, cosAngle, -sinAngle, 0], _
+       [0, sinAngle,  cosAngle, 0], _
+       [0,     0,           0,      1]])
+
+    rotatey(degree) ==
+     angle := degree * pi() / 180::R
+     cosAngle := cos(angle)
+     sinAngle := sin(angle)
+     matrix(_
+      [[ cosAngle, 0, sinAngle, 0], _
+       [    0,       1,     0,      0], _
+       [-sinAngle, 0, cosAngle, 0], _
+       [    0,       0,     0,      1]])
+
+    rotatez(degree) ==
+     angle := degree * pi() / 180::R
+     cosAngle := cos(angle)
+     sinAngle := sin(angle)
+     matrix(_
+      [[cosAngle, -sinAngle, 0, 0], _
+       [sinAngle,  cosAngle, 0, 0], _
+       [   0,           0,       1, 0], _
+       [   0,           0,       0, 1]])
+
+    scale(scalex, scaley, scalez) ==
+     matrix(_
+      [[scalex, 0      ,0     , 0], _
+       [0     , scaley ,0     , 0], _
+       [0     , 0,      scalez, 0], _
+       [0     , 0,      0     , 1]])
+
+    translate(x,y,z) ==
+     matrix(_
+      [[1,0,0,x],_
+       [0,1,0,y],_
+       [0,0,1,z],_
+       [0,0,0,1]])
+ 

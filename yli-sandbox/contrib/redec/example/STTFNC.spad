@@ -1,0 +1,235 @@
+)abbrev package STTFNC StreamTranscendentalFunctionsNonCommutative
+++ Author: Clifton J. Williamson
+++ Date Created: 26 May 1994
+++ Date Last Updated: 26 May 1994
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: Taylor series, transcendental function, non-commutative
+++ Examples:
+++ References:
+++ Description:
+++   StreamTranscendentalFunctionsNonCommutative implements transcendental
+++   functions on Taylor series over a non-commutative ring, where a Taylor
+++   series is represented by a stream of its coefficients.
+StreamTranscendentalFunctionsNonCommutative(Coef): _
+         Exports == Implementation where
+  Coef :   Algebra Fraction Integer
+  I    ==> Integer
+  SG   ==> String
+  ST   ==> Stream Coef
+  STTF ==> StreamTranscendentalFunctions Coef
+
+  Exports ==> with
+--% Exponentials and Logarithms
+    exp     : ST -> ST
+      ++ exp(st) computes the exponential of a power series st.
+    log     : ST -> ST
+      ++ log(st) computes the log of a power series.
+    "**"    : (ST,ST) -> ST
+      ++ st1 ** st2 computes the power of a power series st1 by another
+      ++ power series st2.
+
+--% TrigonometricFunctionCategory
+    sin     : ST -> ST
+      ++ sin(st) computes sine of a power series st.
+    cos     : ST -> ST
+      ++ cos(st) computes cosine of a power series st.
+    tan     : ST -> ST
+      ++ tan(st) computes tangent of a power series st.
+    cot     : ST -> ST
+      ++ cot(st) computes cotangent of a power series st.
+    sec     : ST -> ST
+      ++ sec(st) computes secant of a power series st.
+    csc     : ST -> ST
+      ++ csc(st) computes cosecant of a power series st.
+    asin    : ST -> ST
+      ++ asin(st) computes arcsine of a power series st.
+    acos    : ST -> ST
+      ++ acos(st) computes arccosine of a power series st.
+    atan    : ST -> ST
+      ++ atan(st) computes arctangent of a power series st.
+    acot    : ST -> ST
+      ++ acot(st) computes arccotangent of a power series st.
+    asec    : ST -> ST
+      ++ asec(st) computes arcsecant of a power series st.
+    acsc    : ST -> ST
+      ++ acsc(st) computes arccosecant of a power series st.
+
+--% HyperbloicTrigonometricFunctionCategory
+    sinh    : ST -> ST
+      ++ sinh(st) computes the hyperbolic sine of a power series st.
+    cosh    : ST -> ST
+      ++ cosh(st) computes the hyperbolic cosine of a power series st.
+    tanh    : ST -> ST
+      ++ tanh(st) computes the hyperbolic tangent of a power series st.
+    coth    : ST -> ST
+      ++ coth(st) computes the hyperbolic cotangent of a power series st.
+    sech    : ST -> ST
+      ++ sech(st) computes the hyperbolic secant of a power series st.
+    csch    : ST -> ST
+      ++ csch(st) computes the hyperbolic cosecant of a power series st.
+    asinh   : ST -> ST
+      ++ asinh(st) computes the inverse hyperbolic sine of a power series st.
+    acosh   : ST -> ST
+      ++ acosh(st) computes the inverse hyperbolic cosine
+      ++ of a power series st.
+    atanh   : ST -> ST
+      ++ atanh(st) computes the inverse hyperbolic tangent
+      ++ of a power series st.
+    acoth   : ST -> ST
+      ++ acoth(st) computes the inverse hyperbolic
+      ++ cotangent of a power series st.
+    asech   : ST -> ST
+      ++ asech(st) computes the inverse hyperbolic secant of a
+      ++ power series st.
+    acsch   : ST -> ST
+      ++ acsch(st) computes the inverse hyperbolic
+      ++ cosecant of a power series st.
+
+  Implementation ==> add
+    import StreamTaylorSeriesOperations(Coef)
+
+--% Error Reporting
+
+    ZERO    : SG := "series must have constant coefficient zero"
+    ONE     : SG := "series must have constant coefficient one"
+    NPOWERS : SG := "series expansion has terms of negative degree"
+
+--% Exponentials and Logarithms
+
+    exp z ==
+      empty? z => 1 :: ST
+      (frst z) = 0 =>
+        expx := exp(monom(1,1))$STTF
+        compose(expx,z)
+      error concat("exp: ",ZERO)
+
+    log z ==
+      empty? z => error concat("log: ",ONE)
+      (frst z) = 1 =>
+        log1PlusX := log(monom(1,0) + monom(1,1))$STTF
+        compose(log1PlusX,z - monom(1,0))
+      error concat("log: ",ONE)
+
+    (z1:ST) ** (z2:ST) == exp(log(z1) * z2)
+
+--% Trigonometric Functions
+
+    sin z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        sinx := sin(monom(1,1))$STTF
+        compose(sinx,z)
+      error concat("sin: ",ZERO)
+
+    cos z ==
+      empty? z => 1 :: ST
+      (frst z) = 0 =>
+        cosx := cos(monom(1,1))$STTF
+        compose(cosx,z)
+      error concat("cos: ",ZERO)
+
+    tan z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        tanx := tan(monom(1,1))$STTF
+        compose(tanx,z)
+      error concat("tan: ",ZERO)
+
+    cot z ==
+      empty? z => error "cot: cot(0) is undefined"
+      (frst z) = 0 => error concat("cot: ",NPOWERS)
+      error concat("cot: ",ZERO)
+
+    sec z ==
+      empty? z => 1 :: ST
+      (frst z) = 0 =>
+        secx := sec(monom(1,1))$STTF
+        compose(secx,z)
+      error concat("sec: ",ZERO)
+
+    csc z ==
+      empty? z => error "csc: csc(0) is undefined"
+      (frst z) = 0 => error concat("csc: ",NPOWERS)
+      error concat("csc: ",ZERO)
+
+    asin z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        asinx := asin(monom(1,1))$STTF
+        compose(asinx,z)
+      error concat("asin: ",ZERO)
+
+    atan z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        atanx := atan(monom(1,1))$STTF
+        compose(atanx,z)
+      error concat("atan: ",ZERO)
+
+    acos z == error "acos: acos undefined on this coefficient domain"
+    acot z == error "acot: acot undefined on this coefficient domain"
+    asec z == error "asec: asec undefined on this coefficient domain"
+    acsc z == error "acsc: acsc undefined on this coefficient domain"
+
+--% Hyperbolic Trigonometric Functions
+
+    sinh z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        sinhx := sinh(monom(1,1))$STTF
+        compose(sinhx,z)
+      error concat("sinh: ",ZERO)
+
+    cosh z ==
+      empty? z => 1 :: ST
+      (frst z) = 0 =>
+        coshx := cosh(monom(1,1))$STTF
+        compose(coshx,z)
+      error concat("cosh: ",ZERO)
+
+    tanh z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        tanhx := tanh(monom(1,1))$STTF
+        compose(tanhx,z)
+      error concat("tanh: ",ZERO)
+
+    coth z ==
+      empty? z => error "coth: coth(0) is undefined"
+      (frst z) = 0 => error concat("coth: ",NPOWERS)
+      error concat("coth: ",ZERO)
+
+    sech z ==
+      empty? z => 1 :: ST
+      (frst z) = 0 =>
+        sechx := sech(monom(1,1))$STTF
+        compose(sechx,z)
+      error concat("sech: ",ZERO)
+
+    csch z ==
+      empty? z => error "csch: csch(0) is undefined"
+      (frst z) = 0 => error concat("csch: ",NPOWERS)
+      error concat("csch: ",ZERO)
+
+    asinh z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        asinhx := asinh(monom(1,1))$STTF
+        compose(asinhx,z)
+      error concat("asinh: ",ZERO)
+
+    atanh z ==
+      empty? z => 0 :: ST
+      (frst z) = 0 =>
+        atanhx := atanh(monom(1,1))$STTF
+        compose(atanhx,z)
+      error concat("atanh: ",ZERO)
+
+    acosh z == error "acosh: acosh undefined on this coefficient domain"
+    acoth z == error "acoth: acoth undefined on this coefficient domain"
+    asech z == error "asech: asech undefined on this coefficient domain"
+    acsch z == error "acsch: acsch undefined on this coefficient domain"
+

@@ -1,0 +1,21 @@
+import SetCategory
+import OutputForm
+)abbrev domain NONE None
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions: coerce
+++ Related Constructors: NoneFunctions1
+++ Also See: Any
+++ AMS Classification:
+++ Keywords: none, empty
+++ Description:
+++    \spadtype{None} implements a type with no objects. It is mainly
+++    used in technical situations where such a thing is needed (e.g.
+++    the interpreter and some of the internal \spadtype{Expression}
+++    code).
+
+None():SetCategory == add
+    coerce(none:%):OutputForm == "NONE" :: OutputForm
+    x:% = y:% == EQ(x,y)$Lisp
+

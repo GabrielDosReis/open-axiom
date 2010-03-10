@@ -1,0 +1,60 @@
+import Type
+import Stream
+)abbrev package STREAM2 StreamFunctions2
+++ Authors: Burge, Watt; updated by Clifton J. Williamson
+++ Date Created: July 1986
+++ Date Last Updated: 29 January 1990
+++ Keywords: stream, infinite list, infinite sequence
+StreamFunctions2(A:Type,B:Type): Exports == Implementation where
+  ++ Functions defined on streams with entries in two sets.
+  ST   ==> Stream
+
+  Exports ==> with
+    map: ((A -> B),ST A) -> ST B
+      ++ map(f,s) returns a stream whose elements are the function f applied
+      ++ to the corresponding elements of s.
+      ++ Note: \spad{map(f,[x0,x1,x2,...]) = [f(x0),f(x1),f(x2),..]}.
+    scan: (B,((A,B) -> B),ST A) -> ST B
+      ++ scan(b,h,[x0,x1,x2,...]) returns \spad{[y0,y1,y2,...]}, where
+      ++ \spad{y0 = h(x0,b)},
+      ++ \spad{y1 = h(x1,y0)},\spad{...}
+      ++ \spad{yn = h(xn,y(n-1))}.
+    reduce:  (B,(A,B) -> B,ST A) -> B
+      ++ reduce(b,f,u), where u is a finite stream \spad{[x0,x1,...,xn]},
+      ++ returns the value \spad{r(n)} computed as follows:
+      ++ \spad{r0 = f(x0,b),
+      ++ r1 = f(x1,r0),...,
+      ++ r(n) = f(xn,r(n-1))}.
+--  rreduce: (B,(A,B) -> B,ST A) -> B
+--    ++ reduce(b,h,[x0,x1,..,xn]) = h(x1,h(x2(..,h(x(n-1),h(xn,b))..)
+--  reshape: (ST B,ST A) -> ST B
+--    ++ reshape(y,x) = y
+
+  Implementation ==> add
+
+    mapp: (A -> B,ST A) -> ST B
+    mapp(f,x)== delay
+      empty? x => empty()
+      concat(f frst x, map(f,rst x))
+
+    map(f,x) ==
+      explicitlyEmpty? x => empty()
+      eq?(x,rst x) => repeating([f frst x])
+      mapp(f, x)
+
+--  reshape(y,x) == y
+
+    scan(b,h,x) == delay
+      empty? x => empty()
+      c := h(frst x,b)
+      concat(c,scan(c,h,rst x))
+
+    reduce(b,h,x) ==
+      empty? x => b
+      reduce((h(frst x,b))@B,h,rst x)
+
+
+--  rreduce(b,h,x) ==
+--    empty? x => b
+--    h(frst x,rreduce(b,h,rst x))
+

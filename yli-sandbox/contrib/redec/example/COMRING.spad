@@ -1,0 +1,18 @@
+)abbrev category COMRING CommutativeRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of commutative rings with unity, i.e. rings where
+++ \spadop{*} is commutative, and which have a multiplicative identity.
+++ element.
+--CommutativeRing():Category == Join(Ring,BiModule(%:Ring,%:Ring)) with
+CommutativeRing():Category == Join(Ring,BiModule(%,%)) with
+    commutative("*")  ++ multiplication is commutative.
+

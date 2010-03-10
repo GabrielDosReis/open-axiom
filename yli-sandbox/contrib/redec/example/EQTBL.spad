@@ -1,0 +1,18 @@
+)abbrev domain EQTBL EqTable
+++ Author: Stephen M. Watt
+++ Date Created: 
+++ Date Last Updated: June 21, 1991
+++ Basic Operations: 
+++ Related Domains: HashTable, Table, StringTable
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   This domain provides tables where the keys are compared using 
+++   \spadfun{eq?}.  Thus keys are considered equal only if they
+++   are the same instance of a structure.
+EqTable(Key: SetCategory, Entry: SetCategory) ==
+      HashTable(Key, Entry, "EQ")
+

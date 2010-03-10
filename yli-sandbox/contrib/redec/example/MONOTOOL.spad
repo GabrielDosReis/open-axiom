@@ -1,0 +1,70 @@
+)abbrev package MONOTOOL MonomialExtensionTools
+++ Tools for handling monomial extensions
+++ Author: Manuel Bronstein
+++ Date Created: 18 August 1992
+++ Date Last Updated: 3 June 1993
+++ Description: Tools for handling monomial extensions.
+MonomialExtensionTools(F, UP): Exports == Implementation where
+  F : Field
+  UP: UnivariatePolynomialCategory F
+
+  RF ==> Fraction UP
+  FR ==> Factored UP
+
+  Exports ==> with
+    split      : (UP, UP -> UP) -> Record(normal:UP, special:UP)
+      ++ split(p, D) returns \spad{[n,s]} such that \spad{p = n s},
+      ++ all the squarefree factors of n are normal w.r.t. D,
+      ++ and s is special w.r.t. D.
+      ++ D is the derivation to use.
+    splitSquarefree: (UP, UP -> UP) -> Record(normal:FR, special:FR)
+      ++ splitSquarefree(p, D) returns
+      ++ \spad{[n_1 n_2\^2 ... n_m\^m, s_1 s_2\^2 ... s_q\^q]} such that
+      ++ \spad{p = n_1 n_2\^2 ... n_m\^m s_1 s_2\^2 ... s_q\^q}, each
+      ++ \spad{n_i} is normal w.r.t. D and each \spad{s_i} is special
+      ++ w.r.t D.
+      ++ D is the derivation to use.
+    normalDenom: (RF, UP -> UP) -> UP
+      ++ normalDenom(f, D) returns the product of all the normal factors
+      ++ of \spad{denom(f)}.
+      ++ D is the derivation to use.
+    decompose  : (RF, UP -> UP) -> Record(poly:UP, normal:RF, special:RF)
+      ++ decompose(f, D) returns \spad{[p,n,s]} such that \spad{f = p+n+s},
+      ++ all the squarefree factors of \spad{denom(n)} are normal w.r.t. D,
+      ++ \spad{denom(s)} is special w.r.t. D,
+      ++ and n and s are proper fractions (no pole at infinity).
+      ++ D is the derivation to use.
+
+  Implementation ==> add
+    normalDenom(f, derivation) == split(denom f, derivation).normal
+
+    split(p, derivation) ==
+      pbar := (gcd(p, derivation p) exquo gcd(p, differentiate p))::UP
+      zero? degree pbar => [p, 1]
+      rec := split((p exquo pbar)::UP, derivation)
+      [rec.normal, pbar * rec.special]
+
+    splitSquarefree(p, derivation) ==
+      s:Factored(UP) := 1
+      n := s
+      q := squareFree p
+      for rec in factors q repeat
+        r := rec.factor
+        g := gcd(r, derivation r)
+        if not ground? g then s := s * sqfrFactor(g, rec.exponent)
+        h := (r exquo g)::UP
+        if not ground? h then n := n * sqfrFactor(h, rec.exponent)
+      [n, unit(q) * s]
+
+    decompose(f, derivation) ==
+      qr := divide(numer f, denom f)
+-- rec.normal * rec.special = denom f
+      rec := split(denom f, derivation)
+-- eeu.coef1 * rec.normal + eeu.coef2 * rec.special = qr.remainder
+-- and degree(eeu.coef1) < degree(rec.special)
+-- and degree(eeu.coef2) < degree(rec.normal)
+-- qr.remainder/denom(f) = eeu.coef1 / rec.special + eeu.coef2 / rec.normal
+      eeu := extendedEuclidean(rec.normal, rec.special,
+                               qr.remainder)::Record(coef1:UP, coef2:UP)
+      [qr.quotient, eeu.coef2 / rec.normal, eeu.coef1 / rec.special]
+

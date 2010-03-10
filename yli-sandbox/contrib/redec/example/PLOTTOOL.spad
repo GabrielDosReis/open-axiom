@@ -1,0 +1,73 @@
+)abbrev package PLOTTOOL PlotTools
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++ This package exports plotting tools 
+PlotTools(): Exports == Implementation where
+  L   ==> List
+--  Pt  ==> TwoDimensionalPoint
+  SEG ==> Segment
+  SF  ==> DoubleFloat
+  Pt ==> Point(SF)
+  PLOT ==> Plot 
+  DROP ==> DrawOption
+  S    ==> String
+  VIEW2D ==> TwoDimensionalViewport
+
+  Exports ==> with
+    calcRanges: L L Pt             -> L SEG SF
+        ++ calcRanges(l) \undocumented
+ 
+  Implementation ==> add
+    import GraphicsDefaults
+    import PLOT
+    import TwoDimensionalPlotClipping
+    import DrawOptionFunctions0
+    import ViewportPackage
+    --import POINT
+    import PointPackage(SF)
+ 
+    --%Local functions
+    xRange0: L Pt -> SEG SF
+    xRange: L L Pt -> SEG SF
+    yRange0: L Pt -> SEG SF
+    yRange: L L Pt -> SEG SF
+    drawToScaleRanges: (SEG SF,SEG SF) -> L SEG SF
+  
+    drawToScaleRanges(xVals,yVals) ==
+      xDiff := (xHi := hi xVals) - (xLo := lo xVals)
+      yDiff := (yHi := hi yVals) - (yLo := lo yVals)
+      pad := abs(yDiff - xDiff)/2
+      yDiff > xDiff => [segment(xLo - pad,xHi + pad),yVals]
+      [xVals,segment(yLo - pad,yHi + pad)]
+ 
+    select : (L Pt,Pt -> SF,(SF,SF) -> SF) -> SF
+    select(l,f,g) ==
+      m := f first l
+      for p in rest l repeat m := g(m,f p)
+      m
+ 
+    xRange0(list:L Pt) == select(list,xCoord,min) .. select(list,xCoord,max)
+    yRange0(list:L Pt) == select(list,yCoord,min) .. select(list,yCoord,max)
+ 
+    select2: (L L Pt,L Pt -> SF,(SF,SF) -> SF) -> SF
+    select2(l,f,g) ==
+      m := f first l
+      for p in rest l repeat m := g(m,f p)
+      m
+ 
+    xRange(list:L L Pt) ==
+      select2(list,lo(xRange0(#1)),min) .. select2(list,hi(xRange0(#1)),max)
+ 
+    yRange(list:L L Pt) ==
+      select2(list,lo(yRange0(#1)),min) .. select2(list,hi(yRange0(#1)),max)
+
+  --%Exported Functions
+    calcRanges(llp) ==
+      drawToScale() => drawToScaleRanges(xRange llp, yRange llp)
+      [xRange llp, yRange llp]
+

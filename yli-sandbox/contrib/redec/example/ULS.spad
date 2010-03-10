@@ -1,0 +1,53 @@
+)abbrev domain ULS UnivariateLaurentSeries
+++ Author: Clifton J. Williamson
+++ Date Created: 18 January 1990
+++ Date Last Updated: 21 September 1993
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: series, Laurent
+++ Examples:
+++ References:
+++ Description: Dense Laurent series in one variable
+++   \spadtype{UnivariateLaurentSeries} is a domain representing Laurent
+++   series in one variable with coefficients in an arbitrary ring.  The
+++   parameters of the type specify the coefficient ring, the power series
+++   variable, and the center of the power series expansion.  For example,
+++   \spad{UnivariateLaurentSeries(Integer,x,3)} represents Laurent series in
+++   \spad{(x - 3)} with integer coefficients.
+UnivariateLaurentSeries(Coef,var,cen): Exports == Implementation where
+  Coef : Ring
+  var  : Symbol
+  cen  : Coef
+  I   ==> Integer
+  UTS ==> UnivariateTaylorSeries(Coef,var,cen)
+
+  Exports ==> UnivariateLaurentSeriesConstructorCategory(Coef,UTS) with
+    coerce: Variable(var) -> %
+      ++ \spad{coerce(var)} converts the series variable \spad{var} into a
+      ++ Laurent series.
+    differentiate: (%,Variable(var)) -> %
+      ++ \spad{differentiate(f(x),x)} returns the derivative of
+      ++ \spad{f(x)} with respect to \spad{x}.
+    if Coef has Algebra Fraction Integer then
+      integrate: (%,Variable(var)) -> %
+        ++ \spad{integrate(f(x))} returns an anti-derivative of the power
+        ++ series \spad{f(x)} with constant coefficient 0.
+        ++ We may integrate a series when we can divide coefficients
+        ++ by integers.
+
+  Implementation ==> UnivariateLaurentSeriesConstructor(Coef,UTS) add
+
+    variable x == var
+    center   x == cen
+
+    coerce(v:Variable(var)) ==
+      zero? cen => monomial(1,1)
+      monomial(1,1) + monomial(cen,0)
+
+    differentiate(x:%,v:Variable(var)) == differentiate x
+
+    if Coef has Algebra Fraction Integer then
+      integrate(x:%,v:Variable(var)) == integrate x
+

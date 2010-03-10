@@ -1,0 +1,59 @@
+)abbrev domain NIPROB NumericalIntegrationProblem
+++ Author: Brian Dupee
+++ Date Created: December 1997
+++ Date Last Updated: December 1997
+++ Basic Operations: coerce, retract
+++ Related Constructors: Union
+++ Description:
+++ \axiomType{NumericalIntegrationProblem} is a \axiom{domain}
+++ for the representation of Numerical Integration problems for use
+++ by ANNA. 
+++
+++ The representation is a Union of two record types - one for integration of
+++ a function of one variable:
+++
+++ \axiomType{Record}(var:\axiomType{Symbol},
+++ fn:\axiomType{Expression DoubleFloat},
+++ range:\axiomType{Segment OrderedCompletion DoubleFloat},
+++ abserr:\axiomType{DoubleFloat},
+++ relerr:\axiomType{DoubleFloat},)
+++
+++ and one for multivariate integration:
+++
+++ \axiomType{Record}(fn:\axiomType{Expression DoubleFloat},
+++ range:\axiomType{List Segment OrderedCompletion DoubleFloat},
+++ abserr:\axiomType{DoubleFloat},
+++ relerr:\axiomType{DoubleFloat},).
+++
+
+EDFA   ==> Expression DoubleFloat
+SOCDFA ==> Segment OrderedCompletion DoubleFloat
+DFA    ==> DoubleFloat
+NIAA   ==> Record(var:Symbol,fn:EDFA,range:SOCDFA,abserr:DFA,relerr:DFA)
+MDNIAA ==> Record(fn:EDFA,range:List SOCDFA,abserr:DFA,relerr:DFA)
+ 
+NumericalIntegrationProblem():SetCategory with
+    coerce: NIAA -> %
+      ++ coerce(x) \undocumented{}
+    coerce: MDNIAA -> %
+      ++ coerce(x) \undocumented{}
+    coerce: Union(nia:NIAA,mdnia:MDNIAA) -> %
+      ++ coerce(x) \undocumented{}
+    retract: % -> Union(nia:NIAA,mdnia:MDNIAA)
+      ++ retract(x) \undocumented{}
+
+  ==
+ 
+    add
+      Rep := Union(nia:NIAA,mdnia:MDNIAA)
+ 
+      coerce(s:NIAA) == [s]
+      coerce(s:MDNIAA) == [s]
+      coerce(s:Union(nia:NIAA,mdnia:MDNIAA)) == s
+      coerce(x:%):OutputForm ==
+        (x) case nia => (x.nia)::OutputForm
+        (x.mdnia)::OutputForm
+      retract(x:%):Union(nia:NIAA,mdnia:MDNIAA) ==
+        (x) case nia => [x.nia]
+        [x.mdnia]
+

@@ -1,0 +1,30 @@
+import Ring
+import BiModule
+import CommutativeRing
+import Algebra
+)abbrev category XALG XAlgebra
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This is the category of algebras over non-commutative rings.
+++   It is used by constructors of non-commutative algebras such as:
+++       \spadtype{XPolynomialRing}.
+++       \spadtype{XFreeAlgebra}
+++   Author: Michel Petitot (petitot@lifl.fr)
+
+XAlgebra(R: Ring): Category == 
+  Join(Ring, BiModule(R,R),CoercibleFrom R) with
+    -- attributs
+      if R has CommutativeRing then Algebra(R)
+      -- if R has CommutativeRing then Module(R) 
+-- add
+--  coerce(x:R):% == x * 1$%
+

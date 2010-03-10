@@ -1,0 +1,50 @@
+)abbrev category NUMINT NumericalIntegrationCategory
+++ Author: Brian Dupee
+++ Date Created: February 1994
+++ Date Last Updated: March 1996
+++ Description:
+++ \axiomType{NumericalIntegrationCategory} is the \axiom{category} for 
+++ describing the set of Numerical Integration \axiom{domains} with
+++ \axiomFun{measure} and \axiomFun{numericalIntegration}.
+
+EDFE   ==> Expression DoubleFloat
+SOCDFE ==> Segment OrderedCompletion DoubleFloat
+DFE    ==> DoubleFloat
+NIAE   ==> Record(var:Symbol,fn:EDFE,range:SOCDFE,abserr:DFE,relerr:DFE)
+MDNIAE ==> Record(fn:EDFE,range:List SOCDFE,abserr:DFE,relerr:DFE)
+NumericalIntegrationCategory(): Category == SetCategory with
+
+  measure:(RoutinesTable,NIAE)->Record(measure:Float,explanations:String,extra:Result)
+    ++ measure(R,args) calculates an estimate of the ability of a particular
+    ++ method to solve a problem.  
+    ++
+    ++ This method may be either a specific NAG routine or a strategy (such
+    ++ as transforming the function from one which is difficult to one which
+    ++ is easier to solve).
+    ++
+    ++ It will call whichever agents are needed to perform analysis on the
+    ++ problem in order to calculate the measure. There is a parameter,
+    ++ labelled \axiom{sofar}, which would contain the best compatibility
+    ++ found so far.
+
+  numericalIntegration: (NIAE, Result) -> Result
+    ++ numericalIntegration(args,hints) performs the integration of the
+    ++ function given the strategy or method returned by \axiomFun{measure}.
+
+  measure:(RoutinesTable,MDNIAE)->Record(measure:Float,explanations:String,extra:Result)
+    ++ measure(R,args) calculates an estimate of the ability of a particular
+    ++ method to solve a problem.  
+    ++
+    ++ This method may be either a specific NAG routine or a strategy (such
+    ++ as transforming the function from one which is difficult to one which
+    ++ is easier to solve).
+    ++
+    ++ It will call whichever agents are needed to perform analysis on the
+    ++ problem in order to calculate the measure. There is a parameter,
+    ++ labelled \axiom{sofar}, which would contain the best compatibility
+    ++ found so far.
+
+  numericalIntegration: (MDNIAE, Result) -> Result
+    ++ numericalIntegration(args,hints) performs the integration of the
+    ++ function given the strategy or method returned by \axiomFun{measure}.
+

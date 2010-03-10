@@ -1,0 +1,179 @@
+)abbrev domain SYMTAB SymbolTable
+++ Author: Mike Dewar
+++ Date Created:  October 1992
+++ Date Last Updated: 12 July 1994
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: Create and manipulate a symbol table for generated FORTRAN code
+SymbolTable() : exports == implementation where
+
+  T   ==> Union(S:Symbol,P:Polynomial Integer)
+  TL1 ==> List T
+  TU  ==> Union(name:Symbol,bounds:TL1)
+  TL  ==> List TU
+  SEX ==> SExpression
+  OFORM ==> OutputForm
+  L   ==> List
+  FSTU ==> Union(fst:FortranScalarType,void:"void")
+
+  exports ==> CoercibleTo OutputForm with
+    coerce : $ -> Table(Symbol,FortranType)
+      ++ coerce(x) returns a table view of x
+    empty  : () -> $
+      ++ empty() returns a new, empty symbol table
+    declare! : (L Symbol,FortranType,$) -> FortranType
+      ++ declare!(l,t,tab) creates new entrys in tab, declaring each of l 
+      ++ to be of type t
+    declare! : (Symbol,FortranType,$) -> FortranType
+      ++ declare!(u,t,tab) creates a new entry in tab, declaring u to be of
+      ++ type t
+    fortranTypeOf : (Symbol,$) -> FortranType
+      ++ fortranTypeOf(u,tab) returns the type of u in tab
+    parametersOf: $ -> L Symbol
+      ++ parametersOf(tab) returns a list of all the symbols declared in tab
+    typeList : (FortranScalarType,$) -> TL
+      ++ typeList(t,tab) returns a list of all the objects of type t in tab
+    externalList : $ -> L Symbol
+      ++ externalList(tab) returns a list of all the external symbols in tab
+    typeLists : $ -> L TL
+      ++ typeLists(tab) returns a list of lists of types of objects in tab
+    newTypeLists : $ -> SEX
+      ++ newTypeLists(x) \undocumented
+    printTypes: $ -> Void
+      ++ printTypes(tab) produces FORTRAN type declarations from tab, on the
+      ++ current FORTRAN output stream
+    symbolTable: L Record(key:Symbol,entry:FortranType) -> $
+      ++ symbolTable(l) creates a symbol table from the elements of l.
+
+  implementation ==> add
+
+    Rep := Table(Symbol,FortranType)
+
+    coerce(t:$):OFORM ==
+      coerce(t)$Rep
+
+    coerce(t:$):Table(Symbol,FortranType) ==
+      t pretend Table(Symbol,FortranType)
+
+    symbolTable(l:L Record(key:Symbol,entry:FortranType)):$ ==
+      table(l)$Rep
+
+    empty():$ ==
+      empty()$Rep
+
+    parametersOf(tab:$):L(Symbol) ==
+      keys(tab)
+
+    declare!(name:Symbol,type:FortranType,tab:$):FortranType ==
+      setelt(tab,name,type)$Rep
+      type
+
+    declare!(names:L Symbol,type:FortranType,tab:$):FortranType ==
+      for name in names repeat setelt(tab,name,type)$Rep
+      type
+
+    fortranTypeOf(u:Symbol,tab:$):FortranType ==
+      elt(tab,u)$Rep
+
+    externalList(tab:$):L(Symbol) ==
+     [u for u in keys(tab) | external? fortranTypeOf(u,tab)]
+
+    typeList(type:FortranScalarType,tab:$):TL ==
+      scalarList := []@TL
+      arrayList  := []@TL
+      for u in keys(tab)$Rep repeat
+        uType : FortranType := fortranTypeOf(u,tab)
+        sType : FSTU := scalarTypeOf(uType)
+        if (sType case fst and (sType.fst)=type) then
+          uDim : TL1 := [[v]$T for v in dimensionsOf(uType)]
+          if empty? uDim then 
+            scalarList := cons([u]$TU,scalarList) 
+          else 
+            arrayList := cons([cons([u],uDim)$TL1]$TU,arrayList)
+      -- Scalars come first in case they are integers which are later
+      -- used as an array dimension.
+      append(scalarList,arrayList)
+
+    typeList2(type:FortranScalarType,tab:$):TL ==
+      tl := []@TL
+      symbolType : Symbol := coerce(type)$FortranScalarType
+      for u in keys(tab)$Rep repeat
+        uType : FortranType := fortranTypeOf(u,tab)
+        sType : FSTU := scalarTypeOf(uType)
+        if (sType case fst and (sType.fst)=type) then
+          uDim : TL1 := [[v]$T for v in dimensionsOf(uType)]
+          tl := if empty? uDim then cons([u]$TU,tl)
+                else cons([cons([u],uDim)$TL1]$TU,tl)
+      empty? tl => tl
+      cons([symbolType]$TU,tl)
+
+    updateList(sType:SEX,name:SEX,lDims:SEX,tl:SEX):SEX ==
+      l : SEX := ASSOC(sType,tl)$Lisp
+      entry : SEX := if null?(lDims) then name else CONS(name,lDims)$Lisp
+      null?(l) => CONS([sType,entry]$Lisp,tl)$Lisp
+      RPLACD(l,CONS(entry,cdr l)$Lisp)$Lisp
+      tl
+
+    newTypeLists(tab:$):SEX ==
+      tl := []$Lisp
+      for u in keys(tab)$Rep repeat
+        uType : FortranType := fortranTypeOf(u,tab)
+        sType : FSTU := scalarTypeOf(uType)
+        dims  : L Polynomial Integer := dimensionsOf uType
+        lDims : L SEX := [convert(convert(v)@InputForm)@SEX for v in dims]
+        lType : SEX := if sType case void 
+          then convert(void::Symbol)@SEX 
+          else coerce(sType.fst)$FortranScalarType
+        tl := updateList(lType,convert(u)@SEX,convert(lDims)@SEX,tl)
+      tl
+
+    typeLists(tab:$):L(TL) ==
+      fortranTypes := ["real"::FortranScalarType, _
+             "double precision"::FortranScalarType, _
+             "integer"::FortranScalarType, _
+             "complex"::FortranScalarType, _
+             "logical"::FortranScalarType, _
+             "character"::FortranScalarType]@L(FortranScalarType)
+      tl := []@L TL
+      for u in fortranTypes repeat
+        types : TL := typeList2(u,tab)
+        if (not null types) then 
+          tl := cons(types,tl)$(L TL)
+      tl
+
+    oForm2(w:T):OFORM ==
+      w case S => w.S::OFORM
+      w case P => w.P::OFORM
+
+    oForm(v:TU):OFORM ==
+      v case name => v.name::OFORM
+      v case bounds =>
+        ll : L OFORM := [oForm2(uu) for uu in v.bounds]
+        ll :: OFORM
+
+    outForm(t:TL):L OFORM ==
+     [oForm(u) for u in t]
+
+    printTypes(tab:$):Void ==
+      -- It is important that INTEGER is the first element of this
+      -- list since INTEGER symbols used in type declarations must
+      -- be declared in advance.
+      ft := ["integer"::FortranScalarType, _
+             "real"::FortranScalarType, _
+             "double precision"::FortranScalarType, _
+             "complex"::FortranScalarType, _
+             "logical"::FortranScalarType, _
+             "character"::FortranScalarType]@L(FortranScalarType)
+      for ty in ft repeat
+        tl : TL := typeList(ty,tab)
+        otl : L OFORM := outForm(tl)
+        fortFormatTypes(ty::OFORM,otl)$Lisp
+      el : L OFORM := [u::OFORM for u in externalList(tab)]
+      fortFormatTypes("EXTERNAL"::OFORM,el)$Lisp
+      void()$Void
+

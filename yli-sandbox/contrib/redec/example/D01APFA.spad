@@ -1,0 +1,79 @@
+)abbrev domain D01APFA d01apfAnnaType
+++ Author: Brian Dupee
+++ Date Created: March 1994
+++ Date Last Updated: December 1997
+++ Basic Operations: measure, numericalIntegration
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{d01apfAnnaType} is a domain of \axiomType{NumericalIntegrationCategory}
+++ for the NAG routine D01APF, a general numerical integration routine which
+++ can handle end point singularities of the algebraico-logarithmic form
+++ w(x) = (x-a)^c * (b-x)^d.  The 
+++ function \axiomFun{measure} measures the usefulness of the routine D01APF
+++ for the given problem.  The function \axiomFun{numericalIntegration}
+++ performs the integration by using \axiomType{NagIntegrationPackage}.
+
+d01apfAnnaType(): NumericalIntegrationCategory == Result add
+  EF2   ==> ExpressionFunctions2
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  SDF   ==> Stream DoubleFloat
+  DF    ==> DoubleFloat
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  NIA   ==> Record(var:Symbol,fn:EDF,range:SOCDF,abserr:DF,relerr:DF)
+  MDNIA ==> Record(fn:EDF,range:List SOCDF,abserr:DF,relerr:DF)
+  INT   ==> Integer
+  BOP   ==> BasicOperator
+  S     ==> Symbol
+  ST    ==> String
+  LST   ==> List String
+  RT    ==> RoutinesTable
+  Rep:=Result
+  import Rep, NagIntegrationPackage, d01AgentsPackage, d01WeightsPackage
+
+  measure(R:RT,args:NIA) ==
+    ext:Result := empty()$Result
+    d := (c := 0$DF)
+    if ((a := exprHasAlgebraicWeight(args)) case LDF) then
+      if  (a.1 > -1) then c := a.1
+      if  (a.2 > -1) then d := a.2
+    l:INT := exprHasLogarithmicWeights(args)
+--    (zero? c) and (zero? d) and (one? l) =>
+    (zero? c) and (zero? d) and (l = 1) =>
+        [0.0,"d01apf: A suitable singularity has not been found", ext]
+    out:LDF := [c,d,l :: DF]
+    outany:Any := coerce(out)$AnyFunctions1(LDF)
+    ex:Record(key:S,entry:Any) := [d01apfextra@S,outany]
+    ext := insert!(ex,ext)$Result
+    st:ST :=  "Recommended is d01apf with c = " df2st(c) ", d = " 
+                            df2st(d) " and l = " string(l)$ST
+    [getMeasure(R,d01apf@S)$RT, st, ext]
+
+  numericalIntegration(args:NIA,hints:Result) ==
+
+    Var:EDF := coerce(args.var)$EDF
+    la:Any := coerce(search((d01apfextra@S),hints)$Result)@Any
+    list:LDF := retract(la)$AnyFunctions1(LDF)
+    Fac1:EDF := (Var - (getlo(args.range) :: EDF))$EDF
+    Fac2:EDF := ((gethi(args.range) :: EDF) - Var)$EDF
+    c := first(list)$LDF
+    d := second(list)$LDF
+    l := (retract(third(list)$LDF)@INT)$DF
+    thebiz:EDF := (Fac1**(c :: EDF))*(Fac2**(d :: EDF))
+    if l > 1 then
+      if l = 2 then
+        thebiz := thebiz*log(Fac1)
+      else if l = 3 then
+        thebiz := thebiz*log(Fac2)
+      else
+        thebiz := thebiz*log(Fac1)*log(Fac2)
+    Fn :=  (args.fn/thebiz)$EDF
+    ArgsFn := map(convert(#1)$DF,Fn)$EF2(DF,Float)
+    b:Float := getButtonValue("d01apf","functionEvaluations")$AttributeButtons
+    fEvals:INT := wholePart exp(1.1513*(1.0/(2.0*(1.0-b))))
+    iw:INT := 75*fEvals
+    f : Union(fn:FileName,fp:Asp1(G)) := [retract(ArgsFn)$Asp1(G)]
+    d01apf(getlo(args.range),gethi(args.range),c,d,l,args.abserr,args.relerr,4*iw,iw,-1,f)
+

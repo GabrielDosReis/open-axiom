@@ -1,0 +1,129 @@
+)abbrev package SUBRESP SubResultantPackage
+++ Subresultants
+++ Author: Barry Trager, Renaud Rioboo
+++ Date Created: 1987
+++ Date Last Updated: August 2000
+++ Description:
+++ This package computes the subresultants of two polynomials which is needed
+++ for the `Lazard Rioboo' enhancement to Tragers integrations formula
+++ For efficiency reasons this has been rewritten to call Lionel Ducos
+++ package which is currently the best one.
+++
+SubResultantPackage(R, UP): Exports == Implementation where
+  R : IntegralDomain
+  UP: UnivariatePolynomialCategory R
+ 
+  Z   ==> Integer
+  N   ==> NonNegativeInteger
+ 
+  Exports ==> with
+    subresultantVector: (UP, UP) -> PrimitiveArray UP
+      ++ subresultantVector(p, q) returns \spad{[p0,...,pn]}
+      ++ where pi is the i-th subresultant of p and q.
+      ++ In particular, \spad{p0 = resultant(p, q)}.
+    if R has EuclideanDomain then
+      primitivePart     : (UP,  R) -> UP
+        ++ primitivePart(p, q) reduces the coefficient of p
+        ++ modulo q, takes the primitive part of the result,
+        ++ and ensures that the leading coefficient of that
+        ++ result is monic.
+ 
+  Implementation ==> add
+
+    Lionel ==> PseudoRemainderSequence(R,UP)
+
+    if R has EuclideanDomain then
+      primitivePart(p, q) ==
+         rec := extendedEuclidean(leadingCoefficient p, q,
+                                  1)::Record(coef1:R, coef2:R)
+         unitCanonical primitivePart map((rec.coef1 * #1) rem q, p)
+ 
+    subresultantVector(p1, p2) ==
+       F : UP -- auxiliary stuff !
+       res : PrimitiveArray(UP) := new(2+max(degree(p1),degree(p2)), 0)
+       --
+       -- kind of stupid interface to Lionel's  Package !!!!!!!!!!!!
+       -- might have been wiser to rewrite the loop ...
+       -- But I'm too lazy. [rr]
+       --
+       l := chainSubResultants(p1,p2)$Lionel
+       --
+       -- this returns the chain of non null subresultants !
+       -- we must  rebuild subresultants from this.
+       -- we really hope Lionel Ducos minded what he wrote
+       -- since we are fully blind !
+       --
+       null l =>
+         -- Hum it seems that Lionel returns [] when min(|p1|,|p2|) = 0
+         zero?(degree(p1)) =>
+           res.degree(p2) := p2
+           if degree(p2) > 0
+           then
+             res.((degree(p2)-1)::NonNegativeInteger) := p1
+             res.0 := (leadingCoefficient(p1)**(degree p2)) :: UP
+           else
+             -- both are of degree 0 the resultant is 1 according to Loos
+             res.0 := 1
+           res
+         zero?(degree(p2)) =>
+           if degree(p1) > 0
+           then
+             res.((degree(p1)-1)::NonNegativeInteger) := p2
+             res.0 := (leadingCoefficient(p2)**(degree p1)) :: UP
+           else
+             -- both are of degree 0 the resultant is 1 according to Loos
+             res.0 := 1
+           res
+         error "SUBRESP: strange Subresultant chain from PRS"
+       Sn := first(l)
+       --
+       -- as of Loos definitions last subresultant should not be defective
+       --
+       l := rest(l)
+       n := degree(Sn)
+       F := Sn
+       null l => error "SUBRESP: strange Subresultant chain from PRS"
+       zero? Sn => error "SUBRESP: strange Subresultant chain from PRS"
+       while (l ~= []) repeat
+         res.(n) := Sn
+         F := first(l)
+         l := rest(l)
+         -- F is potentially defective
+         if degree(F) = n
+         then
+           --
+           -- F is defective
+           --
+           null l => error "SUBRESP: strange Subresultant chain from PRS"
+           Sn := first(l)
+           l := rest(l)
+           n := degree(Sn)
+           res.((n-1)::NonNegativeInteger) := F
+         else
+           --
+           -- F is non defective
+           --
+           degree(F) < n => error "strange result !"
+           Sn := F
+           n := degree(Sn)
+       --
+       -- Lionel forgets about p1 if |p1| > |p2|
+       -- forgets about p2 if |p2| > |p1|
+       -- but he reminds p2 if |p1| = |p2|
+       -- a glance at Loos should correct this !
+       --
+       res.n := Sn
+       --
+       -- Loos definition
+       --
+       if degree(p1) = degree(p2)
+       then
+         res.((degree p1)+1) := p1
+       else
+         if degree(p1) > degree(p2)
+         then
+           res.(degree p1) := p1
+         else
+           res.(degree p2) := p2
+       res
+

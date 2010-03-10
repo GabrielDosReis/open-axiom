@@ -1,0 +1,65 @@
+)abbrev domain LO Localize
+++ Author: Dave Barton, Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: + - / numer denom
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: localization
+++ References:
+++ Description: Localize(M,R,S) produces fractions with numerators
+++ from an R module M and denominators from some multiplicative subset
+++ D of R.
+Localize(M:Module R,
+         R:CommutativeRing,
+         S:SubsetCategory(Monoid, R)): Module R with
+      if M has OrderedAbelianGroup then OrderedAbelianGroup
+      _/ :(%,S) -> %
+         ++ x / d divides the element x by d.
+      _/ :(M,S) -> %
+         ++ m / d divides the element m by d.
+      numer: % -> M
+         ++ numer x returns the numerator of x.
+      denom: % -> S
+         ++ denom x returns the denominator of x.
+ ==
+  add
+    --representation
+      Rep:= Record(num:M,den:S)
+    --declarations
+      x,y: %
+      n: Integer
+      m: M
+      r: R
+      d: S
+    --definitions
+      0 == [0,1]
+      zero? x == zero? (x.num)
+      -x== [-x.num,x.den]
+      x=y == y.den*x.num = x.den*y.num
+      numer x == x.num
+      denom x == x.den
+      if M has OrderedAbelianGroup then
+        x < y == 
+--             if y.den::R < 0 then (x,y):=(y,x)
+--             if x.den::R < 0 then (x,y):=(y,x)
+             y.den*x.num < x.den*y.num
+      x+y == [y.den*x.num+x.den*y.num, x.den*y.den]
+      n*x == [n*x.num,x.den]
+      r*x == if r=x.den then [x.num,1] else [r*x.num,x.den]
+      x/d ==
+        zero?(u:S:=d*x.den) => error "division by zero"
+        [x.num,u]
+      m/d == if zero? d then error "division by zero" else [m,d]
+      coerce(x:%):OutputForm ==
+--        one?(xd:=x.den) => (x.num)::OutputForm
+        ((xd:=x.den) = 1) => (x.num)::OutputForm
+        (x.num)::OutputForm / (xd::OutputForm)
+      latex(x:%): String ==
+--        one?(xd:=x.den) => latex(x.num)
+        ((xd:=x.den) = 1) => latex(x.num)
+        nl : String := concat("{", concat(latex(x.num), "}")$String)$String
+        dl : String := concat("{", concat(latex(x.den), "}")$String)$String
+        concat("{ ", concat(nl, concat(" \over ", concat(dl, " }")$String)$String)$String)$String
+

@@ -1,0 +1,252 @@
+import Type
+import FiniteLinearAggregate
+)abbrev category A1AGG OneDimensionalArrayAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ One-dimensional-array aggregates serves as models for one-dimensional arrays.
+++ Categorically, these aggregates are finite linear aggregates
+++ with the \spadatt{shallowlyMutable} property, that is, any component of
+++ the array may be changed without affecting the
+++ identity of the overall array.
+++ Array data structures are typically represented by a fixed area in storage and
+++ therefore cannot efficiently grow or shrink on demand as can list structures
+++ (see however \spadtype{FlexibleArray} for a data structure which
+++ is a cross between a list and an array).
+++ Iteration over, and access to, elements of arrays is extremely fast
+++ (and often can be optimized to open-code).
+++ Insertion and deletion however is generally slow since an entirely new
+++ data structure must be created for the result.
+OneDimensionalArrayAggregate(S:Type): Category ==
+    FiniteLinearAggregate S with shallowlyMutable
+  add
+    parts x         == [qelt(x, i) for i in minIndex x .. maxIndex x]
+    sort_!(f, a) == quickSort(f, a)$FiniteLinearAggregateSort(S, %)
+
+    any?(f, a) ==
+      for i in minIndex a .. maxIndex a repeat
+        f qelt(a, i) => return true
+      false
+
+    every?(f, a) ==
+      for i in minIndex a .. maxIndex a repeat
+        not(f qelt(a, i)) => return false
+      true
+
+    position(f:S -> Boolean, a:%) ==
+      for i in minIndex a .. maxIndex a repeat
+        f qelt(a, i) => return i
+      minIndex(a) - 1
+
+    find(f, a) ==
+      for i in minIndex a .. maxIndex a repeat
+        f qelt(a, i) => return qelt(a, i)
+      "failed"
+
+    count(f:S->Boolean, a:%) ==
+      n:NonNegativeInteger := 0
+      for i in minIndex a .. maxIndex a repeat
+        if f(qelt(a, i)) then n := n+1
+      n
+
+    map_!(f, a) ==
+      for i in minIndex a .. maxIndex a repeat
+        qsetelt_!(a, i, f qelt(a, i))
+      a
+
+    setelt(a:%, s:UniversalSegment(Integer), x:S) ==
+      l := lo s; h := if hasHi s then hi s else maxIndex a
+      l < minIndex a or h > maxIndex a => error "index out of range"
+      for k in l..h repeat qsetelt_!(a, k, x)
+      x
+
+    reduce(f, a) ==
+      empty? a => error "cannot reduce an empty aggregate"
+      r := qelt(a, m := minIndex a)
+      for k in m+1 .. maxIndex a repeat r := f(r, qelt(a, k))
+      r
+
+    reduce(f, a, identity) ==
+      for k in minIndex a .. maxIndex a repeat
+        identity := f(identity, qelt(a, k))
+      identity
+
+    if S has SetCategory then
+       reduce(f, a, identity, absorber) ==
+         for k in minIndex a .. maxIndex a while identity ~= absorber
+                repeat identity := f(identity, qelt(a, k))
+         identity
+
+-- this is necessary since new has disappeared.
+    stupidnew: (NonNegativeInteger, %, %) -> %
+    stupidget: List % -> S
+-- a and b are not both empty if n > 0
+    stupidnew(n, a, b) ==
+      zero? n => empty()
+      new(n, (empty? a => qelt(b, minIndex b); qelt(a, minIndex a)))
+-- at least one element of l must be non-empty
+    stupidget l ==
+      for a in l repeat
+        not empty? a => return first a
+      error "Should not happen"
+
+    map(f, a, b) ==
+      m := max(minIndex a, minIndex b)
+      n := min(maxIndex a, maxIndex b)
+      l := max(0, n - m + 1)::NonNegativeInteger
+      c := stupidnew(l, a, b)
+      for i in minIndex(c).. for j in m..n repeat
+        qsetelt_!(c, i, f(qelt(a, j), qelt(b, j)))
+      c
+
+--  map(f, a, b, x) ==
+--    m := min(minIndex a, minIndex b)
+--    n := max(maxIndex a, maxIndex b)
+--    l := (n - m + 1)::NonNegativeInteger
+--    c := new l
+--    for i in minIndex(c).. for j in m..n repeat
+--      qsetelt_!(c, i, f(a(j, x), b(j, x)))
+--    c
+
+    merge(f, a, b) ==
+      r := stupidnew(#a + #b, a, b)
+      i := minIndex a
+      m := maxIndex a
+      j := minIndex b
+      n := maxIndex b
+      k : Integer
+      for k in minIndex(r).. while i <= m and j <= n repeat
+        if f(qelt(a, i), qelt(b, j)) then
+          qsetelt_!(r, k, qelt(a, i))
+          i := i+1
+        else
+          qsetelt_!(r, k, qelt(b, j))
+          j := j+1
+      for k in k.. for i in i..m repeat qsetelt_!(r, k, elt(a, i))
+      for k in k.. for j in j..n repeat qsetelt_!(r, k, elt(b, j))
+      r
+
+    elt(a:%, s:UniversalSegment(Integer)) ==
+      l := lo s
+      h := if hasHi s then hi s else maxIndex a
+      l < minIndex a or h > maxIndex a => error "index out of range"
+      r := stupidnew(max(0, h - l + 1)::NonNegativeInteger, a, a)
+      for k in minIndex r.. for i in l..h repeat
+        qsetelt_!(r, k, qelt(a, i))
+      r
+
+    insert(a:%, b:%, i:Integer) ==
+      m := minIndex b
+      n := maxIndex b
+      i < m or i > n => error "index out of range"
+      y := stupidnew(#a + #b, a, b)
+      k : Integer
+      for k in minIndex y.. for j in m..i-1 repeat
+        qsetelt_!(y, k, qelt(b, j))
+      for k in k.. for j in minIndex a .. maxIndex a repeat
+        qsetelt_!(y, k, qelt(a, j))
+      for k in k.. for j in i..n repeat qsetelt_!(y, k, qelt(b, j))
+      y
+
+    copy x ==
+      y := stupidnew(#x, x, x)
+      for i in minIndex x .. maxIndex x for j in minIndex y .. repeat
+        qsetelt_!(y, j, qelt(x, i))
+      y
+
+    copyInto_!(y, x, s) ==
+      s < minIndex y or s + #x > maxIndex y + 1 =>
+                                              error "index out of range"
+      for i in minIndex x .. maxIndex x for j in s.. repeat
+        qsetelt_!(y, j, qelt(x, i))
+      y
+
+    construct l ==
+--    a := new(#l)
+      empty? l => empty()
+      a := new(#l, first l)
+      for i in minIndex(a).. for x in l repeat qsetelt_!(a, i, x)
+      a
+
+    delete(a:%, s:UniversalSegment(Integer)) ==
+      l := lo s; h := if hasHi s then hi s else maxIndex a
+      l < minIndex a or h > maxIndex a => error "index out of range"
+      h < l => copy a
+      r := stupidnew((#a - h + l - 1)::NonNegativeInteger, a, a)
+      k : Integer
+      for k in minIndex(r).. for i in minIndex a..l-1 repeat
+        qsetelt_!(r, k, qelt(a, i))
+      for k in k.. for i in h+1 .. maxIndex a repeat
+        qsetelt_!(r, k, qelt(a, i))
+      r
+
+    delete(x:%, i:Integer) ==
+      i < minIndex x or i > maxIndex x => error "index out of range"
+      y := stupidnew((#x - 1)::NonNegativeInteger, x, x)
+      i : Integer
+      for i in minIndex(y).. for j in minIndex x..i-1 repeat
+        qsetelt_!(y, i, qelt(x, j))
+      for i in i .. for j in i+1 .. maxIndex x repeat
+        qsetelt_!(y, i, qelt(x, j))
+      y
+
+    reverse_! x ==
+      m := minIndex x
+      n := maxIndex x
+      for i in 0..((n-m) quo 2) repeat swap_!(x, m+i, n-i)
+      x
+
+    concat l ==
+      empty? l => empty()
+      n := _+/[#a for a in l]
+      i := minIndex(r := new(n, stupidget l))
+      for a in l repeat
+        copyInto_!(r, a, i)
+        i := i + #a
+      r
+
+    sorted?(f, a) ==
+      for i in minIndex(a)..maxIndex(a)-1 repeat
+        not f(qelt(a, i), qelt(a, i + 1)) => return false
+      true
+
+    concat(x:%, y:%) ==
+      z := stupidnew(#x + #y, x, y)
+      copyInto_!(z, x, i := minIndex z)
+      copyInto_!(z, y, i + #x)
+      z
+
+    if S has CoercibleTo(OutputForm) then
+      coerce(r:%):OutputForm ==
+        bracket commaSeparate
+              [qelt(r, k)::OutputForm for k in minIndex r .. maxIndex r]
+
+    if S has SetCategory then
+      x = y ==
+        #x ~= #y => false
+        for i in minIndex x .. maxIndex x repeat
+          not(qelt(x, i) = qelt(y, i)) => return false
+        true
+
+      position(x:S, t:%, s:Integer) ==
+        n := maxIndex t
+        s < minIndex t or s > n => error "index out of range"
+        for k in s..n repeat
+          qelt(t, k) = x => return k
+        minIndex(t) - 1
+
+    if S has OrderedSet then
+      a < b ==
+        for i in minIndex a .. maxIndex a
+          for j in minIndex b .. maxIndex b repeat
+            qelt(a, i) ~= qelt(b, j) => return a.i < b.j
+        #a < #b
+
+

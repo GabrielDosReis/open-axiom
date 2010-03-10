@@ -1,0 +1,201 @@
+)abbrev domain ASP55 Asp55
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: June 1993
+++ Date Last Updated: 23 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp55} produces Fortran for Type 55 ASPs, needed for NAG routines 
+++\axiomOpFrom{e04dgf}{e04Package} and \axiomOpFrom{e04ucf}{e04Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE CONFUN(MODE,NCNLN,N,NROWJ,NEEDC,X,C,CJAC,NSTATE,IUSER
+++     &,USER)
+++      DOUBLE PRECISION C(NCNLN),X(N),CJAC(NROWJ,N),USER(*)
+++      INTEGER N,IUSER(*),NEEDC(NCNLN),NROWJ,MODE,NCNLN,NSTATE
+++      IF(NEEDC(1).GT.0)THEN
+++        C(1)=X(6)**2+X(1)**2
+++        CJAC(1,1)=2.0D0*X(1)
+++        CJAC(1,2)=0.0D0
+++        CJAC(1,3)=0.0D0
+++        CJAC(1,4)=0.0D0
+++        CJAC(1,5)=0.0D0
+++        CJAC(1,6)=2.0D0*X(6)
+++      ENDIF
+++      IF(NEEDC(2).GT.0)THEN
+++        C(2)=X(2)**2+(-2.0D0*X(1)*X(2))+X(1)**2
+++        CJAC(2,1)=(-2.0D0*X(2))+2.0D0*X(1)
+++        CJAC(2,2)=2.0D0*X(2)+(-2.0D0*X(1))
+++        CJAC(2,3)=0.0D0
+++        CJAC(2,4)=0.0D0
+++        CJAC(2,5)=0.0D0
+++        CJAC(2,6)=0.0D0
+++      ENDIF
+++      IF(NEEDC(3).GT.0)THEN
+++        C(3)=X(3)**2+(-2.0D0*X(1)*X(3))+X(2)**2+X(1)**2
+++        CJAC(3,1)=(-2.0D0*X(3))+2.0D0*X(1)
+++        CJAC(3,2)=2.0D0*X(2)
+++        CJAC(3,3)=2.0D0*X(3)+(-2.0D0*X(1))
+++        CJAC(3,4)=0.0D0
+++        CJAC(3,5)=0.0D0
+++        CJAC(3,6)=0.0D0
+++      ENDIF
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp55(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  FSTU   ==> Union(fst:FST,void:"void")
+  SYMTAB ==> SymbolTable
+  FC     ==> FortranCode
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  S      ==> Symbol
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+  MAT    ==> Matrix
+  MFLOAT ==> MachineFloat
+  FEXPR  ==> FortranExpression([],['X],MFLOAT)
+  MF2    ==> MatrixCategoryFunctions2(FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR,
+                    EXPR MFLOAT,VEC EXPR MFLOAT,VEC EXPR MFLOAT,MAT EXPR MFLOAT)
+  SWU    ==> Union(I:Expression Integer,F:Expression Float,
+                   CF:Expression Complex Float,switch:Switch)
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : VEC FEXPR -> $
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+
+    real : FSTU := ["real"::FST]$FSTU
+    integer : FSTU := ["integer"::FST]$FSTU
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(MODE,fortranInteger(),syms)$SYMTAB
+    declare!(NCNLN,fortranInteger(),syms)$SYMTAB
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    declare!(NROWJ,fortranInteger(),syms)$SYMTAB
+    needcType : FT := construct(integer,[NCNLN::Symbol],false)$FT
+    declare!(NEEDC,needcType,syms)$SYMTAB
+    xType : FT := construct(real,[N::Symbol],false)$FT
+    declare!(X,xType,syms)$SYMTAB
+    cType : FT := construct(real,[NCNLN::Symbol],false)$FT
+    declare!(C,cType,syms)$SYMTAB
+    cjacType : FT := construct(real,[NROWJ::Symbol,N::Symbol],false)$FT
+    declare!(CJAC,cjacType,syms)$SYMTAB
+    declare!(NSTATE,fortranInteger(),syms)$SYMTAB
+    iuType : FT := construct(integer,["*"::Symbol],false)$FT
+    declare!(IUSER,iuType,syms)$SYMTAB
+    uType : FT := construct(real,["*"::Symbol],false)$FT
+    declare!(USER,uType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$FSTU,
+                    [MODE,NCNLN,N,NROWJ,NEEDC,X,C,CJAC,NSTATE,IUSER,USER],syms)
+
+    -- Take a symbol, pull of the script and turn it into an integer!!
+    o2int(u:S):Integer ==
+      o : OutputForm := first elt(scripts(u)$S,sub)
+      o pretend Integer
+
+    localAssign(s:Symbol,dim:List POLY INT,u:FEXPR):FC ==
+      assign(s,dim,(u::EXPR MFLOAT)$FEXPR)$FC
+
+    makeCond(index:INT,fun:FEXPR,jac:VEC FEXPR):FC ==
+      needc : EXPR INT := (subscript(NEEDC,[index::OutputForm])$S)::EXPR(INT)
+      sw : Switch := GT([needc]$SWU,[0::EXPR(INT)]$SWU)$Switch
+      ass : List FC := [localAssign(CJAC,[index::POLY INT,i::POLY INT],jac.i)_
+                                                    for i in 1..maxIndex(jac)]
+      cond(sw,block([localAssign(C,[index::POLY INT],fun),:ass])$FC)$FC
+      
+    coerce(u:VEC FEXPR):$ ==
+      ncnln:Integer := maxIndex(u)
+      x:S := X::S
+      pu:List(S) := []
+      -- Work out which variables appear in the expressions
+      for e in entries(u) repeat
+        pu := setUnion(pu,variables(e)$FEXPR)
+      scriptList : List Integer := map(o2int,pu)$ListFunctions2(S,Integer)
+      -- This should be the maximum X_n which occurs (there may be others
+      -- which don't):
+      n:Integer := reduce(max@((Integer, Integer)->Integer),scriptList)$List(Integer)
+      p:List(S) := []
+      for j in 1..n repeat p:= cons(subscript(x,[j::OutputForm])$S,p)
+      p:= reverse(p)
+      jac:MAT FEXPR := _
+         jacobian(u,p)$MultiVariableCalculusFunctions(S,FEXPR,VEC FEXPR,List(S))
+      code : List FC := [makeCond(j,u.j,row(jac,j)) for j in 1..ncnln]
+      ([:code,returns()$FC]::$)@$
+
+    coerce(c:List FC):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FC):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+

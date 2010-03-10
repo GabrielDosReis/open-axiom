@@ -1,0 +1,18 @@
+)abbrev domain STBL SparseTable
+++ Author: Stephen M. Watt
+++ Date Created: 1986
+++ Date Last Updated: June 21, 1991
+++ Basic Operations: 
+++ Related Domains: Table 
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   A sparse table has a default entry, which is returned if no other
+++   value has been explicitly stored for a key.
+
+SparseTable(Key:SetCategory, Ent:SetCategory, dent:Ent) ==
+        GeneralSparseTable(Key, Ent, Table(Key, Ent), dent)
+

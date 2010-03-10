@@ -1,0 +1,12 @@
+)abbrev domain FUNCTION FunctionCalled
+++ Description:
+++ This domain implements named functions
+FunctionCalled(f:Symbol): SetCategory with 
+        name: % -> Symbol 
+                ++ name(x) returns the symbol
+  == add
+   name r                 == f
+   coerce(r:%):OutputForm == f::OutputForm
+   x = y                  == true
+   latex(x:%):String      == latex f
+

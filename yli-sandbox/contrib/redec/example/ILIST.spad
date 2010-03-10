@@ -1,0 +1,191 @@
+import Type
+import ListAggregate
+)abbrev domain ILIST IndexedList
+++ Author: Michael Monagan
+++ Date Created: Sep 1987
+++ Change History:
+++ Basic Operations:
+++   \#, concat, concat!, construct, copy, elt, elt, empty,
+++   empty?, eq?, first, member?, merge!, mergeSort, minIndex,
+++   parts, removeDuplicates!, rest, rest, reverse, reverse!,
+++   setelt, setfirst!, setrest!, sort!, split!
+++ Related Constructors: List
+++ Also See:
+++ AMS Classification:
+++ Keywords: list, aggregate, index
+++ Description:
+++   \spadtype{IndexedList} is a basic implementation of the functions
+++   in \spadtype{ListAggregate}, often using functions in the underlying
+++   LISP system. The second parameter to the constructor (\spad{mn})
+++   is the beginning index of the list. That is, if \spad{l} is a
+++   list, then \spad{elt(l,mn)} is the first value. This constructor
+++   is probably best viewed as the implementation of singly-linked
+++   lists that are addressable by index rather than as a mere wrapper
+++   for LISP lists.
+IndexedList(S:Type, mn:Integer): Exports == Implementation where
+ cycleMax ==> 1000        -- value used in checking for cycles
+
+-- The following seems to be a bit out of date, but is kept in case
+-- a knowledgeable person wants to update it:
+--   The following LISP dependencies are divided into two groups
+--   Those that are required
+--   CONS, EQ, NIL, NULL, QCAR, QCDR, RPLACA, RPLACD
+--   Those that are included for efficiency only
+--   NEQ, LIST, CAR, CDR, NCONC2, NREVERSE, LENGTH
+--   Also REVERSE, since it's called in Polynomial Ring
+
+ Qfirst  ==> QCAR$Lisp
+ Qrest   ==> QCDR$Lisp
+ Qnull   ==> NULL$Lisp
+ Qeq     ==> EQ$Lisp
+ Qneq    ==> NEQ$Lisp
+ Qcons   ==> CONS$Lisp
+ Qpush   ==> PUSH$Lisp
+ 
+ Exports ==> ListAggregate S 
+ Implementation ==>
+  add
+   #x                  == LENGTH(x)$Lisp
+   concat(s:S,x:%)     == CONS(s,x)$Lisp
+   eq?(x,y)            == EQ(x,y)$Lisp
+   first x             == SPADfirst(x)$Lisp
+--   elt(x, "first")     == SPADfirst(x)$Lisp
+   empty()             == NIL$Lisp
+   empty? x            == NULL(x)$Lisp
+   rest x              == CDR(x)$Lisp
+--   elt(x, "rest")       == CDR(x)$Lisp
+   setfirst_!(x,s)     ==
+      empty? x => error "Cannot update an empty list"
+      Qfirst RPLACA(x,s)$Lisp
+--   setelt(x, "first", s) ==
+--      empty? x => error "Cannot update an empty list"
+--      Qfirst RPLACA(x,s)$Lisp
+   setrest_!(x, y)      ==
+      empty? x => error "Cannot update an empty list"
+      Qrest RPLACD(x,y)$Lisp
+--   setelt(x, "rest", y)  ==
+--      empty? x => error "Cannot update an empty list"
+--      Qrest RPLACD(x,y)$Lisp
+   construct l         == l pretend %
+   parts s             == s pretend List S
+   reverse_! x         == NREVERSE(x)$Lisp
+   reverse x           == REVERSE(x)$Lisp
+   minIndex x          == mn
+
+   rest(x, n) ==
+      for i in 1..n repeat
+         if Qnull x then error "index out of range"
+         x := Qrest x
+      x
+
+   copy x ==
+      y := empty()
+      for i in 0.. while not Qnull x repeat
+         if Qeq(i,cycleMax) and cyclic? x then error "cyclic list"
+         y := Qcons(Qfirst x,y)
+         x := Qrest x
+      (NREVERSE(y)$Lisp)@%
+
+   if S has CoercibleTo(OutputForm) then
+     coerce(x):OutputForm ==
+        -- displays cycle with overbar over the cycle
+        y := empty()$List(OutputForm)
+        s := cycleEntry x
+        while Qneq(x, s) repeat
+          y := concat((first x)::OutputForm, y)
+          x := rest x
+        y := reverse_! y
+        empty? s => bracket y
+        -- cyclic case: z is cylic part
+        z := list((first x)::OutputForm)
+        while Qneq(s, rest x) repeat
+           x := rest x
+           z := concat((first x)::OutputForm, z)
+        bracket concat_!(y, overbar commaSeparate reverse_! z)
+
+   if S has SetCategory then
+     x = y ==
+       Qeq(x,y) => true
+       while not Qnull x and not Qnull y repeat
+          Qfirst x ~=$S Qfirst y => return false
+          x := Qrest x
+          y := Qrest y
+       Qnull x and Qnull y
+
+     latex(x : %): String ==
+       s : String := "\left["
+       while not Qnull x repeat
+         s := concat(s, latex(Qfirst x)$S)$String
+         x := Qrest x
+         if not Qnull x then s := concat(s, ", ")$String
+       concat(s, " \right]")$String
+
+     member?(s,x) ==
+        while not Qnull x repeat
+           if s = Qfirst x then return true else x := Qrest x
+        false
+
+   -- Lots of code from parts of AGGCAT, repeated here to
+   -- get faster compilation
+   concat_!(x:%,y:%) ==
+      Qnull x => 
+        Qnull y => x
+        Qpush(first y,x)
+        QRPLACD(x,rest y)$Lisp
+        x
+      z:=x
+      while not Qnull Qrest z repeat
+        z:=Qrest z
+      QRPLACD(z,y)$Lisp
+      x
+
+   -- Then a quicky:
+   if S has SetCategory then
+     removeDuplicates_! l ==
+       p := l
+       while not Qnull p repeat
+--       p := setrest_!(p, remove_!(#1 = Qfirst p, Qrest p))
+-- far too expensive - builds closures etc.
+         pp:=p
+         f:S:=Qfirst p
+         p:=Qrest p
+         while not Qnull (pr:=Qrest pp) repeat
+           if (Qfirst pr)@S = f then QRPLACD(pp,Qrest pr)$Lisp
+           else pp:=pr
+       l
+
+   -- then sorting
+   mergeSort: ((S, S) -> Boolean, %, Integer) -> %
+
+   sort_!(f, l)       == mergeSort(f, l, #l)
+
+   merge_!(f, p, q) ==
+     Qnull p => q
+     Qnull q => p
+     Qeq(p, q) => error "cannot merge a list into itself"
+     if f(Qfirst p, Qfirst q)
+       then (r := t := p; p := Qrest p)
+       else (r := t := q; q := Qrest q)
+     while not Qnull p and not Qnull q repeat
+       if f(Qfirst p, Qfirst q)
+         then (QRPLACD(t, p)$Lisp; t := p; p := Qrest p)
+         else (QRPLACD(t, q)$Lisp; t := q; q := Qrest q)
+     QRPLACD(t, if Qnull p then q else p)$Lisp
+     r
+
+   split_!(p, n) ==
+      n < 1 => error "index out of range"
+      p := rest(p, (n - 1)::NonNegativeInteger)
+      q := Qrest p
+      QRPLACD(p, NIL$Lisp)$Lisp
+      q
+
+   mergeSort(f, p, n) ==
+     if n = 2 and f(first rest p, first p) then p := reverse_! p
+     n < 3 => p
+     l := (n quo 2)::NonNegativeInteger
+     q := split_!(p, l)
+     p := mergeSort(f, p, l)
+     q := mergeSort(f, q, n - l)
+     merge_!(f, p, q)
+

@@ -1,0 +1,21 @@
+)abbrev package FORDER FindOrderFinite
+++ Finds the order of a divisor over a finite field
+++ Author: Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 11 Jul 1990
+FindOrderFinite(F, UP, UPUP, R): Exports == Implementation where
+  F   : Join(Finite, Field)
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+  R   : FunctionFieldCategory(F, UP, UPUP)
+
+  Exports ==> with
+    order: FiniteDivisor(F, UP, UPUP, R) -> NonNegativeInteger
+        ++ order(x) \undocumented
+  Implementation ==> add
+    order d ==
+      dd := d := reduce d
+      for i in 1.. repeat
+        principal? dd => return(i::NonNegativeInteger)
+        dd := reduce(d + dd)
+

@@ -1,0 +1,19 @@
+)abbrev package ESTOOLS2 ExpertSystemToolsPackage2
+++ Author: Brian Dupee
+++ Date Created: February 1995
+++ Date Last Updated: July 1996
+++ Basic Operations: map
+++ Related Constructors: Matrix
+++ Description:
+++ \axiom{ExpertSystemToolsPackage2} contains some useful functions for use
+++ by the computational agents of Ordinary Differential Equation solvers.
+ExpertSystemToolsPackage2(R1:R,R2:R): E == I where
+  R     ==> Ring
+  E ==>  with
+    map:(R1->R2,Matrix R1) -> Matrix R2
+      ++ map(f,m) applies a mapping f:R1 -> R2 onto a matrix
+      ++ \spad{m} in R1 returning a matrix in R2
+  I ==> add
+    map(f:R1->R2,m:Matrix R1):Matrix R2 ==
+      matrix([[f u for u in v] for v in listOfLists(m)$(Matrix R1)])$(Matrix R2)
+

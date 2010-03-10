@@ -1,0 +1,80 @@
+)abbrev package PMPLCAT PatternMatchPolynomialCategory
+++ Pattern matching on polynomial objects
+++ Author: Manuel Bronstein
+++ Date Created: 9 Jan 1990
+++ Date Last Updated: 20 June 1991
+++ Description:
+++   This package provides pattern matching functions on polynomials.
+++ Keywords: pattern, matching, polynomial.
+PatternMatchPolynomialCategory(S,E,V,R,P):Exports== Implementation where
+  S: SetCategory
+  E: OrderedAbelianMonoidSup
+  V: OrderedSet
+  R: Join(Ring, OrderedSet, PatternMatchable S)
+  P: Join(PolynomialCategory(R, E, V), ConvertibleTo Pattern S)
+
+  N   ==> NonNegativeInteger
+  PAT ==> Pattern S
+  PRS ==> PatternMatchResult(S, P)
+  RCP ==> Record(val:PAT, exponent:N)
+  RCX ==> Record(var:V, exponent:N)
+
+  Exports ==> with
+    patternMatch: (P, PAT, PRS, (V, PAT, PRS) -> PRS) -> PRS
+      ++ patternMatch(p, pat, res, vmatch) matches the pattern pat to
+      ++ the polynomial p. res contains the variables of pat which
+      ++ are already matched and their matches; vmatch is the matching
+      ++ function to use on the variables.
+      -- This can be more efficient than pushing down when the variables
+      -- are recursive over P (e.g. kernels)
+    if V has PatternMatchable S then
+      patternMatch: (P, PAT, PRS) -> PRS
+        ++ patternMatch(p, pat, res) matches the pattern pat to
+        ++ the polynomial p; res contains the variables of pat which
+        ++ are already matched and their matches.
+
+  Implementation ==> add
+    import PatternMatchTools(S, R, P)
+    import PatternMatchPushDown(S, R, P)
+
+    if V has PatternMatchable S then
+      patternMatch(x, p, l) ==
+        patternMatch(x, p, l, patternMatch$PatternMatchPushDown(S,V,P))
+
+    patternMatch(x, p, l, vmatch) ==
+      generic? p => addMatch(p, x, l)
+      (r := retractIfCan(x)@Union(R, "failed")) case R =>
+        patternMatch(r::R, p, l)
+      (v := retractIfCan(x)@Union(V, "failed")) case V =>
+        vmatch(v::V, p, l)
+      (u := isPlus p) case List(PAT) =>
+        --(lx := isPlus x) case List(P) =>
+        --  patternMatch(lx::List(P), u::List(PAT), +/#1, l,
+        --                               patternMatch(#1, #2, #3, vmatch))
+        (u := optpair(u::List(PAT))) case List(PAT) =>
+          failed?(l := addMatch(first(u::List(PAT)), 0, l)) => failed()
+          patternMatch(x, second(u::List(PAT)), l, vmatch)
+        failed()
+      (u := isTimes p) case List(PAT) =>
+        (lx := isTimes x) case List(P) =>
+          patternMatchTimes(lx::List(P), u::List(PAT), l,
+                                       patternMatch(#1, #2, #3, vmatch))
+        (u := optpair(u::List(PAT))) case List(PAT) =>
+          failed?(l := addMatch(first(u::List(PAT)), 1, l)) => failed()
+          patternMatch(x, second(u::List(PAT)), l, vmatch)
+        failed()
+      (uu := isPower p) case Record(val:PAT, exponent:PAT) =>
+        uur := uu::Record(val:PAT, exponent: PAT)
+        (ex := isExpt x) case RCX =>
+          failed?(l := patternMatch((ex::RCX).exponent::Integer::P,
+                                   uur.exponent, l, vmatch)) => failed()
+          vmatch((ex::RCX).var, uur.val, l)
+        optional?(uur.exponent) =>
+          failed?(l := addMatch(uur.exponent, 1, l)) => failed()
+          patternMatch(x, uur.val, l, vmatch)
+        failed()
+      ((ep := isExpt p) case RCP) and ((ex := isExpt x) case RCX) and
+           (ex::RCX).exponent = (ep::RCP).exponent =>
+               vmatch((ex::RCX).var, (ep::RCP).val, l)
+      failed()
+

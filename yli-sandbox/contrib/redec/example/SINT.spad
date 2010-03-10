@@ -1,0 +1,157 @@
+)abbrev domain SINT SingleInteger
+SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
+   canonical
+      ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
+   canonicalsClosed
+      ++ \spad{canonicalClosed} means two positives multiply to give positive.
+   noetherian
+      ++ \spad{noetherian} all ideals are finitely generated (in fact principal).
+
+   -- bit operations
+   "not":   % -> %
+      ++ not(n) returns the bit-by-bit logical {\em not} of the single integer n.
+   "xor": (%, %) -> %
+      ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
+      ++ the single integers n and m.
+   Not  : % -> %
+      ++ Not(n) returns the bit-by-bit logical {\em not} of the single integer n.
+   And  : (%,%) -> %
+      ++ And(n,m)  returns the bit-by-bit logical {\em and} of
+      ++ the single integers n and m.
+   Or   : (%,%) -> %
+      ++ Or(n,m)  returns the bit-by-bit logical {\em or} of
+      ++ the single integers n and m.
+
+ == SubDomain(Integer, SMINTP(#1)$Lisp) add
+
+   seed : % := 1$Lisp               -- for random()
+   MAXINT ==> _$ShortMaximum$Lisp
+   MININT ==> _$ShortMinimum$Lisp
+   BASE ==> 67108864$Lisp           -- 2**26
+   MULTIPLIER ==> 314159269$Lisp    -- from Knuth's table
+   MODULUS ==> 2147483647$Lisp      -- 2**31-1
+
+   writeOMSingleInt(dev: OpenMathDevice, x: %): Void ==
+    if x < 0 then
+      OMputApp(dev)
+      OMputSymbol(dev, "arith1", "unary_minus")
+      OMputInteger(dev, convert(-x))
+      OMputEndApp(dev)
+    else
+      OMputInteger(dev, convert(x))
+
+   OMwrite(x: %): String ==
+    s: String := ""
+    sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
+    dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+    OMputObject(dev)
+    writeOMSingleInt(dev, x)
+    OMputEndObject(dev)
+    OMclose(dev)
+    s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
+    s
+
+   OMwrite(x: %, wholeObj: Boolean): String ==
+    s: String := ""
+    sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
+    dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+    if wholeObj then
+      OMputObject(dev)
+    writeOMSingleInt(dev, x)
+    if wholeObj then
+      OMputEndObject(dev)
+    OMclose(dev)
+    s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
+    s
+
+   OMwrite(dev: OpenMathDevice, x: %): Void ==
+    OMputObject(dev)
+    writeOMSingleInt(dev, x)
+    OMputEndObject(dev)
+
+   OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
+    if wholeObj then
+      OMputObject(dev)
+    writeOMSingleInt(dev, x)
+    if wholeObj then
+      OMputEndObject(dev)
+
+   reducedSystem m      == m pretend Matrix(Integer)
+   coerce(x):OutputForm == rep(x)::OutputForm
+   convert(x:%):Integer == rep x
+   i:Integer * y:%      == i::% * y
+   0         == 0$Lisp
+   1         == 1$Lisp
+   base()    == 2$Lisp
+   max()     == MAXINT
+   min()     == MININT
+   x = y     == EQL(x,y)$Lisp
+   ~ x       == LOGNOT(x)$Lisp
+   not(x)    == LOGNOT(x)$Lisp
+   _/_\(x,y) == LOGAND(x,y)$Lisp
+   _\_/(x,y) == LOGIOR(x,y)$Lisp
+   Not(x)    == LOGNOT(x)$Lisp
+   And(x,y)  == LOGAND(x,y)$Lisp
+   Or(x,y)   == LOGIOR(x,y)$Lisp
+   xor(x,y)  == LOGXOR(x,y)$Lisp
+   x < y     == QSLESSP(x,y)$Lisp
+   inc x     == QSADD1(x)$Lisp
+   dec x     == QSSUB1(x)$Lisp
+   - x       == QSMINUS(x)$Lisp
+   x + y     == QSPLUS(x,y)$Lisp
+   x:% - y:% == QSDIFFERENCE(x,y)$Lisp
+   x:% * y:% == QSTIMES(x,y)$Lisp
+   x:% ** n:NonNegativeInteger == ((EXPT(x, n)$Lisp) pretend Integer)::%
+   x quo y   == QSQUOTIENT(x,y)$Lisp
+   x rem y   == QSREMAINDER(x,y)$Lisp
+   divide(x, y)   == CONS(QSQUOTIENT(x,y)$Lisp,QSREMAINDER(x,y)$Lisp)$Lisp
+   gcd(x,y)  == GCD(x,y)$Lisp
+   abs(x)    == QSABSVAL(x)$Lisp
+   odd?(x)   == QSODDP(x)$Lisp
+   zero?(x)  == QSZEROP(x)$Lisp
+--   one?(x)   == ONEP(x)$Lisp
+   one?(x)   == x = 1
+   max(x,y)  == QSMAX(x,y)$Lisp
+   min(x,y)  == QSMIN(x,y)$Lisp
+   hash(x)   == HASHEQ(x)$Lisp
+   length(x) == INTEGER_-LENGTH(x)$Lisp
+   shift(x,n)    == QSLEFTSHIFT(x,n)$Lisp
+   mulmod(a,b,p) == QSMULTMOD(a,b,p)$Lisp
+   addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
+   submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
+   negative?(x)  == QSMINUSP$Lisp x
+   size() == (MAXINT -$Lisp MININT +$Lisp 1$Lisp)  pretend NonNegativeInteger
+   index i ==
+     i > size() => error ["index %1b out of range",i]
+     per(i + MININT - 1$Lisp)
+   lookup x ==
+     (x -$Lisp MININT +$Lisp 1$Lisp) pretend PositiveInteger
+
+
+   reducedSystem(m, v) ==
+        [m pretend Matrix(Integer), v pretend Vector(Integer)]
+
+   positiveRemainder(x,n) ==
+      r := QSREMAINDER(x,n)$Lisp
+      QSMINUSP(r)$Lisp =>
+          QSMINUSP(n)$Lisp => QSDIFFERENCE(x, n)$Lisp
+          QSPLUS(r, n)$Lisp
+      r
+
+   coerce(x:Integer):% ==
+      (x <= rep max) and (x >= rep min) => per x
+      error "integer too large to represent in a machine word"
+
+   random() ==
+      seed := REMAINDER(TIMES(MULTIPLIER,seed)$Lisp,MODULUS)$Lisp
+      REMAINDER(seed,BASE)$Lisp
+
+   random(n) == RANDOM(n)$Lisp
+
+   UCA ==> Record(unit:%,canonical:%,associate:%)
+   unitNormal x ==
+      x < 0 => [-1,-x,-1]$UCA
+      [1,x,1]$UCA
+
+--)bo $noSubsets := false
+

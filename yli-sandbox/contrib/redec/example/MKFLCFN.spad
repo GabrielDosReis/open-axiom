@@ -1,0 +1,119 @@
+)abbrev package MKFLCFN MakeFloatCompiledFunction
+++ Tools for making compiled functions from top-level expressions
+++ Author: Manuel Bronstein
+++ Date Created: 2 Mar 1990
+++ Date Last Updated: 2 Dec 1996 (MCD)
+++ Description:
+++ MakeFloatCompiledFunction transforms top-level objects into
+++ compiled Lisp functions whose arguments are Lisp floats.
+++ This by-passes the \Language{} compiler and interpreter,
+++ thereby gaining several orders of magnitude.
+MakeFloatCompiledFunction(S): Exports == Implementation where
+  S: ConvertibleTo InputForm
+
+  INF ==> InputForm
+  SF  ==> DoubleFloat
+  DI1 ==> devaluate(SF -> SF)$Lisp
+  DI2 ==> devaluate((SF, SF) -> SF)$Lisp
+
+  Exports ==> with
+    makeFloatFunction: (S, Symbol)         -> (SF -> SF)
+      ++ makeFloatFunction(expr, x) returns a Lisp function
+      ++ \spad{f: \axiomType{DoubleFloat} -> \axiomType{DoubleFloat}}
+      ++ defined by \spad{f(x) == expr}. 
+      ++ Function f is compiled and directly
+      ++ applicable to objects of type \axiomType{DoubleFloat}.
+    makeFloatFunction: (S, Symbol, Symbol) -> ((SF, SF) -> SF)
+      ++ makeFloatFunction(expr, x, y) returns a Lisp function
+      ++ \spad{f: (\axiomType{DoubleFloat}, \axiomType{DoubleFloat}) -> \axiomType{DoubleFloat}}
+      ++ defined by \spad{f(x, y) == expr}.
+      ++ Function f is compiled and directly
+      ++ applicable to objects of type \spad{(\axiomType{DoubleFloat}, \axiomType{DoubleFloat})}.
+
+  Implementation ==> add
+    import MakeUnaryCompiledFunction(S, SF, SF)
+    import MakeBinaryCompiledFunction(S, SF, SF, SF)
+
+    streq?    : (INF, String) -> Boolean
+    streqlist?: (INF, List String) -> Boolean
+    gencode   : (String, List INF) -> INF
+    mkLisp    : INF -> Union(INF, "failed")
+    mkLispList: List INF -> Union(List INF, "failed")
+    mkDefun   : (INF, List INF) -> INF
+    mkLispCall: INF -> INF
+    mkPretend : INF -> INF
+    mkCTOR : INF -> INF
+
+    lsf := convert([convert("DoubleFloat"::Symbol)@INF]$List(INF))@INF
+
+    streq?(s, st)    == s = convert(st::Symbol)@INF
+    gencode(s, l)    == convert(concat(convert(s::Symbol)@INF, l))@INF
+    streqlist?(s, l) == member?(string symbol s, l)
+
+    mkPretend form ==
+      convert([convert("pretend"::Symbol), form, lsf]$List(INF))@INF
+
+    mkCTOR form ==
+      convert([convert("C-TO-R"::Symbol), form]$List(INF))@INF
+
+
+    mkLispCall name ==
+      convert([convert("$elt"::Symbol),
+                           convert("Lisp"::Symbol), name]$List(INF))@INF
+
+    mkDefun(s, lv) ==
+      name := convert(new()$Symbol)@INF
+      fun  := convert([convert("DEFUN"::Symbol), name, convert lv,
+              gencode("DECLARE",[gencode("FLOAT",lv)]),mkCTOR s]$List(INF))@INF
+      EVAL(fun)$Lisp
+      if _$compileDontDefineFunctions$Lisp then COMPILE(name)$Lisp
+      name
+
+    makeFloatFunction(f, x, y) ==
+      (u := mkLisp(convert(f)@INF)) case "failed" =>
+        compiledFunction(f, x, y)
+      name := mkDefun(u::INF, [ix := convert x, iy := convert y])
+      t    := [lsf, lsf]$List(INF)
+      spadname := declare DI2
+      spadform:=mkPretend convert([mkLispCall name,ix,iy]$List(INF))@INF
+      interpret function(spadform, [x, y], spadname)
+      binaryFunction compile(spadname, t)
+
+    makeFloatFunction(f, var) ==
+      (u := mkLisp(convert(f)@INF)) case "failed" =>
+        compiledFunction(f, var)
+      name := mkDefun(u::INF, [ivar := convert var])
+      t    := [lsf]$List(INF)
+      spadname := declare DI1
+      spadform:= mkPretend convert([mkLispCall name,ivar]$List(INF))@INF
+      interpret function(spadform, [var], spadname)
+      unaryFunction compile(spadname, t)
+
+    mkLispList l ==
+      ans := nil()$List(INF)
+      for s in l repeat
+        (u := mkLisp s) case "failed" => return "failed"
+        ans := concat(u::INF, ans)
+      reverse_! ans
+    
+
+    mkLisp s ==
+      atom? s => s
+      op := first(l := destruct s)
+      (u := mkLispList rest l) case "failed" => "failed"
+      ll := u::List(INF)
+      streqlist?(op, ["+","*","/","-"]) => convert(concat(op, ll))@INF
+      streq?(op, "**") => gencode("EXPT", ll)
+      streqlist?(op, ["exp","sin","cos","tan","atan", 
+         "log", "sinh","cosh","tanh","asinh","acosh","atanh","sqrt"]) =>
+            gencode(upperCase string symbol op, ll)
+      streq?(op, "nthRoot") =>
+        second ll = convert(2::Integer)@INF =>gencode("SQRT",[first ll])
+        gencode("EXPT", concat(first ll, [1$INF / second ll]))
+      streq?(op, "float") =>
+        a := ll.1
+        e := ll.2
+        b := ll.3
+        _*(a, EXPT(b, e)$Lisp)$Lisp pretend INF
+      "failed"
+

@@ -1,0 +1,458 @@
+import OrderedRing
+import EuclideanDomain
+import CharacteristicZero
+import RealConstant
+)abbrev package ZDSOLVE ZeroDimensionalSolvePackage
+++ Author: Marc Moreno Maza
+++ Date Created: 23/01/1999
+++ Date Last Updated: 08/02/1999
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: 
+++   A package for computing symbolically the complex and real roots of 
+++   zero-dimensional algebraic systems over the integer or rational
+++   numbers. Complex roots are given by means of univariate representations
+++   of irreducible regular chains. Real roots are given by means of tuples
+++   of coordinates lying in the \spadtype{RealClosure} of the coefficient ring.
+++   This constructor takes three arguments. The first one \spad{R} is the
+++   coefficient ring. The second one \spad{ls} is the list of variables involved 
+++   in the systems to solve. The third one must be \spad{concat(ls,s)} where
+++   \spad{s} is an additional symbol used for the univariate representations.
+++   WARNING: The third argument is not checked.
+++   All operations are based on triangular decompositions.
+++   The default is to compute these decompositions directly from the input
+++   system by using the \spadtype{RegularChain} domain constructor.
+++   The lexTriangular algorithm can also be used for computing these decompositions
+++   (see the \spadtype{LexTriangularPackage} package constructor).
+++   For that purpose, the operations \axiomOpFrom{univariateSolve}{ZeroDimensionalSolvePackage},
+++   \axiomOpFrom{realSolve}{ZeroDimensionalSolvePackage} and 
+++   \axiomOpFrom{positiveSolve}{ZeroDimensionalSolvePackage} admit an optional 
+++   argument. \newline Author: Marc Moreno Maza.
+ 
+++ Version: 1.
+
+ZeroDimensionalSolvePackage(R,ls,ls2): Exports == Implementation where
+  R : Join(OrderedRing,EuclideanDomain,CharacteristicZero,RealConstant)
+  ls: List Symbol
+  ls2: List Symbol
+  V ==> OrderedVariableList(ls)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  P ==> Polynomial R
+  LP ==> List P
+  LS ==> List Symbol
+  Q ==> NewSparseMultivariatePolynomial(R,V)
+  U ==> SparseUnivariatePolynomial(R)
+  TS ==> RegularChain(R,ls)
+  RUR ==> Record(complexRoots: U, coordinates: LP) 
+  K ==> Fraction R
+  RC ==> RealClosure(K)
+  PRC ==> Polynomial RC
+  REALSOL ==> List RC
+  URC ==> SparseUnivariatePolynomial RC
+  V2 ==> OrderedVariableList(ls2)
+  Q2 ==> NewSparseMultivariatePolynomial(R,V2)
+  E2 ==> IndexedExponents V2
+  ST ==> SquareFreeRegularTriangularSet(R,E2,V2,Q2)
+  Q2WT ==> Record(val: Q2, tower: ST)
+  LQ2WT ==> Record(val: List(Q2), tower: ST)
+  WIP ==> Record(reals: List(RC), vars: List(Symbol), pols: List(Q2))
+  polsetpack ==> PolynomialSetUtilitiesPackage(R,E2,V2,Q2)
+  normpack ==> NormalizationPackage(R,E2,V2,Q2,ST)
+  rurpack ==> InternalRationalUnivariateRepresentationPackage(R,E2,V2,Q2,ST)
+  quasicomppack ==> SquareFreeQuasiComponentPackage(R,E2,V2,Q2,ST)
+  lextripack ==> LexTriangularPackage(R,ls)
+
+  Exports ==  with
+     triangSolve: (LP,B,B) -> List RegularChain(R,ls)
+       ++ \spad{triangSolve(lp,info?,lextri?)} decomposes the variety
+       ++ associated with \axiom{lp} into regular chains.
+       ++ Thus a point belongs to this variety iff it is a regular
+       ++ zero of a regular set in in the output.
+       ++ Note that \axiom{lp} needs to generate a zero-dimensional ideal.
+       ++ If \axiom{lp} is not zero-dimensional then the result is only
+       ++ a decomposition of its zero-set in the sense of the closure
+       ++ (w.r.t. Zarisky topology).
+       ++ Moreover, if \spad{info?} is \spad{true} then some information is 
+       ++ displayed during the computations.
+       ++ See \axiomOpFrom{zeroSetSplit}{RegularTriangularSetCategory}(lp,true,info?).
+       ++ If \spad{lextri?} is \spad{true} then the lexTriangular algorithm is called
+       ++ from the \spadtype{LexTriangularPackage} constructor
+       ++ (see \axiomOpFrom{zeroSetSplit}{LexTriangularPackage}(lp,false)).
+       ++ Otherwise, the triangular decomposition is computed directly from the input
+       ++ system by using the \axiomOpFrom{zeroSetSplit}{RegularChain} from \spadtype{RegularChain}.
+     triangSolve: (LP,B) -> List RegularChain(R,ls)
+       ++ \spad{triangSolve(lp,info?)} returns the same as \spad{triangSolve(lp,false)}
+     triangSolve: LP -> List RegularChain(R,ls)
+       ++ \spad{triangSolve(lp)} returns the same as \spad{triangSolve(lp,false,false)}
+     univariateSolve: RegularChain(R,ls) -> List Record(complexRoots: U, coordinates: LP) 
+       ++ \spad{univariateSolve(ts)} returns a univariate representation
+       ++ of \spad{ts}.
+       ++ See \axiomOpFrom{rur}{RationalUnivariateRepresentationPackage}(lp,true).
+     univariateSolve: (LP,B,B,B) -> List RUR
+       ++ \spad{univariateSolve(lp,info?,check?,lextri?)} returns a univariate 
+       ++ representation of the variety associated with \spad{lp}. 
+       ++ Moreover, if \spad{info?} is \spad{true} then some information is 
+       ++ displayed during the decomposition into regular chains.
+       ++ If \spad{check?} is \spad{true} then the result is checked.
+       ++ See \axiomOpFrom{rur}{RationalUnivariateRepresentationPackage}(lp,true).
+       ++ If \spad{lextri?} is \spad{true} then the lexTriangular algorithm is called
+       ++ from the \spadtype{LexTriangularPackage} constructor
+       ++ (see \axiomOpFrom{zeroSetSplit}{LexTriangularPackage}(lp,false)).
+       ++ Otherwise, the triangular decomposition is computed directly from the input
+       ++ system by using the \axiomOpFrom{zeroSetSplit}{RegularChain} from \spadtype{RegularChain}.
+     univariateSolve: (LP,B,B) -> List RUR
+       ++ \spad{univariateSolve(lp,info?,check?)} returns the same as
+       ++ \spad{univariateSolve(lp,info?,check?,false)}.
+     univariateSolve: (LP,B) -> List RUR
+       ++ \spad{univariateSolve(lp,info?)} returns the same as
+       ++ \spad{univariateSolve(lp,info?,false,false)}.
+     univariateSolve: LP -> List RUR
+       ++ \spad{univariateSolve(lp)} returns the same as
+       ++ \spad{univariateSolve(lp,false,false,false)}.
+     realSolve: RegularChain(R,ls) -> List REALSOL
+       ++ \spad{realSolve(ts)} returns the set of the points in the regular
+       ++ zero set of \spad{ts} whose coordinates are all real.
+       ++ WARNING: For each set of coordinates given by \spad{realSolve(ts)} 
+       ++ the ordering of the indeterminates is reversed w.r.t. \spad{ls}.
+     realSolve: (LP,B,B,B) -> List REALSOL
+       ++ \spad{realSolve(ts,info?,check?,lextri?)} returns the set of the points 
+       ++ in the variety associated with \spad{lp} whose coordinates are all real.
+       ++ Moreover, if \spad{info?} is \spad{true} then some information is 
+       ++ displayed during decomposition into regular chains.
+       ++ If \spad{check?} is \spad{true} then the result is checked.
+       ++ If \spad{lextri?} is \spad{true} then the lexTriangular algorithm is called
+       ++ from the \spadtype{LexTriangularPackage} constructor
+       ++ (see \axiomOpFrom{zeroSetSplit}{LexTriangularPackage}(lp,false)).
+       ++ Otherwise, the triangular decomposition is computed directly from the input
+       ++ system by using the \axiomOpFrom{zeroSetSplit}{RegularChain} from \spadtype{RegularChain}.
+       ++ WARNING: For each set of coordinates given by \spad{realSolve(ts,info?,check?,lextri?)}
+       ++ the ordering of the indeterminates is reversed w.r.t. \spad{ls}.
+     realSolve: (LP,B,B) -> List REALSOL
+       ++ \spad{realSolve(ts,info?,check?)} returns the same as \spad{realSolve(ts,info?,check?,false)}.
+     realSolve: (LP,B) -> List REALSOL
+       ++ \spad{realSolve(ts,info?)} returns the same as \spad{realSolve(ts,info?,false,false)}.
+     realSolve: LP -> List REALSOL
+       ++ \spad{realSolve(lp)} returns the same as \spad{realSolve(ts,false,false,false)} 
+     positiveSolve: RegularChain(R,ls)  -> List REALSOL
+       ++ \spad{positiveSolve(ts)} returns the points of the regular
+       ++ set of \spad{ts} with (real) strictly positive coordinates.
+     positiveSolve: (LP,B,B) -> List REALSOL
+       ++ \spad{positiveSolve(lp,info?,lextri?)} returns the set of the points 
+       ++ in the variety associated with \spad{lp} whose coordinates are (real) strictly positive.
+       ++ Moreover, if \spad{info?} is \spad{true} then some information is 
+       ++ displayed during decomposition into regular chains.
+       ++ If \spad{lextri?} is \spad{true} then the lexTriangular algorithm is called
+       ++ from the \spadtype{LexTriangularPackage} constructor
+       ++ (see \axiomOpFrom{zeroSetSplit}{LexTriangularPackage}(lp,false)).
+       ++ Otherwise, the triangular decomposition is computed directly from the input
+       ++ system by using the \axiomOpFrom{zeroSetSplit}{RegularChain} from \spadtype{RegularChain}.
+       ++ WARNING: For each set of coordinates given by \spad{positiveSolve(lp,info?,lextri?)} 
+       ++ the ordering of the indeterminates is reversed w.r.t. \spad{ls}.
+     positiveSolve: (LP,B) -> List REALSOL
+       ++ \spad{positiveSolve(lp)} returns the same as \spad{positiveSolve(lp,info?,false)}.
+     positiveSolve: LP -> List REALSOL
+       ++ \spad{positiveSolve(lp)} returns the same as \spad{positiveSolve(lp,false,false)}.
+     squareFree: (TS) -> List ST
+       ++ \spad{squareFree(ts)} returns the square-free factorization of \spad{ts}.
+       ++ Moreover, each factor is a Lazard triangular set and the decomposition 
+       ++ is a Kalkbrener split of \spad{ts}, which is enough here for
+       ++ the matter of solving zero-dimensional algebraic systems.
+       ++ WARNING: \spad{ts} is not checked to be zero-dimensional.
+     convert: Q -> Q2
+       ++ \spad{convert(q)} converts \spad{q}.
+     convert: P -> PRC
+       ++ \spad{convert(p)} converts \spad{p}.
+     convert: Q2 -> PRC
+       ++ \spad{convert(q)} converts \spad{q}.
+     convert: U -> URC
+       ++ \spad{convert(u)} converts \spad{u}.
+     convert: ST -> List Q2
+       ++ \spad{convert(st)} returns the members of \spad{st}.  
+
+  Implementation == add
+     news: Symbol := last(ls2)$(List Symbol)
+     newv: V2 := (variable(news)$V2)::V2
+     newq: Q2 :=  newv :: Q2
+
+     convert(q:Q):Q2 ==
+       ground? q => (ground(q))::Q2
+       q2: Q2 := 0
+       while not ground?(q) repeat
+         v: V := mvar(q)
+         d: N := mdeg(q)
+         v2: V2 := (variable(convert(v)@Symbol)$V2)::V2
+         iq2: Q2 := convert(init(q))@Q2 
+         lq2: Q2 := (v2 :: Q2)
+         lq2 := lq2 ** d
+         q2 := iq2 * lq2 + q2
+         q := tail(q)
+       q2 + (ground(q))::Q2
+
+     squareFree(ts:TS):List(ST) == 
+       irred?: Boolean := false
+       st: ST := [[newq]$(List Q2)]$(ST)      
+       lq: List(Q2) := [convert(p)@Q2 for p in parts(ts)]
+       lq := sort(infRittWu?,lq)
+       toSee: List LQ2WT := []
+       if irred?
+         then
+           lf := irreducibleFactors([first lq])$polsetpack
+           lq := rest lq
+           for f in lf repeat
+             toSee := cons([cons(f,lq),st]$LQ2WT, toSee)
+         else
+           toSee := [[lq,st]$LQ2WT]
+       toSave: List ST := []
+       while not empty? toSee repeat
+         lqwt := first toSee; toSee := rest toSee
+         lq := lqwt.val; st := lqwt.tower
+         empty? lq => 
+           toSave := cons(st,toSave)
+         q := first lq; lq := rest lq
+         lsfqwt: List Q2WT := squareFreePart(q,st)$ST
+         for sfqwt in lsfqwt repeat
+           q := sfqwt.val; st := sfqwt.tower
+           if not ground? init(q)
+             then
+               q := normalizedAssociate(q,st)$normpack
+           newts := internalAugment(q,st)$ST      
+           newlq := [(remainder(q,newts).polnum)@ST for q in lq]
+           toSee := cons([newlq,newts]$LQ2WT,toSee)
+       toSave
+
+
+     triangSolve(lp: LP, info?: B, lextri?: B): List TS ==
+       lq: List(Q) := [convert(p)$Q for p in lp]
+       lextri? => zeroSetSplit(lq,false)$lextripack
+       zeroSetSplit(lq,true,info?)$TS
+
+     triangSolve(lp: LP, info?: B): List TS == triangSolve(lp,info?,false)
+
+     triangSolve(lp: LP): List TS == triangSolve(lp,false)
+
+     convert(u: U): URC ==
+       zero? u => 0
+       ground? u => ((ground(u) :: K)::RC)::URC
+       uu: URC := 0
+       while not ground? u repeat
+         uu := monomial((leadingCoefficient(u) :: K):: RC,degree(u)) + uu
+         u := reductum u
+       uu + ((ground(u) :: K)::RC)::URC
+
+     coerceFromRtoRC(r:R): RC ==
+       (r::K)::RC
+
+     convert(p:P): PRC ==
+       map(coerceFromRtoRC,p)$PolynomialFunctions2(R,RC)
+
+     convert(q2:Q2): PRC ==
+       p: P := coerce(q2)$Q2
+       convert(p)@PRC
+       
+     convert(sts:ST): List Q2 ==
+       lq2: List(Q2) := parts(sts)$ST
+       lq2 := sort(infRittWu?,lq2)
+       rest(lq2)
+
+     realSolve(ts: TS): List REALSOL ==
+       lsts: List ST := squareFree(ts)
+       lr: REALSOL := []
+       lv: List Symbol := []
+       toSee := [[lr,lv,convert(sts)@(List Q2)]$WIP for sts in lsts]
+       toSave: List REALSOL := []
+       while not empty? toSee repeat
+         wip := first toSee; toSee := rest toSee
+         lr := wip.reals; lv := wip.vars; lq2 := wip.pols
+         (empty? lq2) and (not empty? lr) => 
+            toSave := cons(reverse(lr),toSave)
+         q2 := first lq2; lq2 := rest lq2
+         qrc := convert(q2)@PRC
+         if not empty? lr 
+           then
+             for r in reverse(lr) for v in reverse(lv) repeat
+               qrc := eval(qrc,v,r)
+         lv := cons((mainVariable(qrc) :: Symbol),lv)
+         urc: URC := univariate(qrc)@URC
+         urcRoots := allRootsOf(urc)$RC
+         for urcRoot in urcRoots repeat
+           toSee := cons([cons(urcRoot,lr),lv,lq2]$WIP, toSee)
+       toSave
+
+     realSolve(lp: List(P), info?:Boolean, check?:Boolean, lextri?: Boolean): List REALSOL  ==
+       lts: List TS
+       lq: List(Q) := [convert(p)$Q for p in lp]
+       if lextri?
+         then
+           lts := zeroSetSplit(lq,false)$lextripack
+         else
+           lts := zeroSetSplit(lq,true,info?)$TS
+       lsts:  List ST := []
+       for ts in lts repeat 
+         lsts := concat(squareFree(ts), lsts)
+       lsts := removeSuperfluousQuasiComponents(lsts)$quasicomppack   
+       lr: REALSOL := []
+       lv: List Symbol := []
+       toSee := [[lr,lv,convert(sts)@(List Q2)]$WIP for sts in lsts]
+       toSave: List REALSOL := []
+       while not empty? toSee repeat
+         wip := first toSee; toSee := rest toSee
+         lr := wip.reals; lv := wip.vars; lq2 := wip.pols
+         (empty? lq2) and (not empty? lr) => 
+            toSave := cons(reverse(lr),toSave)
+         q2 := first lq2; lq2 := rest lq2
+         qrc := convert(q2)@PRC
+         if not empty? lr 
+           then
+             for r in reverse(lr) for v in reverse(lv) repeat
+               qrc := eval(qrc,v,r)
+         lv := cons((mainVariable(qrc) :: Symbol),lv)
+         urc: URC := univariate(qrc)@URC
+         urcRoots := allRootsOf(urc)$RC
+         for urcRoot in urcRoots repeat
+           toSee := cons([cons(urcRoot,lr),lv,lq2]$WIP, toSee)
+       if check?
+         then
+           for p in lp repeat
+             for realsol in toSave repeat
+               prc: PRC := convert(p)@PRC
+               for rr in realsol for symb in reverse(ls) repeat
+                 prc := eval(prc,symb,rr)
+               not zero? prc =>
+                 error "realSolve$ZDSOLVE: bad result"
+       toSave
+
+     realSolve(lp: List(P), info?:Boolean, check?:Boolean): List REALSOL  ==
+       realSolve(lp,info?,check?,false)
+         
+     realSolve(lp: List(P), info?:Boolean): List REALSOL  ==
+       realSolve(lp,info?,false,false)
+
+     realSolve(lp: List(P)): List REALSOL  ==
+       realSolve(lp,false,false,false)
+
+     positiveSolve(ts: TS): List REALSOL ==
+       lsts: List ST := squareFree(ts)
+       lr: REALSOL := []
+       lv: List Symbol := []
+       toSee := [[lr,lv,convert(sts)@(List Q2)]$WIP for sts in lsts]
+       toSave: List REALSOL := []
+       while not empty? toSee repeat
+         wip := first toSee; toSee := rest toSee
+         lr := wip.reals; lv := wip.vars; lq2 := wip.pols
+         (empty? lq2) and (not empty? lr) => 
+            toSave := cons(reverse(lr),toSave)
+         q2 := first lq2; lq2 := rest lq2
+         qrc := convert(q2)@PRC
+         if not empty? lr 
+           then
+             for r in reverse(lr) for v in reverse(lv) repeat
+               qrc := eval(qrc,v,r)
+         lv := cons((mainVariable(qrc) :: Symbol),lv)
+         urc: URC := univariate(qrc)@URC
+         urcRoots := allRootsOf(urc)$RC
+         for urcRoot in urcRoots repeat
+           if positive? urcRoot
+             then 
+               toSee := cons([cons(urcRoot,lr),lv,lq2]$WIP, toSee)
+       toSave
+
+     positiveSolve(lp: List(P), info?:Boolean, lextri?: Boolean): List REALSOL  ==
+       lts: List TS
+       lq: List(Q) := [convert(p)$Q for p in lp]
+       if lextri?
+         then
+           lts := zeroSetSplit(lq,false)$lextripack
+         else
+           lts := zeroSetSplit(lq,true,info?)$TS
+       lsts:  List ST := []
+       for ts in lts repeat 
+         lsts := concat(squareFree(ts), lsts)
+       lsts := removeSuperfluousQuasiComponents(lsts)$quasicomppack   
+       lr: REALSOL := []
+       lv: List Symbol := []
+       toSee := [[lr,lv,convert(sts)@(List Q2)]$WIP for sts in lsts]
+       toSave: List REALSOL := []
+       while not empty? toSee repeat
+         wip := first toSee; toSee := rest toSee
+         lr := wip.reals; lv := wip.vars; lq2 := wip.pols
+         (empty? lq2) and (not empty? lr) => 
+            toSave := cons(reverse(lr),toSave)
+         q2 := first lq2; lq2 := rest lq2
+         qrc := convert(q2)@PRC
+         if not empty? lr 
+           then
+             for r in reverse(lr) for v in reverse(lv) repeat
+               qrc := eval(qrc,v,r)
+         lv := cons((mainVariable(qrc) :: Symbol),lv)
+         urc: URC := univariate(qrc)@URC
+         urcRoots := allRootsOf(urc)$RC
+         for urcRoot in urcRoots repeat
+           if positive? urcRoot
+             then 
+               toSee := cons([cons(urcRoot,lr),lv,lq2]$WIP, toSee)
+       toSave
+
+     positiveSolve(lp: List(P), info?:Boolean): List REALSOL  ==
+       positiveSolve(lp, info?, false)
+
+     positiveSolve(lp: List(P)): List REALSOL  ==
+       positiveSolve(lp, false, false)
+
+     univariateSolve(ts: TS): List RUR ==
+       toSee: List ST := squareFree(ts)
+       toSave: List RUR := []
+       for st in toSee repeat
+         lus: List ST := rur(st,true)$rurpack 
+         for us in lus repeat
+           g: U  := univariate(select(us,newv)::Q2)$Q2
+           lc: LP := [convert(q2)@P for q2 in parts(collectUpper(us,newv)$ST)$ST]
+           toSave := cons([g,lc]$RUR, toSave)
+       toSave
+
+     univariateSolve(lp: List(P), info?:Boolean, check?:Boolean, lextri?: Boolean): List RUR ==
+       lts: List TS
+       lq: List(Q) := [convert(p)$Q for p in lp]
+       if lextri?
+         then
+           lts := zeroSetSplit(lq,false)$lextripack
+         else
+           lts := zeroSetSplit(lq,true,info?)$TS
+       toSee:  List ST := []
+       for ts in lts repeat 
+         toSee := concat(squareFree(ts), toSee)
+       toSee := removeSuperfluousQuasiComponents(toSee)$quasicomppack   
+       toSave: List RUR := []
+       if check?
+         then
+           lq2: List(Q2) := [convert(p)$Q2 for p in lp]
+       for st in toSee repeat
+         lus: List ST := rur(st,true)$rurpack 
+         for us in lus repeat
+            if check?
+              then
+                rems: List(Q2) := [removeZero(q2,us)$ST for q2 in lq2]
+                not every?(zero?,rems) =>
+                  output(st::OutputForm)$OutputPackage
+                  output("Has a bad RUR component:")$OutputPackage
+                  output(us::OutputForm)$OutputPackage
+                  error "univariateSolve$ZDSOLVE: bad RUR"
+            g: U  := univariate(select(us,newv)::Q2)$Q2
+            lc: LP := [convert(q2)@P for q2 in parts(collectUpper(us,newv)$ST)$ST]
+            toSave := cons([g,lc]$RUR, toSave)
+       toSave
+
+     univariateSolve(lp: List(P), info?:Boolean, check?:Boolean): List RUR ==
+       univariateSolve(lp,info?,check?,false)
+
+     univariateSolve(lp: List(P), info?:Boolean): List RUR ==
+       univariateSolve(lp,info?,false,false)
+
+     univariateSolve(lp: List(P)): List RUR ==
+       univariateSolve(lp,false,false,false)
+

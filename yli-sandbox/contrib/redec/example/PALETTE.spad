@@ -1,0 +1,53 @@
+)abbrev domain PALETTE Palette
+++ Author: Jim Wen
+++ Date Created: May 10th 1989
+++ Date Last Updated: Jan 19th 1990
+++ Basic Operations: dark, dim, bright, pastel, light, hue, shade, coerce
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: dim,bright,pastel,coerce
+++ References:
+++ Description: This domain describes four groups of color shades (palettes).
+ 
+Palette(): Exports == Implementation where
+  I      ==> Integer
+  C      ==> Color
+  SHADE  ==> ["Dark","Dim","Bright","Pastel","Light"]
+
+  Exports ==> SetCategory with
+    dark   : C  -> %
+      ++ dark(c) sets the shade of the indicated hue of c to it's lowest value.
+    dim    : C  -> %
+      ++ dim(c) sets the shade of a hue, c,  above dark, but below bright.
+    bright : C  -> %
+      ++ bright(c) sets the shade of a hue, c, above dim, but below pastel.
+    pastel : C  -> %
+      ++ pastel(c) sets the shade of a hue, c,  above bright, but below light.
+    light  : C  -> %
+      ++ light(c) sets the shade of a hue, c,  to it's highest value.
+    hue    : %  -> C
+      ++ hue(p) returns the hue field of the indicated palette p.
+    shade  : %  -> I
+      ++ shade(p) returns the shade index of the indicated palette p.
+    coerce : C  -> %
+      ++ coerce(c) sets the average shade for the palette to that of the 
+      ++ indicated color c.
+ 
+  Implementation ==> add
+    import I
+    import C
+    Rep := Record(shadeField:I, hueField:C)
+
+    dark   c == [1,c]
+    dim    c == [2,c]  
+    bright c == [3,c]  
+    pastel c == [4,c]  
+    light  c == [5,c]  
+    hue    p == p.hueField
+    shade  p == p.shadeField
+    -- sample() == bright(sample())
+    coerce(c:Color):% == bright c
+    coerce(p:%):OutputForm ==
+      hconcat ["[",coerce(p.hueField),"] from the ",SHADE.(p.shadeField)," palette"]
+

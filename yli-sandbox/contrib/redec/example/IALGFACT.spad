@@ -1,0 +1,91 @@
+import Field
+--import UnivariatePolynomialCategory
+import CharacteristicZero
+--import MonogenicAlgebra
+--import Factored
+)abbrev package IALGFACT InnerAlgFactor
+++ Factorisation in a simple algebraic extension
+++ Author: Patrizia Gianni
+++ Date Created: ???
+++ Date Last Updated: 20 Jul 1988
+++ Description:
+++ Factorization of univariate polynomials with coefficients in an
+++ algebraic extension of a field over which we can factor UP's;
+++ Keywords: factorization, algebraic extension, univariate polynomial
+
+InnerAlgFactor(F, UP, AlExt, AlPol): Exports == Implementation where
+  F    : Field
+  UP   : UnivariatePolynomialCategory F
+  AlPol: UnivariatePolynomialCategory AlExt
+  AlExt : Join(Field, CharacteristicZero, MonogenicAlgebra(F,UP))
+  NUP   ==> SparseUnivariatePolynomial UP
+  N     ==> NonNegativeInteger
+  Z     ==> Integer
+  FR    ==> Factored UP
+  UPCF2 ==> UnivariatePolynomialCategoryFunctions2
+
+
+  Exports ==> with
+    factor: (AlPol, UP -> FR)  ->  Factored AlPol
+      ++ factor(p, f) returns a prime factorisation of p;
+      ++ f is a factorisation map for elements of UP;
+ 
+  Implementation ==> add
+    pnorm        : AlPol -> UP
+    convrt       : AlPol -> NUP
+    change       : UP    -> AlPol
+    perturbfactor: (AlPol, Z, UP -> FR) -> List AlPol
+    irrfactor    : (AlPol, Z, UP -> FR) -> List AlPol
+ 
+ 
+    perturbfactor(f, k, fact) ==
+      pol   := monomial(1$AlExt,1)-
+               monomial(reduce monomial(k::F,1)$UP ,0)
+      newf  := elt(f, pol)
+      lsols := irrfactor(newf, k, fact)
+      pol   := monomial(1, 1) +
+               monomial(reduce monomial(k::F,1)$UP,0)
+      [elt(pp, pol) for pp in lsols]
+ 
+    ---  factorize the square-free parts of f  ---
+    irrfactor(f, k, fact) ==
+      degree(f) =$N 1 => [f]
+      newf := f
+      nn   := pnorm f
+      --newval:RN:=1
+      --pert:=false
+      --if ^ SqFr? nn then
+      --  pert:=true
+      --  newterm:=perturb(f)
+      --  newf:=newterm.ppol
+      --  newval:=newterm.pval
+      --  nn:=newterm.nnorm
+      listfact := factors fact nn
+      #listfact =$N 1 =>
+        first(listfact).exponent =$Z 1 => [f]
+        perturbfactor(f, k + 1, fact)
+      listerm:List(AlPol):= []
+      for pelt in listfact repeat
+        g    := gcd(change(pelt.factor), newf)
+        newf := (newf exquo g)::AlPol
+        listerm :=
+          pelt.exponent =$Z 1 => cons(g, listerm)
+          append(perturbfactor(g, k + 1, fact), listerm)
+      listerm
+ 
+    factor(f, fact) ==
+      sqf := squareFree f
+      unit(sqf) * _*/[_*/[primeFactor(pol, sqterm.exponent)
+                          for pol in irrfactor(sqterm.factor, 0, fact)]
+                                            for sqterm in factors sqf]
+ 
+    p := definingPolynomial()$AlExt
+    newp : NUP := map(#1::UP, p)$UPCF2(F, UP, UP, NUP)
+ 
+    pnorm  q == resultant(convrt q, newp)
+    change q == map(coerce, q)$UPCF2(F,UP,AlExt,AlPol)
+ 
+    convrt q ==
+      swap(map(lift, q)$UPCF2(AlExt, AlPol,
+           UP, NUP))$CommuteUnivariatePolynomialCategory(F, UP, NUP)
+

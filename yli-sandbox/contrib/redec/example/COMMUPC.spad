@@ -1,0 +1,44 @@
+)abbrev package COMMUPC CommuteUnivariatePolynomialCategory
+++ Author: Manuel Bronstein
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A package for swapping the order of two variables in a tower of two
+++ UnivariatePolynomialCategory extensions.
+
+CommuteUnivariatePolynomialCategory(R, UP, UPUP): Exports == Impl where
+  R   : Ring
+  UP  : UnivariatePolynomialCategory R
+  UPUP: UnivariatePolynomialCategory UP
+
+  N ==> NonNegativeInteger
+
+  Exports ==> with
+    swap: UPUP -> UPUP
+      ++ swap(p(x,y)) returns p(y,x).
+
+  Impl ==> add
+    makePoly: (UP, N) -> UPUP
+
+-- converts P(x,y) to P(y,x)
+    swap poly ==
+      ans:UPUP := 0
+      while poly ~= 0 repeat
+        ans  := ans + makePoly(leadingCoefficient poly, degree poly)
+        poly := reductum poly
+      ans
+
+    makePoly(poly, d) ==
+      ans:UPUP := 0
+      while poly ~= 0 repeat
+        ans  := ans +
+             monomial(monomial(leadingCoefficient poly, d), degree poly)
+        poly := reductum poly
+      ans
+

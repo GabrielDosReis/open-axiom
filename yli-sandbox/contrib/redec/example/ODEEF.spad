@@ -1,0 +1,260 @@
+)abbrev package ODEEF ElementaryFunctionODESolver
+++ Author: Manuel Bronstein
+++ Date Created: 18 March 1991
+++ Date Last Updated: 8 March 1994
+++ Description:
+++ \spad{ElementaryFunctionODESolver} provides the top-level
+++ functions for finding closed form solutions of ordinary
+++ differential equations and initial value problems.
+++ Keywords: differential equation, ODE
+ElementaryFunctionODESolver(R, F): Exports == Implementation where
+  R: Join(OrderedSet, EuclideanDomain, RetractableTo Integer,
+          LinearlyExplicitRingOver Integer, CharacteristicZero)
+  F: Join(AlgebraicallyClosedFunctionSpace R, TranscendentalFunctionCategory,
+          PrimitiveFunctionCategory)
+
+  N   ==> NonNegativeInteger
+  OP  ==> BasicOperator
+  SY  ==> Symbol
+  K   ==> Kernel F
+  EQ  ==> Equation F
+  V   ==> Vector F
+  M   ==> Matrix F
+  UP  ==> SparseUnivariatePolynomial F
+  P   ==> SparseMultivariatePolynomial(R, K)
+  LEQ ==> Record(left:UP, right:F)
+  NLQ ==> Record(dx:F, dy:F)
+  REC ==> Record(particular: F, basis: List F)
+  VEC ==> Record(particular: V, basis: List V)
+  ROW ==> Record(index: Integer, row: V, rh: F)
+  SYS ==> Record(mat:M, vec: V)
+  U   ==> Union(REC, F, "failed")
+  UU  ==> Union(F, "failed")
+  OPDIFF ==> "%diff"::SY
+
+  Exports ==> with
+    solve: (M, V, SY) -> Union(VEC, "failed")
+      ++ solve(m, v, x) returns \spad{[v_p, [v_1,...,v_m]]} such that
+      ++ the solutions of the system \spad{D y = m y + v} are
+      ++ \spad{v_p + c_1 v_1 + ... + c_m v_m} where the \spad{c_i's} are
+      ++ constants, and the \spad{v_i's} form a basis for the solutions of
+      ++ \spad{D y = m y}.
+      ++ \spad{x} is the dependent variable.
+    solve: (M, SY) -> Union(List V, "failed")
+      ++ solve(m, x) returns a basis for the solutions of \spad{D y = m y}.
+      ++ \spad{x} is the dependent variable.
+    solve: (List EQ, List OP, SY) -> Union(VEC, "failed")
+      ++ solve([eq_1,...,eq_n], [y_1,...,y_n], x) returns either "failed"
+      ++ or, if the equations form a fist order linear system, a solution
+      ++ of the form \spad{[y_p, [b_1,...,b_n]]} where \spad{h_p} is a
+      ++ particular solution and \spad{[b_1,...b_m]} are linearly independent
+      ++ solutions of the associated homogenuous system.
+      ++ error if the equations do not form a first order linear system
+    solve: (List F, List OP, SY) -> Union(VEC, "failed")
+      ++ solve([eq_1,...,eq_n], [y_1,...,y_n], x) returns either "failed"
+      ++ or, if the equations form a fist order linear system, a solution
+      ++ of the form \spad{[y_p, [b_1,...,b_n]]} where \spad{h_p} is a
+      ++ particular solution and \spad{[b_1,...b_m]} are linearly independent
+      ++ solutions of the associated homogenuous system.
+      ++ error if the equations do not form a first order linear system
+    solve: (EQ, OP, SY) -> U
+      ++ solve(eq, y, x) returns either a solution of the ordinary differential
+      ++ equation \spad{eq} or "failed" if no non-trivial solution can be found;
+      ++ If the equation is linear ordinary, a solution is of the form
+      ++ \spad{[h, [b1,...,bm]]} where \spad{h} is a particular solution
+      ++ and \spad{[b1,...bm]} are linearly independent solutions of the
+      ++ associated homogenuous equation \spad{f(x,y) = 0};
+      ++ A full basis for the solutions of the homogenuous equation
+      ++ is not always returned, only the solutions which were found;
+      ++ If the equation is of the form {dy/dx = f(x,y)}, a solution is of
+      ++ the form \spad{h(x,y)} where \spad{h(x,y) = c} is a first integral
+      ++ of the equation for any constant \spad{c};
+      ++ error if the equation is not one of those 2 forms;
+    solve: (F, OP, SY) -> U
+      ++ solve(eq, y, x) returns either a solution of the ordinary differential
+      ++ equation \spad{eq} or "failed" if no non-trivial solution can be found;
+      ++ If the equation is linear ordinary, a solution is of the form
+      ++ \spad{[h, [b1,...,bm]]} where \spad{h} is a particular solution and
+      ++ and \spad{[b1,...bm]} are linearly independent solutions of the
+      ++ associated homogenuous equation \spad{f(x,y) = 0};
+      ++ A full basis for the solutions of the homogenuous equation
+      ++ is not always returned, only the solutions which were found;
+      ++ If the equation is of the form {dy/dx = f(x,y)}, a solution is of
+      ++ the form \spad{h(x,y)} where \spad{h(x,y) = c} is a first integral
+      ++ of the equation for any constant \spad{c};
+    solve: (EQ, OP, EQ, List F) -> UU
+      ++ solve(eq, y, x = a, [y0,...,ym]) returns either the solution
+      ++ of the initial value problem \spad{eq, y(a) = y0, y'(a) = y1,...}
+      ++ or "failed" if the solution cannot be found;
+      ++ error if the equation is not one linear ordinary or of the form
+      ++ \spad{dy/dx = f(x,y)};
+    solve: (F, OP, EQ, List F) -> UU
+      ++ solve(eq, y, x = a, [y0,...,ym]) returns either the solution
+      ++ of the initial value problem \spad{eq, y(a) = y0, y'(a) = y1,...}
+      ++ or "failed" if the solution cannot be found;
+      ++ error if the equation is not one linear ordinary or of the form
+      ++ \spad{dy/dx = f(x,y)};
+
+  Implementation ==> add
+    import ODEIntegration(R, F)
+    import IntegrationTools(R, F)
+    import NonLinearFirstOrderODESolver(R, F)
+
+    getfreelincoeff : (F, K, SY) -> F
+    getfreelincoeff1: (F, K, List F) -> F
+    getlincoeff     : (F, K) -> F
+    getcoeff        : (F, K) -> UU
+    parseODE        : (F, OP, SY) -> Union(LEQ, NLQ)
+    parseLODE       : (F, List K, UP, SY) -> LEQ
+    parseSYS        : (List F, List OP, SY) -> Union(SYS, "failed")
+    parseSYSeq      : (F, List K, List K, List F, SY) -> Union(ROW, "failed")
+
+    solve(diffeq:EQ, y:OP, x:SY) == solve(lhs diffeq - rhs diffeq, y, x)
+
+    solve(leq: List EQ, lop: List OP, x:SY) ==
+        solve([lhs eq - rhs eq for eq in leq], lop, x)
+
+    solve(diffeq:EQ, y:OP, center:EQ, y0:List F) ==
+      solve(lhs diffeq - rhs diffeq, y, center, y0)
+
+    solve(m:M, x:SY) ==
+        (u := solve(m, new(nrows m, 0), x)) case "failed" => "failed"
+        u.basis
+
+    solve(m:M, v:V, x:SY) ==
+        Lx := LinearOrdinaryDifferentialOperator(F, diff x)
+        uu := solve(m, v, solve(#1, #2,
+               x)$ElementaryFunctionLODESolver(R, F, Lx))$SystemODESolver(F, Lx)
+        uu case "failed" => "failed"
+        rec := uu::Record(particular: V, basis: M)
+        [rec.particular, [column(rec.basis, i) for i in 1..ncols(rec.basis)]]
+
+    solve(diffeq:F, y:OP, center:EQ, y0:List F) ==
+      a := rhs center
+      kx:K := kernel(x := retract(lhs(center))@SY)
+      (ur := parseODE(diffeq, y, x)) case NLQ =>
+--        not one?(#y0) => error "solve: more than one initial condition!"
+        not ((#y0) = 1) => error "solve: more than one initial condition!"
+        rc := ur::NLQ
+        (u := solve(rc.dx, rc.dy, y, x)) case "failed" => "failed"
+        u::F - eval(u::F,  [kx, retract(y(x::F))@K], [a, first y0])
+      rec := ur::LEQ
+      p := rec.left
+      Lx := LinearOrdinaryDifferentialOperator(F, diff x)
+      op:Lx := 0
+      while p ~= 0 repeat
+        op := op + monomial(leadingCoefficient p, degree p)
+        p  := reductum p
+      solve(op, rec.right, x, a, y0)$ElementaryFunctionLODESolver(R, F, Lx)
+
+    solve(leq: List F, lop: List OP, x:SY) ==
+        (u := parseSYS(leq, lop, x)) case SYS =>
+            rec := u::SYS
+            solve(rec.mat, rec.vec, x)
+        error "solve: not a first order linear system"
+
+    solve(diffeq:F, y:OP, x:SY) ==
+      (u := parseODE(diffeq, y, x)) case NLQ =>
+        rc := u::NLQ
+        (uu := solve(rc.dx, rc.dy, y, x)) case "failed" => "failed"
+        uu::F
+      rec := u::LEQ
+      p := rec.left
+      Lx := LinearOrdinaryDifferentialOperator(F, diff x)
+      op:Lx := 0
+      while p ~= 0 repeat
+        op := op + monomial(leadingCoefficient p, degree p)
+        p  := reductum p
+      (uuu := solve(op, rec.right, x)$ElementaryFunctionLODESolver(R, F, Lx))
+         case "failed" => "failed"
+      uuu::REC
+
+-- returns [M, v] s.t. the equations are D x = M x + v
+    parseSYS(eqs, ly, x) ==
+      (n := #eqs) ~= #ly => "failed"
+      m:M := new(n, n, 0)
+      v:V := new(n, 0)
+      xx := x::F
+      lf := [y xx for y in ly]
+      lk0:List(K) := [retract(f)@K for f in lf]
+      lk1:List(K) := [retract(differentiate(f, x))@K for f in lf]
+      for eq in eqs repeat
+          (u := parseSYSeq(eq,lk0,lk1,lf,x)) case "failed" => return "failed"
+          rec := u::ROW
+          setRow_!(m, rec.index, rec.row)
+          v(rec.index) := rec.rh
+      [m, v]
+
+    parseSYSeq(eq, l0, l1, lf, x) ==
+      l := [k for k in varselect(kernels eq, x) | is?(k, OPDIFF)]
+      empty? l or not empty? rest l or zero?(n := position(k := first l,l1)) =>
+         "failed"
+      c := getfreelincoeff1(eq, k, lf)
+      eq := eq - c * k::F
+      v:V := new(#l0, 0)
+      for y in l0 for i in 1.. repeat
+          ci := getfreelincoeff1(eq, y, lf)
+          v.i := - ci / c
+          eq := eq - ci * y::F
+      [n, v, -eq]
+
+-- returns either [p, g] where the equation (diffeq) is of the form p(D)(y) = g
+-- or [p, q] such that the equation (diffeq) is of the form p dx + q dy = 0
+    parseODE(diffeq, y, x) ==
+      f := y(x::F)@K
+      l:List(K) := [retract(f)@K]
+      n:N := 2
+      for k in varselect(kernels diffeq, x) | is?(k, OPDIFF) repeat
+        if (m := height k) > n then n := m
+      n := (n - 2)::N
+-- build a list of kernels in the order [y^(n)(x),...,y''(x),y'(x),y(x)]
+      for i in 1..n repeat
+        l := concat(retract(f := differentiate(f, x))@K, l)
+      k:K   -- #$^#& compiler requires this line and the next one too...
+      c:F
+      while not(empty? l) and zero?(c := getlincoeff(diffeq, k := first l))
+        repeat l := rest l
+      empty? l or empty? rest l => error "parseODE: equation has order 0"
+      diffeq := diffeq - c * (k::F)
+      ny := name y
+      l := rest l
+      height(k) > 3 => parseLODE(diffeq, l, monomial(c, #l), ny)
+      (u := getcoeff(diffeq, k := first l)) case "failed" => return [diffeq, c]
+      eqrhs := (d := u::F) * (k::F) - diffeq
+      freeOf?(eqrhs, ny) and freeOf?(c, ny) and freeOf?(d, ny) =>
+        return [monomial(c, 1) + d::UP, eqrhs]
+      return [diffeq, c]
+
+-- returns [p, g] where the equation (diffeq) is of the form p(D)(y) = g
+    parseLODE(diffeq, l, p, y) ==
+      not freeOf?(leadingCoefficient p, y) =>
+        error "parseLODE: not a linear ordinary differential equation"
+      d := degree(p)::Integer - 1
+      for k in l repeat
+        p := p + monomial(c := getfreelincoeff(diffeq, k, y), d::N)
+        d := d - 1
+        diffeq := diffeq - c * (k::F)
+      freeOf?(diffeq, y) => [p, - diffeq]
+      error "parseLODE: not a linear ordinary differential equation"
+
+    getfreelincoeff(f, k, y) ==
+      freeOf?(c := getlincoeff(f, k), y) => c
+      error "getfreelincoeff: not a linear ordinary differential equation"
+
+    getfreelincoeff1(f, k, ly) ==
+      c := getlincoeff(f, k)
+      for y in ly repeat
+         not freeOf?(c, y) =>
+            error "getfreelincoeff: not a linear ordinary differential equation"
+      c
+
+    getlincoeff(f, k) ==
+      (u := getcoeff(f, k)) case "failed" =>
+        error "getlincoeff: not an appropriate ordinary differential equation"
+      u::F
+
+    getcoeff(f, k) ==
+      (r := retractIfCan(univariate(denom f, k))@Union(P, "failed"))
+        case "failed" or degree(p := univariate(numer f, k)) > 1 => "failed"
+      coefficient(p, 1) / (r::P)
+

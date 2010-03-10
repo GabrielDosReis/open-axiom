@@ -1,0 +1,35 @@
+)abbrev package UDVO UserDefinedVariableOrdering
+++ Author: Manuel Bronstein
+++ Date Created: March 1990
+++ Date Last Updated: 9 April 1991
+++ Description:
+++  This packages provides functions to allow the user to select the ordering
+++  on the variables and operators for displaying polynomials,
+++  fractions and expressions. The ordering affects the display
+++  only and not the computations.
+UserDefinedVariableOrdering(): with
+  setVariableOrder  : List Symbol -> Void
+    ++ setVariableOrder([a1,...,an]) defines an ordering on the
+    ++ variables given by \spad{a1 > a2 > ... > an > other variables}.
+  setVariableOrder  : (List Symbol, List Symbol) -> Void
+    ++ setVariableOrder([b1,...,bm], [a1,...,an]) defines an ordering
+    ++ on the variables given by
+    ++ \spad{b1 > b2 > ... > bm >} other variables \spad{>  a1 > a2 > ... > an}.
+  getVariableOrder  : () -> Record(high:List Symbol, low:List Symbol)
+    ++ getVariableOrder() returns \spad{[[b1,...,bm], [a1,...,an]]} such that
+    ++ the ordering on the variables was given by
+    ++ \spad{setVariableOrder([b1,...,bm], [a1,...,an])}.
+  resetVariableOrder: () -> Void
+    ++ resetVariableOrder() cancels any previous use of
+    ++ setVariableOrder and returns to the default system ordering.
+ == add
+  import UserDefinedPartialOrdering(Symbol)
+ 
+  setVariableOrder l       == setOrder reverse l
+  setVariableOrder(l1, l2) == setOrder(reverse l2, reverse l1)
+  resetVariableOrder()     == setVariableOrder(nil(), nil())
+ 
+  getVariableOrder() ==
+    r := getOrder()
+    [reverse(r.high), reverse(r.low)]
+

@@ -1,0 +1,175 @@
+)abbrev package ODEPRIM PrimitiveRatDE
+++ Author: Manuel Bronstein
+++ Date Created: 1 March 1991
+++ Date Last Updated: 1 February 1994
+++ Description:
+++  \spad{PrimitiveRatDE} provides functions for in-field solutions of linear
+++   ordinary differential equations, in the transcendental case.
+++   The derivation to use is given by the parameter \spad{L}.
+PrimitiveRatDE(F, UP, L, LQ): Exports == Implementation where
+  F  : Join(Field, CharacteristicZero, RetractableTo Fraction Integer)
+  UP : UnivariatePolynomialCategory F
+  L  : LinearOrdinaryDifferentialOperatorCategory UP
+  LQ : LinearOrdinaryDifferentialOperatorCategory Fraction UP
+
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  RF  ==> Fraction UP
+  UP2 ==> SparseUnivariatePolynomial UP
+  REC ==> Record(center:UP, equation:UP)
+
+  Exports ==> with
+    denomLODE: (L, RF) -> Union(UP, "failed")
+      ++ denomLODE(op, g) returns a polynomial d such that
+      ++ any rational solution of \spad{op y = g}
+      ++ is of the form \spad{p/d} for some polynomial p, and
+      ++ "failed", if the equation has no rational solution.
+    denomLODE: (L, List RF) -> UP
+      ++ denomLODE(op, [g1,...,gm]) returns a polynomial
+      ++ d such that any rational solution of \spad{op y = c1 g1 + ... + cm gm}
+      ++ is of the form \spad{p/d} for some polynomial p.
+    indicialEquations: L -> List REC
+      ++ indicialEquations op returns \spad{[[d1,e1],...,[dq,eq]]} where
+      ++ the \spad{d_i}'s are the affine singularities of \spad{op},
+      ++ and the \spad{e_i}'s are the indicial equations at each \spad{d_i}.
+    indicialEquations: (L, UP) -> List REC
+      ++ indicialEquations(op, p) returns \spad{[[d1,e1],...,[dq,eq]]} where
+      ++ the \spad{d_i}'s are the affine singularities of \spad{op}
+      ++ above the roots of \spad{p},
+      ++ and the \spad{e_i}'s are the indicial equations at each \spad{d_i}.
+    indicialEquation: (L, F) -> UP
+      ++ indicialEquation(op, a) returns the indicial equation of \spad{op}
+      ++ at \spad{a}.
+    indicialEquations: LQ -> List REC
+      ++ indicialEquations op returns \spad{[[d1,e1],...,[dq,eq]]} where
+      ++ the \spad{d_i}'s are the affine singularities of \spad{op},
+      ++ and the \spad{e_i}'s are the indicial equations at each \spad{d_i}.
+    indicialEquations: (LQ, UP) -> List REC
+      ++ indicialEquations(op, p) returns \spad{[[d1,e1],...,[dq,eq]]} where
+      ++ the \spad{d_i}'s are the affine singularities of \spad{op}
+      ++ above the roots of \spad{p},
+      ++ and the \spad{e_i}'s are the indicial equations at each \spad{d_i}.
+    indicialEquation: (LQ, F) -> UP
+      ++ indicialEquation(op, a) returns the indicial equation of \spad{op}
+      ++ at \spad{a}.
+    splitDenominator: (LQ, List RF) -> Record(eq:L, rh:List RF)
+      ++ splitDenominator(op, [g1,...,gm]) returns \spad{op0, [h1,...,hm]}
+      ++ such that the equations \spad{op y = c1 g1 + ... + cm gm} and
+      ++ \spad{op0 y = c1 h1 + ... + cm hm} have the same solutions.
+
+  Implementation ==> add
+    import BoundIntegerRoots(F, UP)
+    import BalancedFactorisation(F, UP)
+    import InnerCommonDenominator(UP, RF, List UP, List RF)
+    import UnivariatePolynomialCategoryFunctions2(F, UP, UP, UP2)
+
+    tau          : (UP, UP, UP, N) -> UP
+    NPbound      : (UP, L, UP) -> N
+    hdenom       : (L, UP, UP) -> UP
+    denom0       : (Z, L, UP, UP, UP) -> UP
+    indicialEq   : (UP, List N, List UP) -> UP
+    separateZeros: (UP, UP) -> UP
+    UPfact       : N -> UP
+    UP2UP2       : UP -> UP2
+    indeq        : (UP, L) -> UP
+    NPmulambda   : (UP, L) -> Record(mu:Z, lambda:List N, func:List UP)
+
+    diff := D()$L
+
+    UP2UP2 p                    == map(#1::UP, p)
+    indicialEquations(op:L)     == indicialEquations(op, leadingCoefficient op)
+    indicialEquation(op:L, a:F) == indeq(monomial(1, 1) - a::UP, op)
+
+    splitDenominator(op, lg) ==
+      cd := splitDenominator coefficients op
+      f  := cd.den / gcd(cd.num)
+      l:L := 0
+      while op ~= 0 repeat
+          l  := l + monomial(retract(f * leadingCoefficient op), degree op)
+          op := reductum op
+      [l, [f * g for g in lg]]
+
+    tau(p, pp, q, n) ==
+      ((pp ** n) * ((q exquo (p ** order(q, p)))::UP)) rem p
+
+    indicialEquations(op:LQ) ==
+      indicialEquations(splitDenominator(op, empty()).eq)
+
+    indicialEquations(op:LQ, p:UP) ==
+      indicialEquations(splitDenominator(op, empty()).eq, p)
+
+    indicialEquation(op:LQ, a:F) ==
+      indeq(monomial(1, 1) - a::UP, splitDenominator(op, empty()).eq)
+
+-- returns z(z-1)...(z-(n-1))
+    UPfact n ==
+      zero? n => 1
+      z := monomial(1, 1)$UP
+      */[z - i::F::UP for i in 0..(n-1)::N]
+
+    indicialEq(c, lamb, lf) ==
+      cp := diff c
+      cc := UP2UP2 c
+      s:UP2 := 0
+      for i in lamb for f in lf repeat
+        s := s + (UPfact i) * UP2UP2 tau(c, cp, f, i)
+      primitivePart resultant(cc, s)
+
+    NPmulambda(c, l) ==
+      lamb:List(N) := [d := degree l]
+      lf:List(UP) := [a := leadingCoefficient l]
+      mup := d::Z - order(a, c)
+      while (l := reductum l) ~= 0 repeat
+          a := leadingCoefficient l
+          if (m := (d := degree l)::Z - order(a, c)) > mup then
+              mup := m
+              lamb := [d]
+              lf := [a]
+          else if (m = mup) then
+              lamb := concat(d, lamb)
+              lf := concat(a, lf)
+      [mup, lamb, lf]
+
+-- e = 0 means homogeneous equation
+    NPbound(c, l, e) ==
+      rec := NPmulambda(c, l)
+      n := max(0, - integerBound indicialEq(c, rec.lambda, rec.func))
+      zero? e => n::N
+      max(n, order(e, c)::Z - rec.mu)::N
+
+    hdenom(l, d, e) ==
+      */[dd.factor ** NPbound(dd.factor, l, e)
+                    for dd in factors balancedFactorisation(d, coefficients l)]
+
+    denom0(n, l, d, e, h) ==
+      hdenom(l, d, e) * */[hh.factor ** max(0, order(e, hh.factor) - n)::N
+                                 for hh in factors balancedFactorisation(h, e)]
+
+-- returns a polynomials whose zeros are the zeros of e which are not
+-- zeros of d
+    separateZeros(d, e) ==
+      ((g := squareFreePart e) exquo gcd(g, squareFreePart d))::UP
+
+    indeq(c, l) ==
+      rec := NPmulambda(c, l)
+      indicialEq(c, rec.lambda, rec.func)
+
+    indicialEquations(op:L, p:UP) ==
+      [[dd.factor, indeq(dd.factor, op)]
+                   for dd in factors balancedFactorisation(p, coefficients op)]
+
+-- cannot return "failed" in the homogeneous case
+    denomLODE(l:L, g:RF) ==
+      d := leadingCoefficient l
+      zero? g => hdenom(l, d, 0)
+      h := separateZeros(d, e := denom g)
+      n := degree l
+      (e exquo (h**(n + 1))) case "failed" => "failed"
+      denom0(n, l, d, e, h)
+
+    denomLODE(l:L, lg:List RF) ==
+      empty? lg => denomLODE(l, 0)::UP
+      d := leadingCoefficient l
+      h := separateZeros(d, e := "lcm"/[denom g for g in lg])
+      denom0(degree l, l, d, e, h)
+

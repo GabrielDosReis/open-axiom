@@ -1,0 +1,27 @@
+)abbrev package FRAC2 FractionFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: This package extends a map between integral domains to
+++ a map between Fractions over those domains by applying the map to the
+++ numerators and denominators.
+FractionFunctions2(A, B): Exports == Impl where
+  A, B: IntegralDomain
+
+  R ==> Fraction A
+  S ==> Fraction B
+
+  Exports ==> with
+    map: (A -> B, R) -> S
+      ++ map(func,frac) applies the function func to the numerator
+      ++ and denominator of the fraction frac.
+
+  Impl ==> add
+    map(f, r) == map(f, r)$QuotientFieldCategoryFunctions2(A, B, R, S)
+

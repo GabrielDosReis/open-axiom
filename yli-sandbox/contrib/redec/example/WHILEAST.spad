@@ -1,0 +1,18 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain WHILEAST WhileAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the `while' iterator syntax.
+WhileAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    condition: % -> SpadAst
+      ++ condition(i) returns the condition of the while iterator `i'.
+  Private == add
+    Rep == Pair(Symbol,SpadAst)
+    condition x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('WhileAst::OutputForm,
+        ['condition::OutputForm = condition(x)::OutputForm])$OutputForm
+

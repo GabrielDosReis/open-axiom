@@ -1,0 +1,117 @@
+)abbrev package LODOF LinearOrdinaryDifferentialOperatorFactorizer
+++ Author: Fritz Schwarz, Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 3 February 1994
+++ Description:
+++ \spadtype{LinearOrdinaryDifferentialOperatorFactorizer} provides a
+++ factorizer for linear ordinary differential operators whose coefficients
+++ are rational functions.
+++ Keywords: differential equation, ODE, LODO, factoring
+LinearOrdinaryDifferentialOperatorFactorizer(F, UP): Exports == Impl where
+  F : Join(Field, CharacteristicZero,
+           RetractableTo Integer, RetractableTo Fraction Integer)
+  UP: UnivariatePolynomialCategory F
+ 
+  RF ==> Fraction UP
+  L  ==> LinearOrdinaryDifferentialOperator1 RF
+ 
+  Exports ==> with
+    factor: (L, UP -> List F) -> List L
+      ++ factor(a, zeros) returns the factorisation of a.
+      ++ \spad{zeros} is a zero finder in \spad{UP}.
+    if F has AlgebraicallyClosedField then
+      factor: L -> List L
+        ++ factor(a) returns the factorisation of a.
+      factor1: L -> List L
+        ++ factor1(a) returns the factorisation of a,
+        ++ assuming that a has no first-order right factor.
+ 
+  Impl ==> add
+    import RationalLODE(F, UP)
+    import RationalRicDE(F, UP)
+--  import AssociatedEquations RF
+ 
+    dd := D()$L
+ 
+    expsol     : (L, UP -> List F, UP -> Factored UP) -> Union(RF, "failed")
+    expsols    : (L, UP -> List F, UP -> Factored UP, Boolean) -> List RF
+    opeval     : (L, L) -> L
+    recurfactor: (L, L, UP -> List F, UP -> Factored UP, Boolean) -> List L
+    rfactor    : (L, L, UP -> List F, UP -> Factored UP, Boolean) -> List L
+    rightFactor: (L, NonNegativeInteger, UP -> List F, UP -> Factored UP)
+                                                          -> Union(L, "failed")
+    innerFactor: (L, UP -> List F, UP -> Factored UP, Boolean) -> List L
+ 
+    factor(l, zeros) == innerFactor(l, zeros, squareFree, true)
+ 
+    expsol(l, zeros, ezfactor) ==
+      empty?(sol := expsols(l, zeros, ezfactor, false)) => "failed"
+      first sol
+ 
+    expsols(l, zeros, ezfactor, all?) ==
+      sol := [differentiate(f)/f for f in ratDsolve(l, 0).basis | f ~= 0]
+      not(all? or empty? sol) => sol
+      concat(sol, ricDsolve(l, zeros, ezfactor))
+ 
+-- opeval(l1, l2) returns l1(l2)
+    opeval(l1, l2) ==
+      ans:L := 0
+      l2n:L := 1
+      for i in 0..degree l1 repeat
+        ans := ans + coefficient(l1, i) * l2n
+        l2n := l2 * l2n
+      ans
+      
+    recurfactor(l, r, zeros, ezfactor, adj?) ==
+      q := rightExactQuotient(l, r)::L
+      if adj? then q := adjoint q
+      innerFactor(q, zeros, ezfactor, true)
+ 
+    rfactor(op, r, zeros, ezfactor, adj?) ==
+--      degree r > 1 or not one? leadingCoefficient r =>
+      degree r > 1 or not ((leadingCoefficient r) = 1) =>
+        recurfactor(op, r, zeros, ezfactor, adj?)
+      op1 := opeval(op, dd - coefficient(r, 0)::L)
+      map_!(opeval(#1, r), recurfactor(op1, dd, zeros, ezfactor, adj?))
+ 
+-- r1? is true means look for 1st-order right-factor also
+    innerFactor(l, zeros, ezfactor, r1?) ==
+      (n := degree l) <= 1 => [l]
+      ll := adjoint l
+      for i in 1..(n quo 2) repeat
+        (r1? or (i > 1)) and ((u := rightFactor(l,i,zeros,ezfactor)) case L) =>
+           return concat_!(rfactor(l, u::L, zeros, ezfactor, false), u::L)
+        (2 * i < n) and ((u := rightFactor(ll, i, zeros, ezfactor)) case L) =>
+           return concat(adjoint(u::L), rfactor(ll, u::L, zeros,ezfactor,true))
+      [l]
+ 
+    rightFactor(l, n, zeros, ezfactor) ==
+--      one? n =>
+      (n = 1) =>
+        (u := expsol(l, zeros, ezfactor)) case "failed" => "failed"
+        D() - u::RF::L
+--    rec := associatedEquations(l, n::PositiveInteger)
+--    empty?(sol := expsols(rec.eq, zeros, ezfactor, true)) => "failed"
+      "failed"
+ 
+    if F has AlgebraicallyClosedField then
+      zro1: UP -> List F
+      zro : (UP, UP -> Factored UP) -> List F
+ 
+      zro(p, ezfactor) ==
+        concat [zro1(r.factor) for r in factors ezfactor p]
+ 
+      zro1 p ==
+        [zeroOf(map(#1, p)$UnivariatePolynomialCategoryFunctions2(F, UP,
+                                             F, SparseUnivariatePolynomial F))]
+ 
+      if F is AlgebraicNumber then
+        import AlgFactor UP
+ 
+        factor l  == innerFactor(l, zro(#1, factor), factor, true)
+        factor1 l == innerFactor(l, zro(#1, factor), factor, false)
+ 
+      else
+        factor l  == innerFactor(l, zro(#1, squareFree), squareFree, true)
+        factor1 l == innerFactor(l, zro(#1, squareFree), squareFree, false)
+

@@ -1,0 +1,82 @@
+)abbrev category PFECAT PolynomialFactorizationExplicit
+++ Author: James Davenport
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This is the category of domains that know "enough" about
+++ themselves in order to factor univariate polynomials over themselves.
+++ This will be used in future releases for supporting factorization
+++ over finitely generated coefficient fields, it is not yet available
+++ in the current release of axiom.
+
+PolynomialFactorizationExplicit(): Category == Definition where
+  P ==> SparseUnivariatePolynomial %
+  Definition ==>
+    UniqueFactorizationDomain with
+    -- operations
+       squareFreePolynomial: P -> Factored(P)
+              ++ squareFreePolynomial(p) returns the
+              ++ square-free factorization of the
+              ++ univariate polynomial p.
+       factorPolynomial: P -> Factored(P)
+              ++ factorPolynomial(p) returns the factorization
+              ++ into irreducibles of the univariate polynomial p.
+       factorSquareFreePolynomial: P -> Factored(P)
+              ++ factorSquareFreePolynomial(p) factors the
+              ++ univariate polynomial p into irreducibles
+              ++ where p is known to be square free
+              ++ and primitive with respect to its main variable.
+       gcdPolynomial: (P, P) -> P
+              ++ gcdPolynomial(p,q) returns the gcd of the univariate
+              ++ polynomials p qnd q.
+              -- defaults to Euclidean, but should be implemented via
+              -- modular or p-adic methods.
+       solveLinearPolynomialEquation: (List P, P) -> Union(List P,"failed")
+              ++ solveLinearPolynomialEquation([f1, ..., fn], g)
+              ++ (where the fi are relatively prime to each other)
+              ++ returns a list of ai such that
+              ++ \spad{g/prod fi = sum ai/fi}
+              ++ or returns "failed" if no such list of ai's exists.
+       if % has CharacteristicNonZero then
+         conditionP: Matrix % -> Union(Vector %,"failed")
+              ++ conditionP(m) returns a vector of elements, not all zero,
+              ++ whose \spad{p}-th powers (p is the characteristic of the domain)
+              ++ are a solution of the homogenous linear system represented
+              ++ by m, or "failed" is there is no such vector.
+         charthRoot: % -> Union(%,"failed")
+              ++ charthRoot(r) returns the \spad{p}-th root of r, or "failed"
+              ++ if none exists in the domain.
+              -- this is a special case of conditionP, but often the one we want
+      add
+        gcdPolynomial(f,g) ==
+           zero? f => g
+           zero? g => f
+           cf:=content f
+           if not one? cf then f:=(f exquo cf)::P
+           cg:=content g
+           if not one? cg then g:=(g exquo cg)::P
+           ans:=subResultantGcd(f,g)$P
+           gcd(cf,cg)*(ans exquo content ans)::P
+        if % has CharacteristicNonZero then
+          charthRoot f ==
+             -- to take p'th root of f, solve the system X-fY=0,
+             -- so solution is [x,y]
+             -- with x^p=X and y^p=Y, then (x/y)^p = f
+             zero? f => 0
+             m:Matrix % := matrix [[1,-f]]
+             ans:= conditionP m
+             ans case "failed" => "failed"
+             (ans.1) exquo (ans.2)
+        if % has Field then
+          solveLinearPolynomialEquation(lf,g) ==
+            multiEuclidean(lf,g)$P
+        else solveLinearPolynomialEquation(lf,g) ==
+               LPE ==> LinearPolynomialEquationByFractions %
+               solveLinearPolynomialEquationByFractions(lf,g)$LPE
+

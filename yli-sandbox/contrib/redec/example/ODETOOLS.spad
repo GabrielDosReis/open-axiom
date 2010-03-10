@@ -1,0 +1,65 @@
+)abbrev package ODETOOLS ODETools
+++ Author: Manuel Bronstein
+++ Date Created: 20 March 1991
+++ Date Last Updated: 2 February 1994
+++ Description:
+++   \spad{ODETools} provides tools for the linear ODE solver.
+ODETools(F, LODO): Exports == Implementation where
+  N ==> NonNegativeInteger
+  L ==> List F
+  V ==> Vector F
+  M ==> Matrix F
+
+  F:    Field
+  LODO: LinearOrdinaryDifferentialOperatorCategory F
+
+  Exports ==> with
+    wronskianMatrix: L -> M
+      ++ wronskianMatrix([f1,...,fn]) returns the \spad{n x n} matrix m
+      ++ whose i^th row is \spad{[f1^(i-1),...,fn^(i-1)]}.
+    wronskianMatrix: (L, N) -> M
+      ++ wronskianMatrix([f1,...,fn], q, D) returns the \spad{q x n} matrix m
+      ++ whose i^th row is \spad{[f1^(i-1),...,fn^(i-1)]}.
+    variationOfParameters: (LODO, F, L) -> Union(V, "failed")
+      ++ variationOfParameters(op, g, [f1,...,fm])
+      ++ returns \spad{[u1,...,um]} such that a particular solution of the
+      ++ equation \spad{op y = g} is \spad{f1 int(u1) + ... + fm int(um)}
+      ++ where \spad{[f1,...,fm]} are linearly independent and \spad{op(fi)=0}.
+      ++ The value "failed" is returned if \spad{m < n} and no particular
+      ++ solution is found.
+    particularSolution: (LODO, F, L, F -> F) -> Union(F, "failed")
+      ++ particularSolution(op, g, [f1,...,fm], I) returns a particular
+      ++ solution h of the equation \spad{op y = g} where \spad{[f1,...,fm]}
+      ++ are linearly independent and \spad{op(fi)=0}.
+      ++ The value "failed" is returned if no particular solution is found.
+      ++ Note: the method of variations of parameters is used.
+
+  Implementation ==> add
+    import LinearSystemMatrixPackage(F, V, V, M)
+
+    diff := D()$LODO
+
+    wronskianMatrix l == wronskianMatrix(l, #l)
+
+    wronskianMatrix(l, q) ==
+      v:V := vector l
+      m:M := zero(q, #v)
+      for i in minRowIndex m .. maxRowIndex m repeat
+        setRow_!(m, i, v)
+        v := map_!(diff #1, v)
+      m
+
+    variationOfParameters(op, g, b) ==
+      empty? b => "failed"
+      v:V := new(n := degree op, 0)
+      qsetelt_!(v, maxIndex v, g / leadingCoefficient op)
+      particularSolution(wronskianMatrix(b, n), v)
+
+    particularSolution(op, g, b, integration) ==
+      zero? g => 0
+      (sol := variationOfParameters(op, g, b)) case "failed" => "failed"
+      ans:F := 0
+      for f in b for i in minIndex(s := sol::V) .. repeat
+        ans := ans + integration(qelt(s, i)) * f
+      ans
+

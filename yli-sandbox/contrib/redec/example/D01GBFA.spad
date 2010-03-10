@@ -1,0 +1,64 @@
+)abbrev domain D01GBFA d01gbfAnnaType
+++ Author: Brian Dupee
+++ Date Created: March 1994
+++ Date Last Updated: December 1997
+++ Basic Operations: measure, numericalIntegration
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{d01gbfAnnaType} is a domain of \axiomType{NumericalIntegrationCategory}
+++ for the NAG routine D01GBF, a numerical integration routine which can
+++ handle multi-dimensional quadrature over a finite region.  The 
+++ function \axiomFun{measure} measures the usefulness of the routine D01GBF
+++ for the given problem.  The function \axiomFun{numericalIntegration}
+++ performs the integration by using \axiomType{NagIntegrationPackage}.
+
+d01gbfAnnaType(): NumericalIntegrationCategory == Result add
+  EF2   ==> ExpressionFunctions2
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  SDF   ==> Stream DoubleFloat
+  DF    ==> DoubleFloat
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  NIA   ==> Record(var:Symbol,fn:EDF,range:SOCDF,abserr:DF,relerr:DF)
+  MDNIA ==> Record(fn:EDF,range:List SOCDF,abserr:DF,relerr:DF)
+  INT   ==> Integer
+  BOP   ==> BasicOperator
+  S     ==> Symbol
+  ST    ==> String
+  LST   ==> List String
+  RT    ==> RoutinesTable
+  Rep:=Result
+  import Rep, d01AgentsPackage, NagIntegrationPackage
+
+  measure(R:RT,args:MDNIA) ==
+    ext:Result := empty()$Result
+    (rel := args.relerr) < 0.01 :: DF => 
+      [0.1, "d01gbf: The relative error requirement is too small",ext]
+    segs := args.range
+    vars := variables(args.fn)$EDF
+    for i in 1..# vars repeat
+      nia:NIA := [vars.i,args.fn,segs.i,args.abserr,rel]
+      not rangeIsFinite(nia) case finite => return
+        [0.0,"d01gbf is not a suitable routine for infinite integrals",ext]
+    [getMeasure(R,d01gbf@S)$RT, "Recommended is d01gbf", ext]
+
+  numericalIntegration(args:MDNIA,hints:Result) ==
+    import Integer
+    segs := args.range
+    dim:INT := # segs
+    low:Matrix DF := matrix([[getlo(segs.i) for i in 1..dim]])$(Matrix DF)
+    high:Matrix DF := matrix([[gethi(segs.i) for i in 1..dim]])$(Matrix DF)
+    b:Float := getButtonValue("d01gbf","functionEvaluations")$AttributeButtons
+    a:Float:= exp(1.1513*(1.0/(2.0*(1.0-b))))
+    maxcls:INT := 1500*(dim+1)*(fEvals:INT := wholePart(a))
+    mincls:INT := 300*fEvals
+    c:Float := nthRoot((maxcls::Float)/4.0,dim)$Float
+    lenwrk:INT := 3*dim*(d:INT := wholePart(c))+10*dim
+    wrkstr:Matrix DF := matrix([[0$DF for i in 1..lenwrk]])$(Matrix DF)
+    ArgsFn := map(convert(#1)$DF,args.fn)$EF2(DF,Float)
+    f : Union(fn:FileName,fp:Asp4(FUNCTN)) := [retract(ArgsFn)$Asp4(FUNCTN)]
+    out:Result := d01gbf(dim,low,high,maxcls,args.relerr,lenwrk,mincls,wrkstr,-1,f)
+    changeName(finest@Symbol,result@Symbol,out)
+

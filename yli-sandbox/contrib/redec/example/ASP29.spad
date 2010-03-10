@@ -1,0 +1,68 @@
+)abbrev domain ASP29 Asp29
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Nov 1993
+++ Date Last Updated: 18 March 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp29} produces Fortran for Type 29 ASPs, needed for NAG routine
+++\axiomOpFrom{f02fjf}{f02Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE MONIT(ISTATE,NEXTIT,NEVALS,NEVECS,K,F,D)
+++      DOUBLE PRECISION D(K),F(K)
+++      INTEGER K,NEXTIT,NEVALS,NVECS,ISTATE
+++      CALL F02FJZ(ISTATE,NEXTIT,NEVALS,NEVECS,K,F,D)
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp29(name): Exports == Implementation where
+  name : Symbol
+
+  FST  ==> FortranScalarType
+  FT   ==> FortranType
+  FSTU   ==> Union(fst:FST,void:"void")
+  SYMTAB ==> SymbolTable
+  FC   ==> FortranCode
+  PI   ==> PositiveInteger
+  EXF   ==> Expression Float
+  EXI   ==> Expression Integer
+  VEF  ==> Vector Expression Float
+  VEI  ==> Vector Expression Integer
+  MEI  ==> Matrix Expression Integer
+  MEF  ==> Matrix Expression Float
+  UEXPR ==> Union(I: Expression Integer,F: Expression Float,_
+                  CF: Expression Complex Float)
+  RSFC ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+
+  Exports == FortranProgramCategory  with
+     outputAsFortran:() -> Void
+       ++outputAsFortran() generates the default code for \spadtype{ASP29}.
+
+
+  Implementation == add
+
+    import FST
+    import FT
+    import FC    
+    import SYMTAB
+
+    real : FSTU := ["real"::FST]$FSTU
+    integer : FSTU := ["integer"::FST]$FSTU
+    syms : SYMTAB := empty()
+    declare!(ISTATE,fortranInteger(),syms)
+    declare!(NEXTIT,fortranInteger(),syms)    
+    declare!(NEVALS,fortranInteger(),syms)
+    declare!(NVECS,fortranInteger(),syms)
+    declare!(K,fortranInteger(),syms)
+    kType : FT := construct(real,[K],false)$FT
+    declare!(F,kType,syms)
+    declare!(D,kType,syms)
+    Rep := FortranProgram(name,["void"]$FSTU,
+                          [ISTATE,NEXTIT,NEVALS,NEVECS,K,F,D],syms)
+
+
+    outputAsFortran():Void ==
+      callOne := call("F02FJZ(ISTATE,NEXTIT,NEVALS,NEVECS,K,F,D)")
+      code : List FC := [callOne,returns()]$List(FC)
+      outputAsFortran(coerce(code)@Rep)$Rep
+

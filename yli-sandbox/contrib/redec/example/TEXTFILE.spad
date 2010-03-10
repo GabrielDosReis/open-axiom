@@ -1,0 +1,85 @@
+)abbrev domain TEXTFILE TextFile
+++ Author: Stephen M. Watt
+++ Date Created: 1985
+++ Date Last Updated: June 4, 1991
+++ Basic Operations: writeLine! readLine! readLineIfCan! readIfCan! endOfFile?
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: 
+++ References:
+++ Description: 
+++   This domain provides an implementation of text files.  Text is stored
+++   in these files using the native character set of the computer.
+
+TextFile: Cat == Def where
+    StreamName ==> Union(FileName, "console")
+ 
+    Cat == FileCategory(FileName, String) with
+        writeLine_!: (%, String) -> String
+          ++ writeLine!(f,s) writes the contents of the string s 
+          ++ and finishes the current line in the file f.
+          ++ The value of s is returned.
+
+        writeLine_!: % -> String
+          ++ writeLine!(f) finishes the current line in the file f.
+          ++ An empty string is returned.  The call \spad{writeLine!(f)} is
+          ++ equivalent to \spad{writeLine!(f,"")}.
+
+        readLine_!: % -> String
+          ++ readLine!(f) returns a string of the contents of a line from 
+          ++ the file f.
+
+        readLineIfCan_!: % -> Union(String, "failed")
+          ++ readLineIfCan!(f) returns a string of the contents of a line from
+          ++ file f, if possible.  If f is not readable or if it is 
+          ++ positioned at the end of file, then \spad{"failed"} is returned.
+
+        readIfCan_!: % -> Union(String, "failed")
+          ++ readIfCan!(f) returns a string of the contents of a line from
+          ++ file f, if possible.  If f is not readable or if it is 
+          ++ positioned at the end of file, then \spad{"failed"} is returned.
+
+        endOfFile?: % -> Boolean
+          ++ endOfFile?(f) tests whether the file f is positioned after the
+          ++ end of all text.  If the file is open for output, then
+          ++ this test is always true.
+ 
+    Def == File(String) add
+        FileState ==> SExpression
+ 
+        Rep := Record(fileName:   FileName,    _
+                      fileState:  FileState,   _
+                      fileIOmode: String)
+ 
+        read_! f      == readLine_! f
+        readIfCan_! f == readLineIfCan_! f
+ 
+        readLine_! f ==
+            f.fileIOmode ~= "input"  => error "File not in read state"
+            s: String := read_-line(f.fileState)$Lisp
+            PLACEP(s)$Lisp => error "End of file"
+            s
+        readLineIfCan_! f ==
+            f.fileIOmode ~= "input"  => error "File not in read state"
+            s: String := read_-line(f.fileState)$Lisp
+            PLACEP(s)$Lisp => "failed"
+            s
+        write_!(f, x) ==
+            f.fileIOmode ~= "output" => error "File not in write state"
+            PRINTEXP(x, f.fileState)$Lisp
+            x
+        writeLine_! f ==
+            f.fileIOmode ~= "output" => error "File not in write state"
+            TERPRI(f.fileState)$Lisp
+            ""
+        writeLine_!(f, x) ==
+            f.fileIOmode ~= "output" => error "File not in write state"
+            PRINTEXP(x, f.fileState)$Lisp
+            TERPRI(f.fileState)$Lisp
+            x
+        endOfFile? f ==
+          f.fileIOmode = "output" => false
+          (EOFP(f.fileState)$Lisp pretend Boolean) => true
+          false
+

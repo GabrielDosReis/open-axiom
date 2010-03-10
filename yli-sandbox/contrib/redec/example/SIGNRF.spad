@@ -1,0 +1,87 @@
+)abbrev package SIGNRF RationalFunctionSign
+--%% RationalFunctionSign
+++ Author: Manuel Bronstein
+++ Date Created: 23 August 1989
+++ Date Last Updated: 26 November 1991
+++ Description:
+++ Find the sign of a rational function around a point or infinity.
+RationalFunctionSign(R:GcdDomain): Exports == Implementation where
+  SE  ==> Symbol
+  P   ==> Polynomial R
+  RF  ==> Fraction P
+  ORF ==> OrderedCompletion RF
+  UP  ==> SparseUnivariatePolynomial RF
+  U   ==> Union(Integer, "failed")
+  SGN ==> ToolsForSign(R)
+ 
+  Exports ==> with
+    sign: RF -> U
+      ++ sign f returns the sign of f if it is constant everywhere.
+    sign: (RF, SE, ORF) -> U
+      ++ sign(f, x, a) returns the sign of f as x approaches \spad{a},
+      ++ from both sides if \spad{a} is finite.
+    sign: (RF, SE, RF, String) -> U
+      ++ sign(f, x, a, s) returns the sign of f as x nears \spad{a} from
+      ++ the left (below) if s is the string \spad{"left"},
+      ++ or from the right (above) if s is the string \spad{"right"}.
+ 
+  Implementation ==> add
+    import SGN
+    import InnerPolySign(RF, UP)
+    import PolynomialCategoryQuotientFunctions(IndexedExponents SE,
+                                                      SE, R, P, RF)
+ 
+    psign     : P -> U
+    sqfrSign  : P -> U
+    termSign  : P -> U
+    listSign  : (List P, Integer) -> U
+    finiteSign: (Fraction UP, RF) -> U
+ 
+    sign f ==
+      (un := psign numer f) case "failed" => "failed"
+      (ud := psign denom f) case "failed" => "failed"
+      (un::Integer) * (ud::Integer)
+ 
+    finiteSign(g, a) ==
+      (ud := signAround(denom g, a, sign$%)) case "failed" => "failed"
+      (un := signAround(numer g, a, sign$%)) case "failed" => "failed"
+      (un::Integer) * (ud::Integer)
+ 
+    sign(f, x, a) ==
+      g := univariate(f, x)
+      zero?(n := whatInfinity a) => finiteSign(g, retract a)
+      (ud := signAround(denom g, n, sign$%)) case "failed" => "failed"
+      (un := signAround(numer g, n, sign$%)) case "failed" => "failed"
+      (un::Integer) * (ud::Integer)
+ 
+    sign(f, x, a, st) ==
+      (ud := signAround(denom(g := univariate(f, x)), a,
+                    d := direction st, sign$%)) case "failed" => "failed"
+      (un := signAround(numer g, a, d, sign$%)) case "failed" => "failed"
+      (un::Integer) * (ud::Integer)
+ 
+    psign p ==
+      (r := retractIfCan(p)@Union(R, "failed")) case R => sign(r::R)$SGN
+      (u := sign(retract(unit(s := squareFree p))@R)$SGN) case "failed" =>
+        "failed"
+      ans := u::Integer
+      for term in factors s | odd?(term.exponent) repeat
+        (u := sqfrSign(term.factor)) case "failed" => return "failed"
+        ans := ans * (u::Integer)
+      ans
+ 
+    sqfrSign p ==
+      (u := termSign first(l := monomials p)) case "failed" => "failed"
+      listSign(rest l, u::Integer)
+ 
+    listSign(l, s) ==
+      for term in l repeat
+        (u := termSign term) case "failed" => return "failed"
+        u::Integer ~= s => return "failed"
+      s
+ 
+    termSign term ==
+      for var in variables term repeat
+        odd? degree(term, var) => return "failed"
+      sign(leadingCoefficient term)$SGN
+

@@ -1,0 +1,57 @@
+)abbrev package IMATQF InnerMatrixQuotientFieldFunctions
+++ Author: Clifton J. Williamson
+++ Date Created: 22 November 1989
+++ Date Last Updated: 22 November 1989
+++ Basic Operations:
+++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R), RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Also See:
+++ AMS Classifications:
+++ Keywords: matrix, inverse, integral domain
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{InnerMatrixQuotientFieldFunctions} provides functions on matrices
+++   over an integral domain which involve the quotient field of that integral
+++   domain.  The functions rowEchelon and inverse return matrices with
+++   entries in the quotient field.
+InnerMatrixQuotientFieldFunctions(R,Row,Col,M,QF,Row2,Col2,M2):_
+         Exports == Implementation where
+  R    : IntegralDomain
+  Row  : FiniteLinearAggregate R
+  Col  : FiniteLinearAggregate R
+  M    : MatrixCategory(R,Row,Col)
+  QF   : QuotientFieldCategory R
+  Row2 : FiniteLinearAggregate QF
+  Col2 : FiniteLinearAggregate QF
+  M2   : MatrixCategory(QF,Row2,Col2)
+  IMATLIN ==> InnerMatrixLinearAlgebraFunctions(QF,Row2,Col2,M2)
+  MATCAT2 ==> MatrixCategoryFunctions2(R,Row,Col,M,QF,Row2,Col2,M2)
+  CDEN    ==> InnerCommonDenominator(R,QF,Col,Col2)
+
+  Exports ==> with
+      rowEchelon: M -> M2
+        ++ \spad{rowEchelon(m)} returns the row echelon form of the matrix m.
+        ++ the result will have entries in the quotient field.
+      inverse: M -> Union(M2,"failed")
+        ++ \spad{inverse(m)} returns the inverse of the matrix m.
+        ++ If the matrix is not invertible, "failed" is returned.
+        ++ Error: if the matrix is not square.
+        ++ Note: the result will have entries in the quotient field.
+      if Col2 has shallowlyMutable then
+        nullSpace : M -> List Col
+          ++ \spad{nullSpace(m)} returns a basis for the null space of the
+          ++ matrix m.
+  Implementation ==> add
+
+    qfMat: M -> M2
+    qfMat m == map(#1 :: QF,m)$MATCAT2
+
+    rowEchelon m == rowEchelon(qfMat m)$IMATLIN
+    inverse m ==
+      (inv := inverse(qfMat m)$IMATLIN) case "failed" => "failed"
+      inv :: M2
+
+    if Col2 has shallowlyMutable then
+      nullSpace m ==
+        [clearDenominator(v)$CDEN for v in nullSpace(qfMat m)$IMATLIN]
+

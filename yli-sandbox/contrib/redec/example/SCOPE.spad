@@ -1,0 +1,52 @@
+import CoercibleTo OutputForm
+import Binding
+import List Contour
+)abbrev domain SCOPE Scope
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Scope' is a sequence of contours.
+Scope(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    empty: () -> %
+      ++ empty() returns an empty scope.
+    contours: % -> List Contour     
+      ++ contours(s) returns the list of contours in scope s.
+    findBinding: (Symbol,%) -> Union(Binding, "failed")
+      ++ findBinding(n,s) returns the first binding of `n' in `s'; 
+      ++ otherwise `failed'.
+    pushNewContour: (Binding,%) -> %
+      ++ pushNewContour(b,s) pushs a new contour with sole binding `b'.
+    currentScope: () -> %
+      ++ currentScope() returns the scope currently in effect
+    currentCategoryFrame: () -> %
+      ++ currentCategoryFrame() returns the category frame currently
+      ++ in effect.
+
+  Private ==> add
+    import Contour
+    Rep == List Contour
+    empty() ==
+      per NIL$Lisp
+
+    contours s ==
+      rep s
+
+    findBinding(n,s) ==
+      for c in contours s repeat
+        b := findBinding(n,c)$Contour
+        not b case "failed" => return b
+      "failed"
+
+    pushNewContour(b,s) ==
+      c := LIST(b)$Lisp
+      CONS(c,s)$Lisp @ %
+
+    currentScope() ==
+      CAR(_$e$Lisp)$Lisp @ %
+
+    currentCategoryFrame() ==
+      CAR(_$CategoryFrame$Lisp)$Lisp @ %
+
+    coerce s ==
+      (contours s)::OutputForm

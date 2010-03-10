@@ -1,0 +1,89 @@
+)abbrev package ODEINT ODEIntegration
+++ Author: Manuel Bronstein
+++ Date Created: 4 November 1991
+++ Date Last Updated: 2 February 1994
+++ Description:
+++ \spadtype{ODEIntegration} provides an interface to the integrator.
+++ This package is intended for use
+++ by the differential equations solver but not at top-level.
+ODEIntegration(R, F): Exports == Implementation where
+  R: Join(OrderedSet, EuclideanDomain, RetractableTo Integer,
+          LinearlyExplicitRingOver Integer, CharacteristicZero)
+  F: Join(AlgebraicallyClosedFunctionSpace R, TranscendentalFunctionCategory,
+                                              PrimitiveFunctionCategory)
+
+  Q   ==> Fraction Integer
+  UQ  ==> Union(Q, "failed")
+  SY  ==> Symbol
+  K   ==> Kernel F
+  P   ==> SparseMultivariatePolynomial(R, K)
+  REC ==> Record(coef:Q, logand:F)
+
+  Exports ==> with
+    int   : (F, SY) -> F
+      ++ int(f, x) returns the integral of f with respect to x.
+    expint: (F, SY) -> F
+      ++ expint(f, x) returns e^{the integral of f with respect to x}.
+    diff  : SY -> (F -> F)
+      ++ diff(x) returns the derivation with respect to x.
+
+  Implementation ==> add
+    import FunctionSpaceIntegration(R, F)
+    import ElementaryFunctionStructurePackage(R, F)
+
+    isQ   : List F -> UQ
+    isQlog: F -> Union(REC, "failed")
+    mkprod: List REC -> F
+
+    diff x == differentiate(#1, x)
+
+-- This is the integration function to be used for quadratures
+    int(f, x) ==
+      (u := integrate(f, x)) case F => u::F
+      first(u::List(F))
+
+-- mkprod([q1, f1],...,[qn,fn]) returns */(fi^qi) but groups the
+-- qi having the same denominator together
+    mkprod l ==
+      empty? l => 1
+      rec := first l
+      d := denom(rec.coef)
+      ll := (select(denom(#1.coef) = d, l))@List(Record(coef:Q, logand:F))
+      nthRoot(*/[r.logand ** numer(r.coef) for r in ll], d) *
+        mkprod setDifference(l, ll)
+
+-- computes exp(int(f,x)) in a non-naive way
+    expint(f, x) ==
+      a := int(f, x)
+      (u := validExponential(tower a, a, x)) case F => u::F
+      da := denom a
+      l :=
+        (v := isPlus(na := numer a)) case List(P) => v::List(P)
+        [na]
+      exponent:P := 0
+      lrec:List(REC) := empty()
+      for term in l repeat
+        if (w := isQlog(term / da)) case REC then
+          lrec := concat(w::REC, lrec)
+        else
+          exponent := exponent + term
+      mkprod(lrec) * exp(exponent / da)
+
+-- checks if all the elements of l are rational numbers, returns their product
+    isQ l ==
+      prod:Q := 1
+      for x in l repeat
+        (u := retractIfCan(x)@UQ) case "failed" => return "failed"
+        prod := prod * u::Q
+      prod
+
+-- checks if a non-sum expr is of the form c * log(g) for a rational number c
+    isQlog f ==
+      is?(f, "log"::SY) => [1, first argument(retract(f)@K)]
+      (v := isTimes f) case List(F) and (#(l := v::List(F)) <= 3) =>
+          l := reverse_! sort_! l
+          is?(first l, "log"::SY) and ((u := isQ rest l) case Q) =>
+              [u::Q, first argument(retract(first(l))@K)]
+          "failed"
+      "failed"
+

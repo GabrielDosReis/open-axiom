@@ -1,0 +1,94 @@
+)abbrev category UPSCAT UnivariatePowerSeriesCategory
+++ Author: Clifton J. Williamson
+++ Date Created: 21 December 1989
+++ Date Last Updated: 20 September 1993
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{UnivariatePowerSeriesCategory} is the most general
+++   univariate power series category with exponents in an ordered
+++   abelian monoid.
+++   Note: this category exports a substitution function if it is
+++   possible to multiply exponents.
+++   Note: this category exports a derivative operation if it is possible
+++   to multiply coefficients by exponents.
+UnivariatePowerSeriesCategory(Coef,Expon): Category == Definition where
+  Coef   : Ring
+  Expon  : OrderedAbelianMonoid
+  Term ==> Record(k:Expon,c:Coef)
+
+  Definition ==> PowerSeriesCategory(Coef,Expon,SingletonAsOrderedSet) with
+
+    terms: % -> Stream Term
+      ++ \spad{terms(f(x))} returns a stream of non-zero terms, where a
+      ++ a term is an exponent-coefficient pair.  The terms in the stream
+      ++ are ordered by increasing order of exponents.
+    --series: Stream Term -> %
+      --++ \spad{series(st)} creates a series from a stream of non-zero terms,
+      --++ where a term is an exponent-coefficient pair.  The terms in the
+      --++ stream should be ordered by increasing order of exponents.
+    elt: (%,Expon) -> Coef
+      ++ \spad{elt(f(x),r)} returns the coefficient of the term of degree r in
+      ++ \spad{f(x)}.  This is the same as the function \spadfun{coefficient}.
+    variable: % -> Symbol
+      ++ \spad{variable(f)} returns the (unique) power series variable of
+      ++ the power series f.
+    center: % -> Coef
+      ++ \spad{center(f)} returns the point about which the series f is
+      ++ expanded.
+    multiplyExponents: (%,PositiveInteger) -> %
+      ++ \spad{multiplyExponents(f,n)} multiplies all exponents of the power
+      ++ series f by the positive integer n.
+    order: % -> Expon
+      ++ \spad{order(f)} is the degree of the lowest order non-zero term in f.
+      ++ This will result in an infinite loop if f has no non-zero terms.
+    order: (%,Expon) -> Expon
+      ++ \spad{order(f,n) = min(m,n)}, where m is the degree of the
+      ++ lowest order non-zero term in f.
+    truncate: (%,Expon) -> %
+      ++ \spad{truncate(f,k)} returns a (finite) power series consisting of
+      ++ the sum of all terms of f of degree \spad{<= k}.
+    truncate: (%,Expon,Expon) -> %
+      ++ \spad{truncate(f,k1,k2)} returns a (finite) power
+      ++ series consisting of
+      ++ the sum of all terms of f of degree d with \spad{k1 <= d <= k2}.
+    if Coef has coerce: Symbol -> Coef then
+      if Coef has "**":(Coef,Expon) -> Coef then
+        approximate: (%,Expon) -> Coef
+          ++ \spad{approximate(f)} returns a truncated power series with the
+          ++ series variable viewed as an element of the coefficient domain.
+    extend: (%,Expon) -> %
+      ++ \spad{extend(f,n)} causes all terms of f of degree <= n to be computed.
+    if Expon has SemiGroup then Eltable(%,%)
+    if Coef has "*": (Expon,Coef) -> Coef then
+      DifferentialRing
+      --!! DifferentialExtension Coef
+      if Coef has PartialDifferentialRing Symbol then
+        PartialDifferentialRing Symbol
+    if Coef has "**": (Coef,Expon) -> Coef then
+      eval: (%,Coef) -> Stream Coef
+        ++ \spad{eval(f,a)} evaluates a power series at a value in the
+        ++ ground ring by returning a stream of partial sums.
+
+   add
+    degree f == order f
+    leadingCoefficient f == coefficient(f,order f)
+    leadingMonomial f ==
+      ord := order f
+      monomial(coefficient(f,ord),ord)
+    monomial(f:%,listVar:List SingletonAsOrderedSet,listExpon:List Expon) ==
+      empty? listVar or not empty? rest listVar =>
+        error "monomial: variable list must have exactly one entry"
+      empty? listExpon or not empty? rest listExpon =>
+        error "monomial: exponent list must have exactly one entry"
+      f * monomial(1,first listExpon)
+    monomial(f:%,v:SingletonAsOrderedSet,n:Expon) ==
+      f * monomial(1,n)
+    reductum f == f - leadingMonomial f
+    variables f == list create()
+

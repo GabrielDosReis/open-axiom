@@ -1,0 +1,26 @@
+)abbrev package QFCAT2 QuotientFieldCategoryFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package extends a function between integral domains
+++ to a mapping between their quotient fields.
+QuotientFieldCategoryFunctions2(A, B, R, S): Exports == Impl where
+  A, B: IntegralDomain
+  R   : QuotientFieldCategory(A)
+  S   : QuotientFieldCategory(B)
+
+  Exports ==> with
+    map: (A -> B, R) -> S
+      ++ map(func,frac) applies the function func to the numerator
+      ++ and denominator of frac.
+
+  Impl ==> add
+    map(f, r) == f(numer r) / f(denom r)
+

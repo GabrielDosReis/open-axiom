@@ -1,0 +1,48 @@
+)abbrev package RIDIST RandomIntegerDistributions
+++ Description:
+++ This package exports integer distributions
+RandomIntegerDistributions(): with
+        uniform:   Segment Integer           -> (() -> Integer)
+                ++ uniform(s) \undocumented
+        binomial:  (Integer, RationalNumber) -> (() -> Integer)
+                ++ binomial(n,f) \undocumented
+        poisson:   RationalNumber          -> (() -> Integer)
+                ++ poisson(f) \undocumented
+        geometric: RationalNumber          -> (() -> Integer)
+                ++ geometric(f) \undocumented
+
+        ridHack1:  (Integer,Integer,Integer,Integer) -> Integer
+                ++ ridHack1(i,j,k,l) \undocumented
+    == add
+        import RandomNumberSource()
+        import IntegerBits()
+
+        -- Compute uniform(a..b) as
+        --
+        --     l + U0 + w*U1 + w**2*U2 +...+ w**(n-1)*U-1 + w**n*M
+        --
+        -- where
+        --     l = min(a,b)
+        --     m = abs(b-a) + 1
+        --     w**n < m < w**(n+1)
+        --     U0,...,Un-1  are uniform on  0..w-1
+        --     M            is  uniform on  0..(m quo w**n)-1
+
+        uniform aTob ==
+            a := lo aTob;  b := hi aTob
+            l := min(a,b); m := abs(a-b) + 1
+
+            w := 2**(bitLength size() quo 2)::NonNegativeInteger
+
+            n  := 0
+            mq := m  -- m quo w**n
+            while (mqnext := mq quo w) > 0 repeat
+                n  := n + 1
+                mq := mqnext
+            ridHack1(mq, n, w, l)
+
+        ridHack1(mq, n, w, l) ==
+            r := randnum mq
+            for i in 1..n repeat r := r*w + randnum w
+            r + l
+

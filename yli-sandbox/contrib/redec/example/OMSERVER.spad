@@ -1,0 +1,63 @@
+)abbrev package OMSERVER OpenMathServerPackage
+++ Author: Vilya Harvey
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: \spadtype{OpenMathServerPackage} provides the necessary
+++ operations to run AXIOM as an OpenMath server, reading/writing objects
+++ to/from a port.  Please note the facilities available here are very basic.
+++ The idea is that a user calls e.g. \axiom{Omserve(4000,60)} and then
+++ another process sends OpenMath objects to port 4000 and reads the result.
+
+OpenMathServerPackage(): with
+  OMreceive : OpenMathConnection -> Any
+  ++ OMreceive(c) reads an OpenMath object from connection \axiom{c} and
+  ++ returns the appropriate AXIOM object.
+  OMsend    : (OpenMathConnection, Any) -> Void
+  ++ OMsend(c,u) attempts to output \axiom{u} on \aciom{c} in OpenMath.
+  OMserve   : (SingleInteger, SingleInteger) -> Void
+  ++ OMserve(portnum,timeout) puts AXIOM into server mode on port number
+  ++ \axiom{portnum}.  The parameter \axiom{timeout} specifies the timeout
+  ++ period for the connection.
+ == add
+  import OpenMathDevice
+  import OpenMathConnection
+  import OpenMathPackage
+  import OpenMath
+
+
+
+  OMreceive(conn: OpenMathConnection): Any ==
+    dev: OpenMathDevice := OMconnInDevice(conn)
+    OMsetEncoding(dev, OMencodingUnknown);
+    OMread(dev)
+
+  OMsend(conn: OpenMathConnection, value: Any): Void ==
+    dev: OpenMathDevice := OMconnOutDevice(conn)
+    OMsetEncoding(dev, OMencodingXML);
+    --retractable?(value)$AnyFunctions1(Expression Integer) =>
+    --  OMwrite(dev, retract(value)$AnyFunctions1(Expression Integer), true)
+    retractable?(value)$AnyFunctions1(Integer) =>
+      OMwrite(dev, retract(value)$AnyFunctions1(Integer), true)
+    retractable?(value)$AnyFunctions1(Float) =>
+      OMwrite(dev, retract(value)$AnyFunctions1(Float), true)
+    retractable?(value)$AnyFunctions1(SingleInteger) =>
+      OMwrite(dev, retract(value)$AnyFunctions1(SingleInteger), true)
+    retractable?(value)$AnyFunctions1(DoubleFloat) =>
+      OMwrite(dev, retract(value)$AnyFunctions1(DoubleFloat), true)
+    retractable?(value)$AnyFunctions1(String) =>
+      OMwrite(dev, retract(value)$AnyFunctions1(String), true)
+
+  OMserve(portNum: SingleInteger, timeout: SingleInteger): Void ==
+    conn: OpenMathConnection := OMmakeConn(timeout)
+    OMbindTCP(conn, portNum)
+    val: Any
+    while true repeat
+      val := OMreceive(conn)
+      OMsend(conn, val)
+

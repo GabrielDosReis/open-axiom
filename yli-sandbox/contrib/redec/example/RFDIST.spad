@@ -1,0 +1,91 @@
+)abbrev package RFDIST RandomFloatDistributions
+++ Description:
+++ This package exports random floating-point distributions
+RationalNumber==> Fraction Integer
+RandomFloatDistributions(): Cat == Body where
+    NNI ==> NonNegativeInteger
+
+    Cat ==> with
+        uniform01:   ()  -> Float
+                ++ uniform01() \undocumented
+        normal01:    ()  -> Float
+                ++ normal01() \undocumented
+        exponential1:()  -> Float
+                ++ exponential1() \undocumented
+        chiSquare1:  NNI -> Float
+                ++ chiSquare1(n) \undocumented
+
+        uniform:     (Float, Float) -> (() -> Float)
+                ++ uniform(f,g) \undocumented
+        normal:      (Float, Float) -> (() -> Float)
+                ++ normal(f,g) \undocumented
+        exponential: (Float)        -> (() -> Float)
+                ++ exponential(f) \undocumented
+        chiSquare:   (NNI)          -> (() -> Float)
+                ++ chiSquare(n) \undocumented
+        Beta:        (NNI, NNI)     -> (() -> Float)
+                ++ Beta(n,m) \undocumented
+        F:           (NNI, NNI)     -> (() -> Float)
+                ++ F(n,m) \undocumented
+        t:           (NNI)          -> (() -> Float)
+                ++ t(n) \undocumented
+
+
+    Body ==> add
+        import RandomNumberSource()
+--      FloatPackage0()
+
+        -- random()  generates numbers in 0..rnmax
+        rnmax := (size()$RandomNumberSource() - 1)::Float
+
+        uniform01() ==
+            randnum()::Float/rnmax
+        uniform(a,b) ==
+            a + uniform01()*(b-a)
+
+        exponential1() ==
+            u: Float := 0
+            -- This test should really be  u < m where m is
+            -- the minumum acceptible argument to log.
+            while u = 0 repeat u := uniform01()
+            - log u
+        exponential(mean) ==
+            mean*exponential1()
+
+        -- This method is correct but slow.
+        normal01() ==
+            s := 2::Float
+            v1: Float
+            while s >= 1 repeat
+                v1 := 2 * uniform01() - 1
+                v2 := 2 * uniform01() - 1
+                s  := v1**2 + v2**2
+            v1 * sqrt(-2 * log s/s)
+        normal(mean, stdev) ==
+            mean + stdev*normal01()
+
+        chiSquare1 dgfree ==
+            x: Float := 0
+            for i in 1..dgfree quo 2 repeat
+                x := x + 2*exponential1()
+            if odd? dgfree then
+                x := x + normal01()**2
+            x
+        chiSquare dgfree ==
+            chiSquare1 dgfree
+
+        Beta(dgfree1, dgfree2) ==
+            y1 := chiSquare1 dgfree1
+            y2 := chiSquare1 dgfree2
+            y1/(y1 + y2)
+
+        F(dgfree1, dgfree2) ==
+            y1 := chiSquare1 dgfree1
+            y2 := chiSquare1 dgfree2
+            (dgfree2 * y1)/(dgfree1 * y2)
+
+        t dgfree ==
+            n := normal01()
+            d := chiSquare1(dgfree) / (dgfree::Float)
+            n / sqrt d
+

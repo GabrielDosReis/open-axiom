@@ -1,0 +1,205 @@
+)abbrev package PNTHEORY PolynomialNumberTheoryFunctions
+++ Author: Michael Monagan, Clifton J. Williamson
+++ Date Created: June 1987
+++ Date Last Updated: 10 November 1996 (Claude Quitte)
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: polynomial, number theory
+++ Examples:
+++ References: Knuth, The Art of Computer Programming Vol.2
+++ Description:
+++ This package provides various polynomial number theoretic functions
+++ over the integers.
+PolynomialNumberTheoryFunctions(): Exports == Implementation where
+ I ==> Integer
+ RN ==> Fraction I
+ SUP ==> SparseUnivariatePolynomial
+ NNI ==> NonNegativeInteger
+
+ Exports ==> with
+  bernoulli : I -> SUP RN
+    ++ bernoulli(n) returns the nth Bernoulli polynomial \spad{B[n](x)}.
+    ++ Note: Bernoulli polynomials denoted \spad{B(n,x)} computed by solving the
+    ++ differential equation  \spad{differentiate(B(n,x),x) = n B(n-1,x)} where
+    ++ \spad{B(0,x) = 1} and initial condition comes from \spad{B(n) = B(n,0)}.
+  chebyshevT: I -> SUP I
+    ++ chebyshevT(n) returns the nth Chebyshev polynomial \spad{T[n](x)}.
+    ++ Note: Chebyshev polynomials of the first kind, denoted \spad{T[n](x)},
+    ++ computed from the two term recurrence.  The generating function
+    ++ \spad{(1-t*x)/(1-2*t*x+t**2) = sum(T[n](x)*t**n, n=0..infinity)}.
+  chebyshevU: I -> SUP I
+    ++ chebyshevU(n) returns the nth Chebyshev polynomial \spad{U[n](x)}.
+    ++ Note: Chebyshev polynomials of the second kind, denoted \spad{U[n](x)},
+    ++ computed from the two term recurrence.  The generating function
+    ++ \spad{1/(1-2*t*x+t**2) = sum(T[n](x)*t**n, n=0..infinity)}.
+  cyclotomic: I -> SUP I
+    ++ cyclotomic(n) returns the nth cyclotomic polynomial \spad{phi[n](x)}.
+    ++ Note: \spad{phi[n](x)} is the factor of \spad{x**n - 1} whose roots
+    ++ are the primitive nth roots of unity.
+  euler     : I -> SUP RN
+    ++ euler(n) returns the nth Euler polynomial \spad{E[n](x)}.
+    ++ Note: Euler polynomials denoted \spad{E(n,x)} computed by solving the
+    ++ differential equation  \spad{differentiate(E(n,x),x) = n E(n-1,x)} where
+    ++ \spad{E(0,x) = 1} and initial condition comes from \spad{E(n) = 2**n E(n,1/2)}.
+  fixedDivisor: SUP I -> I
+    ++ fixedDivisor(a) for \spad{a(x)} in \spad{Z[x]} is the largest integer
+    ++ f such that f divides \spad{a(x=k)} for all integers k.
+    ++ Note: fixed divisor of \spad{a} is
+    ++ \spad{reduce(gcd,[a(x=k) for k in 0..degree(a)])}.
+  hermite   : I -> SUP I
+    ++ hermite(n) returns the nth Hermite polynomial \spad{H[n](x)}.
+    ++ Note: Hermite polynomials, denoted \spad{H[n](x)}, are computed from
+    ++ the two term recurrence.  The generating function is:
+    ++ \spad{exp(2*t*x-t**2) = sum(H[n](x)*t**n/n!, n=0..infinity)}.
+  laguerre  : I -> SUP I
+    ++ laguerre(n) returns the nth Laguerre polynomial \spad{L[n](x)}.
+    ++ Note: Laguerre polynomials, denoted \spad{L[n](x)}, are computed from
+    ++ the two term recurrence.  The generating function is:
+    ++ \spad{exp(x*t/(t-1))/(1-t) = sum(L[n](x)*t**n/n!, n=0..infinity)}.
+  legendre  : I -> SUP RN
+    ++ legendre(n) returns the nth Legendre polynomial \spad{P[n](x)}.
+    ++ Note: Legendre polynomials, denoted \spad{P[n](x)}, are computed from
+    ++ the two term recurrence.  The generating function is:
+    ++ \spad{1/sqrt(1-2*t*x+t**2) = sum(P[n](x)*t**n, n=0..infinity)}.
+ Implementation ==> add
+  import IntegerPrimesPackage(I)
+
+  x := monomial(1$I,1)$SUP(I)
+  y := monomial(1$RN,1)$SUP(RN)
+
+  -- For functions computed via a fixed term recurrence we record
+  -- previous values so that the next value can be computed directly
+
+  E : Record(En:I, Ev:SUP(RN)) := [0,1]
+  B : Record( Bn:I, Bv:SUP(RN) ) := [0,1]
+  H : Record( Hn:I, H1:SUP(I), H2:SUP(I) ) := [0,1,x]
+  L : Record( Ln:I, L1:SUP(I), L2:SUP(I) ) := [0,1,x]
+  P : Record( Pn:I, P1:SUP(RN), P2:SUP(RN) ) := [0,1,y]
+  CT : Record( Tn:I, T1:SUP(I), T2:SUP(I) ) := [0,1,x]
+  U : Record( Un:I, U1:SUP(I), U2:SUP(I) ) := [0,1,0]
+
+  MonicQuotient: (SUP(I),SUP(I)) -> SUP(I)
+  MonicQuotient (a,b) ==
+    leadingCoefficient(b) ~= 1 => error "divisor must be monic"
+    b = 1 => a
+    da := degree a
+    db := degree b            -- assertion: degree b > 0
+    q:SUP(I) := 0
+    while da >= db repeat
+      t := monomial(leadingCoefficient a, (da-db)::NNI)
+      a := a - b * t
+      q := q + t
+      da := degree a
+    q
+
+  cyclotomic n ==
+    --++ cyclotomic polynomial denoted phi[n](x)
+    p:I; q:I; r:I; s:I; m:NNI; c:SUP(I); t:SUP(I)
+    n < 0 => error "cyclotomic not defined for negative integers"
+    n = 0 => x
+    k := n; s := p := 1
+    c := x - 1
+    while k > 1 repeat
+      p := nextPrime p
+      (q,r) := divide(k, p)
+      if r = 0 then
+        while r = 0 repeat (k := q; (q,r) := divide(k,p))
+        t := multiplyExponents(c,p::NNI)
+        c := MonicQuotient(t,c)
+        s := s * p
+    m := (n quo s) :: NNI
+    multiplyExponents(c,m)
+
+  euler n ==
+    p : SUP(RN); t : SUP(RN); c : RN; s : I
+    n < 0 => error "euler not defined for negative integers"
+    if n < E.En then (s,p) := (0$I,1$SUP(RN)) else (s,p) := E
+    -- (s,p) := if n < E.En then (0,1) else E
+    for i in s+1 .. n repeat
+      t := (i::RN) * integrate p
+      c := euler(i)$IntegerNumberTheoryFunctions / 2**(i::NNI) - t(1/2)
+      p := t + c::SUP(RN)
+    E.En := n
+    E.Ev := p
+    p
+
+  bernoulli n ==
+    p : SUP RN; t : SUP RN; c : RN; s : I
+    n < 0 => error "bernoulli not defined for negative integers"
+    if n < B.Bn then (s,p) := (0$I,1$SUP(RN)) else (s,p) := B
+    -- (s,p) := if n < B.Bn then (0,1) else B
+    for i in s+1 .. n repeat
+      t := (i::RN) * integrate p
+      c := bernoulli(i)$IntegerNumberTheoryFunctions
+      p := t + c::SUP(RN)
+    B.Bn := n
+    B.Bv := p
+    p
+
+  fixedDivisor a ==
+    g:I; d:NNI; SUP(I)
+    d := degree a
+    g := coefficient(a, minimumDegree a)
+    for k in 1..d while g > 1 repeat g := gcd(g,a k)
+    g
+
+  hermite n ==
+    s : I; p : SUP(I); q : SUP(I)
+    n < 0 => error "hermite not defined for negative integers"
+    -- (s,p,q) := if n < H.Hn then (0,1,x) else H
+    if n < H.Hn then (s := 0; p := 1; q := x) else (s,p,q) := H
+    for k in s+1 .. n repeat (p,q) := (2*x*p-2*(k-1)*q,p)
+    H.Hn := n
+    H.H1 := p
+    H.H2 := q
+    p
+
+  legendre n ==
+    s:I; t:I; p:SUP(RN); q:SUP(RN)
+    n < 0 => error "legendre not defined for negative integers"
+    -- (s,p,q) := if n < P.Pn then (0,1,y) else P
+    if n < P.Pn then (s := 0; p := 1; q := y) else (s,p,q) := P
+    for k in s+1 .. n repeat
+      t := k-1
+      (p,q) := ((k+t)$I/k*y*p - t/k*q,p)
+    P.Pn := n
+    P.P1 := p
+    P.P2 := q
+    p
+
+  laguerre n ==
+    k:I; s:I; t:I; p:SUP(I); q:SUP(I)
+    n < 0 => error "laguerre not defined for negative integers"
+    -- (s,p,q) := if n < L.Ln then (0,1,x) else L
+    if n < L.Ln then (s := 0; p := 1; q := x) else (s,p,q) := L
+    for k in s+1 .. n repeat
+      t := k-1
+      (p,q) := ((((k+t)$I)::SUP(I)-x)*p-t**2*q,p)
+    L.Ln := n
+    L.L1 := p
+    L.L2 := q
+    p
+
+  chebyshevT n ==
+    s : I; p : SUP(I); q : SUP(I)
+    n < 0 => error "chebyshevT not defined for negative integers"
+    -- (s,p,q) := if n < CT.Tn then (0,1,x) else CT
+    if n < CT.Tn then (s := 0; p := 1; q := x) else (s,p,q) := CT
+    for k in s+1 .. n repeat (p,q) := ((2*x*p - q),p)
+    CT.Tn := n
+    CT.T1 := p
+    CT.T2 := q
+    p
+
+  chebyshevU n ==
+    s : I; p : SUP(I); q : SUP(I)
+    n < 0 => error "chebyshevU not defined for negative integers"
+    if n < U.Un then (s := 0; p := 1; q := 0) else (s,p,q) := U
+    for k in s+1 .. n repeat (p,q) := ((2*x*p - q),p)
+    U.Un := n
+    U.U1 := p
+    U.U2 := q
+    p
+

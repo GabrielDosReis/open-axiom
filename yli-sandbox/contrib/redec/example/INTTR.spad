@@ -1,0 +1,448 @@
+)abbrev package INTTR TranscendentalIntegration
+++ Risch algorithm, transcendental case
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 24 October 1995
+++ Description:
+++   This package provides functions for the transcendental
+++   case of the Risch algorithm.
+-- Internally used by the integrator
+TranscendentalIntegration(F, UP): Exports == Implementation where
+  F  : Field
+  UP : UnivariatePolynomialCategory F
+
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  Q   ==> Fraction Z
+  GP  ==> LaurentPolynomial(F, UP)
+  UP2 ==> SparseUnivariatePolynomial UP
+  RF  ==> Fraction UP
+  UPR ==> SparseUnivariatePolynomial RF
+  IR  ==> IntegrationResult RF
+  LOG ==> Record(scalar:Q, coeff:UPR, logand:UPR)
+  LLG ==> List Record(coeff:RF, logand:RF)
+  NE  ==> Record(integrand:RF, intvar:RF)
+  NL  ==> Record(mainpart:RF, limitedlogs:LLG)
+  UPF ==> Record(answer:UP, a0:F)
+  RFF ==> Record(answer:RF, a0:F)
+  IRF ==> Record(answer:IR, a0:F)
+  NLF ==> Record(answer:NL, a0:F)
+  GPF ==> Record(answer:GP, a0:F)
+  UPUP==> Record(elem:UP, notelem:UP)
+  GPGP==> Record(elem:GP, notelem:GP)
+  RFRF==> Record(elem:RF, notelem:RF)
+  FF  ==> Record(ratpart:F,  coeff:F)
+  FFR ==> Record(ratpart:RF, coeff:RF)
+  UF  ==> Union(FF,  "failed")
+  UF2 ==> Union(List F, "failed")
+  REC ==> Record(ir:IR, specpart:RF, polypart:UP)
+  PSOL==> Record(ans:F, right:F, sol?:Boolean)
+  FAIL==> error "Sorry - cannot handle that integrand yet"
+
+  Exports ==> with
+    primintegrate  : (RF, UP -> UP, F -> UF)          -> IRF
+      ++ primintegrate(f, ', foo) returns \spad{[g, a]} such that
+      ++ \spad{f = g' + a}, and \spad{a = 0} or \spad{a} has no integral in UP.
+      ++ Argument foo is an extended integration function on F.
+    expintegrate   : (RF, UP -> UP, (Z, F) -> PSOL) -> IRF
+      ++ expintegrate(f, ', foo) returns \spad{[g, a]} such that
+      ++ \spad{f = g' + a}, and \spad{a = 0} or \spad{a} has no integral in F;
+      ++ Argument foo is a Risch differential equation solver on F;
+    tanintegrate   : (RF, UP -> UP, (Z, F, F) -> UF2) -> IRF
+      ++ tanintegrate(f, ', foo) returns \spad{[g, a]} such that
+      ++ \spad{f = g' + a}, and \spad{a = 0} or \spad{a} has no integral in F;
+      ++ Argument foo is a Risch differential system solver on F;
+    primextendedint:(RF, UP -> UP, F->UF, RF) -> Union(RFF,FFR,"failed")
+      ++ primextendedint(f, ', foo, g) returns either \spad{[v, c]} such that
+      ++ \spad{f = v' + c g} and \spad{c' = 0}, or \spad{[v, a]} such that
+      ++ \spad{f = g' + a}, and \spad{a = 0} or \spad{a} has no integral in UP.
+      ++ Returns "failed" if neither case can hold.
+      ++ Argument foo is an extended integration function on F.
+    expextendedint:(RF,UP->UP,(Z,F)->PSOL, RF) -> Union(RFF,FFR,"failed")
+      ++ expextendedint(f, ', foo, g) returns either \spad{[v, c]} such that
+      ++ \spad{f = v' + c g} and \spad{c' = 0}, or \spad{[v, a]} such that
+      ++ \spad{f = g' + a}, and \spad{a = 0} or \spad{a} has no integral in F.
+      ++ Returns "failed" if neither case can hold.
+      ++ Argument foo is a Risch differential equation function on F.
+    primlimitedint:(RF, UP -> UP, F->UF, List RF) -> Union(NLF,"failed")
+      ++ primlimitedint(f, ', foo, [u1,...,un]) returns
+      ++ \spad{[v, [c1,...,cn], a]} such that \spad{ci' = 0},
+      ++ \spad{f = v' + a + reduce(+,[ci * ui'/ui])},
+      ++ and \spad{a = 0} or \spad{a} has no integral in UP.
+      ++ Returns "failed" if no such v, ci, a exist.
+      ++ Argument foo is an extended integration function on F.
+    explimitedint:(RF, UP->UP,(Z,F)->PSOL,List RF) -> Union(NLF,"failed")
+      ++ explimitedint(f, ', foo, [u1,...,un]) returns
+      ++ \spad{[v, [c1,...,cn], a]} such that \spad{ci' = 0},
+      ++ \spad{f = v' + a + reduce(+,[ci * ui'/ui])},
+      ++ and \spad{a = 0} or \spad{a} has no integral in F.
+      ++ Returns "failed" if no such v, ci, a exist.
+      ++ Argument foo is a Risch differential equation function on F.
+    primextintfrac    : (RF, UP -> UP, RF)  -> Union(FFR, "failed")
+      ++ primextintfrac(f, ', g) returns \spad{[v, c]} such that
+      ++ \spad{f = v' + c g} and \spad{c' = 0}.
+      ++ Error: if \spad{degree numer f >= degree denom f} or
+      ++ if \spad{degree numer g >= degree denom g} or
+      ++ if \spad{denom g} is not squarefree.
+    primlimintfrac    : (RF, UP -> UP, List RF) -> Union(NL, "failed")
+      ++ primlimintfrac(f, ', [u1,...,un]) returns \spad{[v, [c1,...,cn]]}
+      ++ such that \spad{ci' = 0} and \spad{f = v' + +/[ci * ui'/ui]}.
+      ++ Error: if \spad{degree numer f >= degree denom f}.
+    primintfldpoly    : (UP, F -> UF, F)    -> Union(UP, "failed")
+      ++ primintfldpoly(p, ', t') returns q such that \spad{p' = q} or
+      ++ "failed" if no such q exists. Argument \spad{t'} is the derivative of
+      ++ the primitive generating the extension.
+    expintfldpoly     : (GP, (Z, F) -> PSOL) -> Union(GP, "failed")
+      ++ expintfldpoly(p, foo) returns q such that \spad{p' = q} or
+      ++ "failed" if no such q exists.
+      ++ Argument foo is a Risch differential equation function on F.
+    monomialIntegrate : (RF, UP -> UP) -> REC
+      ++ monomialIntegrate(f, ') returns \spad{[ir, s, p]} such that
+      ++ \spad{f = ir' + s + p} and all the squarefree factors of the
+      ++ denominator of s are special w.r.t the derivation '.
+    monomialIntPoly   : (UP, UP -> UP) -> Record(answer:UP, polypart:UP)
+      ++ monomialIntPoly(p, ') returns [q, r] such that
+      ++ \spad{p = q' + r} and \spad{degree(r) < degree(t')}.
+      ++ Error if \spad{degree(t') < 2}.
+
+  Implementation ==> add
+    import SubResultantPackage(UP, UP2)
+    import MonomialExtensionTools(F, UP)
+    import TranscendentalHermiteIntegration(F, UP)
+    import CommuteUnivariatePolynomialCategory(F, UP, UP2)
+
+    primintegratepoly  : (UP, F -> UF, F) -> Union(UPF, UPUP)
+    expintegratepoly   : (GP, (Z, F) -> PSOL) -> Union(GPF, GPGP)
+    expextintfrac      : (RF, UP -> UP, RF) -> Union(FFR, "failed")
+    explimintfrac      : (RF, UP -> UP, List RF) -> Union(NL, "failed")
+    limitedLogs        : (RF, RF -> RF, List RF) -> Union(LLG, "failed")
+    logprmderiv        : (RF, UP -> UP)    -> RF
+    logexpderiv        : (RF, UP -> UP, F) -> RF
+    tanintegratespecial: (RF, RF -> RF, (Z, F, F) -> UF2) -> Union(RFF, RFRF)
+    UP2UP2             : UP -> UP2
+    UP2UPR             : UP -> UPR
+    UP22UPR            : UP2 -> UPR
+    notelementary      : REC -> IR
+    kappa              : (UP, UP -> UP) -> UP
+
+    dummy:RF := 0
+
+    logprmderiv(f, derivation) == differentiate(f, derivation) / f
+
+    UP2UP2 p ==
+      map(#1::UP, p)$UnivariatePolynomialCategoryFunctions2(F, UP, UP, UP2)
+
+    UP2UPR p ==
+      map(#1::UP::RF, p)$UnivariatePolynomialCategoryFunctions2(F, UP, RF, UPR)
+
+    UP22UPR p == map(#1::RF, p)$SparseUnivariatePolynomialFunctions2(UP, RF)
+
+-- given p in k[z] and a derivation on k[t] returns the coefficient lifting
+-- in k[z] of the restriction of D to k.
+    kappa(p, derivation) ==
+      ans:UP := 0
+      while p ~= 0 repeat
+        ans := ans + derivation(leadingCoefficient(p)::UP)*monomial(1,degree p)
+        p := reductum p
+      ans
+
+-- works in any monomial extension
+    monomialIntegrate(f, derivation) ==
+      zero? f => [0, 0, 0]
+      r := HermiteIntegrate(f, derivation)
+      zero?(inum := numer(r.logpart)) => [r.answer::IR, r.specpart, r.polypart]
+      iden  := denom(r.logpart)
+      x := monomial(1, 1)$UP
+      resultvec := subresultantVector(UP2UP2 inum -
+                                 (x::UP2) * UP2UP2 derivation iden, UP2UP2 iden)
+      respoly := primitivePart leadingCoefficient resultvec 0
+      rec := splitSquarefree(respoly, kappa(#1, derivation))
+      logs:List(LOG) := [
+              [1, UP2UPR(term.factor),
+               UP22UPR swap primitivePart(resultvec(term.exponent),term.factor)]
+                     for term in factors(rec.special)]
+      dlog :=
+--           one? derivation x => r.logpart
+           ((derivation x) = 1) => r.logpart
+           differentiate(mkAnswer(0, logs, empty()),
+                         differentiate(#1, derivation))
+      (u := retractIfCan(p := r.logpart - dlog)@Union(UP, "failed")) case UP =>
+        [mkAnswer(r.answer, logs, empty), r.specpart, r.polypart + u::UP]
+      [mkAnswer(r.answer, logs, [[p, dummy]]), r.specpart, r.polypart]
+
+-- returns [q, r] such that p = q' + r and degree(r) < degree(dt)
+-- must have degree(derivation t) >= 2
+    monomialIntPoly(p, derivation) ==
+      (d := degree(dt := derivation monomial(1,1))::Z) < 2 =>
+        error "monomIntPoly: monomial must have degree 2 or more"
+      l := leadingCoefficient dt
+      ans:UP := 0
+      while (n := 1 + degree(p)::Z - d) > 0 repeat
+        ans := ans + (term := monomial(leadingCoefficient(p) / (n * l), n::N))
+        p   := p - derivation term      -- degree(p) must drop here
+      [ans, p]
+
+-- returns either
+--   (q in GP, a in F)  st p = q' + a, and a=0 or a has no integral in F
+-- or (q in GP, r in GP) st p = q' + r, and r has no integral elem/UP
+    expintegratepoly(p, FRDE) ==
+      coef0:F := 0
+      notelm := answr := 0$GP
+      while p ~= 0 repeat
+        ans1 := FRDE(n := degree p, a := leadingCoefficient p)
+        answr := answr + monomial(ans1.ans, n)
+        if ~ans1.sol? then         -- Risch d.e. has no complete solution
+               missing := a - ans1.right
+               if zero? n then coef0 := missing
+                          else notelm := notelm + monomial(missing, n)
+        p   := reductum p
+      zero? notelm => [answr, coef0]
+      [answr, notelm]
+
+-- f is either 0 or of the form p(t)/(1 + t**2)**n
+-- returns either
+--   (q in RF, a in F)  st f = q' + a, and a=0 or a has no integral in F
+-- or (q in RF, r in RF) st f = q' + r, and r has no integral elem/UP
+    tanintegratespecial(f, derivation, FRDE) ==
+      ans:RF := 0
+      p := monomial(1, 2)$UP + 1
+      while (n := degree(denom f) quo 2) ~= 0 repeat
+        r := numer(f) rem p
+        a := coefficient(r, 1)
+        b := coefficient(r, 0)
+        (u := FRDE(n, a, b)) case "failed" => return [ans, f]
+        l := u::List(F)
+        term:RF := (monomial(first l, 1)$UP + second(l)::UP) / denom f
+        ans := ans + term
+        f   := f - derivation term    -- the order of the pole at 1+t^2 drops
+      zero?(c0 := retract(retract(f)@UP)@F) or
+        (u := FRDE(0, c0, 0)) case "failed" => [ans, c0]
+      [ans + first(u::List(F))::UP::RF, 0::F]
+
+-- returns (v in RF, c in RF) s.t. f = v' + cg, and c' = 0, or "failed"
+-- g must have a squarefree denominator (always possible)
+-- g must have no polynomial part and no pole above t = 0
+-- f must have no polynomial part and no pole above t = 0
+    expextintfrac(f, derivation, g) ==
+      zero? f => [0, 0]
+      degree numer f >= degree denom f => error "Not a proper fraction"
+      order(denom f,monomial(1,1)) ~= 0 => error "Not integral at t = 0"
+      r := HermiteIntegrate(f, derivation)
+      zero? g =>
+        r.logpart ~= 0 => "failed"
+        [r.answer, 0]
+      degree numer g >= degree denom g => error "Not a proper fraction"
+      order(denom g,monomial(1,1)) ~= 0 => error "Not integral at t = 0"
+      differentiate(c := r.logpart / g, derivation) ~= 0 => "failed"
+      [r.answer, c]
+
+    limitedLogs(f, logderiv, lu) ==
+      zero? f => empty()
+      empty? lu => "failed"
+      empty? rest lu =>
+        logderiv(c0 := f / logderiv(u0 := first lu)) ~= 0 => "failed"
+        [[c0, u0]]
+      num := numer f
+      den := denom f
+      l1:List Record(logand2:RF, contrib:UP) :=
+--        [[u, numer v] for u in lu | one? denom(v := den * logderiv u)]
+        [[u, numer v] for u in lu | (denom(v := den * logderiv u) = 1)]
+      rows := max(degree den,
+                  1 + reduce(max, [degree(u.contrib) for u in l1], 0)$List(N))
+      m:Matrix(F) := zero(rows, cols := 1 + #l1)
+      for i in 0..rows-1 repeat
+        for pp in l1 for j in minColIndex m .. maxColIndex m - 1 repeat
+          qsetelt_!(m, i + minRowIndex m, j, coefficient(pp.contrib, i))
+        qsetelt_!(m,i+minRowIndex m, maxColIndex m, coefficient(num, i))
+      m := rowEchelon m
+      ans := empty()$LLG
+      for i in minRowIndex m .. maxRowIndex m |
+       qelt(m, i, maxColIndex m) ~= 0 repeat
+        OK := false
+        for pp in l1 for j in minColIndex m .. maxColIndex m - 1
+         while not OK repeat
+          if qelt(m, i, j) ~= 0 then
+            OK := true
+            c := qelt(m, i, maxColIndex m) / qelt(m, i, j)
+            logderiv(c0 := c::UP::RF) ~= 0 => return "failed"
+            ans := concat([c0, pp.logand2], ans)
+        not OK => return "failed"
+      ans
+
+-- returns q in UP s.t. p = q', or "failed"
+    primintfldpoly(p, extendedint, t') ==
+      (u := primintegratepoly(p, extendedint, t')) case UPUP => "failed"
+      u.a0 ~= 0 => "failed"
+      u.answer
+
+-- returns q in GP st p = q', or "failed"
+    expintfldpoly(p, FRDE) ==
+      (u := expintegratepoly(p, FRDE)) case GPGP => "failed"
+      u.a0 ~= 0 => "failed"
+      u.answer
+
+-- returns (v in RF, c1...cn in RF, a in F) s.t. ci' = 0,
+-- and f = v' + a + +/[ci * ui'/ui]
+--                                  and a = 0 or a has no integral in UP
+    primlimitedint(f, derivation, extendedint, lu) ==
+      qr := divide(numer f, denom f)
+      (u1 := primlimintfrac(qr.remainder / (denom f), derivation, lu))
+        case "failed" => "failed"
+      (u2 := primintegratepoly(qr.quotient, extendedint,
+               retract derivation monomial(1, 1))) case UPUP => "failed"
+      [[u1.mainpart + u2.answer::RF, u1.limitedlogs], u2.a0]
+
+-- returns (v in RF, c1...cn in RF, a in F) s.t. ci' = 0,
+-- and f = v' + a + +/[ci * ui'/ui]
+--                                   and a = 0 or a has no integral in F
+    explimitedint(f, derivation, FRDE, lu) ==
+      qr := separate(f)$GP
+      (u1 := explimintfrac(qr.fracPart,derivation, lu)) case "failed" =>
+                                                                "failed"
+      (u2 := expintegratepoly(qr.polyPart, FRDE)) case GPGP => "failed"
+      [[u1.mainpart + convert(u2.answer)@RF, u1.limitedlogs], u2.a0]
+
+-- returns [v, c1...cn] s.t. f = v' + +/[ci * ui'/ui]
+-- f must have no polynomial part (degree numer f < degree denom f)
+    primlimintfrac(f, derivation, lu) ==
+      zero? f => [0, empty()]
+      degree numer f >= degree denom f => error "Not a proper fraction"
+      r := HermiteIntegrate(f, derivation)
+      zero?(r.logpart) => [r.answer, empty()]
+      (u := limitedLogs(r.logpart, logprmderiv(#1, derivation), lu))
+        case "failed" => "failed"
+      [r.answer, u::LLG]
+
+-- returns [v, c1...cn] s.t. f = v' + +/[ci * ui'/ui]
+-- f must have no polynomial part (degree numer f < degree denom f)
+-- f must be integral above t = 0
+    explimintfrac(f, derivation, lu) ==
+      zero? f => [0, empty()]
+      degree numer f >= degree denom f => error "Not a proper fraction"
+      order(denom f, monomial(1,1)) > 0 => error "Not integral at t = 0"
+      r  := HermiteIntegrate(f, derivation)
+      zero?(r.logpart) => [r.answer, empty()]
+      eta' := coefficient(derivation monomial(1, 1), 1)
+      (u := limitedLogs(r.logpart, logexpderiv(#1,derivation,eta'), lu))
+        case "failed" => "failed"
+      [r.answer - eta'::UP *
+        +/[((degree numer(v.logand))::Z - (degree denom(v.logand))::Z) *
+                                            v.coeff for v in u], u::LLG]
+
+    logexpderiv(f, derivation, eta') ==
+      (differentiate(f, derivation) / f) -
+            (((degree numer f)::Z - (degree denom f)::Z) * eta')::UP::RF
+
+    notelementary rec ==
+      rec.ir + integral(rec.polypart::RF + rec.specpart, monomial(1,1)$UP :: RF)
+
+-- returns
+--   (g in IR, a in F)  st f = g'+ a, and a=0 or a has no integral in UP
+    primintegrate(f, derivation, extendedint) ==
+      rec := monomialIntegrate(f, derivation)
+      not elem?(i1 := rec.ir) => [notelementary rec, 0]
+      (u2 := primintegratepoly(rec.polypart, extendedint,
+                        retract derivation monomial(1, 1))) case UPUP =>
+             [i1 + u2.elem::RF::IR
+                 + integral(u2.notelem::RF, monomial(1,1)$UP :: RF), 0]
+      [i1 + u2.answer::RF::IR, u2.a0]
+
+-- returns
+--   (g in IR, a in F)  st f = g' + a, and a = 0 or a has no integral in F
+    expintegrate(f, derivation, FRDE) ==
+      rec := monomialIntegrate(f, derivation)
+      not elem?(i1 := rec.ir) => [notelementary rec, 0]
+-- rec.specpart is either 0 or of the form p(t)/t**n
+      special := rec.polypart::GP +
+                   (numer(rec.specpart)::GP exquo denom(rec.specpart)::GP)::GP
+      (u2 := expintegratepoly(special, FRDE)) case GPGP =>
+        [i1 + convert(u2.elem)@RF::IR + integral(convert(u2.notelem)@RF,
+                                                 monomial(1,1)$UP :: RF), 0]
+      [i1 + convert(u2.answer)@RF::IR, u2.a0]
+
+-- returns
+--   (g in IR, a in F)  st f = g' + a, and a = 0 or a has no integral in F
+    tanintegrate(f, derivation, FRDE) ==
+      rec := monomialIntegrate(f, derivation)
+      not elem?(i1 := rec.ir) => [notelementary rec, 0]
+      r := monomialIntPoly(rec.polypart, derivation)
+      t := monomial(1, 1)$UP
+      c := coefficient(r.polypart, 1) / leadingCoefficient(derivation t)
+      derivation(c::UP) ~= 0 =>
+        [i1 + mkAnswer(r.answer::RF, empty(),
+                       [[r.polypart::RF + rec.specpart, dummy]$NE]), 0]
+      logs:List(LOG) :=
+         zero? c => empty()
+         [[1, monomial(1,1)$UPR - (c/(2::F))::UP::RF::UPR, (1 + t**2)::RF::UPR]]
+      c0 := coefficient(r.polypart, 0)
+      (u := tanintegratespecial(rec.specpart, differentiate(#1, derivation),
+       FRDE)) case RFRF =>
+        [i1 + mkAnswer(r.answer::RF + u.elem, logs, [[u.notelem,dummy]$NE]), c0]
+      [i1 + mkAnswer(r.answer::RF + u.answer, logs, empty()), u.a0 + c0]
+
+-- returns either (v in RF, c in RF) s.t. f = v' + cg, and c' = 0
+--             or (v in RF, a in F)  s.t. f = v' + a
+--                                  and a = 0 or a has no integral in UP
+    primextendedint(f, derivation, extendedint, g) ==
+      fqr := divide(numer f, denom f)
+      gqr := divide(numer g, denom g)
+      (u1 := primextintfrac(fqr.remainder / (denom f), derivation,
+                   gqr.remainder / (denom g))) case "failed" => "failed"
+      zero?(gqr.remainder) =>
+      -- the following FAIL cannot occur if the primitives are all logs
+         degree(gqr.quotient) > 0 => FAIL
+         (u3 := primintegratepoly(fqr.quotient, extendedint,
+               retract derivation monomial(1, 1))) case UPUP => "failed"
+         [u1.ratpart + u3.answer::RF, u3.a0]
+      (u2 := primintfldpoly(fqr.quotient - retract(u1.coeff)@UP *
+        gqr.quotient, extendedint, retract derivation monomial(1, 1)))
+          case "failed" => "failed"
+      [u2::UP::RF + u1.ratpart, u1.coeff]
+
+-- returns either (v in RF, c in RF) s.t. f = v' + cg, and c' = 0
+--             or (v in RF, a in F)  s.t. f = v' + a
+--                                   and a = 0 or a has no integral in F
+    expextendedint(f, derivation, FRDE, g) ==
+      qf := separate(f)$GP
+      qg := separate g
+      (u1 := expextintfrac(qf.fracPart, derivation, qg.fracPart))
+         case "failed" => "failed"
+      zero?(qg.fracPart) =>
+      --the following FAIL's cannot occur if the primitives are all logs
+        retractIfCan(qg.polyPart)@Union(F,"failed") case "failed"=> FAIL
+        (u3 := expintegratepoly(qf.polyPart,FRDE)) case GPGP => "failed"
+        [u1.ratpart + convert(u3.answer)@RF, u3.a0]
+      (u2 := expintfldpoly(qf.polyPart - retract(u1.coeff)@UP :: GP
+        * qg.polyPart, FRDE)) case "failed" => "failed"
+      [convert(u2::GP)@RF + u1.ratpart, u1.coeff]
+
+-- returns either
+--   (q in UP, a in F)  st p = q'+ a, and a=0 or a has no integral in UP
+-- or (q in UP, r in UP) st p = q'+ r, and r has no integral elem/UP
+    primintegratepoly(p, extendedint, t') ==
+      zero? p => [0, 0$F]
+      ans:UP := 0
+      while (d := degree p) > 0 repeat
+        (ans1 := extendedint leadingCoefficient p) case "failed" =>
+          return([ans, p])
+        p   := reductum p - monomial(d * t' * ans1.ratpart, (d - 1)::N)
+        ans := ans + monomial(ans1.ratpart, d)
+                              + monomial(ans1.coeff / (d + 1)::F, d + 1)
+      (ans1:= extendedint(rp := retract(p)@F)) case "failed" => [ans,rp]
+      [monomial(ans1.coeff, 1) + ans1.ratpart::UP + ans, 0$F]
+
+-- returns (v in RF, c in RF) s.t. f = v' + cg, and c' = 0
+-- g must have a squarefree denominator (always possible)
+-- g must have no polynomial part (degree numer g < degree denom g)
+-- f must have no polynomial part (degree numer f < degree denom f)
+    primextintfrac(f, derivation, g) ==
+      zero? f => [0, 0]
+      degree numer f >= degree denom f => error "Not a proper fraction"
+      r := HermiteIntegrate(f, derivation)
+      zero? g =>
+        r.logpart ~= 0 => "failed"
+        [r.answer, 0]
+      degree numer g >= degree denom g => error "Not a proper fraction"
+      differentiate(c := r.logpart / g, derivation) ~= 0 => "failed"
+      [r.answer, c]
+

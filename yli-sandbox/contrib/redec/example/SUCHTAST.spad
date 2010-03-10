@@ -1,0 +1,18 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain SUCHTAST SuchThatAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the filter iterator syntax.
+SuchThatAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    predicate: % -> SpadAst
+      ++ predicate(e) returns the syntax object for the predicate
+      ++ in the filter iterator syntax `e'.
+  Private == add
+    Rep == List SpadAst
+    predicate e == second rep e
+    coerce(x: %): OutputForm ==
+      elt('SuchThatAst::OutputForm, 
+        ['predicate::OutputForm = predicate(x)::OutputForm])$OutputForm

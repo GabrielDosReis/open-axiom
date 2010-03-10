@@ -1,0 +1,32 @@
+import List
+import Syntax
+)abbrev domain SIG Signature
+++ Author: Gabriel Dos Reis
+++ Date Created: January 10, 2008
+++ Date Last Updated: December 20, 2008
+++ Description: This is the datatype for operation signatures as
+++   used by the compiler and the interpreter.  Note that this domain
+++   differs from SignatureAst.
+++ See also: ConstructorCall, Domain.
+Signature(): Public == Private where
+  Public == SetCategory with
+    signature: (List Syntax,Syntax) -> %
+      ++ signature(s,t) constructs a Signature object with parameter
+      ++ types indicaded by `s', and return type indicated by `t'.
+    target: % -> Syntax
+      ++ target(s) returns the target type of the signature `s'.
+    source: % -> List Syntax
+      ++ source(s) returns the list of parameter types of `s'.
+  Private == add
+    Rep == List Syntax
+    signature(s,t) == per cons(t,s)
+    target x == first rep x
+    source x == rest rep x
+    x = y == rep x = rep y
+    printType(x: Syntax): OutputForm ==
+      x::InputForm::OutputForm
+    coerce(x: %): OutputForm ==
+      #source x = 1 =>
+        rarrow(printType first source x, printType target x)
+      rarrow(paren [printType s for s in source x],
+         printType target x)$OutputForm

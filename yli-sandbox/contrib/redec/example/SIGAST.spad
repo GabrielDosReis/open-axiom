@@ -1,0 +1,27 @@
+)abbrev domain SIGAST SignatureAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a signature AST.  A signature AST
+++   is a description of an exported operation, e.g. its name, result
+++   type, and the list of its argument types.
+SignatureAst(): Public == Private where
+  Public ==  SpadSyntaxCategory with
+    signatureAst: (Identifier, Signature) -> %
+      ++ signatureAst(n,s,t) builds the signature AST n: s -> t
+    name: % -> Identifier
+      ++ name(s) returns the name of the signature `s'.
+    signature: % -> Signature
+      ++ signature(s) returns AST of the declared signature for `s'.
+  Private == add
+    import List
+    Rep == Pair(Symbol, Pair(Identifier,List Signature))
+    signatureAst(n,sig) == 
+      per pair('SIGNATURE,pair(n,[sig]))
+    name x == first second rep x
+    signature x == value second second rep x
+    coerce(x: %): OutputForm ==
+      elt('SignatureAst::OutputForm,
+        ['name::OutputForm = name(x)::OutputForm,
+          'signature::OutputForm = signature(x)::OutputForm])$OutputForm
+

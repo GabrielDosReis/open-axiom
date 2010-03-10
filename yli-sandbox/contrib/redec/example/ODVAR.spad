@@ -1,0 +1,31 @@
+)abbrev domain ODVAR OrderlyDifferentialVariable
+++ Author:  William Sit
+++ Date Created: 19 July 1990
+++ Date Last Updated: 13 September 1991
+++ Basic Operations:differentiate, order, variable,<
+++ Related Domains: OrderedVariableList,
+++                  SequentialDifferentialVariable.
+++ See Also: DifferentialVariableCategory
+++ AMS Classifications:12H05
+++ Keywords: differential indeterminates, orderly ranking.
+++ References:Kolchin, E.R. "Differential Algebra and Algebraic Groups"
+++   (Academic Press, 1973).
+++ Description:
+++   \spadtype{OrderlyDifferentialVariable} adds a commonly used orderly
+++   ranking to the set of derivatives of an ordered list of differential
+++   indeterminates.  An orderly ranking is a ranking \spadfun{<} of the
+++   derivatives with the property that for two derivatives u and v,
+++   u \spadfun{<} v if the \spadfun{order} of u is less than that
+++   of v.
+++   This domain belongs to \spadtype{DifferentialVariableCategory}.  It
+++   defines \spadfun{weight} to be just \spadfun{order}, and it
+++   defines an orderly ranking \spadfun{<} on derivatives u via the
+++   lexicographic order on the pair
+++   (\spadfun{order}(u), \spadfun{variable}(u)).
+OrderlyDifferentialVariable(S:OrderedSet):DifferentialVariableCategory(S)
+  == add
+    Rep := Record(var:S, ord:NonNegativeInteger)
+    makeVariable(s,n) == [s, n]
+    variable v     == v.var
+    order v        == v.ord
+

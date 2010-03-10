@@ -1,0 +1,39 @@
+import CoercibleTo OutputForm
+import Symbol
+import List Property
+)abbrev domain BINDING Binding
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Binding' is a name asosciated with a collection of properties.
+Binding(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    name: % -> Symbol               
+      ++ name(b) returns the name of binding b
+    properties: % -> List Property  
+      ++ properties(b) returns the properties associated with binding b.
+    binding: (Symbol, List Property) -> %
+      ++ binding(n,props) constructs a binding with name `n' and 
+      ++ property list `props'.
+
+  Private ==> add
+    rep(x: %): SExpression ==
+      x pretend SExpression
+
+    per(x: SExpression): % ==
+      x pretend %
+
+    name b ==
+      -- this is well defined because there is no way one could
+      -- type safely ask the name of an inexisting binding.
+      symbol car rep b
+
+    properties b ==
+      (cdr rep b) pretend List(Property)
+
+    binding(n,props) ==
+      per CONS(n,props)$Lisp
+
+    coerce b ==
+      null? rep b => empty()$OutputForm
+      rarrow(outputForm name b, (properties b)::OutputForm)$OutputForm

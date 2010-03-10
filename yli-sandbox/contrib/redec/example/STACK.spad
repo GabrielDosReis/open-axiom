@@ -1,0 +1,60 @@
+)abbrev domain STACK Stack
+++ Author: Michael Monagan and Stephen Watt
+++ Date Created:June 86 and July 87
+++ Date Last Updated: December 02, 2007
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+ 
+++ Linked List implementation of a Stack
+--% Dequeue and Heap data types
+ 
+Stack(S: Type): StackAggregate S with
+    stack: List S -> %
+      ++ stack([x,y,...,z]) creates a stack with first (top)
+      ++ element x, second element y,...,and last element z.
+  == add
+    Rep := Reference List S
+
+    if S has CoercibleTo OutputForm then
+      coerce(d:%): OutputForm == 
+        bracket [e::OutputForm for e in deref d]
+
+    if S has SetCategory then
+      s = t == 
+        deref s = deref t
+
+    parts s ==                             -- from HOAGG
+      deref s
+   
+    map(f: S -> S, s: %) ==                -- from HOAGG
+      ref map(f, deref s)$List(S)
+
+    map!(f: S -> S, s: %) ==               -- from HOAGG
+      setref(s, map!(f, deref s)$List(S))
+      s
+
+    copy s == ref copy deref s
+    depth s == # deref s
+    # s == depth s
+    pop_! (s:%):S ==
+        empty? s => error "empty stack"
+        e := first deref s
+        setref(s,rest deref s)
+        e
+    extract_! (s:%):S == pop_! s
+    top (s:%):S ==
+        empty? s => error "empty stack"
+        first deref s
+    inspect s == top s
+    push_!(e,s) == (setref(s,cons(e,deref s));e)
+    insert_!(e:S,s:%):% == (push_!(e,s);s)
+    empty() == ref nil()$List(S)
+    empty? s == null deref s
+    stack s == ref copy s
+

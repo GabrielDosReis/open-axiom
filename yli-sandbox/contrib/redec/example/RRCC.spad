@@ -1,0 +1,86 @@
+)abbrev category RRCC RealRootCharacterizationCategory
+++ Author: Renaud Rioboo
+++ Date Created: summer 1992
+++ Date Last Updated: January 2004
+++ Basic Functions: provides operations with generic real roots of 
+++                  polynomials 
+++ Related Constructors: RealClosure, RightOpenIntervalRootCharacterization
+++ Also See: 
+++ AMS Classifications:
+++ Keywords: Real Algebraic Numbers
+++ References: 
+++ Description:
+++ \axiomType{RealRootCharacterizationCategory} provides common acces
+++ functions for all real root codings.
+RealRootCharacterizationCategory(TheField, ThePols ) : Category == PUB where
+
+   TheField : Join(OrderedRing, Field)
+   ThePols : UnivariatePolynomialCategory(TheField)
+
+   Z ==> Integer
+   N ==> PositiveInteger
+
+   PUB ==>
+     SetCategory with
+
+        sign:                ( ThePols, $ )   ->            Z
+              ++ \axiom{sign(pol,aRoot)} gives the sign of \axiom{pol}
+              ++ interpreted as \axiom{aRoot}
+        zero? :              ( ThePols, $ )   ->         Boolean
+              ++ \axiom{zero?(pol,aRoot)} answers if \axiom{pol}
+              ++ interpreted as \axiom{aRoot} is \axiom{0}
+        negative?:           ( ThePols, $ )   ->         Boolean
+              ++ \axiom{negative?(pol,aRoot)} answers if \axiom{pol}
+              ++ interpreted as \axiom{aRoot} is negative
+        positive?:           ( ThePols, $ )   ->         Boolean
+              ++ \axiom{positive?(pol,aRoot)} answers if \axiom{pol}
+              ++ interpreted as \axiom{aRoot} is positive
+        recip:               ( ThePols, $ )   ->   Union(ThePols,"failed") 
+              ++ \axiom{recip(pol,aRoot)} tries to inverse \axiom{pol}
+              ++ interpreted as \axiom{aRoot}
+        definingPolynomial:         $         ->         ThePols
+              ++ \axiom{definingPolynomial(aRoot)} gives a polynomial
+              ++ such that \axiom{definingPolynomial(aRoot).aRoot = 0} 
+        allRootsOf:              ThePols      ->          List $
+              ++ \axiom{allRootsOf(pol)} creates all the roots of \axiom{pol} 
+              ++ in the Real Closure, assumed in order.
+        rootOf:              ( ThePols, N )   ->      Union($,"failed")
+              ++ \axiom{rootOf(pol,n)} gives the nth root for the order of the
+              ++ Real Closure
+        approximate :  (ThePols,$,TheField)   ->    TheField
+              ++ \axiom{approximate(term,root,prec)} gives an approximation 
+              ++ of \axiom{term} over \axiom{root} with precision \axiom{prec}
+
+        relativeApprox :  (ThePols,$,TheField)   ->    TheField
+              ++ \axiom{approximate(term,root,prec)} gives an approximation 
+              ++ of \axiom{term} over \axiom{root} with precision \axiom{prec}
+
+      add
+
+        zero?(toTest, rootChar) == 
+          sign(toTest, rootChar) = 0
+                
+        negative?(toTest, rootChar) == 
+          sign(toTest, rootChar) < 0              
+        
+        positive?(toTest, rootChar) == 
+          sign(toTest, rootChar) > 0
+
+        rootOf(pol,n) ==
+          liste:List($):= allRootsOf(pol)
+          # liste > n => "failed"
+          liste.n
+
+        recip(toInv,rootChar) ==
+          degree(toInv) = 0 => 
+            res := recip(leadingCoefficient(toInv))
+            if (res case "failed") then "failed" else (res::TheField::ThePols)
+          defPol := definingPolynomial(rootChar)
+          d := principalIdeal([defPol,toInv])
+          zero?(d.generator,rootChar) => "failed"
+          if (degree(d.generator) ~= 0 )
+          then
+            defPol := (defPol exquo (d.generator))::ThePols
+            d := principalIdeal([defPol,toInv])
+          d.coef.2
+

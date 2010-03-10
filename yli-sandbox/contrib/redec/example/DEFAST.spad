@@ -1,0 +1,30 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain DEFAST DefinitionAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a definition.
+DefinitionAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    head: % -> HeadAst
+      ++ head(d) returns the head of the definition `d'.  This is a 
+      ++ list of identifiers starting with the name of the operation
+      ++ followed by the name of the parameters, if any.
+    signature: % -> Signature
+      ++ signature(d) returns the signature of the operation being
+      ++ defined.  Note that this list may be partial in that it
+      ++ contains only the types actually specified in the definition.
+    body: % -> SpadAst
+      ++ body(d) returns the right hand side of the definition `d'.
+  Private == add
+    Rep == List SpadAst
+    head x == (second rep x) : HeadAst
+    signature x == (third rep x) : Signature
+    body x == last rep x
+    coerce(x: %): OutputForm ==
+     elt('DefinitionAst::OutputForm,
+       ['head::OutputForm = head(x)::OutputForm,
+         'signature::OutputForm = signature(x)::OutputForm,
+           'body::OutputForm = body(x)::OutputForm])$OutputForm
+

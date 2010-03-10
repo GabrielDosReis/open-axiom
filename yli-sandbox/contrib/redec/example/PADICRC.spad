@@ -1,0 +1,180 @@
+)abbrev domain PADICRC PAdicRationalConstructor
+++ Author: Clifton J. Williamson
+++ Date Created: 10 May 1990
+++ Date Last Updated: 10 May 1990
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Keywords: p-adic, completion
+++ Examples:
+++ References:
+++ Description: This is the category of stream-based representations of Qp.
+PAdicRationalConstructor(p,PADIC): Exports == Implementation where
+  p     :   Integer
+  PADIC :   PAdicIntegerCategory p
+  CF    ==> ContinuedFraction
+  I     ==> Integer
+  NNI   ==> NonNegativeInteger
+  OUT   ==> OutputForm
+  L     ==> List
+  RN    ==> Fraction Integer
+  ST    ==> Stream
+
+  Exports ==> QuotientFieldCategory(PADIC) with
+    approximate: (%,I) -> RN
+      ++ \spad{approximate(x,n)} returns a rational number y such that
+      ++ \spad{y = x (mod p^n)}.
+    continuedFraction: % -> CF RN
+      ++ \spad{continuedFraction(x)} converts the p-adic rational number x
+      ++ to a continued fraction.
+    removeZeroes: % -> %
+      ++ \spad{removeZeroes(x)} removes leading zeroes from the
+      ++ representation of the p-adic rational \spad{x}.
+      ++ A p-adic rational is represented by (1) an exponent and
+      ++ (2) a p-adic integer which may have leading zero digits.
+      ++ When the p-adic integer has a leading zero digit, a 'leading zero'
+      ++ is removed from the p-adic rational as follows:
+      ++ the number is rewritten by increasing the exponent by 1 and
+      ++ dividing the p-adic integer by p.
+      ++ Note: \spad{removeZeroes(f)} removes all leading zeroes from f.
+    removeZeroes: (I,%) -> %
+      ++ \spad{removeZeroes(n,x)} removes up to n leading zeroes from
+      ++ the p-adic rational \spad{x}.
+
+  Implementation ==> add
+
+    PEXPR := p :: OUT
+
+--% representation
+
+    Rep := Record(expon:I,pint:PADIC)
+
+    getExpon: % -> I
+    getZp   : % -> PADIC
+    makeQp  : (I,PADIC) -> %
+
+    getExpon x    == x.expon
+    getZp x       == x.pint
+    makeQp(r,int) == [r,int]
+
+--% creation
+
+    0 == makeQp(0,0)
+    1 == makeQp(0,1)
+
+    coerce(x:I)     == x :: PADIC :: %
+    coerce(r:RN)    == (numer(r) :: %)/(denom(r) :: %)
+    coerce(x:PADIC) == makeQp(0,x)
+
+--% normalizations
+
+    removeZeroes x ==
+      empty? digits(xx := getZp x) => 0
+      zero? moduloP xx =>
+        removeZeroes makeQp(getExpon x + 1,quotientByP xx)
+      x
+
+    removeZeroes(n,x) ==
+      n <= 0 => x
+      empty? digits(xx := getZp x) => 0
+      zero? moduloP xx =>
+        removeZeroes(n - 1,makeQp(getExpon x + 1,quotientByP xx))
+      x
+
+--% arithmetic
+
+    x = y ==
+      EQ(x,y)$Lisp => true
+      n := getExpon(x) - getExpon(y)
+      n >= 0 =>
+        (p**(n :: NNI) * getZp(x)) = getZp(y)
+      (p**((- n) :: NNI) * getZp(y)) = getZp(x)
+
+    x + y ==
+      n := getExpon(x) - getExpon(y)
+      n >= 0 =>
+        makeQp(getExpon y,getZp(y) + p**(n :: NNI) * getZp(x))
+      makeQp(getExpon x,getZp(x) + p**((-n) :: NNI) * getZp(y))
+
+    -x == makeQp(getExpon x,-getZp(x))
+
+    x - y ==
+      n := getExpon(x) - getExpon(y)
+      n >= 0 =>
+        makeQp(getExpon y,p**(n :: NNI) * getZp(x) - getZp(y))
+      makeQp(getExpon x,getZp(x) - p**((-n) :: NNI) * getZp(y))
+
+    n:I * x:% == makeQp(getExpon x,n * getZp x)
+    x:% * y:% == makeQp(getExpon x + getExpon y,getZp x * getZp y)
+
+    x:% ** n:I ==
+      zero? n => 1
+      positive? n => expt(x,n :: PositiveInteger)$RepeatedSquaring(%)
+      inv expt(x,(-n) :: PositiveInteger)$RepeatedSquaring(%)
+
+    recip x ==
+      x := removeZeroes(1000,x)
+      zero? moduloP(xx := getZp x) => "failed"
+      (inv := recip xx) case "failed" => "failed"
+      makeQp(- getExpon x,inv :: PADIC)
+
+    inv x ==
+      (inv := recip x) case "failed" => error "inv: no inverse"
+      inv :: %
+
+    x:% / y:% == x * inv y
+    x:PADIC / y:PADIC == (x :: %) / (y :: %)
+    x:PADIC * y:% == makeQp(getExpon y,x * getZp y)
+
+    approximate(x,n) ==
+      k := getExpon x
+      (p :: RN) ** k * approximate(getZp x,n - k)
+
+    cfStream: % -> Stream RN
+    cfStream x == delay
+--    zero? x => empty()
+      invx := inv x; x0 := approximate(invx,1)
+      concat(x0,cfStream(invx - (x0 :: %)))
+
+    continuedFraction x ==
+      x0 := approximate(x,1)
+      reducedContinuedFraction(x0,cfStream(x - (x0 :: %)))
+
+    termOutput:(I,I) -> OUT
+    termOutput(k,c) ==
+      k = 0 => c :: OUT
+      mon := (k = 1 => PEXPR; PEXPR ** (k :: OUT))
+      c = 1 => mon
+      c = -1 => -mon
+      (c :: OUT) * mon
+
+    showAll?:() -> Boolean
+    -- check a global Lisp variable
+    showAll?() == true
+
+    coerce(x:%):OUT ==
+      x := removeZeroes(_$streamCount$Lisp,x)
+      m := getExpon x; zp := getZp x
+      uu := digits zp
+      l : L OUT := empty()
+      empty? uu => 0 :: OUT
+      n : NNI ; count : NNI := _$streamCount$Lisp
+      for n in 0..count while not empty? uu repeat
+        if frst(uu) ~= 0 then
+          l := concat(termOutput((n :: I) + m,frst(uu)),l)
+        uu := rst uu
+      if showAll?() then
+        for n in (count + 1).. while explicitEntries? uu and _
+               not eq?(uu,rst uu) repeat
+          if frst(uu) ~= 0 then
+            l := concat(termOutput((n::I) + m,frst(uu)),l)
+          uu := rst uu
+      l :=
+        explicitlyEmpty? uu => l
+        eq?(uu,rst uu) and frst uu = 0 => l
+        concat(prefix("O" :: OUT,[PEXPR ** ((n :: I) + m) :: OUT]),l)
+      empty? l => 0 :: OUT
+      reduce("+",reverse_! l)
+

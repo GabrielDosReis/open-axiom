@@ -1,0 +1,16 @@
+)abbrev package PTFUNC2 PointFunctions2
+++ Description:
+++ This package \undocumented 
+PointFunctions2(R1:Ring,R2:Ring):Exports == Implementation where
+ 
+  Exports == with
+    map : ((R1->R2),Point(R1)) -> Point(R2)
+        ++ map(f,p) \undocumented
+ 
+  Implementation ==> add
+    import Point(R1)
+    import Point(R2)
+ 
+    map(mapping,p) ==
+      point([mapping p.(i::PositiveInteger) for i in minIndex(p)..maxIndex(p)])$Point(R2)
+

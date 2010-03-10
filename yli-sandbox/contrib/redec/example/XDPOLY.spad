@@ -1,0 +1,110 @@
+import OrderedSet
+import Ring
+import FreeModuleCat
+import XPolynomialRing
+import XPolynomialsCat
+)abbrev domain XDPOLY XDistributedPolynomial
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This type supports distributed multivariate polynomials
+++ whose variables do not commute.
+++ The coefficient ring may be non-commutative too.
+++ However, coefficients and variables commute.
+++ Author: Michel Petitot (petitot@lifl.fr)
+
+XDistributedPolynomial(vl:OrderedSet,R:Ring): XDPcat == XDPdef where
+
+  WORD ==> OrderedFreeMonoid(vl)
+  I    ==> Integer
+  NNI  ==> NonNegativeInteger
+  TERM ==> Record(k:WORD, c:R)
+
+  XDPcat == Join(FreeModuleCat(R, WORD), XPolynomialsCat(vl,R))
+
+  XDPdef == XPolynomialRing(R,WORD) add
+
+       import( WORD, TERM)
+
+    -- Representation
+       Rep  :=  List TERM
+
+    -- local functions
+       shw: (WORD , WORD) -> %    -- shuffle de 2 mots
+
+    -- definitions
+
+       mindegTerm p == last(p)$Rep
+
+       if R has CommutativeRing then
+         sh(p:%, n:NNI):% ==
+            n=0 => 1
+            n=1 => p
+            n1: NNI := (n-$I 1)::NNI
+            sh(p, sh(p,n1))
+
+      
+         sh(p1:%, p2:%) ==
+           p:% := 0 
+           for t1 in rep(p1) repeat
+             for t2 in rep(p2) repeat
+                p := p + (t1.c * t2.c) * shw(t1.k,t2.k) 
+           p
+
+       coerce(v: vl):% == coerce(v::WORD)
+       v:vl * p:% ==
+         [[v * t.k , t.c]$TERM for t in p]
+
+       mirror p == 
+         null p => p
+         monom(mirror$WORD leadingMonomial p, leadingCoefficient p) + _
+               mirror reductum p
+
+       degree(p) == length(maxdeg(p))$WORD
+
+       trunc(p, n) ==
+         p = 0 => p
+         degree(p) > n => trunc( reductum p , n)
+         p
+
+       varList p ==
+         constant? p => []
+         le : List vl := "setUnion"/[varList(t.k) for t in p]
+         sort_!(le)
+
+       rquo(p:% , w: WORD) == 
+         [[r::WORD,t.c]$TERM for t in p | not (r:= rquo(t.k,w)) case "failed" ]
+       lquo(p:% , w: WORD) ==
+         [[r::WORD,t.c]$TERM for t in p | not (r:= lquo(t.k,w)) case "failed" ]
+       rquo(p:% , v: vl) ==
+         [[r::WORD,t.c]$TERM for t in p | not (r:= rquo(t.k,v)) case "failed" ]
+       lquo(p:% , v: vl) ==
+         [[r::WORD,t.c]$TERM for t in p | not (r:= lquo(t.k,v)) case "failed" ]
+
+       shw(w1,w2) ==
+         w1 = 1$WORD => w2::%
+         w2 = 1$WORD => w1::%
+         x: vl := first w1 ; y: vl := first w2
+         x * shw(rest w1,w2) + y * shw(w1,rest w2)
+ 
+       lquo(p:%,q:%):% ==
+         +/  [r * t.c for t in q | (r := lquo(p,t.k)) ~= 0] 
+
+       rquo(p:%,q:%):% ==
+         +/  [r * t.c for t in q | (r := rquo(p,t.k)) ~= 0] 
+
+       coef(p:%,q:%):R ==
+         p = 0 => 0$R
+         q = 0 => 0$R 
+         p.first.k > q.first.k => coef(p.rest,q)
+         p.first.k < q.first.k => coef(p,q.rest) 
+         return p.first.c * q.first.c + coef(p.rest,q.rest)
+

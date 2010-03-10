@@ -1,0 +1,235 @@
+import Boolean
+import Integer
+import NonNegativeInteger
+import PositiveInteger
+--import Matrix
+--import List
+--import Table
+--import OnePointCompletion
+--import SparseUnivariatePolynomial
+)abbrev category FFIELDC FiniteFieldCategory
+++ Author: J. Grabmeier, A. Scheerhorn
+++ Date Created: 11 March 1991
+++ Date Last Updated: 31 March 1991
+++ Basic Operations: _+, _*, extensionDegree, order, primitiveElement
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: field, extension field, algebraic extension, finite field
+++  Galois field
+++ References:
+++  D.Lipson, Elements of Algebra and Algebraic Computing, The
+++  Benjamin/Cummings Publishing Company, Inc.-Menlo Park, California, 1981.
+++  J. Grabmeier, A. Scheerhorn: Finite Fields in AXIOM.
+++  AXIOM Technical Report Series, ATR/5 NP2522.
+++ Description:
+++  FiniteFieldCategory is the category of finite fields
+
+FiniteFieldCategory() : Category ==_
+  Join(FieldOfPrimeCharacteristic,Finite,StepThrough,DifferentialRing) with
+--                 ,PolynomialFactorizationExplicit) with
+    charthRoot: $ -> $
+      ++ charthRoot(a) takes the characteristic'th root of {\em a}.
+      ++ Note: such a root is alway defined in finite fields.
+    conditionP: Matrix $ -> Union(Vector $,"failed")
+      ++ conditionP(mat), given a matrix representing a homogeneous system
+      ++ of equations, returns a vector whose characteristic'th powers
+      ++ is a non-trivial solution, or "failed" if no such vector exists.
+    -- the reason for implementing the following function is that we
+    -- can implement the functions order, getGenerator and primitive? on
+    -- category level without computing the, may be time intensive,
+    -- factorization of size()-1 at every function call again.
+    factorsOfCyclicGroupSize:_
+      () -> List Record(factor:Integer,exponent:Integer)
+      ++ factorsOfCyclicGroupSize() returns the factorization of size()-1
+    -- the reason for implementing the function tableForDiscreteLogarithm
+    -- is that we can implement the functions discreteLog and
+    -- shanksDiscLogAlgorithm on category level
+    -- computing the necessary exponentiation tables in the respective
+    -- domains once and for all
+    -- absoluteDegree : $ -> PositiveInteger
+    --  ++ degree of minimal polynomial, if algebraic with respect
+    --  ++ to the prime subfield
+    tableForDiscreteLogarithm: Integer -> _
+             Table(PositiveInteger,NonNegativeInteger)
+      ++ tableForDiscreteLogarithm(a,n) returns a table of the discrete
+      ++ logarithms of \spad{a**0} up to \spad{a**(n-1)} which, called with
+      ++ key \spad{lookup(a**i)} returns i for i in \spad{0..n-1}.
+      ++ Error: if not called for prime divisors of order of
+      ++        multiplicative group.
+    createPrimitiveElement: () -> $
+      ++ createPrimitiveElement() computes a generator of the (cyclic)
+      ++ multiplicative group of the field.
+      -- RDJ: Are these next lines to be included?
+      -- we run through the field and test, algorithms which construct
+      -- elements of larger order were found to be too slow
+    primitiveElement: () -> $
+      ++ primitiveElement() returns a primitive element stored in a global
+      ++ variable in the domain.
+      ++ At first call, the primitive element is computed
+      ++ by calling \spadfun{createPrimitiveElement}.
+    primitive?: $ -> Boolean
+      ++ primitive?(b) tests whether the element b is a generator of the
+      ++ (cyclic) multiplicative group of the field, i.e. is a primitive
+      ++ element.
+      ++ Implementation Note: see ch.IX.1.3, th.2 in D. Lipson.
+    discreteLog: $ -> NonNegativeInteger
+      ++ discreteLog(a) computes the discrete logarithm of \spad{a}
+      ++ with respect to \spad{primitiveElement()} of the field.
+    order: $ -> PositiveInteger
+      ++ order(b) computes the order of an element b in the multiplicative
+      ++ group of the field.
+      ++ Error: if b equals 0.
+    representationType: () -> Union("prime","polynomial","normal","cyclic")
+      ++ representationType() returns the type of the representation, one of:
+      ++ \spad{prime}, \spad{polynomial}, \spad{normal}, or \spad{cyclic}.
+  add
+    I   ==> Integer
+    PI  ==> PositiveInteger
+    NNI ==> NonNegativeInteger
+    SUP ==> SparseUnivariatePolynomial
+    DLP ==> DiscreteLogarithmPackage
+
+    -- exported functions
+
+    differentiate x          == 0
+    init() == 0
+    nextItem(a) ==
+      zero?(a:=index(lookup(a)+1)) => "failed"
+      a
+    order(e):OnePointCompletion(PositiveInteger) ==
+      (order(e)@PI)::OnePointCompletion(PositiveInteger)
+
+    conditionP(mat:Matrix $) ==
+      l:=nullSpace mat
+      empty? l or every?(zero?, first l) => "failed"
+      map(charthRoot,first l)
+    charthRoot(x:$):$ == x**(size() quo characteristic())
+    charthRoot(x:%):Union($,"failed") ==
+        (charthRoot(x)@$)::Union($,"failed")
+    createPrimitiveElement() ==
+      sm1  : PositiveInteger := (size()$$-1) pretend PositiveInteger
+      start : Integer :=
+        -- in the polynomial case, index from 1 to characteristic-1
+        -- gives prime field elements
+        representationType = "polynomial" => characteristic()::Integer
+        1
+      found : Boolean := false
+      e : $
+      for i in start..  while not found repeat
+        e := index(i::PositiveInteger)
+        found := (order(e) = sm1)
+      e
+    primitive? a ==
+      -- add special implementation for prime field case
+      zero?(a) => false
+      explist := factorsOfCyclicGroupSize()
+      q:=(size()-1)@Integer
+      equalone : Boolean := false
+      for exp in explist while not equalone repeat
+--        equalone := one?(a**(q quo exp.factor))
+        equalone := ((a**(q quo exp.factor)) = 1)
+      not equalone
+    order(e: %): PositiveInteger ==
+      e = 0 => error "order(0) is not defined "
+      ord:Integer:= size()-1 -- order e divides ord
+      a:Integer:= 0
+      lof:=factorsOfCyclicGroupSize()
+      for rec in lof repeat -- run through prime divisors
+        a := ord quo (primeDivisor := rec.factor)
+--        goon := one?(e**a)
+        goon := ((e**a) = 1)
+        -- run through exponents of the prime divisors
+        for j in 0..(rec.exponent)-2 while goon repeat
+          -- as long as we get (e**ord = 1) we
+          -- continue dividing by primeDivisor
+          ord := a
+          a := ord quo primeDivisor
+--          goon := one?(e**a)
+          goon := ((e**a) = 1)
+        if goon then ord := a
+        -- as we do a top down search we have found the
+        -- correct exponent of primeDivisor in order e
+        -- and continue with next prime divisor
+      ord pretend PositiveInteger
+    discreteLog(b) ==
+      zero?(b) => error "discreteLog: logarithm of zero"
+      faclist:=factorsOfCyclicGroupSize()
+      a:=b
+      gen:=primitiveElement()
+      -- in GF(2) its necessary to have discreteLog(1) = 1
+      b = gen => 1
+      disclog:Integer:=0
+      mult:Integer:=1
+      groupord := (size() - 1)@Integer
+      exp:Integer:=groupord
+      for f in faclist repeat
+        fac:=f.factor
+        for t in 0..f.exponent-1 repeat
+          exp:=exp quo fac
+          -- shanks discrete logarithm algorithm
+          exptable:=tableForDiscreteLogarithm(fac)
+          n:=#exptable
+          c:=a**exp
+          end:=(fac - 1) quo n
+          found:=false
+          disc1:Integer:=0
+          for i in 0..end while not found repeat
+            rho:= search(lookup(c),exptable)_
+                  $Table(PositiveInteger,NNI)
+            rho case NNI =>
+              found := true
+              disc1:=((n * i + rho)@Integer) * mult
+            c:=c* gen**((groupord quo fac) * (-n))
+          not found => error "discreteLog: ?? discrete logarithm"
+          -- end of shanks discrete logarithm algorithm
+          mult := mult * fac
+          disclog:=disclog+disc1
+          a:=a * (gen ** (-disc1))
+      disclog pretend NonNegativeInteger
+
+    discreteLog(logbase,b) ==
+      zero?(b) =>
+        messagePrint("discreteLog: logarithm of zero")$OutputForm
+        "failed"
+      zero?(logbase) =>
+        messagePrint("discreteLog: logarithm to base zero")$OutputForm
+        "failed"
+      b = logbase => 1
+      not zero?((groupord:=order(logbase)@PI) rem order(b)@PI) =>
+         messagePrint("discreteLog: second argument not in cyclic group _
+generated by first argument")$OutputForm
+         "failed"
+      faclist:=factors factor groupord
+      a:=b
+      disclog:Integer:=0
+      mult:Integer:=1
+      exp:Integer:= groupord
+      for f in faclist repeat
+        fac:=f.factor
+        primroot:= logbase ** (groupord quo fac)
+        for t in 0..f.exponent-1 repeat
+          exp:=exp quo fac
+          rhoHelp:= shanksDiscLogAlgorithm(primroot,_
+                a**exp,fac pretend NonNegativeInteger)$DLP($)
+          rhoHelp case "failed" => return "failed"
+          rho := (rhoHelp :: NNI) * mult
+          disclog := disclog + rho
+          mult := mult * fac
+          a:=a * (logbase ** (-rho))
+      disclog pretend NonNegativeInteger
+
+    FP ==> SparseUnivariatePolynomial($)
+    FRP ==> Factored FP
+    f,g:FP
+    squareFreePolynomial(f:FP):FRP ==
+          squareFree(f)$UnivariatePolynomialSquareFree($,FP)
+    factorPolynomial(f:FP):FRP == factor(f)$DistinctDegreeFactorize($,FP)
+    factorSquareFreePolynomial(f:FP):FRP ==
+        f = 0 => 0
+        flist := distdfact(f,true)$DistinctDegreeFactorize($,FP)
+        (flist.cont :: FP) *
+            (*/[primeFactor(u.irr,u.pow) for u in flist.factors])
+    gcdPolynomial(f:FP,g:FP):FP ==
+         gcd(f,g)$EuclideanDomain_&(FP)
+

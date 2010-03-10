@@ -1,0 +1,100 @@
+)abbrev domain DIRPROD DirectProduct
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: Vector, IndexedVector
+++ Also See: OrderedDirectProduct
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This type represents the finite direct or cartesian product of an
+++ underlying component type. This contrasts with simple vectors in that
+++ the members can be viewed as having constant length. Thus many
+++ categorical properties can by lifted from the underlying component type.
+++ Component extraction operations are provided but no updating operations.
+++ Thus new direct product elements can either be created by converting
+++ vector elements using the \spadfun{directProduct} function
+++ or by taking appropriate linear combinations of basis vectors provided
+++ by the \spad{unitVector} operation.
+ 
+DirectProduct(dim:NonNegativeInteger, R:Type):
+  DirectProductCategory(dim, R) == Vector R add
+ 
+      Rep := Vector R
+ 
+      coerce(z:%):Vector(R)        == copy(z)$Rep pretend Vector(R)
+      coerce(r:R):%                == new(dim, r)$Rep
+ 
+      parts x == VEC2LIST(x)$Lisp
+ 
+      directProduct z ==
+        size?(z, dim) => copy(z)$Rep
+        error "Not of the correct length"
+ 
+ 
+      if R has SetCategory then
+        same?: % -> Boolean
+        same? z == every?(#1 = z(minIndex z), z)
+ 
+        x = y == _and/[qelt(x,i)$Rep = qelt(y,i)$Rep for i in 1..dim]
+ 
+        retract(z:%):R ==
+          same? z => z(minIndex z)
+          error "Not retractable"
+ 
+        retractIfCan(z:%):Union(R, "failed") ==
+          same? z => z(minIndex z)
+          "failed"
+ 
+ 
+      if R has AbelianSemiGroup then
+        u:% + v:% == map(_+ , u, v)$Rep
+ 
+      if R has AbelianMonoid then
+        0 == zero(dim)$Vector(R) pretend %
+ 
+      if R has Monoid then
+        1 == new(dim, 1)$Vector(R) pretend %
+        u:% * r:R       == map(#1 * r, u)
+        r:R * u:%       == map(r * #1, u)
+        x:% * y:%       == [x.i * y.i for i in 1..dim]$Vector(R) pretend %
+ 
+ 
+      if R has CancellationAbelianMonoid then
+        subtractIfCan(u:%, v:%):Union(%,"failed") ==
+          w := new(dim,0)$Vector(R)
+          for i in 1..dim repeat
+            (c := subtractIfCan(qelt(u, i)$Rep, qelt(v,i)$Rep)) case "failed" =>
+                    return "failed"
+            qsetelt_!(w, i, c::R)$Rep
+          w pretend %
+ 
+      if R has Ring then
+ 
+        u:% * v:%                    == map(_* , u, v)$Rep
+ 
+        recip z ==
+          w := new(dim,0)$Vector(R)
+          for i in minIndex w .. maxIndex w repeat
+            (u := recip qelt(z, i)) case "failed" => return "failed"
+            qsetelt_!(w, i, u::R)
+          w pretend %
+ 
+        unitVector i ==
+          v:= new(dim,0)$Vector(R)
+          v.i := 1
+          v pretend %
+ 
+      if R has OrderedSet then
+        x < y ==
+          for i in 1..dim repeat
+             qelt(x,i) < qelt(y,i) => return true
+             qelt(x,i) > qelt(y,i) => return false
+          false
+
+      if R has OrderedAbelianMonoidSup then sup(x, y) == map(sup, x, y)
+ 
+--)bo $noSubsumption := false
+

@@ -1,0 +1,71 @@
+)abbrev package LINDEP LinearDependence
+++ Test for linear dependence
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description: Test for linear dependence.
+LinearDependence(S, R): Exports == Implementation where
+  S: IntegralDomain
+  R: LinearlyExplicitRingOver S
+
+  Q ==> Fraction S
+
+  Exports ==> with
+    linearlyDependent?: Vector R -> Boolean
+      ++ \spad{linearlyDependent?([v1,...,vn])} returns true if
+      ++ the vi's are linearly dependent over S, false otherwise.
+    linearDependence  : Vector R -> Union(Vector S, "failed")
+      ++ \spad{linearDependence([v1,...,vn])} returns \spad{[c1,...,cn]} if
+      ++ \spad{c1*v1 + ... + cn*vn = 0} and not all the ci's are 0,
+      ++ "failed" if the vi's are linearly independent over S.
+    if S has Field then
+      solveLinear: (Vector R, R) -> Union(Vector S, "failed")
+        ++ \spad{solveLinear([v1,...,vn], u)} returns \spad{[c1,...,cn]}
+        ++ such that \spad{c1*v1 + ... + cn*vn = u},
+        ++ "failed" if no such ci's exist in S.
+    else
+      solveLinear: (Vector R, R) -> Union(Vector Q, "failed")
+        ++ \spad{solveLinear([v1,...,vn], u)} returns \spad{[c1,...,cn]}
+        ++ such that \spad{c1*v1 + ... + cn*vn = u},
+        ++ "failed" if no such ci's exist in the quotient field of S.
+
+  Implementation ==> add
+    aNonZeroSolution: Matrix S -> Union(Vector S, "failed")
+
+    aNonZeroSolution m ==
+      every?(zero?, v := first nullSpace m) => "failed"
+      v
+
+    linearlyDependent? v ==
+      zero?(n := #v) => true
+--      one? n => zero?(v(minIndex v))
+      (n = 1) => zero?(v(minIndex v))
+      positive? nullity reducedSystem transpose v
+
+    linearDependence v ==
+      zero?(n := #v) => empty()
+--      one? n =>
+      (n = 1) =>
+        zero?(v(minIndex v)) => new(1, 1)
+        "failed"
+      aNonZeroSolution reducedSystem transpose v
+
+    if S has Field then
+      solveLinear(v:Vector R, c:R):Union(Vector S, "failed") ==
+        zero? c => new(#v, 0)
+        empty? v => "failed"
+        sys := reducedSystem(transpose v, new(1, c))
+        particularSolution(sys.mat, sys.vec)$LinearSystemMatrixPackage(S,
+                                           Vector S, Vector S, Matrix S)
+
+    else
+      solveLinear(v:Vector R, c:R):Union(Vector Q, "failed") ==
+        zero? c => new(#v, 0)
+        empty? v => "failed"
+        sys := reducedSystem(transpose v, new(1, c))
+        particularSolution(map(#1::Q, sys.mat)$MatrixCategoryFunctions2(S,
+               Vector S,Vector S,Matrix S,Q,Vector Q,Vector Q,Matrix Q),
+                  map(#1::Q, sys.vec)$VectorFunctions2(S, Q)
+                                    )$LinearSystemMatrixPackage(Q,
+                                           Vector Q, Vector Q, Matrix Q)
+

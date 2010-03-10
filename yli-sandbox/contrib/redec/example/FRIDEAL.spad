@@ -1,0 +1,166 @@
+)abbrev domain FRIDEAL FractionalIdeal
+++ Author: Manuel Bronstein
+++ Date Created: 27 Jan 1989
+++ Date Last Updated: 30 July 1993
+++ Keywords: ideal, algebra, module.
+++ Examples: )r FRIDEAL INPUT
+++ Description: Fractional ideals in a framed algebra.
+FractionalIdeal(R, F, UP, A): Exports == Implementation where
+  R : EuclideanDomain
+  F : QuotientFieldCategory R
+  UP: UnivariatePolynomialCategory F
+  A : Join(FramedAlgebra(F, UP), RetractableTo F)
+
+  VF  ==> Vector F
+  VA  ==> Vector A
+  UPA ==> SparseUnivariatePolynomial A
+  QF  ==> Fraction UP
+
+  Exports ==> Group with
+    ideal   : VA -> %
+      ++ ideal([f1,...,fn]) returns the ideal \spad{(f1,...,fn)}.
+    basis   : %  -> VA
+      ++ basis((f1,...,fn)) returns the vector \spad{[f1,...,fn]}.
+    norm    : %  -> F
+      ++ norm(I) returns the norm of the ideal I.
+    numer   : %  -> VA
+      ++ numer(1/d * (f1,...,fn)) = the vector \spad{[f1,...,fn]}.
+    denom   : %  -> R
+      ++ denom(1/d * (f1,...,fn)) returns d.
+    minimize: %  -> %
+      ++ minimize(I) returns a reduced set of generators for \spad{I}.
+    randomLC: (NonNegativeInteger, VA) -> A
+      ++ randomLC(n,x) should be local but conditional.
+
+  Implementation ==> add
+    import CommonDenominator(R, F, VF)
+    import MatrixCommonDenominator(UP, QF)
+    import InnerCommonDenominator(R, F, List R, List F)
+    import MatrixCategoryFunctions2(F, Vector F, Vector F, Matrix F,
+                        UP, Vector UP, Vector UP, Matrix UP)
+    import MatrixCategoryFunctions2(UP, Vector UP, Vector UP,
+                        Matrix UP, F, Vector F, Vector F, Matrix F)
+    import MatrixCategoryFunctions2(UP, Vector UP, Vector UP,
+                        Matrix UP, QF, Vector QF, Vector QF, Matrix QF)
+
+    Rep := Record(num:VA, den:R)
+
+    poly    : % -> UPA
+    invrep  : Matrix F -> A
+    upmat   : (A, NonNegativeInteger) -> Matrix UP
+    summat  : % -> Matrix UP
+    num2O   : VA -> OutputForm
+    agcd    : List A -> R
+    vgcd    : VF -> R
+    mkIdeal : (VA, R) -> %
+    intIdeal: (List A, R) -> %
+    ret?    : VA -> Boolean
+    tryRange: (NonNegativeInteger, VA, R, %) -> Union(%, "failed")
+
+    1               == [[1]$VA, 1]
+    numer i         == i.num
+    denom i         == i.den
+    mkIdeal(v, d)   == [v, d]
+    invrep m        == represents(transpose(m) * coordinates(1$A))
+    upmat(x, i)     == map(monomial(#1, i)$UP, regularRepresentation x)
+    ret? v          == any?(retractIfCan(#1)@Union(F,"failed") case F, v)
+    x = y           == denom(x) = denom(y) and numer(x) = numer(y)
+    agcd l  == reduce("gcd", [vgcd coordinates a for a in l]$List(R), 0)
+
+    norm i ==
+      ("gcd"/[retract(u)@R for u in coefficients determinant summat i])
+              / denom(i) ** rank()$A
+
+    tryRange(range, nm, nrm, i) ==
+      for j in 0..10 repeat
+        a := randomLC(10 * range, nm)
+        unit? gcd((retract(norm a)@R exquo nrm)::R, nrm) =>
+                                return intIdeal([nrm::F::A, a], denom i)
+      "failed"
+
+    summat i ==
+      m := minIndex(v := numer i)
+      reduce("+",
+            [upmat(qelt(v, j + m), j) for j in 0..#v-1]$List(Matrix UP))
+
+    inv i ==
+      m  := inverse(map(#1::QF, summat i))::Matrix(QF)
+      cd  := splitDenominator(denom(i)::F::UP::QF * m)
+      cd2 := splitDenominator coefficients(cd.den)
+      invd:= cd2.den / reduce("gcd", cd2.num)
+      d   := reduce("max", [degree p for p in parts(cd.num)])
+      ideal
+        [invd * invrep map(coefficient(#1, j), cd.num) for j in 0..d]$VA
+
+    ideal v ==
+      d := reduce("lcm", [commonDenominator coordinates qelt(v, i)
+                          for i in minIndex v .. maxIndex v]$List(R))
+      intIdeal([d::F * qelt(v, i) for i in minIndex v .. maxIndex v], d)
+
+    intIdeal(l, d) ==
+      lr := empty()$List(R)
+      nr := empty()$List(A)
+      for x in removeDuplicates l repeat
+        if (u := retractIfCan(x)@Union(F, "failed")) case F
+          then lr := concat(retract(u::F)@R, lr)
+          else nr := concat(x, nr)
+      r    := reduce("gcd", lr, 0)
+      g    := agcd nr
+      a    := (r quo (b := gcd(gcd(d, r), g)))::F::A
+      d    := d quo b
+      r ~= 0 and ((g exquo r) case R) => mkIdeal([a], d)
+      invb := inv(b::F)
+      va:VA := [invb * m for m in nr]
+      zero? a => mkIdeal(va, d)
+      mkIdeal(concat(a, va), d)
+
+    vgcd v ==
+      reduce("gcd",
+             [retract(v.i)@R for i in minIndex v .. maxIndex v]$List(R))
+
+    poly i ==
+      m := minIndex(v := numer i)
+      +/[monomial(qelt(v, i + m), i) for i in 0..#v-1]
+
+    i1 * i2 ==
+      intIdeal(coefficients(poly i1 * poly i2), denom i1 * denom i2)
+
+    i:$ ** m:Integer ==
+      m < 0 => inv(i) ** (-m)
+      n := m::NonNegativeInteger
+      v := numer i
+      intIdeal([qelt(v, j) ** n for j in minIndex v .. maxIndex v],
+               denom(i) ** n)
+
+    num2O v ==
+      paren [qelt(v, i)::OutputForm
+             for i in minIndex v .. maxIndex v]$List(OutputForm)
+
+    basis i ==
+      v := numer i
+      d := inv(denom(i)::F)
+      [d * qelt(v, j) for j in minIndex v .. maxIndex v]
+
+    coerce(i:$):OutputForm ==
+      nm := num2O numer i
+--      one? denom i => nm
+      (denom i = 1) => nm
+      (1::Integer::OutputForm) / (denom(i)::OutputForm) * nm
+
+    if F has Finite then
+      randomLC(m, v) ==
+        +/[random()$F * qelt(v, j) for j in minIndex v .. maxIndex v]
+    else
+      randomLC(m, v) ==
+        +/[(random()$Integer rem m::Integer) * qelt(v, j)
+            for j in minIndex v .. maxIndex v]
+
+    minimize i ==
+      n := (#(nm := numer i))
+--      one?(n) or (n < 3 and ret? nm) => i
+      (n = 1) or (n < 3 and ret? nm) => i
+      nrm    := retract(norm mkIdeal(nm, 1))@R
+      for range in 1..5 repeat
+        (u := tryRange(range, nm, nrm, i)) case $ => return(u::$)
+      i
+

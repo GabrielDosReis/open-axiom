@@ -1,0 +1,70 @@
+)abbrev domain E04MBFA e04mbfAnnaType
+++ Author: Brian Dupee
+++ Date Created: February 1996
+++ Date Last Updated: February 1996
+++ Basic Operations: measure, numericalOptimization
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{e04mbfAnnaType} is a domain of \axiomType{NumericalOptimization}
+++ for the NAG routine E04MBF, an optimization routine for Linear functions.
+++ The function
+++ \axiomFun{measure} measures the usefulness of the routine E04MBF
+++ for the given problem.  The function \axiomFun{numericalOptimization}
+++ performs the optimization by using \axiomType{NagOptimisationPackage}.
+e04mbfAnnaType(): NumericalOptimizationCategory == Result add
+  DF    ==> DoubleFloat
+  EF    ==> Expression Float
+  EDF   ==> Expression DoubleFloat
+  PDF   ==> Polynomial DoubleFloat
+  VPDF  ==> Vector Polynomial DoubleFloat
+  LDF   ==> List DoubleFloat
+  LOCDF ==> List OrderedCompletion DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  MPDF  ==> Matrix Polynomial DoubleFloat
+  MF    ==> Matrix Float
+  MEF   ==> Matrix Expression Float
+  LEDF  ==> List Expression DoubleFloat
+  VEF   ==> Vector Expression Float
+  NOA   ==> Record(fn:EDF, init:LDF, lb:LOCDF, cf:LEDF, ub:LOCDF)
+  LSA   ==> Record(lfn:LEDF, init:LDF)
+  EF2   ==> ExpressionFunctions2
+  MI    ==> Matrix Integer
+  INT   ==> Integer
+  F     ==> Float
+  NNI   ==> NonNegativeInteger
+  S     ==> Symbol
+  LS    ==> List Symbol
+  MVCF  ==> MultiVariableCalculusFunctions
+  ESTOOLS2 ==> ExpertSystemToolsPackage2
+  SDF   ==> Stream DoubleFloat
+  LSDF  ==> List Stream DoubleFloat
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  OCDF  ==> OrderedCompletion DoubleFloat
+
+  Rep:=Result
+  import Rep, NagOptimisationPackage
+  import e04AgentsPackage,ExpertSystemToolsPackage
+
+  measure(R:RoutinesTable,args:NOA) ==
+    (not linear?([args.fn])) or (not linear?(args.cf)) => 
+      [0.0,"e04mbf is for a linear objective function and constraints only."]
+    [getMeasure(R,e04mbf@Symbol)$RoutinesTable,"e04mbf is recommended" ]
+
+  numericalOptimization(args:NOA) ==
+    argsFn:EDF := args.fn
+    c := args.cf
+    listVars:List LS := concat(variables(argsFn)$EDF,[variables(z)$EDF for z in c])
+    n:NNI := #(v := removeDuplicates(concat(listVars)$LS)$LS)
+    A:MDF := linearMatrix(args.cf,n)
+    nclin:NNI := # linearPart(c)
+    nrowa:NNI := max(1,nclin)
+    bl:MDF := mat(finiteBound(args.lb,float(1,21,10)$DF),n)
+    bu:MDF := mat(finiteBound(args.ub,float(1,21,10)$DF),n)
+    cvec:MDF := mat(coefficients(retract(argsFn)@PDF)$PDF,n)
+    x := mat(args.init,n)
+    lwork:INT := 
+      nclin < n => 2*nclin*(nclin+4)+2+6*n+nrowa
+      2*(n+3)*n+4*nclin+nrowa
+    out:Result := e04mbf(20,1,n,nclin,n+nclin,nrowa,A,bl,bu,cvec,true,2*n,lwork,x,-1)
+    changeNameToObjf(objlp@Symbol,out)
+

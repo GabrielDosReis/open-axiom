@@ -1,0 +1,59 @@
+)abbrev category UPXSCAT UnivariatePuiseuxSeriesCategory
+++ Author: Clifton J. Williamson
+++ Date Created: 21 December 1989
+++ Date Last Updated: 20 September 1993
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: series, Puiseux
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{UnivariatePuiseuxSeriesCategory} is the category of Puiseux
+++   series in one variable.
+UnivariatePuiseuxSeriesCategory(Coef): Category == Definition where
+  Coef : Ring
+  NNI  ==> NonNegativeInteger
+  RN   ==> Fraction Integer
+  Term ==> Record(k:RN,c:Coef)
+
+  Definition ==> UnivariatePowerSeriesCategory(Coef,RN) with
+
+    series: (NNI,Stream Term) -> %
+      ++ \spad{series(n,st)} creates a series from a common denomiator and
+      ++ a stream of non-zero terms, where a term is an exponent-coefficient
+      ++ pair.  The terms in the stream should be ordered by increasing order
+      ++ of exponents and \spad{n} should be a common denominator for the
+      ++ exponents in the stream of terms.
+    multiplyExponents: (%,Fraction Integer) -> %
+      ++ \spad{multiplyExponents(f,r)} multiplies all exponents of the power
+      ++ series f by the positive rational number r.
+
+    if Coef has Algebra Fraction Integer then
+      integrate: % -> %
+        ++ \spad{integrate(f(x))} returns an anti-derivative of the power
+        ++ series \spad{f(x)} with constant coefficient 1.
+        ++ We may integrate a series when we can divide coefficients
+        ++ by rational numbers.
+      if Coef has integrate: (Coef,Symbol) -> Coef and _
+         Coef has variables: Coef -> List Symbol then
+        integrate: (%,Symbol) -> %
+          ++ \spad{integrate(f(x),var)} returns an anti-derivative of the power
+          ++ series \spad{f(x)} with respect to the variable \spad{var}.
+      if Coef has TranscendentalFunctionCategory and _
+         Coef has PrimitiveFunctionCategory and _
+         Coef has AlgebraicallyClosedFunctionSpace Integer then
+        integrate: (%,Symbol) -> %
+          ++ \spad{integrate(f(x),y)} returns an anti-derivative of
+          ++ the power series \spad{f(x)} with respect to the variable
+          ++ \spad{y}.
+      RadicalCategory
+        --++ We provide rational powers when we can divide coefficients
+        --++ by integers.
+      TranscendentalFunctionCategory
+        --++ We provide transcendental functions when we can divide
+        --++ coefficients by integers.
+    if Coef has Field then Field
+        --++ Univariate Puiseux series over a field form a field.
+

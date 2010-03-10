@@ -1,0 +1,68 @@
+)abbrev domain E04DGFA e04dgfAnnaType
+++ Author: Brian Dupee
+++ Date Created: February 1996
+++ Date Last Updated: February 1996
+++ Basic Operations: measure, numericalOptimization
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{e04dgfAnnaType} is a domain of \axiomType{NumericalOptimization}
+++ for the NAG routine E04DGF, a general optimization routine which
+++ can handle some singularities in the input function.  The function
+++ \axiomFun{measure} measures the usefulness of the routine E04DGF
+++ for the given problem.  The function \axiomFun{numericalOptimization}
+++ performs the optimization by using \axiomType{NagOptimisationPackage}.
+
+e04dgfAnnaType(): NumericalOptimizationCategory == Result add
+  DF    ==> DoubleFloat
+  EF    ==> Expression Float
+  EDF   ==> Expression DoubleFloat
+  PDF   ==> Polynomial DoubleFloat
+  VPDF  ==> Vector Polynomial DoubleFloat
+  LDF   ==> List DoubleFloat
+  LOCDF ==> List OrderedCompletion DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  MPDF  ==> Matrix Polynomial DoubleFloat
+  MF    ==> Matrix Float
+  MEF   ==> Matrix Expression Float
+  LEDF  ==> List Expression DoubleFloat
+  VEF   ==> Vector Expression Float
+  NOA   ==> Record(fn:EDF, init:LDF, lb:LOCDF, cf:LEDF, ub:LOCDF)
+  LSA   ==> Record(lfn:LEDF, init:LDF)
+  EF2   ==> ExpressionFunctions2
+  MI    ==> Matrix Integer
+  INT   ==> Integer
+  F     ==> Float
+  NNI   ==> NonNegativeInteger
+  S     ==> Symbol
+  LS    ==> List Symbol
+  MVCF  ==> MultiVariableCalculusFunctions
+  ESTOOLS2 ==> ExpertSystemToolsPackage2
+  SDF   ==> Stream DoubleFloat
+  LSDF  ==> List Stream DoubleFloat
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  OCDF  ==> OrderedCompletion DoubleFloat
+
+  Rep:=Result
+  import Rep, NagOptimisationPackage, ExpertSystemToolsPackage
+
+  measure(R:RoutinesTable,args:NOA) ==
+    string:String := "e04dgf is "
+    positive?(#(args.cf) + #(args.lb) + #(args.ub)) =>
+      string := concat(string,"unsuitable for constrained problems. ")
+      [0.0,string]
+    string := concat(string,"recommended")
+    [getMeasure(R,e04dgf@Symbol)$RoutinesTable, string]
+
+  numericalOptimization(args:NOA) ==
+    argsFn:EDF := args.fn
+    n:NNI := #(variables(argsFn)$EDF)
+    fu:DF := float(4373903597,-24,10)$DF
+    it:INT := max(50,5*n)
+    lin:DF := float(9,-1,10)$DF
+    ma:DF := float(1,20,10)$DF
+    op:DF := float(326,-14,10)$DF
+    x:MDF := mat(args.init,n)
+    ArgsFn:Expression Float := edf2ef(argsFn)
+    f:Union(fn:FileName,fp:Asp49(OBJFUN)) := [retract(ArgsFn)$Asp49(OBJFUN)]
+    e04dgf(n,1$DF,fu,it,lin,true,ma,op,1,1,n,0,x,-1,f)
+

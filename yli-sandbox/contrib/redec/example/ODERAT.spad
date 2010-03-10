@@ -1,0 +1,225 @@
+)abbrev package ODERAT RationalLODE
+++ Author: Manuel Bronstein
+++ Date Created: 13 March 1991
+++ Date Last Updated: 13 April 1994
+++ Description:
+++  \spad{RationalLODE} provides functions for in-field solutions of linear
+++   ordinary differential equations, in the rational case.
+RationalLODE(F, UP): Exports == Implementation where
+  F  : Join(Field, CharacteristicZero, RetractableTo Integer,
+                                       RetractableTo Fraction Integer)
+  UP : UnivariatePolynomialCategory F
+
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  RF  ==> Fraction UP
+  U   ==> Union(RF, "failed")
+  V   ==> Vector F
+  M   ==> Matrix F
+  LODO ==> LinearOrdinaryDifferentialOperator1 RF
+  LODO2==> LinearOrdinaryDifferentialOperator2(UP, RF)
+
+  Exports ==> with
+    ratDsolve: (LODO, RF) -> Record(particular: U, basis: List RF)
+      ++ ratDsolve(op, g) returns \spad{["failed", []]} if the equation
+      ++ \spad{op y = g} has no rational solution. Otherwise, it returns
+      ++ \spad{[f, [y1,...,ym]]} where f is a particular rational solution
+      ++ and the yi's form a basis for the rational solutions of the
+      ++ homogeneous equation.
+    ratDsolve: (LODO, List RF) -> Record(basis:List RF, mat:Matrix F)
+      ++ ratDsolve(op, [g1,...,gm]) returns \spad{[[h1,...,hq], M]} such
+      ++ that any rational solution of \spad{op y = c1 g1 + ... + cm gm}
+      ++ is of the form \spad{d1 h1 + ... + dq hq} where
+      ++ \spad{M [d1,...,dq,c1,...,cm] = 0}.
+    ratDsolve: (LODO2, RF) -> Record(particular: U, basis: List RF)
+      ++ ratDsolve(op, g) returns \spad{["failed", []]} if the equation
+      ++ \spad{op y = g} has no rational solution. Otherwise, it returns
+      ++ \spad{[f, [y1,...,ym]]} where f is a particular rational solution
+      ++ and the yi's form a basis for the rational solutions of the
+      ++ homogeneous equation.
+    ratDsolve: (LODO2, List RF) -> Record(basis:List RF, mat:Matrix F)
+      ++ ratDsolve(op, [g1,...,gm]) returns \spad{[[h1,...,hq], M]} such
+      ++ that any rational solution of \spad{op y = c1 g1 + ... + cm gm}
+      ++ is of the form \spad{d1 h1 + ... + dq hq} where
+      ++ \spad{M [d1,...,dq,c1,...,cm] = 0}.
+    indicialEquationAtInfinity: LODO -> UP
+      ++ indicialEquationAtInfinity op returns the indicial equation of
+      ++ \spad{op} at infinity.
+    indicialEquationAtInfinity: LODO2 -> UP
+      ++ indicialEquationAtInfinity op returns the indicial equation of
+      ++ \spad{op} at infinity.
+
+  Implementation ==> add
+    import BoundIntegerRoots(F, UP)
+    import RationalIntegration(F, UP)
+    import PrimitiveRatDE(F, UP, LODO2, LODO)
+    import LinearSystemMatrixPackage(F, V, V, M)
+    import InnerCommonDenominator(UP, RF, List UP, List RF)
+
+    nzero?             : V -> Boolean
+    evenodd            : N -> F
+    UPfact             : N -> UP
+    infOrder           : RF -> Z
+    infTau             : (UP, N) -> F
+    infBound           : (LODO2, List RF) -> N
+    regularPoint       : (LODO2, List RF) -> Z
+    infIndicialEquation: (List N, List UP) -> UP
+    makeDot            : (Vector F, List RF) -> RF
+    unitlist           : (N, N) -> List F
+    infMuLambda: LODO2 -> Record(mu:Z, lambda:List N, func:List UP)
+    ratDsolve0: (LODO2, RF) -> Record(particular: U, basis: List RF)
+    ratDsolve1: (LODO2, List RF) -> Record(basis:List RF, mat:Matrix F)
+    candidates: (LODO2,List RF,UP) -> Record(basis:List RF,particular:List RF)
+
+    dummy := new()$Symbol
+
+    infOrder f == (degree denom f) - (degree numer f)
+    evenodd n  == (even? n => 1; -1)
+
+    ratDsolve1(op, lg) ==
+      d := denomLODE(op, lg)
+      rec := candidates(op, lg, d)
+      l := concat([op q for q in rec.basis],
+                  [op(rec.particular.i) - lg.i for i in 1..#(rec.particular)])
+      sys1 := reducedSystem(matrix [l])@Matrix(UP)
+      [rec.basis, reducedSystem sys1]
+
+    ratDsolve0(op, g) ==
+      zero? degree op => [inv(leadingCoefficient(op)::RF) * g, empty()]
+      minimumDegree op > 0 =>
+        sol := ratDsolve0((monicRightDivide(op, monomial(1, 1)).quotient)@LODO2, g)
+        b:List(RF) := [1]
+        for f in sol.basis repeat
+          if (uu := infieldint f) case RF then b := concat(uu::RF, b)
+        sol.particular case "failed" => ["failed", b]
+        [infieldint(sol.particular::RF), b]
+      (u := denomLODE(op, g)) case "failed" => ["failed", empty()]
+      rec := candidates(op, [g], u::UP)
+      l := lb := lsol := empty()$List(RF)
+      for q in rec.basis repeat
+          if zero?(opq := op q) then lsol := concat(q, lsol)
+          else (l := concat(opq, l); lb := concat(q, lb))
+      h:RF := (zero? g => 0; first(rec.particular))
+      empty? l =>
+          zero? g => [0, lsol]
+          [(g = op h => h; "failed"), lsol]
+      m:M
+      v:V
+      if zero? g then
+          m := reducedSystem(reducedSystem(matrix [l])@Matrix(UP))@M
+          v := new(ncols m, 0)$V
+      else
+          sys1 := reducedSystem(matrix [l], vector [g - op h]
+                               )@Record(mat: Matrix UP, vec: Vector UP)
+          sys2 := reducedSystem(sys1.mat, sys1.vec)@Record(mat:M, vec:V)
+          m := sys2.mat
+          v := sys2.vec
+      sol := solve(m, v)
+      part:U :=
+        zero? g => 0
+        sol.particular case "failed" => "failed"
+        makeDot(sol.particular::V, lb) + first(rec.particular)
+      [part,
+       concat_!(lsol, [makeDot(v, lb) for v in sol.basis | nzero? v])]
+
+    indicialEquationAtInfinity(op:LODO2) ==
+      rec := infMuLambda op
+      infIndicialEquation(rec.lambda, rec.func)
+
+    indicialEquationAtInfinity(op:LODO) ==
+      rec := splitDenominator(op, empty())
+      indicialEquationAtInfinity(rec.eq)
+
+    regularPoint(l, lg) ==
+      a := leadingCoefficient(l) * commonDenominator lg
+      coefficient(a, 0) ~= 0 => 0
+      for i in 1.. repeat
+        a(j := i::F) ~= 0 => return i
+        a(-j) ~= 0 => return(-i)
+
+    unitlist(i, q) ==
+      v := new(q, 0)$Vector(F)
+      v.i := 1
+      parts v
+
+    candidates(op, lg, d) ==
+      n := degree d + infBound(op, lg)
+      m := regularPoint(op, lg)
+      uts := UnivariateTaylorSeries(F, dummy, m::F)
+      tools := UTSodetools(F, UP, LODO2, uts)
+      solver := UnivariateTaylorSeriesODESolver(F, uts)
+      dd := UP2UTS(d)$tools
+      f := LODO2FUN(op)$tools
+      q := degree op
+      e := unitlist(1, q)
+      hom := [UTS2UP(dd * ode(f, unitlist(i, q))$solver, n)$tools /$RF d
+                   for i in 1..q]$List(RF)
+      a1 := inv(leadingCoefficient(op)::RF)
+      part := [UTS2UP(dd * ode(RF2UTS(a1 * g)$tools + f #1, e)$solver, n)$tools
+                /$RF d for g in lg | g ~= 0]$List(RF)
+      [hom, part]
+
+    nzero? v ==
+      for i in minIndex v .. maxIndex v repeat
+        not zero? qelt(v, i) => return true
+      false
+
+-- returns z(z+1)...(z+(n-1))
+    UPfact n ==
+      zero? n => 1
+      z := monomial(1, 1)$UP
+      */[z + i::F::UP for i in 0..(n-1)::N]
+
+    infMuLambda l ==
+      lamb:List(N) := [d := degree l]
+      lf:List(UP) := [a := leadingCoefficient l]
+      mup := degree(a)::Z - d
+      while (l := reductum l) ~= 0 repeat
+          a := leadingCoefficient l
+          if (m := degree(a)::Z - (d := degree l)) > mup then
+            mup := m
+            lamb := [d]
+            lf := [a]
+          else if (m = mup) then
+            lamb := concat(d, lamb)
+            lf := concat(a, lf)
+      [mup, lamb, lf]
+
+    infIndicialEquation(lambda, lf) ==
+      ans:UP := 0
+      for i in lambda for f in lf repeat
+        ans := ans + evenodd i * leadingCoefficient f * UPfact i
+      ans
+
+    infBound(l, lg) ==
+      rec := infMuLambda l
+      n := min(- degree(l)::Z - 1,
+               integerBound infIndicialEquation(rec.lambda, rec.func))
+      while not(empty? lg) and zero? first lg repeat lg := rest lg
+      empty? lg => (-n)::N
+      m := infOrder first lg
+      for g in rest lg repeat
+        if not(zero? g) and (mm := infOrder g) < m then m := mm
+      (-min(n, rec.mu - degree(leadingCoefficient l)::Z + m))::N
+
+    makeDot(v, bas) ==
+      ans:RF := 0
+      for i in 1.. for b in bas repeat ans := ans + v.i::UP * b
+      ans
+
+    ratDsolve(op:LODO, g:RF) ==
+      rec := splitDenominator(op, [g])
+      ratDsolve0(rec.eq, first(rec.rh))
+
+    ratDsolve(op:LODO, lg:List RF) ==
+      rec := splitDenominator(op, lg)
+      ratDsolve1(rec.eq, rec.rh)
+
+    ratDsolve(op:LODO2, g:RF) ==
+      unit?(c := content op) => ratDsolve0(op, g)
+      ratDsolve0((op exquo c)::LODO2, inv(c::RF) * g)
+
+    ratDsolve(op:LODO2, lg:List RF) ==
+      unit?(c := content op) => ratDsolve1(op, lg)
+      ratDsolve1((op exquo c)::LODO2, [inv(c::RF) * g for g in lg])
+

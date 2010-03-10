@@ -1,0 +1,21 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain ADDAST AddAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax for an add-expression.
+AddAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    base: % -> SpadAst
+      ++ base(d) returns the base domain(s) of the add-domain expression.
+    body: % -> SpadAst
+      ++ base(d) returns the actual body of the add-domain expression `d'.
+  Private == add
+    Rep == List SpadAst
+    base x == second rep x
+    body x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('AddAst::OutputForm,
+        ['base::OutputForm = base(x)::OutputForm,
+          'body::OutputForm = body(x)::OutputForm])$OutputForm

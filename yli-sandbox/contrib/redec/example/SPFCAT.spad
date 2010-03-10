@@ -1,0 +1,34 @@
+)abbrev category SPFCAT SpecialFunctionCategory
+++ Category for the other special functions
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 11 May 1993
+++ Description: Category for the other special functions;
+SpecialFunctionCategory(): Category == with
+    abs :      $ -> $
+        ++ abs(x) returns the absolute value of x.
+    Gamma:     $ -> $
+        ++ Gamma(x) is the Euler Gamma function.
+    Beta:      ($,$)->$
+        ++ Beta(x,y) is \spad{Gamma(x) * Gamma(y)/Gamma(x+y)}.
+    digamma:   $ -> $
+        ++ digamma(x) is the logarithmic derivative of \spad{Gamma(x)}
+        ++ (often written \spad{psi(x)} in the literature).
+    polygamma: ($, $) -> $
+        ++ polygamma(k,x) is the \spad{k-th} derivative of \spad{digamma(x)},
+        ++ (often written \spad{psi(k,x)} in the literature).
+    Gamma:     ($, $) -> $
+        ++ Gamma(a,x) is the incomplete Gamma function.
+    besselJ:   ($,$) -> $
+        ++ besselJ(v,z) is the Bessel function of the first kind.
+    besselY:   ($,$) -> $
+        ++ besselY(v,z) is the Bessel function of the second kind.
+    besselI:   ($,$) -> $
+        ++ besselI(v,z) is the modified Bessel function of the first kind.
+    besselK:   ($,$) -> $
+        ++ besselK(v,z) is the modified Bessel function of the second kind.
+    airyAi:    $ -> $
+        ++ airyAi(x) is the Airy function \spad{Ai(x)}.
+    airyBi:    $ -> $
+        ++ airyBi(x) is the Airy function \spad{Bi(x)}.
+

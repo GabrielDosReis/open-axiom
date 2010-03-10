@@ -1,0 +1,14 @@
+)abbrev category FPATMAB FullyPatternMatchable
+++ Category of sets that can be pattern-matched on
+++ Author: Manuel Bronstein
+++ Date Created: 28 Nov 1989
+++ Date Last Updated: 29 Nov 1989
+++ Description:
+++   A set S is PatternMatchable over R if S can lift the
+++   pattern-matching functions of S over the integers and float
+++   to itself (necessary for matching in towers).
+++ Keywords: pattern, matching.
+FullyPatternMatchable(R:Type): Category == Type with
+  if R has PatternMatchable Integer then PatternMatchable Integer
+  if R has PatternMatchable Float   then PatternMatchable Float
+

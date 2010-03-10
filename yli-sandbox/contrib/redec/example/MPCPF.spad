@@ -1,0 +1,59 @@
+)abbrev package MPCPF MPolyCatPolyFactorizer
+++ Author: P. Gianni
+++ Date Created:
+++ Date Last Updated: March 1995
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++    This package exports a factor operation for multivariate polynomials
+++ with coefficients which are polynomials over
+++ some ring R over which we can factor. It is used internally by packages
+++ such as the solve package which need to work with polynomials in a specific
+++ set of variables with coefficients which are polynomials in all the other
+++ variables.
+
+MPolyCatPolyFactorizer(E,OV,R,PPR) : C == T
+ where
+  R     :   EuclideanDomain
+  E     :   OrderedAbelianMonoidSup
+    -- following type is required by PushVariables
+  OV    :   OrderedSet  with  
+                 convert : % -> Symbol
+                   ++ convert(x) converts x to a symbol
+                 variable: Symbol -> Union(%, "failed")
+                   ++ variable(s) makes an element from symbol s or fails.
+  PR    ==> Polynomial R
+  PPR   :   PolynomialCategory(PR,E,OV)
+  NNI   ==> NonNegativeInteger
+  ISY   ==> IndexedExponents Symbol
+  SE    ==> Symbol
+  UP    ==> SparseUnivariatePolynomial PR
+  UPPR  ==> SparseUnivariatePolynomial PPR
+
+  C  == with
+     factor      :        PPR             ->   Factored PPR
+       ++ factor(p) factors a polynomial with polynomial
+       ++ coefficients.
+
+             ---  Local Functions  ----
+  T  == add
+
+     import PushVariables(R,E,OV,PPR)
+
+        ----  factorization of p ----
+     factor(p:PPR) : Factored PPR ==
+       ground? p => nilFactor(p,1)
+       c := content p
+       p := (p exquo c)::PPR
+       vars:List OV :=variables p
+       g:PR:=retract pushdown(p, vars)
+       flist := factor(g)$GeneralizedMultivariateFactorize(Symbol,ISY,R,R,PR)
+       ffact : List(Record(irr:PPR,pow:Integer))
+       ffact:=[[pushup(u.factor::PPR,vars),u.exponent] for u in factors flist]
+       fcont:=(unit flist)::PPR
+       nilFactor(c*fcont,1)*(_*/[primeFactor(ff.irr,ff.pow) for ff in ffact])
+

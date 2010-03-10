@@ -1,0 +1,23 @@
+)abbrev package PMPRED AttachPredicates
+++ Predicates for pattern-matching
+++ Author: Manuel Bronstein
+++ Description: Attaching predicates to symbols for pattern matching.
+++ Date Created: 21 Mar 1989
+++ Date Last Updated: 23 May 1990
+++ Keywords: pattern, matching.
+AttachPredicates(D:Type): Exports == Implementation where
+  FE ==> Expression Integer
+
+  Exports ==> with
+    suchThat: (Symbol, D -> Boolean) -> FE
+      ++ suchThat(x, foo) attaches the predicate foo to x.
+    suchThat: (Symbol, List(D -> Boolean)) -> FE
+      ++ suchThat(x, [f1, f2, ..., fn]) attaches the predicate
+      ++ f1 and f2 and ... and fn to x.
+
+  Implementation ==> add
+    import FunctionSpaceAttachPredicates(Integer, FE, D)
+
+    suchThat(p:Symbol, f:D -> Boolean)       == suchThat(p::FE, f)
+    suchThat(p:Symbol, l:List(D -> Boolean)) == suchThat(p::FE, l)
+

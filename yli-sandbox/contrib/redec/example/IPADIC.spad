@@ -1,0 +1,248 @@
+)abbrev domain IPADIC InnerPAdicInteger
+++ Author: Clifton J. Williamson
+++ Date Created: 20 August 1989
+++ Date Last Updated: 15 May 1990
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Keywords: p-adic, completion
+++ Examples:
+++ References:
+++ Description:
+++   This domain implements Zp, the p-adic completion of the integers.
+++   This is an internal domain.
+InnerPAdicInteger(p,unBalanced?): Exports == Implementation where
+  p           : Integer
+  unBalanced? : Boolean
+  I   ==> Integer
+  NNI ==> NonNegativeInteger
+  OUT ==> OutputForm
+  L   ==> List
+  ST  ==> Stream
+  SUP ==> SparseUnivariatePolynomial
+
+  Exports ==> PAdicIntegerCategory p
+
+  Implementation ==> add
+
+    PEXPR := p :: OUT
+
+    Rep := ST I
+
+    characteristic() == 0
+    euclideanSize(x) == order(x)
+
+    stream(x:%):ST I == x pretend ST(I)
+    padic(x:ST I):% == x pretend %
+    digits x == stream x
+
+    extend(x,n) == extend(x,n + 1)$Rep
+    complete x == complete(x)$Rep
+
+--     notBalanced?:() -> Boolean
+--     notBalanced?() == unBalanced?
+
+    modP:I -> I
+    modP n ==
+      unBalanced? or (p = 2) => positiveRemainder(n,p)
+      symmetricRemainder(n,p)
+
+    modPInfo:I -> Record(digit:I,carry:I)
+    modPInfo n ==
+      dv := divide(n,p)
+      r0 := dv.remainder; q := dv.quotient
+      if (r := modP r0) ~= r0 then q := q + ((r0 - r) quo p)
+      [r,q]
+
+    invModP: I -> I
+    invModP n == invmod(n,p)
+
+    modulus()     == p
+    moduloP x     == (empty? x => 0; frst x)
+    quotientByP x == (empty? x => x; rst x)
+
+    approximate(x,n) ==
+      n <= 0 or empty? x => 0
+      frst x + p * approximate(rst x,n - 1)
+
+    x = y ==
+      st : ST I := stream(x - y)
+      n : I := _$streamCount$Lisp
+      for i in 0..n repeat
+        empty? st => return true
+        frst st ~= 0 => return false
+        st := rst st
+      empty? st
+
+    order x ==
+      st := stream x
+      for i in 0..1000 repeat
+        empty? st => return 0
+        frst st ~= 0 => return i
+        st := rst st
+      error "order: series has more than 1000 leading zero coefs"
+
+    0 == padic concat(0$I,empty())
+    1 == padic concat(1$I,empty())
+
+    intToPAdic: I -> ST I
+    intToPAdic n == delay
+      n = 0 => empty()
+      modp := modPInfo n
+      concat(modp.digit,intToPAdic modp.carry)
+
+    intPlusPAdic: (I,ST I) -> ST I
+    intPlusPAdic(n,x) == delay
+      empty? x => intToPAdic n
+      modp := modPInfo(n + frst x)
+      concat(modp.digit,intPlusPAdic(modp.carry,rst x))
+
+    intMinusPAdic: (I,ST I) -> ST I
+    intMinusPAdic(n,x) == delay
+      empty? x => intToPAdic n
+      modp := modPInfo(n - frst x)
+      concat(modp.digit,intMinusPAdic(modp.carry,rst x))
+
+    plusAux: (I,ST I,ST I) -> ST I
+    plusAux(n,x,y) == delay
+      empty? x and empty? y => intToPAdic n
+      empty? x => intPlusPAdic(n,y)
+      empty? y => intPlusPAdic(n,x)
+      modp := modPInfo(n + frst x + frst y)
+      concat(modp.digit,plusAux(modp.carry,rst x,rst y))
+
+    minusAux: (I,ST I,ST I) -> ST I
+    minusAux(n,x,y) == delay
+      empty? x and empty? y => intToPAdic n
+      empty? x => intMinusPAdic(n,y)
+      empty? y => intPlusPAdic(n,x)
+      modp := modPInfo(n + frst x - frst y)
+      concat(modp.digit,minusAux(modp.carry,rst x,rst y))
+
+    x + y == padic plusAux(0,stream x,stream y)
+    x - y == padic minusAux(0,stream x,stream y)
+    - y   == padic intMinusPAdic(0,stream y)
+    coerce(n:I) == padic intToPAdic n
+
+    intMult:(I,ST I) -> ST I
+    intMult(n,x) == delay
+      empty? x => empty()
+      modp := modPInfo(n * frst x)
+      concat(modp.digit,intPlusPAdic(modp.carry,intMult(n,rst x)))
+
+    (n:I) * (x:%) ==
+      padic intMult(n,stream x)
+
+    timesAux:(ST I,ST I) -> ST I
+    timesAux(x,y) == delay
+      empty? x or empty? y => empty()
+      modp := modPInfo(frst x * frst y)
+      car := modp.digit
+      cdr : ST I --!!
+      cdr := plusAux(modp.carry,intMult(frst x,rst y),timesAux(rst x,y))
+      concat(car,cdr)
+
+    (x:%) * (y:%) == padic timesAux(stream x,stream y)
+
+    quotientAux:(ST I,ST I) -> ST I
+    quotientAux(x,y) == delay
+      empty? x => error "quotientAux: first argument"
+      empty? y => empty()
+      modP frst x = 0 =>
+        modP frst y = 0 => quotientAux(rst x,rst y)
+        error "quotient: quotient not integral"
+      z0 := modP(invModP frst x * frst y)
+      yy : ST I --!!
+      yy := rest minusAux(0,y,intMult(z0,x))
+      concat(z0,quotientAux(x,yy))
+
+    recip x ==
+      empty? x or modP frst x = 0 => "failed"
+      padic quotientAux(stream x,concat(1,empty()))
+
+    iExquo: (%,%,I) -> Union(%,"failed")
+    iExquo(xx,yy,n) ==
+      n > 1000 =>
+        error "exquo: quotient by series with many leading zero coefs"
+      empty? yy => "failed"
+      empty? xx => 0
+      zero? frst yy =>
+        zero? frst xx => iExquo(rst xx,rst yy,n + 1)
+        "failed"
+      (rec := recip yy) case "failed" => "failed"
+      xx * (rec :: %)
+
+    x exquo y == iExquo(stream x,stream y,0)
+
+    divide(x,y) ==
+      (z:=x exquo y) case "failed" => [0,x]
+      [z, 0]
+
+    iSqrt: (I,I,I,%) -> %
+    iSqrt(pn,an,bn,bSt) == delay
+      bn1 := (empty? bSt => bn; bn + pn * frst(bSt))
+      c := (bn1 - an*an) quo pn
+      aa := modP(c * invmod(2*an,p))
+      nSt := (empty? bSt => bSt; rst bSt)
+      concat(aa,iSqrt(pn*p,an + pn*aa,bn1,nSt))
+
+    sqrt(b,a) ==
+      p = 2 =>
+        error "sqrt: no square roots in Z2 yet"
+      not zero? modP(a*a - (bb := moduloP b)) =>
+        error "sqrt: not a square root (mod p)"
+      b := (empty? b => b; rst b)
+      a := modP a
+      concat(a,iSqrt(p,a,bb,b))
+
+    iRoot: (SUP I,I,I,I) -> ST I
+    iRoot(f,alpha,invFpx0,pPow) == delay
+      num := -((f(alpha) exquo pPow) :: I)
+      digit := modP(num * invFpx0)
+      concat(digit,iRoot(f,alpha + digit * pPow,invFpx0,p * pPow))
+
+    root(f,x0) ==
+      x0 := modP x0
+      not zero? modP f(x0) =>
+        error "root: not a root (mod p)"
+      fpx0 := modP (differentiate f)(x0)
+      zero? fpx0 =>
+        error "root: approximate root must be a simple root (mod p)"
+      invFpx0 := modP invModP fpx0
+      padic concat(x0,iRoot(f,x0,invFpx0,p))
+
+    termOutput:(I,I) -> OUT
+    termOutput(k,c) ==
+      k = 0 => c :: OUT
+      mon := (k = 1 => PEXPR; PEXPR ** (k :: OUT))
+      c = 1 => mon
+      c = -1 => -mon
+      (c :: OUT) * mon
+
+    showAll?:() -> Boolean
+    -- check a global Lisp variable
+    showAll?() == true
+
+    coerce(x:%):OUT ==
+      empty?(st := stream x) => 0 :: OUT
+      n : NNI ; count : NNI := _$streamCount$Lisp
+      l : L OUT := empty()
+      for n in 0..count while not empty? st repeat
+        if frst(st) ~= 0 then
+          l := concat(termOutput(n :: I,frst st),l)
+        st := rst st
+      if showAll?() then
+        for n in (count + 1).. while explicitEntries? st and _
+               not eq?(st,rst st) repeat
+          if frst(st) ~= 0 then
+            l := concat(termOutput(n pretend I,frst st),l)
+          st := rst st
+      l :=
+        explicitlyEmpty? st => l
+        eq?(st,rst st) and frst st = 0 => l
+        concat(prefix("O" :: OUT,[PEXPR ** (n :: OUT)]),l)
+      empty? l => 0 :: OUT
+      reduce("+",reverse_! l)
+

@@ -1,0 +1,67 @@
+)abbrev domain FM FreeModule
+++ Author: Dave Barton, James Davenport, Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: BiModule(R,R)
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A bi-module is a free module
+++ over a ring with generators indexed by an ordered set.
+++ Each element can be expressed as a finite linear combination of
+++ generators. Only non-zero terms are stored.
+
+FreeModule(R:Ring,S:OrderedSet):
+        Join(BiModule(R,R),IndexedDirectProductCategory(R,S)) with
+    if R has CommutativeRing then Module(R)
+ == IndexedDirectProductAbelianGroup(R,S) add
+    --representations
+       Term ==  Record(k:S,c:R)
+       Rep ==  List Term
+    --declarations
+       x,y: %
+       r: R
+       n: Integer
+       f: R -> R
+       s: S
+    --define
+       if R has EntireRing then 
+         r * x  ==
+             zero? r => 0
+--             one? r => x
+             (r = 1) => x
+           --map(r*#1,x)
+             [[u.k,r*u.c] for u in x ]
+       else
+         r * x  ==
+             zero? r => 0
+--             one? r => x
+             (r = 1) => x
+           --map(r*#1,x)
+             [[u.k,a] for u in x | (a:=r*u.c) ~= 0$R]
+       if R has EntireRing then
+         x * r  ==
+             zero? r => 0
+--             one? r => x
+             (r = 1) => x
+           --map(r*#1,x)
+             [[u.k,u.c*r] for u in x ]
+       else
+         x * r  ==
+             zero? r => 0
+--             one? r => x
+             (r = 1) => x
+           --map(r*#1,x)
+             [[u.k,a] for u in x | (a:=u.c*r) ~= 0$R]
+
+       coerce(x) : OutputForm ==
+         null(rep(x)) => (0$R) :: OutputForm
+         le : List OutputForm := nil
+         for rec in reverse rep x repeat
+           rec.c = 1 => le := cons(rec.k :: OutputForm, le)
+           le := cons(rec.c :: OutputForm *  rec.k :: OutputForm, le)
+         reduce("+"@((OutputForm, OutputForm) -> OutputForm),le)
+

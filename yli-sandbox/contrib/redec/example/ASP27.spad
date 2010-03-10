@@ -1,0 +1,94 @@
+)abbrev domain ASP27 Asp27
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Nov 1993
+++ Date Last Updated: 27 April 1994
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp27} produces Fortran for Type 27 ASPs, needed for NAG routine
+++\axiomOpFrom{f02fjf}{f02Package} ,for example:
+++\begin{verbatim}
+++      FUNCTION DOT(IFLAG,N,Z,W,RWORK,LRWORK,IWORK,LIWORK)
+++      DOUBLE PRECISION W(N),Z(N),RWORK(LRWORK)
+++      INTEGER N,LIWORK,IFLAG,LRWORK,IWORK(LIWORK)
+++      DOT=(W(16)+(-0.5D0*W(15)))*Z(16)+((-0.5D0*W(16))+W(15)+(-0.5D0*W(1
+++     &4)))*Z(15)+((-0.5D0*W(15))+W(14)+(-0.5D0*W(13)))*Z(14)+((-0.5D0*W(
+++     &14))+W(13)+(-0.5D0*W(12)))*Z(13)+((-0.5D0*W(13))+W(12)+(-0.5D0*W(1
+++     &1)))*Z(12)+((-0.5D0*W(12))+W(11)+(-0.5D0*W(10)))*Z(11)+((-0.5D0*W(
+++     &11))+W(10)+(-0.5D0*W(9)))*Z(10)+((-0.5D0*W(10))+W(9)+(-0.5D0*W(8))
+++     &)*Z(9)+((-0.5D0*W(9))+W(8)+(-0.5D0*W(7)))*Z(8)+((-0.5D0*W(8))+W(7)
+++     &+(-0.5D0*W(6)))*Z(7)+((-0.5D0*W(7))+W(6)+(-0.5D0*W(5)))*Z(6)+((-0.
+++     &5D0*W(6))+W(5)+(-0.5D0*W(4)))*Z(5)+((-0.5D0*W(5))+W(4)+(-0.5D0*W(3
+++     &)))*Z(4)+((-0.5D0*W(4))+W(3)+(-0.5D0*W(2)))*Z(3)+((-0.5D0*W(3))+W(
+++     &2)+(-0.5D0*W(1)))*Z(2)+((-0.5D0*W(2))+W(1))*Z(1)
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp27(name): Exports == Implementation where
+  name : Symbol
+
+  O      ==> OutputForm
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  UFST   ==> Union(fst:FST,void:"void")
+  FC     ==> FortranCode
+  PI     ==> PositiveInteger
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  EXPR   ==> Expression
+  MAT    ==> Matrix
+  MFLOAT ==> MachineFloat
+
+
+
+  Exports == FortranMatrixCategory
+
+  Implementation == add
+
+
+    real : UFST := ["real"::FST]$UFST
+    integer : UFST := ["integer"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(IFLAG,fortranInteger(),syms)$SYMTAB
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    declare!(LRWORK,fortranInteger(),syms)$SYMTAB
+    declare!(LIWORK,fortranInteger(),syms)$SYMTAB
+    zType : FT := construct(real,[N],false)$FT
+    declare!(Z,zType,syms)$SYMTAB
+    declare!(W,zType,syms)$SYMTAB
+    rType : FT := construct(real,[LRWORK],false)$FT
+    declare!(RWORK,rType,syms)$SYMTAB
+    iType : FT := construct(integer,[LIWORK],false)$FT
+    declare!(IWORK,iType,syms)$SYMTAB
+    Rep := FortranProgram(name,real,
+                          [IFLAG,N,Z,W,RWORK,LRWORK,IWORK,LIWORK],syms)
+
+    -- To help the poor old compiler!
+    localCoerce(u:Symbol):EXPR(MFLOAT) == coerce(u)$EXPR(MFLOAT)
+
+    coerce (u:MAT MFLOAT):$ ==
+      Ws: Symbol := W
+      Zs: Symbol := Z
+      code : List FC
+      l:EXPR MFLOAT := "+"/ _
+          [("+"/[localCoerce(elt(Ws,[j::O])$Symbol) * u(j,i)_
+                                              for j in 1..nrows(u)::PI])_
+           *localCoerce(elt(Zs,[i::O])$Symbol) for i in 1..ncols(u)::PI]
+      c := assign(name,l)$FC
+      code := [c,returns()]$List(FC)
+      code::$
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

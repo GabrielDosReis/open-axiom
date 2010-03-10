@@ -1,0 +1,32 @@
+)abbrev domain SYMPOLY SymmetricPolynomial
+++ Description:
+++ This domain implements symmetric polynomial
+SymmetricPolynomial(R:Ring) == PolynomialRing(R,Partition) add
+       Term ==  Record(k:Partition,c:R)
+       Rep:=  List Term
+
+-- override PR implementation because coeff. arithmetic too expensive (??)
+
+       if R has EntireRing then
+         (p1:%) * (p2:%)  ==
+            null rep p1 => 0
+            null rep p2 => 0
+            --zero?(first(p1).k) => first(p1).c * p2
+--            one? p2 => p1
+            (p2 = 1) => p1
+            +/[[[t1.k+t2.k,t1.c*t2.c]$Term for t2 in rep p2]
+                   for t1 in reverse(rep p1)]
+                   -- This 'reverse' is an efficiency improvement:
+                   -- reduces both time and space [Abbott/Bradford/Davenport]
+        else
+         (p1:%) * (p2:%)  ==
+            null p1 => 0
+            null p2 => 0
+         --   zero?(p1.first.k) => p1.first.c * p2
+--            one? p2 => p1
+            (p2 = 1) => p1
+            +/[[[t1.k+t2.k,r]$Term for t2 in rep p2 | (r:=t1.c*t2.c) ~= 0]
+                 for t1 in reverse(rep p1)]
+                  -- This 'reverse' is an efficiency improvement:
+                  -- reduces both time and space [Abbott/Bradford/Davenport]
+

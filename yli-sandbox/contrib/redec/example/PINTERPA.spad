@@ -1,0 +1,25 @@
+)abbrev package PINTERPA PolynomialInterpolationAlgorithms
+++ Description:
+++ This package exports interpolation algorithms
+PolynomialInterpolationAlgorithms(F, P): Cat == Body   where
+    F: Field
+    P: UnivariatePolynomialCategory(F)
+ 
+    Cat ==> with
+        LagrangeInterpolation: (List F, List F) -> P
+                ++ LagrangeInterpolation(l1,l2) \undocumented
+ 
+    Body ==> add
+        LagrangeInterpolation(lx, ly) ==
+            #lx ~= #ly =>
+                error "Different number of points and values."
+            ip: P := 0
+            for xi in lx for yi in ly for i in 0.. repeat
+                pp: P := 1
+                xp: F := 1
+                for xj in lx for j in 0.. | i ~= j repeat
+                    pp := pp * (monomial(1,1) - monomial(xj,0))
+                    xp := xp * (xi - xj)
+                ip := ip + (yi/xp) * pp
+            ip
+

@@ -1,0 +1,29 @@
+)abbrev domain IP4ADDR IP4Address
+++ Author: Gabriel Dos Reis
+++ Date Created: October 22, 2008
+++ Date Last Modified: October 22, 2008
+++ Description:  
+++   This domain provides representation for ARPA Internet IP4 addresses.
+IP4Address(): Public == Private where
+  Public == SetCategory with
+    ip4Address: String -> %
+      ++ ip4Address(a) builds a numeric address out of the ASCII form `a'.
+    bytes: % -> DataArray(4,Byte)
+      ++ bytes(x) returns the bytes of the numeric address `x'.
+    resolve: Hostname -> Union(%,"failed")
+      ++ resolve(h) returns the IP4 address of host `h'.
+  Private == add
+    Rep == DataArray(4,Byte)
+    ip4Address a ==
+      n := new()$Rep
+      presentationToNumeric(a,4,n)$Lisp = 0@SingleInteger => per n
+      userError "invalid Internet IP4 address"
+    resolve h ==
+      n := new()$Rep
+      hostnameToNumeric(h::String,4,n)$Lisp = 0@SingleInteger => per n
+      "failed"
+    bytes x == rep x
+    x = y == rep x = rep y
+    coerce(x: %): OutputForm == 
+      infix('_.::OutputForm, 
+        [qelt(rep x,i)::OutputForm for i in 0..3])$OutputForm

@@ -1,0 +1,152 @@
+)abbrev domain LMOPS ListMonoidOps
+++ Internal representation for monoids
+++ Author: Manuel Bronstein
+++ Date Created: November 1989
+++ Date Last Updated: 6 June 1991
+++ Description:
+++ This internal package represents monoid (abelian or not, with or
+++ without inverses) as lists and provides some common operations
+++ to the various flavors of monoids.
+ListMonoidOps(S, E, un): Exports == Implementation where
+  S : SetCategory
+  E : AbelianMonoid
+  un: E
+
+  REC ==> Record(gen:S, exp: E)
+  O   ==> OutputForm
+
+  Exports ==> Join(SetCategory, RetractableTo S) with
+    outputForm    : ($, (O, O) -> O, (O, O) -> O, Integer) -> O
+      ++ outputForm(l, fop, fexp, unit) converts the monoid element
+      ++ represented by l to an \spadtype{OutputForm}.
+      ++ Argument unit is the output form
+      ++ for the \spadignore{unit} of the monoid (e.g. 0 or 1),
+      ++ \spad{fop(a, b)} is the
+      ++ output form for the monoid operation applied to \spad{a} and b
+      ++ (e.g. \spad{a + b}, \spad{a * b}, \spad{ab}),
+      ++ and \spad{fexp(a, n)} is the output form
+      ++ for the exponentiation operation applied to \spad{a} and n
+      ++ (e.g. \spad{n a}, \spad{n * a}, \spad{a ** n}, \spad{a\^n}).
+    listOfMonoms  : $ -> List REC
+      ++ listOfMonoms(l) returns the list of the monomials forming l.
+    makeTerm      : (S, E) -> $
+      ++ makeTerm(s, e) returns the monomial s exponentiated by e
+      ++ (e.g. s^e or e * s).
+    makeMulti     : List REC -> $
+      ++ makeMulti(l) returns the element whose list of monomials is l.
+    nthExpon      : ($, Integer) -> E
+      ++ nthExpon(l, n) returns the exponent of the n^th monomial of l.
+    nthFactor     : ($, Integer) -> S
+      ++ nthFactor(l, n) returns the factor of the n^th monomial of l.
+    reverse       : $ -> $
+      ++ reverse(l) reverses the list of monomials forming l. This
+      ++ has some effect if the monoid is non-abelian, i.e.
+      ++ \spad{reverse(a1\^e1 ... an\^en) = an\^en ... a1\^e1} which is different.
+    reverse_!     : $ -> $
+      ++ reverse!(l) reverses the list of monomials forming l, destroying
+      ++ the element l.
+    size          : $ -> NonNegativeInteger
+      ++ size(l) returns the number of monomials forming l.
+    makeUnit      : () -> $
+      ++ makeUnit() returns the unit element of the monomial.
+    rightMult     : ($, S) -> $
+      ++ rightMult(a, s) returns \spad{a * s} where \spad{*}
+      ++ is the monoid operation,
+      ++ which is assumed non-commutative.
+    leftMult      : (S, $) -> $
+      ++ leftMult(s, a) returns \spad{s * a} where
+      ++ \spad{*} is the monoid operation,
+      ++ which is assumed non-commutative.
+    plus          : (S, E, $) -> $
+      ++ plus(s, e, x) returns \spad{e * s + x} where \spad{+}
+      ++ is the monoid operation,
+      ++ which is assumed commutative.
+    plus          : ($, $) -> $
+      ++ plus(x, y) returns \spad{x + y} where \spad{+}
+      ++ is the monoid operation,
+      ++ which is assumed commutative.
+    commutativeEquality: ($, $) -> Boolean
+      ++ commutativeEquality(x,y) returns true if x and y are equal
+      ++ assuming commutativity
+    mapExpon      : (E -> E, $) -> $
+      ++ mapExpon(f, a1\^e1 ... an\^en) returns \spad{a1\^f(e1) ... an\^f(en)}.
+    mapGen        : (S -> S, $) -> $
+      ++ mapGen(f, a1\^e1 ... an\^en) returns \spad{f(a1)\^e1 ... f(an)\^en}.
+
+  Implementation ==> add
+    Rep := List REC
+
+    localplus: ($, $) -> $
+
+    makeUnit()       == empty()$Rep
+    size l           == # listOfMonoms l
+    coerce(s:S):$    == [[s, un]]
+    coerce(l:$):O    == coerce(l)$Rep
+    makeTerm(s, e)   == (zero? e => makeUnit(); [[s, e]])
+    makeMulti l      == l
+    f = g            == f =$Rep g
+    listOfMonoms l   == l pretend List(REC)
+    nthExpon(f, i)   == f.(i-1+minIndex f).exp
+    nthFactor(f, i)  == f.(i-1+minIndex f).gen
+    reverse l        == reverse(l)$Rep
+    reverse_! l      == reverse_!(l)$Rep
+    mapGen(f, l)     == [[f(x.gen), x.exp] for x in l]
+
+    mapExpon(f, l) ==
+      ans:List(REC) := empty()
+      for x in rep(l) repeat
+        if (a := f(x.exp)) ~= 0 then ans := concat([x.gen, a], ans)
+      reverse_! ans
+
+    outputForm(l, op, opexp, id) ==
+      empty? l => id::OutputForm
+      l:List(O) :=
+         [(p.exp = un => p.gen::O; opexp(p.gen::O, p.exp::O)) for p in l]
+      reduce(op, l)
+
+    retractIfCan(l:$):Union(S, "failed") ==
+      not empty? l and empty? rest l and l.first.exp = un => l.first.gen
+      "failed"
+
+    rightMult(f, s) ==
+      empty? f => s::$
+      s = f.last.gen => (setlast_!(h := copy f, [s, f.last.exp + un]); h)
+      concat(f, [s, un])
+
+    leftMult(s, f) ==
+      empty? f => s::$
+      s = f.first.gen => concat([s, f.first.exp + un], rest f)
+      concat([s, un], f)
+
+    commutativeEquality(s1:$, s2:$):Boolean ==
+      #s1 ~= #s2 => false
+      for t1 in s1 repeat
+          if not member?(t1,s2) then return false
+      true
+
+    plus_!(s:S, n:E, f:$):$ ==
+      h := g := concat([s, n], f)
+      h1 := rest h
+      while not empty? h1 repeat
+        s = h1.first.gen =>
+          l :=
+            zero?(m := n + h1.first.exp) => rest h1
+            concat([s, m], rest h1)
+          setrest_!(h, l)
+          return rest g
+        h := h1
+        h1 := rest h1
+      g
+
+    plus(s, n, f) == plus_!(s,n,copy f)
+
+    plus(f, g) ==
+      #f < #g => localplus(f, g)
+      localplus(g, f)
+
+    localplus(f, g) ==
+      g := copy g
+      for x in f repeat
+        g := plus(x.gen, x.exp, g)
+      g
+

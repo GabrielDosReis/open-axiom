@@ -1,0 +1,42 @@
+import Type
+import Integer
+)abbrev category SEGCAT SegmentCategory
+++ Author:  Stephen M. Watt
+++ Date Created:  December 1986
+++ Date Last Updated: June 3, 1991
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: range, segment
+++ Examples:
+++ References:
+++ Description:
+++   This category provides operations on ranges, or {\em segments}
+++   as they are called.
+
+SegmentCategory(S:Type): Category == ConvertibleFrom S with
+    SEGMENT: (S, S) -> %
+        ++ \spad{l..h} creates a segment with l and h as the endpoints.
+    BY: (%, Integer) -> %
+        ++ \spad{s by n} creates a new segment in which only every \spad{n}-th
+        ++ element is used.
+    lo: % -> S
+        ++ lo(s) returns the first endpoint of s.
+        ++ Note: \spad{lo(l..h) = l}.
+    hi: % -> S
+        ++ hi(s) returns the second endpoint of s.
+        ++ Note: \spad{hi(l..h) = h}.
+    low: % -> S
+        ++ low(s) returns the first endpoint of s.
+        ++ Note: \spad{low(l..h) = l}.
+    high: % -> S
+        ++ high(s) returns the second endpoint of s.
+        ++ Note: \spad{high(l..h) = h}.
+    incr: % -> Integer
+        ++ incr(s) returns \spad{n}, where s is a segment in which every
+        ++ \spad{n}-th element is used.
+        ++ Note: \spad{incr(l..h by n) = n}.
+    segment: (S, S) -> %
+        ++ segment(i,j) is an alternate way to create the segment \spad{i..j}.
+

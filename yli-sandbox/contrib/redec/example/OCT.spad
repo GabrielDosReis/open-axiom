@@ -1,0 +1,63 @@
+)abbrev domain OCT Octonion
+++ Author: R. Wisbauer, J. Grabmeier
+++ Date Created: 05 September 1990
+++ Date Last Updated: 20 September 1990
+++ Basic Operations: _+,_*,octon,image,imagi,imagj,imagk,
+++  imagE,imagI,imagJ,imagK
+++ Related Constructors: Quaternion
+++ Also See: AlgebraGivenByStructuralConstants
+++ AMS Classifications:
+++ Keywords: octonion, non-associative algebra, Cayley-Dixon  
+++ References: e.g. I.L Kantor, A.S. Solodovnikov:
+++  Hypercomplex Numbers, Springer Verlag Heidelberg, 1989,
+++  ISBN 0-387-96980-2
+++ Description:
+++  Octonion implements octonions (Cayley-Dixon algebra) over a
+++  commutative ring, an eight-dimensional non-associative
+++  algebra, doubling the quaternions in the same way as doubling
+++  the complex numbers to get the quaternions 
+++  the main constructor function is {\em octon} which takes 8
+++  arguments: the real part, the i imaginary part, the j 
+++  imaginary part, the k imaginary part, (as with quaternions)
+++  and in addition the imaginary parts E, I, J, K.
+-- Examples: octonion.input
+--)boot $noSubsumption := true
+Octonion(R:CommutativeRing): export == impl where
+ 
+  QR ==> Quaternion R
+ 
+  export ==> Join(OctonionCategory R, FullyRetractableTo QR)  with
+    octon: (QR,QR) -> %
+      ++ octon(qe,qE) constructs an octonion from two quaternions
+      ++ using the relation {\em O = Q + QE}.
+  impl ==> add
+    Rep := Record(e: QR,E: QR)
+ 
+    0 == [0,0]
+    1 == [1,0]
+ 
+    a,b,c,d,f,g,h,i : R
+    p,q : QR
+    x,y : %
+ 
+    real  x == real (x.e)
+    imagi x == imagI (x.e)
+    imagj x == imagJ (x.e)
+    imagk x == imagK (x.e)
+    imagE x == real (x.E)
+    imagI x == imagI (x.E)
+    imagJ x == imagJ (x.E)
+    imagK x == imagK (x.E)
+    octon(a,b,c,d,f,g,h,i) == [quatern(a,b,c,d)$QR,quatern(f,g,h,i)$QR]
+    octon(p,q) == [p,q]
+    coerce(q) == [q,0$QR] 
+    retract(x):QR ==
+      not(zero? imagE x and zero? imagI x and zero? imagJ x and zero? imagK x)=>
+        error "Cannot retract octonion to quaternion."
+      quatern(real x, imagi x,imagj x, imagk x)$QR
+    retractIfCan(x):Union(QR,"failed") ==
+      not(zero? imagE x and zero? imagI x and zero? imagJ x and zero? imagK x)=>
+        "failed"
+      quatern(real x, imagi x,imagj x, imagk x)$QR
+    x * y == [x.e*y.e-(conjugate y.E)*x.E, y.E*x.e + x.E*(conjugate y.e)]
+

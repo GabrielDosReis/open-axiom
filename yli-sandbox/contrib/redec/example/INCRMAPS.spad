@@ -1,0 +1,29 @@
+import Monoid
+import AbelianSemiGroup
+)abbrev package INCRMAPS IncrementingMaps
+++ Author:
+++ Date Created:
+++ Date Last Updated: June 4, 1991
+++ Basic Operations:
+++ Related Domains: UniversalSegment
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   This package provides operations to create incrementing functions.
+
+IncrementingMaps(R:Join(Monoid, AbelianSemiGroup)): with
+    increment: () -> (R -> R)
+        ++ increment() produces a function which adds \spad{1} to whatever
+        ++ argument it is given.  For example, if {f := increment()} then
+        ++ \spad{f x} is \spad{x+1}.
+    incrementBy: R -> (R -> R)
+        ++ incrementBy(n) produces a function which adds \spad{n} to whatever
+        ++ argument it is given.  For example, if {f := increment(n)} then
+        ++ \spad{f x} is \spad{x+n}.
+  == add
+    increment() == 1 + #1
+    incrementBy n == n + #1
+

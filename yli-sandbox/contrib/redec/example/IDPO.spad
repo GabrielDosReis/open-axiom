@@ -1,0 +1,38 @@
+)abbrev domain IDPO IndexedDirectProductObject
+++ Indexed direct products of objects over a set \spad{A}
+++ of generators indexed by an ordered set S. All items have finite support.
+IndexedDirectProductObject(A:SetCategory,S:OrderedSet): IndexedDirectProductCategory(A,S)
+ == add
+    --representations
+       Term==  Record(k:S,c:A)
+       Rep==  List Term
+    --declarations
+       x,y: %
+       f: A -> A
+       s: S
+    --define
+       x = y ==
+         while not null x and not null y repeat
+           x.first.k ~= y.first.k => return false
+           x.first.c ~= y.first.c => return false
+           x:=x.rest
+           y:=y.rest
+         null x and null y
+
+       coerce(x:%):OutputForm ==
+          bracket [rarrow(t.k :: OutputForm, t.c :: OutputForm) for t in x]
+
+       -- sample():% == [[sample()$S,sample()$A]$Term]$Rep
+
+       monomial(r,s) == [[s,r]]
+       map(f,x) == [[tm.k,f(tm.c)] for tm in x]
+
+       reductum x     ==
+          rest x
+       leadingCoefficient x  ==
+          null x => error "Can't take leadingCoefficient of empty product element"
+          x.first.c
+       leadingSupport x  ==
+          null x => error "Can't take leadingCoefficient of empty product element"
+          x.first.k
+

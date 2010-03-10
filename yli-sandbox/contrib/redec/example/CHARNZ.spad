@@ -1,0 +1,17 @@
+)abbrev category CHARNZ CharacteristicNonZero
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Rings of Characteristic Non Zero
+CharacteristicNonZero():Category == Ring with
+    charthRoot: % -> Union(%,"failed")
+       ++ charthRoot(x) returns the pth root of x
+       ++ where p is the characteristic of the ring.
+

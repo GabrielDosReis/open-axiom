@@ -1,0 +1,31 @@
+)abbrev domain SDPOL SequentialDifferentialPolynomial
+++ Author:  William Sit
+++ Date Created: 24 September, 1991
+++ Date Last Updated: 7 February, 1992
+++ Basic Operations:DifferentialPolynomialCategory
+++ Related Constructors: DifferentialSparseMultivariatePolynomial
+++ See Also:
+++ AMS Classifications:12H05
+++ Keywords: differential indeterminates, ranking, differential polynomials,
+++           order, weight, leader, separant, initial, isobaric
+++ References:Kolchin, E.R. "Differential Algebra and Algebraic Groups"
+++   (Academic Press, 1973).
+++ Description:
+++   \spadtype{SequentialDifferentialPolynomial} implements
+++   an ordinary differential polynomial ring in arbitrary number
+++   of differential indeterminates, with coefficients in a
+++   ring.  The ranking on the differential indeterminate is sequential.
+++
+
+SequentialDifferentialPolynomial(R):
+     Exports == Implementation where
+  R: Ring
+  S  ==> Symbol
+  V  ==> SequentialDifferentialVariable S
+  E   ==> IndexedExponents(V)
+  SMP ==> SparseMultivariatePolynomial(R, S)
+  Exports ==> Join(DifferentialPolynomialCategory(R,S,V,E),
+                   RetractableTo SMP)
+
+  Implementation ==> DifferentialSparseMultivariatePolynomial(R,S,V)
+

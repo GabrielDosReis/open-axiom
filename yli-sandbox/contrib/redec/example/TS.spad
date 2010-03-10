@@ -1,0 +1,49 @@
+)abbrev domain TS TaylorSeries
+++ Authors: Burge, Watt, Williamson
+++ Date Created: 15 August 1988
+++ Date Last Updated: 18 May 1991
+++ Basic Operations:
+++ Related Domains: SparseMultivariateTaylorSeries
+++ Also See: UnivariateTaylorSeries
+++ AMS Classifications:
+++ Keywords: multivariate, Taylor, series
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{TaylorSeries} is a general multivariate Taylor series domain
+++   over the ring Coef and with variables of type Symbol.
+TaylorSeries(Coef): Exports == Implementation where
+  Coef  : Ring
+  L   ==> List
+  NNI ==> NonNegativeInteger
+  SMP ==> Polynomial Coef
+  StS ==> Stream SMP
+ 
+  Exports ==> MultivariateTaylorSeriesCategory(Coef,Symbol) with
+    coefficient: (%,NNI) -> SMP
+      ++\spad{coefficient(s, n)} gives the terms of total degree n.
+    coerce: Symbol -> %
+      ++\spad{coerce(s)} converts a variable to a Taylor series
+    coerce: SMP -> %
+      ++\spad{coerce(s)} regroups terms of s by total degree
+      ++ and forms a series.
+ 
+    if Coef has Algebra Fraction Integer then
+      integrate: (%,Symbol,Coef) -> %
+        ++\spad{integrate(s,v,c)} is the integral of s with respect
+        ++ to v and having c as the constant of integration.
+      fintegrate: (() -> %,Symbol,Coef) -> %
+        ++\spad{fintegrate(f,v,c)} is the integral of \spad{f()} with respect
+        ++ to v and having c as the constant of integration.
+        ++ The evaluation of \spad{f()} is delayed.
+ 
+  Implementation ==> SparseMultivariateTaylorSeries(Coef,Symbol,SMP) add
+    Rep := StS -- Below we use the fact that Rep of PS is Stream SMP.
+ 
+    polynomial(s,n) ==
+      sum : SMP := 0
+      for i in 0..n while not empty? s repeat
+        sum := sum + frst s
+        s:= rst s
+      sum
+

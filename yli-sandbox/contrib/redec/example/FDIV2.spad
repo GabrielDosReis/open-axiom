@@ -1,0 +1,31 @@
+)abbrev package FDIV2 FiniteDivisorFunctions2
+++ Lift a map to finite divisors.
+++ Author: Manuel Bronstein
+++ Date Created: 1988
+++ Date Last Updated: 19 May 1993
+FiniteDivisorFunctions2(R1, UP1, UPUP1, F1, R2, UP2, UPUP2, F2):
+ Exports == Implementation where
+  R1   : Field
+  UP1  : UnivariatePolynomialCategory R1
+  UPUP1: UnivariatePolynomialCategory Fraction UP1
+  F1   : FunctionFieldCategory(R1, UP1, UPUP1)
+  R2   : Field
+  UP2  : UnivariatePolynomialCategory R2
+  UPUP2: UnivariatePolynomialCategory Fraction UP2
+  F2   : FunctionFieldCategory(R2, UP2, UPUP2)
+
+  Exports ==> with
+    map: (R1 -> R2, FiniteDivisor(R1, UP1, UPUP1, F1)) ->
+                                       FiniteDivisor(R2, UP2, UPUP2, F2)
+        ++ map(f,d) \undocumented{} 
+
+  Implementation ==> add
+    import UnivariatePolynomialCategoryFunctions2(R1,UP1,R2,UP2)
+    import FunctionFieldCategoryFunctions2(R1,UP1,UPUP1,F1,R2,UP2,UPUP2,F2)
+    import FractionalIdealFunctions2(UP1, Fraction UP1, UPUP1, F1,
+                                     UP2, Fraction UP2, UPUP2, F2)
+
+    map(f, d) ==
+      rec := decompose d
+      divisor map(f, rec.principalPart) + divisor map(map(f, #1), rec.id)
+

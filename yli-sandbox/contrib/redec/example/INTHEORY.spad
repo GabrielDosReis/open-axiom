@@ -1,0 +1,252 @@
+)abbrev package INTHEORY IntegerNumberTheoryFunctions
+++ Author: Michael Monagan, Martin Brock, Robert Sutor, Timothy Daly
+++ Date Created: June 1987
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: number theory, integer
+++ Examples:
+++ References: Knuth, The Art of Computer Programming Vol.2
+++ Description:
+++ This package provides various number theoretic functions on the integers.
+IntegerNumberTheoryFunctions(): Exports == Implementation where
+ I ==> Integer
+ RN ==> Fraction I
+ SUP ==> SparseUnivariatePolynomial
+ NNI ==> NonNegativeInteger
+
+ Exports ==> with
+  bernoulli : I -> RN
+    ++ \spad{bernoulli(n)} returns the nth Bernoulli number.
+    ++ this is \spad{B(n,0)}, where \spad{B(n,x)} is the \spad{n}th Bernoulli
+    ++ polynomial.
+  chineseRemainder: (I,I,I,I) -> I
+    ++ \spad{chineseRemainder(x1,m1,x2,m2)} returns w, where w is such that
+    ++ \spad{w = x1 mod m1} and \spad{w = x2 mod m2}. Note: \spad{m1} and
+    ++ \spad{m2} must be relatively prime.
+  divisors : I -> List I
+    ++ \spad{divisors(n)} returns a list of the divisors of n.
+  euler : I -> I
+    ++ \spad{euler(n)} returns the \spad{n}th Euler number. This is
+    ++ \spad{2^n E(n,1/2)}, where \spad{E(n,x)} is the nth Euler polynomial.
+  eulerPhi : I -> I
+    ++ \spad{eulerPhi(n)} returns the number of integers between 1 and n
+    ++ (including 1) which are relatively prime to n. This is the Euler phi
+    ++ function \spad{\phi(n)} is also called the totient function.
+  fibonacci : I -> I
+    ++ \spad{fibonacci(n)} returns the nth Fibonacci number. the Fibonacci
+    ++ numbers \spad{F[n]} are defined by \spad{F[0] = F[1] = 1} and
+    ++ \spad{F[n] = F[n-1] + F[n-2]}.
+    ++ The algorithm has running time \spad{O(log(n)^3)}.
+    ++ Reference: Knuth, The Art of Computer Programming
+    ++ Vol 2, Semi-Numerical Algorithms.
+  harmonic : I -> RN
+    ++ \spad{harmonic(n)} returns the nth harmonic number. This is
+    ++ \spad{H[n] = sum(1/k,k=1..n)}.
+  jacobi : (I,I) -> I
+    ++ \spad{jacobi(a,b)} returns the Jacobi symbol \spad{J(a/b)}.
+    ++ When b is odd, \spad{J(a/b) = product(L(a/p) for p in factor b )}.
+    ++ Note: by convention, 0 is returned if \spad{gcd(a,b) ~= 1}.
+    ++ Iterative \spad{O(log(b)^2)} version coded by Michael Monagan June 1987.
+  legendre : (I,I) -> I
+    ++ \spad{legendre(a,p)} returns the Legendre symbol \spad{L(a/p)}.
+    ++ \spad{L(a/p) = (-1)**((p-1)/2) mod p} (p prime), which is 0 if \spad{a}
+    ++ is 0, 1 if \spad{a} is a quadratic residue \spad{mod p} and -1 otherwise.
+    ++ Note: because the primality test is expensive,
+    ++ if it is known that p is prime then use \spad{jacobi(a,p)}.
+  moebiusMu : I -> I
+    ++ \spad{moebiusMu(n)} returns the Moebius function \spad{mu(n)}.
+    ++ \spad{mu(n)} is either -1,0 or 1 as follows:
+    ++ \spad{mu(n) = 0} if n is divisible by a square > 1,
+    ++ \spad{mu(n) = (-1)^k} if n is square-free and has k distinct
+    ++ prime divisors.
+  numberOfDivisors: I -> I
+    ++ \spad{numberOfDivisors(n)} returns the number of integers between 1 and n
+    ++ (inclusive) which divide n. The number of divisors of n is often
+    ++ denoted by \spad{tau(n)}.
+  sumOfDivisors : I -> I
+    ++ \spad{sumOfDivisors(n)} returns the sum of the integers between 1 and n
+    ++ (inclusive) which divide n. The sum of the divisors of n is often
+    ++ denoted by \spad{sigma(n)}.
+  sumOfKthPowerDivisors: (I,NNI) -> I
+    ++ \spad{sumOfKthPowerDivisors(n,k)} returns the sum of the \spad{k}th
+    ++ powers of the integers between 1 and n (inclusive) which divide n.
+    ++ the sum of the \spad{k}th powers of the divisors of n is often denoted
+    ++ by \spad{sigma_k(n)}.
+ Implementation ==> add
+  import IntegerPrimesPackage(I)
+
+  -- we store the euler and bernoulli numbers computed so far in
+  -- a Vector because they are computed from an n-term recurrence
+  E: IndexedFlexibleArray(I,0)   := new(1, 1)
+  B: IndexedFlexibleArray(RN,0)  := new(1, 1)
+  H: Record(Hn:I,Hv:RN) := [1, 1]
+
+  harmonic n ==
+    s:I; h:RN
+    n < 0 => error("harmonic not defined for negative integers")
+    if n >= H.Hn then
+      s := H.Hn
+      h := H.Hv 
+      -- (s,h) := H 
+    else (s := 0; h := 0)
+    for k in s+1..n repeat h := h + (1/k)$(Fraction I)
+    H.Hn := n
+    H.Hv := h
+    h
+
+  fibonacci n ==
+    n = 0 => 0
+    n < 0 => (odd? n => 1; -1) * fibonacci(-n)
+    f1, f2 : I
+    (f1,f2) := (0,1)
+    for k in length(n)-2 .. 0 by -1 repeat
+      t := f2**2
+      (f1,f2) := (t+f1**2,t+2*f1*f2)
+      if bit?(n,k) then (f1,f2) := (f2,f1+f2)
+    f2
+
+  euler n ==
+    n < 0 => error "euler not defined for negative integers"
+    odd? n => 0
+    l := (#E) :: I
+    n < l => E(n)
+    concat_!(E, new((n+1-l)::NNI, 0)$IndexedFlexibleArray(I,0))
+    for i in 1 .. l by 2 repeat E(i) := 0
+    -- compute E(i) i = l+2,l+4,...,n given E(j) j = 0,2,...,i-2
+    t,e : I
+    for i in l+1 .. n by 2 repeat
+      t := e := 1
+      for j in 2 .. i-2 by 2 repeat
+        t := (t*(i-j+1)*(i-j+2)) quo (j*(j-1))
+        e := e + t*E(j)
+      E(i) := -e
+    E(n)
+
+  bernoulli n ==
+    n < 0 => error "bernoulli not defined for negative integers"
+    odd? n =>
+      n = 1 => -1/2
+      0
+    l := (#B) :: I
+    n < l => B(n)
+    concat_!(B, new((n+1-l)::NNI, 0)$IndexedFlexibleArray(RN,0))
+    for i in 1 .. l by 2 repeat B(i) := 0
+    -- compute B(i) i = l+2,l+4,...,n given B(j) j = 0,2,...,i-2
+    for i in l+1 .. n by 2 repeat
+      t:I := 1
+      b := (1-i)/2
+      for j in 2 .. i-2 by 2 repeat
+        t := (t*(i-j+2)*(i-j+3)) quo (j*(j-1))
+        b := b + (t::RN) * B(j)
+      B(i) := -b/((i+1)::RN)
+    B(n)
+
+  inverse : (I,I) -> I
+  inverse(a,b) ==
+    borg:I:=b
+    c1:I := 1
+    d1:I := 0
+    while b ~= 0 repeat
+      q:I := a quo b
+      r:I := a-q*b
+      (a,b):=(b,r)
+      (c1,d1):=(d1,c1-q*d1)
+    a ~= 1 => error("moduli are not relatively prime")
+    positiveRemainder(c1,borg)
+  
+  chineseRemainder(x1,m1,x2,m2) ==
+    m1 < 0 or m2 < 0 => error "moduli must be positive"
+    x1 := positiveRemainder(x1,m1)
+    x2 := positiveRemainder(x2,m2)
+    x1 + m1 * positiveRemainder(((x2-x1) * inverse(m1,m2)),m2)
+
+
+  jacobi(a,b) ==
+    -- Revised by Clifton Williamson January 1989.
+    -- Previous version returned incorrect answers when b was even.
+    -- The formula J(a/b) = product ( L(a/p) for p in factor b) is only
+    -- valid when b is odd (the Legendre symbol L(a/p) is not defined
+    -- for p = 2).  When b is even, the Jacobi symbol J(a/b) is only
+    -- defined for a = 0 or 1 (mod 4).  When a = 1 (mod 8),
+    -- J(a/2) = +1 and when a = 5 (mod 8), we define J(a/2) = -1.
+    -- Extending by multiplicativity, we have J(a/b) for even b and
+    -- appropriate a.
+    -- We also define J(a/1) = 1.
+    -- The point of this is the following: if d is the discriminant of
+    -- a quadratic field K and chi is the quadratic character for K,
+    -- then J(d/n) = chi(n) for n > 0.
+    -- Reference: Hecke, Vorlesungen ueber die Theorie der Algebraischen
+    -- Zahlen.
+    if b < 0 then b := -b
+    b = 0 => error "second argument of jacobi may not be 0"
+    b = 1 => 1
+    even? b and positiveRemainder(a,4) > 1 =>
+      error "J(a/b) not defined for b even and a = 2 or 3 (mod 4)"
+    even? b and even? a => 0
+    k : Integer
+    for k in 0.. while even? b repeat b := b quo 2
+    j:I := (odd? k and positiveRemainder(a,8) = 5 => -1; 1)
+    b = 1 => j
+    a := positiveRemainder(a,b)
+    -- assertion: 0 < a < b and odd? b
+    while a > 1 repeat
+      if odd? a then
+        -- J(a/b) = J(b/a) (-1) ** (a-1)/2 (b-1)/2
+        if a rem 4 = 3 and b rem 4 = 3 then j := -j
+        (a,b) := (b rem a,a)
+      else
+        -- J(2*a/b) = J(a/b) (-1) (b**2-1)/8
+        for k in 0.. until odd? a repeat a := a quo 2
+        if odd? k and (b+2) rem 8 > 4 then j := -j
+    a = 0 => 0
+    j
+
+  legendre(a,p) ==
+    prime? p => jacobi(a,p)
+    error "characteristic of legendre must be prime"
+
+  eulerPhi n ==
+    n = 0 => 0
+    r : RN := 1
+    for entry in factors factor n repeat
+      r := ((entry.factor - 1) /$RN entry.factor) * r
+    numer(n * r)
+
+  divisors n ==
+    oldList : List Integer := [1]
+    for f in factors factor n repeat
+      newList := oldList
+      for k in 1..f.exponent repeat
+        pow := f.factor ** k
+        for m in oldList repeat
+          newList := concat(pow * m,newList)
+      oldList := newList
+    sort((#1 < #2)@((Integer, Integer)->Boolean),oldList)
+
+  numberOfDivisors n ==
+    n = 0 => 0
+    */[1+entry.exponent for entry in factors factor n]
+
+  sumOfDivisors n ==
+    n = 0 => 0
+    r : RN := */[(entry.factor**(entry.exponent::NNI + 1)-1)/
+      (entry.factor-1) for entry in factors factor n]
+    numer r
+
+  sumOfKthPowerDivisors(n,k) ==
+    n = 0 => 0
+    r : RN := */[(entry.factor**(k*entry.exponent::NNI+k)-1)/
+      (entry.factor**k-1) for entry in factors factor n]
+    numer r
+
+  moebiusMu n ==
+    n = 1 => 1
+    t := factor n
+    for k in factors t repeat
+      k.exponent > 1 => return 0
+    odd? numberOfFactors t => -1
+    1
+

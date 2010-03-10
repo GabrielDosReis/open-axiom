@@ -1,0 +1,41 @@
+)abbrev domain QUEUE Queue
+++ Author: Michael Monagan and Stephen Watt
+++ Date Created:June 86 and July 87
+++ Date Last Updated:Feb 92
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+ 
+++ Linked List implementation of a Queue
+--% Dequeue and Heap data types
+ 
+Queue(S:SetCategory): QueueAggregate S with
+    queue: List S -> %
+      ++ queue([x,y,...,z]) creates a queue with first (top)
+      ++ element x, second element y,...,and last (bottom) element z.
+  == Stack S add
+    Rep := Reference List S
+    lastTail==> LAST$Lisp
+    enqueue_!(e,q) ==
+        if null deref q then setref(q, list e)
+        else lastTail.(deref q).rest := list e
+        e
+    insert_!(e,q) == (enqueue_!(e,q);q)
+    dequeue_! q ==
+        empty? q => error "empty queue"
+        e := first deref q
+        setref(q,rest deref q)
+        e
+    extract_! q == dequeue_! q
+    rotate_! q == if empty? q then q else (enqueue_!(dequeue_! q,q); q)
+    length q == # deref q
+    front q == if empty? q then error "empty queue" else first deref q
+    inspect q == front q
+    back q == if empty? q then error "empty queue" else last deref q
+    queue q == ref copy q
+

@@ -1,0 +1,28 @@
+)abbrev domain OVAR OrderedVariableList
+++ Description:
+++ This domain implements ordered variables
+OrderedVariableList(VariableList:List Symbol):
+  Join(OrderedFinite, ConvertibleTo Symbol, ConvertibleTo InputForm,
+       ConvertibleTo Pattern Float, ConvertibleTo Pattern Integer) with
+         variable: Symbol -> Union(%,"failed")
+                ++ variable(s) returns a member of the variable set or failed
+    == add
+       VariableList := removeDuplicates VariableList
+       Rep := PositiveInteger
+       s1,s2:%
+       convert(s1):Symbol == VariableList.((s1::Rep)::PositiveInteger)
+       coerce(s1):OutputForm == (convert(s1)@Symbol)::OutputForm
+       convert(s1):InputForm == convert(convert(s1)@Symbol)
+       convert(s1):Pattern(Integer) == convert(convert(s1)@Symbol)
+       convert(s1):Pattern(Float) == convert(convert(s1)@Symbol)
+       index i   == i::%
+       lookup j  == j :: Rep
+       size ()   == #VariableList
+       variable(exp:Symbol) ==
+            for i in 1.. for exp2 in VariableList repeat
+                if exp=exp2 then return i::PositiveInteger::%
+            "failed"
+       s1 < s2 == s2 <$Rep s1
+       s1 = s2 == s1 =$Rep s2
+       latex(x:%):String      == latex(convert(x)@Symbol)
+

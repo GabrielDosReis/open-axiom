@@ -1,0 +1,166 @@
+)abbrev domain HELLFDIV HyperellipticFiniteDivisor
+++ Finite rational divisors on an hyperelliptic curve
+++ Author: Manuel Bronstein
+++ Date Created: 19 May 1993
+++ Date Last Updated: 20 July 1998
+++ Description:
+++ This domains implements finite rational divisors on an hyperelliptic curve,
+++ that is finite formal sums SUM(n * P) where the n's are integers and the
+++ P's are finite rational points on the curve.
+++ The equation of the curve must be  y^2 = f(x) and f must have odd degree.
+++ Keywords: divisor, algebraic, curve.
+++ Examples: )r FDIV INPUT
+HyperellipticFiniteDivisor(F, UP, UPUP, R): Exports == Implementation where
+  F   : Field
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+  R   : FunctionFieldCategory(F, UP, UPUP)
+
+  O   ==> OutputForm
+  Z   ==> Integer
+  RF  ==> Fraction UP
+  ID  ==> FractionalIdeal(UP, RF, UPUP, R)
+  ERR ==> error "divisor: incomplete implementation for hyperelliptic curves"
+
+  Exports ==> FiniteDivisorCategory(F, UP, UPUP, R)
+
+  Implementation ==> add
+    if (uhyper:Union(UP, "failed") := hyperelliptic()$R) case "failed" then
+              error "HyperellipticFiniteDivisor: curve must be hyperelliptic"
+
+-- we use the semi-reduced representation from D.Cantor, "Computing in the
+-- Jacobian of a HyperellipticCurve", Mathematics of Computation, vol 48,
+-- no.177, January 1987, 95-101.
+-- The representation [a,b,f] for D means D = [a,b] + div(f)
+-- and [a,b] is a semi-reduced representative on the Jacobian
+    Rep := Record(center:UP, polyPart:UP, principalPart:R, reduced?:Boolean)
+
+    hyper:UP := uhyper::UP
+    gen:Z    := ((degree(hyper)::Z - 1) exquo 2)::Z     -- genus of the curve
+    dvd:O    := "div"::Symbol::O
+    zer:O    := 0::Z::O
+
+    makeDivisor  : (UP, UP, R) -> %
+    intReduc     : (R, UP) -> R
+    princ?       : % -> Boolean
+    polyIfCan    : R -> Union(UP, "failed")
+    redpolyIfCan : (R, UP) -> Union(UP, "failed")
+    intReduce    : (R, UP) -> R
+    mkIdeal      : (UP, UP) -> ID
+    reducedTimes : (Z, UP, UP) -> %
+    reducedDouble: (UP, UP) -> %
+
+    0                    == divisor(1$R)
+    divisor(g:R)         == [1, 0, g, true]
+    makeDivisor(a, b, g) == [a, b, g, false]
+--    princ? d             == one?(d.center) and zero?(d.polyPart)
+    princ? d             == (d.center = 1) and zero?(d.polyPart)
+    ideal d     == ideal([d.principalPart]) * mkIdeal(d.center, d.polyPart)
+    decompose d == [ideal makeDivisor(d.center, d.polyPart, 1), d.principalPart]
+    mkIdeal(a, b) == ideal [a::RF::R, reduce(monomial(1, 1)$UPUP - b::RF::UPUP)]
+
+-- keep the sum reduced if d1 and d2 are both reduced at the start
+    d1 + d2 ==
+      a1  := d1.center;   a2 := d2.center
+      b1  := d1.polyPart; b2 := d2.polyPart
+      rec := principalIdeal [a1, a2, b1 + b2]
+      d   := rec.generator
+      h   := rec.coef              -- d = h1 a1 + h2 a2 + h3(b1 + b2)
+      a   := ((a1 * a2) exquo d**2)::UP
+      b:UP:= first(h) * a1 * b2
+      b   := b + second(h) * a2 * b1
+      b   := b + third(h) * (b1*b2 + hyper)
+      b   := (b exquo d)::UP rem a
+      dd  := makeDivisor(a, b, d::RF * d1.principalPart * d2.principalPart)
+      d1.reduced? and d2.reduced? => reduce dd
+      dd
+
+-- if is cheaper to keep on reducing as we exponentiate if d is already reduced
+    n:Z * d:% ==
+      zero? n => 0
+      n < 0 => (-n) * (-d)
+      divisor(d.principalPart ** n) + divisor(mkIdeal(d.center,d.polyPart) ** n)
+
+    divisor(i:ID) ==
+--      one?(n := #(v := basis minimize i)) => divisor v minIndex v
+      (n := #(v := basis minimize i)) = 1 => divisor v minIndex v
+      n ~= 2 => ERR
+      a := v minIndex v
+      h := v maxIndex v
+      (u := polyIfCan a) case UP =>
+        (w := redpolyIfCan(h, u::UP)) case UP => makeDivisor(u::UP, w::UP, 1)
+        ERR
+      (u := polyIfCan h) case UP =>
+        (w := redpolyIfCan(a, u::UP)) case UP => makeDivisor(u::UP, w::UP, 1)
+        ERR
+      ERR
+
+    polyIfCan a ==
+      (u := retractIfCan(a)@Union(RF, "failed")) case "failed" => "failed"
+      (v := retractIfCan(u::RF)@Union(UP, "failed")) case "failed" => "failed"
+      v::UP
+
+    redpolyIfCan(h, a) ==
+      degree(p := lift h) ~= 1 => "failed"
+      q := - coefficient(p, 0) / coefficient(p, 1)
+      rec := extendedEuclidean(denom q, a)
+      not ground?(rec.generator) => "failed"
+      ((numer(q) * rec.coef1) exquo rec.generator)::UP rem a
+
+    coerce(d:%):O ==
+      r := bracket [d.center::O, d.polyPart::O]
+      g := prefix(dvd, [d.principalPart::O])
+--      z := one?(d.principalPart)
+      z := (d.principalPart = 1)
+      princ? d => (z => zer; g)
+      z => r
+      r + g
+
+    reduce d ==
+      d.reduced? => d
+      degree(a := d.center) <= gen => (d.reduced? := true; d)
+      b  := d.polyPart
+      a0 := ((hyper - b**2) exquo a)::UP
+      b0 := (-b) rem a0
+      g  := d.principalPart * reduce(b::RF::UPUP-monomial(1,1)$UPUP) / a0::RF::R
+      reduce makeDivisor(a0, b0, g)
+
+    generator d ==
+      d := reduce d
+      princ? d => d.principalPart
+      "failed"
+
+    - d ==
+      a := d.center
+      makeDivisor(a, - d.polyPart, inv(a::RF * d.principalPart))
+
+    d1 = d2 ==
+      d1 := reduce d1
+      d2 := reduce d2
+      d1.center = d2.center and d1.polyPart = d2.polyPart
+        and d1.principalPart = d2.principalPart
+
+    divisor(a, b) ==
+      x := monomial(1, 1)$UP
+      not ground? gcd(d := x - a::UP, retract(discriminant())@UP) =>
+                                  error "divisor: point is singular"
+      makeDivisor(d, b::UP, 1)
+
+    intReduce(h, b) ==
+      v := integralCoordinates(h).num
+      integralRepresents(
+                [qelt(v, i) rem b for i in minIndex v .. maxIndex v], 1)
+
+-- with hyperelliptic curves, it is cheaper to keep divisors in reduced form
+    divisor(h, a, dp, g, r) ==
+      h  := h - (r * dp)::RF::R
+      a  := gcd(a, retract(norm h)@UP)
+      h  := intReduce(h, a)
+      if not ground? gcd(g, a) then h := intReduce(h ** rank(), a)
+      hh := lift h
+      b  := - coefficient(hh, 0) / coefficient(hh, 1)
+      rec := extendedEuclidean(denom b, a)
+      not ground?(rec.generator) => ERR
+      bb := ((numer(b) * rec.coef1) exquo rec.generator)::UP rem a
+      reduce makeDivisor(a, bb, 1)
+

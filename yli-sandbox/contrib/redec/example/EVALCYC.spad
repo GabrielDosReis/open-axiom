@@ -1,0 +1,42 @@
+)abbrev package EVALCYC EvaluateCycleIndicators
+++ Author: William H. Burge
+++ Date Created: 1986
+++ Date Last Updated: Feb 1992
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: This package is to be used in conjuction with
+++             the CycleIndicators package. It provides an evaluation
+++             function for SymmetricPolynomials.
+EvaluateCycleIndicators(F):T==C where
+    F:Algebra Fraction Integer
+    I==>Integer
+    L==>List
+    SPOL==>SymmetricPolynomial
+    RN==>Fraction Integer
+    PR==>Polynomial(RN)
+    PTN==>Partition()
+    lc ==> leadingCoefficient
+    red ==> reductum
+    T== with
+       eval:((I->F),SPOL RN)->F
+         ++\spad{eval(f,s)} evaluates the cycle index s by applying
+         ++ the function f to each integer in a monomial partition,
+         ++ forms their product and sums the results over all monomials.
+    C== add
+       evp:((I->F),PTN)->F
+       fn:I->F
+       pt:PTN
+       spol:SPOL RN
+       i:I
+       evp(fn, pt)== _*/[fn i for i in pt::(L I)]
+ 
+       eval(fn,spol)==
+        if spol=0
+        then 0
+        else ((lc spol)* evp(fn,degree spol)) + eval(fn,red spol)
+

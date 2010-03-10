@@ -1,0 +1,51 @@
+)abbrev domain DEQUEUE Dequeue
+++ Author: Michael Monagan and Stephen Watt
+++ Date Created:June 86 and July 87
+++ Date Last Updated:Feb 92
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+ 
+++ Linked list implementation of a Dequeue
+--% Dequeue and Heap data types
+ 
+Dequeue(S:SetCategory): DequeueAggregate S with
+     dequeue: List S -> %
+       ++ dequeue([x,y,...,z]) creates a dequeue with first (top or front)
+       ++ element x, second element y,...,and last (bottom or back) element z.
+  == Queue S add
+    Rep := Reference List S
+    bottom_! d ==
+         if empty? d then error "empty dequeue" else last deref d
+    dequeue d == ref copy d
+    extractBottom_! d ==
+        if empty? d then error "empty dequeue"
+        p := deref d
+        n := maxIndex p
+        n = 1 =>
+           r := first p
+           setref(d,[])
+           r
+        q := rest(p,(n-2)::NonNegativeInteger)
+        r := first rest q
+        q.rest := []
+        r
+    extractTop_! d ==
+        e := top d
+        setref(d,rest deref d)
+        e
+    height d == # deref d
+    insertTop_!(e,d) == (setref(d,cons(e,deref d)); e)
+    lastTail==> LAST$Lisp
+    insertBottom_!(e,d) ==
+        if empty? d then setref(d, list e)
+        else lastTail.(deref d).rest := list e
+        e
+    top d == if empty? d then error "empty dequeue" else first deref d
+    reverse_! d == (setref(d,reverse deref d); d)
+

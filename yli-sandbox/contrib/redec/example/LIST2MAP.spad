@@ -1,0 +1,90 @@
+import Type
+import SetCategory
+import List
+)abbrev package LIST2MAP ListToMap
+++ Author: Manuel Bronstein
+++ Date Created: 22 Mar 1988
+++ Change History:
+++   11 Oct 1989   MB   ?
+++ Basic Operations: match
+++ Related Constructors: List
+++ Also See:
+++ AMS Classification:
+++ Keywords: mapping, list
+++ Description:
+++   \spadtype{ListToMap} allows mappings to be described by a pair of
+++   lists of equal lengths.  The image of an element \spad{x},
+++   which appears in position \spad{n} in the first list, is then
+++   the \spad{n}th element of the second list.  A default value or
+++   default function can be specified to be used when \spad{x}
+++   does not appear in the first list.  In the absence of defaults,
+++   an error will occur in that case.
+ListToMap(A:SetCategory, B:Type): Exports == Implementation where
+  LA  ==> List A
+  LB  ==> List B
+  AB  ==> (A -> B)
+
+  Exports ==> with
+    match: (LA, LB   ) -> AB
+      ++ match(la, lb) creates a map with no default source or target values
+      ++ defined by lists la and lb of equal length.
+      ++ The target of a source value \spad{x} in la is the
+      ++ value y with the same index lb.
+      ++ Error: if la and lb are not of equal length.
+      ++ Note: when this map is applied, an error occurs when
+      ++ applied to a value missing from la.
+    match: (LA, LB, A) -> B
+      ++ match(la, lb, a) creates a map
+      ++ defined by lists la and lb of equal length, where \spad{a} is used
+      ++ as the default source value if the given one is not in \spad{la}.
+      ++ The target of a source value \spad{x} in la is the
+      ++ value y with the same index lb.
+      ++ Error: if la and lb are not of equal length.
+    match: (LA, LB, B)    -> AB
+      ++ match(la, lb, b) creates a map
+      ++ defined by lists la and lb of equal length, where \spad{b} is used
+      ++ as the default target value if the given function argument is
+      ++ not in \spad{la}.
+      ++ The target of a source value \spad{x} in la is the
+      ++ value y with the same index lb.
+      ++ Error: if la and lb are not of equal length.
+    match: (LA, LB, A, B) -> B
+      ++ match(la, lb, a, b) creates a map
+      ++ defined by lists la and lb of equal length.
+      ++ and applies this map to a.
+      ++ The target of a source value \spad{x} in la is the
+      ++ value y with the same index lb.
+      ++ Argument b is the default target value if a is not in la.
+      ++ Error: if la and lb are not of equal length.
+    match: (LA, LB, AB)    -> AB
+      ++ match(la, lb, f) creates a map
+      ++ defined by lists la and lb of equal length.
+      ++ The target of a source value \spad{x} in la is the
+      ++ value y with the same index lb.
+      ++ Argument \spad{f} is used as the
+      ++ function to call when the given function argument is not in
+      ++ \spad{la}.
+      ++ The value returned is f applied to that argument.
+    match: (LA, LB, A, AB) -> B
+      ++ match(la, lb, a, f) creates a map
+      ++ defined by lists la and lb of equal length.
+      ++ and applies this map to a.
+      ++ The target of a source value \spad{x} in la is the
+      ++ value y with the same index lb.
+      ++ Argument \spad{f} is a default function to call if a is not in la.
+      ++ The value returned is then obtained by applying f to argument a.
+
+  Implementation ==> add
+    match(la, lb)             == match(la, lb, #1)
+    match(la:LA, lb:LB, a:A)  == lb.position(a, la)
+    match(la:LA, lb:LB, b:B)  == match(la, lb, #1, b)
+    match(la:LA, lb:LB, f:AB) == match(la, lb, #1, f)
+
+    match(la:LA, lb:LB, a:A, b:B) ==
+      (p := position(a, la)) < minIndex(la) => b
+      lb.p
+
+    match(la:LA, lb:LB, a:A, f:AB) ==
+      (p := position(a, la)) < minIndex(la) => f a
+      lb.p
+

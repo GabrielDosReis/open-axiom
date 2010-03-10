@@ -1,0 +1,65 @@
+)abbrev domain D01AMFA d01amfAnnaType
+++ Author: Brian Dupee
+++ Date Created: March 1994
+++ Date Last Updated: December 1997
+++ Basic Operations: measure, numericalIntegration
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{d01amfAnnaType} is a domain of \axiomType{NumericalIntegrationCategory}
+++ for the NAG routine D01AMF, a general numerical integration routine which
+++ can handle infinite or semi-infinite range of the input function.  The 
+++ function \axiomFun{measure} measures the usefulness of the routine D01AMF
+++ for the given problem.  The function \axiomFun{numericalIntegration}
+++ performs the integration by using \axiomType{NagIntegrationPackage}.
+
+d01amfAnnaType(): NumericalIntegrationCategory == Result add
+  EF2   ==> ExpressionFunctions2
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  SDF   ==> Stream DoubleFloat
+  DF    ==> DoubleFloat
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  NIA   ==> Record(var:Symbol,fn:EDF,range:SOCDF,abserr:DF,relerr:DF)
+  MDNIA ==> Record(fn:EDF,range:List SOCDF,abserr:DF,relerr:DF)
+  INT   ==> Integer
+  BOP   ==> BasicOperator
+  S     ==> Symbol
+  ST    ==> String
+  LST   ==> List String
+  RT    ==> RoutinesTable
+  Rep:=Result
+  import Rep, d01AgentsPackage, NagIntegrationPackage
+
+  measure(R:RT,args:NIA) ==
+    ext:Result := empty()$Result
+    Range:=rangeIsFinite(args)
+    pp:SDF := singularitiesOf(args)
+    not (empty?(pp)$SDF) =>
+      [0.0,"d01amf: There is a possible problem at the following point(s): "
+                     commaSeparate(sdf2lst(pp)), ext]
+    [getMeasure(R,d01amf@S)$RT, "d01amf is a reasonable choice if the "
+         "integral is infinite or semi-infinite and d01transform cannot "
+           "do better than using general routines",ext]
+
+  numericalIntegration(args:NIA,hints:Result) ==
+    r:INT
+    bound:DF
+    ArgsFn := map(convert(#1)$DF,args.fn)$EF2(DF,Float)
+    b:Float := getButtonValue("d01amf","functionEvaluations")$AttributeButtons
+    fEvals:INT := wholePart exp(1.1513*(1.0/(2.0*(1.0-b))))
+    iw:INT := 150*fEvals
+    f : Union(fn:FileName,fp:Asp1(F)) := [retract(ArgsFn)$Asp1(F)]
+    Range:=rangeIsFinite(args)
+    if (Range case upperInfinite) then
+      bound := getlo(args.range)
+      r := 1
+    else if (Range case lowerInfinite) then
+      bound := gethi(args.range)
+      r := -1
+    else 
+      bound := 0$DF
+      r := 2
+    d01amf(bound,r,args.abserr,args.relerr,4*iw,iw,-1,f)
+

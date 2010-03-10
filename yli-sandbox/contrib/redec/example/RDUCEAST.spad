@@ -1,0 +1,18 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain RDUCEAST ReduceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents list reduction syntax.
+ReduceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    operator: % -> SpadAst
+      ++ operator(e) returns the magma operation being applied.
+    body: % -> SpadAst
+      ++ body(e) return the list of expressions being redcued.
+  Private == add
+    Rep == List SpadAst
+    operator x == second rep x
+    body x == third rep x
+

@@ -1,0 +1,87 @@
+import Type
+import Collection
+import IndexedAggregate
+import NonNegativeInteger
+import Integer
+)abbrev category LNAGG LinearAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A linear aggregate is an aggregate whose elements are indexed by integers.
+++ Examples of linear aggregates are strings, lists, and
+++ arrays.
+++ Most of the exported operations for linear aggregates are non-destructive
+++ but are not always efficient for a particular aggregate.
+++ For example, \spadfun{concat} of two lists needs only to copy its first
+++ argument, whereas \spadfun{concat} of two arrays needs to copy both arguments.
+++ Most of the operations exported here apply to infinite objects (e.g. streams)
+++ as well to finite ones.
+++ For finite linear aggregates, see \spadtype{FiniteLinearAggregate}.
+LinearAggregate(S:Type): Category ==
+  Join(IndexedAggregate(Integer, S), Collection(S)) with
+   new   : (NonNegativeInteger,S) -> %
+     ++ new(n,x) returns \axiom{fill!(new n,x)}.
+   concat: (%,S) -> %
+     ++ concat(u,x) returns aggregate u with additional element x at the end.
+     ++ Note: for lists, \axiom{concat(u,x) == concat(u,[x])}
+   concat: (S,%) -> %
+     ++ concat(x,u) returns aggregate u with additional element at the front.
+     ++ Note: for lists: \axiom{concat(x,u) == concat([x],u)}.
+   concat: (%,%) -> %
+      ++ concat(u,v) returns an aggregate consisting of the elements of u
+      ++ followed by the elements of v.
+      ++ Note: if \axiom{w = concat(u,v)} then \axiom{w.i = u.i for i in indices u}
+      ++ and \axiom{w.(j + maxIndex u) = v.j for j in indices v}.
+   concat: List % -> %
+      ++ concat(u), where u is a lists of aggregates \axiom{[a,b,...,c]}, returns
+      ++ a single aggregate consisting of the elements of \axiom{a}
+      ++ followed by those
+      ++ of b followed ... by the elements of c.
+      ++ Note: \axiom{concat(a,b,...,c) = concat(a,concat(b,...,c))}.
+   map: ((S,S)->S,%,%) -> %
+     ++ map(f,u,v) returns a new collection w with elements \axiom{z = f(x,y)}
+     ++ for corresponding elements x and y from u and v.
+     ++ Note: for linear aggregates, \axiom{w.i = f(u.i,v.i)}.
+   elt: (%,UniversalSegment(Integer)) -> %
+      ++ elt(u,i..j) (also written: \axiom{a(i..j)}) returns the aggregate of
+      ++ elements \axiom{u} for k from i to j in that order.
+      ++ Note: in general, \axiom{a.s = [a.k for i in s]}.
+   delete: (%,Integer) -> %
+      ++ delete(u,i) returns a copy of u with the \axiom{i}th element deleted.
+      ++ Note: for lists, \axiom{delete(a,i) == concat(a(0..i - 1),a(i + 1,..))}.
+   delete: (%,UniversalSegment(Integer)) -> %
+      ++ delete(u,i..j) returns a copy of u with the \axiom{i}th through
+      ++ \axiom{j}th element deleted.
+      ++ Note: \axiom{delete(a,i..j) = concat(a(0..i-1),a(j+1..))}.
+   insert: (S,%,Integer) -> %
+      ++ insert(x,u,i) returns a copy of u having x as its \axiom{i}th element.
+      ++ Note: \axiom{insert(x,a,k) = concat(concat(a(0..k-1),x),a(k..))}.
+   insert: (%,%,Integer) -> %
+      ++ insert(v,u,k) returns a copy of u having v inserted beginning at the
+      ++ \axiom{i}th element.
+      ++ Note: \axiom{insert(v,u,k) = concat( u(0..k-1), v, u(k..) )}.
+   if % has shallowlyMutable then setelt: (%,UniversalSegment(Integer),S) -> S
+      ++ setelt(u,i..j,x) (also written: \axiom{u(i..j) := x}) destructively
+      ++ replaces each element in the segment \axiom{u(i..j)} by x.
+      ++ The value x is returned.
+      ++ Note: u is destructively change so
+      ++ that \axiom{u.k := x for k in i..j};
+      ++ its length remains unchanged.
+ add
+  indices a      == [i for i in minIndex a .. maxIndex a]
+  index?(i, a)   == i >= minIndex a and i <= maxIndex a
+  concat(a:%, x:S)      == concat(a, new(1, x))
+  concat(x:S, y:%)      == concat(new(1, x), y)
+  insert(x:S, a:%, i:Integer) == insert(new(1, x), a, i)
+  if % has finiteAggregate then
+    maxIndex l == #l - 1 + minIndex l
+
+--if % has shallowlyMutable then new(n, s)  == fill_!(new n, s)
+

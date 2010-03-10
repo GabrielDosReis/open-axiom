@@ -1,0 +1,25 @@
+import Type
+import None
+)abbrev package NONE1 NoneFunctions1
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Functions: coerce
+++ Related Constructors: None
+++ Also See:
+++ AMS Classification:
+++ Keywords:
+++ Description:
+++   \spadtype{NoneFunctions1} implements functions on \spadtype{None}.
+++   It particular it includes a particulary dangerous coercion from
+++   any other type to \spadtype{None}.
+
+NoneFunctions1(S:Type): Exports == Implementation where
+  Exports ==> with
+    coerce: S -> None
+      ++ coerce(x) changes \spad{x} into an object of type
+      ++ \spadtype{None}.
+
+  Implementation ==> add
+    coerce(s:S):None == s pretend None
+

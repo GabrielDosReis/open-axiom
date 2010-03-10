@@ -1,0 +1,33 @@
+)abbrev domain PRIMARR PrimitiveArray
+++ This provides a fast array type with no bound checking on elt's.
+++ Minimum index is 0 in this type, cannot be changed
+PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
+   #x == 
+     sizeOfSimpleArray(x)$Lisp
+
+   minIndex x == 
+     0
+
+   empty() == 
+     makeSimpleArray(getVMType(S)$Lisp,0$Lisp)$Lisp
+
+   new(n, x) == 
+     makeFilledSimpleArray(getVMType(S)$Lisp,n,x)$Lisp
+
+   qelt(x, i) == 
+     getSimpleArrayEntry(x,i)$Lisp
+
+   elt(x:%, i:Integer) == 
+     getSimpleArrayEntry(x,i)$Lisp
+
+   qsetelt!(x, i, s) == 
+     setSimpleArrayEntry(x,i,s)$Lisp
+
+   setelt(x:%, i:Integer, s:S) == 
+     setSimpleArrayEntry(x,i,s)$Lisp
+     
+   fill!(x, s) == 
+     for i in 0..maxIndexOfSimpleArray(x)$Lisp repeat 
+       setSimpleArrayEntry(x, i, s)$Lisp
+     x
+

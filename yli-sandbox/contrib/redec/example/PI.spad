@@ -1,0 +1,17 @@
+)abbrev domain PI PositiveInteger
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations:
+++ Related Constructors:
+++ Keywords: positive integer
+++ Description: \spadtype{PositiveInteger} provides functions for
+++   positive integers.
+PositiveInteger: Join(OrderedAbelianSemiGroup,Monoid) with
+            gcd: (%,%) -> %
+              ++ gcd(a,b) computes the greatest common divisor of two
+              ++ positive integers \spad{a} and b.
+            commutative("*")
+              ++ commutative("*") means multiplication is commutative : x*y = y*x
+ == SubDomain(NonNegativeInteger,#1 > 0)
+

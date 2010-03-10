@@ -1,0 +1,66 @@
+)abbrev domain BOOLEAN Boolean
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Date Last Changed: September 20, 2008
+++ Basic Operations: true, false, not, and, or, xor, nand, nor, implies
+++ Related Constructors:
+++ Keywords: boolean
+++ Description:  \spadtype{Boolean} is the elementary logic with 2 values:
+++ true and false
+
+Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputForm) with
+    true: %
+      ++ true is a logical constant.
+    false: %
+      ++ false is a logical constant.
+    xor    : (%, %) -> %
+      ++ xor(a,b) returns the logical exclusive {\em or}
+      ++ of Boolean \spad{a} and b.
+    nand   : (%, %) -> %
+      ++ nand(a,b) returns the logical negation of \spad{a} and b.
+    nor    : (%, %) -> %
+      ++ nor(a,b) returns the logical negation of \spad{a} or b.
+    test: % -> %
+      ++ test(b) returns b and is provided for compatibility with the new compiler.
+  == add
+    nt: % -> %
+
+    test a        == a
+
+    nt b          == (b => false; true)
+    true          == 'T pretend %
+    false         == NIL$Lisp
+    sample():Boolean      == true
+    not b         == NOT(b)$Lisp
+    _~ b          == (b => false; true)
+    _and(a, b)    == AND(a,b)$Lisp
+    _/_\(a, b)    == (a => b; false)
+    _or(a, b)     == OR(a,b)$Lisp
+    _\_/(a, b)    == (a => true; b)
+    xor(a, b)     == (a => nt b; b)
+    nor(a, b)     == (a => false; nt b)
+    nand(a, b)    == (a => nt b; true)
+    a = b         == EQ(a, b)$Lisp
+    implies(a, b) == (a => b; true)
+    equiv(a,b)    == EQ(a, b)$Lisp
+    a < b         == (b => nt a; false)
+
+    size()        == 2
+    index i       ==
+      even?(i::Integer) => false
+      true
+    lookup a      ==
+      a => 1
+      2
+    random()      ==
+      even?(random()$Integer) => false
+      true
+
+    convert(x:%):InputForm ==
+      x => convert("true"::Symbol)
+      convert("false"::Symbol)
+
+    coerce(x:%):OutputForm ==
+      x => message "true"
+      message "false"
+

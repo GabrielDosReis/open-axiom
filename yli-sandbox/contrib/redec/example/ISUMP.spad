@@ -1,0 +1,54 @@
+)abbrev package ISUMP InnerPolySum
+++ Summation of polynomials
+++ Author: SMW
+++ Date Created: ???
+++ Date Last Updated: 19 April 1991
+++ Description: tools for the summation packages.
+InnerPolySum(E, V, R, P): Exports == Impl where
+    E: OrderedAbelianMonoidSup
+    V: OrderedSet
+    R: IntegralDomain
+    P: PolynomialCategory(R, E, V)
+
+    Z   ==> Integer
+    Q   ==> Fraction Z
+    SUP ==> SparseUnivariatePolynomial
+
+    Exports ==> with
+        sum: (P, V, Segment P) -> Record(num:P, den:Z)
+            ++ sum(p(n), n = a..b) returns \spad{p(a) + p(a+1) + ... + p(b)}.
+        sum: (P, V) -> Record(num:P, den: Z)
+            ++ sum(p(n), n) returns \spad{P(n)},
+            ++ the indefinite sum of \spad{p(n)} with respect to
+            ++ upward difference on n, i.e. \spad{P(n+1) - P(n) = a(n)};
+
+    Impl ==> add
+        import PolynomialNumberTheoryFunctions()
+        import UnivariatePolynomialCommonDenominator(Z, Q, SUP Q)
+
+        pmul: (P, SUP Q) -> Record(num:SUP P, den:Z)
+
+        pmul(c, p) ==
+            pn := (rec := splitDenominator p).num
+            [map(numer(#1) * c,
+                pn)$SparseUnivariatePolynomialFunctions2(Q, P), rec.den]
+
+        sum(p, v, s) ==
+          indef := sum(p, v)
+          [eval(indef.num, v, 1 + hi s) - eval(indef.num, v, lo s),
+           indef.den]
+
+        sum(p, v) ==
+            up := univariate(p, v)
+            lp := nil()$List(SUP P)
+            ld := nil()$List(Z)
+            while up ~= 0 repeat
+                ud  := degree up; uc := leadingCoefficient up
+                up  := reductum up
+                rec := pmul(uc, 1 / (ud+1) * bernoulli(ud+1))
+                lp  := concat(rec.num, lp)
+                ld  := concat(rec.den, ld)
+            d := lcm ld
+            vp := +/[(d exquo di)::Z * pi for di in ld for pi in lp]
+            [multivariate(vp, v), d]
+

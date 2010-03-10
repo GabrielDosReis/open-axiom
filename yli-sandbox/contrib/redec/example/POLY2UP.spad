@@ -1,0 +1,29 @@
+)abbrev package POLY2UP PolynomialToUnivariatePolynomial
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package is primarily to help the interpreter do coercions.
+++ It allows you to view a polynomial as a
+++ univariate polynomial in one of its variables with
+++ coefficients which are again a polynomial in all the
+++ other variables.
+
+PolynomialToUnivariatePolynomial(x:Symbol, R:Ring): with
+  univariate: (Polynomial R, Variable x) ->
+                                   UnivariatePolynomial(x, Polynomial R)
+     ++ univariate(p, x) converts the polynomial p to a one of type
+     ++ \spad{UnivariatePolynomial(x,Polynomial(R))}, ie. as a member of \spad{R[...][x]}.
+ == add
+  univariate(p, y) ==
+    q:SparseUnivariatePolynomial(Polynomial R) := univariate(p, x)
+    map(#1, q)$UnivariatePolynomialCategoryFunctions2(Polynomial R,
+                  SparseUnivariatePolynomial Polynomial R, Polynomial R,
+                      UnivariatePolynomial(x, Polynomial R))
+

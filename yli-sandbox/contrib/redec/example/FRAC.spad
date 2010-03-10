@@ -1,0 +1,325 @@
+)abbrev domain FRAC Fraction
+++ Author:
+++ Date Created:
+++ Date Last Updated: 12 February 1992
+++ Basic Functions: Field, numer, denom
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: fraction, localization
+++ References:
+++ Description: Fraction takes an IntegralDomain S and produces
+++ the domain of Fractions with numerators and denominators from S.
+++ If S is also a GcdDomain, then gcd's between numerator and
+++ denominator will be cancelled during all operations.
+Fraction(S: IntegralDomain): QuotientFieldCategory S with 
+       if S has IntegerNumberSystem and S has OpenMath then OpenMath
+       if S has canonical and S has GcdDomain and S has canonicalUnitNormal
+           then canonical
+            ++ \spad{canonical} means that equal elements are in fact identical.
+  == LocalAlgebra(S, S, S) add
+    Rep:= Record(num:S, den:S)
+    coerce(d:S):% == [d,1]
+    zero?(x:%) == zero? x.num
+
+
+    if S has GcdDomain and S has canonicalUnitNormal then
+      retract(x:%):S ==
+--        one?(x.den) => x.num
+        ((x.den) = 1) => x.num
+        error "Denominator not equal to 1"
+
+      retractIfCan(x:%):Union(S, "failed") ==
+--        one?(x.den) => x.num
+        ((x.den) = 1) => x.num
+        "failed"
+    else
+      retract(x:%):S ==
+        (a:= x.num exquo x.den) case "failed" =>
+           error "Denominator not equal to 1"
+        a
+      retractIfCan(x:%):Union(S,"failed") == x.num exquo x.den
+
+    if S has EuclideanDomain then
+      wholePart x ==
+--        one?(x.den) => x.num
+        ((x.den) = 1) => x.num
+        x.num quo x.den
+
+    if S has IntegerNumberSystem then
+
+      floor x ==
+--        one?(x.den) => x.num
+        ((x.den) = 1) => x.num
+        x < 0 => -ceiling(-x)
+        wholePart x
+
+      ceiling x ==
+--        one?(x.den) => x.num
+        ((x.den) = 1) => x.num
+        x < 0 => -floor(-x)
+        1 + wholePart x
+
+      if S has OpenMath then
+        -- TODO: somwhere this file does something which redefines the division
+        -- operator. Doh!
+
+        writeOMFrac(dev: OpenMathDevice, x: %): Void ==
+          OMputApp(dev)
+          OMputSymbol(dev, "nums1", "rational")
+          OMwrite(dev, x.num, false)
+          OMwrite(dev, x.den, false)
+          OMputEndApp(dev)
+
+        OMwrite(x: %): String ==
+          s: String := ""
+          sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
+          dev: OpenMathDevice := _
+                        OMopenString(sp pretend String, OMencodingXML)
+          OMputObject(dev)
+          writeOMFrac(dev, x)
+          OMputEndObject(dev)
+          OMclose(dev)
+          s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
+          s
+
+        OMwrite(x: %, wholeObj: Boolean): String ==
+          s: String := ""
+          sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
+          dev: OpenMathDevice := _
+                        OMopenString(sp pretend String, OMencodingXML)
+          if wholeObj then
+            OMputObject(dev)
+          writeOMFrac(dev, x)
+          if wholeObj then
+            OMputEndObject(dev)
+          OMclose(dev)
+          s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
+          s
+
+        OMwrite(dev: OpenMathDevice, x: %): Void ==
+          OMputObject(dev)
+          writeOMFrac(dev, x)
+          OMputEndObject(dev)
+
+        OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
+          if wholeObj then
+            OMputObject(dev)
+          writeOMFrac(dev, x)
+          if wholeObj then
+            OMputEndObject(dev)
+
+    if S has GcdDomain then
+      cancelGcd: % -> S
+      normalize: % -> %
+
+      normalize x ==
+        zero?(x.num) => 0
+--        one?(x.den) => x
+        ((x.den) = 1) => x
+        uca := unitNormal(x.den)
+        zero?(x.den := uca.canonical) => error "division by zero"
+        x.num := x.num * uca.associate
+        x
+
+      recip x ==
+        zero?(x.num) => "failed"
+        normalize [x.den, x.num]
+
+      cancelGcd x ==
+--        one?(x.den) => x.den
+        ((x.den) = 1) => x.den
+        d := gcd(x.num, x.den)
+        xn := x.num exquo d
+        xn case "failed" =>
+          error "gcd not gcd in QF cancelGcd (numerator)"
+        xd := x.den exquo d
+        xd case "failed" =>
+          error "gcd not gcd in QF cancelGcd (denominator)"
+        x.num := xn :: S
+        x.den := xd :: S
+        d
+
+      nn:S / dd:S ==
+        zero? dd => error "division by zero"
+        cancelGcd(z := [nn, dd])
+        normalize z
+
+      x + y  ==
+        zero? y => x
+        zero? x => y
+        z := [x.den,y.den]
+        d := cancelGcd z
+        g := [z.den * x.num + z.num * y.num, d]
+        cancelGcd g
+        g.den := g.den * z.num * z.den
+        normalize g
+
+      -- We can not rely on the defaulting mechanism
+      -- to supply a definition for -, even though this
+      -- definition would do, for thefollowing reasons:
+      --  1) The user could have defined a subtraction
+      --     in Localize, which would not work for
+      --     QuotientField;
+      --  2) even if he doesn't, the system currently
+      --     places a default definition in Localize,
+      --     which uses Localize's +, which does not
+      --     cancel gcds
+      x - y  ==
+        zero? y => x
+        z := [x.den, y.den]
+        d := cancelGcd z
+        g := [z.den * x.num - z.num * y.num, d]
+        cancelGcd g
+        g.den := g.den * z.num * z.den
+        normalize g
+
+      x:% * y:%  ==
+        zero? x or zero? y => 0
+--        one? x => y
+        (x = 1) => y
+--        one? y => x
+        (y = 1) => x
+        (x, y) := ([x.num, y.den], [y.num, x.den])
+        cancelGcd x; cancelGcd y;
+        normalize [x.num * y.num, x.den * y.den]
+
+      n:Integer * x:% ==
+        y := [n::S, x.den]
+        cancelGcd y
+        normalize [x.num * y.num, y.den]
+
+      nn:S * x:% ==
+        y := [nn, x.den]
+        cancelGcd y
+        normalize [x.num * y.num, y.den]
+
+      differentiate(x:%, deriv:S -> S) ==
+        y := [deriv(x.den), x.den]
+        d := cancelGcd(y)
+        y.num := deriv(x.num) * y.den - x.num * y.num
+        (d, y.den) := (y.den, d)
+        cancelGcd y
+        y.den := y.den * d * d
+        normalize y
+
+      if S has canonicalUnitNormal then
+        x = y == (x.num = y.num) and (x.den = y.den)
+    --x / dd == (cancelGcd (z:=[x.num,dd*x.den]); normalize z)
+
+--        one? x == one? (x.num) and one? (x.den)
+        one? x == ((x.num) = 1) and ((x.den) = 1)
+                  -- again assuming canonical nature of representation
+
+    else
+      nn:S/dd:S == if zero? dd then error "division by zero" else [nn,dd]
+
+      recip x ==
+        zero?(x.num) => "failed"
+        [x.den, x.num]
+
+    if (S has RetractableTo Fraction Integer) then
+      retract(x:%):Fraction(Integer) == retract(retract(x)@S)
+
+      retractIfCan(x:%):Union(Fraction Integer, "failed") ==
+        (u := retractIfCan(x)@Union(S, "failed")) case "failed" => "failed"
+        retractIfCan(u::S)
+
+    else if (S has RetractableTo Integer) then
+      retract(x:%):Fraction(Integer) ==
+        retract(numer x) / retract(denom x)
+
+      retractIfCan(x:%):Union(Fraction Integer, "failed") ==
+        (n := retractIfCan numer x) case "failed" => "failed"
+        (d := retractIfCan denom x) case "failed" => "failed"
+        (n::Integer) / (d::Integer)
+
+    QFP ==> SparseUnivariatePolynomial %
+    DP ==> SparseUnivariatePolynomial S
+    import UnivariatePolynomialCategoryFunctions2(%,QFP,S,DP)
+    import UnivariatePolynomialCategoryFunctions2(S,DP,%,QFP)
+
+    if S has GcdDomain then
+       gcdPolynomial(pp,qq) ==
+          zero? pp => qq
+          zero? qq => pp
+          zero? degree pp or zero? degree qq => 1
+          denpp:="lcm"/[denom u for u in coefficients pp]
+          ppD:DP:=map(retract(#1*denpp),pp)
+          denqq:="lcm"/[denom u for u in coefficients qq]
+          qqD:DP:=map(retract(#1*denqq),qq)
+          g:=gcdPolynomial(ppD,qqD)
+          zero? degree g => 1
+--          one? (lc:=leadingCoefficient g) => map(#1::%,g)
+          ((lc:=leadingCoefficient g) = 1) => map(#1::%,g)
+          map(#1 / lc,g)
+
+    if (S has PolynomialFactorizationExplicit) then
+       -- we'll let the solveLinearPolynomialEquations operator
+       -- default from Field
+       pp,qq: QFP
+       lpp: List QFP
+       import Factored SparseUnivariatePolynomial %
+       if S has CharacteristicNonZero then
+          if S has canonicalUnitNormal and S has GcdDomain then
+             charthRoot x ==
+               n:= charthRoot x.num
+               n case "failed" => "failed"
+               d:=charthRoot x.den
+               d case "failed" => "failed"
+               n/d
+          else
+             charthRoot x ==
+               -- to find x = p-th root of n/d
+               -- observe that xd is p-th root of n*d**(p-1)
+               ans:=charthRoot(x.num *
+                      (x.den)**(characteristic()$%-1)::NonNegativeInteger)
+               ans case "failed" => "failed"
+               ans / x.den
+          clear: List % -> List S
+          clear l ==
+             d:="lcm"/[x.den for x in l]
+             [ x.num * (d exquo x.den)::S for x in l]
+          mat: Matrix %
+          conditionP mat ==
+            matD: Matrix S
+            matD:= matrix [ clear l for l in listOfLists mat ]
+            ansD := conditionP matD
+            ansD case "failed" => "failed"
+            ansDD:=ansD :: Vector(S)
+            [ ansDD(i)::% for i in 1..#ansDD]$Vector(%)
+
+       factorPolynomial(pp) ==
+          zero? pp => 0
+          denpp:="lcm"/[denom u for u in coefficients pp]
+          ppD:DP:=map(retract(#1*denpp),pp)
+          ff:=factorPolynomial ppD
+          den1:%:=denpp::%
+          lfact:List Record(flg:Union("nil", "sqfr", "irred", "prime"),
+                             fctr:QFP, xpnt:Integer)
+          lfact:= [[w.flg,
+                    if leadingCoefficient w.fctr =1 then map(#1::%,w.fctr)
+                    else (lc:=(leadingCoefficient w.fctr)::%;
+                           den1:=den1/lc**w.xpnt;
+                            map(#1::%/lc,w.fctr)),
+                   w.xpnt] for w in factorList ff]
+          makeFR(map(#1::%/den1,unit(ff)),lfact)
+       factorSquareFreePolynomial(pp) ==
+          zero? pp => 0
+          degree pp = 0 => makeFR(pp,empty())
+          lcpp:=leadingCoefficient pp
+          pp:=pp/lcpp
+          denpp:="lcm"/[denom u for u in coefficients pp]
+          ppD:DP:=map(retract(#1*denpp),pp)
+          ff:=factorSquareFreePolynomial ppD
+          den1:%:=denpp::%/lcpp
+          lfact:List Record(flg:Union("nil", "sqfr", "irred", "prime"),
+                             fctr:QFP, xpnt:Integer)
+          lfact:= [[w.flg,
+                    if leadingCoefficient w.fctr =1 then map(#1::%,w.fctr)
+                    else (lc:=(leadingCoefficient w.fctr)::%;
+                           den1:=den1/lc**w.xpnt;
+                            map(#1::%/lc,w.fctr)),
+                   w.xpnt] for w in factorList ff]
+          makeFR(map(#1::%/den1,unit(ff)),lfact)
+

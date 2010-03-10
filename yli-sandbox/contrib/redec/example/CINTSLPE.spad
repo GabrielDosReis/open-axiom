@@ -1,0 +1,48 @@
+)abbrev package CINTSLPE ComplexIntegerSolveLinearPolynomialEquation
+++ Author: James Davenport
+++ Date Created: 1990
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package provides the generalized euclidean algorithm which is
+++ needed as the basic step for factoring polynomials.
+ComplexIntegerSolveLinearPolynomialEquation(R,CR): C == T
+ where
+  CP ==> SparseUnivariatePolynomial CR
+  R:IntegerNumberSystem
+  CR:ComplexCategory(R)
+  C == with
+      solveLinearPolynomialEquation: (List CP,CP) -> Union(List CP,"failed")
+                   ++ solveLinearPolynomialEquation([f1, ..., fn], g)
+                   ++ where (fi relatively prime to each other)
+                   ++ returns a list of ai such that
+                   ++ g = sum ai prod fj (j \= i) or
+                   ++ equivalently g/prod fj = sum (ai/fi)
+                   ++ or returns "failed" if no such list exists
+  T == add
+      oldlp:List CP := []
+      slpePrime:R:=(2::R)
+      oldtable:Vector List CP := empty()
+      solveLinearPolynomialEquation(lp,p) ==
+         if (oldlp ~= lp) then
+            -- we have to generate a new table
+            deg:= _+/[degree u for u in lp]
+            ans:Union(Vector List CP,"failed"):="failed"
+            slpePrime:=67108859::R   -- 2**26 -5 : a prime
+                 -- a good test case for this package is
+                 --  (good question?)
+            while (ans case "failed") repeat
+              ans:=tablePow(deg,complex(slpePrime,0),lp)$GenExEuclid(CR,CP)
+              if (ans case "failed") then
+                 slpePrime:=  slpePrime-4::R
+                 while not prime?(slpePrime)$IntegerPrimesPackage(R) repeat
+                   slpePrime:= slpePrime-4::R
+            oldtable:=(ans:: Vector List CP)
+         answer:=solveid(p,complex(slpePrime,0),oldtable)
+         answer
+

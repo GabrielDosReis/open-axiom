@@ -1,0 +1,10 @@
+)abbrev domain SEX SExpression
+++ Domain for the standard Lisp values
+++ Author: S.M.Watt
+++ Date Created: July 1987
+++ Date Last Modified: 23 May 1991
+++ Description:
+++  This domain allows the manipulation of the usual Lisp values;
+SExpression()
+       == SExpressionOf(String, Symbol, Integer, DoubleFloat, OutputForm)
+

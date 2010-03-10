@@ -1,0 +1,29 @@
+)abbrev package MAPHACK1 MappingPackageInternalHacks1
+++ Author: S.M.Watt and W.H.Burge
+++ Date Created:Jan 87
+++ Date Last Updated:Feb 92
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: various Currying operations.
+MappingPackageInternalHacks1(A: SetCategory): MPcat == MPdef where
+    NNI ==> NonNegativeInteger
+ 
+    MPcat == with
+        iter:  ((A -> A), NNI, A) -> A
+          ++\spad{iter(f,n,x)} applies \spad{f n} times to \spad{x}.
+        recur: ((NNI, A)->A, NNI, A) -> A
+          ++\spad{recur(n,g,x)} is \spad{g(n,g(n-1,..g(1,x)..))}.
+ 
+    MPdef == add
+        iter(g,n,x)  ==
+            for i in 1..n repeat x := g x     -- g(g(..(x)..))
+            x
+        recur(g,n,x) ==
+            for i in 1..n repeat x := g(i,x)  -- g(n,g(n-1,..g(1,x)..))
+            x
+

@@ -1,0 +1,37 @@
+)abbrev domain RULESET Ruleset
+++ Sets of rules for the pattern matcher
+++ Author: Manuel Bronstein
+++ Date Created: 20 Mar 1990
+++ Date Last Updated: 29 Jun 1990
+++ Description:
+++   A ruleset is a set of pattern matching rules grouped together.
+++ Keywords: pattern, matching, rule.
+Ruleset(Base, R, F): Exports == Implementation where
+  Base   : SetCategory
+  R      : Join(Ring, PatternMatchable Base, OrderedSet,
+                                 ConvertibleTo Pattern Base)
+  F      : Join(FunctionSpace R, PatternMatchable Base,
+                                 ConvertibleTo Pattern Base)
+
+  RR ==> RewriteRule(Base, R, F)
+
+  Exports ==> Join(SetCategory, Eltable(F, F)) with
+    ruleset: List RR -> $
+      ++ ruleset([r1,...,rn]) creates the rule set \spad{{r1,...,rn}}.
+    rules  : $ -> List RR
+      ++ rules(r) returns the rules contained in r.
+    elt    : ($, F, PositiveInteger) -> F
+      ++ elt(r,f,n) or r(f, n) applies all the rules of r to f at most n times.
+
+  Implementation ==> add
+    import ApplyRules(Base, R, F)
+
+    Rep := Set RR
+
+    ruleset l                        == {l}$Rep
+    coerce(x:$):OutputForm           == coerce(x)$Rep
+    x = y                            == x =$Rep y
+    elt(x:$, f:F)                    == applyRules(rules x, f)
+    elt(r:$, s:F, n:PositiveInteger) == applyRules(rules r, s, n)
+    rules x                          == parts(x)$Rep
+

@@ -1,0 +1,73 @@
+)abbrev domain D01AQFA d01aqfAnnaType
+++ Author: Brian Dupee
+++ Date Created: March 1994
+++ Date Last Updated: December 1997
+++ Basic Operations: measure, numericalIntegration
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{d01aqfAnnaType} is a domain of \axiomType{NumericalIntegrationCategory}
+++ for the NAG routine D01AQF, a general numerical integration routine which
+++ can solve an integral of the form \newline
+++ \centerline{\inputbitmap{/home/bjd/Axiom/anna/hypertex/bitmaps/d01aqf.xbm}}   
+++ The function \axiomFun{measure} measures the usefulness of the routine 
+++ D01AQF for the given problem.  The function \axiomFun{numericalIntegration}
+++ performs the integration by using \axiomType{NagIntegrationPackage}.
+
+d01aqfAnnaType(): NumericalIntegrationCategory == Result add
+  EF2   ==> ExpressionFunctions2
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  SDF   ==> Stream DoubleFloat
+  DF    ==> DoubleFloat
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  NIA   ==> Record(var:Symbol,fn:EDF,range:SOCDF,abserr:DF,relerr:DF)
+  MDNIA ==> Record(fn:EDF,range:List SOCDF,abserr:DF,relerr:DF)
+  INT   ==> Integer
+  BOP   ==> BasicOperator
+  S     ==> Symbol
+  ST    ==> String
+  LST   ==> List String
+  RT    ==> RoutinesTable
+  Rep:=Result
+  import Rep, d01AgentsPackage, NagIntegrationPackage
+
+  measure(R:RT,args:NIA) ==
+    ext:Result := empty()$Result
+    Den := denominator(args.fn)
+--    one? Den =>
+    (Den = 1) =>
+      [0.0,"d01aqf: A suitable weight function has not been found", ext]
+    listOfZeros:LDF := problemPoints(args.fn,args.var,args.range)
+    numberOfZeros := (#(listOfZeros))$LDF
+    zero?(numberOfZeros) =>
+      [0.0,"d01aqf: A suitable weight function has not been found", ext]
+    numberOfZeros = 1 =>
+      s:SDF := singularitiesOf(args)
+      more?(s,1)$SDF => 
+        [0.0,"d01aqf: Too many singularities have been found", ext]
+      cFloat:Float := (convert(first(listOfZeros)$LDF)@Float)$DF
+      cString:ST := (convert(cFloat)@ST)$Float
+      lany:Any := coerce(listOfZeros)$AnyFunctions1(LDF)
+      ex:Record(key:S,entry:Any) := [d01aqfextra@S,lany]
+      ext := insert!(ex,ext)$Result
+      [getMeasure(R,d01aqf@S)$RT, "Recommended is d01aqf with the "
+        "hilbertian weight function of 1/(x-c) where c = " cString, ext]
+    [0.0,"d01aqf: More than one factor has been found and so does not "
+                "have a suitable weight function",ext]
+
+  numericalIntegration(args:NIA,hints:Result) ==
+    Args := copy args
+    ca:Any :=  coerce(search((d01aqfextra@S),hints)$Result)@Any
+    c:DF := first(retract(ca)$AnyFunctions1(LDF))$LDF
+    ci:FI := df2fi(c)$ExpertSystemToolsPackage
+    Var:EFI := Args.var :: EFI
+    Gx:EFI := (Var-(ci::EFI))*(edf2efi(Args.fn)$ExpertSystemToolsPackage)
+    ArgsFn := map(convert(#1)$FI,Gx)$EF2(FI,Float)
+    b:Float := getButtonValue("d01aqf","functionEvaluations")$AttributeButtons
+    fEvals:INT := wholePart exp(1.1513*(1.0/(2.0*(1.0-b))))
+    iw:INT := 75*fEvals
+    f : Union(fn:FileName,fp:Asp1(G)) := [retract(ArgsFn)$Asp1(G)]
+    d01aqf(getlo(Args.range),gethi(Args.range),c,Args.abserr,Args.relerr,4*iw,iw,-1,f)
+

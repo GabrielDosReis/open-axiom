@@ -1,0 +1,10 @@
+)abbrev package TOPSP TopLevelThreeSpace
+++ Description:
+++ This package exports a function for making a \spadtype{ThreeSpace}
+TopLevelThreeSpace(): with
+    createThreeSpace: () -> ThreeSpace DoubleFloat
+      ++ createThreeSpace() creates a \spadtype{ThreeSpace(DoubleFloat)} object 
+      ++ capable of holding point, curve, mesh components and any combination.
+  == add
+    createThreeSpace() == create3Space()$ThreeSpace(DoubleFloat)
+

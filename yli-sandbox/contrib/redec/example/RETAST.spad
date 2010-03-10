@@ -1,0 +1,19 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain RETAST ReturnAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents `return' expressions.
+ReturnAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the expression returned by `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,SpadAst)
+    expression x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('ReturnAst::OutputForm,
+        ['expression::OutputForm = expression(x)::OutputForm])$OutputForm
+

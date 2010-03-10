@@ -1,0 +1,23 @@
+import List
+import TypeAst
+)abbrev domain IMPTAST ImportAst
+)abbrev domain TYPEAST TypeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents an `import' of types.
+ImportAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    coerce: List TypeAst -> %
+      ++ ts::ImportAst constructs an ImportAst for the list if types `ts'.
+    imports: % -> List TypeAst
+      ++ imports(x) returns the list of imported types.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol, List TypeAst)
+    coerce(ts: List TypeAst): % == per pair('import,ts)
+    imports x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('ImportAst::OutputForm,
+        ['imports::OutputForm = imports(x)::OutputForm])$OutputForm
+

@@ -1,0 +1,21 @@
+import ConstructorKind
+)abbrev category CTORCAT ConstructorCategory
+++ Author: Gabriel Dos Reis
+++ Date Create: December 17, 2008.
+++ Date Last Updated: December 21, 2008.
+++ Basic Operations: name, kind, arity.
+++ Description:
+++   This category declares basic operations on all constructors.
+ConstructorCategory(): Category == OperatorCategory Identifier with
+     kind: % -> ConstructorKind
+       ++ kind(ctor) returns the kind of the constructor `ctor'.
+     dualSignature: % -> List Boolean
+       ++ dualSignature(c) returns a list l of Boolean values with 
+       ++ the following meaning: 
+       ++   l.(i+1) holds when the constructor takes a domain object
+       ++           as the `i'th argument.  Otherwise the argument
+       ++           must be a non-domain object.
+  add
+    kind x == getConstructorKind(x)$Lisp
+    arity x == getConstructorArity(x)$Lisp
+    dualSignature x == getDualSignatureFromDB(x)$Lisp

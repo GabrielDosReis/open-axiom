@@ -1,0 +1,197 @@
+)abbrev package WFFINTBS WildFunctionFieldIntegralBasis
+++ Authors: Victor Miller, Clifton Williamson
+++ Date Created: 24 July 1991
+++ Date Last Updated: 20 September 1994
+++ Basic Operations: integralBasis, localIntegralBasis
+++ Related Domains: IntegralBasisTools(R,UP,F),
+++   TriangularMatrixOperations(R,Vector R,Vector R,Matrix R)
+++ Also See: FunctionFieldIntegralBasis, NumberFieldIntegralBasis
+++ AMS Classifications:
+++ Keywords: function field, integral basis
+++ Examples:
+++ References:
+++ Description:
+++ In this package K is a finite field, R is a ring of univariate
+++ polynomials over K, and F is a framed algebra over R.  The package
+++ provides a function to compute the integral closure of R in the quotient
+++ field of F as well as a function to compute a "local integral basis"
+++ at a specific prime.
+
+WildFunctionFieldIntegralBasis(K,R,UP,F): Exports == Implementation where
+  K  : FiniteFieldCategory
+  --K  : Join(Field,Finite)
+  R  : UnivariatePolynomialCategory K
+  UP : UnivariatePolynomialCategory R
+  F  : FramedAlgebra(R,UP)
+
+  I       ==> Integer
+  Mat     ==> Matrix R
+  NNI     ==> NonNegativeInteger
+  SAE     ==> SimpleAlgebraicExtension
+  RResult ==> Record(basis: Mat, basisDen: R, basisInv:Mat)
+  IResult ==> Record(basis: Mat, basisDen: R, basisInv:Mat,discr: R)
+  MATSTOR ==> StorageEfficientMatrixOperations
+
+  Exports ==> with
+    integralBasis : () -> RResult
+      ++ \spad{integralBasis()} returns a record
+      ++ \spad{[basis,basisDen,basisInv]} containing information regarding
+      ++ the integral closure of R in the quotient field of F, where
+      ++ F is a framed algebra with R-module basis \spad{w1,w2,...,wn}.
+      ++ If \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of \spad{basis} contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+    localIntegralBasis : R -> RResult
+      ++ \spad{integralBasis(p)} returns a record
+      ++ \spad{[basis,basisDen,basisInv]} containing information regarding
+      ++ the local integral closure of R at the prime \spad{p} in the quotient
+      ++ field of F, where F is a framed algebra with R-module basis
+      ++ \spad{w1,w2,...,wn}.
+      ++ If \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the local integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of \spad{basis} contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+
+  Implementation ==> add
+    import IntegralBasisTools(R, UP, F)
+    import ModularHermitianRowReduction(R)
+    import TriangularMatrixOperations(R, Vector R, Vector R, Matrix R)
+    import DistinctDegreeFactorize(K,R)
+
+    listSquaredFactors: R -> List R
+    listSquaredFactors px ==
+      -- returns a list of the factors of px which occur with
+      -- exponent > 1
+      ans : List R := empty()
+      factored := factor(px)$DistinctDegreeFactorize(K,R)
+      for f in factors(factored) repeat
+        if f.exponent > 1 then ans := concat(f.factor,ans)
+      ans
+
+    sae ==> SAE(K, R, prime)
+
+    iLocalIntegralBasis: (Vector F,Vector F,Matrix R,Matrix R,R,R) -> IResult
+    iLocalIntegralBasis(bas,pows,tfm,matrixOut,disc,prime) ==
+      n := rank()$F; standardBasis := basis()$F
+      -- 'standardBasis' is the basis for F as a FramedAlgebra;
+      -- usually this is [1,y,y**2,...,y**(n-1)]
+      p2 := prime * prime --;  sae := SAE(K,R,prime)
+      p := characteristic()$F; q := size()$sae
+      lp := leastPower(q,n)
+      rb := scalarMatrix(n,1); rbinv := scalarMatrix(n,1)
+      -- rb    = basis matrix of current order
+      -- rbinv = inverse basis matrix of current order
+      -- these are wrt the orginal basis for F
+      rbden : R := 1; index : R := 1; oldIndex : R := 1
+      -- rbden = denominator for current basis matrix
+      -- index = index of original order in current order
+      repeat
+        -- pows = [(w1 * rbden) ** q,...,(wn * rbden) ** q], where
+        -- bas = [w1,...,wn] is 'rbden' times the basis for the order B = 'rb'
+        for i in 1..n repeat
+          bi : F := 0
+          for j in 1..n repeat
+            bi := bi + qelt(rb,i,j) * qelt(standardBasis,j)
+          qsetelt_!(bas,i,bi)
+          qsetelt_!(pows,i,bi ** p)
+        coor0 := transpose coordinates(pows,bas)
+        denPow := rbden ** ((p - 1) :: NNI)
+        (coMat0 := coor0 exquo denPow) case "failed" =>
+          error "can't happen"
+        -- the jth column of coMat contains the coordinates of (wj/rbden)**q
+        -- with respect to the basis [w1/rbden,...,wn/rbden]
+        coMat := coMat0 :: Matrix R
+        -- the ith column of 'pPows' contains the coordinates of the pth power
+        -- of the ith basis element for B/prime.B over 'sae' = R/prime.R
+        pPows := map(reduce,coMat)$MatrixCategoryFunctions2(R,Vector R,
+                    Vector R,Matrix R,sae,Vector sae,Vector sae,Matrix sae)
+        -- 'frob' will eventually be the Frobenius matrix for B/prime.B over
+        -- 'sae' = R/prime.R; at each stage of the loop the ith column will
+        -- contain the coordinates of p^k-th powers of the ith basis element
+        frob := copy pPows; tmpMat : Matrix sae := new(n,n,0)
+        for r in 2..leastPower(p,q) repeat
+          for i in 1..n repeat for j in 1..n repeat
+            qsetelt_!(tmpMat,i,j,qelt(frob,i,j) ** p)
+          times_!(frob,pPows,tmpMat)$MATSTOR(sae)
+        frobPow := frob ** lp
+        -- compute the p-radical
+        ns := nullSpace frobPow
+        for i in 1..n repeat for j in 1..n repeat qsetelt_!(tfm,i,j,0)
+        for vec in ns for i in 1.. repeat
+          for j in 1..n repeat
+            qsetelt_!(tfm,i,j,lift qelt(vec,j))
+        id := squareTop rowEchelon(tfm,prime)
+        -- id = basis matrix of the p-radical
+        idinv := UpTriBddDenomInv(id, prime)
+        -- id * idinv = prime * identity
+        -- no need to check for inseparability in this case
+        rbinv := idealiser(id * rb, rbinv * idinv, prime * rbden)
+        index := diagonalProduct rbinv
+        rb := rowEchelon LowTriBddDenomInv(rbinv,rbden * prime)
+        if divideIfCan_!(rb,matrixOut,prime,n) = 1
+          then rb := matrixOut
+          else rbden := rbden * prime
+        rbinv := UpTriBddDenomInv(rb,rbden)
+        indexChange := index quo oldIndex
+        oldIndex := index
+        disc := disc quo (indexChange * indexChange)
+        (not sizeLess?(1,indexChange)) or ((disc exquo p2) case "failed") =>
+          return [rb, rbden, rbinv, disc]
+
+    integralBasis() ==
+      traceMat := traceMatrix()$F; n := rank()$F
+      disc := determinant traceMat        -- discriminant of current order
+      zero? disc => error "integralBasis: polynomial must be separable"
+      singList := listSquaredFactors disc -- singularities of relative Spec
+      runningRb := scalarMatrix(n,1); runningRbinv := scalarMatrix(n,1)
+      -- runningRb    = basis matrix of current order
+      -- runningRbinv = inverse basis matrix of current order
+      -- these are wrt the original basis for F
+      runningRbden : R := 1
+      -- runningRbden = denominator for current basis matrix
+      empty? singList => [runningRb, runningRbden, runningRbinv]
+      bas : Vector F := new(n,0); pows : Vector F := new(n,0)
+      -- storage for basis elements and their powers
+      tfm : Matrix R := new(n,n,0)
+      -- 'tfm' will contain the coordinates of a lifting of the kernel
+      -- of a power of Frobenius
+      matrixOut : Matrix R := new(n,n,0)
+      for prime in singList repeat
+        lb := iLocalIntegralBasis(bas,pows,tfm,matrixOut,disc,prime)
+        rb := lb.basis; rbinv := lb.basisInv; rbden := lb.basisDen
+        disc := lb.discr
+        -- update 'running integral basis' if newly computed
+        -- local integral basis is non-trivial
+        if sizeLess?(1,rbden) then
+          mat := vertConcat(rbden * runningRb,runningRbden * rb)
+          runningRbden := runningRbden * rbden
+          runningRb := squareTop rowEchelon(mat,runningRbden)
+          runningRbinv := UpTriBddDenomInv(runningRb,runningRbden)
+      [runningRb, runningRbden, runningRbinv]
+
+    localIntegralBasis prime ==
+      traceMat := traceMatrix()$F; n := rank()$F
+      disc := determinant traceMat        -- discriminant of current order
+      zero? disc => error "localIntegralBasis: polynomial must be separable"
+      (disc exquo (prime * prime)) case "failed" =>
+        [scalarMatrix(n,1), 1, scalarMatrix(n,1)]
+      bas : Vector F := new(n,0); pows : Vector F := new(n,0)
+      -- storage for basis elements and their powers
+      tfm : Matrix R := new(n,n,0)
+      -- 'tfm' will contain the coordinates of a lifting of the kernel
+      -- of a power of Frobenius
+      matrixOut : Matrix R := new(n,n,0)
+      lb := iLocalIntegralBasis(bas,pows,tfm,matrixOut,disc,prime)
+      [lb.basis, lb.basisDen, lb.basisInv]
+

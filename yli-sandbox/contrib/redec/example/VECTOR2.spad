@@ -1,0 +1,51 @@
+)abbrev package VECTOR2 VectorFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This package provides operations which all take as arguments
+++ vectors of elements of some type \spad{A} and functions from \spad{A} to
+++ another of type B. The operations all iterate over their vector argument
+++ and either return a value of type B or a vector over B.
+ 
+VectorFunctions2(A, B): Exports == Implementation where
+  A, B: Type
+  VA ==> Vector A
+  VB ==> Vector B
+  O2 ==> FiniteLinearAggregateFunctions2(A, VA, B, VB)
+  UB ==> Union(B,"failed")
+ 
+  Exports ==> with
+    scan   : ((A, B) -> B, VA, B) -> VB
+      ++ scan(func,vec,ident) creates a new vector whose elements are
+      ++ the result of applying reduce to the binary function func,
+      ++ increasing initial subsequences of the vector vec,
+      ++ and the element ident.
+    reduce : ((A, B) -> B, VA, B) -> B
+      ++ reduce(func,vec,ident) combines the elements in vec using the
+      ++ binary function func. Argument ident is returned if vec is empty.
+    map    : (A -> B, VA) -> VB
+      ++ map(f, v) applies the function f to every element of the vector v
+      ++ producing a new vector containing the values.
+    map : (A -> UB, VA) -> Union(VB,"failed")
+      ++ map(f, v) applies the function f to every element of the vector v
+      ++ producing a new vector containing the values or \spad{"failed"}.
+
+  Implementation ==> add
+    scan(f, v, b)   == scan(f, v, b)$O2
+    reduce(f, v, b) == reduce(f, v, b)$O2
+    map(f:(A->B), v:VA):VB == map(f, v)$O2
+    map(f:(A -> UB), a:VA):Union(VB,"failed") ==
+     res : List B  := []
+     for u in entries(a) repeat
+       r := f u
+       r = "failed" => return "failed"
+       res := [r::B,:res]	
+     vector reverse! res
+

@@ -1,0 +1,89 @@
+)abbrev domain FTEM FortranTemplate
+++ Author: Mike Dewar
+++ Date Created:  October 1992
+++ Date Last Updated: 
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: Code to manipulate Fortran templates
+FortranTemplate() : specification == implementation where
+
+  specification == FileCategory(FileName, String) with
+
+    processTemplate : (FileName, FileName) -> FileName
+      ++ processTemplate(tp,fn) processes the template tp, writing the
+      ++ result out to fn.
+    processTemplate : (FileName) -> FileName
+      ++ processTemplate(tp) processes the template tp, writing the
+      ++ result to the current FORTRAN output stream.
+    fortranLiteralLine : String -> Void
+      ++ fortranLiteralLine(s) writes s to the current Fortran output stream,
+      ++ followed by a carriage return
+    fortranLiteral : String -> Void
+      ++ fortranLiteral(s) writes s to the current Fortran output stream
+    fortranCarriageReturn : () -> Void
+      ++ fortranCarriageReturn() produces a carriage return on the current
+      ++ Fortran output stream
+
+  implementation == TextFile add
+
+    import TemplateUtilities
+    import FortranOutputStackPackage
+
+    Rep := TextFile
+
+    fortranLiteralLine(s:String):Void ==
+      PRINTEXP(s,_$fortranOutputStream$Lisp)$Lisp
+      TERPRI(_$fortranOutputStream$Lisp)$Lisp 
+
+    fortranLiteral(s:String):Void ==
+      PRINTEXP(s,_$fortranOutputStream$Lisp)$Lisp
+
+    fortranCarriageReturn():Void ==
+      TERPRI(_$fortranOutputStream$Lisp)$Lisp
+
+    writePassiveLine!(line:String):Void ==
+    -- We might want to be a bit clever here and look for new SubPrograms etc.
+      fortranLiteralLine line
+
+    processTemplate(tp:FileName, fn:FileName):FileName == 
+      pushFortranOutputStack(fn)
+      processTemplate(tp)
+      popFortranOutputStack()
+      fn
+
+    getLine(fp:TextFile):String ==
+      line : String := stripCommentsAndBlanks readLine!(fp)
+      while not empty?(line) and elt(line,maxIndex line) = char "__" repeat
+        setelt(line,maxIndex line,char " ")
+        line := concat(line, stripCommentsAndBlanks readLine!(fp))$String
+      line
+
+    processTemplate(tp:FileName):FileName == 
+      fp : TextFile := open(tp,"input")
+      active : Boolean := true
+      line : String
+      endInput : Boolean := false
+      while not (endInput or endOfFile? fp) repeat
+        if active then
+          line := getLine fp
+          line = "endInput" => endInput := true
+          if line = "beginVerbatim" then
+            active := false
+          else
+            not empty? line => interpretString line
+        else
+          line := readLine!(fp)
+          if line = "endVerbatim" then
+            active := true
+          else
+            writePassiveLine! line
+      close!(fp)
+      if not active then 
+        error concat(["Missing `endVerbatim' line in ",tp::String])$String
+      string(_$fortranOutputFile$Lisp)::FileName
+

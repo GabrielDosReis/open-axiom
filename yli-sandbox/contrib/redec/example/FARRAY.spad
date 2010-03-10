@@ -1,0 +1,21 @@
+)abbrev domain FARRAY FlexibleArray
+++ A FlexibleArray is the notion of an array intended to allow for growth
+++ at the end only.  Hence the following efficient operations
+++   \spad{append(x,a)} meaning append item x at the end of the array \spad{a}
+++   \spad{delete(a,n)} meaning delete the last item from the array \spad{a}
+++ Flexible arrays support the other operations inherited from
+++ \spadtype{ExtensibleLinearAggregate}. However, these are not efficient.
+++ Flexible arrays combine the \spad{O(1)} access time property of arrays
+++ with growing and shrinking at the end in \spad{O(1)} (average) time.
+++ This is done by using an ordinary array which may have zero or more
+++ empty slots at the end.  When the array becomes full it is copied
+++ into a new larger (50% larger) array.  Conversely, when the array
+++ becomes less than 1/2 full, it is copied into a smaller array.
+++ Flexible arrays provide for an efficient implementation of many
+++ data structures in particular heaps, stacks and sets.
+
+FlexibleArray(S: Type) == Implementation where
+  ARRAYMININDEX ==> 1       -- if you want to change this, be my guest
+  Implementation ==> IndexedFlexibleArray(S, ARRAYMININDEX)
+-- Join(OneDimensionalArrayAggregate S, ExtensibleLinearAggregate S)
+

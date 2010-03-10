@@ -1,0 +1,109 @@
+)abbrev domain E04GCFA e04gcfAnnaType
+++ Author: Brian Dupee
+++ Date Created: February 1996
+++ Date Last Updated: February 1996
+++ Basic Operations: measure, numericalOptimization
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{e04gcfAnnaType} is a domain of \axiomType{NumericalOptimization}
+++ for the NAG routine E04GCF, a general optimization routine which
+++ can handle some singularities in the input function.  The function
+++ \axiomFun{measure} measures the usefulness of the routine E04GCF
+++ for the given problem.  The function \axiomFun{numericalOptimization}
+++ performs the optimization by using \axiomType{NagOptimisationPackage}.
+e04gcfAnnaType(): NumericalOptimizationCategory == Result add
+  DF    ==> DoubleFloat
+  EF    ==> Expression Float
+  EDF   ==> Expression DoubleFloat
+  PDF   ==> Polynomial DoubleFloat
+  VPDF  ==> Vector Polynomial DoubleFloat
+  LDF   ==> List DoubleFloat
+  LOCDF ==> List OrderedCompletion DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  MPDF  ==> Matrix Polynomial DoubleFloat
+  MF    ==> Matrix Float
+  MEF   ==> Matrix Expression Float
+  LEDF  ==> List Expression DoubleFloat
+  VEF   ==> Vector Expression Float
+  NOA   ==> Record(fn:EDF, init:LDF, lb:LOCDF, cf:LEDF, ub:LOCDF)
+  LSA   ==> Record(lfn:LEDF, init:LDF)
+  EF2   ==> ExpressionFunctions2
+  MI    ==> Matrix Integer
+  INT   ==> Integer
+  F     ==> Float
+  NNI   ==> NonNegativeInteger
+  S     ==> Symbol
+  LS    ==> List Symbol
+  MVCF  ==> MultiVariableCalculusFunctions
+  ESTOOLS2 ==> ExpertSystemToolsPackage2
+  SDF   ==> Stream DoubleFloat
+  LSDF  ==> List Stream DoubleFloat
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  OCDF  ==> OrderedCompletion DoubleFloat
+
+  Rep:=Result
+  import Rep, NagOptimisationPackage,ExpertSystemContinuityPackage
+  import e04AgentsPackage,ExpertSystemToolsPackage
+
+  measure(R:RoutinesTable,args:NOA) ==
+    argsFn:EDF := args.fn
+    string:String := "e04gcf is "
+    positive?(#(args.cf) + #(args.lb) + #(args.ub)) =>
+      string := concat(string,"unsuitable for constrained problems. ")
+      [0.0,string]
+    n:NNI := #(variables(argsFn)$EDF)
+    (n>1)@Boolean => 
+      string := concat(string,"unsuitable for single instances of multivariate problems. ")
+      [0.0,string]
+    a := coerce(float(10,0,10))$OCDF
+    seg:SOCDF := -a..a
+    sings := singularitiesOf(argsFn,variables(argsFn)$EDF,seg)
+    s := #(sdf2lst(sings))
+    positive? s => 
+      string := concat(string,"not recommended for discontinuous functions.")
+      [0.0,string]
+    sumOfSquares(args.fn) case "failed" =>
+      string := concat(string,"unsuitable.")
+      [0.0,string]
+    string := concat(string,"recommended since the function is a sum of squares.")
+    [getMeasure(R,e04gcf@Symbol)$RoutinesTable, string]
+
+  measure(R:RoutinesTable,args:LSA) ==
+    string:String := "e04gcf is "
+    a := coerce(float(10,0,10))$OCDF
+    seg:SOCDF := -a..a
+    sings := concat([singularitiesOf(i,variables(args),seg) for i in args.lfn])$SDF
+    s := #(sdf2lst(sings))
+    positive? s => 
+      string := concat(string,"not recommended for discontinuous functions.")
+      [0.0,string]
+    string := concat(string,"recommended.")
+    m := getMeasure(R,e04gcf@Symbol)$RoutinesTable
+    m := m-(1-exp(-(expenseOfEvaluation(args))**3))
+    [m, string]
+
+  numericalOptimization(args:NOA) ==
+    argsFn:EDF := args.fn
+    lw:INT := 16
+    x := mat(args.init,1)
+    (a := sumOfSquares(argsFn)) case EDF => 
+      ArgsFn := vector([edf2ef(a)$ExpertSystemToolsPackage])$VEF
+      f : Union(fn:FileName,fp:Asp19(LSFUN2)) := [retract(ArgsFn)$Asp19(LSFUN2)]
+      out:Result := e04gcf(1,1,1,lw,x,-1,f)
+      changeNameToObjf(fsumsq@Symbol,out)
+    empty()$Result
+
+  numericalOptimization(args:LSA) ==
+    argsFn := copy args.lfn
+    m:NNI := #(argsFn)
+    n:NNI := #(variables(args))
+    lw:INT := 
+--      one?(n) => 11+5*m
+      (n = 1) => 11+5*m
+      2*n*(4+n+m)+3*m
+    x := mat(args.init,n)
+    ArgsFn := vector([edf2ef(i)$ExpertSystemToolsPackage for i in argsFn])$VEF
+    f : Union(fn:FileName,fp:Asp19(LSFUN2)) := [retract(ArgsFn)$Asp19(LSFUN2)]
+    out:Result := e04gcf(m,n,1,lw,x,-1,f)
+    changeNameToObjf(fsumsq@Symbol,out)
+

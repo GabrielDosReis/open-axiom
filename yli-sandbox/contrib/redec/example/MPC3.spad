@@ -1,0 +1,30 @@
+)abbrev package MPC3 MPolyCatFunctions3
+++ Description:
+++ This package \undocumented
+MPolyCatFunctions3(Vars1,Vars2,E1,E2,R,PR1,PR2): C == T where
+  E1   : OrderedAbelianMonoidSup
+  E2   : OrderedAbelianMonoidSup
+  Vars1: OrderedSet
+  Vars2: OrderedSet
+  R    : Ring
+  PR1  : PolynomialCategory(R,E1,Vars1)
+  PR2  : PolynomialCategory(R,E2,Vars2)
+ 
+  C ==> with
+    map: (Vars1 -> Vars2, PR1) -> PR2
+        ++ map(f,x) \undocumented
+ 
+  T ==> add
+ 
+    map(f:Vars1 -> Vars2, p:PR1):PR2 ==
+      (x1 := mainVariable p) case "failed" =>
+        c:R:=(retract p)
+        c::PR2
+      up := univariate(p, x1::Vars1)
+      x2 := f(x1::Vars1)
+      ans:PR2 := 0
+      while up ~= 0 repeat
+        ans := ans + monomial(map(f,leadingCoefficient up),x2,degree up)
+        up  := reductum up
+      ans
+

@@ -1,0 +1,136 @@
+import OrderedSet
+import CommutativeRing
+import Module
+)abbrev domain LEXP LieExponentials
+++ Author: Michel Petitot (petitot@lifl.fr).
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Management of the Lie Group associated with a
+++ free nilpotent Lie algebra. Every Lie bracket with 
+++ length greater than \axiom{Order} are
+++ assumed to be null.
+++ The implementation inherits from the \spadtype{XPBWPolynomial}
+++ domain constructor: Lyndon
+++ coordinates are exponential coordinates 
+++ of the second kind. \newline Author: Michel Petitot (petitot@lifl.fr).
+
+LieExponentials(VarSet, R, Order): XDPcat == XDPdef where
+
+  EX     ==> OutputForm
+  PI     ==> PositiveInteger
+  NNI    ==> NonNegativeInteger
+  I      ==> Integer
+  RN     ==> Fraction(I)
+  R      : Join(CommutativeRing, Module RN)
+  Order  : PI 
+  VarSet : OrderedSet
+  LWORD  ==> LyndonWord(VarSet)
+  LWORDS ==> List LWORD
+  BASIS  ==> PoincareBirkhoffWittLyndonBasis(VarSet)
+  TERM   ==> Record(k:BASIS, c:R)
+  LTERMS ==> List(TERM)
+  LPOLY  ==> LiePolynomial(VarSet,R)  
+  XDPOLY ==> XDistributedPolynomial(VarSet,R)
+  PBWPOLY==> XPBWPolynomial(VarSet, R)
+  TERM1  ==> Record(k:LWORD, c:R)
+  EQ     ==> Equation(R)
+
+  XDPcat == Group with
+    exp         : LPOLY -> $
+      ++ \axiom{exp(p)} returns the exponential of \axiom{p}.
+    log         : $ -> LPOLY
+      ++ \axiom{log(p)} returns the logarithm of \axiom{p}.
+    ListOfTerms : $ -> LTERMS
+      ++ \axiom{ListOfTerms(p)} returns the internal representation of \axiom{p}.
+    coerce      : $ -> XDPOLY
+      ++ \axiom{coerce(g)} returns the internal representation of \axiom{g}.
+    coerce      : $ -> PBWPOLY
+      ++ \axiom{coerce(g)} returns the internal representation of \axiom{g}.
+    mirror      : $ -> $
+      ++ \axiom{mirror(g)} is the mirror of the internal representation of \axiom{g}.
+    varList     : $ -> List VarSet
+      ++ \axiom{varList(g)} returns the list of variables of \axiom{g}. 
+    LyndonBasis : List VarSet -> List LPOLY
+      ++ \axiom{LyndonBasis(lv)} returns the Lyndon basis of the nilpotent free
+      ++ Lie algebra.
+    LyndonCoordinates: $ -> List TERM1
+      ++ \axiom{LyndonCoordinates(g)} returns the exponential coordinates of \axiom{g}.
+    identification: ($,$) -> List EQ
+      ++ \axiom{identification(g,h)} returns the list of equations \axiom{g_i = h_i},
+      ++ where \axiom{g_i} (resp. \axiom{h_i}) are exponential coordinates 
+      ++ of \axiom{g} (resp. \axiom{h}). 
+
+  XDPdef == PBWPOLY add
+
+    -- Representation
+       Rep := PBWPOLY 
+
+    -- local functions
+       compareTerm1s: (TERM1, TERM1) -> Boolean
+       out: TERM1 -> EX
+       ident: (List TERM1, List TERM1) -> List EQ
+
+    -- functions locales
+       ident(l1, l2) ==
+         import(TERM1)
+         null l1 => [equation(0$R,t.c)$EQ for t in l2]
+         null l2 => [equation(t.c, 0$R)$EQ for t in l1]        
+         u1 : LWORD := l1.first.k; c1 :R := l1.first.c
+         u2 : LWORD := l2.first.k; c2 :R := l2.first.c
+         u1 = u2 =>
+            r: R := c1 - c2
+            r = 0 => ident(rest l1, rest l2) 
+            cons(equation(c1,c2)$EQ , ident(rest l1, rest l2))
+         lexico(u1, u2)$LWORD =>
+            cons(equation(0$R,c2)$EQ , ident(l1, rest l2))
+         cons(equation(c1,0$R)$EQ , ident(rest l1, l2))
+
+       -- ordre lexico decroissant
+       compareTerm1s(u:TERM1, v:TERM1):Boolean == lexico(v.k, u.k)$LWORD
+
+       out(t:TERM1):EX ==
+         t.c =$R 1 => char("e")$Character :: EX ** t.k ::EX
+         char("e")$Character :: EX ** (t.c::EX * t.k::EX)
+ 
+    -- definitions
+       identification(x,y) ==
+          l1: List TERM1 := LyndonCoordinates x
+          l2: List TERM1 := LyndonCoordinates y
+          ident(l1, l2)
+ 
+       LyndonCoordinates x ==
+         lt: List TERM1 := [[l::LWORD, t.c]$TERM1 for t in ListOfTerms x | _
+                             (l := retractIfCan(t.k)$BASIS) case LWORD ] 
+         lt := sort(compareTerm1s,lt)
+
+       x:$ * y:$ == product(x::Rep, y::Rep, Order::I::NNI)$Rep
+
+       exp p == exp(p::Rep , Order::I::NNI)$Rep
+
+       log p == LiePolyIfCan(log(p,Order::I::NNI))$Rep :: LPOLY
+
+       coerce(p:$):EX ==
+          p = 1$$ => 1$R :: EX
+          lt : List TERM1 := LyndonCoordinates p 
+          reduce(_*, [out t for t in lt])$List(EX)
+
+
+       LyndonBasis(lv) == 
+         [LiePoly(l)$LPOLY for l in LyndonWordsList(lv,Order)$LWORD]
+
+       coerce(p:$):PBWPOLY == p::Rep
+
+       inv x ==
+         x = 1 => 1
+         lt:LTERMS := ListOfTerms mirror x
+         lt:= [[t.k, (odd? length(t.k)$BASIS => - t.c; t.c)]$TERM for t in lt ]
+         lt pretend $
+

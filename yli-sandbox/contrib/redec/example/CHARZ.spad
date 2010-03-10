@@ -1,0 +1,14 @@
+)abbrev category CHARZ CharacteristicZero
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ Rings of Characteristic Zero.
+CharacteristicZero():Category == Ring
+

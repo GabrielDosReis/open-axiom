@@ -1,0 +1,17 @@
+)abbrev category PROPLOG PropositionalLogic
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: September 20, 2008
+++ Description: This category declares the connectives of
+++ Propositional Logic.
+PropositionalLogic(): Category == SetCategory with
+  "not": % -> %
+    ++ not p returns the logical negation of `p'.
+  "and": (%, %) -> %
+    ++ p and q returns the logical conjunction of `p', `q'.
+  "or": (%, %) -> %
+    ++ p or q returns the logical disjunction of `p', `q'.
+  implies: (%,%) -> %
+    ++ implies(p,q) returns the logical implication of `q' by `p'.
+  equiv: (%,%) -> %
+    ++ equiv(p,q) returns the logical equivalence of `p', `q'.

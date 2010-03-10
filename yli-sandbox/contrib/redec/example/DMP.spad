@@ -1,0 +1,32 @@
+)abbrev domain DMP DistributedMultivariatePolynomial
+++ Author: Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: Ring, degree, eval, coefficient, monomial, differentiate,
+++ resultant, gcd, leadingCoefficient
+++ Related Constructors: GeneralDistributedMultivariatePolynomial,
+++ HomogeneousDistributedMultivariatePolynomial
+++ Also See: Polynomial
+++ AMS Classifications:
+++ Keywords: polynomial, multivariate, distributed
+++ References:
+++ Description:
+++   This type supports distributed multivariate polynomials
+++ whose variables are from a user specified list of symbols.
+++ The coefficient ring may be non commutative,
+++ but the variables are assumed to commute.
+++ The term ordering is lexicographic specified by the variable
+++ list parameter with the most significant variable first in the list.
+DistributedMultivariatePolynomial(vl,R): public == private where
+  vl : List Symbol
+  R  : Ring
+  E   ==> DirectProduct(#vl,NonNegativeInteger)
+  OV  ==> OrderedVariableList(vl)
+  public == PolynomialCategory(R,E,OV) with
+      reorder: (%,List Integer) -> %
+        ++ reorder(p, perm) applies the permutation perm to the variables
+        ++ in a polynomial and returns the new correctly ordered polynomial
+
+  private ==
+    GeneralDistributedMultivariatePolynomial(vl,R,E)
+

@@ -1,0 +1,10 @@
+)abbrev package SIMPAN SimplifyAlgebraicNumberConvertPackage
+++ Package to allow simplify to be called on AlgebraicNumbers
+++ by converting to EXPR(INT)
+SimplifyAlgebraicNumberConvertPackage(): with
+  simplify: AlgebraicNumber -> Expression(Integer)
+        ++ simplify(an) applies simplifications to an
+ == add
+  simplify(a:AlgebraicNumber) ==
+    simplify(a::Expression(Integer))$TranscendentalManipulations(Integer, Expression Integer)
+

@@ -1,0 +1,54 @@
+import Type
+import Boolean
+import NonNegativeInteger
+)abbrev category AGG Aggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The notion of aggregate serves to model any data structure aggregate,
+++ designating any collection of objects,
+++ with heterogenous or homogeneous members,
+++ with a finite or infinite number
+++ of members, explicitly or implicitly represented.
+++ An aggregate can in principle
+++ represent everything from a string of characters to abstract sets such
+++ as "the set of x satisfying relation {\em r(x)}"
+++ An attribute \spadatt{finiteAggregate} is used to assert that a domain
+++ has a finite number of elements.
+Aggregate: Category == Type with
+   eq?: (%,%) -> Boolean
+     ++ eq?(u,v) tests if u and v are same objects.
+   copy: % -> %
+     ++ copy(u) returns a top-level (non-recursive) copy of u.
+     ++ Note: for collections, \axiom{copy(u) == [x for x in u]}.
+   empty: () -> %
+     ++ empty()$D creates an aggregate of type D with 0 elements.
+     ++ Note: The {\em $D} can be dropped if understood by context,
+     ++ e.g. \axiom{u: D := empty()}.
+   empty?: % -> Boolean
+     ++ empty?(u) tests if u has 0 elements.
+   less?: (%,NonNegativeInteger) -> Boolean
+     ++ less?(u,n) tests if u has less than n elements.
+   more?: (%,NonNegativeInteger) -> Boolean
+     ++ more?(u,n) tests if u has greater than n elements.
+   size?: (%,NonNegativeInteger) -> Boolean
+     ++ size?(u,n) tests if u has exactly n elements.
+   sample: constant -> %    ++ sample yields a value of type %
+   if % has finiteAggregate then
+     "#": % -> NonNegativeInteger     ++ # u returns the number of items in u.
+ add
+  eq?(a,b) == EQ(a,b)$Lisp
+  sample() == empty()
+  if % has finiteAggregate then
+    empty? a   == #a = 0
+    less?(a,n) == #a < n
+    more?(a,n) == #a > n
+    size?(a,n) == #a = n
+

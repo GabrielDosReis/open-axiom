@@ -1,0 +1,17 @@
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: December 17, 2008
+++ Description: 
+++   This domain represents identifer AST.
+++   This domain differs from Symbol in that it does not  support
+++   any form of scripting. 
+++   A value of this domain is a plain old identifier.
+++       
+)abbrev domain IDENT Identifier
+Identifier(): Public == Private where
+  Public == Join(SetCategory, CoercibleTo Symbol)
+  Private == add
+    x = y == EQ(x,y)$Lisp
+    coerce(x: %): Symbol == x : Symbol
+    coerce(x: %): OutputForm == x : OutputForm
+

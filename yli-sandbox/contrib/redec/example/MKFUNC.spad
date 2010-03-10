@@ -1,0 +1,29 @@
+)abbrev package MKFUNC MakeFunction
+++ Tools for making interpreter functions from top-level expressions
+++ Author: Manuel Bronstein
+++ Date Created: 22 Nov 1988
+++ Date Last Updated: 8 Jan 1990
+++ Description: transforms top-level objects into interpreter functions.
+MakeFunction(S:ConvertibleTo InputForm): Exports == Implementation where
+  SY ==> Symbol
+
+  Exports ==> with
+    function: (S, SY         ) -> SY
+      ++ function(e, foo) creates a function \spad{foo() == e}.
+    function: (S, SY,      SY) -> SY
+      ++ function(e, foo, x) creates a function \spad{foo(x) == e}.
+    function: (S, SY, SY,  SY) -> SY
+      ++ function(e, foo, x, y) creates a function \spad{foo(x, y) = e}.
+    function: (S, SY, List SY) -> SY
+      ++ \spad{function(e, foo, [x1,...,xn])} creates a function
+      ++ \spad{foo(x1,...,xn) == e}.
+
+  Implementation ==> add
+    function(s, name)            == function(s, name, nil())
+    function(s:S, name:SY, x:SY) == function(s, name, [x])
+    function(s, name, x, y)      == function(s, name, [x, y])
+
+    function(s:S, name:SY, args:List SY) ==
+      interpret function(convert s, args, name)$InputForm
+      name
+

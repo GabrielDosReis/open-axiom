@@ -1,0 +1,45 @@
+import Type
+import RecursiveAggregate
+)abbrev category DLAGG DoublyLinkedAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A doubly-linked aggregate serves as a model for a doubly-linked
+++ list, that is, a list which can has links to both next and previous
+++ nodes and thus can be efficiently traversed in both directions.
+DoublyLinkedAggregate(S:Type): Category == RecursiveAggregate S with
+   last: % -> S
+     ++ last(l) returns the last element of a doubly-linked aggregate l.
+     ++ Error: if l is empty.
+   head: % -> %
+     ++ head(l) returns the first element of a doubly-linked aggregate l.
+     ++ Error: if l is empty.
+   tail: % -> %
+     ++ tail(l) returns the doubly-linked aggregate l starting at
+     ++ its second element.
+     ++ Error: if l is empty.
+   previous: % -> %
+     ++ previous(l) returns the doubly-link list beginning with its previous
+     ++ element.
+     ++ Error: if l has no previous element.
+     ++ Note: \axiom{next(previous(l)) = l}.
+   next: % -> %
+     ++ next(l) returns the doubly-linked aggregate beginning with its next
+     ++ element.
+     ++ Error: if l has no next element.
+     ++ Note: \axiom{next(l) = rest(l)} and \axiom{previous(next(l)) = l}.
+   if % has shallowlyMutable then
+      concat_!: (%,%) -> %
+        ++ concat!(u,v) destructively concatenates doubly-linked aggregate v to the end of doubly-linked aggregate u.
+      setprevious_!: (%,%) -> %
+        ++ setprevious!(u,v) destructively sets the previous node of doubly-linked aggregate u to v, returning v.
+      setnext_!: (%,%) -> %
+        ++ setnext!(u,v) destructively sets the next node of doubly-linked aggregate u to v, returning v.
+

@@ -1,0 +1,60 @@
+)abbrev domain IBITS IndexedBits
+++ Author: Stephen Watt and Michael Monagan
+++ Date Created:
+++   July 86
+++ Change History:
+++   Oct 87
+++ Basic Operations: range
+++ Related Constructors:
+++ Keywords: indexed bits
+++ Description: \spadtype{IndexedBits} is a domain to compactly represent
+++ large quantities of Boolean data.
+
+IndexedBits(mn:Integer): BitAggregate() with
+        -- temporaries until parser gets better
+        Not: % -> %
+            ++ Not(n) returns the bit-by-bit logical {\em Not} of n.
+        Or : (%, %) -> %
+            ++ Or(n,m)  returns the bit-by-bit logical {\em Or} of
+            ++ n and m.
+        And: (%, %) -> %
+            ++ And(n,m)  returns the bit-by-bit logical {\em And} of
+            ++ n and m.
+    == add
+
+        range: (%, Integer) -> Integer
+          --++ range(j,i) returnes the range i of the boolean j.
+
+        minIndex u  == mn
+
+        range(v, i) ==
+          i >= 0 and i < #v => i
+          error "Index out of range"
+
+        coerce(v):OutputForm ==
+            t:Character := char "1"
+            f:Character := char "0"
+            s := new(#v, space()$Character)$String
+            for i in minIndex(s)..maxIndex(s) for j in mn.. repeat
+              s.i := if v.j then t else f
+            s::OutputForm
+
+        new(n, b)       == BVEC_-MAKE_-FULL(n,TRUTH_-TO_-BIT(b)$Lisp)$Lisp
+        empty()         == BVEC_-MAKE_-FULL(0,0)$Lisp
+        copy v          == BVEC_-COPY(v)$Lisp
+        #v              == BVEC_-SIZE(v)$Lisp
+        v = u           == BVEC_-EQUAL(v, u)$Lisp
+        v < u           == BVEC_-GREATER(u, v)$Lisp
+        _and(u, v)      == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        _or(u, v)       == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+        xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
+        setelt(v:%, i:Integer, f:Boolean) ==
+          BIT_-TO_-TRUTH(BVEC_-SETELT(v, range(v, i-mn), 
+            TRUTH_-TO_-BIT(f)$Lisp)$Lisp)$Lisp
+        elt(v:%, i:Integer) ==
+          BIT_-TO_-TRUTH(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Lisp
+
+        Not v           == BVEC_-NOT(v)$Lisp
+        And(u, v)       == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
+        Or(u, v)        == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+

@@ -1,0 +1,40 @@
+)abbrev category DIVRING DivisionRing
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A division ring (sometimes called a skew field),
+++ i.e. a not necessarily commutative ring where
+++ all non-zero elements have multiplicative inverses.
+
+DivisionRing(): Category ==
+ Join(EntireRing, Algebra Fraction Integer) with
+      "**": (%,Integer) -> %
+          ++ x**n returns x raised to the integer power n.
+      inv : % -> %
+          ++ inv x returns the multiplicative inverse of x.
+          ++ Error: if x is 0.
+-- Q-algebra is a lie, should be conditional on characteristic 0,
+-- but knownInfo cannot handle the following commented
+--    if % has CharacteristicZero then Algebra Fraction Integer
+    add
+      n: Integer
+      x: %
+      import RepeatedSquaring(%)
+      x ** n: Integer ==
+         zero? n => 1
+         zero? x =>
+            n<0 => error "division by zero"
+            x
+         n<0 =>
+            expt(inv x,(-n) pretend PositiveInteger)
+         expt(x,n pretend PositiveInteger)
+--    if % has CharacteristicZero() then
+      q:Fraction(Integer) * x:% == numer(q) * inv(denom(q)::%) * x
+

@@ -1,0 +1,70 @@
+)abbrev package PMASSFS FunctionSpaceAssertions
+++ Assertions for pattern-matching
+++ Author: Manuel Bronstein
+++ Description: Attaching assertions to symbols for pattern matching;
+++ Date Created: 21 Mar 1989
+++ Date Last Updated: 23 May 1990
+++ Keywords: pattern, matching.
+FunctionSpaceAssertions(R, F): Exports == Implementation where
+  R: OrderedSet
+  F: FunctionSpace R
+
+  K  ==> Kernel F
+  PMOPT   ==> "%pmoptional"
+  PMMULT  ==> "%pmmultiple"
+  PMCONST ==> "%pmconstant"
+
+  Exports ==> with
+    assert  : (F, String) -> F
+      ++ assert(x, s) makes the assertion s about x.
+      ++ Error: if x is not a symbol.
+    constant: F -> F
+      ++ constant(x) tells the pattern matcher that x should
+      ++ match only the symbol 'x and no other quantity.
+      ++ Error: if x is not a symbol.
+    optional: F -> F
+      ++ optional(x) tells the pattern matcher that x can match
+      ++ an identity (0 in a sum, 1 in a product or exponentiation).
+      ++ Error: if x is not a symbol.
+    multiple: F -> F
+      ++ multiple(x) tells the pattern matcher that x should
+      ++ preferably match a multi-term quantity in a sum or product.
+      ++ For matching on lists, multiple(x) tells the pattern matcher
+      ++ that x should match a list instead of an element of a list.
+      ++ Error: if x is not a symbol.
+
+  Implementation ==> add
+    ass  : (K, String) -> F
+    asst : (K, String) -> F
+    mkk  : BasicOperator -> F
+
+    mkk op == kernel(op, empty()$List(F))
+
+    ass(k, s) ==
+      has?(op := operator k, s) => k::F
+      mkk assert(copy op, s)
+
+    asst(k, s) ==
+      has?(op := operator k, s) => k::F
+      mkk assert(op, s)
+
+    assert(x, s) ==
+      retractIfCan(x)@Union(Symbol, "failed") case Symbol =>
+        asst(retract(x)@K, s)
+      error "assert must be applied to symbols only"
+
+    constant x ==
+      retractIfCan(x)@Union(Symbol, "failed") case Symbol =>
+        ass(retract(x)@K, PMCONST)
+      error "constant must be applied to symbols only"
+
+    optional x ==
+      retractIfCan(x)@Union(Symbol, "failed") case Symbol =>
+        ass(retract(x)@K, PMOPT)
+      error "optional must be applied to symbols only"
+
+    multiple x ==
+      retractIfCan(x)@Union(Symbol, "failed") case Symbol =>
+        ass(retract(x)@K, PMMULT)
+      error "multiple must be applied to symbols only"
+

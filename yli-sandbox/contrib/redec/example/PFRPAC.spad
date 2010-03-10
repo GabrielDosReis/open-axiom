@@ -1,0 +1,53 @@
+)abbrev package PFRPAC PartialFractionPackage
+++ Author: Barry M. Trager
+++ Date Created: 1992
+++ BasicOperations:
+++ Related Constructors: PartialFraction
+++ Also See:
+++ AMS Classifications:
+++ Keywords: partial fraction, factorization, euclidean domain
+++ References:
+++ Description:
+++   The package \spadtype{PartialFractionPackage} gives an easier
+++   to use interfact the domain \spadtype{PartialFraction}.
+++   The user gives a fraction of polynomials, and a variable and
+++   the package converts it to the proper datatype for the
+++   \spadtype{PartialFraction} domain.
+
+PartialFractionPackage(R): Cat == Capsule where
+--  R : UniqueFactorizationDomain -- not yet supported
+   R : Join(EuclideanDomain, CharacteristicZero)
+   FPR ==> Fraction Polynomial R
+   INDE ==> IndexedExponents Symbol
+   PR ==> Polynomial R
+   SUP ==> SparseUnivariatePolynomial
+   Cat == with
+      partialFraction: (FPR, Symbol) -> Any
+         ++ partialFraction(rf, var) returns the partial fraction decomposition
+         ++ of the rational function rf with respect to the variable var.
+      partialFraction: (PR, Factored PR, Symbol) -> Any
+         ++ partialFraction(num, facdenom, var) returns the partial fraction
+         ++ decomposition of the rational function whose numerator is num and
+         ++ whose factored denominator is facdenom with respect to the variable var.
+   Capsule == add
+      partialFraction(rf, v) ==
+         df := factor(denom rf)$MultivariateFactorize(Symbol, INDE,R,PR)
+         partialFraction(numer rf, df, v)
+
+      makeSup(p:Polynomial R, v:Symbol) : SparseUnivariatePolynomial FPR ==
+         up := univariate(p,v)
+         map(#1::FPR,up)$UnivariatePolynomialCategoryFunctions2(PR, SUP PR, FPR, SUP FPR)
+
+      partialFraction(p, facq, v) ==
+         --up := UnivariatePolynomial(v, Fraction Polynomial R)
+         --fup := Factored up
+         --Factored(UnivariatePolynomial(v, Fraction Polynomial R))
+
+         ffact : List(Record(irr: UnivariatePolynomial(v, Fraction Polynomial R) ,pow:Integer))
+         ffact:=[[makeSup(u.factor,v) pretend UnivariatePolynomial(v, Fraction Polynomial R),u.exponent]
+                      for u in factors facq]
+         fcont:=makeSup(unit facq,v) pretend UnivariatePolynomial(v, Fraction Polynomial R)
+         nflist:Factored(UnivariatePolynomial(v, Fraction Polynomial R)) := fcont*(*/[primeFactor(ff.irr,ff.pow) for ff in ffact])
+         pfup:=partialFraction(makeSup(p,v) pretend UnivariatePolynomial(v, Fraction Polynomial R), nflist)$PartialFraction(UnivariatePolynomial(v, Fraction Polynomial R))
+         coerce(pfup)$AnyFunctions1(PartialFraction UnivariatePolynomial(v, Fraction Polynomial R))
+

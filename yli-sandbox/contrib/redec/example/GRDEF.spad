@@ -1,0 +1,89 @@
+import Boolean
+import Integer
+import DoubleFloat
+)abbrev package GRDEF GraphicsDefaults
+++ Author: Clifton J. Williamson
+++ Date Created: 8 January 1990
+++ Date Last Updated: 8 January 1990
+++ Basic Operations: clipPointsDefault, drawToScale, adaptive, maxPoints,
+++ minPoints, screenResolution
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: TwoDimensionalPlotSettings sets global flags and constants 
+++ for 2-dimensional plotting.
+
+GraphicsDefaults(): Exports == Implementation where
+  B  ==> Boolean
+  I  ==> Integer
+  SF ==> DoubleFloat
+  maxWidth  ==> 1000
+  maxHeight ==> 1000
+
+  Exports ==> with
+    clipPointsDefault: () -> B
+      ++ clipPointsDefault() determines whether or not automatic clipping is 
+      ++ to be done.
+    drawToScale: () -> B
+      ++ drawToScale() determines whether or not plots are to be drawn to scale.
+
+    clipPointsDefault: B -> B
+      ++ clipPointsDefault(true) turns on automatic clipping;
+      ++ \spad{clipPointsDefault(false)} turns off automatic clipping.
+      ++ The default setting is true.
+    drawToScale: B -> B
+      ++ drawToScale(true) causes plots to be drawn to scale.
+      ++ \spad{drawToScale(false)} causes plots to be drawn so that they
+      ++ fill up the viewport window.
+      ++ The default setting is false.
+
+--% settings from the two-dimensional plot package
+
+    adaptive: () -> B
+      ++ adaptive() determines whether plotting will be done adaptively.
+    maxPoints: () -> I
+      ++ maxPoints() returns the maximum number of points in a plot.
+    minPoints: () -> I
+      ++ minPoints() returns the minimum number of points in a plot.
+    screenResolution: () -> I
+      ++ screenResolution() returns the screen resolution n.
+
+    adaptive: B -> B
+      ++ adaptive(true) turns adaptive plotting on;
+      ++ \spad{adaptive(false)} turns adaptive plotting off.
+    maxPoints: I -> I
+      ++ maxPoints() sets the maximum number of points in a plot.
+    minPoints: I -> I
+      ++ minPoints() sets the minimum number of points in a plot.
+    screenResolution: I -> I
+      ++ screenResolution(n) sets the screen resolution to n.
+
+  Implementation ==> add
+
+--% global flags and constants
+
+    CLIPPOINTSDEFAULT : B := true
+    TOSCALE  : B := false
+
+--% functions
+
+    clipPointsDefault()     == CLIPPOINTSDEFAULT
+    drawToScale()  == TOSCALE
+
+    clipPointsDefault b    == CLIPPOINTSDEFAULT := b
+    drawToScale b == TOSCALE := b
+
+--% settings from the two-dimensional plot package
+
+    adaptive() == adaptive?()$Plot
+    minPoints() == minPoints()$Plot
+    maxPoints() == maxPoints()$Plot
+    screenResolution() == screenResolution()$Plot
+
+    adaptive b == setAdaptive(b)$Plot
+    minPoints n == setMinPoints(n)$Plot
+    maxPoints n == setMaxPoints(n)$Plot
+    screenResolution n == setScreenResolution(n)$Plot
+

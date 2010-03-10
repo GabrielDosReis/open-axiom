@@ -1,0 +1,175 @@
+)abbrev package IBACHIN ChineseRemainderToolsForIntegralBases
+++ Author: Clifton Williamson
+++ Date Created: 9 August 1993
+++ Date Last Updated: 3 December 1993
+++ Basic Operations: chineseRemainder, factorList
+++ Related Domains: PAdicWildFunctionFieldIntegralBasis(K,R,UP,F)
+++ Also See: WildFunctionFieldIntegralBasis, FunctionFieldIntegralBasis
+++ AMS Classifications:
+++ Keywords: function field, finite field, integral basis
+++ Examples:
+++ References:
+++ Description:
+
+ChineseRemainderToolsForIntegralBases(K,R,UP): Exports == Implementation where
+  K  : FiniteFieldCategory
+  R  : UnivariatePolynomialCategory K
+  UP : UnivariatePolynomialCategory R
+
+  DDFACT ==> DistinctDegreeFactorize
+  I      ==> Integer
+  L      ==> List
+  L2     ==> ListFunctions2
+  Mat    ==> Matrix R
+  NNI    ==> NonNegativeInteger
+  PI     ==> PositiveInteger
+  Q      ==> Fraction R
+  SAE    ==> SimpleAlgebraicExtension
+  SUP    ==> SparseUnivariatePolynomial
+  SUP2   ==> SparseUnivariatePolynomialFunctions2
+  RESULT ==> Record(basis: Mat, basisDen: R, basisInv: Mat)
+  -- Result
+
+  Exports ==> with
+    factorList: (K,NNI,NNI,NNI) -> L SUP K
+        ++ factorList(k,n,m,j) \undocumented
+
+    listConjugateBases: (RESULT,NNI,NNI) -> List RESULT
+      ++ listConjugateBases(bas,q,n) returns the list
+      ++ \spad{[bas,bas^Frob,bas^(Frob^2),...bas^(Frob^(n-1))]}, where
+      ++ \spad{Frob} raises the coefficients of all polynomials
+      ++ appearing in the basis \spad{bas} to the \spad{q}th power.
+
+    chineseRemainder: (List UP, List RESULT, NNI) -> RESULT
+        ++ chineseRemainder(lu,lr,n) \undocumented
+
+  Implementation ==> add
+    import ModularHermitianRowReduction(R)
+    import TriangularMatrixOperations(R, Vector R, Vector R, Matrix R)
+
+    applyFrobToMatrix: (Matrix R,NNI) -> Matrix R
+    applyFrobToMatrix(mat,q) ==
+      -- raises the coefficients of the polynomial entries of 'mat'
+      -- to the qth power
+      m := nrows mat; n := ncols mat
+      ans : Matrix R := new(m,n,0)
+      for i in 1..m repeat for j in 1..n repeat
+        qsetelt_!(ans,i,j,map(#1 ** q,qelt(mat,i,j)))
+      ans
+
+    listConjugateBases(bas,q,n) ==
+      outList : List RESULT := [bas]
+      b := bas.basis; bInv := bas.basisInv; bDen := bas.basisDen
+      for i in 1..(n-1) repeat
+        b := applyFrobToMatrix(b,q)
+        bInv := applyFrobToMatrix(bInv,q)
+        bDen := map((#1 ** q)@(K -> K),bDen)
+        newBasis : RESULT := [b,bDen,bInv]
+        outList := concat(newBasis,outList)
+      reverse_! outList
+
+    factorList(a,q,n,k) ==
+      coef : SUP K := monomial(a,0); xx : SUP K := monomial(1,1)
+      outList : L SUP K := list((xx - coef)**k)
+      for i in 1..(n-1) repeat
+        coef := coef ** q
+        outList := concat((xx - coef)**k,outList)
+      reverse_! outList
+
+    basisInfoToPolys: (Mat,R,R) -> L UP
+    basisInfoToPolys(mat,lcm,den) ==
+      n := nrows(mat) :: I; n1 := n - 1
+      outList : L UP := empty()
+      for i in 1..n repeat
+        pp : UP := 0
+        for j in 0..n1 repeat
+          pp := pp + monomial(lcm quo den)$UP * qelt(mat,i,j+1),j)
+        outList := concat(pp,outList)
+      reverse_! outList
+
+    basesToPolyLists: (L RESULT,R) -> L L UP
+    basesToPolyLists(basisList,lcm) ==
+      [basisInfoToPolys(b.basis,lcm,b.basisDen) for b in basisList]
+
+    OUT ==> OutputForm
+
+    approximateExtendedEuclidean: (UP,UP,R,NNI) -> Record(coef1:UP,coef2:UP)
+    approximateExtendedEuclidean(f,g,p,n) ==
+      -- f and g are monic and relatively prime (mod p)
+      -- function returns [coef1,coef2] such that
+      -- coef1 * f + coef2 * g = 1 (mod p^n)
+      sae := SAE(K,R,p)
+      fSUP : SUP R := makeSUP f; gSUP : SUP R := makeSUP g
+      fBar : SUP sae := map(convert(#1)@sae,fSUP)$SUP2(R,sae)
+      gBar : SUP sae := map(convert(#1)@sae,gSUP)$SUP2(R,sae)
+      ee := extendedEuclidean(fBar,gBar)
+--      not one?(ee.generator) =>
+      not (ee.generator = 1) =>
+        error "polynomials aren't relatively prime"
+      ss1 := ee.coef1; tt1 := ee.coef2
+      s1 : SUP R := map(convert(#1)@R,ss1)$SUP2(sae,R); s := s1
+      t1 : SUP R := map(convert(#1)@R,tt1)$SUP2(sae,R); t := t1
+      pPower := p
+      for i in 2..n repeat
+        num := 1 - s * fSUP - t * gSUP
+        rhs := (num exquo pPower) :: SUP R
+        sigma := map(#1 rem p,s1 * rhs); tau := map(#1 rem p,t1 * rhs)
+        s := s + pPower * sigma; t := t + pPower * tau
+        quorem := monicDivide(s,gSUP)
+        pPower := pPower * p
+        s := map(#1 rem pPower,quorem.remainder)
+        t := map(#1 rem pPower,t + fSUP * (quorem.quotient))
+      [unmakeSUP s,unmakeSUP t]
+
+    --mapChineseToList: (L SUP Q,L SUP Q,I) -> L SUP Q
+    --mapChineseToList(list,polyList,i) ==
+    mapChineseToList: (L UP,L UP,I,R) -> L UP
+    mapChineseToList(list,polyList,i,den) ==
+      -- 'polyList' consists of MONIC polynomials
+      -- computes a polynomial p such that p = pp (modulo polyList[i])
+      -- and p = 0 (modulo polyList[j]) for j ~= i for each 'pp' in 'list'
+      -- create polynomials
+      q : UP := 1
+      for j in 1..(i-1) repeat
+        q := q * first polyList
+        polyList := rest polyList
+      p := first polyList
+      polyList := rest polyList
+      for j in (i+1).. while not empty? polyList repeat
+        q := q * first polyList
+        polyList := rest polyList
+      --p := map((numer(#1) rem den)/1, p)
+      --q := map((numer(#1) rem den)/1, q)
+      -- 'den' is a power of an irreducible polynomial
+      --!! make this computation more efficient!!
+      factoredDen := factor(den)$DDFACT(K,R)
+      prime := nthFactor(factoredDen,1)
+      n := nthExponent(factoredDen,1) :: NNI
+      invPoly := approximateExtendedEuclidean(q,p,prime,n).coef1
+      -- monicDivide may be inefficient?
+      [monicDivide(pp * invPoly * q,p * q).remainder for pp in list]
+
+    polyListToMatrix: (L UP,NNI) -> Mat
+    polyListToMatrix(polyList,n) ==
+      mat : Mat := new(n,n,0)
+      for i in 1..n for poly in polyList repeat
+        while not zero? poly repeat
+          mat(i,degree(poly) + 1) := leadingCoefficient poly
+          poly := reductum poly
+      mat
+
+    chineseRemainder(factors,factorBases,n) ==
+      denLCM : R := reduce("lcm",[base.basisDen for base in factorBases])
+      denLCM = 1 => [scalarMatrix(n,1),1,scalarMatrix(n,1)]
+      -- compute local basis polynomials with denominators cleared
+      factorBasisPolyLists := basesToPolyLists(factorBases,denLCM)
+      -- use Chinese remainder to compute basis polynomials w/o denominators
+      basisPolyLists : L L UP := empty()
+      for i in 1.. for pList in factorBasisPolyLists repeat
+        polyList := mapChineseToList(pList,factors,i,denLCM)
+        basisPolyLists := concat(polyList,basisPolyLists)
+      basisPolys := concat reverse_! basisPolyLists
+      mat := squareTop rowEchelon(polyListToMatrix(basisPolys,n),denLCM)
+      matInv := UpTriBddDenomInv(mat,denLCM)
+      [mat,denLCM,matInv]
+

@@ -1,0 +1,48 @@
+)abbrev package PADEPAC PadeApproximantPackage
+++ This package computes reliable Pad&ea. approximants using
+++ a generalized Viskovatov continued fraction algorithm.
+++ Authors: Trager,Burge, Hassner & Watt.
+++ Date Created: April 1987
+++ Date Last Updated: 12 April 1990
+++ Keywords: Pade, series
+++ Examples:
+++ References:
+++   "Pade Approximants, Part I: Basic Theory", Baker & Graves-Morris.
+
+PadeApproximantPackage(R: Field, x:Symbol, pt:R): Exports == Implementation where
+   PS ==> UnivariateTaylorSeries(R,x,pt)
+   UP ==> UnivariatePolynomial(x,R)
+   QF ==> Fraction UP
+   CF  ==> ContinuedFraction UP
+   NNI ==> NonNegativeInteger
+   Exports ==> with
+     pade:   (NNI,NNI,PS,PS) -> Union(QF,"failed")
+      ++ pade(nd,dd,ns,ds) computes the approximant as a quotient of polynomials
+      ++ (if it exists) for arguments
+      ++ nd (numerator degree of approximant),
+      ++ dd (denominator degree of approximant),
+      ++ ns (numerator series of function), and
+      ++ ds (denominator series of function).
+     pade:   (NNI,NNI,PS) -> Union(QF,"failed")
+      ++ pade(nd,dd,s)
+      ++ computes the quotient of polynomials
+      ++ (if it exists) with numerator degree at
+      ++ most nd and denominator degree at most dd
+      ++ which matches the series s to order \spad{nd + dd}.
+
+   Implementation ==> add
+     n,m : NNI
+     u,v : PS
+     pa := PadeApproximants(R,PS,UP)
+     pade(n,m,u,v) ==
+       ans:=pade(n,m,u,v)$pa
+       ans case "failed" => ans
+       pt = 0 => ans
+       num := numer(ans::QF)
+       den := denom(ans::QF)
+       xpt : UP := monomial(1,1)-monomial(pt,0)
+       num := num(xpt)
+       den := den(xpt)
+       num/den
+     pade(n,m,u) == pade(n,m,u,1)
+

@@ -1,0 +1,48 @@
+)abbrev domain ASP33 Asp33
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Nov 1993
+++ Date Last Updated: 30 March 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory.
+++ Description:
+++\spadtype{Asp33} produces Fortran for Type 33 ASPs, needed for NAG routine 
+++\axiomOpFrom{d02kef}{d02Package}.  The code is a dummy ASP:
+++\begin{verbatim}
+++      SUBROUTINE REPORT(X,V,JINT)
+++      DOUBLE PRECISION V(3),X
+++      INTEGER JINT
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp33(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  UFST   ==> Union(fst:FST,void:"void")
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  FC     ==> FortranCode
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+
+  Exports ==> FortranProgramCategory with
+     outputAsFortran:() -> Void
+      ++outputAsFortran() generates the default code for \spadtype{ASP33}.
+
+
+  Implementation ==> add
+
+    real : UFST := ["real"::FST]$UFST
+    syms : SYMTAB := empty()
+    declare!(JINT,fortranInteger(),syms)$SYMTAB
+    declare!(X,fortranReal(),syms)$SYMTAB
+    vType : FT := construct(real,["3"::Symbol],false)$FT
+    declare!(V,vType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,[X,V,JINT],syms)
+
+    outputAsFortran():Void == 
+      outputAsFortran( (returns()$FortranCode)::Rep )$Rep
+
+    outputAsFortran(u):Void == outputAsFortran(u)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+

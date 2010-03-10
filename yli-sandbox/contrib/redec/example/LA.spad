@@ -1,0 +1,29 @@
+)abbrev domain LA LocalAlgebra
+++ Author: Dave Barton, Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: LocalAlgebra produces the localization of an algebra, i.e.
+++ fractions whose numerators come from some R algebra.
+LocalAlgebra(A: Algebra R,
+             R: CommutativeRing,
+             S: SubsetCategory(Monoid, R)): Algebra R with
+          if A has OrderedRing then OrderedRing
+          _/ : (%,S) -> %
+            ++ x / d divides the element x by d.
+          _/ : (A,S) -> %
+            ++ a / d divides the element \spad{a} by d.
+          numer: % -> A
+            ++ numer x returns the numerator of x.
+          denom: % -> S
+            ++ denom x returns the denominator of x.
+ == Localize(A, R, S) add
+        1 == 1$A / 1$S
+        x:% * y:% == (numer(x) * numer(y)) / (denom(x) * denom(y))
+        characteristic() == characteristic()$A
+

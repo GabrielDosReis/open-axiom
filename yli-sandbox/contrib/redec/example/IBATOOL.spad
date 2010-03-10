@@ -1,0 +1,139 @@
+)abbrev package IBATOOL IntegralBasisTools
+++ Functions common to both integral basis packages
+++ Author: Victor Miller, Barry Trager, Clifton Williamson
+++ Date Created: 11 April 1990
+++ Date Last Updated: 20 September 1994
+++ Keywords: integral basis, function field, number field
+++ Examples:
+++ References:
+++ Description:
+++ This package contains functions used in the packages
+++ FunctionFieldIntegralBasis and NumberFieldIntegralBasis.
+
+IntegralBasisTools(R,UP,F): Exports == Implementation where
+  R  : EuclideanDomain with 
+        squareFree: $ -> Factored $
+                ++ squareFree(x) returns a square-free factorisation of x 
+  UP : UnivariatePolynomialCategory R
+  F  : FramedAlgebra(R,UP)
+  Mat ==> Matrix R
+  NNI ==> NonNegativeInteger
+  Ans ==> Record(basis: Mat, basisDen: R, basisInv:Mat)
+
+  Exports ==> with
+
+    diagonalProduct: Mat -> R
+      ++ diagonalProduct(m) returns the product of the elements on the
+      ++ diagonal of the matrix m
+    matrixGcd: (Mat,R,NNI) -> R
+      ++ matrixGcd(mat,sing,n) is \spad{gcd(sing,g)} where \spad{g} is the
+      ++ gcd of the entries of the \spad{n}-by-\spad{n} upper-triangular
+      ++ matrix \spad{mat}.
+    divideIfCan_!: (Matrix R,Matrix R,R,Integer) -> R
+      ++ divideIfCan!(matrix,matrixOut,prime,n) attempts to divide the
+      ++ entries of \spad{matrix} by \spad{prime} and store the result in
+      ++ \spad{matrixOut}.  If it is successful, 1 is returned and if not,
+      ++ \spad{prime} is returned.  Here both \spad{matrix} and
+      ++ \spad{matrixOut} are \spad{n}-by-\spad{n} upper triangular matrices.
+    leastPower: (NNI,NNI) -> NNI
+      ++ leastPower(p,n) returns e, where e is the smallest integer
+      ++ such that \spad{p **e >= n}
+    idealiser: (Mat,Mat) -> Mat
+      ++ idealiser(m1,m2) computes the order of an ideal defined by m1 and m2
+    idealiser: (Mat,Mat,R) -> Mat
+      ++ idealiser(m1,m2,d) computes the order of an ideal defined by m1 and m2
+      ++ where d is the known part of the denominator
+    idealiserMatrix: (Mat, Mat) -> Mat
+      ++ idealiserMatrix(m1, m2) returns the matrix representing the linear
+      ++ conditions on the Ring associatied with an ideal defined by m1 and m2.
+    moduleSum: (Ans,Ans) -> Ans
+      ++ moduleSum(m1,m2) returns the sum of two modules in the framed
+      ++ algebra \spad{F}.  Each module \spad{mi} is represented as follows:
+      ++ F is a framed algebra with R-module basis \spad{w1,w2,...,wn} and
+      ++ \spad{mi} is a record \spad{[basis,basisDen,basisInv]}.  If
+      ++ \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ a basis \spad{v1,...,vn} for \spad{mi} is given by
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of 'basis' contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+
+  Implementation ==> add
+    import ModularHermitianRowReduction(R)
+    import TriangularMatrixOperations(R, Vector R, Vector R, Matrix R)
+
+    diagonalProduct m ==
+      ans : R := 1
+      for i in minRowIndex m .. maxRowIndex m
+        for j in minColIndex m .. maxColIndex m repeat
+          ans := ans * qelt(m, i, j)
+      ans
+
+    matrixGcd(mat,sing,n) ==
+      -- note: 'matrix' is upper triangular;
+      -- no need to do anything below the diagonal
+      d := sing
+      for i in 1..n repeat
+        for j in i..n repeat
+          if not zero?(mij := qelt(mat,i,j)) then d := gcd(d,mij)
+--          one? d => return d
+          (d = 1) => return d
+      d
+
+    divideIfCan_!(matrix,matrixOut,prime,n) ==
+    -- note: both 'matrix' and 'matrixOut' will be upper triangular;
+    -- no need to do anything below the diagonal
+      for i in 1..n repeat
+        for j in i..n repeat
+          (a := (qelt(matrix,i,j) exquo prime)) case "failed" => return prime
+          qsetelt_!(matrixOut,i,j,a :: R)
+      1
+
+    leastPower(p,n) ==
+      -- efficiency is not an issue here
+      e : NNI := 1; q := p
+      while q < n repeat (e := e + 1; q := q * p)
+      e
+
+    idealiserMatrix(ideal,idealinv) ==
+      -- computes the Order of the ideal
+      n  := rank()$F
+      bigm := zero(n * n,n)$Mat
+      mr := minRowIndex bigm; mc := minColIndex bigm
+      v := basis()$F
+      for i in 0..n-1 repeat
+        r := regularRepresentation qelt(v,i + minIndex v)
+        m := ideal * r * idealinv
+        for j in 0..n-1 repeat
+          for k in 0..n-1 repeat
+            bigm(j * n + k + mr,i + mc) := qelt(m,j + mr,k + mc)
+      bigm
+
+    idealiser(ideal,idealinv) ==
+      bigm := idealiserMatrix(ideal, idealinv)
+      transpose squareTop rowEch bigm
+
+    idealiser(ideal,idealinv,denom) ==
+      bigm := (idealiserMatrix(ideal, idealinv) exquo denom)::Mat
+      transpose squareTop rowEchelon(bigm,denom)
+
+    moduleSum(mod1,mod2) ==
+      rb1 := mod1.basis; rbden1 := mod1.basisDen; rbinv1 := mod1.basisInv
+      rb2 := mod2.basis; rbden2 := mod2.basisDen; rbinv2 := mod2.basisInv
+      -- compatibility check: doesn't take much computation time
+      (not square? rb1) or (not square? rbinv1) or (not square? rb2) _
+        or (not square? rbinv2) =>
+        error "moduleSum: matrices must be square"
+      ((n := nrows rb1) ~= (nrows rbinv1)) or (n ~= (nrows rb2)) _
+        or (n ~= (nrows rbinv2)) =>
+        error "moduleSum: matrices of imcompatible dimensions"
+      (zero? rbden1) or (zero? rbden2) =>
+        error "moduleSum: denominator must be non-zero"
+      den := lcm(rbden1,rbden2); c1 := den quo rbden1; c2 := den quo rbden2
+      rb := squareTop rowEchelon(vertConcat(c1 * rb1,c2 * rb2),den)
+      rbinv := UpTriBddDenomInv(rb,den)
+      [rb,den,rbinv]
+

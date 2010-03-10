@@ -1,0 +1,47 @@
+)abbrev domain ASTACK ArrayStack
+++ Author: Michael Monagan and Stephen Watt
+++ Date Created:June 86 and July 87
+++ Date Last Updated:Feb 92
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+ 
+++ A stack represented as a flexible array.
+--% Dequeue and Heap data types
+ 
+ArrayStack(S:SetCategory): StackAggregate(S) with
+    arrayStack: List S -> %
+      ++ arrayStack([x,y,...,z]) creates an array stack with first (top)
+      ++ element x, second element y,...,and last element z.
+  == add
+    Rep := IndexedFlexibleArray(S,0)
+ 
+    -- system operations
+    # s == _#(s)$Rep
+    s = t == s =$Rep t
+    copy s == copy(s)$Rep
+    coerce(d):OutputForm ==
+        empty? d => empty()$(List S) ::OutputForm
+        [(d.i::OutputForm) for i in 0..#d-1] ::OutputForm
+ 
+    -- stack operations
+    depth s == # s
+    empty? s == empty?(s)$Rep 
+    extract_! s == pop_! s
+    insert_!(e,s) == (push_!(e,s);s)
+    push_!(e,s) == (concat(e,s); e)
+    pop_! s ==
+        if empty? s then error "empty stack"
+        m := maxIndex s
+        r := s.m
+        delete_!(s,m)
+        r
+    top s == if empty? s then error "empty stack" else s.maxIndex(s)
+    arrayStack l == construct(l)$Rep
+    empty() == new(0,0 pretend S)
+

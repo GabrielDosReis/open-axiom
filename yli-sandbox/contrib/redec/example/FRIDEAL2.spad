@@ -1,0 +1,34 @@
+)abbrev package FRIDEAL2 FractionalIdealFunctions2
+++ Lifting of morphisms to fractional ideals.
+++ Author: Manuel Bronstein
+++ Date Created: 1 Feb 1989
+++ Date Last Updated: 27 Feb 1990
+++ Keywords: ideal, algebra, module.
+FractionalIdealFunctions2(R1, F1, U1, A1, R2, F2, U2, A2):
+ Exports == Implementation where
+  R1, R2: EuclideanDomain
+  F1: QuotientFieldCategory R1
+  U1: UnivariatePolynomialCategory F1
+  A1: Join(FramedAlgebra(F1, U1), RetractableTo F1)
+  F2: QuotientFieldCategory R2
+  U2: UnivariatePolynomialCategory F2
+  A2: Join(FramedAlgebra(F2, U2), RetractableTo F2)
+
+  Exports ==> with
+    map: (R1 -> R2, FractionalIdeal(R1, F1, U1, A1)) ->
+                                         FractionalIdeal(R2, F2, U2, A2)
+        ++ map(f,i) \undocumented{}
+
+  Implementation ==> add
+    fmap: (F1 -> F2, A1) -> A2
+
+    fmap(f, a) ==
+      v := coordinates a
+      represents
+        [f qelt(v, i) for i in minIndex v .. maxIndex v]$Vector(F2)
+
+    map(f, i) ==
+      b := basis i
+      ideal [fmap(f(numer #1) / f(denom #1), qelt(b, j))
+             for j in minIndex b .. maxIndex b]$Vector(A2)
+

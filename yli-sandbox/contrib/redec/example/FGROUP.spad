@@ -1,0 +1,59 @@
+)abbrev domain FGROUP FreeGroup
+++ Free group on any set of generators
+++ Author: Stephen M. Watt
+++ Date Created: ???
+++ Date Last Updated: 6 June 1991
+++ Description:
+++ The free group on a set S is the group of finite products of
+++ the form \spad{reduce(*,[si ** ni])} where the si's are in S, and the ni's
+++ are integers. The multiplication is not commutative.
+FreeGroup(S: SetCategory): Join(Group, RetractableTo S) with
+        "*":    (S, $) -> $
+          ++ s * x returns the product of x by s on the left.
+        "*":    ($, S) -> $
+          ++ x * s returns the product of x by s on the right.
+        "**"         : (S, Integer) -> $
+          ++ s ** n returns the product of s by itself n times.
+        size         : $ -> NonNegativeInteger
+          ++ size(x) returns the number of monomials in x.
+        nthExpon     : ($, Integer) -> Integer
+          ++ nthExpon(x, n) returns the exponent of the n^th monomial of x.
+        nthFactor    : ($, Integer) -> S
+          ++ nthFactor(x, n) returns the factor of the n^th monomial of x.
+        mapExpon     : (Integer -> Integer, $) -> $
+          ++ mapExpon(f, a1\^e1 ... an\^en) returns \spad{a1\^f(e1) ... an\^f(en)}.
+        mapGen       : (S -> S, $) -> $
+          ++ mapGen(f, a1\^e1 ... an\^en) returns \spad{f(a1)\^e1 ... f(an)\^en}.
+        factors      : $ -> List Record(gen: S, exp: Integer)
+          ++ factors(a1\^e1,...,an\^en) returns \spad{[[a1, e1],...,[an, en]]}.
+    == ListMonoidOps(S, Integer, 1) add
+        Rep := ListMonoidOps(S, Integer, 1)
+
+        1                       == makeUnit()
+        one? f                  == empty? listOfMonoms f
+        s:S ** n:Integer        == makeTerm(s, n)
+        f:$ * s:S               == rightMult(f, s)
+        s:S * f:$               == leftMult(s, f)
+        inv f                   == reverse_! mapExpon("-", f)
+        factors f               == copy listOfMonoms f
+        mapExpon(f, x)          == mapExpon(f, x)$Rep
+        mapGen(f, x)            == mapGen(f, x)$Rep
+        coerce(f:$):OutputForm  == outputForm(f, "*", "**", 1)
+
+        f:$ * g:$ ==
+            one? f => g
+            one? g => f
+            r := reverse listOfMonoms f
+            q := copy listOfMonoms g
+            while not empty? r and not empty? q and r.first.gen = q.first.gen
+                and r.first.exp = -q.first.exp repeat
+                     r := rest r
+                     q := rest q
+            empty? r => makeMulti q
+            empty? q => makeMulti reverse_! r
+            r.first.gen = q.first.gen =>
+              setlast_!(h := reverse_! r,
+                                [q.first.gen, q.first.exp + r.first.exp])
+              makeMulti concat_!(h, rest q)
+            makeMulti concat_!(reverse_! r, q)
+

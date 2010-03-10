@@ -1,0 +1,229 @@
+)abbrev category DPOLCAT DifferentialPolynomialCategory
+++ Author:  William Sit
+++ Date Created: 19 July 1990
+++ Date Last Updated: 13 September 1991
+++ Basic Operations:PolynomialCategory
+++ Related Constructors:DifferentialVariableCategory
+++ See Also:
+++ AMS Classifications:12H05
+++ Keywords: differential indeterminates, ranking, differential polynomials,
+++           order, weight, leader, separant, initial, isobaric
+++ References:Kolchin, E.R. "Differential Algebra and Algebraic Groups"
+++   (Academic Press, 1973).
+++ Description:
+++   \spadtype{DifferentialPolynomialCategory} is a category constructor
+++   specifying basic functions in an ordinary differential polynomial
+++   ring with a given ordered set of differential indeterminates.
+++   In addition, it implements defaults for the basic functions.
+++   The functions \spadfun{order} and \spadfun{weight} are extended
+++   from the set of derivatives of differential indeterminates
+++   to the set of differential polynomials.  Other operations
+++   provided on differential polynomials are
+++   \spadfun{leader}, \spadfun{initial},
+++   \spadfun{separant}, \spadfun{differentialVariables}, and
+++   \spadfun{isobaric?}.   Furthermore, if the ground ring is
+++   a differential ring, then evaluation (substitution
+++   of differential indeterminates by elements of the ground ring
+++   or by differential polynomials) is
+++   provided by \spadfun{eval}.
+++   A convenient way of referencing derivatives is provided by
+++   the functions \spadfun{makeVariable}.
+++
+++   To construct a domain using this constructor, one needs
+++   to provide a ground ring R, an ordered set S of differential
+++   indeterminates, a ranking V on the set of derivatives
+++   of the differential indeterminates, and a set E of
+++   exponents in bijection with the set of differential monomials
+++   in the given differential indeterminates.
+++
+
+DifferentialPolynomialCategory(R:Ring,S:OrderedSet,
+  V:DifferentialVariableCategory S, E:OrderedAbelianMonoidSup):
+              Category ==
+  Join(PolynomialCategory(R,E,V),
+       DifferentialExtension R, RetractableTo S) with
+    -- Examples:
+    -- s:=makeVariable('s)
+    -- p:= 3*(s 1)**2 + s*(s 2)**3
+    --  all functions below have default implementations
+    --  using primitives from V
+
+    makeVariable: S -> (NonNegativeInteger -> $)
+       ++ makeVariable(s) views s as a differential
+       ++ indeterminate,  in such a way that the n-th
+       ++ derivative of s may be simply referenced as z.n
+       ++ where z :=makeVariable(s).
+       ++ Note: In the interpreter, z is
+       ++ given as an internal map, which may be ignored.
+       -- Example: makeVariable('s); %.5
+
+    differentialVariables: $ ->  List S
+      ++ differentialVariables(p) returns a list of differential
+      ++ indeterminates occurring in a differential polynomial p.
+    order : ($, S) -> NonNegativeInteger
+      ++ order(p,s) returns the order of the differential
+      ++ polynomial p in differential indeterminate s.
+    order : $   -> NonNegativeInteger
+      ++ order(p) returns the order of the differential polynomial p,
+      ++ which is the maximum number of differentiations of a
+      ++ differential indeterminate, among all those appearing in p.
+    degree: ($, S) -> NonNegativeInteger
+      ++ degree(p, s) returns the maximum degree of
+      ++ the differential polynomial p viewed as a differential polynomial
+      ++ in the differential indeterminate s alone.
+    weights: $ -> List NonNegativeInteger
+      ++ weights(p) returns a list of weights of differential monomials
+      ++ appearing in differential polynomial p.
+    weight: $   -> NonNegativeInteger
+      ++ weight(p) returns the maximum weight of all differential monomials
+      ++ appearing in the differential polynomial p.
+    weights: ($, S) -> List NonNegativeInteger
+      ++ weights(p, s) returns a list of
+      ++ weights of differential monomials
+      ++ appearing in the differential polynomial p when p is viewed
+      ++ as a differential polynomial in the differential indeterminate s
+      ++ alone.
+    weight: ($, S) -> NonNegativeInteger
+      ++ weight(p, s) returns the maximum weight of all differential
+      ++ monomials appearing in the differential polynomial p
+      ++ when p is viewed as a differential polynomial in
+      ++ the differential indeterminate s alone.
+    isobaric?: $ -> Boolean
+      ++ isobaric?(p) returns true if every differential monomial appearing
+      ++ in the differential polynomial p has same weight,
+      ++ and returns false otherwise.
+    leader: $   -> V
+      ++ leader(p) returns the derivative of the highest rank
+      ++ appearing in the differential polynomial p
+      ++ Note: an error occurs if p is in the ground ring.
+    initial:$   -> $
+      ++ initial(p) returns the
+      ++ leading coefficient when the differential polynomial p
+      ++ is written as a univariate polynomial in its leader.
+    separant:$  -> $
+      ++ separant(p) returns the
+      ++ partial derivative of the differential polynomial p
+      ++ with respect to its leader.
+    if R has DifferentialRing then
+      InnerEvalable(S, R)
+      InnerEvalable(S, $)
+      Evalable $
+      makeVariable: $ -> (NonNegativeInteger -> $)
+       ++ makeVariable(p) views p as an element of a differential
+       ++ ring,  in such a way that the n-th
+       ++ derivative of p may be simply referenced as z.n
+       ++ where z := makeVariable(p).
+       ++ Note: In the interpreter, z is
+       ++ given as an internal map, which may be ignored.
+       -- Example: makeVariable(p); %.5; makeVariable(%**2); %.2
+
+ add
+    p:$
+    s:S
+    makeVariable s == makeVariable(s,#1)::$
+
+    if R has IntegralDomain then
+      differentiate(p:$, d:R -> R) ==
+        ans:$ := 0
+        l := variables p
+        u : Union(R, "failed")
+        while (u:=retractIfCan(p)@Union(R, "failed")) case "failed" repeat
+          t := leadingMonomial p
+          lc := leadingCoefficient t
+          ans := ans + d(lc)::$ * (t exquo lc)::$
+              + +/[differentiate(t, v) * (differentiate v)::$ for v in l]
+          p := reductum p
+        ans + d(u::R)::$
+
+    order (p:$):NonNegativeInteger ==
+      ground? p => 0
+      "max"/[order v for v in variables p]
+    order (p:$,s:S):NonNegativeInteger ==
+      ground? p => 0
+      empty? (vv:= [order v for v in variables p | (variable v) = s ]) =>0
+      "max"/vv
+
+    degree (p, s) ==
+      d:NonNegativeInteger:=0
+      for lp in monomials p repeat
+        lv:= [v for v in variables lp | (variable v) = s ]
+        if not empty? lv then d:= max(d, +/degree(lp, lv))
+      d
+
+    weights p ==
+      ws:List NonNegativeInteger := nil
+      empty? (mp:=monomials p) => ws
+      for lp in mp repeat
+        lv:= variables lp
+        if not empty? lv then
+          dv:= degree(lp, lv)
+          w:=+/[(weight v) * d for v in lv for d in dv]$(List NonNegativeInteger)
+          ws:= concat(ws, w)
+      ws
+    weight p ==
+      empty? (ws:=weights p) => 0
+      "max"/ws
+
+    weights (p, s) ==
+      ws:List NonNegativeInteger := nil
+      empty?(mp:=monomials p) => ws
+      for lp in mp repeat
+        lv:= [v for v in variables lp | (variable v) = s ]
+        if not empty? lv then
+          dv:= degree(lp, lv)
+          w:=+/[(weight v) * d for v in lv for d in dv]$(List NonNegativeInteger)
+          ws:= concat(ws, w)
+      ws
+    weight (p,s)  ==
+      empty? (ws:=weights(p,s)) => 0
+      "max"/ws
+
+    isobaric? p == (# removeDuplicates weights p) = 1
+
+    leader p ==             -- depends on the ranking
+      vl:= variables p
+      -- it's not enough just to look at leadingMonomial p
+      -- the term-ordering need not respect the ranking
+      empty? vl => error "leader is not defined "
+      "max"/vl
+    initial p == leadingCoefficient univariate(p,leader p)
+    separant p == differentiate(p, leader p)
+
+    coerce(s:S):$   == s::V::$
+
+    retractIfCan(p:$):Union(S, "failed") ==
+      (v := retractIfCan(p)@Union(V,"failed")) case "failed" => "failed"
+      retractIfCan(v::V)
+
+    differentialVariables p ==
+      removeDuplicates [variable v for v in variables p]
+
+    if R has DifferentialRing then
+
+      makeVariable p == differentiate(p, #1)
+
+      eval(p:$, sl:List S, rl:List R) ==
+        ordp:= order p
+        vl  := concat [[makeVariable(s,j)$V for j in  0..ordp]
+                                for s in sl]$List(List V)
+        rrl:=nil$List(R)
+        for r in rl repeat
+          t:= r
+          rrl:= concat(rrl,
+                concat(r, [t := differentiate t for i in 1..ordp]))
+        eval(p, vl, rrl)
+
+      eval(p:$, sl:List S, rl:List $) ==
+        ordp:= order p
+        vl  := concat [[makeVariable(s,j)$V for j in  0..ordp]
+                                for s in sl]$List(List V)
+        rrl:=nil$List($)
+        for r in rl repeat
+          t:=r
+          rrl:=concat(rrl,
+               concat(r, [t:=differentiate t for i in 1..ordp]))
+        eval(p, vl, rrl)
+      eval(p:$, l:List Equation $) ==
+        eval(p, [retract(lhs e)@S for e in l]$List(S),
+              [rhs e for e in l]$List($))
+

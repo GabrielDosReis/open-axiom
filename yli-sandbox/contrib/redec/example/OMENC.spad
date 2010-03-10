@@ -1,0 +1,42 @@
+)abbrev domain OMENC OpenMathEncoding
+++ Author: Vilya Harvey
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: 
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype{OpenMathEncoding} is the set of valid OpenMath encodings.
+OpenMathEncoding(): SetCategory with
+  OMencodingUnknown : () -> %
+  ++ OMencodingUnknown() is the constant for unknown encoding types. If this 
+  ++ is used on an input device, the encoding will be autodetected.
+  ++ It is invalid to use it on an output device.
+  OMencodingXML     : () -> %
+  ++ OMencodingXML() is the constant for the OpenMath XML encoding.
+  OMencodingSGML    : () -> %
+  ++ OMencodingSGML() is the constant for the deprecated OpenMath SGML encoding.
+  OMencodingBinary  : () -> %
+  ++ OMencodingBinary() is the constant for the OpenMath binary encoding.
+ == add
+  Rep := SingleInteger
+
+  =(u,v) == (u=v)$Rep
+
+  import Rep
+
+  coerce(u) ==
+    u::Rep = 0$Rep => "Unknown"::OutputForm
+    u::Rep = 1$Rep => "Binary"::OutputForm
+    u::Rep = 2::Rep => "XML"::OutputForm
+    u::Rep = 3::Rep => "SGML"::OutputForm
+    error "Bogus OpenMath Encoding Type"
+
+  OMencodingUnknown(): % == 0::Rep
+  OMencodingBinary(): % == 1::Rep
+  OMencodingXML(): % == 2::Rep
+  OMencodingSGML(): % == 3::Rep
+

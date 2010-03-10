@@ -1,0 +1,39 @@
+)abbrev domain COMM Commutator
+++ Author : Larry Lambe
+++ Date created: 30 June 1988.
+++ Updated     : 10 March 1991
+++ Description: A type for basic commutators
+Commutator: Export == Implement where
+   I   ==> Integer
+   OSI ==> OrdSetInts
+   O   ==> OutputForm
+
+   Export == SetCategory with
+     mkcomm : I -> %
+        ++ mkcomm(i) \undocumented{}
+     mkcomm : (%,%) -> %
+        ++ mkcomm(i,j) \undocumented{}
+
+   Implement == add
+     import OSI
+     P   ==  Record(left:%,right:%)
+     Rep == Union(OSI,P)
+     x,y: %
+     i  : I
+
+     x = y ==
+        (x case OSI) and (y case OSI) => x::OSI = y::OSI
+        (x case P) and (y case P) =>
+           xx:P := x::P
+           yy:P := y::P
+           (xx.right = yy.right) and (xx.left = yy.left)
+        false
+
+     mkcomm(i) == i::OSI
+     mkcomm(x,y) == construct(x,y)$P
+
+     coerce(x: %): O ==
+        x case OSI => x::OSI::O
+        xx := x::P
+        bracket([xx.left::O,xx.right::O])$O
+

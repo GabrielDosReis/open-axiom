@@ -1,0 +1,38 @@
+)abbrev domain FFCG FiniteFieldCyclicGroup
+++ Authors: J.Grabmeier, A.Scheerhorn
+++ Date Created: 04.04.1991
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Constructors:  FiniteFieldCyclicGroupExtensionByPolynomial,
+++  FiniteFieldPolynomialPackage
+++ Also See: FiniteField, FiniteFieldNormalBasis
+++ AMS Classifications:
+++ Keywords: finite field, primitive elements, cyclic group
+++ References:
+++  R.Lidl, H.Niederreiter: Finite Field, Encycoldia of Mathematics and
+++  Its Applications, Vol. 20, Cambridge Univ. Press, 1983, ISBN 0 521 30240 4
+++ Description:
+++  FiniteFieldCyclicGroup(p,n) implements a finite field extension of degee n
+++  over the prime field with p elements. Its elements are represented by
+++  powers of a primitive element, i.e. a generator of the multiplicative
+++  (cyclic) group. As primitive element we choose the root of the extension
+++  polynomial, which is created by {\em createPrimitivePoly} from
+++  \spadtype{FiniteFieldPolynomialPackage}. The Zech logarithms are stored
+++  in a table of size half of the field size, and use \spadtype{SingleInteger}
+++  for representing field elements, hence, there are restrictions
+++  on the size of the field.
+
+FiniteFieldCyclicGroup(p,extdeg):_
+  Exports == Implementation where
+  p : PositiveInteger
+  extdeg   : PositiveInteger
+  PI       ==> PositiveInteger
+  FFPOLY         ==> FiniteFieldPolynomialPackage(PrimeField(p))
+  SI       ==> SingleInteger
+  Exports  ==> FiniteAlgebraicExtensionField(PrimeField(p)) with
+    getZechTable:() -> PrimitiveArray(SingleInteger)
+      ++ getZechTable() returns the zech logarithm table of the field.
+      ++ This table is used to perform additions in the field quickly.
+  Implementation ==> FiniteFieldCyclicGroupExtensionByPolynomial(PrimeField(p),_
+                          createPrimitivePoly(extdeg)$FFPOLY)
+

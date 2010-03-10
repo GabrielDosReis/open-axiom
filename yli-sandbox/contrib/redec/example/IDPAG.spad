@@ -1,0 +1,65 @@
+)abbrev domain IDPAG IndexedDirectProductAbelianGroup
+++ Indexed direct products of abelian groups over an abelian group \spad{A} of
+++ generators indexed by the ordered set S.
+++ All items have finite support: only non-zero terms are stored.
+IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedSet):
+    Join(AbelianGroup,IndexedDirectProductCategory(A,S))
+ ==  IndexedDirectProductAbelianMonoid(A,S) add
+    --representations
+       Term ==  Record(k:S,c:A)
+       Rep==  List Term
+       x,y: %
+       r: A
+       n: Integer
+       f: A -> A
+       s: S
+       -x == [[u.k,-u.c] for u in x]
+       n * x  ==
+             n = 0 => 0
+             n = 1 => x
+             [[u.k,a] for u in x | (a:=n*u.c) ~= 0$A]
+
+       qsetrest!: (Rep, Rep) -> Rep
+       qsetrest!(l: Rep, e: Rep): Rep == RPLACD(l, e)$Lisp
+
+       x - y ==
+                null x => -y
+                null y => x
+                endcell: Rep := empty()
+                res:  Rep := empty()
+                while not empty? x and not empty? y repeat
+                        newcell := empty()
+                        if x.first.k = y.first.k then
+                                r:= x.first.c - y.first.c
+                                if not zero? r then
+                                        newcell := cons([x.first.k, r], empty())
+                                x := rest x
+                                y := rest y
+                        else if x.first.k > y.first.k then
+                                newcell := cons(x.first, empty())
+                                x := rest x
+                        else
+                                newcell := cons([y.first.k,-y.first.c], empty())
+                                y := rest y
+                        if not empty? newcell then
+                                if not empty? endcell then
+                                        qsetrest!(endcell, newcell)
+                                        endcell := newcell
+                                else
+                                        res     := newcell;
+                                        endcell := res
+                if empty? x then end := - y
+                else end := x
+                if empty? res then res := end
+                else qsetrest!(endcell, end)
+                res
+
+--       x - y  ==
+--          empty? x => - y
+--          empty? y => x
+--          y.first.k > x.first.k => cons([y.first.k,-y.first.c],(x - y.rest))
+--          x.first.k > y.first.k => cons(x.first,(x.rest - y))
+--          r:= x.first.c - y.first.c
+--          r = 0 => x.rest - y.rest
+--          cons([x.first.k,r],(x.rest - y.rest))
+

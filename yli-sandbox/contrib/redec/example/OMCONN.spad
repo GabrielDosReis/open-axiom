@@ -1,0 +1,40 @@
+import Void
+import Boolean
+import SingleInteger
+import String
+import OpenMathDevice
+)abbrev domain OMCONN OpenMathConnection
+++ Author: Vilya Harvey
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: \spadtype{OpenMathConnection} provides low-level functions
+++ for handling connections to and from \spadtype{OpenMathDevice}s.
+
+
+OpenMathConnection(): with
+  OMmakeConn    : SingleInteger -> % ++ \spad{OMmakeConn}
+  OMcloseConn   : % -> Void ++ \spad{OMcloseConn}
+  OMconnInDevice: %-> OpenMathDevice ++ \spad{OMconnInDevice:}
+  OMconnOutDevice: %-> OpenMathDevice ++ \spad{OMconnOutDevice:}
+  OMconnectTCP  : (%, String, SingleInteger) -> Boolean ++ \spad{OMconnectTCP}
+  OMbindTCP     : (%, SingleInteger) -> Boolean ++ \spad{OMbindTCP}
+ == add
+  OMmakeConn(timeout: SingleInteger): % == OM_-MAKECONN(timeout)$Lisp
+  OMcloseConn(conn: %): Void == OM_-CLOSECONN(conn)$Lisp
+
+  OMconnInDevice(conn: %): OpenMathDevice ==
+    OM_-GETCONNINDEV(conn)$Lisp
+  OMconnOutDevice(conn: %): OpenMathDevice ==
+    OM_-GETCONNOUTDEV(conn)$Lisp
+
+  OMconnectTCP(conn: %, host: String, port: SingleInteger): Boolean ==
+    OM_-CONNECTTCP(conn, host, port)$Lisp
+  OMbindTCP(conn: %, port: SingleInteger): Boolean ==
+    OM_-BINDTCP(conn, port)$Lisp
+

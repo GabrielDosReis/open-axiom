@@ -1,0 +1,149 @@
+)abbrev category EUCDOM EuclideanDomain
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A constructive euclidean domain, i.e. one can divide producing
+++ a quotient and a remainder where the remainder is either zero
+++ or is smaller (\spadfun{euclideanSize}) than the divisor.
+++
+++ Conditional attributes:
+++   multiplicativeValuation\tab{25}\spad{Size(a*b)=Size(a)*Size(b)}
+++   additiveValuation\tab{25}\spad{Size(a*b)=Size(a)+Size(b)}
+
+EuclideanDomain(): Category == PrincipalIdealDomain with
+    --operations
+      sizeLess?: (%,%) -> Boolean
+         ++ sizeLess?(x,y) tests whether x is strictly
+         ++ smaller than y with respect to the \spadfunFrom{euclideanSize}{EuclideanDomain}.
+      euclideanSize: % -> NonNegativeInteger
+         ++ euclideanSize(x) returns the euclidean size of the element x.
+         ++ Error: if x is zero.
+      divide: (%,%) -> Record(quotient:%,remainder:%)
+         ++ divide(x,y) divides x by y producing a record containing a
+         ++ \spad{quotient} and \spad{remainder},
+         ++ where the remainder is smaller (see \spadfunFrom{sizeLess?}{EuclideanDomain})
+         ++ than the divisor y.
+      "quo" : (%,%) -> %
+         ++ x quo y is the same as \spad{divide(x,y).quotient}.
+         ++ See \spadfunFrom{divide}{EuclideanDomain}.
+      "rem": (%,%) -> %
+         ++ x rem y is the same as \spad{divide(x,y).remainder}.
+         ++ See \spadfunFrom{divide}{EuclideanDomain}.
+      extendedEuclidean: (%,%) -> Record(coef1:%,coef2:%,generator:%)
+                     -- formerly called princIdeal
+            ++ extendedEuclidean(x,y) returns a record rec where
+            ++ \spad{rec.coef1*x+rec.coef2*y = rec.generator} and
+            ++ rec.generator is a gcd of x and y.
+            ++ The gcd is unique only
+            ++ up to associates if \spadatt{canonicalUnitNormal} is not asserted.
+            ++ \spadfun{principalIdeal} provides a version of this operation
+            ++ which accepts an arbitrary length list of arguments.
+      extendedEuclidean: (%,%,%) -> Union(Record(coef1:%,coef2:%),"failed")
+                     -- formerly called expressIdealElt
+          ++ extendedEuclidean(x,y,z) either returns a record rec
+          ++ where \spad{rec.coef1*x+rec.coef2*y=z} or returns "failed"
+          ++ if z cannot be expressed as a linear combination of x and y.
+      multiEuclidean: (List %,%) -> Union(List %,"failed")
+          ++ multiEuclidean([f1,...,fn],z) returns a list of coefficients
+          ++ \spad{[a1, ..., an]} such that
+          ++ \spad{ z / prod fi = sum aj/fj}.
+          ++ If no such list of coefficients exists, "failed" is returned.
+    add
+      -- declarations
+      x,y,z: %
+      l: List %
+      -- definitions
+      sizeLess?(x,y) ==
+            zero? y => false
+            zero? x => true
+            euclideanSize(x)<euclideanSize(y)
+      x quo y == divide(x,y).quotient --divide must be user-supplied
+      x rem y == divide(x,y).remainder
+      x exquo y ==
+         zero? y => "failed"
+         qr:=divide(x,y)
+         zero?(qr.remainder) => qr.quotient
+         "failed"
+      gcd(x,y) ==                --Euclidean Algorithm
+         x:=unitCanonical x
+         y:=unitCanonical y
+         while not zero? y repeat
+            (x,y):= (y,x rem y)
+            y:=unitCanonical y             -- this doesn't affect the
+                                           -- correctness of Euclid's algorithm,
+                                           -- but
+                                           -- a) may improve performance
+                                           -- b) ensures gcd(x,y)=gcd(y,x)
+                                           --    if canonicalUnitNormal
+         x
+      IdealElt ==> Record(coef1:%,coef2:%,generator:%)
+      unitNormalizeIdealElt(s:IdealElt):IdealElt ==
+         (u,c,a):=unitNormal(s.generator)
+--         one? a => s
+         (a = 1) => s
+         [a*s.coef1,a*s.coef2,c]$IdealElt
+      extendedEuclidean(x,y) ==         --Extended Euclidean Algorithm
+         s1:=unitNormalizeIdealElt([1$%,0$%,x]$IdealElt)
+         s2:=unitNormalizeIdealElt([0$%,1$%,y]$IdealElt)
+         zero? y => s1
+         zero? x => s2
+         while not zero?(s2.generator) repeat
+            qr:= divide(s1.generator, s2.generator)
+            s3:=[s1.coef1 - qr.quotient * s2.coef1,
+                 s1.coef2 - qr.quotient * s2.coef2, qr.remainder]$IdealElt
+            s1:=s2
+            s2:=unitNormalizeIdealElt s3
+         if not(zero?(s1.coef1)) and not sizeLess?(s1.coef1,y)
+           then
+              qr:= divide(s1.coef1,y)
+              s1.coef1:= qr.remainder
+              s1.coef2:= s1.coef2 + qr.quotient * x
+              s1 := unitNormalizeIdealElt s1
+         s1
+
+      TwoCoefs ==> Record(coef1:%,coef2:%)
+      extendedEuclidean(x,y,z) ==
+         zero? z => [0,0]$TwoCoefs
+         s:= extendedEuclidean(x,y)
+         (w:= z exquo s.generator) case "failed" => "failed"
+         zero? y =>
+            [s.coef1 * w, s.coef2 * w]$TwoCoefs
+         qr:= divide((s.coef1 * w), y)
+         [qr.remainder, s.coef2 * w + qr.quotient * x]$TwoCoefs
+      principalIdeal l ==
+         l = [] => error "empty list passed to principalIdeal"
+         rest l = [] =>
+              uca:=unitNormal(first l)
+              [[uca.unit],uca.canonical]
+         rest rest l = [] =>
+             u:= extendedEuclidean(first l,second l)
+             [[u.coef1, u.coef2], u.generator]
+         v:=principalIdeal rest l
+         u:= extendedEuclidean(first l,v.generator)
+         [[u.coef1,:[u.coef2*vv for vv in v.coef]],u.generator]
+      expressIdealMember(l,z) ==
+         z = 0 => [0 for v in l]
+         pid := principalIdeal l
+         (q := z exquo (pid.generator)) case "failed" => "failed"
+         [q*v for v in pid.coef]
+      multiEuclidean(l,z) ==
+         n := #l
+         zero? n => error "empty list passed to multiEuclidean"
+         n = 1 => [z]
+         l1 := copy l
+         l2 := split!(l1, n quo 2)
+         u:= extendedEuclidean(*/l1, */l2, z)
+         u case "failed" => "failed"
+         v1 := multiEuclidean(l1,u.coef2)
+         v1 case "failed" => "failed"
+         v2 := multiEuclidean(l2,u.coef1)
+         v2 case "failed" => "failed"
+         concat(v1,v2)
+

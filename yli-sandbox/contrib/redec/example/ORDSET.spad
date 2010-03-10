@@ -1,0 +1,46 @@
+import Boolean
+)abbrev category ORDSET OrderedSet
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of totally ordered sets, that is, sets such that for each pair of elements \spad{(a,b)}
+++ exactly one of the following relations holds \spad{a<b or a=b or b<a}
+++ and the relation is transitive, i.e.  \spad{a<b and b<c => a<c}.
+
+OrderedSet(): Category == SetCategory with
+  --operations
+    "<": (%,%) -> Boolean
+      ++ x < y is a strict total ordering on the elements of the set.
+    ">":         (%, %) -> Boolean
+      ++ x > y is a greater than test.
+    ">=":        (%, %) -> Boolean
+      ++ x >= y is a greater than or equal test.
+    "<=":        (%, %) -> Boolean
+      ++ x <= y is a less than or equal test.
+
+    max: (%,%) -> %
+      ++ max(x,y) returns the maximum of x and y relative to "<".
+    min: (%,%) -> %
+      ++ min(x,y) returns the minimum of x and y relative to "<".
+  add
+  --declarations
+    x,y: %
+  --definitions
+  -- These really ought to become some sort of macro
+    max(x,y) ==
+      x > y => x
+      y
+    min(x,y) ==
+      x > y => y
+      x
+    ((x: %) >  (y: %)) : Boolean == y < x
+    ((x: %) >= (y: %)) : Boolean == not (x < y)
+    ((x: %) <= (y: %)) : Boolean == not (y < x)
+

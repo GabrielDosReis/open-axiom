@@ -1,0 +1,74 @@
+)abbrev package PMINS PatternMatchIntegerNumberSystem
+++ Pattern matching on integer number systems
+++ Author: Manuel Bronstein
+++ Date Created: 29 Nov 1989
+++ Date Last Updated: 22 Mar 1990
+++ Description:
+++   This package provides pattern matching functions on integers.
+++ Keywords: pattern, matching, integer.
+PatternMatchIntegerNumberSystem(I:IntegerNumberSystem): with
+  patternMatch: (I, Pattern Integer, PatternMatchResult(Integer, I)) ->
+                                          PatternMatchResult(Integer, I)
+    ++ patternMatch(n, pat, res) matches the pattern pat to the
+    ++ integer n; res contains the variables of pat which
+    ++ are already matched and their matches.
+ == add
+   import IntegerRoots(I)
+
+   PAT ==> Pattern Integer
+   PMR ==> PatternMatchResult(Integer, I)
+
+   patternMatchInner     : (I, PAT, PMR) -> PMR
+   patternMatchRestricted: (I, PAT, PMR, I) -> PMR
+   patternMatchSumProd   :
+     (I, List PAT, PMR, (I, I) -> Union(I, "failed"), I) -> PMR
+
+   patternMatch(x, p, l) ==
+     generic? p => addMatch(p, x, l)
+     patternMatchInner(x, p, l)
+
+   patternMatchRestricted(x, p, l, y) ==
+     generic? p => addMatchRestricted(p, x, l, y)
+     patternMatchInner(x, p, l)
+
+   patternMatchSumProd(x, lp, l, invOp, ident) ==
+     #lp = 2 =>
+       p2 := last lp
+       if ((r:= retractIfCan(p1 := first lp)@Union(Integer,"failed"))
+                          case "failed") then (p1 := p2; p2 := first lp)
+       (r := retractIfCan(p1)@Union(Integer, "failed")) case "failed" =>
+                                                                failed()
+       (y := invOp(x, r::Integer::I)) case "failed" => failed()
+       patternMatchRestricted(y::I, p2, l, ident)
+     failed()
+
+   patternMatchInner(x, p, l) ==
+     constant? p =>
+       (r := retractIfCan(p)@Union(Integer, "failed")) case Integer =>
+         convert(x)@Integer = r::Integer => l
+         failed()
+       failed()
+     (u := isExpt p) case Record(val:PAT,exponent:NonNegativeInteger) =>
+       ur := u::Record(val:PAT, exponent:NonNegativeInteger)
+       (v := perfectNthRoot(x, ur.exponent)) case "failed" => failed()
+       patternMatchRestricted(v::I, ur.val, l, 1)
+     (uu := isPower p) case Record(val:PAT, exponent:PAT) =>
+       uur := uu::Record(val:PAT, exponent: PAT)
+       pr := perfectNthRoot x
+       failed?(l := patternMatchRestricted(pr.exponent::Integer::I,
+                                         uur.exponent, l,1)) => failed()
+       patternMatchRestricted(pr.base, uur.val, l, 1)
+     (w := isTimes p) case List(PAT) =>
+       patternMatchSumProd(x, w::List(PAT), l, #1 exquo #2, 1)
+     (w := isPlus p) case List(PAT) =>
+      patternMatchSumProd(x,w::List(PAT),l,(#1-#2)::Union(I,"failed"),0)
+     (uv := isQuotient p) case Record(num:PAT, den:PAT) =>
+       uvr := uv::Record(num:PAT, den:PAT)
+       (r := retractIfCan(uvr.num)@Union(Integer,"failed")) case Integer
+         and (v := r::Integer::I exquo x) case I =>
+           patternMatchRestricted(v::I, uvr.den, l, 1)
+       (r := retractIfCan(uvr.den)@Union(Integer,"failed")) case Integer
+         => patternMatch(r::Integer * x, uvr.num, l)
+       failed()
+     failed()
+

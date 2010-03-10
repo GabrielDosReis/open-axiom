@@ -1,0 +1,30 @@
+)abbrev domain ODP OrderedDirectProduct
+-- all direct product category domains must be compiled
+-- without subsumption, set SourceLevelSubset to EQUAL
+--)bo $noSubsumption := true
+
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: Vector, DirectProduct
+++ Also See: HomogeneousDirectProduct, SplitHomogeneousDirectProduct
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This type represents the finite direct or cartesian product of an
+++ underlying ordered component type. The ordering on the type is determined
+++ by its third argument which represents the less than function on
+++ vectors. This type is a suitable third argument for
+++ \spadtype{GeneralDistributedMultivariatePolynomial}.
+
+OrderedDirectProduct(dim:NonNegativeInteger,
+                     S:OrderedAbelianMonoidSup,
+                      f:(Vector(S),Vector(S))->Boolean):T
+                             == C where
+   T == DirectProductCategory(dim,S)
+   C == DirectProduct(dim,S) add
+        Rep:=Vector(S)
+        x:% < y:% == f(x::Rep,y::Rep)
+

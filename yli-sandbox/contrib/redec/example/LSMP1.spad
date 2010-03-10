@@ -1,0 +1,64 @@
+)abbrev package LSMP1 LinearSystemMatrixPackage1
+++ Author: R. Sutor
+++ Date Created: June, 1994
+++ Date Last Updated:
+++ Basic Functions: solve, particularSolution, hasSolution?, rank
+++ Related Constructors: LinearSystemMatrixPackage
+++ Also See:
+++ AMS Classifications:
+++ Keywords: solve
+++ References:
+++ Description:
+++ This package solves linear system in the matrix form \spad{AX = B}.
+++ It is essentially a particular instantiation of the package
+++ \spadtype{LinearSystemMatrixPackage} for Matrix and Vector. This
+++ package's existence makes it easier to use \spadfun{solve} in the
+++ AXIOM interpreter.
+
+LinearSystemMatrixPackage1(F): Cat == Capsule where
+    F: Field
+    Row      ==> Vector F
+    Col      ==> Vector F
+    M        ==> Matrix(F)
+    LL       ==> List List F
+
+    N        ==> NonNegativeInteger
+    PartialV ==> Union(Col, "failed")
+    Both     ==> Record(particular: PartialV, basis: List Col)
+    LSMP     ==> LinearSystemMatrixPackage(F, Row, Col, M)
+
+    Cat ==> with
+        solve       : (M, Col) -> Both
+          ++  solve(A,B) finds a particular solution of the system \spad{AX = B}
+          ++  and a basis of the associated homogeneous system \spad{AX = 0}.
+        solve       : (LL, Col) -> Both
+          ++  solve(A,B) finds a particular solution of the system \spad{AX = B}
+          ++  and a basis of the associated homogeneous system \spad{AX = 0}.
+        solve       : (M, List Col) -> List Both
+          ++  solve(A,LB) finds a particular soln of the systems \spad{AX = B}
+          ++  and a basis of the associated homogeneous systems \spad{AX = 0}
+          ++  where B varies in the list of column vectors LB.
+        solve       : (LL, List Col) -> List Both
+          ++  solve(A,LB) finds a particular soln of the systems \spad{AX = B}
+          ++  and a basis of the associated homogeneous systems \spad{AX = 0}
+          ++  where B varies in the list of column vectors LB.
+
+        particularSolution: (M, Col) -> PartialV
+          ++ particularSolution(A,B) finds a particular solution of the linear
+          ++ system \spad{AX = B}.
+        hasSolution?: (M, Col) -> Boolean
+          ++ hasSolution?(A,B) tests if the linear system \spad{AX = B}
+          ++ has a solution.
+        rank        : (M, Col) -> N
+          ++ rank(A,B) computes the rank of the complete matrix \spad{(A|B)}
+          ++ of the linear system \spad{AX = B}.
+
+    Capsule ==> add
+        solve(m : M, c: Col): Both == solve(m,c)$LSMP
+        solve(ll : LL, c: Col): Both == solve(matrix(ll)$M,c)$LSMP
+        solve(m : M, l : List Col): List Both == solve(m, l)$LSMP
+        solve(ll : LL, l : List Col): List Both == solve(matrix(ll)$M, l)$LSMP
+        particularSolution (m : M, c : Col): PartialV == particularSolution(m, c)$LSMP
+        hasSolution?(m :M, c : Col): Boolean == hasSolution?(m, c)$LSMP
+        rank(m : M, c : Col): N == rank(m, c)$LSMP
+

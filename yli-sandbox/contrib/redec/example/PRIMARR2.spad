@@ -1,0 +1,36 @@
+)abbrev package PRIMARR2 PrimitiveArrayFunctions2
+++ This package provides tools for operating on primitive arrays
+++ with unary and binary functions involving different underlying types
+PrimitiveArrayFunctions2(A, B): Exports == Implementation where
+  A, B: Type
+
+  VA ==> PrimitiveArray A
+  VB ==> PrimitiveArray B
+  O2 ==> FiniteLinearAggregateFunctions2(A, VA, B, VB)
+  Exports ==> with
+    scan   : ((A, B) -> B, VA, B) -> VB
+        ++ scan(f,a,r) successively applies
+        ++ \spad{reduce(f,x,r)} to more and more leading sub-arrays
+        ++ x of primitive array \spad{a}.
+        ++ More precisely, if \spad{a} is \spad{[a1,a2,...]}, then
+        ++ \spad{scan(f,a,r)} returns
+        ++ \spad{[reduce(f,[a1],r),reduce(f,[a1,a2],r),...]}.
+    reduce : ((A, B) -> B, VA, B) -> B
+        ++ reduce(f,a,r) applies function f to each
+        ++ successive element of the
+        ++ primitive array \spad{a} and an accumulant initialized to r.
+        ++ For example,
+        ++ \spad{reduce(_+$Integer,[1,2,3],0)}
+        ++ does \spad{3+(2+(1+0))}. Note: third argument r
+        ++ may be regarded as the
+        ++ identity element for the function f.
+    map    : (A -> B, VA) -> VB
+        ++ map(f,a) applies function f to each member of primitive array
+        ++ \spad{a} resulting in a new primitive array over a
+        ++ possibly different underlying domain.
+
+  Implementation ==> add
+    map(f, v)       == map(f, v)$O2
+    scan(f, v, b)   == scan(f, v, b)$O2
+    reduce(f, v, b) == reduce(f, v, b)$O2
+

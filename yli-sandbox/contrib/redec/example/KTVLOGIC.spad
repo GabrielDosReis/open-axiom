@@ -1,0 +1,54 @@
+)abbrev domain KTVLOGIC KleeneTrivalentLogic
+++ Author: Gabriel Dos Reis
+++ Date Created: September 20, 2008
+++ Date Last Modified: September 20, 2008
+++ Description: 
+++   This domain implements Kleene's 3-valued propositional logic.
+KleeneTrivalentLogic(): Public == Private where
+  Public == PropositionalLogic with
+    false: %       ++ the definite falsehood value
+    unknown: %     ++ the indefinite `unknown' 
+    true: %        ++ the definite truth value
+    _case: (%,[| false |]) -> Boolean
+      ++ x case false holds if the value of `x' is `false'
+    _case: (%,[| unknown |]) -> Boolean
+      ++ x case unknown holds if the value of `x' is `unknown'
+    _case: (%,[| true |]) -> Boolean
+      ++ s case true holds if the value of `x' is `true'.
+  Private == add
+    Rep == Byte    -- We need only 3 bits, in fact.
+    false == per(0::NonNegativeInteger::Byte)
+    unknown == per(1::NonNegativeInteger::Byte)
+    true == per(2::Byte)
+    x = y == rep x = rep y
+    x case true == x = true
+    x case false == x = false
+    x case unknown == x = unknown
+    not x ==
+      x case false => true
+      x case unknown => unknown
+      false
+    x and y ==
+      x case false => false
+      x case unknown =>
+        y case false => false
+        unknown
+      y
+    x or y ==
+      x case false => y
+      x case true => x
+      y case true => y
+      unknown
+    implies(x,y) ==
+      x case false => true
+      x case true => y
+      y case true => true
+      unknown
+    equiv(x,y) ==
+      x case unknown => x
+      x case true => y
+      not y
+    coerce(x: %): OutputForm ==
+      x case true => outputForm 'true
+      x case false => outputForm 'false
+      outputForm 'unknown

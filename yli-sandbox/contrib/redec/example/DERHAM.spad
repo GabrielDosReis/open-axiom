@@ -1,0 +1,111 @@
+)abbrev domain DERHAM DeRhamComplex
+++ Author: Larry A. Lambe
+++ Date    : 01/26/91.
+++ Revised : 12/01/91.
+++
+++ based on code from '89 (AntiSymmetric)
+++
+++ Needs: LeftAlgebra, ExtAlgBasis, FreeMod(Ring,OrderedSet)
+++
+++ Description: The deRham complex of Euclidean space, that is, the
+++ class of differential forms of arbitary degree over a coefficient ring.
+++ See Flanders, Harley, Differential Forms, With Applications to the Physical
+++ Sciences, New York, Academic Press, 1963.
+ 
+DeRhamComplex(CoefRing,listIndVar:List Symbol): Export == Implement where
+  CoefRing :  Join(Ring, OrderedSet)
+  ASY     ==> AntiSymm(R,listIndVar)
+  DIFRING ==> DifferentialRing
+  LALG    ==> LeftAlgebra
+  FMR     ==> FreeMod(R,EAB)
+  I       ==> Integer
+  L       ==> List
+  EAB     ==> ExtAlgBasis  -- these are exponents of basis elements in order
+  NNI     ==> NonNegativeInteger
+  O       ==> OutputForm
+  R       ==> Expression(CoefRing)
+ 
+  Export == Join(LALG(R), RetractableTo(R)) with
+      leadingCoefficient : %           -> R
+        ++ leadingCoefficient(df) returns the leading
+        ++ coefficient of differential form df.
+      leadingBasisTerm   : %           -> %
+        ++ leadingBasisTerm(df) returns the leading
+        ++ basis term of differential form df.
+      reductum           : %           -> %
+        ++ reductum(df), where df is a differential form, 
+        ++ returns df minus the leading
+        ++ term of df if df has two or more terms, and
+        ++ 0 otherwise.
+      coefficient        : (%,%)     -> R 
+        ++ coefficient(df,u), where df is a differential form,
+        ++ returns the coefficient of df containing the basis term u
+        ++ if such a term exists, and 0 otherwise.
+      generator          : NNI         -> %
+        ++ generator(n) returns the nth basis term for a differential form.
+      homogeneous?       : %           -> Boolean
+        ++  homogeneous?(df) tests if all of the terms of 
+        ++  differential form df have the same degree.
+      retractable?       : %           -> Boolean
+        ++  retractable?(df) tests if differential form df is a 0-form,
+        ++  i.e., if degree(df) = 0.
+      degree             : %           -> I
+        ++  degree(df) returns the homogeneous degree of differential form df.
+      map                : (R -> R, %) -> %
+        ++  map(f,df) replaces each coefficient x of differential 
+        ++  form df by \spad{f(x)}.
+      totalDifferential    : R -> %
+        ++  totalDifferential(x) returns the total differential 
+        ++  (gradient) form for element x.
+      exteriorDifferential : % -> %
+        ++  exteriorDifferential(df) returns the exterior 
+        ++  derivative (gradient, curl, divergence, ...) of
+        ++  the differential form df.
+
+  Implement == ASY add
+      Rep := ASY 
+
+      dim := #listIndVar
+
+      totalDifferential(f) ==
+        divs:=[differentiate(f,listIndVar.i)*generator(i)$ASY for i in 1..dim]
+        reduce("+",divs)
+
+      termDiff : (R, %) -> %
+      termDiff(r,e) ==
+        totalDifferential(r) * e
+
+      exteriorDifferential(x) ==
+        x = 0 => 0
+        termDiff(leadingCoefficient(x)$Rep,leadingBasisTerm x) + exteriorDifferential(reductum x)
+
+      lv := [concat("d",string(liv))$String::Symbol for liv in listIndVar]
+
+      displayList:EAB -> O
+      displayList(x):O ==
+        le: L I := exponents(x)$EAB
+--      reduce(_*,[(lv.i)::O for i in 1..dim | le.i = 1])$L(O)
+--        reduce(_*,[(lv.i)::O for i in 1..dim | one?(le.i)])$L(O)
+        reduce(_*,[(lv.i)::O for i in 1..dim | ((le.i) = 1)])$L(O)
+
+      makeTerm:(R,EAB) -> O
+      makeTerm(r,x) ==
+      -- we know that r ~= 0
+        x = Nul(dim)$EAB  => r::O
+--        one? r => displayList(x)
+        (r = 1) => displayList(x)
+--      r = 1 => displayList(x)
+        r::O * displayList(x)
+
+      terms : % -> List Record(k: EAB, c: R)
+      terms(a) ==
+        -- it is the case that there are at least two terms in a
+        a pretend List Record(k: EAB, c: R)
+        
+      coerce(a):O ==
+        a           = 0$Rep => 0$I::O
+        ta := terms a
+--      reductum(a) = 0$Rep => makeTerm(leadingCoefficient a, a.first.k)
+        null ta.rest => makeTerm(ta.first.c, ta.first.k)
+        reduce(_+,[makeTerm(t.c,t.k) for t in ta])$L(O)
+

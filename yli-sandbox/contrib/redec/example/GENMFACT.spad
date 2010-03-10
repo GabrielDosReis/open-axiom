@@ -1,0 +1,46 @@
+)abbrev package GENMFACT GeneralizedMultivariateFactorize
+++ Author: P. Gianni
+++ Date Created: 1983
+++ Date Last Updated: Sept. 1990
+++ Basic Functions:
+++ Related Constructors: MultFiniteFactorize, AlgebraicMultFact, MultivariateFactorize
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This is the top level package for doing multivariate factorization
+++ over basic domains like \spadtype{Integer} or \spadtype{Fraction Integer}.
+
+GeneralizedMultivariateFactorize(OV,E,S,R,P) : C == T
+ where
+  R          :   IntegralDomain
+                    -- with factor on R[x]
+  S          :   IntegralDomain
+  OV    :   OrderedSet  with  
+                 convert : % -> Symbol
+                   ++ convert(x) converts x to a symbol
+                 variable: Symbol -> Union(%, "failed")
+                   ++ variable(s) makes an element from symbol s or fails.
+  E          :   OrderedAbelianMonoidSup
+  P          :   PolynomialCategory(R,E,OV)
+
+  C == with
+    factor      :      P  ->  Factored P
+      ++ factor(p) factors the multivariate polynomial p over its coefficient
+      ++ domain
+
+  T == add
+    factor(p:P) : Factored P ==
+      R has FiniteFieldCategory => factor(p)$MultFiniteFactorize(OV,E,R,P)
+      R is Polynomial(S) and S has EuclideanDomain =>
+         factor(p)$MPolyCatPolyFactorizer(E,OV,S,P)
+      R is Fraction(S) and S has CharacteristicZero and 
+        S has EuclideanDomain =>
+            factor(p)$MRationalFactorize(E,OV,S,P)
+      R is Fraction Polynomial S =>
+         factor(p)$MPolyCatRationalFunctionFactorizer(E,OV,S,P)
+      R has CharacteristicZero and R has EuclideanDomain =>
+               factor(p)$MultivariateFactorize(OV,E,R,P)
+      squareFree p
+

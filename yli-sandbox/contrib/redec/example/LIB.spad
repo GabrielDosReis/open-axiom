@@ -1,0 +1,34 @@
+)abbrev domain LIB Library
+++ Author: Stephen M. Watt
+++ Date Created: 1985
+++ Date Last Updated: June 4, 1991
+++ Basic Operations: 
+++ Related Domains: KeyedAccessFile
+++ Also See:
+++ AMS Classifications:
+++ Keywords: 
+++ Examples:
+++ References:
+++ Description:
+++   This domain provides a simple way to save values in files.
+Library(): TableAggregate(String, Any) with
+         library:  FileName -> %
+             ++ library(ln) creates a new library file.
+         pack_!: % -> %
+             ++ pack!(f) reorganizes the file f on disk to recover 
+             ++ unused space.
+
+         elt : (%, Symbol) -> Any
+             ++ elt(lib,k) or lib.k  extracts the value corresponding to the key \spad{k}
+             ++ from the library \spad{lib}.
+
+         setelt : (%, Symbol, Any) -> Any
+             ++ \spad{lib.k := v} saves the value \spad{v} in the library
+             ++ \spad{lib}.  It can later be extracted using the key \spad{k}.
+
+    == KeyedAccessFile(Any) add
+         Rep := KeyedAccessFile(Any)
+         library f == open f
+         elt(f:%,v:Symbol) == elt(f, string v)
+         setelt(f:%, v:Symbol, val:Any) == setelt(f, string v, val)
+

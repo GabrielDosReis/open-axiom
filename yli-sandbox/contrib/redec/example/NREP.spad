@@ -1,0 +1,76 @@
+)abbrev package NREP NumericRealEigenPackage
+++ Author:P. Gianni
+++ Date Created:Summer 1990
+++ Date Last Updated:Spring 1991
+++ Basic Functions:
+++ Related Constructors: FloatingRealPackage
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package computes explicitly eigenvalues and eigenvectors of
+++ matrices with entries over the Rational Numbers.
+++ The results are expressed as floating numbers or as rational numbers
+++ depending on the type of the parameter Par.
+NumericRealEigenPackage(Par) : C == T
+ where
+   Par   :   Join(Field,OrderedRing) -- Float or RationalNumber
+
+   SE    ==> Symbol()
+   RN    ==> Fraction Integer
+   I     ==> Integer
+   NF    ==> Float
+   CF    ==> Complex Float
+   GRN   ==> Complex RN
+   GI    ==> Complex Integer
+   PI    ==> PositiveInteger
+   NNI   ==> NonNegativeInteger
+   MRN   ==> Matrix RN
+
+   MPar        ==> Matrix Par
+   outForm     ==> Record(outval:Par,outmult:Integer,outvect:List MPar)
+
+   C == with
+     characteristicPolynomial :   MRN    -> Polynomial RN
+       ++ characteristicPolynomial(m) returns the characteristic polynomial
+       ++ of the matrix m expressed as polynomial
+       ++ over RN with a new symbol as variable.
+       -- while the function in EigenPackage returns Fraction P RN.
+     characteristicPolynomial : (MRN,SE) -> Polynomial RN
+       ++ characteristicPolynomial(m,x) returns the characteristic polynomial
+       ++ of the matrix m expressed as polynomial
+       ++ over RN with variable x.
+       -- while the function in EigenPackage returns
+       ++ Fraction P RN.
+     realEigenvalues  :   (MRN,Par)   ->  List Par
+       ++ realEigenvalues(m,eps) computes the eigenvalues of the matrix
+       ++ m to precision eps. The eigenvalues are expressed as floats or
+       ++ rational numbers depending on the type of eps (float or rational).
+     realEigenvectors    : (MRN,Par)   ->  List(outForm)
+       ++ realEigenvectors(m,eps)  returns a list of
+       ++ records each one containing
+       ++ a real eigenvalue, its algebraic multiplicity, and a list of
+       ++ associated eigenvectors. All these results
+       ++ are computed to precision eps as floats or rational
+       ++ numbers depending on the type of eps .
+
+
+   T == add
+
+     import InnerNumericEigenPackage(RN, Par, Par)
+
+     characteristicPolynomial(m:MRN) : Polynomial RN ==
+       x:SE:=new()$SE
+       multivariate(charpol(m),x)
+
+            ----  characteristic polynomial of a matrix A ----
+     characteristicPolynomial(A:MRN,x:SE):Polynomial RN ==
+       multivariate(charpol(A),x)
+
+     realEigenvalues(m:MRN,eps:Par) : List Par  ==
+       solve1(charpol m, eps)
+
+     realEigenvectors(m:MRN,eps:Par) :List outForm ==
+       innerEigenvectors(m,eps,factor$GenUFactorize(RN))
+

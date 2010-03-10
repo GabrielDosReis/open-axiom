@@ -1,0 +1,9 @@
+)abbrev package PARSU2 ParametricSurfaceFunctions2
+++ Description:
+++ This package \undocumented
+ParametricSurfaceFunctions2(CF1: Type, CF2:Type): with
+  map: (CF1 -> CF2, ParametricSurface(CF1)) -> ParametricSurface(CF2)
+        ++ map(f,x) \undocumented
+ == add
+  map(f, c) == surface(f coordinate(c,1), f coordinate(c,2), f coordinate(c,3))
+

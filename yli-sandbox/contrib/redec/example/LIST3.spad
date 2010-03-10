@@ -1,0 +1,35 @@
+import Type
+import Type
+)abbrev package LIST3 ListFunctions3
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: map
+++ Related Constructors: List
+++ Also See: ListFunctions2
+++ AMS Classification:
+++ Keywords: list, aggregate, map
+++ Description:
+++   \spadtype{ListFunctions3} implements utility functions that
+++   operate on three kinds of lists, each with a possibly different
+++   type of element.
+ListFunctions3(A:Type, B:Type, C:Type): public == private where
+  LA     ==> List A
+  LB     ==> List B
+  LC     ==> List C
+
+  public ==> with
+    map: ( (A,B)->C, LA, LB) -> LC
+      ++ map(fn,list1, u2) applies the binary function \spad{fn}
+      ++ to corresponding elements of lists \spad{u1} and \spad{u2}
+      ++ and returns a list of the results (in the same order). Thus
+      ++ \spad{map(/,[1,2,3],[4,5,6]) = [1/4,2/4,1/2]}. The computation
+      ++ terminates when the end of either list is reached. That is,
+      ++ the length of the result list is equal to the minimum of the
+      ++ lengths of \spad{u1} and \spad{u2}.
+
+  private ==> add
+    map(fn : (A,B) -> C, la : LA, lb : LB): LC ==
+      empty?(la) or empty?(lb) => empty()$LC
+      concat(fn(first la, first lb), map(fn, rest la, rest lb))
+

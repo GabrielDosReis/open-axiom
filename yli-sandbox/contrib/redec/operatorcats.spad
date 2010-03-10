@@ -1,0 +1,56 @@
+
+)abbrev category MAGMAOP MagmaOperator
+MagmaOperator(T: SetCategory, op: Mapping(T, T, T)):Category 
+  == Type
+
+)abbrev category ASSOCOP AssociativeOperator
+++ Axiom: associativity: rule op(a, op(b, c)) == op(op(a,b), c)
+AssociativeOperator(T: SetCategory, op: Mapping(T, T, T)):Category 
+  == MagmaOperator(T, op)
+
+
+)abbrev category COMMOP CommutativeOperator
+++ Axiom: commutativity: rule op(a, b) == op(b, a)
+CommutativeOperator(T: SetCategory, op: Mapping(T, T, T)):Category 
+  == MagmaOperator(T, op)
+
+
+)abbrev category LDISTOP LeftDistributiveOperator
+++ Axiom: leftDistributivity: rule op1(op2(a,b), c) == op2(op1(a, c), op1(b, c))
+LeftDistributiveOperator(T: SetCategory,_ 
+                         op1:Mapping(T, T, T), op2:Mapping(T, T, T)):Category 
+  == Join(MagmaOperator(T, op1), MagmaOperator(T, op2))
+
+
+)abbrev category RDISTOP RightDistributiveOperator
+++ Axiom: rightDistributivity: rule op1(a, op2(b, c)) == op2(op1(a, b), op1(a, c))
+RightDistributiveOperator(T: SetCategory,_
+                          op1: Mapping(T, T, T), op2: Mapping(T, T, T)):Category 
+  == Join(MagmaOperator(T, op1), MagmaOperator(T, op2))
+
+
+)abbrev category DISTOP DistributiveOperator
+++ Axiom: leftDistributivity: rule op1(op2(a,b), c) == op2(op1(a, c), op1(b, c))
+++        rightDistributivity: rule op1(a, op2(b, c)) == op2(op1(a, b), op1(a, c))
+DistributiveOperator(T: SetCategory,_ 
+                     op1: Mapping(T, T, T), op2: Mapping(T, T, T)):Category
+  == Join(LeftDistributiveOperator(T, op1, op2), RightDistributiveOperator(T, op1, op2))
+
+
+)abbrev category SGRPOP SemiGroupOperator
+++ Axiom: op(absorbantValue, a) = absorbantValue
+SemiGroupOperator(T:SetCategory, op: Mapping(T, T, T)):Category 
+  == AssociativeOperator(T, op) with
+    absorbantValue: T
+
+
+)abbrev category MONOOP MonoidOperator
+++ Axiom: op(neutralValue, a) = a
+++        op(absorbantValue, a) = absorbantValue
+++        associativity: op(a, op(b, c)) == op(op(a,b), c)
+MonoidOperator(T: SetCategory, op: Mapping(T, T, T)): Category
+  == SemiGroupOperator(T, op) with
+    neutralValue: T
+    foo: T
+
+

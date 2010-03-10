@@ -1,0 +1,17 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain CAPSLAST CapsuleAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the capsule of a domain definition.
+CapsuleAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List SpadAst
+      ++ body(c) returns the list of top level expressions appearing in `c'.
+  Private == add
+    Rep == Pair(Symbol, List SpadAst)
+    body x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('CapsuleAst::OutputForm,
+        ['body::OutputForm = body(x)::OutputForm])$OutputForm

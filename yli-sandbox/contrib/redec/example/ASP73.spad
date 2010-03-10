@@ -1,0 +1,142 @@
+)abbrev domain ASP73 Asp73
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 30 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp73} produces Fortran for Type 73 ASPs, needed for NAG routine
+++\axiomOpFrom{d03eef}{d03Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE PDEF(X,Y,ALPHA,BETA,GAMMA,DELTA,EPSOLN,PHI,PSI)
+++      DOUBLE PRECISION ALPHA,EPSOLN,PHI,X,Y,BETA,DELTA,GAMMA,PSI
+++      ALPHA=DSIN(X)
+++      BETA=Y
+++      GAMMA=X*Y
+++      DELTA=DCOS(X)*DSIN(Y)
+++      EPSOLN=Y+X
+++      PHI=X
+++      PSI=Y
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp73(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FSTU   ==> Union(fst:FST,void:"void")
+  FEXPR  ==> FortranExpression(['X,'Y],[],MachineFloat)
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : VEC FEXPR -> $
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(X,fortranReal(),syms) $SYMTAB
+    declare!(Y,fortranReal(),syms) $SYMTAB
+    declare!(ALPHA,fortranReal(),syms)$SYMTAB
+    declare!(BETA,fortranReal(),syms) $SYMTAB
+    declare!(GAMMA,fortranReal(),syms) $SYMTAB
+    declare!(DELTA,fortranReal(),syms) $SYMTAB
+    declare!(EPSOLN,fortranReal(),syms) $SYMTAB
+    declare!(PHI,fortranReal(),syms) $SYMTAB
+    declare!(PSI,fortranReal(),syms) $SYMTAB
+    Rep := FortranProgram(name,["void"]$FSTU,
+                          [X,Y,ALPHA,BETA,GAMMA,DELTA,EPSOLN,PHI,PSI],syms)
+
+    -- To help the poor compiler!
+    localAssign(u:Symbol,v:FEXPR):FortranCode ==
+      assign(u,(v::EXPR MachineFloat)$FEXPR)$FortranCode
+
+    coerce(u:VEC FEXPR):$ ==
+      maxIndex(u) ~= 7 => error "Vector is not of dimension 7"
+      [localAssign(ALPHA@Symbol,elt(u,1)),_
+       localAssign(BETA@Symbol,elt(u,2)),_
+       localAssign(GAMMA@Symbol,elt(u,3)),_
+       localAssign(DELTA@Symbol,elt(u,4)),_
+       localAssign(EPSOLN@Symbol,elt(u,5)),_
+       localAssign(PHI@Symbol,elt(u,6)),_
+       localAssign(PSI@Symbol,elt(u,7)),_
+       returns()$FortranCode]$List(FortranCode)::$
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+

@@ -1,0 +1,40 @@
+import CoercibleTo OutputForm
+import CategoryConstructor
+)abbrev domain CATEGORY Category
+++ Author: Gabriel Dos Reis
+++ Date Create: December 20, 2008.
+++ Date Last Updated: February 16, 2008.
+++ Basic Operations: coerce
+++ Related Constructors: 
+++ Also See: Type
+Category(): Public == Private where
+  Public == CoercibleTo OutputForm with
+    constructor: % -> CategoryConstructor
+      ++ constructor(c) returns the category constructor used to 
+      ++ instantiate the category object `c'.
+    exportedOperators: % -> List OperatorSignature
+      ++ exportedOperators(c) returns the list of all operator signatures
+      ++ exported by the category `c', along with their predicates.
+    principalAncestors: % -> List ConstructorCall
+      ++ principalAncestors(c) returns the list of all category
+      ++ forms that are principal ancestors of the the category `c'.
+    parents: % -> List ConstructorCall
+      ++ parents(c) returns the list of all category forms directly
+      ++ extended by the category `c'.
+  Private == add
+    constructor x ==
+      CAR(devaluate(x)$Lisp)$Lisp
+
+    exportedOperators c ==
+      [CAR(x)$Lisp@OperatorSignature 
+         for x in getCategoryExports(c)$Lisp@List(Syntax)]
+    
+    principalAncestors c == 
+      getCategoryPrincipalAncestors(c)$Lisp
+
+    parents c ==
+      [CAR(x)$Lisp@ConstructorCall
+         for x in getCategoryParents(c)$Lisp@List(Syntax)]
+
+    coerce x ==
+      outputDomainConstructor(x)$Lisp

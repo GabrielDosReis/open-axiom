@@ -1,0 +1,20 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain SEGAST SegmentAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents segement expressions.
+SegmentAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    bounds: % -> List SpadAst
+      ++ bounds(s) returns the bounds of the segment `s'.  If
+      ++ `s' designates an infinite interval, then the returns
+      ++ list a singleton list.
+  Private == add
+    Rep == List SpadAst
+    bounds x == rest rep x
+    coerce(x: %): OutputForm ==
+      elt('SegmentAst::OutputForm,
+        ['bounds::OutputForm = bounds(x)::OutputForm])$OutputForm
+

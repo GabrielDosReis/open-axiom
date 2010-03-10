@@ -1,0 +1,21 @@
+import Boolean
+)abbrev category BASTYPE BasicType
+--% BasicType
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype{BasicType} is the basic category for describing a collection
+++ of elements with \spadop{=} (equality).
+BasicType(): Category == with
+      "=": (%,%) -> Boolean    ++ x=y tests if x and y are equal.
+      "~=": (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
+   add
+      _~_=(x:%,y:%) : Boolean == not(x=y)
+

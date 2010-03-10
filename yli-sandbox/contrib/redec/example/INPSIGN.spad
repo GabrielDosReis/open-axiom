@@ -1,0 +1,42 @@
+)abbrev package INPSIGN InnerPolySign
+--%% InnerPolySign
+++ Author: Manuel Bronstein
+++ Date Created: 23 Aug 1989
+++ Date Last Updated: 19 Feb 1990
+++ Description:
+++ Find the sign of a polynomial around a point or infinity.
+InnerPolySign(R, UP): Exports == Implementation where
+  R : Ring
+  UP: UnivariatePolynomialCategory R
+ 
+  U ==> Union(Integer, "failed")
+ 
+  Exports ==> with
+    signAround: (UP,    Integer, R -> U) -> U
+        ++ signAround(u,i,f) \undocumented
+    signAround: (UP, R, Integer, R -> U) -> U
+        ++ signAround(u,r,i,f) \undocumented
+    signAround: (UP, R,          R -> U) -> U
+        ++ signAround(u,r,f) \undocumented
+ 
+  Implementation ==> add
+    signAround(p:UP, x:R, rsign:R -> U) ==
+      (ur := signAround(p, x,  1, rsign)) case "failed" => "failed"
+      (ul := signAround(p, x, -1, rsign)) case "failed" => "failed"
+      (ur::Integer) = (ul::Integer) => ur
+      "failed"
+ 
+    signAround(p, x, dir, rsign) ==
+      zero? p => 0
+      zero?(r := p x) =>
+        (u := signAround(differentiate p, x, dir, rsign)) case "failed"
+          => "failed"
+        dir * u::Integer
+      rsign r
+ 
+    signAround(p:UP, dir:Integer, rsign:R -> U) ==
+      zero? p => 0
+      (u := rsign leadingCoefficient p) case "failed" => "failed"
+      (dir > 0) or (even? degree p) => u::Integer
+      - (u::Integer)
+

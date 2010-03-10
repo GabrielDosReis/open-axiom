@@ -1,0 +1,61 @@
+)abbrev domain SFORT SimpleFortranProgram
+-- Because of a bug in the compiler:
+)bo $noSubsumption:=true 
+
+++ Author: Mike Dewar
+++ Date Created: November 1992
+++ Date Last Updated: 
+++ Basic Operations:
+++ Related Constructors: FortranType, FortranCode, Switch
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \axiomType{SimpleFortranProgram(f,type)} provides a simple model of some
+++ FORTRAN subprograms, making it possible to coerce objects of various
+++ domains into a FORTRAN subprogram called \axiom{f}.
+++ These can then be translated into legal FORTRAN code.
+SimpleFortranProgram(R,FS): Exports == Implementation where
+  R  : OrderedSet
+  FS : FunctionSpace(R)
+
+  FST ==> FortranScalarType
+
+  Exports ==> FortranProgramCategory with
+    fortran : (Symbol,FST,FS) -> $
+    ++fortran(fname,ftype,body) builds an object of type 
+    ++\axiomType{FortranProgramCategory}. The three arguments specify
+    ++the name, the type and the body of the program.
+
+  Implementation ==> add
+
+    Rep := Record(name : Symbol, type : FST, body : FS )
+
+    fortran(fname, ftype, res) ==
+      construct(fname,ftype,res)$Rep
+
+    nameOf(u:$):Symbol == u . name
+
+    typeOf(u:$):Union(FST,"void") == u . type
+
+    bodyOf(u:$):FS == u . body
+
+    argumentsOf(u:$):List Symbol == variables(bodyOf u)$FS
+
+    coerce(u:$):OutputForm ==
+      coerce(nameOf u)$Symbol
+
+    outputAsFortran(u:$):Void ==
+      ftype := (checkType(typeOf(u)::OutputForm)$Lisp)::OutputForm
+      fname := nameOf(u)::OutputForm
+      args := argumentsOf(u)
+      nargs:=args::OutputForm
+      val  := bodyOf(u)::OutputForm
+      fortFormatHead(ftype,fname,nargs)$Lisp
+      fortFormatTypes(ftype,args)$Lisp
+      dispfortexp1$Lisp ["="::OutputForm, fname, val]@List(OutputForm)
+      dispfortexp1$Lisp "RETURN"::OutputForm
+      dispfortexp1$Lisp "END"::OutputForm
+      void()$Void
+

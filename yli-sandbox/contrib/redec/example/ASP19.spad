@@ -1,0 +1,271 @@
+)abbrev domain ASP19 Asp19
+++ Author: Mike Dewar, Godfrey Nolan, Grant Keady
+++ Date Created: Mar 1993
+++ Date Last Updated: 18 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp19} produces Fortran for Type 19 ASPs, evaluating a set of
+++functions and their jacobian at a given point, for example:
+++\begin{verbatim}
+++      SUBROUTINE LSFUN2(M,N,XC,FVECC,FJACC,LJC)
+++      DOUBLE PRECISION FVECC(M),FJACC(LJC,N),XC(N)
+++      INTEGER M,N,LJC
+++      INTEGER I,J
+++      DO 25003 I=1,LJC
+++        DO 25004 J=1,N
+++          FJACC(I,J)=0.0D0
+++25004   CONTINUE
+++25003 CONTINUE
+++      FVECC(1)=((XC(1)-0.14D0)*XC(3)+(15.0D0*XC(1)-2.1D0)*XC(2)+1.0D0)/(
+++     &XC(3)+15.0D0*XC(2))
+++      FVECC(2)=((XC(1)-0.18D0)*XC(3)+(7.0D0*XC(1)-1.26D0)*XC(2)+1.0D0)/(
+++     &XC(3)+7.0D0*XC(2))
+++      FVECC(3)=((XC(1)-0.22D0)*XC(3)+(4.333333333333333D0*XC(1)-0.953333
+++     &3333333333D0)*XC(2)+1.0D0)/(XC(3)+4.333333333333333D0*XC(2))
+++      FVECC(4)=((XC(1)-0.25D0)*XC(3)+(3.0D0*XC(1)-0.75D0)*XC(2)+1.0D0)/(
+++     &XC(3)+3.0D0*XC(2))
+++      FVECC(5)=((XC(1)-0.29D0)*XC(3)+(2.2D0*XC(1)-0.6379999999999999D0)*
+++     &XC(2)+1.0D0)/(XC(3)+2.2D0*XC(2))
+++      FVECC(6)=((XC(1)-0.32D0)*XC(3)+(1.666666666666667D0*XC(1)-0.533333
+++     &3333333333D0)*XC(2)+1.0D0)/(XC(3)+1.666666666666667D0*XC(2))
+++      FVECC(7)=((XC(1)-0.35D0)*XC(3)+(1.285714285714286D0*XC(1)-0.45D0)*
+++     &XC(2)+1.0D0)/(XC(3)+1.285714285714286D0*XC(2))
+++      FVECC(8)=((XC(1)-0.39D0)*XC(3)+(XC(1)-0.39D0)*XC(2)+1.0D0)/(XC(3)+
+++     &XC(2))
+++      FVECC(9)=((XC(1)-0.37D0)*XC(3)+(XC(1)-0.37D0)*XC(2)+1.285714285714
+++     &286D0)/(XC(3)+XC(2))
+++      FVECC(10)=((XC(1)-0.58D0)*XC(3)+(XC(1)-0.58D0)*XC(2)+1.66666666666
+++     &6667D0)/(XC(3)+XC(2))
+++      FVECC(11)=((XC(1)-0.73D0)*XC(3)+(XC(1)-0.73D0)*XC(2)+2.2D0)/(XC(3)
+++     &+XC(2))
+++      FVECC(12)=((XC(1)-0.96D0)*XC(3)+(XC(1)-0.96D0)*XC(2)+3.0D0)/(XC(3)
+++     &+XC(2))
+++      FVECC(13)=((XC(1)-1.34D0)*XC(3)+(XC(1)-1.34D0)*XC(2)+4.33333333333
+++     &3333D0)/(XC(3)+XC(2))
+++      FVECC(14)=((XC(1)-2.1D0)*XC(3)+(XC(1)-2.1D0)*XC(2)+7.0D0)/(XC(3)+X
+++     &C(2))
+++      FVECC(15)=((XC(1)-4.39D0)*XC(3)+(XC(1)-4.39D0)*XC(2)+15.0D0)/(XC(3
+++     &)+XC(2))
+++      FJACC(1,1)=1.0D0
+++      FJACC(1,2)=-15.0D0/(XC(3)**2+30.0D0*XC(2)*XC(3)+225.0D0*XC(2)**2)
+++      FJACC(1,3)=-1.0D0/(XC(3)**2+30.0D0*XC(2)*XC(3)+225.0D0*XC(2)**2)
+++      FJACC(2,1)=1.0D0
+++      FJACC(2,2)=-7.0D0/(XC(3)**2+14.0D0*XC(2)*XC(3)+49.0D0*XC(2)**2)
+++      FJACC(2,3)=-1.0D0/(XC(3)**2+14.0D0*XC(2)*XC(3)+49.0D0*XC(2)**2)
+++      FJACC(3,1)=1.0D0
+++      FJACC(3,2)=((-0.1110223024625157D-15*XC(3))-4.333333333333333D0)/(
+++     &XC(3)**2+8.666666666666666D0*XC(2)*XC(3)+18.77777777777778D0*XC(2)
+++     &**2)
+++      FJACC(3,3)=(0.1110223024625157D-15*XC(2)-1.0D0)/(XC(3)**2+8.666666
+++     &666666666D0*XC(2)*XC(3)+18.77777777777778D0*XC(2)**2)
+++      FJACC(4,1)=1.0D0
+++      FJACC(4,2)=-3.0D0/(XC(3)**2+6.0D0*XC(2)*XC(3)+9.0D0*XC(2)**2)
+++      FJACC(4,3)=-1.0D0/(XC(3)**2+6.0D0*XC(2)*XC(3)+9.0D0*XC(2)**2)
+++      FJACC(5,1)=1.0D0
+++      FJACC(5,2)=((-0.1110223024625157D-15*XC(3))-2.2D0)/(XC(3)**2+4.399
+++     &999999999999D0*XC(2)*XC(3)+4.839999999999998D0*XC(2)**2)
+++      FJACC(5,3)=(0.1110223024625157D-15*XC(2)-1.0D0)/(XC(3)**2+4.399999
+++     &999999999D0*XC(2)*XC(3)+4.839999999999998D0*XC(2)**2)
+++      FJACC(6,1)=1.0D0
+++      FJACC(6,2)=((-0.2220446049250313D-15*XC(3))-1.666666666666667D0)/(
+++     &XC(3)**2+3.333333333333333D0*XC(2)*XC(3)+2.777777777777777D0*XC(2)
+++     &**2)
+++      FJACC(6,3)=(0.2220446049250313D-15*XC(2)-1.0D0)/(XC(3)**2+3.333333
+++     &333333333D0*XC(2)*XC(3)+2.777777777777777D0*XC(2)**2)
+++      FJACC(7,1)=1.0D0
+++      FJACC(7,2)=((-0.5551115123125783D-16*XC(3))-1.285714285714286D0)/(
+++     &XC(3)**2+2.571428571428571D0*XC(2)*XC(3)+1.653061224489796D0*XC(2)
+++     &**2)
+++      FJACC(7,3)=(0.5551115123125783D-16*XC(2)-1.0D0)/(XC(3)**2+2.571428
+++     &571428571D0*XC(2)*XC(3)+1.653061224489796D0*XC(2)**2)
+++      FJACC(8,1)=1.0D0
+++      FJACC(8,2)=-1.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(8,3)=-1.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(9,1)=1.0D0
+++      FJACC(9,2)=-1.285714285714286D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)*
+++     &*2)
+++      FJACC(9,3)=-1.285714285714286D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)*
+++     &*2)
+++      FJACC(10,1)=1.0D0
+++      FJACC(10,2)=-1.666666666666667D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)
+++     &**2)
+++      FJACC(10,3)=-1.666666666666667D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)
+++     &**2)
+++      FJACC(11,1)=1.0D0
+++      FJACC(11,2)=-2.2D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(11,3)=-2.2D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(12,1)=1.0D0
+++      FJACC(12,2)=-3.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(12,3)=-3.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(13,1)=1.0D0
+++      FJACC(13,2)=-4.333333333333333D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)
+++     &**2)
+++      FJACC(13,3)=-4.333333333333333D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)
+++     &**2)
+++      FJACC(14,1)=1.0D0
+++      FJACC(14,2)=-7.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(14,3)=-7.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(15,1)=1.0D0
+++      FJACC(15,2)=-15.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      FJACC(15,3)=-15.0D0/(XC(3)**2+2.0D0*XC(2)*XC(3)+XC(2)**2)
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp19(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  FC     ==> FortranCode
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FC))
+  FSTU   ==> Union(fst:FST,void: void)
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  MFLOAT ==> MachineFloat
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+  MF2    ==> MatrixCategoryFunctions2(FEXPR,VEC FEXPR,VEC FEXPR,Matrix FEXPR,EXPR MFLOAT,VEC EXPR MFLOAT,VEC EXPR MFLOAT,Matrix EXPR MFLOAT)
+  FEXPR  ==> FortranExpression([],['XC],MFLOAT)
+  S      ==> Symbol
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : VEC FEXPR -> $
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+
+    real : FSTU := ["real"::FST]$FSTU
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(M,fortranInteger()$FT,syms)$SYMTAB
+    declare!(N,fortranInteger()$FT,syms)$SYMTAB
+    declare!(LJC,fortranInteger()$FT,syms)$SYMTAB
+    xcType : FT := construct(real,[N],false)$FT
+    declare!(XC,xcType,syms)$SYMTAB
+    fveccType : FT := construct(real,[M],false)$FT
+    declare!(FVECC,fveccType,syms)$SYMTAB
+    fjaccType : FT := construct(real,[LJC,N],false)$FT
+    declare!(FJACC,fjaccType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$FSTU,[M,N,XC,FVECC,FJACC,LJC],syms)
+
+    coerce(c:List FC):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FC):$ == coerce(c)$Rep
+
+    -- Take a symbol, pull of the script and turn it into an integer!!
+    o2int(u:S):Integer ==
+      o : OutputForm := first elt(scripts(u)$S,sub)
+      o pretend Integer
+
+    -- To help the poor old compiler!
+    fexpr2expr(u:FEXPR):EXPR MFLOAT == coerce(u)$FEXPR
+
+    localAssign1(s:S,j:Matrix FEXPR):FC == 
+      j' : Matrix EXPR MFLOAT := map(fexpr2expr,j)$MF2
+      assign(s,j')$FC
+
+    localAssign2(s:S,j:VEC FEXPR):FC ==
+      j' : VEC EXPR MFLOAT := map(fexpr2expr,j)$VF2(FEXPR,EXPR MFLOAT)
+      assign(s,j')$FC
+
+    import POLY INT
+
+    coerce(u:VEC FEXPR):$ ==
+      -- First zero the Jacobian matrix in case we miss some derivatives which
+      -- are zero.
+      -- import POLY INT
+      seg1 : Segment (POLY INT) := segment(1::(POLY INT),LJC@S::(POLY INT))
+      seg2 : Segment (POLY INT) := segment(1::(POLY INT),N@S::(POLY INT))
+      s1 : SegmentBinding POLY INT := equation(I@S,seg1)
+      s2 : SegmentBinding POLY INT := equation(J@S,seg2)
+      as : FC := assign(FJACC::Symbol,[I@S::(POLY INT),J@S::(POLY INT)],(0.0)@EXPR FLOAT)
+      clear : FC := forLoop(s1,forLoop(s2,as))
+      j:Integer
+      x:S := XC::S
+      pu:List(S) := []
+      -- Work out which variables appear in the expressions
+      for e in entries(u) repeat
+        pu := setUnion(pu,variables(e)$FEXPR)
+      scriptList : List Integer := map(o2int,pu)$ListFunctions2(S,Integer)
+      -- This should be the maximum XC_n which occurs (there may be others
+      -- which don't):
+      n:Integer := reduce(max@((Integer, Integer)-> Integer),scriptList)$List(Integer)
+      p:List(S) := []
+      for j in 1..n repeat p:= cons(subscript(x,[j::OutputForm])$S,p)
+      p:= reverse(p)
+      jac:Matrix(FEXPR) := _
+      jacobian(u,p)$MultiVariableCalculusFunctions(S,FEXPR,VEC FEXPR,List(S))
+      c1:FC := localAssign2(FVECC::Symbol,u)
+      c2:FC := localAssign1(FJACC::Symbol,jac)
+      [clear,c1,c2,returns()]$List(FC)::$
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+

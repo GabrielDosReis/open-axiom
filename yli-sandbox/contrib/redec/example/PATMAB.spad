@@ -1,0 +1,18 @@
+)abbrev category PATMAB PatternMatchable
+++ Category of sets that can be pattern-matched on
+++ Author: Manuel Bronstein
+++ Date Created: 28 Nov 1989
+++ Date Last Updated: 15 Mar 1990
+++ Description:
+++   A set R is PatternMatchable over S if elements of R can
+++   be matched to patterns over S.
+++ Keywords: pattern, matching.
+PatternMatchable(S:SetCategory): Category == SetCategory with
+  patternMatch: (%, Pattern S, PatternMatchResult(S, %)) ->
+                                                PatternMatchResult(S, %)
+    ++ patternMatch(expr, pat, res) matches the pattern pat to the
+    ++ expression expr. res contains the variables of pat which
+    ++ are already matched and their matches (necessary for recursion).
+    ++ Initially, res is just the result of \spadfun{new}
+    ++ which is an empty list of matches.
+

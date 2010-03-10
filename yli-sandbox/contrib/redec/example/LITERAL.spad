@@ -1,0 +1,12 @@
+)abbrev domain LITERAL Literal
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 1, 2008
+++ Description: This domain represents AST for Spad literals.
+Literal(T: SetCategory): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo T)
+  Private == add
+    Rep == T
+    coerce(x: %): T == rep x
+    coerce(x: %): OutputForm == x::T::OutputForm
+    

@@ -1,0 +1,310 @@
+)abbrev domain RECLOS RealClosure
+++ Author: Renaud Rioboo
+++ Date Created: summer 1988
+++ Date Last Updated: January 2004
+++ Basic Functions: provides computations in an ordered real closure
+++ Related Constructors: RightOpenIntervalRootCharacterization
+++ Also See:
+++ AMS Classifications:
+++ Keywords: Real Algebraic Numbers
+++ References: 
+++ Description:
+++ This domain implements the real closure of an ordered field.
+++ Note: 
+++ The code here is generic i.e. it does not depend of the way the operations
+++ are done. The two macros PME and SEG should be passed as functorial
+++ arguments to the domain. It does not help much to write a category
+++ since non trivial methods cannot be placed there either.
+++ 
+RealClosure(TheField): PUB == PRIV where
+
+   TheField   : Join(OrderedRing, Field, RealConstant)
+
+--   ThePols    : UnivariatePolynomialCategory($)
+--   PME       ==> ThePols
+--   TheCharDom : RealRootCharacterizationCategory($, ThePols )
+--   SEG       ==> TheCharDom
+-- this does not work yet
+
+   E         ==> OutputForm
+   Z         ==> Integer
+   SE        ==> Symbol
+   B         ==> Boolean
+   SUP       ==> SparseUnivariatePolynomial($)
+   N         ==> PositiveInteger
+   RN        ==> Fraction Z
+   LF        ==> ListFunctions2($,N)
+
+-- *****************************************************************
+-- *****************************************************************
+--             PUT YOUR OWN PREFERENCE HERE
+-- *****************************************************************
+-- *****************************************************************
+   PME       ==> SparseUnivariatePolynomial($)
+   SEG       ==> RightOpenIntervalRootCharacterization($,PME)
+-- *****************************************************************
+-- *****************************************************************
+
+
+   PUB == Join(RealClosedField,
+               FullyRetractableTo TheField,
+               Algebra TheField) with
+
+       algebraicOf :   (SEG,E) -> $
+             ++ \axiom{algebraicOf(char)} is the external number
+
+       mainCharacterization :   $ -> Union(SEG,"failed")
+             ++ \axiom{mainCharacterization(x)} is the main algebraic 
+             ++ quantity of \axiom{x} (\axiom{SEG})
+
+       relativeApprox :     ($,$) -> RN
+             ++ \axiom{relativeApprox(n,p)} gives a relative 
+             ++ approximation of \axiom{n} 
+             ++ that has precision \axiom{p}
+
+   PRIV == add
+
+-- local functions
+
+       lessAlgebraic  : $ -> $
+       newElementIfneeded : (SEG,E) -> $
+
+-- Representation
+
+       Rec := Record(seg: SEG, val:PME, outForm:E, order:N)
+       Rep := Union(TheField,Rec)
+
+-- global (mutable) variables
+
+       orderOfCreation : N := 1$N
+          -- it is internally used to sort the algebraic levels
+
+       instanceName : Symbol := new()$Symbol
+          -- this used to print the results, thus different instanciations
+          -- use different names
+
+-- now the code
+
+       relativeApprox(nbe,prec) ==
+          nbe case TheField => retract(nbe)
+          appr := relativeApprox(nbe.val, nbe.seg, prec)
+          -- now appr has the good exact precision but is $
+          relativeApprox(appr,prec)
+
+
+       approximate(nbe,prec) ==
+          abs(nbe) < prec => 0
+          nbe case TheField => retract(nbe)
+          appr := approximate(nbe.val, nbe.seg, prec)
+          -- now appr has the good exact precision but is $
+          approximate(appr,prec)
+
+       newElementIfneeded(s,o) ==
+         p := definingPolynomial(s)
+         degree(p) = 1 => 
+             - coefficient(p,0) / leadingCoefficient(p)
+         res := [s, monomial(1,1), o, orderOfCreation ]$Rec
+         orderOfCreation := orderOfCreation + 1
+         res :: $
+
+       algebraicOf(s,o) ==
+         pol := definingPolynomial(s)
+         degree(pol) = 1 => 
+           -coefficient(pol,0) / leadingCoefficient(pol) 
+         res := [s, monomial(1,1), o, orderOfCreation ]$Rec
+         orderOfCreation := orderOfCreation + 1
+         res :: $
+         
+       rename!(x,o) ==
+         x.outForm := o
+         x
+
+       rename(x,o) ==
+         [x.seg, x.val, o, x.order]$Rec
+
+       rootOf(pol,n) ==
+        degree(pol) = 0 => "failed"
+        degree(pol) = 1 =>
+          if n=1
+          then
+            -coefficient(pol,0) / leadingCoefficient(pol)
+          else
+            "failed"
+        r := rootOf(pol,n)$SEG
+        r case "failed" => "failed"
+        o := hconcat(instanceName :: E , orderOfCreation :: E)$E
+        algebraicOf(r,o)
+
+       allRootsOf(pol:SUP):List($) == 
+        degree(pol)=0 => []
+        degree(pol)=1 => [-coefficient(pol,0) / leadingCoefficient(pol)]
+        liste := allRootsOf(pol)$SEG
+        res : List $ := []
+        for term in liste repeat
+           o := hconcat(instanceName :: E , orderOfCreation :: E)$E
+           res := cons(algebraicOf(term,o), res)
+        reverse! res
+
+       coerce(x:$):$ ==
+          x case TheField => x
+          [x.seg,x.val rem$PME definingPolynomial(x.seg),x.outForm,x.order]$Rec
+
+       positive?(x) == 
+          x case TheField => positive?(x)$TheField
+          positive?(x.val,x.seg)$SEG
+
+       negative?(x) == 
+          x case TheField => negative?(x)$TheField
+          negative?(x.val,x.seg)$SEG
+
+       abs(x) == sign(x)*x
+
+       sign(x) ==
+          x case TheField => sign(x)$TheField
+          sign(x.val,x.seg)$SEG
+
+       x < y == positive?(y-x)
+
+       x = y == zero?(x-y)
+
+       mainCharacterization(x) ==
+          x case TheField => "failed"
+          x.seg
+
+       mainDefiningPolynomial(x) ==
+          x case TheField => "failed"
+          definingPolynomial x.seg
+
+       mainForm(x) ==
+          x case TheField => "failed"
+          x.outForm
+
+       mainValue(x) ==
+          x case TheField => "failed"
+          x.val
+
+       coerce(x:$):E ==
+          x case TheField => x::TheField :: E
+          xx:$ := coerce(x)
+          outputForm(univariate(xx.val),x.outForm)$SUP
+
+
+       inv(x) ==
+          (res:= recip x) case "failed" => error "Division by 0"
+          res :: $
+
+       recip(x) ==
+         x case TheField =>
+           if ((r := recip(x)$TheField) case TheField)
+           then r::$
+           else "failed"
+         if ((r := recip(x.val,x.seg)$SEG) case "failed")
+         then "failed"
+         else lessAlgebraic([x.seg,r::PME,x.outForm,x.order]$Rec) 
+
+       (n:Z * x:$):$ == 
+          x case TheField => n *$TheField x
+          zero?(n) => 0
+          one?(n) => x
+          [x.seg,map(n * #1, x.val),x.outForm,x.order]$Rec
+
+       (rn:TheField * x:$):$ == 
+          x case TheField => rn *$TheField x
+          zero?(rn) => 0
+          one?(rn) => x
+          [x.seg,map(rn * #1, x.val),x.outForm,x.order]$Rec
+
+       (x:$ * y:$):$ ==
+          (x case TheField) and (y case TheField) => x *$TheField y
+          (x case TheField) => x::TheField * y
+              -- x is no longer TheField
+          (y case TheField) => y::TheField * x
+              -- now both are algebraic
+          y.order > x.order => 
+            [y.seg,map(x * #1 , y.val),y.outForm,y.order]$Rec
+          x.order > y.order => 
+            [x.seg,map( #1 * y , x.val),x.outForm,x.order]$Rec
+              -- now x.exp = y.exp
+              -- we will multiply the polynomials and then reduce
+              -- however wee need to call lessAlgebraic  
+          lessAlgebraic([x.seg,
+                         (x.val * y.val) rem definingPolynomial(x.seg),
+                         x.outForm,
+                         x.order]$Rec)
+
+       nonNull(rep:Rec):$ ==
+         degree(rep.val)=0 => leadingCoefficient(rep.val)
+         numberOfMonomials(rep.val) = 1 => rep
+         zero?(rep.val,rep.seg)$SEG => 0
+         rep
+
+--       zero?(x) ==
+--          x case TheField => zero?(x)$TheField
+--          zero?(x.val,x.seg)$SEG
+ 
+       zero?(x) ==
+          x case TheField => zero?(x)$TheField
+          false
+ 
+       x + y ==
+          (x case TheField) and (y case TheField) => x +$TheField y
+          (x case TheField) => 
+             if zero?(x)
+             then 
+               y
+             else 
+               nonNull([y.seg,x::PME+(y.val),y.outForm,y.order]$Rec)
+             -- x is no longer TheField
+          (y case TheField) => 
+             if zero?(y)
+             then 
+               x
+             else 
+               nonNull([x.seg,(x.val)+y::PME,x.outForm,x.order]$Rec)
+             -- now both are algebraic
+          y.order > x.order => 
+               nonNull([y.seg,x::PME+y.val,y.outForm,y.order]$Rec)
+          x.order > y.order => 
+               nonNull([x.seg,(x.val)+y::PME,x.outForm,x.order]$Rec)
+              -- now x.exp = y.exp 
+              -- we simply add polynomials (since degree cannot increase)
+              -- however wee need to call lessAlgebraic  
+          nonNull([x.seg,x.val + y.val,x.outForm,x.order])
+
+
+       -x ==
+          x case TheField => -$TheField (x::TheField)
+          [x.seg,-$PME x.val,x.outForm,x.order]$Rec
+
+
+       retractIfCan(x:$):Union(TheField,"failed") ==
+          x case TheField => x
+          o := x.order
+          res := lessAlgebraic x
+          res case TheField => res
+          o = res.order => "failed"
+          retractIfCan res
+
+       retract(x:$):TheField ==
+          x case TheField => x
+          o := x.order
+          res := lessAlgebraic x
+          res case TheField => res
+          o = res.order => error "Can't retract"
+          retract res
+
+
+       lessAlgebraic(x) ==
+          x case TheField => x
+          degree(x.val) = 0 => leadingCoefficient(x.val)
+          def := definingPolynomial(x.seg)
+          degree(def) = 1 => 
+            x.val.(- coefficient(def,0) / leadingCoefficient(def))
+          x
+
+       0 == (0$TheField) :: $
+
+       1 == (1$TheField) :: $
+
+       coerce(rn:TheField):$ == rn :: $
+

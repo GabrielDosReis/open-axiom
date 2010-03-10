@@ -1,0 +1,21 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain HASAST HasAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a `has' expression.
+HasAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    lhs: % -> SpadAst
+      ++ lhs(e) returns the left hand side of the has expression `e'.
+    rhs: % -> SpadAst
+      ++ rhs(e) returns the right hand side of the case expression `e'.
+  Private == add
+    Rep == List SpadAst
+    lhs x == second rep x
+    rhs x == third rep x
+    coerce(x: %): OutputForm ==
+      elt('HasAst::OutputForm,
+        ['lhs::OutputForm = lhs(x)::OutputForm,
+          'rhs::OutputForm = rhs(x)::OutputForm])$OutputForm

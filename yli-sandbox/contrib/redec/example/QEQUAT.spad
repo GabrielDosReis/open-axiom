@@ -1,0 +1,17 @@
+)abbrev domain QEQUAT QueryEquation
+++ This domain implements simple database queries 
+QueryEquation(): Exports == Implementation where
+  Exports == CoercibleTo(OutputForm) with
+    equation: (Symbol,String) -> %
+      ++ equation(s,"a") creates a new equation.
+    variable: % -> Symbol
+      ++ variable(q) returns the variable (i.e. left hand side) of \axiom{q}.
+    value: % -> String
+      ++ value(q) returns the value (i.e. right hand side) of \axiom{q}.
+  Implementation == add
+    Rep := Record(var:Symbol, val:String)
+    coerce(u) == coerce(u.var)$Symbol = coerce(u.val)$String
+    equation(x,s) == [x,s]
+    variable q == q.var
+    value q == q.val
+

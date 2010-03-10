@@ -1,0 +1,50 @@
+import Boolean
+import Collection
+import BagAggregate
+)abbrev category DIOPS DictionaryOperations
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This category is a collection of operations common to both
+++ categories \spadtype{Dictionary} and \spadtype{MultiDictionary}
+DictionaryOperations(S:SetCategory): Category ==
+  Join(BagAggregate S, Collection(S)) with
+   dictionary: () -> %
+     ++ dictionary()$D creates an empty dictionary of type D.
+   dictionary: List S -> %
+     ++ dictionary([x,y,...,z]) creates a dictionary consisting of
+     ++ entries \axiom{x,y,...,z}.
+-- insert: (S,%) -> S                 ++ insert an entry
+-- member?: (S,%) -> Boolean                  ++ search for an entry
+-- remove_!: (S,%,NonNegativeInteger) -> %
+--   ++ remove!(x,d,n) destructively changes dictionary d by removing
+--   ++ up to n entries y such that \axiom{y = x}.
+-- remove_!: (S->Boolean,%,NonNegativeInteger) -> %
+--   ++ remove!(p,d,n) destructively changes dictionary d by removing
+--   ++ up to n entries x such that \axiom{p(x)} is true.
+   if % has finiteAggregate then
+     remove_!: (S,%) -> %
+       ++ remove!(x,d) destructively changes dictionary d by removing
+       ++ all entries y such that \axiom{y = x}.
+     remove_!: (S->Boolean,%) -> %
+       ++ remove!(p,d) destructively changes dictionary d by removeing
+       ++ all entries x such that \axiom{p(x)} is true.
+     select_!: (S->Boolean,%) -> %
+       ++ select!(p,d) destructively changes dictionary d by removing
+       ++ all entries x such that \axiom{p(x)} is not true.
+ add
+   construct l == dictionary l
+   dictionary() == empty()
+   if % has finiteAggregate then
+     copy d == dictionary parts d
+     coerce(s:%):OutputForm ==
+       prefix("dictionary"@String :: OutputForm,
+                                      [x::OutputForm for x in parts s])
+

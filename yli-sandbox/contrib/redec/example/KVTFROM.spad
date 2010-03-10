@@ -1,0 +1,12 @@
+)abbrev category KVTFROM ConvertibleFrom
+++ Author: Gabriel Dos Reis
+++ Date Create: November 19, 2008
+++ Date Last Modified: November 19, 2008
+++ See Also: ConvertibleTo
+++ Description:
+++   A is convertible from B iff any element of domain B can be
+++   explicitly converted into an element of domain A. 
+ConvertibleFrom(S: Type): Category == with
+  convert: S -> %
+    ++ convert(s) transforms `s' into an element of `%'.
+

@@ -1,0 +1,29 @@
+import PositiveInteger
+)abbrev category ABELSG AbelianSemiGroup
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ the class of all additive (commutative) semigroups, i.e.
+++ a set with a commutative and associative operation \spadop{+}.
+++
+++ Axioms:
+++   \spad{associative("+":(%,%)->%)}\tab{30}\spad{ (x+y)+z = x+(y+z) }
+++   \spad{commutative("+":(%,%)->%)}\tab{30}\spad{ x+y = y+x }
+AbelianSemiGroup(): Category == SetCategory with
+    --operations
+      "+": (%,%) -> %                  ++ x+y computes the sum of x and y.
+      "*": (PositiveInteger,%) -> %
+        ++ n*x computes the left-multiplication of x by the positive integer n.
+        ++ This is equivalent to adding x to itself n times.
+    add
+      import RepeatedDoubling(%)
+      if not (% has Ring) then
+        n:PositiveInteger * x:% == double(n,x)
+

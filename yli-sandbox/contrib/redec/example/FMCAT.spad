@@ -1,0 +1,74 @@
+import Ring
+import SetCategory
+import BiModule
+import RetractableTo
+)abbrev category FMCAT FreeModuleCat
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   A domain of this category 
+++   implements formal linear combinations
+++   of elements from a domain \spad{Basis} with coefficients
+++   in a domain \spad{R}. The domain \spad{Basis} needs only
+++   to belong to the category \spadtype{SetCategory} and \spad{R}
+++   to the category \spadtype{Ring}. Thus the coefficient ring
+++   may be non-commutative.
+++   See the \spadtype{XDistributedPolynomial} constructor
+++   for examples of domains built with the \spadtype{FreeModuleCat}
+++   category constructor.
+++   Author: Michel Petitot (petitot@lifl.fr)
+
+FreeModuleCat(R, Basis):Category == Exports where
+   R: Ring
+   Basis: SetCategory
+   TERM ==> Record(k: Basis, c: R)
+   
+   Exports == Join(BiModule(R,R), RetractableTo Basis) with
+        "*"                : (R, Basis) -> %
+          ++ \spad{r*b} returns the product of \spad{r} by \spad{b}.
+        coefficient        : (%, Basis) -> R
+          ++ \spad{coefficient(x,b)} returns the coefficient 
+          ++ of \spad{b} in \spad{x}.
+        map                : (R -> R, %) -> %
+          ++ \spad{map(fn,u)} maps function \spad{fn} onto the coefficients
+          ++  of the non-zero monomials of \spad{u}.
+        monom              : (Basis, R) -> %
+          ++ \spad{monom(b,r)} returns the element with the single monomial
+          ++  \spad{b} and coefficient \spad{r}.
+        monomial?          : % -> Boolean
+          ++ \spad{monomial?(x)} returns true if \spad{x} contains a single 
+          ++ monomial.
+        ListOfTerms        : % -> List TERM
+          ++ \spad{ListOfTerms(x)} returns a list \spad{lt} of terms with type
+          ++ \spad{Record(k: Basis, c: R)} such that \spad{x} equals
+          ++ \spad{reduce(+, map(x +-> monom(x.k, x.c), lt))}.
+        coefficients       : % -> List R           
+          ++ \spad{coefficients(x)} returns the list of coefficients of \spad{x}.
+        monomials          : % -> List %
+          ++ \spad{monomials(x)} returns the list of \spad{r_i*b_i}
+          ++ whose sum is \spad{x}.
+        numberOfMonomials  : % -> NonNegativeInteger
+          ++ \spad{numberOfMonomials(x)} returns the number of monomials of \spad{x}.
+        leadingMonomial    : % -> Basis
+          ++ \spad{leadingMonomial(x)} returns the first element from \spad{Basis}
+          ++ which appears in \spad{ListOfTerms(x)}.
+        leadingCoefficient : % -> R
+          ++ \spad{leadingCoefficient(x)} returns the first coefficient
+          ++ which appears in \spad{ListOfTerms(x)}.
+        leadingTerm        : % -> TERM 
+          ++ \spad{leadingTerm(x)} returns the first term which
+          ++ appears in \spad{ListOfTerms(x)}.
+        reductum           : % -> %
+          ++ \spad{reductum(x)} returns \spad{x} minus its leading term.
+
+      -- attributs
+        if R has CommutativeRing then Module(R)
+

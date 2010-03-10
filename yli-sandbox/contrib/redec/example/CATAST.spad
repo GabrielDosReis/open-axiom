@@ -1,0 +1,23 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain CATAST CategoryAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the unnamed category defined
+++   by a list of exported signatures
+CategoryAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    kind: % -> Symbol
+      ++ kind(c) returns the kind of unnamed category, either
+      ++ 'domain' or 'package'.
+    body: % -> List SpadAst
+      ++ body(c) returns the list of exports in category syntax `c'.
+  Private == add
+    Rep == List SpadAst
+    kind x == (second rep x) : Symbol
+    body x == rest rest rep x
+    coerce(x: %): OutputForm ==
+      elt('CategoryAst::OutputForm,
+        ['kind::OutputForm = kind(x)::OutputForm, 
+          'body::OutputForm = body(x)::OutputForm])$OutputForm

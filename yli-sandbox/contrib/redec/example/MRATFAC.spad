@@ -1,0 +1,51 @@
+)abbrev package MRATFAC MRationalFactorize
+++ Author: P. Gianni
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: MultivariateFactorize
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:  MRationalFactorize contains the factor function for multivariate
+++ polynomials over the quotient field of a ring R such that the package
+++ MultivariateFactorize can factor multivariate polynomials over R.
+
+
+MRationalFactorize(E,OV,R,P) : C == T
+ where
+  E   :   OrderedAbelianMonoidSup
+  OV  :   OrderedSet
+  R   :   Join(EuclideanDomain, CharacteristicZero)  -- with factor over R[x]
+  FR  ==> Fraction R
+  P  :    PolynomialCategory(FR,E,OV)
+  MPR ==> SparseMultivariatePolynomial(R,OV)
+  SUP ==> SparseUnivariatePolynomial
+
+  C  == with
+     factor      : P   ->  Factored P
+       ++ factor(p) factors the multivariate polynomial p with coefficients
+       ++ which are fractions of elements of R.
+
+  T  == add
+     IE     ==> IndexedExponents OV
+     PCLFRR ==> PolynomialCategoryLifting(E,OV,FR,P,MPR)
+     PCLRFR ==> PolynomialCategoryLifting(IE,OV,R,MPR,P)
+     MFACT  ==> MultivariateFactorize(OV,IE,R,MPR)
+     UPCF2  ==> UnivariatePolynomialCategoryFunctions2
+
+     numer1(c:FR): MPR   == (numer c) :: MPR
+     numer2(pol:P) : MPR == map(coerce,numer1,pol)$PCLFRR
+     coerce1(d:R) : P == (d::FR)::P
+     coerce2(pp:MPR) :P == map(coerce,coerce1,pp)$PCLRFR 
+
+     factor(p:P) : Factored P ==
+       pden:R:=lcm([denom c for c in coefficients p])
+       pol :P:= (pden::FR)*p
+       ipol:MPR:= map(coerce,numer1,pol)$PCLFRR
+       ffact:=(factor ipol)$MFACT
+       (1/pden)*map(coerce,coerce1,(unit ffact))$PCLRFR *
+           _*/[primeFactor(map(coerce,coerce1,u.factor)$PCLRFR,
+                           u.exponent) for u in factors ffact]
+

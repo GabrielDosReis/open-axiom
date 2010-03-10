@@ -1,0 +1,311 @@
+)abbrev category ES ExpressionSpace
+++ Category for domains on which operators can be applied
+++ Author: Manuel Bronstein
+++ Date Created: 22 March 1988
+++ Date Last Updated: 27 May 1994
+++ Description:
+++ An expression space is a set which is closed under certain operators;
+++ Keywords: operator, kernel, expression, space.
+ExpressionSpace(): Category == Defn where
+  N   ==> NonNegativeInteger
+  K   ==> Kernel %
+  OP  ==> BasicOperator
+  SY  ==> Symbol
+  PAREN  ==> "%paren"::SY
+  BOX    ==> "%box"::SY
+  DUMMYVAR ==> "%dummyVar"
+
+  Defn ==> Join(OrderedSet, RetractableTo K,
+                InnerEvalable(K, %), Evalable %) with
+    elt          : (OP, %) -> %
+      ++ elt(op,x) or op(x) applies the unary operator op to x.
+    elt          : (OP, %, %) -> %
+      ++ elt(op,x,y) or op(x, y) applies the binary operator op to x and y.
+    elt          : (OP, %, %, %) -> %
+      ++ elt(op,x,y,z) or op(x, y, z) applies the ternary operator op to x, y and z.
+    elt          : (OP, %, %, %, %) -> %
+      ++ elt(op,x,y,z,t) or op(x, y, z, t) applies the 4-ary operator op to x, y, z and t.
+    elt          : (OP, List %) -> %
+      ++ elt(op,[x1,...,xn]) or op([x1,...,xn]) applies the n-ary operator op to x1,...,xn.
+    subst        : (%, Equation %) -> %
+      ++ subst(f, k = g) replaces the kernel k by g formally in f.
+    subst        : (%, List Equation %) -> %
+      ++ subst(f, [k1 = g1,...,kn = gn]) replaces the kernels k1,...,kn
+      ++ by g1,...,gn formally in f.
+    subst        : (%, List K, List %) -> %
+      ++ subst(f, [k1...,kn], [g1,...,gn]) replaces the kernels k1,...,kn
+      ++ by g1,...,gn formally in f.
+    box          : % -> %
+      ++ box(f) returns f with a 'box' around it that prevents f from
+      ++ being evaluated when operators are applied to it. For example,
+      ++ \spad{log(1)} returns 0, but \spad{log(box 1)}
+      ++ returns the formal kernel log(1).
+    box          : List % -> %
+      ++ box([f1,...,fn]) returns \spad{(f1,...,fn)} with a 'box'
+      ++ around them that
+      ++ prevents the fi from being evaluated when operators are applied to
+      ++ them, and makes them applicable to a unary operator. For example,
+      ++ \spad{atan(box [x, 2])} returns the formal kernel \spad{atan(x, 2)}.
+    paren        : % -> %
+      ++ paren(f) returns (f). This prevents f from
+      ++ being evaluated when operators are applied to it. For example,
+      ++ \spad{log(1)} returns 0, but \spad{log(paren 1)} returns the
+      ++ formal kernel log((1)).
+    paren        : List % -> %
+      ++ paren([f1,...,fn]) returns \spad{(f1,...,fn)}. This
+      ++ prevents the fi from being evaluated when operators are applied to
+      ++ them, and makes them applicable to a unary operator. For example,
+      ++ \spad{atan(paren [x, 2])} returns the formal
+      ++ kernel \spad{atan((x, 2))}.
+    distribute   : % -> %
+      ++ distribute(f) expands all the kernels in f that are
+      ++ formally enclosed by a \spadfunFrom{box}{ExpressionSpace}
+      ++ or \spadfunFrom{paren}{ExpressionSpace} expression.
+    distribute   : (%, %) -> %
+      ++ distribute(f, g) expands all the kernels in f that contain g in their
+      ++ arguments and that are formally
+      ++ enclosed by a \spadfunFrom{box}{ExpressionSpace}
+      ++ or a \spadfunFrom{paren}{ExpressionSpace} expression.
+    height       : %  -> N
+      ++ height(f) returns the highest nesting level appearing in f.
+      ++ Constants have height 0. Symbols have height 1. For any
+      ++ operator op and expressions f1,...,fn, \spad{op(f1,...,fn)} has
+      ++ height equal to \spad{1 + max(height(f1),...,height(fn))}.
+    mainKernel   : %  -> Union(K, "failed")
+      ++ mainKernel(f) returns a kernel of f with maximum nesting level, or
+      ++ if f has no kernels (i.e. f is a constant).
+    kernels      : %  -> List K
+      ++ kernels(f) returns the list of all the top-level kernels
+      ++ appearing in f, but not the ones appearing in the arguments
+      ++ of the top-level kernels.
+    tower        : %  -> List K
+      ++ tower(f) returns all the kernels appearing in f, no matter
+      ++ what their levels are.
+    operators    : %  -> List OP
+      ++ operators(f) returns all the basic operators appearing in f,
+      ++ no matter what their levels are.
+    operator     : OP -> OP
+      ++ operator(op) returns a copy of op with the domain-dependent
+      ++ properties appropriate for %.
+    belong?      : OP -> Boolean
+      ++ belong?(op) tests if % accepts op as applicable to its
+      ++ elements.
+    is?          : (%, OP)     -> Boolean
+      ++ is?(x, op) tests if x is a kernel and is its operator is op.
+    is?          : (%, SY) -> Boolean
+      ++ is?(x, s) tests if x is a kernel and is the name of its
+      ++ operator is s.
+    kernel       : (OP, %) -> %
+      ++ kernel(op, x) constructs op(x) without evaluating it.
+    kernel       : (OP, List %) -> %
+      ++ kernel(op, [f1,...,fn]) constructs \spad{op(f1,...,fn)} without
+      ++ evaluating it.
+    map          : (% -> %, K) -> %
+      ++ map(f, k) returns \spad{op(f(x1),...,f(xn))} where
+      ++ \spad{k = op(x1,...,xn)}.
+    freeOf?      : (%, %)  -> Boolean
+      ++ freeOf?(x, y) tests if x does not contain any occurrence of y,
+      ++ where y is a single kernel.
+    freeOf?      : (%, SY) -> Boolean
+      ++ freeOf?(x, s) tests if x does not contain any operator
+      ++ whose name is s.
+    eval         : (%, List SY, List(% -> %)) -> %
+      ++ eval(x, [s1,...,sm], [f1,...,fm]) replaces
+      ++ every \spad{si(a)} in x by \spad{fi(a)} for any \spad{a}.
+    eval         : (%, List SY, List(List % -> %)) -> %
+      ++ eval(x, [s1,...,sm], [f1,...,fm]) replaces
+      ++ every \spad{si(a1,...,an)} in x by
+      ++ \spad{fi(a1,...,an)} for any \spad{a1},...,\spad{an}.
+    eval         : (%, SY, List % -> %) -> %
+      ++ eval(x, s, f) replaces every \spad{s(a1,..,am)} in x
+      ++ by \spad{f(a1,..,am)} for any \spad{a1},...,\spad{am}.
+    eval         : (%, SY, % -> %) -> %
+      ++ eval(x, s, f) replaces every \spad{s(a)} in x by \spad{f(a)}
+      ++ for any \spad{a}.
+    eval         : (%, List OP, List(% -> %)) -> %
+      ++ eval(x, [s1,...,sm], [f1,...,fm]) replaces
+      ++ every \spad{si(a)} in x by \spad{fi(a)} for any \spad{a}.
+    eval         : (%, List OP, List(List % -> %)) -> %
+      ++ eval(x, [s1,...,sm], [f1,...,fm]) replaces
+      ++ every \spad{si(a1,...,an)} in x by
+      ++ \spad{fi(a1,...,an)} for any \spad{a1},...,\spad{an}.
+    eval         : (%, OP, List % -> %) -> %
+      ++ eval(x, s, f) replaces every \spad{s(a1,..,am)} in x
+      ++ by \spad{f(a1,..,am)} for any \spad{a1},...,\spad{am}.
+    eval         : (%, OP, % -> %) -> %
+      ++ eval(x, s, f) replaces every \spad{s(a)} in x by \spad{f(a)}
+      ++ for any \spad{a}.
+    if % has Ring then
+      minPoly: K -> SparseUnivariatePolynomial %
+        ++ minPoly(k) returns p such that \spad{p(k) = 0}.
+      definingPolynomial: % -> %
+        ++ definingPolynomial(x) returns an expression p such that
+        ++ \spad{p(x) = 0}.
+    if % has RetractableTo Integer then
+      even?: % -> Boolean
+        ++ even? x is true if x is an even integer.
+      odd? : % -> Boolean
+        ++ odd? x is true if x is an odd integer.
+
+   add
+
+-- the 7 functions not provided are:
+--        kernels   minPoly   definingPolynomial
+--        coerce:K -> %  eval:(%, List K, List %) -> %
+--        subst:(%, List K, List %) -> %
+--        eval:(%, List Symbol, List(List % -> %)) -> %
+
+    allKernels: %      -> Set K
+    listk     : %      -> List K
+    allk      : List % -> Set K
+    unwrap    : (List K, %) -> %
+    okkernel  : (OP, List %) -> %
+    mkKerLists: List Equation % -> Record(lstk: List K, lstv:List %)
+
+    oppren := operator(PAREN)$CommonOperators()
+    opbox  := operator(BOX)$CommonOperators()
+
+    box(x:%)     == box [x]
+    paren(x:%)   == paren [x]
+    belong? op   == op = oppren or op = opbox
+    listk f      == parts allKernels f
+    tower f      == sort_! listk f
+    allk l       == reduce("union", [allKernels f for f in l], {})
+    operators f  == [operator k for k in listk f]
+    height f     == reduce("max", [height k for k in kernels f], 0)
+    freeOf?(x:%, s:SY)       == not member?(s, [name k for k in listk x])
+    distribute x == unwrap([k for k in listk x | is?(k, oppren)], x)
+    box(l:List %)                  == opbox l
+    paren(l:List %)                == oppren l
+    freeOf?(x:%, k:%)              == not member?(retract k, listk x)
+    kernel(op:OP, arg:%)           == kernel(op, [arg])
+    elt(op:OP, x:%)                == op [x]
+    elt(op:OP, x:%, y:%)           == op [x, y]
+    elt(op:OP, x:%, y:%, z:%)      == op [x, y, z]
+    elt(op:OP, x:%, y:%, z:%, t:%) == op [x, y, z, t]
+    eval(x:%, s:SY, f:List % -> %) == eval(x, [s], [f])
+    eval(x:%, s:OP, f:List % -> %) == eval(x, [name s], [f])
+    eval(x:%, s:SY, f:% -> %)      == eval(x, [s], [f first #1])
+    eval(x:%, s:OP, f:% -> %)      == eval(x, [s], [f first #1])
+    subst(x:%, e:Equation %)       == subst(x, [e])
+
+    eval(x:%, ls:List OP, lf:List(% -> %)) ==
+      eval(x, ls, [f first #1 for f in lf]$List(List % -> %))
+
+    eval(x:%, ls:List SY, lf:List(% -> %)) ==
+      eval(x, ls, [f first #1 for f in lf]$List(List % -> %))
+
+    eval(x:%, ls:List OP, lf:List(List % -> %)) ==
+      eval(x, [name s for s in ls]$List(SY), lf)
+
+    map(fn, k) ==
+      (l := [fn x for x in argument k]$List(%)) = argument k => k::%
+      (operator k) l
+
+    operator op ==
+      is?(op, PAREN) => oppren
+      is?(op, BOX) => opbox
+      error "Unknown operator"
+
+    mainKernel x ==
+      empty?(l := kernels x) => "failed"
+      n := height(k := first l)
+      for kk in rest l repeat
+        if height(kk) > n then
+          n := height kk
+          k := kk
+      k
+
+-- takes all the kernels except for the dummy variables, which are second
+-- arguments of rootOf's, integrals, sums and products which appear only in
+-- their first arguments
+    allKernels f ==
+      s := brace(l := kernels f)
+      for k in l repeat
+          t :=
+              (u := property(operator k, DUMMYVAR)) case None =>
+                  arg := argument k
+                  s0  := remove_!(retract(second arg)@K, allKernels first arg)
+                  arg := rest rest arg
+                  n   := (u::None) pretend N
+                  if n > 1 then arg := rest arg
+                  union(s0, allk arg)
+              allk argument k
+          s := union(s, t)
+      s
+
+    kernel(op:OP, args:List %) ==
+      not belong? op => error "Unknown operator"
+      okkernel(op, args)
+
+    okkernel(op, l) ==
+      kernel(op, l, 1 + reduce("max", [height f for f in l], 0))$K :: %
+
+    elt(op:OP, args:List %) ==
+      not belong? op => error "Unknown operator"
+      ((u := arity op) case N) and (#args ~= u::N)
+                                    => error "Wrong number of arguments"
+      (v := evaluate(op,args)$BasicOperatorFunctions1(%)) case % => v::%
+      okkernel(op, args)
+
+    retract f ==
+      (k := mainKernel f) case "failed" => error "not a kernel"
+      k::K::% ~= f => error "not a kernel"
+      k::K
+
+    retractIfCan f ==
+      (k := mainKernel f) case "failed" => "failed"
+      k::K::% ~= f => "failed"
+      k
+
+    is?(f:%, s:SY) ==
+      (k := retractIfCan f) case "failed" => false
+      is?(k::K, s)
+
+    is?(f:%, op:OP) ==
+      (k := retractIfCan f) case "failed" => false
+      is?(k::K, op)
+
+    unwrap(l, x) ==
+      for k in reverse_! l repeat
+        x := eval(x, k, first argument k)
+      x
+
+    distribute(x, y) ==
+      ky := retract y
+      unwrap([k for k in listk x |
+              is?(k, "%paren"::SY) and member?(ky, listk(k::%))], x)
+
+    -- in case of conflicting substitutions e.g. [x = a, x = b],
+    -- the first one prevails.
+    -- this is not part of the semantics of the function, but just
+    -- a feature of this implementation.
+    eval(f:%, leq:List Equation %) ==
+      rec := mkKerLists leq
+      eval(f, rec.lstk, rec.lstv)
+
+    subst(f:%, leq:List Equation %) ==
+      rec := mkKerLists leq
+      subst(f, rec.lstk, rec.lstv)
+
+    mkKerLists leq ==
+      lk := empty()$List(K)
+      lv := empty()$List(%)
+      for eq in leq repeat
+        (k := retractIfCan(lhs eq)@Union(K, "failed")) case "failed" =>
+                          error "left hand side must be a single kernel"
+        if not member?(k::K, lk) then
+          lk := concat(k::K, lk)
+          lv := concat(rhs eq, lv)
+      [lk, lv]
+
+    if % has RetractableTo Integer then
+       intpred?: (%, Integer -> Boolean) -> Boolean
+
+       even? x == intpred?(x, even?)
+       odd? x  == intpred?(x, odd?)
+
+       intpred?(x, pred?) ==
+           (u := retractIfCan(x)@Union(Integer, "failed")) case Integer
+                  and pred?(u::Integer)
+

@@ -1,0 +1,103 @@
+)abbrev package SOLVESER TransSolvePackageService
+++ Author: W. Wiwianka
+++ Date Created: Summer 1991
+++ Change History: 9/91
+++ Basic Operations: decomposeFunc, unvectorise
+++ Related Constructors:
+++ Keywords:
+++ Description: This package finds the function func3 where  func1 and func2
+++  are given and  func1 = func3(func2) .  If there is no solution then
+++  function func1 will be returned.
+++  An example would be  \spad{func1:= 8*X**3+32*X**2-14*X ::EXPR INT} and
+++  \spad{func2:=2*X ::EXPR INT} convert them via univariate
+++  to FRAC SUP EXPR INT and then the solution is \spad{func3:=X**3+X**2-X}
+++  of type FRAC SUP EXPR INT
+TransSolvePackageService(R) : Exports == Implementation where
+   R   :   Join(IntegralDomain, OrderedSet)
+
+   RE  ==> Expression R
+   EQ  ==> Equation
+   S   ==> Symbol
+   V   ==> Variable
+   L   ==> List
+   SUP ==> SparseUnivariatePolynomial
+   ACF      ==> AlgebraicallyClosedField()
+
+
+   Exports == with
+
+     decomposeFunc : ( Fraction SUP RE , Fraction SUP RE, Fraction SUP RE )  -> Fraction SUP RE
+       ++ decomposeFunc(func1, func2, newvar)  returns a function  func3 where
+       ++ func1 = func3(func2)  and expresses it in the new variable  newvar.
+       ++ If there is no solution then func1 will be returned.
+     unvectorise : ( Vector RE , Fraction SUP RE , Integer ) -> Fraction SUP RE
+       ++ unvectorise(vect, var, n) returns
+       ++ \spad{vect(1) + vect(2)*var + ... + vect(n+1)*var**(n)} where
+       ++ vect  is the vector of the coefficients of the polynomail , var
+       ++ the new variable and n the degree.
+
+
+   Implementation == add
+     import ACF
+     import TranscendentalManipulations(R, RE)
+     import ElementaryFunctionStructurePackage(R, RE)
+     import SparseUnivariatePolynomial(R)
+     import LinearSystemMatrixPackage(RE,Vector RE,Vector RE,Matrix RE)
+     import HomogeneousAggregate(R)
+
+        ---- Local Function Declarations ----
+
+     subsSolve : ( SUP RE, NonNegativeInteger, SUP RE, SUP RE, Integer, Fraction SUP RE) -> Union(SUP RE , "failed" )
+       --++ subsSolve(f, degf, g1, g2, m, h)
+
+
+    -- exported functions
+
+
+     unvectorise(vect:Vector RE, var:Fraction SUP RE,n:Integer) : Fraction SUP RE ==
+       Z:=new()@Symbol
+       polyvar: Fraction SUP RE :=0
+       for i in 1..((n+1)::Integer) repeat
+          vecti:=univariate(vect( i ),first kernels(Z::RE))
+          polyvar:=polyvar + ( vecti )*( var )**( (n-i+1)::NonNegativeInteger )
+       polyvar
+
+
+     decomposeFunc(exprf:Fraction SUP RE , exprg:Fraction SUP RE, newH:Fraction SUP RE ) : Fraction SUP RE ==
+       X:=new()@Symbol
+       f1:=numer(exprf)
+       f2:=denom(exprf)
+       g1:=numer(exprg)
+       g2:=denom(exprg)
+       degF:=max(degree(numer(exprf)),degree(denom(exprf)))
+       degG:=max(degree(g1),degree(g2))
+       newF1,newF2 : Union(SUP RE, "failed")
+       N:= degF exquo degG
+       if not ( N case "failed" ) then
+         m:=N::Integer
+         newF1:=subsSolve(f1,degF,g1,g2,m,newH)
+         if f2 = 1 then
+           newF2:= 1 :: SUP RE
+         else newF2:=subsSolve(f2,degF,g1,g2,m,newH)
+         if ( not ( newF1 case "failed" ) ) and ( not ( newF2 case "failed" ) ) then
+           newF:=newF1/newF2
+         else return exprf
+       else return exprf
+
+
+    -- local functions
+
+
+     subsSolve(F:SUP RE, DegF:NonNegativeInteger, G1:SUP RE, G2:SUP RE, M:Integer, HH: Fraction SUP RE) : Union(SUP RE , "failed" ) ==
+       coeffmat:=new((DegF+1),1,0)@Matrix RE
+       for i in 0..M repeat
+          coeffmat:=horizConcat(coeffmat, (vectorise( ( ( G1**((M-i)::NonNegativeInteger) )*G2**i ), (DegF+1) )::Matrix RE) )
+       vec:= vectorise(F,DegF+1)
+       coeffma:=subMatrix(coeffmat,1,(DegF+1),2,(M+2))
+       solvar:=solve(coeffma,vec)
+       if not ( solvar.particular  case  "failed" ) then
+         solvevarlist:=(solvar.particular)::Vector RE
+         resul:= numer(unvectorise(solvevarlist,( HH ),M))
+         resul
+       else return "failed"
+

@@ -1,0 +1,40 @@
+import Ring
+import Field
+import CommutativeRing
+import Algebra
+import Polynomial
+import Void
+import List
+import NonNegativeInteger
+)abbrev domain OWP OrdinaryWeightedPolynomials
+++ Author: James Davenport
+++ Date Created:  17 April 1992
+++ Date Last Updated: 12 July 1992
+++ Basic Functions: Ring, changeWeightLevel
+++ Related Constructors: WeightedPolynomials
+++ Also See: PolynomialRing
+++ AMS classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain represents truncated weighted polynomials over the
+++ "Polynomial" type. The variables must be
+++ specified, as must the weights.
+++ The representation is sparse
+++ in the sense that only non-zero terms are represented.
+
+OrdinaryWeightedPolynomials(R:Ring,
+                             vl:List Symbol, wl:List NonNegativeInteger,
+                              wtlevel:NonNegativeInteger):
+       Join(Ring, HomotopicTo Polynomial R) with
+         if R has CommutativeRing then Algebra(R)
+         if R has Field then "/": ($,$) -> Union($,"failed")
+                 ++ x/y division (only works if minimum weight
+                 ++ of divisor is zero, and if R is a Field)
+         changeWeightLevel: NonNegativeInteger -> Void
+                 ++ changeWeightLevel(n) This changes the weight level to the new value given:
+                 ++ NB: previously calculated terms are not affected
+    == WeightedPolynomials(R,Symbol,IndexedExponents(Symbol),
+                           Polynomial(R),
+                            vl,wl,wtlevel)
+

@@ -1,0 +1,102 @@
+)abbrev package ORTHPOL OrthogonalPolynomialFunctions
+++ Author: Stephen M. Watt
+++ Date Created:  1990
+++ Date Last Updated: June 25, 1991
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++   This package provides orthogonal polynomials as functions on a ring.
+
+OrthogonalPolynomialFunctions(R: CommutativeRing): Exports == Impl where
+    NNI ==> NonNegativeInteger
+    RN  ==> Fraction Integer
+
+    Exports ==> with
+
+        chebyshevT: (NNI, R) -> R
+           ++ chebyshevT(n,x) is the n-th Chebyshev polynomial of the first
+           ++ kind, \spad{T[n](x)}.  These are defined by
+           ++ \spad{(1-t*x)/(1-2*t*x+t**2) = sum(T[n](x) *t**n, n = 0..)}.
+
+        chebyshevU: (NNI, R) -> R
+           ++ chebyshevU(n,x) is the n-th Chebyshev polynomial of the second
+           ++ kind, \spad{U[n](x)}. These are defined by
+           ++ \spad{1/(1-2*t*x+t**2) = sum(T[n](x) *t**n, n = 0..)}.
+
+        hermiteH:   (NNI, R) -> R
+           ++ hermiteH(n,x) is the n-th Hermite polynomial, \spad{H[n](x)}.
+           ++ These are defined by
+           ++ \spad{exp(2*t*x-t**2) = sum(H[n](x)*t**n/n!, n = 0..)}.
+
+        laguerreL:  (NNI, R) -> R
+           ++ laguerreL(n,x) is the n-th Laguerre polynomial, \spad{L[n](x)}.
+           ++ These are defined by
+           ++ \spad{exp(-t*x/(1-t))/(1-t) = sum(L[n](x)*t**n/n!, n = 0..)}.
+
+        laguerreL:  (NNI, NNI, R) -> R
+           ++ laguerreL(m,n,x) is the associated Laguerre polynomial,
+           ++ \spad{L<m>[n](x)}.  This is the m-th derivative of \spad{L[n](x)}.
+
+        if R has Algebra RN then
+            legendreP:  (NNI, R) -> R
+                ++ legendreP(n,x) is the n-th Legendre polynomial,
+                ++ \spad{P[n](x)}.  These are defined by
+                ++ \spad{1/sqrt(1-2*x*t+t**2) = sum(P[n](x)*t**n, n = 0..)}.
+
+    Impl ==> add
+        p0, p1: R
+        cx:     Integer
+
+        import IntegerCombinatoricFunctions()
+
+        laguerreL(n, x) ==
+            n = 0 => 1
+            (p1, p0) := (-x + 1, 1)
+            for i in 1..n-1 repeat
+                (p1, p0) := ((2*i::R + 1 - x)*p1 - i**2*p0, p1)
+            p1
+        laguerreL(m, n, x) ==
+            ni := n::Integer
+            mi := m::Integer
+            cx := (-1)**m * binomial(ni,ni-mi) * factorial(ni)
+            p0 := 1
+            p1 := cx::R
+            for j in 1..ni-mi repeat
+                cx := -cx*(ni-mi-j+1)
+                cx := (cx exquo ((mi+j)*j))::Integer
+                p0 := p0 * x
+                p1 := p1 + cx*p0
+            p1
+        chebyshevT(n, x) ==
+            n = 0 => 1
+            (p1, p0) := (x, 1)
+            for i in 1..n-1 repeat
+                (p1, p0) := (2*x*p1 - p0, p1)
+            p1
+        chebyshevU(n, x) ==
+            n = 0 => 1
+            (p1, p0) := (2*x, 1)
+            for i in 1..n-1 repeat
+                (p1, p0) := (2*x*p1 - p0, p1)
+            p1
+        hermiteH(n, x) ==
+            n = 0 => 1
+            (p1, p0) := (2*x, 1)
+            for i in 1..n-1 repeat
+                (p1, p0) := (2*x*p1 - 2*i*p0, p1)
+            p1
+        if R has Algebra RN then
+            legendreP(n, x) ==
+                n = 0 => 1
+                p0 := 1
+                p1 := x
+                for i in 1..n-1 repeat
+                    c: RN := 1/(i+1)
+                    (p1, p0) := (c*((2*i+1)*x*p1 - i*p0), p1)
+                p1
+

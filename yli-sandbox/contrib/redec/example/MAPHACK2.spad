@@ -1,0 +1,16 @@
+)abbrev package MAPHACK2 MappingPackageInternalHacks2
+++ Description: various Currying operations.
+MappingPackageInternalHacks2(A: SetCategory, C: SetCategory):_
+  MPcat == MPdef where
+    NNI ==> NonNegativeInteger
+ 
+    MPcat == with
+        arg1:  (A, C) -> A
+          ++\spad{arg1(a,c)} selects its first argument.
+        arg2:  (A, C) -> C
+          ++\spad{arg2(a,c)} selects its second argument.
+ 
+    MPdef == add
+        arg1(a, c)   == a
+        arg2(a, c)   == c
+

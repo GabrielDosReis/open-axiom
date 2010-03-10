@@ -1,0 +1,25 @@
+)abbrev package IPRNTPK InternalPrintPackage
+++ Author: Themos Tsikas
+++ Date Created: 09/09/1998
+++ Date Last Updated: 09/09/1998
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: A package to print strings without line-feed 
+++ nor carriage-return.
+
+InternalPrintPackage(): Exports == Implementation where
+
+  Exports ==  with
+     iprint: String -> Void
+       ++ \axiom{iprint(s)} prints \axiom{s} at the current position 
+       ++ of the cursor.
+
+  Implementation == add
+     iprint(s:String) == 
+          PRINC(coerce(s)@Symbol)$Lisp
+          FORCE_-OUTPUT()$Lisp
+

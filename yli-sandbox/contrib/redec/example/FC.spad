@@ -1,0 +1,590 @@
+import Void
+import List
+import Fraction
+)abbrev domain FC FortranCode 
+-- The FortranCode domain is used to represent operations which are to be
+-- translated into FORTRAN.
+++ Author: Mike Dewar
+++ Date Created: April 1991
+++ Date Last Updated: 22 March 1994
+++                    26 May 1994 Added common, MCD
+++                    21 June 1994 Changed print to printStatement, MCD
+++                    30 June 1994 Added stop, MCD
+++                    12 July 1994 Added assign for String, MCD
+++                     9 January 1995 Added fortran2Lines to getCall, MCD
+++ Basic Operations:
+++ Related Constructors: FortranProgram, Switch, FortranType
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain builds representations of program code segments for use with
+++ the FortranProgram domain.
+FortranCode(): public == private where
+  L ==> List
+  PI ==> PositiveInteger
+  PIN ==> Polynomial Integer
+  SEX ==> SExpression
+  O ==> OutputForm
+  OP ==> Union(Null:"null",
+               Assignment:"assignment",
+               Conditional:"conditional",
+               Return:"return",
+               Block:"block",
+               Comment:"comment",
+               Call:"call",
+               For:"for",
+               While:"while",
+               Repeat:"repeat",
+               Goto:"goto",
+               Continue:"continue",
+               ArrayAssignment:"arrayAssignment",
+               Save:"save",
+               Stop:"stop",
+               Common:"common",
+               Print:"print")
+  ARRAYASS ==> Record(var:Symbol, rand:O, ints2Floats?:Boolean)
+  EXPRESSION ==> Record(ints2Floats?:Boolean,expr:O)
+  ASS ==> Record(var:Symbol,
+                 arrayIndex:L PIN,
+                 rand:EXPRESSION
+                )
+  COND ==> Record(switch: Switch(),
+                  thenClause: $,
+                  elseClause: $
+                 )
+  RETURN ==> Record(empty?:Boolean,value:EXPRESSION)
+  BLOCK ==> List $
+  COMMENT ==> List String
+  COMMON ==> Record(name:Symbol,contents:List Symbol)
+  CALL ==> String
+  FOR ==> Record(range:SegmentBinding PIN, span:PIN,  body:$)
+  LABEL ==> SingleInteger
+  LOOP ==> Record(switch:Switch(),body:$)
+  PRINTLIST ==> List O
+  OPREC ==> Union(nullBranch:"null", assignmentBranch:ASS,
+                  arrayAssignmentBranch:ARRAYASS,
+                  conditionalBranch:COND, returnBranch:RETURN,
+                  blockBranch:BLOCK, commentBranch:COMMENT, callBranch:CALL,
+                  forBranch:FOR, labelBranch:LABEL, loopBranch:LOOP,
+                  commonBranch:COMMON, printBranch:PRINTLIST)
+
+  public == SetCategory with
+    forLoop: (SegmentBinding PIN,$) -> $
+     ++ forLoop(i=1..10,c) creates a representation of a FORTRAN DO loop with
+     ++ \spad{i} ranging over the values 1 to 10.
+    forLoop: (SegmentBinding PIN,PIN,$) -> $
+     ++ forLoop(i=1..10,n,c) creates a representation of a FORTRAN DO loop with
+     ++ \spad{i} ranging over the values 1 to 10 by n.
+    whileLoop: (Switch,$) -> $
+     ++ whileLoop(s,c) creates a while loop in FORTRAN.
+    repeatUntilLoop: (Switch,$) -> $
+     ++ repeatUntilLoop(s,c) creates a repeat ... until loop in FORTRAN.
+    goto: SingleInteger -> $
+      ++ goto(l) creates a representation of a FORTRAN GOTO statement
+    continue: SingleInteger -> $
+      ++ continue(l) creates a representation of a FORTRAN CONTINUE labelled 
+      ++ with l
+    comment: String -> $
+      ++ comment(s) creates a representation of the String s as a single FORTRAN
+      ++ comment.  
+    comment: List String -> $
+      ++ comment(s) creates a representation of the Strings s as a multi-line
+      ++ FORTRAN comment.  
+    call: String -> $
+      ++ call(s) creates a representation of a FORTRAN CALL statement
+    returns: () -> $
+      ++ returns() creates a representation of a FORTRAN RETURN statement.
+    returns: Expression MachineFloat -> $
+      ++ returns(e) creates a representation of a FORTRAN RETURN statement
+      ++ with a returned value.
+    returns: Expression MachineInteger -> $
+      ++ returns(e) creates a representation of a FORTRAN RETURN statement
+      ++ with a returned value.
+    returns: Expression MachineComplex -> $
+      ++ returns(e) creates a representation of a FORTRAN RETURN statement
+      ++ with a returned value.
+    returns: Expression Float -> $
+      ++ returns(e) creates a representation of a FORTRAN RETURN statement
+      ++ with a returned value.
+    returns: Expression Integer -> $
+      ++ returns(e) creates a representation of a FORTRAN RETURN statement
+      ++ with a returned value.
+    returns: Expression Complex Float -> $
+      ++ returns(e) creates a representation of a FORTRAN RETURN statement
+      ++ with a returned value.
+    cond: (Switch,$) -> $
+      ++ cond(s,e) creates a representation of the FORTRAN expression
+      ++ IF (s) THEN e.
+    cond: (Switch,$,$) -> $
+      ++ cond(s,e,f) creates a representation of the FORTRAN expression
+      ++ IF (s) THEN e ELSE f.
+    assign: (Symbol,String) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Expression MachineInteger) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Expression MachineFloat) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Expression MachineComplex) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix MachineInteger) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix MachineFloat) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix MachineComplex) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector MachineInteger) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector MachineFloat) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector MachineComplex) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix Expression MachineInteger) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix Expression MachineFloat) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix Expression MachineComplex) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector Expression MachineInteger) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector Expression MachineFloat) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector Expression MachineComplex) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,L PIN,Expression MachineInteger) -> $
+      ++ assign(x,l,y) creates a representation of the assignment of \spad{y}
+      ++ to the \spad{l}'th element of array \spad{x} (\spad{l} is a list of
+      ++ indices).
+    assign: (Symbol,L PIN,Expression MachineFloat) -> $
+      ++ assign(x,l,y) creates a representation of the assignment of \spad{y}
+      ++ to the \spad{l}'th element of array \spad{x} (\spad{l} is a list of
+      ++ indices).
+    assign: (Symbol,L PIN,Expression MachineComplex) -> $
+      ++ assign(x,l,y) creates a representation of the assignment of \spad{y}
+      ++ to the \spad{l}'th element of array \spad{x} (\spad{l} is a list of
+      ++ indices).
+    assign: (Symbol,Expression Integer) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Expression Float) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Expression Complex Float) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix Expression Integer) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix Expression Float) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Matrix Expression Complex Float) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector Expression Integer) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector Expression Float) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,Vector Expression Complex Float) -> $
+      ++ assign(x,y) creates a representation of the FORTRAN expression
+      ++ x=y.
+    assign: (Symbol,L PIN,Expression Integer) -> $
+      ++ assign(x,l,y) creates a representation of the assignment of \spad{y}
+      ++ to the \spad{l}'th element of array \spad{x} (\spad{l} is a list of
+      ++ indices).
+    assign: (Symbol,L PIN,Expression Float) -> $
+      ++ assign(x,l,y) creates a representation of the assignment of \spad{y}
+      ++ to the \spad{l}'th element of array \spad{x} (\spad{l} is a list of
+      ++ indices).
+    assign: (Symbol,L PIN,Expression Complex Float) -> $
+      ++ assign(x,l,y) creates a representation of the assignment of \spad{y}
+      ++ to the \spad{l}'th element of array \spad{x} (\spad{l} is a list of
+      ++ indices).
+    block: List($) -> $
+      ++ block(l) creates a representation of the statements in l as a block.
+    stop: () -> $
+      ++ stop() creates a representation of a STOP statement.
+    save: () -> $
+      ++ save() creates a representation of a SAVE statement.
+    printStatement: List O -> $
+      ++ printStatement(l) creates a representation of a PRINT statement.
+    common: (Symbol,List Symbol) -> $
+      ++ common(name,contents) creates a representation a named common block.
+    operation: $ -> OP
+      ++ operation(f) returns the name of the operation represented by \spad{f}.
+    code: $ -> OPREC
+      ++ code(f) returns the internal representation of the object represented
+      ++ by \spad{f}.
+    printCode: $ -> Void
+      ++ printCode(f) prints out \spad{f} in FORTRAN notation.
+    getCode: $ -> SEX
+      ++ getCode(f) returns a Lisp list of strings representing \spad{f}
+      ++ in Fortran notation.  This is used by the FortranProgram domain.
+    setLabelValue:SingleInteger -> SingleInteger
+      ++ setLabelValue(i) resets the counter which produces labels to i
+
+  private == add
+    import Void
+    import ASS
+    import COND
+    import RETURN
+    import L PIN
+    import O
+    import SEX
+    import FortranType
+    import TheSymbolTable
+
+    Rep := Record(op: OP, data: OPREC)
+
+    -- We need to be able to generate unique labels
+    labelValue:SingleInteger := 25000::SingleInteger
+    setLabelValue(u:SingleInteger):SingleInteger == labelValue := u
+    newLabel():SingleInteger ==
+      labelValue := labelValue + 1$SingleInteger
+      labelValue
+
+    commaSep(l:List String):List(String) ==
+      [(l.1),:[:[",",u] for u in rest(l)]]
+
+    getReturn(rec:RETURN):SEX ==
+      returnToken : SEX := convert("RETURN"::Symbol::O)$SEX
+      elt(rec,empty?)$RETURN =>
+        getStatement(returnToken,NIL$Lisp)$Lisp
+      rt : EXPRESSION := elt(rec,value)$RETURN
+      rv : O := elt(rt,expr)$EXPRESSION
+      getStatement([returnToken,convert(rv)$SEX]$Lisp,
+                   elt(rt,ints2Floats?)$EXPRESSION )$Lisp
+
+    getStop():SEX ==
+      fortran2Lines(LIST("STOP")$Lisp)$Lisp
+
+    getSave():SEX ==
+      fortran2Lines(LIST("SAVE")$Lisp)$Lisp
+
+    getCommon(u:COMMON):SEX ==
+      fortran2Lines(APPEND(LIST("COMMON"," /",string (u.name),"/ ")$Lisp,_
+                    addCommas(u.contents)$Lisp)$Lisp)$Lisp
+ 
+    getPrint(l:PRINTLIST):SEX ==
+      ll : SEX := LIST("PRINT*")$Lisp
+      for i in l repeat 
+        ll := APPEND(ll,CONS(",",expression2Fortran(i)$Lisp)$Lisp)$Lisp
+      fortran2Lines(ll)$Lisp
+
+    getBlock(rec:BLOCK):SEX ==
+      indentFortLevel(convert(1@Integer)$SEX)$Lisp
+      expr : SEX := LIST()$Lisp
+      for u in rec repeat
+        expr := APPEND(expr,getCode(u))$Lisp
+      indentFortLevel(convert(-1@Integer)$SEX)$Lisp
+      expr
+
+    getBody(f:$):SEX ==
+      operation(f) case Block => getCode f
+      indentFortLevel(convert(1@Integer)$SEX)$Lisp
+      expr := getCode f
+      indentFortLevel(convert(-1@Integer)$SEX)$Lisp
+      expr
+
+    getElseIf(f:$):SEX ==
+      rec := code f
+      expr :=
+       fortFormatElseIf(elt(rec.conditionalBranch,switch)$COND::O)$Lisp
+      expr := 
+       APPEND(expr,getBody elt(rec.conditionalBranch,thenClause)$COND)$Lisp
+      elseBranch := elt(rec.conditionalBranch,elseClause)$COND
+      not(operation(elseBranch) case Null) =>
+        operation(elseBranch) case Conditional => 
+          APPEND(expr,getElseIf elseBranch)$Lisp
+        expr := APPEND(expr, getStatement(ELSE::O,NIL$Lisp)$Lisp)$Lisp
+        expr := APPEND(expr, getBody elseBranch)$Lisp
+      expr
+
+    getContinue(label:SingleInteger):SEX ==
+      lab : O := label::O
+      if (width(lab) > 6) then error "Label too big"
+      cnt : O := "CONTINUE"::O
+      --sp  : O := hspace(6-width lab)
+      sp  : O := hspace(_$fortIndent$Lisp -width lab)
+      LIST(STRCONC(STRINGIMAGE(lab)$Lisp,sp,cnt)$Lisp)$Lisp
+
+    getGoto(label:SingleInteger):SEX ==
+     fortran2Lines(
+      LIST(STRCONC("GOTO ",STRINGIMAGE(label::O)$Lisp)$Lisp)$Lisp)$Lisp
+
+    getRepeat(repRec:LOOP):SEX ==
+      sw : Switch := NOT elt(repRec,switch)$LOOP
+      lab := newLabel()
+      bod := elt(repRec,body)$LOOP
+      APPEND(getContinue lab,getBody bod,
+           fortFormatIfGoto(sw::O,lab)$Lisp)$Lisp
+
+    getWhile(whileRec:LOOP):SEX ==
+      sw := NOT elt(whileRec,switch)$LOOP
+      lab1 := newLabel()
+      lab2 := newLabel()
+      bod := elt(whileRec,body)$LOOP
+      APPEND(fortFormatLabelledIfGoto(sw::O,lab1,lab2)$Lisp,
+           getBody bod, getBody goto(lab1), getContinue lab2)$Lisp
+
+    getArrayAssign(rec:ARRAYASS):SEX ==
+      getfortarrayexp((rec.var)::O,rec.rand,rec.ints2Floats?)$Lisp
+
+    getAssign(rec:ASS):SEX ==
+      indices : L PIN := elt(rec,arrayIndex)$ASS
+      if indices = []::(L PIN) then
+        lhs := elt(rec,var)$ASS::O
+      else
+        lhs := cons(elt(rec,var)$ASS::PIN,indices)::O
+        -- Must get the index brackets correct:
+        lhs := (cdr car cdr convert(lhs)$SEX::SEX)::O -- Yuck!
+      elt(elt(rec,rand)$ASS,ints2Floats?)$EXPRESSION =>
+        assignment2Fortran1(lhs,elt(elt(rec,rand)$ASS,expr)$EXPRESSION)$Lisp
+      integerAssignment2Fortran1(lhs,elt(elt(rec,rand)$ASS,expr)$EXPRESSION)$Lisp
+
+    getCond(rec:COND):SEX ==
+      expr := APPEND(fortFormatIf(elt(rec,switch)$COND::O)$Lisp,
+                     getBody elt(rec,thenClause)$COND)$Lisp
+      elseBranch := elt(rec,elseClause)$COND
+      if not(operation(elseBranch) case Null) then
+        operation(elseBranch) case Conditional =>
+          expr := APPEND(expr,getElseIf elseBranch)$Lisp
+        expr := APPEND(expr,getStatement(ELSE::O,NIL$Lisp)$Lisp,
+                       getBody elseBranch)$Lisp
+      APPEND(expr,getStatement(ENDIF::O,NIL$Lisp)$Lisp)$Lisp
+
+    getComment(rec:COMMENT):SEX ==
+      convert([convert(concat("C     ",c)$String)@SEX for c in rec])@SEX
+
+    getCall(rec:CALL):SEX ==
+      expr := concat("CALL ",rec)$String
+      #expr > 1320 => error "Fortran CALL too large"
+      fortran2Lines(convert([convert(expr)@SEX ])@SEX)$Lisp
+
+    getFor(rec:FOR):SEX ==
+      rnge : SegmentBinding PIN := elt(rec,range)$FOR
+      increment : PIN := elt(rec,span)$FOR
+      lab : SingleInteger := newLabel()
+      declare!(variable rnge,fortranInteger())
+      expr := fortFormatDo(variable rnge, (lo segment rnge)::O,_
+        (hi segment rnge)::O,increment::O,lab)$Lisp
+      APPEND(expr, getBody elt(rec,body)$FOR, getContinue(lab))$Lisp
+ 
+    getCode(f:$):SEX ==
+      opp:OP := operation f
+      rec:OPREC:= code f
+      opp case Assignment => getAssign(rec.assignmentBranch)
+      opp case ArrayAssignment => getArrayAssign(rec.arrayAssignmentBranch)
+      opp case Conditional => getCond(rec.conditionalBranch)
+      opp case Return => getReturn(rec.returnBranch)
+      opp case Block => getBlock(rec.blockBranch)
+      opp case Comment => getComment(rec.commentBranch)
+      opp case Call => getCall(rec.callBranch)
+      opp case For => getFor(rec.forBranch)
+      opp case Continue => getContinue(rec.labelBranch)
+      opp case Goto => getGoto(rec.labelBranch)
+      opp case Repeat => getRepeat(rec.loopBranch)
+      opp case While => getWhile(rec.loopBranch)
+      opp case Save => getSave()
+      opp case Stop => getStop()
+      opp case Print => getPrint(rec.printBranch)
+      opp case Common => getCommon(rec.commonBranch)
+      error "Unsupported program construct."
+      convert(0)@SEX
+
+    printCode(f:$):Void ==
+      displayLines1$Lisp getCode f
+      void()$Void
+
+    code (f:$):OPREC ==
+      elt(f,data)$Rep
+
+    operation (f:$):OP ==
+      elt(f,op)$Rep
+
+    common(name':Symbol,contents':List Symbol):$ ==
+      [["common"]$OP,[[name',contents']$COMMON]$OPREC]$Rep
+
+    stop():$ ==
+      [["stop"]$OP,["null"]$OPREC]$Rep
+
+    save():$ ==
+      [["save"]$OP,["null"]$OPREC]$Rep
+
+    printStatement(l:List O):$ ==
+      [["print"]$OP,[l]$OPREC]$Rep
+
+    comment(s:List String):$ ==
+      [["comment"]$OP,[s]$OPREC]$Rep
+
+    comment(s:String):$ ==
+      [["comment"]$OP,[list s]$OPREC]$Rep
+
+    forLoop(r:SegmentBinding PIN,body':$):$ ==
+      [["for"]$OP,[[r,(incr segment r)::PIN,body']$FOR]$OPREC]$Rep
+
+    forLoop(r:SegmentBinding PIN,increment:PIN,body':$):$ ==
+      [["for"]$OP,[[r,increment,body']$FOR]$OPREC]$Rep
+
+    goto(l:SingleInteger):$ ==
+      [["goto"]$OP,[l]$OPREC]$Rep
+
+    continue(l:SingleInteger):$ ==
+      [["continue"]$OP,[l]$OPREC]$Rep
+
+    whileLoop(sw:Switch,b:$):$ ==
+      [["while"]$OP,[[sw,b]$LOOP]$OPREC]$Rep
+
+    repeatUntilLoop(sw:Switch,b:$):$ ==
+      [["repeat"]$OP,[[sw,b]$LOOP]$OPREC]$Rep
+
+    returns():$ ==
+      v := [false,0::O]$EXPRESSION
+      [["return"]$OP,[[true,v]$RETURN]$OPREC]$Rep
+
+    returns(v:Expression MachineInteger):$ ==
+      [["return"]$OP,[[false,[false,v::O]$EXPRESSION]$RETURN]$OPREC]$Rep
+
+    returns(v:Expression MachineFloat):$ ==
+      [["return"]$OP,[[false,[false,v::O]$EXPRESSION]$RETURN]$OPREC]$Rep
+
+    returns(v:Expression MachineComplex):$ ==
+      [["return"]$OP,[[false,[false,v::O]$EXPRESSION]$RETURN]$OPREC]$Rep
+
+    returns(v:Expression Integer):$ ==
+      [["return"]$OP,[[false,[false,v::O]$EXPRESSION]$RETURN]$OPREC]$Rep
+
+    returns(v:Expression Float):$ ==
+      [["return"]$OP,[[false,[false,v::O]$EXPRESSION]$RETURN]$OPREC]$Rep
+
+    returns(v:Expression Complex Float):$ ==
+      [["return"]$OP,[[false,[false,v::O]$EXPRESSION]$RETURN]$OPREC]$Rep
+
+    block(l:List $):$ ==
+      [["block"]$OP,[l]$OPREC]$Rep
+      
+    cond(sw:Switch,thenC:$):$ ==
+      [["conditional"]$OP,
+       [[sw,thenC,[["null"]$OP,["null"]$OPREC]$Rep]$COND]$OPREC]$Rep
+
+    cond(sw:Switch,thenC:$,elseC:$):$ ==
+      [["conditional"]$OP,[[sw,thenC,elseC]$COND]$OPREC]$Rep
+
+    coerce(f : $):O ==
+      (f.op)::O
+
+    assign(v:Symbol,rhs:String):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[false,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix MachineInteger):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,false]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix MachineFloat):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix MachineComplex):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector MachineInteger):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,false]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector MachineFloat):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector MachineComplex):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix Expression MachineInteger):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,false]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix Expression MachineFloat):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix Expression MachineComplex):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector Expression MachineInteger):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,false]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector Expression MachineFloat):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector Expression MachineComplex):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,index:L PIN,rhs:Expression MachineInteger):$ ==
+      [["assignment"]$OP,[[v,index,[false,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,index:L PIN,rhs:Expression MachineFloat):$ ==
+      [["assignment"]$OP,[[v,index,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,index:L PIN,rhs:Expression MachineComplex):$ ==
+      [["assignment"]$OP,[[v,index,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Expression MachineInteger):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[false,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Expression MachineFloat):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Expression MachineComplex):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix Expression Integer):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,false]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix Expression Float):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Matrix Expression Complex Float):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector Expression Integer):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,false]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector Expression Float):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Vector Expression Complex Float):$ ==
+      [["arrayAssignment"]$OP,[[v,rhs::O,true]$ARRAYASS]$OPREC]$Rep
+
+    assign(v:Symbol,index:L PIN,rhs:Expression Integer):$ ==
+      [["assignment"]$OP,[[v,index,[false,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,index:L PIN,rhs:Expression Float):$ ==
+      [["assignment"]$OP,[[v,index,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,index:L PIN,rhs:Expression Complex Float):$ ==
+      [["assignment"]$OP,[[v,index,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Expression Integer):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[false,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Expression Float):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    assign(v:Symbol,rhs:Expression Complex Float):$ ==
+      [["assignment"]$OP,[[v,nil()::L PIN,[true,rhs::O]$EXPRESSION]$ASS]$OPREC]$Rep
+
+    call(s:String):$ ==
+      [["call"]$OP,[s]$OPREC]$Rep
+

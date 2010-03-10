@@ -1,0 +1,347 @@
+)abbrev category UPOLYC UnivariatePolynomialCategory
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: Ring, monomial, coefficient, reductum, differentiate,
+++ elt, map, resultant, discriminant
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of univariate polynomials over a ring R.
+++ No particular model is assumed - implementations can be either
+++ sparse or dense.
+
+UnivariatePolynomialCategory(R:Ring): Category ==
+ Join(PolynomialCategory(R, NonNegativeInteger, SingletonAsOrderedSet),
+      Eltable(R, R), Eltable(%, %), DifferentialRing,
+      DifferentialExtension R) with
+    vectorise        : (%,NonNegativeInteger) -> Vector R
+      ++ vectorise(p, n) returns \spad{[a0,...,a(n-1)]} where
+      ++ \spad{p = a0 + a1*x + ... + a(n-1)*x**(n-1)} + higher order terms.
+      ++ The degree of polynomial p can be different from \spad{n-1}.
+    makeSUP: % -> SparseUnivariatePolynomial R
+      ++ makeSUP(p) converts the polynomial p to be of type
+      ++ SparseUnivariatePolynomial over the same coefficients.
+    unmakeSUP: SparseUnivariatePolynomial R -> %
+      ++ unmakeSUP(sup) converts sup of type \spadtype{SparseUnivariatePolynomial(R)}
+      ++ to be a member of the given type.
+      ++ Note: converse of makeSUP.
+    multiplyExponents: (%,NonNegativeInteger) -> %
+      ++ multiplyExponents(p,n) returns a new polynomial resulting from
+      ++ multiplying all exponents of the polynomial p by the non negative
+      ++ integer n.
+    divideExponents: (%,NonNegativeInteger) -> Union(%,"failed")
+      ++ divideExponents(p,n) returns a new polynomial resulting from
+      ++ dividing all exponents of the polynomial p by the non negative
+      ++ integer n, or "failed" if some exponent is not exactly divisible
+      ++ by n.
+    monicDivide: (%,%) -> Record(quotient:%,remainder:%)
+      ++ monicDivide(p,q) divide the polynomial p by the monic polynomial q,
+      ++ returning the pair \spad{[quotient, remainder]}.
+      ++ Error: if q isn't monic.
+-- These three are for Karatsuba
+    karatsubaDivide: (%,NonNegativeInteger) -> Record(quotient:%,remainder:%)
+      ++ \spad{karatsubaDivide(p,n)} returns the same as \spad{monicDivide(p,monomial(1,n))}
+    shiftRight: (%,NonNegativeInteger) -> %
+      ++ \spad{shiftRight(p,n)} returns \spad{monicDivide(p,monomial(1,n)).quotient}
+    shiftLeft: (%,NonNegativeInteger) -> %
+      ++ \spad{shiftLeft(p,n)} returns \spad{p * monomial(1,n)}
+    pseudoRemainder: (%,%) -> %
+       ++ pseudoRemainder(p,q) = r, for polynomials p and q, returns the remainder when
+       ++ \spad{p' := p*lc(q)**(deg p - deg q + 1)}
+       ++ is pseudo right-divided by q, i.e. \spad{p' = s q + r}.
+    differentiate: (%, R -> R, %) -> %
+       ++ differentiate(p, d, x') extends the R-derivation d to an
+       ++ extension D in \spad{R[x]} where Dx is given by x', and returns \spad{Dp}.
+    if R has StepThrough then StepThrough
+    if R has CommutativeRing then
+      discriminant: % -> R
+        ++ discriminant(p) returns the discriminant of the polynomial p.
+      resultant: (%,%) -> R
+        ++ resultant(p,q) returns the resultant of the polynomials p and q.
+    if R has IntegralDomain then
+        Eltable(Fraction %, Fraction %)
+        elt  : (Fraction %, Fraction %) -> Fraction %
+             ++ elt(a,b) evaluates the fraction of univariate polynomials \spad{a}
+             ++ with the distinguished variable replaced by b.
+        order: (%, %) -> NonNegativeInteger
+             ++ order(p, q) returns the largest n such that \spad{q**n} divides polynomial p
+             ++ i.e. the order of \spad{p(x)} at \spad{q(x)=0}.
+        subResultantGcd: (%,%) -> %
+           ++ subResultantGcd(p,q) computes the gcd of the polynomials p and q
+           ++ using the SubResultant GCD algorithm.
+        composite: (%, %) -> Union(%, "failed")
+           ++ composite(p, q) returns h if \spad{p = h(q)}, and "failed" no such h exists.
+        composite: (Fraction %, %) -> Union(Fraction %, "failed")
+           ++ composite(f, q) returns h if f = h(q), and "failed" is no such h exists.
+        pseudoQuotient: (%,%) -> %
+           ++ pseudoQuotient(p,q) returns r, the quotient when
+           ++ \spad{p' := p*lc(q)**(deg p - deg q + 1)}
+           ++ is pseudo right-divided by q, i.e. \spad{p' = s q + r}.
+        pseudoDivide: (%, %) -> Record(coef:R, quotient: %, remainder:%)
+           ++ pseudoDivide(p,q) returns \spad{[c, q, r]}, when
+           ++ \spad{p' := p*lc(q)**(deg p - deg q + 1) = c * p}
+           ++ is pseudo right-divided by q, i.e. \spad{p' = s q + r}.
+    if R has GcdDomain then
+        separate: (%, %) -> Record(primePart:%, commonPart: %)
+           ++ separate(p, q) returns \spad{[a, b]} such that polynomial \spad{p = a b} and
+           ++ \spad{a} is relatively prime to q.
+    if R has Field then
+        EuclideanDomain
+        additiveValuation
+          ++ euclideanSize(a*b) = euclideanSize(a) + euclideanSize(b)
+        elt      : (Fraction %, R) -> R
+            ++ elt(a,r) evaluates the fraction of univariate polynomials \spad{a}
+            ++ with the distinguished variable replaced by the constant r.
+    if R has Algebra Fraction Integer then
+      integrate: % -> %
+        ++ integrate(p) integrates the univariate polynomial p with respect
+        ++ to its distinguished variable.
+  add
+    pp,qq: SparseUnivariatePolynomial %
+    variables(p) ==
+      zero? p or zero?(degree p) => []
+      [create()]
+    degree(p:%,v:SingletonAsOrderedSet) == degree p
+    totalDegree(p:%,lv:List SingletonAsOrderedSet) ==
+       empty? lv => 0
+       totalDegree p
+    degree(p:%,lv:List SingletonAsOrderedSet) ==
+       empty? lv => []
+       [degree p]
+    eval(p:%,lv: List SingletonAsOrderedSet,lq: List %):% ==
+      empty? lv => p
+      not empty? rest lv => error "can only eval a univariate polynomial once"
+      eval(p,first lv,first lq)$%
+    eval(p:%,v:SingletonAsOrderedSet,q:%):% == p(q)
+    eval(p:%,lv: List SingletonAsOrderedSet,lr: List R):% ==
+      empty? lv => p
+      not empty? rest lv => error "can only eval a univariate polynomial once"
+      eval(p,first lv,first lr)$%
+    eval(p:%,v:SingletonAsOrderedSet,r:R):% == p(r)::%
+    eval(p:%,le:List Equation %):% == 
+      empty? le  => p
+      not empty? rest le => error "can only eval a univariate polynomial once"
+      mainVariable(lhs first le) case "failed" => p
+      p(rhs first le)
+    mainVariable(p:%) ==
+      zero? degree p =>  "failed"
+      create()$SingletonAsOrderedSet
+    minimumDegree(p:%,v:SingletonAsOrderedSet) == minimumDegree p
+    minimumDegree(p:%,lv:List SingletonAsOrderedSet) ==
+       empty? lv => []
+       [minimumDegree p]
+    monomial(p:%,v:SingletonAsOrderedSet,n:NonNegativeInteger) ==
+       mapExponents(#1+n,p)
+    coerce(v:SingletonAsOrderedSet):% == monomial(1,1)
+    makeSUP p ==
+      zero? p => 0
+      monomial(leadingCoefficient p,degree p) + makeSUP reductum p
+    unmakeSUP sp ==
+      zero? sp => 0
+      monomial(leadingCoefficient sp,degree sp) + unmakeSUP reductum sp
+    karatsubaDivide(p:%,n:NonNegativeInteger) == monicDivide(p,monomial(1,n))
+    shiftRight(p:%,n:NonNegativeInteger) == monicDivide(p,monomial(1,n)).quotient
+    shiftLeft(p:%,n:NonNegativeInteger) == p * monomial(1,n)
+    if R has PolynomialFactorizationExplicit then
+       PFBRU ==>PolynomialFactorizationByRecursionUnivariate(R,%)
+       pp,qq:SparseUnivariatePolynomial %
+       lpp:List SparseUnivariatePolynomial %
+       SupR ==> SparseUnivariatePolynomial R
+       sp:SupR
+
+       solveLinearPolynomialEquation(lpp,pp) ==
+         solveLinearPolynomialEquationByRecursion(lpp,pp)$PFBRU
+       factorPolynomial(pp) ==
+         factorByRecursion(pp)$PFBRU
+       factorSquareFreePolynomial(pp) ==
+         factorSquareFreeByRecursion(pp)$PFBRU
+       import FactoredFunctions2(SupR,S)
+       factor p ==
+         zero? degree p  =>
+           ansR:=factor leadingCoefficient p
+           makeFR(unit(ansR)::%,
+                  [[w.flg,w.fctr::%,w.xpnt] for w in factorList ansR])
+         map(unmakeSUP,factorPolynomial(makeSUP p)$R)
+
+    vectorise(p, n) ==
+      m := minIndex(v := new(n, 0)$Vector(R))
+      for i in minIndex v .. maxIndex v repeat
+        qsetelt_!(v, i, coefficient(p, (i - m)::NonNegativeInteger))
+      v
+    retract(p:%):R ==
+      zero? p => 0
+      zero? degree p => leadingCoefficient p
+      error "Polynomial is not of degree 0"
+    retractIfCan(p:%):Union(R, "failed") ==
+      zero? p => 0
+      zero? degree p => leadingCoefficient p
+      "failed"
+
+    if R has StepThrough then
+       init() == init()$R::%
+       nextItemInner: % -> Union(%,"failed")
+       nextItemInner(n) ==
+         zero? n => nextItem(0$R)::R::% -- assumed not to fail
+         zero? degree n =>
+           nn:=nextItem leadingCoefficient n
+           nn case "failed" => "failed"
+           nn::R::%
+         n1:=reductum n
+         n2:=nextItemInner n1 -- try stepping the reductum
+         n2 case % => monomial(leadingCoefficient n,degree n) + n2
+         1+degree n1 < degree n => -- there was a hole between lt n and n1
+           monomial(leadingCoefficient n,degree n)+
+             monomial(nextItem(init()$R)::R,1+degree n1)
+         n3:=nextItem leadingCoefficient n
+         n3 case "failed" => "failed"
+         monomial(n3,degree n)
+       nextItem(n) ==
+         n1:=nextItemInner n
+         n1 case "failed" => monomial(nextItem(init()$R)::R,1+degree(n))
+         n1
+
+    if R has GcdDomain then
+
+      content(p:%,v:SingletonAsOrderedSet) == content(p)::%
+
+      primeFactor: (%, %) -> %
+
+      primeFactor(p, q) ==
+        (p1 := (p exquo gcd(p, q))::%) = p => p
+        primeFactor(p1, q)
+
+      separate(p, q) ==
+        a := primeFactor(p, q)
+        [a, (p exquo a)::%]
+
+    if R has CommutativeRing then
+      differentiate(x:%, deriv:R -> R, x':%) ==
+        d:% := 0
+        while (dg := degree x) > 0 repeat
+          lc := leadingCoefficient x
+          d := d + x' * monomial(dg * lc, (dg - 1)::NonNegativeInteger)
+                 + monomial(deriv lc, dg)
+          x := reductum x
+        d + deriv(leadingCoefficient x)::%
+    else
+      ncdiff: (NonNegativeInteger, %) -> %
+      -- computes d(x**n) given dx = x', non-commutative case
+      ncdiff(n, x') ==
+        zero? n => 0
+        zero?(n1 := (n - 1)::NonNegativeInteger) => x'
+        x' * monomial(1, n1) + monomial(1, 1) * ncdiff(n1, x')
+
+      differentiate(x:%, deriv:R -> R, x':%) ==
+        d:% := 0
+        while (dg := degree x) > 0 repeat
+          lc := leadingCoefficient x
+          d := d + monomial(deriv lc, dg) + lc * ncdiff(dg, x')
+          x := reductum x
+        d + deriv(leadingCoefficient x)::%
+    differentiate(x:%, deriv:R -> R) == differentiate(x, deriv, 1$%)$%
+    differentiate(x:%) ==
+        d:% := 0
+        while (dg := degree x) > 0 repeat
+          d := d + monomial(dg * leadingCoefficient x, (dg - 1)::NonNegativeInteger)
+          x := reductum x
+        d
+    differentiate(x:%,v:SingletonAsOrderedSet) == differentiate x
+    if R has IntegralDomain then
+      elt(g:Fraction %, f:Fraction %) == ((numer g) f) / ((denom g) f)
+
+      pseudoQuotient(p, q) ==
+        (n := degree(p)::Integer - degree q + 1) < 1 => 0
+        ((leadingCoefficient(q)**(n::NonNegativeInteger) * p
+          - pseudoRemainder(p, q)) exquo q)::%
+
+      pseudoDivide(p, q) ==
+        (n := degree(p)::Integer - degree q + 1) < 1 => [1, 0, p]
+        prem := pseudoRemainder(p, q)
+        lc   := leadingCoefficient(q)**(n::NonNegativeInteger)
+        [lc,((lc*p - prem) exquo q)::%, prem]
+
+      composite(f:Fraction %, q:%) ==
+        (n := composite(numer f, q)) case "failed" => "failed"
+        (d := composite(denom f, q)) case "failed" => "failed"
+        n::% / d::%
+
+      composite(p:%, q:%) ==
+        ground? p => p
+        cqr := pseudoDivide(p, q)
+        ground?(cqr.remainder) and
+          ((v := cqr.remainder exquo cqr.coef) case %) and
+            ((u := composite(cqr.quotient, q)) case %) and
+              ((w := (u::%) exquo cqr.coef) case %) =>
+                v::% + monomial(1, 1) * w::%
+        "failed"
+
+      elt(p:%, f:Fraction %) ==
+        zero? p => 0
+        ans:Fraction(%) := (leadingCoefficient p)::%::Fraction(%)
+        n := degree p
+        while not zero?(p:=reductum p) repeat
+          ans := ans * f ** (n - (n := degree p))::NonNegativeInteger +
+                    (leadingCoefficient p)::%::Fraction(%)
+        zero? n => ans
+        ans * f ** n
+
+      order(p, q) ==
+        zero? p => error "order: arguments must be nonzero"
+        degree(q) < 1 => error "order: place must be non-trivial"
+        ans:NonNegativeInteger := 0
+        repeat
+          (u  := p exquo q) case "failed" => return ans
+          p   := u::%
+          ans := ans + 1
+
+    if R has GcdDomain then
+      squareFree(p:%) ==
+        squareFree(p)$UnivariatePolynomialSquareFree(R, %)
+
+      squareFreePart(p:%) ==
+        squareFreePart(p)$UnivariatePolynomialSquareFree(R, %)
+
+    if R has PolynomialFactorizationExplicit then
+
+      gcdPolynomial(pp,qq) ==
+            zero? pp => unitCanonical qq  -- subResultantGcd can't handle 0
+            zero? qq => unitCanonical pp
+            unitCanonical(gcd(content (pp),content(qq))*
+                   primitivePart
+                      subResultantGcd(primitivePart pp,primitivePart qq))
+
+      squareFreePolynomial pp ==
+         squareFree(pp)$UnivariatePolynomialSquareFree(%,
+                                    SparseUnivariatePolynomial %)
+
+    if R has Field then
+      elt(f:Fraction %, r:R) == ((numer f) r) / ((denom f) r)
+
+      euclideanSize x ==
+            zero? x =>
+              error "euclideanSize called on 0 in Univariate Polynomial"
+            degree x
+      divide(x,y) ==
+            zero? y => error "division by 0 in Univariate Polynomials"
+            quot:=0
+            lc := inv leadingCoefficient y
+            while not zero?(x) and (degree x >= degree y) repeat
+               f:=lc*leadingCoefficient x
+               n:=(degree x - degree y)::NonNegativeInteger
+               quot:=quot+monomial(f,n)
+               x:=x-monomial(f,n)*y
+            [quot,x]
+    if R has Algebra Fraction Integer then
+      integrate p ==
+        ans:% := 0
+        while p ~= 0 repeat
+          l := leadingCoefficient p
+          d := 1 + degree p
+          ans := ans + inv(d::Fraction(Integer)) * monomial(l, d)
+          p := reductum p
+        ans
+

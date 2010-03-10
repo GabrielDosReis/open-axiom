@@ -1,0 +1,47 @@
+)abbrev package FFSLPE FiniteFieldSolveLinearPolynomialEquation
+++ Author: Davenport
+++ Date Created: 1991
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package solves linear diophantine equations for Bivariate polynomials
+++ over finite fields
+
+FiniteFieldSolveLinearPolynomialEquation(F:FiniteFieldCategory,
+                                        FP:UnivariatePolynomialCategory F,
+                                        FPP:UnivariatePolynomialCategory FP): with
+   solveLinearPolynomialEquation: (List FPP, FPP) -> Union(List FPP,"failed")
+              ++ solveLinearPolynomialEquation([f1, ..., fn], g)
+              ++ (where the fi are relatively prime to each other)
+              ++ returns a list of ai such that
+              ++ \spad{g/prod fi = sum ai/fi}
+              ++ or returns "failed" if no such list of ai's exists.
+  == add
+     oldlp:List FPP := []
+     slpePrime: FP := monomial(1,1)
+     oldtable:Vector List FPP := []
+     lp: List FPP
+     p: FPP
+     import DistinctDegreeFactorize(F,FP)
+     solveLinearPolynomialEquation(lp,p) ==
+       if (oldlp ~= lp) then
+          -- we have to generate a new table
+          deg:= +/[degree u for u in lp]
+          ans:Union(Vector List FPP,"failed"):="failed"
+          slpePrime:=monomial(1,1)+monomial(1,0)   -- x+1: our starting guess
+          while (ans case "failed") repeat
+            ans:=tablePow(deg,slpePrime,lp)$GenExEuclid(FP,FPP)
+            if (ans case "failed") then
+               slpePrime:= nextItem(slpePrime)::FP
+               while (degree slpePrime > 1) and
+                     not irreducible? slpePrime repeat
+                 slpePrime := nextItem(slpePrime)::FP
+          oldtable:=(ans:: Vector List FPP)
+       answer:=solveid(p,slpePrime,oldtable)
+       answer
+

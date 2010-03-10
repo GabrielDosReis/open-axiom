@@ -1,0 +1,4 @@
+)abbrev category NETCLT NetworkClientSocket
+NetworkClientSocket(T: SetCategory): Category == InputOutputByteConduit with
+   connectTo: (T, PortNumber) -> Union(%,"failed")
+   isConnected?: % -> Boolean

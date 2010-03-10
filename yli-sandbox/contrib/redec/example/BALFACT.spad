@@ -1,0 +1,42 @@
+)abbrev package BALFACT BalancedFactorisation
+++ Author: Manuel Bronstein
+++ Date Created: 1 March 1991
+++ Date Last Updated: 11 October 1991
+++ Description: This package provides balanced factorisations of polynomials.
+BalancedFactorisation(R, UP): Exports == Implementation where
+  R  : Join(GcdDomain, CharacteristicZero)
+  UP : UnivariatePolynomialCategory R
+
+  Exports ==> with
+    balancedFactorisation: (UP, UP) -> Factored UP
+      ++ balancedFactorisation(a, b) returns
+      ++ a factorisation \spad{a = p1^e1 ... pm^em} such that each
+      ++ \spad{pi} is balanced with respect to b.
+    balancedFactorisation: (UP, List UP) -> Factored UP
+      ++ balancedFactorisation(a, [b1,...,bn]) returns
+      ++ a factorisation \spad{a = p1^e1 ... pm^em} such that each
+      ++ pi is balanced with respect to \spad{[b1,...,bm]}.
+
+  Implementation ==> add
+    balSqfr : (UP, Integer, List UP) -> Factored UP
+    balSqfr1: (UP, Integer,      UP) -> Factored UP
+
+    balancedFactorisation(a:UP, b:UP) == balancedFactorisation(a, [b])
+
+    balSqfr1(a, n, b) ==
+      g := gcd(a, b)
+      fa := sqfrFactor((a exquo g)::UP, n)
+      ground? g => fa
+      fa * balSqfr1(g, n, (b exquo (g ** order(b, g)))::UP)
+
+    balSqfr(a, n, l) ==
+      b := first l
+      empty? rest l => balSqfr1(a, n, b)
+      */[balSqfr1(f.factor, n, b) for f in factors balSqfr(a,n,rest l)]
+
+    balancedFactorisation(a:UP, l:List UP) ==
+      empty?(ll := select(#1 ~= 0, l)) =>
+        error "balancedFactorisation: 2nd argument is empty or all 0"
+      sa := squareFree a
+      unit(sa) * */[balSqfr(f.factor,f.exponent,ll) for f in factors sa])
+

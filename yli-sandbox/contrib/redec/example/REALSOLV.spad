@@ -1,0 +1,53 @@
+import PolynomialCategoryLifting
+import Integer
+import Float
+import Symbol
+import Fraction
+import Polynomial
+import FloatingRealPackage
+)abbrev package REALSOLV RealSolvePackage
+
+RealSolvePackage(): Exports == Implementation where
+  ++ This package provides numerical solutions of systems of polynomial
+  ++ equations for use in ACPLOT.
+  I    ==> Integer
+  IE   ==> IndexedExponents Symbol
+  L    ==> List
+  NF   ==> Float
+  P    ==> Polynomial
+  RN   ==> Fraction Integer
+  SE   ==> Symbol
+  RFI  ==> Fraction Polynomial Integer
+  LIFT ==> PolynomialCategoryLifting(IE,SE,RN,P RN,RFI)
+  SOLV ==> FloatingRealPackage Float
+
+  Exports ==> with
+    solve: (P RN,NF) -> L NF
+      ++ solve(p,eps) finds the real zeroes of a
+      ++ univariate rational polynomial p with precision eps.
+    solve: (P I,NF) -> L NF
+      ++ solve(p,eps) finds the real zeroes of a univariate
+      ++ integer polynomial p with precision eps.
+    realSolve: (L P I,L SE,NF) -> L L NF
+      ++ realSolve(lp,lv,eps) = compute the list of the real
+      ++ solutions of the list lp of polynomials with integer
+      ++ coefficients with respect to the variables in lv,
+      ++ with precision eps.
+
+  Implementation ==> add
+
+    prn2rfi: P RN -> RFI
+    prn2rfi p ==
+      map(#1 :: RFI,(numer(#1) :: RFI)/(denom(#1) :: RFI),p)$LIFT
+
+    pi2rfi: P I -> RFI
+    pi2rfi p == p :: RFI
+
+    solve(p:P RN,eps:NF) == realRoots(prn2rfi p,eps)$SOLV
+
+    solve(p:P I,eps:NF) ==
+      realRoots(p :: RFI,eps)$SOLV
+
+    realSolve(lp,lv,eps) ==
+      realRoots(map(pi2rfi,lp)$ListFunctions2(P I,RFI),lv,eps)$SOLV
+

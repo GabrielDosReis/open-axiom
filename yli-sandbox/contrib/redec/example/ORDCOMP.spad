@@ -1,0 +1,127 @@
+)abbrev domain ORDCOMP OrderedCompletion
+++ Completion with + and - infinity
+++ Author: Manuel Bronstein
+++ Description: Adjunction of two real infinites quantities to a set.
+++ Date Created: 4 Oct 1989
+++ Date Last Updated: 1 Nov 1989
+OrderedCompletion(R:SetCategory): Exports == Implementation where
+  B ==> Boolean
+
+  Exports ==> Join(SetCategory, FullyRetractableTo R) with
+    plusInfinity : () -> %        ++ plusInfinity() returns +infinity.
+    minusInfinity: () -> %        ++ minusInfinity() returns  -infinity.
+    finite?      : %  -> B
+      ++ finite?(x) tests if x is finite.
+    infinite?    : %  -> B
+      ++ infinite?(x) tests if x is +infinity or -infinity,
+    whatInfinity : %  -> SingleInteger
+      ++ whatInfinity(x) returns 0 if x is finite,
+      ++ 1 if x is +infinity, and -1 if x is -infinity.
+    if R has AbelianGroup then AbelianGroup
+    if R has OrderedRing then OrderedRing
+    if R has IntegerNumberSystem then
+      rational?: % -> Boolean
+        ++ rational?(x) tests if x is a finite rational number.
+      rational : % -> Fraction Integer
+        ++ rational(x) returns x as a finite rational number.
+        ++ Error: if x cannot be so converted.
+      rationalIfCan: % -> Union(Fraction Integer, "failed")
+        ++ rationalIfCan(x) returns x as a finite rational number if
+        ++ it is one and "failed" otherwise.
+
+  Implementation ==> add
+    Rep := Union(fin:R, inf:B)  -- true = +infinity, false = -infinity
+
+    coerce(r:R):%          == [r]
+    retract(x:%):R         == (x case fin => x.fin; error "Not finite")
+    finite? x              == x case fin
+    infinite? x            == x case inf
+    plusInfinity()         == [true]
+    minusInfinity()        == [false]
+
+    retractIfCan(x:%):Union(R, "failed") ==
+      x case fin => x.fin
+      "failed"
+
+    coerce(x:%):OutputForm ==
+      x case fin => (x.fin)::OutputForm
+      e := "infinity"::OutputForm
+      x.inf => empty() + e
+      - e
+
+    whatInfinity x ==
+      x case fin => 0
+      x.inf => 1
+      -1
+
+    x = y ==
+      x case inf =>
+        y case inf => not xor(x.inf, y.inf)
+        false
+      y case inf => false
+      x.fin = y.fin
+
+    if R has AbelianGroup then
+      0 == [0$R]
+
+      n:Integer * x:% ==
+        x case inf =>
+          n > 0 => x
+          n < 0 => [not(x.inf)]
+          error "Undefined product"
+        [n * x.fin]
+
+      - x ==
+        x case inf => [not(x.inf)]
+        [- (x.fin)]
+
+      x + y ==
+        x case inf =>
+          y case fin => x
+          xor(x.inf, y.inf) => error "Undefined sum"
+          x
+        y case inf => y
+        [x.fin + y.fin]
+
+    if R has OrderedRing then
+      fininf: (B, R) -> %
+
+      1                == [1$R]
+      characteristic() == characteristic()$R
+
+      fininf(b, r) ==
+        r > 0 => [b]
+        r < 0 => [not b]
+        error "Undefined product"
+
+      x:% * y:% ==
+        x case inf =>
+          y case inf =>
+            xor(x.inf, y.inf) => minusInfinity()
+            plusInfinity()
+          fininf(x.inf, y.fin)
+        y case inf => fininf(y.inf, x.fin)
+        [x.fin * y.fin]
+
+      recip x ==
+        x case inf => 0
+        (u := recip(x.fin)) case "failed" => "failed"
+        [u::R]
+
+      x < y ==
+        x case inf =>
+          y case inf =>
+            xor(x.inf, y.inf) => y.inf
+            false
+          not(x.inf)
+        y case inf => y.inf
+        x.fin < y.fin
+
+    if R has IntegerNumberSystem then
+      rational? x == finite? x
+      rational  x == rational(retract(x)@R)
+
+      rationalIfCan x ==
+        (r:= retractIfCan(x)@Union(R,"failed")) case "failed" =>"failed"
+        rational(r::R)
+

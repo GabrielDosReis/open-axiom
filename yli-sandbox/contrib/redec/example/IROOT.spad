@@ -1,0 +1,115 @@
+)abbrev package IROOT IntegerRoots
+++ Author: Michael Monagan
+++ Date Created: November 1987
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: integer roots
+++ Examples:
+++ References:
+++ Description: The \spadtype{IntegerRoots} package computes square roots and
+++   nth roots of integers efficiently.
+IntegerRoots(I:IntegerNumberSystem): Exports == Implementation where
+  NNI ==> NonNegativeInteger
+
+  Exports ==> with
+    perfectNthPower?: (I, NNI) -> Boolean
+      ++ \spad{perfectNthPower?(n,r)} returns true if n is an \spad{r}th
+      ++ power and false otherwise
+    perfectNthRoot: (I,NNI) -> Union(I,"failed")
+      ++ \spad{perfectNthRoot(n,r)} returns the \spad{r}th root of n if n
+      ++ is an \spad{r}th power and returns "failed" otherwise
+    perfectNthRoot: I -> Record(base:I, exponent:NNI)
+      ++ \spad{perfectNthRoot(n)} returns \spad{[x,r]}, where \spad{n = x\^r}
+      ++ and r is the largest integer such that n is a perfect \spad{r}th power
+    approxNthRoot: (I,NNI) -> I
+      ++ \spad{approxRoot(n,r)} returns an approximation x
+      ++ to \spad{n**(1/r)} such that \spad{-1 < x - n**(1/r) < 1}
+    perfectSquare?: I -> Boolean
+      ++ \spad{perfectSquare?(n)} returns true if n is a perfect square
+      ++ and false otherwise
+    perfectSqrt: I -> Union(I,"failed")
+      ++ \spad{perfectSqrt(n)} returns the square root of n if n is a
+      ++ perfect square and returns "failed" otherwise
+    approxSqrt: I -> I
+      ++ \spad{approxSqrt(n)} returns an approximation x
+      ++ to \spad{sqrt(n)} such that \spad{-1 < x - sqrt(n) < 1}.
+      ++ Compute an approximation s to \spad{sqrt(n)} such that
+      ++           \spad{-1 < s - sqrt(n) < 1}
+      ++ A variable precision Newton iteration is used.
+      ++ The running time is \spad{O( log(n)**2 )}.
+
+  Implementation ==> add
+    import IntegerPrimesPackage(I)
+
+    resMod144: List I := [0::I,1::I,4::I,9::I,16::I,25::I,36::I,49::I,_
+                     52::I,64::I,73::I,81::I,97::I,100::I,112::I,121::I]
+    two := 2::I
+
+
+    perfectSquare? a       == (perfectSqrt a) case I
+    perfectNthPower?(b, n) == perfectNthRoot(b, n) case I
+
+    perfectNthRoot n ==  -- complexity (log log n)**2 (log n)**2
+      m:NNI
+--      one? n or zero? n or n = -1 => [n, 1]
+      (n = 1) or zero? n or n = -1 => [n, 1]
+      e:NNI := 1
+      p:NNI := 2
+      while p::I <= length(n) + 1 repeat
+         for m in 0.. while (r := perfectNthRoot(n, p)) case I repeat
+            n := r::I
+         e := e * p ** m
+         p := convert(nextPrime(p::I))@Integer :: NNI
+      [n, e]
+
+    approxNthRoot(a, n) ==   -- complexity (log log n) (log n)**2
+      zero? n => error "invalid arguments"
+--      one? n => a
+      (n = 1) => a
+      n=2 => approxSqrt a
+      negative? a =>
+        odd? n => - approxNthRoot(-a, n)
+        0
+      zero? a => 0
+--      one? a => 1
+      (a = 1) => 1
+      -- quick check for case of large n
+      ((3*n) quo 2)::I >= (l := length a) => two
+      -- the initial approximation must be >= the root
+      y := max(two, shift(1, (n::I+l-1) quo (n::I)))
+      z:I := 1
+      n1:= (n-1)::NNI
+      x: I
+      while z > 0 repeat
+        x := y
+        xn:= x**n1
+        y := (n1*x*xn+a) quo (n*xn)
+        z := x-y
+      x
+
+    perfectNthRoot(b, n) ==
+      (r := approxNthRoot(b, n)) ** n = b => r
+      "failed"
+
+    perfectSqrt a ==
+      a < 0 or not member?(a rem (144::I), resMod144) => "failed"
+      (s := approxSqrt a) * s = a => s
+      "failed"
+
+    approxSqrt a ==
+      a < 1 => 0
+      if (n := length a) > (100::I) then
+         -- variable precision newton iteration
+         n := n quo (4::I)
+         s := approxSqrt shift(a, -2 * n)
+         s := shift(s, n)
+         return ((1 + s + a quo s) quo two)
+      -- initial approximation for the root is within a factor of 2
+      (new, old) := (shift(1, n quo two), 1)
+      while new ~= old repeat
+         (new, old) := ((1 + new + a quo new) quo two, new)
+      new
+

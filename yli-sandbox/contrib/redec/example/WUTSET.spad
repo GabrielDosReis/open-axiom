@@ -1,0 +1,238 @@
+)abbrev domain WUTSET WuWenTsunTriangularSet
+++ Author: Marc Moreno Maza (marc@nag.co.uk)
+++ Date Created: 11/18/1995
+++ Date Last Updated: 12/15/1998
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: A domain constructor of the category \axiomType{GeneralTriangularSet}.
+++ The only requirement for a list of polynomials to be a member of such
+++ a domain is the following: no polynomial is constant and two distinct
+++ polynomials have distinct main variables. Such a triangular set may
+++ not be auto-reduced or consistent. The \axiomOpFrom{construct}{WuWenTsunTriangularSet} operation
+++ does not check the previous requirement. Triangular sets are stored
+++ as sorted lists w.r.t. the main variables of their members.
+++ Furthermore, this domain exports operations dealing with the
+++ characteristic set method of Wu Wen Tsun and some optimizations
+++ mainly proposed by Dong Ming Wang.\newline
+++ References :
+++  [1] W. T. WU "A Zero Structure Theorem for polynomial equations solving"
+++       MM Research Preprints, 1987.
+++  [2] D. M. WANG "An implementation of the characteristic set method in Maple"
+++       Proc. DISCO'92. Bath, England.
+++ Version: 3
+
+WuWenTsunTriangularSet(R,E,V,P) : Exports == Implementation where
+
+  R : IntegralDomain
+  E : OrderedAbelianMonoidSup
+  V : OrderedSet
+  P : RecursivePolynomialCategory(R,E,V)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  LP ==> List P
+  A ==> FiniteEdge P
+  H ==> FiniteSimpleHypergraph P
+  GPS ==> GeneralPolynomialSet(R,E,V,P)
+  RBT ==> Record(bas:$,top:LP)
+  RUL ==> Record(chs:Union($,"failed"),rfs:LP)
+  pa ==> PolynomialSetUtilitiesPackage(R,E,V,P)
+  NLpT ==> SplittingNode(LP,$)
+  ALpT ==> SplittingTree(LP,$)
+  O ==> OutputForm
+  OP ==> OutputPackage
+
+  Exports ==  TriangularSetCategory(R,E,V,P) with
+
+     medialSet : (LP,((P,P)->B),((P,P)->P)) -> Union($,"failed")
+        ++ \axiom{medialSet(ps,redOp?,redOp)} returns \axiom{bs} a basic set
+        ++ (in Wu Wen Tsun sense w.r.t the reduction-test \axiom{redOp?})
+        ++ of some set generating the same ideal as \axiom{ps} (with 
+        ++ rank not higher than  any basic set of \axiom{ps}), if no non-zero 
+        ++ constant polynomials appear during the computatioms, else 
+        ++ \axiom{"failed"} is returned. In the former case, \axiom{bs} has to be 
+        ++ understood as a candidate for being a characteristic set of \axiom{ps}.
+        ++ In the original algorithm, \axiom{bs} is simply a basic set of \axiom{ps}.
+     medialSet: LP -> Union($,"failed")
+        ++ \axiom{medial(ps)} returns the same as 
+        ++ \axiom{medialSet(ps,initiallyReduced?,initiallyReduce)}.
+     characteristicSet : (LP,((P,P)->B),((P,P)->P)) -> Union($,"failed")
+        ++ \axiom{characteristicSet(ps,redOp?,redOp)} returns a non-contradictory
+        ++ characteristic set of \axiom{ps} in Wu Wen Tsun sense w.r.t the 
+        ++ reduction-test \axiom{redOp?} (using \axiom{redOp} to reduce 
+        ++ polynomials w.r.t a \axiom{redOp?} basic set), if no
+        ++ non-zero constant polynomial appear during those reductions,
+        ++ else \axiom{"failed"} is returned.
+        ++ The operations \axiom{redOp} and \axiom{redOp?} must satisfy 
+        ++ the following conditions: \axiom{redOp?(redOp(p,q),q)} holds
+        ++ for every polynomials \axiom{p,q} and there exists an integer
+        ++ \axiom{e} and a polynomial \axiom{f} such that we have
+        ++ \axiom{init(q)^e*p = f*q + redOp(p,q)}.
+     characteristicSet: LP -> Union($,"failed")
+        ++ \axiom{characteristicSet(ps)} returns the same as 
+        ++ \axiom{characteristicSet(ps,initiallyReduced?,initiallyReduce)}.
+     characteristicSerie  : (LP,((P,P)->B),((P,P)->P)) -> List $
+        ++ \axiom{characteristicSerie(ps,redOp?,redOp)} returns a list \axiom{lts}
+        ++ of triangular sets such that the zero set of \axiom{ps} is the
+        ++ union of the regular zero sets of the members of \axiom{lts}.
+        ++ This is made by the Ritt and Wu Wen Tsun process applying
+        ++ the operation \axiom{characteristicSet(ps,redOp?,redOp)}
+        ++ to compute characteristic sets in Wu Wen Tsun sense.
+     characteristicSerie: LP ->  List $
+        ++ \axiom{characteristicSerie(ps)} returns the same as 
+        ++ \axiom{characteristicSerie(ps,initiallyReduced?,initiallyReduce)}.
+
+  Implementation == GeneralTriangularSet(R,E,V,P) add
+
+     removeSquares: $ -> Union($,"failed")
+
+     Rep == LP
+
+     removeAssociates (lp:LP):LP ==
+       removeDuplicates [primPartElseUnitCanonical(p) for p in lp]
+
+     medialSetWithTrace (ps:LP,redOp?:((P,P)->B),redOp:((P,P)->P)):Union(RBT,"failed") == 
+       qs := rewriteIdealWithQuasiMonicGenerators(ps,redOp?,redOp)$pa
+       contradiction : B := any?(ground?,ps)
+       contradiction => "failed"::Union(RBT,"failed")
+       rs : LP := qs
+       bs : $
+       while (not empty? rs) and (not contradiction) repeat
+         rec := basicSet(rs,redOp?)
+         contradiction := (rec case "failed")@B
+         if not contradiction
+           then
+             bs := (rec::RBT).bas
+             rs := (rec::RBT).top
+             rs :=  rewriteIdealWithRemainder(rs,bs)
+--             contradiction := ((not empty? rs) and (one? first(rs)))
+             contradiction := ((not empty? rs) and (first(rs) = 1))
+             if (not empty? rs) and (not contradiction)
+               then
+                 rs := rewriteSetWithReduction(rs,bs,redOp,redOp?)
+--                 contradiction := ((not empty? rs) and (one? first(rs)))
+                 contradiction := ((not empty? rs) and (first(rs) = 1))
+         if (not empty? rs) and (not contradiction)
+           then
+             rs := removeDuplicates concat(rs,members(bs)) 
+             rs := rewriteIdealWithQuasiMonicGenerators(rs,redOp?,redOp)$pa
+--             contradiction := ((not empty? rs) and (one? first(rs)))
+             contradiction := ((not empty? rs) and (first(rs) = 1))
+       contradiction => "failed"::Union(RBT,"failed")
+       ([bs,qs]$RBT)::Union(RBT,"failed")
+
+     medialSet(ps:LP,redOp?:((P,P)->B),redOp:((P,P)->P)) == 
+       foo: Union(RBT,"failed") := medialSetWithTrace(ps,redOp?,redOp)
+       (foo case "failed") => "failed" :: Union($,"failed")
+       ((foo::RBT).bas) :: Union($,"failed")
+
+     medialSet(ps:LP) == medialSet(ps,initiallyReduced?,initiallyReduce)
+
+     characteristicSetUsingTrace(ps:LP,redOp?:((P,P)->B),redOp:((P,P)->P)):Union($,"failed") ==
+       ps := removeAssociates ps
+       ps := remove(zero?,ps)
+       contradiction : B := any?(ground?,ps)
+       contradiction => "failed"::Union($,"failed")
+       rs : LP := ps
+       qs : LP := ps
+       ms : $
+       while (not empty? rs) and (not contradiction) repeat
+         rec := medialSetWithTrace (qs,redOp?,redOp)
+         contradiction := (rec case "failed")@B
+         if not contradiction
+           then
+             ms := (rec::RBT).bas
+             qs := (rec::RBT).top
+             qs := rewriteIdealWithRemainder(qs,ms)
+--             contradiction := ((not empty? qs) and (one? first(qs))) 
+             contradiction := ((not empty? qs) and (first(qs) = 1)) 
+             if not contradiction
+               then
+                 rs :=  rewriteSetWithReduction(qs,ms,lazyPrem,reduced?)
+--                 contradiction := ((not empty? rs) and (one? first(rs)))
+                 contradiction := ((not empty? rs) and (first(rs) = 1))
+             if  (not contradiction) and (not empty? rs)
+               then
+                 qs := removeDuplicates(concat(rs,concat(members(ms),qs)))
+       contradiction => "failed"::Union($,"failed")
+       ms::Union($,"failed")
+
+     characteristicSet(ps:LP,redOp?:((P,P)->B),redOp:((P,P)->P)) == 
+       characteristicSetUsingTrace(ps,redOp?,redOp)
+
+     characteristicSet(ps:LP) == characteristicSet(ps,initiallyReduced?,initiallyReduce)
+
+     characteristicSerie(ps:LP,redOp?:((P,P)->B),redOp:((P,P)->P)) == 
+       a := [[ps,empty()$$]$NLpT]$ALpT
+       while ((esl := extractSplittingLeaf(a)) case ALpT) repeat
+          ps := value(value(esl::ALpT)$ALpT)$NLpT
+          charSet? := characteristicSetUsingTrace(ps,redOp?,redOp)
+          if not (charSet? case $)
+             then
+                setvalue!(esl::ALpT,[nil()$LP,empty()$$,true]$NLpT)
+                updateStatus!(a)
+             else
+                cs := (charSet?)::$
+                lics := initials(cs)
+                lics := removeRedundantFactors(lics)$pa
+                lics := sort(infRittWu?,lics)
+                if empty? lics 
+                   then
+                      setvalue!(esl::ALpT,[ps,cs,true]$NLpT)
+                      updateStatus!(a)
+                   else
+                      ln : List NLpT := [[nil()$LP,cs,true]$NLpT]
+                      while not empty? lics repeat
+                         newps := cons(first(lics),concat(cs::LP,ps))
+                         lics := rest lics
+                         newps := removeDuplicates newps
+                         newps := sort(infRittWu?,newps)
+                         ln := cons([newps,empty()$$,false]$NLpT,ln)
+                      splitNodeOf!(esl::ALpT,a,ln)
+       remove(empty()$$,conditions(a))
+
+     characteristicSerie(ps:LP) ==  characteristicSerie (ps,initiallyReduced?,initiallyReduce)
+
+     if R has GcdDomain
+     then
+
+       removeSquares (ts:$):Union($,"failed") ==
+         empty?(ts)$$ => ts::Union($,"failed")
+         p := (first ts)::P
+         rsts : Union($,"failed")
+         rsts := removeSquares((rest ts)::$)
+         not(rsts case $) => "failed"::Union($,"failed")
+         newts := rsts::$
+         empty? newts =>
+           p := squareFreePart(p)
+           (per([primitivePart(p)]$LP))::Union($,"failed")
+         zero? initiallyReduce(init(p),newts) => "failed"::Union($,"failed")
+         p := primitivePart(removeZero(p,newts))
+         ground? p => "failed"::Union($,"failed")
+         not (mvar(newts) < mvar(p)) => "failed"::Union($,"failed")
+         p := squareFreePart(p)
+         (per(cons(unitCanonical(p),rep(newts))))::Union($,"failed")
+
+       zeroSetSplit lp ==
+         lts : List $ := characteristicSerie(lp,initiallyReduced?,initiallyReduce)
+         lts := removeDuplicates(lts)$(List $)
+         newlts : List $ := []
+         while not empty? lts repeat
+           ts := first lts
+           lts := rest lts
+           iic := removeSquares(ts)
+           if iic case $
+             then
+               newlts := cons(iic::$,newlts)
+         newlts := removeDuplicates(newlts)$(List $)
+         sort(infRittWu?, newlts)
+
+     else
+
+       zeroSetSplit lp ==
+         lts : List $ := characteristicSerie(lp,initiallyReduced?,initiallyReduce)
+         sort(infRittWu?, removeDuplicates lts)
+

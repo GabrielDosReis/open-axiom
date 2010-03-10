@@ -1,0 +1,162 @@
+)abbrev package PMTOOLS PatternMatchTools
+++ Tools for the pattern matcher
+++ Author: Manuel Bronstein
+++ Date Created: 13 Mar 1990
+++ Date Last Updated: 4 February 1992
+++ Description:
+++   This package provides tools for the pattern matcher.
+++ Keywords: pattern, matching, tools.
+PatternMatchTools(S, R, P): Exports == Implementation where
+  S: SetCategory
+  R: Join(Ring, OrderedSet)
+  P: Join(Ring, ConvertibleTo Pattern S, RetractableTo R)
+
+  PAT ==> Pattern S
+  PRS ==> PatternMatchResult(S, P)
+  REC ==> Record(res:PRS, s:List P)
+  RC  ==> Record(pat:List PAT, s:List P)
+
+  Exports ==> with
+    patternMatch: (List P, List PAT, List P -> P, PRS,
+                                            (P, PAT, PRS) -> PRS) -> PRS
+      ++ patternMatch(lsubj, lpat, op, res, match) matches the list
+      ++ of patterns lpat to the list of subjects lsubj, allowing for
+      ++ commutativity; op is the operator such that op(lpat) should
+      ++ match op(lsubj) at the end, r contains the previous matches,
+      ++ and match is a pattern-matching function on P.
+    patternMatchTimes: (List P, List PAT, PRS,
+                                            (P, PAT, PRS) -> PRS) -> PRS
+      ++ patternMatchTimes(lsubj, lpat, res, match) matches the
+      ++ product of patterns \spad{reduce(*,lpat)}
+      ++ to the product of subjects \spad{reduce(*,lsubj)};
+      ++ r contains the previous matches
+      ++ and match is a pattern-matching function on P.
+
+  Implementation ==> add
+    import PatternFunctions1(S, P)
+
+    preprocessList: (PAT, List P, PRS) -> Union(List P, "failed")
+    selBestGen    : List PAT -> List PAT
+    negConstant   : List P -> Union(P, "failed")
+    findMatch     : (PAT, List P, PRS, P, (P, PAT, PRS) -> PRS) -> REC
+    tryToMatch    : (List PAT, REC, P, (P, PAT, PRS) -> PRS) ->
+                                                  Union(REC, "failed")
+    filterMatchedPatterns: (List PAT, List P, PRS) -> Union(RC, "failed")
+
+    mn1 := convert(-1::P)@Pattern(S)
+
+    negConstant l ==
+      for x in l repeat
+        ((r := retractIfCan(x)@Union(R, "failed")) case R) and
+          (r::R < 0) => return x
+      "failed"
+
+-- tries to match the list of patterns lp to the list of subjects rc.s
+-- with rc.res being the list of existing matches.
+-- updates rc with the new result and subjects still to match
+    tryToMatch(lp, rc, ident, pmatch) ==
+      rec:REC := [l := rc.res, ls := rc.s]
+      for p in lp repeat
+        rec := findMatch(p, ls, l, ident, pmatch)
+        failed?(l := rec.res) => return "failed"
+        ls := rec.s
+      rec
+
+-- handles -1 in the pattern list.
+--    patternMatchTimes(ls, lp, l, pmatch) ==
+--      member?(mn1, lp) =>
+--        (u := negConstant ls) case "failed" => failed()
+--        if (u::P ~= -1::P) then ls := concat(-u::P, ls)
+--        patternMatch(remove(u::P,ls), remove(mn1,lp), */#1, l, pmatch)
+--      patternMatch(ls, lp, */#1, l, pmatch)
+
+-- finds a match for p in ls, try not to match to a "bad" value
+    findMatch(p, ls, l, ident, pmatch) ==
+      bad:List(P) :=
+        generic? p => setIntersection(badValues p, ls)
+        empty()
+      l1:PRS := failed()
+      t : P
+      for x in setDifference(ls, bad)
+        while (t := x; failed?(l1 := pmatch(x, p, l))) repeat 0
+      failed? l1 =>
+        for x in bad
+          while (t := x; failed?(l1 := pmatch(x, p, l))) repeat 0
+        failed? l1 => [addMatchRestricted(p, ident, l, ident), ls]
+        [l1, remove(t, ls)]
+      [l1, remove(t, ls)]
+
+-- filters out pattern if it's generic and already matched.
+    preprocessList(pattern, ls, l) ==
+      generic? pattern =>
+        (u := getMatch(pattern, l)) case P =>
+          member?(u::P, ls) => [u::P]
+          "failed"
+        empty()
+      empty()
+
+-- take out already matched generic patterns
+    filterMatchedPatterns(lp, ls, l) ==
+      for p in lp repeat
+        (rc := preprocessList(p, ls, l)) case "failed" => return "failed"
+        if not empty?(rc::List(P)) then
+          lp := remove(p,  lp)
+          ls := remove(first(rc::List(P)), ls)
+      [lp, ls]
+
+-- select a generic pattern with no predicate if possible
+    selBestGen l ==
+      ans := empty()$List(PAT)
+      for p in l | generic? p repeat
+        ans := [p]
+        not hasPredicate? p => return ans
+      ans
+
+-- matches unordered lists ls and lp
+    patternMatch(ls, lp, op, l, pmatch) ==
+      ident := op empty()
+      (rc := filterMatchedPatterns(lp, ls, l)) case "failed" => return failed()
+      lp := (rc::RC).pat
+      ls := (rc::RC).s
+      empty? lp => l
+      #(lpm := select(optional?, lp)) > 1 =>
+        error "More than one optional pattern in sum/product"
+      (#ls + #lpm) < #lp => failed()
+      if (not empty? lpm) and (#ls + 1 = #lp) then
+        lp := remove(first lpm, lp)
+        failed?(l := addMatch(first lpm, ident, l)) => return l
+      #(lpm := select(multiple?, lp)) > 1 =>
+        error "More than one expandable pattern in sum/product"
+      #ls > #lp and empty? lpm and empty?(lpm := selBestGen lp) =>
+        failed()
+      if not empty? lpm then lp := remove(first lpm, lp)
+      -- this is the order in which we try to match predicates
+      -- l1 = constant patterns (i.e. 'x, or sin('x))
+      l1 := select(constant?, lp)
+      -- l2 = patterns with a predicate attached to them
+      l2 := select(hasPredicate? #1 and not constant? #1, lp)
+      -- l3 = non-generic patterns without predicates
+      l3 := sort_!(depth(#1) > depth(#2),
+        select(not(hasPredicate? #1 or generic? #1 or constant? #1),lp))
+      -- l4 = generic patterns with predicates
+      l4 := select(generic? #1 and
+                              not(hasPredicate? #1 or constant? #1), lp)
+      rec:REC := [l, ls]
+      (u := tryToMatch(l1, rec, ident, pmatch)) case "failed" =>
+        failed()
+      (u := tryToMatch(l2, u::REC, ident, pmatch)) case "failed" =>
+        failed()
+      (u := tryToMatch(l3, u::REC, ident, pmatch)) case "failed" =>
+        failed()
+      rec := u::REC
+      (rc := filterMatchedPatterns(l4,rec.s,rec.res)) case "failed" => failed()
+      rec := [rec.res, (rc::RC).s]
+      (u := tryToMatch((rc::RC).pat,rec,ident,pmatch)) case "failed" => failed()
+      rec := u::REC
+      l := rec.res
+      ls := rec.s
+      empty? lpm =>
+        empty? ls => l
+        failed()
+      addMatch(first lpm, op ls, l)
+

@@ -1,0 +1,27 @@
+)abbrev domain BINARY BinaryExpansion
+++ Author: Clifton J. Williamson
+++ Date Created: April 26, 1990
+++ Date Last Updated: May 15, 1991
+++ Basic Operations:
+++ Related Domains: RadixExpansion
+++ Also See:
+++ AMS Classifications:
+++ Keywords: radix, base, binary
+++ Examples:
+++ References:
+++ Description:
+++   This domain allows rational numbers to be presented as repeating
+++   binary expansions.
+
+BinaryExpansion(): Exports == Implementation where
+  Exports == Join(QuotientFieldCategory(Integer),_
+               CoercibleTo Fraction Integer,CoercibleTo RadixExpansion(2)) with
+    fractionPart: % -> Fraction Integer
+      ++ fractionPart(b) returns the fractional part of a binary expansion.
+    binary: Fraction Integer -> %
+      ++ binary(r) converts a rational number to a binary expansion.
+
+  Implementation ==> RadixExpansion(2) add
+    binary r == r :: %
+    coerce(x:%): RadixExpansion(2) == rep x
+

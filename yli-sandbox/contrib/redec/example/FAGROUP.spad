@@ -1,0 +1,41 @@
+)abbrev domain FAGROUP FreeAbelianGroup
+++ Free abelian group on any set of generators
+++ Author: Manuel Bronstein
+++ Date Created: November 1989
+++ Date Last Updated: 6 June 1991
+++ Description:
+++ The free abelian group on a set S is the monoid of finite sums of
+++ the form \spad{reduce(+,[ni * si])} where the si's are in S, and the ni's
+++ are integers. The operation is commutative.
+FreeAbelianGroup(S:SetCategory): Exports == Implementation where
+  Exports ==> Join(AbelianGroup, Module Integer,
+                   FreeAbelianMonoidCategory(S, Integer)) with
+    if S has OrderedSet then OrderedSet
+
+  Implementation ==> InnerFreeAbelianMonoid(S, Integer, 1) add
+    - f == mapCoef("-", f)
+
+    if S has OrderedSet then
+      inmax: List Record(gen: S, exp: Integer) -> Record(gen: S, exp:Integer)
+
+      inmax l ==
+        mx := first l
+        for t in rest l repeat
+          if t.gen > mx.gen then mx := t
+        mx
+
+      a < b ==
+        zero? a  =>
+          zero? b => false
+          (inmax terms b).exp > 0
+        ta := inmax terms a
+        zero? b => ta.exp < 0
+        ta := inmax terms a
+        tb := inmax terms b
+        ta.gen < tb.gen => tb.exp > 0
+        ta.gen > tb.gen => ta.exp < 0
+        ta.exp < tb.exp => true
+        ta.exp > tb.exp => false
+        lc := ta.exp * ta.gen
+        (a - lc) < (b - lc)
+

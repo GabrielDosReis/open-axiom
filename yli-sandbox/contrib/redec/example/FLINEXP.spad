@@ -1,0 +1,29 @@
+)abbrev category FLINEXP FullyLinearlyExplicitRingOver
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ S is \spadtype{FullyLinearlyExplicitRingOver R} means that S is a
+++ \spadtype{LinearlyExplicitRingOver R} and, in addition, if R is a
+++ \spadtype{LinearlyExplicitRingOver Integer}, then so is S
+FullyLinearlyExplicitRingOver(R:Ring):Category ==
+  LinearlyExplicitRingOver R with
+    if (R has LinearlyExplicitRingOver Integer) then
+            LinearlyExplicitRingOver Integer
+ add
+  if not(R is Integer) then
+    if (R has LinearlyExplicitRingOver Integer) then
+      reducedSystem(m:Matrix %):Matrix(Integer) ==
+        reducedSystem(reducedSystem(m)@Matrix(R))
+
+      reducedSystem(m:Matrix %, v:Vector %):
+        Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
+          rec := reducedSystem(m, v)@Record(mat:Matrix R, vec:Vector R)
+          reducedSystem(rec.mat, rec.vec)
+

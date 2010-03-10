@@ -1,0 +1,23 @@
+)abbrev domain OPSIG OperatorSignature
+++ Author: Gabriel Dos Reis
+++ Date Created: December 20, 2008
+++ Date Last Modified: December 20, 2008
+++ Description:
+++   This the datatype for an operator-signature pair.
+OperatorSignature(): Public == Private where
+  Public == OperatorCategory Identifier with
+    signature: % -> Signature
+      ++ signature(x) returns the signature of `x'.
+    construct: (Identifier,Signature) -> %
+      ++ construct(op,sig) construct a signature-operator with
+      ++ operator name `op', and signature `sig'.
+  Private == add
+    construct(o,s) == LIST(o,s)$Lisp
+    name x == CAR(x)$Lisp
+    signature x == CADR(x)$Lisp
+    x = y == EQUAL(x,y)$Lisp
+    arity x == (#source signature x)::Arity
+    coerce(x: %): OutputForm ==
+      infix('_:::OutputForm, name(x)::OutputForm, 
+              signature(x)::OutputForm)
+

@@ -1,0 +1,47 @@
+)abbrev domain FFNB FiniteFieldNormalBasis
+++ Authors: J.Grabmeier, A.Scheerhorn
+++ Date Created: 26.03.1991
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Constructors: FiniteFieldNormalBasisExtensionByPolynomial,
+++  FiniteFieldPolynomialPackage
+++ Also See: FiniteField, FiniteFieldCyclicGroup
+++ AMS Classifications:
+++ Keywords: finite field, normal basis
+++ References:
+++  R.Lidl, H.Niederreiter: Finite Field, Encyclopedia of Mathematics and
+++  Its Applications, Vol. 20, Cambridge Univ. Press, 1983, ISBN 0 521 30240 4
+++  J. Grabmeier, A. Scheerhorn: Finite Fields in AXIOM.
+++   AXIOM Technical Report Series, ATR/5 NP2522.
+++ Description:
+++  FiniteFieldNormalBasis(p,n) implements a
+++  finite extension field of degree n over the prime field with p elements.
+++  The elements are represented by coordinate vectors with respect to
+++  a normal basis,
+++  i.e. a basis consisting of the conjugates (q-powers) of an element, in
+++  this case called normal element.
+++  This is chosen as a root of the extension polynomial
+++  created by \spadfunFrom{createNormalPoly}{FiniteFieldPolynomialPackage}.
+FiniteFieldNormalBasis(p,extdeg):_
+  Exports == Implementation where
+  p : PositiveInteger
+  extdeg: PositiveInteger                    -- the extension degree
+  NNI     ==> NonNegativeInteger
+  FFF  ==> FiniteFieldFunctions(PrimeField(p))
+  TERM    ==> Record(value:PrimeField(p),index:SingleInteger)
+  Exports ==> FiniteAlgebraicExtensionField(PrimeField(p))  with
+    getMultiplicationTable: ()   -> Vector List TERM
+      ++ getMultiplicationTable() returns the multiplication
+      ++ table for the normal basis of the field.
+      ++ This table is used to perform multiplications between field elements.
+    getMultiplicationMatrix: ()  -> Matrix PrimeField(p)
+      ++ getMultiplicationMatrix() returns the multiplication table in
+      ++ form of a matrix.
+    sizeMultiplication:()   -> NNI
+      ++ sizeMultiplication() returns the number of entries in the
+      ++ multiplication table of the field. Note: The time of multiplication
+      ++ of field elements depends on this size.
+
+  Implementation ==> FiniteFieldNormalBasisExtensionByPolynomial(PrimeField(p),_
+                    createLowComplexityNormalBasis(extdeg)$FFF)
+

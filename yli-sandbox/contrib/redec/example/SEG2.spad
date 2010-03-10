@@ -1,0 +1,51 @@
+import Type
+import OrderedRing
+import Segment
+import List
+)abbrev package SEG2 SegmentFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated: June 4, 1991
+++ Basic Operations:
+++ Related Domains: Segment, UniversalSegment
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++   This package provides operations for mapping functions onto segments.
+
+SegmentFunctions2(R:Type, S:Type): public == private where
+  public ==> with
+    map: (R -> S, Segment R) -> Segment S
+        ++ map(f,l..h) returns a new segment \spad{f(l)..f(h)}.
+
+    if R has OrderedRing then
+      map: (R -> S, Segment R) -> List S
+        ++ map(f,s) expands the segment s, applying \spad{f} to each
+        ++ value.  For example, if \spad{s = l..h by k}, then the list
+        ++ \spad{[f(l), f(l+k),..., f(lN)]} is computed, where
+        ++ \spad{lN <= h < lN+k}.
+
+
+  private ==> add
+    map(f : R->S, r : Segment R): Segment S ==
+      SEGMENT(f lo r,f hi r)$Segment(S)
+
+    if R has OrderedRing then
+     map(f : R->S, r : Segment R): List S ==
+       lr := nil()$List(S)
+       l := lo r
+       h := hi r
+       inc := (incr r)::R
+       if inc > 0 then
+         while l <= h repeat
+           lr := concat(f(l), lr)
+           l := l + inc
+       else
+         while l >= h repeat
+           lr := concat(f(l), lr)
+           l := l + inc
+       reverse_! lr
+

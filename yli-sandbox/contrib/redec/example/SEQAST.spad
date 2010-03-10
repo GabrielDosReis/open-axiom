@@ -1,0 +1,22 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain SEQAST SequenceAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a block of expressions.
+SequenceAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List SpadAst
+      ++ body(e) returns the list of expressions in the sequence
+      ++ of instruction `e'.
+    last: % -> SpadAst
+      ++ last(e) returns the last instruction in `e'.
+  Private == add
+    import Pair
+    Rep == Pair(Symbol,List SpadAst)
+    body x == second rep x
+    last x == last(second rep x)$List(SpadAst)
+    coerce(x: %): OutputForm ==
+      elt('SequenceAst::OutputForm,
+        ['body::OutputForm = body(x)::OutputForm])$OutputForm

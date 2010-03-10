@@ -1,0 +1,181 @@
+)set mess autoload on
+)abbrev domain PROPFRML PropositionalFormula
+++ Author: Gabriel Dos Reis
+++ Date Created: Januray 14, 2008
+++ Date Last Modified: May 11, 2009
+++ Description: This domain implements propositional formula build
+++ over a term domain, that itself belongs to PropositionalLogic
+PropositionalFormula(T: SetCategory): Public == Private where
+  Public == Join(PropositionalLogic, CoercibleFrom T) with
+    isTerm : % -> Maybe T
+      ++ \spad{isTerm f} returns a value \spad{v} such that
+      ++ \spad{v case T} holds if the formula \spad{f} is a term.
+
+    isNot : % -> Maybe %
+      ++ \spad{isNot f} returns a value \spad{v} such that
+      ++ \spad{v case %} holds if the formula \spad{f} is a negation.
+
+    isAnd : % -> Maybe Pair(%,%)
+      ++ \spad{isAnd f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is a conjunction formula.
+
+    isOr : % -> Maybe Pair(%,%)
+      ++ \spad{isOr f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is a disjunction formula.
+
+    isImplies : % -> Maybe Pair(%,%)
+      ++ \spad{isImplies f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is an implication formula.
+
+    isEquiv : % -> Maybe Pair(%,%)
+      ++ \spad{isEquiv f} returns a value \spad{v} such that 
+      ++ \spad{v case Pair(%,%)} holds if the formula \spad{f}
+      ++ is an equivalence formula.
+
+  Private == add
+    FORMULA ==> Union(base: T, unForm: %,
+                  binForm: Record(op: Symbol, lhs: %, rhs: %))
+
+    Rep == FORMULA
+
+    coerce(t: T): % ==
+      per [t]$FORMULA
+
+    not p ==
+      per [p]$FORMULA
+
+    binaryForm(o: Symbol, l: %, r: %): % ==
+      per [[o, l, r]$Record(op: Symbol, lhs: %, rhs: %)]$FORMULA
+
+    p and q ==
+      binaryForm('_and, p, q)
+
+    p or q ==
+      binaryForm('_or, p, q)
+
+    implies(p,q) ==
+      binaryForm('implies, p, q)
+
+    equiv(p,q) ==
+      binaryForm('equiv, p, q)
+
+    -- returns true if the proposition `p' is a formula of kind
+    -- indicated by `o'.
+    isBinaryNode?(p: %, o: Symbol): Boolean ==
+      p' := rep p
+      p' case binForm and p'.binForm.op = o
+
+    -- returns the operands of a binary formula node
+    binaryOperands(p: %): Pair(%,%) ==
+      p' := (rep p).binForm
+      pair(p'.lhs,p'.rhs)$Pair(%,%)
+
+    isTerm f ==
+      rep f case base => just rep(f).base
+      nothing
+
+    isNot f ==
+      rep f case unForm => just rep(f).unForm
+      nothing
+
+    isAnd f ==
+      isBinaryNode?(f,'_and) => just binaryOperands f
+      nothing
+
+    isOr f ==
+      isBinaryNode?(f,'_or) => just binaryOperands f
+      nothing
+
+    isImplies f ==
+      isBinaryNode?(f, 'implies) => just binaryOperands f
+      nothing
+
+    isEquiv f ==
+      isBinaryNode?(f,'equiv) => just binaryOperands f
+      nothing
+
+    -- Unparsing grammar.
+    --
+    -- Ideally, the following syntax would the external form
+    -- Formula:
+    --   EquivFormula
+    --
+    -- EquivFormula:
+    --   ImpliesFormula
+    --   ImpliesFormula <=> EquivFormula
+    --
+    -- ImpliesFormula:
+    --   OrFormula
+    --   OrFormula => ImpliesFormula
+    --
+    -- OrFormula:
+    --   AndFormula
+    --   AndFormula or OrFormula 
+    -- 
+    -- AndFormula
+    --   NotFormula
+    --   NotFormula and AndFormula
+    --
+    -- NotFormula:
+    --   PrimaryFormula
+    --   not NotFormula
+    --
+    -- PrimaryFormula:
+    --   Term
+    --   ( Formula )
+    --
+    -- Note: Since the token '=>' already means a construct different
+    --       from what we would like to have as a notation for
+    --       propositional logic, we will output the formula `p => q'
+    --       as implies(p,q), which looks like a function call.
+    --       Similarly, we do not have the token `<=>' for logical
+    --       equivalence; so we unparser `p <=> q' as equiv(p,q).
+    --
+    --       So, we modify the nonterminal PrimaryFormula to read
+    --       PrimaryFormula:
+    --         Term
+    --         implies(Formula, Formula)
+    --         equiv(Formula, Formula)
+    formula: % -> OutputForm
+    coerce(p: %): OutputForm ==
+      formula p
+
+    primaryFormula(p: %): OutputForm ==
+      (t := isTerm p) case T => t@T::OutputForm
+      if rep p case binForm then
+         p' := (rep p).binForm
+         p'.op = 'implies or p'.op = 'equiv =>
+           return elt(outputForm p'.op, 
+                    [formula p'.lhs, formula p'.rhs])$OutputForm
+      paren(formula p)$OutputForm
+
+    notFormula(p: %): OutputForm ==
+      isNot p case % =>
+        elt(outputForm '_not, [notFormula((rep p).unForm)])$OutputForm
+      primaryFormula p
+
+    andFormula(p: %): OutputForm ==
+      isAnd p case Pair(%,%) =>
+        p' := (rep p).binForm
+        -- ??? idealy, we should be using `and$OutputForm' but
+        -- ??? a bug in the compiler currently prevents that.
+        infix(outputForm '_and, notFormula p'.lhs, 
+          andFormula p'.rhs)$OutputForm
+      notFormula p
+
+    orFormula(p: %): OutputForm ==
+      isOr p case Pair(%,%) =>
+        p' := (rep p).binForm
+        -- ??? idealy, we should be using `or$OutputForm' but
+        -- ??? a bug in the compiler currently prevents that.
+        infix(outputForm '_or, andFormula p'.lhs, 
+          orFormula p'.rhs)$OutputForm
+      andFormula p
+
+    formula p ==
+      -- Note: this should be equivFormula, but see the explanation above.
+      orFormula p
+

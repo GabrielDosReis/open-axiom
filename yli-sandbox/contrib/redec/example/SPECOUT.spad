@@ -1,0 +1,77 @@
+)abbrev package SPECOUT SpecialOutputPackage
+++ Author: Stephen M. Watt
+++ Date Created: September 1986
+++ Date Last Updated: May 23, 1991
+++ Basic Operations: outputAsFortran, outputAsScript, outputAsTex
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: SpecialOutputPackage allows FORTRAN, Tex and
+++   Script Formula Formatter output from programs.
+
+SpecialOutputPackage: public == private where
+  public == with
+    outputAsFortran: (String,OutputForm) -> Void
+      ++ outputAsFortran(v,o) sends output v = o in FORTRAN format
+      ++ to the destination defined by \spadsyscom{set output fortran}.
+    outputAsFortran: OutputForm          -> Void
+      ++ outputAsFortran(o) sends output o in FORTRAN format.
+    outputAsScript:  OutputForm          -> Void
+      ++ outputAsScript(o) sends output o in Script Formula Formatter format
+      ++ to the destination defined by \spadsyscom{set output formula}.
+    outputAsTex:     OutputForm          -> Void
+      ++ outputAsTex(o) sends output o in Tex format to the destination
+      ++ defined by \spadsyscom{set output tex}.
+    outputAsFortran: List OutputForm     -> Void
+      ++ outputAsFortran(l) sends (for each expression in the list l)
+      ++ output in FORTRAN format to the destination defined by
+      ++ \spadsyscom{set output fortran}.
+    outputAsScript:  List OutputForm     -> Void
+      ++ outputAsScript(l) sends (for each expression in the list l)
+      ++ output in Script Formula Formatter format to the destination defined.
+      ++ by \spadsyscom{set output forumula}.
+    outputAsTex:     List OutputForm     -> Void
+      ++ outputAsTex(l) sends (for each expression in the list l)
+      ++ output in Tex format to the destination as defined by
+      ++ \spadsyscom{set output tex}.
+
+  private == add
+    e : OutputForm
+    l : List OutputForm
+    var : String
+    --ExpressionPackage()
+
+    juxtaposeTerms: List OutputForm -> OutputForm
+    juxtaposeTerms l == blankSeparate l
+
+    outputAsFortran e ==
+      dispfortexp$Lisp e
+      void()$Void
+
+    outputAsFortran(var,e) ==
+      e := var::Symbol::OutputForm  = e
+      dispfortexp(e)$Lisp
+      void()$Void
+
+    outputAsFortran l ==
+      dispfortexp$Lisp juxtaposeTerms l
+      void()$Void
+
+    outputAsScript e ==
+      formulaFormat$Lisp e
+      void()$Void
+
+    outputAsScript l ==
+      formulaFormat$Lisp juxtaposeTerms l
+      void()$Void
+
+    outputAsTex e ==
+      texFormat$Lisp e
+      void()$Void
+
+    outputAsTex l ==
+      texFormat$Lisp juxtaposeTerms l
+      void()$Void
+

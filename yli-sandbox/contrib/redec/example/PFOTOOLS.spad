@@ -1,0 +1,52 @@
+)abbrev package PFOTOOLS PointsOfFiniteOrderTools
+++ Utilities for PFOQ and PFO
+++ Author: Manuel Bronstein
+++ Date Created: 25 Aug 1988
+++ Date Last Updated: 11 Jul 1990
+PointsOfFiniteOrderTools(UP, UPUP): Exports == Implementation where
+  UP   : UnivariatePolynomialCategory Fraction Integer
+  UPUP : UnivariatePolynomialCategory Fraction UP
+
+  PI  ==> PositiveInteger
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  Q   ==> Fraction Integer
+
+  Exports ==> with
+    getGoodPrime : Z -> PI
+      ++ getGoodPrime n returns the smallest prime not dividing n
+    badNum       : UP   -> Record(den:Z, gcdnum:Z)
+        ++ badNum(p) \undocumented
+    badNum       : UPUP -> Z
+        ++ badNum(u) \undocumented
+    mix          : List Record(den:Z, gcdnum:Z) -> Z
+        ++ mix(l) \undocumented
+    doubleDisc   : UPUP -> Z
+        ++ doubleDisc(u) \undocumented
+    polyred      : UPUP -> UPUP
+        ++ polyred(u) \undocumented
+
+  Implementation ==> add
+    import IntegerPrimesPackage(Z)
+    import UnivariatePolynomialCommonDenominator(Z, Q, UP)
+
+    mix l          == lcm(lcm [p.den for p in l], gcd [p.gcdnum for p in l])
+    badNum(p:UPUP) == mix [badNum(retract(c)@UP) for c in coefficients p]
+
+    polyred r ==
+      lcm [commonDenominator(retract(c)@UP) for c in coefficients r] * r
+
+    badNum(p:UP) ==
+      cd := splitDenominator p
+      [cd.den, gcd [retract(c)@Z for c in coefficients(cd.num)]]
+
+    getGoodPrime n ==
+      p:PI := 3
+      while zero?(n rem p) repeat
+        p := nextPrime(p::Z)::PI
+      p
+
+    doubleDisc r ==
+      d := retract(discriminant r)@UP
+      retract(discriminant((d exquo gcd(d, differentiate d))::UP))@Z
+

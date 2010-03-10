@@ -1,0 +1,24 @@
+)abbrev category RMODULE RightModule
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of right modules over an rng (ring not necessarily with unit).
+++ This is an abelian group which supports right multiplation by elements of
+++ the rng.
+++
+++ Axioms:
+++   \spad{ x*(a*b) = (x*a)*b }
+++   \spad{ x*(a+b) = (x*a)+(x*b) }
+++   \spad{ (x+y)*x = (x*a)+(y*a) }
+RightModule(R:Rng):Category == AbelianGroup with
+    --operations
+      "*": (%,R) -> %  ++ x*r returns the right multiplication of the module element x
+                       ++ by the ring element r.
+

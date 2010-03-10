@@ -1,0 +1,88 @@
+)abbrev package IBPTOOLS IntegralBasisPolynomialTools
+++ Author: Clifton Williamson
+++ Date Created: 13 August 1993
+++ Date Last Updated: 17 August 1993
+++ Basic Operations: mapUnivariate, mapBivariate
+++ Related Domains: PAdicWildFunctionFieldIntegralBasis(K,R,UP,F)
+++ Also See: WildFunctionFieldIntegralBasis, FunctionFieldIntegralBasis
+++ AMS Classifications:
+++ Keywords: function field, finite field, integral basis
+++ Examples:
+++ References:
+++ Description:  IntegralBasisPolynomialTools provides functions for
+++   mapping functions on the coefficients of univariate and bivariate
+++   polynomials.
+
+IntegralBasisPolynomialTools(K,R,UP,L): Exports == Implementation where
+  K  : Ring
+  R  : UnivariatePolynomialCategory K
+  UP : UnivariatePolynomialCategory R
+  L  : Ring
+
+  MAT ==> Matrix
+  SUP ==> SparseUnivariatePolynomial
+
+  Exports ==> with
+    mapUnivariate: (L -> K,SUP L) -> R
+      ++ mapUnivariate(f,p(x)) applies the function \spad{f} to the
+      ++ coefficients of \spad{p(x)}.
+
+    mapUnivariate: (K -> L,R) -> SUP L
+      ++ mapUnivariate(f,p(x)) applies the function \spad{f} to the
+      ++ coefficients of \spad{p(x)}.
+
+    mapUnivariateIfCan: (L -> Union(K,"failed"),SUP L) -> Union(R,"failed")
+      ++ mapUnivariateIfCan(f,p(x)) applies the function \spad{f} to the
+      ++ coefficients of \spad{p(x)}, if possible, and returns
+      ++ \spad{"failed"} otherwise.
+
+    mapMatrixIfCan: (L -> Union(K,"failed"),MAT SUP L) -> Union(MAT R,"failed")
+      ++ mapMatrixIfCan(f,mat) applies the function \spad{f} to the
+      ++ coefficients of the entries of \spad{mat} if possible, and returns
+      ++ \spad{"failed"} otherwise.
+
+    mapBivariate: (K -> L,UP) -> SUP SUP L
+      ++ mapBivariate(f,p(x,y)) applies the function \spad{f} to the
+      ++ coefficients of \spad{p(x,y)}.
+
+  Implementation ==> add
+
+    mapUnivariate(f:L -> K,poly:SUP L) ==
+      ans : R := 0
+      while not zero? poly repeat
+        ans := ans + monomial(f leadingCoefficient poly,degree poly)
+        poly := reductum poly
+      ans
+
+    mapUnivariate(f:K -> L,poly:R) ==
+      ans : SUP L := 0
+      while not zero? poly repeat
+        ans := ans + monomial(f leadingCoefficient poly,degree poly)
+        poly := reductum poly
+      ans
+
+    mapUnivariateIfCan(f,poly) ==
+      ans : R := 0
+      while not zero? poly repeat
+        (lc := f leadingCoefficient poly) case "failed" => return "failed"
+        ans := ans + monomial(lc :: K,degree poly)
+        poly := reductum poly
+      ans
+
+    mapMatrixIfCan(f,mat) ==
+      m := nrows mat; n := ncols mat
+      matOut : MAT R := new(m,n,0)
+      for i in 1..m repeat for j in 1..n repeat
+        (poly := mapUnivariateIfCan(f,qelt(mat,i,j))) case "failed" =>
+          return "failed"
+        qsetelt_!(matOut,i,j,poly :: R)
+      matOut
+
+    mapBivariate(f,poly) ==
+      ans : SUP SUP L := 0
+      while not zero? poly repeat
+        ans :=
+          ans + monomial(mapUnivariate(f,leadingCoefficient poly),degree poly)
+        poly := reductum poly
+      ans
+

@@ -1,0 +1,31 @@
+)abbrev domain INDE IndexedExponents
+++ Author: James Davenport
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   IndexedExponents of an ordered set of variables gives a representation
+++ for the degree of polynomials in commuting variables. It gives an ordered
+++ pairing of non negative integer exponents with variables
+
+IndexedExponents(Varset:OrderedSet): C == T where
+  C == Join(OrderedAbelianMonoidSup,
+            IndexedDirectProductCategory(NonNegativeInteger,Varset))
+  T == IndexedDirectProductOrderedAbelianMonoidSup(NonNegativeInteger,Varset) add
+      Term ==  Record(k:Varset,c:NonNegativeInteger)
+      Rep ==  List Term
+      x:%
+      t:Term
+      coerceOF(t: Term):OutputForm ==     -- converts term to OutputForm
+         t.c = 1 => (t.k)::OutputForm
+         (t.k)::OutputForm ** (t.c)::OutputForm
+      coerce(x:%):OutputForm == -- converts entire exponents to OutputForm
+         null x => 1::Integer::OutputForm
+         null rest x => coerceOF(first x)
+         reduce("*",[coerceOF t for t in rep(x)])
+

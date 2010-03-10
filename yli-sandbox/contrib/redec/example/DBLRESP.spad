@@ -1,0 +1,50 @@
+)abbrev package DBLRESP DoubleResultantPackage
+++ Residue resultant
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 12 July 1990
+++ Description:
+++ This package provides functions for computing the residues
+++ of a function on an algebraic curve.
+DoubleResultantPackage(F, UP, UPUP, R): Exports == Implementation where
+  F   : Field
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+  R   : FunctionFieldCategory(F, UP, UPUP)
+
+  RF  ==> Fraction UP
+  UP2 ==> SparseUnivariatePolynomial UP
+  UP3 ==> SparseUnivariatePolynomial UP2
+
+  Exports ==> with
+    doubleResultant: (R, UP -> UP) -> UP
+      ++ doubleResultant(f, ') returns p(x) whose roots are
+      ++ rational multiples of the residues of f at all its
+      ++ finite poles. Argument ' is the derivation to use.
+
+  Implementation ==> add
+    import CommuteUnivariatePolynomialCategory(F, UP, UP2)
+    import UnivariatePolynomialCommonDenominator(UP, RF, UPUP)
+
+    UP22   : UP   -> UP2
+    UP23   : UPUP -> UP3
+    remove0: UP   -> UP             -- removes the power of x dividing p
+
+    remove0 p ==
+      primitivePart((p exquo monomial(1, minimumDegree p))::UP)
+
+    UP22 p ==
+      map(#1::UP, p)$UnivariatePolynomialCategoryFunctions2(F,UP,UP,UP2)
+
+    UP23 p ==
+      map(UP22(retract(#1)@UP),
+          p)$UnivariatePolynomialCategoryFunctions2(RF, UPUP, UP2, UP3)
+
+    doubleResultant(h, derivation) ==
+      cd := splitDenominator lift h
+      d  := (cd.den exquo (g := gcd(cd.den, derivation(cd.den))))::UP
+      r  := swap primitivePart swap resultant(UP23(cd.num)
+          - ((monomial(1, 1)$UP :: UP2) * UP22(g * derivation d))::UP3,
+                                              UP23 definingPolynomial())
+      remove0 resultant(r, UP22 d)
+

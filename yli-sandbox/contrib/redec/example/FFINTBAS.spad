@@ -1,0 +1,120 @@
+)abbrev package FFINTBAS FunctionFieldIntegralBasis
+++ Integral bases for function fields of dimension one
+++ Author: Victor Miller
+++ Date Created: 9 April 1990
+++ Date Last Updated: 20 September 1994
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++ In this package R is a Euclidean domain and F is a framed algebra
+++ over R.  The package provides functions to compute the integral
+++ closure of R in the quotient field of F.  It is assumed that
+++ \spad{char(R/P) = char(R)} for any prime P of R.  A typical instance of
+++ this is when \spad{R = K[x]} and F is a function field over R.
+
+
+FunctionFieldIntegralBasis(R,UP,F): Exports == Implementation where
+  R  : EuclideanDomain with 
+        squareFree: $ -> Factored $
+                ++ squareFree(x) returns a square-free factorisation of x 
+  UP : UnivariatePolynomialCategory R
+  F  : FramedAlgebra(R,UP)
+
+  I   ==> Integer
+  Mat ==> Matrix R
+  NNI ==> NonNegativeInteger
+
+  Exports ==> with
+    integralBasis : () -> Record(basis: Mat, basisDen: R, basisInv:Mat)
+      ++ \spad{integralBasis()} returns a record
+      ++ \spad{[basis,basisDen,basisInv]} containing information regarding
+      ++ the integral closure of R in the quotient field of F, where
+      ++ F is a framed algebra with R-module basis \spad{w1,w2,...,wn}.
+      ++ If \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of \spad{basis} contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+    localIntegralBasis : R -> Record(basis: Mat, basisDen: R, basisInv:Mat)
+      ++ \spad{integralBasis(p)} returns a record
+      ++ \spad{[basis,basisDen,basisInv]} containing information regarding
+      ++ the local integral closure of R at the prime \spad{p} in the quotient
+      ++ field of F, where F is a framed algebra with R-module basis
+      ++ \spad{w1,w2,...,wn}.
+      ++ If \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the local integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of \spad{basis} contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+
+  Implementation ==> add
+    import IntegralBasisTools(R, UP, F)
+    import ModularHermitianRowReduction(R)
+    import TriangularMatrixOperations(R, Vector R, Vector R, Matrix R)
+
+    squaredFactors: R -> R
+    squaredFactors px ==
+           */[(if ffe.exponent > 1 then ffe.factor else 1$R)
+                for ffe in factors((squareFree px)@(Factored R))]
+
+    iIntegralBasis: (Mat,R,R) -> Record(basis: Mat, basisDen: R, basisInv:Mat)
+    iIntegralBasis(tfm,disc,sing) ==
+      -- tfm = trace matrix of current order
+      n := rank()$F; tfm0 := copy tfm; disc0 := disc
+      rb := scalarMatrix(n, 1); rbinv := scalarMatrix(n, 1)
+      -- rb    = basis matrix of current order
+      -- rbinv = inverse basis matrix of current order
+      -- these are wrt the original basis for F
+      rbden : R := 1; index : R := 1; oldIndex : R := 1
+      -- rbden = denominator for current basis matrix
+      -- index = index of original order in current order
+      not sizeLess?(1, sing) => [rb, rbden, rbinv]
+      repeat
+        -- compute the p-radical
+        idinv := transpose squareTop rowEchelon(tfm, sing)
+        -- [u1,..,un] are the coordinates of an element of the p-radical
+        -- iff [u1,..,un] * idinv is in sing * R^n
+        id := rowEchelon LowTriBddDenomInv(idinv, sing)
+        -- id = basis matrix of the p-radical
+        idinv := UpTriBddDenomInv(id, sing)
+        -- id * idinv = sing * identity
+        -- no need to check for inseparability in this case
+        rbinv := idealiser(id * rb, rbinv * idinv, sing * rbden)
+        index := diagonalProduct rbinv
+        rb := rowEchelon LowTriBddDenomInv(rbinv, rbden * sing)
+        g := matrixGcd(rb,sing,n)
+        if sizeLess?(1,g) then rb := (rb exquo g) :: Mat
+        rbden := rbden * (sing quo g)
+        rbinv := UpTriBddDenomInv(rb, rbden)
+        disc := disc0 quo (index * index)
+        indexChange := index quo oldIndex; oldIndex := index
+        sing := gcd(indexChange, squaredFactors disc)
+        not sizeLess?(1, sing) => return [rb, rbden, rbinv]
+        tfm := ((rb * tfm0 * transpose rb) exquo (rbden * rbden)) :: Mat
+
+    integralBasis() ==
+      n := rank()$F; p := characteristic()$F
+      (not zero? p) and (n >= p) =>
+        error "integralBasis: possible wild ramification"
+      tfm := traceMatrix()$F; disc := determinant tfm
+      sing := squaredFactors disc    -- singularities of relative Spec
+      iIntegralBasis(tfm,disc,sing)
+
+    localIntegralBasis prime ==
+      n := rank()$F; p := characteristic()$F
+      (not zero? p) and (n >= p) =>
+        error "integralBasis: possible wild ramification"
+      tfm := traceMatrix()$F; disc := determinant tfm
+      (disc exquo (prime * prime)) case "failed" =>
+        [scalarMatrix(n,1),1,scalarMatrix(n,1)]
+      iIntegralBasis(tfm,disc,prime)
+

@@ -1,0 +1,62 @@
+)abbrev package REDORDER ReductionOfOrder
+++ Author: Manuel Bronstein
+++ Date Created: 4 November 1991
+++ Date Last Updated: 3 February 1994
+++ Description:
+++ \spadtype{ReductionOfOrder} provides
+++ functions for reducing the order of linear ordinary differential equations
+++ once some solutions are known.
+++ Keywords: differential equation, ODE
+ReductionOfOrder(F, L): Exports == Impl where
+  F: Field
+  L: LinearOrdinaryDifferentialOperatorCategory F
+
+  Z ==> Integer
+  A ==> PrimitiveArray F
+
+  Exports ==> with
+    ReduceOrder: (L, F) -> L
+      ++ ReduceOrder(op, s) returns \spad{op1} such that for any solution
+      ++ \spad{z} of \spad{op1 z = 0}, \spad{y = s \int z} is a solution of
+      ++ \spad{op y = 0}. \spad{s} must satisfy \spad{op s = 0}.
+    ReduceOrder: (L, List F) -> Record(eq:L, op:List F)
+      ++ ReduceOrder(op, [f1,...,fk]) returns \spad{[op1,[g1,...,gk]]} such that
+      ++ for any solution \spad{z} of \spad{op1 z = 0},
+      ++ \spad{y = gk \int(g_{k-1} \int(... \int(g1 \int z)...)} is a solution
+      ++ of \spad{op y = 0}. Each \spad{fi} must satisfy \spad{op fi = 0}.
+
+  Impl ==> add
+    ithcoef   : (L, Z, A) -> F
+    locals    : (A, Z, Z) -> F
+    localbinom: (Z, Z) -> Z
+
+    diff := D()$L
+
+    localbinom(j, i) == (j > i => binomial(j, i+1); 0)
+    locals(s, j, i)  == (j > i => qelt(s, j - i - 1); 0)
+
+    ReduceOrder(l:L, sols:List F) ==
+      empty? sols => [l, empty()]
+      neweq := ReduceOrder(l, sol := first sols)
+      rec := ReduceOrder(neweq, [diff(s / sol) for s in rest sols])
+      [rec.eq, concat_!(rec.op, sol)]
+
+    ithcoef(eq, i, s) ==
+      ans:F := 0
+      while eq ~= 0 repeat
+          j   := degree eq
+          ans := ans + localbinom(j, i) * locals(s,j,i) * leadingCoefficient eq
+          eq  := reductum eq
+      ans
+
+    ReduceOrder(eq:L, sol:F) ==
+      s:A := new(n := degree eq, 0)         -- will contain derivatives of sol
+      si := sol                             -- will run through the derivatives
+      qsetelt_!(s, 0, si)
+      for i in 1..(n-1)::NonNegativeInteger repeat 
+          qsetelt_!(s, i, si := diff si)
+      ans:L := 0
+      for i in 0..(n-1)::NonNegativeInteger repeat
+          ans := ans + monomial(ithcoef(eq, i, s), i)
+      ans
+

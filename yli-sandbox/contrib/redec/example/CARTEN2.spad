@@ -1,0 +1,33 @@
+)abbrev package CARTEN2 CartesianTensorFunctions2
+++ Author: Stephen M. Watt
+++ Date Created: December 1986
+++ Date Last Updated: May 30, 1991
+++ Basic Operations:  reshape, map
+++ Related Domains: CartesianTensor
+++ Also See:
+++ AMS Classifications:
+++ Keywords: tensor
+++ Examples:
+++ References:
+++ Description:
+++   This package provides functions to enable conversion of tensors
+++   given conversion of the components.
+
+CartesianTensorFunctions2(minix, dim, S, T): CTPcat == CTPdef where
+    minix:  Integer
+    dim:    NonNegativeInteger
+    S, T:   CommutativeRing
+    CS  ==> CartesianTensor(minix, dim, S)
+    CT  ==> CartesianTensor(minix, dim, T)
+
+    CTPcat == with
+        reshape: (List T, CS) -> CT
+            ++ reshape(lt,ts) organizes the list of components lt into
+            ++ a tensor with the same shape as ts.
+        map: (S->T,   CS) -> CT
+            ++ map(f,ts) does a componentwise conversion of the tensor ts
+            ++ to a tensor with components of type T.
+    CTPdef == add
+        reshape(l, s) == unravel l
+        map(f, s)     == unravel [f e for e in ravel s]
+

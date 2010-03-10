@@ -1,0 +1,118 @@
+)abbrev package UPSQFREE UnivariatePolynomialSquareFree
+++ Author: Dave Barton, Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: squareFree, squareFreePart
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package provides for square-free decomposition of
+++ univariate polynomials over arbitrary rings, i.e.
+++ a partial factorization such that each factor is a product
+++ of irreducibles with multiplicity one and the factors are
+++ pairwise relatively prime. If the ring
+++ has characteristic zero, the result is guaranteed to satisfy
+++ this condition. If the ring is an infinite ring of
+++ finite characteristic, then it may not be possible to decide when
+++ polynomials contain factors which are pth powers. In this
+++ case, the flag associated with that polynomial is set to "nil"
+++ (meaning that that polynomials are not guaranteed to be square-free).
+
+UnivariatePolynomialSquareFree(RC:IntegralDomain,P):C == T
+  where
+    fUnion ==> Union("nil", "sqfr", "irred", "prime")
+    FF     ==> Record(flg:fUnion, fctr:P, xpnt:Integer)
+    P:Join(UnivariatePolynomialCategory(RC),IntegralDomain) with
+      gcd: (%,%) -> %
+        ++ gcd(p,q) computes the greatest-common-divisor of p and q.
+
+    C == with
+      squareFree: P -> Factored(P)
+        ++ squareFree(p) computes the square-free factorization of the
+        ++ univariate polynomial p. Each factor has no repeated roots, and the
+        ++ factors are pairwise relatively prime.
+      squareFreePart: P -> P
+        ++ squareFreePart(p) returns a polynomial which has the same
+        ++ irreducible factors as the univariate polynomial p, but each
+        ++ factor has multiplicity one.
+      BumInSepFFE: FF -> FF
+        ++ BumInSepFFE(f) is a local function, exported only because
+        ++ it has multiple conditional definitions.
+
+    T == add
+
+      if RC has CharacteristicZero then
+        squareFreePart(p:P) == (p exquo gcd(p, differentiate p))::P
+      else
+        squareFreePart(p:P) ==
+          unit(s := squareFree(p)$%) * */[f.factor for f in factors s]
+
+      if RC has FiniteFieldCategory then
+        BumInSepFFE(ffe:FF) ==
+           ["sqfr", map(charthRoot,ffe.fctr), characteristic$P*ffe.xpnt]
+      else if RC has CharacteristicNonZero then
+         BumInSepFFE(ffe:FF) ==
+            np := multiplyExponents(ffe.fctr,characteristic$P:NonNegativeInteger)
+            (nthrp := charthRoot(np)) case "failed" =>
+               ["nil", np, ffe.xpnt]
+            ["sqfr", nthrp, characteristic$P*ffe.xpnt]
+
+      else
+        BumInSepFFE(ffe:FF) ==
+          ["nil",
+           multiplyExponents(ffe.fctr,characteristic$P:NonNegativeInteger),
+            ffe.xpnt]
+
+
+      if RC has CharacteristicZero then
+        squareFree(p:P) ==             --Yun's algorithm - see SYMSAC '76, p.27
+           --Note ci primitive is, so GCD's don't need to %do contents.
+           --Change gcd to return cofctrs also?
+           ci:=p; di:=differentiate(p); pi:=gcd(ci,di)
+           degree(pi)=0 =>
+             (u,c,a):=unitNormal(p)
+             makeFR(u,[["sqfr",c,1]])
+           i:NonNegativeInteger:=0; lffe:List FF:=[]
+           lcp := leadingCoefficient p
+           while degree(ci)~=0 repeat
+              ci:=(ci exquo pi)::P
+              di:=(di exquo pi)::P - differentiate(ci)
+              pi:=gcd(ci,di)
+              i:=i+1
+              degree(pi) > 0 =>
+                 lcp:=(lcp exquo (leadingCoefficient(pi)**i))::RC
+                 lffe:=[["sqfr",pi,i],:lffe]
+           makeFR(lcp::P,lffe)
+
+      else
+        squareFree(p:P) ==           --Musser's algorithm - see SYMSAC '76, p.27
+             --p MUST BE PRIMITIVE, Any characteristic.
+             --Note ci primitive, so GCD's don't need to %do contents.
+             --Change gcd to return cofctrs also?
+           ci := gcd(p,differentiate(p))
+           degree(ci)=0 =>
+             (u,c,a):=unitNormal(p)
+             makeFR(u,[["sqfr",c,1]])
+           di := (p exquo ci)::P
+           i:NonNegativeInteger:=0; lffe:List FF:=[]
+           dunit : P := 1
+           while degree(di)~=0 repeat
+              diprev := di
+              di := gcd(ci,di)
+              ci:=(ci exquo di)::P
+              i:=i+1
+              degree(diprev) = degree(di) =>
+                 lc := (leadingCoefficient(diprev) exquo leadingCoefficient(di))::RC
+                 dunit := lc**i * dunit
+              pi:=(diprev exquo di)::P
+              lffe:=[["sqfr",pi,i],:lffe]
+           dunit := dunit * di ** (i+1)
+           degree(ci)=0 => makeFR(dunit*ci,lffe)
+           redSqfr:=squareFree(divideExponents(ci,characteristic$P)::P)
+           lsnil:= [BumInSepFFE(ffe) for ffe in factorList redSqfr]
+           lffe:=append(lsnil,lffe)
+           makeFR(dunit*(unit redSqfr),lffe)
+

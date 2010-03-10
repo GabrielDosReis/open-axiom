@@ -1,0 +1,158 @@
+import Ring
+import OrderedMonoid
+--import XAlgebra
+--import FreeMonoidCat
+)abbrev domain XPR XPolynomialRing
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain represents generalized polynomials with coefficients
+++ (from a not necessarily commutative ring), and words
+++ belonging to an arbitrary \spadtype{OrderedMonoid}.
+++ This type is used, for instance, by the \spadtype{XDistributedPolynomial} 
+++ domain constructor where the Monoid is free.
+++ Author: Michel Petitot (petitot@lifl.fr)
+
+XPolynomialRing(R:Ring,E:OrderedMonoid): T == C where
+  TERM   ==> Record(k: E, c: R)
+  EX     ==> OutputForm
+  NNI    ==> NonNegativeInteger
+
+  T == Join(Ring, XAlgebra(R), FreeModuleCat(R,E),CoercibleFrom E) with
+    --operations
+      "*": (%,R) -> %
+        ++ \spad{p*r} returns the product of \spad{p} by \spad{r}.
+      "#": % -> NonNegativeInteger
+        ++ \spad{# p} returns the number of terms in \spad{p}.
+      maxdeg: % -> E
+        ++ \spad{maxdeg(p)} returns the greatest word occurring in the polynomial \spad{p}
+        ++ with a non-zero coefficient. An error is produced if  \spad{p} is zero.
+      mindeg: % -> E
+        ++ \spad{mindeg(p)} returns the smallest word occurring in the polynomial \spad{p}
+        ++ with a non-zero coefficient. An error is produced if  \spad{p} is zero.
+      reductum : % -> %   
+        ++ \spad{reductum(p)} returns \spad{p} minus its leading term.
+        ++ An error is produced if  \spad{p} is zero.
+      coef  : (%,E) -> R
+        ++ \spad{coef(p,e)} extracts the coefficient of the monomial \spad{e}.
+        ++ Returns zero if \spad{e} is not present. 
+      constant?:% -> Boolean
+        ++ \spad{constant?(p)} tests whether the polynomial \spad{p} belongs to the
+        ++ coefficient ring.
+      constant: % -> R
+        ++ \spad{constant(p)} return the constant term of \spad{p}.
+      quasiRegular? : % -> Boolean
+        ++ \spad{quasiRegular?(x)} return true if \spad{constant(p)} is zero.
+      quasiRegular : % -> % 
+        ++ \spad{quasiRegular(x)} return \spad{x} minus its constant term.
+      map   : (R -> R, %) -> %
+        ++ \spad{map(fn,x)} returns \spad{Sum(fn(r_i) w_i)} if \spad{x} writes \spad{Sum(r_i w_i)}.
+      if R has Field then "/" : (%,R) -> %
+        ++ \spad{p/r} returns \spad{p*(1/r)}.
+
+    --assertions
+      if R has noZeroDivisors then noZeroDivisors
+      if R has unitsKnown then unitsKnown
+      if R has canonicalUnitNormal then canonicalUnitNormal
+          ++ canonicalUnitNormal guarantees that the function
+          ++ unitCanonical returns the same representative for all
+          ++ associates of any particular element.
+
+
+  C == FreeModule1(R,E) add
+    --representations
+       Rep:=  List TERM
+    --uses
+       repeatMultExpt: (%,NonNegativeInteger) -> %
+    --define
+       1  == [[1$E,1$R]]
+ 
+       characteristic  == characteristic$R
+       #x == #$Rep x
+       maxdeg p == if null p then  error " polynome nul !!"
+                             else p.first.k
+       mindeg p == if null p then  error " polynome nul !!" 
+                             else (last p).k
+       
+       coef(p,e)  ==
+          for tm in p repeat
+            tm.k=e => return tm.c
+            tm.k < e => return 0$R
+          0$R
+
+       constant? p == (p = 0) or (maxdeg(p) = 1$E)
+       constant  p == coef(p,1$E)
+
+       quasiRegular? p == (p=0) or (last p).k ~= 1$E
+       quasiRegular  p == 
+          quasiRegular?(p) => p
+          [t for t in p | not(t.k = 1$E)]
+
+       recip(p) ==
+           p=0 => "failed"
+           p.first.k > 1$E => "failed"
+           (u:=recip(p.first.c)) case "failed" => "failed"
+           (u::R)::%
+ 
+       coerce(r:R) == if r=0$R then 0$% else [[1$E,r]]
+       coerce(n:Integer) == (n::R)::%
+ 
+       if R has noZeroDivisors then
+         p1:% * p2:%  ==
+            null p1 => 0
+            null p2 => 0
+    --        p1.first.k = 1$E => p1.first.c * p2
+            p2 = 1 => p1
+--            +/[[[t1.k*t2.k,t1.c*t2.c]$TERM for t2 in p2]
+--                   for t1 in reverse(p1)]
+            +/[[[t1.k*t2.k,t1.c*t2.c]$TERM for t2 in rep p2]
+                   for t1 in rep p1]
+        else
+         p1:% * p2:%  ==
+            null p1 => 0
+            null p2 => 0
+--            p1.first.k = 1$E => p1.first.c * p2
+            p2 = 1 => p1
+--            +/[[[t1.k*t2.k,r]$TERM for t2 in p2 | not (r:=t1.c*t2.c) =$R 0]
+--                 for t1 in reverse(p1)]
+            +/[[[t1.k*t2.k,r]$TERM for t2 in rep p2 | not (r:=t1.c*t2.c) =$R 0]
+                   for t1 in rep p1]
+       p:% ** nn:NNI  == repeatMultExpt(p,nn)
+       repeatMultExpt(x,nn) ==
+               nn = 0 => 1
+               y:% := x
+               for i in 2..nn repeat y:= x * y
+               y
+              
+       outTerm(r:R, m:E):EX ==
+            r=1 => m::EX
+            m=1 => r::EX
+            r::EX * m::EX
+
+--       coerce(x:%) : EX ==
+--         null x => (0$R) :: EX
+--         le : List EX := nil
+--         for rec in x repeat
+--           rec.c = 1$R => le := cons(rec.k :: EX, le)
+--           rec.k = 1$E => le := cons(rec.c :: EX, le)
+--           le := cons(mkBinary("*"::EX,rec.c :: EX,
+--             rec.k :: EX), le)
+--         1 = #le => first le
+--         mkNary("+" :: EX,le)
+
+       coerce(a:%):EX ==
+            empty? a => (0$R)::EX
+            reduce(_+, reverse_! [outTerm(t.c, t.k) for t in a])$List(EX)
+
+ 
+       if R has Field then
+          x/r == inv(r)*x
+

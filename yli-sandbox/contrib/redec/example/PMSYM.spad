@@ -1,0 +1,25 @@
+)abbrev package PMSYM PatternMatchSymbol
+++ Pattern matching on symbols
+++ Author: Manuel Bronstein
+++ Date Created: 9 Jan 1990
+++ Date Last Updated: 20 June 1991
+++ Description:
+++   This package provides pattern matching functions on symbols.
+++ Keywords: pattern, matching, symbol.
+PatternMatchSymbol(S:SetCategory): with
+  patternMatch: (Symbol, Pattern S, PatternMatchResult(S, Symbol)) ->
+                                           PatternMatchResult(S, Symbol)
+    ++ patternMatch(expr, pat, res) matches the pattern pat to the
+    ++ expression expr; res contains the variables of pat which
+    ++ are already matched and their matches (necessary for recursion).
+ == add
+  import TopLevelPatternMatchControl
+
+  patternMatch(s, p, l) ==
+    generic? p  => addMatch(p, s, l)
+    constant? p =>
+      ((u := retractIfCan(p)@Union(Symbol, "failed")) case Symbol)
+        and (u::Symbol) = s => l
+      failed()
+    failed()
+

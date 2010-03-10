@@ -1,0 +1,39 @@
+)abbrev category ABELMON AbelianMonoid
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of multiplicative monoids, i.e. semigroups with an
+++ additive identity element.
+++
+++ Axioms:
+++   \spad{leftIdentity("+":(%,%)->%,0)}\tab{30}\spad{ 0+x=x }
+++   \spad{rightIdentity("+":(%,%)->%,0)}\tab{30}\spad{ x+0=x }
+-- following domain must be compiled with subsumption disabled
+-- define SourceLevelSubset to be EQUAL
+AbelianMonoid(): Category == AbelianSemiGroup with
+    --operations
+      0: constant -> % 
+        ++ 0 is the additive identity element.
+      sample: constant -> %
+        ++ sample yields a value of type %
+      zero?: % -> Boolean
+        ++ zero?(x) tests if x is equal to 0.
+      "*": (NonNegativeInteger,%) -> %
+        ++ n * x is left-multiplication by a non negative integer
+    add
+      import RepeatedDoubling(%)
+      zero? x == x = 0
+      n:PositiveInteger * x:% == (n::NonNegativeInteger) * x
+      sample() == 0
+      if not (% has Ring) then
+        n:NonNegativeInteger * x:% ==
+          zero? n => 0
+          double(n pretend PositiveInteger,x)
+

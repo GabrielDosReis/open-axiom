@@ -1,0 +1,22 @@
+)abbrev category LOGIC Logic
+++ Author: 
+++ Date Created:
+++ Change History:
+++ Basic Operations: ~, /\, \/
+++ Related Constructors:
+++ Keywords: boolean
+++ Description:  
+++ `Logic' provides the basic operations for lattices,
+++ e.g., boolean algebra.
+
+
+Logic: Category == BasicType with
+       _~:        % -> %
+        ++ ~(x) returns the logical complement of x.
+       _/_\:       (%, %) -> %
+        ++ \spadignore { /\ }returns the logical `meet', e.g. `and'.
+       _\_/:       (%, %) -> %
+        ++ \spadignore{ \/ } returns the logical `join', e.g. `or'.
+  add
+    _\_/(x: %,y: %) == _~( _/_\(_~(x), _~(y)))
+

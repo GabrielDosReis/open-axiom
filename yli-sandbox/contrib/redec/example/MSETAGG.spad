@@ -1,0 +1,18 @@
+import MultiDictionary
+import SetAggregate
+)abbrev category MSETAGG MultisetAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A multi-set aggregate is a set which keeps track of the multiplicity
+++ of its elements.
+MultisetAggregate(S:SetCategory):
+ Category == Join(MultiDictionary S, SetAggregate S)
+

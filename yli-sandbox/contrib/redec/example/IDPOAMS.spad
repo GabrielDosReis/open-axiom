@@ -1,0 +1,37 @@
+)abbrev domain IDPOAMS IndexedDirectProductOrderedAbelianMonoidSup
+++ Indexed direct products of ordered abelian monoid sups \spad{A},
+++ generators indexed by the ordered set S.
+++ All items have finite support: only non-zero terms are stored.
+IndexedDirectProductOrderedAbelianMonoidSup(A:OrderedAbelianMonoidSup,S:OrderedSet):
+    Join(OrderedAbelianMonoidSup,IndexedDirectProductCategory(A,S))
+ ==  IndexedDirectProductOrderedAbelianMonoid(A,S) add
+    --representations
+       Term==  Record(k:S,c:A)
+       Rep:=  List Term
+       x,y: %
+       r: A
+       s: S
+
+       subtractIfCan(x,y) ==
+         empty? y => x
+         empty? x => "failed"
+         x.first.k < y.first.k => "failed"
+         x.first.k > y.first.k =>
+             t:= subtractIfCan(x.rest, y)
+             t case "failed" => "failed"
+             cons( x.first, t)
+         u:=subtractIfCan(x.first.c, y.first.c)
+         u case "failed" => "failed"
+         zero? u => subtractIfCan(x.rest, y.rest)
+         t:= subtractIfCan(x.rest, y.rest)
+         t case "failed" => "failed"
+         cons([x.first.k,u],t)
+
+       sup(x,y) ==
+         empty? y => x
+         empty? x => y
+         x.first.k < y.first.k => cons(y.first,sup(x,y.rest))
+         x.first.k > y.first.k => cons(x.first,sup(x.rest,y))
+         u:=sup(x.first.c, y.first.c)
+         cons([x.first.k,u],sup(x.rest,y.rest))
+

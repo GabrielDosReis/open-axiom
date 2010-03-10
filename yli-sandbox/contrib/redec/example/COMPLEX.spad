@@ -1,0 +1,84 @@
+)abbrev domain COMPLEX Complex
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype {Complex(R)} creates the domain of elements of the form
+++ \spad{a + b * i} where \spad{a} and b come from the ring R,
+++ and i is a new element such that \spad{i**2 = -1}.
+Complex(R:CommutativeRing): ComplexCategory(R) with
+     if R has OpenMath then OpenMath
+   == add
+       Rep := Record(real:R, imag:R)
+
+       if R has OpenMath then 
+         writeOMComplex(dev: OpenMathDevice, x: %): Void ==
+          OMputApp(dev)
+          OMputSymbol(dev, "complex1", "complex__cartesian")
+          OMwrite(dev, real x)
+          OMwrite(dev, imag x)
+          OMputEndApp(dev)
+
+         OMwrite(x: %): String ==
+          s: String := ""
+          sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
+          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+          OMputObject(dev)
+          writeOMComplex(dev, x)
+          OMputEndObject(dev)
+          OMclose(dev)
+          s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
+          s
+
+         OMwrite(x: %, wholeObj: Boolean): String ==
+          s: String := ""
+          sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
+          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+          if wholeObj then
+            OMputObject(dev)
+          writeOMComplex(dev, x)
+          if wholeObj then
+            OMputEndObject(dev)
+          OMclose(dev)
+          s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
+          s
+
+         OMwrite(dev: OpenMathDevice, x: %): Void ==
+          OMputObject(dev)
+          writeOMComplex(dev, x)
+          OMputEndObject(dev)
+
+         OMwrite(dev: OpenMathDevice, x: %, wholeObj: Boolean): Void ==
+          if wholeObj then
+            OMputObject(dev)
+          writeOMComplex(dev, x)
+          if wholeObj then
+            OMputEndObject(dev)
+
+       0                == [0, 0]
+       1                == [1, 0]
+       zero? x          == zero?(x.real) and zero?(x.imag)
+--       one? x           == one?(x.real) and zero?(x.imag)
+       one? x           == ((x.real) = 1) and zero?(x.imag)
+       coerce(r:R):%    == [r, 0]
+       complex(r, i)   == [r, i]
+       real x           == x.real
+       imag x           == x.imag
+       x + y            == [x.real + y.real, x.imag + y.imag]
+                           -- by re-defining this here, we save 5 fn calls
+       x:% * y:% ==
+         [x.real * y.real - x.imag * y.imag,
+          x.imag * y.real + y.imag * x.real] -- here we save nine!
+
+
+       if R has IntegralDomain then
+         _exquo(x:%, y:%) == -- to correct bad defaulting problem
+           zero? y.imag => x exquo y.real
+           x * conjugate(y) exquo norm(y)
+

@@ -1,0 +1,45 @@
+)abbrev package INTSLPE IntegerSolveLinearPolynomialEquation
+++ Author: Davenport
+++ Date Created: 1991
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package provides the implementation for the
+++ \spadfun{solveLinearPolynomialEquation}
+++ operation over the integers. It uses a lifting technique
+++ from the package GenExEuclid
+IntegerSolveLinearPolynomialEquation(): C ==T
+ where
+  ZP ==> SparseUnivariatePolynomial Integer
+  C == with
+      solveLinearPolynomialEquation: (List ZP,ZP) -> Union(List ZP,"failed")
+           ++ solveLinearPolynomialEquation([f1, ..., fn], g)
+           ++ (where the fi are relatively prime to each other)
+           ++ returns a list of ai such that
+           ++ \spad{g/prod fi = sum ai/fi}
+           ++ or returns "failed" if no such list of ai's exists.
+  T == add
+      oldlp:List ZP := []
+      slpePrime:Integer:=(2::Integer)
+      oldtable:Vector List ZP := empty()
+      solveLinearPolynomialEquation(lp,p) ==
+         if (oldlp ~= lp) then
+            -- we have to generate a new table
+            deg:= _+/[degree u for u in lp]
+            ans:Union(Vector List ZP,"failed"):="failed"
+            slpePrime:=2147483647::Integer   -- 2**31 -1 : a prime
+                 -- a good test case for this package is
+                 --  ([x**31-1,x-2],2)
+            while (ans case "failed") repeat
+              ans:=tablePow(deg,slpePrime,lp)$GenExEuclid(Integer,ZP)
+              if (ans case "failed") then
+                 slpePrime:= prevPrime(slpePrime)$IntegerPrimesPackage(Integer)
+            oldtable:=(ans:: Vector List ZP)
+         answer:=solveid(p,slpePrime,oldtable)
+         answer
+

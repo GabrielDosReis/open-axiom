@@ -1,0 +1,38 @@
+)abbrev domain QUAT Quaternion
+++ Author: Robert S. Sutor
+++ Date Created: 23 May 1990
+++ Change History:
+++   10 September 1990
+++ Basic Operations: (Algebra)
+++   abs, conjugate, imagI, imagJ, imagK, norm, quatern, rational,
+++   rational?, real
+++ Related Constructors: QuaternionCategoryFunctions2
+++ Also See: QuaternionCategory, DivisionRing
+++ AMS Classifications: 11R52
+++ Keywords: quaternions, division ring, algebra
+++ Description: \spadtype{Quaternion} implements quaternions over a
+++   commutative ring. The main constructor function is \spadfun{quatern}
+++   which takes 4 arguments: the real part, the i imaginary part, the j
+++   imaginary part and the k imaginary part.
+ 
+Quaternion(R:CommutativeRing): QuaternionCategory(R) == add
+  Rep := Record(r:R,i:R,j:R,k:R)
+ 
+  0 == [0,0,0,0]
+  1 == [1,0,0,0]
+ 
+  a,b,c,d : R
+  x,y : $
+ 
+  real  x == x.r
+  imagI x == x.i
+  imagJ x == x.j
+  imagK x == x.k
+ 
+  quatern(a,b,c,d) == [a,b,c,d]
+ 
+  x * y == [x.r*y.r-x.i*y.i-x.j*y.j-x.k*y.k,
+               x.r*y.i+x.i*y.r+x.j*y.k-x.k*y.j,
+                 x.r*y.j+x.j*y.r+x.k*y.i-x.i*y.k,
+                   x.r*y.k+x.k*y.r+x.i*y.j-x.j*y.i]
+

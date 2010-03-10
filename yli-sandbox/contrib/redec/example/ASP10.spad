@@ -1,0 +1,135 @@
+)abbrev domain ASP10 Asp10
+++ Author: Mike Dewar and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 18 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description: 
+++\spadtype{ASP10} produces Fortran for Type 10 ASPs, needed for NAG routine 
+++\axiomOpFrom{d02kef}{d02Package}. This ASP computes the values of a set of functions, for example: 
+++\begin{verbatim}
+++      SUBROUTINE COEFFN(P,Q,DQDL,X,ELAM,JINT)
+++      DOUBLE PRECISION ELAM,P,Q,X,DQDL
+++      INTEGER JINT
+++      P=1.0D0
+++      Q=((-1.0D0*X**3)+ELAM*X*X-2.0D0)/(X*X)
+++      DQDL=1.0D0
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp10(name): Exports == Implementation where
+  name : Symbol
+
+  FST  ==> FortranScalarType
+  FT   ==> FortranType
+  SYMTAB ==> SymbolTable
+  EXF ==> Expression Float
+  RSFC ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FEXPR ==> FortranExpression(['JINT,'X,'ELAM],[],MFLOAT)
+  MFLOAT ==> MachineFloat
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : Vector FEXPR -> %
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+
+    real : FST := "real"::FST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(P,fortranReal()$FT,syms)$SYMTAB
+    declare!(Q,fortranReal()$FT,syms)$SYMTAB
+    declare!(DQDL,fortranReal()$FT,syms)$SYMTAB
+    declare!(X,fortranReal()$FT,syms)$SYMTAB
+    declare!(ELAM,fortranReal()$FT,syms)$SYMTAB
+    declare!(JINT,fortranInteger()$FT,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$Union(fst:FST,void:"void"),
+                          [P,Q,DQDL,X,ELAM,JINT],syms)
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    coerce(c:FortranCode):% == coerce(c)$Rep
+
+    coerce(r:RSFC):% == coerce(r)$Rep
+
+    coerce(c:List FortranCode):% == coerce(c)$Rep
+
+    -- To help the poor old compiler!
+    localAssign(s:Symbol,u:Expression MFLOAT):FortranCode == 
+      assign(s,u)$FortranCode
+
+    coerce(u:Vector FEXPR):% ==
+      import Vector FEXPR
+      not (#u = 3) => error "Incorrect Dimension For Vector"
+      ([localAssign(P,elt(u,1)::Expression MFLOAT),_
+        localAssign(Q,elt(u,2)::Expression MFLOAT),_
+        localAssign(DQDL,elt(u,3)::Expression MFLOAT),_
+        returns()$FortranCode ]$List(FortranCode))::Rep
+
+    coerce(u:%):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

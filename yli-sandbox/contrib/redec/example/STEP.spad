@@ -1,0 +1,29 @@
+)abbrev category STEP StepThrough
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A class of objects which can be 'stepped through'.
+++ Repeated applications of \spadfun{nextItem} is guaranteed never to
+++ return duplicate items and only return "failed" after exhausting
+++ all elements of the domain.
+++ This assumes that the sequence starts with \spad{init()}.
+++ For infinite domains, repeated application
+++ of \spadfun{nextItem} is not required to reach all possible domain elements
+++ starting from any initial element.
+++
+++ Conditional attributes:
+++   infinite\tab{15}repeated \spad{nextItem}'s are never "failed".
+StepThrough(): Category == SetCategory with
+    --operations
+      init: constant -> %
+        ++ init() chooses an initial object for stepping.
+      nextItem: % -> Union(%,"failed")
+        ++ nextItem(x) returns the next item, or "failed" if domain is exhausted.
+

@@ -1,0 +1,101 @@
+import Ring
+import OrderedSet
+)abbrev domain FM1 FreeModule1
+++ Author: Michel Petitot petitot@lifl.fr
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This domain implements linear combinations
+++   of elements from the domain \spad{S} with coefficients
+++   in the domain \spad{R} where \spad{S} is an ordered set
+++   and \spad{R} is a ring (which may be non-commutative).
+++   This domain is used by domains of non-commutative algebra such as:
+++       \spadtype{XDistributedPolynomial},
+++       \spadtype{XRecursivePolynomial}.
+++   Author: Michel Petitot (petitot@lifl.fr)
+
+FreeModule1(R:Ring,S:OrderedSet): FMcat == FMdef where
+  EX ==> OutputForm
+  TERM ==> Record(k:S,c:R)
+
+  FMcat == FreeModuleCat(R,S) with
+    "*":(S,R) -> %
+      ++ \spad{s*r} returns the product \spad{r*s}
+      ++ used by \spadtype{XRecursivePolynomial} 
+  FMdef == FreeModule(R,S) add
+    -- representation
+      Rep := List TERM  
+
+    -- declarations
+      lt: List TERM 
+      x : %
+      r : R
+      s : S
+
+    -- define
+      numberOfMonomials p ==
+         # (p::Rep)
+
+      ListOfTerms(x) == x:List TERM 
+
+      leadingTerm x == x.first
+      leadingMonomial x == x.first.k
+      coefficients x == [t.c for t in x]
+      monomials x == [ monom (t.k, t.c) for t in x]
+
+      retractIfCan x ==
+         numberOfMonomials(x) ~= 1 => "failed"
+         x.first.c = 1 => x.first.k
+         "failed"
+
+      coerce(s:S):% == [[s,1$R]]
+      retract x ==
+         (rr := retractIfCan x) case "failed" => error "FM1.retract impossible"
+         rr :: S
+
+      if R has noZeroDivisors then
+         r * x  ==
+             r = 0 => 0
+             [[u.k,r * u.c]$TERM for u in x]
+         x * r  == 
+             r = 0 => 0
+             [[u.k,u.c * r]$TERM for u in x]
+       else
+         r * x  ==
+             r = 0 => 0
+             [[u.k,a] for u in x | not (a:=r*u.c)= 0$R]
+         x * r  ==
+             r = 0 => 0
+             [[u.k,a] for u in x | not (a:=u.c*r)= 0$R]
+
+      r * s ==
+        r = 0 => 0
+        [[s,r]$TERM]
+
+      s * r ==
+        r = 0 => 0
+        [[s,r]$TERM]
+
+      monom(b,r):% == [[b,r]$TERM] 
+
+      outTerm(r:R, s:S):EX ==
+            r=1  => s::EX
+            r::EX * s::EX
+
+      coerce(a:%):EX ==
+            empty? a => (0$R)::EX
+            reduce(_+, reverse_! [outTerm(t.c, t.k) for t in a])$List(EX)
+
+      coefficient(x,s) ==
+         null x => 0$R
+         x.first.k > s => coefficient(rest x,s)
+         x.first.k = s => x.first.c
+         0$R
+

@@ -1,0 +1,40 @@
+)abbrev category GROUP Group
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The class of multiplicative groups, i.e. monoids with
+++ multiplicative inverses.
+++
+++ Axioms:
+++   \spad{leftInverse("*":(%,%)->%,inv)}\tab{30}\spad{ inv(x)*x = 1 }
+++   \spad{rightInverse("*":(%,%)->%,inv)}\tab{30}\spad{ x*inv(x) = 1 }
+Group(): Category == Monoid with
+    --operations
+      inv: % -> %               ++ inv(x) returns the inverse of x.
+      "/": (%,%) -> %           ++ x/y is the same as x times the inverse of y.
+      "**": (%,Integer) -> %    ++ x**n returns x raised to the integer power n.
+      unitsKnown                ++ unitsKnown asserts that recip only returns
+                                ++ "failed" for non-units.
+      conjugate: (%,%) -> %
+        ++ conjugate(p,q) computes \spad{inv(q) * p * q}; this is 'right action
+        ++ by conjugation'.
+      commutator: (%,%) -> %
+        ++ commutator(p,q) computes \spad{inv(p) * inv(q) * p * q}.
+    add
+      import RepeatedSquaring(%)
+      x:% / y:% == x*inv(y)
+      recip(x:%) == inv(x)
+      x:% ** n:Integer ==
+         zero? n => 1
+         n<0 => expt(inv(x),(-n) pretend PositiveInteger)
+         expt(x,n pretend PositiveInteger)
+      conjugate(p,q) == inv(q) * p * q
+      commutator(p,q) == inv(p) * inv(q) * p * q
+

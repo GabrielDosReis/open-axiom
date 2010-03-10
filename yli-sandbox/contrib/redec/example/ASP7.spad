@@ -1,0 +1,130 @@
+)abbrev domain ASP7 Asp7
+++ Author: Mike Dewar and Godfrey Nolan and Grant Keady
+++ Date Created: Mar 1993
+++ Date Last Updated: 18 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp7} produces Fortran for Type 7 ASPs, needed for NAG routines
+++\axiomOpFrom{d02bbf}{d02Package}, \axiomOpFrom{d02gaf}{d02Package}.
+++These represent a vector of functions of the scalar X and
+++the array Z, and look like:
+++\begin{verbatim}
+++      SUBROUTINE FCN(X,Z,F)
+++      DOUBLE PRECISION F(*),X,Z(*)
+++      F(1)=DTAN(Z(3))
+++      F(2)=((-0.03199999999999999D0*DCOS(Z(3))*DTAN(Z(3)))+(-0.02D0*Z(2)
+++     &**2))/(Z(2)*DCOS(Z(3)))
+++      F(3)=-0.03199999999999999D0/(X*Z(2)**2)
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp7(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  MFLOAT ==> MachineFloat
+  FEXPR  ==> FortranExpression(['X],['Y],MFLOAT)
+  UFST   ==> Union(fst:FST,void:"void")
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+
+  Exports ==> FortranVectorFunctionCategory with
+    coerce : Vector FEXPR -> %
+      ++coerce(f) takes objects from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns them into an ASP.
+
+  Implementation ==> add
+
+    real : UFST := ["real"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(X,fortranReal(),syms)$SYMTAB
+    yType : FT := construct(real,["*"::Symbol],false)$FT
+    declare!(Y,yType,syms)$SYMTAB
+    declare!(F,yType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,[X,Y,F],syms)
+
+    retract(u:VEC FRAC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC FRAC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(FRAC POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC EXPR FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(EXPR FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC EXPR FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(EXPR FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY INT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY INT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY INT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY INT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    retract(u:VEC POLY FLOAT):$ ==
+      v : VEC FEXPR := map(retract,u)$VF2(POLY FLOAT,FEXPR)
+      v::$
+
+    retractIfCan(u:VEC POLY FLOAT):Union($,"failed") ==
+      v:Union(VEC FEXPR,"failed"):=map(retractIfCan,u)$VF2(POLY FLOAT,FEXPR)
+      v case "failed" => "failed"
+      (v::VEC FEXPR)::$
+
+    fexpr2expr(u:FEXPR):EXPR MFLOAT ==
+      (u::EXPR MFLOAT)$FEXPR
+
+    coerce(u:Vector FEXPR ):% ==
+      v : Vector EXPR MFLOAT
+      v:=map(fexpr2expr,u)$VF2(FEXPR,EXPR MFLOAT)
+      ([assign(F,v)$FortranCode,returns()$FortranCode]$List(FortranCode))::%
+
+    coerce(c:List FortranCode):% == coerce(c)$Rep
+
+    coerce(r:RSFC):% == coerce(r)$Rep
+
+    coerce(c:FortranCode):% == coerce(c)$Rep
+
+    coerce(u:%):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

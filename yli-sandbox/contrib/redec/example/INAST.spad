@@ -1,0 +1,24 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain INAST InAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the `in' iterator syntax.
+InAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterationVar: % -> Symbol
+      ++ iterationVar(i) returns the name of the iterating 
+      ++ variable of the `in' iterator 'i'
+    sequence: % -> SpadAst
+      ++ sequence(i) returns the sequence expression being 
+      ++ iterated over by `i'.
+  Private == add
+    Rep == List Syntax
+    iterationVar x == (second rep x)::Symbol
+    sequence x == (last rep x) : SpadAst
+    coerce(x: %): OutputForm ==
+      elt('InAst::OutputForm,
+        ['iterationVar::OutputForm = iterationVar(x)::OutputForm,
+           'sequence::OutputForm = sequence(x)::OutputForm])$OutputForm
+

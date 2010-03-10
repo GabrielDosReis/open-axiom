@@ -1,0 +1,16 @@
+import SetCategory
+import CoercibleTo Syntax
+)abbrev category ASTCAT AbstractSyntaxCategory
+++ Author: Gabriel Dos Reis
+++ Date Created: July 5, 2008
+++ Date Last Modified: September 21, 2008
+++ Description: This is the category of Spad abstract syntax trees.
+AbstractSyntaxCategory(): Category == 
+    Join(SetCategory, HomotopicTo Syntax)
+  add
+    coerce(x: %): Syntax ==
+      x pretend Syntax
+    coerce(x: Syntax): % ==
+      x pretend %
+    coerce(x: %): OutputForm ==
+      x::Syntax::OutputForm 

@@ -1,0 +1,116 @@
+import Character
+import String
+import List Character
+)abbrev domain CCLASS CharacterClass
+++ Author: Stephen M. Watt
+++ Date Created: July 1986
+++ Date Last Updated: June 20, 1991
+++ Basic Operations: charClass
+++ Related Domains: Character, Bits
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description:
+++   This domain allows classes of characters to be defined and manipulated
+++   efficiently.
+
+
+CharacterClass: Join(SetCategory, ConvertibleTo String,
+  FiniteSetAggregate Character, ConvertibleTo List Character) with
+        charClass: String -> %
+            ++ charClass(s) creates a character class which contains
+            ++ exactly the characters given in the string s.
+        charClass: List Character -> %
+            ++ charClass(l) creates a character class which contains
+            ++ exactly the characters given in the list l.
+        digit:  constant -> %
+            ++ digit() returns the class of all characters
+            ++ for which \spadfunFrom{digit?}{Character} is true.
+        hexDigit: constant -> %
+            ++ hexDigit() returns the class of all characters for which
+            ++ \spadfunFrom{hexDigit?}{Character} is true.
+        upperCase: constant -> %
+            ++ upperCase() returns the class of all characters for which
+            ++ \spadfunFrom{upperCase?}{Character} is true.
+        lowerCase:  constant -> %
+            ++ lowerCase() returns the class of all characters for which
+            ++ \spadfunFrom{lowerCase?}{Character} is true.
+        alphabetic  :  constant -> %
+            ++ alphabetic() returns the class of all characters for which
+            ++ \spadfunFrom{alphabetic?}{Character} is true.
+        alphanumeric:  constant -> %
+            ++ alphanumeric() returns the class of all characters for which
+            ++ \spadfunFrom{alphanumeric?}{Character} is true.
+
+    == add
+        Rep := IndexedBits(0)
+        N   := size()$Character
+
+        a, b: %
+
+        digit()         == charClass "0123456789"
+        hexDigit()      == charClass "0123456789abcdefABCDEF"
+        upperCase()     == charClass "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        lowerCase()     == charClass "abcdefghijklmnopqrstuvwxyz"
+        alphabetic()    == union(upperCase(), lowerCase())
+        alphanumeric()  == union(alphabetic(), digit())
+
+        a = b           == a =$Rep b
+
+        member?(c, a)   == a(ord c)
+        union(a,b)      == Or(a, b)
+        intersect (a,b) == And(a, b)
+        difference(a,b) == And(a, Not b)
+        complement a    == Not a
+
+        convert(cl):String ==
+          construct(convert(cl)@List(Character))
+        convert(cl:%):List(Character) ==
+          [char(i) for i in 0..N-1 | cl.i]
+
+        charClass(s: String) ==
+          cl := new(N, false)
+          for i in minIndex(s)..maxIndex(s) repeat cl(ord s.i) := true
+          cl
+
+        charClass(l: List Character) ==
+          cl := new(N, false)
+          for c in l repeat cl(ord c) := true
+          cl
+
+        coerce(cl):OutputForm == (convert(cl)@String)::OutputForm
+
+        -- Stuff to make a legal SetAggregate view
+        # a             == (n := 0; for i in 0..N-1 | (a.i)@Boolean repeat n := n+1; n)
+        empty():%       == charClass []
+        brace():%       == charClass []
+
+        insert_!(c, a)  == (a(ord c) := true; a)
+        remove_!(c: Character, a:%) == (a(ord c) := false; a)
+
+        inspect(a) ==
+            for i in 0..N-1 | a.i repeat
+                 return char i
+            error "Cannot take a character from an empty class."
+        extract_!(a) ==
+            for i in 0..N-1 | a.i repeat
+                 a.i := false
+                 return char i
+            error "Cannot take a character from an empty class."
+
+        map(f, a) ==
+            b := new(N, false)
+            for i in 0..N-1 | a.i repeat b(ord f char i) := true
+            b
+
+        temp: % := new(N, false)$Rep
+        map_!(f, a) ==
+            fill_!(temp, false)
+            for i in 0..N-1 | a.i repeat temp(ord f char i) := true
+            copyInto_!(a, temp, 0)
+
+        parts a ==
+            [char i for i in 0..N-1 | a.i]
+

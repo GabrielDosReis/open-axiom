@@ -1,0 +1,77 @@
+)abbrev package NCEP NumericComplexEigenPackage
+++ Author: P. Gianni
+++ Date Created: Summer 1990
+++ Date Last Updated: Spring 1991
+++ Basic Functions:
+++ Related Constructors: FloatingComplexPackage
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package computes explicitly eigenvalues and eigenvectors of
+++ matrices with entries over the complex rational numbers.
+++ The results are expressed either as complex floating numbers or as
+++ complex rational numbers
+++ depending on the type of the precision parameter.
+NumericComplexEigenPackage(Par) : C == T
+ where
+   Par   :   Join(Field,OrderedRing)   -- Float or RationalNumber
+
+   SE    ==> Symbol()
+   RN    ==> Fraction Integer
+   I     ==> Integer
+   NF    ==> Float
+   CF    ==> Complex Float
+   GRN   ==> Complex RN
+   GI    ==> Complex Integer
+   PI    ==> PositiveInteger
+   NNI   ==> NonNegativeInteger
+   MRN   ==> Matrix RN
+
+   MCF         ==> Matrix CF
+   MGRN        ==> Matrix GRN
+   MCPar       ==> Matrix Complex Par
+   SUPGRN      ==> SparseUnivariatePolynomial GRN
+   outForm     ==> Record(outval:Complex Par,outmult:Integer,outvect:List MCPar)
+
+   C == with
+     characteristicPolynomial :   MGRN    -> Polynomial GRN
+       ++ characteristicPolynomial(m) returns the characteristic polynomial
+       ++ of the matrix m expressed as polynomial
+       ++ over complex rationals with a new symbol as variable.
+       -- while the function in EigenPackage returns Fraction P GRN.
+     characteristicPolynomial : (MGRN,SE) -> Polynomial GRN
+       ++ characteristicPolynomial(m,x) returns the characteristic polynomial
+       ++ of the matrix m expressed as polynomial
+       ++ over Complex Rationals with variable x.
+       -- while the function in EigenPackage returns Fraction P GRN.
+     complexEigenvalues  :   (MGRN,Par)   ->  List Complex Par
+       ++ complexEigenvalues(m,eps) computes the eigenvalues of the matrix
+       ++ m to precision eps. The eigenvalues are expressed as complex floats or
+       ++ complex rational numbers depending on the type of eps (float or rational).
+     complexEigenvectors    : (MGRN,Par)   ->  List(outForm)
+       ++ complexEigenvectors(m,eps)  returns a list of
+       ++ records each one containing
+       ++ a complex eigenvalue, its algebraic multiplicity, and a list of
+       ++ associated eigenvectors. All these results
+       ++ are computed to precision eps and are expressed as complex floats
+       ++ or complex rational numbers depending on the type of eps (float or rational).
+   T == add
+
+     import InnerNumericEigenPackage(GRN,Complex Par,Par)
+
+     characteristicPolynomial(m:MGRN) : Polynomial GRN  ==
+       x:SE:=new()$SE
+       multivariate(charpol m, x)
+
+            ----  characteristic polynomial of a matrix A ----
+     characteristicPolynomial(A:MGRN,x:SE):Polynomial GRN ==
+       multivariate(charpol A, x)
+
+     complexEigenvalues(m:MGRN,eps:Par) : List Complex Par  ==
+       solve1(charpol m, eps)
+
+     complexEigenvectors(m:MGRN,eps:Par) :List outForm ==
+       innerEigenvectors(m,eps,factor$ComplexFactorization(RN,SUPGRN))
+

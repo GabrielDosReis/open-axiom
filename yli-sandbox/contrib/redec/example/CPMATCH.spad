@@ -1,0 +1,49 @@
+)abbrev package CPMATCH ComplexPatternMatch
+++ Author: Barry Trager
+++ Date Created: 30 Nov 1995
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: complex, pattern matching
+++ References:
+++ Description:
+++ This package supports matching patterns involving complex expressions
+ComplexPatternMatch(R, S, CS) : C == T where
+    R: SetCategory
+    S: Join(PatternMatchable R, CommutativeRing)
+    CS: ComplexCategory S
+    PMRS ==> PatternMatchResult(R, CS)
+    PS   ==> Polynomial S
+    C == with
+       if PS has PatternMatchable(R) then
+           patternMatch: (CS, Pattern R, PMRS) -> PMRS
+             ++ patternMatch(cexpr, pat, res) matches the pattern pat to the
+             ++ complex expression cexpr. res contains the variables of pat
+             ++ which are already matched and their matches.
+
+    T == add
+
+       import PatternMatchPushDown(R, S, CS)
+       import PatternMatchResultFunctions2(R, PS, CS)
+       import PatternMatchResultFunctions2(R, CS, PS)
+
+       ivar : PS := "%i"::Symbol::PS
+
+       makeComplex(p:PS):CS ==
+          up := univariate p
+          degree up > 1 => error "not linear in %i"
+          icoef:=leadingCoefficient(up)
+          rcoef:=leadingCoefficient(reductum p)
+          complex(rcoef,icoef)
+
+       makePoly(cs:CS):PS == real(cs)*ivar + imag(cs)::PS
+
+       if PS has PatternMatchable(R) then
+          patternMatch(cs, pat, result) ==
+             zero? imag cs =>
+                patternMatch(real cs, pat, result)
+             map(makeComplex,
+                patternMatch(makePoly cs, pat, map(makePoly, result)))
+

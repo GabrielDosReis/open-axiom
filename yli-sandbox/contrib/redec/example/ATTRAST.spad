@@ -1,0 +1,19 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain ATTRAST AttributeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of an attribute in
+++   a category expression.
+AttributeAst(): Public == Private where
+  Public ==  SpadSyntaxCategory with
+    name: % -> SpadAst
+      ++ name(a) returns the name of the attribute `a'.  Note, this
+      ++ name may be domain name, not just an identifier. 
+  Private == add
+    Rep == Pair(Symbol,SpadAst)
+    name x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('AttributeAst::OutputForm,
+        ['name::OutputForm = name(x)::OutputForm])$OutputForm

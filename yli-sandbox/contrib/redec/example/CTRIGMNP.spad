@@ -1,0 +1,104 @@
+)abbrev package CTRIGMNP ComplexTrigonometricManipulations
+++ Real and Imaginary parts of complex functions
+++ Author: Manuel Bronstein
+++ Date Created: 11 June 1993
+++ Date Last Updated: 14 June 1993
+++ Description:
+++   \spadtype{ComplexTrigonometricManipulations} provides function that
+++   compute the real and imaginary parts of complex functions.
+++ Keywords: complex, function, manipulation.
+ComplexTrigonometricManipulations(R, F): Exports == Implementation where
+  R : Join(IntegralDomain, OrderedSet, RetractableTo Integer)
+  F : Join(AlgebraicallyClosedField, TranscendentalFunctionCategory,
+           FunctionSpace Complex R)
+
+
+  SY  ==> Symbol
+  FR  ==> Expression R
+  K   ==> Kernel F
+
+
+  Exports ==> with
+    complexNormalize: F -> F
+      ++ complexNormalize(f) rewrites \spad{f} using the least possible number
+      ++ of complex independent kernels.
+    complexNormalize: (F, SY) -> F
+      ++ complexNormalize(f, x) rewrites \spad{f} using the least possible
+      ++ number of complex independent kernels involving \spad{x}.
+    complexElementary: F -> F
+      ++ complexElementary(f) rewrites \spad{f} in terms of the 2 fundamental
+      ++ complex transcendental elementary functions: \spad{log, exp}.
+    complexElementary: (F, SY) -> F
+      ++ complexElementary(f, x) rewrites the kernels of \spad{f} involving
+      ++ \spad{x} in terms of the 2 fundamental complex
+      ++ transcendental elementary functions: \spad{log, exp}.
+    real   : F -> FR
+      ++ real(f) returns the real part of \spad{f} where \spad{f} is a complex
+      ++ function.
+    imag   : F -> FR
+      ++ imag(f) returns the imaginary part of \spad{f} where \spad{f}
+      ++ is a complex function.
+    real?  : F -> Boolean
+      ++ real?(f) returns \spad{true} if \spad{f = real f}.
+    trigs  : F -> F
+      ++ trigs(f) rewrites all the complex logs and exponentials
+      ++ appearing in \spad{f} in terms of trigonometric functions.
+    complexForm: F -> Complex FR
+      ++ complexForm(f) returns \spad{[real f, imag f]}.
+
+  Implementation ==> add
+    import InnerTrigonometricManipulations(R, FR, F)
+    import ElementaryFunctionStructurePackage(Complex R, F)
+
+    rreal?: Complex R -> Boolean
+    kreal?: Kernel F -> Boolean
+    localexplogs  : (F, F, List SY) -> F
+
+    real f        == real complexForm f
+    imag f        == imag complexForm f
+    rreal? r      == zero? imag r
+    kreal? k      == every?(real?, argument k)$List(F)
+    complexForm f == explogs2trigs f
+
+    trigs f ==
+      GF2FG explogs2trigs f
+
+    real? f ==
+      every?(rreal?, coefficients numer f)
+        and every?(rreal?, coefficients denom f) and every?(kreal?, kernels f)
+
+    localexplogs(f, g, lx) ==
+      trigs2explogs(g, [k for k in tower f
+                          | is?(k, "tan"::SY) or is?(k, "cot"::SY)], lx)
+
+    complexElementary f ==
+      any?(has?(#1, "rtrig"),
+        operators(g := realElementary f))$List(BasicOperator) =>
+          localexplogs(f, g, variables g)
+      g
+
+    complexElementary(f, x) ==
+      g : F
+      any?(has?(operator #1, "rtrig"),
+       [k for k in tower(g := realElementary(f, x))
+                 | member?(x, variables(k::F))]$List(K))$List(K) =>
+                     localexplogs(f, g, [x])
+      g
+
+    complexNormalize(f, x) ==
+      g : F
+      any?(has?(operator #1, "rtrig"),
+       [k for k in tower(g := realElementary(f, x))
+               | member?(x, variables(k::F))]$List(K))$List(K) =>
+                   (rischNormalize(localexplogs(f, g, [x]), x).func)
+      rischNormalize(g, x).func
+
+    complexNormalize f ==
+      l := variables(g := realElementary f)
+      any?(has?(#1, "rtrig"), operators g)$List(BasicOperator) =>
+        h := localexplogs(f, g, l)
+        for x in l repeat h := rischNormalize(h, x).func
+        h
+      for x in l repeat g := rischNormalize(g, x).func
+      g
+

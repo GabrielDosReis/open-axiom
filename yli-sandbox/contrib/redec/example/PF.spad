@@ -1,0 +1,25 @@
+)abbrev domain PF PrimeField
+++ Authors: N.N.,
+++ Date Created: November 1990, 26.03.1991
+++ Date Last Updated: 31 March 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: prime characteristic, prime field, finite field
+++ References:
+++  R.Lidl, H.Niederreiter: Finite Field, Encycoldia of Mathematics and
+++  Its Applications, Vol. 20, Cambridge Univ. Press, 1983, ISBN 0 521 30240 4
+++ Description:
+++   PrimeField(p) implements the field with p elements if p is a
+++   prime number.
+++   Error: if p is not prime.
+++   Note: this domain does not check that argument is a prime.
+--++   with new compiler, want to put the error check before the add
+PrimeField(p:PositiveInteger): Exp == Impl where
+  Exp ==> Join(FiniteFieldCategory,FiniteAlgebraicExtensionField($),_
+    ConvertibleTo(Integer))
+  Impl ==>  InnerPrimeField(p) add
+    if not prime?(p)$IntegerPrimesPackage(Integer) then
+      error "Argument to prime field must be a prime"
+

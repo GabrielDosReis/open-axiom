@@ -1,0 +1,282 @@
+)abbrev package ODERTRIC RationalRicDE
+++ Author: Manuel Bronstein
+++ Date Created: 22 October 1991
+++ Date Last Updated: 11 April 1994
+++ Description: In-field solution of Riccati equations, rational case.
+RationalRicDE(F, UP): Exports == Implementation where
+  F  : Join(Field, CharacteristicZero, RetractableTo Integer,
+                                       RetractableTo Fraction Integer)
+  UP : UnivariatePolynomialCategory F
+
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  SY  ==> Symbol
+  P   ==> Polynomial F
+  RF  ==> Fraction P
+  EQ  ==> Equation RF
+  QF  ==> Fraction UP
+  L   ==> LinearOrdinaryDifferentialOperator2(UP, QF)
+  LQ  ==> LinearOrdinaryDifferentialOperator1 QF
+  UP2 ==> SparseUnivariatePolynomial UP
+  SUP ==> SparseUnivariatePolynomial P
+  REC ==> Record(poly:SUP, vars:List SY)
+  SOL ==> Record(var:List SY, val:List F)
+  POL ==> Record(poly:UP, eq:L)
+  FRC ==> Record(frac:QF, eq:L)
+  CNT ==> Record(constant:F, eq:L)
+  UTS ==> UnivariateTaylorSeries(F, dummy, 0)
+  UPS ==> SparseUnivariatePolynomial UTS
+  --L   ==> LinearOrdinaryDifferentialOperator2(UP, QF)
+  --LQ  ==> LinearOrdinaryDifferentialOperator1 QF
+
+  Exports ==> with
+    ricDsolve: (LQ, UP -> List F) -> List QF
+      ++ ricDsolve(op, zeros) returns the rational solutions of the associated
+      ++ Riccati equation of \spad{op y = 0}.
+      ++ \spad{zeros} is a zero finder in \spad{UP}.
+    ricDsolve: (LQ, UP -> List F, UP -> Factored UP) -> List QF
+      ++ ricDsolve(op, zeros, ezfactor) returns the rational
+      ++ solutions of the associated Riccati equation of \spad{op y = 0}.
+      ++ \spad{zeros} is a zero finder in \spad{UP}.
+      ++ Argument \spad{ezfactor} is a factorisation in \spad{UP},
+      ++ not necessarily into irreducibles.
+    ricDsolve: (L, UP -> List F) -> List QF
+      ++ ricDsolve(op, zeros) returns the rational solutions of the associated
+      ++ Riccati equation of \spad{op y = 0}.
+      ++ \spad{zeros} is a zero finder in \spad{UP}.
+    ricDsolve: (L, UP -> List F, UP -> Factored UP) -> List QF
+      ++ ricDsolve(op, zeros, ezfactor) returns the rational
+      ++ solutions of the associated Riccati equation of \spad{op y = 0}.
+      ++ \spad{zeros} is a zero finder in \spad{UP}.
+      ++ Argument \spad{ezfactor} is a factorisation in \spad{UP},
+      ++ not necessarily into irreducibles.
+    singRicDE: (L, UP -> Factored UP) -> List FRC
+      ++ singRicDE(op, ezfactor) returns \spad{[[f1,L1], [f2,L2],..., [fk,Lk]]}
+      ++ such that the singular ++ part of any rational solution of the
+      ++ associated Riccati equation of \spad{op y = 0} must be one of the fi's
+      ++ (up to the constant coefficient), in which case the equation for
+      ++ \spad{z = y e^{-int ai}} is \spad{Li z = 0}.
+      ++ Argument \spad{ezfactor} is a factorisation in \spad{UP},
+      ++ not necessarily into irreducibles.
+    polyRicDE: (L, UP -> List F) -> List POL
+      ++ polyRicDE(op, zeros) returns \spad{[[p1, L1], [p2, L2], ... , [pk,Lk]]}
+      ++ such that the polynomial part of any rational solution of the
+      ++ associated Riccati equation of \spad{op y = 0} must be one of the pi's
+      ++ (up to the constant coefficient), in which case the equation for
+      ++ \spad{z = y e^{-int p}} is \spad{Li z = 0}.
+      ++ \spad{zeros} is a zero finder in \spad{UP}.
+    if F has AlgebraicallyClosedField then
+      ricDsolve: LQ -> List QF
+        ++ ricDsolve(op) returns the rational solutions of the associated
+        ++ Riccati equation of \spad{op y = 0}.
+      ricDsolve: (LQ, UP -> Factored UP) -> List QF
+        ++ ricDsolve(op, ezfactor) returns the rational solutions of the
+        ++ associated Riccati equation of \spad{op y = 0}.
+        ++ Argument \spad{ezfactor} is a factorisation in \spad{UP},
+        ++ not necessarily into irreducibles.
+      ricDsolve: L -> List QF
+        ++ ricDsolve(op) returns the rational solutions of the associated
+        ++ Riccati equation of \spad{op y = 0}.
+      ricDsolve: (L, UP -> Factored UP) -> List QF
+        ++ ricDsolve(op, ezfactor) returns the rational solutions of the
+        ++ associated Riccati equation of \spad{op y = 0}.
+        ++ Argument \spad{ezfactor} is a factorisation in \spad{UP},
+        ++ not necessarily into irreducibles.
+
+  Implementation ==> add
+    import RationalLODE(F, UP)
+    import NonLinearSolvePackage F
+    import PrimitiveRatDE(F, UP, L, LQ)
+    import PrimitiveRatRicDE(F, UP, L, LQ)
+
+    FifCan           : RF -> Union(F, "failed")
+    UP2SUP           : UP -> SUP
+    innersol         : (List UP, Boolean) -> List QF
+    mapeval          : (SUP, List SY, List F) -> UP
+    ratsol           : List List EQ -> List SOL
+    ratsln           : List EQ -> Union(SOL, "failed")
+    solveModulo      : (UP, UP2) -> List UP
+    logDerOnly       : L -> List QF
+    nonSingSolve     : (N, L, UP -> List F) -> List QF
+    constantRic      : (UP, UP -> List F) -> List F
+    nopoly           : (N, UP, L, UP -> List F) -> List QF
+    reverseUP        : UP -> UTS
+    reverseUTS       : (UTS, N) -> UP
+    newtonSolution   : (L, F, N, UP -> List F) -> UP
+    newtonSolve      : (UPS, F, N) -> Union(UTS, "failed")
+    genericPolynomial: (SY, Z) -> Record(poly:SUP, vars:List SY)
+      -- genericPolynomial(s, n) returns
+      -- \spad{[[s0 + s1 X +...+ sn X^n],[s0,...,sn]]}.
+
+    dummy := new()$SY
+
+    UP2SUP p == map(#1::P,p)$UnivariatePolynomialCategoryFunctions2(F,UP,P,SUP)
+    logDerOnly l == [differentiate(s) / s for s in ratDsolve(l, 0).basis]
+    ricDsolve(l:LQ, zeros:UP -> List F) == ricDsolve(l, zeros, squareFree)
+    ricDsolve(l:L,  zeros:UP -> List F) == ricDsolve(l, zeros, squareFree)
+    singRicDE(l, ezfactor)              == singRicDE(l, solveModulo, ezfactor)
+
+    ricDsolve(l:LQ, zeros:UP -> List F, ezfactor:UP -> Factored UP) ==
+      ricDsolve(splitDenominator(l, empty()).eq, zeros, ezfactor)
+
+    mapeval(p, ls, lv) ==
+      map(ground eval(#1, ls, lv),
+          p)$UnivariatePolynomialCategoryFunctions2(P, SUP, F, UP)
+
+    FifCan f ==
+      ((n := retractIfCan(numer f))@Union(F, "failed") case F) and
+        ((d := retractIfCan(denom f))@Union(F, "failed") case F) =>
+           (n::F) / (d::F)
+      "failed"
+
+-- returns [0, []] if n < 0
+    genericPolynomial(s, n) ==
+      ans:SUP := 0
+      l:List(SY) := empty()
+      for i in 0..n repeat
+        ans := ans + monomial((sy := new s)::P, i::N)
+        l := concat(sy, l)
+      [ans, reverse_! l]
+
+    ratsln l ==
+      ls:List(SY) := empty()
+      lv:List(F) := empty()
+      for eq in l repeat
+        ((u := FifCan rhs eq) case "failed") or
+          ((v := retractIfCan(lhs eq)@Union(SY, "failed")) case "failed")
+             => return "failed"
+        lv := concat(u::F, lv)
+        ls := concat(v::SY, ls)
+      [ls, lv]
+
+    ratsol l ==
+      ans:List(SOL) := empty()
+      for sol in l repeat
+        if ((u := ratsln sol) case SOL) then ans := concat(u::SOL, ans)
+      ans
+
+-- returns [] if the solutions of l have no polynomial component
+    polyRicDE(l, zeros) ==
+      ans:List(POL) := [[0, l]]
+      empty?(lc := leadingCoefficientRicDE l) => ans
+      rec := first lc                            -- one with highest degree
+      for a in zeros(rec.eq) | a ~= 0 repeat
+        if (p := newtonSolution(l, a, rec.deg, zeros)) ~= 0 then
+            ans := concat([p, changeVar(l, p)], ans)
+      ans
+
+-- reverseUP(a_0 + a_1 x + ... + an x^n) = a_n + ... + a_0 x^n
+    reverseUP p ==
+      ans:UTS := 0
+      n := degree(p)::Z
+      while p ~= 0 repeat
+        ans := ans + monomial(leadingCoefficient p, (n - degree p)::N)
+        p   := reductum p
+      ans
+
+-- reverseUTS(a_0 + a_1 x + ..., n) = a_n + ... + a_0 x^n
+    reverseUTS(s, n) ==
+      +/[monomial(coefficient(s, i), (n - i)::N)$UP for i in 0..n]
+
+-- returns a potential polynomial solution p with leading coefficient a*?**n
+    newtonSolution(l, a, n, zeros) ==
+      i:N
+      m:Z := 0
+      aeq:UPS := 0
+      op := l
+      while op ~= 0 repeat
+        mu := degree(op) * n + degree leadingCoefficient op
+        op := reductum op
+        if mu > m then m := mu
+      while l ~= 0 repeat
+        c := leadingCoefficient l
+        d := degree l
+        s:UTS := monomial(1, (m - d * n - degree c)::N)$UTS * reverseUP c
+        aeq := aeq + monomial(s, d)
+        l := reductum l
+      (u := newtonSolve(aeq, a, n)) case UTS => reverseUTS(u::UTS, n)
+      -- newton lifting failed, so revert to traditional method
+      atn := monomial(a, n)$UP
+      neq := changeVar(l, atn)
+      sols := [sol.poly for sol in polyRicDE(neq, zeros) | degree(sol.poly) < n]
+      empty? sols => atn
+      atn + first sols
+
+-- solves the algebraic equation eq for y, returns a solution of degree n with
+-- initial term a
+-- uses naive newton approximation for now
+-- an example where this fails is   y^2 + 2 x y + 1 + x^2 = 0
+-- which arises from the differential operator D^2 + 2 x D + 1 + x^2
+    newtonSolve(eq, a, n) ==
+      deq := differentiate eq
+      sol := a::UTS
+      for i in 1..n repeat
+        (xquo := eq(sol) exquo deq(sol)) case "failed" => return "failed"
+        sol := truncate(sol - xquo::UTS, i)
+      sol
+
+-- there could be the same solutions coming in different ways, so we
+-- stop when the number of solutions reaches the order of the equation
+    ricDsolve(l:L, zeros:UP -> List F, ezfactor:UP -> Factored UP) ==
+      n := degree l
+      ans:List(QF) := empty()
+      for rec in singRicDE(l, ezfactor) repeat
+        ans := removeDuplicates_! concat_!(ans,
+                         [rec.frac + f for f in nonSingSolve(n, rec.eq, zeros)])
+        #ans = n => return ans
+      ans
+
+-- there could be the same solutions coming in different ways, so we
+-- stop when the number of solutions reaches the order of the equation
+    nonSingSolve(n, l, zeros) ==
+      ans:List(QF) := empty()
+      for rec in polyRicDE(l, zeros) repeat
+        ans := removeDuplicates_! concat_!(ans, nopoly(n,rec.poly,rec.eq,zeros))
+        #ans = n => return ans
+      ans
+
+    constantRic(p, zeros) ==
+      zero? degree p => empty()
+      zeros squareFreePart p
+
+-- there could be the same solutions coming in different ways, so we
+-- stop when the number of solutions reaches the order of the equation
+    nopoly(n, p, l, zeros) ==
+      ans:List(QF) := empty()
+      for rec in constantCoefficientRicDE(l, constantRic(#1, zeros)) repeat
+        ans := removeDuplicates_! concat_!(ans,
+                  [(rec.constant::UP + p)::QF + f for f in logDerOnly(rec.eq)])
+        #ans = n => return ans
+      ans
+
+-- returns [p1,...,pn] s.t. h(x,pi(x)) = 0 mod c(x)
+    solveModulo(c, h) ==
+      rec := genericPolynomial(dummy, degree(c)::Z - 1)
+      unk:SUP := 0
+      while not zero? h repeat
+        unk := unk + UP2SUP(leadingCoefficient h) * (rec.poly ** degree h)
+        h   := reductum h
+      sol := ratsol solve(coefficients(monicDivide(unk,UP2SUP c).remainder),
+                          rec.vars)
+      [mapeval(rec.poly, s.var, s.val) for s in sol]
+
+    if F has AlgebraicallyClosedField then
+      zro1: UP -> List F
+      zro : (UP, UP -> Factored UP) -> List F
+
+      ricDsolve(l:L)  == ricDsolve(l, squareFree)
+      ricDsolve(l:LQ) == ricDsolve(l, squareFree)
+
+      ricDsolve(l:L, ezfactor:UP -> Factored UP) ==
+        ricDsolve(l, zro(#1, ezfactor), ezfactor)
+
+      ricDsolve(l:LQ, ezfactor:UP -> Factored UP) ==
+        ricDsolve(l, zro(#1, ezfactor), ezfactor)
+
+      zro(p, ezfactor) ==
+        concat [zro1(r.factor) for r in factors ezfactor p]
+
+      zro1 p ==
+        [zeroOf(map(#1, p)$UnivariatePolynomialCategoryFunctions2(F, UP,
+                                              F, SparseUnivariatePolynomial F))]
+

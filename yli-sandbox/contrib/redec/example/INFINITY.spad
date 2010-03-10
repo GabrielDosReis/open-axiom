@@ -1,0 +1,18 @@
+)abbrev package INFINITY Infinity
+++ Top-level infinity
+++ Author: Manuel Bronstein
+++ Description: Default infinity signatures for the interpreter;
+++ Date Created: 4 Oct 1989
+++ Date Last Updated: 4 Oct 1989
+Infinity(): with
+  infinity     : () -> OnePointCompletion Integer
+    ++ infinity() returns infinity.
+  plusInfinity : () -> OrderedCompletion  Integer
+    ++ plusInfinity() returns plusIinfinity.
+  minusInfinity: () -> OrderedCompletion  Integer
+    ++ minusInfinity() returns minusInfinity.
+ == add
+  infinity()      == infinity()$OnePointCompletion(Integer)
+  plusInfinity()  == plusInfinity()$OrderedCompletion(Integer)
+  minusInfinity() == minusInfinity()$OrderedCompletion(Integer)
+

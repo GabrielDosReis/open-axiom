@@ -1,0 +1,14 @@
+)abbrev domain ARRAY2 TwoDimensionalArray
+TwoDimensionalArray(R):Exports == Implementation where
+  ++ A TwoDimensionalArray is a two dimensional array with
+  ++ 1-based indexing for both rows and columns.
+  R : Type
+  Row ==> OneDimensionalArray R
+  Col ==> OneDimensionalArray R
+
+  Exports ==> TwoDimensionalArrayCategory(R,Row,Col) with
+    shallowlyMutable
+      ++ One may destructively alter TwoDimensionalArray's.
+
+  Implementation ==> InnerIndexedTwoDimensionalArray(R,1,1,Row,Col)
+

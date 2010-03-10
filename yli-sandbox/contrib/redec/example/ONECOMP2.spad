@@ -1,0 +1,27 @@
+)abbrev package ONECOMP2 OnePointCompletionFunctions2
+++ Lifting of maps to one-point completions
+++ Author: Manuel Bronstein
+++ Description: Lifting of maps to one-point completions.
+++ Date Created: 4 Oct 1989
+++ Date Last Updated: 4 Oct 1989
+OnePointCompletionFunctions2(R, S): Exports == Implementation where
+  R, S: SetCategory
+
+  OPR ==> OnePointCompletion R
+  OPS ==> OnePointCompletion S
+
+  Exports ==> with
+    map: (R -> S, OPR) -> OPS
+      ++ map(f, r) lifts f and applies it to r, assuming that
+      ++ f(infinity) = infinity.
+    map: (R -> S, OPR, OPS) -> OPS
+      ++ map(f, r, i) lifts f and applies it to r, assuming that
+      ++ f(infinity) = i.
+
+  Implementation ==> add
+    map(f, r) == map(f, r, infinity())
+
+    map(f, r, i) ==
+      (u := retractIfCan r) case R => (f(u::R))::OPS
+      i
+

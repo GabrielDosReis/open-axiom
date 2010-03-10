@@ -1,0 +1,63 @@
+)abbrev domain ICARD IndexCard
+++ This domain implements a container of information
+++ about the AXIOM library
+IndexCard() : Exports == Implementation where
+  Exports == OrderedSet with
+    elt: (%,Symbol) -> String
+      ++ elt(ic,s) selects a particular field from \axiom{ic}.  Valid fields
+      ++ are \axiom{name, nargs, exposed, type, abbreviation, kind, origin,
+      ++ params, condition, doc}.
+    display: % -> Void
+      ++ display(ic) prints a summary of the information contained in \axiom{ic}.
+    fullDisplay: % -> Void
+      ++ fullDisplay(ic) prints all of the information contained in \axiom{ic}.
+    coerce: String -> %
+      ++ coerce(s) converts \axiom{s} into an \axiom{IndexCard}.  Warning: if
+      ++ \axiom{s} is not of the right format then an error will occur when using
+      ++ it.
+  Implementation == add
+    Rep == String
+
+    x<y == rep x < rep y
+
+    x=y == rep x = rep y
+
+    display(x) ==
+      name : OutputForm := dbName(x)$Lisp
+      type : OutputForm := dbPart(x,4,1$Lisp)$Lisp
+      output(hconcat(name,hconcat(" : ",type)))$OutputPackage
+
+    fullDisplay(x) ==
+      name : OutputForm := dbName(x)$Lisp
+      type : OutputForm := dbPart(x,4,1$Lisp)$Lisp
+      origin:OutputForm := hconcat(alqlGetOrigin(x$Lisp)$Lisp,alqlGetParams(x$Lisp)$Lisp)
+      fromPart : OutputForm := hconcat(" from ",origin)
+      condition : String := dbPart(x,6,1$Lisp)$Lisp
+      ifPart : OutputForm :=
+        condition = "" => empty()
+        hconcat(" if ",condition::OutputForm)
+      exposed? : String := SUBSTRING(dbPart(x,3,1)$Lisp,0,1)$Lisp 
+      exposedPart : OutputForm := 
+        exposed? = "n" => " (unexposed)"
+        empty()       
+      firstPart := hconcat(name,hconcat(" : ",type))
+      secondPart := hconcat(fromPart,hconcat(ifPart,exposedPart))
+      output(hconcat(firstPart,secondPart))$OutputPackage
+
+    coerce(s:String): % == per s 
+
+    coerce(x): OutputForm == rep(x)::OutputForm
+
+    elt(x,sel) ==
+      sel = 'name => dbName(x)$Lisp
+      sel = 'nargs => dbPart(x,2,1$Lisp)$Lisp
+      sel = 'exposed => SUBSTRING(dbPart(x,3,1)$Lisp,0,1)$Lisp 
+      sel = 'type => dbPart(x,4,1$Lisp)$Lisp
+      sel = 'abbreviation => dbPart(x,5,1$Lisp)$Lisp
+      sel = 'kind => alqlGetKindString(x)$Lisp
+      sel = 'origin => alqlGetOrigin(x)$Lisp
+      sel = 'params => alqlGetParams(x)$Lisp
+      sel = 'condition => dbPart(x,6,1$Lisp)$Lisp
+      sel = 'doc => dbComments(x)$Lisp
+      userError "unknown selector"
+

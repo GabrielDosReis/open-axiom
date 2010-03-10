@@ -1,0 +1,72 @@
+)abbrev package INTHERAL AlgebraicHermiteIntegration
+++ Hermite integration, algebraic case
+++ Author: Manuel Bronstein
+++ Date Created: 1987
+++ Date Last Updated: 25 July 1990
+++ Description: algebraic Hermite redution.
+AlgebraicHermiteIntegration(F,UP,UPUP,R):Exports == Implementation where
+  F   : Field
+  UP  : UnivariatePolynomialCategory F
+  UPUP: UnivariatePolynomialCategory Fraction UP
+  R   : FunctionFieldCategory(F, UP, UPUP)
+
+  N   ==> NonNegativeInteger
+  RF  ==> Fraction UP
+
+  Exports ==> with
+    HermiteIntegrate: (R, UP -> UP) -> Record(answer:R, logpart:R)
+      ++ HermiteIntegrate(f, ') returns \spad{[g,h]} such that
+      ++ \spad{f = g' + h} and h has a only simple finite normal poles.
+
+  Implementation ==> add
+    localsolve: (Matrix UP, Vector UP, UP) -> Vector UP
+
+-- the denominator of f should have no prime factor P s.t. P | P'
+-- (which happens only for P = t in the exponential case)
+    HermiteIntegrate(f, derivation) ==
+      ratform:R := 0
+      n    := rank()
+      m    := transpose((mat:= integralDerivationMatrix derivation).num)
+      inum := (cform := integralCoordinates f).num
+      if ((iden := cform.den) exquo (e := mat.den)) case "failed" then
+        iden := (coef := (e exquo gcd(e, iden))::UP) * iden
+        inum := coef * inum
+      for trm in factors squareFree iden | (j:= trm.exponent) > 1 repeat
+        u':=(u:=(iden exquo (v:=trm.factor)**(j::N))::UP) * derivation v
+        sys := ((u * v) exquo e)::UP * m
+        nn := minRowIndex sys - minIndex inum
+        while j > 1 repeat
+          j := j - 1
+          p := - j * u'
+          sol := localsolve(sys + scalarMatrix(n, p), inum, v)
+          ratform := ratform + integralRepresents(sol, v ** (j::N))
+          inum    := [((qelt(inum, i) - p * qelt(sol, i) -
+                        dot(row(sys, i - nn), sol))
+                          exquo v)::UP - u * derivation qelt(sol, i)
+                             for i in minIndex inum .. maxIndex inum]
+        iden := u * v
+      [ratform, integralRepresents(inum, iden)]
+
+    localsolve(mat, vec, modulus) ==
+      ans:Vector(UP) := new(nrows mat, 0)
+      diagonal? mat =>
+        for i in minIndex ans .. maxIndex ans
+          for j in minRowIndex mat .. maxRowIndex mat
+            for k in minColIndex mat .. maxColIndex mat repeat
+              (bc := extendedEuclidean(qelt(mat, j, k), modulus,
+                qelt(vec, i))) case "failed" => return new(0, 0)
+              qsetelt_!(ans, i, bc.coef1)
+        ans
+      sol := particularSolution(map(#1::RF, mat)$MatrixCategoryFunctions2(UP,
+                         Vector UP, Vector UP, Matrix UP, RF,
+                           Vector RF, Vector RF, Matrix RF),
+                             map(#1::RF, vec)$VectorFunctions2(UP,
+                               RF))$LinearSystemMatrixPackage(RF,
+                                        Vector RF, Vector RF, Matrix RF)
+      sol case "failed" => new(0, 0)
+      for i in minIndex ans .. maxIndex ans repeat
+        (bc := extendedEuclidean(denom qelt(sol, i), modulus, 1))
+          case "failed" => return new(0, 0)
+        qsetelt_!(ans, i, (numer qelt(sol, i) * bc.coef1) rem modulus)
+      ans
+

@@ -1,0 +1,52 @@
+import Type
+import NonNegativeInteger
+import LazyStreamAggregate
+)abbrev package CSTTOOLS CyclicStreamTools
+++ Functions for dealing with cyclic streams
+++ Author: Clifton J. Williamson
+++ Date Created: 5 December 1989
+++ Date Last Updated: 5 December 1989
+++ Keywords: stream, cyclic
+++ Description:
+++ This package provides tools for working with cyclic streams.
+CyclicStreamTools(S,ST): Exports == Implementation where
+  S  : Type
+  ST : LazyStreamAggregate S
+
+  Exports ==> with
+
+    cycleElt: ST -> Union(ST,"failed")
+      ++ cycleElt(s) returns a pointer to a node in the cycle if the stream s is
+      ++ cyclic and returns "failed" if s is not cyclic
+    computeCycleLength: ST -> NonNegativeInteger
+      ++ computeCycleLength(s) returns the length of the cycle of a
+      ++ cyclic stream t, where s is a pointer to a node in the
+      ++ cyclic part of t.
+    computeCycleEntry: (ST,ST) -> ST
+      ++ computeCycleEntry(x,cycElt), where cycElt is a pointer to a
+      ++ node in the cyclic part of the cyclic stream x, returns a
+      ++ pointer to the first node in the cycle
+
+  Implementation ==> add
+
+    cycleElt x ==
+      y := x
+      for i in 0.. repeat
+        (explicitlyEmpty? y) or (lazy? y) => return "failed"
+        y := rst y
+        if odd? i then x := rst x
+        eq?(x,y) => return y
+
+    computeCycleLength cycElt ==
+      i : NonNegativeInteger
+      y := cycElt
+      for i in 1.. repeat
+        y := rst y
+        eq?(y,cycElt) => return i
+
+    computeCycleEntry(x,cycElt) ==
+      y := rest(x, computeCycleLength cycElt)
+      repeat
+        eq?(x,y) => return x
+        x := rst x ; y := rst y
+

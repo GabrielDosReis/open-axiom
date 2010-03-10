@@ -1,0 +1,11 @@
+)abbrev category CONDUIT Conduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: August 24, 2008
+++ Description:
+++   This category is the root of the I/O conduits.
+Conduit(): Category == with
+    close!: % -> %
+      ++ close!(c) closes the conduit c, changing its state to one
+      ++ that is invalid for future read or write operations.
+

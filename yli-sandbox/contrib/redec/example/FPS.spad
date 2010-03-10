@@ -1,0 +1,81 @@
+)abbrev category FPS FloatingPointSystem
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: approximate, base, bits, digits, exponent, float,
+++    mantissa, order, precision, round?
+++ Related Constructors:
+++ Keywords: float, floating point
+++ Description:  
+++ This category is intended as a model for floating point systems.
+++ A floating point system is a model for the real numbers.  In fact,
+++ it is an approximation in the sense that not all real numbers are
+++ exactly representable by floating point numbers.
+++ A floating point system is characterized by the following:
+++
+++   1: \spadfunFrom{base}{FloatingPointSystem} of the \spadfunFrom{exponent}{FloatingPointSystem}.
+++          (actual implemenations are usually binary or decimal)
+++   2: \spadfunFrom{precision}{FloatingPointSystem} of the \spadfunFrom{mantissa}{FloatingPointSystem} (arbitrary or fixed)
+++   3: rounding error for operations
+--++   4:  when, and what happens if exponent overflow/underflow occurs
+++
+++ Because a Float is an approximation to the real numbers, even though
+++ it is defined to be a join of a Field and OrderedRing, some of
+++ the attributes do not hold.  In particular associative("+")
+++ does not hold.  Algorithms defined over a field need special
+++ considerations when the field is a floating point system.
+FloatingPointSystem(): Category == RealNumberSystem() with
+   approximate
+      ++ \spad{approximate} means "is an approximation to the real numbers".
+   float: (Integer,Integer) -> %
+      ++ float(a,e) returns \spad{a * base() ** e}.
+   float: (Integer,Integer,PositiveInteger) -> %
+      ++ float(a,e,b) returns \spad{a * b ** e}.
+   order: % -> Integer
+      ++ order x is the order of magnitude of x.
+      ++ Note: \spad{base ** order x <= |x| < base ** (1 + order x)}.
+   base: () -> PositiveInteger
+      ++ base() returns the base of the \spadfunFrom{exponent}{FloatingPointSystem}.
+   exponent: % -> Integer
+      ++ exponent(x) returns the \spadfunFrom{exponent}{FloatingPointSystem} part of x.
+   mantissa: % -> Integer
+      ++ mantissa(x) returns the mantissa part of x.
+  -- round?: () -> B
+  --    ++ round?() returns the rounding or chopping.
+
+   bits: () -> PositiveInteger
+      ++ bits() returns ceiling's precision in bits.
+   digits: () -> PositiveInteger
+      ++ digits() returns ceiling's precision in decimal digits.
+   precision: () -> PositiveInteger
+      ++ precision() returns the precision in digits base.
+
+   if % has arbitraryPrecision then
+      bits: PositiveInteger -> PositiveInteger
+        ++ bits(n) set the \spadfunFrom{precision}{FloatingPointSystem} to n bits.
+      digits: PositiveInteger -> PositiveInteger
+        ++ digits(d) set the \spadfunFrom{precision}{FloatingPointSystem} to d digits.
+      precision: PositiveInteger -> PositiveInteger
+        ++ precision(n) set the precision in the base to n decimal digits.
+      increasePrecision: Integer -> PositiveInteger
+        ++ increasePrecision(n) increases the current
+        ++ \spadfunFrom{precision}{FloatingPointSystem} by n decimal digits.
+      decreasePrecision: Integer -> PositiveInteger
+        ++ decreasePrecision(n) decreases the current
+        ++ \spadfunFrom{precision}{FloatingPointSystem} precision by n decimal digits.
+   if not (% has arbitraryExponent) then
+    --  overflow: (()->Exit) -> Void
+    --    ++ overflow() returns the Exponent overflow of float
+    --  underflow: (()->Exit) -> Void
+    --    ++ underflow() returns the Exponent underflow of float
+    --  maxExponent: () -> Integer
+    --    ++ maxExponent() returns the max Exponent of float
+      if not (% has arbitraryPrecision) then
+         min: () -> %
+          ++ min() returns the minimum floating point number.
+         max: () -> %
+          ++ max() returns the maximum floating point number.
+ add
+   float(ma, ex) == float(ma, ex, base())
+   digits() == max(1,4004 * (bits()-1) quo 13301)::PositiveInteger
+

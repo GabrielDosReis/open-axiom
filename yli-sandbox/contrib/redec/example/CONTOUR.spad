@@ -1,0 +1,33 @@
+import CoercibleTo OutputForm
+import Symbol
+import Binding
+import List Binding
+)abbrev domain CONTOUR Contour
+++ Author: Gabriel Dos Reis
+++ Date Created: October 24, 2007
+++ Date Last Modified: January 18, 2008.
+++ A `Contour' a list of bindings making up a `virtual scope'.
+Contour(): Public == Private where
+  Public ==> CoercibleTo(OutputForm) with
+    bindings: % -> List Binding     
+      ++ bindings(c) returns the list of bindings in countour c.
+    push: (Binding,%) -> %
+      ++ push(c,b) augments the contour with binding `b'.
+    findBinding: (Symbol,%) -> Union(Binding, "failed")
+      ++ findBinding(c,n) returns the first binding associated with `n'.
+      ++ Otherwise `failed'.
+
+  Private ==> add
+    bindings c ==
+      c pretend List(Binding)
+
+    findBinding(n,c) ==
+      for b in bindings c repeat
+        EQ(n, name b)$Lisp => return b
+      "failed"
+
+    push(b,c) ==
+      CONS(b,c)$Lisp pretend %
+
+    coerce c ==
+      (bindings c)::OutputForm

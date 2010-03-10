@@ -1,0 +1,123 @@
+)abbrev domain ASP9 Asp9
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 18 March 1994
+++                    12 July 1994 added COMMON blocks for d02cjf, d02ejf
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp9} produces Fortran for Type 9 ASPs, needed for NAG routines
+++\axiomOpFrom{d02bhf}{d02Package}, \axiomOpFrom{d02cjf}{d02Package}, \axiomOpFrom{d02ejf}{d02Package}.
+++These ASPs represent a function of a scalar X and a vector Y, for example:
+++\begin{verbatim}
+++      DOUBLE PRECISION FUNCTION G(X,Y)
+++      DOUBLE PRECISION X,Y(*)
+++      G=X+Y(1)
+++      RETURN
+++      END
+++\end{verbatim}
+++If the user provides a constant value for G, then extra information is added
+++via COMMON blocks used by certain routines.  This specifies that the value
+++returned by G in this case is to be ignored.
+
+Asp9(name): Exports == Implementation where
+  name : Symbol
+
+  FEXPR   ==> FortranExpression(['X],['Y],MFLOAT)
+  MFLOAT  ==> MachineFloat
+  FC      ==> FortranCode
+  FST     ==> FortranScalarType
+  FT      ==> FortranType
+  SYMTAB  ==> SymbolTable
+  RSFC    ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  UFST    ==> Union(fst:FST,void:"void")
+  FRAC    ==> Fraction
+  POLY    ==> Polynomial
+  EXPR    ==> Expression
+  INT     ==> Integer
+  FLOAT   ==> Float
+
+  Exports ==> FortranFunctionCategory with
+    coerce : FEXPR -> %
+      ++coerce(f) takes an object from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns it into an ASP.
+
+  Implementation ==> add
+
+    real : FST := "real"::FST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(X,fortranReal()$FT,syms)$SYMTAB
+    yType : FT := construct([real]$UFST,["*"::Symbol],false)$FT
+    declare!(Y,yType,syms)$SYMTAB
+    Rep := FortranProgram(name,[real]$UFST,[X,Y],syms)
+
+    retract(u:FRAC POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:FRAC POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:EXPR FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:EXPR INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    coerce(u:FEXPR):% ==
+      expr : Expression MachineFloat := (u::Expression(MachineFloat))$FEXPR
+      (retractIfCan(u)@Union(MFLOAT,"failed"))$FEXPR case "failed" => 
+          coerce(expr)$Rep
+      locals : SYMTAB := empty()
+      charType : FT := construct(["character"::FST]$UFST,[6::POLY(INT)],false)$FT
+      declare!([CHDUM1,CHDUM2,GOPT1,CHDUM,GOPT2],charType,locals)$SYMTAB
+      common1 := common(CD02EJ,[CHDUM1,CHDUM2,GOPT1] )$FC
+      common2 := common(AD02CJ,[CHDUM,GOPT2] )$FC
+      assign1 := assign(GOPT1,"NOGOPT")$FC
+      assign2 := assign(GOPT2,"NOGOPT")$FC
+      result  := assign(name,expr)$FC
+      code' : List FC := [common1,common2,assign1,assign2,result]
+      ([locals,code']$RSFC)::Rep
+
+    coerce(c:List FortranCode):% == coerce(c)$Rep
+
+    coerce(r:RSFC):% == coerce(r)$Rep
+
+    coerce(c:FortranCode):% == coerce(c)$Rep
+
+    coerce(u:%):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

@@ -1,0 +1,31 @@
+import SetCategory
+import Symbol
+import List Syntax
+)abbrev domain CTORCALL ConstructorCall
+++ Author: Gabriel Dos Reis
+++ Date Created: January 19, 2008
+++ Date Last Updated: July 03, 2008
+++ Description: This domains represents a syntax object that
+++ designates a category, domain, or a package.
+++ See Also: Syntax, Domain
+ConstructorCall(): Public == Private where
+  Public == SetCategory with
+    constructor: % -> Constructor
+      ++ constructor(t) returns the name of the constructor used
+      ++ to make the call.
+    arguments: % -> List Syntax
+      ++ arguments(t) returns the list of syntax objects for the
+      ++ arguments used to invoke the constructor.
+
+  Private == add
+    constructor x ==
+      CAR(x)$Lisp
+
+    arguments x ==
+      CDR(x)$Lisp
+
+    x = y ==
+      EQUAL(x,y)$Lisp
+
+    coerce(x: %): OutputForm ==
+      outputDomainConstructor(x)$Lisp

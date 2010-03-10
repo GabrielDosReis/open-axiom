@@ -1,0 +1,18 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain QQUTAST QuasiquoteAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a quasiquote
+++   expression.
+QuasiquoteAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    expression: % -> SpadAst
+      ++ expression(e) returns the syntax for the expression being quoted.
+  Private == add
+    Rep == List SpadAst
+    expression x == second rep x
+    coerce(x: %): OutputForm ==
+      elt('QuasiquoteAst::OutputForm, 
+        ['expression::OutputForm = expression(x)::OutputForm])$OutputForm

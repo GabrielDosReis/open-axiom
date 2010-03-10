@@ -1,0 +1,87 @@
+)abbrev domain SWITCH Switch
+-- Because of a bug in the compiler:
+)bo $noSubsumption:=false
+
+++ Author: Mike Dewar
+++ Date Created: April 1991
+++ Date Last Updated: March 1994
+++                    30.6.94 Added coercion from Symbol MCD
+++ Basic Operations:
+++ Related Constructors: FortranProgram, FortranCode, FortranTypes
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain builds representations of boolean expressions for use with
+++ the \axiomType{FortranCode} domain.
+Switch():public == private where
+  EXPR ==> Union(I:Expression Integer,F:Expression Float,
+                 CF:Expression Complex Float,switch:%)
+
+  public ==  CoercibleTo OutputForm with
+    coerce : Symbol -> $
+        ++ coerce(s) \undocumented{}
+    LT : (EXPR,EXPR) -> $
+      ++ LT(x,y) returns the \axiomType{Switch} expression representing \spad{x<y}.
+    GT : (EXPR,EXPR) -> $
+      ++ GT(x,y) returns the \axiomType{Switch} expression representing \spad{x>y}.
+    LE : (EXPR,EXPR) -> $
+      ++ LE(x,y) returns the \axiomType{Switch} expression representing \spad{x<=y}.
+    GE : (EXPR,EXPR) -> $
+      ++ GE(x,y) returns the \axiomType{Switch} expression representing \spad{x>=y}.
+    OR : (EXPR,EXPR) -> $
+      ++ OR(x,y) returns the \axiomType{Switch} expression representing \spad{x or y}.
+    EQ : (EXPR,EXPR) -> $
+      ++ EQ(x,y) returns the \axiomType{Switch} expression representing \spad{x = y}.
+    AND : (EXPR,EXPR) -> $
+      ++ AND(x,y) returns the \axiomType{Switch} expression representing \spad{x and y}.
+    NOT : EXPR -> $
+      ++ NOT(x) returns the \axiomType{Switch} expression representing \spad{\~~x}.
+    NOT : $ -> $
+      ++ NOT(x) returns the \axiomType{Switch} expression representing \spad{\~~x}.
+    
+  private == add
+    Rep := Record(op:BasicOperator,rands:List EXPR)
+
+    -- Public function definitions
+
+    nullOp : BasicOperator := operator NULL
+
+    coerce(s:%):OutputForm ==
+      rat := (s . op)::OutputForm
+      ran := [u::OutputForm for u in s.rands]
+      (s . op) = nullOp => first ran
+      #ran = 1 =>
+        prefix(rat,ran)
+      infix(rat,ran)
+
+    coerce(s:Symbol):$ == [nullOp,[[s::Expression(Integer)]$EXPR]$List(EXPR)]$Rep
+
+    NOT(r:EXPR):% ==
+      [operator("~"::Symbol),[r]$List(EXPR)]$Rep
+
+    NOT(r:%):% ==
+      [operator("~"::Symbol),[[r]$EXPR]$List(EXPR)]$Rep
+
+    LT(r1:EXPR,r2:EXPR):% ==
+      [operator("<"::Symbol),[r1,r2]$List(EXPR)]$Rep
+
+    GT(r1:EXPR,r2:EXPR):% ==
+      [operator(">"::Symbol),[r1,r2]$List(EXPR)]$Rep
+
+    LE(r1:EXPR,r2:EXPR):% ==
+      [operator("<="::Symbol),[r1,r2]$List(EXPR)]$Rep
+
+    GE(r1:EXPR,r2:EXPR):% ==
+      [operator(">="::Symbol),[r1,r2]$List(EXPR)]$Rep
+
+    AND(r1:EXPR,r2:EXPR):% ==
+      [operator("and"::Symbol),[r1,r2]$List(EXPR)]$Rep
+
+    OR(r1:EXPR,r2:EXPR):% ==
+      [operator("or"::Symbol),[r1,r2]$List(EXPR)]$Rep
+
+    EQ(r1:EXPR,r2:EXPR):% ==
+      [operator("EQ"::Symbol),[r1,r2]$List(EXPR)]$Rep
+

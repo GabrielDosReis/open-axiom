@@ -1,0 +1,106 @@
+)abbrev package ASSOCEQ AssociatedEquations
+++ Author: Manuel Bronstein
+++ Date Created: 10 January 1994
+++ Date Last Updated: 3 February 1994
+++ Description:
+++ \spadtype{AssociatedEquations} provides functions to compute the
+++ associated equations needed for factoring operators
+AssociatedEquations(R, L):Exports == Implementation where
+  R: IntegralDomain
+  L: LinearOrdinaryDifferentialOperatorCategory R
+ 
+  PI  ==> PositiveInteger
+  N   ==> NonNegativeInteger
+  MAT ==> Matrix R
+  REC ==> Record(minor: List PI, eq: L, minors: List List PI, ops: List L)
+ 
+  Exports ==> with
+    associatedSystem: (L, PI) -> Record(mat: MAT, vec:Vector List PI)
+      ++ associatedSystem(op, m) returns \spad{[M,w]} such that the
+      ++ m-th associated equation system to L is \spad{w' = M w}.
+    uncouplingMatrices: MAT -> Vector MAT
+      ++ uncouplingMatrices(M) returns \spad{[A_1,...,A_n]} such that if
+      ++ \spad{y = [y_1,...,y_n]} is a solution of \spad{y' = M y}, then
+      ++ \spad{[$y_j',y_j'',...,y_j^{(n)}$] = $A_j y$} for all j's.
+    if R has Field then
+        associatedEquations: (L, PI) -> REC
+          ++ associatedEquations(op, m) returns \spad{[w, eq, lw, lop]}
+          ++ such that \spad{eq(w) = 0} where w is the given minor, and
+          ++ \spad{lw_i = lop_i(w)} for all the other minors.
+ 
+  Implementation ==> add
+    makeMatrix: (Vector MAT, N) -> MAT
+ 
+    diff:L := D()
+ 
+    makeMatrix(v, n) == matrix [parts row(v.i, n) for i in 1..#v]
+ 
+    associatedSystem(op, m) ==
+      eq: Vector R
+      S := SetOfMIntegersInOneToN(m, n := degree(op)::PI)
+      w := enumerate()$S
+      s := size()$S
+      ww:Vector List PI := new(s, empty())
+      M:MAT := new(s, s, 0)
+      m1 := (m::Integer - 1)::PI
+      an := leadingCoefficient op
+      a:Vector(R) := [- (coefficient(op, j) exquo an)::R for j in 0..n - 1]
+      for i in 1..s repeat
+          eq := new(s, 0)
+          wi := w.i
+          ww.i := elements wi
+          for k in 1..m1 repeat
+              u := incrementKthElement(wi, k::PI)$S
+              if u case S then eq(lookup(u::S)) := 1
+          if member?(n, wi) then
+              for j in 1..n | a.j ~= 0 repeat
+                  u := replaceKthElement(wi, m, j::PI)
+                  if u case S then
+                    eq(lookup(u::S)) := (odd? delta(wi, m, j::PI) => -a.j; a.j)
+          else
+              u := incrementKthElement(wi, m)$S
+              if u case S then eq(lookup(u::S)) := 1
+          setRow_!(M, i, eq)
+      [M, ww]
+ 
+    uncouplingMatrices m ==
+      n := nrows m
+      v:Vector MAT := new(n, zero(1, 0)$MAT)
+      v.1 := mi := m
+      for i in 2..n repeat v.i := mi := map(diff #1, mi) + mi * m
+      [makeMatrix(v, i) for i in 1..n]
+ 
+    if R has Field then
+        import PrecomputedAssociatedEquations(R, L)
+ 
+        makeop:    Vector R -> L
+        makeeq:    (Vector List PI, MAT, N, N) -> REC
+        computeIt: (L, PI, N) -> REC
+ 
+        makeeq(v, m, i, n) ==
+          [v.i, makeop row(m, i) - 1, [v.j for j in 1..n | j ~= i],
+                                    [makeop row(m, j) for j in 1..n | j ~= i]]
+ 
+        associatedEquations(op, m) ==
+          (u := firstUncouplingMatrix(op, m)) case "failed" => computeIt(op,m,1)
+          (v := inverse(u::MAT)) case "failed" => computeIt(op, m, 2)
+          S := SetOfMIntegersInOneToN(m, degree(op)::PI)
+          w := enumerate()$S
+          s := size()$S
+          ww:Vector List PI := new(s, empty())
+          for i in 1..s repeat ww.i := elements(w.i)
+          makeeq(ww, v::MAT, 1, s)
+ 
+        computeIt(op, m, k) ==
+          rec := associatedSystem(op, m)
+          a := uncouplingMatrices(rec.mat)
+          n := #a
+          for i in k..n repeat
+            (u := inverse(a.i)) case MAT => return makeeq(rec.vec,u::MAT,i,n)
+          error "associatedEquations: full degenerate case"
+ 
+        makeop v ==
+          op:L := 0
+          for i in 1..#v repeat op := op + monomial(v i, i)$L
+          op
+

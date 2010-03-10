@@ -1,0 +1,85 @@
+)abbrev domain D02BHFA d02bhfAnnaType
+++ Author: Brian Dupee
+++ Date Created: February 1995
+++ Date Last Updated: January 1996
+++ Basic Operations: 
+++ Description:
+++ \axiomType{d02bhfAnnaType} is a domain of 
+++ \axiomType{OrdinaryDifferentialEquationsInitialValueProblemSolverCategory}
+++ for the NAG routine D02BHF, a ODE routine which uses an  
+++ Runge-Kutta method to solve a system of differential 
+++ equations.  The function \axiomFun{measure} measures the
+++ usefulness of the routine D02BHF for the given problem.  The 
+++ function \axiomFun{ODESolve} performs the integration by using 
+++ \axiomType{NagOrdinaryDifferentialEquationsPackage}.
+
+d02bhfAnnaType():OrdinaryDifferentialEquationsSolverCategory == Result add  -- Runge Kutta
+  EDF   ==> Expression DoubleFloat
+  LDF   ==> List DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  DF    ==> DoubleFloat
+  F     ==> Float
+  FI    ==> Fraction Integer
+  EFI   ==> Expression Fraction Integer
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  VEDF  ==> Vector Expression DoubleFloat
+  VEF   ==> Vector Expression Float
+  EF    ==> Expression Float
+  VDF   ==> Vector DoubleFloat
+  VMF   ==> Vector MachineFloat
+  MF    ==> MachineFloat
+  ODEA  ==> Record(xinit:DF,xend:DF,fn:VEDF,yinit:LDF,intvals:LDF,_
+                      g:EDF,abserr:DF,relerr:DF)
+  RSS   ==> Record(stiffnessFactor:F,stabilityFactor:F)
+  INT   ==> Integer
+  EF2   ==> ExpressionFunctions2
+
+  import d02AgentsPackage, NagOrdinaryDifferentialEquationsPackage
+  import AttributeButtons
+
+  accuracyCF(ode:ODEA):F ==
+    b := getButtonValue("d02bhf","accuracy")$AttributeButtons
+    accuracyIntensityValue := combineFeatureCompatibility(b,accuracyIF(ode))
+    accuracyIntensityValue > 0.999 => 0$F
+    0.8*exp(-((10*accuracyIntensityValue)**3)$F/266)$F
+
+  stiffnessCF(stiffnessIntensityValue:F):F ==
+    b := getButtonValue("d02bhf","stiffness")$AttributeButtons
+    0.5*exp(-(2*combineFeatureCompatibility(b,stiffnessIntensityValue))**2)$F
+
+  stabilityCF(stabilityIntensityValue:F):F ==
+    b := getButtonValue("d02bhf","stability")$AttributeButtons
+    0.5 * cos(combineFeatureCompatibility(b,stabilityIntensityValue))$F
+
+  expenseOfEvaluationCF(ode:ODEA):F ==
+    b := getButtonValue("d02bhf","expense")$AttributeButtons
+    expenseOfEvaluationIntensityValue := 
+      combineFeatureCompatibility(b,expenseOfEvaluationIF(ode))
+    0.35+0.2*exp(-(2.0*expenseOfEvaluationIntensityValue)**3)$F
+    
+  measure(R:RoutinesTable,args:ODEA) ==
+    m := getMeasure(R,d02bhf :: Symbol)$RoutinesTable
+    ssf := stiffnessAndStabilityOfODEIF args
+    m := combineFeatureCompatibility(m,[accuracyCF(args),
+            stiffnessCF(ssf.stiffnessFactor),
+              expenseOfEvaluationCF(args),
+                stabilityCF(ssf.stabilityFactor)])
+    [m,"Runge-Kutta Merson method"]
+
+  ODESolve(ode:ODEA) ==
+    irelab := 0$INT
+    if positive?(a := ode.abserr) then 
+      inc(irelab)$INT
+    if positive?(r := ode.relerr) then
+      inc(irelab)$INT
+    if positive?(a+r) then
+      tol := max(a,r)$DF
+    else
+      tol:DF := float(1,-4,10)$DF
+    asp7:Union(fn:FileName,fp:Asp7(FCN)) := 
+      [retract(e:VEF := vedf2vef(ode.fn)$ExpertSystemToolsPackage)$Asp7(FCN)]
+    asp9:Union(fn:FileName,fp:Asp9(G)) := 
+      [retract(edf2ef(ode.g)$ExpertSystemToolsPackage)$Asp9(G)]
+    d02bhf(ode.xend,# e,irelab,0$DF,ode.xinit,matrix([ode.yinit])$MDF,
+             tol,-1,asp9,asp7)
+

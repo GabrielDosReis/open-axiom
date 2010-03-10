@@ -1,0 +1,16 @@
+)abbrev category FMTC FortranMachineTypeCategory
+++ Author: Mike Dewar
+++ Date Created:  December 1993
+++ Date Last Updated:
+++ Basic Operations:
+++ Related Domains:
+++ Also See: FortranExpression, MachineInteger, MachineFloat, MachineComplex
+++ AMS Classifications:
+++ Keywords:
+++ Examples:
+++ References:
+++ Description: A category of domains which model machine arithmetic
+++ used by machines in the AXIOM-NAG link.
+FortranMachineTypeCategory():Category == Join(IntegralDomain,OrderedSet,
+                                              RetractableTo(Integer) )
+

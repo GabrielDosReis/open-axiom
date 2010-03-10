@@ -1,0 +1,102 @@
+)abbrev domain CHAR Character
+++ Author: Stephen M. Watt
+++ Date Created: July 1986
+++ Date Last Updated: June 20, 1991
+++ Basic Operations: char
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: character, string
+++ Examples:
+++ References:
+++ Description:
+++   This domain provides the basic character data type.
+
+Character: OrderedFinite() with
+        ord: % -> NonNegativeInteger
+            ++ ord(c) provides an integral code corresponding to the
+            ++ character c.  It is always true that \spad{char ord c = c}.
+        char: NonNegativeInteger  -> %
+            ++ char(i) provides a character corresponding to the integer
+            ++ code i.  It is always true that \spad{ord char i = i}.
+        char: String   -> %
+            ++ char(s) provides a character from a string s of length one.
+        space:  () -> %
+            ++ space() provides the blank character.
+        quote:  () -> %
+            ++ quote() provides the string quote character, \spad{"}.
+        escape: () -> %
+            ++ escape() provides the escape character, \spad{_}, which
+            ++ is used to allow quotes and other characters {\em within}
+            ++ strings.
+        upperCase: % -> %
+            ++ upperCase(c) converts a lower case letter to the corresponding
+            ++ upper case letter.  If c is not a lower case letter, then
+            ++ it is returned unchanged.
+        lowerCase: % -> %
+            ++ lowerCase(c) converts an upper case letter to the corresponding
+            ++ lower case letter.  If c is not an upper case letter, then
+            ++ it is returned unchanged.
+        digit?: % -> Boolean
+            ++ digit?(c) tests if c is a digit character,
+            ++ i.e. one of 0..9.
+        hexDigit?: % -> Boolean
+            ++ hexDigit?(c) tests if c is a hexadecimal numeral,
+            ++ i.e. one of 0..9, a..f or A..F.
+        alphabetic?: % -> Boolean
+            ++ alphabetic?(c) tests if c is a letter,
+            ++ i.e. one of a..z or A..Z.
+        upperCase?: % -> Boolean
+            ++ upperCase?(c) tests if c is an upper case letter,
+            ++ i.e. one of A..Z.
+        lowerCase?: % -> Boolean
+            ++ lowerCase?(c) tests if c is an lower case letter,
+            ++ i.e. one of a..z.
+        alphanumeric?: % -> Boolean
+            ++ alphanumeric?(c) tests if c is either a letter or number,
+            ++ i.e. one of 0..9, a..z or A..Z.
+
+    == add
+        -- We use the base Lisp's system base-char as a
+        -- the representation for this class.
+        CC ==> CharacterClass()
+        NNI ==> NonNegativeInteger
+        import CC
+
+        --cl: Record(dig:CC,hex:CC,upp:CC,low:CC,alpha:CC,alnum:CC) :=
+        --    [ digit(), hexDigit(),
+        --      upperCase(), lowerCase(), alphabetic(), alphanumeric() ]
+
+        a = b                  == CHAR_=(a,b)$Lisp
+        a < b                  == CHAR_<(a,b)$Lisp
+        size()                 == 256
+        index n                == char((n - 1)::NNI)
+        lookup c               == (1 + ord c)::PositiveInteger
+        char(n: NNI)           == CODE_-CHAR(n)$Lisp
+        ord c                  == CHAR_-CODE(c)$Lisp
+        random()               == char(random(size())$NNI)
+        space                  == CHAR("   ", 0$Lisp)$Lisp
+        quote                  == CHAR("_" ", 0$Lisp)$Lisp
+        escape                 == CHAR("__ ", 0$Lisp)$Lisp
+        coerce(c:%):OutputForm == c : OutputForm
+        digit? c               == member?(c, digit())
+        hexDigit? c            == member?(c, hexDigit())
+        upperCase? c           == member?(c, upperCase())
+        lowerCase? c           == member?(c, lowerCase())
+        alphabetic? c          == member?(c, alphabetic())
+        alphanumeric? c        == member?(c, alphanumeric())
+
+        latex c ==
+          concat("\mbox{`", concat(new(1,c)$String, "'}")$String)$String
+
+        char(s:String) ==
+--        one?(#s) => s(minIndex s)
+          (#s) = 1 => s(minIndex s)
+          userError "String is not a single character"
+
+        upperCase c ==
+          CHAR_-UPCASE(c)$Lisp : %
+
+        lowerCase c ==
+          CHAR_-DOWNCASE(c)$Lisp : %
+

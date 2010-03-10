@@ -1,0 +1,226 @@
+)abbrev package NFINTBAS NumberFieldIntegralBasis
+++ Author: Victor Miller, Clifton Williamson
+++ Date Created: 9 April 1990
+++ Date Last Updated: 20 September 1994
+++ Basic Operations: discriminant, integralBasis
+++ Related Domains: IntegralBasisTools, TriangularMatrixOperations
+++ Also See: FunctionFieldIntegralBasis, WildFunctionFieldIntegralBasis
+++ AMS Classifications:
+++ Keywords: number field, integral basis, discriminant
+++ Examples:
+++ References:
+++ Description:
+++   In this package F is a framed algebra over the integers (typically
+++   \spad{F = Z[a]} for some algebraic integer a).  The package provides
+++   functions to compute the integral closure of Z in the quotient
+++   quotient field of F.
+NumberFieldIntegralBasis(UP,F): Exports == Implementation where
+  UP : UnivariatePolynomialCategory Integer
+  F  : FramedAlgebra(Integer,UP)
+
+  FR  ==> Factored Integer
+  I   ==> Integer
+  Mat ==> Matrix I
+  NNI ==> NonNegativeInteger
+  Ans ==> Record(basis: Mat, basisDen: I, basisInv:Mat,discr: I)
+
+  Exports ==> with
+    discriminant: () -> Integer
+      ++ \spad{discriminant()} returns the discriminant of the integral
+      ++ closure of Z in the quotient field of the framed algebra F.
+    integralBasis : () -> Record(basis: Mat, basisDen: I, basisInv:Mat)
+      ++ \spad{integralBasis()} returns a record
+      ++ \spad{[basis,basisDen,basisInv]}
+      ++ containing information regarding the integral closure of Z in the
+      ++ quotient field of F, where F is a framed algebra with Z-module
+      ++ basis \spad{w1,w2,...,wn}.
+      ++ If \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of \spad{basis} contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+    localIntegralBasis : I -> Record(basis: Mat, basisDen: I, basisInv:Mat)
+      ++ \spad{integralBasis(p)} returns a record
+      ++ \spad{[basis,basisDen,basisInv]} containing information regarding
+      ++ the local integral closure of Z at the prime \spad{p} in the quotient
+      ++ field of F, where F is a framed algebra with Z-module basis
+      ++ \spad{w1,w2,...,wn}.
+      ++ If \spad{basis} is the matrix \spad{(aij, i = 1..n, j = 1..n)}, then
+      ++ the \spad{i}th element of the integral basis is
+      ++ \spad{vi = (1/basisDen) * sum(aij * wj, j = 1..n)}, i.e. the
+      ++ \spad{i}th row of \spad{basis} contains the coordinates of the
+      ++ \spad{i}th basis vector.  Similarly, the \spad{i}th row of the
+      ++ matrix \spad{basisInv} contains the coordinates of \spad{wi} with
+      ++ respect to the basis \spad{v1,...,vn}: if \spad{basisInv} is the
+      ++ matrix \spad{(bij, i = 1..n, j = 1..n)}, then
+      ++ \spad{wi = sum(bij * vj, j = 1..n)}.
+
+  Implementation ==> add
+    import IntegralBasisTools(I, UP, F)
+    import ModularHermitianRowReduction(I)
+    import TriangularMatrixOperations(I, Vector I, Vector I, Matrix I)
+
+    frobMatrix              : (Mat,Mat,I,NNI) -> Mat
+    wildPrimes              : (FR,I) -> List I
+    tameProduct             : (FR,I) -> I
+    iTameLocalIntegralBasis : (Mat,I,I) -> Ans
+    iWildLocalIntegralBasis : (Mat,I,I) -> Ans
+
+    frobMatrix(rb,rbinv,rbden,p) ==
+      n := rank()$F; b := basis()$F
+      v : Vector F := new(n,0)
+      for i in minIndex(v)..maxIndex(v)
+        for ii in minRowIndex(rb)..maxRowIndex(rb) repeat
+          a : F := 0
+          for j in minIndex(b)..maxIndex(b)
+            for jj in minColIndex(rb)..maxColIndex(rb) repeat
+              a := a + qelt(rb,ii,jj) * qelt(b,j)
+          qsetelt_!(v,i,a**p)
+      mat := transpose coordinates v
+      ((transpose(rbinv) * mat) exquo (rbden ** p)) :: Mat
+
+    wildPrimes(factoredDisc,n) ==
+      -- returns a list of the primes <=n which divide factoredDisc to a
+      -- power greater than 1
+      ans : List I := empty()
+      for f in factors(factoredDisc) repeat
+        if f.exponent > 1 and f.factor <= n then ans := concat(f.factor,ans)
+      ans
+
+    tameProduct(factoredDisc,n) ==
+      -- returns the product of the primes > n which divide factoredDisc
+      -- to a power greater than 1
+      ans : I := 1
+      for f in factors(factoredDisc) repeat
+        if f.exponent > 1 and f.factor > n then ans := f.factor * ans
+      ans
+
+    integralBasis() ==
+      traceMat := traceMatrix()$F; n := rank()$F
+      disc := determinant traceMat  -- discriminant of current order
+      disc0 := disc                 -- this is disc(F)
+      factoredDisc := factor(disc0)$IntegerFactorizationPackage(Integer)
+      wilds := wildPrimes(factoredDisc,n)
+      sing := tameProduct(factoredDisc,n)
+      runningRb := scalarMatrix(n, 1); runningRbinv := scalarMatrix(n, 1)
+      -- runningRb    = basis matrix of current order
+      -- runningRbinv = inverse basis matrix of current order
+      -- these are wrt the original basis for F
+      runningRbden : I := 1
+      -- runningRbden = denominator for current basis matrix
+--      one? sing and empty? wilds => [runningRb, runningRbden, runningRbinv]
+      (sing = 1) and empty? wilds => [runningRb, runningRbden, runningRbinv]
+      -- id = basis matrix of the ideal (p-radical) wrt current basis
+      matrixOut : Mat := scalarMatrix(n,0)
+      for p in wilds repeat
+        lb := iWildLocalIntegralBasis(matrixOut,disc,p)
+        rb := lb.basis; rbinv := lb.basisInv; rbden := lb.basisDen
+        disc := lb.discr
+        -- update 'running integral basis' if newly computed
+        -- local integral basis is non-trivial
+        if sizeLess?(1,rbden) then
+          mat := vertConcat(rbden * runningRb,runningRbden * rb)
+          runningRbden := runningRbden * rbden
+          runningRb := squareTop rowEchelon(mat,runningRbden)
+          runningRbinv := UpTriBddDenomInv(runningRb,runningRbden)
+      lb := iTameLocalIntegralBasis(traceMat,disc,sing)
+      rb := lb.basis; rbinv := lb.basisInv; rbden := lb.basisDen
+      disc := lb.discr
+      -- update 'running integral basis' if newly computed
+      -- local integral basis is non-trivial
+      if sizeLess?(1,rbden) then
+        mat := vertConcat(rbden * runningRb,runningRbden * rb)
+        runningRbden := runningRbden * rbden
+        runningRb := squareTop rowEchelon(mat,runningRbden)
+        runningRbinv := UpTriBddDenomInv(runningRb,runningRbden)
+      [runningRb,runningRbden,runningRbinv]
+
+    localIntegralBasis p ==
+      traceMat := traceMatrix()$F; n := rank()$F
+      disc := determinant traceMat  -- discriminant of current order
+      (disc exquo (p*p)) case "failed" =>
+        [scalarMatrix(n, 1), 1, scalarMatrix(n, 1)]
+      lb :=
+        p > rank()$F =>
+          iTameLocalIntegralBasis(traceMat,disc,p)
+        iWildLocalIntegralBasis(scalarMatrix(n,0),disc,p)
+      [lb.basis,lb.basisDen,lb.basisInv]
+
+    iTameLocalIntegralBasis(traceMat,disc,sing) ==
+      n := rank()$F; disc0 := disc
+      rb := scalarMatrix(n, 1); rbinv := scalarMatrix(n, 1)
+      -- rb    = basis matrix of current order
+      -- rbinv = inverse basis matrix of current order
+      -- these are wrt the original basis for F
+      rbden : I := 1; index : I := 1; oldIndex : I := 1
+      -- rbden = denominator for current basis matrix
+      -- id = basis matrix of the ideal (p-radical) wrt current basis
+      tfm := traceMat
+      repeat
+        -- compute the p-radical = p-trace-radical
+        idinv := transpose squareTop rowEchelon(tfm,sing)
+        -- [u1,..,un] are the coordinates of an element of the p-radical
+        -- iff [u1,..,un] * idinv is in p * Z^n
+        id := rowEchelon LowTriBddDenomInv(idinv, sing)
+        -- id = basis matrix of the p-radical
+        idinv := UpTriBddDenomInv(id, sing)
+        -- id * idinv = sing * identity
+        -- no need to check for inseparability in this case
+        rbinv := idealiser(id * rb, rbinv * idinv, sing * rbden)
+        index := diagonalProduct rbinv
+        rb := rowEchelon LowTriBddDenomInv(rbinv, sing * rbden)
+        g := matrixGcd(rb,sing,n)
+        if sizeLess?(1,g) then rb := (rb exquo g) :: Mat
+        rbden := rbden * (sing quo g)
+        rbinv := UpTriBddDenomInv(rb, rbden)
+        disc := disc0 quo (index * index)
+        indexChange := index quo oldIndex; oldIndex := index
+--        one? indexChange => return [rb, rbden, rbinv, disc]
+        (indexChange = 1) => return [rb, rbden, rbinv, disc]
+        tfm := ((rb * traceMat * transpose rb) exquo (rbden * rbden)) :: Mat
+
+    iWildLocalIntegralBasis(matrixOut,disc,p) ==
+      n := rank()$F; disc0 := disc
+      rb := scalarMatrix(n, 1); rbinv := scalarMatrix(n, 1)
+      -- rb    = basis matrix of current order
+      -- rbinv = inverse basis matrix of current order
+      -- these are wrt the original basis for F
+      rbden : I := 1; index : I := 1; oldIndex : I := 1
+      -- rbden = denominator for current basis matrix
+      -- id = basis matrix of the ideal (p-radical) wrt current basis
+      p2 := p * p; lp := leastPower(p::NNI,n)
+      repeat
+        tfm := frobMatrix(rb,rbinv,rbden,p::NNI) ** lp
+        -- compute Rp = p-radical
+        idinv := transpose squareTop rowEchelon(tfm, p)
+        -- [u1,..,un] are the coordinates of an element of Rp
+        -- iff [u1,..,un] * idinv is in p * Z^n
+        id := rowEchelon LowTriBddDenomInv(idinv,p)
+        -- id = basis matrix of the p-radical
+        idinv := UpTriBddDenomInv(id,p)
+        -- id * idinv = p * identity
+        -- no need to check for inseparability in this case
+        rbinv := idealiser(id * rb, rbinv * idinv, p * rbden)
+        index := diagonalProduct rbinv
+        rb := rowEchelon LowTriBddDenomInv(rbinv, p * rbden)
+        if divideIfCan_!(rb,matrixOut,p,n) = 1
+          then rb := matrixOut
+          else rbden := p * rbden
+        rbinv := UpTriBddDenomInv(rb, rbden)
+        indexChange := index quo oldIndex; oldIndex := index
+        disc := disc quo (indexChange * indexChange)
+--        one? indexChange or gcd(p2,disc) ~= p2 =>
+        (indexChange = 1) or gcd(p2,disc) ~= p2 =>
+          return [rb, rbden, rbinv, disc]
+
+    discriminant() ==
+      disc := determinant traceMatrix()$F
+      intBas := integralBasis()
+      rb := intBas.basis; rbden := intBas.basisDen
+      index := ((rbden ** rank()$F) exquo (determinant rb)) :: Integer
+      (disc exquo (index * index)) :: Integer
+

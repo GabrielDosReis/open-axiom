@@ -1,0 +1,60 @@
+)abbrev category FORTFN FortranFunctionCategory
+++ Author: Mike Dewar
+++ Date Created: 13 January 1994
+++ Date Last Updated: 18 March 1994
+++ Related Constructors: FortranProgramCategory.
+++ Description:
+++ \axiomType{FortranFunctionCategory} is the category of arguments to
+++ NAG Library routines which return (sets of) function values.
+FortranFunctionCategory():Category == FortranProgramCategory with
+    coerce : List FortranCode -> $
+      ++ coerce(e) takes an object from \spadtype{List FortranCode} and
+      ++  uses it as the body of an ASP.
+    coerce : FortranCode -> $
+      ++ coerce(e) takes an object from \spadtype{FortranCode} and
+      ++  uses it as the body of an ASP.
+    coerce : Record(localSymbols:SymbolTable,code:List(FortranCode)) -> $
+      ++ coerce(e) takes the component of \spad{e} from
+      ++ \spadtype{List FortranCode} and uses it as the body of the ASP,
+      ++ making the declarations in the \spadtype{SymbolTable} component.
+    retract : Expression Float -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Expression Float -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Expression Integer -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Expression Integer -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Polynomial Float -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Polynomial Float -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Polynomial Integer -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Polynomial Integer -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Fraction Polynomial Float -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Fraction Polynomial Float -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retract : Fraction Polynomial Integer -> $
+      ++ retract(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+    retractIfCan : Fraction Polynomial Integer -> Union($,"failed")
+      ++ retractIfCan(e) tries to convert \spad{e} into an ASP, checking that
+      ++  legal Fortran-77 is produced.
+
+    -- NB: These ASPs also have a coerce from an appropriate instantiation
+    --     of FortranExpression.
+
+

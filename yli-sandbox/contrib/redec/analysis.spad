@@ -1,0 +1,1080 @@
+import SYNHELP
+
+)abbrev package LPANL LoopAnalysis 
+++ Author: Yue Li
+++ Date Created: October 27, 2009
+++ Date Last Updated: November 21, 2009
+++ Description: this category represents the set of algebraic wavelet filters
+LoopAnalysis(): Public == Private where
+  macro LTB == Table(Pair(Identifier, Identifier), List RepeatAst)
+  macro REC == RepeatAst
+  macro ACC == List(REC)
+  macro VTB == Table(Syntax, Syntax)
+  macro IFL == Record(lets: List LetAst, globalvars: List Syntax, conditions: List Syntax)
+
+  Public == with
+    split: String -> Pair(List SpadAst, List SpadAst)
+      ++ split a package into decl and def two parts.
+    funDecls: String -> List SpadAst
+      ++ extracts the ast of function declarations.
+    funDefs: String -> List SpadAst
+      ++ extracts the ast of function definitions.
+    captureRepeat: DefinitionAst -> List RepeatAst
+      ++ extracts all the loops (in RepeatAst) from the body of a function definition
+    letOnly?: RepeatAst -> Pair(Boolean, List LetAst)
+      ++ checks whether the body of a single loop ast only contains let statement
+    ifOnly?: RepeatAst -> Pair(Boolean, Pair(List LetAst, List LetAst))
+      ++ checks whether the body of a single loop ast only contains one if statement 
+    nestedIfWithLetInBranches?: RepeatAst -> Pair(Boolean, List IFL)
+      ++ checks whether the body of a single loop ast only contains nested if statement
+      ++ and verifies that all the branches of the if-statements contain only let assignments
+    identAccLoop3: (RepeatAst, VTB) -> ACC
+    identAccLoop2: (SpadAst, VTB) -> ACC 
+    identAccLoop: DefinitionAst -> ACC
+      ++ identifies all the accumulation loops in a function definition
+    identAccLoop0: DefinitionAst -> Pair(Identifier, ACC)
+      ++ identifies all the accumulation loops in a function definition
+      ++ this function is called by the library analysis function.
+    test: String -> ACC
+      ++ testing only
+    getAllFileName: List FileName
+      ++ obtains all the file names of the files in the algebra folder      
+    collectAll: Integer
+      ++ collects the RepeatAst from all the files
+    showStat: Void
+      ++ prints statistical data
+    cleanUp: Boolean
+      ++ resets lpCount and fileCount to 0
+    viewTable: LTB
+      ++ view the table containing all the loops
+    analyze: (String, Integer) -> Boolean
+      ++ collects all the loops, and writes the result into the file
+    analyze2: String -> Boolean
+      ++ collects all the accumulation loops, and writes the result into the file
+    refineElement: RepeatAst -> List RepeatAst
+    refineStmt: SpadAst -> List RepeatAst
+
+    ++ testing
+    T_defStmtStat: (SpadAst, Identifier) -> Integer
+    T_defStat: (DefinitionAst, Identifier) -> Integer
+    searchForAccumulationVariable: (Syntax, Syntax) -> Pair(Integer, List Syntax)
+
+
+    ++ interface to preprocessing framework
+    extractReductionPatternFromFunctionDefinition: (DefinitionAst, Identifier, VTB) -> Pair(LTB, List List Syntax)
+
+
+  Private == add
+    import SpadParser
+    --Global variable
+    vt : VTB := empty()  
+    L_reduction_variable : List List Syntax := []
+    L_reduction_variable_then: List Syntax := []
+    L_reduction_variable_else: List Syntax := []
+
+
+    unknownSyn: Syntax == '_?::Identifier::Syntax
+
+    split s == 
+      c := parse s
+      #c ~= 1 => userError "unknown top-level syntax"
+      w := (c.1)::WhereAst
+      q := qualifier w
+      b := body(q::Syntax::SequenceAst)
+      -- enter the declaration capsule
+      d := categories((body((b.1)::Syntax::DefinitionAst))::Syntax::JoinAst)
+      -- category extensions
+      exts := d.1
+      d2 := (d.2)::Syntax::CategoryAst
+      -- obtain the kind of this definition
+      kind : ConstructorKind := kind d2
+      -- obtain the declarations
+      decls : List SpadAst := body d2
+      -- enter the definition capsule
+      defs := body(expression(b.2::Syntax::ExitAst)::Syntax::DefinitionAst)
+      defs : List SpadAst := body(defs::Syntax::CapsuleAst)
+      pair(decls, defs)
+
+    funDecls s == first split s
+
+    funDefs s == second split s
+
+    -- currently we just test each element in the ast sequence.
+    captureRepeat a == 
+      sig : Signature := signature a
+      bd : List SpadAst := body((body a)::Syntax::SequenceAst)
+      [s::Syntax::RepeatAst for s in bd | s case RepeatAst]
+
+    letOnlySequence?(b: SequenceAst): Pair(Boolean, List LetAst) ==
+      letList : List LetAst := []
+      for b' in body b repeat
+        if compound?(b'::Syntax) and b' case LetAst then
+          letList := cons(b'::Syntax::LetAst, letList)
+        else if compound?(b'::Syntax) and (b' case ExitAst) and ((z:=expression(b'::Syntax::ExitAst)) case LetAst) then
+          letList := cons(z::Syntax::LetAst, letList)
+        else
+          return pair(false, [])   
+      pair(true, letList)
+
+    singleLetInBody(b: LetAst): Pair(Boolean, List LetAst) == pair(true, [b])
+
+    letOnlyBody?(b: SpadAst): Pair(Boolean, List LetAst) ==
+      not compound?(b::Syntax)  => pair(false, [])
+      b case LetAst             => singleLetInBody(b::Syntax::LetAst)
+      b case SequenceAst        => letOnlySequence?(b::Syntax::SequenceAst)
+      pair(false, [])      
+
+    letOnly? r == letOnlyBody? body r
+
+    hasElseBranch?(f: IfAst): Boolean == not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+
+    hasThenBranch?(f: IfAst): Boolean == not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax)
+
+    letInBothBranches?(b: IfAst): Pair(Boolean, Pair(List LetAst, List LetAst)) ==
+      resultOfThen : Pair(Boolean, List LetAst) := pair(false, [])
+      resultOfElse : Pair(Boolean, List LetAst) := pair(false, [])
+      if hasThenBranch?(b) then resultOfThen := letOnlyBody? thenBranch b
+      if hasElseBranch?(b) then resultOfElse := letOnlyBody? elseBranch b
+      hasThenBranch?(b) and hasElseBranch?(b) and first(resultOfThen) and first(resultOfElse) => pair(true, pair(second(resultOfThen),second(resultOfElse)))
+      hasThenBranch?(b) and not hasElseBranch?(b) and first(resultOfThen) => pair(true, pair(second(resultOfThen), []))
+      hasElseBranch?(b) and not hasThenBranch?(b) and first(resultOfElse) => pair(true, pair([], second(resultOfElse))) 
+      pair(false, pair([], []))
+
+    ifAstInSequence?(s: SequenceAst): Pair(Boolean, Pair(List LetAst, List LetAst)) ==
+      (#(b := body s)) = 2 and compound?((b.1)::Syntax) and compound?((b.2)::Syntax)_
+       and (b.1 case LetAst) and (b.2 case ExitAst) and (f := expression((b.2)::Syntax::ExitAst)) case IfAst => 
+        x := getLhs((b.1)::Syntax::LetAst)$SyntaxHelper
+        z := rhs((b.1)::Syntax::LetAst)::Syntax 
+        y := (condition(f::Syntax::IfAst))::Syntax 
+        x = y and first(letInBothBranches?(f::Syntax::IfAst)) =>
+          result : IfAst := (replace(x, f::Syntax, z)$SyntaxHelper)::IfAst
+          letInBothBranches?(result)
+        pair(false, pair([], []))
+      pair(false, pair([], []))
+
+    ifOnly? r ==
+      b := body r
+      not compound?(b::Syntax) => pair(false, pair([], []))
+      b case IfAst             => letInBothBranches?(b::Syntax::IfAst)
+      b case SequenceAst       => ifAstInSequence?(b::Syntax::SequenceAst)
+      pair(false, pair([], []))
+
+------------------------------------------------------------------
+    ifWrappedInSequence?(s: SequenceAst): Pair(Boolean, List IfAst) ==
+      (#(b := body s)) = 2 and compound?((b.1)::Syntax) and compound?((b.2)::Syntax)_
+       and (b.1 case LetAst) and (b.2 case ExitAst) and (f := expression((b.2)::Syntax::ExitAst)) case IfAst => 
+        x := getLhs((b.1)::Syntax::LetAst)$SyntaxHelper
+        z := rhs((b.1)::Syntax::LetAst)::Syntax 
+        y := (condition(f::Syntax::IfAst))::Syntax 
+        x = y => pair(true, [(replace(x, f::Syntax, z)$SyntaxHelper)::IfAst])
+        pair(false, [])
+      pair(false, [])
+
+    isIf?(s: SpadAst): Pair(Boolean, List IfAst) ==
+      s case IfAst => pair(true, [s::Syntax::IfAst])
+      s case SequenceAst => 
+        first(t := ifWrappedInSequence?(s::Syntax::SequenceAst)) => pair(true, second t)
+        pair(false, [])
+      pair(false, [])
+
+    collectLetsFromBothBranches(b: IfAst): Pair(Boolean, List IFL) ==
+      result: List IFL := []
+      -- to finish later.      
+      pair(false, [])
+
+    nestedIfWithLetInBranches? r ==
+      b := body r
+      not compound?(b::Syntax)               => pair(false, [])
+      first(t := isIf?(b))                   => collectLetsFromBothBranches(first second t)
+      pair(false, [])
+------------------------------------------------------------------
+
+    initVt(t: VTB, l: List Identifier): VTB ==
+      for p in l repeat
+        p' := p::Syntax
+        t.p'  := unknownSyn()
+      t
+
+    isLocalVariable?(s: Syntax, t: VTB): Boolean == key?(s, t)
+
+    isGlobal?(s: Syntax, t: VTB): Boolean == key?(s, t)
+
+    localVariableSubstitutions!(i: Integer, b: List LetAst, s: LetAst, var: Syntax): List LetAst ==
+      for n in i..#b repeat
+        b.n := replaceLetRhs(var, b.n, (rhs s)::Syntax)$SyntaxHelper      
+      b
+
+    removeLocalAssignments(b: List LetAst, toRemove: Set Integer): List LetAst ==
+      reverse([b.n for n in 1..#b | not member?(n, toRemove)]@List LetAst)
+
+    eliminateLocalVariable!(b: List LetAst, lv: VTB): List LetAst ==
+      toRemove: Set Integer := {}
+      current : Integer := 1
+      -- local variable substitution
+      for s in reverse b repeat
+        next := #b-current+2
+        if isLocalVariable?(var := getLhs(s)$SyntaxHelper, lv) and (next <= #b) then
+          b := localVariableSubstitutions!(next, b, s, var)
+          -- mark the intermediate assignment which is ready to be removed
+          toRemove := union(next-1, toRemove)
+        current := current + 1
+      -- remove intermediate assignments over local variable	
+      removeLocalAssignments(b, toRemove)
+
+    lhsInRhs?(x: LetAst): Boolean ==
+      l := getLhs(x)$SyntaxHelper
+      x' := replaceLetRhs(l, x, unknownSyn())
+      (x'::Syntax) ~= (x::Syntax)
+
+    toDelete: Set Integer := {}
+   
+    toBeRemoved?(label: Integer): Boolean ==
+      member?(label, toDelete)
+
+    qualifiedForElimination?(b: List LetAst, var: Syntax): Boolean ==
+      vars := [getLhs(b.i)$SyntaxHelper for i in 1..#b| not toBeRemoved?(i)]
+      member?(var, vars)
+
+    globalVariableSubstitutions: List LetAst -> List LetAst
+
+    updateLoopBody!(b: List LetAst, t: List LetAst, i: Integer): List LetAst ==
+      for j in 1..#t repeat
+        b.(i+j) := t.j
+      b
+
+    globalVariableSubstitution(b: List LetAst, b': List LetAst, i: Integer, i': Integer, l: Syntax, r: Syntax): List LetAst==
+      before := b'.i'
+      b'.i' : LetAst := replaceLetRhs(l, b'.i', r)$SyntaxHelper
+      if not ((before::Syntax) = ((b'.i')::Syntax)) then
+        t := globalVariableSubstitutions(b')
+        b := updateLoopBody!(b, t, i)
+      b
+      
+    updateDeletionList!(c: Boolean, i: Integer): Boolean ==
+      if c then 
+        toDelete := union(i, toDelete)
+      true
+
+    globalVariableSubstitutions(b: List LetAst): List LetAst ==
+      for i in #b..1 by -1 | ((i <= #b-1) and not toBeRemoved?(i)) repeat
+        -- if this assignment is not marked as to be removed, continue the substitution for the next assignment
+        b' := [b.n for n in (i+1)..#b]
+        l := getLhs(b.i)$SyntaxHelper
+        r := rhs(b.i)::Syntax
+        qualified? : Boolean := qualifiedForElimination?(b', l)
+        for i' in 1..#b' | not toBeRemoved?(i') repeat
+          if (not qualified?) and lhsInRhs?(b.i) then
+            break
+          b := globalVariableSubstitution(b, b', i, i', l, r)
+          updateDeletionList!(qualified?, i)
+      b
+    
+    removeGlobalAssignments(b: List LetAst): List LetAst ==
+      [qelt(b, n) for n in 1..#b | not member?(n, toDelete)]@List LetAst
+
+    eliminateGlobalVariable!(b: List LetAst): List LetAst ==
+      toDelete := empty()
+      b := globalVariableSubstitutions(b)
+      removeGlobalAssignments(b)
+  
+      --[qelt(b, n) for n in 1..#b | not member?(n, toRm)]@List LetAst
+
+--    withinIterators?(vars: List Syntax, its: List SpadAst): Boolean ==
+--      for i in its repeat
+--        if listWithin?(vars, i::Syntax)$SyntaxHelper then
+--          return true
+--      false
+
+    freeVariables(v: Syntax, gv: VTB): List Syntax ==
+      result : List Syntax := []
+      op := getOperator(v)
+      if op case Identifier and key?(op::Identifier::Syntax, gv) then
+        result := concat(result, op::Identifier::Syntax)
+      for s in getOperands(v) repeat
+        if compound? s then
+          result := concat(result, freeVariables(s, gv))
+        if not compound? s then
+          if key?(s, gv) then
+            result := concat(result, s)
+      result
+
+    advanceListWithin?(vars: List Syntax, i: SpadAst, gv: VTB): Boolean ==
+      for v in vars repeat
+        if compound? v then
+          if listWithin?(freeVariables(v, gv), i::Syntax)$SyntaxHelper then
+            return true
+        if not compound? v then 
+          if within?(v, i::Syntax)$SyntaxHelper then 
+            return true
+      false
+
+    advanceListWithin2?(vars: List Syntax, i: SpadAst, gv: VTB): Boolean ==
+      for v in vars repeat
+        x := v
+        if compound? v and (container := getOperator(v)) case Identifier and key?((c := container::Identifier::Syntax), gv) then
+          x := c
+        if within?(x, i::Syntax)$SyntaxHelper then 
+          return true
+      false
+
+    withinIterators?(vars: List Syntax, its: List SpadAst, gv: VTB): Boolean ==
+      for i in its repeat
+        if advanceListWithin?(vars, i, gv) then
+          return true
+      false
+
+    -- no longer used
+--    withinIterators2?(vars: List Syntax, its: List SpadAst): Boolean ==
+--      for i in its repeat
+--        if listWithin?(vars, i::Syntax)$SyntaxHelper then
+--          return true
+--      false
+
+    isBinaryExpression?(e: Syntax): Boolean ==
+      compound?(e) and #getOperands(e) = 2
+
+---- No longer used
+---- For verifying Liu's canonical form
+-------------------------------------------------------
+--    isLeftAssociativeAccumulation?(accVar: Syntax, operands: List Syntax, vars: List Syntax): Boolean ==
+--      leftOperand := first operands
+--      rightOperand := second operands
+--      leftOperand = accVar and not listWithin?(vars, rightOperand)$SyntaxHelper
+
+--    isRightAssociativeAccumulation?(accVar: Syntax, operands: List Syntax, vars: List Syntax): Boolean ==
+--      leftOperand := first operands
+--      rightOperand := second operands
+--      rightOperand = accVar and not listWithin?(vars, leftOperand)$SyntaxHelper 
+
+--    verifyCanonicalForm(v: Syntax, r: Syntax, its: List SpadAst, vars: List Syntax, count: Integer, gv: VTB): Integer ==
+--      if isBinaryExpression?(r) and not withinIterators?(vars, its, gv)_ 
+--         and (isLeftAssociativeAccumulation?(v, getOperands r, vars)_
+--             or isRightAssociativeAccumulation?(v, getOperands r, vars)) then
+--        -- op := getOperator r
+--        count := count + 1
+--      count
+-------------------------------------------------------------
+
+    searchForAccumulationVariable(v: Syntax, exp: Syntax): Pair(Integer, List Syntax) ==
+      result : List Syntax := []
+      counter : Integer := 0
+      v = exp =>
+        counter := counter + 1
+        pair(counter, result)
+      compound? exp =>
+        expLst := (unlist exp)$SyntaxHelper
+        result := concat(result, expLst.1)
+        for u in expLst repeat
+          if first(r := searchForAccumulationVariable(v, u)) > 0 then
+            counter := counter + (first r)
+            result  := concat(result, second r)
+        pair(counter, result)
+      pair(counter, result)
+        
+    sameOperators?(opList: List Syntax): Boolean == #removeDuplicates(opList) = 1
+
+    verifyCountAndOperator(v: Syntax, exp: Syntax): Boolean ==
+      r := searchForAccumulationVariable(v, exp)
+      (first r = 1) and sameOperators?(second r)
+
+    containExclamation?(r: Syntax): Boolean ==
+      member?(char("!"::String)$Character, entries(toString(r)$SyntaxHelper)) 
+      
+    -- our new form, pay attention to testing option at line 336
+    verifyImprovedCanonicalForm(v: Syntax, r: Syntax, its: List SpadAst, vars: List Syntax, localcount: Integer, gv: VTB): Integer ==
+      --if compound?(v) and 
+      -- containExclamation?(r)  -- for examining the side effect functions.
+      if not containExclamation?(r) and isBinaryExpression?(r) and not withinIterators?(vars, its, gv)_ 
+         and verifyCountAndOperator(v, r) and not advanceListWithin2?(remove(v, vars), r::SpadAst, gv) then
+        localcount := localcount + 1
+      localcount
+
+    countEachReduction(s: LetAst, its: List SpadAst, vars: List Syntax, localcount: Integer, gv: VTB): Integer ==
+      l := getLhs(s)$SyntaxHelper
+      r := rhs(s)::Syntax
+      --count := verifyCanonicalForm(l, r, its, vars, count)
+      localcount := verifyImprovedCanonicalForm(l, r, its, vars, localcount, gv)
+
+    isReduction?(b: List LetAst, its: List SpadAst, gv: VTB): Boolean ==
+      localcount : Integer := 0
+      varsInLhs : List Syntax := [getLhs(s)$SyntaxHelper for s in b]
+      for s in b repeat
+        localcount := countEachReduction(s, its, varsInLhs, localcount, gv)
+      localcount = #b =>
+        -- pay attention to the order of updating
+        if empty? L_reduction_variable_then then
+          L_reduction_variable_then := copy varsInLhs
+        else
+          L_reduction_variable_else := copy varsInLhs
+        true
+      false
+
+    verifyReduction(its: List SpadAst, b: List LetAst, gv: VTB, lv: VTB): Boolean ==
+      empty?(b) => true
+      b := eliminateLocalVariable!(b, lv)
+      b := eliminateGlobalVariable!(b)
+      return isReduction?(b, its, gv)
+
+    -- collect the local variables from each assignment in the body of a loop
+    colLocVar(bl: List LetAst, gv: VTB): VTB ==
+      lv : VTB := empty()
+      for b in bl repeat
+        --print("enter4"::OutputForm)
+        k := getLhs(b)$SyntaxHelper
+        --print("exit4"::OutputForm)
+        if not key?(k, gv) then
+          lv.k := r::Syntax
+      --print(lv::OutputForm)
+      lv
+
+    -- collect the global variables from the loop induction variables
+    colIterVar(iters: List SpadAst, gv: VTB): VTB ==
+      -- currently, we don't handle while loop such as while(i < l) 
+      for i in iters repeat
+        -- e.g. (STEP i (minr x) 1 (maxr x))
+        -- e.g. (IN i l)
+        v := first(getOperands(i::Syntax))
+        -- an approximation to the initial value of the induction variable
+        -- may use more precise value, but I don't see the necessity.
+        gv.v := unknownSyn()
+      gv
+
+    colIfConVar(b: SpadAst, gv: VTB): VTB ==
+      (b case IfAst) =>
+        con := condition(b::Syntax::IfAst)
+        compound?(con::Syntax) and con case LetAst =>
+          v := getLhs(con::Syntax::LetAst)$SyntaxHelper
+          gv.v := unknownSyn()
+          gv
+        gv
+      gv
+
+    withInCondition?(thenList: List LetAst, elseList: List LetAst, b: SpadAst): Boolean ==
+      vars : List Syntax := [getLhs(s)$SyntaxHelper for s in concat(thenList, elseList)]
+      not compound?(b::Syntax) => false
+      b case IfAst => listWithin?(vars, condition(b::Syntax::IfAst)::Syntax)
+      b case SequenceAst => 
+        s := expression((second(body(b::Syntax::SequenceAst)))::Syntax::ExitAst)::Syntax::IfAst
+        listWithin?(vars, condition(s)::Syntax)
+      userError "unexpected body of the verified repeat-if syntax"
+
+    identAccLoop3(r: RepeatAst, gv: VTB): ACC ==
+      result : ACC := []
+      not empty?(iterators(r)) => 
+        its := iterators(r)
+        it := first its
+        -- collect the global variables from the loop induction variables
+        -- in the loop iterators
+        gv := colIterVar(its, gv)
+        -- if this is a while loop
+        -- we don't handle reduction implemented in the while loop right now.
+        it case WhileAst => 
+          result := concat(result, identAccLoop2(body(r), copy gv))
+        -- if this is a for loop, and only contains let statement
+        L_reduction_variable_then := []
+        L_reduction_variable_else := []
+
+        first(p := letOnly? r) => 
+          lv : VTB := colLocVar(second p, gv)
+          verifyReduction(its, second p, gv, lv) =>
+          --not verifyReduction(its, second p, gv, lv) =>
+            L_reduction_variable := concat(L_reduction_variable, [L_reduction_variable_then])
+            result := concat(result, [r])
+          result := concat(result, [])
+
+        first(q := ifOnly? r) =>
+          gv' : VTB := colIfConVar(body r, copy gv)        
+          thenList := first second q
+          elseList := second second q
+          lvThen  : VTB := colLocVar(thenList, gv')
+          lvElse  : VTB := colLocVar(elseList, gv')
+          verifyReduction(its, thenList, gv', lvThen) and_
+          verifyReduction(its, elseList, gv', lvElse) and_
+          not withInCondition?(thenList, elseList, body r) =>
+            L_reduction_variable := concat(L_reduction_variable, [concat(L_reduction_variable_then, L_reduction_variable_else)])
+            result := concat(result, [r])
+          result := concat(result, [])
+
+      -- if this is a for loop, and is a mix, then recur
+        result := concat(result, identAccLoop2(body r, copy gv))
+      result := concat(result, identAccLoop2(body r, copy gv))
+      result
+
+    -- To do: should pass the vt table around
+    -- and make two copies of the table once we enter if/case/Repeat
+    identAccLoop2(s: SpadAst, gv: VTB): ACC ==
+      if not compound?(s::Syntax) then
+        return []
+      result : ACC := []
+      s case LetAst => 
+        k := getLhs(s)$SyntaxHelper
+        gv.k := rhs(s::Syntax::LetAst)::Syntax
+        []
+      s case WhileAst => []  
+      s case ColonAst => 
+        k := lhs(s::Syntax::ColonAst)::Syntax
+        gv.k := unknownSyn()
+        []
+      s case ConstructAst => []
+      s case CollectAst => []
+      s case ReturnAst => []
+      s case CaseAst => result := concat(result, identAccLoop2(rhs(s::Syntax::CaseAst), copy gv))
+      s case SequenceAst => 
+        bs := body(s::Syntax::SequenceAst)
+        for b in bs repeat
+          result := concat(result, identAccLoop2(b, gv))
+        result
+      s case RepeatAst => 
+        result := concat(result, identAccLoop3(s::Syntax::RepeatAst, copy gv))
+      s case IfAst => 
+        thBranch := thenBranch(s::Syntax::IfAst)
+        elBranch := elseBranch(s::Syntax::IfAst)
+        if compound?(thBranch::Syntax) then
+          result := concat(result, identAccLoop2(thBranch, copy gv))
+        if compound?(elBranch::Syntax) then
+          result := concat(result, identAccLoop2(elBranch, copy gv))
+        result
+      s case ExitAst =>
+        e := expression(s::Syntax::ExitAst)
+        result := concat(result, identAccLoop2(e, copy gv))
+      result
+
+    identAccLoop d == 
+      vt := empty()
+      fn : Identifier := name(head(d)::Syntax::HeadAst)
+      pl : List Identifier := parameters(head(d)::Syntax::HeadAst)
+      -- initialize the variable table with function parameters
+      vt := initVt(vt, pl)
+      -- start analysis
+      identAccLoop2(body d, vt)
+
+    test s == 
+      print("The following loops in the definition implement binary function reductions"::OutputForm)
+      identAccLoop((first parse s)::DefinitionAst)
+
+
+-- Syntactical analysis for collecting loops (emprical data):
+-- 1. iterate through each file of algebra library
+-- 2. traverse through the syntax tree of the domain/category/package
+-- 3. collect the RepeatAst when entering the implementation body
+ 
+    -- flags
+    -- 0 : collect all the repeat ast
+    -- 1 : collect qualified repeat ast (accumulation loop)
+    option: Integer := 0
+
+    --Global variables
+    fCount: Integer := 0
+    count: Integer := 0
+    -- counts the let-only loops
+    count2: Integer := 0
+    -- counts the qualified atomic loops
+    count3: Integer := 0
+    defNo: Integer := 0
+    packageNo: Integer := 0
+    categoryNo: Integer := 0
+    domainNo: Integer := 0
+    -- loop table stores the final analysis results
+    lpTable: LTB := empty()
+    alpTable: LTB := empty()
+    rlpTable: LTB := empty()
+    domainName : Identifier := gensym()
+    functionName : Identifier := gensym()
+    -- Table for storing global variables such as constructor parameter, and global variable in capsule
+    cgv: VTB := empty()
+
+    -- The helper functions
+    toString2(lps: List RepeatAst): String ==
+      result : String := ""
+      for lpd in 1..#lps repeat
+        lp := toString((lps.lpd)::Syntax)$SyntaxHelper
+        if lpd < #lps then
+          result := concat([result, "    ", lp, ",", "\n\r\n\r"])
+        else
+          result := concat([result, "    ", lp, "\n\r\n\r", "------------", "\n\r"])
+      result
+
+    toString(ltb: LTB): String ==
+      result : String := ""
+      for k in (keys(ltb)) repeat
+        d := string((first k)::Symbol)
+        f := string((second k)::Symbol)
+        l := toString2(ltb.k)
+        result := concat(result, concat(["(", d, ", ", f, ")"," ==>\n\r\n\r", l, "\n\r"]))
+      result
+
+    writeTableToFile(t: LTB, f: String): Boolean ==
+      ofname : FileName := filename(".",f,"txt")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString t)
+      true
+
+    cleanUp ==
+      lpTable := empty()
+      alpTable := empty()
+      rlpTable := empty()
+      packageNo := 0
+      categoryNo := 0
+      domainNo := 0
+      count := 0
+      count2 := 0
+      count3 := 0
+      fileCount := 0
+      defNo := 0
+      true
+
+    showStat ==
+      print("Total loop #:"::OutputForm)
+      print(count::OutputForm)
+      print("Atomic loop #:"::OutputForm)
+      print(count2::OutputForm)
+      print("Qualified loop #:"::OutputForm)
+      for k in keys(rlpTable) repeat
+        count3 := count3 + #(rlpTable.k)
+      print(count3::OutputForm)
+      print("Total function definition #:"::OutputForm)
+      print(defNo::OutputForm)
+      print("Total file #:"::OutputForm)
+      print(fCount::OutputForm)
+      print("Package #:"::OutputForm)
+      print(packageNo::OutputForm)
+      print("Category #:"::OutputForm)
+      print(categoryNo::OutputForm)
+      print("Domain #:"::OutputForm)
+      print(domainNo::OutputForm)
+
+    updateTable(d: Identifier, f: Identifier, b: RepeatAst, t: LTB): LTB ==
+      k : Pair(Identifier, Identifier) := pair(d, f)
+      if key?(k, t) then
+        t.k := cons(b, t.k)
+      else
+        t.k := [b]
+      t
+
+    updateTable2(d: Identifier, f: Identifier, bl: List RepeatAst, t: LTB): LTB ==
+      for b in bl repeat
+        updateTable(d, f, b, t)
+      t
+    
+    sex2str(s: FileName): String ==
+      res := s::String
+
+    getAllFileName: List FileName ==
+      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
+      sexLst := sex pretend List(FileName)
+      sexLst
+
+    -- filter out the import statement before the category definition
+    importFilter(l: List Syntax): Syntax ==
+      target: Syntax
+      for s in l repeat
+        op := getOperator(s)
+        if op case Identifier then
+          op' := op::Identifier
+          if op'::Symbol = 'DEF or op'::Symbol = 'where then
+            target := s
+      target
+
+    initVtWithGt(v: VTB, g: VTB): VTB ==
+      for k in keys(g) repeat
+        v.k := g.k
+      v
+
+    identAccLoop0 d == 
+      vt := empty()
+      fn : Identifier := name(head(d)::Syntax::HeadAst)
+      pl : List Identifier := parameters(head(d)::Syntax::HeadAst)
+      -- initialize the variable table with function parameters
+      vt := initVt(vt, pl)
+      -- insert the constructor global variables and capsule global variables
+      vt := initVtWithGt(vt, cgv)
+      -- start analysis
+      pair(fn, identAccLoop2(body d, vt))
+
+    -- collect the loop ast from a statement
+    T_defStmtStat(dBody: SpadAst, ctor: Identifier): Integer ==
+      if not compound?(dBody::Syntax) then
+        return count
+      dBody case SignatureAst =>
+        count
+      dBody case MacroAst => 
+        count
+      dBody case DefinitionAst => 
+        defNo := defNo + 1
+        if (option = 1) then
+          -- extract accumulation loop
+          t : Pair(Identifier, ACC) := identAccLoop0(dBody::Syntax::DefinitionAst)
+          -- update the result table
+          t' := first t
+          k : Pair(Identifier, Identifier) := pair(ctor, t')
+          rl : ACC := second t
+          updateTable2(ctor, t', rl, rlpTable)
+          --print("exit!!"::OutputForm)
+        else
+          T_defStat(dBody::Syntax::DefinitionAst, ctor)
+        count
+      dBody case SequenceAst =>
+        stmtLst:= body(dBody::Syntax::SequenceAst)$SequenceAst
+        for stmt in stmtLst repeat
+          T_defStmtStat(stmt, ctor)
+        count
+      dBody case IfAst => 
+        thBranch :=  thenBranch(dBody::Syntax::IfAst)$IfAst
+        elBranch := elseBranch(dBody::Syntax::IfAst)$IfAst
+        if compound?(thBranch::Syntax) then
+          T_defStmtStat(thBranch, ctor)
+        if compound?(elBranch::Syntax) then
+          T_defStmtStat(elBranch, ctor)
+        count
+      dBody case ReturnAst =>
+        rtn := expression(dBody::Syntax::ReturnAst)$ReturnAst
+        if compound?(rtn::Syntax) then
+          T_defStmtStat(rtn, ctor)
+        count
+      dBody case RepeatAst =>
+        b := dBody::Syntax::RepeatAst
+        updateTable(ctor, functionName, b, lpTable)
+        count := count + 1
+        count
+      dBody case CoerceAst =>
+        coeast := dBody::Syntax::CoerceAst
+        tp := ((target(coeast))$CoerceAst)::Syntax
+        exp := (expression(coeast)$CoerceAst)::Syntax
+        coerExp := expression(dBody::Syntax::CoerceAst)$CoerceAst
+        if compound?(coerExp::Syntax) then
+          T_defStmtStat(coerExp, ctor)
+        count
+      dBody case ExitAst =>
+        dbexp := expression(dBody::Syntax::ExitAst)$ExitAst
+        T_defStmtStat(dbexp, ctor)
+      dBody case LetAst =>
+        l := getLhs(dBody)$SyntaxHelper
+        r := (rhs(dBody::Syntax::LetAst)$LetAst)::Syntax
+        cgv.l := r
+        dlet := rhs(dBody::Syntax::LetAst)$LetAst
+        dlhs := lhs(dBody::Syntax::LetAst)$LetAst
+        if compound?(dlet::Syntax) then
+          if (dlet case CollectAst) or (dlet case ConstructAst) then
+            exp := (dlhs::Syntax)
+        T_defStmtStat(dlhs, ctor)
+        T_defStmtStat(dlet, ctor)
+      dBody case WhileAst => count  
+      dBody case ColonAst => 
+        colast := dBody::Syntax::ColonAst
+        id := (lhs(colast)$ColonAst)::Syntax
+        tp := (rhs(colast)$ColonAst)::Syntax
+        cgv.id := unknownSyn()
+        count
+      dBody case ConstructAst => count
+      dBody case CollectAst => count
+      dBody case CaseAst => count
+      count
+
+    -- collects loop from one function definition
+    T_defStat(defa: DefinitionAst, ctor: Identifier): Integer ==
+      hd := head(defa)$DefinitionAst
+      functionName := name hd
+      sig := signature(defa)$DefinitionAst
+      dBody := body(defa)$DefinitionAst
+      T_defStmtStat(dBody, ctor)
+      count
+
+    -- analysis for T_TopLevel statements (definitions)
+    T_TopLevel(sa: SpadAst, ctor: Identifier): Integer ==
+      sa case ColonAst => 
+        -- collect the global variable declared in the capsule
+        l := lhs(sa::Syntax::ColonAst)::Syntax
+        cgv.l := unknownSyn()
+        count
+      sa case SignatureAst =>
+        count
+      sa case MacroAst => 
+        count
+      sa case ImportAst => count
+      sa case DefinitionAst => 
+        defNo := defNo + 1
+        if (option = 1) then
+          -- extract accumulation loop
+          t : Pair(Identifier, ACC) := identAccLoop0(sa::Syntax::DefinitionAst)
+          -- update the result table
+          t' := first t
+          k : Pair(Identifier, Identifier) := pair(ctor, t')
+          rl : ACC := second t
+          updateTable2(ctor, t', rl, rlpTable)
+        else
+          T_defStat(sa::Syntax::DefinitionAst, ctor)
+        count
+      sa case SequenceAst => T_defStmtStat(sa, ctor)
+      sa case LetAst => 
+        sa' := sa::Syntax::LetAst
+        l := getLhs(sa')$SyntaxHelper
+        r := rhs(sa')::Syntax
+        cgv.l := r
+        T_defStmtStat(sa, ctor)
+        -- above two cases are for handling some weird parsing result (ZMOD)
+      sa case IfAst =>
+        thBranch := thenBranch(sa::Syntax::IfAst)$IfAst
+        elBranch := elseBranch(sa::Syntax::IfAst)$IfAst
+        if compound?(thBranch::Syntax) then
+          T_TopLevel(thBranch, ctor)
+        if compound?(elBranch::Syntax) then
+          T_TopLevel(elBranch, ctor)
+        count
+      T_defStmtStat(sa, ctor)
+
+    -- collect loops from a list of capsules
+    collectCapsule(sal: List SpadAst, ctor: Identifier): Integer ==
+      for sa in sal repeat
+        T_TopLevel(sa, ctor)
+      count
+
+    -- collect loops from a package
+    collectPackage(s: Syntax, ctor: Identifier): Integer ==
+      ctorPar : List Identifier := parameters(head(mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
+      qual := qualifier(s::WhereAst)$WhereAst
+      seq  := (qual::Syntax::SequenceAst)
+      seqBody := body(seq)$SequenceAst
+      wCapAl : List SpadAst := empty()
+      b : List SpadAst
+      k : Integer := 0
+      for st in seqBody repeat
+        --if (st case MacroAst) then
+          --collectMacro(st)
+        if (st case ExitAst) then
+          a := expression(st::Syntax::ExitAst)$ExitAst
+          b := body(a::Syntax::CapsuleAst)$CapsuleAst
+        b
+
+      for x in b repeat
+        x' := x::Syntax
+        id := getOperator(x')
+        if (id case Identifier) then
+          id' := id::Identifier
+          if (id'::Symbol = 'add) then
+            wCapAl := body((body(x::Syntax::AddAst)$AddAst)::Syntax::CapsuleAst)$CapsuleAst
+            k := 1 
+        if (x case CapsuleAst) then
+          wCapAl := body(x::Syntax::CapsuleAst)$CapsuleAst
+      collectCapsule(wCapAl, ctor)
+      count
+
+    -- collects loops from a typical category, i.e.,  Cats():Category == Cat with ... add..
+    collectCategory(s: Syntax, ctor: Identifier): Integer == 
+      cDef := (s::DefinitionAst)
+      cBody := body(cDef)$DefinitionAst::Syntax
+      cb := cBody::SpadAst
+      id := getOperator(cBody)
+      id case Identifier =>
+        id' := id::Identifier
+        if (id'::Symbol = 'add) then 
+          cCap:=body(cBody::AddAst)$AddAst::Syntax
+          cCapAl : List SpadAst := body(cCap::CapsuleAst)$CapsuleAst
+          collectCapsule(cCapAl, ctor)
+        if (cb case CapsuleAst) then
+          cCapAl : List SpadAst := body(cBody::CapsuleAst)$CapsuleAst
+          collectCapsule(cCapAl, ctor)
+        count
+      -- this case handles a category which only has with capsule
+      cb case CategoryAst => count
+      count
+
+    -- analysis for typical domain only has add
+    collectDomain(s: Syntax, ctor: Identifier): Integer ==
+      domDef := body(s::DefinitionAst)$DefinitionAst
+      dDef := domDef::Syntax
+      id := getOperator(dDef)
+      print(id::OutputForm)
+      if id case Identifier then
+        id' := id::Identifier
+        if (id'::Symbol = 'add) then 
+          t := body(domDef::Syntax::AddAst)$AddAst
+          if t case CapsuleAst then
+            domCap: List SpadAst := body(t::Syntax::CapsuleAst)$CapsuleAst
+          --print(domCap::OutputForm)
+            collectCapsule(domCap, ctor)
+        if (domDef case CapsuleAst) then
+          domCap: List SpadAst := body(domDef::Syntax::CapsuleAst)$CapsuleAst
+          collectCapsule(domCap, ctor)
+      count
+
+    -- collect loops from a library file
+    collectEach(l: List Syntax): Integer ==
+      -- clean the ctor global variable table
+      cgv := empty()
+      -- start
+      s := importFilter(l)
+      sast := (s::SpadAst)
+      -- if this is a package AST
+      sast case WhereAst => 
+        ctorName : Identifier := name(head(mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
+        consName := ctorName
+        ctorPar  := parameters(head(mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
+        cgv := initVt(cgv, ctorPar)
+        packageNo := packageNo + 1
+        collectPackage(s, ctorName)
+
+      -- if this is a domain or category
+      sast case DefinitionAst => 
+        ctorName := name(head(s::DefinitionAst)$DefinitionAst)$HeadAst
+        consName := ctorName
+        ctorPar  := parameters(head(s::DefinitionAst)$DefinitionAst)$HeadAst         
+        cgv := initVt(cgv, ctorPar)
+        --print(ctorName::OutputForm)
+        sig := signature(s::DefinitionAst)$DefinitionAst
+        tar := target(sig)$Signature
+        if tar = buildSyntax('Category,[]) then
+          categoryNo := categoryNo + 1
+          collectCategory(s, ctorName)
+        else
+          domainNo := domainNo + 1
+          collectDomain(s, ctorName)
+        count
+      count
+
+    collectAll: Integer ==
+      cleanUp()
+      sexls :List FileName := getAllFileName() 
+      for s in sexls repeat
+        fname := sex2str(s)
+        nm: List Syntax := parse(fname)
+        collectEach(nm)
+        fCount := fCount + 1
+      fCount
+
+    analyze(fileStr, opt) ==
+      option := opt
+      collectAll()
+      if (option = 1) then
+        writeTableToFile(rlpTable, fileStr)
+      else
+        writeTableToFile(lpTable, fileStr)
+      true
+
+    viewTable ==
+      lpTable
+
+    -- inferface to preprocessor
+    extractReductionPatternFromFunctionDefinition(defa: DefinitionAst, ctor: Identifier, tpenv: VTB): Pair(LTB, List List Syntax) ==
+      cleanUp()
+      -- manually clean up
+      L_reduction_variable := []
+      lpTable := empty()
+      alpTable := empty()
+      rlpTable := empty()
+      packageNo := 0
+      categoryNo := 0
+      domainNo := 0
+      count := 0
+      count2 := 0
+      count3 := 0
+      fileCount := 0
+      defNo := 0
+      -- finish cleaning up
+
+      rlpTable := empty()
+      option := 1
+      cgv    := copy tpenv
+      --print(cgv::OutputForm)
+      --print(defa::Syntax::OutputForm)
+      T_TopLevel(defa::Syntax::SpadAst, ctor)
+
+      --print(rlpTable::OutputForm)
+      pair(copy rlpTable, copy L_reduction_variable)
+
+
+-- The second round analysis over the loop table for extracting accumulation loops
+-- 1. for each entry of the table, if a RepeatAst is a while loop, and contains no RepeatAst as its body, discard it 
+-- 2. if a RepeatAst is a while loop, containing several RepeatAst, collect those RepeatAst, and recur
+-- 3. if a RepeatAst is a for loop, 
+-- 3.1 and it only contains let statement, then store this whole RepeatAst
+-- 3.2 and it contains several RepeatAst, then collect those RepeatAst, and recur for each.
+-- 3.3 otherwise, discard it.
+
+    --refineElement: RepeatAst -> List RepeatAst
+
+    refineStmt(s: SpadAst): List RepeatAst ==
+      if not compound?(s::Syntax) then
+        return []
+
+      result : List RepeatAst := []
+      s case LetAst => []
+      s case WhileAst => []  
+      s case ColonAst => []
+      s case ConstructAst => []
+      s case CollectAst => []
+      s case ReturnAst => []
+      s case CaseAst => result := concat(result, refineStmt(rhs(s::Syntax::CaseAst)))
+      s case SequenceAst => 
+        bs := body(s::Syntax::SequenceAst)
+        for b in bs repeat
+          result := concat(result, refineStmt(b))
+        result
+      s case RepeatAst => result := concat(result, refineElement(s::Syntax::RepeatAst))
+      s case IfAst => 
+        --print("enter if"::OutputForm)
+        thBranch := thenBranch(s::Syntax::IfAst)
+        elBranch := elseBranch(s::Syntax::IfAst)
+        if compound?(thBranch::Syntax) then
+          result := concat(result, refineStmt(thBranch))
+        if compound?(elBranch::Syntax) then
+          result := concat(result, refineStmt(elBranch))
+        --print("exit if"::OutputForm)
+        result
+      s case ExitAst =>
+        --print("enter exit"::OutputForm)
+        e := expression(s::Syntax::ExitAst)
+        result := concat(result, refineStmt(e))
+        --print("exit exit"::OutputForm)
+        result
+      result
+
+    refineElement(r: RepeatAst): List RepeatAst ==
+      result : List RepeatAst := []
+      not empty?(iterators(r)) => 
+        it := first(iterators(r))
+        -- if this is a while loop
+        it case WhileAst =>
+          result := concat(result, refineStmt(body(r)))
+        -- if this is a for loop, and only contains let statement
+        first(letOnly? r) => 
+          count2 := count2 + 1
+          result := concat(result, [r])
+      -- if this is a for loop, and is a mix, then recur
+        result := concat(result, refineStmt(body r))
+
+      result := concat(result, refineStmt(body r))
+      result
+
+    refineEntry(rs: List RepeatAst): List RepeatAst == 
+      result: List RepeatAst := []
+      for r in rs repeat
+        --print(r::OutputForm)
+        result := concat(result, refineElement(r))
+      result
+
+    refine:Boolean ==
+      for key in keys lpTable repeat
+        l := refineEntry(lpTable.key)
+        if not empty? l then
+          alpTable.key := l
+      true
+
+    analyze2 fileStr ==
+      collectAll()
+      refine()
+      writeTableToFile(alpTable, fileStr)
+      true
+
+
+-- usage:
+-- To do.
+
+
+
+
+
+
+
+
+
+

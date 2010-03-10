@@ -1,0 +1,94 @@
+)abbrev package PMKERNEL PatternMatchKernel
+++ Pattern matching on kernels
+++ Author: Manuel Bronstein
+++ Date Created: 12 Jan 1990
+++ Date Last Updated: 4 May 1992
+++ Description:
+++   This package provides pattern matching functions on kernels.
+++ Keywords: pattern, matching, kernel.
+PatternMatchKernel(S, E): Exports == Implementation where
+  S: SetCategory
+  E: Join(OrderedSet, RetractableTo Kernel %,
+          ConvertibleTo Pattern S, PatternMatchable S)
+
+  PAT ==> Pattern S
+  PRS ==> PatternMatchResult(S, E)
+  POWER ==> "%power"::Symbol
+  NTHRT ==> "nthRoot"::Symbol
+
+  Exports ==> with
+    patternMatch: (Kernel E, PAT, PRS) -> PRS
+      ++ patternMatch(f(e1,...,en), pat, res) matches the pattern pat
+      ++ to \spad{f(e1,...,en)}; res contains the variables of pat which
+      ++ are already matched and their matches.
+
+  Implementation ==> add
+    patternMatchArg  : (List E, List PAT, PRS) -> PRS
+    patternMatchInner: (Kernel E, PAT, PRS) -> Union(PRS, "failed")
+
+    -- matches the ordered lists ls and lp.
+    patternMatchArg(ls, lp, l) ==
+      #ls ~= #lp => failed()
+      for p in lp for s in ls repeat
+        generic? p and failed?(l := addMatch(p,s,l)) => return failed()
+      for p in lp for s in ls repeat
+        not(generic? p) and failed?(l := patternMatch(s, p, l)) =>
+                                                         return failed()
+      l
+
+    patternMatchInner(s, p, l) ==
+      generic? p => addMatch(p, s::E, l)
+      (u := isOp p) case Record(op:BasicOperator, arg: List PAT) =>
+        ur := u::Record(op:BasicOperator, arg: List PAT)
+        ur.op = operator s => patternMatchArg(argument s, ur.arg, l)
+        failed()
+      constant? p =>
+        ((v := retractIfCan(p)@Union(Symbol, "failed")) case Symbol)
+          and ((w := symbolIfCan s) case Symbol) and
+            (v::Symbol = w::Symbol) => l
+        failed()
+      "failed"
+
+    if E has Monoid then
+      patternMatchMonoid: (Kernel E, PAT, PRS) -> Union(PRS, "failed")
+      patternMatchOpt   : (E, List PAT, PRS, E) -> PRS
+
+      patternMatchOpt(x, lp, l, id) ==
+        (u := optpair lp) case List(PAT) =>
+          failed?(l := addMatch(first(u::List(PAT)), id, l)) => failed()
+          patternMatch(x, second(u::List(PAT)), l)
+        failed()
+
+      patternMatchMonoid(s, p, l) ==
+        (u := patternMatchInner(s, p, l)) case PRS => u::PRS
+        (v := isPower p) case Record(val:PAT, exponent:PAT) =>
+          vr := v::Record(val:PAT, exponent: PAT)
+          is?(op := operator s, POWER) =>
+            patternMatchArg(argument s, [vr.val, vr.exponent], l)
+          is?(op,NTHRT) and ((r := recip(second(arg := argument s))) case E) =>
+            patternMatchArg([first arg, r::E], [vr.val, vr.exponent], l)
+          optional?(vr.exponent) =>
+            failed?(l := addMatch(vr.exponent, 1, l)) => failed()
+            patternMatch(s::E, vr.val, l)
+          failed()
+        (w := isTimes p) case List(PAT) =>
+          patternMatchOpt(s::E, w::List(PAT), l, 1)
+        "failed"
+
+      if E has AbelianMonoid then
+        patternMatch(s, p, l) ==
+          (u := patternMatchMonoid(s, p, l)) case PRS => u::PRS
+          (w := isPlus p) case List(PAT) =>
+            patternMatchOpt(s::E, w::List(PAT), l, 0)
+          failed()
+
+      else
+        patternMatch(s, p, l) ==
+          (u := patternMatchMonoid(s, p, l)) case PRS => u::PRS
+          failed()
+
+    else
+      patternMatch(s, p, l) ==
+        (u := patternMatchInner(s, p, l)) case PRS => u::PRS
+        failed()
+

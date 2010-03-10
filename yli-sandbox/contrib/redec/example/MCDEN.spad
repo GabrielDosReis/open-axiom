@@ -1,0 +1,44 @@
+)abbrev package MCDEN MatrixCommonDenominator
+--% MatrixCommonDenominator
+++ Author: Manuel Bronstein
+++ Date Created: 2 May 1988
+++ Date Last Updated: 20 Jul 1990
+++ Description: MatrixCommonDenominator provides functions to
+++ compute the common denominator of a matrix of elements of the
+++ quotient field of an integral domain.
+++ Keywords: gcd, quotient, matrix, common, denominator.
+MatrixCommonDenominator(R, Q): Exports == Implementation where
+  R: IntegralDomain
+  Q: QuotientFieldCategory R
+ 
+  VR ==> Vector R
+  VQ ==> Vector Q
+ 
+  Exports ==> with
+    commonDenominator: Matrix Q -> R
+      ++ commonDenominator(q) returns a common denominator d for
+      ++ the elements of q.
+    clearDenominator : Matrix Q -> Matrix R
+      ++ clearDenominator(q) returns p such that \spad{q = p/d} where d is
+      ++ a common denominator for the elements of q.
+    splitDenominator : Matrix Q -> Record(num: Matrix R, den: R)
+      ++ splitDenominator(q) returns \spad{[p, d]} such that \spad{q = p/d} and d
+      ++ is a common denominator for the elements of q.
+ 
+  Implementation ==> add
+    import ListFunctions2(Q, R)
+    import MatrixCategoryFunctions2(Q,VQ,VQ,Matrix Q,R,VR,VR,Matrix R)
+ 
+    clearDenominator m ==
+      d := commonDenominator m
+      map(numer(d * #1), m)
+ 
+    splitDenominator m ==
+      d := commonDenominator m
+      [map(numer(d * #1), m), d]
+ 
+    if R has GcdDomain then
+      commonDenominator m == lcm map(denom, parts m)
+    else
+      commonDenominator m == reduce("*",map(denom, parts m),1)$List(R)
+

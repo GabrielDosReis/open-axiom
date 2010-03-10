@@ -1,0 +1,31 @@
+import UnivariatePolynomialCategory
+import Field
+import CharacteristicZero
+import Polynomial
+import Fraction
+import Integer
+)abbrev package SAERFFC SAERationalFunctionAlgFactor
+++ Factorisation in UP SAE FRAC POLY INT
+++ Author: Patrizia Gianni
+++ Date Created: ???
+++ Date Last Updated: ???
+++ Description:
+++ Factorization of univariate polynomials with coefficients in an
+++ algebraic extension of \spadtype{Fraction Polynomial Integer}.
+++ Keywords: factorization, algebraic extension, univariate polynomial
+ 
+SAERationalFunctionAlgFactor(UP, SAE, UPA): Exports == Implementation where
+  UP : UnivariatePolynomialCategory Fraction Polynomial Integer
+  SAE : Join(Field, CharacteristicZero,
+                      MonogenicAlgebra(Fraction Polynomial Integer, UP))
+  UPA: UnivariatePolynomialCategory SAE
+ 
+  Exports ==> with
+    factor: UPA -> Factored UPA
+      ++ factor(p) returns a prime factorisation of p.
+ 
+  Implementation ==> add
+    factor q ==
+      factor(q, factor$RationalFunctionFactor(UP)
+              )$InnerAlgFactor(Fraction Polynomial Integer, UP, SAE, UPA)
+

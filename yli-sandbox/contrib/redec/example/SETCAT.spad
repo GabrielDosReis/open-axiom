@@ -1,0 +1,26 @@
+)abbrev category SETCAT SetCategory
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++   09/09/92   RSS   added latex and hash
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype{SetCategory} is the basic category for describing a collection
+++ of elements with \spadop{=} (equality) and \spadfun{coerce} to output form.
+++
+++ Conditional Attributes:
+++    canonical\tab{15}data structure equality is the same as \spadop{=}
+SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
+    --operations
+      hash: % -> SingleInteger  ++ hash(s) calculates a hash code for s.
+      latex: % -> String       ++ latex(s) returns a LaTeX-printable output
+                               ++ representation of s.
+  add
+      hash(s : %):  SingleInteger == SXHASH(s)$Lisp
+      latex(s : %): String       == "\mbox{\bf Unimplemented}"
+

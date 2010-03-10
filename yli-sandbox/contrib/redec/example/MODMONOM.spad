@@ -1,0 +1,25 @@
+)abbrev domain MODMONOM ModuleMonomial
+++ Description:
+++ This package \undocumented
+ModuleMonomial(IS: OrderedSet,
+               E: SetCategory,
+               ff:(MM, MM) -> Boolean): T == C where
+
+   MM ==> Record(index:IS, exponent:E)
+
+   T == Join(OrderedSet, HomotopicTo MM)  with
+        exponent: $ -> E
+                ++ exponent(x) \undocumented
+        index: $ -> IS
+                ++ index(x) \undocumented
+        construct: (IS, E) -> $
+                ++ construct(i,e) \undocumented
+   C == MM  add
+        Rep:= MM
+        x:$ < y:$ == ff(x::Rep, y::Rep)
+        exponent(x:$):E == x.exponent
+        index(x:$): IS == x.index
+        coerce(x:$):MM == x::Rep::MM
+        coerce(x:MM):$ == x::Rep::$
+        construct(i:IS, e:E):$ == [i, e]$MM::Rep::$
+

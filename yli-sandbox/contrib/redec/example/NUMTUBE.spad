@@ -1,0 +1,97 @@
+)abbrev package NUMTUBE NumericTubePlot
+++ Author: Clifton J. Williamson
+++ Date Created: Bastille Day 1989
+++ Date Last Updated: 5 June 1990
+++ Keywords:
+++ Examples:
+++ Package for constructing tubes around 3-dimensional parametric curves.
+NumericTubePlot(Curve): Exports == Implementation where
+  Curve : PlottableSpaceCurveCategory
+  B   ==> Boolean
+  I   ==> Integer
+  SF  ==> DoubleFloat
+  L   ==> List
+  S   ==> String
+  SEG ==> Segment
+  Pt  ==> Point SF
+  TUBE ==> TubePlot Curve
+  Triad ==> Record(tang:Pt,norm:Pt,bin:Pt)
+ 
+  Exports ==> with
+    tube: (Curve,SF,I) -> TUBE
+      ++ tube(c,r,n) creates a tube of radius r around the curve c.
+ 
+  Implementation ==> add
+    import TubePlotTools
+ 
+    LINMAX  := convert(0.995)@SF
+    XHAT := point(1,0,0,0)
+    YHAT := point(0,1,0,0)
+    PREV0 := point(1,1,0,0)
+    PREV := PREV0
+ 
+    colinearity: (Pt,Pt) -> SF
+    colinearity(x,y) == dot(x,y)**2/(dot(x,x) * dot(y,y))
+ 
+    orthog: (Pt,Pt) -> Pt
+    orthog(x,y) ==
+      if colinearity(x,y) > LINMAX then y := PREV
+      if colinearity(x,y) > LINMAX then
+        y := (colinearity(x,XHAT) < LINMAX => XHAT; YHAT)
+      a := -dot(x,y)/dot(x,x)
+      PREV := a*x + y
+ 
+    poTriad:(Pt,Pt,Pt) -> Triad
+    poTriad(pl,po,pr) ==
+      -- use divided difference for t.
+      t := unitVector(pr - pl)
+      -- compute n as orthogonal to t in plane containing po.
+      pol := pl - po
+      n   := unitVector orthog(t,pol)
+      [t,n,cross(t,n)]
+ 
+    curveTriads: L Pt -> L Triad
+    curveTriads l ==
+      (k := #l) < 2 => error "Need at least 2 points to specify a curve"
+      PREV := PREV0
+      k = 2 =>
+        t := unitVector(second l - first l)
+        n := unitVector(t - XHAT)
+        b := cross(t,n)
+        triad : Triad := [t,n,b]
+        [triad,triad]
+      -- compute interior triads using divided differences
+      midtriads : L Triad :=
+        [poTriad(pl,po,pr) for pl in l for po in rest l _
+               for pr in rest rest l]
+      -- compute first triad using a forward difference
+      x := first midtriads
+      t := unitVector(second l - first l)
+      n := unitVector orthog(t,x.norm)
+      begtriad : Triad := [t,n,cross(t,n)]
+      -- compute last triad using a backward difference
+      x := last midtriads
+      -- efficiency!!
+      t := unitVector(l.k - l.(k-1))
+      n := unitVector orthog(t,x.norm)
+      endtriad : Triad := [t,n,cross(t,n)]
+      concat(begtriad,concat(midtriads,endtriad))
+ 
+    curveLoops: (L Pt,SF,I) -> L L Pt
+    curveLoops(pts,r,nn) ==
+      triads := curveTriads pts
+      cosSin := cosSinInfo nn
+      loops : L L Pt := nil()
+      for pt in pts for triad in triads repeat
+        n := triad.norm; b := triad.bin
+        loops := concat(loopPoints(pt,n,b,r,cosSin),loops)
+      reverse_! loops
+ 
+    tube(curve,r,n) ==
+      n < 3 => error "tube: n should be at least 3"
+      brans := listBranches curve
+      loops : L L Pt := nil()
+      for bran in brans repeat
+        loops := concat(loops,curveLoops(bran,r,n))
+      tube(curve,loops,false)
+

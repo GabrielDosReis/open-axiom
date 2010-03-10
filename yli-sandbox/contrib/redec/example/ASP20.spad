@@ -1,0 +1,157 @@
+)abbrev domain ASP20 Asp20
+++ Author: Mike Dewar and Godfrey Nolan and Grant Keady
+++ Date Created: Dec 1993
+++ Date Last Updated: 21 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranVectorFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp20} produces Fortran for Type 20 ASPs, for example:
+++\begin{verbatim}
+++      SUBROUTINE QPHESS(N,NROWH,NCOLH,JTHCOL,HESS,X,HX)
+++      DOUBLE PRECISION HX(N),X(N),HESS(NROWH,NCOLH)
+++      INTEGER JTHCOL,N,NROWH,NCOLH
+++      HX(1)=2.0D0*X(1)
+++      HX(2)=2.0D0*X(2)
+++      HX(3)=2.0D0*X(4)+2.0D0*X(3)
+++      HX(4)=2.0D0*X(4)+2.0D0*X(3)
+++      HX(5)=2.0D0*X(5)
+++      HX(6)=(-2.0D0*X(7))+(-2.0D0*X(6))
+++      HX(7)=(-2.0D0*X(7))+(-2.0D0*X(6))
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp20(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  PI     ==> PositiveInteger
+  UFST   ==> Union(fst:FST,void:"void")
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  MAT    ==> Matrix
+  VF2    ==> VectorFunctions2
+  MFLOAT ==> MachineFloat
+  FEXPR  ==> FortranExpression([],['X,'HESS],MFLOAT)
+  O      ==> OutputForm
+  M2     ==> MatrixCategoryFunctions2
+  MF2a   ==> M2(FRAC POLY INT,VEC FRAC POLY INT,VEC FRAC POLY INT,
+                MAT FRAC POLY INT,FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
+  MF2b   ==> M2(FRAC POLY FLOAT,VEC FRAC POLY FLOAT,VEC FRAC POLY FLOAT,
+                MAT FRAC POLY FLOAT, FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
+  MF2c   ==> M2(POLY INT,VEC POLY INT,VEC POLY INT,MAT POLY INT,
+                FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
+  MF2d   ==> M2(POLY FLOAT,VEC POLY FLOAT,VEC POLY FLOAT,
+                MAT POLY FLOAT, FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
+  MF2e   ==> M2(EXPR INT,VEC EXPR INT,VEC EXPR INT,MAT EXPR INT,
+                FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
+  MF2f   ==> M2(EXPR FLOAT,VEC EXPR FLOAT,VEC EXPR FLOAT,
+                MAT EXPR FLOAT, FEXPR,VEC FEXPR,VEC FEXPR,MAT FEXPR)
+
+
+  Exports == Join(FortranMatrixFunctionCategory, CoercibleFrom MAT FEXPR)
+  Implementation == add
+
+    real : UFST := ["real"::FST]$UFST
+    syms : SYMTAB := empty()
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    declare!(NROWH,fortranInteger(),syms)$SYMTAB
+    declare!(NCOLH,fortranInteger(),syms)$SYMTAB
+    declare!(JTHCOL,fortranInteger(),syms)$SYMTAB
+    hessType : FT := construct(real,[NROWH,NCOLH],false)$FT
+    declare!(HESS,hessType,syms)$SYMTAB
+    xType : FT := construct(real,[N],false)$FT
+    declare!(X,xType,syms)$SYMTAB
+    declare!(HX,xType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,
+                          [N,NROWH,NCOLH,JTHCOL,HESS,X,HX],syms)
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    -- To help the poor old compiler!
+    fexpr2expr(u:FEXPR):EXPR MFLOAT == coerce(u)$FEXPR
+
+    localAssign(s:Symbol,j:VEC FEXPR):FortranCode ==
+      j' : VEC EXPR MFLOAT := map(fexpr2expr,j)$VF2(FEXPR,EXPR MFLOAT)
+      assign(s,j')$FortranCode
+
+    coerce(u:MAT FEXPR):$ ==
+      j:Integer
+      x:Symbol := X::Symbol
+      n := nrows(u)::PI
+      p:VEC FEXPR := [retract(subscript(x,[j::O])$Symbol)@FEXPR for j in 1..n]
+      prod:VEC FEXPR := u*p
+      ([localAssign(HX,prod),returns()$FortranCode]$List(FortranCode))::$
+
+    retract(u:MAT FRAC POLY INT):$ ==
+      v : MAT FEXPR := map(retract,u)$MF2a
+      v::$
+
+    retractIfCan(u:MAT FRAC POLY INT):Union($,"failed") ==
+      v:Union(MAT FEXPR,"failed"):=map(retractIfCan,u)$MF2a
+      v case "failed" => "failed"
+      (v::MAT FEXPR)::$
+
+    retract(u:MAT FRAC POLY FLOAT):$ ==
+      v : MAT FEXPR := map(retract,u)$MF2b
+      v::$
+
+    retractIfCan(u:MAT FRAC POLY FLOAT):Union($,"failed") ==
+      v:Union(MAT FEXPR,"failed"):=map(retractIfCan,u)$MF2b
+      v case "failed" => "failed"
+      (v::MAT FEXPR)::$
+
+    retract(u:MAT EXPR INT):$ ==
+      v : MAT FEXPR := map(retract,u)$MF2e
+      v::$
+
+    retractIfCan(u:MAT EXPR INT):Union($,"failed") ==
+      v:Union(MAT FEXPR,"failed"):=map(retractIfCan,u)$MF2e
+      v case "failed" => "failed"
+      (v::MAT FEXPR)::$
+
+    retract(u:MAT EXPR FLOAT):$ ==
+      v : MAT FEXPR := map(retract,u)$MF2f
+      v::$
+
+    retractIfCan(u:MAT EXPR FLOAT):Union($,"failed") ==
+      v:Union(MAT FEXPR,"failed"):=map(retractIfCan,u)$MF2f
+      v case "failed" => "failed"
+      (v::MAT FEXPR)::$
+
+    retract(u:MAT POLY INT):$ ==
+      v : MAT FEXPR := map(retract,u)$MF2c
+      v::$
+
+    retractIfCan(u:MAT POLY INT):Union($,"failed") ==
+      v:Union(MAT FEXPR,"failed"):=map(retractIfCan,u)$MF2c
+      v case "failed" => "failed"
+      (v::MAT FEXPR)::$
+
+    retract(u:MAT POLY FLOAT):$ ==
+      v : MAT FEXPR := map(retract,u)$MF2d
+      v::$
+
+    retractIfCan(u:MAT POLY FLOAT):Union($,"failed") ==
+      v:Union(MAT FEXPR,"failed"):=map(retractIfCan,u)$MF2d
+      v case "failed" => "failed"
+      (v::MAT FEXPR)::$
+
+    coerce(u:$):O == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

@@ -1,0 +1,115 @@
+import Type
+import FiniteLinearAggregate
+)abbrev package FLAGG2 FiniteLinearAggregateFunctions2
+--% FiniteLinearAggregateFunctions2
+
+++ Author: ???
+++ Date Created: ???
+++ Date Last Updated: ???
+++ Description:
+++ FiniteLinearAggregateFunctions2 provides functions involving two
+++ FiniteLinearAggregates where the underlying domains might be
+++ different. An example of this might be creating a list of rational
+++ numbers by mapping a function across a list of integers where the
+++ function divides each integer by 1000.
+
+FiniteLinearAggregateFunctions2(S, A, R, B):
+ Exports == Implementation where
+  S, R: Type
+  A   : FiniteLinearAggregate S
+  B   : FiniteLinearAggregate R
+
+  Exports ==> with
+    map    : (S -> R, A) -> B          ++ map(f,a) applies function f to each member of aggregate
+                                       ++ \spad{a} resulting in a new aggregate over a
+                                       ++ possibly different underlying domain.
+
+    reduce : ((S, R) -> R, A, R) -> R  ++ reduce(f,a,r) applies function f to each
+                                       ++ successive element of the
+                                       ++ aggregate \spad{a} and an accumulant initialized to r.
+                                       ++ For example,
+                                       ++ \spad{reduce(_+$Integer,[1,2,3],0)}
+                                       ++ does \spad{3+(2+(1+0))}. Note: third argument r
+                                       ++ may be regarded as the
+                                       ++ identity element for the function f.
+
+    scan   : ((S, R) -> R, A, R) -> B  ++ scan(f,a,r) successively applies
+                                       ++ \spad{reduce(f,x,r)} to more and more leading sub-aggregates
+                                       ++ x of aggregrate \spad{a}.
+                                       ++ More precisely, if \spad{a} is \spad{[a1,a2,...]}, then
+                                       ++ \spad{scan(f,a,r)} returns
+                                       ++ \spad{[reduce(f,[a1],r),reduce(f,[a1,a2],r),...]}.
+
+  Implementation ==> add
+    if A has ListAggregate(S) then         -- A is a list-oid
+      reduce(fn, l, ident) ==
+        empty? l => ident
+        reduce(fn, rest l, fn(first l, ident))
+
+      if B has ListAggregate(R) or not(B has shallowlyMutable) then
+        -- A is a list-oid, and B is either list-oids or not mutable
+        map(f, l) == construct [f s for s in entries l]
+
+        scan(fn, l, ident) ==
+          empty? l => empty()
+          val := fn(first l, ident)
+          concat(val, scan(fn, rest l, val))
+
+      else                      -- A is a list-oid, B a mutable array-oid
+        map(f, l) ==
+          i := minIndex(w := new(#l,NIL$Lisp)$B)
+          for a in entries l repeat (qsetelt_!(w, i, f a); i := inc i)
+          w
+
+        scan(fn, l, ident) ==
+          i := minIndex(w := new(#l,NIL$Lisp)$B)
+          vl := ident
+          for a in entries l repeat
+            vl := qsetelt_!(w, i, fn(a, vl))
+            i := inc i
+          w
+
+    else                              -- A is an array-oid
+      reduce(fn, v, ident) ==
+        val := ident
+        for i in minIndex v .. maxIndex v repeat
+          val := fn(qelt(v, i), val)
+        val
+
+      if B has ListAggregate(R) then   -- A is an array-oid, B a list-oid
+        map(f, v) ==
+          construct [f qelt(v, i) for i in minIndex v .. maxIndex v]
+
+        scan(fn, v, ident) ==
+          w := empty()$B
+          for i in minIndex v .. maxIndex v repeat
+            ident := fn(qelt(v, i), ident)
+            w := concat(ident, w)
+          reverse_! w
+
+      else                             -- A and B are array-oid's
+        if B has shallowlyMutable then -- B is also mutable
+          map(f, v) ==
+            w := new(#v,NIL$Lisp)$B
+            for i in minIndex w .. maxIndex w repeat
+              qsetelt_!(w, i, f qelt(v, i))
+            w
+
+          scan(fn, v, ident) ==
+            w   := new(#v,NIL$Lisp)$B
+            vl := ident
+            for i in minIndex v .. maxIndex v repeat
+              vl := qsetelt_!(w, i, fn(qelt(v, i), vl))
+            w
+
+        else                                   -- B non mutable array-oid
+          map(f, v) ==
+            construct [f qelt(v, i) for i in minIndex v .. maxIndex v]
+
+          scan(fn, v, ident) ==
+            w := empty()$B
+            for i in minIndex v .. maxIndex v repeat
+              ident := fn(qelt(v, i), ident)
+              w := concat(w, ident)
+            w
+

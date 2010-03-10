@@ -1,0 +1,112 @@
+)abbrev domain ASP24 Asp24
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 21 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp24} produces Fortran for Type 24 ASPs which evaluate a 
+++multivariate function at a point (needed for NAG routine \axiomOpFrom{e04jaf}{e04Package}), for example:
+++\begin{verbatim}
+++      SUBROUTINE FUNCT1(N,XC,FC)
+++      DOUBLE PRECISION FC,XC(N)
+++      INTEGER N
+++      FC=10.0D0*XC(4)**4+(-40.0D0*XC(1)*XC(4)**3)+(60.0D0*XC(1)**2+5
+++     &.0D0)*XC(4)**2+((-10.0D0*XC(3))+(-40.0D0*XC(1)**3))*XC(4)+16.0D0*X
+++     &C(3)**4+(-32.0D0*XC(2)*XC(3)**3)+(24.0D0*XC(2)**2+5.0D0)*XC(3)**2+
+++     &(-8.0D0*XC(2)**3*XC(3))+XC(2)**4+100.0D0*XC(2)**2+20.0D0*XC(1)*XC(
+++     &2)+10.0D0*XC(1)**4+XC(1)**2
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp24(name): Exports == Implementation where
+  name : Symbol
+
+  FST  ==> FortranScalarType
+  FT   ==> FortranType
+  SYMTAB ==> SymbolTable
+  RSFC ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FSTU ==> Union(fst:FST,void:"void")
+  FEXPR ==> FortranExpression([],['XC],MachineFloat)
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+
+  Exports ==> FortranFunctionCategory with
+      coerce : FEXPR -> $
+        ++ coerce(f) takes an object from the appropriate instantiation of
+        ++ \spadtype{FortranExpression} and turns it into an ASP.
+
+
+  Implementation ==> add
+
+
+    real : FSTU := ["real"::FST]$FSTU
+    syms : SYMTAB := empty()
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    xcType : FT := construct(real,[N::Symbol],false)$FT
+    declare!(XC,xcType,syms)$SYMTAB
+    declare!(FC,fortranReal(),syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$FSTU,[N,XC,FC],syms)
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:FEXPR):$ ==
+      coerce(assign(FC,u::Expression(MachineFloat))$FortranCode)$Rep
+
+    retract(u:FRAC POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:FRAC POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:EXPR FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:EXPR INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

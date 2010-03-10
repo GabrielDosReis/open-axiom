@@ -1,0 +1,66 @@
+import Type
+import SetCategory
+import List
+import Boolean
+)abbrev category RCAGG RecursiveAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A recursive aggregate over a type S is a model for a
+++ a directed graph containing values of type S.
+++ Recursively, a recursive aggregate is a {\em node}
+++ consisting of a \spadfun{value} from S and 0 or more \spadfun{children}
+++ which are recursive aggregates.
+++ A node with no children is called a \spadfun{leaf} node.
+++ A recursive aggregate may be cyclic for which some operations as noted
+++ may go into an infinite loop.
+RecursiveAggregate(S:Type): Category == HomogeneousAggregate(S) with
+   children: % -> List %
+     ++ children(u) returns a list of the children of aggregate u.
+   -- should be % -> %* and also needs children: % -> Iterator(S,S)
+   nodes: % -> List %
+     ++ nodes(u) returns a list of all of the nodes of aggregate u.
+   -- to become % -> %* and also nodes: % -> Iterator(S,S)
+   leaf?: % -> Boolean
+     ++ leaf?(u) tests if u is a terminal node.
+   value: % -> S
+     ++ value(u) returns the value of the node u.
+   elt: (%,"value") -> S
+     ++ elt(u,"value") (also written: \axiom{a. value}) is
+     ++ equivalent to \axiom{value(a)}.
+   cyclic?: % -> Boolean
+     ++ cyclic?(u) tests if u has a cycle.
+   leaves: % -> List S
+     ++ leaves(t) returns the list of values in obtained by visiting the
+     ++ nodes of tree \axiom{t} in left-to-right order.
+   distance: (%,%) -> Integer
+     ++ distance(u,v) returns the path length (an integer) from node u to v.
+   if S has SetCategory then
+      child?: (%,%) -> Boolean
+        ++ child?(u,v) tests if node u is a child of node v.
+      node?: (%,%) -> Boolean
+        ++ node?(u,v) tests if node u is contained in node v
+        ++ (either as a child, a child of a child, etc.).
+   if % has shallowlyMutable then
+      setchildren_!: (%,List %)->%
+        ++ setchildren!(u,v) replaces the current children of node u
+        ++ with the members of v in left-to-right order.
+      setelt: (%,"value",S) -> S
+        ++ setelt(a,"value",x) (also written \axiom{a . value := x})
+        ++ is equivalent to \axiom{setvalue!(a,x)}
+      setvalue_!: (%,S) -> S
+        ++ setvalue!(u,x) sets the value of node u to x.
+ add
+   --elt(x, "value") == value x
+  -- if % has shallowlyMutable then
+   --  setelt(x,y,"value") == setvalue_!(x,y)
+   if S has SetCategory then
+     child?(x,l) == member?(x,children(l))
+

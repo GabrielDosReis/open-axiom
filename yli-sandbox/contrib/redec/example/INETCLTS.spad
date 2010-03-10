@@ -1,0 +1,58 @@
+)abbrev domain INETCLTS InetClientStreamSocket
+InetClientStreamSocket(): Public == Private where
+  Public == Join(NetworkClientSocket IP4Address, CoercibleTo OutputForm) with
+    connectTo: (Hostname, PortNumber) -> Union(%,"failed")
+  Private == add
+    -- we hope that a small integer is OK on all platform
+    Host == Union(IP4Address,Hostname)
+    Rep == Record(%host: Host, %port: PortNumber, %sock: SingleInteger)
+
+    connectTo(ip: IP4Address, p: PortNumber) ==
+      s: SingleInteger := connectToHostAndPort(ip,4,p)$Lisp
+      s = -1::SingleInteger => "failed"
+      per [ip::Host,p,s]
+
+    connectTo(h: Hostname, p: PortNumber) ==
+      (ip := resolve(h)$IP4Address) case "failed" => "failed"
+      s: SingleInteger := connectToHostAndPort(ip::IP4Address,4,p)$Lisp
+      s = -1::SingleInteger => "failed"
+      per [h::Host,p,s]
+
+    isConnected? s ==
+      rep(s).%sock ~= -1::SingleInteger
+
+    readBytes!(x,b) ==
+      n: SingleInteger := 
+          readFromStreamSocket(rep(x).%sock,b, capacity b)$Lisp
+      if n <= 0 then close! x
+      else setLength!(b,n : NonNegativeInteger)
+      n
+    readByte! x ==
+      r: SingleInteger := readByteFromStreamSocket(rep(x).%sock)$Lisp
+      if r < 0 then close! x
+      r
+
+    writeBytes!(x,b) ==
+      n: SingleInteger := 
+          writeToStreamSocket(rep(x).%sock,b, capacity b)$Lisp
+      if n <= 0 then close! x
+      else setLength!(b,n : NonNegativeInteger)
+      n
+
+    writeByte!(x,b) ==
+      r: SingleInteger := writeByteToStreamSocket(rep(x).%sock,b)$Lisp
+      if r < 0 then close! x
+      r
+
+    close! x ==
+      closeSocket(rep(x).%sock)$Lisp
+      rep(x).%sock := -1::SingleInteger
+      x
+
+    coerce(x: %): OutputForm ==
+      x' := rep x
+      h := 
+        x'.%host case IP4Address => x'.%host::IP4Address::OutputForm
+        x'.%host::Hostname::OutputForm
+      infix('_:::OutputForm,h,x'.%port::OutputForm)$OutputForm
+      

@@ -1,0 +1,13 @@
+)abbrev category PRIMCAT PrimitiveFunctionCategory
+++ Category for the integral functions
+++ Author: Manuel Bronstein
+++ Date Created: ???
+++ Date Last Updated: 14 May 1991
+++ Description: Category for the functions defined by integrals;
+PrimitiveFunctionCategory(): Category == with
+    integral: ($, Symbol) -> $
+      ++ integral(f, x) returns the formal integral of f dx.
+    integral: ($, SegmentBinding $) -> $
+      ++ integral(f, x = a..b) returns the formal definite integral
+      ++ of f dx for x between \spad{a} and b.
+

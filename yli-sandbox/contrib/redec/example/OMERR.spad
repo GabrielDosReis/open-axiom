@@ -1,0 +1,43 @@
+)abbrev domain OMERR OpenMathError
+++ Author: Vilya Harvey
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: \spadtype{OpenMathError} is the domain of OpenMath errors.
+OpenMathError() : SetCategory with
+  errorKind : % -> OpenMathErrorKind
+  ++ errorKind(u) returns the type of error which u represents.
+  errorInfo : % -> List Symbol
+  ++ errorInfo(u) returns information about the error u.
+  omError   : (OpenMathErrorKind, List Symbol) -> % 
+  ++ omError(k,l) creates an instance of OpenMathError.
+ == add
+  Rep := Record(err:OpenMathErrorKind, info:List Symbol)
+
+  import List String
+
+  coerce(e:%):OutputForm ==
+    OMParseError? e.err => message "Error parsing OpenMath object"
+    infoSize := #(e.info)
+    OMUnknownCD? e.err => 
+--      not one? infoSize => error "Malformed info list in OMUnknownCD"
+      not (infoSize = 1) => error "Malformed info list in OMUnknownCD"
+      message concat("Cannot handle CD ",string first e.info)
+    OMUnknownSymbol? e.err =>
+      not 2=infoSize => error "Malformed info list in OMUnknownSymbol"
+      message concat ["Cannot handle Symbol ",
+                      string e.info.2, " from CD ", string e.info.1]
+    OMReadError? e.err =>
+      message "OpenMath read error"
+    error "Malformed OpenMath Error"
+
+  omError(e:OpenMathErrorKind,i:List Symbol):% == [e,i]$Rep
+
+  errorKind(e:%):OpenMathErrorKind == e.err
+  errorInfo(e:%):List Symbol == e.info
+

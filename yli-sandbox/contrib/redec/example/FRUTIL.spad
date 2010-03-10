@@ -1,0 +1,55 @@
+)abbrev package FRUTIL FactoredFunctionUtilities
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: refine, mergeFactors
+++ Related Constructors: Factored
+++ Also See:
+++ AMS Classifications: 11A51, 11Y05
+++ Keywords: factor
+++ References:
+++ Description:
+++   \spadtype{FactoredFunctionUtilities} implements some utility
+++   functions for manipulating factored objects.
+FactoredFunctionUtilities(R): Exports == Implementation where
+  R: IntegralDomain
+  FR ==> Factored R
+
+  Exports ==> with
+    refine: (FR, R-> FR) -> FR
+      ++ refine(u,fn) is used to apply the function \userfun{fn} to
+      ++ each factor of \spadvar{u} and then build a new factored
+      ++ object from the results.  For example, if \spadvar{u} were
+      ++ created by calling \spad{nilFactor(10,2)} then
+      ++ \spad{refine(u,factor)} would create a factored object equal
+      ++ to that created by \spad{factor(100)} or
+      ++ \spad{primeFactor(2,2) * primeFactor(5,2)}.
+
+    mergeFactors: (FR,FR) -> FR
+      ++ mergeFactors(u,v) is used when the factorizations of \spadvar{u}
+      ++ and \spadvar{v} are known to be disjoint, e.g. resulting from a
+      ++ content/primitive part split. Essentially, it creates a new
+      ++ factored object by multiplying the units together and appending
+      ++ the lists of factors.
+
+  Implementation ==> add
+    fg: FR
+    func: R -> FR
+    fUnion ==> Union("nil", "sqfr", "irred", "prime")
+    FF     ==> Record(flg: fUnion, fctr: R, xpnt: Integer)
+
+    mergeFactors(f,g) ==
+      makeFR(unit(f)*unit(g),append(factorList f,factorList g))
+
+    refine(f, func) ==
+       u := unit(f)
+       l: List FF := empty()
+       for item in factorList f repeat
+         fitem := func item.fctr
+         u := u*unit(fitem) ** (item.xpnt :: NonNegativeInteger)
+         if item.xpnt = 1 then
+            l := concat(factorList fitem,l)
+         else l := concat([[v.flg,v.fctr,v.xpnt*item.xpnt]
+                          for v in factorList fitem],l)
+       makeFR(u,l)
+

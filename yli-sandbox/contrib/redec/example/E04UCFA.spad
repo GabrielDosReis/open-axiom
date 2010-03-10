@@ -1,0 +1,101 @@
+)abbrev domain E04UCFA e04ucfAnnaType
+++ Author: Brian Dupee
+++ Date Created: February 1996
+++ Date Last Updated: November 1997
+++ Basic Operations: measure, numericalOptimization
+++ Related Constructors: Result, RoutinesTable
+++ Description:
+++ \axiomType{e04ucfAnnaType} is a domain of \axiomType{NumericalOptimization}
+++ for the NAG routine E04UCF, a general optimization routine which
+++ can handle some singularities in the input function.  The function
+++ \axiomFun{measure} measures the usefulness of the routine E04UCF
+++ for the given problem.  The function \axiomFun{numericalOptimization}
+++ performs the optimization by using \axiomType{NagOptimisationPackage}.
+e04ucfAnnaType(): NumericalOptimizationCategory == Result add
+  DF    ==> DoubleFloat
+  EF    ==> Expression Float
+  EDF   ==> Expression DoubleFloat
+  PDF   ==> Polynomial DoubleFloat
+  VPDF  ==> Vector Polynomial DoubleFloat
+  LDF   ==> List DoubleFloat
+  LOCDF ==> List OrderedCompletion DoubleFloat
+  MDF   ==> Matrix DoubleFloat
+  MPDF  ==> Matrix Polynomial DoubleFloat
+  MF    ==> Matrix Float
+  MEF   ==> Matrix Expression Float
+  LEDF  ==> List Expression DoubleFloat
+  VEF   ==> Vector Expression Float
+  NOA   ==> Record(fn:EDF, init:LDF, lb:LOCDF, cf:LEDF, ub:LOCDF)
+  LSA   ==> Record(lfn:LEDF, init:LDF)
+  EF2   ==> ExpressionFunctions2
+  MI    ==> Matrix Integer
+  INT   ==> Integer
+  F     ==> Float
+  NNI   ==> NonNegativeInteger
+  S     ==> Symbol
+  LS    ==> List Symbol
+  MVCF  ==> MultiVariableCalculusFunctions
+  ESTOOLS2 ==> ExpertSystemToolsPackage2
+  SDF   ==> Stream DoubleFloat
+  LSDF  ==> List Stream DoubleFloat
+  SOCDF ==> Segment OrderedCompletion DoubleFloat
+  OCDF  ==> OrderedCompletion DoubleFloat
+
+  Rep:=Result
+  import Rep,NagOptimisationPackage
+  import e04AgentsPackage,ExpertSystemToolsPackage
+
+  measure(R:RoutinesTable,args:NOA) ==
+    zero?(#(args.lb) + #(args.ub)) =>
+      [0.0,"e04ucf is not recommended if there are no bounds specified"]
+    zero?(#(args.cf)) =>
+      string:String := "e04ucf is usable but not always recommended if there are no constraints"
+      [getMeasure(R,e04ucf@Symbol)$RoutinesTable*0.5,string]
+    [getMeasure(R,e04ucf@Symbol)$RoutinesTable,"e04ucf is recommended"]
+
+  numericalOptimization(args:NOA) ==
+    Args := sortConstraints(args)
+    argsFn := Args.fn
+    c := Args.cf
+    listVars:List LS := concat(variables(argsFn)$EDF,[variables(z)$EDF for z in c])
+    n:NNI := #(v := sort(removeDuplicates(concat(listVars)$LS)$LS)$LS)
+    lin:NNI := #(linearPart(c))
+    nlcf := nonLinearPart(c)
+    nonlin:NNI := #(nlcf)
+    if empty?(nlcf) then 
+      nlcf := new(n,coerce(first(v)$LS)$EDF)$LEDF
+    nrowa:NNI := max(1,lin)
+    nrowj:NNI := max(1,nonlin)
+    A:MDF := linearMatrix(c,n)
+    bl:MDF := mat(finiteBound(Args.lb,float(1,25,10)$DF),n)
+    bu:MDF := mat(finiteBound(Args.ub,float(1,25,10)$DF),n)
+    liwork:INT := 3*n+lin+2*nonlin
+    lwork:INT :=
+      zero?(lin+nonlin) => 20*n
+      zero?(nonlin) => 2*n*(n+10)+11*lin
+      2*n*(n+nonlin+10)+(11+n)*lin + 21*nonlin
+    cra:DF := float(1,-2,10)$DF
+    fea:DF := float(1053671201,-17,10)$DF
+    fun:DF := float(4373903597,-24,10)$DF
+    infb:DF := float(1,15,10)$DF
+    lint:DF := float(9,-1,10)$DF
+    maji:INT := max(50,3*(n+lin)+10*nonlin)
+    mini:INT := max(50,3*(n+lin+nonlin))
+    nonf:DF := float(105,-10,10)$DF
+    opt:DF := float(326,-10,10)$DF
+    ste:DF := float(2,0,10)$DF
+    istate:MI := zero(1,n+lin+nonlin)$MI
+    cjac:MDF := 
+      positive?(nonlin) => zero(nrowj,n)$MDF
+      zero(nrowj,1)$MDF
+    clambda:MDF := zero(1,n+lin+nonlin)$MDF
+    r:MDF := zero(n,n)$MDF
+    x:MDF := mat(Args.init,n)
+    VectCF:VEF := vector([edf2ef e for e in nlcf])$VEF
+    ArgsFn:EF := edf2ef(argsFn)
+    fasp : Union(fn:FileName,fp:Asp49(OBJFUN)) := [retract(ArgsFn)$Asp49(OBJFUN)]
+    casp : Union(fn:FileName,fp:Asp55(CONFUN)) := [retract(VectCF)$Asp55(CONFUN)]
+    e04ucf(n,lin,nonlin,nrowa,nrowj,n,A,bl,bu,liwork,lwork,false,cra,3,fea,
+            fun,true,infb,infb,fea,lint,true,maji,1,mini,0,-1,nonf,opt,ste,1,
+             1,n,n,3,istate,cjac,clambda,r,x,-1,casp,fasp)
+

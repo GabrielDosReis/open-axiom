@@ -1,0 +1,35 @@
+)abbrev package CHARPOL CharacteristicPolynomialPackage
+++ Author: Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package provides a characteristicPolynomial function
+++ for any matrix over a commutative ring.
+
+CharacteristicPolynomialPackage(R:CommutativeRing):C == T where
+   PI ==> PositiveInteger
+   M ==> Matrix R
+   C == with
+      characteristicPolynomial: (M, R) -> R
+        ++ characteristicPolynomial(m,r) computes the characteristic
+        ++ polynomial of the matrix m evaluated at the point r.
+        ++ In particular, if r is the polynomial 'x, then it returns
+        ++ the characteristic polynomial expressed as a polynomial in 'x.
+   T == add
+
+           ---- characteristic polynomial  ----
+     characteristicPolynomial(A:M,v:R) : R ==
+       dimA :PI := (nrows A):PI
+       dimA ~= ncols A => error " The matrix is not square"
+       B:M:=zero(dimA,dimA)
+       for i in 1..dimA repeat
+         for j in 1..dimA repeat  B(i,j):=A(i,j)
+         B(i,i) := B(i,i) - v
+       determinant B
+

@@ -1,0 +1,21 @@
+)abbrev domain IDPOAM IndexedDirectProductOrderedAbelianMonoid
+++ Indexed direct products of ordered abelian monoids \spad{A} of
+++ generators indexed by the ordered set S.
+++ The inherited order is lexicographical.
+++ All items have finite support: only non-zero terms are stored.
+IndexedDirectProductOrderedAbelianMonoid(A:OrderedAbelianMonoid,S:OrderedSet):
+    Join(OrderedAbelianMonoid,IndexedDirectProductCategory(A,S))
+ ==  IndexedDirectProductAbelianMonoid(A,S) add
+    --representations
+       Term==  Record(k:S,c:A)
+       Rep==  List Term
+       x,y: %
+       x<y ==
+         empty? y => false
+         empty? x => true   -- note careful order of these two lines
+         y.first.k > x.first.k => true
+         y.first.k < x.first.k => false
+         y.first.c > x.first.c => true
+         y.first.c < x.first.c => false
+         x.rest < y.rest
+

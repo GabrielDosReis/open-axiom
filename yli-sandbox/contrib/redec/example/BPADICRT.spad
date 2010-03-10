@@ -1,0 +1,18 @@
+)abbrev domain BPADICRT BalancedPAdicRational
+++ Author: Clifton J. Williamson
+++ Date Created: 15 May 1990
+++ Date Last Updated: 15 May 1990
+++ Keywords: p-adic, complementation
+++ Basic Operations:
+++ Related Domains:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: p-adic, completion
+++ Examples:
+++ References:
+++ Description:
+++   Stream-based implementation of Qp: numbers are represented as
+++   sum(i = k.., a[i] * p^i), where the a[i] lie in -(p - 1)/2,...,(p - 1)/2.
+BalancedPAdicRational(p:Integer) ==
+  PAdicRationalConstructor(p,BalancedPAdicInteger p)
+

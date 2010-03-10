@@ -1,0 +1,40 @@
+)abbrev domain NNI NonNegativeInteger
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations:
+++ Related Constructors:
+++ Keywords: integer
+++ Description: \spadtype{NonNegativeInteger} provides functions for non
+++   negative integers.
+NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
+            _quo : (%,%) -> %
+              ++ a quo b returns the quotient of \spad{a} and b, forgetting
+              ++ the remainder.
+            _rem : (%,%) -> %
+              ++ a rem b returns the remainder of \spad{a} and b.
+            gcd  : (%,%) -> %
+              ++ gcd(a,b) computes the greatest common divisor of two
+              ++ non negative integers \spad{a} and b.
+            divide: (%,%) -> Record(quotient:%,remainder:%)
+              ++ divide(a,b) returns a record containing both
+              ++ remainder and quotient.
+            _exquo: (%,%) -> Union(%,"failed")
+              ++ exquo(a,b) returns the quotient of \spad{a} and b, or "failed"
+              ++ if b is zero or \spad{a} rem b is zero.
+            shift: (%, Integer) -> %
+              ++ shift(a,i) shift \spad{a} by i bits.
+            random   : % -> %
+              ++ random(n) returns a random integer from 0 to \spad{n-1}.
+            commutative("*")
+              ++ commutative("*") means multiplication is commutative : \spad{x*y = y*x}.
+
+  == SubDomain(Integer,#1 >= 0) add
+      x,y:%
+      sup(x,y) == MAX(x,y)$Lisp
+      shift(x:%, n:Integer):% == ASH(x,n)$Lisp
+      subtractIfCan(x, y) ==
+        c:Integer := rep x - rep y
+        c < 0 => "failed"
+        per c
+

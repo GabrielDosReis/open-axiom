@@ -1,0 +1,289 @@
+import Boolean
+import NonNegativeInteger
+import PositiveInteger
+--import Vector $
+--import Vector F
+--import Matrix
+--import SparseUnivariatePolynomial
+--import OnePointCompletion
+import CardinalNumber
+)abbrev category FAXF FiniteAlgebraicExtensionField
+++ Author: J. Grabmeier, A. Scheerhorn
+++ Date Created: 11 March 1991
+++ Date Last Updated: 31 March 1991
+++ Basic Operations: _+, _*, extensionDegree,
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords: field, extension field, algebraic extension, finite extension
+++ References:
+++  R.Lidl, H.Niederreiter: Finite Field, Encycoldia of Mathematics and
+++  Its Applications, Vol. 20, Cambridge Univ. Press, 1983, ISBN 0 521 30240 4
+++  J. Grabmeier, A. Scheerhorn: Finite Fields in AXIOM.
+++  AXIOM Technical Report Series, ATR/5 NP2522.
+++ Description:
+++  FiniteAlgebraicExtensionField {\em F} is the category of fields
+++  which are finite algebraic extensions of the field {\em F}.
+++  If {\em F} is finite then any finite algebraic extension of {\em F} is finite, too.
+++  Let {\em K} be a finite algebraic extension of the finite field {\em F}.
+++  The exponentiation of elements of {\em K} defines a Z-module structure
+++  on the multiplicative group of {\em K}. The additive group of {\em K}
+++  becomes a module over the ring of polynomials over {\em F} via the operation
+++  \spadfun{linearAssociatedExp}(a:K,f:SparseUnivariatePolynomial F)
+++  which is linear over {\em F}, i.e. for elements {\em a} from {\em K},
+++  {\em c,d} from {\em F} and {\em f,g} univariate polynomials over {\em F}
+++  we have \spadfun{linearAssociatedExp}(a,cf+dg) equals {\em c} times
+++  \spadfun{linearAssociatedExp}(a,f) plus {\em d} times
+++  \spadfun{linearAssociatedExp}(a,g).
+++  Therefore \spadfun{linearAssociatedExp} is defined completely by
+++  its action on  monomials from {\em F[X]}:
+++  \spadfun{linearAssociatedExp}(a,monomial(1,k)\$SUP(F)) is defined to be
+++  \spadfun{Frobenius}(a,k) which is {\em a**(q**k)} where {\em q=size()\$F}.
+++  The operations order and discreteLog associated with the multiplicative
+++  exponentiation have additive analogues associated to the operation
+++  \spadfun{linearAssociatedExp}. These are the functions
+++  \spadfun{linearAssociatedOrder} and \spadfun{linearAssociatedLog},
+++  respectively.
+
+FiniteAlgebraicExtensionField(F : Field) : Category == _
+  Join(ExtensionField F, RetractableTo F) with
+  -- should be unified with algebras
+  -- Join(ExtensionField F, FramedAlgebra F, RetractableTo F) with
+    basis : () -> Vector $
+      ++ basis() returns a fixed basis of \$ as \spad{F}-vectorspace.
+    basis : PositiveInteger -> Vector $
+      ++ basis(n) returns a fixed basis of a subfield of \$ as
+      ++ \spad{F}-vectorspace.
+    coordinates : $ -> Vector F
+      ++ coordinates(a) returns the coordinates of \spad{a} with respect
+      ++ to the fixed \spad{F}-vectorspace basis.
+    coordinates : Vector $ -> Matrix F
+      ++ coordinates([v1,...,vm]) returns the coordinates of the
+      ++ vi's with to the fixed basis.  The coordinates of vi are
+      ++ contained in the ith row of the matrix returned by this
+      ++ function.
+    represents:  Vector F -> $
+      ++ represents([a1,..,an]) returns \spad{a1*v1 + ... + an*vn}, where
+      ++ v1,...,vn are the elements of the fixed basis.
+    minimalPolynomial: $ -> SparseUnivariatePolynomial F
+      ++ minimalPolynomial(a) returns the minimal polynomial of an
+      ++ element \spad{a} over the ground field F.
+    definingPolynomial: () -> SparseUnivariatePolynomial F
+      ++ definingPolynomial() returns the polynomial used to define
+      ++ the field extension.
+    extensionDegree : () ->  PositiveInteger
+      ++ extensionDegree() returns the degree of field extension.
+    degree : $ -> PositiveInteger
+      ++ degree(a) returns the degree of the minimal polynomial of an
+      ++ element \spad{a} over the ground field F.
+    norm: $  -> F
+      ++ norm(a) computes the norm of \spad{a} with respect to the
+      ++ field considered as an algebra with 1 over the ground field F.
+    trace: $ -> F
+      ++ trace(a) computes the trace of \spad{a} with respect to
+      ++ the field considered as an algebra with 1 over the ground field F.
+    if F has Finite then
+      FiniteFieldCategory
+      minimalPolynomial: ($,PositiveInteger) -> SparseUnivariatePolynomial $
+        ++ minimalPolynomial(x,n) computes the minimal polynomial of x over
+        ++ the field of extension degree n over the ground field F.
+      norm: ($,PositiveInteger)  -> $
+        ++ norm(a,d) computes the norm of \spad{a} with respect to the field of
+        ++ extension degree d over the ground field of size.
+        ++ Error: if d does not divide the extension degree of \spad{a}.
+        ++ Note: norm(a,d) = reduce(*,[a**(q**(d*i)) for i in 0..n/d])
+      trace: ($,PositiveInteger)   -> $
+        ++ trace(a,d) computes the trace of \spad{a} with respect to the
+        ++ field of extension degree d over the ground field of size q.
+        ++ Error: if d does not divide the extension degree of \spad{a}.
+        ++ Note: \spad{trace(a,d) = reduce(+,[a**(q**(d*i)) for i in 0..n/d])}.
+      createNormalElement: () -> $
+        ++ createNormalElement() computes a normal element over the ground
+        ++ field F, that is,
+        ++ \spad{a**(q**i), 0 <= i < extensionDegree()} is an F-basis,
+        ++ where \spad{q = size()\$F}.
+        ++ Reference: Such an element exists Lidl/Niederreiter: Theorem 2.35.
+      normalElement: () -> $
+        ++ normalElement() returns a element, normal over the ground field F,
+        ++ i.e. \spad{a**(q**i), 0 <= i < extensionDegree()} is an F-basis,
+        ++ where \spad{q = size()\$F}.
+        ++ At the first call, the element is computed by
+        ++ \spadfunFrom{createNormalElement}{FiniteAlgebraicExtensionField}
+        ++ then cached in a global variable.
+        ++ On subsequent calls, the element is retrieved by referencing the
+        ++ global variable.
+      normal?: $ -> Boolean
+        ++ normal?(a) tests whether the element \spad{a} is normal over the
+        ++ ground field F, i.e.
+        ++ \spad{a**(q**i), 0 <= i <= extensionDegree()-1} is an F-basis,
+        ++ where \spad{q = size()\$F}.
+        ++ Implementation according to Lidl/Niederreiter: Theorem 2.39.
+      generator: () -> $
+        ++ generator() returns a root of the defining polynomial.
+        ++ This element generates the field as an algebra over the ground field.
+      linearAssociatedExp:($,SparseUnivariatePolynomial F) -> $
+        ++ linearAssociatedExp(a,f) is linear over {\em F}, i.e.
+        ++ for elements {\em a} from {\em \$}, {\em c,d} form {\em F} and
+        ++ {\em f,g} univariate polynomials over {\em F} we have
+        ++ \spadfun{linearAssociatedExp}(a,cf+dg) equals {\em c} times
+        ++ \spadfun{linearAssociatedExp}(a,f) plus {\em d} times
+        ++ \spadfun{linearAssociatedExp}(a,g). Therefore
+        ++ \spadfun{linearAssociatedExp} is defined completely by its action on
+        ++ monomials from {\em F[X]}:
+        ++ \spadfun{linearAssociatedExp}(a,monomial(1,k)\$SUP(F)) is defined to
+        ++ be \spadfun{Frobenius}(a,k) which is {\em a**(q**k)},
+        ++ where {\em q=size()\$F}.
+      linearAssociatedOrder: $ -> SparseUnivariatePolynomial F
+        ++ linearAssociatedOrder(a) retruns the monic polynomial {\em g} of
+        ++ least degree, such that \spadfun{linearAssociatedExp}(a,g) is 0.
+      linearAssociatedLog: $ -> SparseUnivariatePolynomial F
+        ++ linearAssociatedLog(a) returns a polynomial {\em g}, such that
+        ++ \spadfun{linearAssociatedExp}(normalElement(),g) equals {\em a}.
+      linearAssociatedLog: ($,$) -> Union(SparseUnivariatePolynomial F,"failed")
+        ++ linearAssociatedLog(b,a) returns a polynomial {\em g}, such that the
+        ++ \spadfun{linearAssociatedExp}(b,g) equals {\em a}.
+        ++ If there is no such polynomial {\em g}, then
+        ++ \spadfun{linearAssociatedLog} fails.
+  add
+    I   ==> Integer
+    PI  ==> PositiveInteger
+    NNI ==> NonNegativeInteger
+    SUP ==> SparseUnivariatePolynomial
+    DLP ==> DiscreteLogarithmPackage
+
+    represents(v) ==
+      a:$:=0
+      b:=basis()
+      for i in 1..extensionDegree()@PI repeat
+        a:=a+(v.i)*(b.i)
+      a
+    transcendenceDegree() == 0$NNI
+    dimension() == (#basis()) ::NonNegativeInteger::CardinalNumber
+    extensionDegree():OnePointCompletion(PositiveInteger) ==
+      (#basis()) :: PositiveInteger::OnePointCompletion(PositiveInteger)
+
+
+
+    degree(a):OnePointCompletion(PositiveInteger) ==
+      degree(a)@PI::OnePointCompletion(PositiveInteger)
+
+    coordinates(v:Vector $) ==
+      m := new(#v, extensionDegree(), 0)$Matrix(F)
+      for i in minIndex v .. maxIndex v for j in minRowIndex m .. repeat
+        setRow_!(m, j, coordinates qelt(v, i))
+      m
+    algebraic? a == true
+    transcendent? a == false
+    extensionDegree(): PositiveInteger == (#basis()) :: PositiveInteger
+    -- degree a == degree(minimalPolynomial a)$SUP(F) :: PI
+ 
+    trace a ==
+      b := basis()
+      abs : F := 0
+      for i in 1..#b repeat
+        abs := abs + elt(coordinates(a*b.i),i)
+      abs
+
+    norm a ==
+      b := basis()
+      m := new(#b,#b, 0)$Matrix(F)
+      for i in 1..#b repeat
+        setRow_!(m,i, coordinates(a*b.i))
+      determinant(m)
+    if F has Finite then
+      linearAssociatedExp(x,f) ==
+        erg:$:=0
+        y:=x
+        for i in 0..degree(f) repeat
+          erg:=erg + coefficient(f,i) * y
+          y:=Frobenius(y)
+        erg
+      linearAssociatedLog(b,x) ==
+        x=0 => 0
+        l:List List F:=[entries coordinates b]
+        a:$:=b
+        extdeg:NNI:=extensionDegree()@PI
+        for i in 2..extdeg repeat
+          a:=Frobenius(a)
+          l:=concat(l,entries coordinates a)$(List List F)
+        l:=concat(l,entries coordinates x)$(List List F)
+        m1:=rowEchelon transpose matrix(l)$(Matrix F)
+        v:=zero(extdeg)$(Vector F)
+        rown:I:=1
+        for i in 1..extdeg repeat
+          if qelt(m1,rown,i) = 1$F then
+            v.i:=qelt(m1,rown,extdeg+1)
+            rown:=rown+1
+        p:=+/[monomial(v.(i+1),i::NNI) for i in 0..(#v-1)]
+        p=0 =>
+         messagePrint("linearAssociatedLog: second argument not in_
+                       group generated by first argument")$OutputForm
+         "failed"
+        p
+      linearAssociatedLog(x) == linearAssociatedLog(normalElement(),x) ::
+                              SparseUnivariatePolynomial(F)
+      linearAssociatedOrder(x) ==
+        x=0 => 0
+        l:List List F:=[entries coordinates x]
+        a:$:=x
+        for i in 1..extensionDegree()@PI repeat
+          a:=Frobenius(a)
+          l:=concat(l,entries coordinates a)$(List List F)
+        v:=first nullSpace transpose matrix(l)$(Matrix F)
+        +/[monomial(v.(i+1),i::NNI) for i in 0..(#v-1)]
+
+      charthRoot(x):Union($,"failed") ==
+        (charthRoot(x)@$)::Union($,"failed")
+      -- norm(e) == norm(e,1) pretend F
+      -- trace(e) == trace(e,1) pretend F
+      minimalPolynomial(a,n) ==
+        extensionDegree()@PI rem n ~= 0 =>
+          error "minimalPolynomial: 2. argument must divide extension degree"
+        f:SUP $:=monomial(1,1)$(SUP $) - monomial(a,0)$(SUP $)
+        u:$:=Frobenius(a,n)
+        while not(u = a) repeat
+          f:=f * (monomial(1,1)$(SUP $) - monomial(u,0)$(SUP $))
+          u:=Frobenius(u,n)
+        f
+      norm(e,s) ==
+        qr := divide(extensionDegree(), s)
+        zero?(qr.remainder) =>
+          pow := (size()-1) quo (size()$F ** s - 1)
+          e ** (pow::NonNegativeInteger)
+        error "norm: second argument must divide degree of extension"
+
+      trace(e,s) ==
+        qr:=divide(extensionDegree()::PositiveInteger,s)
+        q:=size()$F
+        zero?(qr.remainder) =>
+          a:$:=0
+          for i in 0..qr.quotient-1 repeat
+            a:=a + e**(q**(s*i))
+          a
+        error "trace: second argument must divide degree of extension"
+
+      size() == size()$F ** extensionDegree()
+      createNormalElement() ==
+        characteristic() = size() => 1
+        res : $
+        for i in 1.. repeat
+          res := index(i :: PI)
+          not inGroundField? res =>
+            normal? res => return res
+        -- theorem: there exists a normal element, this theorem is
+        -- unknown to the compiler
+        res
+      normal?(x:$) ==
+        p:SUP $:=(monomial(1,extensionDegree()) - monomial(1,0))@(SUP $)
+        f:SUP $:= +/[monomial(Frobenius(x,i),i)$(SUP $) _
+                   for i in 0..extensionDegree()-1]
+        gcd(p,f) = 1 => true
+        false
+      degree(a: %): PositiveInteger ==
+        y:$:=Frobenius a
+        deg:PI:=1
+        while y~=a repeat
+          y := Frobenius(y)
+          deg:=deg+1
+        deg
+

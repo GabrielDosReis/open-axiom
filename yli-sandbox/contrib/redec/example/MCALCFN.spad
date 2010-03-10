@@ -1,0 +1,156 @@
+)abbrev package MCALCFN MultiVariableCalculusFunctions
+++ Author: Themos Tsikas, Grant Keady
+++ Date Created: December 1992
+++ Date Last Updated: June 1993
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++  \spadtype{MultiVariableCalculusFunctions} Package provides several
+++  functions for multivariable calculus.
+++ These include gradient, hessian and jacobian,
+++ divergence and laplacian.
+++ Various forms for banded and sparse storage of matrices are
+++ included.
+MultiVariableCalculusFunctions(S,F,FLAF,FLAS) : Exports == Implementation where
+  PI ==> PositiveInteger
+  NNI ==> NonNegativeInteger
+
+  S: SetCategory
+  F: PartialDifferentialRing(S)
+  FLAS: FiniteLinearAggregate(S)
+    with finiteAggregate
+  FLAF: FiniteLinearAggregate(F)
+
+  Exports ==> with
+    gradient: (F,FLAS) -> Vector F
+     ++ \spad{gradient(v,xlist)}
+     ++ computes the gradient, the vector of first partial derivatives,
+     ++ of the scalar field v,
+     ++ v a function of the variables listed in xlist.
+    divergence: (FLAF,FLAS) ->  F
+     ++ \spad{divergence(vf,xlist)}
+     ++ computes the divergence of the vector field vf,
+     ++ vf a vector function of the variables listed in xlist.
+    laplacian: (F,FLAS) -> F
+     ++ \spad{laplacian(v,xlist)}
+     ++ computes the laplacian of the scalar field v,
+     ++ v a function of the variables listed in xlist.
+    hessian: (F,FLAS) -> Matrix F
+     ++ \spad{hessian(v,xlist)}
+     ++ computes the hessian, the matrix of second partial derivatives,
+     ++ of the scalar field v,
+     ++ v a function of the variables listed in xlist.
+    bandedHessian: (F,FLAS,NNI) -> Matrix F
+     ++ \spad{bandedHessian(v,xlist,k)}
+     ++ computes the hessian, the matrix of second partial derivatives,
+     ++ of the scalar field v,
+     ++ v a function of the variables listed in xlist,
+     ++ k is the semi-bandwidth, the number of nonzero subdiagonals,
+     ++ 2*k+1 being actual bandwidth.
+     ++ Stores the nonzero band in lower triangle in a matrix, 
+     ++ dimensions k+1 by #xlist,
+     ++ whose rows are the vectors formed by diagonal, subdiagonal, etc.
+     ++ of the real, full-matrix, hessian.
+     ++ (The notation conforms to LAPACK/NAG-F07 conventions.)
+    -- At one stage it seemed a good idea to help the ASP<n> domains
+    -- with the types of their input arguments and this led to the
+    -- standard Gradient|Hessian|Jacobian functions.
+    --standardJacobian: (Vector(F),List(S)) -> Matrix F
+    -- ++ \spad{jacobian(vf,xlist)}
+    -- ++ computes the jacobian, the matrix of first partial derivatives,
+    -- ++ of the vector field vf,
+    -- ++ vf a vector function of the variables listed in xlist.
+    jacobian: (FLAF,FLAS) -> Matrix F
+     ++ \spad{jacobian(vf,xlist)}
+     ++ computes the jacobian, the matrix of first partial derivatives,
+     ++ of the vector field vf,
+     ++ vf a vector function of the variables listed in xlist.
+    bandedJacobian: (FLAF,FLAS,NNI,NNI) -> Matrix F
+     ++ \spad{bandedJacobian(vf,xlist,kl,ku)}
+     ++ computes the jacobian, the matrix of first partial derivatives,
+     ++ of the vector field vf,
+     ++ vf a vector function of the variables listed in xlist,
+     ++ kl is the number of nonzero subdiagonals,
+     ++ ku is the number of nonzero superdiagonals,
+     ++ kl+ku+1 being actual bandwidth.
+     ++ Stores the nonzero band in a matrix, 
+     ++ dimensions kl+ku+1 by #xlist.
+     ++ The upper triangle is in the top ku rows,
+     ++ the diagonal is in row ku+1,
+     ++ the lower triangle in the last kl rows.
+     ++ Entries in a column in the band store correspond to entries
+     ++ in same column of full store.
+     ++ (The notation conforms to LAPACK/NAG-F07 conventions.)
+
+  Implementation ==> add
+    localGradient(v:F,xlist:List(S)):Vector(F) ==
+       vector([D(v,x) for x in xlist])
+    gradient(v,xflas) ==
+       --xlist:List(S) := [xflas(i) for i in 1 .. maxIndex(xflas)]
+       xlist:List(S) := parts(xflas)
+       localGradient(v,xlist)
+    localDivergence(vf:Vector(F),xlist:List(S)):F ==
+       i: PI
+       n: NNI
+       ans: F
+       -- Perhaps should report error if two args of min different
+       n:= min(#(xlist),((maxIndex(vf))::NNI))$NNI
+       ans:= 0
+       for i in 1 .. n repeat ans := ans + D(vf(i),xlist(i)) 
+       ans
+    divergence(vf,xflas) ==
+       xlist:List(S) := parts(xflas)
+       i: PI
+       n: NNI
+       ans: F
+       -- Perhaps should report error if two args of min different
+       n:= min(#(xlist),((maxIndex(vf))::NNI))$NNI
+       ans:= 0
+       for i in 1 .. n repeat ans := ans + D(vf(i),xlist(i)) 
+       ans
+    laplacian(v,xflas) ==
+       xlist:List(S) := parts(xflas)
+       gv:Vector(F) := localGradient(v,xlist)
+       localDivergence(gv,xlist)
+    hessian(v,xflas) ==
+       xlist:List(S) := parts(xflas)
+       matrix([[D(v,[x,y]) for x in xlist] for y in xlist])
+    --standardJacobian(vf,xlist) ==
+    --   i: PI
+    --   matrix([[D(vf(i),x) for x in xlist] for i in 1 .. maxIndex(vf)])
+    jacobian(vf,xflas) ==
+       xlist:List(S) := parts(xflas)
+       i: PI
+       matrix([[D(vf(i),x) for x in xlist] for i in 1 .. maxIndex(vf)])
+    bandedHessian(v,xflas,k) ==
+       xlist:List(S) := parts(xflas)
+       j,iw: PI
+       n: NNI
+       bandM: Matrix F
+       n:= #(xlist)
+       bandM:= new(k+1,n,0)
+       for j in 1 .. n repeat setelt(bandM,1,j,D(v,xlist(j),2))
+       for iw in 2 .. (k+1) repeat (_
+         for j in 1 .. (n-iw+1) repeat (_
+           setelt(bandM,iw,j,D(v,[xlist(j),xlist(j+iw-1)])) ) )
+       bandM
+    bandedJacobian(vf,xflas,kl,ku) ==
+       xlist:List(S) := parts(xflas)
+       j,iw: PI
+       n: NNI
+       bandM: Matrix F
+       n:= #(xlist)
+       bandM:= new(kl+ku+1,n,0)
+       for j in 1 .. n repeat setelt(bandM,ku+1,j,D(vf(j),xlist(j)))
+       for iw in (ku+2) .. (ku+kl+1) repeat (_
+         for j in 1 .. (n-iw+ku+1) repeat (_
+           setelt(bandM,iw,j,D(vf(j+iw-1-ku),xlist(j))) ) )
+       for iw in 1 .. ku repeat (_
+         for j in (ku+2-iw) .. n repeat (_
+           setelt(bandM,iw,j,D(vf(j+iw-1-ku),xlist(j))) ) )
+       bandM
+

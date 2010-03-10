@@ -1,0 +1,84 @@
+)abbrev domain IIARRAY2 InnerIndexedTwoDimensionalArray
+InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
+       Exports == Implementation where
+  ++ This is an internal type which provides an implementation of
+  ++ 2-dimensional arrays as PrimitiveArray's of PrimitiveArray's.
+  R : Type
+  mnRow, mnCol : Integer
+  Row : FiniteLinearAggregate R
+  Col : FiniteLinearAggregate R
+
+  Exports ==> TwoDimensionalArrayCategory(R,Row,Col)
+
+  Implementation ==> add
+
+    Rep := PrimitiveArray PrimitiveArray R
+
+--% Predicates
+
+    empty? m == empty?(m)$Rep
+
+--% Primitive array creation
+
+    empty() == empty()$Rep
+
+    new(rows,cols,a) ==
+      rows = 0 =>
+        error "new: arrays with zero rows are not supported"
+--      cols = 0 =>
+--        error "new: arrays with zero columns are not supported"
+      arr : PrimitiveArray PrimitiveArray R := new(rows,empty())
+      for i in minIndex(arr)..maxIndex(arr) repeat
+        qsetelt_!(arr,i,new(cols,a))
+      arr
+
+--% Size inquiries
+
+    minRowIndex m == mnRow
+    minColIndex m == mnCol
+    maxRowIndex m == nrows m + mnRow - 1
+    maxColIndex m == ncols m + mnCol - 1
+
+    nrows m == (# m)$Rep
+
+    ncols m ==
+      empty? m => 0
+      # m(minIndex(m)$Rep)
+
+--% Part selection/assignment
+
+    qelt(m,i,j) ==
+      qelt(qelt(m,i - minRowIndex m)$Rep,j - minColIndex m)
+
+    elt(m:%,i:Integer,j:Integer) ==
+      i < minRowIndex(m) or i > maxRowIndex(m) =>
+        error "elt: index out of range"
+      j < minColIndex(m) or j > maxColIndex(m) =>
+        error "elt: index out of range"
+      qelt(m,i,j)
+
+    qsetelt_!(m,i,j,r) ==
+      setelt(qelt(m,i - minRowIndex m)$Rep,j - minColIndex m,r)
+
+    setelt(m:%,i:Integer,j:Integer,r:R) ==
+      i < minRowIndex(m) or i > maxRowIndex(m) =>
+        error "setelt: index out of range"
+      j < minColIndex(m) or j > maxColIndex(m) =>
+        error "setelt: index out of range"
+      qsetelt_!(m,i,j,r)
+
+    if R has SetCategory then
+        latex(m : %) : String ==
+          s : String := "\left[ \begin{array}{"
+          j : Integer
+          for j in minColIndex(m)..maxColIndex(m) repeat
+            s := concat(s,"c")$String
+          s := concat(s,"} ")$String
+          i : Integer
+          for i in minRowIndex(m)..maxRowIndex(m) repeat
+            for j in minColIndex(m)..maxColIndex(m) repeat
+              s := concat(s, latex(qelt(m,i,j))$R)$String
+              if j < maxColIndex(m) then s := concat(s, " & ")$String
+            if i < maxRowIndex(m) then s := concat(s, " \\ ")$String
+          concat(s, "\end{array} \right]")$String
+

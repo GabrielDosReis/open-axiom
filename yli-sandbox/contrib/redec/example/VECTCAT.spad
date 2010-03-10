@@ -1,0 +1,91 @@
+)abbrev category VECTCAT VectorCategory
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: DirectProductCategory, Vector, IndexedVector
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ \spadtype{VectorCategory} represents the type of vector like objects,
+++ i.e. finite sequences indexed by some finite segment of the
+++ integers. The operations available on vectors depend on the structure
+++ of the underlying components. Many operations from the component domain
+++ are defined for vectors componentwise. It can by assumed that extraction or
+++ updating components can be done in constant time.
+ 
+VectorCategory(R:Type): Category == OneDimensionalArrayAggregate R with
+    if R has AbelianSemiGroup then
+      _+ : (%, %) -> %
+        ++ x + y returns the component-wise sum of the vectors x and y.
+        ++ Error: if x and y are not of the same length.
+    if R has AbelianMonoid then
+      zero: NonNegativeInteger -> %
+        ++ zero(n) creates a zero vector of length n.
+    if R has AbelianGroup then
+      _- : % -> %
+        ++ -x negates all components of the vector x.
+      _- : (%, %) -> %
+        ++ x - y returns the component-wise difference of the vectors x and y.
+        ++ Error: if x and y are not of the same length.
+      _* : (Integer, %) -> %
+        ++ n * y multiplies each component of the vector y by the integer n.
+    if R has Monoid then
+      _* : (R, %) -> %
+        ++ r * y multiplies the element r times each component of the vector y.
+      _* : (%, R) -> %
+        ++ y * r multiplies each component of the vector y by the element r.
+    if R has Ring then
+      dot: (%, %) -> R
+        ++ dot(x,y) computes the inner product of the two vectors x and y.
+        ++ Error: if x and y are not of the same length.
+      outerProduct: (%, %) -> Matrix R
+        ++ outerProduct(u,v) constructs the matrix whose (i,j)'th element is
+        ++ u(i)*v(j).
+      cross: (%, %) -> %
+        ++ vectorProduct(u,v) constructs the cross product of u and v.
+        ++ Error: if u and v are not of length 3.
+    if R has RadicalCategory and R has Ring then
+      length: % -> R
+        ++ length(v) computes the sqrt(dot(v,v)), i.e. the magnitude
+      magnitude: % -> R
+        ++ magnitude(v) computes the sqrt(dot(v,v)), i.e. the length
+ add
+    if R has AbelianSemiGroup then
+      u + v ==
+        (n := #u) ~= #v => error "Vectors must be of the same length"
+        map(_+ , u, v)
+ 
+    if R has AbelianMonoid then
+      zero n == new(n, 0)
+ 
+    if R has AbelianGroup then
+      - u             == map(- #1, u)
+      n:Integer * u:% == map(n * #1, u)
+      u - v           == u + (-v)
+ 
+    if R has Monoid then
+      u:% * r:R       == map(#1 * r, u)
+      r:R * u:%       == map(r * #1, u)
+ 
+    if R has Ring then
+      dot(u, v) ==
+        #u ~= #v => error "Vectors must be of the same length"
+        _+/[qelt(u, i) * qelt(v, i) for i in minIndex u .. maxIndex u]
+      outerProduct(u, v) ==
+        matrix [[qelt(u, i) * qelt(v,j) for i in minIndex u .. maxIndex u] _
+                for j in minIndex v .. maxIndex v]
+      cross(u, v) ==
+        #u ~= 3 or #v ~= 3 => error "Vectors must be of length 3"
+        construct [qelt(u, 2)*qelt(v, 3) - qelt(u, 3)*qelt(v, 2) , _
+                   qelt(u, 3)*qelt(v, 1) - qelt(u, 1)*qelt(v, 3) , _
+                   qelt(u, 1)*qelt(v, 2) - qelt(u, 2)*qelt(v, 1) ]
+
+    if R has RadicalCategory and R has Ring then
+      length p ==
+         sqrt(dot(p,p))
+      magnitude p ==
+         sqrt(dot(p,p))
+ 

@@ -1,0 +1,12 @@
+)abbrev category KRCFROM CoercibleFrom
+++ Author: Gabriel Dos Reis
+++ Date Create: November 19, 2008
+++ Date Last Modified: November 19, 2008
+++ See Also: CoercibleTo
+++ Description:
+++   A is coercible from B iff any element of domain B can be
+++   automically converted into an element of domain A. 
+CoercibleFrom(S: Type): Category == with
+  coerce: S -> %
+    ++ coerce(s) transforms `s' into an element of `%'.
+

@@ -1,0 +1,15 @@
+)abbrev category RGBCMDL RGBColorModel
+++ Author: Gabriel Dos Reis
+++ Date Created: October 06, 2008
+++ Related Constructor: 
+++ Description:
+++   This category defines the common interface for RGB color models.
+RGBColorModel(T: AbelianMonoid): Category == AbelianMonoid with
+    red: % -> T
+      ++ red(c) returns the `red' component of `c'.
+    green: % -> T
+      ++ green(c) returns the `green' component of `c'.
+    blue: % -> T
+      ++ blue(c) returns the `blue' component of `c'.
+    componentUpperBound: T
+      ++ componentUpperBound is an upper bound for all component values.

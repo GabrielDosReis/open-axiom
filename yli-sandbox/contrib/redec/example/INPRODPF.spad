@@ -1,0 +1,55 @@
+)abbrev package INPRODPF InfiniteProductPrimeField
+++ Author: Clifton J. Williamson
+++ Date Created: 22 February 1990
+++ Date Last Updated: 23 February 1990
+++ Basic Operations: infiniteProduct, evenInfiniteProduct, oddInfiniteProduct,
+++   generalInfiniteProduct
+++ Related Domains: UnivariateTaylorSeriesCategory
+++ Also See:
+++ AMS Classifications:
+++ Keywords: Taylor series, infinite product
+++ Examples:
+++ References:
+++ Description: 
+++    This package computes infinite products of univariate Taylor series
+++    over a field of prime order.
+InfiniteProductPrimeField(Coef,UTS): Exports == Implementation where
+  Coef : Join(Field,Finite,ConvertibleTo Integer)
+  UTS  : UnivariateTaylorSeriesCategory Coef
+  I  ==> Integer
+  ST ==> Stream
+ 
+  Exports ==> with
+ 
+    infiniteProduct: UTS -> UTS
+      ++ infiniteProduct(f(x)) computes \spad{product(n=1,2,3...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    evenInfiniteProduct: UTS -> UTS
+      ++ evenInfiniteProduct(f(x)) computes \spad{product(n=2,4,6...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    oddInfiniteProduct: UTS -> UTS
+      ++ oddInfiniteProduct(f(x)) computes \spad{product(n=1,3,5...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+    generalInfiniteProduct: (UTS,I,I) -> UTS
+      ++ generalInfiniteProduct(f(x),a,d) computes
+      ++ \spad{product(n=a,a+d,a+2*d,...,f(x**n))}.
+      ++ The series \spad{f(x)} should have constant coefficient 1.
+ 
+  Implementation ==> add
+ 
+    import StreamInfiniteProduct Integer
+ 
+    applyOverZ:(ST I -> ST I,ST Coef) -> ST Coef
+    applyOverZ(f,st) ==
+      stZ := map(convert(#1)@Integer,st)$StreamFunctions2(Coef,I)
+      map(#1 :: Coef,f stZ)$StreamFunctions2(I,Coef)
+ 
+    infiniteProduct x ==
+      series applyOverZ(infiniteProduct,coefficients x)
+    evenInfiniteProduct x ==
+      series applyOverZ(evenInfiniteProduct,coefficients x)
+    oddInfiniteProduct x ==
+      series applyOverZ(oddInfiniteProduct,coefficients x)
+    generalInfiniteProduct(x,a,d) ==
+      series applyOverZ(generalInfiniteProduct(#1,a,d),coefficients x)
+

@@ -1,0 +1,32 @@
+import UnivariatePolynomialCategory
+import CharacteristicZero
+import Field
+import MonogenicAlgebra
+import Fraction
+import Integer
+import Factored
+)abbrev package SAEFACT SimpleAlgebraicExtensionAlgFactor
+++ Factorisation in a simple algebraic extension;
+++ Author: Patrizia Gianni
+++ Date Created: ???
+++ Date Last Updated: ???
+++ Description:
+++ Factorization of univariate polynomials with coefficients in an
+++ algebraic extension of the rational numbers (\spadtype{Fraction Integer}).
+++ Keywords: factorization, algebraic extension, univariate polynomial
+ 
+SimpleAlgebraicExtensionAlgFactor(UP,SAE,UPA):Exports==Implementation where
+  UP : UnivariatePolynomialCategory Fraction Integer
+  SAE : Join(Field, CharacteristicZero,
+                         MonogenicAlgebra(Fraction Integer, UP))
+  UPA: UnivariatePolynomialCategory SAE
+ 
+  Exports ==> with
+    factor: UPA -> Factored UPA
+      ++ factor(p) returns a prime factorisation of p.
+ 
+  Implementation ==> add
+    factor q ==
+      factor(q, factor$RationalFactorize(UP)
+                       )$InnerAlgFactor(Fraction Integer, UP, SAE, UPA)
+

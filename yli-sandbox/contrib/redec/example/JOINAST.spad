@@ -1,0 +1,17 @@
+)abbrev domain JOINAST JoinAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the join of categories ASTs.
+JoinAst(): Public == Private where
+  Public == Join(SpadSyntaxCategory, CoercibleTo TypeAst) with
+    coerce: List TypeAst -> %
+      ++ ts::JoinAst construct the AST for a join of the types `ts'.
+    categories: % -> List TypeAst
+      ++ catehories(x) returns the types in the join `x'.
+  Private == add
+    Rep == Pair(Symbol, List TypeAst)
+    categories x == second rep x
+    coerce(cats: List TypeAst): % == per pair('Join,cats)
+    coerce(x: %): TypeAst == x : TypeAst
+

@@ -1,0 +1,24 @@
+)abbrev category ALGEBRA Algebra
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of associative algebras (modules which are themselves rings).
+++
+++ Axioms:
+++   \spad{(b+c)::% = (b::%) + (c::%)}
+++   \spad{(b*c)::% = (b::%) * (c::%)}
+++   \spad{(1::R)::% = 1::%}
+++   \spad{b*x = (b::%)*x}
+++   \spad{r*(a*b) = (r*a)*b = a*(r*b)}
+Algebra(R:CommutativeRing): Category ==
+  Join(Ring, Module R, CoercibleFrom R)
+ add
+  coerce(x:R):% == x * 1$%
+

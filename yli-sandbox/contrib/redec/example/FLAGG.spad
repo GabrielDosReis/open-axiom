@@ -1,0 +1,85 @@
+import Type
+import SetCategory
+import OrderedSet
+import LinearAggregate
+import Boolean
+import Integer
+)abbrev category FLAGG FiniteLinearAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A finite linear aggregate is a linear aggregate of finite length.
+++ The finite property of the aggregate adds several exports to the
+++ list of exports from \spadtype{LinearAggregate} such as
+++ \spadfun{reverse}, \spadfun{sort}, and so on.
+FiniteLinearAggregate(S:Type): Category == LinearAggregate S with
+   finiteAggregate
+   merge: ((S,S)->Boolean,%,%) -> %
+      ++ merge(p,a,b) returns an aggregate c which merges \axiom{a} and b.
+      ++ The result is produced by examining each element x of \axiom{a} and y
+      ++ of b successively. If \axiom{p(x,y)} is true, then x is inserted into
+      ++ the result; otherwise y is inserted. If x is chosen, the next element
+      ++ of \axiom{a} is examined, and so on. When all the elements of one
+      ++ aggregate are examined, the remaining elements of the other
+      ++ are appended.
+      ++ For example, \axiom{merge(<,[1,3],[2,7,5])} returns \axiom{[1,2,3,7,5]}.
+   reverse: % -> %
+      ++ reverse(a) returns a copy of \axiom{a} with elements in reverse order.
+   sort: ((S,S)->Boolean,%) -> %
+      ++ sort(p,a) returns a copy of \axiom{a} sorted using total ordering predicate p.
+   sorted?: ((S,S)->Boolean,%) -> Boolean
+      ++ sorted?(p,a) tests if \axiom{a} is sorted according to predicate p.
+   position: (S->Boolean, %) -> Integer
+      ++ position(p,a) returns the index i of the first x in \axiom{a} such that
+      ++ \axiom{p(x)} is true, and \axiom{minIndex(a) - 1} if there is no such x.
+   if S has SetCategory then
+      position: (S, %)  -> Integer
+        ++ position(x,a) returns the index i of the first occurrence of x in a,
+        ++ and \axiom{minIndex(a) - 1} if there is no such x.
+      position: (S,%,Integer) -> Integer
+        ++ position(x,a,n) returns the index i of the first occurrence of x in
+        ++ \axiom{a} where \axiom{i >= n}, and \axiom{minIndex(a) - 1} if no such x is found.
+   if S has OrderedSet then
+      OrderedSet
+      merge: (%,%) -> %
+        ++ merge(u,v) merges u and v in ascending order.
+        ++ Note: \axiom{merge(u,v) = merge(<=,u,v)}.
+      sort: % -> %
+        ++ sort(u) returns an u with elements in ascending order.
+        ++ Note: \axiom{sort(u) = sort(<=,u)}.
+      sorted?: % -> Boolean
+        ++ sorted?(u) tests if the elements of u are in ascending order.
+   if % has shallowlyMutable then
+      copyInto_!: (%,%,Integer) -> %
+        ++ copyInto!(u,v,i) returns aggregate u containing a copy of
+        ++ v inserted at element i.
+      reverse_!: % -> %
+        ++ reverse!(u) returns u with its elements in reverse order.
+      sort_!: ((S,S)->Boolean,%) -> %
+        ++ sort!(p,u) returns u with its elements ordered by p.
+      if S has OrderedSet then sort_!: % -> %
+        ++ sort!(u) returns u with its elements in ascending order.
+ add
+    if S has SetCategory then
+      position(x:S, t:%) == position(x, t, minIndex t)
+
+    if S has OrderedSet then
+--    sorted? l   == sorted?(_<$S, l)
+      sorted? l   == sorted?(#1 < #2 or #1 = #2, l)
+      merge(x, y) == merge(_<$S, x, y)
+      sort l      == sort(_<$S, l)
+
+    if % has shallowlyMutable then
+      reverse x  == reverse_! copy x
+      sort(f, l) == sort_!(f, copy l)
+
+      if S has OrderedSet then
+        sort_! l == sort_!(_<$S, l)
+

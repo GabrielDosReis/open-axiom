@@ -1,0 +1,232 @@
+import OrderedSet
+import CommutativeRing
+)abbrev domain XPBWPOLY XPBWPolynomial
+++ Author: Michel Petitot (petitot@lifl.fr).
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain constructor implements polynomials in non-commutative
+++ variables written in the Poincare-Birkhoff-Witt basis from the
+++ Lyndon basis.
+++ These polynomials can be used to compute Baker-Campbell-Hausdorff
+++ relations. \newline Author: Michel Petitot (petitot@lifl.fr).
+
+XPBWPolynomial(VarSet:OrderedSet,R:CommutativeRing): XDPcat == XDPdef where
+
+  WORD   ==> OrderedFreeMonoid(VarSet)
+  LWORD  ==> LyndonWord(VarSet)
+  LWORDS ==> List LWORD
+  BASIS  ==> PoincareBirkhoffWittLyndonBasis(VarSet)
+  TERM   ==> Record(k:BASIS, c:R)
+  LTERMS ==> List(TERM)
+  LPOLY  ==> LiePolynomial(VarSet,R)  
+  EX     ==> OutputForm
+  XDPOLY ==> XDistributedPolynomial(VarSet,R)
+  XRPOLY ==> XRecursivePolynomial(VarSet,R)
+  TERM1  ==> Record(k:LWORD, c:R)
+  NNI    ==> NonNegativeInteger
+  I      ==> Integer
+  RN     ==> Fraction(Integer)
+
+  XDPcat == Join(XPolynomialsCat(VarSet,R), FreeModuleCat(R, BASIS)) with
+    coerce      : LPOLY -> $
+      ++ \axiom{coerce(p)} returns \axiom{p}. 
+    coerce      : $ -> XDPOLY
+      ++ \axiom{coerce(p)} returns \axiom{p} as a distributed polynomial. 
+    coerce      : $ -> XRPOLY
+      ++ \axiom{coerce(p)} returns \axiom{p} as a recursive polynomial.
+    LiePolyIfCan: $ -> Union(LPOLY,"failed")
+      ++ \axiom{LiePolyIfCan(p)} return  \axiom{p} if \axiom{p} is a Lie polynomial.
+    product     : ($,$,NNI) -> $           -- produit tronque a l'ordre n
+      ++ \axiom{product(a,b,n)} returns \axiom{a*b} (truncated up to order \axiom{n}).
+
+    if R has Module(RN) then
+       exp      : ($,NNI) -> $
+          ++ \axiom{exp(p,n)} returns the exponential of \axiom{p} 
+          ++ (truncated up to order \axiom{n}).
+       log      : ($,NNI) -> $
+          ++ \axiom{log(p,n)} returns the logarithm of \axiom{p}
+          ++ (truncated up to order \axiom{n}).
+
+  XDPdef == FreeModule1(R,BASIS) add
+       import(TERM)
+
+    -- Representation
+       Rep:= LTERMS 
+
+    -- local functions
+       prod1: (BASIS, $) -> $
+       prod2: ($, BASIS) -> $
+       prod : (BASIS, BASIS) -> $
+
+       prod11: (BASIS, $, NNI) -> $
+       prod22: ($, BASIS, NNI) -> $
+
+       outForm : TERM -> EX
+       Dexpand : BASIS -> XDPOLY
+       Rexpand : BASIS -> XRPOLY
+       process : (List LWORD, LWORD, List LWORD) -> $
+       mirror1 : BASIS -> $
+
+    -- functions locales
+       outForm t ==
+           t.c =$R 1 => t.k :: EX
+           t.k =$BASIS 1 => t.c :: EX
+           t.c::EX * t.k ::EX
+
+       prod1(b:BASIS, p:$):$ ==
+         +/ [t.c * prod(b, t.k) for t in p]
+
+       prod2(p:$, b:BASIS):$ ==
+         +/ [t.c * prod(t.k, b) for t in p]
+ 
+       prod11(b,p,n) ==
+           limit: I := n -$I length b
+           +/ [t.c * prod(b, t.k) for t in p| length(t.k) :: I <= limit]
+
+       prod22(p,b,n) ==
+           limit: I := n -$I length b
+           +/ [t.c * prod(t.k, b) for t in p| length(t.k) :: I <= limit]
+
+       prod(g,d) ==
+         d = 1 => monom(g,1)
+         g = 1 => monom(d,1)
+         process(reverse ListOfTerms g, first d, rest ListOfTerms d)
+
+       Dexpand b == 
+         b = 1 => 1$XDPOLY
+         */ [LiePoly(l)$LPOLY :: XDPOLY for l in ListOfTerms b]
+
+       Rexpand b ==
+         b = 1 => 1$XRPOLY
+         */ [LiePoly(l)$LPOLY :: XRPOLY for l in ListOfTerms b]
+
+       mirror1(b:BASIS):$ ==
+         b = 1 => 1
+         lp: LPOLY := LiePoly first b
+         lp := mirror lp
+         mirror1(rest b) * lp :: $
+
+       process(gauche, x, droite) ==    -- algo du "collect process"
+         null gauche => monom( cons(x, droite) pretend BASIS, 1$R)
+         r1, r2 : $
+         not lexico(first gauche, x) =>     -- cas facile !!!
+           monom(append(reverse gauche, cons(x, droite)) pretend BASIS , 1$R)
+
+         p: LPOLY := ([first gauche , x])@LPOLY      -- on crochete !!!
+         null droite =>
+           r1 :=  +/ [t.c * process(rest gauche, t.k, droite) for t in _
+                      ListOfTerms p]
+           r2 :=  process( rest gauche, x, list first gauche)
+           r1 + r2 
+         rd: List LWORD := rest droite; fd: LWORD := first droite
+         r1 := +/ [t.c * process(list t.k, fd, rd) for t in  ListOfTerms p] 
+         r1 := +/ [t.c * process(rest gauche, first t.k, rest ListOfTerms(t.k))_
+                  for t in  r1] 
+         r2 := process([first gauche, x], fd, rd)
+         r2 := +/ [t.c * process(rest gauche, first t.k, rest ListOfTerms(t.k))_
+                  for t in  r2]
+         r1 + r2
+
+    -- definitions
+       1 == monom(1$BASIS, 1$R)
+
+       coerce(r:R):$ == [[1$BASIS , r]$TERM ]
+
+       coerce(p:$):EX ==
+         null p => (0$R) :: EX
+         le : List EX := nil
+         for rec in rep(p) repeat le := cons(outForm rec, le)
+         reduce(_+, le)$List(EX)
+
+       coerce(v: VarSet):$ == monom(v::BASIS , 1$R)
+       coerce(p: LPOLY):$ ==
+          [[t.k :: BASIS , t.c ]$TERM for t in ListOfTerms p]
+
+       coerce(p:$):XDPOLY ==
+         +/ [t.c * Dexpand t.k for t in p]
+
+       coerce(p:$):XRPOLY ==
+         p = 0 => 0$XRPOLY
+         +/ [t.c * Rexpand t.k for t in p]
+
+       constant? p == (null p) or (leadingMonomial(p) =$BASIS 1)
+       constant p == 
+         null p => 0$R
+         p.last.k = 1$BASIS => p.last.c
+         0$R
+
+       quasiRegular? p == (p=0) or (p.last.k ~= 1$BASIS)
+       quasiRegular p == 
+         p = 0 => p
+         p.last.k = 1$BASIS => delete(p, maxIndex p)
+         p
+    
+       x:$ * y:$ ==
+         y = 0$$ => 0
+         +/ [t.c * prod1(t.k, y) for t in x]
+
+--       ListOfTerms p == p pretend LTERMS
+
+       varList p == 
+          lv: List VarSet := "setUnion"/ [varList(b.k)$BASIS for b in p]
+          sort(lv)
+
+       degree(p) ==
+          p=0 => error "null polynomial"
+          length(leadingMonomial p)
+
+       trunc(p, n) ==
+         p = 0 => p
+         degree(p) > n => trunc( reductum p , n)
+         p
+
+       product(x,y,n) ==
+         x = 0 => 0
+         y = 0 => 0
+         +/ [t.c * prod11(t.k, y, n) for t in x]
+
+       if R has Module(RN) then
+         exp (p,n) ==
+             p = 0 => 1
+             not quasiRegular? p => 
+               error "a proper polynomial is required"
+             s : $ := 1 ; r: $ := 1                  -- resultat
+             for i in 1..n repeat
+                k1 :RN := 1/i
+                k2 : R := k1 * 1$R
+                s := k2 * product(p, s, n)
+                r := r + s
+             r
+  
+         log (p,n) ==
+             p = 1 => 0
+             p1: $ := 1 - p
+             not quasiRegular? p1 => 
+               error "constant term <> 1, impossible log "
+             s : $ := - 1 ; r: $ := 0                 -- resultat
+             for i in 1..n repeat
+               k1 :RN := 1/i
+               k2 : R := k1 * 1$R
+               s := product(p1, s, n)
+               r := k2 * s + r
+             r
+ 
+       LiePolyIfCan p ==
+         p = 0 => 0$LPOLY
+         "and"/ [retractable?(t.k)$BASIS for t in p] =>
+            lt : List TERM1 := _
+                 [[retract(t.k)$BASIS, t.c]$TERM1 for t in p]
+            lt pretend LPOLY
+         "failed"
+
+       mirror p ==
+         +/ [t.c * mirror1(t.k) for t in p]
+

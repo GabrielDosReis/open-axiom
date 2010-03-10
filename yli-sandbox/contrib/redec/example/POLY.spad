@@ -1,0 +1,38 @@
+)abbrev domain POLY Polynomial
+++ Author: Dave Barton, Barry Trager
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions: Ring, degree, eval, coefficient, monomial, differentiate,
+++ resultant, gcd
+++ Related Constructors: SparseMultivariatePolynomial, MultivariatePolynomial
+++ Also See:
+++ AMS Classifications:
+++ Keywords: polynomial, multivariate
+++ References:
+++ Description:
+++   This type is the basic representation of sparse recursive multivariate
+++ polynomials whose variables are arbitrary symbols. The ordering
+++ is alphabetic determined by the Symbol type.
+++ The coefficient ring may be non commutative,
+++ but the variables are assumed to commute.
+
+Polynomial(R:Ring):
+  PolynomialCategory(R, IndexedExponents Symbol, Symbol) with
+   if R has Algebra Fraction Integer then
+     integrate: (%, Symbol) -> %
+       ++ integrate(p,x) computes the integral of \spad{p*dx}, i.e.
+       ++ integrates the polynomial p with respect to the variable x.
+ == SparseMultivariatePolynomial(R, Symbol) add
+
+    import UserDefinedPartialOrdering(Symbol)
+
+    coerce(p:%):OutputForm ==
+      (r:= retractIfCan(p)@Union(R,"failed")) case R => r::R::OutputForm
+      a :=
+        userOrdered?() => largest variables p
+        mainVariable(p)::Symbol
+      outputForm(univariate(p, a), a::OutputForm)
+
+    if R has Algebra Fraction Integer then
+      integrate(p, x) == (integrate univariate(p, x)) (x::%)
+

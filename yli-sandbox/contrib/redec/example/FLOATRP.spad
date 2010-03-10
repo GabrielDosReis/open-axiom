@@ -1,0 +1,115 @@
+)abbrev package FLOATRP FloatingRealPackage
+++ Author: P. Gianni
+++ Date Created: January 1990
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors: SystemSolvePackage, RadicalSolvePackage,
+++ FloatingComplexPackage
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++    This is a package for the approximation of real solutions for
+++ systems of polynomial equations over the rational numbers.
+++ The results are expressed as either rational numbers or floats
+++ depending on the type of the precision parameter which can be
+++ either a rational number or a floating point number.
+FloatingRealPackage(Par): Cat == Cap where
+    I        ==> Integer
+    NNI      ==> NonNegativeInteger
+    P        ==> Polynomial
+    EQ       ==> Equation
+    L        ==> List
+    SUP      ==> SparseUnivariatePolynomial
+    RN       ==> Fraction Integer
+    NF       ==> Float
+    CF       ==> Complex Float
+    GI       ==> Complex Integer
+    GRN      ==> Complex RN
+    SE       ==> Symbol
+    RFI      ==> Fraction P I
+    INFSP ==> InnerNumericFloatSolvePackage
+
+    Par : Join(OrderedRing, Field)  -- RN or NewFloat
+
+    Cat == with
+
+       solve:    (L RFI,Par) -> L L EQ P Par
+         ++ solve(lp,eps) finds all of the real solutions of the
+         ++ system lp of rational functions over the rational numbers
+         ++ with respect to all the variables appearing in lp,
+         ++ with precision eps.
+
+       solve:    (L EQ RFI,Par) -> L L EQ P Par
+         ++ solve(leq,eps) finds all of the real solutions of the
+         ++ system leq of equationas of rational functions
+         ++ with respect to all the variables appearing in lp,
+         ++ with precision eps.
+
+       solve:    (RFI,Par) ->  L EQ P Par
+         ++ solve(p,eps) finds all of the real solutions of the
+         ++ univariate rational function p with rational coefficients
+         ++ with respect to the unique variable appearing in p,
+         ++ with precision eps.
+
+       solve:    (EQ RFI,Par) ->  L EQ P Par
+         ++ solve(eq,eps) finds all of the real solutions of the
+         ++ univariate equation eq of rational functions
+         ++ with respect to the unique variables appearing in eq,
+         ++ with precision eps.
+
+       realRoots:    (L RFI,L SE,Par) -> L L Par
+         ++ realRoots(lp,lv,eps) computes the list of the real
+         ++ solutions of the list lp of rational functions with rational
+         ++ coefficients with respect to the variables in lv,
+         ++ with precision eps. Each solution is expressed as a list
+         ++ of numbers in order corresponding to the variables in lv.
+
+       realRoots : (RFI,Par) -> L Par
+         ++ realRoots(rf, eps) finds the real zeros of a univariate
+         ++ rational function with precision given by eps.
+
+    Cap == add
+
+       makeEq(nres:L Par,lv:L SE) : L EQ P Par ==
+           [equation(x::(P Par),r::(P Par)) for x in lv for r in nres]
+
+       -- find the real zeros of an univariate rational polynomial --
+       realRoots(p:RFI,eps:Par) : L Par ==
+         innerSolve1(numer p,eps)$INFSP(I,Par,Par)
+
+       -- real zeros of the system of polynomial lp --
+       realRoots(lp:L RFI,lv:L SE,eps: Par) : L L Par ==
+         lnum:=[numer p for p in lp]
+         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         innerSolve(lnum,lden,lv,eps)$INFSP(I,Par,Par)
+
+       solve(lp:L RFI,eps : Par) : L L EQ  P Par ==
+         lnum:=[numer p for p in lp]
+         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lv:="setUnion"/[variables np for np in lnum]
+         if lden~=[] then
+          lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
+         [makeEq(numres,lv) for numres
+            in innerSolve(lnum,lden,lv,eps)$INFSP(I,Par,Par)]
+
+       solve(le:L EQ RFI,eps : Par) : L L EQ  P Par ==
+         lp:=[lhs ep - rhs ep for ep in le]
+         lnum:=[numer p for p in lp]
+         lden:=[dp for p in lp |(dp:=denom p)~=1]
+         lv:="setUnion"/[variables np for np in lnum]
+         if lden~=[] then
+          lv:=setUnion(lv,"setUnion"/[variables dp for dp in lden])
+         [makeEq(numres,lv) for numres
+           in innerSolve(lnum,lden,lv,eps)$INFSP(I,Par,Par)]
+
+       solve(p : RFI,eps : Par) :  L EQ  P Par ==
+         (mvar := mainVariable numer p ) case "failed" =>
+              error "no variable found"
+         x:P Par:=mvar::SE::(P Par)
+         [equation(x,val::(P Par)) for val in realRoots(p,eps)]
+
+       solve(eq : EQ RFI,eps : Par) :  L EQ  P Par ==
+         solve(lhs eq - rhs eq,eps)
+

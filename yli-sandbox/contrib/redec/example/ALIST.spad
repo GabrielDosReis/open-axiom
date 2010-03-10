@@ -1,0 +1,83 @@
+import SetCategory
+import List
+import Reference
+)abbrev domain ALIST AssociationList
+++ Author:
+++ Date Created:
+++ Change History:
+++ Basic Operations: empty, empty?, keys, \#, concat, first, rest,
+++   setrest!, search, setelt, remove!
+++ Related Constructors:
+++ Also See: List
+++ AMS Classification:
+++ Keywords: list, association list
+++ Description:
+++   \spadtype{AssociationList} implements association lists. These
+++   may be viewed as lists of pairs where the first part is a key
+++   and the second is the stored value. For example, the key might
+++   be a string with a persons employee identification number and
+++   the value might be a record with personnel data.
+
+AssociationList(Key:SetCategory, Entry:SetCategory):
+ AssociationListAggregate(Key, Entry) == add
+        Pair ==> Record(key:Key, entry:Entry)
+        Rep := Reference List Pair
+
+        dictionary()            == ref empty()
+        empty()                 == dictionary()
+        empty? t                == empty? deref t
+        entries(t:%):List(Pair) == deref t
+        parts(t:%):List(Pair)   == deref t
+        keys t                  == [k.key for k in deref t]
+        # t                     == # deref t
+        first(t:%):Pair         == first deref t
+        rest t                  == ref rest deref t
+        concat(p:Pair, t:%)     == ref concat(p, deref t)
+        setrest_!(a:%, b:%)     == ref setrest_!(deref a, deref b)
+        setfirst_!(a:%, p:Pair) == setfirst_!(deref a,p)
+        minIndex(a:%):Integer   == minIndex(deref a)
+        maxIndex(a:%):Integer   == maxIndex(deref a)
+
+        search(k, t) ==
+          for r in deref t repeat
+            k = r.key => return(r.entry)
+          "failed"
+
+        latex(a : %) : String ==
+          l : List Pair := entries a
+          s : String := "\left["
+          while not empty?(l) repeat
+            r : Pair := first l
+            l        := rest l
+            s := concat(s, concat(latex r.key, concat(" = ", latex r.entry)$String)$String)$String
+            if not empty?(l) then s := concat(s, ", ")$String
+          concat(s, " \right]")$String
+
+--      assoc(k, l) ==
+--        (r := find(#1.key=k, l)) case "failed" => "failed"
+--        r
+
+        assoc(k, t) ==
+          for r in deref t repeat
+            k = r.key => return r
+          "failed"
+
+        setelt(t:%, k:Key, e:Entry) ==
+          (r := assoc(k, t)) case Pair => (r::Pair).entry := e
+          setref(t, concat([k, e], deref t))
+          e
+
+        remove_!(k:Key, t:%) ==
+          empty?(l := deref t) => "failed"
+          k = first(l).key =>
+            setref(t, rest l)
+            first(l).entry
+          prev := l
+          curr := rest l
+          while not empty? curr and first(curr).key ~= k repeat
+            prev := curr
+            curr := rest curr
+          empty? curr => "failed"
+          setrest_!(prev, rest curr)
+          first(curr).entry
+

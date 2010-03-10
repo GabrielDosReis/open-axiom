@@ -1,0 +1,24 @@
+)abbrev package PAN2EXPR PolynomialAN2Expression
+++ Author: Barry Trager
+++ Date Created: 8 Oct 1991
+++ Description: This package provides a coerce from polynomials over
+++ algebraic numbers to \spadtype{Expression AlgebraicNumber}.
+PolynomialAN2Expression():Target == Implementation where
+  EXPR ==> Expression(Integer)
+  AN ==> AlgebraicNumber
+  PAN ==> Polynomial AN
+  SY ==> Symbol
+  Target ==> with
+      coerce: Polynomial AlgebraicNumber -> Expression(Integer)
+        ++ coerce(p) converts the polynomial \spad{p} with algebraic number
+        ++ coefficients to \spadtype{Expression Integer}.
+      coerce: Fraction Polynomial AlgebraicNumber -> Expression(Integer)
+        ++ coerce(rf) converts \spad{rf}, a fraction of polynomial \spad{p} with
+        ++ algebraic number coefficients to \spadtype{Expression Integer}.
+  Implementation ==> add
+    coerce(p:PAN):EXPR ==
+        map(#1::EXPR, #1::EXPR, p)$PolynomialCategoryLifting(
+                                  IndexedExponents SY, SY, AN, PAN, EXPR)
+    coerce(rf:Fraction PAN):EXPR ==
+        numer(rf)::EXPR / denom(rf)::EXPR
+

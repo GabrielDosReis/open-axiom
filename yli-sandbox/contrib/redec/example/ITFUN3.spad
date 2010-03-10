@@ -1,0 +1,28 @@
+import Type
+import InfiniteTuple
+import Stream
+)abbrev package ITFUN3 InfiniteTupleFunctions3
+InfiniteTupleFunctions3(A:Type, B:Type,C:Type): Exports
+ == Implementation where
+   ++ Functions defined on streams with entries in two sets.
+   IT   ==> InfiniteTuple
+   ST   ==> Stream
+   SF3  ==> StreamFunctions3(A,B,C)
+   FUN  ==> ((A,B)->C)
+   Exports ==> with
+     map: (((A,B)->C), IT A, IT B) -> IT C
+        ++ map(f,a,b) \undocumented
+     map: (((A,B)->C), ST A, IT B) -> ST C
+        ++ map(f,a,b) \undocumented
+     map: (((A,B)->C), IT A, ST B) -> ST C
+        ++ map(f,a,b) \undocumented
+
+   Implementation ==> add
+
+     map(f:FUN, s1:IT A, s2:IT B):IT C ==
+       map(f, s1 pretend Stream(A), s2 pretend Stream(B))$SF3 pretend IT(C)
+     map(f:FUN, s1:ST A, s2:IT B):ST C ==
+       map(f, s1, s2 pretend Stream(B))$SF3
+     map(f:FUN, s1:IT A, s2:ST B):ST C ==
+       map(f, s1 pretend Stream(A), s2)$SF3
+

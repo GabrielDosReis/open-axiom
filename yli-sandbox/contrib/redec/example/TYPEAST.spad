@@ -1,0 +1,13 @@
+SpadAst(): SpadAstExports
+
+import AbstractSyntaxCategory
+)abbrev domain TYPEAST TypeAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents a type AST.
+TypeAst(): Public == Private where
+  Public == SpadSyntaxCategory
+  Private == add
+    coerce(x: %): OutputForm == (x : SpadAst)::OutputForm
+

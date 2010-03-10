@@ -1,0 +1,18 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain COMMAAST CommaAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the syntax of a comma-separated
+++   list of expressions.
+CommaAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    body: % -> List SpadAst
+      ++ body(e) returns the list of expressions making up `e'.
+  Private == add
+    Rep == List SpadAst
+    body x == rest rep x
+    coerce(x: %): OutputForm ==
+      elt('CommaAst::OutputForm,
+        ['body::OutputForm = body(x)::OutputForm])$OutputForm

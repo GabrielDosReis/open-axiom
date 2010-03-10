@@ -1,0 +1,24 @@
+)abbrev domain IOBFILE InputOutputBinaryFile
+++ Author: Gabriel Dos Reis
+++ Date Created: October 21, 2008
+++ Date Last Modified: October 21, 2008
+++ Description:
+++   This domain provides representation for binary files open
+++   for input and output operations.
+++ See Also: InputBinaryFile, OutputBinaryFile
+InputOutputBinaryFile(): Public == Private where
+  Public == Join(InputOutputByteConduit, CoercibleTo OutputForm) with
+    inputOutputBinaryFile: FileName -> %
+      ++ inputOutputBinaryFile(f) returns an input/output conduit obtained
+      ++ by opening the file designated by `f' as a binary file.
+    inputOutputBinaryFile: String -> %
+      ++ inputOutputBinaryFile(f) returns an input/output conduit obtained
+      ++ by opening the file named by `f' as a binary file.
+    isOpen?: % -> Boolean
+      ++ isOpen?(f) holds if `f' is in open state.
+  Private == (InputBinaryFile, OutputBinaryFile) add
+    Rep == Record(stream: SExpression, filename: FileName)
+    inputOutputBinaryFile(f: FileName) ==
+      per [openBinaryFile(f::String,bothWays$IOMode)$Lisp,f]
+    inputOutputBinaryFile(f: String) ==
+      per [openBinaryFile(f,bothWays$IOMode)$Lisp,f::FileName]

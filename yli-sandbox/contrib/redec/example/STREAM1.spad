@@ -1,0 +1,23 @@
+import Type
+import Stream
+)abbrev package STREAM1 StreamFunctions1
+++ Authors: Burge, Watt; updated by Clifton J. Williamson
+++ Date Created: July 1986
+++ Date Last Updated: 29 January 1990
+++ Keywords: stream, infinite list, infinite sequence
+StreamFunctions1(S:Type): Exports == Implementation where
+  ++ Functions defined on streams with entries in one set.
+  ST  ==> Stream
+
+  Exports ==> with
+    concat: ST ST S -> ST S
+      ++ concat(u) returns the left-to-right concatentation of the streams in u.
+      ++ Note: \spad{concat(u) = reduce(concat,u)}.
+
+  Implementation ==> add
+
+    concat z == delay
+      empty? z => empty()
+      empty?(x := frst z) => concat rst z
+      concat(frst x,concat(rst x,concat rst z))
+

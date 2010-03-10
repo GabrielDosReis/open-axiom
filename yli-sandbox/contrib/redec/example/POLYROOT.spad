@@ -1,0 +1,125 @@
+)abbrev package POLYROOT PolynomialRoots
+++ Author: Manuel Bronstein
+++ Date Created: 15 July 1988
+++ Date Last Updated: 10 November 1993
+++ Description: computes n-th roots of quotients of
+++ multivariate polynomials
+-- not visible to the user
+PolynomialRoots(E, V, R, P, F):Exports == Implementation where
+  E: OrderedAbelianMonoidSup
+  V: OrderedSet
+  R: IntegralDomain
+  P: PolynomialCategory(R, E, V)
+  F: Field with
+    coerce: P -> %
+    numer : $ -> P
+        ++ numer(x) \undocumented
+    denom : $ -> P
+        ++ denom(x) \undocumented
+
+  N   ==> NonNegativeInteger
+  Z   ==> Integer
+  Q   ==> Fraction Z
+  REC ==> Record(exponent:N, coef:F, radicand:F)
+
+  Exports ==> with
+    rroot: (R, N) -> REC
+      ++ rroot(f, n) returns \spad{[m,c,r]} such
+      ++ that \spad{f**(1/n) = c * r**(1/m)}.
+    qroot : (Q, N) -> REC
+      ++ qroot(f, n) returns \spad{[m,c,r]} such
+      ++ that \spad{f**(1/n) = c * r**(1/m)}.
+    if R has GcdDomain then froot: (F, N) -> REC
+      ++ froot(f, n) returns \spad{[m,c,r]} such
+      ++ that \spad{f**(1/n) = c * r**(1/m)}.
+    nthr: (P, N) -> Record(exponent:N,coef:P,radicand:List P)
+        ++ nthr(p,n) should be local but conditional
+
+  Implementation ==> add
+    import FactoredFunctions Z
+    import FactoredFunctions P
+
+    rsplit: List P -> Record(coef:R, poly:P)
+    zroot : (Z, N) -> Record(exponent:N, coef:Z, radicand:Z)
+
+    zroot(x, n) ==
+--      zero? x or one? x => [1, x, 1]
+      zero? x or (x = 1) => [1, x, 1]
+      s := nthRoot(squareFree x, n)
+      [s.exponent, s.coef, */s.radicand]
+
+    if R has imaginary: () -> R then
+      czroot: (Z, N) -> REC
+
+      czroot(x, n) ==
+        rec := zroot(x, n)
+        rec.exponent = 2 and rec.radicand < 0 =>
+          [rec.exponent, rec.coef * imaginary()::P::F, (-rec.radicand)::F]
+        [rec.exponent, rec.coef::F, rec.radicand::F]
+
+      qroot(x, n) ==
+        sn := czroot(numer x, n)
+        sd := czroot(denom x, n)
+        m  := lcm(sn.exponent, sd.exponent)::N
+        [m, sn.coef / sd.coef,
+                    (sn.radicand ** (m quo sn.exponent)) /
+                                (sd.radicand ** (m quo sd.exponent))]
+    else
+      qroot(x, n) ==
+        sn := zroot(numer x, n)
+        sd := zroot(denom x, n)
+        m  := lcm(sn.exponent, sd.exponent)::N
+        [m, sn.coef::F / sd.coef::F,
+                    (sn.radicand ** (m quo sn.exponent))::F /
+                                (sd.radicand ** (m quo sd.exponent))::F]
+
+    if R has RetractableTo Fraction Z then
+      rroot(x, n) ==
+        (r := retractIfCan(x)@Union(Fraction Z,"failed")) case "failed"
+          => [n, 1, x::P::F]
+        qroot(r::Q, n)
+
+    else
+      if R has RetractableTo Z then
+        rroot(x, n) ==
+          (r := retractIfCan(x)@Union(Z,"failed")) case "failed"
+            => [n, 1, x::P::F]
+          qroot(r::Z::Q, n)
+      else
+        rroot(x, n) == [n, 1, x::P::F]
+
+    rsplit l ==
+      r := 1$R
+      p := 1$P
+      for q in l repeat
+        if (u := retractIfCan(q)@Union(R, "failed")) case "failed"
+          then p := p * q
+          else r := r * u::R
+      [r, p]
+
+    if R has GcdDomain then
+      if R has RetractableTo Z then
+        nthr(x, n) ==
+          (r := retractIfCan(x)@Union(Z,"failed")) case "failed"
+             => nthRoot(squareFree x, n)
+          rec := zroot(r::Z, n)
+          [rec.exponent, rec.coef::P, [rec.radicand::P]]
+      else nthr(x, n) == nthRoot(squareFree x, n)
+
+      froot(x, n) ==
+--        zero? x or one? x => [1, x, 1]
+        zero? x or (x = 1) => [1, x, 1]
+        sn := nthr(numer x, n)
+        sd := nthr(denom x, n)
+        pn := rsplit(sn.radicand)
+        pd := rsplit(sd.radicand)
+        rn := rroot(pn.coef, sn.exponent)
+        rd := rroot(pd.coef, sd.exponent)
+        m := lcm([rn.exponent, rd.exponent, sn.exponent, sd.exponent])::N
+        [m, (sn.coef::F / sd.coef::F) * (rn.coef / rd.coef),
+             ((rn.radicand ** (m quo rn.exponent)) /
+                    (rd.radicand ** (m quo rd.exponent))) *
+                           (pn.poly ** (m quo sn.exponent))::F /
+                                    (pd.poly ** (m quo sd.exponent))::F]
+
+

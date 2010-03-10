@@ -1,0 +1,84 @@
+)abbrev domain LSQM LieSquareMatrix
+++ Author: J. Grabmeier
+++ Date Created: 07 March 1991
+++ Date Last Updated: 08 March 1991
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   LieSquareMatrix(n,R) implements the Lie algebra of the n by n
+++   matrices over the commutative ring R.
+++   The Lie bracket (commutator) of the algebra is given by
+++   \spad{a*b := (a *$SQMATRIX(n,R) b - b *$SQMATRIX(n,R) a)},
+++   where \spadfun{*$SQMATRIX(n,R)} is the usual matrix multiplication.
+LieSquareMatrix(n,R): Exports == Implementation where
+
+  n    : PositiveInteger
+  R    : CommutativeRing
+
+  Row ==> DirectProduct(n,R)
+  Col ==> DirectProduct(n,R)
+
+  Exports ==> Join(SquareMatrixCategory(n,R,Row,Col), CoercibleTo Matrix R,_
+      FramedNonAssociativeAlgebra R) --with
+
+  Implementation ==> AssociatedLieAlgebra (R,SquareMatrix(n, R)) add
+
+    Rep :=  AssociatedLieAlgebra (R,SquareMatrix(n, R))
+      -- local functions
+    n2 : PositiveInteger := n*n
+
+    convDM : DirectProduct(n2,R) -> %
+    conv : DirectProduct(n2,R) ->  SquareMatrix(n,R)
+      --++ converts n2-vector to (n,n)-matrix row by row
+    conv v  ==
+      cond : Matrix(R) := new(n,n,0$R)$Matrix(R)
+      z : Integer := 0
+      for i in 1..n repeat
+        for j in 1..n  repeat
+          z := z+1
+          setelt(cond,i,j,v.z)
+      squareMatrix(cond)$SquareMatrix(n, R)
+
+
+    coordinates(a:%,b:Vector(%)):Vector(R) ==
+      -- only valid for b canonicalBasis
+      res : Vector R := new(n2,0$R)
+      z : Integer := 0
+      for i in 1..n repeat
+        for j in 1..n repeat
+          z := z+1
+          res.z := elt(a,i,j)$%
+      res
+
+
+    convDM v ==
+      sq := conv v
+      coerce(sq)$Rep :: %
+
+    basis() ==
+      n2 : PositiveInteger := n*n
+      ldp : List DirectProduct(n2,R) :=
+        [unitVector(i::PositiveInteger)$DirectProduct(n2,R) for i in 1..n2]
+      res:Vector % := vector map(convDM,_
+        ldp)$ListFunctions2(DirectProduct(n2,R), %)
+
+    someBasis() == basis()
+    rank() == n*n
+
+
+--    transpose: % -> %
+--      ++ computes the transpose of a matrix
+--    squareMatrix: Matrix R -> %
+--      ++ converts a Matrix to a LieSquareMatrix
+--    coerce: % -> Matrix R
+--      ++ converts a LieSquareMatrix to a Matrix
+--    symdecomp : % -> Record(sym:%,antisym:%)
+--    if R has commutative("*") then
+--      minorsVect: -> Vector(Union(R,"uncomputed")) --range: 1..2**n-1
+--    if R has commutative("*") then central
+--    if R has commutative("*") and R has unitsKnown then unitsKnown
+

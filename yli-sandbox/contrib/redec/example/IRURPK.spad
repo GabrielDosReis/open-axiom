@@ -1,0 +1,199 @@
+import EuclideanDomain
+import CharacteristicZero
+import OrderedAbelianMonoidSup
+import OrderedSet
+import RecursivePolynomialCategory
+import SquareFreeRegularTriangularSetCategory
+import List
+)abbrev package IRURPK InternalRationalUnivariateRepresentationPackage
+++ Author: Marc Moreno Maza
+++ Date Created: 01/1999
+++ Date Last Updated: 23/01/1999
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: 
+++   An internal package for computing the rational univariate representation
+++   of a zero-dimensional algebraic variety given by a square-free 
+++   triangular set. 
+++   The main operation is \axiomOpFrom{rur}{InternalRationalUnivariateRepresentationPackage}.
+++   It is based on the {\em generic} algorithm description in [1]. \newline References:
+++  [1] D. LAZARD "Solving Zero-dimensional Algebraic Systems"
+++      Journal of Symbolic Computation, 1992, 13, 117-131
+++ Version: 1.
+
+InternalRationalUnivariateRepresentationPackage(R,E,V,P,TS): Exports == Implementation where
+  R : Join(EuclideanDomain,CharacteristicZero)
+  E : OrderedAbelianMonoidSup
+  V : OrderedSet
+  P : RecursivePolynomialCategory(R,E,V)
+  TS : SquareFreeRegularTriangularSetCategory(R,E,V,P)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  LV ==> List V
+  LP ==> List P
+  PWT ==> Record(val: P, tower: TS)
+  LPWT ==> Record(val: LP, tower: TS)
+  WIP ==> Record(pol: P, gap: Z, tower: TS)
+  BWT ==> Record(val:Boolean, tower: TS)
+  polsetpack ==> PolynomialSetUtilitiesPackage(R,E,V,P)
+  normpack ==> NormalizationPackage(R,E,V,P,TS)
+
+  Exports ==  with
+
+     rur: (TS,B) -> List TS
+       ++ \spad{rur(ts,univ?)} returns a rational univariate representation
+       ++ of \spad{ts}. This assumes that the lowest polynomial in \spad{ts}
+       ++ is a variable \spad{v} which does not occur in the other polynomials
+       ++ of \spad{ts}. This variable will be used to define the simple
+       ++ algebraic extension over which these other polynomials will be
+       ++ rewritten as univariate polynomials with degree one.
+       ++ If \spad{univ?} is \spad{true} then these polynomials will have
+       ++ a constant initial.
+     checkRur: (TS, List TS) -> Boolean
+       ++ \spad{checkRur(ts,lus)} returns \spad{true} if \spad{lus}
+       ++ is a rational univariate representation of \spad{ts}.
+
+  Implementation == add
+
+     checkRur(ts: TS, lts: List TS): Boolean ==
+       f0 := last(ts)::P
+       z := mvar(f0)
+       ts := collectUpper(ts,z)
+       dts: N := degree(ts)
+       lp := parts(ts)
+       dlts: N := 0
+       for us in lts repeat
+         dlts := dlts + degree(us)
+         rems := [removeZero(p,us) for p in lp]
+         not every?(zero?,rems) => 
+           output(us::OutputForm)$OutputPackage
+           return false
+       (dts =$N dlts)@Boolean
+
+     convert(p:P,sqfr?:B):TS ==
+       -- if sqfr? ASSUME p is square-free
+       newts: TS := empty()
+       sqfr? => internalAugment(p,newts) 
+       p := squareFreePart(p)
+       internalAugment(p,newts) 
+
+     prepareRur(ts: TS): List LPWT ==
+       not purelyAlgebraic?(ts)$TS => 
+         error "rur$IRURPK: #1 is not zero-dimensional"
+       lp: LP := parts(ts)$TS
+       lp := sort(infRittWu?,lp)
+       empty? lp =>
+         error "rur$IRURPK: #1 is empty"
+       f0 := first lp; lp := rest lp
+--       not (one?(init(f0)) and one?(mdeg(f0)) and zero?(tail(f0))) =>
+       not ((init(f0) = 1) and (mdeg(f0) = 1) and zero?(tail(f0))) =>
+         error "rur$IRURPK: #1 has no generating root."
+       empty? lp =>
+         error "rur$IRURPK: #1 has a generating root but no indeterminates"
+       z: V :=  mvar(f0)
+       f1 := first lp; lp := rest lp
+       x1: V := mvar(f1)
+       newf1 := x1::P - z::P
+       toSave: List LPWT := []
+       for ff1 in irreducibleFactors([f1])$polsetpack repeat
+         newf0 := eval(ff1,mvar(f1),f0)
+         ts := internalAugment(newf1,convert(newf0,true)@TS)
+         toSave := cons([lp,ts],toSave)
+       toSave
+
+     makeMonic(z:V,c:P,r:P,ts:TS,s:P,univ?:B): TS ==
+       --ASSUME r is a irreducible univariate polynomial in z
+       --ASSUME c and s only depends on z and mvar(s)
+       --ASSUME c and a have main degree 1
+       --ASSUME c and s have a constant initial
+       --ASSUME mvar(ts) < mvar(s)
+       lp: LP := parts(ts)
+       lp := sort(infRittWu?,lp)
+       newts: TS := convert(r,true)@TS
+       s := remainder(s,newts).polnum
+       if univ? 
+         then 
+           s := normalizedAssociate(s,newts)$normpack
+       for p in lp repeat
+         p := lazyPrem(eval(p,z,c),s)
+         p := remainder(p,newts).polnum
+         newts := internalAugment(p,newts)
+       internalAugment(s,newts)
+
+     next(lambda:Z):Z == 
+       if lambda < 0 then lambda := - lambda + 1 else lambda := - lambda
+
+     makeLinearAndMonic(p: P, xi: V, ts: TS, univ?:B, check?: B, info?: B): List TS ==
+       -- if check? THEN some VERIFICATIONS are performed
+       -- if info? THEN some INFORMATION is displayed
+       f0 := last(ts)::P
+       z: V := mvar(f0)
+       lambda: Z := 1
+       ts := collectUpper(ts,z)
+       toSee: List WIP := [[f0,lambda,ts]$WIP]
+       toSave: List TS := []
+       while not empty? toSee repeat
+         wip := first toSee; toSee := rest toSee
+         (f0, lambda, ts) := (wip.pol, wip.gap, wip.tower)
+         if check? and ((not univariate?(f0)$polsetpack) or (mvar(f0) ~= z))
+           then
+               output("Bad f0: ")$OutputPackage
+               output(f0::OutputForm)$OutputPackage
+         c: P := lambda * xi::P + z::P 
+         f := eval(f0,z,c); q := eval(p,z,c)
+         prs := subResultantChain(q,f)
+         r := first prs; prs := rest prs
+         check? and ((not zero? degree(r,xi)) or (empty? prs)) =>
+           error "rur$IRURPK: should never happen !"
+         s := first prs; prs := rest prs
+         check? and (zero? degree(s,xi)) and (empty? prs) =>
+           error "rur$IRURPK: should never happen !!"
+         if zero? degree(s,xi) then s := first prs
+--         not one? degree(s,xi) =>            
+         not (degree(s,xi) = 1) =>            
+           toSee := cons([f0,next(lambda),ts]$WIP,toSee)
+         h := init(s)
+         r := squareFreePart(r)
+         ground?(h) or ground?(gcd(h,r)) =>
+           for fr in irreducibleFactors([r])$polsetpack repeat
+             ground? fr => "leave"
+             toSave := cons(makeMonic(z,c,fr,ts,s,univ?),toSave)
+         if info?
+           then 
+             output("Unlucky lambda")$OutputPackage
+             output(h::OutputForm)$OutputPackage
+             output(r::OutputForm)$OutputPackage
+         toSee := cons([f0,next(lambda),ts]$WIP,toSee)
+       toSave
+
+     rur (ts: TS,univ?:Boolean): List TS ==
+       toSee: List LPWT := prepareRur(ts)
+       toSave: List TS := []
+       while not empty? toSee repeat
+         wip := first toSee; toSee := rest toSee
+         ts: TS := wip.tower
+         lp: LP := wip.val
+         empty? lp => toSave := cons(ts,toSave)
+         p := first lp; lp := rest lp
+         xi: V := mvar(p)
+         p := remainder(p,ts).polnum
+         if not univ?
+           then 
+             p := primitivePart stronglyReduce(p,ts)
+         ground?(p) or (mvar(p) < xi) =>
+           error "rur$IRUROK: should never happen"
+--         (one? mdeg(p)) and (ground? init(p)) =>
+         (mdeg(p) = 1) and (ground? init(p)) =>
+           ts := internalAugment(p,ts)
+           wip := [lp,ts]
+           toSee := cons(wip,toSee)
+         lts := makeLinearAndMonic(p,xi,ts,univ?,false,false)
+         for ts in lts repeat
+           wip := [lp,ts]
+           toSee := cons(wip,toSee)
+       toSave
+

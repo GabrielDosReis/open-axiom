@@ -1,0 +1,106 @@
+)abbrev domain ASP4 Asp4
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 18 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp4} produces Fortran for Type 4 ASPs, which take an expression
+++in X(1) .. X(NDIM) and produce a real function of the form:
+++\begin{verbatim}
+++      DOUBLE PRECISION FUNCTION FUNCTN(NDIM,X)
+++      DOUBLE PRECISION X(NDIM)
+++      INTEGER NDIM
+++      FUNCTN=(4.0D0*X(1)*X(3)**2*DEXP(2.0D0*X(1)*X(3)))/(X(4)**2+(2.0D0*
+++     &X(2)+2.0D0)*X(4)+X(2)**2+2.0D0*X(2)+1.0D0)
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp4(name): Exports == Implementation where
+  name : Symbol
+
+  FEXPR  ==> FortranExpression([],['X],MachineFloat)
+  FST    ==> FortranScalarType
+  FT     ==> FortranType
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FortranCode))
+  FSTU   ==> Union(fst:FST,void:"void")
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+
+  Exports ==> FortranFunctionCategory with
+    coerce : FEXPR -> $
+      ++coerce(f) takes an object from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns it into an ASP.
+
+  Implementation ==> add
+
+    real : FSTU := ["real"::FST]$FSTU
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(NDIM,fortranInteger(),syms)$SYMTAB
+    xType : FT := construct(real,[NDIM],false)$FT
+    declare!(X,xType,syms)$SYMTAB
+    Rep := FortranProgram(name,real,[NDIM,X],syms)
+
+    retract(u:FRAC POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      foo::FEXPR::$
+
+    retract(u:FRAC POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      foo::FEXPR::$
+
+    retract(u:EXPR FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      foo::FEXPR::$
+
+    retract(u:EXPR INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      foo::FEXPR::$
+
+    retract(u:POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      foo::FEXPR::$
+
+    retract(u:POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed") 
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      foo::FEXPR::$
+
+    coerce(u:FEXPR):$ ==
+      coerce((u::Expression(MachineFloat))$FEXPR)$Rep
+
+    coerce(c:List FortranCode):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FortranCode):$ == coerce(c)$Rep
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+

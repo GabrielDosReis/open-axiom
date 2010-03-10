@@ -1,0 +1,111 @@
+import OrderedSet
+--import RetractableTo
+--import LyndonWord
+)abbrev domain PBWLB PoincareBirkhoffWittLyndonBasis
+++ Author: Michel Petitot (petitot@lifl.fr).
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain provides the internal representation
+++ of polynomials in non-commutative variables written
+++ over the Poincare-Birkhoff-Witt basis.
+++ See the \spadtype{XPBWPolynomial} domain constructor.
+++ See Free Lie Algebras by C. Reutenauer 
+++ (Oxford science publications). \newline Author: Michel Petitot (petitot@lifl.fr).
+
+PoincareBirkhoffWittLyndonBasis(VarSet: OrderedSet): Public == Private where
+   WORD    ==> OrderedFreeMonoid(VarSet)
+   LWORD   ==> LyndonWord(VarSet)
+   LWORDS  ==> List(LWORD)
+   PI      ==> PositiveInteger
+   NNI     ==> NonNegativeInteger
+   EX      ==> OutputForm
+
+   Public == Join(OrderedSet, RetractableTo LWORD) with
+      1: constant -> %
+         ++ \spad{1} returns the empty list.
+      coerce       : $ -> WORD
+         ++ \spad{coerce([l1]*[l2]*...[ln])} returns the word \spad{l1*l2*...*ln},
+         ++ where \spad{[l_i]} is the backeted form of the Lyndon word \spad{l_i}.
+      coerce       : VarSet -> $
+         ++ \spad{coerce(v)} return \spad{v}
+      first        : $ -> LWORD
+         ++ \spad{first([l1]*[l2]*...[ln])} returns the Lyndon word \spad{l1}.
+      length       : $ -> NNI
+         ++ \spad{length([l1]*[l2]*...[ln])} returns the length of the word \spad{l1*l2*...*ln}.
+      ListOfTerms  : $ -> LWORDS
+         ++ \spad{ListOfTerms([l1]*[l2]*...[ln])} returns the list of words \spad{l1, l2, .... ln}.
+      rest         : $ -> $
+         ++ \spad{rest([l1]*[l2]*...[ln])} returns the list \spad{l2, .... ln}.
+      retractable? : $ -> Boolean
+         ++ \spad{retractable?([l1]*[l2]*...[ln])} returns true iff \spad{n}  equals \spad{1}.
+      varList      : $ -> List VarSet
+         ++ \spad{varList([l1]*[l2]*...[ln])} returns the list of
+         ++ variables in the word \spad{l1*l2*...*ln}.
+   
+   Private == add
+
+    -- Representation
+     Rep := LWORDS
+
+    -- Locales
+     recursif: ($,$) -> Boolean
+
+    -- Define
+     1 == nil
+
+     x = y == x =$Rep y
+
+     varList x ==
+        null x => nil
+        le: List VarSet := "setUnion"/ [varList$LWORD l for l in x]
+
+     first x == first(x)$Rep
+     rest x == rest(x)$Rep
+
+     coerce(v: VarSet):$ == [ v::LWORD ]
+     coerce(l: LWORD):$ == [l]
+     ListOfTerms(x:$):LWORDS == x pretend LWORDS      
+
+     coerce(x:$):WORD ==
+       null x => 1
+       x.first :: WORD *$WORD coerce(x.rest)
+
+     coerce(x:$):EX ==
+       null x => outputForm(1$Integer)$EX
+       reduce(_* ,[l :: EX for l in x])$List(EX)
+
+     retractable? x == 
+       null x => false
+       null x.rest
+
+     retract x == 
+        #x ~= 1 => error "cannot convert to Lyndon word"
+        x.first
+
+     retractIfCan x ==
+        retractable? x => x.first
+        "failed"
+      
+     length x ==
+        n: Integer := +/[ length l for l in x]
+        n::NNI
+
+     recursif(x, y) ==
+       null y => false
+       null x => true
+       x.first = y.first => recursif(rest(x), rest(y))
+       lexico(x.first, y.first)
+
+     x < y == 
+       lx: NNI := length x; ly: NNI := length y 
+       lx = ly => recursif(x,y)
+       lx < ly
+

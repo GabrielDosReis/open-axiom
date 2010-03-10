@@ -1,0 +1,48 @@
+)abbrev domain HASHTBL HashTable
+++ Author: Stephen M. Watt
+++ Date Created: 1985
+++ Date Last Updated: June 21, 1991
+++ Basic Operations: 
+++ Related Domains: Table, EqTable, StringTable
+++ Also See:
+++ AMS Classifications:
+++ Keywords: 
+++ Examples:
+++ References:
+++ Description:
+++   This domain provides access to the underlying Lisp hash tables.
+++   By varying the hashfn parameter, tables suited for different 
+++   purposes can be obtained.
+
+HashTable(Key, Entry, hashfn): Exports == Implementation where
+    Key, Entry: SetCategory
+    hashfn: String --  Union("EQ", "UEQUAL", "CVEC", "ID")
+
+    Exports ==> TableAggregate(Key, Entry) with
+                     finiteAggregate
+
+    Implementation ==> add
+        Pair ==> Record(key: Key, entry: Entry)
+        Ex   ==> OutputForm
+        failMsg := GENSYM()$Lisp
+
+        t1 = t2              == EQ(t1, t2)$Lisp
+        keys t               == HKEYS(t)$Lisp
+        # t                  == HCOUNT(t)$Lisp
+        setelt(t, k, e)      == HPUT(t,k,e)$Lisp
+        remove_!(k:Key, t:%) ==
+          r := HGET(t,k,failMsg)$Lisp
+          not EQ(r,failMsg)$Lisp =>
+            HREM(t, k)$Lisp
+            r pretend Entry
+          "failed"
+
+        empty() ==
+            MAKE_-HASHTABLE(INTERN(hashfn)$Lisp,
+                            INTERN("STRONG")$Lisp)$Lisp
+
+        search(k:Key, t:%)  ==
+            r := HGET(t, k, failMsg)$Lisp
+            not EQ(r, failMsg)$Lisp => r pretend Entry
+            "failed"
+

@@ -1,0 +1,20 @@
+)abbrev category LINEXP LinearlyExplicitRingOver
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ An extension ring with an explicit linear dependence test.
+LinearlyExplicitRingOver(R:Ring): Category == Ring with
+  reducedSystem: Matrix % -> Matrix R
+    ++ reducedSystem(A) returns a matrix B such that \spad{A x = 0} and \spad{B x = 0}
+    ++ have the same solutions in R.
+  reducedSystem: (Matrix %,Vector %) -> Record(mat:Matrix R,vec:Vector R)
+    ++ reducedSystem(A, v) returns a matrix B and a vector w such that
+    ++ \spad{A x = v} and \spad{B x = w} have the same solutions in R.
+

@@ -1,0 +1,10 @@
+)abbrev category UTYPE UnionType
+++ Author: Gabriel Dos Reis
+++ Date Created: December 17, 2007
+++ Date Last Modified: December 17, 2007
+++ Description: The category of domains that act like unions.
+++ UnionType, like Type or Category, acts mostly as a take that
+++ communicates `union-like' intended semantics to the compiler.
+++ A domain D that satifies UnionType should provide definitions
+++ for `case' operators, with corresponding `autoCoerce' operators.
+UnionType(): Category == with nil

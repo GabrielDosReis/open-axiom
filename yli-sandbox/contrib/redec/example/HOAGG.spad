@@ -1,0 +1,82 @@
+import Boolean
+import OutputForm
+import SetCategory
+import Aggregate
+import CoercibleTo OutputForm
+import Evalable
+)abbrev category HOAGG HomogeneousAggregate
+++ Author: Michael Monagan; revised by Manuel Bronstein and Richard Jenks
+++ Date Created: August 87 through August 88
+++ Date Last Updated: April 1991, May 1995
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ A homogeneous aggregate is an aggregate of elements all of the
+++ same type.
+++ In the current system, all aggregates are homogeneous.
+++ Two attributes characterize classes of aggregates.
+++ Aggregates from domains with attribute \spadatt{finiteAggregate}
+++ have a finite number of members.
+++ Those with attribute \spadatt{shallowlyMutable} allow an element
+++ to be modified or updated without changing its overall value.
+HomogeneousAggregate(S:Type): Category == Aggregate with
+   if S has CoercibleTo(OutputForm) then CoercibleTo(OutputForm)
+   if S has SetCategory then SetCategory
+   if S has SetCategory then
+      if S has Evalable S then Evalable S
+   map     : (S->S,%) -> %
+     ++ map(f,u) returns a copy of u with each element x replaced by f(x).
+     ++ For collections, \axiom{map(f,u) = [f(x) for x in u]}.
+   if % has shallowlyMutable then
+     map_!: (S->S,%) -> %
+        ++ map!(f,u) destructively replaces each element x of u by \axiom{f(x)}.
+   if % has finiteAggregate then
+      any?: (S->Boolean,%) -> Boolean
+        ++ any?(p,u) tests if \axiom{p(x)} is true for any element x of u.
+        ++ Note: for collections,
+        ++ \axiom{any?(p,u) = reduce(or,map(f,u),false,true)}.
+      every?: (S->Boolean,%) -> Boolean
+        ++ every?(f,u) tests if p(x) is true for all elements x of u.
+        ++ Note: for collections,
+        ++ \axiom{every?(p,u) = reduce(and,map(f,u),true,false)}.
+      count: (S->Boolean,%) -> NonNegativeInteger
+        ++ count(p,u) returns the number of elements x in u
+        ++ such that \axiom{p(x)} is true. For collections,
+        ++ \axiom{count(p,u) = reduce(+,[1 for x in u | p(x)],0)}.
+      parts: % -> List S
+        ++ parts(u) returns a list of the consecutive elements of u.
+        ++ For collections, \axiom{parts([x,y,...,z]) = (x,y,...,z)}.
+      members: % -> List S
+        ++ members(u) returns a list of the consecutive elements of u.
+        ++ For collections, \axiom{parts([x,y,...,z]) = (x,y,...,z)}.
+      if S has SetCategory then
+        count: (S,%) -> NonNegativeInteger
+          ++ count(x,u) returns the number of occurrences of x in u.
+          ++ For collections, \axiom{count(x,u) = reduce(+,[x=y for y in u],0)}.
+        member?: (S,%) -> Boolean
+          ++ member?(x,u) tests if x is a member of u.
+          ++ For collections,
+          ++ \axiom{member?(x,u) = reduce(or,[x=y for y in u],false)}.
+  add
+   if S has Evalable S then
+     eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
+   if % has finiteAggregate then
+     #c                   == # parts c
+     any?(f, c)           == _or/[f x for x in parts c]
+     every?(f, c)         == _and/[f x for x in parts c]
+     count(f:S -> Boolean, c:%) == _+/[1 for x in parts c | f x]
+     members x            == parts x
+     if S has SetCategory then
+       count(s:S, x:%) == count(s = #1, x)
+       member?(e, c)   == any?(e = #1,c)
+       x = y ==
+          size?(x, #y) and _and/[a = b for a in parts x for b in parts y]
+     if S has CoercibleTo(OutputForm) then
+       coerce(x:%):OutputForm ==
+         bracket
+            commaSeparate [a::OutputForm for a in parts x]$List(OutputForm)
+

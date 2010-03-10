@@ -1,0 +1,354 @@
+)abbrev package RSETGCD RegularTriangularSetGcdPackage
+++ Author: Marc Moreno Maza (marc@nag.co.uk)
+++ Date Created: 08/30/1998
+++ Date Last Updated: 12/15/1998
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: 
+++ An internal package for computing gcds and resultants of univariate
+++ polynomials with coefficients in a tower of simple extensions of a field.\newline
+++ References :
+++  [1] M. MORENO MAZA and R. RIOBOO "Computations of gcd over
+++      algebraic towers of simple extensions" In proceedings of AAECC11
+++      Paris, 1995.
+++  [2] M. MORENO MAZA "Calculs de pgcd au-dessus des tours
+++      d'extensions simples et resolution des systemes d'equations
+++      algebriques" These, Universite P.etM. Curie, Paris, 1997.
+++  [3] M. MORENO MAZA "A new algorithm for computing triangular
+++      decomposition of algebraic varieties" NAG Tech. Rep. 4/98.
+++ Version: 4.
+
+RegularTriangularSetGcdPackage(R,E,V,P,TS): Exports == Implementation where
+
+  R : GcdDomain
+  E : OrderedAbelianMonoidSup
+  V : OrderedSet
+  P : RecursivePolynomialCategory(R,E,V)
+  TS : RegularTriangularSetCategory(R,E,V,P)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  S ==> String
+  LP ==> List P
+  PtoP ==> P -> P
+  PS ==> GeneralPolynomialSet(R,E,V,P)
+  PWT ==> Record(val : P, tower : TS)
+  BWT ==> Record(val : Boolean, tower : TS)
+  LpWT ==> Record(val : (List P), tower : TS)
+  Branch ==> Record(eq: List P, tower: TS, ineq: List P)
+  UBF ==> Union(Branch,"failed")
+  Split ==> List TS
+  KeyGcd ==> Record(arg1: P, arg2: P, arg3: TS, arg4: B)
+  EntryGcd ==> List PWT
+  HGcd ==> TabulatedComputationPackage(KeyGcd, EntryGcd)
+  KeyInvSet ==> Record(arg1: P, arg3: TS)
+  EntryInvSet ==> List TS
+  HInvSet ==> TabulatedComputationPackage(KeyInvSet, EntryInvSet)
+  polsetpack ==> PolynomialSetUtilitiesPackage(R,E,V,P)
+  quasicomppack ==> QuasiComponentPackage(R,E,V,P,TS)
+
+  Exports ==  with
+     startTableGcd!: (S,S,S) -> Void
+         ++ \axiom{startTableGcd!(s1,s2,s3)} 
+         ++ is an internal subroutine, exported only for developement.
+     stopTableGcd!: () -> Void
+         ++ \axiom{stopTableGcd!()} 
+         ++ is an internal subroutine, exported only for developement.
+     startTableInvSet!: (S,S,S) -> Void
+         ++ \axiom{startTableInvSet!(s1,s2,s3)} 
+         ++ is an internal subroutine, exported only for developement.
+     stopTableInvSet!: () -> Void
+         ++ \axiom{stopTableInvSet!()} is an internal subroutine,
+         ++ exported only for developement.
+     prepareSubResAlgo: (P,P,TS) -> List LpWT 
+         ++ \axiom{prepareSubResAlgo(p1,p2,ts)} 
+         ++ is an internal subroutine, exported only for developement.
+     internalLastSubResultant: (P,P,TS,B,B) -> List PWT 
+         ++ \axiom{internalLastSubResultant(p1,p2,ts,inv?,break?)}
+         ++ is an internal subroutine, exported only for developement.
+     internalLastSubResultant: (List LpWT,V,B) -> List PWT 
+         ++ \axiom{internalLastSubResultant(lpwt,v,flag)} is an internal
+         ++ subroutine, exported only for developement.
+     integralLastSubResultant: (P,P,TS) -> List PWT 
+         ++ \axiom{integralLastSubResultant(p1,p2,ts)} 
+         ++ is an internal subroutine, exported only for developement.
+     toseLastSubResultant: (P,P,TS) -> List PWT 
+         ++ \axiom{toseLastSubResultant(p1,p2,ts)} has the same specifications as
+         ++ \axiomOpFrom{lastSubResultant}{RegularTriangularSetCategory}.
+     toseInvertible?: (P,TS) -> B
+         ++ \axiom{toseInvertible?(p1,p2,ts)} has the same specifications as
+         ++ \axiomOpFrom{invertible?}{RegularTriangularSetCategory}.
+     toseInvertible?: (P,TS) -> List BWT
+         ++ \axiom{toseInvertible?(p1,p2,ts)} has the same specifications as
+         ++ \axiomOpFrom{invertible?}{RegularTriangularSetCategory}.
+     toseInvertibleSet: (P,TS) -> Split
+         ++ \axiom{toseInvertibleSet(p1,p2,ts)} has the same specifications as
+         ++ \axiomOpFrom{invertibleSet}{RegularTriangularSetCategory}.
+     toseSquareFreePart: (P,TS) -> List PWT 
+         ++ \axiom{toseSquareFreePart(p,ts)} has the same specifications as
+         ++ \axiomOpFrom{squareFreePart}{RegularTriangularSetCategory}.
+
+  Implementation == add
+
+     startTableGcd!(ok: S, ko: S, domainName: S): Void == 
+       initTable!()$HGcd
+       printInfo!(ok,ko)$HGcd
+       startStats!(domainName)$HGcd
+       void()
+
+     stopTableGcd!(): Void ==   
+       if makingStats?()$HGcd then printStats!()$HGcd
+       clearTable!()$HGcd
+
+     startTableInvSet!(ok: S, ko: S, domainName: S): Void == 
+       initTable!()$HInvSet
+       printInfo!(ok,ko)$HInvSet
+       startStats!(domainName)$HInvSet
+       void()
+
+     stopTableInvSet!(): Void ==   
+       if makingStats?()$HInvSet then printStats!()$HInvSet
+       clearTable!()$HInvSet
+
+     toseInvertible?(p:P,ts:TS): Boolean == 
+       q := primitivePart initiallyReduce(p,ts)
+       zero? q => false
+       normalized?(q,ts) => true
+       v := mvar(q)
+       not algebraic?(v,ts) => 
+         toCheck: List BWT := toseInvertible?(p,ts)@(List BWT)
+         for bwt in toCheck repeat
+           bwt.val = false => return false
+         return true
+       ts_v := select(ts,v)::P
+       ts_v_- := collectUnder(ts,v)
+       lgwt := internalLastSubResultant(ts_v,q,ts_v_-,false,true)
+       for gwt in lgwt repeat
+         g := gwt.val; 
+         (not ground? g) and (mvar(g) = v) => 
+           return false
+       true
+       
+     toseInvertible?(p:P,ts:TS): List BWT ==
+       q := primitivePart initiallyReduce(p,ts)
+       zero? q => [[false,ts]$BWT]
+       normalized?(q,ts) => [[true,ts]$BWT]
+       v := mvar(q)
+       not algebraic?(v,ts) => 
+         lbwt: List BWT := []
+         toCheck: List BWT := toseInvertible?(init(q),ts)@(List BWT)
+         for bwt in toCheck repeat
+           bwt.val => lbwt := cons(bwt,lbwt)
+           newq := removeZero(q,bwt.tower)
+           zero? newq => lbwt := cons(bwt,lbwt)
+           lbwt := concat(toseInvertible?(newq,bwt.tower)@(List BWT), lbwt)
+         return lbwt
+       ts_v := select(ts,v)::P
+       ts_v_- := collectUnder(ts,v)
+       ts_v_+ := collectUpper(ts,v)
+       lgwt := internalLastSubResultant(ts_v,q,ts_v_-,false,false)
+       lbwt: List BWT := []
+       for gwt in lgwt repeat
+         g := gwt.val; ts := gwt.tower
+         (ground? g) or (mvar(g) < v) => 
+           ts := internalAugment(ts_v,ts)
+           ts := internalAugment(members(ts_v_+),ts)
+           lbwt := cons([true, ts]$BWT,lbwt)
+         g := mainPrimitivePart g
+         ts_g := internalAugment(g,ts)
+         ts_g := internalAugment(members(ts_v_+),ts_g)
+         -- USE internalAugment with parameters ??
+         lbwt := cons([false, ts_g]$BWT,lbwt)
+         h := lazyPquo(ts_v,g)
+         (ground? h) or (mvar(h) < v) => "leave"
+         h := mainPrimitivePart h
+         ts_h := internalAugment(h,ts)
+         ts_h := internalAugment(members(ts_v_+),ts_h)
+         -- USE internalAugment with parameters ??
+         -- CAN BE OPTIMIZED if the input tower is separable
+         inv := toseInvertible?(q,ts_h)@(List BWT)
+         lbwt := concat([bwt for bwt in inv | bwt.val],lbwt)
+       sort(#1.val < #2.val,lbwt)
+
+     toseInvertibleSet(p:P,ts:TS): Split ==
+       k: KeyInvSet := [p,ts]
+       e := extractIfCan(k)$HInvSet
+       e case EntryInvSet => e::EntryInvSet
+       q := primitivePart initiallyReduce(p,ts)
+       zero? q => []
+       normalized?(q,ts) => [ts]
+       v := mvar(q)
+       toSave: Split := []
+       not algebraic?(v,ts) => 
+         toCheck: List BWT := toseInvertible?(init(q),ts)@(List BWT)
+         for bwt in toCheck repeat
+           bwt.val => toSave := cons(bwt.tower,toSave)
+           newq := removeZero(q,bwt.tower)
+           zero? newq => "leave"
+           toSave := concat(toseInvertibleSet(newq,bwt.tower), toSave)
+         toSave := removeDuplicates toSave
+         return algebraicSort(toSave)$quasicomppack
+       ts_v := select(ts,v)::P
+       ts_v_- := collectUnder(ts,v)
+       ts_v_+ := collectUpper(ts,v)
+       lgwt := internalLastSubResultant(ts_v,q,ts_v_-,false,false)
+       for gwt in lgwt repeat
+         g := gwt.val; ts := gwt.tower
+         (ground? g) or (mvar(g) < v) => 
+           ts := internalAugment(ts_v,ts)
+           ts := internalAugment(members(ts_v_+),ts)
+           toSave := cons(ts,toSave)
+         g := mainPrimitivePart g
+         h := lazyPquo(ts_v,g)
+         h := mainPrimitivePart h
+         (ground? h) or (mvar(h) < v) => "leave"
+         ts_h := internalAugment(h,ts)
+         ts_h := internalAugment(members(ts_v_+),ts_h)
+         inv := toseInvertibleSet(q,ts_h)
+         toSave := removeDuplicates concat(inv,toSave)
+       toSave := algebraicSort(toSave)$quasicomppack
+       insert!(k,toSave)$HInvSet
+       toSave
+
+     toseSquareFreePart_wip(p:P, ts: TS): List PWT ==
+     -- ASSUME p is not constant and mvar(p) > mvar(ts)
+     -- ASSUME init(p) is invertible w.r.t. ts
+     -- ASSUME p is mainly primitive
+--       one? mdeg(p) => [[p,ts]$PWT]
+       mdeg(p) = 1 => [[p,ts]$PWT]
+       v := mvar(p)$P
+       q: P := mainPrimitivePart D(p,v)
+       lgwt: List PWT := internalLastSubResultant(p,q,ts,true,false)
+       lpwt : List PWT := []
+       sfp : P
+       for gwt in lgwt repeat
+         g := gwt.val; us := gwt.tower
+         (ground? g) or (mvar(g) < v) =>
+           lpwt := cons([p,us],lpwt)
+         g := mainPrimitivePart g
+         sfp := lazyPquo(p,g)
+         sfp := mainPrimitivePart stronglyReduce(sfp,us)
+         lpwt := cons([sfp,us],lpwt)
+       lpwt
+
+     toseSquareFreePart_base(p:P, ts: TS): List PWT == [[p,ts]$PWT]
+
+     toseSquareFreePart(p:P, ts: TS): List PWT == toseSquareFreePart_wip(p,ts)
+
+     prepareSubResAlgo(p1:P,p2:P,ts:TS): List LpWT ==
+       -- ASSUME mvar(p1) = mvar(p2) > mvar(ts) and mdeg(p1) >= mdeg(p2)
+       -- ASSUME init(p1) invertible modulo ts !!!
+       toSee: List LpWT := [[[p1,p2],ts]$LpWT]
+       toSave: List LpWT := []
+       v := mvar(p1)
+       while (not empty? toSee) repeat
+         lpwt := first toSee; toSee := rest toSee
+         p1 := (lpwt.val.1)@P; p2 := (lpwt.val.2)@P
+         ts := lpwt.tower
+         lbwt := toseInvertible?(leadingCoefficient(p2,v),ts)@(List BWT)
+         for bwt in lbwt repeat
+           (bwt.val = true) and (degree(p2,v) > 0) =>
+             p3 := prem(p1, -p2)
+             s: P := init(p2)**(mdeg(p1) - mdeg(p2))::N
+             toSave := cons([[p2,p3,s],bwt.tower]$LpWT,toSave)
+           -- p2 := initiallyReduce(p2,bwt.tower)
+           newp2 := primitivePart initiallyReduce(p2,bwt.tower)
+           (bwt.val = true) =>
+             -- toSave := cons([[p2,0,1],bwt.tower]$LpWT,toSave)
+             toSave := cons([[p2,0,1],bwt.tower]$LpWT,toSave)
+           -- zero? p2 => 
+           zero? newp2 => 
+             toSave := cons([[p1,0,1],bwt.tower]$LpWT,toSave)
+           -- toSee := cons([[p1,p2],ts]$LpWT,toSee)
+           toSee := cons([[p1,newp2],bwt.tower]$LpWT,toSee)
+       toSave
+
+     integralLastSubResultant(p1:P,p2:P,ts:TS): List PWT ==
+       -- ASSUME mvar(p1) = mvar(p2) > mvar(ts) and mdeg(p1) >= mdeg(p2)
+       -- ASSUME p1 and p2 have no algebraic coefficients
+       lsr := lastSubResultant(p1, p2)
+       ground?(lsr) => [[lsr,ts]$PWT]
+       mvar(lsr) < mvar(p1) => [[lsr,ts]$PWT]
+       gi1i2 := gcd(init(p1),init(p2))
+       ex: Union(P,"failed") := (gi1i2 * lsr) exquo$P init(lsr)
+       ex case "failed" => [[lsr,ts]$PWT]
+       [[ex::P,ts]$PWT]
+            
+     internalLastSubResultant(p1:P,p2:P,ts:TS,b1:B,b2:B): List PWT ==
+       -- ASSUME mvar(p1) = mvar(p2) > mvar(ts) and mdeg(p1) >= mdeg(p2)
+       -- if b1 ASSUME init(p2) invertible w.r.t. ts
+       -- if b2 BREAK with the first non-trivial gcd 
+       k: KeyGcd := [p1,p2,ts,b2]
+       e := extractIfCan(k)$HGcd
+       e case EntryGcd => e::EntryGcd
+       toSave: List PWT 
+       empty? ts => 
+         toSave := integralLastSubResultant(p1,p2,ts)
+         insert!(k,toSave)$HGcd
+         return toSave
+       toSee: List LpWT 
+       if b1
+         then
+           p3 := prem(p1, -p2)
+           s: P := init(p2)**(mdeg(p1) - mdeg(p2))::N
+           toSee := [[[p2,p3,s],ts]$LpWT]
+         else
+           toSee := prepareSubResAlgo(p1,p2,ts)
+       toSave := internalLastSubResultant(toSee,mvar(p1),b2)
+       insert!(k,toSave)$HGcd
+       toSave
+
+     internalLastSubResultant(llpwt: List LpWT,v:V,b2:B): List PWT ==
+       toReturn: List PWT := []; toSee: List LpWT; 
+       while (not empty? llpwt) repeat
+         toSee := llpwt; llpwt := []
+         -- CONSIDER FIRST the vanishing current last subresultant
+         for lpwt in toSee repeat 
+           p1 := (lpwt.val.1)@P; p2 := (lpwt.val.2)@P; s := (lpwt.val.3)@P; ts := lpwt.tower
+           lbwt := toseInvertible?(leadingCoefficient(p2,v),ts)@(List BWT)
+           for bwt in lbwt repeat
+             bwt.val = false => 
+               toReturn := cons([p1,bwt.tower]$PWT, toReturn)
+               b2 and positive?(degree(p1,v)) => return toReturn
+             llpwt := cons([[p1,p2,s],bwt.tower]$LpWT, llpwt)
+         empty? llpwt => "leave"
+         -- CONSIDER NOW the branches where the computations continue
+         toSee := llpwt; llpwt := []
+         lpwt := first toSee; toSee := rest toSee
+         p1 := (lpwt.val.1)@P; p2 := (lpwt.val.2)@P; s := (lpwt.val.3)@P
+         delta: N := (mdeg(p1) - degree(p2,v))::N
+         p3: P := LazardQuotient2(p2, leadingCoefficient(p2,v), s, delta)
+         zero?(degree(p3,v)) =>
+           toReturn := cons([p3,lpwt.tower]$PWT, toReturn)
+           for lpwt in toSee repeat 
+             toReturn := cons([p3,lpwt.tower]$PWT, toReturn)
+         (p1, p2) := (p3, next_subResultant2(p1, p2, p3, s))
+         s := leadingCoefficient(p1,v)
+         llpwt := cons([[p1,p2,s],lpwt.tower]$LpWT, llpwt)
+         for lpwt in toSee repeat 
+           llpwt := cons([[p1,p2,s],lpwt.tower]$LpWT, llpwt)
+       toReturn
+
+     toseLastSubResultant(p1:P,p2:P,ts:TS): List PWT ==
+       ground? p1 => 
+         error"in toseLastSubResultantElseSplit$TOSEGCD  : bad #1"
+       ground? p2 => 
+         error"in toseLastSubResultantElseSplit$TOSEGCD : bad #2"
+       not (mvar(p2) = mvar(p1)) => 
+         error"in toseLastSubResultantElseSplit$TOSEGCD : bad #2"
+       algebraic?(mvar(p1),ts) =>
+         error"in toseLastSubResultantElseSplit$TOSEGCD : bad #1"
+       not initiallyReduced?(p1,ts) => 
+         error"in toseLastSubResultantElseSplit$TOSEGCD : bad #1"
+       not initiallyReduced?(p2,ts) => 
+         error"in toseLastSubResultantElseSplit$TOSEGCD : bad #2"
+       purelyTranscendental?(p1,ts) and purelyTranscendental?(p2,ts) =>
+         integralLastSubResultant(p1,p2,ts)
+       if mdeg(p1) < mdeg(p2) then 
+          (p1, p2) := (p2, p1)
+          if odd?(mdeg(p1)) and odd?(mdeg(p2)) then p2 := - p2
+       internalLastSubResultant(p1,p2,ts,false,false)
+

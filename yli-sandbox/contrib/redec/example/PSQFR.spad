@@ -1,0 +1,124 @@
+)abbrev package PSQFR PolynomialSquareFree
+++ Author:
+++ Date Created:
+++ Date Last Updated: November 1993, (P.Gianni)
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This package computes square-free decomposition of multivariate
+++ polynomials over a coefficient ring which is an arbitrary gcd domain.
+++ The requirement on the coefficient domain guarantees that the \spadfun{content} can be
+++ removed so that factors will be primitive as well as square-free.
+++ Over an infinite ring of finite characteristic,it may not be possible to
+++ guarantee that the factors are square-free.
+
+PolynomialSquareFree(VarSet:OrderedSet,E,RC:GcdDomain,P):C == T where
+  E:OrderedAbelianMonoidSup
+  P:PolynomialCategory(RC,E,VarSet)
+
+  C == with
+    squareFree : P -> Factored P
+      ++ squareFree(p) returns the square-free factorization of the
+      ++ polynomial p.  Each factor has no repeated roots, and the
+      ++ factors are pairwise relatively prime.
+
+  T == add
+    SUP    ==> SparseUnivariatePolynomial(P)
+    NNI    ==> NonNegativeInteger
+    fUnion ==> Union("nil", "sqfr", "irred", "prime")
+    FF     ==> Record(flg:fUnion, fctr:P, xpnt:Integer)
+
+    finSqFr : (P,List VarSet) -> Factored P
+    pthPower : P -> Factored P
+    pPolRoot : P -> P
+    putPth   : P -> P
+
+    chrc:=characteristic()$RC
+
+    if RC has CharacteristicNonZero then
+    -- find the p-th root of a polynomial
+      pPolRoot(f:P) : P ==
+        lvar:=variables f
+        empty? lvar => f
+        mv:=first lvar
+        uf:=univariate(f,mv)
+        uf:=divideExponents(uf,chrc)::SUP
+        uf:=map(pPolRoot,uf)
+        multivariate(uf,mv)
+
+    -- substitute variables with their p-th power
+      putPth(f:P) : P ==
+        lvar:=variables f
+        empty? lvar => f
+        mv:=first lvar
+        uf:=univariate(f,mv)
+        uf:=multiplyExponents(uf,chrc)::SUP
+        uf:=map(putPth,uf)
+        multivariate(uf,mv)
+
+    -- the polynomial is a perfect power
+      pthPower(f:P) : Factored P ==
+        proot : P := 0
+        isSq  : Boolean := false
+        if (g:=charthRoot f) case "failed" then proot:=pPolRoot(f)
+        else
+          proot := g :: P
+          isSq  := true
+        psqfr:=finSqFr(proot,variables f)
+        isSq  =>
+          makeFR((unit psqfr)**chrc,[[u.flg,u.fctr,
+           (u.xpnt)*chrc] for u in factorList psqfr])
+        makeFR((unit psqfr),[["nil",putPth u.fctr,u.xpnt]
+                             for u in factorList psqfr])
+
+    -- compute the square free decomposition, finite characteristic case
+      finSqFr(f:P,lvar:List VarSet) : Factored P ==
+         empty? lvar => pthPower(f)
+         mv:=first lvar
+         lvar:=lvar.rest
+         differentiate(f,mv)=0 => finSqFr(f,lvar)
+         uf:=univariate(f,mv)
+         cont := content uf
+         cont1:P:=1
+         uf := (uf exquo cont)::SUP
+         squf := squareFree(uf)$UnivariatePolynomialSquareFree(P,SUP)
+         pfaclist:List FF :=[]
+         for u in factorList squf repeat
+           uexp:NNI:=(u.xpnt):NNI
+           u.flg = "sqfr" =>  -- the square free factor is OK
+             pfaclist:= cons([u.flg,multivariate(u.fctr,mv),uexp],
+                              pfaclist)
+           --listfin1:= finSqFr(multivariate(u.fctr,mv),lvar)
+           listfin1:= squareFree multivariate(u.fctr,mv)
+           flistfin1:=[[uu.flg,uu.fctr,uu.xpnt*uexp]
+                        for uu in factorList listfin1]
+           cont1:=cont1*((unit listfin1)**uexp)
+           pfaclist:=append(flistfin1,pfaclist)
+         cont:=cont*cont1
+         cont ~= 1 =>
+           sqp := squareFree cont
+           pfaclist:= append (factorList sqp,pfaclist)
+           makeFR(unit(sqp)*coefficient(unit squf,0),pfaclist)
+         makeFR(coefficient(unit squf,0),pfaclist)
+
+    squareFree(p:P) ==
+       mv:=mainVariable p
+       mv case "failed" => makeFR(p,[])$Factored(P)
+       characteristic$RC ~=0 => finSqFr(p,variables p)
+       up:=univariate(p,mv)
+       cont := content up
+       up := (up exquo cont)::SUP
+       squp := squareFree(up)$UnivariatePolynomialSquareFree(P,SUP)
+       pfaclist:List FF :=
+         [[u.flg,multivariate(u.fctr,mv),u.xpnt]
+                                            for u in factorList squp]
+       cont ~= 1 =>
+         sqp := squareFree cont
+         makeFR(unit(sqp)*coefficient(unit squp,0),
+              append(factorList sqp, pfaclist))
+       makeFR(coefficient(unit squp,0),pfaclist)
+

@@ -1,0 +1,34 @@
+import Type
+import Stream
+)abbrev package STREAM3 StreamFunctions3
+++ Authors: Burge, Watt; updated by Clifton J. Williamson
+++ Date Created: July 1986
+++ Date Last Updated: 29 January 1990
+++ Keywords: stream, infinite list, infinite sequence
+StreamFunctions3(A,B,C): Exports == Implementation where
+  ++ Functions defined on streams with entries in three sets.
+  A  : Type
+  B  : Type
+  C  : Type
+  ST ==> Stream
+
+  Exports ==> with
+    map: ((A,B) -> C,ST A,ST B) -> ST C
+      ++ map(f,st1,st2) returns the stream whose elements are the
+      ++ function f applied to the corresponding elements of st1 and st2.
+      ++ Note: \spad{map(f,[x0,x1,x2,..],[y0,y1,y2,..]) = [f(x0,y0),f(x1,y1),..]}.
+
+  Implementation ==> add
+
+    mapp:((A,B) -> C,ST A,ST B) -> ST C
+    mapp(g,x,y) == delay
+      empty? x or empty? y => empty()
+      concat(g(frst x,frst y), map(g,rst x,rst y))
+
+    map(g,x,y) ==
+      explicitlyEmpty? x => empty()
+      eq?(x,rst x) => map(g(frst x,#1),y)$StreamFunctions2(B,C)
+      explicitlyEmpty? y => empty()
+      eq?(y,rst y) => map(g(#1,frst y),x)$StreamFunctions2(A,C)
+      mapp(g,x,y)
+

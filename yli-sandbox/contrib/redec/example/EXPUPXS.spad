@@ -1,0 +1,69 @@
+)abbrev domain EXPUPXS ExponentialOfUnivariatePuiseuxSeries
+++ Author: Clifton J. Williamson
+++ Date Created: 4 August 1992
+++ Date Last Updated: 27 August 1992
+++ Basic Operations:
+++ Related Domains: UnivariatePuiseuxSeries(FE,var,cen)
+++ Also See:
+++ AMS Classifications:
+++ Keywords: limit, functional expression, power series, essential singularity
+++ Examples:
+++ References:
+++ Description:
+++   ExponentialOfUnivariatePuiseuxSeries is a domain used to represent
+++   essential singularities of functions.  An object in this domain is a
+++   function of the form \spad{exp(f(x))}, where \spad{f(x)} is a Puiseux
+++   series with no terms of non-negative degree.  Objects are ordered
+++   according to order of singularity, with functions which tend more
+++   rapidly to zero or infinity considered to be larger.  Thus, if
+++   \spad{order(f(x)) < order(g(x))}, i.e. the first non-zero term of
+++   \spad{f(x)} has lower degree than the first non-zero term of \spad{g(x)},
+++   then \spad{exp(f(x)) > exp(g(x))}.  If \spad{order(f(x)) = order(g(x))},
+++   then the ordering is essentially random.  This domain is used
+++   in computing limits involving functions with essential singularities.
+ExponentialOfUnivariatePuiseuxSeries(FE,var,cen):_
+      Exports == Implementation where
+  FE  : Join(Field,OrderedSet)
+  var : Symbol
+  cen : FE
+  UPXS ==> UnivariatePuiseuxSeries(FE,var,cen)
+
+  Exports ==> Join(UnivariatePuiseuxSeriesCategory(FE),OrderedAbelianMonoid) _
+        with
+    exponential : UPXS -> %
+      ++ exponential(f(x)) returns \spad{exp(f(x))}.
+      ++ Note: the function does NOT check that \spad{f(x)} has no
+      ++ non-negative terms.
+    exponent : % -> UPXS
+      ++ exponent(exp(f(x))) returns \spad{f(x)}
+    exponentialOrder: % -> Fraction Integer
+      ++ exponentialOrder(exp(c * x **(-n) + ...)) returns \spad{-n}.
+      ++ exponentialOrder(0) returns \spad{0}.
+
+  Implementation ==> UPXS add
+
+    Rep := UPXS
+
+    exponential f == complete f
+    exponent f == f pretend UPXS
+    exponentialOrder f == order(exponent f,0)
+
+    zero? f == empty? entries complete terms f
+
+    f = g ==
+    -- we redefine equality because we know that we are dealing with
+    -- a FINITE series, so there is no danger in computing all terms
+      (entries complete terms f) = (entries complete terms g)
+
+    f < g ==
+      zero? f => not zero? g
+      zero? g => false
+      (ordf := exponentialOrder f) > (ordg := exponentialOrder g) => true
+      ordf < ordg => false
+      (fCoef := coefficient(f,ordf)) = (gCoef := coefficient(g,ordg)) =>
+        reductum(f) < reductum(g)
+      fCoef < gCoef  -- this is "random" if FE is EXPR INT
+
+    coerce(f:%):OutputForm ==
+      ("%e" :: OutputForm) ** ((coerce$Rep)(complete f)@OutputForm)
+

@@ -1,0 +1,63 @@
+)abbrev package PUSHVAR PushVariables
+++ This package \undocumented{}
+PushVariables(R,E,OV,PPR):C == T where
+   E : OrderedAbelianMonoidSup
+   OV: OrderedSet with
+        convert: % -> Symbol
+          ++ convert(x) converts x to a symbol
+        variable: Symbol -> Union(%, "failed")
+          ++ variable(s) makes an element from symbol s or fails
+   R  : Ring
+   PR ==> Polynomial R
+   PPR: PolynomialCategory(PR,E,OV)
+   SUP ==> SparseUnivariatePolynomial
+   C == with
+     pushdown : (PPR, OV) -> PPR
+        ++ pushdown(p,v) \undocumented{}
+     pushdown : (PPR, List OV) -> PPR
+        ++ pushdown(p,lv) \undocumented{}
+     pushup   : (PPR, OV) -> PPR
+        ++ pushup(p,v) \undocumented{}
+     pushup   : (PPR, List OV) -> PPR
+        ++ pushup(p,lv) \undocumented{}
+     map      : ((PR -> PPR), PPR) -> PPR
+        ++ map(f,p) \undocumented{}
+
+   T == add
+     pushdown(g:PPR,x:OV) : PPR ==
+       eval(g,x,monomial(1,convert x,1)$PR)
+
+     pushdown(g:PPR, lv:List OV) : PPR ==
+       vals:=[monomial(1,convert x,1)$PR for x in lv]
+       eval(g,lv,vals)
+
+     map(f:(PR -> PPR), p: PPR) : PPR ==
+       ground? p => f(retract p)
+       v:=mainVariable(p)::OV
+       multivariate(map(map(f,#1),univariate(p,v)),v)
+
+               ----  push back the variable  ----
+     pushupCoef(c:PR, lv:List OV): PPR ==
+       ground? c => c::PPR
+       v:=mainVariable(c)::Symbol
+       v2 := variable(v)$OV
+       uc := univariate(c,v)
+       ppr : PPR := 0
+       v2 case OV =>
+          while not zero? uc repeat
+             ppr := ppr + monomial(1,v2,degree(uc))$PPR *
+                            pushupCoef(leadingCoefficient uc, lv)
+             uc := reductum uc
+          ppr
+       while not zero? uc repeat
+          ppr := ppr + monomial(1,v,degree(uc))$PR *
+                            pushupCoef(leadingCoefficient uc, lv)
+          uc := reductum uc
+       ppr
+
+     pushup(f:PPR,x:OV) :PPR ==
+       map(pushupCoef(#1,[x]), f)
+
+     pushup(g:PPR, lv:List OV) : PPR ==
+       map(pushupCoef(#1, lv), g)
+

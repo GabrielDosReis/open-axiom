@@ -1,0 +1,33 @@
+)abbrev package PMASS PatternMatchAssertions
+++ Assertions for pattern-matching
+++ Author: Manuel Bronstein
+++ Description: Attaching assertions to symbols for pattern matching.
+++ Date Created: 21 Mar 1989
+++ Date Last Updated: 23 May 1990
+++ Keywords: pattern, matching.
+PatternMatchAssertions(): Exports == Implementation where
+  FE ==> Expression Integer
+
+  Exports ==> with
+    assert  : (Symbol, String) -> FE
+      ++ assert(x, s) makes the assertion s about x.
+    constant: Symbol -> FE
+      ++ constant(x) tells the pattern matcher that x should
+      ++ match only the symbol 'x and no other quantity.
+    optional: Symbol -> FE
+      ++ optional(x) tells the pattern matcher that x can match
+      ++ an identity (0 in a sum, 1 in a product or exponentiation).;
+    multiple: Symbol -> FE
+      ++ multiple(x) tells the pattern matcher that x should
+      ++ preferably match a multi-term quantity in a sum or product.
+      ++ For matching on lists, multiple(x) tells the pattern matcher
+      ++ that x should match a list instead of an element of a list.
+
+  Implementation ==> add
+    import FunctionSpaceAssertions(Integer, FE)
+
+    constant x   == constant(x::FE)
+    multiple x   == multiple(x::FE)
+    optional x   == optional(x::FE)
+    assert(x, s) == assert(x::FE, s)
+

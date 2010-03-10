@@ -1,0 +1,23 @@
+)abbrev domain DLIST DataList
+++ This domain provides some nice functions on lists
+DataList(S:OrderedSet) : Exports == Implementation where
+  Exports == Join(ListAggregate(S), HomotopicTo List S) with
+    datalist: List S -> %
+      ++ datalist(l) creates a datalist from l 
+    elt: (%,"unique") -> %
+      ++ \axiom{l.unique} returns \axiom{l} with duplicates removed.
+      ++ Note: \axiom{l.unique = removeDuplicates(l)}.
+    elt: (%,"sort") -> %
+      ++ \axiom{l.sort} returns \axiom{l} with elements sorted.
+      ++ Note: \axiom{l.sort = sort(l)}
+    elt: (%,"count") -> NonNegativeInteger
+      ++ \axiom{l."count"} returns the number of elements in \axiom{l}.
+  Implementation == List(S) add
+    --elt(x,"unique") == removeDuplicates(x)
+    --elt(x,"sort") == sort(x)
+    --elt(x,"count") == #x
+    coerce(x:List S) == per x
+    coerce(x:%):List S == rep x
+    coerce(x:%): OutputForm == (x :: List S) :: OutputForm
+    datalist(x:List S) == x::%
+

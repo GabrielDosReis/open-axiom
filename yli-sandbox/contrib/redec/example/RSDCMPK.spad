@@ -1,0 +1,275 @@
+)abbrev package RSDCMPK RegularSetDecompositionPackage
+++ Author: Marc Moreno Maza
+++ Date Created: 09/16/1998
+++ Date Last Updated: 12/16/1998
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: 
+++ A package providing a new algorithm for solving polynomial systems
+++ by means of regular chains. Two ways of solving are proposed:
+++ in the sense of Zariski closure (like in Kalkbrener's algorithm)
+++ or in the sense of the regular zeros (like in Wu, Wang or Lazard
+++ methods). This algorithm is valid for nay type
+++ of regular set. It does not care about the way a polynomial is
+++ added in an regular set, or how two quasi-components are compared
+++ (by an inclusion-test), or how the invertibility test is made in
+++ the tower of simple extensions associated with a regular set.
+++ These operations are realized respectively by the domain \spad{TS}
+++ and the packages \axiomType{QCMPACK}(R,E,V,P,TS) and \axiomType{RSETGCD}(R,E,V,P,TS).
+++ The same way it does not care about the way univariate polynomial
+++ gcd (with coefficients in the tower of simple extensions associated 
+++ with a regular set) are computed. The only requirement is that these
+++ gcd need to have invertible initials (normalized or not).
+++ WARNING. There is no need for a user to call diectly any operation
+++ of this package since they can be accessed by the domain \axiom{TS}.
+++ Thus, the operations of this package are not documented.\newline
+++ References :
+++  [1] M. MORENO MAZA "A new algorithm for computing triangular
+++      decomposition of algebraic varieties" NAG Tech. Rep. 4/98.
+++ Version: 5. Same as 4 but Does NOT use any unproved criteria.
+
+RegularSetDecompositionPackage(R,E,V,P,TS): Exports == Implementation where
+
+  R : GcdDomain
+  E : OrderedAbelianMonoidSup
+  V : OrderedSet
+  P : RecursivePolynomialCategory(R,E,V)
+  TS : RegularTriangularSetCategory(R,E,V,P)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  LP ==> List P
+  PS ==> GeneralPolynomialSet(R,E,V,P)
+  PWT ==> Record(val : P, tower : TS)
+  BWT ==> Record(val : Boolean, tower : TS)
+  LpWT ==> Record(val : (List P), tower : TS)
+  Wip ==> Record(done: Split, todo: List LpWT)
+  Branch ==> Record(eq: List P, tower: TS, ineq: List P)
+  UBF ==> Union(Branch,"failed")
+  Split ==> List TS
+  iprintpack ==> InternalPrintPackage()
+  polsetpack ==> PolynomialSetUtilitiesPackage(R,E,V,P)
+  quasicomppack ==> QuasiComponentPackage(R,E,V,P,TS)
+  regsetgcdpack ==> RegularTriangularSetGcdPackage(R,E,V,P,TS)
+
+  Exports ==  with
+
+     KrullNumber: (LP, Split) -> N
+     numberOfVariables: (LP, Split) -> N
+     algebraicDecompose: (P,TS,B) -> Record(done: Split, todo: List LpWT) 
+     transcendentalDecompose: (P,TS,N) -> Record(done: Split, todo: List LpWT) 
+     transcendentalDecompose: (P,TS) -> Record(done: Split, todo: List LpWT) 
+     internalDecompose: (P,TS,N,B) -> Record(done: Split, todo: List LpWT)
+     internalDecompose: (P,TS,N) -> Record(done: Split, todo: List LpWT)
+     internalDecompose: (P,TS) -> Record(done: Split, todo: List LpWT)
+     decompose: (LP, Split, B, B) -> Split
+     decompose: (LP, Split, B, B, B, B, B) -> Split
+     upDateBranches: (LP,Split,List LpWT,Wip,N) -> List LpWT
+     convert: Record(val: List P,tower: TS) -> String
+     printInfo: (List Record(val: List P,tower: TS), N) -> Void
+
+  Implementation == add
+
+     KrullNumber(lp: LP, lts: Split): N ==
+       ln: List N := [#(ts) for ts in lts]
+       n := #lp + reduce(max,ln)
+
+     numberOfVariables(lp: LP, lts: Split): N ==
+       lv: List V := variables([lp]$PS)
+       for ts in lts repeat lv := concat(variables(ts), lv)
+       # removeDuplicates(lv)
+
+     algebraicDecompose(p: P, ts: TS, clos?: B): Record(done: Split, todo: List LpWT) ==
+       ground? p =>
+         error " in algebraicDecompose$REGSET: should never happen !"
+       v := mvar(p); n := #ts
+       ts_v_- := collectUnder(ts,v)
+       ts_v_+ := collectUpper(ts,v)
+       ts_v := select(ts,v)::P
+       if mdeg(p) < mdeg(ts_v)
+         then 
+           lgwt := internalLastSubResultant(ts_v,p,ts_v_-,true,false)$regsetgcdpack
+         else
+           lgwt := internalLastSubResultant(p,ts_v,ts_v_-,true,false)$regsetgcdpack
+       lts: Split := []
+       llpwt: List LpWT := []
+       for gwt in lgwt repeat
+         g := gwt.val; us := gwt.tower
+         zero? g => 
+           error " in algebraicDecompose$REGSET: should never happen !!"
+         ground? g => "leave"
+         if mvar(g) = v then lts := concat(augment(members(ts_v_+),augment(g,us)),lts) 
+         h := leadingCoefficient(g,v)
+         b: Boolean := purelyAlgebraic?(us)
+         lsfp := squareFreeFactors(h)$polsetpack
+         lus := augment(members(ts_v_+),augment(ts_v,us)@Split)$TS
+         for f in lsfp repeat
+           ground? f => "leave"
+           b and purelyAlgebraic?(f,us) => "leave"
+           for vs in lus repeat
+              llpwt := cons([[f,p],vs]$LpWT, llpwt)
+       [lts,llpwt]
+
+     transcendentalDecompose(p: P, ts: TS,bound: N): Record(done: Split, todo: List LpWT) ==
+       lts: Split
+       if #ts < bound 
+         then
+           lts := augment(p,ts)
+         else
+           lts := []
+       llpwt: List LpWT := []
+       [lts,llpwt]
+
+     transcendentalDecompose(p: P, ts: TS): Record(done: Split, todo: List LpWT) ==
+       lts: Split:= augment(p,ts)
+       llpwt: List LpWT := []
+       [lts,llpwt]
+
+     internalDecompose(p: P, ts: TS,bound: N,clos?:B): Record(done: Split, todo: List LpWT) ==
+       clos? => internalDecompose(p,ts,bound)
+       internalDecompose(p,ts)
+
+     internalDecompose(p: P, ts: TS,bound: N): Record(done: Split, todo: List LpWT) ==
+       -- ASSUME p not constant
+       llpwt: List LpWT := []
+       lts: Split := []
+       -- EITHER mvar(p) is null
+       if (not zero? tail(p)) and (not ground? (lmp := leastMonomial(p)))
+         then
+           llpwt := cons([[mvar(p)::P],ts]$LpWT,llpwt)
+           p := (p exquo lmp)::P
+       ip := squareFreePart init(p); tp := tail p
+       p := mainPrimitivePart p
+       -- OR init(p) is null or not
+       lbwt := invertible?(ip,ts)@(List BWT)
+       for bwt in lbwt repeat
+         bwt.val =>
+           if algebraic?(mvar(p),bwt.tower) 
+             then 
+               rsl := algebraicDecompose(p,bwt.tower,true)
+             else
+               rsl := transcendentalDecompose(p,bwt.tower,bound)
+           lts := concat(rsl.done,lts)
+           llpwt := concat(rsl.todo,llpwt)
+           -- purelyAlgebraicLeadingMonomial?(ip,bwt.tower) => "leave"  -- UNPROVED CRITERIA
+           purelyAlgebraic?(ip,bwt.tower) and purelyAlgebraic?(bwt.tower) => "leave" -- SAFE
+           (not ground? ip) => 
+             zero? tp => llpwt := cons([[ip],bwt.tower]$LpWT, llpwt)
+             (not ground? tp) => llpwt := cons([[ip,tp],bwt.tower]$LpWT, llpwt)
+         riv := removeZero(ip,bwt.tower)
+         (zero? riv) =>
+           zero? tp => lts := cons(bwt.tower,lts)
+           (not ground? tp) => llpwt := cons([[tp],bwt.tower]$LpWT, llpwt)
+         llpwt := cons([[riv * mainMonomial(p) + tp],bwt.tower]$LpWT, llpwt)
+       [lts,llpwt]
+
+     internalDecompose(p: P, ts: TS): Record(done: Split, todo: List LpWT) ==
+       -- ASSUME p not constant
+       llpwt: List LpWT := []
+       lts: Split := []
+       -- EITHER mvar(p) is null
+       if (not zero? tail(p)) and (not ground? (lmp := leastMonomial(p)))
+         then
+           llpwt := cons([[mvar(p)::P],ts]$LpWT,llpwt)
+           p := (p exquo lmp)::P
+       ip := squareFreePart init(p); tp := tail p
+       p := mainPrimitivePart p
+       -- OR init(p) is null or not
+       lbwt := invertible?(ip,ts)@(List BWT)
+       for bwt in lbwt repeat
+         bwt.val =>
+           if algebraic?(mvar(p),bwt.tower) 
+             then 
+               rsl := algebraicDecompose(p,bwt.tower,false)
+             else
+               rsl := transcendentalDecompose(p,bwt.tower)
+           lts := concat(rsl.done,lts)
+           llpwt :=  concat(rsl.todo,llpwt)
+           purelyAlgebraic?(ip,bwt.tower) and purelyAlgebraic?(bwt.tower) => "leave"
+           (not ground? ip) => 
+             zero? tp => llpwt := cons([[ip],bwt.tower]$LpWT, llpwt)
+             (not ground? tp) => llpwt := cons([[ip,tp],bwt.tower]$LpWT, llpwt)
+         riv := removeZero(ip,bwt.tower)
+         (zero? riv) =>
+           zero? tp => lts := cons(bwt.tower,lts)
+           (not ground? tp) => llpwt := cons([[tp],bwt.tower]$LpWT, llpwt)
+         llpwt := cons([[riv * mainMonomial(p) + tp],bwt.tower]$LpWT, llpwt)
+       [lts,llpwt]
+
+     decompose(lp: LP, lts: Split, clos?: B, info?: B): Split ==
+       decompose(lp,lts,false,false,clos?,true,info?)
+
+     convert(lpwt: LpWT): String ==
+       ls: List String := ["<", string((#(lpwt.val))::Z), ",", string((#(lpwt.tower))::Z), ">" ]
+       concat ls
+
+     printInfo(toSee: List LpWT, n: N): Void ==
+       lpwt := first toSee
+       s: String := concat ["[", string((#toSee)::Z), " ", convert(lpwt)@String]
+       m: N := #(lpwt.val)
+       toSee := rest toSee
+       for lpwt in toSee repeat
+         m := m + #(lpwt.val)
+         s := concat [s, ",", convert(lpwt)@String]
+       s := concat [s, " -> |", string(m::Z), "|; {", string(n::Z),"}]"]
+       iprint(s)$iprintpack
+       void()
+
+     decompose(lp: LP, lts: Split, cleanW?: B, sqfr?: B, clos?: B, rem?: B, info?: B): Split ==
+       -- if cleanW? then REMOVE REDUNDANT COMPONENTS in lts
+       -- if sqfr? then SPLIT the system with SQUARE-FREE FACTORIZATION
+       -- if clos? then SOLVE in the closure sense 
+       -- if rem? then REDUCE the current p by using remainder
+       -- if info? then PRINT info
+       empty? lp => lts
+       branches: List Branch := prepareDecompose(lp,lts,cleanW?,sqfr?)$quasicomppack
+       empty? branches => []
+       toSee: List LpWT := [[br.eq,br.tower]$LpWT for br in branches]
+       toSave: Split := []
+       if clos? then bound := KrullNumber(lp,lts) else bound := numberOfVariables(lp,lts)
+       while (not empty? toSee) repeat
+         if info? then printInfo(toSee,#toSave)
+         lpwt := first toSee; toSee := rest toSee
+         lp := lpwt.val; ts := lpwt.tower
+         empty? lp => 
+           toSave := cons(ts, toSave)
+         p := first lp;  lp := rest lp
+         if rem? and (not ground? p) and (not empty? ts)  
+            then 
+              p := remainder(p,ts).polnum
+         p := removeZero(p,ts)
+         zero? p => toSee := cons([lp,ts]$LpWT, toSee)
+         ground? p => "leave"
+         rsl := internalDecompose(p,ts,bound,clos?)
+         toSee := upDateBranches(lp,toSave,toSee,rsl,bound)
+       removeSuperfluousQuasiComponents(toSave)$quasicomppack
+
+     upDateBranches(leq:LP,lts:Split,current:List LpWT,wip: Wip,n:N): List LpWT ==
+       newBranches: List LpWT := wip.todo
+       newComponents: Split := wip.done
+       branches1, branches2:  List LpWT 
+       branches1 := []; branches2  := []
+       for branch in newBranches repeat
+         us := branch.tower
+         #us > n => "leave"
+         newleq := sort(infRittWu?,concat(leq,branch.val))
+         --foo := rewriteSetWithReduction(newleq,us,initiallyReduce,initiallyReduced?)
+         --any?(ground?,foo)  => "leave"
+         branches1 := cons([newleq,us]$LpWT, branches1)
+       for us in newComponents repeat
+         #us > n => "leave"
+         subQuasiComponent?(us,lts)$quasicomppack => "leave"
+         --newleq := leq
+         --foo := rewriteSetWithReduction(newleq,us,initiallyReduce,initiallyReduced?)
+         --any?(ground?,foo)  => "leave"
+         branches2 := cons([leq,us]$LpWT, branches2)
+       empty? branches1 => 
+         empty? branches2 => current
+         concat(branches2, current)
+       branches := concat [branches2, branches1, current]
+       -- branches := concat(branches,current)
+       removeSuperfluousCases(branches)$quasicomppack
+

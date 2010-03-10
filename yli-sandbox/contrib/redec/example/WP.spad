@@ -1,0 +1,103 @@
+import Ring()
+import OrderedSet()
+import OrderedAbelianMonoidSup()
+import PolynomialCategory()
+import List()
+import NonNegativeInteger
+)abbrev domain WP WeightedPolynomials
+++ Author: James Davenport
+++ Date Created:  17 April 1992
+++ Date Last Updated: 12 July 1992
+++ Basic Functions: Ring, changeWeightLevel
+++ Related Constructors: PolynomialRing
+++ Also See: OrdinaryWeightedPolynomials
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ This domain represents truncated weighted polynomials over a general
+++ (not necessarily commutative) polynomial type. The variables must be
+++ specified, as must the weights.
+++ The representation is sparse
+++ in the sense that only non-zero terms are represented.
+
+WeightedPolynomials(R:Ring,VarSet: OrderedSet, E:OrderedAbelianMonoidSup,
+                           P:PolynomialCategory(R,E,VarSet),
+                             vl:List VarSet, wl:List NonNegativeInteger,
+                              wtlevel:NonNegativeInteger):
+       Join(Ring, HomotopicTo P) with
+         if R has CommutativeRing then Algebra(R)
+         if R has Field then "/": ($,$) -> Union($,"failed")
+                 ++ x/y division (only works if minimum weight
+                 ++ of divisor is zero, and if R is a Field)
+         changeWeightLevel: NonNegativeInteger -> Void
+                 ++ changeWeightLevel(n) changes the weight level to the new value given:
+                 ++ NB: previously calculated terms are not affected
+    ==
+  add
+   --representations
+   Rep  := PolynomialRing(P,NonNegativeInteger)
+   p:P
+   w,x1,x2:$
+   n:NonNegativeInteger
+   z:Integer
+   changeWeightLevel(n) ==
+        wtlevel:=n
+   lookupList:List Record(var:VarSet, weight:NonNegativeInteger)
+   if #vl ~= #wl then error "incompatible length lists in WeightedPolynomial"
+   lookupList: List Record(var:VarSet, weight:NonNegativeInteger) =[[v,n] for v in vl for n in wl]
+   -- local operation
+   innercoerce: (P,Integer) -> $
+   lookup:VarSet -> NonNegativeInteger
+   lookup v ==
+      l:=lookupList
+      while l ~= [] repeat
+        v = l.first.var => return l.first.weight
+        l:=l.rest
+      0
+   innercoerce(p,z) ==
+      z<0 => 0
+      zero? p => 0
+      mv:= mainVariable p
+      mv case "failed" => monomial(p,0)
+      n:=lookup(mv)
+      up:=univariate(p,mv)
+      ans:$
+      ans:=0
+      while not zero? up  repeat
+        d:=degree up
+        f:=n*d
+        lcup:=leadingCoefficient up
+        up:=up-leadingMonomial up
+        mon:=monomial(1,mv,d)
+        f<=z =>
+            tmp:= innercoerce(lcup,z-f)
+            while not zero? tmp repeat
+              ans:=ans+ monomial(mon*leadingCoefficient(tmp),degree(tmp)+f)
+              tmp:=reductum tmp
+      ans
+   coerce(p):$ == innercoerce(p,wtlevel)
+   coerce(w):P ==  "+"/[c for c in coefficients rep w]
+
+   coerce(p:$):OutputForm ==
+     --zero? p => (0$Integer)::OutputForm
+     --degree p = 0 => leadingCoefficient(p):: OutputForm
+     reduce("+",(reverse [paren(c::OutputForm) for c in coefficients(rep(p))])::(List OutputForm))
+   0 == 0$Rep
+   1 == 1$Rep
+   x1 = x2 ==
+      -- Note that we must strip out any terms greater than wtlevel
+      while degree x1 > wtlevel repeat
+            x1 := reductum x1
+      while degree x2 > wtlevel repeat
+            x2 := reductum x2
+      x1 =$Rep x2
+   x1 + x2 == x1 +$Rep x2
+   -x1 == -(x1::Rep)
+   x1 * x2 ==
+     -- Note that this is probably an extremely inefficient definition
+     w:=x1 *$Rep x2
+     while degree(w) > wtlevel repeat
+           w:=reductum w
+     w
+

@@ -1,0 +1,31 @@
+)abbrev category NAALG NonAssociativeAlgebra
+++ Author: J. Grabmeier, R. Wisbauer
+++ Date Created: 01 March 1991
+++ Date Last Updated: 11 June 1991
+++ Basic Operations: +, -, *, **
+++ Related Constructors: Algebra
+++ Also See:
+++ AMS Classifications:
+++ Keywords: nonassociative algebra
+++ Reference:
+++  R.D. Schafer: An Introduction to Nonassociative Algebras
+++  Academic Press, New York, 1966
+++ Description:
+++   NonAssociativeAlgebra is the category of non associative algebras
+++   (modules which are themselves non associative rngs).
+++   Axioms
+++      r*(a*b) = (r*a)*b = a*(r*b)
+NonAssociativeAlgebra(R:CommutativeRing): Category == _
+  Join(NonAssociativeRng, Module R) with
+    --operations
+    plenaryPower : (%,PositiveInteger) -> %
+      ++ plenaryPower(a,n) is recursively defined to be
+      ++ \spad{plenaryPower(a,n-1)*plenaryPower(a,n-1)} for \spad{n>1}
+      ++ and \spad{a} for \spad{n=1}.
+  add
+    plenaryPower(a,n) ==
+--      one? n => a
+      ( n = 1 ) => a
+      n1 : PositiveInteger := (n-1)::NonNegativeInteger::PositiveInteger
+      plenaryPower(a,n1) * plenaryPower(a,n1)
+

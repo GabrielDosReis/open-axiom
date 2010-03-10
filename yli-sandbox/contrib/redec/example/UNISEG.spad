@@ -1,0 +1,127 @@
+import Type
+import SegmentCategory
+import Segment
+)abbrev domain UNISEG UniversalSegment
+++ Author:  Robert S. Sutor
+++ Date Created: 1987
+++ Date Last Updated: June 4, 1991
+++ Basic Operations:
+++ Related Domains: Segment
+++ Also See:
+++ AMS Classifications:
+++ Keywords: equation
+++ Examples:
+++ References:
+++ Description:
+++  This domain provides segments which may be half open.
+++  That is, ranges of the form \spad{a..} or \spad{a..b}.
+
+UniversalSegment(S: Type): SegmentCategory(S) with
+    SEGMENT: S -> %
+        ++ \spad{l..} produces a half open segment,
+        ++ that is, one with no upper bound.
+    segment: S -> %
+        ++ segment(l) is an alternate way to construct the segment \spad{l..}.
+    coerce : Segment S -> %
+        ++ coerce(x) allows \spadtype{Segment} values to be used as %.
+    hasHi: % -> Boolean
+        ++ hasHi(s) tests whether the segment s has an upper bound.
+
+    if S has SetCategory then SetCategory
+
+    if S has OrderedRing then
+      SegmentExpansionCategory(S, Stream S)
+--    expand : (List %, S) -> Stream S
+--    expand : (%, S) -> Stream S
+
+  == add
+    Rec  ==> Record(low: S, high: S, incr: Integer)
+    Rec2 ==> Record(low: S, incr: Integer)
+    SEG ==> Segment S
+
+    Rep := Union(Rec2, Rec)
+    a,b : S
+    s : %
+    i: Integer
+    ls : List %
+
+    segment a == [a, 1]$Rec2 :: Rep
+    segment(a,b) == [a,b,1]$Rec :: Rep
+    BY(s,i) ==
+      s case Rec => [lo s, hi s, i]$Rec ::Rep
+      [lo s, i]$Rec2 :: Rep
+
+    lo s ==
+      s case Rec2 => (s :: Rec2).low
+      (s :: Rec).low
+
+    low s ==
+      s case Rec2 => (s :: Rec2).low
+      (s :: Rec).low
+
+    hasHi s == s case Rec
+
+    hi s ==
+      not hasHi(s) => error "hi: segment has no upper bound"
+      (s :: Rec).high
+
+    high s ==
+      not hasHi(s) => error "high: segment has no upper bound"
+      (s :: Rec).high
+
+    incr s ==
+      s case Rec2 => (s :: Rec2).incr
+      (s :: Rec).incr
+
+    SEGMENT(a) == segment a
+    SEGMENT(a,b) == segment(a,b)
+
+    coerce(sg : SEG): % == segment(lo sg, hi sg)
+
+    convert a == [a,a,1]
+
+    if S has SetCategory then
+
+       (s1:%) = (s2:%) ==
+          s1 case Rec2 =>
+             s2 case Rec2 =>
+                 s1.low = s2.low and s1.incr = s2.incr
+             false
+          s1 case Rec =>
+             s2 case Rec =>
+                 s2.low = s2.low and s1.high=s2.high and s1.incr=s2.incr
+             false
+          false
+
+       coerce(s: %): OutputForm ==
+         seg :=
+           e := (lo s)::OutputForm
+           hasHi s => SEGMENT(e, (hi s)::OutputForm)
+           SEGMENT e
+         inc := incr s
+         inc = 1 => seg
+         infix(" by "::OutputForm, seg, inc::OutputForm)
+
+    if S has OrderedRing then
+      expand(s:%)       == expand([s])
+      map(f:S->S, s:%)  == map(f, expand s)
+
+      plusInc(t: S, a: S): S == t + a
+
+      expand(ls: List %):Stream S ==
+        st:Stream S := empty()
+        null ls => st
+
+        lb:List(Segment S) := nil()
+        while not null ls and hasHi first ls repeat
+            s  := first ls
+            ls := rest ls
+            ns := BY(SEGMENT(lo s, hi s), incr s)$Segment(S)
+            lb := concat_!(lb,ns)
+        if not null ls then
+            s := first ls
+            st: Stream S := generate(#1 + incr(s)::S, lo s)
+        else
+            st: Stream S := empty()
+        concat(construct expand(lb),  st)
+

@@ -1,0 +1,46 @@
+)abbrev package DIRPROD2 DirectProductFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This package provides operations which all take as arguments
+++ direct products of elements of some type \spad{A} and functions from \spad{A} to another
+++ type B. The operations all iterate over their vector argument
+++ and either return a value of type B or a direct product over B.
+ 
+DirectProductFunctions2(dim, A, B): Exports == Implementation where
+  dim : NonNegativeInteger
+  A, B: Type
+ 
+  DA ==> DirectProduct(dim, A)
+  DB ==> DirectProduct(dim, B)
+  VA ==> Vector A
+  VB ==> Vector B
+  O2 ==> FiniteLinearAggregateFunctions2(A, VA, B, VB)
+ 
+  Exports ==> with
+    scan   : ((A, B) -> B, DA, B) -> DB
+      ++ scan(func,vec,ident) creates a new vector whose elements are
+      ++ the result of applying reduce to the binary function func,
+      ++ increasing initial subsequences of the vector vec,
+      ++ and the element ident.
+    reduce : ((A, B) -> B, DA, B) -> B
+      ++ reduce(func,vec,ident) combines the elements in vec using the
+      ++ binary function func. Argument ident is returned if the vector is empty.
+    map    : (A -> B, DA) -> DB
+      ++ map(f, v) applies the function f to every element of the vector v
+      ++ producing a new vector containing the values.
+ 
+  Implementation ==> add
+    import FiniteLinearAggregateFunctions2(A, VA, B, VB)
+ 
+    map(f, v)       == directProduct map(f, v::VA)
+    scan(f, v, b)   == directProduct scan(f, v::VA, b)
+    reduce(f, v, b) == reduce(f, v::VA, b)
+

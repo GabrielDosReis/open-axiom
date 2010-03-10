@@ -1,0 +1,329 @@
+)abbrev package MATLIN MatrixLinearAlgebraFunctions
+++ Author: Clifton J. Williamson, P.Gianni
+++ Date Created: 13 November 1989
+++ Date Last Updated: December 1992
+++ Basic Operations:
+++ Related Domains: IndexedMatrix(R,minRow,minCol), Matrix(R),
+++    RectangularMatrix(n,m,R), SquareMatrix(n,R)
+++ Also See:
+++ AMS Classifications:
+++ Keywords: matrix, canonical forms, linear algebra
+++ Examples:
+++ References:
+++ Description:
+++   \spadtype{MatrixLinearAlgebraFunctions} provides functions to compute
+++   inverses and canonical forms.
+MatrixLinearAlgebraFunctions(R,Row,Col,M):Exports == Implementation where
+  R   : CommutativeRing
+  Row : FiniteLinearAggregate R
+  Col : FiniteLinearAggregate R
+  M   : MatrixCategory(R,Row,Col)
+  I ==> Integer
+
+  Exports ==> with
+
+    determinant: M -> R
+      ++ \spad{determinant(m)} returns the determinant of the matrix m.
+      ++ an error message is returned if the matrix is not square.
+    minordet: M -> R
+      ++ \spad{minordet(m)} computes the determinant of the matrix m using
+      ++ minors. Error: if the matrix is not square.
+    elRow1!       :   (M,I,I)         ->  M
+      ++ elRow1!(m,i,j) swaps rows i and j of matrix m : elementary operation
+      ++ of first kind
+    elRow2!       :  (M,R,I,I)        ->  M
+      ++ elRow2!(m,a,i,j)  adds to row i a*row(m,j) : elementary operation of
+      ++ second kind. (i ~=j)
+    elColumn2!    :  (M,R,I,I)        ->  M
+      ++ elColumn2!(m,a,i,j)  adds to column i a*column(m,j) : elementary
+      ++ operation of second kind. (i ~=j)
+
+    if R has IntegralDomain then
+      rank: M -> NonNegativeInteger
+        ++ \spad{rank(m)} returns the rank of the matrix m.
+      nullity: M -> NonNegativeInteger
+        ++ \spad{nullity(m)} returns the mullity of the matrix m. This is
+        ++ the dimension of the null space of the matrix m.
+      nullSpace: M -> List Col
+        ++ \spad{nullSpace(m)} returns a basis for the null space of the
+        ++ matrix m.
+      fractionFreeGauss! : M -> M
+        ++ \spad{fractionFreeGauss(m)} performs the fraction
+        ++ free gaussian  elimination on the matrix m.
+      invertIfCan : M -> Union(M,"failed")
+        ++ \spad{invertIfCan(m)} returns the inverse of m over R
+      adjoint : M -> Record(adjMat:M, detMat:R)
+        ++ \spad{adjoint(m)} returns the ajoint matrix of m (i.e. the matrix
+        ++ n such that m*n = determinant(m)*id) and the detrminant of m.
+
+    if R has EuclideanDomain then
+      rowEchelon: M -> M
+        ++ \spad{rowEchelon(m)} returns the row echelon form of the matrix m.
+
+      normalizedDivide: (R, R) -> Record(quotient:R, remainder:R)
+        ++ normalizedDivide(n,d) returns a normalized quotient and
+        ++ remainder such that consistently unique representatives
+        ++ for the residue class are chosen, e.g. positive remainders
+
+    if R has Field then
+      inverse: M -> Union(M,"failed")
+        ++ \spad{inverse(m)} returns the inverse of the matrix.
+        ++ If the matrix is not invertible, "failed" is returned.
+        ++ Error: if the matrix is not square.
+
+  Implementation ==> add
+
+    rowAllZeroes?: (M,I) -> Boolean
+    rowAllZeroes?(x,i) ==
+      -- determines if the ith row of x consists only of zeroes
+      -- internal function: no check on index i
+      for j in minColIndex(x)..maxColIndex(x) repeat
+        qelt(x,i,j) ~= 0 => return false
+      true
+
+    colAllZeroes?: (M,I) -> Boolean
+    colAllZeroes?(x,j) ==
+      -- determines if the ith column of x consists only of zeroes
+      -- internal function: no check on index j
+      for i in minRowIndex(x)..maxRowIndex(x) repeat
+        qelt(x,i,j) ~= 0 => return false
+      true
+
+    minorDet:(M,I,List I,I,PrimitiveArray(Union(R,"uncomputed")))-> R
+    minorDet(x,m,l,i,v) ==
+      z := v.m
+      z case R => z
+      ans : R := 0; rl : List I := nil()
+      j := first l; l := rest l; pos := true
+      minR := minRowIndex x; minC := minColIndex x;
+      repeat
+        if qelt(x,j + minR,i + minC) ~= 0 then
+          ans :=
+            md := minorDet(x,m - 2**(j :: NonNegativeInteger),_
+                           concat_!(reverse rl,l),i + 1,v) *_
+                           qelt(x,j + minR,i + minC)
+            pos => ans + md
+            ans - md
+        null l =>
+          v.m := ans
+          return ans
+        pos := not pos; rl := cons(j,rl); j := first l; l := rest l
+
+    minordet x ==
+      (ndim := nrows x) ~= (ncols x) =>
+        error "determinant: matrix must be square"
+      -- minor expansion with (s---loads of) memory
+      n1 : I := ndim - 1
+      v : PrimitiveArray(Union(R,"uncomputed")) :=
+           new((2**ndim - 1) :: NonNegativeInteger,"uncomputed")
+      minR := minRowIndex x; maxC := maxColIndex x
+      for i in 0..n1 repeat
+        qsetelt_!(v,(2**i - 1),qelt(x,i + minR,maxC))
+      minorDet(x, 2**ndim - 2, [i for i in 0..n1], 0, v)
+
+       -- elementary operation of first kind: exchange two rows --
+    elRow1!(m:M,i:I,j:I) : M ==
+      vec:=row(m,i)
+      setRow!(m,i,row(m,j))
+      setRow!(m,j,vec)
+      m
+
+             -- elementary operation of second kind: add to row i--
+                         -- a*row j  (i~=j) --
+    elRow2!(m : M,a:R,i:I,j:I) : M ==
+      vec:= map(a*#1,row(m,j))
+      vec:=map("+",row(m,i),vec)
+      setRow!(m,i,vec)
+      m
+             -- elementary operation of second kind: add to column i --
+                           -- a*column j (i~=j) --
+    elColumn2!(m : M,a:R,i:I,j:I) : M ==
+      vec:= map(a*#1,column(m,j))
+      vec:=map("+",column(m,i),vec)
+      setColumn!(m,i,vec)
+      m
+
+    if R has IntegralDomain then
+      -- Fraction-Free Gaussian Elimination
+      fractionFreeGauss! x  ==
+        (ndim := nrows x) = 1 => x
+        ans := b := 1$R
+        minR := minRowIndex x; maxR := maxRowIndex x
+        minC := minColIndex x; maxC := maxColIndex x
+        i := minR
+        for j in minC..maxC repeat
+          if qelt(x,i,j) = 0 then -- candidate for pivot = 0
+            rown := minR - 1
+            for k in (i+1)..maxR repeat
+              if qelt(x,k,j) ~= 0 then
+                 rown := k -- found a pivot
+                 leave
+            if rown > minR - 1 then
+               swapRows_!(x,i,rown)
+               ans := -ans
+          (c := qelt(x,i,j)) = 0 =>  "next j" -- try next column
+          for k in (i+1)..maxR repeat
+            if qelt(x,k,j) = 0 then
+              for l in (j+1)..maxC repeat
+                qsetelt_!(x,k,l,(c * qelt(x,k,l) exquo b) :: R)
+            else
+              pv := qelt(x,k,j)
+              qsetelt_!(x,k,j,0)
+              for l in (j+1)..maxC repeat
+                val := c * qelt(x,k,l) - pv * qelt(x,i,l)
+                qsetelt_!(x,k,l,(val exquo b) :: R)
+          b := c
+          (i := i+1)>maxR => leave
+        if ans=-1 then
+          lasti := i-1
+          for j in 1..maxC repeat x(lasti, j) := -x(lasti,j)
+        x
+
+      --
+      lastStep(x:M)  : M ==
+        ndim := nrows x
+        minR := minRowIndex x; maxR := maxRowIndex x
+        minC := minColIndex x; maxC := minC+ndim -1
+        exCol:=maxColIndex x
+        det:=x(maxR,maxC)
+        maxR1:=maxR-1
+        maxC1:=maxC+1
+        minC1:=minC+1
+        iRow:=maxR
+        iCol:=maxC-1
+        for i in maxR1..1 by -1 repeat
+          for j in maxC1..exCol repeat
+            ss:=+/[x(i,iCol+k)*x(i+k,j) for k in 1..(maxR-i)]
+            x(i,j) := _exquo((det * x(i,j) - ss),x(i,iCol))::R
+          iCol:=iCol-1
+        subMatrix(x,minR,maxR,maxC1,exCol)
+
+      invertIfCan(y) ==
+        (nr:=nrows y) ~= (ncols y) =>
+            error "invertIfCan: matrix must be square"
+        adjRec := adjoint y
+        (den:=recip(adjRec.detMat)) case "failed" => "failed"
+        den::R * adjRec.adjMat
+
+      adjoint(y) ==
+        (nr:=nrows y) ~= (ncols y) => error "adjoint: matrix must be square"
+        maxR := maxRowIndex y
+        maxC := maxColIndex y
+        x := horizConcat(copy y,scalarMatrix(nr,1$R))
+        ffr:= fractionFreeGauss!(x)
+        det:=ffr(maxR,maxC)
+        [lastStep(ffr),det]
+
+
+    if R has Field then
+
+      VR      ==> Vector R
+      IMATLIN ==> InnerMatrixLinearAlgebraFunctions(R,Row,Col,M)
+      MMATLIN ==> InnerMatrixLinearAlgebraFunctions(R,VR,VR,Matrix R)
+      FLA2    ==> FiniteLinearAggregateFunctions2(R, VR, R, Col)
+      MAT2    ==> MatrixCategoryFunctions2(R,Row,Col,M,R,VR,VR,Matrix R)
+
+      rowEchelon  y == rowEchelon(y)$IMATLIN
+      rank        y == rank(y)$IMATLIN
+      nullity     y == nullity(y)$IMATLIN
+      determinant y == determinant(y)$IMATLIN
+      inverse     y == inverse(y)$IMATLIN
+      if Col has shallowlyMutable then
+        nullSpace y == nullSpace(y)$IMATLIN
+      else
+        nullSpace y ==
+          [map(#1, v)$FLA2 for v in nullSpace(map(#1, y)$MAT2)$MMATLIN]
+
+    else if R has IntegralDomain then
+      QF      ==> Fraction R
+      Row2    ==> Vector QF
+      Col2    ==> Vector QF
+      M2      ==> Matrix QF
+      IMATQF  ==> InnerMatrixQuotientFieldFunctions(R,Row,Col,M,QF,Row2,Col2,M2)
+
+      nullSpace m == nullSpace(m)$IMATQF
+
+      determinant y ==
+        (nrows y) ~= (ncols y) => error "determinant: matrix must be square"
+        fm:=fractionFreeGauss!(copy y)
+        fm(maxRowIndex fm,maxColIndex fm)
+
+      rank x ==
+        y :=
+          (rk := nrows x) > (rh := ncols x) =>
+              rk := rh
+              transpose x
+          copy x
+        y := fractionFreeGauss! y
+        i := maxRowIndex y
+        while rk > 0 and rowAllZeroes?(y,i) repeat
+          i := i - 1
+          rk := (rk - 1) :: NonNegativeInteger
+        rk :: NonNegativeInteger
+
+      nullity x == (ncols x - rank x) :: NonNegativeInteger
+
+      if R has EuclideanDomain then
+
+        if R has IntegerNumberSystem then
+            normalizedDivide(n:R, d:R):Record(quotient:R, remainder:R) ==
+               qr := divide(n, d)
+               qr.remainder >= 0 => qr
+               d > 0 =>
+                  qr.remainder := qr.remainder + d
+                  qr.quotient := qr.quotient - 1
+                  qr
+               qr.remainder := qr.remainder - d
+               qr.quotient := qr.quotient + 1
+               qr
+        else
+            normalizedDivide(n:R, d:R):Record(quotient:R, remainder:R) ==
+               divide(n, d)
+
+        rowEchelon y ==
+          x := copy y
+          minR := minRowIndex x; maxR := maxRowIndex x
+          minC := minColIndex x; maxC := maxColIndex x
+          n := minR - 1
+          i := minR
+          for j in minC..maxC repeat
+            if i > maxR then leave x
+            n := minR - 1
+            xnj: R
+            for k in i..maxR repeat
+              if not zero?(xkj:=qelt(x,k,j)) and ((n = minR - 1) _
+                     or sizeLess?(xkj,xnj)) then
+                n := k
+                xnj := xkj
+            n = minR - 1 => "next j"
+            swapRows_!(x,i,n)
+            for k in (i+1)..maxR repeat
+              qelt(x,k,j) = 0 => "next k"
+              aa := extendedEuclidean(qelt(x,i,j),qelt(x,k,j))
+              (a,b,d) := (aa.coef1,aa.coef2,aa.generator)
+              b1 := (qelt(x,i,j) exquo d) :: R
+              a1 := (qelt(x,k,j) exquo d) :: R
+              -- a*b1+a1*b = 1
+              for k1 in (j+1)..maxC repeat
+                val1 := a * qelt(x,i,k1) + b * qelt(x,k,k1)
+                val2 := -a1 * qelt(x,i,k1) + b1 * qelt(x,k,k1)
+                qsetelt_!(x,i,k1,val1); qsetelt_!(x,k,k1,val2)
+              qsetelt_!(x,i,j,d); qsetelt_!(x,k,j,0)
+
+            un := unitNormal qelt(x,i,j)
+            qsetelt_!(x,i,j,un.canonical)
+            if un.associate ~= 1 then for jj in (j+1)..maxC repeat
+                qsetelt_!(x,i,jj,un.associate * qelt(x,i,jj))
+
+            xij := qelt(x,i,j)
+            for k in minR..(i-1) repeat
+              qelt(x,k,j) = 0 => "next k"
+              qr := normalizedDivide(qelt(x,k,j), xij)
+              qsetelt_!(x,k,j,qr.remainder)
+              for k1 in (j+1)..maxC repeat
+                qsetelt_!(x,k,k1,qelt(x,k,k1) - qr.quotient * qelt(x,i,k1))
+            i := i + 1
+          x
+
+    else determinant x == minordet x
+

@@ -1,0 +1,16 @@
+)abbrev domain BITS Bits
+++ Author: Stephen M. Watt
+++ Date Created:
+++ Change History:
+++ Basic Operations: And, Not, Or
+++ Related Constructors:
+++ Keywords: bits
+++ Description:  \spadtype{Bits} provides logical functions for Indexed Bits.
+
+Bits(): Exports == Implementation where
+  Exports == BitAggregate() with
+    bits: (NonNegativeInteger, Boolean) -> %
+        ++ bits(n,b) creates bits with n values of b
+  Implementation == IndexedBits(1) add
+    bits(n,b)    == new(n,b)
+

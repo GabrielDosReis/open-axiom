@@ -1,0 +1,386 @@
+)abbrev domain SREGSET SquareFreeRegularTriangularSet
+++ Author: Marc Moreno Maza
+++ Date Created: 08/25/1998
+++ Date Last Updated: 16/12/1998
+++ Basic Functions:
+++ Related Constructors:
+++ Also See: 
+++ AMS Classifications:
+++ Keywords:
+++ Description: 
+++ This domain provides an implementation of square-free regular chains.
+++ Moreover, the operation \axiomOpFrom{zeroSetSplit}{SquareFreeRegularTriangularSetCategory}
+++ is an implementation of a new algorithm for solving polynomial systems by
+++ means of regular chains.\newline
+++ References :
+++  [1] M. MORENO MAZA "A new algorithm for computing triangular
+++      decomposition of algebraic varieties" NAG Tech. Rep. 4/98.
+++   Version: 2
+
+SquareFreeRegularTriangularSet(R,E,V,P) : Exports == Implementation where
+
+  R : GcdDomain
+  E : OrderedAbelianMonoidSup
+  V : OrderedSet
+  P : RecursivePolynomialCategory(R,E,V)
+  N ==> NonNegativeInteger
+  Z ==> Integer
+  B ==> Boolean
+  LP ==> List P
+  PtoP ==> P -> P
+  PS ==> GeneralPolynomialSet(R,E,V,P)
+  PWT ==> Record(val : P, tower : $)
+  BWT ==> Record(val : Boolean, tower : $)
+  LpWT ==> Record(val : (List P), tower : $)
+  Split ==> List $
+  iprintpack ==> InternalPrintPackage()
+  polsetpack ==> PolynomialSetUtilitiesPackage(R,E,V,P)
+  quasicomppack ==> SquareFreeQuasiComponentPackage(R,E,V,P,$)
+  regsetgcdpack ==> SquareFreeRegularTriangularSetGcdPackage(R,E,V,P,$)
+  regsetdecomppack ==> SquareFreeRegularSetDecompositionPackage(R,E,V,P,$)
+
+  Exports ==  SquareFreeRegularTriangularSetCategory(R,E,V,P) with
+
+     internalAugment: (P,$,B,B,B,B,B) -> List $
+       ++ \axiom{internalAugment(p,ts,b1,b2,b3,b4,b5)}
+       ++ is an internal subroutine, exported only for developement.
+     zeroSetSplit: (LP, B, B) -> Split
+       ++ \axiom{zeroSetSplit(lp,clos?,info?)} has the same specifications as
+       ++ \axiomOpFrom{zeroSetSplit}{RegularTriangularSetCategory} 
+       ++ from \spadtype{RegularTriangularSetCategory}
+       ++ Moreover, if \axiom{clos?} then solves in the sense of the Zariski closure
+       ++ else solves in the sense of the regular zeros. If \axiom{info?} then
+       ++ do print messages during the computations.
+     zeroSetSplit: (LP, B, B, B, B) -> Split
+       ++ \axiom{zeroSetSplit(lp,b1,b2.b3,b4)} 
+       ++ is an internal subroutine, exported only for developement.
+     internalZeroSetSplit: (LP, B, B, B) -> Split
+       ++ \axiom{internalZeroSetSplit(lp,b1,b2,b3)}
+       ++ is an internal subroutine, exported only for developement.
+     pre_process: (LP, B, B) -> Record(val: LP, towers: Split)
+       ++ \axiom{pre_process(lp,b1,b2)} 
+       ++ is an internal subroutine, exported only for developement.
+
+  Implementation == add
+
+     Rep == LP
+
+     copy ts ==
+       per(copy(rep(ts))$LP)
+     empty() ==
+       per([])
+     empty?(ts:$) ==
+       empty?(rep(ts))
+     parts ts ==
+       rep(ts)
+     members ts ==
+       rep(ts)
+     map (f : PtoP, ts : $) : $ ==
+       construct(map(f,rep(ts))$LP)$$
+     map! (f : PtoP, ts : $) : $  ==
+       construct(map!(f,rep(ts))$LP)$$
+     member? (p,ts) ==
+       member?(p,rep(ts))$LP
+     unitIdealIfCan():Union($, "failed") ==
+       "failed"::Union($,"failed")
+     roughUnitIdeal? ts ==
+       false
+     coerce(ts:$) : OutputForm ==
+       lp : List(P) := reverse(rep(ts))
+       brace([p::OutputForm for p in lp]$List(OutputForm))$OutputForm
+     mvar ts ==
+       empty? ts => error "mvar$SREGSET: #1 is empty"
+       mvar(first(rep(ts)))$P
+     first ts ==
+       empty? ts => "failed"::Union(P,"failed")
+       first(rep(ts))::Union(P,"failed")
+     last ts ==
+       empty? ts => "failed"::Union(P,"failed")
+       last(rep(ts))::Union(P,"failed")
+     rest ts ==
+       empty? ts => "failed"::Union($,"failed")
+       per(rest(rep(ts)))::Union($,"failed")
+     coerce(ts:$) : (List P) ==
+       rep(ts)
+
+     collectUpper (ts,v) ==
+       empty? ts => ts
+       lp := rep(ts)
+       newlp : Rep := []
+       while (not empty? lp) and (mvar(first(lp)) > v) repeat
+         newlp := cons(first(lp),newlp)
+         lp := rest lp
+       per(reverse(newlp))
+
+     collectUnder (ts,v) ==
+       empty? ts => ts
+       lp := rep(ts)
+       while (not empty? lp) and (mvar(first(lp)) >= v) repeat
+         lp := rest lp
+       per(lp)
+
+     construct(lp:List(P)) ==
+       ts : $ := per([])
+       empty? lp => ts
+       lp := sort(infRittWu?,lp)
+       while not empty? lp repeat
+         eif := extendIfCan(ts,first(lp))
+         not (eif case $) =>
+           error"in construct : List P -> $  from SREGSET : bad #1"
+         ts := eif::$
+         lp := rest lp
+       ts
+
+     extendIfCan(ts:$,p:P) ==
+       ground? p => "failed"::Union($,"failed")       
+       empty? ts => 
+         p := squareFreePart primitivePart p
+         (per([p]))::Union($,"failed")
+       not (mvar(ts) < mvar(p)) => "failed"::Union($,"failed")
+       invertible?(init(p),ts)@Boolean => 
+         lts: Split := augment(p,ts)
+         #lts ~= 1 => "failed"::Union($,"failed")
+         (first lts)::Union($,"failed")
+       "failed"::Union($,"failed")
+
+     removeZero(p:P, ts:$): P ==
+       (ground? p) or (empty? ts) => p
+       v := mvar(p)
+       ts_v_- := collectUnder(ts,v)
+       if algebraic?(v,ts) 
+         then
+           q := lazyPrem(p,select(ts,v)::P)
+           zero? q => return q
+           zero? removeZero(q,ts_v_-) => return 0
+       empty? ts_v_- => p
+       q: P := 0
+       while positive? degree(p,v) repeat
+          q := removeZero(init(p),ts_v_-) * mainMonomial(p) + q
+          p := tail(p)
+       q + removeZero(p,ts_v_-)
+
+     internalAugment(p:P,ts:$): $ ==
+       -- ASSUME that adding p to ts DOES NOT require any split
+       ground? p => error "in internalAugment$SREGSET: ground? #1"
+       first(internalAugment(p,ts,false,false,false,false,false))
+
+     internalAugment(lp:List(P),ts:$): $ ==
+       -- ASSUME that adding p to ts DOES NOT require any split
+       empty? lp => ts
+       internalAugment(rest lp, internalAugment(first lp, ts))
+
+     internalAugment(p:P,ts:$,rem?:B,red?:B,prim?:B,sqfr?:B,extend?:B): Split ==
+       -- ASSUME p is not a constant
+       -- ASSUME mvar(p) is not algebraic w.r.t. ts
+       -- ASSUME init(p) invertible modulo ts
+       -- if rem? then REDUCE p by remainder
+       -- if prim? then REPLACE p by its main primitive part
+       -- if sqfr? then FACTORIZE SQUARE FREE p over R
+       -- if extend? DO NOT ASSUME every pol in ts_v_+ is invertible modulo ts
+       v := mvar(p)
+       ts_v_- := collectUnder(ts,v)
+       ts_v_+ := collectUpper(ts,v)
+       if rem? then p := remainder(p,ts_v_-).polnum
+       -- if rem? then p := reduceByQuasiMonic(p,ts_v_-)
+       if red? then p := removeZero(p,ts_v_-)
+       if prim? then p := mainPrimitivePart p
+       lts: Split
+       if sqfr?
+         then
+           lts: Split := []
+           lsfp := squareFreeFactors(p)$polsetpack
+           for f in lsfp repeat
+             (ground? f) or (mvar(f) < v) => "leave"
+             lpwt := squareFreePart(f,ts_v_-)
+             for pwt in lpwt repeat 
+               sfp := pwt.val; us := pwt.tower
+               lts := cons( per(cons(pwt.val, rep(pwt.tower))), lts)
+         else
+           lts: Split := [per(cons(p,rep(ts_v_-)))]
+       extend? => extend(members(ts_v_+),lts)
+       [per(concat(rep(ts_v_+),rep(us))) for us in lts]
+
+     augment(p:P,ts:$): List $ ==
+       ground? p => error "in augment$SREGSET: ground? #1"
+       algebraic?(mvar(p),ts) => error "in augment$SREGSET: bad #1"
+       -- ASSUME init(p) invertible modulo ts
+       -- DOES NOT ASSUME anything else.
+       -- THUS reduction, mainPrimitivePart and squareFree are NEEDED
+       internalAugment(p,ts,true,true,true,true,true)
+
+     extend(p:P,ts:$): List $ ==
+       ground? p => error "in extend$SREGSET: ground? #1"
+       v := mvar(p)
+       not (mvar(ts) < mvar(p)) => error "in extend$SREGSET: bad #1"
+       split: List($) := invertibleSet(init(p),ts)
+       lts: List($) := []
+       for us in split repeat
+         lts := concat(augment(p,us),lts)
+       lts
+
+     invertible?(p:P,ts:$): Boolean == 
+       stoseInvertible?(p,ts)$regsetgcdpack
+       
+     invertible?(p:P,ts:$): List BWT ==
+       stoseInvertible?_sqfreg(p,ts)$regsetgcdpack
+
+     invertibleSet(p:P,ts:$): Split ==
+       stoseInvertibleSet_sqfreg(p,ts)$regsetgcdpack
+
+     lastSubResultant(p1:P,p2:P,ts:$): List PWT ==
+       stoseLastSubResultant(p1,p2,ts)$regsetgcdpack
+
+     squareFreePart(p:P, ts: $): List PWT ==
+       stoseSquareFreePart(p,ts)$regsetgcdpack
+
+     intersect(p:P, ts: $): List($) == decompose([p], [ts], false, false)$regsetdecomppack
+
+     intersect(lp: LP, lts: List($)): List($) == decompose(lp, lts, false, false)$regsetdecomppack
+        -- SOLVE in the regular zero sense 
+        -- and DO NOT PRINT info
+
+     zeroSetSplit(lp:List(P)) == zeroSetSplit(lp,true,false)
+        -- by default SOLVE in the closure sense 
+        -- and DO NOT PRINT info
+
+     zeroSetSplit(lp:List(P), clos?: B) == zeroSetSplit(lp,clos?, false)
+
+     zeroSetSplit(lp:List(P), clos?: B, info?: B) ==
+       -- if clos? then SOLVE in the closure sense 
+       -- if info? then PRINT info
+       -- by default USE hash-tables
+       -- and PREPROCESS the input system
+       zeroSetSplit(lp,true,clos?,info?,true)
+
+     zeroSetSplit(lp:List(P),hash?:B,clos?:B,info?:B,prep?:B) == 
+       -- if hash? then USE hash-tables
+       -- if info? then PRINT information
+       -- if clos? then SOLVE in the closure sense
+       -- if prep? then PREPROCESS the input system
+       if hash? 
+         then
+           s1, s2, s3, dom1, dom2, dom3: String
+           e: String := empty()$String
+           if info? then (s1,s2,s3) := ("w","g","i") else (s1,s2,s3) := (e,e,e)
+           if info? 
+             then 
+               (dom1, dom2, dom3) := ("QCMPACK", "REGSETGCD: Gcd", "REGSETGCD: Inv Set")
+             else
+               (dom1, dom2, dom3) := (e,e,e)
+           startTable!(s1,"W",dom1)$quasicomppack
+           startTableGcd!(s2,"G",dom2)$regsetgcdpack
+           startTableInvSet!(s3,"I",dom3)$regsetgcdpack
+       lts := internalZeroSetSplit(lp,clos?,info?,prep?)
+       if hash? 
+         then
+           stopTable!()$quasicomppack
+           stopTableGcd!()$regsetgcdpack
+           stopTableInvSet!()$regsetgcdpack
+       lts
+
+     internalZeroSetSplit(lp:LP,clos?:B,info?:B,prep?:B) ==
+       -- if info? then PRINT information
+       -- if clos? then SOLVE in the closure sense
+       -- if prep? then PREPROCE the input system
+       if prep?
+         then
+           pp := pre_process(lp,clos?,info?)
+           lp := pp.val
+           lts := pp.towers
+         else
+           ts: $ := [[]]
+           lts := [ts]
+       lp := remove(zero?, lp)
+       any?(ground?, lp) => []
+       empty? lp => lts
+       empty? lts => lts
+       lp := sort(infRittWu?,lp)
+       clos? => decompose(lp,lts, clos?, info?)$regsetdecomppack
+       -- IN DIM > 0 with clos? the following is not false ...
+       for p in lp repeat
+         lts := decompose([p],lts, clos?, info?)$regsetdecomppack
+       lts
+
+     largeSystem?(lp:LP): Boolean == 
+       -- Gonnet and Gerdt and not Wu-Wang.2
+       #lp > 16 => true
+       #lp < 13 => false
+       lts: List($) := []
+       (#lp :: Z - numberOfVariables(lp,lts)$regsetdecomppack :: Z) > 3
+
+     smallSystem?(lp:LP): Boolean == 
+       -- neural, Vermeer, Liu, and not f-633 and not Hairer-2
+       #lp < 5
+
+     mediumSystem?(lp:LP): Boolean == 
+       -- f-633 and not Hairer-2
+       lts: List($) := []
+       (numberOfVariables(lp,lts)$regsetdecomppack :: Z - #lp :: Z) < 2
+
+--     lin?(p:P):Boolean == ground?(init(p)) and one?(mdeg(p))
+     lin?(p:P):Boolean == ground?(init(p)) and (mdeg(p) = 1)
+
+     pre_process(lp:LP,clos?:B,info?:B): Record(val: LP, towers: Split) ==
+       -- if info? then PRINT information
+       -- if clos? then SOLVE in the closure sense
+       ts: $ := per [[]]; 
+       lts: Split := [ts]
+       empty? lp => [lp,lts]
+       lp1: List P := []
+       lp2: List P := []
+       for p in lp repeat 
+          ground? (tail p) => lp1 := cons(p, lp1)
+          lp2 := cons(p, lp2)
+       lts: Split := decompose(lp1,[ts],clos?,info?)$regsetdecomppack
+       probablyZeroDim?(lp)$polsetpack =>
+          largeSystem?(lp) => return [lp2,lts]
+          if #lp > 7
+            then 
+              -- Butcher (8,8) + Wu-Wang.2 (13,16) 
+              lp2 := crushedSet(lp2)$polsetpack
+              lp2 := remove(zero?,lp2)
+              any?(ground?,lp2) => return [lp2, lts]
+              lp3 := [p for p in lp2 | lin?(p)]
+              lp4 := [p for p in lp2 | not lin?(p)]
+              if clos?
+                then 
+                  lts := decompose(lp4,lts, clos?, info?)$regsetdecomppack
+                else
+                  lp4 := sort(infRittWu?,lp4)
+                  for p in lp4 repeat
+                    lts := decompose([p],lts, clos?, info?)$regsetdecomppack
+              lp2 := lp3
+            else
+              lp2 := crushedSet(lp2)$polsetpack
+              lp2 := remove(zero?,lp2)
+              any?(ground?,lp2) => return [lp2, lts]
+          if clos?
+            then
+              lts := decompose(lp2,lts, clos?, info?)$regsetdecomppack
+            else
+              lp2 := sort(infRittWu?,lp2)
+              for p in lp2 repeat
+                lts := decompose([p],lts, clos?, info?)$regsetdecomppack
+          lp2 := []
+          return [lp2,lts]
+       smallSystem?(lp) => [lp2,lts]
+       mediumSystem?(lp) => [crushedSet(lp2)$polsetpack,lts]
+       lp3 := [p for p in lp2 | lin?(p)]
+       lp4 := [p for p in lp2 | not lin?(p)]
+       if clos?
+         then 
+           lts := decompose(lp4,lts, clos?, info?)$regsetdecomppack
+         else
+           lp4 := sort(infRittWu?,lp4)
+           for p in lp4 repeat
+             lts := decompose([p],lts, clos?, info?)$regsetdecomppack
+       if clos?
+         then 
+           lts := decompose(lp3,lts, clos?, info?)$regsetdecomppack
+         else
+           lp3 := sort(infRittWu?,lp3)
+           for p in lp3 repeat
+             lts := decompose([p],lts, clos?, info?)$regsetdecomppack
+       lp2 := []
+       return [lp2,lts]
+

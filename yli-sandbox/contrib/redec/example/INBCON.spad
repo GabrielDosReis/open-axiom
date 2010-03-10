@@ -1,0 +1,27 @@
+)abbrev category INBCON InputByteConduit
+++ Author: Gabriel Dos Reis
+++ Date Created: August 24, 2008
+++ Date Last Modified: December 26, 2008
+++ Description:
+++   This category describes input byte stream conduits.
+InputByteConduit(): Category == Conduit with
+    readByteIfCan!: % -> SingleInteger
+      ++ readByteIfCan!(cond) attempts to read a byte from the
+      ++ input conduit `cond'.  Returns the read byte if successful,
+      ++ otherwise return -1.
+      ++ Note: Ideally, the return value should have been of type
+      ++   Maybe Byte; but that would have implied allocating
+      ++   a cons cell for every read attempt, which is overkill.
+    readBytes!: (%,ByteBuffer) -> SingleInteger
+      ++ readBytes!(c,b) reads byte sequences from conduit `c' into
+      ++ the byte buffer `b'.  The actual number of bytes written
+      ++ is returned, and the length of `b' is set to that amount.
+  add
+    readBytes!(cond,buf) ==
+      count: NonNegativeInteger := 0
+      b : SingleInteger
+      while count < capacity buf and ((b := readByteIfCan! cond) >= 0) repeat
+        qsetelt!(buf,count,b : Byte)
+        count := count + 1
+      setLength!(buf,count)::SingleInteger
+

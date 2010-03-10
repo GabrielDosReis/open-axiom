@@ -1,0 +1,23 @@
+SpadAst(): SpadAstExports
+
+)abbrev domain RPTAST RepeatAst
+++ Author: Gabriel Dos Reis
+++ Date Created: November 10, 2007
+++ Date Last Modified: September 21, 2008
+++ Description: This domain represents the `repeat' iterator syntax.
+RepeatAst(): Public == Private where
+  Public == SpadSyntaxCategory with
+    iterators: % -> List SpadAst
+      ++ iterators(e) returns the list of iterators controlling the loop `e'.
+    body: % -> SpadAst
+      ++ body(e) returns the body of the loop `e'.
+  Private == add
+    Rep == List SpadAst
+    iterators x == 
+      s := rep x
+      s.(2..(#s - 1))
+    body x == last rep x
+    coerce(x: %): OutputForm ==
+      elt('RepeatAst::OutputForm,
+        ['iterators::OutputForm = iterators(x)::OutputForm, 
+          'body::OutputForm = body(x)::OutputForm])$OutputForm

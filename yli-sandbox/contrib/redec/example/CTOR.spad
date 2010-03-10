@@ -1,0 +1,13 @@
+)abbrev domain CTOR Constructor
+++ Author: Gabriel Dos Reis
+++ Date Create: October 07, 2008.
+++ Date Last Updated: December 17, 2008.
+++ Related Constructors: Domain, Category
+++ Basic Operations: name, kind, arity.
+++ Description:
+++   This domain provides implementations for constructors.
+Constructor(): ConstructorCategory == add
+    Rep == Identifier
+    name x == rep x
+    kind x == getConstructorKind(x)$Lisp
+    arity x == getConstructorArity(x)$Lisp

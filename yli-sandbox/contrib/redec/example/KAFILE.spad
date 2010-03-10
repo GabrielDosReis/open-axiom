@@ -1,0 +1,128 @@
+)abbrev domain KAFILE KeyedAccessFile
+++ Author: Stephen M. Watt
+++ Date Created: 1985
+++ Date Last Updated: June 4, 1991
+++ Basic Operations: 
+++ Related Domains: 
+++ Also See:
+++ AMS Classifications:
+++ Keywords: 
+++ Examples:
+++ References:
+++ Description:
+++  This domain allows a random access file to be viewed both as a table
+++  and as a file object.
+ 
+ 
+KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
+    Name  ==> FileName
+    Key   ==> String
+    Entry :   SetCategory
+ 
+    KAFcategory ==
+        Join(FileCategory(Name, Record(key: Key, entry: Entry)),
+             TableAggregate(Key, Entry)) with
+                 finiteAggregate
+                 pack_!: % -> %
+                     ++ pack!(f) reorganizes the file f on disk to recover 
+                     ++ unused space.
+ 
+    KAFcapsule == add
+ 
+        CLASS     ==> 131   -- an arbitrary no. greater than 127
+        FileState ==> SExpression
+        IOMode    ==> String
+ 
+ 
+        Cons == Record(car: SExpression, cdr: SExpression)
+        Rep  == Record(fileName:    Name,     _
+                      fileState:   FileState,   _
+                      fileIOmode:  IOMode)
+ 
+        defstream(fn: Name, mode: IOMode): FileState ==
+            mode = "input"  =>
+              not readable? fn => error ["File is not readable", fn]
+              RDEFINSTREAM(fn::String)$Lisp
+            mode = "output" =>
+              not writable? fn => error ["File is not writable", fn]
+              RDEFOUTSTREAM(fn::String)$Lisp
+            error ["IO mode must be input or output", mode]
+ 
+        ---- From Set ----
+        f1 = f2 ==
+            f1.fileName = f2.fileName
+        coerce(f: %): OutputForm ==
+            f.fileName::OutputForm
+ 
+        ---- From FileCategory ----
+        open fname ==
+            open(fname, "either")
+        open(fname, mode) ==
+            mode = "either" =>
+                exists? fname =>
+                    open(fname, "input")
+                writable? fname =>
+                    reopen_!(open(fname, "output"), "input")
+                error "File does not exist and cannot be created"
+            [fname, defstream(fname, mode), mode]
+        reopen_!(f, mode) ==
+            close_! f
+            if mode ~= "closed" then
+                f.fileState := defstream(f.fileName, mode)
+                f.fileIOmode  := mode
+            f
+        close_! f  ==
+            if f.fileIOmode ~= "closed" then
+                RSHUT(f.fileState)$Lisp
+                f.fileIOmode  := "closed"
+            f
+        read_! f ==
+            f.fileIOmode ~= "input" => error ["File not in read state",f]
+            ks: List Symbol := RKEYIDS(f.fileName)$Lisp
+            null ks => error ["Attempt to read empty file", f]
+            ix := random()$Integer rem #ks
+            k: String := PNAME(ks.ix)$Lisp
+            [k, SPADRREAD(k, f.fileState)$Lisp]
+        write_!(f, pr) ==
+            f.fileIOmode ~= "output" => error ["File not in write state",f]
+            SPADRWRITE(pr.key, pr.entry, f.fileState)$Lisp
+            pr
+        name f ==
+            f.fileName
+        iomode f ==
+            f.fileIOmode
+ 
+        ---- From TableAggregate ----
+        empty() ==
+            fn := new("", "kaf", "sdata")$Name
+            open fn
+        keys f ==
+            close_! f
+            l: List SExpression := RKEYIDS(f.fileName)$Lisp
+            [PNAME(n)$Lisp for n in l]
+        # f ==
+            # keys f
+        elt(f,k) ==
+            reopen_!(f, "input")
+            SPADRREAD(k, f.fileState)$Lisp
+        setelt(f,k,e) ==
+            -- Leaves f in a safe, closed state.  For speed use "write".
+            reopen_!(f, "output")
+            UNWIND_-PROTECT(write_!(f, [k,e]), close_! f)$Lisp
+            close_! f
+            e
+        search(k,f) ==
+            not member?(k, keys f) => "failed"   -- can't trap RREAD error
+            reopen_!(f, "input")
+            (SPADRREAD(k, f.fileState)$Lisp)@Entry
+        remove_!(k:String,f:%)  ==
+            result := search(k,f)
+            result case "failed" => result
+            close_! f
+            RDROPITEMS(NAMESTRING(f.fileName)$Lisp, LIST(k)$Lisp)$Lisp
+            result
+        pack_! f ==
+            close_! f
+            RPACKFILE(f.fileName)$Lisp
+            f
+

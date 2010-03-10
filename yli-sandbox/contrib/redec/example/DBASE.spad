@@ -1,0 +1,45 @@
+)abbrev domain DBASE Database
+++ This domain implements a simple view of a database whose fields are 
+++ indexed by symbols
+Database(S): Exports == Implementation where
+  S: OrderedSet with 
+    elt: (%,Symbol) -> String
+        ++ elt(x,s) returns an element of x indexed by s
+    display: % -> Void
+        ++ display(x) displays x in some form
+    fullDisplay: % -> Void
+        ++ fullDisplay(x) displays x in detail
+  Exports == Join(SetCategory, CoercibleFrom List S) with
+    elt: (%,QueryEquation) -> %
+      ++ elt(db,q) returns all elements of \axiom{db} which satisfy \axiom{q}.
+    elt: (%,Symbol) -> DataList String
+      ++ elt(db,s) returns the \axiom{s} field of each element of \axiom{db}.
+    _+: (%,%) -> %
+      ++ db1+db2 returns the merge of databases db1 and db2
+    _-: (%,%) -> %
+      ++ db1-db2 returns the difference of databases db1 and db2 i.e. consisting
+      ++ of elements in db1 but not in db2 
+    display: % -> Void
+      ++ display(db) prints a summary line for each entry in \axiom{db}.
+    fullDisplay: % -> Void
+      ++ fullDisplay(db) prints full details of each entry in \axiom{db}.
+    fullDisplay: (%,PositiveInteger,PositiveInteger) -> Void
+      ++ fullDisplay(db,start,end ) prints full details of entries in the range
+      ++ \axiom{start..end} in \axiom{db}.
+  Implementation == List S add
+    s: Symbol
+    Rep := List S
+    coerce(u: List S):% == u@%
+    elt(data: %,s: Symbol) == [x.s for x in data] :: DataList(String)
+    elt(data: %,eq: QueryEquation) ==
+      field := variable eq
+      val := value eq
+      [x for x in data | stringMatches?(val,x.field)$Lisp]
+    x+y==removeDuplicates_! merge(x,y)
+    x-y==mergeDifference(copy(x::Rep),y::Rep)$MergeThing(S)
+    coerce(data): OutputForm == (#data):: OutputForm
+    display(data) ==  for x in data repeat display x
+    fullDisplay(data) == for x in data repeat fullDisplay x
+    fullDisplay(data,n,m) == for x in data for i in 1..m repeat
+      if i >= n then fullDisplay x
+

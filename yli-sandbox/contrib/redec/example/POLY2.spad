@@ -1,0 +1,24 @@
+)abbrev package POLY2 PolynomialFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This package takes a mapping between coefficient rings, and lifts
+++ it to a mapping between polynomials over those rings.
+
+PolynomialFunctions2(R:Ring, S:Ring): with
+  map: (R -> S, Polynomial R) -> Polynomial S
+    ++ map(f, p) produces a new polynomial as a result of applying
+    ++ the function f to every coefficient of the polynomial p.
+ == add
+  map(f, p) == map(#1::Polynomial(S), f(#1)::Polynomial(S),
+                   p)$PolynomialCategoryLifting(IndexedExponents Symbol,
+                                   Symbol, R, Polynomial R, Polynomial S)
+
+

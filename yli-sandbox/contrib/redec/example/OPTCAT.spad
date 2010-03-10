@@ -1,0 +1,50 @@
+)abbrev category OPTCAT NumericalOptimizationCategory
+++ Author: Brian Dupee
+++ Date Created: January 1996
+++ Date Last Updated: March 1996
+++ Description:
+++ \axiomType{NumericalOptimizationCategory} is the \axiom{category} for 
+++ describing the set of Numerical Optimization \axiom{domains} with
+++ \axiomFun{measure} and \axiomFun{optimize}.
+
+LDFH   ==> List DoubleFloat
+LEDFH  ==> List Expression DoubleFloat
+LSAH   ==> Record(lfn:LEDFH, init:LDFH)
+EDFH   ==> Expression DoubleFloat
+LOCDFH ==> List OrderedCompletion DoubleFloat
+NOAH   ==> Record(fn:EDFH, init:LDFH, lb:LOCDFH, cf:LEDFH, ub:LOCDFH)
+NumericalOptimizationCategory(): Category == SetCategory with
+  measure:(RoutinesTable,NOAH)->Record(measure:Float,explanations:String)
+    ++ measure(R,args) calculates an estimate of the ability of a particular
+    ++ method to solve an optimization problem.  
+    ++
+    ++ This method may be either a specific NAG routine or a strategy (such
+    ++ as transforming the function from one which is difficult to one which
+    ++ is easier to solve).
+    ++
+    ++ It will call whichever agents are needed to perform analysis on the
+    ++ problem in order to calculate the measure. There is a parameter,
+    ++ labelled \axiom{sofar}, which would contain the best compatibility
+    ++ found so far.
+
+  measure:(RoutinesTable,LSAH)->Record(measure:Float,explanations:String)
+    ++ measure(R,args) calculates an estimate of the ability of a particular
+    ++ method to solve an optimization problem.  
+    ++
+    ++ This method may be either a specific NAG routine or a strategy (such
+    ++ as transforming the function from one which is difficult to one which
+    ++ is easier to solve).
+    ++
+    ++ It will call whichever agents are needed to perform analysis on the
+    ++ problem in order to calculate the measure. There is a parameter,
+    ++ labelled \axiom{sofar}, which would contain the best compatibility
+    ++ found so far.
+
+  numericalOptimization:LSAH -> Result
+    ++ numericalOptimization(args) performs the optimization of the
+    ++ function given the strategy or method returned by \axiomFun{measure}.
+
+  numericalOptimization:NOAH -> Result
+    ++ numericalOptimization(args) performs the optimization of the
+    ++ function given the strategy or method returned by \axiomFun{measure}.
+

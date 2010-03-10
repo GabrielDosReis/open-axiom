@@ -1,0 +1,142 @@
+)abbrev domain ASP49 Asp49
+++ Author: Mike Dewar, Grant Keady and Godfrey Nolan
+++ Date Created: Mar 1993
+++ Date Last Updated: 23 March 1994
+++                     6 October 1994
+++ Related Constructors: FortranScalarFunctionCategory, FortranProgramCategory
+++ Description:
+++\spadtype{Asp49} produces Fortran for Type 49 ASPs, needed for NAG routines
+++\axiomOpFrom{e04dgf}{e04Package}, \axiomOpFrom{e04ucf}{e04Package}, for example:
+++\begin{verbatim}
+++      SUBROUTINE OBJFUN(MODE,N,X,OBJF,OBJGRD,NSTATE,IUSER,USER)
+++      DOUBLE PRECISION X(N),OBJF,OBJGRD(N),USER(*)
+++      INTEGER N,IUSER(*),MODE,NSTATE
+++      OBJF=X(4)*X(9)+((-1.0D0*X(5))+X(3))*X(8)+((-1.0D0*X(3))+X(1))*X(7)
+++     &+(-1.0D0*X(2)*X(6))
+++      OBJGRD(1)=X(7)
+++      OBJGRD(2)=-1.0D0*X(6)
+++      OBJGRD(3)=X(8)+(-1.0D0*X(7))
+++      OBJGRD(4)=X(9)
+++      OBJGRD(5)=-1.0D0*X(8)
+++      OBJGRD(6)=-1.0D0*X(2)
+++      OBJGRD(7)=(-1.0D0*X(3))+X(1)
+++      OBJGRD(8)=(-1.0D0*X(5))+X(3)
+++      OBJGRD(9)=X(4)
+++      RETURN
+++      END
+++\end{verbatim}
+
+Asp49(name): Exports == Implementation where
+  name : Symbol
+
+  FST    ==> FortranScalarType
+  UFST   ==> Union(fst:FST,void:"void")
+  FT     ==> FortranType
+  FC     ==> FortranCode
+  SYMTAB ==> SymbolTable
+  RSFC   ==> Record(localSymbols:SymbolTable,code:List(FC))
+  MFLOAT ==> MachineFloat
+  FEXPR  ==> FortranExpression([],['X],MFLOAT)
+  FRAC   ==> Fraction
+  POLY   ==> Polynomial
+  EXPR   ==> Expression
+  INT    ==> Integer
+  FLOAT  ==> Float
+  VEC    ==> Vector
+  VF2    ==> VectorFunctions2
+  S      ==> Symbol
+
+  Exports ==> FortranFunctionCategory with
+    coerce : FEXPR -> $
+      ++coerce(f) takes an object from the appropriate instantiation of
+      ++\spadtype{FortranExpression} and turns it into an ASP.
+
+  Implementation ==> add
+
+    real : UFST := ["real"::FST]$UFST
+    integer : UFST := ["integer"::FST]$UFST
+    syms : SYMTAB := empty()$SYMTAB
+    declare!(MODE,fortranInteger(),syms)$SYMTAB
+    declare!(N,fortranInteger(),syms)$SYMTAB
+    xType : FT := construct(real,[N::S],false)$FT
+    declare!(X,xType,syms)$SYMTAB
+    declare!(OBJF,fortranReal(),syms)$SYMTAB
+    declare!(OBJGRD,xType,syms)$SYMTAB
+    declare!(NSTATE,fortranInteger(),syms)$SYMTAB
+    iuType : FT := construct(integer,["*"::S],false)$FT
+    declare!(IUSER,iuType,syms)$SYMTAB
+    uType : FT := construct(real,["*"::S],false)$FT
+    declare!(USER,uType,syms)$SYMTAB
+    Rep := FortranProgram(name,["void"]$UFST,
+                          [MODE,N,X,OBJF,OBJGRD,NSTATE,IUSER,USER],syms)
+
+    fexpr2expr(u:FEXPR):EXPR MFLOAT == coerce(u)$FEXPR
+
+    localAssign(s:S,j:VEC FEXPR):FC ==
+      j' : VEC EXPR MFLOAT := map(fexpr2expr,j)$VF2(FEXPR,EXPR MFLOAT)
+      assign(s,j')$FC
+
+    coerce(u:FEXPR):$ ==
+      vars:List(S) := variables(u)
+      grd:VEC FEXPR := gradient(u,vars)$MultiVariableCalculusFunctions(_
+                                           S,FEXPR,VEC FEXPR,List(S))
+      code : List(FC) := [assign(OBJF@S,fexpr2expr u)$FC,_
+                          localAssign(OBJGRD@S,grd),_
+                          returns()$FC]
+      code::$
+
+    coerce(u:$):OutputForm == coerce(u)$Rep
+
+    coerce(c:List FC):$ == coerce(c)$Rep
+
+    coerce(r:RSFC):$ == coerce(r)$Rep
+
+    coerce(c:FC):$ == coerce(c)$Rep
+
+    outputAsFortran(u):Void ==
+      p := checkPrecision()$NAGLinkSupportPackage
+      outputAsFortran(u)$Rep
+      p => restorePrecision()$NAGLinkSupportPackage
+
+    retract(u:FRAC POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:FRAC POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:FRAC POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:EXPR FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:EXPR INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:EXPR INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:POLY FLOAT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY FLOAT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+
+    retract(u:POLY INT):$ == (retract(u)@FEXPR)::$
+    retractIfCan(u:POLY INT):Union($,"failed") ==
+      foo : Union(FEXPR,"failed")
+      foo := retractIfCan(u)$FEXPR
+      foo case "failed" => "failed"
+      (foo::FEXPR)::$
+

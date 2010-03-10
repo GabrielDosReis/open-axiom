@@ -1,0 +1,35 @@
+import CommutativeRing
+import Field
+)abbrev category LIECAT LieAlgebra
+++ Author: Michel Petitot (petitot@lifl.fr).
+++ Date Created: 91
+++ Date Last Updated: 7 Juillet 92
+++ Fix History: compilation v 2.1 le 13 dec 98
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++ The category of Lie Algebras.
+++ It is used by the following domains of non-commutative algebra:
+++ \axiomType{LiePolynomial} and 
+++ \axiomType{XPBWPolynomial}. \newline Author : Michel Petitot (petitot@lifl.fr).
+LieAlgebra(R: CommutativeRing): Category ==  Module(R) with
+  --attributes
+    NullSquare 
+          ++ \axiom{NullSquare} means that \axiom{[x,x] = 0} holds.
+    JacobiIdentity 
+          ++ \axiom{JacobiIdentity} means that \axiom{[x,[y,z]]+[y,[z,x]]+[z,[x,y]] = 0} holds.
+  --exports
+    construct:  ($,$) -> $
+          ++ \axiom{construct(x,y)} returns the Lie bracket of \axiom{x} and \axiom{y}.
+    if R has Field then 
+       "/"   :  ($,R) -> $
+         ++ \axiom{x/r} returns the division of \axiom{x} by \axiom{r}.
+
+
+  add
+    if R has Field then x / r == inv(r)$R * x
+

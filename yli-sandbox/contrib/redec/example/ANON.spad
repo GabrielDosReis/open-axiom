@@ -1,0 +1,21 @@
+)abbrev domain ANON AnonymousFunction
+++ Description:
+++ This domain implements anonymous functions
+AnonymousFunction():SetCategory with
+    parameters: % -> List Symbol
+      ++ parameters(f) returns the list of parameters bound by `f'.
+    body: % -> Syntax
+      ++ body(f) returns the body of the unnamed function `f'.
+  == add
+    import Syntax
+    coerce(x:%):OutputForm == 
+      x pretend OutputForm
+
+    parameters f ==
+      ps := CADR(f)$Lisp : Syntax
+      ps case Symbol => [ps]$List(Symbol)
+      getOperands(ps) pretend List(Symbol)
+
+    body f ==
+      CADDR(f)$Lisp : Syntax
+

@@ -1,0 +1,44 @@
+)abbrev domain DSMP DifferentialSparseMultivariatePolynomial
+++ Author:  William Sit
+++ Date Created: 19 July 1990
+++ Date Last Updated: 13 September 1991
+++ Basic Operations:DifferentialPolynomialCategory
+++ Related Constructors:
+++ See Also:
+++ AMS Classifications:12H05
+++ Keywords: differential indeterminates, ranking, differential polynomials,
+++           order, weight, leader, separant, initial, isobaric
+++ References:Kolchin, E.R. "Differential Algebra and Algebraic Groups"
+++   (Academic Press, 1973).
+++ Description:
+++   \spadtype{DifferentialSparseMultivariatePolynomial} implements
+++   an ordinary differential polynomial ring by combining a
+++   domain belonging to the category \spadtype{DifferentialVariableCategory}
+++   with the domain \spadtype{SparseMultivariatePolynomial}.
+++
+
+DifferentialSparseMultivariatePolynomial(R, S, V):
+     Exports == Implementation where
+  R: Ring
+  S: OrderedSet
+  V: DifferentialVariableCategory S
+  E   ==> IndexedExponents(V)
+  PC  ==> PolynomialCategory(R,IndexedExponents(V),V)
+  PCL ==> PolynomialCategoryLifting
+  P   ==> SparseMultivariatePolynomial(R, V)
+  SUP ==> SparseUnivariatePolynomial
+  SMP ==> SparseMultivariatePolynomial(R, S)
+
+  Exports ==> Join(DifferentialPolynomialCategory(R,S,V,E),
+                   RetractableTo SMP)
+
+  Implementation ==> P add
+    retractIfCan(p:$):Union(SMP, "failed") ==
+      zero? order p =>
+        map(retract(#1)@S :: SMP, #1::SMP, p)$PCL(
+                                  IndexedExponents V, V, R, $, SMP)
+      "failed"
+
+    coerce(p:SMP):$ ==
+      map(#1::V::$, #1::$, p)$PCL(IndexedExponents S, S, R, SMP, $)
+

@@ -1,0 +1,19 @@
+)abbrev package COMPLEX2 ComplexFunctions2
+++ Author:
+++ Date Created:
+++ Date Last Updated:
+++ Basic Functions:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   This package extends maps from underlying rings to maps between
+++   complex over those rings.
+ComplexFunctions2(R:CommutativeRing, S:CommutativeRing): with
+    map:     (R -> S, Complex R) -> Complex S
+      ++ map(f,u) maps f onto real and imaginary parts of u.
+ == add
+    map(fn, gr) == complex(fn real gr, fn imag gr)
+

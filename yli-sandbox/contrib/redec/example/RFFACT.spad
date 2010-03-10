@@ -1,0 +1,40 @@
+import UnivariatePolynomialCategory
+import Factored
+import Polynomial
+import Integer
+)abbrev package RFFACT RationalFunctionFactor
+++ Factorisation in UP FRAC POLY INT
+++ Author: Patrizia Gianni
+++ Date Created: ???
+++ Date Last Updated: ???
+++ Description:
+++ Factorization of univariate polynomials with coefficients which
+++ are rational functions with integer coefficients.
+
+RationalFunctionFactor(UP): Exports == Implementation where
+  UP: UnivariatePolynomialCategory Fraction Polynomial Integer
+ 
+  SE ==> Symbol
+  P  ==> Polynomial Integer
+  RF ==> Fraction P
+  UPCF2 ==> UnivariatePolynomialCategoryFunctions2
+ 
+  Exports ==> with
+    factor: UP -> Factored UP
+      ++ factor(p) returns a prime factorisation of p.
+ 
+  Implementation ==> add
+    likuniv: (P, SE, P) -> UP
+ 
+    dummy := new()$SE
+ 
+    likuniv(p, x, d) ==
+      map(#1 / d, univariate(p, x))$UPCF2(P,SparseUnivariatePolynomial P,
+                                          RF, UP)
+ 
+    factor p ==
+      d  := denom(q := elt(p,dummy::P :: RF))
+      map(likuniv(#1,dummy,d),
+          factor(numer q)$MultivariateFactorize(SE,
+               IndexedExponents SE,Integer,P))$FactoredFunctions2(P, UP)
+
