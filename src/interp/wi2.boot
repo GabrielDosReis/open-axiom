@@ -583,7 +583,7 @@ compElt(origForm,m,E) ==
     [sig,[pred,val]]:= modemap
     #sig~=2 and val isnt ["CONST",:.] => nil
 --+
-    val := genDeltaEntry [opOf anOp,:modemap]
+    val := genDeltaEntry([opOf anOp,:modemap],E)
     x := markTran(origForm,[val],sig,[E])
     [x,second sig,E] --implies fn calls used to access constants
   compForm(origForm,m,E)
@@ -630,7 +630,7 @@ compApplyModemap(form,modemap,$e) ==
  
 --$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
   f is [op1,d,.] and op1 in '(ELT CONST Subsumed) =>
-    [genDeltaEntry [op,:modemap],lt',$bindings]
+    [genDeltaEntry([op,:modemap],$e),lt',$bindings]
   markImport mc
   [f,lt',$bindings]
  
@@ -693,7 +693,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
 --   ['XLAM,'ignore,MKQ SPADCALL fn]
   getFunctionReplacement compileTimeBindingOf first fn
  
-genDeltaEntry opMmPair ==
+genDeltaEntry(opMmPair,e) ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
   [.,[odc,:.],.] := opMmPair

@@ -1,3 +1,17 @@
+2010-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (genDeltaEntry): Take a second, environment
+	argument.  Pass to compOrCroak.
+	* interp/compiler.boot (compElt): Adjust call to genDeltaEntry.
+	(compCase1): Likewise.
+	(coerceByModemap): Likewise.
+	(autoCoerceByModemap): Likewise.
+	(compCat): Likewise.
+	(compViableModemap): Take an additional environment argument.
+	Pass it to genDeltaEntry.
+	(compApplyModemap): Adjust call to compViableModemap.
+	(compResolveCall): Likewise.
+
 2010-03-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (needToQuoteFlags?): New.

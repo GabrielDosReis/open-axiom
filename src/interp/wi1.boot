@@ -933,7 +933,7 @@ coerceByModemap([x,m,e],m') ==
         s] and (modeEqual(t,m') or isSubset(t,m',e))
            and (modeEqual(s,m) or isSubset(m,s,e))] or return nil
   mm:=first u  -- patch for non-trival conditons
-  fn := genDeltaEntry ['coerce,:mm]
+  fn := genDeltaEntry(['coerce,:mm],e)
   T := [["call",fn,x],m',e]
   markCoerceByModemap(x,m,m',markCallCoerce(x,m',T),nil)
  

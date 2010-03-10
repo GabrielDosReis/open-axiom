@@ -188,7 +188,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
     fun := first fun
   getFunctionReplacement compileTimeBindingOf fun
 
-genDeltaEntry opMmPair ==
+genDeltaEntry(opMmPair,e) ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
   [op,[dc,:sig],[.,cform:=[eltOrConst,.,nsig]]] := opMmPair
@@ -212,7 +212,7 @@ genDeltaEntry opMmPair ==
       $NRTdeltaList:= [["%domain",NRTaddInner dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
-      compEntry:= (compOrCroak(odc,$EmptyMode,$e)).expr
+      compEntry:= (compOrCroak(odc,$EmptyMode,e)).expr
       RPLACA(saveNRTdeltaListComp,compEntry)
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
