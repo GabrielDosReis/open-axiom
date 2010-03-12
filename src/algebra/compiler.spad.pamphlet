@@ -23,12 +23,53 @@
 ++   This domain provides representations for the intermediate
 ++   form data structure used by the Spad elaborator.
 InternalRepresentationForm(): Public == Private where
-  Public == CoercibleTo OutputForm
+  Public == Join(CoercibleTo OutputForm, HomotopicTo Syntax)
   Private == add
+    coerce(x: %): Syntax == x : Syntax
+    coerce(x: Syntax): % == x : %
     coerce(x: %): OutputForm ==
       (x : Syntax)::OutputForm
+
 @
 
+<<domain ITFORM InternalTypeForm>>=
+)abbrev domain ITFORM InternalTypeForm
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This domain provides representations for internal type form.
+InternalTypeForm() == InternalRepresentationForm
+
+@
+
+\section{Elaboration domain}
+<<domain ELABOR Elaboration>>=
+)abbrev domain ELABOR Elaboration
+Elaboration(): Public == Private where
+  Public == CoercibleTo OutputForm with
+    elaboration: (InternalRepresentationForm, InternalTypeForm, Environment) -> %
+      ++ \spad{elaboration(ir,ty,env)} construct an elaboration object for
+      ++ for the internal representation form \spad{ir}, with type \spad{ty},
+      ++ and environment \spad{env}.
+    irForm: % -> InternalRepresentationForm
+      ++ \spad{irForm(x)} returns the internal representation form of
+      ++ the elaboration \spad{x}.
+    typeForm: % -> InternalTypeForm
+      ++ \spad{typeForm(x)} returns the type form of the elaboration \spad{x}.
+    environment: % -> Environment
+      ++ \spad{environment(x)} returns the environment of the
+      ++ elaboration \spad{x}.
+  Private == add
+    Rep == Record(ir: InternalRepresentationForm,
+              type: InternalTypeForm, env: Environment)
+    irForm x == rep(x).ir
+    typeForm x == rep(x).type
+    environment x == rep(x).env
+    coerce(x: %): OutputForm ==
+      bracket([irForm(x)::OutputForm, typeForm(x)::OutputForm,
+                  environment(x)::OutputForm])$OutputForm
+@
 
 \section{A Package for the Spad Compiler}
 
@@ -45,10 +86,14 @@ CompilerPackage(): Public == Private where
        ++ \spad{macroExpand(s,e)} traverses the syntax object \spad{s}
        ++ replacing all (niladic) macro invokations with the
        ++ corresponding substitution.
+     elaborate: Syntax -> Elaboration
+       ++ \spad{elaborate(s)} returns the elaboration of the syntax
+       ++ object \spad{s} in the empty environement.
   Private == add
      macroExpand(s,e) ==
        -- FIXME: this is a short-term stopgap.
        macroExpand(s,e)$Foreign(Builtin)
+
 @
 
 
