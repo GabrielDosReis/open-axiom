@@ -1,5 +1,9 @@
 2010-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/compiler.spad.pamphlet: New.
+
+2010-03-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/syntax.spad.pamphlet (InternalRepresentationForm): New.
 
 2010-03-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
