@@ -1,6 +1,6 @@
 
-(30 . 3477420784)            
-(4430 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3477425182)            
+(4437 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -77,7 +77,7 @@
  |ExtAlgBasis| |ElementaryFunction| |ElementaryFunctionStructurePackage|
  |ElementaryFunctionsUnivariateLaurentSeries|
  |ElementaryFunctionsUnivariatePuiseuxSeries| |ElaboratedExpression|
- |ExtensibleLinearAggregate&| |ExtensibleLinearAggregate|
+ |Elaboration| |ExtensibleLinearAggregate&| |ExtensibleLinearAggregate|
  |ElementaryFunctionCategory&| |ElementaryFunctionCategory|
  |EllipticFunctionsUnivariateTaylorSeries| |Eltable| |EltableAggregate&|
  |EltableAggregate| |EuclideanModularRing| |EntireRing| |Environment|
@@ -187,7 +187,7 @@
  |IntegrationResultRFToFunction| |IrrRepSymNatPackage|
  |InternalRationalUnivariateRepresentationPackage| |IsAst| |IndexedString|
  |InnerPolySum| |InnerSparseUnivariatePowerSeries| |InnerTaylorSeries|
- |InfiniteTupleFunctions2| |InfiniteTupleFunctions3|
+ |InternalTypeForm| |InfiniteTupleFunctions2| |InfiniteTupleFunctions3|
  |InnerTrigonometricManipulations| |InfiniteTuple| |IndexedVector|
  |IndexedAggregate&| |IndexedAggregate| |JavaBytecode| |JoinAst|
  |AssociatedJordanAlgebra| |KeyedAccessFile| |KeyedDictionary&|
@@ -452,9 +452,9 @@
  |clipParametric| |clipWithRanges| |numberOfHues| |yellow| |iifact| |iibinom|
  |iiperm| |iipow| |iidsum| |iidprod| |ipow| |factorial| |multinomial|
  |permutation| |stirling1| |stirling2| |summation| |factorials| |mkcomm|
- |polarCoordinates| |complex| |imaginary| |macroExpand| |solid| |solid?|
- |denominators| |numerators| |convergents| |approximants| |reducedForm|
- |partialQuotients| |partialDenominators| |partialNumerators|
+ |polarCoordinates| |complex| |imaginary| |elaborate| |macroExpand| |solid|
+ |solid?| |denominators| |numerators| |convergents| |approximants|
+ |reducedForm| |partialQuotients| |partialDenominators| |partialNumerators|
  |reducedContinuedFraction| |push| |bindings| |cartesian| |polar| |cylindrical|
  |spherical| |parabolic| |parabolicCylindrical| |paraboloidal|
  |ellipticCylindrical| |prolateSpheroidal| |oblateSpheroidal| |bipolar|
@@ -494,9 +494,10 @@
  |iiasinh| |iiacosh| |iiatanh| |iiacoth| |iiasech| |iiacsch| |specialTrigs|
  |localReal?| |rischNormalize| |realElementary| |validExponential|
  |rootNormalize| |tanQ| |callForm?| |getIdentifier| |variable?| |getConstant|
- |type| |select!| |delete!| |sn| |cn| |dn| |sncndn| |qsetelt!| |categoryFrame|
- |interactiveEnv| |currentEnv| |setProperties!| |getProperties| |setProperty!|
- |getProperty| |scopes| |eigenvalues| |eigenvector| |generalizedEigenvector|
+ |type| |environment| |typeForm| |irForm| |elaboration| |select!| |delete!|
+ |sn| |cn| |dn| |sncndn| |qsetelt!| |categoryFrame| |interactiveEnv|
+ |currentEnv| |setProperties!| |getProperties| |setProperty!| |getProperty|
+ |scopes| |eigenvalues| |eigenvector| |generalizedEigenvector|
  |generalizedEigenvectors| |eigenvectors| |factorAndSplit| |rightOne| |leftOne|
  |rightZero| |leftZero| |swap| |error| |minPoly| |freeOf?| |operators| |tower|
  |kernels| |mainKernel| |distribute| |subst| |functionIsFracPolynomial?|
