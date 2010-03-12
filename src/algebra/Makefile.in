@@ -939,7 +939,7 @@ axiom_algebra_layer_user =  \
 	ASP73    ASP27    ASP28    ASP33    ASP49    ASP7     \
         ASP78    ASP9     ASP12    ASP55    ASP8     ASP19    \
         ASP20    ASP30    ASP31    ASP35    ASP41    ASP42    \
-	ASP74    ASP77    ASP80    ASP29
+	ASP74    ASP77    ASP80    ASP29    IRFORM
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -1012,6 +1012,8 @@ $(OUT)/INETCLTS.$(FASLEXT): $(OUT)/NETCLT.$(FASLEXT)
 
 
 $(OUT)/ASP34.$(FASLEXT): $(OUT)/FMC.$(FASLEXT)
+
+$(OUT)/IRFORM.$(FASLEXT): $(OUT)/SYNTAX.$(FASLEXT)
 
 
 .PHONY: all all-algebra mkdir-output-directory

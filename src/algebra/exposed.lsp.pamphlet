@@ -212,6 +212,7 @@
   (|IntegrationResultFunctions2| . IR2)
   (|IntegrationResultRFToFunction| . IRRF2F)
   (|IntegrationResultToFunction| . IR2F)
+  (|InternalRepresentationForm| . IRFORM)
   (|Interval| . INTRVL)
   (|InventorDataSink| . IVDATA)
   (|InventorViewPort| . IVVIEW)

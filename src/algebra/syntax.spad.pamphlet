@@ -298,6 +298,22 @@ ElaboratedExpression(): Public == Private where
       "failed"
 @
 
+\section{Compiler Intermediate Form}
+<<domain IRFORM InternalRepresentationForm>>=
+)abbrev domain IRFORM InternalRepresentationForm
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This domain provides representations for the intermediate
+++   form data structure used by the Spad elaborator.
+InternalRepresentationForm(): Public == Private where
+  Public == CoercibleTo OutputForm
+  Private == add
+    coerce(x: %): OutputForm ==
+      (x : Syntax)::OutputForm
+@
+
 
 \section{SpadAbstractSyntaxCategory}
 
@@ -1904,6 +1920,7 @@ SpadAst(): SpadAstExports() == add
 <<domain QQUTAST QuasiquoteAst>>
 <<domain DEFAST DefinitionAst>>
 <<domain MACROAST MacroAst>>
+<<domain IRFORM InternalRepresentationForm>>
 
 @
 
