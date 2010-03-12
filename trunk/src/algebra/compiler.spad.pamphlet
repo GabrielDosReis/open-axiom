@@ -1,0 +1,96 @@
+\documentclass{article}
+\usepackage{open-axiom}
+
+\author{Gabriel Dos~Reis}
+
+\begin{document}
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+\eject
+
+
+\section{Compiler Intermediate Form}
+
+<<domain IRFORM InternalRepresentationForm>>=
+)abbrev domain IRFORM InternalRepresentationForm
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This domain provides representations for the intermediate
+++   form data structure used by the Spad elaborator.
+InternalRepresentationForm(): Public == Private where
+  Public == CoercibleTo OutputForm
+  Private == add
+    coerce(x: %): OutputForm ==
+      (x : Syntax)::OutputForm
+@
+
+
+\section{A Package for the Spad Compiler}
+
+<<package COMPILER CompilerPackage>>=
+)abbrev package COMPILER CompilerPackage
+++ Author: Gabriel Dos Reis
+++ Date Created: March 12, 2010
+++ Date Last Modified: March 12, 2010
+++ Description:
+++   This package implements a Spad compiler.
+CompilerPackage(): Public == Private where
+  Public == Type with
+     macroExpand: (Syntax, Environment) -> Syntax
+       ++ \spad{macroExpand(s,e)} traverses the syntax object \spad{s}
+       ++ replacing all (niladic) macro invokations with the
+       ++ corresponding substitution.
+  Private == add
+     macroExpand(s,e) ==
+       -- FIXME: this is a short-term stopgap.
+       macroExpand(s,e)$Foreign(Builtin)
+@
+
+
+\section{License}
+<<license>>=
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
+--All rights reserved.
+--
+--Redistribution and use in source and binary forms, with or without
+--modification, are permitted provided that the following conditions are
+--met:
+--
+--    - Redistributions of source code must retain the above copyright
+--      notice, this list of conditions and the following disclaimer.
+--
+--    - Redistributions in binary form must reproduce the above copyright
+--      notice, this list of conditions and the following disclaimer in
+--      the documentation and/or other materials provided with the
+--      distribution.
+--
+--    - Neither the name of The Numerical Algorithms Group Ltd. nor the
+--      names of its contributors may be used to endorse or promote products
+--      derived from this software without specific prior written permission.
+--
+--THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+--IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+--TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+--PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+--OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+--EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+--PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+--PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+--LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+--NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+--SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+@
+
+
+<<*>>=
+<<license>>
+
+<<domain IRFORM InternalRepresentationForm>>
+<<package COMPILER CompilerPackage>>
+
+@
