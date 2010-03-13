@@ -1,6 +1,6 @@
 
-(30 . 3477435920)            
-(4440 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
+(30 . 3477490098)            
+(4446 |Enumeration| |Mapping| |Record| |Union| |ofCategory| |isDomain|
  ATTRIBUTE |package| |domain| |category| CATEGORY |nobranch| AND |Join|
  |ofType| SIGNATURE "failed" "algebra" |OneDimensionalArrayAggregate&|
  |OneDimensionalArrayAggregate| |AbelianGroup&| |AbelianGroup| |AbelianMonoid&|
@@ -452,14 +452,14 @@
  |clipParametric| |clipWithRanges| |numberOfHues| |yellow| |iifact| |iibinom|
  |iiperm| |iipow| |iidsum| |iidprod| |ipow| |factorial| |multinomial|
  |permutation| |stirling1| |stirling2| |summation| |factorials| |mkcomm|
- |polarCoordinates| |complex| |imaginary| |elaborate| |macroExpand| |solid|
- |solid?| |denominators| |numerators| |convergents| |approximants|
- |reducedForm| |partialQuotients| |partialDenominators| |partialNumerators|
- |reducedContinuedFraction| |push| |bindings| |cartesian| |polar| |cylindrical|
- |spherical| |parabolic| |parabolicCylindrical| |paraboloidal|
- |ellipticCylindrical| |prolateSpheroidal| |oblateSpheroidal| |bipolar|
- |bipolarCylindrical| |toroidal| |conical| |modTree| |multiEuclideanTree|
- |complexZeros| |divisorCascade| |graeffe| |pleskenSplit|
+ |polarCoordinates| |complex| |imaginary| |elaborateFile| |elaborate|
+ |macroExpand| |solid| |solid?| |denominators| |numerators| |convergents|
+ |approximants| |reducedForm| |partialQuotients| |partialDenominators|
+ |partialNumerators| |reducedContinuedFraction| |push| |bindings| |cartesian|
+ |polar| |cylindrical| |spherical| |parabolic| |parabolicCylindrical|
+ |paraboloidal| |ellipticCylindrical| |prolateSpheroidal| |oblateSpheroidal|
+ |bipolar| |bipolarCylindrical| |toroidal| |conical| |modTree|
+ |multiEuclideanTree| |complexZeros| |divisorCascade| |graeffe| |pleskenSplit|
  |reciprocalPolynomial| |rootRadius| |schwerpunkt| |setErrorBound|
  |startPolynomial| |cycleElt| |computeCycleLength| |computeCycleEntry|
  |findConstructor| |arguments| |operations| |dualSignature| |kind| |package|
@@ -625,30 +625,31 @@
  |primlimitedint| |explimitedint| |primextintfrac| |primlimintfrac|
  |primintfldpoly| |expintfldpoly| |monomialIntegrate| |monomialIntPoly|
  |inverseLaplace| |inputOutputBinaryFile| |bothWays| |input| |resolve| |bytes|
- |ip4Address| |iprint| |elem?| |notelem| |logpart| |ratpart| |mkAnswer|
- |perfectNthPower?| |perfectNthRoot| |approxNthRoot| |perfectSquare?|
- |perfectSqrt| |approxSqrt| |generateIrredPoly| |complexExpand|
- |complexIntegrate| |dimensionOfIrreducibleRepresentation|
+ |ip4Address| |iprint| |elem?| |notelem| |logpart| |ratpart| |mkAnswer| |irDef|
+ |irCtor| |irVar| |perfectNthPower?| |perfectNthRoot| |approxNthRoot|
+ |perfectSquare?| |perfectSqrt| |approxSqrt| |generateIrredPoly|
+ |complexExpand| |complexIntegrate| |dimensionOfIrreducibleRepresentation|
  |irreducibleRepresentation| |checkRur| |cAcsch| |cAsech| |cAcoth| |cAtanh|
  |cAcosh| |cAsinh| |cCsch| |cSech| |cCoth| |cTanh| |cCosh| |cSinh| |cAcsc|
  |cAsec| |cAcot| |cAtan| |cAcos| |cAsin| |cCsc| |cSec| |cCot| |cTan| |cCos|
  |cSin| |cLog| |cExp| |cRationalPower| |cPower| |seriesToOutputForm| |iCompose|
- |taylorQuoByVar| |iExquo| |getStream| |getRef| |makeSeries| |voidMode|
- |noValueMode| |jokerMode| GF2FG FG2F F2FG |explogs2trigs| |trigs2explogs|
- |swap!| |fill!| |minIndex| |maxIndex| |entry?| |indices| |index?| |entries|
- |categories| |search| |key?| |symbolIfCan| |kernel| |argument|
- |constantKernel| |constantIfCan| |kovacic| |unknown| |laplace|
- |trailingCoefficient| |normalizeIfCan| |polCase| |distFact| |identification|
- |LyndonCoordinates| |LyndonBasis| |zeroDimensional?| |fglmIfCan| |groebner|
- |lexTriangular| |squareFreeLexTriangular| |belong?| |erf| |dilog| |li| |Ci|
- |Si| |Ei| |linGenPos| |groebgen| |totolex| |minPol| |computeBasis| |coord|
- |anticoord| |intcompBasis| |choosemon| |transform| |pack!| |library|
- |complexLimit| |limit| |linearlyDependent?| |linearDependence| |solveLinear|
- |reducedSystem| |setDifference| |setIntersection| |setUnion| |append| |null|
- |nil| |substitute| |duplicates?| |mapGen| |mapExpon| |commutativeEquality|
- |leftMult| |rightMult| |makeUnit| |reverse!| |reverse| |nthFactor| |nthExpon|
- |makeMulti| |makeTerm| |listOfMonoms| |insert| |delete| |symmetricSquare|
- |factor1| |symmetricProduct| |symmetricPower| |directSum| |\\/| |/\\| ~
+ |taylorQuoByVar| |iExquo| |getStream| |getRef| |makeSeries| |mappingMode|
+ |categoryMode| |voidMode| |noValueMode| |jokerMode| GF2FG FG2F F2FG
+ |explogs2trigs| |trigs2explogs| |swap!| |fill!| |minIndex| |maxIndex| |entry?|
+ |indices| |index?| |entries| |categories| |search| |key?| |symbolIfCan|
+ |kernel| |argument| |constantKernel| |constantIfCan| |kovacic| |unknown|
+ |laplace| |trailingCoefficient| |normalizeIfCan| |polCase| |distFact|
+ |identification| |LyndonCoordinates| |LyndonBasis| |zeroDimensional?|
+ |fglmIfCan| |groebner| |lexTriangular| |squareFreeLexTriangular| |belong?|
+ |erf| |dilog| |li| |Ci| |Si| |Ei| |linGenPos| |groebgen| |totolex| |minPol|
+ |computeBasis| |coord| |anticoord| |intcompBasis| |choosemon| |transform|
+ |pack!| |library| |complexLimit| |limit| |linearlyDependent?|
+ |linearDependence| |solveLinear| |reducedSystem| |setDifference|
+ |setIntersection| |setUnion| |append| |null| |nil| |substitute| |duplicates?|
+ |mapGen| |mapExpon| |commutativeEquality| |leftMult| |rightMult| |makeUnit|
+ |reverse!| |reverse| |nthFactor| |nthExpon| |makeMulti| |makeTerm|
+ |listOfMonoms| |insert| |delete| |symmetricSquare| |factor1|
+ |symmetricProduct| |symmetricPower| |directSum| |\\/| |/\\| ~
  |solveLinearPolynomialEquationByFractions| |hasSolution?| |linSolve|
  |LyndonWordsList| |LyndonWordsList1| |lyndonIfCan| |lyndon| |lyndon?|
  |numberOfComputedEntries| |rst| |frst| |lazyEvaluate| |lazy?|

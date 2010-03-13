@@ -23,10 +23,30 @@
 ++   This domain provides representations for the intermediate
 ++   form data structure used by the Spad elaborator.
 InternalRepresentationForm(): Public == Private where
-  Public == Join(SetCategory, HomotopicTo Syntax)
+  Public == Join(SetCategory, HomotopicTo Syntax) with
+     irVar: (Identifier, InternalTypeForm) -> %
+       ++ \spad{irVar(x,t)} returns an IR for a variable reference
+       ++ of type designated by the type form \spad{t}
+     irCtor: (Identifier, InternalTypeForm) -> %
+       ++ \spad{irCtor(n,t)} returns an IR for a constructor reference
+       ++ of type designated by the type form \spad{t}
+     irDef: (Identifier, InternalTypeForm, %) -> %
+       ++ \spad{irDef(f,ts,e)} returns an IR representation for a definition
+       ++ of a function named \spad{f}, with signature \spad{ts}
+       ++ and body \spad{e}.
   Private == Syntax add
     coerce(x: %): Syntax == rep x
+
     coerce(x: Syntax): % == per x
+
+    irVar(x,t) ==
+      buildSyntax('%irVar,[x::Syntax,t::Syntax])::%
+
+    irCtor(x,t) ==
+      buildSyntax('%irCtor,[x::Syntax,t::Syntax])::%
+
+    irDef(f,ts,e) ==
+      buildSyntax('%irDef,[f::Syntax, ts::Syntax, e::Syntax])::%
 
 @
 
@@ -47,10 +67,18 @@ InternalTypeForm(): Public == Private where
       ++ the value of an expression is to be ignored.
     voidMode: %
       ++ \spad{voidMode} is a constant mode denoting Void.
+    categoryMode: %
+      ++ \spad{categoryMode} is a constant mode denoting Category.
+    mappingMode: (%, List %) -> %
+      ++ \spad{mappingMode(r,ts)} returns a mapping mode with return
+      ++ mode \spad{r}, and parameter modes \spad{ts}.
   Private == InternalRepresentationForm add
     jokerMode == _$EmptyMode$Foreign(Builtin)
     noValueMode == _$NoValueMode$Foreign(Builtin)
     voidMode == _$Void$Foreign(Builtin)
+
+    mappingMode(r,ts) == 
+      buildSyntax('Mapping,cons(r::Syntax, ts : List(Syntax)))::%
 
 @
 
@@ -82,6 +110,18 @@ Elaboration(): Public == Private where
                   environment(x)::OutputForm])$OutputForm
 @
 
+\section{Compilation Context}
+
+<<domain CMPCTXT CompilationContext>>=
+)abbrev domain CMPCTXT CompilationContext
+CompilationContext(): Public == Private where
+  Public == SetCategory with
+    getExitMode: (%,Integer) -> InternalTypeForm
+    pushExitMode!: (%, InternalTypeForm) -> %
+  Private == add
+    Rep == Record(exitModes: List Integer)
+@
+
 \section{A Package for the Spad Compiler}
 
 <<package COMPILER CompilerPackage>>=
@@ -100,6 +140,7 @@ CompilerPackage(): Public == Private where
      elaborate: SpadAst -> Maybe Elaboration
        ++ \spad{elaborate(s)} returns the elaboration of the syntax
        ++ object \spad{s} in the empty environement.
+     elaborateFile: String -> List Maybe Elaboration
   Private == add
      macro IR == InternalRepresentationForm
      macro TFORM == InternalTypeForm
@@ -109,6 +150,9 @@ CompilerPackage(): Public == Private where
      import IR
      import RESULT
      inline RESULT
+
+     -- forward declaration
+     doElaborate: (SpadAst,TFORM,ENV) -> RESULT
 
      macroExpand(s,e) ==
        -- FIXME: this is a short-term stopgap.
@@ -130,7 +174,7 @@ CompilerPackage(): Public == Private where
          decl case nothing => nothing         -- nor declared
          T := destruct(decl)$SExpression
          just(second(T) : TFORM)
-       typeForm val
+       just typeForm(val@Elaboration)
 
      -- simply coerce the elaboration `T' to mode `m'.
      coerceSimply(T: RESULT, m: TFORM): RESULT ==
@@ -150,10 +194,43 @@ CompilerPackage(): Public == Private where
      elaborateIdentifier(x: Identifier, t: TFORM, e: ENV): RESULT ==
        r := 
          case getValue(x,e) is
-           val@Elaboration => just val
-           otherwise => case getMode(x,e) is
-             decl@Elaboration =>
-       coerceTo(getValue(x,e), t)
+           v@Elaboration => just v
+           otherwise => 
+             case getMode(x,e) is
+               m@TFORM => just elaboration(irVar(x,m), m, e)
+               otherwise => nothing$RESULT
+       coerceTo(r, t)
+
+     -- elaborate a form designating a mode
+     elaborateMode(x: SpadAst, e: ENV): Maybe TFORM ==
+       t := doElaborate(x,jokerMode,e)
+       t case nothing => nothing
+       just(t : TFORM) -- FIXME: use conversion.
+
+     -- elaborate a definition.
+     elaborateDefinition(x: DefinitionAst, m: TFORM, e: ENV): RESULT ==
+       import HeadAst
+       e' := e
+       parms := parameters head x
+       n := name head x
+       srcSig := signature x
+       irSig := nil$List(TFORM)
+       -- elaborate parameters and push them in scope.
+       for p in parms for t in source srcSig repeat
+         nil? t => return nothing            -- FIXME: should infer first
+         irT := elaborateMode(t::SpadAst,e)
+         irT case nothing => return nothing
+         irSig := cons(irT@TFORM,irSig)
+       -- elaborate return type.
+       ret := target srcSig
+       nil? ret => nothing                   -- FIXME: should infer first
+       irRet := elaborateMode(ret::SpadAst,e)
+       irRet case nothing => nothing
+       -- elaborate the body.
+       b := doElaborate(body x, irRet@TFORM, e)
+       b case nothing => nothing
+       t := mappingMode(irRet@TFORM, reverse irSig)
+       just elaboration(irDef(n,t,irForm b),t,e')
 
      -- elaborate a syntax `s' under context `m', in the envionment `e'.
      doElaborate(s: SpadAst, t: TFORM, e: ENV): RESULT ==
@@ -163,6 +240,9 @@ CompilerPackage(): Public == Private where
 
      elaborate s == 
        doElaborate(s,jokerMode,empty()$ENV)
+
+     elaborateFile f ==
+       [elaborate(s::SpadAst) for s in parse(f)$SpadParser]
 
 @
 
