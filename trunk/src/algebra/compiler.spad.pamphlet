@@ -23,12 +23,10 @@
 ++   This domain provides representations for the intermediate
 ++   form data structure used by the Spad elaborator.
 InternalRepresentationForm(): Public == Private where
-  Public == Join(CoercibleTo OutputForm, HomotopicTo Syntax)
-  Private == add
-    coerce(x: %): Syntax == x : Syntax
-    coerce(x: Syntax): % == x : %
-    coerce(x: %): OutputForm ==
-      (x : Syntax)::OutputForm
+  Public == Join(SetCategory, HomotopicTo Syntax)
+  Private == Syntax add
+    coerce(x: %): Syntax == rep x
+    coerce(x: Syntax): % == per x
 
 @
 
@@ -39,7 +37,20 @@ InternalRepresentationForm(): Public == Private where
 ++ Date Last Modified: March 12, 2010
 ++ Description:
 ++   This domain provides representations for internal type form.
-InternalTypeForm() == InternalRepresentationForm
+InternalTypeForm(): Public == Private where
+  Public == Join(SetCategory, HomotopicTo Syntax) with
+    jokerMode: %
+      ++ \spad{jokerMode} is a constant that stands for any mode
+      ++ in a type inference context
+    noValueMode: %
+      ++ \spad{noValueMode} is a constant mode that indicates that
+      ++ the value of an expression is to be ignored.
+    voidMode: %
+      ++ \spad{voidMode} is a constant mode denoting Void.
+  Private == InternalRepresentationForm add
+    jokerMode == _$EmptyMode$Foreign(Builtin)
+    noValueMode == _$NoValueMode$Foreign(Builtin)
+    voidMode == _$Void$Foreign(Builtin)
 
 @
 
@@ -82,17 +93,76 @@ Elaboration(): Public == Private where
 ++   This package implements a Spad compiler.
 CompilerPackage(): Public == Private where
   Public == Type with
-     macroExpand: (Syntax, Environment) -> Syntax
+     macroExpand: (SpadAst, Environment) -> SpadAst
        ++ \spad{macroExpand(s,e)} traverses the syntax object \spad{s}
        ++ replacing all (niladic) macro invokations with the
        ++ corresponding substitution.
-     elaborate: Syntax -> Elaboration
+     elaborate: SpadAst -> Maybe Elaboration
        ++ \spad{elaborate(s)} returns the elaboration of the syntax
        ++ object \spad{s} in the empty environement.
   Private == add
+     macro IR == InternalRepresentationForm
+     macro TFORM == InternalTypeForm
+     macro RESULT == Maybe Elaboration
+     macro ENV == Environment
+     import ENV
+     import IR
+     import RESULT
+     inline RESULT
+
      macroExpand(s,e) ==
        -- FIXME: this is a short-term stopgap.
        macroExpand(s,e)$Foreign(Builtin)
+
+     -- fecth the active definition of 'x', if any from environment `e'.
+     getValue(x: Identifier, e: ENV): RESULT ==
+       case getProperty(x,'value,e) is
+         val@SExpression =>
+           T := destruct(val)$SExpression
+           just elaboration(first(T) : IR, second(T) : TFORM, e)
+         otherwise => nothing                 -- not defined
+ 
+     -- fetch the active declaration of 'x', if any from environment `e'.
+     getMode(x: Identifier, e: ENV): Maybe TFORM ==
+       val := getValue(x,e)
+       val case nothing =>                    -- symbol is not defined
+         decl := getProperty(x,'mode,e)
+         decl case nothing => nothing         -- nor declared
+         T := destruct(decl)$SExpression
+         just(second(T) : TFORM)
+       typeForm val
+
+     -- simply coerce the elaboration `T' to mode `m'.
+     coerceSimply(T: RESULT, m: TFORM): RESULT ==
+       T case nothing => T
+       t := typeForm(T@Elaboration)
+       m = jokerMode or t = m => T
+       m = noValueMode or m = voidMode or t = jokerMode => 
+          just elaboration(irForm T, m, environment T)
+       nothing
+    
+     -- implicitly coerce the eloboration `T' to one that is
+     -- valid in a mode context `m'.
+     coerceTo(T: RESULT, m:TFORM): RESULT ==
+       coerceSimply(T,m)
+
+     -- elaborate an identifier in the current environment.
+     elaborateIdentifier(x: Identifier, t: TFORM, e: ENV): RESULT ==
+       r := 
+         case getValue(x,e) is
+           val@Elaboration => just val
+           otherwise => case getMode(x,e) is
+             decl@Elaboration =>
+       coerceTo(getValue(x,e), t)
+
+     -- elaborate a syntax `s' under context `m', in the envionment `e'.
+     doElaborate(s: SpadAst, t: TFORM, e: ENV): RESULT ==
+       case s is
+         id@Identifier => elaborateIdentifier(id,t,e)
+         otherwise => nothing
+
+     elaborate s == 
+       doElaborate(s,jokerMode,empty()$ENV)
 
 @
 
