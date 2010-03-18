@@ -1,3 +1,9 @@
+2010-03-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/any.spad.pamphlet (Property): Tidy.
+	(Environment): Likewise.  Rename setProperty! to putProperty.
+	Rename setProperties! to putProperties.
+
 2010-03-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/compiler.spad.pamphlet: Add more IR contructor
