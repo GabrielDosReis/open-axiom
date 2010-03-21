@@ -3,4 +3,7 @@
 )co analysis
 )co extractreduce
 )co checkassumption
+)co attrcol
+)co catextcol
 )co redupkg
+

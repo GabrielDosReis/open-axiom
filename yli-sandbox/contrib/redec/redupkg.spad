@@ -3,6 +3,7 @@ import TYPCHK
 import LPANL
 import REDANL
 import CHKASSMP
+import CEXCOL
 
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
@@ -26,6 +27,15 @@ ReductionAnalysisPackage(): Public == Private where
   macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
   -- for storing associative operator records
   macro OPREC == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
+
+  --- for  category extension database to use
+  macro EXTP  == Pair(Syntax, List Syntax) -- (category/attribute, predicate)
+  macro LEXTP == List EXTP
+  macro LAP   == LEXTP                -- for attributes, i.e. conditional and unconditional
+  macro LSP   == LEXTP                -- for signatures, i.e. conditional and unconditional
+  macro CEXTR == Record(catname: Identifier, catpars: List Identifier,_ 
+                        partyps: List Syntax, declarations: LSP, extensions: LEXTP, attributes: LAP)
+  macro CEXTDB == List CEXTR
 
   Public == with
     analyze: (Integer, Integer) -> Boolean
@@ -139,6 +149,8 @@ ReductionAnalysisPackage(): Public == Private where
     unknownSyn: Syntax == '_?::Identifier::Syntax
     makePercentage: Syntax   == '%::Identifier::Syntax
     makeCase: Syntax                == 'case::Identifier::Syntax
+    makeTrue: Syntax                == 'true::Identifier::Syntax
+    makeNil: Syntax                 == 'nil::Identifier::Syntax
 
     cleanUpCtorInfo: Boolean ==
       cgv := empty()
@@ -524,7 +536,6 @@ ReductionAnalysisPackage(): Public == Private where
         r_form : RFORM := [constructorName, fn, sig', second resultFromTypeChecker]
         L_reduce := concat(L_reduce, r_fun)
         L_rform := concat(L_rform, r_form)
-
       true
 
     updateGlobalTypeEnvFromColonAst(cast: SpadAst, gte: VTB): VTB ==
@@ -853,7 +864,6 @@ ReductionAnalysisPackage(): Public == Private where
       k = package$ConstructorKind  =>  S_package := union(S_package, {c}) 
       S_domain := union(S_domain, {c})
 
-
     preproc l == 
       cleanUpCtorInfo()
       -- clean the ctor global variable table
@@ -888,7 +898,7 @@ ReductionAnalysisPackage(): Public == Private where
 
 --------------------------------------------------
     getAllFileName: List FileName ==
-      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
+      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/test/*.spad")$Lisp
       sexLst := sex pretend List(FileName)
       sexLst
 
@@ -904,7 +914,7 @@ ReductionAnalysisPackage(): Public == Private where
         preproc(nm)
         fCount := fCount + 1
       fCount
-     
+
     signatureToString(s: Signature): String ==
       result : String := ""
       src := source s
@@ -1133,55 +1143,451 @@ ReductionAnalysisPackage(): Public == Private where
     
     macro TCR == Record(funname: Identifier, signature: Signature, tenv: VTB)
 
+    -- checks whether a variable is a type variable 
+    -- by looking up in the global type environment
     isTpVar?(tp: Syntax, env: VTB): Boolean == not compound? tp and tp case Identifier and key?(tp, env)
 
+    -- checks whether some category/domain is parameterized by some type variable
     containTpVar?(cat: Syntax, env: VTB): Boolean ==
       not compound? cat => isTpVar?(cat, env)
       for opr in getOperands cat repeat
         containTpVar?(opr, env) => return true
       false 
 
-    rightHasLeft?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
-      isTpVar?(leftType, leftEnv) and not containTpVar?(cat:=leftEnv.leftType, leftEnv) =>
-        isTpVar?(rightType, rightEnv) => rightHasLeft?(leftType, leftEnv, rightEnv.rightType, rightEnv)
-        isJoin?(rightType)$SyntaxHelper =>
-          for c in getOperands rightType repeat
-            compound? c and c::SpadAst case CategoryAst => true -- skip if this is attribute
-            rightHasLeft?(leftType, leftEnv, c, rightEnv) => return true
-          false
-        (isDomain?(rightType)$CheckAssumption or isCategory?(rightType)$CheckAssumption) and not containTpVar?(rightType, rightEnv) =>
-          expression := buildSyntax('has::Syntax::Identifier, [rightType, cat])::InputForm
-          retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
-        false
-      isTpVar?(leftType, leftEnv) and containTpVar?(cat, leftEnv) =>
-        isTpVar?(rightType, rightEnv) => rightHasLeft?(leftType, leftEnv, rightEnv.rightType, rightEnv)
-        isJoin?(rightType)$SyntaxHelper =>
-          for c in getOperands rightType repeat
-            compound? c and c::SpadAst case CategoryAst => true -- skip if this is attribute
-            rightHasLeft?(leftType, leftEnv, c, rightEnv) => return true
-          false
-        isCategory?(rightType)$CheckAssumption =>
-          getOperator(cat)::Identifier = getOperator(rightType)::Identifier and #getOperands(cat) = #getOperands(rightType) =>
-            for rights in getOperands rightType for lefts in getOperands cat repeat
-              not rightHasLeft?(lefts, leftEnv, rights, rightEnv) => return false
-            true
-          false
-        false
-      isDomain?(leftType)$CheckAssumption and containTpVar?(leftType, leftEnv) =>
-        isDomain?(rightType)$CheckAssumption and getOperator(rightType)::Identifier = getOperator(leftType)::Identifier and #getOperands(leftType) = #getOperands(rightType) =>
-          for rights in getOperands rightType for lefts in getOperands leftType repeat
-            not rightHasLeft?(lefts, leftEnv, rights, rightEnv) => return false
-          true          
-        false
-      isDomain?(leftType)$CheckAssumption and not containTpVar?(leftType, leftEnv) => rightType = leftType
+    -- returns mapping between the parameters of a category constructor
+    -- and the actual parameters in the corresponding constructed category
+    findMapping(l: List Identifier, rs: Syntax): VTB ==
+      res: Table(Syntax, Syntax) := empty()
+      for e in l for e' in getOperands(rs) repeat
+        x := e::Syntax
+        res.x := e'
+      res
+
+    -- replaces the appearances of all the keys of variable mapping in s with 
+    -- the corresponding contents indexed by those keys    
+    instantiateSyntax(s: Syntax, mapping: VTB): Syntax ==
+      for k in keys mapping repeat
+        s := replace(k, s, mapping.k)$SyntaxHelper
+      s
+      
+    -- replaces % in as signature with the domain that implements the owner category
+    -- of the signature
+    instantiatePercentages(current: Syntax, t: Syntax): Syntax ==
+      replace(makePercentage(), t, current)$SyntaxHelper
+
+    -- instantiates predicate list associated to category extension/signature/attribute
+    -- using the parameter mapping information in variable mapping
+    instantiatePredicate(pl: List Syntax, mapping: VTB): List Syntax ==
+      [instantiateSyntax(p, mapping) for p in pl]
+
+    -- instantiates a single category extension
+    -- meaning that to replace each parameter used in category definition
+    -- with the actual parameter of category
+    -- such mapping of replacement is stored in variable mapping
+    instantiateExtension(e: Syntax, mapping: VTB): Syntax ==
+      instantiateSyntax(e, mapping)
+
+    -- called by the instantiation function below.
+    instantiatePair(p: EXTP, mapping: VTB): EXTP ==
+      pair(instantiateExtension(first p, mapping), instantiatePredicate(second p, mapping))
+
+    -- instantiate both of the predicate and category extension 
+    -- from a category extension list of a category constructor
+    instantiateExtensionList(l: LEXTP, mapping: VTB): LEXTP ==
+      l' := copy l
+      [instantiatePair(e, mapping) for e in l']
+
+    -- by instantiate attribute list, we mean only to instantiate predicate of each attribute.
+    -- attribute itself is no more than an identifier, and does not need to be instantiated.
+    instantiateAttributeList(l: LAP, mapping: VTB): LAP ==
+      l' := copy l
+      [pair(first e, instantiatePredicate(second e, mapping)) for e in l']
+--------
+    rightHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
+    rightHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
+    rcatHasLcat?: (Syntax, VTB, Syntax, VTB) -> Boolean
+    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
+--------
+
+    -- checks whether two type constructors have the same name
+    sameName?(leftType: Syntax, rightType: Syntax): Boolean ==
+      (not compound?(leftType)) or (not compound?(rightType)) => false
+      getOperator(rightType)::Identifier = getOperator(leftType)::Identifier 
+
+    -- This function evaluates one predicate of a predicate list
+    -- again each predicate is a term of a disjunctive normal form represented by the predicate list
+    evaluatePredicate(pred: Syntax, rightEnv: VTB): Boolean ==
+      -- there are two main kinds of predicates:
+      -- 1. trivial: true
+      -- 2. has statement whose right hand side is:
+      --   2.1 attribute
+      --   2.2 signature of some operator
+      --   2.3 category
+      pred = makeTrue() => true
+      (pred' := pred::SpadAst) case HasAst =>
+        r := rhs pred'
+        r' := r::Syntax
+        l := lhs pred'
+        l' := l::Syntax
+        r case AttributeAst             => rightHasLeftAttribute?(name(r::AttributeAst)::Syntax, l', rightEnv)   
+        r case SignatureAst             => rightHasLeftSignature?(r', l', rightEnv)
+        isCategory?(r')$CheckAssumption =>  typeChecks?(r', rightEnv, l', rightEnv)
+        userError "unexpected kind of right hand side in this has predicate"
       false
+
+    -- This function statically evaluates predicate list except the trivial [true]
+    evaluateNontrivialPredicates(preds: List Syntax, rightEnv: VTB): Boolean ==
+      -- evaluate each predicate in the predicate list
+      -- since the predicates are orgnized in disjunctive normal form
+      -- we use laziness here, i.e. some predicate evaluates to false, we directly return false
+      for pred in preds repeat
+        not evaluatePredicate(pred, rightEnv) => return false
+      true
+
+    -- trivial predicate list is [true]
+    trivialPredicate?(preds: List Syntax): Boolean ==
+      (#preds = 1) and (first(preds)::Identifier = makeTrue()::Identifier)
+
+    -- this function does static predicate evaluation
+    -- each category extension, functino declaration, or attribute in a category constructor data
+    -- is associated with a predicate list whose elements represent all componenets of a disjunctive normal form
+    matchPredicate(preds: List Syntax, rightEnv: VTB): Boolean ==
+      -- case 1: trivial predicate [true]
+      trivialPredicate? preds => true
+      -- case 2: nontrivial predicates in the list
+      -- the function returns true when all predicates in the list evaluate to true
+      evaluateNontrivialPredicates(preds, rightEnv)
+
+    -- this function will be called when predicate list of some category extension evaluates to true
+    -- it checks whether that category extension is leftType
+    matchExtension(ext: Syntax, rightEnv: VTB, leftType: Syntax, leftEnv: VTB): Boolean ==
+      not sameName?(leftType, ext)         => false
+      not containTpVar?(leftType, leftEnv) => true
+      for l in getOperands(leftType) for r in getOperands(ext) repeat
+        not typeChecks?(l, leftEnv, r, rightEnv) => return false
+      true
+
+    -- This function checks whether category leftType is extList
+    -- 1. we first statically evaluate the predicate of some category extension
+    -- 2. if 1 returns true, we further compare whether the category under the predicate equals leftType
+    searchExtensionList(leftType: Syntax, leftEnv: VTB, extList: LEXTP, rightEnv: VTB): Boolean ==
+      -- look at each category extension in the extension list
+      -- searching for category stored in leftType
+      for ext in extList repeat
+        matchPredicate(second ext, rightEnv) and matchExtension(first ext, rightEnv, leftType, leftEnv) =>
+          return true
+      false
+   
+    -- this function searches whether there is an attribute which equals attr
+    -- in the attribute list attl.
+    searchAttributeList(attr: Syntax, attl: LAP, rightEnv: VTB): Boolean ==
+      for att in attl repeat
+        matchPredicate(second att, rightEnv) and (first att = attr)=> return true
+      false
+
+    -- returns the constructor of a domain/category.
+    getConstructor(t: Syntax): Constructor ==
+      c := getOperator(t)::Identifier
+      retract(findConstructor(c)$Constructor)$(Maybe Constructor)
+
+    -- returns all the attributes owned by some domain.
+    -- this is implemented under the help of the FunctorData domain functions.
+    attributesOfDomain(dom: Syntax): List Syntax ==
+      domctor := getConstructor(dom)
+      domCtor: DomainConstructor := toDomainConstructor(domctor)$SyntaxHelper
+      print("inattributesofdomain"::OutputForm)
+      print(dom::OutputForm)
+      ftorData : FunctorData := functorData(domCtor)
+      print("exit attributesOfDomain"::OutputForm)
+      domAtts : List Pair(Syntax,NonNegativeInteger) := attributeData ftorData
+      [first e for e in domAtts]     
+
+    -- checks whether a domain rightType has attribute att
+    rightDomHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      attrl := attributesOfDomain(rightType)
+      member?(att, attrl)
+
+    -- recursively look into each category in a category extension list extl
+    -- to examine whether there is one category has attribute att
+    recursiveSearchAttributeList(att: Syntax, extl: LEXTP, rightEnv: VTB): Boolean ==
+      for ext in extl repeat
+        -- again we first examine the predicate, then recursively look at each qualified category
+        matchPredicate(second ext, rightEnv) and rightHasLeftAttribute?(att, first ext, rightEnv) => 
+          return true
+      false
+
+    -- checks whether category rightType has attribute att
+    rightCatHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      isNil?(rightType)$SyntaxHelper => false
+      rightCatName : Identifier := getOperator(rightType)::Identifier
+      r := getCategoryConstructorData(rightCatName)$CategoryExtensionCollection
+      m := findMapping(r.catpars, rightType)
+      attrl := instantiateAttributeList(r.attributes, m)
+      extl := instantiateExtensionList(r.extensions, m)
+      searchAttributeList(att, attrl, rightEnv) => true
+      recursiveSearchAttributeList(att, extl, rightEnv)
+      false
+
+    -- checks whether there is a category in a join syntax has attribute att
+    -- or there is an attribute in the join syntax that equals att
+    rjoinCatHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      -- look at each element in the join ast
+      for c in getOperands rightType repeat
+        -- if the element is an attribute, then directly compare their name
+        (c' := c::SpadAst) case AttributeAst => 
+          (name(c')::Syntax) = att => return true
+          false
+        -- otherwise, the element is a category, we recursively examine whether the
+        -- category has the attribute
+        rightHasLeftAttribute?(att, c, rightEnv) => return true
+      false
+
+    -- evaluates one has-predicate whose right hand side is an attribute
+    -- and left hand side is a domain/category/type variable/join of categories and attributes
+    rightHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      isDomain?(rightType)$CheckAssumption   => rightDomHasLeftAttribute?(att, rightType, rightEnv)
+      isCategory?(rightType)$CheckAssumption => rightCatHasLeftAttribute?(att, rightType, rightEnv)
+      isTpVar?(rightType, rightEnv)          => rightHasLeftAttribute?(att, rightEnv.rightType, rightEnv)
+      isJoin?(rightType)$SyntaxHelper        => rjoinCatHasLeftAttribute?(att, rightType, rightEnv)
+      userError "unexpected cases in rightHasLeftAttribute?"
+
+
+    instantiateSourceOfSignature(src: List Syntax, mapping: VTB, domVar: Syntax): List Syntax ==
+      res : List Syntax := []
+      for s in src repeat
+        s' := instantiateSyntax(s, mapping)
+        s' := instantiatePercentages(domVar, s')
+        res := concat(res, s')
+      res
+
+    instantiateTargetOfSignature(tar: Syntax, mapping: VTB, domVar: Syntax): Syntax ==
+      s' := instantiateSyntax(tar, mapping)
+      s' := instantiatePercentages(domVar, s')
+      s'
+     
+    -- This function instantiates the signature syntax of some function
+    -- declaration from some category constructor data
+    -- 1. replace % with the current domain domVar
+    -- 2. replace each parameter used in the category definition 
+    -- with the actual category constructor parameter
+    instantiateSignatureSyntax(sig: Syntax, mapping: VTB, domVar: Syntax): Syntax ==
+      -- bug in signature function on handling 0 and 1
+      compound?(first(getOperands(sig))) => sig
+      sig' := signature(sig::SpadAst::SignatureAst)
+      fid := name(sig::SpadAst::SignatureAst)
+      src := copy source sig'
+      tar := target sig'
+      src' := instantiateSourceOfSignature(src, mapping, domVar)
+      tar' := instantiateTargetOfSignature(tar, mapping, domVar)
+      newsig := signature(src', tar')$Signature
+      newsigast := signatureAst(fid, newsig)$SignatureAst
+      newsigast::Syntax
+
+    -- This function instantaites
+    --	1. the predicate list associated to a signature
+    --  2. the signature itself
+    instantiateSignaturePair(p: EXTP, mapping: VTB, domVar: Syntax): EXTP ==
+      pair(instantiateSignatureSyntax(first p, mapping, domVar), instantiatePredicate(second p, mapping))
+
+    -- instantiate each signature in a signature list of some category
+    instantiateSignatureList(l: LSP, mapping: VTB, domVar: Syntax): LSP ==
+      l' := copy l
+      [instantiateSignaturePair(e, mapping, domVar) for e in l']
+
+    -- checks whether the two signatures are equivalent
+    sameSignature?(l: Syntax, r: Syntax): Boolean ==
+      -- the following condition skips the function declaration for 0 and 1, 
+      -- it's a workround for the nasty bug on generating signature syntax for 0 and 1
+      compound?(first(getOperands(l))) or compound?(first(getOperands(r))) => false
+      l' := l::SpadAst::SignatureAst
+      r' := r::SpadAst::SignatureAst
+      name(l') = name(r') and (signature l') = (signature r')
     
+    searchSignatureList(sig: Syntax, sigList: LSP, rightType: Syntax, rightEnv: VTB): Boolean ==
+      -- look at each category extension in the extension list
+      -- searching for category stored in leftType
+      for s in sigList repeat
+        matchPredicate(second s, rightEnv) and sameSignature?(first s, sig) => 
+          return true
+      false
+
+    rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
+
+    rdomVarHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
+
+    -- recursively look into each category, looking for the function declaration decl
+    recursiveSearchSignatureList(decl: Syntax, extl: LEXTP, rightType: Syntax, rightEnv: VTB): Boolean ==
+      for ext in extl repeat
+        matchPredicate(second ext, rightEnv) and_
+        rightDomainHasLeftSignature?(decl, first ext, rightType, rightEnv) => 
+          return true
+      false
+
+    -- this function instantaite a single category cat with domain sig (whose type is cat), then looks for
+    -- declaration decl in the instantiated declaration list from the operation list of the category constructor
+    rightDomainHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      catName := getOperator(cat)::Identifier
+      rec := getCategoryConstructorData(catName)$CategoryExtensionCollection
+      m := findMapping(rec.catpars, cat)
+      extl := instantiateExtensionList(rec.extensions, m)
+      decll := instantiateSignatureList(rec.declarations, m, rightType)
+      searchSignatureList(decl, decll, rightType, rightEnv) => true
+      recursiveSearchSignatureList(decl, extl, rightType, rightEnv)
+
+    -- this function is invoked when the type of domain rightType is a join of categories and attributes
+    -- it instantiates each category in the join syntax with the domain, and checks about the membership of the
+    -- function declaration 
+    rjoinCatHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      for c in getOperands cat | not((c::SpadAst) case AttributeAst) repeat
+        rdomVarHasLeftSignature?(decl, c, rightType, rightEnv) => return true
+      false
+
+    -- this function checks whether some domain(variable) rightType implementing category cat 
+    -- has some function declaration decl
+    rdomVarHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      isJoin?(cat)$SyntaxHelper     => rjoinCatHasLeftSignature?(decl, cat, rightType, rightEnv)
+      isCategory?(cat)$SyntaxHelper => rightDomainHasLeftSignature?(decl, cat, rightType, rightEnv)
+      false      
+
+    -- this function checks whether some type rightType has some function declaration decl
+    rightHasLeftSignature?(decl: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+      isTpVar?(rightType, rightEnv) => rdomVarHasLeftSignature?(decl, rightEnv.rightType, rightType, rightEnv)
+      userError "unexpected cases in rightHasLeftSignature?"
+
+    -- recursively goes into each qualified category extension to see whether any one of them has category leftType
+    -- by qualified we mean the predicate list associated to the category extension evaluates to true
+    recursiveSearchExtensionList(leftType: Syntax, leftEnv: VTB, extl: LEXTP, rightEnv: VTB): Boolean ==
+      for ext in extl repeat
+        matchPredicate(second ext, rightEnv) and rcatHasLcat?(leftType, leftEnv, first ext, rightEnv) => return true
+      false
+
+    -- this function checks whether there's one category in the join syntax has	category leftType
+    rjoinCatsHasLcat?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      -- obtain category extensions and attributes in a join ast
+      catsAndAtts := getOperands rightType
+      -- only search those category extensions in Join ast, skipping attributes
+      for c in catsAndAtts | not((c::SpadAst) case AttributeAst) repeat
+        rcatHasLcat?(leftType, leftEnv, c, rightEnv) => return true
+      false
+
+    -- this function finds out whether category rightType directly or indirectly extends category leftType
+    foundInCategoryHierarchy?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      rightTypeName := getOperator(rightType)::Identifier
+      -- obtain the category constructor data for rightType
+ 
+      rec := getCategoryConstructorData(rightTypeName)$CategoryExtensionCollection
+      m := findMapping(rec.catpars, rightType)
+      -- does beta-conversion for the category extension list of rightType category
+      extl := instantiateExtensionList(rec.extensions, m)
+      -- search whether rightType directly extends leftType
+      searchExtensionList(leftType, leftEnv, extl, rightEnv) => true
+      -- if rightType doesn't directly extends, we further check whether it indirectly extends leftType
+      -- by recursively looking into each category rightType directly extends.
+      recursiveSearchExtensionList(leftType, leftEnv, extl, rightEnv)
+
+    handleCatwithAtt(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      rightType' := (rightType::SpadAst)::CategoryAst
+      bd := body(rightType')
+      bd' := [e::Syntax for e in bd]
+      joinType := buildSyntax(makeJoin(), bd')
+      rcatHasLcat?(leftType, leftEnv, joinType, rightEnv)
+
+    -- this function checks whether the category rightType has category leftType
+    -- e.g., this handles query such as PolynomialCategory(R, E, VarSet) has AbelianMonoid
+    rcatHasLcat?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      -- case 1: the rightType is nil
+      isNil?(rightType)$SyntaxHelper  => false
+      -- case 2: the leftType is Type, we directly returns, this is an optimization
+      isType?(leftType)$SyntaxHelper => true
+      -- case 3: the two categories are equivalent
+      rightType = leftType            => true
+      -- case 4: rightType is a join syntax of categories and attributes
+      isJoin?(rightType)$SyntaxHelper => rjoinCatsHasLcat?(leftType, leftEnv, rightType, rightEnv)
+      -- case 5: rightType is a list of attribute wrapped as a CategoryAst
+      -- for instance, this happens when we see the following sytnax: R: Ring with commutative("*") 
+      (rightType::SpadAst) case CategoryAst => handleCatwithAtt(leftType, leftEnv, rightType, rightEnv)
+      -- case 6: rightType is a normal category
+      foundInCategoryHierarchy?(leftType, leftEnv, rightType, rightEnv)
+
+    -- convert formats between PrimitiveArray ConstructorCall and List Syntax
+    convert(a: PrimitiveArray ConstructorCall): List Syntax ==
+      [buildSyntax(name(constructor(a.i)), arguments(a.i)) for i in 0..(#a-1)]
+
+    -- helper function for replacing the local slots
+    replaceLocal(s: Syntax, oprs: List Syntax): Syntax ==
+      empty? oprs => s
+      s' := s
+      for i in 1..#oprs repeat
+        s' := replace(makeLocalNumberSlot(i)$SyntaxHelper, s', oprs.i)$SyntaxHelper
+      s'
+ 
+    -- Record domain constructor is not supported via functorData
+    -- we manually generate functor data for it
+    -- this function will be improved once necessary
+    generateCategoryExtensionForRecord(): List Syntax ==
+      [buildSyntax(makeSetCategory()$SyntaxHelper, [])]    
+
+    -- this function takes in a domain dom, and returns a list of categories
+    -- implemented by the domain
+    getInstantiatedCategoryExtensionList(dom: Syntax): List Syntax ==
+      isRecord?(dom)$SyntaxHelper => generateCategoryExtensionForRecord()
+      ctor := getConstructor(dom)
+      domCtor: DomainConstructor := toDomainConstructor(ctor)$SyntaxHelper
+      ftorData : FunctorData := functorData(domCtor)
+      domTemp : DomainTemplate := domainTemplate(ftorData)
+      domCats : List Syntax := convert(categories(ftorData)$FunctorData)
+      -- replace number slots in category extensions using elements in domain template
+      l := [replace(c, domTemp)$SyntaxHelper for c in domCats]
+      pars := getOperands(dom)
+      -- further replace local# slots with the actual parameters of constructor dom
+      [replaceLocal(e, pars) for e in l]
+
+    -- this function checks domain rightType has category leftType
+    -- e.g., this handles query such as Polynomial(R) has AbelianMonoid
+    rdomHasLcat?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      isType?(leftType)$SyntaxHelper => true  -- an optimization for saving query time
+      categoryExtensionList := getInstantiatedCategoryExtensionList(rightType)
+      member?(leftType, categoryExtensionList)
+
+
+    -- this function typechecks each domain parameter against domain parameter type in the assumption 
+    typeCheckDomainParameters(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      leftPars := getOperands(leftType)
+      rightPars := getOperands(rightType)
+      for leftPar in leftPars for rightPar in rightPars repeat
+        not typeChecks?(leftPar, leftEnv, rightPar, rightEnv) => return false
+      true
+
+    -- this function checks whether an input/output domain of a reduction operator
+    -- matches an input/output domain in the assumption operator
+    rdomIsLdom?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      not sameName?(leftType, rightType) => false
+      typeCheckDomainParameters(leftType, leftEnv, rightType, rightEnv)
+
+    -- this function checks whether the signature of a reduction operator satisfies 
+    -- the type requirement specified in a user assumption
+    typeChecks?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+      -- case 1: basic assumption vs a specific reduction operator, 
+      -- i.e., input and output types are domains
+      isDomain?(leftType)$CheckAssumption and isDomain?(rightType)$CheckAssumption =>
+ 
+        rdomIsLdom?(leftType, leftEnv, rightType, rightEnv)
+
+      -- case 2: generic assumption vs a specific reduction operator
+      isTpVar?(leftType, leftEnv) and isDomain?(rightType)$CheckAssumption => 
+        rdomHasLcat?(leftEnv.leftType, leftEnv, rightType, rightEnv)
+
+      -- case 3: generic assumption vs a generic reduction operator
+      isTpVar?(leftType, leftEnv) and isTpVar?(rightType, rightEnv) =>
+        rcatHasLcat?(leftEnv.leftType, leftEnv, rightEnv.rightType, rightEnv)
+      false
+
     typeMatch?(op: TCR, rec: TCR): Boolean ==
       sig_assumption := op.signature
       sig_actual     := rec.signature
       for left in concat(source sig_assumption, target sig_assumption)_
       for right in concat(source sig_actual, target sig_actual) repeat
-        not rightHasLeft?(left, op.tenv, right, rec.tenv) => return false
+        not typeChecks?(left, op.tenv, right, rec.tenv) => return false
       true
 
     isInList?(rec: TCR, assocops: List TCR): Boolean ==
@@ -1197,6 +1603,7 @@ ReductionAnalysisPackage(): Public == Private where
       for op in assocops repeat
         rec.funname = op.funname and typeMatch?(op, rec) => return true
       false
+
 
   --macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
   --macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
@@ -1309,6 +1716,8 @@ ReductionAnalysisPackage(): Public == Private where
       
     analyze(option, assoc?) == 
       --bugcounter := 0
+      -- building category extension database
+      collectAllConstructorData()$CategoryExtensionCollection
       reductionCounter := 0
       programOption := option
       L_assocop : List OPREC := []

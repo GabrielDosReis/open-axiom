@@ -11,6 +11,7 @@ SyntaxHelper(): Public == Private where
     replace: (Syntax, Syntax, Syntax) -> Syntax
       ++ replace(a, b, c)
       ++ replace all occurrances of a in b with c
+    replace: (Syntax, DomainTemplate) -> Syntax
     replaceLetRhs: (Syntax, LetAst, Syntax) -> LetAst
       ++ replaceLetRhs(a, b, c)
       ++ replaces all occurrances of a in the rhs(b) with c
@@ -20,11 +21,38 @@ SyntaxHelper(): Public == Private where
       ++ checks whether the left hand side of a ColonAst is a list such as x, y, z : Integer
       ++ if so, return the list of elements.
     isJoin?: Syntax -> Boolean
+    isAdd?: Syntax -> Boolean
+    isProgn?: Syntax -> Boolean
+    isNil?: Syntax -> Boolean
+    isType?: Syntax -> Boolean
+    hasElseBranch?: IfAst -> Boolean
+    hasThenBranch?: IfAst -> Boolean
     mappingAstToSignature: MappingAst -> Signature
     isDomain?: Syntax -> Boolean
     isCategory?: Syntax -> Boolean
+    isRecord?: Syntax -> Boolean
+    toDomainConstructor: Constructor -> DomainConstructor
+    makeNumberSlot: Integer -> Syntax
+    makeLocalNumberSlot: Integer -> Syntax
+    makeDoubleDollar: () -> Syntax
+    makeSetCategory: () -> Syntax
+    makeType: () -> Syntax
 
   Private == add
+    toDomainConstructor c == c pretend DomainConstructor
+
+    makeNumberSlot(i: Integer): Syntax ==
+      x := concat("#", convert(i)@String)::Symbol
+      (x pretend Identifier)::Syntax
+
+    makeLocalNumberSlot(i: Integer): Syntax == 
+      l : Identifier := 'local::Identifier
+      buildSyntax(l, [makeNumberSlot(i)])
+
+    makeDoubleDollar(): Syntax ==
+      x := "$$"::Symbol
+      (x pretend Identifier)::Syntax
+
     getLhs b ==
       l := lhs b
       r := rhs b
@@ -86,6 +114,18 @@ SyntaxHelper(): Public == Private where
         buildSyntax(first haystacks, rest haystacks)
       haystack
 
+    replace(haystack, domtemplate) ==
+      haystack case Integer => 
+        ind := haystack::Integer::NonNegativeInteger
+        s := domtemplate.ind
+        replace(s, domtemplate)
+      compound? haystack =>
+        haystacks : List Syntax := []
+        for straw in unlist haystack repeat
+          haystacks := concat(haystacks, replace(straw, domtemplate))
+        buildSyntax(first haystacks, rest haystacks)
+      haystack
+
     replaceLetRhs(a, b, c) ==
       s := b::Syntax
       op := (getOperator s)::Identifier
@@ -105,11 +145,55 @@ SyntaxHelper(): Public == Private where
       [left]
 
     makeJoin: Syntax                   == 'Join::Identifier::Syntax
+
+    makeAdd: Syntax                   == 'add::Identifier::Syntax
+
+    makeProgn: Syntax                   == 'PROGN::Identifier::Syntax
+
+    makeNil: Syntax                 == 'nil::Identifier::Syntax
+
+    makeType: Syntax                == 'Type::Identifier::Syntax
+
+    makeRecord: Syntax              == 'Record::Identifier::Syntax
+
+    makeSetCategory: Syntax         == 'SetCategory::Identifier::Syntax
+
     isJoin?(t: Syntax): Boolean ==
       compound? t =>
         (op := getOperator(t)) case Identifier => (op::Identifier) = makeJoin() 
         false
       false
+
+    isAdd?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeAdd() 
+        false
+      false
+
+    isProgn?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeProgn() 
+        false
+      false
+
+    isNil?(t: Syntax): Boolean ==
+      not compound? t => t = makeNil()
+      false
+
+    isType?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeType()
+        false
+      false
+
+    isRecord?(t: Syntax): Boolean ==
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeRecord()
+      false
+
+    hasElseBranch?(f: IfAst): Boolean == not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+
+    hasThenBranch?(f: IfAst): Boolean == not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
 
     mappingAstToSignature(m: MappingAst): Signature ==
       src : List Syntax := []

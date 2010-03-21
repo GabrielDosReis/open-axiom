@@ -1,0 +1,24 @@
+)abbrev package ATRCOL AttributeCollection
+++ Author: Yue Li
+++ Date Created: March 15, 2010
+++ Date Last Updated: March 20, 2010
+++ Description: 
+++ This package implements functions for collecting all the 
+++ built-in attributes from the category AttributeRegistry
+AttributeCollection(): Public == Private where
+  Public == with
+    collectAttributes: () -> List Syntax
+      ++ returns the complete set of OpenAxiom built-in attributes
+    allAttributes: () -> List Syntax
+      ++ returns the global variable which stores the attribute set
+  Private == add
+    builtinAttributes: List Syntax := []
+    allAttributes == builtinAttributes
+    fileDirectory(): FileName ==
+      f := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/ATTREG.spad")$Lisp
+      l := f pretend List(FileName)
+      first l     
+    collectAttributes ==
+      s := parse(fileDirectory()::String)$SpadParser
+      attrs := rest getOperands last getOperands(s.1)
+      builtinAttributes := [first(getOperands(e)) for e in attrs]
