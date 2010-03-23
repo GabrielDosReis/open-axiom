@@ -1,6 +1,5 @@
 )co operatorcats.spad
 
-
 import SYNHELP
 import TYPCHK
 
@@ -19,30 +18,23 @@ CheckAssumption(): Public == Private where
   Public == with
     preprocOperatorCategories: Boolean
     viewOperatorCategory: List OPCATS
-    preprocAssumptions: Boolean 
+    preprocessAssumptions: Boolean 
     viewAssumptionList: List OPASMP
-    collectAssociativeOperator: List OPREC
- 
+    collectAssociativeOperator: List OPREC 
     ++ export for redupkg
     isDomain?: Syntax -> Boolean
     isCategory?: Syntax -> Boolean
 
-
   Private == add
-    L_opcats : List OPCATS := []
-    L_opasmp : List OPASMP := []
-    L_assocop: List OPREC  := []
-    T_typeenv: Table(Syntax, Syntax) := empty()
+    operatorCategoryList   : List OPCATS := []
+    operatorAssumptionList : List OPASMP := []
+    associativeOperatorList: List OPREC  := []
+    typeEnvironment: Table(Syntax, Syntax) := empty()
 
-    cleanUp(): Boolean == 
-      L_opcats := []
-      true
-
-    extractDeclList(ctor: Identifier): List OPFUNR ==
+    extractDeclarationList(ctor: Identifier): List OPFUNR ==
       result : List OPFUNR := []
       c := retract(findConstructor(ctor)$Constructor)$(Maybe Constructor)
-      L_overload := operations c
-      for f in L_overload repeat
+      for f in operations c repeat
         fn := name f
         for fd in members f repeat
           sig := signature fd
@@ -62,7 +54,7 @@ CheckAssumption(): Public == Private where
       []
 
     preprocOperatorCategories() == 
-      L_opcats := []
+      operatorCategoryList := []
       cats := parse("operatorcats.spad")$SpadParser
       for cat in cats repeat
         cat' := cat::DefinitionAst
@@ -70,32 +62,30 @@ CheckAssumption(): Public == Private where
         cpars := parameters head cat'
         csig := source signature cat'
         joins := (body cat')::Syntax
-        r: OPCATS := [cname, cpars, csig, extractDeclList cname, collectJoins joins]
-        L_opcats := concat(L_opcats, r)
+        r: OPCATS := [cname, cpars, csig, extractDeclarationList cname, collectJoins joins]
+        operatorCategoryList := concat(operatorCategoryList, r)
       true
 
-    viewOperatorCategory() ==  L_opcats
+    viewOperatorCategory() ==  operatorCategoryList
 
     getParametersFromAssumption(a: WhereAst): List Syntax ==
       callform := first getOperands((mainExpression a)::Syntax)
       getOperands callform
 
-    getOPCatNameFromAssumption(a: WhereAst): Identifier ==
+    getOperatorCategoryNameFromAssumption(a: WhereAst): Identifier ==
       callform := first getOperands((mainExpression a)::Syntax)
       (opr := getOperator callform)  case Identifier => opr::Identifier
       userError "unexpected type of constructor name"
 
-    retrieveCatRecord(ctorName: Identifier): OPCATS ==
-      --print(L_opcats::OutputForm)
-      --print(ctorName::OutputForm)
-      for r in L_opcats repeat
+    retrieveCategoryRecord(ctorName: Identifier): OPCATS ==
+      for r in operatorCategoryList repeat
         r.ctorname = ctorName => return r
       userError "can not find the category record!"
 
     getCtorKind(c: Identifier): ConstructorKind == 
       kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
 
-    isTypeT?(c: Syntax): Boolean ==  not compound? c and key?(c, T_typeenv)
+    isTypeT?(c: Syntax): Boolean ==  not compound? c and key?(c, typeEnvironment)
 
     isDomain?(c: Syntax): Boolean ==      
       compound? c and (opr := getOperator c) case Identifier => 
@@ -108,11 +98,11 @@ CheckAssumption(): Public == Private where
         getCtorKind(opr::Identifier) = category$ConstructorKind
       false
 
-    checkDomHasCat(dom: Syntax, cat: Syntax): Boolean ==
+    checkDomainHasCategory(dom: Syntax, cat: Syntax): Boolean ==
       expression := buildSyntax('has::Syntax::Identifier, [dom, cat])::InputForm
       retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
-    checkCatHasCat(catl: Syntax, catr: Syntax): Boolean ==
+    checkCategoryHasCategory(catl: Syntax, catr: Syntax): Boolean ==
       expression := buildSyntax('has::Syntax::Identifier, [catl, catr])::InputForm
       retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
@@ -132,14 +122,14 @@ CheckAssumption(): Public == Private where
     
     checkAnnotatedOperatorParameter(tpanot: Syntax, fn: Identifier, sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
-      AnnotFunResolForAssumption(tpanot, source sig', target sig', fn, T_typeenv)$TypeChecker    
+      AnnotFunResolForAssumption(tpanot, source sig', target sig', fn, typeEnvironment)$TypeChecker    
 
     makeUnknown: Syntax                == '_?::Identifier::Syntax
 
     checkUnannotatedOperatorParameter(fn: Identifier, sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
       for dom in concat(source sig', target sig') repeat
-        first(t := AnnotFunResolForAssumption(dom, source sig', target sig', fn, T_typeenv)$TypeChecker) => return t
+        first(t := AnnotFunResolForAssumption(dom, source sig', target sig', fn, typeEnvironment)$TypeChecker) => return t
       pair(false, signature([makeUnknown()], makeUnknown())) 
 
     checkOperatorParameter(op: Syntax, tp: Syntax): Pair(Boolean, Signature) ==
@@ -148,19 +138,19 @@ CheckAssumption(): Public == Private where
       checkUnannotatedOperatorParameter(op::Identifier, tp)
 
     createFunctionRecord(f: Syntax, s: Signature): OPREC ==
-      first(t := isAnnotatedOperator? f) => [(second second t)::Identifier, first second t, s, copy T_typeenv]
-      [f::Identifier, makeUnknown(), s, copy T_typeenv]
+      first(t := isAnnotatedOperator? f) => [(second second t)::Identifier, first second t, s, copy typeEnvironment]
+      [f::Identifier, makeUnknown(), s, copy typeEnvironment]
 
-    containTpVar?(cat: Syntax): Boolean ==
+    containTypeVar?(cat: Syntax): Boolean ==
       not compound? cat => isTypeT? cat
       for opr in getOperands cat repeat
-        containTpVar? opr  => return true
+        containTypeVar? opr  => return true
       false 
 
-    checkCtorCallForm(pars: List Syntax, ctorName: Identifier): Pair(List Syntax, List OPREC) ==
-      op_rec := retrieveCatRecord(ctorName)
-      ctorPars : List Identifier := op_rec.ctorpars
-      ctorParTypes : List Syntax := op_rec.partypes
+    checkConstructorCallForm(pars: List Syntax, ctorName: Identifier): Pair(List Syntax, List OPREC) ==
+      operatorRecord := retrieveCategoryRecord(ctorName)
+      ctorPars : List Identifier := operatorRecord.ctorpars
+      ctorParTypes : List Syntax := operatorRecord.partypes
       ctorParTypesCopy : List Syntax := copy ctorParTypes
       funRecords: List OPREC := []
       ctorparameters: List Syntax := []
@@ -179,8 +169,8 @@ CheckAssumption(): Public == Private where
 
         (isCategory? tp) =>
           isDomain?(pars.i) => 
-            not containTpVar?(pars.i) =>
-              checkDomHasCat(pars.i, tp) =>
+            not containTypeVar?(pars.i) =>
+              checkDomainHasCategory(pars.i, tp) =>
                 -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy 
                 ctorParTypesCopy := instantiateSignature(pars.i, ctorPars.i, ctorParTypesCopy, i)
                 ctorparameters := concat(ctorparameters, pars.i)
@@ -192,9 +182,9 @@ CheckAssumption(): Public == Private where
             ctorparameters := concat(ctorparameters, pars.i)            
           isTypeT?(pars.i) =>
             k := pars.i
-            tpOfT := T_typeenv.k
+            tpOfT := typeEnvironment.k
             isCategory? tpOfT =>
-              checkCatHasCat(tpOfT, tp) =>
+              checkCategoryHasCategory(tpOfT, tp) =>
                 -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy 
                 ctorParTypesCopy := instantiateSignature(pars.i, ctorPars.i, ctorParTypesCopy, i)
                 ctorparameters := concat(ctorparameters, pars.i)
@@ -219,15 +209,14 @@ CheckAssumption(): Public == Private where
       pair(false, [])
 
     updateForallTypeEnv(forall: Syntax): Boolean ==
-      T_typeenv := empty()
+      typeEnvironment := empty()
       for s in getOperands forall repeat
         s::SpadAst case ColonAst =>
           s' := s::SpadAst::ColonAst
           id := (lhs s')::Syntax
           tp := (rhs s')::Syntax
-          T_typeenv.id := tp
+          typeEnvironment.id := tp
       true
-
 
     checkForallAssumption(a: WhereAst, h: List Syntax): Boolean ==
       forall := first h
@@ -235,79 +224,81 @@ CheckAssumption(): Public == Private where
       updateForallTypeEnv(forall)
       pars := getOperands first getOperands assume
       aname := (getOperator first getOperands assume)::Identifier
-      r := checkCtorCallForm(pars, aname)
+      r := checkConstructorCallForm(pars, aname)
       rec : OPASMP := [aname, first r, second r, (qualifier(a)$WhereAst)::Syntax, true]
-      L_opasmp := concat(L_opasmp, rec)
+      operatorAssumptionList := concat(operatorAssumptionList, rec)
       true
 
     checkAssumption(a: WhereAst): Boolean ==
       first(t := containForall? a) => checkForallAssumption(a, second t)
-      T_typeenv := empty()
+      typeEnvironment := empty()
       pars := getParametersFromAssumption(a)
-      aname := getOPCatNameFromAssumption(a)
-      r := checkCtorCallForm(pars, aname)
+      aname := getOperatorCategoryNameFromAssumption(a)
+      r := checkConstructorCallForm(pars, aname)
       rec : OPASMP := [aname, first r, second r, (qualifier(a)$WhereAst)::Syntax, false]
-      L_opasmp := concat(L_opasmp, rec)
+      operatorAssumptionList := concat(operatorAssumptionList, rec)
       true
 
-    preprocAssumptions() == 
+    preprocessAssumptions() == 
       preprocOperatorCategories()
-      L_opasmp := []
+      operatorAssumptionList := []
       assumps := parse("usrassumptions.spad")$SpadParser
       for a in assumps repeat
         a' := a::WhereAst
         checkAssumption(a')
       true
 
-    buildAssocCallForm(fname: Identifier, rtn: Syntax): Syntax ==  
+    buildAssociativeOperatorCategoryCall(fname: Identifier, rtn: Syntax): Syntax ==  
       buildSyntax('AssociativeOperator::Identifier, [rtn, fname::Syntax])
 
-    instantiateCatRec(callform: Syntax): List Syntax ==
+    instantiateCategoryRecord(callform: Syntax): List Syntax ==
       cname := getOperator(callform)::Identifier
       pars := getOperands callform
-      catrec := first [copy r for r in L_opcats | r.ctorname = cname]
-      pars_catrec := catrec.ctorpars
+      catrec := first [copy r for r in operatorCategoryList | r.ctorname = cname]
+      constructorParameter := catrec.ctorpars
       hascatlist := catrec.hascats
       hascatlist' : List Syntax := copy hascatlist
       for i in 1..#pars repeat
         for j in 1..#hascatlist' repeat
-          hascatlist'.j := replace((pars_catrec.i)::Syntax, hascatlist'.j, pars.i)$SyntaxHelper
+          hascatlist'.j := replace((constructorParameter.i)::Syntax, hascatlist'.j, pars.i)$SyntaxHelper
       hascatlist'
        
     collectAncestors(callform: Syntax): List Syntax ==
       result : List Syntax := []
       callform = buildSyntax('Type::Identifier, []) => result := concat(result, callform)
-      r' := instantiateCatRec callform
+      r' := instantiateCategoryRecord callform
       result := concat(result, r')
       for anc in r' repeat
         result := concat(result, collectAncestors anc)
       removeDuplicates result
     
-    hasAssocOpCatT?(callform: Syntax, op: OPREC): Boolean ==
-      searchTarget := buildAssocCallForm(op.funname, target(op.signature))
+    hasAssociativeOperatorCategoryT?(callform: Syntax, op: OPREC): Boolean ==
+      searchTarget := buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
       callform = searchTarget => true
       ancestors := collectAncestors callform
       member?(searchTarget, ancestors)
 
-    hasAssocOpCat?(callform: Syntax, op: OPREC): Boolean ==
-      right := buildAssocCallForm(op.funname, target(op.signature))
+    hasAssociativeOperatorCategory?(callform: Syntax, op: OPREC): Boolean ==
+      right := buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
       left  := callform
       expression := buildSyntax('has::Syntax::Identifier, [left, right])::InputForm
       retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
-    viewAssumptionList() == L_opasmp
+    viewAssumptionList() == operatorAssumptionList
 
     collectAssociativeOperator() ==
-      preprocAssumptions()
-      L_assocop := []
-      for r in L_opasmp repeat
+      preprocessAssumptions()
+      associativeOperatorList := []
+      for r in operatorAssumptionList repeat
         callform : Syntax := buildSyntax(r.catname, r.parlist)
         for op in r.funpars repeat
           if r.forall? then
-            hasAssocOpCatT?(callform, op) => L_assocop := concat(L_assocop, op)
+            hasAssociativeOperatorCategoryT?(callform, op) => 
+              associativeOperatorList := concat(associativeOperatorList, op)
           else
-            hasAssocOpCat?(callform, op) => L_assocop := concat(L_assocop, op)
-      L_assocop
+            hasAssociativeOperatorCategory?(callform, op) => 
+              associativeOperatorList := concat(associativeOperatorList, op)
+      associativeOperatorList
       
 
 

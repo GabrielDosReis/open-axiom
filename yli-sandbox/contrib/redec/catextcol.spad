@@ -257,7 +257,7 @@ CategoryExtensionCollection(): Public == Private where
       sexLst := sex pretend List(FileName)
       sexLst
 
-    sex2str(s: FileName): String ==
+    sexpressionToString(s: FileName): String ==
       res := s::String
 
     collectAllConstructorData ==
@@ -265,7 +265,7 @@ CategoryExtensionCollection(): Public == Private where
       collectAttributes()$AttributeCollection
       sexls :List FileName := getAllFileName() 
       for s in sexls repeat
-        fname := sex2str(s)
+        fname := sexpressionToString(s)
         nm: List Syntax := parse(fname)$SpadParser
         lookatEach(nm)
       count
@@ -275,3 +275,8 @@ CategoryExtensionCollection(): Public == Private where
         r.catname = cname => return r
       print(cname::OutputForm)
       userError "category extension record not found!"
+
+
+
+
+

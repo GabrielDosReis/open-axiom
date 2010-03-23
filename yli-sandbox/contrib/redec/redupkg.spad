@@ -8,9 +8,10 @@ import CEXCOL
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: December 17, 2009
-++ Description: This package provides preprocessing functions for semantic analysis
-++              of a package/domain/category
+++ Date Last Updated: March 22, 2010
+++ Description: This package provides library functions for extracting
+++ parallelizable accumulation loops, reduce function calls, as well as 
+++ reduce forms
 ReductionAnalysisPackage(): Public == Private where
   macro VTB    == Table(Syntax, Syntax)
   macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
@@ -27,8 +28,8 @@ ReductionAnalysisPackage(): Public == Private where
   macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
   -- for storing associative operator records
   macro OPREC == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
-
   --- for  category extension database to use
+  macro TCR == Record(funname: Identifier, signature: Signature, tenv: VTB)
   macro EXTP  == Pair(Syntax, List Syntax) -- (category/attribute, predicate)
   macro LEXTP == List EXTP
   macro LAP   == LEXTP                -- for attributes, i.e. conditional and unconditional
@@ -36,7 +37,6 @@ ReductionAnalysisPackage(): Public == Private where
   macro CEXTR == Record(catname: Identifier, catpars: List Identifier,_ 
                         partyps: List Syntax, declarations: LSP, extensions: LEXTP, attributes: LAP)
   macro CEXTDB == List CEXTR
-
   Public == with
     analyze: (Integer, Integer) -> Boolean
     analyzeReduction: (String, Integer) -> Boolean
@@ -58,7 +58,7 @@ ReductionAnalysisPackage(): Public == Private where
     collectFromStatement: (SpadAst, Identifier, VTB) -> Integer
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
 
-    getCtorKindInString: Identifier -> String
+    getConstructorKindInString: Identifier -> String
 
   Private == add
     import SpadParser
@@ -81,21 +81,19 @@ ReductionAnalysisPackage(): Public == Private where
     -- 0: extract reduction loops with functions used in the loop
     -- 1: extract reduce function and reduce forms.
     programOption : Integer := 0
-
     -- for reduction loops
-    analysisResultList: List ZREC                       := []
+    analysisResultList: List ZREC                      := []
     -- for reduce function calls
-    reduceList: List RREC                                := []
+    reduceList: List RREC                              := []
     -- no longer used 
-    reduceFormList: List RFREC                          := []
+    reduceFormList: List RFREC                         := []
     -- the improved list for reduce forms
-    rformList : List RFORM                          := []
-    importList : List ImportAst                          := []
-    fundefList : List DREC                               := []
-    categorySet: Set Identifier                         := {}
-    packageSet:  Set Identifier                         := {}
-    domainSet:   Set Identifier                         := {}
-
+    rformList : List RFORM                             := []
+    importList : List ImportAst                        := []
+    fundefList : List DREC                             := []
+    categorySet: Set Identifier                        := {}
+    packageSet:  Set Identifier                        := {}
+    domainSet:   Set Identifier                        := {}
     constructorName: Identifier                        := gensym()
     constructorParameters: List Syntax                 := []
     constructorParameterTypes: List Syntax             := []
@@ -105,12 +103,10 @@ ReductionAnalysisPackage(): Public == Private where
     localUnexportedSignatureDatabase : List FREC       := []
     -- exported signatures with slot instantiated but without instantiating %
     localExportedSignatureDatabase : List FREC         := [] 
-
     -- Table for storing global variables such as constructor parameter, and global variable in capsule
     -- this will become global type environment, storing global function declaration, global 
     -- variable declaration including the immediate initialization
     cgv: VTB := empty()
-
     viewImports == importList
     viewFunDefs == fundefList
     viewMacros  == constructorMacros
@@ -118,14 +114,13 @@ ReductionAnalysisPackage(): Public == Private where
       print(constructorName::OutputForm)
       print(constructorParameters::OutputForm)
       print(constructorParameterTypes::OutputForm)
-
     viewReplacedCtor  == replacedConstructorDef
     viewExportedSig   == localExportedSignatureDatabase
     viewUnexportedSig == localUnexportedSignatureDatabase
     viewGlobalVars    == cgv
     viewReduceFuns    == reduceList
     viewReduceForms   == reduceFormList
-    viewStatistics ==
+    viewStatistics    ==
       if programOption = 0 then 
         print("Reduction loop #:"::OutputForm)
         print(totalcounter::OutputForm)
@@ -145,11 +140,11 @@ ReductionAnalysisPackage(): Public == Private where
       print("Domain #:"::OutputForm)
       print((#domainSet)::OutputForm)
 
-    makePercentage: Syntax   == '%::Identifier::Syntax
+    makePercentage: Syntax          == '%::Identifier::Syntax
     makeCase: Syntax                == 'case::Identifier::Syntax
     makeTrue: Syntax                == 'true::Identifier::Syntax
     makeNil: Syntax                 == 'nil::Identifier::Syntax
-    makeJoin: Syntax                   == 'Join::Identifier::Syntax
+    makeJoin: Syntax                == 'Join::Identifier::Syntax
 
     cleanUpConstructorInformation: Boolean ==
       cgv := empty()
@@ -296,7 +291,7 @@ ReductionAnalysisPackage(): Public == Private where
       localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
       true
 
-    getFunSigFromColonAst(sa: SpadAst, gte: VTB): Boolean ==
+    getFunctionSignatureFromColonAst(sa: SpadAst, gte: VTB): Boolean ==
       sa'   := sa::Syntax::ColonAst
       right := rhs(sa')::Syntax::SpadAst
       left  := lhs(sa')::Syntax::SpadAst
@@ -521,8 +516,8 @@ ReductionAnalysisPackage(): Public == Private where
         rformList := concat(rformList, reduceFormRecord)
       true
 
-    updateGlobalTypeEnvFromColonAst(cast: SpadAst, gte: VTB): VTB ==
-      getFunSigFromColonAst(cast, gte)
+    updateGlobalTypeEnvironmentFromColonAst(cast: SpadAst, gte: VTB): VTB ==
+      getFunctionSignatureFromColonAst(cast, gte)
       varLst := listColonAst(cast::Syntax::ColonAst)$SyntaxHelper
       varTyp := (rhs(cast::Syntax::ColonAst))::Syntax
       for v in varLst repeat
@@ -612,7 +607,7 @@ ReductionAnalysisPackage(): Public == Private where
         count
       dBody case WhileAst => count  
       dBody case ColonAst => 
-        gte := updateGlobalTypeEnvFromColonAst(macroExpansion(dBody), gte)
+        gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(dBody), gte)
         count
       dBody case ConstructAst => count
       dBody case CollectAst => count
@@ -645,7 +640,7 @@ ReductionAnalysisPackage(): Public == Private where
       sa case ColonAst => 
         -- collect the global variable declared in the capsule
         --print(sa::Syntax::OutputForm)
-        gte := updateGlobalTypeEnvFromColonAst(macroExpansion(sa), gte)
+        gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(sa), gte)
         count
       sa case SignatureAst => count
       sa case MacroAst => 
@@ -713,7 +708,7 @@ ReductionAnalysisPackage(): Public == Private where
         if (st case MacroAst) then
           collectMacro(st::Syntax::MacroAst)
         if (st case ColonAst) then
-          cgv := updateGlobalTypeEnvFromColonAst(macroExpansion(st), cgv)
+          cgv := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(st), cgv)
         if (st case ExitAst) then
           a := expression(st::Syntax::ExitAst)$ExitAst
           b := body(a::Syntax::CapsuleAst)$CapsuleAst
@@ -1044,7 +1039,7 @@ ReductionAnalysisPackage(): Public == Private where
         f := string((r.funname)::Symbol)
         s := signatureToString(r.signature)
         a := reductionToString(r.reductions)
-        k : String := getCtorKindInString(r.ctorname)
+        k : String := getConstructorKindInString(r.ctorname)
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
@@ -1059,7 +1054,7 @@ ReductionAnalysisPackage(): Public == Private where
         f := string((r.funname)::Symbol)
         s := signatureToString(r.signature)
         a := reductionFormsToString(r.reduceforms)
-        k : String := getCtorKindInString(r.ctorname)
+        k : String := getConstructorKindInString(r.ctorname)
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r", "Reduce Forms==>\n\r\n\r",_
                                               a, "\n\r"]))
@@ -1074,7 +1069,7 @@ ReductionAnalysisPackage(): Public == Private where
         f := string((r.funname)::Symbol)
         s := signatureToString(r.signature)
         a := reductionFormsToString2(r.reduceforms)
-        k : String := getCtorKindInString(r.ctorname)
+        k : String := getConstructorKindInString(r.ctorname)
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
@@ -1119,7 +1114,7 @@ ReductionAnalysisPackage(): Public == Private where
         print(reductionCounter::OutputForm)
       true
 
-    macro TCR == Record(funname: Identifier, signature: Signature, tenv: VTB)
+
 
     -- checks whether a variable is a type variable 
     -- by looking up in the global type environment
