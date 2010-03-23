@@ -208,7 +208,7 @@ CategoryExtensionCollection(): Public == Private where
     -- filter out the import statement before the category definition
     importFilter(l: List Syntax): Syntax ==
       for s in l repeat
-        s' := s::SpadAst --case ImportAst => L_import := concat(L_import, s::ImportAst)
+        s' := s::SpadAst
         s' case MacroAst => collectMacro(s::MacroAst)
         s' case DefinitionAst or s' case WhereAst => return s
       l.last
@@ -224,7 +224,6 @@ CategoryExtensionCollection(): Public == Private where
       sast case WhereAst => 
         mainexp := mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst
         ctorName : Identifier := name(head(mainexp)$DefinitionAst)$HeadAst
-        --print((getCtorKindInString(ctorName))::OutputForm)
         ctorPar  := parameters(head(mainexp)$DefinitionAst)$HeadAst
         ctorSig  := signature(mainexp)$DefinitionAst
         ctorTps  := source(ctorSig)

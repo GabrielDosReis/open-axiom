@@ -1,11 +1,11 @@
 OA := /users/yli/software/OA-latest/oa/bin/open-axiom --compile
 
-all: help anal tpchk extract checkasm preproc
+all: help analysis tpchk extract checkasm preproc
 
 help: synhelp.spad
 	${OA} synhelp.spad
 
-anal: analysis.spad
+analysis: analysis.spad
 	${OA} analysis.spad
 
 tpchk: typchker.spad

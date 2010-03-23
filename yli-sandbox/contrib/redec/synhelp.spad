@@ -1,6 +1,9 @@
 )abbrev package SYNHELP SyntaxHelper
-++ Authors: Yue Li, Jacob Smith
-++ Description:
+++ Authors: Yue Li
+++ Date Created: November 23, 2009
+++ Date Last Updated: March 20, 2010
+++ Description: This package provides helper functions for
+++ Syntax and AST manipulations
 SyntaxHelper(): Public == Private where
   Public == with
     getLhs: LetAst -> Syntax
@@ -12,26 +15,33 @@ SyntaxHelper(): Public == Private where
       ++ replace(a, b, c)
       ++ replace all occurrances of a in b with c
     replace: (Syntax, DomainTemplate) -> Syntax
+      ++ replace number slots (not including local number slots) with 
+      ++ elements stored in domain template.
     replaceLetRhs: (Syntax, LetAst, Syntax) -> LetAst
       ++ replaceLetRhs(a, b, c)
       ++ replaces all occurrances of a in the rhs(b) with c
     toString: Syntax -> String
+      ++ convert a syntax to string for pretty printing purpose
     listColonAst: ColonAst -> List Syntax
       ++ isListOf?(c)
       ++ checks whether the left hand side of a ColonAst is a list such as x, y, z : Integer
       ++ if so, return the list of elements.
+    hasThenBranch?: IfAst -> Boolean
+      ++ checks whether an if ast has then branch
+    hasElseBranch?: IfAst -> Boolean
+      ++ checks whether an if ast has else branch
     isJoin?: Syntax -> Boolean
     isAdd?: Syntax -> Boolean
     isProgn?: Syntax -> Boolean
     isNil?: Syntax -> Boolean
     isType?: Syntax -> Boolean
-    hasElseBranch?: IfAst -> Boolean
-    hasThenBranch?: IfAst -> Boolean
     mappingAstToSignature: MappingAst -> Signature
+      ++ converts a mapping ast to signature
     isDomain?: Syntax -> Boolean
     isCategory?: Syntax -> Boolean
     isRecord?: Syntax -> Boolean
     toDomainConstructor: Constructor -> DomainConstructor
+      ++ convert a domain constructor with type Constructor to type DomainConstructor
     makeNumberSlot: Integer -> Syntax
     makeLocalNumberSlot: Integer -> Syntax
     makeDoubleDollar: () -> Syntax
@@ -64,15 +74,13 @@ SyntaxHelper(): Public == Private where
       e = set => true
       compound? set =>
         for u in unlist set repeat
-          if within?(e, u) then
-            return true
-        return false
+          within?(e, u) => return true
+        false
       false
 
     listWithin?(vs: List Syntax, s: Syntax): Boolean ==
       for v in vs repeat
-        if within?(v, s) then
-          return true
+        within?(v, s) => return true
       false
 
     unlist(x: Syntax): List Syntax ==
@@ -216,23 +224,3 @@ SyntaxHelper(): Public == Private where
       compound? c and (opr := getOperator c) case Identifier => 
         getCtorKind(opr::Identifier) = category$ConstructorKind
       false
-
-
-
-    --alphaRename: (Syntax, Syntax, Syntax) -> Syntax
-      ++ rename(a, b, c)
-      ++ rename a to c in b, but first, it renames
-      ++ c in b to GENSYM()$Lisp
-    --alphaRename: (Table(Syntax, Syntax), Syntax) -> Syntax
-    --alphaRename: (Table(Symbol, Symbol), Syntax) -> Syntax
-    --alphaRename(needle, haystack, brick) ==
-    --  G : Syntax := GENSYM()$Lisp::Syntax
-    --  replace(needle, replace(brick, haystack, G), brick)
-    --alphaRename(Z : Table(Syntax, Syntax), haystack: Syntax) ==
-    --  for key in keys Z repeat
-    --    haystack := alphaRename(key, haystack, Z.key)
-    --  haystack
-    --alphaRename(Z : Table(Symbol, Symbol), haystack: Syntax) ==
-    --  for key in keys Z repeat
-    --    haystack := alphaRename(key::Syntax, haystack, (Z.key)::Syntax)
-    --  haystack
