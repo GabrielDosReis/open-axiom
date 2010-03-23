@@ -40,8 +40,8 @@ ReductionAnalysisPackage(): Public == Private where
   Public == with
     analyze: (Integer, Integer) -> Boolean
     analyzeReduction: (String, Integer) -> Boolean
-    preproc: List Syntax -> Integer
-    preprocAll: Integer
+    analyzeOneFile: List Syntax -> Integer
+    analyzeAllFiles: Integer
     viewImports: List ImportAst
     viewMacros: VTB
     viewCtorInfo: Void()
@@ -145,13 +145,13 @@ ReductionAnalysisPackage(): Public == Private where
       print("Domain #:"::OutputForm)
       print((#domainSet)::OutputForm)
 
-    unknownSyn: Syntax == '_?::Identifier::Syntax
     makePercentage: Syntax   == '%::Identifier::Syntax
     makeCase: Syntax                == 'case::Identifier::Syntax
     makeTrue: Syntax                == 'true::Identifier::Syntax
     makeNil: Syntax                 == 'nil::Identifier::Syntax
+    makeJoin: Syntax                   == 'Join::Identifier::Syntax
 
-    cleanUpCtorInfo: Boolean ==
+    cleanUpConstructorInformation: Boolean ==
       cgv := empty()
       constructorName: Identifier := gensym()
       replacedConstructorDef : Syntax := gensym()::Syntax
@@ -170,13 +170,13 @@ ReductionAnalysisPackage(): Public == Private where
       count := 0
       defNo := 0
       analysisResultList := []
-      reduceList          := []
+      reduceList         := []
       reduceFormList     := []
-      rformList      := []
+      rformList          := []
       categorySet        := {}
       packageSet         := {}
       domainSet          := {}
-      cleanUpCtorInfo()
+      cleanUpConstructorInformation()
       true
 
     -- collect macros into table
@@ -237,11 +237,10 @@ ReductionAnalysisPackage(): Public == Private where
         for m in keys constructorMacros repeat
           operands.2 := replace(m, operands.2, constructorMacros.m)$SyntaxHelper
       -- if this is a LetAst and the left hand side is a ColonAst
-      if defAst case LetAst and  compound?(lhs(defAst::Syntax::LetAst)::Syntax) and  (l := lhs(defAst::Syntax::LetAst)) case ColonAst then
+      if defAst case LetAst and  compound?(lhs(defAst::Syntax::LetAst)::Syntax) and_
+         (l := lhs(defAst::Syntax::LetAst)) case ColonAst then
         operands.1 := macroExpansion(l)::Syntax
-      defAst' := buildSyntax(op, operands)::SpadAst
-      defAst'
-
+      buildSyntax(op, operands)::SpadAst
 
     -- filter out the import statement before the category definition
     importFilter(l: List Syntax): Syntax ==
@@ -251,29 +250,24 @@ ReductionAnalysisPackage(): Public == Private where
         s' case DefinitionAst or s' case WhereAst => return s
       l.last
 
-    initVtWithGt(v: VTB, g: VTB): VTB ==
-      for k in keys(g) repeat
-        v.k := g.k
-      v
-
     initGlobalVariableEnvironment(ctorName: Identifier, ctorPars: List Identifier, ctorTps: List Syntax): VTB ==
       for p in ctorPars for t in ctorTps repeat
         p' := p::Syntax
         cgv.p'  := t
       cgv
 
-    ctorCallForm: Syntax == buildSyntax(constructorName::Syntax, constructorParameters)
+    constructorCallForm():Syntax == 
+      buildSyntax(constructorName::Syntax, constructorParameters)
 
     instantiatePercentage(signatureast: SpadAst): Syntax ==
       signatureast' := signatureast::Syntax
-      replace(makePercentage(), signatureast', ctorCallForm())$SyntaxHelper
+      replace(makePercentage(), signatureast', constructorCallForm())$SyntaxHelper
 
     -- update the global type environment
-    updateGlobalTypeEnv(gte: VTB, id: Syntax, tp: Syntax): VTB ==
+    updateGlobalTypeEnvironment(gte: VTB, id: Syntax, tp: Syntax): VTB ==
       qsetelt!(gte, id, tp)
       gte
 
-    makeJoin: Syntax                   == 'Join::Identifier::Syntax
     updateGlobalTypeEnvFromCondition(cond: SpadAst, gte: VTB): VTB ==
       compound?(cond::Syntax) and cond case HasAst =>
         cond := macroExpansionForSyntax(cond)
@@ -312,7 +306,7 @@ ReductionAnalysisPackage(): Public == Private where
       -- if this is a function signature
         right' := right::Syntax::MappingAst
         updateUnexportedSignatureDatabase(left'::Identifier, mappingAst2Signature(right'),  #(source(right')$MappingAst))
-        gte := updateGlobalTypeEnv(gte, left::Syntax, right::Syntax) 
+        gte := updateGlobalTypeEnvironment(gte, left::Syntax, right::Syntax) 
       true
 
     signatureComplete?(sig: Signature): Boolean ==
@@ -331,7 +325,7 @@ ReductionAnalysisPackage(): Public == Private where
       recordForPer : FREC := ['per::Identifier, signature([bd::Syntax], makePercentage()), 1]
       localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, [recordForRep, recordForPer])
       true
-      
+
     updateUnexportedDatabaseWhenMeetFunDef(fn: Identifier, sig: Signature, a: Integer, bd: SpadAst): Boolean ==
       isRep?(fn)                  => updateUnexportedDatabaseWhenMeetRep(bd)
       not signatureComplete?(sig) => false
@@ -357,7 +351,7 @@ ReductionAnalysisPackage(): Public == Private where
           return pair(true, entry.signature)
       pair(false, sig)
 
-    updateParameterTypeFromTypeEnv(pars: List Syntax, sig: Signature, gte: VTB): Signature ==
+    updateParameterTypeFromTypeEnvironment(pars: List Syntax, sig: Signature, gte: VTB): Signature ==
       src := source sig
       tar := target sig
       for i in 1..#src for p in pars repeat
@@ -368,7 +362,7 @@ ReductionAnalysisPackage(): Public == Private where
     getCompleteSignature(fn: Identifier, pars: List Syntax, sig: Signature, gte: VTB): Signature ==
       -- search in global type environment first
       if not (fn = makeCase()::Identifier) then 
-        sig := updateParameterTypeFromTypeEnv(pars, sig, gte)
+        sig := updateParameterTypeFromTypeEnvironment(pars, sig, gte)
         signatureComplete?(sig) => return sig
       -- after searching the global type environment, if the type is still incomplete
       -- then search the two databases
@@ -382,14 +376,14 @@ ReductionAnalysisPackage(): Public == Private where
     -- should add exclamation.
     instantiatePercentageInSource(src: List Syntax): List Syntax ==
       for i in 1..#src repeat
-        src.i := replace(makePercentage(), src.i, ctorCallForm())$SyntaxHelper
+        src.i := replace(makePercentage(), src.i, constructorCallForm())$SyntaxHelper
       src
 
     instantiatePercentageForListSyntax(s: List Syntax): List Syntax ==
       instantiatePercentageInSource(s)
 
     instantiatePercentageInTarget(tar: Syntax): Syntax ==
-      replace(makePercentage(), tar, ctorCallForm())$SyntaxHelper
+      replace(makePercentage(), tar, constructorCallForm())$SyntaxHelper
 
     instantiatePercentageForSignature(s: Signature): Signature ==
       src := instantiatePercentageInSource copy source s
@@ -399,7 +393,7 @@ ReductionAnalysisPackage(): Public == Private where
     instantiatePercentageForLoops(l: List RepeatAst): List RepeatAst ==
       result := copy l
       for i in 1..#result repeat
-        result.i := (replace(makePercentage(), (result.i)::Syntax, ctorCallForm())$SyntaxHelper)::RepeatAst
+        result.i := (replace(makePercentage(), (result.i)::Syntax, constructorCallForm())$SyntaxHelper)::RepeatAst
       result
 
     filterOutMappingAst(gte: VTB): VTB == 
@@ -425,31 +419,26 @@ ReductionAnalysisPackage(): Public == Private where
       -- we don't do typechecking for rep and per. or Rep ==
       -- because we generate its type, not user, therefore it is always correct.
       isRep?(fn) => true
-
       -- make a copy of the defintion ast
       defAst' := defAst
       gte' := macroExpansionForTypeEnvironmentTable(gte)
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
-
       if programOption = 0 then
         -- analyze the loop, extracting reductions 
         resultFromLoopAnalysis: Pair(LTB, List List Syntax) := extractReductionPatternFromFunctionDefinition(defAst', constructorName, copy gte')$LoopAnalysis 
         loopTable: LTB := first resultFromLoopAnalysis
         accVariables: List List Syntax := second resultFromLoopAnalysis
-
         -- if there is no interesting loop, we do nothing.
         empty? loopTable => return true
         #keys(loopTable) > 1 => 
           print(loopTable::OutputForm)
           userError "unexpected results from analysis framework [has more than 1 entry in the table]"
-
         print(" ")
         print("-------------------------------------------------------------")
         print("|  Encounter potential reduction, start doing typechecking  |")
         print("-------------------------------------------------------------")
         print(" ")     
-
         k := first keys loopTable
         loopList : List RepeatAst := loopTable.k
         sig' := sig
@@ -461,10 +450,8 @@ ReductionAnalysisPackage(): Public == Private where
         defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
         -- instantiate the % in the signature with the ctor call form
         sig'    := instantiatePercentageForSignature(sig')
-
         --instantiate the % in the collected potential repeatAsts
         loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
-
         -- build the record
         r : DREC := [fn, sig', defAst', copy gte', []]
         -- typechecks the function definition body
@@ -473,7 +460,6 @@ ReductionAnalysisPackage(): Public == Private where
                                              localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
                                              importList', constructorMacros,_
                                              loopList', accVariables)$TypeChecker
-
         r.typeenv := first resultFromTypeChecker
         r.accumulations := second resultFromTypeChecker
         fundefList := concat(fundefList, r)
@@ -500,7 +486,6 @@ ReductionAnalysisPackage(): Public == Private where
         defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
         -- instantiate the % in the signature with the ctor call form
         sig'    := instantiatePercentageForSignature(sig')
-
         --instantiate the % in the collected potential repeatAsts
         reduceForms' : List Syntax := instantiatePercentageForListSyntax(reduceForms)
 
@@ -541,7 +526,7 @@ ReductionAnalysisPackage(): Public == Private where
       varLst := listColonAst(cast::Syntax::ColonAst)$SyntaxHelper
       varTyp := (rhs(cast::Syntax::ColonAst))::Syntax
       for v in varLst repeat
-        gte := updateGlobalTypeEnv(gte, v, varTyp)
+        gte := updateGlobalTypeEnvironment(gte, v, varTyp)
       gte
 
     isTypeExpression?(s: SpadAst): Boolean ==
@@ -559,8 +544,7 @@ ReductionAnalysisPackage(): Public == Private where
       dBody case ImportAst =>
         importList := concat(importList, dBody::Syntax::ImportAst)        
         count
-      dBody case SignatureAst =>
-        count
+      dBody case SignatureAst => count
       dBody case MacroAst => 
         collectMacro(dBody::Syntax::MacroAst)
         count
@@ -571,10 +555,7 @@ ReductionAnalysisPackage(): Public == Private where
       dBody case SequenceAst =>
         stmtLst:= body(dBody::Syntax::SequenceAst)$SequenceAst
         for stmt in stmtLst repeat
-          --print(stmt::Syntax::OutputForm)
-          --print(gte::OutputForm)
           collectFromStatement(stmt, ctor, gte)
-          --print(gte::OutputForm)
         count
       dBody case IfAst => 
         dBody'   := dBody::Syntax::IfAst
@@ -595,7 +576,6 @@ ReductionAnalysisPackage(): Public == Private where
         count
       dBody case RepeatAst =>
         b := dBody::Syntax::RepeatAst
-        --updateTable(ctor, functionName, b, lpTable)
         count := count + 1
         count
       dBody case CoerceAst =>
@@ -619,7 +599,7 @@ ReductionAnalysisPackage(): Public == Private where
           updateUnexportedDatabaseWhenMeetRep(rhs(dBody'))
         else if compound?((l := lhs(dBody'))::Syntax) and l case ColonAst then
           tp := rhs(l::Syntax::ColonAst)::Syntax
-          gte := updateGlobalTypeEnv(gte, id, tp)
+          gte := updateGlobalTypeEnvironment(gte, id, tp)
         else
           gte' := macroExpansionForTypeEnvironmentTable(gte)
           gte' := filterOutMappingAst(gte') 
@@ -628,7 +608,7 @@ ReductionAnalysisPackage(): Public == Private where
                                     gte', constructorName, constructorParameters,_
                                     localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
                                     importList')$TypeChecker
-          gte  := updateGlobalTypeEnv(gte, id, tp)  
+          gte  := updateGlobalTypeEnvironment(gte, id, tp)  
         count
       dBody case WhileAst => count  
       dBody case ColonAst => 
@@ -690,13 +670,13 @@ ReductionAnalysisPackage(): Public == Private where
           updateUnexportedDatabaseWhenMeetRep rhs sa'
         else if compound?((l := lhs(sa'))::Syntax) and l case ColonAst then
           tp := rhs(l::Syntax::ColonAst)::Syntax
-          gte := updateGlobalTypeEnv(gte, id, tp)
+          gte := updateGlobalTypeEnvironment(gte, id, tp)
         else
           gte' := macroExpansionForTypeEnvironmentTable gte
           gte' := filterOutMappingAst gte'
           importList' := macroExpansionForImportList()
           tp   := checkGlobalLetAst(sa', gte', constructorName, constructorParameters, localExportedSignatureDatabase, localUnexportedSignatureDatabase, importList')$TypeChecker
-          gte := updateGlobalTypeEnv(gte, id, tp)
+          gte := updateGlobalTypeEnvironment(gte, id, tp)
         count  
         --collectFromStatement(sa, ctor, gte)
         -- above two cases are for handling some weird parsing result (ZMOD)
@@ -849,21 +829,21 @@ ReductionAnalysisPackage(): Public == Private where
         constructorParameters   := concat(constructorParameters, p::Syntax)
       constructorParameterTypes := ctorTps      
       replacedConstructorDef := instantiatePercentage(sast)
-      localExportedSignatureDatabase := instantiateFunctionDescriptor(ctorCallForm(), getExportedSignatures())
+      localExportedSignatureDatabase := instantiateFunctionDescriptor(constructorCallForm(), getExportedSignatures())
       initGlobalVariableEnvironment(ctorName, ctorPar, ctorTps)
       true
 
-    getCtorKind(c: Identifier): ConstructorKind == 
+    getConstructorKind(c: Identifier): ConstructorKind == 
       kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
 
     countDomPacCat(c: Identifier): Void ==
-      k : ConstructorKind := getCtorKind(c)
+      k : ConstructorKind := getConstructorKind(c)
       k = category$ConstructorKind =>  categorySet := union(categorySet, {c}) 
       k = package$ConstructorKind  =>  packageSet := union(packageSet, {c}) 
       domainSet := union(domainSet, {c})
 
-    preproc l == 
-      cleanUpCtorInfo()
+    analyzeOneFile l == 
+      cleanUpConstructorInformation()
       -- clean the ctor global variable table
       s := importFilter(l)
       sast := s::SpadAst
@@ -900,16 +880,16 @@ ReductionAnalysisPackage(): Public == Private where
       sexLst := sex pretend List(FileName)
       sexLst
 
-    sex2str(s: FileName): String ==
+    sexpressionToString(s: FileName): String ==
       res := s::String
 
-    preprocAll: Integer ==
+    analyzeAllFiles: Integer ==
       cleanUp()
       sexls :List FileName := getAllFileName() 
       for s in sexls repeat
-        fname := sex2str(s)
+        fname := sexpressionToString(s)
         nm: List Syntax := parse(fname)
-        preproc(nm)
+        analyzeOneFile(nm)
         fCount := fCount + 1
       fCount
 
@@ -1036,8 +1016,8 @@ ReductionAnalysisPackage(): Public == Private where
 
       result
 
-    getCtorKindInString(c: Identifier): String ==
-      k : ConstructorKind := getCtorKind(c)
+    getConstructorKindInString(c: Identifier): String ==
+      k : ConstructorKind := getConstructorKind(c)
       k = category$ConstructorKind =>  "Category"
       k = package$ConstructorKind  =>  "Package"
       "Domain"
@@ -1049,7 +1029,7 @@ ReductionAnalysisPackage(): Public == Private where
         f := string((r.funname)::Symbol)
         s := signatureToString(r.signature)
         a := accumulationToString(r.accumulations)
-        k : String := getCtorKindInString(r.ctorname)
+        k : String := getConstructorKindInString(r.ctorname)
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
@@ -1130,7 +1110,7 @@ ReductionAnalysisPackage(): Public == Private where
       bugcounter := 0
       reductionCounter := 0
       programOption := option
-      preprocAll()
+      analyzeAllFiles()
       if programOption = 0 then
         writeZRecordToFile(analysisResultList, fileStr)
         print(bugcounter::OutputForm)
@@ -1709,6 +1689,12 @@ ReductionAnalysisPackage(): Public == Private where
           print("Parallelizable reduce form #:"::OutputForm)
           print(preductionFormCounter::OutputForm)
 
+    -- parameter option:
+    -- 0: extract reduction loops with functions used in the loop
+    -- 1: extract reduce function and reduce forms.
+    -- parameter collectAssociativeOperator?:
+    -- 0: extract all the reduction whose operator is associative
+    -- 1: opposite to 0
     analyze(option, collectAssociativeOperator?) == 
       --bugcounter := 0
       -- building category extension database
@@ -1718,7 +1704,7 @@ ReductionAnalysisPackage(): Public == Private where
       associativeOperatorList : List OPREC := []
       if collectAssociativeOperator? = 1 then
         associativeOperatorList := collectAssociativeOperator()$CheckAssumption
-      preprocAll()
+      analyzeAllFiles()
       if programOption = 0 then
         writeZRecordToFile(analysisResultList, "reduce-loops")
         print("Results for reduction loops have been written into reduce-loops.txt"::OutputForm)
