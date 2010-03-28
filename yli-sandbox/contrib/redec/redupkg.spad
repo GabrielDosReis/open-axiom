@@ -23,6 +23,8 @@ ReductionAnalysisPackage(): Public == Private where
   macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
   macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
   macro RFREC  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List Syntax)
+  macro AREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, affineloops: List RepeatAst)
+
   -- for storing reduce forms
   macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature, tenv: VTB)
   macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
@@ -57,8 +59,9 @@ ReductionAnalysisPackage(): Public == Private where
     ++ testing
     collectFromStatement: (SpadAst, Identifier, VTB) -> Integer
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
-
     getConstructorKindInString: Identifier -> String
+    viewAcls: () -> List AREC
+
 
   Private == add
     import SpadParser
@@ -68,6 +71,9 @@ ReductionAnalysisPackage(): Public == Private where
     count: Integer := 0
     defNo: Integer := 0
     bugcounter : Integer := 0
+    -- ACL nests counter
+    aclandnlcounter: Integer := 0
+    aclLoopDepths: List Integer := []
     -- reductino loop counter
     totalcounter : Integer := 0
     ptotalcounter : Integer := 0
@@ -79,8 +85,13 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- used for preprocessing
     -- 0: extract reduction loops with functions used in the loop
-    -- 1: extract reduce function and reduce forms.
+    -- 1: extract reduce function and reduce forms. 
+    -- 2: extract acl loop nests (e.g. analyze(2, 0))
     programOption : Integer := 0
+    -- for affine loop nests
+    aclList: List AREC                                 := []
+    -- for nested loops
+    nlList: List AREC                                  := []
     -- for reduction loops
     analysisResultList: List ZREC                      := []
     -- for reduce function calls
@@ -120,6 +131,7 @@ ReductionAnalysisPackage(): Public == Private where
     viewGlobalVars    == cgv
     viewReduceFuns    == reduceList
     viewReduceForms   == reduceFormList
+    viewAcls          == aclList
     viewStatistics    ==
       if programOption = 0 then 
         print("Reduction loop #:"::OutputForm)
@@ -165,6 +177,8 @@ ReductionAnalysisPackage(): Public == Private where
       count := 0
       defNo := 0
       analysisResultList := []
+      aclList            := []
+      nlList             := []
       reduceList         := []
       reduceFormList     := []
       rformList          := []
@@ -461,6 +475,63 @@ ReductionAnalysisPackage(): Public == Private where
         -- update the final result to be written into file
         r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
         analysisResultList := concat(analysisResultList, r')
+------------------------------------------------------------------------------------------------------
+
+      if programOption = 2 then
+        resultFromACFAnalysis : LTB := extractAffineControlLoopFromFunctionDefinition(defAst', constructorName, copy gte')$LoopAnalysis
+        empty? resultFromACFAnalysis => return true
+        #keys(resultFromACFAnalysis) > 1 =>
+          print(resultFromACFAnalysis::OutputForm)
+          userError "unexpected results from analysis framework [has more than 1 entry in the table]"
+        print(" ")
+        print("-------------------------------------------------------------")
+        print("|  Encounter affine control loop nest                       |")
+        print("-------------------------------------------------------------")
+        print(" ")
+        k := first keys resultFromACFAnalysis
+        loopList : List RepeatAst := resultFromACFAnalysis.k
+        sig' := sig
+        -- sigh, the following code is due to the bug caused by "left", "last"
+        pars := getOperands(first(getOperands(defAst::Syntax)))
+        if not signatureComplete?(sig) then
+          sig' := getCompleteSignature(fn, pars, sig, gte)
+        -- instantiate the % in the function body with the ctor call form
+        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        -- instantiate the % in the signature with the ctor call form
+        sig'    := instantiatePercentageForSignature(sig')
+        --instantiate the % in the collected potential repeatAsts
+        loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+        r' : AREC := [constructorName, fn, sig', loopList']
+        aclList := concat(aclList, r')
+
+------------------------------------------------------------------------------------------------------
+
+      if programOption = 3 then
+        resultFromLoopNestsAnalysis : LTB := extractAllLoopNests(defAst', constructorName, copy gte')$LoopAnalysis
+        empty? resultFromLoopNestsAnalysis => return true
+        #keys(resultFromLoopNestsAnalysis) > 1 =>
+          print(resultFromLoopNestsAnalysis::OutputForm)
+          userError "unexpected results from analysis framework [has more than 1 entry in the table]"
+        print(" ")
+        print("-------------------------------------------------------------")
+        print("|  Encounter loop nest                                      |")
+        print("-------------------------------------------------------------")
+        print(" ")
+        k := first keys resultFromLoopNestsAnalysis
+        loopList : List RepeatAst := resultFromLoopNestsAnalysis.k
+        sig' := sig
+        -- sigh, the following code is due to the bug caused by "left", "last"
+        pars := getOperands(first(getOperands(defAst::Syntax)))
+        if not signatureComplete?(sig) then
+          sig' := getCompleteSignature(fn, pars, sig, gte)
+        -- instantiate the % in the function body with the ctor call form
+        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        -- instantiate the % in the signature with the ctor call form
+        sig'    := instantiatePercentageForSignature(sig')
+        --instantiate the % in the collected potential repeatAsts
+        loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+        r' : AREC := [constructorName, fn, sig', loopList']
+        nlList := concat(nlList, r')
 
 -------------------------------------------------------------------------------------------------------
 
@@ -871,7 +942,7 @@ ReductionAnalysisPackage(): Public == Private where
 
 --------------------------------------------------
     getAllFileName: List FileName ==
-      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/test/*.spad")$Lisp
+      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
       sexLst := sex pretend List(FileName)
       sexLst
 
@@ -944,6 +1015,18 @@ ReductionAnalysisPackage(): Public == Private where
         else
           result := concat([result, "  Loop Body==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
                      "\n\r\n\r", funsigStr, "\n\r\n\r", "------------------------", "\n\r"])
+      result
+
+    aclToString(al: List RepeatAst): String ==
+      result : String := ""
+      aclandnlcounter := aclandnlcounter + #al
+      for i in 1..#al repeat
+        aclLoopDepths := concat(aclLoopDepths, getLoopDepth(al.i)$LoopAnalysis)
+        loopStr   := toString((al.i)::Syntax)$SyntaxHelper
+        if i < #al then
+          result := concat([result, "  ACL Nests ==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r"])
+        else
+          result := concat([result, "  ACL Nests==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "------------------------", "\n\r"])
       result
 
     reductionToString(al: List REDU): String == 
@@ -1076,6 +1159,28 @@ ReductionAnalysisPackage(): Public == Private where
 
       result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
       result
+
+
+    toString5(rl: List AREC): String ==
+      result : String := ""
+      for r in rl repeat
+        c := string((r.ctorname)::Symbol)
+        f := string((r.funname)::Symbol)
+        s := signatureToString(r.signature)
+        a := aclToString(r.affineloops)
+        k : String := getConstructorKindInString(r.ctorname)
+        result := concat(result, concat([k, ": ", c, "\n\r",_
+                                         "Function: ", f,": ", s, "\n\r\n\r",_
+                                              a, "\n\r"]))
+
+      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
+      result
+
+    writeARecordToFile(al: List AREC, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString5 al)
+      true
 
     writeZRecordToFile(rl: List ZREC, f: String): Boolean ==
       ofname : FileName := filename(".", f, "tex")
@@ -1574,7 +1679,6 @@ ReductionAnalysisPackage(): Public == Private where
         rec.funname = op.funname and typeMatch?(op, rec) => return true
       false
 
-
   --macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
   --macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
   --macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
@@ -1670,6 +1774,17 @@ ReductionAnalysisPackage(): Public == Private where
 
     printStatistics(option: Integer, collectAssociativeOperator?: Integer, associativeOperatorList: List OPREC): Void ==
       viewStatistics()
+      if collectAssociativeOperator? = 0 then
+        if (option = 2) or (option =3) then
+          if (option = 2) then
+            print("Affine control loop #:"::OutputForm)
+          else
+            print("Nested loop #:"::OutputForm)
+          print(aclandnlcounter::OutputForm)
+          print("Average loop depth:"::OutputForm)
+          averageDepth : DoubleFloat := convert(reduce(_+$Integer, aclLoopDepths)/aclandnlcounter)$Fraction(Integer)        
+          print(averageDepth::OutputForm)
+
       if collectAssociativeOperator? = 1 then 
         print("Associative Operators (by User):"::OutputForm)
         print(associativeOperatorList::OutputForm)
@@ -1678,12 +1793,12 @@ ReductionAnalysisPackage(): Public == Private where
           print(pptotalcounter::OutputForm)
           print("Fully parallelizable loop #:"::OutputForm)
           print(ptotalcounter::OutputForm)    
-        else
+        else --if (option = 1) then
           print("Parallelizable reduce function application#:"::OutputForm)
           print(preductionFunctionCounter::OutputForm)
           print("Parallelizable reduce form #:"::OutputForm)
           print(preductionFormCounter::OutputForm)
-
+          
     -- parameter option:
     -- 0: extract reduction loops with functions used in the loop
     -- 1: extract reduce function and reduce forms.
@@ -1692,12 +1807,12 @@ ReductionAnalysisPackage(): Public == Private where
     -- 1: opposite to 0
     analyze(option, collectAssociativeOperator?) == 
       --bugcounter := 0
-      -- building category extension database
-      collectAllConstructorData()$CategoryExtensionCollection
       reductionCounter := 0
       programOption := option
       associativeOperatorList : List OPREC := []
       if collectAssociativeOperator? = 1 then
+        -- building category extension database
+        collectAllConstructorData()$CategoryExtensionCollection
         associativeOperatorList := collectAssociativeOperator()$CheckAssumption
       analyzeAllFiles()
       if programOption = 0 then
@@ -1726,7 +1841,12 @@ ReductionAnalysisPackage(): Public == Private where
           parallelReduceForms := extractParallelizableReduceForm(associativeOperatorList, rformList)
           writeRFORMToFile(parallelReduceForms, "parallel-reduce-forms")
           print("Results for parallelizable reduction forms have been written into reduce-forms.txt"::OutputForm)
-
+      if programOption = 2 then
+        writeARecordToFile(aclList, "acl-nests")
+        print("ACL loop nests have been written into acl-nests.txt"::OutputForm)
+      if programOption = 3 then
+        writeARecordToFile(nlList, "loop-nests")
+        print("All loop nests have been written into loop-nests.txt"::OutputForm)
       printStatistics(option, collectAssociativeOperator?, associativeOperatorList)
       true
 

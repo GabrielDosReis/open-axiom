@@ -6,7 +6,7 @@ import TYPCHK
 )abbrev package CHKASSMP CheckAssumption
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: November 23, 2009
+++ Date Last Updated: March 20, 2010
 ++ Description: This package provides preprocessing functions for semantic analysis
 ++              of a package/domain/category
 CheckAssumption(): Public == Private where
@@ -119,10 +119,10 @@ CheckAssumption(): Public == Private where
           pair(true, getOperands op)
         pair(false, [])
       pair(false, [])
-    
+
     checkAnnotatedOperatorParameter(tpanot: Syntax, fn: Identifier, sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
-      AnnotFunResolForAssumption(tpanot, source sig', target sig', fn, typeEnvironment)$TypeChecker    
+      AnnotFunResolForAssumption(tpanot, source sig', target sig', fn, typeEnvironment)$TypeChecker
 
     makeUnknown: Syntax                == '_?::Identifier::Syntax
 
@@ -154,7 +154,6 @@ CheckAssumption(): Public == Private where
       ctorParTypesCopy : List Syntax := copy ctorParTypes
       funRecords: List OPREC := []
       ctorparameters: List Syntax := []
-
       for i in 1..#ctorParTypesCopy repeat
         tp := ctorParTypesCopy.i
         tp::SpadAst case MappingAst =>
@@ -166,7 +165,6 @@ CheckAssumption(): Public == Private where
             -- to be modified later
             ctorparameters := concat(ctorparameters, (rec.funname)::Syntax)
           userError "the operator parameter can not be resolved!"
-
         (isCategory? tp) =>
           isDomain?(pars.i) => 
             not containTypeVar?(pars.i) =>
@@ -192,7 +190,6 @@ CheckAssumption(): Public == Private where
               print(tp::OutputForm)
               userError "category does not have the expected category"
             userError "the type of T does not have kind category"
-
           print((pars.i)::OutputForm)
           userError "the input type does not have kind domain"
         userError "the expected type is neither a mapping or category"

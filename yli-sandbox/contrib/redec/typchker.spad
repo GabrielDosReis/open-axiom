@@ -48,18 +48,12 @@ TypeChecker(): Public == Private where
       ++ checkFunctionDefinition(r)
       ++ does typechecking for the function definition stored in record r, return the updated record
     checkGlobalLetAst: (LetAst, TENV, Identifier, L Syntax, L FREC, L FREC, L ImportAst) -> Syntax
-
     ++testing
     viewExportedSigTC: List FREC
     viewUnexportedSigTC: List FREC
-
-    ++ exported for assumption checker:
-    --isAnnotatedExpression?: SpadAst -> Pair(Boolean, List Syntax)
-    AnnotFunResol: (Syntax, List Syntax, Syntax, Identifier) -> Pair(Boolean, Signature)
     AnnotFunResolForAssumption: (Syntax, List Syntax, Syntax, Identifier, TENV) -> Pair(Boolean, Signature)
+      ++ exported for assumption checker
     isTypeVariable?: Syntax -> Boolean
-
-
 
   Private == add
     makeOne:  Syntax                   == 'One::Identifier::Syntax
@@ -107,7 +101,6 @@ TypeChecker(): Public == Private where
     makeRep: Syntax                    == 'Rep::Identifier::Syntax
     makeLISTOF: Syntax                 == 'LISTOF::Identifier::Syntax 
 
-
     makeNumberSlot(i: Integer): Syntax ==
       x := concat("#", convert(i)@String)::Symbol
       (x pretend Identifier)::Syntax
@@ -140,7 +133,6 @@ TypeChecker(): Public == Private where
     -- global variable for function resolution engine
     function_origin: Syntax := makeUnknown()
 
-
     viewEnv == typeEnv
 
     viewFreshEnv == freshVariableMapping
@@ -153,7 +145,6 @@ TypeChecker(): Public == Private where
       alpha := (gensym()$Identifier)::Syntax
       freshVariableMapping.alpha := makeUnknown()
       alpha
-
 
     macroExpansionForSyntax(s: Syntax): Syntax ==
       s' := s
@@ -169,7 +160,7 @@ TypeChecker(): Public == Private where
       for k in keys constructorMacros repeat
         k = makeRep() => return (macroExpansionForSyntax(constructorMacros.k))
       makeUnknown()
-                   
+
     ctorCallForm(): Syntax == buildSyntax(constructorName, constructorParameters)
 
     isRepofCtor?(t: Syntax): Boolean == 
@@ -276,13 +267,12 @@ TypeChecker(): Public == Private where
       s' := s::Syntax
       compound?(s') and #getOperands(s') = 2
 
-
     isAccessForm?(s: SpadAst): Boolean ==
       -- unary: record, vector, list, Table
       -- binary: matrix m(1, 2)
       (isUnaryOperator?(s) or isBinaryOperator?(s)) => 
         (op := getOperator(s::Syntax)) case Identifier =>
-          key?((k := op::Identifier::Syntax), typeEnv)=>  not compound?(typeEnv.k) or not ((typeEnv.k)::SpadAst case MappingAst)              -- type variable
+          key?((k := op::Identifier::Syntax), typeEnv) =>  not compound?(typeEnv.k) or not ((typeEnv.k)::SpadAst case MappingAst)              -- type variable
                  -- typeAst but not MappingAst, this should be allowed later (maybe)
           false
         op case Syntax and compound?(op::Syntax)
@@ -586,9 +576,6 @@ TypeChecker(): Public == Private where
               tps' := remove(last tl', tl')
               if first(ufr := globFunResol(tps', rtn', fn)) then return ufr
           ctor   := getConstructor(tp)
-          --print("ctor!!!"::OutputForm)
-          --print(ctor::OutputForm)
-    
           ary    := arity ctor              
           opList := copy operations ctor
           --print(opList::OutputForm)
