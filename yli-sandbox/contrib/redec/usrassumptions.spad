@@ -83,9 +83,9 @@
 --    neutralValue   == 1$T
 
 -- Example 9: generic concat
-forall(T: Type)
-  assume MonoidOperator((List T), _concat) where
-    neutralValue   == empty()$(List T)
+--forall(T: Type)
+--  assume MonoidOperator((List T), _concat) where
+--    neutralValue   == empty()$(List T)
 
 -- Example 10: generic append
 --forall(T: Type)
@@ -101,9 +101,9 @@ forall(T: Type)
 --  assume AssociativeOperator(T, min) where nil
 
 -- Example 14: generic + from AbelianMonoid
---forall(T: AbelianMonoid)
---  assume MonoidOperator(T, _+) where
---    neutralValue   == 0$T
+forall(T: AbelianMonoid)
+  assume MonoidOperator(T, _+) where
+    neutralValue   == 0$T
 
 -- Example 15: generic * from Monoid
 --forall(T: Monoid)

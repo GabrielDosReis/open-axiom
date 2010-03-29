@@ -56,6 +56,7 @@ TypeChecker(): Public == Private where
     isTypeVariable?: Syntax -> Boolean
 
   Private == add
+    import Syntax
     makeOne:  Syntax                   == 'One::Identifier::Syntax
     makeZero: Syntax                   == 'Zero::Identifier::Syntax
     makeTrue: Syntax                   == 'true::Identifier::Syntax

@@ -66,6 +66,7 @@ LoopAnalysis(): Public == Private where
       ++ obtain the depth of a loop nest
   Private == add
     import SpadParser
+    import Syntax
 
     -- flags
     -- 0 : collect all the repeat ast
@@ -136,6 +137,7 @@ LoopAnalysis(): Public == Private where
     singleLetInBody(b: LetAst): Pair(Boolean, List LetAst) == pair(true, [b])
 
     letOnlyBody?(b: SpadAst): Pair(Boolean, List LetAst) ==
+      
       not compound?(b::Syntax)  => pair(false, [])
       b case LetAst             => singleLetInBody(b::Syntax::LetAst)
       b case SequenceAst        => letOnlySequence?(b::Syntax::SequenceAst)
@@ -143,14 +145,30 @@ LoopAnalysis(): Public == Private where
 
     letOnly? r == letOnlyBody? body r
 
-    hasElseBranch?(f: IfAst): Boolean == not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+    hasElseBranch?(f: IfAst): Boolean == 
+      elsebranch := elseBranch(f)::Syntax
+      not compound? elsebranch => not(elsebranch = '%noBranch::Identifier::Syntax)
 
-    hasThenBranch?(f: IfAst): Boolean == not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax)
+      --not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+
+    hasThenBranch?(f: IfAst): Boolean == 
+      --print(f::Syntax::OutputForm)
+      thenbranch := thenBranch(f)::Syntax
+      not compound? thenbranch => not(thenbranch = '%noBranch::Identifier::Syntax)
+      --print("exit has then branch"::OutputForm)
+      true
+    
+      --r := not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax)
+      --print("exit comparison"::OutputForm)
+     -- r
 
     letInBothBranches?(b: IfAst): Pair(Boolean, Pair(List LetAst, List LetAst)) ==
       resultOfThen : Pair(Boolean, List LetAst) := pair(false, [])
       resultOfElse : Pair(Boolean, List LetAst) := pair(false, [])
-      if hasThenBranch?(b) then resultOfThen := letOnlyBody? thenBranch b
+      if hasThenBranch?(b) then 
+        resultOfThen := letOnlyBody? thenBranch b
+
+
       if hasElseBranch?(b) then resultOfElse := letOnlyBody? elseBranch b
       hasThenBranch?(b) and hasElseBranch?(b) and_
       first(resultOfThen) and first(resultOfElse) => pair(true, pair(second(resultOfThen),second(resultOfElse)))
@@ -238,7 +256,7 @@ LoopAnalysis(): Public == Private where
     lhsInRhs?(x: LetAst): Boolean ==
       l := getLhs(x)$SyntaxHelper
       x' := replaceLetRhs(l, x, unknownSyn())
-      (x'::Syntax) ~= (x::Syntax)
+      not(x::Syntax = x'::Syntax)
 
     toDelete: Set Integer := {}
 
@@ -385,7 +403,7 @@ LoopAnalysis(): Public == Private where
       empty?(b) => true
       b := eliminateLocalVariable!(b, lv)
       b := eliminateGlobalVariable!(b)
-      return isReduction?(b, its, gv)
+      isReduction?(b, its, gv)
 
     -- collect the local variables from each assignment in the body of a loop
     collectLocalVariableofLoop(bl: List LetAst, gv: VTB): VTB ==
@@ -465,6 +483,8 @@ LoopAnalysis(): Public == Private where
           result := concat(result, [])
       -- if this is a for loop, and is a mix, then recur
         result := concat(result, identifyAccumulationLoop2(body r, copy gv))
+        result
+
       result := concat(result, identifyAccumulationLoop2(body r, copy gv))
       result
 
@@ -1484,10 +1504,8 @@ LoopAnalysis(): Public == Private where
           result := concat(result, refineStatement(elBranch))
         result
       s case ExitAst =>
-        --print("enter exit"::OutputForm)
         e := expression(s::Syntax::ExitAst)
         result := concat(result, refineStatement(e))
-        --print("exit exit"::OutputForm)
         result
       result
 
