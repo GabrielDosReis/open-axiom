@@ -82,7 +82,7 @@ ReductionAnalysisPackage(): Public == Private where
     -- accumulation loop counter
     accumulationLoopCounter : Integer := 0
 
-    -- parallel accumulation counter全说》西木老师的露卡素减肥法 百科全说之西木老师的露卡素零饥饿减肥法——低碳减肥法 日常减肥的四大误区： ...
+    -- parallel accumulation counter
     parallelAccumulationCounter : Integer := 0
 
     -- partially parallel accumulation counter
@@ -127,6 +127,12 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- list for storing function definitions
     fundefList : List DREC                             := []
+    parallelAccumulationCounter : Integer := 0
+
+    -- partially parallel accumulation counter
+    partialParallelAccumulationCounter : Integer := 0
+
++    -- reduce form counter
 
     -- set of all the category names that have been analyzed
     categorySet: Set Identifier                        := {}
