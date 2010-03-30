@@ -38,6 +38,7 @@ ReductionAnalysisPackage(): Public == Private where
   macro LSP    == LEXTP                -- for signatures, i.e. conditional and unconditional
   macro CEXTR  == Record(catname: Identifier, catpars: List Identifier,_ 
                         partyps: List Syntax, declarations: LSP, extensions: LEXTP, attributes: LAP)
+
   macro CEXTDB == List CEXTR
   Public == with
     analyze: (Integer, Integer) -> Void
@@ -56,7 +57,6 @@ ReductionAnalysisPackage(): Public == Private where
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
       ++ this function collect parallel reduction (loop+reduce+reduce form) from 
       ++ a function definition
-
     --Global variables
     reductionCounter : Integer := 0
     fCount: Integer := 0
@@ -66,13 +66,22 @@ ReductionAnalysisPackage(): Public == Private where
     -- ACL nests counter
     aclandnlcounter: Integer := 0
     aclLoopDepths: List Integer := []
-    -- reductino loop counter
+
+    -- reduction loop counter
     totalcounter : Integer := 0
-    ptotalcounter : Integer := 0
-    pptotalcounter : Integer := 0
+
+    -- parallel accumulation counter
+    parallelAccumulationCounter : Integer := 0
+
+    -- partially parallel accumulation counter
+    partialParallelAccumulationCounter : Integer := 0
+
     reductionFormCounter: Integer := 0
+
     preductionFormCounter: Integer := 0
+
     reductionFunctionCounter: Integer := 0
+
     preductionFunctionCounter: Integer := 0
 
     -- used for preprocessing
@@ -1661,6 +1670,8 @@ ReductionAnalysisPackage(): Public == Private where
         rightCategoryHasLeftCategory?(leftEnv.leftType, leftEnv, rightEnv.rightType, rightEnv)
       false
 
+    -- check whether the input and output types of a reduction operator
+    -- satisfies the type requirement specified in user assumption
     typeMatch?(op: TCR, rec: TCR): Boolean ==
       signatureFromAssumption := op.signature
       signatureFromReduction     := rec.signature
@@ -1669,16 +1680,24 @@ ReductionAnalysisPackage(): Public == Private where
         not typeChecks?(left, op.tenv, right, rec.tenv) => return false
       true
 
+    -- helper function for checking the membership of operator records
+    -- i.e. whether operator stored in rec satisfies name and type requirements 
+    -- of some operator record stored in assocops
     isInList?(rec: TCR, assocops: List TCR): Boolean ==
       for r in assocops repeat
         rec.funname = r.funname =>
-          empty?(r.tenv) =>
-            rec.signature = r.signature  => return true
+          -- if the signature of the reduction operator does not contain type variable
+          empty?(r.tenv) => rec.signature = r.signature  => return true
+          -- if the signature contains type variable, we use the advanced type checking algorithm
           typeMatch?(r, rec) => return true
       false
 
+    -- examine whether the operator used in the current accumulation statement
+    -- is attached with associativity via user assumption
+    -- the current operator information is stored in variable rec
+    -- user assumption information is stored in assocops
     matchesOne?(rec: TCR, assocops: List TCR): Boolean ==
-      empty?(rec.tenv) =>  isInList?(rec, assocops)  -- member? is buggy when there is a table in side a record
+      empty?(rec.tenv) =>  isInList?(rec, assocops)
       for op in assocops repeat
         rec.funname = op.funname and typeMatch?(op, rec) => return true
       false
@@ -1707,7 +1726,7 @@ ReductionAnalysisPackage(): Public == Private where
         not matchesOne?(rec, assocops') => return false
       true
 
-    -- examine whether there's at least one accumulation statement in an accumulation loop
+    -- this function examines whether there's at least one accumulation statement in an accumulation loop
     -- has associativity.
     isPartiallyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
       empty?(l.signaturelist) => false
@@ -1717,7 +1736,8 @@ ReductionAnalysisPackage(): Public == Private where
         matchesOne?(rec, assocops') => return true
       false
 
-    -- divide extracted accumulation loop into two parts according to their reduction operators' algebraic properties:
+    -- divide extracted accumulation loop into two parts according to 
+    -- their reduction operators' algebraic properties:
     -- 1. fully parallel accumulation loop
     -- 2. partially parallel accumulation loop
     extractParallelizableReductionLoop(assocops: List OPREC, recs: List ZREC): Pair(List ZREC, List ZREC)==
@@ -1726,13 +1746,13 @@ ReductionAnalysisPackage(): Public == Private where
       for rec in recs repeat
         recf : ZREC := [rec.ctorname, rec.funname, rec.signature, []]
         recp : ZREC := [rec.ctorname, rec.funname, rec.signature, []]
-        lps := rec.accumulations
-        for l in lps repeat
+        loops := rec.accumulations
+        for l in loops repeat
           isFullyParallelizable?(l, assocops)     => 
-            ptotalcounter := ptotalcounter + 1
+            parallelAccumulationCounter := inc(parallelAccumulationCounter)
             recf.accumulations := concat(recf.accumulations, l)
           isPartiallyParallelizable?(l, assocops) => 
-            pptotalcounter := pptotalcounter + 1
+            partialParallelAccumulationCounter := inc(partialParallelAccumulationCounter)
             recp.accumulations := concat(recp.accumulations, l)
         if not empty?(recf.accumulations) then
           full := concat(full, recf)
@@ -1742,7 +1762,7 @@ ReductionAnalysisPackage(): Public == Private where
 
   --macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature)
   --macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
-
+    -- extract parallel reduce function calls whose reduction operator is associative
     extractParallelizableReduceCall(assocops: List OPREC, recs: List RREC): List RREC ==
       result : List RREC := []
       assocops' := formatConverterTCR assocops
@@ -1758,7 +1778,7 @@ ReductionAnalysisPackage(): Public == Private where
 
   --macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature)
   --macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
-
+    -- extract parallel reduce forms whose operators are associative
     extractParallelizableReduceForm(assocops: List OPREC, recs: List RFORM): List RFORM ==
       result : List RFORM := []
       assocops' := formatConverterTCR assocops
@@ -1783,21 +1803,21 @@ ReductionAnalysisPackage(): Public == Private where
             print("Nested loop #:"::OutputForm)
           print(aclandnlcounter::OutputForm)
           print("Average loop depth:"::OutputForm)
-          averageDepth : DoubleFloat := convert(reduce(_+$Integer, aclLoopDepths)/aclandnlcounter)$Fraction(Integer)        
+          averageDepth:DoubleFloat:=convert(reduce(_+$Integer, aclLoopDepths)/aclandnlcounter)$Fraction(Integer)    
           print(averageDepth::OutputForm)
       useassumption = 1 => 
         print("Associative Operators (by User):"::OutputForm)
         print(associativeOperatorList::OutputForm)
         (option = 0) =>
           print("Partial parallelizable loop #:"::OutputForm)
-          print(pptotalcounter::OutputForm)
+          print(partialParallelAccumulationCounter::OutputForm)
           print("Fully parallelizable loop #:"::OutputForm)
-          print(ptotalcounter::OutputForm)    
+          print(parallelAccumulationCounter::OutputForm)    
         print("Parallelizable reduce function application#:"::OutputForm)
         print(preductionFunctionCounter::OutputForm)
         print("Parallelizable reduce form #:"::OutputForm)
         print(preductionFormCounter::OutputForm)
-      userError "Please read the documentation to find out correct analysis option"          
+      userError "Please read the documentation to find out correct analysis option"
 
     -- this function does various intializations for later reduction detection
     initialization(option: Integer, useassumption: Integer): List OPREC ==
@@ -1858,7 +1878,7 @@ ReductionAnalysisPackage(): Public == Private where
       writeRFORMToFile(parallelReduceForms, "parallel-reduce-forms")
       print("Results for parallelizable reduction forms have been written into reduce-forms.txt"::OutputForm)
 
-    -- according to analysis option, further extract corresponding information, e.g. parallel reduce function calls
+    -- according to analysis option, further extract corresponding information,e.g.parallel reduce function calls
     -- and save the data in a .tex file
     filterAnalysisOutput(associativeOperatorList: List OPREC, option: Integer, useassumption: Integer): Void() ==
       option = 0 =>  
@@ -1886,7 +1906,7 @@ ReductionAnalysisPackage(): Public == Private where
     analyze(option, useassumption) == 
       -- initilization
       associativeOperatorList : List OPREC := initialization(option, useassumption)
-      -- start analyzing all files to extract reductions
+      -- start analyzing all files to extract accumulation loops and reduce 
       analyzeAllFiles()
       -- filters analysis results, e.g., extracting parallel reductions
       -- and write the filtered results into file
