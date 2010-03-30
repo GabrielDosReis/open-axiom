@@ -38,7 +38,6 @@ ReductionAnalysisPackage(): Public == Private where
   macro LSP    == LEXTP                -- for signatures, i.e. conditional and unconditional
   macro CEXTR  == Record(catname: Identifier, catpars: List Identifier,_ 
                         partyps: List Syntax, declarations: LSP, extensions: LEXTP, attributes: LAP)
-
   macro CEXTDB == List CEXTR
   Public == with
     analyze: (Integer, Integer) -> Void
@@ -64,57 +63,78 @@ ReductionAnalysisPackage(): Public == Private where
     rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the domain represented by a domain variable has some function
 
-
     --Global variables
-    reductionCounter : Integer := 0
     -- counter for files that have been analyzed
     fileCounter: Integer := 0
+
+    -- a dummy counter, subject to be removed
     count: Integer := 0
+
     -- counter for function definitions
     functionDefinitionCounter: Integer := 0
-    bugcounter : Integer := 0
+
     -- ACL nests counter
     aclandnlcounter: Integer := 0
+
+    -- list which stored the depth of each affine control loop
     aclLoopDepths: List Integer := []
 
-    -- reduction loop counter
-    totalcounter : Integer := 0
+    -- accumulation loop counter
+    accumulationLoopCounter : Integer := 0
 
-    -- parallel accumulation counter
+    -- parallel accumulation counter全说》西木老师的露卡素减肥法 百科全说之西木老师的露卡素零饥饿减肥法——低碳减肥法 日常减肥的四大误区： ...
     parallelAccumulationCounter : Integer := 0
 
     -- partially parallel accumulation counter
     partialParallelAccumulationCounter : Integer := 0
 
+    -- reduce form counter
     reductionFormCounter: Integer := 0
 
+    -- parallel reduce form counter
     preductionFormCounter: Integer := 0
 
+    -- reduce function call counter
     reductionFunctionCounter: Integer := 0
 
+    -- parallel reduce function call counter
     preductionFunctionCounter: Integer := 0
 
-    -- used for preprocessing
+    -- global analysis option:
     -- 0: extract reduction loops with functions used in the loop
     -- 1: extract reduce function and reduce forms. 
     -- 2: extract acl loop nests (e.g. analyze(2, 0))
+    -- 3: extract all loop nests
     programOption : Integer := 0
-    -- for affine loop nests
+
+    -- list for storing affine loop nest records
     aclList: List AREC                                 := []
-    -- for nested loops
+
+    -- list for storing nested loop records
     nlList: List AREC                                  := []
-    -- for reduction loops
+
+    -- list for storing reduction loop records
     analysisResultList: List ZREC                      := []
-    -- for reduce function calls
+
+    -- list for storing reduce function call records
     reduceList: List RREC                              := []
-    -- no longer used 
-    reduceFormList: List RFREC                         := []
-    -- the improved list for reduce forms
+
+    -- list for storing reduce forms
     rformList : List RFORM                             := []
+
+    -- list for storing import statements
     importList : List ImportAst                        := []
+
+    -- list for storing function definitions
     fundefList : List DREC                             := []
+
+    -- set of all the category names that have been analyzed
     categorySet: Set Identifier                        := {}
+
+    -- set of all the package names that have been analyzed
     packageSet:  Set Identifier                        := {}
+
+    -- set of all the domain names that have been analyzed
     domainSet:   Set Identifier                        := {}
 
     -- global variable storing name of a constructor
@@ -128,13 +148,15 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- global variable storing macros defined in some constructor
     constructorMacros: VTB                             := empty()
-
+  
+    -- global database storing all the signatures of local functions in a constructor definition
     localUnexportedSignatureDatabase : List FREC       := []
+
     -- exported signatures with slot instantiated but without instantiating %
     localExportedSignatureDatabase : List FREC         := [] 
+
     -- Table for storing global variables such as constructor parameter, and global variable in capsule
     -- this will become global type environment, storing global function declaration, global 
-
     -- global type environment
     globalTypeEnvironment: VTB := empty()
 
@@ -165,8 +187,6 @@ ReductionAnalysisPackage(): Public == Private where
     -- returns all the reduce functions extracted
     viewReduceFunctions(): List RREC == reduceList
   
-    -- returns all the reduce forms extracted
-    viewReduceForms(): List RFREC == reduceFormList
 
     -- returns all the affine control loops extracted
     viewAffineControlLoops(): List AREC == aclList
@@ -175,8 +195,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- given by the reduction detector
     viewStatistics(): Void() ==
       if programOption = 0 then 
-        print("Reduction loop #:"::OutputForm)
-        print(totalcounter::OutputForm)
+        print("Accumulation loop #:"::OutputForm)
+        print(accumulationLoopCounter::OutputForm)
       if programOption = 1 then
         print("Reduction function call #:"::OutputForm)
         print(reductionFunctionCounter::OutputForm)        
@@ -220,7 +240,6 @@ ReductionAnalysisPackage(): Public == Private where
       aclList            := []
       nlList             := []
       reduceList         := []
-      reduceFormList     := []
       rformList          := []
       categorySet        := {}
       packageSet         := {}
@@ -580,7 +599,6 @@ ReductionAnalysisPackage(): Public == Private where
         reduceForms : List Syntax := extractReduceFormsFromFunctionDefinition(defAst', constructorName)$ReduceAnalysis 
         -- if there is no interesting loop, we do nothing.
 
-        reductionCounter := reductionCounter + #(reduceForms)
         --k := first keys loopTable
         --loopList : List RepeatAst := loopTable.k
         sig' := sig
@@ -1083,9 +1101,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- convert a list of signature to string
     signaturelistToString(sl: List XREC): String ==
       result : String := ""
-      totalcounter := totalcounter + 1
+      accumulationLoopCounter := inc(accumulationLoopCounter)
       if empty? sl then
-        bugcounter := bugcounter + 1
         result := concat([result, "    [Function signature is not available]"])
 
       for i in 1..#sl repeat
@@ -1885,7 +1902,6 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- this function does various intializations for later reduction detection
     initialization(option: Integer, useassumption: Integer): List OPREC ==
-      reductionCounter := 0
       programOption := option
       useassumption = 1 =>
         -- building category extension database for later assumption checking use
