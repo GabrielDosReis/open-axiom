@@ -51,17 +51,22 @@ ReductionAnalysisPackage(): Public == Private where
       ++ analyze(1, 1): extract parallel reduce functions and reduce forms
       ++ note that the default directory points to my demonstrating example folder:
       ++ /users/yli/software/OA-latest/oa/bin/PARALLEL/example
+
   Private == add
+    import SyntaxHelper
+
     -- local forward function declarations:
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
-      ++ this function collects parallel reduction (loop+reduce+reduce form) from 
-      ++ a function definition
+      ++ this function collects parallel reduction (loop+reduce+reduce form)
+      ++ from a function definition
     collectFromTopLevel: (SpadAst, Identifier, VTB) -> Integer
-      ++ this function collects parallel reduction from each statement of the capsule
+      ++ this function collects parallel reduction 
+      ++ from each statement of the capsule
     rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the some domain has some function
     rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
-      ++ this function checks whether the domain represented by a domain variable has some function
+      ++ this function checks whether the domain represented by a domain 
+      ++ variable has some function
 
     --Global variables
     -- counter for files that have been analyzed
@@ -132,8 +137,6 @@ ReductionAnalysisPackage(): Public == Private where
     -- partially parallel accumulation counter
     partialParallelAccumulationCounter : Integer := 0
 
-+    -- reduce form counter
-
     -- set of all the category names that have been analyzed
     categorySet: Set Identifier                        := {}
 
@@ -155,47 +158,16 @@ ReductionAnalysisPackage(): Public == Private where
     -- global variable storing macros defined in some constructor
     constructorMacros: VTB                             := empty()
   
-    -- global database storing all the signatures of local functions in a constructor definition
+    -- global database storing all the signatures of local functions in a 
+    -- constructor definition
     localUnexportedSignatureDatabase : List FREC       := []
 
     -- exported signatures with slot instantiated but without instantiating %
     localExportedSignatureDatabase : List FREC         := [] 
 
-    -- Table for storing global variables such as constructor parameter, and global variable in capsule
-    -- this will become global type environment, storing global function declaration, global 
-    -- global type environment
+    -- global type environment of storing global variables such as constructor 
+    -- parameter, and global variable in capsule global function declaration
     globalTypeEnvironment: VTB := empty()
-
-    -- the following functions are used for debugging the framework
-    viewImports(): List ImportAst == importList
-
-    -- lists all the function definitions in a domain/category/package definition
-    viewFunctionDefinitions(): List DREC == fundefList
-
-    -- lists all the macros declared in some constructor definition
-    viewMacros():VTB  == constructorMacros
-
-    -- prints the constructor name, parameters, and input types of a type constructor    
-    viewConstructorHeadInformation():Void() ==
-      print(constructorName::OutputForm)
-      print(constructorParameters::OutputForm)
-      print(constructorParameterTypes::OutputForm)
-
-    -- returns all the function declarations exported by some type constructor
-    viewExportedFunctionSignatures(): List FREC == localExportedSignatureDatabase
-
-    -- returns all the function which is locally declared in some type constructor definition
-    viewUnexportedFunctionSignatures(): List FREC == localUnexportedSignatureDatabase
-
-    -- returns the table storing global variables of a constructor
-    viewGlobalVariables(): VTB == globalTypeEnvironment
-
-    -- returns all the reduce functions extracted
-    viewReduceFunctions(): List RREC == reduceList
-  
-
-    -- returns all the affine control loops extracted
-    viewAffineControlLoops(): List AREC == aclList
 
     -- print all kinds of statistics on the results 
     -- given by the reduction detector
@@ -219,13 +191,9 @@ ReductionAnalysisPackage(): Public == Private where
       print("Domain #:"::OutputForm)
       print((#domainSet)::OutputForm)
 
-    makePercentage: Syntax          == '%::Identifier::Syntax
-    makeCase: Syntax                == 'case::Identifier::Syntax
-    makeTrue: Syntax                == 'true::Identifier::Syntax
-    makeNil: Syntax                 == 'nil::Identifier::Syntax
-    makeJoin: Syntax                == 'Join::Identifier::Syntax
-
-    cleanUpConstructorInformation: Boolean ==
+    -- reset all the global variables storing syntax information of some 
+    -- constructor definition
+    cleanUpConstructorInformation: Void ==
       globalTypeEnvironment := empty()
       constructorName: Identifier := gensym()
       constructorParameters := []
@@ -236,9 +204,10 @@ ReductionAnalysisPackage(): Public == Private where
       ctorExportedSignatures := []
       localExportedSignatureDatabase := []  
       localUnexportedSignatureDatabase := []
-      true
 
-    cleanUp():Boolean ==
+    -- reset all the global counters as well as lists
+    -- for storing analysis results
+    cleanUp(): Void ==
       fileCounter := 0
       count := 0
       functionDefinitionCounter := 0
@@ -251,21 +220,19 @@ ReductionAnalysisPackage(): Public == Private where
       packageSet         := {}
       domainSet          := {}
       cleanUpConstructorInformation()
-      true
 
-    -- collect macros into table
-    collectMacroFromDefinitionAst(functionName: Identifier, definitionBody: SpadAst): Boolean ==
+    -- collect macros declared inside a function definition
+    collectMacroFromDefinitionAst(functionName: Identifier, definitionBody: SpadAst): Void ==
       macroName := functionName::Syntax
       macroBody := definitionBody::Syntax
-      constructorMacros.macroName := macroBody
-      true      
+      constructorMacros.macroName := macroBody    
 
-    collectMacro(t: MacroAst): Boolean ==
+    -- given the current macro ast, update the global macro database
+    collectMacro(t: MacroAst): Void ==
       macroHead := head(t)$MacroAst
       macroBody := (body(t)$MacroAst)::Syntax
       macroName := (name(macroHead)$HeadAst)::Syntax
       constructorMacros.macroName := macroBody
-      true
 
     -- does maco expansion
     -- currently only for ColonAst, DefinitionAst before they are collected, and for global type environment before
