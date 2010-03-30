@@ -8,7 +8,7 @@ import CEXCOL
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: March 22, 2010
+++ Date Last Updated: March 29, 2010
 ++ Description: This package provides library functions for extracting
 ++ parallelizable accumulation loops, reduce function calls, as well as 
 ++ reduce forms
@@ -19,52 +19,44 @@ ReductionAnalysisPackage(): Public == Private where
   macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature, tenv: VTB)
   macro LTB    == Table(Pair(Identifier, Identifier), List RepeatAst)
   macro FREC   == Record(funname: Identifier, signature: Signature, arity: Integer)
-  macro DREC   == Record(funname: Identifier, signature: Signature, body: DefinitionAst, typeenv: VTB, accumulations: List YREC)
+  macro DREC   == Record(funname: Identifier, signature: Signature,_ 
+                         body: DefinitionAst, typeenv: VTB, accumulations: List YREC)
   macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
   macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
   macro RFREC  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List Syntax)
   macro AREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, affineloops: List RepeatAst)
-
-  -- for storing reduce forms
+  -- format for storing reduce forms
   macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature, tenv: VTB)
   macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
-  -- for storing associative operator records
-  macro OPREC == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
-  --- for  category extension database to use
-  macro TCR == Record(funname: Identifier, signature: Signature, tenv: VTB)
-  macro EXTP  == Pair(Syntax, List Syntax) -- (category/attribute, predicate)
-  macro LEXTP == List EXTP
-  macro LAP   == LEXTP                -- for attributes, i.e. conditional and unconditional
-  macro LSP   == LEXTP                -- for signatures, i.e. conditional and unconditional
-  macro CEXTR == Record(catname: Identifier, catpars: List Identifier,_ 
+  -- format for storing associative operator records
+  macro OPREC  == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
+  -- format for  category extension database to use
+  macro TCR    == Record(funname: Identifier, signature: Signature, tenv: VTB)
+  macro EXTP   == Pair(Syntax, List Syntax) -- (category/attribute, predicate)
+  macro LEXTP  == List EXTP
+  macro LAP    == LEXTP                -- for attributes, i.e. conditional and unconditional
+  macro LSP    == LEXTP                -- for signatures, i.e. conditional and unconditional
+  macro CEXTR  == Record(catname: Identifier, catpars: List Identifier,_ 
                         partyps: List Syntax, declarations: LSP, extensions: LEXTP, attributes: LAP)
   macro CEXTDB == List CEXTR
   Public == with
-    analyze: (Integer, Integer) -> Boolean
-    analyzeReduction: (String, Integer) -> Boolean
-    analyzeOneFile: List Syntax -> Integer
-    analyzeAllFiles: Integer
-    viewImports: List ImportAst
-    viewMacros: VTB
-    viewCtorInfo: Void()
-    viewReplacedCtor: Syntax
-    viewExportedSig: List FREC
-    viewUnexportedSig: List FREC
-    viewReduceFuns: List RREC
-    viewReduceForms: List RFREC
-    viewFunDefs: List DREC
-    viewGlobalVars: VTB
-    viewStatistics: Void
-
-    ++ testing
-    collectFromStatement: (SpadAst, Identifier, VTB) -> Integer
-    collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
-    getConstructorKindInString: Identifier -> String
-    viewAcls: () -> List AREC
-
-
+    analyze: (Integer, Integer) -> Void
+      ++ This function analyzes all spad library files stored in some directory
+      ++ according to its parameters that are passed in:
+      ++ analyze(0, 0): extract accumulation loops
+      ++ analyze(1, 0): extract reduce functions and reduce forms
+      ++ analyze(2, 0): extract affine control loop (ACL) nests 
+      ++ analyze(3, 0): extract all the normal loop nests
+      ++ analyze(0, 1): extract parallel accumulation loops
+      ++ analyze(1, 1): extract parallel reduce functions and reduce forms
+      ++ note that the default directory points to my demonstrating example folder:
+      ++ /users/yli/software/OA-latest/oa/bin/PARALLEL/example
   Private == add
-    import SpadParser
+    -- local forward function declarations:
+    collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
+      ++ this function collect parallel reduction (loop+reduce+reduce form) from 
+      ++ a function definition
+
     --Global variables
     reductionCounter : Integer := 0
     fCount: Integer := 0
@@ -118,21 +110,46 @@ ReductionAnalysisPackage(): Public == Private where
     -- this will become global type environment, storing global function declaration, global 
     -- variable declaration including the immediate initialization
     cgv: VTB := empty()
-    viewImports == importList
-    viewFunDefs == fundefList
-    viewMacros  == constructorMacros
-    viewCtorInfo ==
+
+    -- the following functions are used for debugging the framework
+    viewImports(): List ImportAst == importList
+
+    -- lists all the function definitions in a domain/category/package definition
+    viewFunctionDefinitions(): List DREC == fundefList
+
+    -- lists all the macros declared in some constructor definition
+    viewMacros():VTB  == constructorMacros
+
+    -- prints the constructor name, parameters, and input types of a type constructor    
+    viewConstructorHeadInformation():Void() ==
       print(constructorName::OutputForm)
       print(constructorParameters::OutputForm)
       print(constructorParameterTypes::OutputForm)
-    viewReplacedCtor  == replacedConstructorDef
-    viewExportedSig   == localExportedSignatureDatabase
-    viewUnexportedSig == localUnexportedSignatureDatabase
-    viewGlobalVars    == cgv
-    viewReduceFuns    == reduceList
-    viewReduceForms   == reduceFormList
-    viewAcls          == aclList
-    viewStatistics    ==
+
+    -- returns constructor definition syntax where macros have been expanded
+    viewReplacedConstructorDefinition():Syntax  == replacedConstructorDef
+
+    -- returns all the function declarations exported by some type constructor
+    viewExportedFunctionSignatures(): List FREC == localExportedSignatureDatabase
+
+    -- returns all the function which is locally declared in some type constructor definition
+    viewUnexportedFunctionSignatures(): List FREC == localUnexportedSignatureDatabase
+
+    -- returns the table storing global variables of a constructor
+    viewGlobalVariables(): VTB == cgv
+
+    -- returns all the reduce functions extracted
+    viewReduceFunctions(): List RREC == reduceList
+  
+    -- returns all the reduce forms extracted
+    viewReduceForms(): List RFREC == reduceFormList
+
+    -- returns all the affine control loops extracted
+    viewAffineControlLoops(): List AREC == aclList
+
+    -- print all kinds of statistics on the results 
+    -- given by the reduction detector
+    viewStatistics(): Void() ==
       if programOption = 0 then 
         print("Reduction loop #:"::OutputForm)
         print(totalcounter::OutputForm)
@@ -908,7 +925,9 @@ ReductionAnalysisPackage(): Public == Private where
       k = package$ConstructorKind  =>  packageSet := union(packageSet, {c}) 
       domainSet := union(domainSet, {c})
 
-    analyzeOneFile l == 
+    -- this function extract parallel reduction 
+    -- from syntax obtained by parsing one spad library file
+    analyzeOneFile(l: List Syntax): Integer == 
       cleanUpConstructorInformation()
       -- clean the ctor global variable table
       s := importFilter(l)
@@ -949,12 +968,12 @@ ReductionAnalysisPackage(): Public == Private where
     sexpressionToString(s: FileName): String ==
       res := s::String
 
-    analyzeAllFiles: Integer ==
+    analyzeAllFiles(): Integer ==
       cleanUp()
       sexls :List FileName := getAllFileName() 
       for s in sexls repeat
         fname := sexpressionToString(s)
-        nm: List Syntax := parse(fname)
+        nm: List Syntax := parse(fname)$SpadParser
         analyzeOneFile(nm)
         fCount := fCount + 1
       fCount
@@ -1205,21 +1224,6 @@ ReductionAnalysisPackage(): Public == Private where
       ofile := open(ofname, "output")$File(String)
       write!(ofile, toString4 rl)
       true
-
-    analyzeReduction(fileStr, option) == 
-      bugcounter := 0
-      reductionCounter := 0
-      programOption := option
-      analyzeAllFiles()
-      if programOption = 0 then
-        writeZRecordToFile(analysisResultList, fileStr)
-        print(bugcounter::OutputForm)
-        print(totalcounter::OutputForm)
-      if programOption = 1 then
-        print(reductionCounter::OutputForm)
-      true
-
-
 
     -- checks whether a variable is a type variable 
     -- by looking up in the global type environment
@@ -1682,22 +1686,29 @@ ReductionAnalysisPackage(): Public == Private where
   --macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
   --macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
   --macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
+  --macro TCR    == Record(funname: Identifier, signature: Signature, tenv: VTB)
+  --macro OPREC  == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
 
-    formatConverterTCR(rs: List OPREC): List TCR ==
-      result : List TCR := []
-      for r in rs repeat
-        rec : TCR := [r.funname, r.signature, r.tenv]
-        result := concat(result, rec)
-      result
+    -- creates a database view of the format of recording storing associative operator information
+    -- the two formats are respectively defined in macros OPREC and TCR
+    formatConverterTCR(rs: List OPREC): List TCR == [[r.funname, r.signature, r.tenv] for r in rs]
 
+    -- examine whether all the accumulation statements in an accumulation loop 
+    -- are using user specified associative operators so that 
+    -- the whole loop is fully parallelizable
     isFullyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
+      -- if the typechecker can not obtain the any signature of operator used in the loop
+      -- we return false, meaning "unknown"
       empty?(l.signaturelist) => false
       assocops' := formatConverterTCR assocops
+      -- verify that all the reduction operators have associativity
       for f in l.signaturelist repeat
         rec : TCR := [f.funname, f.signature, f.tenv]
         not matchesOne?(rec, assocops') => return false
       true
 
+    -- examine whether there's at least one accumulation statement in an accumulation loop
+    -- has associativity.
     isPartiallyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
       empty?(l.signaturelist) => false
       assocops' := formatConverterTCR assocops
@@ -1706,6 +1717,9 @@ ReductionAnalysisPackage(): Public == Private where
         matchesOne?(rec, assocops') => return true
       false
 
+    -- divide extracted accumulation loop into two parts according to their reduction operators' algebraic properties:
+    -- 1. fully parallel accumulation loop
+    -- 2. partially parallel accumulation loop
     extractParallelizableReductionLoop(assocops: List OPREC, recs: List ZREC): Pair(List ZREC, List ZREC)==
       full :   List ZREC := []
       partial: List ZREC := []
@@ -1729,27 +1743,13 @@ ReductionAnalysisPackage(): Public == Private where
   --macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature)
   --macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
 
-    getOperatorName(op: Syntax): Identifier ==
-      compound? op =>
-        opr := getOperator op 
-        opr case Identifier and opr::Identifier = 'elt::Identifier => 
-          (second getOperands op)::Identifier
-        opr case Identifier and opr::Identifier = '_@::Identifier => 
-          getOperatorName(first getOperands op)
-        opr case Identifier and member?(char "#", entries(toString(op)$SyntaxHelper)) =>
-          opr::Identifier
-        print(op::Syntax::OutputForm)
-        userError "unexpected operator syntax"
-      op case String => (op::String::Symbol) pretend Identifier
-      op::Identifier
-
     extractParallelizableReduceCall(assocops: List OPREC, recs: List RREC): List RREC ==
       result : List RREC := []
       assocops' := formatConverterTCR assocops
       for rec in recs repeat
         newrec : RREC := [rec.ctorname, rec.funname, rec.signature, []]
         for r in rec.reductions repeat
-          rec : TCR := [getOperatorName(r.reduceop), r.signature, r.tenv]
+          rec : TCR := [getOperatorName(r.reduceop)$SyntaxHelper, r.signature, r.tenv]
           matchesOne?(rec, assocops') => 
             preductionFunctionCounter := preductionFunctionCounter + 1
             newrec.reductions := concat(newrec.reductions, r)
@@ -1772,10 +1772,11 @@ ReductionAnalysisPackage(): Public == Private where
         not empty?(newrec.reduceforms) => result := concat(result, newrec)
       result
 
-    printStatistics(option: Integer, collectAssociativeOperator?: Integer, associativeOperatorList: List OPREC): Void ==
+    -- prints out all the interesting statistics obtained from reduction detector
+    printStatistics(option: Integer, useassumption: Integer, associativeOperatorList: List OPREC): Void ==
       viewStatistics()
-      if collectAssociativeOperator? = 0 then
-        if (option = 2) or (option =3) then
+      useassumption = 0 =>
+        (option = 2) or (option =3) =>
           if (option = 2) then
             print("Affine control loop #:"::OutputForm)
           else
@@ -1784,71 +1785,113 @@ ReductionAnalysisPackage(): Public == Private where
           print("Average loop depth:"::OutputForm)
           averageDepth : DoubleFloat := convert(reduce(_+$Integer, aclLoopDepths)/aclandnlcounter)$Fraction(Integer)        
           print(averageDepth::OutputForm)
-
-      if collectAssociativeOperator? = 1 then 
+      useassumption = 1 => 
         print("Associative Operators (by User):"::OutputForm)
         print(associativeOperatorList::OutputForm)
-        if (option = 0) then
+        (option = 0) =>
           print("Partial parallelizable loop #:"::OutputForm)
           print(pptotalcounter::OutputForm)
           print("Fully parallelizable loop #:"::OutputForm)
           print(ptotalcounter::OutputForm)    
-        else --if (option = 1) then
-          print("Parallelizable reduce function application#:"::OutputForm)
-          print(preductionFunctionCounter::OutputForm)
-          print("Parallelizable reduce form #:"::OutputForm)
-          print(preductionFormCounter::OutputForm)
-          
+        print("Parallelizable reduce function application#:"::OutputForm)
+        print(preductionFunctionCounter::OutputForm)
+        print("Parallelizable reduce form #:"::OutputForm)
+        print(preductionFormCounter::OutputForm)
+      userError "Please read the documentation to find out correct analysis option"          
+
+    -- this function does various intializations for later reduction detection
+    initialization(option: Integer, useassumption: Integer): List OPREC ==
+      reductionCounter := 0
+      programOption := option
+      useassumption = 1 =>
+        -- building category extension database for later assumption checking use
+        collectAllConstructorData()$CategoryExtensionCollection
+        -- collect all the associative operator from user assumption
+        collectAssociativeOperator()$CheckAssumption
+      []
+    
+    -- obtain and save both fully parallel and partially parallel accumulation loops
+    extractAndSaveParallelAccumulationLoop(associativeOperatorList: List OPREC): Void ==
+      r : Pair(List ZREC, List ZREC)  := extractParallelizableReductionLoop(associativeOperatorList, analysisResultList)
+      parallelReductionLoops          := first r
+      partiallyParallelReductionLoops := second r
+      writeZRecordToFile(parallelReductionLoops, "parallel-reduce-loops")
+      print("Results for fully parallelizable reduction loops have been written into parallel-reduce-loops.txt"::OutputForm)
+      writeZRecordToFile(partiallyParallelReductionLoops, "partial-parallel-reduce-loops")
+      print("Results for partial parallelizable reduction loops have been written into partial-parallel-reduce-loops.txt"::OutputForm)
+
+    -- obtain and save all the accumulation loops (parallel, sequential, and partially parallel)
+    saveAccumulationLoopsToFile(): Void == 
+      writeZRecordToFile(analysisResultList, "reduce-loops")
+      print("Results for reduction loops have been written into reduce-loops.txt"::OutputForm)
+
+    -- obtain and save all the reduce function calls
+    saveReduceFunctionsToFile(): Void ==
+      writeRRecordToFile(reduceList, "reduce-functions")
+      print("Results for reduce function applications have been written into reduce-functions.txt"::OutputForm)
+      
+    -- obtain and save all reduce forms
+    saveRediceFormsToFile(): Void ==
+      writeRFORMToFile(rformList, "reduce-forms")
+      print("Results for reduction forms have been written into reduce-forms.txt"::OutputForm)
+
+    -- obtain and save affine control loops
+    saveAffineControlLoopsToFile(): Void ==
+      writeARecordToFile(aclList, "acl-nests")
+      print("ACL loop nests have been written into acl-nests.txt"::OutputForm)
+
+    -- obtain and save all loop nests, i.e. any loop whose depth is larger than 1
+    saveLoopNestsToFile(): Void ==
+      writeARecordToFile(nlList, "loop-nests")
+      print("All loop nests have been written into loop-nests.txt"::OutputForm)
+
+    -- obtain and save parallel reduce function calls
+    extractAndSaveParallelReduceFunction(associativeOperatorList: List OPREC): Void() ==
+      parallelReduceList := extractParallelizableReduceCall(associativeOperatorList, reduceList)
+      writeRRecordToFile(parallelReduceList, "parallel-reduce-functions")
+      print("Results for parallelizable reduce function applications have_ 
+      been written into parallel-reduce-functions.txt"::OutputForm)
+
+    -- obtain and save parallel reduce forms
+    extractAndSaveParallelReduceForm(associativeOperatorList: List OPREC): Void() ==
+      parallelReduceForms := extractParallelizableReduceForm(associativeOperatorList, rformList)
+      writeRFORMToFile(parallelReduceForms, "parallel-reduce-forms")
+      print("Results for parallelizable reduction forms have been written into reduce-forms.txt"::OutputForm)
+
+    -- according to analysis option, further extract corresponding information, e.g. parallel reduce function calls
+    -- and save the data in a .tex file
+    filterAnalysisOutput(associativeOperatorList: List OPREC, option: Integer, useassumption: Integer): Void() ==
+      option = 0 =>  
+        saveAccumulationLoopsToFile()
+        if useassumption = 1 then extractAndSaveParallelAccumulationLoop(associativeOperatorList)      
+      option = 1 =>  
+        saveReduceFunctionsToFile()
+        saveRediceFormsToFile()
+        if useassumption = 1 then 
+          extractAndSaveParallelReduceFunction(associativeOperatorList)        
+          extractAndSaveParallelReduceForm(associativeOperatorList)
+      option = 2 => saveAffineControlLoopsToFile()
+      option = 3 => saveLoopNestsToFile()
+      userError "Please read the documentation to provide correct analyze option!"   
+    
+    -- main entry of reduction detector
     -- parameter option:
     -- 0: extract reduction loops with functions used in the loop
     -- 1: extract reduce function and reduce forms.
-    -- parameter collectAssociativeOperator?:
-    -- 0: extract all the reduction whose operator is associative
-    -- 1: opposite to 0
-    analyze(option, collectAssociativeOperator?) == 
-      --bugcounter := 0
-      reductionCounter := 0
-      programOption := option
-      associativeOperatorList : List OPREC := []
-      if collectAssociativeOperator? = 1 then
-        -- building category extension database
-        collectAllConstructorData()$CategoryExtensionCollection
-        associativeOperatorList := collectAssociativeOperator()$CheckAssumption
+    -- 2: extract all the ACL nests
+    -- 3: extract all the nested loops
+    -- parameter useassumption:
+    -- 0: do not use user assumption to help analysis
+    -- 1: use user's assumption for extracting parallel reduction
+    analyze(option, useassumption) == 
+      -- initilization
+      associativeOperatorList : List OPREC := initialization(option, useassumption)
+      -- start analyzing all files to extract reductions
       analyzeAllFiles()
-      if programOption = 0 then
-        writeZRecordToFile(analysisResultList, "reduce-loops")
-        print("Results for reduction loops have been written into reduce-loops.txt"::OutputForm)
-        if collectAssociativeOperator? = 1 then 
-          r : Pair(List ZREC, List ZREC)  := extractParallelizableReductionLoop(associativeOperatorList, analysisResultList)
-          parallelReductionLoops          := first r
-          partiallyParallelReductionLoops := second r
-          writeZRecordToFile(parallelReductionLoops, "parallel-reduce-loops")
-          print("Results for fully parallelizable reduction loops have been written into parallel-reduce-loops.txt"::OutputForm)
-          writeZRecordToFile(partiallyParallelReductionLoops, "partial-parallel-reduce-loops")
-          print("Results for partial parallelizable reduction loops have been written into partial-parallel-reduce-loops.txt"::OutputForm)
-
-      if programOption = 1 then
-        writeRRecordToFile(reduceList, "reduce-functions")
-        print("Results for reduce function applications have been written into reduce-functions.txt"::OutputForm)
-        if collectAssociativeOperator? = 1 then 
-          parallelReduceList := extractParallelizableReduceCall(associativeOperatorList, reduceList)
-          writeRRecordToFile(parallelReduceList, "parallel-reduce-functions")
-          print("Results for parallelizable reduce function applications have been written into parallel-reduce-functions.txt"::OutputForm)
-
-        writeRFORMToFile(rformList, "reduce-forms")
-        print("Results for reduction forms have been written into reduce-forms.txt"::OutputForm)
-        if collectAssociativeOperator? = 1 then
-          parallelReduceForms := extractParallelizableReduceForm(associativeOperatorList, rformList)
-          writeRFORMToFile(parallelReduceForms, "parallel-reduce-forms")
-          print("Results for parallelizable reduction forms have been written into reduce-forms.txt"::OutputForm)
-      if programOption = 2 then
-        writeARecordToFile(aclList, "acl-nests")
-        print("ACL loop nests have been written into acl-nests.txt"::OutputForm)
-      if programOption = 3 then
-        writeARecordToFile(nlList, "loop-nests")
-        print("All loop nests have been written into loop-nests.txt"::OutputForm)
-      printStatistics(option, collectAssociativeOperator?, associativeOperatorList)
-      true
+      -- filters analysis results, e.g., extracting parallel reductions
+      -- and write the filtered results into file
+      filterAnalysisOutput(associativeOperatorList, option, useassumption)
+      printStatistics(option, useassumption, associativeOperatorList)
 
 
 

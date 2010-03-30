@@ -47,8 +47,25 @@ SyntaxHelper(): Public == Private where
     makeDoubleDollar: () -> Syntax
     makeSetCategory: () -> Syntax
     makeType: () -> Syntax
-
+    getOperatorName: Syntax -> Identifier
+      ++ obtain the name of the operator used in a function application form
   Private == add
+    import Syntax
+
+    getOperatorName(op: Syntax): Identifier ==
+      compound? op =>
+        opr := getOperator op
+        opr case Identifier and opr::Identifier = 'elt::Identifier =>
+          (second getOperands op)::Identifier
+        opr case Identifier and opr::Identifier = '_@::Identifier =>
+          getOperatorName(first getOperands op)
+        opr case Identifier and member?(char "#", entries(toString op)) =>
+          opr::Identifier
+        print(op::Syntax::OutputForm)
+        userError "unexpected operator syntax"
+      op case String => (op::String::Symbol) pretend Identifier
+      op::Identifier
+
     toDomainConstructor c == c pretend DomainConstructor
 
     makeNumberSlot(i: Integer): Syntax ==
