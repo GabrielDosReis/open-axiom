@@ -57,9 +57,15 @@ ReductionAnalysisPackage(): Public == Private where
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
       ++ this function collect parallel reduction (loop+reduce+reduce form) from 
       ++ a function definition
+    rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
+      ++ this function checks whether the some domain has some function
+    rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
+      ++ this function checks whether the domain represented by a domain variable has some function
+
     --Global variables
     reductionCounter : Integer := 0
-    fCount: Integer := 0
+    -- counter for files that have been analyzed
+    fileCounter: Integer := 0
     count: Integer := 0
     defNo: Integer := 0
     bugcounter : Integer := 0
@@ -106,19 +112,27 @@ ReductionAnalysisPackage(): Public == Private where
     categorySet: Set Identifier                        := {}
     packageSet:  Set Identifier                        := {}
     domainSet:   Set Identifier                        := {}
+
+    -- global variable storing name of a constructor
     constructorName: Identifier                        := gensym()
+
+    -- global variable storing parameters taken by a constructor
     constructorParameters: List Syntax                 := []
+
+    -- global variable storing the type of each constructor parameter
     constructorParameterTypes: List Syntax             := []
+
+    -- global variable storing macros defined in some constructor
     constructorMacros: VTB                             := empty()
-    -- the whole constructor definition body with % replaced by the constructor call form
-    replacedConstructorDef : Syntax                    := gensym()::Syntax
+
     localUnexportedSignatureDatabase : List FREC       := []
     -- exported signatures with slot instantiated but without instantiating %
     localExportedSignatureDatabase : List FREC         := [] 
     -- Table for storing global variables such as constructor parameter, and global variable in capsule
     -- this will become global type environment, storing global function declaration, global 
-    -- variable declaration including the immediate initialization
-    cgv: VTB := empty()
+
+    -- global type environment
+    globalTypeEnvironment: VTB := empty()
 
     -- the following functions are used for debugging the framework
     viewImports(): List ImportAst == importList
@@ -135,9 +149,6 @@ ReductionAnalysisPackage(): Public == Private where
       print(constructorParameters::OutputForm)
       print(constructorParameterTypes::OutputForm)
 
-    -- returns constructor definition syntax where macros have been expanded
-    viewReplacedConstructorDefinition():Syntax  == replacedConstructorDef
-
     -- returns all the function declarations exported by some type constructor
     viewExportedFunctionSignatures(): List FREC == localExportedSignatureDatabase
 
@@ -145,7 +156,7 @@ ReductionAnalysisPackage(): Public == Private where
     viewUnexportedFunctionSignatures(): List FREC == localUnexportedSignatureDatabase
 
     -- returns the table storing global variables of a constructor
-    viewGlobalVariables(): VTB == cgv
+    viewGlobalVariables(): VTB == globalTypeEnvironment
 
     -- returns all the reduce functions extracted
     viewReduceFunctions(): List RREC == reduceList
@@ -170,7 +181,7 @@ ReductionAnalysisPackage(): Public == Private where
       print("Total function definition #:"::OutputForm)
       print(defNo::OutputForm)
       print("Total file #:"::OutputForm)
-      print(fCount::OutputForm)
+      print(fileCounter::OutputForm)
       print("Package #:"::OutputForm)
       print((#packageSet)::OutputForm)
       print("Category #:"::OutputForm)
@@ -185,9 +196,8 @@ ReductionAnalysisPackage(): Public == Private where
     makeJoin: Syntax                == 'Join::Identifier::Syntax
 
     cleanUpConstructorInformation: Boolean ==
-      cgv := empty()
+      globalTypeEnvironment := empty()
       constructorName: Identifier := gensym()
-      replacedConstructorDef : Syntax := gensym()::Syntax
       constructorParameters := []
       constructorParameterTypes := []
       constructorMacros := empty()
@@ -199,7 +209,7 @@ ReductionAnalysisPackage(): Public == Private where
       true
 
     cleanUp():Boolean ==
-      fCount := 0
+      fileCounter := 0
       count := 0
       defNo := 0
       analysisResultList := []
@@ -277,7 +287,7 @@ ReductionAnalysisPackage(): Public == Private where
         operands.1 := macroExpansion(l)::Syntax
       buildSyntax(op, operands)::SpadAst
 
-    -- filter out the import statement before the category definition
+    -- collects import statements at the head of some Spad file
     importFilter(l: List Syntax): Syntax ==
       for s in l repeat
         (s' := s::SpadAst) case ImportAst => importList := concat(importList, s::ImportAst)
@@ -288,13 +298,13 @@ ReductionAnalysisPackage(): Public == Private where
     initGlobalVariableEnvironment(ctorName: Identifier, ctorPars: List Identifier, ctorTps: List Syntax): VTB ==
       for p in ctorPars for t in ctorTps repeat
         p' := p::Syntax
-        cgv.p'  := t
-      cgv
+        globalTypeEnvironment.p'  := t
+      globalTypeEnvironment
 
     constructorCallForm():Syntax == 
       buildSyntax(constructorName::Syntax, constructorParameters)
 
-    instantiatePercentage(signatureast: SpadAst): Syntax ==
+    instantiatePercentageWithCurrentConstructorName(signatureast: SpadAst): Syntax ==
       signatureast' := signatureast::Syntax
       replace(makePercentage(), signatureast', constructorCallForm())$SyntaxHelper
 
@@ -482,7 +492,7 @@ ReductionAnalysisPackage(): Public == Private where
         if not signatureComplete?(sig) then 
           sig' := getCompleteSignature(fn, pars, sig, gte)
         -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
         -- instantiate the % in the signature with the ctor call form
         sig'    := instantiatePercentageForSignature(sig')
         --instantiate the % in the collected potential repeatAsts
@@ -522,7 +532,7 @@ ReductionAnalysisPackage(): Public == Private where
         if not signatureComplete?(sig) then
           sig' := getCompleteSignature(fn, pars, sig, gte)
         -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
         -- instantiate the % in the signature with the ctor call form
         sig'    := instantiatePercentageForSignature(sig')
         --instantiate the % in the collected potential repeatAsts
@@ -551,7 +561,7 @@ ReductionAnalysisPackage(): Public == Private where
         if not signatureComplete?(sig) then
           sig' := getCompleteSignature(fn, pars, sig, gte)
         -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
         -- instantiate the % in the signature with the ctor call form
         sig'    := instantiatePercentageForSignature(sig')
         --instantiate the % in the collected potential repeatAsts
@@ -575,7 +585,7 @@ ReductionAnalysisPackage(): Public == Private where
         if not signatureComplete?(sig) then 
           sig' := getCompleteSignature(fn, pars, sig, gte)
         -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentage(defAst::Syntax::SpadAst)::DefinitionAst
+        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
         -- instantiate the % in the signature with the ctor call form
         sig'    := instantiatePercentageForSignature(sig')
         --instantiate the % in the collected potential repeatAsts
@@ -789,7 +799,7 @@ ReductionAnalysisPackage(): Public == Private where
     -- collect loops from a list of capsules
     collectCapsule(sal: List SpadAst, ctor: Identifier): Integer ==
       for sa in sal repeat
-        collectFromTopLevel(sa, ctor, cgv)
+        collectFromTopLevel(sa, ctor, globalTypeEnvironment)
       count
 
     -- collect loops from a package
@@ -805,7 +815,7 @@ ReductionAnalysisPackage(): Public == Private where
         if (st case MacroAst) then
           collectMacro(st::Syntax::MacroAst)
         if (st case ColonAst) then
-          cgv := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(st), cgv)
+          globalTypeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(st), globalTypeEnvironment)
         if (st case ExitAst) then
           a := expression(st::Syntax::ExitAst)$ExitAst
           b := body(a::Syntax::CapsuleAst)$CapsuleAst
@@ -892,6 +902,7 @@ ReductionAnalysisPackage(): Public == Private where
       tar := instantiateTarget(current, target s)
       signature(src, tar)
 
+    -- create an entry of the exported signature database
     createRecord(fn: Identifier, x: List FunctionDescriptor, current: Syntax): List FREC ==
       result : List FREC := empty()
       for x' in x repeat
@@ -901,92 +912,110 @@ ReductionAnalysisPackage(): Public == Private where
         t : FREC := [fn, s', a]
         result := concat(result, t)
       result
-
+  
+    -- instantiate number slots which appear in function signature with the real constructor type parameter
     instantiateFunctionDescriptor(current: Syntax, opList: List OverloadSet): List FREC ==
       database: List FREC := empty()
       for f in opList repeat
         newRecord := createRecord(name f, members f, current)
         database := concat(database, newRecord)
       database
-----------------------------------------------------
 
+    -- obtain all the exported signatures of a constructor
     getExportedSignatures(): List OverloadSet ==
-      --print(constructorName::OutputForm)
-      ctor := retract(findConstructor(constructorName)$Constructor)$(Maybe Constructor)
-      copy operations ctor
+      constructor := retract(findConstructor(constructorName)$Constructor)$(Maybe Constructor)
+      copy operations constructor
 
-    updateGlobalConstructorInformation(sast: SpadAst, ctorName: Identifier, ctorPar: List Identifier, ctorTps: List Syntax): Boolean ==
-      constructorName           := ctorName
+    -- update the global variables of the current constructor head information
+    updateGlobalConstructorInformation(sast: SpadAst, ctorName: Identifier,_ 
+                                       ctorPar: List Identifier, ctorTps: List Syntax): Void ==
+      constructorName := ctorName
       for p in ctorPar repeat
         constructorParameters   := concat(constructorParameters, p::Syntax)
-      constructorParameterTypes := ctorTps      
-      replacedConstructorDef := instantiatePercentage(sast)
+      constructorParameterTypes := ctorTps
+      -- build the exported signature database of the constructor
       localExportedSignatureDatabase := instantiateFunctionDescriptor(constructorCallForm(), getExportedSignatures())
+      -- initialize the global type environment of the constructor definition
       initGlobalVariableEnvironment(ctorName, ctorPar, ctorTps)
-      true
 
+    -- given an constructor name, find its kind
     getConstructorKind(c: Identifier): ConstructorKind == 
       kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
-
-    countDomPacCat(c: Identifier): Void ==
+  
+    -- this function collects names of categories, domains and packages
+    -- these information will be used for counting total number of each kind of constructor
+    countConstructors(c: Identifier): Void ==
       k : ConstructorKind := getConstructorKind(c)
       k = category$ConstructorKind =>  categorySet := union(categorySet, {c}) 
       k = package$ConstructorKind  =>  packageSet := union(packageSet, {c}) 
       domainSet := union(domainSet, {c})
 
+    -- analyze constructor definition which is defined using where
+    -- this constructor could be either a package or a category constructor
+    collectFromConstructorDefinitionInWhereAst(s: Syntax): Integer ==
+      -- collect constructor head information
+      mainexp  := mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst
+      ctorName := name(head(mainexp)$DefinitionAst)$HeadAst
+      ctorPar  := parameters(head(mainexp)$DefinitionAst)$HeadAst
+      ctorSig  := signature(mainexp)$DefinitionAst
+      ctorTps  := source(ctorSig)
+      countConstructors(ctorName)
+      updateGlobalConstructorInformation(s::SpadAst, ctorName, ctorPar, ctorTps)
+      collectPackage(s, ctorName)
+
+    -- analyze a constructor definition which is in DefinitionAst
+    -- this constructor can be either a category or a domain constructor
+    collectFromConstructorDefinitionInDefinitionAst(s: Syntax): Integer ==
+      -- collect constructor head information
+      ctorName := name(head(s::DefinitionAst)$DefinitionAst)$HeadAst
+      ctorPar  := parameters(head(s::DefinitionAst)$DefinitionAst)$HeadAst
+      ctorSig  := signature(s::DefinitionAst)$DefinitionAst
+      ctorTps  := source(ctorSig)
+      countConstructors(ctorName)
+      updateGlobalConstructorInformation(s::SpadAst, ctorName, ctorPar, ctorTps)
+      sig := signature(s::DefinitionAst)$DefinitionAst
+      tar := target(sig)$Signature
+      tar = buildSyntax('Category,[]) => collectCategory(s, ctorName)
+      collectDomain(s, ctorName)
+
     -- this function extract parallel reduction 
     -- from syntax obtained by parsing one spad library file
     analyzeOneFile(l: List Syntax): Integer == 
+      -- initialize global variables for storing the current constructor information
       cleanUpConstructorInformation()
-      -- clean the ctor global variable table
-      s := importFilter(l)
-      sast := s::SpadAst
-      -- if this is a package AST
-      sast case WhereAst => 
-        mainexp := mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst
-        ctorName : Identifier := name(head(mainexp)$DefinitionAst)$HeadAst
-        ctorPar  := parameters(head(mainexp)$DefinitionAst)$HeadAst
-        ctorSig  := signature(mainexp)$DefinitionAst
-        ctorTps  := source(ctorSig)
-        countDomPacCat(ctorName)
-        updateGlobalConstructorInformation(sast, ctorName, ctorPar, ctorTps)
-        collectPackage(s, ctorName)
+      -- collect all the import information at the head of a Spad file
+      -- these information will be used for function resolution
+      s := importFilter l
+      s' := s::SpadAst
+      -- if this is a package or category
+      s' case WhereAst => collectFromConstructorDefinitionInWhereAst(s)
       -- if this is a domain or category
-      sast case DefinitionAst => 
-        ctorName : Identifier := name(head(sast::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
-        ctorPar  := parameters(head(sast::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
-        ctorSig  := signature(sast::Syntax::DefinitionAst)$DefinitionAst
-        ctorTps  := source(ctorSig)         
-        countDomPacCat(ctorName)
-        updateGlobalConstructorInformation(sast, ctorName, ctorPar, ctorTps)
-        sig := signature(sast::Syntax::DefinitionAst)$DefinitionAst
-        tar := target(sig)$Signature
-        if tar = buildSyntax('Category,[]) then
-          collectCategory(s, ctorName)
-        else
-          collectDomain(s, ctorName)
-        count
+      s' case DefinitionAst => collectFromConstructorDefinitionInDefinitionAst(s)
       count
 
---------------------------------------------------
+    -- obtain all the Spad file name stored in a directory
     getAllFileName: List FileName ==
-      sex := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
-      sexLst := sex pretend List(FileName)
-      sexLst
+      sexp := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
+      sexp pretend List(FileName)
 
-    sexpressionToString(s: FileName): String ==
-      res := s::String
+    -- convert an sexpression to string
+    sexpressionToString(s: FileName): String == s::String
 
+    -- analyze all the Spad files stored in some directory
     analyzeAllFiles(): Integer ==
+      -- initialize all the counters 
+      -- as well as records for holding analysis results
       cleanUp()
-      sexls :List FileName := getAllFileName() 
-      for s in sexls repeat
+      fileNameList :List FileName := getAllFileName() 
+      for s in fileNameList repeat
         fname := sexpressionToString(s)
-        nm: List Syntax := parse(fname)$SpadParser
-        analyzeOneFile(nm)
-        fCount := fCount + 1
-      fCount
+        constructorDefinitionSyntax: List Syntax := parse(fname)$SpadParser
+        analyzeOneFile constructorDefinitionSyntax
+        fileCounter := inc(fileCounter)
+      fileCounter
 
+    -- convert a signature to string
+    -- for output use
     signatureToString(s: Signature): String ==
       result : String := ""
       src := source s
@@ -1001,6 +1030,7 @@ ReductionAnalysisPackage(): Public == Private where
       result := concat([result, ") -> ", toString(tar)$SyntaxHelper])
       result
 
+    -- convert a type environment to string
     tenvToString(tb: VTB): String ==
       result : String := ""
       for i in 1..#(ks := keys tb) repeat
@@ -1012,6 +1042,7 @@ ReductionAnalysisPackage(): Public == Private where
           result := concat([result, "      ", k, ": ", t])
       result
 
+    -- convert a list of signature to string
     signaturelistToString(sl: List XREC): String ==
       result : String := ""
       totalcounter := totalcounter + 1
@@ -1499,10 +1530,6 @@ ReductionAnalysisPackage(): Public == Private where
           return true
       false
 
-    rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
-
-    rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
-
     -- recursively look into each category, looking for the function declaration decl
     recursiveSearchSignatureList(decl: Syntax, extl: LEXTP, rightType: Syntax, rightEnv: VTB): Boolean ==
       for ext in extl repeat
@@ -1660,11 +1687,9 @@ ReductionAnalysisPackage(): Public == Private where
       -- i.e., input and output types are domains
       isDomain?(leftType)$CheckAssumption and isDomain?(rightType)$CheckAssumption =>
         domainVsDomain(leftType, leftEnv, rightType, rightEnv)
-
       -- case 2: generic assumption vs a specific reduction operator
       isTypeVariable?(leftType, leftEnv) and isDomain?(rightType)$CheckAssumption => 
         rightDomainHasLeftCategory?(leftEnv.leftType, leftEnv, rightType, rightEnv)
-
       -- case 3: generic assumption vs a generic reduction operator
       isTypeVariable?(leftType, leftEnv) and isTypeVariable?(rightType, rightEnv) =>
         rightCategoryHasLeftCategory?(leftEnv.leftType, leftEnv, rightEnv.rightType, rightEnv)
@@ -1674,7 +1699,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- satisfies the type requirement specified in user assumption
     typeMatch?(op: TCR, rec: TCR): Boolean ==
       signatureFromAssumption := op.signature
-      signatureFromReduction     := rec.signature
+      signatureFromReduction  := rec.signature
+      -- compare each input/output types of the two operators
       for left in concat(source signatureFromAssumption, target signatureFromAssumption)_
       for right in concat(source signatureFromReduction, target signatureFromReduction) repeat
         not typeChecks?(left, op.tenv, right, rec.tenv) => return false
@@ -1702,12 +1728,11 @@ ReductionAnalysisPackage(): Public == Private where
         rec.funname = op.funname and typeMatch?(op, rec) => return true
       false
 
-  --macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
-  --macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
-  --macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
-  --macro TCR    == Record(funname: Identifier, signature: Signature, tenv: VTB)
-  --macro OPREC  == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
-
+    --macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
+    --macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
+    --macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
+    --macro TCR    == Record(funname: Identifier, signature: Signature, tenv: VTB)
+    --macro OPREC  == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
     -- creates a database view of the format of recording storing associative operator information
     -- the two formats are respectively defined in macros OPREC and TCR
     formatConverterTCR(rs: List OPREC): List TCR == [[r.funname, r.signature, r.tenv] for r in rs]
@@ -1760,8 +1785,8 @@ ReductionAnalysisPackage(): Public == Private where
           partial := concat(partial, recp)
       pair(full, partial)
 
-  --macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature)
-  --macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
+    --macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature)
+    --macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
     -- extract parallel reduce function calls whose reduction operator is associative
     extractParallelizableReduceCall(assocops: List OPREC, recs: List RREC): List RREC ==
       result : List RREC := []
@@ -1776,8 +1801,8 @@ ReductionAnalysisPackage(): Public == Private where
         not empty?(newrec.reductions) => result := concat(result, newrec)
       result
 
-  --macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature)
-  --macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
+    --macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature)
+    --macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
     -- extract parallel reduce forms whose operators are associative
     extractParallelizableReduceForm(assocops: List OPREC, recs: List RFORM): List RFORM ==
       result : List RFORM := []
@@ -1794,6 +1819,7 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- prints out all the interesting statistics obtained from reduction detector
     printStatistics(option: Integer, useassumption: Integer, associativeOperatorList: List OPREC): Void ==
+      -- first print general statistics on category/package/domain numbers
       viewStatistics()
       useassumption = 0 =>
         (option = 2) or (option =3) =>
@@ -1806,7 +1832,7 @@ ReductionAnalysisPackage(): Public == Private where
           averageDepth:DoubleFloat:=convert(reduce(_+$Integer, aclLoopDepths)/aclandnlcounter)$Fraction(Integer)    
           print(averageDepth::OutputForm)
       useassumption = 1 => 
-        print("Associative Operators (by User):"::OutputForm)
+        print("Associative Operator database extracted form user assumption:"::OutputForm)
         print(associativeOperatorList::OutputForm)
         (option = 0) =>
           print("Partial parallelizable loop #:"::OutputForm)
