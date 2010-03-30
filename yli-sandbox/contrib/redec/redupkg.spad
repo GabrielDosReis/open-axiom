@@ -67,6 +67,14 @@ ReductionAnalysisPackage(): Public == Private where
     rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the domain represented by a domain 
       ++ variable has some function
+    rightTypeHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
+      ++ this function checks whether a domain has some attribute
+    rightTypeHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
+      ++ this function checks whether a domain has some signature
+    rightCategoryHasLeftCategory?: (Syntax, VTB, Syntax, VTB) -> Boolean
+      ++ this function checks whether a category has some category
+    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
+      ++ this function checks against two types (type can be domain/domain variable/category)
 
     --Global variables
     -- counter for files that have been analyzed
@@ -359,22 +367,28 @@ ReductionAnalysisPackage(): Public == Private where
     -- skip those function definition which does not have a signature 
     -- their signatures have already been shown in exported ones, or in the local declaration extracted already.
 
-    isRep?(fn: Identifier): Boolean == fn = 'Rep::Identifier
+    -- check whether an identifier is Rep
+    isRep?(i: Identifier): Boolean == i = 'Rep::Identifier
 
+    -- generate two local functions for rep and per once meet Rep
+    -- update these two functions into local function database of the constructor
     updateUnexportedDatabaseWhenMeetRep(bd: SpadAst): Boolean ==
       recordForRep : FREC := ['rep::Identifier, signature([makePercentage()], bd::Syntax), 1]
       recordForPer : FREC := ['per::Identifier, signature([bd::Syntax], makePercentage()), 1]
       localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, [recordForRep, recordForPer])
       true
 
-    updateUnexportedDatabaseWhenMeetFunDef(fn: Identifier, sig: Signature, a: Integer, bd: SpadAst): Boolean ==
-      isRep?(fn)                  => updateUnexportedDatabaseWhenMeetRep(bd)
+    -- this function decides whether a function definition is local to the 
+    -- constructor, if so, then update the local unexported function database
+    updateUnexportedDatabaseWhenMeetFunDef(fn: Identifier, sig: Signature,_ 
+                                           a: Integer, s: SpadAst): Boolean ==
+      isRep?(fn) => updateUnexportedDatabaseWhenMeetRep s
       not signatureComplete?(sig) => false
       r : FREC := [fn, sig, a]
       -- already in exported or unexported signature database?
-      member?(r, localExportedSignatureDatabase) or member?(r, localExportedSignatureDatabase) => false
-      -- otherwise, update the unexpoconstructorNamerted signature database with this entry
-      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
+      member?(r, localExportedSignatureDatabase) => false
+      -- update the unexpoconstructorNamerted signature database with this entry
+      concat!(localUnexportedSignatureDatabase, r)
       true
 
     signatureMatch?(actual: Signature, expect: Signature): Boolean ==
@@ -715,26 +729,28 @@ ReductionAnalysisPackage(): Public == Private where
       dBody case CaseAst => count
       count
 
-    -- collects loop from one function definition
-    collectFromDefinition(defAst: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
+    -- check whether the syntax is a definition for Rep, e.g. Rep == Integer
+    isDefinitionForRep?(bodyOfDefinition: SpadAst, functionArity: Integer):Boolean ==
+      not isRep?(functionName) and_ 
+      functionArity = 0 and_ 
+      isTypeExpression?(bodyOfDefinition)
+
+    -- collects data from a definition ast
+    collectFromDefinition(d: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
       functionDefinitionCounter := inc(functionDefinitionCounter)
-      defAst' := (macroExpansion(defAst::Syntax::SpadAst))::DefinitionAst
-      hd := head(defAst')$DefinitionAst
-      functionName := name hd
-      ary := #(parameters(hd)$HeadAst)
-      sig := signature(defAst')$DefinitionAst
-      dBody := body(defAst')$DefinitionAst
-      if not isRep?(functionName) and ary = 0 and isTypeExpression?(dBody) then
-        -- treat this function abstraction as macro
-        -- or can I say this is inlining?
-        --print(defAst'::Syntax::OutputForm)
-        collectMacroFromDefinitionAst(functionName, dBody)
+      d' := (macroExpansion(d::Syntax::SpadAst))::DefinitionAst
+      headOfDefinition := head(d')$DefinitionAst
+      functionName  := name headOfDefinition
+      functionArity := #(parameters(headOfDefinition)$HeadAst)
+      functionSignature := signature(d')$DefinitionAst
+      bodyOfDefinition := body(d')$DefinitionAst
+      if isDefinitionForRep?(bodyOfDefinition, functionArity) then
+        -- if it is a Rep definition, treat it as macro, and collect it
+        collectMacroFromDefinitionAst(functionName, bodyOfDefinition)
       else
-        ---------------------- add two passes here ----
-        updateUnexportedDatabaseWhenMeetFunDef(functionName, sig, ary, dBody)
-        updateFunDefList(functionName, sig, defAst', dBody, gte)
-        --------------------------
-      -- terminate at each function definition level
+        updateUnexportedDatabaseWhenMeetFunDef(functionName, functionSignature,_ 
+                                               functionArity, bodyOfDefinition)
+        updateFunDefList(functionName, functionSignature, d', bodyOfDefinition, gte)
       count
     
     -- check whether a let assignment is a type assignment
@@ -1295,7 +1311,8 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- checks whether a variable is a type variable 
     -- by looking up in the global type environment
-    isTypeVariable?(tp: Syntax, env: VTB): Boolean == not compound? tp and tp case Identifier and key?(tp, env)
+    isTypeVariable?(tp: Syntax, env: VTB): Boolean == 
+      not compound? tp and tp case Identifier and key?(tp, env)
 
     -- checks whether some category/domain is parameterized by some type variable
     containTypeVariable?(cat: Syntax, env: VTB): Boolean ==
@@ -1354,10 +1371,7 @@ ReductionAnalysisPackage(): Public == Private where
       [pair(first e, instantiatePredicate(second e, mapping)) for e in l']
 
 --------
-    rightTypeHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
-    rightTypeHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
-    rightCategoryHasLeftCategory?: (Syntax, VTB, Syntax, VTB) -> Boolean
-    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
+
 --------
 
     -- checks whether two type constructors have the same name
@@ -1628,6 +1642,8 @@ ReductionAnalysisPackage(): Public == Private where
       -- by recursively looking into each category rightType directly extends.
       recursiveSearchExtensionList(leftType, leftEnv, extl, rightEnv)
 
+   -- this function handles the syntax where a category joined with some attribute 
+   -- and checks whether such type syntax has some attribute
     handleCategoryWithAttribute(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
       rightType' := (rightType::SpadAst)::CategoryAst
       bd := body(rightType')
