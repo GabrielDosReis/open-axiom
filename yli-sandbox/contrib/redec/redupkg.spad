@@ -55,19 +55,23 @@ ReductionAnalysisPackage(): Public == Private where
   Private == add
     -- local forward function declarations:
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
-      ++ this function collect parallel reduction (loop+reduce+reduce form) from 
+      ++ this function collects parallel reduction (loop+reduce+reduce form) from 
       ++ a function definition
+    collectFromTopLevel: (SpadAst, Identifier, VTB) -> Integer
+      ++ this function collects parallel reduction from each statement of the capsule
     rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the some domain has some function
     rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the domain represented by a domain variable has some function
+
 
     --Global variables
     reductionCounter : Integer := 0
     -- counter for files that have been analyzed
     fileCounter: Integer := 0
     count: Integer := 0
-    defNo: Integer := 0
+    -- counter for function definitions
+    functionDefinitionCounter: Integer := 0
     bugcounter : Integer := 0
     -- ACL nests counter
     aclandnlcounter: Integer := 0
@@ -179,7 +183,7 @@ ReductionAnalysisPackage(): Public == Private where
         print("Reduction form #:"::OutputForm)
         print(reductionFormCounter::OutputForm)      
       print("Total function definition #:"::OutputForm)
-      print(defNo::OutputForm)
+      print(functionDefinitionCounter::OutputForm)
       print("Total file #:"::OutputForm)
       print(fileCounter::OutputForm)
       print("Package #:"::OutputForm)
@@ -211,7 +215,7 @@ ReductionAnalysisPackage(): Public == Private where
     cleanUp():Boolean ==
       fileCounter := 0
       count := 0
-      defNo := 0
+      functionDefinitionCounter := 0
       analysisResultList := []
       aclList            := []
       nlList             := []
@@ -651,7 +655,6 @@ ReductionAnalysisPackage(): Public == Private where
         collectMacro(dBody::Syntax::MacroAst)
         count
       dBody case DefinitionAst => 
-        defNo := defNo + 1
         collectFromDefinition(dBody::Syntax::DefinitionAst, ctor, copy gte)
         count
       dBody case SequenceAst =>
@@ -723,6 +726,7 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- collects loop from one function definition
     collectFromDefinition(defAst: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
+      functionDefinitionCounter := inc(functionDefinitionCounter)
       defAst' := (macroExpansion(defAst::Syntax::SpadAst))::DefinitionAst
       hd := head(defAst')$DefinitionAst
       functionName := name hd
@@ -741,13 +745,72 @@ ReductionAnalysisPackage(): Public == Private where
         --------------------------
       -- terminate at each function definition level
       count
+    
+    -- check whether a let assignment is a type assignment
+    -- e.g. foo := Integer or Rep := foo
+    isTypeAssignment?(s: LetAst): Boolean ==
+      not compound?((l := lhs s)::Syntax) and_
+      l case Identifier and_
+      (isRep?(l::Identifier) or isTypeExpression? rhs s)
 
-    -- analysis for T_TopLevel statements (definitions)
-    collectFromTopLevel(sa: SpadAst, ctor: Identifier, gte: VTB): Integer ==
+    -- update macro database with type assignment, i.e. we take type assignment as macro
+    -- when we meet type assignment for Rep, we automatically generate two function per and rep
+    -- updating these two functions into unexported function signature database of the constructor
+    updateDatabaseFromTypeAssignment(s: LetAst): Void ==
+      left := lhs s
+      right := rhs s
+      collectMacroFromDefinitionAst(left::Identifier, right)
+      updateUnexportedDatabaseWhenMeetRep right
+
+
+    -- check whether a let assignment is a immediate initialization
+    -- e.g., foo : Integer := 5
+    isImmediateInitialization?(s: LetAst): Boolean ==
+      compound?((l := lhs(s))::Syntax) and l case ColonAst
+
+    -- using a type checker for let statement which does not have type annotation for its lefthand side
+    updateGlobalTypeEnvironmentUsingTypeChecker(s: LetAst, id: Syntax, typeEnvironment: VTB): Void ==
+      -- expand the macros in typing environment and import list
+      typeEnvironment' := macroExpansionForTypeEnvironmentTable typeEnvironment
+      typeEnvironment' := filterOutMappingAst typeEnvironment' -- in case we may collect some global function signature
+      importList'      := macroExpansionForImportList()
+      -- start typechecking by passing the macro expanded syntax, typing environment and import list to the typechecker
+      tp   := checkGlobalLetAst(s, typeEnvironment', constructorName, constructorParameters,_ 
+                                localExportedSignatureDatabase, localUnexportedSignatureDatabase, importList')$TypeChecker
+      -- update global typing environment
+      typeEnvironment := updateGlobalTypeEnvironment(typeEnvironment, id, tp)
+
+    -- update global typing environment when we meet a global let assignment
+    collectTypesFromGlobalLetAst(s: LetAst, typeEnvironment: VTB): Void ==
+      id := getLhs(s)$SyntaxHelper
+      if isTypeAssignment?(s) then
+        updateDatabaseFromTypeAssignment(s)
+      else if isImmediateInitialization?(s) then
+        typeEnvironment := updateGlobalTypeEnvironment(typeEnvironment, id, rhs((lhs s)::Syntax::ColonAst)::Syntax)
+      -- if the let statement is an assignment to some global variable with an expression
+      -- without type annotation, we ask our typechecker for help, i.e., to infer the type.
+      else
+        updateGlobalTypeEnvironmentUsingTypeChecker(s, id, typeEnvironment)
+
+    -- update global typing environment when meet a if statement for conditional 
+    -- function definition, we collect from its has predicate
+    collectTypesFromGlobalIfAst(s: IfAst, ctor: Identifier, typeEnvironment: VTB): Void ==
+      thBranch := thenBranch(s)$IfAst
+      elBranch := elseBranch(s)$IfAst
+      cond     := condition(s)$IfAst
+      if compound?(thBranch::Syntax) then
+        typeEnvironment' := copy typeEnvironment
+        typeEnvironment' := updateGlobalTypeEnvFromCondition(cond, typeEnvironment')
+        collectFromTopLevel(thBranch, ctor, typeEnvironment')
+      if compound?(elBranch::Syntax) then
+        collectFromTopLevel(elBranch, ctor, copy typeEnvironment)
+
+    -- collect data from a statement of a capsule
+    -- the statement can be a function definition, global variable declaration,
+    -- a conditional function definition/declaration via if statement, ora macro
+    collectFromTopLevel(sa: SpadAst, ctor: Identifier, typeEnvironment: VTB): Integer ==
       sa case ColonAst => 
-        -- collect the global variable declared in the capsule
-        --print(sa::Syntax::OutputForm)
-        gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(sa), gte)
+        typeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(sa), typeEnvironment)
         count
       sa case SignatureAst => count
       sa case MacroAst => 
@@ -757,167 +820,142 @@ ReductionAnalysisPackage(): Public == Private where
         importList := concat(importList, sa::Syntax::ImportAst)        
         count
       sa case DefinitionAst => 
-        defNo := defNo + 1
-        collectFromDefinition(sa::Syntax::DefinitionAst, ctor, copy gte)
+        collectFromDefinition(sa::Syntax::DefinitionAst, ctor, copy typeEnvironment)
         count
-      sa case SequenceAst => collectFromStatement(sa, ctor, gte)
+      sa case SequenceAst => collectFromStatement(sa, ctor, typeEnvironment)
       sa case LetAst => 
-        -- macroExpansion first
+        -- expand the macro for the let statement
         sa' := (macroExpansion sa)::Syntax::LetAst
-        id := getLhs(sa')$SyntaxHelper
-        if not compound?((l := lhs(sa'))::Syntax) and_
-           l case Identifier and_
-           (isRep?(l::Identifier) or isTypeExpression? rhs sa') then
-          collectMacroFromDefinitionAst(l::Identifier, rhs sa')  
-          updateUnexportedDatabaseWhenMeetRep rhs sa'
-        else if compound?((l := lhs(sa'))::Syntax) and l case ColonAst then
-          tp := rhs(l::Syntax::ColonAst)::Syntax
-          gte := updateGlobalTypeEnvironment(gte, id, tp)
-        else
-          gte' := macroExpansionForTypeEnvironmentTable gte
-          gte' := filterOutMappingAst gte'
-          importList' := macroExpansionForImportList()
-          tp   := checkGlobalLetAst(sa', gte', constructorName, constructorParameters, localExportedSignatureDatabase, localUnexportedSignatureDatabase, importList')$TypeChecker
-          gte := updateGlobalTypeEnvironment(gte, id, tp)
+        collectTypesFromGlobalLetAst(sa', typeEnvironment)
         count  
-        --collectFromStatement(sa, ctor, gte)
-        -- above two cases are for handling some weird parsing result (ZMOD)
-      sa case IfAst =>
-        sa' := sa::Syntax::IfAst
-        thBranch := thenBranch(sa')$IfAst
-        elBranch := elseBranch(sa')$IfAst
-        cond     := condition(sa')$IfAst
-        if compound?(thBranch::Syntax) then
-          gte' := copy gte
-          gte' := updateGlobalTypeEnvFromCondition(cond, gte')
-          collectFromTopLevel(thBranch, ctor, gte')
-        if compound?(elBranch::Syntax) then
-          collectFromTopLevel(elBranch, ctor, copy gte)
+      sa case IfAst => 
+        collectTypesFromGlobalIfAst(sa::Syntax::IfAst, ctor, typeEnvironment)
         count
-      collectFromStatement(sa, ctor, gte)
+      collectFromStatement(sa, ctor, typeEnvironment)
 
-    -- collect loops from a list of capsules
-    collectCapsule(sal: List SpadAst, ctor: Identifier): Integer ==
-      for sa in sal repeat
-        collectFromTopLevel(sa, ctor, globalTypeEnvironment)
+    -- collect data from each statement of the capsule of a constructor definition
+    collectFromCapsule(l: List SpadAst, ctor: Identifier): Integer ==
+      for s in l repeat collectFromTopLevel(s, ctor, globalTypeEnvironment)
       count
 
-    -- collect loops from a package
-    collectPackage(s: Syntax, ctor: Identifier): Integer ==
-      ctorPar : List Identifier := parameters(head(mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst)$DefinitionAst)$HeadAst
-      qual := qualifier(s::WhereAst)$WhereAst
-      seq  := (qual::Syntax::SequenceAst)
-      seqBody := body(seq)$SequenceAst
-      wCapAl : List SpadAst := empty()      
-      b : List SpadAst
-      k : Integer := 0
-      for st in seqBody repeat
-        if (st case MacroAst) then
-          collectMacro(st::Syntax::MacroAst)
-        if (st case ColonAst) then
-          globalTypeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(st), globalTypeEnvironment)
-        if (st case ExitAst) then
-          a := expression(st::Syntax::ExitAst)$ExitAst
-          b := body(a::Syntax::CapsuleAst)$CapsuleAst
-        b
-      for x in b repeat
-        x' := x::Syntax
-        id := getOperator(x')
+    -- obtain all the statements which form the qualifier of a WhereAst
+    -- we collect macro and global variable information at the same time
+    getStatementsOfQualifier(bodyOfQualifier: List SpadAst): List SpadAst ==
+      result : List SpadAst := []
+      for s in bodyOfQualifier repeat
+        s case MacroAst => collectMacro(s::Syntax::MacroAst)
+        s case ColonAst =>
+          globalTypeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), globalTypeEnvironment)
+        s case ExitAst =>
+          e := expression(s::Syntax::ExitAst)$ExitAst
+          result := body(e::Syntax::CapsuleAst)$CapsuleAst
+      result
+
+    -- looking for the capsule body of the constructor definition 
+    -- in each statement of a qulifier
+    getBodyOfCapsule(statementOfQualifier: List SpadAst): List SpadAst ==
+      result: List SpadAst
+      for s in statementOfQualifier repeat
+        id := getOperator(s::Syntax)
         if (id case Identifier) then
           id' := id::Identifier
           if (id'::Symbol = 'add) then
-            wCapAl := body((body(x::Syntax::AddAst)$AddAst)::Syntax::CapsuleAst)$CapsuleAst
-            k := 1 
-        if (x case CapsuleAst) then
-          wCapAl := body(x::Syntax::CapsuleAst)$CapsuleAst
-      collectCapsule(wCapAl, ctor)
-      count
+            result := body((body(s::Syntax::AddAst)$AddAst)::Syntax::CapsuleAst)$CapsuleAst
+        if (s case CapsuleAst) then
+          result := body(s::Syntax::CapsuleAst)$CapsuleAst
+      result
 
-    -- collects loops from a typical category, i.e.,  Cats():Category == Cat with ... add..
-    collectCategory(s: Syntax, ctor: Identifier): Integer == 
-      cDef := (s::DefinitionAst)
-      cBody := body(cDef)$DefinitionAst::Syntax
-      cb := cBody::SpadAst
-      id := getOperator(cBody)
-      id case Identifier =>
-        id' := id::Identifier
-        if (id'::Symbol = 'add) then 
-          cCap:=body(cBody::AddAst)$AddAst::Syntax
-          cCapAl : List SpadAst := body(cCap::CapsuleAst)$CapsuleAst
-          collectCapsule(cCapAl, ctor)
-        if (cb case CapsuleAst) then
-          cCapAl : List SpadAst := body(cBody::CapsuleAst)$CapsuleAst
-          collectCapsule(cCapAl, ctor)
-        count
-      -- this case handles a category which only has with capsule
-      cb case CategoryAst => count
-      count
+    -- collects data from a constructor which can be either a category or package
+    collectFromConstructorInWhere(s: Syntax, ctor: Identifier): Integer ==
+      qual := qualifier(s::WhereAst)$WhereAst
+      seq  := (qual::Syntax::SequenceAst)
+      bodyOfQualifier := body(seq)$SequenceAst
+      statementOfQualifier := getStatementsOfQualifier(bodyOfQualifier)
+      bodyOfCapsule := getBodyOfCapsule(statementOfQualifier)
+      collectFromCapsule(bodyOfCapsule, ctor)
 
-    -- analysis for typical domain only has add
-    collectDomain(s: Syntax, ctor: Identifier): Integer ==
-      domDef := body(s::DefinitionAst)$DefinitionAst
-      dDef := domDef::Syntax
-      id := getOperator(dDef)
+    -- collects data from a typical category syntax, 
+    -- i.e.,  Cats():Category == Cat with ... add..
+    collectFromCategory(s: Syntax, ctor: Identifier): Integer == 
+      bodyOfDefinition := body(s::DefinitionAst)$DefinitionAst::Syntax
+      bodyOfDefinition' := bodyOfDefinition::SpadAst
+      id := getOperator(bodyOfDefinition)
       if id case Identifier then
         id' := id::Identifier
         if (id'::Symbol = 'add) then 
-          t := body(domDef::Syntax::AddAst)$AddAst
-          if t case CapsuleAst then
-            domCap: List SpadAst := body(t::Syntax::CapsuleAst)$CapsuleAst
-            collectCapsule(domCap, ctor)
-        if (domDef case CapsuleAst) then
-          domCap: List SpadAst := body(domDef::Syntax::CapsuleAst)$CapsuleAst
-          collectCapsule(domCap, ctor)
+          bodyOfAdd:=body(bodyOfDefinition::AddAst)$AddAst::Syntax
+          statementOfCapsule : List SpadAst := body(bodyOfAdd::CapsuleAst)$CapsuleAst
+          collectFromCapsule(statementOfCapsule, ctor)
+        if (bodyOfDefinition' case CapsuleAst) then
+          statementOfCapsule : List SpadAst := body(bodyOfDefinition::CapsuleAst)$CapsuleAst
+          collectFromCapsule(statementOfCapsule, ctor)
       count
 
------------------------------------ for building local function database
+    -- collects data from a typical domain syntax which only has add capsule withou export
+    collectFromDomain(s: Syntax, ctor: Identifier): Integer ==
+      bodyOfDefinition := body(s::DefinitionAst)$DefinitionAst
+      id := getOperator(bodyOfDefinition::Syntax)
+      if id case Identifier then
+        id' := id::Identifier
+        if (id'::Symbol = 'add) then 
+          bodyOfAdd := body(bodyOfDefinition::Syntax::AddAst)$AddAst
+          if bodyOfAdd case CapsuleAst then
+            statementOfCapsule: List SpadAst := body(bodyOfAdd::Syntax::CapsuleAst)$CapsuleAst
+            collectFromCapsule(statementOfCapsule, ctor)
+        if (bodyOfDefinition case CapsuleAst) then
+          statementOfCapsule: List SpadAst := body(bodyOfDefinition::Syntax::CapsuleAst)$CapsuleAst
+          collectFromCapsule(statementOfCapsule, ctor)
+      count
+
+    -- for building local function database
     makeNumberSlot(i: Integer): Syntax ==
       x := concat("#", convert(i)@String)::Symbol
       (x pretend Identifier)::Syntax
 
-    instantiateNumberSlots(current: Syntax, t: Syntax): Syntax ==
-      typeParameters := getOperands current
+    -- instantiate each number slot with the corresponding constructor type parameter
+    instantiateNumberSlots(t: Syntax): Syntax ==
+      typeParameters := copy constructorParameters
       #typeParameters > 0 =>
         for i in 1 .. #typeParameters repeat
           t := replace(makeNumberSlot(i), t, typeParameters.i)$SyntaxHelper
         t
       t
 
-    instantiateTypeSyntax(current: Syntax, t: Syntax): Syntax ==
+    instantiateTypeSyntax(t: Syntax): Syntax ==
       -- a little bit different here: we don't instantiate %
       -- this makes later extract local function signatures easier
-      t' := instantiateNumberSlots(current, t)
+      t' := instantiateNumberSlots(t)
       t'
 
-    instantiateTarget(current: Syntax, tar: Syntax): Syntax ==
-      instantiateTypeSyntax(current, tar)
+    instantiateTarget(tar: Syntax): Syntax ==
+      instantiateTypeSyntax(tar)
 
-    instantiateSource(current: Syntax, src: List Syntax): List Syntax ==
+    instantiateSource(src: List Syntax): List Syntax ==
       for i in 1..#src repeat
-        src.i := instantiateTypeSyntax(current, src.i)
+        src.i := instantiateTypeSyntax(src.i)
       src
 
-    instantiateSignature(current: Syntax, s: Signature): Signature ==
-      src := instantiateSource(current, copy source s)
-      tar := instantiateTarget(current, target s)
+    instantiateSignature(s: Signature): Signature ==
+      src := instantiateSource(copy source s)
+      tar := instantiateTarget(target s)
       signature(src, tar)
 
     -- create an entry of the exported signature database
-    createRecord(fn: Identifier, x: List FunctionDescriptor, current: Syntax): List FREC ==
+    createRecord(fn: Identifier, x: List FunctionDescriptor): List FREC ==
       result : List FREC := empty()
       for x' in x repeat
         s := signature x'
         a := #(source s)
-        s' := instantiateSignature(current, s)
+        s' := instantiateSignature(s)
         t : FREC := [fn, s', a]
         result := concat(result, t)
       result
   
     -- instantiate number slots which appear in function signature with the real constructor type parameter
-    instantiateFunctionDescriptor(current: Syntax, opList: List OverloadSet): List FREC ==
+    instantiateFunctionDescriptor(opList: List OverloadSet): List FREC ==
       database: List FREC := empty()
       for f in opList repeat
-        newRecord := createRecord(name f, members f, current)
+        newRecord := createRecord(name f, members f)
         database := concat(database, newRecord)
       database
 
@@ -934,7 +972,7 @@ ReductionAnalysisPackage(): Public == Private where
         constructorParameters   := concat(constructorParameters, p::Syntax)
       constructorParameterTypes := ctorTps
       -- build the exported signature database of the constructor
-      localExportedSignatureDatabase := instantiateFunctionDescriptor(constructorCallForm(), getExportedSignatures())
+      localExportedSignatureDatabase := instantiateFunctionDescriptor(getExportedSignatures())
       -- initialize the global type environment of the constructor definition
       initGlobalVariableEnvironment(ctorName, ctorPar, ctorTps)
 
@@ -961,7 +999,7 @@ ReductionAnalysisPackage(): Public == Private where
       ctorTps  := source(ctorSig)
       countConstructors(ctorName)
       updateGlobalConstructorInformation(s::SpadAst, ctorName, ctorPar, ctorTps)
-      collectPackage(s, ctorName)
+      collectFromConstructorInWhere(s, ctorName)
 
     -- analyze a constructor definition which is in DefinitionAst
     -- this constructor can be either a category or a domain constructor
@@ -975,8 +1013,8 @@ ReductionAnalysisPackage(): Public == Private where
       updateGlobalConstructorInformation(s::SpadAst, ctorName, ctorPar, ctorTps)
       sig := signature(s::DefinitionAst)$DefinitionAst
       tar := target(sig)$Signature
-      tar = buildSyntax('Category,[]) => collectCategory(s, ctorName)
-      collectDomain(s, ctorName)
+      tar = buildSyntax('Category,[]) => collectFromCategory(s, ctorName)
+      collectFromDomain(s, ctorName)
 
     -- this function extract parallel reduction 
     -- from syntax obtained by parsing one spad library file
