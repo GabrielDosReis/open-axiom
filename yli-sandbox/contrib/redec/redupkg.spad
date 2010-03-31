@@ -55,14 +55,14 @@ ReductionAnalysisPackage(): Public == Private where
   Private == add
     import SyntaxHelper
 
-    -- local forward function declarations:
-    collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Integer
+    -- some local forward function declarations for bootstrapping
+    collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Void
       ++ this function collects parallel reduction (loop+reduce+reduce form)
       ++ from a function definition
-    collectFromTopLevel: (SpadAst, Identifier, VTB) -> Integer
+    collectFromTopLevel: (SpadAst, Identifier, VTB) -> Void
       ++ this function collects parallel reduction 
       ++ from each toplevel statement of the capsule
-    collectFromStatement: (SpadAst, Identifier, VTB) -> Integer
+    collectFromStatement: (SpadAst, Identifier, VTB) -> Void
       ++ this function collects parallel reduction 
       ++ from each statement
     rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
@@ -70,6 +70,17 @@ ReductionAnalysisPackage(): Public == Private where
     rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the domain represented by a domain 
       ++ variable has some function
+    rightTypeHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
+      ++ this function checks whether some type is declared to have some attribute
+    rightTypeHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
+      ++ this function checks whether some type is declared to have
+      ++ some operator which has certain signature
+    rightCategoryHasLeftCategory?: (Syntax, VTB, Syntax, VTB) -> Boolean
+      ++ this function checks whether some category extends another category
+    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
+      ++ this function checks the actual type against the expected type
+      ++ this is the main entry for the typechecking functionality in the 
+      ++ assumption checking module
 
     --Global variables
     -- counter for files that have been analyzed
@@ -758,43 +769,29 @@ ReductionAnalysisPackage(): Public == Private where
 
 
     -- collect data from a statement
-    collectFromStatement(s: SpadAst, ctor: Identifier, gte: VTB): Integer ==
-      not compound?(s::Syntax) => count
-      s case ImportAst =>
-        importList := concat(importList, s::Syntax::ImportAst)        
-        count
-      s case MacroAst => 
-        collectMacro(s::Syntax::MacroAst)
-        count
+    collectFromStatement(s: SpadAst, ctor: Identifier, gte: VTB): Void ==
+      not compound?(s::Syntax) => print(""::OutputForm)
+      s case ImportAst => importList := concat(importList, s::Syntax::ImportAst)        
+      s case MacroAst => collectMacro(s::Syntax::MacroAst)
       s case DefinitionAst => 
         collectFromDefinition(s::Syntax::DefinitionAst, ctor, copy gte)
-        count
       s case SequenceAst =>
         stmtLst:= body(s::Syntax::SequenceAst)$SequenceAst
         for stmt in stmtLst repeat
           collectFromStatement(stmt, ctor, gte)
-        count
-      s case IfAst => 
-        collectFromIfStatement(s, ctor, gte)
-        count
+      s case IfAst => collectFromIfStatement(s, ctor, gte)
       s case ReturnAst =>
         rtn := expression(s::Syntax::ReturnAst)$ReturnAst
         if compound?(rtn::Syntax) then
           collectFromStatement(rtn, ctor, gte)
-        count
-      s case CoerceAst =>
-        collectFromCoerceStatement(s, ctor, gte)
-        count
-      s case ExitAst =>
+      s case CoerceAst => collectFromCoerceStatement(s, ctor, gte)
+      s case ExitAst => 
         collectFromStatement(expression(s::Syntax::ExitAst)$ExitAst, ctor, gte)
       s case LetAst =>
         s' := (macroExpansion s)::Syntax::LetAst
         collectTypesFromGlobalLetAst(s', gte)
-        count
       s case ColonAst => 
         gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), gte)
-        count
-      count
 
     -- check whether the syntax is a definition for Rep, e.g. Rep == Integer
     isRepDefinition?(functionName:Identifier, bodyOfDefinition: SpadAst, functionArity: Integer):Boolean ==
@@ -803,7 +800,7 @@ ReductionAnalysisPackage(): Public == Private where
       isTypeExpression?(bodyOfDefinition)
 
     -- collects data from a definition ast
-    collectFromDefinition(d: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
+    collectFromDefinition(d: DefinitionAst, ctor: Identifier, gte: VTB): Void ==
       functionDefinitionCounter := inc(functionDefinitionCounter)
       d' := (macroExpansion(d::Syntax::SpadAst))::DefinitionAst
       headOfDefinition := head(d')$DefinitionAst
@@ -818,7 +815,6 @@ ReductionAnalysisPackage(): Public == Private where
         updateUnexportedDatabaseWhenMeetFunDef(functionName, functionSignature,_ 
                                                functionArity, bodyOfDefinition)
         collectFromFunctionBody(functionName, functionSignature, d', gte)
-      count
     
 
 
@@ -838,29 +834,20 @@ ReductionAnalysisPackage(): Public == Private where
     -- collect data from a statement of a capsule
     -- the statement can be a function definition, global variable declaration,
     -- a conditional function definition/declaration via if statement, ora macro
-    collectFromTopLevel(sa: SpadAst, ctor: Identifier, typeEnvironment: VTB): Integer ==
+    collectFromTopLevel(sa: SpadAst, ctor: Identifier, typeEnvironment: VTB): Void ==
       sa case ColonAst => 
         typeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(sa), typeEnvironment)
-        count
-      sa case SignatureAst => count
-      sa case MacroAst => 
-        collectMacro(sa::Syntax::MacroAst)
-        count
-      sa case ImportAst => 
-        importList := concat(importList, sa::Syntax::ImportAst)        
-        count
+      sa case MacroAst => collectMacro(sa::Syntax::MacroAst)
+      sa case ImportAst => importList := concat(importList, sa::Syntax::ImportAst)        
       sa case DefinitionAst => 
         collectFromDefinition(sa::Syntax::DefinitionAst, ctor, copy typeEnvironment)
-        count
       sa case SequenceAst => collectFromStatement(sa, ctor, typeEnvironment)
       sa case LetAst => 
         -- expand the macro for the let statement
         sa' := (macroExpansion sa)::Syntax::LetAst
         collectTypesFromGlobalLetAst(sa', typeEnvironment)
-        count  
       sa case IfAst => 
         collectTypesFromGlobalIfAst(sa::Syntax::IfAst, ctor, typeEnvironment)
-        count
       collectFromStatement(sa, ctor, typeEnvironment)
 
     -- collect data from each statement of the capsule of a constructor definition
@@ -1392,13 +1379,6 @@ ReductionAnalysisPackage(): Public == Private where
       l' := copy l
       [pair(first e, instantiatePredicate(second e, mapping)) for e in l']
 
---------
-    rightTypeHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
-    rightTypeHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
-    rightCategoryHasLeftCategory?: (Syntax, VTB, Syntax, VTB) -> Boolean
-    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
---------
-
     -- checks whether two type constructors have the same name
     sameName?(leftType: Syntax, rightType: Syntax): Boolean ==
       (not compound?(leftType)) or (not compound?(rightType)) => false
@@ -1538,6 +1518,11 @@ ReductionAnalysisPackage(): Public == Private where
       isJoin?(rightType)$SyntaxHelper        => rightJoinCategoriesHasLeftAttribute?(att, rightType, rightEnv)
       userError "unexpected cases in rightTypeHasLeftAttribute?"
 
+    -- This function instantiates the source of the signature syntax
+    -- of some function declaration from some category constructor data
+    -- 1. replace % with the current domain domVar
+    -- 2. replace each parameter used in the category definition 
+    -- with the actual category constructor parameter
     instantiateSourceOfSignature(src: List Syntax, mapping: VTB, domVar: Syntax): List Syntax ==
       res : List Syntax := []
       for s in src repeat
@@ -1546,6 +1531,11 @@ ReductionAnalysisPackage(): Public == Private where
         res := concat(res, s')
       res
 
+    -- This function instantiates the target of the signature syntax
+    -- of some function declaration from some category constructor data
+    -- 1. replace % with the current domain domVar
+    -- 2. replace each parameter used in the category definition 
+    -- with the actual category constructor parameter
     instantiateTargetOfSignature(tar: Syntax, mapping: VTB, domVar: Syntax): Syntax ==
       s' := instantiateSyntax(tar, mapping)
       s' := instantiatePercentages(domVar, s')
@@ -1589,7 +1579,9 @@ ReductionAnalysisPackage(): Public == Private where
       r' := r::SpadAst::SignatureAst
       name(l') = name(r') and (signature l') = (signature r')
     
-    searchSignatureList(sig: Syntax, sigList: LSP, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- search in a list of signature to see whether search 
+    -- target signature is inside
+    searchSignatureList(sig: Syntax, sigList: LSP,rightEnv: VTB): Boolean ==
       -- look at each category extension in the extension list
       -- searching for category stored in leftType
       for s in sigList repeat
@@ -1613,7 +1605,7 @@ ReductionAnalysisPackage(): Public == Private where
       m := findMapping(rec.catpars, cat)
       extl := instantiateExtensionList(rec.extensions, m)
       decll := instantiateSignatureList(rec.declarations, m, rightType)
-      searchSignatureList(decl, decll, rightType, rightEnv) => true
+      searchSignatureList(decl, decll, rightEnv) => true
       recursiveSearchSignatureList(decl, extl, rightType, rightEnv)
 
     -- this function is invoked when the type of domain rightType is a join of categories and attributes
@@ -1667,6 +1659,8 @@ ReductionAnalysisPackage(): Public == Private where
       -- by recursively looking into each category rightType directly extends.
       recursiveSearchExtensionList(leftType, leftEnv, extl, rightEnv)
 
+   -- this function handles the syntax where a category joined with some attribute 
+   -- and checks whether such type syntax has some attribute
     handleCategoryWithAttribute(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
       rightType' := (rightType::SpadAst)::CategoryAst
       bd := body(rightType')
