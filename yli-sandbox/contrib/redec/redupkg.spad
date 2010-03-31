@@ -61,20 +61,15 @@ ReductionAnalysisPackage(): Public == Private where
       ++ from a function definition
     collectFromTopLevel: (SpadAst, Identifier, VTB) -> Integer
       ++ this function collects parallel reduction 
-      ++ from each statement of the capsule
+      ++ from each toplevel statement of the capsule
+    collectFromStatement: (SpadAst, Identifier, VTB) -> Integer
+      ++ this function collects parallel reduction 
+      ++ from each statement
     rightDomainHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the some domain has some function
     rightDomainVariableHasLeftSignature?: (Syntax, Syntax, Syntax, VTB) -> Boolean
       ++ this function checks whether the domain represented by a domain 
       ++ variable has some function
-    rightTypeHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
-      ++ this function checks whether a domain has some attribute
-    rightTypeHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
-      ++ this function checks whether a domain has some signature
-    rightCategoryHasLeftCategory?: (Syntax, VTB, Syntax, VTB) -> Boolean
-      ++ this function checks whether a category has some category
-    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
-      ++ this function checks against two types (type can be domain/domain variable/category)
 
     --Global variables
     -- counter for files that have been analyzed
@@ -127,7 +122,7 @@ ReductionAnalysisPackage(): Public == Private where
     nlList: List AREC                                  := []
 
     -- list for storing reduction loop records
-    analysisResultList: List ZREC                      := []
+    accumulationLoopList: List ZREC                      := []
 
     -- list for storing reduce function call records
     reduceList: List RREC                              := []
@@ -219,7 +214,7 @@ ReductionAnalysisPackage(): Public == Private where
       fileCounter := 0
       count := 0
       functionDefinitionCounter := 0
-      analysisResultList := []
+      accumulationLoopList := []
       aclList            := []
       nlList             := []
       reduceList         := []
@@ -255,18 +250,22 @@ ReductionAnalysisPackage(): Public == Private where
         s' := replace(sub, s', mac)$SyntaxHelper
       s'::SpadAst
 
+    -- does macro expansion for the type of each variable 
+    -- stored in a typing environment
     macroExpansionForTypeEnvironmentTable(gte: VTB): VTB ==
       gte' := copy gte
       for k in keys gte' repeat
         gte'.k := macroExpansionForSyntax((gte'.k)::SpadAst)::Syntax
       gte'
 
+    -- does macro expansion for each import statement collected from constructor
     macroExpansionForImportList(): List ImportAst ==
       importList' := copy importList
       for i in 1..#importList' repeat
         importList'.i := macroExpansionForSyntax((importList'.i)::Syntax::SpadAst)::Syntax::ImportAst
       importList'
 
+    -- does macro expansion for a Spad ast
     macroExpansion(defAst: SpadAst): SpadAst ==
       defAst' := defAst
       op       := getOperator(defAst'::Syntax)::Identifier
@@ -299,24 +298,31 @@ ReductionAnalysisPackage(): Public == Private where
         s' case DefinitionAst or s' case WhereAst => return s
       l.last
 
+    -- initialize the global type environment of the constructor definition
     initGlobalVariableEnvironment(ctorName: Identifier, ctorPars: List Identifier, ctorTps: List Syntax): VTB ==
       for p in ctorPars for t in ctorTps repeat
         p' := p::Syntax
         globalTypeEnvironment.p'  := t
       globalTypeEnvironment
 
+    -- build the constructor call form with its parameters
+    -- for instance, foo(x: Integer) will generate foo(x)
+    -- this call form will be used to replace "%" in domain definitions    
     constructorCallForm():Syntax == 
       buildSyntax(constructorName::Syntax, constructorParameters)
 
-    instantiatePercentageWithCurrentConstructorName(signatureast: SpadAst): Syntax ==
-      signatureast' := signatureast::Syntax
-      replace(makePercentage(), signatureast', constructorCallForm())$SyntaxHelper
+    -- replace % appeared in some type expression with the domain represented by %
+    instantiatePercentageWithCurrentDomain(s: SpadAst): Syntax ==
+      s' := s::Syntax
+      replace(makePercentage(), s', constructorCallForm())$SyntaxHelper
 
     -- update the global type environment
     updateGlobalTypeEnvironment(gte: VTB, id: Syntax, tp: Syntax): VTB ==
       qsetelt!(gte, id, tp)
       gte
 
+    -- update global type environment using the has predicate of a conditional
+    -- function definition
     updateGlobalTypeEnvFromCondition(cond: SpadAst, gte: VTB): VTB ==
       compound?(cond::Syntax) and cond case HasAst =>
         cond := macroExpansionForSyntax(cond)
@@ -333,6 +339,7 @@ ReductionAnalysisPackage(): Public == Private where
         gte
       gte
 
+    -- convert a mapping ast to a signature
     mappingAst2Signature(m: MappingAst): Signature ==
       src : List Syntax := []
       tar := (target m)::Syntax
@@ -340,24 +347,36 @@ ReductionAnalysisPackage(): Public == Private where
         src := concat(src, s::Syntax)
       signature(src, tar)
 
+    -- update local function database of some constructor with
+    -- the extracted function name, function signature and the arity
     updateUnexportedSignatureDatabase(fn: Identifier, sig: Signature, a: Integer): Boolean ==
       r: FREC := [fn, sig, a]
       localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
       true
 
+    -- check whether a colon ast is used for declaring function
+    -- by passing it with the left and right hand sides of the colon ast.
+    isFunctionDeclaration?(left: SpadAst, right: SpadAst): Boolean ==
+      compound?(right::Syntax) and_ 
+      (right case MappingAst) and_
+      (left::Syntax) case Identifier  
+
+    -- obtain function signature from colon ast, e.g. foo: Integer -> Integer
+    -- update the signature information to signature data base
     getFunctionSignatureFromColonAst(sa: SpadAst, gte: VTB): Boolean ==
       sa'   := sa::Syntax::ColonAst
       right := rhs(sa')::Syntax::SpadAst
       left  := lhs(sa')::Syntax::SpadAst
-      if compound?(right::Syntax) and_ 
-         right case MappingAst and_
-         (left' := left::Syntax) case Identifier  then
-      -- if this is a function signature
+      if isFunctionDeclaration?(left, right) then
+        left' := left::Syntax
         right' := right::Syntax::MappingAst
-        updateUnexportedSignatureDatabase(left'::Identifier, mappingAst2Signature(right'),  #(source(right')$MappingAst))
+        updateUnexportedSignatureDatabase(left'::Identifier,_
+                   mappingAst2Signature(right'),  #(source(right')$MappingAst))
         gte := updateGlobalTypeEnvironment(gte, left::Syntax, right::Syntax) 
       true
 
+    -- check all the signature given by our typechecker is complete
+    -- i.e., typechecker can succesfully resolve the signature of some function
     signatureComplete?(sig: Signature): Boolean ==
       for t in concat(source sig, target sig) repeat
         nil? t => return false
@@ -368,7 +387,7 @@ ReductionAnalysisPackage(): Public == Private where
     -- their signatures have already been shown in exported ones, or in the local declaration extracted already.
 
     -- check whether an identifier is Rep
-    isRep?(i: Identifier): Boolean == i = 'Rep::Identifier
+    isRep?(fn: Identifier): Boolean == fn = 'Rep::Identifier
 
     -- generate two local functions for rep and per once meet Rep
     -- update these two functions into local function database of the constructor
@@ -380,24 +399,29 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- this function decides whether a function definition is local to the 
     -- constructor, if so, then update the local unexported function database
-    updateUnexportedDatabaseWhenMeetFunDef(fn: Identifier, sig: Signature,_ 
-                                           a: Integer, s: SpadAst): Boolean ==
-      isRep?(fn) => updateUnexportedDatabaseWhenMeetRep s
+    updateUnexportedDatabaseWhenMeetFunDef(fn: Identifier, sig: Signature,_
+                                           a: Integer, bd: SpadAst): Boolean ==
+      isRep?(fn) => updateUnexportedDatabaseWhenMeetRep(bd)
       not signatureComplete?(sig) => false
       r : FREC := [fn, sig, a]
       -- already in exported or unexported signature database?
-      member?(r, localExportedSignatureDatabase) => false
-      -- update the unexpoconstructorNamerted signature database with this entry
-      concat!(localUnexportedSignatureDatabase, r)
+      member?(r, localExportedSignatureDatabase) or member?(r, localExportedSignatureDatabase) => false
+      -- otherwise, update the unexpoconstructorNamerted signature database with this entry
+      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
       true
 
+    -- check whether the signature used of a query matches with the
+    -- signature obtained from signature database 
     signatureMatch?(actual: Signature, expect: Signature): Boolean ==
       actualSignatureList := concat(source actual, target actual)
       expectSignatureList := concat(source expect, target expect)
+      -- just compare each of the input and output types between the two
       for x in actualSignatureList for y in expectSignatureList repeat
         not nil? x and not x = y => return false
       true
 
+    -- given a function name and signature, we query whether this function 
+    -- information exists in the signature database
     searchInSignatureDatabase(fn: Identifier, sig: Signature, db: List FREC): Pair(Boolean, Signature) ==
       for entry in db repeat
         if entry.funname = fn and_ 
@@ -406,6 +430,8 @@ ReductionAnalysisPackage(): Public == Private where
           return pair(true, entry.signature)
       pair(false, sig)
 
+    -- check the types of parameters of a function definition 
+    -- using typing environment 
     updateParameterTypeFromTypeEnvironment(pars: List Syntax, sig: Signature, gte: VTB): Signature ==
       src := source sig
       tar := target sig
@@ -414,6 +440,8 @@ ReductionAnalysisPackage(): Public == Private where
           src.i := gte.p
       signature(src, tar)
 
+    -- obtain the complete signature for a function definition by searching  
+    -- signature databases
     getCompleteSignature(fn: Identifier, pars: List Syntax, sig: Signature, gte: VTB): Signature ==
       -- search in global type environment first
       if not (fn = makeCase()::Identifier) then 
@@ -428,29 +456,36 @@ ReductionAnalysisPackage(): Public == Private where
       print(constructorMacros::OutputForm)
       userError "unexpected: the signature can not be found in any of the two databases."
 
-    -- should add exclamation.
+    -- replace % in the source of a signature with the current domain call form
     instantiatePercentageInSource(src: List Syntax): List Syntax ==
       for i in 1..#src repeat
         src.i := replace(makePercentage(), src.i, constructorCallForm())$SyntaxHelper
       src
 
+    -- replace % appeared in each syntax of a syntax list 
+    -- with the current domain call form
     instantiatePercentageForListSyntax(s: List Syntax): List Syntax ==
       instantiatePercentageInSource(s)
 
+    -- replace % in the target of a signature with the current domain call form
     instantiatePercentageInTarget(tar: Syntax): Syntax ==
       replace(makePercentage(), tar, constructorCallForm())$SyntaxHelper
 
+    -- replace % in a signature with the current domain call form
     instantiatePercentageForSignature(s: Signature): Signature ==
       src := instantiatePercentageInSource copy source s
       tar := instantiatePercentageInTarget target s
       signature(src, tar)
 
+    -- replace % appeared in a loop with the current domain call form
     instantiatePercentageForLoops(l: List RepeatAst): List RepeatAst ==
       result := copy l
       for i in 1..#result repeat
         result.i := (replace(makePercentage(), (result.i)::Syntax, constructorCallForm())$SyntaxHelper)::RepeatAst
       result
 
+    -- remove all the function types from the general global type environment
+    -- to obtain a type environment only for variables
     filterOutMappingAst(gte: VTB): VTB == 
       gte' := copy gte
       for k in keys gte' repeat
@@ -458,180 +493,183 @@ ReductionAnalysisPackage(): Public == Private where
           remove!(k, gte')
       gte'  
 
-    collectReduceForms(r: List Syntax): Pair(List Syntax, List Syntax) ==
-      reduceFun : List Syntax := []
-      reduceForm: List Syntax := []
-      for e in r repeat
-        if getOperator(e) case Identifier then
-          getOperator(e)::Identifier = 'REDUCE::Identifier => reduceForm := concat(reduceForm, e)
-          getOperator(e)::Identifier = 'reduce::Identifier => reduceFun := concat(reduceFun, e)
-      pair(reduceFun, reduceForm)
+    printBanner0(): Void ==
+      print(" "::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print("|  Encounter potential reduction, start doing typechecking  |"::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print(" "::OutputForm)          
 
-    -- collect all the function definitions in the capsule, attaching with its complete signature,
-    -- its complete AST, and an initialized type environment
-    -- Note that % in its signature is not replaced with the constructor call form
-    updateFunDefList(fn: Identifier, sig: Signature, defAst: DefinitionAst, bd: SpadAst, gte: VTB): Boolean ==
-      -- we don't do typechecking for rep and per. or Rep ==
-      -- because we generate its type, not user, therefore it is always correct.
-      isRep?(fn) => true
-      -- make a copy of the defintion ast
-      defAst' := defAst
+    printBanner1(): Void ==
+      print(" "::OutputForm)
+      print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"::OutputForm)
+      print("$  Encounter potential reduce forms and expressions, start typechecking  $"::OutputForm)
+      print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"::OutputForm)
+      print(" "::OutputForm)     
+
+    printBanner2(): Void ==
+      print(" "::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print("|  Encounter affine control loop nest                       |"::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print(" "::OutputForm)    
+
+    printBanner3(): Void ==
+      print(" "::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print("|  Encounter loop nest                                      |"::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print(" "::OutputForm)   
+
+
+    updateAccumulationLoopList(r: DREC, resultFromTypeChecker: Pair(VTB, List YREC)): Void ==
+      r.typeenv := first resultFromTypeChecker
+      r.accumulations := second resultFromTypeChecker
+      -- update the final result to be written into file
+      r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
+      fundefList := concat(fundefList, r)
+      accumulationLoopList := concat(accumulationLoopList, r')
+
+
+    -- analysis option 0:
+    -- collect all the accumulation loop from all the statements in a function
+    -- body via pattern matching
+    collectAccumulationLoop(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
       gte' := macroExpansionForTypeEnvironmentTable(gte)
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
-      if programOption = 0 then
-        -- analyze the loop, extracting reductions 
-        resultFromLoopAnalysis: Pair(LTB, List List Syntax) := extractReductionPatternFromFunctionDefinition(defAst', constructorName, copy gte')$LoopAnalysis 
-        loopTable: LTB := first resultFromLoopAnalysis
-        accVariables: List List Syntax := second resultFromLoopAnalysis
-        -- if there is no interesting loop, we do nothing.
-        empty? loopTable => return true
-        #keys(loopTable) > 1 => 
-          print(loopTable::OutputForm)
-          userError "unexpected results from analysis framework [has more than 1 entry in the table]"
-        print(" ")
-        print("-------------------------------------------------------------")
-        print("|  Encounter potential reduction, start doing typechecking  |")
-        print("-------------------------------------------------------------")
-        print(" ")     
-        k := first keys loopTable
-        loopList : List RepeatAst := loopTable.k
-        sig' := sig
-        -- sigh, the following code is due to the bug caused by "left", "last"
-        pars := getOperands(first(getOperands(defAst::Syntax)))
-        if not signatureComplete?(sig) then 
-          sig' := getCompleteSignature(fn, pars, sig, gte)
-        -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
-        -- instantiate the % in the signature with the ctor call form
-        sig'    := instantiatePercentageForSignature(sig')
-        --instantiate the % in the collected potential repeatAsts
-        loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
-        -- build the record
-        r : DREC := [fn, sig', defAst', copy gte', []]
-        -- typechecks the function definition body
-        resultFromTypeChecker : Pair(VTB, List YREC) := checkFunctionDefinition(r,_ 
+      -- analyze the loop, extracting reductions 
+      resultFromLoopAnalysis: Pair(LTB, List List Syntax)_ 
+        := extractReductionPatternFromFunctionDefinition(definition',_
+                                       constructorName, copy gte')$LoopAnalysis 
+      loopTable: LTB := first resultFromLoopAnalysis
+      accVariables: List List Syntax := second resultFromLoopAnalysis
+      -- if there is no interesting loop, we do nothing.
+      empty? loopTable => return true
+      printBanner0()
+      k := first keys loopTable
+      loopList : List RepeatAst := loopTable.k
+      sig' := sig
+      pars := getOperands(first(getOperands(definition::Syntax)))
+      if not signatureComplete?(sig) then 
+        sig' := getCompleteSignature(functionName, pars, sig, gte)
+      -- instantiate the % in the function body with the ctor call form
+      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      -- instantiate the % in the signature with the ctor call form
+      sig'    := instantiatePercentageForSignature(sig')
+      --instantiate the % in the collected potential repeatAsts
+      loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+      -- build the record
+      r : DREC := [functionName, sig', definition', copy gte', []]
+      -- typechecks the function definition body
+      resultFromTypeChecker : Pair(VTB, List YREC) := checkFunctionDefinition(r,_ 
                                              constructorName, constructorParameters,_
                                              localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
                                              importList', constructorMacros,_
                                              loopList', accVariables)$TypeChecker
-        r.typeenv := first resultFromTypeChecker
-        r.accumulations := second resultFromTypeChecker
-        fundefList := concat(fundefList, r)
-        -- update the final result to be written into file
-        r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
-        analysisResultList := concat(analysisResultList, r')
-------------------------------------------------------------------------------------------------------
+      updateAccumulationLoopList(r, resultFromTypeChecker)
 
-      if programOption = 2 then
-        resultFromACFAnalysis : LTB := extractAffineControlLoopFromFunctionDefinition(defAst', constructorName, copy gte')$LoopAnalysis
-        empty? resultFromACFAnalysis => return true
-        #keys(resultFromACFAnalysis) > 1 =>
-          print(resultFromACFAnalysis::OutputForm)
-          userError "unexpected results from analysis framework [has more than 1 entry in the table]"
-        print(" ")
-        print("-------------------------------------------------------------")
-        print("|  Encounter affine control loop nest                       |")
-        print("-------------------------------------------------------------")
-        print(" ")
-        k := first keys resultFromACFAnalysis
-        loopList : List RepeatAst := resultFromACFAnalysis.k
-        sig' := sig
-        -- sigh, the following code is due to the bug caused by "left", "last"
-        pars := getOperands(first(getOperands(defAst::Syntax)))
-        if not signatureComplete?(sig) then
-          sig' := getCompleteSignature(fn, pars, sig, gte)
-        -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
-        -- instantiate the % in the signature with the ctor call form
-        sig'    := instantiatePercentageForSignature(sig')
-        --instantiate the % in the collected potential repeatAsts
-        loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
-        r' : AREC := [constructorName, fn, sig', loopList']
-        aclList := concat(aclList, r')
 
-------------------------------------------------------------------------------------------------------
-
-      if programOption = 3 then
-        resultFromLoopNestsAnalysis : LTB := extractAllLoopNests(defAst', constructorName, copy gte')$LoopAnalysis
-        empty? resultFromLoopNestsAnalysis => return true
-        #keys(resultFromLoopNestsAnalysis) > 1 =>
-          print(resultFromLoopNestsAnalysis::OutputForm)
-          userError "unexpected results from analysis framework [has more than 1 entry in the table]"
-        print(" ")
-        print("-------------------------------------------------------------")
-        print("|  Encounter loop nest                                      |")
-        print("-------------------------------------------------------------")
-        print(" ")
-        k := first keys resultFromLoopNestsAnalysis
-        loopList : List RepeatAst := resultFromLoopNestsAnalysis.k
-        sig' := sig
-        -- sigh, the following code is due to the bug caused by "left", "last"
-        pars := getOperands(first(getOperands(defAst::Syntax)))
-        if not signatureComplete?(sig) then
-          sig' := getCompleteSignature(fn, pars, sig, gte)
-        -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
-        -- instantiate the % in the signature with the ctor call form
-        sig'    := instantiatePercentageForSignature(sig')
-        --instantiate the % in the collected potential repeatAsts
-        loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
-        r' : AREC := [constructorName, fn, sig', loopList']
-        nlList := concat(nlList, r')
-
--------------------------------------------------------------------------------------------------------
-
-      if programOption = 1 then
-        -- analyze the loop, extracting reductions 
-        reduceForms : List Syntax := extractReduceFormsFromFunctionDefinition(defAst', constructorName)$ReduceAnalysis 
-        -- if there is no interesting loop, we do nothing.
-
-        --k := first keys loopTable
-        --loopList : List RepeatAst := loopTable.k
-        sig' := sig
-        -- sigh, the following code is due to the bug caused by "left", "last"
-        pars := getOperands(first(getOperands(defAst::Syntax)))
-        if not signatureComplete?(sig) then 
-          sig' := getCompleteSignature(fn, pars, sig, gte)
-        -- instantiate the % in the function body with the ctor call form
-        defAst' := instantiatePercentageWithCurrentConstructorName(defAst::Syntax::SpadAst)::DefinitionAst
-        -- instantiate the % in the signature with the ctor call form
-        sig'    := instantiatePercentageForSignature(sig')
-        --instantiate the % in the collected potential repeatAsts
-        reduceForms' : List Syntax := instantiatePercentageForListSyntax(reduceForms)
-
-        -- we don't divide them right now
-        --x := collectReduceForms(reduceForms')
-        --reduceFormList := second x
-        --reduceForms'   := first x
-
-        --if not empty? reduceFormList then
-        --  rec : RFREC := [constructorName, fn, sig', reduceFormList] 
-        --  L_reduce_form := concat(L_reduce_form, rec)
-
-        empty? reduceForms' => return true
-
-        print(" ")
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print("$  Encounter potential reduce forms and expressions, start typechecking  $")
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-        print(" ")     
-
-        r : DREC := [fn, sig', defAst', copy gte', []]
-
-        -- typechecks the function definition body
-        resultFromTypeChecker : Pair(List REDU, List REDF) := checkFunctionDefinition2(r,_ 
+    -- analysis option 1:
+    -- collect all the reduce function calls and reduce forms from all the 
+    -- statements in a function body via pattern matching
+    collectReduceFunctionAndForm(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
+      gte' := macroExpansionForTypeEnvironmentTable(gte)
+      gte' := filterOutMappingAst(gte')
+      importList' := macroExpansionForImportList()
+      reduceForms : List Syntax := extractReduceFormsFromFunctionDefinition(definition', constructorName)$ReduceAnalysis 
+      sig' := sig
+      pars := getOperands(first(getOperands(definition::Syntax)))
+      if not signatureComplete?(sig) then 
+        sig' := getCompleteSignature(functionName, pars, sig, gte)
+      -- instantiate the % in the function body with the ctor call form
+      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      -- instantiate the % in the signature with the ctor call form
+      sig'    := instantiatePercentageForSignature(sig')
+      --instantiate the % in the collected potential repeatAsts
+      reduceForms' : List Syntax := instantiatePercentageForListSyntax(reduceForms)
+      empty? reduceForms' => return true
+      printBanner1()
+      r : DREC := [functionName, sig', definition', copy gte', []]
+      -- typechecks the function definition body
+      resultFromTypeChecker : Pair(List REDU, List REDF) := checkFunctionDefinition2(r,_ 
                                              constructorName, constructorParameters,_
                                              localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
                                              importList', constructorMacros,_
                                              reduceForms')$TypeChecker
+      reduceFunctionRecord : RREC := [constructorName, functionName, sig', first resultFromTypeChecker]
+      reduceFormRecord : RFORM := [constructorName, functionName, sig', second resultFromTypeChecker]
+      reduceList := concat(reduceList, reduceFunctionRecord)
+      rformList := concat(rformList, reduceFormRecord)
 
-        reduceFunctionRecord : RREC := [constructorName, fn, sig', first resultFromTypeChecker]
-        reduceFormRecord : RFORM := [constructorName, fn, sig', second resultFromTypeChecker]
-        reduceList := concat(reduceList, reduceFunctionRecord)
-        rformList := concat(rformList, reduceFormRecord)
-      true
+    -- analysis option 2:
+    -- collect all the affine control loop from all the 
+    -- statements in a function body via pattern matching
+    collectAffineControlLoop(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
+      gte' := macroExpansionForTypeEnvironmentTable(gte)
+      gte' := filterOutMappingAst(gte')
+      importList' := macroExpansionForImportList()
+      resultFromACFAnalysis : LTB := extractAffineControlLoopFromFunctionDefinition(definition', constructorName, copy gte')$LoopAnalysis
+      empty? resultFromACFAnalysis => return true
+      printBanner2()
+      k := first keys resultFromACFAnalysis
+      loopList : List RepeatAst := resultFromACFAnalysis.k
+      sig' := sig
+      -- sigh, the following code is due to the bug caused by "left", "last"
+      pars := getOperands(first(getOperands(definition::Syntax)))
+      if not signatureComplete?(sig) then
+        sig' := getCompleteSignature(functionName, pars, sig, gte)
+      -- instantiate the % in the function body with the ctor call form
+      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      -- instantiate the % in the signature with the ctor call form
+      sig'    := instantiatePercentageForSignature(sig')
+      --instantiate the % in the collected potential repeatAsts
+      loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+      r' : AREC := [constructorName, functionName, sig', loopList']
+      aclList := concat(aclList, r')
 
+    -- analysis option 3:
+    -- collect all the loop nests from all the 
+    -- statements in a function body via pattern matching
+    collectLoopNests(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
+      gte' := macroExpansionForTypeEnvironmentTable(gte)
+      gte' := filterOutMappingAst(gte')
+      importList' := macroExpansionForImportList()
+      resultFromLoopNestsAnalysis : LTB := extractAllLoopNests(definition', constructorName, copy gte')$LoopAnalysis
+      empty? resultFromLoopNestsAnalysis => return true
+      printBanner3()
+      k := first keys resultFromLoopNestsAnalysis
+      loopList : List RepeatAst := resultFromLoopNestsAnalysis.k
+      sig' := sig
+      -- sigh, the following code is due to the bug caused by "left", "last"
+      pars := getOperands(first(getOperands(definition::Syntax)))
+      if not signatureComplete?(sig) then
+        sig' := getCompleteSignature(functionName, pars, sig, gte)
+      -- instantiate the % in the function body with the ctor call form
+      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      -- instantiate the % in the signature with the ctor call form
+      sig'    := instantiatePercentageForSignature(sig')
+      --instantiate the % in the collected potential repeatAsts
+      loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+      r' : AREC := [constructorName, functionName, sig', loopList']
+      nlList := concat(nlList, r')
+
+    -- collect data from the body of a function definition
+    -- the kind of data depends on the analysis option
+    collectFromFunctionBody(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      isRep?(functionName) => print(""::OutputForm)
+      programOption = 0 => collectAccumulationLoop(functionName, sig, definition, gte)
+      programOption = 1 => collectReduceFunctionAndForm(functionName, sig, definition, gte)
+      programOption = 2 => collectAffineControlLoop(functionName, sig, definition, gte)
+      programOption = 3 => collectLoopNests(functionName, sig, definition, gte)
+      userError "illegal analysis option"
+
+    -- update type environment gte with the variable and its type obtained from
+    -- a colon ast
     updateGlobalTypeEnvironmentFromColonAst(cast: SpadAst, gte: VTB): VTB ==
       getFunctionSignatureFromColonAst(cast, gte)
       varLst := listColonAst(cast::Syntax::ColonAst)$SyntaxHelper
@@ -640,6 +678,8 @@ ReductionAnalysisPackage(): Public == Private where
         gte := updateGlobalTypeEnvironment(gte, v, varTyp)
       gte
 
+    -- check whether a given expression is a specific type expression, i.e.,
+    -- it is compound and it's operator is an identifer representing a type name
     isTypeExpression?(s: SpadAst): Boolean ==
       s' := s::Syntax
       not compound? s' => false
@@ -647,112 +687,30 @@ ReductionAnalysisPackage(): Public == Private where
          retractIfCan(findConstructor(ctor::Identifier)$Constructor)$(Maybe Constructor) case "failed" => false
          true
       false
-          
-    -- collect the loop ast from a statement
-    collectFromStatement(dBody: SpadAst, ctor: Identifier, gte: VTB): Integer ==
-      if not compound?(dBody::Syntax) then
-        return count
-      dBody case ImportAst =>
-        importList := concat(importList, dBody::Syntax::ImportAst)        
-        count
-      dBody case SignatureAst => count
-      dBody case MacroAst => 
-        collectMacro(dBody::Syntax::MacroAst)
-        count
-      dBody case DefinitionAst => 
-        collectFromDefinition(dBody::Syntax::DefinitionAst, ctor, copy gte)
-        count
-      dBody case SequenceAst =>
-        stmtLst:= body(dBody::Syntax::SequenceAst)$SequenceAst
-        for stmt in stmtLst repeat
-          collectFromStatement(stmt, ctor, gte)
-        count
-      dBody case IfAst => 
-        dBody'   := dBody::Syntax::IfAst
-        thBranch := thenBranch(dBody')$IfAst
-        elBranch := elseBranch(dBody')$IfAst
-        cond     := condition(dBody')$IfAst
-        if compound?(thBranch::Syntax) then
-          gte' := copy gte
-          gte' := updateGlobalTypeEnvFromCondition(cond, gte')          
-          collectFromStatement(thBranch, ctor, gte')
-        if compound?(elBranch::Syntax) then
-          collectFromStatement(elBranch, ctor, copy gte)
-        count
-      dBody case ReturnAst =>
-        rtn := expression(dBody::Syntax::ReturnAst)$ReturnAst
-        if compound?(rtn::Syntax) then
-          collectFromStatement(rtn, ctor, gte)
-        count
-      dBody case RepeatAst =>
-        b := dBody::Syntax::RepeatAst
-        count := count + 1
-        count
-      dBody case CoerceAst =>
-        coeast := dBody::Syntax::CoerceAst
-        tp := ((target(coeast))$CoerceAst)::Syntax
-        exp := (expression(coeast)$CoerceAst)::Syntax
-        coerExp := expression(dBody::Syntax::CoerceAst)$CoerceAst
-        if compound?(coerExp::Syntax) then
-          collectFromStatement(coerExp, ctor, gte)
-        count
-      dBody case ExitAst =>
-        dbexp := expression(dBody::Syntax::ExitAst)$ExitAst
-        collectFromStatement(dbexp, ctor, gte)
-      dBody case LetAst =>
-        dBody' := (macroExpansion dBody)::Syntax::LetAst        
-        id := getLhs(dBody')$SyntaxHelper
-        if not compound?((l := lhs(dBody'))::Syntax) and_
-           l case Identifier and_
-           (isRep?(l::Identifier) or isTypeExpression? rhs dBody') then
-          collectMacroFromDefinitionAst(l::Identifier, rhs(dBody'))  
-          updateUnexportedDatabaseWhenMeetRep(rhs(dBody'))
-        else if compound?((l := lhs(dBody'))::Syntax) and l case ColonAst then
-          tp := rhs(l::Syntax::ColonAst)::Syntax
-          gte := updateGlobalTypeEnvironment(gte, id, tp)
-        else
-          gte' := macroExpansionForTypeEnvironmentTable(gte)
-          gte' := filterOutMappingAst(gte') 
-          importList' := macroExpansionForImportList()
-          tp   := checkGlobalLetAst(dBody',_ 
-                                    gte', constructorName, constructorParameters,_
-                                    localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
-                                    importList')$TypeChecker
-          gte  := updateGlobalTypeEnvironment(gte, id, tp)  
-        count
-      dBody case WhileAst => count  
-      dBody case ColonAst => 
-        gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(dBody), gte)
-        count
-      dBody case ConstructAst => count
-      dBody case CollectAst => count
-      dBody case CaseAst => count
-      count
 
-    -- check whether the syntax is a definition for Rep, e.g. Rep == Integer
-    isDefinitionForRep?(bodyOfDefinition: SpadAst, functionArity: Integer):Boolean ==
-      not isRep?(functionName) and_ 
-      functionArity = 0 and_ 
-      isTypeExpression?(bodyOfDefinition)
+    -- collect data from if statement, i.e., respectively collect
+    -- data from both branches
+    collectFromIfStatement(s: SpadAst, ctor: Identifier, gte: VTB): Void ==
+      s'   := s::Syntax::IfAst
+      thBranch := thenBranch(s')$IfAst
+      elBranch := elseBranch(s')$IfAst
+      cond     := condition(s')$IfAst
+      if compound?(thBranch::Syntax) then
+        gte' := copy gte
+        gte' := updateGlobalTypeEnvFromCondition(cond, gte')          
+        collectFromStatement(thBranch, ctor, gte')
+      if compound?(elBranch::Syntax) then
+        collectFromStatement(elBranch, ctor, copy gte)
 
-    -- collects data from a definition ast
-    collectFromDefinition(d: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
-      functionDefinitionCounter := inc(functionDefinitionCounter)
-      d' := (macroExpansion(d::Syntax::SpadAst))::DefinitionAst
-      headOfDefinition := head(d')$DefinitionAst
-      functionName  := name headOfDefinition
-      functionArity := #(parameters(headOfDefinition)$HeadAst)
-      functionSignature := signature(d')$DefinitionAst
-      bodyOfDefinition := body(d')$DefinitionAst
-      if isDefinitionForRep?(bodyOfDefinition, functionArity) then
-        -- if it is a Rep definition, treat it as macro, and collect it
-        collectMacroFromDefinitionAst(functionName, bodyOfDefinition)
-      else
-        updateUnexportedDatabaseWhenMeetFunDef(functionName, functionSignature,_ 
-                                               functionArity, bodyOfDefinition)
-        updateFunDefList(functionName, functionSignature, d', bodyOfDefinition, gte)
-      count
-    
+    -- collect data from a coerce syntax
+    collectFromCoerceStatement(s: SpadAst, ctor: Identifier, gte: VTB): Void ==
+      coeast := s::Syntax::CoerceAst
+      tp := ((target(coeast))$CoerceAst)::Syntax
+      exp := (expression(coeast)$CoerceAst)::Syntax
+      coerExp := expression(s::Syntax::CoerceAst)$CoerceAst
+      if compound?(coerExp::Syntax) then
+        collectFromStatement(coerExp, ctor, gte)
+
     -- check whether a let assignment is a type assignment
     -- e.g. foo := Integer or Rep := foo
     isTypeAssignment?(s: LetAst): Boolean ==
@@ -768,7 +726,6 @@ ReductionAnalysisPackage(): Public == Private where
       right := rhs s
       collectMacroFromDefinitionAst(left::Identifier, right)
       updateUnexportedDatabaseWhenMeetRep right
-
 
     -- check whether a let assignment is a immediate initialization
     -- e.g., foo : Integer := 5
@@ -798,6 +755,72 @@ ReductionAnalysisPackage(): Public == Private where
       -- without type annotation, we ask our typechecker for help, i.e., to infer the type.
       else
         updateGlobalTypeEnvironmentUsingTypeChecker(s, id, typeEnvironment)
+
+
+    -- collect data from a statement
+    collectFromStatement(s: SpadAst, ctor: Identifier, gte: VTB): Integer ==
+      not compound?(s::Syntax) => count
+      s case ImportAst =>
+        importList := concat(importList, s::Syntax::ImportAst)        
+        count
+      s case MacroAst => 
+        collectMacro(s::Syntax::MacroAst)
+        count
+      s case DefinitionAst => 
+        collectFromDefinition(s::Syntax::DefinitionAst, ctor, copy gte)
+        count
+      s case SequenceAst =>
+        stmtLst:= body(s::Syntax::SequenceAst)$SequenceAst
+        for stmt in stmtLst repeat
+          collectFromStatement(stmt, ctor, gte)
+        count
+      s case IfAst => 
+        collectFromIfStatement(s, ctor, gte)
+        count
+      s case ReturnAst =>
+        rtn := expression(s::Syntax::ReturnAst)$ReturnAst
+        if compound?(rtn::Syntax) then
+          collectFromStatement(rtn, ctor, gte)
+        count
+      s case CoerceAst =>
+        collectFromCoerceStatement(s, ctor, gte)
+        count
+      s case ExitAst =>
+        collectFromStatement(expression(s::Syntax::ExitAst)$ExitAst, ctor, gte)
+      s case LetAst =>
+        s' := (macroExpansion s)::Syntax::LetAst
+        collectTypesFromGlobalLetAst(s', gte)
+        count
+      s case ColonAst => 
+        gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), gte)
+        count
+      count
+
+    -- check whether the syntax is a definition for Rep, e.g. Rep == Integer
+    isRepDefinition?(functionName:Identifier, bodyOfDefinition: SpadAst, functionArity: Integer):Boolean ==
+      not isRep?(functionName) and_ 
+      functionArity = 0 and_ 
+      isTypeExpression?(bodyOfDefinition)
+
+    -- collects data from a definition ast
+    collectFromDefinition(d: DefinitionAst, ctor: Identifier, gte: VTB): Integer ==
+      functionDefinitionCounter := inc(functionDefinitionCounter)
+      d' := (macroExpansion(d::Syntax::SpadAst))::DefinitionAst
+      headOfDefinition := head(d')$DefinitionAst
+      functionName  := name headOfDefinition
+      functionArity := #(parameters(headOfDefinition)$HeadAst)
+      functionSignature := signature(d')$DefinitionAst
+      bodyOfDefinition := body(d')$DefinitionAst
+      if isRepDefinition?(functionName, bodyOfDefinition, functionArity) then
+        -- if it is a Rep definition, treat it as macro, and collect it
+        collectMacroFromDefinitionAst(functionName, bodyOfDefinition)
+      else
+        updateUnexportedDatabaseWhenMeetFunDef(functionName, functionSignature,_ 
+                                               functionArity, bodyOfDefinition)
+        collectFromFunctionBody(functionName, functionSignature, d', gte)
+      count
+    
+
 
     -- update global typing environment when meet a if statement for conditional 
     -- function definition, we collect from its has predicate
@@ -1311,8 +1334,7 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- checks whether a variable is a type variable 
     -- by looking up in the global type environment
-    isTypeVariable?(tp: Syntax, env: VTB): Boolean == 
-      not compound? tp and tp case Identifier and key?(tp, env)
+    isTypeVariable?(tp: Syntax, env: VTB): Boolean == not compound? tp and tp case Identifier and key?(tp, env)
 
     -- checks whether some category/domain is parameterized by some type variable
     containTypeVariable?(cat: Syntax, env: VTB): Boolean ==
@@ -1371,7 +1393,10 @@ ReductionAnalysisPackage(): Public == Private where
       [pair(first e, instantiatePredicate(second e, mapping)) for e in l']
 
 --------
-
+    rightTypeHasLeftAttribute?: (Syntax, Syntax, VTB) -> Boolean
+    rightTypeHasLeftSignature?: (Syntax, Syntax, VTB) -> Boolean
+    rightCategoryHasLeftCategory?: (Syntax, VTB, Syntax, VTB) -> Boolean
+    typeChecks?: (Syntax, VTB, Syntax, VTB) -> Boolean
 --------
 
     -- checks whether two type constructors have the same name
@@ -1642,8 +1667,6 @@ ReductionAnalysisPackage(): Public == Private where
       -- by recursively looking into each category rightType directly extends.
       recursiveSearchExtensionList(leftType, leftEnv, extl, rightEnv)
 
-   -- this function handles the syntax where a category joined with some attribute 
-   -- and checks whether such type syntax has some attribute
     handleCategoryWithAttribute(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
       rightType' := (rightType::SpadAst)::CategoryAst
       bd := body(rightType')
@@ -1901,7 +1924,7 @@ ReductionAnalysisPackage(): Public == Private where
     
     -- obtain and save both fully parallel and partially parallel accumulation loops
     extractAndSaveParallelAccumulationLoop(associativeOperatorList: List OPREC): Void ==
-      r : Pair(List ZREC, List ZREC)  := extractParallelizableReductionLoop(associativeOperatorList, analysisResultList)
+      r : Pair(List ZREC, List ZREC)  := extractParallelizableReductionLoop(associativeOperatorList, accumulationLoopList)
       parallelReductionLoops          := first r
       partiallyParallelReductionLoops := second r
       writeZRecordToFile(parallelReductionLoops, "parallel-reduce-loops")
@@ -1911,7 +1934,7 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- obtain and save all the accumulation loops (parallel, sequential, and partially parallel)
     saveAccumulationLoopsToFile(): Void == 
-      writeZRecordToFile(analysisResultList, "reduce-loops")
+      writeZRecordToFile(accumulationLoopList, "reduce-loops")
       print("Results for reduction loops have been written into reduce-loops.txt"::OutputForm)
 
     -- obtain and save all the reduce function calls
