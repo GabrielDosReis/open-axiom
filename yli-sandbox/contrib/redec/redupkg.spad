@@ -8,7 +8,7 @@ import CEXCOL
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: March 29, 2010
+++ Date Last Updated: March 31, 2010
 ++ Description: This package provides library functions for extracting
 ++ parallelizable accumulation loops, reduce function calls, as well as 
 ++ reduce forms
@@ -504,6 +504,7 @@ ReductionAnalysisPackage(): Public == Private where
           remove!(k, gte')
       gte'  
 
+    -- the following four functions are for pretty print of notifications
     printBanner0(): Void ==
       print(" "::OutputForm)
       print("-------------------------------------------------------------"::OutputForm)
@@ -514,7 +515,7 @@ ReductionAnalysisPackage(): Public == Private where
     printBanner1(): Void ==
       print(" "::OutputForm)
       print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"::OutputForm)
-      print("$  Encounter potential reduce forms and expressions, start typechecking  $"::OutputForm)
+      print("|  Encounter potential reduce forms and expressions, start typechecking  |"::OutputForm)
       print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"::OutputForm)
       print(" "::OutputForm)     
 
@@ -532,11 +533,11 @@ ReductionAnalysisPackage(): Public == Private where
       print("-------------------------------------------------------------"::OutputForm)
       print(" "::OutputForm)   
 
-
+    -- update the extracted accumulation loops to the global variable
+    --  which stores the final results
     updateAccumulationLoopList(r: DREC, resultFromTypeChecker: Pair(VTB, List YREC)): Void ==
       r.typeenv := first resultFromTypeChecker
       r.accumulations := second resultFromTypeChecker
-      -- update the final result to be written into file
       r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
       fundefList := concat(fundefList, r)
       accumulationLoopList := concat(accumulationLoopList, r')
@@ -834,21 +835,21 @@ ReductionAnalysisPackage(): Public == Private where
     -- collect data from a statement of a capsule
     -- the statement can be a function definition, global variable declaration,
     -- a conditional function definition/declaration via if statement, ora macro
-    collectFromTopLevel(sa: SpadAst, ctor: Identifier, typeEnvironment: VTB): Void ==
-      sa case ColonAst => 
-        typeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(sa), typeEnvironment)
-      sa case MacroAst => collectMacro(sa::Syntax::MacroAst)
-      sa case ImportAst => importList := concat(importList, sa::Syntax::ImportAst)        
-      sa case DefinitionAst => 
-        collectFromDefinition(sa::Syntax::DefinitionAst, ctor, copy typeEnvironment)
-      sa case SequenceAst => collectFromStatement(sa, ctor, typeEnvironment)
-      sa case LetAst => 
+    collectFromTopLevel(s: SpadAst, ctor: Identifier, typeEnvironment: VTB): Void ==
+      s case ColonAst => 
+        typeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), typeEnvironment)
+      s case MacroAst => collectMacro(s::Syntax::MacroAst)
+      s case ImportAst => importList := concat(importList, s::Syntax::ImportAst)        
+      s case DefinitionAst => 
+        collectFromDefinition(s::Syntax::DefinitionAst, ctor, copy typeEnvironment)
+      s case SequenceAst => collectFromStatement(s, ctor, typeEnvironment)
+      s case LetAst => 
         -- expand the macro for the let statement
-        sa' := (macroExpansion sa)::Syntax::LetAst
-        collectTypesFromGlobalLetAst(sa', typeEnvironment)
-      sa case IfAst => 
-        collectTypesFromGlobalIfAst(sa::Syntax::IfAst, ctor, typeEnvironment)
-      collectFromStatement(sa, ctor, typeEnvironment)
+        s' := (macroExpansion s)::Syntax::LetAst
+        collectTypesFromGlobalLetAst(s', typeEnvironment)
+      s case IfAst => 
+        collectTypesFromGlobalIfAst(s::Syntax::IfAst, ctor, typeEnvironment)
+      collectFromStatement(s, ctor, typeEnvironment)
 
     -- collect data from each statement of the capsule of a constructor definition
     collectFromCapsule(l: List SpadAst, ctor: Identifier): Integer ==
@@ -924,12 +925,13 @@ ReductionAnalysisPackage(): Public == Private where
           collectFromCapsule(statementOfCapsule, ctor)
       count
 
-    -- for building local function database
+    -- make number slot syntax, e.g. #1
     makeNumberSlot(i: Integer): Syntax ==
       x := concat("#", convert(i)@String)::Symbol
       (x pretend Identifier)::Syntax
 
-    -- instantiate each number slot with the corresponding constructor type parameter
+    -- instantiate each number slot with 
+    -- the actual corresponding constructor type parameters
     instantiateNumberSlots(t: Syntax): Syntax ==
       typeParameters := copy constructorParameters
       #typeParameters > 0 =>
@@ -938,20 +940,26 @@ ReductionAnalysisPackage(): Public == Private where
         t
       t
 
+    -- replace the number slot appeared in a syntax with 
+    -- the actual constructor type parameters
     instantiateTypeSyntax(t: Syntax): Syntax ==
       -- a little bit different here: we don't instantiate %
       -- this makes later extract local function signatures easier
-      t' := instantiateNumberSlots(t)
-      t'
+      instantiateNumberSlots(t)
 
-    instantiateTarget(tar: Syntax): Syntax ==
-      instantiateTypeSyntax(tar)
+    -- replace the number slot appeared in the target of a signature syntax 
+    -- with the actual constructor type parameters
+    instantiateTarget(tar: Syntax): Syntax == instantiateTypeSyntax(tar)
 
+    -- replace the number slot appeared in the source of a signature syntax 
+    -- with the actual constructor type parameters
     instantiateSource(src: List Syntax): List Syntax ==
       for i in 1..#src repeat
         src.i := instantiateTypeSyntax(src.i)
       src
 
+    -- replace the number slot appeared in a signature syntax 
+    -- with the actual constructor type parameters
     instantiateSignature(s: Signature): Signature ==
       src := instantiateSource(copy source s)
       tar := instantiateTarget(target s)
@@ -1097,13 +1105,12 @@ ReductionAnalysisPackage(): Public == Private where
           result := concat([result, "      ", k, ": ", t])
       result
 
-    -- convert a list of signature to string
+    -- convert a list of signature to string for pretty printing
     signaturelistToString(sl: List XREC): String ==
       result : String := ""
       accumulationLoopCounter := inc(accumulationLoopCounter)
       if empty? sl then
         result := concat([result, "    [Function signature is not available]"])
-
       for i in 1..#sl repeat
         f := string(((sl.i).funname)::Symbol)
         s := signatureToString((sl.i).signature)
@@ -1117,6 +1124,7 @@ ReductionAnalysisPackage(): Public == Private where
           result := concat([result, "    ", f, ": ", s, " where ", "\n\r", stringOfTenv])
       result
 
+    -- convert an accumulation loop record to string for pretty printing
     accumulationToString(al: List YREC): String ==
       result : String := ""
       for i in 1..#al repeat
@@ -1130,6 +1138,7 @@ ReductionAnalysisPackage(): Public == Private where
                      "\n\r\n\r", funsigStr, "\n\r\n\r", "------------------------", "\n\r"])
       result
 
+    -- convert a ACL record to string for pretty printing
     aclToString(al: List RepeatAst): String ==
       result : String := ""
       aclandnlcounter := aclandnlcounter + #al
@@ -1142,6 +1151,7 @@ ReductionAnalysisPackage(): Public == Private where
           result := concat([result, "  ACL Nests==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "------------------------", "\n\r"])
       result
 
+    -- convert a reduction record to string for pretty printing
     reductionToString(al: List REDU): String == 
       reductionFunctionCounter := reductionFunctionCounter + #al
       result : String := ""
@@ -1167,19 +1177,8 @@ ReductionAnalysisPackage(): Public == Private where
                         "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r", stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
 
       result
-
-    -- no longer used
-    reductionFormsToString(al: List Syntax): String == 
-      reductionFormCounter := reductionFormCounter + #al
-      result : String := ""
-      for i in 1..#al repeat
-        expStr   := toString(al.i)$SyntaxHelper
-        if i < #al then
-          result := concat([result, "    ", expStr, ",", "\n\r\n\r"])
-        else
-          result := concat([result, "    ", expStr, ",", "\n\r\n\r", "------------------------", "\n\r"])
-      result
-
+    
+    -- convert REDF format records to string for pretty printing
     reductionFormsToString2(al: List REDF): String == 
       reductionFormCounter := reductionFormCounter + #al
       result : String := ""
@@ -1204,15 +1203,16 @@ ReductionAnalysisPackage(): Public == Private where
           result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
                       "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r", stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
 
-
       result
 
+    -- obtain the kind of a constructor in string
     getConstructorKindInString(c: Identifier): String ==
       k : ConstructorKind := getConstructorKind(c)
       k = category$ConstructorKind =>  "Category"
       k = package$ConstructorKind  =>  "Package"
       "Domain"
 
+    -- convert ZREC format records to string for pretty printing
     toString(rl: List ZREC): String ==
       result : String := ""
       for r in rl repeat
@@ -1224,10 +1224,10 @@ ReductionAnalysisPackage(): Public == Private where
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
-
       result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
       result
 
+    -- convert RREC format records to string for pretty printing
     toString2(rl: List RREC): String ==
       result : String := ""
       for r in rl | not empty?(r.reductions) repeat
@@ -1239,25 +1239,10 @@ ReductionAnalysisPackage(): Public == Private where
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
-
       result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
       result
 
-    toString3(rl: List RFREC): String ==
-      result : String := ""
-      for r in rl | not empty?(r.reduceforms) repeat
-        c := string((r.ctorname)::Symbol)
-        f := string((r.funname)::Symbol)
-        s := signatureToString(r.signature)
-        a := reductionFormsToString(r.reduceforms)
-        k : String := getConstructorKindInString(r.ctorname)
-        result := concat(result, concat([k, ": ", c, "\n\r",_ 
-                                         "Function: ", f,": ", s, "\n\r", "Reduce Forms==>\n\r\n\r",_
-                                              a, "\n\r"]))
-
-      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
-      result
-
+    -- convert RFORM format records to string for pretty printing
     toString4(rl: List RFORM): String ==
       result : String := ""
       for r in rl | not empty?(r.reduceforms) repeat
@@ -1269,11 +1254,10 @@ ReductionAnalysisPackage(): Public == Private where
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
-
       result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
       result
 
-
+    -- convert AREC format records to string for pretty printing
     toString5(rl: List AREC): String ==
       result : String := ""
       for r in rl repeat
@@ -1285,38 +1269,42 @@ ReductionAnalysisPackage(): Public == Private where
         result := concat(result, concat([k, ": ", c, "\n\r",_
                                          "Function: ", f,": ", s, "\n\r\n\r",_
                                               a, "\n\r"]))
-
       result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
       result
 
-    writeARecordToFile(al: List AREC, f: String): Boolean ==
-      ofname : FileName := filename(".", f, "tex")
-      ofile := open(ofname, "output")$File(String)
-      write!(ofile, toString5 al)
-      true
-
+    -- write the ZREC format record to a .tex file
+    -- i.e., global variables storing accumulation loops and parallel
+    -- accumulation loops, respectively
     writeZRecordToFile(rl: List ZREC, f: String): Boolean ==
       ofname : FileName := filename(".", f, "tex")
       ofile := open(ofname, "output")$File(String)
       write!(ofile, toString rl)
       true
 
+    -- write the RREC format record to a .tex file
+    -- i.e., global variables storing reduce function calls and parallel
+    -- reduce function calls, respectively
     writeRRecordToFile(rl: List RREC, f: String): Boolean ==
       ofname : FileName := filename(".", f, "tex")
       ofile := open(ofname, "output")$File(String)
       write!(ofile, toString2 rl)
       true
 
-    writeRFRecordToFile(rl: List RFREC, f: String): Boolean ==
-      ofname : FileName := filename(".", f, "tex")
-      ofile := open(ofname, "output")$File(String)
-      write!(ofile, toString3 rl)
-      true
-
+    -- write the RFORM format record to a .tex file
+    -- i.e., global variables storing reduce forms and parallel
+    -- reduce forms, respectively
     writeRFORMToFile(rl: List RFORM, f: String): Boolean ==
       ofname : FileName := filename(".", f, "tex")
       ofile := open(ofname, "output")$File(String)
       write!(ofile, toString4 rl)
+      true
+
+    -- write the AREC format record to a .tex file
+    -- i.e., global variables storing ACLs as well as loop nests, respectively
+    writeARecordToFile(al: List AREC, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString5 al)
       true
 
     -- checks whether a variable is a type variable 
@@ -1953,23 +1941,28 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- obtain and save parallel reduce function calls
     extractAndSaveParallelReduceFunction(associativeOperatorList: List OPREC): Void() ==
-      parallelReduceList := extractParallelizableReduceCall(associativeOperatorList, reduceList)
+      parallelReduceList :=_ 
+        extractParallelizableReduceCall(associativeOperatorList, reduceList)
       writeRRecordToFile(parallelReduceList, "parallel-reduce-functions")
       print("Results for parallelizable reduce function applications have_ 
       been written into parallel-reduce-functions.txt"::OutputForm)
 
     -- obtain and save parallel reduce forms
     extractAndSaveParallelReduceForm(associativeOperatorList: List OPREC): Void() ==
-      parallelReduceForms := extractParallelizableReduceForm(associativeOperatorList, rformList)
+      parallelReduceForms :=_ 
+        extractParallelizableReduceForm(associativeOperatorList, rformList)
       writeRFORMToFile(parallelReduceForms, "parallel-reduce-forms")
-      print("Results for parallelizable reduction forms have been written into reduce-forms.txt"::OutputForm)
+      print("Results for parallelizable reduction forms have been_
+             written into reduce-forms.txt"::OutputForm)
 
-    -- according to analysis option, further extract corresponding information,e.g.parallel reduce function calls
-    -- and save the data in a .tex file
-    filterAnalysisOutput(associativeOperatorList: List OPREC, option: Integer, useassumption: Integer): Void() ==
+    -- according to analysis option, further extract corresponding information,
+    -- e.g.parallel reduce function calls and save the data in a .tex file
+    filterAnalysisOutput(associativeOperatorList: List OPREC,_
+                         option: Integer, useassumption: Integer): Void() ==
       option = 0 =>  
         saveAccumulationLoopsToFile()
-        if useassumption = 1 then extractAndSaveParallelAccumulationLoop(associativeOperatorList)      
+        if useassumption = 1 then 
+          extractAndSaveParallelAccumulationLoop(associativeOperatorList)      
       option = 1 =>  
         saveReduceFunctionsToFile()
         saveRediceFormsToFile()
