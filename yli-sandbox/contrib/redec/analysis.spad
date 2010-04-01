@@ -13,12 +13,12 @@ LoopAnalysis(): Public == Private where
   macro IFL == Record(lets: List LetAst, globalvars: List Syntax,_
                       conditions: List Syntax)
   Public == with
-    extractReductionPatternFromFunctionDefinition: (DefinitionAst, Identifier, VTB) -> Pair(LTB, List List Syntax)
+    extractAccumulationLoop: (DefinitionAst, Identifier, VTB) -> Pair(LTB, List List Syntax)
       ++ interface to main analysis function defined in redupkg.spad
-    extractAffineControlLoopFromFunctionDefinition: (DefinitionAst, Identifier, VTB) -> LTB
+    extractAffineControlLoop: (DefinitionAst, Identifier, VTB) -> LTB
       ++ interface to analysis function in redupkg.spad,
       ++ this function returns a list of repeatAst which is affine control loop nests of a function definition
-    extractAllLoopNests: (DefinitionAst, Identifier, VTB) -> LTB
+    extractAllLoopNest: (DefinitionAst, Identifier, VTB) -> LTB
       ++ interface to analysis function in redupkg.spad,
       ++ this function collects all the loop nests, i.e., loop depth >= 2
     getLoopDepth: RepeatAst -> Integer
@@ -29,8 +29,7 @@ LoopAnalysis(): Public == Private where
     import Syntax
 
     -- forward declarations of local functions, for bootstrap purpose
-    letOnly?: RepeatAst -> Pair(Boolean, List LetAst)
-      ++ checks whether the body of a single loop ast only contains let statement
+      
     ifOnly?: RepeatAst -> Pair(Boolean, Pair(List LetAst, List LetAst))
       ++ checks whether the body of a single loop ast only contains one if statement 
     identifyAccumulationLoop3: (RepeatAst, VTB) -> ACC
@@ -87,7 +86,8 @@ LoopAnalysis(): Public == Private where
       b case SequenceAst        => letOnlySequence?(b::Syntax::SequenceAst)
       pair(false, [])
 
-    letOnly? r == letOnlyBody? body r
+    -- checks whether the body of a single loop ast only contains let statement
+    letOnly?(r: RepeatAst): Pair(Boolean, List LetAst) == letOnlyBody? body r
 
     hasElseBranch?(f: IfAst): Boolean == 
       elsebranch := elseBranch(f)::Syntax
@@ -128,7 +128,6 @@ LoopAnalysis(): Public == Private where
       b case IfAst             => letInBothBranches?(b::Syntax::IfAst)
       b case SequenceAst       => ifAstInSequence?(b::Syntax::SequenceAst)
       pair(false, pair([], []))
-
 
     initVariableTable(t: VTB, l: List Identifier): VTB ==
       for p in l repeat
@@ -873,19 +872,18 @@ LoopAnalysis(): Public == Private where
     --Global variables
     count: Integer := 0
     -- loop table stores the final analysis results
-    lpTable: LTB := empty()
-    rlpTable: LTB := empty()
+    accumulationLoopTable: LTB := empty()
     aclTable: LTB := empty()
-    nlTable: LTB := empty()
+    loopNestTable: LTB := empty()
     functionName : Identifier := gensym()
     -- Table for storing global variables such as constructor parameter, and global variable in capsule
-    cgv: VTB := empty()
+    globalTypeEnvironment: VTB := empty()
 
     cleanUp(): Void ==
-      lpTable := empty()
-      rlpTable := empty()
+      accumulationLoopTable := empty()
       aclTable := empty()
-      nlTable := empty()
+      loopNestTable := empty()
+      reductionVariableList := []
       count := 0
 
     updateTable(d: Identifier, f: Identifier, b: RepeatAst, t: LTB): LTB ==
@@ -913,7 +911,7 @@ LoopAnalysis(): Public == Private where
       -- initialize the variable table with function parameters
       vt := initVariableTable(vt, pl)
       -- insert the constructor global variables and capsule global variables
-      vt := initVtWithGt(vt, cgv)
+      vt := initVtWithGt(vt, globalTypeEnvironment)
       -- start analysis
       pair(fn, identifyAccumulationLoop2(body d, vt))
 
@@ -924,7 +922,7 @@ LoopAnalysis(): Public == Private where
       -- initialize the variable table with function parameters
       vt := initVariableTable(vt, pl)
       -- insert the constructor global variables and capsule global variables
-      vt := initVtWithGt(vt, cgv)
+      vt := initVtWithGt(vt, globalTypeEnvironment)
       -- start analysis
       pair(fn, identifyAffineControlLoop(body d, vt))
 
@@ -943,7 +941,7 @@ LoopAnalysis(): Public == Private where
           t' := first t
           k : Pair(Identifier, Identifier) := pair(ctor, t')
           rl : ACC := second t
-          updateTable2(ctor, t', rl, rlpTable)
+          updateTable2(ctor, t', rl, accumulationLoopTable)
           --print("exit!!"::OutputForm)
         else if (option = 2) or (option = 3) then
           -- extract accumulation loop
@@ -955,7 +953,7 @@ LoopAnalysis(): Public == Private where
           option = 2 =>
             updateTable2(ctor, t', rl, aclTable)
           option = 3 =>
-            updateTable2(ctor, t', rl, nlTable)
+            updateTable2(ctor, t', rl, loopNestTable)
           --print("exit!!"::OutputForm)
         else
           collectAccumulationFromDefinition(dBody::Syntax::DefinitionAst, ctor)
@@ -980,7 +978,6 @@ LoopAnalysis(): Public == Private where
         count
       dBody case RepeatAst =>
         b := dBody::Syntax::RepeatAst
-        updateTable(ctor, functionName, b, lpTable)
         count := count + 1
         count
       dBody case CoerceAst =>
@@ -997,7 +994,7 @@ LoopAnalysis(): Public == Private where
       dBody case LetAst =>
         l := getLhs(dBody::Syntax::LetAst)$SyntaxHelper
         r := (rhs(dBody::Syntax::LetAst)$LetAst)::Syntax
-        cgv.l := r
+        globalTypeEnvironment.l := r
         dlet := rhs(dBody::Syntax::LetAst)$LetAst
         dlhs := lhs(dBody::Syntax::LetAst)$LetAst
         if compound?(dlet::Syntax) then
@@ -1010,7 +1007,7 @@ LoopAnalysis(): Public == Private where
         colast := dBody::Syntax::ColonAst
         id := (lhs(colast)$ColonAst)::Syntax
         tp := (rhs(colast)$ColonAst)::Syntax
-        cgv.id := unknownSyn()
+        globalTypeEnvironment.id := unknownSyn()
         count
       dBody case ConstructAst => count
       dBody case CollectAst => count
@@ -1027,11 +1024,11 @@ LoopAnalysis(): Public == Private where
       count
 
     -- analysis for top level statements (definitions)
-    collectAccumulationAtTopLevel(sa: SpadAst, ctor: Identifier): Integer ==
+    collectDataAtTopLevel(sa: SpadAst, ctor: Identifier): Integer ==
       sa case ColonAst => 
         -- collect the global variable declared in the capsule
         l := lhs(sa::Syntax::ColonAst)::Syntax
-        cgv.l := unknownSyn()
+        globalTypeEnvironment.l := unknownSyn()
         count
       sa case SignatureAst => count
       sa case MacroAst     =>  count
@@ -1044,7 +1041,7 @@ LoopAnalysis(): Public == Private where
           t' := first t
           k : Pair(Identifier, Identifier) := pair(ctor, t')
           rl : ACC := second t
-          updateTable2(ctor, t', rl, rlpTable)
+          updateTable2(ctor, t', rl, accumulationLoopTable)
         else if (option = 2) or (option = 3) then
           -- extract accumulation loop
           t : Pair(Identifier, ACC) := identifyAffineControlLoop0(sa::Syntax::DefinitionAst)
@@ -1055,7 +1052,7 @@ LoopAnalysis(): Public == Private where
           option = 2 =>
             updateTable2(ctor, t', rl, aclTable)
           option = 3 =>
-            updateTable2(ctor, t', rl, nlTable)
+            updateTable2(ctor, t', rl, loopNestTable)
           --print("exit!!"::OutputForm)
         else
           collectAccumulationFromDefinition(sa::Syntax::DefinitionAst, ctor)
@@ -1065,63 +1062,48 @@ LoopAnalysis(): Public == Private where
         sa' := sa::Syntax::LetAst
         l := getLhs(sa')$SyntaxHelper
         r := rhs(sa')::Syntax
-        cgv.l := r
+        globalTypeEnvironment.l := r
         collectAccumulationFromStatement(sa, ctor)
         -- above two cases are for handling some weird parsing result (ZMOD)
       sa case IfAst =>
         thBranch := thenBranch(sa::Syntax::IfAst)$IfAst
         elBranch := elseBranch(sa::Syntax::IfAst)$IfAst
         if compound?(thBranch::Syntax) then
-          collectAccumulationAtTopLevel(thBranch, ctor)
+          collectDataAtTopLevel(thBranch, ctor)
         if compound?(elBranch::Syntax) then
-          collectAccumulationAtTopLevel(elBranch, ctor)
+          collectDataAtTopLevel(elBranch, ctor)
         count
       collectAccumulationFromStatement(sa, ctor)
 
-    -- inferface to preprocessor
-    extractReductionPatternFromFunctionDefinition(defa: DefinitionAst, ctor: Identifier, tpenv: VTB): Pair(LTB, List List Syntax) ==
+    -- interface used in redupkg.spad
+    -- this function collects accumulation loops from a function definition
+    extractAccumulationLoop(defa: DefinitionAst,_
+                  ctor: Identifier, tpenv: VTB): Pair(LTB, List List Syntax) ==
       cleanUp()
-      -- does clean up
-      reductionVariableList := []
-      lpTable := empty()
-      rlpTable := empty()
-      count := 0
-      -- finish cleaning up
-      rlpTable := empty()
       option := 1
-      cgv    := copy tpenv
-      collectAccumulationAtTopLevel(defa::Syntax::SpadAst, ctor)
-      pair(copy rlpTable, copy reductionVariableList)
+      globalTypeEnvironment    := copy tpenv
+      collectDataAtTopLevel(defa::Syntax::SpadAst, ctor)
+      pair(copy accumulationLoopTable, copy reductionVariableList)
 
-    -- inferface to preprocessor
-    extractAffineControlLoopFromFunctionDefinition(defa: DefinitionAst, ctor: Identifier, tpenv: VTB): LTB ==
+    -- interface used in redupkg.spad
+    -- this function collects ACLs from a function definition
+    extractAffineControlLoop(defa: DefinitionAst,_
+                             ctor: Identifier, tpenv: VTB): LTB ==
       cleanUp()
-      -- does clean up
-      reductionVariableList := []
-      lpTable := empty()
-      rlpTable := empty()
-      count := 0
-      -- finish cleaning up
-      aclTable := empty()
       option := 2
-      cgv    := copy tpenv
-      collectAccumulationAtTopLevel(defa::Syntax::SpadAst, ctor)
+      globalTypeEnvironment    := copy tpenv
+      collectDataAtTopLevel(defa::Syntax::SpadAst, ctor)
       copy aclTable
 
-    -- inferface to preprocessor
-    extractAllLoopNests(defa: DefinitionAst, ctor: Identifier, tpenv: VTB): LTB ==
+    -- interface used in redupkg.spad
+    -- this function collects normal loop nests from a function definition
+    extractAllLoopNest(defa: DefinitionAst,_
+                       ctor: Identifier, tpenv: VTB): LTB ==
       cleanUp()
-      -- does clean up
-      reductionVariableList := []
-      lpTable := empty()
-      rlpTable := empty()
-      count := 0
-      -- finish cleaning up
-      nlTable := empty()
       option := 3
-      cgv    := copy tpenv
-      collectAccumulationAtTopLevel(defa::Syntax::SpadAst, ctor)
-      copy nlTable
+      globalTypeEnvironment    := copy tpenv
+      collectDataAtTopLevel(defa::Syntax::SpadAst, ctor)
+      copy loopNestTable
 
 
 

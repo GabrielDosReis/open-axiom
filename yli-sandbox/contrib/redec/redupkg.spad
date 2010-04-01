@@ -8,7 +8,7 @@ import CEXCOL
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: March 31, 2010
+++ Date Last Updated: April 1, 2010
 ++ Description: This package provides library functions for extracting
 ++ parallelizable accumulation loops, reduce function calls, as well as 
 ++ reduce forms
@@ -330,7 +330,8 @@ ReductionAnalysisPackage(): Public == Private where
       l.last
 
     -- initialize the global type environment of the constructor definition
-    initGlobalVariableEnvironment(ctorName: Identifier, ctorPars: List Identifier, ctorTps: List Syntax): VTB ==
+    initGlobalVariableEnvironment(ctorName: Identifier,_
+                       ctorPars: List Identifier, ctorTps: List Syntax): VTB ==
       for p in ctorPars for t in ctorTps repeat
         p' := p::Syntax
         globalTypeEnvironment.p'  := t
@@ -547,9 +548,9 @@ ReductionAnalysisPackage(): Public == Private where
 
     printBanner1(): Void ==
       print(" "::OutputForm)
-      print("-----------------------------------------------------------------"::OutputForm)
-      print("|Encounter potential reduce form or function, start typechecking|"::OutputForm)
-      print("-----------------------------------------------------------------"::OutputForm)
+      print("--------------------------------------------------------------"::OutputForm)
+      print("|Encounter potential reduce form/function, start typechecking|"::OutputForm)
+      print("--------------------------------------------------------------"::OutputForm)
       print(" "::OutputForm)     
 
     printBanner2(): Void ==
@@ -587,8 +588,7 @@ ReductionAnalysisPackage(): Public == Private where
       importList' := macroExpansionForImportList()
       -- analyze the loop, extracting reductions 
       resultFromLoopAnalysis: Pair(LTB, List List Syntax)_ 
-        := extractReductionPatternFromFunctionDefinition(definition',_
-                                       constructorName, copy gte')$LoopAnalysis 
+        := extractAccumulationLoop(definition',constructorName, copy gte')$LoopAnalysis 
       loopTable: LTB := first resultFromLoopAnalysis
       accVariables: List List Syntax := second resultFromLoopAnalysis
       -- if there is no interesting loop, we do nothing.
@@ -665,7 +665,7 @@ ReductionAnalysisPackage(): Public == Private where
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
       resultFromACFAnalysis : LTB :=_
-        extractAffineControlLoopFromFunctionDefinition(definition',_
+        extractAffineControlLoop(definition',_
           constructorName, copy gte')$LoopAnalysis
       empty? resultFromACFAnalysis => return true
       printBanner2()
@@ -696,7 +696,7 @@ ReductionAnalysisPackage(): Public == Private where
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
       resultFromLoopNestsAnalysis : LTB :=_
-       extractAllLoopNests(definition', constructorName, copy gte')$LoopAnalysis
+       extractAllLoopNest(definition', constructorName, copy gte')$LoopAnalysis
       empty? resultFromLoopNestsAnalysis => return true
       printBanner3()
       k := first keys resultFromLoopNestsAnalysis
