@@ -14,31 +14,46 @@ import CEXCOL
 ++ reduce forms
 ReductionAnalysisPackage(): Public == Private where
   macro VTB    == Table(Syntax, Syntax)
-  macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
+  macro XREC   == Record(funname: Identifier, signature: Signature,_
+                         usedin: Syntax, tenv: VTB)
   macro YREC   == Record(loopcandidate: RepeatAst, signaturelist: List XREC)
-  macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature, tenv: VTB)
+  macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax,_
+                         signature: Signature, tenv: VTB)
   macro LTB    == Table(Pair(Identifier, Identifier), List RepeatAst)
   macro FREC   == Record(funname: Identifier, signature: Signature, arity: Integer)
   macro DREC   == Record(funname: Identifier, signature: Signature,_ 
-                         body: DefinitionAst, typeenv: VTB, accumulations: List YREC)
-  macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
-  macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
-  macro RFREC  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List Syntax)
-  macro AREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, affineloops: List RepeatAst)
+                   body: DefinitionAst, typeenv: VTB, accumulations: List YREC)
+  macro ZREC   == Record(ctorname: Identifier, funname: Identifier,_
+                         signature: Signature, accumulations: List YREC)
+  macro RREC   == Record(ctorname: Identifier, funname: Identifier,_
+                         signature: Signature, reductions: List REDU)
+  macro RFREC  == Record(ctorname: Identifier, funname: Identifier,_ 
+                         signature: Signature, reduceforms: List Syntax)
+  macro AREC   == Record(ctorname: Identifier, funname: Identifier,_
+                         signature: Signature, affineloops: List RepeatAst)
   -- format for storing reduce forms
-  macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature, tenv: VTB)
-  macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
+  macro REDF   == Record(reduceform: Syntax, reduceop: Identifier,_
+                         signature: Signature, tenv: VTB)
+  macro RFORM  == Record(ctorname: Identifier, funname: Identifier,_
+                         signature: Signature, reduceforms: List REDF)
   -- format for storing associative operator records
-  macro OPREC  == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
+  macro OPREC  == Record(funname: Identifier, origin: Syntax,_
+                         signature: Signature, tenv: VTB)
   -- format for  category extension database to use
   macro TCR    == Record(funname: Identifier, signature: Signature, tenv: VTB)
-  macro EXTP   == Pair(Syntax, List Syntax) -- (category/attribute, predicate)
+  -- for category extension/attribute declaration
+  -- (category/attribute, predicate)
+  macro EXTP   == Pair(Syntax, List Syntax)
   macro LEXTP  == List EXTP
-  macro LAP    == LEXTP                -- for attributes, i.e. conditional and unconditional
-  macro LSP    == LEXTP                -- for signatures, i.e. conditional and unconditional
+   -- for attributes, i.e. conditional and unconditional
+  macro LAP    == LEXTP  
+    -- for signatures, i.e. conditional and unconditional
+  macro LSP    == LEXTP 
   macro CEXTR  == Record(catname: Identifier, catpars: List Identifier,_ 
-                        partyps: List Syntax, declarations: LSP, extensions: LEXTP, attributes: LAP)
+                         partyps: List Syntax, declarations: LSP,_ 
+                         extensions: LEXTP, attributes: LAP)
   macro CEXTDB == List CEXTR
+  macro OF == OutputForm
   Public == with
     analyze: (Integer, Integer) -> Void
       ++ This function analyzes all spad library files stored in some directory
@@ -49,13 +64,13 @@ ReductionAnalysisPackage(): Public == Private where
       ++ analyze(3, 0): extract all the normal loop nests
       ++ analyze(0, 1): extract parallel accumulation loops
       ++ analyze(1, 1): extract parallel reduce functions and reduce forms
-      ++ note that the default directory points to my demonstrating example folder:
+      ++ the default directory points to my demonstrating example folder:
       ++ /users/yli/software/OA-latest/oa/bin/PARALLEL/example
 
   Private == add
     import SyntaxHelper
 
-    -- some local forward function declarations for bootstrapping
+    -- forward declarations of local function for bootstrapping compilation
     collectFromDefinition: (DefinitionAst, Identifier, VTB) -> Void
       ++ this function collects parallel reduction (loop+reduce+reduce form)
       ++ from a function definition
@@ -133,7 +148,7 @@ ReductionAnalysisPackage(): Public == Private where
     nlList: List AREC                                  := []
 
     -- list for storing reduction loop records
-    accumulationLoopList: List ZREC                      := []
+    accumulationLoopList: List ZREC                    := []
 
     -- list for storing reduce function call records
     reduceList: List RREC                              := []
@@ -236,7 +251,8 @@ ReductionAnalysisPackage(): Public == Private where
       cleanUpConstructorInformation()
 
     -- collect macros declared inside a function definition
-    collectMacroFromDefinitionAst(functionName: Identifier, definitionBody: SpadAst): Void ==
+    collectMacroFromDefinitionAst(functionName: Identifier,_
+                                            definitionBody: SpadAst): Void ==
       macroName := functionName::Syntax
       macroBody := definitionBody::Syntax
       constructorMacros.macroName := macroBody    
@@ -249,8 +265,8 @@ ReductionAnalysisPackage(): Public == Private where
       constructorMacros.macroName := macroBody
 
     -- does maco expansion
-    -- currently only for ColonAst, DefinitionAst before they are collected, and for global type environment before
-    -- passing it to typechecker.
+    -- currently only for ColonAst, DefinitionAst before they are collected, 
+    -- and for global type environment before passing it to typechecker.
     macroExpansionForSyntax(s: SpadAst): SpadAst ==
       s' := s::Syntax
       for m in keys constructorMacros repeat
@@ -269,11 +285,13 @@ ReductionAnalysisPackage(): Public == Private where
         gte'.k := macroExpansionForSyntax((gte'.k)::SpadAst)::Syntax
       gte'
 
-    -- does macro expansion for each import statement collected from constructor
+    -- does macro expansion for each import 
+    -- statement collected from constructor
     macroExpansionForImportList(): List ImportAst ==
       importList' := copy importList
       for i in 1..#importList' repeat
-        importList'.i := macroExpansionForSyntax((importList'.i)::Syntax::SpadAst)::Syntax::ImportAst
+        importList'.i := macroExpansionForSyntax_
+          ((importList'.i)::Syntax::SpadAst)::Syntax::ImportAst
       importList'
 
     -- does macro expansion for a Spad ast
@@ -296,7 +314,8 @@ ReductionAnalysisPackage(): Public == Private where
         for m in keys constructorMacros repeat
           operands.2 := replace(m, operands.2, constructorMacros.m)$SyntaxHelper
       -- if this is a LetAst and the left hand side is a ColonAst
-      if defAst case LetAst and  compound?(lhs(defAst::Syntax::LetAst)::Syntax) and_
+      if defAst case LetAst and_
+         compound?(lhs(defAst::Syntax::LetAst)::Syntax) and_
          (l := lhs(defAst::Syntax::LetAst)) case ColonAst then
         operands.1 := macroExpansion(l)::Syntax
       buildSyntax(op, operands)::SpadAst
@@ -304,7 +323,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- collects import statements at the head of some Spad file
     importFilter(l: List Syntax): Syntax ==
       for s in l repeat
-        (s' := s::SpadAst) case ImportAst => importList := concat(importList, s::ImportAst)
+        (s' := s::SpadAst) case ImportAst => 
+          importList := concat(importList, s::ImportAst)
         s' case MacroAst => collectMacro(s::MacroAst)
         s' case DefinitionAst or s' case WhereAst => return s
       l.last
@@ -358,12 +378,18 @@ ReductionAnalysisPackage(): Public == Private where
         src := concat(src, s::Syntax)
       signature(src, tar)
 
+
+    -- update local unexported signature database
+    -- skip those function definition which does not have a signature 
+    -- their signatures have already been shown in exported ones
+    -- or in the local declaration extracted already.
     -- update local function database of some constructor with
     -- the extracted function name, function signature and the arity
-    updateUnexportedSignatureDatabase(fn: Identifier, sig: Signature, a: Integer): Boolean ==
+    updateUnexportedSignatureDatabase(fn: Identifier,_
+                                      sig: Signature, a: Integer): Void ==
       r: FREC := [fn, sig, a]
-      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
-      true
+      localUnexportedSignatureDatabase :=_
+        concat(localUnexportedSignatureDatabase, r)
 
     -- check whether a colon ast is used for declaring function
     -- by passing it with the left and right hand sides of the colon ast.
@@ -393,19 +419,18 @@ ReductionAnalysisPackage(): Public == Private where
         nil? t => return false
       true
 
-    -- update local unexported signature database
-    -- skip those function definition which does not have a signature 
-    -- their signatures have already been shown in exported ones, or in the local declaration extracted already.
-
     -- check whether an identifier is Rep
     isRep?(fn: Identifier): Boolean == fn = 'Rep::Identifier
 
     -- generate two local functions for rep and per once meet Rep
     -- update these two functions into local function database of the constructor
     updateUnexportedDatabaseWhenMeetRep(bd: SpadAst): Boolean ==
-      recordForRep : FREC := ['rep::Identifier, signature([makePercentage()], bd::Syntax), 1]
-      recordForPer : FREC := ['per::Identifier, signature([bd::Syntax], makePercentage()), 1]
-      localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, [recordForRep, recordForPer])
+      recordForRep : FREC :=_
+        ['rep::Identifier, signature([makePercentage()], bd::Syntax), 1]
+      recordForPer : FREC :=_
+        ['per::Identifier, signature([bd::Syntax], makePercentage()), 1]
+      localUnexportedSignatureDatabase :=_
+        concat(localUnexportedSignatureDatabase, [recordForRep, recordForPer])
       true
 
     -- this function decides whether a function definition is local to the 
@@ -416,8 +441,9 @@ ReductionAnalysisPackage(): Public == Private where
       not signatureComplete?(sig) => false
       r : FREC := [fn, sig, a]
       -- already in exported or unexported signature database?
-      member?(r, localExportedSignatureDatabase) or member?(r, localExportedSignatureDatabase) => false
-      -- otherwise, update the unexpoconstructorNamerted signature database with this entry
+      member?(r, localExportedSignatureDatabase) or_
+        member?(r, localExportedSignatureDatabase) => false
+      -- update the unexpoconstructorNamerted signature database with this entry
       localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
       true
 
@@ -433,7 +459,8 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- given a function name and signature, we query whether this function 
     -- information exists in the signature database
-    searchInSignatureDatabase(fn: Identifier, sig: Signature, db: List FREC): Pair(Boolean, Signature) ==
+    searchInSignatureDatabase(fn: Identifier, sig: Signature,_
+                                db: List FREC): Pair(Boolean, Signature) ==
       for entry in db repeat
         if entry.funname = fn and_ 
            entry.arity = #source(sig) and_ 
@@ -443,7 +470,8 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- check the types of parameters of a function definition 
     -- using typing environment 
-    updateParameterTypeFromTypeEnvironment(pars: List Syntax, sig: Signature, gte: VTB): Signature ==
+    updateParameterTypeFromTypeEnvironment(pars: List Syntax,_
+                                     sig: Signature, gte: VTB): Signature ==
       src := source sig
       tar := target sig
       for i in 1..#src for p in pars repeat
@@ -453,24 +481,28 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- obtain the complete signature for a function definition by searching  
     -- signature databases
-    getCompleteSignature(fn: Identifier, pars: List Syntax, sig: Signature, gte: VTB): Signature ==
+    getCompleteSignature(fn: Identifier, pars: List Syntax,_
+                         sig: Signature, gte: VTB): Signature ==
       -- search in global type environment first
       if not (fn = makeCase()::Identifier) then 
         sig := updateParameterTypeFromTypeEnvironment(pars, sig, gte)
         signatureComplete?(sig) => return sig
-      -- after searching the global type environment, if the type is still incomplete
-      -- then search the two databases
-      first(x := searchInSignatureDatabase(fn, sig, localExportedSignatureDatabase))   => second x
-      first(y := searchInSignatureDatabase(fn, sig, localUnexportedSignatureDatabase)) => second y
+      -- after searching the global type environment, 
+      -- if the type is still incomplete then search the two databases
+      first(x := searchInSignatureDatabase_
+           (fn, sig, localExportedSignatureDatabase))   => second x
+      first(y := searchInSignatureDatabase_
+           (fn, sig, localUnexportedSignatureDatabase)) => second y
       print(fn::OutputForm)
       print(sig::OutputForm)
       print(constructorMacros::OutputForm)
-      userError "unexpected: the signature can not be found in any of the two databases."
+      userError "the signature can not be found in any of the two databases."
 
     -- replace % in the source of a signature with the current domain call form
     instantiatePercentageInSource(src: List Syntax): List Syntax ==
       for i in 1..#src repeat
-        src.i := replace(makePercentage(), src.i, constructorCallForm())$SyntaxHelper
+        src.i := replace(makePercentage(),_
+                 src.i, constructorCallForm())$SyntaxHelper
       src
 
     -- replace % appeared in each syntax of a syntax list 
@@ -492,7 +524,8 @@ ReductionAnalysisPackage(): Public == Private where
     instantiatePercentageForLoops(l: List RepeatAst): List RepeatAst ==
       result := copy l
       for i in 1..#result repeat
-        result.i := (replace(makePercentage(), (result.i)::Syntax, constructorCallForm())$SyntaxHelper)::RepeatAst
+        result.i := (replace(makePercentage(), (result.i)::Syntax,_
+                     constructorCallForm())$SyntaxHelper)::RepeatAst
       result
 
     -- remove all the function types from the general global type environment
@@ -514,39 +547,40 @@ ReductionAnalysisPackage(): Public == Private where
 
     printBanner1(): Void ==
       print(" "::OutputForm)
-      print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"::OutputForm)
-      print("|  Encounter potential reduce forms and expressions, start typechecking  |"::OutputForm)
-      print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"::OutputForm)
+      print("-----------------------------------------------------------------"::OutputForm)
+      print("|Encounter potential reduce form or function, start typechecking|"::OutputForm)
+      print("-----------------------------------------------------------------"::OutputForm)
       print(" "::OutputForm)     
 
     printBanner2(): Void ==
       print(" "::OutputForm)
-      print("-------------------------------------------------------------"::OutputForm)
-      print("|  Encounter affine control loop nest                       |"::OutputForm)
-      print("-------------------------------------------------------------"::OutputForm)
+      print("---------------------------------------"::OutputForm)
+      print("|  Encounter affine control loop nest |"::OutputForm)
+      print("---------------------------------------"::OutputForm)
       print(" "::OutputForm)    
 
     printBanner3(): Void ==
       print(" "::OutputForm)
-      print("-------------------------------------------------------------"::OutputForm)
-      print("|  Encounter loop nest                                      |"::OutputForm)
-      print("-------------------------------------------------------------"::OutputForm)
+      print("------------------------"::OutputForm)
+      print("|  Encounter loop nest |"::OutputForm)
+      print("------------------------"::OutputForm)
       print(" "::OutputForm)   
 
     -- update the extracted accumulation loops to the global variable
     --  which stores the final results
-    updateAccumulationLoopList(r: DREC, resultFromTypeChecker: Pair(VTB, List YREC)): Void ==
+    updateAccumulationLoopList(r: DREC,_
+                          resultFromTypeChecker: Pair(VTB, List YREC)): Void ==
       r.typeenv := first resultFromTypeChecker
       r.accumulations := second resultFromTypeChecker
       r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
       fundefList := concat(fundefList, r)
       accumulationLoopList := concat(accumulationLoopList, r')
 
-
     -- analysis option 0:
     -- collect all the accumulation loop from all the statements in a function
     -- body via pattern matching
-    collectAccumulationLoop(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+    collectAccumulationLoop(functionName: Identifier,_
+                  sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
       gte' := macroExpansionForTypeEnvironmentTable(gte)
       gte' := filterOutMappingAst(gte')
@@ -567,7 +601,8 @@ ReductionAnalysisPackage(): Public == Private where
       if not signatureComplete?(sig) then 
         sig' := getCompleteSignature(functionName, pars, sig, gte)
       -- instantiate the % in the function body with the ctor call form
-      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      definition' := instantiatePercentageWithCurrentDomain_
+                     (definition::Syntax::SpadAst)::DefinitionAst
       -- instantiate the % in the signature with the ctor call form
       sig'    := instantiatePercentageForSignature(sig')
       --instantiate the % in the collected potential repeatAsts
@@ -575,56 +610,63 @@ ReductionAnalysisPackage(): Public == Private where
       -- build the record
       r : DREC := [functionName, sig', definition', copy gte', []]
       -- typechecks the function definition body
-      resultFromTypeChecker : Pair(VTB, List YREC) := checkFunctionDefinition(r,_ 
-                                             constructorName, constructorParameters,_
-                                             localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
-                                             importList', constructorMacros,_
-                                             loopList', accVariables)$TypeChecker
+      resultFromTypeChecker : Pair(VTB, List YREC) :=_
+        checkFunctionDefinition(r, constructorName, constructorParameters,_
+            localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
+            importList', constructorMacros, loopList', accVariables)$TypeChecker
       updateAccumulationLoopList(r, resultFromTypeChecker)
 
 
     -- analysis option 1:
     -- collect all the reduce function calls and reduce forms from all the 
     -- statements in a function body via pattern matching
-    collectReduceFunctionAndForm(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+    collectReduceFunctionAndForm(functionName: Identifier, sig: Signature,_
+                                  definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
       gte' := macroExpansionForTypeEnvironmentTable(gte)
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
-      reduceForms : List Syntax := extractReduceFormsFromFunctionDefinition(definition', constructorName)$ReduceAnalysis 
+      reduceForms : List Syntax :=_
+        extractReduceFormsFromFunctionDefinition(definition',_
+                                               constructorName)$ReduceAnalysis 
       sig' := sig
       pars := getOperands(first(getOperands(definition::Syntax)))
       if not signatureComplete?(sig) then 
         sig' := getCompleteSignature(functionName, pars, sig, gte)
       -- instantiate the % in the function body with the ctor call form
-      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      definition' := instantiatePercentageWithCurrentDomain_
+                     (definition::Syntax::SpadAst)::DefinitionAst
       -- instantiate the % in the signature with the ctor call form
       sig'    := instantiatePercentageForSignature(sig')
       --instantiate the % in the collected potential repeatAsts
-      reduceForms' : List Syntax := instantiatePercentageForListSyntax(reduceForms)
+      reduceForms' := instantiatePercentageForListSyntax(reduceForms)
       empty? reduceForms' => return true
       printBanner1()
       r : DREC := [functionName, sig', definition', copy gte', []]
       -- typechecks the function definition body
-      resultFromTypeChecker : Pair(List REDU, List REDF) := checkFunctionDefinition2(r,_ 
-                                             constructorName, constructorParameters,_
-                                             localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
-                                             importList', constructorMacros,_
-                                             reduceForms')$TypeChecker
-      reduceFunctionRecord : RREC := [constructorName, functionName, sig', first resultFromTypeChecker]
-      reduceFormRecord : RFORM := [constructorName, functionName, sig', second resultFromTypeChecker]
+      resultFromTypeChecker : Pair(List REDU, List REDF) :=_
+        checkFunctionDefinition2(r, constructorName, constructorParameters,_
+          localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
+          importList', constructorMacros, reduceForms')$TypeChecker
+      reduceFunctionRecord : RREC := [constructorName, functionName,_
+                                      sig', first resultFromTypeChecker]
+      reduceFormRecord : RFORM := [constructorName, functionName,_
+                                   sig', second resultFromTypeChecker]
       reduceList := concat(reduceList, reduceFunctionRecord)
       rformList := concat(rformList, reduceFormRecord)
 
     -- analysis option 2:
     -- collect all the affine control loop from all the 
     -- statements in a function body via pattern matching
-    collectAffineControlLoop(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+    collectAffineControlLoop(functionName: Identifier, sig: Signature,_
+                             definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
       gte' := macroExpansionForTypeEnvironmentTable(gte)
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
-      resultFromACFAnalysis : LTB := extractAffineControlLoopFromFunctionDefinition(definition', constructorName, copy gte')$LoopAnalysis
+      resultFromACFAnalysis : LTB :=_
+        extractAffineControlLoopFromFunctionDefinition(definition',_
+          constructorName, copy gte')$LoopAnalysis
       empty? resultFromACFAnalysis => return true
       printBanner2()
       k := first keys resultFromACFAnalysis
@@ -635,7 +677,8 @@ ReductionAnalysisPackage(): Public == Private where
       if not signatureComplete?(sig) then
         sig' := getCompleteSignature(functionName, pars, sig, gte)
       -- instantiate the % in the function body with the ctor call form
-      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      definition' := instantiatePercentageWithCurrentDomain_
+                       (definition::Syntax::SpadAst)::DefinitionAst
       -- instantiate the % in the signature with the ctor call form
       sig'    := instantiatePercentageForSignature(sig')
       --instantiate the % in the collected potential repeatAsts
@@ -646,12 +689,14 @@ ReductionAnalysisPackage(): Public == Private where
     -- analysis option 3:
     -- collect all the loop nests from all the 
     -- statements in a function body via pattern matching
-    collectLoopNests(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+    collectLoopNests(functionName: Identifier, sig: Signature,_
+                     definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
       gte' := macroExpansionForTypeEnvironmentTable(gte)
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
-      resultFromLoopNestsAnalysis : LTB := extractAllLoopNests(definition', constructorName, copy gte')$LoopAnalysis
+      resultFromLoopNestsAnalysis : LTB :=_
+       extractAllLoopNests(definition', constructorName, copy gte')$LoopAnalysis
       empty? resultFromLoopNestsAnalysis => return true
       printBanner3()
       k := first keys resultFromLoopNestsAnalysis
@@ -662,7 +707,8 @@ ReductionAnalysisPackage(): Public == Private where
       if not signatureComplete?(sig) then
         sig' := getCompleteSignature(functionName, pars, sig, gte)
       -- instantiate the % in the function body with the ctor call form
-      definition' := instantiatePercentageWithCurrentDomain(definition::Syntax::SpadAst)::DefinitionAst
+      definition' := instantiatePercentageWithCurrentDomain_
+                       (definition::Syntax::SpadAst)::DefinitionAst
       -- instantiate the % in the signature with the ctor call form
       sig'    := instantiatePercentageForSignature(sig')
       --instantiate the % in the collected potential repeatAsts
@@ -672,12 +718,17 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- collect data from the body of a function definition
     -- the kind of data depends on the analysis option
-    collectFromFunctionBody(functionName: Identifier, sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+    collectFromFunctionBody(functionName: Identifier, sig: Signature,_
+                            definition: DefinitionAst, gte: VTB): Void ==
       isRep?(functionName) => print(""::OutputForm)
-      programOption = 0 => collectAccumulationLoop(functionName, sig, definition, gte)
-      programOption = 1 => collectReduceFunctionAndForm(functionName, sig, definition, gte)
-      programOption = 2 => collectAffineControlLoop(functionName, sig, definition, gte)
-      programOption = 3 => collectLoopNests(functionName, sig, definition, gte)
+      programOption = 0 => 
+        collectAccumulationLoop(functionName, sig, definition, gte)
+      programOption = 1 => 
+        collectReduceFunctionAndForm(functionName, sig, definition, gte)
+      programOption = 2 => 
+        collectAffineControlLoop(functionName, sig, definition, gte)
+      programOption = 3 => 
+        collectLoopNests(functionName, sig, definition, gte)
       userError "illegal analysis option"
 
     -- update type environment gte with the variable and its type obtained from
@@ -696,7 +747,8 @@ ReductionAnalysisPackage(): Public == Private where
       s' := s::Syntax
       not compound? s' => false
       (ctor := getOperator(s')) case Identifier => 
-         retractIfCan(findConstructor(ctor::Identifier)$Constructor)$(Maybe Constructor) case "failed" => false
+         retractIfCan(findConstructor(ctor::Identifier)$Constructor)_
+                      $(Maybe Constructor) case "failed" => false
          true
       false
 
@@ -720,8 +772,7 @@ ReductionAnalysisPackage(): Public == Private where
       tp := ((target(coeast))$CoerceAst)::Syntax
       exp := (expression(coeast)$CoerceAst)::Syntax
       coerExp := expression(s::Syntax::CoerceAst)$CoerceAst
-      if compound?(coerExp::Syntax) then
-        collectFromStatement(coerExp, ctor, gte)
+      compound?(coerExp::Syntax) => collectFromStatement(coerExp, ctor, gte)
 
     -- check whether a let assignment is a type assignment
     -- e.g. foo := Integer or Rep := foo
@@ -730,9 +781,11 @@ ReductionAnalysisPackage(): Public == Private where
       l case Identifier and_
       (isRep?(l::Identifier) or isTypeExpression? rhs s)
 
-    -- update macro database with type assignment, i.e. we take type assignment as macro
-    -- when we meet type assignment for Rep, we automatically generate two function per and rep
-    -- updating these two functions into unexported function signature database of the constructor
+    -- update macro database with type assignment, 
+    -- i.e. we take type assignment as macro when we meet type assignment
+    -- for Rep, we automatically generate two function per and rep
+    -- updating these two functions into unexported function signature 
+    -- database of the constructor
     updateDatabaseFromTypeAssignment(s: LetAst): Void ==
       left := lhs s
       right := rhs s
@@ -744,15 +797,20 @@ ReductionAnalysisPackage(): Public == Private where
     isImmediateInitialization?(s: LetAst): Boolean ==
       compound?((l := lhs(s))::Syntax) and l case ColonAst
 
-    -- using a type checker for let statement which does not have type annotation for its lefthand side
-    updateGlobalTypeEnvironmentUsingTypeChecker(s: LetAst, id: Syntax, typeEnvironment: VTB): Void ==
+    -- using a type checker for let statement which does not have 
+    -- type annotation for its lefthand side
+    updateGlobalTypeEnvironmentUsingTypeChecker(s: LetAst, id: Syntax,_
+                                                typeEnvironment: VTB): Void ==
       -- expand the macros in typing environment and import list
       typeEnvironment' := macroExpansionForTypeEnvironmentTable typeEnvironment
-      typeEnvironment' := filterOutMappingAst typeEnvironment' -- in case we may collect some global function signature
+      typeEnvironment' := filterOutMappingAst typeEnvironment' 
+      -- in case we may collect some global function signature
       importList'      := macroExpansionForImportList()
-      -- start typechecking by passing the macro expanded syntax, typing environment and import list to the typechecker
-      tp   := checkGlobalLetAst(s, typeEnvironment', constructorName, constructorParameters,_ 
-                                localExportedSignatureDatabase, localUnexportedSignatureDatabase, importList')$TypeChecker
+      -- start typechecking by passing the macro expanded syntax, 
+      -- typing environment and import list to the typechecker
+      tp   := checkGlobalLetAst(s, typeEnvironment', constructorName,_ 
+                         constructorParameters, localExportedSignatureDatabase,_ 
+                     localUnexportedSignatureDatabase, importList')$TypeChecker
       -- update global typing environment
       typeEnvironment := updateGlobalTypeEnvironment(typeEnvironment, id, tp)
 
@@ -762,12 +820,13 @@ ReductionAnalysisPackage(): Public == Private where
       if isTypeAssignment?(s) then
         updateDatabaseFromTypeAssignment(s)
       else if isImmediateInitialization?(s) then
-        typeEnvironment := updateGlobalTypeEnvironment(typeEnvironment, id, rhs((lhs s)::Syntax::ColonAst)::Syntax)
-      -- if the let statement is an assignment to some global variable with an expression
-      -- without type annotation, we ask our typechecker for help, i.e., to infer the type.
+        typeEnvironment := updateGlobalTypeEnvironment(typeEnvironment,_
+                           id, rhs((lhs s)::Syntax::ColonAst)::Syntax)
+      -- if the let statement is an assignment to some global 
+      -- variable with an expression without type annotation, 
+      -- we ask our typechecker for help, i.e., to infer the type.
       else
         updateGlobalTypeEnvironmentUsingTypeChecker(s, id, typeEnvironment)
-
 
     -- collect data from a statement
     collectFromStatement(s: SpadAst, ctor: Identifier, gte: VTB): Void ==
@@ -795,7 +854,8 @@ ReductionAnalysisPackage(): Public == Private where
         gte := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), gte)
 
     -- check whether the syntax is a definition for Rep, e.g. Rep == Integer
-    isRepDefinition?(functionName:Identifier, bodyOfDefinition: SpadAst, functionArity: Integer):Boolean ==
+    isRepDefinition?(functionName:Identifier,_
+                  bodyOfDefinition: SpadAst, functionArity: Integer):Boolean ==
       not isRep?(functionName) and_ 
       functionArity = 0 and_ 
       isTypeExpression?(bodyOfDefinition)
@@ -809,25 +869,25 @@ ReductionAnalysisPackage(): Public == Private where
       functionArity := #(parameters(headOfDefinition)$HeadAst)
       functionSignature := signature(d')$DefinitionAst
       bodyOfDefinition := body(d')$DefinitionAst
-      if isRepDefinition?(functionName, bodyOfDefinition, functionArity) then
+      isRepDefinition?(functionName, bodyOfDefinition, functionArity) =>
         -- if it is a Rep definition, treat it as macro, and collect it
         collectMacroFromDefinitionAst(functionName, bodyOfDefinition)
-      else
-        updateUnexportedDatabaseWhenMeetFunDef(functionName, functionSignature,_ 
+      
+      updateUnexportedDatabaseWhenMeetFunDef(functionName, functionSignature,_ 
                                                functionArity, bodyOfDefinition)
-        collectFromFunctionBody(functionName, functionSignature, d', gte)
+      collectFromFunctionBody(functionName, functionSignature, d', gte)
     
-
-
     -- update global typing environment when meet a if statement for conditional 
     -- function definition, we collect from its has predicate
-    collectTypesFromGlobalIfAst(s: IfAst, ctor: Identifier, typeEnvironment: VTB): Void ==
+    collectTypesFromGlobalIfAst(s: IfAst, ctor: Identifier,_
+                                typeEnvironment: VTB): Void ==
       thBranch := thenBranch(s)$IfAst
       elBranch := elseBranch(s)$IfAst
       cond     := condition(s)$IfAst
       if compound?(thBranch::Syntax) then
         typeEnvironment' := copy typeEnvironment
-        typeEnvironment' := updateGlobalTypeEnvFromCondition(cond, typeEnvironment')
+        typeEnvironment' := updateGlobalTypeEnvFromCondition_
+                              (cond, typeEnvironment')
         collectFromTopLevel(thBranch, ctor, typeEnvironment')
       if compound?(elBranch::Syntax) then
         collectFromTopLevel(elBranch, ctor, copy typeEnvironment)
@@ -835,9 +895,11 @@ ReductionAnalysisPackage(): Public == Private where
     -- collect data from a statement of a capsule
     -- the statement can be a function definition, global variable declaration,
     -- a conditional function definition/declaration via if statement, ora macro
-    collectFromTopLevel(s: SpadAst, ctor: Identifier, typeEnvironment: VTB): Void ==
+    collectFromTopLevel(s: SpadAst, ctor: Identifier,_
+                        typeEnvironment: VTB): Void ==
       s case ColonAst => 
-        typeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), typeEnvironment)
+        typeEnvironment := updateGlobalTypeEnvironmentFromColonAst_
+                             (macroExpansion(s), typeEnvironment)
       s case MacroAst => collectMacro(s::Syntax::MacroAst)
       s case ImportAst => importList := concat(importList, s::Syntax::ImportAst)        
       s case DefinitionAst => 
@@ -851,7 +913,8 @@ ReductionAnalysisPackage(): Public == Private where
         collectTypesFromGlobalIfAst(s::Syntax::IfAst, ctor, typeEnvironment)
       collectFromStatement(s, ctor, typeEnvironment)
 
-    -- collect data from each statement of the capsule of a constructor definition
+    -- collect data from each statement of the capsule
+    -- of a constructor definition
     collectFromCapsule(l: List SpadAst, ctor: Identifier): Integer ==
       for s in l repeat collectFromTopLevel(s, ctor, globalTypeEnvironment)
       count
@@ -863,7 +926,8 @@ ReductionAnalysisPackage(): Public == Private where
       for s in bodyOfQualifier repeat
         s case MacroAst => collectMacro(s::Syntax::MacroAst)
         s case ColonAst =>
-          globalTypeEnvironment := updateGlobalTypeEnvironmentFromColonAst(macroExpansion(s), globalTypeEnvironment)
+          globalTypeEnvironment := updateGlobalTypeEnvironmentFromColonAst_
+                                     (macroExpansion(s), globalTypeEnvironment)
         s case ExitAst =>
           e := expression(s::Syntax::ExitAst)$ExitAst
           result := body(e::Syntax::CapsuleAst)$CapsuleAst
@@ -878,7 +942,8 @@ ReductionAnalysisPackage(): Public == Private where
         if (id case Identifier) then
           id' := id::Identifier
           if (id'::Symbol = 'add) then
-            result := body((body(s::Syntax::AddAst)$AddAst)::Syntax::CapsuleAst)$CapsuleAst
+            result := body((body(s::Syntax::AddAst)_
+                        $AddAst)::Syntax::CapsuleAst)$CapsuleAst
         if (s case CapsuleAst) then
           result := body(s::Syntax::CapsuleAst)$CapsuleAst
       result
@@ -902,10 +967,10 @@ ReductionAnalysisPackage(): Public == Private where
         id' := id::Identifier
         if (id'::Symbol = 'add) then 
           bodyOfAdd:=body(bodyOfDefinition::AddAst)$AddAst::Syntax
-          statementOfCapsule : List SpadAst := body(bodyOfAdd::CapsuleAst)$CapsuleAst
+          statementOfCapsule := body(bodyOfAdd::CapsuleAst)$CapsuleAst
           collectFromCapsule(statementOfCapsule, ctor)
         if (bodyOfDefinition' case CapsuleAst) then
-          statementOfCapsule : List SpadAst := body(bodyOfDefinition::CapsuleAst)$CapsuleAst
+          statementOfCapsule := body(bodyOfDefinition::CapsuleAst)$CapsuleAst
           collectFromCapsule(statementOfCapsule, ctor)
       count
 
@@ -918,10 +983,11 @@ ReductionAnalysisPackage(): Public == Private where
         if (id'::Symbol = 'add) then 
           bodyOfAdd := body(bodyOfDefinition::Syntax::AddAst)$AddAst
           if bodyOfAdd case CapsuleAst then
-            statementOfCapsule: List SpadAst := body(bodyOfAdd::Syntax::CapsuleAst)$CapsuleAst
+            statementOfCapsule := body(bodyOfAdd::Syntax::CapsuleAst)$CapsuleAst
             collectFromCapsule(statementOfCapsule, ctor)
         if (bodyOfDefinition case CapsuleAst) then
-          statementOfCapsule: List SpadAst := body(bodyOfDefinition::Syntax::CapsuleAst)$CapsuleAst
+          statementOfCapsule := body(_
+            bodyOfDefinition::Syntax::CapsuleAst)$CapsuleAst
           collectFromCapsule(statementOfCapsule, ctor)
       count
 
@@ -976,7 +1042,8 @@ ReductionAnalysisPackage(): Public == Private where
         result := concat(result, t)
       result
   
-    -- instantiate number slots which appear in function signature with the real constructor type parameter
+    -- instantiate number slots which appear in function signature
+    -- with the real constructor type parameter
     instantiateFunctionDescriptor(opList: List OverloadSet): List FREC ==
       database: List FREC := empty()
       for f in opList repeat
@@ -986,27 +1053,31 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- obtain all the exported signatures of a constructor
     getExportedSignatures(): List OverloadSet ==
-      constructor := retract(findConstructor(constructorName)$Constructor)$(Maybe Constructor)
+      constructor := retract(_
+        findConstructor(constructorName)$Constructor)$(Maybe Constructor)
       copy operations constructor
 
     -- update the global variables of the current constructor head information
     updateGlobalConstructorInformation(sast: SpadAst, ctorName: Identifier,_ 
-                                       ctorPar: List Identifier, ctorTps: List Syntax): Void ==
+                       ctorPar: List Identifier, ctorTps: List Syntax): Void ==
       constructorName := ctorName
       for p in ctorPar repeat
         constructorParameters   := concat(constructorParameters, p::Syntax)
       constructorParameterTypes := ctorTps
       -- build the exported signature database of the constructor
-      localExportedSignatureDatabase := instantiateFunctionDescriptor(getExportedSignatures())
+      localExportedSignatureDatabase :=_
+        instantiateFunctionDescriptor(getExportedSignatures())
       -- initialize the global type environment of the constructor definition
       initGlobalVariableEnvironment(ctorName, ctorPar, ctorTps)
 
     -- given an constructor name, find its kind
     getConstructorKind(c: Identifier): ConstructorKind == 
-      kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
+      kind(retract(findConstructor(c)_
+        $Constructor)$(Maybe Constructor))$Constructor
   
     -- this function collects names of categories, domains and packages
-    -- these information will be used for counting total number of each kind of constructor
+    -- these information will be used for counting total number 
+    -- of each kind of constructor
     countConstructors(c: Identifier): Void ==
       k : ConstructorKind := getConstructorKind(c)
       k = category$ConstructorKind =>  categorySet := union(categorySet, {c}) 
@@ -1044,7 +1115,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- this function extract parallel reduction 
     -- from syntax obtained by parsing one spad library file
     analyzeOneFile(l: List Syntax): Integer == 
-      -- initialize global variables for storing the current constructor information
+      -- initialize global variables for storing the 
+      -- current constructor information
       cleanUpConstructorInformation()
       -- collect all the import information at the head of a Spad file
       -- these information will be used for function resolution
@@ -1053,12 +1125,13 @@ ReductionAnalysisPackage(): Public == Private where
       -- if this is a package or category
       s' case WhereAst => collectFromConstructorDefinitionInWhereAst(s)
       -- if this is a domain or category
-      s' case DefinitionAst => collectFromConstructorDefinitionInDefinitionAst(s)
+      s' case DefinitionAst=>collectFromConstructorDefinitionInDefinitionAst(s)
       count
 
     -- obtain all the Spad file name stored in a directory
     getAllFileName: List FileName ==
-      sexp := DIRECTORY("/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad")$Lisp
+      dir := "/users/yli/software/OA-latest/oa/bin/PARALLEL/example/*.spad"
+      sexp := DIRECTORY(dir)$Lisp
       sexp pretend List(FileName)
 
     -- convert an sexpression to string
@@ -1115,13 +1188,16 @@ ReductionAnalysisPackage(): Public == Private where
         f := string(((sl.i).funname)::Symbol)
         s := signatureToString((sl.i).signature)
         if i < #sl then
-          empty?(sl.i.tenv) => result := concat([result, "    ", f, ": ", s, "\n\r\n\r"])
+          empty?(sl.i.tenv) => 
+            result := concat([result, "    ", f, ": ", s, "\n\r\n\r"])
           stringOfTenv := tenvToString(sl.i.tenv)
-          result := concat([result, "    ", f, ": ", s, " where ", "\n\r", stringOfTenv, "\n\r\n\r"]) 
+          result := concat([result, "    ", f, ": ", s, " where ", "\n\r",_
+                            stringOfTenv, "\n\r\n\r"]) 
         else
           empty?(sl.i.tenv) => result := concat([result, "    ", f, ": ", s])
           stringOfTenv := tenvToString(sl.i.tenv)
-          result := concat([result, "    ", f, ": ", s, " where ", "\n\r", stringOfTenv])
+          result := concat([result, "    ", f, ": ", s, " where ", "\n\r",_
+                            stringOfTenv])
       result
 
     -- convert an accumulation loop record to string for pretty printing
@@ -1131,11 +1207,13 @@ ReductionAnalysisPackage(): Public == Private where
         loopStr   := toString(((al.i).loopcandidate)::Syntax)$SyntaxHelper
         funsigStr := signaturelistToString((al.i).signaturelist)
         if i < #al then
-          result := concat([result, "  Loop Body==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
+          result := concat([result, "  Loop Body==>\n\r\n\r", "    ",_
+                     loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
                              "\n\r\n\r", funsigStr, ",", "\n\r\n\r"])
         else
-          result := concat([result, "  Loop Body==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
-                     "\n\r\n\r", funsigStr, "\n\r\n\r", "------------------------", "\n\r"])
+          result := concat([result, "  Loop Body==>\n\r\n\r", "    ",_
+                     loopStr, ",", "\n\r\n\r", "  Operators being Reduced==>",_
+        "\n\r\n\r", funsigStr, "\n\r\n\r", "------------------------", "\n\r"])
       result
 
     -- convert a ACL record to string for pretty printing
@@ -1146,9 +1224,11 @@ ReductionAnalysisPackage(): Public == Private where
         aclLoopDepths := concat(aclLoopDepths, getLoopDepth(al.i)$LoopAnalysis)
         loopStr   := toString((al.i)::Syntax)$SyntaxHelper
         if i < #al then
-          result := concat([result, "  ACL Nests ==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r"])
+          result := concat([result, "  ACL Nests ==>\n\r\n\r",_
+                                             "    ", loopStr, ",", "\n\r\n\r"])
         else
-          result := concat([result, "  ACL Nests==>\n\r\n\r", "    ", loopStr, ",", "\n\r\n\r", "------------------------", "\n\r"])
+          result := concat([result, "  ACL Nests==>\n\r\n\r",_
+         "    ", loopStr, ",", "\n\r\n\r", "------------------------", "\n\r"])
       result
 
     -- convert a reduction record to string for pretty printing
@@ -1163,19 +1243,25 @@ ReductionAnalysisPackage(): Public == Private where
         sigStr   := signatureToString(al.i.signature)
         if i < #al then
           empty?(al.i.tenv) =>
-            result := concat([result, "  Reduce function application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                               "\n\r\n\r", "    ", binOp, ": ", sigStr, ",", "\n\r\n\r"])
+            result := concat([result, "  Reduce function application==>\n\r\n\r"_
+              , "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                     "\n\r\n\r", "    ", binOp, ": ", sigStr, ",", "\n\r\n\r"])
           stringOfTenv := tenvToString(al.i.tenv)
-          result := concat([result, "  Reduce function application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                              "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r", stringOfTenv, "\n\r\n\r"])
+          result := concat([result, "  Reduce function application==>\n\r\n\r",_
+                "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                     "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r",_
+                     stringOfTenv, "\n\r\n\r"])
         else
           empty?(al.i.tenv) =>
-            result := concat([result, "  Reduce functino application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                       "\n\r\n\r", "    ", binOp, ": ", sigStr, "\n\r\n\r", "------------------------", "\n\r"])
+            result := concat([result, "  Reduce functino application==>\n\r\n\r",_
+                "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                "\n\r\n\r", "    ", binOp, ": ", sigStr, "\n\r\n\r",_
+                "------------------------", "\n\r"])
           stringOfTenv := tenvToString(al.i.tenv)
-          result := concat([result, "  Reduce functino application==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                        "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r", stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
-
+          result := concat([result, "  Reduce functino application==>\n\r\n\r",_
+                "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r",_
+                  stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
       result
     
     -- convert REDF format records to string for pretty printing
@@ -1188,20 +1274,26 @@ ReductionAnalysisPackage(): Public == Private where
         opSig    := signatureToString((al.i).signature)
         if i < #al then
           empty?(al.i.tenv) =>
-            result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                               "\n\r\n\r", "    ", binOP, ": ", opSig, ",", "\n\r\n\r"])
+            result := concat([result, "  Reduce Form==>\n\r\n\r", "    ",_
+                  expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                  "\n\r\n\r", "    ", binOP, ": ", opSig, ",", "\n\r\n\r"])
           stringOfTenv := tenvToString(al.i.tenv)
-          result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                             "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r", stringOfTenv, ",", "\n\r\n\r"])          
-
+          result := concat([result, "  Reduce Form==>\n\r\n\r",_
+                "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+             "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r",_
+             stringOfTenv, ",", "\n\r\n\r"])
 
         else
           empty?(al.i.tenv) =>
-            result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                       "\n\r\n\r", "    ", binOP, ": ", opSig, "\n\r\n\r", "------------------------", "\n\r"])
+            result := concat([result, "  Reduce Form==>\n\r\n\r",_
+               "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+               "\n\r\n\r", "    ", binOP, ": ", opSig, "\n\r\n\r",_
+               "------------------------", "\n\r"])
           stringOfTenv := tenvToString(al.i.tenv)
-          result := concat([result, "  Reduce Form==>\n\r\n\r", "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
-                      "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r", stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
+          result := concat([result, "  Reduce Form==>\n\r\n\r",_
+                "    ", expStr, ",", "\n\r\n\r", "  Operator being Reduced==>",_
+                      "\n\r\n\r", "    ", binOP, ": ", opSig, " where ", "\n\r",_
+                  stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
 
       result
 
@@ -1300,7 +1392,8 @@ ReductionAnalysisPackage(): Public == Private where
       true
 
     -- write the AREC format record to a .tex file
-    -- i.e., global variables storing ACLs as well as loop nests, respectively
+    -- i.e., global variables storing ACLs 
+    -- as well as loop nests, respectively
     writeARecordToFile(al: List AREC, f: String): Boolean ==
       ofname : FileName := filename(".", f, "tex")
       ofile := open(ofname, "output")$File(String)
@@ -1309,9 +1402,11 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- checks whether a variable is a type variable 
     -- by looking up in the global type environment
-    isTypeVariable?(tp: Syntax, env: VTB): Boolean == not compound? tp and tp case Identifier and key?(tp, env)
+    isTypeVariable?(tp: Syntax, env: VTB): Boolean == 
+      not compound? tp and tp case Identifier and key?(tp, env)
 
-    -- checks whether some category/domain is parameterized by some type variable
+    -- checks whether some category/domain is 
+    -- parameterized by some type variable
     containTypeVariable?(cat: Syntax, env: VTB): Boolean ==
       not compound? cat => isTypeVariable?(cat, env)
       for opr in getOperands cat repeat
@@ -1334,13 +1429,14 @@ ReductionAnalysisPackage(): Public == Private where
         s := replace(k, s, mapping.k)$SyntaxHelper
       s
 
-    -- replaces % in as signature with the domain that implements the owner category
-    -- of the signature
+    -- replaces % in as signature with the domain that 
+    -- implements the owner category of the signature
     instantiatePercentages(current: Syntax, t: Syntax): Syntax ==
       replace(makePercentage(), t, current)$SyntaxHelper
 
-    -- instantiates predicate list associated to category extension/signature/attribute
-    -- using the parameter mapping information in variable mapping
+    -- instantiates predicate list associated to category 
+    -- extension/signature/attribute using the parameter mapping
+    -- information in variable mapping
     instantiatePredicate(pl: List Syntax, mapping: VTB): List Syntax ==
       [instantiateSyntax(p, mapping) for p in pl]
 
@@ -1353,7 +1449,8 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- called by the instantiation function below.
     instantiatePair(p: EXTP, mapping: VTB): EXTP ==
-      pair(instantiateExtension(first p, mapping), instantiatePredicate(second p, mapping))
+      pair(instantiateExtension(first p, mapping),_
+           instantiatePredicate(second p, mapping))
 
     -- instantiate both of the predicate and category extension 
     -- from a category extension list of a category constructor
@@ -1361,8 +1458,9 @@ ReductionAnalysisPackage(): Public == Private where
       l' := copy l
       [instantiatePair(e, mapping) for e in l']
 
-    -- by instantiate attribute list, we mean only to instantiate predicate of each attribute.
-    -- attribute itself is no more than an identifier, and does not need to be instantiated.
+    -- by instantiate attribute list, we mean only to instantiate 
+    -- predicate of each attribute.Attribute itself is no more than 
+    -- an identifier, and does not need to be instantiated.
     instantiateAttributeList(l: LAP, mapping: VTB): LAP ==
       l' := copy l
       [pair(first e, instantiatePredicate(second e, mapping)) for e in l']
@@ -1373,7 +1471,8 @@ ReductionAnalysisPackage(): Public == Private where
       getOperator(rightType)::Identifier = getOperator(leftType)::Identifier 
 
     -- This function evaluates one predicate of a predicate list
-    -- again each predicate is a term of a disjunctive normal form represented by the predicate list
+    -- again each predicate is a term of a disjunctive normal form 
+    -- represented by the predicate list
     evaluatePredicate(pred: Syntax, rightEnv: VTB): Boolean ==
       -- there are two main kinds of predicates:
       -- 1. trivial: true
@@ -1387,9 +1486,12 @@ ReductionAnalysisPackage(): Public == Private where
         r' := r::Syntax
         l := lhs pred'
         l' := l::Syntax
-        r case AttributeAst             => rightTypeHasLeftAttribute?(name(r::AttributeAst)::Syntax, l', rightEnv)   
-        r case SignatureAst             => rightTypeHasLeftSignature?(r', l', rightEnv)
-        isCategory?(r')$CheckAssumption => typeChecks?(r', rightEnv, l', rightEnv)
+        r case AttributeAst             =>
+          rightTypeHasLeftAttribute?(name(r::AttributeAst)::Syntax, l',rightEnv)   
+        r case SignatureAst             => 
+          rightTypeHasLeftSignature?(r', l', rightEnv)
+        isCategory?(r')$CheckAssumption => 
+          typeChecks?(r', rightEnv, l', rightEnv)
         userError "unexpected kind of right hand side in this has predicate"
       false
 
@@ -1397,7 +1499,8 @@ ReductionAnalysisPackage(): Public == Private where
     evaluateNontrivialPredicates(preds: List Syntax, rightEnv: VTB): Boolean ==
       -- evaluate each predicate in the predicate list
       -- since the predicates are orgnized in disjunctive normal form
-      -- we use laziness here, i.e. some predicate evaluates to false, we directly return false
+      -- we use laziness here, 
+      -- i.e. some predicate evaluates to false, we directly return false
       for pred in preds repeat
         not evaluatePredicate(pred, rightEnv) => return false
       true
@@ -1407,8 +1510,9 @@ ReductionAnalysisPackage(): Public == Private where
       (#preds = 1) and (first(preds)::Identifier = makeTrue()::Identifier)
 
     -- this function does static predicate evaluation
-    -- each category extension, functino declaration, or attribute in a category constructor data
-    -- is associated with a predicate list whose elements represent all componenets of a disjunctive normal form
+    -- each category extension, functino declaration, or attribute 
+    -- in a category constructor data is associated with a predicate 
+    -- list whose elements represent all componenets of a disjunctive normal form
     matchPredicate(preds: List Syntax, rightEnv: VTB): Boolean ==
       -- case 1: trivial predicate [true]
       trivialPredicate? preds => true
@@ -1416,9 +1520,11 @@ ReductionAnalysisPackage(): Public == Private where
       -- the function returns true when all predicates in the list evaluate to true
       evaluateNontrivialPredicates(preds, rightEnv)
 
-    -- this function will be called when predicate list of some category extension evaluates to true
-    -- it checks whether that category extension is leftType
-    matchExtension(ext: Syntax, rightEnv: VTB, leftType: Syntax, leftEnv: VTB): Boolean ==
+    -- this function will be called when predicate list of some 
+    -- category extension evaluates to true it checks whether that
+    -- category extension is leftType
+    matchExtension(ext: Syntax, rightEnv: VTB,_
+                   leftType: Syntax, leftEnv: VTB): Boolean ==
       not sameName?(leftType, ext)                => false
       not containTypeVariable?(leftType, leftEnv) => true
       for l in getOperands(leftType) for r in getOperands(ext) repeat
@@ -1427,20 +1533,24 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- This function checks whether category leftType is extList
     -- 1. we first statically evaluate the predicate of some category extension
-    -- 2. if 1 returns true, we further compare whether the category under the predicate equals leftType
-    searchExtensionList(leftType: Syntax, leftEnv: VTB, extList: LEXTP, rightEnv: VTB): Boolean ==
+    -- 2. if 1 returns true, we further compare whether the category 
+    -- under the predicate equals leftType
+    searchExtensionList(leftType: Syntax, leftEnv: VTB,_
+                        extList: LEXTP, rightEnv: VTB): Boolean ==
       -- look at each category extension in the extension list
       -- searching for category stored in leftType
       for ext in extList repeat
-        matchPredicate(second ext, rightEnv) and matchExtension(first ext, rightEnv, leftType, leftEnv) =>
+        matchPredicate(second ext, rightEnv) and_
+        matchExtension(first ext, rightEnv, leftType, leftEnv) =>
           return true
       false
-   
+
     -- this function searches whether there is an attribute which equals attr
     -- in the attribute list attl.
     searchAttributeList(attr: Syntax, attl: LAP, rightEnv: VTB): Boolean ==
       for att in attl repeat
-        matchPredicate(second att, rightEnv) and (first att = attr)=> return true
+        matchPredicate(second att, rightEnv) and (first att = attr) => 
+          return true
       false
 
     -- returns the constructor of a domain/category.
@@ -1458,21 +1568,26 @@ ReductionAnalysisPackage(): Public == Private where
       [first e for e in domAtts]     
 
     -- checks whether a domain rightType has attribute att
-    rightDomainHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+    rightDomainHasLeftAttribute?(att: Syntax, rightType: Syntax,_
+                                 rightEnv: VTB): Boolean ==
       attrl := attributesOfDomain(rightType)
       member?(att, attrl)
 
     -- recursively look into each category in a category extension list extl
     -- to examine whether there is one category has attribute att
-    recursiveSearchAttributeList(att: Syntax, extl: LEXTP, rightEnv: VTB): Boolean ==
+    recursiveSearchAttributeList(att: Syntax, extl: LEXTP,_
+                                 rightEnv: VTB): Boolean ==
       for ext in extl repeat
-        -- again we first examine the predicate, then recursively look at each qualified category
-        matchPredicate(second ext, rightEnv) and rightTypeHasLeftAttribute?(att, first ext, rightEnv) => 
+        -- again we first examine the predicate, then recursively 
+        -- look at each qualified category
+        matchPredicate(second ext, rightEnv) and_
+        rightTypeHasLeftAttribute?(att, first ext, rightEnv) => 
           return true
       false
 
     -- checks whether category rightType has attribute att
-    rightCategoryHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+    rightCategoryHasLeftAttribute?(att: Syntax, rightType: Syntax,_
+                                                   rightEnv: VTB): Boolean ==
       isNil?(rightType)$SyntaxHelper => false
       rightTypeName : Identifier := getOperator(rightType)::Identifier
       r := getCategoryConstructorData(rightTypeName)$CategoryExtensionCollection
@@ -1485,25 +1600,32 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- checks whether there is a category in a join syntax has attribute att
     -- or there is an attribute in the join syntax that equals att
-    rightJoinCategoriesHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+    rightJoinCategoriesHasLeftAttribute?(att: Syntax, rightType: Syntax,_
+                                                    rightEnv: VTB): Boolean ==
       -- look at each element in the join ast
       for c in getOperands rightType repeat
         -- if the element is an attribute, then directly compare their name
         (c' := c::SpadAst) case AttributeAst => 
           (name(c')::Syntax) = att => return true
           false
-        -- otherwise, the element is a category, we recursively examine whether the
-        -- category has the attribute
+        -- otherwise, the element is a category, 
+        -- we recursively examine whether the category has the attribute
         rightTypeHasLeftAttribute?(att, c, rightEnv) => return true
       false
 
     -- evaluates one has-predicate whose right hand side is an attribute
-    -- and left hand side is a domain/category/type variable/join of categories and attributes
-    rightTypeHasLeftAttribute?(att: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
-      isDomain?(rightType)$CheckAssumption   => rightDomainHasLeftAttribute?(att, rightType, rightEnv)
-      isCategory?(rightType)$CheckAssumption => rightCategoryHasLeftAttribute?(att, rightType, rightEnv)
-      isTypeVariable?(rightType, rightEnv)   => rightTypeHasLeftAttribute?(att, rightEnv.rightType, rightEnv)
-      isJoin?(rightType)$SyntaxHelper        => rightJoinCategoriesHasLeftAttribute?(att, rightType, rightEnv)
+    -- and left hand side is
+    -- a domain/category/type variable/join of categories and attributes
+    rightTypeHasLeftAttribute?(att: Syntax, rightType: Syntax,_
+                                                     rightEnv: VTB): Boolean ==
+      isDomain?(rightType)$CheckAssumption   => 
+        rightDomainHasLeftAttribute?(att, rightType, rightEnv)
+      isCategory?(rightType)$CheckAssumption => 
+        rightCategoryHasLeftAttribute?(att, rightType, rightEnv)
+      isTypeVariable?(rightType, rightEnv)   => 
+        rightTypeHasLeftAttribute?(att, rightEnv.rightType, rightEnv)
+      isJoin?(rightType)$SyntaxHelper        => 
+        rightJoinCategoriesHasLeftAttribute?(att, rightType, rightEnv)
       userError "unexpected cases in rightTypeHasLeftAttribute?"
 
     -- This function instantiates the source of the signature syntax
@@ -1511,7 +1633,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- 1. replace % with the current domain domVar
     -- 2. replace each parameter used in the category definition 
     -- with the actual category constructor parameter
-    instantiateSourceOfSignature(src: List Syntax, mapping: VTB, domVar: Syntax): List Syntax ==
+    instantiateSourceOfSignature(src: List Syntax,_
+                                 mapping: VTB, domVar: Syntax): List Syntax ==
       res : List Syntax := []
       for s in src repeat
         s' := instantiateSyntax(s, mapping)
@@ -1524,7 +1647,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- 1. replace % with the current domain domVar
     -- 2. replace each parameter used in the category definition 
     -- with the actual category constructor parameter
-    instantiateTargetOfSignature(tar: Syntax, mapping: VTB, domVar: Syntax): Syntax ==
+    instantiateTargetOfSignature(tar: Syntax,_
+                                 mapping: VTB, domVar: Syntax): Syntax ==
       s' := instantiateSyntax(tar, mapping)
       s' := instantiatePercentages(domVar, s')
       s'
@@ -1534,7 +1658,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- 1. replace % with the current domain domVar
     -- 2. replace each parameter used in the category definition 
     -- with the actual category constructor parameter
-    instantiateSignatureSyntax(sig: Syntax, mapping: VTB, domVar: Syntax): Syntax ==
+    instantiateSignatureSyntax(sig: Syntax, mapping: VTB,_
+                                            domVar: Syntax): Syntax ==
       -- bug in signature function on handling 0 and 1
       compound?(first(getOperands(sig))) => sig
       sig' := signature(sig::SpadAst::SignatureAst)
@@ -1551,7 +1676,8 @@ ReductionAnalysisPackage(): Public == Private where
     --	1. the predicate list associated to a signature
     --  2. the signature itself
     instantiateSignaturePair(p: EXTP, mapping: VTB, domVar: Syntax): EXTP ==
-      pair(instantiateSignatureSyntax(first p, mapping, domVar), instantiatePredicate(second p, mapping))
+      pair(instantiateSignatureSyntax(first p, mapping, domVar),_
+           instantiatePredicate(second p, mapping))
 
     -- instantiate each signature in a signature list of some category
     instantiateSignatureList(l: LSP, mapping: VTB, domVar: Syntax): LSP ==
@@ -1561,8 +1687,9 @@ ReductionAnalysisPackage(): Public == Private where
     -- checks whether the two signatures are equivalent
     sameSignature?(l: Syntax, r: Syntax): Boolean ==
       -- the following condition skips the function declaration for 0 and 1, 
-      -- it's a workround for the nasty bug on generating signature syntax for 0 and 1
-      compound?(first(getOperands(l))) or compound?(first(getOperands(r))) => false
+      -- it's a workround for the bug on generating signature syntax for 0 and 1
+      compound?(first(getOperands(l))) or compound?(first(getOperands(r))) => 
+        false
       l' := l::SpadAst::SignatureAst
       r' := r::SpadAst::SignatureAst
       name(l') = name(r') and (signature l') = (signature r')
@@ -1577,17 +1704,22 @@ ReductionAnalysisPackage(): Public == Private where
           return true
       false
 
-    -- recursively look into each category, looking for the function declaration decl
-    recursiveSearchSignatureList(decl: Syntax, extl: LEXTP, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- recursively look into each category, looking 
+    -- for the function declaration decl
+    recursiveSearchSignatureList(decl: Syntax, extl: LEXTP, rightType: Syntax,_
+                                                     rightEnv: VTB): Boolean ==
       for ext in extl repeat
         matchPredicate(second ext, rightEnv) and_
         rightDomainHasLeftSignature?(decl, first ext, rightType, rightEnv) => 
           return true
       false
 
-    -- this function instantaite a single category cat with domain sig (whose type is cat), then looks for
-    -- declaration decl in the instantiated declaration list from the operation list of the category constructor
-    rightDomainHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- this function instantaite a single category cat with domain 
+    -- sig (whose type is cat), then looks for declaration decl in the 
+    -- instantiated declaration list from the operation list of 
+    -- the category constructor
+    rightDomainHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax,_
+                                 rightEnv: VTB): Boolean ==
       catName := getOperator(cat)::Identifier
       rec := getCategoryConstructorData(catName)$CategoryExtensionCollection
       m := findMapping(rec.catpars, cat)
@@ -1596,45 +1728,63 @@ ReductionAnalysisPackage(): Public == Private where
       searchSignatureList(decl, decll, rightEnv) => true
       recursiveSearchSignatureList(decl, extl, rightType, rightEnv)
 
-    -- this function is invoked when the type of domain rightType is a join of categories and attributes
-    -- it instantiates each category in the join syntax with the domain, and checks about the membership of the
+    -- this function is invoked when the type of domain rightType is
+    -- a join of categories and attributes it instantiates each category 
+    -- in the join syntax with the domain, and checks about the membership of the
     -- function declaration 
-    rightJoinCategoriesHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
+    rightJoinCategoriesHasLeftSignature?(decl: Syntax, cat: Syntax,_
+                                  rightType: Syntax, rightEnv: VTB): Boolean ==
       for c in getOperands cat | not((c::SpadAst) case AttributeAst) repeat
-        rightDomainVariableHasLeftSignature?(decl, c, rightType, rightEnv) => return true
+        rightDomainVariableHasLeftSignature?(decl, c, rightType, rightEnv) => 
+          return true
       false
 
-    -- this function checks whether some domain(variable) rightType implementing category cat 
-    -- has some function declaration decl
-    rightDomainVariableHasLeftSignature?(decl: Syntax, cat: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
-      isJoin?(cat)$SyntaxHelper     => rightJoinCategoriesHasLeftSignature?(decl, cat, rightType, rightEnv)
-      isCategory?(cat)$SyntaxHelper => rightDomainHasLeftSignature?(decl, cat, rightType, rightEnv)
+    -- this function checks whether some domain(variable) 
+    -- rightType implementing category cat  has some function declaration decl
+    rightDomainVariableHasLeftSignature?(decl: Syntax, cat: Syntax,_
+                                  rightType: Syntax, rightEnv: VTB): Boolean ==
+      isJoin?(cat)$SyntaxHelper     => 
+        rightJoinCategoriesHasLeftSignature?(decl, cat, rightType, rightEnv)
+      isCategory?(cat)$SyntaxHelper => 
+        rightDomainHasLeftSignature?(decl, cat, rightType, rightEnv)
       false
 
-    -- this function checks whether the type rightType has function declaration decl
-    rightTypeHasLeftSignature?(decl: Syntax, rightType: Syntax, rightEnv: VTB): Boolean ==
-      isTypeVariable?(rightType, rightEnv) => rightDomainVariableHasLeftSignature?(decl, rightEnv.rightType, rightType, rightEnv)
+    -- this function checks whether the type rightType 
+    -- has function declaration decl
+    rightTypeHasLeftSignature?(decl: Syntax, rightType: Syntax,_
+                                             rightEnv: VTB): Boolean ==
+      isTypeVariable?(rightType, rightEnv) => 
+        rightDomainVariableHasLeftSignature?_
+          (decl, rightEnv.rightType, rightType, rightEnv)
       userError "unexpected cases in rightTypeHasLeftSignature?"
 
-    -- recursively goes into each qualified category extension to see whether any one of them has category leftType
-    -- by qualified we mean the predicate list associated to the category extension evaluates to true
-    recursiveSearchExtensionList(leftType: Syntax, leftEnv: VTB, extl: LEXTP, rightEnv: VTB): Boolean ==
+    -- recursively goes into each qualified category extension to see 
+    -- whether any one of them has category leftType by qualified we mean 
+    -- the predicate list associated to the category extension evaluates to true
+    recursiveSearchExtensionList(leftType: Syntax, leftEnv: VTB, extl: LEXTP,_
+                                 rightEnv: VTB): Boolean ==
       for ext in extl repeat
         matchPredicate(second ext, rightEnv) and_ 
-        rightCategoryHasLeftCategory?(leftType, leftEnv, first ext, rightEnv) => return true
+        rightCategoryHasLeftCategory?(leftType, leftEnv, first ext, rightEnv)=> 
+          return true
       false
 
-    -- this function checks whether there's one category in the join syntax has	category leftType
-    rightJoinCategoriesHasLeftCategory?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- this function checks whether there's one category 
+    -- in the join syntax has	category leftType
+    rightJoinCategoriesHasLeftCategory?(leftType: Syntax, leftEnv: VTB,_
+                                  rightType: Syntax, rightEnv: VTB): Boolean ==
       -- obtain category extensions and attributes in a join ast
       catsAndAtts := getOperands rightType
       -- only search those category extensions in Join ast, skipping attributes
       for c in catsAndAtts | not((c::SpadAst) case AttributeAst) repeat
-        rightCategoryHasLeftCategory?(leftType, leftEnv, c, rightEnv) => return true
+        rightCategoryHasLeftCategory?(leftType, leftEnv, c, rightEnv) => 
+          return true
       false
 
-    -- this function finds out whether category rightType directly or indirectly extends category leftType
-    foundInCategoryHierarchy?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- this function finds out whether category rightType directly or 
+    -- indirectly extends category leftType
+    foundInCategoryHierarchy?(leftType: Syntax, leftEnv: VTB,_
+                              rightType: Syntax, rightEnv: VTB): Boolean ==
       rightTypeName := getOperator(rightType)::Identifier
       -- obtain the category constructor data for rightType
       rec := getCategoryConstructorData(rightTypeName)$CategoryExtensionCollection
@@ -1643,13 +1793,15 @@ ReductionAnalysisPackage(): Public == Private where
       extl := instantiateExtensionList(rec.extensions, m)
       -- search whether rightType directly extends leftType
       searchExtensionList(leftType, leftEnv, extl, rightEnv) => true
-      -- if rightType doesn't directly extends, we further check whether it indirectly extends leftType
-      -- by recursively looking into each category rightType directly extends.
+      -- if rightType doesn't directly extends, we further check 
+      -- whether it indirectly extends leftType by recursively looking 
+      -- into each category rightType directly extends.
       recursiveSearchExtensionList(leftType, leftEnv, extl, rightEnv)
 
-   -- this function handles the syntax where a category joined with some attribute 
-   -- and checks whether such type syntax has some attribute
-    handleCategoryWithAttribute(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+   -- this function handles the syntax where a category joined 
+   -- with some attribute and checks whether such type syntax has some attribute
+    handleCategoryWithAttribute(leftType: Syntax, leftEnv: VTB,_
+                                rightType: Syntax, rightEnv: VTB): Boolean ==
       rightType' := (rightType::SpadAst)::CategoryAst
       bd := body(rightType')
       bd' := [e::Syntax for e in bd]
@@ -1657,19 +1809,24 @@ ReductionAnalysisPackage(): Public == Private where
       rightCategoryHasLeftCategory?(leftType, leftEnv, joinType, rightEnv)
 
     -- this function checks whether the category rightType has category leftType
-    -- e.g., this handles query such as PolynomialCategory(R, E, VarSet) has AbelianMonoid
-    rightCategoryHasLeftCategory?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- e.g., this handles query such as 
+    -- PolynomialCategory(R, E, VarSet) has AbelianMonoid
+    rightCategoryHasLeftCategory?(leftType: Syntax, leftEnv: VTB,_
+                                  rightType: Syntax, rightEnv: VTB): Boolean ==
       -- case 1: the rightType is nil
       isNil?(rightType)$SyntaxHelper  => false
-      -- case 2: the leftType is Type, we directly returns, this is an optimization
+      -- case 2: the leftType is Type, we directly returns,it's an optimization
       isType?(leftType)$SyntaxHelper => true
       -- case 3: the two categories are equivalent
       rightType = leftType            => true
       -- case 4: rightType is a join syntax of categories and attributes
-      isJoin?(rightType)$SyntaxHelper => rightJoinCategoriesHasLeftCategory?(leftType, leftEnv, rightType, rightEnv)
+      isJoin?(rightType)$SyntaxHelper => 
+        rightJoinCategoriesHasLeftCategory?(leftType, leftEnv, rightType, rightEnv)
       -- case 5: rightType is a list of attribute wrapped as a CategoryAst
-      -- for instance, this happens when we see the following sytnax: R: Ring with commutative("*") 
-      (rightType::SpadAst) case CategoryAst => handleCategoryWithAttribute(leftType, leftEnv, rightType, rightEnv)
+      -- for instance, this happens when we see the following sytnax: 
+      -- R: Ring with commutative("*") 
+      (rightType::SpadAst) case CategoryAst => 
+        handleCategoryWithAttribute(leftType, leftEnv, rightType, rightEnv)
       -- case 6: rightType is a normal category
       foundInCategoryHierarchy?(leftType, leftEnv, rightType, rightEnv)
 
@@ -1682,7 +1839,8 @@ ReductionAnalysisPackage(): Public == Private where
       empty? oprs => s
       s' := s
       for i in 1..#oprs repeat
-        s' := replace(makeLocalNumberSlot(i)$SyntaxHelper, s', oprs.i)$SyntaxHelper
+        s' := replace(makeLocalNumberSlot(i)$SyntaxHelper,_
+                      s', oprs.i)$SyntaxHelper
       s'
  
     -- Record domain constructor is not supported via functorData
@@ -1700,48 +1858,63 @@ ReductionAnalysisPackage(): Public == Private where
       ftorData : FunctorData := functorData(domCtor)
       domTemp : DomainTemplate := domainTemplate(ftorData)
       domCats : List Syntax := convert(categories(ftorData)$FunctorData)
-      -- replace number slots in category extensions using elements in domain template
+      -- replace number slots in category extensions using 
+      -- elements in domain template
       l := [replace(c, domTemp)$SyntaxHelper for c in domCats]
       pars := getOperands(dom)
-      -- further replace local# slots with the actual parameters of constructor dom
+      -- further replace local# slots with the actual 
+      -- parameters of constructor dom
       [replaceLocal(e, pars) for e in l]
 
     -- this function checks domain rightType has category leftType
     -- e.g., this handles query such as Polynomial(R) has AbelianMonoid
-    rightDomainHasLeftCategory?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
-      isType?(leftType)$SyntaxHelper => true  -- an optimization for saving query time
+    rightDomainHasLeftCategory?(leftType: Syntax, leftEnv: VTB,_
+                                rightType: Syntax, rightEnv: VTB): Boolean ==
+      -- an optimization for saving query time
+      isType?(leftType)$SyntaxHelper => true  
       categoryExtensionList := getInstantiatedCategoryExtensionList(rightType)
       member?(leftType, categoryExtensionList)
 
-    -- this function typechecks each domain parameter against domain parameter type in the assumption 
-    typeCheckDomainParameters(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- this function typechecks each domain parameter against 
+    -- domain parameter type in the assumption 
+    typeCheckDomainParameters(leftType: Syntax, leftEnv: VTB,_
+                              rightType: Syntax, rightEnv: VTB): Boolean ==
       leftPars := getOperands(leftType)
       rightPars := getOperands(rightType)
       for leftPar in leftPars for rightPar in rightPars repeat
-        not typeChecks?(leftPar, leftEnv, rightPar, rightEnv) => return false
+        not typeChecks?(leftPar, leftEnv, rightPar, rightEnv) => 
+          return false
       true
 
     -- this function checks whether an input/output domain of a reduction operator
     -- matches an input/output domain in the assumption operator
-    domainVsDomain(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+    domainVsDomain(leftType: Syntax, leftEnv: VTB,_
+                   rightType: Syntax, rightEnv: VTB): Boolean ==
       not sameName?(leftType, rightType) => false
       typeCheckDomainParameters(leftType, leftEnv, rightType, rightEnv)
 
-    -- this function checks whether the signature of a reduction operator satisfies 
-    -- the type requirement specified in a user assumption
-    -- here leftType is the input/output type of the binary operator from assumption
-    -- rightType is the input/output type of the binary operator from extracted reduction
-    typeChecks?(leftType: Syntax, leftEnv: VTB, rightType: Syntax, rightEnv: VTB): Boolean ==
+    -- this function checks whether the signature of a reduction operator 
+    -- satisfies the type requirement specified in a user assumption
+    -- here leftType is the input/output type of the binary operator 
+    -- from assumption rightType is the input/output type of the binary
+    -- operator from extracted reduction
+    typeChecks?(leftType: Syntax, leftEnv: VTB,_
+                rightType: Syntax, rightEnv: VTB): Boolean ==
       -- case 1: basic assumption vs a specific reduction operator, 
       -- i.e., input and output types are domains
-      isDomain?(leftType)$CheckAssumption and isDomain?(rightType)$CheckAssumption =>
+      isDomain?(leftType)$CheckAssumption and_
+      isDomain?(rightType)$CheckAssumption =>
         domainVsDomain(leftType, leftEnv, rightType, rightEnv)
       -- case 2: generic assumption vs a specific reduction operator
-      isTypeVariable?(leftType, leftEnv) and isDomain?(rightType)$CheckAssumption => 
-        rightDomainHasLeftCategory?(leftEnv.leftType, leftEnv, rightType, rightEnv)
+      isTypeVariable?(leftType, leftEnv) and_
+      isDomain?(rightType)$CheckAssumption => 
+        rightDomainHasLeftCategory?(leftEnv.leftType, leftEnv,_
+                                    rightType, rightEnv)
       -- case 3: generic assumption vs a generic reduction operator
-      isTypeVariable?(leftType, leftEnv) and isTypeVariable?(rightType, rightEnv) =>
-        rightCategoryHasLeftCategory?(leftEnv.leftType, leftEnv, rightEnv.rightType, rightEnv)
+      isTypeVariable?(leftType, leftEnv) and_
+      isTypeVariable?(rightType, rightEnv) =>
+        rightCategoryHasLeftCategory?(leftEnv.leftType, leftEnv,_
+                                      rightEnv.rightType, rightEnv)
       false
 
     -- check whether the input and output types of a reduction operator
@@ -1750,9 +1923,12 @@ ReductionAnalysisPackage(): Public == Private where
       signatureFromAssumption := op.signature
       signatureFromReduction  := rec.signature
       -- compare each input/output types of the two operators
-      for left in concat(source signatureFromAssumption, target signatureFromAssumption)_
-      for right in concat(source signatureFromReduction, target signatureFromReduction) repeat
-        not typeChecks?(left, op.tenv, right, rec.tenv) => return false
+      for left in concat(source signatureFromAssumption,_
+                         target signatureFromAssumption)_
+      for right in concat(source signatureFromReduction,_
+                          target signatureFromReduction) repeat
+        not typeChecks?(left, op.tenv, right, rec.tenv) => 
+          return false
       true
 
     -- helper function for checking the membership of operator records
@@ -1761,9 +1937,11 @@ ReductionAnalysisPackage(): Public == Private where
     isInList?(rec: TCR, assocops: List TCR): Boolean ==
       for r in assocops repeat
         rec.funname = r.funname =>
-          -- if the signature of the reduction operator does not contain type variable
+          -- if the signature of the reduction operator 
+          -- does not contain type variable
           empty?(r.tenv) => rec.signature = r.signature  => return true
-          -- if the signature contains type variable, we use the advanced type checking algorithm
+          -- if the signature contains type variable, we use the 
+          -- advanced type checking algorithm
           typeMatch?(r, rec) => return true
       false
 
@@ -1782,15 +1960,18 @@ ReductionAnalysisPackage(): Public == Private where
     --macro ZREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, accumulations: List YREC)
     --macro TCR    == Record(funname: Identifier, signature: Signature, tenv: VTB)
     --macro OPREC  == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: VTB)
-    -- creates a database view of the format of recording storing associative operator information
-    -- the two formats are respectively defined in macros OPREC and TCR
-    formatConverterTCR(rs: List OPREC): List TCR == [[r.funname, r.signature, r.tenv] for r in rs]
+    -- creates a database view of the format of recording storing 
+    -- associative operator information the two formats are respectively
+    -- defined in macros OPREC and TCR
+    formatConverterTCR(rs: List OPREC): List TCR == 
+      [[r.funname, r.signature, r.tenv] for r in rs]
 
     -- examine whether all the accumulation statements in an accumulation loop 
     -- are using user specified associative operators so that 
     -- the whole loop is fully parallelizable
     isFullyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
-      -- if the typechecker can not obtain the any signature of operator used in the loop
+      -- if the typechecker can not obtain the any 
+      -- signature of operator used in the loop
       -- we return false, meaning "unknown"
       empty?(l.signaturelist) => false
       assocops' := formatConverterTCR assocops
@@ -1800,8 +1981,8 @@ ReductionAnalysisPackage(): Public == Private where
         not matchesOne?(rec, assocops') => return false
       true
 
-    -- this function examines whether there's at least one accumulation statement in an accumulation loop
-    -- has associativity.
+    -- this function examines whether there's at least one 
+    -- accumulation statement in an accumulation loop has associativity.
     isPartiallyParallelizable?(l: YREC, assocops: List OPREC): Boolean ==
       empty?(l.signaturelist) => false
       assocops' := formatConverterTCR assocops
@@ -1814,7 +1995,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- their reduction operators' algebraic properties:
     -- 1. fully parallel accumulation loop
     -- 2. partially parallel accumulation loop
-    extractParallelizableReductionLoop(assocops: List OPREC, recs: List ZREC): Pair(List ZREC, List ZREC)==
+    extractParallelizableReductionLoop(assocops: List OPREC,_
+                                 recs: List ZREC): Pair(List ZREC, List ZREC)==
       full :   List ZREC := []
       partial: List ZREC := []
       for rec in recs repeat
@@ -1836,8 +2018,10 @@ ReductionAnalysisPackage(): Public == Private where
 
     --macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature)
     --macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
-    -- extract parallel reduce function calls whose reduction operator is associative
-    extractParallelizableReduceCall(assocops: List OPREC, recs: List RREC): List RREC ==
+    -- extract parallel reduce function calls whose  
+    -- reduction operator is associative
+    extractParallelizableReduceCall(assocops: List OPREC,_
+                                    recs: List RREC): List RREC ==
       result : List RREC := []
       assocops' := formatConverterTCR assocops
       for rec in recs repeat
@@ -1853,7 +2037,8 @@ ReductionAnalysisPackage(): Public == Private where
     --macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature)
     --macro RFORM  == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reduceforms: List REDF)
     -- extract parallel reduce forms whose operators are associative
-    extractParallelizableReduceForm(assocops: List OPREC, recs: List RFORM): List RFORM ==
+    extractParallelizableReduceForm(assocops: List OPREC,_
+                                    recs: List RFORM): List RFORM ==
       result : List RFORM := []
       assocops' := formatConverterTCR assocops
       for rec in recs repeat
@@ -1866,8 +2051,10 @@ ReductionAnalysisPackage(): Public == Private where
         not empty?(newrec.reduceforms) => result := concat(result, newrec)
       result
 
-    -- prints out all the interesting statistics obtained from reduction detector
-    printStatistics(option: Integer, useassumption: Integer, associativeOperatorList: List OPREC): Void ==
+    -- prints out all the interesting statistics 
+    -- obtained from reduction detector
+    printStatistics(option: Integer, useassumption: Integer,_
+                    associativeOperatorList: List OPREC): Void ==
       -- first print general statistics on category/package/domain numbers
       viewStatistics()
       useassumption = 0 =>
@@ -1878,10 +2065,11 @@ ReductionAnalysisPackage(): Public == Private where
             print("Nested loop #:"::OutputForm)
           print(aclandnlcounter::OutputForm)
           print("Average loop depth:"::OutputForm)
-          averageDepth:DoubleFloat:=convert(reduce(_+$Integer, aclLoopDepths)/aclandnlcounter)$Fraction(Integer)    
+          averageDepth:DoubleFloat:= convert(reduce(_+$Integer, aclLoopDepths)_
+                                     /aclandnlcounter)$Fraction(Integer)    
           print(averageDepth::OutputForm)
       useassumption = 1 => 
-        print("Associative Operator database extracted form user assumption:"::OutputForm)
+        print("Associative Operators form user assumption:"::OutputForm)
         print(associativeOperatorList::OutputForm)
         (option = 0) =>
           print("Partial parallelizable loop #:"::OutputForm)
@@ -1904,43 +2092,56 @@ ReductionAnalysisPackage(): Public == Private where
         collectAssociativeOperator()$CheckAssumption
       []
     
-    -- obtain and save both fully parallel and partially parallel accumulation loops
-    extractAndSaveParallelAccumulationLoop(associativeOperatorList: List OPREC): Void ==
-      r : Pair(List ZREC, List ZREC)  := extractParallelizableReductionLoop(associativeOperatorList, accumulationLoopList)
+    -- obtain and save both fully parallel and 
+    -- partially parallel accumulation loops
+    extractAndSaveParallelAccumulationLoop_
+                                 (associativeOperatorList: List OPREC): Void ==
+      r : Pair(List ZREC, List ZREC)  :=_
+        extractParallelizableReductionLoop(associativeOperatorList,_
+                                           accumulationLoopList)
       parallelReductionLoops          := first r
       partiallyParallelReductionLoops := second r
       writeZRecordToFile(parallelReductionLoops, "parallel-reduce-loops")
-      print("Results for fully parallelizable reduction loops have been written into parallel-reduce-loops.txt"::OutputForm)
-      writeZRecordToFile(partiallyParallelReductionLoops, "partial-parallel-reduce-loops")
-      print("Results for partial parallelizable reduction loops have been written into partial-parallel-reduce-loops.txt"::OutputForm)
+      print("Results for fully parallelizable reduction loops have_
+             been written into parallel-reduce-loops.txt"::OutputForm)
+      writeZRecordToFile(partiallyParallelReductionLoops,_
+                         "partial-parallel-reduce-loops")
+      print("Results for partial parallelizable reduction loops have_
+             been written into partial-parallel-reduce-loops.txt"::OutputForm)
 
-    -- obtain and save all the accumulation loops (parallel, sequential, and partially parallel)
+    -- obtain and save all the accumulation loops 
+    -- i.e., parallel, sequential, and partially parallel
     saveAccumulationLoopsToFile(): Void == 
       writeZRecordToFile(accumulationLoopList, "reduce-loops")
-      print("Results for reduction loops have been written into reduce-loops.txt"::OutputForm)
+      print("Results for reduction loops have been_
+             written into reduce-loops.txt"::OutputForm)
 
     -- obtain and save all the reduce function calls
     saveReduceFunctionsToFile(): Void ==
       writeRRecordToFile(reduceList, "reduce-functions")
-      print("Results for reduce function applications have been written into reduce-functions.txt"::OutputForm)
+      print("Results for reduce function applications have been_
+             written into reduce-functions.txt"::OutputForm)
       
     -- obtain and save all reduce forms
     saveRediceFormsToFile(): Void ==
       writeRFORMToFile(rformList, "reduce-forms")
-      print("Results for reduction forms have been written into reduce-forms.txt"::OutputForm)
+      print("Results for reduction forms have been_
+             written into reduce-forms.txt"::OutputForm)
 
     -- obtain and save affine control loops
     saveAffineControlLoopsToFile(): Void ==
       writeARecordToFile(aclList, "acl-nests")
       print("ACL loop nests have been written into acl-nests.txt"::OutputForm)
 
-    -- obtain and save all loop nests, i.e. any loop whose depth is larger than 1
+    -- obtain and save all loop nests, 
+    -- i.e. any loop whose depth is larger than 1
     saveLoopNestsToFile(): Void ==
       writeARecordToFile(nlList, "loop-nests")
       print("All loop nests have been written into loop-nests.txt"::OutputForm)
 
     -- obtain and save parallel reduce function calls
-    extractAndSaveParallelReduceFunction(associativeOperatorList: List OPREC): Void() ==
+    extractAndSaveParallelReduceFunction_
+                               (associativeOperatorList: List OPREC): Void() ==
       parallelReduceList :=_ 
         extractParallelizableReduceCall(associativeOperatorList, reduceList)
       writeRRecordToFile(parallelReduceList, "parallel-reduce-functions")
@@ -1948,7 +2149,8 @@ ReductionAnalysisPackage(): Public == Private where
       been written into parallel-reduce-functions.txt"::OutputForm)
 
     -- obtain and save parallel reduce forms
-    extractAndSaveParallelReduceForm(associativeOperatorList: List OPREC): Void() ==
+    extractAndSaveParallelReduceForm_
+                               (associativeOperatorList: List OPREC): Void() ==
       parallelReduceForms :=_ 
         extractParallelizableReduceForm(associativeOperatorList, rformList)
       writeRFORMToFile(parallelReduceForms, "parallel-reduce-forms")
@@ -1971,7 +2173,7 @@ ReductionAnalysisPackage(): Public == Private where
           extractAndSaveParallelReduceForm(associativeOperatorList)
       option = 2 => saveAffineControlLoopsToFile()
       option = 3 => saveLoopNestsToFile()
-      userError "Please read the documentation to provide correct analyze option!"   
+      userError "Illegal analysis option!"   
     
     -- main entry of reduction detector
     -- parameter option:
@@ -1984,7 +2186,8 @@ ReductionAnalysisPackage(): Public == Private where
     -- 1: use user's assumption for extracting parallel reduction
     analyze(option, useassumption) == 
       -- initilization
-      associativeOperatorList : List OPREC := initialization(option, useassumption)
+      associativeOperatorList : List OPREC :=_
+        initialization(option, useassumption)
       -- start analyzing all files to extract accumulation loops and reduce 
       analyzeAllFiles()
       -- filters analysis results, e.g., extracting parallel reductions
