@@ -36,6 +36,7 @@ LoopAnalysis(): Public == Private where
     identifyAccumulationLoopFromDefinitionBody: DefinitionAst -> Pair(Identifier, ACC)
       ++ identifies all the accumulation loops in a function definition
       ++ this function is called by the library analysis function.
+    identifyAffineControlLoop: (SpadAst, VTB) -> ACC 
     identifyAffineControlLoop0: DefinitionAst -> Pair(Identifier, ACC)
     identifyAffineControlLoop2: (RepeatAst, List Identifier, List Identifier, VTB) -> Boolean
     searchForAccumulationVariable: (Syntax, Syntax) -> Pair(Integer, List Syntax)
@@ -362,48 +363,54 @@ LoopAnalysis(): Public == Private where
         listWithin?(vars, condition(s)::Syntax)
       userError "unexpected body of the verified repeat-if syntax"
 
+    verifyAtomicLoopBody(r: RepeatAst, p: Pair(Boolean, List LetAst), its: List SpadAst, gv: VTB): ACC ==
+      lv : VTB := collectLocalVariableofLoop(second p, gv)
+      verifyReduction(its, second p, gv, lv) =>
+        reductionVariableList := concat(reductionVariableList, [reductionVariableListInThenBranch])
+        [r]
+      []
+
+    -- verify whether the statements from each branch either form an accumulation loop
+    -- or a sequence of accumulation statements
+    -- this handles the accumulation loop whose body has if statement
+    -- e.g. for i in 1..10 repeat
+    --        even? i => x := x+i
+    --        x := x + 1
+    verifyLoopWithIfInside(r: RepeatAst, q: Pair(Boolean, Pair(List LetAst, List LetAst)), its: List SpadAst, gv: VTB): ACC==
+      gv' : VTB := collectVariableFromIfCondition(body r, copy gv)
+      thenList := first second q
+      elseList := second second q
+      lvThen  : VTB := collectLocalVariableofLoop(thenList, gv')
+      lvElse  : VTB := collectLocalVariableofLoop(elseList, gv')
+      verifyReduction(its, thenList, gv', lvThen) and_
+      verifyReduction(its, elseList, gv', lvElse) and_
+      not withInCondition?(thenList, elseList, body r) =>
+        reductionVariableList := concat(reductionVariableList,_
+          [concat(reductionVariableListInThenBranch, reductionVariableListInElseBranch)])
+        [r]
+      []
+
+    -- collect accumulation loop from repeat ast
+    -- i.e. to verify whether a repeatAst has the canonical form
     identifyAccumulationLoopFromRepeat(r: RepeatAst, gv: VTB): ACC ==
-      result : ACC := []
-      not empty?(iterators(r)) => 
-        its := iterators(r)
+      not empty?(its := iterators(r)) => 
         it := first its
         -- collect the global variables from the loop induction variables
         -- in the loop iterators
         gv := collectLoopInductionVariable(its, gv)
-        -- if this is a while loop
-        -- we don't handle reduction implemented in the while loop right now.
+        -- if this is a while loop, the loop is not qualified, 
+        -- and we further search its body
         it case WhileAst => 
-          result := concat(result, identifyAccumulationLoopFromStatement(body(r), copy gv))
+          identifyAccumulationLoopFromStatement(body r, copy gv)
         -- if this is a for loop, and only contains let statement
         reductionVariableListInThenBranch := []
         reductionVariableListInElseBranch := []
-
-        first(p := letOnly? r) => 
-          lv : VTB := collectLocalVariableofLoop(second p, gv)
-          verifyReduction(its, second p, gv, lv) =>
-          --not verifyReduction(its, second p, gv, lv) =>
-            reductionVariableList := concat(reductionVariableList, [reductionVariableListInThenBranch])
-            result := concat(result, [r])
-          result := concat(result, [])
-
-        first(q := ifOnly? r) =>
-          gv' : VTB := collectVariableFromIfCondition(body r, copy gv)        
-          thenList := first second q
-          elseList := second second q
-          lvThen  : VTB := collectLocalVariableofLoop(thenList, gv')
-          lvElse  : VTB := collectLocalVariableofLoop(elseList, gv')
-          verifyReduction(its, thenList, gv', lvThen) and_
-          verifyReduction(its, elseList, gv', lvElse) and_
-          not withInCondition?(thenList, elseList, body r) =>
-            reductionVariableList := concat(reductionVariableList, [concat(reductionVariableListInThenBranch, reductionVariableListInElseBranch)])
-            result := concat(result, [r])
-          result := concat(result, [])
-      -- if this is a for loop, and is a mix, then recur
-        result := concat(result, identifyAccumulationLoopFromStatement(body r, copy gv))
-        result
-
-      result := concat(result, identifyAccumulationLoopFromStatement(body r, copy gv))
-      result
+        first(p := letOnly? r) => verifyAtomicLoopBody(r, p, its, gv)
+        first(q := ifOnly? r) => verifyLoopWithIfInside(r, q, its, gv)
+        -- if this is a for loop whose body is a mix of many kinds of statement
+        -- we recursively examine the body.
+        identifyAccumulationLoopFromStatement(body r, copy gv)
+      identifyAccumulationLoopFromStatement(body r, copy gv)
 
     forLoopWithStep?(r: RepeatAst): Boolean ==
       iters := iterators(r)
@@ -770,6 +777,7 @@ LoopAnalysis(): Public == Private where
       not checkInvariance(concat(loopCounters, boundParameters), r) => false
       verifyStaticControlLoopBody(body r, loopCounters, boundParameters, gv)
 
+    
     identifyAffineControlLoop2(r: RepeatAst, loopCounters: List Identifier,_
                          boundParameters: List Identifier, gv: VTB): Boolean ==
       forLoopWithStep?(r)  => 
@@ -844,11 +852,45 @@ LoopAnalysis(): Public == Private where
         identifyAccumulationLoopFromExit(s, copy gv)
       []
 
+    -- collect affine control loop from a sequence statement
+    identifyAffineControlLoopFromSequence(s: SpadAst, gv: VTB): ACC ==
+      result : ACC := []
+      bs := body(s::Syntax::SequenceAst)
+      for b in bs repeat
+        result := concat(result, identifyAffineControlLoop(b, copy gv))
+      result
+
+    -- collect affine control loop from a repeat ast
+    identifyAffineControlLoopFromRepeat(s: SpadAst, gv: VTB): ACC ==
+      s' := s::Syntax::RepeatAst
+      option = 3 =>
+        getLoopDepth(s') > 1 => [s']
+        []
+      identifyAffineControlLoop2(s', [], [], copy gv)_
+      and containLoop?(body(s')) => [s']
+      gv' := updateGlobalVariableTableWithLoopCounter(s', copy gv)
+      identifyAffineControlLoop(body s', gv')
+
+    -- collect affine control loop from if statement
+    identifyAffineControlLoopFromIf(s: SpadAst, gv: VTB): ACC ==
+      result : ACC := []
+      thBranch := thenBranch(s::Syntax::IfAst)
+      elBranch := elseBranch(s::Syntax::IfAst)
+      if compound?(thBranch::Syntax) then
+        result := concat(result, identifyAffineControlLoop(thBranch, copy gv))
+      if compound?(elBranch::Syntax) then
+        result := concat(result, identifyAffineControlLoop(elBranch, copy gv))
+      result
+
+    -- collect affine control loop from exit statement
+    identifyAffineControlLoopFromExit(s: SpadAst, gv: VTB): ACC ==
+      e := expression(s::Syntax::ExitAst)
+      identifyAffineControlLoop(e, copy gv)
+
     -- Traverse each statement in a definition body,
     -- collecting affine control loop from each statement
     identifyAffineControlLoop(s: SpadAst, gv: VTB): ACC ==
       not compound?(s::Syntax) => []
-      result : ACC := []
       s case LetAst => 
         k := getLhs(s)$SyntaxHelper
         gv.k := rhs(s::Syntax::LetAst)::Syntax
@@ -857,33 +899,17 @@ LoopAnalysis(): Public == Private where
         k := lhs(s::Syntax::ColonAst)::Syntax
         gv.k := unknownSyn()
         []
-      s case CaseAst => result := concat(result, identifyAffineControlLoop(rhs(s::Syntax::CaseAst), copy gv))
+      s case CaseAst => 
+        identifyAffineControlLoop(rhs(s::Syntax::CaseAst), copy gv)
       s case SequenceAst => 
-        bs := body(s::Syntax::SequenceAst)
-        for b in bs repeat
-          result := concat(result, identifyAffineControlLoop(b, copy gv))
-        result
+        identifyAffineControlLoopFromSequence(s, copy gv)
       s case RepeatAst => 
-        s' := s::Syntax::RepeatAst
-        if option = 3 then
-          getLoopDepth(s') >= 2 => return [s']
-          return [] 
-        identifyAffineControlLoop2(s', [], [], copy gv) and containLoop?(body(s')) =>
-          [s']
-        gv' := updateGlobalVariableTableWithLoopCounter(s', copy gv)
-        identifyAffineControlLoop(body s', gv')
+        identifyAffineControlLoopFromRepeat(s, copy gv)
       s case IfAst => 
-        thBranch := thenBranch(s::Syntax::IfAst)
-        elBranch := elseBranch(s::Syntax::IfAst)
-        if compound?(thBranch::Syntax) then
-          result := concat(result, identifyAffineControlLoop(thBranch, copy gv))
-        if compound?(elBranch::Syntax) then
-          result := concat(result, identifyAffineControlLoop(elBranch, copy gv))
-        result
+        identifyAffineControlLoopFromIf(s, copy gv)
       s case ExitAst =>
-        e := expression(s::Syntax::ExitAst)
-        result := concat(result, identifyAffineControlLoop(e, copy gv))
-      result
+        identifyAffineControlLoopFromExit(s, copy gv)
+      []
 
     -- initialize the global variable table
     cleanUp(): Void ==
