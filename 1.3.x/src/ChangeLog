@@ -1,3 +1,8 @@
+2010-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/core.lisp.in (link): Include ECL compiler in final executable.
+	* lib/util.c: #include <stdlib.h>
+
 2010-02-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet

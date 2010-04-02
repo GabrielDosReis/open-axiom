@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2010 Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -38,13 +38,14 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "view.h"
 
 
 #include "util.H1"
-
+#include "cfuns.h"
 
 
 

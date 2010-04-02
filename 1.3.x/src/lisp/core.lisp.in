@@ -38,13 +38,12 @@
 ;; 
 ;; -*- Abstract -*-
 ;; 
-;;  This pamphlet defines the core of the system utilities for building
+;;  This file defines the core of the system utilities for building
 ;;  Boot and OpenAxiom executable.  It essentially etablishes a namespace
 ;;  (package AxiomCore) and defines some macros and functions
 ;;  that need to be present during during compilation and executable
 ;;  image construction.
 ;; 
-
 
 (defpackage "AxiomCore"
   #+:common-lisp (:use "COMMON-LISP")
@@ -637,7 +636,9 @@
              (setq entry-point #'si::top-level))
            (c:build-program core-image 
                             :lisp-files 
-			    (complete-fasl-list-for-link lisp-files)
+			    ;; Include the compiler in the final image.
+			    (cons "sys:libcmp.a"
+				  (complete-fasl-list-for-link lisp-files))
 			    :ld-flags (extra-runtime-libs)
                             :epilogue-code 
 			    `(progn
