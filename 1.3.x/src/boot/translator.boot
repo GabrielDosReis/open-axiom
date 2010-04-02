@@ -757,7 +757,7 @@ getIntermediateLispFile(file,options) ==
   out := NAMESTRING getOutputPathname(options)
   out ^= nil => 
     strconc(shoeRemoveStringIfNec
-       (strconc('".",$effectiveFaslType),out),'".clisp")
+       (strconc('".",$faslType),out),'".clisp")
   defaultBootToLispFile file
 
 translateBootFile(progname, options, file) ==

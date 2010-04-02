@@ -350,12 +350,12 @@ makeint.lisp: Makefile
 ${SAVESYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
+		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(FASLEXT)
 	$(BOOTSYS) -- --system="$(AXIOM)/" --system-algebra \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
-		--load-directory=. $(OBJS) makeint.$(LNKEXT)
+		--load-directory=. $(OBJS) makeint.$(FASLEXT)
 	@ echo 6 $@ created
 	$(mkdir_p) $(axiom_target_bindir)
 @
@@ -375,13 +375,13 @@ all-axiomsys: ${AXIOMSYS}
 ${AXIOMSYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
-		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
+		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(FASLEXT)
 	$(BOOTSYS) -- \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
 		--prologue="(pushnew :open-axiom-algebra-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
-		--load-directory=. $(OBJS) makeint.$(LNKEXT)
+		--load-directory=. $(OBJS) makeint.$(FASLEXT)
 	@ echo 6a $@ created
 @
 
@@ -425,7 +425,7 @@ exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 	@ echo 615 making exposed.lsp from $(axiom_src_algdir)/exposed.lsp.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
 
-$(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(LNKEXT)
+$(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(FASLEXT)
 	@ echo 616 making $@ from exposed.lsp
 	$(mkdir_p) $(axiom_targetdir)/algebra
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
@@ -489,10 +489,10 @@ distclean-local: clean-local
 $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	@cp -p $< $@
 
-%.$(LNKEXT) %.$(FASLEXT): %.boot
+%.$(FASLEXT): %.boot
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
-%.$(LNKEXT) %.$(FASLEXT): %.lisp
+%.$(FASLEXT): %.lisp
 	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
 
 ## Translation to Fortran

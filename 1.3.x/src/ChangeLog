@@ -1,5 +1,11 @@
 2010-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in ($effectiveFaslType): Remove.
+	* boot/translator.boot (getIntermediateLispFile): Tidy.
+	* interp/Makefile.pamphlet: Remove rule %.$(LKNEXT).
+
+2010-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (link): Include ECL compiler in final executable.
 	* lib/util.c: #include <stdlib.h>
 
