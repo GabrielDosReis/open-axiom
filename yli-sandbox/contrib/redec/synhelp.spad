@@ -30,6 +30,8 @@ SyntaxHelper(): Public == Private where
       ++ checks whether an if ast has then branch
     hasElseBranch?: IfAst -> Boolean
       ++ checks whether an if ast has else branch
+    isBinaryExpression?: Syntax -> Boolean
+      ++ checks whether an expression which uses a binary operator
     isJoin?: Syntax -> Boolean
     isAdd?: Syntax -> Boolean
     isProgn?: Syntax -> Boolean
@@ -47,10 +49,26 @@ SyntaxHelper(): Public == Private where
     makeDoubleDollar: () -> Syntax
     makeSetCategory: () -> Syntax
     makeType: () -> Syntax
+    makePercentage: () -> Syntax
+      ++ creates an uncompound syntax for identifier %
+    makeCase: () -> Syntax
+      ++ creates an uncompound syntax for identifier Case
+    makeTrue: () -> Syntax
+      ++ creates an uncompound syntax for identifier True
+    makeNil:  () -> Syntax
+      ++ creates an uncompound syntax for identifier Nil
+    makeJoin: () -> Syntax
+      ++ creates an uncompound syntax for identifier Join
+    makeUnknown: () -> Syntax
+      ++ creates an uncompound syntax for identifier ?
+
     getOperatorName: Syntax -> Identifier
       ++ obtain the name of the operator used in a function application form
   Private == add
     import Syntax
+
+    isBinaryExpression?(e: Syntax): Boolean ==
+      compound?(e) and #getOperands(e) = 2
 
     getOperatorName(op: Syntax): Identifier ==
       compound? op =>
@@ -169,11 +187,13 @@ SyntaxHelper(): Public == Private where
       opr::Identifier = makeLISTOF()::Identifier => getOperands left
       [left]
 
-    makeJoin: Syntax                   == 'Join::Identifier::Syntax
+    makeUnknown: Syntax             == '_?::Identifier::Syntax
 
-    makeAdd: Syntax                   == 'add::Identifier::Syntax
+    makeJoin: Syntax                == 'Join::Identifier::Syntax
 
-    makeProgn: Syntax                   == 'PROGN::Identifier::Syntax
+    makeAdd: Syntax                 == 'add::Identifier::Syntax
+
+    makeProgn: Syntax               == 'PROGN::Identifier::Syntax
 
     makeNil: Syntax                 == 'nil::Identifier::Syntax
 
@@ -182,6 +202,12 @@ SyntaxHelper(): Public == Private where
     makeRecord: Syntax              == 'Record::Identifier::Syntax
 
     makeSetCategory: Syntax         == 'SetCategory::Identifier::Syntax
+
+    makePercentage: Syntax          == '%::Identifier::Syntax
+
+    makeCase: Syntax                == 'case::Identifier::Syntax
+
+    makeTrue: Syntax                == 'true::Identifier::Syntax
 
     isJoin?(t: Syntax): Boolean ==
       compound? t =>
