@@ -28,19 +28,27 @@ LoopAnalysis(): Public == Private where
     import SyntaxHelper
     import Syntax
 
-    -- forward declarations of local functions, for bootstrap purpose
-      
+    -- forward declarations of local functions, for bootstrap purpose    
     ifOnly?: RepeatAst -> Pair(Boolean, Pair(List LetAst, List LetAst))
       ++ checks whether the body of a single loop ast only contains one if statement 
-    identifyAccumulationLoop3: (RepeatAst, VTB) -> ACC
-    identifyAccumulationLoop2: (SpadAst, VTB) -> ACC 
-    identifyAccumulationLoop: DefinitionAst -> ACC
-      ++ identifies all the accumulation loops in a function definition
-    identifyAccumulationLoop0: DefinitionAst -> Pair(Identifier, ACC)
+    identifyAccumulationLoopFromRepeat: (RepeatAst, VTB) -> ACC
+    identifyAccumulationLoopFromStatement: (SpadAst, VTB) -> ACC 
+    identifyAccumulationLoopFromDefinitionBody: DefinitionAst -> Pair(Identifier, ACC)
       ++ identifies all the accumulation loops in a function definition
       ++ this function is called by the library analysis function.
     identifyAffineControlLoop0: DefinitionAst -> Pair(Identifier, ACC)
+    identifyAffineControlLoop2: (RepeatAst, List Identifier, List Identifier, VTB) -> Boolean
     searchForAccumulationVariable: (Syntax, Syntax) -> Pair(Integer, List Syntax)
+
+    --Global variables
+    accumulationLoopTable: LTB := empty()
+    aclTable: LTB := empty()
+    loopNestTable: LTB := empty()
+    -- current function name
+    functionName : Identifier := gensym()
+    -- Type environment for global variables such as constructor parameter, 
+    -- and global variables declared inside the capsule
+    globalTypeEnvironment: VTB := empty()
 
     -- flags
     -- 0 : collect all the repeat ast
@@ -60,10 +68,6 @@ LoopAnalysis(): Public == Private where
     reductionVariableListInThenBranch: List Syntax := []
 
     reductionVariableListInElseBranch: List Syntax := []
-
-    collectAccumulationFromStatement: (SpadAst, Identifier) -> Integer
-
-    collectAccumulationFromDefinition: (DefinitionAst, Identifier) -> Integer
 
     unknownSyn: Syntax == '_?::Identifier::Syntax
 
@@ -129,6 +133,8 @@ LoopAnalysis(): Public == Private where
       b case SequenceAst       => ifAstInSequence?(b::Syntax::SequenceAst)
       pair(false, pair([], []))
 
+    -- initialize a table for storing the global variables
+    -- of a function definition
     initVariableTable(t: VTB, l: List Identifier): VTB ==
       for p in l repeat
         p' := p::Syntax
@@ -180,7 +186,8 @@ LoopAnalysis(): Public == Private where
         b.(i+j) := t.j
       b
 
-    globalVariableSubstitution(b: List LetAst, b': List LetAst, i: Integer, i': Integer, l: Syntax, r: Syntax): List LetAst==
+    globalVariableSubstitution(b: List LetAst, b': List LetAst,_
+                  i: Integer, i': Integer, l: Syntax, r: Syntax): List LetAst==
       before := b'.i'
       b'.i' : LetAst := replaceLetRhs(l, b'.i', r)$SyntaxHelper
       if not ((before::Syntax) = ((b'.i')::Syntax)) then
@@ -188,14 +195,14 @@ LoopAnalysis(): Public == Private where
         b := updateLoopBody!(b, t, i)
       b
       
-    updateDeletionList!(c: Boolean, i: Integer): Boolean ==
+    updateDeletionList!(c: Boolean, i: Integer): Void ==
       if c then 
         toDelete := union(i, toDelete)
-      true
 
     globalVariableSubstitutions(b: List LetAst): List LetAst ==
       for i in #b..1 by -1 | ((i <= #b-1) and not toBeRemoved?(i)) repeat
-        -- if this assignment is not marked as to be removed, continue the substitution for the next assignment
+        -- if this assignment is not marked as to be removed, 
+        -- continue the substitution for the next assignment
         b' := [b.n for n in (i+1)..#b]
         l := getLhs(b.i)$SyntaxHelper
         r := rhs(b.i)::Syntax
@@ -239,7 +246,9 @@ LoopAnalysis(): Public == Private where
     advanceListWithin2?(vars: List Syntax, i: SpadAst, gv: VTB): Boolean ==
       for v in vars repeat
         x := v
-        if compound? v and (container := getOperator(v)) case Identifier and key?((c := container::Identifier::Syntax), gv) then
+        if compound? v and_
+           (container := getOperator(v)) case Identifier and_
+           key?((c := container::Identifier::Syntax), gv) then
           x := c
         within?(x, i::Syntax)$SyntaxHelper => return true
       false
@@ -268,7 +277,8 @@ LoopAnalysis(): Public == Private where
         pair(counter, result)
       pair(counter, result)
 
-    sameOperators?(opList: List Syntax): Boolean == #removeDuplicates(opList) = 1
+    sameOperators?(opList: List Syntax): Boolean == 
+      #removeDuplicates(opList) = 1
 
     verifyCountAndOperator(v: Syntax, exp: Syntax): Boolean ==
       r := searchForAccumulationVariable(v, exp)
@@ -277,8 +287,9 @@ LoopAnalysis(): Public == Private where
     containExclamation?(r: Syntax): Boolean ==
       member?(char("!"::String)$Character, entries(toString(r)$SyntaxHelper)) 
       
-    -- verify our new canonical form, pay attention to testing option at line 385
-    verifyImprovedCanonicalForm(v: Syntax, r: Syntax, its: List SpadAst, vars: List Syntax, localcount: Integer, gv: VTB): Integer ==
+    -- verify our new canonical form, pay attention to testing option
+    verifyImprovedCanonicalForm(v: Syntax, r: Syntax, its: List SpadAst,_
+                   vars: List Syntax, localcount: Integer, gv: VTB): Integer ==
       --if compound?(v) and 
       -- containExclamation?(r)  -- for examining the side effect functions.
       if not containExclamation?(r) and isBinaryExpression?(r) and not withinIterators?(vars, its, gv)_ 
@@ -351,7 +362,7 @@ LoopAnalysis(): Public == Private where
         listWithin?(vars, condition(s)::Syntax)
       userError "unexpected body of the verified repeat-if syntax"
 
-    identifyAccumulationLoop3(r: RepeatAst, gv: VTB): ACC ==
+    identifyAccumulationLoopFromRepeat(r: RepeatAst, gv: VTB): ACC ==
       result : ACC := []
       not empty?(iterators(r)) => 
         its := iterators(r)
@@ -362,7 +373,7 @@ LoopAnalysis(): Public == Private where
         -- if this is a while loop
         -- we don't handle reduction implemented in the while loop right now.
         it case WhileAst => 
-          result := concat(result, identifyAccumulationLoop2(body(r), copy gv))
+          result := concat(result, identifyAccumulationLoopFromStatement(body(r), copy gv))
         -- if this is a for loop, and only contains let statement
         reductionVariableListInThenBranch := []
         reductionVariableListInElseBranch := []
@@ -388,10 +399,10 @@ LoopAnalysis(): Public == Private where
             result := concat(result, [r])
           result := concat(result, [])
       -- if this is a for loop, and is a mix, then recur
-        result := concat(result, identifyAccumulationLoop2(body r, copy gv))
+        result := concat(result, identifyAccumulationLoopFromStatement(body r, copy gv))
         result
 
-      result := concat(result, identifyAccumulationLoop2(body r, copy gv))
+      result := concat(result, identifyAccumulationLoopFromStatement(body r, copy gv))
       result
 
     forLoopWithStep?(r: RepeatAst): Boolean ==
@@ -661,13 +672,15 @@ LoopAnalysis(): Public == Private where
         op'::Identifier = 'elt and #getOperands(op::Syntax) = 2 
       false
 
-    annotatedExpressionWithAffineReferenceOnly?(e: Syntax, loopCounters: List Identifier, gv: VTB): Boolean ==
+    annotatedExpressionWithAffineReferenceOnly?(e: Syntax,_
+                            loopCounters: List Identifier, gv: VTB): Boolean ==
       op := getOperands(getOperator(e)::Syntax).last
       oprs := getOperands(e)
       exp := buildSyntax(op, oprs)
       expressionWithAffineReferenceOnly?(exp, loopCounters, gv)
       
-    expressionWithAffineReferenceOnly?(e: Syntax, loopCounters: List Identifier, gv: VTB): Boolean ==
+    expressionWithAffineReferenceOnly?(e: Syntax,_
+                            loopCounters: List Identifier, gv: VTB): Boolean ==
       not compound? e => true
       isAnnotated?(e) => annotatedExpressionWithAffineReferenceOnly?(e, loopCounters, gv)
       isAccessForm?(e, gv) => verifyIndexExpression(first getOperands(e), loopCounters, gv)
@@ -676,14 +689,16 @@ LoopAnalysis(): Public == Private where
         not expressionWithAffineReferenceOnly?(s, loopCounters, gv) => return false
       true
 
-    verifyArrayReference(a: LetAst, loopCounters: List Identifier, gv: VTB): Boolean ==
+    verifyArrayReference(a: LetAst,_
+                            loopCounters: List Identifier, gv: VTB): Boolean ==
       l := getLhs(a)$SyntaxHelper
       r := rhs(a)::Syntax
       b := expressionWithAffineReferenceOnly?(l, loopCounters, gv) and_
       expressionWithAffineReferenceOnly?(r, loopCounters, gv)
       b    
 
-    verifyPredicateExpression(a: IfAst, loopCounters: List Identifier, gv: VTB): Boolean ==
+    verifyPredicateExpression(a: IfAst,_
+                            loopCounters: List Identifier, gv: VTB): Boolean ==
       predicate := condition(a)::Syntax
       not compound?(predicate) => true
       (op := getOperator(predicate)) case Identifier => 
@@ -695,7 +710,7 @@ LoopAnalysis(): Public == Private where
         expressionWithAffineReferenceOnly?(predicate, loopCounters, gv)
       false
 
-    identifyAffineControlLoop2: (RepeatAst, List Identifier, List Identifier, VTB) -> Boolean
+
 
     verifyStaticControlLoopBody(s: SpadAst, loopCounters: List Identifier, boundParameters: List Identifier, gv: VTB): Boolean ==
       
@@ -738,7 +753,8 @@ LoopAnalysis(): Public == Private where
         verifyStaticControlLoopBody(e, loopCounters, boundParameters, gv)
       expressionWithAffineReferenceOnly?(s::Syntax, loopCounters, gv)
 
-    stepForLoopIsACL?(r: RepeatAst, loopCounters: List Identifier, boundParameters: List Identifier, gv: VTB): Boolean ==
+    stepForLoopIsACL?(r: RepeatAst, loopCounters: List Identifier,_
+                      boundParameters: List Identifier, gv: VTB): Boolean ==
       iter := first iterators(r)
       iter' := iter::Syntax
       loopCounters := concat(loopCounters, collectLoopCounterFromStep(iter))
@@ -746,21 +762,24 @@ LoopAnalysis(): Public == Private where
       not checkInvariance(concat(loopCounters, boundParameters), r) => false
       verifyStaticControlLoopBody(body r, loopCounters, boundParameters, gv)
 
-    inAstForLoopIsACL?(r: RepeatAst, loopCounters: List Identifier, boundParameters: List Identifier, gv: VTB): Boolean ==
+    inAstForLoopIsACL?(r: RepeatAst, loopCounters: List Identifier,_
+                       boundParameters: List Identifier, gv: VTB): Boolean ==
       iter := (first iterators(r))::Syntax::InAst
       seq := sequence(iter)::Syntax
       boundParameters := concat(boundParameters, collectParametersFromSequcneOfInAst(seq, gv))
       not checkInvariance(concat(loopCounters, boundParameters), r) => false
       verifyStaticControlLoopBody(body r, loopCounters, boundParameters, gv)
-      
-    identifyAffineControlLoop2(r: RepeatAst, loopCounters: List Identifier, boundParameters: List Identifier, gv: VTB): Boolean ==
+
+    identifyAffineControlLoop2(r: RepeatAst, loopCounters: List Identifier,_
+                         boundParameters: List Identifier, gv: VTB): Boolean ==
       forLoopWithStep?(r)  => 
         stepForLoopIsACL?(r, loopCounters, boundParameters, gv)
       forLoopWithInAst?(r) => 
         inAstForLoopIsACL?(r, loopCounters, boundParameters, gv)
       false
 
-
+    -- extract the loop counter of a repeatAst, and update the environment
+    -- meaning that the loop counter can be viewed as global variable of the loop
     updateGlobalVariableTableWithLoopCounter(s: RepeatAst, gv: VTB): VTB ==
       gv' := copy gv
       iters := iterators(s)
@@ -769,64 +788,75 @@ LoopAnalysis(): Public == Private where
         iter' := iter::Syntax
         ((op := getOperator(iter')) case Identifier) and_ 
         ((op::Identifier = 'IN) or (op::Identifier = 'STEP)) =>
-          k := first(getOperands(iter'))
-          gv'.k := unknownSyn()
+          loopCounter := first(getOperands(iter'))
+          gv'.loopCounter := unknownSyn()
           gv'
         gv'
       gv'
 
-    -- and make two copies of the table once we enter if/case/Repeat
-    identifyAccumulationLoop2(s: SpadAst, gv: VTB): ACC ==
-      if not compound?(s::Syntax) then return []
+    -- collect accumulation loop from an sequence
+    identifyAccumulationLoopFromSequence(s: SpadAst, gv: VTB): ACC ==
       result : ACC := []
-      s case LetAst => 
-        k := getLhs(s)$SyntaxHelper
-        gv.k := rhs(s::Syntax::LetAst)::Syntax
-        []
-      s case WhileAst => []  
-      s case ColonAst => 
-        k := lhs(s::Syntax::ColonAst)::Syntax
-        gv.k := unknownSyn()
-        []
-      s case ConstructAst => []
-      s case CollectAst => []
-      s case ReturnAst => []
-      s case CaseAst => result := concat(result, identifyAccumulationLoop2(rhs(s::Syntax::CaseAst), copy gv))
-      s case SequenceAst => 
-        bs := body(s::Syntax::SequenceAst)
-        for b in bs repeat
-          result := concat(result, identifyAccumulationLoop2(b, gv))
-        result
-      s case RepeatAst => 
-        result := concat(result, identifyAccumulationLoop3(s::Syntax::RepeatAst, copy gv))
-      s case IfAst => 
-        thBranch := thenBranch(s::Syntax::IfAst)
-        elBranch := elseBranch(s::Syntax::IfAst)
-        if compound?(thBranch::Syntax) then
-          result := concat(result, identifyAccumulationLoop2(thBranch, copy gv))
-        if compound?(elBranch::Syntax) then
-          result := concat(result, identifyAccumulationLoop2(elBranch, copy gv))
-        result
-      s case ExitAst =>
-        e := expression(s::Syntax::ExitAst)
-        result := concat(result, identifyAccumulationLoop2(e, copy gv))
+      bs := body(s::Syntax::SequenceAst)
+      for b in bs repeat
+        result := concat(result, identifyAccumulationLoopFromStatement(b, gv))
       result
 
+    -- collect accumulation loop from a if statement
+    identifyAccumulationLoopFromIf(s: SpadAst, gv: VTB): ACC ==
+      result : ACC := []
+      thBranch := thenBranch(s::Syntax::IfAst)
+      elBranch := elseBranch(s::Syntax::IfAst)
+      if compound?(thBranch::Syntax) then
+        result := concat(result,_
+                      identifyAccumulationLoopFromStatement(thBranch, copy gv))
+      if compound?(elBranch::Syntax) then
+        result := concat(result,_
+                      identifyAccumulationLoopFromStatement(elBranch, copy gv))
+      result
+
+    -- collect accumulation loop from an exit statement
+    identifyAccumulationLoopFromExit(s: SpadAst, gv: VTB): ACC ==
+      e := expression(s::Syntax::ExitAst)
+      identifyAccumulationLoopFromStatement(e, copy gv)
+
+    -- Traverse each statement in a definition body,
+    -- collecting accumulation loop from each statement
+    identifyAccumulationLoopFromStatement(s: SpadAst, gv: VTB): ACC ==
+      not compound?(s::Syntax) => []
+      s case LetAst => 
+        k := getLhs(s)$SyntaxHelper
+        gv.k := rhs(s::Syntax::LetAst)::Syntax
+        []
+      s case ColonAst => 
+        k := lhs(s::Syntax::ColonAst)::Syntax
+        gv.k := unknownSyn()
+        []
+      s case CaseAst => 
+        identifyAccumulationLoopFromStatement(rhs(s::Syntax::CaseAst), copy gv)
+      s case SequenceAst => 
+        identifyAccumulationLoopFromSequence(s, copy gv)
+      s case RepeatAst => 
+        identifyAccumulationLoopFromRepeat(s::Syntax::RepeatAst, copy gv)
+      s case IfAst => 
+        identifyAccumulationLoopFromIf(s, copy gv)
+      s case ExitAst =>
+        identifyAccumulationLoopFromExit(s, copy gv)
+      []
+
+    -- Traverse each statement in a definition body,
+    -- collecting affine control loop from each statement
     identifyAffineControlLoop(s: SpadAst, gv: VTB): ACC ==
-      if not compound?(s::Syntax) then return []
+      not compound?(s::Syntax) => []
       result : ACC := []
       s case LetAst => 
         k := getLhs(s)$SyntaxHelper
         gv.k := rhs(s::Syntax::LetAst)::Syntax
         []
-      s case WhileAst => []  
       s case ColonAst => 
         k := lhs(s::Syntax::ColonAst)::Syntax
         gv.k := unknownSyn()
         []
-      s case ConstructAst => []
-      s case CollectAst => []
-      s case ReturnAst => []
       s case CaseAst => result := concat(result, identifyAffineControlLoop(rhs(s::Syntax::CaseAst), copy gv))
       s case SequenceAst => 
         bs := body(s::Syntax::SequenceAst)
@@ -841,7 +871,7 @@ LoopAnalysis(): Public == Private where
         identifyAffineControlLoop2(s', [], [], copy gv) and containLoop?(body(s')) =>
           [s']
         gv' := updateGlobalVariableTableWithLoopCounter(s', copy gv)
-        identifyAffineControlLoop(body s', gv') -- this gv needs to be updated.
+        identifyAffineControlLoop(body s', gv')
       s case IfAst => 
         thBranch := thenBranch(s::Syntax::IfAst)
         elBranch := elseBranch(s::Syntax::IfAst)
@@ -855,66 +885,46 @@ LoopAnalysis(): Public == Private where
         result := concat(result, identifyAffineControlLoop(e, copy gv))
       result
 
-    identifyAccumulationLoop d == 
-      vt := empty()
-      fn : Identifier := name(head(d)::Syntax::HeadAst)
-      pl : List Identifier := parameters(head(d)::Syntax::HeadAst)
-      -- initialize the variable table with function parameters
-      vt := initVariableTable(vt, pl)
-      -- start analysis
-      identifyAccumulationLoop2(body d, vt)
-
--- Syntactical analysis for collecting loops (emprical data):
--- 1. iterate through each file of algebra library
--- 2. traverse through the syntax tree of the domain/category/package
--- 3. collect the RepeatAst when entering the implementation body
- 
-    --Global variables
-    count: Integer := 0
-    -- loop table stores the final analysis results
-    accumulationLoopTable: LTB := empty()
-    aclTable: LTB := empty()
-    loopNestTable: LTB := empty()
-    functionName : Identifier := gensym()
-    -- Table for storing global variables such as constructor parameter, and global variable in capsule
-    globalTypeEnvironment: VTB := empty()
-
+    -- initialize the global variable table
     cleanUp(): Void ==
       accumulationLoopTable := empty()
       aclTable := empty()
       loopNestTable := empty()
       reductionVariableList := []
-      count := 0
 
-    updateTable(d: Identifier, f: Identifier, b: RepeatAst, t: LTB): LTB ==
+    --  update the final results to be returned 
+    -- with a new entry: (pair(d, f), bl)
+    updateTable(d: Identifier, f: Identifier, b: RepeatAst, t: LTB): Void ==
       k : Pair(Identifier, Identifier) := pair(d, f)
-      if key?(k, t) then
+      key?(k, t) =>
         t.k := cons(b, t.k)
-      else
-        t.k := [b]
-      t
+      t.k := [b]
 
+    -- update the final results to be returned 
+    -- with a new entry: (pair(d, f), bl)
     updateTable2(d: Identifier, f: Identifier, bl: List RepeatAst, t: LTB): LTB ==
-      for b in bl repeat
-        updateTable(d, f, b, t)
+      for b in bl repeat updateTable(d, f, b, t)
       t
 
-    initVtWithGt(v: VTB, g: VTB): VTB ==
-      for k in keys(g) repeat
-        v.k := g.k
+    -- fill a variable table with the content stored in the global typing table
+    initLocTypeEnvWithGlobalTypeEnv(v: VTB, g: VTB): VTB ==
+      for k in keys(g) repeat v.k := g.k
       v
 
-    identifyAccumulationLoop0 d == 
+    -- collects all the accumulation loops (single loop) from a definition body
+    identifyAccumulationLoopFromDefinitionBody d == 
       vt := empty()
       fn : Identifier := name(head(d)::Syntax::HeadAst)
       pl : List Identifier := parameters(head(d)::Syntax::HeadAst)
       -- initialize the variable table with function parameters
       vt := initVariableTable(vt, pl)
       -- insert the constructor global variables and capsule global variables
-      vt := initVtWithGt(vt, globalTypeEnvironment)
+      vt := initLocTypeEnvWithGlobalTypeEnv(vt, globalTypeEnvironment)
       -- start analysis
-      pair(fn, identifyAccumulationLoop2(body d, vt))
+      pair(fn, identifyAccumulationLoopFromStatement(body d, vt))
 
+    -- collects all the affine control loops from a definition body, or, 
+    -- collects all the normal loop nests from a definition body
     identifyAffineControlLoop0 d ==
       vt := empty()
       fn : Identifier := name(head(d)::Syntax::HeadAst)
@@ -922,158 +932,38 @@ LoopAnalysis(): Public == Private where
       -- initialize the variable table with function parameters
       vt := initVariableTable(vt, pl)
       -- insert the constructor global variables and capsule global variables
-      vt := initVtWithGt(vt, globalTypeEnvironment)
+      vt := initLocTypeEnvWithGlobalTypeEnv(vt, globalTypeEnvironment)
       -- start analysis
       pair(fn, identifyAffineControlLoop(body d, vt))
 
-    -- collect the loop ast from a statement
-    collectAccumulationFromStatement(dBody: SpadAst, ctor: Identifier): Integer ==
-      if not compound?(dBody::Syntax) then return count
-      dBody case SignatureAst =>
-        count
-      dBody case MacroAst => 
-        count
-      dBody case DefinitionAst => 
-        if (option = 1) then
-          -- extract accumulation loop
-          t : Pair(Identifier, ACC) := identifyAccumulationLoop0(dBody::Syntax::DefinitionAst)
-          -- update the result table
-          t' := first t
-          k : Pair(Identifier, Identifier) := pair(ctor, t')
-          rl : ACC := second t
-          updateTable2(ctor, t', rl, accumulationLoopTable)
-          --print("exit!!"::OutputForm)
-        else if (option = 2) or (option = 3) then
-          -- extract accumulation loop
-          t : Pair(Identifier, ACC) := identifyAffineControlLoop0(dBody::Syntax::DefinitionAst)
-          -- update the result table
-          t' := first t
-          k : Pair(Identifier, Identifier) := pair(ctor, t')
-          rl : ACC := second t
-          option = 2 =>
-            updateTable2(ctor, t', rl, aclTable)
-          option = 3 =>
-            updateTable2(ctor, t', rl, loopNestTable)
-          --print("exit!!"::OutputForm)
-        else
-          collectAccumulationFromDefinition(dBody::Syntax::DefinitionAst, ctor)
-        count
-      dBody case SequenceAst =>
-        stmtLst:= body(dBody::Syntax::SequenceAst)$SequenceAst
-        for stmt in stmtLst repeat
-          collectAccumulationFromStatement(stmt, ctor)
-        count
-      dBody case IfAst => 
-        thBranch :=  thenBranch(dBody::Syntax::IfAst)$IfAst
-        elBranch := elseBranch(dBody::Syntax::IfAst)$IfAst
-        if compound?(thBranch::Syntax) then
-          collectAccumulationFromStatement(thBranch, ctor)
-        if compound?(elBranch::Syntax) then
-          collectAccumulationFromStatement(elBranch, ctor)
-        count
-      dBody case ReturnAst =>
-        rtn := expression(dBody::Syntax::ReturnAst)$ReturnAst
-        if compound?(rtn::Syntax) then
-          collectAccumulationFromStatement(rtn, ctor)
-        count
-      dBody case RepeatAst =>
-        b := dBody::Syntax::RepeatAst
-        count := count + 1
-        count
-      dBody case CoerceAst =>
-        coeast := dBody::Syntax::CoerceAst
-        tp := ((target(coeast))$CoerceAst)::Syntax
-        exp := (expression(coeast)$CoerceAst)::Syntax
-        coerExp := expression(dBody::Syntax::CoerceAst)$CoerceAst
-        if compound?(coerExp::Syntax) then
-          collectAccumulationFromStatement(coerExp, ctor)
-        count
-      dBody case ExitAst =>
-        dbexp := expression(dBody::Syntax::ExitAst)$ExitAst
-        collectAccumulationFromStatement(dbexp, ctor)
-      dBody case LetAst =>
-        l := getLhs(dBody::Syntax::LetAst)$SyntaxHelper
-        r := (rhs(dBody::Syntax::LetAst)$LetAst)::Syntax
-        globalTypeEnvironment.l := r
-        dlet := rhs(dBody::Syntax::LetAst)$LetAst
-        dlhs := lhs(dBody::Syntax::LetAst)$LetAst
-        if compound?(dlet::Syntax) then
-          if (dlet case CollectAst) or (dlet case ConstructAst) then
-            exp := (dlhs::Syntax)
-        collectAccumulationFromStatement(dlhs, ctor)
-        collectAccumulationFromStatement(dlet, ctor)
-      dBody case WhileAst => count  
-      dBody case ColonAst => 
-        colast := dBody::Syntax::ColonAst
-        id := (lhs(colast)$ColonAst)::Syntax
-        tp := (rhs(colast)$ColonAst)::Syntax
-        globalTypeEnvironment.id := unknownSyn()
-        count
-      dBody case ConstructAst => count
-      dBody case CollectAst => count
-      dBody case CaseAst => count
-      count
+    -- collect data that is accumulation loop from function definition
+    collectAccumulationLoopFromDefinition(sa: SpadAst, ctor: Identifier):Void ==
+      -- extract accumulation loop
+      analysisResult := identifyAccumulationLoopFromDefinitionBody_
+                                                    (sa::Syntax::DefinitionAst)
+      functionName := first analysisResult
+      accumulationLoops := second analysisResult
+      updateTable2(ctor, functionName, accumulationLoops, accumulationLoopTable)   
 
-    -- collects loop from one function definition
-    collectAccumulationFromDefinition(defa: DefinitionAst, ctor: Identifier): Integer ==
-      hd := head(defa)$DefinitionAst
-      functionName := name hd
-      sig := signature(defa)$DefinitionAst
-      dBody := body(defa)$DefinitionAst
-      collectAccumulationFromStatement(dBody, ctor)
-      count
+    -- collect data that is ACL or normal loop nests from function definition
+    collectAclOrLoopNestsFromDefinition(sa: SpadAst, ctor: Identifier): Void == 
+      -- extract affine control loop or normal loop
+      analysisResult := identifyAffineControlLoop0(sa::Syntax::DefinitionAst)
+      -- update the result table
+      functionName   := first analysisResult
+      extractedLoops := second analysisResult
+      option = 2 => updateTable2(ctor, functionName,_
+                                 extractedLoops, aclTable)
+      option = 3 => updateTable2(ctor, functionName,_
+                                 extractedLoops, loopNestTable)   
 
-    -- analysis for top level statements (definitions)
-    collectDataAtTopLevel(sa: SpadAst, ctor: Identifier): Integer ==
-      sa case ColonAst => 
-        -- collect the global variable declared in the capsule
-        l := lhs(sa::Syntax::ColonAst)::Syntax
-        globalTypeEnvironment.l := unknownSyn()
-        count
-      sa case SignatureAst => count
-      sa case MacroAst     =>  count
-      sa case ImportAst    => count
-      sa case DefinitionAst => 
-        if (option = 1) then
-          -- extract accumulation loop
-          t : Pair(Identifier, ACC) := identifyAccumulationLoop0(sa::Syntax::DefinitionAst)
-          -- update the result table
-          t' := first t
-          k : Pair(Identifier, Identifier) := pair(ctor, t')
-          rl : ACC := second t
-          updateTable2(ctor, t', rl, accumulationLoopTable)
-        else if (option = 2) or (option = 3) then
-          -- extract accumulation loop
-          t : Pair(Identifier, ACC) := identifyAffineControlLoop0(sa::Syntax::DefinitionAst)
-          -- update the result table
-          t' := first t
-          k : Pair(Identifier, Identifier) := pair(ctor, t')
-          rl : ACC := second t
-          option = 2 =>
-            updateTable2(ctor, t', rl, aclTable)
-          option = 3 =>
-            updateTable2(ctor, t', rl, loopNestTable)
-          --print("exit!!"::OutputForm)
-        else
-          collectAccumulationFromDefinition(sa::Syntax::DefinitionAst, ctor)
-        count
-      sa case SequenceAst => collectAccumulationFromStatement(sa, ctor)
-      sa case LetAst => 
-        sa' := sa::Syntax::LetAst
-        l := getLhs(sa')$SyntaxHelper
-        r := rhs(sa')::Syntax
-        globalTypeEnvironment.l := r
-        collectAccumulationFromStatement(sa, ctor)
-        -- above two cases are for handling some weird parsing result (ZMOD)
-      sa case IfAst =>
-        thBranch := thenBranch(sa::Syntax::IfAst)$IfAst
-        elBranch := elseBranch(sa::Syntax::IfAst)$IfAst
-        if compound?(thBranch::Syntax) then
-          collectDataAtTopLevel(thBranch, ctor)
-        if compound?(elBranch::Syntax) then
-          collectDataAtTopLevel(elBranch, ctor)
-        count
-      collectAccumulationFromStatement(sa, ctor)
+    -- collect data from  for top level statements (definitions)
+    collectDataFromDefinition(sa: SpadAst, ctor: Identifier): Void ==
+      (option = 1) => 
+        collectAccumulationLoopFromDefinition(sa, ctor)
+      (option = 2) or (option = 3) => 
+        collectAclOrLoopNestsFromDefinition(sa, ctor)
+      userError "loop analysis option be either 1, 2, or 3"
 
     -- interface used in redupkg.spad
     -- this function collects accumulation loops from a function definition
@@ -1082,7 +972,7 @@ LoopAnalysis(): Public == Private where
       cleanUp()
       option := 1
       globalTypeEnvironment    := copy tpenv
-      collectDataAtTopLevel(defa::Syntax::SpadAst, ctor)
+      collectDataFromDefinition(defa::Syntax::SpadAst, ctor)
       pair(copy accumulationLoopTable, copy reductionVariableList)
 
     -- interface used in redupkg.spad
@@ -1092,7 +982,7 @@ LoopAnalysis(): Public == Private where
       cleanUp()
       option := 2
       globalTypeEnvironment    := copy tpenv
-      collectDataAtTopLevel(defa::Syntax::SpadAst, ctor)
+      collectDataFromDefinition(defa::Syntax::SpadAst, ctor)
       copy aclTable
 
     -- interface used in redupkg.spad
@@ -1102,7 +992,7 @@ LoopAnalysis(): Public == Private where
       cleanUp()
       option := 3
       globalTypeEnvironment    := copy tpenv
-      collectDataAtTopLevel(defa::Syntax::SpadAst, ctor)
+      collectDataFromDefinition(defa::Syntax::SpadAst, ctor)
       copy loopNestTable
 
 
