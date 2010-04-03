@@ -29,7 +29,7 @@ LoopAnalysis(): Public == Private where
     import SyntaxHelper
     import Syntax
 
-    -- forward declarations of local functions, for bootstrap purpose    
+    -- forward declarations of local functions for bootstrap purpose    
     ifOnly?: RepeatAst -> Pair(Boolean, Pair(List LetAst, List LetAst))
       ++ checks whether the body of a single loop ast 
       ++ only contains a single if statement 
@@ -38,18 +38,24 @@ LoopAnalysis(): Public == Private where
     globalVariableSubstitutions: List LetAst -> List LetAst
       ++ does all forward substitution for all 
       ++ global variables in the loop body
-    identifyAffineControlLoop: (SpadAst, VTB) -> ACC 
-    identifyAffineControlLoop0: DefinitionAst -> Pair(Identifier, ACC)
-    identifyAffineControlLoop2: (RepeatAst, List Identifier, List Identifier, VTB) -> Boolean
+    identifyAffineControlLoopFromStatement: (SpadAst, VTB) -> ACC
+      ++ collects all the ACLs from a statement
+    isStaticControlLoop?: (RepeatAst, List Identifier,_
+                           List Identifier, VTB) -> Boolean
+      ++ checks whether a loop is an affine control loop
+    verifyStaticControlLoopBody: (SpadAst, List Identifier,_
+                                  List Identifier, VTB) -> Boolean
+      ++ checks whether a statement satisfies the requirement of 
+      ++ static control part
 
     --Global variables
-    -- variable for storing all the accumulation loops
+    -- list for storing all the accumulation loops
     accumulationLoopTable: LTB := empty()
 
-    -- variable for storing all the extracted ACL nests
+    -- list for storing all the extracted ACL nests
     aclTable: LTB := empty()
     
-    -- variable for storing all the extracted normal loop nests 
+    -- list for storing all the extracted normal loop nests 
     loopNestTable: LTB := empty()
 
     -- name of the current function being analyzed
@@ -522,12 +528,15 @@ LoopAnalysis(): Public == Private where
       iters := iterators(r)
       forLoopWithInAst?(r) and #iters = 1
 
+    -- finds loop counter of a for loop whose iterator is a step ast
     collectLoopCounterFromStep(r: SpadAst): List Identifier ==
       c := first getOperands(r::Syntax)
       c case Identifier => [c::Identifier]
       print(r::OutputForm)
       userError "unexpected loop counter syntax"
 
+    -- collect all the variables appeared in the bound expressions
+    -- of a for loop
     collectParametersInBoundFromStep(r: Syntax, gv: VTB): List Identifier ==    
       not compound? r =>
         r case Identifier and key?(r, gv) => [r]
@@ -569,7 +578,8 @@ LoopAnalysis(): Public == Private where
         containLoop?(e)
       false
 
-    getLoopDepth2(s: SpadAst, depth: Integer): Integer ==
+    -- compute the loop depth of the body of a loop
+    getLoopDepthOfBody(s: SpadAst, depth: Integer): Integer ==
       not compound?(s::Syntax) => depth
       s case LetAst => depth
       s case WhileAst => depth
@@ -577,52 +587,52 @@ LoopAnalysis(): Public == Private where
       s case ConstructAst => depth
       s case CollectAst => depth
       s case ReturnAst => depth
-      s case CaseAst => getLoopDepth2(rhs(s::Syntax::CaseAst), depth)
+      s case CaseAst => getLoopDepthOfBody(rhs(s::Syntax::CaseAst), depth)
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         maxDepth := depth
         for b in bs repeat
-          currentDepth := getLoopDepth2(b, depth)
+          currentDepth := getLoopDepthOfBody(b, depth)
           if currentDepth > maxDepth then
             maxDepth := currentDepth
         maxDepth  
-      s case RepeatAst => getLoopDepth2(body(s::Syntax::RepeatAst), inc(depth)) 
+      s case RepeatAst => getLoopDepthOfBody(body(s::Syntax::RepeatAst), inc(depth)) 
       s case IfAst =>
         thBranch := thenBranch(s::Syntax::IfAst)
         elBranch := elseBranch(s::Syntax::IfAst)
         depthThen : Integer := 0
         depthElse : Integer := 0
         if compound?(thBranch::Syntax) then
-          depthThen := getLoopDepth2(thBranch, depth)
+          depthThen := getLoopDepthOfBody(thBranch, depth)
         if compound?(elBranch::Syntax) then
-          depthElse := getLoopDepth2(elBranch, depth)
+          depthElse := getLoopDepthOfBody(elBranch, depth)
         max(depthElse, depthThen)
       s case ExitAst =>
         e := expression(s::Syntax::ExitAst)
-        getLoopDepth2(e, depth)
+        getLoopDepthOfBody(e, depth)
       depth
-
+    
+    -- computes the depth of a loop
     getLoopDepth(s: RepeatAst): Integer ==
       depth : Integer := 1
-      getLoopDepth2(body s, depth)
+      getLoopDepthOfBody(body s, depth)
 
+    -- obtain all the let statement appeared in some statement
     getAllAssignmentFromSyntax(s: SpadAst): List Syntax ==
       not compound?(s::Syntax) => []
       result : List Syntax := []
       s case LetAst => [s::Syntax]
-      s case WhileAst => []
-      s case ColonAst => []
-      s case ConstructAst => []
-      s case CollectAst => []
-      s case ReturnAst => []
-      s case CaseAst => result := concat(result, getAllAssignmentFromSyntax(rhs(s::Syntax::CaseAst)))
+      s case ReturnAst => 
+        getAllAssignmentFromSyntax(expression(s::Syntax::ReturnAst))
+      s case CaseAst => 
+        getAllAssignmentFromSyntax(rhs(s::Syntax::CaseAst))
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         for b in bs repeat
           result := concat(result, getAllAssignmentFromSyntax(b))
         result
       s case RepeatAst =>
-        result := concat(result, getAllAssignmentFromSyntax(body(s::Syntax::RepeatAst)))
+        getAllAssignmentFromSyntax(body(s::Syntax::RepeatAst))
       s case IfAst =>
         thBranch := thenBranch(s::Syntax::IfAst)
         elBranch := elseBranch(s::Syntax::IfAst)
@@ -633,9 +643,10 @@ LoopAnalysis(): Public == Private where
         result
       s case ExitAst =>
         e := expression(s::Syntax::ExitAst)
-        result := concat(result, getAllAssignmentFromSyntax(e))
+        getAllAssignmentFromSyntax(e)
       result
 
+    -- obtain all the variables being assigned in a list of let statements
     getAllIdentifiersFromAssignments(assignments: List Syntax): List Identifier ==
       res : List Identifier := []
       for a in assignments repeat
@@ -643,9 +654,12 @@ LoopAnalysis(): Public == Private where
         lhs case Identifier => res := concat(res, lhs::Identifier)
       removeDuplicates(res)
 
+    -- checks whether each variable in the list varList is not modified in the 
+    -- body of the loop r
     checkInvariance(varList: List Identifier, r: RepeatAst): Boolean ==
       assignmentsInLoop := getAllAssignmentFromSyntax(r::Syntax::SpadAst)
-      identifiersBeingAssigned := getAllIdentifiersFromAssignments assignmentsInLoop
+      identifiersBeingAssigned :=_ 
+        getAllIdentifiersFromAssignments assignmentsInLoop
       for v in varList repeat
         member?(v, identifiersBeingAssigned) => return false
       true
@@ -663,7 +677,6 @@ LoopAnalysis(): Public == Private where
         op' := op::Identifier
         member?(op', buildInAccessFunctions)
       false
-
 
     verifyItemInExpression(l: Syntax, r: Syntax, loopCounters: List Identifier, gv: VTB): Boolean ==
       not compound?(l) and not compound?(r) =>
@@ -791,9 +804,26 @@ LoopAnalysis(): Public == Private where
         expressionWithAffineReferenceOnly?(predicate, loopCounters, gv)
       false
 
-    verifyStaticControlLoopBody(s: SpadAst, loopCounters: List Identifier,_
+    -- verify whether an if-statement is a static control struct
+    -- i.e., the expression in its predicate is an affine expression
+    -- and both of its branches are static control parts
+    isStaticControlIfStatement?(s: IfAst, loopCounters: List Identifier,_
                          boundParameters: List Identifier, gv: VTB): Boolean ==
-      
+      verifyPredicateExpression(s, loopCounters, gv) =>
+        thBranch := thenBranch(s)
+        elBranch := elseBranch(s)
+        if hasThenBranch?(s)$SyntaxHelper then
+          not verifyStaticControlLoopBody(thBranch, loopCounters, boundParameters, copy gv) =>
+            return false
+        if hasElseBranch?(s)$SyntaxHelper then
+          not verifyStaticControlLoopBody(elBranch, loopCounters, boundParameters, copy gv) =>
+            return false
+        true
+      false
+
+    -- verify the body of a loop follows the definition of static control loop
+    verifyStaticControlLoopBody(s: SpadAst, loopCounters: List Identifier,_
+                         boundParameters: List Identifier, gv: VTB): Boolean ==      
       not compound?(s::Syntax) => true
       s case LetAst => 
         k := getLhs(s)$SyntaxHelper
@@ -801,10 +831,10 @@ LoopAnalysis(): Public == Private where
         not empty?(loopCounters) =>
           verifyArrayReference(s::Syntax::LetAst, loopCounters, gv)
         true
-      s case WhileAst => false
-      s case ColonAst => 
-        k := lhs(s::Syntax::ColonAst)::Syntax
-        gv.k := makeUnknown()
+      s case ColonAst =>
+        s' := s::Syntax::ColonAst 
+        k := lhs(s')::Syntax
+        gv.k := rhs(s')::Syntax
         true
       s case ConstructAst => true
       s case CollectAst => true
@@ -815,36 +845,30 @@ LoopAnalysis(): Public == Private where
         for b in bs repeat
           not verifyStaticControlLoopBody(b, loopCounters, boundParameters, copy gv) => return false
         true
-      s case RepeatAst => identifyAffineControlLoop2(s::Syntax::RepeatAst, copy loopCounters, copy boundParameters, copy gv) 
+      s case RepeatAst => 
+        isStaticControlLoop?(s::Syntax::RepeatAst, copy loopCounters, copy boundParameters, copy gv) 
       s case IfAst => 
-        verifyPredicateExpression(s::Syntax::IfAst, loopCounters, gv) =>
-          thBranch := thenBranch(s::Syntax::IfAst)
-          elBranch := elseBranch(s::Syntax::IfAst)
-          if hasThenBranch?(s::Syntax::IfAst)$SyntaxHelper then
-            not verifyStaticControlLoopBody(thBranch, loopCounters, boundParameters, copy gv) =>
-              return false
-          if hasElseBranch?(s::Syntax::IfAst)$SyntaxHelper then
-            not verifyStaticControlLoopBody(elBranch, loopCounters, boundParameters, copy gv) => 
-              return false
-          true
-        false
+        isStaticControlIfStatement?(s::Syntax::IfAst, loopCounters, boundParameters, copy gv)
       s case ExitAst =>
         e := expression(s::Syntax::ExitAst)
         verifyStaticControlLoopBody(e, loopCounters, boundParameters, gv)
       expressionWithAffineReferenceOnly?(s::Syntax, loopCounters, gv)
 
-    stepForLoopIsACL?(r: RepeatAst, loopCounters: List Identifier,_
+    -- checks whether a for loop whose iterator is a step ast is a 
+    -- static control loop
+    stepForLoopIsSCL?(r: RepeatAst, loopCounters: List Identifier,_
                       boundParameters: List Identifier, gv: VTB): Boolean ==
-      iter := first iterators(r)    -- collect accumulation loop from repeat ast
-    -- i.e. to verify whether a repeatAst has the canonical form
+      iter := first iterators(r)    
       iter' := iter::Syntax
-      loopCounters := concat(loopCounters, collectLoopCounterFromStep(iter))
+      loopCounters := concat(loopCounters, collectLoopCounterFromStep iter)
       boundParameters := concat(boundParameters,_
                                 collectParametersInBoundFromStep(iter', gv))
       not checkInvariance(concat(loopCounters, boundParameters), r) => false
       verifyStaticControlLoopBody(body r, loopCounters, boundParameters, gv)
 
-    inAstForLoopIsACL?(r: RepeatAst, loopCounters: List Identifier,_
+    -- checks whether a for loop whose iterator is an in ast is a 
+    -- static control loop
+    inAstForLoopIsSCL?(r: RepeatAst, loopCounters: List Identifier,_
                        boundParameters: List Identifier, gv: VTB): Boolean ==
       iter := (first iterators(r))::Syntax::InAst
       seq := sequence(iter)::Syntax
@@ -853,13 +877,14 @@ LoopAnalysis(): Public == Private where
       not checkInvariance(concat(loopCounters, boundParameters), r) => false
       verifyStaticControlLoopBody(body r, loopCounters, boundParameters, gv)
 
-    
-    identifyAffineControlLoop2(r: RepeatAst, loopCounters: List Identifier,_
+    -- checks whether a loop is a static control loop    
+    isStaticControlLoop?(r: RepeatAst, loopCounters: List Identifier,_
                          boundParameters: List Identifier, gv: VTB): Boolean ==
+      -- a static control loop must be a for loop
       forLoopWithStep?(r)  => 
-        stepForLoopIsACL?(r, loopCounters, boundParameters, gv)
+        stepForLoopIsSCL?(r, loopCounters, boundParameters, gv)
       forLoopWithInAst?(r) => 
-        inAstForLoopIsACL?(r, loopCounters, boundParameters, gv)
+        inAstForLoopIsSCL?(r, loopCounters, boundParameters, gv)
       false
 
     -- extract the loop counter of a repeatAst, and update the environment
@@ -933,8 +958,15 @@ LoopAnalysis(): Public == Private where
       result : ACC := []
       bs := body(s::Syntax::SequenceAst)
       for b in bs repeat
-        result := concat(result, identifyAffineControlLoop(b, copy gv))
+        result := concat(result, identifyAffineControlLoopFromStatement(b, copy gv))
       result
+
+    -- verify affine control loop nest condition
+    -- i.e., the loop is a static control loop
+    -- and the loop should contain at least another single loop
+    isAffineControlLoop?(s: RepeatAst, gv: VTB): Boolean ==
+      isStaticControlLoop?(s, [], [], copy gv)_
+      and containLoop?(body s)
 
     -- collect affine control loop from a repeat ast
     identifyAffineControlLoopFromRepeat(s: SpadAst, gv: VTB): ACC ==
@@ -942,10 +974,11 @@ LoopAnalysis(): Public == Private where
       option = 3 =>
         getLoopDepth(s') > 1 => [s']
         []
-      identifyAffineControlLoop2(s', [], [], copy gv)_
-      and containLoop?(body(s')) => [s']
+      -- an ACL should contain at lesat one single loop in its body
+      isAffineControlLoop?(s', gv) => [s']
+      -- otherwise, we continue to examine its body
       gv' := updateGlobalVariableTableWithLoopCounter(s', copy gv)
-      identifyAffineControlLoop(body s', gv')
+      identifyAffineControlLoopFromStatement(body s', gv')
 
     -- collect affine control loop from if statement
     identifyAffineControlLoopFromIf(s: SpadAst, gv: VTB): ACC ==
@@ -953,19 +986,21 @@ LoopAnalysis(): Public == Private where
       thBranch := thenBranch(s::Syntax::IfAst)
       elBranch := elseBranch(s::Syntax::IfAst)
       if compound?(thBranch::Syntax) then
-        result := concat(result,identifyAffineControlLoop(thBranch, copy gv))
+        result := concat(result,_
+                  identifyAffineControlLoopFromStatement(thBranch, copy gv))
       if compound?(elBranch::Syntax) then
-        result := concat(result,identifyAffineControlLoop(elBranch, copy gv))
+        result := concat(result,_
+                  identifyAffineControlLoopFromStatement(elBranch, copy gv))
       result
 
     -- collect affine control loop from exit statement
     identifyAffineControlLoopFromExit(s: SpadAst, gv: VTB): ACC ==
       e := expression(s::Syntax::ExitAst)
-      identifyAffineControlLoop(e, copy gv)
+      identifyAffineControlLoopFromStatement(e, copy gv)
 
     -- Traverse each statement in a definition body,
     -- collecting affine control loop from each statement
-    identifyAffineControlLoop(s: SpadAst, gv: VTB): ACC ==
+    identifyAffineControlLoopFromStatement(s: SpadAst, gv: VTB): ACC ==
       not compound?(s::Syntax) => []
       s case LetAst => 
         k := getLhs(s)$SyntaxHelper
@@ -976,7 +1011,7 @@ LoopAnalysis(): Public == Private where
         gv.k := makeUnknown()
         []
       s case CaseAst => 
-        identifyAffineControlLoop(rhs(s::Syntax::CaseAst), copy gv)
+        identifyAffineControlLoopFromStatement(rhs(s::Syntax::CaseAst), copy gv)
       s case SequenceAst => 
         identifyAffineControlLoopFromSequence(s, copy gv)
       s case RepeatAst => 
@@ -1035,11 +1070,12 @@ LoopAnalysis(): Public == Private where
 
     -- collects all the affine control loops from a definition body, or, 
     -- collects all the normal loop nests from a definition body
-    identifyAffineControlLoop0 d ==
+    identifyAffineControlLoopFromDefinitionBody(d: DefinitionAst):_
+                                                       Pair(Identifier, ACC) ==
       typeEnvironment : VTB := initializeLocalTypeEnvironment d
       functionName : Identifier := name(head(d)::Syntax::HeadAst)
       -- start analysis
-      pair(functionName, identifyAffineControlLoop(body d, typeEnvironment))
+      pair(functionName, identifyAffineControlLoopFromStatement(body d, typeEnvironment))
 
     -- collect data that is accumulation loop from function definition
     collectAccumulationLoopFromDefinition(sa: SpadAst, ctor: Identifier):Void ==
@@ -1053,7 +1089,8 @@ LoopAnalysis(): Public == Private where
     -- collect data that is ACL or normal loop nests from function definition
     collectAclOrLoopNestsFromDefinition(sa: SpadAst, ctor: Identifier): Void == 
       -- extract affine control loop or normal loop
-      analysisResult := identifyAffineControlLoop0(sa::Syntax::DefinitionAst)
+      analysisResult := identifyAffineControlLoopFromDefinitionBody_
+                                                     (sa::Syntax::DefinitionAst)
       -- update the result table
       functionName   := first analysisResult
       extractedLoops := second analysisResult
