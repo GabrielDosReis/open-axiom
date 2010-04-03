@@ -2,10 +2,10 @@
 )abbrev package LPANL LoopAnalysis 
 ++ Author: Yue Li
 ++ Date Created: October 27, 2009
-++ Date Last Updated: April 2, 2010
+++ Date Last Updated: April 3, 2010
 ++ Description: This package provides library function for extracting 
 ++ accumulation loops, affine control loops and loop nests from a 
-++ function definition body
+++ function definition syntax
 LoopAnalysis(): Public == Private where
   macro ACC == List RepeatAst
   macro LTB == Table(Pair(Identifier, Identifier), ACC)
@@ -47,6 +47,9 @@ LoopAnalysis(): Public == Private where
                                   List Identifier, VTB) -> Boolean
       ++ checks whether a statement satisfies the requirement of 
       ++ static control part
+    expressionWithAffineReferenceOnly?:(Syntax, List Identifier, VTB) -> Boolean
+      ++ verifies that all the index expressions used in some expression are 
+      ++ affine expressions of loop counters
 
     --Global variables
     -- list for storing all the accumulation loops
@@ -76,6 +79,9 @@ LoopAnalysis(): Public == Private where
     -- predicate used in the if-statement that is allowed in ACL
     -- can only uses predicate in this set
     buildInPredicateSet : List Identifier := [_<, _>, _=, _~_=, _<_=, _>_=] 
+
+    -- a set of element access/set operator names
+    buildInAccessFunctions : List Identifier := ['qsetelt!,'setelt,'elt,'qelt]
 
     -- list for storing all the reduction variables used 
     -- in some accumulation loop, i.e., a list contains 
@@ -172,14 +178,15 @@ LoopAnalysis(): Public == Private where
     isLocalVariable?(s: Syntax, t: VTB): Boolean == key?(s, t)
 
     -- does forward substitutions for local variables.
-    localVariableSubstitutions!(i: Integer, b: List LetAst, s: LetAst, var: Syntax): List LetAst ==
+    localVariableSubstitutions!(i: Integer, b: List LetAst,_
+                                s: LetAst, var: Syntax): List LetAst ==
       for n in i..#b repeat
         b.n := replaceLetRhs(var, b.n, (rhs s)::Syntax)$SyntaxHelper      
       b
 
     -- removes uses of local intermediate value assignment after forward 
     -- substitutions of local variables
-    removeLocalAssignments(b: List LetAst, toRemove: Set Integer): List LetAst ==
+    removeLocalAssignments(b: List LetAst, toRemove: Set Integer):List LetAst ==
       reverse([b.n for n in 1..#b | not member?(n, toRemove)]@List LetAst)
 
     -- does forward substitution for local variables, and remove those
@@ -190,7 +197,8 @@ LoopAnalysis(): Public == Private where
       -- local variable substitution
       for s in reverse b repeat
         next := #b-current+2
-        if isLocalVariable?(var := getLhs(s)$SyntaxHelper, lv) and (next <= #b) then
+        if isLocalVariable?(var := getLhs(s)$SyntaxHelper, lv) and_
+           (next <= #b) then
           b := localVariableSubstitutions!(next, b, s, var)
           -- mark the intermediate assignment which is ready to be removed
           toRemove := union(next-1, toRemove)
@@ -218,7 +226,6 @@ LoopAnalysis(): Public == Private where
     qualifiedForElimination?(b: List LetAst, var: Syntax): Boolean ==
       vars := [getLhs(b.i)$SyntaxHelper for i in 1..#b| not toBeRemoved?(i)]
       member?(var, vars)
-
 
     -- generate the simplified loop body
     updateLoopBody!(b: List LetAst, t: List LetAst, i: Integer): List LetAst ==
@@ -411,6 +418,8 @@ LoopAnalysis(): Public == Private where
         gv.v := makeUnknown()
       gv
 
+    -- collect all the variables appeared in the predicate expression of 
+    -- the condition of an if-statement
     collectVariableFromIfCondition(b: SpadAst, gv: VTB): VTB ==
       (b case IfAst) =>
         con := condition(b::Syntax::IfAst)
@@ -423,12 +432,14 @@ LoopAnalysis(): Public == Private where
 
     -- checks whether the variables being assigned by a list of let statements
     -- appeared in the predicate expression of some loop
-    withInCondition?(thenList: List LetAst, elseList: List LetAst, b: SpadAst): Boolean ==
-      vars : List Syntax := [getLhs(s)$SyntaxHelper for s in concat(thenList, elseList)]
+    withInCondition?(thenList: List LetAst,_
+                     elseList: List LetAst, b: SpadAst): Boolean ==
+      vars := [getLhs(s)$SyntaxHelper for s in concat(thenList, elseList)]
       not compound?(b::Syntax) => false
       b case IfAst => listWithin?(vars, condition(b::Syntax::IfAst)::Syntax)
       b case SequenceAst => 
-        s := expression((second(body(b::Syntax::SequenceAst)))::Syntax::ExitAst)::Syntax::IfAst
+        s := expression((second(body(_
+                     b::Syntax::SequenceAst)))::Syntax::ExitAst)::Syntax::IfAst
         listWithin?(vars, condition(s)::Syntax)
       userError "unexpected body of the verified repeat-if syntax"
 
@@ -443,13 +454,14 @@ LoopAnalysis(): Public == Private where
         [r]
       []
 
-    -- verify whether the statements from each branch either form an accumulation loop
-    -- or a sequence of accumulation statements
+    -- verify whether the statements from each branch either
+    -- form an accumulation loop or a sequence of accumulation statements
     -- this handles the accumulation loop whose body has if statement
     -- e.g. for i in 1..10 repeat
     --        even? i => x := x+i
     --        x := x + 1
-    verifyLoopWithIfInside(r: RepeatAst, q: Pair(Boolean, Pair(List LetAst, List LetAst)), its: List SpadAst, gv: VTB): ACC==
+    verifyLoopWithIfInside(r: RepeatAst, q: Pair(Boolean, Pair(List LetAst,_
+                              List LetAst)), its: List SpadAst, gv: VTB): ACC==
       gv' : VTB := collectVariableFromIfCondition(body r, copy gv)
       thenList := first second q
       elseList := second second q
@@ -459,7 +471,8 @@ LoopAnalysis(): Public == Private where
       verifyReduction(its, elseList, gv', lvElse) and_
       not withInCondition?(thenList, elseList, body r) =>
         reductionVariableList := concat(reductionVariableList,_
-          [concat(reductionVariableListInThenBranch, reductionVariableListInElseBranch)])
+          [concat(reductionVariableListInThenBranch,_
+           reductionVariableListInElseBranch)])
         [r]
       []
 
@@ -491,7 +504,8 @@ LoopAnalysis(): Public == Private where
       iters := iterators(r)
       empty? iters => false
       loopHead := (first(iters))::Syntax
-      compound?(loopHead) and (getOperator(loopHead)::Identifier) = ('STEP::Identifier) =>
+      compound?(loopHead) and_
+      (getOperator(loopHead)::Identifier) = ('STEP::Identifier) =>
         #getOperands(loopHead) = 4  -- to make sure we have both lower and upper bounds.
       false
 
@@ -517,6 +531,7 @@ LoopAnalysis(): Public == Private where
       iters := iterators(r)
       forLoopWithStep?(r) and #iters = 1 
 
+    -- checks that a repeat ast is a for loop, predicating on its loop counter
     inSequenceForLoopWithCondition?(r: RepeatAst): Boolean ==
       iters := iterators(r)
       forLoopWithInAst?(r) and #iters = 2 =>
@@ -524,6 +539,8 @@ LoopAnalysis(): Public == Private where
         false
       false
 
+    -- checks that a repeat ast is a for loop, without predicating on its 
+    -- condition
     inSequenceForLoopWithoutCondition?(r: RepeatAst): Boolean ==
       iters := iterators(r)
       forLoopWithInAst?(r) and #iters = 1
@@ -547,17 +564,15 @@ LoopAnalysis(): Public == Private where
         res := concat(res, collectParametersInBoundFromStep(t, gv))
       res
 
+    -- collect parameters used in the sequence of the in ast of a loop
+    -- these paraemeters will further become bound parameters, which is allowed
+    -- to be used in an affine index expression
     collectParametersFromSequcneOfInAst(r: Syntax, gv: VTB): List Identifier ==
       collectParametersInBoundFromStep(r, gv)
 
+    -- checks whether a statement wraps a loop inside
     containLoop?(s: SpadAst): Boolean ==
       not compound?(s::Syntax) => false
-      s case LetAst => false
-      s case WhileAst => false -- we won't have while loop in ScoP
-      s case ColonAst => false
-      s case ConstructAst => false
-      s case CollectAst => false
-      s case ReturnAst => false
       s case CaseAst => containLoop?(rhs(s::Syntax::CaseAst))
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
@@ -574,20 +589,14 @@ LoopAnalysis(): Public == Private where
           containLoop?(elBranch) => return true
         false
       s case ExitAst =>
-        e := expression(s::Syntax::ExitAst)
-        containLoop?(e)
+        containLoop?(expression(s::Syntax::ExitAst))
       false
 
     -- compute the loop depth of the body of a loop
     getLoopDepthOfBody(s: SpadAst, depth: Integer): Integer ==
       not compound?(s::Syntax) => depth
-      s case LetAst => depth
-      s case WhileAst => depth
-      s case ColonAst => depth
-      s case ConstructAst => depth
-      s case CollectAst => depth
-      s case ReturnAst => depth
-      s case CaseAst => getLoopDepthOfBody(rhs(s::Syntax::CaseAst), depth)
+      s case CaseAst => 
+        getLoopDepthOfBody(rhs(s::Syntax::CaseAst), depth)
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         maxDepth := depth
@@ -596,22 +605,23 @@ LoopAnalysis(): Public == Private where
           if currentDepth > maxDepth then
             maxDepth := currentDepth
         maxDepth  
-      s case RepeatAst => getLoopDepthOfBody(body(s::Syntax::RepeatAst), inc(depth)) 
+      s case RepeatAst => 
+        getLoopDepthOfBody(body(s::Syntax::RepeatAst), inc(depth)) 
       s case IfAst =>
-        thBranch := thenBranch(s::Syntax::IfAst)
-        elBranch := elseBranch(s::Syntax::IfAst)
         depthThen : Integer := 0
         depthElse : Integer := 0
-        if compound?(thBranch::Syntax) then
+        s' := s::Syntax::IfAst
+        if hasThenBranch? s' then
+          thBranch := thenBranch s'
           depthThen := getLoopDepthOfBody(thBranch, depth)
-        if compound?(elBranch::Syntax) then
-          depthElse := getLoopDepthOfBody(elBranch, depth)
+        if hasElseBranch? s' then
+          elBranch := elseBranch s'
+          depthElse := getLoopDepthOfBody(elBranch, depth) 
         max(depthElse, depthThen)
       s case ExitAst =>
-        e := expression(s::Syntax::ExitAst)
-        getLoopDepthOfBody(e, depth)
+        getLoopDepthOfBody(expression(s::Syntax::ExitAst), depth)
       depth
-    
+
     -- computes the depth of a loop
     getLoopDepth(s: RepeatAst): Integer ==
       depth : Integer := 1
@@ -634,16 +644,16 @@ LoopAnalysis(): Public == Private where
       s case RepeatAst =>
         getAllAssignmentFromSyntax(body(s::Syntax::RepeatAst))
       s case IfAst =>
-        thBranch := thenBranch(s::Syntax::IfAst)
-        elBranch := elseBranch(s::Syntax::IfAst)
-        if compound?(thBranch::Syntax) then
+        s' := s::Syntax::IfAst
+        if hasThenBranch? s' then
+          thBranch := thenBranch(s')
           result := concat(result, getAllAssignmentFromSyntax(thBranch))
-        if compound?(elBranch::Syntax) then
+        if hasElseBranch? s' then
+          elBranch := elseBranch(s')
           result := concat(result, getAllAssignmentFromSyntax(elBranch))
         result
       s case ExitAst =>
-        e := expression(s::Syntax::ExitAst)
-        getAllAssignmentFromSyntax(e)
+        getAllAssignmentFromSyntax(expression(s::Syntax::ExitAst))
       result
 
     -- obtain all the variables being assigned in a list of let statements
@@ -664,21 +674,23 @@ LoopAnalysis(): Public == Private where
         member?(v, identifiersBeingAssigned) => return false
       true
 
+    -- checks whether an expression is an access form, e.g. a.i
     isAccessForm?(e: Syntax, gv: VTB): Boolean ==
-      (op := getOperator(e)) case Identifier =>
-        (op::Identifier) = 'qelt::Identifier => return true 
-        key?(op::Identifier::Syntax, gv)
-      false
-  
-    buildInAccessFunctions : List Identifier := ['qsetelt!, 'setelt, 'elt, 'qelt]
+      (op := getOperator(e)) case Identifier and_
+      key?(op::Identifier::Syntax, gv)
 
+    -- check whether some operator is an element access/set operator
+    -- e.g., elt(a, i), qsetelt!(a, i, b.j)
     isAccessFunction?(e: Syntax): Boolean ==
       (op := getOperator(e)) case Identifier =>
         op' := op::Identifier
         member?(op', buildInAccessFunctions)
       false
 
-    verifyItemInExpression(l: Syntax, r: Syntax, loopCounters: List Identifier, gv: VTB): Boolean ==
+    -- verify a subexpression of an index expression 
+    -- is an affine expressions of loop counters and symbolic constants
+    verifyItemInExpression(l: Syntax, r: Syntax,_
+                           loopCounters: List Identifier, gv: VTB): Boolean ==
       not compound?(l) and not compound?(r) =>
         l case Integer and r case Identifier =>
           r' := r::Identifier
@@ -689,7 +701,10 @@ LoopAnalysis(): Public == Private where
         false
       false
 
-    verifyIndexExpression(e: Syntax, loopCounters: List Identifier, gv: VTB): Boolean ==
+    -- verify an index expression is an affine expressions of loop counters
+    -- and symbolic constants
+    verifyIndexExpression(e: Syntax,_
+                          loopCounters: List Identifier, gv: VTB): Boolean ==
       not compound?(e) => true
       (op := getOperator(e)) case Identifier =>
         op' := op::Identifier
@@ -704,75 +719,81 @@ LoopAnalysis(): Public == Private where
         false
       false
 
-    expressionWithAffineReferenceOnly?: (Syntax, List Identifier, VTB) -> Boolean
+    -- verify two dimenstional setelt functions, qsetelt!, setelt
+    -- so that all index expressions are affine expressions of loop counters
+    -- and symbolic constants
+    verifyTwoDimensionSet(operands: List Syntax,_
+                          loopCounters: List Identifier, gv: VTB): Boolean ==
+      index1 := operands.2
+      index2 := operands.3
+      c := operands.4
+      verifyIndexExpression(index1, loopCounters, gv) and_
+      verifyIndexExpression(index2, loopCounters, gv) and_
+      expressionWithAffineReferenceOnly?(c, loopCounters, gv)
 
-    verifyAccessFunctionParameters(e: Syntax, loopCounters: List Identifier, gv: VTB): Boolean ==
+    -- verify one dimenstional setelt functions, qsetelt!, setelt 
+    -- so that all index expressions are affine expressions of loop counters
+    -- and symbolic constants
+    verifyOneDimensionSet(operands: List Syntax,_
+                          loopCounters: List Identifier, gv: VTB): Boolean ==
+      index := operands.2
+      c := operands.3
+      verifyIndexExpression(index, loopCounters, gv) and_
+      expressionWithAffineReferenceOnly?(c, loopCounters, gv)
+
+    -- verify two dimenstional element query functions, query, elt
+    -- so that all index expressions are affine expressions of loop counters
+    -- and symbolic constants
+    verifyTwoDimensionElt(operands: List Syntax,_
+                          loopCounters: List Identifier, gv: VTB): Boolean ==
+      index1 := operands.2
+      index2 := operands.3
+      verifyIndexExpression(index1, loopCounters, gv) and_
+      verifyIndexExpression(index2, loopCounters, gv)
+
+    -- verify one dimenstional element query functions: query, elt
+    -- so that all index expressions are affine expressions of loop counters
+    -- and symbolic constants
+    verifyOneDimensionElt(operands: List Syntax,_
+                          loopCounters: List Identifier, gv: VTB): Boolean ==
+      index := operands.2
+      verifyIndexExpression(index, loopCounters, gv)
+
+    -- verifies that index expressions used in built-in access functions 
+    -- are affine expressions of loop counters and symbolic constants
+    verifyAccessFunctionParameters(e: Syntax,_
+                            loopCounters: List Identifier, gv: VTB): Boolean ==
       op := getOperator(e)::Identifier
       opr := getOperands(e)
-      op = 'qsetelt! => 
-        #opr = 4 =>
-          index1 := opr.2
-          index2 := opr.3
-          c := opr.4
-          verifyIndexExpression(index1, loopCounters, gv) and_
-          verifyIndexExpression(index2, loopCounters, gv) and_
-          expressionWithAffineReferenceOnly?(c, loopCounters, gv)
-        #opr = 3 =>
-           index1 := opr.2
-           c := opr.3
-           verifyIndexExpression(index1, loopCounters, gv) and_
-           expressionWithAffineReferenceOnly?(c, loopCounters, gv)
+      (op = 'qsetelt!) or (op = 'setelt) => 
+        #opr = 4 => verifyTwoDimensionSet(opr, loopCounters, gv)
+        #opr = 3 => verifyOneDimensionSet(opr, loopCounters, gv)
         false
-      op = 'setelt => 
-        #opr = 4 =>
-          index1 := opr.2
-          index2 := opr.3
-          c := opr.4
-          verifyIndexExpression(index1, loopCounters, gv) and_
-          verifyIndexExpression(index2, loopCounters, gv) and_
-          expressionWithAffineReferenceOnly?(c, loopCounters, gv)
-        #opr = 3 =>
-           index1 := opr.2
-           c := opr.3
-           verifyIndexExpression(index1, loopCounters, gv) and_
-           expressionWithAffineReferenceOnly?(c, loopCounters, gv)
-        false
-      op = 'elt =>
-        #opr = 2 =>
-          index1 := opr.2
-          verifyIndexExpression(index1, loopCounters, gv)
-        #opr = 3 =>
-          index1 := opr.2
-          index2 := opr.3
-          verifyIndexExpression(index1, loopCounters, gv) and_
-          verifyIndexExpression(index2, loopCounters, gv)
-        false
-      op = 'qelt =>
-        #opr = 2 =>
-          index1 := opr.2
-          verifyIndexExpression(index1, loopCounters, gv)
-        #opr = 3 =>
-          index1 := opr.2
-          index2 := opr.3
-          verifyIndexExpression(index1, loopCounters, gv) and_
-          verifyIndexExpression(index2, loopCounters, gv)
-        false
+      (op = 'elt) or(op = 'qelt) => 
+        #opr = 3 => verifyTwoDimensionElt(opr, loopCounters, gv)
+        #opr = 2 => verifyOneDimensionElt(opr, loopCounters, gv)
       print(e::OutputForm)
       userError "unexpected kind of access library function"
 
+    -- checks whether an expression is an annotated function application
     isAnnotated?(e: Syntax):Boolean ==
       (op := getOperator(e)) case Syntax =>
         (op' := getOperator(op::Syntax)) case Identifier and_
         op'::Identifier = 'elt and #getOperands(op::Syntax) = 2 
       false
 
+    -- verifies that all the index expressions used in some annotated 
+    -- function call are affine expressions of loop counters and symbolic
+    -- constants
     annotatedExpressionWithAffineReferenceOnly?(e: Syntax,_
                             loopCounters: List Identifier, gv: VTB): Boolean ==
       op := getOperands(getOperator(e)::Syntax).last
       oprs := getOperands(e)
       exp := buildSyntax(op, oprs)
       expressionWithAffineReferenceOnly?(exp, loopCounters, gv)
-      
+
+    -- verifies that all the index expressions used in some expression are 
+    -- affine expressions of loop counters and symbolic constants
     expressionWithAffineReferenceOnly?(e: Syntax,_
                             loopCounters: List Identifier, gv: VTB): Boolean ==
       not compound? e => true
@@ -783,14 +804,18 @@ LoopAnalysis(): Public == Private where
         not expressionWithAffineReferenceOnly?(s, loopCounters, gv) => return false
       true
 
+    -- checks that the index expression of an array reference
+    -- is an affine expression of loop counters and symbolic constants
     verifyArrayReference(a: LetAst,_
                             loopCounters: List Identifier, gv: VTB): Boolean ==
       l := getLhs(a)$SyntaxHelper
       r := rhs(a)::Syntax
       b := expressionWithAffineReferenceOnly?(l, loopCounters, gv) and_
       expressionWithAffineReferenceOnly?(r, loopCounters, gv)
-      b    
+      b
 
+    -- verify the expression in the predicate of an if-statement
+    -- is an affine expression of loop counters and symbolic constants
     verifyPredicateExpression(a: IfAst,_
                             loopCounters: List Identifier, gv: VTB): Boolean ==
       predicate := condition(a)::Syntax
@@ -799,24 +824,27 @@ LoopAnalysis(): Public == Private where
         op' := op::Identifier
         member?(op', buildInPredicateSet) =>
           for opr in getOperands(predicate) repeat
-            not expressionWithAffineReferenceOnly?(opr, loopCounters, gv) => return false
+            not expressionWithAffineReferenceOnly?(opr,_
+                                              loopCounters, gv) => return false
           true
         expressionWithAffineReferenceOnly?(predicate, loopCounters, gv)
       false
 
     -- verify whether an if-statement is a static control struct
-    -- i.e., the expression in its predicate is an affine expression
-    -- and both of its branches are static control parts
+    -- i.e., the expression in its predicate is an affine expression 
+    -- and symbolic constant, also both of its branches are static control parts
     isStaticControlIfStatement?(s: IfAst, loopCounters: List Identifier,_
                          boundParameters: List Identifier, gv: VTB): Boolean ==
       verifyPredicateExpression(s, loopCounters, gv) =>
         thBranch := thenBranch(s)
         elBranch := elseBranch(s)
         if hasThenBranch?(s)$SyntaxHelper then
-          not verifyStaticControlLoopBody(thBranch, loopCounters, boundParameters, copy gv) =>
+          not verifyStaticControlLoopBody(thBranch,_
+                                     loopCounters, boundParameters, copy gv) =>
             return false
         if hasElseBranch?(s)$SyntaxHelper then
-          not verifyStaticControlLoopBody(elBranch, loopCounters, boundParameters, copy gv) =>
+          not verifyStaticControlLoopBody(elBranch,_
+                                     loopCounters, boundParameters, copy gv) =>
             return false
         true
       false
@@ -839,16 +867,20 @@ LoopAnalysis(): Public == Private where
       s case ConstructAst => true
       s case CollectAst => true
       s case ReturnAst => true
-      s case CaseAst => false -- we only allow if statement, instead of case conditionals
+      s case CaseAst => false
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         for b in bs repeat
-          not verifyStaticControlLoopBody(b, loopCounters, boundParameters, copy gv) => return false
+          not verifyStaticControlLoopBody(b, loopCounters,_
+                                          boundParameters, copy gv) => 
+            return false
         true
       s case RepeatAst => 
-        isStaticControlLoop?(s::Syntax::RepeatAst, copy loopCounters, copy boundParameters, copy gv) 
+        isStaticControlLoop?(s::Syntax::RepeatAst, copy loopCounters,_
+                             copy boundParameters, copy gv) 
       s case IfAst => 
-        isStaticControlIfStatement?(s::Syntax::IfAst, loopCounters, boundParameters, copy gv)
+        isStaticControlIfStatement?(s::Syntax::IfAst, loopCounters,_
+                                    boundParameters, copy gv)
       s case ExitAst =>
         e := expression(s::Syntax::ExitAst)
         verifyStaticControlLoopBody(e, loopCounters, boundParameters, gv)
@@ -892,14 +924,13 @@ LoopAnalysis(): Public == Private where
     updateGlobalVariableTableWithLoopCounter(s: RepeatAst, gv: VTB): VTB ==
       gv' := copy gv
       iters := iterators(s)
-      #iters > 0 =>
-        iter := first iters
-        iter' := iter::Syntax
-        ((op := getOperator(iter')) case Identifier) and_ 
-        ((op::Identifier = 'IN) or (op::Identifier = 'STEP)) =>
-          loopCounter := first(getOperands(iter'))
-          gv'.loopCounter := makeUnknown()
-          gv'
+      #iters = 0 => gv'
+      iter := first iters
+      iter' := iter::Syntax
+      ((op := getOperator(iter')) case Identifier) and_ 
+      ((op::Identifier = 'IN) or (op::Identifier = 'STEP)) =>
+        loopCounter := first(getOperands(iter'))
+        gv'.loopCounter := makeUnknown()
         gv'
       gv'
 
