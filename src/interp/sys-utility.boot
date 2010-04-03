@@ -273,6 +273,7 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
 $InputIOMode == KEYWORD::INPUT
 $OutputIOMode == KEYWORD::OUTPUT
 $BothWaysIOMode == KEYWORD::IO
+$ClosedIOMode == KEYWORD::CLOSED
 
 ++ return a binary stream open for `file' in mode `mode'; nil
 ++ if something went wrong.  This function is used by the Algebra.
