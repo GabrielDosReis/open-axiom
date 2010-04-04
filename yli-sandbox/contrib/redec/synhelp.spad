@@ -1,54 +1,70 @@
+
 )abbrev package SYNHELP SyntaxHelper
 ++ Authors: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: March 20, 2010
+++ Date Last Updated: April 3, 2010
 ++ Description: This package provides helper functions for
-++ Syntax and AST manipulations
+++ manipulating syntax and ast
 SyntaxHelper(): Public == Private where
   Public == with
     getLhs: LetAst -> Syntax
       ++ returns the variable being assigned (the left hand side)
     unlist: Syntax -> List Syntax
+      ++ unwraps a compound syntax form into a syntax list containing 
+      ++ its operator, and operands
     within?: (Syntax, Syntax) -> Boolean
+      ++ checks whether a syntax is a subexpression of another syntax
     listWithin?: (List Syntax, Syntax) -> Boolean
+      ++ checks whether each syntax in a syntax list is a subexpression
+      ++ of another syntax
     replace: (Syntax, Syntax, Syntax) -> Syntax
       ++ replace(a, b, c)
-      ++ replace all occurrances of a in b with c
+      ++ replaces all the appearances of a in b with c
     replace: (Syntax, DomainTemplate) -> Syntax
-      ++ replace number slots (not including local number slots) with 
-      ++ elements stored in domain template.
+      ++ replace number slots with the elements stored in a domain template 
+      ++ those elements are indexed by the numbers in the number slots
     replaceLetRhs: (Syntax, LetAst, Syntax) -> LetAst
       ++ replaceLetRhs(a, b, c)
       ++ replaces all occurrances of a in the rhs(b) with c
     toString: Syntax -> String
       ++ convert a syntax to string for pretty printing purpose
     listColonAst: ColonAst -> List Syntax
-      ++ isListOf?(c)
-      ++ checks whether the left hand side of a ColonAst is a list such as x, y, z : Integer
-      ++ if so, return the list of elements.
+      ++ checks whether the left hand side of a ColonAst is a list of variables
+      ++ e.g., x, y, z : Integer, if true, return the list of elements.
     hasThenBranch?: IfAst -> Boolean
-      ++ checks whether an if ast has then branch
+      ++ checks whether an if statement has then branch
     hasElseBranch?: IfAst -> Boolean
-      ++ checks whether an if ast has else branch
-    isBinaryExpression?: Syntax -> Boolean
-      ++ checks whether an expression which uses a binary operator
-    isJoin?: Syntax -> Boolean
-    isAdd?: Syntax -> Boolean
-    isProgn?: Syntax -> Boolean
-    isNil?: Syntax -> Boolean
-    isType?: Syntax -> Boolean
+      ++ checks whether an if statement has else branch
     mappingAstToSignature: MappingAst -> Signature
       ++ converts a mapping ast to signature
-    isDomain?: Syntax -> Boolean
-    isCategory?: Syntax -> Boolean
+    isBinaryExpression?: Syntax -> Boolean
+      ++ checks whether an expression whose operator is binary
+    isJoin?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Join
+    isAdd?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Add
+    isProgn?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier PROGN
+    isNil?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier nil
+    isType?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Type
     isRecord?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Record
     toDomainConstructor: Constructor -> DomainConstructor
-      ++ convert a domain constructor with type Constructor to type DomainConstructor
+      ++ convert a domain constructor with type Constructor 
+      ++ to type DomainConstructor
     makeNumberSlot: Integer -> Syntax
+      ++ make the syntax of a number slot, e.g., #1
     makeLocalNumberSlot: Integer -> Syntax
+      ++ make a compound syntax for a local number slot, e.g., 
+      ++ (local #1)
     makeDoubleDollar: () -> Syntax
+      ++ creates an uncompound syntax for identifier $$
     makeSetCategory: () -> Syntax
+      ++ creates an uncompound syntax for identifier SetCategory
     makeType: () -> Syntax
+      ++ creates an uncompound syntax for identifier Type
     makePercentage: () -> Syntax
       ++ creates an uncompound syntax for identifier %
     makeCase: () -> Syntax
@@ -61,9 +77,12 @@ SyntaxHelper(): Public == Private where
       ++ creates an uncompound syntax for identifier Join
     makeUnknown: () -> Syntax
       ++ creates an uncompound syntax for identifier ?
-
     getOperatorName: Syntax -> Identifier
-      ++ obtain the name of the operator used in a function application form
+      ++ obtain the operator name of some compound syntax
+    isDomain?: Syntax -> Boolean                                                                     
+      ++ checks whether a syntax is the one of some domain name
+    isCategory?: Syntax -> Boolean                                                                 
+      ++ checks whether a syntax is the one of some category name                                  
   Private == add
     import Syntax
 
@@ -144,7 +163,8 @@ SyntaxHelper(): Public == Private where
             body := concat([body, bpart])
         concat([toString first uls, "(", body, ")"])
       x case Integer => string(x::Integer)
-      x case DoubleFloat => userError "DoubleFloat conversion to string is not supported."
+      x case DoubleFloat => 
+        userError "DoubleFloat conversion to string is not supported."
       x case String => x::String
       x case Identifier => string(x::Identifier::Symbol)
 
@@ -233,7 +253,8 @@ SyntaxHelper(): Public == Private where
 
     isType?(t: Syntax): Boolean ==
       compound? t =>
-        (op := getOperator(t)) case Identifier => (op::Identifier) = makeType()
+        (op := getOperator(t)) case Identifier => 
+          (op::Identifier) = makeType()
         false
       false
 
@@ -242,9 +263,11 @@ SyntaxHelper(): Public == Private where
         (x'::Identifier::Syntax) = makeRecord()
       false
 
-    hasElseBranch?(f: IfAst): Boolean == not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+    hasElseBranch?(f: IfAst): Boolean == 
+      not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
 
-    hasThenBranch?(f: IfAst): Boolean == not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+    hasThenBranch?(f: IfAst): Boolean == 
+      not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
 
     mappingAstToSignature(m: MappingAst): Signature ==
       src : List Syntax := []
@@ -253,9 +276,9 @@ SyntaxHelper(): Public == Private where
         src := concat(src, s::Syntax)
       signature(src, tar)
 
-
     getCtorKind(c: Identifier): ConstructorKind == 
-      kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
+      kind(retract(findConstructor(_
+           c)$Constructor)$(Maybe Constructor))$Constructor
 
     isDomain?(c: Syntax): Boolean ==      
       compound? c and (opr := getOperator c) case Identifier => 
