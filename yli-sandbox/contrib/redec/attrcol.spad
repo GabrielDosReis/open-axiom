@@ -12,6 +12,7 @@ AttributeCollection(): Public == Private where
     allAttributes: () -> List Syntax
       ++ returns the global variable which stores the attribute set
   Private == add
+    -- global list for storing all extracted built-in attributes
     builtinAttributes: List Syntax := []
     allAttributes == builtinAttributes
     fileDirectory(): FileName ==

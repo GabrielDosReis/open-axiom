@@ -1,93 +1,110 @@
-import SYNHELP
 
 )abbrev package REDANL ReduceAnalysis 
 ++ Author: Yue Li
 ++ Date Created: October 27, 2009
 ++ Date Last Updated: March 20, 2010
-++ Description: This package provides functions for extracting reduce function
-++ call and reduce forms from function definitions
+++ Description: This package provides functions for extracting the syntax of 
+++ reduce function calls and reduce forms from function definitions
+++ reduce form is a unique syntax form, therefore we don't need to do typechecking;
+++ while reduce function call needs typechecking which distinguish the reduce 
+++ over a sequence, and all the other kinds of reduce. The procedure to further 
+++ typecheck reduce functions are implemented in redupkg.spad and typchker.spad, 
+++ but not here
 ReduceAnalysis(): Public == Private where
   Public == with
-    extractReduceFormsFromFunctionDefinition: (DefinitionAst, Identifier) -> List Syntax
+    extractReduceFromFunctionDefinition:_
+      (DefinitionAst, Identifier) -> List Syntax
+      ++ collects all the reduce function syntax and reduce forms from 
+      ++ a function definition 
   Private == add
-    analyzeStatement: (SpadAst, Identifier)       -> Integer
-    analyzeFunctionDefinition:     (DefinitionAst, Identifier) -> Integer
-    count : Integer := 0
-    makeReduce:  Syntax                   == 'reduce::Identifier::Syntax
-    makeREDUCE:  Syntax                   == 'REDUCE::Identifier::Syntax
+    import SyntaxHelper
+ 
+    -- creates a syntax for identifier reduce
+    makeReduce:  Syntax == 'reduce::Identifier::Syntax
+
+    -- creates a syntax for identifier REDUCE
+    makeREDUCE:  Syntax == 'REDUCE::Identifier::Syntax
+
+    -- global list for storing syntax of reduce calls 
+    -- and reduce forms
     reduceList: List Syntax := []
 
-    -- extracting reduce syntax form from expression
-    collectFromExpression(e: Syntax): List Syntax ==
-      result: List Syntax := []
+    -- checks whether a syntax is a reduce call
+    -- note that this reduce call needs to be distinguished
+    -- in the later typechecking phase, see redupkg.spad
+    isReduceCall?(id: Identifier, arity: Integer): Boolean ==
+      (id = makeReduce()::Identifier) and_
+      (arity = 2 or arity = 3 or arity = 4)
+
+    -- checks whether a syntax is a reduce form
+    -- i.e., the operator name of a compound syntax is
+    -- REDUCE
+    isReduceForm?(id: Identifier): Boolean ==
+      id = makeREDUCE()::Identifier
+
+    -- extracting reduce call and reduce form syntax 
+    -- from an expression, adding them to the global list
+    collectFromExpression(e: Syntax): Void ==
       compound? e =>
         if (id:=getOperator e) case Identifier then
           id'  := id::Identifier
-          ary  := #(getOperands  e) 
-          (id' = makeReduce()::Identifier) and_
-          (ary = 2 or ary = 3 or ary = 4) => result := concat(result, e)
-          id' = makeREDUCE()::Identifier => result := concat(result, e)
-        for u in (unlist e)$SyntaxHelper repeat 
-          result := concat(result, collectFromExpression u)
-        result
-      result
+          arity  := #(getOperands  e) 
+          isReduceCall?(id', arity) => 
+            reduceList := concat(reduceList, e)
+          isReduceForm?(id') => 
+            reduceList := concat(reduceList, e)
+        for u in (unlist e) repeat 
+          collectFromExpression u
 
-    -- collect the loop ast from a statement
-    analyzeStatement(dBody: SpadAst, ctor: Identifier): Integer ==
-      if not compound?(dBody::Syntax) then return count
-      dBody case SignatureAst =>   count
-      dBody case MacroAst =>      count
-      dBody case DefinitionAst => 
-        analyzeFunctionDefinition(dBody::Syntax::DefinitionAst, ctor)
-      dBody case SequenceAst =>
-        stmtLst:= body(dBody::Syntax::SequenceAst)
+    -- collect data from a statement
+    extractReduceFromStatement(s: SpadAst, ctor: Identifier): Void ==
+      not compound?(s::Syntax) => void()
+      s case SignatureAst =>   void()
+      s case MacroAst =>  void()
+      s case WhileAst => void()
+      s case ColonAst => void()
+      s case ConstructAst => void()
+      s case CollectAst => void()
+      s case CaseAst => void()
+      s case DefinitionAst => 
+        s' := s::Syntax::DefinitionAst
+        extractReduceFromStatement(body s', ctor)
+      s case SequenceAst =>
+        stmtLst:= body(s::Syntax::SequenceAst)
         for stmt in stmtLst repeat
-          analyzeStatement(stmt, ctor)
-        count
-      dBody case IfAst => 
-        thBranch :=  thenBranch(dBody::Syntax::IfAst)
-        elBranch := elseBranch(dBody::Syntax::IfAst)
-        analyzeStatement(thBranch, ctor)
-        analyzeStatement(elBranch, ctor)
-      dBody case ReturnAst =>
-        rtn := expression(dBody::Syntax::ReturnAst)
-        analyzeStatement(rtn, ctor)
-      dBody case RepeatAst =>
-        lpbd := body(dBody::Syntax::RepeatAst)
-        analyzeStatement(lpbd, ctor)
-      dBody case CoerceAst =>
-        coerExp := expression(dBody::Syntax::CoerceAst)
-        analyzeStatement(coerExp, ctor)
-      dBody case ExitAst =>
-        dbexp := expression(dBody::Syntax::ExitAst)
-        analyzeStatement(dbexp, ctor)
-      dBody case LetAst =>
-        right := rhs(dBody::Syntax::LetAst)
-        analyzeStatement(right, ctor)
-      dBody case WhileAst => count  
-      dBody case ColonAst => count
-      dBody case ConstructAst => count
-      dBody case CollectAst => count
-      dBody case CaseAst => count
-      dBody case RestrictAst => 
-        e := expression(dBody::Syntax::RestrictAst)
-        analyzeStatement(e, ctor)
-      reduceList := concat(reduceList, collectFromExpression(dBody::Syntax))
-      -- we currently don't handle $ annotated reduce or "/" form
-      count
+          extractReduceFromStatement(stmt, ctor)
+      s case IfAst => 
+        s' := s::Syntax::IfAst
+        if hasThenBranch? s' then
+          thBranch := thenBranch(s')
+          extractReduceFromStatement(thBranch, ctor)
+        if hasElseBranch? s' then
+          elBranch := elseBranch(s')
+          extractReduceFromStatement(elBranch, ctor)
+      s case ReturnAst =>
+        rtn := expression(s::Syntax::ReturnAst)
+        extractReduceFromStatement(rtn, ctor)
+      s case RepeatAst =>
+        loopBody := body(s::Syntax::RepeatAst)
+        extractReduceFromStatement(loopBody, ctor)
+      s case CoerceAst =>
+        coerExp := expression(s::Syntax::CoerceAst)
+        extractReduceFromStatement(coerExp, ctor)
+      s case ExitAst =>
+        dbexp := expression(s::Syntax::ExitAst)
+        extractReduceFromStatement(dbexp, ctor)
+      s case LetAst =>
+        right := rhs(s::Syntax::LetAst)
+        extractReduceFromStatement(right, ctor)
+      s case RestrictAst => 
+        e := expression(s::Syntax::RestrictAst)
+        extractReduceFromStatement(e, ctor)
+      collectFromExpression(s::Syntax)
 
-    -- collects loop from one function definition
-    analyzeFunctionDefinition(defa: DefinitionAst, ctor: Identifier): Integer ==
-      hd := head(defa)$DefinitionAst
-      functionName := name hd
-      sig := signature(defa)$DefinitionAst
-      dBody := body(defa)$DefinitionAst
-      analyzeStatement(dBody, ctor)
-      count
-
-    extractReduceFormsFromFunctionDefinition(d, ctor) ==
+    -- main entry of the syntax analysis
+    extractReduceFromFunctionDefinition(d, ctor) ==
       reduceList := []
-      analyzeFunctionDefinition(d, ctor)
+      extractReduceFromStatement(body d, ctor)
       copy reduceList
 
 

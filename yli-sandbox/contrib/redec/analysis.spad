@@ -573,7 +573,6 @@ LoopAnalysis(): Public == Private where
     -- checks whether a statement wraps a loop inside
     containLoop?(s: SpadAst): Boolean ==
       not compound?(s::Syntax) => false
-      s case CaseAst => containLoop?(rhs(s::Syntax::CaseAst))
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         for b in bs repeat
@@ -595,8 +594,6 @@ LoopAnalysis(): Public == Private where
     -- compute the loop depth of the body of a loop
     getLoopDepthOfBody(s: SpadAst, depth: Integer): Integer ==
       not compound?(s::Syntax) => depth
-      s case CaseAst => 
-        getLoopDepthOfBody(rhs(s::Syntax::CaseAst), depth)
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         maxDepth := depth
@@ -635,7 +632,7 @@ LoopAnalysis(): Public == Private where
       s case ReturnAst => 
         getAllAssignmentFromSyntax(expression(s::Syntax::ReturnAst))
       s case CaseAst => 
-        getAllAssignmentFromSyntax(rhs(s::Syntax::CaseAst))
+        getAllAssignmentFromSyntax(lhs(s::Syntax::CaseAst))
       s case SequenceAst =>
         bs := body(s::Syntax::SequenceAst)
         for b in bs repeat
@@ -972,8 +969,6 @@ LoopAnalysis(): Public == Private where
         k := lhs(s::Syntax::ColonAst)::Syntax
         gv.k := makeUnknown()
         []
-      s case CaseAst => 
-        identifyAccumulationLoopFromStatement(rhs(s::Syntax::CaseAst), copy gv)
       s case SequenceAst => 
         identifyAccumulationLoopFromSequence(s, copy gv)
       s case RepeatAst => 
@@ -1041,8 +1036,6 @@ LoopAnalysis(): Public == Private where
         k := lhs(s::Syntax::ColonAst)::Syntax
         gv.k := makeUnknown()
         []
-      s case CaseAst => 
-        identifyAffineControlLoopFromStatement(rhs(s::Syntax::CaseAst), copy gv)
       s case SequenceAst => 
         identifyAffineControlLoopFromSequence(s, copy gv)
       s case RepeatAst => 

@@ -627,7 +627,7 @@ ReductionAnalysisPackage(): Public == Private where
       gte' := filterOutMappingAst(gte')
       importList' := macroExpansionForImportList()
       reduceForms : List Syntax :=_
-        extractReduceFormsFromFunctionDefinition(definition',_
+        extractReduceFromFunctionDefinition(definition',_
                                                constructorName)$ReduceAnalysis 
       sig' := sig
       pars := getOperands(first(getOperands(definition::Syntax)))
