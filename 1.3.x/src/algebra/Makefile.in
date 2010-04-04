@@ -369,7 +369,8 @@ $(OUT)/IEVALAB.$(FASLEXT) $(OUT)/IEVALAB-.$(FASLEXT): \
 $(OUT)/EVALAB.$(FASLEXT) $(OUT)/EVALAB-.$(FASLEXT): \
 	$(OUT)/IEVALAB.$(FASLEXT)
 
-$(OUT)/PROPLOG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/BOOLE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/PROPLOG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 
 $(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
 
@@ -411,7 +412,7 @@ axiom_algebra_layer_1 = \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
   PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
   IDENT    SEGCAT   BINDING  ALIST    BOOLEAN   PRIMARR  \
-  ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
+  ORDRING  ORDRING-          FEVALAB  FEVALAB-  BOOLE    \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1            \
   PROPERTY ARITY    OPERCAT  OPERCAT-
@@ -552,6 +553,8 @@ axiom_algebra_layer_9_nrlibs = \
 axiom_algebra_layer_9_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_9)))
+$(OUT)/BTAGG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
+
 axiom_algebra_layer_10 = \
            BFUNCT   BPADIC   \
   BTREE    CRAPACK  DEQUEUE  DLIST    \

@@ -1,5 +1,13 @@
 2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/boolean.spad.pamphlet (BooleanLogic): New.
+	(PropositionalLogic): Extend it.
+	* algebra/aggcat.spad.pamphlet (BitAggregate): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Assert membership to
+	BooleanLogic. 
+
+2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (PropositionalFormulaFunctions1): New.
 	(PropositionalFormulaFunctions2): Likewise.
 	

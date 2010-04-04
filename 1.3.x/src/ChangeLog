@@ -1,5 +1,9 @@
 2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/boolean.spad.pamphlet (BooleanLogic): New.
+
+2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (PropositionalFormulaFunctions1): New.
 	(PropositionalFormulaFunctions2): Likewise.
 	

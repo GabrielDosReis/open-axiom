@@ -12,7 +12,24 @@
 \tableofcontents
 \eject
 
-\section{category PROPLOG PropositionalLogic}
+\section{Categories an domains for logic}
+
+<<category BOOLE BooleanLogic>>=
+)abbrev category BOOLE BooleanLogic
+++ Author: Gabriel Dos Reis
+++ Date Created: April 04, 2010
+++ Date Last Modified: April 04, 2010
+++ Description:
+++   This is the category of Boolean logic structures.
+BooleanLogic(): Category == Type with
+  not: % -> %
+    ++ \spad{not x} returns the complement or negation of \spad{x}.
+  and: (%,%) -> %
+    ++ \spad{x and y} returns the conjunction of \spad{x} and \spad{y}.
+  or: (%,%) -> %
+    ++ \spad{x or y} returns the disjunction of \spad{x} and \spad{y}.
+@
+
 <<category PROPLOG PropositionalLogic>>=
 )abbrev category PROPLOG PropositionalLogic
 ++ Author: Gabriel Dos Reis
@@ -641,11 +658,9 @@ KleeneTrivalentLogic(): Public == Private where
 <<*>>=
 <<license>>
 
-<<domain REF Reference>>
+<<category BOOLE BooleanLogic>>
 <<category LOGIC Logic>>
 <<domain BOOLEAN Boolean>>
-<<domain IBITS IndexedBits>>
-<<domain BITS Bits>>
 
 <<category PROPLOG PropositionalLogic>>
 <<domain PROPFRML PropositionalFormula>>
@@ -653,6 +668,10 @@ KleeneTrivalentLogic(): Public == Private where
 <<package PROPFUN2 PropositionalFormulaFunctions2>>
 
 <<domain KTVLOGIC KleeneTrivalentLogic>>
+
+<<domain IBITS IndexedBits>>
+<<domain BITS Bits>>
+<<domain REF Reference>>
 
 @
 \eject
