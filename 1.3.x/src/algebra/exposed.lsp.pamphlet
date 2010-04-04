@@ -84,6 +84,7 @@
   (|CartesianTensor| . CARTEN)
   (|CartesianTensorFunctions2| . CARTEN2)
   (|CaseAst| . CASEAST)
+  (|Category| . CATEGORY)
   (|CategoryAst| . CATAST)
   (|Character| . CHAR)
   (|CharacterClass| . CCLASS)

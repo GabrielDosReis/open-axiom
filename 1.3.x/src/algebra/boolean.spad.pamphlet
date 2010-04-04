@@ -37,17 +37,11 @@ BooleanLogic(): Category == Type with
 ++ Date Last Modified: May 27, 2009
 ++ Description: This category declares the connectives of
 ++ Propositional Logic.
-PropositionalLogic(): Category == SetCategory with
+PropositionalLogic(): Category == Join(BooleanLogic,SetCategory) with
   true: %
     ++ true is a logical constant.
   false: %
     ++ false is a logical constant.
-  not: % -> %
-    ++ not p returns the logical negation of `p'.
-  and: (%, %) -> %
-    ++ p and q returns the logical conjunction of `p', `q'.
-  or: (%, %) -> %
-    ++ p or q returns the logical disjunction of `p', `q'.
   implies: (%,%) -> %
     ++ implies(p,q) returns the logical implication of `q' by `p'.
   equiv: (%,%) -> %
