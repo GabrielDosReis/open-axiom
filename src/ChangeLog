@@ -1,3 +1,8 @@
+2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (PropositionalFormulaFunctions1): New.
+	(PropositionalFormulaFunctions2): Likewise.
+	
 2010-04-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-utility.boot ($ClosedIOMode): New.
