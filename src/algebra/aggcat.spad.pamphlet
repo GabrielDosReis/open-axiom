@@ -2681,21 +2681,12 @@ import OneDimensionalArrayAggregate Boolean
 ++ The bit aggregate category models aggregates representing large
 ++ quantities of Boolean data.
 BitAggregate(): Category ==
-  Join(OrderedSet, Logic, OneDimensionalArrayAggregate Boolean) with
-    not: % -> %
-      ++ not(b) returns the logical {\em not} of bit aggregate 
-      ++ \axiom{b}.
+  Join(OrderedSet, BooleanLogic, Logic, OneDimensionalArrayAggregate Boolean) with
     nand : (%, %) -> %
       ++ nand(a,b) returns the logical {\em nand} of bit aggregates \axiom{a}
       ++ and \axiom{b}.
     nor	 : (%, %) -> %
       ++ nor(a,b) returns the logical {\em nor} of bit aggregates \axiom{a} and 
-      ++ \axiom{b}.
-    and : (%, %) -> %
-      ++ a and b returns the logical {\em and} of bit aggregates \axiom{a} and 
-      ++ \axiom{b}.
-    or	 : (%, %) -> %
-      ++ a or b returns the logical {\em or} of bit aggregates \axiom{a} and 
       ++ \axiom{b}.
     xor	 : (%, %) -> %
       ++ xor(a,b) returns the logical {\em exclusive-or} of bit aggregates

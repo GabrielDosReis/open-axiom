@@ -187,7 +187,7 @@ IntegerNumberSystem(): Category ==
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
-SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
+SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenMath) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
    canonicalsClosed
@@ -196,8 +196,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
       ++ \spad{noetherian} all ideals are finitely generated (in fact principal).
 
    -- bit operations
-   not:   % -> %
-      ++ not(n) returns the bit-by-bit logical {\em not} of the single integer n.
    xor: (%, %) -> %
       ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
       ++ the single integers n and m.
@@ -280,7 +278,9 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    x \/ y    == LOGIOR(x,y)$Lisp
    Not(x)    == LOGNOT(x)$Lisp
    And(x,y)  == LOGAND(x,y)$Lisp
+   x and y   == And(x,y)
    Or(x,y)   == LOGIOR(x,y)$Lisp
+   x or y    == Or(x,y)
    xor(x,y)  == LOGXOR(x,y)$Lisp
    x < y     == QSLESSP(x,y)$Lisp
    x > y     == QSGREATERP(x,y)$Lisp
