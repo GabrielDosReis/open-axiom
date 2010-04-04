@@ -1,3 +1,8 @@
+2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (PropositionalFormulaFunctions1): New.
+	(PropositionalFormulaFunctions2): Likewise.
+	
 2010-04-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lisp/core.lisp.in ($effectiveFaslType): Remove.

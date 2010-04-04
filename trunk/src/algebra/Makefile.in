@@ -497,15 +497,17 @@ axiom_algebra_layer_5_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_5)))
 
 $(OUT)/CHARPOL.$(FASLEXT): $(OUT)/SETCAT-.$(FASLEXT)
-$(OUT)PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
+$(OUT)/PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
 $(OUT)/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT) $(OUT)/BYTE.$(FASLEXT)
+$(OUT)/PROPFUN1.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
+$(OUT)/PROPFUN2.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
 
 axiom_algebra_layer_6 = \
-  PROPFRML         AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
-  DIFEXT  DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
-  HYPCAT  HYPCAT-           MODRING NASRING  NASRING- \
-  SORTPAK ZMOD                                        \
-  KTVLOGIC         OAMONS   BYTE    SYSINT   SYSNNI
+  PROPFRML PROPFUN1 AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
+  DIFEXT   DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
+  HYPCAT   HYPCAT-           MODRING NASRING  NASRING- \
+  SORTPAK  ZMOD     PROPFUN2                           \
+  KTVLOGIC          OAMONS   BYTE    SYSINT   SYSNNI
 
 axiom_algebra_layer_6_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_6))
