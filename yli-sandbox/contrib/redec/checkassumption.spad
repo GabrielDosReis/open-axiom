@@ -1,31 +1,30 @@
 )co operatorcats.spad
 
-import SYNHELP
-import TYPCHK
-
 )abbrev package CHKASSMP CheckAssumption
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: March 20, 2010
-++ Description: This package provides preprocessing functions for semantic analysis
-++              of a package/domain/category
+++ Date Last Updated: April 4, 2010
+++ Description: This package provides library function extracts
+++ the knowledge from user assumptions, and store them in an 
+++ internal format which can be understood by the reduction detector
 CheckAssumption(): Public == Private where
   macro OPFUNR == Record(funname: Identifier, signature: Signature)
-  macro OPCATS == Record(ctorname: Identifier, ctorpars: List Identifier, partypes: List Syntax, decls: List OPFUNR, hascats: List Syntax)     
-  macro OPREC == Record(funname: Identifier, origin: Syntax, signature: Signature, tenv: Table(Syntax, Syntax)) 
-  macro OPASMP == Record(catname: Identifier, parlist: List Syntax, funpars: List OPREC, assumptionbody: Syntax, forall?: Boolean)
-
+  macro OPCATS == Record(ctorname: Identifier, ctorpars: List Identifier,_
+                  partypes: List Syntax, decls: List OPFUNR, hascats: List Syntax)     
+  macro OPREC == Record(funname: Identifier, origin: Syntax,_
+                  signature: Signature, tenv: Table(Syntax, Syntax)) 
+  macro OPASMP == Record(catname: Identifier, parlist: List Syntax,_
+                  funpars: List OPREC, assumptionbody: Syntax, forall?: Boolean)
   Public == with
-    preprocOperatorCategories: Boolean
-    viewOperatorCategory: List OPCATS
-    preprocessAssumptions: Boolean 
-    viewAssumptionList: List OPASMP
     collectAssociativeOperator: List OPREC 
-    ++ export for redupkg
-    isDomain?: Syntax -> Boolean
-    isCategory?: Syntax -> Boolean
-
+      ++ collect all the associative operator assumed via user assumption
+      ++ store their information in a database, those information 
+      ++ is function name, signature, as well as values associated to it, 
+      ++ e.g., neutral element, and so on.
   Private == add
+    import SyntaxHelper
+    import TypeChecker
+
     operatorCategoryList   : List OPCATS := []
     operatorAssumptionList : List OPASMP := []
     associativeOperatorList: List OPREC  := []
@@ -53,7 +52,7 @@ CheckAssumption(): Public == Private where
           result := concat(result, joins)
       []
 
-    preprocOperatorCategories() == 
+    preprocOperatorCategories(): Void == 
       operatorCategoryList := []
       cats := parse("operatorcats.spad")$SpadParser
       for cat in cats repeat
@@ -62,9 +61,9 @@ CheckAssumption(): Public == Private where
         cpars := parameters head cat'
         csig := source signature cat'
         joins := (body cat')::Syntax
-        r: OPCATS := [cname, cpars, csig, extractDeclarationList cname, collectJoins joins]
+        r: OPCATS := [cname, cpars, csig,_
+                      extractDeclarationList cname, collectJoins joins]
         operatorCategoryList := concat(operatorCategoryList, r)
-      true
 
     viewOperatorCategory() ==  operatorCategoryList
 
@@ -83,30 +82,26 @@ CheckAssumption(): Public == Private where
       userError "can not find the category record!"
 
     getCtorKind(c: Identifier): ConstructorKind == 
-      kind(retract(findConstructor(c)$Constructor)$(Maybe Constructor))$Constructor
+      ctor := retract(findConstructor(c)$Constructor)$(Maybe Constructor)
+      kind(ctor)$Constructor
 
-    isTypeT?(c: Syntax): Boolean ==  not compound? c and key?(c, typeEnvironment)
-
-    isDomain?(c: Syntax): Boolean ==      
-      compound? c and (opr := getOperator c) case Identifier => 
-        not(getCtorKind(opr::Identifier) = category$ConstructorKind) and_
-        not(getCtorKind(opr::Identifier) = package$ConstructorKind)
-      false
-
-    isCategory?(c: Syntax): Boolean ==
-      compound? c and (opr := getOperator c) case Identifier => 
-        getCtorKind(opr::Identifier) = category$ConstructorKind
-      false
+    isTypeT?(c: Syntax): Boolean ==  
+      not compound? c and key?(c, typeEnvironment)
 
     checkDomainHasCategory(dom: Syntax, cat: Syntax): Boolean ==
-      expression := buildSyntax('has::Syntax::Identifier, [dom, cat])::InputForm
-      retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
+      expression := buildSyntax('has::Syntax::Identifier,_
+                                 [dom, cat])::InputForm
+      retractIfCan(_
+       (interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
     checkCategoryHasCategory(catl: Syntax, catr: Syntax): Boolean ==
-      expression := buildSyntax('has::Syntax::Identifier, [catl, catr])::InputForm
-      retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
+      expression := buildSyntax('has::Syntax::Identifier,_
+                                 [catl, catr])::InputForm
+      retractIfCan((interpret(_
+        expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
-    instantiateSignature(val: Syntax, var: Identifier, ptypes: List Syntax, index: Integer): List Syntax ==
+    instantiateSignature(val: Syntax, var: Identifier,_
+                    ptypes: List Syntax, index: Integer): List Syntax ==
       ptypesCopy := copy ptypes
       for i in index..#ptypes repeat
         ptypesCopy.i := replace(var::Syntax, ptypes.i, val)$SyntaxHelper
@@ -120,34 +115,45 @@ CheckAssumption(): Public == Private where
         pair(false, [])
       pair(false, [])
 
-    checkAnnotatedOperatorParameter(tpanot: Syntax, fn: Identifier, sig: Syntax): Pair(Boolean, Signature) ==
+    checkAnnotatedOperatorParameter(tpanot: Syntax, fn: Identifier,_
+                                    sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
-      AnnotFunResolForAssumption(tpanot, source sig', target sig', fn, typeEnvironment)$TypeChecker
+      AnnotFunResolForAssumption(tpanot, source sig',_
+                                 target sig', fn, typeEnvironment)$TypeChecker
 
-    makeUnknown: Syntax                == '_?::Identifier::Syntax
-
-    checkUnannotatedOperatorParameter(fn: Identifier, sig: Syntax): Pair(Boolean, Signature) ==
+    checkUnannotatedOperatorParameter(fn: Identifier,_
+                                      sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
       for dom in concat(source sig', target sig') repeat
-        first(t := AnnotFunResolForAssumption(dom, source sig', target sig', fn, typeEnvironment)$TypeChecker) => return t
+        first(t := AnnotFunResolForAssumption(dom, source sig',_
+          target sig', fn, typeEnvironment)$TypeChecker) => return t
       pair(false, signature([makeUnknown()], makeUnknown())) 
-
+ 
+    -- does type checking for operator parameter of an assumption
+    -- the operator could be annotated or not
     checkOperatorParameter(op: Syntax, tp: Syntax): Pair(Boolean, Signature) ==
       first(t := isAnnotatedOperator?(op)) => 
-        checkAnnotatedOperatorParameter(first second t, (second second t)::Identifier, tp)
+        checkAnnotatedOperatorParameter(first second t,_
+                                       (second second t)::Identifier, tp)
       checkUnannotatedOperatorParameter(op::Identifier, tp)
 
+    -- creates a record for storing the knowledge of the operator
+    -- being attached with algebraic properties
     createFunctionRecord(f: Syntax, s: Signature): OPREC ==
-      first(t := isAnnotatedOperator? f) => [(second second t)::Identifier, first second t, s, copy typeEnvironment]
+      first(t := isAnnotatedOperator? f) => 
+        [(second second t)::Identifier, first second t, s, copy typeEnvironment]
       [f::Identifier, makeUnknown(), s, copy typeEnvironment]
 
+    -- checks whether a category uses type variables 
+    -- in its parameters
     containTypeVar?(cat: Syntax): Boolean ==
       not compound? cat => isTypeT? cat
       for opr in getOperands cat repeat
         containTypeVar? opr  => return true
       false 
 
-    checkConstructorCallForm(pars: List Syntax, ctorName: Identifier): Pair(List Syntax, List OPREC) ==
+    checkConstructorCallForm(pars: List Syntax,_
+                        ctorName: Identifier): Pair(List Syntax, List OPREC) ==
       operatorRecord := retrieveCategoryRecord(ctorName)
       ctorPars : List Identifier := operatorRecord.ctorpars
       ctorParTypes : List Syntax := operatorRecord.partypes
@@ -159,7 +165,6 @@ CheckAssumption(): Public == Private where
         tp::SpadAst case MappingAst =>
           sig := mappingAstToSignature(tp::SpadAst::MappingAst)$SyntaxHelper
           first(t := checkOperatorParameter(pars.i, tp)) => 
-
             rec := createFunctionRecord(pars.i, sig)
             funRecords := concat(funRecords, rec)
             -- to be modified later
@@ -195,17 +200,21 @@ CheckAssumption(): Public == Private where
         userError "the expected type is neither a mapping or category"
       pair(copy ctorparameters, copy funRecords)
     
+    -- checks whether an assumption is a generic or basic assumption
     containForall?(a: WhereAst): Pair(Boolean, List Syntax) ==
       mainexp := (mainExpression a)::Syntax
       (forall := getOperator mainexp) case Syntax =>
         forall' := forall::Syntax
         assume  := first getOperands mainexp
-        (fa := getOperator forall') case Identifier and fa = 'forall::Identifier =>
+        (fa := getOperator forall') case Identifier and_
+        fa = 'forall::Identifier =>
           pair(true, [forall', assume])
         pair(false, [])
       pair(false, [])
 
-    updateForallTypeEnv(forall: Syntax): Boolean ==
+    -- extract type information from the forall construct
+    -- of some generic assumption
+    updateForallTypeEnvironment(forall: Syntax): Void ==
       typeEnvironment := empty()
       for s in getOperands forall repeat
         s::SpadAst case ColonAst =>
@@ -213,76 +222,103 @@ CheckAssumption(): Public == Private where
           id := (lhs s')::Syntax
           tp := (rhs s')::Syntax
           typeEnvironment.id := tp
-      true
 
-    checkForallAssumption(a: WhereAst, h: List Syntax): Boolean ==
+    -- does typechecking for a generic assumption
+    -- after which, the knowledge of the operator being assumed
+    -- is stored in a global database
+    checkForallAssumption(a: WhereAst, h: List Syntax): Void ==
       forall := first h
       assume := second h
-      updateForallTypeEnv(forall)
+      updateForallTypeEnvironment(forall)
       pars := getOperands first getOperands assume
       aname := (getOperator first getOperands assume)::Identifier
       r := checkConstructorCallForm(pars, aname)
-      rec : OPASMP := [aname, first r, second r, (qualifier(a)$WhereAst)::Syntax, true]
+      rec : OPASMP := [aname, first r, second r,_
+                      (qualifier(a)$WhereAst)::Syntax, true]
       operatorAssumptionList := concat(operatorAssumptionList, rec)
-      true
 
-    checkAssumption(a: WhereAst): Boolean ==
-      first(t := containForall? a) => checkForallAssumption(a, second t)
+    -- does typechecking on the parameters given to a category
+    -- used in a basic assumption. The type requirements are extracted
+    -- from the category definition defined in opcategory.spad
+    checkAssumption(a: WhereAst): Void ==
+      first(t := containForall? a) => 
+        checkForallAssumption(a, second t)
       typeEnvironment := empty()
       pars := getParametersFromAssumption(a)
       aname := getOperatorCategoryNameFromAssumption(a)
       r := checkConstructorCallForm(pars, aname)
-      rec : OPASMP := [aname, first r, second r, (qualifier(a)$WhereAst)::Syntax, false]
+      rec : OPASMP := [aname, first r, second r,_
+                      (qualifier(a)$WhereAst)::Syntax, false]
       operatorAssumptionList := concat(operatorAssumptionList, rec)
-      true
 
-    preprocessAssumptions() == 
+    -- typechecks each assumption, after which knowledge from 
+    -- each assumption is extracted and stored in a global 
+    -- database
+    preprocessAssumptions(): Void == 
       preprocOperatorCategories()
       operatorAssumptionList := []
       assumps := parse("usrassumptions.spad")$SpadParser
       for a in assumps repeat
         a' := a::WhereAst
         checkAssumption(a')
-      true
 
-    buildAssociativeOperatorCategoryCall(fname: Identifier, rtn: Syntax): Syntax ==  
+    -- build a AssociativeOperatorCategory with symbolic constants
+    -- as its parameters
+    buildAssociativeOperatorCategoryCall(fname: Identifier,_
+                                         rtn: Syntax): Syntax ==  
       buildSyntax('AssociativeOperator::Identifier, [rtn, fname::Syntax])
 
+    -- given a category, we instantiate all its constructor data with
+    -- the actual parameters of the category, this helps us to 
+    -- determine the category extensions of some category at compile
+    -- time
     instantiateCategoryRecord(callform: Syntax): List Syntax ==
       cname := getOperator(callform)::Identifier
       pars := getOperands callform
-      catrec := first [copy r for r in operatorCategoryList | r.ctorname = cname]
+      catrec :=_
+        first [copy r for r in operatorCategoryList | r.ctorname = cname]
       constructorParameter := catrec.ctorpars
       hascatlist := catrec.hascats
       hascatlist' : List Syntax := copy hascatlist
       for i in 1..#pars repeat
         for j in 1..#hascatlist' repeat
-          hascatlist'.j := replace((constructorParameter.i)::Syntax, hascatlist'.j, pars.i)$SyntaxHelper
+          hascatlist'.j := replace((constructorParameter.i)::Syntax,_
+                                    hascatlist'.j, pars.i)$SyntaxHelper
       hascatlist'
-       
+
+    -- collect all the categories that some category extends       
     collectAncestors(callform: Syntax): List Syntax ==
       result : List Syntax := []
-      callform = buildSyntax('Type::Identifier, []) => result := concat(result, callform)
+      callform = buildSyntax('Type::Identifier, []) => 
+        result := concat(result, callform)
       r' := instantiateCategoryRecord callform
       result := concat(result, r')
       for anc in r' repeat
         result := concat(result, collectAncestors anc)
       removeDuplicates result
     
+    -- checks whether some algebraic oeprator category has
+    -- AssociativeOperator category, the operator parameter 
+    -- of the category can be generic operator, e.g., op: (T, T) -> T
+    -- where T has AbelianMonoid
     hasAssociativeOperatorCategoryT?(callform: Syntax, op: OPREC): Boolean ==
-      searchTarget := buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
+      searchTarget :=_
+        buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
       callform = searchTarget => true
       ancestors := collectAncestors callform
       member?(searchTarget, ancestors)
 
+    -- checks whether some algebraic oeprator category has 
+    -- AssociativeOperator category, this function is subject to change
+    -- because it only supports category whose parameter is a specific 
+    -- operator
     hasAssociativeOperatorCategory?(callform: Syntax, op: OPREC): Boolean ==
       right := buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
       left  := callform
       expression := buildSyntax('has::Syntax::Identifier, [left, right])::InputForm
       retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
-    viewAssumptionList() == operatorAssumptionList
-
+    -- collect all the associative operators assumed by user
     collectAssociativeOperator() ==
       preprocessAssumptions()
       associativeOperatorList := []
@@ -296,22 +332,3 @@ CheckAssumption(): Public == Private where
             hasAssociativeOperatorCategory?(callform, op) => 
               associativeOperatorList := concat(associativeOperatorList, op)
       associativeOperatorList
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
