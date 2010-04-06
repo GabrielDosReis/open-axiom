@@ -25,11 +25,23 @@ CheckAssumption(): Public == Private where
     import SyntaxHelper
     import TypeChecker
 
+    -- global list for storing constructor data of 
+    -- each operator category
     operatorCategoryList   : List OPCATS := []
+
+    -- global list for storing internal representation 
+    -- of each user assumption
     operatorAssumptionList : List OPASMP := []
+
+    -- global list storing the information of all the
+    -- operators which are attached with associativity via assumption
     associativeOperatorList: List OPREC  := []
+
+    -- type environment used for typechecking an assumption
     typeEnvironment: Table(Syntax, Syntax) := empty()
 
+    -- extract all the declarations in the export of 
+    -- an operator category definition
     extractDeclarationList(ctor: Identifier): List OPFUNR ==
       result : List OPFUNR := []
       c := retract(findConstructor(ctor)$Constructor)$(Maybe Constructor)
@@ -41,6 +53,8 @@ CheckAssumption(): Public == Private where
           result := concat(result, r)
       result
 
+    -- collect all the category extensions listed in
+    -- a join ast
     collectJoins(joins: Syntax): List Syntax ==
       result : List Syntax := []
       compound? joins =>
@@ -52,6 +66,9 @@ CheckAssumption(): Public == Private where
           result := concat(result, joins)
       []
 
+
+    -- traverses operator category hierarchy,
+    -- collecting the constructor data of each category
     preprocOperatorCategories(): Void == 
       operatorCategoryList := []
       cats := parse("operatorcats.spad")$SpadParser
@@ -65,41 +82,57 @@ CheckAssumption(): Public == Private where
                       extractDeclarationList cname, collectJoins joins]
         operatorCategoryList := concat(operatorCategoryList, r)
 
-    viewOperatorCategory() ==  operatorCategoryList
-
+    -- obtain all the parameters of the category used in 
+    -- an assumption head
     getParametersFromAssumption(a: WhereAst): List Syntax ==
       callform := first getOperands((mainExpression a)::Syntax)
       getOperands callform
 
+    -- extract the operator category name from an user assumption syntax
     getOperatorCategoryNameFromAssumption(a: WhereAst): Identifier ==
       callform := first getOperands((mainExpression a)::Syntax)
       (opr := getOperator callform)  case Identifier => opr::Identifier
       userError "unexpected type of constructor name"
 
+    -- given a category name, obtain the record storing 
+    -- the constructor data of that category collected by our preprocessor
     retrieveCategoryRecord(ctorName: Identifier): OPCATS ==
       for r in operatorCategoryList repeat
         r.ctorname = ctorName => return r
       userError "can not find the category record!"
 
+    -- given a constructor name, figure out the constructor kind
+    -- using compiler's database
     getCtorKind(c: Identifier): ConstructorKind == 
       ctor := retract(findConstructor(c)$Constructor)$(Maybe Constructor)
       kind(ctor)$Constructor
 
+    -- checks whether a syntax is a type variable
     isTypeT?(c: Syntax): Boolean ==  
       not compound? c and key?(c, typeEnvironment)
 
+    -- check whether some domain has another category
+    -- note that, this function is subject to change
+    -- it can not handle the case where a category is parameterized with
+    -- type variables 
     checkDomainHasCategory(dom: Syntax, cat: Syntax): Boolean ==
       expression := buildSyntax('has::Syntax::Identifier,_
                                  [dom, cat])::InputForm
       retractIfCan(_
        (interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
+    -- check whether some category has another category
+    -- note that, this function is subject to change
+    -- it can not handle the case where a domain is parameterized with
+    -- type variables 
     checkCategoryHasCategory(catl: Syntax, catr: Syntax): Boolean ==
       expression := buildSyntax('has::Syntax::Identifier,_
                                  [catl, catr])::InputForm
       retractIfCan((interpret(_
         expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
+    -- instantiate a signature of an operator parameter with 
+    -- the actual types or type variables    
     instantiateSignature(val: Syntax, var: Identifier,_
                     ptypes: List Syntax, index: Integer): List Syntax ==
       ptypesCopy := copy ptypes
@@ -107,6 +140,7 @@ CheckAssumption(): Public == Private where
         ptypesCopy.i := replace(var::Syntax, ptypes.i, val)$SyntaxHelper
       ptypesCopy
 
+    -- checks whether some operator is annotated with its domain
     isAnnotatedOperator?(op: Syntax): Pair(Boolean, List Syntax) ==
       compound? op =>
         opr := getOperator op 
@@ -115,12 +149,16 @@ CheckAssumption(): Public == Private where
         pair(false, [])
       pair(false, [])
 
+    -- does type checking for operator parameter of an assumption
+    -- where the operator's domain is annotated 
     checkAnnotatedOperatorParameter(tpanot: Syntax, fn: Identifier,_
                                     sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
       AnnotFunResolForAssumption(tpanot, source sig',_
                                  target sig', fn, typeEnvironment)$TypeChecker
 
+    -- does type checking for operator parameter of an assumption
+    -- where the operator's domain is not annotated 
     checkUnannotatedOperatorParameter(fn: Identifier,_
                                       sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
@@ -130,7 +168,7 @@ CheckAssumption(): Public == Private where
       pair(false, signature([makeUnknown()], makeUnknown())) 
  
     -- does type checking for operator parameter of an assumption
-    -- the operator could be annotated or not
+    -- where the operator's domain can be either annotated or not
     checkOperatorParameter(op: Syntax, tp: Syntax): Pair(Boolean, Signature) ==
       first(t := isAnnotatedOperator?(op)) => 
         checkAnnotatedOperatorParameter(first second t,_
@@ -152,6 +190,9 @@ CheckAssumption(): Public == Private where
         containTypeVar? opr  => return true
       false 
 
+    -- does typechecking for the category used in assumption
+    -- against the type requirements extracted from the 
+    -- operator category definition body
     checkConstructorCallForm(pars: List Syntax,_
                         ctorName: Identifier): Pair(List Syntax, List OPREC) ==
       operatorRecord := retrieveCategoryRecord(ctorName)
