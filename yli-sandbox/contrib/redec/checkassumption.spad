@@ -190,6 +190,74 @@ CheckAssumption(): Public == Private where
         containTypeVar? opr  => return true
       false 
 
+    -- a global list for storing information of the operator
+    -- being attached with algebraic property in a specific assumption
+    funRecords: List OPREC := []
+
+    -- a global list for storing name and type of each parameter
+    -- of the category used in a specific assumption
+    ctorParameters: List Syntax := []
+
+    -- does typechecking for a mapping type, i.e., type of an operator used
+    -- in some assumption
+    typeCheckMappingType(tp: Syntax, par: Syntax): Void ==
+      sig := mappingAstToSignature(tp::SpadAst::MappingAst)$SyntaxHelper
+      first(t := checkOperatorParameter(par, tp)) =>
+        rec := createFunctionRecord(par, sig)
+        funRecords := concat(funRecords, rec)
+        ctorParameters := concat(ctorParameters, (rec.funname)::Syntax)
+      userError "the operator parameter can not be resolved!"
+
+    -- checks whether a specific domain has some specific category
+    domainHasCategory(dom: Syntax, cat: Syntax,_
+                      ctorPars: List Identifier,_
+                      ctorParTypesCopy: List Syntax, i: Integer): Void ==
+      checkDomainHasCategory(dom, cat) =>
+        -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy
+        ctorParTypesCopy := instantiateSignature(dom, ctorPars.i, ctorParTypesCopy, i)
+        ctorParameters := concat(ctorParameters, dom)
+      print(dom::OutputForm)
+      print(cat::OutputForm)
+      userError "domain does not have the expected category"
+
+    -- checks whether a category has some other category
+    categoryHasCategory(typeVar: Syntax, lcat: Syntax, rcat: Syntax,_
+                      ctorPars: List Identifier, ctorParTypesCopy: List Syntax,_
+                      i: Integer): Void ==
+      checkCategoryHasCategory(lcat, rcat) =>
+        -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy
+        ctorParTypesCopy := instantiateSignature(typeVar, ctorPars.i, ctorParTypesCopy, i)
+        ctorParameters := concat(ctorParameters, typeVar)
+      print(lcat::OutputForm)
+      print(rcat::OutputForm)
+      userError "category does not have the expected category"
+
+    -- typechecks each parameter of the category used in an assumption
+    -- by iterating the type of each parameter, and checks it against 
+    -- the expected type as specified in the category definition
+    typeCheckEachParameter(ctorParTypesCopy: List Syntax, pars: List Syntax,_
+                           ctorPars: List Identifier): Void ==
+      for i in 1..#ctorParTypesCopy repeat
+        tp := ctorParTypesCopy.i
+        tp::SpadAst case MappingAst =>
+          typeCheckMappingType(tp, pars.i)
+        (isCategory? tp) =>
+          isDomain?(pars.i) =>
+            not containTypeVar?(pars.i) =>
+              domainHasCategory(pars.i, tp, ctorPars, ctorParTypesCopy, i)
+            ctorParTypesCopy :=_
+              instantiateSignature(pars.i, ctorPars.i, ctorParTypesCopy, i)
+            ctorParameters := concat(ctorParameters, pars.i)
+          isTypeT?(pars.i) =>
+            k := pars.i
+            tpOfT := typeEnvironment.k
+            isCategory? tpOfT =>
+              categoryHasCategory(pars.i, tpOfT, tp, ctorPars, ctorParTypesCopy, i)
+            userError "the type of T does not have kind category"
+          print((pars.i)::OutputForm)
+          userError "the input type does not have kind domain"
+        userError "the expected type is neither a mapping or category"
+
     -- does typechecking for the category used in assumption
     -- against the type requirements extracted from the 
     -- operator category definition body
@@ -198,48 +266,10 @@ CheckAssumption(): Public == Private where
       operatorRecord := retrieveCategoryRecord(ctorName)
       ctorPars : List Identifier := operatorRecord.ctorpars
       ctorParTypes : List Syntax := operatorRecord.partypes
-      ctorParTypesCopy : List Syntax := copy ctorParTypes
-      funRecords: List OPREC := []
-      ctorparameters: List Syntax := []
-      for i in 1..#ctorParTypesCopy repeat
-        tp := ctorParTypesCopy.i
-        tp::SpadAst case MappingAst =>
-          sig := mappingAstToSignature(tp::SpadAst::MappingAst)$SyntaxHelper
-          first(t := checkOperatorParameter(pars.i, tp)) => 
-            rec := createFunctionRecord(pars.i, sig)
-            funRecords := concat(funRecords, rec)
-            -- to be modified later
-            ctorparameters := concat(ctorparameters, (rec.funname)::Syntax)
-          userError "the operator parameter can not be resolved!"
-        (isCategory? tp) =>
-          isDomain?(pars.i) => 
-            not containTypeVar?(pars.i) =>
-              checkDomainHasCategory(pars.i, tp) =>
-                -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy 
-                ctorParTypesCopy := instantiateSignature(pars.i, ctorPars.i, ctorParTypesCopy, i)
-                ctorparameters := concat(ctorparameters, pars.i)
-              print(pars.i::OutputForm)
-              print(tp::OutputForm)
-              userError "domain does not have the expected category"
-            -- currently we can not do type checking for forall(T) AssocOp(List T, concat), i.e. checking List T has SetCategory
-            ctorParTypesCopy := instantiateSignature(pars.i, ctorPars.i, ctorParTypesCopy, i)
-            ctorparameters := concat(ctorparameters, pars.i)            
-          isTypeT?(pars.i) =>
-            k := pars.i
-            tpOfT := typeEnvironment.k
-            isCategory? tpOfT =>
-              checkCategoryHasCategory(tpOfT, tp) =>
-                -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy 
-                ctorParTypesCopy := instantiateSignature(pars.i, ctorPars.i, ctorParTypesCopy, i)
-                ctorparameters := concat(ctorparameters, pars.i)
-              print(tpOfT::OutputForm)
-              print(tp::OutputForm)
-              userError "category does not have the expected category"
-            userError "the type of T does not have kind category"
-          print((pars.i)::OutputForm)
-          userError "the input type does not have kind domain"
-        userError "the expected type is neither a mapping or category"
-      pair(copy ctorparameters, copy funRecords)
+      funRecords := []
+      ctorParameters := []
+      typeCheckEachParameter(copy ctorParTypes, pars, ctorPars)
+      pair(copy ctorParameters, copy funRecords)
     
     -- checks whether an assumption is a generic or basic assumption
     containForall?(a: WhereAst): Pair(Boolean, List Syntax) ==
