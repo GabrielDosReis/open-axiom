@@ -30,39 +30,39 @@ TypeChecker(): Public == Private where
                          signature: Signature, tenv: VTB)
   macro L      == List
   Public == with
-    checkFunDef: DAST -> Syntax
-      ++ checkFunDef(d)
-      ++ does type checking for a definition ast, updating type environment
+    typeCheckFunctionDefinition: DAST -> Syntax
+      ++ typeCheckFunctionDefinition(d)
+      ++ does type checking for a definition ast
+      ++ if the function definition typechecks, the function returns
+      ++ the signature of this function
     checkFunctionDefinition: (DREC, Identifier, L Syntax, L FREC,_
           L FREC, L ImportAst, VTB, L RAST, L L Syntax) -> Pair(TENV, List YREC)
-      ++ checkFunctionDefinition(r)
-      ++ does typechecking for the function definition stored in record r, return the updated record
+      ++ does typechecking for the function definition stored in the record passed
+      ++ in. It returns the updated record storing typechecked accumulation
+      ++ loops, and the signatures of reduction operators used in those loops
     checkFunctionDefinition2: (DREC, Identifier, L Syntax, L FREC,_
                L FREC, L ImportAst, VTB, L Syntax) -> Pair(List REDU, List REDF)
-      ++ checkFunctionDefinition(r)
-      ++ does typechecking for the function definition stored in record r, return the updated record
-    checkGlobalLetAst: (LetAst, TENV, Identifier, L Syntax, L FREC,_
-                                                 L FREC, L ImportAst) -> Syntax
-    ++testing
-    viewExportedSigTC: List FREC
-    viewUnexportedSigTC: List FREC
-     
-
-    AnnotFunResolForAssumption: (Syntax, List Syntax, Syntax, Identifier, TENV) -> Pair(Boolean, Signature)
-      ++ exported for assumption checker
-
-    isTypeVariable?: Syntax -> Boolean
-
+      ++ does typechecking for the function definition stored in the record 
+      ++ passed in and returns the updated record storing typechecked reduction 
+      ++ function calls and reduce forms extracted in the syntactical pattern
+      ++ matching phase
+    checkGlobalLetAst: (LetAst, TENV, Identifier, L Syntax,_
+                        L FREC, L FREC, L ImportAst) -> Syntax
+      ++ exported for redupkg.spad
+      ++ checks the type of a gloal variable assignment
+      ++ in the capsule of a constructor definition
+    resolveAnnotatedFunction: (Syntax, List Syntax, Syntax, Identifier, TENV)_
+                                 -> Pair(Boolean, Signature)
+      ++ Resolves the signature of an operator that is annotated with its domain
   Private == add
     import Syntax
     import SyntaxHelper
-
-    unknown?(s: Syntax): Boolean == s = makeUnknown()
 
     functionReturnType: Syntax := makeUnknown()
 
     -- type environment for one function definition
     typeEnv: TENV := empty()
+
     freshVariableMapping: TENV := empty()
 
     -- for doing type checking in the preprocessing library
@@ -84,10 +84,6 @@ TypeChecker(): Public == Private where
     reduceFormCandidatesWithSignatures: List REDF := []
     -- global variable for function resolution engine
     function_origin: Syntax := makeUnknown()
-
-    viewExportedSigTC   == localExportedSignatureDatabase
-
-    viewUnexportedSigTC == localUnexportedSignatureDatabase
 
     freshVariable(): Syntax == 
       alpha := (gensym()$Identifier)::Syntax
@@ -117,8 +113,10 @@ TypeChecker(): Public == Private where
 
     isPerofCtor?(t: Syntax): Boolean == t = ctorCallForm()
 
+    -- checks whether a variable is a fresh variable
     isFresh?(s: Syntax): Boolean == key?(s, freshVariableMapping)
 
+    -- checks whether a syntax is a type variable
     isTypeVariable?(tp: Syntax): Boolean == 
       not compound?(tp) and (tp case Identifier) and not isFresh?(tp)
 
@@ -638,7 +636,6 @@ TypeChecker(): Public == Private where
         true
       false
 
-
     whereOfSig: VTB := empty()
 
     computeWheresForSignature2(t: Syntax): Boolean ==
@@ -704,9 +701,6 @@ TypeChecker(): Public == Private where
         if isFresh?(ats.i) then
           refinedOperandTypes.i := checkStmt((opr.i)::SpadAst, expectType)    
       refinedOperandTypes
-
-
-
 
     checkUnannotatedExpression(e: SpadAst, expect: Syntax): Syntax ==
       -- 1. unary and is in array access form
@@ -1065,8 +1059,9 @@ TypeChecker(): Public == Private where
         k := (pars.i)::Syntax
         typeEnv.k := ptps.i
       true
-
-    checkFunDef(d: DefinitionAst): Syntax ==
+    
+    -- checks the type of a function definition
+    typeCheckFunctionDefinition(d: DefinitionAst): Syntax ==
       -- obtain type information from type parameter
       -- 1. obtaining types
       sig := signature d
@@ -1133,7 +1128,8 @@ TypeChecker(): Public == Private where
       typeEnv := empty()
       freshVariableMapping := empty()
 
-    -- interfaces to preprocess.spad
+    -- checks the type of a gloal variable assignment
+    -- in the capsule of a constructor definition
     checkGlobalLetAst(l: LetAst, env: TENV, ctorName: Identifier,_
                       ctorPars: List Syntax, exported: L FREC,_
                       unexported: L FREC, importLst: L ImportAst): Syntax ==
@@ -1207,7 +1203,6 @@ TypeChecker(): Public == Private where
                             ctorName: Identifier, ctorPars: List Syntax,_
                             exported: L FREC, unexported: L FREC, importLst: L ImportAst, macroTable: VTB,_
                             potentialReductionForms: L Syntax): Pair(List REDU, List REDF) ==
-
       print((rec.funname)::OutputForm)
       print((rec.signature)::OutputForm)
  
@@ -1243,15 +1238,15 @@ TypeChecker(): Public == Private where
         print(tar::OutputForm)
         print(rtp::OutputForm)
         userError "resultant type does not refine the target type in the signature"
-      --print(typeEnv::OutputForm)
       pair(copy reduceCandidatesWithSignatures, copy reduceFormCandidatesWithSignatures)
 
-    AnnotFunResolForAssumption(tpAnot: Syntax, tps: List Syntax, rtn: Syntax,_
-                   fn: Identifier, T_typenv: TENV): Pair(Boolean, Signature) == 
-      typeEnv := copy T_typenv
+
+    -- resolves the signature of an annotated operator       
+    resolveAnnotatedFunction(tpAnot: Syntax, tps: List Syntax,_ 
+                             rtn: Syntax, fn: Identifier,_
+                             typeEnvironment: TENV): Pair(Boolean, Signature) == 
+      typeEnv := copy typeEnvironment
       AnnotFunResol(tpAnot, tps, rtn, fn)
-
-
 
 -- interesting syntax to be handled:
 --   FLAS: FiniteLinearAggregate(S) with finiteAggregate

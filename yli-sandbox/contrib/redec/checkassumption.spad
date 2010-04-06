@@ -10,7 +10,8 @@
 CheckAssumption(): Public == Private where
   macro OPFUNR == Record(funname: Identifier, signature: Signature)
   macro OPCATS == Record(ctorname: Identifier, ctorpars: List Identifier,_
-                  partypes: List Syntax, decls: List OPFUNR, hascats: List Syntax)     
+                         partypes: List Syntax,_
+                         decls: List OPFUNR, hascats: List Syntax)     
   macro OPREC == Record(funname: Identifier, origin: Syntax,_
                   signature: Signature, tenv: Table(Syntax, Syntax)) 
   macro OPASMP == Record(catname: Identifier, parlist: List Syntax,_
@@ -58,14 +59,14 @@ CheckAssumption(): Public == Private where
     collectJoins(joins: Syntax): List Syntax ==
       result : List Syntax := []
       compound? joins =>
-        (op := getOperator(joins)) case Identifier and op = 'Join::Identifier =>
+        (op := getOperator(joins)) case Identifier and_
+        op = 'Join::Identifier =>
           for cat in getOperands joins repeat
             not(cat::SpadAst case CategoryAst) => result := concat(result, cat)
           result
         not(joins::SpadAst case CategoryAst) => 
           result := concat(result, joins)
       []
-
 
     -- traverses operator category hierarchy,
     -- collecting the constructor data of each category
@@ -154,7 +155,7 @@ CheckAssumption(): Public == Private where
     checkAnnotatedOperatorParameter(tpanot: Syntax, fn: Identifier,_
                                     sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
-      AnnotFunResolForAssumption(tpanot, source sig',_
+      resolveAnnotatedFunction(tpanot, source sig',_
                                  target sig', fn, typeEnvironment)$TypeChecker
 
     -- does type checking for operator parameter of an assumption
@@ -163,7 +164,7 @@ CheckAssumption(): Public == Private where
                                       sig: Syntax): Pair(Boolean, Signature) ==
       sig' := mappingAstToSignature(sig::SpadAst::MappingAst)$SyntaxHelper
       for dom in concat(source sig', target sig') repeat
-        first(t := AnnotFunResolForAssumption(dom, source sig',_
+        first(t := resolveAnnotatedFunction(dom, source sig',_
           target sig', fn, typeEnvironment)$TypeChecker) => return t
       pair(false, signature([makeUnknown()], makeUnknown())) 
  
@@ -188,7 +189,7 @@ CheckAssumption(): Public == Private where
       not compound? cat => isTypeT? cat
       for opr in getOperands cat repeat
         containTypeVar? opr  => return true
-      false 
+      false
 
     -- a global list for storing information of the operator
     -- being attached with algebraic property in a specific assumption
@@ -214,7 +215,8 @@ CheckAssumption(): Public == Private where
                       ctorParTypesCopy: List Syntax, i: Integer): Void ==
       checkDomainHasCategory(dom, cat) =>
         -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy
-        ctorParTypesCopy := instantiateSignature(dom, ctorPars.i, ctorParTypesCopy, i)
+        ctorParTypesCopy := instantiateSignature(dom, ctorPars.i,_
+                                                 ctorParTypesCopy, i)
         ctorParameters := concat(ctorParameters, dom)
       print(dom::OutputForm)
       print(cat::OutputForm)
@@ -226,7 +228,8 @@ CheckAssumption(): Public == Private where
                       i: Integer): Void ==
       checkCategoryHasCategory(lcat, rcat) =>
         -- do instantiation using pars.i, ctorPars.i, ctorParTypesCopy
-        ctorParTypesCopy := instantiateSignature(typeVar, ctorPars.i, ctorParTypesCopy, i)
+        ctorParTypesCopy := instantiateSignature(typeVar, ctorPars.i,_
+                                                 ctorParTypesCopy, i)
         ctorParameters := concat(ctorParameters, typeVar)
       print(lcat::OutputForm)
       print(rcat::OutputForm)
@@ -252,7 +255,8 @@ CheckAssumption(): Public == Private where
             k := pars.i
             tpOfT := typeEnvironment.k
             isCategory? tpOfT =>
-              categoryHasCategory(pars.i, tpOfT, tp, ctorPars, ctorParTypesCopy, i)
+              categoryHasCategory(pars.i, tpOfT, tp,_
+                                  ctorPars, ctorParTypesCopy, i)
             userError "the type of T does not have kind category"
           print((pars.i)::OutputForm)
           userError "the input type does not have kind domain"
@@ -384,10 +388,13 @@ CheckAssumption(): Public == Private where
     -- because it only supports category whose parameter is a specific 
     -- operator
     hasAssociativeOperatorCategory?(callform: Syntax, op: OPREC): Boolean ==
-      right := buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
+      right :=_
+        buildAssociativeOperatorCategoryCall(op.funname, target(op.signature))
       left  := callform
-      expression := buildSyntax('has::Syntax::Identifier, [left, right])::InputForm
-      retractIfCan((interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
+      expression :=_
+        buildSyntax('has::Syntax::Identifier, [left, right])::InputForm
+      retractIfCan(_
+        (interpret(expression)$InputForm))$AnyFunctions1(Boolean)::Boolean
 
     -- collect all the associative operators assumed by user
     collectAssociativeOperator() ==
