@@ -1,110 +1,61 @@
-import SYNHELP
-import CHKASSMP
 
 )abbrev package TYPCHK TypeChecker
 ++ Author: Yue Li
 ++ Date Created: November 7, 2009
-++ Date Last Updated: December 3rd, 2009
-++ Description:  This package provides a type checker for a
-++   subset of Spad language.
+++ Date Last Updated: April 6, 2009
+++ Description:  
+++ This package provides typechecking functions for a subset of Spad language.
 TypeChecker(): Public == Private where
   macro FRES == Pair(Boolean, Signature)
   macro TENV == Table(Syntax, Syntax)
-  macro VTB == Table(Syntax, Syntax)
-  macro DAST  == DefinitionAst
+  macro VTB  == Table(Syntax, Syntax)
+  macro DAST == DefinitionAst
   macro SAST == SequenceAst
   macro LAST == LetAst
   macro IAST == IfAst
   macro RAST == RepeatAst
   macro EAST == ExitAst  
-  macro XREC   == Record(funname: Identifier, signature: Signature, usedin: Syntax, tenv: VTB)
+  macro XREC   == Record(funname: Identifier, signature: Signature,_
+                         usedin: Syntax, tenv: VTB)
   macro YREC   == Record(loopcandidate: RAST, signaturelist: L XREC)
-  macro FREC   == Record(funname: Identifier, signature: Signature, arity: Integer)
-  macro DREC   == Record(funname: Identifier, signature: Signature, body: DefinitionAst, typeenv: TENV, accumulations: List YREC)
-  macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax, signature: Signature, tenv: VTB)
-  macro RREC   == Record(ctorname: Identifier, funname: Identifier, signature: Signature, reductions: List REDU)
-  macro REDF   == Record(reduceform: Syntax, reduceop: Identifier, signature: Signature, tenv: VTB)
+  macro FREC   == Record(funname: Identifier,_
+                         signature: Signature, arity: Integer)
+  macro DREC   == Record(funname: Identifier, signature: Signature,_
+                  body: DefinitionAst, typeenv: TENV, accumulations: List YREC)
+  macro REDU   == Record(reduceexp: Syntax, reduceop: Syntax,_
+                         signature: Signature, tenv: VTB)
+  macro RREC   == Record(ctorname: Identifier, funname: Identifier,_
+                         signature: Signature, reductions: List REDU)
+  macro REDF   == Record(reduceform: Syntax, reduceop: Identifier,_
+                         signature: Signature, tenv: VTB)
   macro L      == List
-
-  Public == with 
-    viewEnv: TENV
-      ++ viewEnv()
-      ++ returns the type environment used in type checking a function definition
-    viewFreshEnv: TENV
-      ++ viewFreshEnv()
-      ++ returns the type environment for fresh variables
-    cleanUp: Boolean
-      ++ cleans up both of the type environment
+  Public == with
     checkFunDef: DAST -> Syntax
       ++ checkFunDef(d)
       ++ does type checking for a definition ast, updating type environment
-    test: String -> Syntax
-      ++ test(s)
-      ++ does typchecking for a Spad function definition stored in the file whose name is s
-    checkFunctionDefinition: (DREC, Identifier, L Syntax, L FREC, L FREC, L ImportAst, VTB, L RAST, L L Syntax) -> Pair(TENV, List YREC)
+    checkFunctionDefinition: (DREC, Identifier, L Syntax, L FREC,_
+          L FREC, L ImportAst, VTB, L RAST, L L Syntax) -> Pair(TENV, List YREC)
       ++ checkFunctionDefinition(r)
       ++ does typechecking for the function definition stored in record r, return the updated record
-    checkFunctionDefinition2: (DREC, Identifier, L Syntax, L FREC, L FREC, L ImportAst, VTB, L Syntax) -> Pair(List REDU, List REDF)
+    checkFunctionDefinition2: (DREC, Identifier, L Syntax, L FREC,_
+               L FREC, L ImportAst, VTB, L Syntax) -> Pair(List REDU, List REDF)
       ++ checkFunctionDefinition(r)
       ++ does typechecking for the function definition stored in record r, return the updated record
-    checkGlobalLetAst: (LetAst, TENV, Identifier, L Syntax, L FREC, L FREC, L ImportAst) -> Syntax
+    checkGlobalLetAst: (LetAst, TENV, Identifier, L Syntax, L FREC,_
+                                                 L FREC, L ImportAst) -> Syntax
     ++testing
     viewExportedSigTC: List FREC
     viewUnexportedSigTC: List FREC
+     
+
     AnnotFunResolForAssumption: (Syntax, List Syntax, Syntax, Identifier, TENV) -> Pair(Boolean, Signature)
       ++ exported for assumption checker
+
     isTypeVariable?: Syntax -> Boolean
 
   Private == add
     import Syntax
-    makeOne:  Syntax                   == 'One::Identifier::Syntax
-    makeZero: Syntax                   == 'Zero::Identifier::Syntax
-    makeTrue: Syntax                   == 'true::Identifier::Syntax
-    makeFalse: Syntax                  == 'false::Identifier::Syntax
-    makeVoid: Syntax                   == 'Void::Identifier::Syntax
-    makeSTEP: Syntax                   == 'STEP::Identifier::Syntax
-    makeUnknown: Syntax                == '_?::Identifier::Syntax
-    makePercentage: Syntax             == '%::Identifier::Syntax
-    makeMatrix: Syntax                 == 'Matrix::Identifier::Syntax
-    makeRecord: Syntax                 == 'Record::Identifier::Syntax
-    makeList: Syntax                   == 'List::Identifier::Syntax
-    makeTable: Syntax                  == 'Table::Identifier::Syntax
-    makeVector: Syntax                 == 'Vector::Identifier::Syntax
-    makeSingleInteger: Syntax          == 'SingleInteger::Identifier::Syntax
-    makeSingleIntegerType: Syntax      == buildSyntax(makeSingleInteger(), [])
-    makeNonNegativeInteger: Syntax     == 'NonNegativeInteger::Identifier::Syntax
-    makeNonNegativeIntegerType: Syntax == buildSyntax(makeNonNegativeInteger(), [])
-    makePositiveInteger: Syntax        == 'PositiveInteger::Identifier::Syntax
-    makePositiveIntegerType: Syntax    == buildSyntax(makePositiveInteger(), [])
-    makeInteger: Syntax                == 'Integer::Identifier::Syntax
-    makeIntegerType: Syntax            == buildSyntax(makeInteger(), [])
-    makeBoolean: Syntax                == 'Boolean::Identifier::Syntax
-    makeSymbol: Syntax                 == 'Symbol::Identifier::Syntax
-    makeDoubleFloat: Syntax            == 'DoubleFloat::Identifier::Syntax
-    makeDoubleFloatType: Syntax        == buildSyntax(makeDoubleFloat(), [])
-    makeString: Syntax                 == 'String::Identifier::Syntax
-    makeIdentifier: Syntax             == 'Identifier::Identifier::Syntax
-    makeJoin: Syntax                   == 'Join::Identifier::Syntax
-    makeElt: Syntax                    == 'elt::Identifier::Syntax
-    makeCoerce: Syntax                 == 'coerce::Identifier::Syntax
-    makeExit: Syntax                   == 'Exit::Identifier::Syntax
-    makeError: Syntax                  == 'error::Identifier::Syntax
-    makeAny: Syntax                    == 'Any::Identifier::Syntax
-    makeLisp: Syntax                   == 'Lisp::Identifier::Syntax
-    makeConstruct: Syntax              == 'construct::Identifier::Syntax
-    makeVariable: Syntax               == 'Variable::Identifier::Syntax
-    makeREDUCE: Syntax                 == 'REDUCE::Identifier::Syntax
-    makeCOLLECT: Syntax                == 'COLLECT::Identifier::Syntax
-    makeTuple: Syntax                  == 'Tuple::Identifier::Syntax
-    makeUnion: Syntax                  == 'Union::Identifier::Syntax
-    makeUNTIL: Syntax                  == 'UNTIL::Identifier::Syntax
-    makeQelt: Syntax                   == 'qelt::Identifier::Syntax
-    makeRep: Syntax                    == 'Rep::Identifier::Syntax
-    makeLISTOF: Syntax                 == 'LISTOF::Identifier::Syntax 
-
-    makeNumberSlot(i: Integer): Syntax ==
-      x := concat("#", convert(i)@String)::Symbol
-      (x pretend Identifier)::Syntax
+    import SyntaxHelper
 
     unknown?(s: Syntax): Boolean == s = makeUnknown()
 
@@ -133,10 +84,6 @@ TypeChecker(): Public == Private where
     reduceFormCandidatesWithSignatures: List REDF := []
     -- global variable for function resolution engine
     function_origin: Syntax := makeUnknown()
-
-    viewEnv == typeEnv
-
-    viewFreshEnv == freshVariableMapping
 
     viewExportedSigTC   == localExportedSignatureDatabase
 
@@ -172,87 +119,8 @@ TypeChecker(): Public == Private where
 
     isFresh?(s: Syntax): Boolean == key?(s, freshVariableMapping)
 
-    isVoid?(t: Syntax): Boolean == (compound? t) and (t = buildSyntax(makeVoid(), []))
-
-    -- type for "errors"
-    isExit?(t: Syntax): Boolean == (compound? t) and (t = buildSyntax(makeExit(), []))
-
-    isAny?(t: Syntax): Boolean == (compound? t) and (t = buildSyntax(makeAny(), []))
-
-    isTrue?(s: Syntax): Boolean == s = makeTrue()
-
-    isFalse?(s: Syntax): Boolean == s = makeFalse()
-
-    isLisp?(s: Syntax): Boolean == s = makeLisp()
-
-    isInteger?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeInteger()
-      false
-
-    isRecord?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeRecord()
-      false
-
-    isMatrix?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeMatrix()
-      false
-
-    isList?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeList()
-      false
-
-    isTable?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeTable()
-      false
-
-    isVector?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeVector()
-      false
-
-    isTuple?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeTuple()
-      false
-
-    isUnion?(t: Syntax): Boolean == 
-      compound? t and (x' := getOperator(t)) case Identifier =>
-        (x'::Identifier::Syntax) = makeUnion()
-      false
-   
-
-    isSingleIntegerType?(s: Syntax): Boolean == s = makeSingleIntegerType()
-
-    isNonNegativeIntegerType?(s: Syntax): Boolean == s = makeNonNegativeIntegerType()
-
-    isPositiveIntegerType?(s: Syntax): Boolean == s = makePositiveIntegerType()
-
-    isIntegerType?(s: Syntax): Boolean == s = makeIntegerType()
-
-    isDoubleFloatType?(s: Syntax): Boolean == s = makeDoubleFloatType()
-
-    stepAst?(i: SpadAst): Boolean ==
-      compound?(i':=i::Syntax) => 
-        (op := getOperator i') case Identifier => (op::Identifier) = makeSTEP()
-        false
-      false
-      
-    untilAst?(i: SpadAst): Boolean ==
-      compound?(i' := i::Syntax) =>
-        (op := getOperator i') case Identifier => (op::Identifier) = makeUNTIL()
-        false
-      false
-
-    hasElseBranch?(f: IAST): Boolean == not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
-
-    hasThenBranch?(f: IAST): Boolean == not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
-
-    isTypeVariable?(tp: Syntax): Boolean == not compound?(tp) and (tp case Identifier) and not isFresh?(tp)
+    isTypeVariable?(tp: Syntax): Boolean == 
+      not compound?(tp) and (tp case Identifier) and not isFresh?(tp)
 
     isJoinSyntax?(t: Syntax): Boolean ==
       compound? t =>
@@ -1073,7 +941,8 @@ TypeChecker(): Public == Private where
       --print("check inin!!"::OutputForm)
       --print(i::Syntax::OutputForm)
 
-      typeOfSequence := checkStmt(sequence i, freshVariable())  -- this is a lie, actually we know we expect List of something
+      typeOfSequence := checkStmt(sequence i, freshVariable())  
+        -- this is a lie, actually we know we expect List of something
       typeOfSequence := stripUnion(typeOfSequence)
       iterationVariable := (iterationVar i)::Syntax
       -- the sequence right now can only be list
@@ -1089,10 +958,7 @@ TypeChecker(): Public == Private where
       userError "the sequence is not a list"
 
     checkWhile(i: WhileAst): Syntax ==
-      --print(i::Syntax::OutputForm)
-      --print(condition(i)::OutputForm)
       cond := first getOperands(i::Syntax)
-      --(cond := getOperator(condition(i)::Syntax)) case Syntax => 
       checkStmt(cond::SpadAst, buildSyntax(makeBoolean(), []))
       buildSyntax(makeVoid(), [])
       --userError "unexpected error in checking while ast"
@@ -1108,7 +974,8 @@ TypeChecker(): Public == Private where
     checkStepElement(typeOfElement: Syntax): Syntax ==
       unification(typeOfElement, makeIntegerType())
 
-    checkEndLessStep(typeOfBegin: Syntax, typeOfStep: Syntax, iterationVariable: Syntax): Syntax ==
+    checkEndLessStep(typeOfBegin: Syntax, typeOfStep: Syntax,_
+                                         iterationVariable: Syntax): Syntax ==
       --print("checking begin iterator"::OutputForm)
       checkStepElement(typeOfBegin)
       --print("checking iterator step"::OutputForm)
@@ -1116,7 +983,8 @@ TypeChecker(): Public == Private where
       typeEnv.iterationVariable := typeOfBegin
       buildSyntax(makeVoid(), [])
 
-    checkWithEndStep(typeOfBegin: Syntax, typeOfStep: Syntax, typeOfEnd: Syntax, iterationVariable: Syntax): Syntax ==
+    checkWithEndStep(typeOfBegin: Syntax, typeOfStep: Syntax,_
+                      typeOfEnd: Syntax, iterationVariable: Syntax): Syntax ==
       --print("checking begin iterator"::OutputForm)
       checkStepElement(typeOfBegin)
       --print("checking iterator step"::OutputForm)
@@ -1240,14 +1108,9 @@ TypeChecker(): Public == Private where
       first(r := inLocalExported?(s))            => unification(second r, expect)
       first(t := inLocalUnexported?(s))          => unification(second t, expect)
       unification(freshVariable(), expect)
-      -- unification(buildSyntax(makeVariable(), []), expect)
       
     checkReturn(s: ReturnAst, expect: Syntax): Syntax == 
-      -- returnAst is buggy
-      --print("checking return!!!"::OutputForm)
-      --print(s::Syntax::OutputForm)
       exp := (first(getOperands(s::Syntax)))::SpadAst
-      --print(functionReturnType::OutputForm)
       checkStmt(exp, functionReturnType)
 
     checkCase(s: CaseAst, expect: Syntax): Syntax ==
@@ -1255,7 +1118,6 @@ TypeChecker(): Public == Private where
       unification(buildSyntax(makeBoolean(), []), expect)
 
     checkStmt(s: SpadAst, expect: Syntax): Syntax ==
-      --print(s::Syntax::OutputForm)
       not compound?(s::Syntax)  => checkVar(s::Syntax, expect)
       s case LetAst             => checkLet(s::Syntax::LetAst, expect)
       s case SequenceAst        => checkSeq(s::Syntax::SequenceAst, expect)
@@ -1267,20 +1129,14 @@ TypeChecker(): Public == Private where
       s case CaseAst            => checkCase(s::Syntax::CaseAst, expect)
       checkExp(s, expect)
 
-    cleanUp(): Boolean ==
+    cleanUp(): Void ==
       typeEnv := empty()
       freshVariableMapping := empty()
-      true
-
-    test(s: String): Syntax ==
-      cleanUp()
-      d := first(parse(s)$SpadParser)
-      checkFunDef(d::Syntax::DefinitionAst)
 
     -- interfaces to preprocess.spad
-    checkGlobalLetAst(l: LetAst, env: TENV, ctorName: Identifier, ctorPars: List Syntax, exported: L FREC, unexported: L FREC, importLst: L ImportAst): Syntax ==
-      --print(l::Syntax::OutputForm)
-      --print(env::OutputForm)
+    checkGlobalLetAst(l: LetAst, env: TENV, ctorName: Identifier,_
+                      ctorPars: List Syntax, exported: L FREC,_
+                      unexported: L FREC, importLst: L ImportAst): Syntax ==
       cleanUp()
       -- for local function resolution using
       constructorName       := ctorName
@@ -1299,7 +1155,6 @@ TypeChecker(): Public == Private where
           r : FREC := [k::Identifier, s, a]
           localUnexportedSignatureDatabase := concat(localUnexportedSignatureDatabase, r)
       true
-
 
     -- loops
     checkFunctionDefinition(rec: DREC,_ 
@@ -1347,10 +1202,7 @@ TypeChecker(): Public == Private where
       --print(typeEnv::OutputForm)
       pair(copy typeEnv, copy candidatesWithSignatures)
 
-
     --- reduce forms
-
-
     checkFunctionDefinition2(rec: DREC,_ 
                             ctorName: Identifier, ctorPars: List Syntax,_
                             exported: L FREC, unexported: L FREC, importLst: L ImportAst, macroTable: VTB,_
@@ -1379,9 +1231,7 @@ TypeChecker(): Public == Private where
       updateEnv(pars, src)
       localExportedSignatureDatabase := exported
       localUnexportedSignatureDatabase := unexported
-      updateUnexportedListWithGlobalMappingAst(typeEnv)  -- pay attention to the order
-
-
+      updateUnexportedListWithGlobalMappingAst(typeEnv)
       constructorMacros := copy macroTable
       reduceCandidates := potentialReductionForms
 
@@ -1396,7 +1246,8 @@ TypeChecker(): Public == Private where
       --print(typeEnv::OutputForm)
       pair(copy reduceCandidatesWithSignatures, copy reduceFormCandidatesWithSignatures)
 
-    AnnotFunResolForAssumption(tpAnot: Syntax, tps: List Syntax, rtn: Syntax, fn: Identifier, T_typenv: TENV): Pair(Boolean, Signature) == 
+    AnnotFunResolForAssumption(tpAnot: Syntax, tps: List Syntax, rtn: Syntax,_
+                   fn: Identifier, T_typenv: TENV): Pair(Boolean, Signature) == 
       typeEnv := copy T_typenv
       AnnotFunResol(tpAnot, tps, rtn, fn)
 
@@ -1444,9 +1295,6 @@ TypeChecker(): Public == Private where
 -- x: SetCategory := Integer
 -- x := y + z
 -- 
-
-
-
 
 -- Notes:
 -- Some useful domains: Constructor, FunctionDescriptor, CategoryConstructor, Domain, Category

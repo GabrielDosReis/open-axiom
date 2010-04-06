@@ -51,6 +51,46 @@ SyntaxHelper(): Public == Private where
       ++ checks whether a syntax is the one of identifier Type
     isRecord?: Syntax -> Boolean
       ++ checks whether a syntax is the one of identifier Record
+    isInteger?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Integer
+    isMatrix?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Matrix
+    isList?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier List
+    isTable?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Table
+    isVector?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Vector       
+    isTuple?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Tuple
+    isUnion?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Union      
+    isVoid?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Void
+    isExit?: Syntax -> Boolean 
+       ++ checks whether a syntax is the one of identifier Exit
+    isAny?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Any
+    isTrue?: Syntax -> Boolean 
+       ++ checks whether a syntax is the one of identifier True       
+    isFalse?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier False
+    isLisp? : Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Lisp
+    isSingleIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type SingleInteger
+    isNonNegativeIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type NonNegativeInteger
+    isPositiveIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type PositiveInteger
+    isIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type Integer
+    isDoubleFloatType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type DoubleFloat
+    stepAst?: SpadAst -> Boolean
+       ++ checks whether a Spad ast is an step ast
+    untilAst?: SpadAst -> Boolean
+       ++ checks whether a Spad ast is an until ast
     toDomainConstructor: Constructor -> DomainConstructor
       ++ convert a domain constructor with type Constructor 
       ++ to type DomainConstructor
@@ -77,6 +117,84 @@ SyntaxHelper(): Public == Private where
       ++ creates an uncompound syntax for identifier Join
     makeUnknown: () -> Syntax
       ++ creates an uncompound syntax for identifier ?
+    makeFalse: () -> Syntax
+      ++ creates an uncompound syntax for identifier False
+    makeOne: () -> Syntax
+      ++ creates an uncompound syntax for identifier One
+    makeZero: () -> Syntax
+      ++ creates an uncompound syntax for identifier Zero
+    makeVoid: () -> Syntax
+      ++ creates an uncompound syntax for identifier Void
+    makeSTEP: () -> Syntax
+      ++ creates an uncompound syntax for identifier STEP
+    makeMatrix: () -> Syntax 
+      ++ creates an uncompound syntax for identifier Matrix
+    makeList: () -> Syntax
+      ++ creates an uncompound syntax for identifier List
+    makeTable: () -> Syntax
+      ++ creates an uncompound syntax for identifier Table
+    makeVector: () -> Syntax
+      ++ creates an uncompound syntax for identifier Vector
+    makeSingleInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier SingleInteger
+    makeSingleIntegerType: () -> Syntax
+      ++ creates a compound syntax for type SingleInteger
+    makeNonNegativeInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier NonNegativeInteger
+    makeNonNegativeIntegerType: () -> Syntax
+      ++ creates a compound syntax for type NonNegativeInteger
+    makePositiveInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier PositiveInteger
+    makePositiveIntegerType: () -> Syntax
+      ++ creates a compound syntax for type PositiveInteger
+    makeInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier Integer
+    makeIntegerType: () -> Syntax
+      ++ creates a compound syntax for type Integer
+    makeBoolean: () -> Syntax
+      ++ creates an uncompound syntax for identifier Boolean
+    makeSymbol: () -> Syntax
+      ++ creates an uncompound syntax for identifier Symbol
+    makeDoubleFloat: () -> Syntax
+      ++ creates an uncompound syntax for identifier DoubleFloat
+    makeDoubleFloatType: () -> Syntax
+      ++ creates a compound syntax for type DoubleFloat      
+    makeString: () -> Syntax
+      ++ creates an uncompound syntax for identifier String
+    makeIdentifier: () -> Syntax
+      ++ creates an uncompound syntax for identifier Identifier
+    makeElt: () -> Syntax
+      ++ creates an uncompound syntax for identifier elt
+    makeCoerce: () -> Syntax
+      ++ creates an uncompound syntax for identifier coerce
+    makeExit: () -> Syntax
+      ++ creates an uncompound syntax for identifier Exit
+    makeError: () -> Syntax
+      ++ creates an uncompound syntax for identifier error
+    makeAny: () -> Syntax
+      ++ creates an uncompound syntax for identifier Any
+    makeLisp: () -> Syntax
+      ++ creates an uncompound syntax for identifier Lisp
+    makeConstruct: () -> Syntax
+      ++ creates an uncompound syntax for identifier construct
+    makeVariable: () -> Syntax
+      ++ creates an uncompound syntax for identifier Variable
+    makeREDUCE: () -> Syntax
+      ++ creates an uncompound syntax for identifier REDUCE
+    makeCOLLECT: () -> Syntax
+      ++ creates an uncompound syntax for identifier COLLECT
+    makeTuple: () -> Syntax
+      ++ creates an uncompound syntax for identifier Tuple
+    makeUnion: () -> Syntax
+      ++ creates an uncompound syntax for identifier Union
+    makeUNTIL: () -> Syntax
+      ++ creates an uncompound syntax for identifier UNTIL
+    makeQelt: () -> Syntax
+      ++ creates an uncompound syntax for identifier qelt
+    makeRep: () -> Syntax
+      ++ creates an uncompound syntax for identifier Rep
+    makeLISTOF: () -> Syntax
+      ++ creates an uncompound syntax for identifier LISTOF 
     getOperatorName: Syntax -> Identifier
       ++ obtain the operator name of some compound syntax
     isDomain?: Syntax -> Boolean                                                                     
@@ -229,6 +347,85 @@ SyntaxHelper(): Public == Private where
 
     makeTrue: Syntax                == 'true::Identifier::Syntax
 
+    makeFalse: Syntax                  == 'false::Identifier::Syntax
+
+    makeOne:  Syntax                   == 'One::Identifier::Syntax
+
+    makeZero: Syntax                   == 'Zero::Identifier::Syntax
+
+    makeVoid: Syntax                   == 'Void::Identifier::Syntax
+
+    makeSTEP: Syntax                   == 'STEP::Identifier::Syntax
+
+    makeMatrix: Syntax                 == 'Matrix::Identifier::Syntax
+
+    makeList: Syntax                   == 'List::Identifier::Syntax
+
+    makeTable: Syntax                  == 'Table::Identifier::Syntax
+
+    makeVector: Syntax                 == 'Vector::Identifier::Syntax
+
+    makeSingleInteger: Syntax          == 'SingleInteger::Identifier::Syntax
+
+    makeSingleIntegerType: Syntax      == buildSyntax(makeSingleInteger(), [])
+
+    makeNonNegativeInteger: Syntax     == 'NonNegativeInteger::Identifier::Syntax
+
+    makeNonNegativeIntegerType: Syntax == buildSyntax(makeNonNegativeInteger(), [])
+
+    makePositiveInteger: Syntax        == 'PositiveInteger::Identifier::Syntax
+
+    makePositiveIntegerType: Syntax    == buildSyntax(makePositiveInteger(), [])
+
+    makeInteger: Syntax                == 'Integer::Identifier::Syntax
+
+    makeIntegerType: Syntax            == buildSyntax(makeInteger(), [])
+
+    makeBoolean: Syntax                == 'Boolean::Identifier::Syntax
+
+    makeSymbol: Syntax                 == 'Symbol::Identifier::Syntax
+
+    makeDoubleFloat: Syntax            == 'DoubleFloat::Identifier::Syntax
+
+    makeDoubleFloatType: Syntax        == buildSyntax(makeDoubleFloat(), [])
+
+    makeString: Syntax                 == 'String::Identifier::Syntax
+
+    makeIdentifier: Syntax             == 'Identifier::Identifier::Syntax
+
+    makeElt: Syntax                    == 'elt::Identifier::Syntax
+
+    makeCoerce: Syntax                 == 'coerce::Identifier::Syntax
+
+    makeExit: Syntax                   == 'Exit::Identifier::Syntax
+
+    makeError: Syntax                  == 'error::Identifier::Syntax
+
+    makeAny: Syntax                    == 'Any::Identifier::Syntax
+
+    makeLisp: Syntax                   == 'Lisp::Identifier::Syntax
+
+    makeConstruct: Syntax              == 'construct::Identifier::Syntax
+
+    makeVariable: Syntax               == 'Variable::Identifier::Syntax
+
+    makeREDUCE: Syntax                 == 'REDUCE::Identifier::Syntax
+
+    makeCOLLECT: Syntax                == 'COLLECT::Identifier::Syntax
+
+    makeTuple: Syntax                  == 'Tuple::Identifier::Syntax
+
+    makeUnion: Syntax                  == 'Union::Identifier::Syntax
+
+    makeUNTIL: Syntax                  == 'UNTIL::Identifier::Syntax
+
+    makeQelt: Syntax                   == 'qelt::Identifier::Syntax
+
+    makeRep: Syntax                    == 'Rep::Identifier::Syntax
+
+
+
+
     isJoin?(t: Syntax): Boolean ==
       compound? t =>
         (op := getOperator(t)) case Identifier => (op::Identifier) = makeJoin() 
@@ -261,6 +458,79 @@ SyntaxHelper(): Public == Private where
     isRecord?(t: Syntax): Boolean ==
       compound? t and (x' := getOperator(t)) case Identifier =>
         (x'::Identifier::Syntax) = makeRecord()
+      false
+
+    isInteger?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeInteger()
+      false
+
+    isMatrix?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeMatrix()
+      false
+
+    isList?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeList()
+      false
+
+    isTable?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeTable()
+      false
+
+    isVector?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeVector()
+      false
+
+    isTuple?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeTuple()
+      false
+
+    isUnion?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeUnion()
+      false
+
+    isVoid?(t: Syntax): Boolean == 
+      (compound? t) and (t = buildSyntax(makeVoid(), []))
+
+    isExit?(t: Syntax): Boolean == 
+      (compound? t) and (t = buildSyntax(makeExit(), []))
+
+    isAny?(t: Syntax): Boolean == 
+      (compound? t) and (t = buildSyntax(makeAny(), []))
+
+    isTrue?(s: Syntax): Boolean == s = makeTrue()
+
+    isFalse?(s: Syntax): Boolean == s = makeFalse()
+
+    isLisp?(s: Syntax): Boolean == s = makeLisp()
+
+    isSingleIntegerType?(s: Syntax): Boolean == s = makeSingleIntegerType()
+
+    isNonNegativeIntegerType?(s: Syntax): Boolean == 
+      s = makeNonNegativeIntegerType()
+
+    isPositiveIntegerType?(s: Syntax): Boolean == s = makePositiveIntegerType()
+
+    isIntegerType?(s: Syntax): Boolean == s = makeIntegerType()
+
+    isDoubleFloatType?(s: Syntax): Boolean == s = makeDoubleFloatType()
+
+    stepAst?(i: SpadAst): Boolean ==
+      compound?(i':=i::Syntax) => 
+        (op := getOperator i') case Identifier => (op::Identifier) = makeSTEP()
+        false
+      false
+      
+    untilAst?(i: SpadAst): Boolean ==
+      compound?(i' := i::Syntax) =>
+        (op := getOperator i') case Identifier => (op::Identifier) = makeUNTIL()
+        false
       false
 
     hasElseBranch?(f: IfAst): Boolean == 
