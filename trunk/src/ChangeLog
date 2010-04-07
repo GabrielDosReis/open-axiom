@@ -1,3 +1,9 @@
+2010-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (isAtom$PropositionalFormula):
+	Rename from isTerm.
+	(simplify$PropositionalFormulaFunctions1): New.
+
 2010-04-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (BooleanLogic): New.
