@@ -59,8 +59,8 @@ PropositionalLogic(): Category == Join(BooleanLogic,SetCategory) with
 ++ over a term domain, that itself belongs to PropositionalLogic
 PropositionalFormula(T: SetCategory): Public == Private where
   Public == Join(PropositionalLogic, CoercibleFrom T) with
-    isTerm : % -> Maybe T
-      ++ \spad{isTerm f} returns a value \spad{v} such that
+    isAtom : % -> Maybe T
+      ++ \spad{isAtom f} returns a value \spad{v} such that
       ++ \spad{v case T} holds if the formula \spad{f} is a term.
 
     isNot : % -> Maybe %
@@ -137,7 +137,7 @@ PropositionalFormula(T: SetCategory): Public == Private where
     equiv(p,q) ==
       per kernel(operator(EQV, 2), [p, q], 1 + max(level p, level q))
 
-    isTerm f ==
+    isAtom f ==
       f' := rep f
       f' case T => just(f'@T)
       nothing
@@ -273,27 +273,74 @@ PropositionalFormulaFunctions1(T): Public == Private where
     terms: PropositionalFormula T -> Set T
       ++ \spad{terms f} ++ returns the set of terms appearing in
       ++ the formula \spad{f}.
+    simplify: PropositionalFormula T -> PropositionalFormula T
+      ++ \spad{simplify f} returns a formula logically equivalent
+      ++ to \spad{f} where obvious tautologies have been removed.
   Private == add
     macro F == PropositionalFormula T
     inline Pair(F,F)
+
     dual f ==
       f = true$F => false$F
       f = false$F => true$F
-      isTerm f case T => f
+      isAtom f case T => f
       (f1 := isNot f) case F => not dual f1
       (f2 := isAnd f) case Pair(F,F) =>
          disjunction(dual first f2, dual second f2)
       (f2 := isOr f) case Pair(F,F) =>
          conjunction(dual first f2, dual second f2)
       error "formula contains `equiv' or `implies'"
+
     terms f ==
-      (t := isTerm f) case T => { t }
+      (t := isAtom f) case T => { t }
       (f1 := isNot f) case F => terms f1
       (f2 := isAnd f) case Pair(F,F) =>
          union(terms first f2, terms second f2)
       (f2 := isOr f) case Pair(F,F) =>
          union(terms first f2, terms second f2)
       empty()$Set(T)
+
+    -- one-step simplification helper function
+    simplifyOneStep(f: F): F ==
+      (f1 := isNot f) case F =>
+        f1 = true$F => false$F
+        f1 = false$F => true$F
+        (f1' := isNot f1) case F => f1'         -- assume classical logic
+        f
+      (f2 := isAnd f) case Pair(F,F) =>
+        first f2 = false$F or second f2 = false$F => false$F
+        first f2 = true$F => second f2
+        second f2 = true$F => first f2
+        f
+      (f2 := isOr f) case Pair(F,F) =>
+        first f2 = false$F => second f2
+        second f2 = false$F => first f2
+        first f2 = true$F or second f2 = true$F => true$F
+        f
+      (f2 := isImplies f) case Pair(F,F) =>
+        first f2 = false$F or second f2 = true$F => true$F
+        first f2 = true$F => second f2
+        second f2 = false$F => not first f2
+        f
+      (f2 := isEquiv f) case Pair(F,F) =>
+        first f2 = true$F => second f2
+        second f2 = true$F => first f2
+        first f2 = false$F => not second f2
+        second f2 = false$F => not first f2
+        f
+      f
+
+    simplify f ==
+      (f1 := isNot f) case F => simplifyOneStep(not simplify f1)
+      (f2 := isAnd f) case Pair(F,F) =>
+        simplifyOneStep(conjunction(simplify first f2, simplify second f2))
+      (f2 := isOr f) case Pair(F,F) =>
+        simplifyOneStep(disjunction(simplify first f2, simplify second f2))
+      (f2 := isImplies f) case Pair(F,F) =>
+        simplifyOneStep(implies(simplify first f2, simplify second f2))
+      (f2 := isEquiv f) case Pair(F,F) =>
+        simplifyOneStep(equiv(simplify first f2, simplify second f2))
+      f
 @
 
 <<package PROPFUN2 PropositionalFormulaFunctions2>>=
@@ -318,7 +365,7 @@ PropositionalFormulaFunctions2(S,T): Public == Private where
     map(f,x) ==
       x = true$FS => true$FT
       x = false$FS => false$FT
-      (t := isTerm x) case S => f(t)::FT
+      (t := isAtom x) case S => f(t)::FT
       (f1 := isNot x) case FS => not map(f,f1)
       (f2 := isAnd x) case Pair(FS,FS) =>
          conjunction(map(f,first f2), map(f,second f2))
