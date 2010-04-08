@@ -63,9 +63,8 @@ addDomain(domain,e) ==
   -- ??? we should probably augment $DummyFunctorNames with CATEGORY
   -- ??? so that we don't have to do this special check here.  Investigate.
   isQuasiquote domain => e 
-  if not isCategoryForm(domain,e) and
-    not member(name,'(Mapping CATEGORY)) then
-      unknownTypeError name
+  if not isCategoryForm(domain,e) and name ~= "Mapping" then
+    unknownTypeError name
   e        --is not a functor
  
 domainMember(dom,domList) == or/[modeEqual(dom,d) for d in domList]

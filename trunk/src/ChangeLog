@@ -1,3 +1,8 @@
+2010-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (atoms$PropositionalFormula):
+	Rename from terms.
+
 2010-04-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (isAtom$PropositionalFormula):
