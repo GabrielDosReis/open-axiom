@@ -611,7 +611,7 @@ ReductionAnalysisPackage(): Public == Private where
       r : DREC := [functionName, sig', definition', copy gte', []]
       -- typechecks the function definition body
       resultFromTypeChecker : Pair(VTB, List YREC) :=_
-        checkFunctionDefinition(r, constructorName, constructorParameters,_
+        verifyAccumulationWithType(r, constructorName, constructorParameters,_
             localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
             importList', constructorMacros, loopList', accVariables)$TypeChecker
       updateAccumulationLoopList(r, resultFromTypeChecker)
@@ -645,7 +645,7 @@ ReductionAnalysisPackage(): Public == Private where
       r : DREC := [functionName, sig', definition', copy gte', []]
       -- typechecks the function definition body
       resultFromTypeChecker : Pair(List REDU, List REDF) :=_
-        checkFunctionDefinition2(r, constructorName, constructorParameters,_
+        verifyReduceCallAndFormWithType(r,constructorName,constructorParameters,_
           localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
           importList', constructorMacros, reduceForms')$TypeChecker
       reduceFunctionRecord : RREC := [constructorName, functionName,_
@@ -808,7 +808,7 @@ ReductionAnalysisPackage(): Public == Private where
       importList'      := macroExpansionForImportList()
       -- start typechecking by passing the macro expanded syntax, 
       -- typing environment and import list to the typechecker
-      tp   := checkGlobalLetAst(s, typeEnvironment', constructorName,_ 
+      tp   := checkGlobalVariableAssignment(s, typeEnvironment', constructorName,_ 
                          constructorParameters, localExportedSignatureDatabase,_ 
                      localUnexportedSignatureDatabase, importList')$TypeChecker
       -- update global typing environment
@@ -1490,7 +1490,7 @@ ReductionAnalysisPackage(): Public == Private where
           rightTypeHasLeftAttribute?(name(r::AttributeAst)::Syntax, l',rightEnv)   
         r case SignatureAst             => 
           rightTypeHasLeftSignature?(r', l', rightEnv)
-        isCategory?(r')$CheckAssumption => 
+        isCategory?(r') => 
           typeChecks?(r', rightEnv, l', rightEnv)
         userError "unexpected kind of right hand side in this has predicate"
       false
@@ -1618,9 +1618,9 @@ ReductionAnalysisPackage(): Public == Private where
     -- a domain/category/type variable/join of categories and attributes
     rightTypeHasLeftAttribute?(att: Syntax, rightType: Syntax,_
                                                      rightEnv: VTB): Boolean ==
-      isDomain?(rightType)$CheckAssumption   => 
+      isDomain?(rightType)   => 
         rightDomainHasLeftAttribute?(att, rightType, rightEnv)
-      isCategory?(rightType)$CheckAssumption => 
+      isCategory?(rightType) => 
         rightCategoryHasLeftAttribute?(att, rightType, rightEnv)
       isTypeVariable?(rightType, rightEnv)   => 
         rightTypeHasLeftAttribute?(att, rightEnv.rightType, rightEnv)
@@ -1902,12 +1902,11 @@ ReductionAnalysisPackage(): Public == Private where
                 rightType: Syntax, rightEnv: VTB): Boolean ==
       -- case 1: basic assumption vs a specific reduction operator, 
       -- i.e., input and output types are domains
-      isDomain?(leftType)$CheckAssumption and_
-      isDomain?(rightType)$CheckAssumption =>
+      isDomain?(leftType) and isDomain?(rightType) =>
         domainVsDomain(leftType, leftEnv, rightType, rightEnv)
       -- case 2: generic assumption vs a specific reduction operator
       isTypeVariable?(leftType, leftEnv) and_
-      isDomain?(rightType)$CheckAssumption => 
+      isDomain?(rightType) => 
         rightDomainHasLeftCategory?(leftEnv.leftType, leftEnv,_
                                     rightType, rightEnv)
       -- case 3: generic assumption vs a generic reduction operator
@@ -2086,12 +2085,13 @@ ReductionAnalysisPackage(): Public == Private where
     initialization(option: Integer, useassumption: Integer): List OPREC ==
       programOption := option
       useassumption = 1 =>
-        -- building category extension database for later assumption checking use
+        -- building category extension database 
+        -- for later assumption checking use
         collectAllConstructorData()$CategoryExtensionCollection
         -- collect all the associative operator from user assumption
         collectAssociativeOperator()$CheckAssumption
       []
-    
+
     -- obtain and save both fully parallel and 
     -- partially parallel accumulation loops
     extractAndSaveParallelAccumulationLoop_
