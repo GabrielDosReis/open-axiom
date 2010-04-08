@@ -270,8 +270,8 @@ PropositionalFormulaFunctions1(T): Public == Private where
   Public == Type with
     dual: PropositionalFormula T -> PropositionalFormula T
       ++ \spad{dual f} returns the dual of the proposition \spad{f}.
-    terms: PropositionalFormula T -> Set T
-      ++ \spad{terms f} ++ returns the set of terms appearing in
+    atoms: PropositionalFormula T -> Set T
+      ++ \spad{atoms f} ++ returns the set of atoms appearing in
       ++ the formula \spad{f}.
     simplify: PropositionalFormula T -> PropositionalFormula T
       ++ \spad{simplify f} returns a formula logically equivalent
@@ -291,13 +291,13 @@ PropositionalFormulaFunctions1(T): Public == Private where
          conjunction(dual first f2, dual second f2)
       error "formula contains `equiv' or `implies'"
 
-    terms f ==
+    atoms f ==
       (t := isAtom f) case T => { t }
-      (f1 := isNot f) case F => terms f1
+      (f1 := isNot f) case F => atoms f1
       (f2 := isAnd f) case Pair(F,F) =>
-         union(terms first f2, terms second f2)
+         union(atoms first f2, atoms second f2)
       (f2 := isOr f) case Pair(F,F) =>
-         union(terms first f2, terms second f2)
+         union(atoms first f2, atoms second f2)
       empty()$Set(T)
 
     -- one-step simplification helper function
@@ -357,7 +357,7 @@ PropositionalFormulaFunctions2(S,T): Public == Private where
   Public == Type with
     map: (S -> T, PropositionalFormula S) -> PropositionalFormula T
       ++ \spad{map(f,x)} returns a propositional formula where
-      ++ all terms in \spad{x} have been replaced by the result
+      ++ all atoms in \spad{x} have been replaced by the result
       ++ of applying the function \spad{f} to them.
   Private == add
     macro FS == PropositionalFormula S
