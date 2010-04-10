@@ -2,7 +2,7 @@
 )abbrev package SYNHELP SyntaxHelper
 ++ Authors: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: April 3, 2010
+++ Date Last Updated: April 9, 2010
 ++ Description: This package provides helper functions for
 ++ manipulating syntax and ast
 SyntaxHelper(): Public == Private where
@@ -169,6 +169,8 @@ SyntaxHelper(): Public == Private where
       ++ creates an uncompound syntax for identifier coerce
     makeExit: () -> Syntax
       ++ creates an uncompound syntax for identifier Exit
+    makeExitType: () -> Syntax
+      ++ creates a syntax for domain Exit
     makeError: () -> Syntax
       ++ creates an uncompound syntax for identifier error
     makeAny: () -> Syntax
@@ -200,7 +202,13 @@ SyntaxHelper(): Public == Private where
     isDomain?: Syntax -> Boolean                                                                     
       ++ checks whether a syntax is the one of some domain name
     isCategory?: Syntax -> Boolean                                                                 
-      ++ checks whether a syntax is the one of some category name                                  
+      ++ checks whether a syntax is the one of some category name 
+    isZero?: Identifier -> Boolean 
+      ++ checks whether the name of a function is Zero
+    isOne?: Identifier -> Boolean 
+      ++ checks whether the name of a function is One
+    isErrorFunction?: Identifier -> Boolean   
+      ++ checks whether the name of a function is Error                             
   Private == add
     import Syntax
 
@@ -369,9 +377,9 @@ SyntaxHelper(): Public == Private where
 
     makeSingleIntegerType: Syntax      == buildSyntax(makeSingleInteger(), [])
 
-    makeNonNegativeInteger: Syntax     == 'NonNegativeInteger::Identifier::Syntax
+    makeNonNegativeInteger: Syntax   == 'NonNegativeInteger::Identifier::Syntax
 
-    makeNonNegativeIntegerType: Syntax == buildSyntax(makeNonNegativeInteger(), [])
+    makeNonNegativeIntegerType:Syntax== buildSyntax(makeNonNegativeInteger(),[])
 
     makePositiveInteger: Syntax        == 'PositiveInteger::Identifier::Syntax
 
@@ -423,8 +431,13 @@ SyntaxHelper(): Public == Private where
 
     makeRep: Syntax                    == 'Rep::Identifier::Syntax
 
+    makeExitType: Syntax == buildSyntax(makeExit(), [])
 
+    isZero?(f: Identifier): Boolean == f = makeZero()
 
+    isOne?(f: Identifier): Boolean == f = makeOne()
+
+    isErrorFunction?(f: Identifier): Boolean == f = makeError()::Identifier
 
     isJoin?(t: Syntax): Boolean ==
       compound? t =>

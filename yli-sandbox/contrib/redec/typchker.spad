@@ -2,9 +2,10 @@
 )abbrev package TYPCHK TypeChecker
 ++ Author: Yue Li
 ++ Date Created: November 7, 2009
-++ Date Last Updated: April 6, 2009
+++ Date Last Updated: April 9, 2009
 ++ Description:  
-++ This package provides typechecking functions for a subset of Spad language.
+++ This package provides library functions which do typechecking for a
+++ function definition.
 TypeChecker(): Public == Private where
   macro FRES == Pair(Boolean, Signature)
   macro TENV == Table(Syntax, Syntax)
@@ -65,6 +66,9 @@ TypeChecker(): Public == Private where
       ++ does typechecking for a statement
     checkTypeofTypeVariablesInType: Syntax -> Void
       ++ does tyepchecking for a type variable
+    resolveExportedFunction: (List Syntax, Syntax,_
+                                        Identifier) -> Pair(Boolean, Signature)
+      ++ resolves a function signature from its input and output types
 
     -- global variable storing the return type of the current 
     -- function whose definition is being typechecked
@@ -73,16 +77,20 @@ TypeChecker(): Public == Private where
     -- type environment for one function definition
     typeEnv: TENV := empty()
 
+    -- a global table for storing all the types of the type variables 
+    -- used in a type expression
+    typeOfTypeVariable: VTB := empty()
+
     -- global table storing the fresh variables introduced during the 
     -- type inference and their actual values which are assigned when doing 
     -- unifications
     freshVariableMapping: TENV := empty()
 
     -- global variable for storing the current constructor definition name
-    constructorName:       Identifier      := gensym()
+    constructorName:Identifier  := gensym()
 
     -- global variable for storing the current constructor parameters
-    constructorParameters: List Syntax     := []
+    constructorParameters: List Syntax              := []
 
     -- global database for storing the information of all the local functions
     -- which are not exported by the current type
@@ -135,7 +143,7 @@ TypeChecker(): Public == Private where
 
     -- global list for storing the typechecked reduce forms with
     -- the signature of their reduction operators
-    reduceFormCandidatesWithSignatures: List REDF := []
+    reduceFormCandidatesWithSignatures: List REDF   := []
 
     -- global variable for storing the origin domain/category of the
     -- function being resolved
@@ -249,7 +257,7 @@ TypeChecker(): Public == Private where
     ((actual: Syntax) < (expect: Syntax)): Boolean ==
       isNonNegativeIntegerType?(actual) and isIntegerType?(expect) => true
       isPositiveIntegerType?(actual) and isIntegerType?(expect) => true
-      isPositiveIntegerType?(actual) and isNonNegativeIntegerType?(expect) => true
+      isPositiveIntegerType?(actual) and isNonNegativeIntegerType?(expect)=>true
       isIntegerType?(actual)         and isDoubleFloatType?(expect) => true      
       isPositiveIntegerType?(actual)  and isDoubleFloatType?(expect) => true
       isNonNegativeIntegerType?(actual)  and isDoubleFloatType?(expect) => true
@@ -262,7 +270,7 @@ TypeChecker(): Public == Private where
     ((actual: Syntax) > (expect: Syntax)): Boolean ==
       isNonNegativeIntegerType?(expect) and isIntegerType?(actual) => true
       isPositiveIntegerType?(expect) and isIntegerType?(actual) => true
-      isPositiveIntegerType?(expect) and isNonNegativeIntegerType?(actual) => true
+      isPositiveIntegerType?(expect) and isNonNegativeIntegerType?(actual)=>true
       isIntegerType?(expect)         and isDoubleFloatType?(actual) => true      
       isPositiveIntegerType?(expect)  and isDoubleFloatType?(actual) => true
       isNonNegativeIntegerType?(expect)  and isDoubleFloatType?(actual) => true      
@@ -305,7 +313,8 @@ TypeChecker(): Public == Private where
       print(expect::OutputForm)
       userError "unification error"
 
-    -- extracted the identifier representing the outer most type constructor from a type syntax
+    -- extracted the identifier representing the outer
+    -- most type constructor from a type syntax
     getIdentifier(tp: Syntax): Identifier ==
       not compound?(tp) => 
         print(tp::OutputForm)
@@ -546,90 +555,107 @@ TypeChecker(): Public == Private where
     extractUnionElements(t: Syntax): List Syntax ==
       [e for e in getOperands t | not e case String]
 
-    -- does function resolution for exported functions
+    -- resolves a function signature from one of its input or output types, 
+    -- where the type is a Union of types
+    resolveFromUnionType(tp: Syntax, tps: List Syntax, rtn: Syntax,_
+                   fn: Identifier, index: Integer): Pair(Boolean, Signature) ==
+      unionElements : List Syntax := extractUnionElements(tp)
+      for elementType in unionElements repeat
+        tl' := copy concat(tps, rtn)
+        tl'.index := elementType
+        rtn' := last tl'
+        tps' := remove(last tl', tl')
+        first(ufr := resolveExportedFunction(tps', rtn', fn)) => return ufr
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- resolves a function signature from one of its input or output types, 
+    -- where the type is a type variable
+    resolveFromTypeOfTypeVariable(tp: Syntax, tps: List Syntax, rtn: Syntax,_
+                                  fn: Identifier): Pair(Boolean, Signature) ==
+      key?(tp, typeEnv) =>
+        tvar := typeEnv.tp
+        typesOftvar : List Syntax := [tvar]
+        if isJoin?(tvar) then typesOftvar := getOperands(tvar)
+        for cat in typesOftvar repeat
+          catCtor := getConstructor cat
+          opList := copy operations catCtor          
+          res := searchCurrentCategoryFunctionSet(tp,cat,tps, rtn, fn, opList)
+          first res => return res
+        pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+      print(tp::OutputForm)
+      print(typeEnv::OutputForm)
+      userError "the type of this type variable can not be found in type environment"          
+
+    -- resolves a function signature from one of its input or output types
+    resolveFromEachType(tp: Syntax, tps: List Syntax, rtn: Syntax,_
+                   fn: Identifier, index: Integer): Pair(Boolean, Signature) ==
+      isTypeVariable?(tp) => resolveFromTypeOfTypeVariable(tp, tps, rtn, fn)
+      isUnion?(tp) => resolveFromUnionType(tp, tps, rtn, fn, index)
+      ctor   := getConstructor(tp)
+      ary    := arity ctor              
+      opList := copy operations ctor
+      if isNonNegativeIntegerType?(tp) or isPositiveIntegerType?(tp) then 
+        opList := concat(opList, copy(operations(getConstructor(makeIntegerType()))))
+      first(resolutionResult := searchCurrentFunctionSet(tp, tps,rtn, fn, opList)) =>
+        return resolutionResult
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- resolves a function signature from its input and output types
     resolveExportedFunction(tps: List Syntax, rtn: Syntax,_
                                   fn: Identifier): Pair(Boolean, Signature) ==
       -- if the type of this parameter is unknown, 
       -- we don't do any resolution, but directly skip
       index: PositiveInteger := 1
-      for tp in (tl := concat(tps, rtn)) | not isFreshTypeVariable?(tp) and_
-                                           not isRecord?(tp) repeat
-        if isTypeVariable?(tp) and key?(tp, typeEnv) then
-          tvar := typeEnv.tp -- this type has to be a category
-          if isJoin?(tvar) then
-            for tvar' in getOperands(tvar) repeat
-              catCtor := getConstructor(tvar')
-              opList := copy operations catCtor    
-              if first(resolutionResult := searchCurrentCategoryFunctionSet(tp,_
-                                             tvar', tps, rtn, fn, opList)) then
-                return resolutionResult
-          else
-            catCtor := getConstructor(tvar)
-            opList := copy operations catCtor
-            --print(catCtor::OutputForm)
-            --print(opList::OutputForm)
-            if first(resolutionResult := searchCurrentCategoryFunctionSet(tp,_
-                                              tvar, tps, rtn, fn, opList)) then
-              return resolutionResult
-        else if isTypeVariable?(tp) and not key?(tp, typeEnv) then     
-          print(tp::OutputForm)
-          print(typeEnv::OutputForm)
-          userError "the type of this type variable can not be found in type environment"          
-        else
-          if isUnion?(tp) then
-            unionElements : List Syntax := extractUnionElements(tp)
-            for ue in unionElements repeat
-              tl' := copy tl
-              tl'.index := ue
-              rtn' := last tl'
-              tps' := remove(last tl', tl')
-              if first(ufr := resolveExportedFunction(tps', rtn', fn)) then return ufr
-          ctor   := getConstructor(tp)
-          ary    := arity ctor              
-          opList := copy operations ctor
-          --print(opList::OutputForm)
-          if isNonNegativeIntegerType?(tp) or isPositiveIntegerType?(tp) then 
-            opList := concat(opList,_
-                           copy(operations(getConstructor(makeIntegerType()))))
-          if first(resolutionResult := searchCurrentFunctionSet(tp, tps,_
-                                                         rtn, fn, opList)) then
-            return resolutionResult
+      tl := concat(tps, rtn)
+      for tp in tl | not isFreshTypeVariable?(tp) and not isRecord?(tp) repeat
+        res := resolveFromEachType(tp, tps, rtn, fn, index)
+        first res => return res
         index := index + 1
       pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- does function resolution for annotated function calls
+    -- whose annotations are type variables, i.e., resolve the function
+    -- from the type of the type annotation
+    resolveFunctionFromTypeOfTypeAnnotation(tpAnot: Syntax, tps: List Syntax,_
+                  rtn: Syntax, fn: Identifier): Pair(Boolean, Signature) ==
+      tvar := typeEnv.tpAnot
+      typesOftvar : List Syntax := [tvar]
+      if isJoin?(tvar) then typesOftvar := getOperands(tvar)
+      for cat in typesOftvar repeat
+        catCtor := getConstructor cat
+        opList := copy operations catCtor          
+        res := searchCurrentCategoryFunctionSet(tpAnot,cat,tps, rtn, fn, opList)
+        first res => return res
+      pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+
+    -- does function resolution for annotated function calls 
+    -- whose annotations are type variables
+    resolveFunctionWithTypeVariableAnnotation(tpAnot: Syntax, tps: List Syntax,_
+                  rtn: Syntax, fn: Identifier): Pair(Boolean, Signature) ==
+      key?(tpAnot, typeEnv) => 
+        resolveFunctionFromTypeOfTypeAnnotation(tpAnot, tps, rtn, fn)
+      print(fn::OutputForm)
+      print(tps::OutputForm)
+      print(rtn::OutputForm)
+      print(tpAnot::OutputForm)
+      print(typeEnv::OutputForm)
+      userError "Annotated function resolver: the type of this type variable_
+                 can not be found in type environment"  
 
     -- does function resolution for annotated function calls
     resolveFunctionWithAnnotation(tpAnot: Syntax, tps: List Syntax,_
                   rtn: Syntax, fn: Identifier): Pair(Boolean, Signature) ==
       -- if this function call is annotated using $ with the package/domain name, 
       -- we directly go to that domain/package/category
-      -- assumption: we don't handle $%, this annotation looks retard.
-      if isTypeVariable?(tpAnot) and key?(tpAnot, typeEnv) then
-        tvar := typeEnv.tpAnot
-        if isJoin?(tvar) then
-          for tvar' in getOperands(tvar) repeat
-            catCtor := getConstructor(tvar')
-            opList := copy operations catCtor          
-            if first(resolutionResult := searchCurrentCategoryFunctionSet(tpAnot, tvar', tps, rtn, fn, opList)) then
-              return resolutionResult
-        else
-          catCtor := getConstructor(tvar)
-          opList := copy operations catCtor
-          if first(resolutionResult := searchCurrentCategoryFunctionSet(tpAnot, tvar, tps, rtn, fn, opList)) then
-            return resolutionResult
-      else if isTypeVariable?(tpAnot) and not key?(tpAnot, typeEnv) then
-        print(fn::OutputForm)
-        print(tps::OutputForm)
-        print(rtn::OutputForm)
-        print(tpAnot::OutputForm)
-        print(typeEnv::OutputForm)
-        userError "[Annotated function resolver]: the type of this type variable can not be found in type environment"          
-      else
-        ctor   := getConstructor(tpAnot)
-        ary    := arity ctor              
-        opList := copy operations ctor
-        if first(resolutionResult := searchCurrentFunctionSet(tpAnot, tps, rtn, fn, opList)) then
-          return resolutionResult
+      -- assumption: we don't handle $%, which won't actually occur.
+      isTypeVariable?(tpAnot) => 
+        resolveFunctionWithTypeVariableAnnotation(tpAnot, tps, rtn, fn)
+      ctor   := getConstructor(tpAnot)           
+      opList := copy operations ctor
+      resolutionResult := searchCurrentFunctionSet(tpAnot, tps, rtn, fn, opList)
+      first resolutionResult => return resolutionResult
       pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+
 
     -- try to resolve a given function from the domain/package/category
     -- imported by the current constructor definition
@@ -640,13 +666,12 @@ TypeChecker(): Public == Private where
           i' := i::Syntax
           if not compound? i' and not isTypeVariable?(i') then
             i' := buildSyntax(i', [])
-          first(r := resolveFunctionWithAnnotation(i', tps, rtn, fn)) => return r
+          first(r := resolveFunctionWithAnnotation(i', tps, rtn, fn)) => 
+            return r
       pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
 
-    --functionResolution: (List Syntax, Syntax, Identifier) -> FRES
-      ++ funRsol(tps) 
-      ++ takes in the syntax of types of parameters, and find the correct function
-      ++ returning its signature
+    -- resolves the signature of a function used in a function application
+    -- given its input and output types
     functionResolution(tps: List Syntax, rtn: Syntax,_
                                   fn: Identifier): Pair(Boolean, Signature) ==
       -- search in the local capsule first, not implemented
@@ -670,7 +695,6 @@ TypeChecker(): Public == Private where
                            typeOfIndex: List Syntax, expect: Syntax): Syntax ==
       -- actually the algorithm in this case should 
       -- be adpated to typechecking all the access form
-      --isTypeVariable?(typeOfContainer) and (isIntegerType?(typeOfIndex) or isPositiveIntegerType?(typeOfIndex)) => 
       first(r := resolveFunctionWithAnnotation(typeOfContainer,_
        concat(typeOfContainer, typeOfIndex), expect, makeElt()::Identifier)) =>
         unification(target second r, expect)
@@ -695,7 +719,8 @@ TypeChecker(): Public == Private where
     -- does typechecking for record type
     checkRecord(tp: Syntax, indexName: Syntax, expect: Syntax): Syntax ==
       for f in getOperands tp repeat
-        first getOperands f = indexName => return unification(second getOperands f, expect)
+        first getOperands f = indexName => 
+          return unification(second getOperands f, expect)
       print(indexName::OutputForm)
       userError "checking record: can not find the corresponding type of this field"
 
@@ -712,7 +737,8 @@ TypeChecker(): Public == Private where
     checkAccessForm(a: SpadAst, expect: Syntax): Syntax ==
       typeOfLeft := makeUnknown()
       if multiAccess?(a) then
-        typeOfLeft := checkStatement(getOperator(a::Syntax)::Syntax::SpadAst, freshVariable())
+        typeOfLeft := checkStatement(getOperator(a::Syntax)::Syntax::SpadAst,_
+                                     freshVariable())
       else
         left := getContainerName(a)
         typeOfLeft := typeEnv.left
@@ -793,10 +819,6 @@ TypeChecker(): Public == Private where
         true
       false
 
-    -- a global table for storing all the types of the type variables 
-    -- used in a type expression
-    typeOfTypeVariable: VTB := empty()
-
     -- obtain the type of a type variable
     checkTypeVariable(t: Syntax): Void ==
       key?(t, typeEnv) =>
@@ -840,7 +862,7 @@ TypeChecker(): Public == Private where
       false
 
     -- does typechecking for a reduce form
-    checkReduceAst(r: SpadAst, expect: Syntax): Syntax ==
+    checkReduceForm(r: SpadAst, expect: Syntax): Syntax ==
       lst := getOperands(r::Syntax).last
       isList?(lstTyp := checkStatement(lst::SpadAst, freshVariable())) => 
         t := unification(first getOperands lstTyp, expect)
@@ -872,23 +894,10 @@ TypeChecker(): Public == Private where
           refinedOperandTypes.i := checkStatement((opr.i)::SpadAst, expectType)    
       refinedOperandTypes
 
-    -- checks whether a function name is Zero
-    isZero?(f: Identifier): Boolean == f = makeZero()
-
-    -- checks whether a function name is One
-    isOne?(f: Identifier): Boolean == f = makeOne()
-
-    -- checks whether a function name is Error
-    isErrorFunction?(f: Identifier): Boolean == f = makeError()::Identifier
-
-    -- creates a syntax for domain Exit
-    makeExitType(): Syntax == buildSyntax(makeExit(), [])
-
-
     -- collects the signature of an operator if it is an accumulation operator
     -- used in an accumulation loop
-    collectAccumulationOperatorOnDemand(e: SpadAst, expect: Syntax,_
-                                t: Pair(Boolean, Signature)): Void==
+    collectAccumulationOperatorOnDemand(functionName: Identifier, e: SpadAst,_
+                           expect: Syntax, t: Pair(Boolean, Signature)): Void==
       if startCollectSignature? and_
          #(oprs:=getOperands(e::Syntax)) = 2 and_
          (member?(oprs.1, accumulationVariableList.accVarListIndex) or_
@@ -934,7 +943,8 @@ TypeChecker(): Public == Private where
           tb := copy rec.tenv
           tb.k := constructorCallForm()
           rec.tenv := copy tb 
-        reduceCandidatesWithSignatures:=concat(reduceCandidatesWithSignatures, rec)
+        reduceCandidatesWithSignatures:=_
+                                     concat(reduceCandidatesWithSignatures,rec)
 
     -- if the operator can be resolved, we collect data for the operator if it 
     -- is an accumulation operator or used in a reduce function call 
@@ -942,7 +952,7 @@ TypeChecker(): Public == Private where
     -- resolution against the expected type
     collectDataAndCheckTypes(functionName: Identifier, t: Pair(Boolean, Signature),_
            typesOfOperands: List Syntax, e: SpadAst, expect: Syntax): Syntax ==
-      collectAccumulationOperatorOnDemand(e, expect, t)
+      collectAccumulationOperatorOnDemand(functionName, e, expect, t)
       collectReduceCallOnDemand(functionName, #typesOfOperands, e, expect, t)
       parameterTypes := source second t
       typesOfOperands' := checkOperands2(e, typesOfOperands, parameterTypes)
@@ -951,9 +961,12 @@ TypeChecker(): Public == Private where
       unification(target second t, expect)
 
     -- print out the information of the function whose function resolution fails
-    cryIfFail(functionName: Identifier, typesOfOperands: List Syntax): Void ==
-      print("[Unannotated function resolver] function can not be resolved,_
-                                                  but we continue"::OutputForm)
+    cryIfFail(functionName: Identifier,_
+                              typesOfOperands: List Syntax, x: Integer): Void ==
+      if x = 1 then
+        print("Unannotated function resolver: resolution fails "::OutputForm)
+      else
+        print("Annotated function resolver: resolution fails "::OutputForm)
       print(functionName::OutputForm)
       print(typesOfOperands::OutputForm)
 
@@ -974,7 +987,7 @@ TypeChecker(): Public == Private where
       t := functionResolution(typesOfOperands, expect, functionName)
       first t => 
         collectDataAndCheckTypes(functionName, t, typesOfOperands, e, expect)
-      cryIfFail(functionName, typesOfOperands)
+      cryIfFail(functionName, typesOfOperands, 1)
       freshVariable()
 
     -- does typechecking for unannotated expression
@@ -986,7 +999,7 @@ TypeChecker(): Public == Private where
       e case HasAst       => checkHasAst(e::Syntax::HasAst, expect)
       e case CollectAst   => checkCollectAst(e::Syntax::CollectAst, expect)
       e case ConstructAst => checkConstructAst(e::Syntax::ConstructAst, expect)
-      isReduceForm?(e)    => checkReduceAst(e, expect)
+      isReduceForm?(e)    => checkReduceForm(e, expect)
       isAccessForm?(e)    => checkAccessForm(e, expect)
       e case CoerceAst    => target(e::Syntax::CoerceAst)::Syntax
       checkUnannotatedFunctionApplication(e, expect)
@@ -1005,31 +1018,8 @@ TypeChecker(): Public == Private where
       isOne?(functionName) => unification(tpAnot, expect)
       typesOfOperands := checkOperands(e)
       t:= resolveFunctionWithAnnotation(tpAnot, typesOfOperands, expect, functionName)      
-      first t =>
-        if startCollectSignature? and_
-           #(oprs:=getOperands(e::Syntax)) = 2 and_
-           (member?(oprs.1, accumulationVariableList.accVarListIndex) or_
-           member?(oprs.2, accumulationVariableList.accVarListIndex)) then
-          rec : XREC := [functionName::Identifier, second t,_
-                       e::Syntax, checkTypeofTypeVariablesInSignature second t]
-          functionSignaturesOfThisLoop := concat(functionSignaturesOfThisLoop, rec)
-
-        if not empty? reduceCandidates and_
-           functionName = 'reduce::Identifier::Syntax and_ 
-           (#typesOfOperands =2 or #typesOfOperands = 3 or #typesOfOperands = 4) and_
-           compound?(fop := (first source second t)) and  fop::SpadAst case MappingAst then
-          rec : REDU := [e::Syntax, first(getOperands(e::Syntax)),_
-             x := mappingAstToSignature(fop::SpadAst::MappingAst)$SyntaxHelper,_
-                                         checkTypeofTypeVariablesInSignature x]
-          reduceCandidatesWithSignatures := concat(reduceCandidatesWithSignatures, rec)
-
-        typesOfOperands' := checkOperands2(e, typesOfOperands, source second t)   
-        for actualType in typesOfOperands' for expectType in source second t repeat
-          unification(actualType, expectType)        
-        unification(target second t, expect)
-      print("[Annotated function resolver] function can not be resolved, but we continue"::OutputForm)
-      print(functionName::OutputForm)
-      print(typesOfOperands::OutputForm)
+      first t => collectDataAndCheckTypes(functionName, t, typesOfOperands, e, expect)
+      cryIfFail(functionName, typesOfOperands, 2)
       freshVariable()
  
     -- does typechecking for an expression
@@ -1472,11 +1462,6 @@ TypeChecker(): Public == Private where
                              typeEnvironment: TENV): Pair(Boolean, Signature) == 
       typeEnv := copy typeEnvironment
       resolveFunctionWithAnnotation(tpAnot, tps, rtn, fn)
-
-
-
-
-
 
 -- Problem: 
 -- 2. IfAst should check both branches first, then do a unification on both branches, 
