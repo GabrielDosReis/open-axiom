@@ -63,6 +63,8 @@ TypeChecker(): Public == Private where
       ++ does typechecking for each iterator in the list of iterators of a loop
     checkStatement: (SpadAst, Syntax) -> Syntax
       ++ does typechecking for a statement
+    checkTypeofTypeVariablesInType: Syntax -> Void
+      ++ does tyepchecking for a type variable
 
     -- global variable storing the return type of the current 
     -- function whose definition is being typechecked
@@ -214,6 +216,8 @@ TypeChecker(): Public == Private where
       false
 
     -- checks whether a compound syntax is an annotated function application
+    -- if so, returns the type annotation alone with the newly constructed call 
+    -- form whose type annotation is removed.
     isAnnotatedExpression?(e: SpadAst): Pair(Boolean, List Syntax) ==
       (op := getOperator(e::Syntax)) case Syntax =>
         compound?(op::Syntax) and_
@@ -221,8 +225,7 @@ TypeChecker(): Public == Private where
           (innerOp::Identifier::Syntax) = makeElt() => pair(true, getOperands op)
           pair(false, [])
         pair(false, [])
-      -- to handle the very buggy 0() function
-      --print("come to the correct case"::OutputForm)
+      -- to handle an annotated function call of function 0()
       (op' := getOperator(e::Syntax)) case Identifier =>
         opr := getOperands(e::Syntax)
         ((op'::Identifier::Syntax) = makeElt()) and compound?(opr.2) =>
@@ -790,17 +793,20 @@ TypeChecker(): Public == Private where
         true
       false
 
-    -- a global environment for storing all the types of the type variables 
-    -- used in some type syntax
+    -- a global table for storing all the types of the type variables 
+    -- used in a type expression
     typeOfTypeVariable: VTB := empty()
+
+    -- obtain the type of a type variable
+    checkTypeVariable(t: Syntax): Void ==
+      key?(t, typeEnv) =>
+        tp := typeEnv.t
+        typeOfTypeVariable.t := tp
+        checkTypeofTypeVariablesInType tp
 
     -- obtain the type of each type variable used in a type syntax
     checkTypeofTypeVariablesInType(t: Syntax): Void ==
-      isTypeVariable?(t) =>
-        key?(t, typeEnv) =>
-          tp := typeEnv.t
-          typeOfTypeVariable.t := tp
-          checkTypeofTypeVariablesInType tp
+      isTypeVariable?(t) => checkTypeVariable(t)
       isFreshTypeVariable?(t) => void()
       t case String or t case Integer or t case DoubleFloat => void()
       not compound? t =>
@@ -840,18 +846,21 @@ TypeChecker(): Public == Private where
         t := unification(first getOperands lstTyp, expect)
         op := first(getOperands(r::Syntax))::Identifier
         sig := signature([t, t], t)$Signature
-        rec : REDF := [r::Syntax, op, sig, checkTypeofTypeVariablesInSignature sig]
+        rec : REDF := [r::Syntax, op, sig,_
+                                     checkTypeofTypeVariablesInSignature sig]
         if isCategory?(constructorCallForm())$SyntaxHelper and_
            callformWithinSignature?(rec.signature, constructorCallForm()) then
-          rec.signature := replaceSignatureBack(rec.signature, constructorCallForm())
+          rec.signature := replaceSignatureBack(rec.signature,_
+                                                         constructorCallForm())
           k := makePercentage()
           tb := copy rec.tenv
           tb.k := constructorCallForm()
           rec.tenv := copy tb 
-        reduceFormCandidatesWithSignatures := concat(reduceFormCandidatesWithSignatures, rec)
+        reduceFormCandidatesWithSignatures :=_
+          concat(reduceFormCandidatesWithSignatures, rec)
         t
       userError "the last operand in REDUCE form is not a list"
-    
+
     -- does typechecking for each parameter of an expression
     checkOperands2(exp: SpadAst, ats: List Syntax, ets: List Syntax): List Syntax ==
       refinedOperandTypes : List Syntax := copy ats
@@ -863,6 +872,111 @@ TypeChecker(): Public == Private where
           refinedOperandTypes.i := checkStatement((opr.i)::SpadAst, expectType)    
       refinedOperandTypes
 
+    -- checks whether a function name is Zero
+    isZero?(f: Identifier): Boolean == f = makeZero()
+
+    -- checks whether a function name is One
+    isOne?(f: Identifier): Boolean == f = makeOne()
+
+    -- checks whether a function name is Error
+    isErrorFunction?(f: Identifier): Boolean == f = makeError()::Identifier
+
+    -- creates a syntax for domain Exit
+    makeExitType(): Syntax == buildSyntax(makeExit(), [])
+
+
+    -- collects the signature of an operator if it is an accumulation operator
+    -- used in an accumulation loop
+    collectAccumulationOperatorOnDemand(e: SpadAst, expect: Syntax,_
+                                t: Pair(Boolean, Signature)): Void==
+      if startCollectSignature? and_
+         #(oprs:=getOperands(e::Syntax)) = 2 and_
+         (member?(oprs.1, accumulationVariableList.accVarListIndex) or_
+          member?(oprs.2, accumulationVariableList.accVarListIndex)) then
+        rec : XREC := [functionName, second t, e::Syntax,_
+                       checkTypeofTypeVariablesInSignature second t]
+        if isCategory?(constructorCallForm())$SyntaxHelper and_
+           callformWithinSignature?(rec.signature, constructorCallForm()) then
+          rec.signature := replaceSignatureBack(rec.signature, constructorCallForm())
+          k := makePercentage()
+          tb := copy rec.tenv
+          tb.k := constructorCallForm()
+          rec.tenv := copy tb 
+        functionSignaturesOfThisLoop := concat(functionSignaturesOfThisLoop, rec)
+
+    -- checks the arity of a reduce call
+    verifyArityOfReduceCall(a: Integer): Boolean == a > 1 and a < 5
+
+    -- checks the kind of the first parameter passed to a reduce call
+    verifyParameterKindOfReduceCall(s: Signature): Boolean ==
+      parameterType := first source s
+      compound? parameterType and_
+      parameterType::SpadAst case MappingAst
+
+    -- collects the information of a reduce function call if 
+    -- it is actually a binary function reduction
+    collectReduceCallOnDemand(functionName: Identifier, a: Integer,_
+               e: SpadAst, expect: Syntax, t: Pair(Boolean, Signature)): Void==
+      if not empty? reduceCandidates and_
+         functionName = 'reduce::Identifier and_ 
+         verifyArityOfReduceCall(a) and_
+         verifyParameterKindOfReduceCall(second t) then
+        parameterType := (first source second t)::SpadAst::MappingAst
+        reduceOpSignature := mappingAstToSignature(parameterType)$SyntaxHelper
+        rec : REDU := [e::Syntax, first(getOperands(e::Syntax)),_
+                       reduceOpSignature,_
+                       checkTypeofTypeVariablesInSignature reduceOpSignature]
+        if isCategory?(constructorCallForm())$SyntaxHelper and_
+           callformWithinSignature?(rec.signature, constructorCallForm()) then
+          rec.signature := replaceSignatureBack(rec.signature,_
+                                                         constructorCallForm())
+          k := makePercentage()
+          tb := copy rec.tenv
+          tb.k := constructorCallForm()
+          rec.tenv := copy tb 
+        reduceCandidatesWithSignatures:=concat(reduceCandidatesWithSignatures, rec)
+
+    -- if the operator can be resolved, we collect data for the operator if it 
+    -- is an accumulation operator or used in a reduce function call 
+    -- then we further check the type of the function obtained from function 
+    -- resolution against the expected type
+    collectDataAndCheckTypes(functionName: Identifier, t: Pair(Boolean, Signature),_
+           typesOfOperands: List Syntax, e: SpadAst, expect: Syntax): Syntax ==
+      collectAccumulationOperatorOnDemand(e, expect, t)
+      collectReduceCallOnDemand(functionName, #typesOfOperands, e, expect, t)
+      parameterTypes := source second t
+      typesOfOperands' := checkOperands2(e, typesOfOperands, parameterTypes)
+      for actualType in typesOfOperands' for expectType in parameterTypes repeat
+        unification(actualType, expectType)
+      unification(target second t, expect)
+
+    -- print out the information of the function whose function resolution fails
+    cryIfFail(functionName: Identifier, typesOfOperands: List Syntax): Void ==
+      print("[Unannotated function resolver] function can not be resolved,_
+                                                  but we continue"::OutputForm)
+      print(functionName::OutputForm)
+      print(typesOfOperands::OutputForm)
+
+    -- does typechecking for unannotated function application
+    checkUnannotatedFunctionApplication(e: SpadAst, expect: Syntax): Syntax==   
+      typesOfOperands := checkOperands e
+      functionName := getFunctionName e
+      -- by default 0 has type NonNegativeInteger
+      -- by default 1 has type PositiveInteger
+      isZero?(functionName) or isOne?(functionName) => 
+        unification(freshVariable(), expect)
+      isErrorFunction?(functionName) => unification(makeExitType(), expect)
+      if functionName = 'reduce::Identifier and #typesOfOperands > 1 and_
+         isList?(typesOfOperands.2) then
+        elementType := first(getOperands(typesOfOperands.2))
+        typesOfOperands.1 := (signature([elementType, elementType],_
+                              elementType)$Signature)::MappingAst::Syntax
+      t := functionResolution(typesOfOperands, expect, functionName)
+      first t => 
+        collectDataAndCheckTypes(functionName, t, typesOfOperands, e, expect)
+      cryIfFail(functionName, typesOfOperands)
+      freshVariable()
+
     -- does typechecking for unannotated expression
     checkUnannotatedExpression(e: SpadAst, expect: Syntax): Syntax ==
       -- 1. unary and is in array access form
@@ -871,104 +985,42 @@ TypeChecker(): Public == Private where
       e case PretendAst   => checkPretendAst(e::Syntax::PretendAst, expect)
       e case HasAst       => checkHasAst(e::Syntax::HasAst, expect)
       e case CollectAst   => checkCollectAst(e::Syntax::CollectAst, expect)
-      e case ConstructAst => 
-        --print("ready to check construct"::OutputForm)
-        --print(expect::OutputForm)
-        checkConstructAst(e::Syntax::ConstructAst, expect)
-      isReduceForm?(e)    => checkReduceAst(e, expect)  -- unannotated expression only
-      isAccessForm?(e)    => checkAccessForm(e, expect) -- can handle List, Vector, Table only
-
-      -- obtain function name
-      functionName: Identifier
-      typesOfOperands := checkOperands(e)
-      typeOfReturn := expect
-      if (e case CoerceAst) then
-        functionName := makeCoerce()::Identifier
-        typeOfReturn := target(e::Syntax::CoerceAst)::Syntax
-        return typeOfReturn
-      else
-        functionName := getFunctionName(e)
-
-      -- by default 0 has type NonNegativeInteger
-      functionName = makeZero() => unification(freshVariable(), expect)
-      -- by default 1 has type PositiveInteger
-      functionName = makeOne() =>  unification(freshVariable(), expect)
-      (functionName = makeError()::Identifier) => return unification(buildSyntax(makeExit(), []), expect) 
-  
-      if functionName = 'reduce::Identifier and #typesOfOperands > 1 and isList?(typesOfOperands.2) then
-        elementType := first(getOperands(typesOfOperands.2))
-        typesOfOperands.1 := (signature([elementType, elementType], elementType)$Signature)::MappingAst::Syntax
-
-
-      t := functionResolution(typesOfOperands, typeOfReturn, functionName)
-      first t =>
-        --print("after fun resol1!!!"::OutputForm)
-        if startCollectSignature? and_
-           #(oprs:=getOperands(e::Syntax)) = 2 and_
-           (member?(oprs.1, accumulationVariableList.accVarListIndex) or member?(oprs.2, accumulationVariableList.accVarListIndex)) then
-          rec : XREC := [functionName, second t, e::Syntax, checkTypeofTypeVariablesInSignature second t]
-          if isCategory?(constructorCallForm())$SyntaxHelper and callformWithinSignature?(rec.signature, constructorCallForm()) then
-            rec.signature := replaceSignatureBack(rec.signature, constructorCallForm())
-            k := makePercentage()
-            tb := copy rec.tenv
-            tb.k := constructorCallForm()
-            rec.tenv := copy tb 
-          functionSignaturesOfThisLoop := concat(functionSignaturesOfThisLoop, rec)
-
-
-        if not empty? reduceCandidates and functionName = 'reduce::Identifier::Syntax::Identifier and_ 
-           (#typesOfOperands =2 or #typesOfOperands = 3 or #typesOfOperands = 4) and_
-           compound?(fop := (first source second t)) and  fop::SpadAst case MappingAst then
-          rec : REDU := [e::Syntax, first(getOperands(e::Syntax)), x := mappingAstToSignature(fop::SpadAst::MappingAst)$SyntaxHelper, checkTypeofTypeVariablesInSignature x]
-          if isCategory?(constructorCallForm())$SyntaxHelper and callformWithinSignature?(rec.signature, constructorCallForm()) then
-            rec.signature := replaceSignatureBack(rec.signature, constructorCallForm())
-            k := makePercentage()
-            tb := copy rec.tenv
-            tb.k := constructorCallForm()
-            rec.tenv := copy tb 
-          reduceCandidatesWithSignatures := concat(reduceCandidatesWithSignatures, rec)
-
-        typesOfOperands' := checkOperands2(e::SpadAst, typesOfOperands, source second t) --, typeOfOperands@(List Syntax), source second t)
-        for actualType in typesOfOperands' for expectType in source second t repeat
-          unification(actualType, expectType)
-        unification(target second t, expect)
-      print("[Unannotated function resolver] function can not be resolved, but we continue"::OutputForm)
-      print(functionName::OutputForm)
-      print(typesOfOperands::OutputForm)
-      freshVariable()
-
-    -- does typechecking for each parameters of an annotated function application
-    checkOperandsInAnnotatedExpression(functionName: Syntax,_
-                                       e: SpadAst): List Syntax == 
-      checkOperands(e)
+      e case ConstructAst => checkConstructAst(e::Syntax::ConstructAst, expect)
+      isReduceForm?(e)    => checkReduceAst(e, expect)
+      isAccessForm?(e)    => checkAccessForm(e, expect)
+      e case CoerceAst    => target(e::Syntax::CoerceAst)::Syntax
+      checkUnannotatedFunctionApplication(e, expect)
 
     -- does typechecking for an annotated expression/function application
-    checkAnnotatedExpression(e: SpadAst, eltOperands: List Syntax, expect: Syntax): Syntax ==
+    checkAnnotatedExpression(e: SpadAst, eltOperands: List Syntax,_
+                                                     expect: Syntax): Syntax ==
       -- access form won't be used with $ sign at the same time
       tpAnot := first eltOperands
       functionName := second eltOperands
-
       -- if this is an annotated construct, then just return the type annotation.
       (functionName = makeConstruct()) => unification(tpAnot, expect)
       -- if this is an annotated collect, also just return the type annotation.
       (functionName = makeCOLLECT()) => unification(tpAnot, expect)
-      (functionName = makeZero()) => unification(tpAnot, expect)
-      (functionName = makeOne()) => unification(tpAnot, expect)
-
-      typesOfOperands := checkOperandsInAnnotatedExpression(functionName, e)
-      typeOfReturn := expect
-
-      first (t:= resolveFunctionWithAnnotation(tpAnot, typesOfOperands, typeOfReturn, functionName)) =>
+      isZero?(functionName) => unification(tpAnot, expect)
+      isOne?(functionName) => unification(tpAnot, expect)
+      typesOfOperands := checkOperands(e)
+      t:= resolveFunctionWithAnnotation(tpAnot, typesOfOperands, expect, functionName)      
+      first t =>
         if startCollectSignature? and_
            #(oprs:=getOperands(e::Syntax)) = 2 and_
-           (member?(oprs.1, accumulationVariableList.accVarListIndex) or member?(oprs.2, accumulationVariableList.accVarListIndex)) then
-          rec : XREC := [functionName::Identifier, second t, e::Syntax, checkTypeofTypeVariablesInSignature second t]
+           (member?(oprs.1, accumulationVariableList.accVarListIndex) or_
+           member?(oprs.2, accumulationVariableList.accVarListIndex)) then
+          rec : XREC := [functionName::Identifier, second t,_
+                       e::Syntax, checkTypeofTypeVariablesInSignature second t]
           functionSignaturesOfThisLoop := concat(functionSignaturesOfThisLoop, rec)
 
-        if not empty? reduceCandidates and functionName = 'reduce::Identifier::Syntax and_ 
+        if not empty? reduceCandidates and_
+           functionName = 'reduce::Identifier::Syntax and_ 
            (#typesOfOperands =2 or #typesOfOperands = 3 or #typesOfOperands = 4) and_
            compound?(fop := (first source second t)) and  fop::SpadAst case MappingAst then
-          rec : REDU := [e::Syntax, first(getOperands(e::Syntax)), x := mappingAstToSignature(fop::SpadAst::MappingAst)$SyntaxHelper, checkTypeofTypeVariablesInSignature x]
+          rec : REDU := [e::Syntax, first(getOperands(e::Syntax)),_
+             x := mappingAstToSignature(fop::SpadAst::MappingAst)$SyntaxHelper,_
+                                         checkTypeofTypeVariablesInSignature x]
           reduceCandidatesWithSignatures := concat(reduceCandidatesWithSignatures, rec)
 
         typesOfOperands' := checkOperands2(e, typesOfOperands, source second t)   
@@ -1024,8 +1076,6 @@ TypeChecker(): Public == Private where
     -- does typechecking for the expression on the right hand side of an 
     -- assignment
     checkRightofLet(right: SpadAst, expect: Syntax): Syntax ==
-      --print("checking right of let"::OutputForm)
-      --print(expect::OutputForm)
       checkStatement(right, expect)
 
     -- does typechecking for an assignment
@@ -1152,14 +1202,17 @@ TypeChecker(): Public == Private where
       l : List Syntax := [e::Syntax for e in rl]
       member?(r::Syntax, l)
 
-    -- does typechecking for a loop
-    checkRepeat(r: RAST, expect: Syntax): Syntax ==
+    -- initialize the result list for storing the signatures
+    -- when the the loop to be typechecked is a member of the accumulation
+    -- candidate list
+    initializeSignatureCollectionIfNecessary(r: RAST):Void ==
       if member?(r, loopCandidates) then
         startCollectSignature? := true
-        functionSignaturesOfThisLoop := []
-      its := iterators r
-      checkIterators(its)
-      checkStatement(body r, freshVariable())
+        functionSignaturesOfThisLoop := [] 
+
+    -- collect the accumulation loop, storing them in a final record
+    -- after type-based verification
+    collectVerifiedAccumulationLoops(r: RAST): Void ==
       if member?(r, loopCandidates) then
         rec : YREC := [r, copy functionSignaturesOfThisLoop]
         accumulationCandidatesWithSignatures :=_
@@ -1167,6 +1220,14 @@ TypeChecker(): Public == Private where
         startCollectSignature? := false
         functionSignaturesOfThisLoop := []
         accVarListIndex := accVarListIndex + 1
+
+    -- does typechecking for a loop
+    checkRepeat(r: RAST, expect: Syntax): Syntax ==
+      initializeSignatureCollectionIfNecessary(r)
+      its := iterators r
+      checkIterators(its)
+      checkStatement(body r, freshVariable())
+      collectVerifiedAccumulationLoops(r)
       unification(buildSyntax(makeVoid(), []), expect)
 
     -- does typechecking for all the statements in a sequence 
@@ -1210,19 +1271,14 @@ TypeChecker(): Public == Private where
     checkVariable(s: Syntax, expect: Syntax): Syntax ==
       isTrue?(s) or isFalse?(s)    => 
         unification(buildSyntax(makeBoolean(), []), expect)
-      s case Integer               => 
-        unification(buildSyntax(makeInteger(), []), expect)
+      s case Integer => unification(makeIntegerType(), expect)
       s case String                =>
-        s = "failed"::Syntax => s
+        s = "failed"::Syntax       => s
         unification(buildSyntax(makeString(), []), expect)
-      s case DoubleFloat           => 
-        unification(buildSyntax(makeDoubleFloat(), []), expect)
-      key?(s, typeEnv)             => 
-        unification(typeEnv.s, expect)
-      first(r := inLocalExported?(s))   => 
-        unification(second r, expect)
-      first(t := inLocalUnexported?(s)) => 
-        unification(second t, expect)
+      s case DoubleFloat => unification(makeDoubleFloatType(), expect)
+      key?(s, typeEnv)                  => unification(typeEnv.s, expect)
+      first(r := inLocalExported?(s))   => unification(second r, expect)
+      first(t := inLocalUnexported?(s)) => unification(second t, expect)
       unification(freshVariable(), expect)
       
     -- does typechecking for a return statement
