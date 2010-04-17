@@ -40,12 +40,10 @@ Partition(): Exports == Implementation where
                    ConvertibleTo List Integer,CoercibleTo List Integer) with
     partition: L I -> %
       ++ partition(li) converts a list of integers li to a partition
-    powers: L I -> L L I
-      ++ powers(li) returns a list of 2-element lists.  For each 2-element
-      ++ list, the first element is an entry of li and the second
-      ++ element is the multiplicity with which the first element
-      ++ occurs in li.  There is a 2-element list for each value
-      ++ occurring in l.
+    powers: L I -> List Pair(I,PositiveInteger)
+      ++ powers(li) returns a list of pairs.  The second component of
+      ++ each pair is the multiplicity with which the first component
+      ++ occurs in li. 
     pdct: % -> I
       ++ \spad{pdct(a1**n1 a2**n2 ...)} returns 
       ++ \spad{n1! * a1**n1 * n2! * a2**n2 * ...}.
@@ -91,7 +89,7 @@ Partition(): Exports == Implementation where
     powers l ==
       empty? l => nil
       li := bite(first l,rest l)
-      cons([first l,first(li) + 1],powers(rest li))
+      cons(pair(first l,first(li)::PositiveInteger + 1),powers(rest li))
  
     conjugate x == per conjugate(rep x)$PartitionsAndPermutations
  
@@ -99,8 +97,8 @@ Partition(): Exports == Implementation where
       i2 = 1 => (i1 :: OUT) ** (" " :: OUT)
       (i1 :: OUT) ** (i2 :: OUT)
  
-    mkexp1(lli: L L I): L OUT ==
-      empty? lli => nil()
+    mkexp1(lli: L Pair(I,PositiveInteger)): L OUT ==
+      empty? lli => nil
       li := first lli
       empty?(rest lli) and second(li) = 1 =>
         [first(li) :: OUT]
