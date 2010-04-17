@@ -1,3 +1,9 @@
+2010-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/prtition.spad.pamphlet (Partition): Simplify
+	implementation.  Reuse operations available from the
+	representation domain.
+
 2010-04-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (atoms$PropositionalFormula):
