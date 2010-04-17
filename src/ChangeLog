@@ -1,5 +1,10 @@
 2010-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/prtition.spad.pamphlet (powers$Partition): Return list
+	of pairs.
+
+2010-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/prtition.spad.pamphlet (Partition): Simplify
 	implementation.  Reuse operations available from the
 	representation domain.
