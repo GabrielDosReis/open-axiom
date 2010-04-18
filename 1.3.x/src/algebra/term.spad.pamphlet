@@ -83,11 +83,29 @@ OperatorCategory(S: SetCategory): Category ==
     is?(op,n) == name op = n
 @
 
+\section{Term Algebra Operator}
+<<domain TALGOP TermAlgebraOperator>>=
+)abbrev domain TALGOP TermAlgebraOperator
+++ Author: Gabriel Dos Reis
+++ Date Created: April 17, 2010
+++ Date Last Modified: April 17, 2010
+TermAlgebraOperator(S: SetCategory): Public == Private where
+  Public == OperatorCategory S with
+    operator: (S,Arity) -> %
+      ++ \spad{operator(n,a)} returns an operator named \spad{n}
+      ++ and with arity \spad{a}.
+  Private == add
+    Rep == Pair(S,Arity)
+    operator(n,a) == per pair(n,a)
+    name x == first rep x
+    arity x == second rep x
+@
+
 
 \section{License}
 
 <<license>>=
---Copyright (C) 2007-2009, Gabriel Dos Reis
+--Copyright (C) 2007-2010, Gabriel Dos Reis
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -127,6 +145,7 @@ OperatorCategory(S: SetCategory): Category ==
 <<license>>
 <<domain ARITY Arity>>
 <<category OPERCAT OperatorCategory>>
+<<domain TALGOP TermAlgebraOperator>>
 
 @
 

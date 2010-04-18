@@ -1,3 +1,7 @@
+2010-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/term.spad.pamphlet (TermAlgebraOperator): New.
+
 2010-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/prtition.spad.pamphlet (powers$Partition): Take a
