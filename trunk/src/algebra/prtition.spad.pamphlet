@@ -32,6 +32,7 @@ import List
 Partition(): Exports == Implementation where
   macro L == List
   macro I == Integer
+  macro P == PositiveInteger
   macro OUT == OutputForm
   macro NNI == NonNegativeInteger
   macro UN == Union(%,"failed")
@@ -40,8 +41,8 @@ Partition(): Exports == Implementation where
                    ConvertibleTo List Integer,CoercibleTo List Integer) with
     partition: L I -> %
       ++ partition(li) converts a list of integers li to a partition
-    powers: L I -> List Pair(I,PositiveInteger)
-      ++ powers(li) returns a list of pairs.  The second component of
+    powers: % -> List Pair(I,PositiveInteger)
+      ++ powers(x) returns a list of pairs.  The second component of
       ++ each pair is the multiplicity with which the first component
       ++ occurs in li. 
     pdct: % -> I
@@ -79,17 +80,20 @@ Partition(): Exports == Implementation where
       (aa := remv(first rep y,x)) case "failed" => "failed"
       subtractIfCan((aa :: %), per rest rep y)
  
-    bite(i: I,li: L I): L I ==
-      empty? li => [0]
-      first li = i =>
-        li1 := bite(i,rest li)
-        cons(first(li1) + 1,rest li1)
-      cons(0,li)
- 
-    powers l ==
-      empty? l => nil
-      li := bite(first l,rest l)
-      cons(pair(first l,first(li)::PositiveInteger + 1),powers(rest li))
+    powers x ==
+      l := rep x
+      r: List Pair(I,P) := nil
+      while not empty? l repeat
+        i := first l
+        -- Now, count how many times the item `i' appears in `l'.
+        -- Since parts of partitions are stored in decreasing
+        -- order, we only need to scan the rest of the list until
+        -- we hit a different number.
+        n: P := 1
+        while not empty?(l := rest l) and i = first l repeat
+          n := n + 1
+        r := cons(pair(i,n), r)
+      reverse! r
  
     conjugate x == per conjugate(rep x)$PartitionsAndPermutations
  
@@ -106,11 +110,11 @@ Partition(): Exports == Implementation where
  
     coerce(x:%):OUT == 
         empty? rep x => rep(x)::OUT
-        paren(reduce("*",mkexp1(powers rep x)))
+        paren(reduce("*",mkexp1(powers x)))
  
     pdct x ==
-      */[factorial(second a) * (first(a) ** (second(a) pretend NNI))
-                 for a in powers rep x]
+      */[factorial(second a) * (first(a) ** second(a))
+                 for a in powers x]
 
 @
 \section{domain SYMPOLY SymmetricPolynomial}
