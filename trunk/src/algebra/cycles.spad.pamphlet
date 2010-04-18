@@ -32,13 +32,6 @@ CycleIndicators: Exports == Implementation where
   PTN  ==> Partition
   RN   ==> Fraction Integer
   FR   ==> Factored Integer
-  h ==> complete
-  s ==> powerSum
-  --a ==> elementary
-  alt ==> alternating
-  cyc ==> cyclic
-  dih ==> dihedral
-  ev == eval
   Exports ==> with
  
     complete: I -> SPOL RN
@@ -54,8 +47,6 @@ CycleIndicators: Exports == Implementation where
     elementary: I -> SPOL RN
       ++\spad{elementary n} is the \spad{n} th elementary symmetric
       ++ function expressed in terms of power sums.
- 
- -- s2h: I -> SPOL RN--s to h
  
     alternating: I -> SPOL RN
       ++\spad{alternating n} is the cycle index of the
@@ -122,8 +113,9 @@ CycleIndicators: Exports == Implementation where
     even?: L I -> B
     even? li == even?( #([i for i in li | even? i]))
  
-    alt i ==
+    alternating i ==
       2 * _+/[trm(partition li) for li in list(partitions i) | even? li]
+
     elementary i ==
            if i=0
            then 1
@@ -145,20 +137,20 @@ CycleIndicators: Exports == Implementation where
       li : L I := [n for j in 1..m]
       monomial(1,partition li)
  
-    s n == ss(n,1)
+    powerSum n == ss(n,1)
  
-    cyc n ==
-      n = 1 => s 1
+    cyclic n ==
+      n = 1 => powerSum 1
       +/[(eulerPhi(i) / n) * ss(i,numer(n/i)) for i in divisors n]
  
-    dih n ==
+    dihedral n ==
       k := n quo 2
-      odd? n => (1/2) * cyc n + (1/2) * ss(2,k) * s 1
-      (1/2) * cyc n + (1/4) * ss(2,k) + (1/4) * ss(2,k-1) * ss(1,2)
+      odd? n => (1/2) * cyclic n + (1/2) * ss(2,k) * powerSum 1
+      (1/2) * cyclic n + (1/4) * ss(2,k) + (1/4) * ss(2,k-1) * ss(1,2)
  
     trm2: L I -> SPOL RN
     trm2 li ==
-      lli := powers(li)$PTN
+      lli := powers(partition li)$PTN
       xx := 1/(pdct partition li)
       prod : SPOL RN := 1
       for ll in lli repeat
@@ -189,11 +181,11 @@ CycleIndicators: Exports == Implementation where
       p := leadingCoefficient(spol1) * cupp(degree spol1,spol2)
       p + cup(reductum spol1,spol2)
  
-    ev spol ==
+    eval spol ==
       zero? spol => 0
-      leadingCoefficient(spol) + ev(reductum spol)
+      leadingCoefficient(spol) + eval(reductum spol)
  
-    cap(spol1,spol2) == ev cup(spol1,spol2)
+    cap(spol1,spol2) == eval cup(spol1,spol2)
  
     mtpol: (I,SPOL RN) -> SPOL RN
     mtpol(n,spol)==
@@ -201,7 +193,6 @@ CycleIndicators: Exports == Implementation where
       deg := partition [n*k for k in (degree spol)::L(I)]
       monomial(leadingCoefficient spol,deg) + mtpol(n,reductum spol)
  
-    fn2: I -> SPOL RN
     evspol: ((I -> SPOL RN),SPOL RN) -> SPOL RN
     evspol(fn2,spol) ==
       zero? spol => 0
@@ -211,10 +202,8 @@ CycleIndicators: Exports == Implementation where
  
     wreath(spol1,spol2) == evspol(mtpol(#1,spol2),spol1)
  
-    hh: I -> SPOL RN      --symmetric group
-    hh n == if n=0 then 1 else if n<0 then 0 else h n
     SFunction li==
-      a:Matrix SPOL RN:=matrix [[hh(k -j+i) for k in li for j in 1..#li]
+      a:Matrix SPOL RN:=matrix [[complete(k -j+i) for k in li for j in 1..#li]
                     for i in 1..#li]
       determinant a
  
@@ -227,7 +216,7 @@ CycleIndicators: Exports == Implementation where
       #li1 < #li2 =>
         error "skewSFunction: partition1 does not include partition2"
       li2:=roundup (li1,li2)
-      a:Matrix SPOL RN:=matrix [[hh(k-li2.i-j+i)
+      a:Matrix SPOL RN:=matrix [[complete(k-li2.i-j+i)
                for k in li1 for j in 1..#li1]  for i in 1..#li1]
       determinant a
 
