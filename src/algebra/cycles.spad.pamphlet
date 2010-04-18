@@ -32,35 +32,36 @@ CycleIndicators: Exports == Implementation where
   PTN  ==> Partition
   RN   ==> Fraction Integer
   FR   ==> Factored Integer
+  macro NNI == NonNegativeInteger
   Exports ==> with
  
-    complete: I -> SPOL RN
+    complete: NNI -> SPOL RN
       ++\spad{complete n} is the \spad{n} th complete homogeneous
       ++ symmetric function expressed in terms of power sums.
       ++ Alternatively it is the cycle index of the symmetric
       ++ group of degree n.
  
-    powerSum: I -> SPOL RN
+    powerSum: NNI -> SPOL RN
       ++\spad{powerSum n} is the \spad{n} th power sum symmetric
       ++ function.
  
-    elementary: I -> SPOL RN
+    elementary: NNI -> SPOL RN
       ++\spad{elementary n} is the \spad{n} th elementary symmetric
       ++ function expressed in terms of power sums.
  
-    alternating: I -> SPOL RN
+    alternating: NNI -> SPOL RN
       ++\spad{alternating n} is the cycle index of the
       ++ alternating group of degree n.
  
-    cyclic: I -> SPOL RN    --cyclic group
+    cyclic: NNI -> SPOL RN    --cyclic group
       ++\spad{cyclic n} is the cycle index of the
       ++ cyclic group of degree n.
  
-    dihedral: I -> SPOL RN    --dihedral group
+    dihedral: NNI -> SPOL RN    --dihedral group
       ++\spad{dihedral n} is the cycle index of the
       ++ dihedral group of degree n.
  
-    graphs: I -> SPOL RN
+    graphs: NNI -> SPOL RN
       ++\spad{graphs n} is the cycle index of the group induced on
       ++ the edges of a graph by applying the symmetric function to the
       ++ n nodes.
@@ -102,12 +103,8 @@ CycleIndicators: Exports == Implementation where
     list st == entries complete st
  
     complete i ==
-           if i=0
-           then 1
-           else if i<0
-                then 0
-                else
-                   _+/[trm(partition pt) for pt in list(partitions i)]
+      i=0 => 1
+      +/[trm(partition pt) for pt in list(partitions i)]
  
  
     even?: L I -> B
@@ -117,12 +114,8 @@ CycleIndicators: Exports == Implementation where
       2 * _+/[trm(partition li) for li in list(partitions i) | even? li]
 
     elementary i ==
-           if i=0
-           then 1
-           else if i<0
-                then 0
-                else
-                  +/[(spol := trm(partition pt); even? pt => spol; -spol)
+       i=0 => 1
+       +/[(spol := trm(partition pt); even? pt => spol; -spol)
                           for pt in list(partitions i)]
  
     divisors: I -> L I
@@ -203,7 +196,8 @@ CycleIndicators: Exports == Implementation where
     wreath(spol1,spol2) == evspol(mtpol(#1,spol2),spol1)
  
     SFunction li==
-      a:Matrix SPOL RN:=matrix [[complete(k -j+i) for k in li for j in 1..#li]
+      a:Matrix SPOL RN :=
+        matrix [[complete((k -j+i)::NNI) for k in li for j in 1..#li]
                     for i in 1..#li]
       determinant a
  
@@ -216,7 +210,7 @@ CycleIndicators: Exports == Implementation where
       #li1 < #li2 =>
         error "skewSFunction: partition1 does not include partition2"
       li2:=roundup (li1,li2)
-      a:Matrix SPOL RN:=matrix [[complete(k-li2.i-j+i)
+      a:Matrix SPOL RN:=matrix [[complete((k-li2.i-j+i)::NNI)
                for k in li1 for j in 1..#li1]  for i in 1..#li1]
       determinant a
 
