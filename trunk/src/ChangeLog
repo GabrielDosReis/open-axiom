@@ -1,6 +1,13 @@
 2010-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/cycles.spad.pamphlet (CycleIndicators): Clean up.
+	(complete$CycleIndicators): Argument type is now NonNegativeInteger.
+	(powerSum$CycleIndicators): Likewise.
+	(elementary$CycleIndicators): Likewise.
+	(alternating$CycleIndicators): Likewise.
+	(cyclic$CycleIndicators): Likewise.
+	(dihedral$CycleIndicators): Likewise.
+	(graphs$CycleIndicators): Likewise.
 
 2010-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
