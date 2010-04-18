@@ -1,5 +1,11 @@
 2010-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/prtition.spad.pamphlet (powers$Partition): Take a
+	Partition as argument.  Remove local function 'bite'.
+	Make powers iterative.
+
+2010-04-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/prtition.spad.pamphlet (powers$Partition): Return list
 	of pairs.
 
