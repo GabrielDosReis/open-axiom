@@ -1,3 +1,7 @@
+2010-04-18  Alfredo Portes  <doyenatccny@gmail.com>
+
+	* hyper/Makefile.in : Remove linking to X11 library for htadd.
+
 2010-04-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/cycles.spad.pamphlet (CycleIndicators): Clean up.
