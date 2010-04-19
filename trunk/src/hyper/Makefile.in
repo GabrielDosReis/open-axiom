@@ -83,7 +83,7 @@ hypertex_DEPENDENCIES =
 htadd_SOURCES = addfile.c htadd.c lex.c
 htadd_objects = $(htadd_SOURCES:.c=.$(OBJEXT))
 htadd_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs) \
-		$(AXIOM_X11_LDFLAGS) -lm
+		-lm
 htadd_DEPENDENCIES =
 
 spadbuf_SOURCES = spadbuf.c
