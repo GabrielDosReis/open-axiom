@@ -581,7 +581,7 @@
                                            (SPADCALL
                                             (SPADCALL |str| |i|
                                              (|getShellEntry| $ 106))
-                                            (|getShellEntry| $ 141)))
+                                            (|getShellEntry| $ 139)))
                                           (PROGN
                                             (LETT #2#
                                              (PROGN
@@ -591,9 +591,9 @@
                                                   (SPADCALL |i|
                                                    (QCSIZE |str|)
                                                    (|getShellEntry| $
-                                                    143))
+                                                    141))
                                                   (|getShellEntry| $
-                                                   144))
+                                                   142))
                                                  $)
                                                 |SYMBOL;name;2$;31|)
                                                (GO #1#))
@@ -626,7 +626,7 @@
                          |SYMBOL;scripts;$R;32|)
                    (LETT |nstr| (QCSIZE |str|) |SYMBOL;scripts;$R;32|)
                    (LETT |m|
-                         (SPADCALL |nscripts| (|getShellEntry| $ 146))
+                         (SPADCALL |nscripts| (|getShellEntry| $ 144))
                          |SYMBOL;scripts;$R;32|)
                    (SEQ (LETT |j| (+ (|getShellEntry| $ 41) 1)
                               |SYMBOL;scripts;$R;32|)
@@ -636,7 +636,7 @@
                                (NULL (SPADCALL
                                       (SPADCALL |str| |j|
                                        (|getShellEntry| $ 106))
-                                      (|getShellEntry| $ 141))))
+                                      (|getShellEntry| $ 139))))
                            (GO G191)))
                         (SPADCALL |nscripts| |i|
                             (PROG1 (LETT #0#
@@ -765,7 +765,7 @@
     (RETURN
       (PROGN
         (LETT |dv$| '(|Symbol|) . #0=(|Symbol|))
-        (LETT $ (|newShell| 164) . #0#)
+        (LETT $ (|newShell| 165) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -838,17 +838,19 @@
              (293 . |maxIndex|) (298 . |position|) (304 . >=)
              |SYMBOL;new;2$;28| (|List| $$) (310 . |keys|)
              (315 . |remove!|) |SYMBOL;resetNew;V;29|
-             |SYMBOL;list;$L;34| (321 . |first|) (|SingleInteger|)
-             (326 . |One|) (330 . +) (336 . |digit?|)
-             (|UniversalSegment| 6) (341 . SEGMENT) (347 . |elt|)
-             (|List| 39) (353 . |minIndex|) (358 . -) (364 . |setelt|)
-             (371 . |rest|) (376 . |first|) (381 . |concat|)
-             (387 . |rest|) (392 . |minIndex|) (397 . |#|) (402 . <)
-             (408 . |first|) (414 . |setelt|) (421 . |rest|)
-             (427 . |elt|) (433 . >) (439 . |minIndex|) (444 . |elt|)
+             |SYMBOL;list;$L;34| (321 . |first|) (326 . +)
+             (332 . |digit?|) (|UniversalSegment| 6) (337 . SEGMENT)
+             (343 . |elt|) (|List| 39) (349 . |minIndex|)
+             (|PositiveInteger|) (354 . |One|) (358 . -)
+             (364 . |setelt|) (371 . |rest|) (376 . |first|)
+             (381 . |concat|) (387 . |rest|) (392 . |minIndex|)
+             (397 . |#|) (402 . <) (408 . |first|) (414 . |setelt|)
+             (421 . |rest|) (427 . |elt|) (433 . >) (439 . |minIndex|)
+             (444 . |elt|)
              (CONS IDENTITY
                    (FUNCALL (|dispatchFunction| |SYMBOL;sample;$;35|)
-                            $)))
+                            $))
+             (|SingleInteger|))
           '#(~= 450 |superscript| 456 |subscript| 462 |string| 468
              |scripts| 473 |scripted?| 478 |script| 483 |sample| 495
              |resetNew| 499 |patternMatch| 503 |new| 517 |name| 526
@@ -867,7 +869,7 @@
                                (|CoercibleFrom| 14)
                                (|ConvertibleTo| 25) (|OpenMath|)
                                (|ConvertibleTo| 46) (|CoercibleTo| 53))
-                            (|makeByteWordVec2| 163
+                            (|makeByteWordVec2| 164
                                 '(0 6 0 7 1 8 0 6 9 0 11 0 12 1 16 0 15
                                   17 2 26 24 0 25 27 0 28 0 29 2 26 0
                                   14 28 30 1 26 24 0 31 1 26 24 0 32 1
@@ -890,11 +892,11 @@
                                   0 124 0 39 0 125 1 6 0 0 126 3 11 6 0
                                   2 6 127 1 14 6 0 128 2 14 6 42 0 129
                                   2 6 22 0 0 130 1 11 132 0 133 2 11
-                                  123 2 0 134 1 132 2 0 137 0 138 0 139
-                                  2 39 0 0 0 140 1 42 22 0 141 2 142 0
-                                  6 6 143 2 14 0 0 142 144 1 145 6 0
-                                  146 2 6 0 0 0 147 3 145 39 0 6 39 148
-                                  1 145 0 0 149 1 145 39 0 150 2 145 0
+                                  123 2 0 134 1 132 2 0 137 2 39 0 0 0
+                                  138 1 42 22 0 139 2 140 0 6 6 141 2
+                                  14 0 0 140 142 1 143 6 0 144 0 145 0
+                                  146 2 6 0 0 0 147 3 143 39 0 6 39 148
+                                  1 143 0 0 149 1 143 39 0 150 2 143 0
                                   0 39 151 1 132 0 0 152 1 58 6 0 153 1
                                   132 39 0 154 2 39 22 0 0 155 2 132 0
                                   0 39 156 3 58 56 0 6 56 157 2 132 0 0
@@ -906,7 +908,7 @@
                                   24 135 3 0 75 0 72 75 76 3 0 68 0 65
                                   68 69 1 0 0 0 131 0 0 0 122 1 0 0 0
                                   100 2 0 0 0 0 1 2 0 0 0 0 1 1 0 92 0
-                                  136 1 0 14 0 114 1 0 138 0 1 2 0 0 0
+                                  136 1 0 14 0 114 1 0 164 0 1 2 0 0 0
                                   56 61 1 0 65 0 80 1 0 72 0 78 1 0 25
                                   0 49 1 0 46 0 48 1 0 0 14 50 1 0 53 0
                                   55 2 0 22 0 0 1 2 0 0 0 56 63 2 0 24

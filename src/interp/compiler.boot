@@ -2356,6 +2356,63 @@ compRepeatOrCollect(form,m,e) ==
  
 listOrVectorElementMode x ==
   x is [a,b,:.] and member(a,'(PrimitiveArray Vector List)) => b
+
+++ Return the least Integer subdomain that can represent values
+++ of both Integer subdomains denoted by the forms `x' and `y.
+joinIntegerModes(x,y,e) ==
+  isSubset(x,y,e) => y
+  isSubset(y,x,e) => x
+  $Integer
+
+++ Subroutine of compStepIterator.
+++ We are elaborating the STEP form of a for-iterator, where all
+++ bounds and increment are expected to be integer-valued expressions.
+++ Compile the expression `x' in the context `e', under those
+++ circumstances.  When successful we return either the declared
+++ mode of the expression, or infer the tightest mode that can
+++ represents the resulting value.  Note that we do not attempt any
+++ SmallInteger optimization at this stage.  Such a transformation can
+++ be done only when we have all information about the bound.
+compIntegerValue(x,e) ==
+  -- 1. Preliminary transformation.
+  -- The literal values 0 and 1 get transformed by the parser
+  -- into calls Zero() and One(), respectively.  Undo that transformation
+  -- locally.  Note that this local transformation is OK, because
+  -- it presents semantics.
+  x :=
+    x = $Zero => 0
+    x = $One => 1
+    x
+  -- 2. Attempt to infer the type of the expression if at all possible.
+  --    The inferred mode is valid only if it is an integer (sub)domain.
+  T := comp(x,$EmptyMode,e)
+  isSubset(T.mode,$Integer,e) => T
+  -- 3. Otherwise, compile in checking mode.
+  comp(x,$PositiveInteger,e) or
+    comp(x,$NonNegativeInteger,e) or
+      compOrCroak(x,$Integer,e)
+  
+++ Attempt to compile a `for' iterator of the form
+++     for index in start..final by inc
+++ where the bound `final' may be missing.
+compStepIterator(index,start,final,inc,e) ==
+  checkVariableName index
+  $formalArgList := [index,:$formalArgList]
+  [start,startMode,e] := compIntegerValue(start,e) or return
+    stackMessage('"start value of index: %1b must be an integer",[start])
+  [inc,incMode,e] := compIntegerValue(inc,e) or return
+    stackMessage('"index increment: %1b must be an integer",[inc])
+  if final ~= nil then
+    [final,finalMode,e] := compIntegerValue(first final,e) or return
+      stackMessage('"final value of index: %1b must be an integer",[final])
+    final := [final]
+  indexMode :=
+    final = nil or isSubset(incMode,$NonNegativeInteger,e) => startMode
+    joinIntegerModes(startMode,finalMode,e)
+  if get(index,"mode",e) = nil then
+    [.,.,e] := compMakeDeclaration(index,indexMode,e) or return nil
+  e:= put(index,"value",[genSomeVariable(),indexMode,$noEnv],e)
+  [["STEP",index,start,inc,:final],e]
  
 compIterator(it,e) ==
     -- ??? Allow for declared iterator variable.
@@ -2386,43 +2443,7 @@ compIterator(it,e) ==
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["ON",x,y''],e]
   it is ["STEP",index,start,inc,:optFinal] =>
-    checkVariableName index
-    $formalArgList:= [index,:$formalArgList]
-    --if all start/inc/end compile as small integers, then loop
-    --is compiled as a small integer loop
-    final':= nil
-    (start':= comp(start,$SmallInteger,e)) and
-      (inc':= comp(inc,$NonNegativeInteger,start'.env)) and
-        (not (optFinal is [final]) or
-          (final':= comp(final,$SmallInteger,inc'.env))) =>
-            indexmode:=
-              comp(start,$NonNegativeInteger,e) =>
-                      $NonNegativeInteger
-              $SmallInteger
-            if null get(index,"mode",e) then [.,.,e]:=
-              compMakeDeclaration(index,indexmode,
-                (final' => final'.env; inc'.env)) or return nil
-            e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
-            if final' then optFinal:= [final'.expr]
-            [["ISTEP",index,start'.expr,inc'.expr,:optFinal],e]
-    [start,.,e]:=
-      comp(start,$Integer,e) or return
-        stackMessage('"start value of index: %1b must be an integer",[start])
-    [inc,.,e]:=
-      comp(inc,$Integer,e) or return
-        stackMessage('"index increment: %1b must be an integer",[inc])
-    if optFinal is [final] then
-      [final,.,e]:=
-        comp(final,$Integer,e) or return
-          stackMessage('"final value of index: %1b must be an integer",[final])
-      optFinal:= [final]
-    indexmode:=
-      comp(third it,$NonNegativeInteger,e) => $NonNegativeInteger
-      $Integer
-    if null get(index,"mode",e) then [.,.,e]:=
-      compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
-    [["STEP",index,start,inc,:optFinal],e]
+    compStepIterator(index,start,optFinal,inc,e)
   it is ["WHILE",p] =>
     [p',m,e]:=
       comp(p,$Boolean,e) or return
