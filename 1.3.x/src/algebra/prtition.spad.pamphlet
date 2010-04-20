@@ -37,15 +37,14 @@ Partition(): Exports == Implementation where
   macro NNI == NonNegativeInteger
   macro UN == Union(%,"failed")
  
-  Exports == Join(OrderedCancellationAbelianMonoid,
-                   ConvertibleTo List Integer,CoercibleTo List Integer) with
-    partition: L I -> %
+  Exports == Join(OrderedCancellationAbelianMonoid,CoercibleTo L P) with
+    partition: L P -> %
       ++ partition(li) converts a list of integers li to a partition
-    powers: % -> List Pair(I,PositiveInteger)
+    powers: % -> List Pair(P,P)
       ++ powers(x) returns a list of pairs.  The second component of
       ++ each pair is the multiplicity with which the first component
       ++ occurs in li. 
-    pdct: % -> I
+    pdct: % -> P
       ++ \spad{pdct(a1**n1 a2**n2 ...)} returns 
       ++ \spad{n1! * a1**n1 * n2! * a2**n2 * ...}.
       ++ This function is used in the package \spadtype{CycleIndicators}.
@@ -53,11 +52,10 @@ Partition(): Exports == Implementation where
       ++ conjugate(p) returns the conjugate partition of a partition p
  
   Implementation == add
-    Rep == List Integer
+    Rep == L P
 
     0 == per nil
-    coerce(s: %): List Integer == rep s
-    convert x == copy rep x
+    coerce(s: %): L P == rep s
     partition list == per sort(#2 < #1,list)
     zero? x == empty? rep x
     x < y == rep x < rep y
@@ -68,7 +66,7 @@ Partition(): Exports == Implementation where
       zero? n => 0
       x + (subtractIfCan(n,1) :: NNI) * x
  
-    remv(i: I,x: %): UN ==
+    remv(i: P,x: %): UN ==
       member?(i,rep x) => per remove(i, rep x)$Rep
       "failed"
  
@@ -82,7 +80,7 @@ Partition(): Exports == Implementation where
  
     powers x ==
       l := rep x
-      r: List Pair(I,P) := nil
+      r: List Pair(P,P) := nil
       while not empty? l repeat
         i := first l
         -- Now, count how many times the item `i' appears in `l'.
@@ -95,13 +93,14 @@ Partition(): Exports == Implementation where
         r := cons(pair(i,n), r)
       reverse! r
  
-    conjugate x == per conjugate(rep x)$PartitionsAndPermutations
+    conjugate x ==
+      per(conjugate(rep(x) pretend L I)$PartitionsAndPermutations pretend L P)
  
-    mkterm(i1: I,i2: I): OUT ==
+    mkterm(i1: P,i2: P): OUT ==
       i2 = 1 => (i1 :: OUT) ** (" " :: OUT)
       (i1 :: OUT) ** (i2 :: OUT)
  
-    mkexp1(lli: L Pair(I,PositiveInteger)): L OUT ==
+    mkexp1(lli: L Pair(P,P)): L OUT ==
       empty? lli => nil
       li := first lli
       empty?(rest lli) and second(li) = 1 =>
@@ -114,7 +113,7 @@ Partition(): Exports == Implementation where
  
     pdct x ==
       */[factorial(second a) * (first(a) ** second(a))
-                 for a in powers x]
+                 for a in powers x] :: P
 
 @
 \section{domain SYMPOLY SymmetricPolynomial}

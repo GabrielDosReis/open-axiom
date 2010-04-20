@@ -205,13 +205,14 @@
              |before?| 144 |and| 150 |\\/| 156 >= 162 > 168 = 174 <=
              180 < 186 |/\\| 192)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0))
-                (CONS '#(NIL |OrderedSet&| NIL NIL |Logic&|
-                         |SetCategory&| NIL |BasicType&| NIL)
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0))
+                (CONS '#(NIL |OrderedSet&| NIL NIL NIL |Logic&|
+                         |SetCategory&| NIL NIL |BasicType&| NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|PropositionalLogic|) (|Finite|)
-                               (|Logic|) (|SetCategory|)
-                               (|ConvertibleTo| 35) (|BasicType|)
+                               (|BooleanLogic|) (|Logic|)
+                               (|SetCategory|) (|ConvertibleTo| 35)
+                               (|Type|) (|BasicType|)
                                (|CoercibleTo| 37))
                             (|makeByteWordVec2| 40
                                 '(0 16 0 17 0 16 0 19 1 27 16 0 28 0 29

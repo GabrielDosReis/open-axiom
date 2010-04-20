@@ -33,6 +33,7 @@ CycleIndicators: Exports == Implementation where
   RN   ==> Fraction Integer
   FR   ==> Factored Integer
   macro NNI == NonNegativeInteger
+  macro PI == PositiveInteger
   Exports ==> with
  
     complete: NNI -> SPOL RN
@@ -49,15 +50,15 @@ CycleIndicators: Exports == Implementation where
       ++\spad{elementary n} is the \spad{n} th elementary symmetric
       ++ function expressed in terms of power sums.
  
-    alternating: NNI -> SPOL RN
+    alternating: PI -> SPOL RN
       ++\spad{alternating n} is the cycle index of the
       ++ alternating group of degree n.
  
-    cyclic: NNI -> SPOL RN    --cyclic group
+    cyclic: PI -> SPOL RN    --cyclic group
       ++\spad{cyclic n} is the cycle index of the
       ++ cyclic group of degree n.
  
-    dihedral: NNI -> SPOL RN    --dihedral group
+    dihedral: PI -> SPOL RN    --dihedral group
       ++\spad{dihedral n} is the cycle index of the
       ++ dihedral group of degree n.
  
@@ -99,24 +100,24 @@ CycleIndicators: Exports == Implementation where
     trm: PTN -> SPOL RN
     trm pt == monomial(inv(pdct(pt) :: RN),pt)
  
-    list: Stream L I -> L L I
+    list: Stream L PI -> L L PI
     list st == entries complete st
  
     complete i ==
       i=0 => 1
-      +/[trm(partition pt) for pt in list(partitions i)]
+      +/[trm partition pt for pt in list partitions i]
  
  
-    even?: L I -> B
+    even?: L PI -> B
     even? li == even?( #([i for i in li | even? i]))
  
     alternating i ==
-      2 * _+/[trm(partition li) for li in list(partitions i) | even? li]
+      2 * _+/[trm partition li for li in list partitions i | even? li]
 
     elementary i ==
        i=0 => 1
-       +/[(spol := trm(partition pt); even? pt => spol; -spol)
-                          for pt in list(partitions i)]
+       +/[(spol := trm partition pt; even? pt => spol; -spol)
+                          for pt in list partitions i]
  
     divisors: I -> L I
     divisors n ==
@@ -125,23 +126,25 @@ CycleIndicators: Exports == Implementation where
                  [[a.factor**j for j in 1..a.exponent] for a in b]);
       if #(b) = 1 then c else concat(n,c)
  
-    ss: (I,I) -> SPOL RN
+    ss: (PI,I) -> SPOL RN
     ss(n,m) ==
-      li : L I := [n for j in 1..m]
+      li : L PI := [n for j in 1..m]
       monomial(1,partition li)
  
-    powerSum n == ss(n,1)
+    powerSum n ==
+      n = 0 => monomial(1,0)
+      ss(n::PI,1)
  
     cyclic n ==
       n = 1 => powerSum 1
-      +/[(eulerPhi(i) / n) * ss(i,numer(n/i)) for i in divisors n]
+      +/[(eulerPhi(i) / n) * ss(i::PI,numer(n/i)) for i in divisors n]
  
     dihedral n ==
       k := n quo 2
       odd? n => (1/2) * cyclic n + (1/2) * ss(2,k) * powerSum 1
       (1/2) * cyclic n + (1/4) * ss(2,k) + (1/4) * ss(2,k-1) * ss(1,2)
  
-    trm2: L I -> SPOL RN
+    trm2: L PI -> SPOL RN
     trm2 li ==
       lli := powers(partition li)$PTN
       xx := 1/(pdct partition li)
@@ -151,16 +154,16 @@ CycleIndicators: Exports == Implementation where
         k := ll0 quo 2
         c :=
           odd? ll0 => ss(ll0,ll1 * k)
-          ss(k,ll1) * ss(ll0,ll1 * (k - 1))
+          ss(k::PI,ll1) * ss(ll0,ll1 * (k - 1))
         c := c * ss(ll0,ll0 * ((ll1*(ll1 - 1)) quo 2))
         prod2 : SPOL RN := 1
         for r in lli | first(r) < ll0 repeat
           r0 := first r; r1 := second r
-          prod2 := ss(lcm(r0,ll0),gcd(r0,ll0) * r1 * ll1) * prod2
+          prod2 := ss(lcm(r0,ll0)::PI,gcd(r0,ll0) * r1 * ll1) * prod2
         prod := c * prod2 * prod
       xx * prod
  
-    graphs n == +/[trm2 li for li in list(partitions n)]
+    graphs n == +/[trm2 li for li in list partitions n]
  
     cupp: (PTN,SPOL RN) -> SPOL RN
     cupp(pt,spol) ==
@@ -180,17 +183,17 @@ CycleIndicators: Exports == Implementation where
  
     cap(spol1,spol2) == eval cup(spol1,spol2)
  
-    mtpol: (I,SPOL RN) -> SPOL RN
+    mtpol: (PI,SPOL RN) -> SPOL RN
     mtpol(n,spol)==
       zero? spol => 0
-      deg := partition [n*k for k in (degree spol)::L(I)]
+      deg := partition [n*k for k in (degree spol)::L(PI)]
       monomial(leadingCoefficient spol,deg) + mtpol(n,reductum spol)
  
-    evspol: ((I -> SPOL RN),SPOL RN) -> SPOL RN
+    evspol: ((PI -> SPOL RN),SPOL RN) -> SPOL RN
     evspol(fn2,spol) ==
       zero? spol => 0
       lc := leadingCoefficient spol
-      prod := */[fn2 i for i in (degree spol)::L(I)]
+      prod := */[fn2 i for i in (degree spol)::L(PI)]
       lc * prod + evspol(fn2,reductum spol)
  
     wreath(spol1,spol2) == evspol(mtpol(#1,spol2),spol1)
@@ -239,6 +242,7 @@ EvaluateCycleIndicators(F):T==C where
     RN==>Fraction Integer
     PR==>Polynomial(RN)
     PTN==>Partition()
+    macro PI == PositiveInteger
     lc ==> leadingCoefficient
     red ==> reductum
     T== with
@@ -252,7 +256,7 @@ EvaluateCycleIndicators(F):T==C where
        pt:PTN
        spol:SPOL RN
        i:I
-       evp(fn, pt)== */[fn i for i in pt::(L I)]
+       evp(fn, pt)== */[fn i for i in pt::L(PI)]
  
        eval(fn,spol)==
         if spol=0

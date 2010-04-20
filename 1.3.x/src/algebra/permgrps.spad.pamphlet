@@ -808,23 +808,23 @@ PermutationGroupExamples():public == private where
 
     public ==> with
 
-      symmetricGroup:       PI        -> PERMGRP I
+      symmetricGroup:       PI        -> PERMGRP PI
         ++ symmetricGroup(n) constructs the symmetric group {\em Sn}
         ++ acting on the integers 1,...,n, generators are the
         ++ {\em n}-cycle {\em (1,...,n)} and the 2-cycle {\em (1,2)}.
-      symmetricGroup:       L I       -> PERMGRP I
+      symmetricGroup:       L PI       -> PERMGRP PI
         ++ symmetricGroup(li) constructs the symmetric group acting on
         ++ the integers in the list {\em li}, generators are the
         ++ cycle given by {\em li} and the 2-cycle {\em (li.1,li.2)}.
         ++ Note: duplicates in the list will be removed.
-      alternatingGroup:     PI        -> PERMGRP I
+      alternatingGroup:     PI        -> PERMGRP PI
         ++ alternatingGroup(n) constructs the alternating group {\em An}
         ++ acting on the integers 1,...,n,  generators are in general the
         ++ {\em n-2}-cycle {\em (3,...,n)} and the 3-cycle {\em (1,2,3)}
         ++ if n is odd and the product of the 2-cycle {\em (1,2)} with
         ++ {\em n-2}-cycle {\em (3,...,n)} and the 3-cycle {\em (1,2,3)}
         ++ if n is even.
-      alternatingGroup:     L I       -> PERMGRP I
+      alternatingGroup:     L PI       -> PERMGRP PI
         ++ alternatingGroup(li) constructs the alternating group acting
         ++ on the integers in the list {\em li}, generators are in general the
         ++ {\em n-2}-cycle {\em (li.3,...,li.n)} and the 3-cycle
@@ -833,72 +833,72 @@ PermutationGroupExamples():public == private where
         ++ {\em n-2}-cycle {\em (li.3,...,li.n)} and the 3-cycle
         ++ {\em (li.1,li.2,li.3)}, if n is even.
         ++ Note: duplicates in the list will be removed.
-      abelianGroup:         L PI      -> PERMGRP I
+      abelianGroup:         L PI      -> PERMGRP PI
         ++ abelianGroup([n1,...,nk]) constructs the abelian group that
         ++ is the direct product of cyclic groups with order {\em ni}.
-      cyclicGroup:          PI        -> PERMGRP I
+      cyclicGroup:          PI        -> PERMGRP PI
         ++ cyclicGroup(n) constructs the cyclic group of order n acting
         ++ on the integers 1,...,n.
-      cyclicGroup:          L I       -> PERMGRP I
+      cyclicGroup:          L PI       -> PERMGRP PI
         ++ cyclicGroup([i1,...,ik]) constructs the cyclic group of
         ++ order k acting on the integers {\em i1},...,{\em ik}.
         ++ Note: duplicates in the list will be removed.
-      dihedralGroup:        PI        -> PERMGRP I
+      dihedralGroup:        PI        -> PERMGRP PI
         ++ dihedralGroup(n) constructs the dihedral group of order 2n
         ++ acting on integers 1,...,N.
-      dihedralGroup:        L I       -> PERMGRP I
+      dihedralGroup:        L PI       -> PERMGRP PI
         ++ dihedralGroup([i1,...,ik]) constructs the dihedral group of
         ++ order 2k acting on the integers out of {\em i1},...,{\em ik}.
         ++ Note: duplicates in the list will be removed.
-      mathieu11:            L I       -> PERMGRP I
+      mathieu11:            L PI       -> PERMGRP PI
         ++ mathieu11(li) constructs the mathieu group acting on the 11
         ++ integers given in the list {\em li}.
         ++ Note: duplicates in the list will be removed.
         ++ error, if {\em li} has less or more than 11 different entries.
-      mathieu11:            ()        -> PERMGRP I
+      mathieu11:            ()        -> PERMGRP PI
         ++ mathieu11 constructs the mathieu group acting on the
         ++ integers 1,...,11.
-      mathieu12:            L I       -> PERMGRP I
+      mathieu12:            L PI       -> PERMGRP PI
         ++ mathieu12(li) constructs the mathieu group acting on the 12
         ++ integers given in the list {\em li}.
         ++ Note: duplicates in the list will be removed
         ++ Error: if {\em li} has less or more than 12 different entries.
-      mathieu12:            ()        -> PERMGRP I
+      mathieu12:            ()        -> PERMGRP PI
         ++ mathieu12 constructs the mathieu group acting on the
         ++ integers 1,...,12.
-      mathieu22:            L I       -> PERMGRP I
+      mathieu22:            L PI       -> PERMGRP PI
         ++ mathieu22(li) constructs the mathieu group acting on the 22
         ++ integers given in the list {\em li}.
         ++ Note: duplicates in the list will be removed.
         ++ Error: if {\em li} has less or more than 22 different entries.
-      mathieu22:            ()        -> PERMGRP I
+      mathieu22:            ()        -> PERMGRP PI
         ++ mathieu22 constructs the mathieu group acting on the
         ++ integers 1,...,22.
-      mathieu23:            L I       -> PERMGRP I
+      mathieu23:            L PI       -> PERMGRP PI
         ++ mathieu23(li) constructs the mathieu group acting on the 23
         ++ integers given in the list {\em li}.
         ++ Note: duplicates in the list will be removed.
         ++ Error: if {\em li} has less or more than 23 different entries.
-      mathieu23:            ()        -> PERMGRP I
+      mathieu23:            ()        -> PERMGRP PI
         ++ mathieu23 constructs the mathieu group acting on the
         ++ integers 1,...,23.
-      mathieu24:            L I       -> PERMGRP I
+      mathieu24:            L PI       -> PERMGRP PI
         ++ mathieu24(li) constructs the mathieu group acting on the 24
         ++ integers given in the list {\em li}.
         ++ Note: duplicates in the list will be removed.
         ++ Error: if {\em li} has less or more than 24 different entries.
-      mathieu24:            ()        -> PERMGRP I
+      mathieu24:            ()        -> PERMGRP PI
         ++ mathieu24 constructs the mathieu group acting on the
         ++ integers 1,...,24.
-      janko2:               L I       -> PERMGRP I
+      janko2:               L PI       -> PERMGRP PI
         ++ janko2(li) constructs the janko group acting on the 100
         ++ integers given in the list {\em li}.
         ++ Note: duplicates in the list will be removed.
         ++ Error: if {\em li} has less or more than 100 different entries
-      janko2:               ()        -> PERMGRP I
+      janko2:               ()        -> PERMGRP PI
         ++ janko2 constructs the janko group acting on the
         ++ integers 1,...,100.
-      rubiksGroup:          ()        -> PERMGRP I
+      rubiksGroup:          ()        -> PERMGRP PI
         ++ rubiksGroup constructs the permutation group representing
         ++ Rubic's Cube acting on integers {\em 10*i+j} for
         ++ {\em 1 <= i <= 6}, {\em 1 <= j <= 8}.
@@ -950,39 +950,41 @@ PermutationGroupExamples():public == private where
         ++             |321|
         ++             +---+
         ++ \end{verbatim}
-      youngGroup:           L I      -> PERMGRP I
+      youngGroup:           L PI      -> PERMGRP PI
         ++ youngGroup([n1,...,nk]) constructs the direct product of the
         ++ symmetric groups {\em Sn1},...,{\em Snk}.
-      youngGroup:    Partition        -> PERMGRP I
+      youngGroup:    Partition        -> PERMGRP PI
         ++ youngGroup(lambda) constructs the direct product of the symmetric
         ++ groups given by the parts of the partition {\em lambda}.
 
     private ==> add
 
       -- import the permutation and permutation group domains:
-
       import PERM I
+      import PERM PI
       import PERMGRP I
+      import PERMGRP PI
 
       -- import the needed map function:
-
       import ListFunctions2(L L I,PERM I)
+      import ListFunctions2(L L PI,PERM PI)
+
       -- the internal functions:
 
-      llli2gp(l:L L L I):PERMGRP I ==
+      llli2gp(l:L L L PI):PERMGRP PI ==
         --++ Converts an list of permutations each represented by a list
         --++ of cycles ( each of them represented as a list of Integers )
         --++ to the permutation group generated by these permutations.
-        (map(cycles,l))::PERMGRP I
+        (map(cycles,l))::PERMGRP PI
 
-      li1n(n:I):L I ==
+      li1n(n: PI):L PI ==
         --++ constructs the list of integers from 1 to n
         [i for i in 1..n]
 
       -- definition of the exported functions:
-      youngGroup(l:L I):PERMGRP I ==
-        gens:= nil()$(L L L I)
-        element:I:= 1
+      youngGroup(l:L PI):PERMGRP PI ==
+        gens:= nil()$(L L L PI)
+        element:PI := 1
         for n in l | n > 1 repeat
           gens:=cons(list [i for i in element..(element+n-1)], gens)
           if n >= 3 then gens := cons([[element,element+1]],gens)
@@ -991,86 +993,86 @@ PermutationGroupExamples():public == private where
           #gens = 0 => [[[1]]]
           gens
 
-      youngGroup(lambda : Partition):PERMGRP I ==
-        youngGroup(convert(lambda)$Partition)
+      youngGroup(lambda : Partition):PERMGRP PI ==
+        youngGroup(lambda::L(PI))
 
-      rubiksGroup():PERMGRP I ==
+      rubiksGroup():PERMGRP PI ==
         -- each generator represents a 90 degree turn of the appropriate
         -- side.
-        f:L L I:=
+        f:L L PI:=
          [[11,13,15,17],[12,14,16,18],[51,31,21,41],[53,33,23,43],[52,32,22,42]]
-        r:L L I:=
+        r:L L PI:=
          [[21,23,25,27],[22,24,26,28],[13,37,67,43],[15,31,61,45],[14,38,68,44]]
-        u:L L I:=
+        u:L L PI:=
          [[31,33,35,37],[32,34,36,38],[13,51,63,25],[11,57,61,23],[12,58,62,24]]
-        d:L L I:=
+        d:L L PI:=
          [[41,43,45,47],[42,44,46,48],[17,21,67,55],[15,27,65,53],[16,28,66,54]]
-        l:L L I:=
+        l:L L PI:=
          [[51,53,55,57],[52,54,56,58],[11,41,65,35],[17,47,63,33],[18,48,64,34]]
-        b:L L I:=
+        b:L L PI:=
          [[61,63,65,67],[62,64,66,68],[45,25,35,55],[47,27,37,57],[46,26,36,56]]
         llli2gp [f,r,u,d,l,b]
 
-      mathieu11(l:L I):PERMGRP I ==
+      mathieu11(l:L PI):PERMGRP PI ==
       -- permutations derived from the ATLAS
         l:=removeDuplicates l
         #l ~= 11 => error "Exactly 11 integers for mathieu11 needed !"
-        a:L L I:=[[l.1,l.10],[l.2,l.8],[l.3,l.11],[l.5,l.7]]
+        a:L L PI:=[[l.1,l.10],[l.2,l.8],[l.3,l.11],[l.5,l.7]]
         llli2gp [a,[[l.1,l.4,l.7,l.6],[l.2,l.11,l.10,l.9]]]
 
-      mathieu11():PERMGRP I == mathieu11 li1n 11
+      mathieu11():PERMGRP PI == mathieu11 li1n 11
 
-      mathieu12(l:L I):PERMGRP I ==
+      mathieu12(l:L PI):PERMGRP PI ==
       -- permutations derived from the ATLAS
         l:=removeDuplicates l
         #l ~= 12 => error "Exactly 12 integers for mathieu12 needed !"
-        a:L L I:=
+        a:L L PI:=
           [[l.1,l.2,l.3,l.4,l.5,l.6,l.7,l.8,l.9,l.10,l.11]]
         llli2gp [a,[[l.1,l.6,l.5,l.8,l.3,l.7,l.4,l.2,l.9,l.10],[l.11,l.12]]]
 
-      mathieu12():PERMGRP I == mathieu12 li1n 12
+      mathieu12():PERMGRP PI == mathieu12 li1n 12
 
-      mathieu22(l:L I):PERMGRP I ==
+      mathieu22(l:L PI):PERMGRP PI ==
       -- permutations derived from the ATLAS
         l:=removeDuplicates l
         #l ~= 22 => error "Exactly 22 integers for mathieu22 needed !"
-        a:L L I:=[[l.1,l.2,l.4,l.8,l.16,l.9,l.18,l.13,l.3,l.6,l.12],   _
+        a:L L PI:=[[l.1,l.2,l.4,l.8,l.16,l.9,l.18,l.13,l.3,l.6,l.12],   _
           [l.5,l.10,l.20,l.17,l.11,l.22,l.21,l.19,l.15,l.7,l.14]]
-        b:L L I:= [[l.1,l.2,l.6,l.18],[l.3,l.15],[l.5,l.8,l.21,l.13],   _
+        b:L L PI:= [[l.1,l.2,l.6,l.18],[l.3,l.15],[l.5,l.8,l.21,l.13],   _
           [l.7,l.9,l.20,l.12],[l.10,l.16],[l.11,l.19,l.14,l.22]]
         llli2gp [a,b]
 
-      mathieu22():PERMGRP I == mathieu22 li1n 22
+      mathieu22():PERMGRP PI == mathieu22 li1n 22
 
-      mathieu23(l:L I):PERMGRP I ==
+      mathieu23(l:L PI):PERMGRP PI ==
       -- permutations derived from the ATLAS
         l:=removeDuplicates l
         #l ~= 23 => error "Exactly 23 integers for mathieu23 needed !"
-        a:L L I:= [[l.1,l.2,l.3,l.4,l.5,l.6,l.7,l.8,l.9,l.10,l.11,l.12,l.13,l.14,_
+        a:L L PI:= [[l.1,l.2,l.3,l.4,l.5,l.6,l.7,l.8,l.9,l.10,l.11,l.12,l.13,l.14,_
                    l.15,l.16,l.17,l.18,l.19,l.20,l.21,l.22,l.23]]
-        b:L L I:= [[l.2,l.16,l.9,l.6,l.8],[l.3,l.12,l.13,l.18,l.4],              _
+        b:L L PI:= [[l.2,l.16,l.9,l.6,l.8],[l.3,l.12,l.13,l.18,l.4],              _
                    [l.7,l.17,l.10,l.11,l.22],[l.14,l.19,l.21,l.20,l.15]]
         llli2gp [a,b]
 
-      mathieu23():PERMGRP I == mathieu23 li1n 23
+      mathieu23():PERMGRP PI == mathieu23 li1n 23
 
-      mathieu24(l:L I):PERMGRP I ==
+      mathieu24(l:L PI):PERMGRP PI ==
       -- permutations derived from the ATLAS
         l:=removeDuplicates l
         #l ~= 24 => error "Exactly 24 integers for mathieu24 needed !"
-        a:L L I:= [[l.1,l.16,l.10,l.22,l.24],[l.2,l.12,l.18,l.21,l.7],          _
+        a:L L PI:= [[l.1,l.16,l.10,l.22,l.24],[l.2,l.12,l.18,l.21,l.7],          _
                    [l.4,l.5,l.8,l.6,l.17],[l.9,l.11,l.13,l.19,l.15]]
-        b:L L I:= [[l.1,l.22,l.13,l.14,l.6,l.20,l.3,l.21,l.8,l.11],[l.2,l.10],  _
+        b:L L PI:= [[l.1,l.22,l.13,l.14,l.6,l.20,l.3,l.21,l.8,l.11],[l.2,l.10],  _
                    [l.4,l.15,l.18,l.17,l.16,l.5,l.9,l.19,l.12,l.7],[l.23,l.24]]
         llli2gp [a,b]
 
-      mathieu24():PERMGRP I == mathieu24 li1n 24
+      mathieu24():PERMGRP PI == mathieu24 li1n 24
 
-      janko2(l:L I):PERMGRP I ==
+      janko2(l:L PI):PERMGRP PI ==
       -- permutations derived from the ATLAS
         l:=removeDuplicates l
         #l ~= 100 => error "Exactly 100 integers for janko2 needed !"
-        a:L L I:=[                                                            _
+        a:L L PI:=[                                                           _
                  [l.2,l.3,l.4,l.5,l.6,l.7,l.8],                               _
                  [l.9,l.10,l.11,l.12,l.13,l.14,l.15],                         _
                  [l.16,l.17,l.18,l.19,l.20,l.21,l.22],                        _
@@ -1085,7 +1087,7 @@ PermutationGroupExamples():public == private where
                  [l.79,l.80,l.81,l.82,l.83,l.84,l.85],                        _
                  [l.86,l.87,l.88,l.89,l.90,l.91,l.92],                        _
                  [l.93,l.94,l.95,l.96,l.97,l.98,l.99] ]
-        b:L L I:=[
+        b:L L PI:=[
                 [l.1,l.74,l.83,l.21,l.36,l.77,l.44,l.80,l.64,l.2,l.34,l.75,l.48,l.17,l.100],_
                 [l.3,l.15,l.31,l.52,l.19,l.11,l.73,l.79,l.26,l.56,l.41,l.99,l.39,l.84,l.90],_
                 [l.4,l.57,l.86,l.63,l.85,l.95,l.82,l.97,l.98,l.81,l.8,l.69,l.38,l.43,l.58],_
@@ -1096,11 +1098,11 @@ PermutationGroupExamples():public == private where
                 [l.10,l.78,l.88,l.29,l.12] ]
         llli2gp [a,b]
 
-      janko2():PERMGRP I == janko2 li1n 100
+      janko2():PERMGRP PI == janko2 li1n 100
 
-      abelianGroup(l:L PI):PERMGRP I ==
-        gens:= nil()$(L L L I)
-        element:I:= 1
+      abelianGroup(l:L PI):PERMGRP PI ==
+        gens:= nil()$(L L L PI)
+        element:PI := 1
         for n in l | n > 1 repeat
           gens:=cons( list [i for i in element..(element+n-1) ], gens )
           element:=element+n
@@ -1108,42 +1110,42 @@ PermutationGroupExamples():public == private where
           #gens = 0 => [[[1]]]
           gens
 
-      alternatingGroup(l:L I):PERMGRP I ==
+      alternatingGroup(l:L PI):PERMGRP PI ==
         l:=removeDuplicates l
         #l = 0 =>
           error "Cannot construct alternating group on empty set"
         #l < 3 => llli2gp [[[l.1]]]
         #l = 3 => llli2gp [[[l.1,l.2,l.3]]]
         tmp:= [l.i for i in 3..(#l)]
-        gens:L L L I:=[[tmp],[[l.1,l.2,l.3]]]
+        gens:L L L PI:=[[tmp],[[l.1,l.2,l.3]]]
         odd?(#l) => llli2gp gens
         gens.1 := cons([l.1,l.2],gens.1)
         llli2gp gens
 
-      alternatingGroup(n:PI):PERMGRP I == alternatingGroup li1n n
+      alternatingGroup(n: PI):PERMGRP PI == alternatingGroup li1n n
 
-      symmetricGroup(l:L I):PERMGRP I ==
+      symmetricGroup(l:L PI):PERMGRP PI ==
         l:=removeDuplicates l
         #l = 0 => error "Cannot construct symmetric group on empty set !"
         #l < 3 => llli2gp [[l]]
         llli2gp [[l],[[l.1,l.2]]]
 
-      symmetricGroup(n:PI):PERMGRP I == symmetricGroup li1n n
+      symmetricGroup(n:PI):PERMGRP PI == symmetricGroup li1n n
 
-      cyclicGroup(l:L I):PERMGRP I ==
+      cyclicGroup(l:L PI):PERMGRP PI ==
         l:=removeDuplicates l
         #l = 0 => error "Cannot construct cyclic group on empty set"
         llli2gp [[l]]
 
-      cyclicGroup(n:PI):PERMGRP I == cyclicGroup li1n n
+      cyclicGroup(n:PI):PERMGRP PI == cyclicGroup li1n n
 
-      dihedralGroup(l:L I):PERMGRP I ==
+      dihedralGroup(l:L PI):PERMGRP PI ==
         l:=removeDuplicates l
         #l < 3 => error "in dihedralGroup: Minimum of 3 elements needed !"
         tmp := [[l.i, l.(#l-i+1) ] for i in 1..(#l quo 2)]
         llli2gp [ [ l ], tmp ]
 
-      dihedralGroup(n:PI):PERMGRP I ==
+      dihedralGroup(n:PI):PERMGRP PI ==
         n = 1 => symmetricGroup (2::PI)
         n = 2 => llli2gp [[[1,2]],[[3,4]]]
         dihedralGroup li1n n
