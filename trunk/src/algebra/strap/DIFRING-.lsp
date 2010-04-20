@@ -28,7 +28,7 @@
            (EXIT |r|))))) 
 
 (DEFUN |DIFRING-;D;SNniS;3| (|r| |n| $)
-  (SPADCALL |r| |n| (|getShellEntry| $ 14))) 
+  (SPADCALL |r| |n| (|getShellEntry| $ 11))) 
 
 (DEFUN |DifferentialRing&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)
@@ -36,7 +36,7 @@
       (PROGN
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|DifferentialRing&|))
         (LETT |dv$| (LIST '|DifferentialRing&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 16) . #0#)
+        (LETT $ (|newShell| 13) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -46,16 +46,14 @@
 
 (MAKEPROP '|DifferentialRing&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|)
-             (0 . |differentiate|) |DIFRING-;D;2S;1| (|SingleInteger|)
-             (5 . |One|) (|NonNegativeInteger|) (9 . |One|)
-             |DIFRING-;differentiate;SNniS;2| (13 . |differentiate|)
-             |DIFRING-;D;SNniS;3|)
-          '#(|differentiate| 19 D 25) 'NIL
+             (0 . |differentiate|) |DIFRING-;D;2S;1|
+             (|NonNegativeInteger|) |DIFRING-;differentiate;SNniS;2|
+             (5 . |differentiate|) |DIFRING-;D;SNniS;3|)
+          '#(|differentiate| 11 D 17) 'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 15
-                                '(1 6 0 0 7 0 9 0 10 0 11 0 12 2 6 0 0
-                                  11 14 2 0 0 0 11 13 2 0 0 0 11 15 1 0
-                                  0 0 8)))))
+                            (|makeByteWordVec2| 12
+                                '(1 6 0 0 7 2 6 0 0 9 11 2 0 0 0 9 10 2
+                                  0 0 0 9 12 1 0 0 0 8)))))
           '|lookupComplete|)) 

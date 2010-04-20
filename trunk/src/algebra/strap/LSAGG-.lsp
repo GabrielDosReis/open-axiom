@@ -652,7 +652,7 @@
                 (SEQ (COND
                        ((EQL |k| 1000)
                         (COND
-                          ((SPADCALL |x| (|getShellEntry| $ 71))
+                          ((SPADCALL |x| (|getShellEntry| $ 69))
                            (EXIT (|error| "cyclic list"))))))
                      (LETT |y|
                            (SPADCALL
@@ -697,7 +697,7 @@
                               (SEQ (SPADCALL |z|
                                     (SPADCALL |x|
                                      (|getShellEntry| $ 18))
-                                    (|getShellEntry| $ 73))
+                                    (|getShellEntry| $ 71))
                                    (LETT |x|
                                     (SPADCALL |x|
                                      (|getShellEntry| $ 17))
@@ -771,7 +771,7 @@
                                        (VECTOR $ |p|))
                                       (SPADCALL |p|
                                        (|getShellEntry| $ 17))
-                                      (|getShellEntry| $ 77))
+                                      (|getShellEntry| $ 75))
                                      (|getShellEntry| $ 27))
                                  |LSAGG-;removeDuplicates!;2A;24|)))
                 NIL (GO G190) G191 (EXIT NIL))
@@ -784,7 +784,7 @@
       (PROGN
         (SPADCALL |#1|
             (SPADCALL (|getShellEntry| $$ 1) (|getShellEntry| $ 18))
-            (|getShellEntry| $ 76)))))) 
+            (|getShellEntry| $ 74)))))) 
 
 (DEFUN |LSAGG-;<;2AB;25| (|x| |y| $)
   (PROG (#0=#:G1565)
@@ -814,7 +814,7 @@
                                               (|getShellEntry| $ 18))
                                              (SPADCALL |y|
                                               (|getShellEntry| $ 18))
-                                             (|getShellEntry| $ 79))
+                                             (|getShellEntry| $ 77))
                                             |LSAGG-;<;2AB;25|)
                                            (GO #0#)))
                                         ('T
@@ -843,7 +843,7 @@
         (LETT |dv$1| (|devaluate| |#1|) . #0=(|ListAggregate&|))
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$| (LIST '|ListAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 82) . #0#)
+        (LETT $ (|newShell| 80) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
@@ -857,16 +857,16 @@
         (COND
           ((|HasCategory| |#2| '(|SetCategory|))
            (PROGN
-             (|setShellEntry| $ 75
+             (|setShellEntry| $ 73
                  (CONS (|dispatchFunction| |LSAGG-;position;SA2I;23|)
                        $))
-             (|setShellEntry| $ 78
+             (|setShellEntry| $ 76
                  (CONS (|dispatchFunction|
                            |LSAGG-;removeDuplicates!;2A;24|)
                        $)))))
         (COND
           ((|HasCategory| |#2| '(|OrderedSet|))
-           (|setShellEntry| $ 80
+           (|setShellEntry| $ 78
                (CONS (|dispatchFunction| |LSAGG-;<;2AB;25|) $))))
         $)))) 
 
@@ -888,27 +888,26 @@
              (113 . |lo|) (118 . |hasHi|) (123 . |hi|)
              (128 . |maxIndex|) (133 . +) |LSAGG-;delete!;AUsA;11|
              (|Union| 7 '"failed") |LSAGG-;find;MAU;12|
-             (|SingleInteger|) (139 . |One|) |LSAGG-;position;MAI;13|
+             (|PositiveInteger|) (139 . |One|) |LSAGG-;position;MAI;13|
              (143 . |reverse!|) (148 . |quo|) (154 . |split!|)
              (160 . |true|) |LSAGG-;sorted?;MAB;15|
              |LSAGG-;reduce;MA2S;16| (164 . ~=) (170 . |reduce|)
              |LSAGG-;new;NniSA;18| |LSAGG-;map;M3A;19|
-             |LSAGG-;reverse!;2A;20| (178 . |Zero|) (182 . |Zero|)
-             (186 . =) (192 . |cyclic?|) |LSAGG-;copy;2A;21|
-             (197 . |setfirst!|) |LSAGG-;copyInto!;2AIA;22|
-             (203 . |position|) (210 . =) (216 . |remove!|)
-             (222 . |removeDuplicates!|) (227 . <) (233 . <)
-             (|Mapping| 7 7))
-          '#(|sorted?| 239 |sort!| 245 |select!| 251 |reverse!| 257
-             |removeDuplicates!| 262 |remove!| 267 |reduce| 273
-             |position| 294 |new| 307 |merge!| 313 |merge| 320 |map|
-             327 |list| 334 |insert!| 339 |find| 353 |delete!| 359
-             |copyInto!| 371 |copy| 378 < 383)
+             |LSAGG-;reverse!;2A;20| (178 . =) (184 . |cyclic?|)
+             |LSAGG-;copy;2A;21| (189 . |setfirst!|)
+             |LSAGG-;copyInto!;2AIA;22| (195 . |position|) (202 . =)
+             (208 . |remove!|) (214 . |removeDuplicates!|) (219 . <)
+             (225 . <) (|Mapping| 7 7))
+          '#(|sorted?| 231 |sort!| 237 |select!| 243 |reverse!| 249
+             |removeDuplicates!| 254 |remove!| 259 |reduce| 265
+             |position| 286 |new| 299 |merge!| 305 |merge| 312 |map|
+             319 |list| 326 |insert!| 331 |find| 345 |delete!| 351
+             |copyInto!| 363 |copy| 370 < 375)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 80
+                            (|makeByteWordVec2| 78
                                 '(1 6 8 0 9 0 6 0 13 2 6 0 7 0 14 1 6
                                   10 0 16 1 6 0 0 17 1 6 7 0 18 3 6 7
                                   19 0 7 20 1 6 0 0 22 3 6 0 11 0 0 23
@@ -920,18 +919,17 @@
                                   0 48 1 6 32 0 49 2 32 0 0 0 50 0 54 0
                                   55 1 6 0 0 57 2 32 0 0 0 58 2 6 0 0
                                   32 59 0 10 0 60 2 7 10 0 0 63 4 0 7
-                                  19 0 7 7 64 0 54 0 68 0 8 0 69 2 8 10
-                                  0 0 70 1 6 10 0 71 2 6 7 0 7 73 3 0
-                                  32 7 0 32 75 2 7 10 0 0 76 2 6 0 28 0
-                                  77 1 0 0 0 78 2 7 10 0 0 79 2 0 10 0
-                                  0 80 2 0 10 11 0 61 2 0 0 11 0 12 2 0
-                                  0 28 0 29 1 0 0 0 67 1 0 0 0 78 2 0 0
-                                  28 0 43 3 0 7 19 0 7 62 4 0 7 19 0 7
-                                  7 64 2 0 7 19 0 21 2 0 32 28 0 56 3 0
-                                  32 7 0 32 75 2 0 0 8 7 65 3 0 0 11 0
-                                  0 31 3 0 0 11 0 0 24 3 0 0 19 0 0 66
-                                  1 0 0 7 15 3 0 0 7 0 32 40 3 0 0 0 0
-                                  32 42 2 0 52 28 0 53 2 0 0 0 45 51 2
-                                  0 0 0 32 44 3 0 0 0 0 32 74 1 0 0 0
-                                  72 2 0 10 0 0 80)))))
+                                  19 0 7 7 64 2 8 10 0 0 68 1 6 10 0 69
+                                  2 6 7 0 7 71 3 0 32 7 0 32 73 2 7 10
+                                  0 0 74 2 6 0 28 0 75 1 0 0 0 76 2 7
+                                  10 0 0 77 2 0 10 0 0 78 2 0 10 11 0
+                                  61 2 0 0 11 0 12 2 0 0 28 0 29 1 0 0
+                                  0 67 1 0 0 0 76 2 0 0 28 0 43 3 0 7
+                                  19 0 7 62 4 0 7 19 0 7 7 64 2 0 7 19
+                                  0 21 2 0 32 28 0 56 3 0 32 7 0 32 73
+                                  2 0 0 8 7 65 3 0 0 11 0 0 31 3 0 0 11
+                                  0 0 24 3 0 0 19 0 0 66 1 0 0 7 15 3 0
+                                  0 7 0 32 40 3 0 0 0 0 32 42 2 0 52 28
+                                  0 53 2 0 0 0 45 51 2 0 0 0 32 44 3 0
+                                  0 0 0 32 72 1 0 0 0 70 2 0 10 0 0 78)))))
           '|lookupComplete|)) 

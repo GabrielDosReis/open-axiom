@@ -235,7 +235,7 @@
                 (SEQ (COND
                        ((EQL |k| 1000)
                         (COND
-                          ((SPADCALL |x| (|getShellEntry| $ 50))
+                          ((SPADCALL |x| (|getShellEntry| $ 48))
                            (EXIT (|error| "cyclic list"))))))
                      (EXIT (LETT |x|
                                  (SPADCALL |x| (|getShellEntry| $ 14))
@@ -262,7 +262,7 @@
                                ((EQL |k| 1000)
                                 (COND
                                   ((SPADCALL |x|
-                                    (|getShellEntry| $ 50))
+                                    (|getShellEntry| $ 48))
                                    (EXIT (|error| "cyclic list"))))))
                              (EXIT (LETT |y|
                                     (SPADCALL
@@ -286,7 +286,7 @@
                               (GO G191)))
                            (SEQ (COND
                                   ((SPADCALL |x| |y|
-                                    (|getShellEntry| $ 53))
+                                    (|getShellEntry| $ 51))
                                    (PROGN
                                      (LETT #0# |x| |URAGG-;findCycle|)
                                      (GO #0#))))
@@ -306,7 +306,7 @@
                                      (GO #0#))))
                                 (COND
                                   ((SPADCALL |x| |y|
-                                    (|getShellEntry| $ 53))
+                                    (|getShellEntry| $ 51))
                                    (PROGN
                                      (LETT #0# |y| |URAGG-;findCycle|)
                                      (GO #0#))))
@@ -324,7 +324,7 @@
       (SEQ (COND
              ((SPADCALL
                   (LETT |y|
-                        (LETT |x| (SPADCALL |x| (|getShellEntry| $ 54))
+                        (LETT |x| (SPADCALL |x| (|getShellEntry| $ 52))
                               |URAGG-;cycleTail;2A;18|)
                         |URAGG-;cycleTail;2A;18|)
                   (|getShellEntry| $ 20))
@@ -335,7 +335,7 @@
                    (SEQ G190
                         (COND
                           ((NULL (NOT (SPADCALL |x| |z|
-                                       (|getShellEntry| $ 53))))
+                                       (|getShellEntry| $ 51))))
                            (GO G191)))
                         (SEQ (LETT |y| |z| |URAGG-;cycleTail;2A;18|)
                              (EXIT (LETT |z|
@@ -361,7 +361,7 @@
                    (SEQ (LETT |l| 1 |URAGG-;cycleEntry;2A;19|) G190
                         (COND
                           ((NULL (NOT (SPADCALL |y| |z|
-                                       (|getShellEntry| $ 53))))
+                                       (|getShellEntry| $ 51))))
                            (GO G191)))
                         (LETT |z| (SPADCALL |z| (|getShellEntry| $ 14))
                               |URAGG-;cycleEntry;2A;19|)
@@ -379,7 +379,7 @@
                    (SEQ G190
                         (COND
                           ((NULL (NOT (SPADCALL |x| |y|
-                                       (|getShellEntry| $ 53))))
+                                       (|getShellEntry| $ 51))))
                            (GO G191)))
                         (SEQ (LETT |x|
                                    (SPADCALL |x|
@@ -408,7 +408,7 @@
                    (SEQ (LETT |k| 1 |URAGG-;cycleLength;ANni;20|) G190
                         (COND
                           ((NULL (NOT (SPADCALL |x| |y|
-                                       (|getShellEntry| $ 53))))
+                                       (|getShellEntry| $ 51))))
                            (GO G191)))
                         (LETT |y| (SPADCALL |y| (|getShellEntry| $ 14))
                               |URAGG-;cycleLength;ANni;20|)
@@ -437,7 +437,7 @@
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
   (PROG (|m| #0=#:G1497)
     (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 60))
+      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 57))
                  |URAGG-;last;ANniA;22|)
            (EXIT (COND
                    ((> |n| |m|) (|error| "index out of range"))
@@ -448,14 +448,14 @@
                                     |URAGG-;last;ANniA;22|)
                               (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
-                            (|getShellEntry| $ 62))
-                        (|getShellEntry| $ 63))))))))) 
+                            (|getShellEntry| $ 59))
+                        (|getShellEntry| $ 60))))))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
   (PROG (|k| #0=#:G1507)
     (RETURN
       (SEQ (EXIT (COND
-                   ((SPADCALL |x| |y| (|getShellEntry| $ 53)) T)
+                   ((SPADCALL |x| |y| (|getShellEntry| $ 51)) T)
                    ('T
                     (SEQ (SEQ (LETT |k| 0 |URAGG-;=;2AB;23|) G190
                               (COND
@@ -472,7 +472,7 @@
                                      ((EQL |k| 1000)
                                       (COND
                                         ((SPADCALL |x|
-                                          (|getShellEntry| $ 50))
+                                          (|getShellEntry| $ 48))
                                          (EXIT (|error| "cyclic list"))))))
                                    (EXIT
                                     (COND
@@ -481,7 +481,7 @@
                                          (|getShellEntry| $ 8))
                                         (SPADCALL |y|
                                          (|getShellEntry| $ 8))
-                                        (|getShellEntry| $ 66))
+                                        (|getShellEntry| $ 63))
                                        (PROGN
                                          (LETT #0# NIL
                                           |URAGG-;=;2AB;23|)
@@ -516,7 +516,7 @@
                               (GO G191)))
                            (SEQ (EXIT (COND
                                         ((SPADCALL |u| |v|
-                                          (|getShellEntry| $ 68))
+                                          (|getShellEntry| $ 65))
                                          (PROGN
                                            (LETT #0# T
                                             |URAGG-;node?;2AB;24|)
@@ -527,7 +527,7 @@
                                             ((EQL |k| 1000)
                                              (COND
                                                ((SPADCALL |v|
-                                                 (|getShellEntry| $ 50))
+                                                 (|getShellEntry| $ 48))
                                                 (EXIT
                                                  (|error|
                                                   "cyclic list"))))))
@@ -539,21 +539,21 @@
                            (LETT |k| (QSADD1 |k|)
                                  |URAGG-;node?;2AB;24|)
                            (GO G190) G191 (EXIT NIL))
-                      (EXIT (SPADCALL |u| |v| (|getShellEntry| $ 68)))))
+                      (EXIT (SPADCALL |u| |v| (|getShellEntry| $ 65)))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;setelt;Afirst2S;25| (|x| T3 |a| $)
-  (SPADCALL |x| |a| (|getShellEntry| $ 70))) 
+  (SPADCALL |x| |a| (|getShellEntry| $ 67))) 
 
 (DEFUN |URAGG-;setelt;Alast2S;26| (|x| T4 |a| $)
-  (SPADCALL |x| |a| (|getShellEntry| $ 72))) 
+  (SPADCALL |x| |a| (|getShellEntry| $ 69))) 
 
 (DEFUN |URAGG-;setelt;Arest2A;27| (|x| T5 |a| $)
-  (SPADCALL |x| |a| (|getShellEntry| $ 74))) 
+  (SPADCALL |x| |a| (|getShellEntry| $ 71))) 
 
 (DEFUN |URAGG-;concat;3A;28| (|x| |y| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 63)) |y|
-      (|getShellEntry| $ 76))) 
+  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 60)) |y|
+      (|getShellEntry| $ 73))) 
 
 (DEFUN |URAGG-;setlast!;A2S;29| (|x| |s| $)
   (SEQ (COND
@@ -561,17 +561,17 @@
           (|error| "setlast: empty list"))
          ('T
           (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 24)) |s|
-                   (|getShellEntry| $ 70))
+                   (|getShellEntry| $ 67))
                (EXIT |s|)))))) 
 
 (DEFUN |URAGG-;setchildren!;ALA;30| (|u| |lv| $)
   (COND
     ((EQL (LENGTH |lv|) 1)
-     (SPADCALL |u| (|SPADfirst| |lv|) (|getShellEntry| $ 74)))
+     (SPADCALL |u| (|SPADfirst| |lv|) (|getShellEntry| $ 71)))
     ('T (|error| "wrong number of children specified")))) 
 
 (DEFUN |URAGG-;setvalue!;A2S;31| (|u| |s| $)
-  (SPADCALL |u| |s| (|getShellEntry| $ 70))) 
+  (SPADCALL |u| |s| (|getShellEntry| $ 67))) 
 
 (DEFUN |URAGG-;split!;AIA;32| (|p| |n| $)
   (PROG (#0=#:G1523 |q|)
@@ -585,12 +585,12 @@
                                      |URAGG-;split!;AIA;32|)
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
-                             (|getShellEntry| $ 62))
+                             (|getShellEntry| $ 59))
                          |URAGG-;split!;AIA;32|)
                    (LETT |q| (SPADCALL |p| (|getShellEntry| $ 14))
                          |URAGG-;split!;AIA;32|)
-                   (SPADCALL |p| (SPADCALL (|getShellEntry| $ 84))
-                       (|getShellEntry| $ 74))
+                   (SPADCALL |p| (SPADCALL (|getShellEntry| $ 81))
+                       (|getShellEntry| $ 71))
                    (EXIT |q|)))))))) 
 
 (DEFUN |URAGG-;cycleSplit!;2A;33| (|x| $)
@@ -598,10 +598,10 @@
     (RETURN
       (SEQ (COND
              ((OR (SPADCALL
-                      (LETT |y| (SPADCALL |x| (|getShellEntry| $ 54))
+                      (LETT |y| (SPADCALL |x| (|getShellEntry| $ 52))
                             |URAGG-;cycleSplit!;2A;33|)
                       (|getShellEntry| $ 20))
-                  (SPADCALL |x| |y| (|getShellEntry| $ 53)))
+                  (SPADCALL |x| |y| (|getShellEntry| $ 51)))
               |y|)
              ('T
               (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
@@ -609,7 +609,7 @@
                    (SEQ G190
                         (COND
                           ((NULL (NOT (SPADCALL |z| |y|
-                                       (|getShellEntry| $ 53))))
+                                       (|getShellEntry| $ 51))))
                            (GO G191)))
                         (SEQ (LETT |x| |z| |URAGG-;cycleSplit!;2A;33|)
                              (EXIT (LETT |z|
@@ -617,8 +617,8 @@
                                      (|getShellEntry| $ 14))
                                     |URAGG-;cycleSplit!;2A;33|)))
                         NIL (GO G190) G191 (EXIT NIL))
-                   (SPADCALL |x| (SPADCALL (|getShellEntry| $ 84))
-                       (|getShellEntry| $ 74))
+                   (SPADCALL |x| (SPADCALL (|getShellEntry| $ 81))
+                       (|getShellEntry| $ 71))
                    (EXIT |y|)))))))) 
 
 (DEFUN |UnaryRecursiveAggregate&| (|#1| |#2|)
@@ -630,7 +630,7 @@
         (LETT |dv$2| (|devaluate| |#2|) . #0#)
         (LETT |dv$|
               (LIST '|UnaryRecursiveAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 88) . #0#)
+        (LETT $ (|newShell| 85) . #0#)
         (|setShellEntry| $ 0 |dv$|)
         (|setShellEntry| $ 3
             (LETT |pv$|
@@ -641,41 +641,41 @@
         (|setShellEntry| $ 7 |#2|)
         (COND
           ((|HasAttribute| |#1| '|finiteAggregate|)
-           (|setShellEntry| $ 64
+           (|setShellEntry| $ 61
                (CONS (|dispatchFunction| |URAGG-;last;ANniA;22|) $))))
         (COND
           ((|HasCategory| |#2| '(|SetCategory|))
            (PROGN
-             (|setShellEntry| $ 67
+             (|setShellEntry| $ 64
                  (CONS (|dispatchFunction| |URAGG-;=;2AB;23|) $))
-             (|setShellEntry| $ 69
+             (|setShellEntry| $ 66
                  (CONS (|dispatchFunction| |URAGG-;node?;2AB;24|) $)))))
         (COND
           ((|testBitVector| |pv$| 1)
            (PROGN
-             (|setShellEntry| $ 71
+             (|setShellEntry| $ 68
                  (CONS (|dispatchFunction| |URAGG-;setelt;Afirst2S;25|)
                        $))
-             (|setShellEntry| $ 73
+             (|setShellEntry| $ 70
                  (CONS (|dispatchFunction| |URAGG-;setelt;Alast2S;26|)
                        $))
-             (|setShellEntry| $ 75
+             (|setShellEntry| $ 72
                  (CONS (|dispatchFunction| |URAGG-;setelt;Arest2A;27|)
                        $))
-             (|setShellEntry| $ 77
+             (|setShellEntry| $ 74
                  (CONS (|dispatchFunction| |URAGG-;concat;3A;28|) $))
-             (|setShellEntry| $ 78
+             (|setShellEntry| $ 75
                  (CONS (|dispatchFunction| |URAGG-;setlast!;A2S;29|) $))
-             (|setShellEntry| $ 81
+             (|setShellEntry| $ 78
                  (CONS (|dispatchFunction|
                            |URAGG-;setchildren!;ALA;30|)
                        $))
-             (|setShellEntry| $ 82
+             (|setShellEntry| $ 79
                  (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|)
                        $))
-             (|setShellEntry| $ 85
+             (|setShellEntry| $ 82
                  (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
-             (|setShellEntry| $ 86
+             (|setShellEntry| $ 83
                  (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|)
                        $)))))
         $)))) 
@@ -694,59 +694,58 @@
              (|NonNegativeInteger|) (49 . |Zero|) (|Integer|)
              (53 . |Zero|) (57 . >) (63 . |One|) (67 . |One|) (71 . -)
              |URAGG-;less?;ANniB;12| (77 . |zero?|)
-             |URAGG-;more?;ANniB;13| |URAGG-;size?;ANniB;14|
-             (|SingleInteger|) (82 . |Zero|) (86 . =) (92 . |cyclic?|)
-             |URAGG-;#;ANni;15| |URAGG-;tail;2A;16| (97 . |eq?|)
-             (103 . |cycleEntry|) |URAGG-;cycleTail;2A;18|
-             (108 . |One|) |URAGG-;cycleEntry;2A;19|
-             |URAGG-;cycleLength;ANni;20| |URAGG-;rest;ANniA;21|
-             (112 . |#|) (117 . >) (123 . |rest|) (129 . |copy|)
-             (134 . |last|) (140 . |true|) (144 . ~=) (150 . =)
-             (156 . =) (162 . |node?|) (168 . |setfirst!|)
-             (174 . |setelt|) (181 . |setlast!|) (187 . |setelt|)
-             (194 . |setrest!|) (200 . |setelt|) (207 . |concat!|)
-             (213 . |concat|) (219 . |setlast!|) (225 . |#|)
-             (230 . |first|) (235 . |setchildren!|) (241 . |setvalue!|)
-             (247 . <) (253 . |empty|) (257 . |split!|)
-             (263 . |cycleSplit!|) '"value")
-          '#(|value| 268 |third| 273 |tail| 278 |split!| 283 |size?|
-             289 |setvalue!| 295 |setlast!| 301 |setelt| 307
-             |setchildren!| 328 |second| 334 |rest| 339 |nodes| 345
-             |node?| 350 |more?| 356 |less?| 362 |leaf?| 368 |last| 373
-             |elt| 384 |cyclic?| 402 |cycleTail| 407 |cycleSplit!| 412
-             |cycleLength| 417 |cycleEntry| 422 |concat| 427 |children|
-             433 = 438 |#| 444)
+             |URAGG-;more?;ANniB;13| |URAGG-;size?;ANniB;14| (82 . =)
+             (88 . |cyclic?|) |URAGG-;#;ANni;15| |URAGG-;tail;2A;16|
+             (93 . |eq?|) (99 . |cycleEntry|) |URAGG-;cycleTail;2A;18|
+             |URAGG-;cycleEntry;2A;19| |URAGG-;cycleLength;ANni;20|
+             |URAGG-;rest;ANniA;21| (104 . |#|) (109 . >)
+             (115 . |rest|) (121 . |copy|) (126 . |last|)
+             (132 . |true|) (136 . ~=) (142 . =) (148 . =)
+             (154 . |node?|) (160 . |setfirst!|) (166 . |setelt|)
+             (173 . |setlast!|) (179 . |setelt|) (186 . |setrest!|)
+             (192 . |setelt|) (199 . |concat!|) (205 . |concat|)
+             (211 . |setlast!|) (217 . |#|) (222 . |first|)
+             (227 . |setchildren!|) (233 . |setvalue!|) (239 . <)
+             (245 . |empty|) (249 . |split!|) (255 . |cycleSplit!|)
+             '"value")
+          '#(|value| 260 |third| 265 |tail| 270 |split!| 275 |size?|
+             281 |setvalue!| 287 |setlast!| 293 |setelt| 299
+             |setchildren!| 320 |second| 326 |rest| 331 |nodes| 337
+             |node?| 342 |more?| 348 |less?| 354 |leaf?| 360 |last| 365
+             |elt| 376 |cyclic?| 394 |cycleTail| 399 |cycleSplit!| 404
+             |cycleLength| 409 |cycleEntry| 414 |concat| 419 |children|
+             425 = 430 |#| 436)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 86
+                            (|makeByteWordVec2| 83
                                 '(1 6 7 0 8 1 6 7 0 11 1 6 0 0 14 1 6
                                   19 0 20 0 19 0 21 1 19 0 0 22 1 6 0 0
                                   24 0 26 0 27 2 26 0 6 0 28 1 26 0 0
                                   29 0 35 0 36 0 37 0 38 2 37 19 0 0 39
                                   0 35 0 40 0 37 0 41 2 37 0 0 0 42 1
-                                  37 19 0 44 0 47 0 48 2 35 19 0 0 49 1
-                                  6 19 0 50 2 6 19 0 0 53 1 6 0 0 54 0
-                                  47 0 56 1 6 35 0 60 2 35 19 0 0 61 2
-                                  6 0 0 35 62 1 6 0 0 63 2 0 0 0 35 64
-                                  0 19 0 65 2 7 19 0 0 66 2 0 19 0 0 67
-                                  2 6 19 0 0 68 2 0 19 0 0 69 2 6 7 0 7
-                                  70 3 0 7 0 9 7 71 2 6 7 0 7 72 3 0 7
-                                  0 12 7 73 2 6 0 0 0 74 3 0 0 0 15 0
-                                  75 2 6 0 0 0 76 2 0 0 0 0 77 2 0 7 0
-                                  7 78 1 26 35 0 79 1 26 6 0 80 2 0 0 0
-                                  30 81 2 0 7 0 7 82 2 37 19 0 0 83 0 6
-                                  0 84 2 0 0 0 37 85 1 0 0 0 86 1 0 7 0
-                                  34 1 0 7 0 18 1 0 0 0 52 2 0 0 0 37
-                                  85 2 0 19 0 35 46 2 0 7 0 7 82 2 0 7
-                                  0 7 78 3 0 7 0 12 7 73 3 0 0 0 15 0
-                                  75 3 0 7 0 9 7 71 2 0 0 0 30 81 1 0 7
-                                  0 17 2 0 0 0 35 59 1 0 30 0 31 2 0 19
-                                  0 0 69 2 0 19 0 35 45 2 0 19 0 35 43
-                                  1 0 19 0 33 2 0 0 0 35 64 1 0 7 0 25
-                                  2 0 7 0 12 13 2 0 0 0 15 16 2 0 7 0 9
-                                  10 1 0 19 0 23 1 0 0 0 55 1 0 0 0 86
-                                  1 0 35 0 58 1 0 0 0 57 2 0 0 0 0 77 1
-                                  0 30 0 32 2 0 19 0 0 67 1 0 35 0 51)))))
+                                  37 19 0 44 2 35 19 0 0 47 1 6 19 0 48
+                                  2 6 19 0 0 51 1 6 0 0 52 1 6 35 0 57
+                                  2 35 19 0 0 58 2 6 0 0 35 59 1 6 0 0
+                                  60 2 0 0 0 35 61 0 19 0 62 2 7 19 0 0
+                                  63 2 0 19 0 0 64 2 6 19 0 0 65 2 0 19
+                                  0 0 66 2 6 7 0 7 67 3 0 7 0 9 7 68 2
+                                  6 7 0 7 69 3 0 7 0 12 7 70 2 6 0 0 0
+                                  71 3 0 0 0 15 0 72 2 6 0 0 0 73 2 0 0
+                                  0 0 74 2 0 7 0 7 75 1 26 35 0 76 1 26
+                                  6 0 77 2 0 0 0 30 78 2 0 7 0 7 79 2
+                                  37 19 0 0 80 0 6 0 81 2 0 0 0 37 82 1
+                                  0 0 0 83 1 0 7 0 34 1 0 7 0 18 1 0 0
+                                  0 50 2 0 0 0 37 82 2 0 19 0 35 46 2 0
+                                  7 0 7 79 2 0 7 0 7 75 3 0 7 0 12 7 70
+                                  3 0 0 0 15 0 72 3 0 7 0 9 7 68 2 0 0
+                                  0 30 78 1 0 7 0 17 2 0 0 0 35 56 1 0
+                                  30 0 31 2 0 19 0 0 66 2 0 19 0 35 45
+                                  2 0 19 0 35 43 1 0 19 0 33 2 0 0 0 35
+                                  61 1 0 7 0 25 2 0 7 0 12 13 2 0 0 0
+                                  15 16 2 0 7 0 9 10 1 0 19 0 23 1 0 0
+                                  0 53 1 0 0 0 83 1 0 35 0 55 1 0 0 0
+                                  54 2 0 0 0 0 74 1 0 30 0 32 2 0 19 0
+                                  0 64 1 0 35 0 49)))))
           '|lookupComplete|)) 
