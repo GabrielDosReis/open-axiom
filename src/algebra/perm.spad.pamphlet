@@ -343,10 +343,10 @@ removes fixed points from its result.
       out
 
     cyclePartition p ==
-      partition([#c for c in coerceToCycle(p, false)])$Partition
+      partition([#c::PI for c in coerceToCycle(p, false)])$Partition
 
     order p ==
-      ord: I := lcm removeDuplicates convert cyclePartition p
+      ord: I := lcm removeDuplicates(cyclePartition(p)::L(PI) pretend L I)
       ord::NNI
 
     sign(p) ==
@@ -483,8 +483,8 @@ Up to [[patch--50]] we did not check for duplicates.
       fixedPoints ( p ) == complement movedPoints p
 
       cyclePartition p ==
-        pt := partition([#c for c in coerceToCycle(p, false)])$Partition
-        pt +$PT conjugate(partition([#fixedPoints(p)])$PT)$PT
+        pt := partition([#c::PI for c in coerceToCycle(p, false)])$Partition
+        pt +$PT conjugate(partition([#fixedPoints(p)::PI])$PT)$PT
 
 @
 \section{License}

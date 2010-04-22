@@ -32,22 +32,24 @@ PartitionsAndPermutations: Exports == Implementation where
   ST1 ==> StreamFunctions1
   ST2 ==> StreamFunctions2
   ST3 ==> StreamFunctions3
+  macro NNI == NonNegativeInteger
+  macro PI == PositiveInteger
  
   Exports ==> with
  
-    partitions: (I,I,I) -> ST L I
+    partitions: (NNI,NNI,NNI) -> ST L PI
       ++\spad{partitions(p,l,n)} is the stream of partitions
       ++ of n whose number of parts is no greater than p
       ++ and whose largest part is no greater than l.
-    partitions: I -> ST L I
+    partitions: NNI -> ST L PI
       ++\spad{partitions(n)} is the stream of all partitions of n.
-    partitions: (I,I) -> ST L I
+    partitions: (NNI,NNI) -> ST L PI
       ++\spad{partitions(p,l)} is the stream of all
       ++ partitions whose number of
       ++ parts and largest part are no greater than p and l.
-    conjugate: L I -> L I
+    conjugate: L PI -> L PI
       ++\spad{conjugate(pt)} is the conjugate of the partition pt.
-    conjugates: ST L I -> ST L I
+    conjugates: ST L PI -> ST L PI
       ++\spad{conjugates(lp)} is the stream of conjugates of a stream
       ++ of partitions lp.
     shuffle: (L I,L I) -> ST L I
@@ -74,25 +76,26 @@ PartitionsAndPermutations: Exports == Implementation where
   Implementation ==> add
  
     partitions(M,N,n) ==
-      zero? n => concat(empty()$L(I),empty()$(ST L I))
-      zero? M or zero? N or n < 0 => empty()
-      c := map(concat(N,#1),partitions(M - 1,N,n - N))
-      concat(c,partitions(M,N - 1,n))
+      zero? n => concat(empty()$L(PI),empty()$(ST L PI))
+      zero? M or zero? N or n < N => empty()
+      s := partitions(subtractIfCan(M,1)::NNI,N,subtractIfCan(n,N)::NNI)
+      c := map(concat(N::PI,#1),s)
+      concat(c,partitions(M,subtractIfCan(N,1)::NNI,n))
  
     partitions n == partitions(n,n,n)
  
     partitions(M,N)==
-      aaa : L ST L I := [partitions(M,N,i) for i in 0..M*N]
-      concat(aaa :: ST ST L I)$ST1(L I)
+      aaa : L ST L PI := [partitions(M,N,i) for i in 0..M*N]
+      concat(aaa :: ST ST L PI)$ST1(L PI)
  
     -- nogreq(n,l) is the number of elements of l that are greater or
     -- equal to n
-    nogreq: (I,L I) -> I
+    nogreq: (I,L PI) -> I
     nogreq(n,x) == +/[1 for i in x | i >= n]
  
     conjugate x ==
       empty? x => empty()
-      [nogreq(i,x) for i in 1..first x]
+      [nogreq(i,x)::PI for i in 1..first x]
  
     conjugates z == map(conjugate,z)
  
