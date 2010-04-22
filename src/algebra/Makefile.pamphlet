@@ -1023,7 +1023,7 @@ axiom_algebra_layer_user =  \
         ASP78    ASP9     ASP12    ASP55    ASP8     ASP19    \
         ASP20    ASP30    ASP31    ASP35    ASP41    ASP42    \
 	ASP74    ASP77    ASP80    ASP29    IRFORM   COMPILER \
-	ITFORM   ELABOR   TALGOP
+	ITFORM   ELABOR   TALGOP   YDIAGRAM
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
