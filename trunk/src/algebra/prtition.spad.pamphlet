@@ -32,20 +32,19 @@ import List
 Partition(): Exports == Implementation where
   macro L == List
   macro I == Integer
-  macro P == PositiveInteger
+  macro PI == PositiveInteger
   macro OUT == OutputForm
   macro NNI == NonNegativeInteger
   macro UN == Union(%,"failed")
  
-  Exports == Join(OrderedCancellationAbelianMonoid,
-                   ConvertibleTo List Integer,CoercibleTo List Integer) with
-    partition: L I -> %
+  Exports == Join(OrderedCancellationAbelianMonoid, CoercibleTo L PI) with
+    partition: L PI -> %
       ++ partition(li) converts a list of integers li to a partition
-    powers: % -> List Pair(I,PositiveInteger)
+    powers: % -> List Pair(PI,PI)
       ++ powers(x) returns a list of pairs.  The second component of
       ++ each pair is the multiplicity with which the first component
       ++ occurs in li. 
-    pdct: % -> I
+    pdct: % -> PI
       ++ \spad{pdct(a1**n1 a2**n2 ...)} returns 
       ++ \spad{n1! * a1**n1 * n2! * a2**n2 * ...}.
       ++ This function is used in the package \spadtype{CycleIndicators}.
@@ -53,11 +52,10 @@ Partition(): Exports == Implementation where
       ++ conjugate(p) returns the conjugate partition of a partition p
  
   Implementation == add
-    Rep == List Integer
+    Rep == L PI
 
     0 == per nil
-    coerce(s: %): List Integer == rep s
-    convert x == copy rep x
+    coerce(s: %): L PI == rep s
     partition list == per sort(#2 < #1,list)
     zero? x == empty? rep x
     x < y == rep x < rep y
@@ -68,7 +66,7 @@ Partition(): Exports == Implementation where
       zero? n => 0
       x + (subtractIfCan(n,1) :: NNI) * x
  
-    remv(i: I,x: %): UN ==
+    remv(i: PI,x: %): UN ==
       member?(i,rep x) => per remove(i, rep x)$Rep
       "failed"
  
@@ -82,14 +80,14 @@ Partition(): Exports == Implementation where
  
     powers x ==
       l := rep x
-      r: List Pair(I,P) := nil
+      r: List Pair(PI,PI) := nil
       while not empty? l repeat
         i := first l
         -- Now, count how many times the item `i' appears in `l'.
         -- Since parts of partitions are stored in decreasing
         -- order, we only need to scan the rest of the list until
         -- we hit a different number.
-        n: P := 1
+        n: PI := 1
         while not empty?(l := rest l) and i = first l repeat
           n := n + 1
         r := cons(pair(i,n), r)
@@ -101,7 +99,7 @@ Partition(): Exports == Implementation where
       i2 = 1 => (i1 :: OUT) ** (" " :: OUT)
       (i1 :: OUT) ** (i2 :: OUT)
  
-    mkexp1(lli: L Pair(I,PositiveInteger)): L OUT ==
+    mkexp1(lli: L Pair(PI,PI)): L OUT ==
       empty? lli => nil
       li := first lli
       empty?(rest lli) and second(li) = 1 =>
@@ -114,7 +112,7 @@ Partition(): Exports == Implementation where
  
     pdct x ==
       */[factorial(second a) * (first(a) ** second(a))
-                 for a in powers x]
+                 for a in powers x] :: PI
 
 @
 \section{domain SYMPOLY SymmetricPolynomial}

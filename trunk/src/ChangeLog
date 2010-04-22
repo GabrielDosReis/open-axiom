@@ -1,3 +1,16 @@
+2010-04-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/irsn.spad.pamphlet (IrrRepSymNatPackage): Tidy.
+	* algebra/partperm.spad.pamphlet (PartitionsAndPermutations): Likewise.
+	* algebra/cycles.spad.pamphlet (complete$CycleIndicators): Now
+	take only positive integers.
+	(powerSum$CycleIndicators): Likewise.
+	(elementary$CycleIndicators): Likewise.
+	(alternating$CycleIndicators): Likewise.
+	(cyclic$CycleIndicators): Likewise.
+	(dihedral$CycleIndicators): Likewise.
+	(graphs$CycleIndicators): Likewise.
+
 2010-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (joinIntegerModes): New.

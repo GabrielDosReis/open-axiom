@@ -989,7 +989,7 @@ PermutationGroupExamples():public == private where
           gens
 
       youngGroup(lambda : Partition):PERMGRP I ==
-        youngGroup(convert(lambda)$Partition)
+        youngGroup(lambda::L(PI) pretend L I)
 
       rubiksGroup():PERMGRP I ==
         -- each generator represents a 90 degree turn of the appropriate

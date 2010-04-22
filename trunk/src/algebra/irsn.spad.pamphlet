@@ -55,27 +55,28 @@ IrrRepSymNatPackage(): public == private where
   ICF   ==> IntegerCombinatoricFunctions Integer
   PP    ==> PartitionsAndPermutations
   PERM  ==> Permutation
+  macro PI == PositiveInteger
 
   public ==> with
 
-    dimensionOfIrreducibleRepresentation  : L I -> NNI
+    dimensionOfIrreducibleRepresentation  : L PI -> NNI
       ++ dimensionOfIrreducibleRepresentation(lambda) is the dimension
       ++ of the ordinary irreducible representation of the symmetric group
       ++ corresponding to {\em lambda}.
       ++ Note: the Robinson-Thrall hook formula is implemented.
-    irreducibleRepresentation : (L I, PERM I) -> M I
+    irreducibleRepresentation : (L PI, PERM I) -> M I
       ++ irreducibleRepresentation(lambda,pi) is the irreducible representation
       ++ corresponding to partition {\em lambda} in Young's natural form of the
       ++ permutation {\em pi} in the symmetric group, whose elements permute
       ++ {\em {1,2,...,n}}.
-    irreducibleRepresentation : L I -> L M I
+    irreducibleRepresentation : L PI -> L M I
       ++ irreducibleRepresentation(lambda) is the list of the two
       ++ irreducible representations corresponding to the partition {\em lambda}
       ++ in Young's natural form for the following two generators
       ++ of the symmetric group, whose elements permute
       ++ {\em {1,2,...,n}}, namely {\em (1 2)} (2-cycle) and
       ++ {\em (1 2 ... n)} (n-cycle).
-    irreducibleRepresentation : (L I, L PERM I)  -> L M I
+    irreducibleRepresentation : (L PI, L PERM I)  -> L M I
       ++ irreducibleRepresentation(lambda,listOfPerm) is the list of the
       ++ irreducible representations corresponding to {\em lambda}
       ++ in Young's natural form for the list of permutations
@@ -84,10 +85,10 @@ IrrRepSymNatPackage(): public == private where
   private ==> add
 
     -- local variables
-    oldlambda : L I  := nil$(L I)
+    oldlambda : L PI  := nil$L(PI)
     flambda   : NNI := 0           -- dimension of the irreducible repr.
     younglist : L M I := nil$(L M I)     -- list of all standard tableaus
-    lprime    : L I  := nil$(L I)      -- conjugated partition of lambda
+    lprime    : L PI  := nil$L(PI)      -- conjugated partition of lambda
     n         : NNI := 0           -- concerning symmetric group S_n
     rows      : NNI := 0           -- # of rows of standard tableau
     columns   : NNI := 0           -- # of columns of standard tableau
@@ -100,7 +101,7 @@ IrrRepSymNatPackage(): public == private where
       -- (signum(k,l,id))_1 <= k,l <= flambda, where id
       -- denotes the identity permutation
 
-    alreadyComputed? : L I -> Void
+    alreadyComputed? : L PI -> Void
       -- test if the last calling of an exported function concerns
       -- the same partition lambda as the previous call
 
@@ -119,9 +120,9 @@ IrrRepSymNatPackage(): public == private where
       -- otherwise
       --            signum(k,l,pi) = 0.
 
-    sumPartition : L I -> NNI
-      -- checks if lambda is a proper partition and results in
-      -- the sum of the entries
+    -- checks if lambda is a proper partition and results in
+    -- the sum of the entries
+    sumPartition : L PI -> NNI
 
     testPermutation : L I -> NNI
       -- testPermutation(pi) checks if pi is an element of S_n,
@@ -157,12 +158,12 @@ IrrRepSymNatPackage(): public == private where
 
 
     alreadyComputed?(lambda) ==
-      if not(lambda = oldlambda) then
+      if lambda ~= oldlambda then
         oldlambda := lambda
         lprime    := conjugate(lambda)$PP
-        rows      := (first(lprime)$(L I))::NNI
-        columns   := (first(lambda)$(L I))::NNI
-        n         := (+/lambda)::NNI
+        rows      := first(lprime)$L(PI)
+        columns   := first(lambda)$L(PI)
+        n         := +/lambda
         younglist := listYoungTableaus(lambda)$SGCF
         flambda   := #younglist
         aIdInverse()        -- side effect: creates actual aId
@@ -240,14 +241,14 @@ IrrRepSymNatPackage(): public == private where
     sumPartition(lambda) ==
       ok   : B := true
       prev : I := first lambda
-      sum  : I := 0
+      sum  : NNI := 0
       for x in lambda repeat
         sum := sum + x
         ok := ok and (prev >= x)
         prev := x
       if not ok then
         error("No proper partition ")
-      sum::NNI
+      sum
 
 
     testPermutation(pi : L I) : NNI ==
@@ -273,7 +274,7 @@ IrrRepSymNatPackage(): public == private where
     dimensionOfIrreducibleRepresentation(lambda) ==
       nn : I :=  sumPartition(lambda)::I --also checks whether lambda
       dd : I := 1                        --is a partition
-      lambdaprime : L I := conjugate(lambda)$PP
+      lambdaprime := conjugate(lambda)$PP
       -- run through all rows of the Youngtableau corr. to lambda
       for i in 1..lambdaprime.1 repeat
         -- run through all nodes in row i of the Youngtableau
@@ -284,7 +285,7 @@ IrrRepSymNatPackage(): public == private where
       (factorial(nn)$ICF quo dd)::NNI
 
 
-    irreducibleRepresentation(lambda:(L I),pi:(PERM I)) ==
+    irreducibleRepresentation(lambda: L PI,pi: PERM I) ==
       nn : NNI := sumPartition(lambda)
       alreadyComputed?(lambda)
       piList : L I := listPermutation pi
@@ -298,8 +299,8 @@ IrrRepSymNatPackage(): public == private where
 
 
     irreducibleRepresentation(lambda) ==
-      listperm : L PERM I := nil$(L PERM I)
-      li       : L I  := nil$(L I)
+      listperm : L PERM I := nil$L(PERM I)
+      li       : L I  := nil$L(I)
       sumPartition(lambda)
       alreadyComputed?(lambda)
       listperm :=
@@ -314,7 +315,7 @@ IrrRepSymNatPackage(): public == private where
       irreducibleRepresentation(lambda,listperm)
 
 
-    irreducibleRepresentation(lambda:(L I),listperm:(L PERM I)) ==
+    irreducibleRepresentation(lambda: L PI,listperm: L PERM I) ==
       sumPartition(lambda)
       alreadyComputed?(lambda)
       [irreducibleRepresentation(lambda, pi) for pi in listperm]
