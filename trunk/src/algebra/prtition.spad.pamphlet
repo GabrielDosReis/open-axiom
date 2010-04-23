@@ -36,10 +36,18 @@ Partition(): Exports == Implementation where
   macro OUT == OutputForm
   macro NNI == NonNegativeInteger
   macro UN == Union(%,"failed")
- 
+
   Exports == Join(OrderedCancellationAbelianMonoid, CoercibleTo L PI) with
     partition: L PI -> %
       ++ partition(li) converts a list of integers li to a partition
+    parts: % -> L PI
+      ++ \spad{parts x} returns the list of decreasing integer sequence
+      ++ making up the partition \spad{x}.
+    #: % -> NNI
+      ++ \spad{#x} returns the sum of all parts of the partition \spad{x}.
+    partitions: NNI -> Stream %
+      ++ \spad{partitions n} returns the stream of all partitions of
+      ++ size \spad{n}.
     powers: % -> List Pair(PI,PI)
       ++ powers(x) returns a list of pairs.  The second component of
       ++ each pair is the multiplicity with which the first component
@@ -57,6 +65,23 @@ Partition(): Exports == Implementation where
     0 == per nil
     coerce(s: %): L PI == rep s
     partition list == per sort(#2 < #1,list)
+    parts x == rep x
+
+    #x ==
+      empty? rep x => 0
+      +/[n for n in rep x]
+
+    allPartitions(n: NNI, k: NNI): Stream % ==
+      zero? n => cons(0,empty()$Stream(%))
+      zero? k => empty()$Stream(%)
+      one? k => cons(partition [1 for i in 1..n], empty()$Stream(%))
+      s :=
+        n < k => empty()$Stream(%)
+        allPartitions((n-k)::NNI,k)
+      concat(map(per(cons(k::PI, rep #1)),s), allPartitions(n,(k-1)::NNI))
+
+    partitions n == allPartitions(n,n)
+
     zero? x == empty? rep x
     x < y == rep x < rep y
     x = y == rep x = rep y

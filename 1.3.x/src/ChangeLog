@@ -1,3 +1,8 @@
+2010-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/prtition.spad.pamphlet (parts$Partition): New.
+	(partitions$Partition): Likewise.
+
 2010-04-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (joinIntegerModes): New.
