@@ -136,7 +136,7 @@
                                (|HomogeneousAggregate| 6)
                                (|OrderedSet|) (|Aggregate|)
                                (|EltableAggregate| 7 6) (|Evalable| 6)
-                               (|SetCategory|) (|Type|) (|Eltable| 7 6)
+                               (|SetCategory|) (|Eltable| 7 6) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 13)
                                (|ConvertibleTo| 14) (|BasicType|))
                             (|makeByteWordVec2| 20
