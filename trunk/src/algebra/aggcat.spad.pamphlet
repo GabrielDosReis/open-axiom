@@ -872,9 +872,9 @@ KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
 import Type
 import SetCategory
 )abbrev category ELTAB Eltable
-++ Author: Michael Monagan; revised by Manuel Bronstein and Manuel Bronstein
+++ Author: Michael Monagan; revised by Manuel Bronstein
 ++ Date Created: August 87 through August 88
-++ Date Last Updated: April 1991
+++ Date Last Updated: April 25, 2010
 ++ Basic Operations:
 ++ Related Constructors:
 ++ Also See:
@@ -882,14 +882,15 @@ import SetCategory
 ++ Keywords:
 ++ References:
 ++ Description:
-++ An eltable over domains D and I is a structure which can be viewed
-++ as a function from D to I.
+++ An eltable over domains \spad{S} and \spad{T} is a structure which
+++ can be viewed as a function from \spad{S} to \spad{T}.
 ++ Examples of eltable structures range from data structures, e.g. those
 ++ of type \spadtype{List}, to algebraic structures, e.g. \spadtype{Polynomial}.
-Eltable(S:SetCategory, Index:Type): Category == with
-  elt : (%, S) -> Index
-     ++ elt(u,i) (also written: u . i) returns the element of u indexed by i.
-     ++ Error: if i is not an index of u.
+Eltable(S: Type, T: Type): Category == Type with
+  elt : (%, S) -> T
+     ++ \spad{elt(u,s)} (also written: \spad{u.s}) returns the value
+     ++ of \spad{u} at \spad{s}.
+     ++ Error: if \spad{u} is not defined at \spad{s}.
 
 @
 
@@ -915,8 +916,6 @@ import SetCategory
 ++ as mapping 0 to 1, 1 to 7 and 2 to 4. In general, an aggregate
 ++ can map members of a domain {\em Dom} to an image domain {\em Im}.
 EltableAggregate(Dom:SetCategory, Im:Type): Category ==
--- This is separated from Eltable
--- and series won't have to support qelt's and setelt's.
   Eltable(Dom, Im) with
     elt : (%, Dom, Im) -> Im
        ++ elt(u, x, y) applies u to x if x is in the domain of u,

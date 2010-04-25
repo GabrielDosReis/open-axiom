@@ -962,8 +962,8 @@
                                (|HomogeneousAggregate| 8)
                                (|OrderedSet|) (|Aggregate|)
                                (|EltableAggregate| 11 8) (|Evalable| 8)
-                               (|SetCategory|) (|Type|)
-                               (|Eltable| 11 8) (|InnerEvalable| 8 8)
+                               (|SetCategory|) (|Eltable| 11 8)
+                               (|Type|) (|InnerEvalable| 8 8)
                                (|CoercibleTo| 29) (|ConvertibleTo| 95)
                                (|BasicType|))
                             (|makeByteWordVec2| 100
