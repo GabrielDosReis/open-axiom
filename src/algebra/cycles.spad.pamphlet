@@ -94,29 +94,29 @@ CycleIndicators: Exports == Implementation where
       ++ expressed in terms of power sum symmetric functions.
  
   Implementation ==> add
-    import PartitionsAndPermutations
     import IntegerNumberTheoryFunctions
+    import Partition
  
     trm: PTN -> SPOL RN
     trm pt == monomial(inv(pdct(pt) :: RN),pt)
  
-    list: Stream L PI -> L L PI
+    list: Stream PTN -> L PTN
     list st == entries complete st
  
     complete i ==
       i=0 => 1
-      +/[trm partition pt for pt in list partitions i]
+      +/[trm pt for pt in list partitions i]
  
  
-    even?: L PI -> B
-    even? li == even?( #([i for i in li | even? i]))
+    even?: PTN -> B
+    even? p == even?( #([i for i in parts p | even? i]))
  
     alternating i ==
-      2 * _+/[trm partition li for li in list partitions i | even? li]
+      2 * _+/[trm p for p in list partitions i | even? p]
 
     elementary i ==
        i=0 => 1
-       +/[(spol := trm partition pt; even? pt => spol; -spol)
+       +/[(spol := trm pt; even? pt => spol; -spol)
                           for pt in list partitions i]
  
     divisors: I -> L I
@@ -142,10 +142,10 @@ CycleIndicators: Exports == Implementation where
       odd? n => (1/2) * cyclic n + (1/2) * ss(2,k) * powerSum 1
       (1/2) * cyclic n + (1/4) * ss(2,k) + (1/4) * ss(2,k-1) * ss(1,2)
  
-    trm2: L PI -> SPOL RN
+    trm2: PTN -> SPOL RN
     trm2 li ==
-      lli := powers(partition li)$PTN
-      xx := 1/(pdct partition li)
+      lli := powers( li)$PTN
+      xx := 1/(pdct li)
       prod : SPOL RN := 1
       for ll in lli repeat
         ll0 := first ll; ll1 := second ll
@@ -161,7 +161,7 @@ CycleIndicators: Exports == Implementation where
         prod := c * prod2 * prod
       xx * prod
  
-    graphs n == +/[trm2 li for li in list(partitions n)]
+    graphs n == +/[trm2 p for p in list(partitions n)]
  
     cupp: (PTN,SPOL RN) -> SPOL RN
     cupp(pt,spol) ==
