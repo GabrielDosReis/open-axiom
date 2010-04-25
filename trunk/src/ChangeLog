@@ -1,3 +1,10 @@
+2010-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/partperm.spad.pamphlet (PartitionsAndPermutations): Move 
+	partitions to domain Partitions.
+	* algebra/cycles.spad.pamphlet (CycleIndicators): User partitions
+	from Partition.  Tidy.
+
 2010-04-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/prtition.spad.pamphlet (parts$Partition): New.

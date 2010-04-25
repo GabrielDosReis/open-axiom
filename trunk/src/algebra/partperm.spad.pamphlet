@@ -37,16 +37,6 @@ PartitionsAndPermutations: Exports == Implementation where
  
   Exports ==> with
  
-    partitions: (NNI,NNI,NNI) -> ST L PI
-      ++\spad{partitions(p,l,n)} is the stream of partitions
-      ++ of n whose number of parts is no greater than p
-      ++ and whose largest part is no greater than l.
-    partitions: NNI -> ST L PI
-      ++\spad{partitions(n)} is the stream of all partitions of n.
-    partitions: (NNI,NNI) -> ST L PI
-      ++\spad{partitions(p,l)} is the stream of all
-      ++ partitions whose number of
-      ++ parts and largest part are no greater than p and l.
     conjugate: L PI -> L PI
       ++\spad{conjugate(pt)} is the conjugate of the partition pt.
     conjugates: ST L PI -> ST L PI
@@ -74,19 +64,6 @@ PartitionsAndPermutations: Exports == Implementation where
       ++ formed from \spad{1,2,3,...,n}.
  
   Implementation ==> add
- 
-    partitions(M,N,n) ==
-      zero? n => concat(empty()$L(PI),empty()$(ST L PI))
-      zero? M or zero? N or n < N => empty()
-      s := partitions(subtractIfCan(M,1)::NNI,N,subtractIfCan(n,N)::NNI)
-      c := map(concat(N::PI,#1),s)
-      concat(c,partitions(M,subtractIfCan(N,1)::NNI,n))
- 
-    partitions n == partitions(n,n,n)
- 
-    partitions(M,N)==
-      aaa : L ST L PI := [partitions(M,N,i) for i in 0..M*N]
-      concat(aaa :: ST ST L PI)$ST1(L PI)
  
     -- nogreq(n,l) is the number of elements of l that are greater or
     -- equal to n
