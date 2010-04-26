@@ -1811,7 +1811,8 @@ import Integer
 ++ as well to finite ones.
 ++ For finite linear aggregates, see \spadtype{FiniteLinearAggregate}.
 LinearAggregate(S:Type): Category ==
-  Join(IndexedAggregate(Integer, S), Collection(S)) with
+  Join(IndexedAggregate(Integer, S), Collection(S),_
+    Eltable(UniversalSegment Integer, %)) with
    new	 : (NonNegativeInteger,S) -> %
      ++ new(n,x) returns \axiom{fill!(new n,x)}.
    concat: (%,S) -> %
@@ -1835,10 +1836,6 @@ LinearAggregate(S:Type): Category ==
      ++ map(f,u,v) returns a new collection w with elements \axiom{z = f(x,y)}
      ++ for corresponding elements x and y from u and v.
      ++ Note: for linear aggregates, \axiom{w.i = f(u.i,v.i)}.
-   elt: (%,UniversalSegment(Integer)) -> %
-      ++ elt(u,i..j) (also written: \axiom{a(i..j)}) returns the aggregate of
-      ++ elements \axiom{u} for k from i to j in that order.
-      ++ Note: in general, \axiom{a.s = [a.k for i in s]}.
    delete: (%,Integer) -> %
       ++ delete(u,i) returns a copy of u with the \axiom{i}th element deleted.
       ++ Note: for lists, \axiom{delete(a,i) == concat(a(0..i - 1),a(i + 1,..))}.
