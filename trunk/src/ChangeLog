@@ -1,5 +1,21 @@
 2010-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/carten.spad.pamphlet (CartesianTensor): Satisfy
+	instantiation of Eltable.
+	* algebra/clifford.spad.pamphlet (QuadraticForm): Likewise.
+	* algebra/domain.spad.pamphlet (DomainTemplate): Likewise.
+	* algebra/files.spad.pamphlet (Library): Likewise.
+	* algebra/aggcat.spad.pamphlet (LinearAggregate): Extend
+	instantiation of Eltable.
+	* algebra/naalg.spad.pamphlet (FiniteRankNonAssociativeAlgebra):
+	Likewise. 
+	* algebra/pscat.spad.pamphlet (UnivariatePowerSeriesCategory):
+	Likewise. 
+	* algebra/sex.spad.pamphlet (SExpressionCategory): Likewise.
+	* algebra/Makefile.pamphlet: Update rules.
+
+2010-04-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/aggcat.spad.pamphlet: Tidy.
 
 2010-04-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>

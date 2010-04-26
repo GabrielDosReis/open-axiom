@@ -203,11 +203,9 @@ CategoryConstructor(): Public == Private where
 ++   Represntation of domain templates resulting from
 ++   compiling a domain constructor
 DomainTemplate(): Public == Private where
-  Public == SetCategory with
+  Public == Join(SetCategory, Eltable(NonNegativeInteger,Syntax)) with
     #: % -> NonNegativeInteger
       ++ \spad{# x} returns the length of the domain template \spad{x}.
-    elt: (%,NonNegativeInteger) -> Syntax
-      ++ \spad{x.i} yields the entry at slot \spad{i} in \spad{x}.
   Private == add
     Rep == PrimitiveArray Syntax
     #x == # rep x

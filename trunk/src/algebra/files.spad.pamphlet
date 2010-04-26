@@ -425,16 +425,12 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
 ++ References:
 ++ Description:
 ++   This domain provides a simple way to save values in files.
-Library(): TableAggregate(String, Any) with
+Library(): Join(TableAggregate(String, Any),Eltable(Symbol,Any)) with
          library:  FileName -> %
              ++ library(ln) creates a new library file.
          pack!: % -> %
              ++ pack!(f) reorganizes the file f on disk to recover 
              ++ unused space.
-
-         elt : (%, Symbol) -> Any
-             ++ elt(lib,k) or lib.k  extracts the value corresponding to the key \spad{k}
-             ++ from the library \spad{lib}.
 
          setelt : (%, Symbol, Any) -> Any
              ++ \spad{lib.k := v} saves the value \spad{v} in the library

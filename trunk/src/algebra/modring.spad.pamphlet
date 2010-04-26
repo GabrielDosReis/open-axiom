@@ -116,7 +116,7 @@ EuclideanModularRing(S,R,Mod,reduction:(R,Mod) -> R,
   R    :  UnivariatePolynomialCategory S
   Mod  :  AbelianMonoid
 
-  C == EuclideanDomain with
+  C == Join(EuclideanDomain, Eltable(R,R)) with
                 modulus :   %     -> Mod
 			++ modulus(x) \undocumented
                 coerce  :   %     -> R
@@ -129,8 +129,6 @@ EuclideanModularRing(S,R,Mod,reduction:(R,Mod) -> R,
 			++ recip(x) \undocumented
                 inv     :    %    -> %
 			++ inv(x) \undocumented
-                elt     : (%, R)  -> R
-			++ elt(x,r) or x.r \undocumented
 
   T == ModularRing(R,Mod,reduction,merge,exactQuo) add
 

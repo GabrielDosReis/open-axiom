@@ -30,7 +30,8 @@ SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
     Decl == Join(SetCategory,ConvertibleFrom Str, ConvertibleFrom Sym,_
               ConvertibleFrom Int, ConvertibleFrom Flt,_
                 ConvertibleFrom Flt, ConvertibleFrom Expr,_
-                  ConvertibleFrom List %) with
+                  ConvertibleFrom List %, Eltable(Integer,%),_
+                    Eltable(List Integer, %)) with
         eq:        (%,%) -> Boolean
           ++ eq(s, t) is true if EQ(s,t) is true in Lisp.
         null?:     % -> Boolean
@@ -72,10 +73,6 @@ SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
           ++ cdr((a1,...,an)) returns \spad{(a2,...,an)}.
         #:       % -> Integer
           ++ #((a1,...,an)) returns n.
-        elt:       (%, Integer)      -> %
-          ++ elt((a1,...,an), i) returns \spad{ai}.
-        elt:       (%, List Integer) -> %
-          ++ elt((a1,...,an), [i1,...,im]) returns \spad{(a_i1,...,a_im)}.
 
 @
 \section{domain SEXOF SExpressionOf}
