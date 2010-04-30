@@ -37,9 +37,8 @@
                    ((< |c| 0) (CONS 1 "failed"))
                    ('T
                     (CONS 0
-                          (PROG1 |c|
-                            (|check-subtype| (>= |c| 0)
-                                '(|NonNegativeInteger|) |c|)))))))))) 
+                          (|check-subtype| (>= |c| 0)
+                              '(|NonNegativeInteger|) |c|))))))))) 
 
 (DEFUN |NonNegativeInteger| ()
   (PROG ()

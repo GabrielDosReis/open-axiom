@@ -6,13 +6,16 @@
 (DEFPARAMETER |LinearAggregate;AL| 'NIL) 
 
 (DEFUN |LinearAggregate;| (|t#1|)
-  (PROG (#0=#:G1398)
+  (PROG (#0=#:G1399)
     (RETURN
       (PROG1 (LETT #0#
                    (|sublisV|
                        (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                        (|sublisV|
-                           (PAIR '(#1=#:G1397) (LIST '(|Integer|)))
+                           (PAIR '(#1=#:G1397 #2=#:G1398)
+                                 (LIST '(|Integer|)
+                                       '(|UniversalSegment|
+                                         (|Integer|))))
                            (COND
                              (|LinearAggregate;CAT|)
                              ('T
@@ -20,6 +23,7 @@
                                     (|Join|
                                      (|IndexedAggregate| '#1# '|t#1|)
                                      (|Collection| '|t#1|)
+                                     (|Eltable| '#2# '$)
                                      (|mkCategory| '|domain|
                                       '(((|new|
                                           ($ (|NonNegativeInteger|)
@@ -34,11 +38,6 @@
                                            (|Mapping| |t#1| |t#1|
                                             |t#1|)
                                            $ $))
-                                         T)
-                                        ((|elt|
-                                          ($ $
-                                           (|UniversalSegment|
-                                            (|Integer|))))
                                          T)
                                         ((|delete| ($ $ (|Integer|)))
                                          T)
@@ -66,12 +65,12 @@
                                         (|Integer|) (|List| $)
                                         (|NonNegativeInteger|))
                                       NIL))
-                                    . #2=(|LinearAggregate|)))))) . #2#)
+                                    . #3=(|LinearAggregate|)))))) . #3#)
         (|setShellEntry| #0# 0
             (LIST '|LinearAggregate| (|devaluate| |t#1|))))))) 
 
-(DEFUN |LinearAggregate| (#0=#:G1399)
-  (LET (#1=#:G1400)
+(DEFUN |LinearAggregate| (#0=#:G1400)
+  (LET (#1=#:G1401)
     (COND
       ((SETQ #1# (|assoc| (|devaluate| #0#) |LinearAggregate;AL|))
        (CDR #1#))

@@ -435,7 +435,7 @@
            (EXIT |x|))))) 
 
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
-  (PROG (|m| #0=#:G1497)
+  (PROG (|m|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 57))
                  |URAGG-;last;ANniA;22|)
@@ -444,8 +444,7 @@
                    ('T
                     (SPADCALL
                         (SPADCALL |x|
-                            (PROG1 (LETT #0# (- |m| |n|)
-                                    |URAGG-;last;ANniA;22|)
+                            (LET ((#0=#:G1499 (- |m| |n|)))
                               (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 59))
@@ -574,15 +573,14 @@
   (SPADCALL |u| |s| (|getShellEntry| $ 67))) 
 
 (DEFUN |URAGG-;split!;AIA;32| (|p| |n| $)
-  (PROG (#0=#:G1523 |q|)
+  (PROG (|q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
              ('T
               (SEQ (LETT |p|
                          (SPADCALL |p|
-                             (PROG1 (LETT #0# (- |n| 1)
-                                     |URAGG-;split!;AIA;32|)
+                             (LET ((#0=#:G1525 (- |n| 1)))
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 59))

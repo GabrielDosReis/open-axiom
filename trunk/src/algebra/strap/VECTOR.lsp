@@ -118,15 +118,15 @@
              |construct| 54)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
-                    '(0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4))
+                    '(0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4))
                 (CONS '#(|VectorCategory&|
                          |OneDimensionalArrayAggregate&|
                          |FiniteLinearAggregate&| |LinearAggregate&|
                          |IndexedAggregate&| |Collection&|
-                         |HomogeneousAggregate&| |OrderedSet&|
-                         |Aggregate&| |EltableAggregate&| |Evalable&|
-                         |SetCategory&| NIL NIL |InnerEvalable&| NIL
-                         NIL |BasicType&|)
+                         |HomogeneousAggregate&| |EltableAggregate&|
+                         |OrderedSet&| NIL |Aggregate&| NIL |Evalable&|
+                         |SetCategory&| NIL |InnerEvalable&| NIL NIL
+                         |BasicType&|)
                       (CONS '#((|VectorCategory| 6)
                                (|OneDimensionalArrayAggregate| 6)
                                (|FiniteLinearAggregate| 6)
@@ -134,9 +134,10 @@
                                (|IndexedAggregate| 7 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
-                               (|OrderedSet|) (|Aggregate|)
-                               (|EltableAggregate| 7 6) (|Evalable| 6)
-                               (|SetCategory|) (|Eltable| 7 6) (|Type|)
+                               (|EltableAggregate| 7 6) (|OrderedSet|)
+                               (|Eltable| 28 $$) (|Aggregate|)
+                               (|Eltable| 7 6) (|Evalable| 6)
+                               (|SetCategory|) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 13)
                                (|ConvertibleTo| 14) (|BasicType|))
                             (|makeByteWordVec2| 20

@@ -178,8 +178,7 @@
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
-  (PROG (|l| |m| |n| |h| #0=#:G1435 |r| #1=#:G1531 #2=#:G1532 |i|
-             #3=#:G1533 |k|)
+  (PROG (|l| |m| |n| |h| |r| #0=#:G1531 #1=#:G1532 |i| #2=#:G1533 |k|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |sg| (|getShellEntry| $ 44))
@@ -201,16 +200,16 @@
               (EXIT (|error| "index out of range"))))
            (LETT |r|
                  (MAKE-FULL-CVEC
-                     (PROG1 (LETT #0# (+ (- |m| (+ (- |h| |l|) 1)) |n|)
-                                  |ISTRING;replace;$Us2$;15|)
-                       (|check-subtype| (>= #0# 0)
-                           '(|NonNegativeInteger|) #0#))
+                     (LET ((#3=#:G1440
+                               (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
+                       (|check-subtype| (>= #3# 0)
+                           '(|NonNegativeInteger|) #3#))
                      (|spadConstant| $ 53))
                  |ISTRING;replace;$Us2$;15|)
            (SEQ (LETT |i| 0 |ISTRING;replace;$Us2$;15|)
-                (LETT #1# (- |l| 1) |ISTRING;replace;$Us2$;15|)
+                (LETT #0# (- |l| 1) |ISTRING;replace;$Us2$;15|)
                 (LETT |k| 0 |ISTRING;replace;$Us2$;15|) G190
-                (COND ((QSGREATERP |i| #1#) (GO G191)))
+                (COND ((QSGREATERP |i| #0#) (GO G191)))
                 (SEQ (EXIT (QESET |r| |k| (CHAR |s| |i|))))
                 (LETT |k|
                       (PROG1 (QSADD1 |k|)
@@ -219,9 +218,9 @@
                       |ISTRING;replace;$Us2$;15|)
                 (GO G190) G191 (EXIT NIL))
            (SEQ (LETT |i| 0 |ISTRING;replace;$Us2$;15|)
-                (LETT #2# (- |n| 1) |ISTRING;replace;$Us2$;15|)
+                (LETT #1# (- |n| 1) |ISTRING;replace;$Us2$;15|)
                 (LETT |k| |k| |ISTRING;replace;$Us2$;15|) G190
-                (COND ((QSGREATERP |i| #2#) (GO G191)))
+                (COND ((QSGREATERP |i| #1#) (GO G191)))
                 (SEQ (EXIT (QESET |r| |k| (CHAR |t| |i|))))
                 (LETT |k|
                       (PROG1 (+ |k| 1)
@@ -230,9 +229,9 @@
                       |ISTRING;replace;$Us2$;15|)
                 (GO G190) G191 (EXIT NIL))
            (SEQ (LETT |i| (+ |h| 1) |ISTRING;replace;$Us2$;15|)
-                (LETT #3# (- |m| 1) |ISTRING;replace;$Us2$;15|)
+                (LETT #2# (- |m| 1) |ISTRING;replace;$Us2$;15|)
                 (LETT |k| |k| |ISTRING;replace;$Us2$;15|) G190
-                (COND ((> |i| #3#) (GO G191)))
+                (COND ((> |i| #2#) (GO G191)))
                 (SEQ (EXIT (QESET |r| |k| (CHAR |s| |i|))))
                 (LETT |k|
                       (PROG1 (+ |k| 1)
@@ -703,24 +702,22 @@
   (|stringMatch| |pattern| |target| (CHARACTER |wildcard|))) 
 
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
-  (PROG (|n| |m| #0=#:G1511 #1=#:G1514 |s| #2=#:G1515 #3=#:G1524 |i|
-             |p| #4=#:G1516 |q|)
+  (PROG (|n| |m| |s| #0=#:G1520 |i| |p| |q|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |n|
                             (SPADCALL |pattern| (|getShellEntry| $ 47))
                             |ISTRING;match?;2$CB;34|)
                       (LETT |p|
-                            (PROG1 (LETT #0#
-                                    (|ISTRING;position;C$2I;19|
-                                     |dontcare| |pattern|
-                                     (LETT |m|
-                                      (|ISTRING;minIndex;$I;11|
-                                       |pattern| $)
-                                      |ISTRING;match?;2$CB;34|)
-                                     $)
-                                    |ISTRING;match?;2$CB;34|)
-                              (|check-subtype| (>= #0# 0)
-                                  '(|NonNegativeInteger|) #0#))
+                            (LET ((#1=#:G1521
+                                      (|ISTRING;position;C$2I;19|
+                                       |dontcare| |pattern|
+                                       (LETT |m|
+                                        (|ISTRING;minIndex;$I;11|
+                                         |pattern| $)
+                                        |ISTRING;match?;2$CB;34|)
+                                       $)))
+                              (|check-subtype| (>= #1# 0)
+                                  '(|NonNegativeInteger|) #1#))
                             |ISTRING;match?;2$CB;34|)
                       (EXIT (COND
                               ((EQL |p| (- |m| 1))
@@ -743,14 +740,13 @@
                                     (LETT |i| |p|
                                      |ISTRING;match?;2$CB;34|)
                                     (LETT |q|
-                                     (PROG1
-                                      (LETT #1#
-                                       (|ISTRING;position;C$2I;19|
-                                        |dontcare| |pattern| (+ |p| 1)
-                                        $)
-                                       |ISTRING;match?;2$CB;34|)
-                                       (|check-subtype| (>= #1# 0)
-                                        '(|NonNegativeInteger|) #1#))
+                                     (LET
+                                      ((#2=#:G1522
+                                        (|ISTRING;position;C$2I;19|
+                                         |dontcare| |pattern| (+ |p| 1)
+                                         $)))
+                                       (|check-subtype| (>= #2# 0)
+                                        '(|NonNegativeInteger|) #2#))
                                      |ISTRING;match?;2$CB;34|)
                                     (SEQ G190
                                      (COND
@@ -766,21 +762,20 @@
                                         $)
                                        |ISTRING;match?;2$CB;34|)
                                       (LETT |i|
-                                       (PROG1
-                                        (LETT #2#
-                                         (|ISTRING;position;2$2I;18|
-                                          |s| |target| |i| $)
-                                         |ISTRING;match?;2$CB;34|)
-                                         (|check-subtype| (>= #2# 0)
-                                          '(|NonNegativeInteger|) #2#))
+                                       (LET
+                                        ((#3=#:G1523
+                                          (|ISTRING;position;2$2I;18|
+                                           |s| |target| |i| $)))
+                                         (|check-subtype| (>= #3# 0)
+                                          '(|NonNegativeInteger|) #3#))
                                        |ISTRING;match?;2$CB;34|)
                                       (EXIT
                                        (COND
                                          ((EQL |i| (- |m| 1))
                                           (PROGN
-                                            (LETT #3# NIL
+                                            (LETT #0# NIL
                                              |ISTRING;match?;2$CB;34|)
-                                            (GO #3#)))
+                                            (GO #0#)))
                                          ('T
                                           (SEQ
                                            (LETT |i|
@@ -790,12 +785,11 @@
                                             |ISTRING;match?;2$CB;34|)
                                            (EXIT
                                             (LETT |q|
-                                             (PROG1
-                                              (LETT #4#
-                                               (|ISTRING;position;C$2I;19|
-                                                |dontcare| |pattern|
-                                                (+ |q| 1) $)
-                                               |ISTRING;match?;2$CB;34|)
+                                             (LET
+                                              ((#4=#:G1524
+                                                (|ISTRING;position;C$2I;19|
+                                                 |dontcare| |pattern|
+                                                 (+ |q| 1) $)))
                                                (|check-subtype|
                                                 (>= #4# 0)
                                                 '(|NonNegativeInteger|)
@@ -816,7 +810,7 @@
                                             |target| $))
                                           (EXIT NIL)))))
                                     (EXIT T)))))))
-           #3# (EXIT #3#))))) 
+           #0# (EXIT #0#))))) 
 
 (DEFUN |IndexedString| (#0=#:G1541)
   (PROG ()
@@ -944,15 +938,15 @@
              806 |#| 812)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
-                    '(0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4))
+                    '(0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4))
                 (CONS '#(|StringAggregate&|
                          |OneDimensionalArrayAggregate&|
                          |FiniteLinearAggregate&| |LinearAggregate&|
                          |IndexedAggregate&| |Collection&|
-                         |HomogeneousAggregate&| |OrderedSet&|
-                         |Aggregate&| |EltableAggregate&| |Evalable&|
-                         |SetCategory&| NIL NIL |InnerEvalable&| NIL
-                         NIL |BasicType&|)
+                         |HomogeneousAggregate&| |EltableAggregate&|
+                         |OrderedSet&| NIL |Aggregate&| NIL |Evalable&|
+                         |SetCategory&| NIL |InnerEvalable&| NIL NIL
+                         |BasicType&|)
                       (CONS '#((|StringAggregate|)
                                (|OneDimensionalArrayAggregate| 8)
                                (|FiniteLinearAggregate| 8)
@@ -960,12 +954,12 @@
                                (|IndexedAggregate| 11 8)
                                (|Collection| 8)
                                (|HomogeneousAggregate| 8)
-                               (|OrderedSet|) (|Aggregate|)
-                               (|EltableAggregate| 11 8) (|Evalable| 8)
-                               (|SetCategory|) (|Eltable| 11 8)
-                               (|Type|) (|InnerEvalable| 8 8)
-                               (|CoercibleTo| 29) (|ConvertibleTo| 95)
-                               (|BasicType|))
+                               (|EltableAggregate| 11 8) (|OrderedSet|)
+                               (|Eltable| 23 $$) (|Aggregate|)
+                               (|Eltable| 11 8) (|Evalable| 8)
+                               (|SetCategory|) (|Type|)
+                               (|InnerEvalable| 8 8) (|CoercibleTo| 29)
+                               (|ConvertibleTo| 95) (|BasicType|))
                             (|makeByteWordVec2| 100
                                 '(0 11 0 12 2 11 13 0 0 14 0 11 0 21 2
                                   11 0 0 0 22 2 23 0 11 11 24 1 23 0 11
@@ -1011,10 +1005,10 @@
                                   2 0 8 0 11 67 3 0 8 0 11 8 1 2 0 0 0
                                   11 1 2 0 0 0 23 1 2 7 7 8 0 1 2 0 7
                                   96 0 1 3 0 0 0 0 11 82 1 0 0 0 20 1 3
-                                  95 0 1 1 0 0 91 1 1 0 0 73 83 2 0 0 0
-                                  0 19 2 0 0 0 8 1 2 0 0 8 0 1 1 8 29 0
-                                  31 1 0 0 8 1 2 7 13 0 0 1 2 0 13 96 0
-                                  1 2 5 13 0 0 1 2 5 13 0 0 1 2 7 13 0
-                                  0 17 2 5 13 0 0 1 2 5 13 0 0 18 1 0 7
-                                  0 16)))))
+                                  95 0 1 1 0 0 91 1 2 0 0 0 0 19 1 0 0
+                                  73 83 2 0 0 8 0 1 2 0 0 0 8 1 1 8 29
+                                  0 31 1 0 0 8 1 2 7 13 0 0 1 2 0 13 96
+                                  0 1 2 5 13 0 0 1 2 5 13 0 0 1 2 7 13
+                                  0 0 17 2 5 13 0 0 1 2 5 13 0 0 18 1 0
+                                  7 0 16)))))
           '|lookupComplete|)) 
