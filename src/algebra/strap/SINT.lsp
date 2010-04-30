@@ -491,11 +491,8 @@
   (+ (- |$ShortMaximum| |$ShortMinimum|) 1)) 
 
 (DEFUN |SINT;index;Pi$;55| (|i| $)
-  (PROG (#0=#:G1459)
-    (RETURN
-      (PROG1 (LETT #0# (- (+ |i| |$ShortMinimum|) 1)
-                   |SINT;index;Pi$;55|)
-        (|check-subtype| (SMINTP #0#) '(|SingleInteger|) #0#))))) 
+  (LET ((#0=#:G1460 (- (+ |i| |$ShortMinimum|) 1)))
+    (|check-subtype| (SMINTP #0#) '(|SingleInteger|) #0#))) 
 
 (DEFUN |SINT;lookup;$Pi;56| (|x| $)
   (DECLARE (IGNORE $))
@@ -518,7 +515,7 @@
                    ('T |r|))))))) 
 
 (DEFUN |SINT;coerce;I$;59| (|x| $)
-  (PROG1 |x| (|check-subtype| (SMINTP |x|) '(|SingleInteger|) |x|))) 
+  (|check-subtype| (SMINTP |x|) '(|SingleInteger|) |x|)) 
 
 (DEFUN |SINT;random;$;60| ($)
   (SEQ (|setShellEntry| $ 6

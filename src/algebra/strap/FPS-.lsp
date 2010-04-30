@@ -12,18 +12,15 @@
       (|getShellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
-  (PROG (#0=#:G1400)
-    (RETURN
-      (PROG1 (LETT #0#
-                   (MAX 1
-                        (QUOTIENT2
-                            (SPADCALL 4004
-                                (- (SPADCALL (|getShellEntry| $ 14)) 1)
-                                (|getShellEntry| $ 16))
-                            13301))
-                   |FPS-;digits;Pi;2|)
-        (|check-subtype| (AND (>= #0# 0) (> #0# 0))
-            '(|PositiveInteger|) #0#))))) 
+  (LET ((#0=#:G1401
+            (MAX 1
+                 (QUOTIENT2
+                     (SPADCALL 4004
+                         (- (SPADCALL (|getShellEntry| $ 14)) 1)
+                         (|getShellEntry| $ 16))
+                     13301))))
+    (|check-subtype| (AND (>= #0# 0) (> #0# 0)) '(|PositiveInteger|)
+        #0#))) 
 
 (DEFUN |FloatingPointSystem&| (|#1|)
   (PROG (|dv$1| |dv$| $ |pv$|)

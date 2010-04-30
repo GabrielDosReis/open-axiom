@@ -571,7 +571,14 @@ optCollectVector form ==
   ["LET",[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
     ["REPEAT",:iters,["setSimpleArrayEntry",vec,index,body]], 
       vec]
- 
+
+++ Translate retraction of a value denoted by `e' to sub-domain `m'
+++ defined by predicate `pred',
+optRetract ["%Retract",e,m,pred] ==
+  atom e => ["check-subtype",substitute(e,"#1",pred),MKQ m,e]
+  g := GENSYM()
+  ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
+
 lispize x == first optimize [x]
  
 --% optimizer hash table
@@ -588,6 +595,7 @@ for x in '( (call         optCall) _
            (_|           optSuchthat)_
            (CATCH        optCatch)_
            (COND         optCond)_
+           (%Retract     optRetract)_
            (%CollectV    optCollectVector)_
            (mkRecord     optMkRecord)_
            (RECORDELT    optRECORDELT)_

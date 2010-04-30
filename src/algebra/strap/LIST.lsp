@@ -320,16 +320,16 @@
              |OMwrite| 270)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 6
-                    '(0 0 0 0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4 6))
+                    '(0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4 6))
                 (CONS '#(|ListAggregate&| |StreamAggregate&|
                          |ExtensibleLinearAggregate&|
                          |FiniteLinearAggregate&|
                          |UnaryRecursiveAggregate&| |LinearAggregate&|
                          |RecursiveAggregate&| |IndexedAggregate&|
                          |Collection&| |HomogeneousAggregate&|
-                         |OrderedSet&| |Aggregate&| |EltableAggregate&|
-                         |Evalable&| |SetCategory&| NIL NIL
-                         |InnerEvalable&| NIL NIL |BasicType&| NIL)
+                         |EltableAggregate&| |OrderedSet&| NIL
+                         |Aggregate&| NIL |Evalable&| |SetCategory&|
+                         NIL |InnerEvalable&| NIL NIL |BasicType&| NIL)
                       (CONS '#((|ListAggregate| 6)
                                (|StreamAggregate| 6)
                                (|ExtensibleLinearAggregate| 6)
@@ -340,9 +340,10 @@
                                (|IndexedAggregate| 7 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
-                               (|OrderedSet|) (|Aggregate|)
-                               (|EltableAggregate| 7 6) (|Evalable| 6)
-                               (|SetCategory|) (|Eltable| 7 6) (|Type|)
+                               (|EltableAggregate| 7 6) (|OrderedSet|)
+                               (|Eltable| 61 $$) (|Aggregate|)
+                               (|Eltable| 7 6) (|Evalable| 6)
+                               (|SetCategory|) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 45)
                                (|ConvertibleTo| 46) (|BasicType|)
                                (|OpenMath|))

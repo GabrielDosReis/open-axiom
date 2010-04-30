@@ -421,15 +421,14 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |ILIST;split!;$I$;29| (|p| |n| $)
-  (PROG (#0=#:G1505 |q|)
+  (PROG (|q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
              ('T
               (SEQ (LETT |p|
                          (|ILIST;rest;$Nni$;19| |p|
-                             (PROG1 (LETT #0# (- |n| 1)
-                                     |ILIST;split!;$I$;29|)
+                             (LET ((#0=#:G1507 (- |n| 1)))
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
                              $)
@@ -438,7 +437,7 @@
                    (QRPLACD |p| NIL) (EXIT |q|)))))))) 
 
 (DEFUN |ILIST;mergeSort| (|f| |p| |n| $)
-  (PROG (#0=#:G1509 |l| |q|)
+  (PROG (|l| |q|)
     (RETURN
       (SEQ (COND
              ((EQL |n| 2)
@@ -450,8 +449,7 @@
                    ((< |n| 3) |p|)
                    ('T
                     (SEQ (LETT |l|
-                               (PROG1 (LETT #0# (QUOTIENT2 |n| 2)
-                                       |ILIST;mergeSort|)
+                               (LET ((#0=#:G1512 (QUOTIENT2 |n| 2)))
                                  (|check-subtype| (>= #0# 0)
                                      '(|NonNegativeInteger|) #0#))
                                |ILIST;mergeSort|)
@@ -606,16 +604,16 @@
              898 > 904 = 910 <= 916 < 922 |#| 928)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
-                    '(0 0 0 0 0 0 0 0 0 0 5 0 0 1 4 0 0 1 2 3 4))
+                    '(0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4))
                 (CONS '#(|ListAggregate&| |StreamAggregate&|
                          |ExtensibleLinearAggregate&|
                          |FiniteLinearAggregate&|
                          |UnaryRecursiveAggregate&| |LinearAggregate&|
                          |RecursiveAggregate&| |IndexedAggregate&|
                          |Collection&| |HomogeneousAggregate&|
-                         |OrderedSet&| |Aggregate&| |EltableAggregate&|
-                         |Evalable&| |SetCategory&| NIL NIL
-                         |InnerEvalable&| NIL NIL |BasicType&|)
+                         |EltableAggregate&| |OrderedSet&| NIL
+                         |Aggregate&| NIL |Evalable&| |SetCategory&|
+                         NIL |InnerEvalable&| NIL NIL |BasicType&|)
                       (CONS '#((|ListAggregate| 6)
                                (|StreamAggregate| 6)
                                (|ExtensibleLinearAggregate| 6)
@@ -626,12 +624,12 @@
                                (|IndexedAggregate| 30 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
-                               (|OrderedSet|) (|Aggregate|)
-                               (|EltableAggregate| 30 6) (|Evalable| 6)
-                               (|SetCategory|) (|Eltable| 30 6)
-                               (|Type|) (|InnerEvalable| 6 6)
-                               (|CoercibleTo| 36) (|ConvertibleTo| 81)
-                               (|BasicType|))
+                               (|EltableAggregate| 30 6) (|OrderedSet|)
+                               (|Eltable| 77 $$) (|Aggregate|)
+                               (|Eltable| 30 6) (|Evalable| 6)
+                               (|SetCategory|) (|Type|)
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 36)
+                               (|ConvertibleTo| 81) (|BasicType|))
                             (|makeByteWordVec2| 84
                                 '(1 11 0 0 33 1 0 11 0 34 0 37 0 38 1 0
                                   0 0 39 1 6 36 0 40 2 37 0 36 0 41 1
@@ -683,7 +681,7 @@
                                   1 0 8 0 1 1 0 0 0 39 2 7 8 6 0 1 2 0
                                   8 75 0 1 3 0 0 0 0 30 1 1 0 0 0 35 1
                                   3 81 0 1 1 0 0 25 26 2 0 0 0 6 1 2 0
-                                  0 0 0 60 1 0 0 43 1 2 0 0 0 6 1 2 0 0
+                                  0 0 0 60 2 0 0 0 6 1 1 0 0 43 1 2 0 0
                                   6 0 10 2 0 0 0 0 1 1 8 36 0 49 1 0 43
                                   0 1 2 7 11 0 0 1 2 7 11 0 0 1 2 0 11
                                   75 0 1 2 5 11 0 0 1 2 5 11 0 0 1 2 7

@@ -108,10 +108,9 @@
                 G190 (COND ((NULL (NOT |found|)) (GO G191)))
                 (SEQ (LETT |e|
                            (SPADCALL
-                               (PROG1 |i|
-                                 (|check-subtype|
-                                     (AND (>= |i| 0) (> |i| 0))
-                                     '(|PositiveInteger|) |i|))
+                               (|check-subtype|
+                                   (AND (>= |i| 0) (> |i| 0))
+                                   '(|PositiveInteger|) |i|)
                                (|getShellEntry| $ 14))
                            |FFIELDC-;createPrimitiveElement;S;8|)
                      (EXIT (LETT |found|

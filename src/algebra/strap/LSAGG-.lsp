@@ -230,7 +230,7 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |LSAGG-;insert!;SAIA;7| (|s| |x| |i| $)
-  (PROG (|m| #0=#:G1463 |y| |z|)
+  (PROG (|m| |y| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;insert!;SAIA;7|)
@@ -241,9 +241,8 @@
                    ('T
                     (SEQ (LETT |y|
                                (SPADCALL |x|
-                                   (PROG1
-                                    (LETT #0# (- (- |i| 1) |m|)
-                                     |LSAGG-;insert!;SAIA;7|)
+                                   (LET
+                                    ((#0=#:G1466 (- (- |i| 1) |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -257,7 +256,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;insert!;2AIA;8| (|w| |x| |i| $)
-  (PROG (|m| #0=#:G1467 |y| |z|)
+  (PROG (|m| |y| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;insert!;2AIA;8|)
@@ -268,9 +267,8 @@
                    ('T
                     (SEQ (LETT |y|
                                (SPADCALL |x|
-                                   (PROG1
-                                    (LETT #0# (- (- |i| 1) |m|)
-                                     |LSAGG-;insert!;2AIA;8|)
+                                   (LET
+                                    ((#0=#:G1470 (- (- |i| 1) |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -336,7 +334,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AIA;10| (|x| |i| $)
-  (PROG (|m| #0=#:G1479 |y|)
+  (PROG (|m| |y|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;delete!;AIA;10|)
@@ -347,9 +345,8 @@
                    ('T
                     (SEQ (LETT |y|
                                (SPADCALL |x|
-                                   (PROG1
-                                    (LETT #0# (- (- |i| 1) |m|)
-                                     |LSAGG-;delete!;AIA;10|)
+                                   (LET
+                                    ((#0=#:G1482 (- (- |i| 1) |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -360,7 +357,7 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AUsA;11| (|x| |i| $)
-  (PROG (|l| |m| |h| #0=#:G1484 #1=#:G1485 |t| #2=#:G1486)
+  (PROG (|l| |m| |h| |t|)
     (RETURN
       (SEQ (LETT |l| (SPADCALL |i| (|getShellEntry| $ 46))
                  |LSAGG-;delete!;AUsA;11|)
@@ -380,18 +377,17 @@
                                  ((< |h| |l|) |x|)
                                  ((EQL |l| |m|)
                                   (SPADCALL |x|
-                                      (PROG1
-                                       (LETT #0# (- (+ |h| 1) |m|)
-                                        |LSAGG-;delete!;AUsA;11|)
+                                      (LET
+                                       ((#0=#:G1488 (- (+ |h| 1) |m|)))
                                         (|check-subtype| (>= #0# 0)
                                          '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 39)))
                                  ('T
                                   (SEQ (LETT |t|
                                         (SPADCALL |x|
-                                         (PROG1
-                                          (LETT #1# (- (- |l| 1) |m|)
-                                           |LSAGG-;delete!;AUsA;11|)
+                                         (LET
+                                          ((#1=#:G1489
+                                            (- (- |l| 1) |m|)))
                                            (|check-subtype| (>= #1# 0)
                                             '(|NonNegativeInteger|)
                                             #1#))
@@ -399,9 +395,9 @@
                                         |LSAGG-;delete!;AUsA;11|)
                                        (SPADCALL |t|
                                         (SPADCALL |t|
-                                         (PROG1
-                                          (LETT #2# (+ (- |h| |l|) 2)
-                                           |LSAGG-;delete!;AUsA;11|)
+                                         (LET
+                                          ((#2=#:G1490
+                                            (+ (- |h| |l|) 2)))
                                            (|check-subtype| (>= #2# 0)
                                             '(|NonNegativeInteger|)
                                             #2#))
@@ -453,7 +449,7 @@
                    ('T |k|))))))) 
 
 (DEFUN |LSAGG-;mergeSort| (|f| |p| |n| $)
-  (PROG (#0=#:G1506 |l| |q|)
+  (PROG (|l| |q|)
     (RETURN
       (SEQ (COND
              ((EQL |n| 2)
@@ -468,8 +464,7 @@
                    ((< |n| 3) |p|)
                    ('T
                     (SEQ (LETT |l|
-                               (PROG1 (LETT #0# (QUOTIENT2 |n| 2)
-                                       |LSAGG-;mergeSort|)
+                               (LET ((#0=#:G1509 (QUOTIENT2 |n| 2)))
                                  (|check-subtype| (>= #0# 0)
                                      '(|NonNegativeInteger|) #0#))
                                |LSAGG-;mergeSort|)
@@ -667,7 +662,7 @@
            (EXIT (SPADCALL |y| (|getShellEntry| $ 57))))))) 
 
 (DEFUN |LSAGG-;copyInto!;2AIA;22| (|y| |x| |s| $)
-  (PROG (|m| #0=#:G1544 |z|)
+  (PROG (|m| |z|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |y| (|getShellEntry| $ 33))
                  |LSAGG-;copyInto!;2AIA;22|)
@@ -676,9 +671,7 @@
                    ('T
                     (SEQ (LETT |z|
                                (SPADCALL |y|
-                                   (PROG1
-                                    (LETT #0# (- |s| |m|)
-                                     |LSAGG-;copyInto!;2AIA;22|)
+                                   (LET ((#0=#:G1550 (- |s| |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -711,7 +704,7 @@
                          (EXIT |y|))))))))) 
 
 (DEFUN |LSAGG-;position;SA2I;23| (|w| |x| |s| $)
-  (PROG (|m| #0=#:G1551 |k|)
+  (PROG (|m| |k|)
     (RETURN
       (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
                  |LSAGG-;position;SA2I;23|)
@@ -720,9 +713,7 @@
                    ('T
                     (SEQ (LETT |x|
                                (SPADCALL |x|
-                                   (PROG1
-                                    (LETT #0# (- |s| |m|)
-                                     |LSAGG-;position;SA2I;23|)
+                                   (LET ((#0=#:G1556 (- |s| |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))

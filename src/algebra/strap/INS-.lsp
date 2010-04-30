@@ -120,19 +120,15 @@
 (DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
-  (PROG (#0=#:G1424 #1=#:G1425)
-    (RETURN
-      (COND
-        ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 27))
-         (|error| "euclideanSize called on zero"))
-        ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 28))
-         (PROG1 (LETT #0# (- (SPADCALL |x| (|getShellEntry| $ 30)))
-                      |INS-;euclideanSize;SNni;9|)
-           (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))
-        ('T
-         (PROG1 (LETT #1# (SPADCALL |x| (|getShellEntry| $ 30))
-                      |INS-;euclideanSize;SNni;9|)
-           (|check-subtype| (>= #1# 0) '(|NonNegativeInteger|) #1#))))))) 
+  (COND
+    ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 27))
+     (|error| "euclideanSize called on zero"))
+    ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 28))
+     (LET ((#0=#:G1425 (- (SPADCALL |x| (|getShellEntry| $ 30)))))
+       (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))
+    ('T
+     (LET ((#1=#:G1426 (SPADCALL |x| (|getShellEntry| $ 30))))
+       (|check-subtype| (>= #1# 0) '(|NonNegativeInteger|) #1#))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))

@@ -21,7 +21,7 @@
                 |LNAGG-;maxIndex;AI;6|)) 
 
 (DEFUN |LNAGG-;indices;AL;1| (|a| $)
-  (PROG (#0=#:G1409 |i| #1=#:G1410)
+  (PROG (#0=#:G1410 |i| #1=#:G1411)
     (RETURN
       (SEQ (PROGN
              (LETT #0# NIL |LNAGG-;indices;AL;1|)

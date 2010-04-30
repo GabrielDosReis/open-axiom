@@ -509,10 +509,15 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
             (STRINGIMAGE (|devaluate| mode))))
  
 (defmacro |check-subtype| (pred submode val)
-   `(|assert| ,pred (coerce-failure-msg ,val ,submode)))
- 
+  `(progn 
+     (|assert| ,pred (coerce-failure-msg ,val ,submode))
+     ,val))
+
 (defmacro |check-union| (pred branch val)
-   `(|assert| ,pred (coerce-failure-msg ,val ,branch )))
+  `(progn
+     (|assert| ,pred (coerce-failure-msg ,val ,branch))
+     ,val))
+  
  
 (defun MAKE-REASONABLE (Z)
    (if (> (length Z) 30) (CONCAT "expression beginning " (subseq Z 0 20)) Z))

@@ -84,9 +84,8 @@
               (SPADCALL
                   (LETT |x|
                         (SPADCALL |x|
-                            (PROG1 |i|
-                              (|check-subtype| (>= |i| 0)
-                                  '(|NonNegativeInteger|) |i|))
+                            (|check-subtype| (>= |i| 0)
+                                '(|NonNegativeInteger|) |i|)
                             (|getShellEntry| $ 25))
                         |STAGG-;elt;AIS;5|)
                   (|getShellEntry| $ 18)))
@@ -94,7 +93,7 @@
        (EXIT (SPADCALL |x| (|getShellEntry| $ 19))))) 
 
 (DEFUN |STAGG-;elt;AUsA;6| (|x| |i| $)
-  (PROG (|l| |h| #0=#:G1416)
+  (PROG (|l| |h|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 28))
@@ -105,9 +104,8 @@
                    ((NOT (SPADCALL |i| (|getShellEntry| $ 29)))
                     (SPADCALL
                         (SPADCALL |x|
-                            (PROG1 |l|
-                              (|check-subtype| (>= |l| 0)
-                                  '(|NonNegativeInteger|) |l|))
+                            (|check-subtype| (>= |l| 0)
+                                '(|NonNegativeInteger|) |l|)
                             (|getShellEntry| $ 25))
                         (|getShellEntry| $ 30)))
                    ('T
@@ -121,13 +119,11 @@
                                  ('T
                                   (SPADCALL
                                       (SPADCALL |x|
-                                       (PROG1 |l|
-                                         (|check-subtype| (>= |l| 0)
-                                          '(|NonNegativeInteger|) |l|))
+                                       (|check-subtype| (>= |l| 0)
+                                        '(|NonNegativeInteger|) |l|)
                                        (|getShellEntry| $ 25))
-                                      (PROG1
-                                       (LETT #0# (+ (- |h| |l|) 1)
-                                        |STAGG-;elt;AUsA;6|)
+                                      (LET
+                                       ((#0=#:G1419 (+ (- |h| |l|) 1)))
                                         (|check-subtype| (>= #0# 0)
                                          '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 35))))))))))))) 
@@ -185,9 +181,8 @@
               (SPADCALL
                   (LETT |x|
                         (SPADCALL |x|
-                            (PROG1 |i|
-                              (|check-subtype| (>= |i| 0)
-                                  '(|NonNegativeInteger|) |i|))
+                            (|check-subtype| (>= |i| 0)
+                                '(|NonNegativeInteger|) |i|)
                             (|getShellEntry| $ 25))
                         |STAGG-;setelt;AI2S;11|)
                   (|getShellEntry| $ 18)))
@@ -195,7 +190,7 @@
        (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 46))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
-  (PROG (|l| |h| #0=#:G1436 |z| |y|)
+  (PROG (|l| |h| |z| |y|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 28))
@@ -219,17 +214,15 @@
                                  ('T
                                   (SEQ (LETT |y|
                                         (SPADCALL |x|
-                                         (PROG1 |l|
-                                           (|check-subtype| (>= |l| 0)
-                                            '(|NonNegativeInteger|)
-                                            |l|))
+                                         (|check-subtype| (>= |l| 0)
+                                          '(|NonNegativeInteger|) |l|)
                                          (|getShellEntry| $ 25))
                                         |STAGG-;setelt;AUs2S;12|)
                                        (LETT |z|
                                         (SPADCALL |y|
-                                         (PROG1
-                                          (LETT #0# (+ (- |h| |l|) 1)
-                                           |STAGG-;setelt;AUs2S;12|)
+                                         (LET
+                                          ((#0=#:G1442
+                                            (+ (- |h| |l|) 1)))
                                            (|check-subtype| (>= #0# 0)
                                             '(|NonNegativeInteger|)
                                             #0#))

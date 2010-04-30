@@ -1762,18 +1762,7 @@ coerceSuperset(T,sub) ==
     rplac(second T',"$")
     T'
   pred := isSubset(sub,T.mode,T.env) =>
-    -- Don't bother introducing a temporary if we have an
-    -- atomic expression.
-    simple? := atom T.expr and not MEMQ(T.expr,$functorLocalParameters)
-    g := 
-      simple? => T.expr
-      GENSYM()
-    result := 
-      simple? => g
-      ["%LET",g,T.expr]
-    pred := substitute(g,"#1",pred)
-    code := ["PROG1",result, ["check-subtype",pred,MKQ sub,g]]
-    [code,sub,T.env]
+    [["%Retract",T.expr,sub,pred],sub,T.env]
   nil
 
 compCoerce1(x,m',e) ==
