@@ -12,6 +12,12 @@ LoopAnalysis(): Public == Private where
   macro VTB == Table(Syntax, Syntax)
   macro IFL == Record(lets: List LetAst, globalvars: List Syntax,_
                       conditions: List Syntax)
+
+  macro REJ   == Record(loopcandidate: RepeatAst, reasons: Set Integer)
+  macro RREC  == Record(ctorname: Identifier, funname: Identifier,_
+                        accumulations: List REJ)
+  macro LREJ  == List RREC
+
   Public == with
     extractAccumulationLoop: (DefinitionAst, Identifier, VTB) ->_
                               Pair(LTB, List List Syntax)
@@ -25,6 +31,12 @@ LoopAnalysis(): Public == Private where
       ++ this function collects all the loop nests, i.e., loop depth >= 2
     getLoopDepth: RepeatAst -> Integer
       ++ computes the depth of a loop nest
+    getAccumulationNumberDistribution: () -> List Float
+      ++ returns the distribution of the number of accumulations
+      ++ in all the extracted accumulation loops
+    rejectLog: Void
+      ++ returns the log for rejected loop syntax
+      ++ alone with rejection reasons
   Private == add
     import SyntaxHelper
     import Syntax
@@ -52,8 +64,15 @@ LoopAnalysis(): Public == Private where
       ++ affine expressions of loop counters
 
     --Global variables
-    -- list for storing all the accumulation loops
+    -- table for storing all the accumulation loops
     accumulationLoopTable: LTB := empty()
+
+    -- list for storing all the rejected accumulation loop candidates
+    -- and the reasons
+    rejectedLoop: LREJ := empty()
+
+    -- list for storing the number of accumulations in each accumulatino loop
+    accumulationNumber: List Float := empty()
 
     -- list for storing all the extracted ACL nests
     aclTable: LTB := empty()
@@ -63,6 +82,9 @@ LoopAnalysis(): Public == Private where
 
     -- name of the current function being analyzed
     functionName : Identifier := gensym()
+
+    -- name of the current type definition
+    constructorName: Identifier := gensym()
 
     -- Type environment for global variables such as constructor parameter, 
     -- as well as global variables declared inside the capsule
@@ -96,6 +118,135 @@ LoopAnalysis(): Public == Private where
     -- list for storing all the reduction variables used in accumulations 
     -- those accumulations appear in the else branch of some if-statement
     reductionVariableListInElseBranch: List Syntax := []
+
+    -- flag indicating whether the current atomic loop contains conditional accumulation
+    examineIf? : Boolean := false
+
+    -- flag indicating whether we are verifying the then-branch of a conditional acc
+    -- false means we are verifying else branch
+    examineThen? : Boolean := true
+
+    -- global counter for rejected accumulation loop candidates
+    rejectionCounter: Integer := 0      
+
+    -- global set storing rejection codes for the current loop
+    rejectionCodes: Set Integer := {}
+
+    -- updates rejection code set of the current loop candidate
+    -- with another new rejection reason code
+    updateRejectionCodes(r: Integer): Void ==
+      r' := r
+      if (r' = 5 or r' = 8 or r' = 11 or r' = 14 or r' = 17 or r' = 20) and_
+         examineIf? then
+        if examineThen? then
+          r' := r' + 1
+        else
+          r' := r' + 2
+      rejectionCodes := union(rejectionCodes, r')
+
+    -- returns the rejecting reason in String 
+    reasonInString(reasonCode: Integer): String ==
+      reasonCode = 1 => "Statements in loop body violate canonical form"
+      reasonCode = 2 => "Statements of then-branch in loop body violate canonical form"
+      reasonCode = 3 => "Statements of else-branch in loop body violate canonical form"
+      reasonCode = 4 => "Accumulation variable involved in the predicate of a conditional accumulation"
+      reasonCode = 5 => "Not each assignment is an independent accumulation"
+      reasonCode = 6 => "Not each assignment in then-branch is an independent accumulation"
+      reasonCode = 7 => "Not each assignment in else-branch is an independent accumulation"
+      reasonCode = 8 => "Effectful function is used in some statement"
+      reasonCode = 9 => "Effectful function is used in some statement of then-branch"
+      reasonCode = 10 => "Effectful function is used in some statement of else-branch"
+      reasonCode = 11 => "Operator used in some statement is not binary operator"
+      reasonCode = 12 => "Operator used in some statement of then-branch is not binary operator"
+      reasonCode = 13 => "Operator used in some statement of else-branch is not binary operator"
+      reasonCode = 14 => "Left hand side of the assignment involves variables used in loop iterator"
+      reasonCode = 15 => "Left hand side of the assignment of then-branch involves variables used in loop iterator"
+      reasonCode = 16 => "Left hand side of the assignment of else-branch involves variables used in loop iterator"
+      reasonCode = 17 => "Accumulation variable of current statement is used by other statement"
+      reasonCode = 18 => "Accumulation variable of current statement of then-branch is used by other statement"
+      reasonCode = 19 => "Accumulation variable of current statement of else-branch is used by other statement"
+      reasonCode = 20 => "More than one different operators are applied to an accumulation variable"
+      reasonCode = 21 => 
+        "More than one different operators of current statement in then-branch are applied to an accumulation variable"
+      reasonCode = 22 => 
+        "More than one different operators of current statement in else-branch are applied to an accumulation variable"
+      userError "unexpected reason code"
+
+    -- converts a set of reasonCodes to reasons in String
+    reasonsToString(rs: Set Integer): String ==
+      result : String := ""
+      rs' := members rs
+      for i in 1..#rs' repeat
+        eachReason := reasonInString(rs'.i)
+        result := concat([result, "   [", convert(i)@String, "] ", eachReason])
+        i < #rs' =>  result := concat([result, "\n\r"])
+      result 
+
+    -- convert an accumulation loop record to string for pretty printing
+    accumulationToString(al: List REJ): String ==
+      result : String := ""
+      rejectionCounter := rejectionCounter + #al
+      for i in 1..#al repeat
+        loopStr   := toString(((al.i).loopcandidate)::Syntax)$SyntaxHelper
+        reasonStr := reasonsToString((al.i).reasons)
+        if i < #al then
+          result := concat([result, "  Loop Body==>\n\r\n\r", "    ",_
+                     loopStr, ",", "\n\r\n\r", "  Reject reason(s)==>",_
+                             "\n\r\n\r", reasonStr, ",", "\n\r\n\r"])
+        else
+          result := concat([result, "  Loop Body==>\n\r\n\r", "    ",_
+                     loopStr, ",", "\n\r\n\r", "  Reject reason(s)==>",_
+        "\n\r\n\r", reasonStr, "\n\r\n\r", "------------------------", "\n\r"])
+      result
+
+    -- convert ZREC format records to string for pretty printing
+    toString(rl: LREJ): String ==
+      result : String := ""
+      for r in rl repeat
+        c := string((r.ctorname)::Symbol)
+        f := string((r.funname)::Symbol)
+        a := accumulationToString(r.accumulations)
+        --k : String := getConstructorKindInString(r.ctorname)
+        result := concat(result, concat([c, "\n\r",_ 
+                                         "Function: ", f,"\n\r\n\r",_
+                                              a, "\n\r"]))
+      result := concat(["\begin{program}\n\r", result, "\end{program}\n\r"])
+      result
+
+    -- write the LREJ format records iinto file
+    writeLREJToFile(rl: LREJ, f: String): Boolean ==
+      ofname : FileName := filename(".", f, "tex")
+      ofile := open(ofname, "output")$File(String)
+      write!(ofile, toString rl)
+      true
+
+    -- obtain and save all reduce forms
+    saveRejectLogToFile(): Void ==
+      writeLREJToFile(rejectedLoop, "reject-log")
+      print("Number of rejected loops:"::OutputForm)
+      print(rejectionCounter::OutputForm)
+      print("The rejection log has been saved to reject-log.txt"::OutputForm)
+
+    -- returns the rejected log
+    rejectLog == saveRejectLogToFile()
+
+    -- updates the rejected candidate list
+    updateRejectedLoopList(lp: RepeatAst): Void ==
+      l : LREJ := [e for e in rejectedLoop | e.ctorname = constructorName and_
+                                      e.funname = functionName]
+      rej : List REJ := [[lp, copy rejectionCodes]]
+      empty? l => 
+        r : RREC := [constructorName, functionName, rej]
+        rejectedLoop := concat(rejectedLoop, r)
+      #l = 1 =>
+        r : RREC := rejectedLoop.last 
+        r.accumulations := concat(r.accumulations, rej)
+        rejectedLoop.last := r
+      userError "unexpected searching results from rejected loop list"
+
+    -- returns the distribution of the number of accumulations
+    -- in all the extracted accumulation loops
+    getAccumulationNumberDistribution() == accumulationNumber
 
     -- checks whether a sequence only contains let statements
     -- if so, also returns the list of let assignments
@@ -180,8 +331,8 @@ LoopAnalysis(): Public == Private where
     -- does forward substitutions for local variables.
     localVariableSubstitutions!(i: Integer, b: List LetAst,_
                                 s: LetAst, var: Syntax): List LetAst ==
-      for n in i..#b repeat
-        b.n := replaceLetRhs(var, b.n, (rhs s)::Syntax)$SyntaxHelper      
+      for n in i..1 repeat
+        b.n := replaceLetRhs(var, b.n, (rhs s)::Syntax)
       b
 
     -- removes uses of local intermediate value assignment after forward 
@@ -198,8 +349,8 @@ LoopAnalysis(): Public == Private where
       for s in reverse b repeat
         next := #b-current+2
         if isLocalVariable?(var := getLhs(s)$SyntaxHelper, lv) and_
-           (next <= #b) then
-          b := localVariableSubstitutions!(next, b, s, var)
+           (next-2>0) then --(next <= #b) then
+          b := localVariableSubstitutions!(next-2, b, s, var)
           -- mark the intermediate assignment which is ready to be removed
           toRemove := union(next-1, toRemove)
         current := current + 1
@@ -308,17 +459,23 @@ LoopAnalysis(): Public == Private where
            (container := getOperator(v)) case Identifier and_
            key?((c := container::Identifier::Syntax), gv) then
           x := c
-        within?(x, i::Syntax)$SyntaxHelper => return true
+        within?(x, i::Syntax)$SyntaxHelper => 
+          updateRejectionCodes(17)
+          return true
       false
 
     -- checks whether the loop iterator 
     withinIterators?(vars: List Syntax, its: List SpadAst, gv: VTB): Boolean ==
       for i in its repeat
-        advanceListWithin?(vars, i, gv) => return true
+        advanceListWithin?(vars, i, gv) => 
+          updateRejectionCodes(14)
+          return true
       false
 
-    -- returns the number and syntax of reduction variables used 
+    -- returns the time of an accumulation variable used 
     -- on the right hand side of a let assignment
+    -- alone with the list of operators which are continuously 
+    -- applied to the accumulation variable
     searchForAccumulationVariable(v: Syntax,_
                                   exp: Syntax): Pair(Integer, List Syntax) ==
       result : List Syntax := []
@@ -345,13 +502,23 @@ LoopAnalysis(): Public == Private where
     -- accumulation variable. e.g. f(f(f(f(a, b)......)))   
     verifyCountAndOperator(v: Syntax, exp: Syntax): Boolean ==
       r := searchForAccumulationVariable(v, exp)
-      (first r = 1) and sameOperators?(second r)
+      (first r = 1) and sameOperators?(second r) => true
+      updateRejectionCodes(20)
+      false
 
     -- checks whether the operator used in the right hand side of 
     -- of a let statement contains side-effect function.
     containExclamation?(r: Syntax): Boolean ==
-      member?(char("!"::String)$Character, entries(toString(r)$SyntaxHelper)) 
-      
+      member?(char("!"::String)$Character, entries(toString(r)$SyntaxHelper)) =>
+        updateRejectionCodes(8)
+        true
+      false      
+
+    isBinaryExpression?(e: Syntax): Boolean ==                                                                                
+      compound?(e) and #getOperands(e) = 2 => true
+      updateRejectionCodes(11)
+      false    
+
     -- verify our new canonical form, pay attention to testing option
     verifyImprovedCanonicalForm(v: Syntax, r: Syntax, its: List SpadAst,_
                    vars: List Syntax, localcount: Integer, gv: VTB): Integer ==
@@ -365,16 +532,33 @@ LoopAnalysis(): Public == Private where
         localcount := localcount + 1
       localcount
 
-    -- verify whether a let assignment is doing accumulation
+    -- verifies whether a let assignment is doing accumulation
     countEachReduction(s: LetAst, its: List SpadAst, vars: List Syntax,_
                                       localcount: Integer, gv: VTB): Integer ==
       l := getLhs(s)$SyntaxHelper
       r := rhs(s)::Syntax
       localcount := verifyImprovedCanonicalForm(l, r, its, vars, localcount, gv)
 
-    -- examine the statement sequence after forward substitutions 
-    -- are independent accumulations
+    -- checks the statement sequence after forward substitutions 
+    -- to make sure they are independent accumulations
     isReduction?(b: List LetAst, its: List SpadAst, gv: VTB): Boolean ==
+      localcount : Integer := 0
+      varsInLhs : List Syntax := [getLhs(s)$SyntaxHelper for s in b]
+      for s in b repeat
+        localcount := countEachReduction(s, its, varsInLhs, localcount, gv)
+      localcount = #b =>
+        accumulationNumber := concat(accumulationNumber, localcount::Float)
+        -- pay attention to the order of updating
+        if empty? reductionVariableListInThenBranch then
+          reductionVariableListInThenBranch := copy varsInLhs
+        else
+          reductionVariableListInElseBranch := copy varsInLhs
+        true
+      false
+
+    -- checks the statement sequence after forward substitutions 
+    -- to make sure they are independent accumulations
+    isReduction2?(b: List LetAst, its: List SpadAst, gv: VTB): Boolean ==
       localcount : Integer := 0
       varsInLhs : List Syntax := [getLhs(s)$SyntaxHelper for s in b]
       for s in b repeat
@@ -397,13 +581,30 @@ LoopAnalysis(): Public == Private where
       b := eliminateGlobalVariable!(b)
       isReduction?(b, its, gv)
 
+    -- stores average of the accumulations in an accumulation loop
+    averageAccNumber : Float := 0
+
+    -- verify whether a sequence of statements only implements independent
+    -- accumulations
+    verifyReduction2(its: List SpadAst, b: List LetAst,_
+                                                 gv: VTB, lv: VTB): Boolean ==
+      empty?(b) => true
+      b := eliminateLocalVariable!(b, lv)
+      b := eliminateGlobalVariable!(b)
+      isReduction2?(b, its, gv) =>
+        averageAccNumber := averageAccNumber + (#b)::Float
+        true
+      false
+
     -- collect the local variables from each assignment in the body of a loop
     collectLocalVariableofLoop(bl: List LetAst, gv: VTB): VTB ==
       lv : VTB := empty()
       for b in bl repeat
         k := getLhs(b)$SyntaxHelper
-        if not key?(k, gv) then
-          lv.k := r::Syntax
+        r := rhs(b)::Syntax
+        --if not key?(k, gv) then
+        not compound? k and not key?(k, gv) =>
+          lv.k := r
       lv
 
     -- collect the global variables from the loop induction variables
@@ -431,15 +632,24 @@ LoopAnalysis(): Public == Private where
       gv
 
     -- checks whether the variables being assigned by a list of let statements
-    -- appeared in the predicate expression of some loop
+    -- appeared in the predicate a conditional accumulation
     withInCondition?(thenList: List LetAst,_
                      elseList: List LetAst, b: SpadAst): Boolean ==
       vars := [getLhs(s)$SyntaxHelper for s in concat(thenList, elseList)]
       not compound?(b::Syntax) => false
-      b case IfAst => listWithin?(vars, condition(b::Syntax::IfAst)::Syntax)
+      b case IfAst => 
+      --  containExclamation?(condition(b::Syntax::IfAst)::Syntax) => 
+      --    print(b::Syntax::OutputForm)
+      --    userError "contain exclamation!"
+        listWithin?(vars, condition(b::Syntax::IfAst)::Syntax)
       b case SequenceAst => 
         s := expression((second(body(_
                      b::Syntax::SequenceAst)))::Syntax::ExitAst)::Syntax::IfAst
+
+        --x := rhs((first(body(b::Syntax::SequenceAst)))::Syntax::LetAst)::Syntax
+        --containExclamation?(condition(s)::Syntax) or containExclamation?(x)  => 
+        --  print(b::Syntax::OutputForm)
+        --  userError "contain exclamation!"
         listWithin?(vars, condition(s)::Syntax)
       userError "unexpected body of the verified repeat-if syntax"
 
@@ -447,11 +657,15 @@ LoopAnalysis(): Public == Private where
     -- independent accumulations
     verifyAtomicLoopBody(r: RepeatAst, p: Pair(Boolean, List LetAst),_
                                             its: List SpadAst, gv: VTB): ACC ==
+      -- clean up the rejection codes for the current loop
+      rejectionCodes := {}
+      examineIf? := false
       localVariables : VTB := collectLocalVariableofLoop(second p, gv)
       verifyReduction(its, second p, gv, localVariables) =>
         reductionVariableList := concat(reductionVariableList,_
                                         [reductionVariableListInThenBranch])
         [r]
+      updateRejectedLoopList(r)
       []
 
     -- verify whether the statements from each branch either
@@ -467,14 +681,49 @@ LoopAnalysis(): Public == Private where
       elseList := second second q
       lvThen  : VTB := collectLocalVariableofLoop(thenList, gv')
       lvElse  : VTB := collectLocalVariableofLoop(elseList, gv')
-      verifyReduction(its, thenList, gv', lvThen) and_
-      verifyReduction(its, elseList, gv', lvElse) and_
-      not withInCondition?(thenList, elseList, body r) =>
-        reductionVariableList := concat(reductionVariableList,_
-          [concat(reductionVariableListInThenBranch,_
-           reductionVariableListInElseBranch)])
-        [r]
+      averageAccNumber := 0
+      -- clean up the rejection codes for the current loop                                                 
+      rejectionCodes := {}   
+      examineIf? := true
+      examineThen? := true
+      verifyReduction2(its, thenList, gv', lvThen) =>
+        examineThen? := false
+        verifyReduction2(its, elseList, gv', lvElse) =>
+          not withInCondition?(thenList, elseList, body r) =>
+            averageAccNumber := ceiling(averageAccNumber/2)
+            accumulationNumber := concat(accumulationNumber, averageAccNumber)
+            reductionVariableList := concat(reductionVariableList,_
+              [concat(reductionVariableListInThenBranch,_
+               reductionVariableListInElseBranch)])
+            [r]
+          updateRejectionCodes(4)
+          updateRejectedLoopList(r)
+          [] 
+        updateRejectedLoopList(r)
+        []        
+      updateRejectedLoopList(r)
       []
+
+--      verifyReduction2(its, thenList, gv', lvThen) and_
+--      verifyReduction2(its, elseList, gv', lvElse) and_
+--      not withInCondition?(thenList, elseList, body r) =>
+--        averageAccNumber := ceiling(averageAccNumber/2)
+--        accumulationNumber := concat(accumulationNumber, averageAccNumber)
+--        reductionVariableList := concat(reductionVariableList,_
+--          [concat(reductionVariableListInThenBranch,_
+--           reductionVariableListInElseBranch)])
+--        [r]
+--      []
+
+
+    -- checks whether the iterator of a repeat ast contains 
+    -- multiple for-iterator
+    multiFor?(its: List SpadAst): Boolean ==
+      i : Integer := 0
+      for it in its repeat
+        if it case InAst or stepAst? it then
+          i := i + 1
+      i > 1
 
     -- collect accumulation loop from repeat ast
     -- i.e. to verify whether a repeatAst has the canonical form
@@ -486,7 +735,7 @@ LoopAnalysis(): Public == Private where
         gv := collectLoopInductionVariable(its, gv)
         -- if this is a while loop, the loop is not qualified, 
         -- and we further search its body
-        it case WhileAst => 
+        it case WhileAst or untilAst? it  or multiFor? its => 
           identifyAccumulationLoopFromStatement(body r, copy gv)
         -- if this is a for loop, and only contains let statement
         reductionVariableListInThenBranch := []
@@ -984,7 +1233,8 @@ LoopAnalysis(): Public == Private where
       result : ACC := []
       bs := body(s::Syntax::SequenceAst)
       for b in bs repeat
-        result := concat(result, identifyAffineControlLoopFromStatement(b, copy gv))
+        result := concat(result,_
+                            identifyAffineControlLoopFromStatement(b, copy gv))
       result
 
     -- verify affine control loop nest condition
@@ -1097,6 +1347,7 @@ LoopAnalysis(): Public == Private where
     identifyAffineControlLoopFromDefinitionBody(d: DefinitionAst):_
                                                        Pair(Identifier, ACC) ==
       typeEnvironment : VTB := initializeLocalTypeEnvironment d
+      constructorName := ctor
       functionName : Identifier := name(head(d)::Syntax::HeadAst)
       -- start analysis
       pair(functionName, identifyAffineControlLoopFromStatement(body d, typeEnvironment))
@@ -1106,6 +1357,7 @@ LoopAnalysis(): Public == Private where
       -- extract accumulation loop
       analysisResult := identifyAccumulationLoopFromDefinitionBody_
                                                     (sa::Syntax::DefinitionAst)
+      constructorName := ctor
       functionName := first analysisResult
       accumulationLoops := second analysisResult
       updateTable2(ctor, functionName, accumulationLoops, accumulationLoopTable)   
@@ -1116,6 +1368,7 @@ LoopAnalysis(): Public == Private where
       analysisResult := identifyAffineControlLoopFromDefinitionBody_
                                                      (sa::Syntax::DefinitionAst)
       -- update the result table
+      constructorName := ctor
       functionName   := first analysisResult
       extractedLoops := second analysisResult
       option = 2 => updateTable2(ctor, functionName,_
