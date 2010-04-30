@@ -34,9 +34,9 @@ LoopAnalysis(): Public == Private where
     getAccumulationNumberDistribution: () -> List Float
       ++ returns the distribution of the number of accumulations
       ++ in all the extracted accumulation loops
-    rejectLog: Void
-      ++ returns the log for rejected loop syntax
-      ++ alone with rejection reasons
+    getRejectLog: () -> Void
+      ++ saves the log to disk containing rejected loop syntax
+      ++ alone with reject reasons
   Private == add
     import SyntaxHelper
     import Syntax
@@ -228,7 +228,7 @@ LoopAnalysis(): Public == Private where
       print("The rejection log has been saved to reject-log.txt"::OutputForm)
 
     -- returns the rejected log
-    rejectLog == saveRejectLogToFile()
+    getRejectLog == saveRejectLogToFile()
 
     -- updates the rejected candidate list
     updateRejectedLoopList(lp: RepeatAst): Void ==
