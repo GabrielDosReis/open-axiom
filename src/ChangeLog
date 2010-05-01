@@ -1,5 +1,15 @@
 2010-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (getSuccessEnvironment): Move to here from
+	compiler.boot.
+	(getInverseEnvironment): Likewise.
+	* interp/wi2.boot (getSuccessEnvironment): Remove.
+	(getInverseEnvironment): Likewise.
+	(corrupted?): Likewise.
+	(unLet): Likewise.
+
+2010-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/macros.lisp (|check-subtype|): Return coerced value if can.
 	(|check-union|): Likewise.
 	* interp/compiler.boot (coerceSuperset): Tidy.  Generate %Retract

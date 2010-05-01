@@ -44,6 +44,8 @@ module c_-util where
   declareUnusedParameters: (%List,%Code) -> %List
   registerFunctionReplacement: (%Symbol,%Form) -> %Thing
   getFunctionReplacement: %Symbol -> %Form
+  getSuccessEnvironment: (%Form,%Env) -> %Env
+  getInverseEnvironment: (%Form,%Env) -> %Env
 
 
 --% 
@@ -384,7 +386,47 @@ makeCommonEnvironment(e,e') ==
           nx>ny => fn(rest x,y,nx-1,ny)
           nx<ny => fn(x,rest y,nx,ny-1)
           [x,y]
- 
+
+++ Return the lexically leftmost location in an assignment for.
+lhsOfAssignment x ==
+  x is ["%LET",lhs,:.] => lhsOfAssignment lhs
+  x
+
+getSuccessEnvironment(a,e) ==
+  a is ["is",id,m] =>
+    id := lhsOfAssignment id
+    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
+      e:=put(id,"specialCase",m,e)
+      currentProplist:= getProplist(id,e)
+      [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
+      newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
+      addBinding(id,newProplist,e)
+    e
+  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+    put(x,"condition",[a,:get(x,"condition",e)],e)
+  a is ["and",:args] =>
+    for form in args repeat
+      e := getSuccessEnvironment(form,e)
+    e
+  a is ["not",a'] => getInverseEnvironment(a',e)
+  e
+
+getInverseEnvironment(a,e) ==
+  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+    --the next two lines are necessary to get 3-branched Unions to work
+    -- old-style unions, that is
+    (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
+      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),e)
+    getUnionMode(x,e) is ["Union",:l] =>
+      l':= delete(m,l)
+      for u in l' repeat
+	 if u is ['_:,=m,:.] then l':= delete(u,l')
+      newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
+      put(x,"condition",[newpred,:get(x,"condition",e)],e)
+    e
+  a is ["not",a'] => getSuccessEnvironment(a',e)
+  e
+
 printEnv E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
