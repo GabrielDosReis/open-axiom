@@ -136,7 +136,7 @@ LoopAnalysis(): Public == Private where
     -- with another new rejection reason code
     updateRejectionCodes(r: Integer): Void ==
       r' := r
-      if (r' = 5 or r' = 8 or r' = 11 or r' = 14 or r' = 17 or r' = 20) and_
+      if (r' = 5 or r' = 8 or r' = 11 or r' = 14 or r' = 17 or r' = 20 or r' = 23) and_
          examineIf? then
         if examineThen? then
           r' := r' + 1
@@ -170,6 +170,12 @@ LoopAnalysis(): Public == Private where
         "More than one different operators of current statement in then-branch are applied to an accumulation variable"
       reasonCode = 22 => 
         "More than one different operators of current statement in else-branch are applied to an accumulation variable"
+      reasonCode = 23 =>
+        "Variable on the lhs appears more than once on the rhs of an statement"
+      reasonCode = 24 =>
+        "Variable on the lhs appears more than once on the rhs of an statement in then-branch"
+      reasonCode = 25 =>
+        "Variable on the lhs appears more than once on the rhs of an statement in else-branch"
       userError "unexpected reason code"
 
     -- converts a set of reasonCodes to reasons in String
@@ -485,7 +491,8 @@ LoopAnalysis(): Public == Private where
         pair(counter, result)
       compound? exp =>
         expLst := (unlist exp)$SyntaxHelper
-        result := concat(result, expLst.1)
+        if not isDoubleColon?(expLst.1) then   -- skip type coercion ::
+          result := concat(result, expLst.1)
         for u in expLst repeat
           if first(r := searchForAccumulationVariable(v, u)) > 0 then
             counter := counter + (first r)
@@ -502,8 +509,11 @@ LoopAnalysis(): Public == Private where
     -- accumulation variable. e.g. f(f(f(f(a, b)......)))   
     verifyCountAndOperator(v: Syntax, exp: Syntax): Boolean ==
       r := searchForAccumulationVariable(v, exp)
-      (first r = 1) and sameOperators?(second r) => true
-      updateRejectionCodes(20)
+      (first r = 1) =>
+        sameOperators?(second r) => true
+        updateRejectionCodes(20)
+        false
+      updateRejectionCodes(23)
       false
 
     -- checks whether the operator used in the right hand side of 

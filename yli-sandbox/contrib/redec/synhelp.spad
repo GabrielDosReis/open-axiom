@@ -37,7 +37,7 @@ SyntaxHelper(): Public == Private where
       ++ checks whether an if statement has else branch
     mappingAstToSignature: MappingAst -> Signature
       ++ converts a mapping ast to signature
-    isBinaryExpression?: Syntax -> Boolean
+    -- isBinaryExpression?: Syntax -> Boolean
       ++ checks whether an expression whose operator is binary
     isJoin?: Syntax -> Boolean
       ++ checks whether a syntax is the one of identifier Join
@@ -87,6 +87,8 @@ SyntaxHelper(): Public == Private where
        ++ checks whether a syntax is the one of type Integer
     isDoubleFloatType?: Syntax -> Boolean
        ++ checks whether a syntax is the one of type DoubleFloat
+    isDoubleColon?: Syntax -> Boolean
+       ++ checks whether a syntax is the type coercion operator ::
     stepAst?: SpadAst -> Boolean
        ++ checks whether a Spad ast is an step ast
     untilAst?: SpadAst -> Boolean
@@ -99,6 +101,8 @@ SyntaxHelper(): Public == Private where
     makeLocalNumberSlot: Integer -> Syntax
       ++ make a compound syntax for a local number slot, e.g., 
       ++ (local #1)
+    makeDoubleColon: () -> Syntax
+      ++ creates an uncompound syntax for coerce function ::
     makeDoubleDollar: () -> Syntax
       ++ creates an uncompound syntax for identifier $$
     makeSetCategory: () -> Syntax
@@ -208,7 +212,9 @@ SyntaxHelper(): Public == Private where
     isOne?: Identifier -> Boolean 
       ++ checks whether the name of a function is One
     isErrorFunction?: Identifier -> Boolean   
-      ++ checks whether the name of a function is Error                             
+      ++ checks whether the name of a function is Error
+    containExclamation?: Syntax -> Boolean
+      ++ checks whether a syntax contains exclamation                             
   Private == add
     import Syntax
 
@@ -333,6 +339,8 @@ SyntaxHelper(): Public == Private where
       opr::Identifier = makeLISTOF()::Identifier => getOperands left
       [left]
 
+    makeDoubleColon: Syntax         == ('_:_:)::Identifier::Syntax
+  
     makeUnknown: Syntax             == '_?::Identifier::Syntax
 
     makeJoin: Syntax                == 'Join::Identifier::Syntax
@@ -468,6 +476,10 @@ SyntaxHelper(): Public == Private where
         false
       false
 
+    isDoubleColon?(t: Syntax): Boolean ==
+      not compound? t => t = makeDoubleColon()
+      false
+
     isRecord?(t: Syntax): Boolean ==
       compound? t and (x' := getOperator(t)) case Identifier =>
         (x'::Identifier::Syntax) = makeRecord()
@@ -573,3 +585,7 @@ SyntaxHelper(): Public == Private where
       compound? c and (opr := getOperator c) case Identifier => 
         getCtorKind(opr::Identifier) = category$ConstructorKind
       false
+
+    containExclamation?(r: Syntax): Boolean ==
+      member?(char("!"::String)$Character, entries(toString(r))) 
+
