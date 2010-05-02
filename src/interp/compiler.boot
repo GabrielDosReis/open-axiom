@@ -1234,13 +1234,11 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
       pp expr
     canReturn(a,level,exitCount,nil) or canReturn(b,level,exitCount,ValueFlag)
       or canReturn(c,level,exitCount,ValueFlag)
-  --now we have an ordinary form
-  atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
-  op is ["XLAM",args,bods] =>
-    and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   op = "LET" or op = "LET*" =>
     or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
        or canReturn(third expr,level,exitCount,ValueFlag)
+  --now we have an ordinary form
+  atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   systemErrorHere ['"canReturn",expr] --for the time being
 
 ++ We are compiling a conditional expression, type check and generate
