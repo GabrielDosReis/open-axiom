@@ -426,7 +426,8 @@ axiom_algebra_layer_1 = \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1   BOOLE    \
-  PROPERTY ARITY    OPERCAT  OPERCAT-
+  PROPERTY ARITY    OPERCAT  OPERCAT- PAIR               \
+  RADCAT   RADCAT-
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -476,7 +477,7 @@ axiom_algebra_layer_4 = \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
   PARSU2            PATRES2  PATTERN1 PDECAT            \
   REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
-  SUCH     TEX1     UDVO     YSTREAM  PAIR     ENV      \
+  SUCH     TEX1     UDVO     YSTREAM           ENV      \
   ATRIG    ATRIG-   GROUP    GROUP-   LALG     LALG- 
 
 
@@ -560,7 +561,7 @@ axiom_algebra_layer_9 = \
   FAGROUP  FAMONOID FLINEXP  FLINEXP- FRETRCT  FRETRCT- \
   FSERIES  FT       IDPAG    IDPOAMS  INFINITY LA       \
   OMLO     ORTHPOL  PRODUCT  PADICCT  PMPRED   PMASS    \
-  PTFUNC2  RADCAT   RADCAT-  RATRET   RADUTIL  UPXS2    \
+  PTFUNC2                    RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE   TABLE    INTABL            \
                     ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
   PDEPROB  COLOR    SIG      FMONCAT
