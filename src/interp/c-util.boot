@@ -603,6 +603,9 @@ isSubset(x,y,e) ==
   -- When using the old style definition, the current domain
   -- is considered a subset of its representation domain
   x = "$" and y = "Rep" => $useRepresentationHack
+  -- Expand domain representation form
+  x = "Rep" and not $useRepresentationHack =>
+    isSubset(getRepresentation e,y,e)
   -- Or, if x has the Subsets property set by SubsetCategory.
   pred := LASSOC(opOf x,get(opOf y,"Subsets",e)) => pred
   -- Or, they are related by subdomain chain.

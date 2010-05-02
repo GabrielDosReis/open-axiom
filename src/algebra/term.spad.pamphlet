@@ -53,7 +53,7 @@ Arity(): Public == Private where
       per(n::SingleInteger)
     retractIfCan x ==
       (n := rep x) < 0 => "failed"
-      n::Integer::NonNegativeInteger
+      n@Integer::NonNegativeInteger
    
 @
 

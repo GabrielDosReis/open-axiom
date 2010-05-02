@@ -1,3 +1,10 @@
+2010-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (isSubset): Expand domain representation form.
+	* algebra/term.spad.pamphlet (retractIfCan$Arity): Tidy.
+	* algebra/tree.spad.pamphlet (cyclicCopy2$Tree): Remove
+	unnecessary "return".
+
 2010-04-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (getSuccessEnvironment): Move to here from
