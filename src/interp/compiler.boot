@@ -838,12 +838,11 @@ setqSingle(id,val,m,E) ==
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
-  if k := NRTassocIndex(id) then 
-    form := ["setShellEntry","$",k,x]
-  else form:=
-         $QuickLet => ["%LET",id,x]
-         ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
+  form :=
+    k := NRTassocIndex(id) => ["setShellEntry","$",k,x]
+    $QuickLet => ["%LET",id,x]
+    ["%LET",id,x,
+       (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
   [form,m',e']
 
 assignError(val,m',form,m) ==
