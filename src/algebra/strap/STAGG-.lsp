@@ -255,37 +255,32 @@
                (EXIT |x|)))))) 
 
 (DEFUN |StreamAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|StreamAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|StreamAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 61) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|HasAttribute| |#1| '|shallowlyMutable|)
-           (PROGN
-             (|setShellEntry| $ 38
-                 (CONS (|dispatchFunction| |STAGG-;concat;3A;7|) $))
-             (|setShellEntry| $ 45
-                 (CONS (|dispatchFunction| |STAGG-;concat;LA;8|) $))
-             (|setShellEntry| $ 48
-                 (CONS (|dispatchFunction| |STAGG-;map!;M2A;9|) $))
-             (|setShellEntry| $ 49
-                 (CONS (|dispatchFunction| |STAGG-;fill!;ASA;10|) $))
-             (|setShellEntry| $ 50
-                 (CONS (|dispatchFunction| |STAGG-;setelt;AI2S;11|) $))
-             (|setShellEntry| $ 53
-                 (CONS (|dispatchFunction| |STAGG-;setelt;AUs2S;12|) $))
-             (|setShellEntry| $ 56
-                 (CONS (|dispatchFunction| |STAGG-;concat!;3A;13|) $)))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|StreamAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 61)) (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|HasAttribute| |#1| '|shallowlyMutable|)
+       (PROGN
+         (|setShellEntry| $ 38
+             (CONS (|dispatchFunction| |STAGG-;concat;3A;7|) $))
+         (|setShellEntry| $ 45
+             (CONS (|dispatchFunction| |STAGG-;concat;LA;8|) $))
+         (|setShellEntry| $ 48
+             (CONS (|dispatchFunction| |STAGG-;map!;M2A;9|) $))
+         (|setShellEntry| $ 49
+             (CONS (|dispatchFunction| |STAGG-;fill!;ASA;10|) $))
+         (|setShellEntry| $ 50
+             (CONS (|dispatchFunction| |STAGG-;setelt;AI2S;11|) $))
+         (|setShellEntry| $ 53
+             (CONS (|dispatchFunction| |STAGG-;setelt;AUs2S;12|) $))
+         (|setShellEntry| $ 56
+             (CONS (|dispatchFunction| |STAGG-;concat!;3A;13|) $)))))
+    $)) 
 
 (MAKEPROP '|StreamAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

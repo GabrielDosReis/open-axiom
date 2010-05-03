@@ -760,30 +760,26 @@
                (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|))))))))))) 
 
 (DEFUN |Symbol;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|Symbol|) . #0=(|Symbol|))
-        (LETT $ (|newShell| 165) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 10 (SPADCALL 0 (|getShellEntry| $ 9)))
-        (|setShellEntry| $ 13 (SPADCALL (|getShellEntry| $ 12)))
-        (|setShellEntry| $ 18
-            (SPADCALL (LIST "0" "1" "2" "3" "4" "5" "6" "7" "8" "9")
-                (|getShellEntry| $ 17)))
-        (|setShellEntry| $ 19 "0123456789")
-        (|setShellEntry| $ 20 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-        (|setShellEntry| $ 21 "abcdefghijklmnopqrstuvwxyz")
-        (|setShellEntry| $ 38 "*")
-        (|setShellEntry| $ 41 (QCSIZE (|getShellEntry| $ 38)))
-        (|setShellEntry| $ 45
-            (SPADCALL (SPADCALL "0" (|getShellEntry| $ 43))
-                (|getShellEntry| $ 44)))
-        $)))) 
+  (LET ((|dv$| (LIST '|Symbol|)) ($ (|newShell| 165))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 10 (SPADCALL 0 (|getShellEntry| $ 9)))
+    (|setShellEntry| $ 13 (SPADCALL (|getShellEntry| $ 12)))
+    (|setShellEntry| $ 18
+        (SPADCALL (LIST "0" "1" "2" "3" "4" "5" "6" "7" "8" "9")
+            (|getShellEntry| $ 17)))
+    (|setShellEntry| $ 19 "0123456789")
+    (|setShellEntry| $ 20 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    (|setShellEntry| $ 21 "abcdefghijklmnopqrstuvwxyz")
+    (|setShellEntry| $ 38 "*")
+    (|setShellEntry| $ 41 (QCSIZE (|getShellEntry| $ 38)))
+    (|setShellEntry| $ 45
+        (SPADCALL (SPADCALL "0" (|getShellEntry| $ 43))
+            (|getShellEntry| $ 44)))
+    $)) 
 
 (MAKEPROP '|Symbol| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|Integer|) (0 . |Zero|)

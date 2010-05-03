@@ -224,62 +224,53 @@
                (|getShellEntry| $ 42)))))) 
 
 (DEFUN |HomogeneousAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|HomogeneousAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$|
-              (LIST '|HomogeneousAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 44) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasAttribute| |#1| '|finiteAggregate|)
-                            (|HasAttribute| |#1| '|shallowlyMutable|)
-                            (|HasCategory| |#2|
-                                (LIST '|Evalable| (|devaluate| |#2|)))
-                            (|HasCategory| |#2| '(|SetCategory|))
-                            (|HasCategory| |#2|
-                                '(|CoercibleTo| (|OutputForm|))))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 13
-               (CONS (|dispatchFunction| |HOAGG-;eval;ALA;1|) $))))
-        (COND
-          ((|testBitVector| |pv$| 1)
-           (PROGN
-             (|setShellEntry| $ 18
-                 (CONS (|dispatchFunction| |HOAGG-;#;ANni;2|) $))
-             (|setShellEntry| $ 23
-                 (CONS (|dispatchFunction| |HOAGG-;any?;MAB;3|) $))
-             (|setShellEntry| $ 24
-                 (CONS (|dispatchFunction| |HOAGG-;every?;MAB;4|) $))
-             (|setShellEntry| $ 28
-                 (CONS (|dispatchFunction| |HOAGG-;count;MANni;5|) $))
-             (|setShellEntry| $ 29
-                 (CONS (|dispatchFunction| |HOAGG-;members;AL;6|) $))
-             (COND
-               ((|testBitVector| |pv$| 4)
-                (PROGN
-                  (|setShellEntry| $ 32
-                      (CONS (|dispatchFunction| |HOAGG-;count;SANni;7|)
-                            $))
-                  (|setShellEntry| $ 34
-                      (CONS (|dispatchFunction| |HOAGG-;member?;SAB;8|)
-                            $))
-                  (|setShellEntry| $ 37
-                      (CONS (|dispatchFunction| |HOAGG-;=;2AB;9|) $)))))
-             (COND
-               ((|testBitVector| |pv$| 5)
-                (|setShellEntry| $ 43
-                    (CONS (|dispatchFunction| |HOAGG-;coerce;AOf;10|)
-                          $)))))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|HomogeneousAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 44))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasAttribute| |#1| '|finiteAggregate|)
+                          (|HasAttribute| |#1| '|shallowlyMutable|)
+                          (|HasCategory| |#2|
+                              (LIST '|Evalable| (|devaluate| |#2|)))
+                          (|HasCategory| |#2| '(|SetCategory|))
+                          (|HasCategory| |#2|
+                              (LIST '|CoercibleTo| '(|OutputForm|)))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|testBitVector| |pv$| 3)
+       (|setShellEntry| $ 13
+           (CONS (|dispatchFunction| |HOAGG-;eval;ALA;1|) $))))
+    (COND
+      ((|testBitVector| |pv$| 1)
+       (PROGN
+         (|setShellEntry| $ 18
+             (CONS (|dispatchFunction| |HOAGG-;#;ANni;2|) $))
+         (|setShellEntry| $ 23
+             (CONS (|dispatchFunction| |HOAGG-;any?;MAB;3|) $))
+         (|setShellEntry| $ 24
+             (CONS (|dispatchFunction| |HOAGG-;every?;MAB;4|) $))
+         (|setShellEntry| $ 28
+             (CONS (|dispatchFunction| |HOAGG-;count;MANni;5|) $))
+         (|setShellEntry| $ 29
+             (CONS (|dispatchFunction| |HOAGG-;members;AL;6|) $))
+         (COND
+           ((|testBitVector| |pv$| 4)
+            (PROGN
+              (|setShellEntry| $ 32
+                  (CONS (|dispatchFunction| |HOAGG-;count;SANni;7|) $))
+              (|setShellEntry| $ 34
+                  (CONS (|dispatchFunction| |HOAGG-;member?;SAB;8|) $))
+              (|setShellEntry| $ 37
+                  (CONS (|dispatchFunction| |HOAGG-;=;2AB;9|) $)))))
+         (COND
+           ((|testBitVector| |pv$| 5)
+            (|setShellEntry| $ 43
+                (CONS (|dispatchFunction| |HOAGG-;coerce;AOf;10|) $)))))))
+    $)) 
 
 (MAKEPROP '|HomogeneousAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

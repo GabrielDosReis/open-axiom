@@ -204,17 +204,13 @@
                  ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))))) 
 
 (DEFUN |Character;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|Character|) . #0=(|Character|))
-        (LETT $ (|newShell| 58) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        $)))) 
+  (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    $)) 
 
 (MAKEPROP '|Character| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|Boolean|) |CHAR;=;2$B;1|

@@ -484,72 +484,65 @@
                  ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|IndexedList|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|IndexedList| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 85) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (OR (AND (|HasCategory| |#1|
-                                      '(|OrderedSet|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|))))
-                                (AND (|HasCategory| |#1|
-                                      '(|SetCategory|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|)))))
-                            (OR (AND (|HasCategory| |#1|
-                                      '(|SetCategory|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|))))
-                                (|HasCategory| |#1|
-                                    '(|CoercibleTo| (|OutputForm|))))
-                            (|HasCategory| |#1|
-                                '(|ConvertibleTo| (|InputForm|)))
-                            (OR (|HasCategory| |#1| '(|OrderedSet|))
-                                (|HasCategory| |#1| '(|SetCategory|)))
-                            (|HasCategory| |#1| '(|OrderedSet|))
-                            (|HasCategory| (|Integer|) '(|OrderedSet|))
-                            (|HasCategory| |#1| '(|SetCategory|))
-                            (|HasCategory| |#1|
-                                '(|CoercibleTo| (|OutputForm|)))
-                            (AND (|HasCategory| |#1| '(|SetCategory|))
-                                 (|HasCategory| |#1|
-                                     (LIST '|Evalable|
-                                      (|devaluate| |#1|)))))) . #0#))
-        (|haddProp| |$ConstructorCache| '|IndexedList|
-            (LIST |dv$1| |dv$2|) (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|testBitVector| |pv$| 8)
-           (|setShellEntry| $ 49
-               (CONS (|dispatchFunction| |ILIST;coerce;$Of;21|) $))))
-        (COND
-          ((|testBitVector| |pv$| 7)
-           (PROGN
-             (|setShellEntry| $ 53
-                 (CONS (|dispatchFunction| |ILIST;=;2$B;22|) $))
-             (|setShellEntry| $ 57
-                 (CONS (|dispatchFunction| |ILIST;latex;$S;23|) $))
-             (|setShellEntry| $ 59
-                 (CONS (|dispatchFunction| |ILIST;member?;S$B;24|) $)))))
-        (COND
-          ((|testBitVector| |pv$| 7)
-           (|setShellEntry| $ 61
-               (CONS (|dispatchFunction|
-                         |ILIST;removeDuplicates!;2$;26|)
-                     $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|IndexedList| |dv$1| |dv$2|))
+         ($ (|newShell| 85))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (OR (AND (|HasCategory| |#1| '(|OrderedSet|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|))))
+                              (AND (|HasCategory| |#1|
+                                    '(|SetCategory|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|)))))
+                          (OR (AND (|HasCategory| |#1|
+                                    '(|SetCategory|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|))))
+                              (|HasCategory| |#1|
+                                  (LIST '|CoercibleTo| '(|OutputForm|))))
+                          (|HasCategory| |#1|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (OR (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
+                          (|HasCategory| |#1| '(|OrderedSet|))
+                          (|HasCategory| (|Integer|) '(|OrderedSet|))
+                          (|HasCategory| |#1| '(|SetCategory|))
+                          (|HasCategory| |#1|
+                              (LIST '|CoercibleTo| '(|OutputForm|)))
+                          (AND (|HasCategory| |#1| '(|SetCategory|))
+                               (|HasCategory| |#1|
+                                   (LIST '|Evalable|
+                                    (|devaluate| |#1|))))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|IndexedList| (LIST |dv$1| |dv$2|)
+        (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|testBitVector| |pv$| 8)
+       (|setShellEntry| $ 49
+           (CONS (|dispatchFunction| |ILIST;coerce;$Of;21|) $))))
+    (COND
+      ((|testBitVector| |pv$| 7)
+       (PROGN
+         (|setShellEntry| $ 53
+             (CONS (|dispatchFunction| |ILIST;=;2$B;22|) $))
+         (|setShellEntry| $ 57
+             (CONS (|dispatchFunction| |ILIST;latex;$S;23|) $))
+         (|setShellEntry| $ 59
+             (CONS (|dispatchFunction| |ILIST;member?;S$B;24|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 7)
+       (|setShellEntry| $ 61
+           (CONS (|dispatchFunction| |ILIST;removeDuplicates!;2$;26|)
+                 $))))
+    $)) 
 
 (MAKEPROP '|IndexedList| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

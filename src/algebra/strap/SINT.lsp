@@ -551,19 +551,14 @@
                   (HREM |$ConstructorCache| '|SingleInteger|))))))))))) 
 
 (DEFUN |SingleInteger;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|SingleInteger|) . #0=(|SingleInteger|))
-        (LETT $ (|newShell| 117) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|SingleInteger| NIL
-            (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 1)
-        $)))) 
+  (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 117))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|SingleInteger| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 1)
+    $)) 
 
 (MAKEPROP '|SingleInteger| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|Integer|) '|seed|
