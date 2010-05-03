@@ -1,5 +1,9 @@
 2010-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (setqSingle): Tidy.
+
+2010-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Generate more readable code for functor definitions.
 	* interp/nruncomp.boot (washFunctorBody): New.
 	(buildFunctor): Use it.  
