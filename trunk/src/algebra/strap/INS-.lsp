@@ -326,18 +326,14 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |IntegerNumberSystem&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegerNumberSystem&|))
-        (LETT |dv$| (LIST '|IntegerNumberSystem&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 93) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|IntegerNumberSystem&| |dv$1|))
+         ($ (|newShell| 93)) (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    $)) 
 
 (MAKEPROP '|IntegerNumberSystem&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|)

@@ -22,31 +22,26 @@
       (|getShellEntry| $ 17))) 
 
 (DEFUN |RecursiveAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|RecursiveAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|RecursiveAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 19) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasAttribute| |#1| '|shallowlyMutable|)
-                            (|HasCategory| |#2| '(|SetCategory|)))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|testBitVector| |pv$| 1)
-           (|setShellEntry| $ 12
-               (CONS (|dispatchFunction| |RCAGG-;setelt;Avalue2S;2|) $))))
-        (COND
-          ((|testBitVector| |pv$| 2)
-           (|setShellEntry| $ 18
-               (CONS (|dispatchFunction| |RCAGG-;child?;2AB;3|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|RecursiveAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 19))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasAttribute| |#1| '|shallowlyMutable|)
+                          (|HasCategory| |#2| '(|SetCategory|))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|testBitVector| |pv$| 1)
+       (|setShellEntry| $ 12
+           (CONS (|dispatchFunction| |RCAGG-;setelt;Avalue2S;2|) $))))
+    (COND
+      ((|testBitVector| |pv$| 2)
+       (|setShellEntry| $ 18
+           (CONS (|dispatchFunction| |RCAGG-;child?;2AB;3|) $))))
+    $)) 
 
 (MAKEPROP '|RecursiveAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

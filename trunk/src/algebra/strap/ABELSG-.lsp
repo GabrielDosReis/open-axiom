@@ -9,23 +9,19 @@
   (SPADCALL |n| |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |AbelianSemiGroup&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|AbelianSemiGroup&|))
-        (LETT |dv$| (LIST '|AbelianSemiGroup&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 11) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (COND
-          ((|HasCategory| |#1| '(|Ring|)))
-          ('T
-           (|setShellEntry| $ 10
-               (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|AbelianSemiGroup&| |dv$1|)) ($ (|newShell| 11))
+         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (COND
+      ((|HasCategory| |#1| '(|Ring|)))
+      ('T
+       (|setShellEntry| $ 10
+           (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) $))))
+    $)) 
 
 (MAKEPROP '|AbelianSemiGroup&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|PositiveInteger|)

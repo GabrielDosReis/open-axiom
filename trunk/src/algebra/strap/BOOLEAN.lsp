@@ -168,17 +168,13 @@
                  ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))))) 
 
 (DEFUN |Boolean;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|Boolean|) . #0=(|Boolean|))
-        (LETT $ (|newShell| 39) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        $)))) 
+  (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    $)) 
 
 (MAKEPROP '|Boolean| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL |BOOLEAN;test;2$;1|

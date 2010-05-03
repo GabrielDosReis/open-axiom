@@ -1041,18 +1041,14 @@
                  ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))))) 
 
 (DEFUN |OutputForm;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|OutputForm|) . #0=(|OutputForm|))
-        (LETT $ (|newShell| 150) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|OutputForm| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 "~G")
-        $)))) 
+  (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|OutputForm| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 "~G")
+    $)) 
 
 (MAKEPROP '|OutputForm| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL '|format| (|String|)

@@ -929,17 +929,13 @@
                  ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|))))))))))) 
 
 (DEFUN |DoubleFloat;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|DoubleFloat|) . #0=(|DoubleFloat|))
-        (LETT $ (|newShell| 165) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|DoubleFloat| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        $)))) 
+  (LET ((|dv$| (LIST '|DoubleFloat|)) ($ (|newShell| 165))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|DoubleFloat| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    $)) 
 
 (MAKEPROP '|DoubleFloat| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|OpenMathEncoding|)

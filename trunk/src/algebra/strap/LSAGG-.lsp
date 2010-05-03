@@ -828,38 +828,32 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |ListAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|ListAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|ListAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 80) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|HasCategory| |#2| '(|SetCategory|))
-           (|setShellEntry| $ 64
-               (CONS (|dispatchFunction| |LSAGG-;reduce;MA3S;17|) $))))
-        (COND
-          ((|HasCategory| |#2| '(|SetCategory|))
-           (PROGN
-             (|setShellEntry| $ 73
-                 (CONS (|dispatchFunction| |LSAGG-;position;SA2I;23|)
-                       $))
-             (|setShellEntry| $ 76
-                 (CONS (|dispatchFunction|
-                           |LSAGG-;removeDuplicates!;2A;24|)
-                       $)))))
-        (COND
-          ((|HasCategory| |#2| '(|OrderedSet|))
-           (|setShellEntry| $ 78
-               (CONS (|dispatchFunction| |LSAGG-;<;2AB;25|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|ListAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 80)) (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|HasCategory| |#2| '(|SetCategory|))
+       (|setShellEntry| $ 64
+           (CONS (|dispatchFunction| |LSAGG-;reduce;MA3S;17|) $))))
+    (COND
+      ((|HasCategory| |#2| '(|SetCategory|))
+       (PROGN
+         (|setShellEntry| $ 73
+             (CONS (|dispatchFunction| |LSAGG-;position;SA2I;23|) $))
+         (|setShellEntry| $ 76
+             (CONS (|dispatchFunction|
+                       |LSAGG-;removeDuplicates!;2A;24|)
+                   $)))))
+    (COND
+      ((|HasCategory| |#2| '(|OrderedSet|))
+       (|setShellEntry| $ 78
+           (CONS (|dispatchFunction| |LSAGG-;<;2AB;25|) $))))
+    $)) 
 
 (MAKEPROP '|ListAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

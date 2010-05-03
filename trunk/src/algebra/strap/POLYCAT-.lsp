@@ -1505,186 +1505,169 @@
   (SPADCALL (ELT $ 245) (ELT $ 246) |p| (|getShellEntry| $ 250))) 
 
 (DEFUN |PolynomialCategory&| (|#1| |#2| |#3| |#4|)
-  (PROG (|dv$1| |dv$2| |dv$3| |dv$4| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|PolynomialCategory&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$3| (|devaluate| |#3|) . #0#)
-        (LETT |dv$4| (|devaluate| |#4|) . #0#)
-        (LETT |dv$|
-              (LIST '|PolynomialCategory&| |dv$1| |dv$2| |dv$3| |dv$4|) . #0#)
-        (LETT $ (|newShell| 259) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasCategory| |#2|
-                                '(|PolynomialFactorizationExplicit|))
-                            (|HasAttribute| |#2|
-                                '|canonicalUnitNormal|)
-                            (|HasCategory| |#2| '(|GcdDomain|))
-                            (|HasCategory| |#2| '(|CommutativeRing|))
-                            (|HasCategory| |#4|
-                                '(|PatternMatchable| (|Float|)))
-                            (|HasCategory| |#2|
-                                '(|PatternMatchable| (|Float|)))
-                            (|HasCategory| |#4|
-                                '(|PatternMatchable| (|Integer|)))
-                            (|HasCategory| |#2|
-                                '(|PatternMatchable| (|Integer|)))
-                            (|HasCategory| |#4|
-                                '(|ConvertibleTo|
-                                     (|Pattern| (|Float|))))
-                            (|HasCategory| |#2|
-                                '(|ConvertibleTo|
-                                     (|Pattern| (|Float|))))
-                            (|HasCategory| |#4|
-                                '(|ConvertibleTo|
-                                     (|Pattern| (|Integer|))))
-                            (|HasCategory| |#2|
-                                '(|ConvertibleTo|
-                                     (|Pattern| (|Integer|))))
-                            (|HasCategory| |#4|
-                                '(|ConvertibleTo| (|InputForm|)))
-                            (|HasCategory| |#2|
-                                '(|ConvertibleTo| (|InputForm|))))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (|setShellEntry| $ 8 |#3|)
-        (|setShellEntry| $ 9 |#4|)
-        (COND
-          ((|testBitVector| |pv$| 4)
-           (PROGN
-             (|setShellEntry| $ 95
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;resultant;2SVarSetS;15|)
-                       $))
-             (|setShellEntry| $ 97
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;discriminant;SVarSetS;16|)
-                       $)))))
-        (COND
-          ((|HasCategory| |#2| '(|IntegralDomain|))
-           (PROGN
-             (|setShellEntry| $ 121
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;reducedSystem;MM;20|)
-                       $))
-             (|setShellEntry| $ 131
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;reducedSystem;MVR;21|)
-                       $)))))
-        (COND
-          ((|testBitVector| |pv$| 1)
-           (PROGN
-             (|setShellEntry| $ 134
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;gcdPolynomial;3Sup;22|)
-                       $))
-             (|setShellEntry| $ 141
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;solveLinearPolynomialEquation;LSupU;23|)
-                       $))
-             (|setShellEntry| $ 145
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;factorPolynomial;SupF;24|)
-                       $))
-             (|setShellEntry| $ 147
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;factorSquareFreePolynomial;SupF;25|)
-                       $))
-             (|setShellEntry| $ 165
-                 (CONS (|dispatchFunction| |POLYCAT-;factor;SF;26|) $))
-             (COND
-               ((|HasCategory| |#2| '(|CharacteristicNonZero|))
-                (PROGN
-                  (|setShellEntry| $ 184
-                      (CONS (|dispatchFunction|
-                                |POLYCAT-;conditionP;MU;27|)
-                            $))))))))
-        (COND
-          ((|HasCategory| |#2| '(|CharacteristicNonZero|))
-           (PROGN
-             (|setShellEntry| $ 186
-                 (CONS (|dispatchFunction| |POLYCAT-;charthRoot;SU;28|)
-                       $)))))
-        (COND
-          ((|testBitVector| |pv$| 3)
-           (PROGN
-             (COND
-               ((|HasCategory| |#2| '(|EuclideanDomain|))
-                (COND
-                  ((|HasCategory| |#2| '(|CharacteristicZero|))
-                   (|setShellEntry| $ 195
-                       (CONS (|dispatchFunction|
-                                 |POLYCAT-;squareFree;SF;31|)
-                             $)))
-                  ('T
-                   (|setShellEntry| $ 195
-                       (CONS (|dispatchFunction|
-                                 |POLYCAT-;squareFree;SF;32|)
-                             $)))))
-               ('T
-                (|setShellEntry| $ 195
-                    (CONS (|dispatchFunction|
-                              |POLYCAT-;squareFree;SF;33|)
-                          $))))
-             (|setShellEntry| $ 203
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;squareFreePart;2S;34|)
-                       $))
-             (|setShellEntry| $ 205
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;content;SVarSetS;35|)
-                       $))
-             (|setShellEntry| $ 210
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;primitivePart;2S;36|)
-                       $))
-             (|setShellEntry| $ 213
-                 (CONS (|dispatchFunction|
-                           |POLYCAT-;primitivePart;SVarSetS;37|)
-                       $)))))
-        (COND
-          ((|testBitVector| |pv$| 8)
-           (COND
-             ((|testBitVector| |pv$| 7)
-              (|setShellEntry| $ 222
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$3| (|devaluate| |#3|)) (|dv$4| (|devaluate| |#4|))
+         (|dv$| (LIST '|PolynomialCategory&| |dv$1| |dv$2| |dv$3|
+                      |dv$4|))
+         ($ (|newShell| 259))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasCategory| |#2|
+                              '(|PolynomialFactorizationExplicit|))
+                          (|HasAttribute| |#2| '|canonicalUnitNormal|)
+                          (|HasCategory| |#2| '(|GcdDomain|))
+                          (|HasCategory| |#2| '(|CommutativeRing|))
+                          (|HasCategory| |#4|
+                              (LIST '|PatternMatchable| '(|Float|)))
+                          (|HasCategory| |#2|
+                              (LIST '|PatternMatchable| '(|Float|)))
+                          (|HasCategory| |#4|
+                              (LIST '|PatternMatchable| '(|Integer|)))
+                          (|HasCategory| |#2|
+                              (LIST '|PatternMatchable| '(|Integer|)))
+                          (|HasCategory| |#4|
+                              (LIST '|ConvertibleTo|
+                                    (LIST '|Pattern| '(|Float|))))
+                          (|HasCategory| |#2|
+                              (LIST '|ConvertibleTo|
+                                    (LIST '|Pattern| '(|Float|))))
+                          (|HasCategory| |#4|
+                              (LIST '|ConvertibleTo|
+                                    (LIST '|Pattern| '(|Integer|))))
+                          (|HasCategory| |#2|
+                              (LIST '|ConvertibleTo|
+                                    (LIST '|Pattern| '(|Integer|))))
+                          (|HasCategory| |#4|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (|HasCategory| |#2|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (|setShellEntry| $ 8 |#3|)
+    (|setShellEntry| $ 9 |#4|)
+    (COND
+      ((|testBitVector| |pv$| 4)
+       (PROGN
+         (|setShellEntry| $ 95
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;resultant;2SVarSetS;15|)
+                   $))
+         (|setShellEntry| $ 97
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;discriminant;SVarSetS;16|)
+                   $)))))
+    (COND
+      ((|HasCategory| |#2| '(|IntegralDomain|))
+       (PROGN
+         (|setShellEntry| $ 121
+             (CONS (|dispatchFunction| |POLYCAT-;reducedSystem;MM;20|)
+                   $))
+         (|setShellEntry| $ 131
+             (CONS (|dispatchFunction| |POLYCAT-;reducedSystem;MVR;21|)
+                   $)))))
+    (COND
+      ((|testBitVector| |pv$| 1)
+       (PROGN
+         (|setShellEntry| $ 134
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;gcdPolynomial;3Sup;22|)
+                   $))
+         (|setShellEntry| $ 141
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;solveLinearPolynomialEquation;LSupU;23|)
+                   $))
+         (|setShellEntry| $ 145
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;factorPolynomial;SupF;24|)
+                   $))
+         (|setShellEntry| $ 147
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;factorSquareFreePolynomial;SupF;25|)
+                   $))
+         (|setShellEntry| $ 165
+             (CONS (|dispatchFunction| |POLYCAT-;factor;SF;26|) $))
+         (COND
+           ((|HasCategory| |#2| '(|CharacteristicNonZero|))
+            (PROGN
+              (|setShellEntry| $ 184
                   (CONS (|dispatchFunction|
-                            |POLYCAT-;patternMatch;SP2Pmr;39|)
-                        $))))))
-        (COND
-          ((|testBitVector| |pv$| 6)
-           (COND
-             ((|testBitVector| |pv$| 5)
-              (|setShellEntry| $ 229
-                  (CONS (|dispatchFunction|
-                            |POLYCAT-;patternMatch;SP2Pmr;40|)
-                        $))))))
-        (COND
-          ((|testBitVector| |pv$| 12)
-           (COND
-             ((|testBitVector| |pv$| 11)
-              (|setShellEntry| $ 236
-                  (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|)
-                        $))))))
-        (COND
-          ((|testBitVector| |pv$| 10)
-           (COND
-             ((|testBitVector| |pv$| 9)
-              (|setShellEntry| $ 243
-                  (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|)
-                        $))))))
-        (COND
-          ((|testBitVector| |pv$| 14)
-           (COND
-             ((|testBitVector| |pv$| 13)
-              (|setShellEntry| $ 251
-                  (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|)
-                        $))))))
-        $)))) 
+                            |POLYCAT-;conditionP;MU;27|)
+                        $))))))))
+    (COND
+      ((|HasCategory| |#2| '(|CharacteristicNonZero|))
+       (PROGN
+         (|setShellEntry| $ 186
+             (CONS (|dispatchFunction| |POLYCAT-;charthRoot;SU;28|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 3)
+       (PROGN
+         (COND
+           ((|HasCategory| |#2| '(|EuclideanDomain|))
+            (COND
+              ((|HasCategory| |#2| '(|CharacteristicZero|))
+               (|setShellEntry| $ 195
+                   (CONS (|dispatchFunction|
+                             |POLYCAT-;squareFree;SF;31|)
+                         $)))
+              ('T
+               (|setShellEntry| $ 195
+                   (CONS (|dispatchFunction|
+                             |POLYCAT-;squareFree;SF;32|)
+                         $)))))
+           ('T
+            (|setShellEntry| $ 195
+                (CONS (|dispatchFunction| |POLYCAT-;squareFree;SF;33|)
+                      $))))
+         (|setShellEntry| $ 203
+             (CONS (|dispatchFunction| |POLYCAT-;squareFreePart;2S;34|)
+                   $))
+         (|setShellEntry| $ 205
+             (CONS (|dispatchFunction| |POLYCAT-;content;SVarSetS;35|)
+                   $))
+         (|setShellEntry| $ 210
+             (CONS (|dispatchFunction| |POLYCAT-;primitivePart;2S;36|)
+                   $))
+         (|setShellEntry| $ 213
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;primitivePart;SVarSetS;37|)
+                   $)))))
+    (COND
+      ((|testBitVector| |pv$| 8)
+       (COND
+         ((|testBitVector| |pv$| 7)
+          (|setShellEntry| $ 222
+              (CONS (|dispatchFunction|
+                        |POLYCAT-;patternMatch;SP2Pmr;39|)
+                    $))))))
+    (COND
+      ((|testBitVector| |pv$| 6)
+       (COND
+         ((|testBitVector| |pv$| 5)
+          (|setShellEntry| $ 229
+              (CONS (|dispatchFunction|
+                        |POLYCAT-;patternMatch;SP2Pmr;40|)
+                    $))))))
+    (COND
+      ((|testBitVector| |pv$| 12)
+       (COND
+         ((|testBitVector| |pv$| 11)
+          (|setShellEntry| $ 236
+              (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|) $))))))
+    (COND
+      ((|testBitVector| |pv$| 10)
+       (COND
+         ((|testBitVector| |pv$| 9)
+          (|setShellEntry| $ 243
+              (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|) $))))))
+    (COND
+      ((|testBitVector| |pv$| 14)
+       (COND
+         ((|testBitVector| |pv$| 13)
+          (|setShellEntry| $ 251
+              (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|) $))))))
+    $)) 
 
 (MAKEPROP '|PolynomialCategory&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

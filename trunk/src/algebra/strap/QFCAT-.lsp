@@ -302,132 +302,118 @@
                            (|getShellEntry| $ 112)))))))) 
 
 (DEFUN |QuotientFieldCategory&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|)
-              . #0=(|QuotientFieldCategory&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$|
-              (LIST '|QuotientFieldCategory&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 123) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasCategory| |#2|
-                                '(|PolynomialFactorizationExplicit|))
-                            (|HasCategory| |#2|
-                                '(|IntegerNumberSystem|))
-                            (|HasCategory| |#2| '(|EuclideanDomain|))
-                            (|HasCategory| |#2|
-                                '(|RetractableTo| (|Symbol|)))
-                            (|HasCategory| |#2|
-                                '(|CharacteristicNonZero|))
-                            (|HasCategory| |#2|
-                                '(|CharacteristicZero|))
-                            (|HasCategory| |#2|
-                                '(|ConvertibleTo| (|InputForm|)))
-                            (|HasCategory| |#2| '(|RealConstant|))
-                            (|HasCategory| |#2|
-                                '(|OrderedIntegralDomain|))
-                            (|HasCategory| |#2| '(|OrderedSet|))
-                            (|HasCategory| |#2|
-                                '(|RetractableTo| (|Integer|)))
-                            (|HasCategory| |#2| '(|StepThrough|)))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|testBitVector| |pv$| 12)
-           (PROGN
-             (|setShellEntry| $ 16
-                 (CONS (|dispatchFunction| |QFCAT-;init;A;3|) $))
-             (|setShellEntry| $ 20
-                 (CONS (|dispatchFunction| |QFCAT-;nextItem;AU;4|) $)))))
-        (COND
-          ((|testBitVector| |pv$| 7)
-           (|setShellEntry| $ 40
-               (CONS (|dispatchFunction| |QFCAT-;convert;AIf;9|) $))))
-        (COND
-          ((|testBitVector| |pv$| 8)
-           (PROGN
-             (|setShellEntry| $ 44
-                 (CONS (|dispatchFunction| |QFCAT-;convert;AF;10|) $))
-             (|setShellEntry| $ 48
-                 (CONS (|dispatchFunction| |QFCAT-;convert;ADf;11|) $)))))
-        (COND
-          ((|testBitVector| |pv$| 9)
-           (COND
-             ((|HasAttribute| |#2| '|canonicalUnitNormal|)
-              (|setShellEntry| $ 51
-                  (CONS (|dispatchFunction| |QFCAT-;<;2AB;12|) $)))
-             ('T
-              (|setShellEntry| $ 51
-                  (CONS (|dispatchFunction| |QFCAT-;<;2AB;13|) $)))))
-          ((|testBitVector| |pv$| 10)
-           (|setShellEntry| $ 51
-               (CONS (|dispatchFunction| |QFCAT-;<;2AB;14|) $))))
-        (COND
-          ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 55
-               (CONS (|dispatchFunction| |QFCAT-;fractionPart;2A;15|)
-                     $))))
-        (COND
-          ((|testBitVector| |pv$| 4)
-           (PROGN
-             (|setShellEntry| $ 58
-                 (CONS (|dispatchFunction| |QFCAT-;coerce;SA;16|) $))
-             (|setShellEntry| $ 61
-                 (CONS (|dispatchFunction| |QFCAT-;retract;AS;17|) $))
-             (|setShellEntry| $ 66
-                 (CONS (|dispatchFunction| |QFCAT-;retractIfCan;AU;18|)
-                       $)))))
-        (COND
-          ((|HasCategory| |#2|
-               '(|ConvertibleTo| (|Pattern| (|Integer|))))
-           (PROGN
-             (|setShellEntry| $ 71
-                 (CONS (|dispatchFunction| |QFCAT-;convert;AP;19|) $))
-             (COND
-               ((|HasCategory| |#2| '(|PatternMatchable| (|Integer|)))
-                (|setShellEntry| $ 76
-                    (CONS (|dispatchFunction|
-                              |QFCAT-;patternMatch;AP2Pmr;20|)
-                          $)))))))
-        (COND
-          ((|HasCategory| |#2|
-               '(|ConvertibleTo| (|Pattern| (|Float|))))
-           (PROGN
-             (|setShellEntry| $ 80
-                 (CONS (|dispatchFunction| |QFCAT-;convert;AP;21|) $))
-             (COND
-               ((|HasCategory| |#2| '(|PatternMatchable| (|Float|)))
-                (|setShellEntry| $ 85
-                    (CONS (|dispatchFunction|
-                              |QFCAT-;patternMatch;AP2Pmr;22|)
-                          $)))))))
-        (COND
-          ((|testBitVector| |pv$| 11)
-           (PROGN
-             (|setShellEntry| $ 91
-                 (CONS (|dispatchFunction| |QFCAT-;coerce;FA;23|) $))
-             (COND
-               ((|domainEqual| |#2| (|Integer|)))
-               ('T
-                (PROGN
-                  (|setShellEntry| $ 93
-                      (CONS (|dispatchFunction| |QFCAT-;retract;AI;24|)
-                            $))
-                  (|setShellEntry| $ 96
-                      (CONS (|dispatchFunction|
-                                |QFCAT-;retractIfCan;AU;25|)
-                            $))))))))
-        (COND
-          ((|testBitVector| |pv$| 2)
-           (|setShellEntry| $ 99
-               (CONS (|dispatchFunction| |QFCAT-;random;A;26|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|QuotientFieldCategory&| |dv$1| |dv$2|))
+         ($ (|newShell| 123))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasCategory| |#2|
+                              '(|PolynomialFactorizationExplicit|))
+                          (|HasCategory| |#2| '(|IntegerNumberSystem|))
+                          (|HasCategory| |#2| '(|EuclideanDomain|))
+                          (|HasCategory| |#2|
+                              (LIST '|RetractableTo| '(|Symbol|)))
+                          (|HasCategory| |#2|
+                              '(|CharacteristicNonZero|))
+                          (|HasCategory| |#2| '(|CharacteristicZero|))
+                          (|HasCategory| |#2|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (|HasCategory| |#2| '(|RealConstant|))
+                          (|HasCategory| |#2|
+                              '(|OrderedIntegralDomain|))
+                          (|HasCategory| |#2| '(|OrderedSet|))
+                          (|HasCategory| |#2|
+                              (LIST '|RetractableTo| '(|Integer|)))
+                          (|HasCategory| |#2| '(|StepThrough|))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|testBitVector| |pv$| 12)
+       (PROGN
+         (|setShellEntry| $ 16
+             (CONS (|dispatchFunction| |QFCAT-;init;A;3|) $))
+         (|setShellEntry| $ 20
+             (CONS (|dispatchFunction| |QFCAT-;nextItem;AU;4|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 7)
+       (|setShellEntry| $ 40
+           (CONS (|dispatchFunction| |QFCAT-;convert;AIf;9|) $))))
+    (COND
+      ((|testBitVector| |pv$| 8)
+       (PROGN
+         (|setShellEntry| $ 44
+             (CONS (|dispatchFunction| |QFCAT-;convert;AF;10|) $))
+         (|setShellEntry| $ 48
+             (CONS (|dispatchFunction| |QFCAT-;convert;ADf;11|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 9)
+       (COND
+         ((|HasAttribute| |#2| '|canonicalUnitNormal|)
+          (|setShellEntry| $ 51
+              (CONS (|dispatchFunction| |QFCAT-;<;2AB;12|) $)))
+         ('T
+          (|setShellEntry| $ 51
+              (CONS (|dispatchFunction| |QFCAT-;<;2AB;13|) $)))))
+      ((|testBitVector| |pv$| 10)
+       (|setShellEntry| $ 51
+           (CONS (|dispatchFunction| |QFCAT-;<;2AB;14|) $))))
+    (COND
+      ((|testBitVector| |pv$| 3)
+       (|setShellEntry| $ 55
+           (CONS (|dispatchFunction| |QFCAT-;fractionPart;2A;15|) $))))
+    (COND
+      ((|testBitVector| |pv$| 4)
+       (PROGN
+         (|setShellEntry| $ 58
+             (CONS (|dispatchFunction| |QFCAT-;coerce;SA;16|) $))
+         (|setShellEntry| $ 61
+             (CONS (|dispatchFunction| |QFCAT-;retract;AS;17|) $))
+         (|setShellEntry| $ 66
+             (CONS (|dispatchFunction| |QFCAT-;retractIfCan;AU;18|) $)))))
+    (COND
+      ((|HasCategory| |#2| '(|ConvertibleTo| (|Pattern| (|Integer|))))
+       (PROGN
+         (|setShellEntry| $ 71
+             (CONS (|dispatchFunction| |QFCAT-;convert;AP;19|) $))
+         (COND
+           ((|HasCategory| |#2| '(|PatternMatchable| (|Integer|)))
+            (|setShellEntry| $ 76
+                (CONS (|dispatchFunction|
+                          |QFCAT-;patternMatch;AP2Pmr;20|)
+                      $)))))))
+    (COND
+      ((|HasCategory| |#2| '(|ConvertibleTo| (|Pattern| (|Float|))))
+       (PROGN
+         (|setShellEntry| $ 80
+             (CONS (|dispatchFunction| |QFCAT-;convert;AP;21|) $))
+         (COND
+           ((|HasCategory| |#2| '(|PatternMatchable| (|Float|)))
+            (|setShellEntry| $ 85
+                (CONS (|dispatchFunction|
+                          |QFCAT-;patternMatch;AP2Pmr;22|)
+                      $)))))))
+    (COND
+      ((|testBitVector| |pv$| 11)
+       (PROGN
+         (|setShellEntry| $ 91
+             (CONS (|dispatchFunction| |QFCAT-;coerce;FA;23|) $))
+         (COND
+           ((|domainEqual| |#2| (|Integer|)))
+           ('T
+            (PROGN
+              (|setShellEntry| $ 93
+                  (CONS (|dispatchFunction| |QFCAT-;retract;AI;24|) $))
+              (|setShellEntry| $ 96
+                  (CONS (|dispatchFunction|
+                            |QFCAT-;retractIfCan;AU;25|)
+                        $))))))))
+    (COND
+      ((|testBitVector| |pv$| 2)
+       (|setShellEntry| $ 99
+           (CONS (|dispatchFunction| |QFCAT-;random;A;26|) $))))
+    $)) 
 
 (MAKEPROP '|QuotientFieldCategory&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

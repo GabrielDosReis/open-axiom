@@ -30,20 +30,15 @@
       (|getShellEntry| $ 8))) 
 
 (DEFUN |SetAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|SetAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|SetAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 16) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|SetAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 16)) (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    $)) 
 
 (MAKEPROP '|SetAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

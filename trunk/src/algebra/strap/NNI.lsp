@@ -62,19 +62,14 @@
                   (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))))) 
 
 (DEFUN |NonNegativeInteger;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|NonNegativeInteger|)
-              . #0=(|NonNegativeInteger|))
-        (LETT $ (|newShell| 22) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|NonNegativeInteger| NIL
-            (CONS 1 $))
-        (|stuffDomainSlots| $)
-        $)))) 
+  (LET ((|dv$| (LIST '|NonNegativeInteger|)) ($ (|newShell| 22))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|NonNegativeInteger| NIL
+        (CONS 1 $))
+    (|stuffDomainSlots| $)
+    $)) 
 
 (MAKEPROP '|NonNegativeInteger| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|Integer|) (0 . |Zero|) (4 . |Zero|)

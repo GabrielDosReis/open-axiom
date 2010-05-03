@@ -214,79 +214,69 @@
                (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))))) 
 
 (DEFUN |List;| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|List|))
-        (LETT |dv$| (LIST '|List| |dv$1|) . #0#)
-        (LETT $ (|newShell| 70) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (OR (AND (|HasCategory| |#1|
-                                      '(|OrderedSet|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|))))
-                                (AND (|HasCategory| |#1|
-                                      '(|SetCategory|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|)))))
-                            (OR (AND (|HasCategory| |#1|
-                                      '(|SetCategory|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|))))
-                                (|HasCategory| |#1|
-                                    '(|CoercibleTo| (|OutputForm|))))
-                            (|HasCategory| |#1|
-                                '(|ConvertibleTo| (|InputForm|)))
-                            (OR (|HasCategory| |#1| '(|OrderedSet|))
-                                (|HasCategory| |#1| '(|SetCategory|)))
-                            (|HasCategory| |#1| '(|OrderedSet|))
-                            (|HasCategory| |#1| '(|OpenMath|))
-                            (|HasCategory| (|Integer|) '(|OrderedSet|))
-                            (|HasCategory| |#1| '(|SetCategory|))
-                            (|HasCategory| |#1|
-                                '(|CoercibleTo| (|OutputForm|)))
-                            (AND (|HasCategory| |#1| '(|SetCategory|))
-                                 (|HasCategory| |#1|
-                                     (LIST '|Evalable|
-                                      (|devaluate| |#1|)))))) . #0#))
-        (|haddProp| |$ConstructorCache| '|List| (LIST |dv$1|)
-            (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (COND
-          ((|testBitVector| |pv$| 6)
-           (PROGN
-             (|setShellEntry| $ 31
-                 (CONS (|dispatchFunction| |LIST;OMwrite;$S;6|) $))
-             (|setShellEntry| $ 32
-                 (CONS (|dispatchFunction| |LIST;OMwrite;$BS;7|) $))
-             (|setShellEntry| $ 33
-                 (CONS (|dispatchFunction| |LIST;OMwrite;Omd$V;8|) $))
-             (|setShellEntry| $ 34
-                 (CONS (|dispatchFunction| |LIST;OMwrite;Omd$BV;9|) $)))))
-        (COND
-          ((|testBitVector| |pv$| 8)
-           (PROGN
-             (|setShellEntry| $ 37
-                 (CONS (|dispatchFunction| |LIST;setUnion;3$;10|) $))
-             (|setShellEntry| $ 41
-                 (CONS (|dispatchFunction|
-                           |LIST;setIntersection;3$;11|)
-                       $))
-             (|setShellEntry| $ 44
-                 (CONS (|dispatchFunction| |LIST;setDifference;3$;12|)
-                       $)))))
-        (COND
-          ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 53
-               (CONS (|dispatchFunction| |LIST;convert;$If;13|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|List| |dv$1|))
+         ($ (|newShell| 70))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (OR (AND (|HasCategory| |#1| '(|OrderedSet|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|))))
+                              (AND (|HasCategory| |#1|
+                                    '(|SetCategory|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|)))))
+                          (OR (AND (|HasCategory| |#1|
+                                    '(|SetCategory|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|))))
+                              (|HasCategory| |#1|
+                                  (LIST '|CoercibleTo| '(|OutputForm|))))
+                          (|HasCategory| |#1|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (OR (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
+                          (|HasCategory| |#1| '(|OrderedSet|))
+                          (|HasCategory| |#1| '(|OpenMath|))
+                          (|HasCategory| (|Integer|) '(|OrderedSet|))
+                          (|HasCategory| |#1| '(|SetCategory|))
+                          (|HasCategory| |#1|
+                              (LIST '|CoercibleTo| '(|OutputForm|)))
+                          (AND (|HasCategory| |#1| '(|SetCategory|))
+                               (|HasCategory| |#1|
+                                   (LIST '|Evalable|
+                                    (|devaluate| |#1|))))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|List| (LIST |dv$1|) (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (COND
+      ((|testBitVector| |pv$| 6)
+       (PROGN
+         (|setShellEntry| $ 31
+             (CONS (|dispatchFunction| |LIST;OMwrite;$S;6|) $))
+         (|setShellEntry| $ 32
+             (CONS (|dispatchFunction| |LIST;OMwrite;$BS;7|) $))
+         (|setShellEntry| $ 33
+             (CONS (|dispatchFunction| |LIST;OMwrite;Omd$V;8|) $))
+         (|setShellEntry| $ 34
+             (CONS (|dispatchFunction| |LIST;OMwrite;Omd$BV;9|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 8)
+       (PROGN
+         (|setShellEntry| $ 37
+             (CONS (|dispatchFunction| |LIST;setUnion;3$;10|) $))
+         (|setShellEntry| $ 41
+             (CONS (|dispatchFunction| |LIST;setIntersection;3$;11|) $))
+         (|setShellEntry| $ 44
+             (CONS (|dispatchFunction| |LIST;setDifference;3$;12|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 3)
+       (|setShellEntry| $ 53
+           (CONS (|dispatchFunction| |LIST;convert;$If;13|) $))))
+    $)) 
 
 (MAKEPROP '|List| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedList| 6 (NRTEVAL 1))

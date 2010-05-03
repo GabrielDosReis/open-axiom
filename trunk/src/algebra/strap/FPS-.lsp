@@ -23,21 +23,17 @@
         #0#))) 
 
 (DEFUN |FloatingPointSystem&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|FloatingPointSystem&|))
-        (LETT |dv$| (LIST '|FloatingPointSystem&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 20) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasAttribute| |#1| '|arbitraryExponent|)
-                            (|HasAttribute| |#1| '|arbitraryPrecision|))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|FloatingPointSystem&| |dv$1|))
+         ($ (|newShell| 20))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasAttribute| |#1| '|arbitraryExponent|)
+                          (|HasAttribute| |#1| '|arbitraryPrecision|)))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    $)) 
 
 (MAKEPROP '|FloatingPointSystem&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|PositiveInteger|)

@@ -377,6 +377,26 @@ NRTdescendCodeTran(u,condList) ==
   u is ['PROGN,:c] => for x in c repeat NRTdescendCodeTran(x,condList)
   nil
 
+++ Remove useless statements from the elaboration `form' of
+++ a function definition.  
+washFunctorBody form == main form where
+  main form ==
+    form' := nil
+    for x in form repeat
+      stmt := clean x
+      stmt = nil => nil
+      stmt is ["PROGN",:l] => form' := [:form',:l]
+      form' := [:form',stmt]
+    form'
+
+  clean x ==
+    x is ["PROGN",:stmts] =>
+      stmts := [s' for s in stmts | (s' := clean s) ~= nil]
+      stmts = nil => nil
+      rest stmts = nil => first stmts
+      ["PROGN",:stmts]
+    x is ["LIST"] => nil
+    x
 
 buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 --PARAMETERS
@@ -459,24 +479,27 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
        :predBitVectorCode2,storeOperationCode]
 
   $CheckVectorList := NRTcheckVector domainShell
-  --CODE: part 1
-  codePart1:= [:devaluateCode,createDomainCode,
-                createViewCode,setVector0Code, slot3Code,:slamCode] where
-    devaluateCode:= [["%LET",b,['devaluate,a]] for [a,:b] in $devaluateList]
+  -- Local bindings
+  bindings := [:devaluateCode,createDomainCode,
+                 createViewCode,createPredVecCode] where
+    devaluateCode:= [[b,["devaluate",a]] for [a,:b] in $devaluateList]
     createDomainCode:=
-      ["%LET",domname,['LIST,MKQ first $definition,:ASSOCRIGHT $devaluateList]]
-    createViewCode:= ["%LET",'$,["newShell", $NRTbase + $NRTdeltaLength]]
-    setVector0Code:=[$setelt,'$,0,'dv_$]
-    slot3Code := ["setShellEntry",'$,3,["%LET",'pv_$,predBitVectorCode1]]
+      [domname,['LIST,MKQ first $definition,:ASSOCRIGHT $devaluateList]]
+    createViewCode:= ["$",["newShell", $NRTbase + $NRTdeltaLength]]
+    createPredVecCode := ["pv$",predBitVectorCode1]
+
+  --CODE: part 1
+  codePart1:= [setVector0Code, slot3Code,:slamCode] where
+    setVector0Code:=[$setelt,"$",0,"dv$"]
+    slot3Code := ["setShellEntry","$",3,"pv$"]
     slamCode:=
       isCategoryPackageName opOf $definition => nil
-      [NRTaddToSlam($definition,'$)]
+      [NRTaddToSlam($definition,"$")]
 
   --CODE: part 3
   $ConstantAssignments :=
       [NRTputInLocalReferences code for code in $ConstantAssignments]
-  codePart3:= [:constantCode1,
-                :constantCode2,:epilogue] where
+  codePart3:= [:constantCode1, :constantCode2,:epilogue] where
     constantCode1:=
       name='Integer => $ConstantAssignments
       nil
@@ -493,8 +516,9 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       name='Integer => nil
       $ConstantAssignments
     epilogue:= $epilogue
-  ans :=
-    ['PROGN,:optFunctorPROGN [:codePart1,:codePart2,:codePart3], '$]
+  ans := ["%Bind",bindings,
+           :washFunctorBody optFunctorBody
+              [:codePart1,:codePart2,:codePart3],"$"]
   $getDomainCode:= nil
     --if we didn't kill this, DEFINE would insert it in the wrong place
   ans:= minimalise ans

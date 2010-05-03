@@ -529,6 +529,13 @@ optLET_* form ==
   rplac(first form,"LET")
   optLET form
 
+optBind form ==
+  rplac(first form,"LET*")
+  optLET_* form
+
+optLIST form ==
+  form is ["LIST"] => nil
+  form
 
 optCollectVector form ==
   [.,eltType,:iters,body] := form
@@ -587,6 +594,8 @@ for x in '( (call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
            (LET_*        optLET_*)_
+           (%Bind        optBind)_
+           (LIST         optLIST)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
            (_-           opt_-)_

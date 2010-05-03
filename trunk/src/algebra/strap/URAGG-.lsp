@@ -620,63 +620,49 @@
                    (EXIT |y|)))))))) 
 
 (DEFUN |UnaryRecursiveAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|)
-              . #0=(|UnaryRecursiveAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$|
-              (LIST '|UnaryRecursiveAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 85) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasAttribute| |#1| '|shallowlyMutable|))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|HasAttribute| |#1| '|finiteAggregate|)
-           (|setShellEntry| $ 61
-               (CONS (|dispatchFunction| |URAGG-;last;ANniA;22|) $))))
-        (COND
-          ((|HasCategory| |#2| '(|SetCategory|))
-           (PROGN
-             (|setShellEntry| $ 64
-                 (CONS (|dispatchFunction| |URAGG-;=;2AB;23|) $))
-             (|setShellEntry| $ 66
-                 (CONS (|dispatchFunction| |URAGG-;node?;2AB;24|) $)))))
-        (COND
-          ((|testBitVector| |pv$| 1)
-           (PROGN
-             (|setShellEntry| $ 68
-                 (CONS (|dispatchFunction| |URAGG-;setelt;Afirst2S;25|)
-                       $))
-             (|setShellEntry| $ 70
-                 (CONS (|dispatchFunction| |URAGG-;setelt;Alast2S;26|)
-                       $))
-             (|setShellEntry| $ 72
-                 (CONS (|dispatchFunction| |URAGG-;setelt;Arest2A;27|)
-                       $))
-             (|setShellEntry| $ 74
-                 (CONS (|dispatchFunction| |URAGG-;concat;3A;28|) $))
-             (|setShellEntry| $ 75
-                 (CONS (|dispatchFunction| |URAGG-;setlast!;A2S;29|) $))
-             (|setShellEntry| $ 78
-                 (CONS (|dispatchFunction|
-                           |URAGG-;setchildren!;ALA;30|)
-                       $))
-             (|setShellEntry| $ 79
-                 (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|)
-                       $))
-             (|setShellEntry| $ 82
-                 (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
-             (|setShellEntry| $ 83
-                 (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|)
-                       $)))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|UnaryRecursiveAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 85))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasAttribute| |#1| '|shallowlyMutable|)))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|HasAttribute| |#1| '|finiteAggregate|)
+       (|setShellEntry| $ 61
+           (CONS (|dispatchFunction| |URAGG-;last;ANniA;22|) $))))
+    (COND
+      ((|HasCategory| |#2| '(|SetCategory|))
+       (PROGN
+         (|setShellEntry| $ 64
+             (CONS (|dispatchFunction| |URAGG-;=;2AB;23|) $))
+         (|setShellEntry| $ 66
+             (CONS (|dispatchFunction| |URAGG-;node?;2AB;24|) $)))))
+    (COND
+      ((|testBitVector| |pv$| 1)
+       (PROGN
+         (|setShellEntry| $ 68
+             (CONS (|dispatchFunction| |URAGG-;setelt;Afirst2S;25|) $))
+         (|setShellEntry| $ 70
+             (CONS (|dispatchFunction| |URAGG-;setelt;Alast2S;26|) $))
+         (|setShellEntry| $ 72
+             (CONS (|dispatchFunction| |URAGG-;setelt;Arest2A;27|) $))
+         (|setShellEntry| $ 74
+             (CONS (|dispatchFunction| |URAGG-;concat;3A;28|) $))
+         (|setShellEntry| $ 75
+             (CONS (|dispatchFunction| |URAGG-;setlast!;A2S;29|) $))
+         (|setShellEntry| $ 78
+             (CONS (|dispatchFunction| |URAGG-;setchildren!;ALA;30|) $))
+         (|setShellEntry| $ 79
+             (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|) $))
+         (|setShellEntry| $ 82
+             (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
+         (|setShellEntry| $ 83
+             (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|) $)))))
+    $)) 
 
 (MAKEPROP '|UnaryRecursiveAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

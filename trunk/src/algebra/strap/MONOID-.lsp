@@ -29,18 +29,13 @@
     ('T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
 
 (DEFUN |Monoid&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|Monoid&|))
-        (LETT |dv$| (LIST '|Monoid&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 21) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Monoid&| |dv$1|))
+         ($ (|newShell| 21)) (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    $)) 
 
 (MAKEPROP '|Monoid&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |One|)

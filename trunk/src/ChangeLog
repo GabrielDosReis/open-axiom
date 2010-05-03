@@ -1,3 +1,11 @@
+2010-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Generate more readable code for functor definitions.
+	* interp/nruncomp.boot (washFunctorBody): New.
+	(buildFunctor): Use it.  
+	* interp/g-opt.boot (optBind): New.
+	(optLIST): Likewise.
+
 2010-05-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (canReturn): Tidy.

@@ -44,63 +44,56 @@
                (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))))) 
 
 (DEFUN |Vector;| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|Vector|))
-        (LETT |dv$| (LIST '|Vector| |dv$1|) . #0#)
-        (LETT $ (|newShell| 36) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (OR (AND (|HasCategory| |#1|
-                                      '(|OrderedSet|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|))))
-                                (AND (|HasCategory| |#1|
-                                      '(|SetCategory|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|)))))
-                            (OR (AND (|HasCategory| |#1|
-                                      '(|SetCategory|))
-                                     (|HasCategory| |#1|
-                                      (LIST '|Evalable|
-                                       (|devaluate| |#1|))))
-                                (|HasCategory| |#1|
-                                    '(|CoercibleTo| (|OutputForm|))))
-                            (|HasCategory| |#1|
-                                '(|ConvertibleTo| (|InputForm|)))
-                            (OR (|HasCategory| |#1| '(|OrderedSet|))
-                                (|HasCategory| |#1| '(|SetCategory|)))
-                            (|HasCategory| |#1| '(|OrderedSet|))
-                            (|HasCategory| (|Integer|) '(|OrderedSet|))
-                            (|HasCategory| |#1| '(|SetCategory|))
-                            (|HasCategory| |#1| '(|AbelianSemiGroup|))
-                            (|HasCategory| |#1| '(|AbelianMonoid|))
-                            (|HasCategory| |#1| '(|AbelianGroup|))
-                            (|HasCategory| |#1| '(|Monoid|))
-                            (|HasCategory| |#1| '(|Ring|))
-                            (AND (|HasCategory| |#1|
-                                     '(|RadicalCategory|))
-                                 (|HasCategory| |#1| '(|Ring|)))
-                            (|HasCategory| |#1|
-                                '(|CoercibleTo| (|OutputForm|)))
-                            (AND (|HasCategory| |#1| '(|SetCategory|))
-                                 (|HasCategory| |#1|
-                                     (LIST '|Evalable|
-                                      (|devaluate| |#1|)))))) . #0#))
-        (|haddProp| |$ConstructorCache| '|Vector| (LIST |dv$1|)
-            (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (COND
-          ((|testBitVector| |pv$| 3)
-           (|setShellEntry| $ 20
-               (CONS (|dispatchFunction| |VECTOR;convert;$If;3|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Vector| |dv$1|))
+         ($ (|newShell| 36))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (OR (AND (|HasCategory| |#1| '(|OrderedSet|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|))))
+                              (AND (|HasCategory| |#1|
+                                    '(|SetCategory|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|)))))
+                          (OR (AND (|HasCategory| |#1|
+                                    '(|SetCategory|))
+                                   (|HasCategory| |#1|
+                                    (LIST '|Evalable|
+                                     (|devaluate| |#1|))))
+                              (|HasCategory| |#1|
+                                  (LIST '|CoercibleTo| '(|OutputForm|))))
+                          (|HasCategory| |#1|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (OR (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
+                          (|HasCategory| |#1| '(|OrderedSet|))
+                          (|HasCategory| (|Integer|) '(|OrderedSet|))
+                          (|HasCategory| |#1| '(|SetCategory|))
+                          (|HasCategory| |#1| '(|AbelianSemiGroup|))
+                          (|HasCategory| |#1| '(|AbelianMonoid|))
+                          (|HasCategory| |#1| '(|AbelianGroup|))
+                          (|HasCategory| |#1| '(|Monoid|))
+                          (|HasCategory| |#1| '(|Ring|))
+                          (AND (|HasCategory| |#1|
+                                   '(|RadicalCategory|))
+                               (|HasCategory| |#1| '(|Ring|)))
+                          (|HasCategory| |#1|
+                              (LIST '|CoercibleTo| '(|OutputForm|)))
+                          (AND (|HasCategory| |#1| '(|SetCategory|))
+                               (|HasCategory| |#1|
+                                   (LIST '|Evalable|
+                                    (|devaluate| |#1|))))))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|Vector| (LIST |dv$1|) (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (COND
+      ((|testBitVector| |pv$| 3)
+       (|setShellEntry| $ 20
+           (CONS (|dispatchFunction| |VECTOR;convert;$If;3|) $))))
+    $)) 
 
 (MAKEPROP '|Vector| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedVector| 6 (NRTEVAL 1))
