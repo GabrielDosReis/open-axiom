@@ -1,3 +1,7 @@
+2010-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/define.boot (compDefineCategory2): Tidy.
+
 2010-05-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (setqSingle): Tidy.
