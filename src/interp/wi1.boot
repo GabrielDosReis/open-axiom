@@ -358,7 +358,7 @@ compAtom(x,m,e) ==
 
 extractCodeAndConstructTriple(u, m, oldE) ==
   u := markKillAll u
-  u is ["call",fn,:.] =>
+  u is ["%Call",fn,:.] =>
     if fn is ["applyFun",a] then fn := a
     [fn,m,oldE]
   [op,:.,env] := u
@@ -934,7 +934,7 @@ coerceByModemap([x,m,e],m') ==
            and (modeEqual(s,m) or isSubset(m,s,e))] or return nil
   mm:=first u  -- patch for non-trival conditons
   fn := genDeltaEntry(['coerce,:mm],e)
-  T := [["call",fn,x],m',e]
+  T := [["%Call",fn,x],m',e]
   markCoerceByModemap(x,m,m',markCallCoerce(x,m',T),nil)
  
 autoCoerceByModemap([x,source,e],target) ==
@@ -943,7 +943,7 @@ autoCoerceByModemap([x,source,e],target) ==
       for (modemap:= [map,cexpr]) in getModemapList("autoCoerce",1,e) | map is [
         .,t,s] and modeEqual(t,target) and modeEqual(s,source)] or return nil
   fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
-  markCoerceByModemap(x,source,target,[["call",fn,x],target,e],true)
+  markCoerceByModemap(x,source,target,[["%Call",fn,x],target,e],true)
 
 --======================================================================
 --                    From compiler.boot
@@ -1010,7 +1010,7 @@ compCase1(x,m,e) ==
   x1 :=
     switchMode => markRepper('rep, x)
     x
-  markCase(x, tag, markCaseWas(x1,[["call",fn,x'],$Boolean,e']))
+  markCase(x, tag, markCaseWas(x1,[["%Call",fn,x'],$Boolean,e']))
 
 genCaseTag(t,l,n) ==
   l is [x, :l] =>
