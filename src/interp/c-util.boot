@@ -1098,11 +1098,6 @@ eqSubst(args,parms,body) ==
   NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
 
-++ returns true if `form' does not really induce computations.
-isAtomicForm: %Form -> %Boolean
-isAtomicForm form ==
-  atom form or first form = "QUOTE"
-
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   isAtomicForm form => form

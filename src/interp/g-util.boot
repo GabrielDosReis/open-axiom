@@ -38,6 +38,7 @@ import sys_-utility
 namespace BOOT
 
 module g_-util where
+  isAtomicForm: %Form -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
@@ -65,6 +66,10 @@ isSharpVarWithNum x ==
     d := ELT(p,i)
     ok := DIGITP d => c := 10*c + DIG2FIX d
   if ok then c else nil
+
+++ Returns true if `form' is either an atom or a quotation.
+isAtomicForm form ==
+  atom form or first form = "QUOTE"
 
 
 --% Sub-domains information handlers
