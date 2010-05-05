@@ -590,9 +590,7 @@ setqSingle(id,val,m,E) ==
        $markFreeStack := [id,:$markFreeStack]
        form:=["setShellEntry","$",k,x]
      else form:=
-         $QuickLet => ["%LET",id,x]
-         ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
+         ["%LET",id,x]
   [form,m',e']
 
 setqMultiple(nameList,val,m,e) ==

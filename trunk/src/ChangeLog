@@ -1,5 +1,10 @@
 2010-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (setqSingle): Ignore $QuickLet.
+	* interp/wi1.boot (setqSingle): Likewise.
+
+2010-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compSetq1): Call self, not compSetq.
 	* interp/c-util.boot (isAtomicForm): Move to g-util.boot.
 	* interp/g-opt.boot (optSEQ): Splice toplevel PROGN forms.
