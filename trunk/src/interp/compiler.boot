@@ -788,7 +788,7 @@ compSetq1(form,val,m,E) ==
   IDENTP form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
     [.,.,E']:= compMakeDeclaration(x,y,E)
-    compSetq(["%LET",x,val],m,E')
+    compSetq1(x,val,m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
     op="%Comma" => setqMultiple(l,val,m,E)
@@ -854,7 +854,8 @@ assignError(val,m',form,m) ==
 setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
     setqMultipleExplicit(nameList,uncons val,m,e)
-  val is ["%Comma",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
+  val is ["%Comma",:l] and m=$NoValueMode => 
+    setqMultipleExplicit(nameList,l,m,e)
   -- 1. create a gensym, %add to local environment, compile and assign rhs
   g:= genVariable()
   e:= addBinding(g,nil,e)

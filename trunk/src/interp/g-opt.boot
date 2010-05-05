@@ -315,7 +315,11 @@ optCONDtail l ==
   [frst,:optCONDtail l']
  
 optSEQ ["SEQ",:l] ==
-  tryToRemoveSEQ SEQToCOND getRidOfTemps l where
+  tryToRemoveSEQ SEQToCOND getRidOfTemps splicePROGN l where
+    splicePROGN l ==
+      isAtomicForm l => l
+      l is [["PROGN",:stmts],:l'] => [:stmts,:l']
+      rplac(rest l, splicePROGN rest l)
     getRidOfTemps l ==
       null l => nil
       l is [["%LET",g,x,:.],:r] and GENSYMP g and 2>numOfOccurencesOf(g,r) =>

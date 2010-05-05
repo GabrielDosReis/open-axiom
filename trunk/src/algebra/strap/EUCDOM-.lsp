@@ -76,13 +76,12 @@
                 (COND
                   ((NULL (NOT (SPADCALL |y| (|getShellEntry| $ 8))))
                    (GO G191)))
-                (SEQ (PROGN
-                       (LETT |#G13| |y| |EUCDOM-;gcd;3S;5|)
-                       (LETT |#G14|
-                             (SPADCALL |x| |y| (|getShellEntry| $ 24))
-                             |EUCDOM-;gcd;3S;5|)
-                       (LETT |x| |#G13| |EUCDOM-;gcd;3S;5|)
-                       (LETT |y| |#G14| |EUCDOM-;gcd;3S;5|))
+                (SEQ (LETT |#G13| |y| |EUCDOM-;gcd;3S;5|)
+                     (LETT |#G14|
+                           (SPADCALL |x| |y| (|getShellEntry| $ 24))
+                           |EUCDOM-;gcd;3S;5|)
+                     (LETT |x| |#G13| |EUCDOM-;gcd;3S;5|)
+                     (LETT |y| |#G14| |EUCDOM-;gcd;3S;5|)
                      (EXIT (LETT |y|
                                  (SPADCALL |y| (|getShellEntry| $ 22))
                                  |EUCDOM-;gcd;3S;5|)))
@@ -92,17 +91,12 @@
 (DEFUN |EUCDOM-;unitNormalizeIdealElt| (|s| $)
   (PROG (|#G16| |u| |c| |a|)
     (RETURN
-      (SEQ (PROGN
-             (LETT |#G16|
-                   (SPADCALL (QVELT |s| 2) (|getShellEntry| $ 27))
-                   |EUCDOM-;unitNormalizeIdealElt|)
-             (LETT |u| (QVELT |#G16| 0)
-                   |EUCDOM-;unitNormalizeIdealElt|)
-             (LETT |c| (QVELT |#G16| 1)
-                   |EUCDOM-;unitNormalizeIdealElt|)
-             (LETT |a| (QVELT |#G16| 2)
-                   |EUCDOM-;unitNormalizeIdealElt|)
-             |#G16|)
+      (SEQ (LETT |#G16| (SPADCALL (QVELT |s| 2) (|getShellEntry| $ 27))
+                 |EUCDOM-;unitNormalizeIdealElt|)
+           (LETT |u| (QVELT |#G16| 0) |EUCDOM-;unitNormalizeIdealElt|)
+           (LETT |c| (QVELT |#G16| 1) |EUCDOM-;unitNormalizeIdealElt|)
+           (LETT |a| (QVELT |#G16| 2) |EUCDOM-;unitNormalizeIdealElt|)
+           |#G16|
            (EXIT (COND
                    ((SPADCALL |a| (|getShellEntry| $ 28)) |s|)
                    ('T

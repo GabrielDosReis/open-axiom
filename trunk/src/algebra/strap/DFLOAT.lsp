@@ -736,14 +736,13 @@
                  #0=#:G1538 |#G111| |#G112| |p0| |p1| |#G113| |#G114|
                  |q0| |q1| |#G115| |#G116| |s| |t|)
     (RETURN
-      (SEQ (EXIT (SEQ (PROGN
-                        (LETT |#G109| (|DFLOAT;manexp| |f| $)
-                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                        (LETT |nu| (QCAR |#G109|)
-                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                        (LETT |ex| (QCDR |#G109|)
-                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                        |#G109|)
+      (SEQ (EXIT (SEQ (LETT |#G109| (|DFLOAT;manexp| |f| $)
+                            |DFLOAT;rationalApproximation;$2NniF;87|)
+                      (LETT |nu| (QCAR |#G109|)
+                            |DFLOAT;rationalApproximation;$2NniF;87|)
+                      (LETT |ex| (QCDR |#G109|)
+                            |DFLOAT;rationalApproximation;$2NniF;87|)
+                      |#G109|
                       (LETT BASE (FLOAT-RADIX 0.0)
                             |DFLOAT;rationalApproximation;$2NniF;87|)
                       (EXIT (COND
@@ -784,15 +783,14 @@
                                          (EXIT
                                           (SEQ G190 NIL
                                            (SEQ
-                                            (PROGN
-                                              (LETT |#G110|
-                                               (DIVIDE2 |s| |t|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q| (QCAR |#G110|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |r| (QCDR |#G110|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              |#G110|)
+                                            (LETT |#G110|
+                                             (DIVIDE2 |s| |t|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |q| (QCAR |#G110|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |r| (QCDR |#G110|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            |#G110|
                                             (LETT |p2|
                                              (+ (* |q| |p1|) |p0|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
@@ -817,24 +815,22 @@
                                                      143))
                                                    |DFLOAT;rationalApproximation;$2NniF;87|)
                                                   (GO #0#)))))
-                                            (PROGN
-                                              (LETT |#G111| |p1|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |#G112| |p2|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |p0| |#G111|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |p1| |#G112|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|))
-                                            (PROGN
-                                              (LETT |#G113| |q1|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |#G114| |q2|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q0| |#G113|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q1| |#G114|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|))
+                                            (LETT |#G111| |p1|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |#G112| |p2|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |p0| |#G111|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |p1| |#G112|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |#G113| |q1|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |#G114| |q2|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |q0| |#G113|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |q1| |#G114|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
                                             (EXIT
                                              (PROGN
                                                (LETT |#G115| |t|

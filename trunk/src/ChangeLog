@@ -1,3 +1,22 @@
+2010-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compSetq1): Call self, not compSetq.
+	* interp/c-util.boot (isAtomicForm): Move to g-util.boot.
+	* interp/g-opt.boot (optSEQ): Splice toplevel PROGN forms.
+	* interp/g-util.boot (isAtomicForm): Move from c-util.boot.  Export.
+
+2010-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Change middle-end instruction "call" to
+	"%Call".
+	* interp/compiler.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 2010-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot: Miscellaneous cleanup.
