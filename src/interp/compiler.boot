@@ -810,19 +810,17 @@ setqSingle(id,val,m,E) ==
   m'':=
     get(id,"mode",E) or getmode(id,E) or
        (if m=$NoValueMode then $EmptyMode else m)
--- m'':= LASSOC("mode",currentProplist) or $EmptyMode
-       --for above line to work, line 3 of compNoStacking is required
   T:=
     eval or return nil where
       eval() ==
         T:= comp(val,m'',E) => T
-        not get(id,"mode",E) and m'' ~= (maxm'':=maximalSuperType m'') and
+        get(id,"mode",E) = nil and m'' ~= (maxm'':=maximalSuperType m'') and
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= convert(T,m) or return nil
   if $profileCompiler = true then
-    null IDENTP id => nil
+    not IDENTP id => nil
     key :=
       id in rest $form => "arguments"
       "locals"
@@ -840,9 +838,7 @@ setqSingle(id,val,m,E) ==
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
   form :=
     k := NRTassocIndex(id) => ["setShellEntry","$",k,x]
-    $QuickLet => ["%LET",id,x]
-    ["%LET",id,x,
-       (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
+    ["%LET",id,x]
   [form,m',e']
 
 assignError(val,m',form,m) ==
