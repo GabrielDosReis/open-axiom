@@ -1468,7 +1468,7 @@ il2OldForm x ==
         rplac(first e,op)
         ilTransformInsns rest e
         e
-      ["call",:ilTransformInsns e]
+      ["%Call",:ilTransformInsns e]
     otherwise => ilTransformInsns x
 
 ++ Subroutines of il2OldForm to walk sequence of IL instructions.

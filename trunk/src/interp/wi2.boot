@@ -437,7 +437,7 @@ applyMapping([op,:argl],m,e,ml) ==
         getAbbreviation($op,#rest $form)
       [op',:argl',"$"] where
         op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
-    ["call",['applyFun,op],:argl']
+    ["%Call",['applyFun,op],:argl']
   pairlis := pairList(argl',$FormalMapVariableList)
   convert([form,SUBLIS(pairlis,first ml),e],m)
  
