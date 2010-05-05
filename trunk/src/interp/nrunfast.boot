@@ -478,7 +478,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
   STRINGP source and lazyt is ['QUOTE,=source] => true
   NUMBERP source =>
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
-      lazyt is ['call,'LENGTH, slotNum] => source = #(domain.slotNum)
+      lazyt is ["call",'LENGTH, slotNum] => source = #(domain.slotNum)
       nil
 
   -- A hideous hack on the same lines as the previous four lines JHD/MCD

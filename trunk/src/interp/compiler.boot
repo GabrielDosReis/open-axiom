@@ -237,7 +237,7 @@ applyMapping([op,:argl],m,e,ml) ==
       emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
     u ~= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
-    ['call,['applyFun,op],:argl']
+    ["call",['applyFun,op],:argl']
   pairlis := pairList($FormalMapVariableList,argl')
   convert([form,SUBLIS(pairlis,first ml),e],m)
 
@@ -702,7 +702,7 @@ compApplication(op,argl,m,T) ==
         not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) and
           null get(T.expr,"value",e) =>
             emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
-      ['call, ['applyFun, T.expr], :[a.expr for a in argTl]]
+      ["call", ['applyFun, T.expr], :[a.expr for a in argTl]]
     coerce([form, retm, e],resolve(retm,m))
   op = 'elt => nil
   eltForm := ['elt, op, :argl]

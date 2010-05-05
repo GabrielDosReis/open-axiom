@@ -263,14 +263,14 @@ markRepeat(form, T)        ==
   [mkWi("repeat", 'WI,form,first T), :rest T]
   
 markTran(form,form',[dc,:sig],env) ==  --from compElt/compFormWithModemap
-  dc ~= 'Rep or not ('_$ in sig) => mkWi('markTran,'WI,form,['call,:form'])
+  dc ~= 'Rep or not ('_$ in sig) => mkWi('markTran,'WI,form,["call",:form'])
   argl := [u for t in rest sig for arg in rest form'] where u() ==
     t='_$ => 
       argSource := getSourceWI arg
       IDENTP argSource and getmode(argSource,env) = 'Rep => arg
       markRepper('rep,arg)
     arg
-  form' := ['call,first form',:argl]
+  form' := ["call",first form',:argl]
   wi := mkWi('markTran,'WI,form,form')
   first sig = '_$ => markRepper('per,wi)
   wi
@@ -681,7 +681,7 @@ markPaths(x,y,s) ==    --x < y; find location s of x in y (initially s=nil)
                               nil)) => markCons(p,s)
 --  x is ['exit,a,b] and y is ['exit,a,c] and (p := mymy markPathsEqual(b,c)) =>
 --     markCons(p,s)
-  y is ['call,:r] => markPaths(x,r,s)                 --for loops
+  y is ["call",:r] => markPaths(x,r,s)                 --for loops
   y is [fn,m,y1] and fn in '(PART CATCH THROW) => markPaths(x,y1,s) or
     "APPEND"/[markPaths(x,u,markCons(i,s)) for u in y1 for i in 0..]
   "APPEND"/[markPaths(x,u,markCons(i,s)) for u in y for i in 0..]
@@ -697,7 +697,7 @@ markPathsEqual(x,y) ==
   y is [fn,.,z] and fn in '(PART CATCH THROW) and markPathsEqual(x,z) => true
   y is ["%LET",a,b] and GENSYMP a and markPathsEqual(x,b) => true
   y is ['IF,a,b,:.] and GENSYMP a => markPathsEqual(x,b)  -------> ??? 
-  y is ['call,:r] => markPathsEqual(IFCDR x,r)
+  y is ["call",:r] => markPathsEqual(IFCDR x,r)
   x is ['REDUCE,.,.,c,:.] and c is ['COLLECT,:u] and 
     y is ['PROGN,.,repeet,:.] and repeet is ['REPEAT,:v] => markPathsEqual(u,v)
   atom y or atom x => 
@@ -1389,7 +1389,7 @@ mkPaths(x,y) ==   --x < y; find location s of x in y (initially s=nil)
   x is [op, :u] and op in '(LIST VECTOR) and y is ['construct,:v] 
     and markPathsEqual(['construct,:u],y) => [y]
   (y is ["%LET",a,b] or y is ['IF,a,b,:.]) and GENSYMP a and markPathsEqual(x,b) => [y]
-  y is ['call,:r] => 
+  y is ["call",:r] => 
 --  markPathsEqual(x,y1) => [y]
     mkPaths(x,r) => [y]
   y is ['PART,.,y1] => mkPaths(x,y1)
