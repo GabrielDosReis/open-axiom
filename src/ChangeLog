@@ -1,5 +1,13 @@
 2010-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot: Miscellaneous cleanup.
+	* interp/g-opt.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
+2010-05-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (backendCompileSPADSLAM): Generate more
 	readable Lisp code.
 
