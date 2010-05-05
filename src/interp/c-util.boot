@@ -1336,7 +1336,7 @@ backendCompileSLAM(name,args,body) ==
   COMP370 [u]
   name
 
-++ Same as backendCompileSPADSLAM, except that the cache is a hash
+++ Same as backendCompileSLAM, except that the cache is a hash
 ++ table.  This backend compiler is used to compile constructors.
 backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
@@ -1348,20 +1348,18 @@ backendCompileSPADSLAM(name,args,body) ==
     null args => [nil,nil,[auxfn]]
     null rest args => [[g1],["devaluate",g1],[auxfn,g1]]
     [g1,["devaluateList",g1],["APPLY",["FUNCTION",auxfn],g1]]
-  arg := first u
+  arg := first u               -- parameter list
   argtran := second u          -- devaluate argument
-  app := third u
-  codePart1 :=                 -- if value already computed, grab it.
-    null args => [al]
-    [["SETQ",g2,["assoc",argtran,al]], ["CDR",g2]]
-  codePart2 :=                 -- otherwise compute it, and cache it.
-                               -- Note: at most five values are cached.
-    null args => [true,["SETQ",al,app]]
-    [true,["SETQ",al,["cons5",["CONS",argtran, ["SETQ",g2,app]],al]],g2]
-  decl :=                      -- declare the cache variable.
-    null args => nil
-    [g2]
-  lamex := ["LAM",arg,["LET",decl,["COND",codePart1,codePart2]]]
+  app := third u               -- code to compute value
+  code := 
+    args = nil => ["COND",[al],[true,["SETQ",al,app]]]
+    ["LET",[[g2,["assoc",argtran,al]]],
+      ["COND",
+        [g2,["CDR",g2]],
+          [true, 
+            ["PROGN",["SETQ",g2,app],
+               ["SETQ",al,["cons5",["CONS",argtran, g2],al]],g2]]]]
+  lamex := ["LAM",arg,code]
   SETANDFILE(al,nil)           -- define the global cache.
   -- compile the worker function first.
   u := [auxfn,["LAMBDA",args,:body]]
