@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -167,7 +167,7 @@ containsString(x,y) ==
 consBuffer item ==
   if item = '"failed" then item := 'failed
   n:=
-    STRINGP item => 2+#item
+    string? item => 2+#item
     IDENTP item => #PNAME item
     #STRINGIMAGE item
   columnsLeft:= $lineLength-$c
@@ -185,7 +185,7 @@ consBuffer item ==
   $lineFragmentBuffer:=
     null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
     NUMBERP item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
-    STRINGP item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
+    string? item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
     $lineFragmentBuffer
   $rightBraceFlag := item = "}"
@@ -193,7 +193,7 @@ consBuffer item ==
   $c:= $c+n
  
 isSpecialBufferItem item ==
-  item = "; " or STRINGP item => true
+  item = "; " or string? item => true
   false
 
 isCloseDelimiter item ==   EQ(item,")") or EQ(item,"]") or EQ(item,"}") 
@@ -337,7 +337,7 @@ formatUnion(['Union,:r]) ==
   $count : local := 0
   formatFormNoColonDecl formatTestForPartial ['Union,:[fn x for x in r]] where fn x ==
     x is [":",y,'Branch] => fn STRINGIMAGE y
-    STRINGP x => [":", INTERN x, ['Enumeration,x]]
+    string? x => [":", INTERN x, ['Enumeration,x]]
     x is [":",:.] => x
     tag := INTERN STRCONC("value",STRINGIMAGE ($count := $count + 1))
     [":", tag, x]      

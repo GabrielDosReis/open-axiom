@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -80,10 +80,10 @@ resolveTT1(t1,t2) ==
   t2 = '(Exit) => t1
   t1 is ['Union,:.] => resolveTTUnion(t1,t2)
   t2 is ['Union,:.] => resolveTTUnion(t2,t1)
-  STRINGP(t1) =>
+  string?(t1) =>
     t2 = $String => t2
     NIL
-  STRINGP(t2) =>
+  string?(t2) =>
     t1 = $String => t1
     NIL
   null acceptableTypesToResolve(t1,t2) => NIL
@@ -164,7 +164,7 @@ resolveTTSpecial(t1,t2) ==
   -- things. (RSS 1/-86)
 
   -- following is just an efficiency hack
-  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and CONSP(t2) and
+  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and cons?(t2) and
     first(t2) in '(Polynomial RationalFunction) => t2
 
   (t1 = $Symbol) and ofCategory(t2, '(IntegerNumberSystem)) =>
@@ -344,7 +344,7 @@ resolveTTRed3(t) ==
       for x in t for cs in getDualSignatureFromDB first t ]
 
 interpOp?(op) ==
-  CONSP(op) and
+  cons?(op) and
     first(op) in '(Incl SetDiff SetComp SetInter SetUnion VarEqual SetEqual)
 
 --% Resolve Type with Category
@@ -410,7 +410,7 @@ getConditionsForCategoryOnType(t,cat) ==
   getConditionalCategoryOfType(t,[NIL],['ATTRIBUTE,cat])
 
 getConditionalCategoryOfType(t,conditions,match) ==
-  if CONSP t then t := first t
+  if cons? t then t := first t
   t in '(Union Mapping Record) => NIL
   conCat := getConstructorCategoryFromDB t
   REMDUP rest getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
@@ -447,7 +447,7 @@ matchUpToPatternVars(pat,form,patAlist) ==
     (p := assoc(pat,patAlist)) => EQUAL(form,rest p)
     patAlist := [[pat,:form],:patAlist]
     true
-  CONSP(pat) =>
+  cons?(pat) =>
     atom form => NIL
     matchUpToPatternVars(first pat, first form,patAlist) and
       matchUpToPatternVars(rest pat, rest form,patAlist)
@@ -595,7 +595,7 @@ resolveTMSpecial(t,m) ==
   t = $AnonymousFunction and m is ['Mapping,:.] => m
   t is ['Variable,x] and m is ['OrderedVariableList,le] =>
     isPatternVar le => ['OrderedVariableList,[x]]
-    CONSP(le) and member(x,le) => le
+    cons?(le) and member(x,le) => le
     NIL
   t is ['Fraction, ['Complex, t1]] and m is ['Complex, m1] =>
     resolveTM1(['Complex, ['Fraction, t1]], m)
@@ -682,13 +682,13 @@ resolveTMRed1(t) ==
   t is ['Resolve,a,b] =>
     ( a := resolveTMRed1 a ) and ( b := resolveTMRed1 b ) and
       resolveTM1(a,b)
-  t is ['Incl,a,b] => CONSP b and member(a,b) and b
-  t is ['Diff,a,b] => CONSP a and member(b,a) and SETDIFFERENCE(a,[b])
-  t is ['SetIncl,a,b] => CONSP b and "and"/[member(x,b) for x in a] and b
-  t is ['SetDiff,a,b] => CONSP b and CONSP b and
+  t is ['Incl,a,b] => cons? b and member(a,b) and b
+  t is ['Diff,a,b] => cons? a and member(b,a) and SETDIFFERENCE(a,[b])
+  t is ['SetIncl,a,b] => cons? b and "and"/[member(x,b) for x in a] and b
+  t is ['SetDiff,a,b] => cons? b and cons? b and
                          intersection(a,b) and SETDIFFERENCE(a,b)
   t is ['VarEqual,a,b] => (a = b) and b
-  t is ['SetComp,a,b] => CONSP a and CONSP b and
+  t is ['SetComp,a,b] => cons? a and cons? b and
     "and"/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
   t is ['SimpleAlgebraicExtension,a,b,p] =>  -- this is a hack. RSS
     ['SimpleAlgebraicExtension, resolveTMRed1 a, resolveTMRed1 b,p]
@@ -711,7 +711,7 @@ equiType(t) ==
   t
 
 getUnderModeOf d ==
-  not CONSP d => NIL
+  not cons? d => NIL
 --  n := LASSOC(first d,$underDomainAlist) => d.n ----> $underDomainAlist NOW always NIL
   for a in rest d for m in rest destructT d repeat
     if m then return a

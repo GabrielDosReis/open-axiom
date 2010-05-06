@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ bcMkFunction(name,arg,args) ==
   STRCONC(name,'"(",arg,"STRCONC"/[STRCONC('",", x) for x in args],'")")
 
 bcString2HyString2 s ==
-  (STRINGP s) and (s.0 = char '_")  =>
+  (string? s) and (s.0 = char '_")  =>
     len := #s
     STRCONC('"\_"", SUBSTRING(s, 1, len-2), '"\_"")
   s
@@ -97,9 +97,9 @@ bcString2WordList s == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => nil
     k := or/[j for j in i..n | s.j ~= char '_  ]
-    null INTEGERP k => nil
+    null integer? k => nil
     l := bcFindString(s,k + 1,n,char '_  )
-    null INTEGERP l => [SUBSTRING(s,k,nil)]
+    null integer? l => [SUBSTRING(s,k,nil)]
     [SUBSTRING(s,k,l-k),:fn(s,l + 1,n)]
 
 

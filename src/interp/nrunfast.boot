@@ -61,7 +61,7 @@ initNewWorld() ==
   $doNotCompressHashTableIfTrue := true
  
 isNewWorldDomain domain == 
-  INTEGERP domain.3    --see HasCategory/Attribute
+  integer? domain.3    --see HasCategory/Attribute
  
 getDomainByteVector dom == 
   CDDR dom.4
@@ -134,7 +134,7 @@ replaceGoGetSlot env ==
   goGetDomain :=
      goGetDomainSlotIndex = 0 => thisDomain
      thisDomain.goGetDomainSlotIndex
-  if CONSP goGetDomain then
+  if cons? goGetDomain then
      goGetDomain := lazyDomainSet(goGetDomain,thisDomain,goGetDomainSlotIndex)
   sig :=
     [newExpandTypeSlot(bytevec.(index := QSADD1 index),thisDomain,thisDomain)
@@ -231,7 +231,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   NE(success,'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
-        CONSP success => [first success,:devaluate rest success]
+        cons? success => [first success,:devaluate rest success]
         success
     success
   subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
@@ -261,7 +261,7 @@ newLookupInAddChain(op,sig,addFormDomain,dollar) ==
 --=======================================================
 newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
-    INTEGERP KAR addFormCell =>
+    integer? KAR addFormCell =>
       or/[newLookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
     if null VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
     lookupInDomainVector(op,sig,addFormDomain.index,dollar)
@@ -274,7 +274,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := second slot4
   SIZE catVec = 0 => nil                      --early exit if no categories
-  INTEGERP KDR catVec.0 =>
+  integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
@@ -439,7 +439,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   if s = '$ then
     --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
     s := devaluate dollar -- calls from HasCategory can have $s
-  INTEGERP a =>
+  integer? a =>
     not typeFlag => s = domain.a
     a = 6 and $isDefaultingPackage => s = devaluate dollar
     VECP (d := domainVal(dollar,domain,a)) =>
@@ -451,8 +451,8 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a = '$ => s = devaluate dollar
   a = "$$" => s = devaluate domain
-  STRINGP a =>
-    STRINGP s => a = s
+  string? a =>
+    string? s => a = s
     s is ['QUOTE,y] and PNAME y = a
     IDENTP s and PNAME s = a
   atom a =>  a = s
@@ -475,7 +475,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
       null coSig => error ["bad Constructor op", op]
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
            for s in sargl for a in argl for flag in rest coSig]
-  STRINGP source and lazyt is ['QUOTE,=source] => true
+  string? source and lazyt is ['QUOTE,=source] => true
   NUMBERP source =>
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
       lazyt is ["%Call",'LENGTH, slotNum] => source = #(domain.slotNum)
@@ -560,7 +560,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
  
 newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   u = '$ => u
-  INTEGERP u =>
+  integer? u =>
      typeFlag => newExpandTypeSlot(u, dollar,domain)
      domain.u
   u is ['NRTEVAL,y] => nrtEval(y,domain)

@@ -183,7 +183,7 @@ comp3(x,m,$e) ==
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
-  STRINGP m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  string? m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
   -- In quasiquote mode, x should match exactly
   (y := isQuasiquote m) =>
      y = x => [["QUOTE",x], m, $e]
@@ -277,7 +277,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
-  if STRINGP x then x:= INTERN x
+  if string? x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ~= nil) and not hasFormalMapVariable(x, vl) => return
@@ -398,14 +398,14 @@ compAtom(x,m,e) ==
   t:=
     IDENTP x => compSymbol(x,m,e) or return nil
     member(m,$IOFormDomains) and primitiveType x => [x,m,e]
-    STRINGP x => [x,x,e]
+    string? x => [x,x,e]
     [x,primitiveType x or return nil,e]
   convert(t,m)
 
 primitiveType x ==
   x is nil => $EmptyMode
-  STRINGP x => $String
-  INTEGERP x =>
+  string? x => $String
+  integer? x =>
     x=0 => $NonNegativeInteger
     x>0 => $PositiveInteger
     $Integer
@@ -828,7 +828,7 @@ setqSingle(id,val,m,E) ==
   newProplist := 
     consProplistOf(id,currentProplist,"value",removeEnv [val,:rest T])
   e':= 
-    CONSP id => e'
+    cons? id => e'
     addBinding(id,newProplist,e')
   if isDomainForm(val,e') then
     if isDomainInScope(id,e') then
@@ -1502,7 +1502,7 @@ compColon([":",f,t],m,e) ==
       (if not member(t,getDomainsInScope e) then e:= addDomain(t,e); t)
     isDomainForm(t,e) or isCategoryForm(t,e) => t
     t is ["Mapping",m',:r] => t
-    STRINGP t => t              -- literal flag types are OK
+    string? t => t              -- literal flag types are OK
     unknownTypeError t
     t
   f is ["LISTOF",:l] =>
@@ -1632,7 +1632,7 @@ commonSuperType(m,m') ==
 coerceSubset: (%Triple,%Mode) -> %Maybe %Triple
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
-  INTEGERP x and (m'' := commonSuperType(m,m')) =>
+  integer? x and (m'' := commonSuperType(m,m')) =>
     -- obviously this is temporary
     satisfies(x,isSubDomain(m',m'')) => [x,m',e]
     nil
@@ -1642,13 +1642,13 @@ coerceHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
-  STRINGP m' and modeEqual(m,$String) => [T.expr,m,$e]
+  string? m' and modeEqual(m,$String) => [T.expr,m,$e]
   modeEqual(m',m) or
     (get(m',"value",$e) is [m'',:.] or getmode(m',$e) is ["Mapping",m'']) and
       modeEqual(m'',m) or
         (get(m,"value",$e) is [m'',:.] or getmode(m,$e) is ["Mapping",m'']) and
           modeEqual(m'',m') => [T.expr,m,T.env]
-  STRINGP T.expr and T.expr=m => [T.expr,m,$e]
+  string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
       $bootStrapMode = true => [T.expr,m,$e]
       extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
@@ -1728,7 +1728,7 @@ coerceSuperset(T,sub) ==
 compCoerce1(x,m',e) ==
   T:= comp(x,m',e) or comp(x,$EmptyMode,e) or return nil
   m1:=
-    STRINGP T.mode => $String
+    string? T.mode => $String
     T.mode
   m':=resolve(m1,m')
   T:=[T.expr,m1,T.env]
@@ -1796,7 +1796,7 @@ compComma(form,m,e) ==
 resolve(din,dout) ==
   din=$NoValueMode or dout=$NoValueMode => $NoValueMode
   dout=$EmptyMode => din
-  din~=dout and (STRINGP din or STRINGP dout) =>
+  din~=dout and (string? din or string? dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) => nil
     mkUnion(din,dout)
@@ -2096,7 +2096,7 @@ compAlternativeGuard(sn,sm,pat,e) ==
       warnTooManyOtherwise()
     $catchAllCount := $catchAllCount + 1
     [true,nil,e,e]
-  CONSP sn =>
+  cons? sn =>
     pat isnt ["%Comma",:.] =>
       stackAndThrow('"Pattern must be a tuple for a tuple scrutinee",nil)
     #sn ~= #rest pat =>
@@ -2190,7 +2190,7 @@ compReduce(form,m,e) ==
 
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   [collectOp,:itl,body]:= collectForm
-  if STRINGP op then op:= INTERN op
+  if string? op then op:= INTERN op
   collectOp ~= "COLLECT" => systemError ['"illegal reduction form:",form]
   $sideEffectsList: local := nil
   $until: local := nil
@@ -2436,7 +2436,7 @@ compPer(["per",x],m,e) ==
   T := comp(x,inType,e) or return nil
   if $subdomain then
     T := 
-      INTEGERP T.expr and satisfies(T.expr,domainVMPredicate "$") => 
+      integer? T.expr and satisfies(T.expr,domainVMPredicate "$") => 
         [T.expr,"$",e]
       coerceSuperset(T,"$") or return nil
   else 

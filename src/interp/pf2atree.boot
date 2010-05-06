@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -125,7 +125,7 @@ pf2Atree1 pf ==
             [mkAtreeNodeWithSrcPos("Dollar",pf),
                 pf2Sexpr((pfFromdomDomain)(pf)),
                     [mkAtreeNodeWithSrcPos("One",pf)]]
-        INTEGERP op =>
+        integer? op =>
             -- n$Foo => n * One()$Foo
             [mkAtreeNodeWithSrcPos("*",pf),
                 mkAtree1WithSrcPos(op,pf),
@@ -466,7 +466,7 @@ pfCollect2Atree pf ==
     sex := ["COLLECT",
         :(loopIters2Sex)((pfParts)((pfCollectIterators)(pf))),
             pf2Sexpr (pfCollectBody)(pf)]
-    sex is ["COLLECT", ["|", cond], var] and SYMBOLP var =>
+    sex is ["COLLECT", ["|", cond], var] and symbol? var =>
         [., [., condAtree], varAtree] := atree
         ["SUCHTHAT", varAtree, condAtree]
 
@@ -525,7 +525,7 @@ pfCollect2Atree pf ==
 --  patternVarsOf1(expr, varList) ==
 --    NULL expr => varList
 --    ATOM expr =>
---      null SYMBOLP expr => varList
+--      null symbol? expr => varList
 --      SymMemQ(expr, varList) => varList
 --      [expr, :varList]
 --    expr is [op, :argl] =>

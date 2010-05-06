@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -444,7 +444,7 @@ spadify(l,results,decls,names,actual) ==
     name := NTH(i,results)
     ty := getFortranType(name,decls)
     -- Result is a string
-    STRINGP fort =>
+    string? fort =>
       spadForms := [makeResultRecord(name,ty,fort), :spadForms]
     -- Result is a Complex Scalar
     ty in ["double complex" , "complex"] =>
@@ -622,7 +622,7 @@ writeData(tmpFile,indata) ==
         NULL v =>   
                 xdrWrite(xstr,0)
         -- characters  
-        STRINGP v => 
+        string? v => 
                 xdrWrite(xstr,v)
         -- some array
         VECTORP v =>  
@@ -652,7 +652,7 @@ writeData(tmpFile,indata) ==
                 for el in v repeat 
                         if el then xdrWrite(xstr,1) else xdrWrite(xstr,0) 
         -- integers
-        INTEGERP v => 
+        integer? v => 
                 xdrWrite(xstr,v)
         -- floats
         FLOATP v => 
@@ -750,7 +750,7 @@ multiToUnivariate f ==
   -- Take an AnonymousFunction, replace the bound variables by references to
   -- elements of a vector, and compile it.
   (first f) ~= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
-  if CONSP second f then
+  if cons? second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
@@ -767,7 +767,7 @@ functionAndJacobian f ==
   -- Take a mapping into n functions of n variables, produce code which will
   -- evaluate function and jacobian values.
   (first f) ~= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
-  if CONSP second f then
+  if cons? second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
@@ -795,7 +795,7 @@ vectorOfFunctions f ==
   -- Take a mapping into n functions of m variables, produce code which will
   -- evaluate function values.
   (first f) ~= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
-  if CONSP second f then
+  if cons? second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]

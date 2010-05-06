@@ -117,7 +117,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   --the operation name should be assigned a slot
   not firstTime and (k:= NRTassocIndex x) => k
   VECP x => systemErrorHere '"NRTencode"
-  CONSP x =>
+  cons? x =>
     op := first x
     op = "Record" or x is ['Union,['_:,a,b],:.] =>
       [op,:[['_:,a,encode(b,c,false)]
@@ -183,7 +183,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
          MKQ x
      fun := lookupDefiningFunction(op,nsig,ndc)
   fun = nil => nil
-  if CONSP fun then
+  if cons? fun then
     eltOrConst = "CONST" => return ['XLAM,'ignore, SPADCALL fun]
     fun := first fun
   getFunctionReplacement compileTimeBindingOf fun
@@ -657,7 +657,7 @@ slot1Filter opList ==
 --include only those ops which are defined within the capsule
   [u for x in opList | u := fn x] where
     fn [op,:l] ==
-      u := [entry for entry in l | INTEGERP second entry] => [op,:u]
+      u := [entry for entry in l | integer? second entry] => [op,:u]
       nil
 
 NRToptimizeHas u ==
@@ -730,7 +730,7 @@ NRTsubstDelta(initSig) ==
   sig := [replaceSlotTypes s for s in initSig] where
      replaceSlotTypes(t) ==
         atom t =>
-          not INTEGERP t => t
+          not integer? t => t
           t = 0 => '$
           t = 2 => '_$_$
           t = 5 => $NRTaddForm
@@ -749,7 +749,7 @@ addConsDB x ==
     min x ==
       y:=HGET($consDB,x)
       y => y
-      CONSP x =>
+      cons? x =>
         for z in tails x repeat
           u:=min first z
           if not EQ(u,first z) then RPLACA(z,u)
@@ -758,7 +758,7 @@ addConsDB x ==
         for i in 0..MAXINDEX x repeat
           x.i:=min (x.i)
         HashCheck x
-      STRINGP x => HashCheck x
+      string? x => HashCheck x
       x
     HashCheck x ==
       y:=HGET($consDB,x)

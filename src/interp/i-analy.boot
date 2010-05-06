@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ putCallInfo(t,op,arg,nargs) ==
 getMinimalVariableTower(var,t) ==
   -- gets the minimal polynomial subtower of t that contains the
   -- given variable. Returns NIL if none.
-  STRINGP(t) or IDENTP(t) => NIL
+  string?(t) or IDENTP(t) => NIL
   t = $Symbol => t
   t is ['Variable,u] =>
     (u = var) => t
@@ -166,7 +166,7 @@ pushDownTargetInfo(op,target,arglist) ==
 pushDownOnArithmeticVariables(op,target,arglist) ==
   -- tries to push appropriate target information onto variable
   -- occurring in arithmetic expressions
-  CONSP(target) and first(target) = 'Variable => NIL
+  cons?(target) and first(target) = 'Variable => NIL
   not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
   not containsPolynomial(target)   => NIL
   for x in arglist for i in 1.. repeat
@@ -175,7 +175,7 @@ pushDownOnArithmeticVariables(op,target,arglist) ==
       getValue(x) or (xn = $immediateDataSymbol) => NIL
       t := getMinimalVariableTower(xn,target) or target
       if not getTarget(x) then putTarget(x,t)
-    CONSP(x) =>  -- node
+    cons?(x) =>  -- node
       [op',:arglist'] := x
       pushDownOnArithmeticVariables(getUnname op',target,arglist')
   arglist
@@ -303,7 +303,7 @@ bottomUpUseSubdomain t ==
   $useIntegerSubdomain : local := true
   ms := bottomUp t
   ($immediateDataSymbol ~= getUnname(t)) or ($Integer ~= first(ms)) => ms
-  null INTEGERP(num := objValUnwrap getValue t) => ms
+  null integer?(num := objValUnwrap getValue t) => ms
   o := getBasicObject(num)
   putValue(t,o)
   ms := [objMode o]
@@ -754,7 +754,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     (i = 1) and (opName = "set!") =>
         a := [x,:a]
         ms := [m,:ms]
-    if CONSP(m) and first(m) = $EmptyMode then return NIL
+    if cons?(m) and first(m) = $EmptyMode then return NIL
     object:= retract getValue x
     a:= [x,:a]
     object="failed" =>

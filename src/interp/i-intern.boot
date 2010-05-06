@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -120,7 +120,7 @@ mkAtree1 x ==
 
 mkAtree2(x,op,argl) ==
   nargl := #argl
-  (op= "-") and (nargl = 1) and (INTEGERP first argl) =>
+  (op= "-") and (nargl = 1) and (integer? first argl) =>
     mkAtree1(MINUS first argl)
   op=":" and argl is [y,z] => [mkAtreeNode "Declare",:argl]
   op="COLLECT" => [mkAtreeNode op,:transformCollect argl]
@@ -150,13 +150,13 @@ mkAtree2(x,op,argl) ==
     t := evaluateType unabbrev type
     t = $DoubleFloat and expr is [['_$elt, =$Float, 'float], :args] =>
         mkAtree1 [['_$elt, $DoubleFloat, 'float], :args]
-    t = $DoubleFloat and INTEGERP expr =>
+    t = $DoubleFloat and integer? expr =>
         v := mkAtreeNode $immediateDataSymbol
         putValue(v,getBasicObject float expr)
         v
-    t = $Float and INTEGERP expr =>
+    t = $Float and integer? expr =>
         mkAtree1 ["::", expr, t]
-    typeIsASmallInteger(t) and INTEGERP expr =>
+    typeIsASmallInteger(t) and integer? expr =>
         mkAtree1 ["::", expr, t]
     [mkAtreeNode 'TARGET,mkAtree1 expr, type]
   (op="case") and (nargl = 2)  =>
@@ -173,7 +173,7 @@ mkAtree2(x,op,argl) ==
     [mkAtreeNode "Dollar",D,mkAtree1 [op1,:argl]]
   op='_$elt =>
     argl is [D,a] =>
-      INTEGERP a =>
+      integer? a =>
         a = 0 => mkAtree1 [['_$elt,D,'Zero]]
         a = 1 => mkAtree1 [['_$elt,D,'One]]
         t := evaluateType unabbrev [D]
@@ -223,7 +223,7 @@ mkAtree3(x,op,argl) ==
     r := mkAtreeValueOf r
     v :=
       null arg => VECTOR(NIL,NIL,NIL)
-      CONSP arg and rest arg and first arg ~= "|" =>
+      cons? arg and rest arg and first arg ~= "|" =>
         collectDefTypesAndPreds ["tuple",:arg]
       null rest arg => collectDefTypesAndPreds first arg
       collectDefTypesAndPreds arg
@@ -240,7 +240,7 @@ mkAtree3(x,op,argl) ==
     a is [op,:arg] =>
       v :=
         null arg => VECTOR(NIL,NIL,NIL)
-        CONSP arg and rest arg and first arg ~= "|" =>
+        cons? arg and rest arg and first arg ~= "|" =>
           collectDefTypesAndPreds ["tuple",:arg]
         null rest arg => collectDefTypesAndPreds first arg
         collectDefTypesAndPreds arg
@@ -395,7 +395,7 @@ getValueFromEnvironment(x,mode) ==
   objValUnwrap v
 
 getValueFromSpecificEnvironment(id,mode,e) ==
-  CONSP e =>
+  cons? e =>
     u := get(id,'value,e) =>
       objMode(u) = $EmptyMode =>
         systemErrorHere ["getValueFromSpecificEnvironment",id]

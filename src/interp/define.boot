@@ -1081,7 +1081,7 @@ getArgumentModeOrMoan(x,form,e) ==
 
 getArgumentMode: (%Form,%Env) -> %Mode 
 getArgumentMode(x,e) ==
-  STRINGP x => x
+  string? x => x
   m:= get(x,'mode,e) => m
  
 checkAndDeclare(argl,form,sig,e) ==
@@ -1240,7 +1240,7 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   -- parameters are never used in the body.
   vl := [ renameParameter for v in vl] where
     renameParameter() ==
-      NUMBERP v or IDENTP v or STRINGP v => v
+      NUMBERP v or IDENTP v or string? v => v
       GENSYM '"flag"
   clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then
@@ -1633,7 +1633,7 @@ DomainSubstitutionFunction(parameters,body) ==
            --For categories, bound and used in compDefineCategory
           MKQ g
         first body="QUOTE" => body
-        CONSP $definition and
+        cons? $definition and
             isFunctor first body and
               first body ~= first $definition
           =>  ['QUOTE,optimize body]

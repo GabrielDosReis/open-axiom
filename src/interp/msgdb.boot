@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -159,7 +159,7 @@ substituteSegmentedMsg(msg,args) ==
   nargs := #args
   for x in segmentedMsgPreprocess msg repeat
     -- x is a list
-    CONSP x =>
+    cons? x =>
       l := cons(substituteSegmentedMsg(x,args),l)
     c := x.0
     n := STRINGLENGTH x
@@ -184,7 +184,7 @@ substituteSegmentedMsg(msg,args) ==
       -- Note 'f processing must come first.
       if MEMQ(char 'f,q) then
           arg :=
-              CONSP arg => APPLY(first arg, rest arg)
+              cons? arg => APPLY(first arg, rest arg)
               arg
       if MEMQ(char 'm,q) then arg := [['"%m",:arg]]
       if MEMQ(char 's,q) then arg := [['"%s",:arg]]
@@ -206,7 +206,7 @@ substituteSegmentedMsg(msg,args) ==
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
-         CONSP(arg) =>
+         cons?(arg) =>
            MEMQ(char 'y,q) or (first arg = '"%y") or ((LENGTH arg) = 1)  =>
              append(reverse arg, l)
            head := first arg
@@ -259,7 +259,7 @@ noBlankBeforeP word==
     if CVECP word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
-    (CONSP word) and member(first word,$msgdbListPrims) => true
+    (cons? word) and member(first word,$msgdbListPrims) => true
     false
 
 $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
@@ -271,7 +271,7 @@ noBlankAfterP word==
     if CVECP word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
-    (CONSP word) and member(first word, $msgdbListPrims) => true
+    (cons? word) and member(first word, $msgdbListPrims) => true
     false
 
 cleanUpSegmentedMsg msg ==
@@ -496,7 +496,7 @@ flowSegmentedMsg(msg, len, offset) ==
   off1:= (offset <= 1 => '""; fillerSpaces(offset-1,'" "))
   firstLine := true
 
-  CONSP msg =>
+  cons? msg =>
     lnl := offset
     if msg is [a,:.] and member(a,'(%b %d _  "%b" "%d" " ")) then
       nl :=  [off1]
@@ -507,14 +507,14 @@ flowSegmentedMsg(msg, len, offset) ==
         actualMarg := potentialMarg
         if lnl = 99999 then nl := ['%l,:nl]
         lnl := 99999
-      CONSP(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
+      cons?(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
         nl := [f,'%l,:nl]
         lnl := 199999
       member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
         nl := [f,:nl]
-      CONSP(f) and member(first(f),'("%t" %t)) =>
+      cons?(f) and member(first(f),'("%t" %t)) =>
         potentialMarg := potentialMarg + rest f
         nl := [f,:nl]
       sbl := sayBrightlyLength f
@@ -571,11 +571,11 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 
 --% Some Standard Message Printing Functions
 
-bright x == ['"%b",:(CONSP(x) and NULL rest LASTNODE x => x; [x]),'"%d"]
+bright x == ['"%b",:(cons?(x) and NULL rest LASTNODE x => x; [x]),'"%d"]
 --bright x == ['%b,:(ATOM x => [x]; x),'%d]
 
 mkMessage msg ==
-  msg and (CONSP msg) and member((first msg),'(%l "%l"))  and
+  msg and (cons? msg) and member((first msg),'(%l "%l"))  and
     member((last msg),'(%l "%l")) => concat msg
   concat('%l,msg,'%l)
 
@@ -625,7 +625,7 @@ brightPrint0(x,out == $OutputStream) ==
   -- don't try to give the token any special interpretation. Just print
   -- it without the backslash.
 
-  STRINGP x and STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
+  string? x and STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
     sayString(SUBSTRING(x,1,NIL),out)
   x = '"%l" =>
     sayNewLine(out)
@@ -654,7 +654,7 @@ brightPrint0(x,out == $OutputStream) ==
       or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
     not $highlightAllowed => sayString('" ",out)
     sayString($highlightFontOff,out)
-  STRINGP x => sayString(x,out)
+  string? x => sayString(x,out)
   brightPrintHighlight(x,out)
 
 brightPrint0AsTeX(x, out == $OutputStream) == 
@@ -681,12 +681,12 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
     sayString('"_"\verb!$!_"",out)
   x = '"$" => 
     sayString('"\verb!$!",out)
-  STRINGP x => sayString(x,out)
+  string? x => sayString(x,out)
   brightPrintHighlight(x,out)
 
 blankIndicator x ==
   if IDENTP x then x := PNAME x
-  null STRINGP x or MAXINDEX x < 1 => nil
+  null string? x or MAXINDEX x < 1 => nil
   x.0 = '% and x.1 = 'x =>
     MAXINDEX x > 1 => PARSE_-INTEGER SUBSTRING(x,2,nil)
     1
@@ -694,7 +694,7 @@ blankIndicator x ==
 
 brightPrint1(x, out == $OutputStream) ==
   if member(x,'(%l "%l")) then sayNewLine(out)
-  else if STRINGP x then sayString(x,out)
+  else if string? x then sayString(x,out)
        else brightPrintHighlight(x,out)
   NIL
 
@@ -844,9 +844,9 @@ sayBrightlyLength1 x ==
     NULL $highlightAllowed => 1
     1
   member(x,'("%l" %l)) => 0
-  STRINGP x and STRINGLENGTH x > 2 and x.0 = '"%" and x.1 = '"x" =>
+  string? x and STRINGLENGTH x > 2 and x.0 = '"%" and x.1 = '"x" =>
     INTERN x.3
-  STRINGP x => STRINGLENGTH x
+  string? x => STRINGLENGTH x
   IDENTP x => STRINGLENGTH PNAME x
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
@@ -919,7 +919,7 @@ sayDisplayStringWidth x ==
   sayDisplayWidth x
 
 sayDisplayWidth x ==
-  CONSP x =>
+  cons? x =>
     +/[fn y for y in x] where fn y ==
       member(y,'(%b %d "%b" "%d")) or y=$quadSymbol => 1
       k := blankIndicator y => k

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -155,7 +155,7 @@ concatWithBlanks r ==
   '""
 
 writedb(u) ==
-  not STRINGP u => nil        --skip if not a string
+  not string? u => nil        --skip if not a string
   PRINTEXP(addPatchesToLongLines(u,500),$outStream)
   --positions for tick(1), dashes(2), and address(9), i.e. 12
   TERPRI $outStream
@@ -489,10 +489,10 @@ getImports conname == --called by mkUsersHashTable
           [op,:[doImport(y,template) for y in args]]
 
         [op,:[doImport(y,template) for y in args]]
-      INTEGERP x => doImport(template.x,template)
+      integer? x => doImport(template.x,template)
       x = '$ => '$
       x = "$$" => "$$"
-      STRINGP x => x
+      string? x => x
       systemError '"bad argument in template"
   listSort(function GLESSEQP,SUBLISLIS(rest conform,$FormalMapVariableList,u))
 
@@ -555,7 +555,7 @@ folks u == --called by getParents and getParentsForDomain
   u is ['SIGNATURE,:.] => nil
   u is ['TYPE,:.] => nil
   u is ['ATTRIBUTE,a] =>
-    CONSP a and constructor? opOf a => folks a
+    cons? a and constructor? opOf a => folks a
     nil
   u is ['IF,p,q,r] =>
     q1 := folks q

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -120,7 +120,7 @@ htpSetProperty(htPage, propName, val) ==
 htpLabelInputString(htPage, label) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props and STRINGP (s := ELT(props,0)) =>
+  props and string? (s := ELT(props,0)) =>
     s = '"" => s
     trimString s
   nil
@@ -210,12 +210,12 @@ htpSetPageDescription(htPage, pageDescription) ==
 iht line ==
 -- issue a single hyperteTeX line, or a group of lines
   $newPage => nil
-  CONSP line =>
+  cons? line =>
     $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 bcIssueHt line ==
-  CONSP line => htMakePage1 line
+  cons? line => htMakePage1 line
   iht line
 
 mapStringize l ==
@@ -225,7 +225,7 @@ mapStringize l ==
   l
 
 basicStringize s ==
-  STRINGP s =>
+  string? s =>
     s = '"\$"      => '"\%"
     s = '"{\em $}" => '"{\em \%}"
     s
@@ -233,7 +233,7 @@ basicStringize s ==
   PRINC_-TO_-STRING s
 
 stringize s ==
-  STRINGP s => s
+  string? s => s
   PRINC_-TO_-STRING s
 
 --htInitPageNoHeading(propList) ==
@@ -404,12 +404,12 @@ htMakeTemplates(templateList, numLabels) ==
   templateList := [templateParts template for template in templateList]
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
-      CONSP template =>
+      cons? template =>
         INTERN CONCAT(first template, PRINC_-TO_-STRING i, rest template)
       template
 
 templateParts template ==
-  NULL STRINGP template => template
+  NULL string? template => template
   i := SEARCH('"%l", template)
   null i => template
   [SUBSEQ(template, 0, i), : SUBSEQ(template, i+2)]
@@ -494,7 +494,7 @@ typeCheckInputAreas htPage ==
       nil
     val := checkCondition(htpLabelInputString(htPage, stringName),
                           string, condList)
-    STRINGP val =>
+    string? val =>
       errorCondition := true
       htpSetLabelErrorMsg(htPage, stringName, val)
     htpSetLabelSpadValue(htPage, stringName, val)
@@ -503,13 +503,13 @@ typeCheckInputAreas htPage ==
 checkCondition(s1, string, condList) ==
   condList is [['Satisfies, pvar, pred]] =>
     val := FUNCALL(pred, string)
-    STRINGP val => val
+    string? val => val
     ['(String), :wrap s1]
   condList isnt [['isDomain, pvar, pattern]] =>
     systemError '"currently invalid domain condition"
   pattern is '(String) => ['(String), :wrap s1]
   val := parseAndEval string
-  STRINGP val =>
+  string? val =>
     val = '"Syntax Error " => '"Error: Syntax Error "
     condErrorMsg pattern
   [type, : data] := val
@@ -520,7 +520,7 @@ checkCondition(s1, string, condList) ==
 
 condErrorMsg type ==
   typeString := form2String type
-  if CONSP typeString then typeString := APPLY(function CONCAT, typeString)
+  if cons? typeString then typeString := APPLY(function CONCAT, typeString)
   CONCAT('"Error: Could not make your input into a ", typeString)
 
 parseAndEval string ==
@@ -578,10 +578,10 @@ htEscapeString str ==
   SUBSTITUTE($funnyBacks, char '_\, str)
 
 unescapeStringsInForm form ==
-  STRINGP form =>
+  string? form =>
     str := NSUBSTITUTE(char '_", $funnyQuote, form)
     NSUBSTITUTE(char '_\, $funnyBacks, str)
-  CONSP form =>
+  cons? form =>
     unescapeStringsInForm first form
     unescapeStringsInForm rest form
     form

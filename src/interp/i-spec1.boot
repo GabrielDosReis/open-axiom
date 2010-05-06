@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -798,7 +798,7 @@ checkForFreeVariables(v,locals) ==
   -- be free, or the token ALL, which means that any parameter is a candidate
   -- to be free.
   NULL v => v
-  SYMBOLP v =>
+  symbol? v =>
     v="$$$" => v -- Placeholder for mini-vector
     MEMQ(v,$boundVariables) => v
     p := POSITION(v,$freeVariables) =>
@@ -965,7 +965,7 @@ upconstruct t ==
   tar is ['Record,:types] => upRecordConstruct(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and CONSP(tar) and not isPartialMode(tar) then
+  if tar and cons?(tar) and not isPartialMode(tar) then
     first(tar) in aggs =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
@@ -1150,7 +1150,7 @@ declare(var,mode) ==
     -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
-      CONSP margs => -1 + #margs
+      cons? margs => -1 + #margs
       1
     nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
@@ -1196,8 +1196,8 @@ isDomainValuedVariable form ==
   -- returns the value of form if form is a variable with a type value
   IDENTP form and (val := (
     get(form,'value,$InteractiveFrame) or _
-    (CONSP($env) and get(form,'value,$env)) or _
-    (CONSP($e) and get(form,'value,$e)))) and
+    (cons?($env) and get(form,'value,$env)) or _
+    (cons?($e) and get(form,'value,$e)))) and
       (member(m := objMode(val),'((Domain) (Category)))
           or conceptualType m = $Category) =>
         objValUnwrap(val)

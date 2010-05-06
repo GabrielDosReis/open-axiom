@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -277,7 +277,7 @@ isFormalArgumentList argl ==
   and/[x=fa for x in argl for fa in $FormalMapVariableList]
 
 mkCategoryExtensionAlist cform ==
-  not CONSP cform => nil
+  not cons? cform => nil
   cop := first cform
   MEMQ(cop, $CategoryNames) => mkCategoryExtensionAlistBasic cform
   catlist := formalSubstitute(cform, first getConstructorExports(cform, true))

@@ -377,7 +377,7 @@ shoeOutParse stream ==
 genDeclaration(n,t) ==
   t is ["%Mapping",valType,argTypes] =>
     if bfTupleP argTypes then argTypes := rest argTypes
-    if not null argTypes and SYMBOLP argTypes 
+    if not null argTypes and symbol? argTypes 
     then argTypes := [argTypes]
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
   ["DECLAIM",["TYPE",t,n]]

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -155,7 +155,7 @@ selectMms(op,args,$declaredMode) ==
 selectMms2(op,tar,args1,args2,$Coerce) ==
   -- decides whether to find functions from a domain or package
   --   or by general modemap evaluation
-  or/[STRINGP arg for arg in args1] => NIL
+  or/[string? arg for arg in args1] => NIL
   if tar = $EmptyMode then tar := NIL
   nargs := #args1
   mmS := NIL
@@ -197,7 +197,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     if tar and not isPartialMode tar then
       if xx := underDomainOf(tar) then a := cons(xx,a)
     for x in args1 repeat
-      CONSP(x) and first(x) in '(List Vector Stream FiniteSet Array) =>
+      cons?(x) and first(x) in '(List Vector Stream FiniteSet Array) =>
         xx := underDomainOf(x) => a := cons(xx,a)
 
     -- now extend this list with those from the arguments to
@@ -221,7 +221,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
         (xm := get(name,'mode,$e)) and not isPartialMode xm =>
           a' := cons(xm,a')
     a := append(a,REMDUP a')
-    a := [x for x in a | CONSP(x)]
+    a := [x for x in a | cons?(x)]
 
     -- step 1. see if we have one without coercing
     a' := a
@@ -464,7 +464,7 @@ altTypeOf(type,val,$declaredMode) ==
     (a := getMinimalVarMode(objValUnwrap getValue(val),$declaredMode)) =>
       a
   type is ['OrderedVariableList,vl] and
-    INTEGERP(val1 := objValUnwrap getValue(val)) and
+    integer?(val1 := objValUnwrap getValue(val)) and
       (a := getMinimalVarMode(vl.(val1 - 1),$declaredMode)) =>
         a
   type = $PositiveInteger    => $Integer
@@ -532,7 +532,7 @@ CONTAINEDisDomain(symbol,cond) ==
    QCAR cond in '(AND OR and or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
    EQ(QCAR cond,'isDomain) =>
-       EQ(symbol,second cond) and CONSP(dom:=third cond) and
+       EQ(symbol,second cond) and cons?(dom:=third cond) and
          dom in '(PositiveInteger NonNegativeInteger)
    false
 
@@ -741,7 +741,7 @@ findUniqueOpInDomain(op,opName,dom) ==
       $genValue =>
          compiledLookupCheck(opName,sig,evalDomain dom)
       NRTcompileEvalForm(opName, sig, evalDomain dom)
-  fun=nil or not CONSP fun => nil
+  fun=nil or not cons? fun => nil
   first fun = function(Undef) => throwKeyedMsg("S2IS0023",[opName,dom])
   binVal :=
     $genValue => wrap fun
@@ -887,7 +887,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   for [a,b,d] in funlist repeat
     not EQ(a,op) => nil
     d is ['XLAM,xargs,:.] =>
-      if CONSP(xargs) then maxargs := MAX(maxargs,#xargs)
+      if cons?(xargs) then maxargs := MAX(maxargs,#xargs)
       else maxargs := MAX(maxargs,1)
       impls := cons([b,nil,true,d],impls)
     d isnt [k,"$",n] => systemErrorHere ["findFunctionInCategory",d]
@@ -942,7 +942,7 @@ matchMmSig(mm,tar,args1,args2) ==
     rtc:= NIL
     if x is ['SubDomain,y,:.] then x:= y
     b := isEqualOrSubDomain(x1,x) or
-      (STRINGP(x) and (x1 is ['Variable,v]) and (x = PNAME v)) or
+      (string?(x) and (x1 is ['Variable,v]) and (x = PNAME v)) or
         $SubDom and isSubDomain(x,x1) => rtc:= 'T
         $Coerce => x2=x or canCoerceFrom(x1,x)
         x1 is ['Variable,:.] and x = $Symbol
@@ -989,7 +989,7 @@ filterModemapsFromPackages(mms, names, op) ==
     isFreeFunctionFromMm(mm) => bad := cons(mm, bad)
     type := getDomainFromMm mm
     null type => bad := cons(mm,bad)
-    if CONSP type then type := first type
+    if cons? type then type := first type
     getConstructorKindFromDB type = "category" => bad := cons(mm,bad)
     name := object2String type
     found := nil
@@ -1288,10 +1288,10 @@ evalMmDom(st) ==
   SL:= NIL
   for mmC in st until SL='failed repeat
     mmC is ['isDomain,v,d] =>
-      STRINGP d => SL:= 'failed
+      string? d => SL:= 'failed
       p:= ASSQ(v,SL) and not (d=rest p) => SL:= 'failed
       d1:= subCopy(d,SL)
-      CONSP(d1) and MEMQ(v,d1) => SL:= 'failed
+      cons?(d1) and MEMQ(v,d1) => SL:= 'failed
       SL:= augmentSub(v,d1,SL)
     mmC is ['isFreeFunction,v,fun] =>
       SL:= augmentSub(v,subCopy(fun,SL),SL)
@@ -1611,7 +1611,7 @@ hasAtt(dom,att,SL) ==
   $domPvar: local := nil
   fun:= first dom =>
     atts:= subCopy(getConstructorAttributesFromDB fun,constructSubst dom) =>
-      CONSP (u := getInfovec first dom) =>
+      cons? (u := getInfovec first dom) =>
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until not (S='failed) repeat
           S:= unifyStruct(x,att,copy SL)

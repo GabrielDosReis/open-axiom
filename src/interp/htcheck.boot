@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -126,6 +126,6 @@ spadSysBranch(tree,arg) ==  --tree is (msg kind TREEorSomethingElse ...)
   kind := tree.2
   kind = 'TREE => spadSysChoose(tree.4,arg)
   kind = 'LITERALS => member(arg,tree.4)
-  kind = 'INTEGER  => INTEGERP arg
+  kind = 'INTEGER  => integer? arg
   kind = 'FUNCTION => atom arg
   systemError '"unknown tree branch"

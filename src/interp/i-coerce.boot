@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ coerceOrThrowFailure(value, t1, t2) ==
 
 retract object ==
   type := objMode object
-  STRINGP type => 'failed
+  string? type => 'failed
   type = $EmptyMode => 'failed
   val := objVal object
   not isWrapped val and val isnt ["%Map",:.] => 'failed
@@ -103,7 +103,7 @@ retract1 object ==
   -- This is mostly for cases such as constant polynomials or
   -- quotients with 1 in the denominator.
   type := objMode object
-  STRINGP type => 'failed
+  string? type => 'failed
   val := objVal object
   type = $PositiveInteger =>    objNew(val,$NonNegativeInteger)
   type = $NonNegativeInteger => objNew(val,$Integer)
@@ -415,13 +415,13 @@ canCoerce1(t1,t2) ==
       NIL
     -- next is for tagged union selectors for the time being
     t1 is ['Variable,=t2] or t2 is ['Variable,=t1] => true
-    STRINGP t1 =>
+    string? t1 =>
       t2 = $String => true
       t2 = $OutputForm => true
       t2 is ['Union,:.] => canCoerceUnion(t1,t2)
       t2 is ['Variable,v] and (t1 = PNAME(v)) => true
       NIL
-    STRINGP t2 =>
+    string? t2 =>
       t1 is ['Variable,v] and (t2 = PNAME(v)) => true
       NIL
     atom t1 or atom t2 => NIL
@@ -516,7 +516,7 @@ canCoerceExplicit2Mapping(t1,t is ['Mapping,target,:argl]) ==
     funNode := mkAtreeNode fun
     transferPropsToNode(fun,funNode)
     mms := CATCH('coerceOrCroaker, selectLocalMms(funNode,fun,argl,target))
-    CONSP mms =>
+    cons? mms =>
       mms is [[['interpOnly,:.],:.]] => nil
       mm := CAAR mms
       mm is [., targ, :.] =>
@@ -837,18 +837,18 @@ coerceInt1(triple,t2) ==
   -- next is for tagged union selectors for the time being
   t1 is ['Variable,=t2] or t2 is ['Variable,=t1] => objNew(val,t2)
 
-  STRINGP t2 =>
+  string? t2 =>
     t1 is ['Variable,v] and (t2 = PNAME(v)) => objNewWrap(t2,t2)
     val' := unwrap val
     (t2 = val') and ((val' = t1) or (t1 = $String)) => objNew(val,t2)
     NIL
   t1 is ['Union,:.] => coerceIntFromUnion(triple,t2)
   t2 is ['Union,:.] => coerceInt2Union(triple,t2)
-  (STRINGP t1) and (t2 = $String) => objNew(val,$String)
-  (STRINGP t1) and (t2 is ['Variable,v]) =>
+  (string? t1) and (t2 = $String) => objNew(val,$String)
+  (string? t1) and (t2 is ['Variable,v]) =>
     t1 = PNAME(v) => objNewWrap(v,t2)
     NIL
-  (STRINGP t1) and (t1 = unwrap val) =>
+  (string? t1) and (t1 = unwrap val) =>
     t2 = $OutputForm => objNew(t1,$OutputForm)
     NIL
   atom t1 => NIL
@@ -902,7 +902,7 @@ coerceInt1(triple,t2) ==
       NIL
     NIL
 
-  EQ(first(t1),'Variable) and CONSP(t2) and
+  EQ(first(t1),'Variable) and cons?(t2) and
     (isEqualOrSubDomain(t2,$Integer) or
       (t2 = [$QuotientField, $Integer]) or MEMQ(first(t2),
         '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => NIL

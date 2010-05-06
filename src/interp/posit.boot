@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ pfPosOrNopos pf ==
     poNoPosition()
  
 poIsPos? pos ==
-    CONSP pos and CONSP first pos and #first pos = 5
+    cons? pos and cons? first pos and #first pos = 5
  
 lnCreate(extBl, st, gNo, :optFileStuff) ==
     lNo :=

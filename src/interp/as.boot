@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -753,7 +753,7 @@ asySplit(name,end) ==
   [SUBSTRING(name,0,k),:asySplit(SUBSTRING(name,k,nil),end-k)]
 
 createAbbreviation s ==
-  if STRINGP s then s := INTERN s
+  if string? s then s := INTERN s
   a := constructor? s
   a ~= s => a
   nil
@@ -974,7 +974,7 @@ asyFindAttrs l ==
   notattrs := []
   for x in l repeat 
     x0 := x
-    while CONSP x repeat x := first x
+    while cons? x repeat x := first x
     if MEMQ(x, $BuiltinAttributes) then attrs := [:attrs, x]
     else notattrs := [:notattrs, x0]
   [attrs, notattrs]

@@ -268,7 +268,7 @@ optCond (x is ['COND,:l]) ==
  
 AssocBarGensym(key,l) ==
   for x in l repeat
-    CONSP x =>
+    cons? x =>
       EqualBarGensym(key,first x) => return x
  
 EqualBarGensym(x,y) ==
@@ -437,7 +437,7 @@ isFloatableVMForm form ==
 ++ fairly conservative approximation of compile time constants.
 isVMConstantForm: %Code -> %Boolean
 isVMConstantForm form ==
-  INTEGERP form or STRINGP form => true
+  integer? form or string? form => true
   form=nil or form=true => true
   form isnt [op,:args] => false
   op = "QUOTE" => true

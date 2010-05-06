@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
 --          text -- the actual text
  
 msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
-    if CONSP key then tag := 'old
+    if cons? key then tag := 'old
     msg := [tag,posWTag,key,argL,optPre,NIL]
     if first optAttr then
         setMsgForcedAttrList(msg,car optAttr)

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -112,7 +112,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
       Prepare u == "union"/[Prepare2 v for v in u]
       Prepare2 v ==
         v is "$" => nil
-        STRINGP v => nil
+        string? v => nil
         atom v => [v]
         MEMQ(first v,$PrimitiveDomainNames) => nil
           --This variable is set in INIT LISP
@@ -203,7 +203,7 @@ SigListUnion(extra,original) ==
 -- present under certain conditions
         -- We must pick up the previous implementation, if any
 --+
-      if ximplem is [[q,.,index]] and INTEGERP index and (q="ELT" or q="CONST")
+      if ximplem is [[q,.,index]] and integer? index and (q="ELT" or q="CONST")
         then $NewCatVec. index:= e
     original:= [e,:original]
   original
@@ -316,7 +316,7 @@ MachineLevelSubset(a,b) ==
   --true if a is a machine-level subset of b
   a=b => true
   b is ["Union",:blist] and member(a,blist) and
-    (and/[STRINGP x for x in blist | x~=a]) => true
+    (and/[string? x for x in blist | x~=a]) => true
            --all other branches must be distinct objects
   not null isSubDomain(a,b)
              --we assume all subsets are true at the machine level

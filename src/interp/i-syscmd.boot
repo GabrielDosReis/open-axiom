@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -362,7 +362,7 @@ clearCmdParts(l is [opt,:vl]) ==
       option='properties =>
         if isMap x then
           (lm := get(x,'localModemap,$InteractiveFrame)) =>
-            CONSP lm => untraceMapSubNames [CADAR lm]
+            cons? lm => untraceMapSubNames [CADAR lm]
           NIL
         for p2 in rest p1 repeat
           prop:= first p2
@@ -1377,13 +1377,13 @@ frameSpad2Cmd args ==
   if args is [a] then args := a
   if ATOM args then args := object2Identifier args
   arg = 'drop  =>
-    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
   arg = "import" =>  importFromFrame args
   arg = "last"  =>   previousInterpreterFrame()
   arg = "names" =>   displayFrameNames()
   arg = "new"   =>
-    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     addNewInterpreterFrame(args)
   arg = "next"  =>   nextInterpreterFrame()
 
@@ -1683,7 +1683,7 @@ writeInputLines(fn,initial) ==
   breakChars := [" ","+"]
   for i in initial..$IOindex - 1 repeat
     vecl := first readHiFi i
-    if STRINGP vecl then vecl := [vecl]
+    if string? vecl then vecl := [vecl]
     for vec in vecl repeat
       n := SIZE vec
       while n > maxn repeat
@@ -1719,7 +1719,7 @@ resetInCoreHist() ==
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
-  NULL INTEGERP n => sayKeyedMsg("S2IH0015",[n]) 
+  NULL integer? n => sayKeyedMsg("S2IH0015",[n]) 
   dif:= n-$HistListLen
   $HistListLen:= n
   l:= rest $HistList
@@ -1924,7 +1924,7 @@ showHistory(arg) ==
   nset := nil
   if arg then
     arg1 := first arg
-    if INTEGERP arg1 then
+    if integer? arg1 then
       n := arg1
       nset := true
       KDR arg => arg1 := second arg
@@ -1952,7 +1952,7 @@ showInput(mini,maxi) ==
     vec:= UNWIND_-PROTECT(readHiFi(ind),disableHist())
     if ind<10 then TAB 2 else if ind<100 then TAB 1
     l := first vec
-    STRINGP l =>
+    string? l =>
       sayMSG ['"   [",ind,'"] ",first vec]
     sayMSG ['"   [",ind,'"] " ]
     for ln in l repeat
@@ -2054,7 +2054,7 @@ writify ob ==
             null ob                => nil
             (e := HGET($seen, ob)) => e
  
-            CONSP ob =>
+            cons? ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
                 (name := spadClosure? ob) =>
@@ -2115,7 +2115,7 @@ writify ob ==
             READTABLEP ob =>
                 THROW('writifyTag, 'writifyFailed)
             -- Default case: return the object itself.
-            STRINGP ob =>
+            string? ob =>
                 EQ(ob, $NullStream) => ['WRITIFIED_!_!, 'NULLSTREAM]
                 EQ(ob, $NonNullStream) => ['WRITIFIED_!_!, 'NONNULLSTREAM]
                 ob
@@ -2127,7 +2127,7 @@ writify ob ==
 
 
 unwritable? ob ==
-    CONSP  ob or VECP ob       => false   -- first for speed
+    cons?  ob or VECP ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
     FLOATP ob => true
@@ -2161,7 +2161,7 @@ dewritify ob ==
             null ob => nil
             e := HGET($seen, ob) => e
  
-            CONSP ob and first ob = 'WRITIFIED_!_! =>
+            cons? ob and first ob = 'WRITIFIED_!_! =>
                 type := ob.1
                 type = 'SELF =>
                     'WRITIFIED_!_!
@@ -2213,7 +2213,7 @@ dewritify ob ==
                    fval
                 error '"Unknown type to de-writify."
  
-            CONSP ob =>
+            cons? ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
                 nob  := CONS(qcar, qcdr)
@@ -2374,7 +2374,7 @@ readSpad2Cmd l ==
 
 --% )savesystem
 savesystem l ==
-  #l ~= 1 or not(SYMBOLP first l) => helpSpad2Cmd '(savesystem)
+  #l ~= 1 or not(symbol? first l) => helpSpad2Cmd '(savesystem)
   SETQ($SpadServer,false)
   SETQ($openServerIfTrue,true)
 )if not %hasFeature KEYWORD::ECL
@@ -2803,7 +2803,7 @@ undoLocalModemapHack changeList ==
 
 removeUndoLines u == --called by writeInputLines
   xtra :=
-    STRINGP $currentLine => [$currentLine]
+    string? $currentLine => [$currentLine]
     reverse $currentLine
   xtra := [x for x in xtra | not stringPrefix?('")history",x)]
   u := [:u, :xtra]
@@ -3206,7 +3206,7 @@ tokenSystemCommand(unabr, tokList) ==
   systemCommand tokList
 
 tokTran tok ==
-  STRINGP tok =>
+  string? tok =>
     #tok = 0 => nil
     isIntegerString tok => READ_-FROM_-STRING tok
     STRING tok.0 = '"_"" =>

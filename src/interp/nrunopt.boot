@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -141,7 +141,7 @@ makeCompactSigCode sig == [fn for x in sig] where
   fn() == 
     x = "$$" => 2
     x = "$" => 0
-    not INTEGERP x => 
+    not integer? x => 
       systemError ['"code vector slot is ",x,'"; must be number"]
     x
   
@@ -186,7 +186,7 @@ makeSpadConstant [fn,dollar,slot] ==
 stuffSlot(dollar,i,item) ==
   dollar.i :=
     atom item => [SYMBOL_-FUNCTION item,:dollar]
-    item is [n,:op] and INTEGERP n => ['newGoGet,dollar,:item]
+    item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
     item is ['CONS,.,['FUNCALL,a,b]] =>
       b = '$ => ['makeSpadConstant,eval a,dollar,i]
       sayBrightlyNT '"Unexpected constant environment!!"
@@ -474,7 +474,7 @@ dcSlots con ==
   for i in 5..MAXINDEX template repeat
     sayBrightlyNT bright i
     item := template.i
-    item is [n,:op] and INTEGERP n => dcOpLatchPrint(op,n)
+    item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
     null item and i > 5 => sayBrightly ['"arg  ",STRCONC('"#",STRINGIMAGE(i - 5))]
     atom item => sayBrightly ['"fun  ",item]
     item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
@@ -511,7 +511,7 @@ getCodeVector() ==
 formatSlotDomain x ==
   x = 0 => ["$"]
   x = 2 => ["$$"]
-  INTEGERP x =>
+  integer? x =>
     val := $infovec.0.x
     null val => [STRCONC('"#",STRINGIMAGE (x  - 5))]
     formatSlotDomain val
@@ -631,7 +631,7 @@ dcData con ==
   sayBrightly '"Operation data from slot 1"
   PRINT_-FULL $infovec.1
   vec := getCodeVector()
-  vec := (CONSP vec => rest vec; vec)
+  vec := (cons? vec => rest vec; vec)
   sayBrightly ['"Information vector has ",SIZE vec,'" entries"]
   dcData1 vec
 
@@ -663,7 +663,7 @@ dcSize(:options) ==
   lazyNodes := 0 --# of nodes needed for lazy domain slots
   for i in 5..maxindex repeat
     atom (item := template.i) =>   fun := fun + 1
-    INTEGERP first item    => latch := latch + 1
+    integer? first item    => latch := latch + 1
     'T                 =>  
        lazy := lazy + 1
        lazyNodes := lazyNodes + numberOfNodes item
@@ -902,7 +902,7 @@ expandType(lazyt,template,domform) ==
  
 expandTypeArgs(u,template,domform) ==
   u = '$ => u --template.0      -------eliminate this as $ is rep by 0
-  INTEGERP u => expandType(templateVal(template, domform, u), template,domform)
+  integer? u => expandType(templateVal(template, domform, u), template,domform)
   u is ['NRTEVAL,y] => y  --eval  y
   u is ['QUOTE,y] => y
   atom u => u

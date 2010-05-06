@@ -87,7 +87,7 @@ compClam(op,argl,body,$clamList) ==
   countFl := 'count in options
   if #argl > 1 and eqEtc= 'EQ then
     keyedSystemError("S2GE0007",[op])
-  (not IDENTP kind) and (not INTEGERP kind or kind < 1) =>
+  (not IDENTP kind) and (not integer? kind or kind < 1) =>
     keyedSystemError("S2GE0005",[op])
   IDENTP kind =>
     shiftFl => keyedSystemError("S2GE0008",[op])
@@ -328,7 +328,7 @@ HGETandCount(hashTable,prop) ==
   u
  
 clearClams() ==
-  for [fn,kind,:.] in $clamList | kind = 'hash or INTEGERP kind repeat
+  for [fn,kind,:.] in $clamList | kind = 'hash or integer? kind repeat
     clearClam fn
  
 clearClam fn ==
@@ -374,7 +374,7 @@ cacheStats() ==
   for [fn,kind,:u] in $clamList repeat
     not ('count in u) =>
       sayBrightly ["%b",fn,"%d","does not keep reference counts"]
-    INTEGERP kind => reportCircularCacheStats(fn,kind)
+    integer? kind => reportCircularCacheStats(fn,kind)
     kind = 'hash => reportHashCacheStats fn
     sayBrightly ["Unknown cache type for","%b",fn,"%d"]
  
@@ -396,7 +396,7 @@ displayCacheFrequency al ==
 mkCircularCountAlist(cl,len) ==
   for [x,count,:.] in cl for i in 1..len while x ~= '_$failed repeat
     u:= assoc(count,al) => RPLACD(u,1 + rest u)
-    if INTEGERP $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
+    if integer? $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
       sayBrightlyNT ["   ",count,"  "]
       pp x
     al:= [[count,:1],:al]
@@ -674,7 +674,7 @@ globalHashtableStats(x,sortFn) ==
   for key in keys repeat
     u:= HGET(x,key)
     for [argList,n,:.] in u repeat
-      not INTEGERP n =>   keyedSystemError("S2GE0013",[x])
+      not integer? n =>   keyedSystemError("S2GE0013",[x])
       argList1:= [constructor2ConstructorForm x for x in argList]
       reportList:= [[n,key,argList1],:reportList]
   sayBrightly ["%b","  USE  NAME ARGS","%d"]

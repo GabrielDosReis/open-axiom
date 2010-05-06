@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ conPageFastPath x == --called by conPage and constructorSearch
 --gets line quickly for constructor name or abbreviation
   s := STRINGIMAGE x
   charPosition(char '_*,s,0) < #s => nil     --quit if name has * in it
-  name := (STRINGP x => INTERN x; x)
+  name := (string? x => INTERN x; x)
   entry := HGET($lowerCaseConTb,name) or return nil
   lineNumber := LASSQ('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable

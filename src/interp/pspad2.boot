@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ formatDeftran(u,SEQflag) ==
     ['IF,a,b,c]
   u is ['Union,:argl] => 
     ['Union,:[x for a in argl 
-      | x := (STRINGP a => [":",INTERN a,'Branch]; formatDeftran(a,nil))]]
+      | x := (string? a => [":",INTERN a,'Branch]; formatDeftran(a,nil))]]
   u is [op,:itl,body] and op in '(REPEAT COLLECT) and
     ([nitl,:nbody] := formatDeftranREPEAT(itl,body)) =>
       formatDeftran([op,:nitl,nbody],SEQflag)
@@ -399,7 +399,7 @@ formatREDUCE ["REDUCE",op,.,u] == formatReduce1(op,u)
 formatreduce ["reduce",op,u] == formatReduce1(op,u)
 
 formatReduce1(op,u) ==
-  if STRINGP op then op := INTERN op
+  if string? op then op := INTERN op
   id := LASSOC(op,
     '((_+ Zero)(_* One)(append . NIL)(gcd Zero) (lcm One) (strconc . "")(lcm One)))
   formatFunctionCall

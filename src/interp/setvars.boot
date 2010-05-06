@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -334,7 +334,7 @@ displaySetVariableSettings(setTree,label) ==
       opt :=
         functionp(setData.setVar) => FUNCALL( setData.setVar,"%display%")
         '"unimplemented"
-      if CONSP opt then opt := [:[o,'" "] for o in opt]
+      if cons? opt then opt := [:[o,'" "] for o in opt]
       sayBrightly concat(setOption,'%b,opt,'%d)
     st = 'STRING   =>
       opt := object2String eval setData.setVar
@@ -523,7 +523,7 @@ setExposeAddGroup arg ==
     sayAsManyPerLineAsPossible [object2String first x for x in
       $globalExposureGroupAlist]
   for x in arg repeat
-    if CONSP x then x := QCAR x
+    if cons? x then x := QCAR x
     x = 'all =>
       $localExposureData.0 :=[first x for x in $globalExposureGroupAlist]
       $localExposureData.1 :=NIL
@@ -551,7 +551,7 @@ setExposeAddConstr arg ==
     displayExposedConstructors()
   for x in arg repeat
     x := unabbrev x
-    if CONSP x then x := QCAR x
+    if cons? x then x := QCAR x
     -- if the constructor is known, we know what type it is
     null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])
@@ -587,7 +587,7 @@ setExposeDropGroup arg ==
     sayMSG '" "
     displayExposedGroups()
   for x in arg repeat
-    if CONSP x then x := QCAR x
+    if cons? x then x := QCAR x
     x = 'all =>
       $localExposureData.0 := NIL
       $localExposureData.1 := NIL
@@ -618,7 +618,7 @@ setExposeDropConstr arg ==
     displayHiddenConstructors()
   for x in arg repeat
     x := unabbrev x
-    if CONSP x then x := QCAR x
+    if cons? x then x := QCAR x
     -- if the constructor is known, we know what type it is
     null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])
@@ -647,7 +647,7 @@ setFortTmpDir arg ==
     $fortranTmpDir := '"/tmp/"
 
   arg = "%display%" =>
-    STRINGP $fortranTmpDir => $fortranTmpDir
+    string? $fortranTmpDir => $fortranTmpDir
     PNAME $fortranTmpDir
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
@@ -686,7 +686,7 @@ setFortDir arg ==
     $fortranDirectory := '"./"
 
   arg = "%display%" =>
-    STRINGP $fortranDirectory => $fortranDirectory
+    string? $fortranDirectory => $fortranDirectory
     PNAME $fortranDirectory
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
@@ -721,7 +721,7 @@ setLinkerArgs arg ==
   arg = "%display%" => object2String $fortranLibraries
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetLinkerArgs()
-  LISTP(arg) and STRINGP(first arg) => 
+  LISTP(arg) and string?(first arg) => 
     $fortranLibraries := first(arg)
   describeSetLinkerArgs()
 

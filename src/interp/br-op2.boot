@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -144,8 +144,8 @@ dbGetDisplayFormForOp(op,sig,doc) ==
   dbGetFormFromDocumentation(op,sig,doc) or dbGetContrivedForm(op,sig)
 
 dbGetFormFromDocumentation(op,sig,x) ==
-  doc := (STRINGP x => x; first x)
-  STRINGP doc and
+  doc := (string? x => x; first x)
+  string? doc and
      (stringPrefix?('"\spad{",doc) and (k := 6) or
        stringPrefix?('"\s{",doc) and (k := 3)) =>
     n := charPosition($charRbrace,doc,k)
@@ -425,7 +425,7 @@ kFormatSlotDomain x == fn formatSlotDomain x where fn x ==
   op = 'local => second x
   op = ":" => [":",second x,fn third x]
   isConstructorName op => [fn y for y in x]
-  INTEGERP op => op
+  integer? op => op
   op = 'QUOTE and atom second x => second x
   x
 
@@ -433,7 +433,7 @@ koCatOps(conform,domname) ==
   conname := opOf conform
   oplist := reverse getConstructorOperationsFromDB conname
   oplist := sublisFormal(IFCDR domname or IFCDR conform ,oplist)
-  --check below for INTEGERP key to avoid subsumed signatures
+  --check below for integer? key to avoid subsumed signatures
   [[zeroOneConvert op,:nalist] for [op,:alist] in oplist | nalist := koCatOps1(alist)]
 
 koCatOps1 alist == [x for item in alist | x := pair] where
@@ -545,7 +545,7 @@ opPageFastPath opstring ==
 --return nil
   x := STRINGIMAGE opstring
   charPosition(char '_*,x,0) < #x => nil     --quit if name has * in it
-  op := (STRINGP x => INTERN x; x)
+  op := (string? x => INTERN x; x)
   mmList := getAllModemapsFromDatabase(op,nil) or return nil
   opAlist := [[op,:[item for mm in mmList]]] where item() ==
     [predList, origin, sig] := modemap2Sig(op, mm)

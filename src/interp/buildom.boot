@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -110,7 +110,7 @@ Record(:args) ==
 
 RecordEqual(x,y,dom) ==
   nargs := #rest(dom.0)
-  CONSP x =>
+  cons? x =>
     b:=
        SPADCALL(first x, first y, first(dom.(nargs + 9)) or
          first RPLACA(dom.(nargs + 9),findEqualFun(dom.$FirstParamSlot)))
@@ -185,7 +185,7 @@ UnionEqual(x, y, dom) ==
   for b in stripUnionTags branches for p in predlist while not same repeat
     typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
     FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
-      STRINGP b => same := (x = y)
+      string? b => same := (x = y)
       if p is ["EQCAR", :.] then (x := rest x; y := rest y)
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
   same
@@ -200,8 +200,8 @@ coerceUn2E(x,source) ==
     typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
     if FUNCALL(typeFun,x) then return
       if p is ["EQCAR", :.] then x := rest x
---    STRINGP b => return x  -- to catch "failed" etc.
-      STRINGP b => byGeorge := x  -- to catch "failed" etc.
+--    string? b => return x  -- to catch "failed" etc.
+      string? b => byGeorge := x  -- to catch "failed" etc.
       byGeorge := coerceVal2E(x,b)
   byGeorge = byJane =>
     error '"Union bug: Cannot find appropriate branch for coerce to E"

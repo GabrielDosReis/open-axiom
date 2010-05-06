@@ -319,7 +319,7 @@ compWithMappingMode(x,m,oldE) ==
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
-  if STRINGP x then x:= INTERN x
+  if string? x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   not null vl and not hasFormalMapVariable(x, vl) => return
@@ -349,7 +349,7 @@ compAtom(x,m,e) ==
   t:=
     IDENTP x => compSymbol(x,m,e) or return nil
     m = $Expression and primitiveType x => [x,m,e]
-    STRINGP x => 
+    string? x => 
       x ~= '"failed" and (member($Symbol, $localImportStack) or
         member($Symbol, $globalImportStack)) => markAt [x, '(String), e]
       [x, x, e]
@@ -575,7 +575,7 @@ setqSingle(id,val,m,E) ==
       'locals
     profileRecord(key,id,T.mode)
   newProplist:= consProplistOf(id,currentProplist,"value",markKillAll removeEnv T)
-  e':= (CONSP id => e'; addBinding(id,newProplist,e'))
+  e':= (cons? id => e'; addBinding(id,newProplist,e'))
   x1 := markKillAll x
   if isDomainForm(x1,e') then
     if isDomainInScope(id,e') then
@@ -791,9 +791,9 @@ resolve(min, mout) ==
   dout := markKillAll mout
   din=$NoValueMode or dout=$NoValueMode => $NoValueMode
   dout=$EmptyMode => din
-  STRINGP din and dout = $Symbol => dout   ------> hack 8/14/94
-  STRINGP dout and din = $Symbol => din    ------> hack 8/14/94
-  din ~= dout and (STRINGP din or STRINGP dout) =>
+  string? din and dout = $Symbol => dout   ------> hack 8/14/94
+  string? dout and din = $Symbol => din    ------> hack 8/14/94
+  din ~= dout and (string? din or string? dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) =>  nil
     mkUnion(din,dout)
@@ -836,7 +836,7 @@ coerceSubset(T := [x,m,e],m') ==
 --  pp [m, m']
   isSubset(m,m',e) => [x,m',e]
   -- if m is a type variable, we can't know.
-  (pred:= isSubset(m',m,e)) and INTEGERP x and
+  (pred:= isSubset(m',m,e)) and integer? x and
      -- obviously this is temporary
     eval substitute(x,"#1",pred) => [x,m',e]
   nil
@@ -868,13 +868,13 @@ spadCompileOrSetq form ==
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
-  STRINGP m' and modeEqual(m,$String) => [T.expr,m,$e]
+  string? m' and modeEqual(m,$String) => [T.expr,m,$e]
   modeEqual(m',m) or
     (get(m',"value",$e) is [m'',:.] or getmode(m',$e) is ["Mapping",m'']) and
       modeEqual(m'',m) or
         (get(m,"value",$e) is [m'',:.] or getmode(m,$e) is ["Mapping",m'']) and
           modeEqual(m'',m') => [T.expr,m,T.env]
-  STRINGP T.expr and T.expr=m => [T.expr,m,$e]
+  string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
       $bootStrapMode = true => [T.expr,m,$e]
       extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
@@ -911,7 +911,7 @@ compCoerce1(x,m',e) ==
   if null T then T := comp(x,$EmptyMode,e)
   null T => return nil
   m1:=
-    STRINGP T.mode => $String
+    string? T.mode => $String
     T.mode
   m':=resolve(m1,m')
   T:=[T.expr,m1,T.env]
@@ -954,7 +954,7 @@ comp3(x,m,$e) ==
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
-  STRINGP m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  string? m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
   null x or atom x => compAtom(x,m,e)
   op:= first x
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
@@ -1013,10 +1013,10 @@ compCase1(x,m,e) ==
 genCaseTag(t,l,n) ==
   l is [x, :l] =>
     x = t     => 
-      STRINGP x => INTERN x
+      string? x => INTERN x
       INTERN STRCONC("value", STRINGIMAGE n)
     x is ["::",=t,:.] => t
-    STRINGP x => genCaseTag(t, l, n)
+    string? x => genCaseTag(t, l, n)
     genCaseTag(t, l, n + 1)
   nil
 

@@ -67,7 +67,7 @@ getVMType d ==
   IDENTP d => 
     d = "*" => d
     "%Thing"
-  STRINGP d => "%Thing"            -- literal flag parameter
+  string? d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
     Void => "%Void"
     Identifier => "%Symbol"
@@ -118,7 +118,7 @@ functionp f ==
 ++ remove `item' from `sequence'.
 delete: (%Thing,%Sequence) -> %Sequence
 delete(item,sequence) ==
-  SYMBOLP item => 
+  symbol? item => 
     REMOVE(item,sequence,KEYWORD::TEST,function EQ)
   atom item and not ARRAYP item =>
     REMOVE(item,sequence)
@@ -128,7 +128,7 @@ delete(item,sequence) ==
 CONTAINED: (%Thing,%Thing) -> %Boolean
 CONTAINED(x,y) == main where
   main() ==
-    SYMBOLP x => eq(x,y)
+    symbol? x => eq(x,y)
     equal(x,y)
   eq(x,y) ==
     atom y => EQ(x,y)

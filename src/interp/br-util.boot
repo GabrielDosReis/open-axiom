@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -183,7 +183,7 @@ unMkEvalable u ==
 
 lisp2HT u == ['"_'",:fn u] where fn u ==
   IDENTP u => escapeSpecialIds PNAME u
-  STRINGP u => escapeString u
+  string? u => escapeString u
   ATOM u => systemError()
   ['"_(",:"append"/[fn x for x in u],'")"]
 
@@ -205,7 +205,7 @@ form2HtString(x,:options) ==
         MEMQ(x,$FormalMapVariableList) => STRCONC('"\",STRINGIMAGE x)
         u := escapeSpecialChars STRINGIMAGE x
         MEMQ(x,$emList) => STRCONC('"{\em ",u,'"}")
-        STRINGP x => STRCONC('"_"",u,'"_"")
+        string? x => STRCONC('"_"",u,'"_"")
         u
       first x = 'QUOTE => STRCONC('"'",sexpr2HtString second x)
       first x = ":" => STRCONC(fn second x,'": ",fn third x)
@@ -237,7 +237,7 @@ form2LispString(x) ==
   atom x =>
     x = '_$ => '"__$"
     MEMQ(x,$FormalMapVariableList) => STRCONC(STRINGIMAGE '__, STRINGIMAGE x)
-    STRINGP x => STRCONC('"_"",STRINGIMAGE x,'"_"")
+    string? x => STRCONC('"_"",STRINGIMAGE x,'"_"")
     STRINGIMAGE x
   x is ['QUOTE,a] => STRCONC('"'",sexpr2LispString a)
   x is [":",a,b] => STRCONC(form2LispString a,'":",form2LispString b)
@@ -282,7 +282,7 @@ getConstructorArgs conname == rest getConstructorForm conname
 
 bcComments(comments,:options) ==
   italics? := not IFCAR options
-  STRINGP comments =>
+  string? comments =>
     comments = '"" => nil
     htSay('"\newline ")
     if italics? then htSay '"{\em "
@@ -318,7 +318,7 @@ dbEvalableConstructor? form ==
     null argl => true
     op = 'QUOTE => 'T     --is a domain valued object
     and/[dbEvalableConstructor? x for x in argl]
-  INTEGERP form => true
+  integer? form => true
   false
 
 htSayItalics s == htSay('"{\em ",s,'"}")
