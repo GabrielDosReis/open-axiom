@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -406,7 +406,7 @@ stringWidth u ==
 
 obj2String o ==
   atom o =>
-    STRINGP o => o
+    string? o => o
     o = " " => '" "
     o = ")" => '")"
     o = "(" => '"("
@@ -426,7 +426,7 @@ APP(u,x,y,d) ==
 
 atom2String x ==
   IDENTP x => PNAME x
-  STRINGP x => x
+  string? x => x
   stringer x
 
 -- General convention in the "app..." functions:
@@ -483,7 +483,7 @@ sayMath u ==
 outputTran x ==
   member(x,'("failed" "nil" "prime" "sqfr" "irred")) =>
     STRCONC('"_"",x,'"_"")
-  STRINGP x => x
+  string? x => x
   VECP x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
   NUMBERP x =>
@@ -494,7 +494,7 @@ outputTran x ==
     x
   x is [c,var,mode] and c in '(_pretend _: _:_: _@) =>
     var := outputTran var
-    if CONSP var then var := ['PAREN,var]
+    if cons? var then var := ['PAREN,var]
     ['CONCATB,var,c,obj2String prefix2String mode]
   x is ['ADEF,vars,.,.,body] =>
     vars :=
@@ -515,7 +515,7 @@ outputTran x ==
     ['BRACKET,['AGGLST,:[outputTran y for y in l]]]
 
   x is [["$elt",domain,"float"], x, y, z] and (domain = $DoubleFloat or
-    domain is ['Float]) and INTEGERP x and INTEGERP y and INTEGERP z and
+    domain is ['Float]) and integer? x and integer? y and integer? z and
         z > 0  and (float := getFunctionFromDomain("float",domain,[$Integer,$Integer,$PositiveInteger])) =>
             f := SPADCALL(x,y,z,float)
             o := coerceInteractive(objNewWrap(f, domain), '(OutputForm))
@@ -523,7 +523,7 @@ outputTran x ==
 
   [op,:l]:= flattenOps x
   --needed since "op" is string in some spad code
-  if STRINGP op then (op := INTERN op; x:= [op,:l])
+  if string? op then (op := INTERN op; x:= [op,:l])
   op = 'LAMBDA_-CLOSURE => 'Closure
   x is ['break,:.] => 'break
   x is ['SEGMENT,a] =>
@@ -549,7 +549,7 @@ outputTran x ==
   x is ["-",a,b] =>
     a := outputTran a
     b := outputTran b
-    INTEGERP b =>
+    integer? b =>
       b < 0 => ["+",a,-b]
       ["+",a,["-",b]]
     b is ["-",c] => ["+",a,c]
@@ -557,7 +557,7 @@ outputTran x ==
 
   -- next stuff translates exp(log(foo4)/foo3) into ROOT(foo4,foo3)
   (x is ["**", ='"%e",foo1]) and (foo1 is [ ='"/",foo2, foo3]) and
-    INTEGERP(foo3) and (foo2 is ['log,foo4]) =>
+    integer?(foo3) and (foo2 is ['log,foo4]) =>
        foo3 = 2 => ['ROOT,outputTran foo4]
        ['ROOT,outputTran foo4,outputTran foo3]
   (x is ["**", ='"%e",foo1]) and (foo1 is [op',foo2, foo3]) and
@@ -730,7 +730,7 @@ outputTranMatrix x ==
 
 mkSuperSub(op,argl) ==
   $linearFormatScripts => linearFormatForm(op,argl)
---  l := [(STRINGP f => f; STRINGIMAGE f)
+--  l := [(string? f => f; STRINGIMAGE f)
 --    for f in linearFormatForm(op,argl)]
 --  "STRCONC"/l
   s:= PNAME op
@@ -846,7 +846,7 @@ exptApp([.,a,b],x,y,d) ==
   APP(b,x',y',d)
 
 exptNeedsPren a ==
-  atom a and null (INTEGERP a and a < 0)  => false
+  atom a and null (integer? a and a < 0)  => false
   key:= keyp a
   key = "OVER" => true  -- added JHD 2/Aug/90
   (key="SUB") or (null GETL(key,"Nud") and null GETL(key,"Led")) => false
@@ -1025,7 +1025,7 @@ aggregateApp(u,x,y,d,s) ==
 --% Function to compute Width
 
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
-  STRINGP u =>
+  string? u =>
     u = $EmptyString => 0
     u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
@@ -1033,11 +1033,11 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
   WIDTH COPY u
 
 WIDTH u ==
-  STRINGP u =>
+  string? u =>
     u = $EmptyString => 0
     u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
-  INTEGERP u => 
+  integer? u => 
     if (u < 1) then 
       negative := 1
       u := -u
@@ -1062,7 +1062,7 @@ putWidth u ==
   rightPrec:= getBindingPowerOf("right",u)
   [firstEl,:l] := u
   interSpace:=
-    SYMBOLP firstEl and GETL(firstEl,"INFIXOP") => 0
+    symbol? firstEl and GETL(firstEl,"INFIXOP") => 0
     1
   argsWidth:=
     l is [firstArg,:restArg] =>
@@ -1659,7 +1659,7 @@ printMap u ==
   if not $collectOutput then TERPRI $algebraOutputStream
 
 isInitialMap u ==
-  u is [[[n],.],:l] and INTEGERP n and
+  u is [[[n],.],:l] and integer? n and
     (and/[x is [[ =i],.] for x in l for i in n+1..])
 
 printMap1(x,initialFlag) ==
@@ -1841,7 +1841,7 @@ charyElse(u,v,start,linelength) ==
 scylla(n,v) ==
   y := LASSOC(n,v)
   null y => nil
-  if STRINGP(y) then y := DROPTRAILINGBLANKS COPY y
+  if string?(y) then y := DROPTRAILINGBLANKS COPY y
   if $collectOutput then
     $outputLines := [y, :$outputLines]
   else
@@ -2409,7 +2409,7 @@ superSubApp(u, x, y, di) ==
   return di
 
 stringer x ==
-  STRINGP x => x
+  string? x => x
   EQ('_|, FETCHCHAR(s:= STRINGIMAGE x, 0)) =>
     RPLACSTR(s, 0, 1, "", nil, nil)
   s
@@ -2555,7 +2555,7 @@ binomialWidth u == 2 + MAX(WIDTH u.1, WIDTH u.2)
 
 mathPrint u ==
   if not $collectOutput then TERPRI $algebraOutputStream
-  (u := STRINGP mathPrint1(mathPrintTran u, nil) =>
+  (u := string? mathPrint1(mathPrintTran u, nil) =>
    PSTRING u; nil)
 
 mathPrintTran u ==
@@ -2599,7 +2599,7 @@ isUnaryPrefix op ==
 
 primaryForm2String x ==
   x = nil => '""
-  STRINGP x => x
+  string? x => x
   x = $EmptyMode => specialChar 'quad
   IDENTP x => 
     x = "$" => '"%"

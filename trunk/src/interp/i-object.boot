@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -162,8 +162,8 @@ getBasicMode x ==  getBasicMode0(x,$useIntegerSubdomain)
 ++ Subroutine of getBasicMode.
 getBasicMode0(x,useIntegerSubdomain) ==
   x is nil => $EmptyMode
-  STRINGP x => $String
-  INTEGERP x =>
+  string? x => $String
+  integer? x =>
     useIntegerSubdomain =>
       x > 0 => $PositiveInteger
       x = 0 => $NonNegativeInteger
@@ -176,14 +176,14 @@ getBasicMode0(x,useIntegerSubdomain) ==
 ++ If x is a literal of the basic types then returns
 ++ an interpreter object denoting x, and nil otherwise.
 getBasicObject x ==
-  INTEGERP    x =>
+  integer?    x =>
     t :=
       not $useIntegerSubdomain => $Integer
       x > 0 => $PositiveInteger
       x = 0 => $NonNegativeInteger
       $Integer
     objNewWrap(x,t)
-  STRINGP x => objNewWrap(x,$String)
+  string? x => objNewWrap(x,$String)
   FLOATP  x => objNewWrap(x,$DoubleFloat)
   NIL
 
@@ -288,7 +288,7 @@ getUnname1 x ==
 
 ++ returns the mode-set of VAT node x.
 getModeSet x ==
-  x and CONSP x => getModeSet first x
+  x and cons? x => getModeSet first x
   VECP x =>
     y:= x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
@@ -320,7 +320,7 @@ getModeOrFirstModeSetIfThere x ==
   NIL
 
 getModeSetUseSubdomain x ==
-  x and CONSP x => getModeSetUseSubdomain first x
+  x and cons? x => getModeSetUseSubdomain first x
   VECP(x) =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x
@@ -336,7 +336,7 @@ getModeSetUseSubdomain x ==
         [m]
       null val => y
       isEqualOrSubDomain(objMode(val),$Integer) and
-        INTEGERP(f := objValUnwrap val) =>
+        integer?(f := objValUnwrap val) =>
           [getBasicMode0(f,true)]
       y
     keyedSystemError("S2GE0016",

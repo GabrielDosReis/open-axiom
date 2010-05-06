@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ isValidType form ==
   -- Note that some forms are said to be invalid because they would
   -- cause problems with the interpreter. Thus things like P P I
   -- are not valid.
-  STRINGP form => true
+  string? form => true
   IDENTP  form => false
   member(form,$LangSupportTypes) => true
   form is ['Record,:selectors] =>
@@ -163,7 +163,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   --  variables, or two levels of Polynomial
   null t        => true    -- a terminating condition with underDomainOf
   t = $EmptyMode => true
-  STRINGP t     => true
+  string? t     => true
   ATOM t => false
 
   badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))

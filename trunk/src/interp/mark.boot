@@ -103,7 +103,7 @@ markCoerce(T,T',kind) ==                                 --for coerce
   tcheck T
   tcheck T'
   if kind = 'AUTOSUBSET then yumyum(kind)
-  STRINGP T.mode and T'.mode = '(String) => T'
+  string? T.mode and T'.mode = '(String) => T'
   markKillAll T.mode = T'.mode => T'
   -- reduce (AUTOSUBSET a b (WI c (AUTOSUBSET b a c))) ==> c
   u :=
@@ -172,7 +172,7 @@ markAutoCoerceDown(x,tag,T,killColonColon?) ==
 markAutoCoerceUp(x,T) ==
 --  y := getSourceWI x
 --  y := 
---    STRINGP y => INTERN y
+--    string? y => INTERN y
 --    y   
   tcheck T  
   [mkWi('coerceExtraHard,'LAMBDA, nil,["REPLACE",['construct, "##1"]],T.expr),
@@ -284,7 +284,7 @@ markImport(d,:option) ==   --from compFormWithModemap/genDeltaEntry/compImport
   declared? := IFCAR option
   null d or d = $Representation => nil
   d is [op,:.] and op in '(Boolean Mapping Void Segment UniversalSegment) => nil
-  STRINGP d or (IDENTP d and (PNAME d).0 = char '_#) => nil
+  string? d or (IDENTP d and (PNAME d).0 = char '_#) => nil
   d in '(_$ _$NoValueMode _$EmptyMode Void) => nil
 -------=======+> WHY DOESN'T THIS WORK????????????
 --if (d' := macroExpand(d,$e)) ~= d then markImport(d',declared?)
@@ -566,7 +566,7 @@ markRecord(source,target,u) ==
   item := first u
   FIXP item or item = $One or item = $Zero => nil
   item is ["-",a] and (FIXP a or a = $One or a = $Zero) => nil
-  STRINGP item => nil
+  string? item => nil
   item is [op,.,t] and op in '( _:_: _@ _pretend)
     and macroExpand(t,$e) = target => nil
   $source: local := source
@@ -1306,7 +1306,7 @@ moveLinesAfter(alist, lines) ==
   n := #lines
   acc := nil
   for i in 0..(n - 1) for x in lines repeat
-    (p :=  ASSOC(i, alist)) and STRINGP rest p => acc := [rest p, x, :acc]
+    (p :=  ASSOC(i, alist)) and string? rest p => acc := [rest p, x, :acc]
     (p :=  lookupRight(i, alist)) and (first p) > i => RPLACD(p, x)
     acc := [x, :acc]
   reverse acc  

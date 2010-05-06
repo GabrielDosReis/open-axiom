@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -262,7 +264,7 @@ htFile2RecordFile(pathname,:option) ==
 --=======================================================================
 recordAndPrintTest md ==  --called by recordAndPrint
   input :=
-    STRINGP $currentLine => [$currentLine]
+    string? $currentLine => [$currentLine]
     fn $currentLine where fn x ==
       x is [y,:r] =>     
         y.(k := MAXINDEX y) = char '__ => 

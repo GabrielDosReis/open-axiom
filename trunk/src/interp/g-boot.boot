@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ mergeableCOND x ==
   ok := true
   while (cls and ok) repeat
     [[p,:r],:cls] := cls
-    CONSP QCDR r => ok := NIL
+    cons? QCDR r => ok := NIL
     first(r) isnt ['EXIT,.] => ok := NIL
     NULL(cls) and ATOM(p) => ok := NIL
     NULL(cls) and (p = ''T) => ok := NIL
@@ -283,18 +283,18 @@ defLET2(lhs,rhs) ==
     a := defLET2(a,rhs)
     null (b := defLET2(b,rhs)) => a
     ATOM b => [a,b]
-    CONSP QCAR b => CONS(a,b)
+    cons? QCAR b => CONS(a,b)
     [a,b]
   lhs is ['CONS,var1,var2] =>
     var1 = "." or (var1 is ["QUOTE",:.]) =>
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
     var2 in '(NIL _.) => l1
-    if CONSP l1 and ATOM first l1 then l1 := cons(l1,nil)
+    if cons? l1 and ATOM first l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
-    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
+    if cons? l2 and ATOM first l2 then l2 := cons(l2,nil)
     append(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
@@ -302,7 +302,7 @@ defLET2(lhs,rhs) ==
     g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
-    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
+    if cons? l2 and ATOM first l2 then l2 := cons(l2,nil)
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
       [[$LET,g,rev],:reverse rest reverse l2,
@@ -352,7 +352,7 @@ defISReverse(x,a) ==
 defIS1(lhs,rhs) ==
   NULL rhs =>
     ['NULL,lhs]
-  STRINGP rhs =>
+  string? rhs =>
     ['EQ,lhs,['QUOTE,INTERN rhs]]
   NUMBERP rhs =>
     ['EQUAL,lhs,rhs]
@@ -368,7 +368,7 @@ defIS1(lhs,rhs) ==
     ['AND,defIS1(lhs,d),MKPROGN [l,''T]]
   rhs is ['EQUAL,a] =>
     ['EQUAL,lhs,a]
-  CONSP lhs =>
+  cons? lhs =>
     g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     MKPROGN [[$LET,g,lhs],defIS1(g,rhs)]
@@ -396,7 +396,7 @@ defIS1(lhs,rhs) ==
     $isGenVarCounter := $isGenVarCounter + 1
     rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)
-    if CONSP l2 and ATOM first l2 then l2 := cons(l2,nil)
+    if cons? l2 and ATOM first l2 then l2 := cons(l2,nil)
     a = "." => ['AND,rev,:l2]
     ['AND,rev,:l2,['PROGN,defLetForm(a,['NREVERSE,a]),''T]]
   SAY '"WARNING (defIS1): possibly bad IS code being generated"

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -193,7 +193,7 @@ showDomainsOp1(u,key) ==
   u
 
 getDomainRefName(dom,nam) ==
-  CONSP nam => [getDomainRefName(dom,x) for x in nam]
+  cons? nam => [getDomainRefName(dom,x) for x in nam]
   not FIXP nam => nam
   slot := dom.nam
   VECP slot => slot.0

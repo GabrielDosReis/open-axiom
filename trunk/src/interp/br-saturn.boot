@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -151,12 +151,12 @@ htSayBind(x, options) ==
 bcHt line ==
   $newPage =>  --this path affects both saturn and old lines
     text :=
-      CONSP line => [['text, :line]]
-      STRINGP line => line
+      cons? line => [['text, :line]]
+      string? line => line
       [['text, line]]
     if $saturn then htpAddToPageDescription($saturnPage, text)
     if $standard then htpAddToPageDescription($curPage, text)
-  CONSP line =>
+  cons? line =>
     $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
@@ -383,9 +383,9 @@ htMakePage1 itemList ==
   for u in itemList repeat
     itemType := 'text
     items :=
-      STRINGP u => u
+      string? u => u
       atom u => STRINGIMAGE u
-      STRINGP first u => u
+      string? first u => u
       u is ['text, :s] => s
       itemType := first u
       rest u
@@ -447,7 +447,7 @@ mkDocLink(code,s) ==
   ['"\lispLink[d]{\verb!", :code, '"!}{", :s, '"}"]
 
 saturnTranText x ==
-  STRINGP x         => [unTab x]
+  string? x         => [unTab x]
   null x            => nil
   r is [s,fn,:.] and s = '"\unixcommand{" => ['"{\it ",s,'".spad}"]
   x is [['text, :s],:r] => unTab [:s, :saturnTranText r]
@@ -548,7 +548,7 @@ htMakeButtonSaturn(htCommand, message, func,options) ==
 
 htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
-    STRINGP pageDescrip => [pageDescrip, :ELT(htPage, 7)]
+    string? pageDescrip => [pageDescrip, :ELT(htPage, 7)]
     nconc(nreverse COPY_-LIST pageDescrip, ELT(htPage, 7))
   SETELT(htPage, 7, newDescript)
 
@@ -1004,7 +1004,7 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
       thing = 'nowhere => '"implemented nowhere"
       thing = 'constant => '"constant"
       thing = '_$ => '"by the domain"
-      INTEGERP thing => '"unexported"
+      integer? thing => '"unexported"
       constructorIfTrue =>
         htSay word
         atom thing => '" an unknown constructor"
@@ -1030,7 +1030,7 @@ dbPresentOps(htPage,which,:exclusions) ==
   implementation? := not asharp? and
     $UserLevel = 'development and $conformsAreDomains --and not $includeUnexposed?
   rightmost? := star? or (implementation? and not $includeUnexposed?)
-  if INTEGERP first exclusions then exclusions := ['documentation]
+  if integer? first exclusions then exclusions := ['documentation]
   htpSetProperty(htPage,'exclusion,first exclusions)
   opAlist :=
     which = '"operation" => htpProperty(htPage,'opAlist)
@@ -1101,7 +1101,7 @@ dbPresentOpsSaturn(htPage,which,exclusions) ==
   implementation? := not asharp? and
     $UserLevel = 'development and $conformsAreDomains --and not $includeUnexposed?
   rightmost? := star? or (implementation? and not $includeUnexposed?)
-  if INTEGERP first exclusions then exclusions := ['documentation]
+  if integer? first exclusions then exclusions := ['documentation]
   htpSetProperty(htPage,'exclusion,first exclusions)
   opAlist :=
     which = '"operation" => htpProperty(htPage,'opAlist)
@@ -1358,7 +1358,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     else
        ndoc:= 
           -- we are confused whether doc is a string or a list of strings
-          CONSP doc =>  [SUBSTITUTE($charNewline, $charFauxNewline, i) for i in doc]
+          cons? doc =>  [SUBSTITUTE($charNewline, $charFauxNewline, i) for i in doc]
           SUBSTITUTE($charNewline, $charFauxNewline,doc)
        htSay ndoc 
 --  htSaySaturn '"\\"
@@ -1494,7 +1494,7 @@ htBlank(:options) ==
   htSayStandard '"\space{1}"
 
 unTab s ==
-  STRINGP s => unTab1 s
+  string? s => unTab1 s
   atom s => s
   [unTab1 first s, :rest s]
 
@@ -1631,9 +1631,9 @@ bcConform1 form == main where
     atom form =>
       -- string literals, e.g. "failed", are constructor arguments
       -- too, until we fix that.
-      STRINGP form or not isConstructorName form =>
+      string? form or not isConstructorName form =>
         s := 
-          STRINGP form => strconc("_"",form,"_"")
+          string? form => strconc("_"",form,"_"")
           STRINGIMAGE form
         (s.0 = char '_#) =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>

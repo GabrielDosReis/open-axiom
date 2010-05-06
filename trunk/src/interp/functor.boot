@@ -135,7 +135,7 @@ PacPrint v ==
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:vv.j],:$WhereList]
       vv.j:= name
-    if CONSP vv.j and REFVECP(u:=rest vv.j) then
+    if cons? vv.j and REFVECP(u:=rest vv.j) then
       l:= ASSQ(keyItem u,Sublis)
       if l
          then name:= rest l
@@ -228,7 +228,7 @@ compCategories1(u,v) ==
 NewbFVectorCopy(u,domName) ==
   v:= newShell SIZE u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | CONSP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
+  for i in 6..MAXINDEX v | cons? u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
   v
  
 mkVector u ==
@@ -641,7 +641,7 @@ ConstantCreator u ==
  
 ProcessCond cond ==
   ncond := SUBLIS($pairlis,cond)
-  INTEGERP POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
+  integer? POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
   cond
 
 TryGDC cond ==
@@ -948,7 +948,7 @@ splitEncodedFunctionName(encodedName, sep) ==
     -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or NIL
     -- sep0 is the separator used in "encodeFunctionName".
     sep0 := '";"
-    if not STRINGP encodedName then
+    if not string? encodedName then
         encodedName := STRINGIMAGE encodedName
     null (p1 := STRPOS(sep0, encodedName, 0,    '"*")) => nil
     null (p2 := STRPOS(sep0, encodedName, p1+1, '"*")) => 'inner

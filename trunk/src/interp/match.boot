@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ $wildCard := char "*"
 
 maskMatch?(mask,subject) ==
   null mask => true
-  if null STRINGP subject then subject := PNAME subject
+  if null string? subject then subject := PNAME subject
   or/[match?(pattern,subject) for pattern in mask]
 
 substring?(part, whole, startpos) ==

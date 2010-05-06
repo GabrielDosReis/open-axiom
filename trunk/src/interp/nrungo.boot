@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ compiledLookup(op,sig,dollar) ==
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 basicLookup(op,sig,domain,dollar) ==
   item := domain.1
-  CONSP item and first item in '(lookupInDomain lookupInTable) => 
+  cons? item and first item in '(lookupInDomain lookupInTable) => 
     lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
   u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
@@ -116,11 +116,11 @@ goGet(:l) ==
   lookupDomain :=
      domainSlot = 0 => thisDomain
      thisDomain.domainSlot -- where we look for the operation
-  if CONSP lookupDomain then lookupDomain := NRTevalDomain lookupDomain
+  if cons? lookupDomain then lookupDomain := NRTevalDomain lookupDomain
   dollar :=                             -- what matches $ in signatures
     explicitLookupDomainIfTrue => lookupDomain
     thisDomain
-  if CONSP dollar then dollar := NRTevalDomain dollar
+  if cons? dollar then dollar := NRTevalDomain dollar
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
   val:= APPLY(first fn,[:arglist,rest fn])
@@ -129,9 +129,9 @@ goGet(:l) ==
 
 NRTreplaceLocalTypes(t,dom) ==
    atom t =>
-     not INTEGERP t => t
+     not integer? t => t
      t:= dom.t
-     if CONSP t then t:= NRTevalDomain t
+     if cons? t then t:= NRTevalDomain t
      t.0
    first t in '(Mapping Union Record _:) =>
       [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
@@ -202,7 +202,7 @@ defaultingFunction op ==
 --=======================================================
 lookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
-    INTEGERP KAR addFormCell =>
+    integer? KAR addFormCell =>
       or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
     if not VECP addFormCell then addFormCell := eval addFormCell
     lookupInDomainVector(op,sig,addFormCell,dollar)
@@ -275,7 +275,7 @@ compareSig(sig,tableSig,dollar,domain) ==
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot = '$ => s = "$" or s = devaluate dollar
-  INTEGERP tslot and CONSP(lazyt:=domain.tslot) and CONSP s =>
+  integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = first s =>
           compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
@@ -291,7 +291,7 @@ compareSigEqual(s,t,dollar,domain) ==
       isSharpVar t =>
         VECP domain => ELT(rest domain.0,POSN1(t,$FormalMapVariableList))
         ELT(rest domain,POSN1(t,$FormalMapVariableList))
-      STRINGP t and IDENTP s => (s := PNAME s; t)
+      string? t and IDENTP s => (s := PNAME s; t)
       nil
     s = '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
@@ -363,7 +363,7 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
   --Must have at least one special value; insist that they be consecutive
   null initList => false
   specialValues:= MSORT ASSOCLEFT initList
-  or/[null INTEGERP n for n in specialValues] => false
+  or/[null integer? n for n in specialValues] => false
   minIndex:= "MIN"/specialValues
   not (and/[i=x for i in minIndex..(minIndex+n-1) for x in specialValues]) =>
     sayKeyedMsg("S2IX0005",
@@ -385,7 +385,7 @@ NRTisRecurrenceRelation(op,body,minivectorName) ==
     generalPred is ['NOT,['SPADCALL,=sharpArg,m,['ELT,=minivectorName, =lesspSlot]]]
       and EQ(lesspSlot,$minivector.slot) => m
     return nil
-  INTEGERP predOk and predOk ~= n =>
+  integer? predOk and predOk ~= n =>
     sayKeyedMsg("S2IX0006",[n,m])
     return nil
 

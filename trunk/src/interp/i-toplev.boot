@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -247,7 +247,7 @@ printTypeAndTimeSaturn(x, m) ==
     typeString := '""
   if $printTypeIfTrue then
     printAsTeX('"\axPrintType{")
-    if CONSP typeString then
+    if cons? typeString then
       MAPC(FUNCTION printAsTeX, typeString)
     else
       printAsTeX(typeString)
@@ -302,7 +302,7 @@ interpretTopLevel(x, posnForm) ==
   c
 
 interpret(x, :restargs) ==
-  posnForm := if CONSP restargs then first restargs else restargs
+  posnForm := if cons? restargs then first restargs else restargs
   --type analyzes and evaluates expression x, returns object
   $env:local := [[nil]]
   $eval:local := true           --generate code-- don't just type analyze
@@ -369,9 +369,9 @@ intSetNeedToSignalSessionManager() ==
 setCurrentLine s ==
   $currentLine := 
      null $currentLine => s
-     STRINGP $currentLine =>
-       [$currentLine, :(STRINGP s => [s]; s)]
-     RPLACD(lastNode $currentLine, (STRINGP s => [s]; s))
+     string? $currentLine =>
+       [$currentLine, :(string? s => [s]; s)]
+     RPLACD(lastNode $currentLine, (string? s => [s]; s))
      $currentLine
 
 

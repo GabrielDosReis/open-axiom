@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace BOOT
 -- pre oldAxiomCategory is (dispatchVector . (cat form))
 -- oldAxiomCategory objects are (dispatchVector . ( (cat form)  hash defaultpack parentlist))
 
-hashCode? x == INTEGERP x
+hashCode? x == integer? x
 
 $domainTypeTokens := ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory,
            'oldAxiomCategory, 0]
@@ -83,7 +83,7 @@ DNameToSExpr dname ==
   first dname = DNameOtherID  =>
         rest dname
   sx := DNameToSExpr1 dname
-  CONSP sx => sx
+  cons? sx => sx
   LIST sx
 
 DNameFixEnum arg == CompStrToString rest arg
@@ -131,7 +131,7 @@ makeLazyOldAxiomDispatchDomain domform ==
   dd
 
 makeOldAxiomDispatchDomain dom ==
-  CONSP dom => dom
+  cons? dom => dom
   [$oldAxiomDomainDispatch,hashTypeForm(dom.0,0),:dom]
 
 closeOldAxiomFunctor(name) ==
@@ -353,7 +353,7 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
          hashCode? sig => sig
          hashType( ['Mapping,:sig], hashPercent)
 
-       if SYMBOLP op then op := hashString SYMBOL_-NAME op
+       if symbol? op then op := hashString SYMBOL_-NAME op
        first SPADCALL(rest dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
   first SPADCALL(rest dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
 
@@ -453,7 +453,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   (success ~= 'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
-        CONSP success => [first success,:devaluate rest success]
+        cons? success => [first success,:devaluate rest success]
         success
     success
   subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
@@ -464,7 +464,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := second slot4
   SIZE catVec = 0 => nil                      --early exit if no categories
-  INTEGERP KDR catVec.0 =>
+  integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
@@ -574,7 +574,7 @@ newHasCategory(domain,catform) ==
   auxvec := first slot4
   catvec := second slot4
   $isDefaultingPackage: local := isDefaultPackageForm? devaluate domain
-  #catvec > 0 and INTEGERP KDR catvec.0 =>              --old style
+  #catvec > 0 and integer? KDR catvec.0 =>              --old style
     predIndex := lazyMatchAssocV1(catform,catvec,domain)
     null predIndex => false
     predIndex = 0 => true

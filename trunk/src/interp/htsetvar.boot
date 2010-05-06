@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,7 @@ htShowIntegerPage(htPage, setData) ==
 htSetInteger(htPage) ==
   htInitPage(mkSetTitle(), nil)
   val := chkRange htpLabelInputString(htPage,'value)
-  not INTEGERP val =>
+  not integer? val =>
     errorPage(htPage,['"Value Error",nil,'"\vspace{3}\centerline{{\em ",val,'"}}\vspace{2}\newline\centerline{Click on \UpBitmap{} to re-enter value}"])
   setDynamicBinding(htpProperty(htPage, 'variable), val)
   htKill(htPage,val)
@@ -266,11 +266,11 @@ htSetNotAvailable(htPage,whatToType) ==
 htDoNothing(htPage,command) == nil
 
 htCheck(checker,value) ==
-  CONSP checker => htCheckList(checker,parseWord value)
+  cons? checker => htCheckList(checker,parseWord value)
   FUNCALL(checker,value)
 
 parseWord x ==
-  STRINGP x =>
+  string? x =>
     and/[DIGITP x.i for i in 0..MAXINDEX x] => PARSE_-INTEGER x
     INTERN x
   x
@@ -278,15 +278,15 @@ parseWord x ==
 htCheckList(checker,value) ==
   if value in '(y ye yes Y YE YES) then value := 'yes
   if value in '(n no N NO) then value := 'no
-  checker is [n,m] and INTEGERP n =>
+  checker is [n,m] and integer? n =>
     m = n + 1 =>
       value in checker => value
       n
     null m =>
-      INTEGERP value and value >= n => value
+      integer? value and value >= n => value
       n
-    INTEGERP m =>
-      INTEGERP value and value >= n and value <= m => value
+    integer? m =>
+      integer? value and value >= n and value <= m => value
       n
   value in checker => value
   first checker
@@ -305,7 +305,7 @@ chkNameList x ==
   '"Please enter a list of identifiers separated by blanks"
 
 chkPosInteger s ==
-  (u := parseOnly s) and INTEGERP u and u > 0 => u
+  (u := parseOnly s) and integer? u and u > 0 => u
   '"Please enter a positive integer"
 
 chkOutputFileName s ==
@@ -315,11 +315,11 @@ chkOutputFileName s ==
 chkDirectory s == s
 
 chkNonNegativeInteger s ==
-  (u := ncParseFromString s) and INTEGERP u and u >= 0 => u
+  (u := ncParseFromString s) and integer? u and u >= 0 => u
   '"Please enter a non-negative integer"
 
 chkRange s ==
-  (u := ncParseFromString s) and INTEGERP u
+  (u := ncParseFromString s) and integer? u
     and u >= $htInitial and (NULL $htFinal or u <= $htFinal)
       => u
   null $htFinal =>

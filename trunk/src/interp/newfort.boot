@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -204,7 +204,7 @@ beenHere(e,n) ==
       fun = 'CAR =>
         RPLACA(loc,var)
       fun = 'CDR =>
-        if CONSP QCDR loc
+        if cons? QCDR loc
           then RPLACD(loc,[var])
           else RPLACD(loc,var)
       SAY '"whoops"
@@ -783,15 +783,15 @@ fortPre1 e ==
   -- replace N-ary by binary functions
   -- strip the '%' character off objects like %pi etc..
   null e => nil
-  INTEGERP(e) =>
+  integer?(e) =>
     $fortInts2Floats = true =>
       e >= 0 => fix2FortranFloat(e)
       ['"-", fix2FortranFloat(-e)]
     e
   isFloat(e) => checkPrecision(e)
   -- Keep strings as strings:
-  -- STRINGP(e) => STRCONC(STRING(34),e,STRING(34))
-  STRINGP(e) => e
+  -- string?(e) => STRCONC(STRING(34),e,STRING(34))
+  string?(e) => e
   e = "%e" => fortPre1 ["exp" , 1]
   imags := ['"%i","%i"]
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
@@ -802,7 +802,7 @@ fortPre1 e ==
   member(op,["**" , '"**"]) =>
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
-    (IDENTP rand or STRINGP rand) and exponent=2 => ["*", rand, rand]
+    (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
     (FIXP exponent and ABS(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
@@ -847,11 +847,11 @@ fix2FortranFloat e ==
   STRCONC(STRINGIMAGE(e),".")
  
 isFloat e ==
-  FLOATP(e) or STRINGP(e) and FIND(char ".",e)
+  FLOATP(e) or string?(e) and FIND(char ".",e)
  
 checkPrecision e ==
   -- Do we have a string?
-  STRINGP(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
+  string?(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
   e := delete(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
     iPart := SUBSEQ(e,0,(period:=POSITION(char ".",e))+1)

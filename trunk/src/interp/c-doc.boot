@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -217,7 +217,7 @@ transDoc(conname,doclist) ==
     null lines =>
       $attribute? => nil
       checkDocError1 ['"Not documented!!!!"]
-    u := checkTrim($x,(STRINGP lines => [lines]; $x = 'constructor => first lines; lines))
+    u := checkTrim($x,(string? lines => [lines]; $x = 'constructor => first lines; lines))
     $argl : local := nil    --set by checkGetArgs
 -- tpd: related domain information doesn't exist
 --    if v := checkExtract('"Related Domains:",u) then
@@ -349,7 +349,7 @@ checkTexht u ==
 checkRecordHash u ==
   while u repeat
     x := first u
-    if STRINGP x and x.0 = $charBack then
+    if string? x and x.0 = $charBack then
       if member(x,$HTlinks) and (u := checkLookForLeftBrace IFCDR u)
            and (u := checkLookForRightBrace IFCDR u)
              and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
@@ -617,7 +617,7 @@ checkIndentedLines(u, margin) ==
   u2
 
 newString2Words l ==
-  not STRINGP l => [l]
+  not string? l => [l]
   m := MAXINDEX l
   m = -1 => NIL
   i := 0
@@ -647,7 +647,7 @@ checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
   s
 
 checkGetArgs u ==
-  NOT STRINGP u => nil
+  NOT string? u => nil
   m := MAXINDEX u
   k := firstNonBlankPosition(u)
   k > 0 => checkGetArgs SUBSTRING(u,k,nil)
@@ -810,11 +810,11 @@ checkDecorate u ==
         spadflag => ['",",:acc]
         ['",{}",:acc]
       x = '"\spad" => ['"\spad",:acc]
-      STRINGP x and DIGITP x.0 => [x,:acc]
+      string? x and DIGITP x.0 => [x,:acc]
       not spadflag and
         (CHARP x and ALPHA_-CHAR_-P x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and ((STRINGP x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
+      not spadflag and ((string? x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
       xcount := SIZE x
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
@@ -938,7 +938,7 @@ checkSplitBrace x ==
   [x]
 
 checkSplitBackslash x ==
-  not STRINGP x => [x]
+  not string? x => [x]
   m := MAXINDEX x
   (k := charPosition($charBack,x,0)) < m =>
     m = 1 or ALPHA_-CHAR_-P(x . (k + 1)) =>     --starts with a backslash so..
@@ -1033,7 +1033,7 @@ checkBeginEnd u ==
   while u repeat
     IDENTITY
       x := first u
-      STRINGP x and x.0 = $charBack and #x > 2 and not HGET($htMacroTable,x)
+      string? x and x.0 = $charBack and #x > 2 and not HGET($htMacroTable,x)
         and not (x = '"\spadignore") and IFCAR IFCDR u = $charLbrace
           and not
             (substring?('"\radiobox",x,0) or substring?('"\inputbox",x,0))=>
@@ -1302,10 +1302,10 @@ checkDecorateForHt u ==
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
       x = '"$" or x = '"%" => checkDocError ['"Unescaped ",x]
---      null spadflag and STRINGP x and (member(x,$argl) or #x = 1
+--      null spadflag and string? x and (member(x,$argl) or #x = 1
 --        and ALPHA_-CHAR_-P x.0) and not member(x,'("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      null spadflag and STRINGP x and (not x.0 = $charBack and not DIGITP(x.0) and DIGITP(x.(MAXINDEX x))or member(x,'("true" "false")))
+--      null spadflag and string? x and (not x.0 = $charBack and not DIGITP(x.0) and DIGITP(x.(MAXINDEX x))or member(x,'("true" "false")))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

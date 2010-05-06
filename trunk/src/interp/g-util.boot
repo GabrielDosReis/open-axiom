@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -157,7 +157,7 @@ ScanOrPairVec(f, ob) ==
     CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
         ScanOrInner(f, ob) ==
             HGET($seen, ob) => nil
-            CONSP ob =>
+            cons? ob =>
                 HPUT($seen, ob, true)
                 ScanOrInner(f, QCAR ob)
                 ScanOrInner(f, QCDR ob)
@@ -337,9 +337,9 @@ getUnionOrRecordTags u ==
 
 Identity x == x
 
-length1? l == CONSP l and not CONSP QCDR l
+length1? l == cons? l and not cons? QCDR l
 
-length2? l == CONSP l and CONSP (l := QCDR l) and not CONSP QCDR l
+length2? l == cons? l and cons? (l := QCDR l) and not cons? QCDR l
 
 pairList(u,v) == [[x,:y] for x in u for y in v]
 
@@ -429,7 +429,7 @@ centerString(text,width,fillchar) ==
 stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
-  null (STRINGP(pref) and STRINGP(str)) => NIL
+  null (string?(pref) and string?(str)) => NIL
   (lp := QCSIZE pref) = 0 => true
   lp > QCSIZE str => NIL
   ok := true
@@ -444,8 +444,8 @@ stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
   if IDENTP str then str := PNAME str
-  null (STRINGP(str) and
-    INTEGERP(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
+  null (string?(str) and
+    integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
   not DIGITP(d := SCHAR(str,pos)) => NIL
   DIG2FIX d
 
@@ -803,13 +803,13 @@ quickOr(a,b) ==
   simpCatPredicate simpBool ['OR,a,b]
 
 intern x ==
-  STRINGP x =>
+  string? x =>
     DIGITP x.0 => string2Integer x
     INTERN x
   x
 
 isDomain a ==
-  CONSP a and VECP(first a) and
+  cons? a and VECP(first a) and
     member(first(a).0, $domainTypeTokens)
 
 -- variables used by browser

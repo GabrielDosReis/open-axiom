@@ -159,7 +159,7 @@ bfColonColon(package, name) ==
 
 bfSymbol: %Thing -> %Thing 
 bfSymbol x==
-   STRINGP x=> x
+   string? x=> x
    ['QUOTE,x]
 
  
@@ -279,7 +279,7 @@ bfSTEP(id,fst,step,lst)==
     g2
   ex :=
      null lst=> []
-     INTEGERP inc =>
+     integer? inc =>
        pred :=
 	 MINUSP inc => "<"
 	 ">"
@@ -541,18 +541,18 @@ bfLET2(lhs,rhs) ==
     a := bfLET2(a,rhs)
     null (b := bfLET2(b,rhs)) => a
     atom b => [a,b]
-    CONSP first b => CONS(a,b)
+    cons? first b => CONS(a,b)
     [a,b]
   lhs is ['CONS,var1,var2] =>
     var1 = "DOT" or var1 is ["QUOTE",:.] =>
       bfLET2(var2,addCARorCDR('CDR,rhs))
     l1 := bfLET2(var1,addCARorCDR('CAR,rhs))
     null var2 or var2 = "DOT" =>l1
-    if CONSP l1 and atom first l1 then l1 := cons(l1,nil)
+    if cons? l1 and atom first l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,bfLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := bfLET2(var2,addCARorCDR('CDR,rhs))
-    if CONSP l2 and atom first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
     APPEND(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := bfISReverse(var2,var1)
@@ -560,7 +560,7 @@ bfLET2(lhs,rhs) ==
     g := INTERN CONCAT('"LETTMP#", STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := bfLET2(patrev,g)
-    if CONSP l2 and atom first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
     var1 = "DOT" => [['L%T,g,rev],:l2]
     last l2 is ['L%T, =var1, val1] =>
       [['L%T,g,rev],:REVERSE rest REVERSE l2,
@@ -585,7 +585,7 @@ bfLET(lhs,rhs) ==
   bfLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
-  NULL CONSP expr => [acc,expr]
+  NULL cons? expr => [acc,expr]
   acc = 'CAR and expr is ["REVERSE",:.] =>
       ["CAR",["LAST",:rest expr]]
  --   cons('last,rest expr)
@@ -629,7 +629,7 @@ bfISReverse(x,a) ==
  
 bfIS1(lhs,rhs) ==
   null rhs => ['NULL,lhs]
-  STRINGP rhs => ['EQ,lhs,['QUOTE,INTERN rhs]]
+  string? rhs => ['EQ,lhs,['QUOTE,INTERN rhs]]
   NUMBERP rhs => ["EQUAL",lhs,rhs]
   atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
   rhs is ['QUOTE,a] =>
@@ -639,7 +639,7 @@ bfIS1(lhs,rhs) ==
     l := bfLET(c,lhs)
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
   rhs is ["EQUAL",a] => bfQ(lhs,a)
-  CONSP lhs =>
+  cons? lhs =>
     g := INTERN CONCAT('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
@@ -661,7 +661,7 @@ bfIS1(lhs,rhs) ==
     $isGenVarCounter := $isGenVarCounter + 1
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],'T]]
     l2 := bfIS1(g,patrev)
-    if CONSP l2 and atom first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
     a = "DOT" => bfAND [rev,:l2]
     bfAND [rev,:l2,['PROGN,bfLetForm(a,['NREVERSE,a]),'T]]
   bpSpecificErrorHere '"bad IS code is generated"
@@ -685,9 +685,9 @@ bfReName x==
 ++ Generate code for a membership test `x in seq' where `seq'
 ++ is a sequence (e.g. a list)
 bfMember(var,seq) ==
-  seq is ["QUOTE",seq'] and "and"/[SYMBOLP x for x in seq'] =>
+  seq is ["QUOTE",seq'] and "and"/[symbol? x for x in seq'] =>
     ["MEMQ",var,seq]
-  var is ["QUOTE",var'] and SYMBOLP var' =>
+  var is ["QUOTE",var'] and symbol? var' =>
     ["MEMQ",var,seq]
   var is ["char",.] => ["MEMBER",var,seq,KEYWORD::TEST,"EQL"]
   ["MEMBER",var,seq]
@@ -728,7 +728,7 @@ defQuoteId x==
   x is ["QUOTE",:.] and IDENTP second x
  
 bfSmintable x==
-  INTEGERP x or CONSP x and first x in '(SIZE LENGTH char)
+  integer? x or cons? x and first x in '(SIZE LENGTH char)
  
 bfQ(l,r)==
   bfSmintable l or bfSmintable r => ["EQL",l,r]
@@ -949,16 +949,16 @@ bfSetelt(e,l,r)==
   bfSetelt(bfElt(e,first l),rest l,r)
  
 bfElt(expr,sel)==
-  y:=SYMBOLP sel and sel has SHOESELFUNCTION
+  y:=symbol? sel and sel has SHOESELFUNCTION
   y =>
-    INTEGERP y => ["ELT",expr,y]
+    integer? y => ["ELT",expr,y]
     [y,expr]
   ["ELT",expr,sel]
  
 defSETELT(var,sel,expr)==
-  y := SYMBOLP sel and sel has SHOESELFUNCTION
+  y := symbol? sel and sel has SHOESELFUNCTION
   y =>
-    INTEGERP y => ["SETF",["ELT",var,y],expr]
+    integer? y => ["SETF",["ELT",var,y],expr]
     ["SETF",[y,var],expr]
   ["SETF",["ELT",var,sel],expr]
  
@@ -1626,7 +1626,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
 genImportDeclaration(op, sig) ==
   sig isnt ["%Signature", op', m] => coreError '"invalid signature"
   m isnt ["%Mapping", t, s] => coreError '"invalid function type"
-  if not null s and SYMBOLP s then s := [s]
+  if not null s and symbol? s then s := [s]
 
   %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')

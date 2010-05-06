@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ module includer
 -- returns a printable representation of X, when it is a symbol
 -- or a character, as string.  Otherwise, returns nil.
 PNAME x ==
-  SYMBOLP x => SYMBOL_-NAME x
+  symbol? x => SYMBOL_-NAME x
   CHARACTERP x => STRING x
   nil
 

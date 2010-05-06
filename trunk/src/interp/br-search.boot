@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -148,16 +148,16 @@ pmTransFilter s ==
   s
 
 checkPmParse parse ==
-  STRINGP parse => parse
+  string? parse => parse
   (fn parse => parse) where fn(u) ==
     u is [op,:args] =>
       op in '(and or not) and "and"/[checkPmParse x for x in args]
-    STRINGP u => true
+    string? u => true
     false
   nil
 
 dnForm x ==
-  STRINGP x => x
+  string? x => x
   x is ['not,argl] =>
     argl is ['or,:orargs]=>
        ['and, :[dnForm negate u for u in orargs]] where negate s ==
@@ -176,7 +176,7 @@ pmParseFromString s ==
   u := ncParseFromString pmPreparse s
   dnForm flatten u where flatten s ==
     s is [op,:argl] =>
-      STRINGP op => STRCONC(op,"STRCONC"/[STRCONC('" ",x) for x in argl])
+      string? op => STRCONC(op,"STRCONC"/[STRCONC('" ",x) for x in argl])
       [op,:[flatten x for x in argl]]
     s
 
@@ -654,7 +654,7 @@ constructorSearch(filter,key,kind) ==
   (parse := conSpecialString? filter) => conPage parse
   pageName := LASSOC(DOWNCASE filter,'(("union" . DomainUnion)("record" . DomainRecord)("mapping" . DomainMapping) ("enumeration" . DomainEnumeration))) =>
     downlink pageName
-  name := (STRINGP filter => INTERN filter; filter)
+  name := (string? filter => INTERN filter; filter)
   if u := HGET($lowerCaseConTb,name) then filter := STRINGIMAGE first u
   line := conPageFastPath DOWNCASE filter =>
     code := dbKind line
@@ -717,7 +717,7 @@ conLowerCaseConTran x ==
   [conLowerCaseConTran y for y in x]
 
 string2Constructor x ==
-  not STRINGP x => x
+  not string? x => x
   IFCAR HGET($lowerCaseConTb, INTERN DOWNCASE x) or x
 
 conLowerCaseConTranTryHarder x ==

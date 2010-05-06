@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -138,7 +138,7 @@ upDollar t ==
       if x then putTarget(y,x)
   putAtree(first form,"dollar",t)
   ms := bottomUp form
-  f in '(One Zero) and CONSP (ms) and first(ms) = $OutputForm =>
+  f in '(One Zero) and cons? (ms) and first(ms) = $OutputForm =>
     throwKeyedMsg("S2IS0021",[f,t])
   putValue(op,getValue first form)
   putModeSet(op,ms)
@@ -500,7 +500,7 @@ up%LET t ==
   -- binding
   t isnt [op,lhs,rhs] => nil
   $declaredMode: local := NIL
-  CONSP lhs =>
+  cons? lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
     var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
@@ -619,7 +619,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
 evalLETchangeValue(name,value) ==
   -- write the value of name into the environment, clearing dependent
   --  maps if its type changes from its last value
-  localEnv := CONSP $env
+  localEnv := cons? $env
   clearCompilationsFlag :=
     val:= (localEnv and get(name,'value,$env)) or get(name,'value,$e)
     null val =>
@@ -747,7 +747,7 @@ isType t ==
    op:=opOf t
    VECP op =>
      isMap(op:= getUnname op) => NIL
-     op = 'Mapping and CONSP t =>
+     op = 'Mapping and cons? t =>
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]
@@ -1075,7 +1075,7 @@ uptuple t ==
   null l => upNullTuple(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and CONSP(tar) and not isPartialMode(tar) then
+  if tar and cons?(tar) and not isPartialMode(tar) then
     first(tar) in aggs =>
       ud := second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)

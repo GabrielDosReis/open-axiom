@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ isInternalMapName name ==
   true
 
 makeInternalMapMinivectorName(name) ==
-  STRINGP name =>
+  string? name =>
     INTERN STRCONC(name,'";MV")
   INTERN STRCONC(PNAME name,'";MV")
 
@@ -232,7 +232,7 @@ getUserIdentifiersIn body ==
         append/[getUserIdentifiersIn y for [.,.,y] in l]
       "append"/[getUserIdentifiersIn y for y in l]
     bodyIdList :=
-      CONSP op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
+      cons? op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
         NCONC(getUserIdentifiersIn op, argIdList)
       argIdList
     REMDUP bodyIdList
@@ -717,7 +717,7 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
     op
   if $verbose then
     if get(op,'isInterpreterRule,$e) then
-      sayKeyedMsg("S2IM0014",[op0,(CONSP sig =>prefix2String first sig;'"?")])
+      sayKeyedMsg("S2IM0014",[op0,(cons? sig =>prefix2String first sig;'"?")])
     else sayKeyedMsg("S2IM0015",[op0,formatSignature sig])
   $whereCacheList := [op,:$whereCacheList]
 
@@ -1067,7 +1067,7 @@ listOfVariables pat ==
   IDENTP pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
     (var='_. => NIL ; [var])
-  CONSP pat => REMDUP [:listOfVariables p for p in pat]
+  cons? pat => REMDUP [:listOfVariables p for p in pat]
   nil
 
 getMapBody(op,mapDef) ==

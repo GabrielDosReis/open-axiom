@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ dbFromConstructor?(htPage) == htpProperty(htPage,'conform)
 
 dbDoesOneOpHaveParameters? opAlist ==
   or/[(or/[fn for x in items]) for [op,:items] in opAlist] where fn() ==
-    STRINGP x => dbPart(x,2,1) ~= '"0"
+    string? x => dbPart(x,2,1) ~= '"0"
     KAR x
 --============================================================================
 --               Master Switch Functions for Operation Views
@@ -105,12 +105,12 @@ reduceByGroup(htPage,opAlist) ==
 dbShowOp1(htPage,opAlist,which,key) ==
   --set up for filtering below in dbGatherData
   $which: local := which
-  if INTEGERP key then
+  if integer? key then
     opAlist := dbSelectData(htPage,opAlist,key)
     ------> Jump out for constructor names in file <--------
-  INTEGERP key and opAlist is [[con,:.]] and htpProperty(htPage,'isFile)
+  integer? key and opAlist is [[con,:.]] and htpProperty(htPage,'isFile)
       and constructor? con => return conPageChoose con
-  if INTEGERP key then
+  if integer? key then
     htPage := htInitPageNoScroll(htCopyProplist htPage)
     if which = '"operation"
       then htpSetProperty(htPage,'opAlist,opAlist)
@@ -129,7 +129,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   $conformsAreDomains : local := htpProperty(htPage,'domname)
   opCount := opAlistCount(opAlist, which)
   branch :=
-    INTEGERP key =>
+    integer? key =>
       opCount <= $opDescriptionThreshold => 'documentation
       'names
     key = 'names and null rest opAlist =>      --means a single op
@@ -235,13 +235,13 @@ conform2StringList(form,opFn,argFn,exception) ==
     res :=
       x = exception => dbOpsForm exception
       pred =>
-        STRINGP x => [x]
+        string? x => [x]
         u := APPLY(argFn,[x])
         atom u and [u] or u
       typ := sublisFormal(args,atype)
       if x is ['QUOTE,a] then x := a
       u := mathform2HtString algCoerceInteractive(x,typ,'(OutputForm)) => [u]
-      NUMBERP x or STRINGP x => [x]
+      NUMBERP x or string? x => [x]
       systemError()
     keyword => [keyword,'": ",:res]
     res
@@ -277,7 +277,7 @@ dbOuttran form ==
       x is ['QUOTE,a] => a
       x
     res := mathform2HtString algCoerceInteractive(arg,typ,'(OutputForm))
-    NUMBERP res or STRINGP res => res
+    NUMBERP res or string? res => res
     ['QUOTE,res]
   [op,:argl]
 
@@ -342,7 +342,7 @@ dbGatherData(htPage,opAlist,which,key) ==
       while alist repeat
         item := first alist
         isExposed? :=
-          STRINGP item => dbExposed?(item,char 'o)   --unexpanded case
+          string? item => dbExposed?(item,char 'o)   --unexpanded case
           null (r := rest rest item) => true      --assume true if unexpanded
           r . 1                                   --expanded case
         if isExposed? then return (exposureFlag := true)
@@ -401,7 +401,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
 
   for (x := [.,.,:key]) in u for i in 0.. repeat
     key = domainForm => domexports := [x,:domexports]
-    INTEGERP key => unexports := [x,:unexports]
+    integer? key => unexports := [x,:unexports]
     isDefaultPackageForm? key => defexports := [x,:defexports]
     key = 'nowhere => nowheres := [x,:nowheres]
     key = 'constant =>constants := [x,:constants]
@@ -655,13 +655,13 @@ dbShowOpDocumentation(htPage,opAlist,which,data) ==
     for item in alist for j in 0.. repeat
       [sig,predicate,origin,exposeFlag,comments] := item
       exposeFlag or not $exposedOnlyIfTrue =>
-        if comments ~= '"" and STRINGP comments and (k := string2Integer comments) then
+        if comments ~= '"" and string? comments and (k := string2Integer comments) then
           comments :=
             MEMQ(k,'(0 1)) => '""
             dbReadComments k
           tail := CDDDDR item
           RPLACA(tail,comments)
-        doc := (STRINGP comments and comments ~= '"" => comments; nil)
+        doc := (string? comments and comments ~= '"" => comments; nil)
         pred := predicate or true
         index := (exactlyOneOpSig => nil; base + j)
         if which = '"package operation" then
@@ -815,7 +815,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
         --NOTE: we must expand all lines here for a given op
         --      since below we will change opAlist
         --Case 1: Already expanded; just cons it onto ACC
-          null STRINGP line => --already expanded
+          null string? line => --already expanded
             if condition? then --this could have been expanded at a lower level
               if null atom (pred := second line) then value := pred
             acc := [line,:acc] --this one is already expanded; record it anyway

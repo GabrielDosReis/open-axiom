@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -358,7 +358,7 @@ coerceSpadFunValue2E(value) ==
 
 isListOfIdentifiers l == and/[IDENTP x for x in l]
 
-isListOfIdentifiersOrStrings l == and/[IDENTP x or STRINGP x for x in l]
+isListOfIdentifiersOrStrings l == and/[IDENTP x or string? x for x in l]
 
 getMapSubNames(l) ==
   subs:= nil
@@ -425,13 +425,13 @@ isTraceGensym x == GENSYMP x
 spadTrace(domain,options) ==
   $fromSpadTrace:= true
   $tracedModemap:local:= nil
-  CONSP domain and REFVECP first domain and (first domain).0 = 0 =>
+  cons? domain and REFVECP first domain and (first domain).0 = 0 =>
       aldorTrace(domain,options)
   not isDomainOrPackage domain => userError '"bad argument to trace"
   listOfOperations:=
     [g x for x in getOption("OPS",options)] where
       g x ==
-        STRINGP x => INTERN x
+        string? x => INTERN x
         x
   if listOfVariables := getOption("VARS",options) then
     options := removeOption("VARS",options)

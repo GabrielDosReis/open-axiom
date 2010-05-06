@@ -385,7 +385,7 @@ mkUnion(a,b) ==
   b is ["Union",:l] => 
     member(a, l) => b
     ["Union",:setUnion([a],l)]
-  STRINGP a => ["Union",b,a]
+  string? a => ["Union",b,a]
   ["Union",a,b]
 
 compForMode(x,m,e) ==

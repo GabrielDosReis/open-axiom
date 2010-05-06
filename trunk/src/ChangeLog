@@ -1,3 +1,86 @@
+2010-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/wi2.boot: Replace INTEGERP, STRINGP, SYMBOLP, CONSP with
+	integer?, string?, symbol?, and cons? respectively.
+	* interp/wi1.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/sys-utility.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/record.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/posit.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/packtran.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/msg.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/match.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/g-boot.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/diagnostics.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/compress.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/cformat.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/buildom.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/bc-util.boot: Likewise.
+	* interp/ax.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* boot/translator.boot: Likewise.
+	* boot/ast.boot: Likewise.
+	* boot/includer.boot: Likewise.
+	* boot/tokens.boot: Add new replacement for integer?, string?,
+	symbol? and cons?
+
 2010-05-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (setqSingle): Ignore $QuickLet.

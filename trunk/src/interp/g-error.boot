@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -91,7 +91,7 @@ errorSupervisor1(errorType,errorMsg,$BreakMode) ==
       errorType = $UserError    => '"Apparent user error"
       errorType = $AlgebraError =>
         '"Error detected within library code"
-      STRINGP errorType         => errorType
+      string? errorType         => errorType
       '"Error with unknown classification"
   msg :=
     errorMsg is ['mathprint, :.] => errorMsg

@@ -92,7 +92,7 @@ $optExportedFunctionReference := false
 
 ++ Quote form, if not a basic value.
 quoteMinimally form ==
-  FIXP form or STRINGP form or form = nil or form = true => form
+  FIXP form or string? form or form = nil or form = true => form
   ["QUOTE",form]
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
@@ -177,7 +177,7 @@ continue() == FIN comp($x,$m,$f)
 LEVEL(:l) == APPLY('level,l)
 level(:l) ==
   null l => same()
-  l is [n] and INTEGERP n => displayComp ($level:= n)
+  l is [n] and integer? n => displayComp ($level:= n)
   SAY '"Correct format: (level n) where n is the level you want to go to"
  
 UP() == up()
@@ -507,7 +507,7 @@ diagnoseUnknownType(t,e) ==
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
     (m := getmode(t,e)) and isKnownCategory(m,$CategoryFrame) => t
-    STRINGP t => t
+    string? t => t
     -- ??? We should not to check for $$ at this stage.  
     -- ??? This is a bug in the compiler that needs to be fixed.
     t = "$$" => t
@@ -775,7 +775,7 @@ stackAndThrow(msg, args == nil) ==
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   THROW("compOrCroak",nil)
  
-printString x == PRINTEXP (STRINGP x => x; PNAME x)
+printString x == PRINTEXP (string? x => x; PNAME x)
  
 printAny x == if atom x then printString x else PRIN1 x
  
@@ -882,7 +882,7 @@ substituteOp(op',op,x) ==
 sublisV(p,e) ==
   (atom p => e; suba(p,e)) where
     suba(p,e) ==
-      STRINGP e => e
+      string? e => e
       -- no need to descend vectors unless they are categories
       isCategory e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
@@ -1220,7 +1220,7 @@ foldExportedFunctionReferences defs ==
 ++ record optimizations permitted at level `level'.
 setCompilerOptimizations level ==
   level = nil => nil
-  INTEGERP level =>
+  integer? level =>
     if level = 0 then
       -- explicit request for no optimization.
       $optProclaim := false
@@ -1654,7 +1654,7 @@ expandFormTemplate(shell,args,slot) ==
     args.n   -- FIXME: we should probably expand with dual signature
   slot is ["NRTEVAL",val] => val
   slot is ["QUOTE",val] => 
-    STRINGP val => val
+    string? val => val
     slot
   [expandFormTemplate(shell,args,i) for i in slot]
 
@@ -1669,7 +1669,7 @@ equalFormTemplate(shell,args,slot,form) ==
     equalFormTemplate(shell,args,args.n,form)
   slot is ["NTREVAL",val] => form = val
   slot is ["QUOTE",val] => 
-     STRINGP val => val = form
+     string? val => val = form
      slot = form
   atom slot or atom form => form = slot
   #slot ~= #form => false

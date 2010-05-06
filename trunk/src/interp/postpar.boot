@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,7 @@ postTran x ==
   atom x =>
     postAtom x
   op := first x
-  SYMBOLP op and (f:= GETL(op,'postTran)) => FUNCALL(f,x)
+  symbol? op and (f:= GETL(op,'postTran)) => FUNCALL(f,x)
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
@@ -119,7 +119,7 @@ checkWarningIndentation() ==
 postCapsule: %ParseTree -> %ParseForm
 postCapsule x ==
   x isnt [op,:.] => checkWarningIndentation()
-  INTEGERP op or op = "==" => ["CAPSULE",postBlockItem x]
+  integer? op or op = "==" => ["CAPSULE",postBlockItem x]
   op = ";" => ["CAPSULE",:postBlockItemList postFlatten(x,";")]
   op = "if" => ["CAPSULE",postBlockItem x]
   checkWarningIndentation()
@@ -489,7 +489,7 @@ postSignature t ==
   t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
   sig is ["->",:.] =>
     sig1:= postType sig
-    op:= postAtom (STRINGP op => INTERN op; op)
+    op:= postAtom (string? op => INTERN op; op)
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
   ["SIGNATURE",postAtom op,:postType ["->","constant",sig]]
 
@@ -503,7 +503,7 @@ killColons x ==
 postSlash: %ParseTree -> %ParseForm
 postSlash t ==
   t isnt ['_/,a,b] => systemErrorHere ["postSlash",t]
-  STRINGP a => postTran ["%Reduce",INTERN a,b]
+  string? a => postTran ["%Reduce",INTERN a,b]
   ['_/,postTran a,postTran b]
 
 removeSuperfluousMapping: %ParseTree -> %ParseForm

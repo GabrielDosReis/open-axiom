@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1527,7 +1527,7 @@ insertAlist(a,b,l) ==
 Un2E(x,source,target) ==
   ['Union,:branches] := source
   x = '_$fromCoerceable_$ =>
-    and/[canCoerce(t, target) for t in branches | not  STRINGP t]
+    and/[canCoerce(t, target) for t in branches | not  string? t]
   coerceUn2E(x,source)
 
 --% Variable
