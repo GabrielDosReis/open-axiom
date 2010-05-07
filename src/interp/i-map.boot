@@ -431,7 +431,7 @@ simplifyMapPattern (x,alias) ==
 
 simplifyMapConstructorRefs form ==
   -- try to linear format constructor names
-  ATOM form => form
+  atom form => form
   [op,:args] := form
   op in '(exit SEQ) =>
     [op,:[simplifyMapConstructorRefs a for a in args]]
@@ -440,11 +440,11 @@ simplifyMapConstructorRefs form ==
   op in '(_: _:_: _@) =>
     args is [obj,dom] =>
       dom' := prefix2String dom
-      --if ATOM dom' then dom' := [dom']
+      --if atom dom' then dom' := [dom']
       --[op,obj,APPLY('CONCAT,dom')]
       dom'' :=
-          ATOM dom' => dom'
-          NULL rest dom' => first dom'
+          atom dom' => dom'
+          null rest dom' => first dom'
           APPLY('CONCAT, dom')
       [op,obj, dom'']
     form
@@ -1001,10 +1001,10 @@ findLocalVars1(op,form) ==
     mkFreeVar($mapName,form)
   form is ['local, :vars] =>
     for x in vars repeat
-      ATOM x => mkLocalVar(op, x)
+      atom x => mkLocalVar(op, x)
   form is ['free, :vars] =>
     for x in vars repeat
-      ATOM x => mkFreeVar(op, x)
+      atom x => mkFreeVar(op, x)
   form is ["%LET",a,b] =>
     (a is ["tuple",:vars]) and (b is ["tuple",:vals]) =>
       for var in vars for val in vals repeat

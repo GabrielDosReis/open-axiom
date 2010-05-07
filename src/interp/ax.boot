@@ -109,7 +109,7 @@ modemapToAx(modemap) ==
       categoryInfo := getConstructorCategoryFromDB constructor
       categoryInfo := SUBLISLIS($FormalMapVariableList, $TriangleVariableList,
                        categoryInfo)
-      NULL args =>
+      null args =>
           ['Define,['Declare, constructor,'Category],
                addDefaults(constructor, axFormatType categoryInfo)]
       ['Define,
@@ -118,7 +118,7 @@ modemapToAx(modemap) ==
              ['Label, constructor,
                addDefaults(constructor, axFormatType categoryInfo)]]]
   constructor in $extendedDomains =>
-     NULL args =>
+     null args =>
         ['Extend, ['Define, ['Declare, constructor, resultType],
             ['Add, ['PretendTo, ['Add, [], []], resultType], []]]]
      conscat := INTERN(STRCONC(SYMBOL_-NAME(constructor), "ExtendCategory"),"BOOT")
@@ -137,7 +137,7 @@ modemapToAx(modemap) ==
           ['Lambda, argdecls, rtype,
             ['Label, constructor,
                 ['Add, ['PretendTo, ['Add, [], []], rtype], []]]]]]]
-  NULL args =>
+  null args =>
      ['Export, ['Declare, constructor, resultType],[],[]]
 --  if resultType is ['With,a,b] then
 --     if not(b is ['Sequence,:withseq]) then withseq := [b]
@@ -242,7 +242,7 @@ axFormatType(typeform) ==
 axFormatOpList ops == ['Sequence,:[axFormatOp o for o in ops]]
 
 axOpTran(name) ==
-   ATOM name =>
+   atom name =>
       name = 'elt => 'apply
       name = 'setelt => 'set_!
       name = 'SEGMENT => ".."
@@ -287,7 +287,7 @@ axFormatCondOp op ==
 
 axFormatOp op ==
    op is ['IF, pred, trueops, falseops] =>
-      NULL(trueops) or trueops='%noBranch =>
+      null(trueops) or trueops='%noBranch =>
          ['If, ['Test,['Not, axFormatPred pred]],
               axFormatCondOp falseops,
                 axFormatCondOp trueops]

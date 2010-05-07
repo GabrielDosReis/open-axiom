@@ -130,7 +130,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                where FindRep cb ==
                  u:=
                    while cb repeat
-                     ATOM cb => return nil
+                     atom cb => return nil
                      cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
                      cb:=rest cb
                  u
@@ -431,7 +431,7 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl'="failed" then return nil
   form:=
-    not MEMQ(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
+    not MEMQ(op,$formalArgList) and atom op and not get(op,'value,e) =>
       nprefix := $prefix or
    -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
@@ -989,8 +989,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
             -- of functorLocalParameters that were added during the
             -- conditional compilation
             nils:=ans:=[]
-            for u in flp1 repeat -- is =u form always an ATOM?
-              if ATOM u or (or/[v is [.,=u,:.] for v in $getDomainCode])
+            for u in flp1 repeat -- is =u form always an atom?
+              if atom u or (or/[v is [.,=u,:.] for v in $getDomainCode])
                 then
                   nils:=[u,:nils]
                 else

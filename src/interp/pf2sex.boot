@@ -461,8 +461,8 @@ patternVarsOf expr ==
   patternVarsOf1(expr, nil)
 
 patternVarsOf1(expr, varList) ==
-  NULL expr => varList
-  ATOM expr =>
+  null expr => varList
+  atom expr =>
     null symbol? expr => varList
     SymMemQ(expr, varList) => varList
     [expr, :varList]

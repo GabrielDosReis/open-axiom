@@ -775,7 +775,7 @@ countCache n ==
   $options =>
     $options is [["vars",:l]] =>
       for x in l repeat
-        NULL IDENTP x => sayKeyedMsg("S2IF0007",[x])
+        null IDENTP x => sayKeyedMsg("S2IF0007",[x])
         $cacheAlist:= insertAlist(x,n,$cacheAlist)
         cacheCountName:= INTERNL(x,'";COUNT")
         setDynamicBinding(cacheCountName,n)

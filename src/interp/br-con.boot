@@ -707,7 +707,7 @@ mkConform(kind,name,argString) ==
       sayBrightlyNT '"Won't parse: "
       pp form
       systemError '"Keywords in argument list?"
-    ATOM parse => [parse]
+    atom parse => [parse]
     parse
   [INTERN name,:rest ncParseFromString STRCONC(char 'd,argString)]  --& case
 
@@ -885,7 +885,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
     or/[gn x for x in HGET(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
     $conform := first u              --origin
-    if ATOM $conform then $conform := [$conform]
+    if atom $conform then $conform := [$conform]
     code     := LASTATOM u         --optional topic code
     comments := or/[p for entry in rest u | p := hn entry] or return nil
     [$conform,first comments,:code]

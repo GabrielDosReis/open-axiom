@@ -749,7 +749,7 @@ dropPrefix(fn) ==
 --++       x := dropLeadingBlanks x
 --++       -- should be two tokens on the line
 --++       p := STRPOS('" ",x,1,NIL)
---++       NULL p =>
+--++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       n := object2Identifier SUBSTRING(x,0,p)
 --++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)

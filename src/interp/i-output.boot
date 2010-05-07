@@ -1139,7 +1139,7 @@ maprin0 x ==
 
 maprinChk x ==
   null $MatrixList => maPrin x
-  ATOM x and (u:= assoc(x,$MatrixList)) =>
+  atom x and (u:= assoc(x,$MatrixList)) =>
     $MatrixList := delete(u,$MatrixList)
     maPrin deMatrix rest u
   x is ["=",arg,y]  =>     --case for tracing with )math and printing matrices
@@ -1189,7 +1189,7 @@ LargeMatrixp(u,width, dist) ==
   --  sees if there is a matrix wider than 'width' in the next 'dist'
   --  part of u, a sized charybdis structure.
   --  NIL if not, first such matrix if there is one
-  ATOM u => nil
+  atom u => nil
   CDAR u <= width => nil
        --CDAR is the width of a charybdis structure
   op:=CAAR u
@@ -1254,7 +1254,7 @@ SubstWhileDesizing(u,m) ==
     -- arg. m is always nil (historical: EU directive to increase argument lists 1991/XGII)     
     --Replaces all occurrences of matrix m by name in u
     --Taking out any outdated size information as it goes
-  ATOM u => u
+  atom u => u
   [[op,:n],:l]:=u
   --name := RASSOC(u,$MatrixList) => name
   -- doesn't work since RASSOC seems to use an EQ test, and returns the
@@ -1268,7 +1268,7 @@ SubstWhileDesizing(u,m) ==
     PushMatrix u
   l':=SubstWhileDesizingList(l,m)
   -- [op,:l']
-  ATOM op => [op,:l']
+  atom op => [op,:l']
   [SubstWhileDesizing(op,m),:l']
 
 --;SubstWhileDesizingList(u,m) ==
@@ -1284,11 +1284,11 @@ SubstWhileDesizing(u,m) ==
 SubstWhileDesizingList(u,m) ==
    u is [a,:b] =>
      res:= 
-       ATOM a => [a] 
+       atom a => [a] 
        [SubstWhileDesizing(a,m)] 
      tail:=res
      for i in b repeat
-        if ATOM i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
+        if atom i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
         tail:=rest tail
      res   
    u  

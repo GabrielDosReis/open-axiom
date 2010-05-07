@@ -184,7 +184,7 @@ unMkEvalable u ==
 lisp2HT u == ['"_'",:fn u] where fn u ==
   IDENTP u => escapeSpecialIds PNAME u
   string? u => escapeString u
-  ATOM u => systemError()
+  atom u => systemError()
   ['"_(",:"append"/[fn x for x in u],'")"]
 
 args2HtString(x,:options) ==

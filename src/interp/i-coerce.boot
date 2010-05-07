@@ -311,7 +311,7 @@ retractByFunction(object,u) ==
   fun :=
 --+
     compiledLookup(funName,[target,t],dcVector)
-  NULL fun => NIL
+  null fun => NIL
   first(fun) = function Undef => NIL
 --+
   $: fluid := dcVector
@@ -634,8 +634,8 @@ canCoercePermute(t1,t2) ==
   -- to t2 in the sense that the components of t1 are in the same order
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
-  NULL towers or NULL rest towers => NIL
-  NULL CDDR towers and t2 = second towers => NIL
+  null towers or null rest towers => NIL
+  null CDDR towers and t2 = second towers => NIL
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in rest towers while ok repeat
@@ -671,7 +671,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
   -- difference is a subdomain
   isEqualOrSubDomain(t1,t2) => true
   typeIsASmallInteger(t1) and t2 = $Integer => true
-  ATOM(t1) or ATOM(t2) => false
+  atom(t1) or atom(t2) => false
   [tl1,:u1] := deconstructT t1
   [tl2,:u2] := deconstructT t2
   tl1 = '(Stream) and tl2 = '(InfiniteTuple) =>
@@ -684,7 +684,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
 absolutelyCannotCoerce(t1,t2) ==
   -- response of true means "definitely cannot coerce"
   -- this is largely an efficiency hack
-  ATOM(t1) or ATOM(t2) => NIL
+  atom(t1) or atom(t2) => NIL
   t2 = $None => true
   n1   := first t1
   n2   := first t2
@@ -1048,7 +1048,7 @@ coerceIntByMap(triple,t2) ==
 
   [[dc,:sig],slot,.]:= first mms
   fun := compiledLookup('map,sig,evalDomain(dc))
-  NULL fun => NIL
+  null fun => NIL
   [fn,:d]:= fun
   fn = function Undef => NIL
   -- now compile a function to do the coercion
@@ -1186,8 +1186,8 @@ coerceIntPermute(object,t2) ==
   -- to t2 in the sense that the components of t1 are in the same order
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
-  NULL towers or NULL rest towers => NIL
-  NULL CDDR towers and t2 = second towers => NIL
+  null towers or null rest towers => NIL
+  null CDDR towers and t2 = second towers => NIL
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in rest towers while ok repeat
@@ -1233,15 +1233,15 @@ computeTTTranspositions(t1,t2) ==
   nreverse towers
 
 decomposeTypeIntoTower t ==
-  ATOM t => [t]
+  atom t => [t]
   d := deconstructT t
-  NULL rest d => [t]
+  null rest d => [t]
   rd := reverse t
   [reverse QCDR rd,:decomposeTypeIntoTower QCAR rd]
 
 reassembleTowerIntoType tower ==
-  ATOM tower => tower
-  NULL rest tower => first tower
+  atom tower => tower
+  null rest tower => first tower
   [:top,t,s] := tower
   reassembleTowerIntoType [:top,[:t,s]]
 

@@ -257,7 +257,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --   if argl'="failed" then return nil
 --   mappingHasCategoryTarget => convert([form,first ml,e],m)
 --   form:=
---     not MEMQ(op,$formalArgList) and ATOM op =>
+--     not MEMQ(op,$formalArgList) and atom op =>
 --       [op',:argl',"$"] where
 --         op':= INTERN STRCONC(STRINGIMAGE $prefix,";",STRINGIMAGE op)
 --     ["%Call",["applyFun",op],:argl']

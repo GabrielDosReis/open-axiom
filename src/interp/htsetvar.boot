@@ -320,7 +320,7 @@ chkNonNegativeInteger s ==
 
 chkRange s ==
   (u := ncParseFromString s) and integer? u
-    and u >= $htInitial and (NULL $htFinal or u <= $htFinal)
+    and u >= $htInitial and (null $htFinal or u <= $htFinal)
       => u
   null $htFinal =>
     STRCONC('"Please enter an integer greater than ",stringize ($htInitial - 1))

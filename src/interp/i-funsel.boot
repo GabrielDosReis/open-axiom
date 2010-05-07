@@ -228,7 +228,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     while a repeat
       x:= first a
       a:= rest a
-      ATOM x => 'iterate
+      atom x => 'iterate
       mmS := append(mmS, findFunctionInDomain(op,x,tar,args1,args2,NIL,NIL))
 
     -- step 2. if we didn't get one, trying coercing (if we are
@@ -239,7 +239,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
       while a repeat
         x:= first a
         a:= rest a
-        ATOM x => 'iterate
+        atom x => 'iterate
         mmS := append(mmS,
           findFunctionInDomain(op,x,tar,args1,args2,$Coerce,NIL))
 
@@ -274,7 +274,7 @@ defaultTarget(opNode,op,nargs,args) ==
     target
 
   a1 := first args
-  ATOM a1 => target
+  atom a1 => target
   a1f := QCAR a1
 
   nargs = 1 =>
@@ -528,7 +528,7 @@ argCouldBelongToSubdomain(op, nargs) ==
 CONTAINEDisDomain(symbol,cond) ==
 -- looks for [isSubDomain,symbol,[domain]] in cond: returning T or NIL
 -- with domain being one of PositiveInteger and NonNegativeInteger
-   ATOM cond => false
+   atom cond => false
    QCAR cond in '(AND OR and or) =>
        or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
    EQ(QCAR cond,'isDomain) =>
@@ -1238,7 +1238,7 @@ replaceSharpCalls t ==
   doReplaceSharpCalls t
 
 doReplaceSharpCalls t ==
-  ATOM t => t
+  atom t => t
   t is ['_#, l] => #l
   t is ['construct,: l] => EVAL ['LIST,:l]
   [first t,:[ doReplaceSharpCalls u for u in rest t]]

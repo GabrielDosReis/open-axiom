@@ -497,7 +497,7 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
     x is ['elt,someDomain,opname] => lookupInDomainByName(opname,evalDomain someDomain,arg)
     x = '$ and (arg = dollarName or arg = domainName) => true
     x = dollarName and arg = domainName => true
-    ATOM x or ATOM arg => false
+    atom x or atom arg => false
     xt and first x = first arg =>
       lazyMatchArgDollarCheck(x,arg,dollarName,domainName)
     false
@@ -541,7 +541,7 @@ newExpandTypeSlot(slot, dollar, domain) ==
  
 newExpandLocalType(lazyt,dollar,domain) ==
   VECP lazyt => lazyt.0
-  ATOM lazyt => lazyt
+  atom lazyt => lazyt
   lazyt is [vec,.,:lazyForm] and VECP vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
@@ -647,7 +647,7 @@ newHasTest(domform,catOrAtt) ==
       for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
-             ATOM x => x
+             atom x => x
              [pred,:l] := x
              pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 

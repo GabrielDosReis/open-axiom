@@ -299,7 +299,7 @@ markImport(d,:option) ==   --from compFormWithModemap/genDeltaEntry/compImport
     if IFCAR option then $globalDeclareStack := insert(dom,$globalDeclareStack)
 
 markMacroTran name ==     --called by markImport
-  ATOM name => name
+  atom name => name
   u := or/[x for [x,:y] in $globalMacroStack | y = name] => u
   u := or/[x for [x,:y] in $localMacroStack  | y = name] => u
   [op,:argl] := name
@@ -1263,7 +1263,7 @@ changeToEqualEqual lines ==
     
 sayMessage x == 
   u := 
-    ATOM x => ['">> ", x]
+    atom x => ['">> ", x]
     ['">> ",: x]
   sayBrightly u
   
@@ -1335,7 +1335,7 @@ diff(x,y) ==
  
 diff1(x,y) ==
   x = y => nil
-  ATOM x or ATOM y => [[x,y]]
+  atom x or atom y => [[x,y]]
   #x ~= #y => [x,y]
   "APPEND"/[diff1(u,v) for u in x for v in y]
     

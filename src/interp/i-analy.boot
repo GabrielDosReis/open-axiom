@@ -580,7 +580,7 @@ printableArgModeSetList() ==
   amsl := nil
   for a in reverse $origArgModeSetList repeat
     b := prefix2String first a
-    if ATOM b then b := [b]
+    if atom b then b := [b]
     amsl := ['%l,:b,:amsl]
   if amsl then amsl := rest amsl
   amsl

@@ -104,7 +104,7 @@ printRecordFile(pathname,:option) ==
   $printTypeIfTrue: local := true
   stream := DEFIOSTREAM([['FILE,:pathname], '(MODE . INPUT)],80,0)
   repeat
-    NULL (PEEK_-CHAR ( true, stream , nil, nil )) => return nil
+    null (PEEK_-CHAR ( true, stream , nil, nil )) => return nil
     [i,t,:o] := dewritify VMREAD stream
     sayNewLine()
     for x in i repeat sayBrightly x
@@ -151,7 +151,7 @@ verifyRecordFile(pathname) ==
   clearCmdAll()
   result := 'ok
   for j in 1.. repeat
-    NULL (PEEK_-CHAR ( true, stream ,nil,nil ))=>return nil
+    null (PEEK_-CHAR ( true, stream ,nil,nil ))=>return nil
     [i,t,:o] := dewritify VMREAD stream
     null i => return nil
     t = 'ForSystemCommands => 

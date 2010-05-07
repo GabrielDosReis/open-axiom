@@ -235,7 +235,7 @@ optSpecialCall(x,y,n) ==
   emitIndirectCall(fn,a,x)
  
 compileTimeBindingOf u ==
-  NULL(name:= BPINAME u)  => keyedSystemError("S2OO0001",[u])
+  null(name:= BPINAME u)  => keyedSystemError("S2OO0001",[u])
   name="Undef" => MOAN "optimiser found unknown function"
   name
  

@@ -857,7 +857,7 @@ spadCompileOrSetq form ==
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
-  else if (ATOM body or and/[ATOM x for x in body])
+  else if (atom body or and/[atom x for x in body])
          and vl is [:vl',E] and not CONTAINED(E,body) then
            macform := ['XLAM,vl',body]
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]

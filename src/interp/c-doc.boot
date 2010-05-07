@@ -107,7 +107,7 @@ recordDocumentation(key,lineno) ==
 recordHeaderDocumentation lineno ==
   if $maxSignatureLineNumber = 0 then
     al := [p for (p := [n,:u]) in $COMBLOCKLIST
-               | NULL n or NULL lineno or n < lineno]
+               | null n or null lineno or n < lineno]
     $COMBLOCKLIST := SETDIFFERENCE($COMBLOCKLIST,al)
     $headerDocumentation := ASSOCRIGHT al
     if $headerDocumentation then $maxSignatureLineNumber := 1 --see postDef

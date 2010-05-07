@@ -52,7 +52,7 @@ $isGenVarCounter := 1
 $LET := 'SPADLET    -- LET is a standard macro in Common Lisp
  
 nakedEXIT? c ==
-  ATOM c => NIL
+  atom c => NIL
   [a,:d] := c
   IDENTP a =>
     a = 'EXIT  => true
@@ -62,7 +62,7 @@ nakedEXIT? c ==
   nakedEXIT?(a) or nakedEXIT?(d)
  
 mergeableCOND x ==
-  ATOM(x) or x isnt ['COND,:cls] => NIL
+  atom(x) or x isnt ['COND,:cls] => NIL
   -- to be mergeable, every result must be an EXIT and the last
   -- predicate must be a pair
   ok := true
@@ -70,8 +70,8 @@ mergeableCOND x ==
     [[p,:r],:cls] := cls
     cons? QCDR r => ok := NIL
     first(r) isnt ['EXIT,.] => ok := NIL
-    NULL(cls) and ATOM(p) => ok := NIL
-    NULL(cls) and (p = ''T) => ok := NIL
+    null(cls) and atom(p) => ok := NIL
+    null(cls) and (p = ''T) => ok := NIL
   ok
  
 mergeCONDsWithEXITs l ==
@@ -79,7 +79,7 @@ mergeCONDsWithEXITs l ==
   -- (COND (foo (EXIT a)))
   -- (COND (bar (EXIT b)))
   -- into one COND
-  NULL l => NIL
+  null l => NIL
   atom l => l
   atom QCDR l => l
   a := QCAR l
@@ -111,14 +111,14 @@ removeEXITFromCOND c ==
   -- c is '(COND ...)
   z := NIL
   for cl in rest c repeat
-    ATOM cl => z := CONS(cl,z)
+    atom cl => z := CONS(cl,z)
     cond := QCAR cl
     length1? cl =>
       cond is ["EXIT",:.] => z := CONS(QCDR cond,z)
       z := CONS(cl,z)
     cl' := reverse cl
     lastSE := QCAR cl'
-    ATOM lastSE => z := CONS(cl,z)
+    atom lastSE => z := CONS(cl,z)
     lastSE is ["EXIT",:.] =>
       z := CONS(reverse CONS(second lastSE,rest cl'),z)
     z := CONS(cl,z)
@@ -149,7 +149,7 @@ bootIF c ==
 bootCOND c ==
   -- handles COND expressions: c is ['COND,:.]
   cls := rest c
-  NULL cls => NIL
+  null cls => NIL
   cls is [[''T,r],:.] => r
   [:icls,fcls] := cls
   ncls := NIL
@@ -197,17 +197,17 @@ tryToRemoveSEQ e ==
  
 bootAbsorbSEQsAndPROGNs e ==
   -- assume e is a list from a SEQ or a PROGN
-  ATOM e => e
+  atom e => e
   [:cls,lcl] := e
   g := [:flatten(f) for f in cls] where
     flatten x ==
-      NULL x => NIL
+      null x => NIL
       IDENTP x =>
         MEMQ(x,$labelsForGO) => [x]
         NIL
-      ATOM x => NIL
+      atom x => NIL
       x is ['PROGN,:pcls,lpcl] =>
-        ATOM lpcl => pcls
+        atom lpcl => pcls
         rest x
       -- next usually comes about from if foo then bar := zap
       x is ['COND,y,[''T,'NIL]] => [['COND,y]]
@@ -240,7 +240,7 @@ bootSEQ e ==
 bootPROGN e ==
   e := ['PROGN,:bootAbsorbSEQsAndPROGNs rest e]
   [.,:cls] := e
-  NULL cls => NIL
+  null cls => NIL
   cls is [body] => body
   e
  
@@ -277,12 +277,12 @@ defLET1(lhs,rhs) ==
  
 defLET2(lhs,rhs) ==
   IDENTP lhs => defLetForm(lhs,rhs)
-  NULL lhs   => NIL
+  null lhs   => NIL
   lhs is ['FLUID,id] => defLetForm(lhs,rhs)
   lhs is [=$LET,a,b] =>
     a := defLET2(a,rhs)
     null (b := defLET2(b,rhs)) => a
-    ATOM b => [a,b]
+    atom b => [a,b]
     cons? QCAR b => CONS(a,b)
     [a,b]
   lhs is ['CONS,var1,var2] =>
@@ -290,11 +290,11 @@ defLET2(lhs,rhs) ==
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
     var2 in '(NIL _.) => l1
-    if cons? l1 and ATOM first l1 then l1 := cons(l1,nil)
+    if cons? l1 and atom first l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
-    if cons? l2 and ATOM first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
     append(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
@@ -302,7 +302,7 @@ defLET2(lhs,rhs) ==
     g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
-    if cons? l2 and ATOM first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
       [[$LET,g,rev],:reverse rest reverse l2,
@@ -343,20 +343,20 @@ defISReverse(x,a) ==
   -- reverses forms coming from APPENDs in patterns
   -- pretty much just a translation of DEF-IS-REV
   x is ['CONS,:.] =>
-    NULL third x => ['CONS,second x, a]
+    null third x => ['CONS,second x, a]
     y := defISReverse(third x, NIL)
     RPLAC(third y,['CONS,second x,a])
     y
   ERRHUH()
  
 defIS1(lhs,rhs) ==
-  NULL rhs =>
+  null rhs =>
     ['NULL,lhs]
   string? rhs =>
     ['EQ,lhs,['QUOTE,INTERN rhs]]
   NUMBERP rhs =>
     ['EQUAL,lhs,rhs]
-  ATOM rhs =>
+  atom rhs =>
     ['PROGN,defLetForm(rhs,lhs),''T]
   rhs is ['QUOTE,a] =>
     IDENTP a => ['EQ,lhs,rhs]
@@ -374,12 +374,12 @@ defIS1(lhs,rhs) ==
     MKPROGN [[$LET,g,lhs],defIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
     a = "." =>
-      NULL b =>
+      null b =>
         ['AND,['CONSP,lhs],
               ['EQ,['QCDR,lhs],'NIL]]
       ['AND,['CONSP,lhs],
             defIS1(['QCDR,lhs],b)]
-    NULL b =>
+    null b =>
       ['AND,['CONSP,lhs],
             ['EQ,['QCDR,lhs],'NIL],_
             defIS1(['QCAR,lhs],a)]
@@ -396,7 +396,7 @@ defIS1(lhs,rhs) ==
     $isGenVarCounter := $isGenVarCounter + 1
     rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)
-    if cons? l2 and ATOM first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
     a = "." => ['AND,rev,:l2]
     ['AND,rev,:l2,['PROGN,defLetForm(a,['NREVERSE,a]),''T]]
   SAY '"WARNING (defIS1): possibly bad IS code being generated"
@@ -412,8 +412,8 @@ defIS(lhs,rhs) ==
 bootOR e ==
   -- flatten any contained ORs.
   cls := rest e
-  NULL cls => NIL
-  NULL rest cls => first cls
+  null cls => NIL
+  null rest cls => first cls
   ncls := [:flatten(c) for c in cls] where
     flatten x ==
       x is ['OR,:.] => QCDR x
@@ -423,8 +423,8 @@ bootOR e ==
 bootAND e ==
   -- flatten any contained ANDs.
   cls := rest e
-  NULL cls => 'T
-  NULL rest cls => first cls
+  null cls => 'T
+  null rest cls => first cls
   ncls := [:flatten(c) for c in cls] where
     flatten x ==
       x is ['AND,:.] => QCDR x
@@ -434,7 +434,7 @@ bootAND e ==
 --% Main Transformation Functions
  
 bootLabelsForGO e ==
-  ATOM e => NIL
+  atom e => NIL
   [head,:tail] := e
   IDENTP head =>
     head = 'GO => $labelsForGO := CONS(first tail,$labelsForGO)
@@ -444,7 +444,7 @@ bootLabelsForGO e ==
   bootLabelsForGO tail
  
 bootTran e ==
-  ATOM e => e
+  atom e => e
   [head,:tail] := e
   head = 'QUOTE => e
   tail := [bootTran t for t in tail]
@@ -460,7 +460,7 @@ bootTran e ==
   [bootTran head,:QCDR e]
  
 bootTransform e ==
---NULL $BOOT => e
+--null $BOOT => e
   $labelsForGO : local := NIL
   bootLabelsForGO e
   bootTran e

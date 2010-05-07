@@ -63,7 +63,7 @@ transferSrcPosInfo(pf, atree) ==
     -- following is a hack because parser code for getting filename
     -- seems wrong.
     fn := lnPlaceOfOrigin poGetLineObject(pos)
-    if NULL fn or fn = '"strings" then fn := '"console"
+    if null fn or fn = '"strings" then fn := '"console"
 
     putSrcPos(atree, fn, pfSourceText(pf), pfLinePosn(pos), pfCharPosn(pos))
     atree

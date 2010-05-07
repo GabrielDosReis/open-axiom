@@ -61,7 +61,7 @@ DNameTupleID  := 2
 DNameOtherID  := 3
 
 DNameToSExpr1 dname ==
-  NULL dname => error "unexpected domain name"
+  null dname => error "unexpected domain name"
   first dname = DNameStringID => 
     INTERN(CompStrToString rest dname)
   name0 := DNameToSExpr1 second dname
@@ -201,7 +201,7 @@ quoteCatOp cat ==
 oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    [catform,hash, pack,:.] := catenv
    opIsHasCat op => if EQL(sig, hash) then [self] else nil
-   NULL(pack) => nil
+   null(pack) => nil
    if not VECP pack then
        pack:=apply(pack, CONS(self, rest catform))
        RPLACA(CDDR catenv, pack)

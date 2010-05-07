@@ -1,3 +1,52 @@
+2010-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/as.boot: Miscellaneous cleanup.
+	* interp/ax.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/cstream.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/diagnostics.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-boot.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/pathname.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/record.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 2010-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Miscellaneous cleanup.

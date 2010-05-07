@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -247,7 +247,7 @@ hasNewInfoAlist conname ==
   (u := getInfoAlist conname) and hasNewInfoText u
 
 hasNewInfoText u ==
-  and/[ATOM op and "and"/[item is [sig,:alist] and
+  and/[atom op and "and"/[item is [sig,:alist] and
     null sig or null atom sig and null atom alist for item in items] for [op,:items] in u]
 
 getInfoAlist conname ==

@@ -712,7 +712,7 @@ fortFormatCharacterTypes(names) ==
   sortedByLength := []
   genuineArrays  := []
   for u in names repeat
-    ATOM u => sortedByLength := insertEntry(0,u,sortedByLength)
+    atom u => sortedByLength := insertEntry(0,u,sortedByLength)
     #u=2 => sortedByLength := insertEntry(second u,first u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat

@@ -83,7 +83,7 @@ MESSAGEPRINT_-1 x ==
   x = "%l" or x = '"%l" => TERPRI()
   string? x => PRINC x
   IDENTP x => PRINC x
-  ATOM x => PRINC x
+  atom x => PRINC x
   PRINC '"("
   MESSAGEPRINT_-1 car x
   MESSAGEPRINT_-2 cdr x
