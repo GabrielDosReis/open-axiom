@@ -745,12 +745,20 @@ translateBootFile(progname, options, file) ==
   outFile := getOutputPathname options or defaultBootToLispFile file
   BOOTTOCL(file, ENOUGH_-NAMESTRING outFile)
 
+retainFile? ext ==
+  Option 'all in $FilesToRetain or Option 'yes in $FilesToRetain => true
+  Option 'no in $FilesToRetain => false
+  Option ext in $FilesToRetain
+
+TRACE retainFile?
+
 compileBootHandler(progname, options, file) ==
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
   errorCount() ~= 0 => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
-    DELETE_-FILE intFile
+    if not retainFile? 'lisp then
+      DELETE_-FILE intFile
     objFile
   nil
 

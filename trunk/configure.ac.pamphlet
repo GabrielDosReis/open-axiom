@@ -645,6 +645,16 @@ axiom_all_prerequisites=
 <<lisp options>>
 <<compiled lisp extension>>
 
+## Occaionally, we may want to keep intermediary files.
+oa_keep_files=
+AC_ARG_ENABLE([int-file-retension], 
+              [  --enable-int-file-retention   keep intermediary files],
+              [case $enableval in
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
+               esac])
+AC_SUBST(oa_keep_files)
+
 ## Does it make sense to pretend that we support multithreading?
 oa_enable_threads=no
 AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],

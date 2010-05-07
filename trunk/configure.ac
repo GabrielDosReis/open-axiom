@@ -358,6 +358,16 @@ if test -z $axiom_fasl_type; then
 fi
 AC_SUBST(axiom_fasl_type)
 
+## Occaionally, we may want to keep intermediary files.
+oa_keep_files=
+AC_ARG_ENABLE([keep-files], 
+              [  --enable-keep-files=<kind> keep intermediary files],
+              [case $enableval in
+                  yes|no|all) oa_keep_files=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-keep-files]) ;;
+               esac])
+AC_SUBST(oa_keep_files)
+
 ## Does it make sense to pretend that we support multithreading?
 oa_enable_threads=no
 AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
