@@ -534,8 +534,7 @@
 
 (DEFUN |shoeKeyWord| (|st|) (GETHASH |st| |shoeKeyTable|))
 
-(DEFUN |shoeKeyWordP| (|st|)
-  (NOT (NULL (GETHASH |st| |shoeKeyTable|))))
+(DEFUN |shoeKeyWordP| (|st|) (GETHASH |st| |shoeKeyTable|))
 
 (DEFUN |shoeMatch| (|l| |i|)
   (|shoeSubStringMatch| |l| |shoeDict| |i|))

@@ -532,7 +532,7 @@
          (COND
            ((|bfTupleP| |argTypes|) (SETQ |argTypes| (CDR |argTypes|))))
          (COND
-           ((AND (NOT (NULL |argTypes|)) (SYMBOLP |argTypes|))
+           ((AND |argTypes| (SYMBOLP |argTypes|))
             (SETQ |argTypes| (LIST |argTypes|))))
          (LIST 'DECLAIM
                (LIST 'FTYPE (LIST 'FUNCTION |argTypes| |valType|) |n|)))

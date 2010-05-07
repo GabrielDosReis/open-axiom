@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,14 +48,14 @@ module parser
 
 bpFirstToken()==
    $stok:=
-     null $inputStream => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+     $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
      first $inputStream
    $ttok := shoeTokPart $stok
    true
  
 bpFirstTok()==
    $stok:=
-     null $inputStream => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+     $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
      first $inputStream
    $ttok:=shoeTokPart $stok
    $bpParenCount>0 and $stok is ["KEY",:.] =>
@@ -294,14 +294,14 @@ bpListAndRecover(f)==
     if bpEqKey "BACKSET"
     then
        c := $inputStream
-    else if bpEqPeek "BACKTAB"  or null $inputStream
+    else if bpEqPeek "BACKTAB"  or $inputStream = nil
 	 then
 	    done := true
 	 else
 	   $inputStream := c
 	   bpGeneralErrorHere()
 	   bpRecoverTrap()
-	   if bpEqPeek "BACKTAB"  or null $inputStream
+	   if bpEqPeek "BACKTAB"  or $inputStream = nil
 	   then done:=true
 	   else
 	       bpNext()
@@ -311,7 +311,7 @@ bpListAndRecover(f)==
   bpPush NREVERSE b
  
 bpMoveTo n==
-   null $inputStream  => true
+   $inputStream = nil  => true
    bpEqPeek "BACKTAB" =>
      n=0  => true
      bpNextToken()
@@ -522,7 +522,7 @@ bpExceptions()==
 bpSexpKey()==
       $stok is ["KEY",:.] and not bpExceptions()=>
                a := $ttok has SHOEINF
-               null a=>  bpPush $ttok and bpNext()
+               a = nil =>  bpPush $ttok and bpNext()
                bpPush a and bpNext()
       false
  
@@ -1064,7 +1064,7 @@ bpAssignLHS()==
                  or true)
 bpChecknull()==
   a := bpPop1()
-  null a => bpTrap()
+  a = nil => bpTrap()
   bpPush a
 
 bpStruct()==

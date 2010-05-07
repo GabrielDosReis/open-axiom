@@ -160,7 +160,7 @@ shoePackageStartsAt (lines,sz,name,stream)==
   shoePackageStartsAt(lines,sz,name,rest stream)
  
 shoeFindLines(fn,name,a)==
-  null a =>
+  a = nil =>
     shoeNotFound fn
     []
   [lines,b]:=shoePackageStartsAt([],#name,name, shoeInclude
@@ -169,7 +169,7 @@ shoeFindLines(fn,name,a)==
   bStreamNull b =>
        shoeConsole strconc (name,'" not found in ",fn)
        []
-  null lines => shoeConsole '")package not found"
+  lines = nil => shoeConsole '")package not found"
   append(reverse lines,first b)
 
 -- Lazy inclusion support.
@@ -177,7 +177,7 @@ shoeFindLines(fn,name,a)==
 $bStreamNil:=["nullstream"]
  
 bStreamNull x==
-  null x or x is ["nullstream",:.] => true
+  x = nil or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
           st:=apply(second x,CDDR x)
           x.first := first st
@@ -195,7 +195,7 @@ bMap1(:z)==
 
 shoeFileMap(f, fn)==
   a:=shoeInputFile fn
-  null a =>
+  a = nil =>
      shoeConsole strconc(fn,'" NOT FOUND")
      $bStreamNil
   shoeConsole strconc('"READING ",fn)
@@ -292,23 +292,23 @@ shoeIncludeFunction? s  == shoePrefix?('")includefunction",s)
  
 shoeBiteOff x==
   n:=STRPOSL('" ",x,0,true)
-  null n =>  false
+  n = nil =>  false
   n1:=STRPOSL ('" ",x,n,nil)
-  null n1 =>  [SUBSTRING(x,n,nil),'""]
+  n1 = nil =>  [SUBSTRING(x,n,nil),'""]
   [SUBSTRING(x,n,n1-n),SUBSTRING(x,n1,nil)]
  
 shoeFileName x==
   a:=shoeBiteOff x
-  null a =>  '""
+  a = nil =>  '""
   c:=shoeBiteOff second a
-  null c =>  first a
+  c = nil =>  first a
   strconc(first a,'".",first c)
  
 shoeFnFileName x==
   a:=shoeBiteOff x
-  null a =>  ['"",'""]
+  a = nil =>  ['"",'""]
   c:=shoeFileName second a
-  null c =>  [first a,'""]
+  c = nil =>  [first a,'""]
   [first a, c]
  
 shoeFunctionFileInput [fun,fn]==
@@ -369,7 +369,7 @@ shoeThen1(keep,b,s)==
    keep1 and not b1=>shoeElse(cons(true,rest keep),cons(true,rest b),t)
    shoeElse(cons(false,rest keep),cons(false,rest b),t)
   command :=shoeEndIf? string=>
-    null rest b=>  shoeInclude t
+    rest b = nil =>  shoeInclude t
     shoeThen(rest keep,rest b,t)
   keep1 and b1 => bAppend(shoeSimpleLine h,shoeThen(keep,b,t))
   shoeThen(keep,b,t)
@@ -388,7 +388,7 @@ shoeElse1(keep,b,s)==
     keep1 and b1=> shoeThen(cons(true,keep),cons(STTOMC command,b),t)
     shoeThen(cons(false,keep),cons(false,b),t)
   command :=shoeEndIf? string =>
-       null rest b=>  shoeInclude t
+       rest b = nil =>  shoeInclude t
        shoeThen(rest keep,rest b,t)
   keep1 and b1 => bAppend(shoeSimpleLine h,shoeElse(keep,b,t))
   shoeElse(keep,b,t)

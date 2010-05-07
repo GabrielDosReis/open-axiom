@@ -879,7 +879,7 @@
   (PROG (|funsR| |funsA| |p| |funs|)
     (RETURN
       (COND
-        ((NULL (CONSP |expr|)) (LIST |acc| |expr|))
+        ((ATOM |expr|) (LIST |acc| |expr|))
         ((AND (EQ |acc| 'CAR) (CONSP |expr|)
               (EQ (CAR |expr|) 'REVERSE))
          (LIST 'CAR (CONS 'LAST (CDR |expr|))))
@@ -1158,7 +1158,7 @@
 
 (DEFUN |bfAND| (|l|)
   (COND
-    ((NULL |l|) 'T)
+    ((NULL |l|) T)
     ((NULL (CDR |l|)) (CAR |l|))
     (T (CONS 'AND
              (LET ((|bfVar#92| NIL) (|bfVar#91| |l|) (|c| NIL))
@@ -2984,9 +2984,7 @@
                                  (NULL (CDR |ISTMP#2|))
                                  (PROGN (SETQ |s| (CAR |ISTMP#2|)) T)))))))
          (|coreError| "invalid function type"))
-        (T (COND
-             ((AND (NOT (NULL |s|)) (SYMBOLP |s|))
-              (SETQ |s| (LIST |s|))))
+        (T (COND ((AND |s| (SYMBOLP |s|)) (SETQ |s| (LIST |s|))))
            (COND
              ((|%hasFeature| :GCL)
               (|genGCLnativeTranslation| |op| |s| |t| |op'|))

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -94,15 +94,15 @@ shoePileCtree(x,y) ==
 -- only enshoePiles forests with >=2 trees
  
 shoePileCforest x==
-  null x => []
-  null rest x => first x
+  x = nil => []
+  rest x = nil => first x
   a := first x
   b := shoePileCoagulate(a,rest x)
-  null rest b => first b
+  rest b = nil => first b
   shoeEnPile shoeSeparatePiles b
  
 shoePileCoagulate(a,b)==
-  null b => [a]
+  b = nil => [a]
   c := first b
   shoeTokPart CAAR c = "THEN" or shoeTokPart CAAR c = "ELSE" =>
     shoePileCoagulate (dqAppend(a,c),rest b)
@@ -114,8 +114,8 @@ shoePileCoagulate(a,b)==
   cons(a,shoePileCoagulate(c,rest b))
  
 shoeSeparatePiles x==
-  null x => []
-  null rest x => first x
+  x = nil => []
+  rest x = nil => first x
   a := first x
   semicolon := dqUnit shoeTokConstruct("KEY", "BACKSET",shoeLastTokPosn a)
   dqConcat [a,semicolon,shoeSeparatePiles rest x]

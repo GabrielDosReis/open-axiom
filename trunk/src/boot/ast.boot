@@ -189,7 +189,7 @@ bfAppend x==
  
 bfColonAppend: (%List,%Thing) -> %List
 bfColonAppend(x,y) ==
-  null x => 
+  x = nil => 
     y is ["BVQUOTE",:a] => ["&REST",["QUOTE",:a]]
     ["&REST",y]
   cons(first x,bfColonAppend(rest x,y))
@@ -236,7 +236,7 @@ bfConstruct b ==
   bfMakeCons a
  
 bfMakeCons l ==
-  null l => NIL
+  l = nil => nil
   l is [["COLON",a],:l1] =>
     l1 => ['APPEND,a,bfMakeCons l1]
     a
@@ -278,7 +278,7 @@ bfSTEP(id,fst,step,lst)==
     initval := cons(lst,initval)
     g2
   ex :=
-     null lst=> []
+     lst = nil => []
      integer? inc =>
        pred :=
 	 MINUSP inc => "<"
@@ -321,11 +321,11 @@ bfLp(iters,body)==
   bfLpCross(rest iters,body)
  
 bfLpCross(iters,body)==
-  null rest iters => bfLp(first iters,body)
+  rest iters = nil => bfLp(first iters,body)
   bfLp(first iters,bfLpCross(rest iters,body))
  
 bfSep(iters)==
-  null iters => [[],[],[],[],[],[]]
+  iters = nil => [[],[],[],[],[],[]]
   f := first iters
   r := bfSep rest iters
   [append(i,j) for i in f for j in r]
@@ -339,7 +339,7 @@ bfReduce(op,y)==
   g := bfGenSymbol()
   g1 := bfGenSymbol()
   body := ['SETQ,g,[op,g,g1]]
-  null init =>
+  init = nil =>
     g2 := bfGenSymbol()
     init := ['CAR,g2]
     ny := ['CDR,g2]
@@ -395,10 +395,10 @@ bfListReduce(op,y,itl)==
 bfLp1(iters,body)==
   [vars,inits,sucs,filters,exits,value] := bfSep bfAppend iters
   nbody :=
-    null filters => body
+    filters = nil => body
     bfAND [:filters,body]
   value :=
-    null value => "NIL"
+    value = nil => "NIL"
     first value
   exits := ["COND",[bfOR exits,["RETURN",value]],['T,nbody]]
   loop := ["LOOP",exits,:sucs]
@@ -418,7 +418,7 @@ bfOpReduce(op,init,y,itl)==
       bfMKPROGN [["SETQ",g,y], ['COND, [['NOT,g],['RETURN,'NIL]]]]
     op = "OR" => bfMKPROGN [["SETQ",g,y], ['COND, [g,['RETURN,g]]]]
     ['SETQ,g,[op,g,y]]
-  null init =>
+  init = nil =>
     g1 := bfGenSymbol()
     init := ['CAR,g1]
     y := ['CDR,g1]          -- ??? bogus self-assignment/initialization
@@ -450,12 +450,12 @@ bfLocal(a,b)==
   a
  
 bfTake(n,x)==
-  null x=>x
+  x = nil => x
   n=0 => nil
   cons(first x,bfTake(n-1,rest x))
  
 bfDrop(n,x)==
-  null x or n=0 =>x
+  x = nil or n = 0 => x
   bfDrop(n-1,rest x)
  
 bfReturnNoName a ==
@@ -472,7 +472,7 @@ bfSUBLIS(p,e)==
 +++ are recursive -- which they are not supposed to be.
 +++ We don't enforce that restriction though.
 bfSUBLIS1(p,e)==
-   null p =>e
+   p = nil => e
    f := first p
    EQ(first f,e) => bfSUBLIS(p, rest f)
    bfSUBLIS1(cdr p,e)
@@ -483,7 +483,7 @@ defSheepAndGoats(x)==
       argl :=
         bfTupleP args => rest args
 	[args]
-      null argl =>
+      argl = nil =>
 	opassoc := [[op,:body]]
 	[opassoc,[],[]]
       op1 := INTERN CONCAT(PNAME $op,'",",PNAME op)
@@ -494,7 +494,7 @@ defSheepAndGoats(x)==
     otherwise => [[],[],[x]]
  
 defSheepAndGoatsList(x)==
-  null x => [[],[],[]]
+  x = nil => [[],[],[]]
   [opassoc,defs,nondefs]    := defSheepAndGoats first x
   [opassoc1,defs1,nondefs1] := defSheepAndGoatsList rest x
   [append(opassoc,opassoc1),append(defs,defs1), append(nondefs,nondefs1)]
@@ -511,7 +511,7 @@ bfLET1(lhs,rhs) ==
     rhs1 := bfLET2(lhs,rhs)
     rhs1 is ["L%T",:.]   => bfMKPROGN [rhs1,rhs]
     rhs1 is ["PROGN",:.] => APPEND(rhs1,[rhs])
-    if IDENTP first rhs1 then rhs1 := CONS(rhs1,NIL)
+    if IDENTP first rhs1 then rhs1 := CONS(rhs1,nil)
     bfMKPROGN [:rhs1,rhs]
   rhs is ["L%T",:.] and IDENTP(name := second rhs) =>
     -- handle things like [a] := x := foo
@@ -525,7 +525,7 @@ bfLET1(lhs,rhs) ==
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(lhs,g)
   let1 is ["PROGN",:.] => bfMKPROGN [rhs1,:rest let1]
-  if IDENTP first let1 then let1 := CONS(let1,NIL)
+  if IDENTP first let1 then let1 := CONS(let1,nil)
   bfMKPROGN [rhs1,:let1,g]
  
 bfCONTAINED(x,y)==
@@ -535,11 +535,11 @@ bfCONTAINED(x,y)==
  
 bfLET2(lhs,rhs) ==
   IDENTP lhs => bfLetForm(lhs,rhs)
-  NULL lhs   => NIL
+  lhs = nil => nil
   lhs is ['FLUID,.] => bfLetForm(lhs,rhs)
   lhs is ['L%T,a,b] =>
     a := bfLET2(a,rhs)
-    null (b := bfLET2(b,rhs)) => a
+    (b := bfLET2(b,rhs)) = nil => a
     atom b => [a,b]
     cons? first b => CONS(a,b)
     [a,b]
@@ -547,7 +547,7 @@ bfLET2(lhs,rhs) ==
     var1 = "DOT" or var1 is ["QUOTE",:.] =>
       bfLET2(var2,addCARorCDR('CDR,rhs))
     l1 := bfLET2(var1,addCARorCDR('CAR,rhs))
-    null var2 or var2 = "DOT" =>l1
+    var2 = nil or var2 = "DOT" =>l1
     if cons? l1 and atom first l1 then l1 := cons(l1,nil)
     IDENTP var2 =>
       [:l1,bfLetForm(var2,addCARorCDR('CDR,rhs))]
@@ -585,7 +585,7 @@ bfLET(lhs,rhs) ==
   bfLET1(lhs,rhs)
  
 addCARorCDR(acc,expr) ==
-  NULL cons? expr => [acc,expr]
+  atom expr => [acc,expr]
   acc = 'CAR and expr is ["REVERSE",:.] =>
       ["CAR",["LAST",:rest expr]]
  --   cons('last,rest expr)
@@ -602,8 +602,8 @@ addCARorCDR(acc,expr) ==
  
 bfPosition(x,l) ==  bfPosn(x,l,0)
 bfPosn(x,l,n) ==
-  null l => -1
-  x=first l => n
+  l = nil => -1
+  x = first l => n
   bfPosn(x,rest l,n+1)
  
 --% IS
@@ -620,15 +620,15 @@ bfIS(left,right)==
  
 bfISReverse(x,a) ==
   x is ['CONS,:.] =>
-    null third x => ['CONS,second x, a]
-    y := bfISReverse(third x, NIL)
+    third x = nil => ['CONS,second x, a]
+    y := bfISReverse(third x, nil)
     y.rest.rest.first := ['CONS,second x,a]
     y
   bpSpecificErrorHere '"Error in bfISReverse"
   bpTrap()
  
 bfIS1(lhs,rhs) ==
-  null rhs => ['NULL,lhs]
+  rhs = nil => ['NULL,lhs]
   string? rhs => ['EQ,lhs,['QUOTE,INTERN rhs]]
   NUMBERP rhs => ["EQUAL",lhs,rhs]
   atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
@@ -645,9 +645,9 @@ bfIS1(lhs,rhs) ==
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
     a = "DOT" =>
-      NULL b => bfAND [['CONSP,lhs],['NULL,['CDR,lhs]]]
+      b = nil => bfAND [['CONSP,lhs],['NULL,['CDR,lhs]]]
       bfAND [['CONSP,lhs],bfIS1(['CDR,lhs],b)]
-    NULL b =>
+    b = nil =>
       bfAND [['CONSP,lhs],['NULL,['CDR,lhs]],bfIS1(['CAR,lhs],a)]
     b = "DOT" => bfAND [['CONSP,lhs],bfIS1(['CAR,lhs],a)]
     a1 := bfIS1(['CAR,lhs],a)
@@ -714,13 +714,13 @@ bfFlatten(op, x) ==
   [x]
  
 bfOR l  ==
-  null l => NIL
-  null rest l => first l
+  l = nil => false
+  rest l = nil => first l
   ["OR",:[:bfFlatten("OR",c) for c in l]]
  
 bfAND l ==
-  null l=> 'T
-  null rest l => first l
+  l = nil => true
+  rest l = nil => first l
   ["AND",:[:bfFlatten("AND",c) for c in l]]
  
  
@@ -733,8 +733,8 @@ bfSmintable x==
 bfQ(l,r)==
   bfSmintable l or bfSmintable r => ["EQL",l,r]
   defQuoteId l or defQuoteId r => ["EQ",l,r]
-  null l => ["NULL",r]
-  null r => ["NULL",l]
+  l = nil => ["NULL",r]
+  r = nil => ["NULL",l]
   l = true or r = true => ["EQ",l,r]
   ["EQUAL",l,r]
  
@@ -757,7 +757,7 @@ bfMDef (op,args,body) ==
   [shoeComp def,:[:shoeComps bfDef1 d for d in $wheredefs]]
  
 bfGargl argl==
-  null argl => [[],[],[],[]]
+  argl = nil => [[],[],[],[]]
   [a,b,c,d] := bfGargl rest argl
   first argl="&REST" =>
     [cons(first argl,b),b,c,
@@ -812,7 +812,7 @@ bfParameterList(p1,p2) ==
   [p1,:p2]
  
 bfInsertLet(x,body)==
-  null x => [false,nil,x,body]
+  x = nil => [false,nil,x,body]
   x is ["&REST",a] =>
     a is ["QUOTE",b] => [true,"QUOTE",["&REST",b],body]
     [false,nil,x,body]
@@ -867,19 +867,19 @@ needsPROG body ==
   false
 
 shoePROG(v,b)==
-  null b => [["PROG", v]]
+  b = nil => [["PROG", v]]
   [:blist,blast] := b
   [["PROG",v,:blist,["RETURN", blast]]]
 
 shoeFluids x==
-  null x => nil
+  x = nil => nil
   IDENTP x and bfBeginsDollar x => [x]
   atom x => nil
   x is ["QUOTE",:.] => nil
   [:shoeFluids first x,:shoeFluids rest x]
 
 shoeATOMs x ==
-  null x => nil
+  x = nil => nil
   atom x => [x]
   [:shoeATOMs first x,:shoeATOMs rest x]
 
@@ -889,7 +889,7 @@ isDynamicVariable x ==
   IDENTP x and bfBeginsDollar x =>
     MEMQ(x,$constantIdentifiers) => false
     CONSTANTP x => false
-    BOUNDP x or null $activeNamespace => true
+    BOUNDP x or $activeNamespace = nil => true
     y := FIND_-SYMBOL(STRING x,$activeNamespace) => not CONSTANTP y
     true
   false
@@ -931,11 +931,11 @@ shoeCompTran1 x==
   shoeCompTran1 rest x
  
 bfTagged(a,b)==
-  null $op => %Signature(a,b)        -- surely a toplevel decl
+  $op = nil => %Signature(a,b)        -- surely a toplevel decl
   IDENTP a =>
-    b = "FLUID" =>  bfLET(compFluid a,NIL)
-    b = "fluid" =>  bfLET(compFluid a,NIL)
-    b = "local" =>  bfLET(compFluid a,NIL)
+    b = "FLUID" =>  bfLET(compFluid a,nil)
+    b = "fluid" =>  bfLET(compFluid a,nil)
+    b = "local" =>  bfLET(compFluid a,nil)
     $typings:=cons(["TYPE",b,a],$typings)
     a
   ["THE",b,a]
@@ -945,7 +945,7 @@ bfAssign(l,r)==
   bfLET(l,r)
  
 bfSetelt(e,l,r)==
-  null rest l => defSETELT(e,first l,r)
+  rest l = nil => defSETELT(e,first l,r)
   bfSetelt(bfElt(e,first l),rest l,r)
  
 bfElt(expr,sel)==
@@ -985,12 +985,12 @@ bfExit(a,b)==
  
 bfMKPROGN l==
   a := [:bfFlattenSeq c for c in tails l]
-  null a => nil
-  null rest a => first a
+  a = nil => nil
+  rest a = nil => first a
   ["PROGN",:a]
  
 bfFlattenSeq x ==
-  null x => NIL
+  x = nil => nil
   f := first x
   atom f =>
     rest x => nil
@@ -1013,18 +1013,18 @@ bfAlternative(a,b) ==
   [a,:bfWashCONDBranchBody b]
 
 bfSequence l ==
-  null l => NIL
+  l = nil => nil
   transform := [bfAlternative(a,b) for x in l while
                   x is ["COND",[a,["IDENTITY",b]]]]
   no := #transform
   before := bfTake(no,l)
   aft := bfDrop(no,l)
-  null before =>
+  before = nil =>
     l is [f] =>
       f is ["PROGN",:.] => bfSequence rest f
       f
     bfMKPROGN [first l,bfSequence rest l]
-  null aft => ["COND",:transform]
+  aft = nil => ["COND",:transform]
   ["COND",:transform,bfAlternative('T,bfSequence aft)]
  
 bfWhere (context,expr)==
@@ -1037,7 +1037,7 @@ bfWhere (context,expr)==
 --shoeReadLispString(s,n)==
 --    n>= # s => nil
 --    [exp,ind]:=shoeReadLisp(s,n)
---    null exp => nil
+--    exp = nil => nil
 --    cons(exp,shoeReadLispString(s,ind))
  
 bfCompHash(op,argl,body) ==
@@ -1120,9 +1120,9 @@ bfCaseItems(g,x) ==
 bfCI: (%Thing,%Thing,%Thing) -> %List 
 bfCI(g,x,y)==
   a := rest x
-  null a => [first x,y]
+  a = nil => [first x,y]
   b := [[i,bfCARCDR(j,g)] for i in a for j in 1.. | i ~= "DOT"]
-  null b => [first x,y]
+  b = nil => [first x,y]
   [first x,["LET",b,y]]
 
 bfCARCDR: (%Short,%Thing) -> %List 
@@ -1138,7 +1138,7 @@ bfDs n ==
 ++ Generate code for try-catch expressions.
 bfTry: (%Thing,%List) -> %Thing
 bfTry(e,cs) ==
-  null cs => e
+  cs = nil => e
   case first cs of
     %Catch(tag) => 
       atom tag => bfTry(["CATCH",["QUOTE",tag],e],rest cs)
@@ -1154,7 +1154,7 @@ bfThrow e ==
 --% Type alias definition
 
 backquote(form,params) ==
-  null params => quote  form
+  params = nil => quote  form
   atom form =>
     form in params => form
     quote form
@@ -1512,7 +1512,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- simulate the reference semantics.  Don't ever try to pass around
   -- gigantic buffer, you might find out that it is insanely inefficient.
   forwardingFun := 
-    null unstableArgs => ["DEFUN",op,parms, [n,:parms]]
+    unstableArgs = nil => ["DEFUN",op,parms, [n,:parms]]
     localPairs := [[a,x,y,:GENSYM '"loc"] for [a,x,:y] in unstableArgs]
     call := 
       [n,:[actualArg(p,localPairs) for p in parms]] where
@@ -1525,7 +1525,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
                   copyBack [p,x,y,:a] ==
                     x is ["readonly",:.] => nil
                     ["SETF", p, [bfColonColon("FFI","FOREIGN-VALUE"), a]]
-      null fixups => [call]
+      fixups = nil => [call]
       [["PROG1",call, :fixups]]
     -- Set up local foreign variables to hold address of traveling data
     for [p,x,y,:a] in localPairs repeat
@@ -1559,7 +1559,7 @@ genSBCLnativeTranslation(op,s,t,op') ==
     %hasFeature KEYWORD::WIN32 => strconc('"__",SYMBOL_-NAME op')
     SYMBOL_-NAME op'
     
-  null unstableArgs =>
+  unstableArgs = nil =>
     [["DEFUN",op,args,
       [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
 	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"), op',
@@ -1628,7 +1628,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
 genImportDeclaration(op, sig) ==
   sig isnt ["%Signature", op', m] => coreError '"invalid signature"
   m isnt ["%Mapping", t, s] => coreError '"invalid function type"
-  if not null s and symbol? s then s := [s]
+  if s ~= nil and symbol? s then s := [s]
 
   %hasFeature KEYWORD::GCL => genGCLnativeTranslation(op,s,t,op')
   %hasFeature KEYWORD::SBCL => genSBCLnativeTranslation(op,s,t,op')

@@ -1,5 +1,15 @@
 2010-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot: Miscellaneous cleanup.
+	* boot/includer.boot: Likewise.
+	* boot/parser.boot: Likewise.
+	* boot/pile.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+	* boot/tokens.boot: Likewise.
+	* boot/translator.boot: Likewise.
+
+2010-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot: Translate assignment to head and tail of a list.
 	Remove explicit uses of RPLACA and RPLACD.
 	* boot/includer.boot: Likewise.
