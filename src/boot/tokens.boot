@@ -216,18 +216,18 @@ for i in [ _
       ["MAX", -999999] , _
       ["MIN",  999999] , _
       ["*",         1] , _
-      ["times",         1] , _
-      ["CONS",    NIL] , _
-      ["APPEND",  NIL] , _
-      ["append",  NIL] , _
-      ["UNION",   NIL] , _
-      ["UNIONQ",  NIL] , _
-      ["union",   NIL] , _
-      ["NCONC",   NIL] , _
-      ["and",      'T] , _
-      ["or",      NIL] , _
-      ["AND",      'T] , _
-      ["OR",      NIL]   _
+      ["times",     1] , _
+      ["CONS",    nil] , _
+      ["APPEND",  nil] , _
+      ["append",  nil] , _
+      ["UNION",   nil] , _
+      ["UNIONQ",  nil] , _
+      ["union",   nil] , _
+      ["NCONC",   nil] , _
+      ["and",    true] , _
+      ["or",    false] , _
+      ["AND",    true] , _
+      ["OR",    false]   _
                          ]
  
        repeat SETF (GET(first i,'SHOETHETA),CDR i)

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,19 +47,19 @@ dqUnit s==
   [a,:a]
  
 dqAppend(x,y)==
-  null x => y
-  null y => x
+  x = nil => y
+  y = nil => x
   x.rest.rest := first y
   x.rest := rest y
   x
  
 dqConcat ld==
-  null ld => nil
-  null rest ld => first ld
+  ld = nil => nil
+  rest ld = nil => first ld
   dqAppend(first ld,dqConcat rest ld)
  
 dqToList s ==
-  null s => nil
+  s = nil => nil
   first s
  
 shoeConstructToken(ln,lp,b,n) == 
@@ -85,7 +85,7 @@ shoeNextLine(s)==
   $ln:=first $f
   $n:=STRPOSL('" ",$ln,0,true)
   $sz :=# $ln
-  null $n => true
+  $n = nil => true
   QENUM($ln,$n)=shoeTAB =>
     a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
     $ln.$n:='" ".0
@@ -103,7 +103,7 @@ shoeLineToks(s)==
   $floatok:local:=true
   $linepos:local:=s
   not shoeNextLine s =>  CONS(nil,nil)
-  null $n => shoeLineToks $r
+  $n = nil => shoeLineToks $r
   fst:=QENUM($ln,0)
   EQL(fst,shoeCLOSEPAREN)=>
     command:=shoeLine? $ln=>
@@ -119,7 +119,7 @@ shoeLineToks(s)==
     shoeLineToks $r
   toks:=[]
   while $n<$sz repeat toks:=dqAppend(toks,shoeToken())
-  null toks => shoeLineToks $r
+  toks = nil => shoeLineToks $r
   cons([toks],$r)
  
 shoeLispToken(s,string)==
@@ -134,7 +134,7 @@ shoeLispToken(s,string)==
  
 shoeAccumulateLines(s,string)==
   not shoeNextLine s =>  CONS(s,string)
-  null $n => shoeAccumulateLines($r,string)
+  $n = nil => shoeAccumulateLines($r,string)
   # $ln=0 => shoeAccumulateLines($r,string)
   fst:=QENUM($ln,0)
   EQL(fst,shoeCLOSEPAREN)=>
@@ -181,7 +181,7 @@ shoeToken () ==
 			       $n:=$n+1
 			       []
     shoeError ()
-  null b => nil
+  b = nil => nil
   dqUnit shoeConstructToken(ln,linepos,b,n)
  
 -- to pair badge and badgee
@@ -229,11 +229,11 @@ shoeLispEscape()==
     SoftShoeError(cons($linepos,$n),'"lisp escape error")
     shoeLeafError ($ln.$n)
   a:=shoeReadLispString($ln,$n)
-  null a =>
+  a = nil =>
     SoftShoeError(cons($linepos,$n),'"lisp escape error")
     shoeLeafError ($ln.$n)
   [exp,n]:=a
-  null n =>
+  n = nil =>
     $n:= $sz
     shoeLeafLispExp  exp
   $n:=n
@@ -247,14 +247,14 @@ shoeEscape()==
 shoeEsc()==
   $n >= $sz =>
     shoeNextLine($r) =>
-      while null $n repeat shoeNextLine($r)
+      while $n = nil repeat shoeNextLine($r)
       shoeEsc()
       false
     false
   n1:=STRPOSL('" ",$ln,$n,true)
-  null n1 =>
+  n1 = nil =>
     shoeNextLine($r)
-    while null $n repeat 
+    while $n = nil repeat 
       shoeNextLine($r)
     shoeEsc()
     false
@@ -309,7 +309,7 @@ shoeSpace()==
   n := $n
   $n := STRPOSL('" ",$ln,$n,true)
   $floatok := true
-  null $n =>
+  $n = nil =>
      shoeLeafSpaces 0
      $n:= # $ln
   shoeLeafSpaces ($n-n)
@@ -464,7 +464,7 @@ shoeKeyWord st   ==
   GETHASH(st,shoeKeyTable)
  
 shoeKeyWordP st  ==  
-  not null GETHASH(st,shoeKeyTable)
+  GETHASH(st,shoeKeyTable) ~= nil
  
 shoeMatch(l,i) == 
   shoeSubStringMatch(l,shoeDict,i)

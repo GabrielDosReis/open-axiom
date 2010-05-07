@@ -188,8 +188,8 @@
                   (LIST 'CONS NIL) (LIST 'APPEND NIL)
                   (LIST '|append| NIL) (LIST 'UNION NIL)
                   (LIST 'UNIONQ NIL) (LIST '|union| NIL)
-                  (LIST 'NCONC NIL) (LIST '|and| 'T) (LIST '|or| NIL)
-                  (LIST 'AND 'T) (LIST 'OR NIL)))
+                  (LIST 'NCONC NIL) (LIST '|and| T) (LIST '|or| NIL)
+                  (LIST 'AND T) (LIST 'OR NIL)))
         (|i| NIL))
     (LOOP
       (COND

@@ -49,7 +49,7 @@ $foreignsDefsForCLisp := []
 
 genModuleFinalization(stream) ==
   %hasFeature KEYWORD::CLISP =>
-    null $foreignsDefsForCLisp => nil
+    $foreignsDefsForCLisp = nil => nil
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
@@ -295,7 +295,7 @@ bFileNext1(fn,s)==
  
 shoeParseTrees dq==
   toklist := dqToList dq
-  null toklist => []
+  toklist = nil => []
   shoeOutParse toklist
  
 shoeTreeConstruct (str)==
@@ -368,7 +368,7 @@ shoeOutParse stream ==
   not bStreamNull $inputStream =>
     bpGeneralErrorHere()
     nil
-  null $stack =>
+  $stack = nil =>
     bpGeneralErrorHere()
     nil
   first $stack
@@ -377,7 +377,7 @@ shoeOutParse stream ==
 genDeclaration(n,t) ==
   t is ["%Mapping",valType,argTypes] =>
     if bfTupleP argTypes then argTypes := rest argTypes
-    if not null argTypes and symbol? argTypes 
+    if argTypes ~= nil and symbol? argTypes 
     then argTypes := [argTypes]
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
   ["DECLAIM",["TYPE",t,n]]
@@ -559,15 +559,15 @@ defuse1(e,y)==
   for i in y repeat defuse1(e,i)
  
 defSeparate x==
-  null x => [[],[]]
+  x = nil => [[],[]]
   f := first x
   [x1,x2] := defSeparate rest x
   bfBeginsDollar f => [[f,:x1],x2]
   [x1,cons(f,x2)]
 
 unfluidlist x==
-  NULL x => []
-  atom x=> [x]
+  x = nil => []
+  atom x => [x]
   x is ["&REST",y]=> [y]
   cons(first x,unfluidlist rest x)
  
@@ -584,7 +584,7 @@ SSORT l ==
   SORT(l,function CLESSP)
  
 bootOutLines(l,outfn,s)==
-  null l => shoeFileLine(s,outfn)
+  l = nil => shoeFileLine(s,outfn)
   a := PNAME first l
   #s + #a > 70 =>
     shoeFileLine(s,outfn)
@@ -601,7 +601,7 @@ XREF fn==
   shoeOpenInputFile(a,infn,shoeXref(a,fn))
  
 shoeXref(a,fn)==
-  null a => shoeNotFound fn
+  a = nil => shoeNotFound fn
   $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
   $bootDefined  :=MAKE_-HASHTABLE "EQ"
