@@ -1,5 +1,12 @@
 2010-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
+	* lisp/core.lisp.in ($FilesToRetain): New. Export.
+	* lisp/Makefile.in: Tidy.
+	* boot/translator.boot (retainFile?): New.
+	(compileBootHandler): Use it.
+
+2010-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/as.boot: Miscellaneous cleanup.
 	* interp/ax.boot: Likewise.
 	* interp/br-con.boot: Likewise.
