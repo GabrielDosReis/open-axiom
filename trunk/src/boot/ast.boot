@@ -622,7 +622,7 @@ bfISReverse(x,a) ==
   x is ['CONS,:.] =>
     null third x => ['CONS,second x, a]
     y := bfISReverse(third x, NIL)
-    RPLACA(CDDR y,['CONS,second x,a])
+    y.rest.rest.first := ['CONS,second x,a]
     y
   bpSpecificErrorHere '"Error in bfISReverse"
   bpTrap()
@@ -904,7 +904,7 @@ shoeCompTran1 x==
   U:=car x
   U = "QUOTE" => nil
   x is ["L%T",l,r] =>
-    RPLACA (x,"SETQ")
+    x.first := "SETQ"
     shoeCompTran1 r
     IDENTP l =>
       not bfBeginsDollar l=>
@@ -918,7 +918,7 @@ shoeCompTran1 x==
       $fluidVars:=
 	 MEMQ(second l,$fluidVars)=>$fluidVars
 	 cons(second l,$fluidVars)
-      RPLACA (rest x,second l)
+      x.rest.first := second l
   U in '(PROG LAMBDA) =>
     newbindings:=nil
     for y in second x repeat
@@ -959,6 +959,8 @@ defSETELT(var,sel,expr)==
   y := symbol? sel and sel has SHOESELFUNCTION
   y =>
     integer? y => ["SETF",["ELT",var,y],expr]
+    y = "CAR" => ["RPLACA",var,expr]
+    y = "CDR" => ["RPLACD",var,expr]
     ["SETF",[y,var],expr]
   ["SETF",["ELT",var,sel],expr]
  

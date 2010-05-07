@@ -1,5 +1,13 @@
 2010-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot: Translate assignment to head and tail of a list.
+	Remove explicit uses of RPLACA and RPLACD.
+	* boot/includer.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+	* boot/translator.boot: Likewise.
+
+2010-05-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/wi2.boot: Replace INTEGERP, STRINGP, SYMBOLP, CONSP with
 	integer?, string?, symbol?, and cons? respectively.
 	* interp/wi1.boot: Likewise.

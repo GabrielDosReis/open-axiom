@@ -180,8 +180,8 @@ bStreamNull x==
   null x or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
           st:=apply(second x,CDDR x)
-          RPLACA(x,first st)
-          RPLACD(x,rest st)
+          x.first := first st
+          x.rest := rest st
   x is ["nullstream",:.]
  
 bMap(f,x) == 

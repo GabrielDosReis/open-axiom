@@ -49,8 +49,8 @@ dqUnit s==
 dqAppend(x,y)==
   null x => y
   null y => x
-  RPLACD (rest x,first y)
-  RPLACD (x,    rest y)
+  x.rest.rest := first y
+  x.rest := rest y
   x
  
 dqConcat ld==
