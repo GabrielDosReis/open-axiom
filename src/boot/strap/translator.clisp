@@ -1274,6 +1274,16 @@
                   (|defaultBootToLispFile| |file|)))
         (BOOTTOCL |file| (ENOUGH-NAMESTRING |outFile|))))))
 
+(DEFUN |retainFile?| (|ext|)
+  (COND
+    ((OR (MEMBER (|Option| '|all|) |$FilesToRetain|)
+         (MEMBER (|Option| '|yes|) |$FilesToRetain|))
+     T)
+    ((MEMBER (|Option| '|no|) |$FilesToRetain|) NIL)
+    (T (MEMBER (|Option| |ext|) |$FilesToRetain|))))
+
+(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL) (TRACE |retainFile?|))
+
 (DEFUN |compileBootHandler| (|progname| |options| |file|)
   (PROG (|objFile| |intFile|)
     (RETURN
@@ -1287,7 +1297,9 @@
               (SETQ |objFile|
                     (|compileLispHandler| |progname| |options|
                         |intFile|))
-              (DELETE-FILE |intFile|) |objFile|)
+              (COND
+                ((NOT (|retainFile?| '|lisp|)) (DELETE-FILE |intFile|)))
+              |objFile|)
           (T NIL))))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)

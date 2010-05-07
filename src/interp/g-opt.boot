@@ -59,9 +59,9 @@ getDomainTemplate dom ==
 ++ Emit code for an indirect call to domain-wide Spad function.  
 ++ This is usually the case for exported functions.
 emitIndirectCall(fn,args,x) ==
-  rplac(first x, "SPADCALL")
-  rplac(first fn,"getShellEntry")
-  rplac(rest x, [:args,fn])
+  x.first := "SPADCALL"
+  fn.first := "getShellEntry"
+  x.rest := [:args,fn]
   x
 
 --% OPTIMIZER
@@ -90,8 +90,8 @@ optimizeFunctionDef(def) ==
         x
       fn(x,g) ==
         x is ["THROW", =g,:u] =>
-          rplac(first x,"RETURN")
-          rplac(rest x,replaceThrowByReturn(u,g))
+          x.first := "RETURN"
+          x.rest := replaceThrowByReturn(u,g)
         atom x => nil
         replaceThrowByReturn(first x,g)
         replaceThrowByReturn(rest x,g)
@@ -125,7 +125,7 @@ subrname u ==
  
 changeThrowToExit(s,g) ==
   atom s or first s in '(QUOTE SEQ REPEAT COLLECT) => nil
-  s is ["THROW", =g,:u] => (rplac(first s,"EXIT"); rplac(rest s,u))
+  s is ["THROW", =g,:u] => (s.first := "EXIT"; s.rest := u)
   changeThrowToExit(first s,g)
   changeThrowToExit(rest s,g)
 
@@ -138,8 +138,8 @@ changeThrowToGo(s,g) ==
   atom s or first s='QUOTE => nil
   s is ["THROW", =g,u] =>
     changeThrowToGo(u,g)
-    rplac(first s,"PROGN")
-    rplac(rest s,[["%LET",second g,u],["GO",second g]])
+    s.first := "PROGN"
+    s.rest := [["%LET",second g,u],["GO",second g]]
   changeThrowToGo(first s,g)
   changeThrowToGo(rest s,g)
 
@@ -148,15 +148,15 @@ optCatch (x is ["CATCH",g,a]) ==
   atom a => a
   if a is ["SEQ",:s,["THROW", =g,u]] then
     changeThrowToExit(s,g)
-    rplac(rest a,[:s,["EXIT",u]])
+    a.rest := [:s,["EXIT",u]]
     ["CATCH",y,a]:= optimize x
   if hasNoThrows(a,g) then
-    rplac(first x,first a) 
-    rplac(rest x,rest a)
+    x.first := first a
+    x.rest := rest a
   else
     changeThrowToGo(a,g)
-    rplac(first x,"SEQ")
-    rplac(rest x,[["EXIT",a],second g,["EXIT",second g]])
+    x.first := "SEQ"
+    x.rest := [["EXIT",a],second g,["EXIT",second g]]
   x
  
 optSPADCALL(form is ['SPADCALL,:argl]) ==
@@ -208,12 +208,12 @@ optCallEval u ==
  
 optCons (x is ["CONS",a,b]) ==
   a="NIL" =>
-    b='NIL => (rplac(first x,'QUOTE); rplac(rest x,['NIL,:'NIL]); x)
-    b is ['QUOTE,:c] => (rplac(first x,'QUOTE); rplac(rest x,['NIL,:c]); x)
+    b='NIL => (x.first := 'QUOTE; x.rest := ['NIL,:'NIL]; x)
+    b is ['QUOTE,:c] => (x.first := 'QUOTE; x.rest := ['NIL,:c]; x)
     x
   a is ['QUOTE,a'] =>
-    b='NIL => (rplac(first x,'QUOTE); rplac(rest x,[a',:'NIL]); x)
-    b is ['QUOTE,:c] => (rplac(first x,'QUOTE); rplac(rest x,[a',:c]); x)
+    b='NIL => (x.first := 'QUOTE; x.rest := [a',:'NIL]; x)
+    b is ['QUOTE,:c] => (x.first := 'QUOTE; x.rest := [a',:c]; x)
     x
   x
  
@@ -225,8 +225,8 @@ optSpecialCall(x,y,n) ==
         '"invalid constant"])
     MKQ yval.n
   fn := getFunctionReplacement compileTimeBindingOf first yval.n =>
-    rplac(rest x,CDAR x)
-    rplac(first x,fn)
+    x.rest := CDAR x
+    x.first := fn
     if fn is ["XLAM",:.] then x:=first optimize [x]
     x is ["EQUAL",:args] => RPLACW(x,DEF_-EQUAL args)
                 --DEF-EQUAL is really an optimiser
@@ -319,7 +319,7 @@ optSEQ ["SEQ",:l] ==
     splicePROGN l ==
       isAtomicForm l => l
       l is [["PROGN",:stmts],:l'] => [:stmts,:l']
-      rplac(rest l, splicePROGN rest l)
+      l.rest := splicePROGN rest l
     getRidOfTemps l ==
       null l => nil
       l is [["%LET",g,x,:.],:r] and GENSYMP g and 2>numOfOccurencesOf(g,r) =>
@@ -507,7 +507,7 @@ optLET u ==
       clause isnt [test,stmt] => continue := false
       -- Stop inlining at least one test is not simple
       not isSimpleVMForm test => continue := false
-      rplac(first clause,SUBLIS(substPairs,test))
+      clause.first := SUBLIS(substPairs,test)
       isSimpleVMForm stmt =>
         rplac(second clause,SUBLIS(substPairs,stmt))
       continue := false
@@ -521,7 +521,7 @@ optLET u ==
   for defs in tails inits repeat
     def := first defs
     atom def => systemErrorHere ["optLET",def] -- cannot happen
-    rplac(rest def, second def)
+    def.rest := second def
   SUBLIS(inits,body)
 
 optLET_* form ==
@@ -530,11 +530,11 @@ optLET_* form ==
   while ok for [[var,.],:inits] in tails second form repeat
     if CONTAINED(var,inits) then ok := false
   not ok => form
-  rplac(first form,"LET")
+  form.first := "LET"
   optLET form
 
 optBind form ==
-  rplac(first form,"LET*")
+  form.first := "LET*"
   optLET_* form
 
 optLIST form ==

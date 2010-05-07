@@ -1028,12 +1028,12 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
                   --bound in compSeq1 and compDefineCapsuleFunction
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
-          rplac(first x,"THROW")
+          x.first := "THROW"
           rplac(second x,tag)
           rplac(third x,(convertOrCroak(t,opMode)).expr)
         true => rplac(second x,second x-1)
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
-        rplac(first t,replaceExitEtc(first t,tag,opFlag,opMode))
+        t.first := replaceExitEtc(first t,tag,opFlag,opMode)
       replaceExitEtc(first x,tag,opFlag,opMode)
       replaceExitEtc(rest x,tag,opFlag,opMode)
 
@@ -1378,7 +1378,7 @@ checkExternalEntity(id,type,lang,e) ==
 removeModifiers t ==
   for (ts := [x,:.]) in tails t repeat
      x is [m,t'] and m in $FFITypeModifier =>
-       rplac(first ts,t')
+       ts.first := t'
   t
 
 ++ Compile external entity signature import.

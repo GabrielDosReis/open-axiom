@@ -1035,7 +1035,7 @@ mutateCONDFormWithUnaryFunction(form,fun) ==
   for clauses in tails body repeat
     -- a clause is a list of forms
     for subForms in tails first clauses repeat
-      rplac(first subForms, FUNCALL(fun, first subForms))
+      subForms.first := FUNCALL(fun, first subForms)
   form
 
 ++ Walk VM LET-form mutating enclosed expression forms with
@@ -1049,7 +1049,7 @@ mutateLETFormWithUnaryFunction(form,fun) ==
     atom def => nil -- no initializer
     rplac(second def, FUNCALL(fun, second def))
   for stmts in tails body repeat
-    rplac(first stmts, FUNCALL(fun, first stmts))
+    stmts.first := FUNCALL(fun, first stmts)
   form
 
 --% 
@@ -1116,14 +1116,14 @@ replaceSimpleFunctions form ==
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)
     not EQ(arg',arg) =>
-      rplac(first args, arg')
+      args.first := arg'
   -- 2. see if we know something about this function.
   [fun,:args] := form
   atom fun =>
     null (fun' := getFunctionReplacement fun) => form
     -- 2.1. the renaming case.
     atom fun' =>
-      rplac(first form,fun')
+      form.first := fun'
       NBUTLAST form
     -- 2.2. the substitution case.
     fun' is ["XLAM",parms,body] =>
@@ -1141,7 +1141,7 @@ replaceSimpleFunctions form ==
       form
     form
   fun' := replaceSimpleFunctions fun
-  not EQ(fun',fun) => rplac(first form,fun')
+  not EQ(fun',fun) => form.first := fun'
   form
 
 
@@ -1199,8 +1199,8 @@ foldSpadcall form ==
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
   null (op := getCapsuleDirectoryEntry slot) => form
-  rplac(first fun, "$")
-  rplac(first form, op)
+  fun.first := "$"
+  form.first := op
 
 
 ++ `defs' is a list of function definitions from the current domain.
@@ -1460,7 +1460,7 @@ il2OldForm x ==
     %ilDeref(e,.) => ["applyFun",il2OldForm e]
     %ilCall(e,.) =>
       e is [["%ilLocal",op,:.],:.] =>
-        rplac(first e,op)
+        e.first := op
         ilTransformInsns rest e
         e
       ["%Call",:ilTransformInsns e]
@@ -1469,7 +1469,7 @@ il2OldForm x ==
 ++ Subroutines of il2OldForm to walk sequence of IL instructions.
 ilTransformInsns form ==
   for insns in tails form repeat
-    rplac(first insns, il2OldForm first insns)
+    insns.first := il2OldForm first insns
   form
 
 
@@ -1536,7 +1536,7 @@ simplifySEQ form ==
   isAtomicForm form => form
   form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
-    rplac(first stmts, simplifySEQ first stmts)
+    stmts.first := simplifySEQ first stmts
   form
 
 ++ Generate Lisp code by lowering middle end defining form `x'.

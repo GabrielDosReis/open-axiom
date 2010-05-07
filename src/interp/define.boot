@@ -240,8 +240,8 @@ checkRepresentation(addForm,body,env) ==
       stackAndThrow('"You cannot specify type for %1b",["Rep"])
     -- Now, trick the rest of the compiler into believing that
     -- `Rep' was defined the Old Way, for lookup purpose.
-    rplac(first stmt,"%LET")
-    rplac(rest stmt,["Rep",domainRep])
+    stmt.first := "%LET"
+    stmt.rest := ["Rep",domainRep]
     $useRepresentationHack := false          -- Don't confuse `Rep' and `%'.
 
   -- Shall we perform the dirty tricks?
@@ -964,7 +964,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     -- been changed before we get here.
     if first form = "^" then 
       sayBrightly ['"Replacing", :bright '"^", '"with",:bright '"**"]
-      rplac(first form,"**")
+      form.first := "**"
     [$op,:argl]:= form
     $form:= [$op,:argl]
     argl:= stripOffArgumentConditions argl
