@@ -309,7 +309,7 @@ getTypeOfSyntax t ==
 -- Convert an arbitrary lisp object to canonical boolean.
 bool: %Thing -> %Boolean
 bool x ==
-    NULL NULL x
+    null null x
  
 TruthP x ==
     --True if x is a predicate that's always true
@@ -525,9 +525,9 @@ removeZeroOneDestructively t ==
 
 flattenSexpr s ==
   null s => s
-  ATOM s => s
+  atom s => s
   [f,:r] := s
-  ATOM f => [f,:flattenSexpr r]
+  atom f => [f,:flattenSexpr r]
   [:flattenSexpr f,:flattenSexpr r]
 
 isLowerCaseLetter c ==
@@ -554,7 +554,7 @@ update() ==
 listSort(pred,list,:optional) ==
    NOT functionp pred => error "listSort: first arg must be a function"
    NOT LISTP list => error "listSort: second argument must be a list"
-   NULL optional => mergeSort(pred,function Identity,list,LENGTH list)
+   null optional => mergeSort(pred,function Identity,list,LENGTH list)
    key := first optional
    NOT functionp key => error "listSort: last arg must be a function"
    mergeSort(pred,key,list,LENGTH list)
@@ -573,16 +573,16 @@ orderList l == listSort(function _?ORDER, COPY_-LIST l)
 
 mergeInPlace(f,g,p,q) ==
    -- merge the two sorted lists p and q
-   if NULL p then return p
-   if NULL q then return q
+   if null p then return p
+   if null q then return q
    if FUNCALL(f,FUNCALL(g, QCAR p),FUNCALL(g, QCAR q))
    then (r := t := p; p := QCDR p)
    else (r := t := q; q := QCDR q)
-   while not NULL p and not NULL q repeat
+   while not null p and not null q repeat
       if FUNCALL(f,FUNCALL(g,QCAR p),FUNCALL(g,QCAR q))
       then (QRPLACD(t,p); t := p; p := QCDR p)
       else (QRPLACD(t,q); t := q; q := QCDR q)
-   if NULL p then QRPLACD(t,q) else QRPLACD(t,p)
+   if null p then QRPLACD(t,q) else QRPLACD(t,p)
    r
 
 mergeSort(f,g,p,n) ==

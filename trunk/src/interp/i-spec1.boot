@@ -346,7 +346,7 @@ upcase t ==
   if first unionDoms is [":",.,.] then
      for i in 0.. for d in unionDoms repeat
         if d is [":",=rhs,.] then rhstag := i
-     if NULL rhstag then error '"upcase: bad Union form"
+     if null rhstag then error '"upcase: bad Union form"
      $genValue =>
         rhstag = first unwrap objVal triple => code := wrap true
         code := wrap false
@@ -797,7 +797,7 @@ checkForFreeVariables(v,locals) ==
   -- bound variables, the parameter locals contains local variables which might
   -- be free, or the token ALL, which means that any parameter is a candidate
   -- to be free.
-  NULL v => v
+  null v => v
   symbol? v =>
     v="$$$" => v -- Placeholder for mini-vector
     MEMQ(v,$boundVariables) => v
@@ -932,7 +932,7 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   vec
 
 subVecNodes(new,old,form) ==
-  ATOM form =>
+  atom form =>
     (VECP form) and (form.0 = old) => new
     form
   [subVecNodes(new,old,first form), :subVecNodes(new,old,rest form)]

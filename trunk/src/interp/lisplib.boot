@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ hasFilePropertyNoCache(p,id,abbrev) ==
   -- it is assumed that the file exists and is a proper pathname
   -- startTimingProcess 'diskread
   fnStream:= readLibPathFast p
-  NULL fnStream => NIL
+  null fnStream => NIL
   -- str:= object2String id
   val:= rread(id,fnStream, nil)
   RSHUT fnStream
@@ -482,8 +482,8 @@ mergeSignatureAndLocalVarAlists(signatureAlist, localVarAlist) ==
     [funcName, :signature] in signatureAlist]
  
 Operators u ==
-  ATOM u => []
-  ATOM first u =>
+  atom u => []
+  atom first u =>
     answer:="union"/[Operators v for v in rest u]
     MEMQ(first u,answer) => answer
     [first u,:answer]

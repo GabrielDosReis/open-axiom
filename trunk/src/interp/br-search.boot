@@ -340,7 +340,7 @@ aPage(a,:b) ==  --called by \spadatt{a}
   arg := IFCAR b or a
   s   := pmParseFromString STRINGIMAGE arg
   searchOn :=
-    ATOM s => s
+    atom s => s
     IFCAR s
   $attributeArgs : local := IFCAR IFCDR s
   aSearch searchOn

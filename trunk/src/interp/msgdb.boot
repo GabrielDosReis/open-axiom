@@ -118,7 +118,7 @@ getKeyedMsg key == fetchKeyedMsg(key,false)
 segmentKeyedMsg(msg) == string2Words msg
 
 segmentedMsgPreprocess x ==
-  ATOM x => x
+  atom x => x
   [head,:tail] := x
   center := rightJust := NIL
   if member(head, '(%ceon "%ceon")) then center := true
@@ -132,7 +132,7 @@ segmentedMsgPreprocess x ==
       member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
       y := CONS(segmentedMsgPreprocess t,y)
     head1 := [(center => '"%ce"; '"%rj"),:nreverse y]
-    NULL tail => [head1]
+    null tail => [head1]
     [head1,:segmentedMsgPreprocess tail]
   head1 := segmentedMsgPreprocess head
   tail1 := segmentedMsgPreprocess tail
@@ -571,8 +571,8 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 
 --% Some Standard Message Printing Functions
 
-bright x == ['"%b",:(cons?(x) and NULL rest LASTNODE x => x; [x]),'"%d"]
---bright x == ['%b,:(ATOM x => [x]; x),'%d]
+bright x == ['"%b",:(cons?(x) and null rest LASTNODE x => x; [x]),'"%d"]
+--bright x == ['%b,:(atom x => [x]; x),'%d]
 
 mkMessage msg ==
   msg and (cons? msg) and member((first msg),'(%l "%l"))  and
@@ -706,7 +706,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
   VECP x => sayString('"UNPRINTABLE",out)
-  ATOM x => sayString(object2String x,out)
+  atom x => sayString(object2String x,out)
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
   key = '"%m" => mathprint(rst,out)
@@ -730,7 +730,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   IDENTP x =>
     pn := PNAME x
     sayString(pn,out)
-  ATOM x => sayString(object2String x,out)
+  atom x => sayString(object2String x,out)
   VECP x => sayString('"UNPRINTABLE",out)
   [key,:rst] := x
   key = '"%m" => mathprint(rst,out)
@@ -761,7 +761,7 @@ tabber num ==
 brightPrintCenter(x,out == $OutputStream) ==
   $texFormatting => brightPrintCenterAsTeX(x,out)
   -- centers rst within $LINELENGTH, checking for %l's
-  ATOM x =>
+  atom x =>
     x := object2String x
     wid := STRINGLENGTH x
     if wid < $LINELENGTH then
@@ -787,7 +787,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   NIL
 
 brightPrintCenterAsTeX(x, out == $OutputStream) ==
-  ATOM x =>
+  atom x =>
     sayString('"\centerline{",out)
     sayString(x,out)
     sayString('"}",out)
@@ -807,7 +807,7 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
 
 brightPrintRightJustify(x, out == $OutputStream) ==
   -- right justifies rst within $LINELENGTH, checking for %l's
-  ATOM x =>
+  atom x =>
     x := object2String x
     wid := STRINGLENGTH x
     wid < $LINELENGTH =>
@@ -841,7 +841,7 @@ sayBrightlyLength l ==
 
 sayBrightlyLength1 x ==
   member(x,'("%b" "%d" %b %d)) =>
-    NULL $highlightAllowed => 1
+    null $highlightAllowed => 1
     1
   member(x,'("%l" %l)) => 0
   string? x and STRINGLENGTH x > 2 and x.0 = '"%" and x.1 = '"x" =>
@@ -851,7 +851,7 @@ sayBrightlyLength1 x ==
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
   VECP x => STRINGLENGTH '"UNPRINTABLE"
-  ATOM x => STRINGLENGTH STRINGIMAGE x
+  atom x => STRINGLENGTH STRINGIMAGE x
   2 + sayBrightlyLength x
 
 sayAsManyPerLineAsPossible l ==

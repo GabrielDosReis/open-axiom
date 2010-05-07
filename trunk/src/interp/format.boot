@@ -385,7 +385,7 @@ constructorName con ==
   con
 
 form2String1 u ==
-  ATOM u => 
+  atom u => 
     u=$EmptyMode or u=$quadSymbol => formWrapId specialChar 'quad
     IDENTP u =>
       constructor? u => app2StringWrap(formWrapId u, [u])
@@ -544,7 +544,7 @@ tuple2String argl ==
   if member(string, '("failed" "nil" "prime" "sqfr" "irred"))
     then string := STRCONC('"_"",string,'"_"")
     else string :=
-      ATOM string => object2String string
+      atom string => object2String string
       [f x for x in string]
   for x in rest argl repeat
     if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
@@ -553,7 +553,7 @@ tuple2String argl ==
   string
  where
   f x ==
-    ATOM x => object2String x
+    atom x => object2String x
     -- [f first x,:f rest x]
     [f y for y in x]
 
@@ -733,7 +733,7 @@ mathObject2String x ==
 object2String x ==
   string? x => x
   IDENTP x  => PNAME x
-  NULL x    => '""
+  null x    => '""
   cons?  x  => STRCONC(object2String first x, object2String rest x)
   WRITE_-TO_-STRING x
 

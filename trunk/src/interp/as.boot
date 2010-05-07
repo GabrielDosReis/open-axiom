@@ -138,8 +138,8 @@ asMakeAlist con ==
   record := HGET($conHash,con)
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := first record
 --TTT in case we put the wrong thing in for niladic catgrs
---if ATOM(form) and kind='category then form:=[form]
-  if ATOM(form) then form:=[form]
+--if atom(form) and kind='category then form:=[form]
+  if atom(form) then form:=[form]
   kind = 'function => asMakeAlistForFunction con
   abb := asyAbbreviation(con,#(KDR sig))
   if null KDR form then PUT(opOf form,'NILADIC,'T)

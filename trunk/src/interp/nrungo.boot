@@ -168,7 +168,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
       slot is ["goGet",:.] =>
         lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
-      NULL slot =>
+      null slot =>
         lookupDisplay(op,sig,domain,'" !! null slot entry, continuing")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
@@ -285,7 +285,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
 
 compareSigEqual(s,t,dollar,domain) ==
   EQUAL(s,t) => true
-  ATOM t =>
+  atom t =>
     u :=
       t='$ => dollar
       isSharpVar t =>
@@ -297,7 +297,7 @@ compareSigEqual(s,t,dollar,domain) ==
     u => compareSigEqual(s,u,dollar,domain)
     EQUAL(s,u)
   s='$ => compareSigEqual(dollar,t,dollar,domain)
-  ATOM s => nil
+  atom s => nil
   #s ~= #t => nil
   match := true
   for u in s for v in t repeat
@@ -318,7 +318,7 @@ NRTcompiledLookup(op,sig,dom) ==
   compiledLookupCheck(op,sig,dom)
 
 NRTtypeHack t ==
-  ATOM t => t
+  atom t => t
   first t = '_# => # second t
   [first t,:[NRTtypeHack tt for tt in rest t]]
 

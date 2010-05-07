@@ -192,8 +192,8 @@ CategoriesFromGDC x ==
   x is ['QUOTE,a] and a is [b] => [a]
  
 compCategories u ==
-  ATOM u => u
-  not ATOM first u =>
+  atom u => u
+  not atom first u =>
     error ['"compCategories: need an atom in operator position", first u]
   first u = "Record" =>
     -- There is no modemap property for these guys so do it by hand.
@@ -203,7 +203,7 @@ compCategories u ==
     [first u, :[compCategories1(a,'(SetCategory)) for a in rest u]]
   u is ['SubDomain,D,.] => compCategories D
   v:=get(first u,'modemap,$e)
-  ATOM v =>
+  atom v =>
     error ['"compCategories: could not get proper modemap for operator",first u]
   if rest v then
     sayBrightly ['"compCategories: ", '%b, '"Warning", '%d,
@@ -211,7 +211,7 @@ compCategories u ==
     pp rest v
   -- the next line "fixes" a bad modemap which sometimes appears ....
   --
-  if rest v and NULL CAAAR v then v:=rest v
+  if rest v and null CAAAR v then v:=rest v
   v:= CDDAAR v
   v:=resolvePatternVars(v, rest u) -- replaces #n forms
   -- select the modemap part of the first entry, and skip result etc.
@@ -220,7 +220,7 @@ compCategories u ==
  
 compCategories1(u,v) ==
 -- v is the mode of u
-  ATOM u => u
+  atom u => u
   isCategoryForm(v,$e) => compCategories u
   [c,:.] := comp(macroExpand(u,$e),v,$e) => c
   error 'compCategories1
@@ -325,7 +325,7 @@ setVector12 args ==
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['LIST,:args2]]]
  where freeof(a,b) ==
-         ATOM a => NULL MEMQ(a,b)
+         atom a => null MEMQ(a,b)
          freeof(first a,b) => freeof(rest a,b)
          false
  
@@ -528,7 +528,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
   (for u in code repeat
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
-      ATOM code =>nil
+      atom code =>nil
       QCAR code in '(getShellEntry ELT QREFELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true

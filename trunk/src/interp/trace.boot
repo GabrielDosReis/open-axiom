@@ -337,7 +337,7 @@ coerceSpadArgs2E(args) ==
         for arg in args for type in rest $tracedSpadModemap]
 
 subTypes(mm,sublist) ==
-  ATOM mm =>
+  atom mm =>
     (s:= LASSOC(mm,sublist)) => s
     mm
   [subTypes(m,sublist) for m in mm]

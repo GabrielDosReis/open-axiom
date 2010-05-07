@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ incRgen s==Delay(function incRgen1,[s])
 incRgen1(:z)==
         [s]:=z
         a:=shoeread_-line s
-        if NULL a
+        if null a
         then (CLOSE s;StreamNil)
 
         else cons(a,incRgen s)

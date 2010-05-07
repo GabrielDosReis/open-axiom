@@ -556,7 +556,7 @@ htpAddToPageDescription(htPage, pageDescrip) ==
 htProcessBcStrings strings ==
   for [numChars, default, stringName, spadType, :filter] in strings repeat
     mess2 := '""
-    if NULL LASSOC(stringName, htpInputAreaAlist page()) then
+    if null LASSOC(stringName, htpInputAreaAlist page()) then
       setUpDefault(stringName, ['string, default, spadType, filter])
     if htpLabelErrorMsg(page(), stringName) then
       iht ['"\centerline{{\em ", htpLabelErrorMsg(page(), stringName), '"}}"]

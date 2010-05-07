@@ -1252,7 +1252,7 @@ displayType($op,u,omitVariableNameIfTrue) ==
     sayMSG ['"   Type of value of ",
         fixObjectForPrinting PNAME $op,'":  (none)"]
   type := prefix2String objMode(u)
-  if ATOM type then type := [type]
+  if atom type then type := [type]
   sayMSG concat ['"   Type of value of ",fixObjectForPrinting PNAME $op,'": ",:type]
   NIL
 
@@ -1268,7 +1268,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
     rhs := '":  "
     STRCONC('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
-  if ATOM labmode then labmode := [labmode]
+  if atom labmode then labmode := [labmode]
   IDENTP expr and getConstructorKindFromDB expr = "domain" =>
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
@@ -1335,7 +1335,7 @@ newHelpSpad2Cmd args ==
   filestream := MAKE_-INSTREAM(helpFile)
   repeat
     line := read_-line(filestream,false)
-    NULL line =>
+    null line =>
       SHUT filestream
       return true
     SAY line
@@ -1375,7 +1375,7 @@ frameSpad2Cmd args ==
   arg  := selectOptionLC(first args,frameArgs,'optionError)
   args := rest args
   if args is [a] then args := a
-  if ATOM args then args := object2Identifier args
+  if atom args then args := object2Identifier args
   arg = 'drop  =>
     args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
@@ -1719,7 +1719,7 @@ resetInCoreHist() ==
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
-  NULL integer? n => sayKeyedMsg("S2IH0015",[n]) 
+  null integer? n => sayKeyedMsg("S2IH0015",[n]) 
   dif:= n-$HistListLen
   $HistListLen:= n
   l:= rest $HistList
@@ -1989,7 +1989,7 @@ readHiFi(n) ==
   if $useInternalHistoryTable
   then
     pair := assoc(n,$internalHistoryTable)
-    ATOM pair => keyedSystemError("S2IH0034",NIL)
+    atom pair => keyedSystemError("S2IH0034",NIL)
     vec := QCDR pair
   else
     HiFi:= RDEFIOSTREAM ['(MODE . INPUT),['FILE,:histFileName()]]
@@ -2420,7 +2420,7 @@ reportOperations(oldArg,u) ==
     sayKeyedMsg("S2IZ0064",NIL)
   u isnt ['Record,:.] and u isnt ['Union,:.] and
     null(isNameOfType u) and u isnt ['typeOf,.] =>
-      if ATOM oldArg then oldArg := [oldArg]
+      if atom oldArg then oldArg := [oldArg]
       sayKeyedMsg("S2IZ0063",NIL)
       for op in oldArg repeat
         sayKeyedMsg("S2IZ0062",[opOf op])

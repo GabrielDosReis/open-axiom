@@ -219,7 +219,7 @@ bcIssueHt line ==
   iht line
 
 mapStringize l ==
-  ATOM l => l
+  atom l => l
   RPLACA(l, basicStringize first l)
   RPLACD(l, mapStringize rest l)
   l
@@ -254,7 +254,7 @@ htQuote s ==
 htProcessToggleButtons buttons ==
   iht '"\newline\indent{5}\beginitems "
   for [message, info, defaultValue, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
     iht ['"\item{\em\inputbox[", htpLabelDefault($curPage, buttonName), '"]{",
          buttonName, '"}{\htbmfile{pick}}{\htbmfile{unpick}}\space{}"]
@@ -265,7 +265,7 @@ htProcessToggleButtons buttons ==
 
 htProcessBcButtons buttons ==
   for [defaultValue, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
     k := htpLabelDefault($curPage,buttonName)
     k = 0 => iht ['"\off{",buttonName,'"}"]
@@ -309,7 +309,7 @@ htRadioButtons [groupName, :buttons] ==
      '"}{\htbmfile{pick}}{\htbmfile{unpick}}\beginitems "]
   defaultValue := '"1"
   for [message, info, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
       defaultValue := '"0"
     iht ['"\item{\em\radiobox[", htpLabelDefault($curPage, buttonName), '"]{",
@@ -327,7 +327,7 @@ htBcRadioButtons [groupName, :buttons] ==
      '"}{\htbmfile{pick}}{\htbmfile{unpick}} "]
   defaultValue := '"1"
   for [message, info, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
       defaultValue := '"0"
     iht ['"{\em\radiobox[", htpLabelDefault($curPage, buttonName), '"]{",
@@ -343,7 +343,7 @@ htInputStrings strings ==
   iht '"\newline\indent{5}\beginitems "
   for [mess1, mess2, numChars, default, stringName, spadType, :filter]
    in strings repeat
-    if NULL LASSOC(stringName, htpInputAreaAlist $curPage) then
+    if null LASSOC(stringName, htpInputAreaAlist $curPage) then
       setUpDefault(stringName, ['string, default, spadType, filter])
     if htpLabelErrorMsg($curPage, stringName) then
       iht ['"\centerline{{\em ", htpLabelErrorMsg($curPage, stringName), '"}}"]
@@ -397,7 +397,7 @@ pvarCondList1(pvarList, activeConds, condList) ==
   pvarCondList1(pvarList, activeConds, restConds)
 
 pvarsOfPattern pattern ==
-  NULL LISTP pattern => nil
+  null LISTP pattern => nil
   [pvar for pvar in rest pattern | pvar in $PatternVariableList]
 
 htMakeTemplates(templateList, numLabels) ==
@@ -409,7 +409,7 @@ htMakeTemplates(templateList, numLabels) ==
       template
 
 templateParts template ==
-  NULL string? template => template
+  null string? template => template
   i := SEARCH('"%l", template)
   null i => template
   [SUBSEQ(template, 0, i), : SUBSEQ(template, i+2)]

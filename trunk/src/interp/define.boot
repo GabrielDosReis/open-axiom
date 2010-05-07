@@ -1537,8 +1537,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    -- of functorLocalParameters that were added during the
    -- conditional compilation
    nils:=ans:=[]
-   for u in flp1 repeat -- is =u form always an ATOM?
-     if ATOM u or (or/[v is [.,=u,:.] for v in $getDomainCode])
+   for u in flp1 repeat -- is =u form always an atom?
+     if atom u or (or/[v is [.,=u,:.] for v in $getDomainCode])
        then
          nils:=[u,:nils]
        else
@@ -1622,7 +1622,7 @@ DomainSubstitutionFunction(parameters,body) ==
   if parameters then
     (body:= Subst(parameters,body)) where
       Subst(parameters,body) ==
-        ATOM body =>
+        atom body =>
           MEMQ(body,parameters) => MKQ body
           body
         member(body,parameters) =>

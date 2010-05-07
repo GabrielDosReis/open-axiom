@@ -619,7 +619,7 @@ writeData(tmpFile,indata) ==
         -- the two Boolean values
         v = "T" => 
                 xdrWrite(xstr,1)
-        NULL v =>   
+        null v =>   
                 xdrWrite(xstr,0)
         -- characters  
         string? v => 

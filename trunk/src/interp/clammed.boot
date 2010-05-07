@@ -164,7 +164,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   null t        => true    -- a terminating condition with underDomainOf
   t = $EmptyMode => true
   string? t     => true
-  ATOM t => false
+  atom t => false
 
   badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))
   t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false

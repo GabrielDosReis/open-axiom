@@ -297,7 +297,7 @@ formatDollar(name,p,argl) ==
       or (indent() and format "$__" and formatForcePren name and undent()))
  
 formatMacroCheck name ==
-  ATOM name => name
+  atom name => name
   u := or/[x for [x,:y] in $globalMacroStack | y = name] => u
   u := or/[x for [x,:y] in $localMacroStack  | y = name] => u
   [op,:argl] := name
@@ -434,7 +434,7 @@ formatApplication2 x ==
 
 formatDot ["dot",a,x] ==
   tryLine (formatOp a and format ".") and
-    ATOM x => format x
+    atom x => format x
     formatPren x
  
 formatSelection u ==
@@ -442,7 +442,7 @@ formatSelection u ==
   formatSpill("formatSelection1",u)
  
 formatSelection1 [f,x] == formatSelectionOp f and format "." and 
-    ATOM x => format x
+    atom x => format x
     formatPren x
  
 formatSelectionOp op ==
@@ -453,7 +453,7 @@ formatSelectionOp op ==
 formatSelectionOp1 f ==
   f is [op,:argl] => 
     argl is [a] => 
-      not ATOM op and ATOM a => formatSelection1 [op,a]
+      not atom op and atom a => formatSelection1 [op,a]
       formatPren f
     format f
   formatOp f
