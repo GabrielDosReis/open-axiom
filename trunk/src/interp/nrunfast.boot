@@ -610,7 +610,7 @@ resolveNiladicConstructors form ==
   atom form => form
   form is ["QUOTE",:.] => form
   for args in tails rest form repeat
-    rplac(first args, resolveNiladicConstructors first args)
+    args.first := resolveNiladicConstructors first args
   form
 
 --=======================================================
@@ -663,7 +663,7 @@ newHasTest(domform,catOrAtt) ==
     sig := 
       type is ["Mapping",:sig'] =>
          for ts in tails sig' repeat
-           rplac(first ts, resolveNiladicConstructors first ts)
+           ts.first := resolveNiladicConstructors first ts
          sig'
       -- a constant; make it look like op: () -> type
       [resolveNiladicConstructors type]

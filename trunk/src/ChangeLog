@@ -1,5 +1,10 @@
-2010-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Replace uses of rplac with explicit assignments.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
 	* lisp/core.lisp.in ($FilesToRetain): New. Export.
 	* lisp/Makefile.in: Tidy.
 	* boot/translator.boot (retainFile?): New.
