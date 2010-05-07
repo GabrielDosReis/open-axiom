@@ -397,7 +397,7 @@ translateToplevelExpression expr ==
   -- at toplevel.
   for t in expr' repeat
     t is ["DECLARE",:.] =>
-      RPLACA(t,"DECLAIM")
+      t.first := "DECLAIM"
   expr' :=
     #expr' > 1 => ["PROGN",:expr']
     first expr'

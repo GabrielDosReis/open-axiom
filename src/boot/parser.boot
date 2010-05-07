@@ -101,12 +101,12 @@ bpPop1()==
  
 bpPop2()==
   a:=second $stack
-  RPLACD($stack,CDDR $stack)
+  $stack.rest := CDDR $stack
   a
  
 bpPop3()==
   a:=third $stack
-  RPLACD(rest $stack,CDDDR $stack)
+  $stack.rest.rest := CDDDR $stack
   a
  
 bpIndentParenthesized f==

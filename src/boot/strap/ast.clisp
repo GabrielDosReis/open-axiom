@@ -931,7 +931,7 @@
          (COND
            ((NULL (CADDR |x|)) (LIST 'CONS (CADR |x|) |a|))
            (T (SETQ |y| (|bfISReverse| (CADDR |x|) NIL))
-              (RPLACA (CDDR |y|) (LIST 'CONS (CADR |x|) |a|)) |y|)))
+              (RPLACA (CDR (CDR |y|)) (LIST 'CONS (CADR |x|) |a|)) |y|)))
         (T (|bpSpecificErrorHere| "Error in bfISReverse") (|bpTrap|))))))
 
 (DEFUN |bfIS1| (|lhs| |rhs|)
@@ -1662,6 +1662,8 @@
           (|y| (COND
                  ((INTEGERP |y|)
                   (LIST 'SETF (LIST 'ELT |var| |y|) |expr|))
+                 ((EQ |y| 'CAR) (LIST 'RPLACA |var| |expr|))
+                 ((EQ |y| 'CDR) (LIST 'RPLACD |var| |expr|))
                  (T (LIST 'SETF (LIST |y| |var|) |expr|))))
           (T (LIST 'SETF (LIST 'ELT |var| |sel|) |expr|)))))))
 
