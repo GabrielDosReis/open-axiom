@@ -445,7 +445,7 @@ setVector4part3(catNames,catvecList) ==
   for u in catvecList for uname in catNames repeat
     for v in third u.4 repeat
       if w:= assoc(first v,generated)
-         then RPLACD(w,[[rest v,:uname],:rest w])
+         then w.rest := [[rest v,:uname],:rest w]
          else generated:= [[first v,[rest v,:uname]],:generated]
   codeList := nil
   for [w,:u] in generated repeat
@@ -462,7 +462,7 @@ setVector5(catNames,locals) ==
   generated:= nil
   for u in locals for uname in catNames repeat
     if w:= assoc(u,generated)
-       then RPLACD(w,[uname,:rest w])
+       then w.rest := [uname,:rest w]
        else generated:= [[u,uname],:generated]
   [(w:= mkVectorWithDeferral(first u,second u);
       for v in rest u repeat
@@ -620,7 +620,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
-  code is ['_:,:.] => (RPLACA(code,'LIST); RPLACD(code,NIL))
+  code is ['_:,:.] => (code.first := 'LIST; code.rest := NIL)
       --Yes, I know that's a hack, but how else do you kill a line?
   code is ['LIST,:.] => nil
   code is ['devaluate,:.] => nil

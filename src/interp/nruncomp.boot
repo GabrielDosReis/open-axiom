@@ -213,7 +213,7 @@ genDeltaEntry(opMmPair,e) ==
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:= (compOrCroak(odc,$EmptyMode,e)).expr
-      RPLACA(saveNRTdeltaListComp,compEntry)
+      saveNRTdeltaListComp.first := compEntry
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
       (n:= POSN1(opModemapPair,$NRTdeltaList)) => n + 1
@@ -265,7 +265,7 @@ NRTgetLocalIndex item ==
     -- ??? That we do is likely a bug.
     flag => item  
     (compOrCroak(item,$EmptyMode,$e)).expr
-  RPLACA(saveNRTdeltaListComp,compEntry)
+  saveNRTdeltaListComp.first := compEntry
   saveIndex
 
 NRTassignCapsuleFunctionSlot(op,sig) ==
@@ -365,8 +365,8 @@ NRTdescendCodeTran(u,condList) ==
   u is ['LIST] => nil
   u is [op,.,i,a] and op in '(setShellEntry SETELT QSETREFV) =>
     null condList and a is ['CONS,fn,:.] =>
-      RPLACA(u,'LIST)
-      RPLACD(u,nil)
+      u.first := 'LIST
+      u.rest := nil
       $template.i :=
         fn = 'IDENTITY => a
         fn is ['dispatchFunction,fn'] => fn'
@@ -589,7 +589,7 @@ reverseCondlist cl ==
       u := assoc(z,alist)
       null u => alist := [[z,x],:alist]
       member(x,rest u) => nil
-      RPLACD(u,[x,:rest u])
+      u.rest := [x,:rest u]
   alist
 
 NRTsetVector4Part2(uncondList,condList) ==
@@ -752,7 +752,7 @@ addConsDB x ==
       cons? x =>
         for z in tails x repeat
           u:=min first z
-          if not EQ(u,first z) then RPLACA(z,u)
+          if not EQ(u,first z) then z.first := u
         HashCheck x
       REFVECP x =>
         for i in 0..MAXINDEX x repeat
@@ -802,9 +802,9 @@ NRTputInTail x ==
     atom (u := first y) =>
       u='$ or LASSOC(u,$devaluateList) => nil
       k:= NRTassocIndex u =>
-        atom u => RPLACA(y,[$elt,'_$,k])
+        atom u => y.first := [$elt,'_$,k]
         -- u atomic means that the slot will always contain a vector
-        RPLACA(y,['SPADCHECKELT,'_$,k])
+        y.first := ['SPADCHECKELT,'_$,k]
       --this reference must check that slot is a vector
       nil
     NRTputInHead u

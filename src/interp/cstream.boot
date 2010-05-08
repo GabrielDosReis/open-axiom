@@ -43,8 +43,8 @@ StreamNull x==
   null x or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
           st:=APPLY(second x,CDDR x)
-          RPLACA(x,first st)
-          RPLACD(x,rest st)
+          x.first := first st
+          x.rest := rest st
   x is ["nullstream",:.]
  
 Delay(f,x)==cons("nonnullstream",[f,:x])

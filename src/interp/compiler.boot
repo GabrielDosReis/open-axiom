@@ -301,7 +301,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
         not IDENTP u => free
         MEMQ(u,bound) => free
         v:=ASSQ(u,free) =>
-          RPLACD(v,1 + rest v)
+          v.rest := 1 + rest v
           free
         null getmode(u,e) => free
         [[u,:1],:free]

@@ -573,7 +573,7 @@ removeUnionsAtStart(argl,modeSets) ==
     m' := objMode val'
     putValue(arg,val')
     putModeSet(arg,[m'])
-    RPLACA(ms,m')
+    ms.first := m'
   modeSets
 
 printableArgModeSetList() ==
@@ -761,7 +761,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
         putAtree(x,'retracted,nil)
         ms := [m, :ms]
     b:= true
-    RPLACA(m,objMode(object))
+    m.first := objMode(object)
     ms := [COPY_-TREE m, :ms]
     putAtree(x,'retracted,true)
     putValue(x,object)
@@ -805,7 +805,7 @@ bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
     if ( (m0 = $Any) or (first m0 = 'Union) ) and
       ('failed ~= (object:=retract getValue x)) then
         b := true
-        RPLACA(m,objMode(object))
+        m.first := objMode(object)
         putModeSet(x,[objMode(object)])
         putValue(x,object)
     a := cons(x,a)
@@ -828,7 +828,7 @@ bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
     if (m0 is ['Union, :.] and null getUnionOrRecordTags m0) and
       ('failed ~= (object:=retract getValue x)) then
         b := true
-        RPLACA(m,objMode(object))
+        m.first := objMode(object)
         putModeSet(x,[objMode(object)])
         putValue(x,object)
     a := cons(x,a)

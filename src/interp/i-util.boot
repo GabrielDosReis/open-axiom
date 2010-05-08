@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ variableNumber(x) ==
   null p => 
     $variableNumberAlist := [[x,:0], :$variableNumberAlist]
     0
-  RPLACD(p, 1+rest p)
+  p.rest := 1+rest p
   rest p
 
 newType? t == nil

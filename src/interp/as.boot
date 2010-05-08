@@ -248,7 +248,7 @@ displayDatabase x == main where
 zeroOneConversion opAlist == opAlist
 --   for u in opAlist repeat
 --     [op,:.] := u
---     DIGITP (PNAME op).0 => RPLACA(u, string2Integer PNAME op)
+--     DIGITP (PNAME op).0 => u.first := string2Integer PNAME op
 --   opAlist
 
 asyDisplay(con,alist) ==

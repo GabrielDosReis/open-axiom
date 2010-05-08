@@ -423,12 +423,12 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
        match,seen)
   cat is ['IF,., cond,.] =>
     matchUpToPatternVars(cond,match,NIL) =>
-      RPLACD(conditions,CONS(cat,rest conditions))
+      conditions.rest := CONS(cat,rest conditions)
       conditions
     conditions
   cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
     member(cat, rest seen) => conditions
-    RPLACD(seen,[cat,:rest seen])
+    seen.rest := [cat,:rest seen]
     subCat := getConstructorCategoryFromDB catName
     -- substitute vars of cat into category
     for v in rest cat for vv in $TriangleVariableList repeat
@@ -486,7 +486,7 @@ resolveTM1(t,m) ==
     isPatternVar m =>
       p := ASSQ(m,$Subst) =>
         $Coerce =>
-          tt := resolveTT1(t,rest p) => RPLACD(p,tt) and tt
+          tt := resolveTT1(t,rest p) => (p.rest := tt) and tt
           NIL
         t=rest p and t
       $Subst := CONS(CONS(m,t),$Subst)

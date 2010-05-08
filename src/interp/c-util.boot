@@ -267,7 +267,7 @@ unErrorRef s ==
 consProplistOf(var,proplist,prop,val) ==
   semchkProplist(var,proplist,prop,val)
   $InteractiveMode and (u:= assoc(prop,proplist)) =>
-    RPLACD(u,val)
+    u.rest := val
     proplist
   [[prop,:val],:proplist]
  
@@ -360,7 +360,7 @@ addContour(c,E is [cur,:tail]) ==
                    if member(x,$getPutTrace) then
                      pp([x,"has",pv])
                    if p="conditionalmode" then
-                     RPLACA(pv,"mode")
+                     pv.first := "mode"
                      --check for conflicts with earlier mode
                      if vv:=LASSOC("mode",e) then
                         if v ~=vv then
@@ -1290,7 +1290,7 @@ backendCompileNEWNAM x ==
     if y = "CLOSEDFN" then
       u := MAKE_-CLOSEDFN_-NAME()
       PUSH([u,second x], $CLOSEDFNS)
-      RPLACA(x,"FUNCTION")
+      x.first := "FUNCTION"
       RPLACA(rest x,u)
   backendCompileNEWNAM first x
   backendCompileNEWNAM rest x
@@ -1481,14 +1481,14 @@ mutateToBackendCode x ==
   isAtomicForm x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
-    RPLACA(x,"MAKEPROP-SAY")
+    x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
     if u ~= "DCQ" then
       $NEWSPAD or $FUNAME in $traceletFunctions =>
         nconc(x,$FUNNAME__TAIL)
-        RPLACA(x,"LETT")
-      $TRACELETFLAG => RPLACA(x,"/TRACE-LET")
-      u = "%LET" => RPLACA(x,"SPADLET")
+        x.first := "LETT"
+      $TRACELETFLAG => x.first := "/TRACE-LET"
+      u = "%LET" => x.first := "SPADLET"
     mutateToBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
@@ -1497,7 +1497,7 @@ mutateToBackendCode x ==
         rplac(second x, CADADR x)
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
-    RPLACA(x, eval u)
+    x.first := eval u
     mutateToBackendCode x
   u in '(PROG LAMBDA) =>
     newBindings := []
@@ -1574,8 +1574,8 @@ transformToBackendCode x ==
     RPLACD(rest x, body)
   else
     null fluids =>
-      RPLACD(lastdecl, body)
-    RPLACD(lastdecl, [declareGlobalVariables fluids,:body])
+      lastdecl.rest := body
+    lastdecl.rest := [declareGlobalVariables fluids,:body]
   x
 
 backendCompile1 x ==

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -116,7 +116,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   for con in HKEYS $conTopicHash repeat
     conCode := 0
     for pair in HGET($conTopicHash,con) repeat 
-      RPLACD(pair,code := topicCode rest pair)
+      pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
     HPUT($conTopicHash,con,
       [['constructor,:conCode],:HGET($conTopicHash,con)])      

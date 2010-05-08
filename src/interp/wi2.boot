@@ -668,7 +668,7 @@ genDeltaEntry(opMmPair,e) ==
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:=
         dc
-      RPLACA(saveNRTdeltaListComp,compEntry)
+      saveNRTdeltaListComp.first := compEntry
       chk(saveNRTdeltaListComp,102)
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
@@ -727,7 +727,7 @@ mkUserConstructorAbbreviation(c,a,type) ==
 compreduce(form is [.,op,x],m,e) ==
   T := compForm(form,m,e) or return nil
   y := T.expr
-  RPLACA(y,"REDUCE")
+  y.first := "REDUCE"
   ------------------<== distinquish this as the special reduce form
   (y is ["REDUCE",:.]) and (id:= getIdentity(op,e)) and (u := comp0(id,m,e)) and
     # getNumberTypesInScope() > 1 => markSimpleReduce([:y, ["@",u.expr,m]], T)
@@ -1011,7 +1011,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
 
 doItSeq item == 
   ['SEQ,:l,['exit,1,x]] := item
-  RPLACA(item,"PROGN")
+  item.first := "PROGN"
   RPLACA(LASTNODE item,x)
   for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
 
@@ -1021,8 +1021,8 @@ doItDomain item ==
   markImport second u
   stackWarning ["Use: import ", [first item,:rest item]]
 --wiReplaceNode(item, u, 14)
-  RPLACA(item, first u)
-  RPLACD(item, rest u)
+  item.first := first u
+  item.rest := rest u
   doIt(item,$predl)
 
 doItLet item ==
@@ -1077,7 +1077,7 @@ doItDef item ==
   body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
   [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
   chk(item,3)
-  RPLACA(item,"CodeDefine")
+  item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
   RPLACD(second item,[$signatureOfForm])
   chk(item,4)
@@ -1101,8 +1101,8 @@ wiReplaceNode(node,ocode,key) ==
   SETQ($NODE,COPY node)
   SETQ($NODE1, COPY first code)
   SETQ($NODE2, COPY rest  code)
-  RPLACA(node,first code)
-  RPLACD(node,rest  code)
+  node.first := first code
+  node.rest := rest  code
   chk(code, key)
   chk(node, key + 1)
 

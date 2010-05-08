@@ -810,7 +810,7 @@ breaklet(fn,vars) ==
     vars
   $letAssoc:=
     null fnEntry => [[fn,:LIST ["BREAK",:vars]],:$letAssoc]
-    pair => (RPLACD(pair,vars); $letAssoc)
+    pair => (pair.rest := vars; $letAssoc)
   if $letAssoc then SETLETPRINTFLAG true
   $QuickLet:local := false
   not MEMQ(fn,$traceletFunctions) and not stupidIsSpadFunction fn

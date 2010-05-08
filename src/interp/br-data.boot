@@ -651,7 +651,7 @@ ancestorsAdd(pred,form) == --called by ancestorsRecur
   op := IFCAR form or form
   alist := HGET($if,op)
   existingNode := assoc(form,alist) =>
-    RPLACD(existingNode,quickOr(rest existingNode,pred))
+    existingNode.rest := quickOr(rest existingNode,pred)
   HPUT($if,op,[[form,:pred],:alist])
 
 domainsOf(conform,domname,:options) ==
@@ -698,8 +698,8 @@ transKCatAlist(conform,domname,s) == main where
       --conform has no arguments so each pair has form [con,:pred]
       for pair in s repeat
         leftForm := getConstructorForm first pair or systemError nil
-        RPLACA(pair,leftForm)
-        RPLACD(pair,sublisFormal(KDR leftForm,rest pair))
+        pair.first := leftForm
+        pair.rest := sublisFormal(KDR leftForm,rest pair)
       s
     --no domname, so look for special argument combinations
     acc := nil
@@ -720,8 +720,8 @@ transKCatAlist(conform,domname,s) == main where
       nreverse acc
     for pair in s repeat --pair has form [con,:pred]
       leftForm := getConstructorForm first pair
-      RPLACA(pair,leftForm)
-      RPLACD(pair,sublisFormal(KDR leftForm,rest pair))
+      pair.first := leftForm
+      pair.rest := sublisFormal(KDR leftForm,rest pair)
     s
 
 mkHasArgsPred subargs ==
@@ -745,7 +745,7 @@ sublisFormal(args,exp,:options) == main where
       r := nreverse acc
       if y then
         nd := LASTNODE r
-        RPLACD(nd,sublisFormal1(args,y,n))
+        nd.rest := sublisFormal1(args,y,n)
       r
     IDENTP x =>
       j := or/[i for f in $formals for i in 0..n | EQ(f,x)] =>

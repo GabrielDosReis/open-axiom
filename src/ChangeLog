@@ -1,5 +1,56 @@
 2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/as.boot: Replace uses of RPLACA and RPLACD with explicit
+	assignment to first and rest fields.
+	* interp/astr.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/buildom.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/compress.boot: Likewise.
+	* interp/cparse.boot: Likewise.
+	* interp/cstream.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/dq.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/packtran.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/termrw.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/word.boot: Likewise.
+
+2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpArgumentList): New.
 	(bpParenthesizedApplication): Use it.  New.
 	(bpPrimary1): Use it to implement function call with explicit

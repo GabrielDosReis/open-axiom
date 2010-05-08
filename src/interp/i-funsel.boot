@@ -115,7 +115,7 @@ selectMms(op,args,$declaredMode) ==
       bottomUp tree
       val := getValue tree
       types1 := [objMode val,:rest types1]
-      RPLACA(args,tree)
+      args.first := tree
 
   if numArgs = 1 and (n = "numer" or n = "denom") and
     isEqualOrSubDomain(first types1,$Integer) and null dc then
@@ -646,7 +646,7 @@ orderMms(name, mmS,args1,args2,tar) ==
       S:= mS
       until b repeat
         b:= null rest S or m < CAADR S =>
-          RPLACD(S,CONS(p,rest S))
+          S.rest := CONS(p,rest S)
         S:= rest S
       mS
   mmS and [rest p for p in mS]
@@ -1127,12 +1127,12 @@ matchTypes(pm,args1,args2) ==
       t=t1 => $Coerce and t1 = $Symbol and
         (q := ASSQ(v,$SymbolType)) and t2 and
           (t3 := resolveTT(rest q, t2)) and
-            RPLACD(q, t3)
+            (q.rest := t3)
       $Coerce =>
         if t = $Symbol and (q := ASSQ(v,$SymbolType)) then
           t := rest q
         if t1 = $Symbol and t2 then t1:= t2
-        t0 := resolveTT(t,t1) => RPLACD(p,t0)
+        t0 := resolveTT(t,t1) => p.rest := t0
         $Subst:= 'failed
       $Subst:= 'failed
     $Subst:= CONS(CONS(v,t1),$Subst)
@@ -1222,15 +1222,15 @@ evalMmCond0(op,sig,st) ==
             canCoerceFrom(t,t1) => 'T
             NIL
           canCoerceFrom(t1,t) => 'T
-          isSubDomain(t,t1) => RPLACD(p,t1)
+          isSubDomain(t,t1) => p.rest := t1
           t1 = $Symbol and canCoerceFrom(getSymbolType first p,t)
   ( SL and p1 and not b and 'failed ) or evalMmCat(op,sig,st,SL)
 
 fixUpTypeArgs SL ==
   for (p := [v, :t2]) in SL repeat
     t1 := LASSOC(v, $Subst)
-    null t1 => RPLACD(p,replaceSharpCalls t2)
-    RPLACD(p, coerceTypeArgs(t1, t2, SL))
+    null t1 => p.rest := replaceSharpCalls t2
+    p.rest := coerceTypeArgs(t1, t2, SL)
   SL
 
 replaceSharpCalls t ==
@@ -1351,7 +1351,7 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
   NSL:= hasCate(d,c,SL)
   NSL='failed and isPatternVar d and $Coerce and ( p:= ASSQ(d,$Subst) )
     and (rest(p) is ["Variable",:.] or rest(p) = $Symbol) =>
-      RPLACD(p,getSymbolType d)
+      p.rest := getSymbolType d
       hasCate(d,c,SL)
   NSL='failed and isPatternVar d =>
     -- following is hack to take care of the case where we have a

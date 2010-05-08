@@ -250,7 +250,7 @@ optCond (x is ['COND,:l]) ==
   if l is [[p1,:c1],[p2,:c2],:.] then
     if (p1 is ["NOT",=p2]) or (p2 is ["NOT",=p1]) then
       l:=[[p1,:c1],['(QUOTE T),:c2]]
-      RPLACD( x,l)
+      x.rest := l
     c1 is ['NIL] and p2 = '(QUOTE T) and first c2 = '(QUOTE T) =>
       p1 is ["NOT",p1']=> return p1'
       return ["NOT",p1]

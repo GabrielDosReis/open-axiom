@@ -285,8 +285,8 @@ instantiate domenv ==
 --     PUT(functor, 'instantiate, fn)
 --  domvec := APPLY(fn, args)
   domvec := APPLY(functor, args)
-  RPLACA(oldDom, $oldAxiomDomainDispatch)
-  RPLACD(oldDom, [second oldDom,: domvec])
+  oldDom.first := $oldAxiomDomainDispatch
+  oldDom.rest := [second oldDom,: domvec]
   oldDom
 
 hashTypeForm([fn,: args], percentHash) == 
@@ -318,7 +318,7 @@ oldAxiomDomainLookupExport _
        oldCompLookup(op, sig, domainVec, self)
      null val => val
      if constant then val := SPADCALL val
-     RPLACA(box, val)
+     box.first := val
      box
      
 oldAxiomDomainHashCode(domenv, env) == first domenv

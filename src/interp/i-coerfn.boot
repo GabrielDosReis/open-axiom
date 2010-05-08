@@ -305,7 +305,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
       p:= ASSQ(exp,x) =>
         c' := SPADCALL(rest p,objValUnwrap(y),plusfunc)
         c' = zero => x := REMALIST(x,exp)
-        RPLACD(p,c')
+        p.rest := c'
       zero = objValUnwrap(y) => 'iterate
       x := CONS(CONS(exp,objValUnwrap(y)),x)
   y => nreverse SORTBY('CAR,x)
@@ -377,7 +377,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
         for term in z repeat
             [., :c] := term
             not (c := coerceInt(objNewWrap(c, source), T)) => coercionFailure()
-            RPLACD(term, objValUnwrap c)
+            term.rest := objValUnwrap c
         z
 
     univ := objValUnwrap univ
@@ -386,7 +386,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
 
     null rest v2 =>
         for term in univ repeat
-            RPLACA(term, VECTOR first term)
+            term.first := VECTOR first term
         univ
 
     -- more than one variable

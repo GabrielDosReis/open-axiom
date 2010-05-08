@@ -201,7 +201,7 @@ uperror t ==
   t isnt [op,msg] => NIL
   msgMs := bottomUp putCallInfo(msg,"error",1,1)
   msgMs isnt [=$String] => NIL
-  RPLACD(t,[mkAtree object2String $mapName,msg])
+  t.rest := [mkAtree object2String $mapName,msg]
   bottomUp t
 
 --% Handlers for free and local
@@ -432,8 +432,8 @@ removeConstruct pat ==
   if pat is ["construct",:p] then pat:=p
   if pat is ["cons", a, b] then pat := [a, [":", b]]
   atom pat => pat
-  RPLACA(pat,removeConstruct first pat)
-  RPLACD(pat,removeConstruct rest pat)
+  pat.first := removeConstruct first pat
+  pat.rest := removeConstruct rest pat
   pat
 
 isPatternMatch(l,pats) ==

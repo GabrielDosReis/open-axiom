@@ -211,8 +211,8 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
 --mergeModemap(entry:=((mc,:sig),:.),modemapList,e) ==
 --    for (mmtail:= (((mc',:sig'),:.),:.)) in tails modemapList do
 --       mc=mc' or isSubset(mc,mc',e)  =>
---         RPLACD(mmtail,(first mmtail,: rest mmtail))
---         RPLACA(mmtail,entry)
+--         mmtail.rest := (first mmtail,: rest mmtail)
+--         mmtail.first := entry
 --         entry := nil
 --         return modemapList
 --     if entry then (:modemapList,entry) else modemapList
