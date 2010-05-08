@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -146,7 +146,7 @@ hashCount table ==
  
 mkCircularAlist n ==
   l:= [[$failed,:$failed] for i in 1..n]
-  RPLACD(LASTNODE l,l)
+  lastNode(l).rest := l
  
 countCircularAlist(cal,n) ==
   +/[nodeCount x for x in cal for i in 1..n]

@@ -836,7 +836,7 @@ markFinish(body,T) ==
   SETQ($e,T.env)
 --if $categoryTranForm then SETQ($t,$categoryTranForm . 1)
   atom CDDR T => systemError()
-  RPLACA(CDDR T,$EmptyEnvironment)
+  T.rest.rest.first := $EmptyEnvironment
   chk(CDDR T,101)
   markFinish1()
   T

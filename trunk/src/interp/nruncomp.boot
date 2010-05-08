@@ -781,7 +781,7 @@ NRTputInHead bod ==
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
     fn is [elt,dom,ind] and not (dom='$) and elt in '(getShellEntry ELT QREFELT CONST) =>
-      k:= NRTassocIndex dom => RPLACA(LASTNODE bod,[$elt,'_$,k])
+      k:= NRTassocIndex dom => lastNode(bod).first := [$elt,'_$,k]
       nil
     NRTputInHead fn
     bod

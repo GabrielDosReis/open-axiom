@@ -366,22 +366,22 @@ dbGatherData(htPage,opAlist,which,key) ==
         nil
       newEntry :=
         u := assoc(entry,data) =>           --key seen before? look on DATA
-          RPLACA(rest u,second u or exposeFlag)--yes, expose if any 1 is exposed
+          u.rest.first := second u or exposeFlag --yes, expose if any 1 is exposed
           u
         data := [y := [entry,exposeFlag,:tail],:data]
         y                                   --no, create new entry in DATA
       if member(key,'(origins conditions)) then
         r := CDDR newEntry
         if atom r then r := nil             --clear out possible 'ASCONST
-        RPLACD(rest newEntry,               --store op/sigs under key if needed
-          insert([dbMakeSignature(op,item),exposeFlag,:tail],r))
+        newEntry.rest.rest :=               --store op/sigs under key if needed
+          insert([dbMakeSignature(op,item),exposeFlag,:tail],r)
   if member(key,'(origins conditions)) then
     for entry in data repeat   --sort list of entries (after the 2nd)
       tail := CDDR entry
       tail :=
         atom tail => tail
         listSort(function LEXLESSEQP,tail)
-      RPLACD(rest entry,tail)
+      entry.rest.rest := tail
   data := listSort(function LEXLESSEQP,data)
   data
 

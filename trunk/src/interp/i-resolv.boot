@@ -750,7 +750,7 @@ constructM(c,A) ==
 
 replaceLast(A,t) ==
   -- replaces the last element of the nonempty list A by t (constructively
-  nreverse RPLACA(reverse A,t)
+  nreverse (reverse(A).first := t)
 
 destructT(functor)==
   -- provides a list of booleans, which indicate whether the arguments

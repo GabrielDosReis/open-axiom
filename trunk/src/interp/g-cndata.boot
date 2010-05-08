@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ getCDTEntry(info,isName) ==
  
 putConstructorProperty(name,prop,val) ==
   null (entry := getCDTEntry(name,true)) => NIL
-  RPLACD(rest entry,PUTALIST(CDDR entry,prop,val))
+  entry.rest.rest := PUTALIST(CDDR entry,prop,val)
   true
 
 attribute? name == 

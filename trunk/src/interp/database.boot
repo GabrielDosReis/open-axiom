@@ -701,7 +701,7 @@ getOperationAlistFromLisplib x ==
           if t is [.] then nil
           else s.rest := QCDDR f
         else r.rest := QCDR f
-      else RPLACD(first items,f)
+      else items.first.rest := f
       items.first := addConsDB first items
   u and markUnique u
 

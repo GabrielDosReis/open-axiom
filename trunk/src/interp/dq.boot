@@ -57,7 +57,7 @@ dqAppend(x,y)==
     else if null y
          then x
          else
-              RPLACD (rest x,first y)
+              x.rest.rest := first y
               x.rest := rest y
               x
  
@@ -76,6 +76,6 @@ dqAddAppend(x,y)==
     else if null y
          then nil
          else
-              RPLACD (rest x,first y)
+              x.rest.rest := first y
               x.rest := rest y
               x

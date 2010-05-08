@@ -116,7 +116,7 @@ npPop2()==
 
 npPop3()==
        a:= third $stack
-       RPLACD(rest $stack,CDDDR $stack)
+       $stack.rest.rest := CDDDR $stack
        a
 
 npParenthesized f==

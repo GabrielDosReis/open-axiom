@@ -1415,7 +1415,7 @@ doIt(item,$predl) ==
   $GENNO: local:= 0
   item is ['SEQ,:l,['exit,1,x]] =>
     item.first := "PROGN"
-    RPLACA(LASTNODE item,x)
+    lastNode(item).first := x
     for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
         --This will RPLAC as appropriate
   isDomainForm(item,$e) =>
@@ -1472,11 +1472,11 @@ doIt(item,$predl) ==
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
     item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
-    RPLACD(second item,[$signatureOfForm])
+    second(item).rest := [$signatureOfForm]
       --This is how the signature is updated for buildFunctor to recognise
     functionPart:= ['dispatchFunction,t.expr]
-    RPLACA(CDDR item,functionPart)
-    RPLACD(CDDR item,nil)
+    item.rest.rest.first := functionPart
+    item.rest.rest.rest := nil
   u:= compOrCroak(item,$EmptyMode,$e) =>
     ([code,.,$e]:= u; item.first := first code; item.rest := rest code)
   systemErrorHere ["doIt", item]

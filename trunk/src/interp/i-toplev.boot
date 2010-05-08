@@ -371,7 +371,7 @@ setCurrentLine s ==
      null $currentLine => s
      string? $currentLine =>
        [$currentLine, :(string? s => [s]; s)]
-     RPLACD(lastNode $currentLine, (string? s => [s]; s))
+     lastNode($currentLine).rest := (string? s => [s]; s)
      $currentLine
 
 

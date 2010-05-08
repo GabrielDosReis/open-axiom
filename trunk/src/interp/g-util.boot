@@ -353,7 +353,7 @@ PUTALIST(alist,prop,val) ==
     -- else we fall over Lucid's read-only storage feature again
     pair.rest := val
     alist
-  QRPLACD(LASTPAIR alist,[[prop,:val]])
+  LASTPAIR(alist).rest := [[prop,:val]]
   alist
 
 REMALIST(alist,prop) ==
