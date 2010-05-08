@@ -786,7 +786,7 @@ InvestigateConditions catvecListMaker ==
     for [v,:.] in newS repeat
       for v' in [v,:first CatEval(v).4] repeat
         if (w:=assoc(v',$HackSlot4)) then
-          RPLAC(rest w,if rest w then mkOr(u,rest w) else u)
+          w.rest := if rest w then mkOr(u,rest w) else u
     (list:= update(list,u,secondaries,newS)) where
       update(list,cond,secondaries,newS) ==
         (list2:=
@@ -988,10 +988,10 @@ getAbbreviation(name,c) ==
     N:= ASSQ(name,rest X) =>
       C:= ASSQ(c,rest N) => rest C --already there
       newAbbreviation:= mkAbbrev(X,x)
-      RPLAC(rest N,[[c,:newAbbreviation],:rest N])
+      N.rest := [[c,:newAbbreviation],:rest N]
       newAbbreviation
     newAbbreviation:= mkAbbrev(X,x)
-    RPLAC(rest X,[[name,[c,:newAbbreviation]],:rest X])
+    X.rest := [[name,[c,:newAbbreviation]],:rest X]
     newAbbreviation
   $abbreviationTable:= [[x,[name,[c,:x]]],:$abbreviationTable]
   x

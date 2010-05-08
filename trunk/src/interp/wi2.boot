@@ -1113,7 +1113,7 @@ replaceNodeInStructureBy(node, x) ==
 
 replaceNodeBy(node, x) ==
   atom x => nil
-  for y in tails x | EQCAR(x,node) repeat RPLAC(first x, $nodeCopy)
+  for y in tails x | EQCAR(x,node) repeat x.first := $nodeCopy
   nil  
 
 chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==

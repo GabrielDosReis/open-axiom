@@ -431,7 +431,7 @@ putI(x,prop,val) == ($InteractiveFrame := put(x,prop,val,$InteractiveFrame))
 getIProplist x == getProplist(x,$InteractiveFrame)
 
 removeBindingI x ==
-  RPLAC(CAAR $InteractiveFrame,deleteAssocWOC(x,CAAR $InteractiveFrame))
+  first($InteractiveFrame).first := deleteAssocWOC(x,CAAR $InteractiveFrame)
 
 rempropI(x,prop) ==
   id:=

@@ -472,7 +472,7 @@ spadTrace(domain,options) ==
     $tracedModemap:= subTypes(mm,constructSubst(domain.0))
     traceName:= BPITRACE(first domain.n,alias, options)
     NCONC(pair,[listOfVariables,first domain.n,traceName,alias])
-    RPLAC(first domain.n,traceName)
+    domain.n.first := traceName
   sigSlotNumberAlist:= [x for x in sigSlotNumberAlist | CDDDR x]
   if $reportSpadTrace then
     if $traceNoisely then printDashedLine()
@@ -480,7 +480,7 @@ spadTrace(domain,options) ==
       reportSpadTrace("TRACING",x)
   if $letAssoc then SETLETPRINTFLAG true
   currentEntry =>
-    RPLAC(rest currentEntry,[:sigSlotNumberAlist,:currentAlist])
+    currentEntry.rest := [:sigSlotNumberAlist,:currentAlist]
   SETQ(_/TRACENAMES,[[domain,:sigSlotNumberAlist],:_/TRACENAMES])
   spadReply()
 
@@ -702,13 +702,13 @@ spadUntrace(domain,options) ==
   for (pair:= [op,sig,n,lv,bpiPointer,traceName,alias]) in sigSlotNumberAlist |
     anyifTrue or MEMQ(op,listOfOperations) repeat
       BPIUNTRACE(traceName,alias)
-      RPLAC(first domain.n,bpiPointer)
-      RPLAC(CDDDR pair,nil)
+      domain.n.first := bpiPointer
+      pair.rest.rest.rest := nil
       if assocPair:=ASSOC(BPINAME bpiPointer,$letAssoc) then
         $letAssoc := REMOVER($letAssoc,assocPair)
         if null $letAssoc then SETLETPRINTFLAG nil
   newSigSlotNumberAlist:= [x for x in sigSlotNumberAlist | CDDDR x]
-  newSigSlotNumberAlist => RPLAC(rest pair,newSigSlotNumberAlist)
+  newSigSlotNumberAlist => pair.rest := newSigSlotNumberAlist
   SETQ(_/TRACENAMES,DELASC(domain,_/TRACENAMES))
   spadReply()
 
