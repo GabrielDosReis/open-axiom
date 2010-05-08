@@ -234,11 +234,12 @@ dbAugmentConstructorDataTable() ==
     cname := INTERN dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
        [name,abb,:.] := entry
-       RPLACD(rest entry,PUTALIST(CDDR entry,'dbLineNumber,fp))
+       entry.rest.rest := PUTALIST(CDDR entry,'dbLineNumber,fp)
 --     if xname := constructorHasExamplePage entry then
---       RPLACD(rest entry,PUTALIST(CDDR entry,'dbExampleFile,xname))
+--       entry.rest := PUTALIST(CDDR entry,'dbExampleFile,xname)
        args := IFCDR getConstructorFormFromDB name
-       if args then RPLACD(rest entry,PUTALIST(CDDR entry,'constructorArgs,args))
+       if args then 
+         entry.rest.rest := PUTALIST(CDDR entry,'constructorArgs,args)
   'done
 
 dbHasExamplePage conname ==

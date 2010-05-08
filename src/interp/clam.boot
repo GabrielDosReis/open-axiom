@@ -431,7 +431,7 @@ remHashEntriesWith0Count $hashTable ==
 initCache n ==
   tail:= '(0 . $failed)
   l:= [[$failed,:tail] for i in 1..n]
-  RPLACD(LASTNODE l,l)
+  lastNode(l).rest := l
  
 assocCache(x,cacheName,fn) ==
   --fn=equality function; do not SHIFT or COUNT

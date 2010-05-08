@@ -1012,7 +1012,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
 doItSeq item == 
   ['SEQ,:l,['exit,1,x]] := item
   item.first := "PROGN"
-  RPLACA(LASTNODE item,x)
+  lastNode(item).first := x
   for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
 
 doItDomain item ==
@@ -1079,7 +1079,7 @@ doItDef item ==
   chk(item,3)
   item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
-  RPLACD(second item,[$signatureOfForm])
+  second(item).rest := [$signatureOfForm]
   chk(item,4)
       --This is how the signature is updated for buildFunctor to recognise
 --+

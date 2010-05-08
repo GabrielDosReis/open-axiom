@@ -144,7 +144,7 @@ PacPrint v ==
           Sublis:= [[keyItem u,:name],:Sublis]
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:u],:$WhereList]
-      RPLACD(vv.j,name)
+      vv.j.rest := name
   PRETTYPRINT vv
  
 DomainPrintSubst(item,Sublis) ==

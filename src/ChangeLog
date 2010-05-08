@@ -1,3 +1,27 @@
+2010-05-08  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/wi2.boot: Remove more RPLACA and RPLACD uses.
+	* interp/topics.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/dq.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/cparse.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+
 2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/as.boot: Replace uses of RPLACA and RPLACD with explicit

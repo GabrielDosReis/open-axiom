@@ -340,7 +340,7 @@ htMakePathKey path ==
       fn(STRCONC(a,'".",PNAME first b),rest b)
 
 htMarkTree(tree,n) ==
-  RPLACD(LASTTAIL tree,n)
+  LASTTAIL(tree).rest := n
   for branch in tree repeat
     branch.3 = 'TREE => htMarkTree(branch.5,n + 1)
 

@@ -1066,7 +1066,7 @@ putWidth u ==
     1
   argsWidth:=
     l is [firstArg,:restArg] =>
-      RPLACA(rest u,putWidth firstArg)
+      u.rest.first := putWidth firstArg
       for y in tails restArg repeat 
         y.first := putWidth first y
       widthFirstArg:=
@@ -2336,10 +2336,10 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
     nil or
        s = -1 => (nextu := nil)
        EQ(lastx, u) => ((nextu := rest u); u.rest := nil)
-       true => ((nextu := lastx); RPLACD(PREDECESSOR(lastx, u), nil))
+       true => ((nextu := lastx); PREDECESSOR(lastx, u).rest := nil)
     for x in tails u repeat
            x.first := LIST('CONCAT, first x, tchr)
-    if null nextu then RPLACA(CDDR LAST u, close)
+    if null nextu then LAST(u).rest.rest.first := close
     x := ASSOCIATER('CONCAT, CONS(ichr, u))
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
     if $collectOutput then TERPRI $algebraOutputStream

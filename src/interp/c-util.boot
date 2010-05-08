@@ -1291,7 +1291,7 @@ backendCompileNEWNAM x ==
       u := MAKE_-CLOSEDFN_-NAME()
       PUSH([u,second x], $CLOSEDFNS)
       x.first := "FUNCTION"
-      RPLACA(rest x,u)
+      x.rest.first := u
   backendCompileNEWNAM first x
   backendCompileNEWNAM rest x
 
@@ -1571,7 +1571,7 @@ transformToBackendCode x ==
   fluids := S_+(backendFluidize second x, $SpecialVars)
   lastdecl := lastDeclarationNode rest x
   if lastdecl = nil then
-    RPLACD(rest x, body)
+    x.rest.rest := body
   else
     null fluids =>
       lastdecl.rest := body

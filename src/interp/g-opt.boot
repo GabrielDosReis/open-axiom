@@ -246,7 +246,7 @@ optMkRecord ["mkRecord",:u] ==
  
 optCond (x is ['COND,:l]) ==
   if l is [a,[aa,b]] and TruthP aa and b is ["COND",:c] then
-    RPLACD(rest x,c)
+    x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
     if (p1 is ["NOT",=p2]) or (p2 is ["NOT",=p1]) then
       l:=[[p1,:c1],['(QUOTE T),:c2]]

@@ -180,7 +180,7 @@ addTopic2Documentation(con,docAlist) ==
     [op,:pairlist] := x
     code := LASSOC(op,alist) or 0
     for sigDoc in pairlist repeat 
-      sigDoc is [.,.] => RPLACD(rest sigDoc,code)
+      sigDoc is [.,.] => sigDoc.rest.rest := code
       systemError sigDoc
   docAlist
     
@@ -239,7 +239,7 @@ transferClassCodes(conform,opAlist) ==
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
     | FIXP (code := myLastAtom pair) repeat
-      u := ASSOC(QCAR pair,opAlist) => RPLACD(LASTNODE u,code)
+      u := ASSOC(QCAR pair,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
 --           Filter Operation by Topic

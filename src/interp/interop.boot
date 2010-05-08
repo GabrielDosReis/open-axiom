@@ -204,7 +204,7 @@ oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    null(pack) => nil
    if not VECP pack then
        pack:=apply(pack, CONS(self, rest catform))
-       RPLACA(CDDR catenv, pack)
+       catenv.rest.rest.first := pack
    fun := basicLookup(op, sig, pack, self) => [fun]
    nil
 
