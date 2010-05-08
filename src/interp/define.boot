@@ -1135,7 +1135,7 @@ stripOffSubdomainConditions(margl,argl) ==
     f() ==
       x is ['SubDomain,marg,condition] =>
         pair:= assoc(i,$argumentConditionList) =>
-          (RPLAC(second pair,MKPF([condition,second pair],'AND)); marg)
+          (pair.rest.first := MKPF([condition,second pair],'AND); marg)
         $argumentConditionList:= [[i,arg,condition],:$argumentConditionList]
         marg
       x

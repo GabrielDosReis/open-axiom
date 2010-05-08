@@ -345,7 +345,7 @@ defISReverse(x,a) ==
   x is ['CONS,:.] =>
     null third x => ['CONS,second x, a]
     y := defISReverse(third x, NIL)
-    RPLAC(third y,['CONS,second x,a])
+    y.rest.rest.first := ['CONS,second x,a]
     y
   ERRHUH()
  

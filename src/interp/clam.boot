@@ -474,7 +474,7 @@ assocCacheShiftCount(x,al,fn) ==
   until EQ(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       newFrontPointer := forwardPointer
-      RPLAC(second y,QSADD1 second y)         --increment use count
+      y.rest.first := QSADD1 second y         --increment use count
       return (val:= y)
     if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
       minCount := c
@@ -559,8 +559,8 @@ recordInstantiation1(op,prop,dropIfTrue) ==
   null $reportInstantiations => nil
   u:= HGET($instantRecord,op) =>     --hope that one exists most of the time
     v := LASSOC(prop,u) =>
-      dropIfTrue => RPLAC(rest v,1+rest v)
-      RPLAC(first v,1+first v)
+      dropIfTrue => v.rest := 1+rest v
+      v.first := 1+first v
     u.rest := [first u,:rest u]
     val :=
       dropIfTrue => [0,:1]

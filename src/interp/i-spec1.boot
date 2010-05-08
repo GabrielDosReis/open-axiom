@@ -333,7 +333,7 @@ userDefinedCase(t is [op, lhs, rhs]) ==
   putMode(r, m)
   putValue(r, objNewWrap(MKQ rhs,m))
   putModeSet(r, [m])
-  x.rest.rest := [r]                   -- fix up contained for rhs.
+  t.rest.rest := [r]                   -- fix up contained for rhs.
   nil                                  -- tell bottomUp to continue.
 
 upcase t ==

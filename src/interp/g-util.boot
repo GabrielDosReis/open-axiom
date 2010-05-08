@@ -246,7 +246,7 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   u := ASSQ(var,curContour) =>
     u.rest := proplist
     e
-  RPLAC(CAAR e,[[var,:proplist],:curContour])
+  first(e).first := [[var,:proplist],:curContour]
   e
 
 --% Syntax manipulation
@@ -735,7 +735,7 @@ addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
   u := ASSQ(var,curContour) =>
     u.rest := proplist
     e
-  RPLAC(CAAR e,[[var,:proplist],:curContour])
+  first(e).first := [[var,:proplist],:curContour]
   e
 
 augProplistInteractive(proplist,prop,val) ==

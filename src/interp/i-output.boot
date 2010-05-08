@@ -1500,7 +1500,7 @@ splitConcat(list,maxWidth,firstTimeIfTrue) ==
       l:= x
       totalWidth:= width
   x:= rest l
-  RPLAC(rest l,nil)
+  l.rest := nil
   [list,:splitConcat(x,maxWidth,nil)]
 
 spadPrint(x,m) ==
@@ -1817,10 +1817,10 @@ charySplit(u,v,start,linelength) ==
     ddm := rest dm
     dm.rest := nil
     WIDTH v > linelength - 2 => return nil
-    RPLAC(first v, first v.0)
+    v.first := first v.0
     dm.rest := ddm
     m := rest m
-  RPLAC(first v,first v.0)
+  v.first := first v.0
   m.rest := nil
   charybdis(v,start + 2,linelength - 2)
   split2(u,dm,ddm,start,linelength)
@@ -2285,7 +2285,7 @@ matWidth(x) ==
     --returns ["max width of entries in column i" for i in 1..numberOfRows]
   subspanList := matLSum matSubList y
   superspanList := matLSum matSuperList y
-  RPLAC(x.1,[widthList, subspanList, superspanList])
+  x.rest.first := [widthList, subspanList, superspanList]
   CAAR x.1
 
 matLSum(x) ==
@@ -2564,7 +2564,7 @@ mathPrintTran u ==
   atom u => u
   true =>
     for x in tails u repeat
-          RPLAC(first x, mathPrintTran first x)
+          x.first := mathPrintTran first x
     u
 
 mathPrint1(x,fg) ==

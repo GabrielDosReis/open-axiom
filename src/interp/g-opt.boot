@@ -105,17 +105,17 @@ optimize x ==
       y='CLOSEDFN => nil
       y is [["XLAM",argl,body],:a] =>
         optimize rest x
-        argl = "ignore" => RPLAC(first x,body)
+        argl = "ignore" => x.first := body
         if not (LENGTH argl<=LENGTH a) then
           SAY '"length mismatch in XLAM expression"
           PRETTYPRINT y
-        RPLAC(first x,optimize optXLAMCond SUBLIS(pairList(argl,a),body))
+        x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)
       atom y =>
         optimize rest x
-      if first y="IF" then (RPLAC(first x,optIF2COND y); y:= first x)
+      if first y="IF" then (x.first := optIF2COND y; y:= first x)
       op:= GETL(subrname first y,"OPTIMIZE") =>
-        (optimize rest x; RPLAC(first x,FUNCALL(op,optimize first x)))
-      RPLAC(first x,optimize first x)
+        (optimize rest x; x.first := FUNCALL(op,optimize first x))
+      x.first := optimize first x
       optimize rest x
  
 subrname u ==
@@ -172,9 +172,9 @@ optCall (x is ["%Call",:u]) ==
   -- next should happen only as result of macro expansion
   atom first x => first x
   [fn,:a]:= first x
-  atom fn => (RPLAC(rest x,a); RPLAC(first x,fn))
+  atom fn => (x.rest := a; x.first := fn)
   fn is ["applyFun",name] =>
-    (RPLAC(first x,"SPADCALL"); RPLAC(rest x,[:a,name]); x)
+    (x.first := "SPADCALL"; x.rest := [:a,name]; x)
   fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
     not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
     q="CONST" => ["spadConstant",R,n]
@@ -262,8 +262,8 @@ optCond (x is ['COND,:l]) ==
   for y in tails l repeat
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
       a:=['OR,a1,a2]
-      RPLAC(first first y,a)
-      RPLAC(rest y,y')
+      first(y).first := a
+      y.rest := y'
   x
  
 AssocBarGensym(key,l) ==
@@ -298,8 +298,8 @@ optXLAMCond x ==
   x is ["COND",u:= [p,c],:l] =>
     (optPredicateIfTrue p => c; ["COND",u,:optCONDtail l])
   atom x => x
-  RPLAC(first x,optXLAMCond first x)
-  RPLAC(rest x,optXLAMCond rest x)
+  x.first := optXLAMCond first x
+  x.rest := optXLAMCond rest x
   x
  
 optPredicateIfTrue p ==
