@@ -431,7 +431,7 @@ setVector4Onecat(name,instantiator,info) ==
         slist:=
           [form(u,name) for u in slist] where
             form([cat,:cond],name) ==
-              u:= ['QUOTE,[cat,:first (eval cat).4]]
+              u:= ['QUOTE,[cat,:first eval(cat).4]]
               ['COND,[TryGDC cond,['SETQ,'TrueDomain,['CONS,['CONS,u,name],
                 'TrueDomain]]]]
         LENGTH slist=1 => [CADAR slist]
@@ -751,8 +751,8 @@ InvestigateConditions catvecListMaker ==
     [true,:[true for u in secondaries]]
   $HackSlot4:=
     MinimalPrimary=MaximalPrimary => nil
-    MaximalPrimaries:=[MaximalPrimary,:first (CatEval MaximalPrimary).4]
-    MinimalPrimaries:=[MinimalPrimary,:first (CatEval MinimalPrimary).4]
+    MaximalPrimaries:=[MaximalPrimary,:first CatEval(MaximalPrimary).4]
+    MinimalPrimaries:=[MinimalPrimary,:first CatEval(MinimalPrimary).4]
     MaximalPrimaries:=S_-(MaximalPrimaries,MinimalPrimaries)
     [[x] for x in MaximalPrimaries]
   ($Conditions:= Conds($principal,nil)) where
@@ -784,7 +784,7 @@ InvestigateConditions catvecListMaker ==
       LENGTH u=1 => first u
       ['AND,:u]
     for [v,:.] in newS repeat
-      for v' in [v,:first (CatEval v).4] repeat
+      for v' in [v,:first CatEval(v).4] repeat
         if (w:=assoc(v',$HackSlot4)) then
           RPLAC(rest w,if rest w then mkOr(u,rest w) else u)
     (list:= update(list,u,secondaries,newS)) where
@@ -1006,7 +1006,7 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  ALPHA_-CHAR_-P (s:= STRINGIMAGE u).(MAXINDEX s) => 
+  ALPHA_-CHAR_-P((s:= STRINGIMAGE u).(MAXINDEX s)) => 
     INTERN STRCONC(s,STRINGIMAGE n)
   INTERNL STRCONC(s,STRINGIMAGE ";",STRINGIMAGE n)
  

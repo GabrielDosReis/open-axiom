@@ -93,7 +93,7 @@ recordSignatureDocumentation(opSig,lineno) ==
 
 recordAttributeDocumentation(['Attribute,att],lineno) ==
   name := opOf att
-  UPPER_-CASE_-P (PNAME name).0 => nil
+  UPPER_-CASE_-P PNAME(name).0 => nil
   recordDocumentation([name,['attribute,:IFCDR postTransform att]],lineno)
 
 recordDocumentation(key,lineno) ==

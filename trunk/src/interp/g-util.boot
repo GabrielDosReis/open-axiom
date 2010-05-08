@@ -810,7 +810,7 @@ intern x ==
 
 isDomain a ==
   cons? a and VECP(first a) and
-    member(first(a).0, $domainTypeTokens)
+    member(first a.0, $domainTypeTokens)
 
 -- variables used by browser
 

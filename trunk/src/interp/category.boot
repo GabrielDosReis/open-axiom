@@ -63,9 +63,9 @@ isCategoryForm(x,e) ==
 CategoryPrint(D,$e) ==
   SAY "--------------------------------------"
   SAY "Name (and arguments) of category:"
-  PRETTYPRINT D.(0)
+  PRETTYPRINT D.0
   SAY "operations:"
-  PRETTYPRINT D.(1)
+  PRETTYPRINT D.1
   SAY "attributes:"
   PRETTYPRINT D.2
   SAY "This is a sub-category of"
@@ -329,7 +329,7 @@ FindFundAncs l ==
   --also as two-lists with the appropriate conditions
   l=nil => nil
   f1:= CatEval CAAR l
-  f1.(0)=nil => FindFundAncs rest l
+  f1.0=nil => FindFundAncs rest l
   ans:= FindFundAncs rest l
   for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,second x)]
    for x in second f1.4] repeat
@@ -361,14 +361,14 @@ CatEval x ==
 --  l=nil => nil
 --  leaves:= [first y for y in leaves]
 --               --remove the slot pointers
---  [x for x in l | not AncestorP(x.(0),leaves)]
+--  [x for x in l | not AncestorP(x.0,leaves)]
  
 AncestorP: (%Form, %List) -> %Form
 AncestorP(xname,leaves) ==
   -- checks for being a principal ancestor of one of the leaves
   member(xname,leaves) => xname
   for y in leaves repeat
-    member(xname,first (CatEval y).4) => return y
+    member(xname,first CatEval(y).4) => return y
  
 CondAncestorP(xname,leaves,condition) ==
   -- checks for being a principal ancestor of one of the leaves
@@ -377,7 +377,7 @@ CondAncestorP(xname,leaves,condition) ==
     ucond:=
       null rest u => true
       second u
-    xname = u' or member(xname,first (CatEval u').4) =>
+    xname = u' or member(xname,first CatEval(u').4) =>
       PredImplies(ucond,condition) => return u'
 
 
@@ -426,12 +426,12 @@ JoinInner(l,$e) ==
   l':= [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
-  sigl:= $NewCatVec.(1)
+  sigl:= $NewCatVec.1
   attl:= $NewCatVec.2
   globalDomains:= $NewCatVec.5
   FundamentalAncestors:= second $NewCatVec.4
-  if $NewCatVec.(0) then FundamentalAncestors:=
-    [[$NewCatVec.(0)],:FundamentalAncestors]
+  if $NewCatVec.0 then FundamentalAncestors:=
+    [[$NewCatVec.0],:FundamentalAncestors]
                     --principal ancestor . all those already included
   copied:= nil
   originalVector:= true
@@ -442,14 +442,14 @@ JoinInner(l,$e) ==
   for [b,condition] in FindFundAncs l' repeat
       --This loop implements Category Subsumption
           --as described in SYSTEM SCRIPT
-    if not (b.(0)=nil) then
+    if not (b.0=nil) then
                    --It's a named category
-      bname:= b.(0)
+      bname:= b.0
       CondAncestorP(bname,FundamentalAncestors,condition) => nil
       (f:=AncestorP(bname,[first u for u in FundamentalAncestors])) =>
         [.,.,index]:=assoc(f,FundamentalAncestors)
         FundamentalAncestors:=[[bname,condition,index],:FundamentalAncestors]
-      PrinAncb:= first (CatEval bname).(4)
+      PrinAncb:= first CatEval(bname).4
                --Principal Ancestors of b
       reallynew:= true
       for anc in FundamentalAncestors repeat
@@ -487,7 +487,7 @@ JoinInner(l,$e) ==
                 reallynew:= nil
                 MEMQ(b,l) =>
                        --MEMQ since category vectors are guaranteed unique
-                  (sigl:= $NewCatVec.(1); attl:= $NewCatVec.2; l:= delete(b,l))
+                  (sigl:= $NewCatVec.1; attl:= $NewCatVec.2; l:= delete(b,l))
              --     SAY("domain ",bname," subsumes")
              --     SAY("adding a conditional domain ",
              --         bname,
@@ -498,7 +498,7 @@ JoinInner(l,$e) ==
              -- value of bCond not used and could be NIL
              -- bCond:= second bCond
                 globalDomains:= $NewCatVec.5
-                for u in $NewCatVec.(1) repeat
+                for u in $NewCatVec.1 repeat
                   if not member(u,sigl) then
                     [s,c,i]:= u
                     if c=true
@@ -512,7 +512,7 @@ JoinInner(l,$e) ==
                        else attl:= [[a,["and",condition,c]],:attl]
       if reallynew then
         n:= SIZE $NewCatVec
-        FundamentalAncestors:= [[b.(0),condition,n],:FundamentalAncestors]
+        FundamentalAncestors:= [[b.0,condition,n],:FundamentalAncestors]
         $NewCatVec:= LENGTHENVEC($NewCatVec,n+1)
 -- We need to copy the vector otherwise the FundamentalAncestors
 -- list will get stepped on while compiling "If R has ... " code
@@ -520,13 +520,13 @@ JoinInner(l,$e) ==
 --        copied:= true
         copied:= false
         originalvector:= false
-        $NewCatVec.n:= b.(0)
+        $NewCatVec.n:= b.0
   if not copied then $NewCatVec:= COPY_-SEQ $NewCatVec
     -- It is important to copy the vector now,
     -- in case SigListUnion alters it while
     -- performing Operator Subsumption
   for b in l repeat
-    sigl:= SigListUnion([DropImplementations u for u in b.(1)],sigl)
+    sigl:= SigListUnion([DropImplementations u for u in b.1],sigl)
     attl:=
 -- next two lines are merely performance improvements
       MEMQ(attl,b.2) => b.2
@@ -548,7 +548,7 @@ JoinInner(l,$e) ==
         [[first u,mkOr(second v,mkAnd(newpred,second u))],:attl]
     sigl:=
       SigListUnion(
-        [AddPredicate(DropImplementations u,newpred) for u in (first b).(1)],sigl) where
+        [AddPredicate(DropImplementations u,newpred) for u in (first b).1],sigl) where
           AddPredicate(op is [sig,oldpred,:implem],newpred) ==
             newpred=true => op
             oldpred=true => [sig,newpred,:implem]
@@ -556,7 +556,7 @@ JoinInner(l,$e) ==
   FundamentalAncestors:= [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
   c:= first $NewCatVec.4
-  pName:= $NewCatVec.(0)
+  pName:= $NewCatVec.0
   if pName and not member(pName,c) then c:= [pName,:c]
   $NewCatVec.4:= [c,FundamentalAncestors,third $NewCatVec.4]
   mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
@@ -574,4 +574,4 @@ Join(:l) ==
 --                       --an incantation
 --  [c,.,.]:= compMakeCategoryObject(sig,e)
 --  -- We assume that the environment need not be kept
---  c.(1)
+--  c.1

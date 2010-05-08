@@ -113,7 +113,7 @@ buildLibdbConEntry conname ==
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
       pname.(MAXINDEX pname) = char '_& => 'x
-      DOWNCASE (PNAME kind).0
+      DOWNCASE PNAME(kind).0
     argl := rest $conform
     conComments :=
       LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r

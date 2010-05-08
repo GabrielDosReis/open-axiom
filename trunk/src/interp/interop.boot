@@ -139,13 +139,13 @@ closeOldAxiomFunctor(name) ==
 
 lazyOldAxiomDomainLookupExport(domenv, self, op, sig, box, skipdefaults, env) ==
   dom := instantiate domenv
-  SPADCALL(rest dom, self, op, sig, box, skipdefaults, first(dom).3)
+  SPADCALL(rest dom, self, op, sig, box, skipdefaults, first dom.3)
 
 lazyOldAxiomDomainHashCode(domenv, env) == first domenv
 
 lazyOldAxiomDomainDevaluate(domenv, env) ==
   dom := instantiate domenv
-  SPADCALL(rest dom, first(dom).1)
+  SPADCALL(rest dom, first dom.1)
 
 lazyOldAxiomAddChild(domenv, kid, env) ==
   CONS($lazyOldAxiomDomainDispatch,domenv)
@@ -328,7 +328,7 @@ oldAxiomDomainHasCategory(domenv, cat, env) ==
     HasCategory(domvec, devaluate cat)
 
 oldAxiomDomainDevaluate(domenv, env) == 
-   SExprToDName(rest(domenv).0, 'T)
+   SExprToDName(rest domenv.0, 'T)
 
 oldAxiomAddChild(domenv, child, env) == CONS($oldAxiomDomainDispatch, domenv)
 
