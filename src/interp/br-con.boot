@@ -874,7 +874,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
     if null FIXP op and
-      DIGITP (s := STRINGIMAGE op).0 then op := string2Integer s
+      DIGITP((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>
       doc := dbConstructorDoc(first aux,$op,$sig)
@@ -1077,7 +1077,7 @@ getConstructorDocumentation conname ==
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==
-  conPage opOf first (htpProperty(htPage,'cAlist)).index
+  conPage opOf first htpProperty(htPage,'cAlist).index
 
 dbShowConditions(htPage,cAlist,kind) ==
   conform := htpProperty(htPage,'conform)

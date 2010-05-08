@@ -900,7 +900,7 @@ asyTypeJoinPartPred x ==
 
 asyTypeJoinItem x ==
   result := asyTypeUnit x
-  isLowerCaseLetter (PNAME opOf result).0 =>
+  isLowerCaseLetter PNAME(opOf result).0 =>
     $opStack := [[['ATTRIBUTE,result],:$predlist],:$opStack]
   $conStack := [[result,:$predlist],:$conStack]
 

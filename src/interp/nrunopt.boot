@@ -733,7 +733,7 @@ numberOfNodes(x) ==
 
 template con ==
   con := abbreviation? con or con
-  ppTemplate (getInfovec con).0
+  ppTemplate getInfovec(con).0
 
 ppTemplate vec ==
   for i in 0..MAXINDEX vec repeat

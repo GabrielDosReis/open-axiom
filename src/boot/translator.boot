@@ -750,8 +750,6 @@ retainFile? ext ==
   Option 'no in $FilesToRetain => false
   Option ext in $FilesToRetain
 
-TRACE retainFile?
-
 compileBootHandler(progname, options, file) ==
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
   errorCount() ~= 0 => nil

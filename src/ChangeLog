@@ -1,3 +1,27 @@
+2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpArgumentList): New.
+	(bpParenthesizedApplication): Use it.  New.
+	(bpPrimary1): Use it to implement function call with explicit
+	parenthesis as primary.
+	(bpOperator): Remove.
+	(bpAssignLHS): Rework.  Allow field path after function call.
+	* boot/translator.boot: Remove debugging statement.
+	* interp/as.boot: Adjust to new syntax.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
 2010-05-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot: Replace uses of rplac with explicit assignments.

@@ -207,7 +207,7 @@ getTraceOption (x is [key,:l]) ==
   key="of" =>
     ["of",:[hn y for y in l]] where
       hn x ==
-        atom x and not UPPER_-CASE_-P (STRINGIMAGE x).(0) =>
+        atom x and not UPPER_-CASE_-P STRINGIMAGE(x).0 =>
           isDomainOrPackage EVAL x => x
           stackTraceOptionError ["S2IT0013",[x]]
         g:= domainToGenvar x => g
@@ -305,7 +305,7 @@ transTraceItem x ==
         x := objVal value
         (y:= domainToGenvar x) => y
         x
-    UPPER_-CASE_-P (STRINGIMAGE x).(0) =>
+    UPPER_-CASE_-P STRINGIMAGE(x).0 =>
       y := opOf unabbrev x
       constructor? y => y
       (y:= domainToGenvar x) => y
@@ -418,7 +418,7 @@ funfind("functor","opname") ==
   [u for u in ops | u is [[ =opname,:.],:.]]
 
 isDomainOrPackage dom ==
-  REFVECP dom and #dom>0 and isFunctor opOf dom.(0)
+  REFVECP dom and #dom>0 and isFunctor opOf dom.0
 
 isTraceGensym x == GENSYMP x
 
@@ -438,7 +438,7 @@ spadTrace(domain,options) ==
   if listOfBreakVars := getOption("VARBREAK",options) then
     options := removeOption("VARBREAK",options)
   anyifTrue:= null listOfOperations
-  domainId:= opOf domain.(0)
+  domainId:= opOf domain.0
   currentEntry:= assoc(domain,_/TRACENAMES)
   currentAlist:= KDR currentEntry
   opStructureList:= flattenOperationAlist getOperationAlistFromLisplib domainId
@@ -593,7 +593,7 @@ letPrint(x,val,currentFunction) ==
          TERPRI()
       if (y:= hasPair("BREAK",y)) and
         (y="all" or MEMQ(x,y) and
-          (not MEMQ((PNAME x).(0),'($ _#)) and not GENSYMP x)) then
+          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               shortenForPrinting val]
   val
@@ -612,7 +612,7 @@ letPrint2(x,printform,currentFunction) ==
          if flag='letPrint2 then print printform
       if (y:= hasPair("BREAK",y)) and
         (y="all" or MEMQ(x,y) and
-          (not MEMQ((PNAME x).(0),'($ _#)) and not GENSYMP x)) then
+          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,":= ",
               printform]
   x
@@ -632,7 +632,7 @@ letPrint3(x,xval,printfn,currentFunction) ==
          if flag='letPrint2 then print xval
       if (y:= hasPair("BREAK",y)) and
         (y="all" or MEMQ(x,y) and
-          (not MEMQ((PNAME x).(0),'($ _#)) and not GENSYMP x)) then
+          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               xval]
   x

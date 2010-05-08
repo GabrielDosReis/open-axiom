@@ -287,8 +287,8 @@ displaySetOptionInformation(arg,setData) ==
   st = 'INTEGER  =>
     sayMessage ['" The",:bright arg,'"option",
       '" may be followed by an integer in the range",
-       :bright (setData.setLeaf).0,'"to",'%l,
-        :bright (setData.setLeaf).1,'"inclusive.",
+       :bright setData.setLeaf.0,'"to",'%l,
+        :bright setData.setLeaf.1,'"inclusive.",
          '" The current setting is",:bright eval setData.setVar]
 
   st = 'STRING  =>

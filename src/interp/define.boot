@@ -489,7 +489,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     -- following line causes cats with no with or Join to be fresh copies
     if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
            formalBody := ['Join, formalBody]
-    body:= optFunctorBody (compOrCroak(formalBody,signature'.target,e)).expr
+    body:= optFunctorBody compOrCroak(formalBody,signature'.target,e).expr
     if $extraParms then
       formals:=actuals:=nil
       for u in $extraParms repeat

@@ -546,14 +546,21 @@ bpSexp1()== bpFirstTok() and
                bpPush nil
  
 bpPrimary1() ==
-   bpName() or
-     bpDot() or
-      bpConstTok() or
-       bpConstruct() or
-        bpCase() or
-         bpStruct() or
-          bpPDefinition() or
-           bpBPileDefinition()
+  bpParenthesizedApplication() or
+    bpDot() or
+      bpConstTok() or 
+        bpConstruct() or
+          bpCase() or
+            bpStruct() or
+              bpPDefinition() or
+                bpBPileDefinition()
+
+bpParenthesizedApplication() ==
+  bpName() and bpAnyNo function bpArgumentList
+
+bpArgumentList() ==
+  bpPDefinition() and 
+    bpPush bfApplication(bpPop2(), bpPop1())
  
 bpPrimary()==  bpFirstTok() and (bpPrimary1() or bpPrefixOperator())
  
@@ -571,9 +578,6 @@ bpSelector()==
   bpEqKey "DOT" and (bpPrimary()
      and bpPush(bfElt(bpPop2(),bpPop1()))
 	or bpPush bfSuffixDot bpPop1() )
- 
-bpOperator() ==
-  bpPrimary() and bpAnyNo function bpSelector
  
 bpApplication()==
    bpPrimary() and bpAnyNo function bpSelector and
@@ -1056,12 +1060,17 @@ bpAssignVariable()==
       bpBracketConstruct function bpPatternL or bpAssignLHS()
  
 bpAssignLHS()==
-   bpName() and (bpEqKey "COLON" and (bpApplication() or bpTrap())
-     and bpPush bfLocal(bpPop2(),bpPop1())
-        or bpEqKey "DOT" and bpList(function bpPrimary,"DOT")
-          and bpChecknull() and
-            bpPush bfTuple([bpPop2(),:bpPop1()])
-                 or true)
+  not bpName() => false
+  bpEqKey "COLON" =>          -- variable declaration
+    bpApplication() or bpTrap()
+    bpPush bfLocal(bpPop2(),bpPop1())
+  bpArgumentList() and (bpEqPeek "DOT" or bpTrap())
+  bpEqKey "DOT" =>            -- field path
+    bpList(function bpPrimary,"DOT") and 
+      bpChecknull() and
+        bpPush bfTuple([bpPop2(),:bpPop1()])
+  true
+
 bpChecknull()==
   a := bpPop1()
   a = nil => bpTrap()
