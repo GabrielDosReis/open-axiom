@@ -102,7 +102,7 @@ showFrom(D,:option) ==
   $predicateList: local := getConstructorPredicatesFromDB nam
   for (opSig := [op,sig]) in getDomainSigs1(D,ops) repeat
     u := from?(D,op,sig)
-    x := assoc(u,alist) => RPLACD(x,[opSig,:rest x])
+    x := assoc(u,alist) => x.rest := [opSig,:rest x]
     alist := [[u,opSig],:alist]
   for [conform,:l] in alist repeat
     sayBrightly concat('"From ",form2String conform,'":")

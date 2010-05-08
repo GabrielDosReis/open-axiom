@@ -1067,7 +1067,8 @@ putWidth u ==
   argsWidth:=
     l is [firstArg,:restArg] =>
       RPLACA(rest u,putWidth firstArg)
-      for y in tails restArg repeat RPLACA(y,putWidth first y)
+      for y in tails restArg repeat 
+        y.first := putWidth first y
       widthFirstArg:=
         0=interSpace and infixArgNeedsParens(firstArg,leftPrec,"right")=>
           2+WIDTH firstArg
@@ -1084,7 +1085,7 @@ putWidth u ==
       if l then ll := rest l else ll := nil
       [oldFirst,:opWidth(oldFirst,ll)+argsWidth]
     [putWidth oldFirst,:2+WIDTH oldFirst+argsWidth]
-  RPLACA(u,newFirst)
+  u.first := newFirst
   u
 
 opWidth(op,has2Arguments) ==
@@ -1288,7 +1289,8 @@ SubstWhileDesizingList(u,m) ==
        [SubstWhileDesizing(a,m)] 
      tail:=res
      for i in b repeat
-        if atom i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
+        if atom i then tail.rest := [i]
+        else tail.rest := [SubstWhileDesizing(i,m)]
         tail:=rest tail
      res   
    u  
@@ -1813,20 +1815,20 @@ charySplit(u,v,start,linelength) ==
   for i in 0.. repeat
     dm := rest m
     ddm := rest dm
-    RPLACD(dm,nil)
+    dm.rest := nil
     WIDTH v > linelength - 2 => return nil
     RPLAC(first v, first v.0)
-    RPLACD(dm,ddm)
+    dm.rest := ddm
     m := rest m
   RPLAC(first v,first v.0)
-  RPLACD(m,nil)
+  m.rest := nil
   charybdis(v,start + 2,linelength - 2)
   split2(u,dm,ddm,start,linelength)
 
 split2(u,dm,ddm,start,linelength) ==
 --prnd(start,(d:= GETL(keyp u,'INFIXOP) => d; opSrch(keyp u,OPLIST)))
   prnd(start,(d:= GETL(keyp u,'INFIXOP) => d; '","))
-  RPLACD(dm,ddm)
+  dm.rest := ddm
   m:= WIDTH [keyp u,:dm]<linelength-2
   charybdis([keyp u,:dm],(m => start+2; start),(m => linelength-2; linelength))
   '" "
@@ -2333,10 +2335,10 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
              null rest x => return(s := -1)
     nil or
        s = -1 => (nextu := nil)
-       EQ(lastx, u) => ((nextu := rest u); RPLACD(u, nil) )
+       EQ(lastx, u) => ((nextu := rest u); u.rest := nil)
        true => ((nextu := lastx); RPLACD(PREDECESSOR(lastx, u), nil))
     for x in tails u repeat
-           RPLACA(x, LIST('CONCAT, first x, tchr))
+           x.first := LIST('CONCAT, first x, tchr)
     if null nextu then RPLACA(CDDR LAST u, close)
     x := ASSOCIATER('CONCAT, CONS(ichr, u))
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)

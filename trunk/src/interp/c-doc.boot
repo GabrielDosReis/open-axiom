@@ -127,7 +127,7 @@ collectAndDeleteAssoc x ==
     while s and first s is [=x,:r] repeat
       res := [:res,:r]
       s := rest s
-      RPLACD(y,s)
+      y.rest := s
   res
 
 finalizeDocumentation() ==
@@ -508,7 +508,7 @@ appendOver [head,:tail] ==
  acc := LASTNODE head
  for x in tail repeat
    end := LASTNODE x
-   RPLACD(acc,x)
+   acc.rest := x
    acc := end
  head
 

@@ -202,11 +202,11 @@ beenHere(e,n) ==
       loc := first exprStk
       fun := first n.3
       fun = 'CAR =>
-        RPLACA(loc,var)
+        loc.first := var
       fun = 'CDR =>
         if cons? QCDR loc
-          then RPLACD(loc,[var])
-          else RPLACD(loc,var)
+          then loc.rest := [var]
+          else loc.rest := var
       SAY '"whoops"
     var
   n.1                     -- been here before, so just get variable
@@ -227,7 +227,7 @@ exp2FortOptimizeCS1 e ==
     pushCsStacks(f,'CAR) where pushCsStacks(x,y) ==
       $fortCsExprStack := [x,:$fortCsExprStack]
       $fortCsFuncStack := [y,:$fortCsFuncStack]
-    RPLACA(f,exp2FortOptimizeCS1 QCAR f)
+    f.first := exp2FortOptimizeCS1 QCAR f
     popCsStacks(0) where popCsStacks(x) ==
       $fortCsFuncStack := QCDR $fortCsFuncStack
       $fortCsExprStack := QCDR $fortCsExprStack
@@ -235,7 +235,7 @@ exp2FortOptimizeCS1 e ==
     -- check to see of we have an non-NIL atomic CDR
     g and atom g =>
       pushCsStacks(f,'CDR)
-      RPLACD(f,exp2FortOptimizeCS1 g)
+      f.rest := exp2FortOptimizeCS1 g
       popCsStacks(0)
       f := NIL
     f := g
@@ -705,7 +705,7 @@ fortFormatTypes1(typeName,names) ==
 insertEntry(size,el,aList) ==
   entry := assoc(size,aList)
   null entry => CONS(CONS(size,LIST el),aList)
-  RPLACD(entry,CONS(el,rest entry))
+  entry.rest := CONS(el,rest entry)
   aList
 
 fortFormatCharacterTypes(names) ==

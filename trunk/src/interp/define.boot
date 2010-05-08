@@ -343,8 +343,8 @@ macroExpandInPlace: (%Form,%Env) -> %Form
 macroExpandInPlace(x,e) ==
   y:= macroExpand(x,e)
   atom x or atom y => y
-  RPLACA(x,first y)
-  RPLACD(x,rest y)
+  x.first := first y
+  x.rest := rest y
   x
 
 macroExpand: (%Form,%Env) -> %Form 
@@ -1408,13 +1408,13 @@ compSingleCapsuleItem(item,$predl,$e) ==
 
 ++ subroutine of doIt.  Called to generate runtime noop insn.
 mutateToNothing item ==
-  RPLACA(item,'PROGN)
-  RPLACD(item,NIL)
+  item.first := 'PROGN
+  item.rest := NIL
 
 doIt(item,$predl) ==
   $GENNO: local:= 0
   item is ['SEQ,:l,['exit,1,x]] =>
-    RPLACA(item,"PROGN")
+    item.first := "PROGN"
     RPLACA(LASTNODE item,x)
     for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
         --This will RPLAC as appropriate
@@ -1425,8 +1425,8 @@ doIt(item,$predl) ==
     -- a cycle otherwise.
     u:= ["import", [first item,:rest item]]
     stackWarning('"Use: import %1p",[[first item,:rest item]])
-    RPLACA(item,first u)
-    RPLACD(item,rest u)
+    item.first := first u
+    item.rest := rest u
     doIt(item,$predl)
   item is ["%LET",lhs,rhs,:.] =>
     compOrCroak(item,$EmptyMode,$e) isnt [code,.,$e] =>
@@ -1434,8 +1434,8 @@ doIt(item,$predl) ==
     not (code is ["%LET",lhs',rhs',:.] and atom lhs') =>
       code is ["PROGN",:.] =>
          stackSemanticError(["multiple assignment ",item," not allowed"],nil)
-      RPLACA(item,first code)
-      RPLACD(item,rest code)
+      item.first := first code
+      item.rest := rest code
     lhs:= lhs'
     if not member(KAR rhs,$NonMentionableDomainNames) and
       not MEMQ(lhs, $functorLocalParameters) then
@@ -1447,11 +1447,11 @@ doIt(item,$predl) ==
         if $optimizeRep then
           nominateForInlining $Representation
     code is ["%LET",:.] =>
-      RPLACA(item,"setShellEntry")
+      item.first := "setShellEntry"
       rhsCode := rhs'
-      RPLACD(item,['$,NRTgetLocalIndex lhs,rhsCode])
-    RPLACA(item,first code)
-    RPLACD(item,rest code)
+      item.rest := ['$,NRTgetLocalIndex lhs,rhsCode]
+    item.first := first code
+    item.rest := rest code
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ["import",:doms] =>
      for dom in doms repeat
@@ -1470,7 +1470,7 @@ doIt(item,$predl) ==
   item is ['DEF,[op,:.],:.] =>
     body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
-    RPLACA(item,"CodeDefine")
+    item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
     RPLACD(second item,[$signatureOfForm])
       --This is how the signature is updated for buildFunctor to recognise
@@ -1478,7 +1478,7 @@ doIt(item,$predl) ==
     RPLACA(CDDR item,functionPart)
     RPLACD(CDDR item,nil)
   u:= compOrCroak(item,$EmptyMode,$e) =>
-    ([code,.,$e]:= u; RPLACA(item,first code); RPLACD(item,rest code))
+    ([code,.,$e]:= u; item.first := first code; item.rest := rest code)
   systemErrorHere ["doIt", item]
  
 isMacro(x,e) ==
@@ -1522,8 +1522,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   if y~="%noBranch" then
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
-  RPLACA(item,"COND")
-  RPLACD(item,[[p',x,:x'],['(QUOTE T),y,:y']])
+  item.first := "COND"
+  item.rest := [[p',x,:x'],['(QUOTE T),y,:y']]
  where localExtras(oldFLP) ==
    EQ(oldFLP,$functorLocalParameters) => NIL
    flp1:=$functorLocalParameters

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ removeDupOrderedAlist u ==
   -- removes duplicate entries in ordered alist
   -- (where duplicates are adjacent)
   for x in tails u repeat
-    (y := rest x) and first first x = first first y => RPLACD(x,rest y)
+    (y := rest x) and first first x = first first y => x.rest := rest y
   u
  
 wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
@@ -182,7 +182,7 @@ findApproximateWords(word,table) ==
 
 consAlist(x,y,alist) ==
   u := ASSOC(x,alist) => 
-    RPLACD(u,[y,:rest u])
+    u.rest := [y,:rest u]
     alist
   [[x,y],:alist]
 
@@ -268,9 +268,9 @@ rotateWordList u ==
   v := u
   p := first v
   while QCDR v repeat
-    RPLACA(v,second v) 
+    v.first := second v
     v := QCDR v
-  RPLACA(v,p)
+  v.first := p
   u
 
 deltaWordEntry(word,entry) ==

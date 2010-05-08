@@ -486,7 +486,7 @@ upLoopIters itrl ==
       upLoopIterSTEP(index,lower,step,upperList)
       -- following is an optimization
       typeIsASmallInteger(get(index,'mode,$env)) =>
-        RPLACA(iter,'ISTEP)
+        iter.first := 'ISTEP
     -- at this point, the AST may already be badly corrupted,
     -- but better late than never.
     throwKeyedMsg("S2IS0061",nil)
@@ -513,8 +513,8 @@ upLoopIterIN(iter,index,s) ==
       NIL
     upLoopIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,first newIter)
-    RPLACD(iter,rest newIter)
+    iter.first := first newIter
+    iter.rest := rest newIter
 
   iterMs isnt [['List,ud]] => throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
@@ -686,8 +686,8 @@ upStreamIterIN(iter,index,s) ==
       NIL
     upStreamIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,first newIter)
-    RPLACD(iter,rest newIter)
+    iter.first := first newIter
+    iter.rest := rest newIter
 
   (iterMs isnt [['List,ud]]) and (iterMs isnt [['Stream,ud]])
     and (iterMs isnt [['InfinitTuple, ud]]) =>

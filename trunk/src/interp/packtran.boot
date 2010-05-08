@@ -46,8 +46,8 @@ packageTran sex ==
     EQ(_*PACKAGE_*, SYMBOL_-PACKAGE sex) => sex
     INTERN STRING sex
   cons? sex =>
-    RPLACA(sex, packageTran first sex)
-    RPLACD(sex, packageTran rest sex)
+    sex.first := packageTran first sex
+    sex.rest := packageTran rest sex
     sex
   sex
 

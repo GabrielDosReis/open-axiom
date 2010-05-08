@@ -1005,7 +1005,7 @@ splitListSayBrightly u ==
     y := rest x
     null y => nil
     first y = '%l =>
-      RPLACD(x,nil)
+      x.rest := nil
       ans:= [u,:rest y]
   ans
 

@@ -770,7 +770,7 @@ markInsertChanges(code,form,t,loc) ==
     if $hohum then pp [i, '" >>> ", x]
     SETQ($CHANGE,COPY x)
     if x is ['elt,:y] and r then x := y
-    RPLACA(x,markInsertChanges(code,first x,t,rest loc))
+    x.first := markInsertChanges(code,first x,t,rest loc)
     chk(x,100)
     form
 --  pp ['"Making change: ",code,form,t]
@@ -1307,7 +1307,7 @@ moveLinesAfter(alist, lines) ==
   acc := nil
   for i in 0..(n - 1) for x in lines repeat
     (p :=  ASSOC(i, alist)) and string? rest p => acc := [rest p, x, :acc]
-    (p :=  lookupRight(i, alist)) and (first p) > i => RPLACD(p, x)
+    (p :=  lookupRight(i, alist)) and (first p) > i => p.rest := x
     acc := [x, :acc]
   reverse acc  
   
@@ -1429,7 +1429,7 @@ combineDefinitions() ==
         item := [predl, :defs]
         op := opOf form
         oldAlist := HGET($hash,opOf form) 
-        pair := ASSOC(sig, oldAlist) => RPLACD(pair, [item,:rest pair])
+        pair := ASSOC(sig, oldAlist) => pair.rest := [item,:rest pair]
         HPUT($hash, op, [[sig, item], :oldAlist])
 --extract and combine multiple definitions
   Xdeflist := nil
@@ -1441,7 +1441,7 @@ combineDefinitions() ==
         ['DEF, form, :.] := def
         ops := PNAME op
         opName := INTERN(STRCONC(ops,'"X",STRINGIMAGE i))
-        RPLACA(form, opName)
+        form.first := opName
 --      rplacaSubst(op, opName, def)
         $acc := [[form,:predl], :$acc]
       Xdeflist := [buildNewDefinition(op,sig,$acc),:Xdeflist]
@@ -1450,7 +1450,7 @@ combineDefinitions() ==
 rplacaSubst(x, y, u) == (fn(x, y, u); u) where fn(x,y,u) ==
   atom u => nil
   while u is [p, :q] repeat
-    if EQ(p, x) then RPLACA(u, y)
+    if EQ(p, x) then u.first := y
     if null atom p then fn(x, y, p)
     u := q
     

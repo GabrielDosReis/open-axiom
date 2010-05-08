@@ -535,13 +535,14 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
           | LASSQ(rest key,catOriginAlist)]
   for pair in u repeat
     [dom,:cat] := pair
-    LASSQ(cat,catOriginAlist) = 'etc => RPLACD(pair,'etc)
-    RPLACD(pair,simpOrDumb(constructorHasCategoryFromDB pair,true))
+    LASSQ(cat,catOriginAlist) = 'etc => pair.rest := 'etc
+    pair.rest := simpOrDumb(constructorHasCategoryFromDB pair,true)
   --now add all of the domains
   for [dom,:pred] in domOriginAlist repeat
     u := insertAlist(dom,simpOrDumb(pred,LASSQ(dom,u) or true),u)
   cAlist := listSort(function GLESSEQP,u)
-  for pair in cAlist repeat RPLACA(pair,getConstructorForm first pair)
+  for pair in cAlist repeat 
+    pair.first := getConstructorForm first pair
   htpSetProperty(htPage,'cAlist,cAlist)
   htpSetProperty(htPage,'thing,'"constructor")
   htpSetProperty(htPage,'specialHeading,'"hoho")
@@ -660,7 +661,7 @@ dbShowOpDocumentation(htPage,opAlist,which,data) ==
             MEMQ(k,'(0 1)) => '""
             dbReadComments k
           tail := CDDDDR item
-          RPLACA(tail,comments)
+          tail.first := comments
         doc := (string? comments and comments ~= '"" => comments; nil)
         pred := predicate or true
         index := (exactlyOneOpSig => nil; base + j)
@@ -733,12 +734,12 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
   form1 := [domform,:rest domform]
   form2 := ['$,:rest conform]
   for pair in opAlist repeat
-    RPLACD(pair,[test for item in rest pair | test]) where test() ==
+    pair.rest := [test for item in rest pair | test] where test() ==
       [head,:tail] := item
       first tail = true => item
       pred := simpHasPred SUBLISLIS(form1,form2,QCAR tail)
       null pred => false
-      RPLACD(item,[pred])
+      item.rest := [pred]
       item
   opAlist
 
@@ -833,7 +834,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           exposeFlag := dbExposed?(line,char 'o)
           acc := [[sig,predicate,origin,exposeFlag,comments],:acc]
         --always store the fruits of our labor:
-        RPLACD(pair,nreverse acc)             --at least partially expand it
+        pair.rest := nreverse acc             --at least partially expand it
         condition? and value => return value  --early exit
       value => value
       condition? => nil
@@ -865,7 +866,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           docCode := IFCDR u   --> (doc . code)
 --        if null FIXP rest docCode then harhar(op) -->
           if null doc and which = '"attribute" then doc := getRegistry(op,sig)
-          RPLACD(tail,[origin,isExposedConstructor opOf origin,:docCode])
+          tail.rest := [origin,isExposedConstructor opOf origin,:docCode]
         $value => return $value
       $value => $value
       condition? => nil

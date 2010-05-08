@@ -113,11 +113,11 @@ RecordEqual(x,y,dom) ==
   cons? x =>
     b:=
        SPADCALL(first x, first y, first(dom.(nargs + 9)) or
-         first RPLACA(dom.(nargs + 9),findEqualFun(dom.$FirstParamSlot)))
+         first (dom.(nargs + 9).first := findEqualFun(dom.$FirstParamSlot)))
     nargs = 1 => b
     b and
        SPADCALL(rest x, rest y, rest (dom.(nargs + 9)) or
-         rest RPLACD(dom.(nargs + 9),findEqualFun(dom.($FirstParamSlot+1))))
+         rest (dom.(nargs + 9).rest := findEqualFun(dom.($FirstParamSlot+1))))
   VECP x =>
     equalfuns := dom.(nargs + 9)
     and/[SPADCALL(x.i,y.i,equalfuns.i or _

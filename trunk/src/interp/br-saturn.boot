@@ -621,7 +621,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   form := IFCAR options
   isFile := null kind
   kind := kind or '"package"
-  RPLACA(parts,kind)
+  parts.first := kind
   conform         := mkConform(kind,name,args)
   $kPageSaturnArguments: local := rest conform
   conname         := opOf conform

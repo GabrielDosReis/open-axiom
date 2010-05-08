@@ -105,7 +105,7 @@ conPageConEntry entry ==
 --%   form := IFCAR options
 --%   isFile := null kind
 --%   kind := kind or '"package"
---%   RPLACA(parts,kind)
+--%   parts.first := kind
 --%   conform         := mkConform(kind,name,args)
 --%   conname         := opOf conform
 --%   capitalKind     := capitalize kind
@@ -267,7 +267,8 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
         u := assoc(item,alist) =>
           keepList := [[item,:quickAnd(rest u,pred)],:keepList]
       alist := keepList
-    for pair in alist repeat RPLACD(pair,simpHasPred rest pair)
+    for pair in alist repeat 
+      pair.rest := simpHasPred rest pair
     listSort(function GLESSEQP, alist)
   catScreen(r,alist) ==
     for x in r repeat
@@ -510,7 +511,8 @@ kcpPage(htPage,junk) ==
 
 reduceAlistForDomain(alist,domform,conform) == --called from kccPage
   alist := SUBLISLIS(rest domform,rest conform,alist)
-  for pair in alist repeat RPLACD(pair,simpHasPred(rest pair,domform))
+  for pair in alist repeat 
+    pair.rest := simpHasPred(rest pair,domform)
   [pair for (pair := [.,:pred]) in alist | pred]
 
 kcaPage(htPage,junk) ==
@@ -747,7 +749,7 @@ conOpPage1(conform,:options) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments]:=parts:= dbXParts(line,7,1)
   isFile := null kind
   kind := kind or '"package"
-  RPLACA(parts,kind)
+  parts.first := kind
   constring       := STRCONC(name,args)
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
@@ -1189,7 +1191,7 @@ dbSpecialExpandIfNecessary(conform,opAlist) ==
   for [op,:u] in opAlist repeat
     for pair in u repeat
       [sig,comments] := pair
-      RPLACD(pair,['T,conform,'T,comments]) --[sig,pred,origin,exposeFg,doc]
+      pair.rest := ['T,conform,'T,comments] --[sig,pred,origin,exposeFg,doc]
   opAlist
 
 X := '"{\sf Record(a:A,b:B)} is used to create the class of pairs of objects made up of a value of type {\em A} selected by the symbol {\em a} and a value of type {\em B} selected by the symbol {\em b}. "

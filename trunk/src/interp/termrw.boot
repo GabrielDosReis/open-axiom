@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ augmentSub(v,t,SL) ==
   -- t doesn't contain any of the variables of SL
   q:= CONS(v,t)
   null SL => [q]
---  for p in SL repeat RPLACD(p,SUBSTQ(t,v,rest p))
+--  for p in SL repeat p.rest := SUBSTQ(t,v,rest p)
   CONS(q,SL)
  
 mergeSubs(S1,S2) ==

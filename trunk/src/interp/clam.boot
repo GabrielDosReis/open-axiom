@@ -314,17 +314,17 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   op
  
 consForHashLookup(a,b) ==
-  RPLACA($hashNode,a)
-  RPLACD($hashNode,b)
+  $hashNode.first := a
+  $hashNode.rest := b
   $hashNode
  
 CDRwithIncrement x ==
-  RPLACA(x,QSADD1 first x)
+  x.first := QSADD1 first x
   rest x
  
 HGETandCount(hashTable,prop) ==
   u:= HGET(hashTable,prop) or return nil
-  RPLACA(u,QSADD1 first u)
+  u.first := QSADD1 first u
   u
  
 clearClams() ==
@@ -395,7 +395,7 @@ displayCacheFrequency al ==
  
 mkCircularCountAlist(cl,len) ==
   for [x,count,:.] in cl for i in 1..len while x ~= '_$failed repeat
-    u:= assoc(count,al) => RPLACD(u,1 + rest u)
+    u:= assoc(count,al) => u.rest := 1 + rest u
     if integer? $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
       sayBrightlyNT ["   ",count,"  "]
       pp x
@@ -412,7 +412,7 @@ reportHashCacheStats fn ==
  
 mkHashCountAlist vl ==
   for [count,:.] in vl repeat
-    u:= assoc(count,al) => RPLACD(u,1 + rest u)
+    u:= assoc(count,al) => u.rest := 1 + rest u
     al:= [[count,:1],:al]
   al
  
@@ -454,8 +454,8 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
   until EQ(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       if not EQ(forwardPointer,al) then   --shift referenced entry to front
-        RPLACA(forwardPointer,first al)
-        RPLACA(al,y)
+        forwardPointer.first := first al
+        al.first := y
       return (val:= y)
     backPointer := forwardPointer      --first is slot replaced on failure
     forwardPointer:= rest forwardPointer
@@ -482,8 +482,8 @@ assocCacheShiftCount(x,al,fn) ==
     forwardPointer:= rest forwardPointer
   if not EQ(newFrontPointer,al) then       --shift referenced entry to front
     temp:= first newFrontPointer           --or entry with smallest count
-    RPLACA(newFrontPointer,first al)
-    RPLACA(al,temp)
+    newFrontPointer.first := first al
+    al.first := temp
   val
  
 clamStats() ==
@@ -530,8 +530,8 @@ haddProp(ht,op,prop,val) ==
     stopTimingProcess 'debug
   u:= HGET(ht,op) =>     --hope that one exists most of the time
     assoc(prop,u) => val     --value is already there--must = val; exit now
-    RPLACD(u,[first u,:rest u])
-    RPLACA(u,[prop,:val])
+    u.rest := [first u,:rest u]
+    u.first := [prop,:val]
     $op: local := op
     listTruncate(u,20)        --save at most 20 instantiations
     val
@@ -561,11 +561,11 @@ recordInstantiation1(op,prop,dropIfTrue) ==
     v := LASSOC(prop,u) =>
       dropIfTrue => RPLAC(rest v,1+rest v)
       RPLAC(first v,1+first v)
-    RPLACD(u,[first u,:rest u])
+    u.rest := [first u,:rest u]
     val :=
       dropIfTrue => [0,:1]
       [1,:0]
-    RPLACA(u,[prop,:val])
+    u.first := [prop,:val]
   val :=
     dropIfTrue => [0,:1]
     [1,:0]
@@ -617,7 +617,7 @@ listTruncate(l,n) ==
   if null atom u then
     if null atom rest u and $reportInstantiations = true then
       recordInstantiation($op,CAADR u,true)
-    RPLACD(u,nil)
+    u.rest := nil
   l
  
 lassocShift(x,l) ==
@@ -627,8 +627,8 @@ lassocShift(x,l) ==
     y:= QCDR y
   result =>
     if not EQ(y,l) then
-      QRPLACA(y,first l)
-      QRPLACA(l,result)
+      y.first := first l
+      l.first := result
     QCDR result
   nil
  
@@ -639,8 +639,8 @@ lassocShiftWithFunction(x,l,fn) ==
     y:= QCDR y
   result =>
     if not EQ(y,l) then
-      QRPLACA(y,first l)
-      QRPLACA(l,result)
+      y.first := first l
+      l.first := result
     QCDR result
   nil
  
@@ -651,8 +651,8 @@ lassocShiftQ(x,l) ==
     y:= rest y
   result =>
     if not EQ(y,l) then
-      RPLACA(y,first l)
-      RPLACA(l,result)
+      y.first := first l
+      l.first := result
     rest result
   nil
  
@@ -663,8 +663,8 @@ lassocShiftQ(x,l) ==
 --     y:= rest y
 --   result =>
 --     if not EQ(y,l) then
---       RPLACA(y,first l)
---       RPLACA(l,result)
+--       y.first := first l
+--       l.first := result
 --     first result
 --   nil
  

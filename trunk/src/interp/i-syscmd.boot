@@ -372,7 +372,7 @@ clearCmdParts(l is [opt,:vl]) ==
       p2:= assoc(option,rest p1) =>
         recordOldValue(x,option,rest p2)
         recordNewValue(x,option,NIL)
-        RPLACD(p2,NIL)
+        p2.rest := NIL
   nil
 
 --% )close
@@ -1480,7 +1480,7 @@ updateFromCurrentInterpreterFrame() ==
 
 
 updateCurrentInterpreterFrame() ==
-  RPLACA($interpreterFrameRing,createCurrentInterpreterFrame())
+  $interpreterFrameRing.first := createCurrentInterpreterFrame()
   updateFromCurrentInterpreterFrame()
   NIL
 
@@ -1601,7 +1601,7 @@ initHistList() ==
   $HistList:= LIST NIL
   li:= $HistList
   for i in 1..$HistListLen repeat li:= CONS(NIL,li)
-  RPLACD($HistList,li)
+  $HistList.rest := li
   $HistListAct:= 0
   $HistRecord:= NIL
 
@@ -1715,7 +1715,7 @@ resetInCoreHist() ==
   $HistListAct:= 0
   for i in 1..$HistListLen repeat
     $HistList:= rest $HistList
-    RPLACA($HistList,NIL)
+    $HistList.first := NIL
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
@@ -1728,7 +1728,7 @@ changeHistListLen(n) ==
   if dif < 0 then
     for i in 1..-dif repeat l:= rest l
     if $HistListAct > n then $HistListAct:= n
-  RPLACD($HistList,l)
+  $HistList.rest := l
   'done
 
 updateHist() ==
@@ -1748,7 +1748,7 @@ updateHist() ==
 updateInCoreHist() ==
   -- updates $HistList and $IOindex
   $HistList:= rest($HistList)
-  RPLACA($HistList,NIL)
+  $HistList.first := NIL
   if $HistListAct < $HistListLen then $HistListAct:= $HistListAct+1
 
 putHist(x,prop,val,e) ==
@@ -1773,8 +1773,8 @@ recordNewValue0(x,prop,val) ==
   -- updateHist writes this stuff out into the history file
   p1:= ASSQ(x,$HistRecord) =>
     p2:= ASSQ(prop,rest p1) =>
-      RPLACD(p2,val)
-    RPLACD(p1,CONS(CONS(prop,val),rest p1))
+      p2.rest := val
+    p1.rest := CONS(CONS(prop,val),rest p1)
   p:= CONS(x,list CONS(prop,val))
   $HistRecord:= CONS(p,$HistRecord)
 
@@ -1787,9 +1787,9 @@ recordOldValue0(x,prop,val) ==
   -- writes (prop . val) into $HistList
   p1:= ASSQ(x,first $HistList) =>
     not ASSQ(prop,rest p1) =>
-      RPLACD(p1,CONS(CONS(prop,val),rest p1))
+      p1.rest := CONS(CONS(prop,val),rest p1)
   p:= CONS(x,list CONS(prop,val))
-  RPLACA($HistList,CONS(p,first $HistList))
+  $HistList.first := CONS(p,first $HistList)
 
 undoInCore(n) ==
   -- undoes the last n>0 steps using $HistList
@@ -1823,7 +1823,7 @@ undoFromFile(n) ==
       val =>
         if not (x='%) then recordOldValue(x,prop,val)
         if $HiFiAccess then recordNewValue(x,prop,val)
-        RPLACD(p,NIL)
+        p.rest := NIL
   for i in 1..n repeat
     vec:= UNWIND_-PROTECT(rest readHiFi(i),disableHist())
     for p1 in vec repeat
@@ -2070,8 +2070,8 @@ writify ob ==
                 HPUT($seen, nob, nob)
                 qcar := writifyInner qcar
                 qcdr := writifyInner qcdr
-                QRPLACA(nob, qcar)
-                QRPLACD(nob, qcdr)
+                nob.first := qcar
+                nob.rest := qcdr
                 nob
             VECP ob =>
                 isDomainOrPackage ob =>
@@ -2099,11 +2099,11 @@ writify ob ==
                 HPUT($seen, ob,  nob)
                 HPUT($seen, nob, nob)
                 keys := HKEYS ob
-                QRPLACD(nob,
+                nob.rest := 
                         ['HASHTABLE,
                           HASHTABLE_-CLASS ob,
                             writifyInner keys,
-                              [writifyInner HGET(ob,k) for k in keys]])
+                              [writifyInner HGET(ob,k) for k in keys]]
                 nob
             PLACEP ob =>
                 nob := ['WRITIFIED_!_!, 'PLACE]
@@ -2219,8 +2219,8 @@ dewritify ob ==
                 nob  := CONS(qcar, qcdr)
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
-                QRPLACA(nob, dewritifyInner qcar)
-                QRPLACD(nob, dewritifyInner qcdr)
+                nob.first := dewritifyInner qcar
+                nob.rest := dewritifyInner qcdr
                 nob
             VECP ob =>
                 n   := QVMAXINDEX ob
@@ -2789,10 +2789,10 @@ undoSingleStep(changes,env) ==
     pairlist := ASSQ(name,env) =>
       proplist := rest pairlist =>
         for (pair := [prop,:value]) in changeList repeat
-          node := ASSQ(prop,proplist) => RPLACD(node,value)
-          RPLACD(proplist,[first proplist,:rest proplist])
-          RPLACA(proplist,pair)
-      RPLACD(pairlist,changeList)
+          node := ASSQ(prop,proplist) => node.rest := value
+          proplist.rest := [first proplist,:rest proplist]
+          proplist.first := pair
+      pairlist.rest := changeList
     env := [change,:env]
   env
 
@@ -2828,7 +2828,7 @@ removeUndoLines u == --called by writeInputLines
            s1 = '")redo" => 0
            s2 ~= '"" => undoCount PARSE_-INTEGER s2
            -1
-        RPLACA(y,CONCAT('">",code,STRINGIMAGE n))
+        y.first := CONCAT('">",code,STRINGIMAGE n)
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil

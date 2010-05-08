@@ -70,8 +70,8 @@ $useIntegerSubdomain := true
 objNew(val, mode) == CONS(mode,val)             -- new names as of 10/14/93
 objNewWrap(val, mode) == CONS(mode,wrap val)
 objNewCode(val, mode) == ["CONS", MKQ mode,val ]
-objSetVal(obj,val) == RPLACD(obj,val)
-objSetMode(obj,mode) == RPLACA(obj,mode)
+objSetVal(obj,val) == obj.rest := val
+objSetMode(obj,mode) == obj.first := mode
 
 objVal obj == rest obj
 objValUnwrap obj == unwrap rest obj
@@ -355,7 +355,7 @@ computedMode t ==
 
 insertShortAlist(prop,val,al) ==
   pair := QASSQ(prop,al) =>
-    RPLACD(pair,val)
+    pair.rest := val
     al
   [[prop,:val],:al]
 

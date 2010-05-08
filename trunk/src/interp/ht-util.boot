@@ -114,7 +114,7 @@ htpProperty(htPage, propName) ==
 
 htpSetProperty(htPage, propName, val) ==
   pair := assoc(propName, ELT(htPage, 6))
-  pair => RPLACD(pair, val)
+  pair => pair.rest := val
   SETELT(htPage, 6, [[propName, :val], :ELT(htPage, 6)])
 
 htpLabelInputString(htPage, label) ==
@@ -220,8 +220,8 @@ bcIssueHt line ==
 
 mapStringize l ==
   atom l => l
-  RPLACA(l, basicStringize first l)
-  RPLACD(l, mapStringize rest l)
+  l.first := basicStringize first l
+  l.rest := mapStringize rest l
   l
 
 basicStringize s ==

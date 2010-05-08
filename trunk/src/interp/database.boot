@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -673,8 +673,8 @@ loadDependents fn ==
 
 markUnique x ==
   u := first x
-  RPLACA(x,'(_$unique))
-  RPLACD(x,[u,:rest x])
+  x.first := '(_$unique)
+  x.rest := [u,:rest x]
   rest x
 
 
@@ -699,10 +699,10 @@ getOperationAlistFromLisplib x ==
       if r is [.,:s] then
         if s is [.,:t] then
           if t is [.] then nil
-          else RPLACD(s,QCDDR f)
-        else RPLACD(r,QCDR f)
+          else s.rest := QCDDR f
+        else r.rest := QCDR f
       else RPLACD(first items,f)
-      RPLACA(items,addConsDB first items)
+      items.first := addConsDB first items
   u and markUnique u
 
 getOplistForConstructorForm (form := [op,:argl]) ==

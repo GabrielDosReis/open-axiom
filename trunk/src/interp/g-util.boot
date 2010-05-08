@@ -232,11 +232,11 @@ putIntSymTab(x,prop,val,e) ==
   pl :=
     null pl => [[prop,:val]]
     u := ASSQ(prop,pl) =>
-      RPLACD(u,val)
+      u.rest := val
       pl
     lp := LASTPAIR pl
     u := [[prop,:val]]
-    RPLACD(lp,u)
+    lp.rest := u
     pl
   EQ(pl0,pl) => e
   addIntSymTabBinding(x,pl,e)
@@ -244,7 +244,7 @@ putIntSymTab(x,prop,val,e) ==
 addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   -- change proplist of var in e destructively
   u := ASSQ(var,curContour) =>
-    RPLACD(u,proplist)
+    u.rest := proplist
     e
   RPLAC(CAAR e,[[var,:proplist],:curContour])
   e
@@ -351,7 +351,7 @@ PUTALIST(alist,prop,val) ==
   pair := assoc(prop,alist) =>
     rest pair = val => alist
     -- else we fall over Lucid's read-only storage feature again
-    QRPLACD(pair,val)
+    pair.rest := val
     alist
   QRPLACD(LASTPAIR alist,[[prop,:val]])
   alist
@@ -360,8 +360,8 @@ REMALIST(alist,prop) ==
   null alist => alist
   alist is [[ =prop,:.],:r] =>
     null r => NIL
-    QRPLACA(alist,first r)
-    QRPLACD(alist,rest r)
+    alist.first := first r
+    alist.rest := rest r
     alist
   null rest alist => alist
   l := alist
@@ -370,7 +370,7 @@ REMALIST(alist,prop) ==
     [.,[p,:.],:r] := l
     p = prop =>
       ok := NIL
-      QRPLACD(l,r)
+      l.rest := r
     if null (l := QCDR l) or null rest l then ok := NIL
   alist
 
@@ -394,7 +394,7 @@ deleteAssocWOC(x,y) ==
   x=a => t
   (fn(x,y);y) where fn(x,y is [h,:t]) ==
     t is [[a,:.],:t1] =>
-      x=a => RPLACD(y,t1)
+      x=a => y.rest := t1
       fn(x,t)
     nil
 
@@ -403,8 +403,8 @@ insertWOC(x,y) ==
   (fn(x,y); y) where fn(x,y is [h,:t]) ==
     x=h => nil
     null t =>
-      RPLACD(y,[h,:t])
-      RPLACA(y,x)
+      y.rest := [h,:t]
+      y.first := x
     fn(x,t)
 
 
@@ -580,24 +580,24 @@ mergeInPlace(f,g,p,q) ==
    else (r := t := q; q := QCDR q)
    while not null p and not null q repeat
       if FUNCALL(f,FUNCALL(g,QCAR p),FUNCALL(g,QCAR q))
-      then (QRPLACD(t,p); t := p; p := QCDR p)
-      else (QRPLACD(t,q); t := q; q := QCDR q)
-   if null p then QRPLACD(t,q) else QRPLACD(t,p)
+      then (t.rest := p; t := p; p := QCDR p)
+      else (t.rest := q; t := q; q := QCDR q)
+   if null p then t.rest := q else t.rest := p
    r
 
 mergeSort(f,g,p,n) ==
    if n=2 and FUNCALL(f,FUNCALL(g,QCADR p),FUNCALL(g,QCAR p)) then
       t := p
       p := QCDR p
-      QRPLACD(p,t)
-      QRPLACD(t,NIL)
+      p.rest := t
+      t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
    l := QSQUOTIENT(n,2)
    t := p
    for i in 1..l-1 repeat t := QCDR t
    q := rest t
-   QRPLACD(t,NIL)
+   t.rest := NIL
    p := mergeSort(f,g,p,l)
    q := mergeSort(f,g,q,QSDIFFERENCE(n,l))
    mergeInPlace(f,g,p,q)
@@ -733,14 +733,14 @@ addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
 addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
   -- change proplist of var in e destructively
   u := ASSQ(var,curContour) =>
-    RPLACD(u,proplist)
+    u.rest := proplist
     e
   RPLAC(CAAR e,[[var,:proplist],:curContour])
   e
 
 augProplistInteractive(proplist,prop,val) ==
   u := ASSQ(prop,proplist) =>
-    RPLACD(u,val)
+    u.rest := val
     proplist
   [[prop,:val],:proplist]
 

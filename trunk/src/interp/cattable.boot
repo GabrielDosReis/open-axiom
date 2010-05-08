@@ -77,7 +77,7 @@ genCategoryTable() ==
 simpTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
-      RPLACD(u,simpHasPred b)
+      u.rest := simpHasPred b
 
 simpCategoryTable() == main where
   main() ==
@@ -199,7 +199,7 @@ genTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     item := HGET(_*ANCESTORS_-HASH_*, id) 
     for (u:=[.,:b]) in item repeat
-      RPLACD(u,simpCatPredicate simpBool b)
+      u.rest := simpCatPredicate simpBool b
     HPUT(_*ANCESTORS_-HASH_*,id,listSort(function GLESSEQP,item))
 
 addToCategoryTable con ==
@@ -217,9 +217,9 @@ encodeCategoryAlist(id,alist) ==
       argl => [[argl,:b]]
       b
     u:= assoc(key,newAl) =>
-      argl => RPLACD(u,encodeUnion(id,first newEntry,rest u))
+      argl => u.rest := encodeUnion(id,first newEntry,rest u)
       if newEntry ~= rest u then
-        p:= moreGeneralCategoryPredicate(id,newEntry,rest u) => RPLACD(u,p)
+        p:= moreGeneralCategoryPredicate(id,newEntry,rest u) => u.rest := p
         sayMSG '"Duplicate entries:"
         PRINT [newEntry,rest u]
     newAl:= [[key,:newEntry],:newAl]
@@ -227,7 +227,7 @@ encodeCategoryAlist(id,alist) ==
 
 encodeUnion(id,new:=[a,:b],alist) ==
   u := assoc(a,alist) =>
-    RPLACD(u,moreGeneralCategoryPredicate(id,b,rest u))
+    u.rest := moreGeneralCategoryPredicate(id,b,rest u)
     alist
   [new,:alist]
 
@@ -310,7 +310,7 @@ catPairUnion(oldList,newList,op,cat) ==
   for pair in newList repeat
     u:= assoc(first pair,oldList) =>
       rest u = rest pair => nil
-      RPLACD(u,addConflict(rest pair,rest u)) where addConflict(new,old) ==
+      u.rest := addConflict(rest pair,rest u) where addConflict(new,old) ==
         quickOr(new,old)
     oldList:= [pair,:oldList]
   oldList
@@ -424,8 +424,8 @@ compressSexpr(x,left,right) ==
 -- recursive version of compressHashTable
   atom x => nil
   u:= HGET($found,x) =>
-    left => RPLACA(left,u)
-    right => RPLACD(right,u)
+    left => left.first := u
+    right => right.rest := u
     nil
   compressSexpr(first x,x,nil)
   compressSexpr(rest x,nil,x)
@@ -444,14 +444,14 @@ squeeze1(l) ==
     z:= member(x,$found) => first z
     $found:= CONS(x,$found)
     squeeze1 x
-  RPLACA(l,y)
+  l.first := y
   x:= rest l
   y:=
     atom x => x
     z:= member(x,$found) => first z
     $found:= CONS(x,$found)
     squeeze1 x
-  RPLACD(l,y)
+  l.rest := y
 
 updateCategoryTable(cname,kind) ==
   $updateCatTableIfTrue =>
@@ -469,7 +469,7 @@ updateCategoryTableForCategory(cname) ==
   addToCategoryTable(cname)
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
       for (u:=[.,:b]) in getConstructorAncestorsFromDB id repeat
-        RPLACD(u,simpCatPredicate simpBool b)
+        u.rest := simpCatPredicate simpBool b
 
 updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)
