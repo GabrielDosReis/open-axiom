@@ -105,7 +105,7 @@ _/MAJOR_-VERSION ==
 
 ++ Glyph for a box
 $boxString ==
-  CONCATENATE('STRING, [CODE_-CHAR 29, CODE_-CHAR 226])
+  strconc(STRING CODE_-CHAR 29, STRING CODE_-CHAR 226)
 
 ++ Glyph for an APL quad
 $quadSymbol ==
@@ -123,27 +123,27 @@ $escapeString ==
 
 ++ Marker to swicth to bold font
 $boldString ==
-  CONCATENATE('STRING, $escapeString, '"[1m")
+  strconc($escapeString, '"[1m")
 
 ++ Marker to switch to normal font
 $normalString ==
-  CONCATENATE('STRING, $escapeString, '"[0;10m")
+  strconc($escapeString, '"[0;10m")
 
 ++ Marker to switch to reverve video display
 $reverseVideoString ==
-  CONCATENATE('STRING, $escapeString, '"[7m")
+  strconc($escapeString, '"[7m")
 
 ++ Marker to underline text
 $underlineString ==
-  CONCATENATE('STRING, $escapeString, '"[4m")
+  strconc($escapeString, '"[4m")
 
 ++
 $highlightFontOn ==
-  CONCATENATE("STRING", '" ", $boldString)
+  strconc('" ", $boldString)
 
 ++
 $highlightFontOff ==
-  CONCATENATE("STRING", $normalString, '" ")
+  strconc($normalString, '" ")
 
 -- 
 -- User Interface
