@@ -670,7 +670,7 @@ validateOutputDirectory x ==
 
 
 describeSetFortTmpDir() ==
-  sayBrightly LIST (
+  sayBrightly [
    '%b,'")set fortran calling tempfile",'%d,_
    '" is used to tell AXIOM where",'%l,_
    '" to place intermediate FORTRAN data files . This must be the ",'%l,_
@@ -678,7 +678,7 @@ describeSetFortTmpDir() ==
    '" to write (including the final slash).",'%l,'%l,_
    '" Syntax:",'%l,_
    '"   )set fortran calling tempfile DIRECTORYNAME",'%l,'%l,_
-   '" The current setting is",'%b,$fortranTmpDir,'%d)
+   '" The current setting is",'%b,$fortranTmpDir,'%d]
 
 
 setFortDir arg ==
@@ -727,7 +727,7 @@ setLinkerArgs arg ==
 
 
 describeSetLinkerArgs() ==
-  sayBrightly LIST (
+  sayBrightly [
    '%b,'")set fortran calling linkerargs",'%d,_
    '" is used to pass arguments to the linker",'%l,_
    '" when using ",'%b,'"mkFort",'%d,_
@@ -737,7 +737,7 @@ describeSetLinkerArgs() ==
    '" The string is passed verbatim, so must be the correct syntax for",'%l,_
    '" the particular linker being used.",'%l,'%l,_
    '" Example: )set fortran calling linker _"-lxlf_"",'%l,'%l,_
-   '" The current setting is",'%b,$fortranLibraries,'%d)
+   '" The current setting is",'%b,$fortranLibraries,'%d]
 
 -- See the section functions in setvart.boot
 --
@@ -785,7 +785,7 @@ countCache n ==
 
 
 describeSetFunctionsCache() ==
-  sayBrightly LIST(
+  sayBrightly [
     '%b,'")set functions cache",'%d,'"is used to tell AXIOM how many",'%l,_
     '" values computed by interpreter functions should be saved.  This can save ",'%l, _
     '" quite a bit of time in recursive functions, though one must consider that",'%l,_
@@ -795,7 +795,7 @@ describeSetFunctionsCache() ==
     '" integer.  This may be followed by any number of function names whose cache",'%l,_
     '" sizes you wish to so set.  If no functions are given, the default cache",'%l,_
     '" size is set.",'%l,'" Examples:",_
-    '"   )set fun cache all         )set fun cache 10 f g Legendre")
+    '"   )set fun cache all         )set fun cache 10 f g Legendre"]
 
 
 sayAllCacheCounts () ==
@@ -883,14 +883,14 @@ setHistory arg ==
 
 
 describeProtectedSymbolsWarning() ==
- sayBrightly LIST(
+ sayBrightly [
   '"Some AXIOM library functions are compiled into the kernel for efficiency",_
   '%l,'"reasons.  To prevent them being re-defined when loaded from a library",_
   '%l,'"they are specially protected.  If a user wishes to know when an attempt",_
   '%l,'"is made to re-define such a function, he or she should issue the command:",_
   '%l,'"        )set kernel warn on",_
   '%l,'"To restore the default behaviour, he or she should issue the command:",_
-  '%l,'"        )set kernel warn off")
+  '%l,'"        )set kernel warn off"]
 
 
 protectedSymbolsWarning arg ==
@@ -910,14 +910,14 @@ PROTECTED_-SYMBOL_-WARN flag ==
   flag
 
 describeProtectSymbols() ==
- sayBrightly LIST(
+ sayBrightly [
   '"Some AXIOM library functions are compiled into the kernel for efficiency",_
   '%l,'"reasons.  To prevent them being re-defined when loaded from a library",_
   '%l,'"they are specially protected.  If a user wishes to re-define these",_
   '%l,'"functions, he or she should issue the command:",_
   '%l,'"        )set kernel protect off",_
   '%l,'"To restore the default behaviour, he or she should issue the command:",_
-  '%l,'"        )set kernel protect on")
+  '%l,'"        )set kernel protect on"]
 
 
 protectSymbols arg ==
@@ -1023,7 +1023,7 @@ setOutputAlgebra arg ==
 
 
 describeSetOutputAlgebra() ==
-  sayBrightly LIST ('%b,'")set output algebra",'%d,_
+  sayBrightly ['%b,'")set output algebra",'%d,_
    '"is used to tell AXIOM to turn algebra-style output",'%l,_
    '"printing on and off, and where to place the output.  By default, the",'%l,_
    '"destination for the output is the screen but printing is turned off.",'%l,_
@@ -1045,7 +1045,7 @@ describeSetOutputAlgebra() ==
   '%l,_
   '"The output is placed in the directory from which you invoked AXIOM or",'%l,_
   '"the one you set with the )cd system command.",'%l,_
-  '"The current setting is: ",'%b,setOutputAlgebra "%display%",'%d)
+  '"The current setting is: ",'%b,setOutputAlgebra "%display%",'%d]
 
 
 -- See the subsection output characters in setvart.boot
@@ -1211,7 +1211,7 @@ setOutputFortran arg ==
 
 
 describeSetOutputFortran() ==
-  sayBrightly LIST ('%b,'")set output fortran",'%d,_
+  sayBrightly ['%b,'")set output fortran",'%d,_
    '"is used to tell AXIOM to turn FORTRAN-style output",'%l,_
    '"printing on and off, and where to place the output.  By default, the",'%l,_
    '"destination for the output is the screen but printing is turned off.",'%l,_
@@ -1235,7 +1235,7 @@ describeSetOutputFortran() ==
   '%l,_
   '"The output is placed in the directory from which you invoked AXIOM or",'%l,_
   '"the one you set with the )cd system command.",'%l,_
-  '"The current setting is: ",'%b,setOutputFortran "%display%",'%d)
+  '"The current setting is: ",'%b,setOutputFortran "%display%",'%d]
 
 
 -- See the section mathml in setvart.boot.pamphlet
@@ -1322,7 +1322,7 @@ setOutputMathml arg ==
   describeSetOutputMathml()
  
 describeSetOutputMathml() ==
-  sayBrightly LIST ('%b,'")set output mathml",'%d,_
+  sayBrightly ['%b,'")set output mathml",'%d,_
     '"is used to tell AXIOM to turn MathML-style output",'%l,_
     '"printing on and off, and where to place the output. By default, the",'%l,_
     '"destination for the output is the screen but printing is turned off.",'%l,_ '
@@ -1344,7 +1344,7 @@ describeSetOutputMathml() ==
    '%l,_
    '"The output is placed in the directory from which you invoked OpenAxiom or",'%l,_
    '"the one you set with the )cd system command.",'%l,_
-   '"The current setting is: ",'%b,setOutputMathml "%display%",'%d)
+   '"The current setting is: ",'%b,setOutputMathml "%display%",'%d]
 
 
 -- See the subsection output openmath in setvart.boot
@@ -1432,7 +1432,7 @@ setOutputOpenMath arg ==
 
 
 describeSetOutputOpenMath() ==
-  sayBrightly LIST ('%b,'")set output openmath",'%d,_
+  sayBrightly ['%b,'")set output openmath",'%d,_
    '"is used to tell AXIOM to turn OpenMath output",'%l,_
    '"printing on and off, and where to place the output.  By default, the",'%l,_
    '"destination for the output is the screen but printing is turned off.",'%l,_
@@ -1454,7 +1454,7 @@ describeSetOutputOpenMath() ==
   '%l,_
   '"The output is placed in the directory from which you invoked AXIOM or",'%l,_
   '"the one you set with the )cd system command.",'%l,_
-  '"The current setting is: ",'%b,setOutputOpenMath "%display%",'%d)
+  '"The current setting is: ",'%b,setOutputOpenMath "%display%",'%d]
 
 -- See the subsection output script in setvart.boot
 -- 
@@ -1544,7 +1544,7 @@ setOutputFormula arg ==
 
 
 describeSetOutputFormula() ==
-  sayBrightly LIST ('%b,'")set output script",'%d,_
+  sayBrightly ['%b,'")set output script",'%d,_
    '"is used to tell AXIOM to turn IBM Script formula-style",'%l,_
    '"output printing on and off, and where to place the output.  By default, the",'%l,_
    '"destination for the output is the screen but printing is turned off.",'%l,_
@@ -1566,7 +1566,7 @@ describeSetOutputFormula() ==
   '%l,_
   '"The output is placed in the directory from which you invoked AXIOM or",'%l,_
   '"the one you set with the )cd system command.",'%l,_
-  '"The current setting is: ",'%b,setOutputFormula "%display%",'%d)
+  '"The current setting is: ",'%b,setOutputFormula "%display%",'%d]
 
 
 -- See the section tex in setvart.boot
@@ -1655,7 +1655,7 @@ setOutputTex arg ==
 
 
 describeSetOutputTex() ==
-  sayBrightly LIST ('%b,'")set output tex",'%d,_
+  sayBrightly ['%b,'")set output tex",'%d,_
    '"is used to tell AXIOM to turn TeX-style output",'%l,_
    '"printing on and off, and where to place the output.  By default, the",'%l,_
    '"destination for the output is the screen but printing is turned off.",'%l,_
@@ -1677,7 +1677,7 @@ describeSetOutputTex() ==
   '%l,_
   '"The output is placed in the directory from which you invoked AXIOM or",'%l,_
   '"the one you set with the )cd system command.",'%l,_
-  '"The current setting is: ",'%b,setOutputTex "%display%",'%d)
+  '"The current setting is: ",'%b,setOutputTex "%display%",'%d]
 
 -- See the section streams in setvart.boot
 --               Current Values of  streams  Variables                   

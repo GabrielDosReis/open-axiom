@@ -1262,7 +1262,7 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
     $optExportedFunctionReference =>
       $capsuleFunctionStack := [form,:$capsuleFunctionStack]
       first form
-    first backendCompile LIST form
+    first backendCompile [form]
   compileConstructor form
  
 compileConstructor form ==
@@ -1281,7 +1281,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
     $clamList:=
       [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
     'LAMBDA
-  compForm:= LIST [fn,[lambdaOrSlam,vl,:bodyl]]
+  compForm:= [[fn,[lambdaOrSlam,vl,:bodyl]]]
   if getConstructorKindFromDB fn = "category"
       then u:= compAndDefine compForm
       else u:= backendCompile compForm
@@ -1570,10 +1570,10 @@ compJoin(["Join",:argl],m,e) ==
             union("append"/[getParms(y,e) for y in rest x],parameters)
               where getParms(y,e) ==
                 atom y =>
-                  isDomainForm(y,e) => LIST y
+                  isDomainForm(y,e) => [y]
                   nil
                 y is ['LENGTH,y'] => [y,y']
-                LIST y
+                [y]
           x
         x is ["DomainSubstitutionMacro",pl,body] =>
           (parameters:= union(pl,parameters); body)

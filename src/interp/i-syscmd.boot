@@ -312,7 +312,7 @@ clearCmdAll() ==
   $previousBindings := nil
   $variableNumberAlist := nil
   untraceMapSubNames _/TRACENAMES
-  $InteractiveFrame := LIST LIST NIL
+  $InteractiveFrame := [[NIL]]
   resetInCoreHist()
   if $useInternalHistoryTable
     then $internalHistoryTable := NIL
@@ -1360,7 +1360,7 @@ frameEnvironment fname ==
   -- is returned
   fname = frameName first $interpreterFrameRing => $InteractiveFrame
   ifr := rest $interpreterFrameRing
-  e := LIST LIST NIL
+  e := [[NIL]]
   while ifr repeat
     [f,:ifr] := ifr
     if fname = frameName f   then
@@ -1402,8 +1402,8 @@ addNewInterpreterFrame(name) ==
   _$ERASE histFileName()
 
 emptyInterpreterFrame(name) ==
-  LIST(name,                            -- frame name
-       LIST LIST NIL,                   -- environment
+  [name,                                -- frame name
+       [[NIL]],                         -- environment
        1,                               -- $IOindex
        $HiFiAccess,                     -- $HiFiAccess
        $HistList,                       -- $HistList
@@ -1412,7 +1412,7 @@ emptyInterpreterFrame(name) ==
        $HistRecord,                     -- $HistRecord
        NIL,                             -- $internalHistoryTable
        COPY_-SEQ $localExposureDataDefault        -- $localExposureData
-      )
+      ]
 
 closeInterpreterFrame(name) ==
   -- if name = NIL then it means the current frame
@@ -1448,7 +1448,7 @@ nextInterpreterFrame() ==
 
 
 createCurrentInterpreterFrame() ==
-  LIST($interpreterFrameName,           -- frame name
+  [$interpreterFrameName,           -- frame name
        $InteractiveFrame,               -- environment
        $IOindex,                        -- $IOindex
        $HiFiAccess,                     -- $HiFiAccess
@@ -1458,7 +1458,7 @@ createCurrentInterpreterFrame() ==
        $HistRecord,                     -- $HistRecord
        $internalHistoryTable,           -- $internalHistoryTable
        $localExposureData               -- $localExposureData
-      )
+      ]
 
 
 updateFromCurrentInterpreterFrame() ==
@@ -1598,7 +1598,7 @@ initHistList() ==
   -- creates $HistList as a circular list of length $HistListLen
   -- and $HistRecord
   $HistListLen:= 20
-  $HistList:= LIST NIL
+  $HistList:= [NIL]
   li:= $HistList
   for i in 1..$HistListLen repeat li:= [NIL,:li]
   $HistList.rest := li

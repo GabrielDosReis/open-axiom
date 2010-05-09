@@ -84,7 +84,7 @@ DNameToSExpr dname ==
         rest dname
   sx := DNameToSExpr1 dname
   cons? sx => sx
-  LIST sx
+  [sx]
 
 DNameFixEnum arg == CompStrToString rest arg
   

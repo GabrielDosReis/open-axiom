@@ -513,7 +513,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       --for that may change the shape of the object, but we must before
       --we match signatures
   cat:= (compMakeCategoryObject(target,e)).expr
-  instantiatedBase:= GENVAR()
+  instantiatedBase:= genvar()
   n:=MAXINDEX cat
   code:=
     [u

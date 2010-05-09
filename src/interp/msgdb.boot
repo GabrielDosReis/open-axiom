@@ -234,7 +234,7 @@ addBlanks msg ==
     blanksOff := true
     msg1 := []
   else
-    msg1 := LIST x
+    msg1 := [x]
   blank := '" "
   for y in rest msg repeat
     member(y,'("%n" %n)) => blanksOff := true
@@ -766,7 +766,7 @@ brightPrintCenter(x,out == $OutputStream) ==
     wid := STRINGLENGTH x
     if wid < $LINELENGTH then
       f := DIVIDE($LINELENGTH - wid,2)
-      x := LIST(fillerSpaces(f.0,'" "),x)
+      x := [fillerSpaces(f.0,'" "),x]
     for y in x repeat brightPrint0(y,out)
     NIL
   y := NIL
@@ -811,7 +811,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
     x := object2String x
     wid := STRINGLENGTH x
     wid < $LINELENGTH =>
-      x := LIST(fillerSpaces($LINELENGTH-wid,'" "),x)
+      x := [fillerSpaces($LINELENGTH-wid,'" "),x]
       for y in x repeat brightPrint0(y,out)
       NIL
     brightPrint0(x,out)

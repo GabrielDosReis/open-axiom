@@ -109,7 +109,7 @@ compJoin(["Join",:argl],m,e) ==
             union("append"/[getParms(y,e) for y in rest x],parameters)
               where getParms(y,e) ==
                 atom y =>
-                  isDomainForm(y,e) => LIST y
+                  isDomainForm(y,e) => [y]
                   nil
                 y is ['LENGTH,y'] => [y,y']
                 LIST y
@@ -862,7 +862,7 @@ spadCompileOrSetq form ==
            macform := ['XLAM,vl',body]
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
-  $insideCapsuleFunctionIfTrue => first backendCompile LIST form
+  $insideCapsuleFunctionIfTrue => first backendCompile [form]
   compileConstructor form
 
 coerceHard(T,m) ==

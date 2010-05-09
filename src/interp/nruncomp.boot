@@ -454,7 +454,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
   $SetFunctions:= newShell SIZE domainShell
-  $catNames:= ['$,:[GENVAR() for u in rest catvecListMaker]]
+  $catNames:= ['$,:[genvar() for u in rest catvecListMaker]]
   domname:='dv_$
 
   -- Do this now to create predicate vector; then DescendCode can refer

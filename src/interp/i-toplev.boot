@@ -152,7 +152,7 @@ processInteractive(form, posnForm) ==
   $domPvar: local := NIL
   $inRetract: local := NIL
   object := processInteractive1(form, posnForm)
-  --object := ERRORSET(LIST('processInteractive1,LIST('QUOTE,form),LIST('QUOTE,posnForm)),'t,'t)
+  --object := ERRORSET(['processInteractive1,LIST('QUOTE,form),['QUOTE,posnForm]],'t,'t)
   if not($ProcessInteractiveValue) then
     if $reportInstantiations = true then
       reportInstantiations()

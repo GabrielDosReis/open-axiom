@@ -168,7 +168,7 @@ processChPosesForOneLine msgList ==
         setMsgPrefix (msg,strconc(oldPre,_
                      MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
-    NCONC(msgList,LIST leaderMsg)  --a back cons
+    NCONC(msgList,[leaderMsg])  --a back cons
  
 posPointers msgList ==
 --gets all the char posns for msgs on one line

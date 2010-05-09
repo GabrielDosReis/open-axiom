@@ -704,7 +704,7 @@ fortFormatTypes1(typeName,names) ==
 
 insertEntry(size,el,aList) ==
   entry := assoc(size,aList)
-  null entry => [[size,:LIST el],:aList]
+  null entry => [[size,:[el]],:aList]
   entry.rest := [el,:rest entry]
   aList
 
