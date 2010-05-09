@@ -49,11 +49,11 @@ shoePileColumn t==
 -- s is a token-dq-stream
  
 shoePileInsert (s)==
-  bStreamNull s => cons([],s)
+  bStreamNull s => [[],:s]
   toktype := shoeTokType CAAAR s
-  toktype = "LISP"  or toktype = "LINE" => cons([first s],rest s)
+  toktype = "LISP"  or toktype = "LINE" => [[first s],:rest s]
   a:=shoePileTree(-1,s)
-  cons([a.2],a.3)
+  [[a.2],:a.3]
  
 shoePileTree(n,s)==
   bStreamNull s => [false,n,[],s]
@@ -73,14 +73,14 @@ shoePileForest(n,s)==
   [b,hh,h,t] := shoePileTree(n,s)
   b => 
     [h1,t1]:=shoePileForest1(hh,t)
-    [cons(h,h1),t1]
+    [[h,:h1],t1]
   [[],s]
  
 shoePileForest1(n,s)==
   [b,n1,h,t] := eqshoePileTree(n,s)
   b => 
     [h1,t1]:=shoePileForest1(n,t)
-    [cons(h,h1),t1]
+    [[h,:h1],t1]
   [[],s]
  
 shoePileForests(h,n,s)==
@@ -111,7 +111,7 @@ shoePileCoagulate(a,b)==
   d is ["KEY",:.] and
 	(e has SHOEINF or e = "COMMA" or e = "SEMICOLON") =>
     shoePileCoagulate(dqAppend(a,c),rest b)
-  cons(a,shoePileCoagulate(c,rest b))
+  [a,:shoePileCoagulate(c,rest b)]
  
 shoeSeparatePiles x==
   x = nil => []

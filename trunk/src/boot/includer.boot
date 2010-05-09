@@ -152,7 +152,7 @@ shoePackageStartsAt (lines,sz,name,stream)==
   bStreamNull stream => [[],['nullstream]]
   a := CAAR stream
   #a >= 8 and SUBSTRING(a,0,8)='")package" =>
-    shoePackageStartsAt(cons(CAAR stream,lines),sz,name,rest stream)
+    shoePackageStartsAt([CAAR stream,:lines],sz,name,rest stream)
   #a < sz =>
     shoePackageStartsAt(lines, sz,name,rest stream)
   SUBSTRING(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
@@ -191,7 +191,7 @@ bMap1(:z)==
      [f,x]:=z
      if bStreamNull x
      then $bStreamNil
-     else cons(FUNCALL(f,first x),bMap(f,rest x))
+     else [FUNCALL(f,first x),:bMap(f,rest x)]
 
 shoeFileMap(f, fn)==
   a:=shoeInputFile fn
@@ -203,7 +203,7 @@ shoeFileMap(f, fn)==
 
  
 bDelay(f,x) ==
-  cons("nonnullstream",[f,:x])
+  ["nonnullstream",:[f,:x]]
  
 bAppend(x,y) ==
   bDelay(function bAppend1,[x,y])
@@ -212,7 +212,7 @@ bAppend1(:z)==
   bStreamNull first z =>
     bStreamNull second z => ["nullstream"]
     second z
-  cons(CAAR z,bAppend(CDAR z,second z))
+  [CAAR z,:bAppend(CDAR z,second z)]
  
 bNext(f,s) ==
   bDelay(function bNext1,[f,s])
@@ -228,14 +228,14 @@ bRgen s ==
 bRgen1(:s) ==
   a := shoeReadLine first s
   shoePLACEP a => ["nullstream"]
-  cons(a,bRgen first s)
+  [a,:bRgen first s]
  
 bIgen n ==
   bDelay(function bIgen1,[n])
  
 bIgen1(:n)==
   n:=first n+1
-  cons(n,bIgen n)
+  [n,:bIgen n]
  
 bAddLineNumber(f1,f2) ==
   bDelay(function bAddLineNumber1,[f1,f2])
@@ -244,7 +244,7 @@ bAddLineNumber1(:f)==
   [f1,f2] := f
   bStreamNull f1 =>  ["nullstream"]
   bStreamNull f2 =>  ["nullstream"]
-  cons(cons(first f1,first f2),bAddLineNumber(rest f1,rest f2))
+  [[first f1,:first f2],:bAddLineNumber(rest f1,rest f2)]
 
 
  
@@ -359,15 +359,15 @@ shoeThen1(keep,b,s)==
   keep1:= first keep
   b1   := first b
   command :=shoeIf? string  =>
-    keep1 and b1=>  shoeThen(cons(true,keep),cons(STTOMC command,b),t)
-    shoeThen(cons(false,keep),cons(false,b),t)
+    keep1 and b1=>  shoeThen([true,:keep],[STTOMC command,:b],t)
+    shoeThen([false,:keep],[false,:b],t)
   command :=shoeElseIf? string=>
     keep1 and not b1=>
-	shoeThen(cons(true,rest keep),cons(STTOMC command,rest b),t)
-    shoeThen(cons(false,rest keep),cons(false,rest b),t)
+	shoeThen([true,:rest keep],[STTOMC command,:rest b],t)
+    shoeThen([false,:rest keep],[false,:rest b],t)
   command :=shoeElse? string =>
-   keep1 and not b1=>shoeElse(cons(true,rest keep),cons(true,rest b),t)
-   shoeElse(cons(false,rest keep),cons(false,rest b),t)
+   keep1 and not b1=>shoeElse([true,:rest keep],[true,:rest b],t)
+   shoeElse([false,:rest keep],[false,:rest b],t)
   command :=shoeEndIf? string=>
     rest b = nil =>  shoeInclude t
     shoeThen(rest keep,rest b,t)
@@ -385,8 +385,8 @@ shoeElse1(keep,b,s)==
   b1:=first b
   keep1:=first keep
   command :=shoeIf? string=>
-    keep1 and b1=> shoeThen(cons(true,keep),cons(STTOMC command,b),t)
-    shoeThen(cons(false,keep),cons(false,b),t)
+    keep1 and b1=> shoeThen([true,:keep],[STTOMC command,:b],t)
+    shoeThen([false,:keep],[false,:b],t)
   command :=shoeEndIf? string =>
        rest b = nil =>  shoeInclude t
        shoeThen(rest keep,rest b,t)

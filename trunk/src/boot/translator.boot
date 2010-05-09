@@ -282,7 +282,7 @@ shoeTransformToFile(fn,str)==
 shoeConsoleItem (str)==
   dq := first str
   shoeConsoleLines shoeDQlines dq
-  cons(shoeParseTrees dq, rest str)
+  [shoeParseTrees dq,:rest str]
 
 bFileNext(fn,s) ==
   bDelay(function bFileNext1,[fn,s])
@@ -533,11 +533,11 @@ defuse(e,x)==
   then
      $bootDefinedTwice:=
 	    nee="TOP-LEVEL"=> $bootDefinedTwice
-	    cons(nee,$bootDefinedTwice)
+	    [nee,:$bootDefinedTwice]
   else HPUT($bootDefined,nee,true)
   defuse1 (e,niens)
   for i in $used repeat
-     HPUT($bootUsed,i,cons(nee,GETHASH(i,$bootUsed)))
+     HPUT($bootUsed,i,[nee,:GETHASH(i,$bootUsed)])
  
 defuse1(e,y)==
   atom y =>
@@ -563,13 +563,13 @@ defSeparate x==
   f := first x
   [x1,x2] := defSeparate rest x
   bfBeginsDollar f => [[f,:x1],x2]
-  [x1,cons(f,x2)]
+  [x1,[f,:x2]]
 
 unfluidlist x==
   x = nil => []
   atom x => [x]
   x is ["&REST",y]=> [y]
-  cons(first x,unfluidlist rest x)
+  [first x,:unfluidlist rest x]
  
 defusebuiltin x ==  
   GETHASH(x,$lispWordTable)
@@ -653,7 +653,7 @@ shoeTransform2 str==
  
 shoeItem (str)==
   dq:=first str
-  cons([[first line for line in  shoeDQlines dq]],rest str)
+  [[[first line for line in  shoeDQlines dq]],:rest str]
  
 stripm (x,pk,bt)==
   atom x =>
@@ -661,7 +661,7 @@ stripm (x,pk,bt)==
       SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
       x
     x
-  CONS(stripm(first x,pk,bt),stripm(rest x,pk,bt))
+  [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]
  
 shoePCompile  fn==
     fn:=stripm(fn,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
