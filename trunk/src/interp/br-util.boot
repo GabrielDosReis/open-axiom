@@ -388,7 +388,7 @@ bcOpTable(u,fn) ==
 
 bcNameConTable u ==
   $bcMultipleNames: local := (#u ~= 1)
-  bcConTable REMDUP u
+  bcConTable removeDuplicates u
   -- bcConTable u
 
 bcConTable u ==
@@ -406,7 +406,7 @@ bcConTable u ==
 bcAbbTable u ==
   htBeginTable()
   firstTime := true
-  for x in REMDUP u repeat        --allow x to be NIL meaning "no abbreviation"
+  for x in removeDuplicates u repeat        --allow x to be NIL meaning "no abbreviation"
   -- for x in u repeat    --allow x to be NIL meaning "no abbreviation"
     if firstTime then firstTime := false
     else htSaySaturn '"&"

@@ -607,7 +607,7 @@ mkAlistOfExplicitCategoryOps target ==
                 op is [a] => a
                 keyedSystemError("S2GE0016",
                   ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
-    opList:= REMDUP ASSOCLEFT u
+    opList:= removeDuplicates ASSOCLEFT u
     [[x,:fn(x,u)] for x in opList] where
       fn(op,u) ==
         u is [[a,:b],:c] => (a=op => [b,:fn(op,c)]; fn(op,c))

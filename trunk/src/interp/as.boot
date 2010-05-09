@@ -72,7 +72,7 @@ astran asyFile ==
   $mmAlist : local :=
     [[con,:asyConstructorModemap con] for con in conlist]
   $docAlist : local :=
-    [[con,:REMDUP asyDocumentation con] for con in conlist]
+    [[con,:removeDuplicates asyDocumentation con] for con in conlist]
   $parentsHash : local := MAKE_-HASH_-TABLE()
 --$childrenHash: local := MAKE_-HASH_-TABLE()
   for con in conlist repeat
@@ -151,7 +151,7 @@ asMakeAlist con ==
   opAlist := SUBLISLIS($FormalMapVariableList,KDR form,CDDR alists)
   ancestorAlist:= SUBLISLIS($FormalMapVariableList,KDR form,first alists)
   catAttrs := [[x,:true] for x in getAttributesFromCATEGORY $constructorCategory]
-  attributeAlist := REMDUP [:second alists,:catAttrs]
+  attributeAlist := removeDuplicates [:second alists,:catAttrs]
   documentation :=
     SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
   filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
@@ -375,7 +375,7 @@ asyMakeOperationAlist(con,proplist, key) ==
       pred => [sig,nil,asyPredTran pred]
       [sig]
     HPUT(ht,id,[entry,:HGET(ht,id)])
-  opalist := [[op,:REMDUP HGET(ht,op)] for op in HKEYS ht]
+  opalist := [[op,:removeDuplicates HGET(ht,op)] for op in HKEYS ht]
   --HPUT($opHash,con,[ancestorAlist,attributeAlist,:opalist])
   HPUT($opHash,con,[ancestorAlist,nil,:opalist])
 

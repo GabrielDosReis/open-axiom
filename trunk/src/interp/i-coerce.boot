@@ -154,7 +154,7 @@ retract2Specialization object ==
 --    coerceInt(object,$Symbol)
   type is ['Polynomial,D] =>
     val' is [ =1,x,:.] =>
-      vl := REMDUP reverse varsInPoly val'
+      vl := removeDuplicates reverse varsInPoly val'
       1 = #vl => coerceInt(object,['UnivariatePolynomial,x,D])
       NIL
     val' is [ =0,:.] => coerceInt(object, D)
@@ -655,8 +655,8 @@ canCoerceByFunction1(m1,m2,fun) ==
   $reportBottomUpFlag:local:= NIL
   -- have to handle cases where we might have changed from RN to QF I
   -- make 2 lists of expanded and unexpanded types
-  l1 := REMDUP [m1,eqType m1]
-  l2 := REMDUP [m2,eqType m2]
+  l1 := removeDuplicates [m1,eqType m1]
+  l2 := removeDuplicates [m2,eqType m2]
   ans  := NIL
   for t1 in l1 while not ans repeat
     for t2 in l2 while not ans repeat
@@ -1208,11 +1208,11 @@ computeTTTranspositions(t1,t2) ==
   p2' := MSORT p2
   p2 = p2' => NIL
   -- if anything is repeated twice, leave
-  p2' ~= MSORT REMDUP p2' => NIL
+  p2' ~= MSORT removeDuplicates p2' => NIL
   -- create a list of permutations that transform the tower parts
   -- of t1 into the order they are in in t2
   n1 := #tl1
-  p2 := LIST2VEC compress(p2,0,# REMDUP tl1) where
+  p2 := LIST2VEC compress(p2,0,# removeDuplicates tl1) where
     compress(l,start,len) ==
       start >= len => l
       member(start,l) => compress(l,start+1,len)

@@ -190,7 +190,7 @@ DOWN() == down()
 down() == displayComp ($level:= $level+1)
  
 displaySemanticErrors() ==
-  n:= #($semanticErrorStack:= REMDUP $semanticErrorStack)
+  n:= #($semanticErrorStack:= removeDuplicates $semanticErrorStack)
   n=0 => nil
   l:= nreverse $semanticErrorStack
   $semanticErrorStack:= nil
@@ -204,7 +204,7 @@ displaySemanticError(l,stream) ==
     sayBrightly(['"      [",i,'"] ",:first x],stream)
  
 displayWarnings() ==
-  n:= #($warningStack:= REMDUP $warningStack)
+  n:= #($warningStack:= removeDuplicates $warningStack)
   n=0 => nil
   sayBrightly bright '"  Warnings:"
   l := nreverse $warningStack
@@ -296,8 +296,8 @@ intersectionContour(c,c') ==
   $var: local
   computeIntersection(c,c') where
     computeIntersection(c,c') ==
-      varlist:= REMDUP ASSOCLEFT c
-      varlist':= REMDUP ASSOCLEFT c'
+      varlist:= removeDuplicates ASSOCLEFT c
+      varlist':= removeDuplicates ASSOCLEFT c'
       interVars:= intersection(varlist,varlist')
       unionVars:= union(varlist,varlist')
       diffVars:= setDifference(unionVars,interVars)
@@ -714,7 +714,7 @@ genSomeVariable() ==
  
 listOfIdentifiersIn x ==
   IDENTP x => [x]
-  x is [op,:l] => REMDUP ("append"/[listOfIdentifiersIn y for y in l])
+  x is [op,:l] => removeDuplicates ("append"/[listOfIdentifiersIn y for y in l])
   nil
  
 mapInto(x,fn) == [FUNCALL(fn,y) for y in x]
@@ -1556,8 +1556,8 @@ transformToBackendCode x ==
       (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
         body
     [simplifySEQ ["SEQ",:body]]
-  $FluidVars := REMDUP nreverse $FluidVars
-  $LocalVars := S_-(S_-(REMDUP nreverse $LocalVars,$FluidVars),
+  $FluidVars := removeDuplicates nreverse $FluidVars
+  $LocalVars := S_-(S_-(removeDuplicates nreverse $LocalVars,$FluidVars),
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)

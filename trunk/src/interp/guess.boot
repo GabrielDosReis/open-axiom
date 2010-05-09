@@ -83,7 +83,7 @@ wordsOfString1(s,j) ==
   nil
 
 wordKeys s == 
-  REMDUP [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
+  removeDuplicates [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
     UPPER_-CASE_-P s.i =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])
@@ -125,7 +125,7 @@ findWords(word,table) ==
       $totalWords
   $lastWords := nil
 
-wordSort u == REMDUP listSort(function GLESSEQP,u)
+wordSort u == removeDuplicates listSort(function GLESSEQP,u)
 
 more() == moreWords($lastWord,$lastTable)
 

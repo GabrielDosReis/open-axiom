@@ -688,7 +688,7 @@ LookUpSigSlots(sig,siglist) ==
   if $insideCategoryPackageIfTrue then
            sig := substitute('$,second($functorForm),sig)
   siglist := $lisplibOperationAlist
-  REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
+  removeDuplicates [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
               and KADDR implem]
  
 SigSlotsMatch(sig,pattern,implem) ==
@@ -821,7 +821,7 @@ ICformat u ==
       atom u => u
       u is ["has",:.] => compHasFormat u
       u is ['AND,:l] or u is ['and,:l] =>
-        l:= REMDUP [ICformat v for [v,:l'] in tails l | not member(v,l')]
+        l:= removeDuplicates [ICformat v for [v,:l'] in tails l | not member(v,l')]
              -- we could have duplicates after, even if not before
         LENGTH l=1 => first l
         l1:= first l
@@ -831,7 +831,7 @@ ICformat u ==
       u is ['OR,:l] =>
         (l:= ORreduce l)
         LENGTH l=1 => ICformat first l
-        l:= ORreduce REMDUP [ICformat u for u in l]
+        l:= ORreduce removeDuplicates [ICformat u for u in l]
                  --causes multiple ANDs to be squashed, etc.
                  -- and duplicates that have been built up by tidying
         (l:= Hasreduce l) where

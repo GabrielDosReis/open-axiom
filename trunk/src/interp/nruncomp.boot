@@ -438,7 +438,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
   oldtime:= TEMPUS_-FUGIT()
   [$catsig,:argsig]:= sig
-  catvecListMaker:=REMDUP
+  catvecListMaker:=removeDuplicates
     [(comp($catsig,$EmptyMode,$e)).expr,
       :[compCategories first u for u in second $domainShell.4]]
   condCats:= InvestigateConditions [$catsig,:rest catvecListMaker]
@@ -554,7 +554,7 @@ NRTsetVector4(siglist,formlist,condlist) ==
                   NRTsetVector4a(sig,form,cond)
 
   $lisplibCategoriesExtended:= [$uncondList,:$condList]
-  code := ['mapConsDB,MKQ reverse REMDUP $uncondList]
+  code := ['mapConsDB,MKQ reverse removeDuplicates $uncondList]
   if $condList then
     localVariable := GENSYM()
     code := [["%LET",localVariable,code]]
@@ -575,7 +575,7 @@ NRTsetVector4Part1(siglist,formlist,condlist) ==
   for sig in reverse siglist for form in reverse formlist
          for cond in reverse condlist repeat
                   NRTsetVector4a(sig,form,cond)
-  reducedUncondlist := REMDUP $uncondList
+  reducedUncondlist := removeDuplicates $uncondList
   reducedConlist :=
     [[x,:y] for [x,z] in $condList| y := SETDIFFERENCE(z,reducedUncondlist)]
   revCondlist := reverseCondlist reducedConlist
@@ -594,7 +594,7 @@ reverseCondlist cl ==
 
 NRTsetVector4Part2(uncondList,condList) ==
   $lisplibCategoriesExtended:= [uncondList,:condList]
-  code := ['mapConsDB,MKQ reverse REMDUP uncondList]
+  code := ['mapConsDB,MKQ reverse removeDuplicates uncondList]
   if condList then
     localVariable := GENSYM()
     code := [["%LET",localVariable,code]]

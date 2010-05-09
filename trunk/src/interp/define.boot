@@ -568,7 +568,7 @@ compMakeCategoryObject(c,$e) ==
 
 predicatesFromAttributes: %List -> %List
 predicatesFromAttributes attrList ==
-  REMDUP [second x for x in attrList]
+  removeDuplicates [second x for x in attrList]
 
  
 compDefineFunctor(df,m,e,prefix,fal) ==
@@ -941,7 +941,7 @@ orderByDependency(vl,dl) ==
     dl':= [setDifference(d,newl) for x in vl for d in dl | member(x,vl')]
     vl:= vl'
     dl:= dl'
-  REMDUP nreverse orderedVarList --ordered so ith is indep. of jth if i < j
+  removeDuplicates nreverse orderedVarList --ordered so ith is indep. of jth if i < j
  
 compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
   m,$e,$prefix,$formalArgList) ==
@@ -1057,7 +1057,7 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
             for x in argl for i in 0..]
     --each element is a declared mode for the variable or nil if none exists
   potentialSigList:=
-    REMDUP
+    removeDuplicates
       [sig for sig in sigs |
           fn(sig,opsig,mList)] where
             fn(sig,opsig,mList) ==
@@ -1102,7 +1102,7 @@ checkAndDeclare(argl,form,sig,e) ==
 getSignature(op,argModeList,$e) ==
   1=#
     (sigl:=
-      REMDUP
+      removeDuplicates
         [sig
           for [[dc,:sig],[pred,:.]] in (mmList:= get(op,'modemap,$e)) | dc='_$
             and rest sig=argModeList and knownInfo pred]) => first sigl
@@ -1611,7 +1611,7 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
           ("union"/[fn sig for ["QUOTE",[[.,sig,:.],:.]] in sigList]) where
             fn sig == [D for D in sig | mustInstantiate D]
   parameters:=
-    REMDUP
+    removeDuplicates
       ("append"/
         [[x for x in sig | IDENTP x and x~='_$]
           for ["QUOTE",[[.,sig,:.],:.]] in sigList])

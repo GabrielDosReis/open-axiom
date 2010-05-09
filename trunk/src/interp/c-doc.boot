@@ -181,7 +181,7 @@ finalizeDocumentation() ==
         macroExpand(x,e))
     hn u ==
      -- ((op,sig,doc), ...)  --> ((op ((sig doc) ...)) ...)
-      opList := REMDUP ASSOCLEFT u
+      opList := removeDuplicates ASSOCLEFT u
       [[op,:[[sig,doc] for [op1,sig,doc] in u | op = op1]] for op in opList]
 
 --=======================================================================

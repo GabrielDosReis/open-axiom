@@ -388,7 +388,7 @@ markChanges(originalDef,T,sig) ==
     markEncodeChanges(code,nil)
     frees := 
       null $markFreeStack => nil
-      [['free,:mySort REMDUP $markFreeStack]]
+      [['free,:mySort removeDuplicates $markFreeStack]]
     noriginalBody := markSpliceInChanges originalBody
     nbody := augmentBodyByLoopDecls noriginalBody
     ndef := ['DEF,form,signature,[nil for x in form],nbody]
@@ -870,7 +870,7 @@ markFinish1() ==
      $globalImportStack := delete($categoryNameForDollar,$globalImportStack)
   $commonImports : local := getCommonImports()
   globalImports := 
-    reverse orderByContainment REMDUP [:$commonImports,:$globalImportStack]
+    reverse orderByContainment removeDuplicates [:$commonImports,:$globalImportStack]
   $finalImports: local := SETDIFFERENCE(globalImports,$globalDeclareStack)
   $capsuleStack := 
     [mkNewCapsuleItem(freepart,imports,x) for freepart in $freeStack 
@@ -955,7 +955,7 @@ markRemImportsAndLeadingMacros(leadingMacros,body) ==
 
 mkNewCapsuleItem(frees,i,x) ==
   [originalDef,:ndef] := x
-  imports := reverse orderByContainment REMDUP SETDIFFERENCE(i,$finalImports)
+  imports := reverse orderByContainment removeDuplicates SETDIFFERENCE(i,$finalImports)
   importPart := [["import",d] for d in imports]
   nbody := 
     ndef is ["%LET",.,x] => x
@@ -1362,7 +1362,7 @@ markGetPaths(x,y) ==
   markPaths(x,y,[nil])
  
 mkCheck() ==
-  for [x, :y] in REMDUP $badStack repeat
+  for [x, :y] in removeDuplicates $badStack repeat
     pp '"!!-------------------------------!!"
     res := mkGetPaths(x, y)
     oldRes := markPaths(x, y, [nil])
@@ -1376,11 +1376,11 @@ mkCheck() ==
 reverseDown u == [reverse x for x in u]
 
 mkCheckRun() ==
-  for [x, :y] in REMDUP $badStack repeat
+  for [x, :y] in removeDuplicates $badStack repeat
     pp mkGetPaths(x,y)
 
 mkGetPaths(x,y) ==
-  u := REMDUP mkPaths(x,y) => getLocationsOf(u,y,nil)
+  u := removeDuplicates mkPaths(x,y) => getLocationsOf(u,y,nil)
   nil   
 
 mkPaths(x,y) ==   --x < y; find location s of x in y (initially s=nil)
