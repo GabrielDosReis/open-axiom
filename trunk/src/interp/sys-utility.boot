@@ -226,7 +226,7 @@ checkMkdir path ==
 
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
-  CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)
+  strconc(systemRootDirectory(),'"algebra/",m,'".",$faslType)
 
 ++ load module in `path' that supposedly will define the function 
 ++ indicated by `name'.

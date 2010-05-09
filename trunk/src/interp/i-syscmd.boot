@@ -142,7 +142,7 @@ unAbbreviateKeyword x ==
   x' :=selectOptionLC(x,$SYSCOMMANDS,'commandErrorIfAmbiguous)
   if not x' then
     x' := 'system
-    SETQ(LINE, CONCAT('")system ", SUBSTRING(LINE, 1, #LINE-1)))
+    SETQ(LINE, strconc('")system ", SUBSTRING(LINE, 1, #LINE-1)))
     $currentLine := LINE
   selectOption(x',commandsForUserLevel $systemCommands,
     'commandUserLevelError)
@@ -2605,7 +2605,7 @@ spool filename ==
     TERPRI()
     resetHighlight()
   PROBE_-FILE STRING first filename =>
-    systemError CONCAT('"file ", STRING first filename, '" already exists")
+    systemError strconc('"file ", STRING first filename, '" already exists")
   DRIBBLE STRING first filename
   SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
   TERPRI()
@@ -2828,7 +2828,7 @@ removeUndoLines u == --called by writeInputLines
            s1 = '")redo" => 0
            s2 ~= '"" => undoCount PARSE_-INTEGER s2
            -1
-        y.first := CONCAT('">",code,STRINGIMAGE n)
+        y.first := strconc('">",code,STRINGIMAGE n)
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil
@@ -3096,7 +3096,7 @@ processSynonyms() ==
   else opt := '" "
   if (SIZE synstr) > (SIZE fun) then
     for i in (SIZE fun)..(SIZE synstr) repeat
-      fun := CONCAT (fun, '" ")
+      fun := strconc (fun, '" ")
 --  $currentLine := STRCONC(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
   cl := STRCONC(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
   SETQ(LINE,cl)
@@ -3115,7 +3115,7 @@ tabsToBlanks s ==
    s
 
 doSystemCommand string ==
-   string := CONCAT('")", EXPAND_-TABS string)
+   string := strconc('")", EXPAND_-TABS string)
    LINE: fluid := string
    processSynonyms()
    string := LINE
@@ -3162,7 +3162,7 @@ handleNoParseCommands(unab, string) ==
                   copyright )) => 
     sayKeyedMsg("S2IV0005", NIL)
     nil
-  funName := INTERN CONCAT('"np",STRING unab)
+  funName := INTERN strconc('"np",STRING unab)
   FUNCALL(funName, SUBSEQ(string, spaceIndex+1))
 
 

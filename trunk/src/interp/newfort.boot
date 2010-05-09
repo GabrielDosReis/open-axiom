@@ -717,7 +717,7 @@ fortFormatCharacterTypes(names) ==
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
     fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in cdr(u)]) where
-       mkCharName v == CONCAT("CHARACTER*(",STRINGIMAGE v,")")
+       mkCharName v == strconc("CHARACTER*(",STRINGIMAGE v,")")
   if (not null genuineArrays) then
     fortFormatTypes1('"CHARACTER",mkParameterList2 genuineArrays) where
        mkParameterList2 l ==

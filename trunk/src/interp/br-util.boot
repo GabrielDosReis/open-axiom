@@ -112,11 +112,11 @@ capitalize s ==
 escapeSpecialIds u ==   --very expensive function
   x := LASSOC(u,$htCharAlist) => [x]
   #u = 1 =>
-    member(u, $htSpecialChars) => [CONCAT('"_\", u)]
+    member(u, $htSpecialChars) => [strconc('"_\", u)]
     [u]
   c := char u.0
   or/[c = char y for y in $htSpecialChars] =>
-    [CONCAT('"_\",u)]
+    [strconc('"_\",u)]
   [u]
 
 escapeString com ==   --this makes changes on single comment lines
@@ -489,7 +489,7 @@ bcNameCountTable(u,fn,gn,:options) ==
 
 dbSayItemsItalics(:u) ==
   htSay '"{\em "
-  APPLY(function dbSayItems,u)
+  apply(function dbSayItems,u)
   htSay '"}"
 
 dbSayItems(countOrPrefix,singular,plural,:options) ==

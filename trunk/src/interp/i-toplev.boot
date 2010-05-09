@@ -89,7 +89,7 @@ start(:l) ==
   SETQ($IOindex,1)
   if $displayStartMsgs then sayKeyedMsg("S2IZ0053",['"history"])
   initHist()
-  if functionp 'addtopath then addtopath CONCAT(systemRootDirectory(),'"bin")
+  if functionp 'addtopath then addtopath strconc(systemRootDirectory(),'"bin")
   if null(l) then
     if $displayStartMsgs then
       sayKeyedMsg("S2IZ0053",[namestring ['_.axiom,'input]])
@@ -267,12 +267,12 @@ msgText(key, args) ==
   msg := segmentKeyedMsg getKeyedMsg key
   msg := substituteSegmentedMsg(msg,args)
   msg := flowSegmentedMsg(msg,$LINELENGTH,$MARGIN)
-  APPLY(function CONCAT, [STRINGIMAGE x for x in CDAR msg])
+  apply(function strconc, [STRINGIMAGE x for x in CDAR msg])
 
 justifyMyType(t) ==
   len := #t
   len > $LINELENGTH => t
-  CONCAT(fillerSpaces($LINELENGTH-len), t)
+  strconc(fillerSpaces($LINELENGTH-len), t)
 
 typeTimePrin x ==
   $highlightDelta: local:= 0

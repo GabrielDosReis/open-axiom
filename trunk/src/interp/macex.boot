@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -182,7 +182,7 @@ mac0InfiniteExpansion(posn, body, active) ==
             got := mac0GetName b
             not got => '"???"
             [sy,st] := got
-            st = 'mlambda => CONCAT(PNAME sy, '"(...)")
+            st = 'mlambda => strconc(PNAME sy, '"(...)")
             PNAME sy
     ncSoftError (posn, 'S2CM0005, _
        [ [:[n,'"==>"] for n in reverse rnames], fname, %pform body ]  )

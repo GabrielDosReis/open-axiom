@@ -348,9 +348,9 @@ lfinteger x==
 --          then ["id",INTERN x]
 --          else ["integer",x]
 
-lfrinteger (r,x)==["integer",CONCAT (r,CONCAT('"r",x))]
---lfrfloat(a,w,v)==["rfloat",CONCAT(a,'"r.",v)]
-lffloat(a,w,e)==["float",CONCAT(a,'".",w,'"e",e)]
+lfrinteger (r,x)==["integer",strconc (r,strconc('"r",x))]
+--lfrfloat(a,w,v)==["rfloat",strconc(a,'"r.",v)]
+lffloat(a,w,e)==["float",strconc(a,'".",w,'"e",e)]
 lfstring x==if #x=1 then ["char",x] else ["string",x]
 lfcomment x== ["comment", x]
 lfnegcomment x== ["negcomment", x]
@@ -505,11 +505,11 @@ scanS()==
                   a:=scanEsc() -- case of end of line when false
                   b:=if a
                      then
-                       str:=CONCAT(str,scanTransform($ln.$n))
+                       str:=strconc(str,scanTransform($ln.$n))
                        $n:=$n+1
                        scanS()
                       else scanS()
-                  CONCAT(str,b)
+                  strconc(str,b)
 scanTransform x==x
 
 --idChar? x== scanLetter x or DIGITP x or x in '(_? _%)
@@ -552,7 +552,7 @@ scanW(b)==             -- starts pointing to first char
                     if idChar?($ln.$n)
                     then scanW(b)
                     else [b,'""]
-           [bb.0 or b,CONCAT(str,bb.1)]
+           [bb.0 or b,strconc(str,bb.1)]
 
 scanWord(esp) ==
           aaa:=scanW(false)
@@ -582,7 +582,7 @@ spleI1(dig,zro) ==
              $n:=$n+1
              a:=scanEsc()
              bb:=spleI1(dig,zro)-- escape, anyno spaces are ignored
-             CONCAT(str,bb)
+             strconc(str,bb)
 
 scanCheckRadix(a,w)==
   r := PARSE_-INTEGER a
@@ -634,7 +634,7 @@ scanNumber() ==
                     --$n:=$n+1
                       v:=spleI1(function rdigit?,true)
                       scanCheckRadix(a,v)
-                      scanExponent(CONCAT(a,'"r",w),v)
+                      scanExponent(strconc(a,'"r",w),v)
                   else lfrinteger(a,w)
 
 scanExponent(a,w)==
@@ -668,7 +668,7 @@ scanExponent(a,w)==
                       then
                         e:=spleI(function digit?)
                         lffloat(a,w,
-                          (if c1=MINUSCOMMENT then CONCAT('"-",e)else e))
+                          (if c1=MINUSCOMMENT then strconc('"-",e)else e))
                       else
                         $n:=n
                         lffloat(a,w,'"0")

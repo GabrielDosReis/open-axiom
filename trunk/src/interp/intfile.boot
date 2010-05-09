@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ namespace BOOT
 shoeInternFile(fn)==
    a:=shoeInputFile fn
    if null a
-   then WRITE_-LINE (CONCAT(fn,'" not found"),$ErrorStream)
+   then WRITE_-LINE (strconc(fn,'" not found"),$ErrorStream)
    else shoeIntern incRgen a
  
 shoeIntern (s)==
@@ -58,7 +58,7 @@ shoeStrings (stream)==
    then ['"",stream]
    else
        [h,t]:=shoeStrings(cdr stream)
-       [CONCAT(a,h),t]
+       [strconc(a,h),t]
  
 --fetchKeyedMsg(key,b)== GET(key,"MSGS")
 --shoeInternFile '"/usr/local/scratchpad/cur/doc/msgs/co-eng.msgs"

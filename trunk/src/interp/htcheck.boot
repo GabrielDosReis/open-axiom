@@ -85,7 +85,7 @@ $primitiveHtCommands := '(
 
 buildHtMacroTable() ==
   $htMacroTable := MAKE_-HASHTABLE 'UEQUAL
-  fn := CONCAT(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
+  fn := strconc(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
   if PROBE_-FILE(fn) then
     instream := MAKE_-INSTREAM fn
     while not EOFP instream repeat

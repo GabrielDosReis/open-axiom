@@ -42,7 +42,7 @@ npNull x== StreamNull x
 StreamNull x==
   null x or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
-          st:=APPLY(second x,CDDR x)
+          st:=apply(second x,CDDR x)
           x.first := first st
           x.rest := rest st
   x is ["nullstream",:.]
@@ -89,7 +89,7 @@ next(f,s)==Delay(function next1,[f,s])
 next1(:z)==
       [f,s]:=z
       StreamNull s=> StreamNil
-      h:= APPLY(f, [s])
+      h:= apply(f, [s])
       incAppend(car h,next(f,cdr h))
  
 nextown(f,g,s)==Delay(function nextown1,[f,g,s])
@@ -107,8 +107,8 @@ nextown2(f,g,e,x) ==
  
 spadcall1(g)==
     [impl, :env] := g
-    APPLY(impl, [env])
+    apply(impl, [env])
  
 spadcall2(f,args) ==
     [impl, :env] := f
-    APPLY(impl, [args, env])
+    apply(impl, [args, env])

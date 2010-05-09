@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2009 Gabriel Dos Reis.
+-- Copyright (C) 2007-2010 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -187,7 +187,7 @@ import oa__system: string -> int for runCommand
 ++ run a program with specified arguments
 runProgram(prog,args) ==
 )if %hasFeature KEYWORD::GCL
-  SYSTEM::SYSTEM(CONCAT/[prog,:[:['" ",a] for a in args]])
+  SYSTEM::SYSTEM(strconc/[prog,:[:['" ",a] for a in args]])
 )elseif %hasFeature KEYWORD::CLISP
   EXT::RUN_-PROGRAM(prog,KEYWORD::ARGUMENTS,args)
 )elseif %hasFeature KEYWORD::SBCL

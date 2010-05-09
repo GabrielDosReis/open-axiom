@@ -184,14 +184,14 @@ bcCreateVariableString(i) ==
    STRCONC('"x",STRINGIMAGE i)
 
 bcMakeUnknowns(number)==
-   APPLY('CONCAT,[STRCONC(bcCreateVariableString(i)," ") for i in 1..number])
+   apply('CONCAT,[STRCONC(bcCreateVariableString(i)," ") for i in 1..number])
    
 bcMakeEquations(i,number)==
    number =1 => STRCONC(bcCreateVariableString(1),"^2+1")
    bcCreateVariableString(i)
    STRCONC(
      STRCONC(
-      APPLY('CONCAT,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
+      apply('CONCAT,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
         STRCONC("-2*",STRCONC(bcCreateVariableString(i),"^2")))
 
 
@@ -202,7 +202,7 @@ bcMakeLinearEquations(i,number)==
         STRCONC(bcCreateVariableString(1),STRCONC("-",bcCreateVariableString(2)))
    STRCONC(
      STRCONC(
-      APPLY('CONCAT,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
+      apply('CONCAT,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
         STRCONC("-2*",bcCreateVariableString(i)))
       
 
