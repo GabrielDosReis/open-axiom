@@ -1046,7 +1046,7 @@ markPrint(:options) ==   --print $def
     else      
       ['add,a,:r] := $originalBody
       xtraLines := 
-        "append"/[[STRCONC(name,'": Category == with"),'""] 
+        "append"/[[strconc(name,'": Category == with"),'""] 
            for name in markCheckForAttributes a]
       nbody :=
         $originalBody is ['add,a,b] =>
@@ -1440,7 +1440,7 @@ combineDefinitions() ==
         [predl,.,:def]    := item
         ['DEF, form, :.] := def
         ops := PNAME op
-        opName := INTERN(STRCONC(ops,'"X",STRINGIMAGE i))
+        opName := INTERN(strconc(ops,'"X",STRINGIMAGE i))
         form.first := opName
 --      rplacaSubst(op, opName, def)
         $acc := [[form,:predl], :$acc]

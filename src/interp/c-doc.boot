@@ -144,16 +144,16 @@ finalizeDocumentation() ==
       sayKeyedMsg("S2CD0001",NIL)
       bigcnt := 1
       if noHeading or signatures or attributes then
-        sayKeyedMsg("S2CD0002",[STRCONC(STRINGIMAGE bigcnt,'"."),name])
+        sayKeyedMsg("S2CD0002",[strconc(STRINGIMAGE bigcnt,'"."),name])
         bigcnt := bigcnt + 1
         litcnt := 1
         if noHeading then
           sayKeyedMsg("S2CD0003",
-            [STRCONC('"(",STRINGIMAGE litcnt,'")"),name])
+            [strconc('"(",STRINGIMAGE litcnt,'")"),name])
           litcnt := litcnt + 1
         if signatures then
           sayKeyedMsg("S2CD0004",
-            [STRCONC('"(",STRINGIMAGE litcnt,'")")])
+            [strconc('"(",STRINGIMAGE litcnt,'")")])
           litcnt := litcnt + 1
           for [op,sig] in signatures repeat
             s := formatOpSignature(op,sig)
@@ -162,7 +162,7 @@ finalizeDocumentation() ==
               ['%x9,:s]
         if attributes then
           sayKeyedMsg("S2CD0005",
-            [STRCONC('"(",STRINGIMAGE litcnt,'")")])
+            [strconc('"(",STRINGIMAGE litcnt,'")")])
           litcnt := litcnt + 1
           for x in attributes repeat
             a := form2String x
@@ -170,7 +170,7 @@ finalizeDocumentation() ==
               atom a => ['%x9,a]
               ['%x9,:a]
       if unusedCommentLineNumbers then
-        sayKeyedMsg("S2CD0006",[STRCONC(STRINGIMAGE bigcnt,'"."),name])
+        sayKeyedMsg("S2CD0006",[strconc(STRINGIMAGE bigcnt,'"."),name])
         for [n,r] in unusedCommentLineNumbers repeat
           sayMSG ['"   ",:bright n,'"   ",r]
   hn [[:fn(sig,$e),:doc] for [sig,:doc] in docList] where
@@ -245,7 +245,7 @@ transDoc(conname,doclist) ==
       $x = 'constructor =>
         v :=checkExtract('"Description:",u) or u and
               checkExtract('"Description:",
-                [STRCONC('"Description: ",first u),:rest u])
+                [strconc('"Description: ",first u),:rest u])
         transformAndRecheckComments('constructor,v or u)
       transformAndRecheckComments($x,u)
     acc := [[$x,longline],:acc]  --processor assumes a list of lines
@@ -410,7 +410,7 @@ removeBackslashes s ==
     s = '"" => '""
     (k := charPosition($charBack,s,0)) < #s =>
       k = 0 => removeBackslashes SUBSTRING(s,1,nil)
-      STRCONC(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
+      strconc(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
     s
 
 ++ returns the arity (as known to the global DB) of the functor
@@ -613,7 +613,7 @@ checkIndentedLines(u, margin) ==
         u2 := [:u2, s]
     verbatim => u2 := [:u2, SUBSTRING(x, margin, nil)]
     margin = k => u2 := [:u2, s]
-    u2 := [:u2, STRCONC('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
+    u2 := [:u2, strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
   u2
 
 newString2Words l ==
@@ -633,7 +633,7 @@ newWordFrom(l,i,m) ==
   while i <= m and not done repeat
     ch := l.i
     ch = $charBlank or ch = $charFauxNewline => done := true
-    buf := STRCONC(buf, STRING ch)
+    buf := strconc(buf, STRING ch)
     i := i + 1
   [buf,i]
 
@@ -682,7 +682,7 @@ checkAddIndented(x,margin) ==
   k := firstNonBlankPosition x
   k = -1 => '"\blankline "
   margin = k => x
-  STRCONC('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(SUBSTRING(x,k,nil),0),'"}")
+  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(SUBSTRING(x,k,nil),0),'"}")
 
 checkAddSpaceSegments(u,k) ==
   m := MAXINDEX u
@@ -691,7 +691,7 @@ checkAddSpaceSegments(u,k) ==
   j := i
   while (j := j + 1) < m and u.j = (char '_  ) repeat 'continue
   n := j - i   --number of blanks
-  n > 1 => STRCONC(SUBSTRING(u,0,i),'"\space{",
+  n > 1 => strconc(SUBSTRING(u,0,i),'"\space{",
              STRINGIMAGE n,'"}",checkAddSpaceSegments(SUBSTRING(u,i + n,nil),0))
   checkAddSpaceSegments(u,j)
 
@@ -841,7 +841,7 @@ isVowel c ==
 
 checkAddBackSlashes s ==
   (CHARP s and (c := s)) or (#s = 1 and (c := s.0)) =>
-    MEMQ(s,$charEscapeList) => STRCONC($charBack,c)
+    MEMQ(s,$charEscapeList) => strconc($charBack,c)
     s
   k := 0
   m := MAXINDEX s
@@ -852,7 +852,7 @@ checkAddBackSlashes s ==
       char = $charBack => k := k + 2
       MEMQ(char,$charEscapeList) => return (insertIndex := k)
     k := k + 1
-  insertIndex => checkAddBackSlashes STRCONC(SUBSTRING(s,0,insertIndex),$charBack,s.k,SUBSTRING(s,insertIndex + 1,nil))
+  insertIndex => checkAddBackSlashes strconc(SUBSTRING(s,0,insertIndex),$charBack,s.k,SUBSTRING(s,insertIndex + 1,nil))
   s
 
 checkAddSpaces u ==
@@ -1120,7 +1120,7 @@ checkTransformFirsts(opname,u,margin) ==
   else if namestring = '"One" then namestring := '"1"
   margin > 0 =>
     s := leftTrim u
-    STRCONC(fillerSpaces margin,checkTransformFirsts(opname,s,0))
+    strconc(fillerSpaces margin,checkTransformFirsts(opname,s,0))
   m := MAXINDEX u
   m < 2 => u
   u.0 = $charBack => u
@@ -1139,7 +1139,7 @@ checkTransformFirsts(opname,u,margin) ==
            then checkDocError ['"Missing close bracket on first line: ", u]
            else checkDocError ['"Missing close parenthesis on first line: ", u]
          u
-      STRCONC('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
+      strconc('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
     k := checkSkipToken(u,j,m) or return u
     infixOp := INTERN SUBSTRING(u,j,k - j)
     not GETL(infixOp,'Led) =>                                     --case 3
@@ -1150,14 +1150,14 @@ checkTransformFirsts(opname,u,margin) ==
         (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
           if l > MAXINDEX u then l := k - 1
-          STRCONC('"\spad{",SUBSTRING(u,0,l + 1),'"}",SUBSTRING(u,l + 1,nil))
-      STRCONC('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+          strconc('"\spad{",SUBSTRING(u,0,l + 1),'"}",SUBSTRING(u,l + 1,nil))
+      strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
     l := checkSkipBlanks(u,k,m) or return u
     n := checkSkipToken(u,l,m) or return u
     namestring ~= PNAME infixOp =>
       checkDocError ['"Improper initial operator in comments: ",infixOp]
       u
-    STRCONC('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
+    strconc('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
   true =>          -- not ALPHA_-CHAR_-P u.0 =>
     i := checkSkipToken(u,0,m) or return u
     namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
@@ -1170,12 +1170,12 @@ checkTransformFirsts(opname,u,margin) ==
     u.j = char '_( =>                                            --case 4
       j := getMatchingRightPren(u,j + 1,char '_(,char '_))
       j > m => u
-      STRCONC('"\spad{",SUBSTRING(u,0,j + 1),'"}",SUBSTRING(u,j + 1,nil))
+      strconc('"\spad{",SUBSTRING(u,0,j + 1),'"}",SUBSTRING(u,j + 1,nil))
     k := checkSkipToken(u,j,m) or return u
     namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    STRCONC('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+    strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
 
 getMatchingRightPren(u,j,open,close) ==
   count := 0
@@ -1220,9 +1220,9 @@ checkAlphabetic c ==
 docreport(nam) ==
 --creates a report for person "nam" using file "whofiles"
   removeFile '"docreport.input"
-  runCommand STRCONC('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
+  runCommand strconc('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
   runCommand '"cat docreport.header temp.input > docreport.input"
-  runCommand STRCONC('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
+  runCommand strconc('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
   runCommand '"cat docreport.input temp.input > temp1.input"
   runCommand '"cat temp1.input docreport.trailer > docreport.input"
   removeFile '"temp.input"
@@ -1231,7 +1231,7 @@ docreport(nam) ==
   _/RQ()
 
 setOutStream nam ==
-  filename := STRCONC('"/tmp/",STRINGIMAGE nam,".docreport")
+  filename := strconc('"/tmp/",STRINGIMAGE nam,".docreport")
   $outStream := MAKE_-OUTSTREAM filename
 
 whoOwns(con) ==
@@ -1239,7 +1239,7 @@ whoOwns(con) ==
 --con=constructor name (id beginning with a capital), returns owner as a string
   filename := getConstructorSourceFileFromDB con
   quoteChar := char '_"
-  runCommand STRCONC('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
+  runCommand strconc('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
   value :=
     EOFP instream => nil

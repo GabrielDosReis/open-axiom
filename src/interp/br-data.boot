@@ -120,13 +120,13 @@ buildLibdbConEntry conname ==
       '""
     argpart:= SUBSTRING(form2HtString ['f,:argl],1,nil)
     sigpart:= libConstructorSig $conform
-    header := STRCONC($kind,PNAME conname)
+    header := strconc($kind,PNAME conname)
     buildLibdbString [header,#argl,$exposed?,sigpart,argpart,abb,conComments]
 
 dbMkForm x == atom x and [x] or x
 
 buildLibdbString [x,:u] ==
-  STRCONC(STRINGIMAGE x,"STRCONC"/[STRCONC('"`",STRINGIMAGE y) for y in u])
+  strconc(STRINGIMAGE x,"STRCONC"/[strconc('"`",STRINGIMAGE y) for y in u])
 
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := getConstructorModemapFromDB conname
@@ -150,7 +150,7 @@ libConstructorSig [conname,:argl] ==
 
 concatWithBlanks r ==
   r is [head,:tail] =>
-    tail => STRCONC(head,'" ",concatWithBlanks tail)
+    tail => strconc(head,'" ",concatWithBlanks tail)
     head
   '""
 
@@ -161,8 +161,8 @@ writedb(u) ==
   TERPRI $outStream
 
 addPatchesToLongLines(s,n) ==
-  #s > n => STRCONC(SUBSTRING(s,0,n),
-              addPatchesToLongLines(STRCONC('"--",SUBSTRING(s,n,nil)),n))
+  #s > n => strconc(SUBSTRING(s,0,n),
+              addPatchesToLongLines(strconc('"--",SUBSTRING(s,n,nil)),n))
   s
 
 buildLibOps oplist == for [op,sig,:pred] in oplist repeat buildLibOp(op,sig,pred)
@@ -179,8 +179,8 @@ buildLibOp(op,sig,pred) ==
     (s := STRINGIMAGE op) = '"One" => '"1"
     s = '"Zero" => '"0"
     s
-  header := STRCONC('"o",sop)
-  conform:= STRCONC($kind,form2LispString $conform)
+  header := strconc('"o",sop)
+  conform:= strconc($kind,form2LispString $conform)
   comments:= libdbTrim concatWithBlanks LASSOC(sig,LASSOC(op,$doc))
   checkCommentsForBraces('operation,sop,sigpart,comments)
   writedb
@@ -215,12 +215,12 @@ buildLibAttrs attrlist ==
 
 buildLibAttr(name,argl,pred) ==
 --attributes      AKname\#\args\conname\pred\comments (K is U or C)
-  header := STRCONC('"a",STRINGIMAGE name)
+  header := strconc('"a",STRINGIMAGE name)
   argPart:= SUBSTRING(form2LispString ['f,:argl],1,nil)
   pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
   predString := (pred = 'T => '""; form2LispString pred)
-  header := STRCONC('"a",STRINGIMAGE name)
-  conname := STRCONC($kind,form2LispString $conname)
+  header := strconc('"a",STRINGIMAGE name)
+  conname := strconc($kind,form2LispString $conname)
   comments:= concatWithBlanks LASSOC(['attribute,:argl],LASSOC(name,$doc))
   checkCommentsForBraces('attribute,STRINGIMAGE name,argl,comments)
   writedb
@@ -246,12 +246,12 @@ dbHasExamplePage conname ==
   sname    := STRINGIMAGE conname
   abb      := constructor? conname
   ucname   := UPCASE STRINGIMAGE abb
-  pathname :=STRCONC(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
-  isExistingFile pathname => INTERN STRCONC(sname,'"XmpPage")
+  pathname :=strconc(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
+  isExistingFile pathname => INTERN strconc(sname,'"XmpPage")
   nil
 
 dbRead(n) ==
-  instream := MAKE_-INSTREAM STRCONC(systemRootDirectory(), '"/algebra/libdb.text")
+  instream := MAKE_-INSTREAM strconc(systemRootDirectory(), '"/algebra/libdb.text")
   FILE_-POSITION(instream,n)
   line := READLINE instream
   SHUT instream
@@ -259,7 +259,7 @@ dbRead(n) ==
 
 dbReadComments(n) ==
   n = 0 => '""
-  instream := MAKE_-INSTREAM STRCONC(systemRootDirectory(),'"/algebra/comdb.text")
+  instream := MAKE_-INSTREAM strconc(systemRootDirectory(),'"/algebra/comdb.text")
   FILE_-POSITION(instream,n)
   line := READLINE instream
   k := dbTickIndex(line,1,1)
@@ -269,7 +269,7 @@ dbReadComments(n) ==
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
         xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
   SHUT instream
-  STRCONC(line, "STRCONC"/nreverse xtralines)
+  strconc(line, "STRCONC"/nreverse xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -316,7 +316,7 @@ dbSpreadComments(line,n) ==
   k >= MAXINDEX line => [SUBSTRING(line,n,nil)]
   line.(k + 1) ~= char '_- =>
     u := dbSpreadComments(line,k)
-    [STRCONC(SUBSTRING(line,n,k - n),first u),:rest u]
+    [strconc(SUBSTRING(line,n,k - n),first u),:rest u]
   [SUBSTRING(line,n,k - n),:dbSpreadComments(SUBSTRING(line,k,nil),0)]
 
 --============================================================================
@@ -329,7 +329,7 @@ buildGloss() ==  --called by buildDatabase (database.boot)
   $outStream: local := MAKE_-OUTSTREAM '"temp.text"
   $x : local := nil
   $attribute? : local := true     --do not surround first word
-  pathname := STRCONC(systemRootDirectory(),'"doc/gloss.text")
+  pathname := strconc(systemRootDirectory(),'"doc/gloss.text")
   instream := MAKE_-INSTREAM pathname
   keypath  := '"glosskey.text"
   removeFile keypath
@@ -407,7 +407,7 @@ getGlossLines instream ==
         #last > 0 and last.(MAXINDEX last) ~= $charBlank => $charBlank
         '""
       lastLineHadTick := false
-      text := [STRCONC(last,fill,line),:rest text]
+      text := [strconc(last,fill,line),:rest text]
     lastLineHadTick := true
     keys := [SUBSTRING(line,0,n),:keys]
     text := [SUBSTRING(line,n + 1,nil),:text]
@@ -435,7 +435,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
 getDefaultPackageClients con ==  --called by mkUsersHashTable
   catname := INTERN SUBSTRING(s := PNAME con,0,MAXINDEX s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
-    pakname := INTERN STRCONC(PNAME catAncestor,'"&")
+    pakname := INTERN strconc(PNAME catAncestor,'"&")
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
     acc := union([CAAR x for x in domainsOf([catAncestor],nil)],acc)
   listSort(function GLESSEQP,acc)

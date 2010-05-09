@@ -398,7 +398,7 @@ isBinaryInfix x ==
   member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
 
 stringApp([.,u],x,y,d) ==
-  appChar(STRCONC($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)
+  appChar(strconc($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)
 
 stringWidth u ==
   u is [.,u] or THROW('outputFailure,'outputFailure)
@@ -482,7 +482,7 @@ sayMath u ==
 
 outputTran x ==
   member(x,'("failed" "nil" "prime" "sqfr" "irred")) =>
-    STRCONC('"_"",x,'"_"")
+    strconc('"_"",x,'"_"")
   string? x => x
   VECP x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
@@ -1178,7 +1178,7 @@ maprinRows matrixList ==
     for [name,:m] in y for n in 0.. repeat
       if not $collectOutput then TERPRI($algebraOutputStream)
       andWhere := (name = firstName => '"where "; '"and ")
-      line := STRCONC(andWhere, PNAME name)
+      line := strconc(andWhere, PNAME name)
       maprinChk ["=",line,m]
       -- note that this could place a new element on $MatrixList, hence the loop
 
@@ -1645,7 +1645,7 @@ outputOp x ==
     n:=
       GETL(op,"NARY") => 2
       #args
-    newop:= INTERN STRCONC("*",STRINGIMAGE n,PNAME op)
+    newop:= INTERN strconc("*",STRINGIMAGE n,PNAME op)
     [newop,:[outputOp y for y in args]]
   x
 
@@ -2350,11 +2350,11 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
 prnd(start, op) ==
 -->
   $testOutputLineFlag =>
-    string := STRCONC(fillerSpaces MAX(0,start - 1),op)
+    string := strconc(fillerSpaces MAX(0,start - 1),op)
     $testOutputLineList := [string,:$testOutputLineList]
   PRINTEXP(fillerSpaces MAX(0,start - 1),$algebraOutputStream)
   $collectOutput =>
-    string := STRCONC(fillerSpaces MAX(0,start - 1),op)
+    string := strconc(fillerSpaces MAX(0,start - 1),op)
     $outputLines := [string, :$outputLines]
   PRINTEXP(op,$algebraOutputStream)
   TERPRI $algebraOutputStream

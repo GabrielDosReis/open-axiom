@@ -138,7 +138,7 @@ replacePercentByDollar s == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => '""
     (m := charPosition(char "%",s,i)) > n => SUBSTRING(s,i,nil)
-    STRCONC(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
+    strconc(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
 
 htpSetLabelInputString(htPage, label, val) ==
 -- value user typed as input string on page

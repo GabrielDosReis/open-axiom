@@ -47,12 +47,12 @@ bcFinish(name,arg,:args) == bcGen bcMkFunction(name,arg,args)
 
 bcMkFunction(name,arg,args) ==
   args := [x for x in args | x]
-  STRCONC(name,'"(",arg,"STRCONC"/[STRCONC('",", x) for x in args],'")")
+  strconc(name,'"(",arg,"STRCONC"/[strconc('",", x) for x in args],'")")
 
 bcString2HyString2 s ==
   (string? s) and (s.0 = char '_")  =>
     len := #s
-    STRCONC('"\_"", SUBSTRING(s, 1, len-2), '"\_"")
+    strconc('"\_"", SUBSTRING(s, 1, len-2), '"\_"")
   s
 
 bcString2HyString s == s
@@ -62,8 +62,8 @@ bcFindString(s,i,n,char) ==  or/[j for j in i..n | s.j = char]
 bcGen command ==
   htInitPage('"Basic Command",nil)
   string :=
-    #command < 50 => STRCONC('"{\centerline{\tt ",command,'" }}")
-    STRCONC('"{\tt ",command,'" }")
+    #command < 50 => strconc('"{\centerline{\tt ",command,'" }}")
+    strconc('"{\tt ",command,'" }")
   htMakePage [
      '(text
         "{Here is the AXIOM command you could have issued to compute this result:}"
@@ -76,7 +76,7 @@ bcGen command ==
 linkGen command ==
   htInitPage('"AXIOM-Nag Link Command",nil)
   string := 
-    #command < 50 => STRCONC('"{\centerline{ ",command,'" }}")
+    #command < 50 => strconc('"{\centerline{ ",command,'" }}")
     command
   htMakePage [
      '(text 
@@ -105,10 +105,10 @@ bcString2WordList s == fn(s,0,MAXINDEX s) where
 
 bcwords2liststring u ==
   null u => nil
-  STRCONC('"[",first u,fn rest u) where
+  strconc('"[",first u,fn rest u) where
     fn(u) ==
       null u => '"]"
-      STRCONC('", ",first u,fn rest u)
+      strconc('", ",first u,fn rest u)
 
 bcVectorGen vec == bcwords2liststring vec
 
@@ -116,7 +116,7 @@ bcError string ==
   sayBrightlyNT '"NOTE: "
   sayBrightly string
 
-bcDrawIt(ind,a,b) == STRCONC(ind,'"=",a,'"..",b)
+bcDrawIt(ind,a,b) == strconc(ind,'"=",a,'"..",b)
 
 bcNotReady htPage ==
   htInitPage('"Basic Command",nil)
@@ -128,11 +128,11 @@ bcNotReady htPage ==
 htStringPad(n,w) ==
   s := STRINGIMAGE n
   ws := #s
-  STRCONC('"\space{",STRINGIMAGE (w - ws + 1),'"}",s)
+  strconc('"\space{",STRINGIMAGE (w - ws + 1),'"}",s)
 
 stringList2String x ==
   null x => '"()"
-  STRCONC('"(",first x,"STRCONC"/[STRCONC('",",y) for y in rest x],'")")
+  strconc('"(",first x,"STRCONC"/[strconc('",",y) for y in rest x],'")")
 
-htMkName(s,n) == STRCONC(s,STRINGIMAGE n)
+htMkName(s,n) == strconc(s,STRINGIMAGE n)
 

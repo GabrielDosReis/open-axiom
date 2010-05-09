@@ -165,7 +165,7 @@ processChPosesForOneLine msgList ==
             putFTText (msg,chPosList)
         posLetter := rest assoc(poCharPosn getMsgPos msg,chPosList)
         oldPre := getMsgPrefix msg
-        setMsgPrefix (msg,STRCONC(oldPre,_
+        setMsgPrefix (msg,strconc(oldPre,_
                      MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
     NCONC(msgList,LIST leaderMsg)  --a back cons
@@ -506,7 +506,7 @@ makeLeaderMsg chPosList ==
     st := MAKE_-FULL_-CVEC ($preLength- 3)
     oldPos := -1
     for [posNum,:posLetter] in reverse chPosList repeat
-        st := STRCONC(st, _
+        st := strconc(st, _
             rep(char ".", (posNum - oldPos - 1)),posLetter)
         oldPos := posNum
     ['leader,$nopos,'nokey,NIL,NIL,[st]]
@@ -518,9 +518,9 @@ makeMsgFromLine line ==
     localNumOfLine  :=
         i := poLinePosn posOfLine
         stNum := STRINGIMAGE i
-        STRCONC(rep(char " ", ($preLength - 7 - SIZE stNum)),_
+        strconc(rep(char " ", ($preLength - 7 - SIZE stNum)),_
          stNum)
-    ['line,posOfLine,NIL,NIL, STRCONC('"Line", localNumOfLine),_
+    ['line,posOfLine,NIL,NIL, strconc('"Line", localNumOfLine),_
         textOfLine]
  
 getMsgTag msg == ncTag msg

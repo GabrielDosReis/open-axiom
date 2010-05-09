@@ -259,7 +259,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --   form:=
 --     not MEMQ(op,$formalArgList) and atom op =>
 --       [op',:argl',"$"] where
---         op':= INTERN STRCONC(STRINGIMAGE $prefix,";",STRINGIMAGE op)
+--         op':= INTERN strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
 --     ["%Call",["applyFun",op],:argl']
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)

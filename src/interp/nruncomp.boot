@@ -543,7 +543,7 @@ NRTcheckVector domainShell ==
     alist := [[first v,:$SetFunctions.i],:alist]
   alist
 
-mkDomainCatName id == INTERN STRCONC(id,";CAT")
+mkDomainCatName id == INTERN strconc(id,";CAT")
 
 NRTsetVector4(siglist,formlist,condlist) ==
   $uncondList: local := nil
@@ -617,7 +617,7 @@ catList2catPackageList u ==
 --converts ((Set) (Module R) ...) to ((Set& $) (Module& $ R)...)
   [fn x for x in u] where
     fn [op,:argl] ==
-      newOp := INTERN(STRCONC(PNAME op,"&"))
+      newOp := INTERN(strconc(PNAME op,"&"))
       addConsDB [newOp,"$",:argl]
 
 NRTsetVector4a(sig,form,cond) ==

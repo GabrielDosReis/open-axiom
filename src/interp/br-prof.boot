@@ -78,7 +78,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
-      [INTERN STRCONC(PNAME conname,'"&"),"$",:rest conform]
+      [INTERN strconc(PNAME conname,'"&"),"$",:rest conform]
     conform
   faTypes  := CDDAR getConstructorModemapFromDB conname
 
@@ -252,12 +252,12 @@ hasNewInfoText u ==
 
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
-  if cat? then conname := INTERN STRCONC(STRINGIMAGE conname,'"&")
+  if cat? then conname := INTERN strconc(STRINGIMAGE conname,'"&")
   abb := constructor? conname or return '"not a constructor"
-  fs  := STRCONC(PNAME abb,'".NRLIB/info")
+  fs  := strconc(PNAME abb,'".NRLIB/info")
   inStream :=
     PROBE_-FILE fs => OPEN fs
-    filename := STRCONC('"/spad/int/algebra/",PNAME abb,'".NRLIB/info")
+    filename := strconc('"/spad/int/algebra/",PNAME abb,'".NRLIB/info")
     PROBE_-FILE filename => OPEN filename
     return nil
   alist := mySort READ inStream

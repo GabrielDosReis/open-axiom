@@ -50,29 +50,29 @@ inputPrompt str ==
   p := first(x) - 2
   y := $OLDLINE
   SETQ($OLDLINE,NIL)
-  y => _$SHOWLINE(STRCONC(str,EBCDIC 19,y),p)
+  y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
   0 = SIZE str => NIL
-  _$SHOWLINE(STRCONC(str,EBCDIC 19),p)
+  _$SHOWLINE(strconc(str,EBCDIC 19),p)
  
 protectedPrompt(:p) ==
   [str,:br] := p
   0 = SIZE str => inputPrompt str
   msg := EBCDIC 29                       -- start of field
   msg :=
-    if br then STRCONC(msg,EBCDIC 232)   -- bright write protect
-    else       STRCONC(msg,EBCDIC  96)   -- write protect
-  msg := STRCONC(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
+    if br then strconc(msg,EBCDIC 232)   -- bright write protect
+    else       strconc(msg,EBCDIC  96)   -- write protect
+  msg := strconc(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
   inputPrompt msg
  
 MKPROMPT() ==
   $inputPromptType = 'none    => '""
   $inputPromptType = 'plain   => '"-> "
   $inputPromptType = 'step    =>
-    STRCONC('"(",STRINGIMAGE $IOindex,'") -> ")
+    strconc('"(",STRINGIMAGE $IOindex,'") -> ")
   $inputPromptType = 'frame   =>
-    STRCONC(STRINGIMAGE $interpreterFrameName,
+    strconc(STRINGIMAGE $interpreterFrameName,
       '" (",STRINGIMAGE $IOindex,'") -> ")
-  STRCONC(STRINGIMAGE $interpreterFrameName,
+  strconc(STRINGIMAGE $interpreterFrameName,
    '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
     STRINGIMAGE $IOindex, '"] -> ")
  

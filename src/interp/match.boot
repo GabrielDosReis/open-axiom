@@ -109,13 +109,13 @@ patternCheck pattern == main where
 --  pp pattern
     pattern
   mknew(old,i,r,new) ==
-    new := STRCONC(new,old.(i + 1))  --add underscored character to string
-    null r => STRCONC(new,subWild(SUBSTRING(old,i + 2,nil),0))
+    new := strconc(new,old.(i + 1))  --add underscored character to string
+    null r => strconc(new,subWild(SUBSTRING(old,i + 2,nil),0))
     mknew(old,first r,rest r,
-          STRCONC(new,subWild(SUBSTRING(old,i + 2,(first r) - i - 1),i + 1)))
+          strconc(new,subWild(SUBSTRING(old,i + 2,(first r) - i - 1),i + 1)))
   subWild(s,i) ==
     (k := charPosition($oldWild,s,i)) < #s =>
-      STRCONC(SUBSTRING(s,i,k - i),$wildCard,subWild(s,k + 1))
+      strconc(SUBSTRING(s,i,k - i),$wildCard,subWild(s,k + 1))
     SUBSTRING(s,i,nil)
   pos(c,s) ==
     i := 0

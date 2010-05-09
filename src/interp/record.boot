@@ -139,7 +139,7 @@ hyperize(u,w) ==
  
 verbatimize u ==
   u = '"" => u
-  STRCONC('"\begin{verbatim}",u,'"\end{verbatim}")
+  strconc('"\begin{verbatim}",u,'"\end{verbatim}")
 --=======================================================================
 --                Function for Verifying a `record' file
 --=======================================================================
@@ -239,7 +239,7 @@ htCommandToInputLine s == fn(s,0) where fn(s,init) ==
 --similar to htTrimAtBackSlash except removes all \
   k := or/[i for i in init..MAXINDEX s | s.i = char '_\] =>
     member(s.(k + 1),[char 'f,char 'b]) => SUBSTRING(s,init,k - init)
-    STRCONC(SUBSTRING(s,init,k - init),fn(s,k + 1))
+    strconc(SUBSTRING(s,init,k - init),fn(s,k + 1))
   SUBSTRING(s,init,nil)
  
 htTrimAtBackSlash s ==
@@ -249,9 +249,9 @@ htTrimAtBackSlash s ==
   s
  
 htMkPath(directory,name,typ) ==
-  nameType := STRCONC(name,'".",typ)
+  nameType := strconc(name,'".",typ)
   null directory => nameType
-  STRCONC(directory,nameType)
+  strconc(directory,nameType)
       
 --=======================================================================
 --              Creating Record File from HT Files
@@ -269,7 +269,7 @@ recordAndPrintTest md ==  --called by recordAndPrint
       x is [y,:r] =>     
         y.(k := MAXINDEX y) = char '__ => 
           u := fn r
-          [STRCONC(SUBSTRING(y,0,k),'" ",first u),:rest u]
+          [strconc(SUBSTRING(y,0,k),'" ",first u),:rest u]
         [y,:fn r]
       x
   output := nreverse $mkTestOutputStack -- set by maPrin

@@ -426,7 +426,7 @@ srcPosColumn(sp) ==
 
 srcPosDisplay(sp) ==
   null sp => nil
-  s := STRCONC('"_"", srcPosFile sp, '"_", line ",
+  s := strconc('"_"", srcPosFile sp, '"_", line ",
       STRINGIMAGE srcPosLine sp, '": ")
   sayBrightly [s, srcPosSource sp]
   col  := srcPosColumn sp

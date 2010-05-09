@@ -421,9 +421,9 @@ centerString(text,width,fillchar) ==
   f := DIVIDE(width - wid,2)
   fill1 := ""
   for i in 1..(f.0) repeat
-    fill1 := STRCONC(fillchar,fill1)
+    fill1 := strconc(fillchar,fill1)
   fill2:= fill1
-  if f.1 ~= 0 then fill1 := STRCONC(fillchar,fill1)
+  if f.1 ~= 0 then fill1 := strconc(fillchar,fill1)
   [fill1,text,fill2]
 
 stringPrefix?(pref,str) ==
@@ -541,7 +541,7 @@ isLetter c ==
 
 update() ==
   runCommand
-    STRCONC(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
+    strconc(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
   _/UPDATE()
 
 --% Inplace Merge Sort for Lists

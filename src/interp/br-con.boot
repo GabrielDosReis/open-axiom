@@ -113,7 +113,7 @@ conPageConEntry entry ==
 --%   sourceFileName  := dbSourceFile INTERN name
 --%   constrings      :=
 --%     KDR form => dbConformGenUnder form
---%     [STRCONC(name,args)]
+--%     [strconc(name,args)]
 --%   emString        := ['"{\sf ",:constrings,'"}"]
 --%   heading := [capitalKind,'" ",:emString]
 --%   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
@@ -294,7 +294,7 @@ kiPage(htPage,junk) ==
 
 kePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   domname         := kDomainName(htPage,kind,name,nargs)
   domname is ['error,:.] => errorPage(htPage,domname)
   htpSetProperty(htPage,'domname,domname)
@@ -427,7 +427,7 @@ kcPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   if kind = '"category" and dbpHasDefaultCategory? xpart then
     htSay '"This category has default package "
-    bcCon(STRCONC(name,char '_&),'"")
+    bcCon(strconc(name,char '_&),'"")
   htSayStandard '"\newline"
   htBeginMenu(3)
   htSayStandard '"\item "
@@ -578,12 +578,12 @@ augmentHasArgs(alist,conform) ==
 kcdePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   conname         := INTERN name
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString STRCONC(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
   pakname         :=
---  kind = '"category" => INTERN STRCONC(name,char '_&)
+--  kind = '"category" => INTERN strconc(name,char '_&)
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -594,12 +594,12 @@ kcdePage(htPage,junk) ==
 kcuPage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   conname         := INTERN name
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString STRCONC(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
   pakname         :=
-    kind = '"category" => INTERN STRCONC(name,char '_&)
+    kind = '"category" => INTERN strconc(name,char '_&)
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -620,7 +620,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN STRCONC(PNAME name,char '_&)
+    kind = '"category" => INTERN strconc(PNAME name,char '_&)
     opOf conform
   domList := getImports pakname
   if domname then
@@ -631,7 +631,7 @@ kcnPage(htPage,junk) ==
   dbShowCons(htPage,'names)
 
 koPageInputAreaUnchanged?(htPage, nargs) ==
-  [htpLabelInputString(htPage,INTERN STRCONC('"*",STRINGIMAGE i)) for i in 1..nargs]
+  [htpLabelInputString(htPage,INTERN strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
       = htpProperty(htPage,'inputAreaList)
 
 kDomainName(htPage,kind,name,nargs) ==
@@ -652,9 +652,9 @@ kDomainName(htPage,kind,name,nargs) ==
       "STRCONC"/["STRCONC"/ ['",",:x] for x in KDR args]
     "STRCONC"/['"(",:first args,argTailPart,'")"]
   typeForm := CATCH($SpadReaderTag, unabbrev mkConform(kind,name,argString)) or
-    ['error,'invalidType,STRCONC(name,argString)]
+    ['error,'invalidType,strconc(name,argString)]
   null (evaluatedTypeForm := kisValidType typeForm) =>
-    ['error,'invalidType,STRCONC(name,argString)]
+    ['error,'invalidType,strconc(name,argString)]
   dbMkEvalable evaluatedTypeForm
 
 kArgumentCheck(domain?,s) ==
@@ -703,7 +703,7 @@ parseNoMacroFromString(s) ==
 
 mkConform(kind,name,argString) ==
   kind ~= '"default package" =>
-    form := STRCONC(name,argString)
+    form := strconc(name,argString)
     parse := parseNoMacroFromString form
     null parse =>
       sayBrightlyNT '"Won't parse: "
@@ -711,7 +711,7 @@ mkConform(kind,name,argString) ==
       systemError '"Keywords in argument list?"
     atom parse => [parse]
     parse
-  [INTERN name,:rest ncParseFromString STRCONC(char 'd,argString)]  --& case
+  [INTERN name,:rest ncParseFromString strconc(char 'd,argString)]  --& case
 
 --=======================================================================
 --           Operation Page for a Domain Form from Scratch
@@ -750,7 +750,7 @@ conOpPage1(conform,:options) ==
   isFile := null kind
   kind := kind or '"package"
   parts.first := kind
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
@@ -777,7 +777,7 @@ conOpPage1(conform,:options) ==
 --=======================================================================
 koPage(htPage,which) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conname         := INTERN name
   domname         :=
     (u := htpProperty(htPage,'domname)) is [=conname,:.]
@@ -1200,7 +1200,7 @@ Y := '"In general, the {\sf Record} constructor can take any number of arguments
 
 Z := '"{\sf Record} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y,Z)
+MESSAGE := strconc(X,Y,Z)
 
 PUT('Record,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1224,7 +1224,7 @@ X := '"{\sf Union(A,B)} denotes the class of objects which are which are either 
 
 Y := '"For an alternate form of {\sf Union} with _"tags_", see \downlink{Union(a:A,b:B)}{DomainUnion}. {\sf Union} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y)
+MESSAGE := strconc(X,Y)
 
 PUT('UntaggedUnion,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1254,7 +1254,7 @@ W := '"This tagged {\sf Union} type is necessary, for example, to disambiguate t
 
 A := '"{\sf Union} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y,Z,W,A)
+MESSAGE := strconc(X,Y,Z,W,A)
 
 PUT('Union,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1280,7 +1280,7 @@ Y := '" All but the first argument is regarded as part of a source tuple for the
 
 Z := '"{\sf Mapping} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y,Z)
+MESSAGE := strconc(X,Y,Z)
 
 PUT('Mapping,'documentation, substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1292,7 +1292,7 @@ X := '"{\em Enumeration(a1, a2 ,..., aN)} creates an object which is exactly one
 
 Y := '" The {\em Enumeration} can constructor can take any number of symbols as arguments."
 
-MESSAGE := STRCONC(X, Y)
+MESSAGE := strconc(X, Y)
 
 PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
   (constructor (NIL MESSAGE))

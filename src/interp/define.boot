@@ -298,7 +298,7 @@ compDefine1(form,m,e) ==
       $formalArgList)
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
-    $prefix => INTERN STRCONC(encodeItem $prefix,'",",encodeItem $op)
+    $prefix => INTERN strconc(encodeItem $prefix,'",",encodeItem $op)
     getConstructorAbbreviationFromDB $op
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 
@@ -420,8 +420,8 @@ makeCategoryPredicates(form,u) ==
           pl
  
 mkCategoryPackage(form is [op,:argl],cat,def) ==
-  packageName:= INTERN(STRCONC(PNAME op,'"&"))
-  packageAbb := INTERN(STRCONC(getConstructorAbbreviationFromDB op,'"-"))
+  packageName:= INTERN(strconc(PNAME op,'"&"))
+  packageAbb := INTERN(strconc(getConstructorAbbreviationFromDB op,'"-"))
   $options:local := []
   -- This stops the next line from becoming confused
   abbreviationsSpad2Cmd ['domain,packageAbb,packageName]
@@ -1184,7 +1184,7 @@ compile u ==
              (and/[modeEqual(x,y) for x in sig for y in $signatureOfForm])]
       isLocalFunction op =>
         if opexport then userError ['%b,op,'%d,'" is local and exported"]
-        INTERN STRCONC(encodeItem $prefix,'";",encodeItem op) 
+        INTERN strconc(encodeItem $prefix,'";",encodeItem op) 
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
        isLocalFunction op ==
@@ -1642,7 +1642,7 @@ DomainSubstitutionFunction(parameters,body) ==
   atom $definition => body
   null rest $definition => body 
            --should not bother if it will only be called once
-  name:= INTERN STRCONC(KAR $definition,";CAT")
+  name:= INTERN strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)
   body:= ["COND",[name],['(QUOTE T),['SETQ,name,body]]]
   body

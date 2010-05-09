@@ -106,9 +106,9 @@ wordFrom(l,i) ==
     ch :=
       c = char '__   => l.(k := 1+k)  --this may exceed bounds
       c
-    buf := STRCONC(buf,ch)
+    buf := strconc(buf,ch)
     k := k + 1
-  if k = maxIndex and (c := l.k) ~= char ('_ ) then buf := STRCONC(buf,c)
+  if k = maxIndex and (c := l.k) ~= char ('_ ) then buf := strconc(buf,c)
   [buf,k+1]
 
 getKeyedMsg key == fetchKeyedMsg(key,false)
@@ -370,7 +370,7 @@ throwListOfKeyedMsgs(descKey,descArgs,l) ==
   sayKeyedMsg(descKey,descArgs)
   sayMSG '" "
   for [key,args] in l for i in 1.. repeat
-    n := STRCONC(object2String i,'".")
+    n := strconc(object2String i,'".")
     sayKeyedMsg(key,[n,:args])
   countError()
   spadThrow()
@@ -522,8 +522,8 @@ flowSegmentedMsg(msg, len, offset) ==
       if firstLine then
         firstLine  := false
         offset := offset + offset
-        off1   := STRCONC(off, off1)
-        off    := STRCONC(off, off)
+        off1   := strconc(off, off1)
+        off    := strconc(off, off)
       if (tot <= len) or (sbl = 1 and tot = len) then
         nl := [f,:nl]
         lnl := lnl + sbl
@@ -869,7 +869,7 @@ sayAsManyPerLineAsPossible l ==
   str := '""
   for i in 0..(n-1) repeat
     [c,:l] := l
-    str := STRCONC(str,c,fillerSpaces(w - #c,'" "))
+    str := strconc(str,c,fillerSpaces(w - #c,'" "))
     REMAINDER(i+1,p) = 0 => (sayMSG str ; str := '"" )
   if str ~= '"" then sayMSG str
   NIL
@@ -965,8 +965,8 @@ centerAndHighlight(text,:argList) ==
   f := DIVIDE(width - wid - 2,2)
   fill1 := '""
   for i in 1..(f.0) repeat
-    fill1 := STRCONC(fillchar,fill1)
-  if f.1 = 0 then fill2 := fill1 else fill2 := STRCONC(fillchar,fill1)
+    fill1 := strconc(fillchar,fill1)
+  if f.1 = 0 then fill2 := fill1 else fill2 := strconc(fillchar,fill1)
   sayBrightly [fill1,'%b,text,'%d,fill2]
   nil
 
@@ -981,8 +981,8 @@ center(text,argList) ==
   f := DIVIDE(width - wid - 2,2)
   fill1 := '""
   for i in 1..(f.0) repeat
-    fill1 := STRCONC(fillchar,fill1)
-  if f.1 = 0 then fill2 := fill1 else fill2 := STRCONC(fillchar,fill1)
+    fill1 := strconc(fillchar,fill1)
+  if f.1 = 0 then fill2 := fill1 else fill2 := strconc(fillchar,fill1)
   concat(fill1,text,fill2)
 
 splitSayBrightly u ==
@@ -1027,14 +1027,14 @@ $htCharAlist == '(
 
 escapeSpecialChars s ==
   u := LASSOC(s,$htCharAlist) => u
-  member(s, $htSpecialChars) => STRCONC('"_\", s)
+  member(s, $htSpecialChars) => strconc('"_\", s)
   null $saturn => s
   ALPHA_-CHAR_-P (s.0) => s
   not (or/[dbSpecialDisplayOpChar? s.i for i in 0..MAXINDEX s]) => s
   buf := '""
   for i in 0..MAXINDEX s repeat buf :=
-    dbSpecialDisplayOpChar?(s.i) => STRCONC(buf,'"\verb!",s.i,'"!")
-    STRCONC(buf,s.i)
+    dbSpecialDisplayOpChar?(s.i) => strconc(buf,'"\verb!",s.i,'"!")
+    strconc(buf,s.i)
   buf
 
 dbSpecialDisplayOpChar? c == (c = char '_~)

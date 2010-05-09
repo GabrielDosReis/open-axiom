@@ -56,7 +56,7 @@ asAll lines ==
   'done
 
 as name ==
-  astran STRCONC(STRINGIMAGE name,'".asy")
+  astran strconc(STRINGIMAGE name,'".asy")
   'done
 
 astran asyFile ==
@@ -66,7 +66,7 @@ astran asyFile ==
   $constantHash := MAKE_-HASH_-TABLE()
   $niladics : local := nil
   $asyFile: local := asyFile
-  $asFilename: local := STRCONC(PATHNAME_-NAME asyFile,'".as")
+  $asFilename: local := strconc(PATHNAME_-NAME asyFile,'".as")
   asytran asyFile
   conlist := [x for x in HKEYS $conHash | HGET($conHash,x) isnt [.,.,"function",:.]]
   $mmAlist : local :=
@@ -154,7 +154,7 @@ asMakeAlist con ==
   attributeAlist := REMDUP [:second alists,:catAttrs]
   documentation :=
     SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
-  filestring := STRCONC(PATHNAME_-NAME STRINGIMAGE filename,'".as")
+  filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
   constantPart := HGET($constantHash,con) and [['constant,:true]]
   niladicPart := MEMQ(con,$niladics) and [['NILADIC,:true]]
   falist :=  TAKE(#KDR form,$FormalMapVariableList)

@@ -419,23 +419,23 @@ superSub(name,x) ==
   for u in x repeat y:= [:y,:u]
   code:=
     x is [[u]] => $quadSymbol
-    STRCONC('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
+    strconc('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
   [INTERNL(PNAME name,"$",code),:y]
  
 scriptTran: %List -> %String
 scriptTran x ==
   null x => '""
-  STRCONC('";",scriptTranRow first x,scriptTran rest x)
+  strconc('";",scriptTranRow first x,scriptTran rest x)
  
 scriptTranRow: %List -> %String
 scriptTranRow x ==
   null x => '""
-  STRCONC($quadSymbol,scriptTranRow1 rest x)
+  strconc($quadSymbol,scriptTranRow1 rest x)
 
 scriptTranRow1: %List -> %String 
 scriptTranRow1 x ==
   null x => '""
-  STRCONC('",",$quadSymbol,scriptTranRow1 rest x)
+  strconc('",",$quadSymbol,scriptTranRow1 rest x)
  
 parseVCONS: %List -> %Form
 parseVCONS l == 

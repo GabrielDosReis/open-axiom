@@ -90,9 +90,9 @@ makeLongStatStringByProperty _
       total := total + n
       timestr := normalizeStatAndStringify n
       str := makeStatString(str,timestr,ab,flag)
-  total := STRCONC(normalizeStatAndStringify total,'" ", units)
+  total := strconc(normalizeStatAndStringify total,'" ", units)
   str = '"" =>  total
-  STRCONC(str, '" = ", total)
+  strconc(str, '" = ", total)
  
 normalizeStatAndStringify t ==
   RNUMP t =>
@@ -119,8 +119,8 @@ roundStat t ==
 makeStatString(oldstr,time,abb,flag) ==
   time = '"" => oldstr
   opening := (flag = 'long => '"("; '" (")
-  oldstr = '"" => STRCONC(time,opening,abb,'")")
-  STRCONC(oldstr,'" + ",time,opening,abb,'")")
+  oldstr = '"" => strconc(time,opening,abb,'")")
+  strconc(oldstr,'" + ",time,opening,abb,'")")
  
 peekTimedName() == IFCAR $timedNameStack
  

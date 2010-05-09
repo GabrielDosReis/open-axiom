@@ -355,13 +355,13 @@ clearConstructorAndLisplibCaches() ==
 clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
-      if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";AL"))
+      if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";AL"))
             then setDynamicBinding(cacheName,nil)
-    if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";CAT"))
+    if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
           then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==
-  cacheName:= INTERNL STRCONC(PNAME catName,'";AL")
+  cacheName:= INTERNL strconc(PNAME catName,'";AL")
   setDynamicBinding(cacheName,nil)
  
 displayHashtable x ==
@@ -707,4 +707,4 @@ domainEqualList(argl1,argl2) ==
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
     sayBrightly ['"Un-clamming function",'%b,fun,'%d]
-    setDynamicBinding(fun,eval INTERN STRCONC(STRINGIMAGE fun,'";"))
+    setDynamicBinding(fun,eval INTERN strconc(STRINGIMAGE fun,'";"))

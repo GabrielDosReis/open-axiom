@@ -52,7 +52,7 @@ sayModemap m ==
 
 sayModemapWithNumber(m,n) ==
   msg := reverse cleanUpSegmentedMsg reverse ["%i","%i",'" ",
-    STRCONC(lbrkSch(),object2String n,rbrkSch()),
+    strconc(lbrkSch(),object2String n,rbrkSch()),
       :formatModemap displayTranModemap m,"%u","%u"]
   sayMSG flowSegmentedMsg(reverse msg,$LINELENGTH,3)
 
@@ -542,13 +542,13 @@ tuple2String argl ==
   null argl => nil
   string := first argl
   if member(string, '("failed" "nil" "prime" "sqfr" "irred"))
-    then string := STRCONC('"_"",string,'"_"")
+    then string := strconc('"_"",string,'"_"")
     else string :=
       atom string => object2String string
       [f x for x in string]
   for x in rest argl repeat
     if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
-      x := STRCONC('"_"",x,'"_"")
+      x := strconc('"_"",x,'"_"")
     string:= concat(string,concat(",",f x))
   string
  where
@@ -734,7 +734,7 @@ object2String x ==
   string? x => x
   IDENTP x  => PNAME x
   null x    => '""
-  cons?  x  => STRCONC(object2String first x, object2String rest x)
+  cons?  x  => strconc(object2String first x, object2String rest x)
   WRITE_-TO_-STRING x
 
 object2Identifier x ==

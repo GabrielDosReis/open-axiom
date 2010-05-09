@@ -47,7 +47,7 @@ tr fn ==
   $convertingSpadFile : local := true
   $options: local := nil
   sfn  := STRINGIMAGE fn
-  newname := STRCONC(sfn,'".as")
+  newname := strconc(sfn,'".as")
   $outStream :local := MAKE_-OUTSTREAM newname
   markSay '"#pile"
   markSay('"#include _"axiom.as_"")
@@ -1014,7 +1014,7 @@ genCaseTag(t,l,n) ==
   l is [x, :l] =>
     x = t     => 
       string? x => INTERN x
-      INTERN STRCONC("value", STRINGIMAGE n)
+      INTERN strconc("value", STRINGIMAGE n)
     x is ["::",=t,:.] => t
     string? x => genCaseTag(t, l, n)
     genCaseTag(t, l, n + 1)
@@ -1107,7 +1107,7 @@ compDefine1(form,m,e) ==
       $formalArgList)
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
-    $prefix => INTERN STRCONC(encodeItem $prefix,'",",encodeItem $op)
+    $prefix => INTERN strconc(encodeItem $prefix,'",",encodeItem $op)
     getAbbreviation($op,#rest $form)
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 
