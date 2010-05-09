@@ -650,14 +650,14 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
       let := mkAtreeNode "%LET"
       t'  := mkAtreeNode t
       if m := getMode(l) then putMode(t',m)
-      seq := cons([let,l,t'],seq)
+      seq := [[let,l,t'],:seq]
     for t in temps for r in reverse rest rhs
       for l in reverse rest lhs repeat
         let := mkAtreeNode "%LET"
         t'  := mkAtreeNode t
         if m := getMode(l) then putMode(t',m)
-        seq := cons([let,t',r],seq)
-    seq := cons(mkAtreeNode 'SEQ,seq)
+        seq := [[let,t',r],:seq]
+    seq := [mkAtreeNode 'SEQ,:seq]
     ms := bottomUp seq
     putValue(op,getValue seq)
     putModeSet(op,ms)
@@ -1085,7 +1085,7 @@ uptuple t ==
   argModeSetList:= [bottomUp x for x in l]
   eltTypes := replaceSymbols([first x for x in argModeSetList],l)
   if not isPartialMode(tar) and tar is ['Tuple,ud] then
-    mode := ['Tuple, resolveTypeListAny cons(ud,eltTypes)]
+    mode := ['Tuple, resolveTypeListAny [ud,:eltTypes]]
   else mode := ['Tuple, resolveTypeListAny eltTypes]
   if isPartialMode tar then tar:=resolveTM(mode,tar)
   evalTuple(op,l,mode,tar)

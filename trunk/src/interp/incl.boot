@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis
+-- Copyright (C) 2007-2010, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -277,84 +277,81 @@ incLude1 (:z) ==
  
             StreamNull ss =>
                 not Top? state =>
-                    cons(xlPrematureEOF(eb,
-                     '")--premature end",  lno,ufos), StreamNil)
+                    [xlPrematureEOF(eb,
+                     '")--premature end",  lno,ufos), :StreamNil]
                 StreamNil
  
             str  :=  EXPAND_-TABS first ss
             info :=  incClassify str
  
             not info.0 =>
-                Skipping? state => cons(xlSkip(eb,str,lno,ufos.0), Rest s)
-                cons(xlOK(eb, str, lno, ufos.0),Rest s)
+                Skipping? state => [xlSkip(eb,str,lno,ufos.0), :Rest s]
+                [xlOK(eb, str, lno, ufos.0),:Rest s]
  
             info.2 = '"other" =>
-                Skipping? state => cons(xlSkip(eb,str,lno,ufos.0), Rest s)
-                cons(xlOK1(eb, str,CONCAT('")command",str), lno, ufos.0),
-                                          Rest s)
+                Skipping? state => [xlSkip(eb,str,lno,ufos.0), :Rest s]
+                [xlOK1(eb, str,CONCAT('")command",str), lno, ufos.0),
+                                          :Rest s]
  
             info.2 = '"say" =>
-                Skipping? state => cons(xlSkip(eb,str,lno,ufos.0), Rest s)
+                Skipping? state => [xlSkip(eb,str,lno,ufos.0), :Rest s]
                 str := incCommandTail(str, info)
-                cons(xlSay(eb, str, lno, ufos, str),
-                     cons(xlOK(eb,str,lno,ufos.0), Rest s))
+                [xlSay(eb, str, lno, ufos, str),
+                     :[xlOK(eb,str,lno,ufos.0), :Rest s]]
  
             info.2 = '"include" =>
                 Skipping? state =>
-                     cons(xlSkip(eb,str,lno,ufos.0), Rest s)
+                     [xlSkip(eb,str,lno,ufos.0), :Rest s]
                 fn1 := inclFname(str, info)
                 not fn1 =>
-                    cons(xlNoSuchFile(eb, str, lno,ufos,fn1),Rest s)
+                    [xlNoSuchFile(eb, str, lno,ufos,fn1),:Rest s]
                 not PROBE_-FILE fn1 =>
-                    cons(xlCannotRead(eb, str, lno,ufos,fn1),Rest s)
+                    [xlCannotRead(eb, str, lno,ufos,fn1),:Rest s]
                 incActive?(fn1,ufos) =>
-                    cons(xlFileCycle (eb, str, lno,ufos,fn1),Rest s)
+                    [xlFileCycle (eb, str, lno,ufos,fn1),:Rest s]
                 Includee  :=
                   incLude(eb+info.1,incFileInput fn1,0,
-                            cons(fn1,ufos), cons(Top,states))
-                cons(
-                    xlOK(eb,str,lno,ufos.0),
-                          incAppend(Includee, Rest s))
+                            [fn1,:ufos], [Top,:states])
+                [xlOK(eb,str,lno,ufos.0), :incAppend(Includee, Rest s)]
  
             info.2 = '"console" =>
-                Skipping? state => cons(xlSkip(eb,str,lno,ufos.0), Rest s)
+                Skipping? state => [xlSkip(eb,str,lno,ufos.0), :Rest s]
                 Head :=
                  incLude(eb+info.1,incConsoleInput(),0,
-                     cons('"console",ufos),cons(Top,states) )
+                     ['"console",:ufos],[Top,:states])
                 Tail := Rest s
  
                 n := incNConsoles ufos
                 if n > 0 then
-                   Head := cons(xlConActive(eb, str, lno,ufos,n),Head)
+                   Head := [xlConActive(eb, str, lno,ufos,n),:Head]
                    Tail :=
-                       cons(xlConStill (eb, str, lno,ufos,n),Tail)
+                       [xlConStill (eb, str, lno,ufos,n),:Tail]
  
                 Head := cons (xlConsole(eb, str, lno,ufos), Head)
-                cons(xlOK(eb,str,lno,ufos.0),incAppend(Head,Tail))
+                [xlOK(eb,str,lno,ufos.0),:incAppend(Head,Tail)]
  
             info.2 = '"fin" =>
                 Skipping? state =>
-                    cons(xlSkippingFin(eb, str, lno,ufos), Rest s)
+                    [xlSkippingFin(eb, str, lno,ufos), :Rest s]
                 not Top? state  =>
-                    cons(xlPrematureFin(eb, str, lno,ufos), StreamNil)
-                cons(xlOK(eb,str,lno,ufos.0), StreamNil)
+                    [xlPrematureFin(eb, str, lno,ufos), :StreamNil]
+                [xlOK(eb,str,lno,ufos.0), :StreamNil]
  
             info.2 = '"assert" =>
                 Skipping? state =>
-                    cons(xlSkippingFin(eb, str, lno,ufos), Rest s)
+                    [xlSkippingFin(eb, str, lno,ufos), :Rest s]
                 assertCond(str, info)
-                cons(xlOK(eb,str,lno,ufos.0), incAppend(Includee, Rest s))
+                [xlOK(eb,str,lno,ufos.0), :incAppend(Includee, Rest s)]
  
             info.2 = '"if" =>
                 s1 :=
                     Skipping? state => IfSkipToEnd
                     if ifCond(str,info) then IfKeepPart else IfSkipPart
-                cons(xlOK(eb,str,lno,ufos.0),
-                      incLude(eb,rest ss,lno,ufos,cons(s1,states)))
+                [xlOK(eb,str,lno,ufos.0),
+                      :incLude(eb,rest ss,lno,ufos,[s1,:states])]
             info.2 = '"elseif" =>
                 not If? state and not Elseif? state =>
-                    cons(xlIfSyntax(eb, str,lno,ufos,info,states),
-                            StreamNil)
+                    [xlIfSyntax(eb, str,lno,ufos,info,states), :StreamNil]
  
                 if SkipEnd? state or KeepPart? state or SkipPart? state
                 then
@@ -365,36 +362,34 @@ incLude1 (:z) ==
                             then ElseifKeepPart
                             else ElseifSkipPart
                          else ElseifSkipToEnd
-                     cons(xlOK(eb,str,lno,ufos.0),
-                        incLude(eb,rest ss,lno,ufos,cons(s1,rest states)))
+                     [xlOK(eb,str,lno,ufos.0),
+                        :incLude(eb,rest ss,lno,ufos,[s1,:rest states])]
                 else
-                    cons(xlIfBug(eb, str, lno,ufos), StreamNil)
+                    [xlIfBug(eb, str, lno,ufos), :StreamNil]
  
             info.2 = '"else" =>
                 not If? state and not Elseif? state =>
-                    cons(xlIfSyntax(eb, str,lno,ufos,info,states),
-                           StreamNil)
+                    [xlIfSyntax(eb, str,lno,ufos,info,states),:StreamNil]
                 if SkipEnd? state or KeepPart? state or SkipPart? state
                 then
                       s1 :=if SkipPart? state
                            then ElseKeepPart
                            else ElseSkipToEnd
-                      cons(xlOK(eb,str,lno,ufos.0),
-                        incLude(eb,rest ss,lno,ufos,cons(s1,rest states)))
+                      [xlOK(eb,str,lno,ufos.0),
+                        :incLude(eb,rest ss,lno,ufos,[s1,:rest states])]
                 else
-                    cons(xlIfBug(eb, str, lno,ufos), StreamNil)
+                    [xlIfBug(eb, str, lno,ufos), :StreamNil]
  
             info.2 = '"endif" =>
                 Top? state =>
-                    cons(xlIfSyntax(eb, str,lno,ufos,info,states),
-                        StreamNil)
-                cons(xlOK(eb,str,lno,ufos.0),
-                         incLude(eb,rest ss,lno,ufos,rest states))
+                    [xlIfSyntax(eb, str,lno,ufos,info,states),:StreamNil]
+                [xlOK(eb,str,lno,ufos.0),
+                         :incLude(eb,rest ss,lno,ufos,rest states)]
 
             info.2 = '"magicNumber" =>
               Rest s
 
-            cons(xlCmdBug(eb, str, lno,ufos), StreamNil)
+            [xlCmdBug(eb, str, lno,ufos),:StreamNil]
  
 --% Message handling for the source includer
 --  SMW June 88

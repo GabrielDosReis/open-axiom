@@ -185,20 +185,20 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
 
     -- get the argument domains and the target
     a := nil
-    for x in args1 repeat if x then a := cons(x,a)
-    for x in args2 repeat if x then a := cons(x,a)
-    if tar and not isPartialMode tar then a := cons(tar,a)
+    for x in args1 repeat if x then a := [x,:a]
+    for x in args2 repeat if x then a := [x,:a]
+    if tar and not isPartialMode tar then a := [tar,:a]
 
     -- for typically homogeneous functions, throw in resolve too
     if op in '(_= _+ _* _- ) then
       r := resolveTypeList a
-      if r ~= nil then a := cons(r,a)
+      if r ~= nil then a := [r,:a]
 
     if tar and not isPartialMode tar then
-      if xx := underDomainOf(tar) then a := cons(xx,a)
+      if xx := underDomainOf(tar) then a := [xx,:a]
     for x in args1 repeat
       cons?(x) and first(x) in '(List Vector Stream FiniteSet Array) =>
-        xx := underDomainOf(x) => a := cons(xx,a)
+        xx := underDomainOf(x) => a := [xx,:a]
 
     -- now extend this list with those from the arguments to
     -- any Unions, Mapping or Records
@@ -207,19 +207,19 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     a := nreverse REMDUP a
     for x in a repeat
       null x => 'iterate
-      x = '(RationalRadicals) => a' := cons($RationalNumber,a')
+      x = '(RationalRadicals) => a' := [$RationalNumber,:a']
       x is ['Union,:l] =>
         -- check if we have a tagged union
         l and first l is [":",:.] =>
           for [.,.,t] in l repeat
-            a' := cons(t,a')
+            a' := [t,:a']
         a' := append(reverse l,a')
       x is ['Mapping,:l] => a' := append(reverse l,a')
       x is ['Record,:l] =>
         a' := append(reverse [third s for s in l],a')
       x is ['FunctionCalled,name] =>
         (xm := get(name,'mode,$e)) and not isPartialMode xm =>
-          a' := cons(xm,a')
+          a' := [xm,:a']
     a := append(a,REMDUP a')
     a := [x for x in a | cons?(x)]
 
@@ -560,7 +560,7 @@ selectLocalMms(op,name,types,tar) ==
 --  matchingMms := nil
 --  for mm in mmS repeat
 --    [., targ, :.] := mm
---    if tar = targ then matchingMms := cons(mm, matchingMms)
+--    if tar = targ then matchingMms := [mm,:matchingMms]
 --  -- if we got some exact matchs on the target, return them
 --  matchingMms => nreverse matchingMms
 --
@@ -889,7 +889,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
     d is ['XLAM,xargs,:.] =>
       if cons?(xargs) then maxargs := MAX(maxargs,#xargs)
       else maxargs := MAX(maxargs,1)
-      impls := cons([b,nil,true,d],impls)
+      impls := [[b,nil,true,d],:impls]
     d isnt [k,"$",n] => systemErrorHere ["findFunctionInCategory",d]
     impls := [[b,n,true,k],:impls]
   impls := nreverse impls
@@ -986,11 +986,11 @@ filterModemapsFromPackages(mms, names, op) ==
       "HomogeneousDistributedMultivariatePolynomial")
   mpacks := '("MFactorize" "MRationalFactorize")
   for mm in mms repeat
-    isFreeFunctionFromMm(mm) => bad := cons(mm, bad)
+    isFreeFunctionFromMm(mm) => bad := [mm,:bad]
     type := getDomainFromMm mm
-    null type => bad := cons(mm,bad)
+    null type => bad := [mm,:bad]
     if cons? type then type := first type
-    getConstructorKindFromDB type = "category" => bad := cons(mm,bad)
+    getConstructorKindFromDB type = "category" => bad := [mm,:bad]
     name := object2String type
     found := nil
     for n in names while not found repeat
@@ -999,8 +999,8 @@ filterModemapsFromPackages(mms, names, op) ==
       (op = 'factor) and member(n,mpolys) and member(name,mpacks) =>
         found := true
     if found
-      then good := cons(mm, good)
-      else bad := cons(mm,bad)
+      then good := [mm,:good]
+      else bad := [mm,:bad]
   [good,bad]
 
 
@@ -1311,8 +1311,8 @@ orderMmCatStack st ==
     for v in vars while not mem repeat
       if MEMQ(v,cat) then
         mem := true
-        havevars := cons(s,havevars)
-    if not mem then haventvars := cons(s,haventvars)
+        havevars := [s,:havevars]
+    if not mem then haventvars := [s,:haventvars]
   null havevars => st
   st := nreverse nconc(haventvars,havevars)
   SORT(st, function mmCatComp)

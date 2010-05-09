@@ -118,7 +118,7 @@ macMacro pf ==
   pf
  
 mac0Define(sy, state, body) ==
-    $pfMacros := cons([sy, state, body], $pfMacros)
+    $pfMacros := [[sy, state, body],:$pfMacros]
  
 -- Returns [state, body] or NIL.
 mac0Get sy ==

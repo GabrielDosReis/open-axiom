@@ -558,7 +558,7 @@ compDefineCategory(df,m,e,prefix,fal) ==
 
 
 %CatObjRes                   -- result of compiling a category
-  <=> cons(%Shell,cons(%Mode,cons(%Env,null)))
+  <=> [%Shell,:[%Mode,:[%Env,:null]]]
  
 compMakeCategoryObject: (%Form,%Env) -> %Maybe %CatObjRes
 compMakeCategoryObject(c,$e) ==

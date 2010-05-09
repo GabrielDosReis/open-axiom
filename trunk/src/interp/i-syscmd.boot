@@ -1527,8 +1527,8 @@ importFromFrame args ==
       vars := NIL
       for [v,:props] in CAAR fenv repeat
         v = "--macros" =>
-          for [m,:.] in props repeat vars := cons(m,vars)
-        vars := cons(v,vars)
+          for [m,:.] in props repeat vars := [m,:vars]
+        vars := [v,:vars]
       importFromFrame [fname,:vars]
     sayKeyedMsg("S2IZ0077",[fname])
   for v in args repeat

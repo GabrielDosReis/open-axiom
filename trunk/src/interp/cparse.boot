@@ -88,7 +88,8 @@ npNext() ==
      $inputStream := rest($inputStream)
      npFirstTok()
 
-npState()==cons($inputStream,$stack)
+npState() == 
+  [$inputStream,:$stack]
 
 npRestore(x)==
       $inputStream:=first x
@@ -175,7 +176,7 @@ npListofFun(f,h,g)==
           a:=$stack
           $stack:=nil
           while APPLY(h,nil) and (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(nreverse $stack,a)
+          $stack := [nreverse $stack,:a]
           npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
         else
           true
@@ -191,7 +192,7 @@ npList(f,str1,g)== -- always produces a list, g is applied to it
           $stack:=nil
           while npEqKey str1 and (npEqKey "BACKSET" or true) and
                              (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(nreverse $stack,a)
+          $stack := [nreverse $stack,:a]
           npPush FUNCALL(g,  [npPop3(),npPop2(),:npPop1()])
         else
           npPush FUNCALL(g, [npPop1()])
@@ -564,16 +565,16 @@ npZeroOrMore f==
          a:=$stack
          $stack:=nil
          while APPLY(f,nil) repeat 0
-         $stack:=cons(nreverse $stack,a)
-         npPush cons(npPop2(),npPop1())
+         $stack := [nreverse $stack,:a]
+         npPush [npPop2(),:npPop1()]
        npPush nil
        true
 
 npIterators()==
          npForIn() and npZeroOrMore function npIterator
-             and npPush cons(npPop2(),npPop1())  or
+             and npPush [npPop2(),:npPop1()]  or
               npWhile() and (npIterators() and
-                    npPush cons(npPop2(),npPop1()) or npPush [npPop1()])
+                    npPush [npPop2(),:npPop1()] or npPush [npPop1()])
 
 npIterator()==   npForIn() or npSuchThat() or npWhile()
 
@@ -988,7 +989,7 @@ npListAndRecover(f)==
             else
                 npNext()
                 c:=$inputStream
-     b:=cons(npPop1(),b)
+     b := [npPop1(),:b]
    $stack:=a
    npPush nreverse b
  

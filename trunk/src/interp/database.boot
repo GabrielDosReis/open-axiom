@@ -623,7 +623,7 @@ flattenSignatureList(x) ==
   x is ['PROGN,:l] =>
      ll:= []
      for x in l repeat
-        x is ['SIGNATURE,:.] => ll:=cons(x,ll)
+        x is ['SIGNATURE,:.] => ll := [x,:ll]
         ll:= append(flattenSignatureList x,ll)
      ll
   nil

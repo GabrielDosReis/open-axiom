@@ -203,7 +203,7 @@ intloopEchoParse s==
          setCurrentLine(mkLineList(lines))
          if $EchoLines then ncloopPrintLines lines
          $lines:=rest
-         cons([[lines,npParse dqToList dq]],rest s)
+         [[[lines,npParse dqToList dq]],:rest s]
  
 intloopInclude0(st, name, n) ==
     $lines:local:=incStream(st,name)
@@ -320,8 +320,8 @@ streamChop(n,s)==
             [a,b]:= streamChop(n-1,cdr s)
             line:=car s
             c:=ncloopPrefix?('")command",rest line)
-            d:= cons(car line,if c then c else cdr line)
-            [cons(d,a),b]
+            d:= [car line,:(if c then c else cdr line)]
+            [[d,:a],b]
  
 ncloopPrintLines lines ==
         for line in lines repeat WRITE_-LINE rest line
@@ -337,7 +337,7 @@ ncloopIncFileName string==
 ncloopParse s==
          [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,stream)
-         cons([[lines,npParse dqToList dq]],rest s)
+         [[[lines,npParse dqToList dq]],:rest s]
  
 ncloopInclude0(st, name, n) ==
      $lines:local := incStream(st, name)

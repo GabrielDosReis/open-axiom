@@ -160,7 +160,7 @@ substituteSegmentedMsg(msg,args) ==
   for x in segmentedMsgPreprocess msg repeat
     -- x is a list
     cons? x =>
-      l := cons(substituteSegmentedMsg(x,args),l)
+      l := [substituteSegmentedMsg(x,args),:l]
     c := x.0
     n := STRINGLENGTH x
 
@@ -180,7 +180,7 @@ substituteSegmentedMsg(msg,args) ==
         '"???"
       -- now pull out qualifiers
       q := NIL
-      for i in 2..(n-1) repeat q := cons(x.i,q)
+      for i in 2..(n-1) repeat q := [x.i,:q]
       -- Note 'f processing must come first.
       if MEMQ(char 'f,q) then
           arg :=
@@ -199,8 +199,8 @@ substituteSegmentedMsg(msg,args) ==
       if MEMQ(char 'c,q) then arg := [['"%ce",:arg]]
       if MEMQ(char 'r,q) then arg := [['"%rj",:arg]]
 
-      if MEMQ(char 'l,q) then l := cons('"%l",l)
-      if MEMQ(char 'b,q) then l := cons('"%b",l)
+      if MEMQ(char 'l,q) then l := ['"%l",:l]
+      if MEMQ(char 'b,q) then l := ['"%b",:l]
       --we splice in arguments that are lists
       --if y is not specified, then the adding of blanks is
       --stifled after the first item in the list until the
@@ -212,15 +212,15 @@ substituteSegmentedMsg(msg,args) ==
            head := first arg
            tail := rest arg
            ['"%y",:append(reverse tail, ['"%n",head,:l ]) ]
-         cons(arg,l)
-      if MEMQ(char 'b,q) then l := cons('"%d",l)
+         [arg,:l]
+      if MEMQ(char 'b,q) then l := ['"%d",:l]
       for ch in '(_. _, _! _: _; _?) repeat
-        if MEMQ(char ch,q) then l := cons(ch,l)
+        if MEMQ(char ch,q) then l := [ch,:l]
 
     c = char "%" and n > 1 and x.1 = char "x" and DIGITP x.2 =>
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
-    l := cons(x,l)
+    l := [x,:l]
   addBlanks nreverse l
 
 addBlanks msg ==
@@ -287,7 +287,7 @@ cleanUpSegmentedMsg msg ==
   for x in msg repeat
     if haveBlank and (member(x,blanks) or member(x,prims)) then
       msg1 := rest msg1
-    msg1 := cons(x,msg1)
+    msg1 := [x,:msg1]
     haveBlank := (member(x,blanks) => true; NIL)
   msg1
 
@@ -773,7 +773,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   ok := true
   while x and ok repeat
     if member(first(x),'(%l "%l")) then ok := NIL
-    else y := cons(first x, y)
+    else y := [first x, :y]
     x := rest x
   y := nreverse y
   wid := sayBrightlyLength y
@@ -820,7 +820,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   ok := true
   while x and ok repeat
     if member(first(x),'(%l "%l")) then ok := NIL
-    else y := cons(first x, y)
+    else y := [first x, :y]
     x := rest x
   y := nreverse y
   wid := sayBrightlyLength y

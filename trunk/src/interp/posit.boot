@@ -117,7 +117,7 @@ pfSourceToken form ==
 --constructer and selectors for leaf tokens
 
 tokConstruct(hd,tok,:pos)==
-         a:=cons(hd,tok)
+         a := [hd,:tok]
          IFCAR pos =>
              pfNoPosition? first pos=> a
              ncPutQ(a,"posn",first pos)

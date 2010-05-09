@@ -500,7 +500,7 @@ traceDomainLocalOps(dom,lops,options) ==
 --    not MEMQ(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
---    l := cons(internalName,l)
+--    l := [internalName,:l]
 --  l => _/TRACE_,1(l,options)
 --  nil
 
@@ -520,7 +520,7 @@ untraceDomainLocalOps(dom,lops) ==
 --    not MEMQ(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
---    l := cons(internalName,l)
+--    l := [internalName,:l]
 --  l => untrace l
 --  nil
 

@@ -993,7 +993,7 @@ upconstruct t ==
     mode := ['Stream, td]
     evalInfiniteTupleConstruct(op, l, mode, tar)
   if not isPartialMode(tar) and tar is ['List,ud] then
-    mode := ['List, resolveTypeListAny cons(ud,eltTypes)]
+    mode := ['List, resolveTypeListAny [ud,:eltTypes]]
   else mode := ['List, resolveTypeListAny eltTypes]
   if isPartialMode tar then tar:=resolveTM(mode,tar)
   evalconstruct(op,l,mode,tar)

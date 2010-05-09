@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -290,19 +290,19 @@ lineoftoks(s)==
    then CONS(nil,nil)
    else
      if null scanIgnoreLine($ln,$n) -- line of spaces or starts ) or >
-     then cons(nil,$r)
+     then [nil,:$r]
      else
       toks:=[]
       a:= incPrefix?('"command",1,$ln)
       a =>
                  $ln:=SUBSTRING($ln,8,nil)
                  b:= dqUnit constoken($ln,$linepos,["command",$ln],0)
-                 cons([[b,s]],$r)
+                 [[[b,s]],:$r]
 
       while $n<$sz repeat toks:=dqAppend(toks,scanToken())
       if null toks
-      then cons([],$r)
-      else cons([[toks,s]],$r)
+      then [[],:$r]
+      else [[[toks,s]],:$r]
 
 
 scanToken() ==
@@ -358,9 +358,9 @@ lferror x==["error",x]
 lfspaces x==["spaces",x]
 
 constoken(ln,lp,b,n)==
---  [b.0,b.1,cons(lp,n)]
-       a:=cons(b.0,b.1)
-       ncPutQ(a,"posn",cons(lp,n))
+--  [b.0,b.1,[lp,:n]]
+       a:=[b.0,:b.1]
+       ncPutQ(a,"posn",[lp,:n])
        a
 
 scanEscape()==
@@ -481,7 +481,7 @@ scanString()==
 scanS()==
    if $n>=$sz
    then
-     ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n),"S2CN0001",[])
+     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0001",[])
      '""
    else
            n:=$n
@@ -492,7 +492,7 @@ scanS()==
            if mn=$sz
            then
                  $n:=$sz
-                 ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n),
+                 ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
                          "S2CN0001",[])
                  SUBSTRING($ln,n,nil)
            else if mn=strsym
@@ -593,7 +593,7 @@ scanCheckRadix(a,w)==
   for i in 0..ns-1  repeat
     a:=rdigit? w.i
     if null a or a>=r
-    then  ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n-ns+i),
+    then  ncSoftError([$linepos,:lnExtraBlanks $linepos+$n-ns+i],
 	       "S2CN0002", [w.i])
 
 scanNumber() ==
@@ -682,7 +682,7 @@ rdigit? x==
 scanError()==
       n:=$n
       $n:=$n+1
-      ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n),
+      ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
          "S2CN0003",[$ln.n])
       lferror ($ln.n)
 
