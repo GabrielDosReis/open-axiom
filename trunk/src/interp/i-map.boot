@@ -441,11 +441,11 @@ simplifyMapConstructorRefs form ==
     args is [obj,dom] =>
       dom' := prefix2String dom
       --if atom dom' then dom' := [dom']
-      --[op,obj,apply('CONCAT,dom')]
+      --[op,obj,apply(function strconc,dom')]
       dom'' :=
           atom dom' => dom'
           null rest dom' => first dom'
-          apply('CONCAT, dom')
+          apply(function strconc, dom')
       [op,obj, dom'']
     form
   form
