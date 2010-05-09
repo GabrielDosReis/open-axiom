@@ -1,5 +1,9 @@
 2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: Don't rename 'car', 'cdr', and PAIRP.
+
+2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/bc-solve.boot: Move cleanups.
 	* interp/br-con.boot: Likewise.
 	* interp/br-op1.boot: Likewise.

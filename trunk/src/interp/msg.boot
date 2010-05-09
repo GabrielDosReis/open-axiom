@@ -105,7 +105,7 @@ msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
     if cons? key then tag := 'old
     msg := [tag,posWTag,key,argL,optPre,NIL]
     if first optAttr then
-        setMsgForcedAttrList(msg,car optAttr)
+        setMsgForcedAttrList(msg,first optAttr)
     putDatabaseStuff msg
     initImPr    msg
     initToWhere msg
