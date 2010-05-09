@@ -327,7 +327,7 @@ incLude1 (:z) ==
                    Tail :=
                        [xlConStill (eb, str, lno,ufos,n),:Tail]
  
-                Head := cons (xlConsole(eb, str, lno,ufos), Head)
+                Head := [xlConsole(eb, str, lno,ufos),:Head]
                 [xlOK(eb,str,lno,ufos.0),:incAppend(Head,Tail)]
  
             info.2 = '"fin" =>

@@ -39,11 +39,11 @@ module postpar
 
 ++ The type of parse trees.
 %ParseTree <=> 
-  %Number or %Symbol or %String or cons
+  %Number or %Symbol or %String or %Pair
 
 ++ The result of processing a parse tree.
 %ParseForm <=>
-  %Number or %Symbol or %String or cons
+  %Number or %Symbol or %String or %Pair
 
 $postStack := []
 

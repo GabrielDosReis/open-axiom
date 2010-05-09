@@ -1282,8 +1282,6 @@
     ((MEMBER (|Option| '|no|) |$FilesToRetain|) NIL)
     (T (MEMBER (|Option| |ext|) |$FilesToRetain|))))
 
-(EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL) (TRACE |retainFile?|))
-
 (DEFUN |compileBootHandler| (|progname| |options| |file|)
   (PROG (|objFile| |intFile|)
     (RETURN
