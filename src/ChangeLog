@@ -1,5 +1,46 @@
 2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/bc-solve.boot: Move cleanups.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/cparse.boot: Likewise.
+	* interp/cstream.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/g-timer.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/incl.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/intfile.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/macex.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nrungo.boot: Likewise.
+	* interp/pathname.boot: Likewise.
+	* interp/profile.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/ptrees.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/sys-os.boot: Likewise.
+	* interp/sys-utility.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+
+2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: Don't rename 'cons'.
 	* interp/msg.boot: Remove uses of cons.
 	* interp/postpar.boot: Likewise.

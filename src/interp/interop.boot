@@ -118,7 +118,7 @@ runOldAxiomFunctor(:allArgs) ==
   [:args,env] := allArgs
   getConstructorKindFromDB env = "category" =>
       [$oldAxiomPreCategoryDispatch,: [env, :args]]
-  dom:=APPLY(env, args)
+  dom:=apply(env, args)
   makeOldAxiomDispatchDomain dom
 
 makeLazyOldAxiomDispatchDomain domform ==
@@ -283,8 +283,8 @@ instantiate domenv ==
 --     fn := SYMBOL_-FUNCTION functor
 --     SETF(SYMBOL_-FUNCTION functor, ofn)
 --     PUT(functor, 'instantiate, fn)
---  domvec := APPLY(fn, args)
-  domvec := APPLY(functor, args)
+--  domvec := apply(fn, args)
+  domvec := apply(functor, args)
   oldDom.first := $oldAxiomDomainDispatch
   oldDom.rest := [second oldDom,: domvec]
   oldDom

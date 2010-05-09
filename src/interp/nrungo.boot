@@ -123,7 +123,7 @@ goGet(:l) ==
   if cons? dollar then dollar := NRTevalDomain dollar
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
-  val:= APPLY(first fn,[:arglist,rest fn])
+  val:= apply(first fn,[:arglist,rest fn])
   setShellEntry(thisDomain,index,fn)
   val
 

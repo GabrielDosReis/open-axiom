@@ -181,13 +181,13 @@ htShowPageNoScroll() ==
   if $standard then
     $htLineList := nil
     htMakePage htpPageDescription $curPage
-    if $htLineList then line := apply(function CONCAT, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, nreverse $htLineList)
     issueHTStandard line
   ----------------------
   if $saturn then
     $htLineList := nil
     htMakePage htpPageDescription $saturnPage
-    if $htLineList then line := apply(function CONCAT, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, nreverse $htLineList)
     issueHTSaturn line
   ----------------------
   endHTPage()
@@ -230,7 +230,7 @@ htMakeErrorPage htPage ==
   if $standard then $curPage := htPage
   if $saturn then $saturnPage := htPage
   htMakePage htpPageDescription htPage
-  line := apply(function CONCAT, nreverse $htLineList)
+  line := apply(function strconc, nreverse $htLineList)
   issueHT line
   endHTPage()
 
@@ -560,7 +560,7 @@ htProcessBcStrings strings ==
       setUpDefault(stringName, ['string, default, spadType, filter])
     if htpLabelErrorMsg(page(), stringName) then
       iht ['"\centerline{{\em ", htpLabelErrorMsg(page(), stringName), '"}}"]
-      mess2 := CONCAT(mess2, bcSadFaces())
+      mess2 := strconc(mess2, bcSadFaces())
       htpSetLabelErrorMsg(page(), stringName, nil)
     iht ['"\inputstring{", stringName, '"}{",
          numChars, '"}{", htpLabelDefault(page(),stringName), '"} ", mess2]

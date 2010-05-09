@@ -1039,7 +1039,7 @@ compBoolean(p,pWas,m,Einit) ==
   op := opOf p
   [p',m,E]:= 
     fop := LASSOC(op,'((and . compAnd) (or . compOr) (not . compNot))) =>
-       APPLY(fop,[p,pWas,m,Einit]) or return nil
+       apply(fop,[p,pWas,m,Einit]) or return nil
     T := comp(p,m,Einit) or return nil
     markAny('compBoolean,pWas,T) 
   [p',m,getSuccessEnvironment(markKillAll p,E),

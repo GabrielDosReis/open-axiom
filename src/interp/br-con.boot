@@ -978,7 +978,7 @@ dbShowCons1(htPage,cAlist,key) ==
     htPage => htCopyProplist htPage
     nil
   page := htInitPageNoScroll(proplist,dbConsHeading(htPage,conlist,key,kind))
-  if u := htpProperty(page,'specialMessage) then APPLY(first u,rest u)
+  if u := htpProperty(page,'specialMessage) then apply(first u,rest u)
   htSayStandard('"\beginscroll ")
   htpSetProperty(page,'cAlist,cAlist)
   $conformsAreDomains: local := htpProperty(page,'domname)
@@ -1320,5 +1320,5 @@ digits2Names s ==
       n := DIGIT_-CHAR_-P c =>
         ('("Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine")).n
       c
-    CONCAT(str, segment)
+    strconc(str, segment)
   str

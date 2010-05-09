@@ -411,7 +411,7 @@ obj2String o ==
     o = ")" => '")"
     o = "(" => '"("
     STRINGIMAGE o
-  APPLY('STRCONC,[obj2String o' for o' in o])
+  apply('STRCONC,[obj2String o' for o' in o])
 
 APP(u,x,y,d) ==
   atom u => appChar(atom2String u,x,y,d)
@@ -1589,18 +1589,18 @@ outputNumber(start,linelength,num) ==
      linelength:=linelength-1 
   while SIZE(num) > linelength repeat
     if $collectOutput then
-       $outputLines := [CONCAT(blnks, SUBSTRING(num,0,linelength),under),
+       $outputLines := [strconc(blnks, SUBSTRING(num,0,linelength),under),
                         :$outputLines]
     else
       sayALGEBRA [blnks,
                   SUBSTRING(num,0,linelength),under]
     num := SUBSTRING(num,linelength,NIL)
     if firsttime then 
-         blnks:=CONCAT(blnks,'" ")
+         blnks:=strconc(blnks,'" ")
          linelength:=linelength-1
          firsttime:=NIL
   if $collectOutput then
-    $outputLines := [CONCAT(blnks, num), :$outputLines]
+    $outputLines := [strconc(blnks, num), :$outputLines]
   else
     sayALGEBRA [blnks, num]
 
@@ -1609,13 +1609,13 @@ outputString(start,linelength,str) ==
   else blnks := '""
   while SIZE(str) > linelength repeat
     if $collectOutput then
-       $outputLines := [CONCAT(blnks, SUBSTRING(str,0,linelength)),
+       $outputLines := [strconc(blnks, SUBSTRING(str,0,linelength)),
                         :$outputLines]
     else
       sayALGEBRA [blnks, SUBSTRING(str,0,linelength)]
     str := SUBSTRING(str,linelength,NIL)
   if $collectOutput then
-    $outputLines := [CONCAT(blnks, str), :$outputLines]
+    $outputLines := [strconc(blnks, str), :$outputLines]
   else
     sayALGEBRA [blnks, str]
 
@@ -2460,8 +2460,8 @@ altSuperSubApp(u, x, y, di) ==
   sublist := everyNth(u := rest u, 2)
   suplist := everyNth(IFCDR u, 2)
 
-  ysub := y - 1 - APPLY('MAX, [ab, :[superspan s for s in sublist]])
-  ysup := y + 1 + APPLY('MAX, [ar, :[subspan   s for s in sublist]])
+  ysub := y - 1 - apply('MAX, [ab, :[superspan s for s in sublist]])
+  ysup := y + 1 + apply('MAX, [ar, :[subspan   s for s in sublist]])
   for sub in sublist for sup in suplist repeat
       wsub := WIDTH sub
       wsup := WIDTH sup

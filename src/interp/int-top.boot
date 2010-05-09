@@ -163,7 +163,7 @@ intloopReadConsole(b, n)==
              c := ncloopCommand(d,n)
              not $leanMode and printPrompt()
              intloopReadConsole('"", c)
-    a:=CONCAT(b,a)
+    a:=strconc(b,a)
     ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (LENGTH a) - 1),n)
     c := intloopProcessString(a, n)
     not $leanMode and printPrompt()
@@ -330,7 +330,7 @@ ncloopPrintLines lines ==
 ncloopIncFileName string==
                 fn := incFileName string
                 not fn =>
-                    WRITE_-LINE (CONCAT(string, '" not found"))
+                    WRITE_-LINE (strconc(string, '" not found"))
                     []
                 fn
 
@@ -410,7 +410,7 @@ ncConversationPhase(fn, args) ==
     $ncMsgList: local := []
     $convPhase: local := 'NoPhase
  
-    UNWIND_-PROTECT( APPLY(fn, args), wrapup(carrier) ) where
+    UNWIND_-PROTECT( apply(fn, args), wrapup(carrier) ) where
         wrapup(carrier) ==
             for m in $ncMsgList repeat
                 ncPutQ(carrier, 'messages, [m, :ncEltQ(carrier, 'messages)])

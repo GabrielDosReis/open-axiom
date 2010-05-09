@@ -162,7 +162,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   htpSetProperty(page,'data,data)
   htpSetProperty(page,'branch,branch)
   -- the only place where specialMessage property is set seems to be commented. out
-  if u := htpProperty(page,'specialMessage) then APPLY(first u,rest u)
+  if u := htpProperty(page,'specialMessage) then apply(first u,rest u)
   htSayStandard('"\beginscroll ")
   FUNCALL(fn,page,opAlist,which,data) --apply branch function
   dbOpsExposureMessage()
@@ -218,7 +218,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   exception := exception or '"%%%nothing%%%"
   [op1,:args] := form
   op := IFCAR HGET($lowerCaseConTb,op1) or op1
-  null args => APPLY(opFn,[op])
+  null args => apply(opFn,[op])
   special := op in '(Union Record Mapping)
   cosig :=
     special => ['T for x in args]
@@ -236,7 +236,7 @@ conform2StringList(form,opFn,argFn,exception) ==
       x = exception => dbOpsForm exception
       pred =>
         string? x => [x]
-        u := APPLY(argFn,[x])
+        u := apply(argFn,[x])
         atom u and [u] or u
       typ := sublisFormal(args,atype)
       if x is ['QUOTE,a] then x := a
@@ -248,7 +248,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   op = 'Mapping => dbMapping2StringList sargl
   head :=
     special => [op]
-    APPLY(opFn,[form])
+    apply(opFn,[form])
   [:head,'"(",:first sargl,:"append"/[[",",:y] for y in rest sargl],'")"]
 
 
@@ -305,7 +305,7 @@ dbConformGen1(form,opButton?) ==
     originalOp=op => form
     [op, :args]
   args => conform2StringList(form, opFunction,FUNCTION dbConformGen,nil)
-  APPLY(opFunction,[form])
+  apply(opFunction,[form])
 
 unAbbreviateIfNecessary op == IFCAR HGET($lowerCaseConTb, op) or op
 

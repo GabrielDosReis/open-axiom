@@ -348,7 +348,7 @@ htInputStrings strings ==
     if htpLabelErrorMsg($curPage, stringName) then
       iht ['"\centerline{{\em ", htpLabelErrorMsg($curPage, stringName), '"}}"]
 
-      mess2 := CONCAT(mess2, bcSadFaces())
+      mess2 := strconc(mess2, bcSadFaces())
       htpSetLabelErrorMsg($curPage, stringName, nil)
     iht '"\item "
     bcIssueHt mess1
@@ -405,7 +405,7 @@ htMakeTemplates(templateList, numLabels) ==
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
       cons? template =>
-        INTERN CONCAT(first template, PRINC_-TO_-STRING i, rest template)
+        INTERN strconc(first template, PRINC_-TO_-STRING i, rest template)
       template
 
 templateParts template ==
@@ -419,7 +419,7 @@ htMakeDoneButton(message, func) ==
   if message = '"Continue" then
     bchtMakeButton('"\lispdownlink", "\ContinueBitmap", func)
   else
-    bchtMakeButton('"\lispdownlink",CONCAT('"\box{", message, '"}"), func)
+    bchtMakeButton('"\lispdownlink",strconc('"\box{", message, '"}"), func)
   bcHt '"} "
 
 htProcessDoneButton [label , func] ==
@@ -430,7 +430,7 @@ htProcessDoneButton [label , func] ==
   else if label = '"Push to enter names" then
     htMakeButton('"\lispdownlink",'"\ControlBitmap{ClickToSet}", func)
   else
-    htMakeButton('"\lispdownlink", CONCAT('"\box{", label, '"}"), func)
+    htMakeButton('"\lispdownlink", strconc('"\box{", label, '"}"), func)
 
   iht '"} "
 
@@ -449,7 +449,7 @@ bchtMakeButton(htCommand, message, func) ==
 htProcessDoitButton [label, command, func] ==
   fun := mkCurryFun(func, [command])
   iht '"\newline\vspace{1}\centerline{"
-  htMakeButton('"\lispcommand", CONCAT('"\box{", label, '"}"), fun)
+  htMakeButton('"\lispcommand", strconc('"\box{", label, '"}"), fun)
   iht '"} "
   iht '"\vspace{2}{Select \  \UpButton{} \  to go back one page.}"
   iht '"\newline{Select \  \ExitButton{QuitPage} \  to remove this window.}"
@@ -520,8 +520,8 @@ checkCondition(s1, string, condList) ==
 
 condErrorMsg type ==
   typeString := form2String type
-  if cons? typeString then typeString := APPLY(function CONCAT, typeString)
-  CONCAT('"Error: Could not make your input into a ", typeString)
+  if cons? typeString then typeString := apply(function strconc, typeString)
+  strconc('"Error: Could not make your input into a ", typeString)
 
 parseAndEval string ==
   $InteractiveMode :fluid := true
@@ -546,29 +546,29 @@ parseAndEval1 string ==
   nil
 
 makeSpadCommand(:l) ==
-  opForm := CONCAT(first l, '"(")
+  opForm := strconc(first l, '"(")
   lastArg := last l
   l := rest l
   argList := nil
   for arg in l while arg ~= lastArg repeat
-    argList := [CONCAT(arg, '", "), :argList]
+    argList := [strconc(arg, '", "), :argList]
   argList := nreverse [lastArg, :argList]
-  CONCAT(opForm, APPLY(function CONCAT, argList), '")")
+  strconc(opForm, apply(function strconc, argList), '")")
 
 htMakeInputList stringList ==
 -- makes an input form for constructing a list
   lastArg := last stringList
   argList := nil
   for arg in stringList while arg ~= lastArg repeat
-    argList := [CONCAT(arg, '", "), :argList]
+    argList := [strconc(arg, '", "), :argList]
   argList := nreverse [lastArg, :argList]
-  bracketString APPLY(function CONCAT, argList)
+  bracketString apply(function strconc, argList)
 
 
 -- predefined filter strings
-bracketString string == CONCAT('"[",string,'"]")
+bracketString string == strconc('"[",string,'"]")
 
-quoteString string == CONCAT('"_"", string, '"_"")
+quoteString string == strconc('"_"", string, '"_"")
 
 $funnyQuote := char 127
 $funnyBacks := char 128

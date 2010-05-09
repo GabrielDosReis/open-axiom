@@ -184,7 +184,7 @@ substituteSegmentedMsg(msg,args) ==
       -- Note 'f processing must come first.
       if MEMQ(char 'f,q) then
           arg :=
-              cons? arg => APPLY(first arg, rest arg)
+              cons? arg => apply(first arg, rest arg)
               arg
       if MEMQ(char 'm,q) then arg := [['"%m",:arg]]
       if MEMQ(char 's,q) then arg := [['"%s",:arg]]

@@ -174,7 +174,7 @@ devaluateDeeply x ==
 --CONTINUE() == continue()
 continue() == FIN comp($x,$m,$f)
  
-LEVEL(:l) == APPLY('level,l)
+LEVEL(:l) == apply('level,l)
 level(:l) ==
   null l => same()
   l is [n] and integer? n => displayComp ($level:= n)

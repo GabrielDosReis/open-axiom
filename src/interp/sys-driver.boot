@@ -101,7 +101,7 @@ systemDatabaseDirectory() ==
 loadExposureGroupData() ==
   LOAD('"./exposed", KEYWORD::VERBOSE,false,
     KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
-  LOAD(CONCAT(systemRootDirectory(),'"algebra/exposed"),
+  LOAD(strconc(systemRootDirectory(),'"algebra/exposed"),
     KEYWORD::VERBOSE,false,KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
   "failed"
 
@@ -242,7 +242,7 @@ initializeGlobalState() ==
 
   -- 7. Etc.
   if have_to and functionp 'addtopath then 
-    addtopath CONCAT(systemRootDirectory(),'"bin")
+    addtopath strconc(systemRootDirectory(),'"bin")
   -- Take off
 
 

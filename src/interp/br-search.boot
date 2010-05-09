@@ -353,7 +353,7 @@ spadType(x) ==  --called by \spadtype{x} from HyperDoc
             systemError ['"Argument: ",s,'" to spadType won't parse"]
   if atom form then form := [form]
   op    := opOf form
-  looksLikeDomainForm form => APPLY(function conPage,form)
+  looksLikeDomainForm form => apply(function conPage,form)
   conPage(op)
 
 looksLikeDomainForm x ==

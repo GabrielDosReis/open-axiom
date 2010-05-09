@@ -198,7 +198,7 @@ incLine1(eb, str,str1, gno, lno, ufo) ==
             ln := lnCreate(eb,str,gno,lno,ufo)
             [[ln,:1],:str1]
 xlSkip(eb, str, lno, ufo) ==
-        str := CONCAT('"-- Omitting:", str)
+        str := strconc('"-- Omitting:", str)
         [incLine(eb, str, -1, lno, ufo), [NIL, "none"]]
  
 xlMsg(eb, str, lno, ufo, mess) ==
@@ -290,7 +290,7 @@ incLude1 (:z) ==
  
             info.2 = '"other" =>
                 Skipping? state => [xlSkip(eb,str,lno,ufos.0), :Rest s]
-                [xlOK1(eb, str,CONCAT('")command",str), lno, ufos.0),
+                [xlOK1(eb, str,strconc('")command",str), lno, ufos.0),
                                           :Rest s]
  
             info.2 = '"say" =>
@@ -423,7 +423,7 @@ inclmsgConStill  n  ==
 inclmsgFinSkipped() ==
     ['S2CI0008, []]
 inclmsgIfSyntax(ufo,found,context) ==
-    found := CONCAT('")", found)
+    found := strconc('")", found)
     ['S2CI0009, [%id found, %id context, %origin ufo]]
 inclmsgNoSuchFile fn ==
     ['S2CI0010, [%fname fn]]

@@ -60,7 +60,7 @@ structure %Ast ==
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)
 pfListOf? x         == pfAbSynOp?(x,'listOf)
-pfAppend list       == APPLY(function append,list)
+pfAppend list       == apply(function append,list)
 
 pfNothing ()        == pfTree('nothing, [])
 pfNothing? form     == pfAbSynOp?(form, 'nothing)

@@ -135,7 +135,7 @@ Undef(:u) ==
     if $reportBottomUpFlag then
       sayMessage concat ['"   Retrospective determination of slot",'%b,
         slot,'%d,'"of",'%b,:prefix2String domain,'%d]
-    APPLY(first ELT(domain',slot),[:u'',rest ELT(domain',slot)])
+    apply(first ELT(domain',slot),[:u'',rest ELT(domain',slot)])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
 makeInitialModemapFrame() == 

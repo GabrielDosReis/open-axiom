@@ -47,12 +47,12 @@ $mapThrowCount := 0 -- times a "return" occurs in map
 $specialMapNameSuffix := NIL
 
 makeInternalMapName(userName,numArgs,numMms,extraPart) ==
-  name := CONCAT('"*",STRINGIMAGE numArgs,'";",
+  name := strconc('"*",STRINGIMAGE numArgs,'";",
     object2String userName,'";",STRINGIMAGE numMms,'";",
       object2String frameName first $interpreterFrameRing )
-  if extraPart then name := CONCAT(name,'";",extraPart)
+  if extraPart then name := strconc(name,'";",extraPart)
   if $specialMapNameSuffix then
-    name := CONCAT(name,'";",$specialMapNameSuffix)
+    name := strconc(name,'";",$specialMapNameSuffix)
   INTERN name
 
 isInternalMapName name ==
@@ -441,11 +441,11 @@ simplifyMapConstructorRefs form ==
     args is [obj,dom] =>
       dom' := prefix2String dom
       --if atom dom' then dom' := [dom']
-      --[op,obj,APPLY('CONCAT,dom')]
+      --[op,obj,apply('CONCAT,dom')]
       dom'' :=
           atom dom' => dom'
           null rest dom' => first dom'
-          APPLY('CONCAT, dom')
+          apply('CONCAT, dom')
       [op,obj, dom'']
     form
   form
@@ -977,7 +977,7 @@ mkValCheck(val,i) ==
 
 mkSharpVar i ==
   -- create #i
-  INTERN CONCAT('"#",STRINGIMAGE i)
+  INTERN strconc('"#",STRINGIMAGE i)
 
 mapPredTran pred ==
   -- transforms "x in i..j" to "x>=i and x<=j"

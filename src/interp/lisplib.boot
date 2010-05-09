@@ -139,7 +139,7 @@ findModule cname ==
   m := getConstructorModuleFromDB cname or return nil
   existingFile? m => m
   strap := algebraBootstrapDir() =>
-    m := CONCAT(strap,PATHNAME_-NAME m,'".",$faslType)
+    m := strconc(strap,PATHNAME_-NAME m,'".",$faslType)
     existingFile? m => m
     systemError ['"missing module for ",:bright cname]
   systemError ['"missing module for ",:bright cname]

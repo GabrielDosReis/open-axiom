@@ -571,12 +571,12 @@ prepareResults(results,args,dummies,values,decls) ==
         LISTP(type) and first(type)="character" => MAKE_-STRING(1)
         LISTP(type) and first(type) in ["complex","double complex"] =>
           makeVector(  makeList(
-            2*APPLY('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
+            2*apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
             if first(type)="complex" then shortZero else longZero),_
           if first(type)="complex" then "%SingleFloat" else "%DoubleFloat" )
         LISTP type => makeVector(_
           makeList(
-            APPLY('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
+            apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
             defaultValue(first type,argNames,actual)),_
           checkForBoolean lispType first(type) )
         type = "integer" => 0

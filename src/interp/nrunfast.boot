@@ -111,10 +111,10 @@ evalSlotDomain(u,dollar) ==
      apply('Record,[[":",tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
   u is ['Union,:argl] and first argl is ['_:,.,.] =>
-     APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
+     apply('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
   u is ["Enumeration",:.] => eval u
-  u is [op,:argl] => APPLY(op,[evalSlotDomain(x,dollar) for x in argl])
+  u is [op,:argl] => apply(op,[evalSlotDomain(x,dollar) for x in argl])
   systemErrorHere '"evalSlotDomain"
 
 --=======================================================
@@ -123,7 +123,7 @@ evalSlotDomain(u,dollar) ==
 newGoGet(:l) ==
   [:arglist,env] := l
   slot := replaceGoGetSlot env
-  APPLY(first slot,[:arglist,rest slot])  --SPADCALL it!
+  apply(first slot,[:arglist,rest slot])  --SPADCALL it!
  
 replaceGoGetSlot env ==
   [thisDomain,index,:op] := env

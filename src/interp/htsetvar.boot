@@ -208,7 +208,7 @@ htSetvarDoneButton(message, func) ==
   if message = '"Select to Set Value" or message = '"Select to Set Values"  then
     bchtMakeButton('"\lisplink",'"\ControlBitmap{ClickToSet}", func)
   else
-    bchtMakeButton('"\lisplink",CONCAT('"\fbox{", message, '"}"), func)
+    bchtMakeButton('"\lisplink",strconc('"\fbox{", message, '"}"), func)
 
   bcHt '"} "
 
