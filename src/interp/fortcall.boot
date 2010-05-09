@@ -50,7 +50,7 @@ makeFort(name,args,decls,results,returnType,aspInfo) ==
   -- and a stub Axiom function to process its arguments.
   -- the following is a list of objects for which values need not be
   -- passed by the user.
-  dummies := [second(u) for u in args | EQUAL(car u,0)]
+  dummies := [second(u) for u in args | EQUAL(first u,0)]
   args := [untangle2(u) for u in args] -- lose spad Union representation
     where untangle2 u ==
       atom (v := rest(u)) => v
@@ -395,7 +395,7 @@ complexRows z ==
 -- make them look like a Fortran vector!
   [:[:pair2list(u.i) for u in z] for i in 0..#(z.0)-1]
 
-pair2list u == [car u,cdr u]
+pair2list u == [first u,rest u]
 vec2Lists1 u == [u.i for i in 0..#u-1]
 vec2Lists u == [vec2Lists1 u.i for i in 0..#u-1]
 

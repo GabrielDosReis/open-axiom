@@ -475,7 +475,7 @@ bfSUBLIS1(p,e)==
    p = nil => e
    f := first p
    EQ(first f,e) => bfSUBLIS(p, rest f)
-   bfSUBLIS1(cdr p,e)
+   bfSUBLIS1(rest p,e)
  
 defSheepAndGoats(x)==
   case x of 
@@ -531,7 +531,7 @@ bfLET1(lhs,rhs) ==
 bfCONTAINED(x,y)==
     EQ(x,y) => true
     atom y=> false
-    bfCONTAINED(x,car y) or bfCONTAINED(x,cdr y)
+    bfCONTAINED(x,first y) or bfCONTAINED(x,rest y)
  
 bfLET2(lhs,rhs) ==
   IDENTP lhs => bfLetForm(lhs,rhs)
@@ -901,7 +901,7 @@ shoeCompTran1 x==
 	 MEMQ(x,$dollarVars)=>$dollarVars
 	 [x,:$dollarVars]
     nil
-  U:=car x
+  U:=first x
   U = "QUOTE" => nil
   x is ["L%T",l,r] =>
     x.first := "SETQ"

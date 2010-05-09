@@ -161,8 +161,8 @@ pfNotArg pf == second pf       -- was ==>
 pfEnSequence a==
            if null a
            then  pfTuple pfListOf a
-           else if null cdr a
-                then  car a
+           else if null rest a
+                then  first a
                 else  pfSequence pfListOf a
 pfFromDom(dom,expr)==
     if pfApplication? expr

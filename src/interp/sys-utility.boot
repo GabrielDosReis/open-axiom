@@ -132,10 +132,10 @@ CONTAINED(x,y) == main where
     equal(x,y)
   eq(x,y) ==
     atom y => EQ(x,y)
-    eq(x, car y) or eq(x, cdr y)
+    eq(x, first y) or eq(x, rest y)
   equal(x,y) ==
     atom y => EQUAL(x,y)
-    equal(x, car y) or equal(x, cdr y)
+    equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'
 -- ??? Should not this be named `alistAllKeys'?
@@ -156,7 +156,7 @@ ASSOCRIGHT x ==
 ADDASSOC: (%Thing,%Thing,%List) -> %List
 ADDASSOC(x,y,l) ==
   atom l => [[x,:y],:l]
-  x = first first l => [[x,:y],:cdr l]
+  x = first first l => [[x,:y],:rest l]
   [first l,:ADDASSOC(x,y,rest l)]
 
 

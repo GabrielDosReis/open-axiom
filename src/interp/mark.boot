@@ -1541,4 +1541,4 @@ for x in [["%LET", :"compSetq"],_
           ["SEQ", :"compSeq"],_
           ["SETQ", :"compSetq"],_
           ["VECTOR", :"compVector"]] repeat
-  MAKEPROP(car x, "special", cdr x)
+  MAKEPROP(first x, "special", rest x)
