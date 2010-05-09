@@ -187,7 +187,7 @@ import oa__system: string -> int for runCommand
 ++ run a program with specified arguments
 runProgram(prog,args) ==
 )if %hasFeature KEYWORD::GCL
-  SYSTEM::SYSTEM CONCAT/[prog,:[:['" ",a] for a in args]]
+  SYSTEM::SYSTEM(CONCAT/[prog,:[:['" ",a] for a in args]])
 )elseif %hasFeature KEYWORD::CLISP
   EXT::RUN_-PROGRAM(prog,KEYWORD::ARGUMENTS,args)
 )elseif %hasFeature KEYWORD::SBCL
