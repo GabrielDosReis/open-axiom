@@ -142,10 +142,10 @@ trace1 l ==
       LASSOC("ops",optionList) =>
         throwKeyedMsg("S2IT0004",NIL)
       opList:=
-        traceList => LIST ["ops",:traceList]
+        traceList => [["ops",:traceList]]
         nil
       varList:=
-        y:= LASSOC("vars",optionList) => LIST ["vars",:y]
+        y:= LASSOC("vars",optionList) => [["vars",:y]]
         nil
       [:domainList,:opList,:varList]
     optionList => [:traceList,:optionList]
@@ -769,7 +769,7 @@ _?t() ==
   null _/TRACENAMES => sayMSG bright '"nothing is traced"
   for x in _/TRACENAMES | atom x and not IS__GENVAR x repeat
     if llm:= get(x,'localModemap,$InteractiveFrame) then
-      x:= (LIST (CADAR llm))
+      x:= ([CADAR llm])
     sayMSG ['"Function",:bright rassocSub(x,$mapSubNameAlist),'"traced"]
   for x in _/TRACENAMES | x is [d,:l] and isDomainOrPackage d repeat
     suffix:=
@@ -809,7 +809,7 @@ breaklet(fn,vars) ==
     pair:= ASSOC("BREAK",fnEntry) => union(vars,rest pair)
     vars
   $letAssoc:=
-    null fnEntry => [[fn,:LIST ["BREAK",:vars]],:$letAssoc]
+    null fnEntry => [[fn,:[["BREAK",:vars]]],:$letAssoc]
     pair => (pair.rest := vars; $letAssoc)
   if $letAssoc then SETLETPRINTFLAG true
   $QuickLet:local := false
@@ -830,5 +830,5 @@ break msg ==
     sayBrightly msg
     INTERRUPT()
 
-compileBoot fn == _/D_,1(LIST fn,'(_/COMP),nil,nil)
+compileBoot fn == _/D_,1([fn],'(_/COMP),nil,nil)
 

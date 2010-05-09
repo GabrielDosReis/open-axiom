@@ -129,7 +129,7 @@ formatOutput x ==
         (y:= strconc(nBlanks $m,y); extraLines:= [y,:extraLines]; x)
       [line,y]
   consLineBuffer x
-  for y in extraLines repeat consLineBuffer LIST y
+  for y in extraLines repeat consLineBuffer [y]
   if after then putOut after
   $commentsToPrint:= nil
  
@@ -142,7 +142,7 @@ putOut x ==
 eject n == for i in 2..n repeat consLineBuffer nil
  
 addComment u ==
-  for x in mkCommentLines u repeat consLineBuffer LIST x
+  for x in mkCommentLines u repeat consLineBuffer [x]
  
 mkCommentLines [.,n,.,s] ==
   lines:= breakComments s
@@ -153,8 +153,8 @@ mkCommentLines [.,n,.,s] ==
 breakComments s ==
   n:= containsString(s,PNAME "ENDOFLINECHR") =>
     #s>n+12 => [SUBSTRING(s,0,n),:breakComments SUBSTRING(s,n+12,NIL)]
-    LIST SUBSTRING(s,0,n)
-  LIST s
+    [SUBSTRING(s,0,n)]
+  [s]
  
 containsString(x,y) ==
                        --if string x contains string y, return start index
@@ -179,7 +179,7 @@ consBuffer item ==
                    --is true except within try
       formatOutput reverse $lineFragmentBuffer
       $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
-      $lineFragmentBuffer:= LIST nBlanks $c
+      $lineFragmentBuffer:= [nBlanks $c]
       consBuffer item
     nil
   $lineFragmentBuffer:=
@@ -205,7 +205,7 @@ newLine() ==
   null $autoLine => nil
   $newLineWritten := true
   formatOutput reverse $lineFragmentBuffer
-  $lineFragmentBuffer:= LIST nBlanks $m
+  $lineFragmentBuffer:= [nBlanks $m]
   $c:= $m
  
 optNewLine() ==
@@ -216,7 +216,7 @@ spillLine() ==
   null $autoLine => nil
   formatOutput reverse $lineFragmentBuffer
   $c:= $m+2*($numberOfSpills:= $numberOfSpills+1)
-  $lineFragmentBuffer:= LIST nBlanks $c
+  $lineFragmentBuffer:= [nBlanks $c]
   $c
  
 indent() ==

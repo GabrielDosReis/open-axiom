@@ -325,13 +325,13 @@ intersectionContour(c,c') ==
     modeCompare(p,p') ==
       pair:= assoc("mode",p) =>
         pair':= assoc("mode",p') =>
-          m'':= unifiable(rest pair,rest pair') => LIST ["mode",:m'']
+          m'':= unifiable(rest pair,rest pair') => [["mode",:m'']]
           stackSemanticError(['%b,$var,'%d,"has two modes: "],nil)
        --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
-        LIST ["conditionalmode",:rest pair]
+        [["conditionalmode",:rest pair]]
         --LIST pair
        --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
-      pair':= assoc("mode",p') => LIST ["conditionalmode",:rest pair']
+      pair':= assoc("mode",p') => [["conditionalmode",:rest pair']]
         --LIST pair'
     unifiable(m1,m2) ==
       m1=m2 => m1
@@ -366,7 +366,7 @@ addContour(c,E is [cur,:tail]) ==
                         if v ~=vv then
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
-        LIST c
+        [c]
  
 makeCommonEnvironment(e,e') ==
   interE makeSameLength(e,e') where  --$ie:=
@@ -416,7 +416,7 @@ getInverseEnvironment(a,e) ==
     --the next two lines are necessary to get 3-branched Unions to work
     -- old-style unions, that is
     (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
-      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),e)
+      put(x,"condition",[MKPF(delete(a,oldpred),"OR")],e)
     getUnionMode(x,e) is ["Union",:l] =>
       l':= delete(m,l)
       for u in l' repeat
@@ -644,7 +644,7 @@ isAlmostSimple x ==
         op="has" => x
         op="is" => x
         op="%LET" =>
-          IDENTP y => (setAssignment LIST x; y)
+          IDENTP y => (setAssignment [x]; y)
           (setAssignment [["%LET",g:= genVariable(),:l],["%LET",y,g]]; g)
         op = "case" and IDENTP y => x
         isSideEffectFree op => [op,:mapInto(rest x, function fn)]
@@ -737,7 +737,7 @@ printDashedLine() ==
 stackSemanticError(msg,expr) ==
   BUMPERRORCOUNT "semantic"
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
-  if atom msg then msg:= LIST msg
+  if atom msg then msg:= [msg]
   entry:= [msg,expr]
   if not member(entry,$semanticErrorStack) then $semanticErrorStack:=
     [entry,:$semanticErrorStack]
@@ -862,7 +862,7 @@ getmodeOrMapping(x,e) ==
  
 outerProduct l ==
                 --of a list of lists
-  null l => LIST nil
+  null l => [nil]
   "append"/[[[x,:y] for y in outerProduct rest l] for x in first l]
  
 sublisR(al,u) ==

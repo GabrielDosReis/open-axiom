@@ -1239,8 +1239,8 @@ isPolynomialMode m ==
     op in '(Polynomial RationalFunction AlgebraicFunction Expression
       ElementaryFunction LiouvillianFunction FunctionalExpression
         CombinatorialFunction) => 'all
-    op = 'UnivariatePolynomial => LIST a
-    op = 'Variable       => LIST a
+    op = 'UnivariatePolynomial => [a]
+    op = 'Variable       => [a]
     op in '(MultivariatePolynomial DistributedMultivariatePolynomial
       HomogeneousDistributedMultivariatePolynomial) => a
     NIL

@@ -492,7 +492,7 @@ freeOfSharpVars x ==
   freeOfSharpVars first x and freeOfSharpVars rest x
 
 listOfSharpVars x ==
-  atom x => (isSharpVarWithNum x => LIST x; nil)
+  atom x => (isSharpVarWithNum x => [x]; nil)
   union(listOfSharpVars first x,listOfSharpVars rest x)
 
 listOfPatternIds x ==

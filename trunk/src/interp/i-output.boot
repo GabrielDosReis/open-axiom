@@ -1879,7 +1879,7 @@ subspan u ==
    atom CAAR u           and_
    not NUMBERP CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
-   APPLX(GETL(CAAR u, 'SUBSPAN), LIST u)
+   APPLX(GETL(CAAR u, 'SUBSPAN), [u])
   MAX(subspan first u, subspan rest u)
 
 agggsub u == subspan rest u
@@ -1891,7 +1891,7 @@ superspan u ==
    atom CAAR u             and_
    not NUMBERP CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
-   APPLX(GETL(CAAR u, 'SUPERSPAN), LIST u)
+   APPLX(GETL(CAAR u, 'SUPERSPAN), [u])
   MAX(superspan first u, superspan rest u)
 
 agggsuper u == superspan rest u
@@ -1998,7 +1998,7 @@ appsum(u, x, y, d) ==
   appsum(rest u, tempx, y, tempdblock)
 
 appneg(u, x, y, d) ==
-  appsum(LIST u, x - 1, y, d)
+  appsum([u], x - 1, y, d)
 
 appparu(u, x, y, d) ==
   bot := y - subspan u
@@ -2100,7 +2100,7 @@ longext(u, i, n) ==
   u := remWidth(REVERSEWOC(['" ",:rest x]))
   charybdis(u, i, n)
   if not $collectOutput then TERPRI $algebraOutputStream
-  charybdis(['ELSE, :LIST y], i, n)
+  charybdis(['ELSE, :[y]], i, n)
   '" "
 
 appvertline(char, x, yl, yu, d) ==
@@ -2325,8 +2325,8 @@ minusWidth(u) ==
 --   LASSOC(name, x) or '","
 
 bracketagglist(u, start, linelength, tchr, open, close) ==
-  u := [LIST('CONCAT, open, first u),
-           :[LIST('CONCAT, '" ", y) for y in rest u]]
+  u := [['CONCAT, open, first u],
+           :[['CONCAT, '" ", y] for y in rest u]]
   repeat
     s := 0
     for x in tails u repeat
@@ -2338,7 +2338,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
        EQ(lastx, u) => ((nextu := rest u); u.rest := nil)
        true => ((nextu := lastx); PREDECESSOR(lastx, u).rest := nil)
     for x in tails u repeat
-           x.first := LIST('CONCAT, first x, tchr)
+           x.first := ['CONCAT, first x, tchr]
     if null nextu then LAST(u).rest.rest.first := close
     x := ASSOCIATER('CONCAT, [ichr,:u])
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
