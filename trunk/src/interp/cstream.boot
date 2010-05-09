@@ -73,7 +73,7 @@ incZip1(:z)==
      [g,f1,f2]:=z
      StreamNull f1 => StreamNil
      StreamNull f2 => StreamNil
-     [FUNCALL(g,car f1,car f2),:incZip(g,cdr f1,cdr f2)]
+     [FUNCALL(g,first f1,first f2),:incZip(g,rest f1,rest f2)]
  
 incAppend(x,y)==Delay(function incAppend1,[x,y])
  
@@ -83,14 +83,14 @@ incAppend1(:z)==
      then if StreamNull y
           then StreamNil
           else y
-     else [car x,:incAppend(cdr x,y)]
+     else [first x,:incAppend(rest x,y)]
  
 next(f,s)==Delay(function next1,[f,s])
 next1(:z)==
       [f,s]:=z
       StreamNull s=> StreamNil
       h:= apply(f, [s])
-      incAppend(car h,next(f,cdr h))
+      incAppend(first h,next(f,rest h))
  
 nextown(f,g,s)==Delay(function nextown1,[f,g,s])
 nextown1 (:z)==
@@ -100,7 +100,7 @@ nextown1 (:z)==
            StreamNil
       StreamNull s
       h:=spadcall2 (f, s)
-      incAppend(car h,nextown(f,g,cdr h))
+      incAppend(first h,nextown(f,g,rest h))
  
 nextown2(f,g,e,x) == 
   nextown([f,:e],[g,:e],x)

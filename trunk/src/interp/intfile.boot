@@ -57,7 +57,7 @@ shoeStrings (stream)==
    if a.0 ~= char " "
    then ['"",stream]
    else
-       [h,t]:=shoeStrings(cdr stream)
+       [h,t]:=shoeStrings(rest stream)
        [strconc(a,h),t]
  
 --fetchKeyedMsg(key,b)== GET(key,"MSGS")

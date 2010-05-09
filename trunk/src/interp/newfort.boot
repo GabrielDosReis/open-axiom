@@ -716,7 +716,7 @@ fortFormatCharacterTypes(names) ==
     #u=2 => sortedByLength := insertEntry(second u,first u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
-    fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in cdr(u)]) where
+    fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in rest(u)]) where
        mkCharName v == strconc("CHARACTER*(",STRINGIMAGE v,")")
   if (not null genuineArrays) then
     fortFormatTypes1('"CHARACTER",mkParameterList2 genuineArrays) where
@@ -905,11 +905,11 @@ segment l ==
       var := NTH(1,e)
       exprs := segment1(third e,
                         $maximumFortranExpressionLength-1-fortExpSize var)
-      s:= [:[['"=",var,car exprs],:cdr exprs],:s]
+      s:= [:[['"=",var,first exprs],:rest exprs],:s]
     else if LISTP(e) and first e = '"RETURN" then
       exprs := segment1(second e,
                         $maximumFortranExpressionLength-2-fortExpSize first e)
-      s := [:[[first e,car exprs],:cdr exprs],:s]
+      s := [:[[first e,first exprs],:rest exprs],:s]
     else s:= [e,:s]
   reverse s
  
@@ -929,9 +929,9 @@ segment1(e,maxSize) ==
       newE := [:newE,NTH(i-1,e)]
     -- this ones too big.
     exprs := segment2(NTH(i-1,e),safeSize)
-    expressions := [:(cdr exprs),:expressions]
-    newE := [:newE,(car exprs)]
-    safeSize := safeSize - fortExpSize car exprs
+    expressions := [:(rest exprs),:expressions]
+    newE := [:newE,(first exprs)]
+    safeSize := safeSize - fortExpSize first exprs
   [newE,:expressions]
  
 segment2(e,topSize) ==
@@ -944,7 +944,7 @@ segment2(e,topSize) ==
     subE := NTH(i-1,e)
     (subSize := fortExpSize subE) > maxSize =>
       subE := segment2(subE,maxSize)
-      exprs := [:(cdr subE),:exprs]
+      exprs := [:(rest subE),:exprs]
       if (subSize := fortExpSize first subE) <= topSize then
         newE := [:newE,first subE]
         topSize := topSize - subSize

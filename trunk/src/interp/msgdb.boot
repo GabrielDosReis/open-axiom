@@ -797,7 +797,7 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
     while lst and not first(lst) = "%l" repeat
       words := [first lst,: words]
       lst := rest lst
-    if lst then lst := cdr lst
+    if lst then lst := rest lst
     sayString('"\centerline{",out)
     words := nreverse words
     for zz in words repeat

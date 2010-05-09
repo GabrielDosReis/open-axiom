@@ -442,7 +442,7 @@ srcPosDisplay(sp) ==
 getFlagArgsPos t ==
   VECP t => getAtree(t, 'flagArgsPos)
   atom t => keyedSystemError("S2II0001",[t])
-  getFlagArgsPos car t
+  getFlagArgsPos first t
 
 --% Transfer of VAT properties.
 

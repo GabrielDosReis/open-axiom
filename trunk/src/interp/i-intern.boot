@@ -307,8 +307,8 @@ flagArguments(op, nargs) ==
 signatureFromModemap m ==
   [sig,pred,:.]  := m
   pred = true => rest sig
-  car pred = "AND" =>
-    sl := [[a,:b] for [.,a,b] in cdr pred]
+  first pred = "AND" =>
+    sl := [[a,:b] for [.,a,b] in rest pred]
     rest SUBLIS(sl,sig)
   
 collectDefTypesAndPreds args ==

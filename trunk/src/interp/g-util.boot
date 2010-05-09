@@ -142,8 +142,8 @@ mkList u ==
 
 ELEMN(x, n, d) ==
   null x => d
-  n = 1 => car x
-  ELEMN(cdr x, n-1, d)
+  n = 1 => first x
+  ELEMN(rest x, n-1, d)
 
 PPtoFile(x, fname) ==
     stream := DEFIOSTREAM([['MODE, :'OUTPUT], ['FILE, :fname]], 80, 0)

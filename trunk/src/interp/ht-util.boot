@@ -372,7 +372,7 @@ renamePatternVariables1(condList, substList, patVars) ==
   cond is ['isDomain, pv, pattern] or cond is ['ofCategory, pv, pattern]
     or cond is ['Satisfies, pv, cond] =>
       if pv = $EmptyMode then nsubst := substList
-      else nsubst := [[pv, :car patVars], :substList]
+      else nsubst := [[pv, :first patVars], :substList]
       renamePatternVariables1(restConds, nsubst, rest patVars)
   substList
 

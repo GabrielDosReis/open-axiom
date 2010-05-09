@@ -317,10 +317,10 @@ streamChop(n,s)==
     else if EQL(n,0)
          then [nil,s]
          else
-            [a,b]:= streamChop(n-1,cdr s)
-            line:=car s
+            [a,b]:= streamChop(n-1,rest s)
+            line:=first s
             c:=ncloopPrefix?('")command",rest line)
-            d:= [car line,:(if c then c else cdr line)]
+            d:= [first line,:(if c then c else rest line)]
             [[d,:a],b]
  
 ncloopPrintLines lines ==

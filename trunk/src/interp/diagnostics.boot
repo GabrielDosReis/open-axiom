@@ -85,8 +85,8 @@ MESSAGEPRINT_-1 x ==
   IDENTP x => PRINC x
   atom x => PRINC x
   PRINC '"("
-  MESSAGEPRINT_-1 car x
-  MESSAGEPRINT_-2 cdr x
+  MESSAGEPRINT_-1 first x
+  MESSAGEPRINT_-2 rest x
   PRINC '")"
 
 MESSAGEPRINT_-2 x ==
@@ -95,6 +95,6 @@ MESSAGEPRINT_-2 x ==
       PRINC '" . "
       MESSAGEPRINT_-1 x
   PRINC '" "
-  MESSAGEPRINT_-1 car x
-  MESSAGEPRINT_-2 cdr x
+  MESSAGEPRINT_-1 first x
+  MESSAGEPRINT_-2 rest x
 

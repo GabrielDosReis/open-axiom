@@ -57,7 +57,7 @@ insertpile (s)==
      if npNull s
      then [false,0,[],s]
      else
-       [h,t]:=[car s,cdr s]
+       [h,t]:=[first s,rest s]
        if pilePlusComment h
        then
           [h1,t1]:=pilePlusComments s
@@ -72,7 +72,7 @@ pilePlusComments s==
       if npNull s
       then [[],s]
       else
-       [h,t]:=[car s,cdr s]
+       [h,t]:=[first s,rest s]
        if pilePlusComment h
        then
          [h1,t1]:=pilePlusComments t
@@ -83,7 +83,7 @@ pileTree(n,s)==
     if npNull s
     then [false,n,[],s]
     else
-        [h,t]:=[car s,cdr s]
+        [h,t]:=[first s,rest s]
         hh:=pileColumn first h
         if hh > n
         then pileForests(first h,hh,t)
@@ -93,7 +93,7 @@ eqpileTree(n,s)==
     if npNull s
     then [false,n,[],s]
     else
-        [h,t]:=[car s,cdr s]
+        [h,t]:=[first s,rest s]
         hh:=pileColumn first h
         if hh = n
         then pileForests(first h,hh,t)
@@ -128,9 +128,9 @@ pileCtree(x,y)==dqAppend(x,pileCforest y)
 pileCforest x==
    if null x
    then []
-   else if null cdr x
+   else if null rest x
         then
-           f:= car x
+           f:= first x
            if EQ(tokPart CAAR f,"IF")
            then enPile f
            else f
@@ -142,12 +142,12 @@ lastTokPosn  t== tokPosn second t
 separatePiles x==
   if null x
   then []
-  else if null cdr x
-       then car x
+  else if null rest x
+       then first x
        else
-         a:=car x
+         a:=first x
          semicolon:=dqUnit tokConstruct("key", "BACKSET",lastTokPosn a)
-         dqConcat [a,semicolon,separatePiles cdr x]
+         dqConcat [a,semicolon,separatePiles rest x]
  
 enPile x==
    dqConcat [dqUnit tokConstruct("key","SETTAB",firstTokPosn x),
