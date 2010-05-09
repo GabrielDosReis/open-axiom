@@ -164,7 +164,7 @@ import sock__send__string__len: (int, string, int) -> int
   for doSendString
 
 sockSendString(type,str) ==
-  doSendString(type, str, LENGTH str)
+  doSendString(type, str, # str)
 
 import sock__get__float: int -> double for sockGetFloat
 

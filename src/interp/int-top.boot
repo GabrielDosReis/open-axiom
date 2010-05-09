@@ -164,7 +164,7 @@ intloopReadConsole(b, n)==
              not $leanMode and printPrompt()
              intloopReadConsole('"", c)
     a:=strconc(b,a)
-    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (LENGTH a) - 1),n)
+    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (# a) - 1),n)
     c := intloopProcessString(a, n)
     not $leanMode and printPrompt()
     intloopReadConsole('"", c)

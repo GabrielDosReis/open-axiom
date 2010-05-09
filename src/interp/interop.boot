@@ -111,7 +111,7 @@ StringToCompStr(str) ==
    strconc(str, STRING (CODE_-CHAR 0))
 
 CompStrToString(str) == 
-   SUBSTRING(str, 0, (LENGTH str - 1))
+   SUBSTRING(str, 0, (# str - 1))
 -- local garbage ends
 
 runOldAxiomFunctor(:allArgs) ==
@@ -208,7 +208,7 @@ oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    fun := basicLookup(op, sig, pack, self) => [fun]
    nil
 
-oldAxiomCategoryParentCount([.,.,.,parents,.], env) == LENGTH parents
+oldAxiomCategoryParentCount([.,.,.,parents,.], env) == # parents
 oldAxiomCategoryNthParent([.,.,.,parvec,dom], n, env) ==
   catform := parvec.(n-1)
   VECTORP KAR catform => catform

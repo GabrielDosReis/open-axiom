@@ -656,7 +656,7 @@ fortFormatHead(returnType,name,args) ==
     changeExprLength(l := -11)
   else
     asp := [s := checkType STRINGIMAGE returnType,'" FUNCTION "]
-    changeExprLength(l := -10-LENGTH(s))
+    changeExprLength(l := -10-#(s))
   displayLines fortran2Lines [:asp,:statement2Fortran [name,:CDADR args] ]
   changeExprLength(-l)
 
@@ -676,7 +676,7 @@ mkParameterList l ==
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 nameLen n ==>
- +/[1+LENGTH(u) for u in n]
+ +/[1+#(u) for u in n]
 
 fortFormatTypes(typeName,names) ==
   null names => return nil
@@ -692,11 +692,11 @@ fortFormatTypes(typeName,names) ==
   fortFormatTypes1(typeName,mkParameterList names)
 
 fortFormatTypes1(typeName,names) ==
-  l := $maximumFortranExpressionLength-1-LENGTH(typeName)
+  l := $maximumFortranExpressionLength-1-#(typeName)
   while nameLen(names) > l repeat
     n := []
     ln := 0
-    while (ln := ln + LENGTH(first names) + 1) < l repeat
+    while (ln := ln + #(first names) + 1) < l repeat
       n := [first names,:n]
       names := rest names
     displayLines fortran2Lines [typeName,'" ",:addCommas n]
@@ -858,7 +858,7 @@ checkPrecision e ==
     expt  := if ePos := POSITION(char "E",e) then SUBSEQ(e,ePos+1) else "0"
     rPart :=
       ePos => SUBSEQ(e,period+1,ePos)
-      period+1 < LENGTH e => SUBSEQ(e,period+1)
+      period+1 < # e => SUBSEQ(e,period+1)
       "0"
     strconc(iPart,rPart,"D",expt)
   e
@@ -874,7 +874,7 @@ fortExpSize e ==
   -- This function overestimates the size because it assumes that e.g.
   -- (+ x (+ y z)) will be printed as "x+(y+z)" rather than "x+y+z"
   -- which is the actual case.
-  atom e => LENGTH STRINGIMAGE e
+  atom e => # STRINGIMAGE e
   #e > 3 => 2+fortSize MAPCAR(function fortExpSize, e)
   #e < 3 => 2+fortSize MAPCAR(function fortExpSize, e)
   [op,arg1,arg2] := e
@@ -895,7 +895,7 @@ fortSize e ==
       atom z => z
       first z
  
-tempLen () == 1 + LENGTH STRINGIMAGE $exp2FortTempVarIndex
+tempLen () == 1 + # STRINGIMAGE $exp2FortTempVarIndex
  
 segment l ==
   not $fortranSegment => l

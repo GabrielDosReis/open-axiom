@@ -106,7 +106,7 @@ optimize x ==
       y is [["XLAM",argl,body],:a] =>
         optimize rest x
         argl = "ignore" => x.first := body
-        if not (LENGTH argl<=LENGTH a) then
+        if not (# argl<= # a) then
           SAY '"length mismatch in XLAM expression"
           PRETTYPRINT y
         x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)

@@ -80,7 +80,7 @@ makeGoGetSlot(item,index) ==
 --=======================================================================
 --> called by getInfovecCode (see top of this file) from compDefineFunctor1
 makeCompactDirect u ==
-  $predListLength :local := LENGTH $NRTslot1PredicateList
+  $predListLength :local := # $NRTslot1PredicateList
   $byteVecAcc: local := nil
   [nam,[addForm,:opList]] := u
   --pp opList 

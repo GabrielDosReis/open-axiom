@@ -385,7 +385,7 @@ float2Sex num ==
     dotIndex => SUBSEQ(mantPart, dotIndex+1)
     '"0"
   bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
-    LENGTH fracPartString, expPart)
+    # fracPartString, expPart)
   $useBFasDefault =>
     [., frac, :exp] := bfForm
     [["$elt", intNewFloat(), 'float], frac, exp, 10]

@@ -296,7 +296,7 @@ worthlessCode x ==
  
 cons5(p,l) ==
   l and (CAAR l = first p) => [p,: rest l]
-  LENGTH l < 5 => [p,:l]
+  # l < 5 => [p,:l]
   RPLACD(QCDDDDR l,nil)
   [p,:l]
  
@@ -434,7 +434,7 @@ setVector4Onecat(name,instantiator,info) ==
               u:= ['QUOTE,[cat,:first eval(cat).4]]
               ['COND,[TryGDC cond,['SETQ,'TrueDomain,['CONS,['CONS,u,name],
                 'TrueDomain]]]]
-        LENGTH slist=1 => [CADAR slist]
+        # slist=1 => [CADAR slist]
                       --return a list, since it is CONSed
         slist:= ['PROGN,:slist]
         [['(QUOTE T),slist]]
@@ -781,7 +781,7 @@ InvestigateConditions catvecListMaker ==
     --newS is a list of secondaries and conditions (over and above
     --u) for which they apply
     u:=
-      LENGTH u=1 => first u
+      # u=1 => first u
       ['AND,:u]
     for [v,:.] in newS repeat
       for v' in [v,:first CatEval(v).4] repeat
@@ -823,14 +823,14 @@ ICformat u ==
       u is ['AND,:l] or u is ['and,:l] =>
         l:= removeDuplicates [ICformat v for [v,:l'] in tails l | not member(v,l')]
              -- we could have duplicates after, even if not before
-        LENGTH l=1 => first l
+        # l=1 => first l
         l1:= first l
         for u in rest l repeat
           l1:=mkAnd(u,l1)
         l1
       u is ['OR,:l] =>
         (l:= ORreduce l)
-        LENGTH l=1 => ICformat first l
+        # l=1 => ICformat first l
         l:= ORreduce removeDuplicates [ICformat u for u in l]
                  --causes multiple ANDs to be squashed, etc.
                  -- and duplicates that have been built up by tidying
@@ -850,7 +850,7 @@ ICformat u ==
                     cond2]] repeat if DescendantP(cond,cond2) then l:= delete(u,l)
                          --v subsumes u
             l
-        LENGTH l=1 => first l
+        # l=1 => first l
         ['OR,:l]
       systemErrorHere ["ICformat",u]
   where

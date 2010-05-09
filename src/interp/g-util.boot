@@ -554,10 +554,10 @@ update() ==
 listSort(pred,list,:optional) ==
    NOT functionp pred => error "listSort: first arg must be a function"
    NOT LISTP list => error "listSort: second argument must be a list"
-   null optional => mergeSort(pred,function Identity,list,LENGTH list)
+   null optional => mergeSort(pred,function Identity,list,# list)
    key := first optional
    NOT functionp key => error "listSort: last arg must be a function"
-   mergeSort(pred,key,list,LENGTH list)
+   mergeSort(pred,key,list,# list)
 
 -- non-destructive merge sort using NOT GGREATERP as predicate
 MSORT list == listSort(function GLESSEQP, COPY_-LIST list)
