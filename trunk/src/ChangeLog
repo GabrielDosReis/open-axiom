@@ -1,4 +1,11 @@
-2010-05-09  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Don't rename 'cons'.
+	* interp/msg.boot: Remove uses of cons.
+	* interp/postpar.boot: Likewise.
+	* interp/types.boot: Likewise.
+
+2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Miscellaneous cleanup.
 	* boot/includer.boot: Likewise.

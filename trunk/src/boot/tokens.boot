@@ -239,7 +239,6 @@ for i in [ _
   ["atom",        "ATOM"]  , _
   ["car",          "CAR"]  , _
   ["cdr",          "CDR"]  , _
-  ["cons",        "CONS"]  , _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _

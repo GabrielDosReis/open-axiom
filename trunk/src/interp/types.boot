@@ -119,13 +119,13 @@ namespace BOOT
 
 %Sequence <=> SEQUENCE
 
-%Pair <=> cons
+%Pair <=> CONS
 
 %Maybe a <=> null or a
 
 --% Data structures for the compiler
 %Constructor <=> %Symbol                       -- constructor
-%Form <=> %Number or %Symbol or %String or cons -- input syntax form
+%Form <=> %Number or %Symbol or %String or %Pair -- input syntax form
 %Instantiation <=> [%Constructor,:%Form]       -- constructor instance
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
@@ -134,7 +134,7 @@ namespace BOOT
   [%Code,:[%Mode,:[%Env,:null]]]
 
 %Signature                      -- signature
-  <=> %Symbol or cons
+  <=> %Symbol or %Pair
 
 %Modemap <=> %List                             -- modemap
 

@@ -568,8 +568,16 @@
       (|bpPush| NIL)))
 
 (DEFUN |bpPrimary1| ()
-  (OR (|bpName|) (|bpDot|) (|bpConstTok|) (|bpConstruct|) (|bpCase|)
-      (|bpStruct|) (|bpPDefinition|) (|bpBPileDefinition|)))
+  (OR (|bpParenthesizedApplication|) (|bpDot|) (|bpConstTok|)
+      (|bpConstruct|) (|bpCase|) (|bpStruct|) (|bpPDefinition|)
+      (|bpBPileDefinition|)))
+
+(DEFUN |bpParenthesizedApplication| ()
+  (AND (|bpName|) (|bpAnyNo| #'|bpArgumentList|)))
+
+(DEFUN |bpArgumentList| ()
+  (AND (|bpPDefinition|)
+       (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpPrimary| ()
   (AND (|bpFirstTok|) (OR (|bpPrimary1|) (|bpPrefixOperator|))))
@@ -591,8 +599,6 @@
        (OR (AND (|bpPrimary|)
                 (|bpPush| (|bfElt| (|bpPop2|) (|bpPop1|))))
            (|bpPush| (|bfSuffixDot| (|bpPop1|))))))
-
-(DEFUN |bpOperator| () (AND (|bpPrimary|) (|bpAnyNo| #'|bpSelector|)))
 
 (DEFUN |bpApplication| ()
   (AND (|bpPrimary|) (|bpAnyNo| #'|bpSelector|)
@@ -1080,13 +1086,16 @@
   (OR (|bpBracketConstruct| #'|bpPatternL|) (|bpAssignLHS|)))
 
 (DEFUN |bpAssignLHS| ()
-  (AND (|bpName|)
-       (OR (AND (|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
-                (|bpPush| (|bfLocal| (|bpPop2|) (|bpPop1|))))
-           (AND (|bpEqKey| 'DOT) (|bpList| #'|bpPrimary| 'DOT)
-                (|bpChecknull|)
-                (|bpPush| (|bfTuple| (CONS (|bpPop2|) (|bpPop1|)))))
-           T)))
+  (COND
+    ((NOT (|bpName|)) NIL)
+    ((|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
+     (|bpPush| (|bfLocal| (|bpPop2|) (|bpPop1|))))
+    (T (AND (|bpArgumentList|) (OR (|bpEqPeek| 'DOT) (|bpTrap|)))
+       (COND
+         ((|bpEqKey| 'DOT)
+          (AND (|bpList| #'|bpPrimary| 'DOT) (|bpChecknull|)
+               (|bpPush| (|bfTuple| (CONS (|bpPop2|) (|bpPop1|))))))
+         (T T)))))
 
 (DEFUN |bpChecknull| ()
   (PROG (|a|)

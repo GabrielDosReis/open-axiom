@@ -120,7 +120,7 @@ processKeyedError msg ==
           CallerName 4,:erMsg]                  --temp
     msgImPr? msg =>
       msgOutputter msg
-    $ncMsgList := cons (msg, $ncMsgList)
+    $ncMsgList := [msg,:$ncMsgList]
  
 ---------------------------------
 --%getting info from db.
