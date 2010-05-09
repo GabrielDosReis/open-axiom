@@ -647,7 +647,7 @@ axiom_all_prerequisites=
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
-AC_ARG_ENABLE([int-file-retension], 
+AC_ARG_ENABLE([int-file-retention], 
               [  --enable-int-file-retention   keep intermediary files],
               [case $enableval in
                   yes|no) oa_keep_files=$enableval ;;

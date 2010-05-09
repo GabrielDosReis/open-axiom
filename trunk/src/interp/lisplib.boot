@@ -721,9 +721,9 @@ compDefineExports(form,ops,sig,e) ==
         fixupSigloc entry ==
           [opsig,pred,funsel] := entry
           if pred ~= 'T then 
-            rplac(second entry, simpBool pred)
+            entry.rest.first := simpBool pred
           funsel is [op,a,:.] and op in '(ELT CONST) =>
-            rplac(third entry,[op,a,nil])
+            entry.rest.rest.first := [op,a,nil]
     ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
   exportsFile := strconc(STRING libName,'".sig")

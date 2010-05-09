@@ -484,8 +484,8 @@ optLET u ==
         nil  -- remove this initialization
       [init] -- otherwwise keep it.
   null inits => body
-  rplac(second u,inits)
-  rplac(third u,body)
+  u.rest.first := inits
+  u.rest.rest.first := body
   -- Avoid initialization forms that may not be floatable.
   not(and/[isFloatableVMForm init for [.,init] in inits]) => u
   -- Identity function.
@@ -509,7 +509,7 @@ optLET u ==
       not isSimpleVMForm test => continue := false
       clause.first := SUBLIS(substPairs,test)
       isSimpleVMForm stmt =>
-        rplac(second clause,SUBLIS(substPairs,stmt))
+        clause.rest.first := SUBLIS(substPairs,stmt)
       continue := false
     continue => body
     u
