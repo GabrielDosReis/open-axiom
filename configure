@@ -941,7 +941,7 @@ with_gnu_ld
 enable_libtool_lock
 with_lisp
 enable_gcl
-enable_keep_files
+enable_int_file_retention
 enable_threads
 enable_checking
 enable_profiling
@@ -1597,7 +1597,7 @@ Optional Features:
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-gcl   build GCL from OpenAxiom source
-  --enable-keep-files=<kind> keep intermediary files
+  --enable-int-file-retention   keep intermediary files
   --enable-threads   turn on threads support
   --enable-checking  turn runtime checking on
   --enable-profiling  turn profiling on
@@ -16191,12 +16191,12 @@ fi
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
-# Check whether --enable-keep-files was given.
-if test "${enable_keep_files+set}" = set; then
-  enableval=$enable_keep_files; case $enableval in
-                  yes|no|all) oa_keep_files=$enableval ;;
-                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-keep-files" >&5
-$as_echo "$as_me: error: erroneous value for --enable-keep-files" >&2;}
+# Check whether --enable-int-file-retention was given.
+if test "${enable_int_file_retention+set}" = set; then
+  enableval=$enable_int_file_retention; case $enableval in
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-int-file-retention" >&5
+$as_echo "$as_me: error: erroneous value for --enable-int-file-retention" >&2;}
    { (exit 1); exit 1; }; } ;;
                esac
 fi

@@ -1022,16 +1022,16 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
       atom x => nil
       x is ["QUOTE",:.] => nil
       x is [ =opFlag,n,t] =>
-        rplac(CAADDR x,replaceExitEtc(CAADDR x,tag,opFlag,opMode))
+        third(x).first := replaceExitEtc(CAADDR x,tag,opFlag,opMode)
         n=0 =>
           $finalEnv:=
                   --bound in compSeq1 and compDefineCapsuleFunction
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
           x.first := "THROW"
-          rplac(second x,tag)
-          rplac(third x,(convertOrCroak(t,opMode)).expr)
-        true => rplac(second x,second x-1)
+          x.rest.first := tag
+          x.rest.rest.first := convertOrCroak(t,opMode).expr
+        true => x.rest.first := second x-1
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
         t.first := replaceExitEtc(first t,tag,opFlag,opMode)
       replaceExitEtc(first x,tag,opFlag,opMode)
@@ -1578,7 +1578,7 @@ tryCourtesyCoercion(T,m) ==
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
-    rplac(second T,MSUBST("$",$Rep,second T))
+    T.rest.first := MSUBST("$",$Rep,second T)
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
@@ -1719,7 +1719,7 @@ coerceSuperset: (%Triple, %Mode) -> %Maybe %Triple
 coerceSuperset(T,sub) ==
   sub = "$" =>
     T' := coerceSuperset(T,$functorForm) or return nil
-    rplac(second T',"$")
+    T'.rest.first := "$"
     T'
   pred := isSubset(sub,T.mode,T.env) =>
     [["%Retract",T.expr,sub,pred],sub,T.env]
@@ -2440,7 +2440,7 @@ compPer(["per",x],m,e) ==
         [T.expr,"$",e]
       coerceSuperset(T,"$") or return nil
   else 
-    rplac(second T,"$")
+    T.rest.first := "$"
   coerce(T,m)
 
 ++ Compile the form `rep x' under the mode `m'.
@@ -2449,7 +2449,7 @@ compPer(["per",x],m,e) ==
 compRep(["rep",x],m,e) ==
   $useRepresentationHack => nil
   T := comp(x,"$",e) or return nil
-  rplac(second T,getRepresentation e or return nil)
+  T.rest.first := getRepresentation e or return nil
   coerce(T,m)
 
 --%

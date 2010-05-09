@@ -360,11 +360,11 @@ AC_SUBST(axiom_fasl_type)
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
-AC_ARG_ENABLE([keep-files], 
-              [  --enable-keep-files=<kind> keep intermediary files],
+AC_ARG_ENABLE([int-file-retention], 
+              [  --enable-int-file-retention   keep intermediary files],
               [case $enableval in
-                  yes|no|all) oa_keep_files=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-keep-files]) ;;
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
                esac])
 AC_SUBST(oa_keep_files)
 

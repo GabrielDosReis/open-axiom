@@ -808,7 +808,7 @@ coerce(T,m) ==
       '"function coerce called from the interpreter."])
 --==================> changes <======================
 --The following line is inappropriate for our needs:::
---rplac(second T,substitute("$",$Rep,second T))
+--T.rest.first := substitute("$",$Rep,second T)
   T' := coerce0(T,m) => T'
   T := [T.expr,fullSubstitute("$",$Representation,T.mode),T.env]
 --==================> changes <======================

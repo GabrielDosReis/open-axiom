@@ -1,4 +1,14 @@
-2010-05-08  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Replace uses of rplac with explicit
+	assignments to first and rest fields.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+
+2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/wi2.boot: Remove more RPLACA and RPLACD uses.
 	* interp/topics.boot: Likewise.

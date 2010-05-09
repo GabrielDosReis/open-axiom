@@ -1496,17 +1496,17 @@ doItConditionally(item,predl) ==
   item isnt ["IF",p,x,y] => systemErrorHere ["doItConditionally",item]
   p is ["not",p'] =>
     -- swap branches and recurse for positive interpretation.
-    rplac(second item,p')
-    rplac(third item,y)
-    rplac(fourth item,x)
+    item.rest.first := p'
+    item.rest.rest.first := y
+    item.rest.rest.rest.first := x
     doItConditionally(item,predl)
   p is ["and",p',p''] =>
-    rplac(second item,p')
-    rplac(third item,["IF",p'',x,COPY y])
+    item.rest.first := p'
+    item.rest.rest.first := ["IF",p'',x,COPY y]
     doItConditionally(item,predl)
   p is ["or",p',p''] =>
-    rplac(second item, p')
-    rplac(fourth item, ["IF",p'',COPY x,y])
+    item.rest.first := p'
+    item.rest.rest.rest.first := ["IF",p'',COPY x,y]
     doItConditionally(item,predl)
   doItIf(item,predl,$e)
     

@@ -671,7 +671,7 @@ adjExitLevel(x,seqnum,inc) ==
   x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
-    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(second x,n+inc))
+    (adjExitLevel(u,seqnum,inc); seqnum>n => x; x.rest.first := n+inc)
   x is [op,:l] => for u in l repeat adjExitLevel(u,seqnum,inc)
  
 wrapSEQExit l ==
@@ -1047,7 +1047,7 @@ mutateLETFormWithUnaryFunction(form,fun) ==
   for defs in tails inits repeat
     def := first defs
     atom def => nil -- no initializer
-    rplac(second def, FUNCALL(fun, second def))
+    def.rest.first := FUNCALL(fun, second def)
   for stmts in tails body repeat
     stmts.first := FUNCALL(fun, first stmts)
   form
@@ -1213,8 +1213,8 @@ foldExportedFunctionReferences defs ==
     body := replaceSimpleFunctions foldSpadcall body
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
-      rplac(second fun, ["LAM",vars,["DECLARE",["IGNORE",last vars]],body])
-    rplac(third lamex,body)
+      fun.rest.first := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
+    lamex.rest.rest.first := body
   defs
 
 ++ record optimizations permitted at level `level'.
@@ -1494,7 +1494,7 @@ mutateToBackendCode x ==
       IDENTP second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
         PUSH(CADADR x, $FluidVars)
-        rplac(second x, CADADR x)
+        x.rest.first := CADADR x
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
