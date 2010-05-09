@@ -287,7 +287,7 @@ lineoftoks(s)==
    $sz:local := nil
    $floatok:local:=true
    if not nextline s
-   then CONS(nil,nil)
+   then [nil,:nil]
    else
      if null scanIgnoreLine($ln,$n) -- line of spaces or starts ) or >
      then [nil,:$r]

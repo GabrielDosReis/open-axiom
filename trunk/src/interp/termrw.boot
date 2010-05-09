@@ -50,7 +50,7 @@ termRW1(t,R) ==
   tt1:= termRW1(t1,R)
   tt2:= t2 and termRW1(t2,R)
   EQ(t1,tt1) and EQ(t2,tt2) => t
-  CONS(tt1,tt2)
+  [tt1,:tt2]
  
 term1RW(t,R) ==
   -- tries to reduce t at the top node
@@ -74,7 +74,7 @@ termMatch(tp,t,SL,vars) ==
   atom tp =>
     MEMQ(tp,vars) =>
       p:= ASSOC(tp,SL) => ( rest p=t )
-      CONS(CONS(tp,t),SL)
+      [[tp,:t],:SL]
     'failed
   atom t => 'failed
   [tp1,:tp2]:= tp
@@ -98,10 +98,10 @@ termMatch(tp,t,SL,vars) ==
 augmentSub(v,t,SL) ==
   -- destructively adds the pair (v,t) to the substitution list SL
   -- t doesn't contain any of the variables of SL
-  q:= CONS(v,t)
+  q := [v,:t]
   null SL => [q]
 --  for p in SL repeat p.rest := SUBSTQ(t,v,rest p)
-  CONS(q,SL)
+  [q,:SL]
  
 mergeSubs(S1,S2) ==
   -- augments S2 by each pair of S1
@@ -128,9 +128,9 @@ subCopyOrNil(t,SL) ==
   atom t => NIL
   [t1,:t2]:= t
   t0:= subCopyOrNil(t1,SL) =>
-    t2 => CONS(t, CONS(rest t0, subCopy0(t2,SL)))
-    CONS(t,CONS(rest t0,t2))
-  t2 and ( t0:= subCopyOrNil(t2,SL) ) => CONS(t, CONS(t1,rest t0))
+    t2 => [t, :[rest t0,:subCopy0(t2,SL)]]
+    [t,:[rest t0,:t2]]
+  t2 and ( t0:= subCopyOrNil(t2,SL) ) => [t, :[t1,:rest t0]]
   NIL
  
  
@@ -146,12 +146,12 @@ deepSubCopy0(t, SL) ==
   
 deepSubCopyOrNil(t,SL) ==
   -- the same as subCopy, but the result is NIL if nothing was copied
-  p:= ASSOC(t,SL) => CONS(t, deepSubCopy0(rest p, SL))
+  p:= ASSOC(t,SL) => [t,:deepSubCopy0(rest p, SL)]
   atom t => NIL
   [t1,:t2]:= t
   t0:= deepSubCopyOrNil(t1,SL) =>
-    t2 => CONS(t, CONS(rest t0, deepSubCopy0(t2,SL)))
-    CONS(t,CONS(rest t0,t2))
-  t2 and ( t0:= deepSubCopyOrNil(t2,SL) ) => CONS(t, CONS(t1,rest t0))
+    t2 => [t, :[rest t0,:deepSubCopy0(t2,SL)]]
+    [t,:[rest t0,:t2]]
+  t2 and ( t0:= deepSubCopyOrNil(t2,SL) ) => [t,:[t1,:rest t0]]
  
  

@@ -278,7 +278,7 @@ resolveTTEq1(c1,arg1,TL is [c2,arg2,:.]) ==
     [c2,arg2,:TL] := bubbleType TL
     until null arg1 or null arg2 or not t repeat
       t := resolveTT1(first arg1,first arg2) =>
-        arg := CONS(t,arg)
+        arg := [t,:arg]
         arg1 := rest arg1
         arg2 := rest arg2
     t and null arg1 and null arg2 and
@@ -423,7 +423,7 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
        match,seen)
   cat is ['IF,., cond,.] =>
     matchUpToPatternVars(cond,match,NIL) =>
-      conditions.rest := CONS(cat,rest conditions)
+      conditions.rest := [cat,:rest conditions]
       conditions
     conditions
   cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
@@ -489,7 +489,7 @@ resolveTM1(t,m) ==
           tt := resolveTT1(t,rest p) => (p.rest := tt) and tt
           NIL
         t=rest p and t
-      $Subst := CONS(CONS(m,t),$Subst)
+      $Subst := [[m,:t],:$Subst]
       t
     atom(t) or atom(m) => NIL
     (t is ['Record,:tr]) and (m is ['Record,:mr]) and
@@ -514,7 +514,7 @@ resolveTMRecord(tr,mr) ==
     second(ta) ~= second(ma) => ok := NIL      -- match tags
     ra := resolveTM1(third ta, third ma)   -- resolve modes
     null ra => ok := NIL
-    tt := CONS([first ta,second ta,ra],tt)
+    tt := [[first ta,second ta,ra],:tt]
   null ok => NIL
   ['Record,nreverse tt]
 
@@ -655,7 +655,7 @@ resolveTMEq2(cm,argm,TL) ==
       x2 := first argm
       argm := rest argm
       tt := resolveTM1(x1,x2) =>
-        arg := CONS(tt,arg)
+        arg := [tt,:arg]
     null argt and null argm and tt and constructM(ct,nreverse arg)
 
 resolveTMRed(t,m) ==
@@ -723,8 +723,8 @@ getUnderModeOf d ==
 --    dt := destructT first t
 --    args := [ x for d in dt for y in t | ( x := d and y ) ]
 --    c := [ x for d in dt for y in t | ( x := not d and y ) ]
---    CONS(c,args)
---  CONS(t,NIL)
+--    [c,:args]
+--  [t,:NIL]
 
 deconstructT(t) ==
   -- M is a type, which may contain type variables
@@ -733,8 +733,8 @@ deconstructT(t) ==
     dt := destructT op
     args := [ x for d in dt for y in t | ( x := d and y ) ]
     c := [ x for d in dt for y in t | ( x := not d and y ) ]
-    CONS(c,args)
-  CONS(t,NIL)
+    [c,:args]
+  [t,:NIL]
 
 constructT(c,A) ==
   -- c is a type constructor, A a list of argument types

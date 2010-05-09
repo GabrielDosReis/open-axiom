@@ -71,13 +71,13 @@ DNameToSExpr1 dname ==
     froms := MAPCAR(function DNameToSExpr, rest froms)
     ret   := second args -- a tuple
     ret   := DNameToSExpr second ret -- contents
-    CONS('Mapping, CONS(ret, froms))
+    ['Mapping,:[ret,:froms]]
   name0 = 'Union or name0 = 'Record =>
     sxs := MAPCAR(function DNameToSExpr, rest first args)
-    CONS(name0, sxs)
+    [name0,:sxs]
   name0 = 'Enumeration =>
-    CONS(name0, MAPCAR(function DNameFixEnum, rest first args))
-  CONS(name0, MAPCAR(function DNameToSExpr, args))
+    [name0,:MAPCAR(function DNameFixEnum, rest first args)]
+  [name0,:MAPCAR(function DNameToSExpr, args)]
 
 DNameToSExpr dname ==
   first dname = DNameOtherID  =>
@@ -148,7 +148,7 @@ lazyOldAxiomDomainDevaluate(domenv, env) ==
   SPADCALL(rest dom, first dom.1)
 
 lazyOldAxiomAddChild(domenv, kid, env) ==
-  CONS($lazyOldAxiomDomainDispatch,domenv)
+  [$lazyOldAxiomDomainDispatch,:domenv]
 
 $lazyOldAxiomDomainDispatch :=
    VECTOR('lazyOldAxiomDomain,
@@ -163,8 +163,8 @@ $lazyOldAxiomDomainDispatch :=
 -- old Axiom category objects are  (dispatch . [catform, hashcode, defaulting package, parent vector, dom])
 oldAxiomPreCategoryBuild(catform, dom, env) ==
    pack := oldAxiomCategoryDefaultPackage(catform, dom)
-   CONS($oldAxiomCategoryDispatch,
-       [catform, hashTypeForm(catform,0), pack, oldAxiomPreCategoryParents(catform,dom), dom])
+   [$oldAxiomCategoryDispatch,
+       :[catform, hashTypeForm(catform,0), pack, oldAxiomPreCategoryParents(catform,dom), dom]]
 oldAxiomPreCategoryHashCode(catform, env) == hashTypeForm(catform,0)
 oldAxiomCategoryDefaultPackage(catform, dom) ==
     hasDefaultPackage opOf catform 
@@ -203,7 +203,7 @@ oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    opIsHasCat op => if EQL(sig, hash) then [self] else nil
    null(pack) => nil
    if not VECP pack then
-       pack:=apply(pack, CONS(self, rest catform))
+       pack:=apply(pack, [self, :rest catform])
        catenv.rest.rest.first := pack
    fun := basicLookup(op, sig, pack, self) => [fun]
    nil
@@ -330,7 +330,7 @@ oldAxiomDomainHasCategory(domenv, cat, env) ==
 oldAxiomDomainDevaluate(domenv, env) == 
    SExprToDName(rest domenv.0, 'T)
 
-oldAxiomAddChild(domenv, child, env) == CONS($oldAxiomDomainDispatch, domenv)
+oldAxiomAddChild(domenv, child, env) == [$oldAxiomDomainDispatch,:domenv]
 
 $oldAxiomDomainDispatch :=
    VECTOR('oldAxiomDomain,

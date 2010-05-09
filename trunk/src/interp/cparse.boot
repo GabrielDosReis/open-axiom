@@ -97,12 +97,13 @@ npRestore(x)==
       $stack:=rest x
       true
 
-npPush x==$stack:=CONS(x,$stack)
+npPush x==
+  $stack := [x,:$stack]
 
 npPushId()==
    a:=GETL($ttok,'INFGENERIC)
    $ttok:= if a then a else $ttok
-   $stack:=CONS(tokConstruct("id",$ttok,tokPosn $stok),$stack)
+   $stack := [tokConstruct("id",$ttok,tokPosn $stok),:$stack]
    npNext()
 
 npPop1()==

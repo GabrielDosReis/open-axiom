@@ -639,14 +639,14 @@ orderMms(name, mmS,args1,args2,tar) ==
   for mm in MSORT mmS repeat
     [sig,.,cond]:= mm
     b:= 'T
-    p:= CONS(m := mmCost(name, sig,cond,tar,args1,args2),mm)
+    p:= [m := mmCost(name, sig,cond,tar,args1,args2),:mm]
     mS:=
       null mS => list p
-      m < CAAR mS => CONS(p,mS)
+      m < CAAR mS => [p,:mS]
       S:= mS
       until b repeat
         b:= null rest S or m < CAADR S =>
-          S.rest := CONS(p,rest S)
+          S.rest := [p,:rest S]
         S:= rest S
       mS
   mmS and [rest p for p in mS]
@@ -830,7 +830,7 @@ allOrMatchingMms(mms,args1,tar,dc) ==
     [sig,:.] := mm
     [res,:args] := MSUBSTQ(dc,"$",sig)
     args ~= args1 => nil
-    x := CONS(mm,x)
+    x := [mm,:x]
   if x then x
   else mms
 
@@ -852,7 +852,7 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
 
   [sig,slot,cond,y] := mm
   [osig,:.]  := omm
-  osig := subCopy(osig, SUBSTQ(CONS('$,'$), dollarPair, SL))
+  osig := subCopy(osig, SUBSTQ(['$,:'$], dollarPair, SL))
   if CONTAINED('_#, sig) or CONTAINED('construct,sig) then
     sig := [replaceSharpCalls t for t in sig]
   matchMmCond cond and matchMmSig(mm,tar,args1,args2) and
@@ -863,10 +863,10 @@ findFunctionInDomain1(omm,op,tar,args1,args2,SL) ==
       y := 'ELT      -- if subsumed fails try it again
       not $SubDom and first sig isnt ['Union,:.] and slot is [tar,:args] and
         (f := findFunctionInDomain(op,dc,tar,args,args,NIL,NIL)) => f
-    y='ELT => [[CONS(dc,sig),osig,nreverse $RTC]]
-    y='CONST => [[CONS(dc,sig),osig,nreverse $RTC]]
-    y='ASCONST => [[CONS(dc,sig),osig,nreverse $RTC]]
-    y is ['XLAM,:.] => [[CONS(dc,sig),y,nreverse $RTC]]
+    y='ELT => [[[dc,:sig],osig,nreverse $RTC]]
+    y='CONST => [[[dc,:sig],osig,nreverse $RTC]]
+    y='ASCONST => [[[dc,:sig],osig,nreverse $RTC]]
+    y is ['XLAM,:.] => [[[dc,:sig],y,nreverse $RTC]]
     sayKeyedMsg("S2IF0006",[y])
     NIL
 
@@ -946,7 +946,7 @@ matchMmSig(mm,tar,args1,args2) ==
         $SubDom and isSubDomain(x,x1) => rtc:= 'T
         $Coerce => x2=x or canCoerceFrom(x1,x)
         x1 is ['Variable,:.] and x = $Symbol
-    $RTC:= CONS(rtc,$RTC)
+    $RTC:= [rtc,:$RTC]
   null args1 and null a and b and matchMmSigTar(tar,first sig)
 
 matchMmSigTar(t1,t2) ==
@@ -966,9 +966,9 @@ matchMmSigTar(t1,t2) ==
 constructSubst(d) ==
   -- constructs a substitution which substitutes d for $
   -- and the arguments of d for #1, #2 ..
-  SL:= list CONS('$,d)
+  SL:= list ['$,:d]
   for x in rest d for i in 1.. repeat
-    SL:= CONS(CONS(INTERNL('"#",STRINGIMAGE i),x),SL)
+    SL:= [[INTERNL('"#",STRINGIMAGE i),:x],:SL]
   SL
 
 filterModemapsFromPackages(mms, names, op) ==
@@ -1096,8 +1096,8 @@ selectMmsGen(op,tar,args1,args2) ==
       ok := true
       for pat in a for arg in args while ok repeat
         not CONTAINED(['isDomain,pat,arg],mmC) => ok := NIL
-      ok => ex := CONS(mm,ex)
-      inex := CONS(mm,inex)
+      ok => ex := [mm,:ex]
+      inex := [mm,:inex]
     [ex,inex]
   matchMms(mmaps,op,tar,args1,args2) ==
     mmS := NIL
@@ -1135,8 +1135,8 @@ matchTypes(pm,args1,args2) ==
         t0 := resolveTT(t,t1) => p.rest := t0
         $Subst:= 'failed
       $Subst:= 'failed
-    $Subst:= CONS(CONS(v,t1),$Subst)
-    if t1 = $Symbol and t2 then $SymbolType:= CONS(CONS(v,t2),$SymbolType)
+    $Subst:= [[v,:t1],:$Subst]
+    if t1 = $Symbol and t2 then $SymbolType:= [[v,:t2],:$SymbolType]
 
 evalMm(op,tar,sig,mmC) ==
   -- evaluates a modemap with signature sig and condition mmC
@@ -1173,7 +1173,7 @@ evalMmStack(mmC) ==
   mmC is ['OR,:args] => [:evalMmStack a for a in args]
   mmC is ['partial,:mmD] => evalMmStack mmD
   mmC is ['ofCategory,pvar,cat] and cat is ['Join,:args] =>
-    evalMmStack CONS('AND,[['ofCategory,pvar,c] for c in args])
+    evalMmStack ['AND,:[['ofCategory,pvar,c] for c in args]]
   mmC is ['ofType,:.] => [NIL]
   mmC is ["has",pat,x] =>
     x in '(ATTRIBUTE SIGNATURE) =>
@@ -1335,7 +1335,7 @@ evalMmCat(op,sig,stack,SL) ==
     for mmC in st repeat
       S:= evalMmCat1(mmC,op, SL)
       S='failed and $hope =>
-        stack:= CONS(mmC,stack)
+        stack:= [mmC,:stack]
       S = 'failed => return S
       not atom S =>
         makingProgress:= 'T
@@ -1366,11 +1366,11 @@ evalMmCat1(mmC is ['ofCategory,d,c],op, SL) ==
       op ~= 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
     null (p := ASSQ(d,$Subst)) =>
       dom =>
-        NSL := [CONS(d,dom)]
+        NSL := [[d,:dom]]
       op ~= 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
     if containsVars dom then dom := resolveTM(rest p, dom)
     $Coerce and canCoerce(rest p, dom) =>
-      NSL := [CONS(d,dom)]
+      NSL := [[d,:dom]]
     op ~= 'coerce => 'failed -- evalMmCatLastChance(d,c,SL)
   NSL
 
@@ -1739,7 +1739,7 @@ getSymbolType var ==
 -- var is a pattern variable
   p:= ASSQ(var,$SymbolType) => rest p
   t:= '(Polynomial (Integer))
-  $SymbolType:= CONS(CONS(var,t),$SymbolType)
+  $SymbolType:= [[var,:t],:$SymbolType]
   t
 
 isEqualOrSubDomain(d1,d2) ==

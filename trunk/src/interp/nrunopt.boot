@@ -362,7 +362,7 @@ NRTmakeCategoryAlist() ==
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
   for x in slot1 repeat
-       x.first := EQSUBSTLIST(CONS("$$",sixEtc),CONS('$,formals),first x)
+       x.first := EQSUBSTLIST(["$$",:sixEtc],['$,:formals],first x)
   -----------code to make a new style slot4 -----------------
   predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList

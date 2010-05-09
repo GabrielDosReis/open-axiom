@@ -611,7 +611,7 @@ NRTsetVector4Part2(uncondList,condList) ==
 mergeAppend(l1,l2) ==
   atom l1 => l2
   member(QCAR l1,l2) => mergeAppend(QCDR l1, l2)
-  CONS(QCAR l1, mergeAppend(QCDR l1, l2))
+  [QCAR l1, :mergeAppend(QCDR l1, l2)]
 
 catList2catPackageList u ==
 --converts ((Set) (Module R) ...) to ((Set& $) (Module& $ R)...)

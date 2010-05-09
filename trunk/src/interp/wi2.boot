@@ -1096,7 +1096,7 @@ doItExpression(item,T) ==
   wiReplaceNode(item,code, 22)
 
 wiReplaceNode(node,ocode,key) ==
-  ncode := CONS(first ocode, rest ocode)
+  ncode := [first ocode,:rest ocode]
   code := replaceNodeInStructureBy(node,ncode)
   SETQ($NODE,COPY node)
   SETQ($NODE1, COPY first code)

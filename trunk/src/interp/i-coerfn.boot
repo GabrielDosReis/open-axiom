@@ -84,9 +84,9 @@ coerceDmp1(u,source is [.,v1,S],target is [.,v2,T],v,w) ==
   pat3:= [member(x,v) and POSN1(x,v) for x in v2]
   for [e,:c] in u until not z repeat
     exp:= LIST2VEC [y for x in pat2 for y in VEC2LIST e | x]
-    z:= coerceInt(objNewWrap([CONS(exp,c)],t),target) =>
+    z:= coerceInt(objNewWrap([[exp,:c]],t),target) =>
       li:= [y for x in pat1 for y in VEC2LIST e | x]
-      a:= [CONS(LIST2VEC [if x then li.x else 0 for x in pat3],one)]
+      a:= [[LIST2VEC [if x then li.x else 0 for x in pat3],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
   z => x
   coercionFailure()
@@ -101,7 +101,7 @@ coerceDmp2(u,source is [.,v1,S],target is [.,v2,T]) ==
   for [e,:c] in u until not z repeat
     z:= coerceInt(objNewWrap(c,S),target) =>
       li:= VEC2LIST e
-      a:= [CONS(LIST2VEC [if x then li.x else 0 for x in pat],one)]
+      a:= [[LIST2VEC [if x then li.x else 0 for x in pat],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
     NIL
   z => x
@@ -307,7 +307,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
         c' = zero => x := REMALIST(x,exp)
         p.rest := c'
       zero = objValUnwrap(y) => 'iterate
-      x := CONS(CONS(exp,objValUnwrap(y)),x)
+      x := [[exp,:objValUnwrap(y)],:x]
   y => nreverse SORTBY('CAR,x)
   coercionFailure()
 

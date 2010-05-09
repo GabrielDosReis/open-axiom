@@ -926,10 +926,10 @@ coerceSubDomain(val, tSuper, tSub) ==
   nil
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
-  predfn := HGET($superHash, CONS(tSuper, tSub)) => predfn
+  predfn := HGET($superHash, [tSuper,:tSub]) => predfn
   arg := GENSYM()
   predfn := COMPILE(nil,["LAMBDA",[arg],substitute(arg,"#1", pred)])
-  HPUT($superHash, CONS(tSuper, tSub), predfn)
+  HPUT($superHash, [tSuper,:tSub], predfn)
   predfn
 
 coerceIntX(val,t1, t2) ==
@@ -1227,7 +1227,7 @@ computeTTTranspositions(t1,t2) ==
     t := tower.(first perm)
     tower.(first perm) := tower.(rest perm)
     tower.(rest perm) := t
-    towers := CONS(VEC2LIST tower,towers)
+    towers := [VEC2LIST tower,:towers]
   towers := [reassembleTowerIntoType tower for tower in towers]
   if first(towers) ~= t2 then towers := [t2,:towers]
   nreverse towers

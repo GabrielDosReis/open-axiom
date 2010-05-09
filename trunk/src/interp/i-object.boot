@@ -67,8 +67,8 @@ $useIntegerSubdomain := true
 
 -- These are the new structure functions.
 
-objNew(val, mode) == CONS(mode,val)             -- new names as of 10/14/93
-objNewWrap(val, mode) == CONS(mode,wrap val)
+objNew(val, mode) == [mode,:val]             -- new names as of 10/14/93
+objNewWrap(val, mode) == [mode,:wrap val]
 objNewCode(val, mode) == ["CONS", MKQ mode,val ]
 objSetVal(obj,val) == obj.rest := val
 objSetMode(obj,mode) == obj.first := mode
@@ -133,10 +133,10 @@ instantiationNormalForm(op,argl) ==
 -- Tuples and Crosses
 
 asTupleNew(eltType,size,listOfElts) == 
-  CONS(size, makeSimpleArrayFromList(eltType,listOfElts))
+  [size,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNew0(eltType,listOfElts) == 
-  CONS(#listOfElts, makeSimpleArrayFromList(eltType,listOfElts))
+  [#listOfElts,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNewCode(eltType, size, listOfElts) == 
   ["asTupleNew", quoteForm getVMType eltType, size, ["LIST", :listOfElts]]

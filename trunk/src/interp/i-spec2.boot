@@ -800,7 +800,7 @@ isInterpMacro name ==
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
   -- $InterpreterMacroAlist will probably be phased out soon
-  (sv := assoc(name,$InterpreterMacroAlist)) => CONS(NIL,rest sv)
+  (sv := assoc(name,$InterpreterMacroAlist)) => [NIL,:rest sv]
   NIL
 
 --% Handlers for prefix QUOTE
@@ -1175,7 +1175,7 @@ copyHack(env) ==
   -- (localModemap . something)
   c:= CAAR env
   d:= [fn p for p in c] where fn(p) ==
-    CONS(first p,[(q is ["localModemap",:.] => q; copy q) for q in rest p])
+    [first p,:[(q is ["localModemap",:.] => q; copy q) for q in rest p]]
   [[d]]
 
 

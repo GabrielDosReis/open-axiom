@@ -99,7 +99,7 @@ initializeSystemCommands() ==
   l := $systemCommands
   $SYSCOMMANDS := NIL
   while l repeat
-    $SYSCOMMANDS := CONS(CAAR l, $SYSCOMMANDS)
+    $SYSCOMMANDS := [CAAR l,:$SYSCOMMANDS]
     l := rest l
   $SYSCOMMANDS := nreverse $SYSCOMMANDS
 
@@ -1134,9 +1134,9 @@ interpFunctionDepAlists() ==
   $dependeeAlist := [[NIL,:NIL]]
   for [dependee,dependent] in deps repeat
     $dependentAlist := PUTALIST($dependentAlist,dependee,
-      CONS(dependent,GETALIST($dependentAlist,dependee)))
+      [dependent,:GETALIST($dependentAlist,dependee)])
     $dependeeAlist  := PUTALIST($dependeeAlist,dependent,
-      CONS(dependee,GETALIST($dependeeAlist,dependent)))
+      [dependee,:GETALIST($dependeeAlist,dependent)])
 
 fixObjectForPrinting(v) ==
     v' := object2Identifier v
@@ -1396,8 +1396,8 @@ addNewInterpreterFrame(name) ==
   for f in $interpreterFrameRing repeat
     name = frameName(f) => throwKeyedMsg("S2IZ0019",[name])
   initHistList()
-  $interpreterFrameRing := CONS(emptyInterpreterFrame(name),
-    $interpreterFrameRing)
+  $interpreterFrameRing := [emptyInterpreterFrame(name),
+    :$interpreterFrameRing]
   updateFromCurrentInterpreterFrame()
   _$ERASE histFileName()
 
@@ -1425,7 +1425,7 @@ closeInterpreterFrame(name) ==
     found := nil
     ifr := NIL
     for f in $interpreterFrameRing repeat
-      found or (name ~= frameName(f)) => ifr := CONS(f,ifr)
+      found or (name ~= frameName(f)) => ifr := [f,:ifr]
       found := true
     not found => throwKeyedMsg("S2IZ0022",[name])
     _$ERASE makeHistFileName(name)
@@ -1600,7 +1600,7 @@ initHistList() ==
   $HistListLen:= 20
   $HistList:= LIST NIL
   li:= $HistList
-  for i in 1..$HistListLen repeat li:= CONS(NIL,li)
+  for i in 1..$HistListLen repeat li:= [NIL,:li]
   $HistList.rest := li
   $HistListAct:= 0
   $HistRecord:= NIL
@@ -1658,7 +1658,7 @@ setHistoryCore inCore ==
       l := LENGTH RKEYIDS histFileName()
       for i in 1..l repeat
         vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
-        $internalHistoryTable := CONS([i,:vec],$internalHistoryTable)
+        $internalHistoryTable := [[i,:vec],:$internalHistoryTable]
       histFileErase histFileName()
     $useInternalHistoryTable := true
     sayKeyedMsg("S2IH0032",NIL)
@@ -1724,7 +1724,7 @@ changeHistListLen(n) ==
   $HistListLen:= n
   l:= rest $HistList
   if dif > 0 then
-    for i in 1..dif repeat l:= CONS(NIL,l)
+    for i in 1..dif repeat l:= [NIL,:l]
   if dif < 0 then
     for i in 1..-dif repeat l:= rest l
     if $HistListAct > n then $HistListAct:= n
@@ -1774,9 +1774,9 @@ recordNewValue0(x,prop,val) ==
   p1:= ASSQ(x,$HistRecord) =>
     p2:= ASSQ(prop,rest p1) =>
       p2.rest := val
-    p1.rest := CONS(CONS(prop,val),rest p1)
-  p:= CONS(x,list CONS(prop,val))
-  $HistRecord:= CONS(p,$HistRecord)
+    p1.rest := [[prop,:val],:rest p1]
+  p:= [x,:list [prop,:val]]
+  $HistRecord:= [p,:$HistRecord]
 
 recordOldValue(x,prop,val) ==
   startTimingProcess 'history
@@ -1787,9 +1787,9 @@ recordOldValue0(x,prop,val) ==
   -- writes (prop . val) into $HistList
   p1:= ASSQ(x,first $HistList) =>
     not ASSQ(prop,rest p1) =>
-      p1.rest := CONS(CONS(prop,val),rest p1)
-  p:= CONS(x,list CONS(prop,val))
-  $HistList.first := CONS(p,first $HistList)
+      p1.rest := [[prop,:val],:rest p1]
+  p:= [x,:list [prop,:val]]
+  $HistList.first := [p,:first $HistList]
 
 undoInCore(n) ==
   -- undoes the last n>0 steps using $HistList
@@ -1883,7 +1883,7 @@ restoreHistory(fn) ==
   for i in 1..l repeat
     vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
     if oldInternal then $internalHistoryTable :=
-      CONS([i,:vec],$internalHistoryTable)
+      [[i,:vec],:$internalHistoryTable]
     LINE:= first vec
     for p1 in rest vec repeat
       x:= first p1
@@ -2001,11 +2001,11 @@ writeHiFi() ==
   -- writes the information of the current step out to history file
   if $useInternalHistoryTable
   then
-    $internalHistoryTable := CONS([$IOindex,$currentLine,:$HistRecord],
-      $internalHistoryTable)
+    $internalHistoryTable := [[$IOindex,$currentLine,:$HistRecord],
+                                 :$internalHistoryTable]
   else
     HiFi:= RDEFIOSTREAM ['(MODE . OUTPUT),['FILE,:histFileName()]]
-    SPADRWRITE(object2Identifier $IOindex, CONS($currentLine,$HistRecord),HiFi)
+    SPADRWRITE(object2Identifier $IOindex, [$currentLine,:$HistRecord],HiFi)
     RSHUT HiFi
 
 disableHist() ==
@@ -2065,7 +2065,7 @@ writify ob ==
                    nob
                 (ob is ['LAMBDA_-CLOSURE, ., ., x, :.]) and x =>
                   THROW('writifyTag, 'writifyFailed)
-                nob := CONS(qcar, qcdr)
+                nob := [qcar,:qcdr]
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 qcar := writifyInner qcar
@@ -2193,7 +2193,7 @@ dewritify ob ==
                     name := ob.3
                     not FBOUNDP name => 
                        error STRCONC('"undefined function: ", SYMBOL_-NAME name)
-                    nob := CONS(SYMBOL_-FUNCTION name, vec)
+                    nob := [SYMBOL_-FUNCTION name,:vec]
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -2216,7 +2216,7 @@ dewritify ob ==
             cons? ob =>
                 qcar := QCAR ob
                 qcdr := QCDR ob
-                nob  := CONS(qcar, qcdr)
+                nob  := [qcar,:qcdr]
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 nob.first := dewritifyInner qcar
@@ -2677,7 +2677,7 @@ recordFrame(systemNormal) ==
     delta := ['systemCommand,:delta]
   $frameRecord := [delta,:$frameRecord]
   $previousBindings := --copy all but the individual properties
-    [CONS(first x,[CONS(first y,rest y) for y in rest x]) for x in CAAR $InteractiveFrame]
+    [[first x,:[[first y,:rest y] for y in rest x]] for x in CAAR $InteractiveFrame]
   first $frameRecord
 
 diffAlist(new,old) ==
@@ -2896,7 +2896,7 @@ filterAndFormatConstructors(constrType,label,patterns) ==
 
 whatConstructors constrType ==
   -- here constrType should be one of 'category, 'domain, 'package
-  MSORT [CONS(getConstructorAbbreviationFromDB con, STRING(con))
+  MSORT [[getConstructorAbbreviationFromDB con, :STRING(con)]
     for con in allConstructors()
       | getConstructorKindFromDB con = constrType]
 
