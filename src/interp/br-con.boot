@@ -959,7 +959,7 @@ conPageChoose conname ==
   dbShowCons1(nil,cAlist,'names)
 
 dbShowCons1(htPage,cAlist,key) ==
-  conlist := REMDUP [item for x in cAlist | pred] where
+  conlist := removeDuplicates [item for x in cAlist | pred] where
     pred() ==
       item := first x
       $exposedOnlyIfTrue => isExposedConstructor opOf item
@@ -991,12 +991,12 @@ dbShowCons1(htPage,cAlist,key) ==
       flist :=
         [y for con in conlist |
           y := (fn := getConstructorSourceFileFromDB con)]
-      bcUnixTable(listSort(function GLESSEQP,REMDUP flist))
+      bcUnixTable(listSort(function GLESSEQP,removeDuplicates flist))
     key = 'documentation   => dbShowConsDoc(page,conlist)
     if $exposedOnlyIfTrue then
       cAlist := [x for x in cAlist | isExposedConstructor opOf first x]
     key = 'conditions =>     dbShowConditions(page,cAlist,kind)
-    key = 'parameters => bcConTable REMDUP ASSOCLEFT cAlist
+    key = 'parameters => bcConTable removeDuplicates ASSOCLEFT cAlist
     key = 'kinds => dbShowConsKinds cAlist
   dbConsExposureMessage()
   htSayStandard("\endscroll ")
@@ -1033,7 +1033,7 @@ dbConsExposureMessage() ==
 --    htSay '" "
 --    htSay (c > 1 => pluralize kind; kind)
 --    htSay '":}"
---    bcConTable REMDUP [CAAR y for y in x]
+--    bcConTable removeDuplicates [CAAR y for y in x]
 --  htEndMenu(2)
 --  htSay '"\indent{0}"
 
@@ -1046,7 +1046,7 @@ dbShowConsDoc(htPage,conlist) ==
   cAlist := htpProperty(htPage,'cAlist)
   --the following code is necessary to skip over duplicates on cAlist
   index := 0
-  for x in REMDUP conlist repeat
+  for x in removeDuplicates conlist repeat
   -- for x in conlist repeat
     dbShowConsDoc1(htPage,getConstructorForm x,i) where i() ==
       while CAAAR cAlist ~= x repeat
@@ -1102,7 +1102,7 @@ dbConsHeading(htPage,conlist,view,kind) ==
   place :=
     htPage => htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
     nil
-  count := #(REMDUP conlist)
+  count := #(removeDuplicates conlist)
   -- count := #conlist
   thing = '"benefactor" =>
     [STRINGIMAGE count,'" Constructors Used by ",form2HtString(place,nil,true)]

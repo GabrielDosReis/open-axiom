@@ -108,7 +108,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $uncondAlist: local := nil
 -->>-- next global initialized here, reset by buildFunctor
     $NRTslot1PredicateList: local :=
-      REMDUP [second x for x in attributeList]
+      removeDuplicates [second x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local := nil --set in NRTmakeSlot1Info

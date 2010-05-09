@@ -405,7 +405,7 @@ compileIs(val,pattern) ==
     pat is ["=",var] => vars:= [var,:vars]
   predCode:=["%LET",g:=GENSYM(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
-  for var in REMDUP vars repeat
+  for var in removeDuplicates vars repeat
     assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
   null $opIsIs =>
     ["COND",[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,MKQ 'T]]]

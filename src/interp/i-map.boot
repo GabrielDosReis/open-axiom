@@ -151,7 +151,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   for parm in parameters repeat mkLocalVar($mapName,parm)
   userVariables2 := setDifference(userVariables1,findLocalVars(op,rhs))
   userVariables3 := setDifference(userVariables2, parameters)
-  userVariables4 := REMDUP setDifference (userVariables3, [op])
+  userVariables4 := removeDuplicates setDifference (userVariables3, [op])
 
   --figure out the new dependencies for the new map (what it depends on)
   newDependencies := makeNewDependencies (op, userVariables4)
@@ -235,7 +235,7 @@ getUserIdentifiersIn body ==
       cons? op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
         NCONC(getUserIdentifiersIn op, argIdList)
       argIdList
-    REMDUP bodyIdList
+    removeDuplicates bodyIdList
 
 getUserIdentifiersInIterators itl ==
   for x in itl repeat
@@ -247,7 +247,7 @@ getUserIdentifiersInIterators itl ==
       varList:= [:getUserIdentifiersIn a,:varList]
     keyedSystemError("S2GE0016",['"getUserIdentifiersInIterators",
       '"unknown iterator construct"])
-  REMDUP varList
+  removeDuplicates varList
 
 getIteratorIds itl ==
   for x in itl repeat
@@ -1067,7 +1067,7 @@ listOfVariables pat ==
   IDENTP pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
     (var='_. => NIL ; [var])
-  cons? pat => REMDUP [:listOfVariables p for p in pat]
+  cons? pat => removeDuplicates [:listOfVariables p for p in pat]
   nil
 
 getMapBody(op,mapDef) ==

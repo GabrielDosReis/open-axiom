@@ -281,7 +281,7 @@ whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
     htSay('"Users of {\em ",ops,'": ")
     bcConform ['Mapping,:sublisFormal(conargs,sig)]
     htSay('"}\newline")
-    bcConTable listSort(function GLESSEQP,REMDUP namelist)
+    bcConTable listSort(function GLESSEQP,removeDuplicates namelist)
   noOneUses := SETDIFFERENCE(opl,usedList)
   if #noOneUses > 0 then
     htSay('"No constructor uses the ")
@@ -298,8 +298,8 @@ whoUsesOperation(htPage,which,key) ==  --see dbPresentOps
   htShowPageNoScroll()
 
 whoUses(opSigList,conform) ==
-  opList := REMDUP ASSOCLEFT opSigList
-  numOfArgsList := REMDUP [-1 + #sig for [.,:sig] in opSigList]
+  opList := removeDuplicates ASSOCLEFT opSigList
+  numOfArgsList := removeDuplicates [-1 + #sig for [.,:sig] in opSigList]
   acc  := nil
   $conname : local := first conform
   domList := getUsersOfConstructor $conname

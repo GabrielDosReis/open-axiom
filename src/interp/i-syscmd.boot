@@ -350,7 +350,7 @@ clearCmdParts(l is [opt,:vl]) ==
   imacs := getInterpMacroNames()
   if vl='(all) then
     vl := ASSOCLEFT CAAR $InteractiveFrame
-    vl := REMDUP(append(vl, pmacs))
+    vl := removeDuplicates(append(vl, pmacs))
   $e : local := $InteractiveFrame
   for x in vl repeat
     clearDependencies(x,true)
@@ -1050,7 +1050,7 @@ displayMacros names ==
   macros :=
      null names => append (imacs, pmacs)
      names
-  macros := REMDUP macros
+  macros := removeDuplicates macros
 
   null macros => sayBrightly '"   There are no OpenAxiom macros."
 
@@ -1080,7 +1080,7 @@ displayMacros names ==
   NIL
 
 getParserMacroNames() ==
-  REMDUP [first mac for mac in getParserMacros()]
+  removeDuplicates [first mac for mac in getParserMacros()]
 
 clearParserMacro(macro) ==
   -- first see if it is one
@@ -1150,7 +1150,7 @@ displayProperties(option,l) ==
   [opt,:vl]:= (l or ['properties])
   imacs := getInterpMacroNames()
   pmacs := getParserMacroNames()
-  macros := REMDUP append(imacs, pmacs)
+  macros := removeDuplicates append(imacs, pmacs)
   if vl is ['all] or null vl then
     vl := MSORT append(getWorkspaceNames(),macros)
   if $frameMessages then sayKeyedMsg("S2IZ0065",[$interpreterFrameName])
@@ -2500,7 +2500,7 @@ reportOpsFromUnitDirectly unitForm ==
       isRecordOrUnion =>
         sayBrightly '"   Records and Unions have no attributes."
       sayBrightly '""
-      attList:= REMDUP MSORT [x for [x,:.] in unit.2]
+      attList:= removeDuplicates MSORT [x for [x,:.] in unit.2]
       say2PerLine [formatAttribute x for x in attList]
       NIL
     opt = 'operations =>
@@ -2514,11 +2514,11 @@ reportOpsFromUnitDirectly unitForm ==
             systemErrorHere ["reportOpsFromUnitDirectly",top]
           [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
             $CategoryFrame)
-          sigList := REMDUP MSORT
+          sigList := removeDuplicates MSORT
                       [[[a,b],true,slot c] for [a,b,c] in funlist]
                              where slot c == (atom c => [c,0,1]; c)
         else
-          sigList:= REMDUP MSORT getOplistForConstructorForm unitForm
+          sigList:= removeDuplicates MSORT getOplistForConstructorForm unitForm
       say2PerLine [formatOperation(x,unit) for x in sigList]
       if $commentedOps ~= 0 then
         sayBrightly
@@ -2560,7 +2560,7 @@ reportOpsFromLisplib(op,u) ==
     opt = 'attributes =>
       centerAndHighlight('"Attributes",$LINELENGTH,specialChar 'hbar)
       sayBrightly '""
-      attList:= REMDUP MSORT [x for [x,:.] in
+      attList:= removeDuplicates MSORT [x for [x,:.] in
         getConstructorAttributesFromDB op]
       null attList => sayBrightly
         concat('%b,form2String functorForm,'%d,"has no attributes.",'%l)
@@ -2576,7 +2576,7 @@ displayOperationsFromLisplib form ==
   opList:= getConstructorOperationsFromDB name
   null opList => 
     centerAndHighlight('"No exported operations",$LINELENGTH)
-  opl:=REMDUP MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
+  opl:=removeDuplicates MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
   ops:= nil
   for x in opl repeat
     ops := [:ops,:formatOperationAlistEntry(x)]

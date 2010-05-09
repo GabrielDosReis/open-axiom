@@ -163,7 +163,7 @@ topicCode lst ==
     x
   if null intersection('(basic extended hidden),u) then u := ['extended,:u]
   bitIndexList := nil
-  for x in REMDUP u repeat
+  for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==
       k := HGET($topicHash,x) => k
       HPUT($topicHash,x,$topicIndex := $topicIndex * 2)
@@ -214,7 +214,7 @@ topics con ==
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
   hash := MAKE_-HASHTABLE 'ID
   tdAdd(con,hash)
-  for x in REMDUP [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
+  for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
   for x in HKEYS hash repeat HPUT(hash,x,mySort HGET(hash,x))
   tdPrint hash 

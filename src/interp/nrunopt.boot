@@ -394,7 +394,7 @@ orderCatAnc x == nreverse ASSOCLEFT SORTBY('CDR,rest depthAssoc x)
  
 depthAssocList u == 
   u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
-  REMDUP ("append"/[depthAssoc(y) for y in u])
+  removeDuplicates ("append"/[depthAssoc(y) for y in u])
  
 depthAssoc x ==
   y := HGET($depthAssocCache,x) => y

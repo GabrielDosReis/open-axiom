@@ -905,7 +905,7 @@ dbShowConsKinds cAlist ==
     htSay(c > 1 => pluralize kind; kind)
     htSay '":}"
     htSaySaturn '"\\"
-    bcConTable REMDUP [CAAR y for y in x]
+    bcConTable removeDuplicates [CAAR y for y in x]
   htEndMenu 'description
   htSayStandard '"\indent{0}"
 

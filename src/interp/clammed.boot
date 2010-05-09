@@ -82,7 +82,7 @@ isValidType form ==
     and/[isValidType type for [:.,type] in selectors]
   form is ['Enumeration,:args] =>
     null (and/[IDENTP x for x in args]) => false
-    ((# args) = (# REMDUP args)) => true
+    ((# args) = (# removeDuplicates args)) => true
     false
   form is ['Mapping,:mapargs] =>
     null mapargs => NIL
@@ -92,7 +92,7 @@ isValidType form ==
     args and first args is [":",:.] =>
       and/[isValidType type for [:.,type] in args]
     null (and/[isValidType arg for arg in args]) => NIL
-    ((# args) = (# REMDUP args)) => true
+    ((# args) = (# removeDuplicates args)) => true
     sayKeyedMsg("S2IR0005",[form])
     NIL
 
@@ -199,12 +199,12 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
     -- check for tagged union
     ml and first ml is [":",:.] => isLegitimateRecordOrTaggedUnion ml
     null (and/[isLegitimateMode(m,nil,nil) for m in ml]) => false
-    ((# ml) = (# REMDUP ml)) => true
+    ((# ml) = (# removeDuplicates ml)) => true
     false
   t is ['Record,:r] => isLegitimateRecordOrTaggedUnion r
   t is ['Enumeration,:r] =>
     null (and/[IDENTP x for x in r]) => false
-    ((# r) = (# REMDUP r)) => true
+    ((# r) = (# removeDuplicates r)) => true
     false
   false
 

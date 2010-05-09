@@ -115,7 +115,7 @@ getDomainOps D ==
   domname := D.0
   conname := first domname
   $predicateList: local := getConstructorPredicatesFromDB conname
-  REMDUP listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
+  removeDuplicates listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
   domname := D.0

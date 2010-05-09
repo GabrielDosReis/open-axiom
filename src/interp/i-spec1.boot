@@ -536,7 +536,7 @@ upLoopIterSTEP(index,lower,step,upperList) ==
       throwKeyedMsg("S2IS0007",['"upper"])
   if utype then types := [utype, :types]
   else types := [stype, :types]
-  type := resolveTypeListAny REMDUP types
+  type := resolveTypeListAny removeDuplicates types
   put(index,'mode,type,$env)
   mkLocalVar('"the iterator expression",index)
 

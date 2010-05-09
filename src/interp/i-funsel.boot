@@ -204,7 +204,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
     -- any Unions, Mapping or Records
 
     a' := nil
-    a := nreverse REMDUP a
+    a := nreverse removeDuplicates a
     for x in a repeat
       null x => 'iterate
       x = '(RationalRadicals) => a' := [$RationalNumber,:a']
@@ -220,7 +220,7 @@ selectMms2(op,tar,args1,args2,$Coerce) ==
       x is ['FunctionCalled,name] =>
         (xm := get(name,'mode,$e)) and not isPartialMode xm =>
           a' := [xm,:a']
-    a := append(a,REMDUP a')
+    a := append(a,removeDuplicates a')
     a := [x for x in a | cons?(x)]
 
     -- step 1. see if we have one without coercing
@@ -1037,7 +1037,7 @@ selectMmsGen(op,tar,args1,args2) ==
   else args := append(args1,args2)
   if tar then args := [tar,:args]
   -- for common aggregates, use under domain also
-  for a in REMDUP args repeat
+  for a in removeDuplicates args repeat
     a =>
       atom a => nil
       fa := QCAR a

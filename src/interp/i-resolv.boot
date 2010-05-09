@@ -148,7 +148,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
       null (d' := resolveTT(d,t2)) => bad := true
       ud := [d',:ud]
     bad => NIL
-    ['Union,:REMDUP reverse ud]
+    ['Union,:removeDuplicates reverse ud]
   ud := nil
   bad := nil
   for d in doms2 while not bad repeat
@@ -156,7 +156,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
     null (d' := resolveTTUnion(t1,d)) => bad := true
     ud := append(ud,rest d')
   bad => NIL
-  ['Union,:REMDUP ud]
+  ['Union,:removeDuplicates ud]
 
 resolveTTSpecial(t1,t2) ==
   -- tries to resolve things that would otherwise get mangled in the
@@ -413,7 +413,7 @@ getConditionalCategoryOfType(t,conditions,match) ==
   if cons? t then t := first t
   t in '(Union Mapping Record) => NIL
   conCat := getConstructorCategoryFromDB t
-  REMDUP rest getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
+  removeDuplicates rest getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
 
 getConditionalCategoryOfType1(cat,conditions,match,seen) ==
   cat is ['Join,:cs] or cat is ['CATEGORY,:cs] =>
@@ -522,7 +522,7 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
   isTaggedUnion m => resolveTMTaggedUnion(t,m)
   -- resolves t with a Union type
   t isnt ['Union,:uts] =>
-    ums := REMDUP spliceTypeListForEmptyMode([t],ums)
+    ums := removeDuplicates spliceTypeListForEmptyMode([t],ums)
     ums' := nil
     success := nil
     for um in ums repeat
@@ -532,14 +532,14 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
         ums' := [um',:ums']
       ums' := [um,:ums']
     -- remove any duplicate domains that might have been created
-    m' := ['Union,:REMDUP reverse ums']
+    m' := ['Union,:removeDuplicates reverse ums']
     success =>
       null CONTAINED('_*_*,m') => m'
       t = $Integer => NIL
       resolveTM1($Integer,m')
     NIL
   -- t is actually a Union if we got here
-  ums := REMDUP spliceTypeListForEmptyMode(uts,ums)
+  ums := removeDuplicates spliceTypeListForEmptyMode(uts,ums)
   bad := nil
   doms := nil
   for ut in uts while not bad repeat
@@ -547,7 +547,7 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
       doms := append(rest m',doms)
     bad := true
   bad => NIL
-  ['Union,:REMDUP doms]
+  ['Union,:removeDuplicates doms]
 
 resolveTMTaggedUnion(t, m is ['Union,:ums]) ==
   NIL
