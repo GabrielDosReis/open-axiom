@@ -47,13 +47,13 @@ substring?(part, whole, startpos) ==
   np := SIZE part
   nw := SIZE whole
   np > nw - startpos => false
-  and/[CHAR_-EQUAL(ELT(part, ip), ELT(whole, iw))
+  and/[CHAR_-EQUAL(part.ip, whole.iw)
       for ip in 0..np-1 for iw in startpos.. ]
 
 anySubstring?(part,whole,startpos) ==
   np := SIZE part
   nw := SIZE whole
-  or/[((k := i) and "and"/[CHAR_-EQUAL(ELT(part, ip),ELT(whole, iw))
+  or/[((k := i) and "and"/[CHAR_-EQUAL(part.ip,whole.iw)
        for ip in 0..np - 1 for iw in i..]) for i in startpos..nw - np] => k
 
 charPosition(c,t,startpos) ==
@@ -61,7 +61,7 @@ charPosition(c,t,startpos) ==
   startpos < 0 or startpos > n => n
   k:= startpos
   for i in startpos .. n-1 repeat
-    c = ELT(t,i) => return nil
+    c = t.i => return nil
     k := k+1
   k
 

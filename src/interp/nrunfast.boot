@@ -185,7 +185,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
+  start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
     maxIndex
@@ -364,8 +364,8 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
-  for i in 0..MAXINDEX packageVec | (entry := ELT(packageVec,i))
-      and (VECP entry or (predIndex := rest (node := ELT(catVec,i))) and
+  for i in 0..MAXINDEX packageVec | (entry := packageVec.i)
+      and (VECP entry or (predIndex := rest (node := catVec.i)) and
           (EQ(predIndex,0) or testBitVector(predvec,predIndex))) repeat
     package :=
       VECP entry =>
@@ -510,7 +510,7 @@ lookupInDomainByName(op,domain,arg) ==
   max := MAXINDEX opvec
   k := getOpCode(op,opvec,max) or return nil
   maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
+  start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
     maxIndex
@@ -673,7 +673,7 @@ newHasTest(domform,catOrAtt) ==
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
   n := MAXINDEX catvec
   xop := first x
-  or/[ELT(auxvec,i) for i in 0..n |
+  or/[auxvec.i for i in 0..n |
     xop = first (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4

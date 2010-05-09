@@ -548,8 +548,8 @@ htMakeButtonSaturn(htCommand, message, func,options) ==
 
 htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
-    string? pageDescrip => [pageDescrip, :ELT(htPage, 7)]
-    nconc(nreverse COPY_-LIST pageDescrip, ELT(htPage, 7))
+    string? pageDescrip => [pageDescrip, :htPage.7]
+    nconc(nreverse COPY_-LIST pageDescrip, htPage.7)
   SETELT(htPage, 7, newDescript)
 
 
@@ -1425,7 +1425,7 @@ htEndTabular() ==
   htSaySaturn '"\end{tabular}"
 
 htPopSaturn s ==
-  pageDescription := ELT($saturnPage, 7)
+  pageDescription := $saturnPage.7
   pageDescription is [=s,:b] => SETELT($saturnPage, 7, rest pageDescription)
   nil
 

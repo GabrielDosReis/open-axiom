@@ -1309,7 +1309,7 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:INTERN digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[DIGITP ELT(s,i) for i in 0..MAXINDEX s]]
+     | (s := PNAME arg) and "or"/[DIGITP s.i for i in 0..MAXINDEX s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer

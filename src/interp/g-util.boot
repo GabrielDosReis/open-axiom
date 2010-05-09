@@ -63,7 +63,7 @@ isSharpVarWithNum x ==
   ok := true
   c := 0
   for i in 1..(n-1) while ok repeat
-    d := ELT(p,i)
+    d := p.i
     ok := DIGITP d => c := 10*c + DIG2FIX d
   if ok then c else nil
 

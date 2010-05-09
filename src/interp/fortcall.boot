@@ -50,7 +50,7 @@ makeFort(name,args,decls,results,returnType,aspInfo) ==
   -- and a stub Axiom function to process its arguments.
   -- the following is a list of objects for which values need not be
   -- passed by the user.
-  dummies := [SECOND(u) for u in args | EQUAL(car u,0)]
+  dummies := [second(u) for u in args | EQUAL(car u,0)]
   args := [untangle2(u) for u in args] -- lose spad Union representation
     where untangle2 u ==
       atom (v := rest(u)) => v
@@ -114,12 +114,12 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
   argList := nil
   for a in args repeat
     argList := [[a, getCType getFortranType(a,decls)], :argList]
-    printDec(SECOND first argList,a,asps,fp)
+    printDec(second first argList,a,asps,fp)
   argList := nreverse argList;
   -- read in the data
   WRITE_-LINE('"    xdrstdio__create(&xdrs, stdin, XDR__DECODE);",fp)
   for a in argList repeat
-    if LISTP SECOND a then writeMalloc(first a,first SECOND a,rest SECOND a,fp)
+    if LISTP second a then writeMalloc(first a,first second a,rest second a,fp)
     not MEMQ(first a,[:dummies,:asps]) => writeXDR(a,'"&xdrs",fp)
   -- now call the Library routine.  FORTRAN names may have an underscore
   -- appended.
@@ -194,7 +194,7 @@ getCType t ==
   error ['"Unrecognised Fortran type: ",t]
 
 XDRFun t ==
-  LISTP(ty := SECOND t) =>
+  LISTP(ty := second t) =>
     if first(ty)='"char" then '"wrapstring" else '"array"
   ty
 
@@ -218,15 +218,15 @@ writeXDR(v,str,fp) ==
   underscore := STRING CHAR('"__:",0) -- to avoid a compiler bug which won't
                                      -- parse " ... __" properly.
   wt(['"    CHECK(xdr",underscore, XDRFun(v), '"(", str, '",&", first(v)],fp)
-  if (LISTP (ty :=SECOND v)) and not EQUAL(first ty,'"char") then
+  if (LISTP (ty :=second v)) and not EQUAL(first ty,'"char") then
     wt(['",&",first(v),'"__length,MAX__ARRAY(",first(v),'"__length),"],fp)
     wt(['"sizeof(",first(ty),'"),xdr",underscore,first ty],fp)
   wl(['"));"],fp)
 
 prefix2Infix(l) ==
   atom(l) => [l]
-  #l=2 => [first l,"(",:prefix2Infix SECOND l,")"]
-  #l=3 => ["(",:prefix2Infix SECOND l,first l,:prefix2Infix THIRD l,")"]
+  #l=2 => [first l,"(",:prefix2Infix second l,")"]
+  #l=3 => ["(",:prefix2Infix second l,first l,:prefix2Infix third l,")"]
   error '"Function in array dimensions with more than two arguments"
 
 writeMalloc(name,type,dims,fp) ==
@@ -306,7 +306,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
     results := [returnName, :results]
   argNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in userArgs]
   aType := [axiomType(a,decls,asps,aspInfo) for a in userArgs]
-  aspTypes := [SECOND NTH(POSITION(u,userArgs),aType) for u in asps]
+  aspTypes := [second NTH(POSITION(u,userArgs),aType) for u in asps]
   nilLst := MAKE_-LIST(#args+1)
   decPar := [["$elt","Lisp","construct"],:makeLispList decls]
   fargNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in args |
@@ -396,8 +396,8 @@ complexRows z ==
   [:[:pair2list(u.i) for u in z] for i in 0..#(z.0)-1]
 
 pair2list u == [car u,cdr u]
-vec2Lists1 u == [ELT(u,i) for i in 0..#u-1]
-vec2Lists u == [vec2Lists1 ELT(u,i) for i in 0..#u-1]
+vec2Lists1 u == [u.i for i in 0..#u-1]
+vec2Lists u == [vec2Lists1 u.i for i in 0..#u-1]
 
 spad2lisp(u) ==
   -- Turn complexes into arrays of floats
@@ -405,7 +405,7 @@ spad2lisp(u) ==
     makeVector([makeVector([second u,CDDR u],"%DoubleFloat")],NIL)
   -- Turn arrays of complexes into arrays of floats so that tarnsposing
   -- them puts them in the correct fortran order
-  first first(u)="Matrix" and first SECOND first(u) = "Complex" =>
+  first first(u)="Matrix" and first second first(u) = "Complex" =>
     makeVector([makeVector(complexRows vec2Lists rest u,"%DoubleFloat")],NIL)
   rest(u)
 
@@ -420,7 +420,7 @@ invokeFortran(objFile,args,dummies,decls,results,actual) ==
 --  -- cons cell, otherwise a vector.  This is to match the internal
 --  -- representation of an Axiom Record.
 --  #returnedValues = 1 => returnedValues
---  #returnedValues = 2 => [first returnedValues,:SECOND returnedValues]
+--  #returnedValues = 2 => [first returnedValues,:second returnedValues]
 --  makeVector(returnedValues,nil)
 
 int2Bool u ==
@@ -449,20 +449,20 @@ spadify(l,results,decls,names,actual) ==
     -- Result is a Complex Scalar
     ty in ["double complex" , "complex"] =>
        spadForms := [makeResultRecord(name,ty, _
-                                     [ELT(fort,0),:ELT(fort,1)]),:spadForms]
+                                     [fort.0,:fort.1]),:spadForms]
     -- Result is a Complex vector or array
     LISTP(ty) and first(ty) in ["double complex" , "complex"] =>
       dims := [getVal(u,names,actual) for u in rest ty]
       els := nil
       if #dims=1 then
-        els := [makeVector([[ELT(fort,2*i),:ELT(fort,2*i+1)] _
+        els := [makeVector([[fort.(2*i),:fort.(2*i+1)] _
                 for i in 0..(first(dims)-1)],nil)]
       else if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
-          for c in 0..(SECOND(dims) - 1) repeat
+          for c in 0..(second(dims) - 1) repeat
             offset := 2*(c*first(dims)+r)
-            innerEls := [[ELT(fort,offset),:ELT(fort,offset+1)],:innerEls]
+            innerEls := [[fort.offset,:fort.(offset+1)],:innerEls]
           els := [makeVector(nreverse innerEls,nil),:els]
       else
          error ['"Can't cope with complex output dimensions higher than 2"]
@@ -472,15 +472,15 @@ spadify(l,results,decls,names,actual) ==
     LISTP(ty) and first(ty)="logical" and #ty=2 =>
       dim := getVal(second ty,names,actual)
       spadForms := [makeResultRecord(name,ty,_
-                          [int2Bool ELT(fort,i) for i in 0..dim-1]), :spadForms]
+                          [int2Bool fort.i for i in 0..dim-1]), :spadForms]
     LISTP(ty) and first(ty)="logical" =>
       dims := [getVal(u,names,actual) for u in rest ty]
       els := nil
       if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
-          for c in 0..(SECOND(dims) - 1) repeat
-            innerEls := [int2Bool ELT(fort,c*first(dims)+r),:innerEls]
+          for c in 0..(second(dims) - 1) repeat
+            innerEls := [int2Bool fort.(c*first(dims)+r),:innerEls]
           els := [nreverse innerEls,:els]
       else
          error ['"Can't cope with logical output dimensions higher than 2"]
@@ -493,24 +493,24 @@ spadify(l,results,decls,names,actual) ==
       if MEMQ(0,dims) then
         els := [[]]
       else if #dims=1 then
-        els := [makeVector([ELT(fort,i) for i in 0..(first(dims)-1)],nil)]
+        els := [makeVector([fort.i for i in 0..(first(dims)-1)],nil)]
       else if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
-          for c in 0..(SECOND(dims) - 1) repeat
-            innerEls := [ELT(fort,c*first(dims)+r),:innerEls]
+          for c in 0..(second(dims) - 1) repeat
+            innerEls := [fort.(c*first(dims)+r),:innerEls]
           els := [makeVector(nreverse innerEls,nil),:els]
       else if #dims=3 then
         iDim := first(dims)
-        jDim := SECOND dims
-        kDim := THIRD dims
+        jDim := second dims
+        kDim := third dims
         for r in 0..(iDim - 1) repeat
           middleEls := nil
           for c in 0..(jDim - 1) repeat
             innerEls := nil
             for p in 0..(kDim - 1) repeat
               offset := p*jDim + c*kDim + r
-              innerEls := [ELT(fort,offset),:innerEls]
+              innerEls := [fort.offset,:innerEls]
             middleEls := [makeVector(nreverse innerEls,nil),:middleEls]
           els := [makeVector(nreverse middleEls,nil),:els]
       else
@@ -596,15 +596,15 @@ prepareResults(results,args,dummies,values,decls) ==
 --        -- order (i.e. swap from C to Fortran order).
 --        els  := nil
 --        rows := first ARRAY_-DIMENSIONS(u)-1
---        cols := first ARRAY_-DIMENSIONS(ELT(u,0))-1
+--        cols := first ARRAY_-DIMENSIONS(u.0)-1
 --        -- Could be a 3D Matrix
---        if VECTORP ELT(ELT(u,0),0) then
---          planes := first ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
+--        if VECTORP u.0.0 then
+--          planes := first ARRAY_-DIMENSIONS(u.0.0)-1
 --          for k in 0..planes repeat for j in 0..cols repeat for i in 0..rows repeat
---            els := [ELT(ELT(ELT(u,i),j),k),:els]
+--            els := [u.i.j.k,:els]
 --        else
 --          for j in 0..cols repeat for i in 0..rows repeat
---            els := [ELT(ELT(u,i),j),:els]
+--            els := [u.i.j,:els]
 --        makeVector(nreverse els,type)
 
 
@@ -628,24 +628,24 @@ writeData(tmpFile,indata) ==
         VECTORP v =>  
                 rows := first ARRAY_-DIMENSIONS(v)
                 -- is it 2d or more (most likely) ?
-                VECTORP ELT(v,0) =>     
-                        cols := first ARRAY_-DIMENSIONS(ELT(v,0))
+                VECTORP v.0 =>     
+                        cols := first ARRAY_-DIMENSIONS(v.0)
                         -- is it 3d ?
-                        VECTORP ELT(ELT(v,0),0) =>
-                                planes := first ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
+                        VECTORP v.0.0 =>
+                                planes := first ARRAY_-DIMENSIONS(v.0.0)
                                 -- write 3d array
                                 xdrWrite(xstr,rows*cols*planes)
                                 for k in 0..planes-1 repeat 
                                         for j in 0..cols-1 repeat 
                                                 for i in 0..rows-1 repeat 
-                                                        xdrWrite(xstr,ELT(ELT(ELT(v,i),j),k))
+                                                        xdrWrite(xstr,v.i.j.k)
                         -- write 2d array
                         xdrWrite(xstr,rows*cols)
                         for j in 0..cols-1 repeat
-                                for i in 0..rows-1 repeat xdrWrite(xstr,ELT(ELT(v,i),j))
+                                for i in 0..rows-1 repeat xdrWrite(xstr,v.i.j)
                 -- write 1d array
                 xdrWrite(xstr,rows)
-                for i in 0..rows-1 repeat xdrWrite(xstr,ELT(v,i))
+                for i in 0..rows-1 repeat xdrWrite(xstr,v.i)
         -- this is used for lists of booleans apparently in f01
         LISTP v => 
                 xdrWrite(xstr,LENGTH v)

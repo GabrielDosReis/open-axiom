@@ -57,35 +57,35 @@ htpDestroyPage(pageName) ==
 
 htpName htPage ==
 -- a symbol whose value is the page
-  ELT(htPage, 0)
+  htPage.0
 
 htpSetName(htPage, val) ==
   SETELT(htPage, 0, val)
 
 htpDomainConditions htPage ==
 -- List of Domain conditions
-  ELT(htPage, 1)
+  htPage.1
 
 htpSetDomainConditions(htPage, val) ==
   SETELT(htPage, 1, val)
 
 htpDomainVariableAlist htPage ==
 -- alist of pattern variables and conditions
-  ELT(htPage, 2)
+  htPage.2
 
 htpSetDomainVariableAlist(htPage, val) ==
   SETELT(htPage, 2, val)
 
 htpDomainPvarSubstList htPage ==
 -- alist of user pattern variables to system vars
-  ELT(htPage, 3)
+  htPage.3
 
 htpSetDomainPvarSubstList(htPage, val) ==
   SETELT(htPage, 3, val)
 
 htpRadioButtonAlist htPage ==
 -- alist of radio button group names and labels
-  ELT(htPage, 4)
+  htPage.4
 
 htpButtonValue(htPage, groupName) ==
   for buttonName in LASSOC(groupName, htpRadioButtonAlist htPage) repeat
@@ -97,30 +97,30 @@ htpSetRadioButtonAlist(htPage, val) ==
 
 htpInputAreaAlist htPage ==
 -- Alist of input-area labels, and default values
-  ELT(htPage, 5)
+  htPage.5
 
 htpSetInputAreaAlist(htPage, val) ==
   SETELT(htPage, 5, val)
 
 htpAddInputAreaProp(htPage, label, prop) ==
-  SETELT(htPage, 5, [[label, nil, nil, nil, :prop], :ELT(htPage, 5)])
+  SETELT(htPage, 5, [[label, nil, nil, nil, :prop], :htPage.5])
 
 htpPropertyList htPage ==
 -- Association list of user-defined properties
-  ELT(htPage, 6)
+  htPage.6
 
 htpProperty(htPage, propName) ==
-  LASSOC(propName, ELT(htPage, 6))
+  LASSOC(propName, htPage.6)
 
 htpSetProperty(htPage, propName, val) ==
-  pair := assoc(propName, ELT(htPage, 6))
+  pair := assoc(propName, htPage.6)
   pair => pair.rest := val
-  SETELT(htPage, 6, [[propName, :val], :ELT(htPage, 6)])
+  SETELT(htPage, 6, [[propName, :val], :htPage.6])
 
 htpLabelInputString(htPage, label) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props and string? (s := ELT(props,0)) =>
+  props and string? (s := props.0) =>
     s = '"" => s
     trimString s
   nil
@@ -129,9 +129,9 @@ htpLabelFilteredInputString(htPage, label) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
-    #props > 5 and ELT(props, 6) =>
-      FUNCALL(SYMBOL_-FUNCTION ELT(props, 6), ELT(props, 0))
-    replacePercentByDollar ELT(props, 0)
+    #props > 5 and props.6 =>
+      FUNCALL(SYMBOL_-FUNCTION props.6, props.0)
+    replacePercentByDollar props.0
   nil
 
 replacePercentByDollar s == fn(s,0,MAXINDEX s) where
@@ -149,7 +149,7 @@ htpSetLabelInputString(htPage, label, val) ==
 htpLabelSpadValue(htPage, label) ==
 -- Scratchpad value of parsed and evaled inputString, as (type . value)
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 1)
+  props => props.1
   nil
 
 htpSetLabelSpadValue(htPage, label, val) ==
@@ -161,7 +161,7 @@ htpSetLabelSpadValue(htPage, label, val) ==
 htpLabelErrorMsg(htPage, label) ==
 -- error message associated with input area
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 2)
+  props => props.2
   nil
 
 htpSetLabelErrorMsg(htPage, label, val) ==
@@ -173,7 +173,7 @@ htpSetLabelErrorMsg(htPage, label, val) ==
 htpLabelType(htPage, label) ==
 -- either 'string or 'button
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 3)
+  props => props.3
   nil
 
 htpLabelDefault(htPage, label) ==
@@ -184,25 +184,25 @@ htpLabelDefault(htPage, label) ==
     msg
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
-    ELT(props, 4)
+    props.4
   nil
 
 
 htpLabelSpadType(htPage, label) ==
 -- pattern variable for target domain for input area
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 5)
+  props => props.5
   nil
 
 htpLabelFilter(htPage, label) ==
 -- string to string mapping applied to input area strings before parsing
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 6)
+  props => props.6
   nil
 
 htpPageDescription htPage ==
 -- a list of all the commands issued to create the basic-command page
-  ELT(htPage, 7)
+  htPage.7
 
 htpSetPageDescription(htPage, pageDescription) ==
   SETELT(htPage, 7, pageDescription)
