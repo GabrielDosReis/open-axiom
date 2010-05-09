@@ -388,7 +388,7 @@ specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index
   -- into the EBCDIC table, and returns the appropriate character
   null (code := IFCDR ASSQ(symbol,$specialCharacterAlist)) => '"?"
-  ELT($specialCharacters,code)
+  $specialCharacters.code
 
 rbrkSch() == PNAME specialChar 'rbrk
 lbrkSch() == PNAME specialChar 'lbrk

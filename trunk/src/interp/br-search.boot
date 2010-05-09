@@ -283,8 +283,8 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       n := SIZE t
       if startpos < 0 or startpos > n then error "index out of range"
       k:= startpos
-      for i in startpos .. n-1 while c ~= ELT(t,i)
-        or i > startpos and ELT(t,i-1) = '__ repeat  (k := k+1)
+      for i in startpos .. n-1 while c ~= t.i
+        or i > startpos and t.(i-1) = '__ repeat  (k := k+1)
       k
     addOptions s ==  --add front anchor
       --options a o c d p x   denote standard items

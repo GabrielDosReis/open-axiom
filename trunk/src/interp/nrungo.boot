@@ -289,8 +289,8 @@ compareSigEqual(s,t,dollar,domain) ==
     u :=
       t='$ => dollar
       isSharpVar t =>
-        VECP domain => ELT(rest domain.0,POSN1(t,$FormalMapVariableList))
-        ELT(rest domain,POSN1(t,$FormalMapVariableList))
+        VECP domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
+        rest(domain).(POSN1(t,$FormalMapVariableList))
       string? t and IDENTP s => (s := PNAME s; t)
       nil
     s = '$ => compareSigEqual(dollar,u,dollar,domain)

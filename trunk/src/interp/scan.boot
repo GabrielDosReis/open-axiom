@@ -176,15 +176,15 @@ scanKeyTable:=scanKeyTableCons()
 scanInsert(s,d) ==
       l := #s
       h := QENUM(s,0)
-      u := ELT(d,h)
+      u := d.h
       n := #u
       k:=0
-      while l <= #(ELT(u,k)) repeat
+      while l <= #(u.k) repeat
           k:=k+1
       v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
+      for i in 0..k-1 repeat VEC_-SETELT(v,i,u.i)
       VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
+      for i in k..n-1 repeat VEC_-SETELT(v,i+1,u.i)
       VEC_-SETELT(d,h,v)
       s
 
@@ -695,12 +695,12 @@ subMatch(l,i)==substringMatch(l,scanDict,i)
 
 substringMatch (l,d,i)==
        h:= QENUM(l, i)
-       u:=ELT(d,h)
+       u:=d.h
        ll:=SIZE l
        done:=false
        s1:='""
        for j in 0.. SIZE u - 1 while not done repeat
-          s:=ELT(u,j)
+          s:=u.j
           ls:=SIZE s
           done:=if ls+i > ll
                 then false

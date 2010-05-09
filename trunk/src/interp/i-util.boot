@@ -129,13 +129,13 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  not EQ(first ELT(domain',slot), function Undef) =>
+  not EQ(first domain'.slot, function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then
       sayMessage concat ['"   Retrospective determination of slot",'%b,
         slot,'%d,'"of",'%b,:prefix2String domain,'%d]
-    apply(first ELT(domain',slot),[:u'',rest ELT(domain',slot)])
+    apply(first domain'.slot,[:u'',rest domain'.slot])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
 makeInitialModemapFrame() == 

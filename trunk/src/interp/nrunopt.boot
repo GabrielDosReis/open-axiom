@@ -897,7 +897,7 @@ expandType(lazyt,template,domform) ==
                                  for [.,tag,dom] in argl]]
   lazyt is ['local,x] =>
     n := POSN1(x,$FormalMapVariableList)
-    ELT(domform,1 + n)
+    domform.(1 + n)
   [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
  
 expandTypeArgs(u,template,domform) ==

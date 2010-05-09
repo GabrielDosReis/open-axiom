@@ -126,7 +126,7 @@ exp2Fort2(e,prec,oldOp) ==
       s
     exp2FortFn(op,args,nargs)
   op = '"CMPLX" =>
-    ['")",:exp2Fort2(SECOND args, prec, op),'",",:exp2Fort2(first args,prec,op),'"("]
+    ['")",:exp2Fort2(second args, prec, op),'",",:exp2Fort2(first args,prec,op),'"("]
   member(op,nonUnaryOps) =>
     if nargs > 0 then arg1 := first args
     nargs = 1 and member(op, '("+" "*")) => exp2Fort2(arg1,prec,op)
@@ -457,11 +457,11 @@ exp2FortSpecial(op,args,nargs) ==
       if LISTP first elts and #elts=1 and first elts is [sOp,:sArgs] then
         member(sOp, ['"SEGMENT","SEGMENT"]) =>
           #sArgs=1 => fortError1 first elts
-          not(NUMBERP(first sArgs) and NUMBERP(SECOND sArgs)) =>
+          not(NUMBERP(first sArgs) and NUMBERP(second sArgs)) =>
             fortError("Cannot expand segment: ",first elts)
-          first sArgs > SECOND sArgs => fortError1
+          first sArgs > second sArgs => fortError1
             '"Lower bound of segment exceeds upper bound."
-          for e in first sArgs .. SECOND sArgs for i in si.. repeat
+          for e in first sArgs .. second sArgs for i in si.. repeat
             $exprStack := [["=",[var,object2String i],fortPre1(e)],:$exprStack]
       for e in elts for i in si.. repeat
         $exprStack := [["=",[var,object2String i],fortPre1(e)],:$exprStack]
@@ -796,7 +796,7 @@ fortPre1 e ==
   imags := ['"%i","%i"]
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
-  ELT(STRINGIMAGE e,0) = "%" => SUBSEQ(STRINGIMAGE e,1)
+  STRINGIMAGE(e).0 = "%" => SUBSEQ(STRINGIMAGE e,1)
   atom e => e
   [op, :args] := e
   member(op,["**" , '"**"]) =>
@@ -814,7 +814,7 @@ fortPre1 e ==
                    INTSIGN  PI PI2 INDEFINTEGRAL)
   op in specialOps => exp2FortSpecial(op,args,#args)
   member(op,['"*", "*", '"+", "+", '"-", "-"]) and (#args > 2) =>
-    binaryExpr := fortPre1 [op,first args, SECOND args]
+    binaryExpr := fortPre1 [op,first args, second args]
     for i in 3..#args repeat
       binaryExpr := [op,binaryExpr,fortPre1 NTH(i-1,args)]
     binaryExpr
@@ -903,11 +903,11 @@ segment l ==
   for e in l repeat
     if LISTP(e) and first member(e,["=",'"="]) then
       var := NTH(1,e)
-      exprs := segment1(THIRD e,
+      exprs := segment1(third e,
                         $maximumFortranExpressionLength-1-fortExpSize var)
       s:= [:[['"=",var,car exprs],:cdr exprs],:s]
     else if LISTP(e) and first e = '"RETURN" then
-      exprs := segment1(SECOND e,
+      exprs := segment1(second e,
                         $maximumFortranExpressionLength-2-fortExpSize first e)
       s := [:[[first e,car exprs],:cdr exprs],:s]
     else s:= [e,:s]

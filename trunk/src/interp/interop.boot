@@ -210,7 +210,7 @@ oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
 
 oldAxiomCategoryParentCount([.,.,.,parents,.], env) == LENGTH parents
 oldAxiomCategoryNthParent([.,.,.,parvec,dom], n, env) ==
-  catform := ELT(parvec, n-1)
+  catform := parvec.(n-1)
   VECTORP KAR catform => catform
   newcat := oldAxiomPreCategoryBuild(catform,dom,nil)
   SETELT(parvec, n-1, newcat)
@@ -404,7 +404,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
+  start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
     maxIndex
