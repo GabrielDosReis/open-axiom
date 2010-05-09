@@ -280,7 +280,7 @@ formatAttributeArg x ==
   prefix2String0 x
 
 formatMapping sig ==
-  "STRCONC"/concat("Mapping(",formatSignature sig,")")
+  strconc/concat("Mapping(",formatSignature sig,")")
 
 dollarPercentTran x ==
     -- Translate $ to %. We actually return %% so that the message
@@ -327,7 +327,7 @@ formatSignatureArgs0(sml) ==
 
 expr2String x ==
   atom (u:= prefix2String0 x) => u
-  "STRCONC"/[atom2String y for y in u]
+  strconc/[atom2String y for y in u]
 
 -- exports (this is a badly named bit of sillyness)
 prefix2StringAsTeX form ==
@@ -364,7 +364,7 @@ form2StringWithPrens form ==
 formString u ==
   x := form2String u
   atom x => STRINGIMAGE x
-  "STRCONC"/[STRINGIMAGE y for y in x]
+  strconc/[STRINGIMAGE y for y in x]
 
 form2String u == 
   $formatSigAsTeX: local := 1
@@ -584,7 +584,7 @@ linearFormatForm(op,argl) ==
   s:= PNAME op
   indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
     (DIGITP (d:= s.(maxIndex:= i)))]
-  cleanOp:= INTERN ("STRCONC"/[PNAME s.i for i in maxIndex..MAXINDEX s])
+  cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   fnArgs:=
     indexList.0 > 0 =>
       concat('"(",formatArgList take(-indexList.0,argl),'")")
@@ -601,7 +601,7 @@ linearFormatForm(op,argl) ==
     nil
   l := [(string? f => f; STRINGIMAGE f) for f in
        concat(cleanOp,scriptArgs,fnArgs)]
-  "STRCONC"/l
+  strconc/l
 
 formatArgList l ==
   null l => nil

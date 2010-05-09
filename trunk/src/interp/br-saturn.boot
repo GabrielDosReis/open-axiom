@@ -1488,7 +1488,7 @@ htSaySaturnAmpersand() == htSaySaturn $saturnAmpersand
 
 htBlank(:options) ==
   options is [n] =>
-    htSaySaturn("STRCONC"/['"\phantom{*}" for i in 1..n])
+    htSaySaturn(strconc/['"\phantom{*}" for i in 1..n])
     htSayStandard strconc('"\space{",STRINGIMAGE n,'"}")
   htSaySaturn '"\phantom{*}"
   htSayStandard '"\space{1}"

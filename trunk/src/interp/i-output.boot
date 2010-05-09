@@ -411,7 +411,7 @@ obj2String o ==
     o = ")" => '")"
     o = "(" => '"("
     STRINGIMAGE o
-  apply('STRCONC,[obj2String o' for o' in o])
+  apply(function strconc,[obj2String o' for o' in o])
 
 APP(u,x,y,d) ==
   atom u => appChar(atom2String u,x,y,d)
@@ -732,11 +732,11 @@ mkSuperSub(op,argl) ==
   $linearFormatScripts => linearFormatForm(op,argl)
 --  l := [(string? f => f; STRINGIMAGE f)
 --    for f in linearFormatForm(op,argl)]
---  "STRCONC"/l
+--  strconc/l
   s:= PNAME op
   indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
     (DIGITP (d:= s.(maxIndex:= i)))]
-  cleanOp:= INTERN ("STRCONC"/[PNAME s.i for i in maxIndex..MAXINDEX s])
+  cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>
     subPart:= ['SUB,cleanOp,:take(indexList.1,argl)]
@@ -1623,7 +1623,7 @@ outputDomainConstructor form ==
   if VECTORP form then form := devaluate form
   atom (u:= prefix2String form) => u
   v:= [object2String(x) for x in u]
-  return INTERNL eval ['STRCONC,:v]
+  return INTERNL apply(function strconc,v)
 
 getOutputAbbreviatedForm form ==
   form is [op,:argl] =>

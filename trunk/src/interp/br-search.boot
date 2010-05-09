@@ -176,7 +176,7 @@ pmParseFromString s ==
   u := ncParseFromString pmPreparse s
   dnForm flatten u where flatten s ==
     s is [op,:argl] =>
-      string? op => strconc(op,"STRCONC"/[strconc('" ",x) for x in argl])
+      string? op => strconc(op,strconc/[strconc('" ",x) for x in argl])
       [op,:[flatten x for x in argl]]
     s
 
@@ -268,7 +268,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       if not ('w in $options) then
         if first res ~= '"" then res := ['"`",:res]
         else if res is [.,p,:r] and p = $wild1 then res := r
-      "STRCONC"/nreverse res
+      strconc/nreverse res
     remUnderscores s ==
       (k := charPosition(char $charUnderscore,s,0)) < MAXINDEX s =>
         strconc(SUBSTRING(s,0,k),'"[",s.(k + 1),'"]",
@@ -688,7 +688,7 @@ conSpecialString?(filter,:options) ==
   filter = '"Mapping" =>nil
   u := kisValidType form => u
   secondTime => false
-  u := "STRCONC"/[string2Constructor x for x in dbString2Words filter]
+  u := strconc/[string2Constructor x for x in dbString2Words filter]
   conSpecialString?(u, true)
 
 dbString2Words l ==

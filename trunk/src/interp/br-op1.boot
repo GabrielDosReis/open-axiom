@@ -903,20 +903,20 @@ evalableConstructor2HtString domform ==
 mathform2HtString form == escapeString
   $fortInts2Floats: local := false
   form := niladicHack form
-  form is ['QUOTE,a] => strconc('"'","STRCONC"/fortexp0 a)
+  form is ['QUOTE,a] => strconc('"'",strconc/fortexp0 a)
   form is ['BRACKET,['AGGLST,:arg]] =>
     if arg is ['construct,:r] then arg := r
     arg :=
       atom arg => [arg]
       [y for x in arg | y := (x is ['QUOTE,a] => a; x)]
-    tailPart := "STRCONC"/[strconc('",",STRINGIMAGE x) for x in rest arg]
+    tailPart := strconc/[strconc('",",STRINGIMAGE x) for x in rest arg]
     strconc('"[",STRINGIMAGE first arg,tailPart,'"]")
   form is ['BRACKET,['AGGLST,'QUOTE,arg]] =>
     if atom arg then arg := [arg]
-    tailPart := "STRCONC"/[strconc('",",x) for x in rest arg]
+    tailPart := strconc/[strconc('",",x) for x in rest arg]
     strconc('"[",first arg,tailPart,'"]")
   atom form => form
-  "STRCONC"/fortexp0 form
+  strconc/fortexp0 form
 
 niladicHack form ==
   atom form => form

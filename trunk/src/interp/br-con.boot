@@ -157,7 +157,7 @@ conPageConEntry entry ==
 conform2String u ==
   x := form2String u
   atom x => STRINGIMAGE x
-  "STRCONC"/[STRINGIMAGE y for y in x]
+  strconc/[STRINGIMAGE y for y in x]
 
 kxPage(htPage,name) == downlink name
 
@@ -649,8 +649,8 @@ kDomainName(htPage,kind,name,nargs) ==
   argString :=
     null args => '"()"
     argTailPart :=
-      "STRCONC"/["STRCONC"/ ['",",:x] for x in KDR args]
-    "STRCONC"/['"(",:first args,argTailPart,'")"]
+      strconc/[strconc/ ['",",:x] for x in KDR args]
+    strconc/['"(",:first args,argTailPart,'")"]
   typeForm := CATCH($SpadReaderTag, unabbrev mkConform(kind,name,argString)) or
     ['error,'invalidType,strconc(name,argString)]
   null (evaluatedTypeForm := kisValidType typeForm) =>

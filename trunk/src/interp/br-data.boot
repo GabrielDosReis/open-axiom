@@ -126,7 +126,7 @@ buildLibdbConEntry conname ==
 dbMkForm x == atom x and [x] or x
 
 buildLibdbString [x,:u] ==
-  strconc(STRINGIMAGE x,"STRCONC"/[strconc('"`",STRINGIMAGE y) for y in u])
+  strconc(STRINGIMAGE x,strconc/[strconc('"`",STRINGIMAGE y) for y in u])
 
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := getConstructorModemapFromDB conname
@@ -269,7 +269,7 @@ dbReadComments(n) ==
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
         xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
   SHUT instream
-  strconc(line, "STRCONC"/nreverse xtralines)
+  strconc(line, strconc/nreverse xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -359,7 +359,7 @@ buildGloss() ==  --called by buildDatabase (database.boot)
       PRINTEXP($tick,defstream)
       PRINTEXP(x,    defstream)
       TERPRI defstream
-    PRINTEXP("STRCONC"/lines,htstream)
+    PRINTEXP(strconc/lines,htstream)
     TERPRI htstream
   PRINTEXP('"\endmenu\endscroll",htstream)
   PRINTEXP('"\lispdownlink{Search}{(|htGloss| _"\stringvalue{pattern}_")} for glossary entry matching \inputstring{pattern}{24}{*}",htstream)
