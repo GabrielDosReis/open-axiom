@@ -79,7 +79,7 @@ bpNextToken() ==
   bpFirstToken()
  
 bpState()== [$inputStream,$stack,$bpParenCount,$bpCount]
---cons($inputStream,$stack)
+--[$inputStream,:$stack]
  
 bpRestore(x)==
   $inputStream:=first x
@@ -509,8 +509,8 @@ bpCancel()==
 
 bpAddTokens n==
   n=0 => nil
-  n>0=> cons(shoeTokConstruct("KEY","SETTAB",shoeTokPosn $stok),bpAddTokens(n-1))
-  cons(shoeTokConstruct("KEY","BACKTAB",shoeTokPosn $stok),bpAddTokens(n+1))
+  n>0=> [shoeTokConstruct("KEY","SETTAB",shoeTokPosn $stok),:bpAddTokens(n-1)]
+  [shoeTokConstruct("KEY","BACKTAB",shoeTokPosn $stok),:bpAddTokens(n+1)]
  
 bpExceptions()==
      bpEqPeek "DOT" or bpEqPeek "QUOTE" or
