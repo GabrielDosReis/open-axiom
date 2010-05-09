@@ -648,7 +648,7 @@ writeData(tmpFile,indata) ==
                 for i in 0..rows-1 repeat xdrWrite(xstr,v.i)
         -- this is used for lists of booleans apparently in f01
         LISTP v => 
-                xdrWrite(xstr,LENGTH v)
+                xdrWrite(xstr,# v)
                 for el in v repeat 
                         if el then xdrWrite(xstr,1) else xdrWrite(xstr,0) 
         -- integers
@@ -667,7 +667,7 @@ readData(tmpFile,results) ==
   xstr := xdrOpen(str,false)
   results := [xdrRead1(xstr,r) for r in results] where
     xdrRead1(x,dummy) ==
-      VECTORP(dummy) and ZEROP(LENGTH dummy) => dummy
+      VECTORP(dummy) and ZEROP(# dummy) => dummy
       xdrRead(x,dummy)
   SHUT(str)
   results

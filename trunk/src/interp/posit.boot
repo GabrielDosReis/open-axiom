@@ -177,7 +177,7 @@ pfSourcePositions form ==
 pfSourcePositionlist x==
       if null x
       then nil
-      else APPEND(pfSourcePositions first x,pfSourcePositionlist rest x)
+      else append(pfSourcePositions first x,pfSourcePositionlist rest x)
  
  
 poCharPosn posn == rest posn

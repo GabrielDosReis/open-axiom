@@ -66,7 +66,7 @@ formatDeftran(u,SEQflag) ==
   u is ['PROGN,:l,x] => formatDeftran(['SEQ,:l,['exit,1,x]],SEQflag)
   u is ['SEQ,:l,[.,n,x]] => 
     v := [:l,x]
-    a := "APPEND"/[formatDeftranSEQ(x,true) for x in l]
+    a := append/[formatDeftranSEQ(x,true) for x in l]
     b := formatDeftranSEQ(x,false)
     if b is [:.,c] and c = '(void) then b := DROP(-1, b)
     [:m,y] := [:a,:b]

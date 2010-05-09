@@ -956,7 +956,7 @@ asyCATEGORY x ==
     cats := r
     operations := ops
   exportPart :=
-    ['CATEGORY,'domain,:"APPEND"/[asyCatItem y for y in operations]]
+    ['CATEGORY,'domain,:append/[asyCatItem y for y in operations]]
   [attribs, na] := asyFindAttrs joins
   joins := na
   cats := "append"/[asyCattran c for c in cats]

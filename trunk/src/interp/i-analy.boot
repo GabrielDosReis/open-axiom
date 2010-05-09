@@ -124,7 +124,7 @@ pushDownTargetInfo(op,target,arglist) ==
   -- put target info on args for certain operations
   target = $OutputForm => NIL
   target = $Any        => NIL
-  n := LENGTH arglist
+  n := # arglist
   pushDownOnArithmeticVariables(op,target,arglist)
   (pdArgs := pushDownOp?(op,n)) =>
     for i in pdArgs repeat
@@ -192,7 +192,7 @@ pushDownOp?(op,n) ==
   -- sameAsTarg is a vector that counts the number of modemaps that
   -- have the corresponding argument equal to the target type
   sameAsTarg := GETZEROVEC n
-  numMms := LENGTH ops
+  numMms := # ops
   for [.,targ,:argl] in ops repeat
     for arg in argl for i in 0.. repeat
       targ = arg => setShellEntry(sameAsTarg,i,1 + sameAsTarg.i)

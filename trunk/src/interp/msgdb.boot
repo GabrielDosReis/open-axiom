@@ -207,7 +207,7 @@ substituteSegmentedMsg(msg,args) ==
       --end of the list. (using %n and %y)
       l :=
          cons?(arg) =>
-           MEMQ(char 'y,q) or (first arg = '"%y") or ((LENGTH arg) = 1)  =>
+           MEMQ(char 'y,q) or (first arg = '"%y") or ((# arg) = 1)  =>
              append(reverse arg, l)
            head := first arg
            tail := rest arg
@@ -227,7 +227,7 @@ addBlanks msg ==
   -- adds proper blanks
   atom msg => msg
   null msg => msg
-  LENGTH msg = 1 => msg
+  # msg = 1 => msg
   blanksOff := false
   x := first msg
   if x = '"%n" then

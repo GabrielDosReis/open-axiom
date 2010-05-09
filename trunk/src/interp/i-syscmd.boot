@@ -1655,7 +1655,7 @@ setHistoryCore inCore ==
     $internalHistoryTable := NIL
     if $IOindex ~= 0 then
       -- actually put something in there
-      l := LENGTH RKEYIDS histFileName()
+      l := # RKEYIDS histFileName()
       for i in 1..l repeat
         vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
         $internalHistoryTable := [[i,:vec],:$internalHistoryTable]
@@ -1875,7 +1875,7 @@ restoreHistory(fn) ==
   histFileErase curfile
   _$FCOPY(restfile,curfile)
  
-  l:= LENGTH RKEYIDS curfile
+  l:= # RKEYIDS curfile
   $HiFiAccess:= true
   oldInternal := $useInternalHistoryTable
   $useInternalHistoryTable := NIL

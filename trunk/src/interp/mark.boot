@@ -683,8 +683,8 @@ markPaths(x,y,s) ==    --x < y; find location s of x in y (initially s=nil)
 --     markCons(p,s)
   y is ["%Call",:r] => markPaths(x,r,s)                 --for loops
   y is [fn,m,y1] and fn in '(PART CATCH THROW) => markPaths(x,y1,s) or
-    "APPEND"/[markPaths(x,u,markCons(i,s)) for u in y1 for i in 0..]
-  "APPEND"/[markPaths(x,u,markCons(i,s)) for u in y for i in 0..]
+    append/[markPaths(x,u,markCons(i,s)) for u in y1 for i in 0..]
+  append/[markPaths(x,u,markCons(i,s)) for u in y for i in 0..]
 
 mymy x == x
 
@@ -1337,7 +1337,7 @@ diff1(x,y) ==
   x = y => nil
   atom x or atom y => [[x,y]]
   #x ~= #y => [x,y]
-  "APPEND"/[diff1(u,v) for u in x for v in y]
+  append/[diff1(u,v) for u in x for v in y]
     
 markConstructorForm name ==  --------> same as getConstructorForm
   name = 'Union   => '(Union  (_: a A) (_: b B))
@@ -1399,7 +1399,7 @@ mkPaths(x,y) ==   --x < y; find location s of x in y (initially s=nil)
   y is [['elt,.,op],:r] and (u := mkPaths(x,[op,:r])) => u
   x is ['elt,:r] and (u := mkPaths(r,y)) => u
   y is ['elt,:r] and (u := mkPaths(x,r)) => u
-  "APPEND"/[u for z in y | u := mkPaths(x,z)]
+  append/[u for z in y | u := mkPaths(x,z)]
 
 getLocationsOf(u,y,s) == [getLocOf(x,y,s) for x in u]
 

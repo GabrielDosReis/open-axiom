@@ -420,7 +420,7 @@ JoinInner(l,$e) ==
           for u in rest pred | not member(u,get("$Information","special",$e))
             and not (u=true)]
       null pred' => l:= [:l,CatEval at2]
-      LENGTH pred'=1 => CondList:= [[CatEval at2,pred'],:CondList]
+      # pred'=1 => CondList:= [[CatEval at2,pred'],:CondList]
       CondList:= [[CatEval at2,["and",:pred']],:CondList]
   [$NewCatVec,:l]:= l
   l':= [:CondList,:[[u,true] for u in l]]

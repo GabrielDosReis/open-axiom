@@ -178,7 +178,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   stateNam:= GENVAR()
   stateVar:= GENSYM()
   stateVal:= GENSYM()
-  lastArg := INTERNL strconc('"#",STRINGIMAGE QSADD1 LENGTH argl)
+  lastArg := INTERNL strconc('"#",STRINGIMAGE QSADD1 # argl)
   decomposeCode:=
     [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]

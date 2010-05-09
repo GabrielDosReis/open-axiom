@@ -2280,7 +2280,7 @@ matSub(x) ==
 
 matWidth(x) ==
   y := CDDR x  -- list of rows, each of form ((ROW . w) element element ...)
-  numOfColumns := LENGTH CDAR y
+  numOfColumns := # CDAR y
   widthList := matLSum2 matWList(y, NLIST(numOfColumns, 0))
     --returns ["max width of entries in column i" for i in 1..numberOfRows]
   subspanList := matLSum matSubList y
@@ -2289,10 +2289,10 @@ matWidth(x) ==
   CAAR x.1
 
 matLSum(x) ==
-  [sumoverlist x + LENGTH x,:x]
+  [sumoverlist x + # x,:x]
 
 matLSum2(x) ==
-  [sumoverlist x + 2*(LENGTH x),:x]
+  [sumoverlist x + 2*(# x),:x]
 
 matWList(x, y) ==
   null x => y

@@ -428,7 +428,7 @@ pfSequence2Atree0(seqList, pf) ==
 --      dotIndex => SUBSEQ(mantPart, dotIndex+1)
 --      '"0"
 --    bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
---      LENGTH fracPartString, expPart)
+--      # fracPartString, expPart)
 --    [., frac, :exp] := bfForm
 --    [["$elt", intNewFloat(), 'float], frac, exp, 10]
 --

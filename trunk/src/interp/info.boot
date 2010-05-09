@@ -133,7 +133,7 @@ chaseInferences(pred,$e) ==
             ante is ["and",:ante'] and member(pred,ante') =>
               ante':= delete(pred,ante')
               v':=
-                LENGTH ante'=1 => first ante'
+                # ante'=1 => first ante'
                 ["and",:ante']
               v':= ["COND",[v',:conseq]]
               member(v',get("$Information","special",$e)) => nil

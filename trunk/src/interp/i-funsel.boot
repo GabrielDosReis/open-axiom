@@ -1639,8 +1639,8 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   if s1 is [":",x,.] then s1:= x
   if s2 is [":",x,.] then s2:= x
-  if not atom s1 and first s1 = '_# then s1:= LENGTH second s1
-  if not atom s2 and first s2 = '_# then s2:= LENGTH second s2
+  if not atom s1 and first s1 = '_# then s1:= # second s1
+  if not atom s2 and first s2 = '_# then s2:= # second s2
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
