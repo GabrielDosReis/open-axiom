@@ -330,7 +330,7 @@ getUnionOrRecordTags u ==
   tags := nil
   if u is ['Union, :tl] or u is ['Record, :tl] then
       for t in tl repeat
-         if t is [":",tag,.] then tags := cons(tag, tags)
+         if t is [":",tag,.] then tags := [tag, :tags]
   tags
 
 --% Various lispy things

@@ -751,7 +751,7 @@ mkSuperSub(op,argl) ==
       i=0 => ['AGGLST]
       i=1 => first this
       ['AGGLST,:this]
-    superSubPart := cons(scripts,superSubPart)
+    superSubPart := [scripts,:superSubPart]
   superSub := ['SUPERSUB,cleanOp,:reverse superSubPart]
   argl => [superSub,:argl]
   superSub

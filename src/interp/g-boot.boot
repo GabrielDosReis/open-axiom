@@ -265,7 +265,7 @@ defLET1(lhs,rhs) ==
     l1 := defLET1(name,third rhs)
     l2 := defLET1(lhs,name)
     l2 is ["PROGN",:.] => MKPROGN [l1,:rest l2]
-    if IDENTP first l2 then l2 := cons(l2,nil)
+    if IDENTP first l2 then l2 := [l2,:nil]
     MKPROGN [l1,:l2,name]
   g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
@@ -290,11 +290,11 @@ defLET2(lhs,rhs) ==
       defLET2(var2,addCARorCDR('CDR,rhs))
     l1 := defLET2(var1,addCARorCDR('CAR,rhs))
     var2 in '(NIL _.) => l1
-    if cons? l1 and atom first l1 then l1 := cons(l1,nil)
+    if cons? l1 and atom first l1 then l1 := [l1,:nil]
     IDENTP var2 =>
       [:l1,defLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := defLET2(var2,addCARorCDR('CDR,rhs))
-    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := [l2,:nil]
     append(l1,l2)
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
@@ -302,7 +302,7 @@ defLET2(lhs,rhs) ==
     g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
-    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := [l2,:nil]
     var1 = "." => [[$LET,g,rev],:l2]
     last l2 is [=$LET, =var1, val1] =>
       [[$LET,g,rev],:reverse rest reverse l2,
@@ -324,7 +324,7 @@ defLET(lhs,rhs) ==
 addCARorCDR(acc,expr) ==
   atom expr => [acc,expr]
   acc = 'CAR and expr is ["REVERSE",:.] =>
-    cons('last,QCDR expr)
+    ['last,:QCDR expr]
   funs := '(CAR CDR CAAR CDAR CADR CDDR CAAAR CADAR CAADR CADDR
             CDAAR CDDAR CDADR CDDDR)
   p := position(QCAR expr,funs)
@@ -396,7 +396,7 @@ defIS1(lhs,rhs) ==
     $isGenVarCounter := $isGenVarCounter + 1
     rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)
-    if cons? l2 and atom first l2 then l2 := cons(l2,nil)
+    if cons? l2 and atom first l2 then l2 := [l2,:nil]
     a = "." => ['AND,rev,:l2]
     ['AND,rev,:l2,['PROGN,defLetForm(a,['NREVERSE,a]),''T]]
   SAY '"WARNING (defIS1): possibly bad IS code being generated"

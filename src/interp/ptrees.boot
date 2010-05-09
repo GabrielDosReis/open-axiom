@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -767,9 +767,9 @@ pfSexpr pform ==
                 args :=
                     a := pfApplicationArg pform
                     if pfTuple? a then pf0TupleParts a else [a]
-                [strip p for p in cons(pfApplicationOp pform, args)]
+                [strip p for p in [pfApplicationOp pform, :args]]
  
-            cons(pfAbSynOp pform, [strip p for p in pfParts pform])
+            [pfAbSynOp pform, :[strip p for p in pfParts pform]]
  
 pfCopyWithPos( pform , pos ) == 
     pfLeaf? pform =>         pfLeaf( pfAbSynOp pform , tokPart pform , pos )

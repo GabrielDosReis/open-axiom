@@ -47,7 +47,8 @@ StreamNull x==
           x.rest := rest st
   x is ["nullstream",:.]
  
-Delay(f,x)==cons("nonnullstream",[f,:x])
+Delay(f,x) ==
+  ["nonnullstream",:[f,:x]]
  
 StreamNil:= ["nullstream"]
  
@@ -59,20 +60,20 @@ incRgen1(:z)==
         if null a
         then (CLOSE s;StreamNil)
 
-        else cons(a,incRgen s)
+        else [a,:incRgen s]
  
 incIgen n==Delay(function incIgen1,[n])
 incIgen1(:z)==
         [n]:=z
         n:=n+1
-        cons(n,incIgen n)
+        [n,:incIgen n]
  
 incZip(g,f1,f2)==Delay(function incZip1,[g,f1,f2])
 incZip1(:z)==
      [g,f1,f2]:=z
      StreamNull f1 => StreamNil
      StreamNull f2 => StreamNil
-     cons(FUNCALL(g,car f1,car f2),incZip(g,cdr f1,cdr f2))
+     [FUNCALL(g,car f1,car f2),:incZip(g,cdr f1,cdr f2)]
  
 incAppend(x,y)==Delay(function incAppend1,[x,y])
  
@@ -82,7 +83,7 @@ incAppend1(:z)==
      then if StreamNull y
           then StreamNil
           else y
-     else cons(car x,incAppend(cdr x,y))
+     else [car x,:incAppend(cdr x,y)]
  
 next(f,s)==Delay(function next1,[f,s])
 next1(:z)==
@@ -101,7 +102,8 @@ nextown1 (:z)==
       h:=spadcall2 (f, s)
       incAppend(car h,nextown(f,g,cdr h))
  
-nextown2(f,g,e,x)==nextown(cons(f,e),cons(g,e),x)
+nextown2(f,g,e,x) == 
+  nextown([f,:e],[g,:e],x)
  
 spadcall1(g)==
     [impl, :env] := g

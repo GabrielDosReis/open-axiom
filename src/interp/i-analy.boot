@@ -199,7 +199,7 @@ pushDownOp?(op,n) ==
   -- now see which args have their count = numMms
   ok := NIL
   for i in 0..(n-1) repeat
-    if numMms = sameAsTarg.i then ok := cons(i,ok)
+    if numMms = sameAsTarg.i then ok := [i,:ok]
   reverse ok
 
 --% Bottom Up Processing
@@ -773,7 +773,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
   -- check that we haven't seen these types before
   typesHad := getAtree(t, 'typesHad)
   if member(ms, typesHad) then b := nil
-  else putAtree(t, 'typesHad, cons(ms, typesHad))
+  else putAtree(t, 'typesHad, [ms, :typesHad])
 
   b and bottomUpForm(t,op,opName,a,amsl)
 
@@ -808,7 +808,7 @@ bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
         m.first := objMode(object)
         putModeSet(x,[objMode(object)])
         putValue(x,object)
-    a := cons(x,a)
+    a := [x,:a]
   b and bottomUpForm(t,op,opName,nreverse a,amsl)
 
 bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
@@ -831,7 +831,7 @@ bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
         m.first := objMode(object)
         putModeSet(x,[objMode(object)])
         putValue(x,object)
-    a := cons(x,a)
+    a := [x,:a]
   b and bottomUpForm(t,op,opName,nreverse a,amsl)
 
 bottomUpElt (form:=[op,:argl]) ==

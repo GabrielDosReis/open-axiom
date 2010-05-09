@@ -1,3 +1,30 @@
+2010-05-08  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/cparse.boot: Replace call to cons with bracket syntax.
+	* interp/cstream.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/g-boot.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/incl.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/macex.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/pile.boot: Likewise.
+	* interp/posit.boot: Likewise.
+	* interp/ptrees.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/types.boot: Likewise.
+
 2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot: Replace uses of rplac with explicit

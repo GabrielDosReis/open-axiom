@@ -126,12 +126,12 @@ namespace BOOT
 --% Data structures for the compiler
 %Constructor <=> %Symbol                       -- constructor
 %Form <=> %Number or %Symbol or %String or cons -- input syntax form
-%Instantiation <=> cons(%Constructor,%Form)    -- constructor instance
+%Instantiation <=> [%Constructor,:%Form]       -- constructor instance
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
 %Code <=> %Form                                -- generated code
 %Triple <=>                                    -- form + type + env
-  cons(%Code,cons(%Mode,cons(%Env,null))) 
+  [%Code,:[%Mode,:[%Env,:null]]]
 
 %Signature                      -- signature
   <=> %Symbol or cons

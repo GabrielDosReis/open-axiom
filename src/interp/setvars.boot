@@ -538,7 +538,7 @@ setExposeAddGroup arg ==
       sayKeyedMsg("S2IZ0049H",[x])
     member(x,$localExposureData.0) =>
       sayKeyedMsg("S2IZ0049I",[x,$interpreterFrameName])
-    $localExposureData.0 := MSORT cons(x,$localExposureData.0)
+    $localExposureData.0 := MSORT [x,:$localExposureData.0]
     sayKeyedMsg("S2IZ0049R",[x,$interpreterFrameName])
     clearClams()
 
@@ -560,7 +560,7 @@ setExposeAddConstr arg ==
     -- if the constructor is explicitly hidden, then remove that
     if member(x,$localExposureData.2) then
       $localExposureData.2 := delete(x,$localExposureData.2)
-    $localExposureData.1 := MSORT cons(x,$localExposureData.1)
+    $localExposureData.1 := MSORT [x,:$localExposureData.1]
     clearClams()
     sayKeyedMsg("S2IZ0049P",[x,$interpreterFrameName])
 
@@ -626,7 +626,7 @@ setExposeDropConstr arg ==
       sayKeyedMsg("S2IZ0049O",[x,$interpreterFrameName])
     if member(x,$localExposureData.1) then
       $localExposureData.1 := delete(x,$localExposureData.1)
-    $localExposureData.2 := MSORT cons(x,$localExposureData.2)
+    $localExposureData.2 := MSORT [x,:$localExposureData.2]
     clearClams()
     sayKeyedMsg("S2IZ0049Q",[x,$interpreterFrameName])
 
@@ -1103,7 +1103,7 @@ setOutputCharacters arg ==
     for [char,:.] in $specialCharacterAlist repeat
       s := STRCONC('"   ",PNAME char,'" is shown as ",
         PNAME specialChar(char))
-      l := cons(s,l)
+      l := [s,:l]
     sayAsManyPerLineAsPossible reverse l
 
   arg is [fn] and (fn := DOWNCASE(fn)) =>

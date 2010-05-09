@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,11 +62,11 @@ insertpile (s)==
        then
           [h1,t1]:=pilePlusComments s
           a:=pileTree(-1,t1)
-          cons([pileCforest [:h1,a.2]],a.3)
+          [[pileCforest [:h1,a.2]],:a.3]
        else
          stream:=CADAR s
          a:=pileTree(-1,s)
-         cons([[a.2,stream]],a.3)
+         [[[a.2,stream]],:a.3]
  
 pilePlusComments s==
       if npNull s
@@ -76,7 +76,7 @@ pilePlusComments s==
        if pilePlusComment h
        then
          [h1,t1]:=pilePlusComments t
-         [cons(h,h1),t1]
+         [[h,:h1],t1]
        else [[],s]
  
 pileTree(n,s)==
@@ -104,7 +104,7 @@ pileForest(n,s)==
      if b
      then
        [h1,t1]:=pileForest1(hh,t)
-       [cons(h,h1),t1]
+       [[h,:h1],t1]
      else [[],s]
  
 pileForest1(n,s)==
@@ -112,7 +112,7 @@ pileForest1(n,s)==
      if b
      then
        [h1,t1]:=pileForest1(n,t)
-       [cons(h,h1),t1]
+       [[h,:h1],t1]
      else [[],s]
  
 pileForests(h,n,s)==

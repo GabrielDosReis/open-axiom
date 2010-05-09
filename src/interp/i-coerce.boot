@@ -1229,7 +1229,7 @@ computeTTTranspositions(t1,t2) ==
     tower.(rest perm) := t
     towers := CONS(VEC2LIST tower,towers)
   towers := [reassembleTowerIntoType tower for tower in towers]
-  if first(towers) ~= t2 then towers := cons(t2,towers)
+  if first(towers) ~= t2 then towers := [t2,:towers]
   nreverse towers
 
 decomposeTypeIntoTower t ==
