@@ -198,7 +198,7 @@ RECLAIM() ==
 ++
 makeAbsoluteFilename: %String -> %String
 makeAbsoluteFilename name ==
-  CONCATENATE("STRING",systemRootDirectory(),name)
+  strconc(systemRootDirectory(),name)
 
 ++ returns true if `file' exists as a pathname.
 existingFile? file ==
