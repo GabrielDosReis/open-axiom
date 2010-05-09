@@ -47,7 +47,7 @@ bcFinish(name,arg,:args) == bcGen bcMkFunction(name,arg,args)
 
 bcMkFunction(name,arg,args) ==
   args := [x for x in args | x]
-  strconc(name,'"(",arg,"STRCONC"/[strconc('",", x) for x in args],'")")
+  strconc(name,'"(",arg,strconc/[strconc('",", x) for x in args],'")")
 
 bcString2HyString2 s ==
   (string? s) and (s.0 = char '_")  =>
@@ -132,7 +132,7 @@ htStringPad(n,w) ==
 
 stringList2String x ==
   null x => '"()"
-  strconc('"(",first x,"STRCONC"/[strconc('",",y) for y in rest x],'")")
+  strconc('"(",first x,strconc/[strconc('",",y) for y in rest x],'")")
 
 htMkName(s,n) == strconc(s,STRINGIMAGE n)
 

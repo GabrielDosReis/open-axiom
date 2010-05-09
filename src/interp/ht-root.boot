@@ -191,7 +191,7 @@ gatherGlossLines(results,defstream) ==
       (j := charPosition($tick,x,1)) and (nextPointer := SUBSTRING(x,0,j))
         and (nextPointer = pointer) repeat
           xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
-    acc := [strconc(keyAndTick,def, "STRCONC"/nreverse xtralines),:acc]
+    acc := [strconc(keyAndTick,def, strconc/nreverse xtralines),:acc]
   reverse acc
 
 htGlossSearch(htPage,junk) ==  htGloss htpLabelInputString(htPage,'filter)

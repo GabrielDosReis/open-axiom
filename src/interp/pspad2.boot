@@ -546,7 +546,7 @@ formatPileLine($m,x,newLineIfTrue) ==
 --======================================================================
 --                       Utility Functions
 --======================================================================
-nBlanks m == "STRCONC"/[char('_  ) for i in 1..m]
+nBlanks m == strconc/[char('_  ) for i in 1..m]
  
 isNewspadOperator op == GETL(op,"Led") or GETL(op,"Nud")
  

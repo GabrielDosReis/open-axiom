@@ -439,7 +439,7 @@ exp2FortSpecial(op,args,nargs) ==
   --  called to get a linearized form for the browser
   op = "QUOTE" =>
     atom (arg := first args) => STRINGIMAGE arg
-    tailPart := "STRCONC"/[strconc('",",x) for x in rest arg]
+    tailPart := strconc/[strconc('",",x) for x in rest arg]
     strconc('"[",first arg,tailPart,'"]")
   op = "PAREN" =>
     args := first args
@@ -672,7 +672,7 @@ mkParameterList l ==
   [par2string(u) for u in l] where par2string u ==
       atom(u) => STRINGIMAGE u
       u := rest second u
-      apply('STRCONC,[STRINGIMAGE(first u),'"(",_
+      apply(function strconc,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 nameLen n ==>
@@ -722,7 +722,7 @@ fortFormatCharacterTypes(names) ==
     fortFormatTypes1('"CHARACTER",mkParameterList2 genuineArrays) where
        mkParameterList2 l ==
          [par2string(u) for u in l] where par2string u ==
-             apply('STRCONC,[STRINGIMAGE(first u),'"(",_
+             apply(function strconc,[STRINGIMAGE(first u),'"(",_
                       :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 fortFormatIntrinsics(l) ==

@@ -259,7 +259,7 @@ checkExtractItemList l ==  --items are separated by commas or end of line
     k <= m => return nil
     acc := [first l,:acc]
     l := rest l
-  "STRCONC"/[x for x in nreverse acc]
+  strconc/[x for x in nreverse acc]
 
 ++ Translate '%' in signature to '%%' for proper printing.
 escapePercent x ==
@@ -448,7 +448,7 @@ checkGetStringBeforeRightBrace u ==
   acc := nil
   while u repeat
     x := first u
-    x = $charRbrace => return "STRCONC"/(nreverse acc)
+    x = $charRbrace => return strconc/(nreverse acc)
     acc := [x,:acc]
     u := rest u
 
@@ -591,7 +591,7 @@ checkComments(nameSig,lines) == main where
     checkArguments u
     if $checkErrorFlag then u := checkFixCommonProblem u
     v := checkDecorate u
-    res := "STRCONC"/[y for y in v]
+    res := strconc/[y for y in v]
     res := checkAddPeriod res
     if $checkErrorFlag then pp res
     res

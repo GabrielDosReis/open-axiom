@@ -925,7 +925,7 @@ encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
     signature':= MSUBST("$",package,signature)
     reducedSig:= mkRepititionAssoc [:rest signature',first signature']
     encodedSig:=
-      ("STRCONC"/[encodedPair for [n,:x] in reducedSig]) where
+      (strconc/[encodedPair for [n,:x] in reducedSig]) where
         encodedPair() ==
           n=1 => encodeItem x
           strconc(STRINGIMAGE n,encodeItem x)
@@ -977,7 +977,7 @@ getCaps x ==
   s:= STRINGIMAGE x
   clist:= [c for i in 0..MAXINDEX s | UPPER_-CASE_-P (c:= s.i)]
   null clist => '"__"
-  "STRCONC"/[first clist,:[L_-CASE u for u in rest clist]]
+  strconc/[first clist,:[L_-CASE u for u in rest clist]]
  
 --% abbreviation code
  

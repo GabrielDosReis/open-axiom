@@ -703,7 +703,7 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
     name := PNAME id
 --  #name < 8 => INTERN UPCASE name
     parts := asySplit(name,MAXINDEX name)
-    newname := "STRCONC"/[asyShorten x for x in parts]
+    newname := strconc/[asyShorten x for x in parts]
     #newname < 8 => INTERN newname
     tryname := SUBSTRING(name,0,7)
     not createAbbreviation tryname => INTERN UPCASE tryname

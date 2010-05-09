@@ -268,7 +268,7 @@ mkCacheVec(op,nam,kind,resetCode,countCode) ==
 -- op2String op ==
 --   u:= linearFormatName op
 --   atom u => PNAME u
---   "STRCONC"/u
+--   strconc/u
 --
 -- reportCacheStorePrint(op,kind,count) ==
 --   ops:= op2String op

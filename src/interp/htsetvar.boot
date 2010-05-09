@@ -290,7 +290,7 @@ htCheckList(checker,value) ==
       n
   value in checker => value
   first checker
---  emlist := "STRCONC"/[strconc('" {\em ",PNAME x,'"} ") for x in checker]
+--  emlist := strconc/[strconc('" {\em ",PNAME x,'"} ") for x in checker]
 --  strconc('"Please enter one of: ",emlist)
 
 translateYesNoToTrueFalse x ==

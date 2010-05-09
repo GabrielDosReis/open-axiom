@@ -347,7 +347,7 @@ postTranScripts a ==
 decodeScripts: %ParseTree -> %ParseForm
 decodeScripts a ==
   a is ["PrefixSC",b] => strconc(STRINGIMAGE 0,decodeScripts b)
-  a is [";",:b] => APPLX('STRCONC,[decodeScripts x for x in b])
+  a is [";",:b] => APPLX(function strconc,[decodeScripts x for x in b])
   a is [",",:b] =>
     STRINGIMAGE fn a where fn a == (a is [",",:b] => +/[fn x for x in b]; 1)
   STRINGIMAGE 1
