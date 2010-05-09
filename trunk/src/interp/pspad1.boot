@@ -106,7 +106,7 @@ fragmentsToLine fragments ==
 lispStringList2String x ==
   null x => '""
   atom x => STRINGIMAGE x
-  rest x => apply(function STRCONC,MAPCAR(function lispStringList2String,x))
+  rest x => apply(function strconc,MAPCAR(function lispStringList2String,x))
   lispStringList2String first x
  
 --% routines for buffer and margin adjustment
@@ -126,7 +126,7 @@ formatOutput x ==
     line:= fragmentsToLine x
     x:=
       #line+#y>$lineLength =>
-        (y:= STRCONC(nBlanks $m,y); extraLines:= [y,:extraLines]; x)
+        (y:= strconc(nBlanks $m,y); extraLines:= [y,:extraLines]; x)
       [line,y]
   consLineBuffer x
   for y in extraLines repeat consLineBuffer LIST y
@@ -339,7 +339,7 @@ formatUnion(['Union,:r]) ==
     x is [":",y,'Branch] => fn STRINGIMAGE y
     string? x => [":", INTERN x, ['Enumeration,x]]
     x is [":",:.] => x
-    tag := INTERN STRCONC("value",STRINGIMAGE ($count := $count + 1))
+    tag := INTERN strconc("value",STRINGIMAGE ($count := $count + 1))
     [":", tag, x]      
 
 formatTestForPartial u ==

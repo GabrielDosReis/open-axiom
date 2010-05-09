@@ -187,7 +187,7 @@ getTraceOption (x is [key,:l]) ==
     stackTraceOptionError ["S2IT0008",NIL]
   key='restore =>
     null l => x
-    stackTraceOptionError ["S2IT0009",[STRCONC('")",object2String key)]]
+    stackTraceOptionError ["S2IT0009",[strconc('")",object2String key)]]
   key='only => ['only,:transOnlyOption l]
   key='within =>
     l is [a] and IDENTP a => x
@@ -197,7 +197,7 @@ getTraceOption (x is [key,:l]) ==
       key="cond" => "when"
       key
     l is [a] => [key,:l]
-    stackTraceOptionError ["S2IT0011",[STRCONC('")",object2String key)]]
+    stackTraceOptionError ["S2IT0011",[strconc('")",object2String key)]]
   key='depth =>
     l is [n] and FIXP n => x
     stackTraceOptionError ["S2IT0012",['")depth"]]
@@ -215,14 +215,14 @@ getTraceOption (x is [key,:l]) ==
   key in '(local ops vars) =>
     null l or l is ["all"] => [key,:"all"]
     isListOfIdentifiersOrStrings l => x
-    stackTraceOptionError ["S2IT0015",[STRCONC('")",object2String key)]]
+    stackTraceOptionError ["S2IT0015",[strconc('")",object2String key)]]
   key='varbreak =>
     null l or l is ["all"] => ["varbreak",:"all"]
     isListOfIdentifiers l => x
-    stackTraceOptionError ["S2IT0016",[STRCONC('")",object2String key)]]
+    stackTraceOptionError ["S2IT0016",[strconc('")",object2String key)]]
   key='mathprint =>
     null l => x
-    stackTraceOptionError ["S2IT0009",[STRCONC('")",object2String key)]]
+    stackTraceOptionError ["S2IT0009",[strconc('")",object2String key)]]
   key => throwKeyedMsg("S2IT0005",[key])
 
 traceOptionError(opt,keys) ==
@@ -231,33 +231,33 @@ traceOptionError(opt,keys) ==
 
 resetTimers () ==
   for timer in _/TIMERLIST repeat
-    setDynamicBinding(INTERN STRCONC(timer,'"_,TIMER"),0)
+    setDynamicBinding(INTERN strconc(timer,'"_,TIMER"),0)
 
 resetSpacers () ==
   for spacer in _/SPACELIST repeat
-    setDynamicBinding(INTERN STRCONC(spacer,'"_,SPACE"),0)
+    setDynamicBinding(INTERN strconc(spacer,'"_,SPACE"),0)
 
 resetCounters () ==
   for k in _/COUNTLIST repeat
-    setDynamicBinding(INTERN STRCONC(k,'"_,COUNT"),0)
+    setDynamicBinding(INTERN strconc(k,'"_,COUNT"),0)
 
 ptimers() ==
   null _/TIMERLIST => sayBrightly '"   no functions are timed"
   for timer in _/TIMERLIST repeat
     sayBrightly ["  ",:bright timer,'_:,'" ",
-      EVAL(INTERN STRCONC(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
+      EVAL(INTERN strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
 
 pspacers() ==
   null _/SPACELIST => sayBrightly '"   no functions have space monitored"
   for spacer in _/SPACELIST repeat
     sayBrightly ["  ",:bright spacer,'_:,'" ",
-      EVAL INTERN STRCONC(spacer,'"_,SPACE"),'" bytes"]
+      EVAL INTERN strconc(spacer,'"_,SPACE"),'" bytes"]
 
 pcounters() ==
   null _/COUNTLIST => sayBrightly '"   no functions are being counted"
   for k in _/COUNTLIST repeat
     sayBrightly ["  ",:bright k,'_:,'" ",
-      EVAL INTERN STRCONC(k,'"_,COUNT"),'" times"]
+      EVAL INTERN strconc(k,'"_,COUNT"),'" times"]
 
 transOnlyOption l ==
   l is [n,:y] =>
@@ -496,7 +496,7 @@ traceDomainLocalOps(dom,lops,options) ==
 --  lops = 'all => _/TRACE_,1(actualLops,options)
 --  l := NIL
 --  for lop in lops repeat
---    internalName := INTERN STRCONC(PNAME abb,'";",PNAME lop)
+--    internalName := INTERN strconc(PNAME abb,'";",PNAME lop)
 --    not MEMQ(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
@@ -516,7 +516,7 @@ untraceDomainLocalOps(dom,lops) ==
 --    sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
 --  l := NIL
 --  for lop in lops repeat
---    internalName := INTERN STRCONC(PNAME abb,'";",PNAME lop)
+--    internalName := INTERN strconc(PNAME abb,'";",PNAME lop)
 --    not MEMQ(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
@@ -544,7 +544,7 @@ traceDomainConstructor(domainConstructor,options) ==
   for [argl,.,:domain] in HGET($ConstructorCache,domainConstructor)
     repeat spadTrace(domain,options)
   SETQ(_/TRACENAMES,[domainConstructor,:_/TRACENAMES])
-  innerDomainConstructor := INTERN STRCONC(domainConstructor,'";")
+  innerDomainConstructor := INTERN strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then domainConstructor := innerDomainConstructor
   EMBED(domainConstructor,
     ['LAMBDA, ['_&REST, 'args],
@@ -564,7 +564,7 @@ untraceDomainConstructor domainConstructor ==
                false
         true
   untraceAllDomainLocalOps domainConstructor
-  innerDomainConstructor := INTERN STRCONC(domainConstructor,'";")
+  innerDomainConstructor := INTERN strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then UNEMBED innerDomainConstructor
     else UNEMBED domainConstructor
   SETQ(_/TRACENAMES,delete(domainConstructor,_/TRACENAMES))

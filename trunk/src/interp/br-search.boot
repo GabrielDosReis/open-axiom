@@ -176,7 +176,7 @@ pmParseFromString s ==
   u := ncParseFromString pmPreparse s
   dnForm flatten u where flatten s ==
     s is [op,:argl] =>
-      string? op => STRCONC(op,"STRCONC"/[STRCONC('" ",x) for x in argl])
+      string? op => strconc(op,"STRCONC"/[strconc('" ",x) for x in argl])
       [op,:[flatten x for x in argl]]
     s
 
@@ -192,11 +192,11 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
       --the following 2 lines make commutative("*") parse correctly!!!!
       t.0 = char '_" => t
       j < siz - 1 and s.j = char '_( => t
-      STRCONC(char '_",t,char '_")
-    STRCONC(SUBSTRING(s,n,i - n),middle,fn(s,j,siz))
+      strconc(char '_",t,char '_")
+    strconc(SUBSTRING(s,n,i - n),middle,fn(s,j,siz))
   gn(s,i,j) ==    --replace each underscore by 4 underscores!
     n := or/[k for k in i..j | s.k = $charUnderscore] =>
-      STRCONC(SUBSTRING(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
+      strconc(SUBSTRING(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
     SUBSTRING(s,i,j - i + 1)
 
 firstNonDelim(s,n) ==  or/[k for k in n..MAXINDEX s | not isFilterDelimiter? s.k]
@@ -206,7 +206,7 @@ isFilterDelimiter? c == MEMQ(c,$pmFilterDelimiters)
 
 grepSplit(lines,doc?) ==
   if doc? then
-    instream2 := OPEN STRCONC(systemRootDirectory(),'"/algebra/libdb.text")
+    instream2 := OPEN strconc(systemRootDirectory(),'"/algebra/libdb.text")
   cons := atts := doms := nil
   while lines is [line, :lines] repeat
     if doc? then
@@ -238,10 +238,10 @@ grepSplit(lines,doc?) ==
 mkUpDownPattern s == recurse(s,0,#s) where
   recurse(s,i,n) ==
     i = n => '""
-    STRCONC(fixchar(s.i),recurse(s,i + 1,n))
+    strconc(fixchar(s.i),recurse(s,i + 1,n))
   fixchar(c) ==
     ALPHA_-CHAR_-P c =>
-      STRCONC(char '_[,CHAR_-UPCASE c,CHAR_-DOWNCASE c,char '_])
+      strconc(char '_[,CHAR_-UPCASE c,CHAR_-DOWNCASE c,char '_])
     c
 
 mkGrepPattern(s,key) ==
@@ -271,7 +271,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       "STRCONC"/nreverse res
     remUnderscores s ==
       (k := charPosition(char $charUnderscore,s,0)) < MAXINDEX s =>
-        STRCONC(SUBSTRING(s,0,k),'"[",s.(k + 1),'"]",
+        strconc(SUBSTRING(s,0,k),'"[",s.(k + 1),'"]",
                 remUnderscores(SUBSTRING(s,k + 2,nil)))
       s
     split(s,char) ==
@@ -297,18 +297,18 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       one := ($options is [x,:$options] and x => x; '"[^x]")
       tick := '"[^`]*`"
       one = 'w => s
-      one = 'none => (s = '"`" => '"^."; STRCONC('"^",s))
+      one = 'none => (s = '"`" => '"^."; strconc('"^",s))
       prefix :=
-        one = 't => STRCONC(tick,tick,tick,tick,tick,".*")
+        one = 't => strconc(tick,tick,tick,tick,tick,".*")
         one = 'n => tick
-        one = 'i => STRCONC(tick,tick,tick,tick)
-        one = 's => STRCONC(tick,tick,tick)
+        one = 'i => strconc(tick,tick,tick,tick)
+        one = 's => strconc(tick,tick,tick)
 --      true => '""    ----> never put on following prefixes
         one = 'k => '"[cdp]"
         one = 'y => '"[cdpx]"
         STRINGIMAGE one
-      s = $wild1 => STRCONC('"^",prefix)
-      STRCONC('"^",prefix,s)
+      s = $wild1 => strconc('"^",prefix)
+      strconc('"^",prefix,s)
 
 conform2OutputForm(form) ==
   [op,:args] := form
@@ -707,7 +707,7 @@ dbWordFrom(l,i) ==
     ch :=
       c = char '__   => l.(k := 1+k)  --this may exceed bounds
       c
-    buf := STRCONC(buf,ch)
+    buf := strconc(buf,ch)
     k := k + 1
   [buf,k]
 
@@ -833,14 +833,14 @@ generalSearchDo(htPage,flag) ==
     which = 'ops => char 'o
     which = 'attrs => char 'a
     acc := '""
-    if htButtonOn?(htPage,'cats) then acc := STRCONC(char 'c,acc)
-    if htButtonOn?(htPage,'doms) then acc := STRCONC(char 'd,acc)
-    if htButtonOn?(htPage,'paks) then acc := STRCONC(char 'p,acc)
-    if htButtonOn?(htPage,'defs) then acc := STRCONC(char 'x,acc)
+    if htButtonOn?(htPage,'cats) then acc := strconc(char 'c,acc)
+    if htButtonOn?(htPage,'doms) then acc := strconc(char 'd,acc)
+    if htButtonOn?(htPage,'paks) then acc := strconc(char 'p,acc)
+    if htButtonOn?(htPage,'defs) then acc := strconc(char 'x,acc)
     n := #acc
     n = 0 or n = 4 => '"[cdpx]"
     n = 1 => acc
-    STRCONC(char '_[,acc,char '_])
+    strconc(char '_[,acc,char '_])
   form := mkDetailedGrepPattern(kindCode,name,nargs,npat)
   lines := applyGrep(form,'libdb)
 --lines := dbReadLines resultFile
@@ -871,15 +871,15 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     nottick := '"[^`]"
     name := replaceGrepStar name
     firstPart :=
-      $saturn => STRCONC(char "^",name)
-      STRCONC(char "^",kind,name)
+      $saturn => strconc(char "^",name)
+      strconc(char "^",kind,name)
     nargsPart := replaceGrepStar nargs
     exposedPart := char '_.   --always get exposed/unexposed
     patPart := replaceGrepStar argOrSig
-    simp STRCONC(conc(firstPart,conc(nargsPart,conc(exposedPart, patPart))),$tick)
+    simp strconc(conc(firstPart,conc(nargsPart,conc(exposedPart, patPart))),$tick)
   conc(a,b) ==
     b = '"[^`]*" or b = char '_. => a
-    STRCONC(a,$tick,b)
+    strconc(a,$tick,b)
   simp a ==
     m := MAXINDEX a
     m > 6 and a.(m-5) = char '_[ and a.(m-4) = char "^"
@@ -893,19 +893,19 @@ replaceGrepStar s ==
   final := MAXINDEX s
   i := charPosition(char '_*,s,0)
   i > final => s
-  STRCONC(SUBSTRING(s,0,i),'"[^`]*",replaceGrepStar SUBSTRING(s,i + 1,nil))
+  strconc(SUBSTRING(s,0,i),'"[^`]*",replaceGrepStar SUBSTRING(s,i + 1,nil))
 
 standardizeSignature(s) == underscoreDollars
   s.0 = char '_( => s
   k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
-  s.(k - 1) = char '_) => STRCONC(char '_(,s)
-  STRCONC(char '_(,SUBSTRING(s,0,k),char '_),SUBSTRING(s,k,nil))
+  s.(k - 1) = char '_) => strconc(char '_(,s)
+  strconc(char '_(,SUBSTRING(s,0,k),char '_),SUBSTRING(s,k,nil))
 
 underscoreDollars(s) == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => '""
     (m := charPosition(char '_$,s,i)) > n => SUBSTRING(s,i,nil)
-    STRCONC(SUBSTRING(s,i,m - i),'"___$",fn(s,m + 1,n))
+    strconc(SUBSTRING(s,i,m - i),'"___$",fn(s,m + 1,n))
 
 --=======================================================================
 --                     Code dependent on $saturn
@@ -951,22 +951,22 @@ dbGetCommentOrigin line ==
   line
 
 grepSource key ==
-  key = 'libdb   => STRCONC(systemRootDirectory(),'"/algebra/libdb.text")
-  key = 'gloss   => STRCONC(systemRootDirectory(),'"doc/glosskey.text")
+  key = 'libdb   => strconc(systemRootDirectory(),'"/algebra/libdb.text")
+  key = 'gloss   => strconc(systemRootDirectory(),'"doc/glosskey.text")
   key = $localLibdb => $localLibdb
   mkGrepTextfile
     key in '(_. a c d k o p x) => 'libdb
     'comdb
 
 mkGrepTextfile s == 
-  STRCONC(systemRootDirectory(),"/algebra/", STRINGIMAGE s, '".text")
+  strconc(systemRootDirectory(),"/algebra/", STRINGIMAGE s, '".text")
 
 mkGrepFile s ==  --called to generate a path name for a temporary grep file
   prefix :=
     $standard or $aixTestSaturn => '"/tmp/"
-    STRCONC(systemRootDirectory(),'"/algebra/")
+    strconc(systemRootDirectory(),'"/algebra/")
   suffix := getEnv '"SPADNUM"
-  STRCONC(prefix, PNAME s,'".txt.", suffix)
+  strconc(prefix, PNAME s,'".txt.", suffix)
 
 --=======================================================================
 --                     Grepping Code
@@ -983,11 +983,11 @@ grepFile(pattern,:options) ==
       casepart :=
         'iv in options => '"-vi"
         '"-i"
-      command := STRCONC('"grep ",casepart,'" _'",pattern,'"_' ",source)
+      command := strconc('"grep ",casepart,'" _'",pattern,'"_' ",source)
       obey
         member(key,'(a o c d p x)) =>
-          STRCONC(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
-        STRCONC(command, '" > ",target)
+          strconc(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
+        strconc(command, '" > ",target)
       dbReadLines target
     ----Windows Version------
     invert? := 'iv in options
@@ -1001,7 +1001,7 @@ dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
     #line = 0 => 'skip     --skip blank lines
     acc :=
       line.0 = dash and line.1 = dash =>
-        [STRCONC(first acc,SUBSTRING(line,2,nil)),:rest acc]
+        [strconc(first acc,SUBSTRING(line,2,nil)),:rest acc]
       [line,:acc]
   -- following call to nreverse needed to keep lines properly sorted
   nreverse acc  ------> added by BMT 12/95

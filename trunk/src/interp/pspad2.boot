@@ -509,7 +509,7 @@ consCommentsTran s ==
   k := or/[i for i in 0..(m - 7) | substring?('"\spad{",s,i)] =>
     r := charPosition(char '_},s,k + 6)
     r = m + 1 => s
-    STRCONC(SUBSTRING(s,0,k),'"`",SUBSTRING(s,k+6,r-k-6),'"'",consCommentsTran SUBSTRING(s,r+1,nil))
+    strconc(SUBSTRING(s,0,k),'"`",SUBSTRING(s,k+6,r-k-6),'"'",consCommentsTran SUBSTRING(s,r+1,nil))
   s
   
 formatDoCommentLine line ==
@@ -565,7 +565,7 @@ string2PrintImage s ==
  
 ident2PrintImage s ==
   m := MAXINDEX s
-  if m > 1 and s.(m - 1) = $underScore then s := STRCONC(SUBSTRING(s,0,m-1),s.m)
+  if m > 1 and s.(m - 1) = $underScore then s := strconc(SUBSTRING(s,0,m-1),s.m)
   u:= GETSTR (2*SIZE s)
   if not (ALPHA_-CHAR_-P s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
   u:= SUFFIX(s.(0),u)

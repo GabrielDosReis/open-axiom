@@ -63,7 +63,7 @@ htShowSetTree(setTree) ==
   htSay('"\tab{2}\newline Variable\tab{",STRINGIMAGE (maxWidth1 + QUOTIENT(maxWidth2,3)),'"}Description\tab{",STRINGIMAGE(maxWidth2 + maxWidth1 + 2),'"}Value\newline\beginitems ")
   for setData in reverse okList repeat
       htSay '"\item"
-      label := STRCONC('"\menuitemstyle{",setData.setName,'"}")
+      label := strconc('"\menuitemstyle{",setData.setName,'"}")
       links := [label,[['text,'"\tab{",tabset1,'"}",setData.setLabel,'"\tab{",tabset2,'"}{\em ",htShowSetTreeValue setData,'"}"]],
                 'htShowSetPage, setData.setName]
       htMakePage [['bcLispLinks, links,'options,'(indent . 0)]]
@@ -92,11 +92,11 @@ htShowSetTreeValue(setData) ==
   st = 'TREE     => '"..."
   systemError()
 
-mkSetTitle() == STRCONC('"Command {\em )set ",listOfStrings2String $path,'"}")
+mkSetTitle() == strconc('"Command {\em )set ",listOfStrings2String $path,'"}")
 
 listOfStrings2String u ==
   null u => '""
-  STRCONC(listOfStrings2String rest u,'" ",stringize first u)
+  strconc(listOfStrings2String rest u,'" ",stringize first u)
 
 htShowSetPage(htPage, branch) ==
   setTree := htpProperty(htPage, 'setTree)
@@ -125,7 +125,7 @@ htSetLiterals(htPage,name,message,variable,values,functionToCall) ==
   bcHt ['"\centerline{Set {\em ", name, '"}}\newline"]
   bcHt ['"{\em Description: } ", message, '"\newline\vspace{1} "]
   bcHt '"Select one of the following: \newline\tab{3} "
-  links := [[STRCONC('"",STRINGIMAGE opt), '"\newline\tab{3}", functionToCall, opt] for opt in values]
+  links := [[strconc('"",STRINGIMAGE opt), '"\newline\tab{3}", functionToCall, opt] for opt in values]
   htMakePage [['bcLispLinks, :links]]
   bcHt ["\indent{0}\newline\vspace{1} The current setting is: {\em ",
         translateTrueFalse2YesNo EVAL variable, '"} "]
@@ -238,7 +238,7 @@ htSetFunCommandContinue(htPage,value) ==
 
 htKill(htPage,value) ==
   htInitPage('"System Command", nil)
-  string := STRCONC('"{\em )set ",listOfStrings2String [value,:$path],'"}")
+  string := strconc('"{\em )set ",listOfStrings2String [value,:$path],'"}")
   htMakePage [
      '(text
         "{Here is the AXIOM system command you could have issued:}"
@@ -253,7 +253,7 @@ htKill(htPage,value) ==
 htSetNotAvailable(htPage,whatToType) ==
   page := htInitPage('"Unavailable Set Command", htpPropertyList htPage)
   htInitPage('"Unavailable System Command", nil)
-  string := STRCONC('"{\em ",whatToType,'"}")
+  string := strconc('"{\em ",whatToType,'"}")
   htMakePage [
      '(text "\vspace{1}\newline"
         "{Sorry, but this system command is not available through HyperDoc. Please directly issue this command in an AXIOM window for more information:}"
@@ -290,8 +290,8 @@ htCheckList(checker,value) ==
       n
   value in checker => value
   first checker
---  emlist := "STRCONC"/[STRCONC('" {\em ",PNAME x,'"} ") for x in checker]
---  STRCONC('"Please enter one of: ",emlist)
+--  emlist := "STRCONC"/[strconc('" {\em ",PNAME x,'"} ") for x in checker]
+--  strconc('"Please enter one of: ",emlist)
 
 translateYesNoToTrueFalse x ==
   x = 'yes => true
@@ -323,8 +323,8 @@ chkRange s ==
     and u >= $htInitial and (null $htFinal or u <= $htFinal)
       => u
   null $htFinal =>
-    STRCONC('"Please enter an integer greater than ",stringize ($htInitial - 1))
-  STRCONC('"Please enter an integer between ",stringize $htInitial,'" and ",
+    strconc('"Please enter an integer greater than ",stringize ($htInitial - 1))
+  strconc('"Please enter an integer between ",stringize $htInitial,'" and ",
             stringize $htFinal)
 
 chkAllNonNegativeInteger s ==
@@ -337,7 +337,7 @@ htMakePathKey path ==
   INTERN fn(PNAME first path,rest path) where
     fn(a,b) ==
       null b => a
-      fn(STRCONC(a,'".",PNAME first b),rest b)
+      fn(strconc(a,'".",PNAME first b),rest b)
 
 htMarkTree(tree,n) ==
   LASTTAIL(tree).rest := n
@@ -417,12 +417,12 @@ htCacheAddChoice htPage ==
       "For each function name, enter {\em all} or a positive integer:"))
   for i in 1.. for name in names repeat htMakePage [
       ['inputStrings,
-        [STRCONC('"Function {\em ",name,'"} will cache"),
+        [strconc('"Function {\em ",name,'"} will cache"),
           '"values",5,10,htMakeLabel('"c",i),'ALLPI]]]
   htSetvarDoneButton('"Select to Set Values",'htCacheSet)
   htShowPage()
 
-htMakeLabel(prefix,i) == INTERN STRCONC(prefix,stringize i)
+htMakeLabel(prefix,i) == INTERN strconc(prefix,stringize i)
 
 htCacheSet htPage ==
   names := htpProperty(htPage,'names)
@@ -455,7 +455,7 @@ htCacheSet htPage ==
 htAllOrNum val == bcHt
   val = 'all => '"{\em all"
   val = 0 => '"{\em no"
-  STRCONC('"the last {\em ",stringize val)
+  strconc('"the last {\em ",stringize val)
 
 htCacheOne names ==
   page := htInitPage(mkSetTitle(),nil)

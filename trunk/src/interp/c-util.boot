@@ -240,7 +240,7 @@ mkErrorExpr level ==
           highlight(b,a) ==
             atom b =>
               substitute(var,b,a) where
-                var:= INTERN STRCONC(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
+                var:= INTERN strconc(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
             highlight1(b,a) where
               highlight1(b,a) ==
                 atom a => a
@@ -704,13 +704,13 @@ flatten(l,key) ==
  
 genDomainVar() ==
   $Index:= $Index+1
-  INTERNL STRCONC("#D",STRINGIMAGE $Index)
+  INTERNL strconc("#D",STRINGIMAGE $Index)
  
 genVariable() ==
-  INTERNL STRCONC("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 genSomeVariable() ==
-  INTERNL STRCONC("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 listOfIdentifiersIn x ==
   IDENTP x => [x]

@@ -76,7 +76,7 @@ DomainPrint1(D,brief,$e) ==
              --if we were passed a vector, go to the domain
   Sublis:=
     [:
-      [[rest u,:INTERNL STRCONC('"View",STRINGIMAGE i)]
+      [[rest u,:INTERNL strconc('"View",STRINGIMAGE i)]
         for u in D for i in 1..],:$Sublis]
   for u in D for i in 1.. repeat
     brief and i>1 => nil
@@ -118,7 +118,7 @@ DomainPrint1(D,brief,$e) ==
     if brief then PRETTYPRINT uu.0 else PRETTYPRINT uu
  
 DPname() ==
-  name:= INTERNL STRCONC('"Where",STRINGIMAGE $WhereCounter)
+  name:= INTERNL strconc('"Where",STRINGIMAGE $WhereCounter)
   $WhereCounter:= $WhereCounter+1
   name
  
@@ -928,7 +928,7 @@ encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
       ("STRCONC"/[encodedPair for [n,:x] in reducedSig]) where
         encodedPair() ==
           n=1 => encodeItem x
-          STRCONC(STRINGIMAGE n,encodeItem x)
+          strconc(STRINGIMAGE n,encodeItem x)
     encodedName:= INTERNL(getConstructorAbbreviationFromDB packageName,";",
         encodeItem fun,";",encodedSig, sep,STRINGIMAGE count)
     if $LISPLIB then
@@ -1007,6 +1007,6 @@ alistSize c ==
  
 addSuffix(n,u) ==
   ALPHA_-CHAR_-P((s:= STRINGIMAGE u).(MAXINDEX s)) => 
-    INTERN STRCONC(s,STRINGIMAGE n)
-  INTERNL STRCONC(s,STRINGIMAGE ";",STRINGIMAGE n)
+    INTERN strconc(s,STRINGIMAGE n)
+  INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  

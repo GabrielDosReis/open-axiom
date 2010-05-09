@@ -1703,8 +1703,8 @@ printMms(mmS) ==
   -- mmS a list of modemap signatures
   sayMSG '" "
   for [sig,imp,.] in mmS for i in 1.. repeat
-    istr := STRCONC('"[",STRINGIMAGE i,'"]")
-    if QCSIZE(istr) = 3 then istr := STRCONC(istr,'" ")
+    istr := strconc('"[",STRINGIMAGE i,'"]")
+    if QCSIZE(istr) = 3 then istr := strconc(istr,'" ")
     sayMSG [:bright istr,'"signature:   ",:formatSignature rest sig]
     first sig='local =>
       sayMSG ['"      implemented: local function ",imp]

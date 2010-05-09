@@ -202,8 +202,8 @@ issueHTSaturn line == --called by htMakePageNoScroll and htMakeErrorPage
      writeSaturn(line)
      writeSaturnSuffix()
      if $saturnFileNumber then
-       fn := STRCONC('"sat", STRINGIMAGE $saturnFileNumber, '".tex")
-       obey STRCONC('"doswrite -a saturn.tex ",fn, '".tex")
+       fn := strconc('"sat", STRINGIMAGE $saturnFileNumber, '".tex")
+       obey strconc('"doswrite -a saturn.tex ",fn, '".tex")
        $saturnFileNumber := $saturnFileNumber + 1
 
 writeSaturnPrefix() ==
@@ -439,7 +439,7 @@ menuButton() == '"\menuitemstyle{}"
 --replaces htMakeButton
 getCallBackFn form ==
   func := mkCurryFun(first form, rest form)
-  STRCONC('"(|htDoneButton| '|", func, '"| ",htpName page(), '")")
+  strconc('"(|htDoneButton| '|", func, '"| ",htpName page(), '")")
 
 mkDocLink(code,s) ==
   if atom code then code := [code]
@@ -630,7 +630,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   sourceFileName  := dbSourceFile INTERN name
   constrings      :=
     KDR form => dbConformGenUnder form
-    [STRCONC(name,args)]
+    [strconc(name,args)]
   emString        := ['"{\sf ",:constrings,'"}"]
   heading := [capitalKind,'" ",:emString]
   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
@@ -741,7 +741,7 @@ kPageContextMenuSaturn page ==
 
 saturnExampleLink lname ==
   htSay '"\docLink{\csname "
-  htSay STRCONC(second lname, '"\endcsname}{E&xamples}")
+  htSay strconc(second lname, '"\endcsname}{E&xamples}")
 
 $exampleConstructors := nil
 
@@ -751,7 +751,7 @@ saturnHasExamplePage conname ==
   ASSQ(conname, $exampleConstructors)
   
 getSaturnExampleList() == 
-  file := STRCONC(systemRootDirectory(), "/doc/axug/examples.lsp")
+  file := strconc(systemRootDirectory(), "/doc/axug/examples.lsp")
   not PROBE_-FILE file => nil
   fp := MAKE_-INSTREAM file
   lst := VMREAD fp
@@ -1489,7 +1489,7 @@ htSaySaturnAmpersand() == htSaySaturn $saturnAmpersand
 htBlank(:options) ==
   options is [n] =>
     htSaySaturn("STRCONC"/['"\phantom{*}" for i in 1..n])
-    htSayStandard STRCONC('"\space{",STRINGIMAGE n,'"}")
+    htSayStandard strconc('"\space{",STRINGIMAGE n,'"}")
   htSaySaturn '"\phantom{*}"
   htSayStandard '"\space{1}"
 
@@ -1539,7 +1539,7 @@ satTypeDownLink(s,code) ==
   htSayStandard code
   htSayStandard '"}"
 
-mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
+mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 
 --=======================================================================
 --      Create separate databases for operations, constructors
@@ -1588,7 +1588,7 @@ mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
 --    if key ~= line.0 then
 --      if outstream then SHUT outstream
 --      key := line . 0
---      outstream := MAKE_-OUTSTREAM STRCONC(STRINGIMAGE key,'"libdb.text")
+--      outstream := MAKE_-OUTSTREAM strconc(STRINGIMAGE key,'"libdb.text")
 --    outP := FILE_-POSITION outstream
 --    [prefix,:comments] := dbSplit(line,6,1)
 --    PRINTEXP(prefix,outstream)
@@ -1617,8 +1617,8 @@ mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
 dbSort(x,y) ==
   sin := STRINGIMAGE x
   sout:= STRINGIMAGE y
-  runCommand STRCONC('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
-  removeFile STRCONC(sin, '".text")
+  runCommand strconc('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
+  removeFile strconc(sin, '".text")
 
 
 bcConform1 form == main where
@@ -1732,12 +1732,12 @@ purgeLocalLibdb() ==   --called by the user through a clear command?
 --moveFile(before,after) ==
 --  $saturn => MOVE_-FILE(before, after)
 --  RENAME_-FILE(before, after)
---  --obey STRCONC('"mv ", before, '" ", after)
+--  --obey strconc('"mv ", before, '" ", after)
 
 -- deleted JHD/MCD, since already one in pathname.boot
 --removeFile fn ==
 --  $saturn => DELETE_-FILE fn
---  obey STRCONC('"rm ",fn)
+--  obey strconc('"rm ",fn)
 
 --=======================================================================
 --            from DAASE.LISP

@@ -495,9 +495,9 @@ dbHeading(items,which,heading,:options) ==
   capwhich := capitalize which
   prefix :=
     count < 2 =>
-      names? => pluralSay(count,STRCONC(capwhich," Name"),nil)
+      names? => pluralSay(count,strconc(capwhich," Name"),nil)
       pluralSay(count,capwhich,nil)
-    names? => pluralSay(count,nil,STRCONC(capwhich," Names"))
+    names? => pluralSay(count,nil,strconc(capwhich," Names"))
     pluralSay(count,nil,pluralize capwhich)
   [:prefix,'" for ",:heading]
 

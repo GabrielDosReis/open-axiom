@@ -267,7 +267,7 @@ defLET1(lhs,rhs) ==
     l2 is ["PROGN",:.] => MKPROGN [l1,:rest l2]
     if IDENTP first l2 then l2 := [l2,:nil]
     MKPROGN [l1,:l2,name]
-  g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
+  g := INTERN strconc('"LETTMP#",STRINGIMAGE $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs' := [$LET,g,rhs]
   let' := defLET1(lhs,g)
@@ -299,7 +299,7 @@ defLET2(lhs,rhs) ==
   lhs is ['APPEND,var1,var2] =>
     patrev := defISReverse(var2,var1)
     rev := ['REVERSE,rhs]
-    g := INTERN STRCONC('"LETTMP#",STRINGIMAGE $letGenVarCounter)
+    g := INTERN strconc('"LETTMP#",STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := defLET2(patrev,g)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
@@ -369,7 +369,7 @@ defIS1(lhs,rhs) ==
   rhs is ['EQUAL,a] =>
     ['EQUAL,lhs,a]
   cons? lhs =>
-    g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
+    g := INTERN strconc('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     MKPROGN [[$LET,g,lhs],defIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
@@ -392,7 +392,7 @@ defIS1(lhs,rhs) ==
     ['AND,['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := defISReverse(b,a)
-    g := INTERN STRCONC('"ISTMP#",STRINGIMAGE $isGenVarCounter)
+    g := INTERN strconc('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     rev := ['AND,['CONSP,lhs],['PROGN,[$LET,g,['REVERSE,lhs]],''T]]
     l2 := defIS1(g,patrev)

@@ -269,7 +269,7 @@ coerceRetract(object,t2) ==
   (c := retractByFunction(object, t2)) => c
   t1 is [D,:.] =>
     fun := GETL(D,'retract) or
-           INTERN STRCONC('"retract",STRINGIMAGE D)
+           INTERN strconc('"retract",STRINGIMAGE D)
     functionp fun =>
       PUT(D,'retract,fun)
       c := CATCH('coerceFailure,FUNCALL(fun,object,t2))
@@ -1167,7 +1167,7 @@ coerceIntCommute(obj,target) ==
 
   source is [D,:.] =>
     fun := GETL(D,'coerceCommute) or
-           INTERN STRCONC('"commute",STRINGIMAGE D)
+           INTERN strconc('"commute",STRINGIMAGE D)
     functionp fun =>
       PUT(D,'coerceCommute,fun)
       u := objValUnwrap obj

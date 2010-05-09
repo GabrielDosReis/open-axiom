@@ -96,7 +96,7 @@ pluralize k ==
   k = '"child" => '"children"
   k = '"category" => '"categories"
   k = '"entry" => '"entries"
-  STRCONC(k,'"s")
+  strconc(k,'"s")
 
 capitalize s ==
   LASSOC(s,'(
@@ -202,66 +202,66 @@ form2HtString(x,:options) ==
   fn(x) where
     fn x ==
       atom x =>
-        MEMQ(x,$FormalMapVariableList) => STRCONC('"\",STRINGIMAGE x)
+        MEMQ(x,$FormalMapVariableList) => strconc('"\",STRINGIMAGE x)
         u := escapeSpecialChars STRINGIMAGE x
-        MEMQ(x,$emList) => STRCONC('"{\em ",u,'"}")
-        string? x => STRCONC('"_"",u,'"_"")
+        MEMQ(x,$emList) => strconc('"{\em ",u,'"}")
+        string? x => strconc('"_"",u,'"_"")
         u
-      first x = 'QUOTE => STRCONC('"'",sexpr2HtString second x)
-      first x = ":" => STRCONC(fn second x,'": ",fn third x)
+      first x = 'QUOTE => strconc('"'",sexpr2HtString second x)
+      first x = ":" => strconc(fn second x,'": ",fn third x)
       first x = 'Mapping =>
-        STRCONC(fnTail(rest rest x,'"()"),'"->",fn second x)
+        strconc(fnTail(rest rest x,'"()"),'"->",fn second x)
       first x = 'construct => fnTail(rest x,'"[]")
       tail := fnTail(rest x,'"()")
       head := fn first x
---    $brief and #head + #tail > 35 => STRCONC(head,'"(...)")
-      STRCONC(head,tail)
+--    $brief and #head + #tail > 35 => strconc(head,'"(...)")
+      strconc(head,tail)
     fnTail(x,str) ==
       null x => '""
-      STRCONC(str . 0,fn first x,fnTailTail rest x,str . 1)
+      strconc(str . 0,fn first x,fnTailTail rest x,str . 1)
     fnTailTail x ==
       null x => '""
-      STRCONC('",",fn first x,fnTailTail rest x)
+      strconc('",",fn first x,fnTailTail rest x)
 
 sexpr2HtString x ==
   atom x => form2HtString x
-  STRCONC('"(",fn x,'")") where fn x ==
+  strconc('"(",fn x,'")") where fn x ==
     r := rest x
     suffix :=
       null r => '""
-      atom r => STRCONC('" . ",form2HtString rest x)
-      STRCONC('" ",fn r)
-    STRCONC(sexpr2HtString first x,suffix)
+      atom r => strconc('" . ",form2HtString rest x)
+      strconc('" ",fn r)
+    strconc(sexpr2HtString first x,suffix)
 
 form2LispString(x) ==
   atom x =>
     x = '_$ => '"__$"
-    MEMQ(x,$FormalMapVariableList) => STRCONC(STRINGIMAGE '__, STRINGIMAGE x)
-    string? x => STRCONC('"_"",STRINGIMAGE x,'"_"")
+    MEMQ(x,$FormalMapVariableList) => strconc(STRINGIMAGE '__, STRINGIMAGE x)
+    string? x => strconc('"_"",STRINGIMAGE x,'"_"")
     STRINGIMAGE x
-  x is ['QUOTE,a] => STRCONC('"'",sexpr2LispString a)
-  x is [":",a,b] => STRCONC(form2LispString a,'":",form2LispString b)
+  x is ['QUOTE,a] => strconc('"'",sexpr2LispString a)
+  x is [":",a,b] => strconc(form2LispString a,'":",form2LispString b)
   first x = 'Mapping =>
-    null rest (r := rest x) => STRCONC('"()->",form2LispString first r)
-    STRCONC(args2LispString rest r,'"->",form2LispString first r)
-  STRCONC(form2LispString first x,args2LispString rest x)
+    null rest (r := rest x) => strconc('"()->",form2LispString first r)
+    strconc(args2LispString rest r,'"->",form2LispString first r)
+  strconc(form2LispString first x,args2LispString rest x)
 
 sexpr2LispString x ==
   atom x => form2LispString x
-  STRCONC('"(",fn x,'")") where fn x ==
+  strconc('"(",fn x,'")") where fn x ==
     r := rest x
     suffix :=
       null r => '""
-      atom r => STRCONC('" . ",form2LispString rest x)
-      STRCONC('" ",fn r)
-    STRCONC(sexpr2HtString first x,suffix)
+      atom r => strconc('" . ",form2LispString rest x)
+      strconc('" ",fn r)
+    strconc(sexpr2HtString first x,suffix)
 
 args2LispString x ==
   null x => '""
-  STRCONC('"(",form2LispString first x,fnTailTail rest x,'")") where
+  strconc('"(",form2LispString first x,fnTailTail rest x,'")") where
     fnTailTail x ==
       null x => '""
-      STRCONC('",",form2LispString first x,fnTailTail rest x)
+      strconc('",",form2LispString first x,fnTailTail rest x)
 
 dbConstructorKind x ==
   target := CADAR getConstructorModemapFromDB x
@@ -360,7 +360,7 @@ dbSourceFile name ==
   null u => '""
   n := PATHNAME_-NAME u
   t := PATHNAME_-TYPE u
-  STRCONC(n,'".",t)
+  strconc(n,'".",t)
 
 asharpConstructorName? name ==
   u:= getConstructorSourceFileFromDB name
@@ -610,7 +610,7 @@ dbKindString kind == LASSOC(kind,$dbKindAlist)
 
 dbName line == escapeString SUBSTRING(line,1,charPosition($tick,line,1) - 1)
 
-dbAttr line == STRCONC(dbName line,escapeString dbPart(line,4,0))
+dbAttr line == strconc(dbName line,escapeString dbPart(line,4,0))
 
 dbPart(line,n,k) ==  --returns part n of line (n=1,..) beginning in column k
   n = 1 => SUBSTRING(line,k + 1,charPosition($tick,line,k + 1) - k - 1)

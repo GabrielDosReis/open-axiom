@@ -274,7 +274,7 @@ displaySetOptionInformation(arg,setData) ==
     displaySetVariableSettings(setData.setLeaf,setData.setName)
 
   -- otherwise we want to show the current setting
-  centerAndHighlight (STRCONC('"The ",object2String arg,'" Option"),
+  centerAndHighlight (strconc('"The ",object2String arg,'" Option"),
                       $LINELENGTH,specialChar 'hbar)
   sayBrightly ['%l,:bright '"Description:",setData.setLabel]
 
@@ -314,8 +314,8 @@ displaySetOptionInformation(arg,setData) ==
 
 displaySetVariableSettings(setTree,label) ==
   if label = "" then label := '")set"
-    else label := STRCONC('" ",object2String label,'" ")
-  centerAndHighlight(STRCONC('"Current Values of ",label,
+    else label := strconc('" ",object2String label,'" ")
+  centerAndHighlight(strconc('"Current Values of ",label,
     '" Variables"),$LINELENGTH," ")
   TERPRI()
   sayBrightly ["Variable     ",
@@ -326,9 +326,9 @@ displaySetVariableSettings(setTree,label) ==
   for setData in setTree repeat
     null satisfiesUserLevel setData.setLevel => nil
     setOption := object2String setData.setName
-    setOption := STRCONC(setOption,fillerSpaces(13-#setOption,'" "),
+    setOption := strconc(setOption,fillerSpaces(13-#setOption,'" "),
                          setData.setLabel)
-    setOption := STRCONC(setOption,fillerSpaces(55-#setOption,'" "))
+    setOption := strconc(setOption,fillerSpaces(55-#setOption,'" "))
     st := setData.setType
     st = 'FUNCTION =>
       opt :=
@@ -980,7 +980,7 @@ setOutputAlgebra arg ==
 
   arg = "%display%" =>
     if $algebraFormat then label := '"On:" else label := '"Off:"
-    STRCONC(label,$algebraOutputFile)
+    strconc(label,$algebraOutputFile)
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetOutputAlgebra()
@@ -1005,7 +1005,7 @@ setOutputAlgebra arg ==
 
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
     if (ptype := pathnameType fn) then
-      fn := STRCONC(pathnameDirectory fn,pathnameName fn)
+      fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
     filename := $FILEP(fn,ft,fm)
@@ -1101,7 +1101,7 @@ setOutputCharacters arg ==
     sayBrightly '" current choice of special characters looks like:"
     l := NIL
     for [char,:.] in $specialCharacterAlist repeat
-      s := STRCONC('"   ",PNAME char,'" is shown as ",
+      s := strconc('"   ",PNAME char,'" is shown as ",
         PNAME specialChar(char))
       l := [s,:l]
     sayAsManyPerLineAsPossible reverse l
@@ -1162,7 +1162,7 @@ setOutputFortran arg ==
 
   arg = "%display%" =>
     if $fortranFormat then label := '"On:" else label := '"Off:"
-    STRCONC(label,$fortranOutputFile)
+    strconc(label,$fortranOutputFile)
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetOutputFortran()
@@ -1195,7 +1195,7 @@ setOutputFortran arg ==
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
     fn := STRING fn
     if (ptype := pathnameType fn) then
-      fn := STRCONC(pathnameDirectory fn,pathnameName fn)
+      fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
     filename := $FILEP(fn,ft,fm)
@@ -1280,7 +1280,7 @@ setOutputMathml arg ==
 
   arg = "%display%" =>
     if $mathmlFormat then label := '"On:" else label := '"Off:"
-    STRCONC(label,$mathmlOutputFile)
+    strconc(label,$mathmlOutputFile)
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetOutputMathml()
@@ -1305,7 +1305,7 @@ setOutputMathml arg ==
 
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
     if (ptype := pathnameType fn) then
-      fn := STRCONC(pathnameDirectory fn,pathnameName fn)
+      fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
     filename := $FILEP(fn,ft,fm)
@@ -1389,7 +1389,7 @@ setOutputOpenMath arg ==
 
   arg = "%display%" =>
     if $openMathFormat then label := '"On:" else label := '"Off:"
-    STRCONC(label,$openMathOutputFile)
+    strconc(label,$openMathOutputFile)
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetOutputOpenMath()
@@ -1414,7 +1414,7 @@ setOutputOpenMath arg ==
 
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
     if (ptype := pathnameType fn) then
-      fn := STRCONC(pathnameDirectory fn,pathnameName fn)
+      fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
     filename := $FILEP(fn,ft,fm)
@@ -1501,7 +1501,7 @@ setOutputFormula arg ==
 
   arg = "%display%" =>
     if $formulaFormat then label := '"On:" else label := '"Off:"
-    STRCONC(label,$formulaOutputFile)
+    strconc(label,$formulaOutputFile)
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetOutputFormula()
@@ -1526,7 +1526,7 @@ setOutputFormula arg ==
 
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
     if (ptype := pathnameType fn) then
-      fn := STRCONC(pathnameDirectory fn,pathnameName fn)
+      fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
     filename := $FILEP(fn,ft,fm)
@@ -1612,7 +1612,7 @@ setOutputTex arg ==
 
   arg = "%display%" =>
     if $texFormat then label := '"On:" else label := '"Off:"
-    STRCONC(label,$texOutputFile)
+    strconc(label,$texOutputFile)
 
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetOutputTex()
@@ -1637,7 +1637,7 @@ setOutputTex arg ==
 
   (arg is [fn,ft]) or (arg is [fn,ft,fm]) => -- aha, a file
     if (ptype := pathnameType fn) then
-      fn := STRCONC(pathnameDirectory fn,pathnameName fn)
+      fn := strconc(pathnameDirectory fn,pathnameName fn)
       ft := ptype
     if null fm then fm := 'A
     filename := $FILEP(fn,ft,fm)

@@ -144,10 +144,10 @@ bcInputEquations(htPage,solutionMethod) ==
       (bcStrings (6 0 r1 P)))
     "append"/[f(i,numEqs,linearPred) for i in 1..numEqs] where f(i,n,linearp) ==
       spacer := (i > 99 => 0; i > 9 => 1; 2)
-      prefix := STRCONC('"\newline\tab{2}{\em Equation ",STRINGIMAGE i,'":}")
-      prefix := STRCONC(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      lnam := INTERN STRCONC('"l",STRINGIMAGE i)
-      rnam := INTERN STRCONC('"r",STRINGIMAGE i)
+      prefix := strconc('"\newline\tab{2}{\em Equation ",STRINGIMAGE i,'":}")
+      prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
+      lnam := INTERN strconc('"l",STRINGIMAGE i)
+      rnam := INTERN strconc('"r",STRINGIMAGE i)
       var:= 
         linearp => bcMakeLinearEquations(i,n)
         bcMakeEquations(i,n)
@@ -181,29 +181,29 @@ bcInputEquations(htPage,solutionMethod) ==
   htShowPage()
 
 bcCreateVariableString(i) == 
-   STRCONC('"x",STRINGIMAGE i)
+   strconc('"x",STRINGIMAGE i)
 
 bcMakeUnknowns(number)==
-   apply(function strconc,[STRCONC(bcCreateVariableString(i)," ") for i in 1..number])
+   apply(function strconc,[strconc(bcCreateVariableString(i)," ") for i in 1..number])
    
 bcMakeEquations(i,number)==
-   number =1 => STRCONC(bcCreateVariableString(1),"^2+1")
+   number =1 => strconc(bcCreateVariableString(1),"^2+1")
    bcCreateVariableString(i)
-   STRCONC(
-     STRCONC(
-      apply(function strconc,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-        STRCONC("-2*",STRCONC(bcCreateVariableString(i),"^2")))
+   strconc(
+     strconc(
+      apply(function strconc,[strconc(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
+        strconc("-2*",strconc(bcCreateVariableString(i),"^2")))
 
 
 bcMakeLinearEquations(i,number)==
    number = 1 => bcCreateVariableString(1)
    number = 2 => 
-        i=1 => STRCONC(bcCreateVariableString(1),STRCONC("+",bcCreateVariableString(2)))
-        STRCONC(bcCreateVariableString(1),STRCONC("-",bcCreateVariableString(2)))
-   STRCONC(
-     STRCONC(
-      apply(function strconc,[STRCONC(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-        STRCONC("-2*",bcCreateVariableString(i)))
+        i=1 => strconc(bcCreateVariableString(1),strconc("+",bcCreateVariableString(2)))
+        strconc(bcCreateVariableString(1),strconc("-",bcCreateVariableString(2)))
+   strconc(
+     strconc(
+      apply(function strconc,[strconc(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
+        strconc("-2*",bcCreateVariableString(i)))
       
 
 bcInputEquationsEnd htPage ==
@@ -237,8 +237,8 @@ bcSolveEquations(htPage,solutionMethod) ==
     digits := htpLabelInputString(htPage,'acc)
     kind := htpButtonValue(htPage,'choice)
     accString :=
-      kind in '(rf cf) => STRCONC('"1.e-",digits)
-      STRCONC('"1/10**",digits)
+      kind in '(rf cf) => strconc('"1.e-",digits)
+      strconc('"1/10**",digits)
   alist := htpProperty(htPage,'inputArea)
   [[.,varpart,:.],:r] := alist
   varlist := bcString2WordList varpart
@@ -275,10 +275,10 @@ bcLinearSolveMatrixInhomo(htPage,junk) ==
   labelList := 
     [f(i) for i in 1..ncols] where f(i) ==
       spacer := (i > 99 => 0; i > 9 => 1; 2)
-      prefix := STRCONC('"{\em Coefficient ",STRINGIMAGE i,'":}")
+      prefix := strconc('"{\em Coefficient ",STRINGIMAGE i,'":}")
       if spacer ~= 0 then
-        prefix := STRCONC(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      name := INTERN STRCONC('"c",STRINGIMAGE i)
+        prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
+      name := INTERN strconc('"c",STRINGIMAGE i)
       [prefix,"",30, 0,name, 'P]
   page := htInitPage('"Linear Solve Basic Command",htpPropertyList htPage)
   htpSetProperty(page,'matrix,htpProperty(htPage,'matrix))
@@ -305,7 +305,7 @@ bcLinearMatrixGen(htPage,key) ==
   vecform := bcVectorGen vector 
   form := bcMkFunction('"solve",matform,[vecform])
   bcGen
-    key = 'particular => STRCONC(form,'".particular")
+    key = 'particular => strconc(form,'".particular")
     form
   
 linearFinalRequest(nhh,mat,vect) ==     
@@ -352,7 +352,7 @@ bcGenEquations alist ==
     y := rest y
     left := (first y).1
     y := rest y
-    eqnlist := [STRCONC(left,'" = ",right),:eqnlist]
+    eqnlist := [strconc(left,'" = ",right),:eqnlist]
   rest eqnlist => bcwords2liststring eqnlist
   first eqnlist
   

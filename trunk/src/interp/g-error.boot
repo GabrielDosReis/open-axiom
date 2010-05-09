@@ -58,7 +58,7 @@ $ReadingFile := false
 -- REDERR msg == error msg
 
 -- BFLERRMSG func ==
---  errorSupervisor($AlgebraError,STRCONC(
+--  errorSupervisor($AlgebraError,strconc(
 --    '"BigFloat: invalid argument to ",func))
 
 argumentDataError(argnum, condit, funname) ==

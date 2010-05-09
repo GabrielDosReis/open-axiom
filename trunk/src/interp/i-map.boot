@@ -67,8 +67,8 @@ isInternalMapName name ==
 
 makeInternalMapMinivectorName(name) ==
   string? name =>
-    INTERN STRCONC(name,'";MV")
-  INTERN STRCONC(PNAME name,'";MV")
+    INTERN strconc(name,'";MV")
+  INTERN strconc(PNAME name,'";MV")
 
 mkCacheName(name) == INTERNL(STRINGIMAGE name,'";AL")
 
@@ -472,7 +472,7 @@ getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
 --% User function analysis
 
 mapCatchName mapname ==
-   INTERN STRCONC('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
+   INTERN strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
 
 analyzeMap(op,argTypes,mapDef, tar) ==
   -- Top level enty point for map type analysis.  Sets up catch point
@@ -713,7 +713,7 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
   if lmm:= get(op,'localModemap,$InteractiveFrame) then
     untraceMapSubNames [CADAR lmm]
   op0 :=
-    ( n := isSharpVarWithNum op ) => STRCONC('"<argument ",object2String n,'">")
+    ( n := isSharpVarWithNum op ) => strconc('"<argument ",object2String n,'">")
     op
   if $verbose then
     if get(op,'isInterpreterRule,$e) then

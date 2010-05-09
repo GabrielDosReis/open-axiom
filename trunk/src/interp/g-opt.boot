@@ -365,10 +365,10 @@ optRECORDCOPY ["RECORDCOPY",name,len] ==
  
 --mkRecordAccessFunction(ind,len) ==
 --  stringOfDs:= $EmptyString
---  for i in 0..(ind-1) do stringOfDs:= STRCONC(stringOfDs,PNAME "D")
+--  for i in 0..(ind-1) do stringOfDs:= strconc(stringOfDs,PNAME "D")
 --  prefix:= if ind=len-1 then PNAME "C" else PNAME "CA"
---  if $QuickCode then prefix:=STRCONC("Q",prefix)
---  INTERN(STRCONC(prefix,stringOfDs,PNAME "R"))
+--  if $QuickCode then prefix:=strconc("Q",prefix)
+--  INTERN(strconc(prefix,stringOfDs,PNAME "R"))
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
  

@@ -382,7 +382,7 @@ encodeCatform x ==
 NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
  
 hasDefaultPackage catname ==
-  defname := INTERN STRCONC(catname,'"&")
+  defname := INTERN strconc(catname,'"&")
   constructor? defname => defname
   nil
  
@@ -475,7 +475,7 @@ dcSlots con ==
     sayBrightlyNT bright i
     item := template.i
     item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
-    null item and i > 5 => sayBrightly ['"arg  ",STRCONC('"#",STRINGIMAGE(i - 5))]
+    null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",STRINGIMAGE(i - 5))]
     atom item => sayBrightly ['"fun  ",item]
     item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
     sayBrightly concat('"lazy ",form2String formatSlotDomain i)
@@ -513,7 +513,7 @@ formatSlotDomain x ==
   x = 2 => ["$$"]
   integer? x =>
     val := $infovec.0.x
-    null val => [STRCONC('"#",STRINGIMAGE (x  - 5))]
+    null val => [strconc('"#",STRINGIMAGE (x  - 5))]
     formatSlotDomain val
   atom x => x
   x is ['NRTEVAL,y] => (atom y => [y]; y)

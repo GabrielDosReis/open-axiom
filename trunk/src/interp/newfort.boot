@@ -79,7 +79,7 @@ expression2Fortran1(name,e) ==
 
 newFortranTempVar() ==
   $exp2FortTempVarIndex := 1 + $exp2FortTempVarIndex
-  newVar := INTERN STRCONC('"T",STRINGIMAGE $exp2FortTempVarIndex)
+  newVar := INTERN strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
   updateSymbolTable(newVar,$defaultFortranType)
   newVar
  
@@ -298,8 +298,8 @@ fortran2Lines1 f ==
   -- f is a list of strings making up 1 FORTRAN statement
   -- return: a reverse list of FORTRAN lines
   normPref := MAKE_-STRING($fortIndent)
-  --contPref := STRCONC(MAKE_-STRING($fortIndent-1),"&")
-  contPref := STRCONC("     &",MAKE_-STRING($fortIndent-6))
+  --contPref := strconc(MAKE_-STRING($fortIndent-1),"&")
+  contPref := strconc("     &",MAKE_-STRING($fortIndent-6))
   lines := NIL
   ll := $fortIndent
   while f repeat
@@ -309,7 +309,7 @@ fortran2Lines1 f ==
     while ok repeat
       (ll + (sff := SIZE ff)) <= $fortLength =>
         ll := ll + sff
-        line := STRCONC(line,ff)
+        line := strconc(line,ff)
         f := rest f
         if f then ff := first f
         else ok := nil
@@ -320,7 +320,7 @@ fortran2Lines1 f ==
       -- legal format. MCD
       if (ll < $fortLength) and (ll + sff) > $fortLength then
         spaceLeft := $fortLength - ll
-        line := STRCONC(line,SUBSEQ(ff,0,spaceLeft))
+        line := strconc(line,SUBSEQ(ff,0,spaceLeft))
         ff := SUBSEQ(ff,spaceLeft)
       lines := [line,:lines]
       ll := $fortIndent
@@ -337,7 +337,7 @@ fortError1 u ==
  
 fortError(u,v) ==
   $fortError := "t"
-  msg := STRCONC("   ",STRINGIMAGE u);
+  msg := strconc("   ",STRINGIMAGE u);
   sayErrorly("Fortran translation error",msg)
   mathPrint v
  
@@ -374,7 +374,7 @@ formatAsFortranExpresion x ==
 dispfortexp x ==
   if atom(x) or x is [op,:.] and not object2Identifier op in
     '(_= MATRIX construct ) then
-      var := INTERN STRCONC('"R",object2String $IOindex)
+      var := INTERN strconc('"R",object2String $IOindex)
       x := ['"=",var,x]
   dispfortexp1 x
  
@@ -439,8 +439,8 @@ exp2FortSpecial(op,args,nargs) ==
   --  called to get a linearized form for the browser
   op = "QUOTE" =>
     atom (arg := first args) => STRINGIMAGE arg
-    tailPart := "STRCONC"/[STRCONC('",",x) for x in rest arg]
-    STRCONC('"[",first arg,tailPart,'"]")
+    tailPart := "STRCONC"/[strconc('",",x) for x in rest arg]
+    strconc('"[",first arg,tailPart,'"]")
   op = "PAREN" =>
     args := first args
     not(first(args)="CONCATB") => fortError1 [op,:args]
@@ -617,9 +617,9 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
     l := [first(r),:l]
     r := rest(r)
   labString := STRINGIMAGE label1
-  for i in #(labString)..5 repeat labString := STRCONC(labString,'" ")
+  for i in #(labString)..5 repeat labString := strconc(labString,'" ")
   lines := fortran2Lines nreverse [:nreverse l,'"IF(",:r]
-  lines := [STRCONC(labString,SUBSEQ(first lines,6)),:rest lines]
+  lines := [strconc(labString,SUBSEQ(first lines,6)),:rest lines]
   checkLines lines
 
 fortFormatIf(switch) ==
@@ -790,7 +790,7 @@ fortPre1 e ==
     e
   isFloat(e) => checkPrecision(e)
   -- Keep strings as strings:
-  -- string?(e) => STRCONC(STRING(34),e,STRING(34))
+  -- string?(e) => strconc(STRING(34),e,STRING(34))
   string?(e) => e
   e = "%e" => fortPre1 ["exp" , 1]
   imags := ['"%i","%i"]
@@ -843,8 +843,8 @@ fortPreRoot e ==
  
 fix2FortranFloat e ==
   -- Return a Fortran float for a given integer.
-  $fortranPrecision = "double" => STRCONC(STRINGIMAGE(e),".0D0")
-  STRCONC(STRINGIMAGE(e),".")
+  $fortranPrecision = "double" => strconc(STRINGIMAGE(e),".0D0")
+  strconc(STRINGIMAGE(e),".")
  
 isFloat e ==
   FLOATP(e) or string?(e) and FIND(char ".",e)
@@ -860,7 +860,7 @@ checkPrecision e ==
       ePos => SUBSEQ(e,period+1,ePos)
       period+1 < LENGTH e => SUBSEQ(e,period+1)
       "0"
-    STRCONC(iPart,rPart,"D",expt)
+    strconc(iPart,rPart,"D",expt)
   e
  
 ----------------- segment.boot -----------------------

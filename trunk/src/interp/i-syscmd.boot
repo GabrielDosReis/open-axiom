@@ -560,14 +560,14 @@ compileAsharpCmd1 args ==
         fullopt = 'library   => doLibrary  := true
         fullopt = 'nolibrary => doLibrary  := false
 
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     tempArgs :=
         pathType = '"ao" =>
             -- want to strip out -Fao
             (p := STRPOS('"-Fao", $asharpCmdlineFlags, 0, NIL)) =>
                 p = 0 => SUBSTRING($asharpCmdlineFlags, 5, NIL)
-                STRCONC(SUBSTRING($asharpCmdlineFlags, 0, p), '" ",
+                strconc(SUBSTRING($asharpCmdlineFlags, 0, p), '" ",
                     SUBSTRING($asharpCmdlineFlags, p+5, NIL))
             $asharpCmdlineFlags
         $asharpCmdlineFlags
@@ -576,19 +576,19 @@ compileAsharpCmd1 args ==
         onlyArgs =>
             s := ""
             for a in onlyArgs repeat
-                s := STRCONC(s, '" ", object2String a)
+                s := strconc(s, '" ", object2String a)
             s
         moreArgs =>
             s := tempArgs
             for a in moreArgs repeat
-                s := STRCONC(s, '" ", object2String a)
+                s := strconc(s, '" ", object2String a)
             s
         tempArgs
 
     if not beQuiet then sayKeyedMsg("S2IZ0038A",[namestring args, asharpArgs])
 
     command :=
-     STRCONC(STRCONC(getEnv('"ALDORROOT"),'"/bin/"),_
+     strconc(strconc(getEnv('"ALDORROOT"),'"/bin/"),_
                "aldor ", asharpArgs, '" ", namestring args)
     rc := runCommand command
 
@@ -643,7 +643,7 @@ compileAsharpArchiveCmd args ==
 
     cd [ object2Identifier namestring dir ]
 
-    cmd := STRCONC( '"ar x ", namestring path )
+    cmd := strconc( '"ar x ", namestring path )
     rc := runCommand cmd
     rc ~= 0 =>
         cd [ object2Identifier namestring curDir ]
@@ -694,7 +694,7 @@ compileAsharpLispCmd args ==
         fullopt = 'library   => doLibrary  := true
         fullopt = 'nolibrary => doLibrary  := false
 
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     lsp := fnameMake(pathnameDirectory path, pathnameName path, pathnameType path)
     if fnameReadable?(lsp) then
@@ -738,7 +738,7 @@ compileSpadLispCmd args ==
         fullopt = 'library   => doLibrary  := true
         fullopt = 'nolibrary => doLibrary  := false
 
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     lsp := fnameMake(pathnameDirectory path, pathnameName path, pathnameType path)
     if fnameReadable?(lsp) then
@@ -835,7 +835,7 @@ compileSpad2Cmd args ==
            null optargs => throwKeyedMsg("S2IZ0037",['")report"])
            if "insn" in optargs then
              $reportOptimization := true
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     $InteractiveMode : local := nil
     -- avoid Boolean semantics transformations based on syntax only
@@ -1092,7 +1092,7 @@ displayMacro name ==
   null m =>
     sayBrightly ['"  ",:bright name,'"is not an interpreter macro."]
   -- $op is needed in the output routines.
-  $op : local := STRCONC('"macro ",object2String name)
+  $op : local := strconc('"macro ",object2String name)
   [args,:body] := m
   args :=
     null args => nil
@@ -1141,7 +1141,7 @@ interpFunctionDepAlists() ==
 fixObjectForPrinting(v) ==
     v' := object2Identifier v
     EQ(v',"%") => '"\%"
-    member(v',$msgdbPrims) => STRCONC('"\",PNAME v')
+    member(v',$msgdbPrims) => strconc('"\",PNAME v')
     v
 
 displayProperties(option,l) ==
@@ -1266,7 +1266,7 @@ displayValue($op,u,omitVariableNameIfTrue) ==
         rhs := '"):  "
         '"Value (has type "
     rhs := '":  "
-    STRCONC('"Value of ", PNAME $op,'": ")
+    strconc('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
   if atom labmode then labmode := [labmode]
   IDENTP expr and getConstructorKindFromDB expr = "domain" =>
@@ -1692,7 +1692,7 @@ writeInputLines(fn,initial) ==
         for j in 1..maxn while not done repeat
           k := 1 + maxn - j
           MEMQ(vec.k,breakChars) =>
-            svec := STRCONC(SUBSTRING(vec,0,k+1),UNDERBAR)
+            svec := strconc(SUBSTRING(vec,0,k+1),UNDERBAR)
             lineList := [svec,:lineList]
             done := true
             vec := SUBSTRING(vec,k+1,NIL)
@@ -2192,7 +2192,7 @@ dewritify ob ==
                     vec := dewritifyInner ob.2
                     name := ob.3
                     not FBOUNDP name => 
-                       error STRCONC('"undefined function: ", SYMBOL_-NAME name)
+                       error strconc('"undefined function: ", SYMBOL_-NAME name)
                     nob := [SYMBOL_-FUNCTION name,:vec]
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
@@ -2489,7 +2489,7 @@ reportOpsFromUnitDirectly unitForm ==
       '"is not"
     sayBrightly ['" This constructor",:bright verb,
       '"exposed in this frame."]
-    sayBrightly ['" Issue",:bright STRCONC('")edit ",
+    sayBrightly ['" Issue",:bright strconc('")edit ",
       namestring sourceFile),'"to see algebra source code for",
         :bright abb,'%l]
 
@@ -2547,7 +2547,7 @@ reportOpsFromLisplib(op,u) ==
   sayBrightly ['" This constructor",:bright verb,
     '"exposed in this frame."]
   sourceFile := getConstructorSourceFileFromDB op
-  sayBrightly ['" Issue",:bright STRCONC('")edit ",
+  sayBrightly ['" Issue",:bright strconc('")edit ",
     namestring sourceFile),
       '"to see algebra source code for",:bright fn,'%l]
 
@@ -2717,7 +2717,7 @@ diffAlist(new,old) ==
 
 reportUndo acc ==
   for [name,:proplist] in acc repeat
-    sayBrightly STRCONC("Properties of ",PNAME name,'" ::")
+    sayBrightly strconc("Properties of ",PNAME name,'" ::")
     curproplist := LASSOC(name,CAAR $InteractiveFrame)
     for [prop,:value] in proplist repeat
       sayBrightlyNT ['"  ",prop,'" was: "]
@@ -2739,7 +2739,7 @@ undoCount(n) ==  --computes the number of undo's, given $IOindex
   m :=
     n >= 0 => $IOindex - n - 1
     -n
-  m >= $IOindex => userError STRCONC('"Magnitude of undo argument must be less than step number (",STRINGIMAGE $IOindex,'").")
+  m >= $IOindex => userError strconc('"Magnitude of undo argument must be less than step number (",STRINGIMAGE $IOindex,'").")
   m
 
 
@@ -2942,7 +2942,7 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
   sayBrightly '""
 
 whatCommands(patterns) ==
-  label := STRCONC("System Commands for User Level: ",
+  label := strconc("System Commands for User Level: ",
     STRINGIMAGE $UserLevel)
   centerAndHighlight(label,$LINELENGTH,specialChar 'hbar)
   l := filterListOfStrings(patterns,
@@ -3091,14 +3091,14 @@ processSynonyms() ==
   fun := eval fun              -- fun may have been a suspension
   to := STRPOS('")",fun,1,NIL)
   if to and to ~= SIZE(fun)-1 then
-    opt := STRCONC('" ",SUBSTRING(fun,to,NIL))
+    opt := strconc('" ",SUBSTRING(fun,to,NIL))
     fun := SUBSTRING(fun,0,to-1)
   else opt := '" "
   if (SIZE synstr) > (SIZE fun) then
     for i in (SIZE fun)..(SIZE synstr) repeat
       fun := strconc (fun, '" ")
---  $currentLine := STRCONC(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
-  cl := STRCONC(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
+--  $currentLine := strconc(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
+  cl := strconc(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
   SETQ(LINE,cl)
   SETQ(CHR,LINE.(p+1))
   processSynonyms ()
@@ -3111,7 +3111,7 @@ tabsToBlanks s ==
    n := #s
    k < n =>
       k = 0 => tabsToBlanks SUBSTRING(s,1,nil)
-      STRCONC(SUBSTRING(s,0,k),$charBlank, tabsToBlanks SUBSTRING(s,k + 1,nil))
+      strconc(SUBSTRING(s,0,k),$charBlank, tabsToBlanks SUBSTRING(s,k + 1,nil))
    s
 
 doSystemCommand string ==
