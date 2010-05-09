@@ -1,4 +1,33 @@
-2010-05-08  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cattable.boot: Replace call to CONS with bracket syntax.
+	* interp/clammed.boot: Likewise.
+	* interp/cparse.boot: Likewise.
+	* interp/dq.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/g-boot.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/incl.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/rulesets.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/termrw.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
+2010-05-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/cparse.boot: Replace call to cons with bracket syntax.
 	* interp/cstream.boot: Likewise.

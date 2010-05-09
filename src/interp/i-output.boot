@@ -2097,10 +2097,10 @@ slashWidth(u) ==
 longext(u, i, n) ==
   x := reverse u
   y := first x
-  u := remWidth(REVERSEWOC(CONS('" ", rest x)))
+  u := remWidth(REVERSEWOC(['" ",:rest x]))
   charybdis(u, i, n)
   if not $collectOutput then TERPRI $algebraOutputStream
-  charybdis(CONS('ELSE, LIST y), i, n)
+  charybdis(['ELSE, :LIST y], i, n)
   '" "
 
 appvertline(char, x, yl, yu, d) ==
@@ -2289,10 +2289,10 @@ matWidth(x) ==
   CAAR x.1
 
 matLSum(x) ==
-  CONS(sumoverlist x + LENGTH x, x)
+  [sumoverlist x + LENGTH x,:x]
 
 matLSum2(x) ==
-  CONS(sumoverlist x + 2*(LENGTH x), x)
+  [sumoverlist x + 2*(LENGTH x),:x]
 
 matWList(x, y) ==
   null x => y
@@ -2300,11 +2300,11 @@ matWList(x, y) ==
 
 matWList1(x, y) ==
   null x => nil
-  true => CONS(MAX(WIDTH first x, first y), matWList1(rest x, rest y) )
+  true => [MAX(WIDTH first x, first y),:matWList1(rest x, rest y)]
 
 matSubList(x) ==  --computes the max/[subspan(e) for e in "row named x"]
   null x => nil
-  true => CONS(matSubList1(CDAR x, 0), matSubList(rest x) )
+  true => [matSubList1(CDAR x, 0),:matSubList(rest x)]
 
 matSubList1(x, y) ==
   null x => y
@@ -2312,7 +2312,7 @@ matSubList1(x, y) ==
 
 matSuperList(x) ==  --computes the max/[superspan(e) for e in "row named x"]
   null x => nil
-  true => CONS(matSuperList1(CDAR x, 0), matSuperList(rest x) )
+  true => [matSuperList1(CDAR x, 0),:matSuperList(rest x)]
 
 matSuperList1(x, y) ==
   null x => y
@@ -2325,8 +2325,8 @@ minusWidth(u) ==
 --   LASSOC(name, x) or '","
 
 bracketagglist(u, start, linelength, tchr, open, close) ==
-  u := CONS(LIST('CONCAT, open, first u),
-            [LIST('CONCAT, '" ", y) for y in rest u] )
+  u := [LIST('CONCAT, open, first u),
+           :[LIST('CONCAT, '" ", y) for y in rest u]]
   repeat
     s := 0
     for x in tails u repeat
@@ -2340,7 +2340,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
     for x in tails u repeat
            x.first := LIST('CONCAT, first x, tchr)
     if null nextu then LAST(u).rest.rest.first := close
-    x := ASSOCIATER('CONCAT, CONS(ichr, u))
+    x := ASSOCIATER('CONCAT, [ichr,:u])
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
     if $collectOutput then TERPRI $algebraOutputStream
     ichr := '" "
@@ -2370,8 +2370,8 @@ qTWidth(u) ==
 
 remWidth(x) ==
   atom x => x
-  true => CONS( (atom first x => first x; true => CAAR x),
-                MMAPCAR(function remWidth, rest x) )
+  true => [(atom first x => first x; true => CAAR x),
+              :MMAPCAR(function remWidth, rest x)]
 
 subSub(u) ==
   height CDDR u

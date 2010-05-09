@@ -1185,11 +1185,11 @@ replaceSharps(x,d) ==
   -- all replaces the triangle variables
   SL:= NIL
   for e in rest d for var in $FormalMapVariableList repeat
-    SL:= CONS(CONS(var,e),SL)
+    SL:= [[var,:e],:SL]
   x := subCopy(x,SL)
   SL:= NIL
   for e in rest d for var in $TriangleVariableList repeat
-    SL:= CONS(CONS(var,e),SL)
+    SL:= [[var,:e],:SL]
   subCopy(x,SL)
 
 isDomainValuedVariable form ==

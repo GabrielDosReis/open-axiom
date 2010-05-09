@@ -170,7 +170,7 @@ loadLib cname ==
   coSig :=
       u =>
           [[.,:sig],:.] := u
-          CONS(NIL,[categoryForm?(x) for x in rest sig])
+          [NIL,:[categoryForm?(x) for x in rest sig]]
       NIL
   -- in following, add property value false or NIL to possibly clear
   -- old value

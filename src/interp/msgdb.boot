@@ -130,7 +130,7 @@ segmentedMsgPreprocess x ==
     while tail and ok repeat
       [t,:tail] := tail
       member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
-      y := CONS(segmentedMsgPreprocess t,y)
+      y := [segmentedMsgPreprocess t,:y]
     head1 := [(center => '"%ce"; '"%rj"),:nreverse y]
     null tail => [head1]
     [head1,:segmentedMsgPreprocess tail]
@@ -779,7 +779,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     f := DIVIDE($LINELENGTH - wid,2)
-    y := CONS(fillerSpaces(f.0,'" "),y)
+    y := [fillerSpaces(f.0,'" "),:y]
   for z in y repeat brightPrint0(z,out)
   if x then
     sayNewLine(out)
@@ -825,7 +825,7 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   y := nreverse y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
-    y := CONS(fillerSpaces($LINELENGTH-wid,'" "),y)
+    y := [fillerSpaces($LINELENGTH-wid,'" "),:y]
   for z in y repeat brightPrint0(z,out)
   if x then
     sayNewLine(out)

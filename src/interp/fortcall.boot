@@ -420,7 +420,7 @@ invokeFortran(objFile,args,dummies,decls,results,actual) ==
 --  -- cons cell, otherwise a vector.  This is to match the internal
 --  -- representation of an Axiom Record.
 --  #returnedValues = 1 => returnedValues
---  #returnedValues = 2 => CONS(first returnedValues,SECOND returnedValues)
+--  #returnedValues = 2 => [first returnedValues,:SECOND returnedValues]
 --  makeVector(returnedValues,nil)
 
 int2Bool u ==
@@ -431,7 +431,7 @@ int2Bool u ==
 makeResultRecord(name,type,value) ==
   -- Take an object returned by the NAG routine and make it into an AXIOM
   -- object of type Record(key:Symbol,entry:Any) for use by Result.
-  CONS(name,CONS(spadTypeTTT type,value))
+  [name,:[spadTypeTTT type,:value]]
 
 spadify(l,results,decls,names,actual) ==
   -- The elements of list l are the output forms returned from the Fortran
@@ -449,20 +449,20 @@ spadify(l,results,decls,names,actual) ==
     -- Result is a Complex Scalar
     ty in ["double complex" , "complex"] =>
        spadForms := [makeResultRecord(name,ty, _
-                                     CONS(ELT(fort,0),ELT(fort,1)) ),:spadForms]
+                                     [ELT(fort,0),:ELT(fort,1)]),:spadForms]
     -- Result is a Complex vector or array
     LISTP(ty) and first(ty) in ["double complex" , "complex"] =>
       dims := [getVal(u,names,actual) for u in rest ty]
       els := nil
       if #dims=1 then
-        els := [makeVector([CONS(ELT(fort,2*i),ELT(fort,2*i+1)) _
+        els := [makeVector([[ELT(fort,2*i),:ELT(fort,2*i+1)] _
                 for i in 0..(first(dims)-1)],nil)]
       else if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
           for c in 0..(SECOND(dims) - 1) repeat
             offset := 2*(c*first(dims)+r)
-            innerEls := [CONS(ELT(fort,offset),ELT(fort,offset+1)),:innerEls]
+            innerEls := [[ELT(fort,offset),:ELT(fort,offset+1)],:innerEls]
           els := [makeVector(nreverse innerEls,nil),:els]
       else
          error ['"Can't cope with complex output dimensions higher than 2"]

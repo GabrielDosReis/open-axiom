@@ -47,7 +47,9 @@ namespace BOOT
  
 -- dqToList transforms a dq to a list
  
-dqUnit s==(a:=[s];CONS(a,a))
+dqUnit s==
+  a := [s]
+  [a,:a]
  
 dqUnitCopy s== dqUnit(CAAR s)
  

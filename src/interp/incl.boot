@@ -76,7 +76,7 @@ incConsoleInput () == incRgen  MAKE_-INSTREAM 0
  
 incLine(eb, str, gno, lno, ufo) ==
             ln := lnCreate(eb,str,gno,lno,ufo)
-            CONS(CONS(ln,1), str)
+            [[ln,:1],:str]
  
 incPos f == first f
  
@@ -196,7 +196,7 @@ xlOK1(eb, str,str1, lno, ufo)  ==
  
 incLine1(eb, str,str1, gno, lno, ufo) ==
             ln := lnCreate(eb,str,gno,lno,ufo)
-            CONS(CONS(ln,1), str1)
+            [[ln,:1],:str1]
 xlSkip(eb, str, lno, ufo) ==
         str := CONCAT('"-- Omitting:", str)
         [incLine(eb, str, -1, lno, ufo), [NIL, "none"]]

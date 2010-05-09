@@ -96,7 +96,7 @@ isValidType form ==
     sayKeyedMsg("S2IR0005",[form])
     NIL
 
-  badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))
+  badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
   form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => NIL
 
   form is [=$QuotientField,D] and not isPartialMode(D) and
@@ -166,7 +166,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   string? t     => true
   atom t => false
 
-  badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))
+  badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
   t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false
 
   t is [=$QuotientField,D] and not isPartialMode(D) and

@@ -350,7 +350,7 @@ getConstrCat(x) ==
   for y in x repeat
     y is ['CATEGORY,.,:z] =>
       for zz in z repeat cats := makeCatPred(zz, cats, true)
-    cats:= CONS(y,cats)
+    cats:= [y,:cats]
   cats:= nreverse cats
   cats
 
@@ -361,7 +361,7 @@ makeCatPred(zz, cats, thePred) ==
     for at in ats repeat
       if at is ['ATTRIBUTE,z3] and not atom z3 and
         constructor? first z3 then
-          cats:= CONS(['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],cats)
+          cats:= [['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],:cats]
       at is ['IF, pred, :.] =>
         cats := makeCatPred(at, cats, curPred)
   cats
@@ -442,14 +442,14 @@ squeeze1(l) ==
   y:=
     atom x => x
     z:= member(x,$found) => first z
-    $found:= CONS(x,$found)
+    $found:= [x,:$found]
     squeeze1 x
   l.first := y
   x:= rest l
   y:=
     atom x => x
     z:= member(x,$found) => first z
-    $found:= CONS(x,$found)
+    $found:= [x,:$found]
     squeeze1 x
   l.rest := y
 

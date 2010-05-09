@@ -111,18 +111,18 @@ removeEXITFromCOND c ==
   -- c is '(COND ...)
   z := NIL
   for cl in rest c repeat
-    atom cl => z := CONS(cl,z)
+    atom cl => z := [cl,:z]
     cond := QCAR cl
     length1? cl =>
-      cond is ["EXIT",:.] => z := CONS(QCDR cond,z)
-      z := CONS(cl,z)
+      cond is ["EXIT",:.] => z := [QCDR cond,:z]
+      z := [cl,:z]
     cl' := reverse cl
     lastSE := QCAR cl'
-    atom lastSE => z := CONS(cl,z)
+    atom lastSE => z := [cl,:z]
     lastSE is ["EXIT",:.] =>
-      z := CONS(reverse CONS(second lastSE,rest cl'),z)
-    z := CONS(cl,z)
-  CONS('COND,nreverse z)
+      z := [reverse [second lastSE,:rest cl'],:z]
+    z := [cl,:z]
+  ['COND,:nreverse z]
  
 flattenCOND body ==
   -- transforms nested COND clauses to flat ones, if possible
@@ -156,15 +156,15 @@ bootCOND c ==
   for cl in icls repeat
     [p,:r] := cl
     ncls :=
-      r is [['PROGN,:r1]] => CONS([p,:r1],ncls)
-      CONS(cl,ncls)
+      r is [['PROGN,:r1]] => [[p,:r1],:ncls]
+      [cl,:ncls]
   fcls := bootPushEXITintoCONDclause fcls
   ncls :=
     fcls is [''T,['COND,:mcls]] =>
       append(reverse mcls,ncls)
     fcls is [''T,['PROGN,:mcls]] =>
-      CONS([''T,:mcls],ncls)
-    CONS(fcls,ncls)
+      [[''T,:mcls],:ncls]
+    [fcls,:ncls]
   ['COND,:reverse ncls]
  
 bootPushEXITintoCONDclause e ==
@@ -173,9 +173,9 @@ bootPushEXITintoCONDclause e ==
   for cl in cls repeat
     [p,:r] := cl
     ncls :=
-      r is [['EXIT,:.]] => CONS(cl,ncls)
-      r is [r1]           => CONS([p,['EXIT,r1]],ncls)
-      CONS([p,['EXIT,bootTran ['PROGN,:r]]],ncls)
+      r is [['EXIT,:.]] => [cl,:ncls]
+      r is [r1]           => [[p,['EXIT,r1]],:ncls]
+      [[p,['EXIT,bootTran ['PROGN,:r]]],:ncls]
   [''T,['COND,:nreverse ncls]]
  
 --% SEQ and PROGN
@@ -258,7 +258,7 @@ defLET1(lhs,rhs) ==
     rhs' := defLET2(lhs,rhs)
     EQCAR(rhs',$LET) => MKPROGN [rhs',rhs]
     rhs' is ["PROGN",:.] => append(rhs',[rhs])
-    if IDENTP first rhs' then rhs' := CONS(rhs',NIL)
+    if IDENTP first rhs' then rhs' := [rhs',:NIL]
     MKPROGN [:rhs',rhs]
   rhs is [=$LET,:.] and IDENTP(name := second rhs) =>
     -- handle things like [a] := x := foo
@@ -272,7 +272,7 @@ defLET1(lhs,rhs) ==
   rhs' := [$LET,g,rhs]
   let' := defLET1(lhs,g)
   let' is ["PROGN",:.] => MKPROGN [rhs',:rest let']
-  if IDENTP first let' then let' := CONS(let',NIL)
+  if IDENTP first let' then let' := [let',:NIL]
   MKPROGN [rhs',:let',g]
  
 defLET2(lhs,rhs) ==
@@ -283,7 +283,7 @@ defLET2(lhs,rhs) ==
     a := defLET2(a,rhs)
     null (b := defLET2(b,rhs)) => a
     atom b => [a,b]
-    cons? QCAR b => CONS(a,b)
+    cons? QCAR b => [a,:b]
     [a,b]
   lhs is ['CONS,var1,var2] =>
     var1 = "." or (var1 is ["QUOTE",:.]) =>
@@ -333,8 +333,8 @@ addCARorCDR(acc,expr) ==
              CAADDR CADAAR CADDAR CADADR CADDDR)
   funsR := '(CDAR CDDR CDAAR CDDAR CDADR CDDDR CDAAAR CDADAR CDAADR
              CDADDR CDDAAR CDDDAR CDDADR CDDDDR)
-  if acc = 'CAR then CONS(funsA.p,QCDR expr)
-  else               CONS(funsR.p,QCDR expr)
+  if acc = 'CAR then [funsA.p,:QCDR expr]
+  else               [funsR.p,:QCDR expr]
  
  
 --% IS
@@ -437,7 +437,7 @@ bootLabelsForGO e ==
   atom e => NIL
   [head,:tail] := e
   IDENTP head =>
-    head = 'GO => $labelsForGO := CONS(first tail,$labelsForGO)
+    head = 'GO => $labelsForGO := [first tail,:$labelsForGO]
     head = 'QUOTE => NIL
     bootLabelsForGO tail
   bootLabelsForGO head
