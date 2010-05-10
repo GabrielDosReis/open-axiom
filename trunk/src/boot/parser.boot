@@ -800,6 +800,9 @@ bpAssign()==
     bpEqPeek "BEC" =>
       bpRestore a
       bpAssignment() or bpTrap()
+    bpEqPeek "GIVES" =>
+      bpRestore a
+      bpLambda() or bpTrap()
     true
   bpRestore a
   false
@@ -810,6 +813,14 @@ bpAssignment()==
       (bpAssign() or bpTrap()) and
 	 bpPush bfAssign (bpPop2(),bpPop1())
  
+++ Parse a lambda expression
+++   Lambda ::= Variable +-> Assign
+bpLambda() ==
+  bpVariable() and
+    bpEqKey "GIVES" and
+      (bpAssign() or bpTrap()) and
+        bpPush bfLambda(bpPop2(),bpPop1())
+
 -- should only be allowed in sequences
 bpExit()==
   bpAssign() and (bpEqKey "EXIT" and

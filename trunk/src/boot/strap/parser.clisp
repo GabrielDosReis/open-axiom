@@ -840,6 +840,8 @@
            (COND
              ((|bpEqPeek| 'BEC) (|bpRestore| |a|)
               (OR (|bpAssignment|) (|bpTrap|)))
+             ((|bpEqPeek| 'GIVES) (|bpRestore| |a|)
+              (OR (|bpLambda|) (|bpTrap|)))
              (T T)))
           (T (|bpRestore| |a|) NIL))))))
 
@@ -847,6 +849,10 @@
   (AND (|bpAssignVariable|) (|bpEqKey| 'BEC)
        (OR (|bpAssign|) (|bpTrap|))
        (|bpPush| (|bfAssign| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpLambda| ()
+  (AND (|bpVariable|) (|bpEqKey| 'GIVES) (OR (|bpAssign|) (|bpTrap|))
+       (|bpPush| (|bfLambda| (|bpPop2|) (|bpPop1|)))))
 
 (DEFUN |bpExit| ()
   (AND (|bpAssign|)
