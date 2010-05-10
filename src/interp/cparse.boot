@@ -204,15 +204,15 @@ npPPff f ==
   FUNCALL f and npPush [npPop1()]
 
 npPPf f ==
-  npSemiListing function LAMBDA(nil, npPPff f)
+  npSemiListing function (() +-> npPPff f)
 
 npPPg f ==
-  npListAndRecover function LAMBDA(nil, npPPf f)
+  npListAndRecover function (() +-> npPPf f)
     and npPush pfAppend npPop1()
 
 npPP(f) ==
-  npParened function LAMBDA(nil, npPPf f)
-    or npPileBracketed function LAMBDA(nil, npPPg f) and
+  npParened function (() +-> npPPf f)
+    or npPileBracketed function (() +-> npPPg f) and
       npPush pfEnSequence npPop1()
         or FUNCALL f
 
@@ -220,11 +220,11 @@ npPCff f ==
   FUNCALL f and npPush [npPop1()]
 
 npPCg f ==
-  npListAndRecover function LAMBDA(nil,npPCff f)
+  npListAndRecover function (() +-> npPCff f)
     and npPush pfAppend npPop1()
 
 npPC(f) ==
-  npPileBracketed function LAMBDA(nil, npPCg f) and
+  npPileBracketed function (() +-> npPCg f) and
     npPush pfEnSequence npPop1()
       or FUNCALL f
 
@@ -615,7 +615,7 @@ npBackTrack(p1,p2,p3)==
 
 npMDEF() == 
   npBackTrack(function npStatement,"MDEF",
-    function LAMBDA(nil, npMdef "MDEF"))
+    function (() +-> npMdef "MDEF"))
 
 npAssign()== npBackTrack(function npMDEF,"BECOMES",function npAssignment)
 
@@ -647,7 +647,7 @@ npGives()== npBackTrack(function npExit,"GIVES",function npLambda)
 
 npDefinitionOrStatement()==
   npQuantified 
-    function LAMBDA(nil, npBackTrack(function npGives,
+    function (() +-> npBackTrack(function npGives,
                             "DEF",function npDef))
 
 npVoid()== npAndOr("DO",function npStatement,function pfNovalue)
@@ -724,7 +724,7 @@ npFix()== npEqKey "FIX" and  npPP function npDef
                and npPush pfFix npPop1 ()
 
 npMacro() == 
-  npEqKey "MACRO" and  npPP function LAMBDA(nil, npMdef "DEF")
+  npEqKey "MACRO" and  npPP function (() +-> npMdef "DEF")
 
 npRule()== npEqKey "RULE" and  npPP function npSingleRule
 

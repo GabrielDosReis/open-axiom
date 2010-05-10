@@ -1506,7 +1506,7 @@ mutateToBackendCode x ==
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
     res := mutateToBackendCode CDDR x
-    $LocalVars := REMOVE_-IF(function LAMBDA(y(), y in newBindings), 
+    $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
   u = "DECLARE" => nil       -- there is nothing to do convert there

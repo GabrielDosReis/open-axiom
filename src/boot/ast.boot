@@ -112,6 +112,7 @@ structure %Ast ==
   %ConstantDefinition(%Name,%Ast)       -- x == y
   %Definition(%Name,%Ast,%Ast)          -- f x == y
   %Macro(%Name,%List,%Ast)              -- m x ==> y
+  %Lambda(%List,%Ast)                   -- x +-> x**2
   %SuchThat(%Ast)                       -- | p
   %Assignment(%Ast,%Ast)                -- x := y
   %While(%Ast)                          -- while p           -- iterator
@@ -742,6 +743,13 @@ bfLessp(l,r)==
   l = 0 => ["PLUSP",r]
   r = 0 => ["MINUSP", l]
   ["<",l,r]
+
+bfLambda(vars,body) ==
+  -- FIXME: Check that we have only names in vars.
+  vars := 
+    bfTupleP vars => rest vars
+    [vars]
+  ["LAMBDA",vars,body]
  
 bfMDef (op,args,body) ==
   argl :=

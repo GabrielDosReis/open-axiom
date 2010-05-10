@@ -1,5 +1,14 @@
 2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	Add lambda expression syntax to Boot.
+	* boot/parser.boot (bpLambda): New.
+	* boot/ast.boot (bfLambda): New.
+	* boot/tokens.boot: Add "+->" as token.
+	* interp/cparse.boot: Use lambda expression syntax.
+	* interp/c-util.boot: Likewise.
+
+2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: Don't rename 'car', 'cdr', and PAIRP.
 
 2010-05-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
