@@ -132,9 +132,9 @@ AbelianGroup(): Category == Join(CancellationAbelianMonoid, LeftLinearSet Intege
 -- define SourceLevelSubset to be EQUAL
 AbelianMonoid(): Category == AbelianSemiGroup with
     --operations
-      0: constant -> % 
+      0: % 
 	++ 0 is the additive identity element.
-      sample: constant -> %
+      sample: %
 	++ sample yields a value of type %
       zero?: % -> Boolean
 	++ zero?(x) tests if x is equal to 0.
@@ -1059,8 +1059,8 @@ Module(R:CommutativeRing): Category == Join(BiModule(R,R), LinearSet R)
 ++    unitsKnown\tab{15}\spadfun{recip} only returns "failed" on non-units
 Monoid(): Category == SemiGroup with
     --operations
-      1: constant ->  %                   ++ 1 is the multiplicative identity.
-      sample: constant -> %               ++ sample yields a value of type %
+      1:              %                   ++ 1 is the multiplicative identity.
+      sample:             %               ++ sample yields a value of type %
       one?: % -> Boolean                  ++ one?(x) tests if x is equal to 1.
       **: (%,NonNegativeInteger) -> %     ++ x**n returns the repeated product
                                           ++ of x n times, i.e. exponentiation.
@@ -1719,7 +1719,7 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
 ++   infinite\tab{15}repeated \spad{nextItem}'s are never "failed".
 StepThrough(): Category == SetCategory with
     --operations
-      init: constant -> %
+      init:             %
         ++ init() chooses an initial object for stepping.
       nextItem: % -> Union(%,"failed")
         ++ nextItem(x) returns the next item, or "failed" if domain is exhausted.

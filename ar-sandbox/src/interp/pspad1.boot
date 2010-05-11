@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ fragmentsToLine fragments ==
 lispStringList2String x ==
   null x => '""
   atom x => STRINGIMAGE x
-  rest x => APPLY(function STRCONC,MAPCAR(function lispStringList2String,x))
+  rest x => apply(function strconc,MAPCAR(function lispStringList2String,x))
   lispStringList2String first x
  
 --% routines for buffer and margin adjustment
@@ -126,10 +126,10 @@ formatOutput x ==
     line:= fragmentsToLine x
     x:=
       #line+#y>$lineLength =>
-        (y:= STRCONC(nBlanks $m,y); extraLines:= [y,:extraLines]; x)
+        (y:= strconc(nBlanks $m,y); extraLines:= [y,:extraLines]; x)
       [line,y]
   consLineBuffer x
-  for y in extraLines repeat consLineBuffer LIST y
+  for y in extraLines repeat consLineBuffer [y]
   if after then putOut after
   $commentsToPrint:= nil
  
@@ -142,7 +142,7 @@ putOut x ==
 eject n == for i in 2..n repeat consLineBuffer nil
  
 addComment u ==
-  for x in mkCommentLines u repeat consLineBuffer LIST x
+  for x in mkCommentLines u repeat consLineBuffer [x]
  
 mkCommentLines [.,n,.,s] ==
   lines:= breakComments s
@@ -153,8 +153,8 @@ mkCommentLines [.,n,.,s] ==
 breakComments s ==
   n:= containsString(s,PNAME "ENDOFLINECHR") =>
     #s>n+12 => [SUBSTRING(s,0,n),:breakComments SUBSTRING(s,n+12,NIL)]
-    LIST SUBSTRING(s,0,n)
-  LIST s
+    [SUBSTRING(s,0,n)]
+  [s]
  
 containsString(x,y) ==
                        --if string x contains string y, return start index
@@ -167,7 +167,7 @@ containsString(x,y) ==
 consBuffer item ==
   if item = '"failed" then item := 'failed
   n:=
-    STRINGP item => 2+#item
+    string? item => 2+#item
     IDENTP item => #PNAME item
     #STRINGIMAGE item
   columnsLeft:= $lineLength-$c
@@ -179,13 +179,13 @@ consBuffer item ==
                    --is true except within try
       formatOutput reverse $lineFragmentBuffer
       $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
-      $lineFragmentBuffer:= LIST nBlanks $c
+      $lineFragmentBuffer:= [nBlanks $c]
       consBuffer item
     nil
   $lineFragmentBuffer:=
     null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
     NUMBERP item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
-    STRINGP item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
+    string? item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
     $lineFragmentBuffer
   $rightBraceFlag := item = "}"
@@ -193,7 +193,7 @@ consBuffer item ==
   $c:= $c+n
  
 isSpecialBufferItem item ==
-  item = "; " or STRINGP item => true
+  item = "; " or string? item => true
   false
 
 isCloseDelimiter item ==   EQ(item,")") or EQ(item,"]") or EQ(item,"}") 
@@ -205,7 +205,7 @@ newLine() ==
   null $autoLine => nil
   $newLineWritten := true
   formatOutput reverse $lineFragmentBuffer
-  $lineFragmentBuffer:= LIST nBlanks $m
+  $lineFragmentBuffer:= [nBlanks $m]
   $c:= $m
  
 optNewLine() ==
@@ -216,7 +216,7 @@ spillLine() ==
   null $autoLine => nil
   formatOutput reverse $lineFragmentBuffer
   $c:= $m+2*($numberOfSpills:= $numberOfSpills+1)
-  $lineFragmentBuffer:= LIST nBlanks $c
+  $lineFragmentBuffer:= [nBlanks $c]
   $c
  
 indent() ==
@@ -264,9 +264,9 @@ format(x,:options) ==
       if op = "return" then argl := rest argl
       n := #argl
       op is ['elt,y,"construct"] => formatDollar(y,'construct,argl)
-      op is ['elt,name,p] and UPPER_-CASE_-P (STRINGIMAGE opOf name).0 => 
+      op is ['elt,name,p] and UPPER_-CASE_-P STRINGIMAGE(opOf name).0 => 
         formatDollar(name,p,argl)
-      op = 'elt and UPPER_-CASE_-P (STRINGIMAGE opOf first argl).0 => 
+      op = 'elt and UPPER_-CASE_-P STRINGIMAGE(opOf first argl).0 => 
         formatDollar1(first argl,second argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
       if op in '(AND OR NOT) then op:= DOWNCASE op
@@ -297,7 +297,7 @@ formatDollar(name,p,argl) ==
       or (indent() and format "$__" and formatForcePren name and undent()))
  
 formatMacroCheck name ==
-  ATOM name => name
+  atom name => name
   u := or/[x for [x,:y] in $globalMacroStack | y = name] => u
   u := or/[x for [x,:y] in $localMacroStack  | y = name] => u
   [op,:argl] := name
@@ -337,9 +337,9 @@ formatUnion(['Union,:r]) ==
   $count : local := 0
   formatFormNoColonDecl formatTestForPartial ['Union,:[fn x for x in r]] where fn x ==
     x is [":",y,'Branch] => fn STRINGIMAGE y
-    STRINGP x => [":", INTERN x, ['Enumeration,x]]
+    string? x => [":", INTERN x, ['Enumeration,x]]
     x is [":",:.] => x
-    tag := INTERN STRCONC("value",STRINGIMAGE ($count := $count + 1))
+    tag := INTERN strconc("value",STRINGIMAGE ($count := $count + 1))
     [":", tag, x]      
 
 formatTestForPartial u ==
@@ -420,7 +420,7 @@ formatHasDollarOp x ==
   x is ["elt",a,b] and isTypeProbably? a 
 
 isTypeProbably? x ==
-  IDENTP x and UPPER_-CASE_-P (PNAME x).0
+  IDENTP x and UPPER_-CASE_-P PNAME(x).0
 
 formatOpPren(op,x) == formatOp op and formatPren x
 
@@ -434,7 +434,7 @@ formatApplication2 x ==
 
 formatDot ["dot",a,x] ==
   tryLine (formatOp a and format ".") and
-    ATOM x => format x
+    atom x => format x
     formatPren x
  
 formatSelection u ==
@@ -442,7 +442,7 @@ formatSelection u ==
   formatSpill("formatSelection1",u)
  
 formatSelection1 [f,x] == formatSelectionOp f and format "." and 
-    ATOM x => format x
+    atom x => format x
     formatPren x
  
 formatSelectionOp op ==
@@ -453,7 +453,7 @@ formatSelectionOp op ==
 formatSelectionOp1 f ==
   f is [op,:argl] => 
     argl is [a] => 
-      not ATOM op and ATOM a => formatSelection1 [op,a]
+      not atom op and atom a => formatSelection1 [op,a]
       formatPren f
     format f
   formatOp f

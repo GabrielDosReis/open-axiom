@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -69,7 +69,7 @@ module includer
 -- returns a printable representation of X, when it is a symbol
 -- or a character, as string.  Otherwise, returns nil.
 PNAME x ==
-  SYMBOLP x => SYMBOL_-NAME x
+  symbol? x => SYMBOL_-NAME x
   CHARACTERP x => STRING x
   nil
 
@@ -152,7 +152,7 @@ shoePackageStartsAt (lines,sz,name,stream)==
   bStreamNull stream => [[],['nullstream]]
   a := CAAR stream
   #a >= 8 and SUBSTRING(a,0,8)='")package" =>
-    shoePackageStartsAt(cons(CAAR stream,lines),sz,name,rest stream)
+    shoePackageStartsAt([CAAR stream,:lines],sz,name,rest stream)
   #a < sz =>
     shoePackageStartsAt(lines, sz,name,rest stream)
   SUBSTRING(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
@@ -160,7 +160,7 @@ shoePackageStartsAt (lines,sz,name,stream)==
   shoePackageStartsAt(lines,sz,name,rest stream)
  
 shoeFindLines(fn,name,a)==
-  null a =>
+  a = nil =>
     shoeNotFound fn
     []
   [lines,b]:=shoePackageStartsAt([],#name,name, shoeInclude
@@ -169,7 +169,7 @@ shoeFindLines(fn,name,a)==
   bStreamNull b =>
        shoeConsole strconc (name,'" not found in ",fn)
        []
-  null lines => shoeConsole '")package not found"
+  lines = nil => shoeConsole '")package not found"
   append(reverse lines,first b)
 
 -- Lazy inclusion support.
@@ -177,11 +177,11 @@ shoeFindLines(fn,name,a)==
 $bStreamNil:=["nullstream"]
  
 bStreamNull x==
-  null x or x is ["nullstream",:.] => true
+  x = nil or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
           st:=apply(second x,CDDR x)
-          RPLACA(x,first st)
-          RPLACD(x,rest st)
+          x.first := first st
+          x.rest := rest st
   x is ["nullstream",:.]
  
 bMap(f,x) == 
@@ -191,11 +191,11 @@ bMap1(:z)==
      [f,x]:=z
      if bStreamNull x
      then $bStreamNil
-     else cons(FUNCALL(f,first x),bMap(f,rest x))
+     else [FUNCALL(f,first x),:bMap(f,rest x)]
 
 shoeFileMap(f, fn)==
   a:=shoeInputFile fn
-  null a =>
+  a = nil =>
      shoeConsole strconc(fn,'" NOT FOUND")
      $bStreamNil
   shoeConsole strconc('"READING ",fn)
@@ -203,7 +203,7 @@ shoeFileMap(f, fn)==
 
  
 bDelay(f,x) ==
-  cons("nonnullstream",[f,:x])
+  ["nonnullstream",:[f,:x]]
  
 bAppend(x,y) ==
   bDelay(function bAppend1,[x,y])
@@ -212,7 +212,7 @@ bAppend1(:z)==
   bStreamNull first z =>
     bStreamNull second z => ["nullstream"]
     second z
-  cons(CAAR z,bAppend(CDAR z,second z))
+  [CAAR z,:bAppend(CDAR z,second z)]
  
 bNext(f,s) ==
   bDelay(function bNext1,[f,s])
@@ -228,14 +228,14 @@ bRgen s ==
 bRgen1(:s) ==
   a := shoeReadLine first s
   shoePLACEP a => ["nullstream"]
-  cons(a,bRgen first s)
+  [a,:bRgen first s]
  
 bIgen n ==
   bDelay(function bIgen1,[n])
  
 bIgen1(:n)==
   n:=first n+1
-  cons(n,bIgen n)
+  [n,:bIgen n]
  
 bAddLineNumber(f1,f2) ==
   bDelay(function bAddLineNumber1,[f1,f2])
@@ -244,7 +244,7 @@ bAddLineNumber1(:f)==
   [f1,f2] := f
   bStreamNull f1 =>  ["nullstream"]
   bStreamNull f2 =>  ["nullstream"]
-  cons(cons(first f1,first f2),bAddLineNumber(rest f1,rest f2))
+  [[first f1,:first f2],:bAddLineNumber(rest f1,rest f2)]
 
 
  
@@ -292,23 +292,23 @@ shoeIncludeFunction? s  == shoePrefix?('")includefunction",s)
  
 shoeBiteOff x==
   n:=STRPOSL('" ",x,0,true)
-  null n =>  false
+  n = nil =>  false
   n1:=STRPOSL ('" ",x,n,nil)
-  null n1 =>  [SUBSTRING(x,n,nil),'""]
+  n1 = nil =>  [SUBSTRING(x,n,nil),'""]
   [SUBSTRING(x,n,n1-n),SUBSTRING(x,n1,nil)]
  
 shoeFileName x==
   a:=shoeBiteOff x
-  null a =>  '""
+  a = nil =>  '""
   c:=shoeBiteOff second a
-  null c =>  first a
+  c = nil =>  first a
   strconc(first a,'".",first c)
  
 shoeFnFileName x==
   a:=shoeBiteOff x
-  null a =>  ['"",'""]
+  a = nil =>  ['"",'""]
   c:=shoeFileName second a
-  null c =>  [first a,'""]
+  c = nil =>  [first a,'""]
   [first a, c]
  
 shoeFunctionFileInput [fun,fn]==
@@ -359,17 +359,17 @@ shoeThen1(keep,b,s)==
   keep1:= first keep
   b1   := first b
   command :=shoeIf? string  =>
-    keep1 and b1=>  shoeThen(cons(true,keep),cons(STTOMC command,b),t)
-    shoeThen(cons(false,keep),cons(false,b),t)
+    keep1 and b1=>  shoeThen([true,:keep],[STTOMC command,:b],t)
+    shoeThen([false,:keep],[false,:b],t)
   command :=shoeElseIf? string=>
     keep1 and not b1=>
-	shoeThen(cons(true,rest keep),cons(STTOMC command,rest b),t)
-    shoeThen(cons(false,rest keep),cons(false,rest b),t)
+	shoeThen([true,:rest keep],[STTOMC command,:rest b],t)
+    shoeThen([false,:rest keep],[false,:rest b],t)
   command :=shoeElse? string =>
-   keep1 and not b1=>shoeElse(cons(true,rest keep),cons(true,rest b),t)
-   shoeElse(cons(false,rest keep),cons(false,rest b),t)
+   keep1 and not b1=>shoeElse([true,:rest keep],[true,:rest b],t)
+   shoeElse([false,:rest keep],[false,:rest b],t)
   command :=shoeEndIf? string=>
-    null rest b=>  shoeInclude t
+    rest b = nil =>  shoeInclude t
     shoeThen(rest keep,rest b,t)
   keep1 and b1 => bAppend(shoeSimpleLine h,shoeThen(keep,b,t))
   shoeThen(keep,b,t)
@@ -385,10 +385,10 @@ shoeElse1(keep,b,s)==
   b1:=first b
   keep1:=first keep
   command :=shoeIf? string=>
-    keep1 and b1=> shoeThen(cons(true,keep),cons(STTOMC command,b),t)
-    shoeThen(cons(false,keep),cons(false,b),t)
+    keep1 and b1=> shoeThen([true,:keep],[STTOMC command,:b],t)
+    shoeThen([false,:keep],[false,:b],t)
   command :=shoeEndIf? string =>
-       null rest b=>  shoeInclude t
+       rest b = nil =>  shoeInclude t
        shoeThen(rest keep,rest b,t)
   keep1 and b1 => bAppend(shoeSimpleLine h,shoeElse(keep,b,t))
   shoeElse(keep,b,t)

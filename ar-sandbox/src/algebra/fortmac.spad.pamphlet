@@ -184,7 +184,6 @@ MachineFloat(): Exports == Implementation where
       while (current := current*base) < target repeat power := power+1
       POWER := power
       MMAX  := B**POWER
-      void()
 
     changeBase(exp:I,man:I,base:PI):$ ==
       newExp : I  := 0

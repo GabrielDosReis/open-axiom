@@ -130,7 +130,8 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
     dim: NNI
     R: CommutativeRing
 
-    Exports ==> Join(GradedAlgebra(R, NNI), GradedModule(I, NNI)) with
+    Exports ==> Join(GradedAlgebra(R, NNI), GradedModule(I, NNI),_
+                  Eltable(I,R)) with
 
         coerce: DP(dim, R) -> %
             ++ coerce(v) views a vector as a rank 1 tensor.
@@ -152,8 +153,6 @@ CartesianTensor(minix, dim, R): Exports == Implementation where
 
         elt: (%) -> R
             ++ elt(t) gives the component of a rank 0 tensor.
-        elt: (%, I) -> R
-            ++ elt(t,i) gives a component of a rank 1 tensor.
         elt: (%, I, I) -> R
             ++ elt(t,i,j) gives a component of a rank 2 tensor.
         elt: (%, I, I, I) -> R

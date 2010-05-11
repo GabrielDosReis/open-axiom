@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -50,29 +50,29 @@ inputPrompt str ==
   p := first(x) - 2
   y := $OLDLINE
   SETQ($OLDLINE,NIL)
-  y => _$SHOWLINE(STRCONC(str,EBCDIC 19,y),p)
+  y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
   0 = SIZE str => NIL
-  _$SHOWLINE(STRCONC(str,EBCDIC 19),p)
+  _$SHOWLINE(strconc(str,EBCDIC 19),p)
  
 protectedPrompt(:p) ==
   [str,:br] := p
   0 = SIZE str => inputPrompt str
   msg := EBCDIC 29                       -- start of field
   msg :=
-    if br then STRCONC(msg,EBCDIC 232)   -- bright write protect
-    else       STRCONC(msg,EBCDIC  96)   -- write protect
-  msg := STRCONC(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
+    if br then strconc(msg,EBCDIC 232)   -- bright write protect
+    else       strconc(msg,EBCDIC  96)   -- write protect
+  msg := strconc(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
   inputPrompt msg
  
 MKPROMPT() ==
   $inputPromptType = 'none    => '""
   $inputPromptType = 'plain   => '"-> "
   $inputPromptType = 'step    =>
-    STRCONC('"(",STRINGIMAGE $IOindex,'") -> ")
+    strconc('"(",STRINGIMAGE $IOindex,'") -> ")
   $inputPromptType = 'frame   =>
-    STRCONC(STRINGIMAGE $interpreterFrameName,
+    strconc(STRINGIMAGE $interpreterFrameName,
       '" (",STRINGIMAGE $IOindex,'") -> ")
-  STRCONC(STRINGIMAGE $interpreterFrameName,
+  strconc(STRINGIMAGE $interpreterFrameName,
    '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
     STRINGIMAGE $IOindex, '"] -> ")
  
@@ -117,7 +117,7 @@ variableNumber(x) ==
   null p => 
     $variableNumberAlist := [[x,:0], :$variableNumberAlist]
     0
-  RPLACD(p, 1+rest p)
+  p.rest := 1+rest p
   rest p
 
 newType? t == nil
@@ -129,13 +129,13 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  not EQ(first ELT(domain',slot), function Undef) =>
+  not EQ(first domain'.slot, function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then
       sayMessage concat ['"   Retrospective determination of slot",'%b,
         slot,'%d,'"of",'%b,:prefix2String domain,'%d]
-    APPLY(first ELT(domain',slot),[:u'',rest ELT(domain',slot)])
+    apply(first domain'.slot,[:u'',rest domain'.slot])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
 makeInitialModemapFrame() == 

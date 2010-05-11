@@ -580,7 +580,6 @@ returning Void.  I really only need the one coerce function.
       sayTeX$Lisp "<math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_">"
       sayTeX$Lisp mathml
       sayTeX$Lisp "</math>"
-      void()$Void
 
 
 
@@ -657,7 +656,6 @@ returning Void.  I really only need the one coerce function.
         u := segment(enE+1,end)$US
         displayElt(mathML.u)
 
-      void()$Void
 
     eltName(pos:I,mathML:S): S ==
       -- Assuming pos is the position of "<" for a start tag of a mathML

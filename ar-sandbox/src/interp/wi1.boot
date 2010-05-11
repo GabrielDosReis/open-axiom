@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ tr fn ==
   $convertingSpadFile : local := true
   $options: local := nil
   sfn  := STRINGIMAGE fn
-  newname := STRCONC(sfn,'".as")
+  newname := strconc(sfn,'".as")
   $outStream :local := MAKE_-OUTSTREAM newname
   markSay '"#pile"
   markSay('"#include _"axiom.as_"")
@@ -109,7 +109,7 @@ compJoin(["Join",:argl],m,e) ==
             union("append"/[getParms(y,e) for y in rest x],parameters)
               where getParms(y,e) ==
                 atom y =>
-                  isDomainForm(y,e) => LIST y
+                  isDomainForm(y,e) => [y]
                   nil
                 y is ['LENGTH,y'] => [y,y']
                 LIST y
@@ -319,7 +319,7 @@ compWithMappingMode(x,m,oldE) ==
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
-  if STRINGP x then x:= INTERN x
+  if string? x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   not null vl and not hasFormalMapVariable(x, vl) => return
@@ -347,10 +347,9 @@ compAtom(x,m,e) ==
   FIXP x and opOf m in '(Integer NonNegativeInteger PositiveInteger SmallInteger) => markAt [x,m,e]
 --  FIXP x and (T := [x, $Integer,e]) and (T' := convert(T,m)) => markAt(T, T')
   t:=
-    isSymbol x =>
-      compSymbol(x,m,e) or return nil
+    IDENTP x => compSymbol(x,m,e) or return nil
     m = $Expression and primitiveType x => [x,m,e]
-    STRINGP x => 
+    string? x => 
       x ~= '"failed" and (member($Symbol, $localImportStack) or
         member($Symbol, $globalImportStack)) => markAt [x, '(String), e]
       [x, x, e]
@@ -359,7 +358,7 @@ compAtom(x,m,e) ==
 
 extractCodeAndConstructTriple(u, m, oldE) ==
   u := markKillAll u
-  u is ["call",fn,:.] =>
+  u is ["%Call",fn,:.] =>
     if fn is ["applyFun",a] then fn := a
     [fn,m,oldE]
   [op,:.,env] := u
@@ -576,7 +575,7 @@ setqSingle(id,val,m,E) ==
       'locals
     profileRecord(key,id,T.mode)
   newProplist:= consProplistOf(id,currentProplist,"value",markKillAll removeEnv T)
-  e':= (CONSP id => e'; addBinding(id,newProplist,e'))
+  e':= (cons? id => e'; addBinding(id,newProplist,e'))
   x1 := markKillAll x
   if isDomainForm(x1,e') then
     if isDomainInScope(id,e') then
@@ -591,9 +590,7 @@ setqSingle(id,val,m,E) ==
        $markFreeStack := [id,:$markFreeStack]
        form:=["setShellEntry","$",k,x]
      else form:=
-         $QuickLet => ["%LET",id,x]
-         ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
+         ["%LET",id,x]
   [form,m',e']
 
 setqMultiple(nameList,val,m,e) ==
@@ -794,9 +791,9 @@ resolve(min, mout) ==
   dout := markKillAll mout
   din=$NoValueMode or dout=$NoValueMode => $NoValueMode
   dout=$EmptyMode => din
-  STRINGP din and dout = $Symbol => dout   ------> hack 8/14/94
-  STRINGP dout and din = $Symbol => din    ------> hack 8/14/94
-  din ~= dout and (STRINGP din or STRINGP dout) =>
+  string? din and dout = $Symbol => dout   ------> hack 8/14/94
+  string? dout and din = $Symbol => din    ------> hack 8/14/94
+  din ~= dout and (string? din or string? dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) =>  nil
     mkUnion(din,dout)
@@ -811,7 +808,7 @@ coerce(T,m) ==
       '"function coerce called from the interpreter."])
 --==================> changes <======================
 --The following line is inappropriate for our needs:::
---rplac(second T,substitute("$",$Rep,second T))
+--T.rest.first := substitute("$",$Rep,second T)
   T' := coerce0(T,m) => T'
   T := [T.expr,fullSubstitute("$",$Representation,T.mode),T.env]
 --==================> changes <======================
@@ -839,7 +836,7 @@ coerceSubset(T := [x,m,e],m') ==
 --  pp [m, m']
   isSubset(m,m',e) => [x,m',e]
   -- if m is a type variable, we can't know.
-  (pred:= isSubset(m',m,e)) and INTEGERP x and
+  (pred:= isSubset(m',m,e)) and integer? x and
      -- obviously this is temporary
     eval substitute(x,"#1",pred) => [x,m',e]
   nil
@@ -860,24 +857,24 @@ spadCompileOrSetq form ==
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
-  else if (ATOM body or and/[ATOM x for x in body])
+  else if (atom body or and/[atom x for x in body])
          and vl is [:vl',E] and not CONTAINED(E,body) then
            macform := ['XLAM,vl',body]
            LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
-  $insideCapsuleFunctionIfTrue => first backendCompile LIST form
+  $insideCapsuleFunctionIfTrue => first backendCompile [form]
   compileConstructor form
 
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
-  STRINGP m' and modeEqual(m,$String) => [T.expr,m,$e]
+  string? m' and modeEqual(m,$String) => [T.expr,m,$e]
   modeEqual(m',m) or
     (get(m',"value",$e) is [m'',:.] or getmode(m',$e) is ["Mapping",m'']) and
       modeEqual(m'',m) or
         (get(m,"value",$e) is [m'',:.] or getmode(m,$e) is ["Mapping",m'']) and
           modeEqual(m'',m') => [T.expr,m,T.env]
-  STRINGP T.expr and T.expr=m => [T.expr,m,$e]
+  string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
       $bootStrapMode = true => [T.expr,m,$e]
       extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
@@ -914,7 +911,7 @@ compCoerce1(x,m',e) ==
   if null T then T := comp(x,$EmptyMode,e)
   null T => return nil
   m1:=
-    STRINGP T.mode => $String
+    string? T.mode => $String
     T.mode
   m':=resolve(m1,m')
   T:=[T.expr,m1,T.env]
@@ -934,8 +931,8 @@ coerceByModemap([x,m,e],m') ==
         s] and (modeEqual(t,m') or isSubset(t,m',e))
            and (modeEqual(s,m) or isSubset(m,s,e))] or return nil
   mm:=first u  -- patch for non-trival conditons
-  fn := genDeltaEntry ['coerce,:mm]
-  T := [["call",fn,x],m',e]
+  fn := genDeltaEntry(['coerce,:mm],e)
+  T := [["%Call",fn,x],m',e]
   markCoerceByModemap(x,m,m',markCallCoerce(x,m',T),nil)
  
 autoCoerceByModemap([x,source,e],target) ==
@@ -944,7 +941,7 @@ autoCoerceByModemap([x,source,e],target) ==
       for (modemap:= [map,cexpr]) in getModemapList("autoCoerce",1,e) | map is [
         .,t,s] and modeEqual(t,target) and modeEqual(s,source)] or return nil
   fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
-  markCoerceByModemap(x,source,target,[["call",fn,x],target,e],true)
+  markCoerceByModemap(x,source,target,[["%Call",fn,x],target,e],true)
 
 --======================================================================
 --                    From compiler.boot
@@ -957,7 +954,7 @@ comp3(x,m,$e) ==
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
-  STRINGP m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  string? m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
   null x or atom x => compAtom(x,m,e)
   op:= first x
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
@@ -1011,15 +1008,15 @@ compCase1(x,m,e) ==
   x1 :=
     switchMode => markRepper('rep, x)
     x
-  markCase(x, tag, markCaseWas(x1,[["call",fn,x'],$Boolean,e']))
+  markCase(x, tag, markCaseWas(x1,[["%Call",fn,x'],$Boolean,e']))
 
 genCaseTag(t,l,n) ==
   l is [x, :l] =>
     x = t     => 
-      STRINGP x => INTERN x
-      INTERN STRCONC("value", STRINGIMAGE n)
+      string? x => INTERN x
+      INTERN strconc("value", STRINGIMAGE n)
     x is ["::",=t,:.] => t
-    STRINGP x => genCaseTag(t, l, n)
+    string? x => genCaseTag(t, l, n)
     genCaseTag(t, l, n + 1)
   nil
 
@@ -1042,7 +1039,7 @@ compBoolean(p,pWas,m,Einit) ==
   op := opOf p
   [p',m,E]:= 
     fop := LASSOC(op,'((and . compAnd) (or . compOr) (not . compNot))) =>
-       APPLY(fop,[p,pWas,m,Einit]) or return nil
+       apply(fop,[p,pWas,m,Einit]) or return nil
     T := comp(p,m,Einit) or return nil
     markAny('compBoolean,pWas,T) 
   [p',m,getSuccessEnvironment(markKillAll p,E),
@@ -1110,7 +1107,7 @@ compDefine1(form,m,e) ==
       $formalArgList)
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
-    $prefix => INTERN STRCONC(encodeItem $prefix,'",",encodeItem $op)
+    $prefix => INTERN strconc(encodeItem $prefix,'",",encodeItem $op)
     getAbbreviation($op,#rest $form)
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 

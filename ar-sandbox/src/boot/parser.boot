@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,14 +48,14 @@ module parser
 
 bpFirstToken()==
    $stok:=
-     null $inputStream => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+     $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
      first $inputStream
    $ttok := shoeTokPart $stok
    true
  
 bpFirstTok()==
    $stok:=
-     null $inputStream => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
+     $inputStream = nil => shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
      first $inputStream
    $ttok:=shoeTokPart $stok
    $bpParenCount>0 and $stok is ["KEY",:.] =>
@@ -79,7 +79,7 @@ bpNextToken() ==
   bpFirstToken()
  
 bpState()== [$inputStream,$stack,$bpParenCount,$bpCount]
---cons($inputStream,$stack)
+--[$inputStream,:$stack]
  
 bpRestore(x)==
   $inputStream:=first x
@@ -101,12 +101,12 @@ bpPop1()==
  
 bpPop2()==
   a:=second $stack
-  RPLACD($stack,CDDR $stack)
+  $stack.rest := CDDR $stack
   a
  
 bpPop3()==
   a:=third $stack
-  RPLACD(rest $stack,CDDDR $stack)
+  $stack.rest.rest := CDDDR $stack
   a
  
 bpIndentParenthesized f==
@@ -294,14 +294,14 @@ bpListAndRecover(f)==
     if bpEqKey "BACKSET"
     then
        c := $inputStream
-    else if bpEqPeek "BACKTAB"  or null $inputStream
+    else if bpEqPeek "BACKTAB"  or $inputStream = nil
 	 then
 	    done := true
 	 else
 	   $inputStream := c
 	   bpGeneralErrorHere()
 	   bpRecoverTrap()
-	   if bpEqPeek "BACKTAB"  or null $inputStream
+	   if bpEqPeek "BACKTAB"  or $inputStream = nil
 	   then done:=true
 	   else
 	       bpNext()
@@ -311,7 +311,7 @@ bpListAndRecover(f)==
   bpPush NREVERSE b
  
 bpMoveTo n==
-   null $inputStream  => true
+   $inputStream = nil  => true
    bpEqPeek "BACKTAB" =>
      n=0  => true
      bpNextToken()
@@ -509,8 +509,8 @@ bpCancel()==
 
 bpAddTokens n==
   n=0 => nil
-  n>0=> cons(shoeTokConstruct("KEY","SETTAB",shoeTokPosn $stok),bpAddTokens(n-1))
-  cons(shoeTokConstruct("KEY","BACKTAB",shoeTokPosn $stok),bpAddTokens(n+1))
+  n>0=> [shoeTokConstruct("KEY","SETTAB",shoeTokPosn $stok),:bpAddTokens(n-1)]
+  [shoeTokConstruct("KEY","BACKTAB",shoeTokPosn $stok),:bpAddTokens(n+1)]
  
 bpExceptions()==
      bpEqPeek "DOT" or bpEqPeek "QUOTE" or
@@ -522,7 +522,7 @@ bpExceptions()==
 bpSexpKey()==
       $stok is ["KEY",:.] and not bpExceptions()=>
                a := $ttok has SHOEINF
-               null a=>  bpPush $ttok and bpNext()
+               a = nil =>  bpPush $ttok and bpNext()
                bpPush a and bpNext()
       false
  
@@ -546,14 +546,21 @@ bpSexp1()== bpFirstTok() and
                bpPush nil
  
 bpPrimary1() ==
-   bpName() or
-     bpDot() or
-      bpConstTok() or
-       bpConstruct() or
-        bpCase() or
-         bpStruct() or
-          bpPDefinition() or
-           bpBPileDefinition()
+  bpParenthesizedApplication() or
+    bpDot() or
+      bpConstTok() or 
+        bpConstruct() or
+          bpCase() or
+            bpStruct() or
+              bpPDefinition() or
+                bpBPileDefinition()
+
+bpParenthesizedApplication() ==
+  bpName() and bpAnyNo function bpArgumentList
+
+bpArgumentList() ==
+  bpPDefinition() and 
+    bpPush bfApplication(bpPop2(), bpPop1())
  
 bpPrimary()==  bpFirstTok() and (bpPrimary1() or bpPrefixOperator())
  
@@ -571,9 +578,6 @@ bpSelector()==
   bpEqKey "DOT" and (bpPrimary()
      and bpPush(bfElt(bpPop2(),bpPop1()))
 	or bpPush bfSuffixDot bpPop1() )
- 
-bpOperator() ==
-  bpPrimary() and bpAnyNo function bpSelector
  
 bpApplication()==
    bpPrimary() and bpAnyNo function bpSelector and
@@ -796,6 +800,9 @@ bpAssign()==
     bpEqPeek "BEC" =>
       bpRestore a
       bpAssignment() or bpTrap()
+    bpEqPeek "GIVES" =>
+      bpRestore a
+      bpLambda() or bpTrap()
     true
   bpRestore a
   false
@@ -806,6 +813,14 @@ bpAssignment()==
       (bpAssign() or bpTrap()) and
 	 bpPush bfAssign (bpPop2(),bpPop1())
  
+++ Parse a lambda expression
+++   Lambda ::= Variable +-> Assign
+bpLambda() ==
+  bpVariable() and
+    bpEqKey "GIVES" and
+      (bpAssign() or bpTrap()) and
+        bpPush bfLambda(bpPop2(),bpPop1())
+
 -- should only be allowed in sequences
 bpExit()==
   bpAssign() and (bpEqKey "EXIT" and
@@ -1056,15 +1071,20 @@ bpAssignVariable()==
       bpBracketConstruct function bpPatternL or bpAssignLHS()
  
 bpAssignLHS()==
-   bpName() and (bpEqKey "COLON" and (bpApplication() or bpTrap())
-     and bpPush bfLocal(bpPop2(),bpPop1())
-        or bpEqKey "DOT" and bpList(function bpPrimary,"DOT")
-          and bpChecknull() and
-            bpPush bfTuple([bpPop2(),:bpPop1()])
-                 or true)
+  not bpName() => false
+  bpEqKey "COLON" =>          -- variable declaration
+    bpApplication() or bpTrap()
+    bpPush bfLocal(bpPop2(),bpPop1())
+  bpArgumentList() and (bpEqPeek "DOT" or bpTrap())
+  bpEqKey "DOT" =>            -- field path
+    bpList(function bpPrimary,"DOT") and 
+      bpChecknull() and
+        bpPush bfTuple([bpPop2(),:bpPop1()])
+  true
+
 bpChecknull()==
   a := bpPop1()
-  null a => bpTrap()
+  a = nil => bpTrap()
   bpPush a
 
 bpStruct()==

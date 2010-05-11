@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copryight (C) 2007, Gabriel Dos Reis
+-- Copryight (C) 2007-2010, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ namespace BOOT
 %origin x ==
     [function porigin, x]
 porigin x ==
-    (STRINGP x => x; pfname x)
+    (string? x => x; pfname x)
  
 %fname x ==
     [function pfname, x]

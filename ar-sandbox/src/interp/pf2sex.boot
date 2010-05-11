@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -385,7 +385,7 @@ float2Sex num ==
     dotIndex => SUBSEQ(mantPart, dotIndex+1)
     '"0"
   bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
-    LENGTH fracPartString, expPart)
+    # fracPartString, expPart)
   $useBFasDefault =>
     [., frac, :exp] := bfForm
     [["$elt", intNewFloat(), 'float], frac, exp, 10]
@@ -407,7 +407,7 @@ loopIters2Sex iterList ==
 pfCollect2Sex pf ==
   sex := ["COLLECT", :loopIters2Sex pfParts pfCollectIterators pf,
     pf2Sex1 pfCollectBody pf]
-  sex is ["COLLECT", ["|", cond], var] and SYMBOLP var =>
+  sex is ["COLLECT", ["|", cond], var] and symbol? var =>
     ["|", var, cond]
   sex
 
@@ -461,9 +461,9 @@ patternVarsOf expr ==
   patternVarsOf1(expr, nil)
 
 patternVarsOf1(expr, varList) ==
-  NULL expr => varList
-  ATOM expr =>
-    null SYMBOLP expr => varList
+  null expr => varList
+  atom expr =>
+    null symbol? expr => varList
     SymMemQ(expr, varList) => varList
     [expr, :varList]
   expr is [op, :argl] =>

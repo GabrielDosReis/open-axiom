@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ evaluateType0 form ==
   domain:= isDomainValuedVariable form => domain
   form = $EmptyMode => form
   form = "?"        => $EmptyMode
-  STRINGP form => form
+  string? form => form
   form = "$" => form
   $expandSegments : local := nil
   form is ['typeOf,.] =>
@@ -138,7 +138,7 @@ evaluateType form ==
   domain:= isDomainValuedVariable form => domain
   form = $EmptyMode => form
   form = "?"        => $EmptyMode
-  STRINGP form => form
+  string? form => form
   form = "$" => form
   $expandSegments : local := nil
   form is ['typeOf,.] =>
@@ -287,7 +287,7 @@ evalForm(op,opName,argl,mmS) ==
 
 sideEffectedArg?(t,sig,opName) ==
   opString := SYMBOL_-NAME opName
-  (opName ~= 'setelt) and (ELT(opString, #opString-1) ~= char '_!) => nil
+  (opName ~= 'setelt) and (opString.(#opString-1) ~= char '_!) => nil
   dc := first sig
   t = dc
 

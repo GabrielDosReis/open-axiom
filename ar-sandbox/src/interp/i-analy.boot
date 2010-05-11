@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ putCallInfo(t,op,arg,nargs) ==
 getMinimalVariableTower(var,t) ==
   -- gets the minimal polynomial subtower of t that contains the
   -- given variable. Returns NIL if none.
-  STRINGP(t) or IDENTP(t) => NIL
+  string?(t) or IDENTP(t) => NIL
   t = $Symbol => t
   t is ['Variable,u] =>
     (u = var) => t
@@ -124,7 +124,7 @@ pushDownTargetInfo(op,target,arglist) ==
   -- put target info on args for certain operations
   target = $OutputForm => NIL
   target = $Any        => NIL
-  n := LENGTH arglist
+  n := # arglist
   pushDownOnArithmeticVariables(op,target,arglist)
   (pdArgs := pushDownOp?(op,n)) =>
     for i in pdArgs repeat
@@ -166,7 +166,7 @@ pushDownTargetInfo(op,target,arglist) ==
 pushDownOnArithmeticVariables(op,target,arglist) ==
   -- tries to push appropriate target information onto variable
   -- occurring in arithmetic expressions
-  CONSP(target) and first(target) = 'Variable => NIL
+  cons?(target) and first(target) = 'Variable => NIL
   not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
   not containsPolynomial(target)   => NIL
   for x in arglist for i in 1.. repeat
@@ -175,7 +175,7 @@ pushDownOnArithmeticVariables(op,target,arglist) ==
       getValue(x) or (xn = $immediateDataSymbol) => NIL
       t := getMinimalVariableTower(xn,target) or target
       if not getTarget(x) then putTarget(x,t)
-    CONSP(x) =>  -- node
+    cons?(x) =>  -- node
       [op',:arglist'] := x
       pushDownOnArithmeticVariables(getUnname op',target,arglist')
   arglist
@@ -192,14 +192,14 @@ pushDownOp?(op,n) ==
   -- sameAsTarg is a vector that counts the number of modemaps that
   -- have the corresponding argument equal to the target type
   sameAsTarg := GETZEROVEC n
-  numMms := LENGTH ops
+  numMms := # ops
   for [.,targ,:argl] in ops repeat
     for arg in argl for i in 0.. repeat
       targ = arg => setShellEntry(sameAsTarg,i,1 + sameAsTarg.i)
   -- now see which args have their count = numMms
   ok := NIL
   for i in 0..(n-1) repeat
-    if numMms = sameAsTarg.i then ok := cons(i,ok)
+    if numMms = sameAsTarg.i then ok := [i,:ok]
   reverse ok
 
 --% Bottom Up Processing
@@ -303,7 +303,7 @@ bottomUpUseSubdomain t ==
   $useIntegerSubdomain : local := true
   ms := bottomUp t
   ($immediateDataSymbol ~= getUnname(t)) or ($Integer ~= first(ms)) => ms
-  null INTEGERP(num := objValUnwrap getValue t) => ms
+  null integer?(num := objValUnwrap getValue t) => ms
   o := getBasicObject(num)
   putValue(t,o)
   ms := [objMode o]
@@ -573,14 +573,14 @@ removeUnionsAtStart(argl,modeSets) ==
     m' := objMode val'
     putValue(arg,val')
     putModeSet(arg,[m'])
-    RPLACA(ms,m')
+    ms.first := m'
   modeSets
 
 printableArgModeSetList() ==
   amsl := nil
   for a in reverse $origArgModeSetList repeat
     b := prefix2String first a
-    if ATOM b then b := [b]
+    if atom b then b := [b]
     amsl := ['%l,:b,:amsl]
   if amsl then amsl := rest amsl
   amsl
@@ -754,14 +754,14 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
     (i = 1) and (opName = "set!") =>
         a := [x,:a]
         ms := [m,:ms]
-    if CONSP(m) and first(m) = $EmptyMode then return NIL
+    if cons?(m) and first(m) = $EmptyMode then return NIL
     object:= retract getValue x
     a:= [x,:a]
     object="failed" =>
         putAtree(x,'retracted,nil)
         ms := [m, :ms]
     b:= true
-    RPLACA(m,objMode(object))
+    m.first := objMode(object)
     ms := [COPY_-TREE m, :ms]
     putAtree(x,'retracted,true)
     putValue(x,object)
@@ -773,7 +773,7 @@ bottomUpFormRetract(t,op,opName,argl,amsl) ==
   -- check that we haven't seen these types before
   typesHad := getAtree(t, 'typesHad)
   if member(ms, typesHad) then b := nil
-  else putAtree(t, 'typesHad, cons(ms, typesHad))
+  else putAtree(t, 'typesHad, [ms, :typesHad])
 
   b and bottomUpForm(t,op,opName,a,amsl)
 
@@ -805,10 +805,10 @@ bottomUpFormAnyUnionRetract(t,op,opName,argl,amsl) ==
     if ( (m0 = $Any) or (first m0 = 'Union) ) and
       ('failed ~= (object:=retract getValue x)) then
         b := true
-        RPLACA(m,objMode(object))
+        m.first := objMode(object)
         putModeSet(x,[objMode(object)])
         putValue(x,object)
-    a := cons(x,a)
+    a := [x,:a]
   b and bottomUpForm(t,op,opName,nreverse a,amsl)
 
 bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
@@ -828,10 +828,10 @@ bottomUpFormUntaggedUnionRetract(t,op,opName,argl,amsl) ==
     if (m0 is ['Union, :.] and null getUnionOrRecordTags m0) and
       ('failed ~= (object:=retract getValue x)) then
         b := true
-        RPLACA(m,objMode(object))
+        m.first := objMode(object)
         putModeSet(x,[objMode(object)])
         putValue(x,object)
-    a := cons(x,a)
+    a := [x,:a]
   b and bottomUpForm(t,op,opName,nreverse a,amsl)
 
 bottomUpElt (form:=[op,:argl]) ==
@@ -840,8 +840,8 @@ bottomUpElt (form:=[op,:argl]) ==
 
     ms := bottomUp op
     ms and (ms is [['Union,:.]] or ms is [['Record,:.]]) =>
-        RPLAC(rest form, [op,:argl])
-        RPLAC(first form, mkAtreeNode "elt")
+        form.rest := [op,:argl]
+        form.first := mkAtreeNode "elt"
         bottomUp form
 
     target  := getTarget form
@@ -852,16 +852,16 @@ bottomUpElt (form:=[op,:argl]) ==
     while null u for newOp in newOps repeat
         newArgs := [op,:argl]
         if selectMms(newOp, newArgs, target) then
-            RPLAC(rest form, newArgs)
-            RPLAC(first form, newOp)
+            form.rest := newArgs
+            form.first := newOp
             u := bottomUp form
 
     while null u and ( "and"/[retractAtree(a) for a in newArgs] ) repeat
         while null u for newOp in newOps repeat
             newArgs := [op,:argl]
             if selectMms(newOp, newArgs, target) then
-                RPLAC(rest form, newArgs)
-                RPLAC(first form, newOp)
+                form.rest := newArgs
+                form.first := newOp
                 u := bottomUp form
     u
 

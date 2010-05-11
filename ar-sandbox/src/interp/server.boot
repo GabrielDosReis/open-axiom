@@ -113,7 +113,7 @@ executeQuietCommand() ==
 
 parseAndEvalToHypertex str ==
   lines := parseAndEvalToStringForHypertex str
-  len := LENGTH lines
+  len := # lines
   sockSendInt($MenuServer, len)
   for s in lines repeat
     sockSendString($MenuServer, s)

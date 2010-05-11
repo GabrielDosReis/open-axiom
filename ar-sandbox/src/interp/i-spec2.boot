@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -138,7 +138,7 @@ upDollar t ==
       if x then putTarget(y,x)
   putAtree(first form,"dollar",t)
   ms := bottomUp form
-  f in '(One Zero) and CONSP (ms) and first(ms) = $OutputForm =>
+  f in '(One Zero) and cons? (ms) and first(ms) = $OutputForm =>
     throwKeyedMsg("S2IS0021",[f,t])
   putValue(op,getValue first form)
   putModeSet(op,ms)
@@ -201,7 +201,7 @@ uperror t ==
   t isnt [op,msg] => NIL
   msgMs := bottomUp putCallInfo(msg,"error",1,1)
   msgMs isnt [=$String] => NIL
-  RPLACD(t,[mkAtree object2String $mapName,msg])
+  t.rest := [mkAtree object2String $mapName,msg]
   bottomUp t
 
 --% Handlers for free and local
@@ -405,7 +405,7 @@ compileIs(val,pattern) ==
     pat is ["=",var] => vars:= [var,:vars]
   predCode:=["%LET",g:=GENSYM(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
-  for var in REMDUP vars repeat
+  for var in removeDuplicates vars repeat
     assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
   null $opIsIs =>
     ["COND",[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,MKQ 'T]]]
@@ -432,8 +432,8 @@ removeConstruct pat ==
   if pat is ["construct",:p] then pat:=p
   if pat is ["cons", a, b] then pat := [a, [":", b]]
   atom pat => pat
-  RPLACA(pat,removeConstruct first pat)
-  RPLACD(pat,removeConstruct rest pat)
+  pat.first := removeConstruct first pat
+  pat.rest := removeConstruct rest pat
   pat
 
 isPatternMatch(l,pats) ==
@@ -500,7 +500,7 @@ up%LET t ==
   -- binding
   t isnt [op,lhs,rhs] => nil
   $declaredMode: local := NIL
-  CONSP lhs =>
+  cons? lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
     var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
@@ -619,7 +619,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
 evalLETchangeValue(name,value) ==
   -- write the value of name into the environment, clearing dependent
   --  maps if its type changes from its last value
-  localEnv := CONSP $env
+  localEnv := cons? $env
   clearCompilationsFlag :=
     val:= (localEnv and get(name,'value,$env)) or get(name,'value,$e)
     null val =>
@@ -650,14 +650,14 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
       let := mkAtreeNode "%LET"
       t'  := mkAtreeNode t
       if m := getMode(l) then putMode(t',m)
-      seq := cons([let,l,t'],seq)
+      seq := [[let,l,t'],:seq]
     for t in temps for r in reverse rest rhs
       for l in reverse rest lhs repeat
         let := mkAtreeNode "%LET"
         t'  := mkAtreeNode t
         if m := getMode(l) then putMode(t',m)
-        seq := cons([let,t',r],seq)
-    seq := cons(mkAtreeNode 'SEQ,seq)
+        seq := [[let,t',r],:seq]
+    seq := [mkAtreeNode 'SEQ,:seq]
     ms := bottomUp seq
     putValue(op,getValue seq)
     putModeSet(op,ms)
@@ -747,7 +747,7 @@ isType t ==
    op:=opOf t
    VECP op =>
      isMap(op:= getUnname op) => NIL
-     op = 'Mapping and CONSP t =>
+     op = 'Mapping and cons? t =>
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]
@@ -800,7 +800,7 @@ isInterpMacro name ==
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
   -- $InterpreterMacroAlist will probably be phased out soon
-  (sv := assoc(name,$InterpreterMacroAlist)) => CONS(NIL,rest sv)
+  (sv := assoc(name,$InterpreterMacroAlist)) => [NIL,:rest sv]
   NIL
 
 --% Handlers for prefix QUOTE
@@ -1075,7 +1075,7 @@ uptuple t ==
   null l => upNullTuple(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and CONSP(tar) and not isPartialMode(tar) then
+  if tar and cons?(tar) and not isPartialMode(tar) then
     first(tar) in aggs =>
       ud := second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
@@ -1085,7 +1085,7 @@ uptuple t ==
   argModeSetList:= [bottomUp x for x in l]
   eltTypes := replaceSymbols([first x for x in argModeSetList],l)
   if not isPartialMode(tar) and tar is ['Tuple,ud] then
-    mode := ['Tuple, resolveTypeListAny cons(ud,eltTypes)]
+    mode := ['Tuple, resolveTypeListAny [ud,:eltTypes]]
   else mode := ['Tuple, resolveTypeListAny eltTypes]
   if isPartialMode tar then tar:=resolveTM(mode,tar)
   evalTuple(op,l,mode,tar)
@@ -1175,7 +1175,7 @@ copyHack(env) ==
   -- (localModemap . something)
   c:= CAAR env
   d:= [fn p for p in c] where fn(p) ==
-    CONS(first p,[(q is ["localModemap",:.] => q; copy q) for q in rest p])
+    [first p,:[(q is ["localModemap",:.] => q; copy q) for q in rest p]]
   [[d]]
 
 

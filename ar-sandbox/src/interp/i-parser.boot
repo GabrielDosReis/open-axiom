@@ -41,11 +41,11 @@ namespace BOOT
 
 ++ returns the list of tokens making up a line in the stream `s'
 tokenizeLine s ==
-  [dq, stream]  := car s
+  [dq, stream]  := first s
   [lines, rest] := ncloopDQlines(dq, $lines)
   setCurrentLine(mkLineList lines)
   $lines := rest
-  [[npParse dqToList dq], :cdr s]
+  [[npParse dqToList dq], :rest s]
 
 ++ parse the IO stream `s' obtained from file `f'
 parseStream(s, f) ==
@@ -58,15 +58,15 @@ parseStream(s, f) ==
 ++ return the list of all tokens making up the stream `s'
 collectTokens s ==
   StreamNull s => nil
-  ts := car s
-  [ts, :collectTokens cdr s]
+  ts := first s
+  [ts, :collectTokens rest s]
 
 ++ return the list of parsed lines from stream `s'.  `p' is the list
 ++ of parsed lines collected so far.
 collectParsedLines(s, p) ==
   StreamNull s => p
-  ptree := car s
-  collectParsedLines(cdr s, [:p, ptree])
+  ptree := first s
+  collectParsedLines(rest s, [:p, ptree])
 
 ++ parse the whole file `file'.  Returns a list of parse tree
 ++ containing full source location information.

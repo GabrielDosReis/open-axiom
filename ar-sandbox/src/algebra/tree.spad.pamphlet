@@ -230,7 +230,7 @@ Tree(S: SetCategory): T==C where
     cyclicCopy(t) == cyclicCopy2(t, cyclicEntries t)
 
     cyclicCopy2(t, cycles) ==
-      eqMember?(t, cycles) => return copyCycle2(t, cycles)
+      eqMember?(t, cycles) => copyCycle2(t, cycles)
       tree(value t, [cyclicCopy2(c, cycles) for c in children t])
    
     copyCycle2(cycle, cycleList) == 

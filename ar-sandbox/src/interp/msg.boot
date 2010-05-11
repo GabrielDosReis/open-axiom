@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,10 +102,10 @@ ncBug (erMsgKey, erArgL,:optAttr) ==
 --          text -- the actual text
  
 msgCreate(tag,posWTag,key,argL,optPre,:optAttr) ==
-    if CONSP key then tag := 'old
+    if cons? key then tag := 'old
     msg := [tag,posWTag,key,argL,optPre,NIL]
     if first optAttr then
-        setMsgForcedAttrList(msg,car optAttr)
+        setMsgForcedAttrList(msg,first optAttr)
     putDatabaseStuff msg
     initImPr    msg
     initToWhere msg
@@ -120,7 +120,7 @@ processKeyedError msg ==
           CallerName 4,:erMsg]                  --temp
     msgImPr? msg =>
       msgOutputter msg
-    $ncMsgList := cons (msg, $ncMsgList)
+    $ncMsgList := [msg,:$ncMsgList]
  
 ---------------------------------
 --%getting info from db.
@@ -165,10 +165,10 @@ processChPosesForOneLine msgList ==
             putFTText (msg,chPosList)
         posLetter := rest assoc(poCharPosn getMsgPos msg,chPosList)
         oldPre := getMsgPrefix msg
-        setMsgPrefix (msg,STRCONC(oldPre,_
+        setMsgPrefix (msg,strconc(oldPre,_
                      MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
-    NCONC(msgList,LIST leaderMsg)  --a back cons
+    NCONC(msgList,[leaderMsg])  --a back cons
  
 posPointers msgList ==
 --gets all the char posns for msgs on one line
@@ -506,7 +506,7 @@ makeLeaderMsg chPosList ==
     st := MAKE_-FULL_-CVEC ($preLength- 3)
     oldPos := -1
     for [posNum,:posLetter] in reverse chPosList repeat
-        st := STRCONC(st, _
+        st := strconc(st, _
             rep(char ".", (posNum - oldPos - 1)),posLetter)
         oldPos := posNum
     ['leader,$nopos,'nokey,NIL,NIL,[st]]
@@ -518,9 +518,9 @@ makeMsgFromLine line ==
     localNumOfLine  :=
         i := poLinePosn posOfLine
         stNum := STRINGIMAGE i
-        STRCONC(rep(char " ", ($preLength - 7 - SIZE stNum)),_
+        strconc(rep(char " ", ($preLength - 7 - SIZE stNum)),_
          stNum)
-    ['line,posOfLine,NIL,NIL, STRCONC('"Line", localNumOfLine),_
+    ['line,posOfLine,NIL,NIL, strconc('"Line", localNumOfLine),_
         textOfLine]
  
 getMsgTag msg == ncTag msg

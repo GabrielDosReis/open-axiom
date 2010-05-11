@@ -456,7 +456,7 @@
 
 (defun |knownEqualPred| (dom)
   (let ((fun (|compiledLookup| '= '((|Boolean|) $ $) dom)))
-    (if fun (get (bpiname (car fun)) '|SPADreplace|)
+    (if fun (|getFunctionReplacement| (bpiname (car fun)))
       nil)))
 
 (defun |hashable| (dom)

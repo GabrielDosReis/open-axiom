@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -176,15 +176,15 @@ scanKeyTable:=scanKeyTableCons()
 scanInsert(s,d) ==
       l := #s
       h := QENUM(s,0)
-      u := ELT(d,h)
+      u := d.h
       n := #u
       k:=0
-      while l <= #(ELT(u,k)) repeat
+      while l <= #(u.k) repeat
           k:=k+1
       v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
+      for i in 0..k-1 repeat VEC_-SETELT(v,i,u.i)
       VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
+      for i in k..n-1 repeat VEC_-SETELT(v,i+1,u.i)
       VEC_-SETELT(d,h,v)
       s
 
@@ -287,22 +287,22 @@ lineoftoks(s)==
    $sz:local := nil
    $floatok:local:=true
    if not nextline s
-   then CONS(nil,nil)
+   then [nil,:nil]
    else
      if null scanIgnoreLine($ln,$n) -- line of spaces or starts ) or >
-     then cons(nil,$r)
+     then [nil,:$r]
      else
       toks:=[]
       a:= incPrefix?('"command",1,$ln)
       a =>
                  $ln:=SUBSTRING($ln,8,nil)
                  b:= dqUnit constoken($ln,$linepos,["command",$ln],0)
-                 cons([[b,s]],$r)
+                 [[[b,s]],:$r]
 
       while $n<$sz repeat toks:=dqAppend(toks,scanToken())
       if null toks
-      then cons([],$r)
-      else cons([[toks,s]],$r)
+      then [[],:$r]
+      else [[[toks,s]],:$r]
 
 
 scanToken() ==
@@ -348,9 +348,9 @@ lfinteger x==
 --          then ["id",INTERN x]
 --          else ["integer",x]
 
-lfrinteger (r,x)==["integer",CONCAT (r,CONCAT('"r",x))]
---lfrfloat(a,w,v)==["rfloat",CONCAT(a,'"r.",v)]
-lffloat(a,w,e)==["float",CONCAT(a,'".",w,'"e",e)]
+lfrinteger (r,x)==["integer",strconc (r,strconc('"r",x))]
+--lfrfloat(a,w,v)==["rfloat",strconc(a,'"r.",v)]
+lffloat(a,w,e)==["float",strconc(a,'".",w,'"e",e)]
 lfstring x==if #x=1 then ["char",x] else ["string",x]
 lfcomment x== ["comment", x]
 lfnegcomment x== ["negcomment", x]
@@ -358,9 +358,9 @@ lferror x==["error",x]
 lfspaces x==["spaces",x]
 
 constoken(ln,lp,b,n)==
---  [b.0,b.1,cons(lp,n)]
-       a:=cons(b.0,b.1)
-       ncPutQ(a,"posn",cons(lp,n))
+--  [b.0,b.1,[lp,:n]]
+       a:=[b.0,:b.1]
+       ncPutQ(a,"posn",[lp,:n])
        a
 
 scanEscape()==
@@ -481,7 +481,7 @@ scanString()==
 scanS()==
    if $n>=$sz
    then
-     ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n),"S2CN0001",[])
+     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0001",[])
      '""
    else
            n:=$n
@@ -492,7 +492,7 @@ scanS()==
            if mn=$sz
            then
                  $n:=$sz
-                 ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n),
+                 ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
                          "S2CN0001",[])
                  SUBSTRING($ln,n,nil)
            else if mn=strsym
@@ -505,11 +505,11 @@ scanS()==
                   a:=scanEsc() -- case of end of line when false
                   b:=if a
                      then
-                       str:=CONCAT(str,scanTransform($ln.$n))
+                       str:=strconc(str,scanTransform($ln.$n))
                        $n:=$n+1
                        scanS()
                       else scanS()
-                  CONCAT(str,b)
+                  strconc(str,b)
 scanTransform x==x
 
 --idChar? x== scanLetter x or DIGITP x or x in '(_? _%)
@@ -552,7 +552,7 @@ scanW(b)==             -- starts pointing to first char
                     if idChar?($ln.$n)
                     then scanW(b)
                     else [b,'""]
-           [bb.0 or b,CONCAT(str,bb.1)]
+           [bb.0 or b,strconc(str,bb.1)]
 
 scanWord(esp) ==
           aaa:=scanW(false)
@@ -582,7 +582,7 @@ spleI1(dig,zro) ==
              $n:=$n+1
              a:=scanEsc()
              bb:=spleI1(dig,zro)-- escape, anyno spaces are ignored
-             CONCAT(str,bb)
+             strconc(str,bb)
 
 scanCheckRadix(a,w)==
   r := PARSE_-INTEGER a
@@ -593,7 +593,7 @@ scanCheckRadix(a,w)==
   for i in 0..ns-1  repeat
     a:=rdigit? w.i
     if null a or a>=r
-    then  ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n-ns+i),
+    then  ncSoftError([$linepos,:lnExtraBlanks $linepos+$n-ns+i],
 	       "S2CN0002", [w.i])
 
 scanNumber() ==
@@ -634,7 +634,7 @@ scanNumber() ==
                     --$n:=$n+1
                       v:=spleI1(function rdigit?,true)
                       scanCheckRadix(a,v)
-                      scanExponent(CONCAT(a,'"r",w),v)
+                      scanExponent(strconc(a,'"r",w),v)
                   else lfrinteger(a,w)
 
 scanExponent(a,w)==
@@ -668,7 +668,7 @@ scanExponent(a,w)==
                       then
                         e:=spleI(function digit?)
                         lffloat(a,w,
-                          (if c1=MINUSCOMMENT then CONCAT('"-",e)else e))
+                          (if c1=MINUSCOMMENT then strconc('"-",e)else e))
                       else
                         $n:=n
                         lffloat(a,w,'"0")
@@ -682,7 +682,7 @@ rdigit? x==
 scanError()==
       n:=$n
       $n:=$n+1
-      ncSoftError(cons($linepos,lnExtraBlanks $linepos+$n),
+      ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
          "S2CN0003",[$ln.n])
       lferror ($ln.n)
 
@@ -695,12 +695,12 @@ subMatch(l,i)==substringMatch(l,scanDict,i)
 
 substringMatch (l,d,i)==
        h:= QENUM(l, i)
-       u:=ELT(d,h)
+       u:=d.h
        ll:=SIZE l
        done:=false
        s1:='""
        for j in 0.. SIZE u - 1 while not done repeat
-          s:=ELT(u,j)
+          s:=u.j
           ls:=SIZE s
           done:=if ls+i > ll
                 then false

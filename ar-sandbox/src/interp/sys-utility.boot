@@ -67,7 +67,7 @@ getVMType d ==
   IDENTP d => 
     d = "*" => d
     "%Thing"
-  STRINGP d => "%Thing"            -- literal flag parameter
+  string? d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
     Void => "%Void"
     Identifier => "%Symbol"
@@ -118,7 +118,7 @@ functionp f ==
 ++ remove `item' from `sequence'.
 delete: (%Thing,%Sequence) -> %Sequence
 delete(item,sequence) ==
-  SYMBOLP item => 
+  symbol? item => 
     REMOVE(item,sequence,KEYWORD::TEST,function EQ)
   atom item and not ARRAYP item =>
     REMOVE(item,sequence)
@@ -128,14 +128,14 @@ delete(item,sequence) ==
 CONTAINED: (%Thing,%Thing) -> %Boolean
 CONTAINED(x,y) == main where
   main() ==
-    SYMBOLP x => eq(x,y)
+    symbol? x => eq(x,y)
     equal(x,y)
   eq(x,y) ==
     atom y => EQ(x,y)
-    eq(x, car y) or eq(x, cdr y)
+    eq(x, first y) or eq(x, rest y)
   equal(x,y) ==
     atom y => EQUAL(x,y)
-    equal(x, car y) or equal(x, cdr y)
+    equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'
 -- ??? Should not this be named `alistAllKeys'?
@@ -156,7 +156,7 @@ ASSOCRIGHT x ==
 ADDASSOC: (%Thing,%Thing,%List) -> %List
 ADDASSOC(x,y,l) ==
   atom l => [[x,:y],:l]
-  x = first first l => [[x,:y],:cdr l]
+  x = first first l => [[x,:y],:rest l]
   [first l,:ADDASSOC(x,y,rest l)]
 
 
@@ -198,7 +198,7 @@ RECLAIM() ==
 ++
 makeAbsoluteFilename: %String -> %String
 makeAbsoluteFilename name ==
-  CONCATENATE("STRING",systemRootDirectory(),name)
+  strconc(systemRootDirectory(),name)
 
 ++ returns true if `file' exists as a pathname.
 existingFile? file ==
@@ -226,7 +226,7 @@ checkMkdir path ==
 
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
-  CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)
+  strconc(systemRootDirectory(),'"algebra/",m,'".",$faslType)
 
 ++ load module in `path' that supposedly will define the function 
 ++ indicated by `name'.
@@ -273,6 +273,7 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
 $InputIOMode == KEYWORD::INPUT
 $OutputIOMode == KEYWORD::OUTPUT
 $BothWaysIOMode == KEYWORD::IO
+$ClosedIOMode == KEYWORD::CLOSED
 
 ++ return a binary stream open for `file' in mode `mode'; nil
 ++ if something went wrong.  This function is used by the Algebra.

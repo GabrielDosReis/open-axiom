@@ -20,124 +20,124 @@ import List
 ++ Domain for partitions of positive integers
 ++ Author: William H. Burge
 ++ Date Created: 29 October 1987
-++ Date Last Updated: 23 Sept 1991
+++ Date Last Updated: April 17, 2010
+++ Description:
+++   Partition is an OrderedCancellationAbelianMonoid which is used
+++   as the basis for symmetric polynomial representation of the
+++   sums of powers in SymmetricPolynomial.  Thus, \spad{(5 2 2 1)} will
+++   represent \spad{s5 * s2**2 * s1}.
 ++ Keywords:
 ++ Examples:
 ++ References:
-Partition: Exports == Implementation where
-  ++ Partition is an OrderedCancellationAbelianMonoid which is used
-  ++ as the basis for symmetric polynomial representation of the
-  ++ sums of powers in SymmetricPolynomial.  Thus, \spad{(5 2 2 1)} will
-  ++ represent \spad{s5 * s2**2 * s1}.
-  L   ==> List
-  I   ==> Integer
-  OUT ==> OutputForm
-  NNI ==> NonNegativeInteger
-  UN  ==> Union(%,"failed")
- 
-  Exports ==> Join(OrderedCancellationAbelianMonoid,
-                   ConvertibleTo List Integer,CoercibleTo List Integer) with
-    partition: L I -> %
+Partition(): Exports == Implementation where
+  macro L == List
+  macro I == Integer
+  macro PI == PositiveInteger
+  macro OUT == OutputForm
+  macro NNI == NonNegativeInteger
+  macro UN == Union(%,"failed")
+
+  Exports == Join(OrderedCancellationAbelianMonoid, CoercibleTo L PI) with
+    partition: L PI -> %
       ++ partition(li) converts a list of integers li to a partition
-    powers: L I -> L L I
-      ++ powers(li) returns a list of 2-element lists.  For each 2-element
-      ++ list, the first element is an entry of li and the second
-      ++ element is the multiplicity with which the first element
-      ++ occurs in li.  There is a 2-element list for each value
-      ++ occurring in l.
-    pdct: % -> I
+    parts: % -> L PI
+      ++ \spad{parts x} returns the list of decreasing integer sequence
+      ++ making up the partition \spad{x}.
+    #: % -> NNI
+      ++ \spad{#x} returns the sum of all parts of the partition \spad{x}.
+    partitions: NNI -> Stream %
+      ++ \spad{partitions n} returns the stream of all partitions of
+      ++ size \spad{n}.
+    powers: % -> List Pair(PI,PI)
+      ++ powers(x) returns a list of pairs.  The second component of
+      ++ each pair is the multiplicity with which the first component
+      ++ occurs in li. 
+    pdct: % -> PI
       ++ \spad{pdct(a1**n1 a2**n2 ...)} returns 
       ++ \spad{n1! * a1**n1 * n2! * a2**n2 * ...}.
       ++ This function is used in the package \spadtype{CycleIndicators}.
     conjugate: % -> %
       ++ conjugate(p) returns the conjugate partition of a partition p
  
-  Implementation ==> add
+  Implementation == add
+    Rep == L PI
+
+    0 == per nil
+    coerce(s: %): L PI == rep s
+    partition list == per sort(#2 < #1,list)
+    parts x == rep x
+
+    #x ==
+      empty? rep x => 0
+      +/[n for n in rep x]
+
+    allPartitions(n: NNI, k: NNI): Stream % ==
+      zero? n => cons(0,empty()$Stream(%))
+      zero? k => empty()$Stream(%)
+      one? k => cons(partition [1 for i in 1..n], empty()$Stream(%))
+      s :=
+        n < k => empty()$Stream(%)
+        allPartitions((n-k)::NNI,k)
+      concat(map(per(cons(k::PI, rep #1)),s), allPartitions(n,(k-1)::NNI))
+
+    partitions n == allPartitions(n,n)
+
+    zero? x == empty? rep x
+    x < y == rep x < rep y
+    x = y == rep x = rep y
+    x + y == per merge(#2 < #1, rep x, rep y)$Rep
+
+    n:NNI * x:% ==
+      zero? n => 0
+      x + (subtractIfCan(n,1) :: NNI) * x
  
-    import PartitionsAndPermutations
- 
-    Rep := List Integer
-    0 == nil()
- 
-    coerce (s:%): List Integer == s pretend List Integer
-    convert x == copy(x pretend L I)
- 
-    partition list == sort(#2 < #1,list)
- 
-    x < y ==
-      empty? x => not empty? y
-      empty? y => false
-      first x = first y => rest x < rest y
-      first x < first y
- 
-    x = y ==
-	EQUAL(x,y)$Lisp
---      empty? x => empty? y
---      empty? y => false
---      first x = first y => rest x = rest y
---      false
- 
-    x + y ==
-      empty? x => y
-      empty? y => x
-      first x > first y => concat(first x,rest(x) + y)
-      concat(first y,x + rest(y))
-    n:NNI * x:% == (zero? n => 0; x + (subtractIfCan(n,1) :: NNI) * x)
- 
-    dp: (I,%) -> %
-    dp(i,x) ==
-      empty? x => 0
-      first x = i => rest x
-      concat(first x,dp(i,rest x))
- 
-    remv: (I,%) -> UN
-    remv(i,x) == (member?(i,x) => dp(i,x); "failed")
+    remv(i: PI,x: %): UN ==
+      member?(i,rep x) => per remove(i, rep x)$Rep
+      "failed"
  
     subtractIfCan(x, y) ==
-      empty? x =>
-        empty? y => 0
+      zero? x =>
+        zero? y => 0
         "failed"
-      empty? y => x
-      (aa := remv(first y,x)) case "failed" => "failed"
-      subtractIfCan((aa :: %), rest y)
+      zero? y => x
+      (aa := remv(first rep y,x)) case "failed" => "failed"
+      subtractIfCan((aa :: %), per rest rep y)
  
-    li1 : L I  --!! 'bite' won't compile without this
-    bite: (I,L I) -> L I
-    bite(i,li) ==
-      empty? li => concat(0,nil())
-      first li = i =>
-        li1 := bite(i,rest li)
-        concat(first(li1) + 1,rest li1)
-      concat(0,li)
+    powers x ==
+      l := rep x
+      r: List Pair(PI,PI) := nil
+      while not empty? l repeat
+        i := first l
+        -- Now, count how many times the item `i' appears in `l'.
+        -- Since parts of partitions are stored in decreasing
+        -- order, we only need to scan the rest of the list until
+        -- we hit a different number.
+        n: PI := 1
+        while not empty?(l := rest l) and i = first l repeat
+          n := n + 1
+        r := cons(pair(i,n), r)
+      reverse! r
  
-    li : L I  --!!  'powers' won't compile without this
-    powers l ==
-      empty? l => nil()
-      li := bite(first l,rest l)
-      concat([first l,first(li) + 1],powers(rest li))
+    conjugate x == per conjugate(rep x)$PartitionsAndPermutations
  
-    conjugate x == conjugate(x pretend Rep)$PartitionsAndPermutations
- 
-    mkterm: (I,I) -> OUT
-    mkterm(i1,i2) ==
+    mkterm(i1: I,i2: I): OUT ==
       i2 = 1 => (i1 :: OUT) ** (" " :: OUT)
       (i1 :: OUT) ** (i2 :: OUT)
  
-    mkexp1: L L I -> L OUT
-    mkexp1 lli ==
-      empty? lli => nil()
+    mkexp1(lli: L Pair(PI,PI)): L OUT ==
+      empty? lli => nil
       li := first lli
       empty?(rest lli) and second(li) = 1 =>
-        concat(first(li) :: OUT,nil())
-      concat(mkterm(first li,second li),mkexp1(rest lli))
+        [first(li) :: OUT]
+      cons(mkterm(first li,second li),mkexp1(rest lli))
  
     coerce(x:%):OUT == 
-        empty? (x pretend Rep) => coerce(x pretend Rep)$Rep
-        paren(reduce("*",mkexp1(powers(x pretend Rep))))
+        empty? rep x => rep(x)::OUT
+        paren(reduce("*",mkexp1(powers x)))
  
     pdct x ==
-      */[factorial(second a) * (first(a) ** (second(a) pretend NNI))
-                 for a in powers(x pretend Rep)]
+      */[factorial(second a) * (first(a) ** second(a))
+                 for a in powers x] :: PI
 
 @
 \section{domain SYMPOLY SymmetricPolynomial}
@@ -146,7 +146,7 @@ Partition: Exports == Implementation where
 ++ Description:
 ++ This domain implements symmetric polynomial
 SymmetricPolynomial(R:Ring) == PolynomialRing(R,Partition) add
-       Term:=  Record(k:Partition,c:R)
+       Term ==  Record(k:Partition,c:R)
        Rep:=  List Term
 
 -- override PR implementation because coeff. arithmetic too expensive (??)

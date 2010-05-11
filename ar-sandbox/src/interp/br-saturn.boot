@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -151,12 +151,12 @@ htSayBind(x, options) ==
 bcHt line ==
   $newPage =>  --this path affects both saturn and old lines
     text :=
-      CONSP line => [['text, :line]]
-      STRINGP line => line
+      cons? line => [['text, :line]]
+      string? line => line
       [['text, line]]
     if $saturn then htpAddToPageDescription($saturnPage, text)
     if $standard then htpAddToPageDescription($curPage, text)
-  CONSP line =>
+  cons? line =>
     $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
@@ -181,13 +181,13 @@ htShowPageNoScroll() ==
   if $standard then
     $htLineList := nil
     htMakePage htpPageDescription $curPage
-    if $htLineList then line := apply(function CONCAT, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, nreverse $htLineList)
     issueHTStandard line
   ----------------------
   if $saturn then
     $htLineList := nil
     htMakePage htpPageDescription $saturnPage
-    if $htLineList then line := apply(function CONCAT, nreverse $htLineList)
+    if $htLineList then line := apply(function strconc, nreverse $htLineList)
     issueHTSaturn line
   ----------------------
   endHTPage()
@@ -202,8 +202,8 @@ issueHTSaturn line == --called by htMakePageNoScroll and htMakeErrorPage
      writeSaturn(line)
      writeSaturnSuffix()
      if $saturnFileNumber then
-       fn := STRCONC('"sat", STRINGIMAGE $saturnFileNumber, '".tex")
-       obey STRCONC('"doswrite -a saturn.tex ",fn, '".tex")
+       fn := strconc('"sat", STRINGIMAGE $saturnFileNumber, '".tex")
+       obey strconc('"doswrite -a saturn.tex ",fn, '".tex")
        $saturnFileNumber := $saturnFileNumber + 1
 
 writeSaturnPrefix() ==
@@ -230,7 +230,7 @@ htMakeErrorPage htPage ==
   if $standard then $curPage := htPage
   if $saturn then $saturnPage := htPage
   htMakePage htpPageDescription htPage
-  line := apply(function CONCAT, nreverse $htLineList)
+  line := apply(function strconc, nreverse $htLineList)
   issueHT line
   endHTPage()
 
@@ -383,9 +383,9 @@ htMakePage1 itemList ==
   for u in itemList repeat
     itemType := 'text
     items :=
-      STRINGP u => u
+      string? u => u
       atom u => STRINGIMAGE u
-      STRINGP first u => u
+      string? first u => u
       u is ['text, :s] => s
       itemType := first u
       rest u
@@ -439,7 +439,7 @@ menuButton() == '"\menuitemstyle{}"
 --replaces htMakeButton
 getCallBackFn form ==
   func := mkCurryFun(first form, rest form)
-  STRCONC('"(|htDoneButton| '|", func, '"| ",htpName page(), '")")
+  strconc('"(|htDoneButton| '|", func, '"| ",htpName page(), '")")
 
 mkDocLink(code,s) ==
   if atom code then code := [code]
@@ -447,7 +447,7 @@ mkDocLink(code,s) ==
   ['"\lispLink[d]{\verb!", :code, '"!}{", :s, '"}"]
 
 saturnTranText x ==
-  STRINGP x         => [unTab x]
+  string? x         => [unTab x]
   null x            => nil
   r is [s,fn,:.] and s = '"\unixcommand{" => ['"{\it ",s,'".spad}"]
   x is [['text, :s],:r] => unTab [:s, :saturnTranText r]
@@ -548,19 +548,19 @@ htMakeButtonSaturn(htCommand, message, func,options) ==
 
 htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
-    STRINGP pageDescrip => [pageDescrip, :ELT(htPage, 7)]
-    nconc(nreverse COPY_-LIST pageDescrip, ELT(htPage, 7))
+    string? pageDescrip => [pageDescrip, :htPage.7]
+    nconc(nreverse COPY_-LIST pageDescrip, htPage.7)
   SETELT(htPage, 7, newDescript)
 
 
 htProcessBcStrings strings ==
   for [numChars, default, stringName, spadType, :filter] in strings repeat
     mess2 := '""
-    if NULL LASSOC(stringName, htpInputAreaAlist page()) then
+    if null LASSOC(stringName, htpInputAreaAlist page()) then
       setUpDefault(stringName, ['string, default, spadType, filter])
     if htpLabelErrorMsg(page(), stringName) then
       iht ['"\centerline{{\em ", htpLabelErrorMsg(page(), stringName), '"}}"]
-      mess2 := CONCAT(mess2, bcSadFaces())
+      mess2 := strconc(mess2, bcSadFaces())
       htpSetLabelErrorMsg(page(), stringName, nil)
     iht ['"\inputstring{", stringName, '"}{",
          numChars, '"}{", htpLabelDefault(page(),stringName), '"} ", mess2]
@@ -621,7 +621,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   form := IFCAR options
   isFile := null kind
   kind := kind or '"package"
-  RPLACA(parts,kind)
+  parts.first := kind
   conform         := mkConform(kind,name,args)
   $kPageSaturnArguments: local := rest conform
   conname         := opOf conform
@@ -630,7 +630,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   sourceFileName  := dbSourceFile INTERN name
   constrings      :=
     KDR form => dbConformGenUnder form
-    [STRCONC(name,args)]
+    [strconc(name,args)]
   emString        := ['"{\sf ",:constrings,'"}"]
   heading := [capitalKind,'" ",:emString]
   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
@@ -741,7 +741,7 @@ kPageContextMenuSaturn page ==
 
 saturnExampleLink lname ==
   htSay '"\docLink{\csname "
-  htSay STRCONC(second lname, '"\endcsname}{E&xamples}")
+  htSay strconc(second lname, '"\endcsname}{E&xamples}")
 
 $exampleConstructors := nil
 
@@ -751,7 +751,7 @@ saturnHasExamplePage conname ==
   ASSQ(conname, $exampleConstructors)
   
 getSaturnExampleList() == 
-  file := STRCONC(systemRootDirectory(), "/doc/axug/examples.lsp")
+  file := strconc(systemRootDirectory(), "/doc/axug/examples.lsp")
   not PROBE_-FILE file => nil
   fp := MAKE_-INSTREAM file
   lst := VMREAD fp
@@ -905,7 +905,7 @@ dbShowConsKinds cAlist ==
     htSay(c > 1 => pluralize kind; kind)
     htSay '":}"
     htSaySaturn '"\\"
-    bcConTable REMDUP [CAAR y for y in x]
+    bcConTable removeDuplicates [CAAR y for y in x]
   htEndMenu 'description
   htSayStandard '"\indent{0}"
 
@@ -1004,7 +1004,7 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
       thing = 'nowhere => '"implemented nowhere"
       thing = 'constant => '"constant"
       thing = '_$ => '"by the domain"
-      INTEGERP thing => '"unexported"
+      integer? thing => '"unexported"
       constructorIfTrue =>
         htSay word
         atom thing => '" an unknown constructor"
@@ -1030,7 +1030,7 @@ dbPresentOps(htPage,which,:exclusions) ==
   implementation? := not asharp? and
     $UserLevel = 'development and $conformsAreDomains --and not $includeUnexposed?
   rightmost? := star? or (implementation? and not $includeUnexposed?)
-  if INTEGERP first exclusions then exclusions := ['documentation]
+  if integer? first exclusions then exclusions := ['documentation]
   htpSetProperty(htPage,'exclusion,first exclusions)
   opAlist :=
     which = '"operation" => htpProperty(htPage,'opAlist)
@@ -1101,7 +1101,7 @@ dbPresentOpsSaturn(htPage,which,exclusions) ==
   implementation? := not asharp? and
     $UserLevel = 'development and $conformsAreDomains --and not $includeUnexposed?
   rightmost? := star? or (implementation? and not $includeUnexposed?)
-  if INTEGERP first exclusions then exclusions := ['documentation]
+  if integer? first exclusions then exclusions := ['documentation]
   htpSetProperty(htPage,'exclusion,first exclusions)
   opAlist :=
     which = '"operation" => htpProperty(htPage,'opAlist)
@@ -1358,7 +1358,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     else
        ndoc:= 
           -- we are confused whether doc is a string or a list of strings
-          CONSP doc =>  [SUBSTITUTE($charNewline, $charFauxNewline, i) for i in doc]
+          cons? doc =>  [SUBSTITUTE($charNewline, $charFauxNewline, i) for i in doc]
           SUBSTITUTE($charNewline, $charFauxNewline,doc)
        htSay ndoc 
 --  htSaySaturn '"\\"
@@ -1425,7 +1425,7 @@ htEndTabular() ==
   htSaySaturn '"\end{tabular}"
 
 htPopSaturn s ==
-  pageDescription := ELT($saturnPage, 7)
+  pageDescription := $saturnPage.7
   pageDescription is [=s,:b] => SETELT($saturnPage, 7, rest pageDescription)
   nil
 
@@ -1488,13 +1488,13 @@ htSaySaturnAmpersand() == htSaySaturn $saturnAmpersand
 
 htBlank(:options) ==
   options is [n] =>
-    htSaySaturn("STRCONC"/['"\phantom{*}" for i in 1..n])
-    htSayStandard STRCONC('"\space{",STRINGIMAGE n,'"}")
+    htSaySaturn(strconc/['"\phantom{*}" for i in 1..n])
+    htSayStandard strconc('"\space{",STRINGIMAGE n,'"}")
   htSaySaturn '"\phantom{*}"
   htSayStandard '"\space{1}"
 
 unTab s ==
-  STRINGP s => unTab1 s
+  string? s => unTab1 s
   atom s => s
   [unTab1 first s, :rest s]
 
@@ -1539,7 +1539,7 @@ satTypeDownLink(s,code) ==
   htSayStandard code
   htSayStandard '"}"
 
-mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
+mkButtonBox n == strconc('"\buttonbox{", STRINGIMAGE n, '"}")
 
 --=======================================================================
 --      Create separate databases for operations, constructors
@@ -1588,7 +1588,7 @@ mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
 --    if key ~= line.0 then
 --      if outstream then SHUT outstream
 --      key := line . 0
---      outstream := MAKE_-OUTSTREAM STRCONC(STRINGIMAGE key,'"libdb.text")
+--      outstream := MAKE_-OUTSTREAM strconc(STRINGIMAGE key,'"libdb.text")
 --    outP := FILE_-POSITION outstream
 --    [prefix,:comments] := dbSplit(line,6,1)
 --    PRINTEXP(prefix,outstream)
@@ -1617,8 +1617,8 @@ mkButtonBox n == STRCONC('"\buttonbox{", STRINGIMAGE n, '"}")
 dbSort(x,y) ==
   sin := STRINGIMAGE x
   sout:= STRINGIMAGE y
-  runCommand STRCONC('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
-  removeFile STRCONC(sin, '".text")
+  runCommand strconc('"sort -f _"",sin,'".text_" > _"", sout, '".text_"")
+  removeFile strconc(sin, '".text")
 
 
 bcConform1 form == main where
@@ -1631,9 +1631,9 @@ bcConform1 form == main where
     atom form =>
       -- string literals, e.g. "failed", are constructor arguments
       -- too, until we fix that.
-      STRINGP form or not isConstructorName form =>
+      string? form or not isConstructorName form =>
         s := 
-          STRINGP form => strconc("_"",form,"_"")
+          string? form => strconc("_"",form,"_"")
           STRINGIMAGE form
         (s.0 = char '_#) =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>
@@ -1732,12 +1732,12 @@ purgeLocalLibdb() ==   --called by the user through a clear command?
 --moveFile(before,after) ==
 --  $saturn => MOVE_-FILE(before, after)
 --  RENAME_-FILE(before, after)
---  --obey STRCONC('"mv ", before, '" ", after)
+--  --obey strconc('"mv ", before, '" ", after)
 
 -- deleted JHD/MCD, since already one in pathname.boot
 --removeFile fn ==
 --  $saturn => DELETE_-FILE fn
---  obey STRCONC('"rm ",fn)
+--  obey strconc('"rm ",fn)
 
 --=======================================================================
 --            from DAASE.LISP

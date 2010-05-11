@@ -37,7 +37,7 @@ namespace BOOT
 
 --Hypertex commands other than solve and matrix
 
-bcDrawIt2(ind,a,b) == STRCONC('"{}",ind,'"=",a,'"{}..",b,'"{}")
+bcDrawIt2(ind,a,b) == strconc('"{}",ind,'"=",a,'"{}..",b,'"{}")
 
 bcIndefiniteIntegrate() ==
   htInitPage("Indefinite Integration Basic Command",nil)
@@ -63,7 +63,7 @@ bcIndefiniteIntegrate() ==
 bcIndefiniteIntegrateGen htPage ==
   integrand := htpLabelInputString(htPage,'integrand)
   var := htpLabelInputString(htPage,'symbol)
-  bcGen STRCONC('"integrate(",integrand,'",",var,")")
+  bcGen strconc('"integrate(",integrand,'",",var,")")
 
 
 bcDefiniteIntegrate() ==
@@ -116,9 +116,9 @@ bcDefiniteIntegrateGen htPage ==
     htpButtonValue(htPage,'toButton) = 'toPoint =>
       htpLabelInputString(htPage,'to)
     '"%plusInfinity"
-  varpart := STRCONC(var,'" = ",lowerLimit,'"..",upperLimit)
+  varpart := strconc(var,'" = ",lowerLimit,'"..",upperLimit)
   bcGen
-   STRCONC('"integrate(",integrand,'",",varpart,'")")
+   strconc('"integrate(",integrand,'",",varpart,'")")
 
 bcSum() ==
   htInitPage("Sum Basic Command",nil)
@@ -155,7 +155,7 @@ bcSumGen htPage ==
   index := htpLabelInputString(htPage,'index)
   first := htpLabelInputString(htPage,'first)
   last := htpLabelInputString(htPage,'last)
-  bcGen STRCONC('"sum(",mand,'",",index,'" = ",first,'"..",last,'")")
+  bcGen strconc('"sum(",mand,'",",index,'" = ",first,'"..",last,'")")
 
 bcProduct() ==
   htInitPage("Product Basic Command",nil)
@@ -180,7 +180,7 @@ bcProductGen htPage ==
   index := htpLabelInputString(htPage,'index)
   first := htpLabelInputString(htPage,'first)
   last := htpLabelInputString(htPage,'last)
-  bcGen STRCONC('"product(",mand,'",",index,'",",first,'",",last,'")")
+  bcGen strconc('"product(",mand,'",",index,'",",first,'",",last,'")")
 
 bcDifferentiate() ==
   htInitPage("Differentiate Basic Command",nil)
@@ -222,9 +222,9 @@ bcDifferentiateGen htPage ==
     #indexList = #varlist => bcwords2liststring indexList
     bcError '"You must say how many times you want to differentiate with respect to each variable---or leave that entry blank"
   lastPart :=
-    indexpart => STRCONC('",",indexpart,'")")
+    indexpart => strconc('",",indexpart,'")")
     '")"
-  bcGen STRCONC('"differentiate(",mand,'",",varpart,lastPart)
+  bcGen strconc('"differentiate(",mand,'",",varpart,lastPart)
 
 bcDraw() ==
   htInitPage('"Draw Basic Command",nil)
@@ -288,7 +288,7 @@ bcDraw2DfunGen htPage ==
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
   if (title ~= '"") then
-    titlePart := STRCONC('"{}",'"title ==_"",title,'"_"")
+    titlePart := strconc('"{}",'"title ==_"",title,'"_"")
     bcFinish('"draw",fun,bcDrawIt2(ind,from1,to1),titlePart)
   else
     bcFinish('"draw",fun,bcDrawIt2(ind,from1,to1))
@@ -333,9 +333,9 @@ bcDraw2DparGen htPage ==
   from1 := htpLabelInputString(htPage,'from1)
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
-  curvePart := STRCONC('"curve(",'"{}",fun1,'",{}",fun2,'")")
+  curvePart := strconc('"curve(",'"{}",fun1,'",{}",fun2,'")")
   if (title ~= '"") then
-    titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
+    titlePart := (title = '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1),titlePart)
   else
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1))
@@ -383,12 +383,12 @@ bcDraw2DSolveGen htPage ==
   from2 := htpLabelInputString(htPage,'from2)
   to2 := htpLabelInputString(htPage,'to2)
   title := htpLabelInputString(htPage,'title)
-  clipPart := STRCONC('"{}",'"range==[{}",from1,'"..",to1,",{}",from2,'"..",to2,'"]")
+  clipPart := strconc('"{}",'"range==[{}",from1,'"..",to1,",{}",from2,'"..",to2,'"]")
   if (title ~= '"") then
-    titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
-    bcFinish('"draw",STRCONC(fun,'" = 0 "),ind1,ind2,clipPart,titlePart)
+    titlePart := (title = '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
+    bcFinish('"draw",strconc(fun,'" = 0 "),ind1,ind2,clipPart,titlePart)
   else
-    bcFinish('"draw",STRCONC(fun,'" = 0 "),ind1,ind2,clipPart)
+    bcFinish('"draw",strconc(fun,'" = 0 "),ind1,ind2,clipPart)
 
 bcDraw3Dfun() ==
   htInitPage('"Three Dimensional Draw Basic Command",nil)
@@ -439,7 +439,7 @@ bcDraw3DfunGen htPage ==
   to2 := htpLabelInputString(htPage,'to2)
   title := htpLabelInputString(htPage,'title)
   if (title ~= '"") then
-    titlePart := (title = '"" => nil;STRCONC('"{}",'"title ==_"",title,'"_""))
+    titlePart := (title = '"" => nil;strconc('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",fun,bcDrawIt2(ind1,from1,to1),bcDrawIt2(ind2,from2,to2),titlePart)
   else
     bcFinish('"draw",fun,bcDrawIt2(ind1,from1,to1),bcDrawIt2(ind2,from2,to2))
@@ -486,10 +486,10 @@ bcDraw3DparGen htPage ==
   from1 := htpLabelInputString(htPage,'from1)
   to1 := htpLabelInputString(htPage,'to1)
   title := htpLabelInputString(htPage,'title)
-  curvePart := STRCONC('"curve(",'"{}",fun1,'",{}",fun2,'",{}",fun3,'")")
+  curvePart := strconc('"curve(",'"{}",fun1,'",{}",fun2,'",{}",fun3,'")")
   tubePart := '"{}tubeRadius==.25,{}tubePoints==16"
   if (title ~= '"") then
-    titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
+    titlePart := (title = '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1),tubePart,titlePart)
   else
     bcFinish('"draw",curvePart,bcDrawIt2(ind,from1,to1),tubePart)
@@ -552,9 +552,9 @@ bcDraw3Dpar1Gen htPage ==
   title := htpLabelInputString(htPage,'title)
   r1 := bcDrawIt2(ind1,from1,to1)
   r2 := bcDrawIt2(ind2,from2,to2)
-  surfacePart := STRCONC('"surface(",'"{}",fun1,'",{}",fun2,'",{}",fun3,'")")
+  surfacePart := strconc('"surface(",'"{}",fun1,'",{}",fun2,'",{}",fun3,'")")
   if (title ~= '"") then
-    titlePart := (title = '"" => nil; STRCONC('"{}",'"title ==_"",title,'"_""))
+    titlePart := (title = '"" => nil; strconc('"{}",'"title ==_"",title,'"_""))
     bcFinish('"draw",surfacePart,r1,r2,titlePart)
   else
     bcFinish('"draw",surfacePart,r1,r2)
@@ -610,7 +610,7 @@ bcSeriesExpansionGen htPage ==
   var := htpLabelInputString(htPage,'variable)
   point := htpLabelInputString(htPage,'point)
   terms := htpLabelInputString(htPage,'numberOfTerms)
-  bcFinish("series",fun,STRCONC(var,'" = ",point))
+  bcFinish("series",fun,strconc(var,'" = ",point))
 
 bcSeriesByFormula(a,b) ==
   htInitPage('"Power Series Basic Command",nil)
@@ -782,9 +782,9 @@ bcSeriesGen(htPage) ==
   index   := htpLabelInputString(htPage,'index)
   var := htpLabelInputString(htPage,'variable)
   point := htpLabelInputString(htPage,'point)
-  varPart := STRCONC(var,'" = ",point)
-  minPart := STRCONC(min,'"..")
-  bcFinish('"series",STRCONC(index,'" +-> ",formula),varPart,minPart,step)
+  varPart := strconc(var,'" = ",point)
+  minPart := strconc(min,'"..")
+  bcFinish('"series",strconc(index,'" +-> ",formula),varPart,minPart,step)
 
 bcLimit() ==
   htInitPage('"Limit Basic Command",nil)
@@ -850,7 +850,7 @@ bcRealLimitGen htPage ==
     loc :=
       p = 'plusInfinity => '"%plusInfinity"
       '"%minusInfinity"
-    bcFinish('"limit",fun,STRCONC(var,'" = ",loc))
+    bcFinish('"limit",fun,strconc(var,'" = ",loc))
   page := htInitPage('"Real Limit Basic Command",nil)
   htMakePage '(
     (text . "Compute the limit")
@@ -871,7 +871,7 @@ bcRealLimitGen1(htPage,key) ==
   fun := htpProperty(htPage,'fun)
   var := htpProperty(htPage,'var)
   loc := htpProperty(htPage,'loc)
-  varPart := STRCONC(var,'" = ",loc)
+  varPart := strconc(var,'" = ",loc)
   bcFinish('"limit",fun,varPart,direction)
 
 bcComplexLimit(a,b) ==
@@ -917,14 +917,14 @@ bcComplexLimitGen htPage ==
       complexPart :=
         comp = '"0" => '""
         comp = '"1" => '"%i"
-        STRCONC(comp,'"*%i")
+        strconc(comp,'"*%i")
       real = '"0" =>
         complexPart = '"" => "0"
         complexPart
       complexPart = '"" => real
-      STRCONC(real,'" + ",complexPart)
+      strconc(real,'" + ",complexPart)
     '"%infinity"
-  varPart := STRCONC(var,'" = ",loc)
+  varPart := strconc(var,'" = ",loc)
   bcFinish('"complexLimit",fun,varPart)
 
 

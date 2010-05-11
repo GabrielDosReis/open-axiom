@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,8 @@ npNext() ==
      $inputStream := rest($inputStream)
      npFirstTok()
 
-npState()==cons($inputStream,$stack)
+npState() == 
+  [$inputStream,:$stack]
 
 npRestore(x)==
       $inputStream:=first x
@@ -96,12 +97,13 @@ npRestore(x)==
       $stack:=rest x
       true
 
-npPush x==$stack:=CONS(x,$stack)
+npPush x==
+  $stack := [x,:$stack]
 
 npPushId()==
    a:=GETL($ttok,'INFGENERIC)
    $ttok:= if a then a else $ttok
-   $stack:=CONS(tokConstruct("id",$ttok,tokPosn $stok),$stack)
+   $stack := [tokConstruct("id",$ttok,tokPosn $stok),:$stack]
    npNext()
 
 npPop1()==
@@ -111,12 +113,12 @@ npPop1()==
 
 npPop2()==
        a:= second $stack
-       RPLACD($stack,CDDR $stack)
+       $stack.rest := CDDR $stack
        a
 
 npPop3()==
        a:= third $stack
-       RPLACD(rest $stack,CDDDR $stack)
+       $stack.rest.rest := CDDDR $stack
        a
 
 npParenthesized f==
@@ -126,7 +128,7 @@ npParenthesized f==
 npParenthesize (open,close,f)==
     a:=$stok
     npEqKey open =>
-         APPLY(f,nil) and (npEqKey close or npMissingMate(close,a))=> true
+         apply(f,nil) and (npEqKey close or npMissingMate(close,a))=> true
          npEqKey close  =>  npPush  []
          npMissingMate(close,a)
     false
@@ -135,7 +137,7 @@ npEnclosed(open,close,fn,f)==
     a:=$stok
     npEqKey open =>
         npEqKey close  => npPush FUNCALL(fn,a,pfTuple pfListOf [])
-        APPLY(f,nil) and (npEqKey close or npMissingMate(close,a))=>
+        apply(f,nil) and (npEqKey close or npMissingMate(close,a))=>
                    npPush FUNCALL (fn,a,pfEnSequence npPop1())
         false
     false
@@ -162,36 +164,36 @@ npPileBracketed f==
  if npEqKey "SETTAB"
  then if npEqKey "BACKTAB"
       then npPush pfNothing()     -- never happens
-      else if APPLY(f,nil) and (npEqKey "BACKTAB" or npMissing "backtab")
+      else if apply(f,nil) and (npEqKey "BACKTAB" or npMissing "backtab")
            then npPush pfPile npPop1()
            else false
  else false
 
 npListofFun(f,h,g)==
-    if APPLY(f,nil)
+    if apply(f,nil)
     then
-        if APPLY(h,nil) and (APPLY(f,nil) or npTrap())
+        if apply(h,nil) and (apply(f,nil) or npTrap())
         then
           a:=$stack
           $stack:=nil
-          while APPLY(h,nil) and (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(nreverse $stack,a)
+          while apply(h,nil) and (apply(f,nil) or npTrap()) repeat 0
+          $stack := [nreverse $stack,:a]
           npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
         else
           true
     else false
 
 npList(f,str1,g)== -- always produces a list, g is applied to it
-    if APPLY(f,nil)
+    if apply(f,nil)
     then
         if npEqKey str1 and (npEqKey "BACKSET" or true)
-                       and (APPLY(f,nil) or npTrap())
+                       and (apply(f,nil) or npTrap())
         then
           a:=$stack
           $stack:=nil
           while npEqKey str1 and (npEqKey "BACKSET" or true) and
-                             (APPLY(f,nil) or npTrap()) repeat 0
-          $stack:=cons(nreverse $stack,a)
+                             (apply(f,nil) or npTrap()) repeat 0
+          $stack := [nreverse $stack,:a]
           npPush FUNCALL(g,  [npPop3(),npPop2(),:npPop1()])
         else
           npPush FUNCALL(g, [npPop1()])
@@ -202,15 +204,15 @@ npPPff f ==
   FUNCALL f and npPush [npPop1()]
 
 npPPf f ==
-  npSemiListing function LAMBDA(nil, npPPff f)
+  npSemiListing function (() +-> npPPff f)
 
 npPPg f ==
-  npListAndRecover function LAMBDA(nil, npPPf f)
+  npListAndRecover function (() +-> npPPf f)
     and npPush pfAppend npPop1()
 
 npPP(f) ==
-  npParened function LAMBDA(nil, npPPf f)
-    or npPileBracketed function LAMBDA(nil, npPPg f) and
+  npParened function (() +-> npPPf f)
+    or npPileBracketed function (() +-> npPPg f) and
       npPush pfEnSequence npPop1()
         or FUNCALL f
 
@@ -218,11 +220,11 @@ npPCff f ==
   FUNCALL f and npPush [npPop1()]
 
 npPCg f ==
-  npListAndRecover function LAMBDA(nil,npPCff f)
+  npListAndRecover function (() +-> npPCff f)
     and npPush pfAppend npPop1()
 
 npPC(f) ==
-  npPileBracketed function LAMBDA(nil, npPCg f) and
+  npPileBracketed function (() +-> npPCg f) and
     npPush pfEnSequence npPop1()
       or FUNCALL f
 
@@ -230,16 +232,16 @@ npPC(f) ==
 -- s must transform the head of the stack
 
 npAnyNo s==
-     while APPLY(s,nil) repeat 0
+     while apply(s,nil) repeat 0
      true
 
 npAndOr(keyword,p,f)==
-   npEqKey keyword and (APPLY(p,nil) or npTrap())
+   npEqKey keyword and (apply(p,nil) or npTrap())
              and npPush FUNCALL(f, npPop1())
 
 npRightAssoc(o,p)==
     a:=npState()
-    if APPLY(p,nil)
+    if apply(p,nil)
     then
        while  npInfGeneric o and (npRightAssoc(o,p)
                or (npPush pfApplication(npPop2(),npPop1());false)) repeat
@@ -253,10 +255,10 @@ npRightAssoc(o,p)==
 -- p o p o = (p o p) o
 
 npLeftAssoc(operations,parser)==
-    if APPLY(parser,nil)
+    if apply(parser,nil)
     then
        while npInfGeneric(operations)
-         and (APPLY(parser,nil) or
+         and (apply(parser,nil) or
               (npPush pfApplication(npPop2(),npPop1());false))
            repeat
              npPush pfInfApplication(npPop2(),npPop2(),npPop1())
@@ -303,18 +305,18 @@ npConditional f==
   then
            if npEqKey "SETTAB"
            then if npEqKey "THEN"
-                then  (APPLY(f,nil) or npTrap()) and npElse(f)
+                then  (apply(f,nil) or npTrap()) and npElse(f)
                         and npEqKey "BACKTAB"
                 else  npMissing "then"
            else if npEqKey "THEN"
-                then (APPLY(f,nil) or npTrap()) and npElse(f)
+                then (apply(f,nil) or npTrap()) and npElse(f)
                 else npMissing "then"
   else false
 
 npElse(f)==
            a:=npState()
            if npBacksetElse()
-           then  (APPLY(f,nil) or npTrap()) and
+           then  (apply(f,nil) or npTrap()) and
                  npPush pfIf(npPop3(),npPop2(),npPop1())
            else
               npRestore a
@@ -416,7 +418,7 @@ npPrefixColon()== npEqPeek "COLON" and
 
 -- silly
 
-npEncAp(f)== APPLY(f,nil) and npAnyNo function npEncl
+npEncAp(f)== apply(f,nil) and npAnyNo function npEncl
                    and npFromdom()
 
 
@@ -435,7 +437,7 @@ npFromdom1 c==
 
 npPrimary()==   npPrimary1() or npPrimary2()
 
-npDotted f== APPLY(f,nil) and npAnyNo function npSelector
+npDotted f== apply(f,nil) and npAnyNo function npSelector
 
 npSelector()==
             npEqKey "DOT" and (npPrimary() or npTrap()) and
@@ -560,20 +562,20 @@ npExpress()==
              npPush pfCollect (npPop2(),pfListOf npPop1()) or true)
 
 npZeroOrMore f==
-       APPLY(f,nil)=>
+       apply(f,nil)=>
          a:=$stack
          $stack:=nil
-         while APPLY(f,nil) repeat 0
-         $stack:=cons(nreverse $stack,a)
-         npPush cons(npPop2(),npPop1())
+         while apply(f,nil) repeat 0
+         $stack := [nreverse $stack,:a]
+         npPush [npPop2(),:npPop1()]
        npPush nil
        true
 
 npIterators()==
          npForIn() and npZeroOrMore function npIterator
-             and npPush cons(npPop2(),npPop1())  or
+             and npPush [npPop2(),:npPop1()]  or
               npWhile() and (npIterators() and
-                    npPush cons(npPop2(),npPop1()) or npPush [npPop1()])
+                    npPush [npPop2(),:npPop1()] or npPush [npPop1()])
 
 npIterator()==   npForIn() or npSuchThat() or npWhile()
 
@@ -604,16 +606,16 @@ npStatement()==
 
 npBackTrack(p1,p2,p3)==
      a:=npState()
-     APPLY(p1,nil) =>
+     apply(p1,nil) =>
          npEqPeek p2   =>
             npRestore a
-            APPLY(p3,nil) or npTrap()
+            apply(p3,nil) or npTrap()
          true
      false
 
 npMDEF() == 
   npBackTrack(function npStatement,"MDEF",
-    function LAMBDA(nil, npMdef "MDEF"))
+    function (() +-> npMdef "MDEF"))
 
 npAssign()== npBackTrack(function npMDEF,"BECOMES",function npAssignment)
 
@@ -645,7 +647,7 @@ npGives()== npBackTrack(function npExit,"GIVES",function npLambda)
 
 npDefinitionOrStatement()==
   npQuantified 
-    function LAMBDA(nil, npBackTrack(function npGives,
+    function (() +-> npBackTrack(function npGives,
                             "DEF",function npDef))
 
 npVoid()== npAndOr("DO",function npStatement,function pfNovalue)
@@ -722,7 +724,7 @@ npFix()== npEqKey "FIX" and  npPP function npDef
                and npPush pfFix npPop1 ()
 
 npMacro() == 
-  npEqKey "MACRO" and  npPP function LAMBDA(nil, npMdef "DEF")
+  npEqKey "MACRO" and  npPP function (() +-> npMdef "DEF")
 
 npRule()== npEqKey "RULE" and  npPP function npSingleRule
 
@@ -963,7 +965,7 @@ npListAndRecover(f)==
    done:=false
    c:=$inputStream
    while not done repeat
-     found:=CATCH("TRAPPOINT",APPLY(f,nil))
+     found:=CATCH("TRAPPOINT",apply(f,nil))
      if found="TRAPPED"
      then
         $inputStream:=c
@@ -988,7 +990,7 @@ npListAndRecover(f)==
             else
                 npNext()
                 c:=$inputStream
-     b:=cons(npPop1(),b)
+     b := [npPop1(),:b]
    $stack:=a
    npPush nreverse b
  

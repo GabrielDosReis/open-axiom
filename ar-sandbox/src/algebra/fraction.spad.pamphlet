@@ -368,7 +368,7 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
           s: String := ""
           sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
           dev: OpenMathDevice := _
-		  	OMopenString(sp pretend String, OMencodingXML)
+		  	OMopenString(sp pretend String, OMencodingXML())
           OMputObject(dev)
           writeOMFrac(dev, x)
           OMputEndObject(dev)
@@ -380,7 +380,7 @@ Fraction(S: IntegralDomain): QuotientFieldCategory S with
           s: String := ""
           sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
           dev: OpenMathDevice := _
-		  	OMopenString(sp pretend String, OMencodingXML)
+		  	OMopenString(sp pretend String, OMencodingXML())
           if wholeObj then
             OMputObject(dev)
           writeOMFrac(dev, x)
@@ -698,6 +698,8 @@ FractionFunctions2(A, B): Exports == Impl where
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

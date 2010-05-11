@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -44,21 +44,21 @@ minimalise x ==
     min x ==
       y:=HGET($hash,x)
       y => y
-      CONSP x =>
+      cons? x =>
         x = '(QUOTE T) => '(QUOTE T)
         -- copes with a particular Lucid-ism, God knows why
         -- This circular way of doing things is an attempt to deal with Lucid
         -- Who may place quoted cells in read-only memory
         z:=min first x
-        if not EQ(z,first x) then RPLACA(x,z)
+        if not EQ(z,first x) then x.first := z
         z:=min rest x
-        if not EQ(z,rest x) then RPLACD(x,z)
+        if not EQ(z,rest x) then x.rest := z
         HashCheck x
       REFVECP x =>
         for i in 0..MAXINDEX x repeat
           x.i:=min (x.i)
         HashCheck x
-      STRINGP x => HashCheck x
+      string? x => HashCheck x
       x
     HashCheck x ==
       y:=HGET($hash,x)

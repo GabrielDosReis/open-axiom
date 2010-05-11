@@ -206,7 +206,6 @@ NAGLinkSupportPackage() : exports == implementation where
       systemCommand("set fortran precision single")$MoreSystemCommands
       if _$nagMessages$Lisp  then 
         print("** Warning: Restoring fortran precision to single")$PrintPackage
-      void()$Void
 
     uniqueId : String := ""
     counter : Integer := 0
@@ -284,7 +283,6 @@ FortranPackage(): Exports == Implementation where
     command : String := 
       concat(["sys rm -f ",target," ; cp ",source," ",target])$String
     systemCommand(command)$MoreSystemCommands
-    void()$Void
 
   linkToFortran(name:S,args:L U, decls:L L U, res:L(S)):SEX == 
     makeFort(name,args,decls,res,NIL$Lisp,NIL$Lisp)$Lisp
@@ -373,7 +371,6 @@ FortranOutputStackPackage() : specification == implementation where
         push!(string(_$fortranOutputFile$Lisp),fortranOutputStack)
       push!( fn::String,fortranOutputStack)
       systemCommand concat(["set output fortran quiet ", fn::String])$String
-      void()
 
     pushFortranOutputStack(fn:String):Void ==
       if empty? fortranOutputStack then
@@ -383,14 +380,12 @@ FortranOutputStackPackage() : specification == implementation where
         push!(string(_$fortranOutputFile$Lisp),fortranOutputStack)
       push!( fn,fortranOutputStack)
       systemCommand concat(["set output fortran quiet ", fn])$String
-      void()
 
     popFortranOutputStack():Void ==
       if not empty? fortranOutputStack then pop! fortranOutputStack
       if empty? fortranOutputStack then push!("CONSOLE",fortranOutputStack)
       systemCommand concat(["set output fortran quiet append ",_
                            top fortranOutputStack])$String
-      void()
 
     clearFortranOutputStack():Stack String ==
       fortranOutputStack := empty()@(Stack String)

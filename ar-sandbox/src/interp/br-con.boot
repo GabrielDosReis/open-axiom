@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ conPageFastPath x == --called by conPage and constructorSearch
 --gets line quickly for constructor name or abbreviation
   s := STRINGIMAGE x
   charPosition(char '_*,s,0) < #s => nil     --quit if name has * in it
-  name := (STRINGP x => INTERN x; x)
+  name := (string? x => INTERN x; x)
   entry := HGET($lowerCaseConTb,name) or return nil
   lineNumber := LASSQ('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable
@@ -105,7 +105,7 @@ conPageConEntry entry ==
 --%   form := IFCAR options
 --%   isFile := null kind
 --%   kind := kind or '"package"
---%   RPLACA(parts,kind)
+--%   parts.first := kind
 --%   conform         := mkConform(kind,name,args)
 --%   conname         := opOf conform
 --%   capitalKind     := capitalize kind
@@ -113,7 +113,7 @@ conPageConEntry entry ==
 --%   sourceFileName  := dbSourceFile INTERN name
 --%   constrings      :=
 --%     KDR form => dbConformGenUnder form
---%     [STRCONC(name,args)]
+--%     [strconc(name,args)]
 --%   emString        := ['"{\sf ",:constrings,'"}"]
 --%   heading := [capitalKind,'" ",:emString]
 --%   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
@@ -157,7 +157,7 @@ conPageConEntry entry ==
 conform2String u ==
   x := form2String u
   atom x => STRINGIMAGE x
-  "STRCONC"/[STRINGIMAGE y for y in x]
+  strconc/[STRINGIMAGE y for y in x]
 
 kxPage(htPage,name) == downlink name
 
@@ -267,7 +267,8 @@ domainDescendantsOf(conform,domform) == main where --called by kargPage
         u := assoc(item,alist) =>
           keepList := [[item,:quickAnd(rest u,pred)],:keepList]
       alist := keepList
-    for pair in alist repeat RPLACD(pair,simpHasPred rest pair)
+    for pair in alist repeat 
+      pair.rest := simpHasPred rest pair
     listSort(function GLESSEQP, alist)
   catScreen(r,alist) ==
     for x in r repeat
@@ -293,7 +294,7 @@ kiPage(htPage,junk) ==
 
 kePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   domname         := kDomainName(htPage,kind,name,nargs)
   domname is ['error,:.] => errorPage(htPage,domname)
   htpSetProperty(htPage,'domname,domname)
@@ -306,9 +307,9 @@ kePage(htPage,junk) ==
                        getConstructorExports((domname or conform),true))
   [conlist,attrlist,:oplist] := data
   if domname then
-    for x in conlist repeat  RPLAC(rest x,simpHasPred rest x)
-    for x in attrlist repeat RPLAC(CDDR x,simpHasPred CDDR x)
-    for x in oplist   repeat RPLAC(CDDR x,simpHasPred CDDR x)
+    for x in conlist repeat  x.rest := simpHasPred rest x
+    for x in attrlist repeat x.rest.rest := simpHasPred CDDR x
+    for x in oplist   repeat x.rest.rest := simpHasPred CDDR x
   prefix := pluralSay(#conlist + #attrlist + #oplist,'"Export",'"Exports")
   page := htInitPage([:prefix,'" of ",:heading],htCopyProplist htPage)
   htSayStandard '"\beginmenu "
@@ -426,7 +427,7 @@ kcPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   if kind = '"category" and dbpHasDefaultCategory? xpart then
     htSay '"This category has default package "
-    bcCon(STRCONC(name,char '_&),'"")
+    bcCon(strconc(name,char '_&),'"")
   htSayStandard '"\newline"
   htBeginMenu(3)
   htSayStandard '"\item "
@@ -510,7 +511,8 @@ kcpPage(htPage,junk) ==
 
 reduceAlistForDomain(alist,domform,conform) == --called from kccPage
   alist := SUBLISLIS(rest domform,rest conform,alist)
-  for pair in alist repeat RPLACD(pair,simpHasPred(rest pair,domform))
+  for pair in alist repeat 
+    pair.rest := simpHasPred(rest pair,domform)
   [pair for (pair := [.,:pred]) in alist | pred]
 
 kcaPage(htPage,junk) ==
@@ -576,12 +578,12 @@ augmentHasArgs(alist,conform) ==
 kcdePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   conname         := INTERN name
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString STRCONC(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
   pakname         :=
---  kind = '"category" => INTERN STRCONC(name,char '_&)
+--  kind = '"category" => INTERN strconc(name,char '_&)
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -592,12 +594,12 @@ kcdePage(htPage,junk) ==
 kcuPage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   conname         := INTERN name
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString STRCONC(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
   pakname         :=
-    kind = '"category" => INTERN STRCONC(name,char '_&)
+    kind = '"category" => INTERN strconc(name,char '_&)
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -618,7 +620,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN STRCONC(PNAME name,char '_&)
+    kind = '"category" => INTERN strconc(PNAME name,char '_&)
     opOf conform
   domList := getImports pakname
   if domname then
@@ -629,7 +631,7 @@ kcnPage(htPage,junk) ==
   dbShowCons(htPage,'names)
 
 koPageInputAreaUnchanged?(htPage, nargs) ==
-  [htpLabelInputString(htPage,INTERN STRCONC('"*",STRINGIMAGE i)) for i in 1..nargs]
+  [htpLabelInputString(htPage,INTERN strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
       = htpProperty(htPage,'inputAreaList)
 
 kDomainName(htPage,kind,name,nargs) ==
@@ -647,12 +649,12 @@ kDomainName(htPage,kind,name,nargs) ==
   argString :=
     null args => '"()"
     argTailPart :=
-      "STRCONC"/["STRCONC"/ ['",",:x] for x in KDR args]
-    "STRCONC"/['"(",:first args,argTailPart,'")"]
+      strconc/[strconc/ ['",",:x] for x in KDR args]
+    strconc/['"(",:first args,argTailPart,'")"]
   typeForm := CATCH($SpadReaderTag, unabbrev mkConform(kind,name,argString)) or
-    ['error,'invalidType,STRCONC(name,argString)]
+    ['error,'invalidType,strconc(name,argString)]
   null (evaluatedTypeForm := kisValidType typeForm) =>
-    ['error,'invalidType,STRCONC(name,argString)]
+    ['error,'invalidType,strconc(name,argString)]
   dbMkEvalable evaluatedTypeForm
 
 kArgumentCheck(domain?,s) ==
@@ -701,15 +703,15 @@ parseNoMacroFromString(s) ==
 
 mkConform(kind,name,argString) ==
   kind ~= '"default package" =>
-    form := STRCONC(name,argString)
+    form := strconc(name,argString)
     parse := parseNoMacroFromString form
     null parse =>
       sayBrightlyNT '"Won't parse: "
       pp form
       systemError '"Keywords in argument list?"
-    ATOM parse => [parse]
+    atom parse => [parse]
     parse
-  [INTERN name,:rest ncParseFromString STRCONC(char 'd,argString)]  --& case
+  [INTERN name,:rest ncParseFromString strconc(char 'd,argString)]  --& case
 
 --=======================================================================
 --           Operation Page for a Domain Form from Scratch
@@ -747,8 +749,8 @@ conOpPage1(conform,:options) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments]:=parts:= dbXParts(line,7,1)
   isFile := null kind
   kind := kind or '"package"
-  RPLACA(parts,kind)
-  constring       := STRCONC(name,args)
+  parts.first := kind
+  constring       := strconc(name,args)
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
@@ -775,7 +777,7 @@ conOpPage1(conform,:options) ==
 --=======================================================================
 koPage(htPage,which) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  constring       := STRCONC(name,args)
+  constring       := strconc(name,args)
   conname         := INTERN name
   domname         :=
     (u := htpProperty(htPage,'domname)) is [=conname,:.]
@@ -874,7 +876,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
     if null FIXP op and
-      DIGITP (s := STRINGIMAGE op).0 then op := string2Integer s
+      DIGITP((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>
       doc := dbConstructorDoc(first aux,$op,$sig)
@@ -885,7 +887,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
     or/[gn x for x in HGET(docTable,op)]
   gn u ==  --u is [origin,entry1,...,:code]
     $conform := first u              --origin
-    if ATOM $conform then $conform := [$conform]
+    if atom $conform then $conform := [$conform]
     code     := LASTATOM u         --optional topic code
     comments := or/[p for entry in rest u | p := hn entry] or return nil
     [$conform,first comments,:code]
@@ -957,7 +959,7 @@ conPageChoose conname ==
   dbShowCons1(nil,cAlist,'names)
 
 dbShowCons1(htPage,cAlist,key) ==
-  conlist := REMDUP [item for x in cAlist | pred] where
+  conlist := removeDuplicates [item for x in cAlist | pred] where
     pred() ==
       item := first x
       $exposedOnlyIfTrue => isExposedConstructor opOf item
@@ -976,7 +978,7 @@ dbShowCons1(htPage,cAlist,key) ==
     htPage => htCopyProplist htPage
     nil
   page := htInitPageNoScroll(proplist,dbConsHeading(htPage,conlist,key,kind))
-  if u := htpProperty(page,'specialMessage) then APPLY(first u,rest u)
+  if u := htpProperty(page,'specialMessage) then apply(first u,rest u)
   htSayStandard('"\beginscroll ")
   htpSetProperty(page,'cAlist,cAlist)
   $conformsAreDomains: local := htpProperty(page,'domname)
@@ -989,12 +991,12 @@ dbShowCons1(htPage,cAlist,key) ==
       flist :=
         [y for con in conlist |
           y := (fn := getConstructorSourceFileFromDB con)]
-      bcUnixTable(listSort(function GLESSEQP,REMDUP flist))
+      bcUnixTable(listSort(function GLESSEQP,removeDuplicates flist))
     key = 'documentation   => dbShowConsDoc(page,conlist)
     if $exposedOnlyIfTrue then
       cAlist := [x for x in cAlist | isExposedConstructor opOf first x]
     key = 'conditions =>     dbShowConditions(page,cAlist,kind)
-    key = 'parameters => bcConTable REMDUP ASSOCLEFT cAlist
+    key = 'parameters => bcConTable removeDuplicates ASSOCLEFT cAlist
     key = 'kinds => dbShowConsKinds cAlist
   dbConsExposureMessage()
   htSayStandard("\endscroll ")
@@ -1031,7 +1033,7 @@ dbConsExposureMessage() ==
 --    htSay '" "
 --    htSay (c > 1 => pluralize kind; kind)
 --    htSay '":}"
---    bcConTable REMDUP [CAAR y for y in x]
+--    bcConTable removeDuplicates [CAAR y for y in x]
 --  htEndMenu(2)
 --  htSay '"\indent{0}"
 
@@ -1044,7 +1046,7 @@ dbShowConsDoc(htPage,conlist) ==
   cAlist := htpProperty(htPage,'cAlist)
   --the following code is necessary to skip over duplicates on cAlist
   index := 0
-  for x in REMDUP conlist repeat
+  for x in removeDuplicates conlist repeat
   -- for x in conlist repeat
     dbShowConsDoc1(htPage,getConstructorForm x,i) where i() ==
       while CAAAR cAlist ~= x repeat
@@ -1077,7 +1079,7 @@ getConstructorDocumentation conname ==
     is [[nil,line,:.],:.] and line or '""
 
 dbSelectCon(htPage,which,index) ==
-  conPage opOf first (htpProperty(htPage,'cAlist)).index
+  conPage opOf first htpProperty(htPage,'cAlist).index
 
 dbShowConditions(htPage,cAlist,kind) ==
   conform := htpProperty(htPage,'conform)
@@ -1100,7 +1102,7 @@ dbConsHeading(htPage,conlist,view,kind) ==
   place :=
     htPage => htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
     nil
-  count := #(REMDUP conlist)
+  count := #(removeDuplicates conlist)
   -- count := #conlist
   thing = '"benefactor" =>
     [STRINGIMAGE count,'" Constructors Used by ",form2HtString(place,nil,true)]
@@ -1189,7 +1191,7 @@ dbSpecialExpandIfNecessary(conform,opAlist) ==
   for [op,:u] in opAlist repeat
     for pair in u repeat
       [sig,comments] := pair
-      RPLACD(pair,['T,conform,'T,comments]) --[sig,pred,origin,exposeFg,doc]
+      pair.rest := ['T,conform,'T,comments] --[sig,pred,origin,exposeFg,doc]
   opAlist
 
 X := '"{\sf Record(a:A,b:B)} is used to create the class of pairs of objects made up of a value of type {\em A} selected by the symbol {\em a} and a value of type {\em B} selected by the symbol {\em b}. "
@@ -1198,7 +1200,7 @@ Y := '"In general, the {\sf Record} constructor can take any number of arguments
 
 Z := '"{\sf Record} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y,Z)
+MESSAGE := strconc(X,Y,Z)
 
 PUT('Record,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1222,7 +1224,7 @@ X := '"{\sf Union(A,B)} denotes the class of objects which are which are either 
 
 Y := '"For an alternate form of {\sf Union} with _"tags_", see \downlink{Union(a:A,b:B)}{DomainUnion}. {\sf Union} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y)
+MESSAGE := strconc(X,Y)
 
 PUT('UntaggedUnion,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1252,7 +1254,7 @@ W := '"This tagged {\sf Union} type is necessary, for example, to disambiguate t
 
 A := '"{\sf Union} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y,Z,W,A)
+MESSAGE := strconc(X,Y,Z,W,A)
 
 PUT('Union,'documentation,substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1278,7 +1280,7 @@ Y := '" All but the first argument is regarded as part of a source tuple for the
 
 Z := '"{\sf Mapping} is a primitive domain of \Language{} which cannot be defined in the \Language{} language."
 
-MESSAGE := STRCONC(X,Y,Z)
+MESSAGE := strconc(X,Y,Z)
 
 PUT('Mapping,'documentation, substitute(MESSAGE,'MESSAGE,'(
   (constructor (NIL MESSAGE))
@@ -1290,7 +1292,7 @@ X := '"{\em Enumeration(a1, a2 ,..., aN)} creates an object which is exactly one
 
 Y := '" The {\em Enumeration} can constructor can take any number of symbols as arguments."
 
-MESSAGE := STRCONC(X, Y)
+MESSAGE := strconc(X, Y)
 
 PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
   (constructor (NIL MESSAGE))
@@ -1307,7 +1309,7 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:INTERN digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[DIGITP ELT(s,i) for i in 0..MAXINDEX s]]
+     | (s := PNAME arg) and "or"/[DIGITP s.i for i in 0..MAXINDEX s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer
@@ -1318,5 +1320,5 @@ digits2Names s ==
       n := DIGIT_-CHAR_-P c =>
         ('("Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine")).n
       c
-    CONCAT(str, segment)
+    strconc(str, segment)
   str

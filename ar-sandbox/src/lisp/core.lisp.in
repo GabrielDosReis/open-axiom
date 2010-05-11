@@ -91,6 +91,7 @@
 	   "$LispOptimizeOptions"
 	   "$StandardLinking"
 	   "$ECLVersionNumber"
+	   "$FilesToRetain"
 
 	   "getOptionValue"
            "getCommandLineArguments"
@@ -135,6 +136,10 @@
 ;; on the Make command line). 
 (defconstant |$systemInstallationDirectory| 
   "@open_axiom_installdir@/")
+
+;; File kinds to retain.
+(defconstant |$FilesToRetain|
+  '(@oa_keep_files@))
 
 ;; Lisp compiler optimization settings.
 (defconstant |$LispOptimizeOptions|

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -113,20 +113,20 @@ buildLibdbConEntry conname ==
        and t is ['CATEGORY,'package,:.] then kind := 'package
     $kind :=
       pname.(MAXINDEX pname) = char '_& => 'x
-      DOWNCASE (PNAME kind).0
+      DOWNCASE PNAME(kind).0
     argl := rest $conform
     conComments :=
       LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r
       '""
     argpart:= SUBSTRING(form2HtString ['f,:argl],1,nil)
     sigpart:= libConstructorSig $conform
-    header := STRCONC($kind,PNAME conname)
+    header := strconc($kind,PNAME conname)
     buildLibdbString [header,#argl,$exposed?,sigpart,argpart,abb,conComments]
 
 dbMkForm x == atom x and [x] or x
 
 buildLibdbString [x,:u] ==
-  STRCONC(STRINGIMAGE x,"STRCONC"/[STRCONC('"`",STRINGIMAGE y) for y in u])
+  strconc(STRINGIMAGE x,strconc/[strconc('"`",STRINGIMAGE y) for y in u])
 
 libConstructorSig [conname,:argl] ==
   [[.,:sig],:.] := getConstructorModemapFromDB conname
@@ -150,19 +150,19 @@ libConstructorSig [conname,:argl] ==
 
 concatWithBlanks r ==
   r is [head,:tail] =>
-    tail => STRCONC(head,'" ",concatWithBlanks tail)
+    tail => strconc(head,'" ",concatWithBlanks tail)
     head
   '""
 
 writedb(u) ==
-  not STRINGP u => nil        --skip if not a string
+  not string? u => nil        --skip if not a string
   PRINTEXP(addPatchesToLongLines(u,500),$outStream)
   --positions for tick(1), dashes(2), and address(9), i.e. 12
   TERPRI $outStream
 
 addPatchesToLongLines(s,n) ==
-  #s > n => STRCONC(SUBSTRING(s,0,n),
-              addPatchesToLongLines(STRCONC('"--",SUBSTRING(s,n,nil)),n))
+  #s > n => strconc(SUBSTRING(s,0,n),
+              addPatchesToLongLines(strconc('"--",SUBSTRING(s,n,nil)),n))
   s
 
 buildLibOps oplist == for [op,sig,:pred] in oplist repeat buildLibOp(op,sig,pred)
@@ -179,8 +179,8 @@ buildLibOp(op,sig,pred) ==
     (s := STRINGIMAGE op) = '"One" => '"1"
     s = '"Zero" => '"0"
     s
-  header := STRCONC('"o",sop)
-  conform:= STRCONC($kind,form2LispString $conform)
+  header := strconc('"o",sop)
+  conform:= strconc($kind,form2LispString $conform)
   comments:= libdbTrim concatWithBlanks LASSOC(sig,LASSOC(op,$doc))
   checkCommentsForBraces('operation,sop,sigpart,comments)
   writedb
@@ -215,12 +215,12 @@ buildLibAttrs attrlist ==
 
 buildLibAttr(name,argl,pred) ==
 --attributes      AKname\#\args\conname\pred\comments (K is U or C)
-  header := STRCONC('"a",STRINGIMAGE name)
+  header := strconc('"a",STRINGIMAGE name)
   argPart:= SUBSTRING(form2LispString ['f,:argl],1,nil)
   pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
   predString := (pred = 'T => '""; form2LispString pred)
-  header := STRCONC('"a",STRINGIMAGE name)
-  conname := STRCONC($kind,form2LispString $conname)
+  header := strconc('"a",STRINGIMAGE name)
+  conname := strconc($kind,form2LispString $conname)
   comments:= concatWithBlanks LASSOC(['attribute,:argl],LASSOC(name,$doc))
   checkCommentsForBraces('attribute,STRINGIMAGE name,argl,comments)
   writedb
@@ -234,23 +234,24 @@ dbAugmentConstructorDataTable() ==
     cname := INTERN dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
        [name,abb,:.] := entry
-       RPLACD(rest entry,PUTALIST(CDDR entry,'dbLineNumber,fp))
+       entry.rest.rest := PUTALIST(CDDR entry,'dbLineNumber,fp)
 --     if xname := constructorHasExamplePage entry then
---       RPLACD(rest entry,PUTALIST(CDDR entry,'dbExampleFile,xname))
+--       entry.rest := PUTALIST(CDDR entry,'dbExampleFile,xname)
        args := IFCDR getConstructorFormFromDB name
-       if args then RPLACD(rest entry,PUTALIST(CDDR entry,'constructorArgs,args))
+       if args then 
+         entry.rest.rest := PUTALIST(CDDR entry,'constructorArgs,args)
   'done
 
 dbHasExamplePage conname ==
   sname    := STRINGIMAGE conname
   abb      := constructor? conname
   ucname   := UPCASE STRINGIMAGE abb
-  pathname :=STRCONC(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
-  isExistingFile pathname => INTERN STRCONC(sname,'"XmpPage")
+  pathname :=strconc(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
+  isExistingFile pathname => INTERN strconc(sname,'"XmpPage")
   nil
 
 dbRead(n) ==
-  instream := MAKE_-INSTREAM STRCONC(systemRootDirectory(), '"/algebra/libdb.text")
+  instream := MAKE_-INSTREAM strconc(systemRootDirectory(), '"/algebra/libdb.text")
   FILE_-POSITION(instream,n)
   line := READLINE instream
   SHUT instream
@@ -258,7 +259,7 @@ dbRead(n) ==
 
 dbReadComments(n) ==
   n = 0 => '""
-  instream := MAKE_-INSTREAM STRCONC(systemRootDirectory(),'"/algebra/comdb.text")
+  instream := MAKE_-INSTREAM strconc(systemRootDirectory(),'"/algebra/comdb.text")
   FILE_-POSITION(instream,n)
   line := READLINE instream
   k := dbTickIndex(line,1,1)
@@ -268,7 +269,7 @@ dbReadComments(n) ==
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
         xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
   SHUT instream
-  STRCONC(line, "STRCONC"/nreverse xtralines)
+  strconc(line, strconc/nreverse xtralines)
 
 dbSplitLibdb() ==
   instream := MAKE_-INSTREAM  '"olibdb.text"
@@ -315,7 +316,7 @@ dbSpreadComments(line,n) ==
   k >= MAXINDEX line => [SUBSTRING(line,n,nil)]
   line.(k + 1) ~= char '_- =>
     u := dbSpreadComments(line,k)
-    [STRCONC(SUBSTRING(line,n,k - n),first u),:rest u]
+    [strconc(SUBSTRING(line,n,k - n),first u),:rest u]
   [SUBSTRING(line,n,k - n),:dbSpreadComments(SUBSTRING(line,k,nil),0)]
 
 --============================================================================
@@ -328,7 +329,7 @@ buildGloss() ==  --called by buildDatabase (database.boot)
   $outStream: local := MAKE_-OUTSTREAM '"temp.text"
   $x : local := nil
   $attribute? : local := true     --do not surround first word
-  pathname := STRCONC(systemRootDirectory(),'"doc/gloss.text")
+  pathname := strconc(systemRootDirectory(),'"doc/gloss.text")
   instream := MAKE_-INSTREAM pathname
   keypath  := '"glosskey.text"
   removeFile keypath
@@ -358,7 +359,7 @@ buildGloss() ==  --called by buildDatabase (database.boot)
       PRINTEXP($tick,defstream)
       PRINTEXP(x,    defstream)
       TERPRI defstream
-    PRINTEXP("STRCONC"/lines,htstream)
+    PRINTEXP(strconc/lines,htstream)
     TERPRI htstream
   PRINTEXP('"\endmenu\endscroll",htstream)
   PRINTEXP('"\lispdownlink{Search}{(|htGloss| _"\stringvalue{pattern}_")} for glossary entry matching \inputstring{pattern}{24}{*}",htstream)
@@ -406,7 +407,7 @@ getGlossLines instream ==
         #last > 0 and last.(MAXINDEX last) ~= $charBlank => $charBlank
         '""
       lastLineHadTick := false
-      text := [STRCONC(last,fill,line),:rest text]
+      text := [strconc(last,fill,line),:rest text]
     lastLineHadTick := true
     keys := [SUBSTRING(line,0,n),:keys]
     text := [SUBSTRING(line,n + 1,nil),:text]
@@ -434,7 +435,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
 getDefaultPackageClients con ==  --called by mkUsersHashTable
   catname := INTERN SUBSTRING(s := PNAME con,0,MAXINDEX s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
-    pakname := INTERN STRCONC(PNAME catAncestor,'"&")
+    pakname := INTERN strconc(PNAME catAncestor,'"&")
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
     acc := union([CAAR x for x in domainsOf([catAncestor],nil)],acc)
   listSort(function GLESSEQP,acc)
@@ -489,10 +490,10 @@ getImports conname == --called by mkUsersHashTable
           [op,:[doImport(y,template) for y in args]]
 
         [op,:[doImport(y,template) for y in args]]
-      INTEGERP x => doImport(template.x,template)
+      integer? x => doImport(template.x,template)
       x = '$ => '$
       x = "$$" => "$$"
-      STRINGP x => x
+      string? x => x
       systemError '"bad argument in template"
   listSort(function GLESSEQP,SUBLISLIS(rest conform,$FormalMapVariableList,u))
 
@@ -555,7 +556,7 @@ folks u == --called by getParents and getParentsForDomain
   u is ['SIGNATURE,:.] => nil
   u is ['TYPE,:.] => nil
   u is ['ATTRIBUTE,a] =>
-    CONSP a and constructor? opOf a => folks a
+    cons? a and constructor? opOf a => folks a
     nil
   u is ['IF,p,q,r] =>
     q1 := folks q
@@ -651,7 +652,7 @@ ancestorsAdd(pred,form) == --called by ancestorsRecur
   op := IFCAR form or form
   alist := HGET($if,op)
   existingNode := assoc(form,alist) =>
-    RPLACD(existingNode,quickOr(rest existingNode,pred))
+    existingNode.rest := quickOr(rest existingNode,pred)
   HPUT($if,op,[[form,:pred],:alist])
 
 domainsOf(conform,domname,:options) ==
@@ -698,8 +699,8 @@ transKCatAlist(conform,domname,s) == main where
       --conform has no arguments so each pair has form [con,:pred]
       for pair in s repeat
         leftForm := getConstructorForm first pair or systemError nil
-        RPLACA(pair,leftForm)
-        RPLACD(pair,sublisFormal(KDR leftForm,rest pair))
+        pair.first := leftForm
+        pair.rest := sublisFormal(KDR leftForm,rest pair)
       s
     --no domname, so look for special argument combinations
     acc := nil
@@ -720,8 +721,8 @@ transKCatAlist(conform,domname,s) == main where
       nreverse acc
     for pair in s repeat --pair has form [con,:pred]
       leftForm := getConstructorForm first pair
-      RPLACA(pair,leftForm)
-      RPLACD(pair,sublisFormal(KDR leftForm,rest pair))
+      pair.first := leftForm
+      pair.rest := sublisFormal(KDR leftForm,rest pair)
     s
 
 mkHasArgsPred subargs ==
@@ -745,7 +746,7 @@ sublisFormal(args,exp,:options) == main where
       r := nreverse acc
       if y then
         nd := LASTNODE r
-        RPLACD(nd,sublisFormal1(args,y,n))
+        nd.rest := sublisFormal1(args,y,n)
       r
     IDENTP x =>
       j := or/[i for f in $formals for i in 0..n | EQ(f,x)] =>

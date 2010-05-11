@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ showFrom(D,:option) ==
   $predicateList: local := getConstructorPredicatesFromDB nam
   for (opSig := [op,sig]) in getDomainSigs1(D,ops) repeat
     u := from?(D,op,sig)
-    x := assoc(u,alist) => RPLACD(x,[opSig,:rest x])
+    x := assoc(u,alist) => x.rest := [opSig,:rest x]
     alist := [[u,opSig],:alist]
   for [conform,:l] in alist repeat
     sayBrightly concat('"From ",form2String conform,'":")
@@ -115,7 +115,7 @@ getDomainOps D ==
   domname := D.0
   conname := first domname
   $predicateList: local := getConstructorPredicatesFromDB conname
-  REMDUP listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
+  removeDuplicates listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
   domname := D.0
@@ -193,7 +193,7 @@ showDomainsOp1(u,key) ==
   u
 
 getDomainRefName(dom,nam) ==
-  CONSP nam => [getDomainRefName(dom,x) for x in nam]
+  cons? nam => [getDomainRefName(dom,x) for x in nam]
   not FIXP nam => nam
   slot := dom.nam
   VECP slot => slot.0

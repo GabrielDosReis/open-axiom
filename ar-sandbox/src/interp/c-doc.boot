@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -93,7 +93,7 @@ recordSignatureDocumentation(opSig,lineno) ==
 
 recordAttributeDocumentation(['Attribute,att],lineno) ==
   name := opOf att
-  UPPER_-CASE_-P (PNAME name).0 => nil
+  UPPER_-CASE_-P PNAME(name).0 => nil
   recordDocumentation([name,['attribute,:IFCDR postTransform att]],lineno)
 
 recordDocumentation(key,lineno) ==
@@ -107,7 +107,7 @@ recordDocumentation(key,lineno) ==
 recordHeaderDocumentation lineno ==
   if $maxSignatureLineNumber = 0 then
     al := [p for (p := [n,:u]) in $COMBLOCKLIST
-               | NULL n or NULL lineno or n < lineno]
+               | null n or null lineno or n < lineno]
     $COMBLOCKLIST := SETDIFFERENCE($COMBLOCKLIST,al)
     $headerDocumentation := ASSOCRIGHT al
     if $headerDocumentation then $maxSignatureLineNumber := 1 --see postDef
@@ -127,7 +127,7 @@ collectAndDeleteAssoc x ==
     while s and first s is [=x,:r] repeat
       res := [:res,:r]
       s := rest s
-      RPLACD(y,s)
+      y.rest := s
   res
 
 finalizeDocumentation() ==
@@ -144,16 +144,16 @@ finalizeDocumentation() ==
       sayKeyedMsg("S2CD0001",NIL)
       bigcnt := 1
       if noHeading or signatures or attributes then
-        sayKeyedMsg("S2CD0002",[STRCONC(STRINGIMAGE bigcnt,'"."),name])
+        sayKeyedMsg("S2CD0002",[strconc(STRINGIMAGE bigcnt,'"."),name])
         bigcnt := bigcnt + 1
         litcnt := 1
         if noHeading then
           sayKeyedMsg("S2CD0003",
-            [STRCONC('"(",STRINGIMAGE litcnt,'")"),name])
+            [strconc('"(",STRINGIMAGE litcnt,'")"),name])
           litcnt := litcnt + 1
         if signatures then
           sayKeyedMsg("S2CD0004",
-            [STRCONC('"(",STRINGIMAGE litcnt,'")")])
+            [strconc('"(",STRINGIMAGE litcnt,'")")])
           litcnt := litcnt + 1
           for [op,sig] in signatures repeat
             s := formatOpSignature(op,sig)
@@ -162,7 +162,7 @@ finalizeDocumentation() ==
               ['%x9,:s]
         if attributes then
           sayKeyedMsg("S2CD0005",
-            [STRCONC('"(",STRINGIMAGE litcnt,'")")])
+            [strconc('"(",STRINGIMAGE litcnt,'")")])
           litcnt := litcnt + 1
           for x in attributes repeat
             a := form2String x
@@ -170,7 +170,7 @@ finalizeDocumentation() ==
               atom a => ['%x9,a]
               ['%x9,:a]
       if unusedCommentLineNumbers then
-        sayKeyedMsg("S2CD0006",[STRCONC(STRINGIMAGE bigcnt,'"."),name])
+        sayKeyedMsg("S2CD0006",[strconc(STRINGIMAGE bigcnt,'"."),name])
         for [n,r] in unusedCommentLineNumbers repeat
           sayMSG ['"   ",:bright n,'"   ",r]
   hn [[:fn(sig,$e),:doc] for [sig,:doc] in docList] where
@@ -181,7 +181,7 @@ finalizeDocumentation() ==
         macroExpand(x,e))
     hn u ==
      -- ((op,sig,doc), ...)  --> ((op ((sig doc) ...)) ...)
-      opList := REMDUP ASSOCLEFT u
+      opList := removeDuplicates ASSOCLEFT u
       [[op,:[[sig,doc] for [op1,sig,doc] in u | op = op1]] for op in opList]
 
 --=======================================================================
@@ -217,7 +217,7 @@ transDoc(conname,doclist) ==
     null lines =>
       $attribute? => nil
       checkDocError1 ['"Not documented!!!!"]
-    u := checkTrim($x,(STRINGP lines => [lines]; $x = 'constructor => first lines; lines))
+    u := checkTrim($x,(string? lines => [lines]; $x = 'constructor => first lines; lines))
     $argl : local := nil    --set by checkGetArgs
 -- tpd: related domain information doesn't exist
 --    if v := checkExtract('"Related Domains:",u) then
@@ -245,7 +245,7 @@ transDoc(conname,doclist) ==
       $x = 'constructor =>
         v :=checkExtract('"Description:",u) or u and
               checkExtract('"Description:",
-                [STRCONC('"Description: ",first u),:rest u])
+                [strconc('"Description: ",first u),:rest u])
         transformAndRecheckComments('constructor,v or u)
       transformAndRecheckComments($x,u)
     acc := [[$x,longline],:acc]  --processor assumes a list of lines
@@ -259,7 +259,7 @@ checkExtractItemList l ==  --items are separated by commas or end of line
     k <= m => return nil
     acc := [first l,:acc]
     l := rest l
-  "STRCONC"/[x for x in nreverse acc]
+  strconc/[x for x in nreverse acc]
 
 ++ Translate '%' in signature to '%%' for proper printing.
 escapePercent x ==
@@ -349,7 +349,7 @@ checkTexht u ==
 checkRecordHash u ==
   while u repeat
     x := first u
-    if STRINGP x and x.0 = $charBack then
+    if string? x and x.0 = $charBack then
       if member(x,$HTlinks) and (u := checkLookForLeftBrace IFCDR u)
            and (u := checkLookForRightBrace IFCDR u)
              and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
@@ -410,7 +410,7 @@ removeBackslashes s ==
     s = '"" => '""
     (k := charPosition($charBack,s,0)) < #s =>
       k = 0 => removeBackslashes SUBSTRING(s,1,nil)
-      STRCONC(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
+      strconc(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
     s
 
 ++ returns the arity (as known to the global DB) of the functor
@@ -448,7 +448,7 @@ checkGetStringBeforeRightBrace u ==
   acc := nil
   while u repeat
     x := first u
-    x = $charRbrace => return "STRCONC"/(nreverse acc)
+    x = $charRbrace => return strconc/(nreverse acc)
     acc := [x,:acc]
     u := rest u
 
@@ -508,7 +508,7 @@ appendOver [head,:tail] ==
  acc := LASTNODE head
  for x in tail repeat
    end := LASTNODE x
-   RPLACD(acc,x)
+   acc.rest := x
    acc := end
  head
 
@@ -591,7 +591,7 @@ checkComments(nameSig,lines) == main where
     checkArguments u
     if $checkErrorFlag then u := checkFixCommonProblem u
     v := checkDecorate u
-    res := "STRCONC"/[y for y in v]
+    res := strconc/[y for y in v]
     res := checkAddPeriod res
     if $checkErrorFlag then pp res
     res
@@ -613,11 +613,11 @@ checkIndentedLines(u, margin) ==
         u2 := [:u2, s]
     verbatim => u2 := [:u2, SUBSTRING(x, margin, nil)]
     margin = k => u2 := [:u2, s]
-    u2 := [:u2, STRCONC('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
+    u2 := [:u2, strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
   u2
 
 newString2Words l ==
-  not STRINGP l => [l]
+  not string? l => [l]
   m := MAXINDEX l
   m = -1 => NIL
   i := 0
@@ -633,7 +633,7 @@ newWordFrom(l,i,m) ==
   while i <= m and not done repeat
     ch := l.i
     ch = $charBlank or ch = $charFauxNewline => done := true
-    buf := STRCONC(buf, STRING ch)
+    buf := strconc(buf, STRING ch)
     i := i + 1
   [buf,i]
 
@@ -647,7 +647,7 @@ checkAddPeriod s ==  --No, just leave blank at the end (rdj: 10/18/91)
   s
 
 checkGetArgs u ==
-  NOT STRINGP u => nil
+  NOT string? u => nil
   m := MAXINDEX u
   k := firstNonBlankPosition(u)
   k > 0 => checkGetArgs SUBSTRING(u,k,nil)
@@ -682,7 +682,7 @@ checkAddIndented(x,margin) ==
   k := firstNonBlankPosition x
   k = -1 => '"\blankline "
   margin = k => x
-  STRCONC('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(SUBSTRING(x,k,nil),0),'"}")
+  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(SUBSTRING(x,k,nil),0),'"}")
 
 checkAddSpaceSegments(u,k) ==
   m := MAXINDEX u
@@ -691,7 +691,7 @@ checkAddSpaceSegments(u,k) ==
   j := i
   while (j := j + 1) < m and u.j = (char '_  ) repeat 'continue
   n := j - i   --number of blanks
-  n > 1 => STRCONC(SUBSTRING(u,0,i),'"\space{",
+  n > 1 => strconc(SUBSTRING(u,0,i),'"\space{",
              STRINGIMAGE n,'"}",checkAddSpaceSegments(SUBSTRING(u,i + n,nil),0))
   checkAddSpaceSegments(u,j)
 
@@ -810,11 +810,11 @@ checkDecorate u ==
         spadflag => ['",",:acc]
         ['",{}",:acc]
       x = '"\spad" => ['"\spad",:acc]
-      STRINGP x and DIGITP x.0 => [x,:acc]
+      string? x and DIGITP x.0 => [x,:acc]
       not spadflag and
         (CHARP x and ALPHA_-CHAR_-P x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and ((STRINGP x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
+      not spadflag and ((string? x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
       xcount := SIZE x
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
@@ -841,7 +841,7 @@ isVowel c ==
 
 checkAddBackSlashes s ==
   (CHARP s and (c := s)) or (#s = 1 and (c := s.0)) =>
-    MEMQ(s,$charEscapeList) => STRCONC($charBack,c)
+    MEMQ(s,$charEscapeList) => strconc($charBack,c)
     s
   k := 0
   m := MAXINDEX s
@@ -852,7 +852,7 @@ checkAddBackSlashes s ==
       char = $charBack => k := k + 2
       MEMQ(char,$charEscapeList) => return (insertIndex := k)
     k := k + 1
-  insertIndex => checkAddBackSlashes STRCONC(SUBSTRING(s,0,insertIndex),$charBack,s.k,SUBSTRING(s,insertIndex + 1,nil))
+  insertIndex => checkAddBackSlashes strconc(SUBSTRING(s,0,insertIndex),$charBack,s.k,SUBSTRING(s,insertIndex + 1,nil))
   s
 
 checkAddSpaces u ==
@@ -938,7 +938,7 @@ checkSplitBrace x ==
   [x]
 
 checkSplitBackslash x ==
-  not STRINGP x => [x]
+  not string? x => [x]
   m := MAXINDEX x
   (k := charPosition($charBack,x,0)) < m =>
     m = 1 or ALPHA_-CHAR_-P(x . (k + 1)) =>     --starts with a backslash so..
@@ -1033,7 +1033,7 @@ checkBeginEnd u ==
   while u repeat
     IDENTITY
       x := first u
-      STRINGP x and x.0 = $charBack and #x > 2 and not HGET($htMacroTable,x)
+      string? x and x.0 = $charBack and #x > 2 and not HGET($htMacroTable,x)
         and not (x = '"\spadignore") and IFCAR IFCDR u = $charLbrace
           and not
             (substring?('"\radiobox",x,0) or substring?('"\inputbox",x,0))=>
@@ -1120,7 +1120,7 @@ checkTransformFirsts(opname,u,margin) ==
   else if namestring = '"One" then namestring := '"1"
   margin > 0 =>
     s := leftTrim u
-    STRCONC(fillerSpaces margin,checkTransformFirsts(opname,s,0))
+    strconc(fillerSpaces margin,checkTransformFirsts(opname,s,0))
   m := MAXINDEX u
   m < 2 => u
   u.0 = $charBack => u
@@ -1139,7 +1139,7 @@ checkTransformFirsts(opname,u,margin) ==
            then checkDocError ['"Missing close bracket on first line: ", u]
            else checkDocError ['"Missing close parenthesis on first line: ", u]
          u
-      STRCONC('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
+      strconc('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
     k := checkSkipToken(u,j,m) or return u
     infixOp := INTERN SUBSTRING(u,j,k - j)
     not GETL(infixOp,'Led) =>                                     --case 3
@@ -1150,14 +1150,14 @@ checkTransformFirsts(opname,u,margin) ==
         (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
           if l > MAXINDEX u then l := k - 1
-          STRCONC('"\spad{",SUBSTRING(u,0,l + 1),'"}",SUBSTRING(u,l + 1,nil))
-      STRCONC('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+          strconc('"\spad{",SUBSTRING(u,0,l + 1),'"}",SUBSTRING(u,l + 1,nil))
+      strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
     l := checkSkipBlanks(u,k,m) or return u
     n := checkSkipToken(u,l,m) or return u
     namestring ~= PNAME infixOp =>
       checkDocError ['"Improper initial operator in comments: ",infixOp]
       u
-    STRCONC('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
+    strconc('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
   true =>          -- not ALPHA_-CHAR_-P u.0 =>
     i := checkSkipToken(u,0,m) or return u
     namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
@@ -1170,12 +1170,12 @@ checkTransformFirsts(opname,u,margin) ==
     u.j = char '_( =>                                            --case 4
       j := getMatchingRightPren(u,j + 1,char '_(,char '_))
       j > m => u
-      STRCONC('"\spad{",SUBSTRING(u,0,j + 1),'"}",SUBSTRING(u,j + 1,nil))
+      strconc('"\spad{",SUBSTRING(u,0,j + 1),'"}",SUBSTRING(u,j + 1,nil))
     k := checkSkipToken(u,j,m) or return u
     namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    STRCONC('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+    strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
 
 getMatchingRightPren(u,j,open,close) ==
   count := 0
@@ -1220,9 +1220,9 @@ checkAlphabetic c ==
 docreport(nam) ==
 --creates a report for person "nam" using file "whofiles"
   removeFile '"docreport.input"
-  runCommand STRCONC('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
+  runCommand strconc('"echo _")bo setOutStream('",STRINGIMAGE nam,'")_" > temp.input")
   runCommand '"cat docreport.header temp.input > docreport.input"
-  runCommand STRCONC('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
+  runCommand strconc('"awk '/",STRINGIMAGE nam,'"/ {printf(_")co %s.spad\n_",$2)}' whofiles > temp.input")
   runCommand '"cat docreport.input temp.input > temp1.input"
   runCommand '"cat temp1.input docreport.trailer > docreport.input"
   removeFile '"temp.input"
@@ -1231,7 +1231,7 @@ docreport(nam) ==
   _/RQ()
 
 setOutStream nam ==
-  filename := STRCONC('"/tmp/",STRINGIMAGE nam,".docreport")
+  filename := strconc('"/tmp/",STRINGIMAGE nam,".docreport")
   $outStream := MAKE_-OUTSTREAM filename
 
 whoOwns(con) ==
@@ -1239,7 +1239,7 @@ whoOwns(con) ==
 --con=constructor name (id beginning with a capital), returns owner as a string
   filename := getConstructorSourceFileFromDB con
   quoteChar := char '_"
-  runCommand STRCONC('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
+  runCommand strconc('"awk '$2 == ",quoteChar,filename,quoteChar,'" {print $1}' whofiles > /tmp/temp")
   instream := MAKE_-INSTREAM '"/tmp/temp"
   value :=
     EOFP instream => nil
@@ -1302,10 +1302,10 @@ checkDecorateForHt u ==
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
       x = '"$" or x = '"%" => checkDocError ['"Unescaped ",x]
---      null spadflag and STRINGP x and (member(x,$argl) or #x = 1
+--      null spadflag and string? x and (member(x,$argl) or #x = 1
 --        and ALPHA_-CHAR_-P x.0) and not member(x,'("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      null spadflag and STRINGP x and (not x.0 = $charBack and not DIGITP(x.0) and DIGITP(x.(MAXINDEX x))or member(x,'("true" "false")))
+--      null spadflag and string? x and (not x.0 = $charBack and not DIGITP(x.0) and DIGITP(x.(MAXINDEX x))or member(x,'("true" "false")))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

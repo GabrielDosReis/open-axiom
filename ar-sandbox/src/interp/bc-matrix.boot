@@ -99,7 +99,7 @@ bcInputMatrixByFormulaGen htPage ==
   colVar := htpLabelInputString(htPage,'colVar)
   nrows := htpProperty(htPage,'nrows)
   ncols := htpProperty(htPage,'ncols)
-  bcGen STRCONC('"matrix([[",formula,'" for ",colVar,'" in 1..",
+  bcGen strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
     STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
 
 bcInputExplicitMatrix(htPage,junk) ==
@@ -115,10 +115,10 @@ bcInputExplicitMatrix(htPage,junk) ==
   wcols := # STRINGIMAGE ncols
   labelList := 
     "append"/[[f for j in 1..ncols] for i in 1..nrows] where f() ==
-      rowpart := STRCONC('"{\em Row",htStringPad(i,wrows))
-      colpart := STRCONC('", Column",htStringPad(j,wcols),'":}\space{2}")
-      prefix := STRCONC(rowpart,colpart)
- --     name := INTERN STRCONC(htMkName('"row",i),htMkName('"col",j))
+      rowpart := strconc('"{\em Row",htStringPad(i,wrows))
+      colpart := strconc('", Column",htStringPad(j,wcols),'":}\space{2}")
+      prefix := strconc(rowpart,colpart)
+ --     name := INTERN strconc(htMkName('"row",i),htMkName('"col",j))
       name := INTERN STRINGIMAGE (k := k + 1)
       [prefix,'"",30, 0,name,'P]
   labelList := 
@@ -145,7 +145,7 @@ bcMatrixGen htPage ==
     formula := formula.0
     rowVar := (LASSOC('rowVar,mat)).0
     colVar := (LASSOC('colVar,mat)).0
-    STRCONC('"matrix([[",formula,'" for ",colVar,'" in 1..",
+    strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
       STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
   mat := htpProperty(htPage,'matrix) =>
     mat := reverse mat
@@ -153,6 +153,6 @@ bcMatrixGen htPage ==
     matform := [[mat.(k := k + 1).1
       for j in 0..(ncols-1)] for i in 0..(nrows-1)]
     matstring := bcwords2liststring [bcwords2liststring x for x in matform]
-    STRCONC('"matrix(",matstring,'")")
+    strconc('"matrix(",matstring,'")")
   systemError nil
   

@@ -298,7 +298,6 @@ ElaboratedExpression(): Public == Private where
       "failed"
 @
 
-
 \section{SpadAbstractSyntaxCategory}
 
 <<category ASTCAT AbstractSyntaxCategory>>=

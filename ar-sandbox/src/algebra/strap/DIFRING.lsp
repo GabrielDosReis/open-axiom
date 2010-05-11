@@ -4,25 +4,21 @@
 (DEFPARAMETER |DifferentialRing;AL| 'NIL) 
 
 (DEFUN |DifferentialRing;| ()
-  (PROG (#0=#:G1396)
-    (RETURN
-      (PROG1 (LETT #0#
-                   (|Join| (|Ring|)
-                           (|mkCategory| '|domain|
-                               '(((|differentiate| ($ $)) T)
-                                 ((D ($ $)) T)
-                                 ((|differentiate|
-                                      ($ $ (|NonNegativeInteger|)))
-                                  T)
-                                 ((D ($ $ (|NonNegativeInteger|))) T))
-                               NIL '((|NonNegativeInteger|)) NIL))
-                   |DifferentialRing|)
-        (|setShellEntry| #0# 0 '(|DifferentialRing|)))))) 
+  (LET ((#0=#:G1396
+            (|Join| (|Ring|)
+                    (|mkCategory| '|domain|
+                        '(((|differentiate| ($ $)) T) ((D ($ $)) T)
+                          ((|differentiate|
+                               ($ $ (|NonNegativeInteger|)))
+                           T)
+                          ((D ($ $ (|NonNegativeInteger|))) T))
+                        NIL '((|NonNegativeInteger|)) NIL))))
+    (|setShellEntry| #0# 0 '(|DifferentialRing|))
+    #0#)) 
 
 (DEFUN |DifferentialRing| ()
-  (LET ()
-    (COND
-      (|DifferentialRing;AL|)
-      (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|)))))) 
+  (COND
+    (|DifferentialRing;AL|)
+    (T (SETQ |DifferentialRing;AL| (|DifferentialRing;|))))) 
 
 (MAKEPROP '|DifferentialRing| 'NILADIC T) 
