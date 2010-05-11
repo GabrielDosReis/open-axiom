@@ -270,6 +270,89 @@ hasFormalMapVariable(x, vl) ==
   ScanOrPairVec(function hasone?,x) where
      hasone? x == MEMQ(x,$formalMapVariables)
 
+
+++ Return the usage list of free variables in a lambda expresion.
+++ The usage list is an a-list (name, number of timed used.)
+freeVarUsage([.,vars,body],env) ==
+  freeList(body,vars,nil,env) where
+    freeList(u,bound,free,e) ==
+      atom u =>
+        not IDENTP u => free
+        MEMQ(u,bound) => free
+        v := ASSQ(u,free) =>
+          v.rest := 1 + rest v
+          free
+        getmode(u,e) = nil => free
+        [[u,:1],:free]
+      op := first u
+      op in '(QUOTE GO function) => free
+      op = "LAMBDA" =>
+        bound := UNIONQ(bound, second u)
+        for v in CDDR u repeat
+          free := freeList(v,bound,free,e)
+        free
+      op = "PROG" =>
+        bound := UNIONQ(bound, second u)
+        for v in CDDR u | cons? v repeat
+          free := freeList(v,bound,free,e)
+        free
+      op = "SEQ" =>
+        for v in rest u | cons? v repeat
+          free := freeList(v,bound,free,e)
+        free
+      op = "COND" =>
+        for v in rest u repeat
+          for vv in v repeat
+            free := freeList(vv,bound,free,e)
+        free
+      if atom op then --Atomic functions aren't descended
+        u := rest u
+      for v in u repeat
+        free := freeList(v,bound,free,e)
+      free
+
+++ Finish processing a lambda expression with parameter list `vars',
+++ and `env' as the environement after the compilation its body. 
+finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
+  $FUNNAME: local := nil
+  $FUNNAME__TAIL: local := [nil]
+  expandedFunction := transformToBackendCode expr
+  frees := freeVarUsage(expandedFunction,env)
+  vec := nil          -- mini-vector
+  expandedFunction :=
+    frees = nil => ["LAMBDA",[:vars,"$$"], :CDDR expandedFunction]
+    -- At this point, we have a function that we would like to pass.
+    -- Unfortunately, it makes various free variable references outside
+    -- itself.  So we build a mini-vector that contains them all, and
+    -- pass this as the environment to our inner function.
+    -- One free can go by itself, more than one needs a vector.
+    frees is [[var,:.]] =>
+      vec := var
+      ["LAMBDA",[:vars,var],:CDDR expandedFunction]
+    scode := nil
+    slist := nil   -- list of single used variables, no local bindings.
+    locals := nil  -- list of multiple used variables, need local bindings.
+    i := -1
+    for v in frees repeat
+      i := i+1
+      vec := [first v,:vec]
+      rest v = 1 => slist := [[first v,"getShellEntry","$$",i],:slist]
+      scode := [['SETQ,first v,["getShellEntry","$$",i]],:scode]
+      locals := [first v,:locals]
+    body :=
+      slist => SUBLISNQ(slist,CDDR expandedFunction)
+      CDDR expandedFunction
+    if locals then
+      if body is [["DECLARE",:.],:.] then
+        body := [first body,["PROG",locals,:scode,
+                               ["RETURN",["PROGN",:rest body]]]]
+      else body := [["PROG",locals,:scode,["RETURN",["PROGN",:body]]]]
+    vec := ["VECTOR",:nreverse vec]
+    ["LAMBDA",[:vars,"$$"],:body]
+  fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
+  frees = nil => ["LIST",fname]
+  ["CONS",fname,vec]
+
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   $killOptimizeIfTrue: local:= true
   e:= oldE
@@ -287,84 +370,8 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
     [u,.,.] := t
     extractCodeAndConstructTriple(u, m, oldE)
   [u,.,.]:= comp(x,m',e) or return nil
-  uu:=optimizeFunctionDef [nil,["LAMBDA",vl,u]]
-  --  At this point, we have a function that we would like to pass.
-  --  Unfortunately, it makes various free variable references outside
-  --  itself.  So we build a mini-vector that contains them all, and
-  --  pass this as the environment to our inner function.
-  $FUNNAME :local := nil
-  $FUNNAME__TAIL :local := [nil]
-  expandedFunction:= transformToBackendCode second uu
-  frees:=FreeList(expandedFunction,vl,nil,e)
-    where FreeList(u,bound,free,e) ==
-      atom u =>
-        not IDENTP u => free
-        MEMQ(u,bound) => free
-        v:=ASSQ(u,free) =>
-          v.rest := 1 + rest v
-          free
-        null getmode(u,e) => free
-        [[u,:1],:free]
-      op := first u
-      op in '(QUOTE GO function) => free
-      op = "LAMBDA" =>
-        bound := UNIONQ(bound, second u)
-        for v in CDDR u repeat
-          free:=FreeList(v,bound,free,e)
-        free
-      op = "PROG" =>
-        bound := UNIONQ(bound, second u)
-        for v in CDDR u | not atom v repeat
-          free:=FreeList(v,bound,free,e)
-        free
-      op = "SEQ" =>
-        for v in rest u | not atom v repeat
-          free:=FreeList(v,bound,free,e)
-        free
-      op = "COND" =>
-        for v in rest u repeat
-          for vv in v repeat
-            free:=FreeList(vv,bound,free,e)
-        free
-      if atom op then u := rest u  --Atomic functions aren't descended
-      for v in u repeat
-        free:=FreeList(v,bound,free,e)
-      free
-  expandedFunction :=
-            --One free can go by itself, more than one needs a vector
-         --An A-list name . number of times used
-    #frees = 0 => ["LAMBDA",[:vl,"$$"], :CDDR expandedFunction]
-    #frees = 1 =>
-      vec:=first first frees
-      ["LAMBDA",[:vl,vec], :CDDR expandedFunction]
-    scode:=nil
-    vec:=nil
-    slist:=nil
-    locals:=nil
-    i:=-1
-    for v in frees repeat
-      i:=i+1
-      vec:=[first v,:vec]
-      rest v = 1 =>
-                --Only used once
-        slist:=[[first v,"getShellEntry","$$",i],:slist]
-      scode:=[['SETQ,first v,["getShellEntry","$$",i]],:scode]
-      locals:=[first v,:locals]
-    body:=
-      slist => SUBLISNQ(slist,CDDR expandedFunction)
-      CDDR expandedFunction
-    if locals then
-      if body is [["DECLARE",:.],:.] then
-        body := [first body,["PROG",locals,:scode,
-                               ["RETURN",["PROGN",:rest body]]]]
-      else body:=[["PROG",locals,:scode,["RETURN",["PROGN",:body]]]]
-    vec:=["VECTOR",:nreverse vec]
-    ["LAMBDA",[:vl,"$$"],:body]
-  fname:=["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
-  uu:=
-    frees => ["CONS",fname,vec]
-    ["LIST",fname]
-  [uu,m,oldE]
+  [.,fun] := optimizeFunctionDef [nil,["LAMBDA",vl,u]]
+  [finishLambdaExpression(fun,e),m,oldE]
 
 extractCodeAndConstructTriple(u, m, oldE) ==
   u is ["%Call",fn,:.] =>
@@ -2198,7 +2205,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   $endTestList: local := nil
   oldEnv := e
   $e:= e
-  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").(0) for x in itl]
+  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").0 for x in itl]
   itl="failed" => return nil
   e:= $e
   acc:= GENSYM()
