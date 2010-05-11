@@ -2459,6 +2459,59 @@ compRep(["rep",x],m,e) ==
   T.rest.first := getRepresentation e or return nil
   coerce(T,m)
 
+--% Lambda expressions
+
+compUnnamedMapping(parms,source,target,body,env) ==
+  $killOptimizeIfTrue: local := true
+  savedEnv := env
+  for p in parms for s in source repeat
+    [.,.,env] := compMakeDeclaration(p,s,env)
+    env := put(p,'value,[genSomeVariable(),get(p,'mode,env),nil],env)
+  T := comp(body,target,env) or return nil
+  [.,fun] := optimizeFunctionDef [nil,["LAMBDA",parms,T.expr]]
+  fun := finishLambdaExpression(fun,env)
+  [fun,["Mapping",T.mode,:source],savedEnv]
+
+gatherParameterList vars == main(vars,nil,nil) where
+  main(vars,parms,source) ==
+    vars = nil => [nreverse parms,nreverse source]
+    atom vars or vars is [":",:.] => [[x] for x in check vars]
+    [v,s] := check first vars
+    main(rest vars,[v,:parms],[s,:source])
+  check var == 
+    atom var =>
+      not IDENTP var =>
+        stackAndThrow('"invalid parameter %1b in lambda expression",[var])
+      [checkVariableName var,nil]
+    var is [":",p,t] =>
+      not IDENTP p =>
+        stackAndThrow('"invalid parameter %1b in lambda expression",[p])
+      [checkVariableName p,t]
+    stackAndThrow('"invalid parameter for mapping",nil)
+
+compLambda(x is ["+->",vars,body],m,e) ==
+  -- 1. Gather parameters and their types.
+  if vars is ["%Comma",:vars'] then
+    vars := vars'
+  [parms,source] := gatherParameterList vars
+  -- 2. Compile the form
+  T := 
+    -- 2.1. No parameter is declared
+    and/[s = nil for s in source] =>
+      -- Guess from context
+      m is ["Mapping",dst,:src] =>
+        #src ~= #parms =>
+           stackAndThrow('"inappropriate function type for unnamed mapping",nil)
+        compUnnamedMapping(parms,src,dst,body,e) or return nil
+      -- Otherwise, assumes this is just purely syntactic code block.
+      [quoteForm ["+->",parms,body],$AnonymousFunction,e]
+    -- 2.2. If all parameters are declared, then compile as a mapping.
+    and/[s ~= nil for s in source] =>
+      compUnnamedMapping(parms,source,$EmptyMode,body,e) or return nil
+    -- 2.3.  Well, give up for now.
+    stackAndThrow('"parameters in a lambda expression must be all declared or none declared",nil)
+  coerce(T,m)
+
 --%
 --% Entry point to the compiler
 --%
@@ -2503,6 +2556,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["@", :"compAtSign"],_
 	  [":", :"compColon"],_
 	  ["::", :"compCoerce"],_
+          ["+->", :"compLambda"],_
 	  ["QUOTE", :"compQuote"],_
 	  ["add", :"compAdd"],_
 	  ["CAPSULE", :"compCapsule"],_
