@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -109,7 +109,7 @@ modemapToAx(modemap) ==
       categoryInfo := getConstructorCategoryFromDB constructor
       categoryInfo := SUBLISLIS($FormalMapVariableList, $TriangleVariableList,
                        categoryInfo)
-      NULL args =>
+      null args =>
           ['Define,['Declare, constructor,'Category],
                addDefaults(constructor, axFormatType categoryInfo)]
       ['Define,
@@ -118,10 +118,10 @@ modemapToAx(modemap) ==
              ['Label, constructor,
                addDefaults(constructor, axFormatType categoryInfo)]]]
   constructor in $extendedDomains =>
-     NULL args =>
+     null args =>
         ['Extend, ['Define, ['Declare, constructor, resultType],
             ['Add, ['PretendTo, ['Add, [], []], resultType], []]]]
-     conscat := INTERN(STRCONC(SYMBOL_-NAME(constructor), "ExtendCategory"),"BOOT")
+     conscat := INTERN(strconc(SYMBOL_-NAME(constructor), "ExtendCategory"),"BOOT")
      rtype := ['Apply, conscat, :args]
 --     if resultType is ['With,a,b] then
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]
@@ -137,7 +137,7 @@ modemapToAx(modemap) ==
           ['Lambda, argdecls, rtype,
             ['Label, constructor,
                 ['Add, ['PretendTo, ['Add, [], []], rtype], []]]]]]]
-  NULL args =>
+  null args =>
      ['Export, ['Declare, constructor, resultType],[],[]]
 --  if resultType is ['With,a,b] then
 --     if not(b is ['Sequence,:withseq]) then withseq := [b]
@@ -166,9 +166,9 @@ axFormatAttrib(typeform) ==
 axFormatType(typeform) ==
   atom typeform =>
      typeform = '$ => '%
-     STRINGP typeform =>
+     string? typeform =>
         ['Apply,'Enumeration, INTERN typeform]
-     INTEGERP typeform =>
+     integer? typeform =>
        -- need to test for PositiveInteger vs Integer
         axAddLiteral('integer, 'PositiveInteger, 'Literal)
         ['RestrictTo, ['LitInteger, STRINGIMAGE typeform ], 'PositiveInteger]
@@ -211,8 +211,8 @@ axFormatType(typeform) ==
       valueCount := 0
       for x in args repeat
           tag :=
-            STRINGP x => INTERN x
-            x is ['QUOTE,val] and STRINGP val => INTERN val
+            string? x => INTERN x
+            x is ['QUOTE,val] and string? val => INTERN val
             valueCount := valueCount + 1
             INTERNL("value", STRINGIMAGE valueCount)
           taglist := [tag ,: taglist]
@@ -242,7 +242,7 @@ axFormatType(typeform) ==
 axFormatOpList ops == ['Sequence,:[axFormatOp o for o in ops]]
 
 axOpTran(name) ==
-   ATOM name =>
+   atom name =>
       name = 'elt => 'apply
       name = 'setelt => 'set_!
       name = 'SEGMENT => ".."
@@ -287,7 +287,7 @@ axFormatCondOp op ==
 
 axFormatOp op ==
    op is ['IF, pred, trueops, falseops] =>
-      NULL(trueops) or trueops='%noBranch =>
+      null(trueops) or trueops='%noBranch =>
          ['If, ['Test,['Not, axFormatPred pred]],
               axFormatCondOp falseops,
                 axFormatCondOp trueops]

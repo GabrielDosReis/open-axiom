@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ sayModemap m ==
 
 sayModemapWithNumber(m,n) ==
   msg := reverse cleanUpSegmentedMsg reverse ["%i","%i",'" ",
-    STRCONC(lbrkSch(),object2String n,rbrkSch()),
+    strconc(lbrkSch(),object2String n,rbrkSch()),
       :formatModemap displayTranModemap m,"%u","%u"]
   sayMSG flowSegmentedMsg(reverse msg,$LINELENGTH,3)
 
@@ -175,7 +175,7 @@ reportOpSymbol op1 ==
   if op1 = "^" then
     sayMessage ['"  ",op1, '" is another name for", :bright '"**"]
     op1 := "**"
-  op := (STRINGP op1 => INTERN op1; op1)
+  op := (string? op1 => INTERN op1; op1)
   modemaps := getAllModemapsFromDatabase(op,nil)
   null modemaps =>
     ok := true
@@ -227,8 +227,8 @@ formatOperationAlistEntry (entry:= [op,:modemaps]) ==
 
 formatOperation([[op,sig],.,[fn,.,n]],domain) ==
   opSigString := formatOpSignature(op,sig)
-  INTEGERP n and function Undef = KAR domain.n =>
-    if INTEGERP $commentedOps then $commentedOps := $commentedOps + 1
+  integer? n and function Undef = KAR domain.n =>
+    if integer? $commentedOps then $commentedOps := $commentedOps + 1
     concat(" --",opSigString)
   opSigString
 
@@ -246,11 +246,11 @@ formatOpSymbol(op,sig) ==
   n := #sig
   (op = 'elt) and (n = 3) =>
     (second(sig) = '_$) =>
-      STRINGP (sel := third(sig)) =>
+      string? (sel := third(sig)) =>
         [quad,".",sel]
       [quad,".",quad]
     op
-  STRINGP op or GETL(op,"Led") or GETL(op,"Nud") =>
+  string? op or GETL(op,"Led") or GETL(op,"Nud") =>
     n = 3 =>
       if op = 'SEGMENT then op := '".."
       op = 'in => [quad,'" ",op,'" ",quad]
@@ -273,14 +273,14 @@ formatAttribute x ==
     ["  ",op]
 
 formatAttributeArg x ==
-  STRINGP x and x ='"*" => "_"*_""
+  string? x and x ='"*" => "_"*_""
   atom x => formatOpSymbol (x,nil)
   x is [":",op,["Mapping",:sig]] =>
     concat('%b,formatOpSymbol(op,sig),": ",'%d,formatMapping sig)
   prefix2String0 x
 
 formatMapping sig ==
-  "STRCONC"/concat("Mapping(",formatSignature sig,")")
+  strconc/concat("Mapping(",formatSignature sig,")")
 
 dollarPercentTran x ==
     -- Translate $ to %. We actually return %% so that the message
@@ -308,7 +308,7 @@ formatSignatureArgs sml ==
   
 formatSignature0 sig ==
   null sig => "() -> ()"
-  INTEGERP sig => '"hashcode"
+  integer? sig => '"hashcode"
   [tm,:sml] := sig
   sourcePart:= formatSignatureArgs0 sml
   targetPart:= prefix2String0 tm
@@ -327,7 +327,7 @@ formatSignatureArgs0(sml) ==
 
 expr2String x ==
   atom (u:= prefix2String0 x) => u
-  "STRCONC"/[atom2String y for y in u]
+  strconc/[atom2String y for y in u]
 
 -- exports (this is a badly named bit of sillyness)
 prefix2StringAsTeX form ==
@@ -343,7 +343,7 @@ prefix2String0 form ==
 --  SUBRP form => formWrapId BPINAME form
 --  atom form =>
 --    form=$EmptyMode or form=$quadSymbol => formWrapId specialChar 'quad
---    STRINGP form => formWrapId form
+--    string? form => formWrapId form
 --    IDENTP form => 
 --      constructor? form => app2StringWrap(formWrapId form, [form])
 --      formWrapId form
@@ -364,7 +364,7 @@ form2StringWithPrens form ==
 formString u ==
   x := form2String u
   atom x => STRINGIMAGE x
-  "STRCONC"/[STRINGIMAGE y for y in x]
+  strconc/[STRINGIMAGE y for y in x]
 
 form2String u == 
   $formatSigAsTeX: local := 1
@@ -385,13 +385,13 @@ constructorName con ==
   con
 
 form2String1 u ==
-  ATOM u => 
+  atom u => 
     u=$EmptyMode or u=$quadSymbol => formWrapId specialChar 'quad
     IDENTP u =>
       constructor? u => app2StringWrap(formWrapId u, [u])
       u
     SUBRP u => formWrapId BPINAME u
-    STRINGP u => formWrapId u
+    string? u => formWrapId u
     WRITE_-TO_-STRING formWrapId u
   u1 := u
   [op,:argl] := u
@@ -419,7 +419,7 @@ form2String1 u ==
       null argl => [ '":" ]
       null rest argl => [ '":", form2String1 first argl ]
       formDecl2String(argl.0,argl.1)
-  op = "#" and CONSP argl and LISTP first argl =>
+  op = "#" and cons? argl and LISTP first argl =>
     STRINGIMAGE SIZE first argl
   op = 'Join => formJoin2String argl
   op = "ATTRIBUTE" => form2String1 first argl
@@ -459,9 +459,9 @@ formWrapId id ==
 formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
   fn(x,m) ==
     x=$EmptyMode or x=$quadSymbol => specialChar 'quad
-    STRINGP(x) or IDENTP(x) => x
+    string?(x) or IDENTP(x) => x
     x is [ ='_:,:.] => form2String1 x
-    isValidType(m) and CONSP(m) and
+    isValidType(m) and cons?(m) and
       (getConstructorKindFromDB first(m) = "domain") =>
         (x' := coerceInteractive(objNewWrap(x,m),$OutputForm)) =>
           form2String1 objValUnwrap x'
@@ -542,18 +542,18 @@ tuple2String argl ==
   null argl => nil
   string := first argl
   if member(string, '("failed" "nil" "prime" "sqfr" "irred"))
-    then string := STRCONC('"_"",string,'"_"")
+    then string := strconc('"_"",string,'"_"")
     else string :=
-      ATOM string => object2String string
+      atom string => object2String string
       [f x for x in string]
   for x in rest argl repeat
     if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
-      x := STRCONC('"_"",x,'"_"")
+      x := strconc('"_"",x,'"_"")
     string:= concat(string,concat(",",f x))
   string
  where
   f x ==
-    ATOM x => object2String x
+    atom x => object2String x
     -- [f first x,:f rest x]
     [f y for y in x]
 
@@ -577,14 +577,14 @@ linearFormat x ==
 
 numOfSpadArguments id ==
   char("*") = (s:= PNAME id).0 =>
-      +/[n for i in 1.. while INTEGERP (n:=PARSE_-INTEGER PNAME s.i)]
+      +/[n for i in 1.. while integer? (n:=PARSE_-INTEGER PNAME s.i)]
   keyedSystemError("S2IF0012",[id])
 
 linearFormatForm(op,argl) ==
   s:= PNAME op
   indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
     (DIGITP (d:= s.(maxIndex:= i)))]
-  cleanOp:= INTERN ("STRCONC"/[PNAME s.i for i in maxIndex..MAXINDEX s])
+  cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   fnArgs:=
     indexList.0 > 0 =>
       concat('"(",formatArgList take(-indexList.0,argl),'")")
@@ -599,9 +599,9 @@ linearFormatForm(op,argl) ==
   scriptArgs:=
     scriptArgs => concat(specialChar 'lbrk,scriptArgs, specialChar 'rbrk)
     nil
-  l := [(STRINGP f => f; STRINGIMAGE f) for f in
+  l := [(string? f => f; STRINGIMAGE f) for f in
        concat(cleanOp,scriptArgs,fnArgs)]
-  "STRCONC"/l
+  strconc/l
 
 formatArgList l ==
   null l => nil
@@ -731,15 +731,15 @@ mathObject2String x ==
   object2String x
 
 object2String x ==
-  STRINGP x => x
+  string? x => x
   IDENTP x  => PNAME x
-  NULL x    => '""
-  CONSP  x  => STRCONC(object2String first x, object2String rest x)
+  null x    => '""
+  cons?  x  => strconc(object2String first x, object2String rest x)
   WRITE_-TO_-STRING x
 
 object2Identifier x ==
   IDENTP x  => x
-  STRINGP x => INTERN x
+  string? x => INTERN x
   INTERN WRITE_-TO_-STRING x
 
 blankList x == "append"/[[BLANK,y] for y in x]
@@ -753,7 +753,7 @@ pkey keyStuff ==
         key := first keyStuff
         keyStuff := IFCDR keyStuff
         next := IFCAR keyStuff
-        while CONSP next repeat
+        while cons? next repeat
             if first next = 'dbN then dbN := second next
             else argL := next
             keyStuff  := IFCDR keyStuff
@@ -790,8 +790,8 @@ form2Fence1 x ==
 
 form2FenceQuote x ==
   NUMBERP x => [STRINGIMAGE x]
-  SYMBOLP x => [FORMAT(NIL, '"|~a|", x)]
-  STRINGP x => ['"_"",x,'"_""]
+  symbol? x => [FORMAT(NIL, '"|~a|", x)]
+  string? x => ['"_"",x,'"_""]
   atom    x => systemErrorHere ["form2FenceQuote",x]
   ['"(",:form2FenceQuote first x,:form2FenceQuoteTail rest x]
 

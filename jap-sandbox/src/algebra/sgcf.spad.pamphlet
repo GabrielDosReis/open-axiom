@@ -48,6 +48,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
   V    ==> Vector
   B    ==> Boolean
   ICF  ==> IntegerCombinatoricFunctions Integer
+  macro PI == PositiveInteger
  
   public ==> with
  
@@ -85,7 +86,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       ++ is given in list form.
       ++ Notes: the inverse of this map is {\em coleman}.
       ++ For details, see James/Kerber.
-    listYoungTableaus : (L I) -> L M I
+    listYoungTableaus : L PI -> L M I
       ++ listYoungTableaus(lambda) where {\em lambda} is a proper partition
       ++ generates the list of all standard tableaus of shape {\em lambda}
       ++ by means of lattice permutations. The numbers of the lattice
@@ -95,7 +96,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       ++ Notes: the functions {\em nextLatticePermutation} and
       ++ {\em makeYoungTableau} are used.
       ++ The entries are from {\em 0,...,n-1}.
-    makeYoungTableau : (L I,L I) -> M I
+    makeYoungTableau : (L PI,L I) -> M I
       ++ makeYoungTableau(lambda,gitter) computes for a given lattice
       ++ permutation {\em gitter} and for an improper partition {\em lambda}
       ++ the corresponding standard tableau of shape {\em lambda}.
@@ -107,7 +108,7 @@ SymmetricGroupCombinatoricFunctions(): public == private where
       ++ to the lexicographical order from bottom-to-top.
       ++ The first Coleman matrix is achieved by {\em C=new(1,1,0)}.
       ++ Also, {\em new(1,1,0)} indicates that C is the last Coleman matrix.
-    nextLatticePermutation : (L I, L I, B) -> L I
+    nextLatticePermutation : (L PI, L I, B) -> L I
       ++ nextLatticePermutation(lambda,lattP,constructNotFirst) generates
       ++ the lattice permutation according to the proper partition
       ++ {\em lambda} succeeding the lattice permutation {\em lattP} in
@@ -280,9 +281,9 @@ SymmetricGroupCombinatoricFunctions(): public == private where
  
     nextLatticePermutation(lambda, lattP, constructNotFirst) ==
  
-      lprime  : L I  := conjugate(lambda)$PartitionsAndPermutations
-      columns : NNI := (first(lambda)$(L I))::NNI
-      rows    : NNI := (first(lprime)$(L I))::NNI
+      lprime  := conjugate(lambda)$PartitionsAndPermutations
+      columns := first(lambda)$L(PI)
+      rows    := first(lprime)$L(PI)
       n       : NNI :=(+/lambda)::NNI
  
       not constructNotFirst =>   -- first lattice permutation
@@ -332,9 +333,9 @@ SymmetricGroupCombinatoricFunctions(): public == private where
  
  
     makeYoungTableau(lambda,gitter) ==
-      lprime  : L I  := conjugate(lambda)$PartitionsAndPermutations
-      columns : NNI := (first(lambda)$(L I))::NNI
-      rows    : NNI := (first(lprime)$(L I))::NNI
+      lprime  := conjugate(lambda)$PartitionsAndPermutations
+      columns := first(lambda)$L(PI)
+      rows    := first(lprime)$L(PI)
       ytab    : M I  := new(rows,columns,0)
       help    : V I  := new(columns,1)
       i : I := -1     -- this makes the entries ranging from 0,..,n-1

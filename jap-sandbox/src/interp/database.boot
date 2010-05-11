@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -607,7 +607,7 @@ mkAlistOfExplicitCategoryOps target ==
                 op is [a] => a
                 keyedSystemError("S2GE0016",
                   ['"mkAlistOfExplicitCategoryOps",'"bad signature"])
-    opList:= REMDUP ASSOCLEFT u
+    opList:= removeDuplicates ASSOCLEFT u
     [[x,:fn(x,u)] for x in opList] where
       fn(op,u) ==
         u is [[a,:b],:c] => (a=op => [b,:fn(op,c)]; fn(op,c))
@@ -623,7 +623,7 @@ flattenSignatureList(x) ==
   x is ['PROGN,:l] =>
      ll:= []
      for x in l repeat
-        x is ['SIGNATURE,:.] => ll:=cons(x,ll)
+        x is ['SIGNATURE,:.] => ll := [x,:ll]
         ll:= append(flattenSignatureList x,ll)
      ll
   nil
@@ -673,8 +673,8 @@ loadDependents fn ==
 
 markUnique x ==
   u := first x
-  RPLACA(x,'(_$unique))
-  RPLACD(x,[u,:rest x])
+  x.first := '(_$unique)
+  x.rest := [u,:rest x]
   rest x
 
 
@@ -699,10 +699,10 @@ getOperationAlistFromLisplib x ==
       if r is [.,:s] then
         if s is [.,:t] then
           if t is [.] then nil
-          else RPLACD(s,QCDDR f)
-        else RPLACD(r,QCDR f)
-      else RPLACD(first items,f)
-      RPLACA(items,addConsDB first items)
+          else s.rest := QCDDR f
+        else r.rest := QCDR f
+      else items.first.rest := f
+      items.first := addConsDB first items
   u and markUnique u
 
 getOplistForConstructorForm (form := [op,:argl]) ==
@@ -749,7 +749,7 @@ dropPrefix(fn) ==
 --++       x := dropLeadingBlanks x
 --++       -- should be two tokens on the line
 --++       p := STRPOS('" ",x,1,NIL)
---++       NULL p =>
+--++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       n := object2Identifier SUBSTRING(x,0,p)
 --++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)

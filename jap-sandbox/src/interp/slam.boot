@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -146,7 +146,7 @@ hashCount table ==
  
 mkCircularAlist n ==
   l:= [[$failed,:$failed] for i in 1..n]
-  RPLACD(LASTNODE l,l)
+  lastNode(l).rest := l
  
 countCircularAlist(cal,n) ==
   +/[nodeCount x for x in cal for i in 1..n]
@@ -178,7 +178,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   stateNam:= GENVAR()
   stateVar:= GENSYM()
   stateVal:= GENSYM()
-  lastArg := INTERNL STRCONC('"#",STRINGIMAGE QSADD1 LENGTH argl)
+  lastArg := INTERNL strconc('"#",STRINGIMAGE QSADD1 # argl)
   decomposeCode:=
     [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]
@@ -268,7 +268,7 @@ mkCacheVec(op,nam,kind,resetCode,countCode) ==
 -- op2String op ==
 --   u:= linearFormatName op
 --   atom u => PNAME u
---   "STRCONC"/u
+--   strconc/u
 --
 -- reportCacheStorePrint(op,kind,count) ==
 --   ops:= op2String op

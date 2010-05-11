@@ -281,6 +281,7 @@ Property(): Public == Private where
   Private == add
     import Boolean
     Rep == Pair(Identifier,SExpression)
+    inline Rep
 
     name x == 
       first rep x
@@ -326,6 +327,8 @@ Binding(): Public == Private where
 
   Private == add
     Rep == Pair(Identifier, List Property)
+    import List Property
+    inline Rep
 
     name b ==
       first rep b
@@ -444,25 +447,27 @@ import List Property
 )abbrev domain ENV Environment
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
-++ Date Last Modified: January 19, 2008.
+++ Date Last Modified: March 18, 2010.
 ++ An `Environment' is a stack of scope.
 Environment(): Public == Private where
   Public == CoercibleTo(OutputForm) with
     empty: () -> %
-      ++ empty() constructs an empty environment
+      ++ \spad{empty()} constructs an empty environment
     scopes: % -> List Scope     
-      ++ scopes(e) returns the stack of scopes in environment e.
+      ++ \spad{scopes(e)} returns the stack of scopes in environment \spad{e}.
     getProperty: (Identifier, Identifier, %) -> Maybe SExpression
-      ++ getProperty(n,p,e) returns the value of property with name `p'
-      ++ for the symbol `n' in environment `e'. Otherwise, `nothing.
-    setProperty!: (Identifier, Identifier, SExpression, %) -> %
-      ++ setProperty!(n,p,v,e) binds the property `(p,v)' to `n'
-      ++ in the topmost scope of `e'.
+      ++ \spad{getProperty(n,p,e)} returns the value of property with name
+      ++ \spad{p} for the symbol \spad{n} in environment \spad{e}.
+      ++ Otherwise, \spad{nothing}.
+    putProperty: (Identifier, Identifier, SExpression, %) -> %
+      ++ \spad{putProperty(n,p,v,e)} binds the property \spad{(p,v)} to
+      ++ \spad{n} in the topmost scope of \spad{e}.
     getProperties: (Identifier, %) -> List Property
-      ++ getBinding(n,e) returns the list of properties of `n' in e.
-    setProperties!: (Identifier, List Property, %) -> %
-      ++ setBinding!(n,props,e) set the list of properties of `n' 
-      ++ to `props' in `e'.
+      ++ \spad{getBinding(n,e)} returns the list of properties of
+      ++ \spad{n} in \spad{e}.
+    putProperties: (Identifier, List Property, %) -> %
+      ++ \spad{putProperties(n,props,e)} set the list of properties of
+      ++ \spad{n} to \spad{props} in \spad{e}.
     currentEnv: () -> %        
       ++ the current normal environment in effect.
     interactiveEnv: () -> %        
@@ -483,13 +488,13 @@ Environment(): Public == Private where
       null? v => nothing
       just v 
 
-    setProperty!(n,p,v,e) ==
+    putProperty(n,p,v,e) ==
       put(n,p,v,e)$Lisp
 
     getProperties(n,e) ==
       getProplist(n,e)$Lisp
 
-    setProperties!(n,b,e) ==
+    putProperties(n,b,e) ==
       addBinding(n,b,e)$Lisp
 
     currentEnv() ==
@@ -511,7 +516,7 @@ Environment(): Public == Private where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

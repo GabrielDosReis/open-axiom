@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,6 +88,7 @@ shoeKeyWords == [  _
             ['"=>","EXIT" ], _
             ['"->", "ARROW"],_
             ['":=", "BEC"], _
+            ['"+->", "GIVES"], _
             ['"==", "DEF"], _
             ['"==>","MDEF" ], _
             ['"<=>", "TDEF"], _
@@ -216,18 +217,18 @@ for i in [ _
       ["MAX", -999999] , _
       ["MIN",  999999] , _
       ["*",         1] , _
-      ["times",         1] , _
-      ["CONS",    NIL] , _
-      ["APPEND",  NIL] , _
-      ["append",  NIL] , _
-      ["UNION",   NIL] , _
-      ["UNIONQ",  NIL] , _
-      ["union",   NIL] , _
-      ["NCONC",   NIL] , _
-      ["and",      'T] , _
-      ["or",      NIL] , _
-      ["AND",      'T] , _
-      ["OR",      NIL]   _
+      ["times",     1] , _
+      ["CONS",    nil] , _
+      ["APPEND",  nil] , _
+      ["append",  nil] , _
+      ["UNION",   nil] , _
+      ["UNIONQ",  nil] , _
+      ["union",   nil] , _
+      ["NCONC",   nil] , _
+      ["and",    true] , _
+      ["or",    false] , _
+      ["AND",    true] , _
+      ["OR",    false]   _
                          ]
  
        repeat SETF (GET(first i,'SHOETHETA),CDR i)
@@ -237,9 +238,7 @@ for i in [ _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
-  ["car",          "CAR"]  , _
-  ["cdr",          "CDR"]  , _
-  ["cons",        "CONS"]  , _
+  ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
   ["drop",        "DROP"]  , _
@@ -249,6 +248,7 @@ for i in [ _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
   ["genvar",    "GENVAR"]  , _
+  ["integer?","INTEGERP"]  , _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
@@ -260,7 +260,6 @@ for i in [ _
   ["null",        "NULL"]  , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
-  ["PAIRP",      "CONSP"]  , _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
@@ -270,7 +269,9 @@ for i in [ _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
+  ["string?",  "STRINGP"]  ,_
   ["substitute", "SUBST"]  , _
+  ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
   ["true",           "T"]  , _

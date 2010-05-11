@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -489,6 +489,11 @@ $compileExportsOnly := false
 ++ of category defaults only.  This is meaningful only when
 ++ compiling categories.
 $compileDefaultsOnly := false
+
+++ True if we should consider the representation domain (`Rep')
+++ as candidate for inlining, for the purpose of reducing
+++ abstraction penalty.
+$optimizeRep := false
 
 ++
 $leanMode := false

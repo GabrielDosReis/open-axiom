@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ makeGoGetSlot(item,index) ==
 --=======================================================================
 --> called by getInfovecCode (see top of this file) from compDefineFunctor1
 makeCompactDirect u ==
-  $predListLength :local := LENGTH $NRTslot1PredicateList
+  $predListLength :local := # $NRTslot1PredicateList
   $byteVecAcc: local := nil
   [nam,[addForm,:opList]] := u
   --pp opList 
@@ -141,7 +141,7 @@ makeCompactSigCode sig == [fn for x in sig] where
   fn() == 
     x = "$$" => 2
     x = "$" => 0
-    not INTEGERP x => 
+    not integer? x => 
       systemError ['"code vector slot is ",x,'"; must be number"]
     x
   
@@ -179,14 +179,14 @@ getLookupFun infovec ==
 makeSpadConstant [fn,dollar,slot] ==
   val := FUNCALL(fn,dollar)
   u:= dollar.slot
-  RPLACA(u,function IDENTITY)
-  RPLACD(u,val)
+  u.first := function IDENTITY
+  u.rest := val
   val
 
 stuffSlot(dollar,i,item) ==
   dollar.i :=
     atom item => [SYMBOL_-FUNCTION item,:dollar]
-    item is [n,:op] and INTEGERP n => ['newGoGet,dollar,:item]
+    item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
     item is ['CONS,.,['FUNCALL,a,b]] =>
       b = '$ => ['makeSpadConstant,eval a,dollar,i]
       sayBrightlyNT '"Unexpected constant environment!!"
@@ -362,7 +362,7 @@ NRTmakeCategoryAlist() ==
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
   for x in slot1 repeat
-       RPLACA(x,EQSUBSTLIST(CONS("$$",sixEtc),CONS('$,formals),first x))
+       x.first := EQSUBSTLIST(["$$",:sixEtc],['$,:formals],first x)
   -----------code to make a new style slot4 -----------------
   predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
@@ -382,7 +382,7 @@ encodeCatform x ==
 NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
  
 hasDefaultPackage catname ==
-  defname := INTERN STRCONC(catname,'"&")
+  defname := INTERN strconc(catname,'"&")
   constructor? defname => defname
   nil
  
@@ -394,7 +394,7 @@ orderCatAnc x == nreverse ASSOCLEFT SORTBY('CDR,rest depthAssoc x)
  
 depthAssocList u == 
   u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
-  REMDUP ("append"/[depthAssoc(y) for y in u])
+  removeDuplicates ("append"/[depthAssoc(y) for y in u])
  
 depthAssoc x ==
   y := HGET($depthAssocCache,x) => y
@@ -474,8 +474,8 @@ dcSlots con ==
   for i in 5..MAXINDEX template repeat
     sayBrightlyNT bright i
     item := template.i
-    item is [n,:op] and INTEGERP n => dcOpLatchPrint(op,n)
-    null item and i > 5 => sayBrightly ['"arg  ",STRCONC('"#",STRINGIMAGE(i - 5))]
+    item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
+    null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",STRINGIMAGE(i - 5))]
     atom item => sayBrightly ['"fun  ",item]
     item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
     sayBrightly concat('"lazy ",form2String formatSlotDomain i)
@@ -511,9 +511,9 @@ getCodeVector() ==
 formatSlotDomain x ==
   x = 0 => ["$"]
   x = 2 => ["$$"]
-  INTEGERP x =>
+  integer? x =>
     val := $infovec.0.x
-    null val => [STRCONC('"#",STRINGIMAGE (x  - 5))]
+    null val => [strconc('"#",STRINGIMAGE (x  - 5))]
     formatSlotDomain val
   atom x => x
   x is ['NRTEVAL,y] => (atom y => [y]; y)
@@ -631,7 +631,7 @@ dcData con ==
   sayBrightly '"Operation data from slot 1"
   PRINT_-FULL $infovec.1
   vec := getCodeVector()
-  vec := (CONSP vec => rest vec; vec)
+  vec := (cons? vec => rest vec; vec)
   sayBrightly ['"Information vector has ",SIZE vec,'" entries"]
   dcData1 vec
 
@@ -663,7 +663,7 @@ dcSize(:options) ==
   lazyNodes := 0 --# of nodes needed for lazy domain slots
   for i in 5..maxindex repeat
     atom (item := template.i) =>   fun := fun + 1
-    INTEGERP first item    => latch := latch + 1
+    integer? first item    => latch := latch + 1
     'T                 =>  
        lazy := lazy + 1
        lazyNodes := lazyNodes + numberOfNodes item
@@ -733,7 +733,7 @@ numberOfNodes(x) ==
 
 template con ==
   con := abbreviation? con or con
-  ppTemplate (getInfovec con).0
+  ppTemplate getInfovec(con).0
 
 ppTemplate vec ==
   for i in 0..MAXINDEX vec repeat
@@ -897,12 +897,12 @@ expandType(lazyt,template,domform) ==
                                  for [.,tag,dom] in argl]]
   lazyt is ['local,x] =>
     n := POSN1(x,$FormalMapVariableList)
-    ELT(domform,1 + n)
+    domform.(1 + n)
   [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
  
 expandTypeArgs(u,template,domform) ==
   u = '$ => u --template.0      -------eliminate this as $ is rep by 0
-  INTEGERP u => expandType(templateVal(template, domform, u), template,domform)
+  integer? u => expandType(templateVal(template, domform, u), template,domform)
   u is ['NRTEVAL,y] => y  --eval  y
   u is ['QUOTE,y] => y
   atom u => u

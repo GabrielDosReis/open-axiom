@@ -160,6 +160,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;<=;2$B;37|)) 
 
+(PUT '|INT;<=;2$B;37| '|SPADreplace|
+     '(XLAM (|x| |y|) (NOT (> |x| |y|)))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;>=;2$B;38|)) 
 
@@ -411,7 +414,9 @@
 
 (DEFUN |INT;>;2$B;36| (|x| |y| $) (DECLARE (IGNORE $)) (> |x| |y|)) 
 
-(DEFUN |INT;<=;2$B;37| (|x| |y| $) (NOT (> |x| |y|))) 
+(DEFUN |INT;<=;2$B;37| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (> |x| |y|))) 
 
 (DEFUN |INT;>=;2$B;38| (|x| |y| $) (DECLARE (IGNORE $)) (>= |x| |y|)) 
 
@@ -530,20 +535,16 @@
                  ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))))) 
 
 (DEFUN |Integer;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|Integer|) . #0=(|Integer|))
-        (LETT $ (|newShell| 142) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 84
-            (|setShellEntry| $ 53
-                (CONS (|dispatchFunction| |INT;*;3$;43|) $)))
-        $)))) 
+  (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 142))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 84
+        (|setShellEntry| $ 53
+            (CONS (|dispatchFunction| |INT;*;3$;43|) $)))
+    $)) 
 
 (MAKEPROP '|Integer| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL

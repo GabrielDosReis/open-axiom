@@ -49,7 +49,7 @@ $foreignsDefsForCLisp := []
 
 genModuleFinalization(stream) ==
   %hasFeature KEYWORD::CLISP =>
-    null $foreignsDefsForCLisp => nil
+    $foreignsDefsForCLisp = nil => nil
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
@@ -282,7 +282,7 @@ shoeTransformToFile(fn,str)==
 shoeConsoleItem (str)==
   dq := first str
   shoeConsoleLines shoeDQlines dq
-  cons(shoeParseTrees dq, rest str)
+  [shoeParseTrees dq,:rest str]
 
 bFileNext(fn,s) ==
   bDelay(function bFileNext1,[fn,s])
@@ -295,7 +295,7 @@ bFileNext1(fn,s)==
  
 shoeParseTrees dq==
   toklist := dqToList dq
-  null toklist => []
+  toklist = nil => []
   shoeOutParse toklist
  
 shoeTreeConstruct (str)==
@@ -368,7 +368,7 @@ shoeOutParse stream ==
   not bStreamNull $inputStream =>
     bpGeneralErrorHere()
     nil
-  null $stack =>
+  $stack = nil =>
     bpGeneralErrorHere()
     nil
   first $stack
@@ -377,7 +377,7 @@ shoeOutParse stream ==
 genDeclaration(n,t) ==
   t is ["%Mapping",valType,argTypes] =>
     if bfTupleP argTypes then argTypes := rest argTypes
-    if not null argTypes and SYMBOLP argTypes 
+    if argTypes ~= nil and symbol? argTypes 
     then argTypes := [argTypes]
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
   ["DECLAIM",["TYPE",t,n]]
@@ -397,7 +397,7 @@ translateToplevelExpression expr ==
   -- at toplevel.
   for t in expr' repeat
     t is ["DECLARE",:.] =>
-      RPLACA(t,"DECLAIM")
+      t.first := "DECLAIM"
   expr' :=
     #expr' > 1 => ["PROGN",:expr']
     first expr'
@@ -533,11 +533,11 @@ defuse(e,x)==
   then
      $bootDefinedTwice:=
 	    nee="TOP-LEVEL"=> $bootDefinedTwice
-	    cons(nee,$bootDefinedTwice)
+	    [nee,:$bootDefinedTwice]
   else HPUT($bootDefined,nee,true)
   defuse1 (e,niens)
   for i in $used repeat
-     HPUT($bootUsed,i,cons(nee,GETHASH(i,$bootUsed)))
+     HPUT($bootUsed,i,[nee,:GETHASH(i,$bootUsed)])
  
 defuse1(e,y)==
   atom y =>
@@ -559,17 +559,17 @@ defuse1(e,y)==
   for i in y repeat defuse1(e,i)
  
 defSeparate x==
-  null x => [[],[]]
+  x = nil => [[],[]]
   f := first x
   [x1,x2] := defSeparate rest x
   bfBeginsDollar f => [[f,:x1],x2]
-  [x1,cons(f,x2)]
+  [x1,[f,:x2]]
 
 unfluidlist x==
-  NULL x => []
-  atom x=> [x]
+  x = nil => []
+  atom x => [x]
   x is ["&REST",y]=> [y]
-  cons(first x,unfluidlist rest x)
+  [first x,:unfluidlist rest x]
  
 defusebuiltin x ==  
   GETHASH(x,$lispWordTable)
@@ -584,7 +584,7 @@ SSORT l ==
   SORT(l,function CLESSP)
  
 bootOutLines(l,outfn,s)==
-  null l => shoeFileLine(s,outfn)
+  l = nil => shoeFileLine(s,outfn)
   a := PNAME first l
   #s + #a > 70 =>
     shoeFileLine(s,outfn)
@@ -601,7 +601,7 @@ XREF fn==
   shoeOpenInputFile(a,infn,shoeXref(a,fn))
  
 shoeXref(a,fn)==
-  null a => shoeNotFound fn
+  a = nil => shoeNotFound fn
   $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
   $bootDefined  :=MAKE_-HASHTABLE "EQ"
@@ -653,7 +653,7 @@ shoeTransform2 str==
  
 shoeItem (str)==
   dq:=first str
-  cons([[first line for line in  shoeDQlines dq]],rest str)
+  [[[first line for line in  shoeDQlines dq]],:rest str]
  
 stripm (x,pk,bt)==
   atom x =>
@@ -661,7 +661,7 @@ stripm (x,pk,bt)==
       SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
       x
     x
-  CONS(stripm(first x,pk,bt),stripm(rest x,pk,bt))
+  [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]
  
 shoePCompile  fn==
     fn:=stripm(fn,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
@@ -745,12 +745,18 @@ translateBootFile(progname, options, file) ==
   outFile := getOutputPathname options or defaultBootToLispFile file
   BOOTTOCL(file, ENOUGH_-NAMESTRING outFile)
 
+retainFile? ext ==
+  Option 'all in $FilesToRetain or Option 'yes in $FilesToRetain => true
+  Option 'no in $FilesToRetain => false
+  Option ext in $FilesToRetain
+
 compileBootHandler(progname, options, file) ==
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
   errorCount() ~= 0 => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
-    DELETE_-FILE intFile
+    if not retainFile? 'lisp then
+      DELETE_-FILE intFile
     objFile
   nil
 

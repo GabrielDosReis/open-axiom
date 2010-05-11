@@ -505,7 +505,6 @@ FortranCode(): public == private where
 
     printCode(f:$):Void ==
       displayLines1$Lisp getCode f
-      void()$Void
 
     code (f:$):OPREC ==
       elt(f,data)$Rep
@@ -776,7 +775,6 @@ FortranProgram(name,returnType,arguments,symbols): Exports == Implement where
       clearTheSymbolTable(tempName)
       for expr in body repeat displayLines1(expr)$Lisp
       dispStatement(END::OutputForm)$Lisp
-      void()$Void
 
     mkString(l:List Symbol):String ==
       unparse(convert(l::OutputForm)@InputForm)$InputForm
@@ -788,7 +786,6 @@ FortranProgram(name,returnType,arguments,symbols): Exports == Implement where
         s1 : String := mkString(user)
         s2 : String := mkString(target)
         error ["Incompatible variable lists:", s1, s2]
-      void()$Void
 
     coerce(u:EXPR MINT) : $ ==
       checkVariables(variables(u)$EXPR(MINT),arguments)
@@ -1214,7 +1211,6 @@ SimpleFortranProgram(R,FS): Exports == Implementation where
       dispfortexp1$Lisp ["="::OutputForm, fname, val]@List(OutputForm)
       dispfortexp1$Lisp "RETURN"::OutputForm
       dispfortexp1$Lisp "END"::OutputForm
-      void()$Void
 
 @
 \section{domain SWITCH Switch}
@@ -1641,7 +1637,6 @@ FortranExpression(basicSymbols,subscriptedSymbols,R):
       extras : L S := setDifference(ops,fortranFunctions)
       not empty? extras => 
         error ["Non FORTRAN-77 functions detected:",[string(v) for v in extras]]
-      void()
 
     checkForNagOperators(u:EXPR R):$ ==
       useNagFunctionsFlag =>

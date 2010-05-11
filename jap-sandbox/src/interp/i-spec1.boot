@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -223,7 +223,7 @@ upAlgExtension t ==
   null (canonicalAE:= coerceInteractive(T,pd)) =>
     throwKeyedMsgCannotCoerceWithValue(objVal T,objMode T,pd)
   sae:= ['SimpleAlgebraicExtension,field,pd,objValUnwrap canonicalAE]
-  saeTypeSynonym := INTERN STRCONC('"SAE",STRINGIMAGE a)
+  saeTypeSynonym := INTERN strconc('"SAE",STRINGIMAGE a)
   saeTypeSynonymValue := objNew(sae,'(Domain))
   fun := getFunctionFromDomain('generator,sae,NIL)
   expr:= wrap SPADCALL(fun)
@@ -333,7 +333,7 @@ userDefinedCase(t is [op, lhs, rhs]) ==
   putMode(r, m)
   putValue(r, objNewWrap(MKQ rhs,m))
   putModeSet(r, [m])
-  RPLACD(cdr t, [r])                   -- fix up contained for rhs.
+  t.rest.rest := [r]                   -- fix up contained for rhs.
   nil                                  -- tell bottomUp to continue.
 
 upcase t ==
@@ -346,7 +346,7 @@ upcase t ==
   if first unionDoms is [":",.,.] then
      for i in 0.. for d in unionDoms repeat
         if d is [":",=rhs,.] then rhstag := i
-     if NULL rhstag then error '"upcase: bad Union form"
+     if null rhstag then error '"upcase: bad Union form"
      $genValue =>
         rhstag = first unwrap objVal triple => code := wrap true
         code := wrap false
@@ -486,7 +486,7 @@ upLoopIters itrl ==
       upLoopIterSTEP(index,lower,step,upperList)
       -- following is an optimization
       typeIsASmallInteger(get(index,'mode,$env)) =>
-        RPLACA(iter,'ISTEP)
+        iter.first := 'ISTEP
     -- at this point, the AST may already be badly corrupted,
     -- but better late than never.
     throwKeyedMsg("S2IS0061",nil)
@@ -513,8 +513,8 @@ upLoopIterIN(iter,index,s) ==
       NIL
     upLoopIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,first newIter)
-    RPLACD(iter,rest newIter)
+    iter.first := first newIter
+    iter.rest := rest newIter
 
   iterMs isnt [['List,ud]] => throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
@@ -536,7 +536,7 @@ upLoopIterSTEP(index,lower,step,upperList) ==
       throwKeyedMsg("S2IS0007",['"upper"])
   if utype then types := [utype, :types]
   else types := [stype, :types]
-  type := resolveTypeListAny REMDUP types
+  type := resolveTypeListAny removeDuplicates types
   put(index,'mode,type,$env)
   mkLocalVar('"the iterator expression",index)
 
@@ -686,8 +686,8 @@ upStreamIterIN(iter,index,s) ==
       NIL
     upStreamIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,first newIter)
-    RPLACD(iter,rest newIter)
+    iter.first := first newIter
+    iter.rest := rest newIter
 
   (iterMs isnt [['List,ud]]) and (iterMs isnt [['Stream,ud]])
     and (iterMs isnt [['InfinitTuple, ud]]) =>
@@ -797,8 +797,8 @@ checkForFreeVariables(v,locals) ==
   -- bound variables, the parameter locals contains local variables which might
   -- be free, or the token ALL, which means that any parameter is a candidate
   -- to be free.
-  NULL v => v
-  SYMBOLP v =>
+  null v => v
+  symbol? v =>
     v="$$$" => v -- Placeholder for mini-vector
     MEMQ(v,$boundVariables) => v
     p := POSITION(v,$freeVariables) =>
@@ -932,7 +932,7 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   vec
 
 subVecNodes(new,old,form) ==
-  ATOM form =>
+  atom form =>
     (VECP form) and (form.0 = old) => new
     form
   [subVecNodes(new,old,first form), :subVecNodes(new,old,rest form)]
@@ -965,7 +965,7 @@ upconstruct t ==
   tar is ['Record,:types] => upRecordConstruct(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and CONSP(tar) and not isPartialMode(tar) then
+  if tar and cons?(tar) and not isPartialMode(tar) then
     first(tar) in aggs =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
@@ -993,7 +993,7 @@ upconstruct t ==
     mode := ['Stream, td]
     evalInfiniteTupleConstruct(op, l, mode, tar)
   if not isPartialMode(tar) and tar is ['List,ud] then
-    mode := ['List, resolveTypeListAny cons(ud,eltTypes)]
+    mode := ['List, resolveTypeListAny [ud,:eltTypes]]
   else mode := ['List, resolveTypeListAny eltTypes]
   if isPartialMode tar then tar:=resolveTM(mode,tar)
   evalconstruct(op,l,mode,tar)
@@ -1150,7 +1150,7 @@ declare(var,mode) ==
     -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
-      CONSP margs => -1 + #margs
+      cons? margs => -1 + #margs
       1
     nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
@@ -1185,19 +1185,19 @@ replaceSharps(x,d) ==
   -- all replaces the triangle variables
   SL:= NIL
   for e in rest d for var in $FormalMapVariableList repeat
-    SL:= CONS(CONS(var,e),SL)
+    SL:= [[var,:e],:SL]
   x := subCopy(x,SL)
   SL:= NIL
   for e in rest d for var in $TriangleVariableList repeat
-    SL:= CONS(CONS(var,e),SL)
+    SL:= [[var,:e],:SL]
   subCopy(x,SL)
 
 isDomainValuedVariable form ==
   -- returns the value of form if form is a variable with a type value
   IDENTP form and (val := (
     get(form,'value,$InteractiveFrame) or _
-    (CONSP($env) and get(form,'value,$env)) or _
-    (CONSP($e) and get(form,'value,$e)))) and
+    (cons?($env) and get(form,'value,$env)) or _
+    (cons?($e) and get(form,'value,$e)))) and
       (member(m := objMode(val),'((Domain) (Category)))
           or conceptualType m = $Category) =>
         objValUnwrap(val)
@@ -1239,8 +1239,8 @@ isPolynomialMode m ==
     op in '(Polynomial RationalFunction AlgebraicFunction Expression
       ElementaryFunction LiouvillianFunction FunctionalExpression
         CombinatorialFunction) => 'all
-    op = 'UnivariatePolynomial => LIST a
-    op = 'Variable       => LIST a
+    op = 'UnivariatePolynomial => [a]
+    op = 'Variable       => [a]
     op in '(MultivariatePolynomial DistributedMultivariatePolynomial
       HomogeneousDistributedMultivariatePolynomial) => a
     NIL

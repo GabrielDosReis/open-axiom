@@ -461,11 +461,11 @@ InnerSparseUnivariatePowerSeries(Coef): Exports == Implementation where
         explicitEntries? y => void()
         xDeg := (getExpon frst x) :: COM
         while (xDeg + elt(yRefer)) < nn repeat lazyEvaluate y
-        void()
+
       explicitEntries? y =>
         yDeg := (getExpon frst y) :: COM
         while (yDeg + elt(xRefer)) < nn repeat lazyEvaluate x
-        void()
+
       lazyEvaluate x
       -- if x = y, then y may now have explicit entries
       if lazy? y then lazyEvaluate y

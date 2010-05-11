@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,12 +47,12 @@ $mapThrowCount := 0 -- times a "return" occurs in map
 $specialMapNameSuffix := NIL
 
 makeInternalMapName(userName,numArgs,numMms,extraPart) ==
-  name := CONCAT('"*",STRINGIMAGE numArgs,'";",
+  name := strconc('"*",STRINGIMAGE numArgs,'";",
     object2String userName,'";",STRINGIMAGE numMms,'";",
       object2String frameName first $interpreterFrameRing )
-  if extraPart then name := CONCAT(name,'";",extraPart)
+  if extraPart then name := strconc(name,'";",extraPart)
   if $specialMapNameSuffix then
-    name := CONCAT(name,'";",$specialMapNameSuffix)
+    name := strconc(name,'";",$specialMapNameSuffix)
   INTERN name
 
 isInternalMapName name ==
@@ -66,9 +66,9 @@ isInternalMapName name ==
   true
 
 makeInternalMapMinivectorName(name) ==
-  STRINGP name =>
-    INTERN STRCONC(name,'";MV")
-  INTERN STRCONC(PNAME name,'";MV")
+  string? name =>
+    INTERN strconc(name,'";MV")
+  INTERN strconc(PNAME name,'";MV")
 
 mkCacheName(name) == INTERNL(STRINGIMAGE name,'";AL")
 
@@ -151,7 +151,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   for parm in parameters repeat mkLocalVar($mapName,parm)
   userVariables2 := setDifference(userVariables1,findLocalVars(op,rhs))
   userVariables3 := setDifference(userVariables2, parameters)
-  userVariables4 := REMDUP setDifference (userVariables3, [op])
+  userVariables4 := removeDuplicates setDifference (userVariables3, [op])
 
   --figure out the new dependencies for the new map (what it depends on)
   newDependencies := makeNewDependencies (op, userVariables4)
@@ -232,10 +232,10 @@ getUserIdentifiersIn body ==
         append/[getUserIdentifiersIn y for [.,.,y] in l]
       "append"/[getUserIdentifiersIn y for y in l]
     bodyIdList :=
-      CONSP op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
+      cons? op or not (GETL(op,'Nud) or GETL(op,'Led) or GETL(op,'up))=>
         NCONC(getUserIdentifiersIn op, argIdList)
       argIdList
-    REMDUP bodyIdList
+    removeDuplicates bodyIdList
 
 getUserIdentifiersInIterators itl ==
   for x in itl repeat
@@ -247,7 +247,7 @@ getUserIdentifiersInIterators itl ==
       varList:= [:getUserIdentifiersIn a,:varList]
     keyedSystemError("S2GE0016",['"getUserIdentifiersInIterators",
       '"unknown iterator construct"])
-  REMDUP varList
+  removeDuplicates varList
 
 getIteratorIds itl ==
   for x in itl repeat
@@ -431,7 +431,7 @@ simplifyMapPattern (x,alias) ==
 
 simplifyMapConstructorRefs form ==
   -- try to linear format constructor names
-  ATOM form => form
+  atom form => form
   [op,:args] := form
   op in '(exit SEQ) =>
     [op,:[simplifyMapConstructorRefs a for a in args]]
@@ -440,12 +440,12 @@ simplifyMapConstructorRefs form ==
   op in '(_: _:_: _@) =>
     args is [obj,dom] =>
       dom' := prefix2String dom
-      --if ATOM dom' then dom' := [dom']
-      --[op,obj,APPLY('CONCAT,dom')]
+      --if atom dom' then dom' := [dom']
+      --[op,obj,apply(function strconc,dom')]
       dom'' :=
-          ATOM dom' => dom'
-          NULL rest dom' => first dom'
-          APPLY('CONCAT, dom')
+          atom dom' => dom'
+          null rest dom' => first dom'
+          apply(function strconc, dom')
       [op,obj, dom'']
     form
   form
@@ -472,7 +472,7 @@ getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
 --% User function analysis
 
 mapCatchName mapname ==
-   INTERN STRCONC('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
+   INTERN strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
 
 analyzeMap(op,argTypes,mapDef, tar) ==
   -- Top level enty point for map type analysis.  Sets up catch point
@@ -713,11 +713,11 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
   if lmm:= get(op,'localModemap,$InteractiveFrame) then
     untraceMapSubNames [CADAR lmm]
   op0 :=
-    ( n := isSharpVarWithNum op ) => STRCONC('"<argument ",object2String n,'">")
+    ( n := isSharpVarWithNum op ) => strconc('"<argument ",object2String n,'">")
     op
   if $verbose then
     if get(op,'isInterpreterRule,$e) then
-      sayKeyedMsg("S2IM0014",[op0,(CONSP sig =>prefix2String first sig;'"?")])
+      sayKeyedMsg("S2IM0014",[op0,(cons? sig =>prefix2String first sig;'"?")])
     else sayKeyedMsg("S2IM0015",[op0,formatSignature sig])
   $whereCacheList := [op,:$whereCacheList]
 
@@ -977,7 +977,7 @@ mkValCheck(val,i) ==
 
 mkSharpVar i ==
   -- create #i
-  INTERN CONCAT('"#",STRINGIMAGE i)
+  INTERN strconc('"#",STRINGIMAGE i)
 
 mapPredTran pred ==
   -- transforms "x in i..j" to "x>=i and x<=j"
@@ -1001,10 +1001,10 @@ findLocalVars1(op,form) ==
     mkFreeVar($mapName,form)
   form is ['local, :vars] =>
     for x in vars repeat
-      ATOM x => mkLocalVar(op, x)
+      atom x => mkLocalVar(op, x)
   form is ['free, :vars] =>
     for x in vars repeat
-      ATOM x => mkFreeVar(op, x)
+      atom x => mkFreeVar(op, x)
   form is ["%LET",a,b] =>
     (a is ["tuple",:vars]) and (b is ["tuple",:vals]) =>
       for var in vars for val in vals repeat
@@ -1067,7 +1067,7 @@ listOfVariables pat ==
   IDENTP pat => (pat='_. => nil ; [pat])
   pat is ['_:,var] or pat is ['_=,var] =>
     (var='_. => NIL ; [var])
-  CONSP pat => REMDUP [:listOfVariables p for p in pat]
+  cons? pat => removeDuplicates [:listOfVariables p for p in pat]
   nil
 
 getMapBody(op,mapDef) ==

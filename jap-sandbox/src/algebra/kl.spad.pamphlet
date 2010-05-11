@@ -67,13 +67,13 @@ SortedCache(S:CachableSet): Exports == Implementation where
     cache() == deref cach
 
     shiftCache(l, n) ==
-      for x in l repeat setPosition(x, n + position x)
-      void
+      for x in l repeat
+        setPosition(x, n + position x)
 
     clearCache() ==
-      for x in cache repeat setPosition(x, 0)
+      for x in cache() repeat
+        setPosition(x, 0)
       setref(cach,nil$List(S))
-      void
 
     enterInCache(x:S, equal?:S -> Boolean) ==
       scan := cache()
@@ -119,12 +119,12 @@ SortedCache(S:CachableSet): Exports == Implementation where
 ++ A kernel over a set S is an operator applied to a given list
 ++ of arguments from S.
 Kernel(S: SetCategory): Exports == Implementation where
-  O  ==> OutputForm
-  N  ==> NonNegativeInteger
-  OP ==> BasicOperator
+  macro O  == OutputForm
+  macro N  == NonNegativeInteger
+  macro OP == BasicOperator
 
 
-  Exports ==> Join(CachableSet, OrderedSet, Patternable S) with
+  Exports == Join(CachableSet, OrderedSet, Patternable S) with
     operator: % -> OP
       ++ operator(op(a1,...,an)) returns the operator op.
     argument: % -> List S
@@ -157,7 +157,7 @@ Kernel(S: SetCategory): Exports == Implementation where
     macro SPECIALINPUT == '%specialInput
     import SortedCache(%)
 
-    Rep == Record(op:OP, arg:List S, nest:N, posit:N)
+    Rep == Record(op: OP, arg: List S, nest: N, posit: N)
 
     clearCache()
 
@@ -272,7 +272,7 @@ KernelFunctions2(R: SetCategory, S: SetCategory): with
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

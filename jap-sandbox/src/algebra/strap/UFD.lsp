@@ -4,24 +4,21 @@
 (DEFPARAMETER |UniqueFactorizationDomain;AL| 'NIL) 
 
 (DEFUN |UniqueFactorizationDomain;| ()
-  (PROG (#0=#:G1396)
-    (RETURN
-      (PROG1 (LETT #0#
-                   (|Join| (|GcdDomain|)
-                           (|mkCategory| '|domain|
-                               '(((|prime?| ((|Boolean|) $)) T)
-                                 ((|squareFree| ((|Factored| $) $)) T)
-                                 ((|squareFreePart| ($ $)) T)
-                                 ((|factor| ((|Factored| $) $)) T))
-                               NIL '((|Factored| $) (|Boolean|)) NIL))
-                   |UniqueFactorizationDomain|)
-        (|setShellEntry| #0# 0 '(|UniqueFactorizationDomain|)))))) 
+  (LET ((#0=#:G1396
+            (|Join| (|GcdDomain|)
+                    (|mkCategory| '|domain|
+                        '(((|prime?| ((|Boolean|) $)) T)
+                          ((|squareFree| ((|Factored| $) $)) T)
+                          ((|squareFreePart| ($ $)) T)
+                          ((|factor| ((|Factored| $) $)) T))
+                        NIL '((|Factored| $) (|Boolean|)) NIL))))
+    (|setShellEntry| #0# 0 '(|UniqueFactorizationDomain|))
+    #0#)) 
 
 (DEFUN |UniqueFactorizationDomain| ()
-  (LET ()
-    (COND
-      (|UniqueFactorizationDomain;AL|)
-      (T (SETQ |UniqueFactorizationDomain;AL|
-               (|UniqueFactorizationDomain;|)))))) 
+  (COND
+    (|UniqueFactorizationDomain;AL|)
+    (T (SETQ |UniqueFactorizationDomain;AL|
+             (|UniqueFactorizationDomain;|))))) 
 
 (MAKEPROP '|UniqueFactorizationDomain| 'NILADIC T) 

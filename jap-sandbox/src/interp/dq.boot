@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,9 @@ namespace BOOT
  
 -- dqToList transforms a dq to a list
  
-dqUnit s==(a:=[s];CONS(a,a))
+dqUnit s==
+  a := [s]
+  [a,:a]
  
 dqUnitCopy s== dqUnit(CAAR s)
  
@@ -57,8 +59,8 @@ dqAppend(x,y)==
     else if null y
          then x
          else
-              RPLACD (rest x,first y)
-              RPLACD (x,    rest y)
+              x.rest.rest := first y
+              x.rest := rest y
               x
  
 dqConcat ld==
@@ -76,6 +78,6 @@ dqAddAppend(x,y)==
     else if null y
          then nil
          else
-              RPLACD (rest x,first y)
-              RPLACD (x,    rest y)
+              x.rest.rest := first y
+              x.rest := rest y
               x

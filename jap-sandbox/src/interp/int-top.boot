@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -152,7 +152,7 @@ SpadInterpretStream(str, source, interactive?) ==
 
 intloopReadConsole(b, n)==
     a:= serverReadLine $InputStream
-    not STRINGP a => leaveScratchpad()
+    not string? a => leaveScratchpad()
     #a=0 =>
              not $leanMode and printPrompt()
              intloopReadConsole('"", n)
@@ -163,8 +163,8 @@ intloopReadConsole(b, n)==
              c := ncloopCommand(d,n)
              not $leanMode and printPrompt()
              intloopReadConsole('"", c)
-    a:=CONCAT(b,a)
-    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (LENGTH a) - 1),n)
+    a:=strconc(b,a)
+    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (# a) - 1),n)
     c := intloopProcessString(a, n)
     not $leanMode and printPrompt()
     intloopReadConsole('"", c)
@@ -203,7 +203,7 @@ intloopEchoParse s==
          setCurrentLine(mkLineList(lines))
          if $EchoLines then ncloopPrintLines lines
          $lines:=rest
-         cons([[lines,npParse dqToList dq]],rest s)
+         [[[lines,npParse dqToList dq]],:rest s]
  
 intloopInclude0(st, name, n) ==
     $lines:local:=incStream(st,name)
@@ -317,11 +317,11 @@ streamChop(n,s)==
     else if EQL(n,0)
          then [nil,s]
          else
-            [a,b]:= streamChop(n-1,cdr s)
-            line:=car s
+            [a,b]:= streamChop(n-1,rest s)
+            line:=first s
             c:=ncloopPrefix?('")command",rest line)
-            d:= cons(car line,if c then c else cdr line)
-            [cons(d,a),b]
+            d:= [first line,:(if c then c else rest line)]
+            [[d,:a],b]
  
 ncloopPrintLines lines ==
         for line in lines repeat WRITE_-LINE rest line
@@ -330,14 +330,14 @@ ncloopPrintLines lines ==
 ncloopIncFileName string==
                 fn := incFileName string
                 not fn =>
-                    WRITE_-LINE (CONCAT(string, '" not found"))
+                    WRITE_-LINE (strconc(string, '" not found"))
                     []
                 fn
 
 ncloopParse s==
          [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,stream)
-         cons([[lines,npParse dqToList dq]],rest s)
+         [[[lines,npParse dqToList dq]],:rest s]
  
 ncloopInclude0(st, name, n) ==
      $lines:local := incStream(st, name)
@@ -410,7 +410,7 @@ ncConversationPhase(fn, args) ==
     $ncMsgList: local := []
     $convPhase: local := 'NoPhase
  
-    UNWIND_-PROTECT( APPLY(fn, args), wrapup(carrier) ) where
+    UNWIND_-PROTECT( apply(fn, args), wrapup(carrier) ) where
         wrapup(carrier) ==
             for m in $ncMsgList repeat
                 ncPutQ(carrier, 'messages, [m, :ncEltQ(carrier, 'messages)])

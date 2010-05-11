@@ -123,17 +123,13 @@
 (DEFUN |CHAR;size;Nni;6| ($) (DECLARE (IGNORE $)) 256) 
 
 (DEFUN |CHAR;index;Pi$;7| (|n| $)
-  (PROG (#0=#:G1403)
-    (RETURN
-      (CODE-CHAR
-          (PROG1 (LETT #0# (- |n| 1) |CHAR;index;Pi$;7|)
-            (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))))) 
+  (CODE-CHAR
+      (LET ((#0=#:G1404 (- |n| 1)))
+        (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))) 
 
 (DEFUN |CHAR;lookup;$Pi;8| (|c| $)
-  (PROG (#0=#:G1405)
-    (RETURN
-      (PROG1 (LETT #0# (+ 1 (CHAR-CODE |c|)) |CHAR;lookup;$Pi;8|)
-        (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))))) 
+  (LET ((#0=#:G1406 (+ 1 (CHAR-CODE |c|))))
+    (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))) 
 
 (DEFUN |CHAR;char;Nni$;9| (|n| $)
   (DECLARE (IGNORE $))
@@ -208,17 +204,13 @@
                  ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))))) 
 
 (DEFUN |Character;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|Character|) . #0=(|Character|))
-        (LETT $ (|newShell| 58) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
-        (|stuffDomainSlots| $)
-        $)))) 
+  (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    $)) 
 
 (MAKEPROP '|Character| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|Boolean|) |CHAR;=;2$B;1|

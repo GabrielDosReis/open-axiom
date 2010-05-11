@@ -1,6 +1,6 @@
 -- Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ genCategoryTable() ==
     in domainList | catl := getConstructorCategoryFromDB con]
   -- $nonLisplibDomains, $noCategoryDomains are set in BUILDOM BOOT
   specialDs := SETDIFFERENCE($nonLisplibDomains,$noCategoryDomains)
-  domainTable:= [:[addDomainToTable(id, getConstrCat (eval [id]).3)
+  domainTable:= [:[addDomainToTable(id, getConstrCat eval([id]).3)
     for id in specialDs], :domainTable]
   for [id,:entry] in domainTable repeat
     for [a,:b] in encodeCategoryAlist(id,entry) repeat
@@ -77,7 +77,7 @@ genCategoryTable() ==
 simpTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     for (u:=[a,:b]) in getConstructorAncestorsFromDB id repeat
-      RPLACD(u,simpHasPred b)
+      u.rest := simpHasPred b
 
 simpCategoryTable() == main where
   main() ==
@@ -199,7 +199,7 @@ genTempCategoryTable() ==
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
     item := HGET(_*ANCESTORS_-HASH_*, id) 
     for (u:=[.,:b]) in item repeat
-      RPLACD(u,simpCatPredicate simpBool b)
+      u.rest := simpCatPredicate simpBool b
     HPUT(_*ANCESTORS_-HASH_*,id,listSort(function GLESSEQP,item))
 
 addToCategoryTable con ==
@@ -217,9 +217,9 @@ encodeCategoryAlist(id,alist) ==
       argl => [[argl,:b]]
       b
     u:= assoc(key,newAl) =>
-      argl => RPLACD(u,encodeUnion(id,first newEntry,rest u))
+      argl => u.rest := encodeUnion(id,first newEntry,rest u)
       if newEntry ~= rest u then
-        p:= moreGeneralCategoryPredicate(id,newEntry,rest u) => RPLACD(u,p)
+        p:= moreGeneralCategoryPredicate(id,newEntry,rest u) => u.rest := p
         sayMSG '"Duplicate entries:"
         PRINT [newEntry,rest u]
     newAl:= [[key,:newEntry],:newAl]
@@ -227,7 +227,7 @@ encodeCategoryAlist(id,alist) ==
 
 encodeUnion(id,new:=[a,:b],alist) ==
   u := assoc(a,alist) =>
-    RPLACD(u,moreGeneralCategoryPredicate(id,b,rest u))
+    u.rest := moreGeneralCategoryPredicate(id,b,rest u)
     alist
   [new,:alist]
 
@@ -277,7 +277,7 @@ isFormalArgumentList argl ==
   and/[x=fa for x in argl for fa in $FormalMapVariableList]
 
 mkCategoryExtensionAlist cform ==
-  not CONSP cform => nil
+  not cons? cform => nil
   cop := first cform
   MEMQ(cop, $CategoryNames) => mkCategoryExtensionAlistBasic cform
   catlist := formalSubstitute(cform, first getConstructorExports(cform, true))
@@ -296,7 +296,7 @@ mkCategoryExtensionAlistBasic cform ==
 --category:= eval cform
   category :=      -- changed by RSS on 7/29/87
     macrop cop => eval cform
-    APPLY(cop, rest cform)
+    apply(cop, rest cform)
   extendsList:= [[x,:'T] for x in category.4.0]
   for [cat,pred,:.] in category.4.1 repeat
     newList := getCategoryExtensionAlist0 cat
@@ -310,7 +310,7 @@ catPairUnion(oldList,newList,op,cat) ==
   for pair in newList repeat
     u:= assoc(first pair,oldList) =>
       rest u = rest pair => nil
-      RPLACD(u,addConflict(rest pair,rest u)) where addConflict(new,old) ==
+      u.rest := addConflict(rest pair,rest u) where addConflict(new,old) ==
         quickOr(new,old)
     oldList:= [pair,:oldList]
   oldList
@@ -350,7 +350,7 @@ getConstrCat(x) ==
   for y in x repeat
     y is ['CATEGORY,.,:z] =>
       for zz in z repeat cats := makeCatPred(zz, cats, true)
-    cats:= CONS(y,cats)
+    cats:= [y,:cats]
   cats:= nreverse cats
   cats
 
@@ -361,7 +361,7 @@ makeCatPred(zz, cats, thePred) ==
     for at in ats repeat
       if at is ['ATTRIBUTE,z3] and not atom z3 and
         constructor? first z3 then
-          cats:= CONS(['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],cats)
+          cats:= [['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],:cats]
       at is ['IF, pred, :.] =>
         cats := makeCatPred(at, cats, curPred)
   cats
@@ -424,8 +424,8 @@ compressSexpr(x,left,right) ==
 -- recursive version of compressHashTable
   atom x => nil
   u:= HGET($found,x) =>
-    left => RPLACA(left,u)
-    right => RPLACD(right,u)
+    left => left.first := u
+    right => right.rest := u
     nil
   compressSexpr(first x,x,nil)
   compressSexpr(rest x,nil,x)
@@ -442,16 +442,16 @@ squeeze1(l) ==
   y:=
     atom x => x
     z:= member(x,$found) => first z
-    $found:= CONS(x,$found)
+    $found:= [x,:$found]
     squeeze1 x
-  RPLACA(l,y)
+  l.first := y
   x:= rest l
   y:=
     atom x => x
     z:= member(x,$found) => first z
-    $found:= CONS(x,$found)
+    $found:= [x,:$found]
     squeeze1 x
-  RPLACD(l,y)
+  l.rest := y
 
 updateCategoryTable(cname,kind) ==
   $updateCatTableIfTrue =>
@@ -469,7 +469,7 @@ updateCategoryTableForCategory(cname) ==
   addToCategoryTable(cname)
   for id in HKEYS _*ANCESTORS_-HASH_* repeat
       for (u:=[.,:b]) in getConstructorAncestorsFromDB id repeat
-        RPLACD(u,simpCatPredicate simpBool b)
+        u.rest := simpCatPredicate simpBool b
 
 updateCategoryTableForDomain(cname,category) ==
   clearCategoryTable(cname)

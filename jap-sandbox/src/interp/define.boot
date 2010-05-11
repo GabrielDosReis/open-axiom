@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -181,6 +181,7 @@ $reservedNames == '(per rep _$)
 checkVariableName var ==
   MEMQ(var,$reservedNames) =>
     stackAndThrow('"You cannot use reserved name %1b as variable",[var])
+  var
 
 checkParameterNames parms ==
   for p in parms repeat
@@ -240,8 +241,8 @@ checkRepresentation(addForm,body,env) ==
       stackAndThrow('"You cannot specify type for %1b",["Rep"])
     -- Now, trick the rest of the compiler into believing that
     -- `Rep' was defined the Old Way, for lookup purpose.
-    rplac(first stmt,"%LET")
-    rplac(rest stmt,["Rep",domainRep])
+    stmt.first := "%LET"
+    stmt.rest := ["Rep",domainRep]
     $useRepresentationHack := false          -- Don't confuse `Rep' and `%'.
 
   -- Shall we perform the dirty tricks?
@@ -298,7 +299,7 @@ compDefine1(form,m,e) ==
       $formalArgList)
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
-    $prefix => INTERN STRCONC(encodeItem $prefix,'",",encodeItem $op)
+    $prefix => INTERN strconc(encodeItem $prefix,'",",encodeItem $op)
     getConstructorAbbreviationFromDB $op
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 
@@ -343,8 +344,8 @@ macroExpandInPlace: (%Form,%Env) -> %Form
 macroExpandInPlace(x,e) ==
   y:= macroExpand(x,e)
   atom x or atom y => y
-  RPLACA(x,first y)
-  RPLACD(x,rest y)
+  x.first := first y
+  x.rest := rest y
   x
 
 macroExpand: (%Form,%Env) -> %Form 
@@ -420,8 +421,8 @@ makeCategoryPredicates(form,u) ==
           pl
  
 mkCategoryPackage(form is [op,:argl],cat,def) ==
-  packageName:= INTERN(STRCONC(PNAME op,'"&"))
-  packageAbb := INTERN(STRCONC(getConstructorAbbreviationFromDB op,'"-"))
+  packageName:= INTERN(strconc(PNAME op,'"&"))
+  packageAbb := INTERN(strconc(getConstructorAbbreviationFromDB op,'"-"))
   $options:local := []
   -- This stops the next line from becoming confused
   abbreviationsSpad2Cmd ['domain,packageAbb,packageName]
@@ -489,7 +490,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     -- following line causes cats with no with or Join to be fresh copies
     if opOf(formalBody)~='Join and opOf(formalBody)~='mkCategory then
            formalBody := ['Join, formalBody]
-    body:= optFunctorBody (compOrCroak(formalBody,signature'.target,e)).expr
+    body:= optFunctorBody compOrCroak(formalBody,signature'.target,e).expr
     if $extraParms then
       formals:=actuals:=nil
       for u in $extraParms repeat
@@ -500,8 +501,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ["PROG1",["%LET",g:= GENSYM(),body],
-         ["setShellEntry",g,0,mkConstructor $form]]
+      ["%Bind",[[g:= GENSYM(),body]],
+         ["setShellEntry",g,0,mkConstructor $form],g]
     fun:= compile [op',["LAM",sargl,body]]
  
     -- 5. give operator a 'modemap property
@@ -558,7 +559,7 @@ compDefineCategory(df,m,e,prefix,fal) ==
 
 
 %CatObjRes                   -- result of compiling a category
-  <=> cons(%Shell,cons(%Mode,cons(%Env,null)))
+  <=> [%Shell,:[%Mode,:[%Env,:null]]]
  
 compMakeCategoryObject: (%Form,%Env) -> %Maybe %CatObjRes
 compMakeCategoryObject(c,$e) ==
@@ -568,7 +569,7 @@ compMakeCategoryObject(c,$e) ==
 
 predicatesFromAttributes: %List -> %List
 predicatesFromAttributes attrList ==
-  REMDUP [second x for x in attrList]
+  removeDuplicates [second x for x in attrList]
 
  
 compDefineFunctor(df,m,e,prefix,fal) ==
@@ -941,7 +942,7 @@ orderByDependency(vl,dl) ==
     dl':= [setDifference(d,newl) for x in vl for d in dl | member(x,vl')]
     vl:= vl'
     dl:= dl'
-  REMDUP nreverse orderedVarList --ordered so ith is indep. of jth if i < j
+  removeDuplicates nreverse orderedVarList --ordered so ith is indep. of jth if i < j
  
 compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
   m,$e,$prefix,$formalArgList) ==
@@ -964,7 +965,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     -- been changed before we get here.
     if first form = "^" then 
       sayBrightly ['"Replacing", :bright '"^", '"with",:bright '"**"]
-      rplac(first form,"**")
+      form.first := "**"
     [$op,:argl]:= form
     $form:= [$op,:argl]
     argl:= stripOffArgumentConditions argl
@@ -1057,7 +1058,7 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
             for x in argl for i in 0..]
     --each element is a declared mode for the variable or nil if none exists
   potentialSigList:=
-    REMDUP
+    removeDuplicates
       [sig for sig in sigs |
           fn(sig,opsig,mList)] where
             fn(sig,opsig,mList) ==
@@ -1081,7 +1082,7 @@ getArgumentModeOrMoan(x,form,e) ==
 
 getArgumentMode: (%Form,%Env) -> %Mode 
 getArgumentMode(x,e) ==
-  STRINGP x => x
+  string? x => x
   m:= get(x,'mode,e) => m
  
 checkAndDeclare(argl,form,sig,e) ==
@@ -1102,7 +1103,7 @@ checkAndDeclare(argl,form,sig,e) ==
 getSignature(op,argModeList,$e) ==
   1=#
     (sigl:=
-      REMDUP
+      removeDuplicates
         [sig
           for [[dc,:sig],[pred,:.]] in (mmList:= get(op,'modemap,$e)) | dc='_$
             and rest sig=argModeList and knownInfo pred]) => first sigl
@@ -1135,7 +1136,7 @@ stripOffSubdomainConditions(margl,argl) ==
     f() ==
       x is ['SubDomain,marg,condition] =>
         pair:= assoc(i,$argumentConditionList) =>
-          (RPLAC(second pair,MKPF([condition,second pair],'AND)); marg)
+          (pair.rest.first := MKPF([condition,second pair],'AND); marg)
         $argumentConditionList:= [[i,arg,condition],:$argumentConditionList]
         marg
       x
@@ -1184,7 +1185,7 @@ compile u ==
              (and/[modeEqual(x,y) for x in sig for y in $signatureOfForm])]
       isLocalFunction op =>
         if opexport then userError ['%b,op,'%d,'" is local and exported"]
-        INTERN STRCONC(encodeItem $prefix,'";",encodeItem op) 
+        INTERN strconc(encodeItem $prefix,'";",encodeItem op) 
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
        isLocalFunction op ==
@@ -1240,30 +1241,29 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   -- parameters are never used in the body.
   vl := [ renameParameter for v in vl] where
     renameParameter() ==
-      NUMBERP v or IDENTP v or STRINGP v => v
+      NUMBERP v or IDENTP v or string? v => v
       GENSYM '"flag"
   clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
 
-  if vl is [:vl',E] and body is [nam',: =vl'] then
-      LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
+  if nam' := forwardingCall?(vl,body) then
+      registerFunctionReplacement(nam,nam')
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
-  else if (isAtomicForm body or and/[isAtomicForm x for x in body])
-         and vl is [:vl',E] and not CONTAINED(E,body) then
-           macform := ['XLAM,vl',body]
-           LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ macform]
+  else if macform := expandableDefinition?(vl,body) then
+           registerFunctionReplacement(nam,macform)
            sayBrightly ['"     ",:bright nam,'"is replaced by",:bright body]
 
   form := 
-    GET(nam,"SPADreplace") => [nam,[lam,vl,["DECLARE",["IGNORE",E]],body]]
+    getFunctionReplacement nam => 
+      [nam,[lam,vl,["DECLARE",["IGNORE",last vl]],body]]
     [nam,[lam,vl,body]]
 
   $insideCapsuleFunctionIfTrue => 
     $optExportedFunctionReference =>
       $capsuleFunctionStack := [form,:$capsuleFunctionStack]
       first form
-    first backendCompile LIST form
+    first backendCompile [form]
   compileConstructor form
  
 compileConstructor form ==
@@ -1282,7 +1282,7 @@ compileConstructor1 (form:=[fn,[key,vl,:bodyl]]) ==
     $clamList:=
       [[fn,"$ConstructorCache",'domainEqualList,'count],:$clamList]
     'LAMBDA
-  compForm:= LIST [fn,[lambdaOrSlam,vl,:bodyl]]
+  compForm:= [[fn,[lambdaOrSlam,vl,:bodyl]]]
   if getConstructorKindFromDB fn = "category"
       then u:= compAndDefine compForm
       else u:= backendCompile compForm
@@ -1409,14 +1409,14 @@ compSingleCapsuleItem(item,$predl,$e) ==
 
 ++ subroutine of doIt.  Called to generate runtime noop insn.
 mutateToNothing item ==
-  RPLACA(item,'PROGN)
-  RPLACD(item,NIL)
+  item.first := 'PROGN
+  item.rest := NIL
 
 doIt(item,$predl) ==
   $GENNO: local:= 0
   item is ['SEQ,:l,['exit,1,x]] =>
-    RPLACA(item,"PROGN")
-    RPLACA(LASTNODE item,x)
+    item.first := "PROGN"
+    lastNode(item).first := x
     for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
         --This will RPLAC as appropriate
   isDomainForm(item,$e) =>
@@ -1426,8 +1426,8 @@ doIt(item,$predl) ==
     -- a cycle otherwise.
     u:= ["import", [first item,:rest item]]
     stackWarning('"Use: import %1p",[[first item,:rest item]])
-    RPLACA(item,first u)
-    RPLACD(item,rest u)
+    item.first := first u
+    item.rest := rest u
     doIt(item,$predl)
   item is ["%LET",lhs,rhs,:.] =>
     compOrCroak(item,$EmptyMode,$e) isnt [code,.,$e] =>
@@ -1435,22 +1435,24 @@ doIt(item,$predl) ==
     not (code is ["%LET",lhs',rhs',:.] and atom lhs') =>
       code is ["PROGN",:.] =>
          stackSemanticError(["multiple assignment ",item," not allowed"],nil)
-      RPLACA(item,first code)
-      RPLACD(item,rest code)
+      item.first := first code
+      item.rest := rest code
     lhs:= lhs'
     if not member(KAR rhs,$NonMentionableDomainNames) and
       not MEMQ(lhs, $functorLocalParameters) then
          $functorLocalParameters:= [:$functorLocalParameters,lhs]
     if code is ["%LET",.,rhs',:.] and isDomainForm(rhs',$e) then
       if lhs="Rep" then
-        $Representation:= getRepresentation $e
-           --$Representation bound by compDefineFunctor, used in compNoStacking
+        --$Representation bound by compDefineFunctor, used in compNoStacking
+        $Representation := getRepresentation $e
+        if $optimizeRep then
+          nominateForInlining $Representation
     code is ["%LET",:.] =>
-      RPLACA(item,"setShellEntry")
+      item.first := "setShellEntry"
       rhsCode := rhs'
-      RPLACD(item,['$,NRTgetLocalIndex lhs,rhsCode])
-    RPLACA(item,first code)
-    RPLACD(item,rest code)
+      item.rest := ['$,NRTgetLocalIndex lhs,rhsCode]
+    item.first := first code
+    item.rest := rest code
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ["import",:doms] =>
      for dom in doms repeat
@@ -1469,15 +1471,15 @@ doIt(item,$predl) ==
   item is ['DEF,[op,:.],:.] =>
     body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
-    RPLACA(item,"CodeDefine")
+    item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
-    RPLACD(second item,[$signatureOfForm])
+    second(item).rest := [$signatureOfForm]
       --This is how the signature is updated for buildFunctor to recognise
     functionPart:= ['dispatchFunction,t.expr]
-    RPLACA(CDDR item,functionPart)
-    RPLACD(CDDR item,nil)
+    item.rest.rest.first := functionPart
+    item.rest.rest.rest := nil
   u:= compOrCroak(item,$EmptyMode,$e) =>
-    ([code,.,$e]:= u; RPLACA(item,first code); RPLACD(item,rest code))
+    ([code,.,$e]:= u; item.first := first code; item.rest := rest code)
   systemErrorHere ["doIt", item]
  
 isMacro(x,e) ==
@@ -1495,17 +1497,17 @@ doItConditionally(item,predl) ==
   item isnt ["IF",p,x,y] => systemErrorHere ["doItConditionally",item]
   p is ["not",p'] =>
     -- swap branches and recurse for positive interpretation.
-    rplac(second item,p')
-    rplac(third item,y)
-    rplac(fourth item,x)
+    item.rest.first := p'
+    item.rest.rest.first := y
+    item.rest.rest.rest.first := x
     doItConditionally(item,predl)
   p is ["and",p',p''] =>
-    rplac(second item,p')
-    rplac(third item,["IF",p'',x,COPY y])
+    item.rest.first := p'
+    item.rest.rest.first := ["IF",p'',x,COPY y]
     doItConditionally(item,predl)
   p is ["or",p',p''] =>
-    rplac(second item, p')
-    rplac(fourth item, ["IF",p'',COPY x,y])
+    item.rest.first := p'
+    item.rest.rest.rest.first := ["IF",p'',COPY x,y]
     doItConditionally(item,predl)
   doItIf(item,predl,$e)
     
@@ -1521,8 +1523,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   if y~="%noBranch" then
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
-  RPLACA(item,"COND")
-  RPLACD(item,[[p',x,:x'],['(QUOTE T),y,:y']])
+  item.first := "COND"
+  item.rest := [[p',x,:x'],['(QUOTE T),y,:y']]
  where localExtras(oldFLP) ==
    EQ(oldFLP,$functorLocalParameters) => NIL
    flp1:=$functorLocalParameters
@@ -1536,8 +1538,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
    -- of functorLocalParameters that were added during the
    -- conditional compilation
    nils:=ans:=[]
-   for u in flp1 repeat -- is =u form always an ATOM?
-     if ATOM u or (or/[v is [.,=u,:.] for v in $getDomainCode])
+   for u in flp1 repeat -- is =u form always an atom?
+     if atom u or (or/[v is [.,=u,:.] for v in $getDomainCode])
        then
          nils:=[u,:nils]
        else
@@ -1569,10 +1571,10 @@ compJoin(["Join",:argl],m,e) ==
             union("append"/[getParms(y,e) for y in rest x],parameters)
               where getParms(y,e) ==
                 atom y =>
-                  isDomainForm(y,e) => LIST y
+                  isDomainForm(y,e) => [y]
                   nil
                 y is ['LENGTH,y'] => [y,y']
-                LIST y
+                [y]
           x
         x is ["DomainSubstitutionMacro",pl,body] =>
           (parameters:= union(pl,parameters); body)
@@ -1610,7 +1612,7 @@ mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
           ("union"/[fn sig for ["QUOTE",[[.,sig,:.],:.]] in sigList]) where
             fn sig == [D for D in sig | mustInstantiate D]
   parameters:=
-    REMDUP
+    removeDuplicates
       ("append"/
         [[x for x in sig | IDENTP x and x~='_$]
           for ["QUOTE",[[.,sig,:.],:.]] in sigList])
@@ -1621,7 +1623,7 @@ DomainSubstitutionFunction(parameters,body) ==
   if parameters then
     (body:= Subst(parameters,body)) where
       Subst(parameters,body) ==
-        ATOM body =>
+        atom body =>
           MEMQ(body,parameters) => MKQ body
           body
         member(body,parameters) =>
@@ -1632,7 +1634,7 @@ DomainSubstitutionFunction(parameters,body) ==
            --For categories, bound and used in compDefineCategory
           MKQ g
         first body="QUOTE" => body
-        CONSP $definition and
+        cons? $definition and
             isFunctor first body and
               first body ~= first $definition
           =>  ['QUOTE,optimize body]
@@ -1641,7 +1643,7 @@ DomainSubstitutionFunction(parameters,body) ==
   atom $definition => body
   null rest $definition => body 
            --should not bother if it will only be called once
-  name:= INTERN STRCONC(KAR $definition,";CAT")
+  name:= INTERN strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)
   body:= ["COND",[name],['(QUOTE T),['SETQ,name,body]]]
   body

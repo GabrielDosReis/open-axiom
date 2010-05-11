@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ DomainPrint1(D,brief,$e) ==
              --if we were passed a vector, go to the domain
   Sublis:=
     [:
-      [[rest u,:INTERNL STRCONC('"View",STRINGIMAGE i)]
+      [[rest u,:INTERNL strconc('"View",STRINGIMAGE i)]
         for u in D for i in 1..],:$Sublis]
   for u in D for i in 1.. repeat
     brief and i>1 => nil
@@ -118,7 +118,7 @@ DomainPrint1(D,brief,$e) ==
     if brief then PRETTYPRINT uu.0 else PRETTYPRINT uu
  
 DPname() ==
-  name:= INTERNL STRCONC('"Where",STRINGIMAGE $WhereCounter)
+  name:= INTERNL strconc('"Where",STRINGIMAGE $WhereCounter)
   $WhereCounter:= $WhereCounter+1
   name
  
@@ -135,7 +135,7 @@ PacPrint v ==
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:vv.j],:$WhereList]
       vv.j:= name
-    if CONSP vv.j and REFVECP(u:=rest vv.j) then
+    if cons? vv.j and REFVECP(u:=rest vv.j) then
       l:= ASSQ(keyItem u,Sublis)
       if l
          then name:= rest l
@@ -144,7 +144,7 @@ PacPrint v ==
           Sublis:= [[keyItem u,:name],:Sublis]
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:u],:$WhereList]
-      RPLACD(vv.j,name)
+      vv.j.rest := name
   PRETTYPRINT vv
  
 DomainPrintSubst(item,Sublis) ==
@@ -192,8 +192,8 @@ CategoriesFromGDC x ==
   x is ['QUOTE,a] and a is [b] => [a]
  
 compCategories u ==
-  ATOM u => u
-  not ATOM first u =>
+  atom u => u
+  not atom first u =>
     error ['"compCategories: need an atom in operator position", first u]
   first u = "Record" =>
     -- There is no modemap property for these guys so do it by hand.
@@ -203,7 +203,7 @@ compCategories u ==
     [first u, :[compCategories1(a,'(SetCategory)) for a in rest u]]
   u is ['SubDomain,D,.] => compCategories D
   v:=get(first u,'modemap,$e)
-  ATOM v =>
+  atom v =>
     error ['"compCategories: could not get proper modemap for operator",first u]
   if rest v then
     sayBrightly ['"compCategories: ", '%b, '"Warning", '%d,
@@ -211,7 +211,7 @@ compCategories u ==
     pp rest v
   -- the next line "fixes" a bad modemap which sometimes appears ....
   --
-  if rest v and NULL CAAAR v then v:=rest v
+  if rest v and null CAAAR v then v:=rest v
   v:= CDDAAR v
   v:=resolvePatternVars(v, rest u) -- replaces #n forms
   -- select the modemap part of the first entry, and skip result etc.
@@ -220,7 +220,7 @@ compCategories u ==
  
 compCategories1(u,v) ==
 -- v is the mode of u
-  ATOM u => u
+  atom u => u
   isCategoryForm(v,$e) => compCategories u
   [c,:.] := comp(macroExpand(u,$e),v,$e) => c
   error 'compCategories1
@@ -228,7 +228,7 @@ compCategories1(u,v) ==
 NewbFVectorCopy(u,domName) ==
   v:= newShell SIZE u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | CONSP u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
+  for i in 6..MAXINDEX v | cons? u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
   v
  
 mkVector u ==
@@ -296,7 +296,7 @@ worthlessCode x ==
  
 cons5(p,l) ==
   l and (CAAR l = first p) => [p,: rest l]
-  LENGTH l < 5 => [p,:l]
+  # l < 5 => [p,:l]
   RPLACD(QCDDDDR l,nil)
   [p,:l]
  
@@ -325,7 +325,7 @@ setVector12 args ==
           freeof($domainShell.4,args1) => nil  
   [['SetDomainSlots124,'$,['QUOTE,args1],['LIST,:args2]]]
  where freeof(a,b) ==
-         ATOM a => NULL MEMQ(a,b)
+         atom a => null MEMQ(a,b)
          freeof(first a,b) => freeof(rest a,b)
          false
  
@@ -388,7 +388,7 @@ mkTypeForm x ==
     ['LIST,MKQ 'Record,:[mkTypeForm y for y in argl]]
   x is ['Join,:argl] =>
     ['LIST,MKQ 'Join,:[mkTypeForm y for y in argl]]
-  x is ['call,:argl] => ['MKQ, optCall x]
+  x is ["%Call",:argl] => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD
   x is [op] => MKQ x
@@ -431,10 +431,10 @@ setVector4Onecat(name,instantiator,info) ==
         slist:=
           [form(u,name) for u in slist] where
             form([cat,:cond],name) ==
-              u:= ['QUOTE,[cat,:first (eval cat).4]]
+              u:= ['QUOTE,[cat,:first eval(cat).4]]
               ['COND,[TryGDC cond,['SETQ,'TrueDomain,['CONS,['CONS,u,name],
                 'TrueDomain]]]]
-        LENGTH slist=1 => [CADAR slist]
+        # slist=1 => [CADAR slist]
                       --return a list, since it is CONSed
         slist:= ['PROGN,:slist]
         [['(QUOTE T),slist]]
@@ -445,7 +445,7 @@ setVector4part3(catNames,catvecList) ==
   for u in catvecList for uname in catNames repeat
     for v in third u.4 repeat
       if w:= assoc(first v,generated)
-         then RPLACD(w,[[rest v,:uname],:rest w])
+         then w.rest := [[rest v,:uname],:rest w]
          else generated:= [[first v,[rest v,:uname]],:generated]
   codeList := nil
   for [w,:u] in generated repeat
@@ -462,7 +462,7 @@ setVector5(catNames,locals) ==
   generated:= nil
   for u in locals for uname in catNames repeat
     if w:= assoc(u,generated)
-       then RPLACD(w,[uname,:rest w])
+       then w.rest := [uname,:rest w]
        else generated:= [[u,uname],:generated]
   [(w:= mkVectorWithDeferral(first u,second u);
       for v in rest u repeat
@@ -513,7 +513,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       --for that may change the shape of the object, but we must before
       --we match signatures
   cat:= (compMakeCategoryObject(target,e)).expr
-  instantiatedBase:= GENVAR()
+  instantiatedBase:= genvar()
   n:=MAXINDEX cat
   code:=
     [u
@@ -528,7 +528,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
   (for u in code repeat
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
-      ATOM code =>nil
+      atom code =>nil
       QCAR code in '(getShellEntry ELT QREFELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
@@ -620,12 +620,12 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
-  code is ['_:,:.] => (RPLACA(code,'LIST); RPLACD(code,NIL))
+  code is ['_:,:.] => (code.first := 'LIST; code.rest := NIL)
       --Yes, I know that's a hack, but how else do you kill a line?
   code is ['LIST,:.] => nil
   code is ['devaluate,:.] => nil
   code is ['MDEF,:.] => nil
-  code is ['call,:.] => code
+  code is ["%Call",:.] => code
   code is ["setShellEntry",:.] => code -- can be generated by doItIf
   code is ['SETELT,:.] => systemErrorHere ["DescendCode",code]
   code is ['QSETREFV,:.] => systemErrorHere ["DescendCode",code]
@@ -641,7 +641,7 @@ ConstantCreator u ==
  
 ProcessCond cond ==
   ncond := SUBLIS($pairlis,cond)
-  INTEGERP POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
+  integer? POSN1(ncond,$NRTslot1PredicateList) => predicateBitRef ncond
   cond
 
 TryGDC cond ==
@@ -688,7 +688,7 @@ LookUpSigSlots(sig,siglist) ==
   if $insideCategoryPackageIfTrue then
            sig := substitute('$,second($functorForm),sig)
   siglist := $lisplibOperationAlist
-  REMDUP [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
+  removeDuplicates [implem for u in siglist | SigSlotsMatch(sig,first u,implem:=third u)
               and KADDR implem]
  
 SigSlotsMatch(sig,pattern,implem) ==
@@ -751,8 +751,8 @@ InvestigateConditions catvecListMaker ==
     [true,:[true for u in secondaries]]
   $HackSlot4:=
     MinimalPrimary=MaximalPrimary => nil
-    MaximalPrimaries:=[MaximalPrimary,:first (CatEval MaximalPrimary).4]
-    MinimalPrimaries:=[MinimalPrimary,:first (CatEval MinimalPrimary).4]
+    MaximalPrimaries:=[MaximalPrimary,:first CatEval(MaximalPrimary).4]
+    MinimalPrimaries:=[MinimalPrimary,:first CatEval(MinimalPrimary).4]
     MaximalPrimaries:=S_-(MaximalPrimaries,MinimalPrimaries)
     [[x] for x in MaximalPrimaries]
   ($Conditions:= Conds($principal,nil)) where
@@ -781,12 +781,12 @@ InvestigateConditions catvecListMaker ==
     --newS is a list of secondaries and conditions (over and above
     --u) for which they apply
     u:=
-      LENGTH u=1 => first u
+      # u=1 => first u
       ['AND,:u]
     for [v,:.] in newS repeat
-      for v' in [v,:first (CatEval v).4] repeat
+      for v' in [v,:first CatEval(v).4] repeat
         if (w:=assoc(v',$HackSlot4)) then
-          RPLAC(rest w,if rest w then mkOr(u,rest w) else u)
+          w.rest := if rest w then mkOr(u,rest w) else u
     (list:= update(list,u,secondaries,newS)) where
       update(list,cond,secondaries,newS) ==
         (list2:=
@@ -821,17 +821,17 @@ ICformat u ==
       atom u => u
       u is ["has",:.] => compHasFormat u
       u is ['AND,:l] or u is ['and,:l] =>
-        l:= REMDUP [ICformat v for [v,:l'] in tails l | not member(v,l')]
+        l:= removeDuplicates [ICformat v for [v,:l'] in tails l | not member(v,l')]
              -- we could have duplicates after, even if not before
-        LENGTH l=1 => first l
+        # l=1 => first l
         l1:= first l
         for u in rest l repeat
           l1:=mkAnd(u,l1)
         l1
       u is ['OR,:l] =>
         (l:= ORreduce l)
-        LENGTH l=1 => ICformat first l
-        l:= ORreduce REMDUP [ICformat u for u in l]
+        # l=1 => ICformat first l
+        l:= ORreduce removeDuplicates [ICformat u for u in l]
                  --causes multiple ANDs to be squashed, etc.
                  -- and duplicates that have been built up by tidying
         (l:= Hasreduce l) where
@@ -850,7 +850,7 @@ ICformat u ==
                     cond2]] repeat if DescendantP(cond,cond2) then l:= delete(u,l)
                          --v subsumes u
             l
-        LENGTH l=1 => first l
+        # l=1 => first l
         ['OR,:l]
       systemErrorHere ["ICformat",u]
   where
@@ -925,10 +925,10 @@ encodeFunctionName(fun,package is [packageName,:arglist],signature,sep,count)
     signature':= MSUBST("$",package,signature)
     reducedSig:= mkRepititionAssoc [:rest signature',first signature']
     encodedSig:=
-      ("STRCONC"/[encodedPair for [n,:x] in reducedSig]) where
+      (strconc/[encodedPair for [n,:x] in reducedSig]) where
         encodedPair() ==
           n=1 => encodeItem x
-          STRCONC(STRINGIMAGE n,encodeItem x)
+          strconc(STRINGIMAGE n,encodeItem x)
     encodedName:= INTERNL(getConstructorAbbreviationFromDB packageName,";",
         encodeItem fun,";",encodedSig, sep,STRINGIMAGE count)
     if $LISPLIB then
@@ -948,7 +948,7 @@ splitEncodedFunctionName(encodedName, sep) ==
     -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or NIL
     -- sep0 is the separator used in "encodeFunctionName".
     sep0 := '";"
-    if not STRINGP encodedName then
+    if not string? encodedName then
         encodedName := STRINGIMAGE encodedName
     null (p1 := STRPOS(sep0, encodedName, 0,    '"*")) => nil
     null (p2 := STRPOS(sep0, encodedName, p1+1, '"*")) => 'inner
@@ -977,7 +977,7 @@ getCaps x ==
   s:= STRINGIMAGE x
   clist:= [c for i in 0..MAXINDEX s | UPPER_-CASE_-P (c:= s.i)]
   null clist => '"__"
-  "STRCONC"/[first clist,:[L_-CASE u for u in rest clist]]
+  strconc/[first clist,:[L_-CASE u for u in rest clist]]
  
 --% abbreviation code
  
@@ -988,10 +988,10 @@ getAbbreviation(name,c) ==
     N:= ASSQ(name,rest X) =>
       C:= ASSQ(c,rest N) => rest C --already there
       newAbbreviation:= mkAbbrev(X,x)
-      RPLAC(rest N,[[c,:newAbbreviation],:rest N])
+      N.rest := [[c,:newAbbreviation],:rest N]
       newAbbreviation
     newAbbreviation:= mkAbbrev(X,x)
-    RPLAC(rest X,[[name,[c,:newAbbreviation]],:rest X])
+    X.rest := [[name,[c,:newAbbreviation]],:rest X]
     newAbbreviation
   $abbreviationTable:= [[x,[name,[c,:x]]],:$abbreviationTable]
   x
@@ -1006,7 +1006,7 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  ALPHA_-CHAR_-P (s:= STRINGIMAGE u).(MAXINDEX s) => 
-    INTERN STRCONC(s,STRINGIMAGE n)
-  INTERNL STRCONC(s,STRINGIMAGE ";",STRINGIMAGE n)
+  ALPHA_-CHAR_-P((s:= STRINGIMAGE u).(MAXINDEX s)) => 
+    INTERN strconc(s,STRINGIMAGE n)
+  INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  

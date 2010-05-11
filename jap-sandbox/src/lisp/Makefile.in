@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -137,10 +137,15 @@ float_type = @float_type@
 double_type = @double_type@
 string_type = @string_type@
 
+oa_comma =,
+
+oa_keep_files = $(patsubst %,|%|,$(subst $(oa_comma), ,@oa_keep_files@))
+
 edit = sed \
 	-e 's|@open_axiom_installdir[@]|$(open_axiom_installdir)|g' \
 	-e 's|@axiom_optimize_options[@]|$(axiom_optimize_options)|g' \
 	-e 's|@oa_editor[@]|$(oa_editor)|g' \
+	-e 's/@oa_keep_files[@]/$(oa_keep_files)/g' \
 	-e 's|@host[@]|$(host)|g' \
 	-e 's|@build[@]|$(build)|g' \
 	-e 's|@target[@]|$(target)|g' \

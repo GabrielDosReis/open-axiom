@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -102,7 +104,7 @@ printRecordFile(pathname,:option) ==
   $printTypeIfTrue: local := true
   stream := DEFIOSTREAM([['FILE,:pathname], '(MODE . INPUT)],80,0)
   repeat
-    NULL (PEEK_-CHAR ( true, stream , nil, nil )) => return nil
+    null (PEEK_-CHAR ( true, stream , nil, nil )) => return nil
     [i,t,:o] := dewritify VMREAD stream
     sayNewLine()
     for x in i repeat sayBrightly x
@@ -133,11 +135,11 @@ hyperize(u,w) ==
   res := reverse $testOutputLineList
   null res => '""
   null rest res => first res
-  "STRCONC"/[first res,:[STRCONC("\newline ",x) for x in rest res]]
+  strconc/[first res,:[strconc("\newline ",x) for x in rest res]]
  
 verbatimize u ==
   u = '"" => u
-  STRCONC('"\begin{verbatim}",u,'"\end{verbatim}")
+  strconc('"\begin{verbatim}",u,'"\end{verbatim}")
 --=======================================================================
 --                Function for Verifying a `record' file
 --=======================================================================
@@ -149,7 +151,7 @@ verifyRecordFile(pathname) ==
   clearCmdAll()
   result := 'ok
   for j in 1.. repeat
-    NULL (PEEK_-CHAR ( true, stream ,nil,nil ))=>return nil
+    null (PEEK_-CHAR ( true, stream ,nil,nil ))=>return nil
     [i,t,:o] := dewritify VMREAD stream
     null i => return nil
     t = 'ForSystemCommands => 
@@ -237,7 +239,7 @@ htCommandToInputLine s == fn(s,0) where fn(s,init) ==
 --similar to htTrimAtBackSlash except removes all \
   k := or/[i for i in init..MAXINDEX s | s.i = char '_\] =>
     member(s.(k + 1),[char 'f,char 'b]) => SUBSTRING(s,init,k - init)
-    STRCONC(SUBSTRING(s,init,k - init),fn(s,k + 1))
+    strconc(SUBSTRING(s,init,k - init),fn(s,k + 1))
   SUBSTRING(s,init,nil)
  
 htTrimAtBackSlash s ==
@@ -247,9 +249,9 @@ htTrimAtBackSlash s ==
   s
  
 htMkPath(directory,name,typ) ==
-  nameType := STRCONC(name,'".",typ)
+  nameType := strconc(name,'".",typ)
   null directory => nameType
-  STRCONC(directory,nameType)
+  strconc(directory,nameType)
       
 --=======================================================================
 --              Creating Record File from HT Files
@@ -262,12 +264,12 @@ htFile2RecordFile(pathname,:option) ==
 --=======================================================================
 recordAndPrintTest md ==  --called by recordAndPrint
   input :=
-    STRINGP $currentLine => [$currentLine]
+    string? $currentLine => [$currentLine]
     fn $currentLine where fn x ==
       x is [y,:r] =>     
         y.(k := MAXINDEX y) = char '__ => 
           u := fn r
-          [STRCONC(SUBSTRING(y,0,k),'" ",first u),:rest u]
+          [strconc(SUBSTRING(y,0,k),'" ",first u),:rest u]
         [y,:fn r]
       x
   output := nreverse $mkTestOutputStack -- set by maPrin

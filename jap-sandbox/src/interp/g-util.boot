@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,7 @@ import sys_-utility
 namespace BOOT
 
 module g_-util where
+  isAtomicForm: %Form -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
@@ -62,9 +63,13 @@ isSharpVarWithNum x ==
   ok := true
   c := 0
   for i in 1..(n-1) while ok repeat
-    d := ELT(p,i)
+    d := p.i
     ok := DIGITP d => c := 10*c + DIG2FIX d
   if ok then c else nil
+
+++ Returns true if `form' is either an atom or a quotation.
+isAtomicForm form ==
+  atom form or first form = "QUOTE"
 
 
 --% Sub-domains information handlers
@@ -137,8 +142,8 @@ mkList u ==
 
 ELEMN(x, n, d) ==
   null x => d
-  n = 1 => car x
-  ELEMN(cdr x, n-1, d)
+  n = 1 => first x
+  ELEMN(rest x, n-1, d)
 
 PPtoFile(x, fname) ==
     stream := DEFIOSTREAM([['MODE, :'OUTPUT], ['FILE, :fname]], 80, 0)
@@ -152,7 +157,7 @@ ScanOrPairVec(f, ob) ==
     CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
         ScanOrInner(f, ob) ==
             HGET($seen, ob) => nil
-            CONSP ob =>
+            cons? ob =>
                 HPUT($seen, ob, true)
                 ScanOrInner(f, QCAR ob)
                 ScanOrInner(f, QCDR ob)
@@ -227,11 +232,11 @@ putIntSymTab(x,prop,val,e) ==
   pl :=
     null pl => [[prop,:val]]
     u := ASSQ(prop,pl) =>
-      RPLACD(u,val)
+      u.rest := val
       pl
     lp := LASTPAIR pl
     u := [[prop,:val]]
-    RPLACD(lp,u)
+    lp.rest := u
     pl
   EQ(pl0,pl) => e
   addIntSymTabBinding(x,pl,e)
@@ -239,9 +244,9 @@ putIntSymTab(x,prop,val,e) ==
 addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   -- change proplist of var in e destructively
   u := ASSQ(var,curContour) =>
-    RPLACD(u,proplist)
+    u.rest := proplist
     e
-  RPLAC(CAAR e,[[var,:proplist],:curContour])
+  first(e).first := [[var,:proplist],:curContour]
   e
 
 --% Syntax manipulation
@@ -304,7 +309,7 @@ getTypeOfSyntax t ==
 -- Convert an arbitrary lisp object to canonical boolean.
 bool: %Thing -> %Boolean
 bool x ==
-    NULL NULL x
+    null null x
  
 TruthP x ==
     --True if x is a predicate that's always true
@@ -325,16 +330,16 @@ getUnionOrRecordTags u ==
   tags := nil
   if u is ['Union, :tl] or u is ['Record, :tl] then
       for t in tl repeat
-         if t is [":",tag,.] then tags := cons(tag, tags)
+         if t is [":",tag,.] then tags := [tag, :tags]
   tags
 
 --% Various lispy things
 
 Identity x == x
 
-length1? l == CONSP l and not CONSP QCDR l
+length1? l == cons? l and not cons? QCDR l
 
-length2? l == CONSP l and CONSP (l := QCDR l) and not CONSP QCDR l
+length2? l == cons? l and cons? (l := QCDR l) and not cons? QCDR l
 
 pairList(u,v) == [[x,:y] for x in u for y in v]
 
@@ -346,17 +351,17 @@ PUTALIST(alist,prop,val) ==
   pair := assoc(prop,alist) =>
     rest pair = val => alist
     -- else we fall over Lucid's read-only storage feature again
-    QRPLACD(pair,val)
+    pair.rest := val
     alist
-  QRPLACD(LASTPAIR alist,[[prop,:val]])
+  LASTPAIR(alist).rest := [[prop,:val]]
   alist
 
 REMALIST(alist,prop) ==
   null alist => alist
   alist is [[ =prop,:.],:r] =>
     null r => NIL
-    QRPLACA(alist,first r)
-    QRPLACD(alist,rest r)
+    alist.first := first r
+    alist.rest := rest r
     alist
   null rest alist => alist
   l := alist
@@ -365,7 +370,7 @@ REMALIST(alist,prop) ==
     [.,[p,:.],:r] := l
     p = prop =>
       ok := NIL
-      QRPLACD(l,r)
+      l.rest := r
     if null (l := QCDR l) or null rest l then ok := NIL
   alist
 
@@ -389,7 +394,7 @@ deleteAssocWOC(x,y) ==
   x=a => t
   (fn(x,y);y) where fn(x,y is [h,:t]) ==
     t is [[a,:.],:t1] =>
-      x=a => RPLACD(y,t1)
+      x=a => y.rest := t1
       fn(x,t)
     nil
 
@@ -398,8 +403,8 @@ insertWOC(x,y) ==
   (fn(x,y); y) where fn(x,y is [h,:t]) ==
     x=h => nil
     null t =>
-      RPLACD(y,[h,:t])
-      RPLACA(y,x)
+      y.rest := [h,:t]
+      y.first := x
     fn(x,t)
 
 
@@ -416,15 +421,15 @@ centerString(text,width,fillchar) ==
   f := DIVIDE(width - wid,2)
   fill1 := ""
   for i in 1..(f.0) repeat
-    fill1 := STRCONC(fillchar,fill1)
+    fill1 := strconc(fillchar,fill1)
   fill2:= fill1
-  if f.1 ~= 0 then fill1 := STRCONC(fillchar,fill1)
+  if f.1 ~= 0 then fill1 := strconc(fillchar,fill1)
   [fill1,text,fill2]
 
 stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
-  null (STRINGP(pref) and STRINGP(str)) => NIL
+  null (string?(pref) and string?(str)) => NIL
   (lp := QCSIZE pref) = 0 => true
   lp > QCSIZE str => NIL
   ok := true
@@ -439,8 +444,8 @@ stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
   if IDENTP str then str := PNAME str
-  null (STRINGP(str) and
-    INTEGERP(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
+  null (string?(str) and
+    integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
   not DIGITP(d := SCHAR(str,pos)) => NIL
   DIG2FIX d
 
@@ -487,7 +492,7 @@ freeOfSharpVars x ==
   freeOfSharpVars first x and freeOfSharpVars rest x
 
 listOfSharpVars x ==
-  atom x => (isSharpVarWithNum x => LIST x; nil)
+  atom x => (isSharpVarWithNum x => [x]; nil)
   union(listOfSharpVars first x,listOfSharpVars rest x)
 
 listOfPatternIds x ==
@@ -520,9 +525,9 @@ removeZeroOneDestructively t ==
 
 flattenSexpr s ==
   null s => s
-  ATOM s => s
+  atom s => s
   [f,:r] := s
-  ATOM f => [f,:flattenSexpr r]
+  atom f => [f,:flattenSexpr r]
   [:flattenSexpr f,:flattenSexpr r]
 
 isLowerCaseLetter c ==
@@ -536,7 +541,7 @@ isLetter c ==
 
 update() ==
   runCommand
-    STRCONC(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
+    strconc(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
   _/UPDATE()
 
 --% Inplace Merge Sort for Lists
@@ -549,10 +554,10 @@ update() ==
 listSort(pred,list,:optional) ==
    NOT functionp pred => error "listSort: first arg must be a function"
    NOT LISTP list => error "listSort: second argument must be a list"
-   NULL optional => mergeSort(pred,function Identity,list,LENGTH list)
+   null optional => mergeSort(pred,function Identity,list,# list)
    key := first optional
    NOT functionp key => error "listSort: last arg must be a function"
-   mergeSort(pred,key,list,LENGTH list)
+   mergeSort(pred,key,list,# list)
 
 -- non-destructive merge sort using NOT GGREATERP as predicate
 MSORT list == listSort(function GLESSEQP, COPY_-LIST list)
@@ -568,31 +573,31 @@ orderList l == listSort(function _?ORDER, COPY_-LIST l)
 
 mergeInPlace(f,g,p,q) ==
    -- merge the two sorted lists p and q
-   if NULL p then return p
-   if NULL q then return q
+   if null p then return p
+   if null q then return q
    if FUNCALL(f,FUNCALL(g, QCAR p),FUNCALL(g, QCAR q))
    then (r := t := p; p := QCDR p)
    else (r := t := q; q := QCDR q)
-   while not NULL p and not NULL q repeat
+   while not null p and not null q repeat
       if FUNCALL(f,FUNCALL(g,QCAR p),FUNCALL(g,QCAR q))
-      then (QRPLACD(t,p); t := p; p := QCDR p)
-      else (QRPLACD(t,q); t := q; q := QCDR q)
-   if NULL p then QRPLACD(t,q) else QRPLACD(t,p)
+      then (t.rest := p; t := p; p := QCDR p)
+      else (t.rest := q; t := q; q := QCDR q)
+   if null p then t.rest := q else t.rest := p
    r
 
 mergeSort(f,g,p,n) ==
    if n=2 and FUNCALL(f,FUNCALL(g,QCADR p),FUNCALL(g,QCAR p)) then
       t := p
       p := QCDR p
-      QRPLACD(p,t)
-      QRPLACD(t,NIL)
+      p.rest := t
+      t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
    l := QSQUOTIENT(n,2)
    t := p
    for i in 1..l-1 repeat t := QCDR t
    q := rest t
-   QRPLACD(t,NIL)
+   t.rest := NIL
    p := mergeSort(f,g,p,l)
    q := mergeSort(f,g,q,QSDIFFERENCE(n,l))
    mergeInPlace(f,g,p,q)
@@ -728,14 +733,14 @@ addBinding(var,proplist,e is [[curContour,:tailContour],:tailEnv]) ==
 addBindingInteractive(var,proplist,e is [[curContour,:.],:.]) ==
   -- change proplist of var in e destructively
   u := ASSQ(var,curContour) =>
-    RPLACD(u,proplist)
+    u.rest := proplist
     e
-  RPLAC(CAAR e,[[var,:proplist],:curContour])
+  first(e).first := [[var,:proplist],:curContour]
   e
 
 augProplistInteractive(proplist,prop,val) ==
   u := ASSQ(prop,proplist) =>
-    RPLACD(u,val)
+    u.rest := val
     proplist
   [[prop,:val],:proplist]
 
@@ -798,14 +803,14 @@ quickOr(a,b) ==
   simpCatPredicate simpBool ['OR,a,b]
 
 intern x ==
-  STRINGP x =>
+  string? x =>
     DIGITP x.0 => string2Integer x
     INTERN x
   x
 
 isDomain a ==
-  CONSP a and VECP(first a) and
-    member(first(a).0, $domainTypeTokens)
+  cons? a and VECP(first a) and
+    member(first a.0, $domainTypeTokens)
 
 -- variables used by browser
 

@@ -4,19 +4,14 @@
 (DEFPARAMETER |EntireRing;AL| 'NIL) 
 
 (DEFUN |EntireRing;| ()
-  (PROG (#0=#:G1396)
-    (RETURN
-      (PROG1 (LETT #0#
-                   (|Join| (|Ring|) (|BiModule| '$ '$)
-                           (|mkCategory| '|package| NIL
-                               '((|noZeroDivisors| T)) 'NIL NIL))
-                   |EntireRing|)
-        (|setShellEntry| #0# 0 '(|EntireRing|)))))) 
+  (LET ((#0=#:G1396
+            (|Join| (|Ring|) (|BiModule| '$ '$)
+                    (|mkCategory| '|package| NIL
+                        '((|noZeroDivisors| T)) 'NIL NIL))))
+    (|setShellEntry| #0# 0 '(|EntireRing|))
+    #0#)) 
 
 (DEFUN |EntireRing| ()
-  (LET ()
-    (COND
-      (|EntireRing;AL|)
-      (T (SETQ |EntireRing;AL| (|EntireRing;|)))))) 
+  (COND (|EntireRing;AL|) (T (SETQ |EntireRing;AL| (|EntireRing;|))))) 
 
 (MAKEPROP '|EntireRing| 'NILADIC T) 

@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2009 Gabriel Dos Reis
+-- Copyright (C) 2007-2010 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,7 @@ systemDatabaseDirectory() ==
 loadExposureGroupData() ==
   LOAD('"./exposed", KEYWORD::VERBOSE,false,
     KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
-  LOAD(CONCAT(systemRootDirectory(),'"algebra/exposed"),
+  LOAD(strconc(systemRootDirectory(),'"algebra/exposed"),
     KEYWORD::VERBOSE,false,KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
   "failed"
 
@@ -193,6 +193,7 @@ initializeGlobalState() ==
   $compileExportsOnly := getOptionValue "exports-only"
   $compileDefaultsOnly := getOptionValue "defaults-only"
   $reportOptimization := getOptionValue "show-insn"
+  $optimizeRep := getOptionValue "inline-rep"
   setCompilerOptimizations(getOptionValue "optimize" or
                              $defaultOptimizationLevel)
   GCMSG(NIL)
@@ -241,7 +242,7 @@ initializeGlobalState() ==
 
   -- 7. Etc.
   if have_to and functionp 'addtopath then 
-    addtopath CONCAT(systemRootDirectory(),'"bin")
+    addtopath strconc(systemRootDirectory(),'"bin")
   -- Take off
 
 

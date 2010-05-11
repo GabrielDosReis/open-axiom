@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -116,7 +116,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   for con in HKEYS $conTopicHash repeat
     conCode := 0
     for pair in HGET($conTopicHash,con) repeat 
-      RPLACD(pair,code := topicCode rest pair)
+      pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
     HPUT($conTopicHash,con,
       [['constructor,:conCode],:HGET($conTopicHash,con)])      
@@ -163,7 +163,7 @@ topicCode lst ==
     x
   if null intersection('(basic extended hidden),u) then u := ['extended,:u]
   bitIndexList := nil
-  for x in REMDUP u repeat
+  for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==
       k := HGET($topicHash,x) => k
       HPUT($topicHash,x,$topicIndex := $topicIndex * 2)
@@ -180,7 +180,7 @@ addTopic2Documentation(con,docAlist) ==
     [op,:pairlist] := x
     code := LASSOC(op,alist) or 0
     for sigDoc in pairlist repeat 
-      sigDoc is [.,.] => RPLACD(rest sigDoc,code)
+      sigDoc is [.,.] => sigDoc.rest.rest := code
       systemError sigDoc
   docAlist
     
@@ -214,7 +214,7 @@ topics con ==
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
   hash := MAKE_-HASHTABLE 'ID
   tdAdd(con,hash)
-  for x in REMDUP [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
+  for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
   for x in HKEYS hash repeat HPUT(hash,x,mySort HGET(hash,x))
   tdPrint hash 
@@ -239,7 +239,7 @@ transferClassCodes(conform,opAlist) ==
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
     | FIXP (code := myLastAtom pair) repeat
-      u := ASSOC(QCAR pair,opAlist) => RPLACD(LASTNODE u,code)
+      u := ASSOC(QCAR pair,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
 --           Filter Operation by Topic

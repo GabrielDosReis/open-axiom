@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -84,9 +84,9 @@ coerceDmp1(u,source is [.,v1,S],target is [.,v2,T],v,w) ==
   pat3:= [member(x,v) and POSN1(x,v) for x in v2]
   for [e,:c] in u until not z repeat
     exp:= LIST2VEC [y for x in pat2 for y in VEC2LIST e | x]
-    z:= coerceInt(objNewWrap([CONS(exp,c)],t),target) =>
+    z:= coerceInt(objNewWrap([[exp,:c]],t),target) =>
       li:= [y for x in pat1 for y in VEC2LIST e | x]
-      a:= [CONS(LIST2VEC [if x then li.x else 0 for x in pat3],one)]
+      a:= [[LIST2VEC [if x then li.x else 0 for x in pat3],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
   z => x
   coercionFailure()
@@ -101,7 +101,7 @@ coerceDmp2(u,source is [.,v1,S],target is [.,v2,T]) ==
   for [e,:c] in u until not z repeat
     z:= coerceInt(objNewWrap(c,S),target) =>
       li:= VEC2LIST e
-      a:= [CONS(LIST2VEC [if x then li.x else 0 for x in pat],one)]
+      a:= [[LIST2VEC [if x then li.x else 0 for x in pat],:one]]
       x:= SPADCALL(x,SPADCALL(objValUnwrap(z),a,multfunc),plusfunc)
     NIL
   z => x
@@ -305,9 +305,9 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
       p:= ASSQ(exp,x) =>
         c' := SPADCALL(rest p,objValUnwrap(y),plusfunc)
         c' = zero => x := REMALIST(x,exp)
-        RPLACD(p,c')
+        p.rest := c'
       zero = objValUnwrap(y) => 'iterate
-      x := CONS(CONS(exp,objValUnwrap(y)),x)
+      x := [[exp,:objValUnwrap(y)],:x]
   y => nreverse SORTBY('CAR,x)
   coercionFailure()
 
@@ -377,7 +377,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
         for term in z repeat
             [., :c] := term
             not (c := coerceInt(objNewWrap(c, source), T)) => coercionFailure()
-            RPLACD(term, objValUnwrap c)
+            term.rest := objValUnwrap c
         z
 
     univ := objValUnwrap univ
@@ -386,7 +386,7 @@ Expr2Dmp(u,source is [Expr,S], target is [dmp,v2,T]) ==
 
     null rest v2 =>
         for term in univ repeat
-            RPLACA(term, VECTOR first term)
+            term.first := VECTOR first term
         univ
 
     -- more than one variable
@@ -1514,12 +1514,12 @@ Up2Up(u,source is [.,v1,S], target is [.,v2,T]) ==
 
 insertAlist(a,b,l) ==
   null l => [[a,:b]]
-  a = l.0.0 => (RPLAC(CDAR l,b);l)
+  a = l.0.0 => (first(l).rest := b;l)
   _?ORDER(l.0.0,a) => [[a,:b],:l]
   (fn(a,b,l);l) where fn(a,b,l) ==
-    null rest l => RPLAC(rest l,[[a,:b]])
-    a = l.1.0 => RPLAC(rest l.1,b)
-    _?ORDER(l.1.0,a) => RPLAC(rest l,[[a,:b],:rest l])
+    null rest l => l.rest := [[a,:b]]
+    a = l.1.0 => l.1.rest := b
+    _?ORDER(l.1.0,a) => l.rest := [[a,:b],:rest l]
     fn(a,b,rest l)
 
 --% Union
@@ -1527,7 +1527,7 @@ insertAlist(a,b,l) ==
 Un2E(x,source,target) ==
   ['Union,:branches] := source
   x = '_$fromCoerceable_$ =>
-    and/[canCoerce(t, target) for t in branches | not  STRINGP t]
+    and/[canCoerce(t, target) for t in branches | not  string? t]
   coerceUn2E(x,source)
 
 --% Variable

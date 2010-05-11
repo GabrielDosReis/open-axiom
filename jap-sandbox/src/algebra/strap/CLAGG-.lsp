@@ -171,60 +171,52 @@
       (|getShellEntry| $ 32))) 
 
 (DEFUN |Collection&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|Collection&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|Collection&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 43) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasCategory| |#2|
-                                '(|ConvertibleTo| (|InputForm|)))
-                            (|HasCategory| |#2| '(|SetCategory|))
-                            (|HasAttribute| |#1| '|finiteAggregate|))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|testBitVector| |pv$| 3)
-           (PROGN
-             (|setShellEntry| $ 12
-                 (CONS (|dispatchFunction| |CLAGG-;#;ANni;1|) $))
-             (|setShellEntry| $ 18
-                 (CONS (|dispatchFunction| |CLAGG-;count;MANni;2|) $))
-             (|setShellEntry| $ 21
-                 (CONS (|dispatchFunction| |CLAGG-;any?;MAB;3|) $))
-             (|setShellEntry| $ 22
-                 (CONS (|dispatchFunction| |CLAGG-;every?;MAB;4|) $))
-             (|setShellEntry| $ 25
-                 (CONS (|dispatchFunction| |CLAGG-;find;MAU;5|) $))
-             (|setShellEntry| $ 28
-                 (CONS (|dispatchFunction| |CLAGG-;reduce;MAS;6|) $))
-             (|setShellEntry| $ 30
-                 (CONS (|dispatchFunction| |CLAGG-;reduce;MA2S;7|) $))
-             (|setShellEntry| $ 33
-                 (CONS (|dispatchFunction| |CLAGG-;remove;M2A;8|) $))
-             (|setShellEntry| $ 35
-                 (CONS (|dispatchFunction| |CLAGG-;select;M2A;9|) $))
-             (COND
-               ((|testBitVector| |pv$| 2)
-                (PROGN
-                  (|setShellEntry| $ 38
-                      (CONS (|dispatchFunction| |CLAGG-;remove;S2A;10|)
-                            $))
-                  (|setShellEntry| $ 40
-                      (CONS (|dispatchFunction|
-                                |CLAGG-;reduce;MA3S;11|)
-                            $))
-                  (|setShellEntry| $ 42
-                      (CONS (|dispatchFunction|
-                                |CLAGG-;removeDuplicates;2A;12|)
-                            $))))))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|Collection&| |dv$1| |dv$2|))
+         ($ (|newShell| 43))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasCategory| |#2|
+                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (|HasCategory| |#2| '(|SetCategory|))
+                          (|HasAttribute| |#1| '|finiteAggregate|)))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|testBitVector| |pv$| 3)
+       (PROGN
+         (|setShellEntry| $ 12
+             (CONS (|dispatchFunction| |CLAGG-;#;ANni;1|) $))
+         (|setShellEntry| $ 18
+             (CONS (|dispatchFunction| |CLAGG-;count;MANni;2|) $))
+         (|setShellEntry| $ 21
+             (CONS (|dispatchFunction| |CLAGG-;any?;MAB;3|) $))
+         (|setShellEntry| $ 22
+             (CONS (|dispatchFunction| |CLAGG-;every?;MAB;4|) $))
+         (|setShellEntry| $ 25
+             (CONS (|dispatchFunction| |CLAGG-;find;MAU;5|) $))
+         (|setShellEntry| $ 28
+             (CONS (|dispatchFunction| |CLAGG-;reduce;MAS;6|) $))
+         (|setShellEntry| $ 30
+             (CONS (|dispatchFunction| |CLAGG-;reduce;MA2S;7|) $))
+         (|setShellEntry| $ 33
+             (CONS (|dispatchFunction| |CLAGG-;remove;M2A;8|) $))
+         (|setShellEntry| $ 35
+             (CONS (|dispatchFunction| |CLAGG-;select;M2A;9|) $))
+         (COND
+           ((|testBitVector| |pv$| 2)
+            (PROGN
+              (|setShellEntry| $ 38
+                  (CONS (|dispatchFunction| |CLAGG-;remove;S2A;10|) $))
+              (|setShellEntry| $ 40
+                  (CONS (|dispatchFunction| |CLAGG-;reduce;MA3S;11|) $))
+              (|setShellEntry| $ 42
+                  (CONS (|dispatchFunction|
+                            |CLAGG-;removeDuplicates;2A;12|)
+                        $))))))))
+    $)) 
 
 (MAKEPROP '|Collection&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

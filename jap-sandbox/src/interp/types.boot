@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2009 Gabriel Dos Reis
+-- Copyright (C) 2007-2010 Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -119,22 +119,22 @@ namespace BOOT
 
 %Sequence <=> SEQUENCE
 
-%Pair <=> cons
+%Pair <=> CONS
 
 %Maybe a <=> null or a
 
 --% Data structures for the compiler
 %Constructor <=> %Symbol                       -- constructor
-%Form <=> %Number or %Symbol or %String or cons -- input syntax form
-%Instantiation <=> cons(%Constructor,%Form)    -- constructor instance
+%Form <=> %Number or %Symbol or %String or %Pair -- input syntax form
+%Instantiation <=> [%Constructor,:%Form]       -- constructor instance
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
 %Code <=> %Form                                -- generated code
 %Triple <=>                                    -- form + type + env
-  cons(%Code,cons(%Mode,cons(%Env,null))) 
+  [%Code,:[%Mode,:[%Env,:null]]]
 
 %Signature                      -- signature
-  <=> %Symbol or cons
+  <=> %Symbol or %Pair
 
 %Modemap <=> %List                             -- modemap
 

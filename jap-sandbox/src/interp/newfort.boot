@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ expression2Fortran1(name,e) ==
 
 newFortranTempVar() ==
   $exp2FortTempVarIndex := 1 + $exp2FortTempVarIndex
-  newVar := INTERN STRCONC('"T",STRINGIMAGE $exp2FortTempVarIndex)
+  newVar := INTERN strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
   updateSymbolTable(newVar,$defaultFortranType)
   newVar
  
@@ -126,7 +126,7 @@ exp2Fort2(e,prec,oldOp) ==
       s
     exp2FortFn(op,args,nargs)
   op = '"CMPLX" =>
-    ['")",:exp2Fort2(SECOND args, prec, op),'",",:exp2Fort2(first args,prec,op),'"("]
+    ['")",:exp2Fort2(second args, prec, op),'",",:exp2Fort2(first args,prec,op),'"("]
   member(op,nonUnaryOps) =>
     if nargs > 0 then arg1 := first args
     nargs = 1 and member(op, '("+" "*")) => exp2Fort2(arg1,prec,op)
@@ -202,11 +202,11 @@ beenHere(e,n) ==
       loc := first exprStk
       fun := first n.3
       fun = 'CAR =>
-        RPLACA(loc,var)
+        loc.first := var
       fun = 'CDR =>
-        if CONSP QCDR loc
-          then RPLACD(loc,[var])
-          else RPLACD(loc,var)
+        if cons? QCDR loc
+          then loc.rest := [var]
+          else loc.rest := var
       SAY '"whoops"
     var
   n.1                     -- been here before, so just get variable
@@ -227,7 +227,7 @@ exp2FortOptimizeCS1 e ==
     pushCsStacks(f,'CAR) where pushCsStacks(x,y) ==
       $fortCsExprStack := [x,:$fortCsExprStack]
       $fortCsFuncStack := [y,:$fortCsFuncStack]
-    RPLACA(f,exp2FortOptimizeCS1 QCAR f)
+    f.first := exp2FortOptimizeCS1 QCAR f
     popCsStacks(0) where popCsStacks(x) ==
       $fortCsFuncStack := QCDR $fortCsFuncStack
       $fortCsExprStack := QCDR $fortCsExprStack
@@ -235,7 +235,7 @@ exp2FortOptimizeCS1 e ==
     -- check to see of we have an non-NIL atomic CDR
     g and atom g =>
       pushCsStacks(f,'CDR)
-      RPLACD(f,exp2FortOptimizeCS1 g)
+      f.rest := exp2FortOptimizeCS1 g
       popCsStacks(0)
       f := NIL
     f := g
@@ -298,8 +298,8 @@ fortran2Lines1 f ==
   -- f is a list of strings making up 1 FORTRAN statement
   -- return: a reverse list of FORTRAN lines
   normPref := MAKE_-STRING($fortIndent)
-  --contPref := STRCONC(MAKE_-STRING($fortIndent-1),"&")
-  contPref := STRCONC("     &",MAKE_-STRING($fortIndent-6))
+  --contPref := strconc(MAKE_-STRING($fortIndent-1),"&")
+  contPref := strconc("     &",MAKE_-STRING($fortIndent-6))
   lines := NIL
   ll := $fortIndent
   while f repeat
@@ -309,7 +309,7 @@ fortran2Lines1 f ==
     while ok repeat
       (ll + (sff := SIZE ff)) <= $fortLength =>
         ll := ll + sff
-        line := STRCONC(line,ff)
+        line := strconc(line,ff)
         f := rest f
         if f then ff := first f
         else ok := nil
@@ -320,7 +320,7 @@ fortran2Lines1 f ==
       -- legal format. MCD
       if (ll < $fortLength) and (ll + sff) > $fortLength then
         spaceLeft := $fortLength - ll
-        line := STRCONC(line,SUBSEQ(ff,0,spaceLeft))
+        line := strconc(line,SUBSEQ(ff,0,spaceLeft))
         ff := SUBSEQ(ff,spaceLeft)
       lines := [line,:lines]
       ll := $fortIndent
@@ -337,7 +337,7 @@ fortError1 u ==
  
 fortError(u,v) ==
   $fortError := "t"
-  msg := STRCONC("   ",STRINGIMAGE u);
+  msg := strconc("   ",STRINGIMAGE u);
   sayErrorly("Fortran translation error",msg)
   mathPrint v
  
@@ -374,7 +374,7 @@ formatAsFortranExpresion x ==
 dispfortexp x ==
   if atom(x) or x is [op,:.] and not object2Identifier op in
     '(_= MATRIX construct ) then
-      var := INTERN STRCONC('"R",object2String $IOindex)
+      var := INTERN strconc('"R",object2String $IOindex)
       x := ['"=",var,x]
   dispfortexp1 x
  
@@ -439,8 +439,8 @@ exp2FortSpecial(op,args,nargs) ==
   --  called to get a linearized form for the browser
   op = "QUOTE" =>
     atom (arg := first args) => STRINGIMAGE arg
-    tailPart := "STRCONC"/[STRCONC('",",x) for x in rest arg]
-    STRCONC('"[",first arg,tailPart,'"]")
+    tailPart := strconc/[strconc('",",x) for x in rest arg]
+    strconc('"[",first arg,tailPart,'"]")
   op = "PAREN" =>
     args := first args
     not(first(args)="CONCATB") => fortError1 [op,:args]
@@ -457,11 +457,11 @@ exp2FortSpecial(op,args,nargs) ==
       if LISTP first elts and #elts=1 and first elts is [sOp,:sArgs] then
         member(sOp, ['"SEGMENT","SEGMENT"]) =>
           #sArgs=1 => fortError1 first elts
-          not(NUMBERP(first sArgs) and NUMBERP(SECOND sArgs)) =>
+          not(NUMBERP(first sArgs) and NUMBERP(second sArgs)) =>
             fortError("Cannot expand segment: ",first elts)
-          first sArgs > SECOND sArgs => fortError1
+          first sArgs > second sArgs => fortError1
             '"Lower bound of segment exceeds upper bound."
-          for e in first sArgs .. SECOND sArgs for i in si.. repeat
+          for e in first sArgs .. second sArgs for i in si.. repeat
             $exprStack := [["=",[var,object2String i],fortPre1(e)],:$exprStack]
       for e in elts for i in si.. repeat
         $exprStack := [["=",[var,object2String i],fortPre1(e)],:$exprStack]
@@ -617,9 +617,9 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
     l := [first(r),:l]
     r := rest(r)
   labString := STRINGIMAGE label1
-  for i in #(labString)..5 repeat labString := STRCONC(labString,'" ")
+  for i in #(labString)..5 repeat labString := strconc(labString,'" ")
   lines := fortran2Lines nreverse [:nreverse l,'"IF(",:r]
-  lines := [STRCONC(labString,SUBSEQ(first lines,6)),:rest lines]
+  lines := [strconc(labString,SUBSEQ(first lines,6)),:rest lines]
   checkLines lines
 
 fortFormatIf(switch) ==
@@ -656,7 +656,7 @@ fortFormatHead(returnType,name,args) ==
     changeExprLength(l := -11)
   else
     asp := [s := checkType STRINGIMAGE returnType,'" FUNCTION "]
-    changeExprLength(l := -10-LENGTH(s))
+    changeExprLength(l := -10-#(s))
   displayLines fortran2Lines [:asp,:statement2Fortran [name,:CDADR args] ]
   changeExprLength(-l)
 
@@ -672,11 +672,11 @@ mkParameterList l ==
   [par2string(u) for u in l] where par2string u ==
       atom(u) => STRINGIMAGE u
       u := rest second u
-      apply('STRCONC,[STRINGIMAGE(first u),'"(",_
+      apply(function strconc,[STRINGIMAGE(first u),'"(",_
                :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 nameLen n ==>
- +/[1+LENGTH(u) for u in n]
+ +/[1+#(u) for u in n]
 
 fortFormatTypes(typeName,names) ==
   null names => return nil
@@ -692,11 +692,11 @@ fortFormatTypes(typeName,names) ==
   fortFormatTypes1(typeName,mkParameterList names)
 
 fortFormatTypes1(typeName,names) ==
-  l := $maximumFortranExpressionLength-1-LENGTH(typeName)
+  l := $maximumFortranExpressionLength-1-#(typeName)
   while nameLen(names) > l repeat
     n := []
     ln := 0
-    while (ln := ln + LENGTH(first names) + 1) < l repeat
+    while (ln := ln + #(first names) + 1) < l repeat
       n := [first names,:n]
       names := rest names
     displayLines fortran2Lines [typeName,'" ",:addCommas n]
@@ -704,25 +704,25 @@ fortFormatTypes1(typeName,names) ==
 
 insertEntry(size,el,aList) ==
   entry := assoc(size,aList)
-  null entry => CONS(CONS(size,LIST el),aList)
-  RPLACD(entry,CONS(el,rest entry))
+  null entry => [[size,:[el]],:aList]
+  entry.rest := [el,:rest entry]
   aList
 
 fortFormatCharacterTypes(names) ==
   sortedByLength := []
   genuineArrays  := []
   for u in names repeat
-    ATOM u => sortedByLength := insertEntry(0,u,sortedByLength)
+    atom u => sortedByLength := insertEntry(0,u,sortedByLength)
     #u=2 => sortedByLength := insertEntry(second u,first u,sortedByLength)
     genuineArrays := [u,:genuineArrays]
   for u in sortedByLength repeat
-    fortFormatTypes1(mkCharName car u, [STRINGIMAGE(s) for s in cdr(u)]) where
-       mkCharName v == CONCAT("CHARACTER*(",STRINGIMAGE v,")")
+    fortFormatTypes1(mkCharName first u, [STRINGIMAGE(s) for s in rest(u)]) where
+       mkCharName v == strconc("CHARACTER*(",STRINGIMAGE v,")")
   if (not null genuineArrays) then
     fortFormatTypes1('"CHARACTER",mkParameterList2 genuineArrays) where
        mkParameterList2 l ==
          [par2string(u) for u in l] where par2string u ==
-             apply('STRCONC,[STRINGIMAGE(first u),'"(",_
+             apply(function strconc,[STRINGIMAGE(first u),'"(",_
                       :rest [:['",",:statement2Fortran(v)] for v in rest u],'")"])
 
 fortFormatIntrinsics(l) ==
@@ -783,26 +783,26 @@ fortPre1 e ==
   -- replace N-ary by binary functions
   -- strip the '%' character off objects like %pi etc..
   null e => nil
-  INTEGERP(e) =>
+  integer?(e) =>
     $fortInts2Floats = true =>
       e >= 0 => fix2FortranFloat(e)
       ['"-", fix2FortranFloat(-e)]
     e
   isFloat(e) => checkPrecision(e)
   -- Keep strings as strings:
-  -- STRINGP(e) => STRCONC(STRING(34),e,STRING(34))
-  STRINGP(e) => e
+  -- string?(e) => strconc(STRING(34),e,STRING(34))
+  string?(e) => e
   e = "%e" => fortPre1 ["exp" , 1]
   imags := ['"%i","%i"]
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
-  ELT(STRINGIMAGE e,0) = "%" => SUBSEQ(STRINGIMAGE e,1)
+  STRINGIMAGE(e).0 = "%" => SUBSEQ(STRINGIMAGE e,1)
   atom e => e
   [op, :args] := e
   member(op,["**" , '"**"]) =>
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
-    (IDENTP rand or STRINGP rand) and exponent=2 => ["*", rand, rand]
+    (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
     (FIXP exponent and ABS(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
@@ -814,7 +814,7 @@ fortPre1 e ==
                    INTSIGN  PI PI2 INDEFINTEGRAL)
   op in specialOps => exp2FortSpecial(op,args,#args)
   member(op,['"*", "*", '"+", "+", '"-", "-"]) and (#args > 2) =>
-    binaryExpr := fortPre1 [op,first args, SECOND args]
+    binaryExpr := fortPre1 [op,first args, second args]
     for i in 3..#args repeat
       binaryExpr := [op,binaryExpr,fortPre1 NTH(i-1,args)]
     binaryExpr
@@ -843,24 +843,24 @@ fortPreRoot e ==
  
 fix2FortranFloat e ==
   -- Return a Fortran float for a given integer.
-  $fortranPrecision = "double" => STRCONC(STRINGIMAGE(e),".0D0")
-  STRCONC(STRINGIMAGE(e),".")
+  $fortranPrecision = "double" => strconc(STRINGIMAGE(e),".0D0")
+  strconc(STRINGIMAGE(e),".")
  
 isFloat e ==
-  FLOATP(e) or STRINGP(e) and FIND(char ".",e)
+  FLOATP(e) or string?(e) and FIND(char ".",e)
  
 checkPrecision e ==
   -- Do we have a string?
-  STRINGP(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
+  string?(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
   e := delete(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
     iPart := SUBSEQ(e,0,(period:=POSITION(char ".",e))+1)
     expt  := if ePos := POSITION(char "E",e) then SUBSEQ(e,ePos+1) else "0"
     rPart :=
       ePos => SUBSEQ(e,period+1,ePos)
-      period+1 < LENGTH e => SUBSEQ(e,period+1)
+      period+1 < # e => SUBSEQ(e,period+1)
       "0"
-    STRCONC(iPart,rPart,"D",expt)
+    strconc(iPart,rPart,"D",expt)
   e
  
 ----------------- segment.boot -----------------------
@@ -874,7 +874,7 @@ fortExpSize e ==
   -- This function overestimates the size because it assumes that e.g.
   -- (+ x (+ y z)) will be printed as "x+(y+z)" rather than "x+y+z"
   -- which is the actual case.
-  atom e => LENGTH STRINGIMAGE e
+  atom e => # STRINGIMAGE e
   #e > 3 => 2+fortSize MAPCAR(function fortExpSize, e)
   #e < 3 => 2+fortSize MAPCAR(function fortExpSize, e)
   [op,arg1,arg2] := e
@@ -895,7 +895,7 @@ fortSize e ==
       atom z => z
       first z
  
-tempLen () == 1 + LENGTH STRINGIMAGE $exp2FortTempVarIndex
+tempLen () == 1 + # STRINGIMAGE $exp2FortTempVarIndex
  
 segment l ==
   not $fortranSegment => l
@@ -903,13 +903,13 @@ segment l ==
   for e in l repeat
     if LISTP(e) and first member(e,["=",'"="]) then
       var := NTH(1,e)
-      exprs := segment1(THIRD e,
+      exprs := segment1(third e,
                         $maximumFortranExpressionLength-1-fortExpSize var)
-      s:= [:[['"=",var,car exprs],:cdr exprs],:s]
+      s:= [:[['"=",var,first exprs],:rest exprs],:s]
     else if LISTP(e) and first e = '"RETURN" then
-      exprs := segment1(SECOND e,
+      exprs := segment1(second e,
                         $maximumFortranExpressionLength-2-fortExpSize first e)
-      s := [:[[first e,car exprs],:cdr exprs],:s]
+      s := [:[[first e,first exprs],:rest exprs],:s]
     else s:= [e,:s]
   reverse s
  
@@ -929,9 +929,9 @@ segment1(e,maxSize) ==
       newE := [:newE,NTH(i-1,e)]
     -- this ones too big.
     exprs := segment2(NTH(i-1,e),safeSize)
-    expressions := [:(cdr exprs),:expressions]
-    newE := [:newE,(car exprs)]
-    safeSize := safeSize - fortExpSize car exprs
+    expressions := [:(rest exprs),:expressions]
+    newE := [:newE,(first exprs)]
+    safeSize := safeSize - fortExpSize first exprs
   [newE,:expressions]
  
 segment2(e,topSize) ==
@@ -944,7 +944,7 @@ segment2(e,topSize) ==
     subE := NTH(i-1,e)
     (subSize := fortExpSize subE) > maxSize =>
       subE := segment2(subE,maxSize)
-      exprs := [:(cdr subE),:exprs]
+      exprs := [:(rest subE),:exprs]
       if (subSize := fortExpSize first subE) <= topSize then
         newE := [:newE,first subE]
         topSize := topSize - subSize

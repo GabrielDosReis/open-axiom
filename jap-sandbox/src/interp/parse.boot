@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ $parsingType := false
 --%
 
 washOperatorName x ==
-  STRINGP x =>
+  string? x =>
     stackWarning('"String syntax for %1b in signature is deprecated.",[x])
     INTERN x
   x
@@ -77,7 +77,7 @@ parseTran x ==
     r:= parseConstruct ["construct",:argl]
     op is ["elt",:.] => [parseTran op,:rest r]
     r
-  SYMBOLP u and (fn:= GET(u,'parseTran)) => FUNCALL(fn,x)
+  symbol? u and (fn:= GET(u,'parseTran)) => FUNCALL(fn,x)
   [parseTran op,:parseTranList argl]
 
 parseType t ==
@@ -277,7 +277,7 @@ parseExit t ==
   a:= parseTran a
   b:= parseTran b
   b =>
-    not INTEGERP a =>
+    not integer? a =>
       (MOAN('"first arg ",a,'" for exit must be integer"); ["exit",1,a])
     ["exit",a,:b]
   ["exit",1,a]
@@ -289,7 +289,7 @@ parseLeave t ==
   a:= parseTran a
   b:= parseTran b
   b =>
-    not INTEGERP a =>
+    not integer? a =>
       (MOAN('"first arg ",a,'" for 'leave' must be integer"); ["leave",1,a])
     ["leave",a,:b]
   ["leave",1,a]
@@ -419,23 +419,23 @@ superSub(name,x) ==
   for u in x repeat y:= [:y,:u]
   code:=
     x is [[u]] => $quadSymbol
-    STRCONC('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
+    strconc('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
   [INTERNL(PNAME name,"$",code),:y]
  
 scriptTran: %List -> %String
 scriptTran x ==
   null x => '""
-  STRCONC('";",scriptTranRow first x,scriptTran rest x)
+  strconc('";",scriptTranRow first x,scriptTran rest x)
  
 scriptTranRow: %List -> %String
 scriptTranRow x ==
   null x => '""
-  STRCONC($quadSymbol,scriptTranRow1 rest x)
+  strconc($quadSymbol,scriptTranRow1 rest x)
 
 scriptTranRow1: %List -> %String 
 scriptTranRow1 x ==
   null x => '""
-  STRCONC('",",$quadSymbol,scriptTranRow1 rest x)
+  strconc('",",$quadSymbol,scriptTranRow1 rest x)
  
 parseVCONS: %List -> %Form
 parseVCONS l == 

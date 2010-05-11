@@ -96,7 +96,8 @@ UnivariatePowerSeriesCategory(Coef,Expon): Category == Definition where
   Expon  : OrderedAbelianMonoid
   Term ==> Record(k:Expon,c:Coef)
 
-  Definition ==> PowerSeriesCategory(Coef,Expon,SingletonAsOrderedSet) with
+  Definition ==> Join(PowerSeriesCategory(Coef,Expon,SingletonAsOrderedSet),_
+                    Eltable(Expon,Coef)) with
 
     terms: % -> Stream Term
       ++ \spad{terms(f(x))} returns a stream of non-zero terms, where a
@@ -106,9 +107,6 @@ UnivariatePowerSeriesCategory(Coef,Expon): Category == Definition where
       --++ \spad{series(st)} creates a series from a stream of non-zero terms,
       --++ where a term is an exponent-coefficient pair.  The terms in the
       --++ stream should be ordered by increasing order of exponents.
-    elt: (%,Expon) -> Coef
-      ++ \spad{elt(f(x),r)} returns the coefficient of the term of degree r in
-      ++ \spad{f(x)}.  This is the same as the function \spadfun{coefficient}.
     variable: % -> Symbol
       ++ \spad{variable(f)} returns the (unique) power series variable of
       ++ the power series f.

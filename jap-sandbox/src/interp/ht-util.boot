@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,35 +57,35 @@ htpDestroyPage(pageName) ==
 
 htpName htPage ==
 -- a symbol whose value is the page
-  ELT(htPage, 0)
+  htPage.0
 
 htpSetName(htPage, val) ==
   SETELT(htPage, 0, val)
 
 htpDomainConditions htPage ==
 -- List of Domain conditions
-  ELT(htPage, 1)
+  htPage.1
 
 htpSetDomainConditions(htPage, val) ==
   SETELT(htPage, 1, val)
 
 htpDomainVariableAlist htPage ==
 -- alist of pattern variables and conditions
-  ELT(htPage, 2)
+  htPage.2
 
 htpSetDomainVariableAlist(htPage, val) ==
   SETELT(htPage, 2, val)
 
 htpDomainPvarSubstList htPage ==
 -- alist of user pattern variables to system vars
-  ELT(htPage, 3)
+  htPage.3
 
 htpSetDomainPvarSubstList(htPage, val) ==
   SETELT(htPage, 3, val)
 
 htpRadioButtonAlist htPage ==
 -- alist of radio button group names and labels
-  ELT(htPage, 4)
+  htPage.4
 
 htpButtonValue(htPage, groupName) ==
   for buttonName in LASSOC(groupName, htpRadioButtonAlist htPage) repeat
@@ -97,30 +97,30 @@ htpSetRadioButtonAlist(htPage, val) ==
 
 htpInputAreaAlist htPage ==
 -- Alist of input-area labels, and default values
-  ELT(htPage, 5)
+  htPage.5
 
 htpSetInputAreaAlist(htPage, val) ==
   SETELT(htPage, 5, val)
 
 htpAddInputAreaProp(htPage, label, prop) ==
-  SETELT(htPage, 5, [[label, nil, nil, nil, :prop], :ELT(htPage, 5)])
+  SETELT(htPage, 5, [[label, nil, nil, nil, :prop], :htPage.5])
 
 htpPropertyList htPage ==
 -- Association list of user-defined properties
-  ELT(htPage, 6)
+  htPage.6
 
 htpProperty(htPage, propName) ==
-  LASSOC(propName, ELT(htPage, 6))
+  LASSOC(propName, htPage.6)
 
 htpSetProperty(htPage, propName, val) ==
-  pair := assoc(propName, ELT(htPage, 6))
-  pair => RPLACD(pair, val)
-  SETELT(htPage, 6, [[propName, :val], :ELT(htPage, 6)])
+  pair := assoc(propName, htPage.6)
+  pair => pair.rest := val
+  SETELT(htPage, 6, [[propName, :val], :htPage.6])
 
 htpLabelInputString(htPage, label) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props and STRINGP (s := ELT(props,0)) =>
+  props and string? (s := props.0) =>
     s = '"" => s
     trimString s
   nil
@@ -129,16 +129,16 @@ htpLabelFilteredInputString(htPage, label) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
-    #props > 5 and ELT(props, 6) =>
-      FUNCALL(SYMBOL_-FUNCTION ELT(props, 6), ELT(props, 0))
-    replacePercentByDollar ELT(props, 0)
+    #props > 5 and props.6 =>
+      FUNCALL(SYMBOL_-FUNCTION props.6, props.0)
+    replacePercentByDollar props.0
   nil
 
 replacePercentByDollar s == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => '""
     (m := charPosition(char "%",s,i)) > n => SUBSTRING(s,i,nil)
-    STRCONC(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
+    strconc(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
 
 htpSetLabelInputString(htPage, label, val) ==
 -- value user typed as input string on page
@@ -149,7 +149,7 @@ htpSetLabelInputString(htPage, label, val) ==
 htpLabelSpadValue(htPage, label) ==
 -- Scratchpad value of parsed and evaled inputString, as (type . value)
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 1)
+  props => props.1
   nil
 
 htpSetLabelSpadValue(htPage, label, val) ==
@@ -161,7 +161,7 @@ htpSetLabelSpadValue(htPage, label, val) ==
 htpLabelErrorMsg(htPage, label) ==
 -- error message associated with input area
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 2)
+  props => props.2
   nil
 
 htpSetLabelErrorMsg(htPage, label, val) ==
@@ -173,7 +173,7 @@ htpSetLabelErrorMsg(htPage, label, val) ==
 htpLabelType(htPage, label) ==
 -- either 'string or 'button
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 3)
+  props => props.3
   nil
 
 htpLabelDefault(htPage, label) ==
@@ -184,25 +184,25 @@ htpLabelDefault(htPage, label) ==
     msg
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
-    ELT(props, 4)
+    props.4
   nil
 
 
 htpLabelSpadType(htPage, label) ==
 -- pattern variable for target domain for input area
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 5)
+  props => props.5
   nil
 
 htpLabelFilter(htPage, label) ==
 -- string to string mapping applied to input area strings before parsing
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => ELT(props, 6)
+  props => props.6
   nil
 
 htpPageDescription htPage ==
 -- a list of all the commands issued to create the basic-command page
-  ELT(htPage, 7)
+  htPage.7
 
 htpSetPageDescription(htPage, pageDescription) ==
   SETELT(htPage, 7, pageDescription)
@@ -210,22 +210,22 @@ htpSetPageDescription(htPage, pageDescription) ==
 iht line ==
 -- issue a single hyperteTeX line, or a group of lines
   $newPage => nil
-  CONSP line =>
+  cons? line =>
     $htLineList := NCONC(nreverse mapStringize COPY_-LIST line, $htLineList)
   $htLineList := [basicStringize line, :$htLineList]
 
 bcIssueHt line ==
-  CONSP line => htMakePage1 line
+  cons? line => htMakePage1 line
   iht line
 
 mapStringize l ==
-  ATOM l => l
-  RPLACA(l, basicStringize first l)
-  RPLACD(l, mapStringize rest l)
+  atom l => l
+  l.first := basicStringize first l
+  l.rest := mapStringize rest l
   l
 
 basicStringize s ==
-  STRINGP s =>
+  string? s =>
     s = '"\$"      => '"\%"
     s = '"{\em $}" => '"{\em \%}"
     s
@@ -233,7 +233,7 @@ basicStringize s ==
   PRINC_-TO_-STRING s
 
 stringize s ==
-  STRINGP s => s
+  string? s => s
   PRINC_-TO_-STRING s
 
 --htInitPageNoHeading(propList) ==
@@ -254,7 +254,7 @@ htQuote s ==
 htProcessToggleButtons buttons ==
   iht '"\newline\indent{5}\beginitems "
   for [message, info, defaultValue, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
     iht ['"\item{\em\inputbox[", htpLabelDefault($curPage, buttonName), '"]{",
          buttonName, '"}{\htbmfile{pick}}{\htbmfile{unpick}}\space{}"]
@@ -265,7 +265,7 @@ htProcessToggleButtons buttons ==
 
 htProcessBcButtons buttons ==
   for [defaultValue, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
     k := htpLabelDefault($curPage,buttonName)
     k = 0 => iht ['"\off{",buttonName,'"}"]
@@ -309,7 +309,7 @@ htRadioButtons [groupName, :buttons] ==
      '"}{\htbmfile{pick}}{\htbmfile{unpick}}\beginitems "]
   defaultValue := '"1"
   for [message, info, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
       defaultValue := '"0"
     iht ['"\item{\em\radiobox[", htpLabelDefault($curPage, buttonName), '"]{",
@@ -327,7 +327,7 @@ htBcRadioButtons [groupName, :buttons] ==
      '"}{\htbmfile{pick}}{\htbmfile{unpick}} "]
   defaultValue := '"1"
   for [message, info, buttonName] in buttons repeat
-    if NULL LASSOC(buttonName, htpInputAreaAlist $curPage) then
+    if null LASSOC(buttonName, htpInputAreaAlist $curPage) then
       setUpDefault(buttonName, ['button, defaultValue])
       defaultValue := '"0"
     iht ['"{\em\radiobox[", htpLabelDefault($curPage, buttonName), '"]{",
@@ -343,12 +343,12 @@ htInputStrings strings ==
   iht '"\newline\indent{5}\beginitems "
   for [mess1, mess2, numChars, default, stringName, spadType, :filter]
    in strings repeat
-    if NULL LASSOC(stringName, htpInputAreaAlist $curPage) then
+    if null LASSOC(stringName, htpInputAreaAlist $curPage) then
       setUpDefault(stringName, ['string, default, spadType, filter])
     if htpLabelErrorMsg($curPage, stringName) then
       iht ['"\centerline{{\em ", htpLabelErrorMsg($curPage, stringName), '"}}"]
 
-      mess2 := CONCAT(mess2, bcSadFaces())
+      mess2 := strconc(mess2, bcSadFaces())
       htpSetLabelErrorMsg($curPage, stringName, nil)
     iht '"\item "
     bcIssueHt mess1
@@ -372,7 +372,7 @@ renamePatternVariables1(condList, substList, patVars) ==
   cond is ['isDomain, pv, pattern] or cond is ['ofCategory, pv, pattern]
     or cond is ['Satisfies, pv, cond] =>
       if pv = $EmptyMode then nsubst := substList
-      else nsubst := [[pv, :car patVars], :substList]
+      else nsubst := [[pv, :first patVars], :substList]
       renamePatternVariables1(restConds, nsubst, rest patVars)
   substList
 
@@ -397,19 +397,19 @@ pvarCondList1(pvarList, activeConds, condList) ==
   pvarCondList1(pvarList, activeConds, restConds)
 
 pvarsOfPattern pattern ==
-  NULL LISTP pattern => nil
+  null LISTP pattern => nil
   [pvar for pvar in rest pattern | pvar in $PatternVariableList]
 
 htMakeTemplates(templateList, numLabels) ==
   templateList := [templateParts template for template in templateList]
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
-      CONSP template =>
-        INTERN CONCAT(first template, PRINC_-TO_-STRING i, rest template)
+      cons? template =>
+        INTERN strconc(first template, PRINC_-TO_-STRING i, rest template)
       template
 
 templateParts template ==
-  NULL STRINGP template => template
+  null string? template => template
   i := SEARCH('"%l", template)
   null i => template
   [SUBSEQ(template, 0, i), : SUBSEQ(template, i+2)]
@@ -419,7 +419,7 @@ htMakeDoneButton(message, func) ==
   if message = '"Continue" then
     bchtMakeButton('"\lispdownlink", "\ContinueBitmap", func)
   else
-    bchtMakeButton('"\lispdownlink",CONCAT('"\box{", message, '"}"), func)
+    bchtMakeButton('"\lispdownlink",strconc('"\box{", message, '"}"), func)
   bcHt '"} "
 
 htProcessDoneButton [label , func] ==
@@ -430,7 +430,7 @@ htProcessDoneButton [label , func] ==
   else if label = '"Push to enter names" then
     htMakeButton('"\lispdownlink",'"\ControlBitmap{ClickToSet}", func)
   else
-    htMakeButton('"\lispdownlink", CONCAT('"\box{", label, '"}"), func)
+    htMakeButton('"\lispdownlink", strconc('"\box{", label, '"}"), func)
 
   iht '"} "
 
@@ -449,7 +449,7 @@ bchtMakeButton(htCommand, message, func) ==
 htProcessDoitButton [label, command, func] ==
   fun := mkCurryFun(func, [command])
   iht '"\newline\vspace{1}\centerline{"
-  htMakeButton('"\lispcommand", CONCAT('"\box{", label, '"}"), fun)
+  htMakeButton('"\lispcommand", strconc('"\box{", label, '"}"), fun)
   iht '"} "
   iht '"\vspace{2}{Select \  \UpButton{} \  to go back one page.}"
   iht '"\newline{Select \  \ExitButton{QuitPage} \  to remove this window.}"
@@ -494,7 +494,7 @@ typeCheckInputAreas htPage ==
       nil
     val := checkCondition(htpLabelInputString(htPage, stringName),
                           string, condList)
-    STRINGP val =>
+    string? val =>
       errorCondition := true
       htpSetLabelErrorMsg(htPage, stringName, val)
     htpSetLabelSpadValue(htPage, stringName, val)
@@ -503,13 +503,13 @@ typeCheckInputAreas htPage ==
 checkCondition(s1, string, condList) ==
   condList is [['Satisfies, pvar, pred]] =>
     val := FUNCALL(pred, string)
-    STRINGP val => val
+    string? val => val
     ['(String), :wrap s1]
   condList isnt [['isDomain, pvar, pattern]] =>
     systemError '"currently invalid domain condition"
   pattern is '(String) => ['(String), :wrap s1]
   val := parseAndEval string
-  STRINGP val =>
+  string? val =>
     val = '"Syntax Error " => '"Error: Syntax Error "
     condErrorMsg pattern
   [type, : data] := val
@@ -520,8 +520,8 @@ checkCondition(s1, string, condList) ==
 
 condErrorMsg type ==
   typeString := form2String type
-  if CONSP typeString then typeString := APPLY(function CONCAT, typeString)
-  CONCAT('"Error: Could not make your input into a ", typeString)
+  if cons? typeString then typeString := apply(function strconc, typeString)
+  strconc('"Error: Could not make your input into a ", typeString)
 
 parseAndEval string ==
   $InteractiveMode :fluid := true
@@ -546,29 +546,29 @@ parseAndEval1 string ==
   nil
 
 makeSpadCommand(:l) ==
-  opForm := CONCAT(first l, '"(")
+  opForm := strconc(first l, '"(")
   lastArg := last l
   l := rest l
   argList := nil
   for arg in l while arg ~= lastArg repeat
-    argList := [CONCAT(arg, '", "), :argList]
+    argList := [strconc(arg, '", "), :argList]
   argList := nreverse [lastArg, :argList]
-  CONCAT(opForm, APPLY(function CONCAT, argList), '")")
+  strconc(opForm, apply(function strconc, argList), '")")
 
 htMakeInputList stringList ==
 -- makes an input form for constructing a list
   lastArg := last stringList
   argList := nil
   for arg in stringList while arg ~= lastArg repeat
-    argList := [CONCAT(arg, '", "), :argList]
+    argList := [strconc(arg, '", "), :argList]
   argList := nreverse [lastArg, :argList]
-  bracketString APPLY(function CONCAT, argList)
+  bracketString apply(function strconc, argList)
 
 
 -- predefined filter strings
-bracketString string == CONCAT('"[",string,'"]")
+bracketString string == strconc('"[",string,'"]")
 
-quoteString string == CONCAT('"_"", string, '"_"")
+quoteString string == strconc('"_"", string, '"_"")
 
 $funnyQuote := char 127
 $funnyBacks := char 128
@@ -578,10 +578,10 @@ htEscapeString str ==
   SUBSTITUTE($funnyBacks, char '_\, str)
 
 unescapeStringsInForm form ==
-  STRINGP form =>
+  string? form =>
     str := NSUBSTITUTE(char '_", $funnyQuote, form)
     NSUBSTITUTE(char '_\, $funnyBacks, str)
-  CONSP form =>
+  cons? form =>
     unescapeStringsInForm first form
     unescapeStringsInForm rest form
     form

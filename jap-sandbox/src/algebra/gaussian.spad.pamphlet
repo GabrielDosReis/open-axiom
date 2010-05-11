@@ -563,7 +563,7 @@ Complex(R:CommutativeRing): ComplexCategory(R) with
          OMwrite(x: %): String ==
           s: String := ""
           sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
           OMputObject(dev)
           writeOMComplex(dev, x)
           OMputEndObject(dev)
@@ -574,7 +574,7 @@ Complex(R:CommutativeRing): ComplexCategory(R) with
          OMwrite(x: %, wholeObj: Boolean): String ==
           s: String := ""
           sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+          dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
           if wholeObj then
             OMputObject(dev)
           writeOMComplex(dev, x)
@@ -783,7 +783,7 @@ ComplexIntegerSolveLinearPolynomialEquation(R,CR): C == T
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

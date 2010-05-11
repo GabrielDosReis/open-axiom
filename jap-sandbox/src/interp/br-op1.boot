@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ dbFromConstructor?(htPage) == htpProperty(htPage,'conform)
 
 dbDoesOneOpHaveParameters? opAlist ==
   or/[(or/[fn for x in items]) for [op,:items] in opAlist] where fn() ==
-    STRINGP x => dbPart(x,2,1) ~= '"0"
+    string? x => dbPart(x,2,1) ~= '"0"
     KAR x
 --============================================================================
 --               Master Switch Functions for Operation Views
@@ -105,12 +105,12 @@ reduceByGroup(htPage,opAlist) ==
 dbShowOp1(htPage,opAlist,which,key) ==
   --set up for filtering below in dbGatherData
   $which: local := which
-  if INTEGERP key then
+  if integer? key then
     opAlist := dbSelectData(htPage,opAlist,key)
     ------> Jump out for constructor names in file <--------
-  INTEGERP key and opAlist is [[con,:.]] and htpProperty(htPage,'isFile)
+  integer? key and opAlist is [[con,:.]] and htpProperty(htPage,'isFile)
       and constructor? con => return conPageChoose con
-  if INTEGERP key then
+  if integer? key then
     htPage := htInitPageNoScroll(htCopyProplist htPage)
     if which = '"operation"
       then htpSetProperty(htPage,'opAlist,opAlist)
@@ -129,7 +129,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   $conformsAreDomains : local := htpProperty(htPage,'domname)
   opCount := opAlistCount(opAlist, which)
   branch :=
-    INTEGERP key =>
+    integer? key =>
       opCount <= $opDescriptionThreshold => 'documentation
       'names
     key = 'names and null rest opAlist =>      --means a single op
@@ -162,7 +162,7 @@ dbShowOp1(htPage,opAlist,which,key) ==
   htpSetProperty(page,'data,data)
   htpSetProperty(page,'branch,branch)
   -- the only place where specialMessage property is set seems to be commented. out
-  if u := htpProperty(page,'specialMessage) then APPLY(first u,rest u)
+  if u := htpProperty(page,'specialMessage) then apply(first u,rest u)
   htSayStandard('"\beginscroll ")
   FUNCALL(fn,page,opAlist,which,data) --apply branch function
   dbOpsExposureMessage()
@@ -218,7 +218,7 @@ conform2StringList(form,opFn,argFn,exception) ==
   exception := exception or '"%%%nothing%%%"
   [op1,:args] := form
   op := IFCAR HGET($lowerCaseConTb,op1) or op1
-  null args => APPLY(opFn,[op])
+  null args => apply(opFn,[op])
   special := op in '(Union Record Mapping)
   cosig :=
     special => ['T for x in args]
@@ -235,20 +235,20 @@ conform2StringList(form,opFn,argFn,exception) ==
     res :=
       x = exception => dbOpsForm exception
       pred =>
-        STRINGP x => [x]
-        u := APPLY(argFn,[x])
+        string? x => [x]
+        u := apply(argFn,[x])
         atom u and [u] or u
       typ := sublisFormal(args,atype)
       if x is ['QUOTE,a] then x := a
       u := mathform2HtString algCoerceInteractive(x,typ,'(OutputForm)) => [u]
-      NUMBERP x or STRINGP x => [x]
+      NUMBERP x or string? x => [x]
       systemError()
     keyword => [keyword,'": ",:res]
     res
   op = 'Mapping => dbMapping2StringList sargl
   head :=
     special => [op]
-    APPLY(opFn,[form])
+    apply(opFn,[form])
   [:head,'"(",:first sargl,:"append"/[[",",:y] for y in rest sargl],'")"]
 
 
@@ -277,7 +277,7 @@ dbOuttran form ==
       x is ['QUOTE,a] => a
       x
     res := mathform2HtString algCoerceInteractive(arg,typ,'(OutputForm))
-    NUMBERP res or STRINGP res => res
+    NUMBERP res or string? res => res
     ['QUOTE,res]
   [op,:argl]
 
@@ -305,7 +305,7 @@ dbConformGen1(form,opButton?) ==
     originalOp=op => form
     [op, :args]
   args => conform2StringList(form, opFunction,FUNCTION dbConformGen,nil)
-  APPLY(opFunction,[form])
+  apply(opFunction,[form])
 
 unAbbreviateIfNecessary op == IFCAR HGET($lowerCaseConTb, op) or op
 
@@ -342,7 +342,7 @@ dbGatherData(htPage,opAlist,which,key) ==
       while alist repeat
         item := first alist
         isExposed? :=
-          STRINGP item => dbExposed?(item,char 'o)   --unexpanded case
+          string? item => dbExposed?(item,char 'o)   --unexpanded case
           null (r := rest rest item) => true      --assume true if unexpanded
           r . 1                                   --expanded case
         if isExposed? then return (exposureFlag := true)
@@ -366,22 +366,22 @@ dbGatherData(htPage,opAlist,which,key) ==
         nil
       newEntry :=
         u := assoc(entry,data) =>           --key seen before? look on DATA
-          RPLACA(rest u,second u or exposeFlag)--yes, expose if any 1 is exposed
+          u.rest.first := second u or exposeFlag --yes, expose if any 1 is exposed
           u
         data := [y := [entry,exposeFlag,:tail],:data]
         y                                   --no, create new entry in DATA
       if member(key,'(origins conditions)) then
         r := CDDR newEntry
         if atom r then r := nil             --clear out possible 'ASCONST
-        RPLACD(rest newEntry,               --store op/sigs under key if needed
-          insert([dbMakeSignature(op,item),exposeFlag,:tail],r))
+        newEntry.rest.rest :=               --store op/sigs under key if needed
+          insert([dbMakeSignature(op,item),exposeFlag,:tail],r)
   if member(key,'(origins conditions)) then
     for entry in data repeat   --sort list of entries (after the 2nd)
       tail := CDDR entry
       tail :=
         atom tail => tail
         listSort(function LEXLESSEQP,tail)
-      RPLACD(rest entry,tail)
+      entry.rest.rest := tail
   data := listSort(function LEXLESSEQP,data)
   data
 
@@ -401,7 +401,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
 
   for (x := [.,.,:key]) in u for i in 0.. repeat
     key = domainForm => domexports := [x,:domexports]
-    INTEGERP key => unexports := [x,:unexports]
+    integer? key => unexports := [x,:unexports]
     isDefaultPackageForm? key => defexports := [x,:defexports]
     key = 'nowhere => nowheres := [x,:nowheres]
     key = 'constant =>constants := [x,:constants]
@@ -535,13 +535,14 @@ dbShowOpAllDomains(htPage,opAlist,which) ==
           | LASSQ(rest key,catOriginAlist)]
   for pair in u repeat
     [dom,:cat] := pair
-    LASSQ(cat,catOriginAlist) = 'etc => RPLACD(pair,'etc)
-    RPLACD(pair,simpOrDumb(constructorHasCategoryFromDB pair,true))
+    LASSQ(cat,catOriginAlist) = 'etc => pair.rest := 'etc
+    pair.rest := simpOrDumb(constructorHasCategoryFromDB pair,true)
   --now add all of the domains
   for [dom,:pred] in domOriginAlist repeat
     u := insertAlist(dom,simpOrDumb(pred,LASSQ(dom,u) or true),u)
   cAlist := listSort(function GLESSEQP,u)
-  for pair in cAlist repeat RPLACA(pair,getConstructorForm first pair)
+  for pair in cAlist repeat 
+    pair.first := getConstructorForm first pair
   htpSetProperty(htPage,'cAlist,cAlist)
   htpSetProperty(htPage,'thing,'"constructor")
   htpSetProperty(htPage,'specialHeading,'"hoho")
@@ -655,13 +656,13 @@ dbShowOpDocumentation(htPage,opAlist,which,data) ==
     for item in alist for j in 0.. repeat
       [sig,predicate,origin,exposeFlag,comments] := item
       exposeFlag or not $exposedOnlyIfTrue =>
-        if comments ~= '"" and STRINGP comments and (k := string2Integer comments) then
+        if comments ~= '"" and string? comments and (k := string2Integer comments) then
           comments :=
             MEMQ(k,'(0 1)) => '""
             dbReadComments k
           tail := CDDDDR item
-          RPLACA(tail,comments)
-        doc := (STRINGP comments and comments ~= '"" => comments; nil)
+          tail.first := comments
+        doc := (string? comments and comments ~= '"" => comments; nil)
         pred := predicate or true
         index := (exactlyOneOpSig => nil; base + j)
         if which = '"package operation" then
@@ -733,12 +734,12 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
   form1 := [domform,:rest domform]
   form2 := ['$,:rest conform]
   for pair in opAlist repeat
-    RPLACD(pair,[test for item in rest pair | test]) where test() ==
+    pair.rest := [test for item in rest pair | test] where test() ==
       [head,:tail] := item
       first tail = true => item
       pred := simpHasPred SUBLISLIS(form1,form2,QCAR tail)
       null pred => false
-      RPLACD(item,[pred])
+      item.rest := [pred]
       item
   opAlist
 
@@ -815,7 +816,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
         --NOTE: we must expand all lines here for a given op
         --      since below we will change opAlist
         --Case 1: Already expanded; just cons it onto ACC
-          null STRINGP line => --already expanded
+          null string? line => --already expanded
             if condition? then --this could have been expanded at a lower level
               if null atom (pred := second line) then value := pred
             acc := [line,:acc] --this one is already expanded; record it anyway
@@ -833,7 +834,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           exposeFlag := dbExposed?(line,char 'o)
           acc := [[sig,predicate,origin,exposeFlag,comments],:acc]
         --always store the fruits of our labor:
-        RPLACD(pair,nreverse acc)             --at least partially expand it
+        pair.rest := nreverse acc             --at least partially expand it
         condition? and value => return value  --early exit
       value => value
       condition? => nil
@@ -865,7 +866,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
           docCode := IFCDR u   --> (doc . code)
 --        if null FIXP rest docCode then harhar(op) -->
           if null doc and which = '"attribute" then doc := getRegistry(op,sig)
-          RPLACD(tail,[origin,isExposedConstructor opOf origin,:docCode])
+          tail.rest := [origin,isExposedConstructor opOf origin,:docCode]
         $value => return $value
       $value => $value
       condition? => nil
@@ -902,20 +903,20 @@ evalableConstructor2HtString domform ==
 mathform2HtString form == escapeString
   $fortInts2Floats: local := false
   form := niladicHack form
-  form is ['QUOTE,a] => STRCONC('"'","STRCONC"/fortexp0 a)
+  form is ['QUOTE,a] => strconc('"'",strconc/fortexp0 a)
   form is ['BRACKET,['AGGLST,:arg]] =>
     if arg is ['construct,:r] then arg := r
     arg :=
       atom arg => [arg]
       [y for x in arg | y := (x is ['QUOTE,a] => a; x)]
-    tailPart := "STRCONC"/[STRCONC('",",STRINGIMAGE x) for x in rest arg]
-    STRCONC('"[",STRINGIMAGE first arg,tailPart,'"]")
+    tailPart := strconc/[strconc('",",STRINGIMAGE x) for x in rest arg]
+    strconc('"[",STRINGIMAGE first arg,tailPart,'"]")
   form is ['BRACKET,['AGGLST,'QUOTE,arg]] =>
     if atom arg then arg := [arg]
-    tailPart := "STRCONC"/[STRCONC('",",x) for x in rest arg]
-    STRCONC('"[",first arg,tailPart,'"]")
+    tailPart := strconc/[strconc('",",x) for x in rest arg]
+    strconc('"[",first arg,tailPart,'"]")
   atom form => form
-  "STRCONC"/fortexp0 form
+  strconc/fortexp0 form
 
 niladicHack form ==
   atom form => form
@@ -934,7 +935,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
   conname := first domname
   abb := getConstructorAbbreviation conname
   opAlist := getOperationAlistFromLisplib conname
-  "append"/[REMDUP [[op1,:fn] for [sig,slot,pred,key,:.] in u
+  "append"/[removeDuplicates [[op1,:fn] for [sig,slot,pred,key,:.] in u
               | key ~= 'Subsumed and ((null ops and (op1 := op)) or (op1 := memq(op,ops)))]
                  for [op,:u] in opAlist] where
     memq(op,ops) ==   --dirty trick to get 0 and 1 instead of Zero and One

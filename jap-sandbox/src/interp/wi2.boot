@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -108,7 +108,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $uncondAlist: local := nil
 -->>-- next global initialized here, reset by buildFunctor
     $NRTslot1PredicateList: local :=
-      REMDUP [second x for x in attributeList]
+      removeDuplicates [second x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local := nil --set in NRTmakeSlot1Info
@@ -130,7 +130,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                where FindRep cb ==
                  u:=
                    while cb repeat
-                     ATOM cb => return nil
+                     atom cb => return nil
                      cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
                      cb:=rest cb
                  u
@@ -385,7 +385,7 @@ mkUnion(a,b) ==
   b is ["Union",:l] => 
     member(a, l) => b
     ["Union",:setUnion([a],l)]
-  STRINGP a => ["Union",b,a]
+  string? a => ["Union",b,a]
   ["Union",a,b]
 
 compForMode(x,m,e) ==
@@ -408,61 +408,6 @@ macroExpand(x,e) ==   --not worked out yet
       ['MI,a,macroExpand(b,e)]
   macroExpandList(x,e)
  
-getSuccessEnvironment(a,e) ==
-  -- the next four lines try to ensure that explicit special-case tests
-  --  prevent implicit ones from being generated
-  a is ["has",x,m] =>
-    x := unLet x   
-    IDENTP x and isDomainForm(m,$EmptyEnvironment) => put(x,"specialCase",m,e)
-    e
-  a is ["is",id,m] =>
-    id := unLet id
-    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
-         e:=put(id,"specialCase",m,e)
-         currentProplist:= getProplist(id,e)
-         [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
-         newProplist:= consProplistOf(id,currentProplist,"value",removeEnv T)
-         addBinding(id,newProplist,e)
-    e
-  a is ["case",x,m] and (x := unLet x) and IDENTP x =>
-    put(x,"condition",[a,:get(x,"condition",e)],e)
-  e
- 
-getInverseEnvironment(a,E) ==
-  atom a => E
-  [op,:argl]:= a
--- the next five lines try to ensure that explicit special-case tests
--- prevent implicit ones from being generated
-  op="has" =>
-    [x,m]:= argl
-    x := unLet x
-    IDENTP x and isDomainForm(m,$EmptyEnvironment) => put(x,"specialCase",m,E)
-    E
-  a is ["case",x,m] and (x := unLet x) and IDENTP x =>
-           --the next two lines are necessary to get 3-branched Unions to work
-           -- old-style unions, that is
-    if corrupted? get(x,"condition",E) then systemError 'condition
-    (get(x,"condition",E) is [["OR",:oldpred]]) and member(a,oldpred) =>
-      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),E)
-    getUnionMode(x,E) is ["Union",:l] or systemError 'Union
-    if corrupted? l then systemError 'list
-    l':= delete(m,l)
-    for u in l' repeat
-       if u is ['_:,=m,:.] then l':= delete(u,l')
-    newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
-    put(x,"condition",[newpred,:get(x,"condition",E)],E)
-  E
-
-unLet x ==
-  x is ["%LET",u,:.] => unLet u
-  x
-
-corrupted? u ==
-  u is [op,:r] =>
-    op in '(WI MI PART) => true
-    or/[corrupted? x for x in r]
-  false
-
 --======================================================================
 --                    From apply.boot
 --======================================================================
@@ -486,13 +431,13 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl'="failed" then return nil
   form:=
-    not MEMQ(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
+    not MEMQ(op,$formalArgList) and atom op and not get(op,'value,e) =>
       nprefix := $prefix or
    -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
       [op',:argl',"$"] where
-        op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
-    ['call,['applyFun,op],:argl']
+        op':= INTERN strconc(encodeItem nprefix,";",encodeItem op)
+    ["%Call",['applyFun,op],:argl']
   pairlis := pairList(argl',$FormalMapVariableList)
   convert([form,SUBLIS(pairlis,first ml),e],m)
  
@@ -583,7 +528,7 @@ compElt(origForm,m,E) ==
     [sig,[pred,val]]:= modemap
     #sig~=2 and val isnt ["CONST",:.] => nil
 --+
-    val := genDeltaEntry [opOf anOp,:modemap]
+    val := genDeltaEntry([opOf anOp,:modemap],E)
     x := markTran(origForm,[val],sig,[E])
     [x,second sig,E] --implies fn calls used to access constants
   compForm(origForm,m,E)
@@ -630,7 +575,7 @@ compApplyModemap(form,modemap,$e) ==
  
 --$NRTflag=true and f is [op1,d,.] and NE(d,'$) and member(op1,'(ELT CONST)) =>
   f is [op1,d,.] and op1 in '(ELT CONST Subsumed) =>
-    [genDeltaEntry [op,:modemap],lt',$bindings]
+    [genDeltaEntry([op,:modemap],$e),lt',$bindings]
   markImport mc
   [f,lt',$bindings]
  
@@ -667,7 +612,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
 --   then ndc := dcval.expr
 --   else ndc := dc
   sig := SUBST(ndc,dc,sig)
-  not MEMQ(KAR ndc,$optimizableConstructorNames) => nil
+  not optimizableDomain? ndc => nil
   dcval := optCallEval ndc
   -- MSUBST guarantees to use EQUAL testing
   sig := MSUBST(devaluate dcval, ndc, sig)
@@ -691,9 +636,9 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
      hehe fn
      [op]                    -----------> return just the op here
 --   ['XLAM,'ignore,MKQ SPADCALL fn]
-  GETL(compileTimeBindingOf first fn,'SPADreplace)
+  getFunctionReplacement compileTimeBindingOf first fn
  
-genDeltaEntry opMmPair ==
+genDeltaEntry(opMmPair,e) ==
 --called from compApplyModemap
 --$NRTdeltaLength=0.. always equals length of $NRTdeltaList
   [.,[odc,:.],.] := opMmPair
@@ -717,13 +662,13 @@ genDeltaEntry opMmPair ==
     [op,[dc,:[genDeltaSig x for x in sig]],['T,cform]] -- force pred to T
   if null NRTassocIndex dc and
     (member(dc,$functorLocalParameters) or null atom dc) then
-    --create "domain" entry to $NRTdeltaList
-      $NRTdeltaList:= [['domain,NRTaddInner dc,:dc],:$NRTdeltaList]
+    --create "%domain" entry to $NRTdeltaList
+      $NRTdeltaList:= [["%domain",NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:=
         dc
-      RPLACA(saveNRTdeltaListComp,compEntry)
+      saveNRTdeltaListComp.first := compEntry
       chk(saveNRTdeltaListComp,102)
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
@@ -782,7 +727,7 @@ mkUserConstructorAbbreviation(c,a,type) ==
 compreduce(form is [.,op,x],m,e) ==
   T := compForm(form,m,e) or return nil
   y := T.expr
-  RPLACA(y,"REDUCE")
+  y.first := "REDUCE"
   ------------------<== distinquish this as the special reduce form
   (y is ["REDUCE",:.]) and (id:= getIdentity(op,e)) and (u := comp0(id,m,e)) and
     # getNumberTypesInScope() > 1 => markSimpleReduce([:y, ["@",u.expr,m]], T)
@@ -982,7 +927,7 @@ chaseInferences(origPred,$e) ==
             ante is ["and",:ante'] and member(pred,ante') =>
               ante':= delete(pred,ante')
               v':=
-                LENGTH ante'=1 => first ante'
+                # ante'=1 => first ante'
                 ["and",:ante']
               v':= ["COND",[v',:conseq]]
               member(v',get("$Information","special",$e)) => nil
@@ -1044,8 +989,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
             -- of functorLocalParameters that were added during the
             -- conditional compilation
             nils:=ans:=[]
-            for u in flp1 repeat -- is =u form always an ATOM?
-              if ATOM u or (or/[v is [.,=u,:.] for v in $getDomainCode])
+            for u in flp1 repeat -- is =u form always an atom?
+              if atom u or (or/[v is [.,=u,:.] for v in $getDomainCode])
                 then
                   nils:=[u,:nils]
                 else
@@ -1066,8 +1011,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
 
 doItSeq item == 
   ['SEQ,:l,['exit,1,x]] := item
-  RPLACA(item,"PROGN")
-  RPLACA(LASTNODE item,x)
+  item.first := "PROGN"
+  lastNode(item).first := x
   for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
 
 doItDomain item ==
@@ -1076,8 +1021,8 @@ doItDomain item ==
   markImport second u
   stackWarning ["Use: import ", [first item,:rest item]]
 --wiReplaceNode(item, u, 14)
-  RPLACA(item, first u)
-  RPLACD(item, rest u)
+  item.first := first u
+  item.rest := rest u
   doIt(item,$predl)
 
 doItLet item ==
@@ -1132,9 +1077,9 @@ doItDef item ==
   body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
   [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
   chk(item,3)
-  RPLACA(item,"CodeDefine")
+  item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
-  RPLACD(second item,[$signatureOfForm])
+  second(item).rest := [$signatureOfForm]
   chk(item,4)
       --This is how the signature is updated for buildFunctor to recognise
 --+
@@ -1151,13 +1096,13 @@ doItExpression(item,T) ==
   wiReplaceNode(item,code, 22)
 
 wiReplaceNode(node,ocode,key) ==
-  ncode := CONS(first ocode, rest ocode)
+  ncode := [first ocode,:rest ocode]
   code := replaceNodeInStructureBy(node,ncode)
   SETQ($NODE,COPY node)
   SETQ($NODE1, COPY first code)
   SETQ($NODE2, COPY rest  code)
-  RPLACA(node,first code)
-  RPLACD(node,rest  code)
+  node.first := first code
+  node.rest := rest  code
   chk(code, key)
   chk(node, key + 1)
 
@@ -1168,7 +1113,7 @@ replaceNodeInStructureBy(node, x) ==
 
 replaceNodeBy(node, x) ==
   atom x => nil
-  for y in tails x | EQCAR(x,node) repeat RPLAC(first x, $nodeCopy)
+  for y in tails x | EQCAR(x,node) repeat x.first := $nodeCopy
   nil  
 
 chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==

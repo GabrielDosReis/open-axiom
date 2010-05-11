@@ -59,7 +59,7 @@ OutputPackage: with
 
         output e ==
             mathprint(e)$Lisp
-            void()
+
         output s ==
             output(s:E)
         output(s,e) ==
@@ -125,32 +125,25 @@ SpecialOutputPackage: public == private where
 
     outputAsFortran e ==
       dispfortexp$Lisp e
-      void()$Void
 
     outputAsFortran(var,e) ==
       e := var::Symbol::OutputForm  = e
       dispfortexp(e)$Lisp
-      void()$Void
 
     outputAsFortran l ==
       dispfortexp$Lisp juxtaposeTerms l
-      void()$Void
 
     outputAsScript e ==
       formulaFormat$Lisp e
-      void()$Void
 
     outputAsScript l ==
       formulaFormat$Lisp juxtaposeTerms l
-      void()$Void
 
     outputAsTex e ==
       texFormat$Lisp e
-      void()$Void
 
     outputAsTex l ==
       texFormat$Lisp juxtaposeTerms l
-      void()$Void
 
 @
 \section{package DISPLAY DisplayPackage}
@@ -253,11 +246,9 @@ DisplayPackage: public == private where
 
     say s ==
       sayBrightly$Lisp s
-      void()$Void
 
     say l ==
       sayBrightly$Lisp l
-      void()$Void
 
     sayLength s == #s
 

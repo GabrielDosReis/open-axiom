@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -63,9 +63,8 @@ addDomain(domain,e) ==
   -- ??? we should probably augment $DummyFunctorNames with CATEGORY
   -- ??? so that we don't have to do this special check here.  Investigate.
   isQuasiquote domain => e 
-  if not isCategoryForm(domain,e) and
-    not member(name,'(Mapping CATEGORY)) then
-      unknownTypeError name
+  if not isCategoryForm(domain,e) and name ~= "Mapping" then
+    unknownTypeError name
   e        --is not a functor
  
 domainMember(dom,domList) == or/[modeEqual(dom,d) for d in domList]
@@ -143,7 +142,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
    --hack to change selectors from strings to identifiers; and to
    --add flag identifiers as literals in the envir
   op='elt and sig is [:lt,sel] =>
-    STRINGP sel =>
+    string? sel =>
       id:= INTERN sel
       if $insideCapsuleFunctionIfTrue=true
          then $e:= makeLiteral(id,$e)
@@ -152,7 +151,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
     -- atom sel => systemErrorHere '"addEltModemap"
     addModemap1(op,mc,sig,pred,fn,e)
   op='setelt and sig is [:lt,sel,v] =>
-    STRINGP sel =>
+    string? sel =>
       id:= INTERN sel
       if $insideCapsuleFunctionIfTrue=true
          then $e:= makeLiteral(id,$e)
@@ -212,8 +211,8 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
 --mergeModemap(entry:=((mc,:sig),:.),modemapList,e) ==
 --    for (mmtail:= (((mc',:sig'),:.),:.)) in tails modemapList do
 --       mc=mc' or isSubset(mc,mc',e)  =>
---         RPLACD(mmtail,(first mmtail,: rest mmtail))
---         RPLACA(mmtail,entry)
+--         mmtail.rest := (first mmtail,: rest mmtail)
+--         mmtail.first := entry
 --         entry := nil
 --         return modemapList
 --     if entry then (:modemapList,entry) else modemapList
@@ -264,7 +263,6 @@ augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   catform:= (isCategory categoryForm => categoryForm.(0); categoryForm)
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
-  $base:= 4
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
     u:=assoc(substitute("Rep",domainName,lhs),repFnAlist)
     u and not AMFCR_,redefinedList(op,functorBody) =>
@@ -288,7 +286,6 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   --if not $InteractiveMode then
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
-  $base:= 4
   condlist:=[]
   for [[op,sig,:.],cond,fnsel] in fnAlist repeat
 --  e:= addModemap(op,domainName,sig,cond,fnsel,e)

@@ -4,16 +4,13 @@
 (DEFPARAMETER |OrderedIntegralDomain;AL| 'NIL) 
 
 (DEFUN |OrderedIntegralDomain;| ()
-  (PROG (#0=#:G1396)
-    (RETURN
-      (PROG1 (LETT #0# (|Join| (|IntegralDomain|) (|OrderedRing|))
-                   |OrderedIntegralDomain|)
-        (|setShellEntry| #0# 0 '(|OrderedIntegralDomain|)))))) 
+  (LET ((#0=#:G1396 (|Join| (|IntegralDomain|) (|OrderedRing|))))
+    (|setShellEntry| #0# 0 '(|OrderedIntegralDomain|))
+    #0#)) 
 
 (DEFUN |OrderedIntegralDomain| ()
-  (LET ()
-    (COND
-      (|OrderedIntegralDomain;AL|)
-      (T (SETQ |OrderedIntegralDomain;AL| (|OrderedIntegralDomain;|)))))) 
+  (COND
+    (|OrderedIntegralDomain;AL|)
+    (T (SETQ |OrderedIntegralDomain;AL| (|OrderedIntegralDomain;|))))) 
 
 (MAKEPROP '|OrderedIntegralDomain| 'NILADIC T) 

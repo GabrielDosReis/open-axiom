@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,9 @@
 import c_-util
 namespace BOOT
 
+module nrunfast where
+  getOpCode: (%Symbol, %Vector %Thing, %Short) -> %Maybe %Short
+
 ++
 $doNotCompressHashTableIfTrue := false
 
@@ -58,7 +61,7 @@ initNewWorld() ==
   $doNotCompressHashTableIfTrue := true
  
 isNewWorldDomain domain == 
-  INTEGERP domain.3    --see HasCategory/Attribute
+  integer? domain.3    --see HasCategory/Attribute
  
 getDomainByteVector dom == 
   CDDR dom.4
@@ -108,10 +111,10 @@ evalSlotDomain(u,dollar) ==
      apply('Record,[[":",tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
   u is ['Union,:argl] and first argl is ['_:,.,.] =>
-     APPLY('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
+     apply('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
   u is ["Enumeration",:.] => eval u
-  u is [op,:argl] => APPLY(op,[evalSlotDomain(x,dollar) for x in argl])
+  u is [op,:argl] => apply(op,[evalSlotDomain(x,dollar) for x in argl])
   systemErrorHere '"evalSlotDomain"
 
 --=======================================================
@@ -120,7 +123,7 @@ evalSlotDomain(u,dollar) ==
 newGoGet(:l) ==
   [:arglist,env] := l
   slot := replaceGoGetSlot env
-  APPLY(first slot,[:arglist,rest slot])  --SPADCALL it!
+  apply(first slot,[:arglist,rest slot])  --SPADCALL it!
  
 replaceGoGetSlot env ==
   [thisDomain,index,:op] := env
@@ -131,7 +134,7 @@ replaceGoGetSlot env ==
   goGetDomain :=
      goGetDomainSlotIndex = 0 => thisDomain
      thisDomain.goGetDomainSlotIndex
-  if CONSP goGetDomain then
+  if cons? goGetDomain then
      goGetDomain := lazyDomainSet(goGetDomain,thisDomain,goGetDomainSlotIndex)
   sig :=
     [newExpandTypeSlot(bytevec.(index := QSADD1 index),thisDomain,thisDomain)
@@ -182,7 +185,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
+  start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
     maxIndex
@@ -228,7 +231,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   NE(success,'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
-        CONSP success => [first success,:devaluate rest success]
+        cons? success => [first success,:devaluate rest success]
         success
     success
   subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
@@ -258,7 +261,7 @@ newLookupInAddChain(op,sig,addFormDomain,dollar) ==
 --=======================================================
 newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
-    INTEGERP KAR addFormCell =>
+    integer? KAR addFormCell =>
       or/[newLookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
     if null VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
     lookupInDomainVector(op,sig,addFormDomain.index,dollar)
@@ -271,7 +274,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := second slot4
   SIZE catVec = 0 => nil                      --early exit if no categories
-  INTEGERP KDR catVec.0 =>
+  integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
@@ -361,8 +364,8 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
-  for i in 0..MAXINDEX packageVec | (entry := ELT(packageVec,i))
-      and (VECP entry or (predIndex := rest (node := ELT(catVec,i))) and
+  for i in 0..MAXINDEX packageVec | (entry := packageVec.i)
+      and (VECP entry or (predIndex := rest (node := catVec.i)) and
           (EQ(predIndex,0) or testBitVector(predvec,predIndex))) repeat
     package :=
       VECP entry =>
@@ -436,7 +439,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   if s = '$ then
     --  a = 0 => return true  --needed only if extra call in newGoGet to basicLookup
     s := devaluate dollar -- calls from HasCategory can have $s
-  INTEGERP a =>
+  integer? a =>
     not typeFlag => s = domain.a
     a = 6 and $isDefaultingPackage => s = devaluate dollar
     VECP (d := domainVal(dollar,domain,a)) =>
@@ -448,8 +451,8 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a = '$ => s = devaluate dollar
   a = "$$" => s = devaluate domain
-  STRINGP a =>
-    STRINGP s => a = s
+  string? a =>
+    string? s => a = s
     s is ['QUOTE,y] and PNAME y = a
     IDENTP s and PNAME s = a
   atom a =>  a = s
@@ -472,10 +475,10 @@ lazyMatch(source,lazyt,dollar,domain) ==
       null coSig => error ["bad Constructor op", op]
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
            for s in sargl for a in argl for flag in rest coSig]
-  STRINGP source and lazyt is ['QUOTE,=source] => true
+  string? source and lazyt is ['QUOTE,=source] => true
   NUMBERP source =>
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
-      lazyt is ['call,'LENGTH, slotNum] => source = #(domain.slotNum)
+      lazyt is ["%Call",'LENGTH, slotNum] => source = #(domain.slotNum)
       nil
 
   -- A hideous hack on the same lines as the previous four lines JHD/MCD
@@ -494,7 +497,7 @@ lazyMatchArgDollarCheck(s,d,dollarName,domainName) ==
     x is ['elt,someDomain,opname] => lookupInDomainByName(opname,evalDomain someDomain,arg)
     x = '$ and (arg = dollarName or arg = domainName) => true
     x = dollarName and arg = domainName => true
-    ATOM x or ATOM arg => false
+    atom x or atom arg => false
     xt and first x = first arg =>
       lazyMatchArgDollarCheck(x,arg,dollarName,domainName)
     false
@@ -507,7 +510,7 @@ lookupInDomainByName(op,domain,arg) ==
   max := MAXINDEX opvec
   k := getOpCode(op,opvec,max) or return nil
   maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
+  start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
     maxIndex
@@ -538,7 +541,7 @@ newExpandTypeSlot(slot, dollar, domain) ==
  
 newExpandLocalType(lazyt,dollar,domain) ==
   VECP lazyt => lazyt.0
-  ATOM lazyt => lazyt
+  atom lazyt => lazyt
   lazyt is [vec,.,:lazyForm] and VECP vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
@@ -557,7 +560,7 @@ newExpandLocalTypeForm([functorName,:argl],dollar,domain) ==
  
 newExpandLocalTypeArgs(u,dollar,domain,typeFlag) ==
   u = '$ => u
-  INTEGERP u =>
+  integer? u =>
      typeFlag => newExpandTypeSlot(u, dollar,domain)
      domain.u
   u is ['NRTEVAL,y] => nrtEval(y,domain)
@@ -607,7 +610,7 @@ resolveNiladicConstructors form ==
   atom form => form
   form is ["QUOTE",:.] => form
   for args in tails rest form repeat
-    rplac(first args, resolveNiladicConstructors first args)
+    args.first := resolveNiladicConstructors first args
   form
 
 --=======================================================
@@ -644,7 +647,7 @@ newHasTest(domform,catOrAtt) ==
       for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
            evalCond x ==
-             ATOM x => x
+             atom x => x
              [pred,:l] := x
              pred = "has" => 
                   l is [ w1,['ATTRIBUTE,w2]] => newHasTest(w1,w2) 
@@ -660,7 +663,7 @@ newHasTest(domform,catOrAtt) ==
     sig := 
       type is ["Mapping",:sig'] =>
          for ts in tails sig' repeat
-           rplac(first ts, resolveNiladicConstructors first ts)
+           ts.first := resolveNiladicConstructors first ts
          sig'
       -- a constant; make it look like op: () -> type
       [resolveNiladicConstructors type]
@@ -670,7 +673,7 @@ newHasTest(domform,catOrAtt) ==
 lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
   n := MAXINDEX catvec
   xop := first x
-  or/[ELT(auxvec,i) for i in 0..n |
+  or/[auxvec.i for i in 0..n |
     xop = first (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4

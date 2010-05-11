@@ -87,7 +87,7 @@ compClam(op,argl,body,$clamList) ==
   countFl := 'count in options
   if #argl > 1 and eqEtc= 'EQ then
     keyedSystemError("S2GE0007",[op])
-  (not IDENTP kind) and (not INTEGERP kind or kind < 1) =>
+  (not IDENTP kind) and (not integer? kind or kind < 1) =>
     keyedSystemError("S2GE0005",[op])
   IDENTP kind =>
     shiftFl => keyedSystemError("S2GE0008",[op])
@@ -314,21 +314,21 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   op
  
 consForHashLookup(a,b) ==
-  RPLACA($hashNode,a)
-  RPLACD($hashNode,b)
+  $hashNode.first := a
+  $hashNode.rest := b
   $hashNode
  
 CDRwithIncrement x ==
-  RPLACA(x,QSADD1 first x)
+  x.first := QSADD1 first x
   rest x
  
 HGETandCount(hashTable,prop) ==
   u:= HGET(hashTable,prop) or return nil
-  RPLACA(u,QSADD1 first u)
+  u.first := QSADD1 first u
   u
  
 clearClams() ==
-  for [fn,kind,:.] in $clamList | kind = 'hash or INTEGERP kind repeat
+  for [fn,kind,:.] in $clamList | kind = 'hash or integer? kind repeat
     clearClam fn
  
 clearClam fn ==
@@ -355,13 +355,13 @@ clearConstructorAndLisplibCaches() ==
 clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
-      if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";AL"))
+      if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";AL"))
             then setDynamicBinding(cacheName,nil)
-    if BOUNDP(cacheName:= INTERNL STRCONC(PNAME name,'";CAT"))
+    if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
           then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==
-  cacheName:= INTERNL STRCONC(PNAME catName,'";AL")
+  cacheName:= INTERNL strconc(PNAME catName,'";AL")
   setDynamicBinding(cacheName,nil)
  
 displayHashtable x ==
@@ -374,7 +374,7 @@ cacheStats() ==
   for [fn,kind,:u] in $clamList repeat
     not ('count in u) =>
       sayBrightly ["%b",fn,"%d","does not keep reference counts"]
-    INTEGERP kind => reportCircularCacheStats(fn,kind)
+    integer? kind => reportCircularCacheStats(fn,kind)
     kind = 'hash => reportHashCacheStats fn
     sayBrightly ["Unknown cache type for","%b",fn,"%d"]
  
@@ -395,8 +395,8 @@ displayCacheFrequency al ==
  
 mkCircularCountAlist(cl,len) ==
   for [x,count,:.] in cl for i in 1..len while x ~= '_$failed repeat
-    u:= assoc(count,al) => RPLACD(u,1 + rest u)
-    if INTEGERP $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
+    u:= assoc(count,al) => u.rest := 1 + rest u
+    if integer? $reportFavoritesIfNumber and count >= $reportFavoritesIfNumber then
       sayBrightlyNT ["   ",count,"  "]
       pp x
     al:= [[count,:1],:al]
@@ -412,7 +412,7 @@ reportHashCacheStats fn ==
  
 mkHashCountAlist vl ==
   for [count,:.] in vl repeat
-    u:= assoc(count,al) => RPLACD(u,1 + rest u)
+    u:= assoc(count,al) => u.rest := 1 + rest u
     al:= [[count,:1],:al]
   al
  
@@ -431,7 +431,7 @@ remHashEntriesWith0Count $hashTable ==
 initCache n ==
   tail:= '(0 . $failed)
   l:= [[$failed,:tail] for i in 1..n]
-  RPLACD(LASTNODE l,l)
+  lastNode(l).rest := l
  
 assocCache(x,cacheName,fn) ==
   --fn=equality function; do not SHIFT or COUNT
@@ -454,8 +454,8 @@ assocCacheShift(x,cacheName,fn) ==  --like ASSOC except that al is circular
   until EQ(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       if not EQ(forwardPointer,al) then   --shift referenced entry to front
-        RPLACA(forwardPointer,first al)
-        RPLACA(al,y)
+        forwardPointer.first := first al
+        al.first := y
       return (val:= y)
     backPointer := forwardPointer      --first is slot replaced on failure
     forwardPointer:= rest forwardPointer
@@ -474,7 +474,7 @@ assocCacheShiftCount(x,al,fn) ==
   until EQ(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       newFrontPointer := forwardPointer
-      RPLAC(second y,QSADD1 second y)         --increment use count
+      y.rest.first := QSADD1 second y         --increment use count
       return (val:= y)
     if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
       minCount := c
@@ -482,8 +482,8 @@ assocCacheShiftCount(x,al,fn) ==
     forwardPointer:= rest forwardPointer
   if not EQ(newFrontPointer,al) then       --shift referenced entry to front
     temp:= first newFrontPointer           --or entry with smallest count
-    RPLACA(newFrontPointer,first al)
-    RPLACA(al,temp)
+    newFrontPointer.first := first al
+    al.first := temp
   val
  
 clamStats() ==
@@ -530,8 +530,8 @@ haddProp(ht,op,prop,val) ==
     stopTimingProcess 'debug
   u:= HGET(ht,op) =>     --hope that one exists most of the time
     assoc(prop,u) => val     --value is already there--must = val; exit now
-    RPLACD(u,[first u,:rest u])
-    RPLACA(u,[prop,:val])
+    u.rest := [first u,:rest u]
+    u.first := [prop,:val]
     $op: local := op
     listTruncate(u,20)        --save at most 20 instantiations
     val
@@ -559,13 +559,13 @@ recordInstantiation1(op,prop,dropIfTrue) ==
   null $reportInstantiations => nil
   u:= HGET($instantRecord,op) =>     --hope that one exists most of the time
     v := LASSOC(prop,u) =>
-      dropIfTrue => RPLAC(rest v,1+rest v)
-      RPLAC(first v,1+first v)
-    RPLACD(u,[first u,:rest u])
+      dropIfTrue => v.rest := 1+rest v
+      v.first := 1+first v
+    u.rest := [first u,:rest u]
     val :=
       dropIfTrue => [0,:1]
       [1,:0]
-    RPLACA(u,[prop,:val])
+    u.first := [prop,:val]
   val :=
     dropIfTrue => [0,:1]
     [1,:0]
@@ -617,7 +617,7 @@ listTruncate(l,n) ==
   if null atom u then
     if null atom rest u and $reportInstantiations = true then
       recordInstantiation($op,CAADR u,true)
-    RPLACD(u,nil)
+    u.rest := nil
   l
  
 lassocShift(x,l) ==
@@ -627,8 +627,8 @@ lassocShift(x,l) ==
     y:= QCDR y
   result =>
     if not EQ(y,l) then
-      QRPLACA(y,first l)
-      QRPLACA(l,result)
+      y.first := first l
+      l.first := result
     QCDR result
   nil
  
@@ -639,8 +639,8 @@ lassocShiftWithFunction(x,l,fn) ==
     y:= QCDR y
   result =>
     if not EQ(y,l) then
-      QRPLACA(y,first l)
-      QRPLACA(l,result)
+      y.first := first l
+      l.first := result
     QCDR result
   nil
  
@@ -651,8 +651,8 @@ lassocShiftQ(x,l) ==
     y:= rest y
   result =>
     if not EQ(y,l) then
-      RPLACA(y,first l)
-      RPLACA(l,result)
+      y.first := first l
+      l.first := result
     rest result
   nil
  
@@ -663,8 +663,8 @@ lassocShiftQ(x,l) ==
 --     y:= rest y
 --   result =>
 --     if not EQ(y,l) then
---       RPLACA(y,first l)
---       RPLACA(l,result)
+--       y.first := first l
+--       l.first := result
 --     first result
 --   nil
  
@@ -674,7 +674,7 @@ globalHashtableStats(x,sortFn) ==
   for key in keys repeat
     u:= HGET(x,key)
     for [argList,n,:.] in u repeat
-      not INTEGERP n =>   keyedSystemError("S2GE0013",[x])
+      not integer? n =>   keyedSystemError("S2GE0013",[x])
       argList1:= [constructor2ConstructorForm x for x in argList]
       reportList:= [[n,key,argList1],:reportList]
   sayBrightly ["%b","  USE  NAME ARGS","%d"]
@@ -707,4 +707,4 @@ domainEqualList(argl1,argl2) ==
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
     sayBrightly ['"Un-clamming function",'%b,fun,'%d]
-    setDynamicBinding(fun,eval INTERN STRCONC(STRINGIMAGE fun,'";"))
+    setDynamicBinding(fun,eval INTERN strconc(STRINGIMAGE fun,'";"))

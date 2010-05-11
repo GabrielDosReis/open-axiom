@@ -447,7 +447,7 @@ TranscendentalIntegration(F, UP): Exports == Implementation where
            differentiate(mkAnswer(0, logs, empty()),
                          differentiate(#1, derivation))
       (u := retractIfCan(p := r.logpart - dlog)@Union(UP, "failed")) case UP =>
-        [mkAnswer(r.answer, logs, empty), r.specpart, r.polypart + u::UP]
+        [mkAnswer(r.answer, logs, empty()), r.specpart, r.polypart + u::UP]
       [mkAnswer(r.answer, logs, [[p, dummy]]), r.specpart, r.polypart]
 
 -- returns [q, r] such that p = q' + r and degree(r) < degree(dt)
@@ -857,6 +857,8 @@ RationalFunctionIntegration(F): Exports == Implementation where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,10 @@ module c_-util where
   foldExportedFunctionReferences: %List -> %List
   diagnoseUnknownType: (%Mode,%Env) -> %Form
   declareUnusedParameters: (%List,%Code) -> %List
+  registerFunctionReplacement: (%Symbol,%Form) -> %Thing
+  getFunctionReplacement: %Symbol -> %Form
+  getSuccessEnvironment: (%Form,%Env) -> %Env
+  getInverseEnvironment: (%Form,%Env) -> %Env
 
 
 --% 
@@ -85,6 +89,11 @@ $optReplaceSimpleFunctions := false
 $optExportedFunctionReference := false
 
 --%
+
+++ Quote form, if not a basic value.
+quoteMinimally form ==
+  FIXP form or string? form or form = nil or form = true => form
+  ["QUOTE",form]
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
 ++ Otherwise, return `m'.
@@ -165,10 +174,10 @@ devaluateDeeply x ==
 --CONTINUE() == continue()
 continue() == FIN comp($x,$m,$f)
  
-LEVEL(:l) == APPLY('level,l)
+LEVEL(:l) == apply('level,l)
 level(:l) ==
   null l => same()
-  l is [n] and INTEGERP n => displayComp ($level:= n)
+  l is [n] and integer? n => displayComp ($level:= n)
   SAY '"Correct format: (level n) where n is the level you want to go to"
  
 UP() == up()
@@ -181,7 +190,7 @@ DOWN() == down()
 down() == displayComp ($level:= $level+1)
  
 displaySemanticErrors() ==
-  n:= #($semanticErrorStack:= REMDUP $semanticErrorStack)
+  n:= #($semanticErrorStack:= removeDuplicates $semanticErrorStack)
   n=0 => nil
   l:= nreverse $semanticErrorStack
   $semanticErrorStack:= nil
@@ -195,7 +204,7 @@ displaySemanticError(l,stream) ==
     sayBrightly(['"      [",i,'"] ",:first x],stream)
  
 displayWarnings() ==
-  n:= #($warningStack:= REMDUP $warningStack)
+  n:= #($warningStack:= removeDuplicates $warningStack)
   n=0 => nil
   sayBrightly bright '"  Warnings:"
   l := nreverse $warningStack
@@ -231,7 +240,7 @@ mkErrorExpr level ==
           highlight(b,a) ==
             atom b =>
               substitute(var,b,a) where
-                var:= INTERN STRCONC(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
+                var:= INTERN strconc(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
             highlight1(b,a) where
               highlight1(b,a) ==
                 atom a => a
@@ -258,7 +267,7 @@ unErrorRef s ==
 consProplistOf(var,proplist,prop,val) ==
   semchkProplist(var,proplist,prop,val)
   $InteractiveMode and (u:= assoc(prop,proplist)) =>
-    RPLACD(u,val)
+    u.rest := val
     proplist
   [[prop,:val],:proplist]
  
@@ -287,8 +296,8 @@ intersectionContour(c,c') ==
   $var: local
   computeIntersection(c,c') where
     computeIntersection(c,c') ==
-      varlist:= REMDUP ASSOCLEFT c
-      varlist':= REMDUP ASSOCLEFT c'
+      varlist:= removeDuplicates ASSOCLEFT c
+      varlist':= removeDuplicates ASSOCLEFT c'
       interVars:= intersection(varlist,varlist')
       unionVars:= union(varlist,varlist')
       diffVars:= setDifference(unionVars,interVars)
@@ -316,13 +325,13 @@ intersectionContour(c,c') ==
     modeCompare(p,p') ==
       pair:= assoc("mode",p) =>
         pair':= assoc("mode",p') =>
-          m'':= unifiable(rest pair,rest pair') => LIST ["mode",:m'']
+          m'':= unifiable(rest pair,rest pair') => [["mode",:m'']]
           stackSemanticError(['%b,$var,'%d,"has two modes: "],nil)
        --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
-        LIST ["conditionalmode",:rest pair]
+        [["conditionalmode",:rest pair]]
         --LIST pair
        --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
-      pair':= assoc("mode",p') => LIST ["conditionalmode",:rest pair']
+      pair':= assoc("mode",p') => [["conditionalmode",:rest pair']]
         --LIST pair'
     unifiable(m1,m2) ==
       m1=m2 => m1
@@ -351,13 +360,13 @@ addContour(c,E is [cur,:tail]) ==
                    if member(x,$getPutTrace) then
                      pp([x,"has",pv])
                    if p="conditionalmode" then
-                     RPLACA(pv,"mode")
+                     pv.first := "mode"
                      --check for conflicts with earlier mode
                      if vv:=LASSOC("mode",e) then
                         if v ~=vv then
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
-        LIST c
+        [c]
  
 makeCommonEnvironment(e,e') ==
   interE makeSameLength(e,e') where  --$ie:=
@@ -377,7 +386,47 @@ makeCommonEnvironment(e,e') ==
           nx>ny => fn(rest x,y,nx-1,ny)
           nx<ny => fn(x,rest y,nx,ny-1)
           [x,y]
- 
+
+++ Return the lexically leftmost location in an assignment for.
+lhsOfAssignment x ==
+  x is ["%LET",lhs,:.] => lhsOfAssignment lhs
+  x
+
+getSuccessEnvironment(a,e) ==
+  a is ["is",id,m] =>
+    id := lhsOfAssignment id
+    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
+      e:=put(id,"specialCase",m,e)
+      currentProplist:= getProplist(id,e)
+      [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
+      newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
+      addBinding(id,newProplist,e)
+    e
+  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+    put(x,"condition",[a,:get(x,"condition",e)],e)
+  a is ["and",:args] =>
+    for form in args repeat
+      e := getSuccessEnvironment(form,e)
+    e
+  a is ["not",a'] => getInverseEnvironment(a',e)
+  e
+
+getInverseEnvironment(a,e) ==
+  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+    --the next two lines are necessary to get 3-branched Unions to work
+    -- old-style unions, that is
+    (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
+      put(x,"condition",[MKPF(delete(a,oldpred),"OR")],e)
+    getUnionMode(x,e) is ["Union",:l] =>
+      l':= delete(m,l)
+      for u in l' repeat
+	 if u is ['_:,=m,:.] then l':= delete(u,l')
+      newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
+      put(x,"condition",[newpred,:get(x,"condition",e)],e)
+    e
+  a is ["not",a'] => getSuccessEnvironment(a',e)
+  e
+
 printEnv E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
@@ -458,7 +507,7 @@ diagnoseUnknownType(t,e) ==
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
     (m := getmode(t,e)) and isKnownCategory(m,$CategoryFrame) => t
-    STRINGP t => t
+    string? t => t
     -- ??? We should not to check for $$ at this stage.  
     -- ??? This is a bug in the compiler that needs to be fixed.
     t = "$$" => t
@@ -554,6 +603,9 @@ isSubset(x,y,e) ==
   -- When using the old style definition, the current domain
   -- is considered a subset of its representation domain
   x = "$" and y = "Rep" => $useRepresentationHack
+  -- Expand domain representation form
+  x = "Rep" and not $useRepresentationHack =>
+    isSubset(getRepresentation e,y,e)
   -- Or, if x has the Subsets property set by SubsetCategory.
   pred := LASSOC(opOf x,get(opOf y,"Subsets",e)) => pred
   -- Or, they are related by subdomain chain.
@@ -571,8 +623,6 @@ isDomainInScope(domain,e) ==
 --   false
   isFunctor name => false
   true --is not a functor
- 
-isSymbol x == IDENTP x or x=nil
  
 isSimple x ==
   atom x or $InteractiveMode => true
@@ -594,7 +644,7 @@ isAlmostSimple x ==
         op="has" => x
         op="is" => x
         op="%LET" =>
-          IDENTP y => (setAssignment LIST x; y)
+          IDENTP y => (setAssignment [x]; y)
           (setAssignment [["%LET",g:= genVariable(),:l],["%LET",y,g]]; g)
         op = "case" and IDENTP y => x
         isSideEffectFree op => [op,:mapInto(rest x, function fn)]
@@ -621,7 +671,7 @@ adjExitLevel(x,seqnum,inc) ==
   x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
-    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(second x,n+inc))
+    (adjExitLevel(u,seqnum,inc); seqnum>n => x; x.rest.first := n+inc)
   x is [op,:l] => for u in l repeat adjExitLevel(u,seqnum,inc)
  
 wrapSEQExit l ==
@@ -654,17 +704,17 @@ flatten(l,key) ==
  
 genDomainVar() ==
   $Index:= $Index+1
-  INTERNL STRCONC("#D",STRINGIMAGE $Index)
+  INTERNL strconc("#D",STRINGIMAGE $Index)
  
 genVariable() ==
-  INTERNL STRCONC("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 genSomeVariable() ==
-  INTERNL STRCONC("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 listOfIdentifiersIn x ==
   IDENTP x => [x]
-  x is [op,:l] => REMDUP ("append"/[listOfIdentifiersIn y for y in l])
+  x is [op,:l] => removeDuplicates ("append"/[listOfIdentifiersIn y for y in l])
   nil
  
 mapInto(x,fn) == [FUNCALL(fn,y) for y in x]
@@ -687,7 +737,7 @@ printDashedLine() ==
 stackSemanticError(msg,expr) ==
   BUMPERRORCOUNT "semantic"
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
-  if atom msg then msg:= LIST msg
+  if atom msg then msg:= [msg]
   entry:= [msg,expr]
   if not member(entry,$semanticErrorStack) then $semanticErrorStack:=
     [entry,:$semanticErrorStack]
@@ -725,7 +775,7 @@ stackAndThrow(msg, args == nil) ==
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   THROW("compOrCroak",nil)
  
-printString x == PRINTEXP (STRINGP x => x; PNAME x)
+printString x == PRINTEXP (string? x => x; PNAME x)
  
 printAny x == if atom x then printString x else PRIN1 x
  
@@ -812,7 +862,7 @@ getmodeOrMapping(x,e) ==
  
 outerProduct l ==
                 --of a list of lists
-  null l => LIST nil
+  null l => [nil]
   "append"/[[[x,:y] for y in outerProduct rest l] for x in first l]
  
 sublisR(al,u) ==
@@ -832,7 +882,7 @@ substituteOp(op',op,x) ==
 sublisV(p,e) ==
   (atom p => e; suba(p,e)) where
     suba(p,e) ==
-      STRINGP e => e
+      string? e => e
       -- no need to descend vectors unless they are categories
       isCategory e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
@@ -985,7 +1035,7 @@ mutateCONDFormWithUnaryFunction(form,fun) ==
   for clauses in tails body repeat
     -- a clause is a list of forms
     for subForms in tails first clauses repeat
-      rplac(first subForms, FUNCALL(fun, first subForms))
+      subForms.first := FUNCALL(fun, first subForms)
   form
 
 ++ Walk VM LET-form mutating enclosed expression forms with
@@ -997,9 +1047,9 @@ mutateLETFormWithUnaryFunction(form,fun) ==
   for defs in tails inits repeat
     def := first defs
     atom def => nil -- no initializer
-    rplac(second def, FUNCALL(fun, second def))
+    def.rest.first := FUNCALL(fun, second def)
   for stmts in tails body repeat
-    rplac(first stmts, FUNCALL(fun, first stmts))
+    stmts.first := FUNCALL(fun, first stmts)
   form
 
 --% 
@@ -1035,6 +1085,10 @@ getFunctionReplacement name ==
 clearReplacement name ==
   REMPROP(name,"SPADreplace")
 
+++ Register the inlinable form of a function.
+registerFunctionReplacement(name,body) ==
+  LAM_,EVALANDFILEACTQ ["PUT",MKQ name,MKQ "SPADreplace",quoteMinimally body]
+
 eqSubstAndCopy: (%List, %List, %Form) -> %Form
 eqSubstAndCopy(args,parms,body) ==
   SUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
@@ -1043,11 +1097,6 @@ eqSubst: (%List, %List, %Form) -> %Form
 eqSubst(args,parms,body) ==
   NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
-
-++ returns true if `form' does not really induce computations.
-isAtomicForm: %Form -> %Boolean
-isAtomicForm form ==
-  atom form or first form = "QUOTE"
 
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
@@ -1067,14 +1116,14 @@ replaceSimpleFunctions form ==
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)
     not EQ(arg',arg) =>
-      rplac(first args, arg')
+      args.first := arg'
   -- 2. see if we know something about this function.
   [fun,:args] := form
   atom fun =>
     null (fun' := getFunctionReplacement fun) => form
     -- 2.1. the renaming case.
     atom fun' =>
-      rplac(first form,fun')
+      form.first := fun'
       NBUTLAST form
     -- 2.2. the substitution case.
     fun' is ["XLAM",parms,body] =>
@@ -1092,15 +1141,54 @@ replaceSimpleFunctions form ==
       form
     form
   fun' := replaceSimpleFunctions fun
-  not EQ(fun',fun) => rplac(first form,fun')
+  not EQ(fun',fun) => form.first := fun'
   form
 
+
+++ We are processing a function definition with parameter list `vars'
+++ and body given by `body'.  If `body' is a forwarding function call, 
+++ return the target function.  Otherwise, return nil.
+forwardingCall?(vars,body) ==
+  vars is [:vars',.] and body is [fun,: =vars'] and IDENTP fun => fun
+  nil
+
+
+++ Return true if `form' has a linear usage of all variables in `vars'.
+usesVariablesLinearly?(form,vars) ==
+  isAtomicForm form => true
+  and/[numOfOccurencesOf(var,form) < 2 for var in vars] 
+
+++ We are processing a function definition with parameter list `vars'
+++ and body given by `body'.  If `body' is a form that can be inlined,
+++ then return the inline form.  Otherwise, return nil.
+expandableDefinition?(vars,body) ==
+  expand? :=
+    -- We definitely don't want to expand a form that uses
+    -- the domain of computation environment.
+    vars isnt [:vars',env] or CONTAINED(env,body) => false
+
+    -- Constants are currently implemented as niladic functions, and
+    -- we want to avoid disturbing object identity, so we rule
+    -- out use of side-effect full operators.  
+    -- FIXME: This should be done only for constant creators.
+    null vars' => semiSimpleRelativeTo?(body,$VMsideEffectFreeOperators)
+
+    isAtomicForm body => true
+    [op,:args] := body
+    not IDENTP op => false
+    and/[isAtomicForm x for x in args] 
+      or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
+                usesVariablesLinearly?(body,vars')
+    false
+  expand? => ["XLAM",vars',body]
+  nil
 
 ++ Replace all SPADCALLs to operations defined in the current
 ++ domain.  Conditional operations are not folded.
 foldSpadcall: %Form -> %Form
 foldSpadcall form ==
-  isAtomicForm form => form
+  isAtomicForm form => form           -- leave atomic forms alone
+  form is ["DECLARE",:.] => form      -- don't walk declarations
   form is ["LET",inits,:body] =>
     mutateLETFormWithUnaryFunction(form,"foldSpadcall")
   form is ["COND",:stmts] =>
@@ -1111,8 +1199,8 @@ foldSpadcall form ==
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
   null (op := getCapsuleDirectoryEntry slot) => form
-  rplac(first fun, "$")
-  rplac(first form, op)
+  fun.first := "$"
+  form.first := op
 
 
 ++ `defs' is a list of function definitions from the current domain.
@@ -1120,14 +1208,19 @@ foldSpadcall form ==
 ++ with their corresponding linkage names.  
 foldExportedFunctionReferences defs ==
   for fun in defs repeat
-    foldSpadcall fun is [.,lamex] =>
-      rplac(third lamex, replaceSimpleFunctions third lamex)
+    fun isnt [name,lamex] => nil
+    lamex isnt ["LAM",vars,body] => nil
+    body := replaceSimpleFunctions foldSpadcall body
+    form := expandableDefinition?(vars,body) =>
+      registerFunctionReplacement(name,form)
+      fun.rest.first := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
+    lamex.rest.rest.first := body
   defs
 
 ++ record optimizations permitted at level `level'.
 setCompilerOptimizations level ==
   level = nil => nil
-  INTEGERP level =>
+  integer? level =>
     if level = 0 then
       -- explicit request for no optimization.
       $optProclaim := false
@@ -1137,6 +1230,8 @@ setCompilerOptimizations level ==
       $optReplaceSimpleFunctions := true
     if level > 1 then
       $optExportedFunctionReference := true
+    if level > 2 then
+      $optimizeRep := true
   coreError '"unknown optimization level request"
 
 
@@ -1195,8 +1290,8 @@ backendCompileNEWNAM x ==
     if y = "CLOSEDFN" then
       u := MAKE_-CLOSEDFN_-NAME()
       PUSH([u,second x], $CLOSEDFNS)
-      RPLACA(x,"FUNCTION")
-      RPLACA(rest x,u)
+      x.first := "FUNCTION"
+      x.rest.first := u
   backendCompileNEWNAM first x
   backendCompileNEWNAM rest x
 
@@ -1236,7 +1331,7 @@ backendCompileSLAM(name,args,body) ==
   COMP370 [u]
   name
 
-++ Same as backendCompileSPADSLAM, except that the cache is a hash
+++ Same as backendCompileSLAM, except that the cache is a hash
 ++ table.  This backend compiler is used to compile constructors.
 backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
@@ -1248,20 +1343,18 @@ backendCompileSPADSLAM(name,args,body) ==
     null args => [nil,nil,[auxfn]]
     null rest args => [[g1],["devaluate",g1],[auxfn,g1]]
     [g1,["devaluateList",g1],["APPLY",["FUNCTION",auxfn],g1]]
-  arg := first u
+  arg := first u               -- parameter list
   argtran := second u          -- devaluate argument
-  app := third u
-  codePart1 :=                 -- if value already computed, grab it.
-    null args => [al]
-    [["SETQ",g2,["assoc",argtran,al]], ["CDR",g2]]
-  codePart2 :=                 -- otherwise compute it, and cache it.
-                               -- Note: at most five values are cached.
-    null args => [true,["SETQ",al,app]]
-    [true,["SETQ",al,["cons5",["CONS",argtran, ["SETQ",g2,app]],al]],g2]
-  decl :=                      -- declare the cache variable.
-    null args => nil
-    [g2]
-  lamex := ["LAM",arg,["LET",decl,["COND",codePart1,codePart2]]]
+  app := third u               -- code to compute value
+  code := 
+    args = nil => ["COND",[al],[true,["SETQ",al,app]]]
+    ["LET",[[g2,["assoc",argtran,al]]],
+      ["COND",
+        [g2,["CDR",g2]],
+          [true, 
+            ["PROGN",["SETQ",g2,app],
+               ["SETQ",al,["cons5",["CONS",argtran, g2],al]],g2]]]]
+  lamex := ["LAM",arg,code]
   SETANDFILE(al,nil)           -- define the global cache.
   -- compile the worker function first.
   u := [auxfn,["LAMBDA",args,:body]]
@@ -1367,16 +1460,16 @@ il2OldForm x ==
     %ilDeref(e,.) => ["applyFun",il2OldForm e]
     %ilCall(e,.) =>
       e is [["%ilLocal",op,:.],:.] =>
-        rplac(first e,op)
+        e.first := op
         ilTransformInsns rest e
         e
-      ["call",:ilTransformInsns e]
+      ["%Call",:ilTransformInsns e]
     otherwise => ilTransformInsns x
 
 ++ Subroutines of il2OldForm to walk sequence of IL instructions.
 ilTransformInsns form ==
   for insns in tails form repeat
-    rplac(first insns, il2OldForm first insns)
+    insns.first := il2OldForm first insns
   form
 
 
@@ -1388,23 +1481,23 @@ mutateToBackendCode x ==
   isAtomicForm x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
-    RPLACA(x,"MAKEPROP-SAY")
+    x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
     if u ~= "DCQ" then
       $NEWSPAD or $FUNAME in $traceletFunctions =>
         nconc(x,$FUNNAME__TAIL)
-        RPLACA(x,"LETT")
-      $TRACELETFLAG => RPLACA(x,"/TRACE-LET")
-      u = "%LET" => RPLACA(x,"SPADLET")
+        x.first := "LETT"
+      $TRACELETFLAG => x.first := "/TRACE-LET"
+      u = "%LET" => x.first := "SPADLET"
     mutateToBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
         PUSH(CADADR x, $FluidVars)
-        rplac(second x, CADADR x)
+        x.rest.first := CADADR x
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
-    RPLACA(x, eval u)
+    x.first := eval u
     mutateToBackendCode x
   u in '(PROG LAMBDA) =>
     newBindings := []
@@ -1413,7 +1506,7 @@ mutateToBackendCode x ==
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
     res := mutateToBackendCode CDDR x
-    $LocalVars := REMOVE_-IF(function LAMBDA(y(), y in newBindings), 
+    $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
   u = "DECLARE" => nil       -- there is nothing to do convert there
@@ -1443,7 +1536,7 @@ simplifySEQ form ==
   isAtomicForm form => form
   form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
-    rplac(first stmts, simplifySEQ first stmts)
+    stmts.first := simplifySEQ first stmts
   form
 
 ++ Generate Lisp code by lowering middle end defining form `x'.
@@ -1463,8 +1556,8 @@ transformToBackendCode x ==
       (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
         body
     [simplifySEQ ["SEQ",:body]]
-  $FluidVars := REMDUP nreverse $FluidVars
-  $LocalVars := S_-(S_-(REMDUP nreverse $LocalVars,$FluidVars),
+  $FluidVars := removeDuplicates nreverse $FluidVars
+  $LocalVars := S_-(S_-(removeDuplicates nreverse $LocalVars,$FluidVars),
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)
@@ -1478,11 +1571,11 @@ transformToBackendCode x ==
   fluids := S_+(backendFluidize second x, $SpecialVars)
   lastdecl := lastDeclarationNode rest x
   if lastdecl = nil then
-    RPLACD(rest x, body)
+    x.rest.rest := body
   else
     null fluids =>
-      RPLACD(lastdecl, body)
-    RPLACD(lastdecl, [declareGlobalVariables fluids,:body])
+      lastdecl.rest := body
+    lastdecl.rest := [declareGlobalVariables fluids,:body]
   x
 
 backendCompile1 x ==
@@ -1529,3 +1622,147 @@ compileQuietly fn ==
   quietlyIfInteractive COMP370 fn
 
 
+
+--%
+--% Compile Time operation lookup for the benefit of domain inlining.
+--%
+
+++ Subroutine of lookupDefiningFunction.
+++ Called when the domain of computation `dc' is closed (this is the
+++ case of niladic constructors) to lookup up the definition function
+++ of the operation `op' with signature `sig'.
+lookupFunctionInstance(op,sig,dc) ==
+  dom := eval dc
+  sig := MSUBST(devaluate dom,dc,sig)
+  compiledLookup(op,sig,dom)
+
+++ If `x' is a formal map variable, returns its position.
+++ Otherwise return nil.
+isFormal: %Symbol -> %Maybe %Short
+isFormal x ==
+  POSITION(x,$FormalMapVariableList,KEYWORD::TEST, function EQ)
+
+++ Expand the form at position `slot' in the domain template `shell'
+++ with argument list `args'.
+expandFormTemplate(shell,args,slot) ==
+  FIXP slot =>
+    slot = 0 => "$"
+    slot = 2 => "$$"
+    expandFormTemplate(shell,args,getShellEntry(shell,slot))
+  atom slot => slot
+  slot is ["local",parm] and (n := isFormal parm) => 
+    args.n   -- FIXME: we should probably expand with dual signature
+  slot is ["NRTEVAL",val] => val
+  slot is ["QUOTE",val] => 
+    string? val => val
+    slot
+  [expandFormTemplate(shell,args,i) for i in slot]
+
+++ Compare the form at `slot' in the domain templare `shell'
+++ for equality with `form'.
+equalFormTemplate(shell,args,slot,form) ==
+  FIXP slot =>
+    slot = 0 => form = "$"
+    slot = 2 => form = "$$"
+    equalFormTemplate(shell,args,getShellEntry(shell,slot),form)
+  slot is ["local",parm] and (n := isFormal parm) => 
+    equalFormTemplate(shell,args,args.n,form)
+  slot is ["NTREVAL",val] => form = val
+  slot is ["QUOTE",val] => 
+     string? val => val = form
+     slot = form
+  atom slot or atom form => form = slot
+  #slot ~= #form => false
+  and/[equalFormTemplate(shell,args,i,x) for i in slot for x in form]
+
+++ Subroutine of lookupDefiningFunction.
+++ Return the location of function templates with signature `sig',
+++ descriptor address in the range [start,end), in the domain 
+++ template `shell' whose local reference vector is `funDesc'.
+++ Return value:
+++    nil         => function not defined by `shell'.
+++    "ambiguous" => too many candidates
+++    <number>    => slot number of unique matching function.
+getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
+  nargs := #rest sig
+  loc := nil                           -- candidate locations
+  while loc ~= "ambiguous" and start < end repeat
+    n := funDesc.start                 -- arity of current operator
+    PROGN
+      -- Skip if arity mismatch
+      i := start
+      n ~= nargs => nil
+      -- We are not interested in predicates, at this point.
+      -- Skip if this operator's signature does not match 
+      i := i + 2
+      or/[not equalFormTemplate(shell,args,funDesc.k,t) 
+           for k in i.. for t in sig] => nil
+      -- Grab the location of this match
+      loc := 
+        FIXP loc => "ambiguous"
+        funDesc.(i + n + 1)
+    start := start + n + 4
+  loc
+
+++ Subroutine of lookupDefiningFunction.
+lookupInheritedDefiningFunction(op,sig,shell,args,slot) ==
+  dom := expandFormTemplate(shell,args,slot)
+  atom dom or dom is ["local",:.] => nil
+  lookupDefiningFunction(op,sig,dom)
+
+++ Return the name of the function definition that explicitly implements
+++ the operation `op' with signature `sig' in the domain of 
+++ computation `dc'.  Otherwise, return nil.
+++ Note: Only a function defined by the domain template, or its add-chains,
+++       and that is unambiguous is returned.  In particular, this
+++       function defaulting packages.
+lookupDefiningFunction(op,sig,dc) ==
+  -- 1. Read domain information, if available.
+  [ctor,:args] := dc
+  -- 1.1. Niladic constructors don't need approximation.
+  null args => lookupFunctionInstance(op,sig,dc)
+  -- 1.2. Don't look into defaulting package
+  isDefaultPackageName ctor => nil
+  -- 1.2. Silently give up if the constructor is just not there
+  loadLibIfNotLoaded ctor
+  infovec := GET(ctor, "infovec") or return nil
+  -- 1.3. We need information about the original domain template
+  shell := first infovec               -- domain template
+  opTable := second infovec            -- operator-code table
+  opTableLength := #opTable
+  forgetful := infovec.4 = "lookupIncomplete"
+
+  -- 2. Get the address range of op's descriptor set
+  [.,.,.,:funDesc] := fourth infovec
+  index := getOpCode(op, opTable, opTableLength - 1)
+  -- 2.1. For a forgetful functor, try the add chain
+  index = nil =>
+    forgetful and lookupInheritedDefiningFunction(op,sig,shell,args,5)
+  -- 2.2. The operation is either defined here, or is available
+  --      from category package defaults.
+  limit := 
+    index + 2 < opTableLength => opTable.(index + 2)
+    #funDesc 
+
+  -- 3. Locate the descriptor with matching signature
+  loc := getFunctionTemplate(sig,opTable.index,limit,shell,args,funDesc)
+
+  -- 4. Look into the add-chain if necessary
+  loc = nil => lookupInheritedDefiningFunction(op,sig,shell,args,shell.5)
+
+  -- 5. Give up if the operation is overloaded on semantics predicates.
+  loc = "ambiguous" => nil
+
+  -- 6. We have a location to a function descriptor.
+  fun := shell.loc
+  -- 6.1. A constant producing functions?
+  fun is [.,.,[.,["dispatchFunction",fun'],.]] => fun'
+  -- 6.2. An inherited function?
+  fun is [idx,:.] => 
+    not FIXP idx => nil          -- a UFO?
+    loc := funDesc.(idx + 1)
+    if loc = 0 then loc := 5
+    shell.loc = nil => nil
+    lookupInheritedDefiningFunction(op,sig,shell,args,shell.loc)
+  -- 6.3. Whatever.
+  fun

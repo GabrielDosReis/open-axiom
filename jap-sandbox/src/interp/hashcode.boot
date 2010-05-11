@@ -45,11 +45,11 @@ $DomainsWithoutLisplibs ==
 getDomainHash dom == SPADCALL(rest dom, (first dom).4)
 
 hashType(type, percentHash) ==
-        SYMBOLP type  =>
+        symbol? type  =>
            type = '$ => percentHash
            type = "%" => percentHash
            hashString SYMBOL_-NAME type
-        STRINGP type  => hashCombine(hashString type, 
+        string? type  => hashCombine(hashString type, 
                                         hashString('"Enumeration"))
         type is ['QUOTE, val] => hashType(val, percentHash)
         type is [dom] => hashString SYMBOL_-NAME dom

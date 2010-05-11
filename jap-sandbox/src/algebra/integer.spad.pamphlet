@@ -97,7 +97,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       OMwrite(x: %): String ==
         s: String := ""
         sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-        dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+        dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
         OMputObject(dev)
         writeOMInt(dev, x)
         OMputEndObject(dev)
@@ -108,7 +108,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       OMwrite(x: %, wholeObj: Boolean): String ==
         s: String := ""
         sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-        dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+        dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
         if wholeObj then
           OMputObject(dev)
         writeOMInt(dev, x)
@@ -344,6 +344,8 @@ RomanNumeral(): Join(IntegerNumberSystem,ConvertibleFrom Symbol) with
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

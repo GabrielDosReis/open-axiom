@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -67,11 +67,11 @@ $useIntegerSubdomain := true
 
 -- These are the new structure functions.
 
-objNew(val, mode) == CONS(mode,val)             -- new names as of 10/14/93
-objNewWrap(val, mode) == CONS(mode,wrap val)
+objNew(val, mode) == [mode,:val]             -- new names as of 10/14/93
+objNewWrap(val, mode) == [mode,:wrap val]
 objNewCode(val, mode) == ["CONS", MKQ mode,val ]
-objSetVal(obj,val) == RPLACD(obj,val)
-objSetMode(obj,mode) == RPLACA(obj,mode)
+objSetVal(obj,val) == obj.rest := val
+objSetMode(obj,mode) == obj.first := mode
 
 objVal obj == rest obj
 objValUnwrap obj == unwrap rest obj
@@ -133,10 +133,10 @@ instantiationNormalForm(op,argl) ==
 -- Tuples and Crosses
 
 asTupleNew(eltType,size,listOfElts) == 
-  CONS(size, makeSimpleArrayFromList(eltType,listOfElts))
+  [size,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNew0(eltType,listOfElts) == 
-  CONS(#listOfElts, makeSimpleArrayFromList(eltType,listOfElts))
+  [#listOfElts,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNewCode(eltType, size, listOfElts) == 
   ["asTupleNew", quoteForm getVMType eltType, size, ["LIST", :listOfElts]]
@@ -162,8 +162,8 @@ getBasicMode x ==  getBasicMode0(x,$useIntegerSubdomain)
 ++ Subroutine of getBasicMode.
 getBasicMode0(x,useIntegerSubdomain) ==
   x is nil => $EmptyMode
-  STRINGP x => $String
-  INTEGERP x =>
+  string? x => $String
+  integer? x =>
     useIntegerSubdomain =>
       x > 0 => $PositiveInteger
       x = 0 => $NonNegativeInteger
@@ -176,14 +176,14 @@ getBasicMode0(x,useIntegerSubdomain) ==
 ++ If x is a literal of the basic types then returns
 ++ an interpreter object denoting x, and nil otherwise.
 getBasicObject x ==
-  INTEGERP    x =>
+  integer?    x =>
     t :=
       not $useIntegerSubdomain => $Integer
       x > 0 => $PositiveInteger
       x = 0 => $NonNegativeInteger
       $Integer
     objNewWrap(x,t)
-  STRINGP x => objNewWrap(x,$String)
+  string? x => objNewWrap(x,$String)
   FLOATP  x => objNewWrap(x,$DoubleFloat)
   NIL
 
@@ -288,7 +288,7 @@ getUnname1 x ==
 
 ++ returns the mode-set of VAT node x.
 getModeSet x ==
-  x and CONSP x => getModeSet first x
+  x and cons? x => getModeSet first x
   VECP x =>
     y:= x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
@@ -320,7 +320,7 @@ getModeOrFirstModeSetIfThere x ==
   NIL
 
 getModeSetUseSubdomain x ==
-  x and CONSP x => getModeSetUseSubdomain first x
+  x and cons? x => getModeSetUseSubdomain first x
   VECP(x) =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x
@@ -336,7 +336,7 @@ getModeSetUseSubdomain x ==
         [m]
       null val => y
       isEqualOrSubDomain(objMode(val),$Integer) and
-        INTEGERP(f := objValUnwrap val) =>
+        integer?(f := objValUnwrap val) =>
           [getBasicMode0(f,true)]
       y
     keyedSystemError("S2GE0016",
@@ -355,7 +355,7 @@ computedMode t ==
 
 insertShortAlist(prop,val,al) ==
   pair := QASSQ(prop,al) =>
-    RPLACD(pair,val)
+    pair.rest := val
     al
   [[prop,:val],:al]
 
@@ -426,7 +426,7 @@ srcPosColumn(sp) ==
 
 srcPosDisplay(sp) ==
   null sp => nil
-  s := STRCONC('"_"", srcPosFile sp, '"_", line ",
+  s := strconc('"_"", srcPosFile sp, '"_", line ",
       STRINGIMAGE srcPosLine sp, '": ")
   sayBrightly [s, srcPosSource sp]
   col  := srcPosColumn sp
@@ -442,7 +442,7 @@ srcPosDisplay(sp) ==
 getFlagArgsPos t ==
   VECP t => getAtree(t, 'flagArgsPos)
   atom t => keyedSystemError("S2II0001",[t])
-  getFlagArgsPos car t
+  getFlagArgsPos first t
 
 --% Transfer of VAT properties.
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ namespace BOOT
 $profileAlist := nil
 
 profileWrite() ==  --called from finalizeLisplib
-  outStream := MAKE_-OUTSTREAM CONCAT(LIBSTREAM_-DIRNAME $libFile,'"/info")
+  outStream := MAKE_-OUTSTREAM strconc(LIBSTREAM_-DIRNAME $libFile,'"/info")
   SETQ(_*PRINT_-PRETTY_*, true)
   PRINT_-FULL(profileTran $profileAlist,outStream)
   SHUT outStream

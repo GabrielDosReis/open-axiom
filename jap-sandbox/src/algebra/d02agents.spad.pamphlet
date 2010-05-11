@@ -73,7 +73,6 @@ ODEIntensityFunctionsTable(): E == I where
 
     clearTheIFTable():Void ==
       theIFTable := empty()$Rep
-      void()$Void
 
     iFTable(l:List Record(key:ODEA,entry:ATT)):$ ==
       theIFTable := table(l)$Rep

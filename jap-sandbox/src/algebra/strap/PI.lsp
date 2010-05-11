@@ -26,18 +26,13 @@
                   (HREM |$ConstructorCache| '|PositiveInteger|))))))))))) 
 
 (DEFUN |PositiveInteger;| ()
-  (PROG (|dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$| '(|PositiveInteger|) . #0=(|PositiveInteger|))
-        (LETT $ (|newShell| 16) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|haddProp| |$ConstructorCache| '|PositiveInteger| NIL
-            (CONS 1 $))
-        (|stuffDomainSlots| $)
-        $)))) 
+  (LET ((|dv$| (LIST '|PositiveInteger|)) ($ (|newShell| 16))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|haddProp| |$ConstructorCache| '|PositiveInteger| NIL (CONS 1 $))
+    (|stuffDomainSlots| $)
+    $)) 
 
 (MAKEPROP '|PositiveInteger| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL (|NonNegativeInteger|) (0 . |Zero|)

@@ -285,7 +285,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    OMwrite(x: %): String ==
      s: String := ""
      sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-     dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+     dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
      OMputObject(dev)
      OMputFloat(dev, convert x)
      OMputEndObject(dev)
@@ -296,7 +296,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    OMwrite(x: %, wholeObj: Boolean): String ==
      s: String := ""
      sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-     dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML)
+     dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
      if wholeObj then
        OMputObject(dev)
      OMputFloat(dev, convert x)
@@ -505,6 +505,8 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
 --modification, are permitted provided that the following conditions are

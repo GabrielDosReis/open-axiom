@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ hasFilePropertyNoCache(p,id,abbrev) ==
   -- it is assumed that the file exists and is a proper pathname
   -- startTimingProcess 'diskread
   fnStream:= readLibPathFast p
-  NULL fnStream => NIL
+  null fnStream => NIL
   -- str:= object2String id
   val:= rread(id,fnStream, nil)
   RSHUT fnStream
@@ -139,7 +139,7 @@ findModule cname ==
   m := getConstructorModuleFromDB cname or return nil
   existingFile? m => m
   strap := algebraBootstrapDir() =>
-    m := CONCAT(strap,PATHNAME_-NAME m,'".",$faslType)
+    m := strconc(strap,PATHNAME_-NAME m,'".",$faslType)
     existingFile? m => m
     systemError ['"missing module for ",:bright cname]
   systemError ['"missing module for ",:bright cname]
@@ -170,7 +170,7 @@ loadLib cname ==
   coSig :=
       u =>
           [[.,:sig],:.] := u
-          CONS(NIL,[categoryForm?(x) for x in rest sig])
+          [NIL,:[categoryForm?(x) for x in rest sig]]
       NIL
   -- in following, add property value false or NIL to possibly clear
   -- old value
@@ -383,7 +383,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,'"-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE(LIST SYMBOL_-NAME getConstructorAbbreviationFromDB op,NIL)
+  LOCALDATABASE([SYMBOL_-NAME getConstructorAbbreviationFromDB op],NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
@@ -482,8 +482,8 @@ mergeSignatureAndLocalVarAlists(signatureAlist, localVarAlist) ==
     [funcName, :signature] in signatureAlist]
  
 Operators u ==
-  ATOM u => []
-  ATOM first u =>
+  atom u => []
+  atom first u =>
     answer:="union"/[Operators v for v in rest u]
     MEMQ(first u,answer) => answer
     [first u,:answer]
@@ -721,9 +721,9 @@ compDefineExports(form,ops,sig,e) ==
         fixupSigloc entry ==
           [opsig,pred,funsel] := entry
           if pred ~= 'T then 
-            rplac(second entry, simpBool pred)
+            entry.rest.first := simpBool pred
           funsel is [op,a,:.] and op in '(ELT CONST) =>
-            rplac(third entry,[op,a,nil])
+            entry.rest.rest.first := [op,a,nil]
     ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
   exportsFile := strconc(STRING libName,'".sig")

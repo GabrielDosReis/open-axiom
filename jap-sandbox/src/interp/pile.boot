@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,33 +57,33 @@ insertpile (s)==
      if npNull s
      then [false,0,[],s]
      else
-       [h,t]:=[car s,cdr s]
+       [h,t]:=[first s,rest s]
        if pilePlusComment h
        then
           [h1,t1]:=pilePlusComments s
           a:=pileTree(-1,t1)
-          cons([pileCforest [:h1,a.2]],a.3)
+          [[pileCforest [:h1,a.2]],:a.3]
        else
          stream:=CADAR s
          a:=pileTree(-1,s)
-         cons([[a.2,stream]],a.3)
+         [[[a.2,stream]],:a.3]
  
 pilePlusComments s==
       if npNull s
       then [[],s]
       else
-       [h,t]:=[car s,cdr s]
+       [h,t]:=[first s,rest s]
        if pilePlusComment h
        then
          [h1,t1]:=pilePlusComments t
-         [cons(h,h1),t1]
+         [[h,:h1],t1]
        else [[],s]
  
 pileTree(n,s)==
     if npNull s
     then [false,n,[],s]
     else
-        [h,t]:=[car s,cdr s]
+        [h,t]:=[first s,rest s]
         hh:=pileColumn first h
         if hh > n
         then pileForests(first h,hh,t)
@@ -93,7 +93,7 @@ eqpileTree(n,s)==
     if npNull s
     then [false,n,[],s]
     else
-        [h,t]:=[car s,cdr s]
+        [h,t]:=[first s,rest s]
         hh:=pileColumn first h
         if hh = n
         then pileForests(first h,hh,t)
@@ -104,7 +104,7 @@ pileForest(n,s)==
      if b
      then
        [h1,t1]:=pileForest1(hh,t)
-       [cons(h,h1),t1]
+       [[h,:h1],t1]
      else [[],s]
  
 pileForest1(n,s)==
@@ -112,7 +112,7 @@ pileForest1(n,s)==
      if b
      then
        [h1,t1]:=pileForest1(n,t)
-       [cons(h,h1),t1]
+       [[h,:h1],t1]
      else [[],s]
  
 pileForests(h,n,s)==
@@ -128,9 +128,9 @@ pileCtree(x,y)==dqAppend(x,pileCforest y)
 pileCforest x==
    if null x
    then []
-   else if null cdr x
+   else if null rest x
         then
-           f:= car x
+           f:= first x
            if EQ(tokPart CAAR f,"IF")
            then enPile f
            else f
@@ -142,12 +142,12 @@ lastTokPosn  t== tokPosn second t
 separatePiles x==
   if null x
   then []
-  else if null cdr x
-       then car x
+  else if null rest x
+       then first x
        else
-         a:=car x
+         a:=first x
          semicolon:=dqUnit tokConstruct("key", "BACKSET",lastTokPosn a)
-         dqConcat [a,semicolon,separatePiles cdr x]
+         dqConcat [a,semicolon,separatePiles rest x]
  
 enPile x==
    dqConcat [dqUnit tokConstruct("key","SETTAB",firstTokPosn x),

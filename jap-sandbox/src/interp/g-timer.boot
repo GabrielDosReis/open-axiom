@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -90,9 +90,9 @@ makeLongStatStringByProperty _
       total := total + n
       timestr := normalizeStatAndStringify n
       str := makeStatString(str,timestr,ab,flag)
-  total := STRCONC(normalizeStatAndStringify total,'" ", units)
+  total := strconc(normalizeStatAndStringify total,'" ", units)
   str = '"" =>  total
-  STRCONC(str, '" = ", total)
+  strconc(str, '" = ", total)
  
 normalizeStatAndStringify t ==
   RNUMP t =>
@@ -102,8 +102,8 @@ normalizeStatAndStringify t ==
   INTP t =>
       K := 1024
       M := K*K
-      t > 9*M => CONCAT(STRINGIMAGE QUOTIENT(t + 512*K,M), '"M")
-      t > 9*K => CONCAT(STRINGIMAGE QUOTIENT(t + 512,K),   '"K")
+      t > 9*M => strconc(STRINGIMAGE QUOTIENT(t + 512*K,M), '"M")
+      t > 9*K => strconc(STRINGIMAGE QUOTIENT(t + 512,K),   '"K")
       STRINGIMAGE t
   STRINGIMAGE t
  
@@ -119,8 +119,8 @@ roundStat t ==
 makeStatString(oldstr,time,abb,flag) ==
   time = '"" => oldstr
   opening := (flag = 'long => '"("; '" (")
-  oldstr = '"" => STRCONC(time,opening,abb,'")")
-  STRCONC(oldstr,'" + ",time,opening,abb,'")")
+  oldstr = '"" => strconc(time,opening,abb,'")")
+  strconc(oldstr,'" + ",time,opening,abb,'")")
  
 peekTimedName() == IFCAR $timedNameStack
  
