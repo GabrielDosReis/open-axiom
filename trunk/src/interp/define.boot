@@ -181,6 +181,7 @@ $reservedNames == '(per rep _$)
 checkVariableName var ==
   MEMQ(var,$reservedNames) =>
     stackAndThrow('"You cannot use reserved name %1b as variable",[var])
+  var
 
 checkParameterNames parms ==
   for p in parms repeat

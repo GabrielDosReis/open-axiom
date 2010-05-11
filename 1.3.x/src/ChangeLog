@@ -1,3 +1,10 @@
+2010-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for interpreter-style anonymous function.
+	* interp/compiler.boot (compUnnamedMapping): New.
+	(gatherParameterList): Likewise.
+	(compLambda): Likewise.
+
 2010-05-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (freeVarUsage): New.  Split out of
