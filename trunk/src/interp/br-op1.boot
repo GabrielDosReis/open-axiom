@@ -842,7 +842,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
     expandFlag = 'lists => --lists are partially expanded
       -- entry is [sig, predicate, origin, exposeFlag, comments]
       $value: local := nil
-      $docTableHash := MAKE_-HASHTABLE 'EQUAL
+      $docTableHash := hashTable 'EQUAL
       packageSymbol := false
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then

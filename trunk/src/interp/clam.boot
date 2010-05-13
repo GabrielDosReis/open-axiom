@@ -183,7 +183,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if null argl then
     null cacheNameOrNil => keyedSystemError("S2GE0011",[op])
     nil
-  (not cacheNameOrNil) and not (eqEtc in '(EQ CVEC UEQUAL)) =>
+  (not cacheNameOrNil) and not (eqEtc in '(EQ EQL EQUAL CVEC UEQUAL)) =>
     keyedSystemError("S2GE0012",[op])
 --withWithout := (countFl => "with"; "without")
 --middle:=
@@ -270,7 +270,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     weakStrong:= (countFl => 'STRONG; 'WEAK)
       --note: WEAK means that key/value pairs disappear at garbage collection
     cacheResetCode:=
-      ['SETQ,cacheName,['MAKE_-HASHTABLE,MKQ eqEtc]]
+      ['SETQ,cacheName,['hashTable,MKQ eqEtc]]
     cacheCountCode:= ['hashCount,cacheName]
     cacheVector:=
       mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)

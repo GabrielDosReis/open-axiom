@@ -517,7 +517,7 @@ $parentsCache := nil
 
 parentsOf con == --called by kcpPage, ancestorsRecur
   if null $parentsCache then 
-     $parentsCache := MAKE_-HASHTABLE 'ID
+     $parentsCache := hashTable 'EQ
   HGET($parentsCache,con) or
     parents := getParentsForDomain con
     HPUT($parentsCache,con,parents)
@@ -594,7 +594,7 @@ childArgCheck(argl, nargl) ==
 
 --computeDescendantsOf cat ==
 --dynamically generates descendants
---  hash := MAKE_-HASHTABLE 'UEQUAL
+--  hash := hashTable 'EQUAL
 --  for [child,:pred] in childrenOf cat repeat
 --    childForm := getConstructorForm child
 --    HPUT(hash,childForm,pred)
@@ -618,8 +618,8 @@ ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   computeAncestorsOf(conform,domform)
 
 computeAncestorsOf(conform,domform) ==
-  $done: local := MAKE_-HASHTABLE 'UEQUAL
-  $if:   local := MAKE_-HASHTABLE 'ID
+  $done: local := hashTable 'EQUAL
+  $if:   local := hashTable 'EQ
   ancestorsRecur(conform,domform,true,true)
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat

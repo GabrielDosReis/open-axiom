@@ -46,7 +46,7 @@ showCategoryTable con ==
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
-  SETQ($ct,MAKE_-HASHTABLE 'ID)
+  SETQ($ct,hashTable 'EQ)
   for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
     HPUT($ct,a,[[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)])
   for id in HKEYS $ct | null conList or MEMQ(id,conList) repeat
@@ -54,8 +54,8 @@ displayCategoryTable(:options) ==
     PRINT HGET($ct,id)
 
 genCategoryTable() ==
-  SETQ(_*ANCESTORS_-HASH_*,  MAKE_-HASHTABLE 'ID)
-  SETQ(_*HASCATEGORY_-HASH_*,MAKE_-HASHTABLE 'UEQUAL)
+  SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
+  SETQ(_*HASCATEGORY_-HASH_*,hashTable 'EQUAL)
   genTempCategoryTable()
   domainList:=
     [con for con in allConstructors()
@@ -415,7 +415,7 @@ categoryParts(conform,category,:options) == main where
 compressHashTable ht ==
 -- compresses hash table ht, to give maximal sharing of cells
   sayBrightlyNT '"compressing hash table..."
-  $found: local := MAKE_-HASHTABLE 'UEQUAL
+  $found: local := hashTable 'EQUAL
   for x in HKEYS ht repeat compressSexpr(HGET(ht,x),nil,nil)
   sayBrightly   "done"
   ht

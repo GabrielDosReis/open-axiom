@@ -106,7 +106,7 @@ start(:l) ==
     SAY fillerSpaces($LINELENGTH,'"=")
     TERPRI()
     $OLDLINE := NIL
-  $superHash := MAKE_-HASHTABLE('UEQUAL)
+  $superHash := hashTable 'EQUAL
   if null l then runspad()
   'EndOfSpad
 

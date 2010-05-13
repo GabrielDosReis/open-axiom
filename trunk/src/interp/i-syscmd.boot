@@ -42,7 +42,7 @@ $compileRecurrence := true
 $errorReportLevel := 'warning
 $sourceFileTypes := '(INPUT SPAD BOOT LISP LISP370 META)
 
-$existingFiles := MAKE_-HASHTABLE "UEQUAL"
+$existingFiles := hashTable "EQUAL"
 
 $SYSCOMMANDS := [first x for x in $systemCommands]
 
@@ -299,7 +299,7 @@ clearCmdCompletely() ==
   sayKeyedMsg("S2IZ0013",NIL)
   clearClams()
   clearConstructorCaches()
-  $existingFiles := MAKE_-HASHTABLE 'UEQUAL
+  $existingFiles := hashTable 'EQUAL
   sayKeyedMsg("S2IZ0014",NIL)
   RECLAIM()
   sayKeyedMsg("S2IZ0015",NIL)
@@ -863,7 +863,7 @@ convertSpadToAsFile path ==
     $abbreviationsAlreadyPrinted: local := nil    -- for spad -> as translator
     $convertingSpadFile : local := true
     $options: local := '((nolib))      -- translator shouldn't create nrlibs
-    SETQ(HT,MAKE_-HASHTABLE 'UEQUAL)
+    SETQ(HT,hashTable 'EQUAL)
 
     newName := fnameMake(pathnameDirectory path, pathnameName path, '"as")
     canDoIt := true
@@ -1835,7 +1835,7 @@ undoFromFile(n) ==
   updateHist()
 
 saveHistory(fn) ==
-  $seen: local := MAKE_-HASHTABLE 'EQ
+  $seen: local := hashTable 'EQ
   not $HiFiAccess => sayKeyedMsg("S2IH0016",NIL)
   not $useInternalHistoryTable and
     null MAKE_-INPUT_-FILENAME histFileName() => sayKeyedMsg("S2IH0022",NIL)
@@ -2046,7 +2046,7 @@ safeWritify ob ==
 
 writify ob ==
     not ScanOrPairVec(function(unwritable?), ob) => ob
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
     $writifyComplained: local := false
  
     writifyInner ob where
@@ -2154,7 +2154,7 @@ dewritify ob ==
     (not ScanOrPairVec(function is?, ob)
             where  is? a == a = 'WRITIFIED_!_!) => ob
  
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
  
     dewritifyInner ob where
         dewritifyInner ob ==
@@ -2177,7 +2177,7 @@ dewritify ob ==
                     HPUT($seen, ob, f)
                     f
                 type = 'HASHTABLE =>
-                    nob := MAKE_-HASHTABLE ob.2
+                    nob := hashTable ob.2
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     for k in ob.3 for e in ob.4 repeat

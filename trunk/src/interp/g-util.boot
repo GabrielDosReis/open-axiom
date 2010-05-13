@@ -152,7 +152,7 @@ PPtoFile(x, fname) ==
     x
 
 ScanOrPairVec(f, ob) ==
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
  
     CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
         ScanOrInner(f, ob) ==

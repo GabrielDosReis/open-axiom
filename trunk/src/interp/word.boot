@@ -40,7 +40,7 @@ buildFunctionTable(dicts) ==
   buildWordTable getListOfFunctionNames dicts
  
 buildWordTable u ==
-  table:= MAKE_-HASHTABLE 'ID
+  table:= hashTable 'EQ
   for s in u repeat
     key := UPCASE s.0
     HPUT(table,key,[[s,:wordsOfString s],:HGET(table,key)])
@@ -78,7 +78,7 @@ readFunctionTable() ==
     $wordDictionary = 'development => 'SPADD
     'SPADC
   stream:= readLib(name,'DATABASE)
-  table:= MAKE_-HASHTABLE 'ID
+  table:= hashTable 'EQ
   for key in RKEYIDS makePathname(name,'DATABASE,"*") repeat
     HPUT(table,kk:=object2Identifier key, rread(kk,stream,nil))
   RSHUT stream

@@ -64,7 +64,7 @@ $topicSynonyms := '(
 
 $groupAssoc := '((extended . 1) (basic . 2) (hidden . 4))
 
-$topicHash := MAKE_-HASHTABLE "ID"
+$topicHash := hashTable 'EQ
 SETF(GETHASH("basic",$topicHash),2)
 SETF(GETHASH("algebraic",$topicHash),4)
 SETF(GETHASH("miscellaneous",$topicHash),13)
@@ -85,11 +85,11 @@ SETF(GETHASH("trignometric",$topicHash),11)
 --=======================================================================
 --called at build-time before making DOCUMENTATION property
 mkTopicHashTable() ==                         --given $groupAssoc = ((extended . 1)(basic . 2)(xx . 4)..)
-  $defaultsHash := MAKE_-HASHTABLE 'ID        --keys are ops, value is list of topic names
+  $defaultsHash := hashTable 'EQ        --keys are ops, value is list of topic names
   for [kind,:items] in $topicsDefaults repeat --$topicsDefaults is ((<topic> op ...) ..)
     for item in items repeat 
       HPUT($defaultsHash,item,[kind,:HGET($defaultsHash,item)])
-  $conTopicHash  := MAKE_-HASHTABLE 'EQL      --key is constructor name; value is
+  $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
   instream := OPEN '"topics.data"           
   while not EOFP instream repeat
     line := READLINE instream
@@ -107,7 +107,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
            | lst := string2OpAlist line]
     alist => HPUT($conTopicHash,con,alist)
   --initialize table of topic classes
-  $topicHash := MAKE_-HASHTABLE 'ID           --$topicHash has keys: topic and value: index
+  $topicHash := hashTable 'EQ           --$topicHash has keys: topic and value: index
   for [x,:c] in $groupAssoc repeat HPUT($topicHash,x,c)
   $topicIndex := rest LAST $groupAssoc
 
@@ -190,7 +190,7 @@ addTopic2Documentation(con,docAlist) ==
 td con ==
   $topicClasses := ASSOCRIGHT mySort
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
-  hash := MAKE_-HASHTABLE 'ID
+  hash := hashTable 'EQ
   tdAdd(con,hash)
   tdPrint hash 
 
@@ -212,7 +212,7 @@ topics con ==
   --assumes that DOCUMENTATION property already has #s added
   $topicClasses := ASSOCRIGHT mySort
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
-  hash := MAKE_-HASHTABLE 'ID
+  hash := hashTable 'EQ
   tdAdd(con,hash)
   for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)

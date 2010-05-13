@@ -920,7 +920,7 @@ getNumberTypesInScope() ==
 getCommonImports() ==
   importList := [x for x in $importStack for y in $capsuleStack |
                    KAR KAR y = 'DEF]
-  hash := MAKE_-HASHTABLE 'EQUAL
+  hash := hashTable 'EQUAL
   for x in importList repeat
     for y in x repeat HPUT(hash,y,1 + (HGET(hash,y) or 0))
   threshold := FLOOR (.5 * #importList)
