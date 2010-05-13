@@ -146,36 +146,29 @@ LoopAnalysis(): Public == Private where
 
     -- returns the rejecting reason in String 
     reasonInString(reasonCode: Integer): String ==
-      reasonCode = 1 => "Statements in loop body violate canonical form"
-      reasonCode = 2 => "Statements of then-branch in loop body violate canonical form"
-      reasonCode = 3 => "Statements of else-branch in loop body violate canonical form"
-      reasonCode = 4 => "Accumulation variable involved in the predicate of a conditional accumulation"
+      reasonCode = 3 => "Not a for-loop"
+      reasonCode = 4 => "Accumulation variable found in the conditional's predicate"
       reasonCode = 5 => "Not each assignment is an independent accumulation"
-      reasonCode = 6 => "Not each assignment in then-branch is an independent accumulation"
-      reasonCode = 7 => "Not each assignment in else-branch is an independent accumulation"
-      reasonCode = 8 => "Effectful function is used in some statement"
-      reasonCode = 9 => "Effectful function is used in some statement of then-branch"
-      reasonCode = 10 => "Effectful function is used in some statement of else-branch"
-      reasonCode = 11 => "Operator used in some statement is not binary operator"
-      reasonCode = 12 => "Operator used in some statement of then-branch is not binary operator"
-      reasonCode = 13 => "Operator used in some statement of else-branch is not binary operator"
-      reasonCode = 14 => "Left hand side of the assignment involves variables used in loop iterator"
-      reasonCode = 15 => "Left hand side of the assignment of then-branch involves variables used in loop iterator"
-      reasonCode = 16 => "Left hand side of the assignment of else-branch involves variables used in loop iterator"
-      reasonCode = 17 => "Accumulation variable of current statement is used by other statement"
-      reasonCode = 18 => "Accumulation variable of current statement of then-branch is used by other statement"
-      reasonCode = 19 => "Accumulation variable of current statement of else-branch is used by other statement"
-      reasonCode = 20 => "More than one different operators are applied to an accumulation variable"
-      reasonCode = 21 => 
-        "More than one different operators of current statement in then-branch are applied to an accumulation variable"
-      reasonCode = 22 => 
-        "More than one different operators of current statement in else-branch are applied to an accumulation variable"
-      reasonCode = 23 =>
-        "Variable on the lhs appears more than once on the rhs of an statement"
-      reasonCode = 24 =>
-        "Variable on the lhs appears more than once on the rhs of an statement in then-branch"
-      reasonCode = 25 =>
-        "Variable on the lhs appears more than once on the rhs of an statement in else-branch"
+      reasonCode = 6 => "In then-branch: Not each assignment is an independent accumulation"
+      reasonCode = 7 => "In else-branch: Not each assignment is an independent accumulation"
+      reasonCode = 8 => "Effectful function is found"
+      reasonCode = 9 => "In then-branch: Effectful function is found"
+      reasonCode = 10 => "In else-branch: Effectful function is found"
+      reasonCode = 11 => "Non-binary accumulation operator is used"
+      reasonCode = 12 => "In then-branch: Non-binary accumulation operator is used"
+      reasonCode = 13 => "In else-branch: Non-binary accumulation operator is used"
+      reasonCode = 14 => "Loop index variable is changed in some accumulation"
+      reasonCode = 15 => "In then-branch: Loop index variable is changed in some accumulation"
+      reasonCode = 16 => "In else-branch: Loop index variable is changed in some accumulation"
+      reasonCode = 17 => "Non-independent accumulation"
+      reasonCode = 18 => "In then-branch: Non-independent accumulation"
+      reasonCode = 19 => "In else-branch: Non-independent accumulation"
+      reasonCode = 20 => "More than one accumulation operator is used in one assignment"
+      reasonCode = 21 => "In then-branch: More than one accumulation operator is used in an assignment"
+      reasonCode = 22 => "In else-branch: More than one accumulation operator is used in an assignment"
+      reasonCode = 23 => "Accumulation variable appears in the accumulating expression"
+      reasonCode = 24 => "In then-branch: Accumulation variable found in the accumulating expression"
+      reasonCode = 25 => "In else-branch: Accumulation variable found in the accumulating expression"
       userError "unexpected reason code"
 
     -- converts a set of reasonCodes to reasons in String
@@ -524,7 +517,8 @@ LoopAnalysis(): Public == Private where
         true
       false      
 
-    isBinaryExpression?(e: Syntax): Boolean ==                                                                                
+    -- checks whether the expression's operator is binary
+    isBinaryExpression?(e: Syntax): Boolean ==                                                                            
       compound?(e) and #getOperands(e) = 2 => true
       updateRejectionCodes(11)
       false    
@@ -668,7 +662,7 @@ LoopAnalysis(): Public == Private where
     verifyAtomicLoopBody(r: RepeatAst, p: Pair(Boolean, List LetAst),_
                                             its: List SpadAst, gv: VTB): ACC ==
       -- clean up the rejection codes for the current loop
-      rejectionCodes := {}
+      --rejectionCodes := {}
       examineIf? := false
       localVariables : VTB := collectLocalVariableofLoop(second p, gv)
       verifyReduction(its, second p, gv, localVariables) =>
@@ -693,7 +687,7 @@ LoopAnalysis(): Public == Private where
       lvElse  : VTB := collectLocalVariableofLoop(elseList, gv')
       averageAccNumber := 0
       -- clean up the rejection codes for the current loop                                                 
-      rejectionCodes := {}   
+      --rejectionCodes := {}   
       examineIf? := true
       examineThen? := true
       verifyReduction2(its, thenList, gv', lvThen) =>
@@ -738,6 +732,8 @@ LoopAnalysis(): Public == Private where
     -- collect accumulation loop from repeat ast
     -- i.e. to verify whether a repeatAst has the canonical form
     identifyAccumulationLoopFromRepeat(r: RepeatAst, gv: VTB): ACC ==
+      depth := getLoopDepth(r)
+      rejectionCodes := {}
       not empty?(its := iterators(r)) => 
         it := first its
         -- collect the global variables from the loop induction variables
@@ -746,6 +742,10 @@ LoopAnalysis(): Public == Private where
         -- if this is a while loop, the loop is not qualified, 
         -- and we further search its body
         it case WhileAst or untilAst? it  or multiFor? its => 
+          depth = 1 =>
+            updateRejectionCodes(3)
+            updateRejectedLoopList(r)
+            []       
           identifyAccumulationLoopFromStatement(body r, copy gv)
         -- if this is a for loop, and only contains let statement
         reductionVariableListInThenBranch := []
@@ -755,6 +755,10 @@ LoopAnalysis(): Public == Private where
         -- if this is a for loop whose body is a mix of many kinds of statement
         -- we recursively examine the body.
         identifyAccumulationLoopFromStatement(body r, copy gv)
+      depth = 1 => 
+        updateRejectionCodes(3)                                                                                       
+        updateRejectedLoopList(r)  
+        []
       identifyAccumulationLoopFromStatement(body r, copy gv)
 
     -- checks whether a repeatAst is a for loop whose iterator
