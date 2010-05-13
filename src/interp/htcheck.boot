@@ -84,7 +84,7 @@ $primitiveHtCommands := '(
   ("\windowlink"         . 2))
 
 buildHtMacroTable() ==
-  $htMacroTable := MAKE_-HASHTABLE 'UEQUAL
+  $htMacroTable := hashTable 'EQUAL
   fn := strconc(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
   if PROBE_-FILE(fn) then
     instream := MAKE_-INSTREAM fn

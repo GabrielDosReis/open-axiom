@@ -39,7 +39,7 @@ namespace BOOT
 -- to various situations are required
  
 minimalise x ==
-  $hash:local:=MAKE_-HASHTABLE 'UEQUAL
+  $hash:local:=hashTable 'EQUAL
   min x where
     min x ==
       y:=HGET($hash,x)

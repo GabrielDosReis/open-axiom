@@ -448,7 +448,7 @@ koCatOps1 alist == [x for item in alist | x := pair] where
     false
 
 koCatAttrs(catform,domname) ==
-  $if: local := MAKE_-HASHTABLE 'ID
+  $if: local := hashTable 'EQ
   catname   := opOf catform
   koCatAttrsAdd(domname or catform,true)
   ancestors := ancestorsOf(catform,domname)

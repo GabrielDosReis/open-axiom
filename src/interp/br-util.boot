@@ -71,7 +71,7 @@ $predvec  := nil             --bound in koOps
 $exposedOnlyIfTrue := nil    --see repeatSearch, dbShowOps, dbShowCon
 $bcMultipleNames := nil      --see bcNameConTable
 $bcConformBincount := nil    --see bcConform1
-$docTableHash := MAKE_-HASHTABLE 'EQUAL  --see dbExpandOpAlistIfNecessary
+$docTableHash := hashTable 'EQUAL  --see dbExpandOpAlistIfNecessary
 $groupChoice := nil  --see dbShowOperationsFromConform
 
 ------------------> Initial Settings <---------------------

@@ -42,7 +42,7 @@ buildOperationWordTable() ==
   $opWordTable := buildWordTable [PNAME x for x in allOperations()]
  
 buildWordTable u ==
-  table:= MAKE_-HASHTABLE 'ID
+  table:= hashTable 'EQ
   for s in u repeat
     words := wordsOfString s
     key := UPCASE s.0

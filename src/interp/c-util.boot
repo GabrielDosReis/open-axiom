@@ -49,6 +49,14 @@ module c_-util where
 
 
 --% 
+
+++
+$ConstructorCache := hashTable 'EQ
+
+++
+$instantRecord := hashTable 'EQ
+
+
 ++ if true continue compiling after errors
 $scanIfTrue := false
 

@@ -180,7 +180,7 @@ exp2FortOptimize e ==
  
 exp2FortOptimizeCS e ==
   $fortCsList : local := NIL
-  $fortCsHash : local := MAKE_-HASHTABLE 'EQ
+  $fortCsHash : local := hashTable 'EQ
   $fortCsExprStack : local := NIL
   $fortCsFuncStack : local := NIL
   f := exp2FortOptimizeCS1 e

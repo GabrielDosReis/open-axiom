@@ -1,3 +1,37 @@
+2010-05-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-utility.boot (hashTable): Define.
+	* interp/word.boot: Use it.
+	* interp/topics.boot: Likewise.
+	* interp/sys-driver.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/compress.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/sys-globals.boot ($ConstructorCache): Move elsewhere.
+	($instantRecord): Likewise.
+	* algebra/newdata.spad.pamphlet: Use EQUAL as equality function
+	for hash table.
+	* algebra/table.spad.pamphlet: Call hashTable builtin function
+	instead of MAKE-HASHTABLE.
+
 2010-05-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for interpreter-style anonymous function.

@@ -268,6 +268,16 @@ PRINT_-AND_-EVAL_-DEFUN(name,body) ==
   PRINT_-DEFUN(name,body)
 
 
+--% Hash table
+
+hashTable cmp ==
+  testFun :=
+    cmp in '(ID EQ) => function EQ
+    cmp = 'EQL => function EQL
+    cmp = 'EQUAL => function EQUAL
+    error '"bad arg to hashTable"
+  MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
+
 
 --% File IO
 $InputIOMode == KEYWORD::INPUT

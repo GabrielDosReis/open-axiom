@@ -235,7 +235,7 @@ rebuildCDT(filemode) ==
 buildDatabase(filemode,expensive) ==
   $InteractiveMode: local:= true
   $constructorList := nil       --looked at by buildLibdb
-  $ConstructorCache:= MAKE_-HASHTABLE('ID)
+  $ConstructorCache:= hashTable 'EQ
   SAY '"Making constructor autoload"
   makeConstructorsAutoLoad()
   SAY '"Building category table"

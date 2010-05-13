@@ -35,6 +35,7 @@
 import bits
 import dq
 import incl
+import sys_-utility
 namespace BOOT
 module scan
 
@@ -165,7 +166,7 @@ scanKeyWords == [ _
 
 
 scanKeyTableCons()==
-   KeyTable:=MAKE_-HASHTABLE("CVEC",true)
+   KeyTable := hashTable 'EQUAL
    for st in scanKeyWords repeat
       HPUT(KeyTable,first st,second st)
    KeyTable

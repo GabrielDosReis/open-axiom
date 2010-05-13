@@ -54,7 +54,7 @@ $insideCategoryPackageIfTrue := false
 $profileCompiler := false
 
 ++
-$Slot1DataBase := MAKE_-HASHTABLE "ID"
+$Slot1DataBase := hashTable 'EQ
 
 ++
 $NRTdeltaList := []

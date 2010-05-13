@@ -350,7 +350,7 @@ bitsOf n ==
 --               Generate Slot 4 Constructor Vectors
 --=======================================================================
 NRTmakeCategoryAlist() ==
-  $depthAssocCache: local := MAKE_-HASHTABLE 'ID
+  $depthAssocCache: local := hashTable 'EQ
   $catAncestorAlist: local := NIL
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]

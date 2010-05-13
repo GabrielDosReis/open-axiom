@@ -145,7 +145,7 @@ resetWorkspaceVariables() ==
   SETQ(_/PRETTY                     , NIL)
   SETQ(_/SPACELIST                  , NIL)
   SETQ(_/TIMERLIST                  , NIL)
-  SETQ($existingFiles               , MAKE_-HASHTABLE 'UEQUAL)
+  SETQ($existingFiles               , hashTable 'EQUAL)
   SETQ($functionTable               , NIL)
   SETQ($echoLineStack               , NIL)
   SETQ($slamFlag                    , NIL)

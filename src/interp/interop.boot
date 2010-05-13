@@ -262,7 +262,7 @@ $attributeDispatch :=
 
 
 orderedDefaults(conform,domform) ==
-  $depthAssocCache : local := MAKE_-HASHTABLE 'ID
+  $depthAssocCache : local := hashTable 'EQ
   conList := [x for x in orderCatAnc (op := opOf conform) | hasDefaultPackage op]
   acc := nil
   ancestors := ancestorsOf(conform,domform)

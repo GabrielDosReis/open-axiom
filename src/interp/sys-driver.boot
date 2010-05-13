@@ -198,7 +198,7 @@ initializeGlobalState() ==
                              $defaultOptimizationLevel)
   GCMSG(NIL)
   if have_to then
-    $superHash := MAKE_-HASHTABLE('UEQUAL)
+    $superHash := hashTable 'EQUAL
   initNewWorld()
 
   -- 1. Macros.
