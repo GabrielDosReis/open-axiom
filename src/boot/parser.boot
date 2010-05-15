@@ -734,11 +734,15 @@ bpLeave() ==
 
 ++ Return:
 ++   RETURN Assign
+++   Leave
+++   Throw
+++   And
 bpReturn()==
   (bpEqKey "RETURN" and  (bpAssign() or bpTrap()) and
 	 bpPush bfReturnNoName bpPop1()) 
-    or bpThrow()
-      or bpAnd()
+    or bpLeave()
+      or bpThrow()
+        or bpAnd()
  
  
 bpLogical()== bpLeftAssoc('(OR),function bpReturn)

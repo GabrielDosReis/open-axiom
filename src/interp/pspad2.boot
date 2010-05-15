@@ -168,7 +168,7 @@ formatDeftranREPEAT(itl,body) ==
   u := [x for x in itl | x is ["UNTIL",p]] or return nil
   nitl := SETDIFFERENCE(itl,u)
   pred := MKPF([p for ['UNTIL,p] in u],'or)
-  cond := ['IF,pred,['leave,n,nil],'%noBranch]
+  cond := ['IF,pred,["leave",n,nil],'%noBranch]
   nbody :=
     body is ['SEQ,:l,[.,n,x]] => ['SEQ,:l,x,['exit,n,cond]]
     ['SEQ,body,['exit,n,cond]]

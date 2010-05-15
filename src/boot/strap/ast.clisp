@@ -1596,6 +1596,7 @@
                          ((MEMQ (CADR |l|) |$fluidVars|) |$fluidVars|)
                          (T (CONS (CADR |l|) |$fluidVars|))))
                  (RPLACA (CDR |x|) (CADR |l|)))))
+             ((EQ U '|%Leave|) (RPLACA |x| 'RETURN))
              ((MEMQ U '(PROG LAMBDA)) (SETQ |newbindings| NIL)
               (LET ((|bfVar#110| (CADR |x|)) (|y| NIL))
                 (LOOP

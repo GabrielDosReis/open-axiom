@@ -1154,11 +1154,11 @@ markInsertBodyParts u ==
 --u is ["%LET",a,b] and constructor? opOf b => u
   u is ["%LET",a,b] and a is [op,:.] =>
     ["%LET",[markWrapPart x for x in a],markInsertBodyParts b]
-  u is [op,a,b] and op in '(_add _with IN %LET) =>
+  u is [op,a,b] and op in '(add with IN %LET) =>
     [op,markInsertBodyParts a,markInsertBodyParts b]
-  u is [op,a,b] and op in '(_: _:_: _pretend _@) =>
+  u is [op,a,b] and op in '(_: _:_: pretend _@) =>
     [op,markInsertBodyParts a,b]
-  u is [op,a,:x] and op in '(STEP return leave exit reduce) => 
+  u is [op,a,:x] and op in '(STEP _return _leave exit reduce) => 
     [op,a,:[markInsertBodyParts y for y in x]]
   u is [op,:x] and markPartOp? op => [op,:[markWrapPart y for y in x]]
   u is [op,:.] and constructor? op => u
