@@ -532,7 +532,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       QCAR code in '(getShellEntry ELT QREFELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
-      code is [x,name,number,u'] and x in '(setShellEntry SETELT QSETREFV) =>
+      code is [x,name,number,u'] and x in '(setShellEntry QSETREFV) =>
         update(u',copyvec,[[name,:number],:sofar])
   for i in 6..n repeat
     for u in copyvec.i repeat
@@ -634,7 +634,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
  
 ConstantCreator u ==
   null u => false
-  u is [q,.,.,u'] and (q in '(setShellEntry SETELT QSETREFV)) => 
+  u is [q,.,.,u'] and (q in '(setShellEntry QSETREFV)) => 
     ConstantCreator u'
   u is ['CONS,:.] => false
   true

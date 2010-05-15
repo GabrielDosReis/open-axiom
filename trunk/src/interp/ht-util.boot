@@ -60,28 +60,28 @@ htpName htPage ==
   htPage.0
 
 htpSetName(htPage, val) ==
-  SETELT(htPage, 0, val)
+  htPage.0 := val
 
 htpDomainConditions htPage ==
 -- List of Domain conditions
   htPage.1
 
 htpSetDomainConditions(htPage, val) ==
-  SETELT(htPage, 1, val)
+  htPage.1 := val
 
 htpDomainVariableAlist htPage ==
 -- alist of pattern variables and conditions
   htPage.2
 
 htpSetDomainVariableAlist(htPage, val) ==
-  SETELT(htPage, 2, val)
+  htPage.2 := val
 
 htpDomainPvarSubstList htPage ==
 -- alist of user pattern variables to system vars
   htPage.3
 
 htpSetDomainPvarSubstList(htPage, val) ==
-  SETELT(htPage, 3, val)
+  htPage.3 := val
 
 htpRadioButtonAlist htPage ==
 -- alist of radio button group names and labels
@@ -93,17 +93,17 @@ htpButtonValue(htPage, groupName) ==
       return buttonName
 
 htpSetRadioButtonAlist(htPage, val) ==
-  SETELT(htPage, 4, val)
+  htPage.4 := val
 
 htpInputAreaAlist htPage ==
 -- Alist of input-area labels, and default values
   htPage.5
 
 htpSetInputAreaAlist(htPage, val) ==
-  SETELT(htPage, 5, val)
+  htPage.5 := val
 
 htpAddInputAreaProp(htPage, label, prop) ==
-  SETELT(htPage, 5, [[label, nil, nil, nil, :prop], :htPage.5])
+  htPage.5 := [[label, nil, nil, nil, :prop], :htPage.5]
 
 htpPropertyList htPage ==
 -- Association list of user-defined properties
@@ -115,7 +115,7 @@ htpProperty(htPage, propName) ==
 htpSetProperty(htPage, propName, val) ==
   pair := assoc(propName, htPage.6)
   pair => pair.rest := val
-  SETELT(htPage, 6, [[propName, :val], :htPage.6])
+  htPage.6 := [[propName, :val], :htPage.6]
 
 htpLabelInputString(htPage, label) ==
 -- value user typed as input string on page
@@ -143,7 +143,7 @@ replacePercentByDollar s == fn(s,0,MAXINDEX s) where
 htpSetLabelInputString(htPage, label, val) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => SETELT(props, 0, STRINGIMAGE val)
+  props => props.0 := STRINGIMAGE val
   nil
 
 htpLabelSpadValue(htPage, label) ==
@@ -155,7 +155,7 @@ htpLabelSpadValue(htPage, label) ==
 htpSetLabelSpadValue(htPage, label, val) ==
 -- value user typed as input string on page
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => SETELT(props, 1, val)
+  props => props.1 := val
   nil
 
 htpLabelErrorMsg(htPage, label) ==
@@ -167,7 +167,7 @@ htpLabelErrorMsg(htPage, label) ==
 htpSetLabelErrorMsg(htPage, label, val) ==
 -- error message associated with input area
   props := LASSOC(label, htpInputAreaAlist htPage)
-  props => SETELT(props, 2, val)
+  props => props.2 := val
   nil
 
 htpLabelType(htPage, label) ==
@@ -205,7 +205,7 @@ htpPageDescription htPage ==
   htPage.7
 
 htpSetPageDescription(htPage, pageDescription) ==
-  SETELT(htPage, 7, pageDescription)
+  htPage.7 := pageDescription
 
 iht line ==
 -- issue a single hyperteTeX line, or a group of lines

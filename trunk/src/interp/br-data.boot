@@ -190,7 +190,7 @@ libdbTrim s ==
   k := MAXINDEX s
   k < 0 => s
   for i in 0..k repeat
-    s.i = $Newline => SETELT(s,i,char '_ )
+    s.i = $Newline => s.i := char " "
   trimString s
 
 checkCommentsForBraces(kind,sop,sigpart,comments) ==
