@@ -1,5 +1,12 @@
 2010-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot (shoeCompTran1): Handle %Leave expressions.
+	* boot/parser.boot (bpReturn): Parse leave-expressions too.
+	* interp/mark.boot (markInsertBodyParts): properly escape Boot
+	keywords. 
+
+2010-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (SETELT): Remove.
 	* interp/br-data.boot: Remove use of SETELT.
 	* interp/br-saturn.boot: Likewise.

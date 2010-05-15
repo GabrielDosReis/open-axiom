@@ -771,7 +771,7 @@
 (DEFUN |bpReturn| ()
   (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))
            (|bpPush| (|bfReturnNoName| (|bpPop1|))))
-      (|bpThrow|) (|bpAnd|)))
+      (|bpLeave|) (|bpThrow|) (|bpAnd|)))
 
 (DEFUN |bpLogical| () (|bpLeftAssoc| '(OR) #'|bpReturn|))
 

@@ -927,6 +927,7 @@ shoeCompTran1 x==
 	 MEMQ(second l,$fluidVars)=>$fluidVars
 	 [second l,:$fluidVars]
       x.rest.first := second l
+  U = "%Leave" => x.first := "RETURN"
   U in '(PROG LAMBDA) =>
     newbindings:=nil
     for y in second x repeat
