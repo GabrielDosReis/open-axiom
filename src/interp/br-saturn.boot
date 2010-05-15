@@ -550,7 +550,7 @@ htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
     string? pageDescrip => [pageDescrip, :htPage.7]
     nconc(nreverse COPY_-LIST pageDescrip, htPage.7)
-  SETELT(htPage, 7, newDescript)
+  htPage.7 := newDescript
 
 
 htProcessBcStrings strings ==
@@ -1426,7 +1426,7 @@ htEndTabular() ==
 
 htPopSaturn s ==
   pageDescription := $saturnPage.7
-  pageDescription is [=s,:b] => SETELT($saturnPage, 7, rest pageDescription)
+  pageDescription is [=s,:b] => $saturnPage.7 := rest pageDescription
   nil
 
 htBeginTable() ==

@@ -106,7 +106,7 @@ capitalize s ==
       ("default package" . "Default Package"))) 
    or
     res := COPY_-SEQ s
-    SETELT(res,0,UPCASE res.0)
+    res.0 := UPCASE res.0
     res
 
 escapeSpecialIds u ==   --very expensive function

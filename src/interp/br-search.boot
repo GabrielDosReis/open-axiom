@@ -603,7 +603,8 @@ stripOffSegments(s,n) ==
 replaceTicksBySpaces s ==
   n := -1
   max := MAXINDEX s
-  while (n := charPosition(char '_`,s,n + 1)) <= max repeat SETELT(s,n,char '_ )
+  while (n := charPosition(char '_`,s,n + 1)) <= max repeat 
+    s.n := char " "
   s
 
 checkFilter filter ==

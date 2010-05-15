@@ -363,7 +363,7 @@ consDomainForm(x,dc) ==
 NRTdescendCodeTran(u,condList) ==
   null u => nil
   u is ['LIST] => nil
-  u is [op,.,i,a] and op in '(setShellEntry SETELT QSETREFV) =>
+  u is [op,.,i,a] and op in '(setShellEntry QSETREFV) =>
     null condList and a is ['CONS,fn,:.] =>
       u.first := 'LIST
       u.rest := nil

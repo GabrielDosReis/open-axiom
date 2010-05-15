@@ -213,7 +213,7 @@ oldAxiomCategoryNthParent([.,.,.,parvec,dom], n, env) ==
   catform := parvec.(n-1)
   VECTORP KAR catform => catform
   newcat := oldAxiomPreCategoryBuild(catform,dom,nil)
-  SETELT(parvec, n-1, newcat)
+  parvec.(n-1) := newcat
   newcat
 
 oldAxiomCategoryBuild([catform,:.], dom, env) ==
