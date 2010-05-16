@@ -1315,7 +1315,7 @@
                       (IDENTP A)
                       (NUMP A)
                       (AND (consp A) (EQ (car A) 'QUOTE)))
-                    `((SETELT ,sv ,i ,a)))
+                    `((SETF (ELT ,sv ,i) ,a)))
                   ( (OR (consp A) (simple-vector-p A))
                     `((setq ,w (ELT ,sv ,i))
                       ,@(RCQGENEXP W A QFLAG))))
