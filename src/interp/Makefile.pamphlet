@@ -124,7 +124,6 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	g-cndata.$(FASLEXT)	database.$(FASLEXT)	\
 	debug.$(FASLEXT)	dq.$(FASLEXT)		\
 	fname.$(FASLEXT)	format.$(FASLEXT)	\
-	def.$(FASLEXT)	        g-boot.$(FASLEXT)	\
 	g-error.$(FASLEXT)	g-opt.$(FASLEXT)	\
 	ggreater.$(FASLEXT)				\
 	hypertex.$(FASLEXT)	\
@@ -189,16 +188,6 @@ first time they are called. Loading the files overwrites
 the autoload function call and re-calls the function. 
 Any subsequent calls will run the compiled code.
 
-Notice that the object file [[def.$(FASLEXT)]] appears on both the
-[[OBJS]] and [[TRANOBJS]] lists.  In normal situation, parsing 
-precedes translation; consequently the file [[def]] is loaded by the 
-parser, so that it does not need to be reloaded by the translator. 
-However, it may theoretically be that a translation could happen without 
-prior parsing (in case someone types in a parse tree for SPAD code).  
-Consequently, it must be ensured that [[def.]] is still loaded in that
-configuration.  In the long term, the autoload machinery need
-rethinking.
-
 The {\bf OCOBJS} list contains files from the old compiler. Again,
 ``old'' is meaningless. These files should probably be autoloaded.
 <<environment>>=
@@ -247,8 +236,7 @@ many compiler functions by versions contain in this files.
 (which replace compiler functions) {\em must} be autoloaded).
 <<environment>>=
 TRANOBJS= ${AUTO}/wi1.$(FASLEXT) ${AUTO}/wi2.$(FASLEXT) ${AUTO}/pspad1.$(FASLEXT) \
-	  ${AUTO}/pspad2.$(FASLEXT) ${AUTO}/mark.$(FASLEXT) ${AUTO}/nspadaux.$(FASLEXT) \
-	  ${AUTO}/def.$(FASLEXT)
+	  ${AUTO}/pspad2.$(FASLEXT) ${AUTO}/mark.$(FASLEXT) ${AUTO}/nspadaux.$(FASLEXT)
 
 autoload_objects += $(TRANOBJS)
 
@@ -597,10 +585,9 @@ mark.$(FASLEXT): macros.$(FASLEXT)
 parse.$(FASLEXT): metalex.$(FASLEXT) postpar.$(FASLEXT)
 packtran.$(FASLEXT): sys-macros.$(FASLEXT)
 postpar.$(FASLEXT): macros.$(FASLEXT)
-bootlex.$(FASLEXT): preparse.$(FASLEXT) def.$(FASLEXT) \
+bootlex.$(FASLEXT): preparse.$(FASLEXT) macros.$(FASLEXT) \
 			nlib.$(FASLEXT) sys-globals.$(FASLEXT)
 newaux.$(FASLEXT): macros.$(FASLEXT)
-def.$(FASLEXT): macros.$(FASLEXT)
 comp.$(FASLEXT): macros.$(FASLEXT)
 preparse.$(FASLEXT): fnewmeta.$(FASLEXT)
 fnewmeta.$(FASLEXT): parsing.$(FASLEXT)
@@ -649,10 +636,9 @@ info.$(FASLEXT): g-util.$(FASLEXT)
 slam.$(FASLEXT): g-timer.$(FASLEXT)
 clammed.$(FASLEXT): g-timer.$(FASLEXT)
 clam.$(FASLEXT): g-timer.$(FASLEXT)
-g-opt.$(FASLEXT): def.$(FASLEXT)
+g-opt.$(FASLEXT): macros.$(FASLEXT)
 g-timer.$(FASLEXT): macros.$(FASLEXT) g-util.$(FASLEXT)
 msgdb.$(FASLEXT): g-util.$(FASLEXT)
-g-boot.$(FASLEXT): def.$(FASLEXT) g-util.$(FASLEXT)
 g-error.$(FASLEXT): diagnostics.$(FASLEXT) g-util.$(FASLEXT)
 c-util.$(FASLEXT): g-util.$(FASLEXT) g-opt.$(FASLEXT)
 pathname.$(FASLEXT): nlib.$(FASLEXT)

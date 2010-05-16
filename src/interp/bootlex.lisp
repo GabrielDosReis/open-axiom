@@ -45,7 +45,7 @@
 
 (import-module "sys-globals")
 (IMPORT-MODULE "preparse")
-(IMPORT-MODULE "def")
+(IMPORT-MODULE "macros")
 (IMPORT-MODULE "nlib")
 (in-package "BOOT")
 
