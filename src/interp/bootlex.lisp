@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -363,7 +363,7 @@ or the chracters ?, !, ' or %"
          (do ((i 0 (1+ i))
               (k (maxindex x)))
              ((> i k))
-           (if (LET ((Y (LASSOC (ELT X I) AL))) (SETELT X I Y))
+           (if (LET ((Y (LASSOC (ELT X I) AL))) (SETF (ELT X I) Y))
                (TRANSLABEL1 (ELT X I) AL))))
         ((ATOM X) NIL)
         ((LET ((Y (LASSOC (FIRST X) AL)))

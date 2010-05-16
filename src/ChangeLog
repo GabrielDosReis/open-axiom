@@ -1,5 +1,14 @@
 2010-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/daase.lisp ($ConstructorCache): Declare.
+	* interp/bootlex.lisp: Fix use of SETELT.
+	* interp/macros.lisp: Likewise.
+	* interp/preparse.lisp: Likewise.
+	* interp/spad.lisp: Likewise.
+	* interp/vmlisp.lisp: Likewise.
+
+2010-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (shoeCompTran1): Handle %Leave expressions.
 	* boot/parser.boot (bpReturn): Parse leave-expressions too.
 	* interp/mark.boot (markInsertBodyParts): properly escape Boot
