@@ -155,3 +155,20 @@ validateVariableNameOrElse var ==
   not IDENTP var => throwKeyedMsg("S2IS0016",[STRINGIMAGE var])
   var in '(% %%) => throwKeyedMsg("S2IS0050",[var])
   true
+
+--%
+
+flattenCOND body ==
+  -- transforms nested COND clauses to flat ones, if possible
+  body isnt ['COND,:.] => body
+  ['COND,:extractCONDClauses body]
+ 
+extractCONDClauses clauses ==
+  -- extracts nested COND clauses into a flat structure
+  clauses is ['COND, [pred1,:act1],:restClauses] =>
+    if act1 is [['PROGN,:acts]] then act1 := acts
+    restClauses is [[''T,restCond]] =>
+      [[pred1,:act1],:extractCONDClauses restCond]
+    [[pred1,:act1],:restClauses]
+  [[''T,clauses]]
+ 

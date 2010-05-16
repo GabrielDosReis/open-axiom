@@ -886,7 +886,7 @@ setqMultiple(nameList,val,m,e) ==
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
   if assignList="failed" then NIL
-  else [MKPROGN [x,:assignList,g],m',e]
+  else [mkpf([x,:assignList,g],'PROGN),m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList~=#valList =>

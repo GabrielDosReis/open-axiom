@@ -1,5 +1,13 @@
 2010-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-util.boot (flattenCOND): Move from g-boot.boot.
+	(extractCONDClauses): Likewise.
+	* interp/g-boot.boot: Remove.
+	* interp/def.lisp: Likewise.
+	* interp/Makefile.pamphlet: Adjust dependencies.
+
+2010-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/property.lisp: Clean up.
 
 2010-05-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
