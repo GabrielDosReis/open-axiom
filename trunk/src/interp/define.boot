@@ -123,7 +123,7 @@ emitSubdomainInfo(form,super,pred) ==
   pred := eqSubst($AtVariables,rest form,pred)
   super := eqSubst($AtVariables,rest form,super)
   evalAndRwriteLispForm("evalOnLoad2",["noteSubDomainInfo",
-     quoteForm first form,quoteForm super, quoteForm pred])
+     quoteForm form.op,quoteForm super, quoteForm pred])
 
 
 ++ List of operations defined in a given capsule
@@ -237,11 +237,11 @@ checkRepresentation(addForm,body,env) ==
       stackAndThrow('"You cannot define %1b in category defaults",["Rep"])
     if args ~= nil then
       stackAndThrow('"%1b does take arguments",["Rep"])
-    if first sig ~= nil then
+    if sig.target ~= nil then
       stackAndThrow('"You cannot specify type for %1b",["Rep"])
     -- Now, trick the rest of the compiler into believing that
     -- `Rep' was defined the Old Way, for lookup purpose.
-    stmt.first := "%LET"
+    stmt.op := "%LET"
     stmt.rest := ["Rep",domainRep]
     $useRepresentationHack := false          -- Don't confuse `Rep' and `%'.
 
@@ -271,12 +271,12 @@ compDefine1(form,m,e) ==
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
-     => [lhs,m,put(first lhs,"macro",rhs,e)]
+     => [lhs,m,put(lhs.op,"macro",rhs,e)]
   checkParameterNames rest lhs
   null signature.target and not MEMQ(KAR rhs,$BuiltinConstructorNames) and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
-      compDefine1(['DEF,lhs,[first sig,:rest signature],specialCases,rhs],m,e)
+      compDefine1(['DEF,lhs,[sig.target,:signature.source],specialCases,rhs],m,e)
   if signature.target=$Category then $insideCategoryIfTrue:= true
  
 -- RDJ (11/83): when argument and return types are all declared,
@@ -287,13 +287,13 @@ compDefine1(form,m,e) ==
 -- 2. if signature list for arguments is not empty, replace ('DEF,..) by
 --       ('where,('DEF,..),..) with an empty signature list;
 --     otherwise, fill in all NILs in the signature
-  or/[x ~= nil for x in rest signature] => compDefWhereClause(form,m,e)
+  or/[x ~= nil for x in signature.source] => compDefWhereClause(form,m,e)
   signature.target=$Category =>
     compDefineCategory(form,m,e,nil,$formalArgList)
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
     if null signature.target then signature:=
       [getTargetFromRhs(lhs,rhs,giveFormalParametersValues(rest lhs,e)),:
-          rest signature]
+          signature.source]
     rhs:= addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,specialCases,rhs],m,e,nil,
       $formalArgList)
@@ -307,7 +307,7 @@ compDefineAddSignature([op,:argl],signature,e) ==
   (sig:= hasFullSignature(argl,signature,e)) and
    not assoc(['$,:sig],LASSOC('modemap,getProplist(op,e))) =>
      declForm:=
-       [":",[op,:[[":",x,m] for x in argl for m in rest sig]],first signature]
+       [":",[op,:[[":",x,m] for x in argl for m in sig.source]],signature.target]
      [.,.,e]:= comp(declForm,$EmptyMode,e)
      e
   e
@@ -465,7 +465,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
  
     -- 2. obtain signature
     signature':=
-      [first signature,
+      [signature.target,
         :[getArgumentModeOrMoan(a,$definition,e) for a in argl]]
     e:= giveFormalParametersValues(argl,e)
  
@@ -482,7 +482,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
     $functorStats: local:= [0,0]
     $getDomainCode: local := nil
     $addForm: local:= nil
-    for x in sargl for t in rest signature' repeat
+    for x in sargl for t in signature'.source repeat
       [.,.,e]:= compMakeDeclaration(x,t,e)
  
     -- 4. compile body in environment of %type declarations for arguments
@@ -542,8 +542,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 mkConstructor: %Form -> %Form
 mkConstructor form ==
   atom form => ['devaluate,form]
-  null rest form => ['QUOTE,[first form]]
-  ['LIST,MKQ first form,:[mkConstructor x for x in rest form]]
+  null rest form => ['QUOTE,[form.op]]
+  ['LIST,MKQ form.op,:[mkConstructor x for x in rest form]]
  
 compDefineCategory(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
@@ -610,7 +610,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
        isCategoryPackageName $op or MEMQ($op,$mutableDomains)
                                     --true if domain has mutable state
     signature':=
-      [first signature,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
+      [signature.target,:[getArgumentModeOrMoan(a,form,$e) for a in argl]]
     $functorForm := $form := [$op,:argl]
     if null signature'.target then signature':=
       modemap2Signature getModemap($form,$e)
@@ -649,7 +649,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     --  domain D in argl,check its signature: if domain, its type is Join(A1,..,An);
     --  in this case, D is replaced by D1,..,Dn (gensyms) which are set
     --  to the A1,..,An view of D
-    makeFunctorArgumentParameters(argl,rest signature',first signature')
+    makeFunctorArgumentParameters(argl,signature'.source,signature'.target)
     $functorLocalParameters := argl
 
     --  4. compile body in environment of %type declarations for arguments
@@ -703,7 +703,7 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         -- see NRTsetVector4 for initial setting of $lisplibCategoriesExtended
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
-            NRTgetLookupFunction($functorForm,CADAR $lisplibModemap,$NRTaddForm)
+            NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm)
             --either lookupComplete (for forgetful guys) or lookupIncomplete
         $byteAddress :local := 0
         $byteVec :local := nil
@@ -881,18 +881,18 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
   -- 1. create sigList= list of all signatures which have embedded
   --    declarations moved into global variable $sigAlist
   sigList:=
-    [transformType fetchType(a,x,e,form) for a in rest form for x in rest signature]
+    [transformType fetchType(a,x,e,form) for a in rest form for x in signature.source]
        where
         fetchType(a,x,e,form) ==
           x => x
           getmode(a,e) or userError concat(
-            '"There is no mode for argument",a,'"of function",first form)
+            '"There is no mode for argument",a,'"of function",form.op)
         transformType x ==
           atom x => x
           x is [":",R,Rtype] =>
             ($sigAlist:= [[R,:transformType Rtype],:$sigAlist]; x)
           x is ['Record,:.] => x --RDJ 8/83
-          [first x,:[transformType y for y in rest x]]
+          [x.op,:[transformType y for y in rest x]]
  
   -- 2. replace each argument of the form (|| x p) by x, recording
   --    the given predicate in global variable $predAlist
@@ -925,8 +925,8 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
       ["where",defform,:whereList] where
         defform:=
           ['DEF,form'',signature',specialCases,body] where
-            form'':= [first form,:argList]
-            signature':= [first signature,:[nil for x in rest signature]]
+            form'':= [form.op,:argList]
+            signature':= [signature.target,:[nil for x in signature.source]]
  
 orderByDependency(vl,dl) ==
   -- vl is list of variables, dl is list of dependency-lists
@@ -963,9 +963,9 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     $returnMode:= m
     -- Change "^" to "**" in definitions.  All other places have 
     -- been changed before we get here.
-    if first form = "^" then 
+    if form.op = "^" then 
       sayBrightly ['"Replacing", :bright '"^", '"with",:bright '"**"]
-      form.first := "**"
+      form.op := "**"
     [$op,:argl]:= form
     $form:= [$op,:argl]
     argl:= stripOffArgumentConditions argl
@@ -973,28 +973,28 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
  
     --let target and local signatures help determine modes of arguments
     argModeList:=
-      identSig:= hasSigInTargetCategory(argl,form,first signature,e) =>
+      identSig:= hasSigInTargetCategory(argl,form,signature.target,e) =>
         (e:= checkAndDeclare(argl,form,identSig,e); rest identSig)
       [getArgumentModeOrMoan(a,form,e) for a in argl]
     argModeList:= stripOffSubdomainConditions(argModeList,argl)
-    signature':= [first signature,:argModeList]
+    signature':= [signature.target,:argModeList]
     if null identSig then  --make $op a local function
       $e := put($op,'mode,['Mapping,:signature'],$e)
  
     --obtain target type if not given
-    if null first signature' then signature':=
+    if null signature'.target then signature':=
       identSig => identSig
-      getSignature($op,rest signature',e) or return nil
+      getSignature($op,signature'.source,e) or return nil
     e:= giveFormalParametersValues(argl,e)
  
     $signatureOfForm:= signature' --this global is bound in compCapsuleItems
     $functionLocations := [[[$op,$signatureOfForm],:lineNumber],
       :$functionLocations]
-    e:= addDomain(first signature',e)
+    e:= addDomain(signature'.target,e)
     e:= compArgumentConditions e
  
     if $profileCompiler then
-      for x in argl for t in rest signature' repeat 
+      for x in argl for t in signature'.source repeat 
         profileRecord('arguments,x,t)
 
     --4. introduce needed domains into extendedEnv
@@ -1062,8 +1062,8 @@ hasSigInTargetCategory(argl,form,opsig,e) ==
       [sig for sig in sigs |
           fn(sig,opsig,mList)] where
             fn(sig,opsig,mList) ==
-              (null opsig or opsig=first sig) and
-                (and/[compareMode2Arg(x,m) for x in mList for m in rest sig])
+              (null opsig or opsig=sig.target) and
+                (and/[compareMode2Arg(x,m) for x in mList for m in sig.source])
   c:= #potentialSigList
   1=c => first potentialSigList
     --accept only those signatures op right length which match declared modes
@@ -1088,7 +1088,7 @@ getArgumentMode(x,e) ==
 checkAndDeclare(argl,form,sig,e) ==
 -- arguments with declared types must agree with those in sig;
 -- those that don't get declarations put into e
-  for a in argl for m in rest sig repeat
+  for a in argl for m in sig.source repeat
     isQuasiquote m => nil	  -- we just built m from a.
     m1:= getArgumentMode(a,e) =>
       not modeEqual(m1,m) =>
@@ -1096,7 +1096,7 @@ checkAndDeclare(argl,form,sig,e) ==
           '" not ",m1,'%l,:stack]
     e:= put(a,'mode,m,e)
   if stack then
-    sayBrightly ['"   Parameters of ",:bright first form,
+    sayBrightly ['"   Parameters of ",:bright form.op,
       '" are of wrong type:",'%l,:stack]
   e
  
@@ -1106,7 +1106,7 @@ getSignature(op,argModeList,$e) ==
       removeDuplicates
         [sig
           for [[dc,:sig],[pred,:.]] in (mmList:= get(op,'modemap,$e)) | dc='_$
-            and rest sig=argModeList and knownInfo pred]) => first sigl
+            and sig.source = argModeList and knownInfo pred]) => first sigl
   null sigl =>
     (u:= getmode(op,$e)) is ['Mapping,:sig] => sig
     SAY '"************* USER ERROR **********"
@@ -1314,7 +1314,7 @@ bootStrapError(functorForm,sourceFile) ==
   ['COND, _
     ['$bootStrapMode, _
         ['VECTOR,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
-    [''T, ['systemError,['LIST,''%b,MKQ first functorForm,''%d,'"from", _
+    [''T, ['systemError,['LIST,''%b,MKQ functorForm.op,''%d,'"from", _
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
 
 compAdd(['add,$addForm,capsule],m,e) ==
@@ -1324,7 +1324,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [['COND, _
        ['$bootStrapMode, _
            code],_
-       [''T, ['systemError,['LIST,''%b,MKQ first $functorForm,''%d,'"from", _
+       [''T, ['systemError,['LIST,''%b,MKQ $functorForm.op,''%d,'"from", _
          ''%b,MKQ namestring _/EDITFILE,''%d,'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
@@ -1409,13 +1409,13 @@ compSingleCapsuleItem(item,$predl,$e) ==
 
 ++ subroutine of doIt.  Called to generate runtime noop insn.
 mutateToNothing item ==
-  item.first := 'PROGN
+  item.op := 'PROGN
   item.rest := NIL
 
 doIt(item,$predl) ==
   $GENNO: local:= 0
   item is ['SEQ,:l,['exit,1,x]] =>
-    item.first := "PROGN"
+    item.op := "PROGN"
     lastNode(item).first := x
     for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
         --This will RPLAC as appropriate
@@ -1426,7 +1426,7 @@ doIt(item,$predl) ==
     -- a cycle otherwise.
     u:= ["import", [first item,:rest item]]
     stackWarning('"Use: import %1p",[[first item,:rest item]])
-    item.first := first u
+    item.op := u.op
     item.rest := rest u
     doIt(item,$predl)
   item is ["%LET",lhs,rhs,:.] =>
@@ -1448,10 +1448,10 @@ doIt(item,$predl) ==
         if $optimizeRep then
           nominateForInlining $Representation
     code is ["%LET",:.] =>
-      item.first := "setShellEntry"
+      item.op := "setShellEntry"
       rhsCode := rhs'
       item.rest := ['$,NRTgetLocalIndex lhs,rhsCode]
-    item.first := first code
+    item.op := code.op
     item.rest := rest code
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ["import",:doms] =>
@@ -1471,7 +1471,7 @@ doIt(item,$predl) ==
   item is ['DEF,[op,:.],:.] =>
     body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
-    item.first := "CodeDefine"
+    item.op := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
     second(item).rest := [$signatureOfForm]
       --This is how the signature is updated for buildFunctor to recognise
@@ -1523,7 +1523,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   if y~="%noBranch" then
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
-  item.first := "COND"
+  item.op := "COND"
   item.rest := [[p',x,:x'],['(QUOTE T),y,:y']]
  where localExtras(oldFLP) ==
    EQ(oldFLP,$functorLocalParameters) => NIL
@@ -1633,10 +1633,10 @@ DomainSubstitutionFunction(parameters,body) ==
            --bound in buildFunctor
            --For categories, bound and used in compDefineCategory
           MKQ g
-        first body="QUOTE" => body
+        body.op = "QUOTE" => body
         cons? $definition and
-            isFunctor first body and
-              first body ~= first $definition
+            isFunctor body.op and 
+              body.op ~= $definition.op
           =>  ['QUOTE,optimize body]
         [Subst(parameters,u) for u in body]
   not (body is ["Join",:.]) => body

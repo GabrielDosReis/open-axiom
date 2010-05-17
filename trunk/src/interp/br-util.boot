@@ -264,7 +264,7 @@ args2LispString x ==
       strconc('",",form2LispString first x,fnTailTail rest x)
 
 dbConstructorKind x ==
-  target := CADAR getConstructorModemapFromDB x
+  target := getConstructorModemapFromDB(x).mmTarget
   target = '(Category) => 'category
   target is ['CATEGORY,'package,:.] => 'package
   HGET($defaultPackageNamesHT,x) => 'default_ package

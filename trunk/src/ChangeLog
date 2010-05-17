@@ -1,5 +1,15 @@
 2010-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/as.boot: Clean up.
+	* interp/br-util.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
+2010-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-util.boot (flattenCOND): Move from g-boot.boot.
 	(extractCONDClauses): Likewise.
 	* interp/g-boot.boot: Remove.

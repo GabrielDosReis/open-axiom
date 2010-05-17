@@ -89,7 +89,7 @@ asyParents(conform) ==
   con:= opOf conform
 --formals := TAKE(#formalParams,$TriangleVariableList)
   modemap := LASSOC(con,$mmAlist)
-  $constructorCategory :local := asySubstMapping CADAR modemap
+  $constructorCategory :local := asySubstMapping modemap.mmTarget
   for x in folks $constructorCategory repeat
 --  x := SUBLISLIS(formalParams,formals,x)
 --  x := SUBLISLIS(IFCDR conform,formalParams,x)
@@ -144,7 +144,7 @@ asMakeAlist con ==
   abb := asyAbbreviation(con,#(KDR sig))
   if null KDR form then PUT(opOf form,'NILADIC,'T)
   modemap := asySubstMapping LASSOC(con,$mmAlist)
-  $constructorCategory :local := CADAR modemap
+  $constructorCategory :local := modemap.mmTarget
   parents := mySort HGET($parentsHash,con)
 --children:= mySort HGET($childrenHash,con)
   alists  := HGET($opHash,con)
@@ -168,7 +168,7 @@ asMakeAlist con ==
   constructorModemap  := SUBLISLIS(falist,KDR form,modemap)
 --TTT fix a niladic category constructormodemap (remove the joins)
   if kind = 'category then
-     SETF(CADAR(constructorModemap),['Category])
+     constructorModemap.mmTarget := $Category
   res := [['constructorForm,:form],:constantPart,:niladicPart,
            ['constructorKind,:kind],
              ['constructorModemap,:constructorModemap],

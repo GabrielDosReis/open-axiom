@@ -108,7 +108,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
      else s for s in sigList]
   NewLocals:= nil
   for s in sigList repeat
-    NewLocals:= union(NewLocals,Prepare CADAR s) where
+    NewLocals:= union(NewLocals,Prepare s.mmTarget) where
       Prepare u == "union"/[Prepare2 v for v in u]
       Prepare2 v ==
         v is "$" => nil
