@@ -189,7 +189,7 @@ comp3(x,m,$e) ==
      y = x => [["QUOTE",x], m, $e]
      nil
   atom x => compAtom(x,m,e)
-  op:= first x
+  op:= x.op
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
   op=":" => compColon(x,m,e)
   op="::" => compCoerce(x,m,e)
@@ -284,7 +284,7 @@ freeVarUsage([.,vars,body],env) ==
           free
         getmode(u,e) = nil => free
         [[u,:1],:free]
-      op := first u
+      op := u.op
       op in '(QUOTE GO function) => free
       op = "LAMBDA" =>
         bound := UNIONQ(bound, second u)
@@ -383,7 +383,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
-  (op := first x) and IDENTP op and (fn := GET(op,"SPECIAL")) =>
+  (op := x.op) and IDENTP op and (fn := GET(op,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
@@ -1208,7 +1208,7 @@ compIf(["IF",a,b,c],m,E) ==
 
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
-  (op:= first expr)="QUOTE" => ValueFlag and level=exitCount
+  (op:= expr.op)="QUOTE" => ValueFlag and level=exitCount
   op="TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil

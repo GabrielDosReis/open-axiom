@@ -342,7 +342,7 @@ substNames(domainName,viewName,functorForm,opalist) ==
        -- putInLocalDomainReferences
   [[:SUBSTQ("$","$$",SUBSTQ(nameForDollar,"$",modemapform)),
        [sel, viewName,if domainName = "$" then pos else
-                                         CADAR modemapform]]
+                                         modemapform.mmTarget]]
      for [:modemapform,[sel,"$",pos]] in
           EQSUBSTLIST(KDR functorForm,$FormalMapVariableList, opalist)]
  
