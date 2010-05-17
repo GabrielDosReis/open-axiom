@@ -1,3 +1,9 @@
+2010-05-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/fnewmeta.lisp: Remove out-of-date META grammar.
+	(PARSE-LabelExpr): Remove.
+	* interp/newaux.lisp: Remove Nud property for << and >>.
+
 2010-05-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/as.boot: Clean up.
