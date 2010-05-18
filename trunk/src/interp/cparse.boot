@@ -37,167 +37,192 @@ namespace BOOT
 -- npTerm introduced between npRemainder and npSum
 -- rhs of assignment changed from npStatement to npGives
 
+++ Entry point into the parser.
 npParse stream ==
-    $inputStream:local := stream
-    $stack:local       :=nil
-    $stok:local:=nil
-    $ttok:local:=nil
-    npFirstTok()
-    found:=CATCH("TRAPPOINT",npItem())
-    if found="TRAPPED"
-    then
-      ncSoftError(tokPosn $stok,'S2CY0006, [])
-      pfWrong(pfDocument  '"top level syntax error" ,pfListOf nil)
-    else if not null $inputStream
-         then
-          ncSoftError(tokPosn $stok,'S2CY0002,[])
-          pfWrong(pfDocument ['"input stream not exhausted"],pfListOf [])
-         else if null $stack
-              then
-                 ncSoftError(tokPosn $stok,'S2CY0009, [])
-                 pfWrong(pfDocument ['"stack empty"],pfListOf [])
-              else
-                 first $stack
+  $inputStream: local := stream
+  $stack: local :=nil
+  $stok: local := nil
+  $ttok: local := nil
+  npFirstTok()
+  found := CATCH("TRAPPOINT",npItem())
+  found = "TRAPPED" =>
+    ncSoftError(tokPosn $stok,'S2CY0006, [])
+    pfWrong(pfDocument  '"top level syntax error" ,pfListOf nil)
+  $inputStream ~= nil =>
+    ncSoftError(tokPosn $stok,'S2CY0002,[])
+    pfWrong(pfDocument ['"input stream not exhausted"],pfListOf [])
+  $stack = nil => 
+    ncSoftError(tokPosn $stok,'S2CY0009, [])
+    pfWrong(pfDocument ['"stack empty"],pfListOf [])
+  first $stack
 
+++ Parse a toplevel item.
+++   Item ::= QualifiedDefinition [ SEMICOLON Item ]
 npItem()==
-     npQualDef() =>
-            npEqKey "SEMICOLON" =>
-                      [a,b]:=npItem1 npPop1 ()
-                      c:=pfEnSequence b
-                      a => npPush c
-                      npPush pfNovalue c
-            npPush pfEnSequence npPop1 ()
-     false
+  npQualDef() =>
+    npEqKey "SEMICOLON" =>
+      [a,b] := npItem1 npPop1()
+      c := pfEnSequence b
+      a => npPush c
+      npPush pfNovalue c
+    npPush pfEnSequence npPop1 ()
+  false
 
+++ Subroutine of npItem1.
 npItem1 c==
-     npQualDef() =>
-            npEqKey "SEMICOLON" =>
-                      [a,b]:=npItem1 npPop1 ()
-                      [a,append(c,b)]
-            [true,append (c,npPop1())]
-     [false,c]
+  npQualDef() =>
+    npEqKey "SEMICOLON" =>
+      [a,b] := npItem1 npPop1()
+      [a,append(c,b)]
+    [true,append (c,npPop1())]
+  [false,c]
 
+++ Get the first token, if any, from the current input stream.
 npFirstTok()==
-      $stok:=
-          if null $inputStream
-          then tokConstruct("ERROR","NOMORE",tokPosn $stok)
-          else first $inputStream
-      $ttok:=tokPart $stok
+  $stok :=
+    $inputStream = nil => tokConstruct("ERROR","NOMORE",tokPosn $stok)
+    first $inputStream
+  $ttok := tokPart $stok
 
+++ Get next token from the current input stream.  
 npNext() ==
-     $inputStream := rest($inputStream)
-     npFirstTok()
+  $inputStream := rest $inputStream
+  npFirstTok()
 
+++ Returns a snapshot of the current parser state.  
 npState() == 
   [$inputStream,:$stack]
 
-npRestore(x)==
-      $inputStream:=first x
-      npFirstTok()
-      $stack:=rest x
-      true
+++ Restore the parser state to a prevously saved state `x'.  
+npRestore x ==
+  $inputStream := first x
+  npFirstTok()
+  $stack := rest x
+  true
 
-npPush x==
+++ Push a new parse tree on the current parse tree stack.  
+npPush x ==
   $stack := [x,:$stack]
 
-npPushId()==
-   a:=GETL($ttok,'INFGENERIC)
-   $ttok:= if a then a else $ttok
-   $stack := [tokConstruct("id",$ttok,tokPosn $stok),:$stack]
-   npNext()
+++ If the current token designates an infix operator, push its
+++ name on the parsing tree stack, otherwise treat the token
+++ has a name.
+npPushId() ==
+  a := GETL($ttok,'INFGENERIC)
+  $ttok := if a then a else $ttok
+  $stack := [tokConstruct("id",$ttok,tokPosn $stok),:$stack]
+  npNext()
 
-npPop1()==
-       a:=first $stack
-       $stack:=rest $stack
-       a
+++ Remove the first item from the parse tree stack, and return it
+npPop1() ==
+  a := first $stack
+  $stack := rest $stack
+  a
 
-npPop2()==
-       a:= second $stack
-       $stack.rest := CDDR $stack
-       a
+++ Remove the second item from the parse tree stack, and return it.
+npPop2() ==
+  a := second $stack
+  $stack.rest := $stack.rest.rest
+  a
 
-npPop3()==
-       a:= third $stack
-       $stack.rest.rest := CDDDR $stack
-       a
+++ Remove the third item from the parse tree stack, and return it.
+npPop3() ==
+  a := third $stack
+  $stack.rest.rest := $stack.rest.rest.rest
+  a
 
-npParenthesized f==
-   npParenthesize("(",")",f)   or
-   npParenthesize("(|","|)",f)
+++ Parser combinator: parse the syntax `f' enclosed in round
+++ round brackets
+npParenthesized f ==
+   npParenthesize("(",")",f) or npParenthesize("(|","|)",f)
 
+++ Parser combinator: parse the syntax `f' enclosed in brackets
+++ as indicaed by `open' and `close'.
 npParenthesize (open,close,f)==
-    a:=$stok
-    npEqKey open =>
-         apply(f,nil) and (npEqKey close or npMissingMate(close,a))=> true
-         npEqKey close  =>  npPush  []
-         npMissingMate(close,a)
-    false
+  a := $stok
+  npEqKey open =>
+    apply(f,nil) and (npEqKey close or npMissingMate(close,a)) => true
+    npEqKey close => npPush []
+    npMissingMate(close,a)
+  false
 
+++ Parser combinator: parse a syntax composed of an opening bracket
+++ `open', followed by a syntax `f', terminated by the closing
+++ bracket `close'.  Use `fn' to construct the resulting parse tree.
 npEnclosed(open,close,fn,f)==
-    a:=$stok
-    npEqKey open =>
-        npEqKey close  => npPush FUNCALL(fn,a,pfTuple pfListOf [])
-        apply(f,nil) and (npEqKey close or npMissingMate(close,a))=>
-                   npPush FUNCALL (fn,a,pfEnSequence npPop1())
-        false
+  a := $stok
+  npEqKey open =>
+    npEqKey close  => npPush FUNCALL(fn,a,pfTuple pfListOf [])
+    apply(f,nil) and (npEqKey close or npMissingMate(close,a)) =>
+      npPush FUNCALL (fn,a,pfEnSequence npPop1())
     false
+  false
 
+++ Parser combinator: parse a round-bracket syntax.
+++ Note: The parenthesis are part of the parse tree.
 npParened f ==
-    npEnclosed("(",")",function pfParen,f) or
+  npEnclosed("(",")",function pfParen,f) or
     npEnclosed("(|","|)",function pfParen,f)
 
+++ Parser combinator: parse a square-bracket syntax.
+++ Note: The brackets are part of the parse tree.
 npBracked f ==
-    npEnclosed("[","]",function pfBracket,f) or
+  npEnclosed("[","]",function pfBracket,f) or
     npEnclosed("[|","|]",function pfBracketBar,f)
 
+++ Parser combinator: parse a curly-bracket syntax.
+++ Note: The braces are part of the parse tree.
 npBraced f ==
-    npEnclosed("{","}",function pfBrace,f) or
+  npEnclosed("{","}",function pfBrace,f) or
     npEnclosed("{|","|}",function pfBraceBar,f)
 
+++ Parser combinator: parse an angle-bracket syntax.
+++ Note: The angles are part of the parse tree.
 npAngleBared f ==
-    npEnclosed("<|","|>",function pfHide,f)
+  npEnclosed("<|","|>",function pfHide,f)
 
+++ Parser combinator: parse a bracketed syntax.
+++ Note: The brackets are part of the parse tree.
 npBracketed f==
   npParened f or npBracked f or npBraced f or npAngleBared f
 
+++ Parse combinator: parse a sequence of syntax `f' in a pile.  
 npPileBracketed f==
- if npEqKey "SETTAB"
- then if npEqKey "BACKTAB"
-      then npPush pfNothing()     -- never happens
-      else if apply(f,nil) and (npEqKey "BACKTAB" or npMissing "backtab")
-           then npPush pfPile npPop1()
-           else false
- else false
+  npEqKey "SETTAB" =>
+    npEqKey "BACKTAB" => npPush pfNothing()     -- never happens
+    apply(f,nil) and (npEqKey "BACKTAB" or npMissing "backtab") =>
+      npPush pfPile npPop1()
+    false
+  false
 
+++ Parser combinator: parse a either a single syntax `f', or a sequence
+++ of syntax `f' separated by syntax `g'. In case of a sequence, use
+++ `g' to build the resulting parse tree.
 npListofFun(f,h,g)==
-    if apply(f,nil)
-    then
-        if apply(h,nil) and (apply(f,nil) or npTrap())
-        then
-          a:=$stack
-          $stack:=nil
-          while apply(h,nil) and (apply(f,nil) or npTrap()) repeat 0
-          $stack := [nreverse $stack,:a]
-          npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
-        else
-          true
-    else false
+  apply(f,nil) =>
+    apply(h,nil) and (apply(f,nil) or npTrap()) =>
+      a := $stack
+      $stack := nil
+      while apply(h,nil) and (apply(f,nil) or npTrap()) repeat 0
+      $stack := [nreverse $stack,:a]
+      npPush FUNCALL(g, [npPop3(),npPop2(),:npPop1()])
+    true
+  false
 
+++ Parse combinator: parse a sequence of syntax `f' separated by
+++ token `str1'.  Build the resulting parse tree with `g'.
 npList(f,str1,g)== -- always produces a list, g is applied to it
-    if apply(f,nil)
-    then
-        if npEqKey str1 and (npEqKey "BACKSET" or true)
-                       and (apply(f,nil) or npTrap())
-        then
-          a:=$stack
-          $stack:=nil
-          while npEqKey str1 and (npEqKey "BACKSET" or true) and
-                             (apply(f,nil) or npTrap()) repeat 0
-          $stack := [nreverse $stack,:a]
-          npPush FUNCALL(g,  [npPop3(),npPop2(),:npPop1()])
-        else
-          npPush FUNCALL(g, [npPop1()])
-    else npPush FUNCALL(g, [])
+  apply(f,nil) =>
+    npEqKey str1 and (npEqKey "BACKSET" or true)
+                   and (apply(f,nil) or npTrap()) =>
+      a := $stack
+      $stack := nil
+      while npEqKey str1 and (npEqKey "BACKSET" or true) and
+                         (apply(f,nil) or npTrap()) repeat 0
+      $stack := [nreverse $stack,:a]
+      npPush FUNCALL(g,[npPop3(),npPop2(),:npPop1()])
+    npPush FUNCALL(g, [npPop1()])
+  npPush FUNCALL(g, [])
 
 
 npPPff f ==
@@ -229,108 +254,116 @@ npPC(f) ==
       or FUNCALL f
 
 
--- s must transform the head of the stack
+++ Parser combinator: Apply the parser `s' any number of time it
+++ it is possible.  Note that `s' transforms the the top of the
+++ parse tree stack.
+npAnyNo s ==
+  while apply(s,nil) repeat 0
+  true
 
-npAnyNo s==
-     while apply(s,nil) repeat 0
-     true
-
+++ Parser combinator: parse `keyword' followed by the syntax `p',
+++ and build the resulting parse tree with `f'.
 npAndOr(keyword,p,f)==
-   npEqKey keyword and (apply(p,nil) or npTrap())
-             and npPush FUNCALL(f, npPop1())
+  npEqKey keyword and (apply(p,nil) or npTrap()) and
+    npPush FUNCALL(f, npPop1())
 
+++ Parser combinator: parse a right-associative syntax with operand
+++ syntax `p', and operator `o'.
+++ p o p o p o p = (p o (p o (p o p)))
+++ p o p o = (p o p) o
 npRightAssoc(o,p)==
-    a:=npState()
-    if apply(p,nil)
-    then
-       while  npInfGeneric o and (npRightAssoc(o,p)
-               or (npPush pfApplication(npPop2(),npPop1());false)) repeat
-             npPush pfInfApplication(npPop2(),npPop2(),npPop1())
-       true
-    else
-       npRestore a
-       false
+  a := npState()
+  apply(p,nil) =>
+    while npInfGeneric o and (npRightAssoc(o,p)
+            or (npPush pfApplication(npPop2(),npPop1());false)) repeat
+      npPush pfInfApplication(npPop2(),npPop2(),npPop1())
+    true
+  npRestore a
+  false
 
--- p o p o p o p = (((p o p) o p) o p)
--- p o p o = (p o p) o
+++ Parser combinator: parse a left-associative syntax with operand
+++ syntax `p', and operators in `operations'.
+++ p o p o p o p = (((p o p) o p) o p)
+++ p o p o = (p o p) o
+npLeftAssoc(operations,parser) ==
+  apply(parser,nil) =>
+    while npInfGeneric(operations) and
+           (apply(parser,nil) or
+               (npPush pfApplication(npPop2(),npPop1());false)) repeat
+      npPush pfInfApplication(npPop2(),npPop2(),npPop1())
+    true
+  false
 
-npLeftAssoc(operations,parser)==
-    if apply(parser,nil)
-    then
-       while npInfGeneric(operations)
-         and (apply(parser,nil) or
-              (npPush pfApplication(npPop2(),npPop1());false))
-           repeat
-             npPush pfInfApplication(npPop2(),npPop2(),npPop1())
-       true
-    else false
-
-npInfixOp()==
-  CAAR $stok = "key" and
+++ Parse an infix operator name.
+npInfixOp() ==
+  $stok.first.first = "key" and
     GETL($ttok,"INFGENERIC") and npPushId()
 
-npInfixOperator()== npInfixOp() or
-        a:=npState()
-        b:=$stok
-        npEqKey "'" and npInfixOp() =>
-                npPush pfSymb (npPop1 (),tokPosn b)
-        npRestore a
-        npEqKey "BACKQUOTE" and  npInfixOp() =>
-                a:=npPop1()
-                npPush tokConstruct("idsy",tokPart a,tokPosn a)
-        npRestore a
-        false
+++ Parse an infix operator, either quoted or backquoted.    
+npInfixOperator() ==
+  npInfixOp() or
+    a := npState()
+    b := $stok
+    npEqKey "'" and npInfixOp() =>
+      npPush pfSymb(npPop1(),tokPosn b)
+    npRestore a
+    npEqKey "BACKQUOTE" and  npInfixOp() =>
+      a := npPop1()
+      npPush tokConstruct("idsy",tokPart a,tokPosn a)
+    npRestore a
+    false
 
-npInfKey s==  CAAR $stok="key" and  MEMQ($ttok,s) and npPushId()
+++ Parse any infix keyword in the list `s'.    
+npInfKey s ==
+  $stok.first.first = "key" and MEMQ($ttok,s) and npPushId()
 
-npDDInfKey s==
-    npInfKey s or
-        a:=npState()
-        b:=$stok
-        npEqKey "'" and npInfKey s =>
-                 npPush pfSymb (npPop1 () ,tokPosn b)
-        npRestore a
-        npEqKey "BACKQUOTE" and  npInfKey s =>
-                a:=npPop1()
-                npPush tokConstruct("idsy",tokPart a,tokPosn a)
-        npRestore a
-        false
+++ Parse any infix keyword in the list `s', either in plain syntax
+++ or quoted form.
+npDDInfKey s ==
+  npInfKey s or
+    a := npState()
+    b := $stok
+    npEqKey "'" and npInfKey s =>
+      npPush pfSymb(npPop1(),tokPosn b)
+    npRestore a
+    npEqKey "BACKQUOTE" and npInfKey s =>
+      a := npPop1()
+      npPush tokConstruct("idsy",tokPart a,tokPosn a)
+    npRestore a
+    false
 
-npInfGeneric s== npDDInfKey s  and
-                   (npEqKey "BACKSET" or true)
+++ Same as npDDInfKey, except that newline+bakset are accepted.    
+npInfGeneric s ==
+  npDDInfKey s  and (npEqKey "BACKSET" or true)
 
-npConditional f==
-  if  npEqKey "IF" and (npLogical() or npTrap()) and
-                   (npEqKey "BACKSET" or true)
-  then
-           if npEqKey "SETTAB"
-           then if npEqKey "THEN"
-                then  (apply(f,nil) or npTrap()) and npElse(f)
-                        and npEqKey "BACKTAB"
-                else  npMissing "then"
-           else if npEqKey "THEN"
-                then (apply(f,nil) or npTrap()) and npElse(f)
-                else npMissing "then"
-  else false
+++ Parser combinator:  Parse the syntax `f' as either the then-branch,
+++ of both branches of a conditional expression.
+npConditional f ==
+  npEqKey "IF" and (npLogical() or npTrap()) and
+                   (npEqKey "BACKSET" or true) =>
+    npEqKey "SETTAB" =>
+      npEqKey "THEN" =>
+        (apply(f,nil) or npTrap()) and npElse f and npEqKey "BACKTAB"
+      npMissing "then"
+    npEqKey "THEN" => (apply(f,nil) or npTrap()) and npElse f
+    npMissing "then"
+  false
 
-npElse(f)==
-           a:=npState()
-           if npBacksetElse()
-           then  (apply(f,nil) or npTrap()) and
-                 npPush pfIf(npPop3(),npPop2(),npPop1())
-           else
-              npRestore a
-              npPush pfIfThenOnly(npPop2(),npPop1())
+npElse f ==
+  a := npState()
+  npBacksetElse() =>
+    (apply(f,nil) or npTrap()) and
+        npPush pfIf(npPop3(),npPop2(),npPop1())
+  npRestore a
+  npPush pfIfThenOnly(npPop2(),npPop1())
 
 npBacksetElse()==
-    if npEqKey "BACKSET"
-    then npEqKey "ELSE"
-    else npEqKey "ELSE"
+  npEqKey "BACKSET" => npEqKey "ELSE"
+  npEqKey "ELSE"
 
 npWConditional f==
-    if npConditional f
-    then npPush pfTweakIf npPop1()
-    else false
+  npConditional f => npPush pfTweakIf npPop1()
+  false
 
 npQuantified f ==
   npEqPeek "FORALL" =>
@@ -345,49 +378,49 @@ npQuantified f ==
 
 -- peek for keyword s, no advance of token stream
 
-npEqPeek s ==  CAAR $stok="key" and EQ(s,$ttok)
+npEqPeek s ==
+  $stok.first.first = "key" and EQ(s,$ttok)
 
 -- test for keyword s, if found advance token stream
 
 npEqKey s ==
-    CAAR $stok="key" and EQ(s,$ttok) and npNext()
+  $stok.first.first = "key" and EQ(s,$ttok) and npNext()
 
-$npTokToNames:= ["~","#","[]","{}", "[||]","{||}"]
+$npTokToNames ==
+  ["~","#","[]","{}", "[||]","{||}"]
 
 npId() ==
-        CAAR $stok="id" =>
-               npPush $stok
-               npNext()
-        CAAR $stok="key" and MEMQ($ttok,$npTokToNames)=>
-               npPush tokConstruct("id",$ttok,tokPosn $stok)
-               npNext()
-        false
+  $stok.first.first = "id" =>
+     npPush $stok
+     npNext()
+  $stok.first.first = "key" and MEMQ($ttok,$npTokToNames) =>
+     npPush tokConstruct("id",$ttok,tokPosn $stok)
+     npNext()
+  false
 
 npSymbolVariable()==
-     a:=npState()
-     npEqKey "BACKQUOTE" and  npId()  =>
-          a:=npPop1()
-          npPush tokConstruct("idsy",tokPart a,tokPosn a)
-     npRestore a
-     false
+  a := npState()
+  npEqKey "BACKQUOTE" and npId() =>
+    a:=npPop1()
+    npPush tokConstruct("idsy",tokPart a,tokPosn a)
+  npRestore a
+  false
 
-npName()==npId() or npSymbolVariable()
+npName() ==
+  npId() or npSymbolVariable()
 
 npConstTok() ==
-     tokType $stok in '(integer string char float command) =>
-          npPush $stok
-          npNext()
-     npEqPeek "'" =>
-          a:=$stok
-          b:=npState()
-          npNext()
-          if
-              npPrimary1() and npPush pfSymb(npPop1(),tokPosn a)
-          then true
-          else
-            npRestore b
-            false
-     false
+  tokType $stok in '(integer string char float command) =>
+    npPush $stok
+    npNext()
+  npEqPeek "'" =>
+    a := $stok
+    b := npState()
+    npNext()
+    npPrimary1() and npPush pfSymb(npPop1(),tokPosn a) => true
+    npRestore b
+    false
+  false
 
 
 npPrimary1() ==
@@ -398,31 +431,35 @@ npPrimary1() ==
    npBPileDefinition() or npDefn() or
    npRule()
 
-npPrimary2()== npEncAp function npAtom2 -- or  npBPileDefinition()
-               or npAdd(pfNothing()) or npWith(pfNothing())
+npPrimary2() ==
+  npEncAp function npAtom2 -- or  npBPileDefinition()
+    or npAdd(pfNothing()) or npWith(pfNothing())
 
 
-npAtom1()== npPDefinition() or ((npName() or npConstTok() or
-       npDollar() or npBDefinition()) and npFromdom())
+npAtom1() ==
+  npPDefinition() or ((npName() or npConstTok() or
+    npDollar() or npBDefinition()) and npFromdom())
 
-npAtom2()== (npInfixOperator() or npAmpersand() or npPrefixColon())
-                           and npFromdom()
+npAtom2() ==
+  (npInfixOperator() or npAmpersand() or npPrefixColon()) and npFromdom()
 
-npDollar()== npEqPeek "$" and
-   npPush tokConstruct("id","$",tokPosn $stok)
-   npNext()
+npDollar() ==
+  npEqPeek "$" and
+    npPush tokConstruct("id","$",tokPosn $stok)
+    npNext()
 
-npPrefixColon()== npEqPeek "COLON" and
-   npPush tokConstruct("id",":",tokPosn $stok)
-   npNext()
+npPrefixColon() ==
+  npEqPeek "COLON" and
+    npPush tokConstruct("id",":",tokPosn $stok)
+    npNext()
 
 -- silly
 
-npEncAp(f)== apply(f,nil) and npAnyNo function npEncl
-                   and npFromdom()
+npEncAp f ==
+  apply(f,nil) and npAnyNo function npEncl and npFromdom()
 
-
-npEncl()==  npBDefinition() and npPush pfApplication(npPop2(),npPop1())
+npEncl()==
+  npBDefinition() and npPush pfApplication(npPop2(),npPop1())
 
 npFromdom()==
   npEqKey "$" and (npApplication() or npTrap())
@@ -435,21 +472,23 @@ npFromdom1 c==
         or npPush c
 
 
-npPrimary()==   npPrimary1() or npPrimary2()
+npPrimary()==
+  npPrimary1() or npPrimary2()
 
-npDotted f== apply(f,nil) and npAnyNo function npSelector
+npDotted f ==
+  apply(f,nil) and npAnyNo function npSelector
 
 npSelector()==
-            npEqKey "DOT" and (npPrimary() or npTrap()) and
-              npPush(pfApplication(npPop2(),npPop1()))
+  npEqKey "DOT" and (npPrimary() or npTrap()) and
+    npPush(pfApplication(npPop2(),npPop1()))
 
-npApplication()==
+npApplication() ==
    npDotted function npPrimary and
       (npApplication2() and
             npPush(pfApplication(npPop2(),npPop1())) or true)
 
 
-npApplication2()==
+npApplication2() ==
    npDotted function npPrimary1 and
       (npApplication2() and
             npPush(pfApplication(npPop2(),npPop1())) or true)
@@ -462,30 +501,37 @@ npTypedForm(sy,fn) ==
      npEqKey sy  and (npApplication() or npTrap()) and
         npPush FUNCALL(fn,npPop2(),npPop1())
 
-npRestrict() == npTypedForm("AT",function pfRestrict)
+npRestrict() ==
+  npTypedForm("AT",function pfRestrict)
 
-npCoerceTo() == npTypedForm("COERCE",function pfCoerceto)
+npCoerceTo() ==
+  npTypedForm("COERCE",function pfCoerceto)
 
-npPretend() == npTypedForm("PRETEND",function pfPretend)
+npPretend() ==
+  npTypedForm("PRETEND",function pfPretend)
 
 npTypeStyle()==
- npCoerceTo() or npRestrict() or npPretend()
+  npCoerceTo() or npRestrict() or npPretend()
 
-npTypified ()==npApplication() and npAnyNo function npTypeStyle
+npTypified() ==
+  npApplication() and npAnyNo function npTypeStyle
 
-npTagged() == npTypedForm1("COLON",function pfTagged)
+npTagged() ==
+  npTypedForm1("COLON",function pfTagged)
 
-npColon () == npTypified() and npAnyNo function npTagged
+npColon() ==
+  npTypified() and npAnyNo function npTagged
 
-npPower() == npRightAssoc('(POWER CARAT),function npColon)
+npPower() ==
+  npRightAssoc('(POWER CARAT),function npColon)
 
 npProduct()==
-    npLeftAssoc('(TIMES SLASH BACKSLASH SLASHSLASH
-       BACKSLASHBACKSLASH SLASHBACKSLASH BACKSLASHSLASH )
-                       ,function npPower)
+  npLeftAssoc('(TIMES SLASH BACKSLASH SLASHSLASH
+     BACKSLASHBACKSLASH SLASHBACKSLASH BACKSLASHSLASH )
+                     ,function npPower)
 
 npRemainder()==
-    npLeftAssoc('(REM QUO )  ,function npProduct)
+  npLeftAssoc('(REM QUO ),function npProduct)
 
 npTerm()==
    npInfGeneric '(MINUS PLUS) and (npRemainder()
@@ -493,11 +539,14 @@ npTerm()==
              or npRemainder()
 
 
-npSum()==npLeftAssoc('(PLUS MINUS),function npTerm)
+npSum() ==
+  npLeftAssoc('(PLUS MINUS),function npTerm)
 
-npArith()==npLeftAssoc('(MOD),function npSum)
+npArith() ==
+  npLeftAssoc('(MOD),function npSum)
 
-npSegment()==  npEqPeek "SEG"  and npPushId() and npFromdom()
+npSegment() ==
+  npEqPeek "SEG"  and npPushId() and npFromdom()
 
 npInterval()==
   npArith() and
@@ -506,32 +555,41 @@ npInterval()==
      (npArith() and npPush(pfInfApplication(npPop2(),npPop2(),npPop1())))
             or npPush(pfApplication(npPop1(),npPop1()))) or true)
 
-npBy()== npLeftAssoc ('(BY),function npInterval)
+npBy() ==
+  npLeftAssoc ('(BY),function npInterval)
 
-npAmpersand()==  npEqKey "AMPERSAND" and (npName() or npTrap())
-npAmpersandFrom()== npAmpersand()  and npFromdom()
+npAmpersand() ==
+  npEqKey "AMPERSAND" and (npName() or npTrap())
 
-npSynthetic()==
-    if npBy()
-    then
-       while npAmpersandFrom()  and (npBy() or
-          (npPush pfApplication(npPop2(),npPop1());false)) repeat
-             npPush pfInfApplication(npPop2(),npPop2(),npPop1())
-       true
-    else false
+npAmpersandFrom() ==
+  npAmpersand()  and npFromdom()
 
-npRelation()==
-   npLeftAssoc ('(EQUAL NOTEQUAL LT LE GT GE OANGLE CANGLE),
-            function npSynthetic)
+npSynthetic() ==
+  npBy() =>
+    while npAmpersandFrom()  and (npBy() or
+            (npPush pfApplication(npPop2(),npPop1());false)) repeat
+      npPush pfInfApplication(npPop2(),npPop2(),npPop1())
+    true
+  false
 
-npQuiver()  ==    npRightAssoc('(ARROW LARROW),function npRelation)
-npDiscrim() == 
+npRelation() ==
+  npLeftAssoc ('(EQUAL NOTEQUAL LT LE GT GE OANGLE CANGLE),
+           function npSynthetic)
+
+npQuiver() ==
+  npRightAssoc('(ARROW LARROW),function npRelation)
+
+npDiscrim()== 
   npLeftAssoc ('(CASE HAS IS ISNT), function npQuiver)
 
-npDisjand() ==    npLeftAssoc('(AND ),function npDiscrim)
+npDisjand() ==
+  npLeftAssoc('(AND ),function npDiscrim)
 
-npLogical()   ==  npLeftAssoc('(OR ),function npDisjand)
-npSuch() == npLeftAssoc( '(BAR),function npLogical)
+npLogical() ==
+  npLeftAssoc('(OR ),function npDisjand)
+
+npSuch() ==
+  npLeftAssoc('(BAR),function npLogical)
 
 ++ Parse a type expression
 ++   Type:
@@ -540,45 +598,49 @@ npSuch() == npLeftAssoc( '(BAR),function npLogical)
 npType() ==
   npQuantified function npMonoType
 
-npMonoType() ==  npSuch()  and
-                a:=npPop1()
-                npWith(a) or npPush a
+npMonoType() ==
+  npSuch() and
+    a := npPop1()
+    npWith(a) or npPush a
 
-npADD()    ==   npMonoType() and
-                a:=npPop1()
-                npAdd(a) or npPush a
+npADD() ==
+  npMonoType() and
+    a := npPop1()
+    npAdd(a) or npPush a
 
-npConditionalStatement()==npConditional function npQualifiedDefinition
+npConditionalStatement() ==
+  npConditional function npQualifiedDefinition
 
 npExpress1()==
   npConditionalStatement() 
     or npBackTrack(function npADD, "BECOMES", function npAssignment)
 
-npCommaBackSet()== npEqKey "COMMA" and (npEqKey "BACKSET" or true)
+npCommaBackSet() ==
+  npEqKey "COMMA" and (npEqKey "BACKSET" or true)
 
 npExpress()==
-     npExpress1() and
-        (npIterators() and
-             npPush pfCollect (npPop2(),pfListOf npPop1()) or true)
+  npExpress1() and
+     (npIterators() and
+          npPush pfCollect (npPop2(),pfListOf npPop1()) or true)
 
 npZeroOrMore f==
-       apply(f,nil)=>
-         a:=$stack
-         $stack:=nil
-         while apply(f,nil) repeat 0
-         $stack := [nreverse $stack,:a]
-         npPush [npPop2(),:npPop1()]
-       npPush nil
-       true
+  apply(f,nil)=>
+    a := $stack
+    $stack := nil
+    while apply(f,nil) repeat 0
+    $stack := [nreverse $stack,:a]
+    npPush [npPop2(),:npPop1()]
+  npPush nil
+  true
 
-npIterators()==
-         npForIn() and npZeroOrMore function npIterator
-             and npPush [npPop2(),:npPop1()]  or
-              npWhile() and (npIterators() and
-                    npPush [npPop2(),:npPop1()] or npPush [npPop1()])
+npIterators() ==
+  npForIn() and npZeroOrMore function npIterator
+      and npPush [npPop2(),:npPop1()]  or
+       npWhile() and (npIterators() and
+             npPush [npPop2(),:npPop1()] or npPush [npPop1()])
 
-npIterator()==   npForIn() or npSuchThat() or npWhile()
-
+npIterator() ==
+  npForIn() or npSuchThat() or npWhile()
 
 ++ Parse a case-pattern expression.
 ++   Case:
@@ -590,86 +652,95 @@ npCase() ==
         and npPush pfCase(npPop2(), pfSequenceToList npPop1())
   false
 
-npStatement()==
-        npCase() or
-        npExpress() or
-        npLoop() or
-        npIterate() or
-        npReturn() or
-        npBreak() or
-        npFree() or
-        npImport() or
-        npInline() or
-        npLocal() or
-        npExport() or
-        npVoid()
+npStatement() ==
+  npCase() or
+  npExpress() or
+  npLoop() or
+  npIterate() or
+  npReturn() or
+  npBreak() or
+  npFree() or
+  npImport() or
+  npInline() or
+  npLocal() or
+  npExport() or
+  npVoid()
 
-npBackTrack(p1,p2,p3)==
-     a:=npState()
-     apply(p1,nil) =>
-         npEqPeek p2   =>
-            npRestore a
-            apply(p3,nil) or npTrap()
-         true
-     false
+npBackTrack(p1,p2,p3) ==
+  a := npState()
+  apply(p1,nil) =>
+    npEqPeek p2   =>
+      npRestore a
+      apply(p3,nil) or npTrap()
+    true
+  false
 
 npMDEF() == 
   npBackTrack(function npStatement,"MDEF",
     function (() +-> npMdef "MDEF"))
 
-npAssign()== npBackTrack(function npMDEF,"BECOMES",function npAssignment)
+npAssign()==
+  npBackTrack(function npMDEF,"BECOMES",function npAssignment)
 
 npAssignment()==
-    npAssignVariable() and
-      (npEqKey "BECOMES" or npTrap()) and
-        (npGives() or npTrap()) and
-           npPush pfAssign (npPop2(),npPop1())
+  npAssignVariable() and
+    (npEqKey "BECOMES" or npTrap()) and
+      (npGives() or npTrap()) and
+         npPush pfAssign (npPop2(),npPop1())
 
-npAssignVariableName()==npApplication() and
-      a:=npPop1()
-      if pfId? a
-      then
-         (npPush a and npDecl() or npPush pfTyped(npPop1(),pfNothing()))
-      else npPush a
+npAssignVariableName() ==
+  npApplication() and
+    a := npPop1()
+    pfId? a => 
+      (npPush a and npDecl() or npPush pfTyped(npPop1(),pfNothing()))
+    npPush a
 
-npAssignVariable()== npColon() and npPush pfListOf [npPop1()]
+npAssignVariable() ==
+  npColon() and npPush pfListOf [npPop1()]
 
-npAssignVariablelist()== npListing function npAssignVariableName
+npAssignVariablelist() ==
+  npListing function npAssignVariableName
 
-npExit()== npBackTrack(function npAssign,"EXIT",function npPileExit)
+npExit() ==
+  npBackTrack(function npAssign,"EXIT",function npPileExit)
 
 npPileExit()==
-     npAssign() and (npEqKey "EXIT" or npTrap()) and
-         (npStatement() or npTrap())
-           and npPush pfExit (npPop2(),npPop1())
+  npAssign() and (npEqKey "EXIT" or npTrap()) and
+      (npStatement() or npTrap())
+        and npPush pfExit(npPop2(),npPop1())
 
-npGives()== npBackTrack(function npExit,"GIVES",function npLambda)
+npGives() ==
+  npBackTrack(function npExit,"GIVES",function npLambda)
 
 npDefinitionOrStatement()==
   npQuantified 
     function (() +-> npBackTrack(function npGives,
                             "DEF",function npDef))
 
-npVoid()== npAndOr("DO",function npStatement,function pfNovalue)
+npVoid() ==
+  npAndOr("DO",function npStatement,function pfNovalue)
 
 npReturn()==
-         npEqKey "RETURN" and
-          (npExpress() or npPush pfNothing()) and
-           (npEqKey "FROM" and (npName() or npTrap()) and
-              npPush pfReturn (npPop2(),npPop1()) or
-                npPush pfReturnNoName npPop1())
+  npEqKey "RETURN" and
+   (npExpress() or npPush pfNothing()) and
+    (npEqKey "FROM" and (npName() or npTrap()) and
+       npPush pfReturn (npPop2(),npPop1()) or
+         npPush pfReturnNoName npPop1())
+
 npLoop()==
-     npIterators() and
-      (npCompMissing "REPEAT" and
-         (npAssign() or npTrap()) and
-            npPush pfLp(npPop2(),npPop1()))
-                or
-                  npEqKey "REPEAT" and (npAssign() or npTrap()) and
-                       npPush pfLoop1 npPop1 ()
+  npIterators() and
+   (npCompMissing "REPEAT" and
+      (npAssign() or npTrap()) and
+         npPush pfLp(npPop2(),npPop1()))
+             or
+               npEqKey "REPEAT" and (npAssign() or npTrap()) and
+                    npPush pfLoop1 npPop1 ()
 
-npSuchThat()==npAndOr("BAR",function npLogical,function pfSuchthat)
+npSuchThat() ==
+  npAndOr("BAR",function npLogical,function pfSuchthat)
 
-npWhile()==npAndOr ("WHILE",function npLogical,function pfWhile)
+npWhile() ==
+  npAndOr ("WHILE",function npLogical,function pfWhile)
 
 npForIn()==
   npEqKey "FOR" and (npVariable() or npTrap()) and (npCompMissing "IN")
@@ -677,145 +748,156 @@ npForIn()==
          npPush pfForin(npPop2(),npPop1()))
 
 npBreak()==
-     npEqKey "BREAK" and  npPush pfBreak pfNothing ()
+  npEqKey "BREAK" and  npPush pfBreak pfNothing()
 
 npIterate()==
-     npEqKey "ITERATE" and  npPush pfIterate pfNothing ()
+  npEqKey "ITERATE" and  npPush pfIterate pfNothing()
 
 npQualType()==
-     npType() and
-            npPush pfQualType(npPop1(),pfNothing())
+  npType() and npPush pfQualType(npPop1(),pfNothing())
 
-npSQualTypelist()== npListing function npQualType
-                and npPush pfParts npPop1 ()
+npSQualTypelist() ==
+  npListing function npQualType and npPush pfParts npPop1()
 
-npQualTypelist()== npPC function npSQualTypelist
-                             and npPush pfUnSequence npPop1 ()
+npQualTypelist()==
+  npPC function npSQualTypelist and npPush pfUnSequence npPop1()
 
-npImport()==npAndOr("IMPORT",function npQualTypelist,function pfImport)
+npImport() ==
+  npAndOr("IMPORT",function npQualTypelist,function pfImport)
 
-npInline()==npAndOr("INLINE",function npQualTypelist,function pfInline)
+npInline() ==
+  npAndOr("INLINE",function npQualTypelist,function pfInline)
 
-npLocalDecl()== npEqKey "COLON" and (npType() or npTrap()) and
-             npPush pfSpread (pfParts npPop2(),npPop1()) or
-              npPush pfSpread (pfParts npPop1(),pfNothing())
+npLocalDecl()==
+  npEqKey "COLON" and (npType() or npTrap()) and
+    npPush pfSpread (pfParts npPop2(),npPop1()) or
+     npPush pfSpread (pfParts npPop1(),pfNothing())
 
-npLocalItem()==npTypeVariable() and  npLocalDecl()
+npLocalItem() ==
+  npTypeVariable() and  npLocalDecl()
 
-npLocalItemlist()== npPC function npSLocalItem
-                             and npPush pfUnSequence npPop1 ()
+npLocalItemlist()==
+  npPC function npSLocalItem and npPush pfUnSequence npPop1()
 
-npSLocalItem()== npListing function npLocalItem
-        and npPush  pfAppend pfParts npPop1()
+npSLocalItem()==
+  npListing function npLocalItem and npPush  pfAppend pfParts npPop1()
 
-npFree()== npEqKey "FREE" and (npLocalItemlist() or npTrap())
-     and npPush pfFree npPop1()
+npFree()==
+  npEqKey "FREE" and (npLocalItemlist() or npTrap()) and
+    npPush pfFree npPop1()
 
-npLocal()== npEqKey "local" and (npLocalItemlist() or npTrap())
-     and npPush pfLocal npPop1()
-npExport()== npEqKey "EXPORT" and (npLocalItemlist() or npTrap())
-     and npPush pfExport npPop1()
+npLocal()==
+  npEqKey "local" and (npLocalItemlist() or npTrap()) and
+    npPush pfLocal npPop1()
 
-npLet()== npLetQualified function npDefinitionOrStatement
+npExport()==
+  npEqKey "EXPORT" and (npLocalItemlist() or npTrap()) and
+    npPush pfExport npPop1()
 
-npDefn()== npEqKey "DEFN" and  npPP function npDef
+npLet() ==
+  npLetQualified function npDefinitionOrStatement
 
-npFix()== npEqKey "FIX" and  npPP function npDef
-               and npPush pfFix npPop1 ()
+npDefn() ==
+  npEqKey "DEFN" and  npPP function npDef
+
+npFix() ==
+  npEqKey "FIX" and npPP function npDef and npPush pfFix npPop1()
 
 npMacro() == 
   npEqKey "MACRO" and  npPP function (() +-> npMdef "DEF")
 
-npRule()== npEqKey "RULE" and  npPP function npSingleRule
+npRule()==
+  npEqKey "RULE" and  npPP function npSingleRule
 
 npAdd(extra)==
-     npEqKey "ADD" =>
-       a:=npState()
-       npDefinitionOrStatement() or npTrap()
-       npEqPeek "IN" =>
-               npRestore a
-               (npVariable() or npTrap()) and
-                     npCompMissing "IN"  and
-                         (npDefinitionOrStatement() or npTrap()) and
-                            npPush pfAdd(npPop2(),npPop1(),extra)
-       npPush pfAdd(pfNothing(),npPop1(),extra)
+  npEqKey "ADD" =>
+    a:=npState()
+    npDefinitionOrStatement() or npTrap()
+    npEqPeek "IN" =>
+      npRestore a
+      (npVariable() or npTrap()) and
+            npCompMissing "IN"  and
+                (npDefinitionOrStatement() or npTrap()) and
+                   npPush pfAdd(npPop2(),npPop1(),extra)
+    npPush pfAdd(pfNothing(),npPop1(),extra)
 
 npDefaultValue()==
-      npEqKey "DEFAULT" and
-             (npDefinitionOrStatement() or npTrap())
-         and  npPush [pfAdd(pfNothing(),npPop1(),pfNothing())]
+  npEqKey "DEFAULT" and
+    (npDefinitionOrStatement() or npTrap()) and
+       npPush [pfAdd(pfNothing(),npPop1(),pfNothing())]
 
 npWith(extra)==
-     npEqKey "WITH" =>
-       a:=npState()
-       npCategoryL() or npTrap()
-       npEqPeek "IN" =>
-               npRestore a
-               (npVariable() or npTrap()) and
-                     npCompMissing "IN"  and
-                          (npCategoryL() or npTrap()) and
-                              npPush pfWith(npPop2(),npPop1(),extra)
-       npPush pfWith(pfNothing(),npPop1(),extra)
+  npEqKey "WITH" =>
+    a := npState()
+    npCategoryL() or npTrap()
+    npEqPeek "IN" =>
+      npRestore a
+      (npVariable() or npTrap()) and
+            npCompMissing "IN"  and
+                 (npCategoryL() or npTrap()) and
+                     npPush pfWith(npPop2(),npPop1(),extra)
+    npPush pfWith(pfNothing(),npPop1(),extra)
 
-npCategoryL()== npCategory() and npPush pfUnSequence npPop1 ()
+npCategoryL()==
+  npCategory() and npPush pfUnSequence npPop1 ()
 
 pfUnSequence x==
-        pfSequence? x =>   pfListOf pfAppend pf0SequenceArgs  x
-        pfListOf x
+  pfSequence? x => pfListOf pfAppend pf0SequenceArgs x
+  pfListOf x
 
-npCategory()== npPP function npSCategory
+npCategory() ==
+  npPP function npSCategory
 
 npSCategory()==
-  if npWConditional function npCategoryL
-  then  npPush [npPop1()]
-  else
-    if npDefaultValue()
-    then true
-    else
-      a:=npState()
-      if npPrimary()
-      then if npEqPeek "COLON"
-           then
-              npRestore a
-              npSignature()
-           else
-              npRestore a
-              npApplication() and npPush [pfAttribute (npPop1())]
-                           or npTrap()
+  npWConditional function npCategoryL => npPush [npPop1()]
+  npDefaultValue() => true
+  a := npState()
+  npPrimary() =>
+    npEqPeek "COLON" =>
+      npRestore a
+      npSignature()
+    npRestore a
+    npApplication() and npPush [pfAttribute (npPop1())] or npTrap()
+  false
 
-      else false
+npSignatureDefinee() ==
+  npName() or npInfixOperator() or npPrefixColon()
 
+npSigDecl()==
+  npEqKey "COLON" and (npType() or npTrap()) and
+    npPush pfSpread (pfParts npPop2(),npPop1())
 
-npSignatureDefinee()==
-   npName() or npInfixOperator() or npPrefixColon()
+npSigItem() ==
+  npTypeVariable() and  (npSigDecl() or npTrap())
 
+npSigItemlist() ==
+  npListing function npSigItem and
+    npPush pfListOf pfAppend pfParts npPop1()
 
-npSigDecl()== npEqKey "COLON" and (npType() or npTrap()) and
-           npPush pfSpread (pfParts npPop2(),npPop1())
+npSignature() ==
+  npSigItemlist() and
+    npPush pfWDec(pfNothing(),npPop1())
 
-npSigItem()==npTypeVariable() and  (npSigDecl() or npTrap())
+npSemiListing(p) ==
+  npListofFun(p,function npSemiBackSet,function pfAppend)
 
-npSigItemlist()== npListing function npSigItem
-        and npPush pfListOf pfAppend pfParts npPop1()
+npSemiBackSet() ==
+  npEqKey "SEMICOLON" and (npEqKey "BACKSET" or true)
 
-npSignature()==
-    npSigItemlist() and
-            npPush pfWDec(pfNothing(),npPop1())
+npDecl()==
+  npEqKey "COLON" and (npType() or npTrap()) and
+    npPush pfTyped (npPop2(),npPop1())
 
-npSemiListing (p)==
-       npListofFun(p,function npSemiBackSet,function pfAppend)
+npVariableName() ==
+  npName() and
+    (npDecl() or npPush pfTyped(npPop1(),pfNothing()))
 
-npSemiBackSet()== npEqKey "SEMICOLON" and (npEqKey "BACKSET" or true)
-npDecl()== npEqKey "COLON" and (npType() or npTrap()) and
-           npPush pfTyped (npPop2(),npPop1())
+npVariable() ==
+  npParenthesized function npVariablelist
+    or (npVariableName() and npPush pfListOf [npPop1()])
 
-npVariableName()==npName() and
-      (npDecl() or npPush pfTyped(npPop1(),pfNothing()))
-
-npVariable()== npParenthesized function npVariablelist or
-      (npVariableName() and npPush pfListOf [npPop1()])
-
-npVariablelist()== npListing function npVariableName
+npVariablelist() ==
+  npListing function npVariableName
 
 ++ Parse binders of a quantified expression
 ++   QuantifiedVariable:
@@ -824,63 +906,71 @@ npVariablelist()== npListing function npVariableName
 ++      EXIST
 ++      FORALL
 npQuantifierVariable quantifier ==
-  npEqKey quantifier and (npVariable() or npTrap())
-    and npEqKey "DOT"
+  npEqKey quantifier and
+    (npVariable() or npTrap()) and
+      npEqKey "DOT"
 
 
-npListing (p)==npList(p,"COMMA",function pfListOf)
+npListing p ==
+  npList(p,"COMMA",function pfListOf)
+
 npQualified(f)==
-    if FUNCALL f
-    then
-     while npEqKey "WHERE" and (npDefinition() or npTrap()) repeat
-             npPush pfWhere(npPop1(),npPop1())
-     true
-    else  npLetQualified  f
+  FUNCALL f => 
+    while npEqKey "WHERE" and (npDefinition() or npTrap()) repeat
+      npPush pfWhere(npPop1(),npPop1())
+    true
+  npLetQualified  f
 
 npLetQualified f==
-      npEqKey "%LET" and
-      (npDefinition() or npTrap()) and
+  npEqKey "%LET" and
+    (npDefinition() or npTrap()) and
       npCompMissing "IN"  and
-      (FUNCALL f or npTrap()) and
-      npPush pfWhere(npPop2(),npPop1())
-
+        (FUNCALL f or npTrap()) and
+          npPush pfWhere(npPop2(),npPop1())
 
 npQualifiedDefinition()==
-       npQualified function npDefinitionOrStatement
+  npQualified function npDefinitionOrStatement
 
-npTuple (p)==
-    npListofFun(p,function npCommaBackSet,function pfTupleListOf)
-npComma()==  npTuple function npQualifiedDefinition
+npTuple p ==
+  npListofFun(p,function npCommaBackSet,function pfTupleListOf)
 
-npQualDef()== npComma() and npPush [npPop1()]
+npComma() ==
+  npTuple function npQualifiedDefinition
 
-npDefinitionlist ()==npSemiListing(function npQualDef)
+npQualDef() ==
+  npComma() and npPush [npPop1()]
 
-npPDefinition ()==
-     npParenthesized function npDefinitionlist and
-                 npPush pfEnSequence npPop1()
+npDefinitionlist() ==
+  npSemiListing(function npQualDef)
 
-npBDefinition()== npPDefinition() or
-            npBracketed function npDefinitionlist
+npPDefinition() ==
+  npParenthesized function npDefinitionlist and
+    npPush pfEnSequence npPop1()
+
+npBDefinition()==
+  npPDefinition()
+    or npBracketed function npDefinitionlist
 
 npPileDefinitionlist()==
- npListAndRecover function npDefinitionlist
-    and npPush pfAppend npPop1()
+  npListAndRecover function npDefinitionlist and
+    npPush pfAppend npPop1()
 
 
-npTypeVariable()== npParenthesized function npTypeVariablelist or
-           npSignatureDefinee() and npPush pfListOf [npPop1()]
+npTypeVariable()==
+  npParenthesized function npTypeVariablelist
+    or npSignatureDefinee() and npPush pfListOf [npPop1()]
 
-npTypeVariablelist()== npListing function npSignatureDefinee
+npTypeVariablelist() ==
+  npListing function npSignatureDefinee
 
 npBPileDefinition()==
-     npPileBracketed function npPileDefinitionlist
-       and npPush pfSequence pfListOf npPop1 ()
+  npPileBracketed function npPileDefinitionlist and
+    npPush pfSequence pfListOf npPop1()
 
 
 npLambda()==
-     (npVariable() and
-      ((npLambda() or npTrap()) and
+  (npVariable() and
+    ((npLambda() or npTrap()) and
        npPush pfLam(npPop2(),npPop1()))) or
          npEqKey "GIVES" and (npDefinitionOrStatement() or npTrap()) or
           npEqKey "COLON" and (npType() or npTrap()) and
@@ -888,66 +978,68 @@ npLambda()==
                and
                   npPush pfReturnTyped(npPop2(),npPop1())
 
-npDef()==
-    npSuch() =>
-         [op,arg,rt]:=  pfCheckItOut(npPop1())
-         npDefTail "DEF" or npTrap()
-         body:=npPop1()
-         null arg => npPush pfDefinition (op,body)
-         npPush pfDefinition (op,pfPushBody(rt,arg,body))
-    false
+npDef() ==
+  npSuch() =>
+    [op,arg,rt] :=  pfCheckItOut(npPop1())
+    npDefTail "DEF" or npTrap()
+    body := npPop1()
+    arg = nil => npPush pfDefinition (op,body)
+    npPush pfDefinition (op,pfPushBody(rt,arg,body))
+  false
 
 npDefTail kw == 
   npEqKey kw and npDefinitionOrStatement()
 
 npMdef kw ==
-    npQuiver() =>
-         [op,arg]:=  pfCheckMacroOut(npPop1())
-         npDefTail kw or npTrap()
-         body:=npPop1()
-         null arg => npPush pfMacro (op,body)
-         npPush pfMacro (op,pfPushMacroBody(arg,body))
-    false
+  npQuiver() =>
+    [op,arg] := pfCheckMacroOut(npPop1())
+    npDefTail kw or npTrap()
+    body := npPop1()
+    arg = nil => npPush pfMacro (op,body)
+    npPush pfMacro(op,pfPushMacroBody(arg,body))
+  false
 
 
 npSingleRule()==
-    npQuiver() =>
-         npDefTail "DEF" or npTrap()
-         npPush pfRule (npPop2(),npPop1())
-    false
+  npQuiver() =>
+    npDefTail "DEF" or npTrap()
+    npPush pfRule(npPop2(),npPop1())
+  false
 
 npDefinitionItem()==
-      npImport()  or
-          a:=npState()
-          npStatement() =>
-               npEqPeek "DEF" =>
-                  npRestore a
-                  npDef()
-               npEqPeek "MDEF" =>
-                  npRestore a
-                  npMdef "MDEF"
-               npRestore a
-               npMacro() or npDefn()
-          npTrap()
+  npImport()  or
+    a := npState()
+    npStatement() =>
+      npEqPeek "DEF" =>
+        npRestore a
+        npDef()
+      npEqPeek "MDEF" =>
+        npRestore a
+        npMdef "MDEF"
+      npRestore a
+      npMacro() or npDefn()
+    npTrap()
 
-npDefinition()== npPP function npDefinitionItem
-            and npPush  pfSequenceToList npPop1 ()
+npDefinition() ==
+  npPP function npDefinitionItem and
+    npPush pfSequenceToList npPop1()
 
 pfSequenceToList x==
-        pfSequence? x =>  pfSequenceArgs  x
-        pfListOf [x]
+  pfSequence? x => pfSequenceArgs x
+  pfListOf [x]
 
 --% Diagnostic routines
 
 npMissingMate(close,open)==
-   ncSoftError(tokPosn open, 'S2CY0008, [])
-   npMissing close
+  ncSoftError(tokPosn open, 'S2CY0008, [])
+  npMissing close
  
 npMissing s==
-   ncSoftError(tokPosn $stok,'S2CY0007, [PNAME s])
-   THROW("TRAPPOINT","TRAPPED")
+  ncSoftError(tokPosn $stok,'S2CY0007, [PNAME s])
+  THROW("TRAPPOINT","TRAPPED")
  
-npCompMissing s == npEqKey s or npMissing s
+npCompMissing s ==
+  npEqKey s or npMissing s
  
 npRecoverTrap()==
   npFirstTok()
@@ -959,53 +1051,46 @@ npRecoverTrap()==
  
  
 npListAndRecover(f)==
-   a:=$stack
-   b:=nil
-   $stack:=nil
-   done:=false
-   c:=$inputStream
-   while not done repeat
-     found:=CATCH("TRAPPOINT",apply(f,nil))
-     if found="TRAPPED"
-     then
-        $inputStream:=c
-        npRecoverTrap()
-     else if not found
-          then
-            $inputStream:=c
-            syGeneralErrorHere()
-            npRecoverTrap()
-     if npEqKey "BACKSET"
-     then
-        c:=$inputStream
-     else if npEqPeek "BACKTAB"
-          then
-             done:=true
-          else
-            $inputStream:=c
-            syGeneralErrorHere()
-            npRecoverTrap()
-            if npEqPeek "BACKTAB"
-            then done:=true
-            else
-                npNext()
-                c:=$inputStream
-     b := [npPop1(),:b]
-   $stack:=a
-   npPush nreverse b
+  a := $stack
+  b := nil
+  $stack := nil
+  done := false
+  c := $inputStream
+  while not done repeat
+    found:=CATCH("TRAPPOINT",apply(f,nil))
+    if found="TRAPPED" then
+       $inputStream:=c
+       npRecoverTrap()
+    else if not found
+         then
+           $inputStream:=c
+           syGeneralErrorHere()
+           npRecoverTrap()
+    if npEqKey "BACKSET" then
+       c:=$inputStream
+    else if npEqPeek "BACKTAB"
+         then
+            done:=true
+         else
+           $inputStream:=c
+           syGeneralErrorHere()
+           npRecoverTrap()
+           if npEqPeek "BACKTAB"
+           then done:=true
+           else
+               npNext()
+               c:=$inputStream
+    b := [npPop1(),:b]
+  $stack := a
+  npPush nreverse b
  
 npMoveTo n==
-      if null $inputStream
-      then true
-      else
-           if npEqPeek "BACKTAB"
-           then if n=0
-                then true
-                else (npNext();npMoveTo(n-1))
-           else if npEqPeek "BACKSET"
-                then if n=0
-                     then true
-                     else (npNext();npMoveTo n)
-                 else if npEqKey "SETTAB"
-                      then npMoveTo(n+1)
-                      else (npNext();npMoveTo n)
+  $inputStream = nil => true
+  npEqPeek "BACKTAB" =>
+    n = 0 => true
+    (npNext();npMoveTo(n-1))
+  npEqPeek "BACKSET" =>
+    n = 0 => true
+    (npNext();npMoveTo n)
+  npEqKey "SETTAB" => npMoveTo(n+1)
+  (npNext();npMoveTo n)
