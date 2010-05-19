@@ -126,6 +126,7 @@ structure %Ast ==
   %Append(%Sequence)                    -- concatenate lists
   %Case(%Ast,%Sequence)                 -- case x of ...
   %Return(%Ast)                         -- return x
+  %Leave(%Ast)                          -- leave x
   %Throw(%Ast)                          -- throw OutOfRange 3
   %Catch(%Ast)                          -- catch OutOfRange
   %Try(%Ast,%Sequence)                  -- try x / y catch DivisionByZero
@@ -461,6 +462,9 @@ bfDrop(n,x)==
  
 bfReturnNoName a ==
   ["RETURN",a]
+
+bfLeave x ==
+  ["%Leave",x]
  
 bfSUBLIS(p,e)==
   atom e=>bfSUBLIS1(p,e)
@@ -802,7 +806,6 @@ shoeComp x==
   a:=shoeCompTran second x
   a is ["LAMBDA",:.] => ["DEFUN",first x,second a,:CDDR a]
   ["DEFMACRO",first x,second a,:CDDR a]
-
 
 ++ Translate function parameter list to Lisp.
 ++ We are processing a function definition.  `p2' is the list of

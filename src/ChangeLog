@@ -1,5 +1,11 @@
 2010-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/ast.boot: Add %Leave ast node.
+	(bfLeave): New.
+	* boot/parser.boot (bpLeave): Use it.
+
+2010-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/translator.boot (translateToplevelExpression): Tidy.
 
 2010-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
