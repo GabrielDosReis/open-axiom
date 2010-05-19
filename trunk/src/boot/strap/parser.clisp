@@ -766,7 +766,7 @@
 
 (DEFUN |bpLeave| ()
   (AND (|bpEqKey| 'LEAVE) (OR (|bpLogical|) (|bpTrap|))
-       (|bpPush| (|%LeaveAst| (|bpPop1|)))))
+       (|bpPush| (|bfLeave| (|bpPop1|)))))
 
 (DEFUN |bpReturn| ()
   (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))
