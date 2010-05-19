@@ -392,7 +392,7 @@ translateSignatureDeclaration d ==
 ++ A non declarative expression `expr' appears at toplevel and its
 ++ translation needs embeddeding in an `EVAL-WHEN'.
 translateToplevelExpression expr ==
-  expr' := rest rest shoeCompTran ["LAMBDA",["x"],expr]
+  expr' := rest rest shoeCompTran ["LAMBDA",nil,expr]
   -- replace "DECLARE"s with "DECLAIM"s, as the former can't appear
   -- at toplevel.
   for t in expr' repeat
