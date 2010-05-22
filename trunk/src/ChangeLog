@@ -1,5 +1,14 @@
 2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/cparse.boot (npDefinitionItem): Consider a declaration as
+	a definition item too.
+	* interp/i-map.boot (addDefMap): Don't confuse constant
+	with niladic functions.
+	* interp/pf2sex.boot (pfDefinition2Sex): Don't be confused by
+	typed constant definitions.
+
+2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/ptrees.boot (pfWith): Now a function of two arguments.
 	(pfWithWithon): Remove.
 	(pfDefinableName?): New.

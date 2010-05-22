@@ -1010,6 +1010,7 @@ npDefinitionItem()==
         npMdef "MDEF"
       npRestore a
       npMacro() or npDefn()
+        or npName() and npDecl()
     npTrap()
 
 npDefinition() ==

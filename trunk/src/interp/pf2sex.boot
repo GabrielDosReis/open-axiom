@@ -307,8 +307,19 @@ pfDefinition2Sex pf ==
     systemError '"lhs of definition must be a single item in the interpreter"
   id := first idList
   rhs := pfDefinitionRhs pf
-  [argList, :body] := pfLambdaTran rhs
-  ["DEF", (argList = 'id => id; [id, :argList]), :body]
+  lhs := nil
+  body := nil
+  -- Sometimes, a typed constant definition is mischaracterized as
+  -- a definition of the colon delimiter.  
+  if id is [":",id',t] then
+    id := id'
+  if pfLambda? rhs then
+    [argList, :body] := pfLambdaTran rhs
+    lhs := [id,:argList]
+  else
+    lhs := id
+    body := [[t],[nil],pf2Sex1 rhs]
+  ["DEF",lhs,:body]
 
 pfLambdaTran pf ==
   pfLambda? pf =>
