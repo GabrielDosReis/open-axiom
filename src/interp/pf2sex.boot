@@ -510,11 +510,10 @@ pfDoc2SexOrNil pf ==
 
 pfWith2Sex pf ==
   ["%With", pfType2SexOrNil pfWithBase pf, 
-    [pf2Sex1 s for s in pf0WithWithin pf], 
-      pfType2SexOrNil pfWithWithon pf]
+    [pf2Sex1 s for s in pf0WithWithin pf]]
 
 pfAdd2Sex pf ==
-  ["%Add", pf2Sex1 pfAddBase pf, pf2Sex1 pfAddAddin pf,
+  ["%Add", pfType2SexOrNil pfAddBase pf, pf2Sex1 pfAddAddin pf,
     pfType2SexOrNil pfAddAddon pf]
 
 pfWDeclare2Sex pf ==
