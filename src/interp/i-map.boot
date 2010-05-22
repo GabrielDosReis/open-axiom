@@ -88,10 +88,18 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
 
   -- next check is for bad forms on the lhs of the ==, such as
   -- numbers, constants.
+
+  -- FIXME: this function miguidedly characterizes constant definitions
+  -- as rules definitions.  In particular, typed constant definitions
+  -- are characterized are rules in one part, and announced to user
+  -- a niladic functions.  We try to limit the damage as much as we can.
+  defineeIsConstant := false
+
   if atom lhs then
     op := lhs
     putHist(op,'isInterpreterRule,true,$e)
     putHist(op,'isInterpreterFunction,false,$e)
+    defineeIsConstant := true
     lhs := [lhs]
   else
     -- this is a function definition. If it has been declared
@@ -132,7 +140,8 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   if allDecs then
     mapmode := nreverse mapmode
     putHist(op,'mode,mapmode,$e)
-    sayKeyedMsg("S2IM0006",[formatOpSignature(op,rest mapmode)])
+    if not defineeIsConstant then
+      sayKeyedMsg("S2IM0006",[formatOpSignature(op,rest mapmode)])
   else if someDecs then throwKeyedMsg("S2IM0007",[op])
 
   -- if map is declared, check that signature arg count is the
