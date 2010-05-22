@@ -826,17 +826,9 @@ npDefaultValue()==
     (npDefinitionOrStatement() or npTrap()) and
        npPush [pfAdd(pfNothing(),npPop1(),pfNothing())]
 
-npWith(extra)==
-  npEqKey "WITH" =>
-    a := npState()
-    npCategoryL() or npTrap()
-    npEqPeek "IN" =>
-      npRestore a
-      (npVariable() or npTrap()) and
-            npCompMissing "IN"  and
-                 (npCategoryL() or npTrap()) and
-                     npPush pfWith(npPop2(),npPop1(),extra)
-    npPush pfWith(pfNothing(),npPop1(),extra)
+npWith extra ==
+  npEqKey "WITH" and (npCategoryL() or npTrap()) and
+    npPush pfWith(extra,npPop1())
 
 npCategoryL()==
   npCategory() and npPush pfUnSequence npPop1 ()

@@ -1,5 +1,15 @@
 2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/ptrees.boot (pfWith): Now a function of two arguments.
+	(pfWithWithon): Remove.
+	(pfDefinableName?): New.
+	(pfCheckItOut): Use it.
+	* interp/cparse.boot (npWith): Simplify.
+	* interp/pf2sex.boot (pfWith2Sex): Adjust.
+	(pfAdd2Sex): Tidy.
+
+2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cparse.boot (npQuiver): Redefine.  Now send Application
 	to Application.
 	(npTypedForm): Replace Application with Quiver.
