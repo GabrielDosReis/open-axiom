@@ -497,8 +497,11 @@ npTypedForm1(sy,fn) ==
      npEqKey sy  and (npType() or npTrap()) and
         npPush FUNCALL(fn,npPop2(),npPop1())
 
+npQuiver() ==
+  npRightAssoc('(ARROW LARROW),function npApplication)
+
 npTypedForm(sy,fn) ==
-     npEqKey sy  and (npApplication() or npTrap()) and
+     npEqKey sy  and (npQuiver() or npTrap()) and
         npPush FUNCALL(fn,npPop2(),npPop1())
 
 npRestrict() ==
@@ -514,10 +517,10 @@ npTypeStyle()==
   npCoerceTo() or npRestrict() or npPretend()
 
 npTypified() ==
-  npApplication() and npAnyNo function npTypeStyle
+  npQuiver() and npAnyNo function npTypeStyle
 
 npTagged() ==
-  npTypedForm1("COLON",function pfTagged)
+  npTypedForm("COLON",function pfTagged)
 
 npColon() ==
   npTypified() and npAnyNo function npTagged
@@ -576,11 +579,8 @@ npRelation() ==
   npLeftAssoc ('(EQUAL NOTEQUAL LT LE GT GE OANGLE CANGLE),
            function npSynthetic)
 
-npQuiver() ==
-  npRightAssoc('(ARROW LARROW),function npRelation)
-
 npDiscrim()== 
-  npLeftAssoc ('(CASE HAS IS ISNT), function npQuiver)
+  npLeftAssoc ('(CASE HAS IS ISNT), function npRelation)
 
 npDisjand() ==
   npLeftAssoc('(AND ),function npDiscrim)
@@ -991,7 +991,7 @@ npDefTail kw ==
   npEqKey kw and npDefinitionOrStatement()
 
 npMdef kw ==
-  npQuiver() =>
+  npSuch() =>
     [op,arg] := pfCheckMacroOut(npPop1())
     npDefTail kw or npTrap()
     body := npPop1()
@@ -1001,7 +1001,7 @@ npMdef kw ==
 
 
 npSingleRule()==
-  npQuiver() =>
+  npSuch() =>
     npDefTail "DEF" or npTrap()
     npPush pfRule(npPop2(),npPop1())
   false
