@@ -1,3 +1,18 @@
+2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cparse.boot (npQuiver): Redefine.  Now send Application
+	to Application.
+	(npTypedForm): Replace Application with Quiver.
+	(npTypified): Likewise.
+	(npTagged): Use npTypedForm not npTypedForm1.
+	(npDiscrim): Now extend Relation, not Quiver.
+	(npMdef): Allow same LHS as npDef.
+	(npSingleRule): Likewise.
+	* boot/ast.boot: Replace CONCAT with strconc.  Replace SYMBOL-NAME
+	with PNAME.
+	* boot/scanner.boot: Likewise.
+	* boot/translator.boot: Likewise.
+
 2010-05-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot: Add %Leave ast node.

@@ -170,7 +170,7 @@ EVAL_-BOOT_-FILE fn ==
    b := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
-   outfn:=CONCAT(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
+   outfn := strconc(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
    shoeOpenInputFile(a,infn,shoeClLines(a,infn,[],outfn))
    setCurrentPackage b
    LOAD outfn
@@ -575,7 +575,7 @@ defusebuiltin x ==
   GETHASH(x,$lispWordTable)
  
 bootOut (l,outfn)==
-  for i in l repeat shoeFileLine (CONCAT ('"   ",PNAME i),outfn)
+  for i in l repeat shoeFileLine(strconc ('"   ",PNAME i),outfn)
  
 CLESSP(s1,s2)==
   not(SHOEGREATERP(s1,s2))
@@ -589,7 +589,7 @@ bootOutLines(l,outfn,s)==
   #s + #a > 70 =>
     shoeFileLine(s,outfn)
     bootOutLines(l,outfn,'" ")
-  bootOutLines(rest l,outfn,CONCAT(s,'" ",a))
+  bootOutLines(rest l,outfn,strconc(s,'" ",a))
  
  
 -- (xref "fn") produces a cross reference listing in "fn.xref"
@@ -597,7 +597,7 @@ bootOutLines(l,outfn,s)==
 -- used in "fn.boot", together with a list of functions that use it.
  
 XREF fn==
-  infn:=CONCAT(fn,'".boot")
+  infn := strconc(fn,'".boot")
   shoeOpenInputFile(a,infn,shoeXref(a,fn))
  
 shoeXref(a,fn)==
@@ -609,7 +609,7 @@ shoeXref(a,fn)==
   $GenVarCounter  :=0
   $bfClamming :=false
   shoeDefUse shoeTransformStream a
-  out:=CONCAT(fn,'".xref")
+  out := strconc(fn,'".xref")
   shoeOpenOutputFile(stream,out,shoeXReport stream)
   out
  
@@ -618,7 +618,7 @@ shoeXReport stream==
    shoeFileLine('"USED and where DEFINED",stream)
    c:=SSORT HKEYS $bootUsed
    for i in c repeat
-      a:=CONCAT(PNAME i,'" is used in ")
+      a := strconc(PNAME i,'" is used in ")
       bootOutLines( SSORT GETHASH(i,$bootUsed),stream,a)
  
 FBO (name,fn)== 
@@ -633,14 +633,14 @@ shoeGeneralFC(f,name,fn)==
    infn:=shoeAddbootIfNec fn
    a:= shoeOpenInputFile(a,infn,shoeFindName2(fn,name, a))
    filename:= if # name > 8 then SUBSTRING(name,0,8) else name
-   a =>  FUNCALL(f, CONCAT('"/tmp/",filename))
+   a =>  FUNCALL(f, strconc('"/tmp/",filename))
    nil
  
 shoeFindName2(fn,name,a)==
   lines:=shoeFindLines(fn,name,a)
   lines =>
     filename:= if # name > 8 then SUBSTRING(name,0,8) else name
-    filename := CONCAT ('"/tmp/",filename,'".boot")
+    filename := strconc('"/tmp/",filename,'".boot")
     shoeOpenOutputFile(stream, filename,
 	 for line in lines repeat shoeFileLine (line,stream))
     true

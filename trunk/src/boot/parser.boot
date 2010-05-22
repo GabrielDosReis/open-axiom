@@ -257,7 +257,7 @@ bpMissingMate(close,open)==
    bpMissing close
  
 bpMissing s==
-   bpSpecificErrorHere(CONCAT(PNAME s,'" possibly missing"))
+   bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
    throw TRAPPOINT "TRAPPED"
  
 bpCompMissing s == bpEqKey s or bpMissing s
