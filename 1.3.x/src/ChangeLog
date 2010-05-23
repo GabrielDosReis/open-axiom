@@ -1,3 +1,10 @@
+2010-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-spec1.boot (compileADEFBody): Establish a dynamic
+	binding for $freeVariables and $boundVariables.
+	(mkIterFun): Likewise.
+	(mkIterZippedFun): Likewise.
+
 2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* input/collect.input.pamphlet: Remove bogus expression.

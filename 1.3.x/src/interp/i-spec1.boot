@@ -182,8 +182,8 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
                           :declareUnusedParameters(parms,body)]]
     code :=  wrap compileInteractive fun
   else
-    $freeVariables := []
-    $boundVariables := [minivectorName,:vars]
+    $freeVariables: local := []
+    $boundVariables: local := [minivectorName,:vars]
     -- CCL does not support upwards funargs, so we check for any free variables
     -- and pass them into the lambda as part of envArg.
     body := checkForFreeVariables(body,"ALL")
@@ -781,8 +781,8 @@ mkIterFun([index,:s],funBody,$localVars) ==
   mkLocalVar($mapName,index)
   [m]:=bottomUpCompile funBody
   mapMode := ['Mapping,m,indMode]
-  $freeVariables := []
-  $boundVariables := [index]
+  $freeVariables: local := []
+  $boundVariables: local := [index]
   -- CCL does not support upwards funargs, so we check for any free variables
   -- and pass them into the lambda as part of envArg.
   body := checkForFreeVariables(getValue funBody,$localVars)
@@ -919,8 +919,8 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   mkLocalVar($mapName,$index)
   [m]:=bottomUpCompile funBody
   mapMode := ['Mapping,m,zipType]
-  $freeVariables := []
-  $boundVariables := [$index]
+  $freeVariables: local := []
+  $boundVariables: local := [$index]
   -- CCL does not support upwards funargs, so we check for any free variables
   -- and pass them into the lambda as part of envArg.
   body :=

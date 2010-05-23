@@ -1,5 +1,12 @@
 2010-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-spec1.boot (compileADEFBody): Establish a dynamic
+	binding for $freeVariables and $boundVariables.
+	(mkIterFun): Likewise.
+	(mkIterZippedFun): Likewise.
+
+2010-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: gensym is now candidate for renaming.
 	* boot/ast.boot: Replace GENSYM with gensym.
 	* interp/buildom.boot: Likewise.
