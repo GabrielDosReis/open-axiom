@@ -247,6 +247,7 @@ for i in [ _
   ["first",        "CAR"]  , _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
+  ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
   ["integer?","INTEGERP"]  , _
   ["lastNode",    "LAST"]  , _

@@ -493,7 +493,7 @@ pfRhsRule2Sex rhs ==
   pf2Sex1 rhs
 
 pfSuchThat2Sex args ==
-  name := GENSYM()
+  name := gensym()
   argList := pf0TupleParts args
   lhsSex := pf2Sex1 first argList
   rhsSex := pf2Sex second argList

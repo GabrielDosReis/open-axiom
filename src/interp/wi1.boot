@@ -918,7 +918,7 @@ compCoerce1(x,m',e) ==
   T':= coerce(T,m') => T'
   T':= coerceByModemap(T,m') => T'
   pred:=isSubset(m',T.mode,e) =>
-    gg:=GENSYM()
+    gg:=gensym()
     pred:= substitute(gg,"#1",pred)
     code:= ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
     [code,m',T.env]
@@ -1217,7 +1217,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ['PROG1,["%LET",g:= GENSYM(),body],
+      ['PROG1,["%LET",g:= gensym(),body],
          ["setShellEntry",g,0,mkConstructor $functorForm]]
     fun:= compile [op',['LAM,sargl,body]]
 

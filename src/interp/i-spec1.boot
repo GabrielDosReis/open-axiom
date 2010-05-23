@@ -119,7 +119,7 @@ evalTargetedADEF(t,vars,types,body) ==
   -- this is used in the interpret-code case, but isn't so bad any way
   -- since it makes the bodies look more like regular map bodies
 
-  sublist := [[var,:GENSYM()] for var in vars]
+  sublist := [[var,:gensym()] for var in vars]
   body := sublisNQ(sublist,body)
   vars := [rest v for v in sublist]
 
@@ -788,7 +788,7 @@ mkIterFun([index,:s],funBody,$localVars) ==
   body := checkForFreeVariables(getValue funBody,$localVars)
   parms := [index,"envArg"]
   val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
-  vec := mkAtreeNode GENSYM()
+  vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
 
@@ -927,7 +927,7 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
    [checkForFreeVariables(form,$localVars) for form in getValue funBody]
   parms := [$index,'envArg]
   val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
-  vec := mkAtreeNode GENSYM()
+  vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
 
@@ -950,7 +950,7 @@ iterVarPos var ==
     index=var => return(i)
 
 mkNestedElts n ==
-  n=0 => mkAtreeNode($index or ($index:= GENSYM()))
+  n=0 => mkAtreeNode($index or ($index:= gensym()))
   [mkAtreeNode "elt", mkNestedElts(n-1), mkAtreeNode 'part2]
 
 --% Handlers for construct

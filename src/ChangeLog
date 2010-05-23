@@ -1,3 +1,34 @@
+2010-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: gensym is now candidate for renaming.
+	* boot/ast.boot: Replace GENSYM with gensym.
+	* interp/buildom.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/clammed.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/macex.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/pf2atree.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/ptrees.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/sys-constants.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* input/collect.input.pamphlet: Remove bogus expression.

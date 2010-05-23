@@ -467,7 +467,7 @@ postReduce t ==
   t isnt ["%Reduce",op,expr] => systemErrorHere ["postReduce",t]
   $InteractiveMode or expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
-  postReduce ["%Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
+  postReduce ["%Reduce",op,["COLLECT",["IN",g:= gensym(),expr],
     ["construct",  g]]]
 
 postFlattenLeft: (%ParseTree, %Symbol) -> %ParseForm

@@ -99,7 +99,7 @@ compClam(op,argl,body,$clamList) ==
     [:bright cacheCount,'"computed values"]
   sayBrightly [:bright op,'"will save last",:phrase]
   auxfn:= INTERNL(op,'";")
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,computeValue] :=
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
     [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
@@ -111,8 +111,8 @@ compClam(op,argl,body,$clamList) ==
     setDynamicBinding(callCounter,0)
     callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
     hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
-  g2:= GENSYM()  --length of cache or arg-value pair
-  g3:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --length of cache or arg-value pair
+  g3:= gensym()  --value computed by calling function
   lookUpFunction:=
     shiftFl =>
       countFl => 'assocCacheShiftCount
@@ -192,7 +192,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 --sayBrightly
 --  ["%b",op,"%d","hashes ",:middle,withWithout," reference counts"]
   auxfn:= INTERNL(op,'";")
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
   --    cacheArgKey: the form used to look up the value in the cache
@@ -211,7 +211,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     setDynamicBinding(callCounter,0)
     callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
     hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
-  g2:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --value computed by calling function
   returnFoundValue:=
     null argl =>
     --  if we have a global hastable, functions with no arguments are
@@ -284,7 +284,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   if (not (eqEtc in '(UEQUAL))) then
     sayBrightly "for hash option, only EQ, CVEC, and UEQUAL are allowed"
   auxfn:= INTERNL(op,'";")
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
   --    cacheArgKey: the form used to look up the value in the cache
@@ -294,7 +294,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
       argl is [.] => [auxfn,g1]  --g1 is a parameter
       ['APPLX,['function,auxfn],g1]          --g1 is a parameter list
     [g1,['consForHashLookup,MKQ op,g1],application]
-  g2:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --value computed by calling function
   returnFoundValue:=
     countFl => ['CDRwithIncrement,g2]
     g2

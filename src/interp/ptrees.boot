@@ -673,7 +673,7 @@ pfTaggedToTyped x==
   rt:=if pfTagged? x then pfTaggedExpr x else pfNothing()
   form:= if pfTagged? x then pfTaggedTag x else x
   not pfId? form =>
-      a:=pfId GENSYM()
+      a:=pfId gensym()
       pfTyped(pfSuch(a,
            pfInfApplication (pfId "=", a,form)),rt)
   pfTyped(form,rt)

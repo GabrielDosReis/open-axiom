@@ -501,7 +501,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ["%Bind",[[g:= GENSYM(),body]],
+      ["%Bind",[[g:= gensym(),body]],
          ["setShellEntry",g,0,mkConstructor $form],g]
     fun:= compile [op',["LAM",sargl,body]]
  
@@ -1027,7 +1027,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
        prTriple T
     --  A THROW to the above CATCH occurs if too many semantic errors occur
     --  see stackSemanticError
-    catchTag:= MKQ GENSYM()
+    catchTag:= MKQ gensym()
     fun:=
       body':= replaceExitEtc(T.expr,catchTag,"TAGGEDreturn",$returnMode)
       body':= addArgumentConditions(body',$op)
@@ -1242,7 +1242,7 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   vl := [ renameParameter for v in vl] where
     renameParameter() ==
       NUMBERP v or IDENTP v or string? v => v
-      GENSYM '"flag"
+      gensym '"flag"
   clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then
     body := replaceSimpleFunctions body
@@ -1543,7 +1543,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
        then
          nils:=[u,:nils]
        else
-         gv := GENSYM()
+         gv := gensym()
          ans:=[["%LET",gv,u],:ans]
          nils:=[gv,:nils]
      n:=n+1
@@ -1627,7 +1627,7 @@ DomainSubstitutionFunction(parameters,body) ==
           MEMQ(body,parameters) => MKQ body
           body
         member(body,parameters) =>
-          g:=GENSYM()
+          g:=gensym()
           $extraParms:=PUSH([g,:body],$extraParms)
            --Used in SetVector12 to generate a substitution list
            --bound in buildFunctor

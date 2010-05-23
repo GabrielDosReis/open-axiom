@@ -82,7 +82,7 @@ macLambdaParameterHandling( replist , pform )  ==
         replist
     pfMLambda? pform =>     -- construct assoclist ( identifier . replacement )
         parlist := pf0MLambdaArgs pform  -- extract parameter list
-        [[pfIdSymbol par ,:pfLeaf( pfAbSynOp par,GENSYM(),pfLeafPosition par)] for par in parlist ]
+        [[pfIdSymbol par ,:pfLeaf( pfAbSynOp par,gensym(),pfLeafPosition par)] for par in parlist ]
     for p in pfParts pform repeat macLambdaParameterHandling( replist , p )
 
 macSubstituteId( replist , pform ) ==

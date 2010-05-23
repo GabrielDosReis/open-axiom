@@ -994,7 +994,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
                 then
                   nils:=[u,:nils]
                 else
-                  gv := GENSYM()
+                  gv := gensym()
                   ans:=[["%LET",gv,u],:ans]
                   nils:=[gv,:nils]
               n:=n+1

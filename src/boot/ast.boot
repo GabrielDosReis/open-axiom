@@ -1455,7 +1455,7 @@ genECLnativeTranslation(op,s,t,op') ==
   argtypes := nil
   for x in s repeat
      argtypes := [nativeArgumentType x,:argtypes]
-     args := [GENSYM(),:args]
+     args := [gensym(),:args]
   args := reverse args
   rettype := nativeReturnType t
   [["DEFUN",op, args,
@@ -1500,7 +1500,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- copy data there, pass pointers to them, and possibly copy
   -- them back.  Ugh.  
   n := INTERN strconc(PNAME op, '"%clisp-hack")
-  parms := [GENSYM '"parm" for x in s]  -- parameters of the forward decl.
+  parms := [gensym '"parm" for x in s]  -- parameters of the forward decl.
 
   -- Now, separate non-simple data from the rest.  This is a triple-list
   -- of the form ((parameter boot-type . ffi-type) ...)
@@ -1525,7 +1525,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- gigantic buffer, you might find out that it is insanely inefficient.
   forwardingFun := 
     unstableArgs = nil => ["DEFUN",op,parms, [n,:parms]]
-    localPairs := [[a,x,y,:GENSYM '"loc"] for [a,x,:y] in unstableArgs]
+    localPairs := [[a,x,y,:gensym '"loc"] for [a,x,:y] in unstableArgs]
     call := 
       [n,:[actualArg(p,localPairs) for p in parms]] where
 	    actualArg(p,pairs) ==
@@ -1559,7 +1559,7 @@ genSBCLnativeTranslation(op,s,t,op') ==
   rettype := nativeReturnType t
   argtypes := [nativeArgumentType x for x in s]
 
-  args := [GENSYM() for x in s]
+  args := [gensym() for x in s]
   unstableArgs := nil
   newArgs := nil
   for a in args for x in s repeat
@@ -1591,7 +1591,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   argtypes := [nativeArgumentType x for x in s]
 
   -- Build parameter list for the forwarding function
-  parms := [GENSYM '"parm" for x in s]
+  parms := [gensym '"parm" for x in s]
 
   -- Separate string arguments and array arguments from scalars.
   -- These array arguments need to be pinned down, and the string
@@ -1599,8 +1599,8 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   strPairs := nil 
   aryPairs := nil
   for p in parms for x in s repeat
-    x = "string" => strPairs := [[p,:GENSYM '"loc"], :strPairs]
-    x is [.,["buffer",.]] => aryPairs := [[p,:GENSYM '"loc"], :aryPairs]
+    x = "string" => strPairs := [[p,:gensym '"loc"], :strPairs]
+    x is [.,["buffer",.]] => aryPairs := [[p,:gensym '"loc"], :aryPairs]
 
   -- Build the actual foreign function call.
   -- Note that Clozure CL does not mangle foreign function call for

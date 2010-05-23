@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ serverReadLine(stream) ==
        $NeedToSignalSessionManager := true
        return l
      action = $CreateFrame =>
-       frameName := GENSYM('"frame")
+       frameName := gensym('"frame")
        addNewInterpreterFrame(frameName)
        $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
        $currentFrameNum := $frameNumber

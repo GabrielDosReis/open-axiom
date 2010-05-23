@@ -321,7 +321,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
            [["$elt","Lisp","construct"],:mkQuote results],resPar]
   if asps then
     -- Make a unique(ish) id for asp files
-    aspId := strconc(getEnv('"SPADNUM"), GENSYM('"NAG"))
+    aspId := strconc(getEnv('"SPADNUM"), gensym('"NAG"))
     body := ["SEQ",:makeAspGenerators(asps,aspTypes,aspId),_
              makeCompilation(asps,file,aspId),_
              ["pretend",call,fType] ]
@@ -673,9 +673,9 @@ readData(tmpFile,results) ==
   results
 
 generateDataName()==strconc($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENSYM('"NAG"),'"data")
+    getEnv('"SPADNUM"), gensym('"NAG"),'"data")
 generateResultsName()==strconc($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENSYM('"NAG"),'"results")
+    getEnv('"SPADNUM"), gensym('"NAG"),'"results")
 
 
 fortCall(objFile,data,results) ==
@@ -755,7 +755,7 @@ multiToUnivariate f ==
   else
     vars := [second f]
   body := COPY_-TREE third f
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     body := NSUBST(["elt",newVariable,index+1],vars.(index),body)
@@ -778,7 +778,7 @@ functionAndJacobian f ==
     DF(fn,var) == 
       ["@",["convert",["differentiate",fn,var]],"InputForm"]
   jacBodies := CDDR interpret [["$elt",["List",["InputForm"]],"construct"],:jacBodies]
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)
@@ -800,7 +800,7 @@ vectorOfFunctions f ==
   else
     vars := [second f]
   funBodies := COPY_-TREE CDADDR f
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)
