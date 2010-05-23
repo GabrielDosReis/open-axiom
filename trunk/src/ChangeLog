@@ -1,5 +1,9 @@
 2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* input/collect.input.pamphlet: Remove bogus expression.
+
+2010-05-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cparse.boot (npDefinitionItem): Consider a declaration as
 	a definition item too.
 	* interp/i-map.boot (addDefMap): Don't confuse constant
