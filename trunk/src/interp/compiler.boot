@@ -1016,7 +1016,7 @@ compSeq1(l,$exitModeStack,e) ==
         ($insideExpressionIfTrue:= NIL; compSeqItem(x,$NoValueMode,e) or return
           "failed")).expr for x in l]
   if c="failed" then return nil
-  catchTag:= MKQ GENSYM()
+  catchTag:= MKQ gensym()
   form:= ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",$exitModeStack.(0))]
   [["CATCH",catchTag,form],$exitModeStack.(0),$finalEnv]
 
@@ -1698,7 +1698,7 @@ coerceable(m,m',e) ==
 coerceExit: (%Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
   m':= resolve(m,m')
-  x':= replaceExitEtc(x,catchTag:= MKQ GENSYM(),"TAGGEDexit",$exitMode)
+  x':= replaceExitEtc(x,catchTag:= MKQ gensym(),"TAGGEDexit",$exitMode)
   coerce([["CATCH",catchTag,x'],m,e],m')
 
 compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1967,7 +1967,7 @@ compRetractGuard(x,t,sn,sm,e) ==
     -- view, that temporary needs to have a lifetime that covers both
     -- the condition and the body of the alternative, so just use 
     -- assignment here and let the rest of the compiler deal with it.
-    z := GENSYM()
+    z := gensym()
     caseCode := ["PROGN",["%LET",z,retractCode],["QEQCAR",z,0]]
     restrictCode := ["QCDR",z]
   -- 1.3. Everything else failed; nice try.
@@ -2071,7 +2071,7 @@ defineMatchScrutinee(m,e) ==
       [[t for m' in rest m | [t,e] := defTemp(m',e)], e]
     defTemp(m,e)
   where defTemp(m,e) ==
-    t := GENSYM()
+    t := gensym()
     [.,.,e] := compMakeDeclaration(t,m,e)
     [t,put(t,"value",[genSomeVariable(),m,$noEnv],e)]
 
@@ -2208,9 +2208,9 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   itl:= [([.,$e]:= compIterator(x,$e) or return "failed").0 for x in itl]
   itl="failed" => return nil
   e:= $e
-  acc:= GENSYM()
-  afterFirst:= GENSYM()
-  bodyVal:= GENSYM()
+  acc:= gensym()
+  afterFirst:= gensym()
+  bodyVal:= gensym()
   [part1,m,e]:= comp(["%LET",bodyVal,body],m,e) or return nil
   [part2,.,e]:= comp(["%LET",acc,bodyVal],m,e) or return nil
   [part3,.,e]:= comp(["%LET",acc,parseTran [op,acc,bodyVal]],m,e) or return nil
@@ -2285,7 +2285,7 @@ compRepeatOrCollect(form,m,e) ==
             compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
         if $iterateCount > 0 then
-           bodyTag := quoteForm GENSYM()
+           bodyTag := quoteForm gensym()
            body' := ["CATCH",bodyTag,NSUBST(bodyTag,"$loopBodyTag",body')]
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')

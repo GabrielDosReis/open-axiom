@@ -67,14 +67,14 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
     keyedSystemError("S2IM0019",[cacheCount,op])
   sayKeyedMsg("S2IX0003",[op,num])
   auxfn := mkAuxiliaryName nam
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,computeValue] :=
     null argl => [nil,[auxfn]]
     argl is [.] => [[g1, 'envArg],[auxfn,g1, 'envArg]]  --g1 is a parameter
     [g1,['APPLX,MKQ auxfn,g1]]          --g1 is a parameter list
   cacheName := mkCacheName nam
-  g2:= GENSYM()  --length of cache or arg-value pair
-  g3:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --length of cache or arg-value pair
+  g3:= gensym()  --value computed by calling function
   secondPredPair:=
     null argl => [cacheName]
     [['SETQ,g3,['assocCircular,g1,cacheName]],['CDR,g3]]
@@ -114,14 +114,14 @@ getCacheCount fn ==
 reportFunctionCacheAll(op,nam,argl,body) ==
   sayKeyedMsg("S2IX0004",[op])
   auxfn:= mkAuxiliaryName nam
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,computeValue] :=
     null argl => [['envArg],[auxfn, 'envArg]]
     argl is [.] => [[g1, 'envArg],[auxfn,g1, 'envArg]]  --g1 is a parameter
     [g1,["APPLX",MKQ auxfn,g1]]          --g1 is a parameter list
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
-  g2:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --value computed by calling function
   secondPredPair:= [["SETQ",g2,["HGET",cacheName,g1]],g2]
   thirdPredPair:= ['(QUOTE T),["HPUT",cacheName,g1,computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",["COND",secondPredPair,thirdPredPair]]]
@@ -170,14 +170,14 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       extraArguments is [x] => x
       ['LIST,:extraArguments]
     nil
-  g:= GENSYM()
-  gIndex:= GENSYM()
-  gsList:= [GENSYM() for x in initCode]
+  g:= gensym()
+  gIndex:= gensym()
+  gsList:= [gensym() for x in initCode]
   auxfn := mkAuxiliaryName(nam)
   $compiledOpNameList := [:$compiledOpNameList,auxfn]
   stateNam:= GENVAR()
-  stateVar:= GENSYM()
-  stateVal:= GENSYM()
+  stateVar:= gensym()
+  stateVal:= gensym()
   lastArg := INTERNL strconc('"#",STRINGIMAGE QSADD1 # argl)
   decomposeCode:=
     [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
@@ -209,7 +209,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       :[["%LET",g,["%ELT",stateVar,i]] for g in gsList for i in 1..]]
   mainFunction:= [nam,["LAM",margl,:declareUnusedParameters(margl,mbody)]] where
     margl:= [:argl,'envArg]
-    max:= GENSYM()
+    max:= gensym()
     tripleCode := ["CONS",n,["LIST",:initCode]]
  
     -- initialSetCode initializes the global variable if necessary and

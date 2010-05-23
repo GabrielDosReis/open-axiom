@@ -35,7 +35,7 @@
 import i_-coerce
 namespace BOOT
 
-$coerceFailure := GENSYM()
+$coerceFailure := gensym()
 
 position1(x,y) ==
   -- this is used where we want to assume a 1-based index

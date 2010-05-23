@@ -359,7 +359,7 @@ makeSimplePredicateOrNil: %ParseForm -> %Form
 makeSimplePredicateOrNil p ==
   isSimple p => nil
   u:= isAlmostSimple p => u
-  wrapSEQExit [["%LET",g:= GENSYM(),p],g]
+  wrapSEQExit [["%LET",g:= gensym(),p],g]
  
 
 parseWhere: %List -> %Form

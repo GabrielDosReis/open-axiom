@@ -576,9 +576,9 @@ optCollectVector form ==
     ["MIN",:nreverse vecSize]
   -- if no suitable loop index was found, introduce one.
   if index = nil then
-    index := GENSYM()
+    index := gensym()
     iters := [:iters,["ISTEP",index,0,1]]
-  vec := GENSYM()
+  vec := gensym()
   ["LET",[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
     ["REPEAT",:iters,["setSimpleArrayEntry",vec,index,body]], 
       vec]
@@ -587,7 +587,7 @@ optCollectVector form ==
 ++ defined by predicate `pred',
 optRetract ["%Retract",e,m,pred] ==
   atom e => ["check-subtype",substitute(e,"#1",pred),MKQ m,e]
-  g := GENSYM()
+  g := gensym()
   ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
 
 lispize x == first optimize [x]

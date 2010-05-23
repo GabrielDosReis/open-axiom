@@ -547,7 +547,7 @@ pfCollect2Atree pf ==
 --
 
 --  pfSuchThat2Atree args ==
---    name := GENSYM()
+--    name := gensym()
 --    argList := pf0TupleParts args
 --    lhsSex := pf2Atree1 first argList
 --    rhsSex := pf2Atree second argList

@@ -195,7 +195,7 @@ UnionPrint(x, dom) == coerceUn2E(x, dom.0)
 coerceUn2E(x,source) ==
   ["Union",:branches] := source
   predlist := mkPredList branches
-  byGeorge := byJane := GENSYM()
+  byGeorge := byJane := gensym()
   for b in stripUnionTags branches for p in predlist  repeat
     typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
     if FUNCALL(typeFun,x) then return
@@ -308,7 +308,7 @@ constructorCategory (title is [op,:.]) ==
 --mkMappingFunList(nam,mapForm,e) == [[],e]
 mkMappingFunList(nam,mapForm,e) ==
   nargs := #rest mapForm
-  dc := GENSYM()
+  dc := gensym()
   sigFunAlist:=
     [["=",[$Boolean,nam ,nam], ["ELT",dc,$FirstParamSlot + nargs]], 
       ["~=",[$Boolean,nam,nam],["ELT",dc,0]],
@@ -319,7 +319,7 @@ mkMappingFunList(nam,mapForm,e) ==
 
 mkRecordFunList(nam,["Record",:Alist],e) ==
   len:= #Alist
-  dc := GENSYM()
+  dc := gensym()
   sigFunAlist:=
     [["construct",[nam,:[A for [.,a,A] in Alist]],"mkRecord"],
       ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot + len]],
@@ -352,7 +352,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 		   ["XLAM",["#1"],["QEQCAR","#1",i]]]]
 		     for [.,tag,type] in listOfEntries for i in 0..])] where
 		       cdownFun() ==
-			gg:=GENSYM()
+			gg:=gensym()
 			$InteractiveMode =>
 			  ["XLAM",["#1"],["PROG1",["QCDR","#1"],
 			    ["check-union",["QEQCAR","#1",i],type,"#1"]]]
@@ -376,7 +376,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   nargs := #listOfEntries
   --1. create representations of subtypes
   predList:= mkPredList listOfEntries
-  g:=GENSYM()
+  g:=gensym()
   --2. create coercions from subtypes to subUnion
   cList:=
    [["=",[$Boolean,g ,g],["ELT",op,$FirstParamSlot + nargs]],
@@ -393,7 +393,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		  p is ["EQCAR",x,n] => ["XLAM",["#1"],["CONS",n,"#1"]]
 		  ["XLAM",["#1"],"#1"]
 		cdownFun() ==
-		  gg:=GENSYM()
+		  gg:=gensym()
 		  if p is ["EQCAR",x,n] then
 		     ref:=["QCDR",gg]
 		     q:= ["QEQCAR", gg, n]

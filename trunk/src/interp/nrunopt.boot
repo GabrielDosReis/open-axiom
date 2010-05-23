@@ -320,9 +320,9 @@ orderByContainment pl ==
   for x in rest pl repeat
     if (y := CONTAINED(max,x)) then
       if null assoc(max,$predGensymAlist)
-      then $predGensymAlist := [[max,:GENSYM()],:$predGensymAlist]
+      then $predGensymAlist := [[max,:gensym()],:$predGensymAlist]
     else if CONTAINED(x,max)
-         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:GENSYM()],:$predGensymAlist]
+         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:gensym()],:$predGensymAlist]
     if y then max := x
   [max,:orderByContainment delete(max,pl)]
  

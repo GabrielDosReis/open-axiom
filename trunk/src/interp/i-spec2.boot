@@ -403,7 +403,7 @@ compileIs(val,pattern) ==
     IDENTP(pat) and isLocalVar(pat) => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
     pat is ["=",var] => vars:= [var,:vars]
-  predCode:=["%LET",g:=GENSYM(),["isPatternMatch",
+  predCode:=["%LET",g:=gensym(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
   for var in removeDuplicates vars repeat
     assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
@@ -643,7 +643,7 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
     -- to first hold the assignments so that things like
     -- (t1,t2) := (t2,t1) will work.
     seq := []
-    temps := [GENSYM() for l in rest lhs]
+    temps := [gensym() for l in rest lhs]
     for lvar in temps repeat mkLocalVar($mapName,lvar)
     for l in reverse rest lhs for t in temps repeat
       transferPropsToNode(getUnname l,l)
@@ -911,9 +911,9 @@ transformREPEAT [:itrl,body] ==
 upREPEAT t ==
   -- REPEATS always return void() of Void
   -- assures throw to interpret-code mode goes to outermost loop
-  $repeatLabel : local := MKQ GENSYM()
+  $repeatLabel : local := MKQ gensym()
   $breakCount  : local := 0
-  $repeatBodyLabel : local := MKQ GENSYM()
+  $repeatBodyLabel : local := MKQ gensym()
   $iterateCount    : local := 0
   $compilingLoop => upREPEAT1 t
   upREPEAT0 t

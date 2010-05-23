@@ -556,7 +556,7 @@ NRTsetVector4(siglist,formlist,condlist) ==
   $lisplibCategoriesExtended:= [$uncondList,:$condList]
   code := ['mapConsDB,MKQ reverse removeDuplicates $uncondList]
   if $condList then
-    localVariable := GENSYM()
+    localVariable := gensym()
     code := [["%LET",localVariable,code]]
     for [pred,list] in $condList repeat
       code :=
@@ -564,7 +564,7 @@ NRTsetVector4(siglist,formlist,condlist) ==
           ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
             :code]
     code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
-  g := GENSYM()
+  g := gensym()
   [$setelt,'$,4,['PROG2,["%LET",g,code],
     ['VECTOR,['catList2catPackageList,g],g]]]
 
@@ -596,7 +596,7 @@ NRTsetVector4Part2(uncondList,condList) ==
   $lisplibCategoriesExtended:= [uncondList,:condList]
   code := ['mapConsDB,MKQ reverse removeDuplicates uncondList]
   if condList then
-    localVariable := GENSYM()
+    localVariable := gensym()
     code := [["%LET",localVariable,code]]
     for [pred,list] in condList repeat
       code :=
@@ -604,7 +604,7 @@ NRTsetVector4Part2(uncondList,condList) ==
           ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
             :code]
     code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
-  g := GENSYM()
+  g := gensym()
   [$setelt,'$,4,['PROG2,["%LET",g,code],
     ['VECTOR,['catList2catPackageList,g],g]]]
 
@@ -662,10 +662,10 @@ slot1Filter opList ==
 
 NRToptimizeHas u ==
 --u is a list ((pred cond)...) -- see optFunctorBody
---produces an alist: (((HasCategory a b) . GENSYM)...)
+--produces an alist: (((HasCategory a b) . gensym)...)
   u is [a,:b] =>
     a='HasCategory => LASSOC(u,$hasCategoryAlist) or
-      $hasCategoryAlist := [[u,:(y:=GENSYM())],:$hasCategoryAlist]
+      $hasCategoryAlist := [[u,:(y:=gensym())],:$hasCategoryAlist]
       y
     a="has" => NRToptimizeHas ['HasCategory,first b,MKQ second b]
     a = 'QUOTE => u

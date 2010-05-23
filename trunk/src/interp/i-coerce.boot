@@ -927,7 +927,7 @@ coerceSubDomain(val, tSuper, tSub) ==
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
   predfn := HGET($superHash, [tSuper,:tSub]) => predfn
-  arg := GENSYM()
+  arg := gensym()
   predfn := COMPILE(nil,["LAMBDA",[arg],substitute(arg,"#1", pred)])
   HPUT($superHash, [tSuper,:tSub], predfn)
   predfn

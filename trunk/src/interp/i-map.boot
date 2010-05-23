@@ -551,7 +551,7 @@ mkInterpFun(op,opName,argTypes) ==
     for argName in parms]] where argCode() ==
       ['putValueValue,['mkAtreeNode,MKQ argName],
         objNewCode(['wrap,argName],type)]
-  funName := GENSYM()
+  funName := gensym()
   body:=['rewriteMap1,MKQ opName,arglCode,MKQ sig]
   putMapCode(opName,body,sig,funName,parms,false)
   genMapCode(opName,body,sig,funName,parms,false)

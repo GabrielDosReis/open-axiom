@@ -206,6 +206,7 @@
                          (LIST '|exit| 'EXIT) (LIST '|false| 'NIL)
                          (LIST '|first| 'CAR) (LIST '|fourth| 'CADDDR)
                          (LIST '|function| 'FUNCTION)
+                         (LIST '|gensym| 'GENSYM)
                          (LIST '|genvar| 'GENVAR)
                          (LIST '|integer?| 'INTEGERP)
                          (LIST '|lastNode| 'LAST) (LIST 'LAST '|last|)

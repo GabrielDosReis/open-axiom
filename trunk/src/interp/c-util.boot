@@ -1142,7 +1142,7 @@ replaceSimpleFunctions form ==
       -- conservatively approximate eager semantics
       and/[isAtomicForm first as for as in tails args] =>
         -- alpha rename before substitution.
-	newparms := [GENSYM() for p in parms]
+	newparms := [gensym() for p in parms]
 	body := eqSubstAndCopy(newparms,parms,body)
 	eqSubst(args,newparms,body)
       -- get cute later.
@@ -1313,8 +1313,8 @@ backendCompileSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
   al := INTERNL(name,'";AL")    -- name of the cache alist.
   auxfn := INTERNL(name,'";")   -- name of the worker function.
-  g1 := GENSYM()                -- name for the parameter.
-  g2 := GENSYM()                -- name for the cache value
+  g1 := gensym()                -- name for the parameter.
+  g2 := gensym()                -- name for the cache value
   u :=                          -- body of the stub function
     null args => [nil,[auxfn]]
     null rest args => [[g1],[auxfn,g1]]
@@ -1345,8 +1345,8 @@ backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
   al := INTERNL(name,'";AL")   -- name of the cache hash table.
   auxfn := INTERNL(name,'";")  -- name of the worker function.
-  g1 := GENSYM()               -- name of the worker function parameter
-  g2 := GENSYM()               -- name for the cache value.
+  g1 := gensym()               -- name of the worker function parameter
+  g2 := gensym()               -- name for the cache value.
   u := 
     null args => [nil,nil,[auxfn]]
     null rest args => [[g1],["devaluate",g1],[auxfn,g1]]
