@@ -85,8 +85,8 @@ structure %Name ==
 structure %Ast ==
   Command(%String)                      -- includer command
   %Module(%Name,%List)                  -- module declaration
-  Import(%String)                       -- import module
-  ImportSignature(Name, Signature)      -- import function declaration
+  %Import(%String)                       -- import module
+  %ImportSignature(Name, Signature)      -- import function declaration
   %TypeAlias(%Head, %List)              -- type alias definition
   Signature(Name, Mapping)              -- op: S -> T
   Mapping(Ast, %List)                   -- (S1, S2) -> T

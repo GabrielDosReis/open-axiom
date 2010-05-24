@@ -486,7 +486,7 @@
            (PROGN
              (SETQ |a| (CAR |s|))
              (COND
-               ((EQCAR |a| '+LINE) (|shoeFileLine| (CADR |a|) |st|))
+               ((EQ (CAR |a|) '+LINE) (|shoeFileLine| (CADR |a|) |st|))
                ('T (REALLYPRETTYPRINT |a| |st|) (TERPRI |st|)))
              (SETQ |s| (CDR |s|)))))))))
 
@@ -656,7 +656,7 @@
                                           (|translateToplevel| |d| T))
                                          |bfVar#15|))))
                                (SETQ |bfVar#14| (CDR |bfVar#14|))))))))
-             (|Import|
+             (|%Import|
                  (LET ((|m| (CAR |bfVar#17|)))
                    (PROGN
                      (COND
@@ -664,7 +664,7 @@
                                     "skip"))
                         (|bootImport| (STRING |m|))))
                      (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
-             (|ImportSignature|
+             (|%ImportSignature|
                  (LET ((|x| (CAR |bfVar#17|))
                        (|sig| (CADR |bfVar#17|)))
                    (|genImportDeclaration| |x| |sig|)))
@@ -746,7 +746,7 @@
         (SETQ |b| (|bpPop1|))
         (|bpPush|
             (COND
-              ((EQCAR |b| '+LINE) (LIST |b|))
+              ((EQ (CAR |b|) '+LINE) (LIST |b|))
               ((AND (CONSP |b|) (EQ (CAR |b|) 'L%T)
                     (PROGN
                       (SETQ |ISTMP#1| (CDR |b|))
@@ -1360,7 +1360,7 @@
         (SETQ |out| (NAMESTRING (|getOutputPathname| |options|)))
         (COND
           (|out| (CONCAT (|shoeRemoveStringIfNec|
-                             (CONCAT "." |$effectiveFaslType|) |out|)
+                             (CONCAT "." |$faslType|) |out|)
                          ".clisp"))
           ('T (|defaultBootToLispFile| |file|)))))))
 

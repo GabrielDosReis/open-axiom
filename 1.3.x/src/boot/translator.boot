@@ -335,7 +335,7 @@ shoeFileLine(x, stream) ==
 shoeFileTrees(s,st)==
   while not bStreamNull s repeat
     a:= first s
-    if EQCAR (a,"+LINE")
+    if first a = "+LINE"
     then shoeFileLine(second a,st)
     else 
       REALLYPRETTYPRINT(a,st)
@@ -426,12 +426,12 @@ translateToplevel(b,export?) ==
       [["PROVIDE", STRING m],
         :[first translateToplevel(d,true) for d in ds]]
 
-    Import(m) => 
+    %Import(m) => 
       if getOptionValue "import" ^= '"skip" then
         bootImport STRING m
       [["IMPORT-MODULE", STRING m]]
 
-    ImportSignature(x, sig) =>
+    %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
 
     %TypeAlias(lhs, rhs) => 
@@ -465,7 +465,7 @@ bpOutItem()==
   bpComma() or bpTrap()
   b:=bpPop1()
   bpPush 
-    EQCAR(b,"+LINE")=> [ b ]
+    first b = "+LINE" => [ b ]
     b is ["L%T",l,r] and IDENTP l => 
       $InteractiveMode => [["SETQ",l,r]]
       [["DEFPARAMETER",l,r]]

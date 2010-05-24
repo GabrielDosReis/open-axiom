@@ -34,10 +34,10 @@
 (DEFUN |%Module| #0=(|bfVar#3| |bfVar#4|)
   (CONS '|%Module| (LIST . #0#)))
 
-(DEFUN |Import| #0=(|bfVar#5|) (CONS '|Import| (LIST . #0#)))
+(DEFUN |%Import| #0=(|bfVar#5|) (CONS '|%Import| (LIST . #0#)))
 
-(DEFUN |ImportSignature| #0=(|bfVar#6| |bfVar#7|)
-  (CONS '|ImportSignature| (LIST . #0#)))
+(DEFUN |%ImportSignature| #0=(|bfVar#6| |bfVar#7|)
+  (CONS '|%ImportSignature| (LIST . #0#)))
 
 (DEFUN |%TypeAlias| #0=(|bfVar#8| |bfVar#9|)
   (CONS '|%TypeAlias| (LIST . #0#)))

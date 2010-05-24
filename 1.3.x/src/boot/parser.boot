@@ -64,7 +64,7 @@ bpFirstTok()==
           then shoeTokConstruct("ERROR","NOMORE",shoeTokPosn $stok)
           else first $inputStream
       $ttok:=shoeTokPart $stok
-      $bpParenCount>0 and EQCAR($stok,"KEY") =>
+      $bpParenCount>0 and first $stok = "KEY" =>
              EQ($ttok,"SETTAB")=>
                 $bpCount:=$bpCount+1
                 bpNext()
@@ -202,12 +202,12 @@ bpListofFun(f,h,g)==
           $stack:=nil
           while apply(h,nil) and (apply(f,nil) or bpTrap()) repeat 0
           $stack:=[NREVERSE $stack,:a]
-          bpPush FUNCALL(g, bfListOf [bpPop3(),bpPop2(),:bpPop1()])
+          bpPush FUNCALL(g, [bpPop3(),bpPop2(),:bpPop1()])
         else
           true
     else false
  
-bpList(f,str1,g)==
+bpList(f,str1)==
     if apply(f,nil)
     then
         if bpEqKey str1 and (apply(f,nil) or bpTrap())
@@ -216,10 +216,10 @@ bpList(f,str1,g)==
           $stack:=nil
           while bpEqKey str1 and (apply(f,nil) or bpTrap()) repeat 0
           $stack:=[NREVERSE $stack,:a]
-          bpPush FUNCALL(g,  [bpPop3(),bpPop2(),:bpPop1()])
+          bpPush [bpPop3(),bpPop2(),:bpPop1()]
         else
-          bpPush FUNCALL(g, [bpPop1()])
-    else bpPush FUNCALL(g, [])
+          bpPush [bpPop1()]
+    else bpPush nil
  
 bpOneOrMore f==
        apply(f,nil)=>
@@ -269,10 +269,10 @@ bpBacksetElse()==
     then bpEqKey "ELSE"
     else bpEqKey "ELSE"
  
-bpEqPeek s ==  EQCAR($stok,"KEY") and EQ(s,$ttok)
+bpEqPeek s ==  first $stok = "KEY" and EQ(s,$ttok)
  
-bpEqKey s ==   EQCAR($stok,"KEY") and EQ(s,$ttok) and bpNext()
-bpEqKeyNextTok s ==   EQCAR($stok,"KEY") and EQ(s,$ttok) and
+bpEqKey s ==   first $stok = "KEY" and EQ(s,$ttok) and bpNext()
+bpEqKeyNextTok s ==   first $stok = "KEY" and EQ(s,$ttok) and
                   bpNextToken()
  
 bpPileTrap()   == bpMissing  "BACKTAB"
@@ -374,7 +374,7 @@ bpMoveTo n==
 bpQualifiedName() ==
   bpEqPeek "COLON-COLON" =>
     bpNext()
-    EQCAR($stok, "ID") and bpPushId() and bpNext()
+    first $stok = "ID" and bpPushId() and bpNext()
       and bpPush bfColonColon(bpPop2(), bpPop1())
   false
 
@@ -382,7 +382,7 @@ bpQualifiedName() ==
 ++   ID
 ++   Name :: ID
 bpName() ==
-  EQCAR( $stok,"ID") =>
+  first $stok = "ID" =>
     bpPushId()
     bpNext()
     bpAnyNo function bpQualifiedName
@@ -401,9 +401,9 @@ bpConstTok() ==
      MEMQ(shoeTokType $stok, '(INTEGER FLOAT)) =>
           bpPush $ttok
           bpNext()
-     EQCAR($stok,"LISP")=> bpPush bfReadLisp $ttok and bpNext()
-     EQCAR($stok,"LISPEXP")=> bpPush $ttok and bpNext()
-     EQCAR($stok,"LINE")=> bpPush ["+LINE", $ttok] and bpNext()
+     first $stok = "LISP" => bpPush bfReadLisp $ttok and bpNext()
+     first $stok = "LISPEXP" => bpPush $ttok and bpNext()
+     first $stok = "LINE" => bpPush ["+LINE", $ttok] and bpNext()
      bpEqPeek "QUOTE" =>
           bpNext()
           (bpSexp() or bpTrap()) and
@@ -469,8 +469,8 @@ bpImport() ==
       (bpSignature() or bpTrap()) and 
         (bpEqKey "FOR" or bpTrap()) and
            (bpName() or bpTrap()) and
-              bpPush ImportSignature(bpPop1(), bpPop1())
-    bpPush Import bpPop1()
+              bpPush %ImportSignature(bpPop1(), bpPop1())
+    bpPush %Import bpPop1()
   false
 
 -- Parse a type alias defnition:
@@ -545,14 +545,14 @@ bpExceptions()==
  
  
 bpSexpKey()==
-      EQCAR( $stok,"KEY") and not bpExceptions()=>
+      first $stok = "KEY" and not bpExceptions()=>
                a:=GET($ttok,"SHOEINF")
                null a=>  bpPush $ttok and bpNext()
                bpPush a and bpNext()
       false
  
 bpAnyId()==
-  bpEqKey "MINUS"  and (EQCAR($stok,"INTEGER") or bpTrap()) and
+  bpEqKey "MINUS"  and (first $stok = "INTEGER" or bpTrap()) and
           bpPush MINUS $ttok and bpNext() or
              bpSexpKey() or
                    MEMQ(shoeTokType $stok, '(ID INTEGER STRING FLOAT))
@@ -585,11 +585,11 @@ bpPrimary()==  bpFirstTok() and (bpPrimary1() or bpPrefixOperator())
 bpDot()== bpEqKey "DOT" and bpPush bfDot ()
  
 bpPrefixOperator()==
-   EQCAR( $stok,"KEY") and
+   first $stok = "KEY" and
      GET($ttok,"SHOEPRE") and bpPushId() and  bpNext()
  
 bpInfixOperator()==
-  EQCAR( $stok,"KEY") and
+  first $stok = "KEY" and
     GET($ttok,"SHOEINF") and bpPushId() and  bpNext()
  
 bpSelector()==
@@ -622,7 +622,7 @@ bpTagged()==
 bpExpt()== bpRightAssoc('(POWER),function bpTagged)
  
 bpInfKey s==
- EQCAR( $stok,"KEY") and
+ first $stok = "KEY" and
    MEMBER($ttok,s) and bpPushId() and bpNext()
  
 bpInfGeneric s== bpInfKey s and  (bpEqKey "BACKSET" or true)
@@ -653,7 +653,7 @@ bpString()==
          bpPush(["QUOTE",INTERN $ttok]) and bpNext()
  
 bpThetaName() ==
-        if EQCAR( $stok,"ID") and GET($ttok,"SHOETHETA")
+        if first $stok = "ID" and GET($ttok,"SHOETHETA")
         then
            bpPushId()
            bpNext()
@@ -1106,8 +1106,7 @@ bpAssignVariable()==
 bpAssignLHS()==
    bpName() and (bpEqKey "COLON" and (bpApplication() or bpTrap())
      and bpPush bfLocal(bpPop2(),bpPop1())
-        or bpEqKey "DOT" and bpList(function bpPrimary,"DOT",
-              function bfListOf)
+        or bpEqKey "DOT" and bpList(function bpPrimary,"DOT")
           and bpChecknull() and
             bpPush bfTuple([bpPop2(),:bpPop1()])
                  or true)

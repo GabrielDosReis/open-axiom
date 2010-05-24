@@ -186,12 +186,12 @@ shoeFindLines(fn,name,a)==
 $bStreamNil:=["nullstream"]
  
 bStreamNull x==
-  null x or EQCAR (x,"nullstream") => true
-  while EQCAR(x,"nonnullstream") repeat
+  null x or first x = "nullstream" => true
+  while first x = "nonnullstream" repeat
           st:=apply(second x,CDDR x)
           RPLACA(x,first st)
           RPLACD(x,rest st)
-  EQCAR(x,"nullstream")
+  first x = "nullstream"
  
 bMap(f,x) == 
   bDelay(function bMap1, [f,x])

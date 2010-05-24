@@ -138,18 +138,18 @@
   (PROG (|st|)
     (RETURN
       (COND
-        ((OR (NULL |x|) (EQCAR |x| '|nullstream|)) T)
+        ((OR (NULL |x|) (EQ (CAR |x|) '|nullstream|)) T)
         ('T
          (PROGN
            (LOOP
              (COND
-               ((NOT (EQCAR |x| '|nonnullstream|)) (RETURN NIL))
+               ((NOT (EQ (CAR |x|) '|nonnullstream|)) (RETURN NIL))
                ('T
                 (PROGN
                   (SETQ |st| (APPLY (CADR |x|) (CDDR |x|)))
                   (RPLACA |x| (CAR |st|))
                   (RPLACD |x| (CDR |st|))))))
-           (EQCAR |x| '|nullstream|)))))))
+           (EQ (CAR |x|) '|nullstream|)))))))
 
 (DEFUN |bMap| (|f| |x|) (|bDelay| #'|bMap1| (LIST |f| |x|)))
 
