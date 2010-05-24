@@ -1069,16 +1069,25 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
+++ List of opcode-expander pairs.  
+$middleEndOpcodes == nil
+
+++ Return the expander of a middle-end opcode, or nil if there is none.
+getOpcodeExpander op ==
+  x := ASSOC(op,$middleEndOpcodes) => rest op
+  nil
+
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
   isAtomicForm x => x
-  first x in $middleEndMacroList =>
+  [op,:args] := x
+  op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
-  a := middleEndExpand first x
-  b := middleEndExpand rest x
-  EQ(a,first x) and EQ(b,rest x) => x
+  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,args)
+  a := middleEndExpand op
+  b := middleEndExpand args
+  EQ(a,op) and EQ(b,args) => x
   [a,:b]
-
 
 
 -- A function is simple if it looks like a super combinator, and it
