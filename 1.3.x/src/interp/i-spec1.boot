@@ -844,6 +844,16 @@ checkForFreeVariables(v,locals) ==
           ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
         ["SETF",newvar,checkForFreeVariables(form,locals)]
       error "Non-simple variable bindings are not currently supported"
+    op in '(LET LET_* %Bind) =>
+      vars := [first init for init in first args]
+      inits := [checkInit(init,locals) for init in first args] where
+                  checkInit([var,init],locals) ==
+                     init := checkForFreeVariables(init,locals)
+                     $boundVariables := [var,:$boundVariables]
+                     [var,init]
+      body := checkForFreeVariables(rest args,locals)
+      $boundVariables := setDifference($boundVariables,vars)
+      [op,inits,:body]
     op = "PROG" =>
       error "Non-simple variable bindings are not currently supported"
     [op,:[checkForFreeVariables(a,locals) for a in args]]
