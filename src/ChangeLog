@@ -1,5 +1,13 @@
 2010-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-object.boot (object): New. Abstract over boilerplate.
+	* interp/i-analy.boot: Use it in place of boilerplate.
+	* interp/i-eval.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+
+2010-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot ($middleEndOpcodes): New.
 	(getOpcodeExpander): Likewise.
 	(middleEndExpand): Use it to expand middle end opcodes.
