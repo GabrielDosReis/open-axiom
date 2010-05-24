@@ -598,8 +598,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
     rtype := ['Record,:rargs]
     code := optRECORDCOPY(['RECORDCOPY,getArgValue(first argl, rtype),#rargs])
 
-    if $genValue then code := wrap timedEVALFUN code
-    val := objNew(code,rtype)
+    val := object(code,rtype)
     putValue(t,val)
     putModeSet(t,[rtype])
 

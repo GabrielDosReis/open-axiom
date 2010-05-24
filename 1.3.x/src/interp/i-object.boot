@@ -78,6 +78,12 @@ objValUnwrap obj == unwrap CDR obj
 objMode obj == CAR obj
 objEnv obj == $EmptyEnvironment
 
+++ Return a newly constructed interpreter object, with fully evaluated
+++ underlying value if in evaluation context.
+object(v,m) ==
+  $genValue => objNewWrap(timedEVALFUN v,m)
+  objNew(v,m)
+
 objCodeVal obj == CADDR obj
 objCodeMode obj == CADR obj
 

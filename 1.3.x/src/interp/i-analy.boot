@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -598,8 +598,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
     rtype := ['Record,:rargs]
     code := optRECORDCOPY(['RECORDCOPY,getArgValue(CAR argl, rtype),#rargs])
 
-    if $genValue then code := wrap timedEVALFUN code
-    val := objNew(code,rtype)
+    val := object(code,rtype)
     putValue(t,val)
     putModeSet(t,[rtype])
 

@@ -545,8 +545,7 @@ evalCOLLECT(op,[:itrl,body],m) ==
   bod := getArgValue(body,computedMode body)
   if bod isnt ['SPADCALL,:.] then bod := ['unwrap,bod]
   code := timedOptimization asTupleNewCode0(second m, ['COLLECT,:iters,bod])
-  if $genValue then code := wrap timedEVALFUN code
-  putValue(op,objNew(code,m))
+  putValue(op,object(code,m))
 
 falseFun(x) == nil
 
@@ -1015,9 +1014,7 @@ evalTupleConstruct(op,l,m,tar) ==
   ['List, ud] := m
   code := ['APPEND,
     :([["asTupleAsList", getArgValueOrThrow(x,['Tuple, ud])] for x in l])]
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
 
   (val1 := coerceInteractive(val,tar or m)) =>
     putValue(op,val1)
@@ -1029,9 +1026,7 @@ evalInfiniteTupleConstruct(op,l,m,tar) ==
   ['Stream, ud] := m
   code := first [(getArgValue(x,['InfiniteTuple, ud]) or
     throwKeyedMsg("S2IC0007",[['InifinteTuple, ud]])) for x in l]
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
   if tar then val1 := coerceInteractive(val,tar) else val1 := val
 
   val1 =>
@@ -1044,9 +1039,7 @@ evalconstruct(op,l,m,tar) ==
   [agg,:.,underMode]:= m
   code := ['LIST, :(argCode:=[(getArgValue(x,underMode) or
     throwKeyedMsg("S2IC0007",[underMode])) for x in l])]
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
   if tar then val1 := coerceInteractive(val,tar) else val1 := val
 
   val1 =>
@@ -1103,8 +1096,7 @@ upRecordConstruct(op,l,tar) ==
     (len = 1) => ["CONS", :argCode, '()]
     (len = 2) => ["CONS",:argCode]
     ['VECTOR,:argCode]
-  if $genValue then code :=  wrap timedEVALFUN code
-  putValue(op,objNew(code,tar))
+  putValue(op,object(code,tar))
   putModeSet(op,[tar])
 
 --% Handlers for declarations

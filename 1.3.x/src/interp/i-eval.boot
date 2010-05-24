@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -355,15 +355,11 @@ getArgValueComp(arg,type,cond) ==
   keyedMsgCompFailure("S2IE0010",[n])
 
 evalFormMkValue(op,form,tm) ==
-  val:=
-    u:=
-      $genValue => wrap timedEVALFUN form
-      form
-    objNew(u,tm)
+  val:= object(form,tm)
 --+
   if $NRTmonitorIfTrue = true then
     sayBrightlyNT ['"Value of ",op.0,'" ===> "]
-    pp unwrap u
+    pp objValUnwrap val
   putValue(op,val)
   [tm]
 

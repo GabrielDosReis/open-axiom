@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -173,11 +173,8 @@ upLispCall(op,t) ==
     for arg in argl repeat bottomUp arg
     code:=[getUnname lispOp,
       :[getArgValue(arg,computedMode arg) for arg in argl]]
-  code :=
-    $genValue => wrap timedEVALFUN code
-    code
   rt := '(SExpression)
-  putValue(op,objNew(code,rt))
+  putValue(op,object(code,rt))
   putModeSet(op,[rt])
 
 --% Handlers for equation
@@ -239,8 +236,7 @@ uphas t ==
     evaluateType0 prop => ["evaluateType", MKQ prop]
     MKQ prop
   code := ["NOT",["NULL",["newHasTest",type, catCode]]]
-  if $genValue then code := wrap timedEVALFUN code
-  putValue(op,objNew(code,$Boolean))
+  putValue(op,object(code,$Boolean))
   putModeSet(op,[$Boolean])
 
 --hasTest(a,b) ==
@@ -383,10 +379,7 @@ evalis(op,[a,pattern],mode) ==
     code:= compileIs(a,pattern)
   else code:=[fun,getArgValue(a,mode),
     MKQ pattern,MKQ mode]
-  triple:=
-    $genValue => objNewWrap(timedEVALFUN code,$Boolean)
-    objNew(code,$Boolean)
-  putValue(op,triple)
+  putValue(op,object(code,$Boolean))
 
 isLocalPred pattern ==
   -- returns true if the is predicate is to be compiled
@@ -564,7 +557,7 @@ evalLET(lhs,rhs) ==
       isWrapped(objVal v') and (v2:=coerceInteractive(v',$OutputForm)) =>
         throwKeyedMsg("S2IS0036",[objValUnwrap v2,t2])
       throwKeyedMsg("S2IS0037",[t2])
-    t2 and objNew(($genValue => wrap timedEVALFUN v ; v),t2)
+    t2 and object(v,t2)
   value => evalLETput(lhs,value)
   throwKeyedMsgCannotCoerceWithValue(objVal v,t1,getMode lhs)
 
@@ -1094,9 +1087,7 @@ evalTuple(op,l,m,tar) ==
   [agg,:.,underMode]:= m
   code := asTupleNewCode(underMode, #l,
     [(getArgValue(x,underMode) or throwKeyedMsg("S2IC0007",[underMode])) for x in l])
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
   if tar then val1 := coerceInteractive(val,tar) else val1 := val
 
   val1 =>
