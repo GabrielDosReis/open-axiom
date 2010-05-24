@@ -1,3 +1,9 @@
+2010-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot ($middleEndOpcodes): New.
+	(getOpcodeExpander): Likewise.
+	(middleEndExpand): Use it to expand middle end opcodes.
+
 2010-05-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-spec1.boot (compileADEFBody): Establish a dynamic

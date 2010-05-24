@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1011,16 +1011,25 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
+++ List of opcode-expander pairs.  
+$middleEndOpcodes == nil
+
+++ Return the expander of a middle-end opcode, or nil if there is none.
+getOpcodeExpander op ==
+  x := ASSOC(op,$middleEndOpcodes) => rest op
+  nil
+
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
   isAtomicForm x => x
-  first x in $middleEndMacroList =>
+  [op,:args] := x
+  op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
-  a := middleEndExpand first x
-  b := middleEndExpand rest x
-  EQ(a,first x) and EQ(b,rest x) => x
+  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,args)
+  a := middleEndExpand op
+  b := middleEndExpand args
+  EQ(a,op) and EQ(b,args) => x
   [a,:b]
-
 
 
 -- A function is simple if it looks like a super combinator, and it
