@@ -1016,7 +1016,7 @@ $middleEndOpcodes == nil
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
 getOpcodeExpander op ==
-  x := ASSOC(op,$middleEndOpcodes) => rest op
+  x := ASSOC(op,$middleEndOpcodes) => rest x
   nil
 
 middleEndExpand: %Form -> %Form
