@@ -815,6 +815,7 @@ checkForFreeVariables(v,locals) ==
       -- Might have a mode at the front of a list, or be calling a function
       -- which returns a function.
       [checkForFreeVariables(op,locals),:[checkForFreeVariables(a,locals) for a in args]]
+    op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
     op = "COLLECT" => -- Introduces a new bound variable?
@@ -845,9 +846,6 @@ checkForFreeVariables(v,locals) ==
       error "Non-simple variable bindings are not currently supported"
     op = "PROG" =>
       error "Non-simple variable bindings are not currently supported"
-    op = "LAMBDA" => v
-    op = "QUOTE" => v
-    op = "getValueFromEnvironment" => v
     [op,:[checkForFreeVariables(a,locals) for a in args]]
   v
 
