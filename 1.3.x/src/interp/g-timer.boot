@@ -255,7 +255,7 @@ timedOptimization(code) ==
  
 timedEVALFUN(code) ==
   startTimingProcess 'evaluation
-  r := timedEvaluate code
+  r := timedEvaluate expandToVMForm code
   stopTimingProcess 'evaluation
   r
  

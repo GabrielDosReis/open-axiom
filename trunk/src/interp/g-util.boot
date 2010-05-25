@@ -43,7 +43,32 @@ module g_-util where
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
   isSubDomain: (%Mode,%Mode) -> %Form
+  expandToVMForm: %Thing -> %Thing
 
+
+--%
+--% Opcode expansion to VM codes.
+--%
+
+++ List of opcode-expander pairs.  
+$middleEndOpcodes == nil
+
+++ Return the expander of a middle-end opcode, or nil if there is none.
+getOpcodeExpander op ==
+  x := ASSOC(op,$middleEndOpcodes) => rest x
+  nil
+
+++ Expand all opcodes contained in the form `x' into a form
+++ suitable for evaluation by the VM.
+expandToVMForm x ==
+  isAtomicForm x => x
+  [op,:args] := x
+  IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
+  op' := expandToVMForm op
+  args' := expandToVMForm args
+  EQ(op,op') and EQ(args,args') => x
+  [op',:args']
+  
 ++
 $interpOnly := false
 
