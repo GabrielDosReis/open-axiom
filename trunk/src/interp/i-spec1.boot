@@ -572,11 +572,11 @@ interpCOLLECT(op,itrl,body) ==
   emptyAtree op
   emptyAtree itrl
   emptyAtree body
-  code := ['COLLECT,:[interpIter itr for itr in itrl],
+  code := ["%collect",:[interpIter itr for itr in itrl],
     interpCOLLECTbody(body,$indexVars,$indexTypes)]
   value := timedEVALFUN code
   t :=
-    null value => '(None)
+    null value => $None
     last $collectTypeList
   rm := ['Tuple,t]
   value := [objValUnwrap coerceInteractive(objNewWrap(v,m),t)
@@ -817,7 +817,7 @@ checkForFreeVariables(v,locals) ==
     op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
-    op in '(COLLECT REPEAT %collect) => -- Introduces a new bound variable?
+    op in '(COLLECT REPEAT %collect %repeat) =>
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
        r := [op,:[checkForFreeVariables(a,locals) for a in args]]

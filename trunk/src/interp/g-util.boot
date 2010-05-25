@@ -116,6 +116,9 @@ expandUNTIL p ==
   g := gensym()
   [[[g,false]],nil,[["SETQ",g,middleEndExpand p]],nil,[g]]
 
+expandInit(var,val) ==
+  [[[var,middleEndExpand val]],nil,nil,nil,nil]
+
 expandIterators iters ==
   [toLisp it or leave "failed" for it in iters] where
      toLisp it ==
@@ -125,37 +128,49 @@ expandIterators iters ==
        it is ["WHILE",pred] => expandWHILE pred
        it is [op,pred] and op in '(SUCHTHAT _|) => expandSUCHTHAT pred
        it is ["UNTIL",pred] => expandUNTIL pred
+       it is ["%init",var,val] => expandInit(var,val)
        nil
 
-++ Generate code for list comprehension.
-expandCollect ["%collect",:iters,body] ==
+expandLoop(iters,body,ret) ==
   itersCode := expandIterators iters
-  itersCode = "failed" => systemErrorHere ["expandCollect",iters]
-  val := gensym()    -- result of the list comprehension
+  itersCode = "failed" => systemErrorHere ["expandLoop",iters]
+  body := middleEndExpand body
   itersCode := "coagulate"/itersCode
     where
       coagulate(it1,it2) == [append(it1.k,it2.k) for k in 0..4]
-  [loopInits,bodyInits,cont,filters,exits,value] := itersCode
-  -- Transform the body to build the list as we go.
-  body := ["SETQ",val,["CONS",middleEndExpand body,val]]
-  -- Guard th execution of the body by the filters.
+  [loopInits,bodyInits,cont,filters,exits] := itersCode
+  -- Guard the execution of the body by the filters.
   if filters ~= nil then
     body := mkpf([:filters,body],"AND")
   -- If there is any body-wide initialization, now is the time.
   if bodyInits ~= nil then
     body := ["LET",bodyInits,body]
-  if value ~= nil then
-    value := first value
   exits := ["COND",
-             [mkpf(exits,"OR"),["RETURN",["NREVERSE",val]]],
+             [mkpf(exits,"OR"),["RETURN",ret]],
                [true,body]]
   body := ["LOOP",exits,:cont]
   -- Finally, set up loop-wide initializations.
-  ["LET",[:loopInits,[val,nil]],body]
+  loopInits = nil => body
+  ["LET",loopInits,body]
+
+++ Generate code for list comprehension.
+expandCollect ["%collect",:iters,body] ==
+  val := gensym()    -- result of the list comprehension
+  -- Transform the body to build the list as we go.
+  body := ["SETQ",val,["CONS",middleEndExpand body,val]]
+  -- Initialize the variable holding the result; expand as 
+  -- if ordinary loop.  But don't forget we built the result
+  -- in reverse order.
+  expandLoop([:iters,["%init",val,nil]],body,["NREVERSE",val])
+
+++ Generate code for plain loop.
+expandRepeat ["%repeat",:iters,body] ==
+  expandLoop(iters,body,["voidValue"])
 
 ++ Table of opcode-expander pairs.  
 $OpcodeExpanders == [
-   ["%collect",:"expandCollect"]
+   ["%collect",:"expandCollect"],
+   ["%repeat",:"expandRepeat"]
  ]
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
