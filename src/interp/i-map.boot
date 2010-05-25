@@ -1031,7 +1031,7 @@ findLocalVars1(op,form) ==
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
     for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
-  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect) =>
+  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect %repeat) =>
     findLocalsInLoop(op,itrl,body)
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 

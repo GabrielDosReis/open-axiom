@@ -1,3 +1,17 @@
+2010-05-25  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/i-spec2.boot (evalREPEAT): Generate %repeat forms.
+	(interpREPEAT): Likewise.
+	* interp/i-spec1.boot (interpCOLLECT): Generate %collect forms.
+	* interp/i-map.boot (findLocalVars1): Handle %repeat forms the
+	same as REPEAT forms.
+	* interp/g-opt.boot (changeThrowToExit): Don't look into %repeat
+	forms. 
+	(expandInit): New.
+	(expandLoop): New.  abstract from expandCollect.
+	(expandCollect): Use it.  Rework.
+	(expandRepeat): New.
+
 2010-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot: Implement expansion of %collect forms.
