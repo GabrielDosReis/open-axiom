@@ -1069,21 +1069,13 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
-++ List of opcode-expander pairs.  
-$middleEndOpcodes == nil
-
-++ Return the expander of a middle-end opcode, or nil if there is none.
-getOpcodeExpander op ==
-  x := ASSOC(op,$middleEndOpcodes) => rest x
-  nil
-
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
   isAtomicForm x => x
   [op,:args] := x
   op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
-  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,args)
+  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,x,nil)
   a := middleEndExpand op
   b := middleEndExpand args
   EQ(a,op) and EQ(b,args) => x

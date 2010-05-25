@@ -1,5 +1,11 @@
 2010-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (expandToVMForm): New.  Export.
+	(getOpcodeExpander): move to here from c-util.boot.
+	($middleEndOpcodes): Likewise.
+
+2010-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-object.boot (object): New. Abstract over boilerplate.
 	* interp/i-analy.boot: Use it in place of boilerplate.
 	* interp/i-eval.boot: Likewise.
