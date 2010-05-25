@@ -1508,6 +1508,14 @@ mutateToBackendCode x ==
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
     mutateToBackendCode x
+  u in '(LET LET_*) =>
+    vars := nil
+    for [var,init] in second x repeat
+      mutateToBackendCode init
+      $LocalVars := [var,:$LocalVars]
+      vars := [var,:vars]
+    mutateToBackendCode x.rest.rest
+    $LocalVars := setDifference($LocalVars,vars)
   u in '(PROG LAMBDA) =>
     newBindings := []
     for y in second x repeat
