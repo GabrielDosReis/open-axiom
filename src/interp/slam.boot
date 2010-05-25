@@ -38,6 +38,100 @@ namespace BOOT
 ++ List of compiled function names.
 $compiledOpNameList := []
 
+
+isRecurrenceRelation(op,body,minivectorName) ==
+  -- returns [body p1 p2 ... pk] for a k-term recurrence relation
+  -- where the n-th term is computed using the (n-1)st,...,(n-k)th
+  -- whose values are initially computed using the expressions
+  -- p1,...,pk respectively; body has #2,#3,... in place of
+  -- f(k-1),f(k-2),...
+
+  body isnt ['COND,:pcl] => false
+  -- body should have a conditional expression which
+  -- gives k boundary values, one general term plus possibly an
+  -- "out of domain" condition
+  --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
+  --  CONTAINED('throwKeyedMsg,mess)) => NIL
+  pcl := [x for x in pcl | not (x is [''T,:mess] and
+    (CONTAINED('throwMessage,mess) or
+      CONTAINED('throwKeyedMsg,mess)))]
+  integer := eval $Integer
+  iequalSlot:=compiledLookupCheck("=",[$Boolean,"$","$"],integer)
+  lesspSlot:=compiledLookupCheck("<",[$Boolean,"$","$"],integer)
+  notpSlot:= compiledLookupCheck("not",["$","$"],eval $Boolean)
+  for [p,c] in pcl repeat
+    p is ['SPADCALL,sharpVar,n1,['ELT,=minivectorName,slot]]
+      and EQ(iequalSlot,$minivector.slot) =>
+        initList:= [[n1,:c],:initList]
+        sharpList := insert(sharpVar,sharpList)
+        n:=n1
+    miscList:= [[p,c],:miscList]
+  miscList isnt [[generalPred,generalTerm]] or sharpList isnt [sharpArg] =>
+      return false
+    --first general term starts at n
+
+  --Must have at least one special value; insist that they be consecutive
+  null initList => false
+  specialValues:= MSORT ASSOCLEFT initList
+  or/[null integer? n for n in specialValues] => false
+  minIndex:= "MIN"/specialValues
+  not (and/[i=x for i in minIndex..(minIndex+n-1) for x in specialValues]) =>
+    sayKeyedMsg("S2IX0005",
+      ["append"/[['" ",sv]  for sv in specialValues]])
+    return nil
+
+  --Determine the order k of the recurrence and index n of first general term
+  k:= #specialValues
+  n:= k+minIndex
+  --Check general predicate
+  predOk :=
+    generalPred is '(QUOTE T) => true
+    generalPred is ['SPADCALL,m,=sharpArg,['ELT,=minivectorName,slot]]
+      and EQ(lesspSlot,$minivector.slot)=> m+1
+    generalPred is ['SPADCALL,['SPADCALL,=sharpArg,m,
+      ['ELT,=minivectorName,slot]], ['ELT,=minivectorName,notSlot]]
+        and EQ(lesspSlot,$minivector.slot)
+          and EQ(notpSlot,$minivector.notSlot) => m
+    generalPred is ['NOT,['SPADCALL,=sharpArg,m,['ELT,=minivectorName, =lesspSlot]]]
+      and EQ(lesspSlot,$minivector.slot) => m
+    return nil
+  integer? predOk and predOk ~= n =>
+    sayKeyedMsg("S2IX0006",[n,m])
+    return nil
+
+  --Check general term for references to just the k previous values
+  diffCell:=compiledLookupCheck("-",'($ $ $),integer)
+  diffSlot := or/[i for i in 0.. for x in $minivector | EQ(x,diffCell)]
+                or return nil
+  --Check general term for references to just the k previous values
+  sharpPosition := PARSE_-INTEGER SUBSTRING(sharpArg,1,nil)
+  al:= mkDiffAssoc(op,generalTerm,k,sharpPosition,sharpArg,diffSlot,minivectorName)
+  null al => false
+  "$failed" in al => false
+  body:= generalTerm
+  for [a,:b] in al repeat
+    body:= substitute(b,a,body)
+  result:= [body,sharpArg,n-1,:nreverse [LASSOC(i,initList) or
+      systemErrorHere('"isRecurrenceRelation")
+        for i in minIndex..(n-1)]]
+
+mkDiffAssoc(op,body,k,sharpPosition,sharpArg,diffSlot,vecname) ==
+  -- returns alist which should not have any entries = $failed
+  -- form substitution list of the form:
+  -- ( ((f (,DIFFERENCE #1 1)) . #2) ((f (,DIFFERENCE #1 2)) . #3) ...)
+  --   but also checking that all difference values lie in 1..k
+  atom body => nil
+  body is ['COND,:pl] =>
+    "union"/[mkDiffAssoc(op,c,k,sharpPosition,sharpArg,diffSlot,vecname) for [p,c] in pl]
+  body is [fn,:argl] =>
+    (fn = op) and argl.(sharpPosition-1) is
+      ['SPADCALL,=sharpArg,n,['ELT,=vecname,=diffSlot]] =>
+          NUMP n and n > 0 and n <= k =>
+            [[body,:$TriangleVariableList.n]]
+          ['$failed]
+    "union"/[mkDiffAssoc(op,x,k,sharpPosition,sharpArg,diffSlot,vecname) for x in argl]
+  systemErrorHere '"mkDiffAssoc"
+
 reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   -- for an alternate definition of this function which does not allow
   -- dynamic caching, see SLAMOLD BOOT
@@ -49,7 +143,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   argl := COPY argl     -- play it safe for optimization
   init :=
     not(isRecursive and $compileRecurrence and #argl = 1) => nil
-    NRTisRecurrenceRelation(nam,body,minivectorName)
+    isRecurrenceRelation(nam,body,minivectorName)
   init => compileRecurrenceRelation(op,nam,argl,body,init)
   cacheCount:= getCacheCount op
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
@@ -179,8 +273,8 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   stateVar:= gensym()
   stateVal:= gensym()
   lastArg := INTERNL strconc('"#",STRINGIMAGE QSADD1 # argl)
-  decomposeCode:=
-    [["%LET",gIndex,["ELT",lastArg,0]],:[["%LET",g,["ELT",lastArg,i]]
+  decomposeBindings:=
+    [[gIndex,["ELT",lastArg,0]],:[[g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]
   gsRev:= reverse gsList
   rotateCode:= [["%LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
@@ -199,8 +293,8 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
         ["COND", [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
       newValueCode:= ["%LET",g,substitute(gIndex,sharpArg,
         EQSUBSTLIST(gsList,rest $TriangleVariableList,body))]
-      ["PROGN",:decomposeCode,
-        ["REPEAT",["WHILE",'T],["PROGN",endTest,advanceCode,
+      ["%bind",decomposeBindings,
+        ["%repeat",["WHILE",true],["PROGN",endTest,advanceCode,
           newValueCode,:rotateCode]]]
   fromScratchInit:=
     [["%LET",gIndex,n],:[["%LET",g,x] for g in gsList for x in initCode]]
@@ -219,7 +313,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
         extraArguments => ["hashTable",''EQUAL]
         tripleCode
       cacheResetCode := ["SETQ",stateNam,initialValueCode]
-      ["COND",[["NULL",["AND",["BOUNDP",MKQ stateNam], _
+      ["COND",[["%not",["%and",["BOUNDP",MKQ stateNam], _
                           ["CONSP",stateNam]]],    _
                  ["%LET",stateVar,cacheResetCode]], _
              [''T, ["%LET",stateVar,stateNam]]]
@@ -234,12 +328,12 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
  
     mbody :=
       preset := [initialSetCode,:initialResetCode,["%LET",max,["ELT",stateVar,0]]]
-      phrase1:= [["AND",["%LET",max,["ELT",stateVar,0]],["GE",sharpArg,max]],
+      phrase1:= [["%and",["%LET",max,["ELT",stateVar,0]],["%ge",sharpArg,max]],
                   [auxfn,:argl,stateVar]]
-      phrase2:= [["GT",sharpArg,["SETQ",max,["DIFFERENCE",max,k]]],
+      phrase2:= [["%gt",sharpArg,["SETQ",max,["DIFFERENCE",max,k]]],
                   ["ELT",stateVar,["QSADD1",["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]
-      phrase3:= [["GT",sharpArg,n],[auxfn,:argl,["LIST",n,:initCode]]]
-      phrase4:= [["GT",sharpArg,n-k],
+      phrase3:= [["%gt",sharpArg,n],[auxfn,:argl,["LIST",n,:initCode]]]
+      phrase4:= [["%gt",sharpArg,n-k],
         ["ELT",["LIST",:initCode],["QSDIFFERENCE",n,sharpArg]]]
       phrase5:= ['(QUOTE T),['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['COND,phrase1,phrase2,phrase3,phrase4,phrase5]]

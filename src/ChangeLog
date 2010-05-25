@@ -1,3 +1,12 @@
+2010-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot: Add expanders for %lt, %le, %gt, %ge, %not,
+	%and, %or, and %bind forms.
+	* interp/c-util.boot (mutateToBackendCode): Handle LET and LET* forms.
+	* interp/nrungo.boot (NRTisRecurrenceRelation): Move to ...
+	* interp/slam.boot: Here.  Remove NRT prefix.
+	(compileRecurrenceRelation): Generate forms using middle-end opcodes.
+
 2010-05-25  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* interp/i-spec2.boot (evalREPEAT): Generate %repeat forms.

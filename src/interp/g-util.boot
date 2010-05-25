@@ -167,10 +167,52 @@ expandCollect ["%collect",:iters,body] ==
 expandRepeat ["%repeat",:iters,body] ==
   expandLoop(iters,body,["voidValue"])
 
+
+expandGreaterEqual ["%ge",:args] ==
+  [">=",:expandToVMForm args]
+  
+expandGreater ["%gt",:args] ==
+  [">",:expandToVMForm args]
+  
+expandLessEqual ["%le",:args] ==
+  ["<=",:expandToVMForm args]
+  
+expandLess ["%lt",:args] ==
+  ["<",:expandToVMForm args]
+
+-- Logical operators
+
+expandNot ["%not",arg] ==
+  ["NOT",expandToVMForm arg]
+  
+expandAnd ["%and",:args] ==
+  ["AND",:expandToVMForm args]
+  
+expandOr ["%or",:args] ==
+  ["OR",:expandToVMForm args]
+
+-- Local variable bindings
+expandBind ["%bind",inits,body] ==
+  body := expandToVMForm body
+  inits := [[first x,expandToVMForm second x] for x in inits]
+  -- FIXME: we should consider turning LET* into LET or direct inlining.
+  ["LET*",inits,body]
+  
 ++ Table of opcode-expander pairs.  
 $OpcodeExpanders == [
+   ["%not",:"expandNot"],
+   ["%and",:"expandAnd"],
+   ["%or",:"expandOr"],
+
    ["%collect",:"expandCollect"],
-   ["%repeat",:"expandRepeat"]
+   ["%repeat",:"expandRepeat"],
+
+   ["%le",:"expandLessEqual"],
+   ["%lt",:"expandLess"],
+   ["%ge",:"expandGreaterEqual"],
+   ["%gt",:"expandGreater"],
+
+   ["%bind",:"expandBind"]
  ]
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
