@@ -1073,9 +1073,9 @@ middleEndExpand: %Form -> %Form
 middleEndExpand x ==
   isAtomicForm x => x
   [op,:args] := x
+  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,x,nil)
   op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
-  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,x,nil)
   a := middleEndExpand op
   b := middleEndExpand args
   EQ(a,op) and EQ(b,args) => x

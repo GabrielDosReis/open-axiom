@@ -50,12 +50,117 @@ module g_-util where
 --% Opcode expansion to VM codes.
 --%
 
-++ List of opcode-expander pairs.  
-$middleEndOpcodes == nil
+
+--%
+--% Iteration control structures
+--%
+--% Code generation for an iterator produces a sequence of 
+--% length 5, whose components have the following meanings:
+--%  0. list of loop-wide variables and their initializers
+--%  1. list of body-wide variables and their initializers
+--%  2. update code for next iteration
+--%  3. predicate guarding loop body execution
+--%  4. loop termination predicate
+
+++ Generate code that sequentially visits each component of a list.
+expandIN(x,l) ==
+  g := gensym()           -- rest of the list yet to be visited
+  [[[g,middleEndExpand l]],
+    [[x,["CAR",g]]],[["SETQ",g,["CDR",g]]],
+      nil,[["ATOM",g]]]
+
+expandON(x,l) ==
+  [[[x,middleEndExpand l]],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
+  
+++ Generate code that traverses an interval with lower bound 'lo',
+++ arithmetic progression `step, and possible upper bound `final'.
+expandSTEP(id,lo,step,final)==
+  lo := middleEndExpand lo
+  step := middleEndExpand step
+  final := middleEndExpand final
+  loopvar := [[id,lo]]
+  inc :=
+    isAtomicForm step => step
+    g1 := gensym()
+    loopvar := [:loopvar,[g1,step]]
+    g1
+  final :=
+    atom final => final
+    final is [hi] and isAtomicForm hi => hi
+    g2 := gensym()
+    loopvar := [:loopvar,[g2,:final]]
+    g2
+  ex :=
+     final = nil => nil
+     integer? inc =>
+       pred :=
+	 MINUSP inc => "<"
+	 ">"
+       [[pred,id,final]]
+     [['COND,[['MINUSP,inc],
+	   ["<",id,final]],['T,[">",id,final]]]]
+  suc := [["SETQ",id,["+",id,inc]]]
+  [loopvar,nil,suc,nil,ex]
+
+++ Generate code for iterators that filter out execution state
+++ not satisfying predicate `p'.
+expandSUCHTHAT p == 
+  [nil,nil,nil,[middleEndExpand p],nil]
+
+++ Generate code for iterators that stop loop iteration when the
+++ state fails predicate `p'.
+expandWHILE p == 
+  [nil,nil,nil,nil,[["NOT",middleEndExpand p]]]
+
+expandUNTIL p ==
+  g := gensym()
+  [[[g,false]],nil,[["SETQ",g,middleEndExpand p]],nil,[g]]
+
+expandIterators iters ==
+  [toLisp it or leave "failed" for it in iters] where
+     toLisp it ==
+       it is ["STEP",var,lo,inc,:hi] => expandSTEP(var,lo,inc,hi)
+       it is ["IN",var,seq] => expandIN(var,seq)
+       it is ["ON",var,seq] => expandON(var,seq)
+       it is ["WHILE",pred] => expandWHILE pred
+       it is [op,pred] and op in '(SUCHTHAT _|) => expandSUCHTHAT pred
+       it is ["UNTIL",pred] => expandUNTIL pred
+       nil
+
+++ Generate code for list comprehension.
+expandCollect ["%collect",:iters,body] ==
+  itersCode := expandIterators iters
+  itersCode = "failed" => systemErrorHere ["expandCollect",iters]
+  val := gensym()    -- result of the list comprehension
+  itersCode := "coagulate"/itersCode
+    where
+      coagulate(it1,it2) == [append(it1.k,it2.k) for k in 0..4]
+  [loopInits,bodyInits,cont,filters,exits,value] := itersCode
+  -- Transform the body to build the list as we go.
+  body := ["SETQ",val,["CONS",middleEndExpand body,val]]
+  -- Guard th execution of the body by the filters.
+  if filters ~= nil then
+    body := mkpf([:filters,body],"AND")
+  -- If there is any body-wide initialization, now is the time.
+  if bodyInits ~= nil then
+    body := ["LET",bodyInits,body]
+  if value ~= nil then
+    value := first value
+  exits := ["COND",
+             [mkpf(exits,"OR"),["RETURN",["NREVERSE",val]]],
+               [true,body]]
+  body := ["LOOP",exits,:cont]
+  -- Finally, set up loop-wide initializations.
+  ["LET",[:loopInits,[val,nil]],body]
+
+++ Table of opcode-expander pairs.  
+$OpcodeExpanders == [
+   ["%collect",:"expandCollect"]
+ ]
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
 getOpcodeExpander op ==
-  x := ASSOC(op,$middleEndOpcodes) => rest x
+  x := ASSOC(op,$OpcodeExpanders) => rest x
   nil
 
 ++ Expand all opcodes contained in the form `x' into a form

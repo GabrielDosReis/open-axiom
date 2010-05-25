@@ -1,3 +1,16 @@
+2010-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot: Implement expansion of %collect forms.
+	* interp/c-util.boot (middleEndExpand): Tidy.
+	* interp/g-opt.boot (changeThrowToExit): Don't look into %collect
+	forms. 
+	* interp/i-map.boot (getUserIdentifiersIn): Factorize.  Handle
+	%collect forms same as COLLECT forms.
+	(findLocalVars1): Likewise.
+	* interp/i-spec1.boot (evalCOLLECT): Now generate %collect forms.
+	(checkForFreeVariables): Factorize.  Handle %collect forms same as
+	COLLECT forms.
+
 2010-05-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot (expandToVMForm): New.  Export.

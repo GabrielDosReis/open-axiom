@@ -124,7 +124,7 @@ subrname u ==
   nil
  
 changeThrowToExit(s,g) ==
-  atom s or first s in '(QUOTE SEQ REPEAT COLLECT) => nil
+  atom s or first s in '(QUOTE SEQ REPEAT COLLECT %collect) => nil
   s is ["THROW", =g,:u] => (s.first := "EXIT"; s.rest := u)
   changeThrowToExit(first s,g)
   changeThrowToExit(rest s,g)

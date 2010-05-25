@@ -230,7 +230,7 @@ getUserIdentifiersIn body ==
     body="" => nil
     [body]
   body is ["WRAPPED",:.] => nil
-  (body is ["COLLECT",:itl,body1]) or (body is ['REPEAT,:itl,body1]) =>
+  body is [op,:itl,body1] and op in '(COLLECT REPEAT %collect) =>
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
     S_-(userIds,getIteratorIds itl)
@@ -1031,7 +1031,7 @@ findLocalVars1(op,form) ==
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
     for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
-  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT) =>
+  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect) =>
     findLocalsInLoop(op,itrl,body)
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
