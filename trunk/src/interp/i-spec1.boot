@@ -544,7 +544,7 @@ evalCOLLECT(op,[:itrl,body],m) ==
   iters := [evalLoopIter itr for itr in itrl]
   bod := getArgValue(body,computedMode body)
   if bod isnt ['SPADCALL,:.] then bod := ['unwrap,bod]
-  code := timedOptimization asTupleNewCode0(second m, ['COLLECT,:iters,bod])
+  code := timedOptimization asTupleNewCode0(second m, ["%collect",:iters,bod])
   putValue(op,object(code,m))
 
 falseFun(x) == nil
@@ -817,20 +817,13 @@ checkForFreeVariables(v,locals) ==
     op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
-    op = "COLLECT" => -- Introduces a new bound variable?
+    op in '(COLLECT REPEAT %collect) => -- Introduces a new bound variable?
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
-       r := ["COLLECT",:[checkForFreeVariables(a,locals) for a in args]]
+       r := [op,:[checkForFreeVariables(a,locals) for a in args]]
        $boundVariables := delete(var,$boundVariables)
        r
-      ["COLLECT",:[checkForFreeVariables(a,locals) for a in args]]
-    op = "REPEAT" => -- Introduces a new bound variable?
-      first(args) is ["STEP",var,:.] =>
-       $boundVariables := [var,:$boundVariables]
-       r := ["REPEAT",:[checkForFreeVariables(a,locals) for a in args]]
-       $boundVariables := delete(var,$boundVariables)
-       r
-      ["REPEAT",:[checkForFreeVariables(a,locals) for a in args]]
+      [op,:[checkForFreeVariables(a,locals) for a in args]]
     op = "%LET" =>
       args is [var,form,name] =>
         -- This is some bizarre %LET, not what one would expect in Common Lisp!
