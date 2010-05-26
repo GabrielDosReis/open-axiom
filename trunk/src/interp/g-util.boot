@@ -191,34 +191,65 @@ expandAnd ["%and",:args] ==
 expandOr ["%or",:args] ==
   ["OR",:expandToVMForm args]
 
+-- Arithmetic operations
+expandImul ["%imul",:args] ==
+  ["*",:expandToVMForm args]
+
+expandIadd ["%iadd",:args] ==
+  ["+",:expandToVMForm args]
+
+expandIsub ["%isub",:args] ==
+  ["-",:expandToVMForm args]
+
+expandIeq ["%ieq",:args] ==
+  ["EQL",:expandToVMForm args]
+
 -- Local variable bindings
 expandBind ["%bind",inits,body] ==
   body := expandToVMForm body
   inits := [[first x,expandToVMForm second x] for x in inits]
   -- FIXME: we should consider turning LET* into LET or direct inlining.
   ["LET*",inits,body]
-  
+
+-- Memory load/store
+
+expandDynval ["%dynval",:args] ==
+  ["SYMBOL-VALUE",:expandToVMForm args]
+
+expandStore ["%store",place,value] ==
+  place := expandToVMForm place
+  value := expandToVMForm value
+  cons? place => ["SETF",place,value]
+  ["SETQ",place,value]
+
 ++ Table of opcode-expander pairs.  
-$OpcodeExpanders == [
-   ["%not",:"expandNot"],
-   ["%and",:"expandAnd"],
-   ["%or",:"expandOr"],
+for x in [
+   ["%not",:function expandNot],
+   ["%and",:function expandAnd],
+   ["%or",:function expandOr],
 
-   ["%collect",:"expandCollect"],
-   ["%repeat",:"expandRepeat"],
+   ["%collect",:function expandCollect],
+   ["%repeat",:function expandRepeat],
 
-   ["%le",:"expandLessEqual"],
-   ["%lt",:"expandLess"],
-   ["%ge",:"expandGreaterEqual"],
-   ["%gt",:"expandGreater"],
+   ["%le",:function expandLessEqual],
+   ["%lt",:function expandLess],
+   ["%ge",:function expandGreaterEqual],
+   ["%gt",:function expandGreater],
 
-   ["%bind",:"expandBind"]
- ]
+   ["%imul",:function expandImul],
+   ["%iadd",:function expandIadd],
+   ["%isub",:function expandIsub],
+
+   ["%ieq",:function expandIeq],
+
+   ["%bind",:function expandBind],
+   ["%store",:function expandStore],
+   ["%dynval",:function expandDynval]
+ ] repeat MAKEPROP(first x,"%Expander", rest x)
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
 getOpcodeExpander op ==
-  x := ASSOC(op,$OpcodeExpanders) => rest x
-  nil
+  op has %Expander
 
 ++ Expand all opcodes contained in the form `x' into a form
 ++ suitable for evaluation by the VM.
