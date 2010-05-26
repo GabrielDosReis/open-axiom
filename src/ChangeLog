@@ -1,3 +1,43 @@
+2010-05-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot: Automatically translate alphabetic?, digit?,
+	lowerCase?, upperCase?, readByte, readInteger, readLine,
+	writeByte, writeLine.
+	* interp/as.boot: Use them.
+	* interp/bc-matrix.boot: Likewise.
+	* interp/bc-solve.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/htcheck.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/int-top.boot: Likewise.
+	* interp/intfile.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/scan.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/sys-utility.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/word.boot: Likewise.
+
 2010-05-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot ($ClearBodyToken): New constant.

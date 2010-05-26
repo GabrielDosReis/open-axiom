@@ -1397,7 +1397,7 @@ backendCompile2 code ==
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
   IDENTP x and x ~= "$" and x ~= "$$" and
-    (PNAME x).0 = char "$" and not DIGITP((PNAME x).1) => x
+    (PNAME x).0 = char "$" and not digit?((PNAME x).1) => x
   isAtomicForm x => nil
   first x = "FLUID" => second x
   a := backendFluidize first x
@@ -1415,7 +1415,7 @@ $SpecialVars := []
 pushLocalVariable: %Symbol -> %List
 pushLocalVariable x ==
   x ~= "$" and (p := PNAME x).0 = char "$" and
-    p.1 ~= char "," and not DIGITP p.1 => nil
+    p.1 ~= char "," and not digit? p.1 => nil
   PUSH(x,$LocalVars)
 
 

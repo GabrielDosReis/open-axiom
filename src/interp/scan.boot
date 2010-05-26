@@ -513,7 +513,7 @@ scanS()==
                   strconc(str,b)
 scanTransform x==x
 
---idChar? x== scanLetter x or DIGITP x or x in '(_? _%)
+--idChar? x== scanLetter x or digit? x or x in '(_? _%)
 
 --scanLetter x==
 --   if not CHARP x
@@ -529,7 +529,6 @@ posend(line,n)==
 --     n
 
 --startsId? x==  scanLetter x or x in '(_? _%)
-digit? x== DIGITP x
 
 scanW(b)==             -- starts pointing to first char
        n1:=$n         -- store starting character position
@@ -586,7 +585,7 @@ spleI1(dig,zro) ==
              strconc(str,bb)
 
 scanCheckRadix(a,w)==
-  r := PARSE_-INTEGER a
+  r := readInteger a
   ns:=#w
   ns = 0 => 
     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0004",[a])

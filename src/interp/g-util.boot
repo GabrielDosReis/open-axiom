@@ -251,7 +251,7 @@ isSharpVarWithNum x ==
   c := 0
   for i in 1..(n-1) while ok repeat
     d := p.i
-    ok := DIGITP d => c := 10*c + DIG2FIX d
+    ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
 ++ Returns true if `form' is either an atom or a quotation.
@@ -633,7 +633,7 @@ stringChar2Integer(str,pos) ==
   if IDENTP str then str := PNAME str
   null (string?(str) and
     integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
-  not DIGITP(d := SCHAR(str,pos)) => NIL
+  not digit?(d := SCHAR(str,pos)) => NIL
   DIG2FIX d
 
 dropLeadingBlanks str ==
@@ -718,13 +718,13 @@ flattenSexpr s ==
   [:flattenSexpr f,:flattenSexpr r]
 
 isLowerCaseLetter c ==
-  LOWER_-CASE_-P c
+  lowerCase? c
 
 isUpperCaseLetter c ==
-  UPPER_-CASE_-P c
+  upperCase? c
 
 isLetter c ==
-  ALPHA_-CHAR_-P c
+  alphabetic? c
 
 update() ==
   runCommand
@@ -991,7 +991,7 @@ quickOr(a,b) ==
 
 intern x ==
   string? x =>
-    DIGITP x.0 => string2Integer x
+    digit? x.0 => string2Integer x
     INTERN x
   x
 

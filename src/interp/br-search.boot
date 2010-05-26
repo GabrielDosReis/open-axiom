@@ -93,8 +93,8 @@ grepForAbbrev(s,key) ==
   someUpperCaseChar := false
   for i in 0..MAXINDEX s repeat
     c := s . i
-    LOWER_-CASE_-P c => return (someLowerCaseChar := true)
-    UPPER_-CASE_-P c => someUpperCaseChar := true
+    lowerCase? c => return (someLowerCaseChar := true)
+    upperCase? c => someUpperCaseChar := true
   someLowerCaseChar or not someUpperCaseChar => false
   pattern := DOWNCASE s
   ['Abbreviations ,:[getConstructorFormFromDB x
@@ -210,7 +210,7 @@ grepSplit(lines,doc?) ==
   cons := atts := doms := nil
   while lines is [line, :lines] repeat
     if doc? then
-        N:=PARSE_-INTEGER dbPart(line,1,-1)
+        N:=readInteger dbPart(line,1,-1)
         if NUMBERP N then 
            FILE_-POSITION(instream2,N)
            line := READLINE instream2
@@ -240,7 +240,7 @@ mkUpDownPattern s == recurse(s,0,#s) where
     i = n => '""
     strconc(fixchar(s.i),recurse(s,i + 1,n))
   fixchar(c) ==
-    ALPHA_-CHAR_-P c =>
+    alphabetic? c =>
       strconc(char '_[,CHAR_-UPCASE c,CHAR_-DOWNCASE c,char '_])
     c
 
@@ -946,7 +946,7 @@ dbGetCommentOrigin line ==
   key := INTERN SUBSTRING(firstPart,0,1)    --extract this and throw away
   address := SUBSTRING(firstPart, 1, nil)   --address in libdb
   instream := OPEN grepSource key           --this always returns libdb now
-  FILE_-POSITION(instream,PARSE_-INTEGER address)
+  FILE_-POSITION(instream,readInteger address)
   line := READLINE instream
   CLOSE instream
   line

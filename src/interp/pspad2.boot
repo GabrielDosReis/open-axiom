@@ -566,10 +566,10 @@ ident2PrintImage s ==
   m := MAXINDEX s
   if m > 1 and s.(m - 1) = $underScore then s := strconc(SUBSTRING(s,0,m-1),s.m)
   u:= GETSTR (2*SIZE s)
-  if not (ALPHA_-CHAR_-P s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
+  if not (alphabetic? s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
   u:= SUFFIX(s.(0),u)
   for i in 1..MAXINDEX s repeat
-    if not (DIGITP s.i or ALPHA_-CHAR_-P s.i or ((c := s.i) = char '?) 
+    if not (digit? s.i or alphabetic? s.i or ((c := s.i) = char '?) 
       or (c = char '_!)) then SUFFIX('__,u)
     u:= SUFFIX(s.i,u)
   INTERN u
@@ -578,15 +578,15 @@ isIdentifier x ==
   IDENTP x =>
     s:= PNAME x
     #s = 0 => nil
-    ALPHA_-CHAR_-P s.(0) => and/[s.i ~= char '" " for i in 1..MAXINDEX s]
+    alphabetic? s.(0) => and/[s.i ~= char '" " for i in 1..MAXINDEX s]
     #s>1 =>
-      or/[ALPHA_-CHAR_-P s.i for i in 1..(m:= MAXINDEX s)] =>
+      or/[alphabetic? s.i for i in 1..(m:= MAXINDEX s)] =>
         and/[s.i ~= char '" " for i in 1..m] => true
  
 isGensym x == 
   s := STRINGIMAGE x
   n := MAXINDEX s
-  s.0 = char '_G and and/[DIGITP s.i for i in 1..n]
+  s.0 = char '_G and and/[digit? s.i for i in 1..n]
  
 --======================================================================
 --                       Macro Helpers

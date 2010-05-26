@@ -173,7 +173,7 @@ substituteSegmentedMsg(msg,args) ==
       l := NCONC(nreverse v,l)
 
     -- x requires parameter substitution
-    (x.0 = char "%") and (n > 1) and (DIGITP x.1) =>
+    (x.0 = char "%") and (n > 1) and (digit? x.1) =>
       a := DIG2FIX x.1
       arg :=
         a <= nargs => args.(a-1)
@@ -217,7 +217,7 @@ substituteSegmentedMsg(msg,args) ==
       for ch in '(_. _, _! _: _; _?) repeat
         if MEMQ(char ch,q) then l := [ch,:l]
 
-    c = char "%" and n > 1 and x.1 = char "x" and DIGITP x.2 =>
+    c = char "%" and n > 1 and x.1 = char "x" and digit? x.2 =>
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
     l := [x,:l]
@@ -688,7 +688,7 @@ blankIndicator x ==
   if IDENTP x then x := PNAME x
   null string? x or MAXINDEX x < 1 => nil
   x.0 = '% and x.1 = 'x =>
-    MAXINDEX x > 1 => PARSE_-INTEGER SUBSTRING(x,2,nil)
+    MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
     1
   nil
 
@@ -1029,7 +1029,7 @@ escapeSpecialChars s ==
   u := LASSOC(s,$htCharAlist) => u
   member(s, $htSpecialChars) => strconc('"_\", s)
   null $saturn => s
-  ALPHA_-CHAR_-P (s.0) => s
+  alphabetic? (s.0) => s
   not (or/[dbSpecialDisplayOpChar? s.i for i in 0..MAXINDEX s]) => s
   buf := '""
   for i in 0..MAXINDEX s repeat buf :=

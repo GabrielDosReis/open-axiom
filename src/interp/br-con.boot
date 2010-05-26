@@ -876,7 +876,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
     if null FIXP op and
-      DIGITP((s := STRINGIMAGE op).0) then op := string2Integer s
+      digit?((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>
       doc := dbConstructorDoc(first aux,$op,$sig)
@@ -1309,7 +1309,7 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:INTERN digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[DIGITP s.i for i in 0..MAXINDEX s]]
+     | (s := PNAME arg) and "or"/[digit? s.i for i in 0..MAXINDEX s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer

@@ -234,6 +234,7 @@ for i in [ _
        repeat SETF (GET(first i,'SHOETHETA),CDR i)
 
 for i in [ _
+  ["alphabetic?", "ALPHA-CHAR-P"], _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
@@ -241,6 +242,7 @@ for i in [ _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
+  ["digit?",    "DIGITP"]  , _
   ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
@@ -253,6 +255,7 @@ for i in [ _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
+  ["lowerCase?", "LOWER-CASE-P"], _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["nil"           ,NIL ]  , _
@@ -261,6 +264,9 @@ for i in [ _
   ["null",        "NULL"]  , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
+  ["readByte", "READ-BYTE"], _
+  ["readInteger", "PARSE-INTEGER"], _
+  ["readLine", "READ-LINE"], _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
@@ -276,6 +282,9 @@ for i in [ _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
   ["true",           "T"]  , _
+  ["upperCase?", "UPPER-CASE-P"], _
+  ["writeByte", "WRITE-BYTE"], _
+  ["writeLine", "WRITE-LINE"], _
   ["PLUS",           "+"]  , _
   ["MINUS",     "-"]  , _
   ["TIMES",          "*"]  , _

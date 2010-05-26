@@ -158,7 +158,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
     tryAgain? and #pattern > 0 =>
       (pattern.(k := MAXINDEX(pattern))) = char 's =>
         htGlossPage(htPage,SUBSTRING(pattern,0,k),true)
-      UPPER_-CASE_-P pattern.0 =>
+      upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
       errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
     errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])

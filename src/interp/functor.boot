@@ -975,7 +975,7 @@ encodeItem x ==
  
 getCaps x ==
   s:= STRINGIMAGE x
-  clist:= [c for i in 0..MAXINDEX s | UPPER_-CASE_-P (c:= s.i)]
+  clist:= [c for i in 0..MAXINDEX s | upperCase? (c:= s.i)]
   null clist => '"__"
   strconc/[first clist,:[L_-CASE u for u in rest clist]]
  
@@ -1006,7 +1006,7 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  ALPHA_-CHAR_-P((s:= STRINGIMAGE u).(MAXINDEX s)) => 
+  alphabetic?((s:= STRINGIMAGE u).(MAXINDEX s)) => 
     INTERN strconc(s,STRINGIMAGE n)
   INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  
