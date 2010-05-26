@@ -853,7 +853,7 @@ spadCompileOrSetq form ==
         --bizarre hack to take account of the existence of "known" functions
         --good for performance (LISPLLIB size, BPI size, NILSEC)
   [nam,[lam,vl,body]] := form
-  CONTAINED("",body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
+  CONTAINED($ClearBodyToken,body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']

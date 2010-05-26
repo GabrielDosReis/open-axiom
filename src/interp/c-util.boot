@@ -50,6 +50,10 @@ module c_-util where
 
 --% 
 
+++ Token to indicate that a function body should be ignored.
+$ClearBodyToken ==
+  KEYWORD::OpenAxiomClearBodyToken
+
 ++
 $ConstructorCache := hashTable 'EQ
 

@@ -1020,7 +1020,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
  
     noteCapsuleFunctionDefinition($op,signature', makePredicate $predl)
     T := CATCH('compCapsuleBody, compOrCroak(body,rettype,e))
-	 or ["",rettype,e]
+	 or [$ClearBodyToken,rettype,e]
     NRTassignCapsuleFunctionSlot($op,signature')
     if $newCompCompare=true then
        SAY '"The old compiler generates:"
@@ -1233,7 +1233,7 @@ compile u ==
 spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
         --bizarre hack to take account of the existence of "known" functions
         --good for performance (LISPLLIB size, BPI size, NILSEC)
-  CONTAINED("",body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
+  CONTAINED($ClearBodyToken,body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
 
   -- flag parameters needs to be made atomic, otherwise Lisp is confused.
   -- We try our best to preserve
