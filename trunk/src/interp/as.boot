@@ -248,7 +248,7 @@ displayDatabase x == main where
 zeroOneConversion opAlist == opAlist
 --   for u in opAlist repeat
 --     [op,:.] := u
---     DIGITP (PNAME op).0 => u.first := string2Integer PNAME op
+--     digit? (PNAME op).0 => u.first := string2Integer PNAME op
 --   opAlist
 
 asyDisplay(con,alist) ==
@@ -748,7 +748,7 @@ asyShorten x ==
 asySplit(name,end) ==
   end < 1 => [name]
   k := 0
-  for i in 1..end while LOWER_-CASE_-P name.i repeat k := i
+  for i in 1..end while lowerCase? name.i repeat k := i
   k := k + 1
   [SUBSTRING(name,0,k),:asySplit(SUBSTRING(name,k,nil),end-k)]
 

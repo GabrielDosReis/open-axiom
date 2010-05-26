@@ -299,11 +299,11 @@ openBinaryFile(file,mode) ==
 ++ Attemp to read a byte from input file `ifile'.  If not end of
 ++ file, return the read byte; %nothing.
 readByteFromFile ifile ==
-  READ_-BYTE(ifile,false,%nothing)
+  readByte(ifile,false,%nothing)
 
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
-  WRITE_-BYTE(b,ofile)
+  writeByte(b,ofile)
 
 closeFile file ==
   CLOSE file

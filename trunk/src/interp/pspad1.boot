@@ -264,9 +264,9 @@ format(x,:options) ==
       if op = "return" then argl := rest argl
       n := #argl
       op is ['elt,y,"construct"] => formatDollar(y,'construct,argl)
-      op is ['elt,name,p] and UPPER_-CASE_-P STRINGIMAGE(opOf name).0 => 
+      op is ['elt,name,p] and upperCase? STRINGIMAGE(opOf name).0 => 
         formatDollar(name,p,argl)
-      op = 'elt and UPPER_-CASE_-P STRINGIMAGE(opOf first argl).0 => 
+      op = 'elt and upperCase? STRINGIMAGE(opOf first argl).0 => 
         formatDollar1(first argl,second argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
       if op in '(AND OR NOT) then op:= DOWNCASE op
@@ -420,7 +420,7 @@ formatHasDollarOp x ==
   x is ["elt",a,b] and isTypeProbably? a 
 
 isTypeProbably? x ==
-  IDENTP x and UPPER_-CASE_-P PNAME(x).0
+  IDENTP x and upperCase? PNAME(x).0
 
 formatOpPren(op,x) == formatOp op and formatPren x
 

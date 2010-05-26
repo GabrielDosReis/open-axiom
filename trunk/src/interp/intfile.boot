@@ -38,7 +38,7 @@ namespace BOOT
 shoeInternFile(fn)==
    a:=shoeInputFile fn
    if null a
-   then WRITE_-LINE (strconc(fn,'" not found"),$ErrorStream)
+   then writeLine (strconc(fn,'" not found"),$ErrorStream)
    else shoeIntern incRgen a
  
 shoeIntern (s)==

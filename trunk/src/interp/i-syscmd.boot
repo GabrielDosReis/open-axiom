@@ -1703,7 +1703,7 @@ writeInputLines(fn,initial) ==
   file := histInputFileName(fn)
   histFileErase file
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
-  for x in removeUndoLines nreverse lineList repeat WRITE_-LINE(x,inp)
+  for x in removeUndoLines nreverse lineList repeat writeLine(x,inp)
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
@@ -2663,7 +2663,7 @@ undo(l) ==
     null l => -1
     first l
   if IDENTP n then
-    n := PARSE_-INTEGER PNAME n
+    n := readInteger PNAME n
     if not FIXP n then userError '"undo argument must be an integer"
   $InteractiveFrame := undoSteps(undoCount n,undoWhen)
   nil
@@ -2826,7 +2826,7 @@ removeUndoLines u == --called by writeInputLines
           s2 := trimString SUBSTRING(s1,0,m)
         n :=
            s1 = '")redo" => 0
-           s2 ~= '"" => undoCount PARSE_-INTEGER s2
+           s2 ~= '"" => undoCount readInteger s2
            -1
         y.first := strconc('">",code,STRINGIMAGE n)
       nil
@@ -2835,7 +2835,7 @@ removeUndoLines u == --called by writeInputLines
   for y in tails nreverse u repeat
     (x := first y).0 = char '_> =>
       code := x . 1                                 --code = a,b, or r
-      n := PARSE_-INTEGER SUBSTRING(x,2,nil)        --n = number of undo steps
+      n := readInteger SUBSTRING(x,2,nil)           --n = number of undo steps
       y := rest y                                   --kill >n line
       while y repeat
         c := first y

@@ -577,13 +577,13 @@ linearFormat x ==
 
 numOfSpadArguments id ==
   char("*") = (s:= PNAME id).0 =>
-      +/[n for i in 1.. while integer? (n:=PARSE_-INTEGER PNAME s.i)]
+      +/[n for i in 1.. while integer? (n:=readInteger PNAME s.i)]
   keyedSystemError("S2IF0012",[id])
 
 linearFormatForm(op,argl) ==
   s:= PNAME op
-  indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
-    (DIGITP (d:= s.(maxIndex:= i)))]
+  indexList:= [readInteger PNAME d for i in 1.. while
+    (digit? (d:= s.(maxIndex:= i)))]
   cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   fnArgs:=
     indexList.0 > 0 =>

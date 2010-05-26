@@ -1244,12 +1244,12 @@ changeToEqualEqual lines ==
     N := MAXINDEX x
     (n := charPosition($blank, x, 8)) > N => nil
     n = 0 => nil
-    not ALPHA_-CHAR_-P (x . (n - 1)) => nil
+    not alphabetic? (x . (n - 1)) => nil
     not substring?('":= ", x, n+1) => nil
     m := n + 3
-    while (m := m + 1) <= N and ALPHA_-CHAR_-P (x . m) repeat nil
+    while (m := m + 1) <= N and alphabetic? (x . m) repeat nil
     m = n + 2 => nil
-    not UPPER_-CASE_-P (x . (n + 4)) => nil
+    not upperCase? (x . (n + 4)) => nil
     word := INTERN SUBSTRING(x, n + 4, m - n - 4)
     expandedWord := macroExpand(word,$e)
     not (word in '(Record Union Mapping)

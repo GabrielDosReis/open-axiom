@@ -207,7 +207,7 @@ getTraceOption (x is [key,:l]) ==
   key="of" =>
     ["of",:[hn y for y in l]] where
       hn x ==
-        atom x and not UPPER_-CASE_-P STRINGIMAGE(x).0 =>
+        atom x and not upperCase? STRINGIMAGE(x).0 =>
           isDomainOrPackage EVAL x => x
           stackTraceOptionError ["S2IT0013",[x]]
         g:= domainToGenvar x => g
@@ -305,7 +305,7 @@ transTraceItem x ==
         x := objVal value
         (y:= domainToGenvar x) => y
         x
-    UPPER_-CASE_-P STRINGIMAGE(x).0 =>
+    upperCase? STRINGIMAGE(x).0 =>
       y := opOf unabbrev x
       constructor? y => y
       (y:= domainToGenvar x) => y

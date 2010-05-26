@@ -134,7 +134,7 @@ blankLine? line ==
 string2OpAlist s ==
   m := #s
   k := skipBlanks(s,0,m) or return nil
-  UPPER_-CASE_-P s.k => nil       --skip constructor names
+  upperCase? s.k => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
     acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]

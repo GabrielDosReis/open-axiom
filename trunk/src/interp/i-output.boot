@@ -734,8 +734,8 @@ mkSuperSub(op,argl) ==
 --    for f in linearFormatForm(op,argl)]
 --  strconc/l
   s:= PNAME op
-  indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
-    (DIGITP (d:= s.(maxIndex:= i)))]
+  indexList:= [readInteger PNAME d for i in 1.. while
+    (digit? (d:= s.(maxIndex:= i)))]
   cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>

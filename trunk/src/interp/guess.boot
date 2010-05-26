@@ -69,13 +69,13 @@ wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(MAXINDEX(s)-1) | UPPER_-CASE_-P s.i] =>
+  k := or/[i for i in j..(MAXINDEX(s)-1) | upperCase? s.i] =>
     tailWords:=
-      UPPER_-CASE_-P s.(k+1) =>
-        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not UPPER_-CASE_-P s.i]
+      upperCase? s.(k+1) =>
+        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not upperCase? s.i]
         null n => [SUBSTRING(s,k,nil)]
         n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | UPPER_-CASE_-P s.i] =>
+      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | upperCase? s.i] =>
         [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
       [SUBSTRING(s,k,nil)]
     k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
@@ -85,7 +85,7 @@ wordsOfString1(s,j) ==
 wordKeys s == 
   removeDuplicates [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
-    UPPER_-CASE_-P s.i =>
+    upperCase? s.i =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])
       fn(s,i + 1,i,n,[s.i,:acc])
     fn(s,i + 1,lastKeyIndex,n,acc)

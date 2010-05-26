@@ -93,7 +93,7 @@ recordSignatureDocumentation(opSig,lineno) ==
 
 recordAttributeDocumentation(['Attribute,att],lineno) ==
   name := opOf att
-  UPPER_-CASE_-P PNAME(name).0 => nil
+  upperCase? PNAME(name).0 => nil
   recordDocumentation([name,['attribute,:IFCDR postTransform att]],lineno)
 
 recordDocumentation(key,lineno) ==
@@ -736,9 +736,9 @@ checkExtract(header,lines) ==
   for line in firstLines repeat
     do
       m := #line
-      (k := firstNonBlankPosition line) = -1     => 'skip  --include if blank
-      k > margin                                 => 'skip  --include if idented
-      not UPPER_-CASE_-P line.k                  => 'skip  --also if not upcased
+      (k := firstNonBlankPosition line) = -1 => 'skip  --include if blank
+      k > margin                             => 'skip  --include if idented
+      not upperCase? line.k                  => 'skip  --also if not upcased
       (j := charPosition(char '_:,line,k)) = m   => 'skip  --or if not colon, or
       (i := charPosition(char '_ ,line,k+1)) < j => 'skip  --blank before colon
       return nil
@@ -810,11 +810,11 @@ checkDecorate u ==
         spadflag => ['",",:acc]
         ['",{}",:acc]
       x = '"\spad" => ['"\spad",:acc]
-      string? x and DIGITP x.0 => [x,:acc]
+      string? x and digit? x.0 => [x,:acc]
       not spadflag and
-        (CHARP x and ALPHA_-CHAR_-P x and not MEMQ(x,$charExclusions) or
+        (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and ((string? x and not x.0 = $charBack and DIGITP(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
+      not spadflag and ((string? x and not x.0 = $charBack and digit?(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
       xcount := SIZE x
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
@@ -941,7 +941,7 @@ checkSplitBackslash x ==
   not string? x => [x]
   m := MAXINDEX x
   (k := charPosition($charBack,x,0)) < m =>
-    m = 1 or ALPHA_-CHAR_-P(x . (k + 1)) =>     --starts with a backslash so..
+    m = 1 or alphabetic?(x . (k + 1)) =>        --starts with a backslash so..
       (k := charPosition($charBack,x,1)) < m => --..see if there is another
          [SUBSTRING(x,0,k),:checkSplitBackslash SUBSTRING(x,k,nil)]  -- yup
       [x]                                       --no, just return line
@@ -968,7 +968,7 @@ checkSplitPunctuation x ==
   m > 1 and x.(m - 1) = $charQuote => [SUBSTRING(x,0,m - 1),SUBSTRING(x,m-1,nil)]
   (k := charPosition($charBack,x,0)) < m =>
     k = 0 =>
-      m = 1 or HGET($htMacroTable,x) or ALPHA_-CHAR_-P x.1 => [x]
+      m = 1 or HGET($htMacroTable,x) or alphabetic? x.1 => [x]
       v := SUBSTRING(x,2,nil)
       [SUBSTRING(x,0,2),:checkSplitPunctuation v]
     u := SUBSTRING(x,0,k)
@@ -1124,7 +1124,7 @@ checkTransformFirsts(opname,u,margin) ==
   m := MAXINDEX u
   m < 2 => u
   u.0 = $charBack => u
-  ALPHA_-CHAR_-P u.0 =>
+  alphabetic? u.0 =>
     i := checkSkipToken(u,0,m) or return u
     j := checkSkipBlanks(u,i,m) or return u
     open := u.j
@@ -1158,7 +1158,7 @@ checkTransformFirsts(opname,u,margin) ==
       checkDocError ['"Improper initial operator in comments: ",infixOp]
       u
     strconc('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
-  true =>          -- not ALPHA_-CHAR_-P u.0 =>
+  true =>          -- not alphabetic? u.0 =>
     i := checkSkipToken(u,0,m) or return u
     namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
@@ -1195,7 +1195,7 @@ checkSkipBlanks(u,i,m) ==
   i
 
 checkSkipToken(u,i,m) ==
-  ALPHA_-CHAR_-P(u.i) => checkSkipIdentifierToken(u,i,m)
+  alphabetic?(u.i) => checkSkipIdentifierToken(u,i,m)
   checkSkipOpToken(u,i,m)
 
 checkSkipOpToken(u,i,m) ==
@@ -1212,7 +1212,7 @@ checkSkipIdentifierToken(u,i,m) ==
 
 ++ returns true if character `c' is alphabetic.
 checkAlphabetic c ==
-  ALPHA_-CHAR_-P c or DIGITP c or MEMQ(c,$charIdentifierEndings)
+  alphabetic? c or digit? c or MEMQ(c,$charIdentifierEndings)
 
 --=======================================================================
 --        Code for creating a personalized report for ++ comments
@@ -1303,9 +1303,9 @@ checkDecorateForHt u ==
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
       x = '"$" or x = '"%" => checkDocError ['"Unescaped ",x]
 --      null spadflag and string? x and (member(x,$argl) or #x = 1
---        and ALPHA_-CHAR_-P x.0) and not member(x,'("a" "A")) =>
+--        and alphabetic? x.0) and not member(x,'("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      null spadflag and string? x and (not x.0 = $charBack and not DIGITP(x.0) and DIGITP(x.(MAXINDEX x))or member(x,'("true" "false")))
+--      null spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or member(x,'("true" "false")))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u
