@@ -282,8 +282,8 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
  
   newTripleCode := ["LIST",sharpArg,:gsList]
   newStateCode :=
-    null extraArguments => ["SETQ",stateNam,newTripleCode]
-    ["HPUT",stateNam,extraArgumentCode,newTripleCode]
+    null extraArguments => ["%store",["%dynval", MKQ stateNam],newTripleCode]
+    ["HPUT",["%dynval", MKQ stateNam],extraArgumentCode,newTripleCode]
  
   computeFunction:= [auxfn,["LAM",cargl,cbody]] where
     cargl:= [:argl,lastArg]
@@ -312,11 +312,11 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       initialValueCode :=
         extraArguments => ["hashTable",''EQUAL]
         tripleCode
-      cacheResetCode := ["SETQ",stateNam,initialValueCode]
+      cacheResetCode := ["%store",["%dynval", MKQ stateNam],initialValueCode]
       ["COND",[["%not",["%and",["BOUNDP",MKQ stateNam], _
-                          ["CONSP",stateNam]]],    _
+                          ["CONSP",["%dynval",MKQ stateNam]]]],    _
                  ["%LET",stateVar,cacheResetCode]], _
-             [''T, ["%LET",stateVar,stateNam]]]
+             [''T, ["%LET",stateVar,["%dynval",MKQ stateNam]]]]
  
     -- when there are extra arguments, initialResetCode resets "stateVar"
     --  to the hashtable entry for the extra arguments

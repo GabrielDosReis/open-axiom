@@ -1,5 +1,12 @@
 2010-05-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/slam.boot (compileRecurrenceRelation): Generate code to
+	access and set the global value of the variable holding the cache
+	state. 
+	* interp/g-util.boot: Add more middle end form expanders.
+
+2010-05-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: Automatically translate alphabetic?, digit?,
 	lowerCase?, upperCase?, readByte, readInteger, readLine,
 	writeByte, writeLine.
