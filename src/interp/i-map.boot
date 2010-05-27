@@ -763,16 +763,16 @@ compileCoerceMap(op,argTypes,mm) ==
   name:= makeLocalModemap(op,[first sig,:argTypes])
   argCode := [objVal(coerceInteractive(objNew(arg,t1),t2) or
     throwKeyedMsg("S2IC0001",[arg,$mapName,t1,t2]))
-      for t1 in argTypes for t2 in rest sig for arg in parms]
+      for t1 in argTypes for t2 in sig.source for arg in parms]
   $insideCompileBodyIfTrue := false
   parms:= [:parms,'envArg]
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
-  minivectorName := makeInternalMapMinivectorName(name)
-  body := declareUnusedParameters(parms,substitute(minivectorName,"$$$",body))
+  minivectorName := makeInternalMapMinivectorName name
+  body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
-  compileInteractive 
-    [name,['LAMBDA,parms,declareGlobalVariables [minivectorName],:body]]
-  first sig
+  compileInteractive
+    [name,['LAMBDA,parms,:declareUnusedParameters(parms,body)]]
+  sig.target
 
 depthOfRecursion(opName,body) ==
   -- returns the "depth" of recursive calls of opName in body

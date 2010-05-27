@@ -153,8 +153,8 @@ compileTargetedADEF(t,vars,types,body) ==
 compileADEFBody(t,vars,types,body,computedResultType) ==
 --+
   $compiledOpNameList := [$mapName]
-  minivectorName := makeInternalMapMinivectorName(PNAME $mapName)
-  body := substitute(minivectorName,"$$$",body)
+  minivectorName := makeInternalMapMinivectorName PNAME $mapName
+  body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
 
   -- The use of the three variables $definingMap, $genValue and $compilingMap
@@ -177,9 +177,7 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   -- MCD 13/3/96
   parms := [:vars,"envArg"]
   if not $definingMap and ($genValue or $compilingMap) then
-    fun := [$mapName,["LAMBDA",parms, 
-                        declareGlobalVariables [minivectorName],
-                          :declareUnusedParameters(parms,body)]]
+    fun := [$mapName,["LAMBDA",parms,:declareUnusedParameters(parms,body)]]
     code :=  wrap compileInteractive fun
   else
     $freeVariables: local := []
