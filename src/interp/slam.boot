@@ -174,13 +174,13 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   g3:= gensym()  --value computed by calling function
   secondPredPair:=
     null argl => [cacheName]
-    [['SETQ,g3,['assocCircular,g1,cacheName]],['CDR,g3]]
+    [["%store",g3,['assocCircular,g1,["%dynval",MKQ cacheName]]],['CDR,g3]]
   thirdPredPair:=
-    null argl => ['(QUOTE T),['SETQ,cacheName,computeValue]]
+    null argl => ['(QUOTE T),[["%store",["%dynval",MKQ cacheName],computeValue]]]
     ['(QUOTE T),
       ["SETQ",g2,computeValue],
         ["SETQ",g3,
-            ["CAR",["SETQ",cacheName,['predCircular,cacheName,cacheCount]]]],
+            ["CAR",["%store",["%dynval",MKQ cacheName],['predCircular,["%dynval",cacheName],cacheCount]]]],
           ["RPLACA",g3,g1],
             ["RPLACD",g3,g2],
               g2]
@@ -219,8 +219,8 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function
-  secondPredPair:= [["SETQ",g2,["HGET",cacheName,g1]],g2]
-  thirdPredPair:= ['(QUOTE T),["HPUT",cacheName,g1,computeValue]]
+  secondPredPair:= [["SETQ",g2,["HGET",["%dynval",MKQ cacheName],g1]],g2]
+  thirdPredPair:= ['(QUOTE T),["HPUT",["%dynval",MKQ cacheName],g1,computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",["COND",secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
@@ -230,7 +230,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= 'hash_-table
-  cacheResetCode:= ["SETQ",cacheName,['hashTable,''EQUAL]]
+  cacheResetCode:= ["%store",["%dynval",MKQ cacheName],['hashTable,''EQUAL]]
   cacheCountCode:= ['hashCount,cacheName]
   cacheVector:=
     mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)
@@ -437,5 +437,4 @@ clearAllSlams x ==
         NCONC(thoseToClear,someMoreToClear)
  
 clearSlam("functor")==
-  id:= mkCacheName functor
-  setDynamicBinding(id,nil)
+  setDynamicBinding(mkCacheName functor,nil)

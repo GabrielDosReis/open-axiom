@@ -383,18 +383,18 @@ evalis(op,[a,pattern],mode) ==
   putValue(op,triple)
 
 isLocalPred pattern ==
-  -- returns true if the is predicate is to be compiled
+  -- returns true if this predicate is to be compiled
   for pat in pattern repeat
-    IDENTP pat and isLocalVar(pat) => return true
-    pat is [":",var] and isLocalVar(var) => return true
-    pat is ["=",var] and isLocalVar(var) => return true
+    IDENTP pat and isLocallyBound pat => return true
+    pat is [":",var] and isLocallyBound var => return true
+    pat is ["=",var] and isLocallyBound var => return true
 
 compileIs(val,pattern) ==
   -- produce code for compiled "is" predicate.  makes pattern variables
   --  into local variables of the function
   vars:= NIL
   for pat in rest pattern repeat
-    IDENTP(pat) and isLocalVar(pat) => vars:=[pat,:vars]
+    IDENTP(pat) and isLocallyBound pat => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
     pat is ["=",var] => vars:= [var,:vars]
   predCode:=["%LET",g:=gensym(),["isPatternMatch",
@@ -567,7 +567,7 @@ evalLETput(lhs,value) ==
   name:= getUnname lhs
   if not $genValue then
     code:=
-      isLocalVar(name) =>
+      isLocallyBound name =>
         om := objMode(value)
         dm := get(name,'mode,$env)
         dm and not ((om = dm) or isSubDomain(om,dm) or
@@ -584,7 +584,7 @@ evalLETput(lhs,value) ==
       ['unwrap,['evalLETchangeValue,MKQ name,
         objNewCode(['wrap,objVal value],objMode value)]]
     value:= objNew(code,objMode value)
-    isLocalVar(name) =>
+    isLocallyBound name =>
       if not get(name,'mode,$env) then put(name,'autoDeclare,'T,$env)
       put(name,'mode,objMode(value),$env)
     put(name,'automode,objMode(value),$env)
@@ -621,7 +621,7 @@ evalLETchangeValue(name,value) ==
     objMode val ~= objMode(value)
   if clearCompilationsFlag then
     clearDependencies(name,true)
-  if localEnv and isLocalVar(name)
+  if localEnv and isLocallyBound name
     then $env:= putHist(name,'value,value,$env)
     else putIntSymTab(name,'value,value,$e)
   objVal value
@@ -745,7 +745,7 @@ isType t ==
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]
-     isLocalVar(op) => NIL
+     isLocallyBound op => NIL
      d := isDomainValuedVariable op => d
      type:=
        -- next line handles subscripted vars
@@ -763,7 +763,7 @@ upLETtype(op,lhs,type) ==
     compFailure ['"   Cannot compile type assignment to",:bright opName]
   mode := conceptualType type
   val:= objNew(type,mode)
-  if isLocalVar(opName) then put(opName,'value,val,$env)
+  if isLocallyBound opName then put(opName,'value,val,$env)
   else putHist(opName,'value,val,$e)
   putValue(op,val)
   -- have to fix the following
@@ -934,6 +934,7 @@ upREPEAT1 t ==
   $interpOnly => interpREPEAT(op,itrl,body,repeatMode)
 
   -- analyze iterators and loop body
+  $iteratorVars: local := nil
   upLoopIters itrl
   bottomUpCompile body
 

@@ -70,10 +70,6 @@ makeInternalMapMinivectorName(name) ==
     INTERN strconc(name,'";MV")
   INTERN strconc(PNAME name,'";MV")
 
-mkCacheName(name) == INTERNL(STRINGIMAGE name,'";AL")
-
-mkAuxiliaryName(name) == INTERNL(STRINGIMAGE name,'";AUX")
-
 --% Adding a function definition
 
 isMapExpr x == x is ["%Map",:.]
@@ -685,7 +681,7 @@ compileDeclaredMap(op,sig,mapDef) ==
   -- creates a local modemap and puts it into the environment
   $localVars: local := nil
   $freeVars: local := nil
-  $env:local:= [[nil]]
+  $env: local:= [[nil]]
   parms:=[var for var in $FormalMapVariableList for m in rest sig]
   for m in rest sig for var in parms repeat
     $env:= put(var,'mode,m,$env)
@@ -736,7 +732,7 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
   -- loop variables and variables that do have %LET expressions, but that
   -- can be finessed later.
 
-  locals := SETDIFFERENCE(COPY $localVars, parms)
+  locals := setDifference($localVars,parms)
   if locals then
     lets := [["%LET", l, ''UNINITIALIZED__VARIABLE, op] for l in locals]
     body := ['PROGN, :lets, body]
@@ -798,9 +794,9 @@ mapRecurDepth(opName,opList,body) ==
 
 analyzeUndeclaredMap(op,argTypes,mapDef,$mapList) ==
   -- Computes the signature of the map named op, and compiles the body
-  $freeVars:local := NIL
+  $freeVars: local := NIL
   $localVars: local := NIL
-  $env:local:= [[nil]]
+  $env: local:= [[nil]]
   $mapList := [op,:$mapList]
   parms:=[var for var in $FormalMapVariableList for m in argTypes]
   for m in argTypes for var in parms repeat
@@ -1006,7 +1002,7 @@ findLocalVars1(op,form) ==
   -- sets the two lists $localVars and $freeVars
   atom form =>
     not IDENTP form or isSharpVarWithNum form => nil
-    isLocalVar(form) or isFreeVar(form) => nil
+    isLocallyBound form or isFreeVar form => nil
     mkFreeVar($mapName,form)
   form is ['local, :vars] =>
     for x in vars repeat
@@ -1042,13 +1038,18 @@ findLocalVars1(op,form) ==
   keyedSystemError("S2IM0020",[op])
 
 findLocalsInLoop(op,itrl,body) ==
+  savedLocalVars := $localVars
+  iterVars := nil
   for it in itrl repeat
     it is ['STEP,index,lower,step,:upperList] =>
+      iterVars := [index,:iterVars]
       mkLocalVar(op,index)
       findLocalVars1(op,lower)
       for up in upperList repeat findLocalVars1(op,up)
     it is ['IN,index,s] =>
-      mkLocalVar(op,index) ; findLocalVars1(op,s)
+      iterVars := [index,:iterVars]
+      mkLocalVar(op,index)
+      findLocalVars1(op,s)
     it is ['WHILE,b] =>
       findLocalVars1(op,b)
     it is ['_|,pred] =>
@@ -1057,15 +1058,15 @@ findLocalsInLoop(op,itrl,body) ==
   for it in itrl repeat
     it is [op,b] and (op in '(UNTIL)) =>
       findLocalVars1(op,b)
+  $localVars := setUnion(savedLocalVars,setDifference($localVars,iterVars))
 
-isLocalVar(var) == member(var,$localVars)
+isFreeVar(var) ==
+  member(var,$freeVars)
 
 mkLocalVar(op,var) ==
   -- add var to the local variable list
   isFreeVar(var) => $localVars
   $localVars:= insert(var,$localVars)
-
-isFreeVar(var) == member(var,$freeVars)
 
 mkFreeVar(op,var) ==
   -- op here for symmetry with mkLocalVar

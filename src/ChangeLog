@@ -1,5 +1,47 @@
 2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-macros.lisp (eval): Expand opcodes before calling EVAL.
+	* interp/slam.boot (reportFunctionCompilation): Tidy.  Take extra
+	care when generating code that access global variables.
+	(reportFunctionCacheAll): Likewise.
+	* interp/i-util.boot (isLocallyBound): Define.
+	* interp/i-spec1.boot (upCOLLECT1): Bind $iteratorVars to nil.
+	(upLoopIterSTEP): Call mkIteratorVariable instead of mkLocalVar.
+	(upLoopIterIN): Likewise.
+	(upStreamIterIN): Likewise.
+	(upStreamIterSTEP): Likewise.
+	(collectOneStream): Tidy.
+	(mkAndApplyPredicates): Likewise.
+	(mkIterFun): Lose last parameter. Tidy.
+	(declare): Use isLocallyBound.
+	(getAndEvalConstructorArgument): Likewise.
+	(mkIteratorVariable): New.
+	($iteratorVars): New.
+	* interp/i-spec2.boot (upREPEAT1): Bind $iteratorVars to nil.
+	(isLocalPred): Use isLocallyBound.
+	(compileIs): Likewise.
+	(evalLETput): Likewise.
+	(evalLETchangeValue): Likewise.
+	(isType): Likewise.
+	* interp/i-analy.boot (bottomUp): Likewise.
+	(bottomUpDefaultCompile): Likewise.
+	* interp/i-eval.boot (evalForm): Likewise.
+	(getMappingArgValue): Likewise.
+	* interp/i-map.boot (findLocalVars1): Likewise.
+	(findLocalsInLoop): Tidy.  Filter out iterator variables.
+	(isLocalVar): Remove.
+	* interp/g-util.boot (mkCacheName): Define here.
+	(mkAuxiliaryName): Likewise.
+	* interp/c-util.boot (backendCompileSLAM): Use mkCacheName.
+	(backendCompileSPADSLAM): Likewise.
+	* interp/clam.boot (compClam): Likewise.
+	(clearCategoryCaches): Likewise.
+	(clearCategoryCache): Likewise.
+	* interp/g-timer.boot (timedEVALFUN): expandToVMForm is now
+	implicitly called by eval.
+
+2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-map.boot (compileCoerceMap): Minivectors are global
 	variables. Generate appropriate code.
 	* interp/i-spec1.boot (compileTargetedADEF): Likewise.

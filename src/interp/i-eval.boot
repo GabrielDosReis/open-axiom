@@ -248,7 +248,7 @@ evalForm(op,opName,argl,mmS) ==
       form :=
         dc='local => --[fun,:form]
           atom fun =>
-            fun in $localVars => ['SPADCALL,:form,fun]
+            isLocallyBound fun => ['SPADCALL,:form,fun]
             [fun,:form,NIL]
           ['SPADCALL,:form,fun]
         dc is ["__FreeFunction__",:freeFun] =>
@@ -321,7 +321,7 @@ getArgValueOrThrow(x, type) ==
   getArgValue(x,type) or throwKeyedMsg("S2IC0007",[type])
 
 getMappingArgValue(a,t,m is ['Mapping,:ml]) ==
-  (una := getUnname a) in $localVars =>
+  isLocallyBound(una := getUnname a) =>
     $genValue =>
       name := get(una,'name,$env)
       a.0 := name

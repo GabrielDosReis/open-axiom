@@ -225,7 +225,7 @@ bottomUp t ==
       [om]
     if atom op then
       opName:= getUnname op
-      if opName in $localVars then
+      if isLocallyBound opName then
         putModeSet(op,bottomUpIdentifier(op,opName))
       else
         transferPropsToNode(opName,op)
@@ -470,7 +470,7 @@ bottomUpDefaultCompile(t,id,defaultMode,target,isSub) ==
   tmode := getMode t
   tval  := getValue t
   expr:=
-    id in $localVars => id
+    isLocallyBound id => id
     get(id,"mode",$env) => id       -- declared local variable
     tmode or tval =>
       envMode := tmode or objMode tval

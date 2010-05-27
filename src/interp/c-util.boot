@@ -1316,7 +1316,7 @@ backendCompileNEWNAM x ==
 ++ as alists.
 backendCompileSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
-  al := INTERNL(name,'";AL")    -- name of the cache alist.
+  al := mkCacheName name        -- name of the cache alist.
   auxfn := INTERNL(name,'";")   -- name of the worker function.
   g1 := gensym()                -- name for the parameter.
   g2 := gensym()                -- name for the cache value
@@ -1348,7 +1348,7 @@ backendCompileSLAM(name,args,body) ==
 ++ table.  This backend compiler is used to compile constructors.
 backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
-  al := INTERNL(name,'";AL")   -- name of the cache hash table.
+  al := mkCacheName name       -- name of the cache hash table.
   auxfn := INTERNL(name,'";")  -- name of the worker function.
   g1 := gensym()               -- name of the worker function parameter
   g2 := gensym()               -- name for the cache value.

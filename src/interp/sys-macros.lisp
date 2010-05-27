@@ -371,7 +371,7 @@
        (the (values t) (funcall (car ,gi) ,@args (cdr ,gi))))))
 
 (defmacro |eval| (form)
-  `(EVAL ,form))
+  `(EVAL (|expandToVMForm| ,form)))
 
 ;; 
 ;; -*- Arithmetics -*-
