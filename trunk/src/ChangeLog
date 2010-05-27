@@ -1,3 +1,14 @@
+2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-map.boot (compileCoerceMap): Minivectors are global
+	variables. Generate appropriate code.
+	* interp/i-spec1.boot (compileTargetedADEF): Likewise.
+	(compileADEFBody): Likewise.
+	* interp/slam.boot (isRecurrenceRelation): Likewise.  Adjust
+	patterns to match minivectors.
+	(mkDiffAssoc): Likewise.
+	(reportFunctionCompilation): Don't declare minivectors.
+
 2010-05-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/slam.boot (compileRecurrenceRelation): Generate code to

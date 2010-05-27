@@ -60,11 +60,12 @@ isRecurrenceRelation(op,body,minivectorName) ==
   lesspSlot:=compiledLookupCheck("<",[$Boolean,"$","$"],integer)
   notpSlot:= compiledLookupCheck("not",["$","$"],eval $Boolean)
   for [p,c] in pcl repeat
-    p is ['SPADCALL,sharpVar,n1,['ELT,=minivectorName,slot]]
-      and EQ(iequalSlot,$minivector.slot) =>
-        initList:= [[n1,:c],:initList]
-        sharpList := insert(sharpVar,sharpList)
-        n:=n1
+    p is ['SPADCALL,sharpVar,n1,
+      ["ELT",["%dynval",=MKQ minivectorName],slot]]
+        and EQ(iequalSlot,$minivector.slot) =>
+          initList:= [[n1,:c],:initList]
+          sharpList := insert(sharpVar,sharpList)
+          n:=n1
     miscList:= [[p,c],:miscList]
   miscList isnt [[generalPred,generalTerm]] or sharpList isnt [sharpArg] =>
       return false
@@ -86,14 +87,17 @@ isRecurrenceRelation(op,body,minivectorName) ==
   --Check general predicate
   predOk :=
     generalPred is '(QUOTE T) => true
-    generalPred is ['SPADCALL,m,=sharpArg,['ELT,=minivectorName,slot]]
-      and EQ(lesspSlot,$minivector.slot)=> m+1
+    generalPred is ['SPADCALL,m,=sharpArg,
+      ["ELT",["%dynval",=MKQ minivectorName],slot]]
+        and EQ(lesspSlot,$minivector.slot)=> m+1
     generalPred is ['SPADCALL,['SPADCALL,=sharpArg,m,
-      ['ELT,=minivectorName,slot]], ['ELT,=minivectorName,notSlot]]
-        and EQ(lesspSlot,$minivector.slot)
-          and EQ(notpSlot,$minivector.notSlot) => m
-    generalPred is ['NOT,['SPADCALL,=sharpArg,m,['ELT,=minivectorName, =lesspSlot]]]
-      and EQ(lesspSlot,$minivector.slot) => m
+      ["ELT",["%dynval",=MKQ minivectorName],slot]],
+        ["ELT",["%dynval",=MKQ minivectorName],notSlot]]
+          and EQ(lesspSlot,$minivector.slot)
+            and EQ(notpSlot,$minivector.notSlot) => m
+    generalPred is ['NOT,['SPADCALL,=sharpArg,m,
+      ["ELT",["%dynval",=MKQ minivectorName], =lesspSlot]]]
+        and EQ(lesspSlot,$minivector.slot) => m
     return nil
   integer? predOk and predOk ~= n =>
     sayKeyedMsg("S2IX0006",[n,m])
@@ -125,7 +129,7 @@ mkDiffAssoc(op,body,k,sharpPosition,sharpArg,diffSlot,vecname) ==
     "union"/[mkDiffAssoc(op,c,k,sharpPosition,sharpArg,diffSlot,vecname) for [p,c] in pl]
   body is [fn,:argl] =>
     (fn = op) and argl.(sharpPosition-1) is
-      ['SPADCALL,=sharpArg,n,['ELT,=vecname,=diffSlot]] =>
+      ['SPADCALL,=sharpArg,n,["ELT",["%dynval",=MKQ vecname],=diffSlot]] =>
           NUMP n and n > 0 and n <= k =>
             [[body,:$TriangleVariableList.n]]
           ['$failed]
@@ -137,8 +141,8 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   -- dynamic caching, see SLAMOLD BOOT
 --+
   $compiledOpNameList := [nam]
-  minivectorName := makeInternalMapMinivectorName(nam)
-  body := substitute(minivectorName,"$$$",body)
+  minivectorName := makeInternalMapMinivectorName nam
+  body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
   argl := COPY argl     -- play it safe for optimization
   init :=
@@ -149,8 +153,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
   parms := [:argl,"envArg"]
   cacheCount = 0 or null argl =>
-    fun:= [nam,["LAMBDA",parms,declareGlobalVariables [minivectorName],
-                   :declareUnusedParameters(parms,body)]]
+    fun:= [nam,["LAMBDA",parms,:declareUnusedParameters(parms,body)]]
     compileInteractive fun
     nam
   num :=
