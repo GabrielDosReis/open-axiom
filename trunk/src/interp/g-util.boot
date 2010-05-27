@@ -267,6 +267,13 @@ $interpOnly := false
 
 --% Utility Functions of General Use
 
+mkCacheName(name) ==
+  INTERN strconc(PNAME name,'";AL")
+
+mkAuxiliaryName(name) ==
+  INTERN strconc(PNAME name,'";AUX")
+
+
 homogeneousListToVector(t,l) ==
   makeSimpleArrayFromList(t,l)
 

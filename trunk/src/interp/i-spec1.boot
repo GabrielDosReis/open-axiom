@@ -460,6 +460,7 @@ upCOLLECT1 t ==
       putTarget(body,S)
   $interpOnly => interpCOLLECT(op,itrl,body)
   isStreamCollect itrl => collectStream(t,op,itrl,body)
+  $iteratorVars: local := nil
   upLoopIters itrl
   ms:= bottomUpCompile body
   [m]:= ms
@@ -516,7 +517,7 @@ upLoopIterIN(iter,index,s) ==
 
   iterMs isnt [['List,ud]] => throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
 
 upLoopIterSTEP(index,lower,step,upperList) ==
   null IDENTP index => throwKeyedMsg("S2IS0005",[index])
@@ -536,7 +537,7 @@ upLoopIterSTEP(index,lower,step,upperList) ==
   else types := [stype, :types]
   type := resolveTypeListAny removeDuplicates types
   put(index,'mode,type,$env)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
 
 evalCOLLECT(op,[:itrl,body],m) ==
   iters := [evalLoopIter itr for itr in itrl]
@@ -690,7 +691,7 @@ upStreamIterIN(iter,index,s) ==
     and (iterMs isnt [['InfinitTuple, ud]]) =>
       throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
   s :=
     iterMs is [['List,ud],:.] =>
       form:=[mkAtreeNode 'pretend, [mkAtreeNode 'COERCE,s,['Stream,ud]],
@@ -711,7 +712,7 @@ upStreamIterSTEP(index,lower,step,upperList) ==
 
   put(index,'mode,type := resolveTT(ltype,stype),$env)
   null type => throwKeyedMsg("S2IS0010", nil)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
 
   s :=
     null upperList =>
@@ -738,7 +739,7 @@ collectOneStream(t,op,itrl,body) ==
   -- build stream collect for case of iterating over a single stream
   --  In this case we don't need to build records
   form := mkAndApplyPredicates itrl
-  bodyVec := mkIterFun(first $indexVars,body,$localVars)
+  bodyVec := mkIterFun(first $indexVars,body)
   form := [mkAtreeNode 'map,bodyVec,form]
   bottomUp form
   val := getValue form
@@ -756,20 +757,20 @@ mkAndApplyPredicates itrl ==
   for iter in itrl repeat
     iter is ['WHILE,pred] =>
       fun := 'filterWhile
-      predVec := mkIterFun(indSet,pred,$localVars)
+      predVec := mkIterFun(indSet,pred)
       s := [mkAtreeNode fun,predVec,s]
     iter is ['UNTIL,pred] =>
       fun := 'filterUntil
-      predVec := mkIterFun(indSet,pred,$localVars)
+      predVec := mkIterFun(indSet,pred)
       s := [mkAtreeNode fun,predVec,s]
     iter is ['SUCHTHAT,pred] =>
       fun := 'select
       putTarget(pred,$Boolean)
-      predVec := mkIterFun(indSet,pred,$localVars)
+      predVec := mkIterFun(indSet,pred)
       s := [mkAtreeNode fun,predVec,s]
   s
 
-mkIterFun([index,:s],funBody,$localVars) ==
+mkIterFun([index,:s],funBody) ==
   -- transform funBody into a lambda with index as the parameter
   mode := objMode getValue s
   mode isnt ['Stream, indMode] and mode isnt ['InfiniteTuple, indMode] =>
@@ -778,13 +779,14 @@ mkIterFun([index,:s],funBody,$localVars) ==
   mkLocalVar($mapName,index)
   [m]:=bottomUpCompile funBody
   mapMode := ['Mapping,m,indMode]
+  -- Check generated code for free variables and pass them into the
+  -- lambda as part of envArg.  Since only `index' is bound, every
+  -- other symbol in non-operator position is a free variable.
   $freeVariables: local := []
   $boundVariables: local := [index]
-  -- CCL does not support upwards funargs, so we check for any free variables
-  -- and pass them into the lambda as part of envArg.
-  body := checkForFreeVariables(getValue funBody,$localVars)
+  body := checkForFreeVariables(objVal getValue funBody,"ALL")
   parms := [index,"envArg"]
-  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
+  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,body)]]
   vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
@@ -1146,7 +1148,7 @@ declare(var,mode) ==
     nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
   else clearDependencies(var,true)
-  isLocalVar(var) => put(var,'mode,mode,$env)
+  isLocallyBound var => put(var,'mode,mode,$env)
   mode is ['Mapping,:.] => declareMap(var,mode)
   v := get(var,'value,$e) =>
     -- only allow this if either
@@ -1168,7 +1170,8 @@ getAndEvalConstructorArgument tree ==
   triple := getValue tree
   objMode triple = '(Domain) => triple
   isWrapped objVal(triple) => triple
-  isLocalVar objVal triple => compFailure('"   Local variable or parameter used in type")
+  isLocallyBound objVal triple =>
+    compFailure('"   Local variable or parameter used in type")
   objNewWrap(timedEVALFUN objVal(triple), objMode(triple))
 
 replaceSharps(x,d) ==
@@ -1262,3 +1265,9 @@ deleteAll(x,l) ==
   x = first(l) => deleteAll(x,rest l)
   [first l,:deleteAll(x,rest l)]
 
+
+$iteratorVars := nil  
+
+mkIteratorVariable id ==
+  $iteratorVars := [id,:$iteratorVars]
+  -- mkLocalVar('"the iterator expression",id)

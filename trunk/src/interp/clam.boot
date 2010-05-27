@@ -103,7 +103,7 @@ compClam(op,argl,body,$clamList) ==
   [arg,computeValue] :=
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
     [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
-  cacheName:= INTERNL(op,'";AL")
+  cacheName:= mkCacheName op
   if $reportCounts=true then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
@@ -203,7 +203,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
       [[g1],['LIST,key],[auxfn,g1]]  --g1 is a parameter
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
-  cacheName:= cacheNameOrNil or INTERNL(op,'";AL")
+  cacheName:= cacheNameOrNil or mkCacheName op
   if $reportCounts=true then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
@@ -355,14 +355,13 @@ clearConstructorAndLisplibCaches() ==
 clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
-      if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";AL"))
+      if BOUNDP(cacheName:= mkCacheName name)
             then setDynamicBinding(cacheName,nil)
     if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
           then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==
-  cacheName:= INTERNL strconc(PNAME catName,'";AL")
-  setDynamicBinding(cacheName,nil)
+  setDynamicBinding(mkCacheName catName,nil)
  
 displayHashtable x ==
   l:= nreverse SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
