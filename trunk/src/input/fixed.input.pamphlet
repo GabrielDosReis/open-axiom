@@ -373,10 +373,10 @@ factor %
 )clear all
 -- Do this in a virgin system
 )set expose add constructor SquareMatrix
-S2:= SquareMatrix(2,FRAC POLY INT);
-V2: S2 := matrix([[v,-v],[-v,v]]);
-I2: S2 := 1;
-m:=5;
+S2:= SquareMatrix(2,FRAC POLY INT)
+V2: S2 := matrix([[v,-v],[-v,v]])
+I2: S2 := 1
+m:=5
 l: List(S2) := append(cons(V2+h*I2,_
             [(V2+2*h*I2) for i in 2 .. (m-1)]),_
              [V2+h*I2])
