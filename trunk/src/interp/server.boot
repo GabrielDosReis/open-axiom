@@ -158,6 +158,6 @@ parseAndEvalStr1 string ==
 protectedEVAL x ==
   error := true
   val := NIL
-  UNWIND_-PROTECT((val := EVAL x; error := NIL),
+  UNWIND_-PROTECT((val := eval x; error := NIL),
                    error => (resetStackLimits(); sendHTErrorSignal()))
   val

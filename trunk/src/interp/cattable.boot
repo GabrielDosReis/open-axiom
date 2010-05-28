@@ -115,7 +115,7 @@ simpHasPred(pred,:options) == main where
     pred in '(T etc) => pred
     null pred => nil
     pred
-  simpDevaluate a == EVAL substitute('QUOTE,'devaluate,a)
+  simpDevaluate a == eval substitute('QUOTE,'devaluate,a)
   simpHas(pred,a,b) ==
     b is ['ATTRIBUTE,attr] => simpHasAttribute(pred,a,attr)
     b is ['SIGNATURE,op,sig] => simpHasSignature(pred,a,op,sig)
@@ -158,13 +158,13 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
 
 simpCatHasAttribute(domform,attr) ==
   conform := getConstructorForm opOf domform
-  catval :=  EVAL mkEvalable conform
+  catval :=  eval mkEvalable conform
   if atom KDR attr then attr := IFCAR attr
   pred :=
     u := LASSOC(attr,catval . 2) => first u
     return false                            --exit: not there
   pred = true => true
-  EVAL SUBLISLIS(rest domform,rest conform,pred)
+  eval SUBLISLIS(rest domform,rest conform,pred)
 
 hasIdent pred ==
   pred is [op,:r] =>

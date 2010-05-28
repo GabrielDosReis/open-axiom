@@ -371,7 +371,7 @@ ksPage(htPage,junk) ==
   if domname then
     htpSetProperty(htPage,'domname,domname)
     htpSetProperty(htPage,'heading,heading)
-  domain  := (kind = '"category" => nil; EVAL domname)
+  domain  := (kind = '"category" => nil; eval domname)
   conform:= htpProperty(htPage,'conform)
   page := htInitPageNoScroll(htCopyProplist htPage,
                              ['"Search order for ",:heading])
@@ -397,7 +397,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
     test() ==
       pred := simpCatPredicate
         p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
-        $domain => EVAL p
+        $domain => eval p
         p
       if domname and CONTAINED('$,pred) then pred := substitute(domname,'$,pred)
 --    which = '"attribute" => pred    --all categories
@@ -415,7 +415,7 @@ kcPage(htPage,junk) ==
   [kind,name,nargs,xpart,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   domname         := kDomainName(htPage,kind,name,nargs)
   domname is ['error,:.] => errorPage(htPage,domname)
---  domain          := (kind = '"category" => nil; EVAL domname)
+--  domain          := (kind = '"category" => nil; eval domname)
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
   heading :=

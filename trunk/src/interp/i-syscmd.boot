@@ -2168,7 +2168,7 @@ dewritify ob ==
                 type = 'BPI =>
                     oname := ob.2
                     f :=
-                        INTP oname => EVAL GENSYMMER oname
+                        INTP oname => eval GENSYMMER oname
                         SYMBOL_-FUNCTION oname
                     not COMPILED_-FUNCTION_-P f =>
                         error '"A required BPI does not exist."
@@ -2184,7 +2184,7 @@ dewritify ob ==
                         HPUT(nob, dewritifyInner k, dewritifyInner e)
                     nob
                 type = 'DEVALUATED =>
-                    nob := EVAL dewritifyInner ob.2
+                    nob := eval dewritifyInner ob.2
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -3169,7 +3169,7 @@ handleNoParseCommands(unab, string) ==
 npboot str ==
   sex := string2BootTree str
   FORMAT(true, '"~&~S~%", sex)
-  $ans := EVAL sex
+  $ans := eval sex
   FORMAT(true, '"~&Value = ~S~%", $ans)
 
 stripLisp str ==
@@ -3184,7 +3184,7 @@ stripLisp str ==
 
 
 nplisp str ==
-  $ans := EVAL READ_-FROM_-STRING str
+  $ans := eval READ_-FROM_-STRING str
   FORMAT(true, '"~&Value = ~S~%", $ans)
 
 npsystem(unab, str) ==

@@ -191,7 +191,7 @@ oldAxiomPreCategoryParents(catform,dom) ==
   parents := parentsOf opOf catform
   PROGV(vars, vals,
     LIST2VEC
-      [EVAL quoteCatOp cat for [cat,:pred] in parents | EVAL pred])
+      [eval quoteCatOp cat for [cat,:pred] in parents | eval pred])
 
 quoteCatOp cat == 
    atom cat => MKQ cat

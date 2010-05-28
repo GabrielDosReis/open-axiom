@@ -298,7 +298,7 @@ mkCurryFun(fun, val) ==
   name := GENTEMP()
   code :=
     ['DEFUN, name, '(arg), ['APPLY, MKQ fun, ['CONS, 'arg, MKQ val]]]
-  EVAL code
+  eval code
   name
 
 htRadioButtons [groupName, :buttons] ==
