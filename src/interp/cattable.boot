@@ -120,10 +120,10 @@ simpHasPred(pred,:options) == main where
     b is ['ATTRIBUTE,attr] => simpHasAttribute(pred,a,attr)
     b is ['SIGNATURE,op,sig] => simpHasSignature(pred,a,op,sig)
     IDENTP a or hasIdent b => pred
-    npred := eval pred
+    npred := evalHas pred
     IDENTP npred or null hasIdent npred => npred
     pred
-  eval (pred := ["has",d,cat]) ==
+  evalHas (pred := ["has",d,cat]) ==
     x := hasCat(first d,first cat)
     y := rest cat =>
       npred := or/[p for [args,:p] in x | y = args] => simp npred
