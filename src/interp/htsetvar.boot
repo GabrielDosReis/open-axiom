@@ -128,7 +128,7 @@ htSetLiterals(htPage,name,message,variable,values,functionToCall) ==
   links := [[strconc('"",STRINGIMAGE opt), '"\newline\tab{3}", functionToCall, opt] for opt in values]
   htMakePage [['bcLispLinks, :links]]
   bcHt ["\indent{0}\newline\vspace{1} The current setting is: {\em ",
-        translateTrueFalse2YesNo EVAL variable, '"} "]
+        translateTrueFalse2YesNo eval variable, '"} "]
   htShowPage()
 
 htSetLiteral(htPage, val) ==
@@ -193,7 +193,7 @@ htShowFunctionPageContinued(htPage) ==
   page := htInitPage(mkSetTitle(), htpPropertyList htPage)
   bcHt ['"\centerline{Set {\em ", setData.setName, '"}}\newline"]
   bcHt ['"{\em Description: } ", setData.setLabel, '"\newline\vspace{1} "]
-  currentValue := EVAL variable
+  currentValue := eval variable
   htMakePage
     [ ['domainConditions, ['Satisfies,'S,checker]],
       ['text,:phrase],

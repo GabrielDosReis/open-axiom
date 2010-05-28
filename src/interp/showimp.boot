@@ -142,7 +142,7 @@ getExtensionsOfDomain domain ==
   u := getDomainExtensionsOfDomain domain
   cats := getCategoriesOfDomain domain
   for x in u repeat
-    cats := union(cats,getCategoriesOfDomain EVAL x)
+    cats := union(cats,getCategoriesOfDomain eval x)
   [:u,:cats]
 
 getDomainExtensionsOfDomain domain ==
@@ -150,7 +150,7 @@ getDomainExtensionsOfDomain domain ==
   d := domain
   while (u := devaluateSlotDomain(5,d)) repeat
     acc := [u,:acc]
-    d := EVAL u
+    d := eval u
   acc
 
 devaluateSlotDomain(u,dollar) ==

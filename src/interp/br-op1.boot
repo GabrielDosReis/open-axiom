@@ -390,7 +390,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
 --  where entry has form ((op sig . implementor) . stuff)
   conform := htpProperty(htPage,'conform)
   domainForm  := htpProperty(htPage,'domname)
-  dom     := EVAL domainForm
+  dom     := eval domainForm
   which   := '"operation"
   [nam,:$domainArgs] := domainForm
   $predicateList: local := getConstructorPredicatesFromDB nam

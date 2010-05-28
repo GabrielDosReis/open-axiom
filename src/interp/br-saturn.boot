@@ -94,7 +94,7 @@ off()==
 --  $saturn =>
 --    saturnEvalToFile(x, fn)
 --    runCommand  '"cat /tmp/sat.text"
---  EVAL x
+--  eval x
 
 
 --=======================================================================

@@ -1,5 +1,22 @@
 2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-utility.boot (eval): Define here.
+	* interp/br-con.boot: Use it.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/cattable.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/sys-macros.lisp (eval): Move to sys-utility.boot.
+
+2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-macros.lisp (eval): Expand opcodes before calling EVAL.
 	* interp/slam.boot (reportFunctionCompilation): Tidy.  Take extra
 	care when generating code that access global variables.

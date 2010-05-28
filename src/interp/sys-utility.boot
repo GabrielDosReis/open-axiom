@@ -38,7 +38,14 @@ import vmlisp
 namespace BOOT
 
 module sys_-utility where
+  eval: %Thing -> %Thing
   probleReadableFile : %String -> %Maybe %String
+
+
+++ Evaluate an OpenAxiom VM form.  Eventually, this function is
+++ to be provided as a builtin by a OpenAxiom target machine.
+eval x ==
+  EVAL expandToVMForm x
 
 --%
 $COMBLOCKLIST := nil
@@ -256,15 +263,15 @@ bitior(x,y) ==
 ++ compile a function definition, augmenting the current
 ++ evaluation environement with the result of the compilation.
 COMPILE_-DEFUN(name,body) ==
-  EVAL body
+  eval body
   COMPILE name
 
 ++ Augment the current evaluation environment with a function definition.
 EVAL_-DEFUN(name,body) ==
-  EVAL MACROEXPANDALL body
+  eval MACROEXPANDALL body
 
 PRINT_-AND_-EVAL_-DEFUN(name,body) ==
-  EVAL body
+  eval body
   PRINT_-DEFUN(name,body)
 
 

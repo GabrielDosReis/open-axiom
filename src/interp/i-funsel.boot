@@ -1240,7 +1240,7 @@ replaceSharpCalls t ==
 doReplaceSharpCalls t ==
   atom t => t
   t is ['_#, l] => #l
-  t is ['construct,: l] => EVAL ['LIST,:l]
+  t is ['construct,: l] => eval ['LIST,:l]
   [first t,:[ doReplaceSharpCalls u for u in rest t]]
 
 noSharpCallsHere t ==
