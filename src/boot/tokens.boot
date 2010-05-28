@@ -314,6 +314,7 @@ for i in [ _
   ["aModeSet",              3] , _
   ["aTree",                 0] , _
   ["aValue",                2] , _
+  ["args",              "CDR"] , _
   ["attributes",       "CADDR"] , _
   ["cacheCount",     "CADDDDR"] , _
   ["cacheName",         "CADR"] , _

@@ -251,6 +251,7 @@
                           (LIST '|setDef| 6) (LIST '|aGeneral| 4)
                           (LIST '|aMode| 1) (LIST '|aModeSet| 3)
                           (LIST '|aTree| 0) (LIST '|aValue| 2)
+                          (LIST '|args| 'CDR)
                           (LIST '|attributes| 'CADDR)
                           (LIST '|cacheCount| 'CADDDDR)
                           (LIST '|cacheName| 'CADR)

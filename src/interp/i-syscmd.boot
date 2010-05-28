@@ -2168,7 +2168,7 @@ dewritify ob ==
                 type = 'BPI =>
                     oname := ob.2
                     f :=
-                        INTP oname => eval GENSYMMER oname
+                        integer? oname => eval GENSYMMER oname
                         SYMBOL_-FUNCTION oname
                     not COMPILED_-FUNCTION_-P f =>
                         error '"A required BPI does not exist."

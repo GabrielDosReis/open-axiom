@@ -99,7 +99,7 @@ normalizeStatAndStringify t ==
       t := roundStat t
       t = 0.0 => '"0"
       FORMAT(nil,'"~,2F",t)
-  INTP t =>
+  integer? t =>
       K := 1024
       M := K*K
       t > 9*M => strconc(STRINGIMAGE QUOTIENT(t + 512*K,M), '"M")
@@ -109,7 +109,7 @@ normalizeStatAndStringify t ==
  
 significantStat t ==
    RNUMP t => (t > 0.01)
-   INTP  t => (t > 100)
+   integer?  t => (t > 100)
    true
  
 roundStat t ==
