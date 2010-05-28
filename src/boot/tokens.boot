@@ -181,7 +181,7 @@ for i in [ _
 --           "SHOEEQ", _
              "LENGTH"  _
                      ] _
-       repeat SETF (GET(i,'SHOEPRE),'T)
+       repeat property(i,'SHOEPRE) := true
  
 ++ List of infix operators.
 for i in [      _
@@ -201,7 +201,7 @@ for i in [      _
         ["GE"   ,">="], _
         ["SHOENE"  ,"~="] _
                    ]_
-       repeat SETF (GET(first i,'SHOEINF),second i)
+       repeat property(first i,'SHOEINF) := second i
  
 
 ++ List of monoid operations and their neutral elements.
@@ -231,7 +231,7 @@ for i in [ _
       ["OR",    false]   _
                          ]
  
-       repeat SETF (GET(first i,'SHOETHETA),CDR i)
+       repeat property(first i,'SHOETHETA) := rest i
 
 for i in [ _
   ["alphabetic?", "ALPHA-CHAR-P"], _
@@ -299,7 +299,7 @@ for i in [ _
   ["SHOENE",        "/="], _
   ["T",               "T$"]   _
                                 ]
-       repeat SETF (GET(first i,'SHOERENAME),CDR i)
+       repeat property(first i,'SHOERENAME) := rest i
 
  
 for i in [ _
@@ -341,4 +341,4 @@ for i in [ _
   ["streamName",        "CADR"] , _
   ["target",             "CAR"]  _
                              ] _
-       repeat SETF (GET(first i,'SHOESELFUNCTION),second i)
+       repeat property(first i,'SHOESELFUNCTION) := second i
