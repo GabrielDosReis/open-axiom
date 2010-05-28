@@ -310,7 +310,7 @@ for x in '((+ WIDTH sumWidth)
 	   (ZAG SUPERSPAN zagSuper)
 	   (ZAG WIDTH zagWidth)) 
   repeat
-    MAKEPROP(first x, second x, third x)
+    property(first x, second x) := third x
 
 
 for x in '((+ APP plusApp)
@@ -380,7 +380,7 @@ for x in '((+ APP plusApp)
 	   (BRACE APP braceApp)
 	   (BRACE WIDTH qTWidth)) 
   repeat
-    MAKEPROP(first x, second x, third x)
+    property(first x, second x) := third x
 
 --%
 

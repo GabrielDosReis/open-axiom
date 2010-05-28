@@ -1286,7 +1286,7 @@ backendCompileILAM: (%Symbol,%List, %Code) -> %Symbol
 backendCompileILAM(name,args,body) ==
   args' := NLIST(#args, ["GENSYM"])
   body' := eqSubst(args',args,body)
-  MAKEPROP(name,"ILAM",true)
+  property(name,'ILAM) := true
   setDynamicBinding(name,["LAMBDA",args',:body'])
   name
 

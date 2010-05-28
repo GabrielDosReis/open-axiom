@@ -245,7 +245,7 @@ for x in [
    ["%bind",:function expandBind],
    ["%store",:function expandStore],
    ["%dynval",:function expandDynval]
- ] repeat MAKEPROP(first x,"%Expander", rest x)
+ ] repeat property(first x,"%Expander") := rest x
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
 getOpcodeExpander op ==

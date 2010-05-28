@@ -2601,4 +2601,4 @@ for x in [["|", :"compSuchthat"],_
           ["%Match",:"compMatch"],_
           ["%SignatureImport",:"compSignatureImport"],_
           ["[||]", :"compileQuasiquote"]] repeat
-  MAKEPROP(first x, "SPECIAL", rest x)
+  property(first x, 'SPECIAL) := rest x

@@ -175,10 +175,10 @@ loadLib cname ==
   -- in following, add property value false or NIL to possibly clear
   -- old value
   if null rest getConstructorFormFromDB cname then
-      MAKEPROP(cname,'NILADIC,'T)
+      property(cname,'NILADIC) := true
     else
       REMPROP(cname,'NILADIC)
-  MAKEPROP(cname,'LOADED,fullLibName)
+  property(cname,'LOADED) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
   'T
@@ -196,7 +196,7 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
     else
      clearConstructorCache cname
      installConstructor(cname,kind)
-     MAKEPROP(cname,'LOADED,fullLibName)
+     property(cname,'LOADED) := fullLibName
      if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
      stopTimingProcess 'load
   'T
@@ -454,7 +454,7 @@ finalizeLisplib libName ==
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
   if $lisplibForm and null rest $lisplibForm then
-    MAKEPROP(first $lisplibForm,'NILADIC,'T)
+    property(first $lisplibForm,'NILADIC) := true
   leaveIfErrors libName
   true
 
