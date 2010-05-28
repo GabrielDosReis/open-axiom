@@ -160,7 +160,7 @@
       (COND
         ((OR (ATOM |bfVar#6|) (PROGN (SETQ |i| (CAR |bfVar#6|)) NIL))
          (RETURN NIL))
-        (T (SETF (GET |i| 'SHOEPRE) 'T)))
+        (T (SETF (GET |i| 'SHOEPRE) T)))
       (SETQ |bfVar#6| (CDR |bfVar#6|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
