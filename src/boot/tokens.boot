@@ -264,6 +264,7 @@ for i in [ _
   ["null",        "NULL"]  , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
+  ["property",     "GET"]  , _
   ["readByte", "READ-BYTE"], _
   ["readInteger", "PARSE-INTEGER"], _
   ["readLine", "READ-LINE"], _

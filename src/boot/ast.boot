@@ -209,6 +209,9 @@ compFluidize x==
   x is ["QUOTE",:.] => x
   [compFluidize(first x),:compFluidize(rest x)]
  
+bfPlace x ==
+  ["%Place",:x]
+
 bfTuple x == 
   ["TUPLE",:x]
  
@@ -954,6 +957,7 @@ bfTagged(a,b)==
  
 bfAssign(l,r)==
   bfTupleP l => bfSetelt(second l,CDDR l ,r)
+  l is ["%Place",:l'] => ["SETF",l',r]
   bfLET(l,r)
  
 bfSetelt(e,l,r)==

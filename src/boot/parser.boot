@@ -1079,7 +1079,10 @@ bpAssignLHS()==
   bpEqKey "COLON" =>          -- variable declaration
     bpApplication() or bpTrap()
     bpPush bfLocal(bpPop2(),bpPop1())
-  bpArgumentList() and (bpEqPeek "DOT" or bpTrap())
+  bpArgumentList() and 
+    (bpEqPeek "DOT" 
+      or (bpEqPeek "BEC" and bpPush bfPlace bpPop1()) 
+        or bpTrap())
   bpEqKey "DOT" =>            -- field path
     bpList(function bpPrimary,"DOT") and 
       bpChecknull() and

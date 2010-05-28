@@ -1,3 +1,13 @@
+2010-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for 'property' builtin function.
+	* interp/g-timer.boot: Rename property to prop to avoid conflict.
+	* boot/parser.boot (bpAssignLHS): Allow functional places to
+	assign to.
+	* boot/ast.boot (bfPlace): New.
+	(bfAssign): Handle %Place forms.
+	* boot/tokens.boot: property is now translated to GET.
+
 2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: args is now a selector.

@@ -216,7 +216,7 @@
                   (LIST '|nil| NIL) (LIST '|not| 'NOT)
                   (LIST '|nreverse| 'NREVERSE) (LIST '|null| 'NULL)
                   (LIST '|or| 'OR) (LIST '|otherwise| 'T)
-                  (LIST '|readByte| 'READ-BYTE)
+                  (LIST '|property| 'GET) (LIST '|readByte| 'READ-BYTE)
                   (LIST '|readInteger| 'PARSE-INTEGER)
                   (LIST '|readLine| 'READ-LINE)
                   (LIST '|removeDuplicates| 'REMDUP)
