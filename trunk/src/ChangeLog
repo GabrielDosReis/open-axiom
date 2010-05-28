@@ -1,5 +1,12 @@
 2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: args is now a selector.
+	* interp/g-timer.boot: Use integer? in lieu of INTP.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+
+2010-05-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-utility.boot (eval): Define here.
 	* interp/br-con.boot: Use it.
 	* interp/br-op1.boot: Likewise.

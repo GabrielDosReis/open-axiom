@@ -254,7 +254,7 @@ $msgdbNoBlanksBeforeGroup := ['" ", " ", '"%", "%",_
 $msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 
 noBlankBeforeP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
     if CVECP word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
@@ -266,7 +266,7 @@ $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
                               "[", "(", '"[", '"(" ]
 
 noBlankAfterP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
     if CVECP word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
