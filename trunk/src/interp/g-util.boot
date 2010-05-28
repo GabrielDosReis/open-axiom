@@ -192,6 +192,13 @@ expandOr ["%or",:args] ==
   ["OR",:expandToVMForm args]
 
 -- Arithmetic operations
+
+expandIabs ["%iabs",arg] ==
+  ["ABS",expandToVMForm arg]
+
+expandIexp ["%iexp",:args] ==
+  ["EXPT",:expandToVMForm args]
+
 expandImul ["%imul",:args] ==
   ["*",:expandToVMForm args]
 
@@ -203,6 +210,15 @@ expandIsub ["%isub",:args] ==
 
 expandIeq ["%ieq",:args] ==
   ["EQL",:expandToVMForm args]
+
+expandImin ["%imin",:args] ==
+  ["MIN",:expandToVMForm args]
+
+expandImax ["%imax",:args] ==
+  ["MAX",:expandToVMForm args]
+
+expandIgcd ["%igcd",:args] ==
+  ["GCD",:expandToVMForm args]
 
 -- Local variable bindings
 expandBind ["%bind",inits,body] ==
@@ -222,6 +238,15 @@ expandStore ["%store",place,value] ==
   cons? place => ["SETF",place,value]
   ["SETQ",place,value]
 
+-- List operators
+
+expandHead ["%head",x] ==
+  ["CAR",expandToVMForm x]
+
+expandTail ["%tail",x] ==
+  ["CDR",expandToVMForm x]
+
+
 ++ Table of opcode-expander pairs.  
 for x in [
    ["%not",:function expandNot],
@@ -236,11 +261,19 @@ for x in [
    ["%ge",:function expandGreaterEqual],
    ["%gt",:function expandGreater],
 
+   ["%iabs",:function expandIabs],
    ["%imul",:function expandImul],
+   ["%iexp",:function expandIexp],
    ["%iadd",:function expandIadd],
    ["%isub",:function expandIsub],
+   ["%imin",:function expandImin],
+   ["%imax",:function expandImax],
+   ["%igcd",:function expandIgcd],
 
    ["%ieq",:function expandIeq],
+
+   ["%head",:function expandHead],
+   ["%tail",:function expandTail],
 
    ["%bind",:function expandBind],
    ["%store",:function expandStore],
