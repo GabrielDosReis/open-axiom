@@ -631,5 +631,5 @@ for x in [["with", :"postWith"],_
           ["%Match",:"postMatch"],_
           ["^=", :"postBootNotEqual"],_
 	  ["%Comma", :"post%Comma"]] repeat
-  MAKEPROP(first x, "postTran", rest x)
+  property(first x, 'postTran) := rest x
 

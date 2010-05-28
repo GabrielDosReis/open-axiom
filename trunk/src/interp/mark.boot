@@ -47,9 +47,9 @@ namespace BOOT
 REMPROP("and",'parseTran)
 REMPROP("or",'parseTran)
 REMPROP("not",'parseTran)
-MAKEPROP("and",'special,'compAnd)
-MAKEPROP("or",'special,'compOr)
-MAKEPROP("not",'special,'compNot)
+property("and",'special) := 'compAnd
+property("or",'special) := 'compOr
+property("not",'special) := 'compNot
 SETQ($monitorWI,nil)
 SETQ($monitorCoerce,nil)
 SETQ($markPrimitiveNumbers,nil)  -- '(Integer SmallInteger))
@@ -519,7 +519,7 @@ markOrigName x ==
       k := charPosition(char '_;, s, 0)
       k > MAXINDEX s => nil
       origName := INTERN SUBSTRING(s, k + 1, nil)
-      MAKEPROP(op, 'ORIGNAME, origName)
+      property(op, 'ORIGNAME) := origName
       REMPROP(op,'PNAME)
     markOrigName op
   nil
@@ -1541,4 +1541,4 @@ for x in [["%LET", :"compSetq"],_
           ["SEQ", :"compSeq"],_
           ["SETQ", :"compSetq"],_
           ["VECTOR", :"compVector"]] repeat
-  MAKEPROP(first x, "special", rest x)
+  property(first x, 'special) := rest x

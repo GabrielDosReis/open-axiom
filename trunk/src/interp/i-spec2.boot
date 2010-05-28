@@ -1224,5 +1224,5 @@ up%Add t ==
 
 for name in $specialOps repeat
    functionName:=INTERNL('up,name)
-   MAKEPROP(name,'up,functionName)
+   property(name,'up) := functionName
 

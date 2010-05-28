@@ -469,4 +469,4 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["SEQ", :"parseSeq"],_
 	  ["VCONS", :"parseVCONS"],_
 	  ["where", :"parseWhere"]] repeat
-  MAKEPROP(first x, "parseTran", rest x)
+  property(first x,'parseTran) := rest x

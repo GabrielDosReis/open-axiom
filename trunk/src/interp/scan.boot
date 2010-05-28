@@ -216,7 +216,7 @@ scanPunCons()==
 scanPun:=scanPunCons()
 
 --for i in ["COLON","MINUS"] repeat
---   MAKEPROP(i,'PREGENERIC,'TRUE)
+--   property(i,'PREGENERIC) := true
 
 for i in   [ _
    ["EQUAL"    ,"="], _
@@ -248,7 +248,7 @@ for i in   [ _
    ["LARROW"       ,"<-"], _
    ["BAR"       ,"|"], _
    ["SEG"       ,".."] _
-    ] repeat MAKEPROP(first i,'INFGENERIC,second i)
+    ] repeat property(first i,'INFGENERIC) := second i
 
 -- Scanner
 

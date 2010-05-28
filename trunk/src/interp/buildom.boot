@@ -419,5 +419,5 @@ for x in '((Record mkRecordFunList)
            (Mapping mkMappingFunList)
            (Enumeration mkEnumerationFunList)) 
  repeat
-   MAKEPROP(first x, "makeFunctionList", second x)
+   property(first x, 'makeFunctionList) := second x
 

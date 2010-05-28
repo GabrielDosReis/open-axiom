@@ -614,6 +614,6 @@ for x in '( (%Call         optCall) _
            (RECORDELT    optRECORDELT)_
            (SETRECORDELT optSETRECORDELT)_
            (RECORDCOPY   optRECORDCOPY)) _
-   repeat MAKEPROP(first x,'OPTIMIZE, second x)
+   repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC
 
