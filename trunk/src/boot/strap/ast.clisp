@@ -233,6 +233,8 @@
     ((AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE)) |x|)
     (T (CONS (|compFluidize| (CAR |x|)) (|compFluidize| (CDR |x|))))))
 
+(DEFUN |bfPlace| (|x|) (CONS '|%Place| |x|))
+
 (DEFUN |bfTuple| (|x|) (CONS 'TUPLE |x|))
 
 (DEFUN |bfTupleP| (|x|) (AND (CONSP |x|) (EQ (CAR |x|) 'TUPLE)))
@@ -1647,9 +1649,13 @@
     (T (LIST 'THE |b| |a|))))
 
 (DEFUN |bfAssign| (|l| |r|)
-  (COND
-    ((|bfTupleP| |l|) (|bfSetelt| (CADR |l|) (CDDR |l|) |r|))
-    (T (|bfLET| |l| |r|))))
+  (PROG (|l'|)
+    (RETURN
+      (COND
+        ((|bfTupleP| |l|) (|bfSetelt| (CADR |l|) (CDDR |l|) |r|))
+        ((AND (CONSP |l|) (EQ (CAR |l|) '|%Place|))
+         (SETQ |l'| (CDR |l|)) (LIST 'SETF |l'| |r|))
+        (T (|bfLET| |l| |r|))))))
 
 (DEFUN |bfSetelt| (|e| |l| |r|)
   (COND

@@ -1096,7 +1096,11 @@
     ((NOT (|bpName|)) NIL)
     ((|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
      (|bpPush| (|bfLocal| (|bpPop2|) (|bpPop1|))))
-    (T (AND (|bpArgumentList|) (OR (|bpEqPeek| 'DOT) (|bpTrap|)))
+    (T (AND (|bpArgumentList|)
+            (OR (|bpEqPeek| 'DOT)
+                (AND (|bpEqPeek| 'BEC)
+                     (|bpPush| (|bfPlace| (|bpPop1|))))
+                (|bpTrap|)))
        (COND
          ((|bpEqKey| 'DOT)
           (AND (|bpList| #'|bpPrimary| 'DOT) (|bpChecknull|)
