@@ -583,8 +583,8 @@ compMapCond''(cexpr,dc) ==
   cexpr=true => true
   --cexpr = "true" => true
 ---------------> new <----------------------
-  cexpr is [op,:l] and op in '(_and AND) => and/[compMapCond''(u,dc) for u in l]
-  cexpr is [op,:l] and op in '(_or OR)   => or/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(and AND) => and/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(or OR)   => or/[compMapCond''(u,dc) for u in l]
 ---------------> new <----------------------
   cexpr is ["not",u] => not compMapCond''(u,dc)
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)

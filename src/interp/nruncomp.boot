@@ -712,12 +712,12 @@ genSlotSig(sig,$e) ==
    [NRTgetLocalIndex t for t in sig]
 
 deepChaseInferences(pred,$e) ==
-    pred is ['AND,:preds] or pred is ['and,:preds] =>
+    pred is [op,:preds] and op in '(AND and %and) =>
         for p in preds repeat $e := deepChaseInferences(p,$e)
         $e
-    pred is ['OR,pred1,:.] or pred is ['or,pred1,:.] =>
+    pred is [op,pred1,:.] and op in '(OR or %or) =>
         deepChaseInferences(pred1,$e)
-    pred is 'T or pred is ['NOT,:.] or pred is ['not,:.] => $e
+    pred is 'T or pred is [op,:.] and op in '(NOT not %not) => $e
     chaseInferences(pred,$e)
 
 vectorLocation(op,sig) ==
