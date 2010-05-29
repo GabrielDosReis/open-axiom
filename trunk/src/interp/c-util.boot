@@ -1075,6 +1075,8 @@ $middleEndMacroList ==
 
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
+  x = '%false => 'NIL
+  x = '%true => 'T
   isAtomicForm x => x
   [op,:args] := x
   IDENTP op and (fun := getOpcodeExpander op) => apply(fun,x,nil)

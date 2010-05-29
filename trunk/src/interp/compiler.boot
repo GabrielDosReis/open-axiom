@@ -1125,7 +1125,8 @@ compReturn(["return",x],m,e) ==
 ++ `op' supposedly designate an external entity with language linkage
 ++ `lang'.  Return the mode of its local declaration (import).
 getExternalSymbolMode(op,lang,e) ==
-  lang = "Builtin" => "%Thing"      -- for the time being
+  lang = 'Builtin => "%Thing"      -- for the time being
+  lang = 'Lisp => "%Thing"         -- for the time being
   lang ~= "C" =>
     stackAndThrow('"Sorry: %b Foreign %1b %d is invalid at the moment",[lang])
   get(op,"%Lang",e) ~= lang =>
@@ -1369,9 +1370,9 @@ checkExternalEntity(id,type,lang,e) ==
   get(id,"modemap",e) =>
     stackAndThrow('"%1b already names exported operations in scope",[id])
   -- We don't type check builtin declarations at the moment.
-  lang = "Builtin" => id
+  lang = 'Builtin or lang = 'Lisp => id
   -- Only functions are accepted at the moment.  And all mentioned
-  --  types must be those that are supported by the FFI.
+  -- types must be those that are supported by the FFI.
   type' := checkExternalEntityType(type,e) 
   type' isnt [=bootDenotation "Mapping",:.] =>
     stackAndThrow('"Signature for external entity must be a Mapping type",nil)
@@ -1393,19 +1394,24 @@ compSignatureImport: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
   -- 1. Make sure we have the right syntax.
   home isnt ["Foreign",:args] =>
-    stackAndThrow('"signature import from be from a %1bp domain",["Foreign"])
+    stackAndThrow('"signature import must be from a %1bp domain",["Foreign"])
   args isnt [lang] =>
     stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
   not IDENTP lang =>
     stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
-  not (lang in '(Builtin C)) =>
+  not (lang in '(Builtin C Lisp)) =>
     stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
   -- 2. Make sure this import is not subverting anything we know
   id' := checkExternalEntity(id,type,lang,e)
   -- 3. Make a local declaration for it.
-  T := compMakeDeclaration(id,removeModifiers type,e) or return nil
-  T.env := put(id,"%Lang",lang,T.env)
-  T.env:= put(id,"%Link",id',T.env)
+  T := [.,.,e] := compMakeDeclaration(id,removeModifiers type,e) or return nil
+  e := put(id,"%Lang",lang,e)
+  e := put(id,"%Link",id',e)
+  -- 4. Also make non-function externals self-evaluating so we don't
+  --    complain later for undefined variable references.
+  if T.mode isnt ['Mapping,:.] then
+    e := put(id,"value",[id',T.mode,nil],e)
+  T.env := e
   convert(T,m)
 
 
