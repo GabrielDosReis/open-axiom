@@ -64,7 +64,7 @@ flattenVMForm(form,op) == main where
     atom form => form
     EQ(form.op,op) => [op,:flatten(form.args,op,nil)]
     [flattenVMForm(form.op,op),:flattenVMForm(form.args,op)]
-  flatten(forms,op,acc) ==
+  flatten(forms,op,accu) ==
     forms = nil => accu
     x := flattenVMForm(first forms,op)
     cons? x and EQ(x.op,op) => flatten(rest forms,op,[:accu,:x.args])
