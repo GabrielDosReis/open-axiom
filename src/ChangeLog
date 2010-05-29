@@ -1,3 +1,12 @@
+2010-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (getExternalSymbolMode): Allow Lisp as
+	foreign language. 
+	(checkExternalEntity): Likewise.
+	(compSignatureImport): Likewise.  Give foreign variables dummy values.
+	* interp/c-util.boot (middleEndExpand): Handle %true and %false.
+	* interp/g-util.boot (expandToVMForm): Likewise.
+
 2010-05-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for 'property' builtin function.

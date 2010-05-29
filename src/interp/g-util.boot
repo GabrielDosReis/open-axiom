@@ -253,6 +253,9 @@ expandIadd ["%iadd",:args] ==
 expandIsub ["%isub",:args] ==
   ["-",:expandToVMForm args]
 
+expandEq ["%eq",:args] ==
+  ["EQ",:expandToVMForm args]
+
 expandIeq ["%ieq",:args] ==
   ["EQL",:expandToVMForm args]
 
@@ -315,6 +318,7 @@ for x in [
    ["%imax",:function expandImax],
    ["%igcd",:function expandIgcd],
 
+   ["%eq",:function expandEq],
    ["%ieq",:function expandIeq],
 
    ["%head",:function expandHead],
@@ -332,6 +336,8 @@ getOpcodeExpander op ==
 ++ Expand all opcodes contained in the form `x' into a form
 ++ suitable for evaluation by the VM.
 expandToVMForm x ==
+  x = '%false => 'NIL
+  x = '%true => 'T
   isAtomicForm x => x
   [op,:args] := x
   IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
