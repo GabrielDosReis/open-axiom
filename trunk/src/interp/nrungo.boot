@@ -246,11 +246,11 @@ lookupInCategories(op,sig,dom,dollar) ==
 --=======================================================
 lookupPred(pred,dollar,domain) ==
   pred = true => true
-  pred is ['AND,:pl] or pred is ['and,:pl] =>
+  pred is [op,:pl] and op in '(AND and %and) =>
     and/[lookupPred(p,dollar,domain) for p in pl]
-  pred is ['OR,:pl] or pred is ['or,:pl] =>
+  pred is [op,:pl] and op in '(OR or %or) =>
     or/[lookupPred(p,dollar,domain) for p in pl]
-  pred is ['NOT,p] or pred is ['not,p] => not lookupPred(p,dollar,domain)
+  pred is [op,p] and op in '(NOT not %not) => not lookupPred(p,dollar,domain)
   pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
   pred is ["has",a,b] =>
     VECP a =>

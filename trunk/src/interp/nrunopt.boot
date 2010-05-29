@@ -229,7 +229,7 @@ predicateBitIndex x ==
 
 predicateBitIndexRemop p==
 --transform attribute predicates taken out by removeAttributePredicates
-  p is [op,:argl] and op in '(AND and OR or NOT not) => 
+  p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
     simpBool makePrefixForm([predicateBitIndexRemop x for x in argl],op)
   p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
   p
@@ -276,12 +276,13 @@ augmentPredVector(dollar,value) ==
 
 isHasDollarPred pred ==
   pred is [op,:r] =>
-    op in '(AND and OR or NOT not) => or/[isHasDollarPred x for x in r]
+    op in '(AND and %and OR or %or NOT not %not) => 
+      or/[isHasDollarPred x for x in r]
     op in '(HasCategory HasAttribute) => first r = '$
   false
 
 stripOutNonDollarPreds pred ==
-  pred is [op,:r] and op in '(AND and OR or NOT not) => 
+  pred is [op,:r] and op in '(AND and %and OR or %or NOT not %not) => 
     "append"/[stripOutNonDollarPreds x for x in r]
   not isHasDollarPred pred => [pred]
   nil
@@ -289,7 +290,7 @@ stripOutNonDollarPreds pred ==
 removeAttributePredicates pl ==
   [fn p for p in pl] where
     fn p ==
-      p is [op,:argl] and op in '(AND and OR or NOT not) => 
+      p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
           makePrefixForm(fnl argl,op)
       p is ["has",'$,['ATTRIBUTE,a]] =>
         sayBrightlyNT '"Predicate: "
