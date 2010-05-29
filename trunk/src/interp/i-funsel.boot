@@ -35,10 +35,7 @@
 import i_-coerfn
 namespace BOOT
 
-$constructorExposureList := '(Boolean Integer String)
 $domPvar := nil
-
-
 
 sayFunctionSelection(op,args,target,dc,func) ==
   $abbreviateTypes : local := true
@@ -529,9 +526,9 @@ CONTAINEDisDomain(symbol,cond) ==
 -- looks for [isSubDomain,symbol,[domain]] in cond: returning T or NIL
 -- with domain being one of PositiveInteger and NonNegativeInteger
    atom cond => false
-   QCAR cond in '(AND OR and or) =>
-       or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
-   EQ(QCAR cond,'isDomain) =>
+   cond.op in '(AND OR and or %and %or) =>
+       or/[CONTAINEDisDomain(symbol, u) for u in cond.args]
+   cond.op = 'isDomain =>
        EQ(symbol,second cond) and cons?(dom:=third cond) and
          dom in '(PositiveInteger NonNegativeInteger)
    false
@@ -911,14 +908,14 @@ matchMmCond(cond) ==
   -- tests the condition, which comes with a modemap
   -- cond is 'T or a list, but I hate to test for 'T (ALBI)
   $domPvar: local := nil
-  atom cond or
-    cond is ['AND,:conds] or cond is ['and,:conds] =>
-      and/[matchMmCond c for c in conds]
-    cond is ['OR,:conds] or cond is ['or,:conds] =>
-      or/[matchMmCond c for c in conds]
+  atom cond or 
+    cond.op in '(AND _and %and) =>
+      and/[matchMmCond c for c in cond.args]
+    cond.op in '(OR _or %or) =>
+      or/[matchMmCond c for c in cond.args]
     cond is ["has",dom,x] =>
       hasCaty(dom,x,NIL) ~= 'failed
-    cond is ['not,cond1] => not matchMmCond cond1
+    cond is [op,cond1] and op in '(_not NOT %not) => not matchMmCond cond1
     keyedSystemError("S2GE0016",
       ['"matchMmCond",'"unknown form of condition"])
 
@@ -1168,12 +1165,13 @@ evalMmFreeFunction(op,tar,sig,mmC) ==
 
 evalMmStack(mmC) ==
   -- translates the modemap condition mmC into a list of stacks
-  mmC is ['AND,:a] =>
+  mmC is [op,:a] and op in '(AND _and %and) =>
     ["NCONC"/[evalMmStackInner cond for cond in a]]
-  mmC is ['OR,:args] => [:evalMmStack a for a in args]
+  mmC is [op,:args] and op in '(OR _or %or) => 
+    [:evalMmStack a for a in args]
   mmC is ['partial,:mmD] => evalMmStack mmD
   mmC is ['ofCategory,pvar,cat] and cat is ['Join,:args] =>
-    evalMmStack ['AND,:[['ofCategory,pvar,c] for c in args]]
+    evalMmStack ['%and,:[['ofCategory,pvar,c] for c in args]]
   mmC is ['ofType,:.] => [NIL]
   mmC is ["has",pat,x] =>
     x in '(ATTRIBUTE SIGNATURE) =>
@@ -1182,7 +1180,7 @@ evalMmStack(mmC) ==
   [[mmC]]
 
 evalMmStackInner(mmC) ==
-  mmC is ['OR,:args] =>
+  mmC is [op,:args] and op in '(OR _or %or) =>
     keyedSystemError("S2GE0016",
       ['"evalMmStackInner",'"OR condition nested inside an AND"])
   mmC is ['partial,:mmD] => evalMmStackInner mmD
@@ -1525,7 +1523,7 @@ hasCaty1(cond,SL) ==
   -- SL is augmented, if cond is true, otherwise the result is 'failed
   $domPvar: local := NIL
   cond is ["has",a,b] => hasCate(a,b,SL)
-  cond is ['AND,:args] =>
+  cond is [op,:args] and op in '(AND _and %and) =>
     for x in args while not (S='failed) repeat S:=
       x is ["has",a,b] => hasCate(a,b, SL)
       -- next line is for an obscure bug in the table
@@ -1533,7 +1531,7 @@ hasCaty1(cond,SL) ==
       --'failed
       hasCaty1(x, SL)
     S
-  cond is ['OR,:args] =>
+  cond is [op,:args] and op in '(OR _or %or) =>
     for x in args until not (S='failed) repeat S:=
       x is ["has",a,b] => hasCate(a,b,copy SL)
       -- next line is for an obscure bug in the table
@@ -1575,7 +1573,7 @@ hasSigOr(orCls, S0, SL) ==
       atom cls => copy SL
       cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
-      cls is ['AND,:andCls] or cls is ['and,:andCls] =>
+      cls is [op,:andCls] and op in '(AND _and %and) =>
         hasSigAnd(andCls, S0, SL)
       keyedSystemError("S2GE0016",
         ['"hasSigOr",'"unexpected condition for signature"])
@@ -1594,9 +1592,9 @@ hasSig(dom,foo,sig,SL) ==
           atom cond => copy SL
           cond is ["has",a,b] =>
             hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
-          cond is ['AND,:andCls] or cond is ['and,:andCls] =>
+          cond is [op,:andCls] and op in '(AND _and %and) =>
             hasSigAnd(andCls, S0, SL)
-          cond is ['OR,:orCls] or cond is ['or,:orCls] =>
+          cond is [op,:orCls] and op in '(OR _or %or) =>
             hasSigOr(orCls, S0, SL)
           keyedSystemError("S2GE0016",
              ['"hasSig",'"unexpected condition for signature"])
@@ -1625,9 +1623,9 @@ hasAtt(dom,att,SL) ==
   'failed
 
 hasCatExpression(cond,SL) ==
-  cond is ["OR",:l] =>
+  cond is [op,:l] and op in '(OR _or %or) =>
     or/[(y:=hasCatExpression(x,SL)) ~= 'failed for x in l] => y
-  cond is ["AND",:l] =>
+  cond is [op,:l] and op in '(AND _and %and) =>
     and/[(SL:= hasCatExpression(x,SL)) ~= 'failed for x in l] => SL
   cond is ["has",a,b] => hasCate(a,b,SL)
   keyedSystemError("S2GE0016",

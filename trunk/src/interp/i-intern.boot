@@ -307,7 +307,7 @@ flagArguments(op, nargs) ==
 signatureFromModemap m ==
   [sig,pred,:.]  := m
   pred = true => rest sig
-  first pred = "AND" =>
+  pred.op in '(AND %and) =>
     sl := [[a,:b] for [.,a,b] in rest pred]
     rest SUBLIS(sl,sig)
   
