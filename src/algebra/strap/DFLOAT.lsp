@@ -94,7 +94,7 @@
                 |DFLOAT;<=;2$B;22|)) 
 
 (PUT '|DFLOAT;<=;2$B;22| '|SPADreplace|
-     '(XLAM (|x| |y|) (NOT (> |x| |y|)))) 
+     '(XLAM (|x| |y|) (|%not| (> |x| |y|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
                     |%Boolean|)

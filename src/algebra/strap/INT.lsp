@@ -161,7 +161,7 @@
                 |INT;<=;2$B;37|)) 
 
 (PUT '|INT;<=;2$B;37| '|SPADreplace|
-     '(XLAM (|x| |y|) (NOT (> |x| |y|)))) 
+     '(XLAM (|x| |y|) (|%not| (> |x| |y|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;>=;2$B;38|)) 
