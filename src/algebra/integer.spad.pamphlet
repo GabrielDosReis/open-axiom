@@ -174,29 +174,30 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
        Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
         [m pretend Matrix(Integer), vec pretend Vector(Integer)]
 
-      abs(x) == ABS(x)$Lisp
+      abs(x) == %iabs(x)$Foreign(Builtin)
       random() == random()$Lisp
       random(x) == RANDOM(x)$Lisp
-      x = y == EQL(x,y)$Lisp
-      x < y == (x<y)$Lisp
-      x > y == (x > y)$Lisp       -- Don't rely on default; help the inliner
-      x <= y == (x <= y)$Lisp     -- Ditto
-      x >= y == (x >= y)$Lisp     -- Ditto
+      x = y == %ieq(x,y)$Foreign(Builtin)
+      x < y == %ilt(x,y)$Foreign(Builtin)
+      x > y == %igt(x,y)$Foreign(Builtin)
+      x <= y == %ile(x,y)$Foreign(Builtin)
+      x >= y == %ige(x,y)$Foreign(Builtin)
       - x == (-x)$Lisp
-      x + y == (x+y)$Lisp
-      x - y == (x-y)$Lisp
-      x * y == (x*y)$Lisp
-      (m:Integer) * (y:%) == (m*y)$Lisp -- for subsumption problem
-      x ** n == EXPT(x,n)$Lisp
-      odd? x == ODDP(x)$Lisp
-      max(x,y) == MAX(x,y)$Lisp
-      min(x,y) == MIN(x,y)$Lisp
+      x + y == %iadd(x,y)$Foreign(Builtin)
+      x - y == %isub(x,y)$Foreign(Builtin)
+      x * y == %imul(x,y)$Foreign(Builtin)
+      (m:Integer) * (y:%) == 
+         %imul(m,y)$Foreign(Builtin) -- for subsumption problem
+      x ** n == %ipow(x,n)$Foreign(Builtin)
+      odd? x == %iodd?(x)$Foreign(Builtin)
+      max(x,y) == %imax(x,y)$Foreign(Builtin)
+      min(x,y) == %imin(x,y)$Foreign(Builtin)
       divide(x,y) == DIVIDE2(x,y)$Lisp
       x quo y == QUOTIENT2(x,y)$Lisp
       x rem y == REMAINDER2(x,y)$Lisp
       shift(x, y) == ASH(x,y)$Lisp
       recip(x) == if one? x or x=-1 then x else "failed"
-      gcd(x,y) == GCD(x,y)$Lisp
+      gcd(x,y) == %igcd(x,y)$Foreign(Builtin)
       UCA ==> Record(unit:%,canonical:%,associate:%)
       unitNormal x ==
          x < 0 => [-1,-x,-1]$UCA
@@ -271,7 +272,7 @@ NonNegativeInteger: Join(OrderedAbelianMonoidSup,Monoid) with
 
   == SubDomain(Integer,#1 >= 0) add
       x,y:%
-      sup(x,y) == MAX(x,y)$Lisp
+      sup(x,y) == %imax(x,y)$Foreign(Builtin)
       shift(x:%, n:Integer):% == ASH(x,n)$Lisp
       subtractIfCan(x, y) ==
         c:Integer := rep x - rep y

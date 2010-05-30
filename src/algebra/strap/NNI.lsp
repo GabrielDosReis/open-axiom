@@ -1,7 +1,8 @@
 
 (/VERSIONCHECK 2) 
 
-(|noteSubDomainInfo| '|NonNegativeInteger| '(|Integer|) '(>= |#1| 0)) 
+(|noteSubDomainInfo| '|NonNegativeInteger| '(|Integer|)
+    '(|%ige| |#1| 0)) 
 
 (DECLAIM (FTYPE (FUNCTION
                     ((|%IntegerSection| 0) (|%IntegerSection| 0)
@@ -9,7 +10,7 @@
                     (|%IntegerSection| 0))
                 |NNI;sup;3$;1|)) 
 
-(PUT '|NNI;sup;3$;1| '|SPADreplace| 'MAX) 
+(PUT '|NNI;sup;3$;1| '|SPADreplace| '|%imax|) 
 
 (DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Integer| |%Shell|)
                     (|%IntegerSection| 0))
@@ -43,7 +44,7 @@
 (DEFUN |NonNegativeInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1408)
+      (PROG (#0=#:G1409)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|NonNegativeInteger|)

@@ -486,8 +486,8 @@ OutputForm(): SetCategory with
         --   uniformize integrals, products, etc as plexes.
 
         cons ==> CONS$Lisp
-        car  ==> CAR$Lisp
-        cdr  ==> CDR$Lisp
+        car  ==> %head$Foreign(Builtin)
+        cdr  ==> %tail$Foreign(Builtin)
 
         format: String := "~G"
         doubleFloatFormat(s:String): String ==

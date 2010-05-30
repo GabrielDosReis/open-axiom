@@ -4,9 +4,9 @@
 (DEFPARAMETER |RealNumberSystem;AL| 'NIL) 
 
 (DEFUN |RealNumberSystem;| ()
-  (LET ((#0=#:G1405
+  (LET ((#0=#:G1406
             (|sublisV|
-                (PAIR '(#1=#:G1401 #2=#:G1402 #3=#:G1403 #4=#:G1404)
+                (PAIR '(#1=#:G1402 #2=#:G1403 #3=#:G1404 #4=#:G1405)
                       (LIST '(|Integer|) '(|Fraction| (|Integer|))
                             '(|Pattern| (|Float|)) '(|Float|)))
                 (|Join| (|Field|) (|OrderedRing|) (|RealConstant|)

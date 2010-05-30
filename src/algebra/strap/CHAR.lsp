@@ -124,11 +124,11 @@
 
 (DEFUN |CHAR;index;Pi$;7| (|n| $)
   (CODE-CHAR
-      (LET ((#0=#:G1404 (- |n| 1)))
+      (LET ((#0=#:G1405 (- |n| 1)))
         (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))) 
 
 (DEFUN |CHAR;lookup;$Pi;8| (|c| $)
-  (LET ((#0=#:G1406 (+ 1 (CHAR-CODE |c|))))
+  (LET ((#0=#:G1407 (+ 1 (CHAR-CODE |c|))))
     (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))) 
 
 (DEFUN |CHAR;char;Nni$;9| (|n| $)
@@ -188,7 +188,7 @@
 (DEFUN |Character| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1426)
+      (PROG (#0=#:G1427)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Character|)

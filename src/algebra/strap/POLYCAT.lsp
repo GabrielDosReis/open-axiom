@@ -6,7 +6,7 @@
 (DEFPARAMETER |PolynomialCategory;AL| 'NIL) 
 
 (DEFUN |PolynomialCategory;| (|t#1| |t#2| |t#3|)
-  (LET ((#0=#:G1415
+  (LET ((#0=#:G1416
             (|sublisV|
                 (PAIR '(|t#1| |t#2| |t#3|)
                       (LIST (|devaluate| |t#1|) (|devaluate| |t#2|)
@@ -204,9 +204,9 @@
               (|devaluate| |t#2|) (|devaluate| |t#3|)))
     #0#)) 
 
-(DEFUN |PolynomialCategory| (&REST #0=#:G1418 &AUX #1=#:G1416)
+(DEFUN |PolynomialCategory| (&REST #0=#:G1419 &AUX #1=#:G1417)
   (DSETQ #1# #0#)
-  (LET ((#2=#:G1417
+  (LET ((#2=#:G1418
             (|assoc| (|devaluateList| #1#) |PolynomialCategory;AL|)))
     (COND
       (#2# (CDR #2#))

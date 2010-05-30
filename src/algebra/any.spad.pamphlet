@@ -413,7 +413,7 @@ Scope(): Public == Private where
     import Contour
     Rep == List Contour
     empty() ==
-      per NIL$Lisp
+      per %nil$Foreign(Builtin)
 
     contours s ==
       rep s
@@ -428,10 +428,10 @@ Scope(): Public == Private where
       CONS(LIST(b)$Lisp,s)$Lisp
 
     currentScope() ==
-      CAR(_$e$Lisp)$Lisp
+      %head(_$e$Lisp)$Foreign(Builtin)
 
     currentCategoryFrame() ==
-      CAR(_$CategoryFrame$Lisp)$Lisp
+      %head(_$CategoryFrame$Lisp)$Foreign(Builtin)
 
     coerce s ==
       (contours s)::OutputForm
@@ -478,7 +478,7 @@ Environment(): Public == Private where
   Private == add
     Rep == List Scope
     empty() ==
-      per NIL$Lisp
+      per %nil$Foreign(Builtin)
 
     scopes e ==
       rep e

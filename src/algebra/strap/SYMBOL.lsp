@@ -209,7 +209,7 @@
   (SPADCALL |x| (|getShellEntry| $ 79))) 
 
 (DEFUN |SYMBOL;syprefix| (|sc| $)
-  (PROG (|ns| #0=#:G1547 |n| #1=#:G1548)
+  (PROG (|ns| #0=#:G1548 |n| #1=#:G1549)
     (RETURN
       (SEQ (LETT |ns|
                  (LIST (LENGTH (QVELT |sc| 3)) (LENGTH (QVELT |sc| 2))
@@ -438,7 +438,7 @@
            (EXIT |s|))))) 
 
 (DEFUN |SYMBOL;anyRadix| (|n| |s| $)
-  (PROG (|qr| |ns| #0=#:G1503)
+  (PROG (|qr| |ns| #0=#:G1504)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |ns| "" |SYMBOL;anyRadix|)
                       (EXIT (SEQ G190 NIL
@@ -530,7 +530,7 @@
                      (|SYMBOL;scripts;$R;32| |x| $) $)))))) 
 
 (DEFUN |SYMBOL;resetNew;V;29| ($)
-  (PROG (|k| #0=#:G1549)
+  (PROG (|k| #0=#:G1550)
     (RETURN
       (SEQ (SPADCALL (|getShellEntry| $ 10) 0 (|getShellEntry| $ 121))
            (EXIT (SEQ (LETT |k| NIL |SYMBOL;resetNew;V;29|)
@@ -554,7 +554,7 @@
 (DEFUN |SYMBOL;scripted?;$B;30| (|sy| $) (NOT (ATOM |sy|))) 
 
 (DEFUN |SYMBOL;name;2$;31| (|sy| $)
-  (PROG (|str| |i| #0=#:G1550 #1=#:G1530 #2=#:G1528)
+  (PROG (|str| |i| #0=#:G1551 #1=#:G1531 #2=#:G1529)
     (RETURN
       (SEQ (EXIT (COND
                    ((NOT (|SYMBOL;scripted?;$B;30| |sy| $)) |sy|)
@@ -607,8 +607,8 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |SYMBOL;scripts;$R;32| (|sy| $)
-  (PROG (|lscripts| |str| |nstr| |j| |nscripts| |m| |n| #0=#:G1551 |i|
-            #1=#:G1552 |a| #2=#:G1553 |allscripts|)
+  (PROG (|lscripts| |str| |nstr| |j| |nscripts| |m| |n| #0=#:G1552 |i|
+            #1=#:G1553 |a| #2=#:G1554 |allscripts|)
     (RETURN
       (SEQ (COND
              ((NOT (|SYMBOL;scripted?;$B;30| |sy| $))
@@ -639,7 +639,7 @@
                                       (|getShellEntry| $ 139))))
                            (GO G191)))
                         (SPADCALL |nscripts| |i|
-                            (LET ((#3=#:G1541
+                            (LET ((#3=#:G1542
                                       (-
                                        (SPADCALL
                                         (SPADCALL |str| |j|
@@ -746,7 +746,7 @@
 (DEFUN |Symbol| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1555)
+      (PROG (#0=#:G1556)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|Symbol|) |Symbol|)

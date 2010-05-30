@@ -6,12 +6,12 @@
 (DEFPARAMETER |MultivariateTaylorSeriesCategory;AL| 'NIL) 
 
 (DEFUN |MultivariateTaylorSeriesCategory;| (|t#1| |t#2|)
-  (LET ((#0=#:G1398
+  (LET ((#0=#:G1399
             (|sublisV|
                 (PAIR '(|t#1| |t#2|)
                       (LIST (|devaluate| |t#1|) (|devaluate| |t#2|)))
                 (|sublisV|
-                    (PAIR '(#1=#:G1397)
+                    (PAIR '(#1=#:G1398)
                           (LIST '(|IndexedExponents| |t#2|)))
                     (COND
                       (|MultivariateTaylorSeriesCategory;CAT|)
@@ -86,9 +86,9 @@
     #0#)) 
 
 (DEFUN |MultivariateTaylorSeriesCategory|
-       (&REST #0=#:G1401 &AUX #1=#:G1399)
+       (&REST #0=#:G1402 &AUX #1=#:G1400)
   (DSETQ #1# #0#)
-  (LET ((#2=#:G1400
+  (LET ((#2=#:G1401
             (|assoc| (|devaluateList| #1#)
                      |MultivariateTaylorSeriesCategory;AL|)))
     (COND

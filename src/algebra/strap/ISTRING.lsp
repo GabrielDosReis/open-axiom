@@ -178,7 +178,7 @@
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
-  (PROG (|l| |m| |n| |h| |r| #0=#:G1531 #1=#:G1532 |i| #2=#:G1533 |k|)
+  (PROG (|l| |m| |n| |h| |r| #0=#:G1532 #1=#:G1533 |i| #2=#:G1534 |k|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |sg| (|getShellEntry| $ 44))
@@ -200,7 +200,7 @@
               (EXIT (|error| "index out of range"))))
            (LETT |r|
                  (MAKE-FULL-CVEC
-                     (LET ((#3=#:G1440
+                     (LET ((#3=#:G1441
                                (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
                        (|check-subtype| (>= #3# 0)
                            '(|NonNegativeInteger|) #3#))
@@ -250,7 +250,7 @@
                (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (PROG (|np| |nw| |iw| |ip| #0=#:G1534 #1=#:G1449 #2=#:G1445)
+  (PROG (|np| |nw| |iw| |ip| #0=#:G1535 #1=#:G1450 #2=#:G1446)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |np| (QCSIZE |part|)
                             |ISTRING;substring?;2$IB;17|)
@@ -319,7 +319,7 @@
                                  ('T (+ |r| (|getShellEntry| $ 6))))))))))))) 
 
 (DEFUN |ISTRING;position;C$2I;19| (|c| |t| |startpos| $)
-  (PROG (|r| #0=#:G1535 #1=#:G1459)
+  (PROG (|r| #0=#:G1536 #1=#:G1460)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |startpos|
                             (- |startpos| (|getShellEntry| $ 6))
@@ -354,7 +354,7 @@
            #1# (EXIT #1#))))) 
 
 (DEFUN |ISTRING;position;Cc$2I;20| (|cc| |t| |startpos| $)
-  (PROG (|r| #0=#:G1536 #1=#:G1465)
+  (PROG (|r| #0=#:G1537 #1=#:G1466)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |startpos|
                             (- |startpos| (|getShellEntry| $ 6))
@@ -562,7 +562,7 @@
                      (SPADCALL |i| |n| (|getShellEntry| $ 24)) $)))))) 
 
 (DEFUN |ISTRING;rightTrim;$C$;26| (|s| |c| $)
-  (PROG (|j| #0=#:G1537)
+  (PROG (|j| #0=#:G1538)
     (RETURN
       (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 47))
                       |ISTRING;rightTrim;$C$;26|)
@@ -583,7 +583,7 @@
                      $)))))) 
 
 (DEFUN |ISTRING;rightTrim;$Cc$;27| (|s| |cc| $)
-  (PROG (|j| #0=#:G1538)
+  (PROG (|j| #0=#:G1539)
     (RETURN
       (SEQ (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 47))
                       |ISTRING;rightTrim;$Cc$;27|)
@@ -604,7 +604,7 @@
                      $)))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (PROG (#0=#:G1539 #1=#:G1494 #2=#:G1492 #3=#:G1493 |t| |s| #4=#:G1540
+  (PROG (#0=#:G1540 #1=#:G1495 #2=#:G1493 #3=#:G1494 |t| |s| #4=#:G1541
             |i|)
     (RETURN
       (SEQ (LETT |t|
@@ -702,13 +702,13 @@
   (|stringMatch| |pattern| |target| (CHARACTER |wildcard|))) 
 
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
-  (PROG (|n| |m| |s| #0=#:G1520 |i| |p| |q|)
+  (PROG (|n| |m| |s| #0=#:G1521 |i| |p| |q|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |n|
                             (SPADCALL |pattern| (|getShellEntry| $ 47))
                             |ISTRING;match?;2$CB;34|)
                       (LETT |p|
-                            (LET ((#1=#:G1521
+                            (LET ((#1=#:G1522
                                       (|ISTRING;position;C$2I;19|
                                        |dontcare| |pattern|
                                        (LETT |m|
@@ -741,7 +741,7 @@
                                      |ISTRING;match?;2$CB;34|)
                                     (LETT |q|
                                      (LET
-                                      ((#2=#:G1522
+                                      ((#2=#:G1523
                                         (|ISTRING;position;C$2I;19|
                                          |dontcare| |pattern| (+ |p| 1)
                                          $)))
@@ -763,7 +763,7 @@
                                        |ISTRING;match?;2$CB;34|)
                                       (LETT |i|
                                        (LET
-                                        ((#3=#:G1523
+                                        ((#3=#:G1524
                                           (|ISTRING;position;2$2I;18|
                                            |s| |target| |i| $)))
                                          (|check-subtype| (>= #3# 0)
@@ -786,7 +786,7 @@
                                            (EXIT
                                             (LETT |q|
                                              (LET
-                                              ((#4=#:G1524
+                                              ((#4=#:G1525
                                                 (|ISTRING;position;C$2I;19|
                                                  |dontcare| |pattern|
                                                  (+ |q| 1) $)))
@@ -812,10 +812,10 @@
                                     (EXIT T)))))))
            #0# (EXIT #0#))))) 
 
-(DEFUN |IndexedString| (#0=#:G1541)
+(DEFUN |IndexedString| (#0=#:G1542)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1542)
+      (PROG (#1=#:G1543)
         (RETURN
           (COND
             ((LETT #1#

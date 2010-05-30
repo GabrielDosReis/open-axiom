@@ -4,8 +4,8 @@
 (DEFPARAMETER |Ring;AL| 'NIL) 
 
 (DEFUN |Ring;| ()
-  (LET ((#0=#:G1397
-            (|sublisV| (PAIR '(#1=#:G1396) (LIST '(|Integer|)))
+  (LET ((#0=#:G1398
+            (|sublisV| (PAIR '(#1=#:G1397) (LIST '(|Integer|)))
                 (|Join| (|Rng|) (|Monoid|) (|LeftModule| '$)
                         (|CoercibleFrom| '#1#)
                         (|mkCategory| '|package|

@@ -224,7 +224,7 @@
                                           (|getShellEntry| $ 33)))))))))))))))) 
 
 (DEFUN |EUCDOM-;principalIdeal;LR;9| (|l| $)
-  (PROG (|uca| |v| |u| #0=#:G1517 |vv| #1=#:G1518)
+  (PROG (|uca| |v| |u| #0=#:G1518 |vv| #1=#:G1519)
     (RETURN
       (SEQ (COND
              ((SPADCALL |l| NIL (|getShellEntry| $ 42))
@@ -281,7 +281,7 @@
                                (QVELT |u| 2)))))))))) 
 
 (DEFUN |EUCDOM-;expressIdealMember;LSU;10| (|l| |z| $)
-  (PROG (#0=#:G1519 #1=#:G1520 |pid| |q| #2=#:G1521 |v| #3=#:G1522)
+  (PROG (#0=#:G1520 #1=#:G1521 |pid| |q| #2=#:G1522 |v| #3=#:G1523)
     (RETURN
       (SEQ (COND
              ((SPADCALL |z| (|spadConstant| $ 19)
@@ -346,9 +346,9 @@
                                      (EXIT (NREVERSE0 #2#))))))))))))))) 
 
 (DEFUN |EUCDOM-;multiEuclidean;LSU;11| (|l| |z| $)
-  (PROG (|n| |l1| |l2| #0=#:G1396 #1=#:G1523 #2=#:G1504 #3=#:G1502
-             #4=#:G1503 #5=#:G1397 #6=#:G1524 #7=#:G1507 #8=#:G1505
-             #9=#:G1506 |u| |v1| |v2|)
+  (PROG (|n| |l1| |l2| #0=#:G1397 #1=#:G1524 #2=#:G1505 #3=#:G1503
+             #4=#:G1504 #5=#:G1398 #6=#:G1525 #7=#:G1508 #8=#:G1506
+             #9=#:G1507 |u| |v1| |v2|)
     (RETURN
       (SEQ (LETT |n| (LENGTH |l|) |EUCDOM-;multiEuclidean;LSU;11|)
            (EXIT (COND

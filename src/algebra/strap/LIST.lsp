@@ -172,7 +172,7 @@
            (EXIT |lu|))))) 
 
 (DEFUN |LIST;convert;$If;13| (|x| $)
-  (PROG (#0=#:G1442 |a| #1=#:G1443)
+  (PROG (#0=#:G1443 |a| #1=#:G1444)
     (RETURN
       (SEQ (SPADCALL
                (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
@@ -196,10 +196,10 @@
                             (GO G190) G191 (EXIT (NREVERSE0 #0#)))))
                (|getShellEntry| $ 52)))))) 
 
-(DEFUN |List| (#0=#:G1444)
+(DEFUN |List| (#0=#:G1445)
   (PROG ()
     (RETURN
-      (PROG (#1=#:G1445)
+      (PROG (#1=#:G1446)
         (RETURN
           (COND
             ((LETT #1#

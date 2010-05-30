@@ -4,7 +4,7 @@
 (DEFPARAMETER |AbelianMonoid;AL| 'NIL) 
 
 (DEFUN |AbelianMonoid;| ()
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1398
             (|Join| (|AbelianSemiGroup|)
                     (|mkCategory| '|domain|
                         '(((|Zero| ($) |constant|) T)

@@ -231,26 +231,33 @@ expandDynval ["%dynval",:args] ==
   ["SYMBOL-VALUE",:expandToVMForm args]
 
 expandStore ["%store",place,value] ==
-  place := expandToVMForm place
   value := expandToVMForm value
+  place is ['%head,x] => ['RPLACA,expandToVMForm x,value]
+  place is ['%tail,x] => ['RPLACD,expandToVMForm x,value]
+  place := expandToVMForm place
   cons? place => ["SETF",place,value]
   ["SETQ",place,value]
 
 ++ Opcodes with direct mapping to target operations.
 for x in [
+    -- Boolean constants
+    -- ['%false, :'NIL],
+    ['%true,  :'T],
     -- unary Boolean operations
     ['%not, :'NOT],
-
     -- binary Boolean operations
     ['%and, :'AND],
     ['%or,  :'OR],
 
     -- unary integer operations.
-    ['%iabs,:'ABS],
-
+    ['%iabs,    :'ABS],
+    ['%ieven?,  :'EVENP],
+    ['%ineg,    :"-"],
+    ['%integer?,:'INTEGERP],
+    ['%iodd?,   :'ODDP],
     -- binary integer operations.
     ['%iadd,:"+"],
-    ['%iexp,:'EXPT],
+    ['%ieq, :"EQL"],
     ['%igcd,:'GCD],
     ['%ige, :">="],
     ['%igt, :">"],
@@ -260,14 +267,13 @@ for x in [
     ['%imax,:'MAX],
     ['%imin,:'MIN],
     ['%imul,:"*"],
+    ['%ipow,:'EXPT],
     ['%isub,:"-"],
 
     -- unary float operations.
     ['%fabs,:'ABS],
-
     -- binary float operations.
     ['%fadd,:"+"],
-    ['%fexp,:'EXPT],
     ['%fge, :">="],
     ['%fgt, :">"],
     ['%fle, :"<="],
@@ -275,10 +281,14 @@ for x in [
     ['%fmax,:'MAX],
     ['%fmin,:'MIN],
     ['%fmul,:"*"],
+    ['%fpow,:'EXPT],
     ['%fsub,:"-"],
 
+    -- list contants
+    -- ['%nil, :'NIL],
     -- unary list operations
     ['%head,:'CAR],
+    ['%pair?, :'CONSP],
     ['%tail,:'CDR]
   ] repeat property(first x,'%Rename) := rest x
 
@@ -301,11 +311,10 @@ getOpcodeExpander op ==
 ++ Expand all opcodes contained in the form `x' into a form
 ++ suitable for evaluation by the VM.
 expandToVMForm x ==
-  x = '%false => 'NIL
-  x = '%true => 'T
+  x = '%false or x = '%nil => 'NIL
+  IDENTP x and (x' := x has %Rename) => x'
   isAtomicForm x => x
   [op,:args] := x
-  IDENTP op and (op' := op has %Rename) => [op',:expandToVMForm args]
   IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
   op' := expandToVMForm op
   args' := expandToVMForm args

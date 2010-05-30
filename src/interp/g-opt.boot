@@ -402,10 +402,11 @@ $VMsideEffectFreeOperators ==
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
       MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
-       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL
-        %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail
-         %imul %iadd %isub %igcd %ilcm %iexp %imin %imax
-          %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax)
+       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL %false %true
+        %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail %integer?
+         %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd?
+          %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax
+           %fpow %nil %pair?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 

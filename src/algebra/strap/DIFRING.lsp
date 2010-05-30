@@ -4,7 +4,7 @@
 (DEFPARAMETER |DifferentialRing;AL| 'NIL) 
 
 (DEFUN |DifferentialRing;| ()
-  (LET ((#0=#:G1396
+  (LET ((#0=#:G1397
             (|Join| (|Ring|)
                     (|mkCategory| '|domain|
                         '(((|differentiate| ($ $)) T) ((D ($ $)) T)

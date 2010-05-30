@@ -52,7 +52,7 @@ FunctionDescriptor(): Public == Private where
       ++ \spad{signature(x)} returns the signature of function
       ++ described by \spad{x}.
   Private == add
-    signature x == CAR(x)$Lisp
+    signature x == %head(x)$Foreign(Builtin)
     x = y == EQUAL(x,y)$Lisp
     coerce x == (x : Syntax)::OutputForm
 
@@ -164,11 +164,14 @@ ConstructorCall(C: ConstructorCategory): Public == Private where
       ++ arguments used to invoke the constructor.
 
   Private == add
+    import %head: % -> C from Foreign Builtin
+    import %tail: % -> List Syntax from Foreign Builtin
+
     constructor x ==
-      CAR(x)$Lisp
+      %head x 
 
     arguments x ==
-      CDR(x)$Lisp
+      %tail x
 
     x = y ==
       EQUAL(x,y)$Lisp
@@ -243,7 +246,7 @@ FunctorData(): Public == Private where
       ++ \spad{lookupFunction x} returns the name of the lookup
       ++ function associated with the functor data \spad{x}.
   Private == add
-    domainTemplate x == CAR(x)$Foreign(Builtin)
+    domainTemplate x == %head(x)$Foreign(Builtin)
     attributeData x == CADDR(x)$Foreign(Builtin)
    
     part3Data(x: %): SExpression == CADDDR(x)$Foreign(Builtin)
@@ -333,7 +336,7 @@ OperatorSignature(): Public == Private where
       ++ operator name `op', and signature `sig'.
   Private == add
     construct(o,s) == LIST(o,s)$Lisp
-    name x == CAR(x)$Lisp
+    name x == %head(x)$Foreign(Builtin)
     signature x == CADR(x)$Lisp
     x = y == EQUAL(x,y)$Lisp
     arity x == (#source signature x)::Arity
@@ -386,17 +389,17 @@ Category(): Public == Private where
       ++ extended by the category `c'.
   Private == add
     constructor x ==
-      CAR(devaluate(x)$Lisp)$Lisp
+      %head(devaluate(x)$Lisp)$Foreign(Builtin)
 
     exportedOperators c ==
-      [CAR(x)$Lisp@OperatorSignature 
+      [%head(x)$Foreign(Builtin)@OperatorSignature 
          for x in getCategoryExports(c)$Lisp@List(Syntax)]
     
     principalAncestors c == 
       getCategoryPrincipalAncestors(c)$Lisp
 
     parents c ==
-      [CAR(x)$Lisp@ConstructorCall(CategoryConstructor)
+      [%head(x)$Foreign(Builtin)@ConstructorCall(CategoryConstructor)
          for x in getCategoryParents(c)$Lisp@List(Syntax)]
 
     coerce x ==
@@ -434,7 +437,7 @@ Domain(): Public == Private where
 
   Private == add
     constructor x ==
-      CAR(devaluate(x)$Lisp)$Lisp
+      %head(devaluate(x)$Lisp)$Foreign(Builtin)
 
     coerce x ==
       outputDomainConstructor(x)$Lisp
