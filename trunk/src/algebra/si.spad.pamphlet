@@ -271,7 +271,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    base()    == 2$Lisp
    max()     == MAXINT
    min()     == MININT
-   x = y     == EQL(x,y)$Lisp
+   x = y     == %ieq(x,y)$Foreign(Builtin)
    ~ x       == LOGNOT(x)$Lisp
    not(x)    == LOGNOT(x)$Lisp
    x /\ y    == LOGAND(x,y)$Lisp
@@ -284,19 +284,20 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    xor(x,y)  == LOGXOR(x,y)$Lisp
    x < y     == QSLESSP(x,y)$Lisp
    x > y     == QSGREATERP(x,y)$Lisp
-   x <= y    == (x <= y)$Lisp
-   x >= y    == (x >= y)$Lisp
+   x <= y    == %ile(x,y)$Foreign(Builtin)
+   x >= y    == %ige(x,y)$Foreign(Builtin)
    inc x     == QSADD1(x)$Lisp
    dec x     == QSSUB1(x)$Lisp
    - x       == QSMINUS(x)$Lisp
    x + y     == QSPLUS(x,y)$Lisp
    x:% - y:% == QSDIFFERENCE(x,y)$Lisp
    x:% * y:% == QSTIMES(x,y)$Lisp
-   x:% ** n:NonNegativeInteger == ((EXPT(x, n)$Lisp) pretend Integer)::%
+   x:% ** n:NonNegativeInteger == 
+      (%ipow(x, n)$Foreign(Builtin) pretend Integer)::%
    x quo y   == QSQUOTIENT(x,y)$Lisp
    x rem y   == QSREMAINDER(x,y)$Lisp
    divide(x, y)   == CONS(QSQUOTIENT(x,y)$Lisp,QSREMAINDER(x,y)$Lisp)$Lisp
-   gcd(x,y)  == GCD(x,y)$Lisp
+   gcd(x,y)  == %igcd(x,y)$Foreign(Builtin)
    abs(x)    == QSABSVAL(x)$Lisp
    odd?(x)   == QSODDP(x)$Lisp
    zero?(x)  == QSZEROP(x)$Lisp

@@ -50,7 +50,7 @@
   (SPADCALL |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
-  (PROG (#0=#:G1446 |i|)
+  (PROG (#0=#:G1447 |i|)
     (RETURN
       (SEQ (SPADCALL
                (PROGN
@@ -123,7 +123,7 @@
                                         '(|NonNegativeInteger|) |l|)
                                        (|getShellEntry| $ 25))
                                       (LET
-                                       ((#0=#:G1419 (+ (- |h| |l|) 1)))
+                                       ((#0=#:G1420 (+ (- |h| |l|) 1)))
                                         (|check-subtype| (>= #0# 0)
                                          '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 35))))))))))))) 
@@ -221,7 +221,7 @@
                                        (LETT |z|
                                         (SPADCALL |y|
                                          (LET
-                                          ((#0=#:G1442
+                                          ((#0=#:G1443
                                             (+ (- |h| |l|) 1)))
                                            (|check-subtype| (>= #0# 0)
                                             '(|NonNegativeInteger|)

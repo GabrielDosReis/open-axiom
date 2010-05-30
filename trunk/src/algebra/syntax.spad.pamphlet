@@ -211,7 +211,7 @@ Syntax(): Public == Private where
 
     getOperator x ==
       atom? x => userError "atom as operand to getOperator"
-      op: % := CAR(x)$Lisp
+      op: % := %head(x)$Foreign(Builtin)
       op case Identifier => op@Identifier
       op case Integer => op@Integer
       op case DoubleFloat => op@DoubleFloat
@@ -223,7 +223,7 @@ Syntax(): Public == Private where
 
     getOperands x ==
       atom? x => []
-      CDR(x)$Lisp
+      %tail(x)$Foreign(Builtin)
 
     coerce(x: %): InputForm ==
       x : InputForm

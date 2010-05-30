@@ -124,10 +124,10 @@
     ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 27))
      (|error| "euclideanSize called on zero"))
     ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 28))
-     (LET ((#0=#:G1425 (- (SPADCALL |x| (|getShellEntry| $ 30)))))
+     (LET ((#0=#:G1426 (- (SPADCALL |x| (|getShellEntry| $ 30)))))
        (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))
     ('T
-     (LET ((#1=#:G1426 (SPADCALL |x| (|getShellEntry| $ 30))))
+     (LET ((#1=#:G1427 (SPADCALL |x| (|getShellEntry| $ 30))))
        (|check-subtype| (>= #1# 0) '(|NonNegativeInteger|) #1#))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
@@ -275,7 +275,7 @@
                    ('T |c1|))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
-  (PROG (|y| #0=#:G1482 |z|)
+  (PROG (|y| #0=#:G1483 |z|)
     (RETURN
       (SEQ (EXIT (SEQ (COND
                         ((SPADCALL |x| (|getShellEntry| $ 85))

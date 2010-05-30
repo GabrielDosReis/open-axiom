@@ -4,7 +4,7 @@
 (DEFPARAMETER |CancellationAbelianMonoid;AL| 'NIL) 
 
 (DEFUN |CancellationAbelianMonoid;| ()
-  (LET ((#0=#:G1396
+  (LET ((#0=#:G1397
             (|Join| (|AbelianMonoid|)
                     (|mkCategory| '|domain|
                         '(((|subtractIfCan| ((|Union| $ "failed") $ $))

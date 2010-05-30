@@ -242,7 +242,7 @@
                     (SEQ (LETT |y|
                                (SPADCALL |x|
                                    (LET
-                                    ((#0=#:G1466 (- (- |i| 1) |m|)))
+                                    ((#0=#:G1467 (- (- |i| 1) |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -268,7 +268,7 @@
                     (SEQ (LETT |y|
                                (SPADCALL |x|
                                    (LET
-                                    ((#0=#:G1470 (- (- |i| 1) |m|)))
+                                    ((#0=#:G1471 (- (- |i| 1) |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -346,7 +346,7 @@
                     (SEQ (LETT |y|
                                (SPADCALL |x|
                                    (LET
-                                    ((#0=#:G1482 (- (- |i| 1) |m|)))
+                                    ((#0=#:G1483 (- (- |i| 1) |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -378,7 +378,7 @@
                                  ((EQL |l| |m|)
                                   (SPADCALL |x|
                                       (LET
-                                       ((#0=#:G1488 (- (+ |h| 1) |m|)))
+                                       ((#0=#:G1489 (- (+ |h| 1) |m|)))
                                         (|check-subtype| (>= #0# 0)
                                          '(|NonNegativeInteger|) #0#))
                                       (|getShellEntry| $ 39)))
@@ -386,7 +386,7 @@
                                   (SEQ (LETT |t|
                                         (SPADCALL |x|
                                          (LET
-                                          ((#1=#:G1489
+                                          ((#1=#:G1490
                                             (- (- |l| 1) |m|)))
                                            (|check-subtype| (>= #1# 0)
                                             '(|NonNegativeInteger|)
@@ -396,7 +396,7 @@
                                        (SPADCALL |t|
                                         (SPADCALL |t|
                                          (LET
-                                          ((#2=#:G1490
+                                          ((#2=#:G1491
                                             (+ (- |h| |l|) 2)))
                                            (|check-subtype| (>= #2# 0)
                                             '(|NonNegativeInteger|)
@@ -464,7 +464,7 @@
                    ((< |n| 3) |p|)
                    ('T
                     (SEQ (LETT |l|
-                               (LET ((#0=#:G1509 (QUOTIENT2 |n| 2)))
+                               (LET ((#0=#:G1510 (QUOTIENT2 |n| 2)))
                                  (|check-subtype| (>= #0# 0)
                                      '(|NonNegativeInteger|) #0#))
                                |LSAGG-;mergeSort|)
@@ -482,7 +482,7 @@
                                    (|getShellEntry| $ 23))))))))))) 
 
 (DEFUN |LSAGG-;sorted?;MAB;15| (|f| |l| $)
-  (PROG (#0=#:G1515 |p|)
+  (PROG (#0=#:G1516 |p|)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |l| (|getShellEntry| $ 16)) T)
@@ -671,7 +671,7 @@
                    ('T
                     (SEQ (LETT |z|
                                (SPADCALL |y|
-                                   (LET ((#0=#:G1550 (- |s| |m|)))
+                                   (LET ((#0=#:G1551 (- |s| |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -713,7 +713,7 @@
                    ('T
                     (SEQ (LETT |x|
                                (SPADCALL |x|
-                                   (LET ((#0=#:G1556 (- |s| |m|)))
+                                   (LET ((#0=#:G1557 (- |s| |m|)))
                                      (|check-subtype| (>= #0# 0)
                                       '(|NonNegativeInteger|) #0#))
                                    (|getShellEntry| $ 39))
@@ -778,7 +778,7 @@
             (|getShellEntry| $ 74)))))) 
 
 (DEFUN |LSAGG-;<;2AB;25| (|x| |y| $)
-  (PROG (#0=#:G1565)
+  (PROG (#0=#:G1566)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ G190
                            (COND

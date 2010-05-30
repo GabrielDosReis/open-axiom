@@ -1,5 +1,24 @@
 2010-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (middleEndExpand): Tidy.
+	* interp/g-util.boot (expandToVMForm): Likewise.  
+	(expandStore): Refine store to pair components.
+	* algebra/any.spad.pamphlet (Scope): Use builtin operators.
+	(Environment): Likewise.
+	* algebra/domain.spad.pamphlet (FunctionDescriptor): Likewise.
+	(ConstructorCall): Likewise.
+	(FunctorData): Likewise.
+	(OperatorSignature): Likewise.
+	(Category): Likewise.
+	(Domain): Likewise.
+	* algebra/integer.spad.pamphlet (Integer): Likewise.
+	(NonNegativeInteger): Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/syntax.spad.pamphlet (Syntax): Likewise.
+
+2010-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-coerce.boot (getSubDomainPredicate): Use compileInteractive.
 
 2010-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>

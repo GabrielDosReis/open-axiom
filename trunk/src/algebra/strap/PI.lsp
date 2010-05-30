@@ -2,12 +2,12 @@
 (/VERSIONCHECK 2) 
 
 (|noteSubDomainInfo| '|PositiveInteger| '(|NonNegativeInteger|)
-    '(> |#1| 0)) 
+    '(|%igt| |#1| 0)) 
 
 (DEFUN |PositiveInteger| ()
   (PROG ()
     (RETURN
-      (PROG (#0=#:G1400)
+      (PROG (#0=#:G1401)
         (RETURN
           (COND
             ((LETT #0# (HGET |$ConstructorCache| '|PositiveInteger|)

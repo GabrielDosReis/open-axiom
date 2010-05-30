@@ -4,9 +4,9 @@
 (DEFPARAMETER |DivisionRing;AL| 'NIL) 
 
 (DEFUN |DivisionRing;| ()
-  (LET ((#0=#:G1399
+  (LET ((#0=#:G1400
             (|sublisV|
-                (PAIR '(#1=#:G1398) (LIST '(|Fraction| (|Integer|))))
+                (PAIR '(#1=#:G1399) (LIST '(|Fraction| (|Integer|))))
                 (|Join| (|EntireRing|) (|Algebra| '#1#)
                         (|mkCategory| '|domain|
                             '(((** ($ $ (|Integer|))) T)

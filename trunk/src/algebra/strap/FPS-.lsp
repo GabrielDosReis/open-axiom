@@ -12,7 +12,7 @@
       (|getShellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
-  (LET ((#0=#:G1401
+  (LET ((#0=#:G1402
             (MAX 1
                  (QUOTIENT2
                      (SPADCALL 4004

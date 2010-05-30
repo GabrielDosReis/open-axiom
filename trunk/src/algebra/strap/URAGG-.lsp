@@ -274,7 +274,7 @@
                    (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
-  (PROG (#0=#:G1474 |y|)
+  (PROG (#0=#:G1475 |y|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
                             |URAGG-;findCycle|)
@@ -444,14 +444,14 @@
                    ('T
                     (SPADCALL
                         (SPADCALL |x|
-                            (LET ((#0=#:G1499 (- |m| |n|)))
+                            (LET ((#0=#:G1500 (- |m| |n|)))
                               (|check-subtype| (>= #0# 0)
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 59))
                         (|getShellEntry| $ 60))))))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
-  (PROG (|k| #0=#:G1507)
+  (PROG (|k| #0=#:G1508)
     (RETURN
       (SEQ (EXIT (COND
                    ((SPADCALL |x| |y| (|getShellEntry| $ 51)) T)
@@ -505,7 +505,7 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
-  (PROG (|k| #0=#:G1512)
+  (PROG (|k| #0=#:G1513)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ (LETT |k| 0 |URAGG-;node?;2AB;24|) G190
                            (COND
@@ -580,7 +580,7 @@
              ('T
               (SEQ (LETT |p|
                          (SPADCALL |p|
-                             (LET ((#0=#:G1525 (- |n| 1)))
+                             (LET ((#0=#:G1526 (- |n| 1)))
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 59))
