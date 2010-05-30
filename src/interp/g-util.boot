@@ -212,61 +212,11 @@ expandCollect ["%collect",:iters,body] ==
 expandRepeat ["%repeat",:iters,body] ==
   expandLoop(iters,body,["voidValue"])
 
-
-expandGreaterEqual ["%ge",:args] ==
-  [">=",:expandToVMForm args]
   
-expandGreater ["%gt",:args] ==
-  [">",:expandToVMForm args]
-  
-expandLessEqual ["%le",:args] ==
-  ["<=",:expandToVMForm args]
-  
-expandLess ["%lt",:args] ==
-  ["<",:expandToVMForm args]
-
 -- Logical operators
-
-expandNot ["%not",arg] ==
-  ["NOT",expandToVMForm arg]
-  
-expandAnd ["%and",:args] ==
-  ["AND",:expandToVMForm args]
-  
-expandOr ["%or",:args] ==
-  ["OR",:expandToVMForm args]
-
--- Arithmetic operations
-
-expandIabs ["%iabs",arg] ==
-  ["ABS",expandToVMForm arg]
-
-expandIexp ["%iexp",:args] ==
-  ["EXPT",:expandToVMForm args]
-
-expandImul ["%imul",:args] ==
-  ["*",:expandToVMForm args]
-
-expandIadd ["%iadd",:args] ==
-  ["+",:expandToVMForm args]
-
-expandIsub ["%isub",:args] ==
-  ["-",:expandToVMForm args]
 
 expandEq ["%eq",:args] ==
   ["EQ",:expandToVMForm args]
-
-expandIeq ["%ieq",:args] ==
-  ["EQL",:expandToVMForm args]
-
-expandImin ["%imin",:args] ==
-  ["MIN",:expandToVMForm args]
-
-expandImax ["%imax",:args] ==
-  ["MAX",:expandToVMForm args]
-
-expandIgcd ["%igcd",:args] ==
-  ["GCD",:expandToVMForm args]
 
 -- Local variable bindings
 expandBind ["%bind",inits,body] ==
@@ -286,43 +236,58 @@ expandStore ["%store",place,value] ==
   cons? place => ["SETF",place,value]
   ["SETQ",place,value]
 
--- List operators
+++ Opcodes with direct mapping to target operations.
+for x in [
+    -- unary Boolean operations
+    ['%not, :'NOT],
 
-expandHead ["%head",x] ==
-  ["CAR",expandToVMForm x]
+    -- binary Boolean operations
+    ['%and, :'AND],
+    ['%or,  :'OR],
 
-expandTail ["%tail",x] ==
-  ["CDR",expandToVMForm x]
+    -- unary integer operations.
+    ['%iabs,:'ABS],
 
+    -- binary integer operations.
+    ['%iadd,:"+"],
+    ['%iexp,:'EXPT],
+    ['%igcd,:'GCD],
+    ['%ige, :">="],
+    ['%igt, :">"],
+    ['%ilcm,:'LCM],
+    ['%ile, :"<="],
+    ['%ilt, :"<"],
+    ['%imax,:'MAX],
+    ['%imin,:'MIN],
+    ['%imul,:"*"],
+    ['%isub,:"-"],
+
+    -- unary float operations.
+    ['%fabs,:'ABS],
+
+    -- binary float operations.
+    ['%fadd,:"+"],
+    ['%fexp,:'EXPT],
+    ['%fge, :">="],
+    ['%fgt, :">"],
+    ['%fle, :"<="],
+    ['%flt, :"<"],
+    ['%fmax,:'MAX],
+    ['%fmin,:'MIN],
+    ['%fmul,:"*"],
+    ['%fsub,:"-"],
+
+    -- unary list operations
+    ['%head,:'CAR],
+    ['%tail,:'CDR]
+  ] repeat property(first x,'%Rename) := rest x
 
 ++ Table of opcode-expander pairs.  
 for x in [
-   ["%not",:function expandNot],
-   ["%and",:function expandAnd],
-   ["%or",:function expandOr],
-
    ["%collect",:function expandCollect],
    ["%repeat",:function expandRepeat],
 
-   ["%le",:function expandLessEqual],
-   ["%lt",:function expandLess],
-   ["%ge",:function expandGreaterEqual],
-   ["%gt",:function expandGreater],
-
-   ["%iabs",:function expandIabs],
-   ["%imul",:function expandImul],
-   ["%iexp",:function expandIexp],
-   ["%iadd",:function expandIadd],
-   ["%isub",:function expandIsub],
-   ["%imin",:function expandImin],
-   ["%imax",:function expandImax],
-   ["%igcd",:function expandIgcd],
-
    ["%eq",:function expandEq],
-   ["%ieq",:function expandIeq],
-
-   ["%head",:function expandHead],
-   ["%tail",:function expandTail],
 
    ["%bind",:function expandBind],
    ["%store",:function expandStore],
@@ -340,6 +305,7 @@ expandToVMForm x ==
   x = '%true => 'T
   isAtomicForm x => x
   [op,:args] := x
+  IDENTP op and (op' := op has %Rename) => [op',:expandToVMForm args]
   IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
   op' := expandToVMForm op
   args' := expandToVMForm args
