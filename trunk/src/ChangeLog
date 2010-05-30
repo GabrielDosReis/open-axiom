@@ -1,3 +1,7 @@
+2010-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-coerce.boot (getSubDomainPredicate): Use compileInteractive.
+
 2010-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/boolean.spad.pamphlet (Boolean): Remove reference to
