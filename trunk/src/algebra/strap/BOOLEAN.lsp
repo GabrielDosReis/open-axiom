@@ -8,41 +8,41 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;true;$;2|)) 
 
-(PUT '|BOOLEAN;true;$;2| '|SPADreplace| '(XLAM NIL 'T)) 
+(PUT '|BOOLEAN;true;$;2| '|SPADreplace| '(XLAM NIL |%true|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;false;$;3|)) 
 
-(PUT '|BOOLEAN;false;$;3| '|SPADreplace| '(XLAM NIL NIL)) 
+(PUT '|BOOLEAN;false;$;3| '|SPADreplace| '(XLAM NIL |%false|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;not;2$;4|)) 
 
-(PUT '|BOOLEAN;not;2$;4| '|SPADreplace| 'NOT) 
+(PUT '|BOOLEAN;not;2$;4| '|SPADreplace| '|%not|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;~;2$;5|)) 
 
-(PUT '|BOOLEAN;~;2$;5| '|SPADreplace| 'NOT) 
+(PUT '|BOOLEAN;~;2$;5| '|SPADreplace| '|%not|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;and;3$;6|)) 
 
-(PUT '|BOOLEAN;and;3$;6| '|SPADreplace| 'AND) 
+(PUT '|BOOLEAN;and;3$;6| '|SPADreplace| '|%and|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;/\\;3$;7|)) 
 
-(PUT '|BOOLEAN;/\\;3$;7| '|SPADreplace| 'AND) 
+(PUT '|BOOLEAN;/\\;3$;7| '|SPADreplace| '|%and|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;or;3$;8|)) 
 
-(PUT '|BOOLEAN;or;3$;8| '|SPADreplace| 'OR) 
+(PUT '|BOOLEAN;or;3$;8| '|SPADreplace| '|%or|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;\\/;3$;9|)) 
 
-(PUT '|BOOLEAN;\\/;3$;9| '|SPADreplace| 'OR) 
+(PUT '|BOOLEAN;\\/;3$;9| '|SPADreplace| '|%or|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;xor;3$;10|)) 
@@ -56,7 +56,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;=;3$;13|)) 
 
-(PUT '|BOOLEAN;=;3$;13| '|SPADreplace| 'EQ) 
+(PUT '|BOOLEAN;=;3$;13| '|SPADreplace| '|%eq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;implies;3$;14|)) 
@@ -64,7 +64,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;equiv;3$;15|)) 
 
-(PUT '|BOOLEAN;equiv;3$;15| '|SPADreplace| 'EQ) 
+(PUT '|BOOLEAN;equiv;3$;15| '|SPADreplace| '|%eq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;<;3$;16|)) 
@@ -90,7 +90,7 @@
 
 (DEFUN |BOOLEAN;test;2$;1| (|a| $) (DECLARE (IGNORE $)) |a|) 
 
-(DEFUN |BOOLEAN;true;$;2| ($) (DECLARE (IGNORE $)) 'T) 
+(DEFUN |BOOLEAN;true;$;2| ($) (DECLARE (IGNORE $)) T) 
 
 (DEFUN |BOOLEAN;false;$;3| ($) (DECLARE (IGNORE $)) NIL) 
 

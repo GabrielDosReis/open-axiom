@@ -1,5 +1,10 @@
 2010-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/boolean.spad.pamphlet (Boolean): Remove reference to
+	Lisp.  Use builtin functions.
+
+2010-05-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (getExternalSymbolMode): Allow Lisp as
 	foreign language. 
 	(checkExternalEntity): Likewise.

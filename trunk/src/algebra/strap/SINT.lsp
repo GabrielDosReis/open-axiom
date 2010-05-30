@@ -123,7 +123,7 @@
                 |SINT;<=;2$B;28|)) 
 
 (PUT '|SINT;<=;2$B;28| '|SPADreplace|
-     '(XLAM (|x| |y|) (NOT (> |x| |y|)))) 
+     '(XLAM (|x| |y|) (|%not| (> |x| |y|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;>=;2$B;29|)) 

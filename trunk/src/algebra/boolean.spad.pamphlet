@@ -472,40 +472,42 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
     test: % -> %
       ++ test(b) returns b and is provided for compatibility with the new compiler.
   == add
-    import EQ: (%,%) -> Boolean from Foreign Builtin
-    import AND: (%,%) -> % from Foreign Builtin
-    import OR: (%,%) -> % from Foreign Builtin
-    import NOT: % -> % from Foreign Builtin
+    import %false: % from Foreign Builtin
+    import %true: % from Foreign Builtin
+    import %eq: (%,%) -> Boolean from Foreign Builtin
+    import %and: (%,%) -> % from Foreign Builtin
+    import %or: (%,%) -> % from Foreign Builtin
+    import %not: % -> % from Foreign Builtin
 
     test a        == a
 
-    true          == 'T pretend %
-    false         == NIL$Foreign(Builtin)
-    sample()      == true
-    not b         == NOT b
-    ~ b           == NOT b
-    a and b       == AND(a,b)
-    a /\ b        == AND(a,b)
-    a or b        == OR(a,b)
-    a \/ b        == OR(a,b)
-    xor(a, b)     == (a => NOT b; b)
-    nor(a, b)     == (a => false; NOT b)
-    nand(a, b)    == (a => NOT b; true)
-    a = b         == EQ(a, b)
-    implies(a, b) == (a => b; true)
-    equiv(a,b)    == EQ(a, b)
-    a < b         == (b => NOT a; false)
+    true          == %true
+    false         == %false
+    sample()      == %true
+    not b         == %not b
+    ~b            == %not b
+    a and b       == %and(a,b)
+    a /\ b        == %and(a,b)
+    a or b        == %or(a,b)
+    a \/ b        == %or(a,b)
+    xor(a, b)     == (a => %not b; b)
+    nor(a, b)     == (a => %false; %not b)
+    nand(a, b)    == (a => %not b; %true)
+    a = b         == %eq(a,b)
+    implies(a, b) == (a => b; %true)
+    equiv(a,b)    == %eq(a, b)
+    a < b         == (b => %not a; %false)
 
     size()        == 2
     index i       ==
-      even?(i::Integer) => false
-      true
+      even?(i::Integer) => %false
+      %true
     lookup a      ==
       a => 1
       2
     random()      ==
-      even?(random()$Integer) => false
-      true
+      even?(random()$Integer) => %false
+      %true
 
     convert(x:%):InputForm ==
       x => 'true
