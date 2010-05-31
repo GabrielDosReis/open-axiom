@@ -1,3 +1,8 @@
+2010-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compWithMappingMode): Handle lambda
+	expressions as mapping.
+
 2010-05-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (middleEndExpand): Tidy.

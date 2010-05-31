@@ -404,9 +404,9 @@ $VMsideEffectFreeOperators ==
       MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
        CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL %false %true
         %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail %integer?
-         %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd?
+         %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax
-           %fpow %nil %pair?)
+           %fpow %nil %pair? %lconcat %llength %hash %ismall?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 

@@ -255,12 +255,14 @@ for x in [
     ['%ineg,    :"-"],
     ['%integer?,:'INTEGERP],
     ['%iodd?,   :'ODDP],
+    ['%ismall?, :'FIXNUMP],
     -- binary integer operations.
     ['%iadd,:"+"],
     ['%ieq, :"EQL"],
     ['%igcd,:'GCD],
     ['%ige, :">="],
     ['%igt, :">"],
+    ['%iinc,:"1+"],
     ['%ilcm,:'LCM],
     ['%ile, :"<="],
     ['%ilt, :"<"],
@@ -287,9 +289,15 @@ for x in [
     -- list contants
     -- ['%nil, :'NIL],
     -- unary list operations
-    ['%head,:'CAR],
-    ['%pair?, :'CONSP],
-    ['%tail,:'CDR]
+    ['%head,    :'CAR],
+    ['%llength, :'LIST_-LENGTH],
+    ['%pair?,   :'CONSP],
+    ['%tail,    :'CDR],
+    -- binary list operations
+    ['%lconcat, :'APPEND],
+
+    -- general utility
+    ['%hash,:'SXHASH]
   ] repeat property(first x,'%Rename) := rest x
 
 ++ Table of opcode-expander pairs.  
