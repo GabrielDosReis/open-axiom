@@ -1,5 +1,12 @@
 2010-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot: Add more opcodes.
+	* algebra/syntax.spad.pamphlet: Clean up.
+	* algebra/variable.spad.pamphlet: Likewise.
+	* algebra/ystream.spad.pamphlet: Likewise.
+
+2010-05-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compWithMappingMode): Handle lambda
 	expressions as mapping.
 

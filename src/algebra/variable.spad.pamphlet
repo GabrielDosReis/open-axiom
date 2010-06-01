@@ -101,16 +101,18 @@ AnonymousFunction():SetCategory with
       ++ body(f) returns the body of the unnamed function `f'.
   == add
     import Syntax
+    import %lsecond: % -> Syntax from Foreign Builtin
+    import %lthird: % -> Syntax  from Foreign Builtin
     coerce(x:%):OutputForm == 
       x pretend OutputForm
 
     parameters f ==
-      ps := CADR(f)$Lisp : Syntax
+      ps := %lsecond f
       ps case Identifier => [ps]$List(Identifier)
       getOperands(ps) pretend List(Identifier)
 
     body f ==
-      CADDR(f)$Lisp : Syntax
+      %lthird f
 
 @
 

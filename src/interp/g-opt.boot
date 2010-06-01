@@ -405,13 +405,14 @@ $VMsideEffectFreeOperators ==
        CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL %false %true
         %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-          %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax
-           %fpow %nil %pair? %lconcat %llength %hash %ismall?)
+          %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
+           %fpow %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+            %hash %ismall? %string?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ["CONS","LIST","VECTOR","STRINGIMAGE",
+    ["CONS","LIST","VECTOR","STRINGIMAGE",'%gensym,
       "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
