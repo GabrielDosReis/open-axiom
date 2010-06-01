@@ -9,12 +9,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |ILIST;concat;S2$;2|)) 
 
-(PUT '|ILIST;concat;S2$;2| '|SPADreplace| 'CONS) 
+(PUT '|ILIST;concat;S2$;2| '|SPADreplace| '|%makepair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%Boolean|)
                 |ILIST;eq?;2$B;3|)) 
 
-(PUT '|ILIST;eq?;2$B;3| '|SPADreplace| 'EQ) 
+(PUT '|ILIST;eq?;2$B;3| '|SPADreplace| '|%eq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |ILIST;first;$S;4|)) 
@@ -29,23 +29,23 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%List|) |ILIST;empty;$;6|)) 
 
-(PUT '|ILIST;empty;$;6| '|SPADreplace| '(XLAM NIL NIL)) 
+(PUT '|ILIST;empty;$;6| '|SPADreplace| '(XLAM NIL |%nil|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Boolean|)
                 |ILIST;empty?;$B;7|)) 
 
-(PUT '|ILIST;empty?;$B;7| '|SPADreplace| 'NULL) 
+(PUT '|ILIST;empty?;$B;7| '|SPADreplace| '|%lempty?|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
                 |ILIST;rest;2$;8|)) 
 
-(PUT '|ILIST;rest;2$;8| '|SPADreplace| 'CDR) 
+(PUT '|ILIST;rest;2$;8| '|SPADreplace| '|%tail|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%List|)
                 |ILIST;elt;$rest$;9|)) 
 
 (PUT '|ILIST;elt;$rest$;9| '|SPADreplace|
-     '(XLAM (|x| "rest") (CDR |x|))) 
+     '(XLAM (|x| "rest") (|%tail| |x|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Thing|)
                 |ILIST;setfirst!;$2S;10|)) 
@@ -150,22 +150,22 @@
 (DEFUN |ILIST;setfirst!;$2S;10| (|x| |s| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (QCAR (RPLACA |x| |s|))))) 
+    ('T (CAR (RPLACA |x| |s|))))) 
 
 (DEFUN |ILIST;setelt;$first2S;11| (|x| T2 |s| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (QCAR (RPLACA |x| |s|))))) 
+    ('T (CAR (RPLACA |x| |s|))))) 
 
 (DEFUN |ILIST;setrest!;3$;12| (|x| |y| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (QCDR (RPLACD |x| |y|))))) 
+    ('T (CDR (RPLACD |x| |y|))))) 
 
 (DEFUN |ILIST;setelt;$rest2$;13| (|x| T3 |y| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (QCDR (RPLACD |x| |y|))))) 
+    ('T (CDR (RPLACD |x| |y|))))) 
 
 (DEFUN |ILIST;construct;L$;14| (|l| $) (DECLARE (IGNORE $)) |l|) 
 
@@ -188,7 +188,7 @@
                 (COND ((QSGREATERP |i| |n|) (GO G191)))
                 (SEQ (COND
                        ((NULL |x|) (|error| "index out of range")))
-                     (EXIT (LETT |x| (QCDR |x|) |ILIST;rest;$Nni$;19|)))
+                     (EXIT (LETT |x| (CDR |x|) |ILIST;rest;$Nni$;19|)))
                 (LETT |i| (QSADD1 |i|) |ILIST;rest;$Nni$;19|) (GO G190)
                 G191 (EXIT NIL))
            (EXIT |x|))))) 
@@ -200,13 +200,12 @@
            (SEQ (LETT |i| 0 |ILIST;copy;2$;20|) G190
                 (COND ((NULL (NOT (NULL |x|))) (GO G191)))
                 (SEQ (COND
-                       ((EQ |i| 1000)
+                       ((EQL |i| 1000)
                         (COND
-                          ((SPADCALL |x| (|getShellEntry| $ 34))
+                          ((SPADCALL |x| (|getShellEntry| $ 35))
                            (|error| "cyclic list")))))
-                     (LETT |y| (CONS (QCAR |x|) |y|)
-                           |ILIST;copy;2$;20|)
-                     (EXIT (LETT |x| (QCDR |x|) |ILIST;copy;2$;20|)))
+                     (LETT |y| (CONS (CAR |x|) |y|) |ILIST;copy;2$;20|)
+                     (EXIT (LETT |x| (CDR |x|) |ILIST;copy;2$;20|)))
                 (LETT |i| (QSADD1 |i|) |ILIST;copy;2$;20|) (GO G190)
                 G191 (EXIT NIL))
            (EXIT (NREVERSE |y|)))))) 
@@ -215,25 +214,25 @@
   (PROG (|s| |y| |z|)
     (RETURN
       (SEQ (LETT |y| NIL |ILIST;coerce;$Of;21|)
-           (LETT |s| (SPADCALL |x| (|getShellEntry| $ 39))
+           (LETT |s| (SPADCALL |x| (|getShellEntry| $ 40))
                  |ILIST;coerce;$Of;21|)
            (SEQ G190 (COND ((NULL (NOT (EQ |x| |s|))) (GO G191)))
                 (SEQ (LETT |y|
                            (CONS (SPADCALL (|SPADfirst| |x|)
-                                     (|getShellEntry| $ 40))
+                                     (|getShellEntry| $ 41))
                                  |y|)
                            |ILIST;coerce;$Of;21|)
                      (EXIT (LETT |x| (CDR |x|) |ILIST;coerce;$Of;21|)))
                 NIL (GO G190) G191 (EXIT NIL))
            (LETT |y| (NREVERSE |y|) |ILIST;coerce;$Of;21|)
            (EXIT (COND
-                   ((NULL |s|) (SPADCALL |y| (|getShellEntry| $ 44)))
+                   ((NULL |s|) (SPADCALL |y| (|getShellEntry| $ 45)))
                    ('T
                     (SEQ (LETT |z|
                                (SPADCALL
                                    (SPADCALL (|SPADfirst| |x|)
-                                    (|getShellEntry| $ 40))
-                                   (|getShellEntry| $ 45))
+                                    (|getShellEntry| $ 41))
+                                   (|getShellEntry| $ 46))
                                |ILIST;coerce;$Of;21|)
                          (SEQ G190
                               (COND
@@ -245,7 +244,7 @@
                                     (LETT |z|
                                      (CONS
                                       (SPADCALL (|SPADfirst| |x|)
-                                       (|getShellEntry| $ 40))
+                                       (|getShellEntry| $ 41))
                                       |z|)
                                      |ILIST;coerce;$Of;21|)))
                               NIL (GO G190) G191 (EXIT NIL))
@@ -253,13 +252,13 @@
                                    (SPADCALL |y|
                                     (SPADCALL
                                      (SPADCALL (NREVERSE |z|)
-                                      (|getShellEntry| $ 46))
-                                     (|getShellEntry| $ 47))
-                                    (|getShellEntry| $ 48))
-                                   (|getShellEntry| $ 44))))))))))) 
+                                      (|getShellEntry| $ 47))
+                                     (|getShellEntry| $ 48))
+                                    (|getShellEntry| $ 49))
+                                   (|getShellEntry| $ 45))))))))))) 
 
 (DEFUN |ILIST;=;2$B;22| (|x| |y| $)
-  (PROG (#0=#:G1469)
+  (PROG (#0=#:G1467)
     (RETURN
       (SEQ (EXIT (COND
                    ((EQ |x| |y|) T)
@@ -272,18 +271,18 @@
                                  (GO G191)))
                               (SEQ (EXIT
                                     (COND
-                                      ((SPADCALL (QCAR |x|) (QCAR |y|)
-                                        (|getShellEntry| $ 52))
+                                      ((SPADCALL (CAR |x|) (CAR |y|)
+                                        (|getShellEntry| $ 53))
                                        (PROGN
                                          (LETT #0# NIL
                                           |ILIST;=;2$B;22|)
                                          (GO #0#)))
                                       ('T
                                        (SEQ
-                                        (LETT |x| (QCDR |x|)
+                                        (LETT |x| (CDR |x|)
                                          |ILIST;=;2$B;22|)
                                         (EXIT
-                                         (LETT |y| (QCDR |y|)
+                                         (LETT |y| (CDR |y|)
                                           |ILIST;=;2$B;22|)))))))
                               NIL (GO G190) G191 (EXIT NIL))
                          (EXIT (COND ((NULL |x|) (NULL |y|)) ('T NIL)))))))
@@ -296,10 +295,10 @@
            (SEQ G190 (COND ((NULL (NOT (NULL |x|))) (GO G191)))
                 (SEQ (LETT |s|
                            (STRCONC |s|
-                                    (SPADCALL (QCAR |x|)
-                                     (|getShellEntry| $ 55)))
+                                    (SPADCALL (CAR |x|)
+                                     (|getShellEntry| $ 56)))
                            |ILIST;latex;$S;23|)
-                     (LETT |x| (QCDR |x|) |ILIST;latex;$S;23|)
+                     (LETT |x| (CDR |x|) |ILIST;latex;$S;23|)
                      (EXIT (COND
                              ((NOT (NULL |x|))
                               (LETT |s| (STRCONC |s| ", ")
@@ -308,19 +307,19 @@
            (EXIT (STRCONC |s| " \\right]")))))) 
 
 (DEFUN |ILIST;member?;S$B;24| (|s| |x| $)
-  (PROG (#0=#:G1477)
+  (PROG (#0=#:G1475)
     (RETURN
       (SEQ (EXIT (SEQ (SEQ G190
                            (COND ((NULL (NOT (NULL |x|))) (GO G191)))
                            (SEQ (EXIT (COND
-                                        ((SPADCALL |s| (QCAR |x|)
-                                          (|getShellEntry| $ 58))
+                                        ((SPADCALL |s| (CAR |x|)
+                                          (|getShellEntry| $ 59))
                                          (PROGN
                                            (LETT #0# T
                                             |ILIST;member?;S$B;24|)
                                            (GO #0#)))
                                         ('T
-                                         (LETT |x| (QCDR |x|)
+                                         (LETT |x| (CDR |x|)
                                           |ILIST;member?;S$B;24|)))))
                            NIL (GO G190) G191 (EXIT NIL))
                       (EXIT NIL)))
@@ -340,8 +339,8 @@
               (SEQ (LETT |z| |x| |ILIST;concat!;3$;25|)
                    (SEQ G190
                         (COND
-                          ((NULL (NOT (NULL (QCDR |z|)))) (GO G191)))
-                        (LETT |z| (QCDR |z|) |ILIST;concat!;3$;25|) NIL
+                          ((NULL (NOT (NULL (CDR |z|)))) (GO G191)))
+                        (LETT |z| (CDR |z|) |ILIST;concat!;3$;25|) NIL
                         (GO G190) G191 (EXIT NIL))
                    (QRPLACD |z| |y|) (EXIT |x|)))))))) 
 
@@ -351,23 +350,23 @@
       (SEQ (LETT |p| |l| |ILIST;removeDuplicates!;2$;26|)
            (SEQ G190 (COND ((NULL (NOT (NULL |p|))) (GO G191)))
                 (SEQ (LETT |pp| |p| |ILIST;removeDuplicates!;2$;26|)
-                     (LETT |f| (QCAR |p|)
+                     (LETT |f| (CAR |p|)
                            |ILIST;removeDuplicates!;2$;26|)
-                     (LETT |p| (QCDR |p|)
+                     (LETT |p| (CDR |p|)
                            |ILIST;removeDuplicates!;2$;26|)
                      (EXIT (SEQ G190
                                 (COND
                                   ((NULL
                                     (NOT
                                      (NULL
-                                      (LETT |pr| (QCDR |pp|)
+                                      (LETT |pr| (CDR |pp|)
                                        |ILIST;removeDuplicates!;2$;26|))))
                                    (GO G191)))
                                 (SEQ (EXIT
                                       (COND
-                                        ((SPADCALL (QCAR |pr|) |f|
-                                          (|getShellEntry| $ 58))
-                                         (QRPLACD |pp| (QCDR |pr|)))
+                                        ((SPADCALL (CAR |pr|) |f|
+                                          (|getShellEntry| $ 59))
+                                         (QRPLACD |pp| (CDR |pr|)))
                                         ('T
                                          (LETT |pp| |pr|
                                           |ILIST;removeDuplicates!;2$;26|)))))
@@ -387,17 +386,17 @@
              ((EQ |p| |q|) (|error| "cannot merge a list into itself"))
              ('T
               (SEQ (COND
-                     ((SPADCALL (QCAR |p|) (QCAR |q|) |f|)
+                     ((SPADCALL (CAR |p|) (CAR |q|) |f|)
                       (SEQ (LETT |r|
                                  (LETT |t| |p| |ILIST;merge!;M3$;28|)
                                  |ILIST;merge!;M3$;28|)
-                           (EXIT (LETT |p| (QCDR |p|)
+                           (EXIT (LETT |p| (CDR |p|)
                                        |ILIST;merge!;M3$;28|))))
                      ('T
                       (SEQ (LETT |r|
                                  (LETT |t| |q| |ILIST;merge!;M3$;28|)
                                  |ILIST;merge!;M3$;28|)
-                           (EXIT (LETT |q| (QCDR |q|)
+                           (EXIT (LETT |q| (CDR |q|)
                                        |ILIST;merge!;M3$;28|)))))
                    (SEQ G190
                         (COND
@@ -406,15 +405,15 @@
                                    ('T (NOT (NULL |q|)))))
                            (GO G191)))
                         (COND
-                          ((SPADCALL (QCAR |p|) (QCAR |q|) |f|)
+                          ((SPADCALL (CAR |p|) (CAR |q|) |f|)
                            (SEQ (QRPLACD |t| |p|)
                                 (LETT |t| |p| |ILIST;merge!;M3$;28|)
-                                (EXIT (LETT |p| (QCDR |p|)
+                                (EXIT (LETT |p| (CDR |p|)
                                        |ILIST;merge!;M3$;28|))))
                           ('T
                            (SEQ (QRPLACD |t| |q|)
                                 (LETT |t| |q| |ILIST;merge!;M3$;28|)
-                                (EXIT (LETT |q| (QCDR |q|)
+                                (EXIT (LETT |q| (CDR |q|)
                                        |ILIST;merge!;M3$;28|)))))
                         NIL (GO G190) G191 (EXIT NIL))
                    (QRPLACD |t| (COND ((NULL |p|) |q|) ('T |p|)))
@@ -428,12 +427,12 @@
              ('T
               (SEQ (LETT |p|
                          (|ILIST;rest;$Nni$;19| |p|
-                             (LET ((#0=#:G1508 (- |n| 1)))
+                             (LET ((#0=#:G1506 (- |n| 1)))
                                (|check-subtype| (>= #0# 0)
                                    '(|NonNegativeInteger|) #0#))
                              $)
                          |ILIST;split!;$I$;29|)
-                   (LETT |q| (QCDR |p|) |ILIST;split!;$I$;29|)
+                   (LETT |q| (CDR |p|) |ILIST;split!;$I$;29|)
                    (QRPLACD |p| NIL) (EXIT |q|)))))))) 
 
 (DEFUN |ILIST;mergeSort| (|f| |p| |n| $)
@@ -449,7 +448,7 @@
                    ((< |n| 3) |p|)
                    ('T
                     (SEQ (LETT |l|
-                               (LET ((#0=#:G1513 (QUOTIENT2 |n| 2)))
+                               (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
                                  (|check-subtype| (>= #0# 0)
                                      '(|NonNegativeInteger|) #0#))
                                |ILIST;mergeSort|)
@@ -463,11 +462,11 @@
                                |ILIST;mergeSort|)
                          (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
-(DEFUN |IndexedList| (&REST #0=#:G1522 &AUX #1=#:G1520)
+(DEFUN |IndexedList| (&REST #0=#:G1520 &AUX #1=#:G1518)
   (DSETQ #1# #0#)
   (PROG ()
     (RETURN
-      (PROG (#2=#:G1521)
+      (PROG (#2=#:G1519)
         (RETURN
           (COND
             ((LETT #2#
@@ -486,7 +485,7 @@
 (DEFUN |IndexedList;| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|IndexedList| |dv$1| |dv$2|))
-         ($ (|newShell| 85))
+         ($ (|newShell| 86))
          (|pv$| (|buildPredVector| 0 0
                     (LIST (OR (AND (|HasCategory| |#1| '(|OrderedSet|))
                                    (|HasCategory| |#1|
@@ -526,20 +525,20 @@
     (|setShellEntry| $ 7 |#2|)
     (COND
       ((|testBitVector| |pv$| 8)
-       (|setShellEntry| $ 49
+       (|setShellEntry| $ 50
            (CONS (|dispatchFunction| |ILIST;coerce;$Of;21|) $))))
     (COND
       ((|testBitVector| |pv$| 7)
        (PROGN
-         (|setShellEntry| $ 53
+         (|setShellEntry| $ 54
              (CONS (|dispatchFunction| |ILIST;=;2$B;22|) $))
-         (|setShellEntry| $ 57
+         (|setShellEntry| $ 58
              (CONS (|dispatchFunction| |ILIST;latex;$S;23|) $))
-         (|setShellEntry| $ 59
+         (|setShellEntry| $ 60
              (CONS (|dispatchFunction| |ILIST;member?;S$B;24|) $)))))
     (COND
       ((|testBitVector| |pv$| 7)
-       (|setShellEntry| $ 61
+       (|setShellEntry| $ 62
            (CONS (|dispatchFunction| |ILIST;removeDuplicates!;2$;26|)
                  $))))
     $)) 
@@ -556,45 +555,45 @@
              |ILIST;construct;L$;14| |ILIST;parts;$L;15|
              |ILIST;reverse!;2$;16| |ILIST;reverse;2$;17| (|Integer|)
              |ILIST;minIndex;$I;18| |ILIST;rest;$Nni$;19| (0 . |not|)
-             (5 . |cyclic?|) |ILIST;copy;2$;20| (|OutputForm|)
-             (|List| 36) (10 . |empty|) (14 . |cycleEntry|)
-             (19 . |coerce|) (24 . |concat|) (30 . |reverse!|)
-             (|List| $) (35 . |bracket|) (40 . |list|)
-             (45 . |commaSeparate|) (50 . |overbar|) (55 . |concat!|)
-             (61 . |coerce|) (66 . |true|) (70 . |false|) (74 . ~=)
-             (80 . =) (|String|) (86 . |latex|) (91 . |concat|)
-             (97 . |latex|) (102 . =) (108 . |member?|)
-             |ILIST;concat!;3$;25| (114 . |removeDuplicates!|)
+             (5 . =) (11 . |cyclic?|) |ILIST;copy;2$;20| (|OutputForm|)
+             (|List| 37) (16 . |empty|) (20 . |cycleEntry|)
+             (25 . |coerce|) (30 . |concat|) (36 . |reverse!|)
+             (|List| $) (41 . |bracket|) (46 . |list|)
+             (51 . |commaSeparate|) (56 . |overbar|) (61 . |concat!|)
+             (67 . |coerce|) (72 . |true|) (76 . |false|) (80 . ~=)
+             (86 . =) (|String|) (92 . |latex|) (97 . |concat|)
+             (103 . |latex|) (108 . =) (114 . |member?|)
+             |ILIST;concat!;3$;25| (120 . |removeDuplicates!|)
              (|Mapping| 11 6 6) |ILIST;sort!;M2$;27|
-             |ILIST;merge!;M3$;28| (119 . |One|) (123 . <)
-             (129 . |One|) (133 . -) |ILIST;split!;$I$;29| (139 . =)
-             (145 . |quo|) (|Mapping| 6 6 6) (|Equation| 6) (|List| 73)
+             |ILIST;merge!;M3$;28| (125 . |One|) (129 . <)
+             (135 . |One|) (139 . -) |ILIST;split!;$I$;29| (145 . =)
+             (151 . |quo|) (|Mapping| 6 6 6) (|Equation| 6) (|List| 74)
              (|Mapping| 11 6) (|Void|) (|UniversalSegment| 30) '"last"
              '"value" (|Mapping| 6 6) (|InputForm|) (|SingleInteger|)
              (|List| 30) (|Union| 6 '"failed"))
-          '#(~= 151 |value| 157 |third| 162 |tail| 167 |swap!| 172
-             |split!| 179 |sorted?| 185 |sort!| 196 |sort| 207 |size?|
-             218 |setvalue!| 224 |setrest!| 230 |setlast!| 236
-             |setfirst!| 242 |setelt| 248 |setchildren!| 290 |select!|
-             296 |select| 302 |second| 308 |sample| 313 |reverse!| 317
-             |reverse| 322 |rest| 327 |removeDuplicates!| 338
-             |removeDuplicates| 343 |remove!| 348 |remove| 360 |reduce|
-             372 |qsetelt!| 393 |qelt| 400 |possiblyInfinite?| 406
-             |position| 411 |parts| 430 |nodes| 435 |node?| 440 |new|
-             446 |more?| 452 |minIndex| 458 |min| 463 |merge!| 469
-             |merge| 482 |members| 495 |member?| 500 |maxIndex| 506
-             |max| 511 |map!| 517 |map| 523 |list| 536 |less?| 541
-             |leaves| 547 |leaf?| 552 |latex| 557 |last| 562 |insert!|
-             573 |insert| 587 |indices| 601 |index?| 606 |hash| 612
-             |first| 617 |find| 628 |fill!| 634 |explicitlyFinite?| 640
-             |every?| 645 |eval| 651 |eq?| 677 |entry?| 683 |entries|
-             689 |empty?| 694 |empty| 699 |elt| 703 |distance| 746
-             |delete!| 752 |delete| 764 |cyclic?| 776 |cycleTail| 781
-             |cycleSplit!| 786 |cycleLength| 791 |cycleEntry| 796
-             |count| 801 |copyInto!| 813 |copy| 820 |convert| 825
-             |construct| 830 |concat!| 835 |concat| 847 |coerce| 870
-             |children| 875 |child?| 880 |before?| 886 |any?| 892 >=
-             898 > 904 = 910 <= 916 < 922 |#| 928)
+          '#(~= 157 |value| 163 |third| 168 |tail| 173 |swap!| 178
+             |split!| 185 |sorted?| 191 |sort!| 202 |sort| 213 |size?|
+             224 |setvalue!| 230 |setrest!| 236 |setlast!| 242
+             |setfirst!| 248 |setelt| 254 |setchildren!| 296 |select!|
+             302 |select| 308 |second| 314 |sample| 319 |reverse!| 323
+             |reverse| 328 |rest| 333 |removeDuplicates!| 344
+             |removeDuplicates| 349 |remove!| 354 |remove| 366 |reduce|
+             378 |qsetelt!| 399 |qelt| 406 |possiblyInfinite?| 412
+             |position| 417 |parts| 436 |nodes| 441 |node?| 446 |new|
+             452 |more?| 458 |minIndex| 464 |min| 469 |merge!| 475
+             |merge| 488 |members| 501 |member?| 506 |maxIndex| 512
+             |max| 517 |map!| 523 |map| 529 |list| 542 |less?| 547
+             |leaves| 553 |leaf?| 558 |latex| 563 |last| 568 |insert!|
+             579 |insert| 593 |indices| 607 |index?| 612 |hash| 618
+             |first| 623 |find| 634 |fill!| 640 |explicitlyFinite?| 646
+             |every?| 651 |eval| 657 |eq?| 683 |entry?| 689 |entries|
+             695 |empty?| 700 |empty| 705 |elt| 709 |distance| 752
+             |delete!| 758 |delete| 770 |cyclic?| 782 |cycleTail| 787
+             |cycleSplit!| 792 |cycleLength| 797 |cycleEntry| 802
+             |count| 807 |copyInto!| 819 |copy| 826 |convert| 831
+             |construct| 836 |concat!| 841 |concat| 853 |coerce| 876
+             |children| 881 |child?| 886 |before?| 892 |any?| 898 >=
+             904 > 910 = 916 <= 922 < 928 |#| 934)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 5
                     '(0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4))
@@ -618,66 +617,66 @@
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
                                (|EltableAggregate| 30 6) (|OrderedSet|)
-                               (|Eltable| 77 $$) (|Aggregate|)
+                               (|Eltable| 78 $$) (|Aggregate|)
                                (|Eltable| 30 6) (|Evalable| 6)
                                (|SetCategory|) (|Type|)
-                               (|InnerEvalable| 6 6) (|CoercibleTo| 36)
-                               (|ConvertibleTo| 81) (|BasicType|))
-                            (|makeByteWordVec2| 84
-                                '(1 11 0 0 33 1 0 11 0 34 0 37 0 38 1 0
-                                  0 0 39 1 6 36 0 40 2 37 0 36 0 41 1
-                                  37 0 0 42 1 36 0 43 44 1 37 0 36 45 1
-                                  36 0 43 46 1 36 0 0 47 2 37 0 0 36 48
-                                  1 0 36 0 49 0 11 0 50 0 11 0 51 2 6
-                                  11 0 0 52 2 0 11 0 0 53 1 6 54 0 55 2
-                                  54 0 0 0 56 1 0 54 0 57 2 6 11 0 0 58
-                                  2 0 11 6 0 59 1 0 0 0 61 0 30 0 65 2
-                                  30 11 0 0 66 0 8 0 67 2 30 0 0 0 68 2
-                                  30 11 0 0 70 2 30 0 0 0 71 2 7 11 0 0
-                                  1 1 0 6 0 1 1 0 6 0 1 1 0 0 0 1 3 0
-                                  76 0 30 30 1 2 0 0 0 30 69 1 5 11 0 1
-                                  2 0 11 62 0 1 1 5 0 0 1 2 0 0 62 0 63
-                                  1 5 0 0 1 2 0 0 62 0 1 2 0 11 0 8 1 2
-                                  0 6 0 6 1 2 0 0 0 0 23 2 0 6 0 6 1 2
-                                  0 6 0 6 21 3 0 6 0 30 6 1 3 0 6 0 77
-                                  6 1 3 0 6 0 78 6 1 3 0 0 0 19 0 24 3
-                                  0 6 0 14 6 22 3 0 6 0 79 6 1 2 0 0 0
-                                  43 1 2 0 0 75 0 1 2 0 0 75 0 1 1 0 6
-                                  0 1 0 0 0 1 1 0 0 0 28 1 0 0 0 29 2 0
-                                  0 0 8 32 1 0 0 0 18 1 7 0 0 61 1 7 0
-                                  0 1 2 7 0 6 0 1 2 0 0 75 0 1 2 7 0 6
-                                  0 1 2 0 0 75 0 1 4 7 6 72 0 6 6 1 2 0
-                                  6 72 0 1 3 0 6 72 0 6 1 3 0 6 0 30 6
-                                  1 2 0 6 0 30 1 1 0 11 0 1 3 7 30 6 0
-                                  30 1 2 7 30 6 0 1 2 0 30 75 0 1 1 0
-                                  25 0 27 1 0 43 0 1 2 7 11 0 0 1 2 0 0
-                                  8 6 1 2 0 11 0 8 1 1 6 30 0 31 2 5 0
-                                  0 0 1 2 5 0 0 0 1 3 0 0 62 0 0 64 2 5
-                                  0 0 0 1 3 0 0 62 0 0 1 1 0 25 0 1 2 7
-                                  11 6 0 59 1 6 30 0 1 2 5 0 0 0 1 2 0
-                                  0 80 0 1 3 0 0 72 0 0 1 2 0 0 80 0 1
-                                  1 0 0 6 1 2 0 11 0 8 1 1 0 25 0 1 1 0
-                                  11 0 1 1 7 54 0 57 2 0 0 0 8 1 1 0 6
-                                  0 1 3 0 0 0 0 30 1 3 0 0 6 0 30 1 3 0
-                                  0 0 0 30 1 3 0 0 6 0 30 1 1 0 83 0 1
-                                  2 0 11 30 0 1 1 7 82 0 1 2 0 0 0 8 1
-                                  1 0 6 0 13 2 0 84 75 0 1 2 0 0 0 6 1
-                                  1 0 11 0 1 2 0 11 75 0 1 3 9 0 0 6 6
-                                  1 3 9 0 0 25 25 1 2 9 0 0 73 1 2 9 0
-                                  0 74 1 2 0 11 0 0 12 2 7 11 6 0 1 1 0
-                                  25 0 1 1 0 11 0 17 0 0 0 16 3 0 6 0
-                                  30 6 1 2 0 6 0 30 1 2 0 0 0 77 1 2 0
-                                  6 0 78 1 2 0 0 0 19 20 2 0 6 0 14 15
-                                  2 0 6 0 79 1 2 0 30 0 0 1 2 0 0 0 30
-                                  1 2 0 0 0 77 1 2 0 0 0 77 1 2 0 0 0
-                                  30 1 1 0 11 0 34 1 0 0 0 1 1 0 0 0 1
-                                  1 0 8 0 1 1 0 0 0 39 2 7 8 6 0 1 2 0
-                                  8 75 0 1 3 0 0 0 0 30 1 1 0 0 0 35 1
-                                  3 81 0 1 1 0 0 25 26 2 0 0 0 6 1 2 0
-                                  0 0 0 60 2 0 0 0 6 1 1 0 0 43 1 2 0 0
-                                  6 0 10 2 0 0 0 0 1 1 8 36 0 49 1 0 43
-                                  0 1 2 7 11 0 0 1 2 7 11 0 0 1 2 0 11
-                                  75 0 1 2 5 11 0 0 1 2 5 11 0 0 1 2 7
-                                  11 0 0 53 2 5 11 0 0 1 2 5 11 0 0 1 1
-                                  0 8 0 9)))))
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 37)
+                               (|ConvertibleTo| 82) (|BasicType|))
+                            (|makeByteWordVec2| 85
+                                '(1 11 0 0 33 2 8 11 0 0 34 1 0 11 0 35
+                                  0 38 0 39 1 0 0 0 40 1 6 37 0 41 2 38
+                                  0 37 0 42 1 38 0 0 43 1 37 0 44 45 1
+                                  38 0 37 46 1 37 0 44 47 1 37 0 0 48 2
+                                  38 0 0 37 49 1 0 37 0 50 0 11 0 51 0
+                                  11 0 52 2 6 11 0 0 53 2 0 11 0 0 54 1
+                                  6 55 0 56 2 55 0 0 0 57 1 0 55 0 58 2
+                                  6 11 0 0 59 2 0 11 6 0 60 1 0 0 0 62
+                                  0 30 0 66 2 30 11 0 0 67 0 8 0 68 2
+                                  30 0 0 0 69 2 30 11 0 0 71 2 30 0 0 0
+                                  72 2 7 11 0 0 1 1 0 6 0 1 1 0 6 0 1 1
+                                  0 0 0 1 3 0 77 0 30 30 1 2 0 0 0 30
+                                  70 1 5 11 0 1 2 0 11 63 0 1 1 5 0 0 1
+                                  2 0 0 63 0 64 1 5 0 0 1 2 0 0 63 0 1
+                                  2 0 11 0 8 1 2 0 6 0 6 1 2 0 0 0 0 23
+                                  2 0 6 0 6 1 2 0 6 0 6 21 3 0 6 0 30 6
+                                  1 3 0 6 0 78 6 1 3 0 6 0 79 6 1 3 0 0
+                                  0 19 0 24 3 0 6 0 14 6 22 3 0 6 0 80
+                                  6 1 2 0 0 0 44 1 2 0 0 76 0 1 2 0 0
+                                  76 0 1 1 0 6 0 1 0 0 0 1 1 0 0 0 28 1
+                                  0 0 0 29 2 0 0 0 8 32 1 0 0 0 18 1 7
+                                  0 0 62 1 7 0 0 1 2 7 0 6 0 1 2 0 0 76
+                                  0 1 2 7 0 6 0 1 2 0 0 76 0 1 4 7 6 73
+                                  0 6 6 1 2 0 6 73 0 1 3 0 6 73 0 6 1 3
+                                  0 6 0 30 6 1 2 0 6 0 30 1 1 0 11 0 1
+                                  3 7 30 6 0 30 1 2 7 30 6 0 1 2 0 30
+                                  76 0 1 1 0 25 0 27 1 0 44 0 1 2 7 11
+                                  0 0 1 2 0 0 8 6 1 2 0 11 0 8 1 1 6 30
+                                  0 31 2 5 0 0 0 1 2 5 0 0 0 1 3 0 0 63
+                                  0 0 65 2 5 0 0 0 1 3 0 0 63 0 0 1 1 0
+                                  25 0 1 2 7 11 6 0 60 1 6 30 0 1 2 5 0
+                                  0 0 1 2 0 0 81 0 1 3 0 0 73 0 0 1 2 0
+                                  0 81 0 1 1 0 0 6 1 2 0 11 0 8 1 1 0
+                                  25 0 1 1 0 11 0 1 1 7 55 0 58 2 0 0 0
+                                  8 1 1 0 6 0 1 3 0 0 0 0 30 1 3 0 0 6
+                                  0 30 1 3 0 0 0 0 30 1 3 0 0 6 0 30 1
+                                  1 0 84 0 1 2 0 11 30 0 1 1 7 83 0 1 2
+                                  0 0 0 8 1 1 0 6 0 13 2 0 85 76 0 1 2
+                                  0 0 0 6 1 1 0 11 0 1 2 0 11 76 0 1 3
+                                  9 0 0 6 6 1 3 9 0 0 25 25 1 2 9 0 0
+                                  74 1 2 9 0 0 75 1 2 0 11 0 0 12 2 7
+                                  11 6 0 1 1 0 25 0 1 1 0 11 0 17 0 0 0
+                                  16 3 0 6 0 30 6 1 2 0 6 0 30 1 2 0 0
+                                  0 78 1 2 0 6 0 79 1 2 0 0 0 19 20 2 0
+                                  6 0 14 15 2 0 6 0 80 1 2 0 30 0 0 1 2
+                                  0 0 0 30 1 2 0 0 0 78 1 2 0 0 0 78 1
+                                  2 0 0 0 30 1 1 0 11 0 35 1 0 0 0 1 1
+                                  0 0 0 1 1 0 8 0 1 1 0 0 0 40 2 7 8 6
+                                  0 1 2 0 8 76 0 1 3 0 0 0 0 30 1 1 0 0
+                                  0 36 1 3 82 0 1 1 0 0 25 26 2 0 0 0 6
+                                  1 2 0 0 0 0 61 2 0 0 0 6 1 1 0 0 44 1
+                                  2 0 0 6 0 10 2 0 0 0 0 1 1 8 37 0 50
+                                  1 0 44 0 1 2 7 11 0 0 1 2 7 11 0 0 1
+                                  2 0 11 76 0 1 2 5 11 0 0 1 2 5 11 0 0
+                                  1 2 7 11 0 0 54 2 5 11 0 0 1 2 5 11 0
+                                  0 1 1 0 8 0 9)))))
           '|lookupComplete|)) 
