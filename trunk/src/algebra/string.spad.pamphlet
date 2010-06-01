@@ -75,21 +75,24 @@ Character: OrderedFinite() with
 	CC ==> CharacterClass()
         NNI ==> NonNegativeInteger
 	import CC
+        import %ceq: (%,%) -> Boolean from Foreign Builtin
+        import %clt: (%,%) -> Boolean from Foreign Builtin
+        import %cle: (%,%) -> Boolean from Foreign Builtin
+        import %cgt: (%,%) -> Boolean from Foreign Builtin
+        import %cge: (%,%) -> Boolean from Foreign Builtin
+        import %c2i: % -> NNI         from Foreign Builtin
+        import %i2c: NNI -> %         from Foreign Builtin
 
-	--cl: Record(dig:CC,hex:CC,upp:CC,low:CC,alpha:CC,alnum:CC) :=
-	--    [ digit(), hexDigit(),
-	--	upperCase(), lowerCase(), alphabetic(), alphanumeric() ]
-
-	a = b		       == CHAR_=(a,b)$Lisp
-	a < b		       == CHAR_<(a,b)$Lisp
-	a > b		       == CHAR_>(a,b)$Lisp
-	a <= b		       == CHAR_<_=(a,b)$Lisp
-	a >= b		       == CHAR_>_=(a,b)$Lisp
+	a = b		       == %ceq(a,b)
+	a < b		       == %clt(a,b)
+	a > b		       == %cgt(a,b)
+	a <= b		       == %cle(a,b)
+	a >= b		       == %cge(a,b)
 	size()		       == 256
 	index n		       == char((n - 1)::NNI)
 	lookup c	       == (1 + ord c)::PositiveInteger
-	char(n: NNI)	       == CODE_-CHAR(n)$Lisp
-	ord c		       == CHAR_-CODE(c)$Lisp
+	char(n: NNI)	       == %i2c n
+	ord c		       == %c2i c
 	random()	       == char(random(size())$NNI)
 	space		       == CHAR("   ", 0$Lisp)$Lisp
 	quote		       == CHAR("_" ", 0$Lisp)$Lisp
