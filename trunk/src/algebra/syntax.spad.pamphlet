@@ -114,17 +114,21 @@ Syntax(): Public == Private where
       ++ x case String is true if `x' really is a String
 
   Private == add
+    import %integer?: % -> Boolean from Foreign Builtin
+    import %float?: % -> Boolean   from Foreign Builtin
+    import %string?: % -> Boolean  from Foreign Builtin
+
     x = y ==
       EQUAL(x,y)$Lisp
    
     s case Integer ==
-      INTEGERP(s)$Lisp
+      %integer? s
 
     s case DoubleFloat ==
-      FLOATP(s)$Lisp
+      %float? s
 
     s case String ==
-      STRINGP(s)$Lisp
+      %string? s
 
     s case Identifier ==
       IDENTP(s)$Lisp
@@ -198,10 +202,10 @@ Syntax(): Public == Private where
 
     --% syntax construction
     buildSyntax(s: Identifier, l: List %): % ==
-      CONS(s,l)$Lisp
+      %makepair(s,l)$Foreign(Builtin)
 
     buildSyntax(op: %, l: List %): % ==
-      CONS(op,l)$Lisp
+      %makepair(op,l)$Foreign(Builtin)
 
     nil? x ==
       NULL(x)$Lisp
@@ -267,7 +271,9 @@ ElaboratedExpression(): Public == Private where
       ++ getOperands(e) returns the list of operands in `e', assuming it
       ++ is a call form.
 
-  Private ==> add
+  Private == add
+    import %eq: (%,%) -> Boolean from Foreign Builtin
+    import %pair?: % -> Boolean  from Foreign Builtin
     isAtomic(x: %): Boolean ==
       ATOM(x)$Lisp
 
@@ -275,7 +281,7 @@ ElaboratedExpression(): Public == Private where
       getMode(x)$Lisp
 
     callForm? x ==
-      CONSP(x)$Lisp
+      %pair? x
 
     getOperator x ==
       op: SExpression := getUnnameIfCan(x)$Lisp
@@ -284,7 +290,7 @@ ElaboratedExpression(): Public == Private where
 
     constant? x ==
       isAtomic x and 
-        EQ(getUnnameIfCan(x)$Lisp, _$immediateDataSymbol$Lisp)$Lisp : Boolean
+        %eq(getUnnameIfCan(x)$Lisp, _$immediateDataSymbol$Lisp)
 
     getConstant x ==
       constant? x => getValue(x)$Lisp @ SExpression
@@ -580,8 +586,10 @@ Identifier(): Public == Private where
       ++ \spad{gensym()} returns a new identifier, different from 
       ++ any other identifier in the running system
   Private == add
-    gensym() == GENSYM()$Foreign(Builtin)
-    x = y == EQ(x,y)$Lisp
+    import %eq: (%,%) -> Boolean from Foreign Builtin
+    import %gensym: () -> %      from Foreign Builtin
+    gensym() == %gensym()
+    x = y == %eq(x,y)
     coerce(x: %): Symbol == x : Symbol
     coerce(x: %): OutputForm == x : OutputForm
 

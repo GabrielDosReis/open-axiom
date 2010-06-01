@@ -273,28 +273,39 @@ for x in [
     ['%isub,:"-"],
 
     -- unary float operations.
-    ['%fabs,:'ABS],
+    ['%fabs,  :'ABS],
+    ['%float?,:'FLOATP],
     -- binary float operations.
-    ['%fadd,:"+"],
-    ['%fge, :">="],
-    ['%fgt, :">"],
-    ['%fle, :"<="],
-    ['%flt, :"<"],
-    ['%fmax,:'MAX],
-    ['%fmin,:'MIN],
-    ['%fmul,:"*"],
-    ['%fpow,:'EXPT],
-    ['%fsub,:"-"],
+    ['%fadd,  :"+"],
+    ['%fge,   :">="],
+    ['%fgt,   :">"],
+    ['%fle,   :"<="],
+    ['%flt,   :"<"],
+    ['%fmax,  :'MAX],
+    ['%fmin,  :'MIN],
+    ['%fmul,  :"*"],
+    ['%fpow,  :'EXPT],
+    ['%fsub,  :"-"],
 
     -- list contants
     -- ['%nil, :'NIL],
     -- unary list operations
     ['%head,    :'CAR],
+    ['%makepair,:'CONS],
+    ['%lfirst,  :'CAR],
     ['%llength, :'LIST_-LENGTH],
+    ['%lsecond, :'CADR],
+    ['%lthird,  :'CADDR],
     ['%pair?,   :'CONSP],
     ['%tail,    :'CDR],
     -- binary list operations
     ['%lconcat, :'APPEND],
+
+    -- symbol unary functions
+    ['%gensym,  :'GENSYM],
+
+    -- string unary functions
+    ['%string?, :'STRINGP],
 
     -- general utility
     ['%hash,:'SXHASH]
