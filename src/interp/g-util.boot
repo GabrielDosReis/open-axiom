@@ -249,6 +249,15 @@ for x in [
     ['%and, :'AND],
     ['%or,  :'OR],
 
+    -- character binary operations
+    ['%ceq, :'CHAR_=],
+    ['%clt, :'CHAR_<],
+    ['%cle, :'CHAR_<_=],
+    ['%cgt, :'CHAR_>],
+    ['%cge, :'CHAR_>_=],
+    ['%c2i, :'CHAR_-CODE],
+    ['%i2c, :'CODE_-CHAR],
+
     -- unary integer operations.
     ['%iabs,    :'ABS],
     ['%ieven?,  :'EVENP],

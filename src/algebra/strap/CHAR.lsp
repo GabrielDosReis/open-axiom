@@ -4,27 +4,27 @@
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;=;2$B;1|)) 
 
-(PUT '|CHAR;=;2$B;1| '|SPADreplace| 'CHAR=) 
+(PUT '|CHAR;=;2$B;1| '|SPADreplace| '|%ceq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;<;2$B;2|)) 
 
-(PUT '|CHAR;<;2$B;2| '|SPADreplace| 'CHAR<) 
+(PUT '|CHAR;<;2$B;2| '|SPADreplace| '|%clt|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;>;2$B;3|)) 
 
-(PUT '|CHAR;>;2$B;3| '|SPADreplace| 'CHAR>) 
+(PUT '|CHAR;>;2$B;3| '|SPADreplace| '|%cgt|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;<=;2$B;4|)) 
 
-(PUT '|CHAR;<=;2$B;4| '|SPADreplace| 'CHAR<=) 
+(PUT '|CHAR;<=;2$B;4| '|SPADreplace| '|%cle|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;>=;2$B;5|)) 
 
-(PUT '|CHAR;>=;2$B;5| '|SPADreplace| 'CHAR>=) 
+(PUT '|CHAR;>=;2$B;5| '|SPADreplace| '|%cge|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
                 |CHAR;size;Nni;6|)) 
@@ -40,12 +40,12 @@
 (DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Shell|) |%Char|)
                 |CHAR;char;Nni$;9|)) 
 
-(PUT '|CHAR;char;Nni$;9| '|SPADreplace| 'CODE-CHAR) 
+(PUT '|CHAR;char;Nni$;9| '|SPADreplace| '|%i2c|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) (|%IntegerSection| 0))
                 |CHAR;ord;$Nni;10|)) 
 
-(PUT '|CHAR;ord;$Nni;10| '|SPADreplace| 'CHAR-CODE) 
+(PUT '|CHAR;ord;$Nni;10| '|SPADreplace| '|%c2i|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;random;$;11|)) 
 
