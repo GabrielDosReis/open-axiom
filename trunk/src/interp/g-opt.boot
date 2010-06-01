@@ -407,12 +407,13 @@ $VMsideEffectFreeOperators ==
          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
            %fpow %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
-            %hash %ismall? %string? %ceq %clt %cle %cgt %cge %c2i %i2c)
+            %lreverse %lempty? %hash %ismall? %string?
+             %ceq %clt %cle %cgt %cge %c2i %i2c)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ["CONS","LIST","VECTOR","STRINGIMAGE",'%gensym,
+    ["CONS","LIST","VECTOR","STRINGIMAGE",'%gensym, '%lreverse_!,
       "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to

@@ -299,16 +299,19 @@ for x in [
     -- list contants
     -- ['%nil, :'NIL],
     -- unary list operations
-    ['%head,    :'CAR],
-    ['%makepair,:'CONS],
-    ['%lfirst,  :'CAR],
-    ['%llength, :'LIST_-LENGTH],
-    ['%lsecond, :'CADR],
-    ['%lthird,  :'CADDR],
-    ['%pair?,   :'CONSP],
-    ['%tail,    :'CDR],
+    ['%head,      :'CAR],
+    ['%makepair,  :'CONS],
+    ['%lempty?,   :'NULL],
+    ['%lfirst,    :'CAR],
+    ['%llength,   :'LIST_-LENGTH],
+    ['%lreverse,  :'REVERSE],
+    ['%lreverse_!,:'NREVERSE],
+    ['%lsecond,   :'CADR],
+    ['%lthird,    :'CADDR],
+    ['%pair?,     :'CONSP],
+    ['%tail,      :'CDR],
     -- binary list operations
-    ['%lconcat, :'APPEND],
+    ['%lconcat,   :'APPEND],
 
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
