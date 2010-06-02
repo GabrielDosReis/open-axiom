@@ -406,7 +406,7 @@ $VMsideEffectFreeOperators ==
         %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
-           %fpow %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+           %fpow %fdiv %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
             %lreverse %lempty? %hash %ismall? %string?
              %ceq %clt %cle %cgt %cge %c2i %i2c)
 

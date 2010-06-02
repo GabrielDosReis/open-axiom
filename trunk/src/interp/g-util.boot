@@ -286,6 +286,8 @@ for x in [
     ['%float?,:'FLOATP],
     -- binary float operations.
     ['%fadd,  :"+"],
+    ['%fdiv,  :"/"],
+    ['%feq,   :"="],
     ['%fge,   :">="],
     ['%fgt,   :">"],
     ['%fle,   :"<="],
