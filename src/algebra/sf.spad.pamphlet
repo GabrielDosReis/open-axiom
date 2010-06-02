@@ -279,6 +279,17 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
 
  == add
    MER ==> Record(MANTISSA:Integer,EXPONENT:Integer)
+   import %fmul: (%,%) -> %      from Foreign Builtin
+   import %fadd: (%,%) -> %      from Foreign Builtin
+   import %fsub: (%,%) -> %      from Foreign Builtin
+   import %fdiv: (%,%) -> %      from Foreign Builtin
+   import %fmin: (%,%) -> %      from Foreign Builtin
+   import %fmax: (%,%) -> %      from Foreign Builtin
+   import %feq: (%,%) -> Boolean from Foreign Builtin
+   import %flt: (%,%) -> Boolean from Foreign Builtin
+   import %fle: (%,%) -> Boolean from Foreign Builtin
+   import %fgt: (%,%) -> Boolean from Foreign Builtin
+   import %fge: (%,%) -> Boolean from Foreign Builtin
 
    manexp: % -> MER
 
@@ -341,18 +352,18 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    pi()             == PI$Lisp
    coerce(x:%):OutputForm == outputForm x
    convert(x:%):InputForm == convert(x pretend DoubleFloat)$InputForm
-   x < y            == (x<y)$Lisp
-   x > y            == (x > y)$Lisp        -- help inliner
-   x <= y           == (x <= y)$Lisp       -- ditto
-   x >= y           == (x >= y)$Lisp       -- ditto
+   x < y            == %flt(x,y)
+   x > y            == %fgt(x,y)
+   x <= y           == %fle(x,y)
+   x >= y           == %fge(x,y)
    - x              == (-x)$Lisp
-   x + y            == (x+y)$Lisp
-   x:% - y:%        == (x-y)$Lisp
-   x:% * y:%        == (x*y)$Lisp
+   x + y            == %fadd(x,y)
+   x:% - y:%        == %fsub(x,y)
+   x:% * y:%        == %fmul(x,y)
    i:Integer * x:%  == (i*x)$Lisp
-   max(x,y)         == MAX(x,y)$Lisp
-   min(x,y)         == MIN(x,y)$Lisp
-   x = y            == (x=y)$Lisp
+   max(x,y)         == %fmax(x,y)
+   min(x,y)         == %fmin(x,y)
+   x = y            == %feq(x,y)
    x:% / i:Integer  == (x/i)$Lisp
    sqrt x           == checkComplex SQRT(x)$Lisp
    log10 x          == checkComplex log(x)$Lisp
@@ -386,7 +397,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    acsch x          == ACSCH(x)$Lisp
    acoth x          == checkComplex ACOTH(x)$Lisp
    asech x          == checkComplex ASECH(x)$Lisp
-   x:% / y:%        == (x/y)$Lisp
+   x:% / y:%        == %fdiv(x,y)
    negative? x      == MINUSP(x)$Lisp
    zero? x          == ZEROP(x)$Lisp
    one? x           == x = 1
