@@ -766,8 +766,7 @@ compileCoerceMap(op,argTypes,mm) ==
   minivectorName := makeInternalMapMinivectorName name
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
-  compileInteractive
-    [name,['LAMBDA,parms,:declareUnusedParameters(parms,body)]]
+  compileInteractive [name,['LAMBDA,parms,body]]
   sig.target
 
 depthOfRecursion(opName,body) ==
