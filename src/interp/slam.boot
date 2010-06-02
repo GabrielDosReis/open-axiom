@@ -153,8 +153,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   cacheCount = "all" => reportFunctionCacheAll(op,nam,argl,body)
   parms := [:argl,"envArg"]
   cacheCount = 0 or null argl =>
-    fun:= [nam,["LAMBDA",parms,:declareUnusedParameters(parms,body)]]
-    compileInteractive fun
+    compileInteractive [nam,["LAMBDA",parms,body]]
     nam
   num :=
     FIXP cacheCount =>
@@ -190,8 +189,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
   -- of above.
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
-  computeFunction:= [auxfn,["LAMBDA",parms,
-                              :declareUnusedParameters(parms,body)]]
+  computeFunction:= [auxfn,["LAMBDA",parms,body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= "function"
@@ -225,8 +223,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
   parms := [:argl, "envArg"]
-  computeFunction:= [auxfn,["LAMBDA",parms,
-                              :declareUnusedParameters(parms,body)]]
+  computeFunction:= [auxfn,["LAMBDA",parms,body]]
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= 'hash_-table
@@ -304,7 +301,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   continueInit:=
     [["%LET",gIndex,["%ELT",stateVar,0]],
       :[["%LET",g,["%ELT",stateVar,i]] for g in gsList for i in 1..]]
-  mainFunction:= [nam,["LAM",margl,:declareUnusedParameters(margl,mbody)]] where
+  mainFunction:= [nam,["LAM",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= gensym()
     tripleCode := ["CONS",n,["LIST",:initCode]]
@@ -412,8 +409,8 @@ clearLocalModemaps x ==
  
 compileInteractive fn ==
   if $InteractiveMode then startTimingProcess 'compilation
-  --following not used for common lisp
-  --removeUnnecessaryLastArguments second fn
+  if fn is [.,[bindOp,.,.]] and bindOp in $AbstractionOperator then
+    fn := [first fn,declareUnusedParameters second fn]
   if $reportCompilation then
     sayBrightlyI bright '"Generated LISP code for function:"
     pp fn

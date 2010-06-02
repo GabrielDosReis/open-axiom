@@ -177,16 +177,14 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   -- MCD 13/3/96
   parms := [:vars,"envArg"]
   if not $definingMap and ($genValue or $compilingMap) then
-    fun := [$mapName,["LAMBDA",parms,:declareUnusedParameters(parms,body)]]
-    code :=  wrap compileInteractive fun
+    code := wrap compileInteractive [$mapName,["LAMBDA",parms,body]]
   else
     $freeVariables: local := []
     $boundVariables: local := [minivectorName,:vars]
     -- CCL does not support upwards funargs, so we check for any free variables
     -- and pass them into the lambda as part of envArg.
     body := checkForFreeVariables(body,"ALL")
-    fun := ["function",["LAMBDA",parms,
-                         :declareUnusedParameters(parms,body)]]
+    fun := ["function",["LAMBDA",parms,body]]
     code := ["CONS", fun, ["VECTOR", :reverse $freeVariables]]
 
   val := objNew(code,rt := ['Mapping,computedResultType,:rest types])
@@ -786,7 +784,7 @@ mkIterFun([index,:s],funBody) ==
   $boundVariables: local := [index]
   body := checkForFreeVariables(objVal getValue funBody,"ALL")
   parms := [index,"envArg"]
-  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,body)]]
+  val:=['function,declareUnusedParameters ['LAMBDA,parms,body]]
   vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
@@ -926,7 +924,7 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   body :=
    [checkForFreeVariables(form,$localVars) for form in getValue funBody]
   parms := [$index,'envArg]
-  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
+  val:=['function,declareUnusedParameters ['LAMBDA,parms,objVal body]]
   vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec

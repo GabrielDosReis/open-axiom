@@ -41,7 +41,7 @@ module c_-util where
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List -> %List
   diagnoseUnknownType: (%Mode,%Env) -> %Form
-  declareUnusedParameters: (%List,%Code) -> %List
+  declareUnusedParameters: %Code -> %Code
   registerFunctionReplacement: (%Symbol,%Form) -> %Thing
   getFunctionReplacement: %Symbol -> %Form
   getSuccessEnvironment: (%Form,%Env) -> %Env
@@ -156,13 +156,34 @@ wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ~= #sig
 
+$AbstractionOperator ==
+  '(LAM ILAM SLAM SPADSLAM LAMBDA)
+
+++ Return true if the symbol 's' is used in the form 'x'.  
+usedSymbol?(s,x) ==
+  symbol? x => s = x
+  atom x => false
+  x is ['QUOTE,:.] => false
+  x is [op,parms,:body] and op in $AbstractionOperator =>
+    x in parms => false
+    usedSymbol?(x,body)
+  or/[usedSymbol?(s,x') for x' in x]
+  
+  
 ++ We are about to seal the (Lisp) definition of a function.
-++ Augment the `body' with a declaration for those `parms'
+++ Augment the body of any function definition in the form `x'
+++ with declarations for unused parameters.
 ++ that are unused.
-declareUnusedParameters(parms,body) ==
-  unused := [p for p in parms | not CONTAINED(p,body)]
-  null unused => [body]
-  [["DECLARE",["IGNORE",:unused]],body]
+declareUnusedParameters x == (augment x; x) where
+  augment x == 
+    isAtomicForm x => nil
+    x is [op,parms,body] and op in $AbstractionOperator =>
+      augment body
+      unused := [p for p in parms | not usedSymbol?(p,body)]
+      null unused => [body]
+      x.rest.rest := [["DECLARE",["IGNORE",:unused]],body]
+    for x' in x repeat
+      augment x'
 
 devaluate d ==
   not REFVECP d => d
