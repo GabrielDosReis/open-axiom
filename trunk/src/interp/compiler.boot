@@ -1849,7 +1849,7 @@ compCat(form is [functorName,:argl],m,e) ==
   diagnoseUnknownType(form,e)
   [funList,e]:= FUNCALL(fn,form,form,e)
   catForm:=
-    ["Join",'(SetCategory),["CATEGORY","domain",:
+    ["Join",$SetCategory,["CATEGORY","domain",:
       [["SIGNATURE",op,sig] for [op,sig,.] in funList | op~="="]]]
   --RDJ: for coercion purposes, it necessary to know it's a Set; I'm not
   --sure if it uses any of the other signatures(see extendsCategoryForm)

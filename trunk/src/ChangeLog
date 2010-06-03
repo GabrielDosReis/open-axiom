@@ -1,3 +1,10 @@
+2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot: Cleanup.
+	* interp/c-util.boot ($SetCategory): New constant.
+	* interp/compiler.boot: Use it.
+	* interp/functor.boot: Likewise.
+
 2010-06-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (usedSymbol?): New.

@@ -197,10 +197,10 @@ compCategories u ==
     error ['"compCategories: need an atom in operator position", first u]
   first u = "Record" =>
     -- There is no modemap property for these guys so do it by hand.
-    [first u, :[[":", a.1, compCategories1(a.2,'(SetCategory))] for a in rest u]]
+    [first u, :[[":", a.1, compCategories1(a.2,$SetCategory)] for a in rest u]]
   first u = "Union" or first u = "Mapping" =>
     -- There is no modemap property for these guys so do it by hand.
-    [first u, :[compCategories1(a,'(SetCategory)) for a in rest u]]
+    [first u, :[compCategories1(a,$SetCategory) for a in rest u]]
   u is ['SubDomain,D,.] => compCategories D
   v:=get(first u,'modemap,$e)
   atom v =>
