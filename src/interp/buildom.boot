@@ -53,7 +53,7 @@ $commonCategoryAncestors ==
 ++ Default category packages for Record, Union, Mapping and 
 ++ Enumeration domains.
 $commonCategoryDefaults ==
-  ['(SetCategory_& $), '(BasicType_& $), NIL]
+  ['(SetCategory_& $), '(BasicType_& $), nil]
 
 ++ The slot number in a domain shell that holds the first parameter to
 ++ a domain constructor.
@@ -92,8 +92,8 @@ Record(:args) ==
 	  ["~=",[[$Boolean,"$","$"],:0]], 
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := NIL
-  dom.3 := ["RecordCategory",:QCDR dom.0]
+  dom.2 := nil
+  dom.3 := ["RecordCategory",:rest dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := third a
@@ -102,7 +102,7 @@ Record(:args) ==
   dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
 -- following is cache for equality functions
   dom.($FirstParamSlot + nargs + 3) := if nargs <= 2
-	    then [NIL,:NIL]
+	    then [nil,:nil]
 	    else newShell nargs
   -- remember this instantiation for future re-use.
   haddProp($ConstructorCache,"Record",srcArgs,[1,:dom])
@@ -167,8 +167,8 @@ Union(:args) ==
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
-  dom.2 := NIL
-  dom.3 := ["UnionCategory",:QCDR dom.0]
+  dom.2 := nil
+  dom.3 := ["UnionCategory",:rest dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -223,8 +223,8 @@ Mapping(:args) ==
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := NIL
-  dom.3 := '(SetCategory)
+  dom.2 := nil
+  dom.3 := $SetCategory
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -261,8 +261,8 @@ Enumeration(:"args") ==
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
                 [["$", $Symbol], :oldSlotCode(nargs+2)]]
                   ]]
-  dom.2 := NIL
-  dom.3 := ["EnumerationCategory",:QCDR dom.0]
+  dom.2 := nil
+  dom.3 := ["EnumerationCategory",:rest dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -300,7 +300,7 @@ constructorCategory (title is [op,:.]) ==
   [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=
-    JoinInner([eval ["SetCategory"],mkCategory("domain",oplist,nil,nil,nil)],
+    JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
   cat.(0):= title
   cat
@@ -346,7 +346,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
         ["hash",[$SingleInteger,name],["ELT",dc,0]],
 	 ["coerce",[$OutputForm,name],["ELT",dc,$FirstParamSlot+nargs+1]],:
 	   ("append"/
-	    [[["construct",[name,type],["XLAM",["#1"],["CONS",i,"#1"]]],
+	    [[["construct",[name,type],["XLAM",["#1"],["%makepair",i,"#1"]]],
 	      ["elt",[type,name,tag],cdownFun],
 		["case",[$Boolean,name,tag],
 		   ["XLAM",["#1"],["QEQCAR","#1",i]]]]
@@ -354,9 +354,9 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 		       cdownFun() ==
 			gg:=gensym()
 			$InteractiveMode =>
-			  ["XLAM",["#1"],["PROG1",["QCDR","#1"],
+			  ["XLAM",["#1"],["PROG1",["%tail","#1"],
 			    ["check-union",["QEQCAR","#1",i],type,"#1"]]]
-			["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],["QCDR",gg],
+			["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],["%tail",gg],
 			  ["check-union",["QEQCAR",gg,i],type,gg]]]
   [cList,e]
 
@@ -390,12 +390,12 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 	   ["case",[$Boolean,g,t],typeFun]]
 	     for p in predList for t in listOfEntries])] where
 		upFun() ==
-		  p is ["EQCAR",x,n] => ["XLAM",["#1"],["CONS",n,"#1"]]
+		  p is ["EQCAR",x,n] => ["XLAM",["#1"],["%makepair",n,"#1"]]
 		  ["XLAM",["#1"],"#1"]
 		cdownFun() ==
 		  gg:=gensym()
 		  if p is ["EQCAR",x,n] then
-		     ref:=["QCDR",gg]
+		     ref:=["%tail",gg]
 		     q:= ["QEQCAR", gg, n]
 		  else
 		     ref:=gg
@@ -404,7 +404,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		       ["check-union",q,t,gg]]]
 		downFun() ==
 		   p is ["EQCAR",x,.] =>
-		     ["XLAM",["#1"],["QCDR","#1"]]
+		     ["XLAM",["#1"],["%tail","#1"]]
 		   ["XLAM",["#1"],"#1"]
 		typeFun() ==
 		   p is ["EQCAR",x,n] =>

@@ -48,6 +48,10 @@ module c_-util where
   getInverseEnvironment: (%Form,%Env) -> %Env
 
 
+--%
+$SetCategory ==
+  '(SetCategory)
+  
 --% 
 
 ++ Token to indicate that a function body should be ignored.
