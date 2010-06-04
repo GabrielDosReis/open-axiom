@@ -1976,7 +1976,7 @@ compRetractGuard(x,t,sn,sm,e) ==
     -- assignment here and let the rest of the compiler deal with it.
     z := gensym()
     caseCode := ["PROGN",["%LET",z,retractCode],['%ieq,['%head,z],0]]
-    restrictCode := ["QCDR",z]
+    restrictCode := ["%tail",z]
   -- 1.3. Everything else failed; nice try.
   else return stackAndThrow('"%1bp is not retractable to %2bp",[sm,t])
   -- 2.  Now declare `x'.

@@ -340,21 +340,21 @@ optSEQ ["SEQ",:l] ==
  
 optRECORDELT ["RECORDELT",name,ind,len] ==
   len=1 =>
-    ind=0 => ["QCAR",name]
+    ind=0 => ["%head",name]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["QCAR",name]
-    ind=1 => ["QCDR",name]
+    ind=0 => ["%head",name]
+    ind=1 => ["%tail",name]
     keyedSystemError("S2OO0002",[ind])
   ["QVELT",name,ind]
  
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["QCAR",name]]
+    ind=0 => ["PROGN",["RPLACA",name,expr],["%head",name]]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["QCAR",name]]
-    ind=1 => ["PROGN",["RPLACD",name,expr],["QCDR",name]]
+    ind=0 => ["PROGN",["RPLACA",name,expr],["%head",name]]
+    ind=1 => ["PROGN",["RPLACD",name,expr],["%tail",name]]
     keyedSystemError("S2OO0002",[ind])
   ["QSETVELT",name,ind,expr]
  
