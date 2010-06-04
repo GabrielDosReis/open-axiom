@@ -1975,7 +1975,7 @@ compRetractGuard(x,t,sn,sm,e) ==
     -- the condition and the body of the alternative, so just use 
     -- assignment here and let the rest of the compiler deal with it.
     z := gensym()
-    caseCode := ["PROGN",["%LET",z,retractCode],["QEQCAR",z,0]]
+    caseCode := ["PROGN",["%LET",z,retractCode],['%ieq,['%head,z],0]]
     restrictCode := ["QCDR",z]
   -- 1.3. Everything else failed; nice try.
   else return stackAndThrow('"%1bp is not retractable to %2bp",[sm,t])

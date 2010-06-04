@@ -491,8 +491,8 @@
                                 (|getShellEntry| $ 124))
                             |SYMBOL;new;2$;28|)
                       (EXIT (COND
-                              ((QEQCAR |u| 1) 0)
-                              ('T (+ (QCDR |u|) 1)))))
+                              ((EQL (CAR |u|) 1) 0)
+                              ('T (+ (CDR |u|) 1)))))
                  |SYMBOL;new;2$;28|)
            (SPADCALL (|getShellEntry| $ 13) |x| |n|
                (|getShellEntry| $ 127))

@@ -349,15 +349,15 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 	    [[["construct",[name,type],["XLAM",["#1"],["%makepair",i,"#1"]]],
 	      ["elt",[type,name,tag],cdownFun],
 		["case",[$Boolean,name,tag],
-		   ["XLAM",["#1"],["QEQCAR","#1",i]]]]
+		   ["XLAM",["#1"],['%ieq,['%head,"#1"],i]]]]
 		     for [.,tag,type] in listOfEntries for i in 0..])] where
 		       cdownFun() ==
 			gg:=gensym()
 			$InteractiveMode =>
 			  ["XLAM",["#1"],["PROG1",["%tail","#1"],
-			    ["check-union",["QEQCAR","#1",i],type,"#1"]]]
+			    ["check-union",['%ieq,['%head,"#1"],i],type,"#1"]]]
 			["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],["%tail",gg],
-			  ["check-union",["QEQCAR",gg,i],type,gg]]]
+			  ["check-union",['%ieq,['%head,gg],i],type,gg]]]
   [cList,e]
 
 mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
@@ -396,7 +396,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		  gg:=gensym()
 		  if p is ["EQCAR",x,n] then
 		     ref:=["%tail",gg]
-		     q:= ["QEQCAR", gg, n]
+		     q:= ['%ieq,['%head,gg],n]
 		  else
 		     ref:=gg
 		     q:= substitute(gg,"#1",p)
@@ -408,7 +408,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		   ["XLAM",["#1"],"#1"]
 		typeFun() ==
 		   p is ["EQCAR",x,n] =>
-		     ["XLAM",["#1"],["QEQCAR",x,n]]
+		     ["XLAM",["#1"],['%ieq,['%head,x],n]]
 		   ["XLAM",["#1"],p]
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]

@@ -196,20 +196,20 @@
                              (|getShellEntry| $ 37))
                          |EUCDOM-;extendedEuclidean;3SU;8|)
                    (EXIT (COND
-                           ((QEQCAR |w| 1) (CONS 1 "failed"))
+                           ((EQL (CAR |w|) 1) (CONS 1 "failed"))
                            ((SPADCALL |y| (|getShellEntry| $ 8))
                             (CONS 0
                                   (CONS (SPADCALL (QVELT |s| 0)
-                                         (QCDR |w|)
+                                         (CDR |w|)
                                          (|getShellEntry| $ 29))
                                         (SPADCALL (QVELT |s| 1)
-                                         (QCDR |w|)
+                                         (CDR |w|)
                                          (|getShellEntry| $ 29)))))
                            ('T
                             (SEQ (LETT |qr|
                                        (SPADCALL
                                         (SPADCALL (QVELT |s| 0)
-                                         (QCDR |w|)
+                                         (CDR |w|)
                                          (|getShellEntry| $ 29))
                                         |y| (|getShellEntry| $ 16))
                                        |EUCDOM-;extendedEuclidean;3SU;8|)
@@ -217,7 +217,7 @@
                                         (CONS (QCDR |qr|)
                                          (SPADCALL
                                           (SPADCALL (QVELT |s| 1)
-                                           (QCDR |w|)
+                                           (CDR |w|)
                                            (|getShellEntry| $ 29))
                                           (SPADCALL (QCAR |qr|) |x|
                                            (|getShellEntry| $ 29))
@@ -315,7 +315,7 @@
                              (|getShellEntry| $ 37))
                          |EUCDOM-;expressIdealMember;LSU;10|)
                    (EXIT (COND
-                           ((QEQCAR |q| 1) (CONS 1 "failed"))
+                           ((EQL (CAR |q|) 1) (CONS 1 "failed"))
                            ('T
                             (CONS 0
                                   (PROGN
@@ -336,7 +336,7 @@
                                         (GO G191)))
                                      (LETT #2#
                                       (CONS
-                                       (SPADCALL (QCDR |q|) |v|
+                                       (SPADCALL (CDR |q|) |v|
                                         (|getShellEntry| $ 29))
                                        #2#)
                                       |EUCDOM-;expressIdealMember;LSU;10|)
@@ -446,32 +446,31 @@
                                    |z| (|getShellEntry| $ 62))
                                |EUCDOM-;multiEuclidean;LSU;11|)
                          (EXIT (COND
-                                 ((QEQCAR |u| 1) (CONS 1 "failed"))
+                                 ((EQL (CAR |u|) 1) (CONS 1 "failed"))
                                  ('T
                                   (SEQ (LETT |v1|
-                                        (SPADCALL |l1|
-                                         (QCDR (QCDR |u|))
+                                        (SPADCALL |l1| (QCDR (CDR |u|))
                                          (|getShellEntry| $ 63))
                                         |EUCDOM-;multiEuclidean;LSU;11|)
                                        (EXIT
                                         (COND
-                                          ((QEQCAR |v1| 1)
+                                          ((EQL (CAR |v1|) 1)
                                            (CONS 1 "failed"))
                                           ('T
                                            (SEQ
                                             (LETT |v2|
                                              (SPADCALL |l2|
-                                              (QCAR (QCDR |u|))
+                                              (QCAR (CDR |u|))
                                               (|getShellEntry| $ 63))
                                              |EUCDOM-;multiEuclidean;LSU;11|)
                                             (EXIT
                                              (COND
-                                               ((QEQCAR |v2| 1)
+                                               ((EQL (CAR |v2|) 1)
                                                 (CONS 1 "failed"))
                                                ('T
                                                 (CONS 0
-                                                 (SPADCALL (QCDR |v1|)
-                                                  (QCDR |v2|)
+                                                 (SPADCALL (CDR |v1|)
+                                                  (CDR |v2|)
                                                   (|getShellEntry| $
                                                    64)))))))))))))))))))))) 
 

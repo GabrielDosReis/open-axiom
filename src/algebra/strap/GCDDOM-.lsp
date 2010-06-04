@@ -29,8 +29,8 @@
                              (|getShellEntry| $ 12))
                          |GCDDOM-;lcm;3S;1|)
                    (EXIT (COND
-                           ((QEQCAR LCM 0)
-                            (SPADCALL |x| (QCDR LCM)
+                           ((EQL (CAR LCM) 0)
+                            (SPADCALL |x| (CDR LCM)
                                 (|getShellEntry| $ 13)))
                            ('T (|error| "bad gcd in lcm computation"))))))))))) 
 
@@ -60,8 +60,8 @@
                                       (SPADCALL |p1| |c1|
                                        (|getShellEntry| $ 27))
                                       |GCDDOM-;gcdPolynomial;3Sup;4|)
-                                (QCDR #0#)
-                           (|check-union| (QEQCAR #0# 0)
+                                (CDR #0#)
+                           (|check-union| (EQL (CAR #0#) 0)
                                (|SparseUnivariatePolynomial|
                                    (|getShellEntry| $ 6))
                                #0#))
@@ -71,8 +71,8 @@
                                       (SPADCALL |p2| |c2|
                                        (|getShellEntry| $ 27))
                                       |GCDDOM-;gcdPolynomial;3Sup;4|)
-                                (QCDR #0#)
-                           (|check-union| (QEQCAR #0# 0)
+                                (CDR #0#)
+                           (|check-union| (EQL (CAR #0#) 0)
                                (|SparseUnivariatePolynomial|
                                    (|getShellEntry| $ 6))
                                #0#))
@@ -91,8 +91,9 @@
                                            (|getShellEntry| $ 34))
                                           (|getShellEntry| $ 35))
                                          |GCDDOM-;gcdPolynomial;3Sup;4|)
-                                        (QCDR #0#)
-                                         (|check-union| (QEQCAR #0# 0)
+                                        (CDR #0#)
+                                         (|check-union|
+                                          (EQL (CAR #0#) 0)
                                           (|SparseUnivariatePolynomial|
                                            (|getShellEntry| $ 6))
                                           #0#))
@@ -111,8 +112,9 @@
                                            (|getShellEntry| $ 34))
                                           (|getShellEntry| $ 35))
                                          |GCDDOM-;gcdPolynomial;3Sup;4|)
-                                        (QCDR #0#)
-                                         (|check-union| (QEQCAR #0# 0)
+                                        (CDR #0#)
+                                         (|check-union|
+                                          (EQL (CAR #0#) 0)
                                           (|SparseUnivariatePolynomial|
                                            (|getShellEntry| $ 6))
                                           #0#))
@@ -169,9 +171,9 @@
                                                   (|getShellEntry| $
                                                    27))
                                                  |GCDDOM-;gcdPolynomial;3Sup;4|)
-                                                (QCDR #0#)
+                                                (CDR #0#)
                                                  (|check-union|
-                                                  (QEQCAR #0# 0)
+                                                  (EQL (CAR #0#) 0)
                                                   (|SparseUnivariatePolynomial|
                                                    (|getShellEntry| $
                                                     6))

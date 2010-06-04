@@ -122,12 +122,12 @@
               (SEQ (LETT |r| (SPADCALL |p| (|getShellEntry| $ 51))
                          |RNS-;patternMatch;SP2Pmr;10|)
                    (EXIT (COND
-                           ((QEQCAR |r| 0)
+                           ((EQL (CAR |r|) 0)
                             (COND
                               ((SPADCALL
                                    (SPADCALL |x|
                                     (|getShellEntry| $ 33))
-                                   (QCDR |r|) (|getShellEntry| $ 52))
+                                   (CDR |r|) (|getShellEntry| $ 52))
                                |l|)
                               ('T (SPADCALL (|getShellEntry| $ 53)))))
                            ('T (SPADCALL (|getShellEntry| $ 53)))))))

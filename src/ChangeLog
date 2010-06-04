@@ -1,5 +1,9 @@
 2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot: Clean up QEQCAR uses.
+
+2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot: Cleanup.
 	* interp/c-util.boot ($SetCategory): New constant.
 	* interp/compiler.boot: Use it.

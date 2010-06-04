@@ -318,7 +318,7 @@
                                              |FFIELDC-;discreteLog;SNni;11|)
                                             (EXIT
                                              (COND
-                                               ((QEQCAR |rho| 0)
+                                               ((EQL (CAR |rho|) 0)
                                                 (SEQ
                                                  (LETT |found| T
                                                   |FFIELDC-;discreteLog;SNni;11|)
@@ -326,7 +326,7 @@
                                                   (LETT |disc1|
                                                    (*
                                                     (+ (* |n| |i|)
-                                                     (QCDR |rho|))
+                                                     (CDR |rho|))
                                                     |mult|)
                                                    |FFIELDC-;discreteLog;SNni;11|))))
                                                ('T
@@ -463,7 +463,7 @@
                                           |FFIELDC-;discreteLog;2SU;12|)
                                          (EXIT
                                           (COND
-                                            ((QEQCAR |rhoHelp| 1)
+                                            ((EQL (CAR |rhoHelp|) 1)
                                              (PROGN
                                                (LETT #2#
                                                 (CONS 1 "failed")
@@ -472,7 +472,7 @@
                                             ('T
                                              (SEQ
                                               (LETT |rho|
-                                               (* (QCDR |rhoHelp|)
+                                               (* (CDR |rhoHelp|)
                                                 |mult|)
                                                |FFIELDC-;discreteLog;2SU;12|)
                                               (LETT |disclog|
