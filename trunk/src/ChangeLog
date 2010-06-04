@@ -1,7 +1,7 @@
 2010-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/buildom.boot (UnionEqual): Don't COERCE to FUNCTION.  Use
-	eval. 
+	eval.  Use middle end opcodes instead of EQCAR.
 	(coerceUn2E): Likewise.
 
 2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>

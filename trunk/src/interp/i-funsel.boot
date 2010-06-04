@@ -124,7 +124,7 @@ selectMms(op,args,$declaredMode) ==
 
   identType := 'Variable
   for x in types1 while not $declaredMode repeat
-      not EQCAR(x,identType) => $declaredMode:= x
+      x isnt [=identType,:.] => $declaredMode:= x
   types2 := [altTypeOf(x,y,$declaredMode) for x in types1 for y in args]
 
   mmS:=

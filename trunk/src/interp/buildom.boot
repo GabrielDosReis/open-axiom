@@ -186,7 +186,7 @@ UnionEqual(x, y, dom) ==
     typeFun := eval ['%lam,'(_#1),p]
     FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
       string? b => same := (x = y)
-      if p is ["EQCAR", :.] then (x := rest x; y := rest y)
+      if p is ['%ieq,['%head,.],:.] then (x := rest x; y := rest y)
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
   same
 
@@ -199,7 +199,7 @@ coerceUn2E(x,source) ==
   for b in stripUnionTags branches for p in predlist  repeat
     typeFun := eval ['%lam,'(_#1),p]
     if FUNCALL(typeFun,x) then return
-      if p is ["EQCAR", :.] then x := rest x
+      if p is ['%ieq,['%head,.],:.] then x := rest x
 --    string? b => return x  -- to catch "failed" etc.
       string? b => byGeorge := x  -- to catch "failed" etc.
       byGeorge := coerceVal2E(x,b)
@@ -390,11 +390,12 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 	   ["case",[$Boolean,g,t],typeFun]]
 	     for p in predList for t in listOfEntries])] where
 		upFun() ==
-		  p is ["EQCAR",x,n] => ["XLAM",["#1"],["%makepair",n,"#1"]]
+		  p is ['%ieq,['%head,x],n] =>
+                    ["XLAM",["#1"],["%makepair",n,"#1"]]
 		  ["XLAM",["#1"],"#1"]
 		cdownFun() ==
 		  gg:=gensym()
-		  if p is ["EQCAR",x,n] then
+		  if p is ['%ieq,['%head,x],n] then
 		     ref:=["%tail",gg]
 		     q:= ['%ieq,['%head,gg],n]
 		  else
@@ -403,11 +404,11 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		  ["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],ref,
 		       ["check-union",q,t,gg]]]
 		downFun() ==
-		   p is ["EQCAR",x,.] =>
+		   p is ['%ieq,['%head,x],.] =>
 		     ["XLAM",["#1"],["%tail","#1"]]
 		   ["XLAM",["#1"],"#1"]
 		typeFun() ==
-		   p is ["EQCAR",x,n] =>
+		   p is ['%ieq,['%head,x],n] =>
 		     ["XLAM",["#1"],['%ieq,['%head,x],n]]
 		   ["XLAM",["#1"],p]
   cList:= substitute(dollarIfRepHack op,g,cList)
