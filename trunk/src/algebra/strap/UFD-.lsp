@@ -29,8 +29,7 @@
                                NIL))
                          (GO G191)))
                       (PROGN
-                        (LETT #1# (QCAR |f|)
-                              |UFD-;squareFreePart;2S;1|)
+                        (LETT #1# (CAR |f|) |UFD-;squareFreePart;2S;1|)
                         (COND
                           (#3# (LETT #2#
                                      (SPADCALL #2# #1#

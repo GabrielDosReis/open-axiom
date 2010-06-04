@@ -451,9 +451,9 @@
 
 (DEFUN |DFLOAT;base;Pi;6| ($) (DECLARE (IGNORE $)) (FLOAT-RADIX 0.0)) 
 
-(DEFUN |DFLOAT;mantissa;$I;7| (|x| $) (QCAR (|DFLOAT;manexp| |x| $))) 
+(DEFUN |DFLOAT;mantissa;$I;7| (|x| $) (CAR (|DFLOAT;manexp| |x| $))) 
 
-(DEFUN |DFLOAT;exponent;$I;8| (|x| $) (QCDR (|DFLOAT;manexp| |x| $))) 
+(DEFUN |DFLOAT;exponent;$I;8| (|x| $) (CDR (|DFLOAT;manexp| |x| $))) 
 
 (DEFUN |DFLOAT;precision;Pi;9| ($)
   (DECLARE (IGNORE $))
@@ -733,8 +733,8 @@
                                      (FLOAT-DIGITS 0.0))
                                |DFLOAT;manexp|)
                          (EXIT (CONS (* |s|
-                                      (FIX (* |two53| (QCAR |me|))))
-                                     (- (QCDR |me|) (FLOAT-DIGITS 0.0))))))))
+                                      (FIX (* |two53| (CAR |me|))))
+                                     (- (CDR |me|) (FLOAT-DIGITS 0.0))))))))
            #0# (EXIT #0#))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;87| (|f| |d| |b| $)
@@ -744,9 +744,9 @@
     (RETURN
       (SEQ (EXIT (SEQ (LETT |#G109| (|DFLOAT;manexp| |f| $)
                             |DFLOAT;rationalApproximation;$2NniF;87|)
-                      (LETT |nu| (QCAR |#G109|)
+                      (LETT |nu| (CAR |#G109|)
                             |DFLOAT;rationalApproximation;$2NniF;87|)
-                      (LETT |ex| (QCDR |#G109|)
+                      (LETT |ex| (CDR |#G109|)
                             |DFLOAT;rationalApproximation;$2NniF;87|)
                       |#G109|
                       (LETT BASE (FLOAT-RADIX 0.0)
@@ -792,9 +792,9 @@
                                             (LETT |#G110|
                                              (DIVIDE2 |s| |t|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (LETT |q| (QCAR |#G110|)
+                                            (LETT |q| (CAR |#G110|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (LETT |r| (QCDR |#G110|)
+                                            (LETT |r| (CDR |#G110|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
                                             |#G110|
                                             (LETT |p2|

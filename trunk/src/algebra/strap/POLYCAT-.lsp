@@ -1379,9 +1379,9 @@
                      (SPADCALL |p2| |mvar| (|getShellEntry| $ 59))
                      (|getShellEntry| $ 191))
                  |POLYCAT-;monicDivide;2SVarSetR;30|)
-           (EXIT (CONS (SPADCALL (QCAR |result|) |mvar|
+           (EXIT (CONS (SPADCALL (CAR |result|) |mvar|
                            (|getShellEntry| $ 161))
-                       (SPADCALL (QCDR |result|) |mvar|
+                       (SPADCALL (CDR |result|) |mvar|
                            (|getShellEntry| $ 161)))))))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;31| (|p| $)
@@ -1415,7 +1415,7 @@
                                NIL))
                          (GO G191)))
                       (PROGN
-                        (LETT #1# (QCAR |f|)
+                        (LETT #1# (CAR |f|)
                               |POLYCAT-;squareFreePart;2S;34|)
                         (COND
                           (#3# (LETT #2#

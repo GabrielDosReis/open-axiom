@@ -445,12 +445,12 @@
                                  (SEQ (LETT |qr|
                                        (DIVIDE2 |n| (QCSIZE |s|))
                                        |SYMBOL;anyRadix|)
-                                      (LETT |n| (QCAR |qr|)
+                                      (LETT |n| (CAR |qr|)
                                        |SYMBOL;anyRadix|)
                                       (LETT |ns|
                                        (SPADCALL
                                         (SPADCALL |s|
-                                         (+ (QCDR |qr|)
+                                         (+ (CDR |qr|)
                                           (SPADCALL |s|
                                            (|getShellEntry| $ 117)))
                                          (|getShellEntry| $ 106))
