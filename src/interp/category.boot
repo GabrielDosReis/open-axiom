@@ -171,7 +171,7 @@ SigListUnion(extra,original) ==
              --same signature and same predicate
         opred = true => extra:= delete(x,extra)
    -- PRETTYPRINT ("we ought to subsume",x,o)
-      not MachineLevelSubsume(QCAR o,QCAR x) =>
+      not MachineLevelSubsume(first o,first x) =>
          '"Source level subsumption not implemented"
       extra:= delete(x,extra)
   for e in extra repeat
@@ -179,7 +179,7 @@ SigListUnion(extra,original) ==
     eimplem:=[]
     for x in SigListOpSubsume(e,original) repeat
         --PRETTYPRINT(LIST("SigListOpSubsume",e,x))
-      not MachineLevelSubsume(QCAR e,QCAR x) =>
+      not MachineLevelSubsume(first e,first x) =>
         --systemError '"Source level subsumption not implemented"
         original:= [e,:original]
         return nil -- this exits from the innermost for loop
@@ -406,9 +406,9 @@ JoinInner(l,$e) ==
       if atom at2 then at2:=[at2]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
-      QMEMQ(QCAR at2,$Attributes) => nil
+      QMEMQ(first at2,$Attributes) => nil
       null isCategoryForm(at2,$e) =>
-        $Attributes:=[QCAR at2,:$Attributes]
+        $Attributes:=[first at2,:$Attributes]
         nil
       pred:= second at
         -- The predicate under which this category is conditional

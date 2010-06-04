@@ -576,7 +576,7 @@ getSystemModemaps(op,nargs) ==
   mml:= getOperationFromDB op =>
     mms := NIL
     for (x := [[.,:sig],.]) in mml repeat
-      (NUMBERP nargs) and (nargs ~= #QCDR sig) => 'iterate
+      (NUMBERP nargs) and (nargs ~= # sig.source) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
         isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
       'iterate
@@ -700,7 +700,7 @@ getOperationAlistFromLisplib x ==
         if s is [.,:t] then
           if t is [.] then nil
           else s.rest := QCDDR f
-        else r.rest := QCDR f
+        else r.rest := rest f
       else items.first.rest := f
       items.first := addConsDB first items
   u and markUnique u

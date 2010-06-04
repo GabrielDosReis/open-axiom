@@ -612,7 +612,7 @@ listTruncate(l,n) ==
   n:= QSSUB1 n
   while n ~= 0 and null atom u repeat
     n:= QSSUB1 n
-    u:= QCDR u
+    u:= rest u
   if null atom u then
     if null atom rest u and $reportInstantiations = true then
       recordInstantiation($op,CAADR u,true)
@@ -622,25 +622,25 @@ listTruncate(l,n) ==
 lassocShift(x,l) ==
   y:= l
   while not atom y repeat
-    EQUAL(x,first QCAR y) => return (result := QCAR y)
-    y:= QCDR y
+    EQUAL(x,first first y) => return (result := first y)
+    y:= rest y
   result =>
     if not EQ(y,l) then
       y.first := first l
       l.first := result
-    QCDR result
+    rest result
   nil
  
 lassocShiftWithFunction(x,l,fn) ==
   y:= l
   while not atom y repeat
-    FUNCALL(fn,x,first QCAR y) => return (result := QCAR y)
-    y:= QCDR y
+    FUNCALL(fn,x,first first y) => return (result := first y)
+    y:= rest y
   result =>
     if not EQ(y,l) then
       y.first := first l
       l.first := result
-    QCDR result
+    rest result
   nil
  
 lassocShiftQ(x,l) ==

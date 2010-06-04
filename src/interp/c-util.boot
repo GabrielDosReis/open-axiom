@@ -923,9 +923,9 @@ sublisV(p,e) ==
       -- no need to descend vectors unless they are categories
       isCategory e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
-      u:= suba(p,QCAR e)
-      v:= suba(p,QCDR e)
-      EQ(QCAR e,u) and EQ(QCDR e,v) => e
+      u:= suba(p,first e)
+      v:= suba(p,rest e)
+      EQ(first e,u) and EQ(rest e,v) => e
       [u,:v]
 
 --% DEBUGGING PRINT ROUTINES used in breaks

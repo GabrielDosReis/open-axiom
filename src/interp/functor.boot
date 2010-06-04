@@ -529,7 +529,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
       atom code =>nil
-      QCAR code in '(getShellEntry ELT QREFELT) =>
+      code.op in '(getShellEntry ELT QREFELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
       code is [x,name,number,u'] and x in '(setShellEntry QSETREFV) =>

@@ -254,7 +254,7 @@ isConstructorName op ==
 nAssocQ(x,l,n) ==
   repeat
     if atom l then return nil
-    if EQ(x,(QCAR l).n) then return QCAR l
-    l:= QCDR l
+    if EQ(x,first(l).n) then return first l
+    l:= rest l
  
 
