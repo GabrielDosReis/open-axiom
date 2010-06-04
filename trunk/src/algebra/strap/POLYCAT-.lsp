@@ -159,11 +159,12 @@
                                          NIL))
                                       (GO G191)))
                                    (COND
-                                     ((QEQCAR
-                                       (SPADCALL
-                                        (SPADCALL |e|
-                                         (|getShellEntry| $ 14))
-                                        (|getShellEntry| $ 16))
+                                     ((EQL
+                                       (CAR
+                                        (SPADCALL
+                                         (SPADCALL |e|
+                                          (|getShellEntry| $ 14))
+                                         (|getShellEntry| $ 16)))
                                        1)
                                       (PROGN
                                         (LETT #1#
@@ -313,18 +314,18 @@
       (SEQ (LETT |u| (SPADCALL |p| (|getShellEntry| $ 53))
                  |POLYCAT-;isExpt;SU;5|)
            (EXIT (COND
-                   ((OR (QEQCAR |u| 1)
+                   ((OR (EQL (CAR |u|) 1)
                         (NOT (SPADCALL |p|
                                  (SPADCALL (|spadConstant| $ 43)
-                                     (QCDR |u|)
+                                     (CDR |u|)
                                      (LETT |d|
-                                      (SPADCALL |p| (QCDR |u|)
+                                      (SPADCALL |p| (CDR |u|)
                                        (|getShellEntry| $ 46))
                                       |POLYCAT-;isExpt;SU;5|)
                                      (|getShellEntry| $ 47))
                                  (|getShellEntry| $ 54))))
                     (CONS 1 "failed"))
-                   ('T (CONS 0 (CONS (QCDR |u|) |d|))))))))) 
+                   ('T (CONS 0 (CONS (CDR |u|) |d|))))))))) 
 
 (DEFUN |POLYCAT-;coefficient;SVarSetNniS;6| (|p| |v| |n| $)
   (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 59)) |n|
@@ -363,9 +364,9 @@
       (SEQ (LETT |q|
                  (PROG2 (LETT #0# (SPADCALL |p| (|getShellEntry| $ 53))
                               |POLYCAT-;retract;SVarSet;9|)
-                        (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 9)
-                       #0#))
+                        (CDR #0#)
+                   (|check-union| (EQL (CAR #0#) 0)
+                       (|getShellEntry| $ 9) #0#))
                  |POLYCAT-;retract;SVarSet;9|)
            (EXIT (COND
                    ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 72)) |p|
@@ -380,10 +381,10 @@
                                  (SPADCALL |p| (|getShellEntry| $ 53))
                                  |POLYCAT-;retractIfCan;SU;10|)
                            (EXIT (COND
-                                   ((QEQCAR |q| 0)
+                                   ((EQL (CAR |q|) 0)
                                     (COND
                                       ((SPADCALL
-                                        (SPADCALL (QCDR |q|)
+                                        (SPADCALL (CDR |q|)
                                          (|getShellEntry| $ 72))
                                         |p| (|getShellEntry| $ 54))
                                        (PROGN
@@ -431,8 +432,8 @@
                                      (SPADCALL |p|
                                       (|getShellEntry| $ 53))
                                      |POLYCAT-;totalDegree;SNni;13|)
-                                    (QCDR #0#)
-                               (|check-union| (QEQCAR #0# 0)
+                                    (CDR #0#)
+                               (|check-union| (EQL (CAR #0#) 0)
                                    (|getShellEntry| $ 9) #0#))
                              (|getShellEntry| $ 59))
                          |POLYCAT-;totalDegree;SNni;13|)
@@ -473,8 +474,8 @@
                                      (SPADCALL |p|
                                       (|getShellEntry| $ 53))
                                      |POLYCAT-;totalDegree;SLNni;14|)
-                                    (QCDR #0#)
-                                     (|check-union| (QEQCAR #0# 0)
+                                    (CDR #0#)
+                                     (|check-union| (EQL (CAR #0#) 0)
                                       (|getShellEntry| $ 9) #0#))
                                    |POLYCAT-;totalDegree;SLNni;14|)
                              (|getShellEntry| $ 59))
@@ -800,7 +801,7 @@
       (SEQ (LETT |v| (SPADCALL |p| (|getShellEntry| $ 53))
                  |POLYCAT-;factor;SF;26|)
            (EXIT (COND
-                   ((QEQCAR |v| 1)
+                   ((EQL (CAR |v|) 1)
                     (SEQ (LETT |ansR|
                                (SPADCALL
                                    (SPADCALL |p|
@@ -847,7 +848,7 @@
                                    (|getShellEntry| $ 159)))))
                    ('T
                     (SEQ (LETT |up|
-                               (SPADCALL |p| (QCDR |v|)
+                               (SPADCALL |p| (CDR |v|)
                                    (|getShellEntry| $ 59))
                                |POLYCAT-;factor;SF;26|)
                          (LETT |ansSUP|
@@ -857,7 +858,7 @@
                                    (SPADCALL
                                     (SPADCALL |ansSUP|
                                      (|getShellEntry| $ 160))
-                                    (QCDR |v|) (|getShellEntry| $ 161))
+                                    (CDR |v|) (|getShellEntry| $ 161))
                                    (PROGN
                                      (LETT #2# NIL
                                       |POLYCAT-;factor;SF;26|)
@@ -882,7 +883,7 @@
                                          (CONS
                                           (VECTOR (QVELT |ww| 0)
                                            (SPADCALL (QVELT |ww| 1)
-                                            (QCDR |v|)
+                                            (CDR |v|)
                                             (|getShellEntry| $ 161))
                                            (QVELT |ww| 2))
                                           #2#)
@@ -1043,7 +1044,7 @@
                                                 |POLYCAT-;conditionP;MU;27|)
                                                (EXIT
                                                 (COND
-                                                  ((QEQCAR |nd| 1)
+                                                  ((EQL (CAR |nd|) 1)
                                                    (PROGN
                                                      (LETT #10#
                                                       (CONS 1 "failed")
@@ -1052,7 +1053,7 @@
                                                   ('T
                                                    (LET
                                                     ((#20=#:G1612
-                                                      (QCDR |nd|)))
+                                                      (CDR |nd|)))
                                                      (|check-subtype|
                                                       (>= #20# 0)
                                                       '(|NonNegativeInteger|)
@@ -1139,7 +1140,7 @@
                                 (|getShellEntry| $ 180))
                             |POLYCAT-;conditionP;MU;27|)
                       (EXIT (COND
-                              ((QEQCAR |ans| 1) (CONS 1 "failed"))
+                              ((EQL (CAR |ans|) 1) (CONS 1 "failed"))
                               ('T
                                (SEQ (LETT |i| 0
                                      |POLYCAT-;conditionP;MU;27|)
@@ -1194,7 +1195,7 @@
                                                     (SPADCALL |m|
                                                      (SPADCALL
                                                       (SPADCALL
-                                                       (QCDR |ans|)
+                                                       (CDR |ans|)
                                                        (LETT |i|
                                                         (+ |i| 1)
                                                         |POLYCAT-;conditionP;MU;27|)
@@ -1250,10 +1251,11 @@
                                    (|getShellEntry| $ 185))
                                |POLYCAT-;charthRoot;SU;28|)
                          (EXIT (COND
-                                 ((QEQCAR |ans| 1) (CONS 1 "failed"))
+                                 ((EQL (CAR |ans|) 1)
+                                  (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
-                                        (SPADCALL (QCDR |ans|)
+                                        (SPADCALL (CDR |ans|)
                                          (|getShellEntry| $ 51))))))))
                    ('T
                     (SEQ (LETT |ch| (|spadConstant| $ 169)
@@ -1273,10 +1275,11 @@
                                    (|getShellEntry| $ 185))
                                |POLYCAT-;charthRootlv|)
                          (EXIT (COND
-                                 ((QEQCAR |ans| 1) (CONS 1 "failed"))
+                                 ((EQL (CAR |ans|) 1)
+                                  (CONS 1 "failed"))
                                  ('T
                                   (CONS 0
-                                        (SPADCALL (QCDR |ans|)
+                                        (SPADCALL (CDR |ans|)
                                          (|getShellEntry| $ 51))))))))
                    ('T
                     (SEQ (LETT |v| (|SPADfirst| |vars|)
@@ -1296,7 +1299,7 @@
                                     |POLYCAT-;charthRootlv|)
                                    (EXIT
                                     (COND
-                                      ((QEQCAR |dd| 1)
+                                      ((EQL (CAR |dd|) 1)
                                        (PROGN
                                          (LETT #0# (CONS 1 "failed")
                                           |POLYCAT-;charthRootlv|)
@@ -1319,7 +1322,7 @@
                                          |POLYCAT-;charthRootlv|)
                                         (EXIT
                                          (COND
-                                           ((QEQCAR |ansx| 1)
+                                           ((EQL (CAR |ansx|) 1)
                                             (PROGN
                                               (LETT #0#
                                                (CONS 1 "failed")
@@ -1334,11 +1337,11 @@
                                              (EXIT
                                               (LETT |ans|
                                                (SPADCALL |ans|
-                                                (SPADCALL (QCDR |ansx|)
+                                                (SPADCALL (CDR |ansx|)
                                                  |v|
                                                  (LET
                                                   ((#1=#:G1640
-                                                    (QCDR |dd|)))
+                                                    (CDR |dd|)))
                                                    (|check-subtype|
                                                     (>= #1# 0)
                                                     '(|NonNegativeInteger|)
@@ -1352,7 +1355,7 @@
                                    $)
                                |POLYCAT-;charthRootlv|)
                          (EXIT (COND
-                                 ((QEQCAR |ansx| 1)
+                                 ((EQL (CAR |ansx|) 1)
                                   (PROGN
                                     (LETT #0# (CONS 1 "failed")
                                      |POLYCAT-;charthRootlv|)
@@ -1361,7 +1364,7 @@
                                   (PROGN
                                     (LETT #0#
                                      (CONS 0
-                                      (SPADCALL |ans| (QCDR |ansx|)
+                                      (SPADCALL |ans| (CDR |ansx|)
                                        (|getShellEntry| $ 183)))
                                      |POLYCAT-;charthRootlv|)
                                     (GO #0#)))))))))
@@ -1445,9 +1448,9 @@
                                       (|getShellEntry| $ 206))
                                   (|getShellEntry| $ 207))
                               |POLYCAT-;primitivePart;2S;36|)
-                        (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
-                       #0#))
+                        (CDR #0#)
+                   (|check-union| (EQL (CAR #0#) 0)
+                       (|getShellEntry| $ 6) #0#))
                  (|getShellEntry| $ 209))
              1)))) 
 
@@ -1461,9 +1464,9 @@
                                       (|getShellEntry| $ 211))
                                   (|getShellEntry| $ 212))
                               |POLYCAT-;primitivePart;SVarSetS;37|)
-                        (QCDR #0#)
-                   (|check-union| (QEQCAR #0# 0) (|getShellEntry| $ 6)
-                       #0#))
+                        (CDR #0#)
+                   (|check-union| (EQL (CAR #0#) 0)
+                       (|getShellEntry| $ 6) #0#))
                  (|getShellEntry| $ 209))
              1)))) 
 

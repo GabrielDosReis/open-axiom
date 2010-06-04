@@ -494,8 +494,9 @@
                                           (|getShellEntry| $ 108))
                                          (|getShellEntry| $ 112))
                                         |INT;factorPolynomial|)
-                                       (QCDR #0#)
-                                  (|check-union| (QEQCAR #0# 0) $ #0#))
+                                       (CDR #0#)
+                                  (|check-union| (EQL (CAR #0#) 0) $
+                                      #0#))
                                 (|getShellEntry| $ 114))
                             (|getShellEntry| $ 118))
                         (|getShellEntry| $ 120))))))))) 

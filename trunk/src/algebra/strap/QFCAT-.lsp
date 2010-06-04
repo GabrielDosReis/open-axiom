@@ -101,11 +101,11 @@
                      (|getShellEntry| $ 18))
                  |QFCAT-;nextItem;AU;4|)
            (EXIT (COND
-                   ((QEQCAR |m| 1)
+                   ((EQL (CAR |m|) 1)
                     (|error| "We seem to have a Fraction of a finite object"))
                    ('T
                     (CONS 0
-                          (SPADCALL (QCDR |m|) (|spadConstant| $ 14)
+                          (SPADCALL (CDR |m|) (|spadConstant| $ 14)
                               (|getShellEntry| $ 15)))))))))) 
 
 (DEFUN |QFCAT-;map;M2A;5| (|fn| |x| $)
@@ -221,8 +221,8 @@
       (SEQ (LETT |r| (SPADCALL |x| (|getShellEntry| $ 63))
                  |QFCAT-;retractIfCan;AU;18|)
            (EXIT (COND
-                   ((QEQCAR |r| 1) (CONS 1 "failed"))
-                   ('T (SPADCALL (QCDR |r|) (|getShellEntry| $ 65))))))))) 
+                   ((EQL (CAR |r|) 1) (CONS 1 "failed"))
+                   ('T (SPADCALL (CDR |r|) (|getShellEntry| $ 65))))))))) 
 
 (DEFUN |QFCAT-;convert;AP;19| (|x| $)
   (SPADCALL
@@ -264,8 +264,8 @@
       (SEQ (LETT |u| (SPADCALL |x| (|getShellEntry| $ 63))
                  |QFCAT-;retractIfCan;AU;25|)
            (EXIT (COND
-                   ((QEQCAR |u| 1) (CONS 1 "failed"))
-                   ('T (SPADCALL (QCDR |u|) (|getShellEntry| $ 95))))))))) 
+                   ((EQL (CAR |u|) 1) (CONS 1 "failed"))
+                   ('T (SPADCALL (CDR |u|) (|getShellEntry| $ 95))))))))) 
 
 (DEFUN |QFCAT-;random;A;26| ($)
   (PROG (|d|)
