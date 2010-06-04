@@ -607,6 +607,7 @@
   (|BinaryRecursiveAggregate| . BRAGG)
   (|BinaryTreeCategory| . BTCAT)
   (|BitAggregate| . BTAGG)
+  (|BooleanLogic| . BOOLE)
   (|CachableSet| . CACHSET)
   (|CancellationAbelianMonoid| . CABMON)
   (|CharacteristicNonZero| . CHARNZ)
