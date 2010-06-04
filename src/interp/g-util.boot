@@ -322,7 +322,8 @@ for x in [
     ['%string?, :'STRINGP],
 
     -- general utility
-    ['%hash,:'SXHASH]
+    ['%hash,:'SXHASH],
+    ['%lam, :'LAMBDA]
   ] repeat property(first x,'%Rename) := rest x
 
 ++ Table of opcode-expander pairs.  
