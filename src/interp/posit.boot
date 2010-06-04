@@ -138,7 +138,7 @@ pfAbSynOp form ==
 
 pfAbSynOp?(form, op) ==
     hd := first form
-    EQ(hd, op) or EQCAR(hd, op)
+    EQ(hd, op) or hd is [=op,:.]
 
 pfLeaf? form ==
   pfAbSynOp form in

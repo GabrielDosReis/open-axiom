@@ -980,7 +980,7 @@ coerceUnion2Branch(object) ==
       predicate := pred
       targetType := typ
   null targetType => keyedSystemError("S2IC0013",NIL)
-  predicate is ['EQCAR,.,p] => objNewWrap(rest val',targetType)
+  predicate is ['%ieq,['%head,.],p] => objNewWrap(rest val',targetType)
   objNew(objVal object,targetType)
 
 coerceBranch2Union(object,union) ==
@@ -991,7 +991,7 @@ coerceBranch2Union(object,union) ==
   p := position(objMode object,doms)
   p = -1 => keyedSystemError("S2IC0014",[objMode object,union])
   val := objVal object
-  predList.p is ['EQCAR,.,tag] =>
+  predList.p is ['%ieq,['%head,.],tag] =>
     objNewWrap([removeQuote tag,:unwrap val],union)
   objNew(val,union)
 

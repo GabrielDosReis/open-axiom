@@ -145,7 +145,7 @@ isCapitalWord x ==
   (y := PNAME x) and and/[upperCase? y.i for i in 0..MAXINDEX y]
  
 mkPredList listOfEntries ==
-  [['EQCAR,"#1",i] for arg in listOfEntries for i in 0..]
+  [['%ieq,['%head,"#1"],i] for arg in listOfEntries for i in 0..]
 
 
 --%

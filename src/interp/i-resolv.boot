@@ -794,7 +794,7 @@ bubbleConstructor(TL) ==
 compareTT(t1,t2) ==
   -- 'T if type t1 is more nested than t2
   -- otherwise 'T if t1 is lexicographically greater than t2
-  EQCAR(t1,$QuotientField) or
+  t1 is [=$QuotientField,:.] or
     MEMQ(opOf t2,[$QuotientField, 'SimpleAlgebraicExtension]) => NIL
     CGREATERP(PRIN2CVEC opOf t1,PRIN2CVEC opOf t2)
 
