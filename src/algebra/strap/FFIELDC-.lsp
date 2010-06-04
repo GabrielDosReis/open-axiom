@@ -148,7 +148,7 @@
                         (LETT |equalone|
                               (SPADCALL
                                   (SPADCALL |a|
-                                      (QUOTIENT2 |q| (QCAR |exp|))
+                                      (QUOTIENT2 |q| (CAR |exp|))
                                       (|getShellEntry| $ 58))
                                   (|getShellEntry| $ 59))
                               |FFIELDC-;primitive?;SB;9|)
@@ -180,7 +180,7 @@
                            (GO G191)))
                         (SEQ (LETT |a|
                                    (QUOTIENT2 |ord|
-                                    (LETT |primeDivisor| (QCAR |rec|)
+                                    (LETT |primeDivisor| (CAR |rec|)
                                      |FFIELDC-;order;SPi;10|))
                                    |FFIELDC-;order;SPi;10|)
                              (LETT |goon|
@@ -190,7 +190,7 @@
                                     (|getShellEntry| $ 59))
                                    |FFIELDC-;order;SPi;10|)
                              (SEQ (LETT |j| 0 |FFIELDC-;order;SPi;10|)
-                                  (LETT #1# (- (QCDR |rec|) 2)
+                                  (LETT #1# (- (CDR |rec|) 2)
                                         |FFIELDC-;order;SPi;10|)
                                   G190
                                   (COND
@@ -264,13 +264,13 @@
                                             NIL))
                                          (GO G191)))
                                       (SEQ
-                                       (LETT |fac| (QCAR |f|)
+                                       (LETT |fac| (CAR |f|)
                                         |FFIELDC-;discreteLog;SNni;11|)
                                        (EXIT
                                         (SEQ
                                          (LETT |t| 0
                                           |FFIELDC-;discreteLog;SNni;11|)
-                                         (LETT #1# (- (QCDR |f|) 1)
+                                         (LETT #1# (- (CDR |f|) 1)
                                           |FFIELDC-;discreteLog;SNni;11|)
                                          G190
                                          (COND
@@ -433,7 +433,7 @@
                                         |FFIELDC-;discreteLog;2SU;12|)
                                        NIL))
                                     (GO G191)))
-                                 (SEQ (LETT |fac| (QCAR |f|)
+                                 (SEQ (LETT |fac| (CAR |f|)
                                        |FFIELDC-;discreteLog;2SU;12|)
                                       (LETT |primroot|
                                        (SPADCALL |logbase|
@@ -444,7 +444,7 @@
                                        (SEQ
                                         (LETT |t| 0
                                          |FFIELDC-;discreteLog;2SU;12|)
-                                        (LETT #1# (- (QCDR |f|) 1)
+                                        (LETT #1# (- (CDR |f|) 1)
                                          |FFIELDC-;discreteLog;2SU;12|)
                                         G190
                                         (COND
@@ -517,14 +517,14 @@
                          (SPADCALL |f| T (|getShellEntry| $ 105))
                          |FFIELDC-;factorSquareFreePolynomial|)
                    (EXIT (SPADCALL
-                             (SPADCALL (QCAR |flist|)
+                             (SPADCALL (CAR |flist|)
                                  (|getShellEntry| $ 106))
                              (PROGN
                                (LETT #3# NIL
                                      |FFIELDC-;factorSquareFreePolynomial|)
                                (SEQ (LETT |u| NIL
                                      |FFIELDC-;factorSquareFreePolynomial|)
-                                    (LETT #0# (QCDR |flist|)
+                                    (LETT #0# (CDR |flist|)
                                      |FFIELDC-;factorSquareFreePolynomial|)
                                     G190
                                     (COND
@@ -536,7 +536,7 @@
                                        (GO G191)))
                                     (PROGN
                                       (LETT #1#
-                                       (SPADCALL (QCAR |u|) (QCDR |u|)
+                                       (SPADCALL (CAR |u|) (CDR |u|)
                                         (|getShellEntry| $ 107))
                                        |FFIELDC-;factorSquareFreePolynomial|)
                                       (COND
