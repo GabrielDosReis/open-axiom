@@ -1238,7 +1238,7 @@ decomposeTypeIntoTower t ==
   d := deconstructT t
   null rest d => [t]
   rd := reverse t
-  [reverse QCDR rd,:decomposeTypeIntoTower QCAR rd]
+  [reverse rest rd,:decomposeTypeIntoTower first rd]
 
 reassembleTowerIntoType tower ==
   atom tower => tower

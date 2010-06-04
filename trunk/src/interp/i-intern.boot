@@ -450,7 +450,7 @@ remprop(x,prop,e) ==
 
 fastSearchCurrentEnv(x,currentEnv) ==
   u:= QLASSQ(x,first currentEnv) => u
-  while (currentEnv:= QCDR currentEnv) repeat
+  while (currentEnv:= rest currentEnv) repeat
     u:= QLASSQ(x,first currentEnv) => u
 
 transformCollect [:itrl,body] ==

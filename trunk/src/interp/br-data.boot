@@ -741,8 +741,8 @@ sublisFormal(args,exp,:options) == main where
       acc := nil
       y := x
       while null atom y repeat
-        acc := [sublisFormal1(args,QCAR y,n),:acc]
-        y := QCDR y
+        acc := [sublisFormal1(args,first y,n),:acc]
+        y := rest y
       r := nreverse acc
       if y then
         nd := LASTNODE r

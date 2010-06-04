@@ -1,5 +1,31 @@
 2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/br-con.boot: More cleanup.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-intern.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/topics.boot: Likewise.
+
+2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot: Clean up QEQCAR uses.
 
 2010-06-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>

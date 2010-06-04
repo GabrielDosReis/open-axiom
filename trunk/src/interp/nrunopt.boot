@@ -302,7 +302,7 @@ removeAttributePredicates pl ==
  
 transHasCode x ==
   atom x => x
-  op := QCAR x
+  op := x.op
   op in '(HasCategory HasAttribute) => x
   op="has" => compHasFormat x
   [transHasCode y for y in x]
@@ -330,7 +330,7 @@ orderByContainment pl ==
 buildBitTable(:l) == fn(reverse l,0) where fn(l,n) ==
   null l => n
   n := n + n
-  if QCAR l then n := n + 1
+  if first l then n := n + 1
   fn(rest l,n)
  
 buildPredVector(init,n,l) == fn(init,2 ** n,l) where fn(acc,n,l) ==

@@ -439,11 +439,11 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         nil
       slot := domain.loc
       null atom slot =>
-        QCAR slot = 'newGoGet => someMatch:=true
+        slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
-        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot QCDR slot),
+        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)
         return (success := slot)
       slot = 'skip =>       --recursive call from above 'replaceGoGetSlot
@@ -470,7 +470,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := dom.3
-  packageVec := QCAR slot4
+  packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
@@ -499,9 +499,9 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             endPos :=
               code+2 > max => SIZE byteVector
               opvec.(code+2)
-            --not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
+            --not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
-            --numOfArgs ~= #(QCDR sig) => nil
+            --numOfArgs ~= #sig.source => nil
             packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package

@@ -272,7 +272,7 @@ defaultTarget(opNode,op,nargs,args) ==
 
   a1 := first args
   atom a1 => target
-  a1f := QCAR a1
+  a1f := first a1
 
   nargs = 1 =>
     op = 'kernel =>
@@ -443,8 +443,8 @@ defaultTarget(opNode,op,nargs,args) ==
 mkRationalFunction D ==  ['Fraction, ['Polynomial, D]]
 
 defaultTargetFE(a,:options) ==
-  a is ['Variable,.] or a = $RationalNumber or MEMQ(QCAR a,
-    [QCAR $Symbol, 'RationalRadicals,
+  a is ['Variable,.] or a = $RationalNumber or MEMQ(a.op,
+    [$Symbol.op, 'RationalRadicals,
      'Pi]) or typeIsASmallInteger(a) or isEqualOrSubDomain(a, $Integer) or
        a = '(AlgebraicNumber) =>
           IFCAR options => [$FunctionalExpression, ['Complex, $Integer]]
@@ -1037,7 +1037,7 @@ selectMmsGen(op,tar,args1,args2) ==
   for a in removeDuplicates args repeat
     a =>
       atom a => nil
-      fa := QCAR a
+      fa := a.op
       fa in '(Record Union) => NIL
       conNames := insert(STRINGIMAGE fa, conNames)
 
@@ -1421,14 +1421,14 @@ hasCateSpecial(v,dom,cat,SL) ==
 
 -- to be used in $newSystem only
 hasCateSpecialNew(v,dom,cat,SL) ==
-  fe := member(QCAR cat, '(ElementaryFunctionCategory
+  fe := member(cat.op, '(ElementaryFunctionCategory
        TrigonometricFunctionCategory ArcTrigonometricFunctionCategory
         HyperbolicFunctionCategory ArcHyperbolicFunctionCategory
          PrimitiveFunctionCategory SpecialFunctionCategory Evalable
           CombinatorialOpsCategory TranscendentalFunctionCategory
            AlgebraicallyClosedFunctionSpace ExpressionSpace
              LiouvillianFunctionCategory FunctionSpace))
-  alg := member(QCAR cat, '(RadicalCategory AlgebraicallyClosedField))
+  alg := member(cat.op, '(RadicalCategory AlgebraicallyClosedField))
   fefull := fe or alg or cat = $CombinatorialFunctionCategory
   partialResult :=
     dom is ["Variable",:.] or dom = $Symbol =>

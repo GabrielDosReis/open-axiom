@@ -476,8 +476,8 @@ ScanOrPairVec(f, ob) ==
             HGET($seen, ob) => nil
             cons? ob =>
                 HPUT($seen, ob, true)
-                ScanOrInner(f, QCAR ob)
-                ScanOrInner(f, QCDR ob)
+                ScanOrInner(f, first ob)
+                ScanOrInner(f, rest ob)
                 nil
             VECP ob =>
                 HPUT($seen, ob, true)
@@ -499,15 +499,15 @@ get(x,prop,e) ==
   get1(x,prop,e)
 
 get0(x,prop,e) ==
-  not atom x => get(QCAR x,prop,e)
-  u:= QLASSQ(x,first QCAR e) => QLASSQ(prop,u)
-  (tail:= rest QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+  not atom x => get(x.op,prop,e)
+  u:= QLASSQ(x,first first e) => QLASSQ(prop,u)
+  (tail:= rest first e) and (u:= fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
   nil
 
 get1(x,prop,e) ==
     --this is the old get
-  not atom x => get(QCAR x,prop,e)
+  not atom x => get(x.op,prop,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
@@ -655,9 +655,9 @@ getUnionOrRecordTags u ==
 
 Identity x == x
 
-length1? l == cons? l and not cons? QCDR l
+length1? l == cons? l and not cons? rest l
 
-length2? l == cons? l and cons? (l := QCDR l) and not cons? QCDR l
+length2? l == cons? l and cons? (l := rest l) and not cons? rest l
 
 pairList(u,v) == [[x,:y] for x in u for y in v]
 
@@ -689,7 +689,7 @@ REMALIST(alist,prop) ==
     p = prop =>
       ok := NIL
       l.rest := r
-    if null (l := QCDR l) or null rest l then ok := NIL
+    if null (l := rest l) or null rest l then ok := NIL
   alist
 
 deleteLassoc(x,y) ==
@@ -893,27 +893,27 @@ mergeInPlace(f,g,p,q) ==
    -- merge the two sorted lists p and q
    if null p then return p
    if null q then return q
-   if FUNCALL(f,FUNCALL(g, QCAR p),FUNCALL(g, QCAR q))
-   then (r := t := p; p := QCDR p)
-   else (r := t := q; q := QCDR q)
+   if FUNCALL(f,FUNCALL(g, first p),FUNCALL(g, first q))
+   then (r := t := p; p := rest p)
+   else (r := t := q; q := rest q)
    while not null p and not null q repeat
-      if FUNCALL(f,FUNCALL(g,QCAR p),FUNCALL(g,QCAR q))
-      then (t.rest := p; t := p; p := QCDR p)
-      else (t.rest := q; t := q; q := QCDR q)
+      if FUNCALL(f,FUNCALL(g,first p),FUNCALL(g,first q))
+      then (t.rest := p; t := p; p := rest p)
+      else (t.rest := q; t := q; q := rest q)
    if null p then t.rest := q else t.rest := p
    r
 
 mergeSort(f,g,p,n) ==
-   if n=2 and FUNCALL(f,FUNCALL(g,QCADR p),FUNCALL(g,QCAR p)) then
+   if n=2 and FUNCALL(f,FUNCALL(g,second p),FUNCALL(g,first p)) then
       t := p
-      p := QCDR p
+      p := rest p
       p.rest := t
       t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
    l := QSQUOTIENT(n,2)
    t := p
-   for i in 1..l-1 repeat t := QCDR t
+   for i in 1..l-1 repeat t := rest t
    q := rest t
    t.rest := NIL
    p := mergeSort(f,g,p,l)
@@ -938,7 +938,7 @@ formatUnabbreviatedSig sig ==
   [target,:args] := dollarPercentTran sig
   target := formatUnabbreviated target
   null args => ['"() -> ",:target]
-  null rest args => [:formatUnabbreviated QCAR args,'" -> ",:target]
+  null rest args => [:formatUnabbreviated first args,'" -> ",:target]
   args := formatUnabbreviatedTuple args
   ['"(",:args,'") -> ",:target]
 
@@ -946,9 +946,9 @@ formatUnabbreviatedTuple t ==
   -- t is a list of types
   null t => t
   atom t => [t]
-  t0 := formatUnabbreviated QCAR t
+  t0 := formatUnabbreviated t.op
   null rest t => t0
-  [:t0,'",",:formatUnabbreviatedTuple QCDR t]
+  [:t0,'",",:formatUnabbreviatedTuple rest t]
 
 formatUnabbreviated t ==
   null t =>

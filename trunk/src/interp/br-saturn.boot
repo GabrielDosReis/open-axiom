@@ -1646,7 +1646,7 @@ bcConform1 form == main where
       $bcMultipleNames =>
         satTypeDownLink(s, ['"(|conPageChoose| '|",s,'"|)"])
       satTypeDownLink(s, ["(|conPage| '|",s,'"|)"])
-    (head := QCAR form) = 'QUOTE =>
+    (head := form.op) = 'QUOTE =>
       htSay('"'")
       hd second form
     head = 'SIGNATURE =>
@@ -1657,11 +1657,11 @@ bcConform1 form == main where
       hd second form
       htSay '": "
       hd third form
-    QCDR form and dbEvalableConstructor? form
+    form.args and dbEvalableConstructor? form
        => bcConstructor(form,head)
     hd head
-    null (r := QCDR form) => nil
-    tl QCDR form
+    null (r := form.args) => nil
+    tl form.args
   mapping [target,:source] ==
     tuple source
     bcHt

@@ -239,7 +239,7 @@ transferClassCodes(conform,opAlist) ==
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
     | FIXP (code := myLastAtom pair) repeat
-      u := ASSOC(QCAR pair,opAlist) => lastNode(u).rest := code
+      u := ASSOC(pair.op,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
 --           Filter Operation by Topic

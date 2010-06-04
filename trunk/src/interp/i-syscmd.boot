@@ -1990,7 +1990,7 @@ readHiFi(n) ==
   then
     pair := assoc(n,$internalHistoryTable)
     atom pair => keyedSystemError("S2IH0034",NIL)
-    vec := QCDR pair
+    vec := rest pair
   else
     HiFi:= RDEFIOSTREAM ['(MODE . INPUT),['FILE,:histFileName()]]
     vec:= SPADRREAD(object2Identifier n,HiFi)
@@ -2055,10 +2055,10 @@ writify ob ==
             (e := HGET($seen, ob)) => e
  
             cons? ob =>
-                qcar := QCAR ob
-                qcdr := QCDR ob
+                qcar := first ob
+                qcdr := rest ob
                 (name := spadClosure? ob) =>
-                   d := writifyInner QCDR ob
+                   d := writifyInner rest ob
                    nob := ['WRITIFIED_!_!, 'SPADCLOSURE, d, name]
                    HPUT($seen, ob, nob)
                    HPUT($seen, nob, nob)
@@ -2144,9 +2144,9 @@ writifyComplain s ==
    sayKeyedMsg("S2IH0027",[s]) 
 
 spadClosure? ob ==
-  fun := QCAR ob
+  fun := first ob
   not (name := BPINAME fun) => nil
-  vec := QCDR ob
+  vec := rest ob
   not VECP vec => nil
   name
 
@@ -2214,8 +2214,8 @@ dewritify ob ==
                 error '"Unknown type to de-writify."
  
             cons? ob =>
-                qcar := QCAR ob
-                qcdr := QCDR ob
+                qcar := first ob
+                qcdr := rest ob
                 nob  := [qcar,:qcdr]
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)

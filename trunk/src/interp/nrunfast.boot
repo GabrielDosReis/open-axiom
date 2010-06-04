@@ -217,11 +217,11 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
         nil
       slot := domain.loc
       null atom slot =>
-        QCAR slot='newGoGet => someMatch:=true
+        slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
-        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot QCDR slot),
+        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)
         return (success := slot)
       slot = 'skip =>       --recursive call from above 'replaceGoGetSlot
@@ -280,7 +280,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := dom.3
-  packageVec := QCAR slot4
+  packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
@@ -309,9 +309,9 @@ newLookupInCategories(op,sig,dom,dollar) ==
             endPos :=
               code+2 > max => SIZE byteVector
               opvec.(code+2)
-            not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
+            not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
-            --numOfArgs ~= #(QCDR sig) => nil
+            --numOfArgs ~= #sig.source => nil
             packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
@@ -358,7 +358,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   predvec := dom.3
   slot4 := dom.4
   packageVec := first slot4
-  catVec := first QCDR slot4
+  catVec := first rest slot4
   --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
@@ -373,7 +373,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
            sayLooking1('"already instantiated cat package",entry)
          entry
       IDENTP entry =>
-        cat := QCAR node
+        cat := first node
         packageForm := nil
         if not GETL(entry,'LOADED) then loadLib entry
         infovec := GETL(entry,'infovec)
@@ -385,7 +385,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
             null code => nil
             byteVector := CDDR infovec.3
             numOfArgs := byteVector.(opvec.code)
-            numOfArgs ~= #(QCDR sig) => nil
+            numOfArgs ~= #sig.source => nil
             packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
@@ -445,7 +445,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
     VECP (d := domainVal(dollar,domain,a)) =>
       s = d.0 => true
       domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
-      KAR s = QCAR d.0 and
+      KAR s = first d.0 and
         lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
     --VECP first d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
     lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
@@ -679,7 +679,7 @@ lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
   n  := MAXINDEX vec
   xop := first x
-  or/[QCDR QVELT(vec,i) for i in 0..n |
+  or/[rest QVELT(vec,i) for i in 0..n |
     xop = first (lazyt := first QVELT(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 --=======================================================

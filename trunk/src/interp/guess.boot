@@ -267,9 +267,9 @@ findApproxSimple(words,wordList,threshold) ==
 rotateWordList u ==
   v := u
   p := first v
-  while QCDR v repeat
+  while rest v repeat
     v.first := second v
-    v := QCDR v
+    v := rest v
   v.first := p
   u
 

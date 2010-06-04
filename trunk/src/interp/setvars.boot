@@ -523,7 +523,7 @@ setExposeAddGroup arg ==
     sayAsManyPerLineAsPossible [object2String first x for x in
       $globalExposureGroupAlist]
   for x in arg repeat
-    if cons? x then x := QCAR x
+    if cons? x then x := first x
     x = 'all =>
       $localExposureData.0 :=[first x for x in $globalExposureGroupAlist]
       $localExposureData.1 :=NIL
@@ -551,7 +551,7 @@ setExposeAddConstr arg ==
     displayExposedConstructors()
   for x in arg repeat
     x := unabbrev x
-    if cons? x then x := QCAR x
+    if cons? x then x := first x
     -- if the constructor is known, we know what type it is
     null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])
@@ -587,7 +587,7 @@ setExposeDropGroup arg ==
     sayMSG '" "
     displayExposedGroups()
   for x in arg repeat
-    if cons? x then x := QCAR x
+    if cons? x then x := first x
     x = 'all =>
       $localExposureData.0 := NIL
       $localExposureData.1 := NIL
@@ -618,7 +618,7 @@ setExposeDropConstr arg ==
     displayHiddenConstructors()
   for x in arg repeat
     x := unabbrev x
-    if cons? x then x := QCAR x
+    if cons? x then x := first x
     -- if the constructor is known, we know what type it is
     null getConstructorKindFromDB x =>
       sayKeyedMsg("S2IZ0049J",[x])

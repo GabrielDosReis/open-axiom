@@ -737,7 +737,7 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
     pair.rest := [test for item in rest pair | test] where test() ==
       [head,:tail] := item
       first tail = true => item
-      pred := simpHasPred SUBLISLIS(form1,form2,QCAR tail)
+      pred := simpHasPred SUBLISLIS(form1,form2,first tail)
       null pred => false
       item.rest := [pred]
       item
