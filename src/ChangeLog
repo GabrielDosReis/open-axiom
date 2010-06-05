@@ -1,3 +1,8 @@
+2010-06-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/utils.c (openaxiom_execute_core): Don't let CLISP fool
+	itself. 
+
 2010-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/exposed.lsp.pamphlet: Expose SquareMatrix.
