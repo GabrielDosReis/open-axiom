@@ -330,16 +330,13 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
  
 DirectProduct(dim:NonNegativeInteger, R:Type):
   DirectProductCategory(dim, R) == Vector R add
- 
-      Rep := Vector R
- 
-      coerce(z:%):Vector(R)        == copy(z)$Rep pretend Vector(R)
-      coerce(r:R):%                == new(dim, r)$Rep
+      coerce(z:%):Vector(R)        == copy rep z
+      coerce(r:R):%                == per new(dim, r)$Vector(R)
  
       parts x == VEC2LIST(x)$Lisp
  
       directProduct z ==
-        size?(z, dim) => copy(z)$Rep
+        size?(z, dim) => per copy z
         error "Not of the correct length"
  
  
@@ -347,7 +344,7 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
         same?: % -> Boolean
         same? z == every?(#1 = z(minIndex z), z)
  
-        x = y == and/[qelt(x,i)$Rep = qelt(y,i)$Rep for i in 1..dim]
+        x = y == and/[qelt(rep x,i) = qelt(rep y,i) for i in 1..dim]
  
         retract(z:%):R ==
           same? z => z(minIndex z)
@@ -359,42 +356,42 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
  
  
       if R has AbelianSemiGroup then
-        u:% + v:% == map(_+ , u, v)$Rep
+        u:% + v:% == per map(_+ , rep u, rep v)
  
       if R has AbelianMonoid then
-        0 == zero(dim)$Vector(R) pretend %
+        0 == per zero(dim)$Vector(R)
  
       if R has Monoid then
-        1 == new(dim, 1)$Vector(R) pretend %
-        u:% * r:R       == map(#1 * r, u)
-        r:R * u:%       == map(r * #1, u)
-        x:% * y:%       == [x.i * y.i for i in 1..dim]$Vector(R) pretend %
+        1 == per new(dim, 1)$Vector(R)
+        u:% * r:R       == per map(#1 * r, rep u)
+        r:R * u:%       == per map(r * #1, rep u)
+        x:% * y:%       == per [x.i * y.i for i in 1..dim]$Vector(R)
  
  
       if R has CancellationAbelianMonoid then
         subtractIfCan(u:%, v:%):Union(%,"failed") ==
           w := new(dim,0)$Vector(R)
           for i in 1..dim repeat
-            (c := subtractIfCan(qelt(u, i)$Rep, qelt(v,i)$Rep)) case "failed" =>
+            (c := subtractIfCan(qelt(rep u, i), qelt(rep v,i))) case "failed" =>
                     return "failed"
-            qsetelt!(w, i, c::R)$Rep
-          w pretend %
+            qsetelt!(w, i, c::R)
+          per w
  
       if R has Ring then
  
-        u:% * v:%                    == map(_* , u, v)$Rep
+        u:% * v:%                    == per map(_* ,rep u,rep v)
  
         recip z ==
           w := new(dim,0)$Vector(R)
           for i in minIndex w .. maxIndex w repeat
             (u := recip qelt(z, i)) case "failed" => return "failed"
             qsetelt!(w, i, u::R)
-          w pretend %
+          per w
  
         unitVector i ==
           v:= new(dim,0)$Vector(R)
           v.i := 1
-          v pretend %
+          per v
  
       if R has OrderedSet then
         x < y ==
@@ -403,7 +400,8 @@ DirectProduct(dim:NonNegativeInteger, R:Type):
              qelt(x,i) > qelt(y,i) => return false
           false
 
-      if R has OrderedAbelianMonoidSup then sup(x, y) == map(sup, x, y)
+      if R has OrderedAbelianMonoidSup then
+        sup(x,y) == per map(sup, rep x, rep y)
  
 @
 \section{package DIRPROD2 DirectProductFunctions2}
