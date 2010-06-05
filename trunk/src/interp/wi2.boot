@@ -490,7 +490,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
               (c1 is ['_:,=(second argl),=m] or EQ(c1,second argl) ) =>
 -- first is a full tag, as placed by getInverseEnvironment
 -- second is what getSuccessEnvironment will place there
-                ["CDR",z]
+                ['%tail,z]
         markTran(form,form',markMap,e')
   qt(18,T)
   convert(T,m)
