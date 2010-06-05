@@ -391,7 +391,8 @@ hasDefaultPackage catname ==
 --=======================================================================
 --             Generate Category Level Alist
 --=======================================================================
-orderCatAnc x == nreverse ASSOCLEFT SORTBY('CDR,rest depthAssoc x)
+orderCatAnc x ==
+  nreverse ASSOCLEFT SORTBY(function rest,rest depthAssoc x)
  
 depthAssocList u == 
   u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90

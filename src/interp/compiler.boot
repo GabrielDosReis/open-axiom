@@ -625,7 +625,7 @@ compFormWithModemap(form,m,e,modemap) ==
               (c1 is [":",=(second argl),=m] or EQ(c1,second argl) ) =>
       -- first is a full tag, as placed by getInverseEnvironment
       -- second is what getSuccessEnvironment will place there
-                ["CDR",z]
+                ['%tail,z]
         ["%Call",:form']
       e':=
         Tl => (LAST Tl).env
@@ -2000,7 +2000,7 @@ compRecoverDomain(x,t,sn,e) ==
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
   e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
   -- 3.  Assemble the result
-  [caseCode,[[x,["CDR",sn]]],e,originalEnv]
+  [caseCode,[[x,['%tail,sn]]],e,originalEnv]
 
 ++ Subroutine of compAlternativeGuardItem, responsible for 
 ++ compiling a guad item of the form
