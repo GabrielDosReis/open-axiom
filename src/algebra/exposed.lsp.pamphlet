@@ -405,6 +405,7 @@
   (|SquareFreeRegularTriangularSet| . SREGSET)
   (|SquareFreeRegularTriangularSetGcdPackage| . SFRGCD)
   (|SquareFreeQuasiComponentPackage| . SFQCMPK)
+  (|SquareMatrix| . SQMATRIX)
   (|Stack| . STACK)
   (|StepAst| . STEPAST)
   (|Stream| . STREAM)
