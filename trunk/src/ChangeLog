@@ -1,5 +1,9 @@
 2010-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/exposed.lsp.pamphlet: Expose SquareMatrix.
+
+2010-06-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (UnionEqual): Don't COERCE to FUNCTION.  Use
 	eval.  Use middle end opcodes instead of EQCAR.
 	(coerceUn2E): Likewise.
