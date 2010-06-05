@@ -392,6 +392,10 @@ openaxiom_execute_core(const openaxiom_command* command,
       something to tell about what GCL's own runtime is.  Silly.  */
    if (OPENAXIOM_BASE_RTS == openaxiom_gcl_runtime)
       args[0] = "";
+   /* And CLISP wants to believe that argv[0] is where it hides stuff
+      from the saved image.  */
+   else if (OPENAXIOM_BASE_RTS == openaxiom_clisp_runtime)
+      args[0] = execpath;
    else
       args[0] = command->core.argv[0];
    /* Now, make sure we copy whatever arguments are required by the
