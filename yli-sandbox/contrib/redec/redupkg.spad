@@ -8,10 +8,10 @@ import CEXCOL
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: April 1, 2010
+++ Date Last Updated: Jun 4, 2010
 ++ Description: This package provides library functions for extracting
-++ parallelizable accumulation loops, reduce function calls, as well as 
-++ reduce forms
+++ parallelizable accumulation loops, reduce function calls, reduce forms 
+++ as well as (inclusive) prefixsum/scan
 ReductionAnalysisPackage(): Public == Private where
   macro VTB    == Table(Syntax, Syntax)
   macro XREC   == Record(funname: Identifier, signature: Signature,_
@@ -149,6 +149,9 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- list for storing reduction loop records
     accumulationLoopList: List ZREC                    := []
+
+    -- list for storing scan loop records
+    scanLoopList: List ZREC                            := []
 
     -- list for storing reduce function call records
     reduceList: List RREC                              := []
@@ -538,11 +541,11 @@ ReductionAnalysisPackage(): Public == Private where
           remove!(k, gte')
       gte'  
 
-    -- the following four functions are for pretty print of notifications
+    -- the following four functions are for pretty print of analysis messages
     printBanner0(): Void ==
       print(" "::OutputForm)
       print("-------------------------------------------------------------"::OutputForm)
-      print("|  Encounter potential reduction, start doing typechecking  |"::OutputForm)
+      print("|  Encounter potential reduction, start typechecking  |"::OutputForm)
       print("-------------------------------------------------------------"::OutputForm)
       print(" "::OutputForm)          
 
@@ -567,6 +570,14 @@ ReductionAnalysisPackage(): Public == Private where
       print("------------------------"::OutputForm)
       print(" "::OutputForm)   
 
+    printBanner4(): Void ==
+      print(" "::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print("|  Encounter potential prefix sum, start typechecking       |"::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print(" "::OutputForm)    
+
+
     -- update the extracted accumulation loops to the global variable
     --  which stores the final results
     updateAccumulationLoopList(r: DREC,_
@@ -576,6 +587,16 @@ ReductionAnalysisPackage(): Public == Private where
       r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
       fundefList := concat(fundefList, r)
       accumulationLoopList := concat(accumulationLoopList, r')
+
+    -- update the extracted scan loops to the global variable
+    --  which stores the final results
+    updateScanLoopList(r: DREC,_
+                          resultFromTypeChecker: Pair(VTB, List YREC)): Void ==
+      r.typeenv := first resultFromTypeChecker
+      r.accumulations := second resultFromTypeChecker
+      r' : ZREC := [constructorName, r.funname, r.signature, r.accumulations]
+      fundefList := concat(fundefList, r)
+      scanLoopList := concat(scanLoopList, r')
 
     -- analysis option 0:
     -- collect all the accumulation loop from all the statements in a function
@@ -616,10 +637,49 @@ ReductionAnalysisPackage(): Public == Private where
             importList', constructorMacros, loopList', accVariables)$TypeChecker
       updateAccumulationLoopList(r, resultFromTypeChecker)
 
+    -- analysis option 4:
+    -- collect all the inclusive scans from all the statements in a function
+    -- body via pattern matching
+    collectScan(functionName: Identifier,_
+                  sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
+      gte' := macroExpansionForTypeEnvironmentTable(gte)
+      gte' := filterOutMappingAst(gte')
+      importList' := macroExpansionForImportList()
+      -- analyze the loop, extracting reductions 
+      resultFromScanAnalysis: Pair(LTB, List List Syntax)_ 
+        := extractScanLoop(definition',constructorName, copy gte')$LoopAnalysis
+      loopTable: LTB := first resultFromScanAnalysis
+      operands: List List Syntax := second resultFromScanAnalysis
+      -- if there is no interesting loop, we do nothing.
+      empty? loopTable => return true
+      printBanner4()
+      k := first keys loopTable
+      loopList : List RepeatAst := loopTable.k
+      sig' := sig
+      pars := getOperands(first(getOperands(definition::Syntax)))
+      if not signatureComplete?(sig) then 
+        sig' := getCompleteSignature(functionName, pars, sig, gte)
+      -- instantiate the % in the function body with the ctor call form
+      definition' := instantiatePercentageWithCurrentDomain_
+                     (definition::Syntax::SpadAst)::DefinitionAst
+      -- instantiate the % in the signature with the ctor call form
+      sig'    := instantiatePercentageForSignature(sig')
+      --instantiate the % in the collected potential repeatAsts
+      loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
+      -- build the record
+      r : DREC := [functionName, sig', definition', copy gte', []]
+      -- typechecks the function definition body
+      resultFromTypeChecker : Pair(VTB, List YREC) :=_
+        verifyScanWithType(r, constructorName, constructorParameters,_
+            localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
+            importList', constructorMacros, loopList', operands)$TypeChecker
+      updateScanLoopList(r, resultFromTypeChecker)
+
 
     -- analysis option 1:
     -- collect all the reduce function calls and reduce forms from all the 
-    -- statements in a function body via pattern matching
+    -- statements in a function definition body via pattern matching
     collectReduceFunctionAndForm(functionName: Identifier, sig: Signature,_
                                   definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
@@ -657,7 +717,7 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- analysis option 2:
     -- collect all the affine control loop from all the 
-    -- statements in a function body via pattern matching
+    -- statements in a function definition body via pattern matching
     collectAffineControlLoop(functionName: Identifier, sig: Signature,_
                              definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
@@ -688,7 +748,7 @@ ReductionAnalysisPackage(): Public == Private where
 
     -- analysis option 3:
     -- collect all the loop nests from all the 
-    -- statements in a function body via pattern matching
+    -- statements in a function definition body
     collectLoopNests(functionName: Identifier, sig: Signature,_
                      definition: DefinitionAst, gte: VTB): Void ==
       definition' := definition
@@ -729,6 +789,8 @@ ReductionAnalysisPackage(): Public == Private where
         collectAffineControlLoop(functionName, sig, definition, gte)
       programOption = 3 => 
         collectLoopNests(functionName, sig, definition, gte)
+      programOption = 4 => 
+        collectScan(functionName, sig, definition, gte)
       userError "illegal analysis option"
 
     -- update type environment gte with the variable and its type obtained from
@@ -1181,7 +1243,6 @@ ReductionAnalysisPackage(): Public == Private where
     -- convert a list of signature to string for pretty printing
     signaturelistToString(sl: List XREC): String ==
       result : String := ""
-      accumulationLoopCounter := inc(accumulationLoopCounter)
       if empty? sl then
         result := concat([result, "    [Function signature is not available]"])
       for i in 1..#sl repeat
@@ -1203,6 +1264,7 @@ ReductionAnalysisPackage(): Public == Private where
     -- convert an accumulation loop record to string for pretty printing
     accumulationToString(al: List YREC): String ==
       result : String := ""
+      accumulationLoopCounter := accumulationLoopCounter + #al
       for i in 1..#al repeat
         loopStr   := toString(((al.i).loopcandidate)::Syntax)$SyntaxHelper
         funsigStr := signaturelistToString((al.i).signaturelist)
@@ -1263,7 +1325,7 @@ ReductionAnalysisPackage(): Public == Private where
                 "\n\r\n\r", "    ", binOp, ": ", sigStr, " where ", "\n\r",_
                   stringOfTenv, "\n\r\n\r", "------------------------", "\n\r"])
       result
-    
+
     -- convert REDF format records to string for pretty printing
     reductionFormsToString2(al: List REDF): String == 
       reductionFormCounter := reductionFormCounter + #al
@@ -1312,6 +1374,7 @@ ReductionAnalysisPackage(): Public == Private where
         f := string((r.funname)::Symbol)
         s := signatureToString(r.signature)
         a := accumulationToString(r.accumulations)
+        
         k : String := getConstructorKindInString(r.ctorname)
         result := concat(result, concat([k, ": ", c, "\n\r",_ 
                                          "Function: ", f,": ", s, "\n\r\n\r",_
@@ -2123,7 +2186,7 @@ ReductionAnalysisPackage(): Public == Private where
              written into reduce-functions.txt"::OutputForm)
       
     -- obtain and save all reduce forms
-    saveRediceFormsToFile(): Void ==
+    saveReduceFormsToFile(): Void ==
       writeRFORMToFile(rformList, "reduce-forms")
       print("Results for reduction forms have been_
              written into reduce-forms.txt"::OutputForm)
@@ -2167,7 +2230,7 @@ ReductionAnalysisPackage(): Public == Private where
           extractAndSaveParallelAccumulationLoop(associativeOperatorList)      
       option = 1 =>  
         saveReduceFunctionsToFile()
-        saveRediceFormsToFile()
+        saveReduceFormsToFile()
         if useassumption = 1 then 
           extractAndSaveParallelReduceFunction(associativeOperatorList)        
           extractAndSaveParallelReduceForm(associativeOperatorList)

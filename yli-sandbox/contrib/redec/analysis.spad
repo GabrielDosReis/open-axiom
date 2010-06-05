@@ -29,6 +29,11 @@ LoopAnalysis(): Public == Private where
     extractAllLoopNest: (DefinitionAst, Identifier, VTB) -> LTB
       ++ interface for analysis function in redupkg.spad,
       ++ this function collects all the loop nests, i.e., loop depth >= 2
+    extractScanLoop: (DefinitionAst, Identifier, VTB) ->_
+                              Pair(LTB, List List Syntax)
+      ++ interface for main analysis function defined in redupkg.spad
+      ++ this function returns a list of repeatAst which satisfies one of the 
+      ++ syntactical patterns of a scan
     getLoopDepth: RepeatAst -> Integer
       ++ computes the depth of a loop nest
     getAccumulationNumberDistribution: () -> List Float
@@ -47,6 +52,8 @@ LoopAnalysis(): Public == Private where
       ++ only contains a single if statement 
     identifyAccumulationLoopFromStatement: (SpadAst, VTB) -> ACC
       ++ collects accumulation loop from each statement
+    identifyScanLoopFromStatement: (SpadAst, VTB) -> ACC
+      ++ collects scan loop from each statement
     globalVariableSubstitutions: List LetAst -> List LetAst
       ++ does all forward substitution for all 
       ++ global variables in the loop body
@@ -67,6 +74,9 @@ LoopAnalysis(): Public == Private where
     -- table for storing all the accumulation loops
     accumulationLoopTable: LTB := empty()
 
+    -- table for storing all the scan loops
+    scanLoopTable: LTB := empty()  
+ 
     -- list for storing all the rejected accumulation loop candidates
     -- and the reasons
     rejectedLoop: LREJ := empty()
@@ -111,6 +121,9 @@ LoopAnalysis(): Public == Private where
     -- branches 
     reductionVariableList : List List Syntax := []
 
+    -- list for storing all the operands of a prefix sum operator
+    prefixsumOperandsList: List List Syntax := []
+
     -- list for storing all the reduction variables used in accumulations 
     -- those accumulations appear in the then branch of some if-statement
     reductionVariableListInThenBranch: List Syntax := []
@@ -146,7 +159,7 @@ LoopAnalysis(): Public == Private where
 
     -- returns the rejecting reason in String 
     reasonInString(reasonCode: Integer): String ==
-      reasonCode = 3 => "Not a for-loop"
+      reasonCode = 3 => "Not a single for-loop"
       reasonCode = 4 => "Accumulation variable found in the conditional's predicate"
       reasonCode = 5 => "Not each assignment is an independent accumulation"
       reasonCode = 6 => "In then-branch: Not each assignment is an independent accumulation"
@@ -157,12 +170,12 @@ LoopAnalysis(): Public == Private where
       reasonCode = 11 => "Non-binary accumulation operator is used"
       reasonCode = 12 => "In then-branch: Non-binary accumulation operator is used"
       reasonCode = 13 => "In else-branch: Non-binary accumulation operator is used"
-      reasonCode = 14 => "Loop index variable is changed in some accumulation"
-      reasonCode = 15 => "In then-branch: Loop index variable is changed in some accumulation"
-      reasonCode = 16 => "In else-branch: Loop index variable is changed in some accumulation"
-      reasonCode = 17 => "Non-independent accumulation"
-      reasonCode = 18 => "In then-branch: Non-independent accumulation"
-      reasonCode = 19 => "In else-branch: Non-independent accumulation"
+      reasonCode = 14 => "Accumulation variable found in loop iterator"
+      reasonCode = 15 => "In then-branch: Accumulation variable found in loop iterator"
+      reasonCode = 16 => "In else-branch: Accumulation variable found in loop iterator"
+      reasonCode = 17 => "Dependent accumulations"
+      reasonCode = 18 => "In then-branch: Dependent accumulations"
+      reasonCode = 19 => "In else-branch: Dependent accumulations"
       reasonCode = 20 => "More than one accumulation operator is used in one assignment"
       reasonCode = 21 => "In then-branch: More than one accumulation operator is used in an assignment"
       reasonCode = 22 => "In else-branch: More than one accumulation operator is used in an assignment"
@@ -463,7 +476,8 @@ LoopAnalysis(): Public == Private where
           return true
       false
 
-    -- checks whether the loop iterator 
+    -- checks whether the accumulation variables appear in loop iterator or
+    -- the predicate of a conditional
     withinIterators?(vars: List Syntax, its: List SpadAst, gv: VTB): Boolean ==
       for i in its repeat
         advanceListWithin?(vars, i, gv) => 
@@ -756,7 +770,7 @@ LoopAnalysis(): Public == Private where
         -- we recursively examine the body.
         identifyAccumulationLoopFromStatement(body r, copy gv)
       depth = 1 => 
-        updateRejectionCodes(3)                                                                                       
+        updateRejectionCodes(3)                                                                                 
         updateRejectedLoopList(r)  
         []
       identifyAccumulationLoopFromStatement(body r, copy gv)
@@ -1036,7 +1050,7 @@ LoopAnalysis(): Public == Private where
       userError "unexpected kind of access library function"
 
     -- checks whether an expression is an annotated function application
-    isAnnotated?(e: Syntax):Boolean ==
+    isAnnotated?(e: Syntax): Boolean ==
       (op := getOperator(e)) case Syntax =>
         (op' := getOperator(op::Syntax)) case Identifier and_
         op'::Identifier = 'elt and #getOperands(op::Syntax) = 2 
@@ -1242,6 +1256,223 @@ LoopAnalysis(): Public == Private where
         identifyAccumulationLoopFromExit(s, copy gv)
       []
 
+    -- checks the lhs of the let against the corresponding component 
+    -- of the first scan pattern
+    verifyLeftOfLet(l: Syntax, indexVar: Syntax, gv: VTB): Boolean ==
+      compound? l =>
+        first getOperands(l) = indexVar 
+        false
+      false
+   
+    -- create a minus ``-" syntax
+    makeMinus(): Syntax == '_-::Identifier::Syntax
+
+    -- create compound one
+    makeCompoundOne(): Syntax == buildSyntax(makeOne(), [])
+
+    -- build compound syntax (- indexVar (One))
+    buildMinusOne(indexVar: Syntax): Syntax ==
+      buildSyntax(makeMinus(), [indexVar, makeCompoundOne()])
+
+    -- create a minus ``-" syntax
+    verifyTheOther(opr: Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
+      compound?(indexExpr := first(getOperands(opr))) and first unlist opr = seq =>
+        indexExpr = buildMinusOne(indexVar)
+      false
+
+    -- checks the rhs's operand of the let against the corresponding component 
+    -- of the first scan pattern
+    verifyOperandsOfRhs(oprs: List Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
+      compound?(lopr := first oprs) and compound?(ropr := second oprs) =>
+        first getOperands(lopr) = indexVar => verifyTheOther(ropr, indexVar, seq, gv)
+        first getOperands(ropr) = indexVar => verifyTheOther(lopr, indexVar, seq, gv)
+        false
+      false
+
+    -- checks the rhs of the let against the corresponding component
+    -- of the first scan pattern
+    verifyRightOfLet(r: Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
+      if isAnnotated?(r) then
+        op := getOperands(getOperator(r)::Syntax).last
+        oprs := getOperands(r)
+        r := buildSyntax(op, oprs)     
+      isBinaryExpression?(r) and verifyOperandsOfRhs(getOperands(r), indexVar, seq, gv)
+
+    -- checks the loop body against the first scan pattern 
+    verifyScanForm1(s: LetAst, it: SpadAst, gv: VTB): Boolean ==
+      indexVariable := first getOperands(it::Syntax)
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      verifyLeftOfLet(lhs, indexVariable, gv) =>
+        seq := first unlist lhs
+        verifyRightOfLet(rhs, indexVariable, seq, gv)
+        false
+      false
+
+
+    -- checks the rhs of the first assignment against the corresponding componenet
+    -- of the second prefix sum syntax pattern
+    verifyRhsOfFirstAssignment2(l: Syntax, r: Syntax, indexVar: Syntax, gv: VTB):_
+                                   Pair(Boolean , Syntax) ==
+      result : Pair(Boolean, Syntax) := pair(true, makeUnknown())
+      isBinaryExpression?(r) =>
+        oprs := getOperands(r)
+        lopr := first oprs
+        ropr := second oprs
+        l = lopr =>
+          compound?(ropr) and #(args := getOperands(ropr))=1 and first args = indexVar =>
+            pair(true, lopr)
+          result
+        l = ropr =>
+          compound?(lopr) and #(args := getOperands(lopr))=1 and first args = indexVar =>
+            pair(true, ropr)
+          result
+        result
+      result
+
+    -- checks the first statement of the second kind of prefix sum pattern
+    verifyFirstAssignment2(s: LetAst, indexVar: Syntax, gv: VTB): Pair(Boolean, Syntax) ==
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      not compound?(lhs) and compound?(rhs) =>
+        if isAnnotated?(rhs) then
+          op := getOperands(getOperator(rhs)::Syntax).last
+          oprs := getOperands(rhs)
+          rhs := buildSyntax(op, oprs)
+        verifyRhsOfFirstAssignment2(lhs, rhs, indexVar, gv)
+      pair(false, makeUnknown())
+
+    -- checks the second statement of the second kind of prefix sum pattern
+    verifySecondAssignment2(s: LetAst, v: Syntax,  indexVar: Syntax, gv: VTB): Boolean ==
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      not compound?(rhs) and rhs = v and compound?(lhs) and_
+      #(args := getOperands(lhs)) = 1 and first args = indexVar
+
+    -- checks the loop body against the second scan pattern
+    verifyScanForm2(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
+      indexVariable := first getOperands(it::Syntax)
+      first (r := verifyFirstAssignment2(first b, indexVariable, gv)) =>
+        verifySecondAssignment2(second b, second r, indexVariable, gv)
+      false
+
+    -- checks the statement sequence after forward substitutions
+    -- to make sure the loop body implements one step scan
+    isScan?(b: List LetAst, its: List SpadAst, gv: VTB): Boolean ==
+      localcount : Integer := 0
+      varsInLhs : List Syntax := [getLhs(s)$SyntaxHelper for s in b]
+      -- later we also need to add the verification to guarantee that #its = 1
+      #its = 1 =>
+        it := first its
+        #b = 1 and stepAst? it     => verifyScanForm1(first b, it, gv)
+        #b = 2 and stepAst? it     => verifyScanForm2(b, it, gv)
+        --#b = 2 and (it case InAst) => verifyScanForm3(b, it, gv)
+        false
+      --accumulationNumber := concat(accumulationNumber, localcount::Float)
+      false
+
+
+    -- verify whether a sequence of statements only implements independent
+    -- accumulations
+    verifyScan(its: List SpadAst, b: List LetAst,_
+                                                 gv: VTB, lv: VTB): Boolean ==
+      empty?(b) => true
+      b := eliminateLocalVariable!(b, lv)
+      b := eliminateGlobalVariable!(b)
+      isScan?(b, its, gv)
+
+    -- checks whether statements in an atomic loop body implements only
+    -- independent accumulations
+    verifyAtomicLoopBodyAsScan(r: RepeatAst, p: Pair(Boolean, List LetAst),_
+                                            its: List SpadAst, gv: VTB): ACC ==
+      -- clean up the rejection codes for the current loop
+      --rejectionCodes := {}
+      examineIf? := false
+      localVariables : VTB := collectLocalVariableofLoop(second p, gv)
+      verifyScan(its, second p, gv, localVariables) =>
+        --reductionVariableList := concat(reductionVariableList,_
+        --                               [reductionVariableListInThenBranch])
+        [r]
+      updateRejectedLoopList(r)
+      []
+
+    -- i.e. to verify whether a repeatAst has the canonical form
+    identifyScanLoopFromRepeat(r: RepeatAst, gv: VTB): ACC ==
+      depth := getLoopDepth(r)
+      rejectionCodes := {}
+      not empty?(its := iterators(r)) =>
+        it := first its
+        -- collect the global variables from the loop induction variables
+        -- in the loop iterators
+        gv := collectLoopInductionVariable(its, gv)
+        -- if this is a while loop, the loop is not qualified,
+        -- and we further search its body
+        it case WhileAst or untilAst? it  or multiFor? its =>
+          depth = 1 =>
+            updateRejectionCodes(3)
+            updateRejectedLoopList(r)
+            []
+          identifyScanLoopFromStatement(body r, copy gv)
+        -- if this is a for loop, and only contains let statement
+        first(p := letOnly? r) => verifyAtomicLoopBodyAsScan(r, p, its, gv)
+        -- if this is a for loop whose body is a mix of many kinds of statement
+        -- we recursively examine the body.
+        identifyScanLoopFromStatement(body r, copy gv)
+      depth = 1 =>
+        updateRejectionCodes(3)
+        updateRejectedLoopList(r)
+        []
+      identifyScanLoopFromStatement(body r, copy gv)
+
+    -- collect scan loop from an sequence
+    identifyScanLoopFromSequence(s: SpadAst, gv: VTB): ACC ==
+      result : ACC := []
+      bs := body(s::Syntax::SequenceAst)
+      for b in bs repeat
+        result := concat(result, identifyScanLoopFromStatement(b, gv))
+      result
+
+    -- collect scan loop from a if statement
+    identifyScanLoopFromIf(s: SpadAst, gv: VTB): ACC ==
+      result : ACC := []
+      thBranch := thenBranch(s::Syntax::IfAst)
+      elBranch := elseBranch(s::Syntax::IfAst)
+      if compound?(thBranch::Syntax) then
+        result := concat(result,_
+                      identifyScanLoopFromStatement(thBranch, copy gv))
+      if compound?(elBranch::Syntax) then
+        result := concat(result,_
+                      identifyScanLoopFromStatement(elBranch, copy gv))
+      result
+
+    -- collect accumulation loop from an exit statement
+    identifyScanLoopFromExit(s: SpadAst, gv: VTB): ACC ==
+      e := expression(s::Syntax::ExitAst)
+      identifyScanLoopFromStatement(e, copy gv)
+
+    -- Traverse each statement in a definition body,
+    -- collecting scan loop from each statement
+    identifyScanLoopFromStatement(s: SpadAst, gv: VTB): ACC ==
+      -- TO DO  
+      not compound?(s::Syntax) => []
+      s case LetAst =>
+        k := getLhs(s)$SyntaxHelper
+        gv.k := rhs(s::Syntax::LetAst)::Syntax
+        []
+      s case ColonAst =>
+        k := lhs(s::Syntax::ColonAst)::Syntax
+        gv.k := makeUnknown()
+	[]
+      s case SequenceAst =>
+        identifyScanLoopFromSequence(s, copy gv)
+      s case RepeatAst =>
+        [] -- identifyScanLoopFromRepeat(s::Syntax::RepeatAst, copy gv)
+      s case IfAst =>
+        identifyScanLoopFromIf(s, copy gv)
+      s case ExitAst =>
+        identifyScanLoopFromExit(s, copy gv)
+      []
+
     -- collect affine control loop from a sequence statement
     identifyAffineControlLoopFromSequence(s: SpadAst, gv: VTB): ACC ==
       result : ACC := []
@@ -1313,9 +1544,11 @@ LoopAnalysis(): Public == Private where
     -- initialize the global variable table
     cleanUp(): Void ==
       accumulationLoopTable := empty()
+      scanLoopTable := empty()
       aclTable := empty()
       loopNestTable := empty()
       reductionVariableList := []
+      prefixsumOperandsList := []
 
     --  update the final results to be returned 
     -- with a new entry: (pair(d, f), bl)
@@ -1356,6 +1589,15 @@ LoopAnalysis(): Public == Private where
       pair(functionName,_
            identifyAccumulationLoopFromStatement(body d, typeEnvironment))
 
+    -- collects all the accumulation loops (single loop) from a definition body
+    identifyScanLoopFromDefinitionBody(d: DefinitionAst):_
+                                                     Pair(Identifier, ACC) == 
+      typeEnvironment : VTB := initializeLocalTypeEnvironment d
+      functionName := name(head(d)::Syntax::HeadAst)
+      -- start analysis
+      pair(functionName,_
+           identifyScanLoopFromStatement(body d, typeEnvironment))
+
     -- collects all the affine control loops from a definition body, or, 
     -- collects all the normal loop nests from a definition body
     identifyAffineControlLoopFromDefinitionBody(d: DefinitionAst):_
@@ -1389,6 +1631,17 @@ LoopAnalysis(): Public == Private where
                                  extractedLoops, aclTable)
       option = 3 => updateTable2(ctor, functionName,_
                                  extractedLoops, loopNestTable)   
+
+    -- collect data that is prefix sum from function definition
+    collectScanLoopFromDefinition(sa: SpadAst, ctor: Identifier):Void ==
+      -- extract accumulation loop
+      analysisResult := identifyScanLoopFromDefinitionBody_
+                                                    (sa::Syntax::DefinitionAst)
+      constructorName := ctor
+      functionName := first analysisResult
+      scanLoops := second analysisResult
+      updateTable2(ctor, functionName, scanLoops, scanLoopTable)   
+
 
     -- collect data from  for top level statements (definitions)
     collectDataFromDefinition(sa: SpadAst, ctor: Identifier): Void ==
@@ -1428,6 +1681,15 @@ LoopAnalysis(): Public == Private where
       collectDataFromDefinition(defa::Syntax::SpadAst, ctor)
       copy loopNestTable
 
+    -- interface used in redupkg.spad
+    -- this function collects scan loops from a function definition
+    extractScanLoop(defa: DefinitionAst,_
+                  ctor: Identifier, tpenv: VTB): Pair(LTB, List List Syntax) ==
+      cleanUp()
+      option := 4
+      globalTypeEnvironment    := copy tpenv
+      collectDataFromDefinition(defa::Syntax::SpadAst, ctor)
+      pair(copy accumulationLoopTable, copy prefixsumOperandsList)
 
 
 
