@@ -27,8 +27,8 @@
     (LOOP
       (COND
         ((> |i| #0#) (RETURN (NREVERSE #1#)))
-        (T (LETT #1# (CONS |i| #1#) |LNAGG-;indices;AL;1|)))
-      (LETT |i| (+ |i| 1) |LNAGG-;indices;AL;1|)))) 
+        (T (SETQ #1# (CONS |i| #1#))))
+      (SETQ |i| (+ |i| 1))))) 
 
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
   (COND

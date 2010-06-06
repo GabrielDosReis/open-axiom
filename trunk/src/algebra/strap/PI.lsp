@@ -8,15 +8,14 @@
   (PROG (#0=#:G1401)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|PositiveInteger|)
-               |PositiveInteger|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|PositiveInteger|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|PositiveInteger|
                                (LIST (CONS NIL
                                       (CONS 1 (|PositiveInteger;|))))))
-             (LETT #0# T |PositiveInteger|))
+             (SETQ #0# T))
            (COND
              ((NOT #0#) (HREM |$ConstructorCache| '|PositiveInteger|))))))))) 
 

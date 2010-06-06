@@ -16,7 +16,7 @@
                     (COND
                       (|MultivariateTaylorSeriesCategory;CAT|)
                       ('T
-                       (LETT |MultivariateTaylorSeriesCategory;CAT|
+                       (SETQ |MultivariateTaylorSeriesCategory;CAT|
                              (|Join| (|PartialDifferentialRing| '|t#2|)
                                      (|PowerSeriesCategory| '|t#1| '#1#
                                       '|t#2|)
@@ -78,8 +78,7 @@
                                         (|NonNegativeInteger|)
                                         (|List| |t#2|)
                                         (|List| (|NonNegativeInteger|)))
-                                      NIL))
-                             |MultivariateTaylorSeriesCategory|)))))))
+                                      NIL)))))))))
     (|setShellEntry| #0# 0
         (LIST '|MultivariateTaylorSeriesCategory| (|devaluate| |t#1|)
               (|devaluate| |t#2|)))

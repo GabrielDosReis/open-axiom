@@ -189,8 +189,7 @@
                 (SEQ (COND
                        ((NULL |x|) (|error| "index out of range")))
                      (EXIT (LETT |x| (CDR |x|) |ILIST;rest;$Nni$;19|)))
-                (LETT |i| (QSADD1 |i|) |ILIST;rest;$Nni$;19|) (GO G190)
-                G191 (EXIT NIL))
+                (SETQ |i| (QSADD1 |i|)) (GO G190) G191 (EXIT NIL))
            (EXIT |x|))))) 
 
 (DEFUN |ILIST;copy;2$;20| (|x| $)
@@ -206,8 +205,7 @@
                            (|error| "cyclic list")))))
                      (LETT |y| (CONS (CAR |x|) |y|) |ILIST;copy;2$;20|)
                      (EXIT (LETT |x| (CDR |x|) |ILIST;copy;2$;20|)))
-                (LETT |i| (QSADD1 |i|) |ILIST;copy;2$;20|) (GO G190)
-                G191 (EXIT NIL))
+                (SETQ |i| (QSADD1 |i|)) (GO G190) G191 (EXIT NIL))
            (EXIT (NREVERSE |y|)))))) 
 
 (DEFUN |ILIST;coerce;$Of;21| (|x| $)
@@ -467,16 +465,15 @@
   (PROG (#2=#:G1519)
     (RETURN
       (COND
-        ((LETT #2#
+        ((SETQ #2#
                (|lassocShiftWithFunction| (|devaluateList| #1#)
                    (HGET |$ConstructorCache| '|IndexedList|)
-                   '|domainEqualList|)
-               |IndexedList|)
+                   '|domainEqualList|))
          (|CDRwithIncrement| #2#))
         ('T
          (UNWIND-PROTECT
            (PROG1 (APPLY (|function| |IndexedList;|) #1#)
-             (LETT #2# T |IndexedList|))
+             (SETQ #2# T))
            (COND
              ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
 

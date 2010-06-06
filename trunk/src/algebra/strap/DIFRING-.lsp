@@ -22,9 +22,7 @@
                 (SEQ (EXIT (LETT |r|
                                  (SPADCALL |r| (|getShellEntry| $ 7))
                                  |DIFRING-;differentiate;SNniS;2|)))
-                (LETT |i| (QSADD1 |i|)
-                      |DIFRING-;differentiate;SNniS;2|)
-                (GO G190) G191 (EXIT NIL))
+                (SETQ |i| (QSADD1 |i|)) (GO G190) G191 (EXIT NIL))
            (EXIT |r|))))) 
 
 (DEFUN |DIFRING-;D;SNniS;3| (|r| |n| $)

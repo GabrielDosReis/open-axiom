@@ -23,10 +23,7 @@
                       G190
                       (COND
                         ((OR (ATOM #0#)
-                             (PROGN
-                               (LETT |f| (CAR #0#)
-                                     |UFD-;squareFreePart;2S;1|)
-                               NIL))
+                             (PROGN (SETQ |f| (CAR #0#)) NIL))
                          (GO G191)))
                       (PROGN
                         (LETT #1# (CAR |f|) |UFD-;squareFreePart;2S;1|)
@@ -39,8 +36,7 @@
                            (PROGN
                              (LETT #2# #1# |UFD-;squareFreePart;2S;1|)
                              (LETT #3# 'T |UFD-;squareFreePart;2S;1|)))))
-                      (LETT #0# (CDR #0#) |UFD-;squareFreePart;2S;1|)
-                      (GO G190) G191 (EXIT NIL))
+                      (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
                  (COND (#3# #2#) ('T (|spadConstant| $ 16))))
                (|getShellEntry| $ 15)))))) 
 

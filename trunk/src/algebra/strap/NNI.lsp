@@ -45,8 +45,7 @@
   (PROG (#0=#:G1409)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|NonNegativeInteger|)
-               |NonNegativeInteger|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|NonNegativeInteger|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
@@ -54,7 +53,7 @@
                                '|NonNegativeInteger|
                                (LIST (CONS NIL
                                       (CONS 1 (|NonNegativeInteger;|))))))
-             (LETT #0# T |NonNegativeInteger|))
+             (SETQ #0# T))
            (COND
              ((NOT #0#)
               (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))) 

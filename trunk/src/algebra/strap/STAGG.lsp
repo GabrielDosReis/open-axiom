@@ -11,7 +11,7 @@
                 (COND
                   (|StreamAggregate;CAT|)
                   ('T
-                   (LETT |StreamAggregate;CAT|
+                   (SETQ |StreamAggregate;CAT|
                          (|Join| (|UnaryRecursiveAggregate| '|t#1|)
                                  (|LinearAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
@@ -21,8 +21,7 @@
                                        ((|possiblyInfinite?|
                                          ((|Boolean|) $))
                                         T))
-                                     NIL '((|Boolean|)) NIL))
-                         |StreamAggregate|))))))
+                                     NIL '((|Boolean|)) NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|StreamAggregate| (|devaluate| |t#1|)))
     #0#)) 

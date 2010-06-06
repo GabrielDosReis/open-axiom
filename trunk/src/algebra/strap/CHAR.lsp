@@ -189,13 +189,13 @@
   (PROG (#0=#:G1427)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|Character|) |Character|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|Character|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
                                (LIST (CONS NIL (CONS 1 (|Character;|))))))
-             (LETT #0# T |Character|))
+             (SETQ #0# T))
            (COND ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
 
 (DEFUN |Character;| ()

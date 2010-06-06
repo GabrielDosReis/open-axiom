@@ -15,7 +15,7 @@
                     (COND
                       (|LinearAggregate;CAT|)
                       ('T
-                       (LETT |LinearAggregate;CAT|
+                       (SETQ |LinearAggregate;CAT|
                              (|Join| (|IndexedAggregate| '#1# '|t#1|)
                                      (|Collection| '|t#1|)
                                      (|Eltable| '#2# '$)
@@ -59,8 +59,7 @@
                                          (|Integer|))
                                         (|Integer|) (|List| $)
                                         (|NonNegativeInteger|))
-                                      NIL))
-                             |LinearAggregate|)))))))
+                                      NIL)))))))))
     (|setShellEntry| #0# 0
         (LIST '|LinearAggregate| (|devaluate| |t#1|)))
     #0#)) 

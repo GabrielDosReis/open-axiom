@@ -54,10 +54,7 @@
                         |CLAGG-;count;MANni;2|)
                   G190
                   (COND
-                    ((OR (ATOM #0#)
-                         (PROGN
-                           (LETT |x| (CAR #0#) |CLAGG-;count;MANni;2|)
-                           NIL))
+                    ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL))
                      (GO G191)))
                   (COND
                     ((SPADCALL |x| |f|)
@@ -70,8 +67,7 @@
                           (PROGN
                             (LETT #2# #1# |CLAGG-;count;MANni;2|)
                             (LETT #3# 'T |CLAGG-;count;MANni;2|)))))))
-                  (LETT #0# (CDR #0#) |CLAGG-;count;MANni;2|) (GO G190)
-                  G191 (EXIT NIL))
+                  (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
              (COND (#3# #2#) ('T 0))))))) 
 
 (DEFUN |CLAGG-;any?;MAB;3| (|f| |c| $)
@@ -84,10 +80,7 @@
                         |CLAGG-;any?;MAB;3|)
                   G190
                   (COND
-                    ((OR (ATOM #0#)
-                         (PROGN
-                           (LETT |x| (CAR #0#) |CLAGG-;any?;MAB;3|)
-                           NIL))
+                    ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL))
                      (GO G191)))
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |CLAGG-;any?;MAB;3|)
@@ -98,8 +91,7 @@
                        (PROGN
                          (LETT #2# #1# |CLAGG-;any?;MAB;3|)
                          (LETT #3# 'T |CLAGG-;any?;MAB;3|)))))
-                  (LETT #0# (CDR #0#) |CLAGG-;any?;MAB;3|) (GO G190)
-                  G191 (EXIT NIL))
+                  (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
              (COND (#3# #2#) ('T NIL))))))) 
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
@@ -112,10 +104,7 @@
                         |CLAGG-;every?;MAB;4|)
                   G190
                   (COND
-                    ((OR (ATOM #0#)
-                         (PROGN
-                           (LETT |x| (CAR #0#) |CLAGG-;every?;MAB;4|)
-                           NIL))
+                    ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL))
                      (GO G191)))
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |CLAGG-;every?;MAB;4|)
@@ -126,8 +115,7 @@
                        (PROGN
                          (LETT #2# #1# |CLAGG-;every?;MAB;4|)
                          (LETT #3# 'T |CLAGG-;every?;MAB;4|)))))
-                  (LETT #0# (CDR #0#) |CLAGG-;every?;MAB;4|) (GO G190)
-                  G191 (EXIT NIL))
+                  (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
              (COND (#3# #2#) ('T T))))))) 
 
 (DEFUN |CLAGG-;find;MAU;5| (|f| |c| $)

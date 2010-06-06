@@ -11,7 +11,7 @@
                 (COND
                   (|QuotientFieldCategory;CAT|)
                   ('T
-                   (LETT |QuotientFieldCategory;CAT|
+                   (SETQ |QuotientFieldCategory;CAT|
                          (|Join| (|Field|) (|Algebra| '|t#1|)
                                  (|RetractableTo| '|t#1|)
                                  (|FullyEvalableOver| '|t#1|)
@@ -73,8 +73,7 @@
                                        ((|PolynomialFactorizationExplicit|)
                                         (|has| |t#1|
                                          (|PolynomialFactorizationExplicit|))))
-                                     'NIL NIL))
-                         |QuotientFieldCategory|))))))
+                                     'NIL NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|QuotientFieldCategory| (|devaluate| |t#1|)))
     #0#)) 

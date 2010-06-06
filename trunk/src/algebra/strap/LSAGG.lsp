@@ -11,14 +11,13 @@
                 (COND
                   (|ListAggregate;CAT|)
                   ('T
-                   (LETT |ListAggregate;CAT|
+                   (SETQ |ListAggregate;CAT|
                          (|Join| (|StreamAggregate| '|t#1|)
                                  (|FiniteLinearAggregate| '|t#1|)
                                  (|ExtensibleLinearAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|list| ($ |t#1|)) T)) NIL 'NIL
-                                     NIL))
-                         |ListAggregate|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0 (LIST '|ListAggregate| (|devaluate| |t#1|)))
     #0#)) 
 

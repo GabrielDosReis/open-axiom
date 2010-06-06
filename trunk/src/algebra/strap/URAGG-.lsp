@@ -240,8 +240,7 @@
                      (EXIT (LETT |x|
                                  (SPADCALL |x| (|getShellEntry| $ 14))
                                  |URAGG-;#;ANni;15|)))
-                (LETT |k| (QSADD1 |k|) |URAGG-;#;ANni;15|) (GO G190)
-                G191 (EXIT NIL))
+                (SETQ |k| (QSADD1 |k|)) (GO G190) G191 (EXIT NIL))
            (EXIT |k|))))) 
 
 (DEFUN |URAGG-;tail;2A;16| (|x| $)
@@ -269,8 +268,8 @@
                                      (LETT |x| |y| |URAGG-;tail;2A;16|)
                                      (|getShellEntry| $ 14))
                                     |URAGG-;tail;2A;16|)))
-                        (LETT |k| (QSADD1 |k|) |URAGG-;tail;2A;16|)
-                        (GO G190) G191 (EXIT NIL))
+                        (SETQ |k| (QSADD1 |k|)) (GO G190) G191
+                        (EXIT NIL))
                    (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
@@ -365,17 +364,15 @@
                            (GO G191)))
                         (LETT |z| (SPADCALL |z| (|getShellEntry| $ 14))
                               |URAGG-;cycleEntry;2A;19|)
-                        (LETT |l| (QSADD1 |l|)
-                              |URAGG-;cycleEntry;2A;19|)
-                        (GO G190) G191 (EXIT NIL))
+                        (SETQ |l| (QSADD1 |l|)) (GO G190) G191
+                        (EXIT NIL))
                    (LETT |y| |x| |URAGG-;cycleEntry;2A;19|)
                    (SEQ (LETT |k| 1 |URAGG-;cycleEntry;2A;19|) G190
                         (COND ((QSGREATERP |k| |l|) (GO G191)))
                         (LETT |y| (SPADCALL |y| (|getShellEntry| $ 14))
                               |URAGG-;cycleEntry;2A;19|)
-                        (LETT |k| (QSADD1 |k|)
-                              |URAGG-;cycleEntry;2A;19|)
-                        (GO G190) G191 (EXIT NIL))
+                        (SETQ |k| (QSADD1 |k|)) (GO G190) G191
+                        (EXIT NIL))
                    (SEQ G190
                         (COND
                           ((NULL (NOT (SPADCALL |x| |y|
@@ -412,9 +409,8 @@
                            (GO G191)))
                         (LETT |y| (SPADCALL |y| (|getShellEntry| $ 14))
                               |URAGG-;cycleLength;ANni;20|)
-                        (LETT |k| (QSADD1 |k|)
-                              |URAGG-;cycleLength;ANni;20|)
-                        (GO G190) G191 (EXIT NIL))
+                        (SETQ |k| (QSADD1 |k|)) (GO G190) G191
+                        (EXIT NIL))
                    (EXIT |k|)))))))) 
 
 (DEFUN |URAGG-;rest;ANniA;21| (|x| |n| $)
@@ -430,8 +426,7 @@
                                     (SPADCALL |x|
                                      (|getShellEntry| $ 14))
                                     |URAGG-;rest;ANniA;21|)))))
-                (LETT |i| (QSADD1 |i|) |URAGG-;rest;ANniA;21|)
-                (GO G190) G191 (EXIT NIL))
+                (SETQ |i| (QSADD1 |i|)) (GO G190) G191 (EXIT NIL))
            (EXIT |x|))))) 
 
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
@@ -496,8 +491,8 @@
                                           (SPADCALL |y|
                                            (|getShellEntry| $ 14))
                                           |URAGG-;=;2AB;23|)))))))
-                              (LETT |k| (QSADD1 |k|) |URAGG-;=;2AB;23|)
-                              (GO G190) G191 (EXIT NIL))
+                              (SETQ |k| (QSADD1 |k|)) (GO G190) G191
+                              (EXIT NIL))
                          (EXIT (COND
                                  ((SPADCALL |x| (|getShellEntry| $ 20))
                                   (SPADCALL |y| (|getShellEntry| $ 20)))
@@ -535,9 +530,8 @@
                                             (SPADCALL |v|
                                              (|getShellEntry| $ 14))
                                             |URAGG-;node?;2AB;24|)))))))
-                           (LETT |k| (QSADD1 |k|)
-                                 |URAGG-;node?;2AB;24|)
-                           (GO G190) G191 (EXIT NIL))
+                           (SETQ |k| (QSADD1 |k|)) (GO G190) G191
+                           (EXIT NIL))
                       (EXIT (SPADCALL |u| |v| (|getShellEntry| $ 65)))))
            #0# (EXIT #0#))))) 
 

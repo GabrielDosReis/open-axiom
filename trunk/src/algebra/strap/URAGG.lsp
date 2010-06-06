@@ -11,7 +11,7 @@
                 (COND
                   (|UnaryRecursiveAggregate;CAT|)
                   ('T
-                   (LETT |UnaryRecursiveAggregate;CAT|
+                   (SETQ |UnaryRecursiveAggregate;CAT|
                          (|Join| (|RecursiveAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|concat| ($ $ $)) T)
@@ -74,8 +74,7 @@
                                      NIL
                                      '((|Integer|)
                                        (|NonNegativeInteger|))
-                                     NIL))
-                         |UnaryRecursiveAggregate|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|)))
     #0#)) 

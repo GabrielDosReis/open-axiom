@@ -30,15 +30,14 @@
   (PROG (#1=#:G1409)
     (RETURN
       (COND
-        ((LETT #1#
+        ((SETQ #1#
                (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
                    (HGET |$ConstructorCache| '|Vector|)
-                   '|domainEqualList|)
-               |Vector|)
+                   '|domainEqualList|))
          (|CDRwithIncrement| #1#))
         ('T
          (UNWIND-PROTECT
-           (PROG1 (|Vector;| #0#) (LETT #1# T |Vector|))
+           (PROG1 (|Vector;| #0#) (SETQ #1# T))
            (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))) 
 
 (DEFUN |Vector;| (|#1|)

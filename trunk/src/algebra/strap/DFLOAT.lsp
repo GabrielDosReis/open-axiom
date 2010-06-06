@@ -915,15 +915,14 @@
   (PROG (#0=#:G1562)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)
-               |DoubleFloat|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|DoubleFloat|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|DoubleFloat|
                                (LIST (CONS NIL
                                       (CONS 1 (|DoubleFloat;|))))))
-             (LETT #0# T |DoubleFloat|))
+             (SETQ #0# T))
            (COND
              ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|))))))))) 
 

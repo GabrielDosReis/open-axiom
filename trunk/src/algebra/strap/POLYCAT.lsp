@@ -14,7 +14,7 @@
                 (COND
                   (|PolynomialCategory;CAT|)
                   ('T
-                   (LETT |PolynomialCategory;CAT|
+                   (SETQ |PolynomialCategory;CAT|
                          (|Join| (|PartialDifferentialRing| '|t#3|)
                                  (|FiniteAbelianMonoidRing| '|t#1|
                                      '|t#2|)
@@ -197,8 +197,7 @@
                                        (|SparseUnivariatePolynomial|
                                         |t#1|)
                                        (|List| (|NonNegativeInteger|)))
-                                     NIL))
-                         |PolynomialCategory|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|PolynomialCategory| (|devaluate| |t#1|)
               (|devaluate| |t#2|) (|devaluate| |t#3|)))
