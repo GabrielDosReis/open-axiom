@@ -638,24 +638,17 @@
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (PROG (#0=#:G1553 |l| #1=#:G1554 |lv|)
+  (PROG (|lv|)
     (RETURN
       (SEQ (LETT |lv|
-                 (PROGN
-                   (LETT #0# NIL |OUTFORM;matrix;L$;31|)
-                   (SEQ (LETT |l| NIL |OUTFORM;matrix;L$;31|)
-                        (LETT #1# |ll| |OUTFORM;matrix;L$;31|) G190
-                        (COND
-                          ((OR (ATOM #1#)
-                               (PROGN
-                                 (LETT |l| (CAR #1#)
-                                       |OUTFORM;matrix;L$;31|)
-                                 NIL))
-                           (GO G191)))
-                        (SEQ (EXIT (LETT #0# (CONS (LIST2VEC |l|) #0#)
-                                    |OUTFORM;matrix;L$;31|)))
-                        (LETT #1# (CDR #1#) |OUTFORM;matrix;L$;31|)
-                        (GO G190) G191 (EXIT (NREVERSE0 #0#))))
+                 (LET ((#0=#:G1554 |ll|) (#1=#:G1553 NIL))
+                   (LOOP
+                     (COND
+                       ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                       (T (LET ((|l| (CAR #0#)))
+                            (LETT #1# (CONS (LIST2VEC |l|) #1#)
+                                  |OUTFORM;matrix;L$;31|))))
+                     (LETT #0# (CDR #0#) |OUTFORM;matrix;L$;31|)))
                  |OUTFORM;matrix;L$;31|)
            (EXIT (CONS 'MATRIX (LIST2VEC |lv|))))))) 
 

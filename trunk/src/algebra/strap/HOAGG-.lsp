@@ -195,33 +195,24 @@
              ('T NIL)))))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
-  (PROG (#0=#:G1433 |a| #1=#:G1434)
+  (PROG ()
     (RETURN
-      (SEQ (SPADCALL
-               (SPADCALL
-                   (PROGN
-                     (LETT #0# NIL |HOAGG-;coerce;AOf;10|)
-                     (SEQ (LETT |a| NIL |HOAGG-;coerce;AOf;10|)
-                          (LETT #1#
-                                (SPADCALL |x| (|getShellEntry| $ 15))
-                                |HOAGG-;coerce;AOf;10|)
-                          G190
-                          (COND
-                            ((OR (ATOM #1#)
-                                 (PROGN
-                                   (LETT |a| (CAR #1#)
-                                    |HOAGG-;coerce;AOf;10|)
-                                   NIL))
-                             (GO G191)))
-                          (LETT #0#
-                                (CONS (SPADCALL |a|
-                                       (|getShellEntry| $ 39))
-                                      #0#)
-                                |HOAGG-;coerce;AOf;10|)
-                          (LETT #1# (CDR #1#) |HOAGG-;coerce;AOf;10|)
-                          (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-                   (|getShellEntry| $ 41))
-               (|getShellEntry| $ 42)))))) 
+      (SPADCALL
+          (SPADCALL
+              (LET ((#0=#:G1434 (SPADCALL |x| (|getShellEntry| $ 15)))
+                    (#1=#:G1433 NIL))
+                (LOOP
+                  (COND
+                    ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                    (T (LET ((|a| (CAR #0#)))
+                         (LETT #1#
+                               (CONS (SPADCALL |a|
+                                      (|getShellEntry| $ 39))
+                                     #1#)
+                               |HOAGG-;coerce;AOf;10|))))
+                  (LETT #0# (CDR #0#) |HOAGG-;coerce;AOf;10|)))
+              (|getShellEntry| $ 41))
+          (|getShellEntry| $ 42))))) 
 
 (DEFUN |HomogeneousAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

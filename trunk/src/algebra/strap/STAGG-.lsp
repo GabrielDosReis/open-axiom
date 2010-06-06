@@ -50,25 +50,24 @@
   (SPADCALL |x| (|getShellEntry| $ 9))) 
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
-  (PROG (#0=#:G1447 |i|)
+  (PROG ()
     (RETURN
-      (SEQ (SPADCALL
-               (PROGN
-                 (LETT #0# NIL |STAGG-;first;ANniA;3|)
-                 (SEQ (LETT |i| 1 |STAGG-;first;ANniA;3|) G190
-                      (COND ((QSGREATERP |i| |n|) (GO G191)))
-                      (LETT #0#
-                            (CONS (|STAGG-;c2| |x|
-                                      (LETT |x|
-                                       (SPADCALL |x|
-                                        (|getShellEntry| $ 13))
-                                       |STAGG-;first;ANniA;3|)
-                                      $)
-                                  #0#)
-                            |STAGG-;first;ANniA;3|)
-                      (LETT |i| (QSADD1 |i|) |STAGG-;first;ANniA;3|)
-                      (GO G190) G191 (EXIT (NREVERSE0 #0#))))
-               (|getShellEntry| $ 15)))))) 
+      (SPADCALL
+          (LET ((|i| 1) (#0=#:G1447 NIL))
+            (LOOP
+              (COND
+                ((> |i| |n|) (RETURN (NREVERSE #0#)))
+                (T (LETT #0#
+                         (CONS (|STAGG-;c2| |x|
+                                   (LETT |x|
+                                    (SPADCALL |x|
+                                     (|getShellEntry| $ 13))
+                                    |STAGG-;first;ANniA;3|)
+                                   $)
+                               #0#)
+                         |STAGG-;first;ANniA;3|)))
+              (LETT |i| (+ |i| 1) |STAGG-;first;ANniA;3|)))
+          (|getShellEntry| $ 15))))) 
 
 (DEFUN |STAGG-;c2| (|x| |r| $)
   (COND

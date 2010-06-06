@@ -1,5 +1,10 @@
 2010-06-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compRepeatOrCollect): Compile list
+	comprehension to %collect form.
+
+2010-06-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* driver/utils.c (openaxiom_execute_core): Don't let CLISP fool
 	itself. 
 
