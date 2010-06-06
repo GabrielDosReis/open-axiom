@@ -2288,8 +2288,7 @@ compRepeatOrCollect(form,m,e) ==
           -- ??? we hve a plain old loop; the return type should be Void
           $loopKind := repeatOrCollect
           $NoValueMode
-        [body',m',e']:=
-            compOrCroak(body,bodyMode,e) or return nil
+        [body',m',e'] := compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
         if $iterateCount > 0 then
            bodyTag := quoteForm gensym()
@@ -2300,6 +2299,8 @@ compRepeatOrCollect(form,m,e) ==
         form':= 
            repeatOrCollect = "%CollectV" => 
              ["%CollectV",localReferenceIfThere m',:itl',body']
+           -- We are phasing out use of LISP macros COLLECT and REPEAT.
+           repeatOrCollect = "COLLECT" => ["%collect",:itl',body']
            [repeatOrCollect,:itl',body']
         m'' := 
           aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']

@@ -223,7 +223,7 @@
                                           (|getShellEntry| $ 33)))))))))))))))) 
 
 (DEFUN |EUCDOM-;principalIdeal;LR;9| (|l| $)
-  (PROG (|uca| |v| |u| #0=#:G1518 |vv| #1=#:G1519)
+  (PROG (|uca| |v| |u|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |l| NIL (|getShellEntry| $ 42))
@@ -251,61 +251,43 @@
                              (|getShellEntry| $ 36))
                          |EUCDOM-;principalIdeal;LR;9|)
                    (EXIT (CONS (CONS (QVELT |u| 0)
-                                     (PROGN
-                                       (LETT #0# NIL
-                                        |EUCDOM-;principalIdeal;LR;9|)
-                                       (SEQ
-                                        (LETT |vv| NIL
-                                         |EUCDOM-;principalIdeal;LR;9|)
-                                        (LETT #1# (CAR |v|)
-                                         |EUCDOM-;principalIdeal;LR;9|)
-                                        G190
-                                        (COND
-                                          ((OR (ATOM #1#)
-                                            (PROGN
-                                              (LETT |vv| (CAR #1#)
-                                               |EUCDOM-;principalIdeal;LR;9|)
-                                              NIL))
-                                           (GO G191)))
-                                        (LETT #0#
-                                         (CONS
-                                          (SPADCALL (QVELT |u| 1) |vv|
-                                           (|getShellEntry| $ 29))
-                                          #0#)
-                                         |EUCDOM-;principalIdeal;LR;9|)
-                                        (LETT #1# (CDR #1#)
-                                         |EUCDOM-;principalIdeal;LR;9|)
-                                        (GO G190) G191
-                                        (EXIT (NREVERSE0 #0#)))))
+                                     (LET
+                                      ((#0=#:G1519 (CAR |v|))
+                                       (#1=#:G1518 NIL))
+                                       (LOOP
+                                         (COND
+                                           ((ATOM #0#)
+                                            (RETURN (NREVERSE #1#)))
+                                           (T
+                                            (LET ((|vv| (CAR #0#)))
+                                              (LETT #1#
+                                               (CONS
+                                                (SPADCALL (QVELT |u| 1)
+                                                 |vv|
+                                                 (|getShellEntry| $ 29))
+                                                #1#)
+                                               |EUCDOM-;principalIdeal;LR;9|))))
+                                         (LETT #0# (CDR #0#)
+                                          |EUCDOM-;principalIdeal;LR;9|))))
                                (QVELT |u| 2)))))))))) 
 
 (DEFUN |EUCDOM-;expressIdealMember;LSU;10| (|l| |z| $)
-  (PROG (#0=#:G1520 #1=#:G1521 |pid| |q| #2=#:G1522 |v| #3=#:G1523)
+  (PROG (|pid| |q|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |z| (|spadConstant| $ 19)
                   (|getShellEntry| $ 51))
               (CONS 0
-                    (PROGN
-                      (LETT #0# NIL
-                            |EUCDOM-;expressIdealMember;LSU;10|)
-                      (SEQ (LETT |v| NIL
-                                 |EUCDOM-;expressIdealMember;LSU;10|)
-                           (LETT #1# |l|
-                                 |EUCDOM-;expressIdealMember;LSU;10|)
-                           G190
-                           (COND
-                             ((OR (ATOM #1#)
-                                  (PROGN
-                                    (LETT |v| (CAR #1#)
-                                     |EUCDOM-;expressIdealMember;LSU;10|)
-                                    NIL))
-                              (GO G191)))
-                           (LETT #0# (CONS (|spadConstant| $ 19) #0#)
-                                 |EUCDOM-;expressIdealMember;LSU;10|)
-                           (LETT #1# (CDR #1#)
-                                 |EUCDOM-;expressIdealMember;LSU;10|)
-                           (GO G190) G191 (EXIT (NREVERSE0 #0#))))))
+                    (LET ((#0=#:G1521 |l|) (#1=#:G1520 NIL))
+                      (LOOP
+                        (COND
+                          ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                          (T (LET ((|v| (CAR #0#)))
+                               (LETT #1#
+                                     (CONS (|spadConstant| $ 19) #1#)
+                                     |EUCDOM-;expressIdealMember;LSU;10|))))
+                        (LETT #0# (CDR #0#)
+                              |EUCDOM-;expressIdealMember;LSU;10|)))))
              ('T
               (SEQ (LETT |pid| (SPADCALL |l| (|getShellEntry| $ 48))
                          |EUCDOM-;expressIdealMember;LSU;10|)
@@ -317,32 +299,22 @@
                            ((EQL (CAR |q|) 1) (CONS 1 "failed"))
                            ('T
                             (CONS 0
-                                  (PROGN
-                                    (LETT #2# NIL
-                                     |EUCDOM-;expressIdealMember;LSU;10|)
-                                    (SEQ
-                                     (LETT |v| NIL
-                                      |EUCDOM-;expressIdealMember;LSU;10|)
-                                     (LETT #3# (CAR |pid|)
-                                      |EUCDOM-;expressIdealMember;LSU;10|)
-                                     G190
-                                     (COND
-                                       ((OR (ATOM #3#)
-                                         (PROGN
-                                           (LETT |v| (CAR #3#)
-                                            |EUCDOM-;expressIdealMember;LSU;10|)
-                                           NIL))
-                                        (GO G191)))
-                                     (LETT #2#
-                                      (CONS
-                                       (SPADCALL (CDR |q|) |v|
-                                        (|getShellEntry| $ 29))
-                                       #2#)
-                                      |EUCDOM-;expressIdealMember;LSU;10|)
-                                     (LETT #3# (CDR #3#)
-                                      |EUCDOM-;expressIdealMember;LSU;10|)
-                                     (GO G190) G191
-                                     (EXIT (NREVERSE0 #2#))))))))))))))) 
+                                  (LET ((#2=#:G1523 (CAR |pid|))
+                                        (#3=#:G1522 NIL))
+                                    (LOOP
+                                      (COND
+                                        ((ATOM #2#)
+                                         (RETURN (NREVERSE #3#)))
+                                        (T
+                                         (LET ((|v| (CAR #2#)))
+                                           (LETT #3#
+                                            (CONS
+                                             (SPADCALL (CDR |q|) |v|
+                                              (|getShellEntry| $ 29))
+                                             #3#)
+                                            |EUCDOM-;expressIdealMember;LSU;10|))))
+                                      (LETT #2# (CDR #2#)
+                                       |EUCDOM-;expressIdealMember;LSU;10|)))))))))))))) 
 
 (DEFUN |EUCDOM-;multiEuclidean;LSU;11| (|l| |z| $)
   (PROG (|n| |l1| |l2| #0=#:G1397 #1=#:G1524 #2=#:G1505 #3=#:G1503

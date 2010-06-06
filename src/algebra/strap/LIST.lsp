@@ -172,29 +172,22 @@
            (EXIT |lu|))))) 
 
 (DEFUN |LIST;convert;$If;13| (|x| $)
-  (PROG (#0=#:G1443 |a| #1=#:G1444)
+  (PROG ()
     (RETURN
-      (SEQ (SPADCALL
-               (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
-                     (PROGN
-                       (LETT #0# NIL |LIST;convert;$If;13|)
-                       (SEQ (LETT |a| NIL |LIST;convert;$If;13|)
-                            (LETT #1# |x| |LIST;convert;$If;13|) G190
-                            (COND
-                              ((OR (ATOM #1#)
-                                   (PROGN
-                                     (LETT |a| (CAR #1#)
-                                      |LIST;convert;$If;13|)
-                                     NIL))
-                               (GO G191)))
-                            (LETT #0#
-                                  (CONS (SPADCALL |a|
-                                         (|getShellEntry| $ 48))
-                                        #0#)
-                                  |LIST;convert;$If;13|)
-                            (LETT #1# (CDR #1#) |LIST;convert;$If;13|)
-                            (GO G190) G191 (EXIT (NREVERSE0 #0#)))))
-               (|getShellEntry| $ 52)))))) 
+      (SPADCALL
+          (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
+                (LET ((#0=#:G1444 |x|) (#1=#:G1443 NIL))
+                  (LOOP
+                    (COND
+                      ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                      (T (LET ((|a| (CAR #0#)))
+                           (LETT #1#
+                                 (CONS (SPADCALL |a|
+                                        (|getShellEntry| $ 48))
+                                       #1#)
+                                 |LIST;convert;$If;13|))))
+                    (LETT #0# (CDR #0#) |LIST;convert;$If;13|))))
+          (|getShellEntry| $ 52))))) 
 
 (DEFUN |List| (#0=#:G1445)
   (PROG ()

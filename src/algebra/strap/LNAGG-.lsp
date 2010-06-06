@@ -21,18 +21,16 @@
                 |LNAGG-;maxIndex;AI;6|)) 
 
 (DEFUN |LNAGG-;indices;AL;1| (|a| $)
-  (PROG (#0=#:G1411 |i| #1=#:G1412)
+  (PROG ()
     (RETURN
-      (SEQ (PROGN
-             (LETT #0# NIL |LNAGG-;indices;AL;1|)
-             (SEQ (LETT |i| (SPADCALL |a| (|getShellEntry| $ 9))
-                        |LNAGG-;indices;AL;1|)
-                  (LETT #1# (SPADCALL |a| (|getShellEntry| $ 10))
-                        |LNAGG-;indices;AL;1|)
-                  G190 (COND ((> |i| #1#) (GO G191)))
-                  (LETT #0# (CONS |i| #0#) |LNAGG-;indices;AL;1|)
-                  (LETT |i| (+ |i| 1) |LNAGG-;indices;AL;1|) (GO G190)
-                  G191 (EXIT (NREVERSE0 #0#)))))))) 
+      (LET ((|i| (SPADCALL |a| (|getShellEntry| $ 9)))
+            (#0=#:G1412 (SPADCALL |a| (|getShellEntry| $ 10)))
+            (#1=#:G1411 NIL))
+        (LOOP
+          (COND
+            ((> |i| #0#) (RETURN (NREVERSE #1#)))
+            (T (LETT #1# (CONS |i| #1#) |LNAGG-;indices;AL;1|)))
+          (LETT |i| (+ |i| 1) |LNAGG-;indices;AL;1|)))))) 
 
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
   (COND
