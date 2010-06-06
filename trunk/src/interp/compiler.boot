@@ -1027,23 +1027,23 @@ compSeqItem(x,m,e) ==
 replaceExitEtc(x,tag,opFlag,opMode) ==
   (fn(x,tag,opFlag,opMode); x) where
     fn(x,tag,opFlag,opMode) ==
-      atom x => nil
-      x is ["QUOTE",:.] => nil
+      isAtomicForm x => nil
       x is [ =opFlag,n,t] =>
-        third(x).first := replaceExitEtc(CAADDR x,tag,opFlag,opMode)
+        second(x.args).expr :=
+          replaceExitEtc(second(x.args).expr,tag,opFlag,opMode)
         n=0 =>
           $finalEnv:=
                   --bound in compSeq1 and compDefineCapsuleFunction
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
-          x.first := "THROW"
-          x.rest.first := tag
-          x.rest.rest.first := convertOrCroak(t,opMode).expr
-        true => x.rest.first := second x-1
+          x.op := "THROW"
+          first(x.args) := tag
+          second(x.args) := convertOrCroak(t,opMode).expr
+        first(x.args) := second x-1
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
-        t.first := replaceExitEtc(first t,tag,opFlag,opMode)
-      replaceExitEtc(first x,tag,opFlag,opMode)
-      replaceExitEtc(rest x,tag,opFlag,opMode)
+        t.expr := replaceExitEtc(t.expr,tag,opFlag,opMode)
+      replaceExitEtc(x.op,tag,opFlag,opMode)
+      replaceExitEtc(x.args,tag,opFlag,opMode)
 
 --% SUCHTHAT
 compSuchthat: (%Form,%Mode,%Env) -> %Maybe %Triple
