@@ -1,5 +1,10 @@
 2010-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (mutateToBackendCode): Don't replace explicit
+	SETQ by LETT.
+
+2010-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (needPROGS?): New.
 	(transformToBackendCode): Use it.  Don't add unneeded PROG/RETURN.
 

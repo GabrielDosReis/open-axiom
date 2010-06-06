@@ -54,10 +54,7 @@
                         |HOAGG-;any?;MAB;3|)
                   G190
                   (COND
-                    ((OR (ATOM #0#)
-                         (PROGN
-                           (LETT |x| (CAR #0#) |HOAGG-;any?;MAB;3|)
-                           NIL))
+                    ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL))
                      (GO G191)))
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |HOAGG-;any?;MAB;3|)
@@ -68,8 +65,7 @@
                        (PROGN
                          (LETT #2# #1# |HOAGG-;any?;MAB;3|)
                          (LETT #3# 'T |HOAGG-;any?;MAB;3|)))))
-                  (LETT #0# (CDR #0#) |HOAGG-;any?;MAB;3|) (GO G190)
-                  G191 (EXIT NIL))
+                  (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
              (COND (#3# #2#) ('T NIL))))))) 
 
 (DEFUN |HOAGG-;every?;MAB;4| (|f| |c| $)
@@ -82,10 +78,7 @@
                         |HOAGG-;every?;MAB;4|)
                   G190
                   (COND
-                    ((OR (ATOM #0#)
-                         (PROGN
-                           (LETT |x| (CAR #0#) |HOAGG-;every?;MAB;4|)
-                           NIL))
+                    ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL))
                      (GO G191)))
                   (PROGN
                     (LETT #1# (SPADCALL |x| |f|) |HOAGG-;every?;MAB;4|)
@@ -96,8 +89,7 @@
                        (PROGN
                          (LETT #2# #1# |HOAGG-;every?;MAB;4|)
                          (LETT #3# 'T |HOAGG-;every?;MAB;4|)))))
-                  (LETT #0# (CDR #0#) |HOAGG-;every?;MAB;4|) (GO G190)
-                  G191 (EXIT NIL))
+                  (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
              (COND (#3# #2#) ('T T))))))) 
 
 (DEFUN |HOAGG-;count;MANni;5| (|f| |c| $)
@@ -110,10 +102,7 @@
                         |HOAGG-;count;MANni;5|)
                   G190
                   (COND
-                    ((OR (ATOM #0#)
-                         (PROGN
-                           (LETT |x| (CAR #0#) |HOAGG-;count;MANni;5|)
-                           NIL))
+                    ((OR (ATOM #0#) (PROGN (SETQ |x| (CAR #0#)) NIL))
                      (GO G191)))
                   (COND
                     ((SPADCALL |x| |f|)
@@ -126,8 +115,7 @@
                           (PROGN
                             (LETT #2# #1# |HOAGG-;count;MANni;5|)
                             (LETT #3# 'T |HOAGG-;count;MANni;5|)))))))
-                  (LETT #0# (CDR #0#) |HOAGG-;count;MANni;5|) (GO G190)
-                  G191 (EXIT NIL))
+                  (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
              (COND (#3# #2#) ('T 0))))))) 
 
 (DEFUN |HOAGG-;members;AL;6| (|x| $)
@@ -166,14 +154,9 @@
                            |HOAGG-;=;2AB;9|)
                      G190
                      (COND
-                       ((OR (ATOM #1#)
-                            (PROGN
-                              (LETT |a| (CAR #1#) |HOAGG-;=;2AB;9|)
-                              NIL)
+                       ((OR (ATOM #1#) (PROGN (SETQ |a| (CAR #1#)) NIL)
                             (ATOM #0#)
-                            (PROGN
-                              (LETT |b| (CAR #0#) |HOAGG-;=;2AB;9|)
-                              NIL))
+                            (PROGN (SETQ |b| (CAR #0#)) NIL))
                         (GO G191)))
                      (PROGN
                        (LETT #2#
@@ -186,10 +169,7 @@
                           (PROGN
                             (LETT #3# #2# |HOAGG-;=;2AB;9|)
                             (LETT #4# 'T |HOAGG-;=;2AB;9|)))))
-                     (LETT #1#
-                           (PROG1 (CDR #1#)
-                             (LETT #0# (CDR #0#) |HOAGG-;=;2AB;9|))
-                           |HOAGG-;=;2AB;9|)
+                     (SETQ #1# (PROG1 (CDR #1#) (SETQ #0# (CDR #0#))))
                      (GO G190) G191 (EXIT NIL))
                 (COND (#4# #3#) ('T T))))
              ('T NIL)))))) 
@@ -203,11 +183,10 @@
               (COND
                 ((ATOM #0#) (RETURN (NREVERSE #1#)))
                 (T (LET ((|a| (CAR #0#)))
-                     (LETT #1#
+                     (SETQ #1#
                            (CONS (SPADCALL |a| (|getShellEntry| $ 39))
-                                 #1#)
-                           |HOAGG-;coerce;AOf;10|))))
-              (LETT #0# (CDR #0#) |HOAGG-;coerce;AOf;10|)))
+                                 #1#)))))
+              (SETQ #0# (CDR #0#))))
           (|getShellEntry| $ 41))
       (|getShellEntry| $ 42))) 
 

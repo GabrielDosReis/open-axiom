@@ -154,13 +154,13 @@
   (PROG (#0=#:G1424)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|Boolean|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
                                (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
-             (LETT #0# T |Boolean|))
+             (SETQ #0# T))
            (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
 
 (DEFUN |Boolean;| ()

@@ -646,9 +646,8 @@
                      (COND
                        ((ATOM #0#) (RETURN (NREVERSE #1#)))
                        (T (LET ((|l| (CAR #0#)))
-                            (LETT #1# (CONS (LIST2VEC |l|) #1#)
-                                  |OUTFORM;matrix;L$;31|))))
-                     (LETT #0# (CDR #0#) |OUTFORM;matrix;L$;31|)))
+                            (SETQ #1# (CONS (LIST2VEC |l|) #1#)))))
+                     (SETQ #0# (CDR #0#))))
                  |OUTFORM;matrix;L$;31|)
            (EXIT (CONS 'MATRIX (LIST2VEC |lv|))))))) 
 
@@ -673,11 +672,7 @@
                 (LETT #0# (REVERSE |l|) |OUTFORM;blankSeparate;L$;35|)
                 G190
                 (COND
-                  ((OR (ATOM #0#)
-                       (PROGN
-                         (LETT |u| (CAR #0#)
-                               |OUTFORM;blankSeparate;L$;35|)
-                         NIL))
+                  ((OR (ATOM #0#) (PROGN (SETQ |u| (CAR #0#)) NIL))
                    (GO G191)))
                 (SEQ (EXIT (COND
                              ((EQCAR |u| |c|)
@@ -686,8 +681,7 @@
                              ('T
                               (LETT |l1| (CONS |u| |l1|)
                                     |OUTFORM;blankSeparate;L$;35|)))))
-                (LETT #0# (CDR #0#) |OUTFORM;blankSeparate;L$;35|)
-                (GO G190) G191 (EXIT NIL))
+                (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
            (EXIT (CONS |c| |l1|)))))) 
 
 (DEFUN |OUTFORM;brace;2$;36| (|a| $)
@@ -1019,15 +1013,14 @@
   (PROG (#0=#:G1557)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|OutputForm|)
-               |OutputForm|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|OutputForm|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
                                (LIST (CONS NIL
                                       (CONS 1 (|OutputForm;|))))))
-             (LETT #0# T |OutputForm|))
+             (SETQ #0# T))
            (COND ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
 
 (DEFUN |OutputForm;| ()

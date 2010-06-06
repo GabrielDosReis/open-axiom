@@ -234,11 +234,10 @@
                                (COND
                                  ((ATOM #0#) (RETURN (NREVERSE #1#)))
                                  (T (LET ((|n| (CAR #0#)))
-                                      (LETT #1#
+                                      (SETQ #1#
                                        (CONS (|SYMBOL;istring| |n| $)
-                                        #1#)
-                                       |SYMBOL;syprefix|))))
-                               (LETT #0# (CDR #0#) |SYMBOL;syprefix|))))
+                                        #1#)))))
+                               (SETQ #0# (CDR #0#)))))
                      (|getShellEntry| $ 93))))))) 
 
 (DEFUN |SYMBOL;syscripts| (|sc| $)
@@ -530,15 +529,11 @@
                       G190
                       (COND
                         ((OR (ATOM #0#)
-                             (PROGN
-                               (LETT |k| (CAR #0#)
-                                     |SYMBOL;resetNew;V;29|)
-                               NIL))
+                             (PROGN (SETQ |k| (CAR #0#)) NIL))
                          (GO G191)))
                       (SEQ (EXIT (SPADCALL |k| (|getShellEntry| $ 13)
                                      (|getShellEntry| $ 134))))
-                      (LETT #0# (CDR #0#) |SYMBOL;resetNew;V;29|)
-                      (GO G190) G191 (EXIT NIL))))))) 
+                      (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))))))) 
 
 (DEFUN |SYMBOL;scripted?;$B;30| (|sy| $) (NOT (ATOM |sy|))) 
 
@@ -588,9 +583,8 @@
                                                (GO #1#))
                                              |SYMBOL;name;2$;31|)
                                             (GO #2#))))))
-                                     (LETT |i| (+ |i| 1)
-                                      |SYMBOL;name;2$;31|)
-                                     (GO G190) G191 (EXIT NIL)))
+                                     (SETQ |i| (+ |i| 1)) (GO G190)
+                                     G191 (EXIT NIL)))
                               #2# (EXIT #2#))
                          (EXIT (|error| "Improper scripted symbol"))))))
            #1# (EXIT #1#))))) 
@@ -638,11 +632,8 @@
                               (|check-subtype| (>= #1# 0)
                                   '(|NonNegativeInteger|) #1#))
                             (|getShellEntry| $ 148))
-                        (LETT |i|
-                              (PROG1 (+ |i| 1)
-                                (LETT |j| (+ |j| 1)
-                                      |SYMBOL;scripts;$R;32|))
-                              |SYMBOL;scripts;$R;32|)
+                        (SETQ |i|
+                              (PROG1 (+ |i| 1) (SETQ |j| (+ |j| 1))))
                         (GO G190) G191 (EXIT NIL))
                    (LETT |nscripts|
                          (SPADCALL (CDR |nscripts|)
@@ -660,10 +651,7 @@
                         (LETT |i| |m| |SYMBOL;scripts;$R;32|) G190
                         (COND
                           ((OR (ATOM #0#)
-                               (PROGN
-                                 (LETT |n| (CAR #0#)
-                                       |SYMBOL;scripts;$R;32|)
-                                 NIL))
+                               (PROGN (SETQ |n| (CAR #0#)) NIL))
                            (GO G191)))
                         (COND
                           ((< (LENGTH |allscripts|) |n|)
@@ -681,24 +669,19 @@
                                            (RETURN (NREVERSE #3#)))
                                           (T
                                            (LET ((|a| (CAR #2#)))
-                                             (LETT #3#
+                                             (SETQ #3#
                                               (CONS
                                                (|SYMBOL;coerce;$Of;11|
                                                 |a| $)
-                                               #3#)
-                                              |SYMBOL;scripts;$R;32|))))
-                                        (LETT #2# (CDR #2#)
-                                         |SYMBOL;scripts;$R;32|)))
+                                               #3#)))))
+                                        (SETQ #2# (CDR #2#))))
                                     (|getShellEntry| $ 157))
                                 (EXIT (LETT |allscripts|
                                        (SPADCALL |allscripts| |n|
                                         (|getShellEntry| $ 158))
                                        |SYMBOL;scripts;$R;32|)))))
-                        (LETT |i|
-                              (PROG1 (+ |i| 1)
-                                (LETT #0# (CDR #0#)
-                                      |SYMBOL;scripts;$R;32|))
-                              |SYMBOL;scripts;$R;32|)
+                        (SETQ |i|
+                              (PROG1 (+ |i| 1) (SETQ #0# (CDR #0#))))
                         (GO G190) G191 (EXIT NIL))
                    (EXIT (VECTOR (SPADCALL |lscripts| |m|
                                      (|getShellEntry| $ 159))
@@ -728,13 +711,13 @@
   (PROG (#0=#:G1556)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|Symbol|) |Symbol|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|Symbol|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Symbol|
                                (LIST (CONS NIL (CONS 1 (|Symbol;|))))))
-             (LETT #0# T |Symbol|))
+             (SETQ #0# T))
            (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|))))))))) 
 
 (DEFUN |Symbol;| ()

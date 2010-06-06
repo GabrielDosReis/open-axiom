@@ -11,7 +11,7 @@
                 (COND
                   (|Collection;CAT|)
                   ('T
-                   (LETT |Collection;CAT|
+                   (SETQ |Collection;CAT|
                          (|Join| (|HomogeneousAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|construct|
@@ -68,8 +68,7 @@
                                         (|has| |t#1|
                                          (|ConvertibleTo|
                                           (|InputForm|)))))
-                                     '((|List| |t#1|)) NIL))
-                         |Collection|))))))
+                                     '((|List| |t#1|)) NIL))))))))
     (|setShellEntry| #0# 0 (LIST '|Collection| (|devaluate| |t#1|)))
     #0#)) 
 

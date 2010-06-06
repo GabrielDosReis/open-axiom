@@ -118,9 +118,7 @@
                                        (|getShellEntry| $ 19))
                                       |sm1|)
                                  |FFIELDC-;createPrimitiveElement;S;8|)))
-                (LETT |i| (+ |i| 1)
-                      |FFIELDC-;createPrimitiveElement;S;8|)
-                (GO G190) G191 (EXIT NIL))
+                (SETQ |i| (+ |i| 1)) (GO G190) G191 (EXIT NIL))
            (EXIT |e|))))) 
 
 (DEFUN |FFIELDC-;primitive?;SB;9| (|a| $)
@@ -139,10 +137,7 @@
                         G190
                         (COND
                           ((OR (ATOM #0#)
-                               (PROGN
-                                 (LETT |exp| (CAR #0#)
-                                       |FFIELDC-;primitive?;SB;9|)
-                                 NIL)
+                               (PROGN (SETQ |exp| (CAR #0#)) NIL)
                                (NULL (NOT |equalone|)))
                            (GO G191)))
                         (LETT |equalone|
@@ -152,8 +147,7 @@
                                       (|getShellEntry| $ 58))
                                   (|getShellEntry| $ 59))
                               |FFIELDC-;primitive?;SB;9|)
-                        (LETT #0# (CDR #0#) |FFIELDC-;primitive?;SB;9|)
-                        (GO G190) G191 (EXIT NIL))
+                        (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
                    (EXIT (NOT |equalone|))))))))) 
 
 (DEFUN |FFIELDC-;order;SPi;10| (|e| $)
@@ -173,10 +167,7 @@
                         (LETT #0# |lof| |FFIELDC-;order;SPi;10|) G190
                         (COND
                           ((OR (ATOM #0#)
-                               (PROGN
-                                 (LETT |rec| (CAR #0#)
-                                       |FFIELDC-;order;SPi;10|)
-                                 NIL))
+                               (PROGN (SETQ |rec| (CAR #0#)) NIL))
                            (GO G191)))
                         (SEQ (LETT |a|
                                    (QUOTIENT2 |ord|
@@ -210,15 +201,13 @@
                                            (|getShellEntry| $ 58))
                                           (|getShellEntry| $ 59))
                                          |FFIELDC-;order;SPi;10|)))
-                                  (LETT |j| (QSADD1 |j|)
-                                        |FFIELDC-;order;SPi;10|)
-                                  (GO G190) G191 (EXIT NIL))
+                                  (SETQ |j| (QSADD1 |j|)) (GO G190)
+                                  G191 (EXIT NIL))
                              (EXIT (COND
                                      (|goon|
                                       (LETT |ord| |a|
                                        |FFIELDC-;order;SPi;10|)))))
-                        (LETT #0# (CDR #0#) |FFIELDC-;order;SPi;10|)
-                        (GO G190) G191 (EXIT NIL))
+                        (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
                    (EXIT |ord|)))))))) 
 
 (DEFUN |FFIELDC-;discreteLog;SNni;11| (|b| $)
@@ -259,8 +248,7 @@
                                       (COND
                                         ((OR (ATOM #0#)
                                           (PROGN
-                                            (LETT |f| (CAR #0#)
-                                             |FFIELDC-;discreteLog;SNni;11|)
+                                            (SETQ |f| (CAR #0#))
                                             NIL))
                                          (GO G191)))
                                       (SEQ
@@ -342,8 +330,7 @@
                                                   (|getShellEntry| $
                                                    77))
                                                  |FFIELDC-;discreteLog;SNni;11|)))))
-                                           (LETT |i| (QSADD1 |i|)
-                                            |FFIELDC-;discreteLog;SNni;11|)
+                                           (SETQ |i| (QSADD1 |i|))
                                            (GO G190) G191 (EXIT NIL))
                                           (EXIT
                                            (COND
@@ -368,12 +355,10 @@
                                              ('T
                                               (|error|
                                                "discreteLog: ?? discrete logarithm")))))
-                                         (LETT |t| (QSADD1 |t|)
-                                          |FFIELDC-;discreteLog;SNni;11|)
+                                         (SETQ |t| (QSADD1 |t|))
                                          (GO G190) G191 (EXIT NIL))))
-                                      (LETT #0# (CDR #0#)
-                                       |FFIELDC-;discreteLog;SNni;11|)
-                                      (GO G190) G191 (EXIT NIL))
+                                      (SETQ #0# (CDR #0#)) (GO G190)
+                                      G191 (EXIT NIL))
                                  (EXIT |disclog|)))))))))))) 
 
 (DEFUN |FFIELDC-;discreteLog;2SU;12| (|logbase| |b| $)
@@ -428,10 +413,7 @@
                                  G190
                                  (COND
                                    ((OR (ATOM #0#)
-                                     (PROGN
-                                       (LETT |f| (CAR #0#)
-                                        |FFIELDC-;discreteLog;2SU;12|)
-                                       NIL))
+                                     (PROGN (SETQ |f| (CAR #0#)) NIL))
                                     (GO G191)))
                                  (SEQ (LETT |fac| (CAR |f|)
                                        |FFIELDC-;discreteLog;2SU;12|)
@@ -490,12 +472,10 @@
                                                    58))
                                                  (|getShellEntry| $ 77))
                                                 |FFIELDC-;discreteLog;2SU;12|)))))))
-                                        (LETT |t| (QSADD1 |t|)
-                                         |FFIELDC-;discreteLog;2SU;12|)
+                                        (SETQ |t| (QSADD1 |t|))
                                         (GO G190) G191 (EXIT NIL))))
-                                 (LETT #0# (CDR #0#)
-                                       |FFIELDC-;discreteLog;2SU;12|)
-                                 (GO G190) G191 (EXIT NIL))
+                                 (SETQ #0# (CDR #0#)) (GO G190) G191
+                                 (EXIT NIL))
                             (EXIT (CONS 0 |disclog|))))))))
            #2# (EXIT #2#))))) 
 
@@ -530,8 +510,7 @@
                                     (COND
                                       ((OR (ATOM #0#)
                                         (PROGN
-                                          (LETT |u| (CAR #0#)
-                                           |FFIELDC-;factorSquareFreePolynomial|)
+                                          (SETQ |u| (CAR #0#))
                                           NIL))
                                        (GO G191)))
                                     (PROGN
@@ -551,9 +530,8 @@
                                             |FFIELDC-;factorSquareFreePolynomial|)
                                            (LETT #3# 'T
                                             |FFIELDC-;factorSquareFreePolynomial|)))))
-                                    (LETT #0# (CDR #0#)
-                                     |FFIELDC-;factorSquareFreePolynomial|)
-                                    (GO G190) G191 (EXIT NIL))
+                                    (SETQ #0# (CDR #0#)) (GO G190) G191
+                                    (EXIT NIL))
                                (COND
                                  (#3# #2#)
                                  ('T (|spadConstant| $ 109))))

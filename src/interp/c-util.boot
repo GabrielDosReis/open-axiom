@@ -1523,7 +1523,7 @@ mutateToBackendCode x ==
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
-    if u ~= "DCQ" then
+    if u ~= 'DCQ and u ~= 'SETQ then
       $NEWSPAD or $FUNAME in $traceletFunctions =>
         nconc(x,$FUNNAME__TAIL)
         x.first := "LETT"

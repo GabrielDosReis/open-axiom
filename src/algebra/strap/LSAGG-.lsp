@@ -441,8 +441,7 @@
                 (SEQ (EXIT (LETT |x|
                                  (SPADCALL |x| (|getShellEntry| $ 17))
                                  |LSAGG-;position;MAI;13|)))
-                (LETT |k| (+ |k| 1) |LSAGG-;position;MAI;13|) (GO G190)
-                G191 (EXIT NIL))
+                (SETQ |k| (+ |k| 1)) (GO G190) G191 (EXIT NIL))
            (EXIT (COND
                    ((SPADCALL |x| (|getShellEntry| $ 16))
                     (- (SPADCALL |x| (|getShellEntry| $ 33)) 1))
@@ -572,8 +571,7 @@
                                  (SPADCALL |s| |l|
                                      (|getShellEntry| $ 14))
                                  |LSAGG-;new;NniSA;18|)))
-                (LETT |k| (QSADD1 |k|) |LSAGG-;new;NniSA;18|) (GO G190)
-                G191 (EXIT NIL))
+                (SETQ |k| (QSADD1 |k|)) (GO G190) G191 (EXIT NIL))
            (EXIT |l|))))) 
 
 (DEFUN |LSAGG-;map;M3A;19| (|f| |x| |y| $)
@@ -657,8 +655,7 @@
                      (EXIT (LETT |x|
                                  (SPADCALL |x| (|getShellEntry| $ 17))
                                  |LSAGG-;copy;2A;21|)))
-                (LETT |k| (QSADD1 |k|) |LSAGG-;copy;2A;21|) (GO G190)
-                G191 (EXIT NIL))
+                (SETQ |k| (QSADD1 |k|)) (GO G190) G191 (EXIT NIL))
            (EXIT (SPADCALL |y| (|getShellEntry| $ 57))))))) 
 
 (DEFUN |LSAGG-;copyInto!;2AIA;22| (|y| |x| |s| $)
@@ -736,9 +733,8 @@
                                      (SPADCALL |x|
                                       (|getShellEntry| $ 17))
                                      |LSAGG-;position;SA2I;23|)))
-                              (LETT |k| (+ |k| 1)
-                                    |LSAGG-;position;SA2I;23|)
-                              (GO G190) G191 (EXIT NIL))
+                              (SETQ |k| (+ |k| 1)) (GO G190) G191
+                              (EXIT NIL))
                          (EXIT (COND
                                  ((SPADCALL |x| (|getShellEntry| $ 16))
                                   (- (SPADCALL |x|
@@ -770,7 +766,7 @@
 
 (DEFUN |LSAGG-;removeDuplicates!;2A;24!0| (|#1| $$)
   (PROG ($)
-    (LETT $ (|getShellEntry| $$ 0) |LSAGG-;removeDuplicates!;2A;24|)
+    (SETQ $ (|getShellEntry| $$ 0))
     (RETURN
       (PROGN
         (SPADCALL |#1|

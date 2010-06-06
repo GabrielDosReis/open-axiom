@@ -11,7 +11,7 @@
                 (COND
                   (|SetAggregate;CAT|)
                   ('T
-                   (LETT |SetAggregate;CAT|
+                   (SETQ |SetAggregate;CAT|
                          (|Join| (|SetCategory|) (|Collection| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|part?| ((|Boolean|) $ $)) T)
@@ -30,8 +30,7 @@
                                        ((|union| ($ $ |t#1|)) T)
                                        ((|union| ($ |t#1| $)) T))
                                      '((|partiallyOrderedSet| T))
-                                     '((|Boolean|) (|List| |t#1|)) NIL))
-                         |SetAggregate|))))))
+                                     '((|Boolean|) (|List| |t#1|)) NIL))))))))
     (|setShellEntry| #0# 0 (LIST '|SetAggregate| (|devaluate| |t#1|)))
     #0#)) 
 

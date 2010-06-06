@@ -55,16 +55,15 @@
         (LOOP
           (COND
             ((> |i| |n|) (RETURN (NREVERSE #0#)))
-            (T (LETT #0#
+            (T (SETQ #0#
                      (CONS (|STAGG-;c2| |x|
                                (LETT |x|
                                      (SPADCALL |x|
                                       (|getShellEntry| $ 13))
                                      |STAGG-;first;ANniA;3|)
                                $)
-                           #0#)
-                     |STAGG-;first;ANniA;3|)))
-          (LETT |i| (+ |i| 1) |STAGG-;first;ANniA;3|)))
+                           #0#))))
+          (SETQ |i| (+ |i| 1))))
       (|getShellEntry| $ 15))) 
 
 (DEFUN |STAGG-;c2| (|x| |r| $)

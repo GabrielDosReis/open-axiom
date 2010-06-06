@@ -11,7 +11,7 @@
                 (COND
                   (|HomogeneousAggregate;CAT|)
                   ('T
-                   (LETT |HomogeneousAggregate;CAT|
+                   (SETQ |HomogeneousAggregate;CAT|
                          (|Join| (|Aggregate|)
                                  (|mkCategory| '|domain|
                                      '(((|map|
@@ -71,8 +71,7 @@
                                      '((|Boolean|)
                                        (|NonNegativeInteger|)
                                        (|List| |t#1|))
-                                     NIL))
-                         |HomogeneousAggregate|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|HomogeneousAggregate| (|devaluate| |t#1|)))
     #0#)) 

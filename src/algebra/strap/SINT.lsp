@@ -531,15 +531,14 @@
   (PROG (#0=#:G1495)
     (RETURN
       (COND
-        ((LETT #0# (HGET |$ConstructorCache| '|SingleInteger|)
-               |SingleInteger|)
+        ((SETQ #0# (HGET |$ConstructorCache| '|SingleInteger|))
          (|CDRwithIncrement| (CDAR #0#)))
         ('T
          (UNWIND-PROTECT
            (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
                                (LIST (CONS NIL
                                       (CONS 1 (|SingleInteger;|))))))
-             (LETT #0# T |SingleInteger|))
+             (SETQ #0# T))
            (COND
              ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
 

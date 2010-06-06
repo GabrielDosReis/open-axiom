@@ -11,7 +11,7 @@
                 (COND
                   (|RecursiveAggregate;CAT|)
                   ('T
-                   (LETT |RecursiveAggregate;CAT|
+                   (SETQ |RecursiveAggregate;CAT|
                          (|Join| (|HomogeneousAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|children| ((|List| $) $)) T)
@@ -42,8 +42,7 @@
                                      NIL
                                      '((|List| $) (|Boolean|)
                                        (|Integer|) (|List| |t#1|))
-                                     NIL))
-                         |RecursiveAggregate|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|RecursiveAggregate| (|devaluate| |t#1|)))
     #0#)) 

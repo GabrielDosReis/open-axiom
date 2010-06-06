@@ -179,27 +179,25 @@
                 (COND
                   ((ATOM #0#) (RETURN (NREVERSE #1#)))
                   (T (LET ((|a| (CAR #0#)))
-                       (LETT #1#
+                       (SETQ #1#
                              (CONS (SPADCALL |a|
                                     (|getShellEntry| $ 48))
-                                   #1#)
-                             |LIST;convert;$If;13|))))
-                (LETT #0# (CDR #0#) |LIST;convert;$If;13|))))
+                                   #1#)))))
+                (SETQ #0# (CDR #0#)))))
       (|getShellEntry| $ 52))) 
 
 (DEFUN |List| (#0=#:G1445)
   (PROG (#1=#:G1446)
     (RETURN
       (COND
-        ((LETT #1#
+        ((SETQ #1#
                (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
                    (HGET |$ConstructorCache| '|List|)
-                   '|domainEqualList|)
-               |List|)
+                   '|domainEqualList|))
          (|CDRwithIncrement| #1#))
         ('T
          (UNWIND-PROTECT
-           (PROG1 (|List;| #0#) (LETT #1# T |List|))
+           (PROG1 (|List;| #0#) (SETQ #1# T))
            (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))) 
 
 (DEFUN |List;| (|#1|)
