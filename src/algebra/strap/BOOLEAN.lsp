@@ -151,21 +151,17 @@
   (COND (|x| '|true|) ('T '|false|))) 
 
 (DEFUN |Boolean| ()
-  (PROG ()
+  (PROG (#0=#:G1424)
     (RETURN
-      (PROG (#0=#:G1424)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|Boolean;|))))))
-                 (LETT #0# T |Boolean|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
+                               (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
+             (LETT #0# T |Boolean|))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
 
 (DEFUN |Boolean;| ()
   (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))

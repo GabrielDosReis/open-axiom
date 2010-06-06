@@ -371,17 +371,15 @@
       (|getShellEntry| $ 76))) 
 
 (DEFUN |POLYCAT-;primitiveMonomials;SL;12| (|p| $)
-  (PROG ()
-    (RETURN
-      (LET ((#0=#:G1699 (SPADCALL |p| (|getShellEntry| $ 35)))
-            (#1=#:G1698 NIL))
-        (LOOP
-          (COND
-            ((ATOM #0#) (RETURN (NREVERSE #1#)))
-            (T (LET ((|q| (CAR #0#)))
-                 (LETT #1# (CONS (|POLYCAT-;mkPrim| |q| $) #1#)
-                       |POLYCAT-;primitiveMonomials;SL;12|))))
-          (LETT #0# (CDR #0#) |POLYCAT-;primitiveMonomials;SL;12|)))))) 
+  (LET ((#0=#:G1699 (SPADCALL |p| (|getShellEntry| $ 35)))
+        (#1=#:G1698 NIL))
+    (LOOP
+      (COND
+        ((ATOM #0#) (RETURN (NREVERSE #1#)))
+        (T (LET ((|q| (CAR #0#)))
+             (LETT #1# (CONS (|POLYCAT-;mkPrim| |q| $) #1#)
+                   |POLYCAT-;primitiveMonomials;SL;12|))))
+      (LETT #0# (CDR #0#) |POLYCAT-;primitiveMonomials;SL;12|)))) 
 
 (DEFUN |POLYCAT-;totalDegree;SNni;13| (|p| $)
   (PROG (#0=#:G1492 |d| |u|)
@@ -481,23 +479,20 @@
       (|getShellEntry| $ 96))) 
 
 (DEFUN |POLYCAT-;allMonoms| (|l| $)
-  (PROG ()
-    (RETURN
+  (SPADCALL
       (SPADCALL
-          (SPADCALL
-              (LET ((#0=#:G1701 |l|) (#1=#:G1700 NIL))
-                (LOOP
-                  (COND
-                    ((ATOM #0#) (RETURN (NREVERSE #1#)))
-                    (T (LET ((|p| (CAR #0#)))
-                         (LETT #1#
-                               (CONS (SPADCALL |p|
-                                      (|getShellEntry| $ 98))
-                                     #1#)
-                               |POLYCAT-;allMonoms|))))
-                  (LETT #0# (CDR #0#) |POLYCAT-;allMonoms|)))
-              (|getShellEntry| $ 99))
-          (|getShellEntry| $ 100))))) 
+          (LET ((#0=#:G1701 |l|) (#1=#:G1700 NIL))
+            (LOOP
+              (COND
+                ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                (T (LET ((|p| (CAR #0#)))
+                     (LETT #1#
+                           (CONS (SPADCALL |p| (|getShellEntry| $ 98))
+                                 #1#)
+                           |POLYCAT-;allMonoms|))))
+              (LETT #0# (CDR #0#) |POLYCAT-;allMonoms|)))
+          (|getShellEntry| $ 99))
+      (|getShellEntry| $ 100))) 
 
 (DEFUN |POLYCAT-;P2R| (|p| |b| |n| $)
   (PROG (|w| |bj| #0=#:G1703 |i| #1=#:G1702)
@@ -530,35 +525,30 @@
            (EXIT |w|))))) 
 
 (DEFUN |POLYCAT-;eq2R| (|l| |b| $)
-  (PROG ()
-    (RETURN
-      (SPADCALL
-          (LET ((#0=#:G1707 |b|) (#1=#:G1704 NIL))
-            (LOOP
-              (COND
-                ((ATOM #0#) (RETURN (NREVERSE #1#)))
-                (T (LET ((|bj| (CAR #0#)))
-                     (LETT #1#
-                           (CONS (LET ((#2=#:G1706 |l|)
-                                       (#3=#:G1705 NIL))
-                                   (LOOP
-                                     (COND
-                                       ((ATOM #2#)
-                                        (RETURN (NREVERSE #3#)))
-                                       (T
-                                        (LET ((|p| (CAR #2#)))
-                                          (LETT #3#
-                                           (CONS
-                                            (SPADCALL |p| |bj|
-                                             (|getShellEntry| $ 106))
-                                            #3#)
-                                           |POLYCAT-;eq2R|))))
-                                     (LETT #2# (CDR #2#)
-                                      |POLYCAT-;eq2R|)))
-                                 #1#)
-                           |POLYCAT-;eq2R|))))
-              (LETT #0# (CDR #0#) |POLYCAT-;eq2R|)))
-          (|getShellEntry| $ 111))))) 
+  (SPADCALL
+      (LET ((#0=#:G1707 |b|) (#1=#:G1704 NIL))
+        (LOOP
+          (COND
+            ((ATOM #0#) (RETURN (NREVERSE #1#)))
+            (T (LET ((|bj| (CAR #0#)))
+                 (LETT #1#
+                       (CONS (LET ((#2=#:G1706 |l|) (#3=#:G1705 NIL))
+                               (LOOP
+                                 (COND
+                                   ((ATOM #2#) (RETURN (NREVERSE #3#)))
+                                   (T
+                                    (LET ((|p| (CAR #2#)))
+                                      (LETT #3#
+                                       (CONS
+                                        (SPADCALL |p| |bj|
+                                         (|getShellEntry| $ 106))
+                                        #3#)
+                                       |POLYCAT-;eq2R|))))
+                                 (LETT #2# (CDR #2#) |POLYCAT-;eq2R|)))
+                             #1#)
+                       |POLYCAT-;eq2R|))))
+          (LETT #0# (CDR #0#) |POLYCAT-;eq2R|)))
+      (|getShellEntry| $ 111))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MM;20| (|m| $)
   (PROG (|b| |d| |mm| |l|)

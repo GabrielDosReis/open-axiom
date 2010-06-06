@@ -528,24 +528,20 @@
     ('T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |SingleInteger| ()
-  (PROG ()
+  (PROG (#0=#:G1495)
     (RETURN
-      (PROG (#0=#:G1495)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|SingleInteger|)
-                   |SingleInteger|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
-                                   (LIST
-                                    (CONS NIL
-                                     (CONS 1 (|SingleInteger;|))))))
-                 (LETT #0# T |SingleInteger|))
-               (COND
-                 ((NOT #0#)
-                  (HREM |$ConstructorCache| '|SingleInteger|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|SingleInteger|)
+               |SingleInteger|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|SingleInteger;|))))))
+             (LETT #0# T |SingleInteger|))
+           (COND
+             ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
 
 (DEFUN |SingleInteger;| ()
   (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 116))

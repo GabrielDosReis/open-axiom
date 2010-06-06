@@ -27,21 +27,19 @@
       (|getShellEntry| $ 19))) 
 
 (DEFUN |Vector| (#0=#:G1408)
-  (PROG ()
+  (PROG (#1=#:G1409)
     (RETURN
-      (PROG (#1=#:G1409)
-        (RETURN
-          (COND
-            ((LETT #1#
-                   (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
-                       (HGET |$ConstructorCache| '|Vector|)
-                       '|domainEqualList|)
-                   |Vector|)
-             (|CDRwithIncrement| #1#))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (|Vector;| #0#) (LETT #1# T |Vector|))
-               (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))))) 
+      (COND
+        ((LETT #1#
+               (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
+                   (HGET |$ConstructorCache| '|Vector|)
+                   '|domainEqualList|)
+               |Vector|)
+         (|CDRwithIncrement| #1#))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (|Vector;| #0#) (LETT #1# T |Vector|))
+           (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))) 
 
 (DEFUN |Vector;| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Vector| |dv$1|))

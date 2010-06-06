@@ -172,39 +172,35 @@
            (EXIT |lu|))))) 
 
 (DEFUN |LIST;convert;$If;13| (|x| $)
-  (PROG ()
-    (RETURN
-      (SPADCALL
-          (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
-                (LET ((#0=#:G1444 |x|) (#1=#:G1443 NIL))
-                  (LOOP
-                    (COND
-                      ((ATOM #0#) (RETURN (NREVERSE #1#)))
-                      (T (LET ((|a| (CAR #0#)))
-                           (LETT #1#
-                                 (CONS (SPADCALL |a|
-                                        (|getShellEntry| $ 48))
-                                       #1#)
-                                 |LIST;convert;$If;13|))))
-                    (LETT #0# (CDR #0#) |LIST;convert;$If;13|))))
-          (|getShellEntry| $ 52))))) 
+  (SPADCALL
+      (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
+            (LET ((#0=#:G1444 |x|) (#1=#:G1443 NIL))
+              (LOOP
+                (COND
+                  ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                  (T (LET ((|a| (CAR #0#)))
+                       (LETT #1#
+                             (CONS (SPADCALL |a|
+                                    (|getShellEntry| $ 48))
+                                   #1#)
+                             |LIST;convert;$If;13|))))
+                (LETT #0# (CDR #0#) |LIST;convert;$If;13|))))
+      (|getShellEntry| $ 52))) 
 
 (DEFUN |List| (#0=#:G1445)
-  (PROG ()
+  (PROG (#1=#:G1446)
     (RETURN
-      (PROG (#1=#:G1446)
-        (RETURN
-          (COND
-            ((LETT #1#
-                   (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
-                       (HGET |$ConstructorCache| '|List|)
-                       '|domainEqualList|)
-                   |List|)
-             (|CDRwithIncrement| #1#))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (|List;| #0#) (LETT #1# T |List|))
-               (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))))) 
+      (COND
+        ((LETT #1#
+               (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
+                   (HGET |$ConstructorCache| '|List|)
+                   '|domainEqualList|)
+               |List|)
+         (|CDRwithIncrement| #1#))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (|List;| #0#) (LETT #1# T |List|))
+           (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))) 
 
 (DEFUN |List;| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|List| |dv$1|))

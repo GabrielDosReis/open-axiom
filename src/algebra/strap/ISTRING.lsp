@@ -813,24 +813,20 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |IndexedString| (#0=#:G1542)
-  (PROG ()
+  (PROG (#1=#:G1543)
     (RETURN
-      (PROG (#1=#:G1543)
-        (RETURN
-          (COND
-            ((LETT #1#
-                   (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
-                       (HGET |$ConstructorCache| '|IndexedString|)
-                       '|domainEqualList|)
-                   |IndexedString|)
-             (|CDRwithIncrement| #1#))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (|IndexedString;| #0#)
-                 (LETT #1# T |IndexedString|))
-               (COND
-                 ((NOT #1#)
-                  (HREM |$ConstructorCache| '|IndexedString|))))))))))) 
+      (COND
+        ((LETT #1#
+               (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
+                   (HGET |$ConstructorCache| '|IndexedString|)
+                   '|domainEqualList|)
+               |IndexedString|)
+         (|CDRwithIncrement| #1#))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (|IndexedString;| #0#) (LETT #1# T |IndexedString|))
+           (COND
+             ((NOT #1#) (HREM |$ConstructorCache| '|IndexedString|))))))))) 
 
 (DEFUN |IndexedString;| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
