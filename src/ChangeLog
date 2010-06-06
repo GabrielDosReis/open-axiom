@@ -1,5 +1,9 @@
 2010-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (replaceExitEtc): Tidy.
+
+2010-06-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (mutateToBackendCode): Don't replace explicit
 	SETQ by LETT.
 
