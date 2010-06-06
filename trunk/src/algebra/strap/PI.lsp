@@ -5,25 +5,20 @@
     '(|%igt| |#1| 0)) 
 
 (DEFUN |PositiveInteger| ()
-  (PROG ()
+  (PROG (#0=#:G1401)
     (RETURN
-      (PROG (#0=#:G1401)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|PositiveInteger|)
-                   |PositiveInteger|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache|
-                                   '|PositiveInteger|
-                                   (LIST
-                                    (CONS NIL
-                                     (CONS 1 (|PositiveInteger;|))))))
-                 (LETT #0# T |PositiveInteger|))
-               (COND
-                 ((NOT #0#)
-                  (HREM |$ConstructorCache| '|PositiveInteger|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|PositiveInteger|)
+               |PositiveInteger|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|PositiveInteger|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|PositiveInteger;|))))))
+             (LETT #0# T |PositiveInteger|))
+           (COND
+             ((NOT #0#) (HREM |$ConstructorCache| '|PositiveInteger|))))))))) 
 
 (DEFUN |PositiveInteger;| ()
   (LET ((|dv$| (LIST '|PositiveInteger|)) ($ (|newShell| 16))

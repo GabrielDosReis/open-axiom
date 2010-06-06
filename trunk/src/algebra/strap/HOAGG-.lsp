@@ -195,24 +195,21 @@
              ('T NIL)))))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
-  (PROG ()
-    (RETURN
+  (SPADCALL
       (SPADCALL
-          (SPADCALL
-              (LET ((#0=#:G1434 (SPADCALL |x| (|getShellEntry| $ 15)))
-                    (#1=#:G1433 NIL))
-                (LOOP
-                  (COND
-                    ((ATOM #0#) (RETURN (NREVERSE #1#)))
-                    (T (LET ((|a| (CAR #0#)))
-                         (LETT #1#
-                               (CONS (SPADCALL |a|
-                                      (|getShellEntry| $ 39))
-                                     #1#)
-                               |HOAGG-;coerce;AOf;10|))))
-                  (LETT #0# (CDR #0#) |HOAGG-;coerce;AOf;10|)))
-              (|getShellEntry| $ 41))
-          (|getShellEntry| $ 42))))) 
+          (LET ((#0=#:G1434 (SPADCALL |x| (|getShellEntry| $ 15)))
+                (#1=#:G1433 NIL))
+            (LOOP
+              (COND
+                ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                (T (LET ((|a| (CAR #0#)))
+                     (LETT #1#
+                           (CONS (SPADCALL |a| (|getShellEntry| $ 39))
+                                 #1#)
+                           |HOAGG-;coerce;AOf;10|))))
+              (LETT #0# (CDR #0#) |HOAGG-;coerce;AOf;10|)))
+          (|getShellEntry| $ 41))
+      (|getShellEntry| $ 42))) 
 
 (DEFUN |HomogeneousAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

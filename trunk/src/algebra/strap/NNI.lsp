@@ -42,25 +42,22 @@
                               '(|NonNegativeInteger|) |c|))))))))) 
 
 (DEFUN |NonNegativeInteger| ()
-  (PROG ()
+  (PROG (#0=#:G1409)
     (RETURN
-      (PROG (#0=#:G1409)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|NonNegativeInteger|)
-                   |NonNegativeInteger|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache|
-                                   '|NonNegativeInteger|
-                                   (LIST
-                                    (CONS NIL
-                                     (CONS 1 (|NonNegativeInteger;|))))))
-                 (LETT #0# T |NonNegativeInteger|))
-               (COND
-                 ((NOT #0#)
-                  (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|NonNegativeInteger|)
+               |NonNegativeInteger|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache|
+                               '|NonNegativeInteger|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|NonNegativeInteger;|))))))
+             (LETT #0# T |NonNegativeInteger|))
+           (COND
+             ((NOT #0#)
+              (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))) 
 
 (DEFUN |NonNegativeInteger;| ()
   (LET ((|dv$| (LIST '|NonNegativeInteger|)) ($ (|newShell| 22))

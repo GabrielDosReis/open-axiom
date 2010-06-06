@@ -1587,6 +1587,16 @@ simplifySEQ form ==
     stmts.first := simplifySEQ first stmts
   form
 
+++ Return true if the Lisp `form' has a `RETURN' form
+++ that needs to be enclosed in a `PROG' form.
+needsPROG? form ==
+  isAtomicForm form => false
+  op := form.op
+  op = 'RETURN => true
+  op in '(LOOP PROG) => false
+  form is ['BLOCK,=nil,:.] => false
+  or/[needsPROG? x for x in form]
+
 ++ Generate Lisp code by lowering middle end defining form `x'.
 ++ x has the strucrure: <name, parms, stmt1, ...>
 transformToBackendCode: %Form -> %Code
@@ -1612,7 +1622,7 @@ transformToBackendCode x ==
   body := 
     fluids ~= nil =>
       [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-    lvars ~= nil or CONTAINED("RETURN",body) =>
+    lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]
     body
   -- add reference parameters to the list of special variables.

@@ -725,20 +725,17 @@
 (DEFUN |SYMBOL;sample;$;35| ($) (DECLARE (IGNORE $)) '|aSymbol|) 
 
 (DEFUN |Symbol| ()
-  (PROG ()
+  (PROG (#0=#:G1556)
     (RETURN
-      (PROG (#0=#:G1556)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|Symbol|) |Symbol|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Symbol|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|Symbol;|))))))
-                 (LETT #0# T |Symbol|))
-               (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|Symbol|) |Symbol|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Symbol|
+                               (LIST (CONS NIL (CONS 1 (|Symbol;|))))))
+             (LETT #0# T |Symbol|))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|))))))))) 
 
 (DEFUN |Symbol;| ()
   (LET ((|dv$| (LIST '|Symbol|)) ($ (|newShell| 165))

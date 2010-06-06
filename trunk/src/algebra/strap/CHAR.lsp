@@ -186,22 +186,17 @@
   (CHAR-DOWNCASE |c|)) 
 
 (DEFUN |Character| ()
-  (PROG ()
+  (PROG (#0=#:G1427)
     (RETURN
-      (PROG (#0=#:G1427)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|Character|)
-                   |Character|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|Character;|))))))
-                 (LETT #0# T |Character|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|Character|) |Character|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
+                               (LIST (CONS NIL (CONS 1 (|Character;|))))))
+             (LETT #0# T |Character|))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
 
 (DEFUN |Character;| ()
   (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))

@@ -464,23 +464,21 @@
 
 (DEFUN |IndexedList| (&REST #0=#:G1520 &AUX #1=#:G1518)
   (DSETQ #1# #0#)
-  (PROG ()
+  (PROG (#2=#:G1519)
     (RETURN
-      (PROG (#2=#:G1519)
-        (RETURN
-          (COND
-            ((LETT #2#
-                   (|lassocShiftWithFunction| (|devaluateList| #1#)
-                       (HGET |$ConstructorCache| '|IndexedList|)
-                       '|domainEqualList|)
-                   |IndexedList|)
-             (|CDRwithIncrement| #2#))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (APPLY (|function| |IndexedList;|) #1#)
-                 (LETT #2# T |IndexedList|))
-               (COND
-                 ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))))) 
+      (COND
+        ((LETT #2#
+               (|lassocShiftWithFunction| (|devaluateList| #1#)
+                   (HGET |$ConstructorCache| '|IndexedList|)
+                   '|domainEqualList|)
+               |IndexedList|)
+         (|CDRwithIncrement| #2#))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (APPLY (|function| |IndexedList;|) #1#)
+             (LETT #2# T |IndexedList|))
+           (COND
+             ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

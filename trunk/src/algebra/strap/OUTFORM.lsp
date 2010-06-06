@@ -1016,22 +1016,19 @@
   (LIST 'INTSIGN |b| |c| |a|)) 
 
 (DEFUN |OutputForm| ()
-  (PROG ()
+  (PROG (#0=#:G1557)
     (RETURN
-      (PROG (#0=#:G1557)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|OutputForm|)
-                   |OutputForm|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|OutputForm;|))))))
-                 (LETT #0# T |OutputForm|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|OutputForm|)
+               |OutputForm|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|OutputForm;|))))))
+             (LETT #0# T |OutputForm|))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
 
 (DEFUN |OutputForm;| ()
   (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))

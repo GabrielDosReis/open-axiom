@@ -516,21 +516,17 @@
     ('T (SPADCALL (LIST |p| |q|) (|getShellEntry| $ 126))))) 
 
 (DEFUN |Integer| ()
-  (PROG ()
+  (PROG (#0=#:G1524)
     (RETURN
-      (PROG (#0=#:G1524)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|Integer|) |Integer|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|Integer;|))))))
-                 (LETT #0# T |Integer|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|Integer|) |Integer|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
+                               (LIST (CONS NIL (CONS 1 (|Integer;|))))))
+             (LETT #0# T |Integer|))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
 
 (DEFUN |Integer;| ()
   (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 141))

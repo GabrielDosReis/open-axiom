@@ -912,23 +912,20 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |DoubleFloat| ()
-  (PROG ()
+  (PROG (#0=#:G1562)
     (RETURN
-      (PROG (#0=#:G1562)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)
-                   |DoubleFloat|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|DoubleFloat|
-                                   (LIST
-                                    (CONS NIL
-                                     (CONS 1 (|DoubleFloat;|))))))
-                 (LETT #0# T |DoubleFloat|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|))))))))))) 
+      (COND
+        ((LETT #0# (HGET |$ConstructorCache| '|DoubleFloat|)
+               |DoubleFloat|)
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|DoubleFloat|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|DoubleFloat;|))))))
+             (LETT #0# T |DoubleFloat|))
+           (COND
+             ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|))))))))) 
 
 (DEFUN |DoubleFloat;| ()
   (LET ((|dv$| (LIST '|DoubleFloat|)) ($ (|newShell| 164))
