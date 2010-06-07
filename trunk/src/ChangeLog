@@ -1,5 +1,10 @@
 2010-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (finishLambdaExpression): Bind escaped
+	variables with LET-form instead of assignment.
+
+2010-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (replaceExitEtc): Replace TAGGEDreturn with
 	%return. 
 	* interp/g-opt.boot (removeNeedlessThrow): New.
