@@ -212,6 +212,9 @@ expandCollect ["%collect",:iters,body] ==
 expandRepeat ["%repeat",:iters,body] ==
   expandLoop(iters,body,["voidValue"])
 
+expandReturn(x is ['%return,.,y]) ==
+  $FUNNAME = nil => systemErrorHere ['expandReturn,x]
+  ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
   
 -- Logical operators
 
@@ -330,6 +333,7 @@ for x in [
 for x in [
    ["%collect",:function expandCollect],
    ["%repeat",:function expandRepeat],
+   ['%return,  :function expandReturn],
 
    ["%eq",:function expandEq],
 

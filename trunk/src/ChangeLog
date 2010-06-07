@@ -1,5 +1,14 @@
 2010-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (replaceExitEtc): Replace TAGGEDreturn with
+	%return. 
+	* interp/g-opt.boot (removeNeedlessThrow): New.
+	(optCatch): Use to it to avoid horrendous code generation for
+	return statement.
+	* interp/g-util.boot (expandReturn): New.  Expand %return forms.
+
+2010-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (isLispSpecialVariable): New.
 	(mutateToBackendCode): Use it to record special vars.
 	Be careful with locally bound variables.

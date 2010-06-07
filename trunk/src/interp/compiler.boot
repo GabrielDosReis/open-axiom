@@ -1036,8 +1036,11 @@ replaceExitEtc(x,tag,opFlag,opMode) ==
                   --bound in compSeq1 and compDefineCapsuleFunction
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
-          x.op := "THROW"
-          first(x.args) := tag
+          if opFlag = 'TAGGEDreturn then
+            x.op := '%return
+          else 
+            x.op := "THROW"
+            first(x.args) := tag
           second(x.args) := convertOrCroak(t,opMode).expr
         first(x.args) := second x-1
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>

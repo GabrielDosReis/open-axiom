@@ -143,9 +143,22 @@ changeThrowToGo(s,g) ==
   changeThrowToGo(first s,g)
   changeThrowToGo(rest s,g)
 
+++ Change any `(THROW tag (%return expr))' in x to just
+++ `(%return expr) since a return-operator transfer control
+++ out of the function body anyway.
+removeNeedlessThrow x ==
+  isAtomicForm x => x
+  x is ['THROW,.,y] and y is ['%return,:.] =>
+    removeNeedlessThrow third y
+    x.op := y.op
+    x.args := y.args
+  for x' in x repeat
+    removeNeedlessThrow x'
+
 optCatch (x is ["CATCH",g,a]) ==
   $InteractiveMode => x
   atom a => a
+  removeNeedlessThrow a
   if a is ["SEQ",:s,["THROW", =g,u]] then
     changeThrowToExit(s,g)
     a.rest := [:s,["EXIT",u]]
