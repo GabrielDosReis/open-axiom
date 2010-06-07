@@ -329,24 +329,23 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
     frees is [[var,:.]] =>
       vec := var
       ["LAMBDA",[:vars,var],:CDDR expandedFunction]
-    scode := nil
+    scode := nil   -- list of multiple used variables, need local bindings.
     slist := nil   -- list of single used variables, no local bindings.
-    locals := nil  -- list of multiple used variables, need local bindings.
     i := -1
     for v in frees repeat
       i := i+1
       vec := [first v,:vec]
       rest v = 1 => slist := [[first v,"getShellEntry","$$",i],:slist]
-      scode := [['SETQ,first v,["getShellEntry","$$",i]],:scode]
-      locals := [first v,:locals]
+      scode := [[first v,["getShellEntry","$$",i]],:scode]
     body :=
       slist => SUBLISNQ(slist,CDDR expandedFunction)
       CDDR expandedFunction
-    if locals then
-      if body is [["DECLARE",:.],:.] then
-        body := [first body,["PROG",locals,:scode,
-                               ["RETURN",["PROGN",:rest body]]]]
-      else body := [["PROG",locals,:scode,["RETURN",["PROGN",:body]]]]
+    if scode ~= nil then
+      body := 
+        body is [["DECLARE",:.],:.] =>
+          [first body,["PROG",nreverse scode,
+            ["RETURN",["PROGN",:rest body]]]]
+        [["LET",nreverse scode,:body]]
     vec := ["VECTOR",:nreverse vec]
     ["LAMBDA",[:vars,"$$"],:body]
   fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
