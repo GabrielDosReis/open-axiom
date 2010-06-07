@@ -670,7 +670,7 @@
   (|stringMatch| |pattern| |target| (CHARACTER |wildcard|))) 
 
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
-  (PROG (|n| |m| |s| #0=#:G1521 |i| |p| |q|)
+  (PROG (|m| |n| |s| #0=#:G1521 |i| |p| |q|)
     (RETURN
       (SEQ (EXIT (SEQ (LETT |n|
                             (SPADCALL |pattern| (|getShellEntry| $ 47))
