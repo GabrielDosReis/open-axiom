@@ -1445,6 +1445,12 @@ pushLocalVariable x ==
     p.1 ~= char "," and not digit? p.1 => nil
   PUSH(x,$LocalVars)
 
+isLispSpecialVariable x ==
+  s := PNAME x
+  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not BOUNDP x
+  
+noteSpecialVariable x ==
+  $SpecialVars := insert(x,$SpecialVars)
 
 --%
 --% Middle Env to Back End Transformations.
@@ -1518,6 +1524,7 @@ ilTransformInsns form ==
 ++ Replace every middle end sub-forms in `x' with Lisp code.
 mutateToBackendCode: %Form -> %Void
 mutateToBackendCode x ==
+  IDENTP x and isLispSpecialVariable x => noteSpecialVariable x
   isAtomicForm x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
@@ -1540,13 +1547,15 @@ mutateToBackendCode x ==
     x.first := eval u
     mutateToBackendCode x
   u in '(LET LET_*) =>
+    oldVars := $LocalVars
     vars := nil
     for [var,init] in second x repeat
       mutateToBackendCode init
       $LocalVars := [var,:$LocalVars]
       vars := [var,:vars]
     mutateToBackendCode x.rest.rest
-    $LocalVars := setDifference($LocalVars,vars)
+    newVars := setDifference($LocalVars,setUnion(vars,oldVars))
+    $LocalVars := setUnion(oldVars,newVars)
   u in '(PROG LAMBDA) =>
     newBindings := []
     for y in second x repeat
@@ -1619,9 +1628,11 @@ transformToBackendCode x ==
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)
-  body := 
+  body :=
     fluids ~= nil =>
-      [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+      lvars ~= nil or needsPROG? body =>
+        [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+      [declareGlobalVariables fluids,:body]
     lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]
     body
