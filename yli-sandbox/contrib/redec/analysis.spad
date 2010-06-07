@@ -122,7 +122,13 @@ LoopAnalysis(): Public == Private where
     reductionVariableList : List List Syntax := []
 
     -- list for storing all the operands of a prefix sum operator
-    prefixsumOperandsList: List List Syntax := []
+    -- there is only one element of the outmost list
+    -- in the inner list, there are four elements:
+    -- 1: target vector name
+    -- 2: source vector name
+    -- 3: binary operator name
+    -- 4: the function application of the rhs of the first assignment
+    scanComponents: List List Syntax := []
 
     -- list for storing all the reduction variables used in accumulations 
     -- those accumulations appear in the then branch of some if-statement
@@ -140,8 +146,8 @@ LoopAnalysis(): Public == Private where
     examineThen? : Boolean := true
 
     -- global counter for rejected accumulation loop candidates
-    rejectionCounter: Integer := 0      
-
+    rejectionCounter: Integer := 0
+      
     -- global set storing rejection codes for the current loop
     rejectionCodes: Set Integer := {}
 
@@ -1259,11 +1265,10 @@ LoopAnalysis(): Public == Private where
     -- checks the lhs of the let against the corresponding component 
     -- of the first scan pattern
     verifyLeftOfLet(l: Syntax, indexVar: Syntax, gv: VTB): Boolean ==
-      compound? l =>
-        first getOperands(l) = indexVar 
-        false
+      compound? l and hasOperands? l =>
+        first getOperands(l) = indexVar
       false
-   
+
     -- create a minus ``-" syntax
     makeMinus(): Syntax == '_-::Identifier::Syntax
 
@@ -1274,7 +1279,7 @@ LoopAnalysis(): Public == Private where
     buildMinusOne(indexVar: Syntax): Syntax ==
       buildSyntax(makeMinus(), [indexVar, makeCompoundOne()])
 
-    -- create a minus ``-" syntax
+    -- 
     verifyTheOther(opr: Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
       compound?(indexExpr := first(getOperands(opr))) and first unlist opr = seq =>
         indexExpr = buildMinusOne(indexVar)
@@ -1284,18 +1289,25 @@ LoopAnalysis(): Public == Private where
     -- of the first scan pattern
     verifyOperandsOfRhs(oprs: List Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
       compound?(lopr := first oprs) and compound?(ropr := second oprs) =>
-        first getOperands(lopr) = indexVar => verifyTheOther(ropr, indexVar, seq, gv)
-        first getOperands(ropr) = indexVar => verifyTheOther(lopr, indexVar, seq, gv)
+        hasOperands?(lopr) and first getOperands(lopr) = indexVar => 
+          (first scanComponents).2 := first unlist lopr
+          verifyTheOther(ropr, indexVar, seq, gv)
+        hasOperands?(ropr) and first getOperands(ropr) = indexVar => 
+          (first scanComponents).2 := first unlist ropr
+          verifyTheOther(lopr, indexVar, seq, gv)
         false
       false
 
     -- checks the rhs of the let against the corresponding component
     -- of the first scan pattern
     verifyRightOfLet(r: Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
+      not compound?(r) => false
       if isAnnotated?(r) then
         op := getOperands(getOperator(r)::Syntax).last
         oprs := getOperands(r)
-        r := buildSyntax(op, oprs)     
+        r := buildSyntax(op, oprs)
+      (first scanComponents).3 := first unlist r
+      (first scanComponents).4 := r     
       isBinaryExpression?(r) and verifyOperandsOfRhs(getOperands(r), indexVar, seq, gv)
 
     -- checks the loop body against the first scan pattern 
@@ -1304,11 +1316,94 @@ LoopAnalysis(): Public == Private where
       lhs := getLhs s
       rhs := rhs(s)::Syntax
       verifyLeftOfLet(lhs, indexVariable, gv) =>
+        print("passing first round verification!"::OutputForm)
+        print(it::OutputForm)
+        print(s::Syntax::OutputForm)
         seq := first unlist lhs
+        (first scanComponents).1 := seq
         verifyRightOfLet(rhs, indexVariable, seq, gv)
+      false
+
+    -- returns the compound function application syntax wrapped by 
+    -- the annotation syntax
+    -- this function is going to be moved to syntax helper package
+    stripAnnotation(s: Syntax): Syntax ==
+      isAnnotated?(s) =>
+        op := getOperands(getOperator(s)::Syntax).last
+        oprs := getOperands(s)
+        buildSyntax(op, oprs)
+      s   
+
+    -- checks whether the operator of a function application is one 
+    -- of the following sequence element set functions
+    -- 1. qsetelt!(v, i, value)
+    -- 2. to be added
+    isElementSetFunction?(s: Syntax): Boolean ==
+      isTrinaryExpression?(s) and getOperatorName(s) = 'qsetelt!
+
+
+    -- checks whether the operator of a function application is one 
+    -- of the following sequence element access functions
+    -- 1. qelt(v, i)
+    -- 2. to be added
+    isElementQueryFunction?(s: Syntax): Boolean ==
+      (isBinaryExpression?(s) and getOperatorName(s) = 'qelt) or_
+      (isBinaryExpression?(s) and getOperatorName(s) = 'elt)
+
+    -- checks the binary function combination in the rhs of the first 
+    -- assignment in scan pattern 2c
+    verifyCombination2c(c: Syntax, l: Syntax,_
+                                   indexVar: Syntax, gv: VTB): Boolean ==
+      not compound?(c) => false
+      c' := stripAnnotation(c)
+      isBinaryExpression?(c') => 
+        (first scanComponents).3 := getOperatorName(c')::Syntax
+        (first scanComponents).4 := c'
+        oprs := getOperands c'
+        lopr := first oprs
+        ropr := second oprs
+        ropr = l =>
+          isElementQueryFunction?(lopr) and getOperands(lopr).2 = indexVar =>
+            (first scanComponents).2 := getOperands(lopr).1
+            true
+          compound?(lopr) and #(args := getOperands(lopr))=1 and_
+          first args = indexVar =>
+            (first scanComponents).2 := first unlist lopr
+            true    
+          false     
+        lopr = l =>
+          isElementQueryFunction?(ropr) and getOperands(ropr).2 = indexVar =>
+            (first scanComponents).2 := getOperands(ropr).1
+            true
+          compound?(ropr) and #(args := getOperands(ropr))=1 and_
+          first args = indexVar =>
+            (first scanComponents).2 := first unlist ropr
+            true    
+          false              
+        false
+      false
+         
+    -- checks the rhs of the let against the corresponding component
+    -- of the first scan pattern
+    verifyRightOfLet2c(l: Syntax, r: Syntax, indexVar: Syntax, gv: VTB): Boolean ==
+      not compound?(r) => false
+      r' : Syntax := stripAnnotation(r)
+      isElementSetFunction?(r') =>
+        oprs := getOperands(r')
+        not within?(indexVar, oprs.1) and oprs.2 = indexVar and_
+        verifyCombination2c(oprs.3, l, indexVar, gv) =>
+          -- set target
+          (first scanComponents).1 := oprs.1
+          true
         false
       false
 
+    -- checks the loop body against the scan pattern 2c
+    verifyScanForm2c(s: LetAst, it: SpadAst, gv: VTB): Boolean ==
+      indexVariable := first getOperands(it::Syntax)
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      not compound?(lhs) and verifyRightOfLet2c(lhs, rhs, indexVariable, gv)
 
     -- checks the rhs of the first assignment against the corresponding componenet
     -- of the second prefix sum syntax pattern
@@ -1320,12 +1415,26 @@ LoopAnalysis(): Public == Private where
         lopr := first oprs
         ropr := second oprs
         l = lopr =>
-          compound?(ropr) and #(args := getOperands(ropr))=1 and first args = indexVar =>
+          -- pattern: l.i
+          (compound?(ropr) and #(args := getOperands(ropr))=1 and first args = indexVar) =>
+            (first scanComponents).2 := first unlist ropr
+            pair(true, lopr)
+          -- pattern: qelt(l, i)  or elt(l, i)
+          (compound?(ropr) and (x := getOperator(ropr)) case Identifier and_
+           (x::Identifier = 'qelt::Identifier or x::Identifier = 'elt::Identifier) and_
+           second getOperands(ropr) = indexVar) =>
+            (first scanComponents).2 := first getOperands(ropr)
             pair(true, lopr)
           result
         l = ropr =>
           compound?(lopr) and #(args := getOperands(lopr))=1 and first args = indexVar =>
+            (first scanComponents).2 := first unlist lopr
             pair(true, ropr)
+          (compound?(lopr) and (x := getOperator(lopr)) case Identifier and_
+           (x::Identifier = 'qelt::Identifier or x::Identifier = 'elt::Identifier) and_
+           second getOperands(lopr) = indexVar) =>
+            (first scanComponents).2 := first getOperands(lopr)
+            pair(true, lopr)
           result
         result
       result
@@ -1339,20 +1448,29 @@ LoopAnalysis(): Public == Private where
           op := getOperands(getOperator(rhs)::Syntax).last
           oprs := getOperands(rhs)
           rhs := buildSyntax(op, oprs)
+        (first scanComponents).3 := first unlist rhs
+        (first scanComponents).4 := rhs
         verifyRhsOfFirstAssignment2(lhs, rhs, indexVar, gv)
       pair(false, makeUnknown())
 
     -- checks the second statement of the second kind of prefix sum pattern
     verifySecondAssignment2(s: LetAst, v: Syntax,  indexVar: Syntax, gv: VTB): Boolean ==
       lhs := getLhs s
-      rhs := rhs(s)::Syntax
+      rhs := rhs(s)::Syntax      
       not compound?(rhs) and rhs = v and compound?(lhs) and_
-      #(args := getOperands(lhs)) = 1 and first args = indexVar
+      #(args := getOperands(lhs)) = 1 and first args = indexVar =>
+        (first scanComponents).1 := first unlist lhs
+        true
+      false
 
     -- checks the loop body against the second scan pattern
     verifyScanForm2(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
       indexVariable := first getOperands(it::Syntax)
       first (r := verifyFirstAssignment2(first b, indexVariable, gv)) =>
+        print("passing first round verification of the second pattern!"::OutputForm)
+        print(it::OutputForm)
+        print(b::OutputForm)
+        seq := first unlist lhs        
         verifySecondAssignment2(second b, second r, indexVariable, gv)
       false
  
@@ -1366,7 +1484,12 @@ LoopAnalysis(): Public == Private where
         lopr := first oprs
         ropr := second oprs
         (l = lopr and indexVar = ropr) or_
-        (l = ropr and indexVar = lopr) => pair(true, l)
+        (l = ropr and indexVar = lopr) => 
+          print("passing first 1.5 round verification!"::OutputForm)
+          print(l::OutputForm)
+          print(r::OutputForm)        
+          print(indexVar::OutputForm)
+          pair(true, l)
         result
       result
 
@@ -1381,6 +1504,8 @@ LoopAnalysis(): Public == Private where
           op := getOperands(getOperator(rhs)::Syntax).last
           oprs := getOperands(rhs)
           rhs := buildSyntax(op, oprs)
+        (first scanComponents).3 := first unlist rhs
+        (first scanComponents).4 := rhs        
         verifyRhsOfFirstAssignment3(lhs, rhs, indexVar, gv)
       pair(false, makeUnknown())
 
@@ -1397,16 +1522,25 @@ LoopAnalysis(): Public == Private where
         oprs := getOperands(rhs)
         lopr := first oprs
         ropr := second oprs
-        (lhs = lopr and v = ropr) or (lhs = ropr and v = lopr)
+        op := getOperator(rhs)
+        (op case Identifier) and (op::Identifier = 'concat::Identifier) and_
+        ((lhs = lopr and v = ropr) or (lhs = ropr and v = lopr)) =>
+          (first scanComponents).1 := lhs
+          true
+        false
       false
 
     -- checks the loop syntax against the third scan pattern
     verifyScanForm3(b: List LetAst, it: InAst, gv: VTB): Boolean ==
       indexVariable := iterationVar(it)::Syntax
+      (first scanComponents).2 := sequence(it)::Syntax
       first (r := verifyFirstAssignment3(first b, indexVariable, gv)) =>
+        --print("passing first round verification!"::OutputForm)
+        --print(it::Syntax::OutputForm)
+        --print(b::OutputForm)        
         verifySecondAssignment3(second b, indexVariable, second r, gv)
       false
-      
+
     -- checks the statement sequence after forward substitutions
     -- to make sure the loop body implements one step scan
     isScan?(b: List LetAst, its: List SpadAst, gv: VTB): Boolean ==
@@ -1415,19 +1549,21 @@ LoopAnalysis(): Public == Private where
       -- later we also need to add the verification to guarantee that #its = 1
       #its = 1 =>
         it := first its
-        #b = 1 and stepAst? it     => verifyScanForm1(first b, it, gv)
-        #b = 2 and stepAst? it     => verifyScanForm2(b, it, gv)
-        #b = 2 and (it case InAst) => verifyScanForm3(b, it::Syntax::InAst, gv)
+        #b = 1 and stepAst? it     => 
+          verifyScanForm1(first b, it, gv) => true
+          verifyScanForm2c(first b, it, gv)
+
+        --#b = 2 and stepAst? it     => verifyScanForm2(b, it, gv)
+        --#b = 2 and (it case InAst) => verifyScanForm3(b, it::Syntax::InAst, gv)
         false
       --accumulationNumber := concat(accumulationNumber, localcount::Float)
       false
-
 
     -- verify whether a sequence of statements only implements independent
     -- accumulations
     verifyScan(its: List SpadAst, b: List LetAst,_
                                                  gv: VTB, lv: VTB): Boolean ==
-      empty?(b) => true
+      empty?(b) => false
       b := eliminateLocalVariable!(b, lv)
       b := eliminateGlobalVariable!(b)
       isScan?(b, its, gv)
@@ -1441,10 +1577,9 @@ LoopAnalysis(): Public == Private where
       examineIf? := false
       localVariables : VTB := collectLocalVariableofLoop(second p, gv)
       verifyScan(its, second p, gv, localVariables) =>
-        --reductionVariableList := concat(reductionVariableList,_
-        --                               [reductionVariableListInThenBranch])
         [r]
       updateRejectedLoopList(r)
+      -- scanComponents := []
       []
 
     -- i.e. to verify whether a repeatAst has the canonical form
@@ -1513,11 +1648,11 @@ LoopAnalysis(): Public == Private where
       s case ColonAst =>
         k := lhs(s::Syntax::ColonAst)::Syntax
         gv.k := makeUnknown()
-	[]
+        []
       s case SequenceAst =>
         identifyScanLoopFromSequence(s, copy gv)
       s case RepeatAst =>
-        [] -- identifyScanLoopFromRepeat(s::Syntax::RepeatAst, copy gv)
+        identifyScanLoopFromRepeat(s::Syntax::RepeatAst, copy gv)
       s case IfAst =>
         identifyScanLoopFromIf(s, copy gv)
       s case ExitAst =>
@@ -1599,7 +1734,7 @@ LoopAnalysis(): Public == Private where
       aclTable := empty()
       loopNestTable := empty()
       reductionVariableList := []
-      prefixsumOperandsList := []
+      scanComponents := [[makeUnknown() for i in 1..4]]
 
     --  update the final results to be returned 
     -- with a new entry: (pair(d, f), bl)
@@ -1693,14 +1828,15 @@ LoopAnalysis(): Public == Private where
       scanLoops := second analysisResult
       updateTable2(ctor, functionName, scanLoops, scanLoopTable)   
 
-
     -- collect data from  for top level statements (definitions)
     collectDataFromDefinition(sa: SpadAst, ctor: Identifier): Void ==
       (option = 1) => 
         collectAccumulationLoopFromDefinition(sa, ctor)
       (option = 2) or (option = 3) => 
         collectAclOrLoopNestsFromDefinition(sa, ctor)
-      userError "loop analysis option be either 1, 2, or 3"
+      (option = 4) => 
+        collectScanLoopFromDefinition(sa, ctor)
+      userError "loop analysis option be either 1, 2, 3 or 4"
 
     -- interface used in redupkg.spad
     -- this function collects accumulation loops from a function definition
@@ -1740,7 +1876,7 @@ LoopAnalysis(): Public == Private where
       option := 4
       globalTypeEnvironment    := copy tpenv
       collectDataFromDefinition(defa::Syntax::SpadAst, ctor)
-      pair(copy accumulationLoopTable, copy prefixsumOperandsList)
+      pair(copy scanLoopTable, copy scanComponents)
 
 
 

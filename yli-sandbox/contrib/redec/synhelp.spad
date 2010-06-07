@@ -35,10 +35,14 @@ SyntaxHelper(): Public == Private where
       ++ checks whether an if statement has then branch
     hasElseBranch?: IfAst -> Boolean
       ++ checks whether an if statement has else branch
+    hasOperands?: Syntax -> Boolean 
+      ++ checks whether a function application has operands
     mappingAstToSignature: MappingAst -> Signature
       ++ converts a mapping ast to signature
-    -- isBinaryExpression?: Syntax -> Boolean
-      ++ checks whether an expression whose operator is binary
+    isBinaryExpression?: Syntax -> Boolean
+      ++ checks whether an expression has a binary operator
+    isTrinaryExpression?: Syntax -> Boolean
+      ++ checks whether an expression has a trinary operator
     isJoin?: Syntax -> Boolean
       ++ checks whether a syntax is the one of identifier Join
     isAdd?: Syntax -> Boolean
@@ -218,8 +222,14 @@ SyntaxHelper(): Public == Private where
   Private == add
     import Syntax
 
+    hasOperands?(s: Syntax): Boolean ==
+      compound?(s) and #getOperands(s) > 0
+
     isBinaryExpression?(e: Syntax): Boolean ==
       compound?(e) and #getOperands(e) = 2
+
+    isTrinaryExpression?(e: Syntax): Boolean ==
+      compound?(e) and #getOperands(e) = 3
 
     getOperatorName(op: Syntax): Identifier ==
       compound? op =>
@@ -230,6 +240,7 @@ SyntaxHelper(): Public == Private where
           getOperatorName(first getOperands op)
         opr case Identifier and member?(char "#", entries(toString op)) =>
           opr::Identifier
+        opr case Identifier => opr::Identifier
         print(op::Syntax::OutputForm)
         userError "unexpected operator syntax"
       op case String => (op::String::Symbol) pretend Identifier
