@@ -1,0 +1,129 @@
+
+)abbrev package SCANL ScanAnalysis 
+++ Author: Yue Li
+++ Date Created: Jun 8, 2010
+++ Date Last Updated: Jun 8, 2010
+++ Description: This package provides functions for extracting the syntax of 
+++ scan function calls from function definitions
+ScanAnalysis(): Public == Private where
+  Public == with
+    extractScanFromFunctionDefinition:_
+      (DefinitionAst, Identifier) -> List Syntax
+      ++ collects all the scan function call syntax from 
+      ++ a function definition 
+  Private == add
+    import SyntaxHelper
+
+    -- creates a syntax for identifier reduce
+    makeScan:  Syntax == 'scan::Identifier::Syntax
+
+    -- global list for storing syntax of scan calls 
+    scanList: List Syntax := []
+
+    -- checks whether a syntax is a scan call
+    isScanCall?(id: Identifier, arity: Integer): Boolean ==
+      (id = makeScan()::Identifier) and arity = 3
+
+    -- extracting scan call syntax 
+    -- from an expression, adding them to the global list
+    collectFromExpression(e: Syntax): Void ==
+      e := stripAnnotation(e)
+      compound? e =>
+        if (id:=getOperator e) case Identifier then
+          id'  := id::Identifier
+          arity  := #(getOperands  e) 
+          isScanCall?(id', arity) => 
+            scanList := concat(scanList, e)
+        for u in (unlist e) repeat 
+          collectFromExpression u
+
+    -- new instrumentation, for temporary experiment
+    -- checks whether there's an if statement in a sequence of statements
+    ifAstInSequence?(s: SequenceAst):Pair(Boolean, Syntax) ==
+      (#(b := body s)) = 2 and_
+      compound?((b.1)::Syntax) and_
+      compound?((b.2)::Syntax) and_
+      (b.1 case LetAst) and_
+      (b.2 case ExitAst) and_
+      compound?((f := expression((b.2)::Syntax::ExitAst))::Syntax) and_
+      f case IfAst => 
+        x := getLhs((b.1)::Syntax::LetAst)$SyntaxHelper
+        z := rhs((b.1)::Syntax::LetAst)::Syntax 
+        y := (condition(f::Syntax::IfAst))::Syntax 
+        x = y => pair(true, z)
+        pair(false, makeUnknown())
+      pair(false, makeUnknown())
+
+    exclamations: List Syntax := empty()
+
+    ifCounter : Integer := 0
+
+    -- collect scan call from a statement
+    extractScanFromStatement(s: SpadAst, ctor: Identifier): Void ==
+      not compound?(s::Syntax) => void()
+      s case SignatureAst =>   void()
+      s case MacroAst =>  void()
+      s case WhileAst => void()
+      s case ColonAst => void()
+      s case ConstructAst => void()
+      s case CollectAst => void()
+      s case CaseAst => void()
+      s case DefinitionAst => 
+        s' := s::Syntax::DefinitionAst
+        extractScanFromStatement(body s', ctor)
+      s case SequenceAst =>
+        if first(x := ifAstInSequence?(s::Syntax::SequenceAst)) then
+          if containExclamation?(second x) then  
+            exclamations := concat(exclamations, second x)
+            exclamations := concat(exclamations, ctor::Syntax)
+        
+        stmtLst:= body(s::Syntax::SequenceAst)
+        for stmt in stmtLst repeat
+          extractScanFromStatement(stmt, ctor)
+      s case IfAst => 
+        ifCounter := ifCounter + 1
+        s' := s::Syntax::IfAst
+        if hasThenBranch? s' then
+          thBranch := thenBranch(s')
+          extractScanFromStatement(thBranch, ctor)
+        if hasElseBranch? s' then
+          elBranch := elseBranch(s')
+          extractScanFromStatement(elBranch, ctor)
+      s case ReturnAst =>
+        rtn := expression(s::Syntax::ReturnAst)
+        extractScanFromStatement(rtn, ctor)
+      s case RepeatAst =>
+        loopBody := body(s::Syntax::RepeatAst)
+        extractScanFromStatement(loopBody, ctor)
+      s case CoerceAst =>
+        coerExp := expression(s::Syntax::CoerceAst)
+        extractScanFromStatement(coerExp, ctor)
+      s case ExitAst =>
+        dbexp := expression(s::Syntax::ExitAst)
+        extractScanFromStatement(dbexp, ctor)
+      s case LetAst =>
+        right := rhs(s::Syntax::LetAst)
+        extractScanFromStatement(right, ctor)
+      s case RestrictAst => 
+        e := expression(s::Syntax::RestrictAst)
+        extractScanFromStatement(e, ctor)
+      collectFromExpression(s::Syntax)
+
+    -- main entry of the syntax analysis
+    extractScanFromFunctionDefinition(d, ctor) ==
+      scanList := []
+      extractScanFromStatement(body d, ctor)
+      copy scanList
+
+
+
+
+
+
+
+
+
+
+
+
+
