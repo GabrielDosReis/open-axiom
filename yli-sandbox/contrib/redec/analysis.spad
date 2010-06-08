@@ -1272,6 +1272,12 @@ LoopAnalysis(): Public == Private where
     -- create a minus ``-" syntax
     makeMinus(): Syntax == '_-::Identifier::Syntax
 
+    -- create a plus ``+" syntax
+    makePlus(): Syntax == '_+::Identifier::Syntax
+
+    -- create a inc ``+" syntax
+    makeInc(): Syntax == 'inc::Identifier::Syntax
+
     -- create compound one
     makeCompoundOne(): Syntax == buildSyntax(makeOne(), [])
 
@@ -1279,6 +1285,13 @@ LoopAnalysis(): Public == Private where
     buildMinusOne(indexVar: Syntax): Syntax ==
       buildSyntax(makeMinus(), [indexVar, makeCompoundOne()])
 
+    -- build compound syntax (+ indexVar (One))
+    buildPlusOne(indexVar: Syntax): Syntax ==
+      buildSyntax(makePlus(), [indexVar, makeCompoundOne()])
+
+    -- build compound syntax (inc indexVar)
+    buildInc(indexVar: Syntax): Syntax ==
+      buildSyntax(makeInc(), [indexVar])
     -- 
     verifyTheOther(opr: Syntax, indexVar: Syntax, seq: Syntax, gv: VTB): Boolean ==
       compound?(indexExpr := first(getOperands(opr))) and first unlist opr = seq =>
@@ -1434,13 +1447,13 @@ LoopAnalysis(): Public == Private where
            (x::Identifier = 'qelt::Identifier or x::Identifier = 'elt::Identifier) and_
            second getOperands(lopr) = indexVar) =>
             (first scanComponents).2 := first getOperands(lopr)
-            pair(true, lopr)
+            pair(true, ropr)
           result
         result
       result
 
     -- checks the first statement of the second kind of prefix sum pattern
-    verifyFirstAssignment2(s: LetAst, indexVar: Syntax, gv: VTB): Pair(Boolean, Syntax) ==
+    verifyFirstAssignment2a(s: LetAst, indexVar: Syntax, gv: VTB): Pair(Boolean, Syntax) ==
       lhs := getLhs s
       rhs := rhs(s)::Syntax
       not compound?(lhs) and compound?(rhs) =>
@@ -1454,7 +1467,7 @@ LoopAnalysis(): Public == Private where
       pair(false, makeUnknown())
 
     -- checks the second statement of the second kind of prefix sum pattern
-    verifySecondAssignment2(s: LetAst, v: Syntax,  indexVar: Syntax, gv: VTB): Boolean ==
+    verifySecondAssignment2a(s: LetAst, v: Syntax,  indexVar: Syntax, gv: VTB): Boolean ==
       lhs := getLhs s
       rhs := rhs(s)::Syntax      
       not compound?(rhs) and rhs = v and compound?(lhs) and_
@@ -1464,14 +1477,80 @@ LoopAnalysis(): Public == Private where
       false
 
     -- checks the loop body against the second scan pattern
-    verifyScanForm2(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
+    verifyScanForm2a(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
       indexVariable := first getOperands(it::Syntax)
-      first (r := verifyFirstAssignment2(first b, indexVariable, gv)) =>
-        print("passing first round verification of the second pattern!"::OutputForm)
-        print(it::OutputForm)
-        print(b::OutputForm)
-        seq := first unlist lhs        
-        verifySecondAssignment2(second b, second r, indexVariable, gv)
+      first (r := verifyFirstAssignment2a(first b, indexVariable, gv)) =>   
+        verifySecondAssignment2a(second b, second r, indexVariable, gv)
+      false
+
+
+    -- check the rhs of the first assignment in the loop body against the 
+    -- first assignment of the scan pattern 2b
+    verifyRhsOfFirstAssignment2b(r: Syntax, indexVar: Syntax, gv: VTB):_
+                                                Pair(Boolean, Syntax) ==
+      result : Pair(Boolean, Syntax) := pair(false, makeUnknown())
+      isBinaryExpression?(r) =>
+        oprs := getOperands(r)
+        lopr := first oprs
+        ropr := second oprs
+        not compound?(lopr) and compound?(ropr) =>
+          -- pattern: l.i
+          (compound?(ropr) and #(args := getOperands(ropr))=1 and first args = indexVar) =>
+            (first scanComponents).2 := first unlist ropr
+            pair(true, lopr)
+          -- pattern: qelt(l, i)  or elt(l, i)
+          (isElementQueryFunction?(ropr) and second getOperands(ropr) = indexVar) =>
+            (first scanComponents).2 := first getOperands(ropr)
+            pair(true, lopr)
+          result
+        not compound?(ropr) and compound?(lopr) =>
+          -- pattern: l.i
+          (compound?(lopr) and #(args := getOperands(lopr))=1 and first args = indexVar) =>
+            (first scanComponents).2 := first unlist lopr
+            pair(true, ropr)
+          -- pattern: qelt(l, i)  or elt(l, i)
+          (isElementQueryFunction?(lopr) and second getOperands(lopr) = indexVar) =>
+            (first scanComponents).2 := first getOperands(lopr)
+            pair(true, ropr)
+          result
+        result
+      result      
+
+    -- check the first assignment in the loop body against the first assignment
+    -- of the scan pattern 2b
+    verifyFirstAssignment2b(s: LetAst, indexVar: Syntax, gv: VTB):_
+                                                       Pair(Boolean, Syntax) ==
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      compound?(lhs) and compound?(rhs) and_
+      hasOperands?(lhs) and first getOperands(lhs) = indexVar =>
+        rhs' := stripAnnotation(rhs)
+        (first scanComponents).1 := first unlist lhs
+        (first scanComponents).3 := first unlist rhs'
+        (first scanComponents).4 := rhs'
+        verifyRhsOfFirstAssignment2b(rhs', indexVar, gv)
+      pair(false, makeUnknown())
+
+    -- check the second assignment agains the second assignment of the scan 
+    -- pattern 2b    
+    verifySecondAssignment2b(s: LetAst, l: Syntax, r: Syntax, indexVar: Syntax,_
+                                                           gv: VTB): Boolean ==
+      getLhs(s) = r =>
+        compound?(rhs := rhs(s)::Syntax) =>
+          rhs' := stripAnnotation(rhs)
+          rhs' = l => true
+          (isElementQueryFunction?(rhs') and_
+          second getOperands(rhs') = indexVar) and_
+          first getOperands(rhs') = (first scanComponents).1
+        false
+      false
+
+    -- checks the loop body against the scan pattern 2b
+    verifyScanForm2b(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
+      indexVar := first getOperands(it::Syntax)
+      first (r := verifyFirstAssignment2b(first b, indexVar, gv)) =>
+        accessForm := getLhs first b        
+        verifySecondAssignment2b(second b, accessForm, second r, indexVar, gv)
       false
  
     -- checks the rhs of the first assignment against the first assignment 
@@ -1485,10 +1564,6 @@ LoopAnalysis(): Public == Private where
         ropr := second oprs
         (l = lopr and indexVar = ropr) or_
         (l = ropr and indexVar = lopr) => 
-          print("passing first 1.5 round verification!"::OutputForm)
-          print(l::OutputForm)
-          print(r::OutputForm)        
-          print(indexVar::OutputForm)
           pair(true, l)
         result
       result
@@ -1534,13 +1609,111 @@ LoopAnalysis(): Public == Private where
     verifyScanForm3(b: List LetAst, it: InAst, gv: VTB): Boolean ==
       indexVariable := iterationVar(it)::Syntax
       (first scanComponents).2 := sequence(it)::Syntax
-      first (r := verifyFirstAssignment3(first b, indexVariable, gv)) =>
-        --print("passing first round verification!"::OutputForm)
-        --print(it::Syntax::OutputForm)
-        --print(b::OutputForm)        
+      first (r := verifyFirstAssignment3(first b, indexVariable, gv)) =>    
         verifySecondAssignment3(second b, indexVariable, second r, gv)
       false
 
+    -- checks the second assignment against the corresponding component
+    -- in the scan pattern 4
+    verifySecondAssignment4(s: LetAst, l: Syntax, indexVar: Syntax, gv: VTB):_
+                                                         Boolean ==
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      not within?(indexVar, lhs) and compound?(rhs) =>
+        rhs' := stripAnnotation(rhs)
+        oprs := getOperands(rhs')
+        lopr := first oprs
+        ropr := second oprs
+        (getOperatorName(rhs') = 'concat::Identifier) and_
+        ((lhs = lopr and l = ropr) or (lhs = ropr and l = lopr)) =>
+          (first scanComponents).1 := lhs
+          true
+        false
+      false
+
+    -- checks the loop syntax against the scan pattern 4
+    verifyScanForm4(b: List LetAst, it: InAst, gv: VTB): Boolean ==
+      indexVariable := first getOperands(it::Syntax)
+      -- reuse 2a's first assignment pattern
+      first (r := verifyFirstAssignment2a(first b, indexVariable, gv)) =>  
+        verifySecondAssignment4(second b, second r, indexVariable, gv)
+      false
+
+    -- checks the binary function combination in the rhs of the first 
+    -- assignment in scan pattern 5
+    verifyCombination5(c: Syntax, l: Syntax,_
+                                   indexVar: Syntax, gv: VTB): Boolean ==
+      not compound?(c) => false
+      c' := stripAnnotation(c)
+      isBinaryExpression?(c') => 
+        (first scanComponents).3 := getOperatorName(c')::Syntax
+        (first scanComponents).4 := c'
+        oprs := getOperands c'
+        lopr := first oprs
+        ropr := second oprs
+        (ropr = l and lopr = indexVar) or (lopr = l and ropr = indexVar) 
+      false
+        
+    -- checks the rhs of the first assignment syntax against the corresponding 
+    -- component of scan pattern 5
+    verifyRightOfLet5(l: Syntax, r: Syntax, indexVar: Syntax, gv: VTB):_
+                                            Pair(Boolean, Syntax) ==
+      result : Pair(Boolean, Syntax) := pair(false, makeUnknown())
+      not compound?(r) => result
+      r' : Syntax := stripAnnotation(r)
+      isElementSetFunction?(r') =>
+        oprs := getOperands(r')
+        not within?(indexVar, oprs.1) and not compound?(oprs.2) and_
+        verifyCombination5(oprs.3, l, indexVar, gv) =>
+          -- set target
+          (first scanComponents).1 := oprs.1
+          pair(true, oprs.2)
+        result
+      result
+
+    -- checks the first assignment syntax against the corresponding component
+    -- of scan pattern 5
+    verifyFirstAssignment5(s: LetAst, indexVar: Syntax, gv: VTB):_
+                                            Pair(Boolean, Syntax) ==
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      not compound?(lhs) =>
+        verifyRightOfLet5(lhs, rhs, indexVar, gv)
+      pair(false, makeUnknown())
+
+
+    -- checks the second assignment syntax against the corresponding component
+    -- of scan pattern 5
+    verifySecondAssignment5(s: LetAst, targetIndex: Syntax, gv: VTB): Boolean ==
+      lhs := getLhs s
+      rhs := rhs(s)::Syntax
+      lhs = targetIndex and_
+      (rhs = buildPlusOne(targetIndex) or rhs = buildInc(targetIndex))
+
+    -- checks the loop syntax against the scan pattern 5
+    verifyScanForm5(b: List LetAst, it: InAst, gv: VTB): Boolean ==
+      indexVar := iterationVar(it)::Syntax
+      (first scanComponents).2 := sequence(it)::Syntax
+      first (r := verifyFirstAssignment5(first b, indexVar, gv)) =>    
+        verifySecondAssignment5(second b, second r, gv)
+      false
+
+    -- verify scan pattern 1 and 2c
+    verifyScanPatternA(s : LetAst, it: SpadAst, gv: VTB): Boolean ==
+      verifyScanForm1(s, it, gv) or_
+      verifyScanForm2c(s, it, gv)
+
+    -- verify scan pattern 2a, 2b, and 4
+    verifyScanPatternB(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
+      verifyScanForm2a(b, it, gv) or_
+      verifyScanForm2b(b, it, gv) or_
+      verifyScanForm4(b, it, gv)
+
+    -- verify scan pattern 3 and 5
+    verifyScanPatternC(b: List LetAst, it: SpadAst, gv: VTB): Boolean ==
+      verifyScanForm3(b, it::Syntax::InAst, gv) or_
+      verifyScanForm5(b, it::Syntax::InAst, gv)
+      
     -- checks the statement sequence after forward substitutions
     -- to make sure the loop body implements one step scan
     isScan?(b: List LetAst, its: List SpadAst, gv: VTB): Boolean ==
@@ -1549,12 +1722,9 @@ LoopAnalysis(): Public == Private where
       -- later we also need to add the verification to guarantee that #its = 1
       #its = 1 =>
         it := first its
-        #b = 1 and stepAst? it     => 
-          verifyScanForm1(first b, it, gv) => true
-          verifyScanForm2c(first b, it, gv)
-
-        --#b = 2 and stepAst? it     => verifyScanForm2(b, it, gv)
-        --#b = 2 and (it case InAst) => verifyScanForm3(b, it::Syntax::InAst, gv)
+        #b = 1 and stepAst? it => verifyScanPatternA(first b, it, gv)
+        #b = 2 and stepAst? it => verifyScanPatternB(b, it, gv) 
+        #b = 2 and (it case InAst) => verifyScanPatternC(b, it, gv)
         false
       --accumulationNumber := concat(accumulationNumber, localcount::Float)
       false
