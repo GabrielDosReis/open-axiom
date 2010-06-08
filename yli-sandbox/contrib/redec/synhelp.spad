@@ -219,8 +219,26 @@ SyntaxHelper(): Public == Private where
       ++ checks whether the name of a function is Error
     containExclamation?: Syntax -> Boolean
       ++ checks whether a syntax contains exclamation                             
+    isAnnotated?: Syntax -> Boolean
+      ++ checks whether an expression is an annotated function application
+    stripAnnotation: Syntax -> Syntax
+      ++ returns the compound function application syntax wrapped by 
+      ++ the annotation syntax
   Private == add
     import Syntax
+
+    isAnnotated?(e: Syntax): Boolean ==
+      (op := getOperator(e)) case Syntax =>
+        (op' := getOperator(op::Syntax)) case Identifier and_
+        op'::Identifier = 'elt and #getOperands(op::Syntax) = 2 
+      false
+
+    stripAnnotation(s: Syntax): Syntax ==
+      compound?(s) and isAnnotated?(s) =>
+        op := getOperands(getOperator(s)::Syntax).last
+        oprs := getOperands(s)
+        buildSyntax(op, oprs)
+      s
 
     hasOperands?(s: Syntax): Boolean ==
       compound?(s) and #getOperands(s) > 0

@@ -2,7 +2,7 @@
 )abbrev package LPANL LoopAnalysis 
 ++ Author: Yue Li
 ++ Date Created: October 27, 2009
-++ Date Last Updated: April 3, 2010
+++ Date Last Updated: Jun 8, 2010
 ++ Description: This package provides library function for extracting 
 ++ accumulation loops, affine control loops and loop nests from a 
 ++ function definition syntax
@@ -1055,13 +1055,6 @@ LoopAnalysis(): Public == Private where
       print(e::OutputForm)
       userError "unexpected kind of access library function"
 
-    -- checks whether an expression is an annotated function application
-    isAnnotated?(e: Syntax): Boolean ==
-      (op := getOperator(e)) case Syntax =>
-        (op' := getOperator(op::Syntax)) case Identifier and_
-        op'::Identifier = 'elt and #getOperands(op::Syntax) = 2 
-      false
-
     -- verifies that all the index expressions used in some annotated 
     -- function call are affine expressions of loop counters and symbolic
     -- constants
@@ -1336,16 +1329,6 @@ LoopAnalysis(): Public == Private where
         (first scanComponents).1 := seq
         verifyRightOfLet(rhs, indexVariable, seq, gv)
       false
-
-    -- returns the compound function application syntax wrapped by 
-    -- the annotation syntax
-    -- this function is going to be moved to syntax helper package
-    stripAnnotation(s: Syntax): Syntax ==
-      isAnnotated?(s) =>
-        op := getOperands(getOperator(s)::Syntax).last
-        oprs := getOperands(s)
-        buildSyntax(op, oprs)
-      s   
 
     -- checks whether the operator of a function application is one 
     -- of the following sequence element set functions

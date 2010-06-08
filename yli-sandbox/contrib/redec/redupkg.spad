@@ -2,13 +2,14 @@ import SYNHELP
 import TYPCHK
 import LPANL
 import REDANL
+import SCANL
 import CHKASSMP
 import CEXCOL
 
 )abbrev package REDUPKG ReductionAnalysisPackage
 ++ Author: Yue Li
 ++ Date Created: November 23, 2009
-++ Date Last Updated: Jun 4, 2010
+++ Date Last Updated: Jun 8, 2010
 ++ Description: This package provides library functions for extracting
 ++ parallelizable accumulation loops, reduce function calls, reduce forms 
 ++ as well as (inclusive) prefixsum/scan
@@ -62,10 +63,13 @@ ReductionAnalysisPackage(): Public == Private where
       ++ analyze(1, 0): extract reduce functions and reduce forms
       ++ analyze(2, 0): extract affine control loop (ACL) nests 
       ++ analyze(3, 0): extract all the normal loop nests
+      ++ analyze(4, 0): extract prefix sum loops
+      ++ analyze(5, 0): extract scan calls
       ++ analyze(0, 1): extract parallel accumulation loops
       ++ analyze(1, 1): extract parallel reduce functions and reduce forms
       ++ the default directory points to my demonstrating example folder:
       ++ /users/yli/software/OA-latest/oa/bin/PARALLEL/example
+    scanlst : List Syntax
 
   Private == add
     import SyntaxHelper
@@ -159,6 +163,11 @@ ReductionAnalysisPackage(): Public == Private where
     -- list for storing reduce forms
     rformList : List RFORM                             := []
 
+    -- list for storing scan function call
+    scanList : List Syntax                             := []
+
+    scanlst == scanList
+
     -- list for storing import statements
     importList : List ImportAst                        := []
 
@@ -248,6 +257,7 @@ ReductionAnalysisPackage(): Public == Private where
       nlList             := []
       reduceList         := []
       rformList          := []
+      scanList           := []
       categorySet        := {}
       packageSet         := {}
       domainSet          := {}
@@ -577,6 +587,12 @@ ReductionAnalysisPackage(): Public == Private where
       print("-------------------------------------------------------------"::OutputForm)
       print(" "::OutputForm)    
 
+    printBanner5(): Void ==
+      print(" "::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print("|  Encounter scan                                           |"::OutputForm)
+      print("-------------------------------------------------------------"::OutputForm)
+      print(" "::OutputForm)    
 
     -- update the extracted accumulation loops to the global variable
     --  which stores the final results
@@ -636,45 +652,6 @@ ReductionAnalysisPackage(): Public == Private where
             localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
             importList', constructorMacros, loopList', accVariables)$TypeChecker
       updateAccumulationLoopList(r, resultFromTypeChecker)
-
-    -- analysis option 4:
-    -- collect all the inclusive scans from all the statements in a function
-    -- body via pattern matching
-    collectScan(functionName: Identifier,_
-                  sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
-      definition' := definition
-      gte' := macroExpansionForTypeEnvironmentTable(gte)
-      gte' := filterOutMappingAst(gte')
-      importList' := macroExpansionForImportList()
-      -- analyze the loop, extracting reductions 
-      resultFromScanAnalysis: Pair(LTB, List List Syntax)_ 
-        := extractScanLoop(definition',constructorName, copy gte')$LoopAnalysis
-      loopTable: LTB := first resultFromScanAnalysis
-      operands: List List Syntax := second resultFromScanAnalysis
-      -- if there is no interesting loop, we do nothing.
-      empty? loopTable => return true
-      printBanner4()
-      k := first keys loopTable
-      loopList : List RepeatAst := loopTable.k
-      sig' := sig
-      pars := getOperands(first(getOperands(definition::Syntax)))
-      if not signatureComplete?(sig) then 
-        sig' := getCompleteSignature(functionName, pars, sig, gte)
-      -- instantiate the % in the function body with the ctor call form
-      definition' := instantiatePercentageWithCurrentDomain_
-                     (definition::Syntax::SpadAst)::DefinitionAst
-      -- instantiate the % in the signature with the ctor call form
-      sig'    := instantiatePercentageForSignature(sig')
-      --instantiate the % in the collected potential repeatAsts
-      loopList' : List RepeatAst := instantiatePercentageForLoops(loopList)
-      -- build the record
-      r : DREC := [functionName, sig', definition', copy gte', []]
-      -- typechecks the function definition body
-      resultFromTypeChecker : Pair(VTB, List YREC) :=_
-        verifyScanWithType(r, constructorName, constructorParameters,_
-            localExportedSignatureDatabase, localUnexportedSignatureDatabase,_
-            importList', constructorMacros, loopList', operands)$TypeChecker
-      updateScanLoopList(r, resultFromTypeChecker)
 
 
     -- analysis option 1:
@@ -776,6 +753,43 @@ ReductionAnalysisPackage(): Public == Private where
       r' : AREC := [constructorName, functionName, sig', loopList']
       nlList := concat(nlList, r')
 
+
+    -- analysis option 4:
+    -- collect all the inclusive scans from all the statements in a function
+    -- body via pattern matching
+    collectScan(functionName: Identifier,_
+                  sig: Signature, definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
+      gte' := macroExpansionForTypeEnvironmentTable(gte)
+      gte' := filterOutMappingAst(gte')
+      importList' := macroExpansionForImportList()
+      -- analyze the loop, extracting reductions 
+      resultFromScanAnalysis: Pair(LTB, List List Syntax)_ 
+        := extractScanLoop(definition',constructorName, copy gte')$LoopAnalysis
+      loopTable: LTB := first resultFromScanAnalysis
+      components: List List Syntax := second resultFromScanAnalysis
+      -- if there is no interesting loop, we do nothing.
+      not empty? loopTable =>
+        printBanner4()
+        print(loopTable::OutputForm)
+      
+
+
+    -- analysis option 5:
+    -- collect all the scan function calls from all the 
+    -- statements in a function definition body via pattern matching
+    collectScanCall(functionName: Identifier, sig: Signature,_
+                                  definition: DefinitionAst, gte: VTB): Void ==
+      definition' := definition
+      scans: List Syntax :=_
+        extractScanFromFunctionDefinition(definition',_
+                                               constructorName)$ScanAnalysis 
+
+      not empty?(scans) => 
+        printBanner5()
+        scanList := concat(scanList, scans)
+
+
     -- collect data from the body of a function definition
     -- the kind of data depends on the analysis option
     collectFromFunctionBody(functionName: Identifier, sig: Signature,_
@@ -791,6 +805,8 @@ ReductionAnalysisPackage(): Public == Private where
         collectLoopNests(functionName, sig, definition, gte)
       programOption = 4 => 
         collectScan(functionName, sig, definition, gte)
+      programOption = 5 =>
+        collectScanCall(functionName, sig, definition, gte)
       userError "illegal analysis option"
 
     -- update type environment gte with the variable and its type obtained from
@@ -2130,6 +2146,9 @@ ReductionAnalysisPackage(): Public == Private where
           averageDepth:DoubleFloat:= convert(reduce(_+$Integer, aclLoopDepths)_
                                      /aclandnlcounter)$Fraction(Integer)    
           print(averageDepth::OutputForm)
+        option = 5 =>
+          print("Scan function call #:"::OutputForm)
+          print((#scanList)::OutputForm)
       useassumption = 1 => 
         print("Associative Operators form user assumption:"::OutputForm)
         print(associativeOperatorList::OutputForm)
@@ -2236,6 +2255,8 @@ ReductionAnalysisPackage(): Public == Private where
           extractAndSaveParallelReduceForm(associativeOperatorList)
       option = 2 => saveAffineControlLoopsToFile()
       option = 3 => saveLoopNestsToFile()
+      option = 4 => print("saving scan loop is not implemented!"::OutputForm)
+      option = 5 => print("saving scan call is not implemented!"::OutputForm)
       userError "Illegal analysis option!"   
     
     -- main entry of reduction detector
