@@ -1,3 +1,7 @@
+2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (removeNeedlessThrow): Tidy.
+
 2010-06-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Widen scope of iterator variables in presence of terminating

@@ -145,13 +145,17 @@ changeThrowToGo(s,g) ==
 
 ++ Change any `(THROW tag (%return expr))' in x to just
 ++ `(%return expr) since a return-operator transfer control
-++ out of the function body anyway.
+++ out of the function body anyway.  Similarly, transform
+++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
 removeNeedlessThrow x ==
   isAtomicForm x => x
   x is ['THROW,.,y] and y is ['%return,:.] =>
     removeNeedlessThrow third y
     x.op := y.op
     x.args := y.args
+  x is ['THROW,g,y] and y is ['THROW,=g,z] =>
+    removeNeedlessThrow z
+    second(x.args) := z
   for x' in x repeat
     removeNeedlessThrow x'
 
