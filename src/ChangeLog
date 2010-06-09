@@ -1,3 +1,13 @@
+2010-06-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Widen scope of iterator variables in presence of terminating
+	predicate iterators.  There is exactly one instance in the entire
+	OpenAxio library.
+	* interp/g-util.boot (expandIN): Take one more parameter to
+	determine early binding.
+	(expandIterators): Determine if wider scope is needed for iterator
+	variables. 
+
 2010-06-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (finishLambdaExpression): Bind escaped

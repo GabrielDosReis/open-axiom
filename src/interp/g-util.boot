@@ -108,11 +108,15 @@ mkVMForm(op,args) ==
 --%  4. loop termination predicate
 
 ++ Generate code that sequentially visits each component of a list.
-expandIN(x,l) ==
+expandIN(x,l,early?) ==
   g := gensym()           -- rest of the list yet to be visited
+  early? =>               -- give the loop variable a wider scope.
+    [[[g,middleEndExpand l],[x,'NIL]],
+      nil,[['SETQ,g,['CDR,g]]],
+        nil,[['ATOM,g],['PROGN,['SETQ,x,['CAR,g]],'NIL]]]
   [[[g,middleEndExpand l]],
-    [[x,["CAR",g]]],[["SETQ",g,["CDR",g]]],
-      nil,[["ATOM",g]]]
+    [[x,['CAR,g]]],[['SETQ,g,['CDR,g]]],
+      nil,[['ATOM,g]]]
 
 expandON(x,l) ==
   [[[x,middleEndExpand l]],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
@@ -165,10 +169,15 @@ expandInit(var,val) ==
   [[[var,middleEndExpand val]],nil,nil,nil,nil]
 
 expandIterators iters ==
-  [toLisp it or leave "failed" for it in iters] where
-     toLisp it ==
+  -- Exit predicates may reference iterator variables.  In that case,
+  -- the scope the variables must cover the generated loop body.  The
+  -- following is much more coarse approximation than we may want,
+  -- but it will do.  For now.
+  early? := or/[ it.op in '(WHILE UNTIL) for it in iters]
+  [toLisp(it,early?) or leave "failed" for it in iters] where
+     toLisp(it,early?) ==
        it is ["STEP",var,lo,inc,:hi] => expandSTEP(var,lo,inc,hi)
-       it is ["IN",var,seq] => expandIN(var,seq)
+       it is ["IN",var,seq] => expandIN(var,seq,early?)
        it is ["ON",var,seq] => expandON(var,seq)
        it is ["WHILE",pred] => expandWHILE pred
        it is [op,pred] and op in '(SUCHTHAT _|) => expandSUCHTHAT pred
