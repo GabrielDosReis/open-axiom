@@ -1,4 +1,9 @@
-2010-06-09  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCollectVector): Generare %collect form,
+	not COLLECT.
+
+2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (canReturn): Handle %when and %bind.
 	(compMatchAlternative): Generate %bind form.

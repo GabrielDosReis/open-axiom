@@ -591,7 +591,7 @@ optCollectVector form ==
     systemErrorHere ["optCollectVector", iter]
   -- if we draw from a list, then just build a list and convert to vector.
   fromList => 
-    ["homogeneousListToVector",["getVMType",eltType], ["COLLECT",:iters,body]]
+    ["homogeneousListToVector",["getVMType",eltType], ['%collect,:iters,body]]
   vecSize = nil => systemErrorHere ["optCollectVector",form]
   -- get the actual size of the vector.
   vecSize :=
