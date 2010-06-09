@@ -836,19 +836,15 @@
 (DEFUN |OUTFORM;empty;$;73| ($) (LIST 'NOTHING)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
-  (PROG (#0=#:G1496 |e|)
+  (PROG (|e|)
     (RETURN
-      (SEQ (EXIT (SEQ (LETT |e|
-                            (COND
-                              ((IDENTP |a|) |a|)
-                              ((STRINGP |a|) (INTERN |a|))
-                              ('T
-                               (PROGN
-                                 (LETT #0# NIL |OUTFORM;infix?;$B;74|)
-                                 (GO #0#))))
-                            |OUTFORM;infix?;$B;74|)
-                      (EXIT (COND ((GET |e| 'INFIXOP) T) ('T NIL)))))
-           #0# (EXIT #0#))))) 
+      (SEQ (LETT |e|
+                 (COND
+                   ((IDENTP |a|) |a|)
+                   ((STRINGP |a|) (INTERN |a|))
+                   ('T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))
+                 |OUTFORM;infix?;$B;74|)
+           (EXIT (COND ((GET |e| 'INFIXOP) T) ('T NIL))))))) 
 
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)
   (DECLARE (IGNORE $))
