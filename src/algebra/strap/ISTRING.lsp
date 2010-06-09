@@ -544,47 +544,34 @@
                      $)))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (PROG (#0=#:G1540 #1=#:G1495 #2=#:G1493 #3=#:G1494 |t| |s| #4=#:G1541
-            |i|)
+  (PROG (|t| |s| #0=#:G1541 |i|)
     (RETURN
       (SEQ (LETT |t|
                  (MAKE-FULL-CVEC
-                     (PROGN
-                       (LETT #3# NIL |ISTRING;concat;L$;28|)
-                       (SEQ (LETT |s| NIL |ISTRING;concat;L$;28|)
-                            (LETT #0# |l| |ISTRING;concat;L$;28|) G190
-                            (COND
-                              ((OR (ATOM #0#)
-                                   (PROGN (SETQ |s| (CAR #0#)) NIL))
-                               (GO G191)))
-                            (SEQ (EXIT (PROGN
-                                         (LETT #1# (QCSIZE |s|)
-                                          |ISTRING;concat;L$;28|)
-                                         (COND
-                                           (#3#
-                                            (LETT #2# (+ #2# #1#)
-                                             |ISTRING;concat;L$;28|))
-                                           ('T
-                                            (PROGN
-                                              (LETT #2# #1#
-                                               |ISTRING;concat;L$;28|)
-                                              (LETT #3# 'T
-                                               |ISTRING;concat;L$;28|)))))))
-                            (SETQ #0# (CDR #0#)) (GO G190) G191
-                            (EXIT NIL))
-                       (COND (#3# #2#) ('T 0)))
+                     (LET ((#1=#:G1494 NIL) (#2=#:G1495 T)
+                           (#3=#:G1540 |l|))
+                       (LOOP
+                         (COND
+                           ((ATOM #3#) (RETURN (COND (#2# 0) (T #1#))))
+                           (T (LET ((|s| (CAR #3#)))
+                                (LET ((#4=#:G1493 (QCSIZE |s|)))
+                                  (COND
+                                    (#2# (SETQ #1# #4#))
+                                    (T (SETQ #1# (+ #1# #4#))))
+                                  (SETQ #2# NIL)))))
+                         (SETQ #3# (CDR #3#))))
                      (|spadConstant| $ 53))
                  |ISTRING;concat;L$;28|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;concat;L$;28|)
            (SEQ (LETT |s| NIL |ISTRING;concat;L$;28|)
-                (LETT #4# |l| |ISTRING;concat;L$;28|) G190
+                (LETT #0# |l| |ISTRING;concat;L$;28|) G190
                 (COND
-                  ((OR (ATOM #4#) (PROGN (SETQ |s| (CAR #4#)) NIL))
+                  ((OR (ATOM #0#) (PROGN (SETQ |s| (CAR #0#)) NIL))
                    (GO G191)))
                 (SEQ (|ISTRING;copyInto!;2$I$;29| |t| |s| |i| $)
                      (EXIT (LETT |i| (+ |i| (QCSIZE |s|))
                                  |ISTRING;concat;L$;28|)))
-                (SETQ #4# (CDR #4#)) (GO G190) G191 (EXIT NIL))
+                (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
            (EXIT |t|))))) 
 
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)

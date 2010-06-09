@@ -1229,7 +1229,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
           or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
         or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
     canReturn(data,level,exitCount,ValueFlag)
-  op = "COND" =>
+  op = "COND" or op = '%when =>
     level = exitCount =>
       or/[canReturn(last u,level,exitCount,ValueFlag) for u in rest expr]
     or/[or/[canReturn(u,level,exitCount,ValueFlag) for u in v]
@@ -1241,7 +1241,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
       pp expr
     canReturn(a,level,exitCount,nil) or canReturn(b,level,exitCount,ValueFlag)
       or canReturn(c,level,exitCount,ValueFlag)
-  op = "LET" or op = "LET*" =>
+  op in '(LET LET_* %bind) =>
     or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
        or canReturn(third expr,level,exitCount,ValueFlag)
   --now we have an ordinary form
@@ -2145,7 +2145,7 @@ compMatchAlternative(sn,sm,pat,stmt,m,e) ==
   body :=
     null inits => stmtT.expr
     atom sn => ["LET",inits,stmtT.expr]
-    ["LET*",inits,stmtT.expr]
+    ["%bind",inits,stmtT.expr]
   [[guard,body],stmtT.mode,stmtT.env,eF]
 
 ++ Analyze and generate code for `is case'-pattern where the
@@ -2171,7 +2171,7 @@ compMatch(["%Match",subject,altBlock],m,env) ==
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := 
     atom sn => ["LET",[[sn,se]],["COND",:nreverse altsCode]]
-    ["LET*",[[n,e] for n in sn for e in rest se], 
+    ["%bind",[[n,e] for n in sn for e in rest se], 
        ["COND",:nreverse altsCode]]
   [code,m,savedEnv]
 
@@ -2205,46 +2205,48 @@ compReduce(form,m,e) ==
  compReduce1(form,m,e,$formalArgList)
 
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
-  [collectOp,:itl,body]:= collectForm
-  if string? op then op:= INTERN op
+  [collectOp,:itl,body] := collectForm
+  if string? op then op := INTERN op
   collectOp ~= "COLLECT" => systemError ['"illegal reduction form:",form]
-  $sideEffectsList: local := nil
   $until: local := nil
-  $initList: local := nil
-  $endTestList: local := nil
   oldEnv := e
-  $e:= e
-  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").0 for x in itl]
+  itl := [([.,e]:= compIterator(x,e) or return "failed").0 for x in itl]
   itl="failed" => return nil
-  e:= $e
-  acc:= gensym()
-  afterFirst:= gensym()
-  bodyVal:= gensym()
-  [part1,m,e]:= comp(["%LET",bodyVal,body],m,e) or return nil
-  [part2,.,e]:= comp(["%LET",acc,bodyVal],m,e) or return nil
-  [part3,.,e]:= comp(["%LET",acc,parseTran [op,acc,bodyVal]],m,e) or return nil
-  identityCode:=
-    id:= getIdentity(op,e) => u.expr where u() == comp(id,m,e) or return nil
+  b := gensym()          -- holds value of the body
+  [bval,bmode,e] := comp(['%LET,b,body],$EmptyMode,e) or return nil
+  accu := gensym()       -- holds value of the accumulator
+  [move,.,e] := comp(['%LET,accu,b],$EmptyMode,e) or return nil
+  move.op := '%store     -- in reality, we are not defining a new variable
+  [update,mode,e] := comp(['%LET,accu,[op,accu,b]],m,e) or return nil
+  update.op := '%store   -- just update the accumulation variable.
+  nval :=
+    id := getIdentity(op,e) => u.expr where
+      u() == comp(id,mode,e) or return nil
     ["IdentityError",MKQ op]
-  finalCode:=
-    ["PROGN",
-      ["%LET",afterFirst,nil],
-       ["REPEAT",:itl,
-        ["PROGN",part1,
-          ["IF", afterFirst,part3,
-                   ["PROGN",part2,["%LET",afterFirst,MKQ true]]]]],
-                    ["IF",afterFirst,acc,identityCode]]
   if $until then
-    [untilCode,.,e]:= comp($until,$Boolean,e)
-    finalCode:= substitute(["UNTIL",untilCode],'$until,finalCode)
-  [finalCode,m,oldEnv]
+    [untilCode,.,e]:= comp($until,$Boolean,e) or return nil
+    itl := substitute(["UNTIL",untilCode],'$until,itl)
+  firstTime := gensym()
+  finalCode := ['%reduce,
+                 ['%init,accu,'%nil],['%init,firstTime,'%true],:itl,
+                   ['%when,[firstTime,nval],['%otherwise,accu]],
+                     ['%bind,[[b,third bval]],
+                       ['%when,[firstTime,move],['%otherwise,update]],
+                         ['%store,firstTime,'%false]]]
+  T := coerce([finalCode,mode,e],m) or return nil
+  [T.expr,T.mode,oldEnv]
 
 ++ returns the identity element of the `reduction' operation `x'
 ++ over a list -- a monoid homomorphism.   
 getIdentity(x,e) ==
-  -- The empty list should be indicated by name, not  by its
-  -- object representation.
-  GETL(x,"THETA") is [y] => (y => y; "nil")
+  GETL(x,"THETA") is [y] =>
+    y = 0 => $Zero
+    y = 1 => $One
+    -- The empty list should be indicated by name, not  by its
+    -- object representation.
+    y => y
+    "nil"
+  nil
  
 numberize x ==
   x=$Zero => 0

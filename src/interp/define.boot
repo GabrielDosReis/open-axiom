@@ -501,7 +501,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ["%Bind",[[g:= gensym(),body]],
+      ["%bind",[[g:= gensym(),body]],
          ["setShellEntry",g,0,mkConstructor $form],g]
     fun:= compile [op',["LAM",sargl,body]]
  

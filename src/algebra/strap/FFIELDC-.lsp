@@ -473,7 +473,7 @@
   (SPADCALL |f| (|getShellEntry| $ 98))) 
 
 (DEFUN |FFIELDC-;factorSquareFreePolynomial| (|f| $)
-  (PROG (|flist| |u| #0=#:G1520 #1=#:G1509 #2=#:G1507 #3=#:G1508)
+  (PROG (|flist|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |f| (|spadConstant| $ 99)
@@ -486,42 +486,29 @@
                    (EXIT (SPADCALL
                              (SPADCALL (CAR |flist|)
                                  (|getShellEntry| $ 106))
-                             (PROGN
-                               (LETT #3# NIL
-                                     |FFIELDC-;factorSquareFreePolynomial|)
-                               (SEQ (LETT |u| NIL
-                                     |FFIELDC-;factorSquareFreePolynomial|)
-                                    (LETT #0# (CDR |flist|)
-                                     |FFIELDC-;factorSquareFreePolynomial|)
-                                    G190
-                                    (COND
-                                      ((OR (ATOM #0#)
-                                        (PROGN
-                                          (SETQ |u| (CAR #0#))
-                                          NIL))
-                                       (GO G191)))
-                                    (PROGN
-                                      (LETT #1#
-                                       (SPADCALL (CAR |u|) (CDR |u|)
-                                        (|getShellEntry| $ 107))
-                                       |FFIELDC-;factorSquareFreePolynomial|)
+                             (LET ((#0=#:G1508 NIL) (#1=#:G1509 T)
+                                   (#2=#:G1520 (CDR |flist|)))
+                               (LOOP
+                                 (COND
+                                   ((ATOM #2#)
+                                    (RETURN
                                       (COND
-                                        (#3#
-                                         (LETT #2#
-                                          (SPADCALL #2# #1#
-                                           (|getShellEntry| $ 108))
-                                          |FFIELDC-;factorSquareFreePolynomial|))
-                                        ('T
-                                         (PROGN
-                                           (LETT #2# #1#
-                                            |FFIELDC-;factorSquareFreePolynomial|)
-                                           (LETT #3# 'T
-                                            |FFIELDC-;factorSquareFreePolynomial|)))))
-                                    (SETQ #0# (CDR #0#)) (GO G190) G191
-                                    (EXIT NIL))
-                               (COND
-                                 (#3# #2#)
-                                 ('T (|spadConstant| $ 109))))
+                                        (#1# (|spadConstant| $ 109))
+                                        (T #0#))))
+                                   (T
+                                    (LET ((|u| (CAR #2#)))
+                                      (LET
+                                       ((#3=#:G1507
+                                         (SPADCALL (CAR |u|) (CDR |u|)
+                                          (|getShellEntry| $ 107))))
+                                        (COND
+                                          (#1# (SETQ #0# #3#))
+                                          (T
+                                           (SETQ #0#
+                                            (SPADCALL #0# #3#
+                                             (|getShellEntry| $ 108)))))
+                                        (SETQ #1# NIL)))))
+                                 (SETQ #2# (CDR #2#))))
                              (|getShellEntry| $ 110)))))))))) 
 
 (DEFUN |FFIELDC-;gcdPolynomial;3Sup;16| (|f| |g| $)
