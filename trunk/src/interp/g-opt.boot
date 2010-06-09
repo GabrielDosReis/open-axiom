@@ -124,7 +124,7 @@ subrname u ==
   nil
  
 changeThrowToExit(s,g) ==
-  atom s or first s in '(QUOTE SEQ REPEAT COLLECT %collect %repeat) => nil
+  atom s or first s in '(QUOTE SEQ REPEAT COLLECT %collect %repeat %reduce) => nil
   s is ["THROW", =g,:u] => (s.first := "EXIT"; s.rest := u)
   changeThrowToExit(first s,g)
   changeThrowToExit(rest s,g)
@@ -480,7 +480,7 @@ findVMFreeVars form ==
 ++ in `form'.
 varIsAssigned(var,form) ==
   isAtomicForm form => false
-  form is [op,=var,:.] and op in '(%LET LETT SETQ) => true
+  form is [op,=var,:.] and op in '(%LET LETT SETQ %store) => true
   or/[varIsAssigned(var,f) for f in form]
 
 ++ Subroutine of optLET.  Return true if the variable `var' locally
@@ -621,7 +621,7 @@ for x in '( (%Call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
            (LET_*        optLET_*)_
-           (%Bind        optBind)_
+           (%bind        optBind)_
            (LIST         optLIST)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_

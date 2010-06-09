@@ -200,7 +200,7 @@ expandLoop(iters,body,ret) ==
   if bodyInits ~= nil then
     body := ["LET",bodyInits,body]
   exits := ["COND",
-             [mkpf(exits,"OR"),["RETURN",ret]],
+             [mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
                [true,body]]
   body := ["LOOP",exits,:cont]
   -- Finally, set up loop-wide initializations.
@@ -220,6 +220,9 @@ expandCollect ["%collect",:iters,body] ==
 ++ Generate code for plain loop.
 expandRepeat ["%repeat",:iters,body] ==
   expandLoop(iters,body,["voidValue"])
+
+expandReduce ['%reduce,:iters,val,body] ==
+  expandLoop(iters,body,val)
 
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
@@ -334,14 +337,17 @@ for x in [
     ['%string?, :'STRINGP],
 
     -- general utility
-    ['%hash,:'SXHASH],
-    ['%lam, :'LAMBDA]
+    ['%hash,     :'SXHASH],
+    ['%lam,      :'LAMBDA],
+    ['%otherwise,:'T],
+    ['%when,     :'COND]
   ] repeat property(first x,'%Rename) := rest x
 
 ++ Table of opcode-expander pairs.  
 for x in [
    ["%collect",:function expandCollect],
    ["%repeat",:function expandRepeat],
+   ['%reduce, :function expandReduce],
    ['%return,  :function expandReturn],
 
    ["%eq",:function expandEq],

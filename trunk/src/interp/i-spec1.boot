@@ -815,7 +815,7 @@ checkForFreeVariables(v,locals) ==
     op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
-    op in '(COLLECT REPEAT %collect %repeat) =>
+    op in '(COLLECT REPEAT %collect %repeat %reduce) =>
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
        r := [op,:[checkForFreeVariables(a,locals) for a in args]]
@@ -834,7 +834,7 @@ checkForFreeVariables(v,locals) ==
           ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
         ["SETF",newvar,checkForFreeVariables(form,locals)]
       error "Non-simple variable bindings are not currently supported"
-    op in '(LET LET_* %Bind) =>
+    op in '(LET LET_* %bind) =>
       vars := [first init for init in first args]
       inits := [checkInit(init,locals) for init in first args] where
                   checkInit([var,init],locals) ==

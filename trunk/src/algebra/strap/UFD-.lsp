@@ -8,37 +8,29 @@
                 |UFD-;prime?;SB;2|)) 
 
 (DEFUN |UFD-;squareFreePart;2S;1| (|x| $)
-  (PROG (|s| |f| #0=#:G1419 #1=#:G1406 #2=#:G1404 #3=#:G1405)
+  (PROG (|s|)
     (RETURN
-      (SEQ (SPADCALL
-               (SPADCALL
-                   (LETT |s| (SPADCALL |x| (|getShellEntry| $ 8))
-                         |UFD-;squareFreePart;2S;1|)
-                   (|getShellEntry| $ 10))
-               (PROGN
-                 (LETT #3# NIL |UFD-;squareFreePart;2S;1|)
-                 (SEQ (LETT |f| NIL |UFD-;squareFreePart;2S;1|)
-                      (LETT #0# (SPADCALL |s| (|getShellEntry| $ 14))
-                            |UFD-;squareFreePart;2S;1|)
-                      G190
-                      (COND
-                        ((OR (ATOM #0#)
-                             (PROGN (SETQ |f| (CAR #0#)) NIL))
-                         (GO G191)))
-                      (PROGN
-                        (LETT #1# (CAR |f|) |UFD-;squareFreePart;2S;1|)
-                        (COND
-                          (#3# (LETT #2#
-                                     (SPADCALL #2# #1#
-                                      (|getShellEntry| $ 15))
-                                     |UFD-;squareFreePart;2S;1|))
-                          ('T
-                           (PROGN
-                             (LETT #2# #1# |UFD-;squareFreePart;2S;1|)
-                             (LETT #3# 'T |UFD-;squareFreePart;2S;1|)))))
-                      (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
-                 (COND (#3# #2#) ('T (|spadConstant| $ 16))))
-               (|getShellEntry| $ 15)))))) 
+      (SPADCALL
+          (SPADCALL
+              (LETT |s| (SPADCALL |x| (|getShellEntry| $ 8))
+                    |UFD-;squareFreePart;2S;1|)
+              (|getShellEntry| $ 10))
+          (LET ((#0=#:G1405 NIL) (#1=#:G1406 T)
+                (#2=#:G1419 (SPADCALL |s| (|getShellEntry| $ 14))))
+            (LOOP
+              (COND
+                ((ATOM #2#)
+                 (RETURN (COND (#1# (|spadConstant| $ 16)) (T #0#))))
+                (T (LET ((|f| (CAR #2#)))
+                     (LET ((#3=#:G1404 (CAR |f|)))
+                       (COND
+                         (#1# (SETQ #0# #3#))
+                         (T (SETQ #0#
+                                  (SPADCALL #0# #3#
+                                      (|getShellEntry| $ 15)))))
+                       (SETQ #1# NIL)))))
+              (SETQ #2# (CDR #2#))))
+          (|getShellEntry| $ 15))))) 
 
 (DEFUN |UFD-;prime?;SB;2| (|x| $)
   (EQL (LENGTH (SPADCALL (SPADCALL |x| (|getShellEntry| $ 18))

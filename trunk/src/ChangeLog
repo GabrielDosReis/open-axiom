@@ -1,3 +1,17 @@
+2010-06-09  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/compiler.boot (canReturn): Handle %when and %bind.
+	(compMatchAlternative): Generate %bind form.
+	(compMatch): Likewise.
+	(compReduce1): Rewrite.
+	(getIdentity): Tidy.
+	* interp/g-opt.boot (changeThrowToExit): HAndle %reduce.
+	(varIsAssigned): %store is side-effectful.
+	* interp/g-util.boot (expandReduce): New.  Expand %reduce forms.
+	* interp/i-map.boot (getUserIdentifiersIn): Handle %reduce.
+	(findLocalVars1): Likewise.
+	* interp/i-spec1.boot (checkForFreeVariables): Likewise.
+
 2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (removeNeedlessThrow): Tidy.

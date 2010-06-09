@@ -516,7 +516,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
       name='Integer => nil
       $ConstantAssignments
     epilogue:= $epilogue
-  ans := ["%Bind",bindings,
+  ans := ["%bind",bindings,
            :washFunctorBody optFunctorBody
               [:codePart1,:codePart2,:codePart3],"$"]
   $getDomainCode:= nil

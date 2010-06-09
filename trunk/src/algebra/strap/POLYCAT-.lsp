@@ -732,78 +732,64 @@
                                    (|getShellEntry| $ 159))))))))))) 
 
 (DEFUN |POLYCAT-;conditionP;MU;27| (|mat| $)
-  (PROG (#0=#:G1610 #1=#:G1730 #2=#:G1731 #3=#:G1605 #4=#:G1603
-            #5=#:G1604 |nd| |ll| |ch| |l| #6=#:G1722 |u| #7=#:G1723
-            #8=#:G1583 #9=#:G1581 #10=#:G1582 |mons| |m| #11=#:G1724
-            |vars| |degs| |deg1| |redmons| |llR| |monslist| |ans| |i|)
+  (PROG (#0=#:G1610 #1=#:G1730 |nd| |ll| |ch| |l| #2=#:G1722 |mons| |m|
+            #3=#:G1724 |vars| |degs| |deg1| |redmons| |llR| |monslist|
+            |ans| |i|)
     (RETURN
       (SEQ (LETT |ll|
                  (SPADCALL (SPADCALL |mat| (|getShellEntry| $ 166))
                      (|getShellEntry| $ 114))
                  |POLYCAT-;conditionP;MU;27|)
            (LETT |llR|
-                 (LET ((#12=#:G1721 (|SPADfirst| |ll|))
-                       (#13=#:G1720 NIL))
+                 (LET ((#4=#:G1721 (|SPADfirst| |ll|))
+                       (#5=#:G1720 NIL))
                    (LOOP
                      (COND
-                       ((ATOM #12#) (RETURN (NREVERSE #13#)))
-                       (T (LET ((|z| (CAR #12#)))
-                            (SETQ #13# (CONS NIL #13#)))))
-                     (SETQ #12# (CDR #12#))))
+                       ((ATOM #4#) (RETURN (NREVERSE #5#)))
+                       (T (LET ((|z| (CAR #4#)))
+                            (SETQ #5# (CONS NIL #5#)))))
+                     (SETQ #4# (CDR #4#))))
                  |POLYCAT-;conditionP;MU;27|)
            (LETT |monslist| NIL |POLYCAT-;conditionP;MU;27|)
            (LETT |ch| (|spadConstant| $ 169)
                  |POLYCAT-;conditionP;MU;27|)
            (SEQ (LETT |l| NIL |POLYCAT-;conditionP;MU;27|)
-                (LETT #6# |ll| |POLYCAT-;conditionP;MU;27|) G190
+                (LETT #2# |ll| |POLYCAT-;conditionP;MU;27|) G190
                 (COND
-                  ((OR (ATOM #6#) (PROGN (SETQ |l| (CAR #6#)) NIL))
+                  ((OR (ATOM #2#) (PROGN (SETQ |l| (CAR #2#)) NIL))
                    (GO G191)))
                 (SEQ (LETT |mons|
-                           (PROGN
-                             (LETT #10# NIL
-                                   |POLYCAT-;conditionP;MU;27|)
-                             (SEQ (LETT |u| NIL
-                                        |POLYCAT-;conditionP;MU;27|)
-                                  (LETT #7# |l|
-                                        |POLYCAT-;conditionP;MU;27|)
-                                  G190
-                                  (COND
-                                    ((OR (ATOM #7#)
-                                      (PROGN (SETQ |u| (CAR #7#)) NIL))
-                                     (GO G191)))
-                                  (SEQ (EXIT
-                                        (PROGN
-                                          (LETT #8#
-                                           (SPADCALL |u|
-                                            (|getShellEntry| $ 98))
-                                           |POLYCAT-;conditionP;MU;27|)
-                                          (COND
-                                            (#10#
-                                             (LETT #9#
-                                              (SPADCALL #9# #8#
-                                               (|getShellEntry| $ 170))
-                                              |POLYCAT-;conditionP;MU;27|))
-                                            ('T
-                                             (PROGN
-                                               (LETT #9# #8#
-                                                |POLYCAT-;conditionP;MU;27|)
-                                               (LETT #10# 'T
-                                                |POLYCAT-;conditionP;MU;27|)))))))
-                                  (SETQ #7# (CDR #7#)) (GO G190) G191
-                                  (EXIT NIL))
-                             (COND
-                               (#10# #9#)
-                               ('T (|IdentityError| '|setUnion|))))
+                           (LET ((#6=#:G1582 NIL) (#7=#:G1583 T)
+                                 (#8=#:G1723 |l|))
+                             (LOOP
+                               (COND
+                                 ((ATOM #8#)
+                                  (RETURN
+                                    (COND
+                                      (#7#
+                                       (|IdentityError| '|setUnion|))
+                                      (T #6#))))
+                                 (T (LET ((|u| (CAR #8#)))
+                                      (LET
+                                       ((#9=#:G1581
+                                         (SPADCALL |u|
+                                          (|getShellEntry| $ 98))))
+                                        (COND
+                                          (#7# (SETQ #6# #9#))
+                                          (T
+                                           (SETQ #6#
+                                            (SPADCALL #6# #9#
+                                             (|getShellEntry| $ 170)))))
+                                        (SETQ #7# NIL)))))
+                               (SETQ #8# (CDR #8#))))
                            |POLYCAT-;conditionP;MU;27|)
                      (LETT |redmons| NIL |POLYCAT-;conditionP;MU;27|)
                      (SEQ (LETT |m| NIL |POLYCAT-;conditionP;MU;27|)
-                          (LETT #11# |mons|
-                                |POLYCAT-;conditionP;MU;27|)
+                          (LETT #3# |mons| |POLYCAT-;conditionP;MU;27|)
                           G190
                           (COND
-                            ((OR (ATOM #11#)
-                                 (PROGN (SETQ |m| (CAR #11#)) NIL))
+                            ((OR (ATOM #3#)
+                                 (PROGN (SETQ |m| (CAR #3#)) NIL))
                              (GO G191)))
                           (SEQ (LETT |vars|
                                      (SPADCALL |m|
@@ -815,15 +801,15 @@
                                      |POLYCAT-;conditionP;MU;27|)
                                (LETT |deg1|
                                      (LET
-                                      ((#14=#:G1726 |degs|)
-                                       (#15=#:G1725 NIL))
+                                      ((#10=#:G1726 |degs|)
+                                       (#11=#:G1725 NIL))
                                        (LOOP
                                          (COND
-                                           ((ATOM #14#)
-                                            (RETURN (NREVERSE #15#)))
+                                           ((ATOM #10#)
+                                            (RETURN (NREVERSE #11#)))
                                            (T
-                                            (LET ((|d| (CAR #14#)))
-                                              (SETQ #15#
+                                            (LET ((|d| (CAR #10#)))
+                                              (SETQ #11#
                                                (CONS
                                                 (SEQ
                                                  (LETT |nd|
@@ -840,14 +826,14 @@
                                                         "failed")))
                                                     ('T
                                                      (LET
-                                                      ((#16=#:G1612
+                                                      ((#12=#:G1612
                                                         (CDR |nd|)))
                                                        (|check-subtype|
-                                                        (>= #16# 0)
+                                                        (>= #12# 0)
                                                         '(|NonNegativeInteger|)
-                                                        #16#))))))
-                                                #15#)))))
-                                         (SETQ #14# (CDR #14#))))
+                                                        #12#))))))
+                                                #11#)))))
+                                         (SETQ #10# (CDR #10#))))
                                      |POLYCAT-;conditionP;MU;27|)
                                (LETT |redmons|
                                      (CONS
@@ -858,19 +844,19 @@
                                      |POLYCAT-;conditionP;MU;27|)
                                (EXIT (LETT |llR|
                                       (LET
-                                       ((#17=#:G1728 |l|)
-                                        (#18=#:G1729 |llR|)
-                                        (#19=#:G1727 NIL))
+                                       ((#13=#:G1728 |l|)
+                                        (#14=#:G1729 |llR|)
+                                        (#15=#:G1727 NIL))
                                         (LOOP
                                           (COND
-                                            ((OR (ATOM #17#)
-                                              (ATOM #18#))
-                                             (RETURN (NREVERSE #19#)))
+                                            ((OR (ATOM #13#)
+                                              (ATOM #14#))
+                                             (RETURN (NREVERSE #15#)))
                                             (T
                                              (LET
-                                              ((|u| (CAR #17#))
-                                               (|v| (CAR #18#)))
-                                               (SETQ #19#
+                                              ((|u| (CAR #13#))
+                                               (|v| (CAR #14#)))
+                                               (SETQ #15#
                                                 (CONS
                                                  (CONS
                                                   (SPADCALL
@@ -881,15 +867,15 @@
                                                    (|getShellEntry| $
                                                     175))
                                                   |v|)
-                                                 #19#)))))
-                                          (SETQ #17# (CDR #17#))
-                                          (SETQ #18# (CDR #18#))))
+                                                 #15#)))))
+                                          (SETQ #13# (CDR #13#))
+                                          (SETQ #14# (CDR #14#))))
                                       |POLYCAT-;conditionP;MU;27|)))
-                          (SETQ #11# (CDR #11#)) (GO G190) G191
+                          (SETQ #3# (CDR #3#)) (GO G190) G191
                           (EXIT NIL))
                      (EXIT (LETT |monslist| (CONS |redmons| |monslist|)
                                  |POLYCAT-;conditionP;MU;27|)))
-                (SETQ #6# (CDR #6#)) (GO G190) G191 (EXIT NIL))
+                (SETQ #2# (CDR #2#)) (GO G190) G191 (EXIT NIL))
            (LETT |ans|
                  (SPADCALL
                      (SPADCALL (SPADCALL |llR| (|getShellEntry| $ 111))
@@ -902,7 +888,7 @@
                     (SEQ (LETT |i| 0 |POLYCAT-;conditionP;MU;27|)
                          (EXIT (CONS 0
                                      (LET
-                                      ((#20=#:G1611
+                                      ((#16=#:G1611
                                         (|makeSimpleArray|
                                          (|getVMType|
                                           (|getShellEntry| $ 6))
@@ -923,67 +909,56 @@
                                            (GO G191)))
                                         (SEQ
                                          (EXIT
-                                          (|setSimpleArrayEntry| #20#
+                                          (|setSimpleArrayEntry| #16#
                                            #0#
-                                           (PROGN
-                                             (LETT #5# NIL
-                                              |POLYCAT-;conditionP;MU;27|)
-                                             (SEQ
-                                              (LETT |m| NIL
-                                               |POLYCAT-;conditionP;MU;27|)
-                                              (LETT #2# |mons|
-                                               |POLYCAT-;conditionP;MU;27|)
-                                              G190
-                                              (COND
-                                                ((OR (ATOM #2#)
-                                                  (PROGN
-                                                    (SETQ |m|
-                                                     (CAR #2#))
-                                                    NIL))
-                                                 (GO G191)))
-                                              (SEQ
-                                               (EXIT
-                                                (PROGN
-                                                  (LETT #3#
-                                                   (SPADCALL |m|
-                                                    (SPADCALL
-                                                     (SPADCALL
-                                                      (CDR |ans|)
-                                                      (LETT |i|
-                                                       (+ |i| 1)
-                                                       |POLYCAT-;conditionP;MU;27|)
-                                                      (|getShellEntry|
-                                                       $ 181))
-                                                     (|getShellEntry| $
-                                                      51))
-                                                    (|getShellEntry| $
-                                                     182))
-                                                   |POLYCAT-;conditionP;MU;27|)
-                                                  (COND
-                                                    (#5#
-                                                     (LETT #4#
-                                                      (SPADCALL #4# #3#
-                                                       (|getShellEntry|
-                                                        $ 183))
-                                                      |POLYCAT-;conditionP;MU;27|))
-                                                    ('T
-                                                     (PROGN
-                                                       (LETT #4# #3#
-                                                        |POLYCAT-;conditionP;MU;27|)
-                                                       (LETT #5# 'T
-                                                        |POLYCAT-;conditionP;MU;27|)))))))
-                                              (SETQ #2# (CDR #2#))
-                                              (GO G190) G191
-                                              (EXIT NIL))
-                                             (COND
-                                               (#5# #4#)
-                                               ('T
-                                                (|spadConstant| $ 27)))))))
+                                           (LET
+                                            ((#17=#:G1604 NIL)
+                                             (#18=#:G1605 T)
+                                             (#19=#:G1731 |mons|))
+                                             (LOOP
+                                               (COND
+                                                 ((ATOM #19#)
+                                                  (RETURN
+                                                    (COND
+                                                      (#18#
+                                                       (|spadConstant|
+                                                        $ 27))
+                                                      (T #17#))))
+                                                 (T
+                                                  (LET
+                                                   ((|m| (CAR #19#)))
+                                                    (LET
+                                                     ((#20=#:G1603
+                                                       (SPADCALL |m|
+                                                        (SPADCALL
+                                                         (SPADCALL
+                                                          (CDR |ans|)
+                                                          (LETT |i|
+                                                           (+ |i| 1)
+                                                           |POLYCAT-;conditionP;MU;27|)
+                                                          (|getShellEntry|
+                                                           $ 181))
+                                                         (|getShellEntry|
+                                                          $ 51))
+                                                        (|getShellEntry|
+                                                         $ 182))))
+                                                      (COND
+                                                        (#18#
+                                                         (SETQ #17#
+                                                          #20#))
+                                                        (T
+                                                         (SETQ #17#
+                                                          (SPADCALL
+                                                           #17# #20#
+                                                           (|getShellEntry|
+                                                            $ 183)))))
+                                                      (SETQ #18# NIL)))))
+                                               (SETQ #19# (CDR #19#)))))))
                                         (SETQ #1#
                                          (PROG1 (CDR #1#)
                                            (SETQ #0# (QSADD1 #0#))))
                                         (GO G190) G191 (EXIT NIL))
-                                       #20#))))))))))) 
+                                       #16#))))))))))) 
 
 (DEFUN |POLYCAT-;charthRoot;SU;28| (|p| $)
   (PROG (|vars| |ans| |ch|)
@@ -1126,40 +1101,29 @@
   (SPADCALL |p| (|getShellEntry| $ 197))) 
 
 (DEFUN |POLYCAT-;squareFreePart;2S;34| (|p| $)
-  (PROG (|s| |f| #0=#:G1732 #1=#:G1654 #2=#:G1652 #3=#:G1653)
+  (PROG (|s|)
     (RETURN
-      (SEQ (SPADCALL
-               (SPADCALL
-                   (LETT |s| (SPADCALL |p| (|getShellEntry| $ 198))
-                         |POLYCAT-;squareFreePart;2S;34|)
-                   (|getShellEntry| $ 199))
-               (PROGN
-                 (LETT #3# NIL |POLYCAT-;squareFreePart;2S;34|)
-                 (SEQ (LETT |f| NIL |POLYCAT-;squareFreePart;2S;34|)
-                      (LETT #0# (SPADCALL |s| (|getShellEntry| $ 202))
-                            |POLYCAT-;squareFreePart;2S;34|)
-                      G190
-                      (COND
-                        ((OR (ATOM #0#)
-                             (PROGN (SETQ |f| (CAR #0#)) NIL))
-                         (GO G191)))
-                      (PROGN
-                        (LETT #1# (CAR |f|)
-                              |POLYCAT-;squareFreePart;2S;34|)
-                        (COND
-                          (#3# (LETT #2#
-                                     (SPADCALL #2# #1#
-                                      (|getShellEntry| $ 182))
-                                     |POLYCAT-;squareFreePart;2S;34|))
-                          ('T
-                           (PROGN
-                             (LETT #2# #1#
-                                   |POLYCAT-;squareFreePart;2S;34|)
-                             (LETT #3# 'T
-                                   |POLYCAT-;squareFreePart;2S;34|)))))
-                      (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
-                 (COND (#3# #2#) ('T (|spadConstant| $ 43))))
-               (|getShellEntry| $ 182)))))) 
+      (SPADCALL
+          (SPADCALL
+              (LETT |s| (SPADCALL |p| (|getShellEntry| $ 198))
+                    |POLYCAT-;squareFreePart;2S;34|)
+              (|getShellEntry| $ 199))
+          (LET ((#0=#:G1653 NIL) (#1=#:G1654 T)
+                (#2=#:G1732 (SPADCALL |s| (|getShellEntry| $ 202))))
+            (LOOP
+              (COND
+                ((ATOM #2#)
+                 (RETURN (COND (#1# (|spadConstant| $ 43)) (T #0#))))
+                (T (LET ((|f| (CAR #2#)))
+                     (LET ((#3=#:G1652 (CAR |f|)))
+                       (COND
+                         (#1# (SETQ #0# #3#))
+                         (T (SETQ #0#
+                                  (SPADCALL #0# #3#
+                                      (|getShellEntry| $ 182)))))
+                       (SETQ #1# NIL)))))
+              (SETQ #2# (CDR #2#))))
+          (|getShellEntry| $ 182))))) 
 
 (DEFUN |POLYCAT-;content;SVarSetS;35| (|p| |v| $)
   (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 59))
