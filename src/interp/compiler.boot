@@ -2304,7 +2304,7 @@ compRepeatOrCollect(form,m,e) ==
            repeatOrCollect = "%CollectV" => 
              ["%CollectV",localReferenceIfThere m',:itl',body']
            -- We are phasing out use of LISP macros COLLECT and REPEAT.
-           repeatOrCollect = "COLLECT" => ["%collect",:itl',body']
+           repeatOrCollect = "COLLECT" => ['%collect,:itl',body']
            [repeatOrCollect,:itl',body']
         m'' := 
           aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']

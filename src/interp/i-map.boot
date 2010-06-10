@@ -226,9 +226,14 @@ getUserIdentifiersIn body ==
     body = $ClearBodyToken => nil
     [body]
   body is ["WRAPPED",:.] => nil
-  body is [op,:itl,body1] and op in '(COLLECT REPEAT %repeat %collect %reduce) =>
+  body is [op,:itl,body1] and op in '(COLLECT REPEAT %repeat %collect) =>
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
+    S_-(userIds,getIteratorIds itl)
+  body is [op,:itl,val,body1] and op in '(%reduce %loop) =>
+    userIds :=
+      S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
+    userIds := S_+(getUserIdentifiersIn val,userIds)
     S_-(userIds,getIteratorIds itl)
   body is [op,:l] =>
     argIdList := 
@@ -248,6 +253,7 @@ getUserIdentifiersInIterators itl ==
       varList:= [:"append"/[getUserIdentifiersIn y for y in l],:varList]
     x is ["IN",.,y]   => varList:= [:getUserIdentifiersIn y,:varList]
     x is ["ON",.,y]   => varList:= [:getUserIdentifiersIn y,:varList]
+    x is ['%init,.,y]   => varList:= [:getUserIdentifiersIn y,:varList]
     x is [op,a] and op in '(_| WHILE UNTIL) =>
       varList:= [:getUserIdentifiersIn a,:varList]
     keyedSystemError("S2GE0016",['"getUserIdentifiersInIterators",
@@ -255,10 +261,12 @@ getUserIdentifiersInIterators itl ==
   removeDuplicates varList
 
 getIteratorIds itl ==
+  varList := nil
   for x in itl repeat
-    x is ["STEP",i,:.] => varList:= [i,:varList]
-    x is ["IN",y,:.]   => varList:= [y,:varList]
-    x is ["ON",y,:.]   => varList:= [y,:varList]
+    x is ["STEP",i,:.] => varList := [i,:varList]
+    x is ["IN",y,:.]   => varList := [y,:varList]
+    x is ["ON",y,:.]   => varList := [y,:varList]
+    x is ['%init,y,:.]   => varList := [y,:varList]
     nil
   varList
 
@@ -1026,8 +1034,10 @@ findLocalVars1(op,form) ==
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
     for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
-  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect %repeat %reduce) =>
+  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect %repeat) =>
     findLocalsInLoop(op,itrl,body)
+  form is [oper,:itrl,val,body] and oper in '(%reduce %loop) =>
+    findLocalsInLoop(op,itrl,[body,val])
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
       -- don't pick field tags, their are not variables.
@@ -1045,14 +1055,12 @@ findLocalsInLoop(op,itrl,body) ==
       mkLocalVar(op,index)
       findLocalVars1(op,lower)
       for up in upperList repeat findLocalVars1(op,up)
-    it is ['IN,index,s] =>
+    it is [op,index,s] and op in '(IN %init) =>
       iterVars := [index,:iterVars]
       mkLocalVar(op,index)
       findLocalVars1(op,s)
-    it is ['WHILE,b] =>
-      findLocalVars1(op,b)
-    it is ['_|,pred] =>
-      findLocalVars1(op,pred)
+    it is ['WHILE,b] => findLocalVars1(op,b)
+    it is ['_|,pred] => findLocalVars1(op,pred)
   findLocalVars1(op,body)
   for it in itrl repeat
     it is [op,b] and (op in '(UNTIL)) =>

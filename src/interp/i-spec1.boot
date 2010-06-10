@@ -541,7 +541,7 @@ evalCOLLECT(op,[:itrl,body],m) ==
   iters := [evalLoopIter itr for itr in itrl]
   bod := getArgValue(body,computedMode body)
   if bod isnt ['SPADCALL,:.] then bod := ['unwrap,bod]
-  code := timedOptimization asTupleNewCode0(second m, ["%collect",:iters,bod])
+  code := timedOptimization asTupleNewCode0(second m, ['%collect,:iters,bod])
   putValue(op,object(code,m))
 
 falseFun(x) == nil
@@ -569,7 +569,7 @@ interpCOLLECT(op,itrl,body) ==
   emptyAtree op
   emptyAtree itrl
   emptyAtree body
-  code := ["%collect",:[interpIter itr for itr in itrl],
+  code := ['%collect,:[interpIter itr for itr in itrl],
     interpCOLLECTbody(body,$indexVars,$indexTypes)]
   value := timedEVALFUN code
   t :=
