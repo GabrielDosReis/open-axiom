@@ -217,13 +217,6 @@ expandCollect ['%collect,:iters,body] ==
   -- in reverse order.
   expandLoop ['%loop,:iters,["%init",val,nil],body,["NREVERSE",val]]
 
-++ Generate code for plain loop.
-expandRepeat ["%repeat",:iters,body] ==
-  expandLoop ['%loop,:iters,body,["voidValue"]]
-
-expandReduce ['%reduce,:iters,val,body] ==
-  expandLoop ['%loop,:iters,body,val]
-
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
   ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
@@ -346,8 +339,6 @@ for x in [
 ++ Table of opcode-expander pairs.  
 for x in [
    ['%collect,:function expandCollect],
-   ["%repeat",:function expandRepeat],
-   ['%reduce, :function expandReduce],
    ['%loop,   :function expandLoop],
    ['%return,  :function expandReturn],
 

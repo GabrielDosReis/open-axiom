@@ -953,7 +953,7 @@ evalREPEAT(op,[:itrl,body],repeatMode) ==
   bodyCode := getArgValue(body,bodyMode)
   if $iterateCount > 0 then
     bodyCode := ["CATCH",$repeatBodyLabel,bodyCode]
-  code := ["%repeat",:[evalLoopIter itr for itr in itrl], bodyCode]
+  code := ['%loop,:[evalLoopIter itr for itr in itrl],bodyCode,voidValue()]
   code := timedOptimization code
   if $breakCount > 0 then code := ['CATCH,$repeatLabel,code]
   val :=
@@ -975,9 +975,9 @@ interpREPEAT(op,itrl,body,repeatMode) ==
   $indexTypes: local := NIL
   code :=
       -- we must insert a CATCH for the iterate clause
-      ["%repeat",:[interpIter itr for itr in itrl],
+      ['%loop,:[interpIter itr for itr in itrl],
         ["CATCH",$repeatBodyLabel,interpLoop(body,$indexVars,
-          $indexTypes,nil)]]
+          $indexTypes,nil)],voidValue()]
   SPADCATCH(eval $repeatLabel,timedEVALFUN code)
   val:= objNewWrap(voidValue(),repeatMode)
   putValue(op,val)

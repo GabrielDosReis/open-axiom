@@ -294,8 +294,8 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       newValueCode:= ["%LET",g,substitute(gIndex,sharpArg,
         EQSUBSTLIST(gsList,rest $TriangleVariableList,body))]
       ["%bind",decomposeBindings,
-        ["%repeat",["WHILE",true],["PROGN",endTest,advanceCode,
-          newValueCode,:rotateCode]]]
+        ['%loop,["WHILE",true],["PROGN",endTest,advanceCode,
+          newValueCode,:rotateCode],voidValue()]]
   fromScratchInit:=
     [["%LET",gIndex,n],:[["%LET",g,x] for g in gsList for x in initCode]]
   continueInit:=
