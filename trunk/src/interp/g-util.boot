@@ -208,7 +208,7 @@ expandLoop(iters,body,ret) ==
   ["LET",loopInits,body]
 
 ++ Generate code for list comprehension.
-expandCollect ["%collect",:iters,body] ==
+expandCollect ['%collect,:iters,body] ==
   val := gensym()    -- result of the list comprehension
   -- Transform the body to build the list as we go.
   body := ["SETQ",val,["CONS",middleEndExpand body,val]]
@@ -345,7 +345,7 @@ for x in [
 
 ++ Table of opcode-expander pairs.  
 for x in [
-   ["%collect",:function expandCollect],
+   ['%collect,:function expandCollect],
    ["%repeat",:function expandRepeat],
    ['%reduce, :function expandReduce],
    ['%return,  :function expandReturn],
