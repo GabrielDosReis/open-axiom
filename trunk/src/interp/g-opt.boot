@@ -600,11 +600,10 @@ optCollectVector form ==
   -- if no suitable loop index was found, introduce one.
   if index = nil then
     index := gensym()
-    iters := [:iters,["ISTEP",index,0,1]]
+    iters := [:iters,['STEP,index,0,1]]
   vec := gensym()
   ["LET",[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
-    ["REPEAT",:iters,["setSimpleArrayEntry",vec,index,body]], 
-      vec]
+    ['%loop,:iters,["setSimpleArrayEntry",vec,index,body],vec]]
 
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',

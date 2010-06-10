@@ -1,3 +1,8 @@
+2010-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCollectVector): Generate %loop for the
+	non-simple case.
+
 2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot (expandLoop): Now take all arguments as a
