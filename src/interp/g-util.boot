@@ -185,7 +185,7 @@ expandIterators iters ==
        it is ["%init",var,val] => expandInit(var,val)
        nil
 
-expandLoop(iters,body,ret) ==
+expandLoop ['%loop,:iters,body,ret] ==
   itersCode := expandIterators iters
   itersCode = "failed" => systemErrorHere ["expandLoop",iters]
   body := middleEndExpand body
@@ -215,14 +215,14 @@ expandCollect ['%collect,:iters,body] ==
   -- Initialize the variable holding the result; expand as 
   -- if ordinary loop.  But don't forget we built the result
   -- in reverse order.
-  expandLoop([:iters,["%init",val,nil]],body,["NREVERSE",val])
+  expandLoop ['%loop,:iters,["%init",val,nil],body,["NREVERSE",val]]
 
 ++ Generate code for plain loop.
 expandRepeat ["%repeat",:iters,body] ==
-  expandLoop(iters,body,["voidValue"])
+  expandLoop ['%loop,:iters,body,["voidValue"]]
 
 expandReduce ['%reduce,:iters,val,body] ==
-  expandLoop(iters,body,val)
+  expandLoop ['%loop,:iters,body,val]
 
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
@@ -348,6 +348,7 @@ for x in [
    ['%collect,:function expandCollect],
    ["%repeat",:function expandRepeat],
    ['%reduce, :function expandReduce],
+   ['%loop,   :function expandLoop],
    ['%return,  :function expandReturn],
 
    ["%eq",:function expandEq],

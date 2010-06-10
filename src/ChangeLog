@@ -1,5 +1,12 @@
 2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (expandLoop): Now take all arguments as a
+	single %loop form.
+	(expandCollect): Adjust call.
+	(expandRepeat): Likewise.
+
+2010-06-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optCollectVector): Generare %collect form,
 	not COLLECT.
 
