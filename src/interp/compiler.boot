@@ -300,7 +300,7 @@ freeVarUsage([.,vars,body],env) ==
         for v in rest u | cons? v repeat
           free := freeList(v,bound,free,e)
         free
-      op = "COND" =>
+      op in '(COND %when) =>
         for v in rest u repeat
           for vv in v repeat
             free := freeList(vv,bound,free,e)
@@ -1450,7 +1450,7 @@ compLogicalNot(x,m,e) ==
     $EmptyMode
   yT := comp(y,yTarget,e) or return nil
   yT.mode = $Boolean and yTarget = $Boolean => 
-    [["NOT",yT.expr],yT.mode,yT.env]
+    [["%not",yT.expr],yT.mode,yT.env]
   compResolveCall("not",[yT],m,yT.env)
 
 
@@ -1627,7 +1627,7 @@ satisfies(val,pred) ==
   pred=false or pred=true => pred
   vars := findVMFreeVars pred
   vars ~= nil and vars isnt ["#1"] => false
-  eval ["LET",[["#1",val]],pred]
+  eval ['%bind,[["#1",val]],pred]
 
 
 ++ If the domain designated by the domain forms `m' and `m'' have
@@ -2170,9 +2170,9 @@ compMatch(["%Match",subject,altBlock],m,env) ==
   $catchAllCount = 0 => 
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := 
-    atom sn => ["LET",[[sn,se]],["COND",:nreverse altsCode]]
+    atom sn => ['%bind,[[sn,se]],['%when,:nreverse altsCode]]
     ["%bind",[[n,e] for n in sn for e in rest se], 
-       ["COND",:nreverse altsCode]]
+       ['%when,:nreverse altsCode]]
   [code,m,savedEnv]
 
 ++ Compile the form scheme `x'.
@@ -2227,12 +2227,12 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
     [untilCode,.,e]:= comp($until,$Boolean,e) or return nil
     itl := substitute(["UNTIL",untilCode],'$until,itl)
   firstTime := gensym()
-  finalCode := ['%reduce,
+  finalCode := ['%loop,
                  ['%init,accu,'%nil],['%init,firstTime,'%true],:itl,
-                   ['%when,[firstTime,nval],['%otherwise,accu]],
-                     ['%bind,[[b,third bval]],
-                       ['%when,[firstTime,move],['%otherwise,update]],
-                         ['%store,firstTime,'%false]]]
+                   ['%bind,[[b,third bval]],
+                     ['%when,[firstTime,move],['%otherwise,update]],
+                       ['%store,firstTime,'%false]],
+                         ['%when,[firstTime,nval],['%otherwise,accu]]]
   T := coerce([finalCode,mode,e],m) or return nil
   [T.expr,T.mode,oldEnv]
 

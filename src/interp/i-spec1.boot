@@ -815,7 +815,7 @@ checkForFreeVariables(v,locals) ==
     op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
-    op in '(COLLECT REPEAT %collect %repeat %reduce) =>
+    op in '(COLLECT REPEAT %collect %loop) =>
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
        r := [op,:[checkForFreeVariables(a,locals) for a in args]]

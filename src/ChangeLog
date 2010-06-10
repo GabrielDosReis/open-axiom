@@ -1,5 +1,16 @@
 2010-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (freeVarUsage): Handle %when too.
+	(compLogicalNot): Generate %not form.
+	(satisfies): Use %bind.
+	(compMatch): Likewise.
+	(compReduce1): Generate %loop directly instead of %reduce.
+	* interp/g-opt.boot (changeThrowToExit): Don't check for %reduce.
+	* interp/g-util.boot (expandRepeat): Remove.
+	(expandReduce): Likewise.
+
+2010-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optCollectVector): Generate %loop for the
 	non-simple case.
 

@@ -226,11 +226,11 @@ getUserIdentifiersIn body ==
     body = $ClearBodyToken => nil
     [body]
   body is ["WRAPPED",:.] => nil
-  body is [op,:itl,body1] and op in '(COLLECT REPEAT %repeat %collect) =>
+  body is [op,:itl,body1] and op in '(COLLECT REPEAT %collect) =>
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
     S_-(userIds,getIteratorIds itl)
-  body is [op,:itl,val,body1] and op in '(%reduce %loop) =>
+  body is ['%loop,:itl,val,body1] =>
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
     userIds := S_+(getUserIdentifiersIn val,userIds)
@@ -1034,9 +1034,9 @@ findLocalVars1(op,form) ==
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
     for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
-  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect %repeat) =>
+  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect) =>
     findLocalsInLoop(op,itrl,body)
-  form is [oper,:itrl,val,body] and oper in '(%reduce %loop) =>
+  form is ['%loop,:itrl,val,body] =>
     findLocalsInLoop(op,itrl,[body,val])
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
