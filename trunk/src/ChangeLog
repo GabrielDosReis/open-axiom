@@ -1,3 +1,8 @@
+2010-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/buildom.boot (mkNewUnionFunList): Use %bind, not PROG2.
+	(mkUnionFunList): Likewise.
+
 2010-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/tree.spad.pamphlet (map!Tree): Don't forget the return
