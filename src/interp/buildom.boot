@@ -356,8 +356,10 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 			$InteractiveMode =>
 			  ["XLAM",["#1"],["PROG1",["%tail","#1"],
 			    ["check-union",['%ieq,['%head,"#1"],i],type,"#1"]]]
-			["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],["%tail",gg],
-			  ["check-union",['%ieq,['%head,gg],i],type,gg]]]
+			["XLAM",["#1"],
+                          ['%bind,[[gg,"#1"]],
+                            ["check-union",['%ieq,['%head,gg],i],type,gg],
+                              ["%tail",gg]]]
   [cList,e]
 
 mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
@@ -401,8 +403,8 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		  else
 		     ref:=gg
 		     q:= substitute(gg,"#1",p)
-		  ["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],ref,
-		       ["check-union",q,t,gg]]]
+		  ["XLAM",["#1"],
+                    ['%bind,[[gg,"#1"]],["check-union",q,t,gg],ref]]
 		downFun() ==
 		   p is ['%ieq,['%head,x],.] =>
 		     ["XLAM",["#1"],["%tail","#1"]]
