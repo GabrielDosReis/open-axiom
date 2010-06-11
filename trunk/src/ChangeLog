@@ -1,5 +1,10 @@
 2010-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/tree.spad.pamphlet (map!Tree): Don't forget the return
+	value. 
+
+2010-06-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (freeVarUsage): Handle %when too.
 	(compLogicalNot): Generate %not form.
 	(satisfies): Use %bind.

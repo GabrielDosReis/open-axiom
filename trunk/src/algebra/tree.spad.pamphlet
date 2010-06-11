@@ -87,6 +87,7 @@ Tree(S: SetCategory): T==C where
       t case empty => t
       setvalue!(t, fn value t)
       for c in children t repeat map!(fn, c)
+      t
     tree(s,lt) == [[s,lt]]
     tree(s) == [[s,[]]]
     tree(ls) ==
