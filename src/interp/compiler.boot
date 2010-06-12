@@ -1101,11 +1101,14 @@ compBreak(x,m,e) ==
 compIterate: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compIterate(x,m,e) ==
   x ~= "iterate" or not jumpFromLoop("REPEAT",x) => nil
+  index := #$exitModeStack - 1 - ($leaveLevelStack.0 + 1)
   $iterateCount := $iterateCount + 1
-  -- We don't really produce a value; but we cannot adequately convey
-  -- that to the current 'EXIT' structure.  So, pretend we have an 
-  -- undefined value, which is a good enough approximation.
-  [["THROW","$loopBodyTag",nil],m,e]
+  u := coerce(['%nil,'$Void,e],$exitModeStack.index) or return nil
+  u := coerce(u,m) or return nil
+  modifyModeStack(u.mode,index)
+  if $loopBodyTag = nil then       -- bound in compRepeatOrCollect
+    $loopBodyTag := MKQ gensym()
+  [['THROW,$loopBodyTag,u.expr],u.mode,e]
 
 --% return
 
@@ -2267,6 +2270,7 @@ compRepeatOrCollect(form,m,e) ==
         $until: local := nil
         $loopKind: local := nil
         $iterateCount: local := 0
+        $loopBodyTag: local := nil
         $breakCount: local := 0
         oldEnv := e
         aggr := nil
@@ -2295,8 +2299,7 @@ compRepeatOrCollect(form,m,e) ==
         [body',m',e'] := compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
         if $iterateCount > 0 then
-           bodyTag := quoteForm gensym()
-           body' := ["CATCH",bodyTag,NSUBST(bodyTag,"$loopBodyTag",body')]
+           body' := ["CATCH",$loopBodyTag,body']
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
