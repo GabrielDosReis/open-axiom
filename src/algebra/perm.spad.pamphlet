@@ -15,7 +15,7 @@
 ++ Authors:  Holger Gollan, Johannes Grabmeier, Gerhard Schneider
 ++ Date Created: 27 July 1989
 ++ Date Last Updated: 29 March 1990
-++ Basic Operations: cycle, cycles, eval, orbit
+++ Basic Operations: cycle, cycles, orbit
 ++ Related Constructors: PermutationGroup, PermutationGroupExamples
 ++ Also See: RepresentationTheoryPackage1
 ++ AMS Classifications:
@@ -24,7 +24,8 @@
 ++ Description: PermutationCategory provides a categorial environment
 ++  for subgroups of bijections of a set (i.e. permutations)
 
-PermutationCategory(S:SetCategory): Category  ==  Group with
+PermutationCategory(S:SetCategory): Category ==
+  Join(Group,Eltable(S,S)) with
     cycle   :  List S       ->  %
       ++ cycle(ls) coerces a cycle {\em ls}, i.e. a list with not
       ++ repetitions to a permutation, which maps {\em ls.i} to
@@ -37,12 +38,9 @@ PermutationCategory(S:SetCategory): Category  ==  Group with
       ++ {\em ls.i} to {\em ls.i+1}, indices modulo the length of the list,
       ++ then these permutations are mutiplied.
       ++ Error: if repetitions occur in one cycle.
-    eval  :  (%,S)          ->  S
-      ++ eval(p, el) returns the image of {\em el} under the
-      ++ permutation p.
-    elt  :  (%,S)          ->  S
-      ++ elt(p, el) returns the image of {\em el} under the
-      ++ permutation p.
+    support: % -> Set S
+      ++ \spad{support p} returns the set of points not fixed by the
+      ++ permutation \spad{p}.
     orbit :  (%,S)          ->  Set S
       ++ orbit(p, el) returns the orbit of {\em el} under the
       ++ permutation p, i.e. the set which is given by applications of
@@ -61,7 +59,7 @@ PermutationCategory(S:SetCategory): Category  ==  Group with
 ++ Authors: Johannes Grabmeier, Holger Gollan
 ++ Date Created: 19 May 1989
 ++ Date Last Updated: 2 June 2006
-++ Basic Operations: _*, degree, movedPoints, cyclePartition, order,
+++ Basic Operations: _*, degree, support, cyclePartition, order,
 ++  numberOfCycles, sign, even?, odd?
 ++ Related Constructors: PermutationGroup, PermutationGroupExamples
 ++ Also See: RepresentationTheoryPackage1
@@ -126,8 +124,6 @@ Permutation(S:SetCategory): public == private where
     degree            :  %                ->  NonNegativeInteger
       ++ degree(p) retuns the number of points moved by the
       ++ permutation p.
-    movedPoints       :  %                ->  Set S
-      ++ movedPoints(p) returns the set of points moved by the permutation p.
     cyclePartition    :  %                ->  Partition
       ++ cyclePartition(p) returns the cycle structure of a permutation
       ++ p including cycles of length 1 only if S is finite.
@@ -300,7 +296,7 @@ Note that before [[patch--50]] this read
       coercePreimagesImages preImageAndImage ==
       p : % := [preImageAndImage.1,preImageAndImage.2]
 \end{verbatim}
-causing bugs when computing [[movedPoints]], [[fixedPoints]], [[even?]],
+causing bugs when computing [[support]], [[fixedPoints]], [[even?]],
 [[odd?]], etc., as reported in Issue~\#295.
 
 The other coercion facilities check for fixed points. It also seems that [[*]]
@@ -308,7 +304,7 @@ removes fixed points from its result.
 
 <<TEST PERM>>=
   p := coercePreimagesImages([[1,2,3],[1,2,3]])
-  movedPoints p    -- should return {}
+  support p        -- should return {}
   even? p          -- should return true
   p := coercePreimagesImages([[0,1,2,3],[3,0,2,1]])$PERM ZMOD 4
   fixedPoints p    -- should return {2}
@@ -319,9 +315,9 @@ removes fixed points from its result.
 
 <<domain PERM Permutation>>=
 
-    movedPoints p == construct p.1
+    support p == construct p.1
 
-    degree p ==  #movedPoints p
+    degree p ==  #support p
 
     p = q ==
       #(preimp := p.1) ~= #(preimq := q.1) => false
@@ -334,12 +330,12 @@ removes fixed points from its result.
     orbit(p ,el) ==
       -- start with a 1-element list:
       out : Set S := brace list el
-      el2 := eval(p, el)
+      el2 := p(el)
       while el2 ~= el repeat
         -- be carefull: insert adds one element
         -- as side effect to out
         insert!(el2, out)
-        el2 := eval(p, el2)
+        el2 := p(el2)
       out
 
     cyclePartition p ==
@@ -450,12 +446,10 @@ removes fixed points from its result.
 
     inv p  == [p.2, p.1]
 
-    eval(p, el) ==
+    elt(p,el) ==
       pos := position(el, p.1)
       pos = 0 => el
       (p.2).pos
-
-    elt(p, el) == eval(p, el)
 
     numberOfCycles p == #coerceToCycle(p, false)
 
@@ -480,7 +474,7 @@ Up to [[patch--50]] we did not check for duplicates.
 Up to [[patch--50]] we did not check for duplicates.
 
 <<domain PERM Permutation>>=
-      fixedPoints ( p ) == complement movedPoints p
+      fixedPoints ( p ) == complement support p
 
       cyclePartition p ==
         pt := partition([#c::PI for c in coerceToCycle(p, false)])$Partition

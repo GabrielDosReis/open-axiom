@@ -1,5 +1,16 @@
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/permgrps.spad.pamphlet (PermutationGroup): Rename
+	movedPoints to support.  Adjust call eval.
+	* algebra/perm.spad.pamphlet (PermutationCategory): Now extend
+	Eltable.  Remove eval.  Rename movedPoints to support.
+	(Permutation): Adjust.
+	* algebra/irsn.spad.pamphlet (listPermutationIrrRepSymNatPackage): 
+	Change call to eval to elt.
+	* algebra/rep1.spad.pamphlet: Likewise.
+
+2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (replaceableTemporary?): New.
 	(optSEQ) [getRidOfTemps]: Use it to decide when to safely inline a
 	temporary variable definition.
