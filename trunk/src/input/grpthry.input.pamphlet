@@ -22,7 +22,7 @@ g2 : PERMGRP INT := [ x , z ]
 g3 : PERMGRP INT := [ y , z ]
 order g1
 degree g3
-movedPoints g2
+support g2
 orbit (g1, 3)
 orbits g3
 member? ( y , g2 )
@@ -72,9 +72,9 @@ px * pz
 py ** 3
 inv px
 order px
-movedPoints py
+support py
 orbit ( pz , 3 )
-eval ( py , 7 )
+py 7
 )sh PERM
 
 -- Input for page RepA6Page

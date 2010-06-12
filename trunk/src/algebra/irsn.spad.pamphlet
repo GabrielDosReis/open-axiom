@@ -171,7 +171,7 @@ IrrRepSymNatPackage(): public == private where
     listPermutation(pi) ==
       li : L I := nil$(L I)
       for k in n..1 by -1 repeat
-        li := cons(eval(pi,k)$(PERM I),li)
+        li := cons(pi.k,li)
       li
 
     signum(numberOfRowTableau, numberOfColumnTableau,pi) ==

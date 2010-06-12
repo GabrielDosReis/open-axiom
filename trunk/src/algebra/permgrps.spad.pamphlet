@@ -116,8 +116,8 @@ PermutationGroup(S:SetCategory): public == private where
       ++ wordInGenerators(p,gp) returns the word for the permutation p
       ++ in the original generators of the group {\em gp},
       ++ represented by the indices of the list, given by {\em generators}.
-    movedPoints      : %         -> FSET S
-      ++ movedPoints(gp) returns the points moved by the group {\em gp}.
+    support      : %         -> FSET S
+      ++ support(gp) returns the points moved by the group {\em gp}.
     <              : (%,%)     -> B
       ++ gp1 < gp2 returns true if and only if {\em gp1}
       ++ is a proper subgroup of {\em gp2}.
@@ -261,7 +261,7 @@ PermutationGroup(S:SetCategory): public == private where
           newList  := nil()$(L S)
           workList := orbitList.pos
           for j in #workList..1 by -1 repeat
-            newList := cons ( eval ( gen , workList.j ) , newList )
+            newList := cons (gen(workList.j) , newList )
           if not member?( newList , orbitList ) then
             orbitList := cons ( newList , orbitList )
             pos  := pos + 1
@@ -298,10 +298,10 @@ PermutationGroup(S:SetCategory): public == private where
       true
 
     pointList(group : %) : L S ==
-      support : FSET S :=  brace()   -- empty set !!
+      s : FSET S :=  brace()   -- empty set !!
       for perm in group.gens repeat
-        support := union(support, movedPoints perm)
-      parts support
+        s := union(s, support perm)
+      parts s
 
     orbitWithSvc ( group : L V NNI , point : NNI ) : REC ==
       -- compute orbit with Schreier vector, "-2" means not in the orbit,
@@ -469,7 +469,7 @@ PermutationGroup(S:SetCategory): public == private where
       for ggg in 1..#gp repeat
         q := new(degree,0)$(V NNI)
         for i in 1..degree repeat
-          newEl := eval ( gp.ggg , supp.i )
+          newEl := elt(gp.ggg,supp.i)
           pos2  := position ( newEl , supp )
           q.i   := pos2 pretend NNI
         newGroup := cons ( q , newGroup )
@@ -597,7 +597,7 @@ PermutationGroup(S:SetCategory): public == private where
       -- internal membership testing
       supp     := pointList gp
       outlist := nil()$(L NNI)
-      mP : L S := parts movedPoints p
+      mP : L S := parts support p
       for x in mP repeat
         not member? (x, supp) => return [ false , nil()$(L NNI) ]
       if flag then
@@ -617,7 +617,7 @@ PermutationGroup(S:SetCategory): public == private where
       degree := # supp
       pp := new(degree,0)$(V NNI)
       for i in 1..degree repeat
-        el   := eval ( p , supp.i )
+        el   := p(supp.i)
         pos  := position ( el , supp )
         pp.i := pos::NNI
       words := nil()$(L L NNI)
@@ -649,7 +649,7 @@ PermutationGroup(S:SetCategory): public == private where
 
     elt ( gp , i ) == (gp.gens).i
 
-    movedPoints ( gp ) == brace pointList gp
+    support ( gp ) == brace pointList gp
 
     random ( group , maximalNumberOfFactors ) ==
       maximalNumberOfFactors < 1 => 1$(PERM S)
@@ -707,7 +707,7 @@ PermutationGroup(S:SetCategory): public == private where
       outSet
 
     orbits ( gp ) ==
-      spp    := movedPoints gp
+      spp    := support gp
       orbits := nil()$(L FSET S)
       while cardinality spp > 0 repeat
         el       := extract! spp
@@ -734,17 +734,17 @@ PermutationGroup(S:SetCategory): public == private where
       shortenWord ( outlist , gp )
 
     gp1 < gp2 ==
-      not empty? difference ( movedPoints gp1 , movedPoints gp2 ) => false
+      not empty? difference ( support gp1 , support gp2 ) => false
       not subgroup ( gp1 , gp2 ) => false
       order gp1 = order gp2 => false
       true
 
     gp1 <= gp2 ==
-      not empty?  difference ( movedPoints gp1 , movedPoints gp2 ) => false
+      not empty?  difference ( support gp1 , support gp2 ) => false
       subgroup ( gp1 , gp2 )
 
     gp1 = gp2 ==
-      movedPoints gp1 ~= movedPoints gp2 => false
+      support gp1 ~= support gp2 => false
       if #(gp1.gens) <= #(gp2.gens) then
         not subgroup ( gp1 , gp2 ) => return false
       else

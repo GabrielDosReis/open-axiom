@@ -61,7 +61,7 @@ inv px
 
 -- or for the image of some element under a special permutation:
 
-eval(px,17::PrimeField(29))
+elt(px,17::PrimeField(29))
 
 -- you may try to build commutators:
 
@@ -76,7 +76,7 @@ orbit(px,11::PrimeField(29))
 -- or for the elements of the underlying set, which are permuted
 -- by a given permutation:
 
-movedPoints(pk)
+support(pk)
 
 -- Now we take a short look on permutation groups.
 -- They are represented as a list of generating permutations:
@@ -129,9 +129,9 @@ el4 : PERM Vector PrimeField 2 := coerceListOfPairs ll4
 
 -- Now we can do the same operations as before, e.g.
 
-eval ( el3 , vl.5 )
+el3(vl.5)
 el2 * el1
-movedPoints el4
+support el4
 
 -- Let's built the general linear group now
 
