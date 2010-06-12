@@ -1,5 +1,9 @@
 2010-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/tree.spad.pamphlet (node?$Tree): Fix thinko.
+
+2010-06-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (mkNewUnionFunList): Use %bind, not PROG2.
 	(mkUnionFunList): Likewise.
 
