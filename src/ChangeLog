@@ -1,5 +1,11 @@
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (replaceableTemporary?): New.
+	(optSEQ) [getRidOfTemps]: Use it to decide when to safely inline a
+	temporary variable definition.
+
+2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compIterate): Rewrite.
 	(compRepeatOrCollect): Tidy.  Bind $loopBodyTag.
 
