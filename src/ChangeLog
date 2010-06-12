@@ -1,5 +1,12 @@
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/kl.spad.pamphlet (Kernel): Don't clear the on
+	instanstiation, for that may erase other precious information in
+	the running seesion when Kernel is implicitly re-instantiated by
+	the interpreter.
+
+2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/permgrps.spad.pamphlet (PermutationGroup): Rename
 	movedPoints to support.  Adjust call eval.
 	* algebra/perm.spad.pamphlet (PermutationCategory): Now extend
