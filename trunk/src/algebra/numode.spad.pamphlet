@@ -194,12 +194,12 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
       m       : I    := nvar
       outlist : L OFORM := [x::E,x::E,x::E]
       i       : I
-      iter    : I
 
       eps  := 1.0/eps
       for i in 1..m repeat
          y(i)  := ystart(i)
-      for iter in 1..nstep repeat
+      iter : I := 1
+      while iter <= nstep repeat
 --compute the derivative
          derivs(dydx,y,x)
 --if overshoot, the set h accordingly
@@ -212,15 +212,12 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
          rk4qclocal(y,dydx,nvar,x,step,eps,yscal,derivs
                    ,t1,t2,t3,t4,t5,t6)
          x         := x + step.did
---       outlist.0 := x::E
---       outlist.1 := y(0)::E
---       outlist.2 := y(1)::E
---       output(blankSeparate(outlist)::E)
 --check to see if done
          if (x-x2) >= 0.0 then
             leave
 --next stepsize to use
          step.try := step.next
+         iter := iter + 1
 --end nstep repeat
       if iter = (nstep+1) then
          output("ode: ERROR ")
