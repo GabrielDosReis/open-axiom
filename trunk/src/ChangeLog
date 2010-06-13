@@ -1,5 +1,13 @@
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/aggcat.spad.pamphlet (UnaryRecursiveAggregate) 
+	[#, cycleEntry, cycleLength]: Tidy.
+	(ListAggregate) [position]: Likewise.
+	* algebra/string.spad.pamphlet (IndexedString) [replace,split,
+	leftTrim, rightTrim]: Likewise.
+
+2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/aggcat.spad.pamphlet (OneDimensionalArrayAggregate)
 	[merge,insert,delete]: Tidy.
 
