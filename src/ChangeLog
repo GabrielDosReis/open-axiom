@@ -1,5 +1,10 @@
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/aggcat.spad.pamphlet (OneDimensionalArrayAggregate)
+	[merge,insert,delete]: Tidy.
+
+2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (complainIfShadowing): New.
 	(compStepIterator): Use it to warn about loop variable shadowing
 	declaration in enclosing scope.
