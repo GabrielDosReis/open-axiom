@@ -2362,12 +2362,19 @@ compIntegerValue(x,e) ==
   comp(x,$PositiveInteger,e) or
     comp(x,$NonNegativeInteger,e) or
       compOrCroak(x,$Integer,e)
-  
+
+++ Issue a diagnostic if `x' names a loop variable with a matching
+++ declaration  or definition in the enclosing scope.  
+complainIfShadowing(x,e) ==
+  if getmode(x,e) ~= nil then
+    stackWarning('"loop variable %1b shadows variable from enclosing scope",[x])
+
 ++ Attempt to compile a `for' iterator of the form
 ++     for index in start..final by inc
 ++ where the bound `final' may be missing.
 compStepIterator(index,start,final,inc,e) ==
   checkVariableName index
+  complainIfShadowing(index,e)
   $formalArgList := [index,:$formalArgList]
   [start,startMode,e] := compIntegerValue(start,e) or return
     stackMessage('"start value of index: %1b must be an integer",[start])
@@ -2389,6 +2396,7 @@ compIterator(it,e) ==
     -- ??? Allow for declared iterator variable.
   it is ["IN",x,y] =>
     checkVariableName x
+    complainIfShadowing(x,e)
     --these two lines must be in this order, to get "for f in list f"
     --to give  an error message if f is undefined
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
@@ -2403,6 +2411,7 @@ compIterator(it,e) ==
     [["IN",x,y''],e]
   it is ["ON",x,y] =>
     checkVariableName x
+    complainIfShadowing(x,e)
     $formalArgList:= [x,:$formalArgList]
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
     [mOver,mUnder]:=

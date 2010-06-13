@@ -1,5 +1,12 @@
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (complainIfShadowing): New.
+	(compStepIterator): Use it to warn about loop variable shadowing
+	declaration in enclosing scope.
+	(compIterator): Likewise.
+
+2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/kl.spad.pamphlet (Kernel): Don't clear the on
 	instanstiation, for that may erase other precious information in
 	the running seesion when Kernel is implicitly re-instantiated by
