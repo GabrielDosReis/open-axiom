@@ -1,5 +1,10 @@
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/generic.spad.pamphlet
+	(GenericNonAssociativeAlgebra)[generic]:  Fix thinko.
+
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/array1.spad.pamphlet (IndexedFlexibleArray) [merge!]: Tidy.
 	* algebra/intfact.spad.pamphlet (IntegerRoots) [perfectNthRoot]:
 	Likewise. 
