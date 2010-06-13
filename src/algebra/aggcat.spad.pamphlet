@@ -1573,10 +1573,11 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? l and zero? i
 
   #x ==
-    k : NonNegativeInteger
-    for k in 0.. while not empty? x repeat
+    k: NonNegativeInteger := 0
+    while not empty? x repeat
       k = cycleMax and cyclic? x => error "cyclic list"
       x := rest x
+      k := k + 1
     k
 
   tail x ==
@@ -1608,8 +1609,10 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => x
     empty?(y := findCycle x) => y
     z := rest y
-    l : NonNegativeInteger
-    for l in 1.. while not eq?(y,z) repeat z := rest z
+    l: NonNegativeInteger := 1
+    while not eq?(y,z) repeat
+      z := rest z
+      l := l + 1
     y := x
     for k in 1..l repeat y := rest y
     while not eq?(x,y) repeat (x := rest x; y := rest y)
@@ -1619,8 +1622,10 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => 0
     empty?(x := findCycle x) => 0
     y := rest x
-    k : NonNegativeInteger
-    for k in 1.. while not eq?(x,y) repeat y := rest y
+    k: NonNegativeInteger := 1
+    while not eq?(x,y) repeat
+      y := rest y
+      k := k + 1
     k
 
   rest(x, n) ==
@@ -2417,9 +2422,10 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      first x
 
    position(f:S -> Boolean, x:%) ==
-     k : Integer
-     for k in minIndex(x).. while not empty? x and not f first x repeat
+     k := minIndex(x)
+     while not empty? x and not f first x repeat
        x := rest x
+       k := k + 1
      empty? x => minIndex(x) - 1
      k
 
@@ -2511,9 +2517,10 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      position(w, x, s) ==
        s < (m := minIndex x) => error "index out of range"
        x := rest(x, (s - m)::NonNegativeInteger)
-       k : Integer
-       for k in s.. while not empty? x and w ~= first x repeat
+       k := s
+       while not empty? x and w ~= first x repeat
 	 x := rest x
+         k := k + 1
        empty? x => minIndex x - 1
        k
 

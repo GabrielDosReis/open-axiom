@@ -294,10 +294,16 @@ IndexedString(mn:Integer): Export == Implementation where
 	h:I := if hasHi sg then hi(sg) - mn else maxIndex s - mn
 	l < 0 or h >= m or h < l-1 => error "index out of range"
 	r := new((m-(h-l+1)+n)::N, space$C)
-        k : NonNegativeInteger
-	for k in 0.. for i in 0..l-1 repeat Qsetelt(r, k, Qelt(s, i))
-	for k in k.. for i in 0..n-1 repeat Qsetelt(r, k, Qelt(t, i))
-	for k in k.. for i in h+1..m-1 repeat Qsetelt(r, k, Qelt(s, i))
+        k: NonNegativeInteger := 0
+	for i in 0..l-1 repeat
+          Qsetelt(r, k, Qelt(s, i))
+          k := k + 1
+	for i in 0..n-1 repeat
+          Qsetelt(r, k, Qelt(t, i))
+          k := k + 1
+	for i in h+1..m-1 repeat
+          Qsetelt(r, k, Qelt(s, i))
+          k := k + 1
 	r
 
     setelt(s:%, i:I, c:C) ==
@@ -339,48 +345,50 @@ IndexedString(mn:Integer): Export == Implementation where
 
     split(s, c) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn..n while s.i = c repeat 0
+        i := mn
+	while i <= n and s.i = c repeat i := i + 1
 	l := empty()$List(%)
 	j:Integer -- j is conditionally intialized
 	while i <= n and (j := position(c, s, i)) >= mn repeat
 	    l := concat(s(i..j-1), l)
-	    for i in j..n while s.i = c repeat 0
+            i := j
+	    while i <= n and s.i = c repeat i := i + 1
 	if i <= n then l := concat(s(i..n), l)
 	reverse! l
 
     split(s, cc) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn..n while member?(s.i,cc) repeat 0
+        i := mn
+	while i <= n and member?(s.i,cc) repeat i := i + 1
 	l := empty()$List(%)
 	j:Integer -- j is conditionally intialized
 	while i <= n and (j := position(cc, s, i)) >= mn repeat
 	    l := concat(s(i..j-1), l)
-	    for i in j..n while member?(s.i,cc) repeat 0
+            i := j
+	    while i <= n and member?(s.i,cc) repeat i := i + 1
 	if i <= n then l := concat(s(i..n), l)
 	reverse! l
 
     leftTrim(s, c) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn .. n while s.i = c repeat 0
+        i := mn
+	while i <= n and s.i = c repeat i := i + 1
 	s(i..n)
 
     leftTrim(s, cc) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn .. n while member?(s.i,cc) repeat 0
+        i := mn
+	while i <= n and member?(s.i,cc) repeat i := i + 1
 	s(i..n)
 
     rightTrim(s, c) ==
-        j : NonNegativeInteger
-	for j in maxIndex s .. mn by -1 while s.j = c repeat 0
+        j := maxIndex s
+	while j >=  mn and s.j = c repeat j := j - 1
 	s(minIndex(s)..j)
 
     rightTrim(s, cc) ==
-        j : NonNegativeInteger
-	for j in maxIndex s .. mn by -1 while member?(s.j, cc) repeat 0
+        j := maxIndex s
+	while j >= mn and member?(s.j, cc) repeat j := j - 1
 	s(minIndex(s)..j)
 
     concat l ==
