@@ -19,7 +19,7 @@ import SparseUnivariatePolynomial
 )abbrev domain GCNAALG GenericNonAssociativeAlgebra
 ++ Authors: J. Grabmeier, R. Wisbauer
 ++ Date Created: 26 June 1991
-++ Date Last Updated: 26 June 1991
+++ Date Last Updated: June 13, 2010
 ++ Basic Operations: generic
 ++ Related Constructors: AlgebraPackage
 ++ Also See:
@@ -265,7 +265,7 @@ GenericNonAssociativeAlgebra(R : CommutativeRing, n : PositiveInteger,_
     generic() ==  genericElement
 
     generic(vs:V S, ve: V %): % ==
-      maxIndex v > maxIndex ve =>
+      maxIndex ve > maxIndex vs =>
         error "generic: too little symbols"
       v : Vector PR :=
         [monomial(1$PR, [vs.i],[1]) for i in 1..maxIndex ve]
