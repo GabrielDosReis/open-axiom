@@ -2086,16 +2086,23 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       m := maxIndex a
       j := minIndex b
       n := maxIndex b
-      k : Integer
-      for k in minIndex(r).. while i <= m and j <= n repeat
+      k := minIndex(r)
+      while i <= m and j <= n repeat
 	if f(qelt(a, i), qelt(b, j)) then
 	  qsetelt!(r, k, qelt(a, i))
 	  i := i+1
 	else
 	  qsetelt!(r, k, qelt(b, j))
 	  j := j+1
-      for k in k.. for i in i..m repeat qsetelt!(r, k, elt(a, i))
-      for k in k.. for j in j..n repeat qsetelt!(r, k, elt(b, j))
+        k := k + 1
+      while i <= m repeat
+        qsetelt!(r, k, elt(a, i))
+        k := k + 1
+        i := i + 1
+      while j <= n repeat
+        qsetelt!(r, k, elt(b, j))
+        k := k + 1
+        j := j + 1
       r
 
     elt(a:%, s:UniversalSegment(Integer)) ==
@@ -2112,12 +2119,16 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       n := maxIndex b
       i < m or i > n => error "index out of range"
       y := stupidnew(#a + #b, a, b)
-      k : Integer
-      for k in minIndex y.. for j in m..i-1 repeat
+      k := minIndex y
+      for j in m..i-1 repeat
 	qsetelt!(y, k, qelt(b, j))
-      for k in k.. for j in minIndex a .. maxIndex a repeat
+        k := k + 1
+      for j in minIndex a .. maxIndex a repeat
 	qsetelt!(y, k, qelt(a, j))
-      for k in k.. for j in i..n repeat qsetelt!(y, k, qelt(b, j))
+        k := k + 1
+      for j in i..n repeat
+        qsetelt!(y, k, qelt(b, j))
+        k := k + 1
       y
 
     copy x ==
@@ -2145,21 +2156,25 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       l < minIndex a or h > maxIndex a => error "index out of range"
       h < l => copy a
       r := stupidnew((#a - h + l - 1)::NonNegativeInteger, a, a)
-      k : Integer
-      for k in minIndex(r).. for i in minIndex a..l-1 repeat
+      k := minIndex(r)
+      for i in minIndex a..l-1 repeat
 	qsetelt!(r, k, qelt(a, i))
-      for k in k.. for i in h+1 .. maxIndex a repeat
+        k := k + 1
+      for i in h+1 .. maxIndex a repeat
 	qsetelt!(r, k, qelt(a, i))
+        k := k + 1
       r
 
     delete(x:%, i:Integer) ==
       i < minIndex x or i > maxIndex x => error "index out of range"
       y := stupidnew((#x - 1)::NonNegativeInteger, x, x)
-      i : Integer
-      for i in minIndex(y).. for j in minIndex x..i-1 repeat
-	qsetelt!(y, i, qelt(x, j))
-      for i in i .. for j in i+1 .. maxIndex x repeat
-	qsetelt!(y, i, qelt(x, j))
+      k := minIndex y
+      for j in minIndex x..i-1 repeat
+	qsetelt!(y, k, qelt(x, j))
+        k := k + 1
+      for j in i+1 .. maxIndex x repeat
+	qsetelt!(y, k, qelt(x, j))
+        k := k + 1
       y
 
     reverse! x ==
