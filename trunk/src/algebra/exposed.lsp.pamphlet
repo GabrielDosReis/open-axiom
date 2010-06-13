@@ -627,6 +627,7 @@
   (|DequeueAggregate| . DQAGG)
   (|Dictionary| . DIAGG)
   (|DictionaryOperations| . DIOPS)
+  (|DifferentialDomain| . DIFFEXT)
   (|DifferentialExtension| . DIFEXT)
   (|DifferentialPolynomialCategory| . DPOLCAT)
   (|DifferentialRing| . DIFRING)

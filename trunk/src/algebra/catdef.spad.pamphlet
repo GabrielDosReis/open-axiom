@@ -353,6 +353,36 @@ CommutativeRing():Category == Join(Ring,BiModule(%,%)) with
 
 @
 
+\section{Differential Domain}
+
+<<category DIFFDOM DifferentialDomain>>=
+)abbrev category DIFFDOM DifferentialDomain
+++ Author: Gabriel Dos Reis
+++ Date Created: June 13, 2010
+++ Date Last Modified: June 13, 2010
+++ Description:
+++   This category captures the interface of domains with a distinguished
+++   operation named \spad{differentiate}.  Usually, additional properties
+++   are wanted.  For example, that it obeys the usual Leibniz identity
+++   of differentiation of product, in case of differential rings. One
+++   could also want \spad{differentiate} to obey the chain rule when
+++   considering differential manifolds.
+++   The lack of specific requirement in this category is an implicit
+++   admission that currently \Language{} is not expressive enough to
+++   express the most general notion of differentiation in an adequate
+++   manner, suitable for computational purposes.
+DifferentialDomain(T: Type): Category == Type with
+    differentiate: % -> T
+      ++ \spad{differentiate x} compute the derivative of \spad{x}.
+    D: % -> T
+      ++ \spad{D x} is a shorthand for \spad{differentiate x}
+  add
+    D x ==
+      differentiate x
+
+@
+
+
 \section{category DIFRING DifferentialRing}
 <<category DIFRING DifferentialRing>>=
 )abbrev category DIFRING DifferentialRing
@@ -1875,6 +1905,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category ORDRING OrderedRing>>
 <<category OINTDOM OrderedIntegralDomain>>
 <<category OAMONS OrderedAbelianMonoidSup>>
+<<category DIFFDOM DifferentialDomain>>
 <<category DIFRING DifferentialRing>>
 <<category PDRING PartialDifferentialRing>>
 <<category DIFEXT DifferentialExtension>>

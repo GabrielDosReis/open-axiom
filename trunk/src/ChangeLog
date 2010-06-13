@@ -1,5 +1,9 @@
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (DifferentialDomain): New.
+
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/laurent.spad.pamphlet
 	(UnivariateLaurentSeriesConstructor) [termsToOutputForm]: Tidy.
 	* algebra/mts.spad.pamphlet (SparseMultivariateTaylorSeries)
