@@ -1,3 +1,7 @@
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/padic.spad.pamphlet (InnerPAdicInteger) [coerce]: Tidy.
+
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/aggcat.spad.pamphlet (UnaryRecursiveAggregate) 

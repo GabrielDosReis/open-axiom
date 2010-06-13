@@ -290,18 +290,21 @@ InnerPAdicInteger(p,unBalanced?): Exports == Implementation where
 
     coerce(x:%):OUT ==
       empty?(st := stream x) => 0 :: OUT
-      n : NNI ; count : NNI := _$streamCount$Lisp
+      count : NNI := _$streamCount$Lisp
       l : L OUT := empty()
-      for n in 0..count while not empty? st repeat
+      n : NNI := 0
+      while n  <= count while not empty? st repeat
         if frst(st) ~= 0 then
           l := concat(termOutput(n :: I,frst st),l)
         st := rst st
+        n := n + 1
       if showAll?() then
-        for n in (count + 1).. while explicitEntries? st and _
-               not eq?(st,rst st) repeat
+        n := count + 1
+        while explicitEntries? st and not eq?(st,rst st) repeat
           if frst(st) ~= 0 then
             l := concat(termOutput(n pretend I,frst st),l)
           st := rst st
+          n := n + 1
       l :=
         explicitlyEmpty? st => l
         eq?(st,rst st) and frst st = 0 => l
