@@ -1,5 +1,15 @@
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/array1.spad.pamphlet (IndexedFlexibleArray) [merge!]: Tidy.
+	* algebra/intfact.spad.pamphlet (IntegerRoots) [perfectNthRoot]:
+	Likewise. 
+	* algebra/numode.spad.pamphlet
+	(NumericalOrdinaryDifferentialEquations) [rf4a]:  Likewise.
+	* algebra/solvelin.spad.pamphlet (LinearSystemMatrixPackage)
+	[aSolution]:  Likewise.
+
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/padic.spad.pamphlet (InnerPAdicInteger) [coerce]: Tidy.
 
 2010-06-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>

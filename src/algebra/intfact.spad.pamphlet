@@ -271,13 +271,14 @@ IntegerRoots(I:IntegerNumberSystem): Exports == Implementation where
     perfectNthPower?(b, n) == perfectNthRoot(b, n) case I
 
     perfectNthRoot n ==  -- complexity (log log n)**2 (log n)**2
-      m:NNI
       one? n or zero? n or n = -1 => [n, 1]
       e:NNI := 1
       p:NNI := 2
       while p::I <= length(n) + 1 repeat
-         for m in 0.. while (r := perfectNthRoot(n, p)) case I repeat
+         m: NNI := 0
+         while (r := perfectNthRoot(n, p)) case I repeat
             n := r::I
+            m := m + 1
          e := e * p ** m
          p := convert(nextPrime(p::I))@Integer :: NNI
       [n, e]
