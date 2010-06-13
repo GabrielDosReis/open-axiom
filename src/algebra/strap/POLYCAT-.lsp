@@ -324,14 +324,14 @@
          (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 70))))) 
 
 (DEFUN |POLYCAT-;retract;SVarSet;9| (|p| $)
-  (PROG (#0=#:G1478 |q|)
+  (PROG (|q|)
     (RETURN
       (SEQ (LETT |q|
-                 (PROG2 (LETT #0# (SPADCALL |p| (|getShellEntry| $ 53))
-                              |POLYCAT-;retract;SVarSet;9|)
-                        (CDR #0#)
+                 (LET ((#0=#:G1478
+                           (SPADCALL |p| (|getShellEntry| $ 53))))
                    (|check-union| (EQL (CAR #0#) 0)
-                       (|getShellEntry| $ 9) #0#))
+                       (|getShellEntry| $ 9) #0#)
+                   (CDR #0#))
                  |POLYCAT-;retract;SVarSet;9|)
            (EXIT (COND
                    ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 72)) |p|
@@ -374,20 +374,19 @@
       (SETQ #0# (CDR #0#))))) 
 
 (DEFUN |POLYCAT-;totalDegree;SNni;13| (|p| $)
-  (PROG (#0=#:G1492 |d| |u|)
+  (PROG (|d| |u|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p| (|getShellEntry| $ 78)) 0)
              ('T
               (SEQ (LETT |u|
                          (SPADCALL |p|
-                             (PROG2 (LETT #0#
-                                     (SPADCALL |p|
-                                      (|getShellEntry| $ 53))
-                                     |POLYCAT-;totalDegree;SNni;13|)
-                                    (CDR #0#)
+                             (LET ((#0=#:G1492
+                                    (SPADCALL |p|
+                                     (|getShellEntry| $ 53))))
                                (|check-union| (EQL (CAR #0#) 0)
-                                   (|getShellEntry| $ 9) #0#))
+                                   (|getShellEntry| $ 9) #0#)
+                               (CDR #0#))
                              (|getShellEntry| $ 59))
                          |POLYCAT-;totalDegree;SNni;13|)
                    (LETT |d| 0 |POLYCAT-;totalDegree;SNni;13|)
@@ -414,7 +413,7 @@
                    (EXIT |d|)))))))) 
 
 (DEFUN |POLYCAT-;totalDegree;SLNni;14| (|p| |lv| $)
-  (PROG (#0=#:G1500 |v| |w| |d| |u|)
+  (PROG (|v| |w| |d| |u|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |p| (|getShellEntry| $ 78)) 0)
@@ -422,14 +421,13 @@
               (SEQ (LETT |u|
                          (SPADCALL |p|
                              (LETT |v|
-                                   (PROG2
-                                    (LETT #0#
-                                     (SPADCALL |p|
-                                      (|getShellEntry| $ 53))
-                                     |POLYCAT-;totalDegree;SLNni;14|)
-                                    (CDR #0#)
+                                   (LET
+                                    ((#0=#:G1500
+                                      (SPADCALL |p|
+                                       (|getShellEntry| $ 53))))
                                      (|check-union| (EQL (CAR #0#) 0)
-                                      (|getShellEntry| $ 9) #0#))
+                                      (|getShellEntry| $ 9) #0#)
+                                     (CDR #0#))
                                    |POLYCAT-;totalDegree;SLNni;14|)
                              (|getShellEntry| $ 59))
                          |POLYCAT-;totalDegree;SLNni;14|)
@@ -1131,36 +1129,28 @@
       (|getShellEntry| $ 204))) 
 
 (DEFUN |POLYCAT-;primitivePart;2S;36| (|p| $)
-  (PROG (#0=#:G1658)
-    (RETURN
-      (QVELT (SPADCALL
-                 (PROG2 (LETT #0#
-                              (SPADCALL |p|
-                                  (SPADCALL |p|
-                                      (|getShellEntry| $ 206))
-                                  (|getShellEntry| $ 207))
-                              |POLYCAT-;primitivePart;2S;36|)
-                        (CDR #0#)
-                   (|check-union| (EQL (CAR #0#) 0)
-                       (|getShellEntry| $ 6) #0#))
-                 (|getShellEntry| $ 209))
-             1)))) 
+  (QVELT (SPADCALL
+             (LET ((#0=#:G1658
+                       (SPADCALL |p|
+                           (SPADCALL |p| (|getShellEntry| $ 206))
+                           (|getShellEntry| $ 207))))
+               (|check-union| (EQL (CAR #0#) 0) (|getShellEntry| $ 6)
+                   #0#)
+               (CDR #0#))
+             (|getShellEntry| $ 209))
+         1)) 
 
 (DEFUN |POLYCAT-;primitivePart;SVarSetS;37| (|p| |v| $)
-  (PROG (#0=#:G1664)
-    (RETURN
-      (QVELT (SPADCALL
-                 (PROG2 (LETT #0#
-                              (SPADCALL |p|
-                                  (SPADCALL |p| |v|
-                                      (|getShellEntry| $ 211))
-                                  (|getShellEntry| $ 212))
-                              |POLYCAT-;primitivePart;SVarSetS;37|)
-                        (CDR #0#)
-                   (|check-union| (EQL (CAR #0#) 0)
-                       (|getShellEntry| $ 6) #0#))
-                 (|getShellEntry| $ 209))
-             1)))) 
+  (QVELT (SPADCALL
+             (LET ((#0=#:G1664
+                       (SPADCALL |p|
+                           (SPADCALL |p| |v| (|getShellEntry| $ 211))
+                           (|getShellEntry| $ 212))))
+               (|check-union| (EQL (CAR #0#) 0) (|getShellEntry| $ 6)
+                   #0#)
+               (CDR #0#))
+             (|getShellEntry| $ 209))
+         1)) 
 
 (DEFUN |POLYCAT-;before?;2SB;38| (|p| |q| $)
   (PROG (|dp| |dq|)

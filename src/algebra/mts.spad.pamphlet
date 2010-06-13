@@ -253,16 +253,18 @@ SparseMultivariateTaylorSeries(Coef,Var,SMP):_
     coerce(s:%):OUT ==
       uu := s pretend Stream(SMP)
       empty? uu => (0$SMP) :: OUT
-      n : NNI; count : NNI := _$streamCount$Lisp
+      count : NNI := _$streamCount$Lisp
       l : List OUT := empty()
-      for n in 0..count while not empty? uu repeat
+      n : NNI := 0
+      while n <= count and not empty? uu repeat
         if frst(uu) ~= 0 then l := concat(tout frst uu,l)
         uu := rst uu
+        n := n + 1
       if showAll?() then
-        for n in n.. while explicitEntries? uu and _
-               not eq?(uu,rst uu) repeat
+        while explicitEntries? uu and not eq?(uu,rst uu) repeat
           if frst(uu) ~= 0 then l := concat(tout frst uu,l)
           uu := rst uu
+          n := n + 1
       l :=
         explicitlyEmpty? uu => l
         eq?(uu,rst uu) and frst uu = 0 => l
