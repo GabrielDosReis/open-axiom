@@ -1,5 +1,18 @@
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/laurent.spad.pamphlet
+	(UnivariateLaurentSeriesConstructor) [termsToOutputForm]: Tidy.
+	* algebra/mts.spad.pamphlet (SparseMultivariateTaylorSeries)
+	[coerce]:  Likewise.
+	* algebra/padic.spad.pamphlet (PAdicIntegerCategory) [coerce]:
+	Likewise. 
+	* algebra/pscat.spad.pamphlet
+	(UnivariateTaylorSeriesCategory)[coerce]:  Likewise.
+	* algebra/puiseux.spad.pamphlet (UnivariatePuiseuxSeries)
+	[termsToOutputForm]:  Likewise.
+
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/generic.spad.pamphlet
 	(GenericNonAssociativeAlgebra)[generic]:  Fix thinko.
 

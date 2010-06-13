@@ -474,7 +474,7 @@
   (SPADCALL |p| (|getShellEntry| $ 106))) 
 
 (DEFUN |INT;factorPolynomial| (|p| $)
-  (PROG (|pp| #0=#:G1499)
+  (PROG (|pp|)
     (RETURN
       (SEQ (LETT |pp| (SPADCALL |p| (|getShellEntry| $ 107))
                  |INT;factorPolynomial|)
@@ -486,17 +486,16 @@
                     (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
                         (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
                             (SPADCALL
-                                (PROG2 (LETT #0#
-                                        (SPADCALL
-                                         (SPADCALL |p|
-                                          (|getShellEntry| $ 108))
-                                         (SPADCALL |pp|
-                                          (|getShellEntry| $ 108))
-                                         (|getShellEntry| $ 112))
-                                        |INT;factorPolynomial|)
-                                       (CDR #0#)
+                                (LET ((#0=#:G1499
+                                       (SPADCALL
+                                        (SPADCALL |p|
+                                         (|getShellEntry| $ 108))
+                                        (SPADCALL |pp|
+                                         (|getShellEntry| $ 108))
+                                        (|getShellEntry| $ 112))))
                                   (|check-union| (EQL (CAR #0#) 0) $
-                                      #0#))
+                                      #0#)
+                                  (CDR #0#))
                                 (|getShellEntry| $ 114))
                             (|getShellEntry| $ 118))
                         (|getShellEntry| $ 120))))))))) 
