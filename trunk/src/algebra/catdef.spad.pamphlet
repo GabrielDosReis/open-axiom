@@ -446,7 +446,7 @@ DifferentialExtension(R:Ring): Category == Ring with
     D: (%, R -> R, NonNegativeInteger) -> %
        ++ D(x, deriv, n) differentiate x n times
        ++ using a derivation which extends deriv on R.
-    if R has DifferentialDomain R then DifferentialRing
+    if R has DifferentialRing then DifferentialRing
     if R has PartialDifferentialRing(Symbol) then
              PartialDifferentialRing(Symbol)
   add
@@ -457,7 +457,7 @@ DifferentialExtension(R:Ring): Category == Ring with
     D(x:%, derivation: R -> R, n:NonNegativeInteger) ==
             differentiate(x, derivation, n)
 
-    if R has DifferentialDomain R then
+    if R has DifferentialRing then
       differentiate x == differentiate(x, differentiate$R)
 
     if R has PartialDifferentialRing Symbol then
