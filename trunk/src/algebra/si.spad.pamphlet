@@ -262,7 +262,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
     if wholeObj then
       OMputEndObject(dev)
 
-   reducedSystem m      == m pretend Matrix(Integer)
+   reducedSystem(m: Matrix %) == m pretend Matrix(Integer)
    coerce(x):OutputForm == rep(x)::OutputForm
    convert(x:%):Integer == rep x
    i:Integer * y:%      == i::% * y

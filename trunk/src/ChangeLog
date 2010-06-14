@@ -1,3 +1,12 @@
+2010-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (LinearlyExplicitRingOver): Now
+	extends LeftModule R.
+	[reducedSystem: Vector % -> Matrix R]: New overload.
+	* algebra/lindep.spad.pamphlet (LinearDependence): Additionally
+	require Ring on the second parameter.
+	(IntegerLinearDependence): Add similar requirement on the parameter.
+
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Partially revert previous change.
