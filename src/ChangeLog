@@ -1,5 +1,9 @@
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Partially revert previous change.
+
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (DifferentialRing): Now extends
 	DifferentialDomain.
 	(DifferentialExtension): Check parameter for only DifferentialDomain.

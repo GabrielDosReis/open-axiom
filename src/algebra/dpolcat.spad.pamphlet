@@ -300,7 +300,7 @@ DifferentialPolynomialCategory(R:Ring,S:OrderedSet,
       ++ separant(p) returns the
       ++ partial derivative of the differential polynomial p
       ++ with respect to its leader.
-    if R has DifferentialDomain R then
+    if R has DifferentialRing then
       InnerEvalable(S, R)
       InnerEvalable(S, $)
       Evalable $
@@ -394,7 +394,7 @@ DifferentialPolynomialCategory(R:Ring,S:OrderedSet,
     differentialVariables p ==
       removeDuplicates [variable v for v in variables p]
 
-    if R has DifferentialDomain R then
+    if R has DifferentialRing then
 
       makeVariable p == differentiate(p, #1)
 
