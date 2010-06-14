@@ -360,7 +360,7 @@ axiom_algebra_layer_0 = \
   RCAGG    RCAGG-   SETAGG   SETAGG-  HOAGG    HOAGG-   \
   TBAGG    TBAGG-   KDAGG    KDAGG-   DIAGG    DIAGG-   \
   DIOPS    DIOPS-   STRING   STRICAT  ISTRING  ILIST    \
-  LIST     DIFFDOM                                      \
+  LIST     DIFFDOM  DIFFDOM-                            \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
   RTVALUE  SYSPTR
 
