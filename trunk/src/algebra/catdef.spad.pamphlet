@@ -403,21 +403,12 @@ DifferentialDomain(T: Type): Category == Type with
 ++   \spad{differentiate(x+y) = differentiate(x)+differentiate(y)}
 ++   \spad{differentiate(x*y) = x*differentiate(y) + differentiate(x)*y}
 
-DifferentialRing(): Category == Ring with
-    differentiate: % -> %
-         ++ differentiate(x) returns the derivative of x.
-         ++ This function is a simple differential operator
-         ++ where no variable needs to be specified.
-    D: % -> %
-         ++ D(x) returns the derivative of x.
-         ++ This function is a simple differential operator
-         ++ where no variable needs to be specified.
+DifferentialRing(): Category == Join(Ring,DifferentialDomain %) with
     differentiate: (%, NonNegativeInteger) -> %
          ++ differentiate(x, n) returns the n-th derivative of x.
     D: (%, NonNegativeInteger) -> %
          ++ D(x, n) returns the n-th derivative of x.
   add
-    D r == differentiate r
     differentiate(r, n) ==
       for i in 1..n repeat r := differentiate r
       r
@@ -455,7 +446,7 @@ DifferentialExtension(R:Ring): Category == Ring with
     D: (%, R -> R, NonNegativeInteger) -> %
        ++ D(x, deriv, n) differentiate x n times
        ++ using a derivation which extends deriv on R.
-    if R has DifferentialRing then DifferentialRing
+    if R has DifferentialDomain R then DifferentialRing
     if R has PartialDifferentialRing(Symbol) then
              PartialDifferentialRing(Symbol)
   add
@@ -466,7 +457,7 @@ DifferentialExtension(R:Ring): Category == Ring with
     D(x:%, derivation: R -> R, n:NonNegativeInteger) ==
             differentiate(x, derivation, n)
 
-    if R has DifferentialRing then
+    if R has DifferentialDomain R then
       differentiate x == differentiate(x, differentiate$R)
 
     if R has PartialDifferentialRing Symbol then

@@ -1,5 +1,15 @@
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (DifferentialRing): Now extends
+	DifferentialDomain.
+	(DifferentialExtension): Check parameter for only DifferentialDomain.
+	* algebra/dpolcat.spad.pamphlet (DifferentialPolynomialCategory):
+	Likewise. 
+	* algebra/lodop.spad.pamphlet (OppositeMonogenicLinearOperator):
+	Likewise. 
+
+2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (DifferentialDomain): New.
 
 2010-06-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
