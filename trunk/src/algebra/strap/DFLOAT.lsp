@@ -1004,7 +1004,7 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|FloatingPointSystem&| |RealNumberSystem&|
                          |Field&| |EuclideanDomain&| NIL
                          |UniqueFactorizationDomain&| |GcdDomain&|
@@ -1017,12 +1017,12 @@
                          NIL NIL NIL NIL |AbelianSemiGroup&|
                          |SemiGroup&| NIL
                          |TranscendentalFunctionCategory&|
-                         |RetractableTo&| |RetractableTo&| NIL
-                         |SetCategory&| NIL
+                         |DifferentialDomain&| |RetractableTo&|
+                         |RetractableTo&| NIL |SetCategory&| NIL
                          |ElementaryFunctionCategory&| NIL
                          |HyperbolicFunctionCategory&|
                          |ArcTrigonometricFunctionCategory&|
-                         |TrigonometricFunctionCategory&| NIL NIL
+                         |TrigonometricFunctionCategory&| NIL NIL NIL
                          |RadicalCategory&| NIL NIL NIL NIL NIL
                          |BasicType&| NIL)
                       (CONS '#((|FloatingPointSystem|)
@@ -1056,6 +1056,7 @@
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|LeftLinearSet| 26)
                                (|TranscendentalFunctionCategory|)
+                               (|DifferentialDomain| $$)
                                (|RetractableTo| 114)
                                (|RetractableTo| 26) (|RealConstant|)
                                (|SetCategory|) (|ConvertibleTo| 50)
@@ -1064,7 +1065,8 @@
                                (|HyperbolicFunctionCategory|)
                                (|ArcTrigonometricFunctionCategory|)
                                (|TrigonometricFunctionCategory|)
-                               (|OpenMath|) (|ConvertibleTo| 154)
+                               (|OpenMath|) (|Type|)
+                               (|ConvertibleTo| 154)
                                (|RadicalCategory|)
                                (|ConvertibleTo| 111)
                                (|ConvertibleTo| 13)
@@ -1113,8 +1115,8 @@
                                   0 1 2 0 158 0 0 1 3 0 160 0 0 0 1 2 0
                                   102 0 0 1 2 0 157 156 0 1 1 0 26 0 28
                                   0 0 0 45 1 0 0 0 71 1 0 115 0 1 2 0
-                                  139 0 0 1 0 0 24 1 1 0 0 0 104 2 0 0
-                                  0 115 1 1 0 0 0 88 1 0 0 0 78 1 0 0 0
+                                  139 0 0 1 0 0 24 1 2 0 0 0 115 1 1 0
+                                  0 0 104 1 0 0 0 88 1 0 0 0 78 1 0 0 0
                                   89 1 0 0 0 76 1 0 0 0 86 1 0 0 0 74 1
                                   0 50 0 52 1 0 154 0 1 1 0 111 0 113 1
                                   0 13 0 14 1 0 0 114 1 1 0 0 26 70 1 0

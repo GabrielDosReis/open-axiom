@@ -5,10 +5,9 @@
 
 (DEFUN |DifferentialRing;| ()
   (LET ((#0=#:G1397
-            (|Join| (|Ring|)
+            (|Join| (|Ring|) (|DifferentialDomain| '$)
                     (|mkCategory| '|domain|
-                        '(((|differentiate| ($ $)) T) ((D ($ $)) T)
-                          ((|differentiate|
+                        '(((|differentiate|
                                ($ $ (|NonNegativeInteger|)))
                            T)
                           ((D ($ $ (|NonNegativeInteger|))) T))

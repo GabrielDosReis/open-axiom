@@ -383,6 +383,31 @@ DifferentialDomain(T: Type): Category == Type with
 @
 
 
+<<category DIFFSPC DifferentialSpace>>=
+)abbrev category DIFFSPC DifferentialSpace
+++ Author: Gabriel Dos Reis
+++ Date Created: June 13, 2010
+++ Date Last Modified: June 15, 2010
+++ Description:
+++   This category is like \spadtype{DifferentialDomain} where the
+++   target of the differentiation operator is the same as its source.
+DifferentialSpace(): Category == DifferentialDomain % with
+    differentiate: (%, NonNegativeInteger) -> %
+      ++ \spad{differentiate(x,n)} returns the \spad{n}-th
+      ++ derivative of \spad{x}.
+    D: (%, NonNegativeInteger) -> %
+      ++ \spad{D(x, n)} returns the \spad{n}-th derivative of \spad{x}.
+  add
+    differentiate(r, n) ==
+      for i in 1..n repeat r := differentiate r
+      r
+    D(r,n) ==
+      differentiate(r,n)
+
+@
+
+
+
 \section{category DIFRING DifferentialRing}
 <<category DIFRING DifferentialRing>>=
 )abbrev category DIFRING DifferentialRing
