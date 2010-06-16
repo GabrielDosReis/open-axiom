@@ -428,16 +428,7 @@ DifferentialSpace(): Category == DifferentialDomain % with
 ++   \spad{differentiate(x+y) = differentiate(x)+differentiate(y)}
 ++   \spad{differentiate(x*y) = x*differentiate(y) + differentiate(x)*y}
 
-DifferentialRing(): Category == Join(Ring,DifferentialDomain %) with
-    differentiate: (%, NonNegativeInteger) -> %
-         ++ differentiate(x, n) returns the n-th derivative of x.
-    D: (%, NonNegativeInteger) -> %
-         ++ D(x, n) returns the n-th derivative of x.
-  add
-    differentiate(r, n) ==
-      for i in 1..n repeat r := differentiate r
-      r
-    D(r,n) == differentiate(r,n)
+DifferentialRing(): Category == Join(Ring,DifferentialSpace)
 
 @
 

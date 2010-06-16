@@ -639,17 +639,17 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
-                         |DifferentialRing&| |OrderedRing&| NIL NIL
-                         |Module&| NIL NIL |Ring&| NIL NIL NIL NIL NIL
-                         NIL |AbelianGroup&| NIL NIL NIL NIL NIL
+                         NIL |OrderedRing&| NIL NIL |Module&| NIL NIL
+                         |Ring&| NIL NIL NIL NIL NIL NIL
+                         |AbelianGroup&| NIL NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL NIL
-                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
-                         |SemiGroup&| NIL |Logic&| NIL NIL
-                         |RetractableTo&| |DifferentialDomain&|
+                         |DifferentialSpace&| |OrderedSet&| NIL NIL
+                         |AbelianSemiGroup&| |SemiGroup&| NIL |Logic&|
+                         NIL NIL |RetractableTo&| |DifferentialDomain&|
                          |SetCategory&| NIL NIL NIL NIL NIL NIL NIL NIL
                          NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
@@ -675,7 +675,8 @@
                                (|OrderedAbelianSemiGroup|)
                                (|LinearSet| $$) (|AbelianMonoid|)
                                (|Monoid|) (|Finite|) (|StepThrough|)
-                               (|PatternMatchable| 5) (|OrderedSet|)
+                               (|PatternMatchable| 5)
+                               (|DifferentialSpace|) (|OrderedSet|)
                                (|LeftLinearSet| $$)
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
@@ -721,7 +722,7 @@
                                   0 0 0 67 1 0 0 0 1 1 0 114 0 1 2 0
                                   111 0 0 1 3 0 113 0 0 0 1 2 0 101 0 0
                                   1 2 0 110 108 0 1 1 0 9 0 1 1 0 61 0
-                                  1 2 0 65 0 0 66 1 0 0 0 1 2 0 0 0 61
+                                  1 2 0 65 0 0 66 2 0 0 0 61 1 1 0 0 0
                                   1 1 0 0 0 58 1 0 0 0 1 1 0 102 0 1 1
                                   0 103 0 1 1 0 106 0 1 1 0 105 0 1 1 0
                                   5 0 17 1 0 0 5 94 1 0 0 0 1 1 0 0 5
@@ -731,7 +732,7 @@
                                   0 0 68 2 0 0 0 0 47 0 0 0 7 2 0 0 0 0
                                   51 0 0 0 39 3 0 11 12 0 9 29 2 0 14 0
                                   9 27 2 0 11 12 0 28 1 0 14 0 26 1 0 0
-                                  0 48 1 0 0 0 1 2 0 0 0 61 1 2 0 0 0 0
+                                  0 48 2 0 0 0 61 1 1 0 0 0 1 2 0 0 0 0
                                   49 2 0 9 0 0 56 2 0 9 0 0 54 2 0 9 0
                                   0 43 2 0 9 0 0 55 2 0 9 0 0 10 2 0 0
                                   0 0 46 1 0 0 0 16 2 0 0 0 0 60 2 0 0

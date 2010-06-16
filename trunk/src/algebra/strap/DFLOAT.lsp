@@ -1004,18 +1004,17 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|FloatingPointSystem&| |RealNumberSystem&|
                          |Field&| |EuclideanDomain&| NIL
                          |UniqueFactorizationDomain&| |GcdDomain&|
                          |DivisionRing&| |IntegralDomain&| |Algebra&|
-                         |Algebra&| |DifferentialRing&| NIL
-                         |OrderedRing&| |Module&| NIL NIL |Module&| NIL
-                         NIL |Ring&| NIL NIL NIL NIL NIL NIL NIL
-                         |AbelianGroup&| NIL NIL NIL NIL NIL
-                         |AbelianMonoid&| |Monoid&| NIL |OrderedSet&|
-                         NIL NIL NIL NIL |AbelianSemiGroup&|
-                         |SemiGroup&| NIL
+                         |Algebra&| NIL NIL |OrderedRing&| |Module&|
+                         NIL NIL |Module&| NIL NIL |Ring&| NIL NIL NIL
+                         NIL NIL NIL NIL |AbelianGroup&| NIL NIL NIL
+                         NIL NIL |AbelianMonoid&| |Monoid&|
+                         |DifferentialSpace&| NIL |OrderedSet&| NIL NIL
+                         NIL NIL |AbelianSemiGroup&| |SemiGroup&| NIL
                          |TranscendentalFunctionCategory&|
                          |DifferentialDomain&| |RetractableTo&|
                          |RetractableTo&| NIL |SetCategory&| NIL
@@ -1048,6 +1047,7 @@
                                (|OrderedAbelianSemiGroup|)
                                (|LinearSet| 114) (|LinearSet| $$)
                                (|AbelianMonoid|) (|Monoid|)
+                               (|DifferentialSpace|)
                                (|PatternMatchable| 111) (|OrderedSet|)
                                (|LeftLinearSet| 114)
                                (|RightLinearSet| 114)
@@ -1129,7 +1129,7 @@
                                   0 0 83 1 0 0 0 92 1 0 0 0 80 1 0 0 0
                                   119 0 0 0 23 0 0 0 43 2 0 11 9 0 21 3
                                   0 11 9 0 19 22 1 0 8 0 18 2 0 8 0 19
-                                  20 1 0 0 0 107 1 0 0 0 1 2 0 0 0 115
+                                  20 1 0 0 0 107 2 0 0 0 115 1 1 0 0 0
                                   1 2 0 0 0 0 109 2 0 19 0 0 56 2 0 19
                                   0 0 54 2 0 19 0 0 64 2 0 19 0 0 55 2
                                   0 19 0 0 53 2 0 0 0 26 65 2 0 0 0 0

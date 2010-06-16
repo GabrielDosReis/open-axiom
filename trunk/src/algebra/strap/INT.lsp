@@ -635,19 +635,19 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0))
+                      0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
-                         |DifferentialRing&| |OrderedRing&| NIL NIL
-                         |Module&| NIL NIL |Ring&| NIL NIL NIL NIL NIL
-                         NIL |AbelianGroup&| NIL NIL NIL NIL
+                         NIL |OrderedRing&| NIL NIL |Module&| NIL NIL
+                         |Ring&| NIL NIL NIL NIL NIL NIL
+                         |AbelianGroup&| NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL
-                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
-                         |SemiGroup&| NIL NIL |RetractableTo&|
-                         |DifferentialDomain&| |SetCategory&| NIL NIL
-                         NIL NIL NIL NIL NIL NIL NIL NIL NIL
-                         |BasicType&| NIL)
+                         |DifferentialSpace&| |OrderedSet&| NIL NIL
+                         |AbelianSemiGroup&| |SemiGroup&| NIL NIL
+                         |RetractableTo&| |DifferentialDomain&|
+                         |SetCategory&| NIL NIL NIL NIL NIL NIL NIL NIL
+                         NIL NIL NIL |BasicType&| NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -671,7 +671,8 @@
                                (|OrderedAbelianSemiGroup|)
                                (|LinearSet| $$) (|AbelianMonoid|)
                                (|Monoid|) (|StepThrough|)
-                               (|PatternMatchable| 17) (|OrderedSet|)
+                               (|PatternMatchable| 17)
+                               (|DifferentialSpace|) (|OrderedSet|)
                                (|LeftLinearSet| $$)
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
@@ -723,7 +724,7 @@
                                   0 0 0 0 94 1 0 0 0 1 1 0 113 0 114 2
                                   0 137 0 0 1 3 0 139 0 0 0 1 2 0 92 0
                                   0 112 2 0 136 134 0 1 1 0 9 0 1 1 0 7
-                                  0 1 2 0 88 0 0 89 1 0 0 0 1 2 0 0 0 7
+                                  0 1 2 0 88 0 0 89 2 0 0 0 7 1 1 0 0 0
                                   1 1 0 0 0 40 1 0 0 0 36 1 0 14 0 66 1
                                   0 59 0 61 1 0 56 0 58 1 0 131 0 1 1 0
                                   62 0 64 1 0 17 0 48 1 0 0 17 47 1 0 0
@@ -732,7 +733,7 @@
                                   0 35 2 0 9 0 0 1 3 0 0 0 0 0 51 1 0 0
                                   0 78 0 0 0 6 0 0 0 31 3 0 11 12 0 9
                                   29 2 0 14 0 9 27 2 0 11 12 0 28 1 0
-                                  14 0 26 1 0 0 0 1 2 0 0 0 7 1 2 0 9 0
+                                  14 0 26 2 0 0 0 7 1 1 0 0 0 1 2 0 9 0
                                   0 50 2 0 9 0 0 81 2 0 9 0 0 33 2 0 9
                                   0 0 82 2 0 9 0 0 10 1 0 0 0 16 2 0 0
                                   0 0 39 2 0 0 0 0 37 2 0 0 0 7 84 2 0
