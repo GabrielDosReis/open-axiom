@@ -1,5 +1,10 @@
 2010-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/dpolcat.spad.pamphlet (DifferentialVariableCategory):
+	Extend DifferentialSpace.
+
+2010-06-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (DifferentialSpace): New.
 
 2010-06-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
