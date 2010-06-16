@@ -339,6 +339,8 @@ $(OUT)/OUT.$(FASLEXT): $(OUT)/VOID.$(FASLEXT)
 
 $(OUT)/DIFFDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/DIFFSPC.$(FASLEXT): $(OUT)/DIFFDOM.$(FASLEXT)
+$(OUT)/DIFFMOD.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/PDDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
@@ -363,9 +365,9 @@ axiom_algebra_layer_0 = \
   RCAGG    RCAGG-   SETAGG   SETAGG-  HOAGG    HOAGG-   \
   TBAGG    TBAGG-   KDAGG    KDAGG-   DIAGG    DIAGG-   \
   DIOPS    DIOPS-   STRING   STRICAT  ISTRING  ILIST    \
-  LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC-          \
+  LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC- DIFFMOD  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
-  RTVALUE  SYSPTR
+  RTVALUE  SYSPTR   PDDOM    PDDOM-
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))

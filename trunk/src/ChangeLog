@@ -1,5 +1,10 @@
 2010-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (DifferentialModule): New.
+	(PartialDifferentialDomain): Likewise.
+
+2010-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (DifferentialRing): Now extends
 	DifferentialSpace. 
 
