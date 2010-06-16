@@ -493,6 +493,7 @@ axiom_algebra_layer_4_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_4)))
 
 $(OUT)/KERNEL.$(FASLEXT): $(OUT)/KERNEL2.$(FASLEXT)
+$(OUT)/DVARCAT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 
 axiom_algebra_layer_5 = \
            CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
