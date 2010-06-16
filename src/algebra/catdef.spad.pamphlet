@@ -406,8 +406,6 @@ DifferentialSpace(): Category == DifferentialDomain % with
 
 @
 
-
-
 \section{category DIFRING DifferentialRing}
 <<category DIFRING DifferentialRing>>=
 )abbrev category DIFRING DifferentialRing
@@ -431,6 +429,32 @@ DifferentialSpace(): Category == DifferentialDomain % with
 DifferentialRing(): Category == Join(Ring,DifferentialSpace)
 
 @
+
+\section{Differential Module}
+
+<<category DIFFMOD DifferentialModule>>=
+)abbrev category DIFFMOD DifferentialModule
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 14, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpace
+++ Also See:
+++ Description:
+++   An R-module equipped with a distinguised differential operator.
+++   If R is a differential ring, then differentiation on the module
+++   should extend differentiation on the differential ring R.  The
+++   latter can be the null operator. In that case, the differentiation
+++   operator on the module is just an R-linear operator.  For that
+++   reason, we do not require that the ring R be a DifferentialRing; 
+++
+++ Axioms:
+++   \spad{differentiate(x + y) = differentiate(x) + differentiate(x)}
+++   \spad{differentiate(r*y) = r*differentiate(y) + differentiate(r)*y}
+
+DifferentialModule(R: CommutativeRing): Category ==
+  Join(Module R, DifferentialSpace)
+@
+
 
 \section{category DIFEXT DifferentialExtension}
 <<category DIFEXT DifferentialExtension>>=
@@ -1399,6 +1423,33 @@ OrderedSet(): Category == SetCategory with
     ((x: %) <= (y: %)) : Boolean == not (y < x)
 
 @
+
+\section{Partial Differential Domain}
+
+<<category PDDOM PartialDifferentialDomain>>=
+)abbrev category PDDOM PartialDifferentialDomain
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Modified: June 16, 2010
+++ Description:
+++   This category captures the interface of domains with a distinguished
+++   operation named \spad{differentiate} for partial differentiation with
+++   respect to some domain of variables.
+++ See Also:
+++   DifferentialDomain
+PartialDifferentialDomain(T: Type, S: Type): Category == Type with
+    differentiate: (%,S) -> T
+      ++ \spad{differentiate(x,v)} computes the partial derivative
+      ++ of \spad{x} with respect to \spad{v}.
+    D: (%,S) -> T
+      ++ \spad{D(x,v)} is a shorthand for \spad{differentiate(x,v)}
+  add
+    D(x,v) ==
+      differentiate(x,v)
+
+@
+
+
 \section{category PDRING PartialDifferentialRing}
 <<category PDRING PartialDifferentialRing>>=
 )abbrev category PDRING PartialDifferentialRing
@@ -1919,6 +1970,8 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category OAMONS OrderedAbelianMonoidSup>>
 <<category DIFFDOM DifferentialDomain>>
 <<category DIFRING DifferentialRing>>
+<<category DIFFMOD DifferentialModule>>
+<<category PDDOM PartialDifferentialDomain>>
 <<category PDRING PartialDifferentialRing>>
 <<category DIFEXT DifferentialExtension>>
 @
