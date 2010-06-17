@@ -1,5 +1,12 @@
 2010-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (LeftLinearSet): Weaken requirement
+	on argument.
+	(RightLinearSet): Likewise.
+	(LinearSet): Likewise.
+
+2010-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (DifferentialModule): New.
 	(PartialDifferentialDomain): Likewise.
 
