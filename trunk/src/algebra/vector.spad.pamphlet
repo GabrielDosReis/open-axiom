@@ -255,19 +255,13 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
              ++ dot(x,y) computes the inner product of the vectors x and y.
          if R has AbelianSemiGroup then AbelianSemiGroup
          if R has CancellationAbelianMonoid then CancellationAbelianMonoid
-         if R has Monoid then
-           Monoid
-           * : (R, %) -> %
-             ++ r * y multiplies the element r times each component of the
-             ++ vector y.
-           * : (%, R) -> %
-             ++ y * r multiplies each component of the vector y by the element r.
+         if R has Monoid then LinearSet R
          if R has Finite then Finite
          if R has CommutativeRing then
            Algebra R
            CommutativeRing
          if R has unitsKnown then unitsKnown
-         if R has OrderedRing then OrderedRing
+         if R has OrderedSet then OrderedSet
          if R has OrderedAbelianMonoidSup then OrderedAbelianMonoidSup
          if R has Field then VectorSpace R
  add
