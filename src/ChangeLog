@@ -1,5 +1,13 @@
 2010-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/vector.spad.pamphlet (DirectProductCategory): Extend
+	LinearSet if the coefficient type satifies Monoid.  Remove
+	previous bogus extension of Monoid.  
+	Similarly, extend OrderedSet if the element type satisfies
+	OrderedSet.  Remove previous bogus extension of OrderedRing.
+
+2010-06-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (LeftLinearSet): Weaken requirement
 	on argument.
 	(RightLinearSet): Likewise.
