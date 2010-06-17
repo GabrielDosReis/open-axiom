@@ -376,6 +376,7 @@ DifferentialDomain(T: Type): Category == Type with
 
 @
 
+\section{Differential Space}
 
 <<category DIFFSPC DifferentialSpace>>=
 )abbrev category DIFFSPC DifferentialSpace
@@ -400,6 +401,54 @@ DifferentialSpace(): Category == DifferentialDomain % with
 
 @
 
+
+\section{Differential Space Extension}
+
+<<category DSEXT DifferentialSpaceExtension>>=
+)abbrev category DSEXT DifferentialSpaceExtension
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpace
+++ Also See:
+++ Description:
+++   Extension of a base differential space with a derivation.
+++
+DifferentialSpaceExtension(R: Type): Category == Type with
+    differentiate: (%,R -> R) -> %
+      ++ \spad{differentiate(x,d)} computes the derivative of
+      ++ \spad{x}, extending differentiation \spad{d} on \spad{R}.
+    differentiate: (%,R -> R,NonNegativeInteger) -> %
+      ++ \spad{differentiate(x,d,n)} computes the \spad{n}-th derivative
+      ++ of \spad{x} using a derivation extending \spad{d} on \spad{R}.
+    D: (%,R -> R) -> %
+      ++ \spad{D(x,d)} is a shorthand for \spad{differentiate(x,d)}.
+    D: (%,R -> R,NonNegativeInteger) -> %
+      ++ \spad{D(x,d,n)} is a shorthand for \spad{differentiate(x,d,n)}.
+    if R has DifferentialSpace then DifferentialSpace
+    if R has PartialDifferentialSpace Symbol then
+      PartialDifferentialSpace Symbol
+  add
+    differentiate(x: %, d: R -> R, n: NonNegativeInteger):% ==
+      for i in 1..n repeat x := differentiate(x,d)
+      x
+
+    D(x: %, d: R -> R) ==
+      differentiate(x, d)
+
+    D(x: %, d: R -> R, n: NonNegativeInteger) ==
+      differentiate(x,d,n)
+
+    if R has DifferentialSpace then
+      differentiate x == differentiate(x, differentiate$R)
+
+    if R has PartialDifferentialSpace Symbol then
+      differentiate(x:%, v: Symbol):% ==
+        differentiate(x, differentiate(#1, v)$R)
+
+@
+
+
 \section{category DIFRING DifferentialRing}
 <<category DIFRING DifferentialRing>>=
 )abbrev category DIFRING DifferentialRing
@@ -423,6 +472,7 @@ DifferentialSpace(): Category == DifferentialDomain % with
 DifferentialRing(): Category == Join(Ring,DifferentialSpace)
 
 @
+
 
 \section{Differential Module}
 
@@ -499,6 +549,25 @@ DifferentialExtension(R:Ring): Category == Ring with
         differentiate(x, differentiate(#1, v)$R)
 
 @
+
+\section{Differential Module Extension}
+
+<<category DMEXT DifferentialModuleExtension>>=
+)abbrev category DMEXT DifferentialModuleExtension
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpaceExtension
+++ Also See:
+++   DifferentialExtension
+++ Description:
+++   Category of modules that extend differential rings.
+++
+DifferentialModuleExtension(R: CommutativeRing): Category ==
+  Join(Module(R),DifferentialSpaceExtension R)
+@
+
+
 \section{category DIVRING DivisionRing}
 <<category DIVRING DivisionRing>>=
 )abbrev category DIVRING DivisionRing
@@ -1981,12 +2050,15 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category OINTDOM OrderedIntegralDomain>>
 <<category OAMONS OrderedAbelianMonoidSup>>
 <<category DIFFDOM DifferentialDomain>>
+<<category DIFFSPC DifferentialSpace>>
 <<category DIFRING DifferentialRing>>
 <<category DIFFMOD DifferentialModule>>
+<<category DMEXT DifferentialModuleExtension>>
 <<category PDDOM PartialDifferentialDomain>>
 <<category PDSPC PartialDifferentialSpace>>
 <<category PDRING PartialDifferentialRing>>
 <<category DIFEXT DifferentialExtension>>
+<<category DSEXT DifferentialSpaceExtension>>
 @
 
 \eject

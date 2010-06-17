@@ -1,5 +1,10 @@
 2010-06-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (DifferentialSpaceExtension): New.
+	(DifferentialModuleExtension): Likewise.
+
+2010-06-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/vector.spad.pamphlet (DirectProductCategory): Extend
 	AbelianMonoid if element type satisfies AbelianMonoid.
 	Extend AbelianGroup if element type satisfies AbelianGroup.
