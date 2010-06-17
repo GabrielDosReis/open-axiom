@@ -342,6 +342,7 @@ $(OUT)/DIFFDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/DIFFSPC.$(FASLEXT): $(OUT)/DIFFDOM.$(FASLEXT)
 $(OUT)/DIFFMOD.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/PDDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/PDSPC.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
 
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
@@ -368,7 +369,7 @@ axiom_algebra_layer_0 = \
   DIOPS    DIOPS-   STRING   STRICAT  ISTRING  ILIST    \
   LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC- DIFFMOD  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
-  RTVALUE  SYSPTR   PDDOM    PDDOM-
+  RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -499,13 +500,14 @@ axiom_algebra_layer_4_objects = \
 
 $(OUT)/KERNEL.$(FASLEXT): $(OUT)/KERNEL2.$(FASLEXT)
 $(OUT)/DVARCAT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/PDRING.$(FASLEXT): $(OUT)/PDSPC.$(FASLEXT)
 
 axiom_algebra_layer_5 = \
            CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
   ELEMFUN- ESTOOLS2 FCOMP    FPATMAB  IDPAM    IDPO     \
   INCRMAPS KERNEL2           MODMONOM MONADWU  MONADWU- \
   MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
-           ORDMON   PATMATCH PERMCAT  PDRING   PDRING-  \
+           ORDMON   PATMATCH PERMCAT  PDRING            \
   SDVAR    SUP2     TRIGCAT  TRIGCAT- ULS2     UP2      \
   ELABEXPR KERNEL
 
