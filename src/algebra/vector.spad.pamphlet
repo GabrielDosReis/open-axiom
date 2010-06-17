@@ -224,7 +224,7 @@ VectorFunctions2(A, B): Exports == Implementation where
  
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: June 17, 2010
 ++ Basic Functions:
 ++ Related Constructors: DirectProduct
 ++ Also See: VectorCategory
@@ -255,11 +255,11 @@ DirectProductCategory(dim:NonNegativeInteger, R:Type): Category ==
              ++ dot(x,y) computes the inner product of the vectors x and y.
          if R has AbelianSemiGroup then AbelianSemiGroup
          if R has CancellationAbelianMonoid then CancellationAbelianMonoid
+         if R has AbelianMonoid then AbelianMonoid
+         if R has AbelianGroup then AbelianGroup
          if R has Monoid then LinearSet R
          if R has Finite then Finite
-         if R has CommutativeRing then
-           Algebra R
-           CommutativeRing
+         if R has CommutativeRing then Module R
          if R has unitsKnown then unitsKnown
          if R has OrderedSet then OrderedSet
          if R has OrderedAbelianMonoidSup then OrderedAbelianMonoidSup
