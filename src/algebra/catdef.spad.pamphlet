@@ -20,18 +20,16 @@
 ++ Date Created: May 31, 2009
 ++ Date Last Modified: May 31, 2009
 ++ Description:
-++   A set is an \spad{R}-left linear set if it is stable by left-dilation
-++   by elements in the ring \spad{R}.  This category differs from
-++   \spad{LeftModule} in that no other assumption (such as addition)
-++   is made about the underlying set.
+++   A set is an \spad{S}-left linear set if it is stable by left-dilation
+++   by elements in the semigroup \spad{S}.  
 ++ See Also: RightLinearSet.
-LeftLinearSet(R: Rng): Category == SetCategory with
+LeftLinearSet(S: SemiGroup): Category == SetCategory with
    0: %                
      ++ \spad{0} represents the origin of the linear set
    zero?: % -> Boolean 
-     ++ \spad{zero? x} holds is \spad{x} is the origin.
-   *: (R,%) -> %       
-     ++ \spad{r*x} is the left-dilation of \spad{x} by \spad{r}.
+     ++ \spad{zero? x} holds if \spad{x} is the origin.
+   *: (S,%) -> %       
+     ++ \spad{s*x} is the left-dilation of \spad{x} by \spad{s}.
 
 @
 
@@ -41,18 +39,16 @@ LeftLinearSet(R: Rng): Category == SetCategory with
 ++ Date Created: May 31, 2009
 ++ Date Last Modified: May 31, 2009
 ++ Description:
-++   A set is an \spad{R}-right linear set if it is stable by right-dilation
-++   by elements in the ring \spad{R}.  This category differs from
-++   \spad{RightModule} in that no other assumption (such as addition)
-++   is made about the underlying set.
+++   A set is an \spad{S}-right linear set if it is stable by right-dilation
+++   by elements in the semigroup \spad{S}.
 ++ See Also: LeftLinearSet.
-RightLinearSet(R: Rng): Category == SetCategory with
+RightLinearSet(S: SemiGroup): Category == SetCategory with
    0: %                
      ++ \spad{0} represents the origin of the linear set
    zero?: % -> Boolean 
-     ++ \spad{zero? x} holds is \spad{x} is the origin.
-   *: (%,R) -> %       
-     ++ \spad{r*x} is the left-dilation of \spad{x} by \spad{r}.
+     ++ \spad{zero? x} holds if \spad{x} is the origin.
+   *: (%,S) -> %       
+     ++ \spad{x*s} is the right-dilation of \spad{x} by \spad{s}.
 
 @
 
@@ -62,12 +58,10 @@ RightLinearSet(R: Rng): Category == SetCategory with
 ++ Date Created: May 31, 2009
 ++ Date Last Modified: May 31, 2009
 ++ Description:
-++   A set is an \spad{R}-linear set if it is stable by dilation
-++   by elements in the ring \spad{R}.  This category differs from
-++   \spad{Module} in that no other assumption (such as addition)
-++   is made about the underlying set.
+++   A set is an \spad{S}-linear set if it is stable by dilation
+++   by elements in the semigroup \spad{S}.
 ++ See Also: LeftLinearSet, RightLinearSet.
-LinearSet(R: Rng): Category == Join(LeftLinearSet R, RightLinearSet R)
+LinearSet(S: SemiGroup): Category == Join(LeftLinearSet S, RightLinearSet S)
 
 @
 
