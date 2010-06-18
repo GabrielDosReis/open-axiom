@@ -736,6 +736,7 @@
   (|OutputByteConduit| . OUTBCON)
   (|PAdicIntegerCategory| . PADICCT)
   (|PartialDifferentialDomain| . PDDOM)
+  (|PartialDifferentialModule| . PDMOD)
   (|PartialDifferentialRing| . PDRING)
   (|PartialDifferentialSpace| . PDSPC)
   (|PartialTranscendentalFunctions| . PTRANFN)
