@@ -14,7 +14,7 @@
 )abbrev category ULSCCAT UnivariateLaurentSeriesConstructorCategory
 ++ Author: Clifton J. Williamson
 ++ Date Created: 6 February 1990
-++ Date Last Updated: 10 May 1990
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains:
 ++ Also See:
@@ -562,13 +562,11 @@ UnivariateLaurentSeries(Coef,var,cen): Exports == Implementation where
   I   ==> Integer
   UTS ==> UnivariateTaylorSeries(Coef,var,cen)
 
-  Exports ==> UnivariateLaurentSeriesConstructorCategory(Coef,UTS) with
+  Exports ==> Join(UnivariateLaurentSeriesConstructorCategory(Coef,UTS),_
+                   PartialDifferentialDomain(%,Variable var)) with
     coerce: Variable(var) -> %
       ++ \spad{coerce(var)} converts the series variable \spad{var} into a
       ++ Laurent series.
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} returns the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     if Coef has Algebra Fraction Integer then
       integrate: (%,Variable(var)) -> %
         ++ \spad{integrate(f(x))} returns an anti-derivative of the power

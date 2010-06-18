@@ -1,5 +1,19 @@
 2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/fparfrac.spad.pamphlet (FullPartialFractionExpansion):
+	Now satisfies DifferentialSpace.
+	* algebra/gseries.spad.pamphlet (GeneralUnivariatePowerSeries):
+	Now satisfies an instance of PartialDifferentialDomain.
+	* algebra/laurent.spad.pamphlet (UnivariateLaurentSeries): Likewise.
+	* algebra/puiseux.spad.pamphlet (UnivariatePuiseuxSeries): Likewise.
+	* algebra/suls.spad.pamphlet (SparseUnivariateLaurentSeries): Likewise.
+	* algebra/supxs.spad.pamphlet (SparseUnivariatePuiseuxSeries):
+	Likewise. 
+	* algebra/suts.spad.pamphlet (SparseUnivariateTaylorSeries): Likewise.
+	* algebra/taylor.spad.pamphlet (UnivariateTaylorSeries): Likewise.
+
+2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (DifferentialExtension): Now
 	extends DifferentialSpaceExtension.
 

@@ -802,12 +802,12 @@ axiom_algebra_layer_14_objects = \
 <<layer15>>=
 $(OUT)/EXPUPXS.$(FASLEXT): $(OUT)/UPXS.$(FASLEXT)
 $(OUT)/UPXS.$(FASLEXT): $(OUT)/UPXSCAT.$(FASLEXT) $(OUT)/UPXSCONS.$(FASLEXT) \
-	$(OUT)/ULS.$(FASLEXT)
+	$(OUT)/ULS.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
 $(OUT)/UPXSCONS.$(FASLEXT): $(OUT)/UPXSCCA.$(FASLEXT)
-$(OUT)/ULS.$(FASLEXT): $(OUT)/ULSCONS.$(FASLEXT)
+$(OUT)/ULS.$(FASLEXT): $(OUT)/ULSCONS.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
 $(OUT)/ULSCONS.$(FASLEXT): $(OUT)/ULSCCAT.$(FASLEXT)
 $(OUT)/ULSCCAT.$(FASLEXT): $(OUT)/UTS.$(FASLEXT)
-$(OUT)/UTS.$(FASLEXT): $(OUT)/UTSCAT.$(FASLEXT)
+$(OUT)/UTS.$(FASLEXT): $(OUT)/UTSCAT.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
 
 axiom_algebra_layer_15 = \
   DSMP     EXPUPXS  UPXS     UPXSCONS \
@@ -883,6 +883,7 @@ axiom_algebra_layer_18_objects = \
 
 <<layer19>>=
 $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
+$(OUT)/FPARFRAC.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM           ATTRBUT \
@@ -926,6 +927,7 @@ axiom_algebra_layer_19_objects = \
 <<layer20>>=
 $(OUT)/AN.$(FASLEXT): $(OUT)/IAN.$(FASLEXT)
 $(OUT)/IAN.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
+$(OUT)/SUTS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
 
 axiom_algebra_layer_20 = \
   AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
@@ -972,6 +974,9 @@ axiom_algebra_layer_20_objects = \
 
 <<layer21>>=
 $(OUT)/FDIV.$(FASLEXT): $(OUT)/HELLFDIV.$(FASLEXT)
+$(OUT)/GSERIES.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/SULS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/SUPXS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
 
 axiom_algebra_layer_21 = \
   DEFINTEF DFINTTLS DEFINTRF D01TRNS  \
