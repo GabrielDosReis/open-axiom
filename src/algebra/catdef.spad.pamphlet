@@ -495,8 +495,9 @@ DifferentialRing(): Category == Join(Ring,DifferentialSpace)
 ++   \spad{differentiate(x + y) = differentiate(x) + differentiate(x)}
 ++   \spad{differentiate(r*y) = r*differentiate(y) + differentiate(r)*y}
 
-DifferentialModule(R: CommutativeRing): Category ==
-  Join(Module R, DifferentialSpace)
+DifferentialModule(R: Ring): Category ==
+  Join(BiModule(R,R), DifferentialSpace) with
+    if R has CommutativeRing then Module R
 @
 
 
@@ -537,8 +538,11 @@ DifferentialExtension(R:Ring): Category ==
 ++ Description:
 ++   Category of modules that extend differential rings.
 ++
-DifferentialModuleExtension(R: CommutativeRing): Category ==
-  Join(Module(R),DifferentialSpaceExtension R)
+DifferentialModuleExtension(R: Ring): Category ==
+  Join(BiModule(R,R),DifferentialSpaceExtension R) with
+    if R has DifferentialSpace then DifferentialModule R
+    if R has PartialDifferentialSpace Symbol then
+      PartialDifferentialModule(R,Symbol)
 @
 
 
@@ -1544,8 +1548,6 @@ PartialDifferentialSpace(S: SetCategory): Category ==
 
 @
 
-
-
 \section{category PDRING PartialDifferentialRing}
 <<category PDRING PartialDifferentialRing>>=
 )abbrev category PDRING PartialDifferentialRing
@@ -1569,6 +1571,35 @@ PartialDifferentialRing(S:SetCategory): Category ==
   Join(Ring,PartialDifferentialSpace S)
 
 @
+
+\section{Partial Differential Module}
+
+<<category PDMOD PartialDifferentialModule>>=
+)abbrev category PDMOD PartialDifferentialModule
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: June 18, 2010
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   A partial differential R-module with differentiations
+++   indexed by a parameter type S.
+++
+++ Axioms:
+++   \spad{differentiate(x+y,e) = differentiate(x,e)+differentiate(y,e)}
+++   \spad{differentiate(r*x,e) = r*differentiate(x,e) + differentiate(r,e)*x}
+++   \spad{differentiate(x*r,e) = x*differentiate(r,e) + differentiate(x,e)*r}
+
+PartialDifferentialModule(R: Ring,S: SetCategory): Category ==
+  Join(BiModule(R,R),PartialDifferentialSpace S) with
+     if R has CommutativeRing then Module R
+
+@
+
+
 \section{category PFECAT PolynomialFactorizationExplicit}
 <<category PFECAT PolynomialFactorizationExplicit>>=
 )abbrev category PFECAT PolynomialFactorizationExplicit
@@ -2031,6 +2062,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category PDDOM PartialDifferentialDomain>>
 <<category PDSPC PartialDifferentialSpace>>
 <<category PDRING PartialDifferentialRing>>
+<<category PDMOD PartialDifferentialModule>>
 <<category DIFEXT DifferentialExtension>>
 <<category DSEXT DifferentialSpaceExtension>>
 @
