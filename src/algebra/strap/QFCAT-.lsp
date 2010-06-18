@@ -457,10 +457,9 @@
              (343 . |minColIndex|) (348 . +) (354 . |maxColIndex|)
              (359 . |subMatrix|) (|Vector| 7) (368 . |column|)
              (|Record| (|:| |mat| 23) (|:| |vec| 111)) (|Vector| $)
-             |QFCAT-;reducedSystem;MVR;27| (|Union| 86 '"failed")
-             (|Matrix| 67) (|Vector| 67)
-             (|Record| (|:| |mat| 117) (|:| |vec| 118)) (|List| 56)
-             (|List| 29) (|OutputForm|))
+             |QFCAT-;reducedSystem;MVR;27| (|List| 56) (|List| 29)
+             (|Union| 86 '"failed") (|Matrix| 67) (|Vector| 67)
+             (|Record| (|:| |mat| 119) (|:| |vec| 120)) (|OutputForm|))
           '#(|retractIfCan| 374 |retract| 384 |reducedSystem| 394
              |random| 405 |patternMatch| 409 |numerator| 423 |nextItem|
              428 |map| 433 |init| 439 |fractionPart| 443
@@ -497,11 +496,11 @@
                                   109 5 23 0 0 67 67 67 67 110 2 23 111
                                   0 67 112 1 0 94 0 96 1 0 64 0 66 1 0
                                   67 0 93 1 0 56 0 61 2 0 113 27 114
-                                  115 1 0 23 27 28 0 0 0 99 3 0 75 0 68
-                                  75 76 3 0 84 0 77 84 85 1 0 0 0 10 1
+                                  115 1 0 23 27 28 0 0 0 99 3 0 84 0 77
+                                  84 85 3 0 75 0 68 75 76 1 0 0 0 10 1
                                   0 17 0 20 2 0 0 21 0 22 0 0 0 16 1 0
                                   0 0 55 2 0 0 0 21 36 1 0 0 0 12 1 0
-                                  45 0 48 1 0 41 0 44 1 0 37 0 40 1 0
-                                  77 0 80 1 0 68 0 71 1 0 0 56 58 1 0 0
+                                  45 0 48 1 0 37 0 40 1 0 41 0 44 1 0
+                                  68 0 71 1 0 77 0 80 1 0 0 56 58 1 0 0
                                   86 91 0 0 29 31 2 0 49 0 0 51)))))
           '|lookupComplete|)) 
