@@ -413,7 +413,7 @@ UnivariatePuiseuxSeriesConstructor(Coef,ULS):_
 )abbrev domain UPXS UnivariatePuiseuxSeries
 ++ Author: Clifton J. Williamson
 ++ Date Created: 28 January 1990
-++ Date Last Updated: 21 September 1993
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains:
 ++ Also See:
@@ -442,10 +442,8 @@ UnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
   ULS ==> UnivariateLaurentSeries(Coef,var,cen)
 
   Exports ==> Join(UnivariatePuiseuxSeriesConstructorCategory(Coef,ULS),_
+                   PartialDifferentialDomain(%,Variable var),_
                    RetractableTo UTS,CoercibleFrom Variable var) with
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} returns the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     if Coef has Algebra Fraction Integer then
       integrate: (%,Variable(var)) -> %
         ++ \spad{integrate(f(x))} returns an anti-derivative of the power

@@ -14,7 +14,7 @@
 )abbrev domain SUTS SparseUnivariateTaylorSeries
 ++ Author: Clifton J. Williamson
 ++ Date Created: 16 February 1990
-++ Date Last Updated: 10 March 1995
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains: InnerSparseUnivariatePowerSeries,
 ++   SparseUnivariateLaurentSeries, SparseUnivariatePuiseuxSeries
@@ -47,7 +47,8 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
   ST   ==> Stream Term
   UP   ==> UnivariatePolynomial(var,Coef)
 
-  Exports ==> UnivariateTaylorSeriesCategory(Coef) with
+  Exports ==> Join(UnivariateTaylorSeriesCategory(Coef),_
+                   PartialDifferentialDomain(%,Variable var)) with
     coerce: UP -> %
       ++\spad{coerce(p)} converts a univariate polynomial p in the variable
       ++\spad{var} to a univariate Taylor series in \spad{var}.
@@ -57,9 +58,6 @@ SparseUnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
     coerce: Variable(var) -> %
       ++\spad{coerce(var)} converts the series variable \spad{var} into a
       ++ Taylor series.
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} computes the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     if Coef has Algebra Fraction Integer then
       integrate: (%,Variable(var)) -> %
         ++ \spad{integrate(f(x),x)} returns an anti-derivative of the power
