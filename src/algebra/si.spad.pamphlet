@@ -317,7 +317,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
      (x -$Lisp MININT +$Lisp 1$Lisp) pretend PositiveInteger
 
 
-   reducedSystem(m, v) ==
+   reducedSystem(m: Matrix %, v: Vector %) ==
         [m pretend Matrix(Integer), v pretend Vector(Integer)]
 
    positiveRemainder(x,n) ==

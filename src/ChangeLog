@@ -1,5 +1,11 @@
 2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (LinearlyExplicitRingOver)
+	[reducedSystem]: Add overload.
+	* algebra/si.spad.pamphlet (SingleInteger)[reducedSystem]: Tidy.
+
+2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (LeftLinearSet): Remove declaration
 	for 0 and zero?
 	(RightLinearSet): Likewise.
