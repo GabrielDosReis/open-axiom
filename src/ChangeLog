@@ -1,4 +1,10 @@
-2010-06-18  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/catdef.spad.pamphlet (LeftLinearSet): Remove declaration
+	for 0 and zero?
+	(RightLinearSet): Likewise.
+
+2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (DifferentialModule): Tidy.
 	(DifferentialModuleExtension): Likewise.
