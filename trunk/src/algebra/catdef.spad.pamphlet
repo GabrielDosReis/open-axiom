@@ -24,10 +24,6 @@
 ++   by elements in the semigroup \spad{S}.  
 ++ See Also: RightLinearSet.
 LeftLinearSet(S: SemiGroup): Category == SetCategory with
-   0: %                
-     ++ \spad{0} represents the origin of the linear set
-   zero?: % -> Boolean 
-     ++ \spad{zero? x} holds if \spad{x} is the origin.
    *: (S,%) -> %       
      ++ \spad{s*x} is the left-dilation of \spad{x} by \spad{s}.
 
@@ -43,10 +39,6 @@ LeftLinearSet(S: SemiGroup): Category == SetCategory with
 ++   by elements in the semigroup \spad{S}.
 ++ See Also: LeftLinearSet.
 RightLinearSet(S: SemiGroup): Category == SetCategory with
-   0: %                
-     ++ \spad{0} represents the origin of the linear set
-   zero?: % -> Boolean 
-     ++ \spad{zero? x} holds if \spad{x} is the origin.
    *: (%,S) -> %       
      ++ \spad{x*s} is the right-dilation of \spad{x} by \spad{s}.
 
