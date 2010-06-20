@@ -65,7 +65,20 @@ emitIndirectCall(fn,args,x) ==
   x
 
 --% OPTIMIZER
- 
+
+++ Change (%LET id expr) to (%store id expr) if `id' is being
+++ updated as opposed to being defined. `vars' is the list of
+++ all variable definitions in scope.
+changeVariableDefinitionToStore(form,vars) ==
+  isAtomicForm form => nil
+  form is ['%LET,v,expr] =>
+    changeVariableDefinitionToStore(expr,vars)
+    if v in vars then form.op := '%store
+  for x in form repeat
+    changeVariableDefinitionToStore(x,vars)
+    x is ['%LET,v,:.] and not (v in vars) =>
+      vars := [v,:vars]
+
 optimizeFunctionDef(def) ==
   if $reportOptimization then
     sayBrightlyI bright '"Original LISP code:"
@@ -95,6 +108,7 @@ optimizeFunctionDef(def) ==
         atom x => nil
         replaceThrowByReturn(first x,g)
         replaceThrowByReturn(rest x,g)
+  changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,body']]
  
 optimize x ==
