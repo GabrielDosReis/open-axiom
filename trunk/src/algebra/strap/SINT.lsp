@@ -295,7 +295,7 @@
          ('T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
 
 (DEFUN |SINT;OMwrite;$S;2| (|x| $)
-  (PROG (|sp| |dev| |s|)
+  (PROG (|s| |sp| |dev|)
     (RETURN
       (SEQ (LETT |s| "" |SINT;OMwrite;$S;2|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |SINT;OMwrite;$S;2|)
@@ -307,11 +307,10 @@
            (|SINT;writeOMSingleInt| |dev| |x| $)
            (SPADCALL |dev| (|getShellEntry| $ 24))
            (SPADCALL |dev| (|getShellEntry| $ 25))
-           (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |SINT;OMwrite;$S;2|)
-           (EXIT |s|))))) 
+           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
 
 (DEFUN |SINT;OMwrite;$BS;3| (|x| |wholeObj| $)
-  (PROG (|sp| |dev| |s|)
+  (PROG (|s| |sp| |dev|)
     (RETURN
       (SEQ (LETT |s| "" |SINT;OMwrite;$BS;3|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |SINT;OMwrite;$BS;3|)
@@ -323,8 +322,7 @@
            (|SINT;writeOMSingleInt| |dev| |x| $)
            (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 24))))
            (SPADCALL |dev| (|getShellEntry| $ 25))
-           (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |SINT;OMwrite;$BS;3|)
-           (EXIT |s|))))) 
+           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
 
 (DEFUN |SINT;OMwrite;Omd$V;4| (|dev| |x| $)
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 23))

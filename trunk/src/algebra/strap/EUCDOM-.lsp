@@ -67,10 +67,8 @@
 (DEFUN |EUCDOM-;gcd;3S;5| (|x| |y| $)
   (PROG (|#G13| |#G14|)
     (RETURN
-      (SEQ (LETT |x| (SPADCALL |x| (|getShellEntry| $ 22))
-                 |EUCDOM-;gcd;3S;5|)
-           (LETT |y| (SPADCALL |y| (|getShellEntry| $ 22))
-                 |EUCDOM-;gcd;3S;5|)
+      (SEQ (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 22)))
+           (SETQ |y| (SPADCALL |y| (|getShellEntry| $ 22)))
            (LOOP
              (COND
                ((NOT (NOT (SPADCALL |y| (|getShellEntry| $ 8))))
@@ -79,12 +77,10 @@
                        (LETT |#G14|
                              (SPADCALL |x| |y| (|getShellEntry| $ 24))
                              |EUCDOM-;gcd;3S;5|)
-                       (LETT |x| |#G13| |EUCDOM-;gcd;3S;5|)
-                       (LETT |y| |#G14| |EUCDOM-;gcd;3S;5|)
-                       (EXIT (LETT |y|
+                       (SETQ |x| |#G13|) (SETQ |y| |#G14|)
+                       (EXIT (SETQ |y|
                                    (SPADCALL |y|
-                                    (|getShellEntry| $ 22))
-                                   |EUCDOM-;gcd;3S;5|))))))
+                                    (|getShellEntry| $ 22))))))))
            (EXIT |x|))))) 
 
 (DEFUN |EUCDOM-;unitNormalizeIdealElt| (|s| $)
@@ -106,7 +102,7 @@
                             |c|)))))))) 
 
 (DEFUN |EUCDOM-;extendedEuclidean;2SR;7| (|x| |y| $)
-  (PROG (|s3| |s2| |qr| |s1|)
+  (PROG (|s1| |s2| |s3| |qr|)
     (RETURN
       (SEQ (LETT |s1|
                  (|EUCDOM-;unitNormalizeIdealElt|
@@ -149,13 +145,11 @@
                                         (|getShellEntry| $ 31))
                                        (CDR |qr|))
                                       |EUCDOM-;extendedEuclidean;2SR;7|)
-                                     (LETT |s1| |s2|
-                                      |EUCDOM-;extendedEuclidean;2SR;7|)
+                                     (SETQ |s1| |s2|)
                                      (EXIT
-                                      (LETT |s2|
+                                      (SETQ |s2|
                                        (|EUCDOM-;unitNormalizeIdealElt|
-                                        |s3| $)
-                                       |EUCDOM-;extendedEuclidean;2SR;7|))))))
+                                        |s3| $)))))))
                          (COND
                            ((NOT (SPADCALL (QVELT |s1| 0)
                                      (|getShellEntry| $ 8)))
@@ -173,10 +167,9 @@
                                        (|getShellEntry| $ 29))
                                       (|getShellEntry| $ 33)))
                                     (EXIT
-                                     (LETT |s1|
+                                     (SETQ |s1|
                                       (|EUCDOM-;unitNormalizeIdealElt|
-                                       |s1| $)
-                                      |EUCDOM-;extendedEuclidean;2SR;7|)))))))
+                                       |s1| $))))))))
                          (EXIT |s1|))))))))) 
 
 (DEFUN |EUCDOM-;extendedEuclidean;3SU;8| (|x| |y| |z| $)

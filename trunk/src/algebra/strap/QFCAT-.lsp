@@ -174,16 +174,16 @@
               (PROGN
                 (LETT |#G19| |y| |QFCAT-;<;2AB;13|)
                 (LETT |#G20| |x| |QFCAT-;<;2AB;13|)
-                (LETT |x| |#G19| |QFCAT-;<;2AB;13|)
-                (LETT |y| |#G20| |QFCAT-;<;2AB;13|))))
+                (SETQ |x| |#G19|)
+                (SETQ |y| |#G20|))))
            (COND
              ((SPADCALL (SPADCALL |y| (|getShellEntry| $ 11))
                   (|spadConstant| $ 52) (|getShellEntry| $ 50))
               (PROGN
                 (LETT |#G21| |y| |QFCAT-;<;2AB;13|)
                 (LETT |#G22| |x| |QFCAT-;<;2AB;13|)
-                (LETT |x| |#G21| |QFCAT-;<;2AB;13|)
-                (LETT |y| |#G22| |QFCAT-;<;2AB;13|))))
+                (SETQ |x| |#G21|)
+                (SETQ |y| |#G22|))))
            (EXIT (SPADCALL
                      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
                          (SPADCALL |y| (|getShellEntry| $ 11))

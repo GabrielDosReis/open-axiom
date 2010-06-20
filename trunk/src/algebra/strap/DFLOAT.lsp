@@ -401,7 +401,7 @@
                 |DFLOAT;**;$F$;88|)) 
 
 (DEFUN |DFLOAT;OMwrite;$S;1| (|x| $)
-  (PROG (|sp| |dev| |s|)
+  (PROG (|s| |sp| |dev|)
     (RETURN
       (SEQ (LETT |s| "" |DFLOAT;OMwrite;$S;1|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |DFLOAT;OMwrite;$S;1|)
@@ -413,11 +413,10 @@
            (SPADCALL |dev| |x| (|getShellEntry| $ 15))
            (SPADCALL |dev| (|getShellEntry| $ 16))
            (SPADCALL |dev| (|getShellEntry| $ 17))
-           (LETT |s| (OM-STRINGPTRTOSTRING |sp|) |DFLOAT;OMwrite;$S;1|)
-           (EXIT |s|))))) 
+           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
 
 (DEFUN |DFLOAT;OMwrite;$BS;2| (|x| |wholeObj| $)
-  (PROG (|sp| |dev| |s|)
+  (PROG (|s| |sp| |dev|)
     (RETURN
       (SEQ (LETT |s| "" |DFLOAT;OMwrite;$BS;2|)
            (LETT |sp| (OM-STRINGTOSTRINGPTR |s|)
@@ -430,9 +429,7 @@
            (SPADCALL |dev| |x| (|getShellEntry| $ 15))
            (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 16))))
            (SPADCALL |dev| (|getShellEntry| $ 17))
-           (LETT |s| (OM-STRINGPTRTOSTRING |sp|)
-                 |DFLOAT;OMwrite;$BS;2|)
-           (EXIT |s|))))) 
+           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
 
 (DEFUN |DFLOAT;OMwrite;Omd$V;3| (|dev| |x| $)
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 12))
@@ -658,12 +655,8 @@
              ('T
               (SEQ (LETT |theta| (ATAN (FLOAT-SIGN 1.0 (/ |y| |x|)))
                          |DFLOAT;atan;3$;79|)
-                   (COND
-                     ((< |x| 0.0)
-                      (LETT |theta| (- PI |theta|) |DFLOAT;atan;3$;79|)))
-                   (COND
-                     ((< |y| 0.0)
-                      (LETT |theta| (- |theta|) |DFLOAT;atan;3$;79|)))
+                   (COND ((< |x| 0.0) (SETQ |theta| (- PI |theta|))))
+                   (COND ((< |y| 0.0) (SETQ |theta| (- |theta|))))
                    (EXIT |theta|)))))))) 
 
 (DEFUN |DFLOAT;retract;$F;80| (|x| $)
@@ -711,7 +704,7 @@
              ('T
               (SEQ (LETT |s| (|DFLOAT;sign;$I;84| |x| $)
                          |DFLOAT;manexp|)
-                   (LETT |x| (FLOAT-SIGN 1.0 |x|) |DFLOAT;manexp|)
+                   (SETQ |x| (FLOAT-SIGN 1.0 |x|))
                    (COND
                      ((> |x| |$DoubleFloatMaximum|)
                       (RETURN-FROM |DFLOAT;manexp|
@@ -729,9 +722,9 @@
                                (- (CDR |me|) (FLOAT-DIGITS 0.0))))))))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;87| (|f| |d| |b| $)
-  (PROG (|#G109| |nu| |ex| BASE |de| |tol| |#G110| |q| |r| |p2| |q2|
-                 |#G111| |#G112| |p0| |p1| |#G113| |#G114| |q0| |q1|
-                 |#G115| |#G116| |s| |t|)
+  (PROG (|#G109| |nu| |ex| BASE |de| |tol| |s| |t| |p0| |p1| |q0| |q1|
+                 |#G110| |q| |r| |p2| |q2| |#G111| |#G112| |#G113|
+                 |#G114| |#G115| |#G116|)
     (RETURN
       (SEQ (LETT |#G109| (|DFLOAT;manexp| |f| $)
                  |DFLOAT;rationalApproximation;$2NniF;87|)
@@ -814,28 +807,22 @@
                                                |DFLOAT;rationalApproximation;$2NniF;87|)
                                               (LETT |#G112| |p2|
                                                |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |p0| |#G111|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |p1| |#G112|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
+                                              (SETQ |p0| |#G111|)
+                                              (SETQ |p1| |#G112|)
                                               (LETT |#G113| |q1|
                                                |DFLOAT;rationalApproximation;$2NniF;87|)
                                               (LETT |#G114| |q2|
                                                |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q0| |#G113|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q1| |#G114|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
+                                              (SETQ |q0| |#G113|)
+                                              (SETQ |q1| |#G114|)
                                               (EXIT
                                                (PROGN
                                                  (LETT |#G115| |t|
                                                   |DFLOAT;rationalApproximation;$2NniF;87|)
                                                  (LETT |#G116| |r|
                                                   |DFLOAT;rationalApproximation;$2NniF;87|)
-                                                 (LETT |s| |#G115|
-                                                  |DFLOAT;rationalApproximation;$2NniF;87|)
-                                                 (LETT |t| |#G116|
-                                                  |DFLOAT;rationalApproximation;$2NniF;87|)))))))))))))))))))) 
+                                                 (SETQ |s| |#G115|)
+                                                 (SETQ |t| |#G116|)))))))))))))))))))) 
 
 (DEFUN |DFLOAT;**;$F$;88| (|x| |r| $)
   (PROG (|n| |d|)

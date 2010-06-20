@@ -675,11 +675,8 @@
                  (T (LET ((|u| (CAR #0#)))
                       (COND
                         ((EQCAR |u| |c|)
-                         (LETT |l1| (APPEND (CDR |u|) |l1|)
-                               |OUTFORM;blankSeparate;L$;35|))
-                        ('T
-                         (LETT |l1| (CONS |u| |l1|)
-                               |OUTFORM;blankSeparate;L$;35|))))))
+                         (SETQ |l1| (APPEND (CDR |u|) |l1|)))
+                        ('T (SETQ |l1| (CONS |u| |l1|)))))))
                (SETQ #0# (CDR #0#))))
            (EXIT (CONS |c| |l1|)))))) 
 
@@ -730,8 +727,7 @@
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
          ((ODDP (LENGTH |l|))
-          (LETT |l| (APPEND |l| (LIST (|OUTFORM;empty;$;73| $)))
-                |OUTFORM;supersub;$L$;47|)))
+          (SETQ |l| (APPEND |l| (LIST (|OUTFORM;empty;$;73| $))))))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;hconcat;3$;48| (|a| |b| $)

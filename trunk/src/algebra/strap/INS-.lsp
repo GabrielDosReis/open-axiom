@@ -206,9 +206,8 @@
                     (SEQ (COND
                            ((SPADCALL |n| (|spadConstant| $ 10)
                                 (|getShellEntry| $ 28))
-                            (LETT |n|
-                                  (SPADCALL |n| (|getShellEntry| $ 19))
-                                  |INS-;symmetricRemainder;3S;27|)))
+                            (SETQ |n|
+                                  (SPADCALL |n| (|getShellEntry| $ 19)))))
                          (EXIT (COND
                                  ((SPADCALL |r| (|spadConstant| $ 10)
                                       (|getShellEntry| $ 16))
@@ -232,12 +231,11 @@
                                  ('T |r|))))))))))) 
 
 (DEFUN |INS-;invmod;3S;28| (|a| |b| $)
-  (PROG (|q| |r| |r1| |c| |c1| |d| |d1|)
+  (PROG (|c| |c1| |d| |d1| |q| |r| |r1|)
     (RETURN
       (SEQ (COND
              ((SPADCALL |a| (|getShellEntry| $ 85))
-              (LETT |a| (SPADCALL |a| |b| (|getShellEntry| $ 86))
-                    |INS-;invmod;3S;28|)))
+              (SETQ |a| (SPADCALL |a| |b| (|getShellEntry| $ 86)))))
            (LETT |c| |a| |INS-;invmod;3S;28|)
            (LETT |c1| (|spadConstant| $ 22) |INS-;invmod;3S;28|)
            (LETT |d| |b| |INS-;invmod;3S;28|)
@@ -261,10 +259,8 @@
                                      (|getShellEntry| $ 88))
                                  (|getShellEntry| $ 67))
                              |INS-;invmod;3S;28|)
-                       (LETT |c| |d| |INS-;invmod;3S;28|)
-                       (LETT |c1| |d1| |INS-;invmod;3S;28|)
-                       (LETT |d| |r| |INS-;invmod;3S;28|)
-                       (EXIT (LETT |d1| |r1| |INS-;invmod;3S;28|))))))
+                       (SETQ |c| |d|) (SETQ |c1| |d1|) (SETQ |d| |r|)
+                       (EXIT (SETQ |d1| |r1|))))))
            (COND
              ((NOT (SPADCALL |c| (|getShellEntry| $ 89)))
               (EXIT (|error| "inverse does not exist"))))
@@ -278,8 +274,7 @@
     (RETURN
       (SEQ (COND
              ((SPADCALL |x| (|getShellEntry| $ 85))
-              (LETT |x| (SPADCALL |x| |p| (|getShellEntry| $ 86))
-                    |INS-;powmod;4S;29|)))
+              (SETQ |x| (SPADCALL |x| |p| (|getShellEntry| $ 86)))))
            (EXIT (COND
                    ((SPADCALL |x| (|getShellEntry| $ 66))
                     (|spadConstant| $ 10))
@@ -297,29 +292,26 @@
                                      (COND
                                        ((SPADCALL |n|
                                          (|getShellEntry| $ 13))
-                                        (LETT |y|
+                                        (SETQ |y|
                                          (SPADCALL |y| |z| |p|
-                                          (|getShellEntry| $ 91))
-                                         |INS-;powmod;4S;29|)))
+                                          (|getShellEntry| $ 91)))))
                                      (EXIT
                                       (COND
                                         ((SPADCALL
-                                          (LETT |n|
+                                          (SETQ |n|
                                            (SPADCALL |n|
                                             (SPADCALL
                                              (|spadConstant| $ 22)
                                              (|getShellEntry| $ 19))
-                                            (|getShellEntry| $ 20))
-                                           |INS-;powmod;4S;29|)
+                                            (|getShellEntry| $ 20)))
                                           (|getShellEntry| $ 66))
                                          (RETURN-FROM
                                           |INS-;powmod;4S;29|
                                            |y|))
                                         ('T
-                                         (LETT |z|
+                                         (SETQ |z|
                                           (SPADCALL |z| |z| |p|
-                                           (|getShellEntry| $ 91))
-                                          |INS-;powmod;4S;29|))))))))))))))))) 
+                                           (|getShellEntry| $ 91))))))))))))))))))) 
 
 (DEFUN |IntegerNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

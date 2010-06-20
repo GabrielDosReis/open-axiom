@@ -57,10 +57,9 @@
             ((> |i| |n|) (RETURN (NREVERSE #0#)))
             (T (SETQ #0#
                      (CONS (|STAGG-;c2| |x|
-                               (LETT |x|
+                               (SETQ |x|
                                      (SPADCALL |x|
-                                      (|getShellEntry| $ 13))
-                                     |STAGG-;first;ANniA;3|)
+                                      (|getShellEntry| $ 13)))
                                $)
                            #0#))))
           (SETQ |i| (+ |i| 1))))
@@ -73,17 +72,15 @@
     ('T (SPADCALL |x| (|getShellEntry| $ 19))))) 
 
 (DEFUN |STAGG-;elt;AIS;5| (|x| |i| $)
-  (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21)))
-             |STAGG-;elt;AIS;5|)
+  (SEQ (SETQ |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21))))
        (COND
          ((OR (< |i| 0)
               (SPADCALL
-                  (LETT |x|
+                  (SETQ |x|
                         (SPADCALL |x|
                             (|check-subtype| (>= |i| 0)
                                 '(|NonNegativeInteger|) |i|)
-                            (|getShellEntry| $ 25))
-                        |STAGG-;elt;AIS;5|)
+                            (|getShellEntry| $ 25)))
                   (|getShellEntry| $ 18)))
           (EXIT (|error| "index out of range"))))
        (EXIT (SPADCALL |x| (|getShellEntry| $ 19))))) 
@@ -149,10 +146,9 @@
                                (SPADCALL |l| (|getShellEntry| $ 19))
                                |f|)
                            (|getShellEntry| $ 46))
-                       (EXIT (LETT |l|
+                       (EXIT (SETQ |l|
                                    (SPADCALL |l|
-                                    (|getShellEntry| $ 13))
-                                   |STAGG-;map!;M2A;9|))))))
+                                    (|getShellEntry| $ 13))))))))
            (EXIT |y|))))) 
 
 (DEFUN |STAGG-;fill!;ASA;10| (|x| |s| $)
@@ -164,30 +160,27 @@
                ((NOT (NOT (SPADCALL |y| (|getShellEntry| $ 18))))
                 (RETURN NIL))
                (T (SEQ (SPADCALL |y| |s| (|getShellEntry| $ 46))
-                       (EXIT (LETT |y|
+                       (EXIT (SETQ |y|
                                    (SPADCALL |y|
-                                    (|getShellEntry| $ 13))
-                                   |STAGG-;fill!;ASA;10|))))))
+                                    (|getShellEntry| $ 13))))))))
            (EXIT |x|))))) 
 
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
-  (SEQ (LETT |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21)))
-             |STAGG-;setelt;AI2S;11|)
+  (SEQ (SETQ |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21))))
        (COND
          ((OR (< |i| 0)
               (SPADCALL
-                  (LETT |x|
+                  (SETQ |x|
                         (SPADCALL |x|
                             (|check-subtype| (>= |i| 0)
                                 '(|NonNegativeInteger|) |i|)
-                            (|getShellEntry| $ 25))
-                        |STAGG-;setelt;AI2S;11|)
+                            (|getShellEntry| $ 25)))
                   (|getShellEntry| $ 18)))
           (EXIT (|error| "index out of range"))))
        (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 46))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
-  (PROG (|l| |h| |z| |y|)
+  (PROG (|l| |h| |y| |z|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |i| (|getShellEntry| $ 28))
@@ -237,10 +230,9 @@
                                              (SPADCALL |y| |s|
                                               (|getShellEntry| $ 46))
                                              (EXIT
-                                              (LETT |y|
+                                              (SETQ |y|
                                                (SPADCALL |y|
-                                                (|getShellEntry| $ 13))
-                                               |STAGG-;setelt;AUs2S;12|))))))
+                                                (|getShellEntry| $ 13))))))))
                                        (EXIT |s|))))))))))))) 
 
 (DEFUN |STAGG-;concat!;3A;13| (|x| |y| $)
