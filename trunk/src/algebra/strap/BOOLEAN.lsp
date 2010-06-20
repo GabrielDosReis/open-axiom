@@ -151,6 +151,7 @@
   (COND (|x| '|true|) ('T '|false|))) 
 
 (DEFUN |Boolean| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#0=#:G1424)
     (RETURN
       (COND
@@ -166,6 +167,7 @@
 (DEFUN |Boolean;| ()
   (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))

@@ -42,6 +42,7 @@
                               '(|NonNegativeInteger|) |c|))))))))) 
 
 (DEFUN |NonNegativeInteger| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#0=#:G1409)
     (RETURN
       (COND
@@ -61,6 +62,7 @@
 (DEFUN |NonNegativeInteger;| ()
   (LET ((|dv$| (LIST '|NonNegativeInteger|)) ($ (|newShell| 22))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|NonNegativeInteger| NIL

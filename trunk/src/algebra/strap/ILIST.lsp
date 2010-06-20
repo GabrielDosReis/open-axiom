@@ -442,6 +442,7 @@
                          (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
 (DEFUN |IndexedList| (&REST #0=#:G1520 &AUX #1=#:G1518)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (DSETQ #1# #0#)
   (PROG (#2=#:G1519)
     (RETURN
@@ -492,6 +493,7 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedList| (LIST |dv$1| |dv$2|)

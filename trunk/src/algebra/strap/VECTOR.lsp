@@ -27,6 +27,7 @@
       (|getShellEntry| $ 19))) 
 
 (DEFUN |Vector| (#0=#:G1408)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#1=#:G1409)
     (RETURN
       (COND
@@ -81,6 +82,7 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Vector| (LIST |dv$1|) (CONS 1 $))

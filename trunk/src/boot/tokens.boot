@@ -240,6 +240,7 @@ for i in [ _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
   ["cons?",      "CONSP"]  , _
+  ["readOnly?","CONSTANTP"], _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
   ["digit?",    "DIGITP"]  , _

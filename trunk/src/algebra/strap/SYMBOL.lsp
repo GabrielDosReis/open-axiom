@@ -681,6 +681,7 @@
 (DEFUN |SYMBOL;sample;$;35| ($) (DECLARE (IGNORE $)) '|aSymbol|) 
 
 (DEFUN |Symbol| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#0=#:G1556)
     (RETURN
       (COND
@@ -696,6 +697,7 @@
 (DEFUN |Symbol;| ()
   (LET ((|dv$| (LIST '|Symbol|)) ($ (|newShell| 165))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))
