@@ -2263,6 +2263,33 @@ localReferenceIfThere m ==
   idx := NRTassocIndex m => ["getShellEntry","$",idx]
   quoteForm m
 
+massageLoop x == main x where
+  main x ==
+    x isnt ['CATCH,tag,['REPEAT,:iters,body]] => x
+    $mayHaveFreeIteratorVariables or CONTAINED('TAGGEDexit,x) => x
+    replaceThrowWithLeave(body,tag)
+    containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
+    ['CATCH,tag,['%loop,:iters,body,'%nil]]
+  replaceThrowWithLeave(x,tag) ==
+    isAtomicForm x => nil
+    x is ['THROW,=tag,expr] =>
+      replaceThrowWithLeave(expr,tag)
+      -- Avoid redudant THROW for return-expressions.
+      if expr is ['TAGGEDreturn,:.] then
+        x.op := expr.op
+        x.args := expr.args
+      else
+        x.op := '%leave
+        x.args := rest x.args
+    for x' in x repeat replaceThrowWithLeave(x',tag)
+  containsNonLocalControl?(x,tags) ==
+    isAtomicForm x => false
+    x is ['THROW,tag,x'] =>
+      not(tag in tags) or containsNonLocalControl?(x',tags)
+    x is ['CATCH,tag,x'] =>
+      containsNonLocalControl?(x',[tag,:tags])
+    or/[containsNonLocalControl?(x',tags) for x' in x]
+
 compRepeatOrCollect(form,m,e) ==
   fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],$formalArgList
     ,e) where
@@ -2272,6 +2299,7 @@ compRepeatOrCollect(form,m,e) ==
         $iterateCount: local := 0
         $loopBodyTag: local := nil
         $breakCount: local := 0
+        $mayHaveFreeIteratorVariables: local := false
         oldEnv := e
         aggr := nil
         [repeatOrCollect,:itl,body]:= form
@@ -2315,7 +2343,7 @@ compRepeatOrCollect(form,m,e) ==
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
         -- in a loop are local to the loop.
-        [T.expr,T.mode,oldEnv]
+        [massageLoop T.expr,T.mode,oldEnv]
  
 --constructByModemap([x,source,e],target) ==
 --  u:=
@@ -2367,6 +2395,7 @@ compIntegerValue(x,e) ==
 ++ declaration  or definition in the enclosing scope.  
 complainIfShadowing(x,e) ==
   if getmode(x,e) ~= nil then
+    $mayHaveFreeIteratorVariables := true  -- bound in compRepeatOrCollect
     stackWarning('"loop variable %1b shadows variable from enclosing scope",[x])
 
 ++ Attempt to compile a `for' iterator of the form

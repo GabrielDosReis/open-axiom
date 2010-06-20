@@ -63,12 +63,15 @@
 (DEFUN |LIST;writeOMList| (|dev| |x| $)
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 16))
        (SPADCALL |dev| "list1" "list" (|getShellEntry| $ 18))
-       (SEQ G190 (COND ((NULL (NOT (NULL |x|))) (GO G191)))
-            (SEQ (SPADCALL |dev| (SPADCALL |x| (|getShellEntry| $ 20))
-                     NIL (|getShellEntry| $ 22))
-                 (EXIT (LETT |x| (SPADCALL |x| (|getShellEntry| $ 23))
-                             |LIST;writeOMList|)))
-            NIL (GO G190) G191 (EXIT NIL))
+       (LOOP
+         (COND
+           ((NOT (NOT (NULL |x|))) (RETURN NIL))
+           (T (SEQ (SPADCALL |dev|
+                       (SPADCALL |x| (|getShellEntry| $ 20)) NIL
+                       (|getShellEntry| $ 22))
+                   (EXIT (LETT |x|
+                               (SPADCALL |x| (|getShellEntry| $ 23))
+                               |LIST;writeOMList|))))))
        (EXIT (SPADCALL |dev| (|getShellEntry| $ 24))))) 
 
 (DEFUN |LIST;OMwrite;$S;6| (|x| $)
@@ -125,23 +128,23 @@
                  |LIST;setIntersection;3$;11|)
            (LETT |l1| (SPADCALL |l1| (|getShellEntry| $ 36))
                  |LIST;setIntersection;3$;11|)
-           (SEQ G190
-                (COND
-                  ((NULL (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
-                   (GO G191)))
-                (SEQ (COND
-                       ((SPADCALL
-                            (SPADCALL |l1| (|getShellEntry| $ 20)) |l2|
-                            (|getShellEntry| $ 40))
-                        (LETT |u|
-                              (CONS (SPADCALL |l1|
-                                     (|getShellEntry| $ 20))
-                                    |u|)
-                              |LIST;setIntersection;3$;11|)))
-                     (EXIT (LETT |l1|
-                                 (SPADCALL |l1| (|getShellEntry| $ 23))
-                                 |LIST;setIntersection;3$;11|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
+                (RETURN NIL))
+               (T (SEQ (COND
+                         ((SPADCALL
+                              (SPADCALL |l1| (|getShellEntry| $ 20))
+                              |l2| (|getShellEntry| $ 40))
+                          (LETT |u|
+                                (CONS (SPADCALL |l1|
+                                       (|getShellEntry| $ 20))
+                                      |u|)
+                                |LIST;setIntersection;3$;11|)))
+                       (EXIT (LETT |l1|
+                                   (SPADCALL |l1|
+                                    (|getShellEntry| $ 23))
+                                   |LIST;setIntersection;3$;11|))))))
            (EXIT |u|))))) 
 
 (DEFUN |LIST;setDifference;3$;12| (|l1| |l2| $)
@@ -151,24 +154,24 @@
                  |LIST;setDifference;3$;12|)
            (LETT |lu| (SPADCALL (|getShellEntry| $ 38))
                  |LIST;setDifference;3$;12|)
-           (SEQ G190
-                (COND
-                  ((NULL (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
-                   (GO G191)))
-                (SEQ (LETT |l11|
-                           (SPADCALL |l1| 1 (|getShellEntry| $ 42))
-                           |LIST;setDifference;3$;12|)
-                     (COND
-                       ((NOT (SPADCALL |l11| |l2|
-                                 (|getShellEntry| $ 40)))
-                        (LETT |lu|
-                              (SPADCALL |l11| |lu|
-                                  (|getShellEntry| $ 43))
-                              |LIST;setDifference;3$;12|)))
-                     (EXIT (LETT |l1|
-                                 (SPADCALL |l1| (|getShellEntry| $ 23))
-                                 |LIST;setDifference;3$;12|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
+                (RETURN NIL))
+               (T (SEQ (LETT |l11|
+                             (SPADCALL |l1| 1 (|getShellEntry| $ 42))
+                             |LIST;setDifference;3$;12|)
+                       (COND
+                         ((NOT (SPADCALL |l11| |l2|
+                                   (|getShellEntry| $ 40)))
+                          (LETT |lu|
+                                (SPADCALL |l11| |lu|
+                                    (|getShellEntry| $ 43))
+                                |LIST;setDifference;3$;12|)))
+                       (EXIT (LETT |l1|
+                                   (SPADCALL |l1|
+                                    (|getShellEntry| $ 23))
+                                   |LIST;setDifference;3$;12|))))))
            (EXIT |lu|))))) 
 
 (DEFUN |LIST;convert;$If;13| (|x| $)

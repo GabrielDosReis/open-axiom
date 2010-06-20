@@ -178,7 +178,7 @@
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
-  (PROG (|l| |m| |n| |h| |r| #0=#:G1535 #1=#:G1536 |i| #2=#:G1537 |k|)
+  (PROG (|l| |m| |n| |h| |r| |k|)
     (RETURN
       (SEQ (LETT |l|
                  (- (SPADCALL |sg| (|getShellEntry| $ 44))
@@ -200,34 +200,37 @@
               (EXIT (|error| "index out of range"))))
            (LETT |r|
                  (MAKE-FULL-CVEC
-                     (LET ((#3=#:G1444
+                     (LET ((#0=#:G1444
                                (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
-                       (|check-subtype| (>= #3# 0)
-                           '(|NonNegativeInteger|) #3#))
+                       (|check-subtype| (>= #0# 0)
+                           '(|NonNegativeInteger|) #0#))
                      (|spadConstant| $ 53))
                  |ISTRING;replace;$Us2$;15|)
            (LETT |k| 0 |ISTRING;replace;$Us2$;15|)
-           (SEQ (LETT |i| 0 |ISTRING;replace;$Us2$;15|)
-                (LETT #0# (- |l| 1) |ISTRING;replace;$Us2$;15|) G190
-                (COND ((QSGREATERP |i| #0#) (GO G191)))
-                (SEQ (QESET |r| |k| (CHAR |s| |i|))
-                     (EXIT (LETT |k| (+ |k| 1)
-                                 |ISTRING;replace;$Us2$;15|)))
-                (SETQ |i| (QSADD1 |i|)) (GO G190) G191 (EXIT NIL))
-           (SEQ (LETT |i| 0 |ISTRING;replace;$Us2$;15|)
-                (LETT #1# (- |n| 1) |ISTRING;replace;$Us2$;15|) G190
-                (COND ((QSGREATERP |i| #1#) (GO G191)))
-                (SEQ (QESET |r| |k| (CHAR |t| |i|))
-                     (EXIT (LETT |k| (+ |k| 1)
-                                 |ISTRING;replace;$Us2$;15|)))
-                (SETQ |i| (QSADD1 |i|)) (GO G190) G191 (EXIT NIL))
-           (SEQ (LETT |i| (+ |h| 1) |ISTRING;replace;$Us2$;15|)
-                (LETT #2# (- |m| 1) |ISTRING;replace;$Us2$;15|) G190
-                (COND ((> |i| #2#) (GO G191)))
-                (SEQ (QESET |r| |k| (CHAR |s| |i|))
-                     (EXIT (LETT |k| (+ |k| 1)
-                                 |ISTRING;replace;$Us2$;15|)))
-                (SETQ |i| (+ |i| 1)) (GO G190) G191 (EXIT NIL))
+           (LET ((|i| 0) (#1=#:G1535 (- |l| 1)))
+             (LOOP
+               (COND
+                 ((> |i| #1#) (RETURN NIL))
+                 (T (SEQ (QESET |r| |k| (CHAR |s| |i|))
+                         (EXIT (LETT |k| (+ |k| 1)
+                                     |ISTRING;replace;$Us2$;15|)))))
+               (SETQ |i| (+ |i| 1))))
+           (LET ((|i| 0) (#2=#:G1536 (- |n| 1)))
+             (LOOP
+               (COND
+                 ((> |i| #2#) (RETURN NIL))
+                 (T (SEQ (QESET |r| |k| (CHAR |t| |i|))
+                         (EXIT (LETT |k| (+ |k| 1)
+                                     |ISTRING;replace;$Us2$;15|)))))
+               (SETQ |i| (+ |i| 1))))
+           (LET ((|i| (+ |h| 1)) (#3=#:G1537 (- |m| 1)))
+             (LOOP
+               (COND
+                 ((> |i| #3#) (RETURN NIL))
+                 (T (SEQ (QESET |r| |k| (CHAR |s| |i|))
+                         (EXIT (LETT |k| (+ |k| 1)
+                                     |ISTRING;replace;$Us2$;15|)))))
+               (SETQ |i| (+ |i| 1))))
            (EXIT |r|))))) 
 
 (DEFUN |ISTRING;setelt;$I2C;16| (|s| |i| |c| $)
@@ -240,7 +243,7 @@
                (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (PROG (|np| |nw| |iw| |ip| #0=#:G1538)
+  (PROG (|np| |nw|)
     (RETURN
       (SEQ (LETT |np| (QCSIZE |part|) |ISTRING;substring?;2$IB;17|)
            (LETT |nw| (QCSIZE |whole|) |ISTRING;substring?;2$IB;17|)
@@ -250,26 +253,20 @@
                    ((< |startpos| 0) (|error| "index out of bounds"))
                    ((> |np| (- |nw| |startpos|)) NIL)
                    ('T
-                    (SEQ (SEQ (LETT |iw| |startpos|
-                                    |ISTRING;substring?;2$IB;17|)
-                              (LETT |ip| 0
-                                    |ISTRING;substring?;2$IB;17|)
-                              (LETT #0# (- |np| 1)
-                                    |ISTRING;substring?;2$IB;17|)
-                              G190
-                              (COND ((QSGREATERP |ip| #0#) (GO G191)))
-                              (SEQ (EXIT
-                                    (COND
-                                      ((NOT
-                                        (CHAR= (CHAR |part| |ip|)
-                                         (CHAR |whole| |iw|)))
-                                       (RETURN-FROM
-                                        |ISTRING;substring?;2$IB;17|
-                                         NIL)))))
-                              (SETQ |ip|
-                                    (PROG1 (QSADD1 |ip|)
-                                      (SETQ |iw| (+ |iw| 1))))
-                              (GO G190) G191 (EXIT NIL))
+                    (SEQ (LET ((|ip| 0) (#0=#:G1538 (- |np| 1))
+                               (|iw| |startpos|))
+                           (LOOP
+                             (COND
+                               ((> |ip| #0#) (RETURN NIL))
+                               (T (COND
+                                    ((NOT
+                                      (CHAR= (CHAR |part| |ip|)
+                                       (CHAR |whole| |iw|)))
+                                     (RETURN-FROM
+                                      |ISTRING;substring?;2$IB;17|
+                                       NIL)))))
+                             (SETQ |ip| (+ |ip| 1))
+                             (SETQ |iw| (+ |iw| 1))))
                          (EXIT T))))))))) 
 
 (DEFUN |ISTRING;position;2$2I;18| (|s| |t| |startpos| $)
@@ -290,55 +287,47 @@
                                  ('T (+ |r| (|getShellEntry| $ 6))))))))))))) 
 
 (DEFUN |ISTRING;position;C$2I;19| (|c| |t| |startpos| $)
-  (PROG (|r| #0=#:G1539)
-    (RETURN
-      (SEQ (LETT |startpos| (- |startpos| (|getShellEntry| $ 6))
-                 |ISTRING;position;C$2I;19|)
-           (EXIT (COND
-                   ((< |startpos| 0) (|error| "index out of bounds"))
-                   ((>= |startpos| (QCSIZE |t|))
-                    (- (|getShellEntry| $ 6) 1))
-                   ('T
-                    (SEQ (SEQ (LETT |r| |startpos|
-                                    |ISTRING;position;C$2I;19|)
-                              (LETT #0# (- (QCSIZE |t|) 1)
-                                    |ISTRING;position;C$2I;19|)
-                              G190 (COND ((> |r| #0#) (GO G191)))
-                              (SEQ (EXIT
-                                    (COND
-                                      ((CHAR= (CHAR |t| |r|) |c|)
-                                       (RETURN-FROM
-                                        |ISTRING;position;C$2I;19|
-                                         (+ |r| (|getShellEntry| $ 6)))))))
-                              (SETQ |r| (+ |r| 1)) (GO G190) G191
-                              (EXIT NIL))
-                         (EXIT (- (|getShellEntry| $ 6) 1)))))))))) 
+  (SEQ (LETT |startpos| (- |startpos| (|getShellEntry| $ 6))
+             |ISTRING;position;C$2I;19|)
+       (EXIT (COND
+               ((< |startpos| 0) (|error| "index out of bounds"))
+               ((>= |startpos| (QCSIZE |t|))
+                (- (|getShellEntry| $ 6) 1))
+               ('T
+                (SEQ (LET ((|r| |startpos|)
+                           (#0=#:G1539 (- (QCSIZE |t|) 1)))
+                       (LOOP
+                         (COND
+                           ((> |r| #0#) (RETURN NIL))
+                           (T (COND
+                                ((CHAR= (CHAR |t| |r|) |c|)
+                                 (RETURN-FROM
+                                     |ISTRING;position;C$2I;19|
+                                   (+ |r| (|getShellEntry| $ 6)))))))
+                         (SETQ |r| (+ |r| 1))))
+                     (EXIT (- (|getShellEntry| $ 6) 1)))))))) 
 
 (DEFUN |ISTRING;position;Cc$2I;20| (|cc| |t| |startpos| $)
-  (PROG (|r| #0=#:G1540)
-    (RETURN
-      (SEQ (LETT |startpos| (- |startpos| (|getShellEntry| $ 6))
-                 |ISTRING;position;Cc$2I;20|)
-           (EXIT (COND
-                   ((< |startpos| 0) (|error| "index out of bounds"))
-                   ((>= |startpos| (QCSIZE |t|))
-                    (- (|getShellEntry| $ 6) 1))
-                   ('T
-                    (SEQ (SEQ (LETT |r| |startpos|
-                                    |ISTRING;position;Cc$2I;20|)
-                              (LETT #0# (- (QCSIZE |t|) 1)
-                                    |ISTRING;position;Cc$2I;20|)
-                              G190 (COND ((> |r| #0#) (GO G191)))
-                              (SEQ (EXIT
-                                    (COND
-                                      ((SPADCALL (CHAR |t| |r|) |cc|
-                                        (|getShellEntry| $ 65))
-                                       (RETURN-FROM
-                                        |ISTRING;position;Cc$2I;20|
-                                         (+ |r| (|getShellEntry| $ 6)))))))
-                              (SETQ |r| (+ |r| 1)) (GO G190) G191
-                              (EXIT NIL))
-                         (EXIT (- (|getShellEntry| $ 6) 1)))))))))) 
+  (SEQ (LETT |startpos| (- |startpos| (|getShellEntry| $ 6))
+             |ISTRING;position;Cc$2I;20|)
+       (EXIT (COND
+               ((< |startpos| 0) (|error| "index out of bounds"))
+               ((>= |startpos| (QCSIZE |t|))
+                (- (|getShellEntry| $ 6) 1))
+               ('T
+                (SEQ (LET ((|r| |startpos|)
+                           (#0=#:G1540 (- (QCSIZE |t|) 1)))
+                       (LOOP
+                         (COND
+                           ((> |r| #0#) (RETURN NIL))
+                           (T (COND
+                                ((SPADCALL (CHAR |t| |r|) |cc|
+                                     (|getShellEntry| $ 65))
+                                 (RETURN-FROM
+                                     |ISTRING;position;Cc$2I;20|
+                                   (+ |r| (|getShellEntry| $ 6)))))))
+                         (SETQ |r| (+ |r| 1))))
+                     (EXIT (- (|getShellEntry| $ 6) 1)))))))) 
 
 (DEFUN |ISTRING;suffix?;2$B;21| (|s| |t| $)
   (PROG (|m| |n|)
@@ -359,53 +348,48 @@
       (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 47))
                  |ISTRING;split;$CL;22|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;split;$CL;22|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((> |i| |n|) NIL)
-                           ('T
-                            (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $)
-                                |c| (|getShellEntry| $ 69)))))
-                   (GO G191)))
-                (SEQ (EXIT (LETT |i| (+ |i| 1) |ISTRING;split;$CL;22|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((> |i| |n|) NIL)
+                       ('T
+                        (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $) |c|
+                            (|getShellEntry| $ 69)))))
+                (RETURN NIL))
+               (T (LETT |i| (+ |i| 1) |ISTRING;split;$CL;22|))))
            (LETT |l| NIL |ISTRING;split;$CL;22|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((> |i| |n|) NIL)
-                           ('T
-                            (>= (LETT |j|
-                                      (|ISTRING;position;C$2I;19| |c|
-                                       |s| |i| $)
-                                      |ISTRING;split;$CL;22|)
-                                (|getShellEntry| $ 6)))))
-                   (GO G191)))
-                (SEQ (LETT |l|
-                           (SPADCALL
-                               (|ISTRING;elt;$Us$;31| |s|
-                                   (SPADCALL |i| (- |j| 1)
-                                    (|getShellEntry| $ 24))
-                                   $)
-                               |l| (|getShellEntry| $ 72))
-                           |ISTRING;split;$CL;22|)
-                     (LETT |i| |j| |ISTRING;split;$CL;22|)
-                     (EXIT (SEQ G190
-                                (COND
-                                  ((NULL
-                                    (COND
-                                      ((> |i| |n|) NIL)
-                                      ('T
-                                       (SPADCALL
-                                        (|ISTRING;elt;$IC;30| |s| |i|
-                                         $)
-                                        |c| (|getShellEntry| $ 69)))))
-                                   (GO G191)))
-                                (SEQ (EXIT
-                                      (LETT |i| (+ |i| 1)
-                                       |ISTRING;split;$CL;22|)))
-                                NIL (GO G190) G191 (EXIT NIL))))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((> |i| |n|) NIL)
+                       ('T
+                        (>= (LETT |j|
+                                  (|ISTRING;position;C$2I;19| |c| |s|
+                                      |i| $)
+                                  |ISTRING;split;$CL;22|)
+                            (|getShellEntry| $ 6)))))
+                (RETURN NIL))
+               (T (SEQ (LETT |l|
+                             (SPADCALL
+                                 (|ISTRING;elt;$Us$;31| |s|
+                                     (SPADCALL |i| (- |j| 1)
+                                      (|getShellEntry| $ 24))
+                                     $)
+                                 |l| (|getShellEntry| $ 72))
+                             |ISTRING;split;$CL;22|)
+                       (LETT |i| |j| |ISTRING;split;$CL;22|)
+                       (EXIT (LOOP
+                               (COND
+                                 ((NOT (COND
+                                         ((> |i| |n|) NIL)
+                                         ('T
+                                          (SPADCALL
+                                           (|ISTRING;elt;$IC;30| |s|
+                                            |i| $)
+                                           |c| (|getShellEntry| $ 69)))))
+                                  (RETURN NIL))
+                                 (T (LETT |i| (+ |i| 1)
+                                     |ISTRING;split;$CL;22|)))))))))
            (COND
              ((NOT (> |i| |n|))
               (LETT |l|
@@ -423,53 +407,48 @@
       (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 47))
                  |ISTRING;split;$CcL;23|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;split;$CcL;23|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((> |i| |n|) NIL)
-                           ('T
-                            (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $)
-                                |cc| (|getShellEntry| $ 65)))))
-                   (GO G191)))
-                (SEQ (EXIT (LETT |i| (+ |i| 1) |ISTRING;split;$CcL;23|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((> |i| |n|) NIL)
+                       ('T
+                        (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $) |cc|
+                            (|getShellEntry| $ 65)))))
+                (RETURN NIL))
+               (T (LETT |i| (+ |i| 1) |ISTRING;split;$CcL;23|))))
            (LETT |l| NIL |ISTRING;split;$CcL;23|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((> |i| |n|) NIL)
-                           ('T
-                            (>= (LETT |j|
-                                      (|ISTRING;position;Cc$2I;20| |cc|
-                                       |s| |i| $)
-                                      |ISTRING;split;$CcL;23|)
-                                (|getShellEntry| $ 6)))))
-                   (GO G191)))
-                (SEQ (LETT |l|
-                           (SPADCALL
-                               (|ISTRING;elt;$Us$;31| |s|
-                                   (SPADCALL |i| (- |j| 1)
-                                    (|getShellEntry| $ 24))
-                                   $)
-                               |l| (|getShellEntry| $ 72))
-                           |ISTRING;split;$CcL;23|)
-                     (LETT |i| |j| |ISTRING;split;$CcL;23|)
-                     (EXIT (SEQ G190
-                                (COND
-                                  ((NULL
-                                    (COND
-                                      ((> |i| |n|) NIL)
-                                      ('T
-                                       (SPADCALL
-                                        (|ISTRING;elt;$IC;30| |s| |i|
-                                         $)
-                                        |cc| (|getShellEntry| $ 65)))))
-                                   (GO G191)))
-                                (SEQ (EXIT
-                                      (LETT |i| (+ |i| 1)
-                                       |ISTRING;split;$CcL;23|)))
-                                NIL (GO G190) G191 (EXIT NIL))))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((> |i| |n|) NIL)
+                       ('T
+                        (>= (LETT |j|
+                                  (|ISTRING;position;Cc$2I;20| |cc| |s|
+                                      |i| $)
+                                  |ISTRING;split;$CcL;23|)
+                            (|getShellEntry| $ 6)))))
+                (RETURN NIL))
+               (T (SEQ (LETT |l|
+                             (SPADCALL
+                                 (|ISTRING;elt;$Us$;31| |s|
+                                     (SPADCALL |i| (- |j| 1)
+                                      (|getShellEntry| $ 24))
+                                     $)
+                                 |l| (|getShellEntry| $ 72))
+                             |ISTRING;split;$CcL;23|)
+                       (LETT |i| |j| |ISTRING;split;$CcL;23|)
+                       (EXIT (LOOP
+                               (COND
+                                 ((NOT (COND
+                                         ((> |i| |n|) NIL)
+                                         ('T
+                                          (SPADCALL
+                                           (|ISTRING;elt;$IC;30| |s|
+                                            |i| $)
+                                           |cc| (|getShellEntry| $ 65)))))
+                                  (RETURN NIL))
+                                 (T (LETT |i| (+ |i| 1)
+                                     |ISTRING;split;$CcL;23|)))))))))
            (COND
              ((NOT (> |i| |n|))
               (LETT |l|
@@ -487,17 +466,15 @@
       (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 47))
                  |ISTRING;leftTrim;$C$;24|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;leftTrim;$C$;24|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((> |i| |n|) NIL)
-                           ('T
-                            (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $)
-                                |c| (|getShellEntry| $ 69)))))
-                   (GO G191)))
-                (SEQ (EXIT (LETT |i| (+ |i| 1)
-                                 |ISTRING;leftTrim;$C$;24|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((> |i| |n|) NIL)
+                       ('T
+                        (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $) |c|
+                            (|getShellEntry| $ 69)))))
+                (RETURN NIL))
+               (T (LETT |i| (+ |i| 1) |ISTRING;leftTrim;$C$;24|))))
            (EXIT (|ISTRING;elt;$Us$;31| |s|
                      (SPADCALL |i| |n| (|getShellEntry| $ 24)) $)))))) 
 
@@ -507,17 +484,15 @@
       (SEQ (LETT |n| (SPADCALL |s| (|getShellEntry| $ 47))
                  |ISTRING;leftTrim;$Cc$;25|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;leftTrim;$Cc$;25|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((> |i| |n|) NIL)
-                           ('T
-                            (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $)
-                                |cc| (|getShellEntry| $ 65)))))
-                   (GO G191)))
-                (SEQ (EXIT (LETT |i| (+ |i| 1)
-                                 |ISTRING;leftTrim;$Cc$;25|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((> |i| |n|) NIL)
+                       ('T
+                        (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $) |cc|
+                            (|getShellEntry| $ 65)))))
+                (RETURN NIL))
+               (T (LETT |i| (+ |i| 1) |ISTRING;leftTrim;$Cc$;25|))))
            (EXIT (|ISTRING;elt;$Us$;31| |s|
                      (SPADCALL |i| |n| (|getShellEntry| $ 24)) $)))))) 
 
@@ -526,17 +501,15 @@
     (RETURN
       (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 47))
                  |ISTRING;rightTrim;$C$;26|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((>= |j| (|getShellEntry| $ 6))
-                            (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $)
-                                      |c| (|getShellEntry| $ 69)))
-                           ('T NIL)))
-                   (GO G191)))
-                (SEQ (EXIT (LETT |j| (- |j| 1)
-                                 |ISTRING;rightTrim;$C$;26|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((>= |j| (|getShellEntry| $ 6))
+                        (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $) |c|
+                                  (|getShellEntry| $ 69)))
+                       ('T NIL)))
+                (RETURN NIL))
+               (T (LETT |j| (- |j| 1) |ISTRING;rightTrim;$C$;26|))))
            (EXIT (|ISTRING;elt;$Us$;31| |s|
                      (SPADCALL (|ISTRING;minIndex;$I;11| |s| $) |j|
                          (|getShellEntry| $ 24))
@@ -547,51 +520,49 @@
     (RETURN
       (SEQ (LETT |j| (SPADCALL |s| (|getShellEntry| $ 47))
                  |ISTRING;rightTrim;$Cc$;27|)
-           (SEQ G190
-                (COND
-                  ((NULL (COND
-                           ((>= |j| (|getShellEntry| $ 6))
-                            (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $)
-                                      |cc| (|getShellEntry| $ 65)))
-                           ('T NIL)))
-                   (GO G191)))
-                (SEQ (EXIT (LETT |j| (- |j| 1)
-                                 |ISTRING;rightTrim;$Cc$;27|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (COND
+                       ((>= |j| (|getShellEntry| $ 6))
+                        (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $) |cc|
+                            (|getShellEntry| $ 65)))
+                       ('T NIL)))
+                (RETURN NIL))
+               (T (LETT |j| (- |j| 1) |ISTRING;rightTrim;$Cc$;27|))))
            (EXIT (|ISTRING;elt;$Us$;31| |s|
                      (SPADCALL (|ISTRING;minIndex;$I;11| |s| $) |j|
                          (|getShellEntry| $ 24))
                      $)))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (PROG (|t| |s| #0=#:G1542 |i|)
+  (PROG (|t| |i|)
     (RETURN
       (SEQ (LETT |t|
                  (MAKE-FULL-CVEC
-                     (LET ((#1=#:G1497 NIL) (#2=#:G1498 T)
-                           (#3=#:G1541 |l|))
+                     (LET ((#0=#:G1497 NIL) (#1=#:G1498 T)
+                           (#2=#:G1541 |l|))
                        (LOOP
                          (COND
-                           ((ATOM #3#) (RETURN (COND (#2# 0) (T #1#))))
-                           (T (LET ((|s| (CAR #3#)))
-                                (LET ((#4=#:G1496 (QCSIZE |s|)))
+                           ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
+                           (T (LET ((|s| (CAR #2#)))
+                                (LET ((#3=#:G1496 (QCSIZE |s|)))
                                   (COND
-                                    (#2# (SETQ #1# #4#))
-                                    (T (SETQ #1# (+ #1# #4#))))
-                                  (SETQ #2# NIL)))))
-                         (SETQ #3# (CDR #3#))))
+                                    (#1# (SETQ #0# #3#))
+                                    (T (SETQ #0# (+ #0# #3#))))
+                                  (SETQ #1# NIL)))))
+                         (SETQ #2# (CDR #2#))))
                      (|spadConstant| $ 53))
                  |ISTRING;concat;L$;28|)
            (LETT |i| (|getShellEntry| $ 6) |ISTRING;concat;L$;28|)
-           (SEQ (LETT |s| NIL |ISTRING;concat;L$;28|)
-                (LETT #0# |l| |ISTRING;concat;L$;28|) G190
-                (COND
-                  ((OR (ATOM #0#) (PROGN (SETQ |s| (CAR #0#)) NIL))
-                   (GO G191)))
-                (SEQ (|ISTRING;copyInto!;2$I$;29| |t| |s| |i| $)
-                     (EXIT (LETT |i| (+ |i| (QCSIZE |s|))
-                                 |ISTRING;concat;L$;28|)))
-                (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
+           (LET ((#4=#:G1542 |l|))
+             (LOOP
+               (COND
+                 ((ATOM #4#) (RETURN NIL))
+                 (T (LET ((|s| (CAR #4#)))
+                      (SEQ (|ISTRING;copyInto!;2$I$;29| |t| |s| |i| $)
+                           (EXIT (LETT |i| (+ |i| (QCSIZE |s|))
+                                       |ISTRING;concat;L$;28|))))))
+               (SETQ #4# (CDR #4#))))
            (EXIT |t|))))) 
 
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)
@@ -680,49 +651,50 @@
                                  (|check-subtype| (>= #1# 0)
                                      '(|NonNegativeInteger|) #1#))
                                |ISTRING;match?;2$CB;34|)
-                         (SEQ G190
-                              (COND
-                                ((NULL (SPADCALL |q| (- |m| 1)
-                                        (|getShellEntry| $ 87)))
-                                 (GO G191)))
-                              (SEQ (LETT |s|
-                                    (|ISTRING;elt;$Us$;31| |pattern|
-                                     (SPADCALL (+ |p| 1) (- |q| 1)
-                                      (|getShellEntry| $ 24))
-                                     $)
-                                    |ISTRING;match?;2$CB;34|)
-                                   (LETT |i|
-                                    (LET
-                                     ((#2=#:G1527
-                                       (|ISTRING;position;2$2I;18| |s|
-                                        |target| |i| $)))
-                                      (|check-subtype| (>= #2# 0)
-                                       '(|NonNegativeInteger|) #2#))
-                                    |ISTRING;match?;2$CB;34|)
-                                   (EXIT
-                                    (COND
-                                      ((EQL |i| (- |m| 1))
-                                       (RETURN-FROM
-                                        |ISTRING;match?;2$CB;34|
-                                         NIL))
-                                      ('T
-                                       (SEQ
-                                        (LETT |i| (+ |i| (QCSIZE |s|))
-                                         |ISTRING;match?;2$CB;34|)
-                                        (LETT |p| |q|
-                                         |ISTRING;match?;2$CB;34|)
-                                        (EXIT
-                                         (LETT |q|
-                                          (LET
-                                           ((#3=#:G1528
-                                             (|ISTRING;position;C$2I;19|
-                                              |dontcare| |pattern|
-                                              (+ |q| 1) $)))
-                                            (|check-subtype| (>= #3# 0)
-                                             '(|NonNegativeInteger|)
-                                             #3#))
-                                          |ISTRING;match?;2$CB;34|)))))))
-                              NIL (GO G190) G191 (EXIT NIL))
+                         (LOOP
+                           (COND
+                             ((NOT (SPADCALL |q| (- |m| 1)
+                                    (|getShellEntry| $ 87)))
+                              (RETURN NIL))
+                             (T (SEQ (LETT |s|
+                                      (|ISTRING;elt;$Us$;31| |pattern|
+                                       (SPADCALL (+ |p| 1) (- |q| 1)
+                                        (|getShellEntry| $ 24))
+                                       $)
+                                      |ISTRING;match?;2$CB;34|)
+                                     (LETT |i|
+                                      (LET
+                                       ((#2=#:G1527
+                                         (|ISTRING;position;2$2I;18|
+                                          |s| |target| |i| $)))
+                                        (|check-subtype| (>= #2# 0)
+                                         '(|NonNegativeInteger|) #2#))
+                                      |ISTRING;match?;2$CB;34|)
+                                     (EXIT
+                                      (COND
+                                        ((EQL |i| (- |m| 1))
+                                         (RETURN-FROM
+                                          |ISTRING;match?;2$CB;34|
+                                           NIL))
+                                        ('T
+                                         (SEQ
+                                          (LETT |i|
+                                           (+ |i| (QCSIZE |s|))
+                                           |ISTRING;match?;2$CB;34|)
+                                          (LETT |p| |q|
+                                           |ISTRING;match?;2$CB;34|)
+                                          (EXIT
+                                           (LETT |q|
+                                            (LET
+                                             ((#3=#:G1528
+                                               (|ISTRING;position;C$2I;19|
+                                                |dontcare| |pattern|
+                                                (+ |q| 1) $)))
+                                              (|check-subtype|
+                                               (>= #3# 0)
+                                               '(|NonNegativeInteger|)
+                                               #3#))
+                                            |ISTRING;match?;2$CB;34|))))))))))
                          (COND
                            ((SPADCALL |p| |n| (|getShellEntry| $ 87))
                             (COND

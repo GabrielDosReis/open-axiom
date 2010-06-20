@@ -332,6 +332,7 @@ for x in [
     -- general utility
     ['%hash,     :'SXHASH],
     ['%lam,      :'LAMBDA],
+    ['%leave,    :'RETURN],
     ['%otherwise,:'T],
     ['%when,     :'COND]
   ] repeat property(first x,'%Rename) := rest x
