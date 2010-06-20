@@ -878,6 +878,7 @@
                                    $))))))))))))) 
 
 (DEFUN |DoubleFloat| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#0=#:G1562)
     (RETURN
       (COND
@@ -895,6 +896,7 @@
 (DEFUN |DoubleFloat;| ()
   (LET ((|dv$| (LIST '|DoubleFloat|)) ($ (|newShell| 164))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|DoubleFloat| NIL (CONS 1 $))

@@ -1006,6 +1006,7 @@
   (LIST 'INTSIGN |b| |c| |a|)) 
 
 (DEFUN |OutputForm| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#0=#:G1557)
     (RETURN
       (COND
@@ -1022,6 +1023,7 @@
 (DEFUN |OutputForm;| ()
   (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|OutputForm| NIL (CONS 1 $))

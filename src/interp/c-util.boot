@@ -1447,7 +1447,7 @@ pushLocalVariable x ==
 
 isLispSpecialVariable x ==
   s := PNAME x
-  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not BOUNDP x
+  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not readOnly? x
   
 noteSpecialVariable x ==
   $SpecialVars := insert(x,$SpecialVars)
@@ -1618,9 +1618,8 @@ transformToBackendCode x ==
   body := skipDeclarations CDDR x
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
-    stmt := first body
-    null rest body and 
-      (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
+    body is [stmt] and
+      (atom stmt or stmt.op = "SEQ" or not CONTAINED("EXIT",stmt)) =>
         body
     [simplifySEQ ["SEQ",:body]]
   $FluidVars := removeDuplicates nreverse $FluidVars
@@ -1632,6 +1631,8 @@ transformToBackendCode x ==
     fluids ~= nil =>
       lvars ~= nil or needsPROG? body =>
         [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+      body is [[op,bindings,:body']] and op in '(LET LET_*) =>
+        [[op,bindings,declareGlobalVariables fluids,:body']]
       [declareGlobalVariables fluids,:body]
     lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]

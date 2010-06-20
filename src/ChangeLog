@@ -1,3 +1,9 @@
+2010-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/tokens.boot (readOnly?): New builtin Boot function.
+	* interp/c-util.boot (isLispSpecialVariable): Tidy.
+	(transformToBackendCode): Likewise.
+
 2010-06-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/catdef.spad.pamphlet (LinearlyExplicitRingOver)

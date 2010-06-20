@@ -186,6 +186,7 @@
   (CHAR-DOWNCASE |c|)) 
 
 (DEFUN |Character| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (PROG (#0=#:G1427)
     (RETURN
       (COND
@@ -201,6 +202,7 @@
 (DEFUN |Character;| ()
   (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
