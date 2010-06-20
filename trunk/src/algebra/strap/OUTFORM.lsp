@@ -664,24 +664,23 @@
   (CONS 'AGGSET |l|)) 
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
-  (PROG (|c| |u| #0=#:G1555 |l1|)
+  (PROG (|c| |l1|)
     (RETURN
       (SEQ (LETT |c| 'CONCATB |OUTFORM;blankSeparate;L$;35|)
            (LETT |l1| NIL |OUTFORM;blankSeparate;L$;35|)
-           (SEQ (LETT |u| NIL |OUTFORM;blankSeparate;L$;35|)
-                (LETT #0# (REVERSE |l|) |OUTFORM;blankSeparate;L$;35|)
-                G190
-                (COND
-                  ((OR (ATOM #0#) (PROGN (SETQ |u| (CAR #0#)) NIL))
-                   (GO G191)))
-                (SEQ (EXIT (COND
-                             ((EQCAR |u| |c|)
-                              (LETT |l1| (APPEND (CDR |u|) |l1|)
-                                    |OUTFORM;blankSeparate;L$;35|))
-                             ('T
-                              (LETT |l1| (CONS |u| |l1|)
-                                    |OUTFORM;blankSeparate;L$;35|)))))
-                (SETQ #0# (CDR #0#)) (GO G190) G191 (EXIT NIL))
+           (LET ((#0=#:G1555 (REVERSE |l|)))
+             (LOOP
+               (COND
+                 ((ATOM #0#) (RETURN NIL))
+                 (T (LET ((|u| (CAR #0#)))
+                      (COND
+                        ((EQCAR |u| |c|)
+                         (LETT |l1| (APPEND (CDR |u|) |l1|)
+                               |OUTFORM;blankSeparate;L$;35|))
+                        ('T
+                         (LETT |l1| (CONS |u| |l1|)
+                               |OUTFORM;blankSeparate;L$;35|))))))
+               (SETQ #0# (CDR #0#))))
            (EXIT (CONS |c| |l1|)))))) 
 
 (DEFUN |OUTFORM;brace;2$;36| (|a| $)

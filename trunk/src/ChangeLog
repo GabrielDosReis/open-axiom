@@ -1,5 +1,12 @@
 2010-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (massageLoop): New.
+	(compRepeatOrCollect): Use it to generate appropriate %loop forms.
+	Bind new special variable $mayHaveFreeIteratorVariables.
+	(complainIfShadowing): Set it as appropriate.
+
+2010-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot (readOnly?): New builtin Boot function.
 	* interp/c-util.boot (isLispSpecialVariable): Tidy.
 	(transformToBackendCode): Likewise.

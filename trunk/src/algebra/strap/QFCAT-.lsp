@@ -270,15 +270,14 @@
 (DEFUN |QFCAT-;random;A;26| ($)
   (PROG (|d|)
     (RETURN
-      (SEQ (SEQ G190
-                (COND
-                  ((NULL (SPADCALL
-                             (LETT |d|
-                                   (SPADCALL (|getShellEntry| $ 97))
-                                   |QFCAT-;random;A;26|)
-                             (|getShellEntry| $ 98)))
-                   (GO G191)))
-                (SEQ (EXIT |d|)) NIL (GO G190) G191 (EXIT NIL))
+      (SEQ (LOOP
+             (COND
+               ((NOT (SPADCALL
+                         (LETT |d| (SPADCALL (|getShellEntry| $ 97))
+                               |QFCAT-;random;A;26|)
+                         (|getShellEntry| $ 98)))
+                (RETURN NIL))
+               (T |d|)))
            (EXIT (SPADCALL (SPADCALL (|getShellEntry| $ 97)) |d|
                      (|getShellEntry| $ 15))))))) 
 

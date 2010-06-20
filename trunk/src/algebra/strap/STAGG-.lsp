@@ -140,33 +140,34 @@
   (PROG (|y|)
     (RETURN
       (SEQ (LETT |y| |l| |STAGG-;map!;M2A;9|)
-           (SEQ G190
-                (COND
-                  ((NULL (NOT (SPADCALL |l| (|getShellEntry| $ 18))))
-                   (GO G191)))
-                (SEQ (SPADCALL |l|
-                         (SPADCALL
-                             (SPADCALL |l| (|getShellEntry| $ 19)) |f|)
-                         (|getShellEntry| $ 46))
-                     (EXIT (LETT |l|
-                                 (SPADCALL |l| (|getShellEntry| $ 13))
-                                 |STAGG-;map!;M2A;9|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (NOT (SPADCALL |l| (|getShellEntry| $ 18))))
+                (RETURN NIL))
+               (T (SEQ (SPADCALL |l|
+                           (SPADCALL
+                               (SPADCALL |l| (|getShellEntry| $ 19))
+                               |f|)
+                           (|getShellEntry| $ 46))
+                       (EXIT (LETT |l|
+                                   (SPADCALL |l|
+                                    (|getShellEntry| $ 13))
+                                   |STAGG-;map!;M2A;9|))))))
            (EXIT |y|))))) 
 
 (DEFUN |STAGG-;fill!;ASA;10| (|x| |s| $)
   (PROG (|y|)
     (RETURN
       (SEQ (LETT |y| |x| |STAGG-;fill!;ASA;10|)
-           (SEQ G190
-                (COND
-                  ((NULL (NOT (SPADCALL |y| (|getShellEntry| $ 18))))
-                   (GO G191)))
-                (SEQ (SPADCALL |y| |s| (|getShellEntry| $ 46))
-                     (EXIT (LETT |y|
-                                 (SPADCALL |y| (|getShellEntry| $ 13))
-                                 |STAGG-;fill!;ASA;10|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (NOT (SPADCALL |y| (|getShellEntry| $ 18))))
+                (RETURN NIL))
+               (T (SEQ (SPADCALL |y| |s| (|getShellEntry| $ 46))
+                       (EXIT (LETT |y|
+                                   (SPADCALL |y|
+                                    (|getShellEntry| $ 13))
+                                   |STAGG-;fill!;ASA;10|))))))
            (EXIT |x|))))) 
 
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
@@ -224,22 +225,22 @@
                                             #0#))
                                          (|getShellEntry| $ 25))
                                         |STAGG-;setelt;AUs2S;12|)
-                                       (SEQ G190
-                                        (COND
-                                          ((NULL
-                                            (NOT
-                                             (SPADCALL |y| |z|
-                                              (|getShellEntry| $ 52))))
-                                           (GO G191)))
-                                        (SEQ
-                                         (SPADCALL |y| |s|
-                                          (|getShellEntry| $ 46))
-                                         (EXIT
-                                          (LETT |y|
-                                           (SPADCALL |y|
-                                            (|getShellEntry| $ 13))
-                                           |STAGG-;setelt;AUs2S;12|)))
-                                        NIL (GO G190) G191 (EXIT NIL))
+                                       (LOOP
+                                         (COND
+                                           ((NOT
+                                             (NOT
+                                              (SPADCALL |y| |z|
+                                               (|getShellEntry| $ 52))))
+                                            (RETURN NIL))
+                                           (T
+                                            (SEQ
+                                             (SPADCALL |y| |s|
+                                              (|getShellEntry| $ 46))
+                                             (EXIT
+                                              (LETT |y|
+                                               (SPADCALL |y|
+                                                (|getShellEntry| $ 13))
+                                               |STAGG-;setelt;AUs2S;12|))))))
                                        (EXIT |s|))))))))))))) 
 
 (DEFUN |STAGG-;concat!;3A;13| (|x| |y| $)

@@ -242,30 +242,29 @@
            (LETT |c1| (|spadConstant| $ 22) |INS-;invmod;3S;28|)
            (LETT |d| |b| |INS-;invmod;3S;28|)
            (LETT |d1| (|spadConstant| $ 10) |INS-;invmod;3S;28|)
-           (SEQ G190
-                (COND
-                  ((NULL (NOT (SPADCALL |d| (|getShellEntry| $ 66))))
-                   (GO G191)))
-                (SEQ (LETT |q|
-                           (SPADCALL |c| |d| (|getShellEntry| $ 87))
-                           |INS-;invmod;3S;28|)
-                     (LETT |r|
-                           (SPADCALL |c|
-                               (SPADCALL |q| |d|
-                                   (|getShellEntry| $ 88))
-                               (|getShellEntry| $ 67))
-                           |INS-;invmod;3S;28|)
-                     (LETT |r1|
-                           (SPADCALL |c1|
-                               (SPADCALL |q| |d1|
-                                   (|getShellEntry| $ 88))
-                               (|getShellEntry| $ 67))
-                           |INS-;invmod;3S;28|)
-                     (LETT |c| |d| |INS-;invmod;3S;28|)
-                     (LETT |c1| |d1| |INS-;invmod;3S;28|)
-                     (LETT |d| |r| |INS-;invmod;3S;28|)
-                     (EXIT (LETT |d1| |r1| |INS-;invmod;3S;28|)))
-                NIL (GO G190) G191 (EXIT NIL))
+           (LOOP
+             (COND
+               ((NOT (NOT (SPADCALL |d| (|getShellEntry| $ 66))))
+                (RETURN NIL))
+               (T (SEQ (LETT |q|
+                             (SPADCALL |c| |d| (|getShellEntry| $ 87))
+                             |INS-;invmod;3S;28|)
+                       (LETT |r|
+                             (SPADCALL |c|
+                                 (SPADCALL |q| |d|
+                                     (|getShellEntry| $ 88))
+                                 (|getShellEntry| $ 67))
+                             |INS-;invmod;3S;28|)
+                       (LETT |r1|
+                             (SPADCALL |c1|
+                                 (SPADCALL |q| |d1|
+                                     (|getShellEntry| $ 88))
+                                 (|getShellEntry| $ 67))
+                             |INS-;invmod;3S;28|)
+                       (LETT |c| |d| |INS-;invmod;3S;28|)
+                       (LETT |c1| |d1| |INS-;invmod;3S;28|)
+                       (LETT |d| |r| |INS-;invmod;3S;28|)
+                       (EXIT (LETT |d1| |r1| |INS-;invmod;3S;28|))))))
            (COND
              ((NOT (SPADCALL |c| (|getShellEntry| $ 89)))
               (EXIT (|error| "inverse does not exist"))))
@@ -290,7 +289,10 @@
                     (SEQ (LETT |y| (|spadConstant| $ 22)
                                |INS-;powmod;4S;29|)
                          (LETT |z| |x| |INS-;powmod;4S;29|)
-                         (EXIT (SEQ G190 NIL
+                         (EXIT (LOOP
+                                 (COND
+                                   (NIL (RETURN NIL))
+                                   (T
                                     (SEQ
                                      (COND
                                        ((SPADCALL |n|
@@ -317,8 +319,7 @@
                                          (LETT |z|
                                           (SPADCALL |z| |z| |p|
                                            (|getShellEntry| $ 91))
-                                          |INS-;powmod;4S;29|)))))
-                                    NIL (GO G190) G191 (EXIT NIL))))))))))) 
+                                          |INS-;powmod;4S;29|))))))))))))))))) 
 
 (DEFUN |IntegerNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
