@@ -1029,13 +1029,9 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
      if R has IntegralDomain
      then
 
-       if R has EuclideanDomain
-         then
-           exactQuo(r:R,s:R):R ==
-             r quo$R s
-         else
-           exactQuo(r:R,s:R):R ==
-             (r exquo$R s)::R
+       exactQuo(r:R,s:R):R ==
+         R has EuclideanDomain => r quo$R s
+         (r exquo$R s)::R
 
        exactQuotient (p:$,r:R) ==
          (p exquo$$ r)::$
@@ -1215,9 +1211,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
 
              mpc2Z := MPolyCatFunctions2(Symbol,IES,IES,Z,R,PZ,PR)
              mpc2Q := MPolyCatFunctions2(Symbol,IES,IES,Q,R,PQ,PR)
-             ZToR (z:Z):R == coerce(z)@R
              QToR (q:Q):R == coerce(q)@R
-             PZToPR (pz:PZ):PR == map(ZToR,pz)$mpc2Z
              PQToPR (pq:PQ):PR == map(QToR,pq)$mpc2Q
 
              retract(pz:PZ) ==
@@ -1254,7 +1248,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                        retractIfCan(pr)@Union($,"failed")
 
                  retractIfCan(pz:PZ) ==
-                   pr : PR := PZToPR(pz)
+                   pr : PR := map(#1::R,pz)$mpc2Z
                    retractIfCan(pr)@Union($,"failed")
 
                  retract(pr:PR) ==
@@ -1298,8 +1292,6 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
            then 
 
              mpc2Z := MPolyCatFunctions2(Symbol,IES,IES,Z,R,PZ,PR)
-             ZToR (z:Z):R == coerce(z)@R
-             PZToPR (pz:PZ):PR == map(ZToR,pz)$mpc2Z
 
              retract(pz:PZ) ==
                rif : Union($,"failed") := retractIfCan(pz)@Union($,"failed")
@@ -1323,7 +1315,7 @@ RecursivePolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, V:OrderedSet): Ca
                        localRetractIfCanPZ(pz)@Union($,"failed")
                    else
                      retractIfCan(pz:PZ) ==
-                       pr : PR := PZToPR(pz)
+                       pr : PR := map(#1::R,pz)$mpc2Z
                        retractIfCan(pr)@Union($,"failed")
 
                  retract(pr:PR) ==

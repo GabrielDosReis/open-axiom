@@ -705,6 +705,7 @@
              ((NOT #1#) (HREM |$ConstructorCache| '|IndexedString|))))))))) 
 
 (DEFUN |IndexedString;| (|#1|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IndexedString| |dv$1|)) ($ (|newShell| 100))
          (|pv$| (|buildPredVector| 0 0

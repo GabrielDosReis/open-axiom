@@ -196,6 +196,7 @@
            (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))) 
 
 (DEFUN |List;| (|#1|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|List| |dv$1|))
          ($ (|newShell| 70))
          (|pv$| (|buildPredVector| 0 0

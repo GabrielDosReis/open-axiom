@@ -338,23 +338,27 @@ PermutationGroup(S:SetCategory): public == private where
         xelt := times ( x , xelt )
         if wordProblem then word := append ( wordlist.p , word )
         ppt  := x.ppt
+      [xelt,word]
 
     bsgs1 (group:L V NNI,number1:NNI,words:L L NNI,maxLoops:I,gp:%,diff:I)_
         : NNI ==
       -- try to get a good approximation for the strong generators and base
       ort: REC
       k1: NNI
-      i : NNI
-      for i in number1..degree repeat
+      i: NNI := number1
+      while i <= degree repeat
         ort := orbitWithSvc ( group , i )
         k   := ort.orb
         k1  := # k
         if k1 ~= 1 then leave
+        i := i + 1
       gpsgs := nil()$(L V NNI)
       words2 := nil()$(L L NNI)
       gplength : NNI := #group
-      jj: NNI
-      for jj in 1..gplength repeat if (group.jj).i ~= i then leave
+      jj: NNI := 1
+      while jj <= gplength repeat
+        if (group.jj).i ~= i then leave
+        jj := jj + 1
       for k in 1..gplength repeat
         el2 := group.k
         if el2.i ~= i then

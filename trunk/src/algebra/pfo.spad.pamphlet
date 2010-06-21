@@ -385,10 +385,9 @@ PointsOfFiniteOrder(R0, F, UP, UPUP, R): Exports == Implementation where
       map(UP22UP(#1,k)::QF,
           p)$UnivariatePolynomialCategoryFunctions2(UP2, UP3, QF, UPUP)
 
-    if R0 has GcdDomain then
-       cmult(l:List SMP):SMP == lcm l
-    else
-       cmult(l:List SMP):SMP == */l
+    cmult(l:List SMP):SMP ==
+      R0 has GcdDomain => lcm l
+      */l
 
     doubleDisc(f:UP3):Z ==
       d := discriminant f
