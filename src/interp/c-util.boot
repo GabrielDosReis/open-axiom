@@ -1104,7 +1104,8 @@ middleEndExpand x ==
   IDENTP x and (x' := x has %Rename) => x'
   isAtomicForm x => x
   [op,:args] := x
-  IDENTP op and (fun := getOpcodeExpander op) => apply(fun,x,nil)
+  IDENTP op and (fun := getOpcodeExpander op) =>
+    middleEndExpand apply(fun,x,nil)
   op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
   a := middleEndExpand op

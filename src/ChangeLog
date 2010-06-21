@@ -1,5 +1,10 @@
 2010-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (middleEndExpand): Give it another macro
+	expansion pass after new opcode expansion.
+
+2010-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nlib.lisp (COMPILE-LIB-FILE): Rework.  Halt compilation
 	if generated is malformed or contains serious warnings.
 	* algebra/pfo.spad.pamphlet (PointsOfFiniteOrder) [cmult]: Merge
