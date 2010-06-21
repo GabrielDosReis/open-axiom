@@ -456,8 +456,6 @@ d01anfAnnaType(): NumericalIntegrationCategory == Result add
     ext:Result := empty()$Result
     weight:Union(Record(op:BOP,w:DF),"failed") :=
       exprHasWeightCosWXorSinWX(args)
-    weight case "failed" => 
-      [0.0,"d01anf: A suitable weight has not been found", ext]
     weight case Record(op:BOP,w:DF) =>
       wany := coerce(weight)$AnyFunctions1(Record(op:BOP,w:DF))
       ex:Record(key:S,entry:Any) := [d01anfextra@S,wany]
@@ -466,6 +464,7 @@ d01anfAnnaType(): NumericalIntegrationCategory == Result add
                           string(args.var)$S ")"
       [getMeasure(R,d01anf@S)$RT,
         "d01anf: The expression has a suitable weight:- " ws, ext]
+    [0.0,"d01anf: A suitable weight has not been found", ext]
     
   numericalIntegration(args:NIA,hints:Result) ==
     a:INT
@@ -529,8 +528,6 @@ d01asfAnnaType(): NumericalIntegrationCategory == Result add
       [0.0,"d01asf is not a suitable routine for infinite integrals",ext]
     weight: Union(Record(op:BOP,w:DF),"failed") :=
       exprHasWeightCosWXorSinWX(args)
-    weight case "failed" => 
-      [0.0,"d01asf: A suitable weight has not been found", ext]
     weight case Record(op:BOP,w:DF) =>
       wany := coerce(weight)$AnyFunctions1(Record(op:BOP,w:DF))
       ex:Record(key:S,entry:Any) := [d01asfextra@S,wany]
@@ -539,6 +536,7 @@ d01asfAnnaType(): NumericalIntegrationCategory == Result add
                           string(args.var)$S ")"
       [getMeasure(R,d01asf@S)$RT,
         "d01asf: A suitable weight has been found:- " ws, ext]
+    [0.0,"d01asf: A suitable weight has not been found", ext]
     
   numericalIntegration(args:NIA,hints:Result) ==
     i:INT

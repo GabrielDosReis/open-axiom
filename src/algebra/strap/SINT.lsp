@@ -542,6 +542,7 @@
              ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
 
 (DEFUN |SingleInteger;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 116))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (DECLARE (SPECIAL |$ConstructorCache|))

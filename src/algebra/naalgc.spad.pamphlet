@@ -1022,7 +1022,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing): Category == _
         listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
         symbolsForCoef : Vector Symbol :=
           [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
-        xx : M P R
+        xx : M P R := new(1,n,0)
         mo : P R
         x : M P R := new(1,n,0)
         for i in 1..n repeat
@@ -1055,7 +1055,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing): Category == _
         listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
         symbolsForCoef : Vector Symbol :=
           [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
-        xx : M P R
+        xx : M P R := new(1,n,0)
         mo : P R
         x : M P R := new(1,n,0)
         for i in 1..n repeat

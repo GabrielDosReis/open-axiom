@@ -77,6 +77,10 @@ SparseMultivariateTaylorSeries(Coef,Var,SMP):_
   Implementation ==> PS add
  
     Rep := StS -- Below we use the fact that Rep of PS is Stream SMP.
+    -- FIXME: These come for free if assignment to Rep is removed.
+    rep(x: %): Rep == x pretend Rep
+    per(x: Rep): % == x pretend %
+
     extend(x,n) == extend(x,n + 1)$Rep
     complete x == complete(x)$Rep
 
@@ -187,43 +191,40 @@ SparseMultivariateTaylorSeries(Coef,Var,SMP):_
       map(differentiate(#1,v),rst s)
  
     if Coef has Algebra Fraction Integer then
+      (x:%) ** (r:RN) == powern(r,rep x)$STT
+      (r:RN) * (x:%)  == per map(r * #1, rep x)$ST2(SMP,SMP)
+      (x:%) * (r:RN)  == per map(#1 * r,rep x )$ST2(SMP,SMP)
  
-      stream(x:%):Rep == x pretend Rep
+      exp x == exp(rep x)$STF
+      log x == log(rep x)$STF
  
-      (x:%) ** (r:RN) == powern(r,stream x)$STT
-      (r:RN) * (x:%)  == map(r * #1, stream x)$ST2(SMP,SMP) pretend %
-      (x:%) * (r:RN)  == map(#1 * r,stream x )$ST2(SMP,SMP) pretend %
+      sin x == sin(rep x)$STF
+      cos x == cos(rep x)$STF
+      tan x == tan(rep x)$STF
+      cot x == cot(rep x)$STF
+      sec x == sec(rep x)$STF
+      csc x == csc(rep x)$STF
  
-      exp x == exp(stream x)$STF
-      log x == log(stream x)$STF
+      asin x == asin(rep x)$STF
+      acos x == acos(rep x)$STF
+      atan x == atan(rep x)$STF
+      acot x == acot(rep x)$STF
+      asec x == asec(rep x)$STF
+      acsc x == acsc(rep x)$STF
  
-      sin x == sin(stream x)$STF
-      cos x == cos(stream x)$STF
-      tan x == tan(stream x)$STF
-      cot x == cot(stream x)$STF
-      sec x == sec(stream x)$STF
-      csc x == csc(stream x)$STF
+      sinh x == sinh(rep x)$STF
+      cosh x == cosh(rep x)$STF
+      tanh x == tanh(rep x)$STF
+      coth x == coth(rep x)$STF
+      sech x == sech(rep x)$STF
+      csch x == csch(rep x)$STF
  
-      asin x == asin(stream x)$STF
-      acos x == acos(stream x)$STF
-      atan x == atan(stream x)$STF
-      acot x == acot(stream x)$STF
-      asec x == asec(stream x)$STF
-      acsc x == acsc(stream x)$STF
- 
-      sinh x == sinh(stream x)$STF
-      cosh x == cosh(stream x)$STF
-      tanh x == tanh(stream x)$STF
-      coth x == coth(stream x)$STF
-      sech x == sech(stream x)$STF
-      csch x == csch(stream x)$STF
- 
-      asinh x == asinh(stream x)$STF
-      acosh x == acosh(stream x)$STF
-      atanh x == atanh(stream x)$STF
-      acoth x == acoth(stream x)$STF
-      asech x == asech(stream x)$STF
-      acsch x == acsch(stream x)$STF
+      asinh x == asinh(rep x)$STF
+      acosh x == acosh(rep x)$STF
+      atanh x == atanh(rep x)$STF
+      acoth x == acoth(rep x)$STF
+      asech x == asech(rep x)$STF
+      acsch x == acsch(rep x)$STF
  
       intsmp(v:Var,p: SMP): SMP ==
         up := univariate(p,v)
@@ -272,9 +273,7 @@ SparseMultivariateTaylorSeries(Coef,Var,SMP):_
       empty? l => (0$SMP) :: OUT
       reduce("+",reverse! l)
     if Coef has Field then
-         stream(x:%):Rep == x pretend Rep
-         SF2==> StreamFunctions2
-         p:% / r:Coef ==(map(#1/$SMP r,stream p)$SF2(SMP,SMP))pretend %
+      p:% / r:Coef == per map(#1/$SMP r,rep p)$StreamFunctions2(SMP,SMP)
 
 @
 \section{domain TS TaylorSeries}
