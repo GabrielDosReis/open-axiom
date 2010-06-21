@@ -1,11 +1,5 @@
 2010-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* algebra/sgcf.spad.pamphlet (SymmetricGroupCombinatoricFunctions)
-	[listYoungTableaus]: Fix thinko.  Don't use lattice in its own
-	initialization before it is defined.
-
-2010-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
 	* interp/g-opt.boot (changeVariableDefinitionToStore): New.
 	(optimizeFunctionDef): Use it.
 

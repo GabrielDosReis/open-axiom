@@ -21,7 +21,6 @@
              ((NOT #0#) (HREM |$ConstructorCache| '|PositiveInteger|))))))))) 
 
 (DEFUN |PositiveInteger;| ()
-  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|PositiveInteger|)) ($ (|newShell| 16))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (DECLARE (SPECIAL |$ConstructorCache|))

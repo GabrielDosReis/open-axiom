@@ -200,7 +200,6 @@
            (COND ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
 
 (DEFUN |Character;| ()
-  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (DECLARE (SPECIAL |$ConstructorCache|))

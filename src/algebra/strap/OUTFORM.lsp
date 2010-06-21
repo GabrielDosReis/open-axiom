@@ -1016,7 +1016,6 @@
            (COND ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
 
 (DEFUN |OutputForm;| ()
-  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (DECLARE (SPECIAL |$ConstructorCache|))
