@@ -338,6 +338,7 @@ PermutationGroup(S:SetCategory): public == private where
         xelt := times ( x , xelt )
         if wordProblem then word := append ( wordlist.p , word )
         ppt  := x.ppt
+      [xelt,word]
 
     bsgs1 (group:L V NNI,number1:NNI,words:L L NNI,maxLoops:I,gp:%,diff:I)_
         : NNI ==

@@ -1,3 +1,30 @@
+2010-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nlib.lisp (COMPILE-LIB-FILE): Rework.  Halt compilation
+	if generated is malformed or contains serious warnings.
+	* algebra/pfo.spad.pamphlet (PointsOfFiniteOrder) [cmult]: Merge
+	local conditional definitions.
+	* algebra/permgrps.spad.pamphlet (PermutationGroup) [cosetRep]: 
+	Don't forget to return a value.
+	* algebra/newpoly.spad.pamphlet (RecursivePolynomialCategory)
+	[exactQuo]: Merge conditional local definitions.
+	[ZToR]: Inline at sole use point.  Remove conditional definitions.
+	[QToR]: Likewise.
+	[PZToPR]: Likewise.
+	[PQToPR]: Likewise.
+	* algebra/naalgc.spad.pamphlet (FramedNonAssociativeAlgebra)
+	[leftRankPolynomial]:  Initialize local variable xx.
+	(rightRankPolynomial): Likewise.
+	* algebra/multsqfr.spad.pamphlet (MultivariateSquareFree)
+	[intChoose]:  Error if no solution is found in the loop.
+	* algebra/mts.spad.pamphlet (SparseMultivariateTaylorSeries): Tidy.
+	[stream] Remove duplicate definition.	
+	* algebra/d01routine.spad.pamphlet (d01anfAnnaType) [measure]: Tidy.
+	(d01asfAnnaType) [measure]: Likewise.
+	* algebra/d01transform.spad.pamphlet (d01TransformFunctionType)
+	[measure]: Likewise.
+	* algebra/forttyp.spad.pamphlet (FortranScalarType) [coerce]: Likewise.
+
 2010-06-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/sgcf.spad.pamphlet (SymmetricGroupCombinatoricFunctions)
