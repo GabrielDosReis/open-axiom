@@ -130,6 +130,7 @@ FortranScalarType() : exports == implementation where
       s = upperDoubleSymbol => ["double precision"]$Rep
       s = doubleComplexSymbol => ["double complex"]$Rep
       s = upperDoubleCOmplexSymbol => ["double complex"]$Rep
+      error concat([string s," is invalid as a Fortran Type"])$String
 
     coerce(s:String):$ ==
       s = "real" => ["real"]$Rep

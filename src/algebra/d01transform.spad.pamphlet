@@ -127,7 +127,6 @@ d01TransformFunctionType():NumericalIntegrationCategory == Result add
 
   measure(R:RoutinesTable,args:NIA) ==
     Range:=rangeIsFinite(args)
-    Range case bothInfinite => split(1,args)
     Range case upperInfinite =>
       positive?(lo(args.range))$OCDF =>
         transform(true,args)
@@ -136,6 +135,7 @@ d01TransformFunctionType():NumericalIntegrationCategory == Result add
       negative?(hi(args.range))$OCDF =>
         transform(false,args)
       split(3,args)
+    split(1,args)
 
   numericalIntegration(args:NIA,hints:Result) ==
     mainResult:DF := mainAbserr:DF := 0$DF
