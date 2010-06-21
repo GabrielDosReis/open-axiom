@@ -232,7 +232,7 @@
           (ldate (and (probe-file lfile) (file-write-date lfile))))
      (if ldate
          (if (and bdate (> bdate ldate)) nil
-           (progn (|compileLispFile| lfile bfile) (list bfile))))))
+           (progn (compile-lib-file lfile) (list bfile))))))
 
 #+:AKCL
 (defun spad-fixed-arg (fname )

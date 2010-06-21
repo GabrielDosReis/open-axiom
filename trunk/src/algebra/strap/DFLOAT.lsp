@@ -885,7 +885,6 @@
              ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|))))))))) 
 
 (DEFUN |DoubleFloat;| ()
-  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|DoubleFloat|)) ($ (|newShell| 164))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (DECLARE (SPECIAL |$ConstructorCache|))

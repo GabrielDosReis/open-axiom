@@ -151,10 +151,8 @@ IntegerPrimesPackage(I:IntegerNumberSystem): with
 
       nm1 := n-1
       q := (nm1) quo two
-      k: NonNegativeInteger := 1
-      while not odd? q repeat
-        q := q quo two
-        k := k + 1
+      k : NonNegativeInteger
+      for k in 1.. while not odd? q repeat q := q quo two
       -- q = (n-1) quo 2**k for largest possible k
 
       n < JaeschkeLimit =>
@@ -459,10 +457,8 @@ IntegerFactorizationPackage(I): Exports == Implementation where
           if n<d*d then
              if n>1 then ls := concat!(ls, ["prime",n,1]$FFE)
              return makeFR(1, ls)
-          m: Integer := 0
-          while zero?(n rem d) repeat
-            n := n quo d
-            m := m + 1
+          m : Integer
+          for m in 0.. while zero?(n rem d) repeat n := n quo d
           if m>0 then ls := concat!(ls, ["prime",d,convert m]$FFE)
           d := d+s
 
@@ -500,10 +496,8 @@ IntegerFactorizationPackage(I): Exports == Implementation where
                 insert!(x+y,a,c)
                 insert!(x-y,a,c)
           (d := PollardSmallFactor20 n) case I =>
-             m': NonNegativeInteger := 0
-             while zero?(n rem d) repeat
-               n := n quo d
-               m' := m' + 1
+             m' : NonNegativeInteger
+             for m' in 0.. while zero?(n rem d) repeat n := n quo d
              insert!(d, a, m' * c)
              if n > 1 then insert!(n, a, c)
           -- an elliptic curve factorization attempt should be made here

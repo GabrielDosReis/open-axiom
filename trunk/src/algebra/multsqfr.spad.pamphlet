@@ -267,8 +267,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
          ctf1:=ctf
          lval1:=lval
          d1:=d0
-     error "intChoose$MultivariateSquareFree: fell off loop without answer" 
-
+ 
  
         ----  Choose the leading coefficient for the lifting  ----
    coefChoose(exp:Z,sqlead:Factored(P)) : P ==

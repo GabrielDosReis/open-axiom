@@ -304,9 +304,8 @@ PolynomialGcdPackage(E,OV,R,P):C == T where
         listpol:=listpol.rest
         nolift:Boolean:=true
         uf: SUP
-        for fs in tails listpol while nolift repeat
-          uf := first fs
-          --note uf and d not necessarily primitive
+        for uf in listpol repeat
+              --note uf and d not necessarily primitive
           degree gcd(uf,d) =0 => nolift:=false
         nolift => ["notCoprime"]
         f:SUPP:=([p1,p2]$List(SUPP)).(position(uf,listpol))
