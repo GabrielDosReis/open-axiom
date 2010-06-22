@@ -227,11 +227,16 @@ expandEq ["%eq",:args] ==
   ["EQ",:expandToVMForm args]
 
 -- Local variable bindings
-expandBind ["%bind",inits,body] ==
+expandBind ['%bind,inits,body] ==
   body := expandToVMForm body
   inits := [[first x,expandToVMForm second x] for x in inits]
+  n := #inits
+  n = 0 => body
   -- FIXME: we should consider turning LET* into LET or direct inlining.
-  ["LET*",inits,body]
+  op :=
+    n = 1 => 'LET
+    'LET_*
+  [op,inits,body]
 
 -- Memory load/store
 

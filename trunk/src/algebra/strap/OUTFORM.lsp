@@ -526,11 +526,8 @@
      '(XLAM (|a|) (LIST 'SUPERSUB |a| " " '|,|))) 
 
 (DEFUN |OUTFORM;doubleFloatFormat;2S;1| (|s| $)
-  (PROG (|ss|)
-    (RETURN
-      (SEQ (LETT |ss| (|getShellEntry| $ 6)
-                 |OUTFORM;doubleFloatFormat;2S;1|)
-           (|setShellEntry| $ 6 |s|) (EXIT |ss|))))) 
+  (LET ((|ss| (|getShellEntry| $ 6)))
+    (SEQ (|setShellEntry| $ 6 |s|) (EXIT |ss|)))) 
 
 (DEFUN |OUTFORM;sform| (|s| $) (DECLARE (IGNORE $)) |s|) 
 
@@ -638,18 +635,14 @@
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (PROG (|lv|)
-    (RETURN
-      (SEQ (LETT |lv|
-                 (LET ((#0=#:G1554 |ll|) (#1=#:G1553 NIL))
-                   (LOOP
-                     (COND
-                       ((ATOM #0#) (RETURN (NREVERSE #1#)))
-                       (T (LET ((|l| (CAR #0#)))
-                            (SETQ #1# (CONS (LIST2VEC |l|) #1#)))))
-                     (SETQ #0# (CDR #0#))))
-                 |OUTFORM;matrix;L$;31|)
-           (EXIT (CONS 'MATRIX (LIST2VEC |lv|))))))) 
+  (LET ((|lv| (LET ((#0=#:G1554 |ll|) (#1=#:G1553 NIL))
+                (LOOP
+                  (COND
+                    ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                    (T (LET ((|l| (CAR #0#)))
+                         (SETQ #1# (CONS (LIST2VEC |l|) #1#)))))
+                  (SETQ #0# (CDR #0#))))))
+    (CONS 'MATRIX (LIST2VEC |lv|)))) 
 
 (DEFUN |OUTFORM;pile;L$;32| (|l| $)
   (DECLARE (IGNORE $))
@@ -664,21 +657,18 @@
   (CONS 'AGGSET |l|)) 
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
-  (PROG (|c| |l1|)
-    (RETURN
-      (SEQ (LETT |c| 'CONCATB |OUTFORM;blankSeparate;L$;35|)
-           (LETT |l1| NIL |OUTFORM;blankSeparate;L$;35|)
-           (LET ((#0=#:G1555 (REVERSE |l|)))
-             (LOOP
-               (COND
-                 ((ATOM #0#) (RETURN NIL))
-                 (T (LET ((|u| (CAR #0#)))
-                      (COND
-                        ((EQCAR |u| |c|)
-                         (SETQ |l1| (APPEND (CDR |u|) |l1|)))
-                        ('T (SETQ |l1| (CONS |u| |l1|)))))))
-               (SETQ #0# (CDR #0#))))
-           (EXIT (CONS |c| |l1|)))))) 
+  (LET* ((|c| 'CONCATB) (|l1| NIL))
+    (SEQ (LET ((#0=#:G1555 (REVERSE |l|)))
+           (LOOP
+             (COND
+               ((ATOM #0#) (RETURN NIL))
+               (T (LET ((|u| (CAR #0#)))
+                    (COND
+                      ((EQCAR |u| |c|)
+                       (SETQ |l1| (APPEND (CDR |u|) |l1|)))
+                      ('T (SETQ |l1| (CONS |u| |l1|)))))))
+             (SETQ #0# (CDR #0#))))
+         (EXIT (CONS |c| |l1|))))) 
 
 (DEFUN |OUTFORM;brace;2$;36| (|a| $)
   (DECLARE (IGNORE $))
@@ -831,15 +821,11 @@
 (DEFUN |OUTFORM;empty;$;73| ($) (LIST 'NOTHING)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
-  (PROG (|e|)
-    (RETURN
-      (SEQ (LETT |e|
-                 (COND
-                   ((IDENTP |a|) |a|)
-                   ((STRINGP |a|) (INTERN |a|))
-                   ('T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))
-                 |OUTFORM;infix?;$B;74|)
-           (EXIT (COND ((GET |e| 'INFIXOP) T) ('T NIL))))))) 
+  (LET ((|e| (COND
+               ((IDENTP |a|) |a|)
+               ((STRINGP |a|) (INTERN |a|))
+               ('T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))))
+    (COND ((GET |e| 'INFIXOP) T) ('T NIL)))) 
 
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)
   (DECLARE (IGNORE $))
@@ -893,22 +879,14 @@
   (LIST 'SUPERSUB |a| " " '|,|)) 
 
 (DEFUN |OUTFORM;dot;$Nni$;85| (|a| |nn| $)
-  (PROG (|s|)
-    (RETURN
-      (SEQ (LETT |s|
-                 (MAKE-FULL-CVEC |nn|
-                     (SPADCALL "." (|getShellEntry| $ 119)))
-                 |OUTFORM;dot;$Nni$;85|)
-           (EXIT (LIST 'SUPERSUB |a| " " |s|)))))) 
+  (LET ((|s| (MAKE-FULL-CVEC |nn|
+                 (SPADCALL "." (|getShellEntry| $ 119)))))
+    (LIST 'SUPERSUB |a| " " |s|))) 
 
 (DEFUN |OUTFORM;prime;$Nni$;86| (|a| |nn| $)
-  (PROG (|s|)
-    (RETURN
-      (SEQ (LETT |s|
-                 (MAKE-FULL-CVEC |nn|
-                     (SPADCALL "," (|getShellEntry| $ 119)))
-                 |OUTFORM;prime;$Nni$;86|)
-           (EXIT (LIST 'SUPERSUB |a| " " |s|)))))) 
+  (LET ((|s| (MAKE-FULL-CVEC |nn|
+                 (SPADCALL "," (|getShellEntry| $ 119)))))
+    (LIST 'SUPERSUB |a| " " |s|))) 
 
 (DEFUN |OUTFORM;overlabel;3$;87| (|a| |b| $)
   (DECLARE (IGNORE $))

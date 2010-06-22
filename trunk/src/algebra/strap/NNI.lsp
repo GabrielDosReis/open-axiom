@@ -31,15 +31,12 @@
   (ASH |x| |n|)) 
 
 (DEFUN |NNI;subtractIfCan;2$U;3| (|x| |y| $)
-  (PROG (|c|)
-    (RETURN
-      (SEQ (LETT |c| (- |x| |y|) |NNI;subtractIfCan;2$U;3|)
-           (EXIT (COND
-                   ((< |c| 0) (CONS 1 "failed"))
-                   ('T
-                    (CONS 0
-                          (|check-subtype| (>= |c| 0)
-                              '(|NonNegativeInteger|) |c|))))))))) 
+  (LET ((|c| (- |x| |y|)))
+    (COND
+      ((< |c| 0) (CONS 1 "failed"))
+      ('T
+       (CONS 0
+             (|check-subtype| (>= |c| 0) '(|NonNegativeInteger|) |c|)))))) 
 
 (DEFUN |NonNegativeInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

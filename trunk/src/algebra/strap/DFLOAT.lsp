@@ -401,35 +401,24 @@
                 |DFLOAT;**;$F$;88|)) 
 
 (DEFUN |DFLOAT;OMwrite;$S;1| (|x| $)
-  (PROG (|s| |sp| |dev|)
-    (RETURN
-      (SEQ (LETT |s| "" |DFLOAT;OMwrite;$S;1|)
-           (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |DFLOAT;OMwrite;$S;1|)
-           (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 7))
-                     (|getShellEntry| $ 10))
-                 |DFLOAT;OMwrite;$S;1|)
-           (SPADCALL |dev| (|getShellEntry| $ 12))
-           (SPADCALL |dev| |x| (|getShellEntry| $ 15))
-           (SPADCALL |dev| (|getShellEntry| $ 16))
-           (SPADCALL |dev| (|getShellEntry| $ 17))
-           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
+  (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
+         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 7))
+                    (|getShellEntry| $ 10))))
+    (SEQ (SPADCALL |dev| (|getShellEntry| $ 12))
+         (SPADCALL |dev| |x| (|getShellEntry| $ 15))
+         (SPADCALL |dev| (|getShellEntry| $ 16))
+         (SPADCALL |dev| (|getShellEntry| $ 17))
+         (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |DFLOAT;OMwrite;$BS;2| (|x| |wholeObj| $)
-  (PROG (|s| |sp| |dev|)
-    (RETURN
-      (SEQ (LETT |s| "" |DFLOAT;OMwrite;$BS;2|)
-           (LETT |sp| (OM-STRINGTOSTRINGPTR |s|)
-                 |DFLOAT;OMwrite;$BS;2|)
-           (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 7))
-                     (|getShellEntry| $ 10))
-                 |DFLOAT;OMwrite;$BS;2|)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 12))))
-           (SPADCALL |dev| |x| (|getShellEntry| $ 15))
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 16))))
-           (SPADCALL |dev| (|getShellEntry| $ 17))
-           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
+  (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
+         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 7))
+                    (|getShellEntry| $ 10))))
+    (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 12))))
+         (SPADCALL |dev| |x| (|getShellEntry| $ 15))
+         (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 16))))
+         (SPADCALL |dev| (|getShellEntry| $ 17))
+         (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |DFLOAT;OMwrite;Omd$V;3| (|dev| |x| $)
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 12))
@@ -673,21 +662,16 @@
             (FLOAT-RADIX 0.0) $))) 
 
 (DEFUN |DFLOAT;retract;$I;82| (|x| $)
-  (PROG (|n|)
-    (RETURN
-      (SEQ (LETT |n| (FIX |x|) |DFLOAT;retract;$I;82|)
-           (EXIT (COND
-                   ((= |x| (FLOAT |n| |$DoubleFloatMaximum|)) |n|)
-                   ('T (|error| "Not an integer")))))))) 
+  (LET ((|n| (FIX |x|)))
+    (COND
+      ((= |x| (FLOAT |n| |$DoubleFloatMaximum|)) |n|)
+      ('T (|error| "Not an integer"))))) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;83| (|x| $)
-  (PROG (|n|)
-    (RETURN
-      (SEQ (LETT |n| (FIX |x|) |DFLOAT;retractIfCan;$U;83|)
-           (EXIT (COND
-                   ((= |x| (FLOAT |n| |$DoubleFloatMaximum|))
-                    (CONS 0 |n|))
-                   ('T (CONS 1 "failed")))))))) 
+  (LET ((|n| (FIX |x|)))
+    (COND
+      ((= |x| (FLOAT |n| |$DoubleFloatMaximum|)) (CONS 0 |n|))
+      ('T (CONS 1 "failed"))))) 
 
 (DEFUN |DFLOAT;sign;$I;84| (|x| $)
   (|DFLOAT;retract;$I;82| (FLOAT-SIGN |x| 1.0) $)) 
@@ -722,107 +706,104 @@
                                (- (CDR |me|) (FLOAT-DIGITS 0.0))))))))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;87| (|f| |d| |b| $)
-  (PROG (|#G109| |nu| |ex| BASE |de| |tol| |s| |t| |p0| |p1| |q0| |q1|
-                 |#G110| |q| |r| |p2| |q2| |#G111| |#G112| |#G113|
-                 |#G114| |#G115| |#G116|)
+  (PROG (BASE |de| |tol| |s| |t| |p0| |p1| |q0| |q1| |#G110| |q| |r|
+              |p2| |q2| |#G111| |#G112| |#G113| |#G114| |#G115|
+              |#G116|)
     (RETURN
-      (SEQ (LETT |#G109| (|DFLOAT;manexp| |f| $)
-                 |DFLOAT;rationalApproximation;$2NniF;87|)
-           (LETT |nu| (CAR |#G109|)
-                 |DFLOAT;rationalApproximation;$2NniF;87|)
-           (LETT |ex| (CDR |#G109|)
-                 |DFLOAT;rationalApproximation;$2NniF;87|)
-           |#G109|
-           (LETT BASE (FLOAT-RADIX 0.0)
-                 |DFLOAT;rationalApproximation;$2NniF;87|)
-           (EXIT (COND
-                   ((>= |ex| 0)
-                    (SPADCALL
-                        (* |nu|
-                           (EXPT BASE
-                                 (|check-subtype| (>= |ex| 0)
-                                     '(|NonNegativeInteger|) |ex|)))
-                        (|getShellEntry| $ 135)))
-                   ('T
-                    (SEQ (LETT |de|
-                               (EXPT BASE
-                                     (LET ((#0=#:G1540 (- |ex|)))
-                                       (|check-subtype| (>= #0# 0)
-                                        '(|NonNegativeInteger|) #0#)))
-                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                         (EXIT (COND
-                                 ((< |b| 2)
-                                  (|error| "base must be > 1"))
-                                 ('T
-                                  (SEQ (LETT |tol| (EXPT |b| |d|)
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (LETT |s| |nu|
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (LETT |t| |de|
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (LETT |p0| 0
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (LETT |p1| 1
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (LETT |q0| 1
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (LETT |q1| 0
-                                        |DFLOAT;rationalApproximation;$2NniF;87|)
-                                       (EXIT
-                                        (LOOP
-                                          (COND
-                                            (NIL (RETURN NIL))
-                                            (T
-                                             (SEQ
-                                              (LETT |#G110|
-                                               (DIVIDE2 |s| |t|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q| (CAR |#G110|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |r| (CDR |#G110|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              |#G110|
-                                              (LETT |p2|
-                                               (+ (* |q| |p1|) |p0|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |q2|
-                                               (+ (* |q| |q1|) |q0|)
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (COND
-                                                ((OR (EQL |r| 0)
-                                                  (<
-                                                   (SPADCALL |tol|
-                                                    (ABS
-                                                     (- (* |nu| |q2|)
-                                                      (* |de| |p2|)))
-                                                    (|getShellEntry| $
-                                                     144))
-                                                   (* |de| (ABS |p2|))))
-                                                 (RETURN-FROM
-                                                  |DFLOAT;rationalApproximation;$2NniF;87|
-                                                   (SPADCALL |p2| |q2|
-                                                    (|getShellEntry| $
-                                                     142)))))
-                                              (LETT |#G111| |p1|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |#G112| |p2|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (SETQ |p0| |#G111|)
-                                              (SETQ |p1| |#G112|)
-                                              (LETT |#G113| |q1|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (LETT |#G114| |q2|
-                                               |DFLOAT;rationalApproximation;$2NniF;87|)
-                                              (SETQ |q0| |#G113|)
-                                              (SETQ |q1| |#G114|)
-                                              (EXIT
-                                               (PROGN
-                                                 (LETT |#G115| |t|
-                                                  |DFLOAT;rationalApproximation;$2NniF;87|)
-                                                 (LETT |#G116| |r|
-                                                  |DFLOAT;rationalApproximation;$2NniF;87|)
-                                                 (SETQ |s| |#G115|)
-                                                 (SETQ |t| |#G116|)))))))))))))))))))) 
+      (LET* ((|#G109| (|DFLOAT;manexp| |f| $)) (|nu| (CAR |#G109|))
+             (|ex| (CDR |#G109|)))
+        (SEQ |#G109|
+             (LETT BASE (FLOAT-RADIX 0.0)
+                   |DFLOAT;rationalApproximation;$2NniF;87|)
+             (EXIT (COND
+                     ((>= |ex| 0)
+                      (SPADCALL
+                          (* |nu|
+                             (EXPT BASE
+                                   (|check-subtype| (>= |ex| 0)
+                                    '(|NonNegativeInteger|) |ex|)))
+                          (|getShellEntry| $ 135)))
+                     ('T
+                      (SEQ (LETT |de|
+                                 (EXPT BASE
+                                       (LET ((#0=#:G1540 (- |ex|)))
+                                         (|check-subtype| (>= #0# 0)
+                                          '(|NonNegativeInteger|) #0#)))
+                                 |DFLOAT;rationalApproximation;$2NniF;87|)
+                           (EXIT (COND
+                                   ((< |b| 2)
+                                    (|error| "base must be > 1"))
+                                   ('T
+                                    (SEQ
+                                     (LETT |tol| (EXPT |b| |d|)
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (LETT |s| |nu|
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (LETT |t| |de|
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (LETT |p0| 0
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (LETT |p1| 1
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (LETT |q0| 1
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (LETT |q1| 0
+                                      |DFLOAT;rationalApproximation;$2NniF;87|)
+                                     (EXIT
+                                      (LOOP
+                                        (COND
+                                          (NIL (RETURN NIL))
+                                          (T
+                                           (SEQ
+                                            (LETT |#G110|
+                                             (DIVIDE2 |s| |t|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |q| (CAR |#G110|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |r| (CDR |#G110|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            |#G110|
+                                            (LETT |p2|
+                                             (+ (* |q| |p1|) |p0|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |q2|
+                                             (+ (* |q| |q1|) |q0|)
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (COND
+                                              ((OR (EQL |r| 0)
+                                                (<
+                                                 (SPADCALL |tol|
+                                                  (ABS
+                                                   (- (* |nu| |q2|)
+                                                    (* |de| |p2|)))
+                                                  (|getShellEntry| $
+                                                   144))
+                                                 (* |de| (ABS |p2|))))
+                                               (RETURN-FROM
+                                                |DFLOAT;rationalApproximation;$2NniF;87|
+                                                 (SPADCALL |p2| |q2|
+                                                  (|getShellEntry| $
+                                                   142)))))
+                                            (LETT |#G111| |p1|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |#G112| |p2|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (SETQ |p0| |#G111|)
+                                            (SETQ |p1| |#G112|)
+                                            (LETT |#G113| |q1|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (LETT |#G114| |q2|
+                                             |DFLOAT;rationalApproximation;$2NniF;87|)
+                                            (SETQ |q0| |#G113|)
+                                            (SETQ |q1| |#G114|)
+                                            (EXIT
+                                             (PROGN
+                                               (LETT |#G115| |t|
+                                                |DFLOAT;rationalApproximation;$2NniF;87|)
+                                               (LETT |#G116| |r|
+                                                |DFLOAT;rationalApproximation;$2NniF;87|)
+                                               (SETQ |s| |#G115|)
+                                               (SETQ |t| |#G116|))))))))))))))))))))) 
 
 (DEFUN |DFLOAT;**;$F$;88| (|x| |r| $)
   (PROG (|n| |d|)

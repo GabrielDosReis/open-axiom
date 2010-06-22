@@ -213,55 +213,45 @@
                    (EXIT |r|)))))))) 
 
 (DEFUN |LSAGG-;insert!;SAIA;7| (|s| |x| |i| $)
-  (PROG (|m| |y| |z|)
+  (PROG (|y| |z|)
     (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
-                 |LSAGG-;insert!;SAIA;7|)
-           (EXIT (COND
-                   ((< |i| |m|) (|error| "index out of range"))
-                   ((EQL |i| |m|)
-                    (SPADCALL |s| |x| (|getShellEntry| $ 14)))
-                   ('T
-                    (SEQ (LETT |y|
-                               (SPADCALL |x|
-                                   (LET
-                                    ((#0=#:G1467 (- (- |i| 1) |m|)))
-                                     (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                   (|getShellEntry| $ 39))
-                               |LSAGG-;insert!;SAIA;7|)
-                         (LETT |z|
-                               (SPADCALL |y| (|getShellEntry| $ 17))
-                               |LSAGG-;insert!;SAIA;7|)
-                         (SPADCALL |y|
-                             (SPADCALL |s| |z| (|getShellEntry| $ 14))
-                             (|getShellEntry| $ 27))
-                         (EXIT |x|))))))))) 
+      (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 33))))
+        (COND
+          ((< |i| |m|) (|error| "index out of range"))
+          ((EQL |i| |m|) (SPADCALL |s| |x| (|getShellEntry| $ 14)))
+          ('T
+           (SEQ (LETT |y|
+                      (SPADCALL |x|
+                          (LET ((#0=#:G1467 (- (- |i| 1) |m|)))
+                            (|check-subtype| (>= #0# 0)
+                                '(|NonNegativeInteger|) #0#))
+                          (|getShellEntry| $ 39))
+                      |LSAGG-;insert!;SAIA;7|)
+                (LETT |z| (SPADCALL |y| (|getShellEntry| $ 17))
+                      |LSAGG-;insert!;SAIA;7|)
+                (SPADCALL |y| (SPADCALL |s| |z| (|getShellEntry| $ 14))
+                    (|getShellEntry| $ 27))
+                (EXIT |x|)))))))) 
 
 (DEFUN |LSAGG-;insert!;2AIA;8| (|w| |x| |i| $)
-  (PROG (|m| |y| |z|)
+  (PROG (|y| |z|)
     (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
-                 |LSAGG-;insert!;2AIA;8|)
-           (EXIT (COND
-                   ((< |i| |m|) (|error| "index out of range"))
-                   ((EQL |i| |m|)
-                    (SPADCALL |w| |x| (|getShellEntry| $ 41)))
-                   ('T
-                    (SEQ (LETT |y|
-                               (SPADCALL |x|
-                                   (LET
-                                    ((#0=#:G1471 (- (- |i| 1) |m|)))
-                                     (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                   (|getShellEntry| $ 39))
-                               |LSAGG-;insert!;2AIA;8|)
-                         (LETT |z|
-                               (SPADCALL |y| (|getShellEntry| $ 17))
-                               |LSAGG-;insert!;2AIA;8|)
-                         (SPADCALL |y| |w| (|getShellEntry| $ 27))
-                         (SPADCALL |y| |z| (|getShellEntry| $ 41))
-                         (EXIT |x|))))))))) 
+      (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 33))))
+        (COND
+          ((< |i| |m|) (|error| "index out of range"))
+          ((EQL |i| |m|) (SPADCALL |w| |x| (|getShellEntry| $ 41)))
+          ('T
+           (SEQ (LETT |y|
+                      (SPADCALL |x|
+                          (LET ((#0=#:G1471 (- (- |i| 1) |m|)))
+                            (|check-subtype| (>= #0# 0)
+                                '(|NonNegativeInteger|) #0#))
+                          (|getShellEntry| $ 39))
+                      |LSAGG-;insert!;2AIA;8|)
+                (LETT |z| (SPADCALL |y| (|getShellEntry| $ 17))
+                      |LSAGG-;insert!;2AIA;8|)
+                (SPADCALL |y| |w| (|getShellEntry| $ 27))
+                (SPADCALL |y| |z| (|getShellEntry| $ 41)) (EXIT |x|)))))))) 
 
 (DEFUN |LSAGG-;remove!;M2A;9| (|f| |x| $)
   (PROG (|p| |q|)
@@ -307,76 +297,64 @@
                          (EXIT |x|))))))))) 
 
 (DEFUN |LSAGG-;delete!;AIA;10| (|x| |i| $)
-  (PROG (|m| |y|)
+  (PROG (|y|)
     (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
-                 |LSAGG-;delete!;AIA;10|)
-           (EXIT (COND
-                   ((< |i| |m|) (|error| "index out of range"))
-                   ((EQL |i| |m|)
-                    (SPADCALL |x| (|getShellEntry| $ 17)))
-                   ('T
-                    (SEQ (LETT |y|
-                               (SPADCALL |x|
-                                   (LET
-                                    ((#0=#:G1483 (- (- |i| 1) |m|)))
-                                     (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                   (|getShellEntry| $ 39))
-                               |LSAGG-;delete!;AIA;10|)
-                         (SPADCALL |y|
-                             (SPADCALL |y| 2 (|getShellEntry| $ 39))
-                             (|getShellEntry| $ 27))
-                         (EXIT |x|))))))))) 
+      (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 33))))
+        (COND
+          ((< |i| |m|) (|error| "index out of range"))
+          ((EQL |i| |m|) (SPADCALL |x| (|getShellEntry| $ 17)))
+          ('T
+           (SEQ (LETT |y|
+                      (SPADCALL |x|
+                          (LET ((#0=#:G1483 (- (- |i| 1) |m|)))
+                            (|check-subtype| (>= #0# 0)
+                                '(|NonNegativeInteger|) #0#))
+                          (|getShellEntry| $ 39))
+                      |LSAGG-;delete!;AIA;10|)
+                (SPADCALL |y| (SPADCALL |y| 2 (|getShellEntry| $ 39))
+                    (|getShellEntry| $ 27))
+                (EXIT |x|)))))))) 
 
 (DEFUN |LSAGG-;delete!;AUsA;11| (|x| |i| $)
-  (PROG (|l| |m| |h| |t|)
+  (PROG (|h| |t|)
     (RETURN
-      (SEQ (LETT |l| (SPADCALL |i| (|getShellEntry| $ 46))
-                 |LSAGG-;delete!;AUsA;11|)
-           (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
-                 |LSAGG-;delete!;AUsA;11|)
-           (EXIT (COND
-                   ((< |l| |m|) (|error| "index out of range"))
-                   ('T
-                    (SEQ (LETT |h|
-                               (COND
-                                 ((SPADCALL |i| (|getShellEntry| $ 47))
-                                  (SPADCALL |i| (|getShellEntry| $ 48)))
-                                 ('T
-                                  (SPADCALL |x| (|getShellEntry| $ 49))))
-                               |LSAGG-;delete!;AUsA;11|)
-                         (EXIT (COND
-                                 ((< |h| |l|) |x|)
-                                 ((EQL |l| |m|)
-                                  (SPADCALL |x|
+      (LET* ((|l| (SPADCALL |i| (|getShellEntry| $ 46)))
+             (|m| (SPADCALL |x| (|getShellEntry| $ 33))))
+        (COND
+          ((< |l| |m|) (|error| "index out of range"))
+          ('T
+           (SEQ (LETT |h|
+                      (COND
+                        ((SPADCALL |i| (|getShellEntry| $ 47))
+                         (SPADCALL |i| (|getShellEntry| $ 48)))
+                        ('T (SPADCALL |x| (|getShellEntry| $ 49))))
+                      |LSAGG-;delete!;AUsA;11|)
+                (EXIT (COND
+                        ((< |h| |l|) |x|)
+                        ((EQL |l| |m|)
+                         (SPADCALL |x|
+                             (LET ((#0=#:G1489 (- (+ |h| 1) |m|)))
+                               (|check-subtype| (>= #0# 0)
+                                   '(|NonNegativeInteger|) #0#))
+                             (|getShellEntry| $ 39)))
+                        ('T
+                         (SEQ (LETT |t|
+                                    (SPADCALL |x|
+                                     (LET
+                                      ((#1=#:G1490 (- (- |l| 1) |m|)))
+                                       (|check-subtype| (>= #1# 0)
+                                        '(|NonNegativeInteger|) #1#))
+                                     (|getShellEntry| $ 39))
+                                    |LSAGG-;delete!;AUsA;11|)
+                              (SPADCALL |t|
+                                  (SPADCALL |t|
                                       (LET
-                                       ((#0=#:G1489 (- (+ |h| 1) |m|)))
-                                        (|check-subtype| (>= #0# 0)
-                                         '(|NonNegativeInteger|) #0#))
-                                      (|getShellEntry| $ 39)))
-                                 ('T
-                                  (SEQ (LETT |t|
-                                        (SPADCALL |x|
-                                         (LET
-                                          ((#1=#:G1490
-                                            (- (- |l| 1) |m|)))
-                                           (|check-subtype| (>= #1# 0)
-                                            '(|NonNegativeInteger|)
-                                            #1#))
-                                         (|getShellEntry| $ 39))
-                                        |LSAGG-;delete!;AUsA;11|)
-                                       (SPADCALL |t|
-                                        (SPADCALL |t|
-                                         (LET
-                                          ((#2=#:G1491
-                                            (+ (- |h| |l|) 2)))
-                                           (|check-subtype| (>= #2# 0)
-                                            '(|NonNegativeInteger|)
-                                            #2#))
-                                         (|getShellEntry| $ 39))
-                                        (|getShellEntry| $ 27))
-                                       (EXIT |x|))))))))))))) 
+                                       ((#2=#:G1491 (+ (- |h| |l|) 2)))
+                                        (|check-subtype| (>= #2# 0)
+                                         '(|NonNegativeInteger|) #2#))
+                                      (|getShellEntry| $ 39))
+                                  (|getShellEntry| $ 27))
+                              (EXIT |x|)))))))))))) 
 
 (DEFUN |LSAGG-;find;MAU;12| (|f| |x| $)
   (SEQ (LOOP
@@ -394,25 +372,22 @@
                ('T (CONS 0 (SPADCALL |x| (|getShellEntry| $ 18)))))))) 
 
 (DEFUN |LSAGG-;position;MAI;13| (|f| |x| $)
-  (PROG (|k|)
-    (RETURN
-      (SEQ (LETT |k| (SPADCALL |x| (|getShellEntry| $ 33))
-                 |LSAGG-;position;MAI;13|)
-           (LOOP
-             (COND
-               ((NOT (COND
-                       ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
-                       ('T
-                        (NOT (SPADCALL
-                                 (SPADCALL |x| (|getShellEntry| $ 18))
-                                 |f|)))))
-                (RETURN NIL))
-               (T (SEQ (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 17)))
-                       (EXIT (SETQ |k| (+ |k| 1)))))))
-           (EXIT (COND
-                   ((SPADCALL |x| (|getShellEntry| $ 16))
-                    (- (SPADCALL |x| (|getShellEntry| $ 33)) 1))
-                   ('T |k|))))))) 
+  (LET ((|k| (SPADCALL |x| (|getShellEntry| $ 33))))
+    (SEQ (LOOP
+           (COND
+             ((NOT (COND
+                     ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
+                     ('T
+                      (NOT (SPADCALL
+                               (SPADCALL |x| (|getShellEntry| $ 18))
+                               |f|)))))
+              (RETURN NIL))
+             (T (SEQ (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 17)))
+                     (EXIT (SETQ |k| (+ |k| 1)))))))
+         (EXIT (COND
+                 ((SPADCALL |x| (|getShellEntry| $ 16))
+                  (- (SPADCALL |x| (|getShellEntry| $ 33)) 1))
+                 ('T |k|)))))) 
 
 (DEFUN |LSAGG-;mergeSort| (|f| |p| |n| $)
   (PROG (|l| |q|)
@@ -471,80 +446,66 @@
                    (EXIT T)))))))) 
 
 (DEFUN |LSAGG-;reduce;MA2S;16| (|f| |x| |i| $)
-  (PROG (|r|)
-    (RETURN
-      (SEQ (LETT |r| |i| |LSAGG-;reduce;MA2S;16|)
-           (LOOP
-             (COND
-               ((NOT (NOT (SPADCALL |x| (|getShellEntry| $ 16))))
-                (RETURN NIL))
-               (T (SEQ (SETQ |r|
-                             (SPADCALL |r|
-                                 (SPADCALL |x| (|getShellEntry| $ 18))
-                                 |f|))
-                       (EXIT (SETQ |x|
-                                   (SPADCALL |x|
-                                    (|getShellEntry| $ 17))))))))
-           (EXIT |r|))))) 
+  (LET ((|r| |i|))
+    (SEQ (LOOP
+           (COND
+             ((NOT (NOT (SPADCALL |x| (|getShellEntry| $ 16))))
+              (RETURN NIL))
+             (T (SEQ (SETQ |r|
+                           (SPADCALL |r|
+                               (SPADCALL |x| (|getShellEntry| $ 18))
+                               |f|))
+                     (EXIT (SETQ |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 17))))))))
+         (EXIT |r|)))) 
 
 (DEFUN |LSAGG-;reduce;MA3S;17| (|f| |x| |i| |a| $)
-  (PROG (|r|)
-    (RETURN
-      (SEQ (LETT |r| |i| |LSAGG-;reduce;MA3S;17|)
-           (LOOP
-             (COND
-               ((NOT (COND
-                       ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
-                       ('T (SPADCALL |r| |a| (|getShellEntry| $ 61)))))
-                (RETURN NIL))
-               (T (SEQ (SETQ |r|
-                             (SPADCALL |r|
-                                 (SPADCALL |x| (|getShellEntry| $ 18))
-                                 |f|))
-                       (EXIT (SETQ |x|
-                                   (SPADCALL |x|
-                                    (|getShellEntry| $ 17))))))))
-           (EXIT |r|))))) 
+  (LET ((|r| |i|))
+    (SEQ (LOOP
+           (COND
+             ((NOT (COND
+                     ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
+                     ('T (SPADCALL |r| |a| (|getShellEntry| $ 61)))))
+              (RETURN NIL))
+             (T (SEQ (SETQ |r|
+                           (SPADCALL |r|
+                               (SPADCALL |x| (|getShellEntry| $ 18))
+                               |f|))
+                     (EXIT (SETQ |x|
+                                 (SPADCALL |x| (|getShellEntry| $ 17))))))))
+         (EXIT |r|)))) 
 
 (DEFUN |LSAGG-;new;NniSA;18| (|n| |s| $)
-  (PROG (|l|)
-    (RETURN
-      (SEQ (LETT |l| (SPADCALL (|getShellEntry| $ 13))
-                 |LSAGG-;new;NniSA;18|)
-           (LET ((|k| 1))
-             (LOOP
-               (COND
-                 ((> |k| |n|) (RETURN NIL))
-                 (T (SETQ |l|
-                          (SPADCALL |s| |l| (|getShellEntry| $ 14)))))
-               (SETQ |k| (+ |k| 1))))
-           (EXIT |l|))))) 
-
-(DEFUN |LSAGG-;map;M3A;19| (|f| |x| |y| $)
-  (PROG (|z|)
-    (RETURN
-      (SEQ (LETT |z| (SPADCALL (|getShellEntry| $ 13))
-                 |LSAGG-;map;M3A;19|)
+  (LET ((|l| (SPADCALL (|getShellEntry| $ 13))))
+    (SEQ (LET ((|k| 1))
            (LOOP
              (COND
-               ((NOT (COND
-                       ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
-                       ('T (NOT (SPADCALL |y| (|getShellEntry| $ 16))))))
-                (RETURN NIL))
-               (T (SEQ (SETQ |z|
-                             (SPADCALL
-                                 (SPADCALL
-                                     (SPADCALL |x|
-                                      (|getShellEntry| $ 18))
-                                     (SPADCALL |y|
-                                      (|getShellEntry| $ 18))
-                                     |f|)
-                                 |z| (|getShellEntry| $ 14)))
-                       (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 17)))
-                       (EXIT (SETQ |y|
+               ((> |k| |n|) (RETURN NIL))
+               (T (SETQ |l| (SPADCALL |s| |l| (|getShellEntry| $ 14)))))
+             (SETQ |k| (+ |k| 1))))
+         (EXIT |l|)))) 
+
+(DEFUN |LSAGG-;map;M3A;19| (|f| |x| |y| $)
+  (LET ((|z| (SPADCALL (|getShellEntry| $ 13))))
+    (SEQ (LOOP
+           (COND
+             ((NOT (COND
+                     ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
+                     ('T (NOT (SPADCALL |y| (|getShellEntry| $ 16))))))
+              (RETURN NIL))
+             (T (SEQ (SETQ |z|
+                           (SPADCALL
+                               (SPADCALL
+                                   (SPADCALL |x|
+                                    (|getShellEntry| $ 18))
                                    (SPADCALL |y|
-                                    (|getShellEntry| $ 17))))))))
-           (EXIT (SPADCALL |z| (|getShellEntry| $ 55))))))) 
+                                    (|getShellEntry| $ 18))
+                                   |f|)
+                               |z| (|getShellEntry| $ 14)))
+                     (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 17)))
+                     (EXIT (SETQ |y|
+                                 (SPADCALL |y| (|getShellEntry| $ 17))))))))
+         (EXIT (SPADCALL |z| (|getShellEntry| $ 55)))))) 
 
 (DEFUN |LSAGG-;reverse!;2A;20| (|x| $)
   (PROG (|z| |y|)
@@ -575,125 +536,104 @@
                    (EXIT |x|)))))))) 
 
 (DEFUN |LSAGG-;copy;2A;21| (|x| $)
-  (PROG (|y|)
-    (RETURN
-      (SEQ (LETT |y| (SPADCALL (|getShellEntry| $ 13))
-                 |LSAGG-;copy;2A;21|)
-           (LET ((|k| 0))
-             (LOOP
-               (COND
-                 ((NOT (NOT (SPADCALL |x| (|getShellEntry| $ 16))))
-                  (RETURN NIL))
-                 (T (SEQ (COND
-                           ((EQL |k| 1000)
-                            (COND
-                              ((SPADCALL |x| (|getShellEntry| $ 67))
-                               (EXIT (|error| "cyclic list"))))))
-                         (SETQ |y|
-                               (SPADCALL
-                                   (SPADCALL |x|
-                                    (|getShellEntry| $ 18))
-                                   |y| (|getShellEntry| $ 14)))
-                         (EXIT (SETQ |x|
-                                     (SPADCALL |x|
-                                      (|getShellEntry| $ 17)))))))
-               (SETQ |k| (+ |k| 1))))
-           (EXIT (SPADCALL |y| (|getShellEntry| $ 55))))))) 
-
-(DEFUN |LSAGG-;copyInto!;2AIA;22| (|y| |x| |s| $)
-  (PROG (|m| |z|)
-    (RETURN
-      (SEQ (LETT |m| (SPADCALL |y| (|getShellEntry| $ 33))
-                 |LSAGG-;copyInto!;2AIA;22|)
-           (EXIT (COND
-                   ((< |s| |m|) (|error| "index out of range"))
-                   ('T
-                    (SEQ (LETT |z|
-                               (SPADCALL |y|
-                                   (LET ((#0=#:G1552 (- |s| |m|)))
-                                     (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                   (|getShellEntry| $ 39))
-                               |LSAGG-;copyInto!;2AIA;22|)
-                         (LOOP
-                           (COND
-                             ((NOT (COND
-                                     ((SPADCALL |z|
-                                       (|getShellEntry| $ 16))
-                                      NIL)
-                                     ('T
-                                      (NOT
-                                       (SPADCALL |x|
-                                        (|getShellEntry| $ 16))))))
-                              (RETURN NIL))
-                             (T (SEQ (SPADCALL |z|
-                                      (SPADCALL |x|
-                                       (|getShellEntry| $ 18))
-                                      (|getShellEntry| $ 69))
-                                     (SETQ |x|
-                                      (SPADCALL |x|
-                                       (|getShellEntry| $ 17)))
-                                     (EXIT
-                                      (SETQ |z|
-                                       (SPADCALL |z|
-                                        (|getShellEntry| $ 17))))))))
-                         (EXIT |y|))))))))) 
-
-(DEFUN |LSAGG-;position;SA2I;23| (|w| |x| |s| $)
-  (PROG (|m| |k|)
-    (RETURN
-      (SEQ (LETT |m| (SPADCALL |x| (|getShellEntry| $ 33))
-                 |LSAGG-;position;SA2I;23|)
-           (EXIT (COND
-                   ((< |s| |m|) (|error| "index out of range"))
-                   ('T
-                    (SEQ (SETQ |x|
-                               (SPADCALL |x|
-                                   (LET ((#0=#:G1559 (- |s| |m|)))
-                                     (|check-subtype| (>= #0# 0)
-                                      '(|NonNegativeInteger|) #0#))
-                                   (|getShellEntry| $ 39)))
-                         (LETT |k| |s| |LSAGG-;position;SA2I;23|)
-                         (LOOP
-                           (COND
-                             ((NOT (COND
-                                     ((SPADCALL |x|
-                                       (|getShellEntry| $ 16))
-                                      NIL)
-                                     ('T
-                                      (SPADCALL |w|
-                                       (SPADCALL |x|
-                                        (|getShellEntry| $ 18))
-                                       (|getShellEntry| $ 61)))))
-                              (RETURN NIL))
-                             (T (SEQ (SETQ |x|
-                                      (SPADCALL |x|
-                                       (|getShellEntry| $ 17)))
-                                     (EXIT (SETQ |k| (+ |k| 1)))))))
-                         (EXIT (COND
-                                 ((SPADCALL |x| (|getShellEntry| $ 16))
-                                  (- (SPADCALL |x|
-                                      (|getShellEntry| $ 33))
-                                     1))
-                                 ('T |k|))))))))))) 
-
-(DEFUN |LSAGG-;removeDuplicates!;2A;24| (|l| $)
-  (PROG (|p|)
-    (RETURN
-      (SEQ (LETT |p| |l| |LSAGG-;removeDuplicates!;2A;24|)
+  (LET ((|y| (SPADCALL (|getShellEntry| $ 13))))
+    (SEQ (LET ((|k| 0))
            (LOOP
              (COND
-               ((NOT (NOT (SPADCALL |p| (|getShellEntry| $ 16))))
+               ((NOT (NOT (SPADCALL |x| (|getShellEntry| $ 16))))
                 (RETURN NIL))
-               (T (SETQ |p|
-                        (SPADCALL |p|
-                            (SPADCALL
-                                (CONS #'|LSAGG-;removeDuplicates!;2A;24!0|
-                                      (VECTOR $ |p|))
-                                (SPADCALL |p| (|getShellEntry| $ 17))
-                                (|getShellEntry| $ 73))
-                            (|getShellEntry| $ 27))))))
-           (EXIT |l|))))) 
+               (T (SEQ (COND
+                         ((EQL |k| 1000)
+                          (COND
+                            ((SPADCALL |x| (|getShellEntry| $ 67))
+                             (EXIT (|error| "cyclic list"))))))
+                       (SETQ |y|
+                             (SPADCALL
+                                 (SPADCALL |x| (|getShellEntry| $ 18))
+                                 |y| (|getShellEntry| $ 14)))
+                       (EXIT (SETQ |x|
+                                   (SPADCALL |x|
+                                    (|getShellEntry| $ 17)))))))
+             (SETQ |k| (+ |k| 1))))
+         (EXIT (SPADCALL |y| (|getShellEntry| $ 55)))))) 
+
+(DEFUN |LSAGG-;copyInto!;2AIA;22| (|y| |x| |s| $)
+  (PROG (|z|)
+    (RETURN
+      (LET ((|m| (SPADCALL |y| (|getShellEntry| $ 33))))
+        (COND
+          ((< |s| |m|) (|error| "index out of range"))
+          ('T
+           (SEQ (LETT |z|
+                      (SPADCALL |y|
+                          (LET ((#0=#:G1552 (- |s| |m|)))
+                            (|check-subtype| (>= #0# 0)
+                                '(|NonNegativeInteger|) #0#))
+                          (|getShellEntry| $ 39))
+                      |LSAGG-;copyInto!;2AIA;22|)
+                (LOOP
+                  (COND
+                    ((NOT (COND
+                            ((SPADCALL |z| (|getShellEntry| $ 16)) NIL)
+                            ('T
+                             (NOT (SPADCALL |x| (|getShellEntry| $ 16))))))
+                     (RETURN NIL))
+                    (T (SEQ (SPADCALL |z|
+                                (SPADCALL |x| (|getShellEntry| $ 18))
+                                (|getShellEntry| $ 69))
+                            (SETQ |x|
+                                  (SPADCALL |x| (|getShellEntry| $ 17)))
+                            (EXIT (SETQ |z|
+                                        (SPADCALL |z|
+                                         (|getShellEntry| $ 17))))))))
+                (EXIT |y|)))))))) 
+
+(DEFUN |LSAGG-;position;SA2I;23| (|w| |x| |s| $)
+  (PROG (|k|)
+    (RETURN
+      (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 33))))
+        (COND
+          ((< |s| |m|) (|error| "index out of range"))
+          ('T
+           (SEQ (SETQ |x|
+                      (SPADCALL |x|
+                          (LET ((#0=#:G1559 (- |s| |m|)))
+                            (|check-subtype| (>= #0# 0)
+                                '(|NonNegativeInteger|) #0#))
+                          (|getShellEntry| $ 39)))
+                (LETT |k| |s| |LSAGG-;position;SA2I;23|)
+                (LOOP
+                  (COND
+                    ((NOT (COND
+                            ((SPADCALL |x| (|getShellEntry| $ 16)) NIL)
+                            ('T
+                             (SPADCALL |w|
+                                 (SPADCALL |x| (|getShellEntry| $ 18))
+                                 (|getShellEntry| $ 61)))))
+                     (RETURN NIL))
+                    (T (SEQ (SETQ |x|
+                                  (SPADCALL |x| (|getShellEntry| $ 17)))
+                            (EXIT (SETQ |k| (+ |k| 1)))))))
+                (EXIT (COND
+                        ((SPADCALL |x| (|getShellEntry| $ 16))
+                         (- (SPADCALL |x| (|getShellEntry| $ 33)) 1))
+                        ('T |k|)))))))))) 
+
+(DEFUN |LSAGG-;removeDuplicates!;2A;24| (|l| $)
+  (LET ((|p| |l|))
+    (SEQ (LOOP
+           (COND
+             ((NOT (NOT (SPADCALL |p| (|getShellEntry| $ 16))))
+              (RETURN NIL))
+             (T (SETQ |p|
+                      (SPADCALL |p|
+                          (SPADCALL
+                              (CONS #'|LSAGG-;removeDuplicates!;2A;24!0|
+                                    (VECTOR $ |p|))
+                              (SPADCALL |p| (|getShellEntry| $ 17))
+                              (|getShellEntry| $ 73))
+                          (|getShellEntry| $ 27))))))
+         (EXIT |l|)))) 
 
 (DEFUN |LSAGG-;removeDuplicates!;2A;24!0| (|#1| $$)
   (LET (($ (|getShellEntry| $$ 0)))
