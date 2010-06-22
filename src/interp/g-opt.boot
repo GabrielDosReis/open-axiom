@@ -79,6 +79,33 @@ changeVariableDefinitionToStore(form,vars) ==
     x is ['%LET,v,:.] and not (v in vars) =>
       vars := [v,:vars]
 
+++ Return true if `x' contains control transfer to a point outside itself.
+jumpToToplevel? x ==
+  isAtomicForm x => false
+  op := x.op
+  op = 'SEQ => CONTAINED('THROW,x.args)
+  op in '(EXIT THROW %leave) => true
+  or/[jumpToToplevel? x' for x' in x]
+
+++ Return true if `form' is just one assignment expression.
+singleAssignment? form ==
+  form is ['%LET,.,rhs] and not CONTAINED('%LET,rhs)
+
+++ Turns `form' into a `%bind'-expression if it starts with a
+++ a sequence of first-time variable definitions.
+groupVariableDefinitions form ==
+  isAtomicForm form => form
+  form isnt ['SEQ,:stmts,['EXIT,val]] => form
+  defs := nil
+  for x in stmts while singleAssignment? x  repeat
+    defs := [x.args,:defs]
+  defs = nil or jumpToToplevel? defs => form
+  stmts := drop(#defs,stmts)
+  expr :=
+    stmts = nil => val
+    ['SEQ,:stmts,['EXIT,val]]
+  ['%bind,nreverse defs,expr]
+
 optimizeFunctionDef(def) ==
   if $reportOptimization then
     sayBrightlyI bright '"Original LISP code:"
@@ -109,7 +136,7 @@ optimizeFunctionDef(def) ==
         replaceThrowByReturn(first x,g)
         replaceThrowByReturn(rest x,g)
   changeVariableDefinitionToStore(body',args)
-  [name,[slamOrLam,args,body']]
+  [name,[slamOrLam,args,groupVariableDefinitions body']]
  
 optimize x ==
   (opt x; x) where

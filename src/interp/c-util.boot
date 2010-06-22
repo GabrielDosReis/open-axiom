@@ -1620,8 +1620,10 @@ transformToBackendCode x ==
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
     body is [stmt] and
-      (atom stmt or stmt.op = "SEQ" or not CONTAINED("EXIT",stmt)) =>
-        body
+      (atom stmt
+        or stmt.op in '(SEQ LET LET_*)
+          or not CONTAINED("EXIT",stmt)) =>
+            body
     [simplifySEQ ["SEQ",:body]]
   $FluidVars := removeDuplicates nreverse $FluidVars
   $LocalVars := S_-(S_-(removeDuplicates nreverse $LocalVars,$FluidVars),

@@ -1,3 +1,16 @@
+2010-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Group sequence of LETT definitions into LET/LET* expressions where
+	appropriate. 
+	* interp/g-opt.boot (jumpToToplevel?): New.
+	(singleAssignment?): Likewise.
+	(groupVariableDefinitions): Likewise.  Use them.
+	(optimizeFunctionDef): Group toplevel variable definitions into
+	a bind expression.
+	* interp/g-util.boot (expandBind): Tidy.
+	* interp/c-util.boot (transformToBackendCode): Refrain from
+	enclosing let-expressions in SEQ if not needed.
+
 2010-06-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (middleEndExpand): Give it another macro

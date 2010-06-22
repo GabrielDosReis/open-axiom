@@ -275,34 +275,24 @@
          ('T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
 
 (DEFUN |INT;OMwrite;$S;2| (|x| $)
-  (PROG (|s| |sp| |dev|)
-    (RETURN
-      (SEQ (LETT |s| "" |INT;OMwrite;$S;2|)
-           (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |INT;OMwrite;$S;2|)
-           (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 21))
-                     (|getShellEntry| $ 22))
-                 |INT;OMwrite;$S;2|)
-           (SPADCALL |dev| (|getShellEntry| $ 23))
-           (|INT;writeOMInt| |dev| |x| $)
-           (SPADCALL |dev| (|getShellEntry| $ 24))
-           (SPADCALL |dev| (|getShellEntry| $ 25))
-           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
+  (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
+         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 21))
+                    (|getShellEntry| $ 22))))
+    (SEQ (SPADCALL |dev| (|getShellEntry| $ 23))
+         (|INT;writeOMInt| |dev| |x| $)
+         (SPADCALL |dev| (|getShellEntry| $ 24))
+         (SPADCALL |dev| (|getShellEntry| $ 25))
+         (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |INT;OMwrite;$BS;3| (|x| |wholeObj| $)
-  (PROG (|s| |sp| |dev|)
-    (RETURN
-      (SEQ (LETT |s| "" |INT;OMwrite;$BS;3|)
-           (LETT |sp| (OM-STRINGTOSTRINGPTR |s|) |INT;OMwrite;$BS;3|)
-           (LETT |dev|
-                 (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 21))
-                     (|getShellEntry| $ 22))
-                 |INT;OMwrite;$BS;3|)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 23))))
-           (|INT;writeOMInt| |dev| |x| $)
-           (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 24))))
-           (SPADCALL |dev| (|getShellEntry| $ 25))
-           (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|))))) 
+  (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
+         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 21))
+                    (|getShellEntry| $ 22))))
+    (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 23))))
+         (|INT;writeOMInt| |dev| |x| $)
+         (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 24))))
+         (SPADCALL |dev| (|getShellEntry| $ 25))
+         (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |INT;OMwrite;Omd$V;4| (|dev| |x| $)
   (SEQ (SPADCALL |dev| (|getShellEntry| $ 23))
@@ -349,16 +339,10 @@
   (INTEGER-LENGTH |a|)) 
 
 (DEFUN |INT;addmod;4$;20| (|a| |b| |p| $)
-  (PROG (|c|)
-    (RETURN
-      (SEQ (LETT |c| (+ |a| |b|) |INT;addmod;4$;20|)
-           (EXIT (COND ((>= |c| |p|) (- |c| |p|)) ('T |c|))))))) 
+  (LET ((|c| (+ |a| |b|))) (COND ((>= |c| |p|) (- |c| |p|)) ('T |c|)))) 
 
 (DEFUN |INT;submod;4$;21| (|a| |b| |p| $)
-  (PROG (|c|)
-    (RETURN
-      (SEQ (LETT |c| (- |a| |b|) |INT;submod;4$;21|)
-           (EXIT (COND ((< |c| 0) (+ |c| |p|)) ('T |c|))))))) 
+  (LET ((|c| (- |a| |b|))) (COND ((< |c| 0) (+ |c| |p|)) ('T |c|)))) 
 
 (DEFUN |INT;mulmod;4$;22| (|a| |b| |p| $)
   (REMAINDER2 (* |a| |b|) |p|)) 
@@ -378,11 +362,9 @@
   (STRINGIMAGE |x|)) 
 
 (DEFUN |INT;latex;$S;27| (|x| $)
-  (PROG (|s|)
-    (RETURN
-      (SEQ (LETT |s| (STRINGIMAGE |x|) |INT;latex;$S;27|)
-           (COND ((< -1 |x|) (COND ((< |x| 10) (EXIT |s|)))))
-           (EXIT (STRCONC "{" (STRCONC |s| "}"))))))) 
+  (LET ((|s| (STRINGIMAGE |x|)))
+    (SEQ (COND ((< -1 |x|) (COND ((< |x| 10) (EXIT |s|)))))
+         (EXIT (STRCONC "{" (STRCONC |s| "}")))))) 
 
 (DEFUN |INT;positiveRemainder;3$;28| (|a| |b| $)
   (PROG (|r|)
@@ -472,31 +454,27 @@
   (SPADCALL |p| (|getShellEntry| $ 106))) 
 
 (DEFUN |INT;factorPolynomial| (|p| $)
-  (PROG (|pp|)
-    (RETURN
-      (SEQ (LETT |pp| (SPADCALL |p| (|getShellEntry| $ 107))
-                 |INT;factorPolynomial|)
-           (EXIT (COND
-                   ((EQL (SPADCALL |pp| (|getShellEntry| $ 108))
-                         (SPADCALL |p| (|getShellEntry| $ 108)))
-                    (SPADCALL |p| (|getShellEntry| $ 110)))
-                   ('T
-                    (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
-                        (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
-                            (SPADCALL
-                                (LET ((#0=#:G1499
-                                       (SPADCALL
-                                        (SPADCALL |p|
-                                         (|getShellEntry| $ 108))
-                                        (SPADCALL |pp|
-                                         (|getShellEntry| $ 108))
-                                        (|getShellEntry| $ 112))))
-                                  (|check-union| (EQL (CAR #0#) 0) $
-                                      #0#)
-                                  (CDR #0#))
-                                (|getShellEntry| $ 114))
-                            (|getShellEntry| $ 118))
-                        (|getShellEntry| $ 120))))))))) 
+  (LET ((|pp| (SPADCALL |p| (|getShellEntry| $ 107))))
+    (COND
+      ((EQL (SPADCALL |pp| (|getShellEntry| $ 108))
+            (SPADCALL |p| (|getShellEntry| $ 108)))
+       (SPADCALL |p| (|getShellEntry| $ 110)))
+      ('T
+       (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
+           (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
+                     (SPADCALL
+                         (LET ((#0=#:G1499
+                                   (SPADCALL
+                                    (SPADCALL |p|
+                                     (|getShellEntry| $ 108))
+                                    (SPADCALL |pp|
+                                     (|getShellEntry| $ 108))
+                                    (|getShellEntry| $ 112))))
+                           (|check-union| (EQL (CAR #0#) 0) $ #0#)
+                           (CDR #0#))
+                         (|getShellEntry| $ 114))
+                     (|getShellEntry| $ 118))
+           (|getShellEntry| $ 120)))))) 
 
 (DEFUN |INT;factorPolynomial!0| (|#1| $)
   (SPADCALL |#1| (|getShellEntry| $ 111))) 

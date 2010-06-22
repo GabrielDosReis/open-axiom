@@ -67,18 +67,15 @@
       (|getShellEntry| $ 22))) 
 
 (DEFUN |FFIELDC-;conditionP;MU;5| (|mat| $)
-  (PROG (|l|)
-    (RETURN
-      (SEQ (LETT |l| (SPADCALL |mat| (|getShellEntry| $ 27))
-                 |FFIELDC-;conditionP;MU;5|)
-           (COND
-             ((OR (NULL |l|)
-                  (SPADCALL (ELT $ 16) (|SPADfirst| |l|)
-                      (|getShellEntry| $ 31)))
-              (EXIT (CONS 1 "failed"))))
-           (EXIT (CONS 0
-                       (SPADCALL (ELT $ 32) (|SPADfirst| |l|)
-                           (|getShellEntry| $ 34)))))))) 
+  (LET ((|l| (SPADCALL |mat| (|getShellEntry| $ 27))))
+    (SEQ (COND
+           ((OR (NULL |l|)
+                (SPADCALL (ELT $ 16) (|SPADfirst| |l|)
+                    (|getShellEntry| $ 31)))
+            (EXIT (CONS 1 "failed"))))
+         (EXIT (CONS 0
+                     (SPADCALL (ELT $ 32) (|SPADfirst| |l|)
+                         (|getShellEntry| $ 34))))))) 
 
 (DEFUN |FFIELDC-;charthRoot;2S;6| (|x| $)
   (SPADCALL |x|
@@ -90,36 +87,34 @@
   (CONS 0 (SPADCALL |x| (|getShellEntry| $ 32)))) 
 
 (DEFUN |FFIELDC-;createPrimitiveElement;S;8| ($)
-  (PROG (|e| |sm1| |start| |found|)
+  (PROG (|e|)
     (RETURN
-      (SEQ (LETT |sm1| (- (SPADCALL (|getShellEntry| $ 40)) 1)
-                 |FFIELDC-;createPrimitiveElement;S;8|)
-           (LETT |start|
+      (LET* ((|sm1| (- (SPADCALL (|getShellEntry| $ 40)) 1))
+             (|start| (COND
+                        ((SPADCALL (SPADCALL (|getShellEntry| $ 48))
+                             (CONS 1 "polynomial")
+                             (|getShellEntry| $ 49))
+                         (|spadConstant| $ 41))
+                        ('T 1)))
+             (|found| NIL))
+        (SEQ (LET ((|i| |start|))
+               (LOOP
                  (COND
-                   ((SPADCALL (SPADCALL (|getShellEntry| $ 48))
-                        (CONS 1 "polynomial") (|getShellEntry| $ 49))
-                    (|spadConstant| $ 41))
-                   ('T 1))
-                 |FFIELDC-;createPrimitiveElement;S;8|)
-           (LETT |found| NIL |FFIELDC-;createPrimitiveElement;S;8|)
-           (LET ((|i| |start|))
-             (LOOP
-               (COND
-                 ((NOT (NOT |found|)) (RETURN NIL))
-                 (T (SEQ (LETT |e|
-                               (SPADCALL
-                                   (|check-subtype|
-                                    (AND (>= |i| 0) (> |i| 0))
-                                    '(|PositiveInteger|) |i|)
-                                   (|getShellEntry| $ 14))
-                               |FFIELDC-;createPrimitiveElement;S;8|)
-                         (EXIT (SETQ |found|
-                                     (EQL
-                                      (SPADCALL |e|
-                                       (|getShellEntry| $ 19))
-                                      |sm1|))))))
-               (SETQ |i| (+ |i| 1))))
-           (EXIT |e|))))) 
+                   ((NOT (NOT |found|)) (RETURN NIL))
+                   (T (SEQ (LETT |e|
+                                 (SPADCALL
+                                     (|check-subtype|
+                                      (AND (>= |i| 0) (> |i| 0))
+                                      '(|PositiveInteger|) |i|)
+                                     (|getShellEntry| $ 14))
+                                 |FFIELDC-;createPrimitiveElement;S;8|)
+                           (EXIT (SETQ |found|
+                                       (EQL
+                                        (SPADCALL |e|
+                                         (|getShellEntry| $ 19))
+                                        |sm1|))))))
+                 (SETQ |i| (+ |i| 1))))
+             (EXIT |e|)))))) 
 
 (DEFUN |FFIELDC-;primitive?;SB;9| (|a| $)
   (PROG (|explist| |q| |equalone|)
