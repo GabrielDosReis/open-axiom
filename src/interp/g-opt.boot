@@ -471,18 +471,19 @@ $VMsideEffectFreeOperators ==
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
       MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
-       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL %false %true
+       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER %false %true
         %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
-           %fpow %fdiv %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
-            %lreverse %lempty? %hash %ismall? %string?
-             %ceq %clt %cle %cgt %cge %c2i %i2c)
+           %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
+            %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+             %lreverse %lempty? %hash %ismall? %string?
+              %ceq %clt %cle %cgt %cge %c2i %i2c)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ["CONS","LIST","VECTOR","STRINGIMAGE",'%gensym, '%lreverse_!,
+    ['CONS,'LIST,'VECTOR,'STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
       "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
@@ -513,10 +514,8 @@ isFloatableVMForm form ==
 isVMConstantForm: %Code -> %Boolean
 isVMConstantForm form ==
   integer? form or string? form => true
-  form=nil or form=true => true
   form isnt [op,:args] => false
-  op = "QUOTE" => true
-  MEMQ(op,$simpleVMoperators) and 
+  MEMQ(op,$VMsideEffectFreeOperators) and 
     "and"/[isVMConstantForm arg for arg in args]
 
 ++ Return the set of free variables in the VM form `form'.

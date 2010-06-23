@@ -92,8 +92,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;and;3$;22|)) 
 
-(PUT '|SINT;and;3$;22| '|SPADreplace| 'LOGAND) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;Or;3$;23|)) 
 
@@ -101,8 +99,6 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;or;3$;24|)) 
-
-(PUT '|SINT;or;3$;24| '|SPADreplace| 'LOGIOR) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;xor;3$;25|)) 
@@ -198,8 +194,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Boolean|)
                 |SINT;one?;$B;44|)) 
 
-(PUT '|SINT;one?;$B;44| '|SPADreplace| '(XLAM (|x|) (|%ieq| |x| 1))) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;max;3$;45|)) 
 
@@ -283,6 +277,14 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Shell|)
                 |SINT;unitNormal;$R;62|)) 
+
+(PUT '|SINT;and;3$;22| '|SPADreplace|
+     '(XLAM (|x| |y|) (LOGAND |x| |y|))) 
+
+(PUT '|SINT;or;3$;24| '|SPADreplace|
+     '(XLAM (|x| |y|) (LOGIOR |x| |y|))) 
+
+(PUT '|SINT;one?;$B;44| '|SPADreplace| '(XLAM (|x|) (|%ieq| |x| 1))) 
 
 (DEFUN |SINT;writeOMSingleInt| (|dev| |x| $)
   (SEQ (COND
@@ -509,7 +511,7 @@
 
 (DEFUN |SINT;unitNormal;$R;62| (|x| $)
   (COND
-    ((QSLESSP |x| 0) (VECTOR -1 (QSMINUS |x|) -1))
+    ((QSLESSP |x| 0) (VECTOR (QSMINUS 1) (QSMINUS |x|) (QSMINUS 1)))
     ('T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |SingleInteger| ()

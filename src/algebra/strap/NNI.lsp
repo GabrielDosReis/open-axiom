@@ -33,7 +33,7 @@
 (DEFUN |NNI;subtractIfCan;2$U;3| (|x| |y| $)
   (LET ((|c| (- |x| |y|)))
     (COND
-      ((< |c| 0) (CONS 1 "failed"))
+      ((MINUSP |c|) (CONS 1 "failed"))
       ('T
        (CONS 0
              (|check-subtype| (>= |c| 0) '(|NonNegativeInteger|) |c|)))))) 

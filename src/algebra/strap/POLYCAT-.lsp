@@ -936,7 +936,7 @@
                          |POLYCAT-;charthRootlv|)
                    (LOOP
                      (COND
-                       ((NOT (> |d| 0)) (RETURN NIL))
+                       ((NOT (< 0 |d|)) (RETURN NIL))
                        (T (SEQ (LETT |dd|
                                      (SPADCALL |d| |ch|
                                       (|getShellEntry| $ 173))

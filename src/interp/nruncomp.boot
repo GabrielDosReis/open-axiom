@@ -164,8 +164,10 @@ needToQuoteFlags?(sig,env) ==
 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   $killOptimizeIfTrue = true => nil
+  -- references to modemaps from current domain are folded in a later
+  -- stage of the compilation process.
+  dc = '$ => nil
   ndc :=
-    dc = '$ => $functorForm
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
   sig := MSUBST(ndc,dc,sig)

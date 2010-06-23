@@ -74,7 +74,7 @@
 (DEFUN |STAGG-;elt;AIS;5| (|x| |i| $)
   (SEQ (SETQ |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21))))
        (COND
-         ((OR (< |i| 0)
+         ((OR (MINUSP |i|)
               (SPADCALL
                   (SETQ |x|
                         (SPADCALL |x|
@@ -91,7 +91,7 @@
       (LET ((|l| (- (SPADCALL |i| (|getShellEntry| $ 28))
                     (SPADCALL |x| (|getShellEntry| $ 21)))))
         (COND
-          ((< |l| 0) (|error| "index out of range"))
+          ((MINUSP |l|) (|error| "index out of range"))
           ((NOT (SPADCALL |i| (|getShellEntry| $ 29)))
            (SPADCALL (SPADCALL |x|
                          (|check-subtype| (>= |l| 0)
@@ -156,7 +156,7 @@
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
   (SEQ (SETQ |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21))))
        (COND
-         ((OR (< |i| 0)
+         ((OR (MINUSP |i|)
               (SPADCALL
                   (SETQ |x|
                         (SPADCALL |x|
@@ -173,7 +173,7 @@
       (LET ((|l| (- (SPADCALL |i| (|getShellEntry| $ 28))
                     (SPADCALL |x| (|getShellEntry| $ 21)))))
         (COND
-          ((< |l| 0) (|error| "index out of range"))
+          ((MINUSP |l|) (|error| "index out of range"))
           ('T
            (SEQ (LETT |h|
                       (COND

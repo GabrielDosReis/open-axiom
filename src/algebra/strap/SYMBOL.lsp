@@ -278,7 +278,7 @@
     (RETURN
       (LET ((|s| (PNAME (SPADCALL |e| (|getShellEntry| $ 100)))))
         (SEQ (COND
-               ((> (QCSIZE |s|) 1)
+               ((< 1 (QCSIZE |s|))
                 (COND
                   ((SPADCALL (SPADCALL |s| 1 (|getShellEntry| $ 106))
                        (SPADCALL "\\" (|getShellEntry| $ 43))
@@ -607,7 +607,7 @@
 
 (DEFUN |SYMBOL;istring| (|n| $)
   (COND
-    ((> |n| 9) (|error| "Can have at most 9 scripts of each kind"))
+    ((< 9 |n|) (|error| "Can have at most 9 scripts of each kind"))
     ('T (|getSimpleArrayEntry| (|getShellEntry| $ 18) (+ |n| 0))))) 
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)

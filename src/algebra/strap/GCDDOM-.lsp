@@ -76,7 +76,7 @@
                               (SPADCALL |p1| (|getShellEntry| $ 29))
                               |GCDDOM-;gcdPolynomial;3Sup;4|)
                         (EXIT (COND
-                                ((> |e1| 0)
+                                ((< 0 |e1|)
                                  (SETQ |p1|
                                        (LET
                                         ((#0#
@@ -95,7 +95,7 @@
                               (SPADCALL |p2| (|getShellEntry| $ 29))
                               |GCDDOM-;gcdPolynomial;3Sup;4|)
                         (EXIT (COND
-                                ((> |e2| 0)
+                                ((< 0 |e2|)
                                  (SETQ |p2|
                                        (LET
                                         ((#0#

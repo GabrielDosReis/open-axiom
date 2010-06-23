@@ -11,8 +11,8 @@
   (COND
     ((ZEROP |n|) (|spadConstant| $ 10))
     ((SPADCALL |x| (|getShellEntry| $ 11))
-     (COND ((< |n| 0) (|error| "division by zero")) ('T |x|)))
-    ((< |n| 0)
+     (COND ((MINUSP |n|) (|error| "division by zero")) ('T |x|)))
+    ((MINUSP |n|)
      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15)) (- |n|)
          (|getShellEntry| $ 19)))
     ('T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
