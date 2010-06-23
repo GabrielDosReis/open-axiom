@@ -82,6 +82,12 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
  == add
       ZP ==> SparseUnivariatePolynomial %
       ZZP ==> SparseUnivariatePolynomial Integer
+      import %ineg: % -> %             from Foreign Builtin
+      import %hash: % -> SingleInteger from Foreign Builtin
+      import %iadd: (%,%) -> %         from Foreign Builtin
+      import %isub: (%,%) -> %         from Foreign Builtin
+      import %imul: (%,%) -> %         from Foreign Builtin
+
       x,y: %
       n: NonNegativeInteger
 
@@ -138,19 +144,19 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       copy x  == x
       inc  x  == x + 1
       dec  x  == x - 1
-      hash x == SXHASH(x)$Lisp
+      hash x == %hash x
       negative? x == MINUSP(x)$Lisp
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
       length a == INTEGER_-LENGTH(a)$Lisp
       addmod(a, b, p) ==
-         (c:=a + b) >= p => c - p
+         (c := %iadd(a,b)) >= p => c - p
          c
       submod(a, b, p) ==
-         (c:=a - b) < 0 => c + p
+         (c := %isub(a,b)) < 0 => c + p
          c
-      mulmod(a, b, p) == (a * b) rem p
+      mulmod(a, b, p) == %imul(a,b) rem p
       convert(x:%):Float       == coerce(x pretend Integer)$Float
       convert(x:%):DoubleFloat  == coerce(x pretend Integer)$DoubleFloat
       convert(x:%):InputForm   == convert(x pretend Integer)$InputForm
@@ -182,12 +188,11 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       x > y == %igt(x,y)$Foreign(Builtin)
       x <= y == %ile(x,y)$Foreign(Builtin)
       x >= y == %ige(x,y)$Foreign(Builtin)
-      - x == (-x)$Lisp
-      x + y == %iadd(x,y)$Foreign(Builtin)
-      x - y == %isub(x,y)$Foreign(Builtin)
-      x * y == %imul(x,y)$Foreign(Builtin)
-      (m:Integer) * (y:%) == 
-         %imul(m,y)$Foreign(Builtin) -- for subsumption problem
+      - x == %ineg x
+      x + y == %iadd(x,y)
+      x - y == %isub(x,y)
+      x * y == %imul(x,y)
+      (m:Integer) * (y:%) == %imul(m,y) -- for subsumption problem
       x ** n == %ipow(x,n)$Foreign(Builtin)
       odd? x == %iodd?(x)$Foreign(Builtin)
       max(x,y) == %imax(x,y)$Foreign(Builtin)

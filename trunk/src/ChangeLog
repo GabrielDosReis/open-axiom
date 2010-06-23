@@ -1,3 +1,18 @@
+2010-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nruncomp.boot (optDeltaEntry): Don't optimize current
+	domain modemap references here.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include more
+	floating point operators.
+	($simpleVMoperators): Move FUNCALL here.
+	(isVMConstantForm): Tidy.
+	* interp/g-util.boot: Expand more floating point insns.
+	* interp/c-util.boot (replaceSimpleFunctions): Replace more
+	constants. 
+	* algebra/integer.spad.pamphlet (Integer): More cleanup.  Use
+	builtin functions.
+	* algebra/sf.spad.pamphlet: Likewise.
+
 2010-06-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Group sequence of LETT definitions into LET/LET* expressions where

@@ -27,7 +27,7 @@
 (DEFUN |ABELGRP-;*;I2S;4| (|n| |x| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 19))
-    ((> |n| 0) (SPADCALL |n| |x| (|getShellEntry| $ 24)))
+    ((< 0 |n|) (SPADCALL |n| |x| (|getShellEntry| $ 24)))
     ('T
      (SPADCALL (- |n|) (SPADCALL |x| (|getShellEntry| $ 7))
          (|getShellEntry| $ 24))))) 

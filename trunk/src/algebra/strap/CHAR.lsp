@@ -129,7 +129,7 @@
 
 (DEFUN |CHAR;lookup;$Pi;8| (|c| $)
   (LET ((#0=#:G1407 (+ 1 (CHAR-CODE |c|))))
-    (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))) 
+    (|check-subtype| (< 0 #0#) '(|PositiveInteger|) #0#))) 
 
 (DEFUN |CHAR;char;Nni$;9| (|n| $)
   (DECLARE (IGNORE $))

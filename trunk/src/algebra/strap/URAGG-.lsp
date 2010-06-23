@@ -168,20 +168,20 @@
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((> |i| 0)
+                     ((< 0 |i|)
                       (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
                      ('T NIL)))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
-         (EXIT (> |i| 0))))) 
+         (EXIT (< 0 |i|))))) 
 
 (DEFUN |URAGG-;more?;ANniB;13| (|l| |n| $)
   (LET ((|i| |n|))
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((> |i| 0)
+                     ((< 0 |i|)
                       (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
                      ('T NIL)))
               (RETURN NIL))
@@ -198,7 +198,7 @@
            (COND
              ((NOT (COND
                      ((SPADCALL |l| (|getShellEntry| $ 20)) NIL)
-                     ('T (> |i| 0))))
+                     ('T (< 0 |i|))))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
@@ -376,7 +376,7 @@
 (DEFUN |URAGG-;last;ANniA;22| (|x| |n| $)
   (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 60))))
     (COND
-      ((> |n| |m|) (|error| "index out of range"))
+      ((< |m| |n|) (|error| "index out of range"))
       ('T
        (SPADCALL
            (SPADCALL |x|

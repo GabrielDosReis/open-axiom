@@ -104,7 +104,7 @@
                    (T (SEQ (LETT |e|
                                  (SPADCALL
                                      (|check-subtype|
-                                      (AND (>= |i| 0) (> |i| 0))
+                                      (AND (>= |i| 0) (< 0 |i|))
                                       '(|PositiveInteger|) |i|)
                                      (|getShellEntry| $ 14))
                                  |FFIELDC-;createPrimitiveElement;S;8|)

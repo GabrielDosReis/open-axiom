@@ -25,8 +25,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Boolean|)
                 |INT;one?;$B;7|)) 
 
-(PUT '|INT;one?;$B;7| '|SPADreplace| '(XLAM (|x|) (|%ieq| |x| 1))) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Integer|) |INT;Zero;$;8|)) 
 
 (PUT '|INT;Zero;$;8| '|SPADreplace| '(XLAM NIL 0)) 
@@ -47,17 +45,13 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;inc;2$;12|)) 
 
-(PUT '|INT;inc;2$;12| '|SPADreplace| '(XLAM (|x|) (|%iadd| |x| 1))) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;dec;2$;13|)) 
-
-(PUT '|INT;dec;2$;13| '|SPADreplace| '(XLAM (|x|) (|%isub| |x| 1))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Short|)
                 |INT;hash;$Si;14|)) 
 
-(PUT '|INT;hash;$Si;14| '|SPADreplace| 'SXHASH) 
+(PUT '|INT;hash;$Si;14| '|SPADreplace| '|%hash|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Boolean|)
                 |INT;negative?;$B;15|)) 
@@ -100,8 +94,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%DoubleFloat|)
                 |INT;convert;$Df;24|)) 
 
-(PUT '|INT;convert;$Df;24| '|SPADreplace|
-     '(XLAM (|x|) (FLOAT |x| |$DoubleFloatMaximum|))) 
+(PUT '|INT;convert;$Df;24| '|SPADreplace| '|%i2f|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
                 |INT;convert;$If;25|)) 
@@ -170,7 +163,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;-;2$;39|)) 
 
-(PUT '|INT;-;2$;39| '|SPADreplace| '-) 
+(PUT '|INT;-;2$;39| '|SPADreplace| '|%ineg|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;+;3$;40|)) 
@@ -247,8 +240,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;unitCanonical;2$;55|)) 
 
-(PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Thing| |%Shell|) |%Pair|)
                 |INT;solveLinearPolynomialEquation|)) 
 
@@ -264,9 +255,18 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |INT;gcdPolynomial;3Sup;60|)) 
 
+(PUT '|INT;one?;$B;7| '|SPADreplace| '(XLAM (|x|) (|%ieq| |x| 1))) 
+
+(PUT '|INT;inc;2$;12| '|SPADreplace| '(XLAM (|x|) (|%iadd| |x| 1))) 
+
+(PUT '|INT;dec;2$;13| '|SPADreplace| '(XLAM (|x|) (|%isub| |x| 1))) 
+
+(PUT '|INT;unitCanonical;2$;55| '|SPADreplace|
+     '(XLAM (|x|) (|%iabs| |x|))) 
+
 (DEFUN |INT;writeOMInt| (|dev| |x| $)
   (SEQ (COND
-         ((< |x| 0)
+         ((MINUSP |x|)
           (SEQ (SPADCALL |dev| (|getShellEntry| $ 13))
                (SPADCALL |dev| "arith1" "unary_minus"
                    (|getShellEntry| $ 15))
@@ -342,20 +342,20 @@
   (LET ((|c| (+ |a| |b|))) (COND ((>= |c| |p|) (- |c| |p|)) ('T |c|)))) 
 
 (DEFUN |INT;submod;4$;21| (|a| |b| |p| $)
-  (LET ((|c| (- |a| |b|))) (COND ((< |c| 0) (+ |c| |p|)) ('T |c|)))) 
+  (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) ('T |c|)))) 
 
 (DEFUN |INT;mulmod;4$;22| (|a| |b| |p| $)
   (REMAINDER2 (* |a| |b|) |p|)) 
 
 (DEFUN |INT;convert;$F;23| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 57))) 
+  (SPADCALL |x| (|getShellEntry| $ 56))) 
 
 (DEFUN |INT;convert;$Df;24| (|x| $)
   (DECLARE (IGNORE $))
   (FLOAT |x| |$DoubleFloatMaximum|)) 
 
 (DEFUN |INT;convert;$If;25| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 63))) 
+  (SPADCALL |x| (|getShellEntry| $ 62))) 
 
 (DEFUN |INT;convert;$S;26| (|x| $)
   (DECLARE (IGNORE $))
@@ -391,7 +391,7 @@
 
 (DEFUN |INT;<;2$B;35| (|x| |y| $) (DECLARE (IGNORE $)) (< |x| |y|)) 
 
-(DEFUN |INT;>;2$B;36| (|x| |y| $) (DECLARE (IGNORE $)) (> |x| |y|)) 
+(DEFUN |INT;>;2$B;36| (|x| |y| $) (DECLARE (IGNORE $)) (< |y| |x|)) 
 
 (DEFUN |INT;<=;2$B;37| (|x| |y| $) (DECLARE (IGNORE $)) (<= |x| |y|)) 
 
@@ -441,7 +441,7 @@
 (DEFUN |INT;gcd;3$;53| (|x| |y| $) (DECLARE (IGNORE $)) (GCD |x| |y|)) 
 
 (DEFUN |INT;unitNormal;$R;54| (|x| $)
-  (COND ((< |x| 0) (VECTOR -1 (- |x|) -1)) ('T (VECTOR 1 |x| 1)))) 
+  (COND ((MINUSP |x|) (VECTOR -1 (- |x|) -1)) ('T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |INT;unitCanonical;2$;55| (|x| $)
   (DECLARE (IGNORE $))
@@ -492,7 +492,7 @@
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1524)
+  (PROG (#0=#:G1525)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))
@@ -513,7 +513,7 @@
     (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))
     (|stuffDomainSlots| $)
     (|setShellEntry| $ 83
-        (|setShellEntry| $ 53
+        (|setShellEntry| $ 82
             (CONS (|dispatchFunction| |INT;*;3$;43|) $)))
     $)) 
 
@@ -539,7 +539,7 @@
              (|SingleInteger|) |INT;hash;$Si;14| |INT;negative?;$B;15|
              (|OutputForm|) (56 . |outputForm|) |INT;coerce;$Of;16|
              |INT;coerce;2$;17| |INT;convert;2$;18| |INT;length;2$;19|
-             |INT;>=;2$B;38| |INT;addmod;4$;20| |INT;submod;4$;21| NIL
+             |INT;>=;2$B;38| |INT;addmod;4$;20| |INT;submod;4$;21|
              |INT;rem;3$;50| |INT;mulmod;4$;22| (|Float|)
              (61 . |coerce|) |INT;convert;$F;23| (|DoubleFloat|)
              (66 . |coerce|) |INT;convert;$Df;24| (|InputForm|)
@@ -547,10 +547,10 @@
              |INT;convert;$S;26| (81 . <) (87 . |concat|)
              |INT;latex;$S;27| |INT;positiveRemainder;3$;28|
              (|Matrix| 17) (|Matrix| $) |INT;reducedSystem;2M;29|
-             (|Vector| 17) (|Record| (|:| |mat| 71) (|:| |vec| 74))
+             (|Vector| 17) (|Record| (|:| |mat| 70) (|:| |vec| 73))
              (|Vector| $) |INT;reducedSystem;MVR;30| |INT;abs;2$;31|
              |INT;random;$;32| |INT;random;2$;33| |INT;>;2$B;36|
-             |INT;<=;2$B;37| NIL |INT;**;$Nni$;44| |INT;odd?;$B;45|
+             |INT;<=;2$B;37| NIL NIL |INT;**;$Nni$;44| |INT;odd?;$B;45|
              |INT;max;3$;46| |INT;min;3$;47|
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
              |INT;divide;2$R;48| |INT;quo;3$;49| |INT;shift;3$;51|
@@ -659,11 +659,11 @@
                                (|DifferentialDomain| $$)
                                (|SetCategory|) (|OpenMath|)
                                (|ConvertibleTo| 14)
-                               (|ConvertibleTo| 56)
-                               (|ConvertibleTo| 59)
+                               (|ConvertibleTo| 55)
+                               (|ConvertibleTo| 58)
                                (|CombinatorialFunctionCategory|)
                                (|ConvertibleTo| 131)
-                               (|ConvertibleTo| 62)
+                               (|ConvertibleTo| 61)
                                (|ConvertibleTo| 17) (|Type|)
                                (|CoercibleFrom| $$)
                                (|CoercibleFrom| 17) (|BasicType|)
@@ -673,9 +673,9 @@
                                   15 2 12 11 0 17 18 1 12 11 0 19 0 20
                                   0 21 2 12 0 14 20 22 1 12 11 0 23 1
                                   12 11 0 24 1 12 11 0 25 0 7 0 32 1 44
-                                  0 17 45 1 56 0 17 57 1 59 0 17 60 1
-                                  62 0 17 63 1 14 0 17 65 2 17 9 0 0 67
-                                  2 14 0 0 0 68 2 101 100 99 98 102 1
+                                  0 17 45 1 55 0 17 56 1 58 0 17 59 1
+                                  61 0 17 62 1 14 0 17 64 2 17 9 0 0 66
+                                  2 14 0 0 0 67 2 101 100 99 98 102 1
                                   105 104 103 106 1 103 0 0 107 1 103 2
                                   0 108 1 109 104 103 110 1 103 0 2 111
                                   2 0 92 0 0 112 1 0 113 0 114 2 117
@@ -686,37 +686,37 @@
                                   9 0 1 2 0 0 0 0 1 2 0 92 0 0 1 3 0 0
                                   0 0 0 52 1 0 0 0 1 1 0 113 0 1 2 0 9
                                   0 0 1 1 0 17 0 1 2 0 0 0 0 91 0 0 0 1
-                                  1 0 133 0 1 1 0 17 0 1 2 0 0 0 0 54 2
-                                  0 75 76 0 1 1 0 71 76 1 1 0 71 72 73
-                                  2 0 75 72 76 77 1 0 92 0 93 1 0 130 0
-                                  1 1 0 9 0 1 1 0 129 0 1 0 0 0 79 1 0
-                                  0 0 80 2 0 0 0 0 90 1 0 135 134 1 1 0
-                                  9 0 1 3 0 0 0 0 0 1 2 0 0 0 0 70 1 0
+                                  1 0 133 0 1 1 0 17 0 1 2 0 0 0 0 53 2
+                                  0 74 75 0 1 1 0 70 75 1 1 0 70 71 72
+                                  2 0 74 71 75 76 1 0 92 0 93 1 0 130 0
+                                  1 1 0 9 0 1 1 0 129 0 1 0 0 0 78 1 0
+                                  0 0 79 2 0 0 0 0 90 1 0 135 134 1 1 0
+                                  9 0 1 3 0 0 0 0 0 1 2 0 0 0 0 69 1 0
                                   9 0 1 2 0 0 0 0 1 3 0 132 0 131 132 1
                                   1 0 9 0 34 1 0 9 0 85 1 0 92 0 1 1 0
-                                  9 0 43 2 0 136 134 0 1 3 0 0 0 0 0 55
+                                  9 0 43 2 0 136 134 0 1 3 0 0 0 0 0 54
                                   2 0 0 0 0 87 2 0 0 0 0 86 1 0 0 0 1 1
                                   0 0 0 49 2 0 0 0 0 1 1 0 0 134 1 1 0
-                                  14 0 69 2 0 0 0 0 1 0 0 0 1 1 0 0 0
+                                  14 0 68 2 0 0 0 0 1 0 0 0 1 1 0 0 0
                                   38 1 0 41 0 42 2 0 127 127 127 128 2
                                   0 0 0 0 94 1 0 0 134 1 1 0 0 0 1 1 0
                                   113 0 114 2 0 137 0 0 1 3 0 139 0 0 0
                                   1 2 0 92 0 0 112 2 0 136 134 0 1 1 0
                                   9 0 1 1 0 7 0 1 2 0 88 0 0 89 2 0 0 0
                                   7 1 1 0 0 0 1 1 0 0 0 40 1 0 0 0 36 1
-                                  0 14 0 66 1 0 59 0 61 1 0 56 0 58 1 0
-                                  131 0 1 1 0 62 0 64 1 0 17 0 48 1 0 0
+                                  0 14 0 65 1 0 58 0 60 1 0 55 0 57 1 0
+                                  131 0 1 1 0 61 0 63 1 0 17 0 48 1 0 0
                                   17 47 1 0 0 0 1 1 0 0 17 47 1 0 44 0
                                   46 0 0 7 1 2 0 9 0 0 1 2 0 0 0 0 1 2
                                   0 9 0 0 1 0 0 0 35 2 0 9 0 0 1 3 0 0
-                                  0 0 0 51 1 0 0 0 78 0 0 0 6 0 0 0 31
+                                  0 0 0 51 1 0 0 0 77 0 0 0 6 0 0 0 31
                                   3 0 11 12 0 9 29 2 0 14 0 9 27 2 0 11
                                   12 0 28 1 0 14 0 26 2 0 0 0 7 1 1 0 0
-                                  0 1 2 0 9 0 0 50 2 0 9 0 0 81 2 0 9 0
-                                  0 33 2 0 9 0 0 82 2 0 9 0 0 10 1 0 0
+                                  0 1 2 0 9 0 0 50 2 0 9 0 0 80 2 0 9 0
+                                  0 33 2 0 9 0 0 81 2 0 9 0 0 10 1 0 0
                                   0 16 2 0 0 0 0 39 2 0 0 0 0 37 2 0 0
                                   0 7 84 2 0 0 0 140 1 2 0 0 17 0 83 2
-                                  0 0 0 0 53 2 0 0 17 0 83 2 0 0 7 0 1
+                                  0 0 0 0 82 2 0 0 17 0 83 2 0 0 7 0 1
                                   2 0 0 140 0 1)))))
           '|lookupComplete|)) 
 

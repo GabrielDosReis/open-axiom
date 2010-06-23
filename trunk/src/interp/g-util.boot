@@ -226,6 +226,50 @@ expandReturn(x is ['%return,.,y]) ==
 expandEq ["%eq",:args] ==
   ["EQ",:expandToVMForm args]
 
+
+expandIneg ['%ineg,x] ==
+  x := expandToVMForm x
+  integer? x => -x
+  ['_-,x]
+
+expandIlt ['%ilt,x,y] ==
+  integer? x and x = 0 => ['PLUSP,expandToVMForm y]
+  integer? y and y = 0 => ['MINUSP,expandToVMForm x]
+  ['_<,expandToVMForm x,expandToVMForm y]
+
+expandIgt ['%igt,x,y] ==
+  expandFlt ['%ilt,y,x]
+
+-- Floating point support
+
+expandFbase ['%fbase] ==
+  FLOAT_-RADIX $DoubleFloatMaximum
+
+expandFprec ['%fprec] ==
+  FLOAT_-DIGITS $DoubleFloatMaximum
+
+expandFminval ['%fminval] ==
+  '$DoubleFloatMinimum
+
+expandFmaxval ['%fmaxval] ==
+  '$DoubleFloatMaximum
+
+expandI2f ['%i2f,x] ==
+  x := expandToVMForm x
+  integer? x and (x = 0 or x = 1) => FLOAT(x,$DoubleFloatMaximum)
+  ['FLOAT,x,'$DoubleFloatMaximum]
+
+expandFneg ['%fneg,x] ==
+  ['_-,expandToVMForm x]
+
+expandFlt ['%flt,x,y] ==
+  x is ['%i2f,0] => ['PLUSP,expandToVMForm y]
+  y is ['%i2f,0] => ['MINUSP,expandToVMForm x]
+  ['_<,expandToVMForm x,expandToVMForm y]
+
+expandFgt ['%fgt,x,y] ==
+  expandFlt ['%flt,y,x]
+
 -- Local variable bindings
 expandBind ['%bind,inits,body] ==
   body := expandToVMForm body
@@ -274,7 +318,6 @@ for x in [
     -- unary integer operations.
     ['%iabs,    :'ABS],
     ['%ieven?,  :'EVENP],
-    ['%ineg,    :"-"],
     ['%integer?,:'INTEGERP],
     ['%iodd?,   :'ODDP],
     ['%ismall?, :'FIXNUMP],
@@ -283,11 +326,9 @@ for x in [
     ['%ieq, :"EQL"],
     ['%igcd,:'GCD],
     ['%ige, :">="],
-    ['%igt, :">"],
     ['%iinc,:"1+"],
     ['%ilcm,:'LCM],
     ['%ile, :"<="],
-    ['%ilt, :"<"],
     ['%imax,:'MAX],
     ['%imin,:'MIN],
     ['%imul,:"*"],
@@ -297,14 +338,13 @@ for x in [
     -- unary float operations.
     ['%fabs,  :'ABS],
     ['%float?,:'FLOATP],
+    ['%ftrunc,:'TRUNCATE],
     -- binary float operations.
     ['%fadd,  :"+"],
     ['%fdiv,  :"/"],
     ['%feq,   :"="],
     ['%fge,   :">="],
-    ['%fgt,   :">"],
     ['%fle,   :"<="],
-    ['%flt,   :"<"],
     ['%fmax,  :'MAX],
     ['%fmin,  :'MIN],
     ['%fmul,  :"*"],
@@ -347,6 +387,19 @@ for x in [
    ['%collect,:function expandCollect],
    ['%loop,   :function expandLoop],
    ['%return,  :function expandReturn],
+
+   ['%igt,     :function expandIgt],
+   ['%ilt,     :function expandIlt],
+   ['%ineg,    :function expandIneg],
+
+   ['%i2f,     :function expandI2f],
+   ['%fbase,   :function expandFbase],
+   ['%fgt,     :function expandFgt],
+   ['%flt,     :function expandFlt],
+   ['%fmaxval, :function expandFmaxval],
+   ['%fminval, :function expandFminval],
+   ['%fneg,    :function expandFneg],
+   ['%fprec,   :function expandFprec],
 
    ["%eq",:function expandEq],
 
