@@ -1,5 +1,10 @@
 2010-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
+	Include Maybe.
+
+2010-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (optDeltaEntry): Don't optimize current
 	domain modemap references here.
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include more
