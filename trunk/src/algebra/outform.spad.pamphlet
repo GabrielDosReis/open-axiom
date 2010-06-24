@@ -496,7 +496,6 @@ OutputForm(): SetCategory with
           ss
 
         a, b: %
-        l: List %
         s: String
         e: Symbol
         n: Integer
@@ -567,12 +566,12 @@ OutputForm(): SetCategory with
                   else l1:=[u,:l1]
            cons(c, l1)
 
-        brace a        == bless [eform 'BRACE,   a]
-        brace l        == brace commaSeparate l
-        bracket a      == bless [eform 'BRACKET, a]
-        bracket l      == bracket commaSeparate l
-        paren a        == bless [eform 'PAREN,   a]
-        paren l        == paren commaSeparate l
+        brace a            == bless [eform 'BRACE,   a]
+        brace(l: List %)   == brace commaSeparate l
+        bracket a          == bless [eform 'BRACKET, a]
+        bracket(l: List %) == bracket commaSeparate l
+        paren a            == bless [eform 'PAREN,   a]
+        paren(l: List %)   == paren commaSeparate l
 
         sub     (a,b)  == bless [eform 'SUB, a, b]
         super   (a, b) == bless [eform 'SUPERSUB,a,sform " ",b]

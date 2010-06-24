@@ -344,8 +344,6 @@ PolynomialCategory(R:Ring, E:OrderedAbelianMonoidSup, VarSet:OrderedSet):
     if R has PolynomialFactorizationExplicit then
        PolynomialFactorizationExplicit
  add
-    p:%
-    v:VarSet
     ln:List NonNegativeInteger
     lv:List VarSet
     n:NonNegativeInteger
