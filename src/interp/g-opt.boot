@@ -221,10 +221,10 @@ optSPADCALL(form is ['SPADCALL,:argl]) ==
   null $InteractiveMode => form
   -- last arg is function/env, but may be a form
   argl is [:argl,fun] and fun is ["ELT",dom,slot] =>
-    optCall ["%Call",['ELT,dom,slot],:argl]
+    optCall ['%call,['ELT,dom,slot],:argl]
   form
  
-optCall (x is ["%Call",:u]) ==
+optCall (x is ['%call,:u]) ==
   -- destructively optimizes this new x
   x:= optimize [u]
   -- next should happen only as result of macro expansion
@@ -667,7 +667,7 @@ lispize x == first optimize [x]
  
 --% optimizer hash table
  
-for x in '( (%Call         optCall) _
+for x in '( (%call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
            (LET_*        optLET_*)_

@@ -1510,7 +1510,7 @@ il2OldForm x ==
         e.first := op
         ilTransformInsns rest e
         e
-      ["%Call",:ilTransformInsns e]
+      ['%call,:ilTransformInsns e]
     otherwise => ilTransformInsns x
 
 ++ Subroutines of il2OldForm to walk sequence of IL instructions.

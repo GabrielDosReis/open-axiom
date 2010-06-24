@@ -1,3 +1,14 @@
+2010-06-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Cleanup.
+	* interp/compiler.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+
 2010-06-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
