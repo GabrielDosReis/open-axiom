@@ -236,8 +236,8 @@ applyMapping([op,:argl],m,e,ml) ==
     atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
       emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
-    u ~= nil and u.expr is ["XLAM",:.] => ["%Call",u.expr,:argl']
-    ["%Call",['applyFun,op],:argl']
+    u ~= nil and u.expr is ["XLAM",:.] => ['%call,u.expr,:argl']
+    ['%call,['applyFun,op],:argl']
   pairlis := pairList($FormalMapVariableList,argl')
   convert([form,SUBLIS(pairlis,first ml),e],m)
 
@@ -260,7 +260,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --     not MEMQ(op,$formalArgList) and atom op =>
 --       [op',:argl',"$"] where
 --         op':= INTERN strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
---     ["%Call",["applyFun",op],:argl']
+--     ['%call,["applyFun",op],:argl']
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)
 
@@ -374,7 +374,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   [finishLambdaExpression(fun,e),m,oldE]
 
 extractCodeAndConstructTriple(u, m, oldE) ==
-  u is ["%Call",fn,:.] =>
+  u is ['%call,fn,:.] =>
     if fn is ["applyFun",a] then fn := a
     [fn,m,oldE]
   [op,:.,env] := u
@@ -625,7 +625,7 @@ compFormWithModemap(form,m,e,modemap) ==
       -- first is a full tag, as placed by getInverseEnvironment
       -- second is what getSuccessEnvironment will place there
                 ['%tail,z]
-        ["%Call",:form']
+        ['%call,:form']
       e':=
         Tl => (LAST Tl).env
         e
@@ -709,7 +709,7 @@ compApplication(op,argl,m,T) ==
         not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) and
           null get(T.expr,"value",e) =>
             emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
-      ["%Call", ['applyFun, T.expr], :[a.expr for a in argTl]]
+      ['%call, ['applyFun, T.expr], :[a.expr for a in argTl]]
     coerce([form, retm, e],resolve(retm,m))
   op = 'elt => nil
   eltForm := ['elt, op, :argl]
@@ -1165,7 +1165,7 @@ compElt(form,m,E) ==
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry([opOf anOp,:modemap],E)
-    convert([["%Call",val],second sig,E], m)
+    convert([['%call,val],second sig,E], m)
   compForm(form,m,E)
 
 --% HAS
@@ -1497,8 +1497,8 @@ compCase1(x,m,e) ==
   fn := genDeltaEntry(["case",:fn],e)
   -- user-defined `case' functions really are binary, as opposed to
   -- the compiler-synthetized versions for Union instances.  
-  not isUnionMode(m',e') => [["%Call",fn,x',MKQ m],$Boolean,e']
-  [["%Call",fn,x'],$Boolean,e']
+  not isUnionMode(m',e') => [['%call,fn,x',MKQ m],$Boolean,e']
+  [['%call,fn,x'],$Boolean,e']
 
 
 ++ For `case' operation implemented in library, the second operand
@@ -1767,7 +1767,7 @@ coerceByModemap([x,m,e],m') ==
   --mm:= (or/[mm for (mm:=[.,[cond,.]]) in u | cond=true]) or return nil
   mm:=first u  -- patch for non-trival conditons
   fn := genDeltaEntry(['coerce,:mm],e)
-  [["%Call",fn,x],m',e]
+  [['%call,fn,x],m',e]
 
 autoCoerceByModemap([x,source,e],target) ==
   u:=
@@ -1779,11 +1779,11 @@ autoCoerceByModemap([x,source,e],target) ==
 
   source is ["Union",:l] and member(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
-       => [["%Call",genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
+       => [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
     x="$fromCoerceable$" => nil
     stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
       [x,source,target])
-  [["%Call",genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
+  [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
 
 
 ++ Compile a comma separated expression list. These typically are
@@ -1933,7 +1933,7 @@ compResolveCall(op,argTs,m,$e) ==
        tryMM() ==
          not coerceable(mm.mmTarget,m,$e) =>nil
          compViableModemap(op,argTs,mm,$e) isnt [f,Ts] => nil
-         coerce([["%Call",f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
+         coerce([['%call,f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
   #outcomes ~= 1 => nil
   first outcomes
 
@@ -2351,7 +2351,7 @@ compRepeatOrCollect(form,m,e) ==
 --      for (modemap:= [map,cexpr]) in getModemapList("construct",1,e) | map is [
 --        .,t,s] and modeEqual(t,target) and modeEqual(s,source)] or return nil
 --  fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
---  [["%Call",fn,x],target,e]
+--  [['%call,fn,x],target,e]
  
 listOrVectorElementMode x ==
   x is [a,b,:.] and member(a,'(PrimitiveArray Vector List)) => b
