@@ -261,8 +261,7 @@
 
 (PUT '|INT;dec;2$;13| '|SPADreplace| '(XLAM (|x|) (|%isub| |x| 1))) 
 
-(PUT '|INT;unitCanonical;2$;55| '|SPADreplace|
-     '(XLAM (|x|) (|%iabs| |x|))) 
+(PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
 
 (DEFUN |INT;writeOMInt| (|dev| |x| $)
   (SEQ (COND

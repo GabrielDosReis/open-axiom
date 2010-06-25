@@ -278,11 +278,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Shell|)
                 |SINT;unitNormal;$R;62|)) 
 
-(PUT '|SINT;and;3$;22| '|SPADreplace|
-     '(XLAM (|x| |y|) (LOGAND |x| |y|))) 
+(PUT '|SINT;and;3$;22| '|SPADreplace| 'LOGAND) 
 
-(PUT '|SINT;or;3$;24| '|SPADreplace|
-     '(XLAM (|x| |y|) (LOGIOR |x| |y|))) 
+(PUT '|SINT;or;3$;24| '|SPADreplace| 'LOGIOR) 
 
 (PUT '|SINT;one?;$B;44| '|SPADreplace| '(XLAM (|x|) (|%ieq| |x| 1))) 
 

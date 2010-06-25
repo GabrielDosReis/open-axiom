@@ -1221,7 +1221,9 @@ expandableDefinition?(vars,body) ==
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
     false
-  expand? => ["XLAM",vars',body]
+  expand? =>
+    body is [fun,: =vars'] and symbol? fun => fun
+    ['XLAM,vars',body]
   nil
 
 ++ Replace all SPADCALLs to operations defined in the current
