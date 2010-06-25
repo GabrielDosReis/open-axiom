@@ -472,7 +472,7 @@ $VMsideEffectFreeOperators ==
      QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
       MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
        CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER %false %true
-        %and %or %not %eq %ieq %ilt %ile %igt %ige %head %tail %integer?
+        %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
            %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc

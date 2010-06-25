@@ -272,7 +272,7 @@ ElaboratedExpression(): Public == Private where
       ++ is a call form.
 
   Private == add
-    import %eq: (%,%) -> Boolean from Foreign Builtin
+    import %peq: (%,%) -> Boolean from Foreign Builtin
     import %pair?: % -> Boolean  from Foreign Builtin
     isAtomic(x: %): Boolean ==
       ATOM(x)$Lisp
@@ -290,7 +290,7 @@ ElaboratedExpression(): Public == Private where
 
     constant? x ==
       isAtomic x and 
-        %eq(getUnnameIfCan(x)$Lisp, _$immediateDataSymbol$Lisp)
+        %peq(getUnnameIfCan(x)$Lisp, _$immediateDataSymbol$Lisp)
 
     getConstant x ==
       constant? x => getValue(x)$Lisp @ SExpression
@@ -586,10 +586,10 @@ Identifier(): Public == Private where
       ++ \spad{gensym()} returns a new identifier, different from 
       ++ any other identifier in the running system
   Private == add
-    import %eq: (%,%) -> Boolean from Foreign Builtin
+    import %peq: (%,%) -> Boolean from Foreign Builtin
     import %gensym: () -> %      from Foreign Builtin
     gensym() == %gensym()
-    x = y == %eq(x,y)
+    x = y == %peq(x,y)
     coerce(x: %): Symbol == x : Symbol
     coerce(x: %): OutputForm == x : OutputForm
 

@@ -57,7 +57,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
   add
    import %nil: %                from Foreign Builtin
    import %makepair: (S,%) -> %  from Foreign Builtin
-   import %eq: (%,%) -> Boolean  from Foreign Builtin
+   import %peq: (%,%) -> Boolean  from Foreign Builtin
    import %lempty?: % -> Boolean from Foreign Builtin
    import %head: % -> S          from Foreign Builtin
    import %tail: % -> %          from Foreign Builtin
@@ -66,7 +66,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    
    #x                  == LENGTH(x)$Lisp
    concat(s:S,x:%)     == %makepair(s,x)
-   eq?(x,y)            == %eq(x,y)
+   eq?(x,y)            == %peq(x,y)
    first x             == SPADfirst(x)$Lisp
    elt(x,"first")      == SPADfirst(x)$Lisp
    empty()             == %nil
@@ -110,21 +110,21 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
         -- displays cycle with overbar over the cycle
         y := empty()$List(OutputForm)
         s := cycleEntry x
-        while not %eq(x, s) repeat
+        while not %peq(x, s) repeat
           y := concat((first x)::OutputForm, y)
           x := rest x
         y := reverse! y
         empty? s => bracket y
         -- cyclic case: z is cylic part
         z := list((first x)::OutputForm)
-        while not %eq(s, rest x) repeat
+        while not %peq(s, rest x) repeat
            x := rest x
            z := concat((first x)::OutputForm, z)
         bracket concat!(y, overbar commaSeparate reverse! z)
 
    if S has SetCategory then
      x = y ==
-       %eq(x,y) => true
+       %peq(x,y) => true
        while not Qnull x and not Qnull y repeat
           %head x ~=$S %head y => return false
           x := %tail x
@@ -181,7 +181,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    merge!(f, p, q) ==
      Qnull p => q
      Qnull q => p
-     %eq(p, q) => error "cannot merge a list into itself"
+     %peq(p, q) => error "cannot merge a list into itself"
      if f(%head p, %head q)
        then (r := t := p; p := %tail p)
        else (r := t := q; q := %tail q)

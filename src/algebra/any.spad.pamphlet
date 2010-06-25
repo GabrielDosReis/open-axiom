@@ -33,7 +33,7 @@ import OutputForm
 
 None():SetCategory == add
     coerce(none:%):OutputForm == "NONE" :: OutputForm
-    x:% = y:% == EQ(x,y)$Lisp
+    x:% = y:% == %peq(x,y)$Foreign(Builtin)
 
 @
 
@@ -53,7 +53,7 @@ RuntimeValue(): Type with
       ++ \spad{eq(x,y)} holds if both values \spad{x} and \spad{y}
       ++ resides at the same address in memory.
   == add
-    eq(x,y) == EQ(x,y)$Foreign(Builtin)
+    eq(x,y) == %peq(x,y)$Foreign(Builtin)
 @
 
 
@@ -84,9 +84,11 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
     nothing: %
       ++ \spad{nothing} represents failure or absence of value.
   Private == add
-    nothing == %nothing$Lisp
+    import %nothing: %            from Foreign Builtin
+    import %peq: (%,%) -> Boolean from Foreign Builtin
+    nothing == %nothing
     just x == x : %
-    x case nothing == EQ(x,%nothing$Lisp)$Lisp
+    x case nothing == %peq(x,%nothing)
     x case T == not(x case nothing)
     autoCoerce x == x : T
     coerce(x: T): % == just x
@@ -181,7 +183,7 @@ Any(): SetCategory with
      x = y      == 
        case (x,y) is 
          (x': exist(S: BasicType) . S, y': S) => x' = y'
-         otherwise => EQ(x,y)$Foreign(Builtin)
+         otherwise => %peq(x,y)$Foreign(Builtin)
 
      coerce(x):OutputForm ==
        case x is
@@ -296,7 +298,7 @@ Property(): Public == Private where
       v := value x
       val := 
          null? v => false::OutputForm
-         EQ(v,'T)$Lisp => true::OutputForm
+         %peq(v,'T)$Foreign(Builtin) => true::OutputForm
          v::OutputForm
       
       bracket(infix(outputForm '_=_>, name(x)::OutputForm, 
@@ -371,7 +373,7 @@ Contour(): Public == Private where
 
     findBinding(n,c) ==
       for b in bindings c repeat
-        EQ(n, name b)$Lisp => return just b
+        %peq(n, name b)$Foreign(Builtin) => return just b
       nothing
 
     push(b,c) ==

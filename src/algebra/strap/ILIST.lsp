@@ -14,7 +14,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%Boolean|)
                 |ILIST;eq?;2$B;3|)) 
 
-(PUT '|ILIST;eq?;2$B;3| '|SPADreplace| '|%eq|) 
+(PUT '|ILIST;eq?;2$B;3| '|SPADreplace| '|%peq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |ILIST;first;$S;4|)) 

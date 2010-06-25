@@ -442,7 +442,7 @@ PAdicRationalConstructor(p,PADIC): Exports == Implementation where
 --% arithmetic
 
     x = y ==
-      EQ(x,y)$Lisp => true
+      %peq(x,y)$Foreign(Builtin) => true
       n := getExpon(x) - getExpon(y)
       n >= 0 =>
         (p**(n :: NNI) * getZp(x)) = getZp(y)

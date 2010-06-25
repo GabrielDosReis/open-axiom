@@ -32,7 +32,7 @@ ConstructorKind(): Public == Private where
     category == 'category : %
     domain == 'domain : %
     package == 'package : %
-    k1 = k2 == EQ(k1,k2)$Lisp
+    k1 = k2 == %peq(k1,k2)$Foreign(Builtin)
     coerce(k: %): OutputForm == k : OutputForm
 
 @
@@ -355,8 +355,8 @@ SystemPredicate(): Public == Private where
   Private == add
     x = y == EQUAL(x,y)$Lisp
     coerce(x: %): OutputForm ==
-      NOT(x)$Lisp => 'false::OutputForm
-      EQ(x,'T)$Lisp => 'true::OutputForm
+      %not(x)$Foreign(Builtin) => 'false::OutputForm
+      %peq(x,'T)$Foreign(Builtin) => 'true::OutputForm
       EQCAR(x,'NOT)$Lisp => not(CADR(x)$Lisp : % :: OutputForm)
 
 @
