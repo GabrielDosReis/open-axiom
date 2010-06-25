@@ -324,7 +324,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
 	startpos >= Qsize t => mn - 1
 	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
-	EQ(r, NIL$Lisp)$Lisp => mn - 1
+	%peq(r, NIL$Lisp)$Foreign(Builtin) => mn - 1
 	r + mn
     position(c: Character, t: %, startpos: I) ==
 	(startpos := startpos - mn) < 0 => error "index out of bounds"

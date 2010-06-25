@@ -221,12 +221,13 @@ expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
   ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
   
--- Logical operators
+-- Pointer operations
+expandPeq ['%peq,x,y] ==
+  x = '%nil => ['NULL,expandToVMForm y]
+  y = '%nil => ['NULL,expandToVMForm x]
+  ['EQ,expandToVMForm x, expandToVMForm y]
 
-expandEq ["%eq",:args] ==
-  ["EQ",:expandToVMForm args]
-
-
+-- Integer operations
 expandIneg ['%ineg,x] ==
   x := expandToVMForm x
   integer? x => -x
@@ -401,7 +402,7 @@ for x in [
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
 
-   ["%eq",:function expandEq],
+   ["%peq",:function expandPeq],
 
    ["%bind",:function expandBind],
    ["%store",:function expandStore],

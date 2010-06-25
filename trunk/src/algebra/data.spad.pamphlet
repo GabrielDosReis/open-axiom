@@ -72,7 +72,7 @@ ByteOrder(): Public == Private where
     unknownEndian == %unknownEndian$Foreign(Builtin)
     littleEndian == %littleEndian$Foreign(Builtin)
     bigEndian == %bigEndian$Foreign(Builtin)
-    x = y == EQ(x,y)$Foreign(Builtin)
+    x = y == %peq(x,y)$Foreign(Builtin)
     coerce(x: %): OutputForm ==
       outputForm
         x = littleEndian => 'litteEndian

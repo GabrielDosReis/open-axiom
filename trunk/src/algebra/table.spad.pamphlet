@@ -39,13 +39,13 @@ HashTable(Key, Entry, hashfn): Exports == Implementation where
         Ex   ==> OutputForm
         failMsg := GENSYM()$Lisp
 
-        t1 = t2              == EQ(t1, t2)$Lisp
+        t1 = t2              == %peq(t1,t2)$Foreign(Builtin)
         keys t               == HKEYS(t)$Lisp
         # t                  == HCOUNT(t)$Lisp
         setelt(t, k, e)      == HPUT(t,k,e)$Lisp
         remove!(k:Key, t:%) ==
           r := HGET(t,k,failMsg)$Lisp
-          not EQ(r,failMsg)$Lisp =>
+          not %peq(r,failMsg)$Foreign(Builtin) =>
             HREM(t, k)$Lisp
             r pretend Entry
           "failed"
@@ -55,7 +55,7 @@ HashTable(Key, Entry, hashfn): Exports == Implementation where
 
         search(k:Key, t:%)  ==
             r := HGET(t, k, failMsg)$Lisp
-            not EQ(r, failMsg)$Lisp => r pretend Entry
+            not %peq(r,failMsg)$Foreign(Builtin) => r pretend Entry
             "failed"
 
 @

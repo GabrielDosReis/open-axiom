@@ -410,7 +410,7 @@ Reference(S:Type): Type with
     == add
         Rep := Record(value: S)
 
-        p = q        == EQ(p, q)$Lisp
+        p = q        == %peq(p,q)$Foreign(Builtin)
         ref v        == [v]
         elt p        == p.value
         setelt(p, v) == p.value := v
@@ -474,7 +474,7 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
   == add
     import %false: % from Foreign Builtin
     import %true: % from Foreign Builtin
-    import %eq: (%,%) -> Boolean from Foreign Builtin
+    import %peq: (%,%) -> Boolean from Foreign Builtin
     import %and: (%,%) -> % from Foreign Builtin
     import %or: (%,%) -> % from Foreign Builtin
     import %not: % -> % from Foreign Builtin
@@ -493,9 +493,9 @@ Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputFor
     xor(a, b)     == (a => %not b; b)
     nor(a, b)     == (a => %false; %not b)
     nand(a, b)    == (a => %not b; %true)
-    a = b         == %eq(a,b)
+    a = b         == %peq(a,b)
     implies(a, b) == (a => b; %true)
-    equiv(a,b)    == %eq(a, b)
+    equiv(a,b)    == %peq(a, b)
     a < b         == (b => %not a; %false)
 
     size()        == 2

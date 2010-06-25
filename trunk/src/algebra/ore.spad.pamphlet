@@ -307,7 +307,7 @@ Automorphism(R:Ring): Join(Group, Eltable(R, R)) with
       1                               == ident
       err r                           == error "Morphism is not invertible"
       ident(r, n)                     == r
-      f = g                           == EQ(f, g)$Lisp
+      f = g                           == %peq(f,g)$Foreign(Builtin)
       elt(f, r)                       == apply(f, r, 1)
       inv f                           == apply(f, #1, - #2)
       (f: %) ** (n: Integer)          == apply(f, #1, n * #2)

@@ -207,7 +207,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
 --% predicates
 
     x = y ==
-      EQ(x,y)$Lisp => true
+      %peq(x,y)$Foreign(Builtin) => true
       (expDiff := getExpon(x) - getExpon(y)) = 0 =>
         getUTS(x) = getUTS(y)
       abs(expDiff) > _$streamCount$Lisp => false

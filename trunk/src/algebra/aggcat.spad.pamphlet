@@ -60,7 +60,7 @@ Aggregate: Category == Type with
    if % has finiteAggregate then
      #: % -> NonNegativeInteger     ++ # u returns the number of items in u.
  add
-  eq?(a,b) == EQ(a,b)$Lisp
+  eq?(a,b) == %peq(a,b)$Foreign(Builtin)
   sample() == empty()
   if % has finiteAggregate then
     empty? a   == #a = 0

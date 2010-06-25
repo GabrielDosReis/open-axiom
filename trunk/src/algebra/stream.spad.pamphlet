@@ -100,7 +100,7 @@ LazyStreamAggregate(S:Type): Category == StreamAggregate(S) with
       explicitlyFinite? x and explicitlyFinite? y =>
         entries x = entries y
       explicitEntries? x and explicitEntries? y =>
-        frst x = frst y and EQ(rst x, rst y)$Lisp
+        frst x = frst y and %peq(rst x,rst y)$Foreign(Builtin)
       -- treat cyclic streams
       false
 
@@ -664,8 +664,8 @@ Stream(S): Exports == Implementation where
 
     Rep := Record(firstElt: S, restOfStream: %)
 
-    explicitlyEmpty? x == EQ(frst x,NullStream)$Lisp
-    lazy? x            == EQ(frst x,NonNullStream)$Lisp
+    explicitlyEmpty? x == %peq(frst x,NullStream)$Foreign(Builtin)
+    lazy? x            == %peq(frst x,NonNullStream)$Foreign(Builtin)
 
 --% signatures of local functions
 
@@ -922,7 +922,7 @@ Stream(S): Exports == Implementation where
     lazyEvaluate x ==
       st := lazyEval x
       setfrst!(x, frst st)
-      setrst!(x,if EQ(rst st,st)$Lisp then x else rst st)
+      setrst!(x,if %peq(rst st,st)$Foreign(Builtin) then x else rst st)
       x
 
     -- empty? is the only function that explicitly causes evaluation
@@ -931,7 +931,7 @@ Stream(S): Exports == Implementation where
       while lazy? x repeat
         st := lazyEval x
         setfrst!(x, frst st)
-        setrst!(x,if EQ(rst st,st)$Lisp then x else rst st)
+        setrst!(x,if %peq(rst st,st)$Foreign(Builtin) then x else rst st)
       explicitlyEmpty? x
 
     --setvalue(x,s) == setfirst!(x,s)

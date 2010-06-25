@@ -1,3 +1,25 @@
+2010-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot: Rename %eq to %peq for pointer comparaison.
+	* interp/g-util.boot: Expand it.
+	* algebra/aggcat.spad.pamphlet: Cleanup.
+	* algebra/any.spad.pamphlet: Likewise.
+	* algebra/boolean.spad.pamphlet: Likewise.
+	* algebra/data.spad.pamphlet: Likewise.
+	* algebra/domain.spad.pamphlet: Likewise.
+	* algebra/files.spad.pamphlet: Likewise.
+	* algebra/laurent.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/mappkg.spad.pamphlet: Likewise.
+	* algebra/ore.spad.pamphlet: Likewise.
+	* algebra/padic.spad.pamphlet: Likewise.
+	* algebra/pattern.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+	* algebra/stream.spad.pamphlet: Likewise.
+	* algebra/string.spad.pamphlet: Likewise.
+	* algebra/syntax.spad.pamphlet: Likewise.
+	* algebra/table.spad.pamphlet: Likewise.
+
 2010-06-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (expandableDefinition?): Try to make it a
