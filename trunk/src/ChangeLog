@@ -1,5 +1,10 @@
 2010-06-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (expandableDefinition?): Try to make it a
+	forwarding function if possible.
+
+2010-06-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/outform.spad.pamphlet: Cleanup.
 	* algebra/polycat.spad.pamphlet: Likewise.
 	* algebra/sregset.spad.pamphlet: Likewise.
