@@ -61,6 +61,8 @@
                                      '(((|CoercibleTo| (|OutputForm|))
                                         (|has| |t#1|
                                          (|CoercibleTo| (|OutputForm|))))
+                                       ((|BasicType|)
+                                        (|has| |t#1| (|BasicType|)))
                                        ((|SetCategory|)
                                         (|has| |t#1| (|SetCategory|)))
                                        ((|Evalable| |t#1|)

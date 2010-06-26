@@ -219,7 +219,7 @@ import Boolean
 ++ Description:
 ++ \spadtype{BasicType} is the basic category for describing a collection
 ++ of elements with \spadop{=} (equality).
-BasicType(): Category == with
+BasicType(): Category == Type with
       =: (%,%) -> Boolean    ++ x=y tests if x and y are equal.
       ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
    add

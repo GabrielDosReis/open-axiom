@@ -620,11 +620,11 @@
                          |Ring&| NIL NIL NIL NIL NIL NIL
                          |AbelianGroup&| NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL
-                         |DifferentialSpace&| |OrderedSet&| NIL NIL
-                         |AbelianSemiGroup&| |SemiGroup&| NIL NIL
-                         |RetractableTo&| |DifferentialDomain&|
-                         |SetCategory&| NIL NIL NIL NIL NIL NIL NIL NIL
-                         NIL NIL NIL |BasicType&| NIL)
+                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
+                         |SemiGroup&| NIL |DifferentialSpace&|
+                         |SetCategory&| NIL |RetractableTo&|
+                         |DifferentialDomain&| |BasicType&| NIL NIL NIL
+                         NIL NIL NIL NIL NIL NIL NIL NIL NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -648,24 +648,23 @@
                                (|OrderedAbelianSemiGroup|)
                                (|LinearSet| $$) (|AbelianMonoid|)
                                (|Monoid|) (|StepThrough|)
-                               (|PatternMatchable| 17)
-                               (|DifferentialSpace|) (|OrderedSet|)
+                               (|PatternMatchable| 17) (|OrderedSet|)
                                (|LeftLinearSet| $$)
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
-                               (|LeftLinearSet| 17) (|RealConstant|)
-                               (|RetractableTo| 17)
-                               (|DifferentialDomain| $$)
-                               (|SetCategory|) (|OpenMath|)
-                               (|ConvertibleTo| 14)
+                               (|LeftLinearSet| 17)
+                               (|DifferentialSpace|) (|SetCategory|)
+                               (|RealConstant|) (|RetractableTo| 17)
+                               (|DifferentialDomain| $$) (|BasicType|)
+                               (|OpenMath|) (|ConvertibleTo| 14)
                                (|ConvertibleTo| 55)
                                (|ConvertibleTo| 58)
                                (|CombinatorialFunctionCategory|)
                                (|ConvertibleTo| 131)
                                (|ConvertibleTo| 61)
-                               (|ConvertibleTo| 17) (|Type|)
+                               (|ConvertibleTo| 17)
                                (|CoercibleFrom| $$)
-                               (|CoercibleFrom| 17) (|BasicType|)
+                               (|CoercibleFrom| 17) (|Type|)
                                (|CoercibleTo| 44))
                             (|makeByteWordVec2| 140
                                 '(0 7 0 8 1 12 11 0 13 3 12 11 0 14 14
