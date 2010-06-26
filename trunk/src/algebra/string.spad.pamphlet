@@ -504,12 +504,10 @@ String(): StringCategory == IndexedString(MINSTRINGINDEX) add
 \section{category STRICAT StringCategory}
 <<category STRICAT StringCategory>>=
 )abbrev category STRICAT StringCategory
--- Note that StringCategory is built into the old compiler
--- redundant SetCategory added to help A# compiler
 ++ Description:
 ++ A category for string-like objects
 
-StringCategory():Category == Join(StringAggregate(), SetCategory, OpenMath) with
+StringCategory():Category == Join(StringAggregate(), OpenMath) with
   string: Integer -> %
     ++ string(i) returns the decimal representation of i in a string
 

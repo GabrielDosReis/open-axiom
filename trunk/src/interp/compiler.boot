@@ -57,7 +57,6 @@ comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
-compString: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -744,8 +743,6 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 --% SPECIAL EVALUATION FUNCTIONS
 
 compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
-
-compString(x,m,e) == [x,resolve($StringCategory,m),e]
 
 --% SUBSET CATEGORY
 
