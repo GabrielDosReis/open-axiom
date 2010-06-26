@@ -82,10 +82,10 @@
              |Zero| 137 |One| 141 >= 145 > 151 = 157 <= 163 < 169 + 175
              ** 181 * 193)
           '(((|commutative| "*") . 0))
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0))
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL NIL NIL |Monoid&| |AbelianMonoid&|
                          |OrderedSet&| |SemiGroup&| |AbelianSemiGroup&|
-                         |SetCategory&| |BasicType&| NIL)
+                         |SetCategory&| |BasicType&| NIL NIL)
                       (CONS '#((|OrderedAbelianMonoidSup|)
                                (|OrderedCancellationAbelianMonoid|)
                                (|OrderedAbelianMonoid|)
@@ -93,7 +93,7 @@
                                (|OrderedAbelianSemiGroup|) (|Monoid|)
                                (|AbelianMonoid|) (|OrderedSet|)
                                (|SemiGroup|) (|AbelianSemiGroup|)
-                               (|SetCategory|) (|BasicType|)
+                               (|SetCategory|) (|BasicType|) (|Type|)
                                (|CoercibleTo| 21))
                             (|makeByteWordVec2| 21
                                 '(0 0 0 6 0 5 0 7 2 5 8 0 0 9 2 5 0 0 0

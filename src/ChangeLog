@@ -1,5 +1,10 @@
 2010-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Satisfy
+	BasicType if element type satisfies it.
+
+2010-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/string.spad.pamphlet (StringCategory): Remove.
 	(String): Adjust.
 

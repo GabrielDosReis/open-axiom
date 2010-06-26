@@ -1087,9 +1087,9 @@
              624 |and| 630 SEGMENT 636 >= 647 > 653 = 659 <= 671 < 677
              / 683 - 689 + 700 ** 706 * 712)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0))
-                (CONS '#(|SetCategory&| |BasicType&| NIL)
-                      (CONS '#((|SetCategory|) (|BasicType|)
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0))
+                (CONS '#(|SetCategory&| |BasicType&| NIL NIL)
+                      (CONS '#((|SetCategory|) (|BasicType|) (|Type|)
                                (|CoercibleTo| 18))
                             (|makeByteWordVec2| 149
                                 '(1 7 11 0 12 0 26 0 27 2 7 0 0 26 28 2

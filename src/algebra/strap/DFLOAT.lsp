@@ -976,18 +976,19 @@
                          |Algebra&| NIL NIL |OrderedRing&| |Module&|
                          NIL NIL |Module&| NIL NIL |Ring&| NIL NIL NIL
                          NIL NIL NIL NIL |AbelianGroup&| NIL NIL NIL
-                         NIL NIL |AbelianMonoid&| |Monoid&|
-                         |DifferentialSpace&| NIL |OrderedSet&| NIL NIL
-                         NIL NIL |AbelianSemiGroup&| |SemiGroup&| NIL
+                         NIL NIL |AbelianMonoid&| |Monoid&| NIL
+                         |OrderedSet&| NIL NIL NIL NIL
+                         |AbelianSemiGroup&| |SemiGroup&| NIL
+                         |DifferentialSpace&| |SetCategory&|
                          |TranscendentalFunctionCategory&|
                          |DifferentialDomain&| |RetractableTo&|
-                         |RetractableTo&| NIL |SetCategory&| NIL
+                         |RetractableTo&| NIL |BasicType&| NIL
                          |ElementaryFunctionCategory&| NIL
                          |HyperbolicFunctionCategory&|
                          |ArcTrigonometricFunctionCategory&|
-                         |TrigonometricFunctionCategory&| NIL NIL NIL
-                         |RadicalCategory&| NIL NIL NIL NIL NIL
-                         |BasicType&| NIL)
+                         |TrigonometricFunctionCategory&| NIL NIL
+                         |RadicalCategory&| NIL NIL NIL NIL NIL NIL
+                         NIL)
                       (CONS '#((|FloatingPointSystem|)
                                (|RealNumberSystem|) (|Field|)
                                (|EuclideanDomain|)
@@ -1011,7 +1012,6 @@
                                (|OrderedAbelianSemiGroup|)
                                (|LinearSet| 114) (|LinearSet| $$)
                                (|AbelianMonoid|) (|Monoid|)
-                               (|DifferentialSpace|)
                                (|PatternMatchable| 111) (|OrderedSet|)
                                (|LeftLinearSet| 114)
                                (|RightLinearSet| 114)
@@ -1019,24 +1019,24 @@
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|LeftLinearSet| 25)
+                               (|DifferentialSpace|) (|SetCategory|)
                                (|TranscendentalFunctionCategory|)
                                (|DifferentialDomain| $$)
                                (|RetractableTo| 114)
                                (|RetractableTo| 25) (|RealConstant|)
-                               (|SetCategory|) (|ConvertibleTo| 50)
+                               (|BasicType|) (|ConvertibleTo| 50)
                                (|ElementaryFunctionCategory|)
                                (|ArcHyperbolicFunctionCategory|)
                                (|HyperbolicFunctionCategory|)
                                (|ArcTrigonometricFunctionCategory|)
                                (|TrigonometricFunctionCategory|)
-                               (|OpenMath|) (|Type|)
-                               (|ConvertibleTo| 154)
+                               (|OpenMath|) (|ConvertibleTo| 154)
                                (|RadicalCategory|)
                                (|ConvertibleTo| 111)
                                (|ConvertibleTo| 13)
                                (|CoercibleFrom| 114)
                                (|CoercibleFrom| $$)
-                               (|CoercibleFrom| 25) (|BasicType|)
+                               (|CoercibleFrom| 25) (|Type|)
                                (|CoercibleTo| 47))
                             (|makeByteWordVec2| 163
                                 '(0 6 0 7 2 9 0 8 6 10 1 9 11 0 12 2 9

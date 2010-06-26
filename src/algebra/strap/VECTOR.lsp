@@ -63,6 +63,9 @@
                                   (LIST '|CoercibleTo| '(|OutputForm|))))
                           (|HasCategory| |#1|
                               (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (OR (|HasCategory| |#1| '(|BasicType|))
+                              (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
                           (OR (|HasCategory| |#1| '(|OrderedSet|))
                               (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| |#1| '(|OrderedSet|))
@@ -78,6 +81,7 @@
                                (|HasCategory| |#1| '(|Ring|)))
                           (|HasCategory| |#1|
                               (LIST '|CoercibleTo| '(|OutputForm|)))
+                          (|HasCategory| |#1| '(|BasicType|))
                           (AND (|HasCategory| |#1| '(|SetCategory|))
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
@@ -109,16 +113,16 @@
           '#(|vector| 34 |parts| 39 |maxIndex| 44 |convert| 49
              |construct| 54)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
-          (CONS (|makeByteWordVec2| 5
-                    '(0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4))
+          (CONS (|makeByteWordVec2| 6
+                    '(0 0 0 0 0 0 0 6 0 5 0 0 0 1 4 0 1 2 3))
                 (CONS '#(|VectorCategory&|
                          |OneDimensionalArrayAggregate&|
                          |FiniteLinearAggregate&| |LinearAggregate&|
                          |IndexedAggregate&| |Collection&|
-                         |HomogeneousAggregate&| |EltableAggregate&|
-                         |OrderedSet&| NIL |Aggregate&| NIL |Evalable&|
-                         |SetCategory&| NIL |InnerEvalable&| NIL NIL
-                         |BasicType&|)
+                         |HomogeneousAggregate&| |OrderedSet&|
+                         |EltableAggregate&| |SetCategory&| NIL
+                         |Aggregate&| NIL |Evalable&| |BasicType&| NIL
+                         |InnerEvalable&| NIL NIL)
                       (CONS '#((|VectorCategory| 6)
                                (|OneDimensionalArrayAggregate| 6)
                                (|FiniteLinearAggregate| 6)
@@ -126,15 +130,15 @@
                                (|IndexedAggregate| 7 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
-                               (|EltableAggregate| 7 6) (|OrderedSet|)
-                               (|Eltable| 28 $$) (|Aggregate|)
-                               (|Eltable| 7 6) (|Evalable| 6)
-                               (|SetCategory|) (|Type|)
+                               (|OrderedSet|) (|EltableAggregate| 7 6)
+                               (|SetCategory|) (|Eltable| 28 $$)
+                               (|Aggregate|) (|Eltable| 7 6)
+                               (|Evalable| 6) (|BasicType|) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 13)
-                               (|ConvertibleTo| 14) (|BasicType|))
+                               (|ConvertibleTo| 14))
                             (|makeByteWordVec2| 20
                                 '(0 7 0 8 1 0 0 9 10 1 14 0 13 15 1 0 9
                                   0 16 1 9 14 0 17 1 14 0 18 19 1 0 14
-                                  0 20 1 0 0 9 11 1 0 9 0 16 1 6 7 0 12
+                                  0 20 1 0 0 9 11 1 0 9 0 16 1 7 7 0 12
                                   1 3 14 0 20 1 0 0 9 10)))))
           '|lookupIncomplete|)) 

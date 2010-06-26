@@ -728,12 +728,13 @@
              |argscript| 600 |OMwrite| 606 >= 630 > 636 = 642 <= 648 <
              654)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0))
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|OrderedSet&| NIL NIL |SetCategory&|
-                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL)
+                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL NIL)
                       (CONS '#((|OrderedSet|) (|PatternMatchable| 70)
                                (|PatternMatchable| 6) (|SetCategory|)
-                               (|BasicType|) (|ConvertibleTo| 72)
+                               (|BasicType|) (|Type|)
+                               (|ConvertibleTo| 72)
                                (|ConvertibleTo| 65)
                                (|CoercibleFrom| 14)
                                (|ConvertibleTo| 25) (|OpenMath|)

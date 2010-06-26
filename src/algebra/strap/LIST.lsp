@@ -203,6 +203,9 @@
                                   (LIST '|CoercibleTo| '(|OutputForm|))))
                           (|HasCategory| |#1|
                               (LIST '|ConvertibleTo| '(|InputForm|)))
+                          (OR (|HasCategory| |#1| '(|BasicType|))
+                              (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
                           (OR (|HasCategory| |#1| '(|OrderedSet|))
                               (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| |#1| '(|OrderedSet|))
@@ -211,6 +214,7 @@
                           (|HasCategory| |#1| '(|SetCategory|))
                           (|HasCategory| |#1|
                               (LIST '|CoercibleTo| '(|OutputForm|)))
+                          (|HasCategory| |#1| '(|BasicType|))
                           (AND (|HasCategory| |#1| '(|SetCategory|))
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
@@ -222,7 +226,7 @@
     (|stuffDomainSlots| $)
     (|setShellEntry| $ 6 |#1|)
     (COND
-      ((|testBitVector| |pv$| 6)
+      ((|testBitVector| |pv$| 7)
        (PROGN
          (|setShellEntry| $ 31
              (CONS (|dispatchFunction| |LIST;OMwrite;$S;6|) $))
@@ -233,7 +237,7 @@
          (|setShellEntry| $ 34
              (CONS (|dispatchFunction| |LIST;OMwrite;Omd$BV;9|) $)))))
     (COND
-      ((|testBitVector| |pv$| 8)
+      ((|testBitVector| |pv$| 9)
        (PROGN
          (|setShellEntry| $ 37
              (CONS (|dispatchFunction| |LIST;setUnion;3$;10|) $))
@@ -278,17 +282,18 @@
              235 |convert| 241 |cons| 246 |concat| 252 |append| 264
              |OMwrite| 270)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
-          (CONS (|makeByteWordVec2| 6
-                    '(0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 1 4 0 1 2 3 4 6))
+          (CONS (|makeByteWordVec2| 7
+                    '(0 0 0 0 0 0 0 0 0 0 6 0 5 0 0 0 1 4 0 1 2 3 7))
                 (CONS '#(|ListAggregate&| |StreamAggregate&|
                          |ExtensibleLinearAggregate&|
                          |FiniteLinearAggregate&|
                          |UnaryRecursiveAggregate&| |LinearAggregate&|
                          |RecursiveAggregate&| |IndexedAggregate&|
                          |Collection&| |HomogeneousAggregate&|
-                         |EltableAggregate&| |OrderedSet&| NIL
-                         |Aggregate&| NIL |Evalable&| |SetCategory&|
-                         NIL |InnerEvalable&| NIL NIL |BasicType&| NIL)
+                         |OrderedSet&| |EltableAggregate&|
+                         |SetCategory&| NIL |Aggregate&| NIL
+                         |Evalable&| |BasicType&| NIL |InnerEvalable&|
+                         NIL NIL NIL)
                       (CONS '#((|ListAggregate| 6)
                                (|StreamAggregate| 6)
                                (|ExtensibleLinearAggregate| 6)
@@ -299,13 +304,12 @@
                                (|IndexedAggregate| 7 6)
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
-                               (|EltableAggregate| 7 6) (|OrderedSet|)
-                               (|Eltable| 61 $$) (|Aggregate|)
-                               (|Eltable| 7 6) (|Evalable| 6)
-                               (|SetCategory|) (|Type|)
+                               (|OrderedSet|) (|EltableAggregate| 7 6)
+                               (|SetCategory|) (|Eltable| 61 $$)
+                               (|Aggregate|) (|Eltable| 7 6)
+                               (|Evalable| 6) (|BasicType|) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 45)
-                               (|ConvertibleTo| 46) (|BasicType|)
-                               (|OpenMath|))
+                               (|ConvertibleTo| 46) (|OpenMath|))
                             (|makeByteWordVec2| 53
                                 '(0 7 0 8 1 15 14 0 16 3 15 14 0 17 17
                                   18 1 10 0 0 19 1 0 6 0 20 0 10 0 21 3
@@ -318,12 +322,12 @@
                                   2 0 10 6 0 40 2 0 0 0 0 41 2 0 6 0 7
                                   42 2 0 0 6 0 43 2 0 0 0 0 44 1 46 0
                                   45 47 1 6 46 0 48 2 49 0 46 0 50 1 46
-                                  0 51 52 1 0 46 0 53 2 8 0 0 0 37 2 8
-                                  0 0 0 41 2 8 0 0 0 44 1 0 0 0 23 1 8
-                                  0 0 36 1 0 10 0 11 0 0 0 9 2 8 10 6 0
+                                  0 51 52 1 0 46 0 53 2 9 0 0 0 37 2 9
+                                  0 0 0 41 2 9 0 0 0 44 1 0 0 0 23 1 9
+                                  0 0 36 1 0 10 0 11 0 0 0 9 2 9 10 6 0
                                   40 1 0 6 0 20 1 0 10 0 39 0 0 0 38 2
                                   0 6 0 7 42 1 3 46 0 53 2 0 0 6 0 12 2
                                   0 0 0 0 35 2 0 0 6 0 43 2 0 0 0 0 13
-                                  3 6 14 15 0 10 34 2 6 17 0 10 32 2 6
-                                  14 15 0 33 1 6 17 0 31)))))
+                                  3 7 14 15 0 10 34 2 7 17 0 10 32 2 7
+                                  14 15 0 33 1 7 17 0 31)))))
           '|lookupIncomplete|)) 
