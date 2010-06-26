@@ -1,5 +1,13 @@
 2010-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %vref
+	and %vlength.
+	* interp/g-util.boot: Expand them.
+	* algebra/array1.spad.pamphlet (PrimitiveArray): Use them.
+	(IndexedOneDimensionalArray): Likewise.
+
+2010-06-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/aggcat.spad.pamphlet (HomogeneousAggregate): Satisfy
 	BasicType if element type satisfies it.
 
