@@ -352,6 +352,9 @@ for x in [
     ['%fpow,  :'EXPT],
     ['%fsub,  :"-"],
 
+    -- string operations
+    ['%f2s,   :'DFLOAT_-FORMAT_-GENERAL],
+
     -- list contants
     -- ['%nil, :'NIL],
     -- unary list operations

@@ -477,7 +477,7 @@ $VMsideEffectFreeOperators ==
           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
            %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
             %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
-             %lreverse %lempty? %hash %ismall? %string?
+             %lreverse %lempty? %hash %ismall? %string? %f2s
               %ceq %clt %cle %cgt %cge %c2i %i2c)
 
 ++ List of simple VM operators

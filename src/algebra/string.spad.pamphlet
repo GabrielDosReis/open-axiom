@@ -462,7 +462,8 @@ the coercion.
 MINSTRINGINDEX ==> 1	      -- as of 3/14/90.
 
 String(): StringCategory == IndexedString(MINSTRINGINDEX) add 
-    string n == STRINGIMAGE(n)$Lisp
+    string(n: Integer) == STRINGIMAGE(n)$Lisp
+    string(f: DoubleFloat) == %f2s(f)$Foreign(Builtin)
 
     OMwrite(x: %): String ==
       s: String := ""
@@ -510,6 +511,9 @@ String(): StringCategory == IndexedString(MINSTRINGINDEX) add
 StringCategory():Category == Join(StringAggregate(), OpenMath) with
   string: Integer -> %
     ++ string(i) returns the decimal representation of i in a string
+  string: DoubleFloat -> %
+    ++ \spad{string f} returns the decimal representation of
+    ++ \spad{f} in a string
 
 @
 \section{License}
