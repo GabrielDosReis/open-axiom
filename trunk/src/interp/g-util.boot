@@ -372,6 +372,11 @@ for x in [
     -- binary list operations
     ['%lconcat,   :'APPEND],
 
+    -- simple vector operations
+    ['%vfill,     :'FILL],
+    ['%vlength,   :'sizeOfSimpleArray],
+    ['%vref,      :'getSimpleArrayEntry],
+
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
 
