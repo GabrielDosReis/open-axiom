@@ -1,4 +1,12 @@
 2010-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot: Expand %f2s.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %f2s.
+	* algebra/string.spad.pamphlet (StringCategory) [string]: Add
+	overload DoubleFloat -> %.
+	(String): Define it.
+
+2010-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 	
 	* interp/compiler.boot (compString): Remove as unused.
 	* interp/mark.boot (compString): Likewise.
