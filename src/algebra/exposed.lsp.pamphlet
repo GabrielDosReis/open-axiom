@@ -790,7 +790,6 @@
   (|StepThrough| . STEP)
   (|StreamAggregate| . STAGG)
   (|StringAggregate| . SRAGG)
-  (|StringCategory| . STRICAT)
   (|StructuralConstantsPackage| . SCPKG)
   (|TableAggregate| . TBAGG)
   (|ThreeSpaceCategory| . SPACEC)

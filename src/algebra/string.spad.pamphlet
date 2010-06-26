@@ -461,7 +461,15 @@ the coercion.
 ++   This is the domain of character strings.
 MINSTRINGINDEX ==> 1	      -- as of 3/14/90.
 
-String(): StringCategory == IndexedString(MINSTRINGINDEX) add 
+String(): Public == Private where
+  Public == Join(StringAggregate(), OpenMath) with
+    string: Integer -> %
+      ++ \spad{string i} returns the decimal representation of
+      ++ \spad{i} in a string
+    string: DoubleFloat -> %
+      ++ \spad{string f} returns the decimal representation of
+      ++ \spad{f} in a string
+  Private == IndexedString(MINSTRINGINDEX) add 
     string(n: Integer) == STRINGIMAGE(n)$Lisp
     string(f: DoubleFloat) == %f2s(f)$Foreign(Builtin)
 
@@ -502,20 +510,7 @@ String(): StringCategory == IndexedString(MINSTRINGINDEX) add
         OMputEndObject(dev)
 
 @
-\section{category STRICAT StringCategory}
-<<category STRICAT StringCategory>>=
-)abbrev category STRICAT StringCategory
-++ Description:
-++ A category for string-like objects
 
-StringCategory():Category == Join(StringAggregate(), OpenMath) with
-  string: Integer -> %
-    ++ string(i) returns the decimal representation of i in a string
-  string: DoubleFloat -> %
-    ++ \spad{string f} returns the decimal representation of
-    ++ \spad{f} in a string
-
-@
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
@@ -557,7 +552,6 @@ StringCategory():Category == Join(StringAggregate(), OpenMath) with
 <<domain CHAR Character>>
 <<domain CCLASS CharacterClass>>
 <<domain ISTRING IndexedString>>
-<<category STRICAT StringCategory>>
 <<domain STRING String>>
 @
 \eject
