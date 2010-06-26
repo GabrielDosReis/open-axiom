@@ -1525,7 +1525,6 @@ for x in [["%LET", :"compSetq"],_
           ["SubsetCategory", :"compSubsetCategory"],_
           ["SubDomain", :"compSubDomain"],_
           ["case", :"compCase"],_
-          ["String", :"compString"],_
           ["RecordCategory", :"compConstructorCategory"],_
           ["ListCategory", :"compConstructorCategory"],_
           ["VectorCategory", :"compConstructorCategory"],_

@@ -1,4 +1,11 @@
 2010-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+	
+	* interp/compiler.boot (compString): Remove as unused.
+	* interp/mark.boot (compString): Likewise.
+	* algebra/string.spad.pamphlet (StringCategory): Remove obsolete
+	comments.  Remove redundant SetCategory extension.
+
+2010-06-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot: Rename %eq to %peq for pointer comparaison.
 	* interp/g-util.boot: Expand it.
