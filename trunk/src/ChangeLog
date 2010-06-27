@@ -1,5 +1,10 @@
 2010-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/matcat.spad.pamphlet (MatrixCategory) [matrix]:
+	Add overload that takes sizes and function to compute entries.
+
+2010-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (LinearlyExplicitRingOver)
 	[leftReducedSystem]:  Rename from reducedSystem.
 
