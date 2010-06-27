@@ -587,22 +587,22 @@
              |submod| 205 |squareFreePart| 212 |squareFree| 217
              |sizeLess?| 222 |sign| 228 |shift| 233 |sample| 239
              |retractIfCan| 243 |retract| 248 |rem| 253 |reducedSystem|
-             259 |recip| 281 |rationalIfCan| 286 |rational?| 291
-             |rational| 296 |random| 301 |quo| 310 |principalIdeal| 316
-             |prime?| 321 |powmod| 326 |positiveRemainder| 333
-             |positive?| 339 |permutation| 344 |patternMatch| 350
-             |one?| 357 |odd?| 362 |nextItem| 367 |negative?| 372
-             |multiEuclidean| 377 |mulmod| 383 |min| 390 |max| 396
-             |mask| 402 |length| 407 |lcm| 412 |latex| 423 |invmod| 428
-             |init| 434 |inc| 438 |hash| 443 |gcdPolynomial| 448 |gcd|
-             454 |factorial| 465 |factor| 470 |extendedEuclidean| 475
-             |exquo| 488 |expressIdealMember| 494 |even?| 500
-             |euclideanSize| 505 |divide| 510 |differentiate| 516 |dec|
-             527 |copy| 532 |convert| 537 |coerce| 567 |characteristic|
-             587 |bit?| 591 |binomial| 597 |before?| 603 |base| 609
-             |associates?| 613 |addmod| 619 |abs| 626 |Zero| 631 |One|
-             635 |OMwrite| 639 D 663 >= 674 > 680 = 686 <= 692 < 698 -
-             704 + 715 ** 721 * 733)
+             259 |recip| 270 |rationalIfCan| 275 |rational?| 280
+             |rational| 285 |random| 290 |quo| 299 |principalIdeal| 305
+             |prime?| 310 |powmod| 315 |positiveRemainder| 322
+             |positive?| 328 |permutation| 333 |patternMatch| 339
+             |one?| 346 |odd?| 351 |nextItem| 356 |negative?| 361
+             |multiEuclidean| 366 |mulmod| 372 |min| 379 |max| 385
+             |mask| 391 |length| 396 |leftReducedSystem| 401 |lcm| 412
+             |latex| 423 |invmod| 428 |init| 434 |inc| 438 |hash| 443
+             |gcdPolynomial| 448 |gcd| 454 |factorial| 465 |factor| 470
+             |extendedEuclidean| 475 |exquo| 488 |expressIdealMember|
+             494 |even?| 500 |euclideanSize| 505 |divide| 510
+             |differentiate| 516 |dec| 527 |copy| 532 |convert| 537
+             |coerce| 567 |characteristic| 587 |bit?| 591 |binomial|
+             597 |before?| 603 |base| 609 |associates?| 613 |addmod|
+             619 |abs| 626 |Zero| 631 |One| 635 |OMwrite| 639 D 663 >=
+             674 > 680 = 686 <= 692 < 698 - 704 + 715 ** 721 * 733)
           '((|infinite| . 0) (|noetherian| . 0)
             (|canonicalsClosed| . 0) (|canonical| . 0)
             (|canonicalUnitNormal| . 0) (|multiplicativeValuation| . 0)
@@ -684,18 +684,18 @@
                                   9 0 1 2 0 0 0 0 1 2 0 92 0 0 1 3 0 0
                                   0 0 0 52 1 0 0 0 1 1 0 113 0 1 2 0 9
                                   0 0 1 1 0 17 0 1 2 0 0 0 0 91 0 0 0 1
-                                  1 0 133 0 1 1 0 17 0 1 2 0 0 0 0 53 2
-                                  0 74 75 0 1 1 0 70 75 1 1 0 70 71 72
-                                  2 0 74 71 75 76 1 0 92 0 93 1 0 130 0
-                                  1 1 0 9 0 1 1 0 129 0 1 0 0 0 78 1 0
-                                  0 0 79 2 0 0 0 0 90 1 0 135 134 1 1 0
-                                  9 0 1 3 0 0 0 0 0 1 2 0 0 0 0 69 1 0
-                                  9 0 1 2 0 0 0 0 1 3 0 132 0 131 132 1
-                                  1 0 9 0 34 1 0 9 0 85 1 0 92 0 1 1 0
-                                  9 0 43 2 0 136 134 0 1 3 0 0 0 0 0 54
-                                  2 0 0 0 0 87 2 0 0 0 0 86 1 0 0 0 1 1
-                                  0 0 0 49 2 0 0 0 0 1 1 0 0 134 1 1 0
-                                  14 0 68 2 0 0 0 0 1 0 0 0 1 1 0 0 0
+                                  1 0 133 0 1 1 0 17 0 1 2 0 0 0 0 53 1
+                                  0 70 71 72 2 0 74 71 75 76 1 0 92 0
+                                  93 1 0 130 0 1 1 0 9 0 1 1 0 129 0 1
+                                  0 0 0 78 1 0 0 0 79 2 0 0 0 0 90 1 0
+                                  135 134 1 1 0 9 0 1 3 0 0 0 0 0 1 2 0
+                                  0 0 0 69 1 0 9 0 1 2 0 0 0 0 1 3 0
+                                  132 0 131 132 1 1 0 9 0 34 1 0 9 0 85
+                                  1 0 92 0 1 1 0 9 0 43 2 0 136 134 0 1
+                                  3 0 0 0 0 0 54 2 0 0 0 0 87 2 0 0 0 0
+                                  86 1 0 0 0 1 1 0 0 0 49 2 0 74 75 0 1
+                                  1 0 70 75 1 2 0 0 0 0 1 1 0 0 134 1 1
+                                  0 14 0 68 2 0 0 0 0 1 0 0 0 1 1 0 0 0
                                   38 1 0 41 0 42 2 0 127 127 127 128 2
                                   0 0 0 0 94 1 0 0 134 1 1 0 0 0 1 1 0
                                   113 0 114 2 0 137 0 0 1 3 0 139 0 0 0

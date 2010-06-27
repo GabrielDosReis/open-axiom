@@ -600,24 +600,24 @@
              |subtractIfCan| 121 |submod| 127 |squareFreePart| 134
              |squareFree| 139 |sizeLess?| 144 |size| 150 |sign| 154
              |shift| 159 |sample| 165 |retractIfCan| 169 |retract| 174
-             |rem| 179 |reducedSystem| 185 |recip| 207 |rationalIfCan|
-             212 |rational?| 217 |rational| 222 |random| 227 |quo| 236
-             |principalIdeal| 242 |prime?| 247 |powmod| 252
-             |positiveRemainder| 259 |positive?| 265 |permutation| 270
-             |patternMatch| 276 |or| 283 |one?| 289 |odd?| 294 |not|
-             299 |nextItem| 304 |negative?| 309 |multiEuclidean| 314
-             |mulmod| 320 |min| 327 |max| 337 |mask| 347 |lookup| 352
-             |length| 357 |lcm| 362 |latex| 373 |invmod| 378 |init| 384
-             |index| 388 |inc| 393 |hash| 398 |gcdPolynomial| 403 |gcd|
-             409 |factorial| 420 |factor| 425 |extendedEuclidean| 430
-             |exquo| 443 |expressIdealMember| 449 |even?| 455
-             |euclideanSize| 460 |divide| 465 |differentiate| 471 |dec|
-             482 |copy| 487 |convert| 492 |coerce| 517 |characteristic|
-             537 |bit?| 541 |binomial| 547 |before?| 553 |base| 559
-             |associates?| 563 |and| 569 |addmod| 575 |abs| 582 |\\/|
-             587 |Zero| 593 |Or| 597 |One| 603 |OMwrite| 607 |Not| 631
-             D 636 |And| 647 >= 653 > 659 = 665 <= 671 < 677 |/\\| 683
-             - 689 + 700 ** 706 * 718)
+             |rem| 179 |reducedSystem| 185 |recip| 196 |rationalIfCan|
+             201 |rational?| 206 |rational| 211 |random| 216 |quo| 225
+             |principalIdeal| 231 |prime?| 236 |powmod| 241
+             |positiveRemainder| 248 |positive?| 254 |permutation| 259
+             |patternMatch| 265 |or| 272 |one?| 278 |odd?| 283 |not|
+             288 |nextItem| 293 |negative?| 298 |multiEuclidean| 303
+             |mulmod| 309 |min| 316 |max| 326 |mask| 336 |lookup| 341
+             |length| 346 |leftReducedSystem| 351 |lcm| 362 |latex| 373
+             |invmod| 378 |init| 384 |index| 388 |inc| 393 |hash| 398
+             |gcdPolynomial| 403 |gcd| 409 |factorial| 420 |factor| 425
+             |extendedEuclidean| 430 |exquo| 443 |expressIdealMember|
+             449 |even?| 455 |euclideanSize| 460 |divide| 465
+             |differentiate| 471 |dec| 482 |copy| 487 |convert| 492
+             |coerce| 517 |characteristic| 537 |bit?| 541 |binomial|
+             547 |before?| 553 |base| 559 |associates?| 563 |and| 569
+             |addmod| 575 |abs| 582 |\\/| 587 |Zero| 593 |Or| 597 |One|
+             603 |OMwrite| 607 |Not| 631 D 636 |And| 647 >= 653 > 659 =
+             665 <= 671 < 677 |/\\| 683 - 689 + 700 ** 706 * 718)
           '((|noetherian| . 0) (|canonicalsClosed| . 0)
             (|canonical| . 0) (|canonicalUnitNormal| . 0)
             (|multiplicativeValuation| . 0) (|noZeroDivisors| . 0)
@@ -691,18 +691,18 @@
                                   0 0 0 0 0 81 1 0 0 0 1 1 0 114 0 1 2
                                   0 9 0 0 1 0 0 61 83 1 0 5 0 1 2 0 0 0
                                   0 78 0 0 0 1 1 0 107 0 1 1 0 5 0 1 2
-                                  0 0 0 0 64 1 0 30 91 1 1 0 30 31 32 2
-                                  0 90 91 0 1 2 0 90 31 91 92 1 0 101 0
-                                  1 1 0 100 0 1 1 0 9 0 1 1 0 99 0 1 0
-                                  0 0 95 1 0 0 0 96 2 0 0 0 0 63 1 0
-                                  110 108 1 1 0 9 0 1 3 0 0 0 0 0 1 2 0
-                                  0 0 0 93 1 0 9 0 1 2 0 0 0 0 1 3 0
-                                  104 0 105 104 1 2 0 0 0 0 52 1 0 9 0
-                                  72 1 0 9 0 69 1 0 0 0 45 1 0 101 0 1
-                                  1 0 9 0 82 2 0 109 108 0 1 3 0 0 0 0
-                                  0 79 0 0 0 42 2 0 0 0 0 74 0 0 0 41 2
-                                  0 0 0 0 73 1 0 0 0 1 1 0 84 0 88 1 0
-                                  0 0 77 1 0 0 108 1 2 0 0 0 0 1 1 0 14
+                                  0 0 0 0 64 1 0 30 31 32 2 0 90 31 91
+                                  92 1 0 101 0 1 1 0 100 0 1 1 0 9 0 1
+                                  1 0 99 0 1 0 0 0 95 1 0 0 0 96 2 0 0
+                                  0 0 63 1 0 110 108 1 1 0 9 0 1 3 0 0
+                                  0 0 0 1 2 0 0 0 0 93 1 0 9 0 1 2 0 0
+                                  0 0 1 3 0 104 0 105 104 1 2 0 0 0 0
+                                  52 1 0 9 0 72 1 0 9 0 69 1 0 0 0 45 1
+                                  0 101 0 1 1 0 9 0 82 2 0 109 108 0 1
+                                  3 0 0 0 0 0 79 0 0 0 42 2 0 0 0 0 74
+                                  0 0 0 41 2 0 0 0 0 73 1 0 0 0 1 1 0
+                                  84 0 88 1 0 0 0 77 1 0 30 91 1 2 0 90
+                                  91 0 1 1 0 0 108 1 2 0 0 0 0 1 1 0 14
                                   0 1 2 0 0 0 0 1 0 0 0 1 1 0 0 84 87 1
                                   0 0 0 57 1 0 75 0 76 2 0 115 115 115
                                   1 1 0 0 108 1 2 0 0 0 0 67 1 0 0 0 1

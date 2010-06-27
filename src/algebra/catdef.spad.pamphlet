@@ -1096,12 +1096,12 @@ LeftModule(R:Rng):Category == Join(AbelianGroup, LeftLinearSet R)
 ++ Description:
 ++    An extension of left-module with an explicit linear dependence test.
 LinearlyExplicitRingOver(R:Ring): Category == LeftModule R with
-  reducedSystem: Vector % -> Matrix R
-    ++ \spad{reducedSystem [v1,...,vn]} returns a matrix \spad{M}
+  leftReducedSystem: Vector % -> Matrix R
+    ++ \spad{leftReducedSystem [v1,...,vn]} returns a matrix \spad{M}
     ++ with coefficients in \spad{R} such that the system of equations
     ++ \spad{c1*v1 + ... + cn*vn = 0$%} has the same solution as
     ++ \spad{c * M = 0} where \spad{c} is the row vector \spad{[c1,...cn]}.
-  reducedSystem: (Vector %,%) -> Record(mat: Matrix R,vec: Vector R)
+  leftReducedSystem: (Vector %,%) -> Record(mat: Matrix R,vec: Vector R)
     ++ \spad{reducedSystem([v1,...,vn],u)} returns a matrix \spad{M}
     ++ with coefficients in \spad{R} and a vector \spad{w} such
     ++ that the system of equations \spad{c1*v1 + ... + cn*vn = u}
