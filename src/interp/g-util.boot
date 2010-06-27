@@ -227,6 +227,9 @@ expandPeq ['%peq,x,y] ==
   y = '%nil => ['NULL,expandToVMForm x]
   ['EQ,expandToVMForm x, expandToVMForm y]
 
+expandBefore? ['%before?,x,y] ==
+  ['GGREATER,expandToVMForm y,expandToVMForm x]
+
 -- Integer operations
 expandIneg ['%ineg,x] ==
   x := expandToVMForm x
@@ -393,8 +396,8 @@ for x in [
 
 ++ Table of opcode-expander pairs.  
 for x in [
-   ['%collect,:function expandCollect],
-   ['%loop,   :function expandLoop],
+   ['%collect, :function expandCollect],
+   ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
 
    ['%igt,     :function expandIgt],
@@ -410,11 +413,12 @@ for x in [
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
 
-   ["%peq",:function expandPeq],
+   ['%peq,     :function expandPeq],
+   ['%before?, :function expandBefore?],
 
-   ["%bind",:function expandBind],
-   ["%store",:function expandStore],
-   ["%dynval",:function expandDynval]
+   ["%bind",   :function expandBind],
+   ["%store",  :function expandStore],
+   ["%dynval", :function expandDynval]
  ] repeat property(first x,"%Expander") := rest x
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.

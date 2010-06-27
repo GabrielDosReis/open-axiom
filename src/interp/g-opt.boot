@@ -479,7 +479,7 @@ $VMsideEffectFreeOperators ==
             %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
              %lreverse %lempty? %hash %ismall? %string? %f2s
               %ceq %clt %cle %cgt %cge %c2i %i2c
-               %vref %vlength)
+               %vref %vlength %before?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
