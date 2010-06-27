@@ -1,5 +1,10 @@
 2010-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot: Add new opcode %before?.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include it.
+
+2010-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/matcat.spad.pamphlet (MatrixCategory) [matrix]:
 	Add overload that takes sizes and function to compute entries.
 
