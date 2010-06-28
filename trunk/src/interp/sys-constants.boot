@@ -590,6 +590,7 @@ $SystemInlinableConstructorNames ==
     PrimitiveArray     _
     Vector             _
     Maybe              _
+    Pair               _
     Void)
 
 ++ FIXME
