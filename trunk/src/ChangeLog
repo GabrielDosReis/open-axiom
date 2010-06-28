@@ -1,3 +1,8 @@
+2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/i-map.boot (findExternalVarsInBindExpr): New.
+	(findLocalVars1): Use it for %bind-expressions.
+
 2010-06-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot: Add new opcode %before?.
