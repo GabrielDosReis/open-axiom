@@ -1,5 +1,13 @@
 2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/slam.boot (clearCache): Use reallyClearLocalModemaps to
+	remove local modemaps.Likewise. 
+	(clearLocalModemaps): Likewise. Tidy.
+	(reallyClearLocalModemaps): New.  Remove dynamically generated
+	function definition for internal Lisp-level functions.
+
+2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-map.boot (findExternalVarsInBindExpr): New.
 	(findLocalVars1): Use it for %bind-expressions.
 

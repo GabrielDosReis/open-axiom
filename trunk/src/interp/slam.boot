@@ -382,21 +382,32 @@ mkCacheVec(op,nam,kind,resetCode,countCode) ==
 --   u:= getI(op,"cache") =>
 --     reportCacheStorePrint(op,'variable,nodeCount u)
 --   nil
- 
+
+++ We are about to clear local modemaps associated with `x'.
+++ It is insufficient to just remove the internal functions
+++ form the 'localModemap property list in the current environment.
+++ We also need to clear any Lisp-level function resulting from
+++ previous compilations.
+reallyClearLocalModemaps x ==
+  for mm in get(x,'localModemap,$e) repeat
+    FMAKUNBOUND second mm
+  $e:= putHist(x,'localModemap,nil,$e)
+  
+
 clearCache x ==
   get(x,'localModemap,$e) or get(x,'mapBody,$e) =>
     for [map,:sub] in $mapSubNameAlist repeat
       map=x => _/UNTRACE_,2(sub,NIL)
-    $e:= putHist(x,'localModemap,nil,$e)
+    $e := reallyClearLocalModemaps x
     $e:= putHist(x,'mapBody,nil,$e)
     $e:= putHist(x,'localVars,nil,$e)
     sayKeyedMsg("S2IX0007",[x])
  
 clearLocalModemaps x ==
-  u:= get(x,"localModemap",$e) =>
+  u := get(x,"localModemap",$e) =>
     for sub in ASSOCRIGHT $mapSubNameAlist repeat
       _/UNTRACE_,2(sub,NIL)
-    $e:= putHist(x,"localModemap",nil,$e)
+    $e:= reallyClearLocalModemaps x
     for mm in u repeat
       [.,fn,:.] := mm
       if def:= get(fn,'definition,$e) then
@@ -406,6 +417,8 @@ clearLocalModemaps x ==
       -- now clear the property list of the identifier
       $e := addIntSymTabBinding(x,nil,$e)
     sayKeyedMsg("S2IX0007",[x])
+    $e
+  $e
  
 compileInteractive fn ==
   if $InteractiveMode then startTimingProcess 'compilation
