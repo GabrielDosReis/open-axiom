@@ -1,5 +1,10 @@
 2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
+	Include Pair.
+
+2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/slam.boot (clearCache): Use reallyClearLocalModemaps to
 	remove local modemaps.Likewise. 
 	(clearLocalModemaps): Likewise. Tidy.
