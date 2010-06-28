@@ -228,7 +228,7 @@ expandPeq ['%peq,x,y] ==
   ['EQ,expandToVMForm x, expandToVMForm y]
 
 expandBefore? ['%before?,x,y] ==
-  ['GGREATER,expandToVMForm y,expandToVMForm x]
+  ['GGREATERP,expandToVMForm y,expandToVMForm x]
 
 -- Integer operations
 expandIneg ['%ineg,x] ==
