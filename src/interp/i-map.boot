@@ -1033,11 +1033,14 @@ findLocalVars1(op,form) ==
     mkLocalVar(op,a)
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
-    for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
+    for var in listOfVariables rest pattern repeat
+      mkLocalVar(op,var)
   form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect) =>
     findLocalsInLoop(op,itrl,body)
   form is ['%loop,:itrl,val,body] =>
     findLocalsInLoop(op,itrl,[body,val])
+  form is ['%bind,bindings,:body] =>
+    findExternalVarsInBindExpr(op,bindings,body)
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
       -- don't pick field tags, their are not variables.
@@ -1066,6 +1069,19 @@ findLocalsInLoop(op,itrl,body) ==
     it is [op,b] and (op in '(UNTIL)) =>
       findLocalVars1(op,b)
   $localVars := setUnion(savedLocalVars,setDifference($localVars,iterVars))
+
+++ Subroutine of findLocalVars1.  
+++ Find variables in a bind-expressions that are external to that block.  
+findExternalVarsInBindExpr(op,bindings,stmts) ==
+  savedLocalVars := $localVars
+  boundVars := nil
+  for [var,init] in bindings repeat
+    findLocalVars1(op,init)
+    boundVars := [var,:boundVars]
+    mkLocalVar(op,var)
+  for stmt in stmts repeat
+    findLocalVars1(op,stmt)
+  $localVars := setUnion(savedLocalVars,setDifference($localVars,boundVars))
 
 isFreeVar(var) ==
   member(var,$freeVars)
