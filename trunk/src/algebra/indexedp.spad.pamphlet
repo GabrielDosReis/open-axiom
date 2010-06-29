@@ -46,9 +46,9 @@ IndexedDirectProductCategory(A:SetCategory,S:OrderedSet): Category ==
        ++ reductum(z) returns a new element created by removing the
        ++ leading coefficient/support pair from the element z.
        ++ Error: if z has no support.
-    support: % -> List Pair(S,A)
-      ++ \spad{support x} returns the list of terms in \spad{x}.
-      ++ Each term is a pair of an index (the first component)
+    terms: % -> List Pair(S,A)
+      ++ \spad{terms x} returns the list of terms in \spad{x}.
+      ++ Each term is a pair of a support (the first component)
       ++ and the corresponding value (the second component).
 
 @
@@ -104,7 +104,7 @@ IndexedDirectProductObject(A,S): Public == Private where
          error "Can't take leadingCoefficient of empty product element"
        termIndex first rep x
 
-    support x == rep x
+    terms x == rep x
 
 @
 \section{domain IDPAM IndexedDirectProductAbelianMonoid}
@@ -322,7 +322,9 @@ IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedSet):
 @
 \section{License}
 <<license>>=
---Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
+--Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
+--All rights reserved.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
