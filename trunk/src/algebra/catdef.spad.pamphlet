@@ -296,7 +296,8 @@ OrderedType(): Category == BasicType with
 )abbrev domain ORDSTRCT OrderedStructure
 OrderedStructure(T: Type,f: (T,T) -> Boolean): Public == Private where
   Public == Join(OrderedType,HomotopicTo T)
-  Private == T add
+  Private == add
+    Rep == T
     coerce(x: %): T == rep x
     coerce(y: T): % == per y
     x < y  == f(rep x,rep y)

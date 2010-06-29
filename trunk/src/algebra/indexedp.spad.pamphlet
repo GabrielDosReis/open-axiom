@@ -65,10 +65,7 @@ IndexedDirectProductCategory(A:SetCategory,S:OrderedSet): Category ==
 IndexedDirectProductObject(A,S): Public == Private where
   A: SetCategory
   S: OrderedSet
-  Public == IndexedDirectProductCategory(A,S) with
-    indexedDirectProductObject: List Pair(S,A) -> %
-      ++ \spad{indexedDirectProductObject l} constructs an indexed
-      ++ direct product object with support-value pairs given in \spad{l}.
+  Public == IndexedDirectProductCategory(A,S)
   Private == add
     Term == Pair(S,A)
     Rep == List Term
@@ -108,8 +105,6 @@ IndexedDirectProductObject(A,S): Public == Private where
        termIndex first rep x
 
     terms x == rep x
-    indexedDirectProductObject l ==
-      per sort((x,y) +-> termIndex x > termIndex y, l)
 
 @
 \section{domain IDPAM IndexedDirectProductAbelianMonoid}
@@ -119,10 +114,7 @@ IndexedDirectProductObject(A,S): Public == Private where
 ++ generators indexed by the ordered set S. All items have finite support.
 ++ Only non-zero terms are stored.
 IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
-    Join(AbelianMonoid,IndexedDirectProductCategory(A,S)) with
-      construct: List Pair(A,S) -> %
-        ++ \spad{l} returns an IndexedDirectProductAbelianMonoid object
-        ++ with support and value as specified in the list of pairs \spad{l}.
+    Join(AbelianMonoid,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductObject(A,S) add
     --representations
        Term ==  Pair(S,A)
@@ -203,10 +195,6 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
        pair2Term(t: Pair(A,S)): Term ==
          [second t, first t]
 
-       construct l ==
-         per indexedDirectProductObject
-               [pair2Term t for t in l | not zero? first t]
-
 @
 \section{domain IDPOAM IndexedDirectProductOrderedAbelianMonoid}
 <<domain IDPOAM IndexedDirectProductOrderedAbelianMonoid>>=
@@ -279,66 +267,61 @@ IndexedDirectProductOrderedAbelianMonoidSup(A:OrderedAbelianMonoidSup,S:OrderedS
 ++ generators indexed by the ordered set S.
 ++ All items have finite support: only non-zero terms are stored.
 IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedSet):
-    Join(AbelianGroup,IndexedDirectProductCategory(A,S))
+    Join(AbelianGroup,IndexedDirectProductCategory(A,S)) with
+      construct: List Pair(A,S) -> %
+        ++ \spad{construct l} returns an object that is a linear
+        ++ combination with support in \spad{A} and coefficients
+        ++ in \spad{A}.
  ==  IndexedDirectProductAbelianMonoid(A,S) add
     --representations
-       Term:=  Record(k:S,c:A)
-       Rep:=  List Term
-       x,y: %
-       r: A
-       n: Integer
-       f: A -> A
-       s: S
-       -x == [[u.k,-u.c] for u in x]
-       n * x  ==
-             n = 0 => 0
-             n = 1 => x
-             [[u.k,a] for u in x | (a:=n*u.c) ~= 0$A]
+       Term == Pair(S,A)
+       termIndex(t: Term): S == first t
+       termValue(t: Term): A == second t
 
-       qsetrest!: (Rep, Rep) -> Rep
-       qsetrest!(l: Rep, e: Rep): Rep == RPLACD(l, e)$Lisp
+       -x == [[termIndex u,-termValue u] for u in terms x] pretend %
+       n:Integer * x:% ==
+         n = 0 => 0
+         n = 1 => x
+         [[termIndex u,a] for u in terms x
+            | not zero?(a := n * termValue u)] pretend %
+
+       qsetrest!: (List Term, List Term) -> List Term
+       qsetrest!(l, e) == RPLACD(l, e)$Lisp
 
        x - y ==
-                null x => -y
-                null y => x
-                endcell: Rep := empty()
-                res:  Rep := empty()
-                while not empty? x and not empty? y repeat
-                        newcell := empty()
-                        if x.first.k = y.first.k then
-                                r:= x.first.c - y.first.c
-                                if not zero? r then
-                                        newcell := cons([x.first.k, r], empty())
-                                x := rest x
-                                y := rest y
-                        else if x.first.k > y.first.k then
-                                newcell := cons(x.first, empty())
-                                x := rest x
-                        else
-                                newcell := cons([y.first.k,-y.first.c], empty())
-                                y := rest y
-                        if not empty? newcell then
-                                if not empty? endcell then
-                                        qsetrest!(endcell, newcell)
-                                        endcell := newcell
-                                else
-                                        res     := newcell;
-                                        endcell := res
-                end := 
-                  empty? x => - y
-                  x
-                if empty? res then res := end
-                else qsetrest!(endcell, end)
-                res
-
---       x - y  ==
---          empty? x => - y
---          empty? y => x
---          y.first.k > x.first.k => cons([y.first.k,-y.first.c],(x - y.rest))
---          x.first.k > y.first.k => cons(x.first,(x.rest - y))
---          r:= x.first.c - y.first.c
---          r = 0 => x.rest - y.rest
---          cons([x.first.k,r],(x.rest - y.rest))
+         x' := terms x
+         y' := terms y
+         null x' => -y
+         null y' => x
+         endcell: List Term := nil
+         res: List Term := nil
+         while not empty? x' and not empty? y' repeat
+           newcell: List Term := nil
+           if termIndex x'.first = termIndex y'.first then
+             r := termValue x'.first - termValue y'.first
+             if not zero? r then
+               newcell := cons([termIndex x'.first, r], empty())
+             x' := rest x'
+             y' := rest y'
+           else if termIndex x'.first > termIndex y'.first then
+             newcell := cons(x'.first, empty())
+             x' := rest x'
+           else
+             newcell := cons([termIndex y'.first,-termValue y'.first], empty())
+             y' := rest y'
+           if not empty? newcell then
+             if not empty? endcell then
+               qsetrest!(endcell, newcell)
+               endcell := newcell
+             else
+               res     := newcell;
+               endcell := res
+         end := 
+           empty? x' => terms(-(y' pretend %))
+           x'
+         if empty? res then res := end
+         else qsetrest!(endcell, end)
+         res pretend %
 
 @
 \section{License}
