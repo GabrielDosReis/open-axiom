@@ -459,12 +459,12 @@
                                   (LIST '|CoercibleTo| '(|OutputForm|))))
                           (|HasCategory| |#1|
                               (LIST '|ConvertibleTo| '(|InputForm|)))
-                          (OR (|HasCategory| |#1| '(|BasicType|))
-                              (|HasCategory| |#1| '(|OrderedSet|))
-                              (|HasCategory| |#1| '(|SetCategory|)))
                           (OR (|HasCategory| |#1| '(|OrderedSet|))
                               (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| |#1| '(|OrderedSet|))
+                          (OR (|HasCategory| |#1| '(|BasicType|))
+                              (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| (|Integer|) '(|OrderedSet|))
                           (|HasCategory| |#1| '(|SetCategory|))
                           (|HasCategory| |#1|
@@ -555,15 +555,15 @@
              904 > 910 = 916 <= 922 < 928 |#| 934)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 6
-                    '(0 0 0 0 0 0 0 0 0 0 6 0 5 0 0 0 1 4 0 1 2 3))
+                    '(0 0 0 0 0 0 0 0 0 0 5 0 4 5 0 0 0 1 6 0 1 2 3))
                 (CONS '#(|ListAggregate&| |StreamAggregate&|
                          |ExtensibleLinearAggregate&|
                          |FiniteLinearAggregate&|
                          |UnaryRecursiveAggregate&| |LinearAggregate&|
                          |RecursiveAggregate&| |IndexedAggregate&|
-                         |Collection&| |HomogeneousAggregate&|
-                         |OrderedSet&| |EltableAggregate&|
-                         |SetCategory&| NIL |Aggregate&| NIL
+                         |Collection&| |HomogeneousAggregate&| NIL
+                         |EltableAggregate&| |SetCategory&|
+                         |OrderedType&| NIL |Aggregate&| NIL
                          |Evalable&| |BasicType&| NIL |InnerEvalable&|
                          NIL NIL)
                       (CONS '#((|ListAggregate| 6)
@@ -577,9 +577,10 @@
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
                                (|OrderedSet|) (|EltableAggregate| 30 6)
-                               (|SetCategory|) (|Eltable| 78 $$)
-                               (|Aggregate|) (|Eltable| 30 6)
-                               (|Evalable| 6) (|BasicType|) (|Type|)
+                               (|SetCategory|) (|OrderedType|)
+                               (|Eltable| 78 $$) (|Aggregate|)
+                               (|Eltable| 30 6) (|Evalable| 6)
+                               (|BasicType|) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 37)
                                (|ConvertibleTo| 82))
                             (|makeByteWordVec2| 85
@@ -595,8 +596,8 @@
                                   30 0 0 0 69 2 30 11 0 0 71 2 30 0 0 0
                                   72 2 10 11 0 0 1 1 0 6 0 1 1 0 6 0 1
                                   1 0 0 0 1 3 0 77 0 30 30 1 2 0 0 0 30
-                                  70 1 6 11 0 1 2 0 11 63 0 1 1 6 0 0 1
-                                  2 0 0 63 0 64 1 6 0 0 1 2 0 0 63 0 1
+                                  70 1 5 11 0 1 2 0 11 63 0 1 1 5 0 0 1
+                                  2 0 0 63 0 64 1 5 0 0 1 2 0 0 63 0 1
                                   2 0 11 0 8 1 2 0 6 0 6 1 2 0 0 0 0 23
                                   2 0 6 0 6 1 2 0 6 0 6 21 3 0 6 0 30 6
                                   1 3 0 6 0 78 6 1 3 0 6 0 79 6 1 3 0 0
@@ -611,9 +612,9 @@
                                   3 8 30 6 0 30 1 2 8 30 6 0 1 2 0 30
                                   76 0 1 1 0 25 0 27 1 0 44 0 1 2 8 11
                                   0 0 1 2 0 0 8 6 1 2 0 11 0 8 1 1 7 30
-                                  0 31 2 6 0 0 0 1 2 6 0 0 0 1 3 0 0 63
-                                  0 0 65 2 6 0 0 0 1 3 0 0 63 0 0 1 1 0
-                                  25 0 1 2 8 11 6 0 60 1 7 30 0 1 2 6 0
+                                  0 31 2 5 0 0 0 1 2 5 0 0 0 1 3 0 0 63
+                                  0 0 65 2 5 0 0 0 1 3 0 0 63 0 0 1 1 0
+                                  25 0 1 2 8 11 6 0 60 1 7 30 0 1 2 5 0
                                   0 0 1 2 0 0 81 0 1 3 0 0 73 0 0 1 2 0
                                   0 81 0 1 1 0 0 6 1 2 0 11 0 8 1 1 0
                                   25 0 1 1 0 11 0 1 1 8 55 0 58 2 0 0 0
@@ -635,8 +636,8 @@
                                   0 0 36 1 3 82 0 1 1 0 0 25 26 2 0 0 0
                                   6 1 2 0 0 0 0 61 2 0 0 0 6 1 1 0 0 44
                                   1 2 0 0 6 0 10 2 0 0 0 0 1 1 9 37 0
-                                  50 1 0 44 0 1 2 8 11 0 0 1 2 8 11 0 0
-                                  1 2 0 11 76 0 1 2 6 11 0 0 1 2 6 11 0
-                                  0 1 2 10 11 0 0 54 2 6 11 0 0 1 2 6
+                                  50 1 0 44 0 1 2 8 11 0 0 1 2 10 11 0
+                                  0 1 2 0 11 76 0 1 2 5 11 0 0 1 2 5 11
+                                  0 0 1 2 10 11 0 0 54 2 5 11 0 0 1 2 5
                                   11 0 0 1 1 0 8 0 9)))))
           '|lookupComplete|)) 

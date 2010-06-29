@@ -191,7 +191,7 @@
              |BOOLEAN;lookup;$Pi;19| (9 . |random|)
              |BOOLEAN;random;$;20| (|InputForm|)
              |BOOLEAN;convert;$If;21| (|OutputForm|)
-             |BOOLEAN;coerce;$Of;22| (|SingleInteger|) (|String|))
+             |BOOLEAN;coerce;$Of;22| (|String|) (|SingleInteger|))
           '#(~= 13 ~ 19 |xor| 24 |true| 30 |test| 34 |size| 39 |random|
              43 |or| 47 |not| 53 |nor| 58 |nand| 64 |min| 70 |max| 80
              |lookup| 90 |latex| 95 |index| 100 |implies| 105 |hash|
@@ -199,23 +199,23 @@
              |before?| 136 |and| 142 |\\/| 148 >= 154 > 160 = 166 <=
              172 < 178 |/\\| 184)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0))
-                (CONS '#(NIL |OrderedSet&| NIL NIL |Logic&|
-                         |SetCategory&| NIL |BasicType&| NIL NIL NIL)
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0))
+                (CONS '#(NIL NIL NIL NIL |Logic&| |SetCategory&|
+                         |OrderedType&| NIL |BasicType&| NIL NIL NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|PropositionalLogic|) (|Finite|)
                                (|Logic|) (|SetCategory|)
-                               (|BooleanLogic|) (|BasicType|)
-                               (|ConvertibleTo| 33) (|Type|)
-                               (|CoercibleTo| 35))
+                               (|OrderedType|) (|BooleanLogic|)
+                               (|BasicType|) (|ConvertibleTo| 33)
+                               (|Type|) (|CoercibleTo| 35))
                             (|makeByteWordVec2| 38
                                 '(1 25 18 0 26 0 27 0 29 0 25 0 31 2 0
                                   18 0 0 1 1 0 0 0 10 2 0 0 0 0 15 0 0
                                   0 7 1 0 0 0 6 0 0 23 24 0 0 0 32 2 0
                                   0 0 0 13 1 0 0 0 9 2 0 0 0 0 16 2 0 0
                                   0 0 17 0 0 0 1 2 0 0 0 0 1 0 0 0 1 2
-                                  0 0 0 0 1 1 0 27 0 30 1 0 38 0 1 1 0
-                                  0 27 28 2 0 0 0 0 20 1 0 37 0 1 0 0 0
+                                  0 0 0 0 1 1 0 27 0 30 1 0 37 0 1 1 0
+                                  0 27 28 2 0 0 0 0 20 1 0 38 0 1 0 0 0
                                   8 2 0 0 0 0 21 1 0 33 0 34 1 0 35 0
                                   36 2 0 18 0 0 1 2 0 0 0 0 11 2 0 0 0
                                   0 14 2 0 18 0 0 1 2 0 18 0 0 1 2 0 18

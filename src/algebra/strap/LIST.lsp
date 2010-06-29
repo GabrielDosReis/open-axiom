@@ -203,12 +203,12 @@
                                   (LIST '|CoercibleTo| '(|OutputForm|))))
                           (|HasCategory| |#1|
                               (LIST '|ConvertibleTo| '(|InputForm|)))
-                          (OR (|HasCategory| |#1| '(|BasicType|))
-                              (|HasCategory| |#1| '(|OrderedSet|))
-                              (|HasCategory| |#1| '(|SetCategory|)))
                           (OR (|HasCategory| |#1| '(|OrderedSet|))
                               (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| |#1| '(|OrderedSet|))
+                          (OR (|HasCategory| |#1| '(|BasicType|))
+                              (|HasCategory| |#1| '(|OrderedSet|))
+                              (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| |#1| '(|OpenMath|))
                           (|HasCategory| (|Integer|) '(|OrderedSet|))
                           (|HasCategory| |#1| '(|SetCategory|))
@@ -283,15 +283,15 @@
              |OMwrite| 270)
           '((|shallowlyMutable| . 0) (|finiteAggregate| . 0))
           (CONS (|makeByteWordVec2| 7
-                    '(0 0 0 0 0 0 0 0 0 0 6 0 5 0 0 0 1 4 0 1 2 3 7))
+                    '(0 0 0 0 0 0 0 0 0 0 5 0 4 5 0 0 0 1 6 0 1 2 3 7))
                 (CONS '#(|ListAggregate&| |StreamAggregate&|
                          |ExtensibleLinearAggregate&|
                          |FiniteLinearAggregate&|
                          |UnaryRecursiveAggregate&| |LinearAggregate&|
                          |RecursiveAggregate&| |IndexedAggregate&|
-                         |Collection&| |HomogeneousAggregate&|
-                         |OrderedSet&| |EltableAggregate&|
-                         |SetCategory&| NIL |Aggregate&| NIL
+                         |Collection&| |HomogeneousAggregate&| NIL
+                         |EltableAggregate&| |SetCategory&|
+                         |OrderedType&| NIL |Aggregate&| NIL
                          |Evalable&| |BasicType&| NIL |InnerEvalable&|
                          NIL NIL NIL)
                       (CONS '#((|ListAggregate| 6)
@@ -305,9 +305,10 @@
                                (|Collection| 6)
                                (|HomogeneousAggregate| 6)
                                (|OrderedSet|) (|EltableAggregate| 7 6)
-                               (|SetCategory|) (|Eltable| 61 $$)
-                               (|Aggregate|) (|Eltable| 7 6)
-                               (|Evalable| 6) (|BasicType|) (|Type|)
+                               (|SetCategory|) (|OrderedType|)
+                               (|Eltable| 61 $$) (|Aggregate|)
+                               (|Eltable| 7 6) (|Evalable| 6)
+                               (|BasicType|) (|Type|)
                                (|InnerEvalable| 6 6) (|CoercibleTo| 45)
                                (|ConvertibleTo| 46) (|OpenMath|))
                             (|makeByteWordVec2| 53

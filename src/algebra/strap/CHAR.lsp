@@ -243,12 +243,13 @@
              |alphanumeric?| 210 |alphabetic?| 215 >= 220 > 226 = 232
              <= 238 < 244)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0))
-                (CONS '#(NIL |OrderedSet&| NIL |SetCategory&|
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
+                (CONS '#(NIL NIL NIL |SetCategory&| |OrderedType&|
                          |BasicType&| NIL NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
-                               (|Finite|) (|SetCategory|) (|BasicType|)
-                               (|Type|) (|CoercibleTo| 29))
+                               (|Finite|) (|SetCategory|)
+                               (|OrderedType|) (|BasicType|) (|Type|)
+                               (|CoercibleTo| 29))
                             (|makeByteWordVec2| 57
                                 '(0 14 0 15 0 12 0 16 2 17 0 0 0 18 2
                                   12 0 0 0 22 1 12 0 0 24 0 31 0 32 2

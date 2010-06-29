@@ -626,16 +626,16 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
                          NIL |OrderedRing&| NIL NIL |Module&| NIL NIL
                          |Ring&| NIL NIL NIL NIL NIL NIL
                          |AbelianGroup&| NIL NIL NIL NIL NIL
-                         |AbelianMonoid&| |Monoid&| NIL NIL NIL
-                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
-                         |SemiGroup&| NIL |Logic&| |DifferentialSpace&|
+                         |AbelianMonoid&| |Monoid&| NIL NIL NIL NIL NIL
+                         NIL |AbelianSemiGroup&| |SemiGroup&| NIL
+                         |Logic&| |DifferentialSpace&| |OrderedType&|
                          |SetCategory&| NIL NIL |RetractableTo&|
                          |DifferentialDomain&| |BasicType&| NIL NIL NIL
                          NIL NIL NIL NIL NIL NIL NIL NIL)
@@ -667,9 +667,9 @@
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|LeftLinearSet| 5) (|Logic|)
-                               (|DifferentialSpace|) (|SetCategory|)
-                               (|BooleanLogic|) (|RealConstant|)
-                               (|RetractableTo| 5)
+                               (|DifferentialSpace|) (|OrderedType|)
+                               (|SetCategory|) (|BooleanLogic|)
+                               (|RealConstant|) (|RetractableTo| 5)
                                (|DifferentialDomain| $$) (|BasicType|)
                                (|OpenMath|) (|ConvertibleTo| 102)
                                (|ConvertibleTo| 103)
