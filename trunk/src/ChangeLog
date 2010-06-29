@@ -1,5 +1,11 @@
 2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductCategory)
+	[support]: New.
+	(IndexedDirectProductObject): Implement.
+
+2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-constants.boot ($SystemInlinableConstructorNames):
 	Include Pair.
 
