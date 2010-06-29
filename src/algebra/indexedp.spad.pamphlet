@@ -52,50 +52,59 @@ IndexedDirectProductCategory(A:SetCategory,S:OrderedSet): Category ==
       ++ and the corresponding value (the second component).
 
 @
+
 \section{domain IDPO IndexedDirectProductObject}
 <<domain IDPO IndexedDirectProductObject>>=
 )abbrev domain IDPO IndexedDirectProductObject
-++ Data Last Updated: June 28, 2010
-++ Indexed direct products of objects over a set \spad{A}
-++ of generators indexed by an ordered set S. All items have finite support.
-IndexedDirectProductObject(A:SetCategory,S:OrderedSet): IndexedDirectProductCategory(A,S)
- == add
-    --representations
-       Term:=  Record(k:S,c:A)
-       Rep:=  List Term
-    --declarations
-       x,y: %
-       f: A -> A
-       s: S
-    --define
-       x = y ==
-         while not null x and not null y repeat
-           x.first.k ~= y.first.k => return false
-           x.first.c ~= y.first.c => return false
-           x:=x.rest
-           y:=y.rest
-         null x and null y
+++ Author: James Davenport, Gabriel Dos Reis
+++ Date Created:
+++ Date Last Updated: June 28, 2010
+++ Description:
+++   Indexed direct products of objects over a set \spad{A}
+++   of generators indexed by an ordered set S. All items have finite support.
+IndexedDirectProductObject(A,S): Public == Private where
+  A: SetCategory
+  S: OrderedSet
+  Public == IndexedDirectProductCategory(A,S)
+  Private == add
+    Term == Pair(S,A)
+    Rep == List Term
+    -- Return the index of a term
+    termIndex(t: Term): S == first t
+    -- Return the value of a term
+    termValue(t: Term): A == second t
 
-       coerce(x:%):OutputForm ==
-          bracket [rarrow(t.k :: OutputForm, t.c :: OutputForm) for t in x]
+    x = y ==
+      x' := rep x
+      y' := rep y
+      while not null x' and not null y' repeat
+        termIndex first x' ~= termIndex first y' => return false
+        termValue first x' ~= termValue first y' => return false
+        x' := rest x'
+        y' := rest y'
+      null x' and null y'
 
-       -- sample():% == [[sample()$S,sample()$A]$Term]$Rep
+    coerce(x:%):OutputForm ==
+       bracket [rarrow(termIndex(t)::OutputForm, termValue(t)::OutputForm)
+                 for t in rep x]
 
-       monomial(r,s) == [[s,r]]
-       map(f,x) == [[tm.k,f(tm.c)] for tm in x]
+    -- sample():% == [[sample()$S,sample()$A]$Term]$Rep
 
-       reductum x     ==
-          rest x
-       leadingCoefficient x  ==
-          null x => error "Can't take leadingCoefficient of empty product element"
-          x.first.c
-       leadingSupport x  ==
-          null x => error "Can't take leadingCoefficient of empty product element"
-          x.first.k
+    monomial(r,s) == per [[s,r]]
+    map(f,x) == per [[termIndex tm,f termValue tm] for tm in rep x]
 
-       -- FIXME: We should define Rep directly as List Pair(S,R)
-       --        so that this gross pretend can go away.
-       support x == x pretend List Pair(S,A)
+    reductum x ==
+       per rest rep x
+    leadingCoefficient x  ==
+       null rep x =>
+         error "Can't take leadingCoefficient of empty product element"
+       termValue first rep x
+    leadingSupport x  ==
+       null rep x =>
+         error "Can't take leadingCoefficient of empty product element"
+       termIndex first rep x
+
+    support x == rep x
 
 @
 \section{domain IDPAM IndexedDirectProductAbelianMonoid}

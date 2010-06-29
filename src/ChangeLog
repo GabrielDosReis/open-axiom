@@ -1,5 +1,10 @@
 2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductCategory):
+	Rework implementation.
+
+2010-06-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/indexedp.spad.pamphlet (IndexedDirectProductCategory)
 	[support]: New.
 	(IndexedDirectProductObject): Implement.
