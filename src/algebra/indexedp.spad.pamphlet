@@ -12,9 +12,9 @@
 \section{category IDPC IndexedDirectProductCategory}
 <<category IDPC IndexedDirectProductCategory>>=
 )abbrev category IDPC IndexedDirectProductCategory
-++ Author: James Davenport
+++ Author: James Davenport, Gabriel Dos Reis
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: June 28, 2010
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -46,11 +46,16 @@ IndexedDirectProductCategory(A:SetCategory,S:OrderedSet): Category ==
        ++ reductum(z) returns a new element created by removing the
        ++ leading coefficient/support pair from the element z.
        ++ Error: if z has no support.
+    support: % -> List Pair(S,A)
+      ++ \spad{support x} returns the list of terms in \spad{x}.
+      ++ Each term is a pair of an index (the first component)
+      ++ and the corresponding value (the second component).
 
 @
 \section{domain IDPO IndexedDirectProductObject}
 <<domain IDPO IndexedDirectProductObject>>=
 )abbrev domain IDPO IndexedDirectProductObject
+++ Data Last Updated: June 28, 2010
 ++ Indexed direct products of objects over a set \spad{A}
 ++ of generators indexed by an ordered set S. All items have finite support.
 IndexedDirectProductObject(A:SetCategory,S:OrderedSet): IndexedDirectProductCategory(A,S)
@@ -87,6 +92,10 @@ IndexedDirectProductObject(A:SetCategory,S:OrderedSet): IndexedDirectProductCate
        leadingSupport x  ==
           null x => error "Can't take leadingCoefficient of empty product element"
           x.first.k
+
+       -- FIXME: We should define Rep directly as List Pair(S,R)
+       --        so that this gross pretend can go away.
+       support x == x pretend List Pair(S,A)
 
 @
 \section{domain IDPAM IndexedDirectProductAbelianMonoid}
