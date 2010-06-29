@@ -1,5 +1,9 @@
 2010-06-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/catdef.spad.pamphlet (OrderedType): New.
+
+2010-06-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (BasicType) [before?]: Declare here.
 	(OrderedType) [max,min]: Export and provide defaults.
 	(OrderedSet): Simplify.
