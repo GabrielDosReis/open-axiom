@@ -1,5 +1,12 @@
 2010-06-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/indexedp.spad.pamphlet (IndexedDirectProductObject)
+	[indexedDirectProductObject]: New.
+	(IndexedDirectProductAbelianMonoid): Rework implementation.
+	[construct]: Likewise.
+
+2010-06-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/catdef.spad.pamphlet (OrderedType): New.
 
 2010-06-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
