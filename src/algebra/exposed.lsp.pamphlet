@@ -733,6 +733,7 @@
   (|OrderedMultisetAggregate| . OMSAGG)
   (|OrderedRing| . ORDRING)
   (|OrderedSet| . ORDSET)
+  (|OrderedType| . ORDTYPE)
   (|OutputByteConduit| . OUTBCON)
   (|PAdicIntegerCategory| . PADICCT)
   (|PartialDifferentialDomain| . PDDOM)
