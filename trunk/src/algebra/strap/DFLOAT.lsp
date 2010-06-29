@@ -968,7 +968,7 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+                      0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(|FloatingPointSystem&| |RealNumberSystem&|
                          |Field&| |EuclideanDomain&| NIL
                          |UniqueFactorizationDomain&| |GcdDomain&|
@@ -976,10 +976,10 @@
                          |Algebra&| NIL NIL |OrderedRing&| |Module&|
                          NIL NIL |Module&| NIL NIL |Ring&| NIL NIL NIL
                          NIL NIL NIL NIL |AbelianGroup&| NIL NIL NIL
-                         NIL NIL |AbelianMonoid&| |Monoid&| NIL
-                         |OrderedSet&| NIL NIL NIL NIL
-                         |AbelianSemiGroup&| |SemiGroup&| NIL
-                         |DifferentialSpace&| |SetCategory&|
+                         NIL NIL |AbelianMonoid&| |Monoid&| NIL NIL NIL
+                         NIL NIL NIL |AbelianSemiGroup&| |SemiGroup&|
+                         NIL |DifferentialSpace&| |OrderedType&|
+                         |SetCategory&|
                          |TranscendentalFunctionCategory&|
                          |DifferentialDomain&| |RetractableTo&|
                          |RetractableTo&| NIL |BasicType&| NIL
@@ -1019,7 +1019,8 @@
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|LeftLinearSet| 25)
-                               (|DifferentialSpace|) (|SetCategory|)
+                               (|DifferentialSpace|) (|OrderedType|)
+                               (|SetCategory|)
                                (|TranscendentalFunctionCategory|)
                                (|DifferentialDomain| $$)
                                (|RetractableTo| 114)

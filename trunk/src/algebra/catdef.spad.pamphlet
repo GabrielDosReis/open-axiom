@@ -222,8 +222,14 @@ import Boolean
 BasicType(): Category == Type with
       =: (%,%) -> Boolean    ++ x=y tests if x and y are equal.
       ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
+      before?: (%,%) -> Boolean
+        ++ \spad{before?(x,y)} holds if the system representation
+        ++ of \spad{x} is comes before that of \spad{y} in a
+        ++ an implementation defined manner.
    add
+      x = y == not before?(x,y) and not before?(y,x)
       x:% ~= y:% == not(x=y)
+      before?(x,y) == %before?(x,y)$Foreign(Builtin)
 
 @
 
@@ -255,13 +261,24 @@ OrderedType(): Category == BasicType with
     >= : (%,%) -> Boolean
       ++ \spad{x <= y} holds if \spad{x} is greater or equal than \spad{y}
       ++ in the current domain.
+    max: (%,%) -> %
+      ++ \spad{max(x,y)} returns the maximum of \spad{x} and \spad{y}
+      ++ relative to the ordering.
+    min: (%,%) -> %
+      ++ \spad{min(x,y)} returns the minimum of \spad{x} and \spad{y}
+      ++ relative to the ordering.
   add
-    import %before?: (%,%) -> Boolean from Foreign Builtin
-    x < y  == %before?(x,y)
     x > y  == y < x
     x <= y == not(y < x)
     x >= y == not(x < y)
     x = y  == not(x < y) and not(y < x)
+    max(x,y) ==
+      x < y => y
+      x
+    min(x,y) ==
+      x < y => x
+      y
+    before?(x,y) == x < y
 
 @
 
@@ -1472,33 +1489,7 @@ import Boolean
 ++ exactly one of the following relations holds \spad{a<b or a=b or b<a}
 ++ and the relation is transitive, i.e.  \spad{a<b and b<c => a<c}.
 
-OrderedSet(): Category == SetCategory with
-  --operations
-    <: (%,%) -> Boolean
-      ++ x < y is a strict total ordering on the elements of the set.
-    >:         (%, %) -> Boolean
-      ++ x > y is a greater than test.
-    >=:        (%, %) -> Boolean
-      ++ x >= y is a greater than or equal test.
-    <=:        (%, %) -> Boolean
-      ++ x <= y is a less than or equal test.
-
-    max: (%,%) -> %
-      ++ max(x,y) returns the maximum of x and y relative to "<".
-    min: (%,%) -> %
-      ++ min(x,y) returns the minimum of x and y relative to "<".
-  add
-    before?(x,y) == x < y
-  -- These really ought to become some sort of macro
-    max(x,y) ==
-      x > y => x
-      y
-    min(x,y) ==
-      x > y => y
-      x
-    ((x: %) >  (y: %)) : Boolean == y < x
-    ((x: %) >= (y: %)) : Boolean == not (x < y)
-    ((x: %) <= (y: %)) : Boolean == not (y < x)
+OrderedSet(): Category == Join(SetCategory,OrderedType) 
 
 @
 
@@ -1882,7 +1873,6 @@ SemiGroup(): Category == SetCategory with
 ++ Date Created:
 ++ Date Last Updated:
 ++   09/09/92   RSS   added latex and hash
-++   May 21, 2009: added before? -- gdr
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1900,13 +1890,9 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
       hash: % -> SingleInteger  ++ hash(s) calculates a hash code for s.
       latex: % -> String       ++ latex(s) returns a LaTeX-printable output
                                ++ representation of s.
-      before?: (%,%) -> Boolean
-        ++ spad{before?(x,y)} holds if \spad{x} comes before \spad{y}
-        ++ in the internal total ordering used by OpenAxiom.
   add
       hash(s : %):  SingleInteger == SXHASH(s)$Lisp
       latex(s : %): String       == "\mbox{\bf Unimplemented}"
-      before?(x,y) == GGREATERP(y,x)$Foreign(Builtin)
 @
 
 \section{category STEP StepThrough}

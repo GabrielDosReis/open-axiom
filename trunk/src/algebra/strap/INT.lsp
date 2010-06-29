@@ -612,16 +612,16 @@
           (CONS (|makeByteWordVec2| 1
                     '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
                       0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-                      0 0 0 0 0 0))
+                      0 0 0 0 0 0 0))
                 (CONS '#(|IntegerNumberSystem&| |EuclideanDomain&|
                          |UniqueFactorizationDomain&| NIL NIL
                          |GcdDomain&| |IntegralDomain&| |Algebra&| NIL
                          NIL |OrderedRing&| NIL NIL |Module&| NIL NIL
                          |Ring&| NIL NIL NIL NIL NIL NIL
                          |AbelianGroup&| NIL NIL NIL NIL
-                         |AbelianMonoid&| |Monoid&| NIL NIL
-                         |OrderedSet&| NIL NIL |AbelianSemiGroup&|
-                         |SemiGroup&| NIL |DifferentialSpace&|
+                         |AbelianMonoid&| |Monoid&| NIL NIL NIL NIL NIL
+                         |AbelianSemiGroup&| |SemiGroup&| NIL
+                         |DifferentialSpace&| |OrderedType&|
                          |SetCategory&| NIL |RetractableTo&|
                          |DifferentialDomain&| |BasicType&| NIL NIL NIL
                          NIL NIL NIL NIL NIL NIL NIL NIL NIL)
@@ -653,8 +653,9 @@
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
                                (|LeftLinearSet| 17)
-                               (|DifferentialSpace|) (|SetCategory|)
-                               (|RealConstant|) (|RetractableTo| 17)
+                               (|DifferentialSpace|) (|OrderedType|)
+                               (|SetCategory|) (|RealConstant|)
+                               (|RetractableTo| 17)
                                (|DifferentialDomain| $$) (|BasicType|)
                                (|OpenMath|) (|ConvertibleTo| 14)
                                (|ConvertibleTo| 55)

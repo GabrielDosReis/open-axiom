@@ -73,8 +73,8 @@
              (14 . -) (20 . <) (|Union| $ '"failed")
              |NNI;subtractIfCan;2$U;3|
              (|Record| (|:| |quotient| $) (|:| |remainder| $))
-             (|PositiveInteger|) (|NonNegativeInteger|)
-             (|SingleInteger|) (|String|) (|OutputForm|))
+             (|PositiveInteger|) (|NonNegativeInteger|) (|String|)
+             (|OutputForm|) (|SingleInteger|))
           '#(~= 26 |zero?| 32 |sup| 37 |subtractIfCan| 43 |shift| 49
              |sample| 55 |rem| 59 |recip| 65 |random| 70 |quo| 75
              |one?| 81 |min| 86 |max| 92 |latex| 98 |hash| 103 |gcd|
@@ -82,10 +82,11 @@
              |Zero| 137 |One| 141 >= 145 > 151 = 157 <= 163 < 169 + 175
              ** 181 * 193)
           '(((|commutative| "*") . 0))
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0 0))
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL NIL NIL |Monoid&| |AbelianMonoid&|
-                         |OrderedSet&| |SemiGroup&| |AbelianSemiGroup&|
-                         |SetCategory&| |BasicType&| NIL NIL)
+                         NIL |SemiGroup&| |AbelianSemiGroup&|
+                         |SetCategory&| |OrderedType&| |BasicType&| NIL
+                         NIL)
                       (CONS '#((|OrderedAbelianMonoidSup|)
                                (|OrderedCancellationAbelianMonoid|)
                                (|OrderedAbelianMonoid|)
@@ -93,17 +94,18 @@
                                (|OrderedAbelianSemiGroup|) (|Monoid|)
                                (|AbelianMonoid|) (|OrderedSet|)
                                (|SemiGroup|) (|AbelianSemiGroup|)
-                               (|SetCategory|) (|BasicType|) (|Type|)
-                               (|CoercibleTo| 21))
+                               (|SetCategory|) (|OrderedType|)
+                               (|BasicType|) (|Type|)
+                               (|CoercibleTo| 20))
                             (|makeByteWordVec2| 21
                                 '(0 0 0 6 0 5 0 7 2 5 8 0 0 9 2 5 0 0 0
                                   12 2 5 8 0 0 13 2 0 8 0 0 1 1 0 8 0 1
                                   2 0 0 0 0 10 2 0 14 0 0 15 2 0 0 0 5
                                   11 0 0 0 1 2 0 0 0 0 1 1 0 14 0 1 1 0
                                   0 0 1 2 0 0 0 0 1 1 0 8 0 1 2 0 0 0 0
-                                  1 2 0 0 0 0 1 1 0 20 0 1 1 0 19 0 1 2
+                                  1 2 0 0 0 0 1 1 0 19 0 1 1 0 21 0 1 2
                                   0 0 0 0 1 2 0 14 0 0 1 2 0 16 0 0 1 1
-                                  0 21 0 1 2 0 8 0 0 1 0 0 0 6 0 0 0 1
+                                  0 20 0 1 2 0 8 0 0 1 0 0 0 6 0 0 0 1
                                   2 0 8 0 0 1 2 0 8 0 0 1 2 0 8 0 0 1 2
                                   0 8 0 0 1 2 0 8 0 0 1 2 0 0 0 0 1 2 0
                                   0 0 17 1 2 0 0 0 18 1 2 0 0 0 0 1 2 0
