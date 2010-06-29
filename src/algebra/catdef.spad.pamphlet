@@ -245,9 +245,10 @@ BasicType(): Category == Type with
 ++   Category of types equipped with a total ordering.
 ++ Axioms:
 ++   forall(x,y)
-++     x > y  = y < x
-++     x <= y = not(y > x)
-++     x >= y = not(x < y)
+++     x > y  <=> y < x
+++     x <= y <=> not(y > x)
+++     x >= y <=> not(x < y)
+++     x <= y and x >= y => x = y
 OrderedType(): Category == BasicType with
     <  : (%,%) -> Boolean
       ++ \spad{x < y} holds if \spad{x} is less than \spad{y} in the
@@ -281,6 +282,27 @@ OrderedType(): Category == BasicType with
     before?(x,y) == x < y
 
 @
+
+\section{Ordered Structure}
+
+<<domain ORDSTRCT OrderedStructure>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: June 28, 2010
+++ Date Last Modified: June 28, 2010
+++ See Also: OrderedType
+++ Description:
+++   This domain turns any total ordering \spad{f} on a type \spad{T} into
+++   a model of the category \spadtype{OrderedType}.
+)abbrev domain ORDSTRCT OrderedStructure
+OrderedStructure(T: Type,f: (T,T) -> Boolean): Public == Private where
+  Public == Join(OrderedType,HomotopicTo T)
+  Private == T add
+    coerce(x: %): T == rep x
+    coerce(y: T): % == per y
+    x < y  == f(rep x,rep y)
+
+@
+
 
 
 \section{category BMODULE BiModule}
@@ -2032,6 +2054,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 
 <<category BASTYPE BasicType>>
 <<category ORDTYPE OrderedType>>
+<<domain ORDSTRCT OrderedStructure>>
 <<category SETCAT SetCategory>>
 <<category STEP StepThrough>>
 <<category SGROUP SemiGroup>>
