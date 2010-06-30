@@ -761,7 +761,7 @@ compIterator(it,e) ==
          stackMessage ["mode: ",m," must be a list or vector of some mode"]
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,mUnder,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),mUnder,e],e)
+    e:= giveVariableSomeValue(x,mUnder,e)
     markReduceIn(it, [["IN",x,y'],e])
   it is ["ON",x,y] =>
 ---------------> new <---------------------
@@ -777,7 +777,7 @@ compIterator(it,e) ==
         stackMessage ["mode: ",m," must be a list of other modes"]
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,m,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),m,e],e)
+    e:= giveVariableSomeValue(x,m,e)
     [["ON",x,y'],e]
   it is ["STEP",oindex,start,inc,:optFinal] =>
     index := markKillAll oindex
@@ -805,7 +805,7 @@ compIterator(it,e) ==
 --  markImport ['Segment,indexmode]
     if null get(index,"mode",e) then [.,.,e]:=
       compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+    e:= giveVariableSomeValue(index,indexmode,e)
     markReduceStep(it, [["STEP",markStep(index),start,inc,:optFinal],e])
   it is ["WHILE",p] =>
     [p',m,e]:=
@@ -853,7 +853,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
     givenRange => givenRange
     nil
   e:= put(index,"range",range,e)
-  e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+  e:= giveVariableSomeValue(index,indexmode,e)
   noptFinal := 
     final' => 
       [final'.expr]

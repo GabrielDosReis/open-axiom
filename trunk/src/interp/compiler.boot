@@ -865,7 +865,7 @@ setqMultiple(nameList,val,m,e) ==
   -- 1.1. exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat 
-      e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
+      e:= giveVariableSomeValue(y,D,e)
     convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   -- 2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
@@ -1536,7 +1536,7 @@ compColon([":",f,t],m,e) ==
     put(f,"mode",t,e)
   if not $bootStrapMode and $insideFunctorIfTrue and
     makeCategoryForm(t,e) is [catform,e] then
-        e:= put(f,"value",[genSomeVariable(),t,$noEnv],e)
+        e := giveVariableSomeValue(f,t,e)
   ["/throwAway",getmode(f,e),e]
 
 unknownTypeError name ==
@@ -1738,7 +1738,7 @@ coerceSuperset(T,sub) ==
     T'.rest.first := "$"
     T'
   pred := isSubset(sub,T.mode,T.env) =>
-    [["%Retract",T.expr,sub,pred],sub,T.env]
+    [["%retract",T.expr,sub,pred],sub,T.env]
   nil
 
 compCoerce1(x,m',e) ==
@@ -1983,7 +1983,7 @@ compRetractGuard(x,t,sn,sm,e) ==
   else return stackAndThrow('"%1bp is not retractable to %2bp",[sm,t])
   -- 2.  Now declare `x'.
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
+  e := giveVariableSomeValue(x,t,e)
   -- 3.  Assemble result.
   [caseCode, [[x,restrictCode]],e,envFalse]
 
@@ -2000,7 +2000,7 @@ compRecoverDomain(x,t,sn,e) ==
   -- 2. Declare `x'.
   originalEnv := e
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
+  e := giveVariableSomeValue(x,t,e)
   -- 3.  Assemble the result
   [caseCode,[[x,['%tail,sn]]],e,originalEnv]
 
@@ -2082,7 +2082,7 @@ defineMatchScrutinee(m,e) ==
   where defTemp(m,e) ==
     t := gensym()
     [.,.,e] := compMakeDeclaration(t,m,e)
-    [t,put(t,"value",[genSomeVariable(),m,$noEnv],e)]
+    [t,giveVariableSomeValue(t,m,e)]
 
 ++ Generate code for guard in a simple pattern where
 ++ `sn' is the name of the temporary holding the scrutinee value,
@@ -2415,7 +2415,7 @@ compStepIterator(index,start,final,inc,e) ==
     joinIntegerModes(startMode,finalMode,e)
   if get(index,"mode",e) = nil then
     [.,.,e] := compMakeDeclaration(index,indexMode,e) or return nil
-  e:= put(index,"value",[genSomeVariable(),indexMode,$noEnv],e)
+  e := giveVariableSomeValue(index,indexMode,e)
   [["STEP",index,start,inc,:final],e]
  
 compIterator(it,e) ==
@@ -2432,7 +2432,7 @@ compIterator(it,e) ==
          stackMessage('"mode: %1pb must be a list of some mode",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,mUnder,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),mUnder,$noEnv],e)
+    e:= giveVariableSomeValue(x,mUnder,e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["IN",x,y''],e]
   it is ["ON",x,y] =>
@@ -2445,7 +2445,7 @@ compIterator(it,e) ==
         stackMessage('"mode: %1pb must be a list of other modes",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,m,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),m,$noEnv],e)
+    e:= giveVariableSomeValue(x,m,e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["ON",x,y''],e]
   it is ["STEP",index,start,inc,:optFinal] =>
@@ -2516,7 +2516,7 @@ compUnnamedMapping(parms,source,target,body,env) ==
   savedEnv := env
   for p in parms for s in source repeat
     [.,.,env] := compMakeDeclaration(p,s,env)
-    env := put(p,'value,[genSomeVariable(),get(p,'mode,env),nil],env)
+    env := giveVariableSomeValue(p,get(p,'mode,env),env)
   T := comp(body,target,env) or return nil
   [.,fun] := optimizeFunctionDef [nil,["LAMBDA",parms,T.expr]]
   fun := finishLambdaExpression(fun,env)

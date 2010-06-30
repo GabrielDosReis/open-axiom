@@ -332,8 +332,8 @@ getTargetFromRhs(lhs,rhs,e) ==
   (compOrCroak(rhs,$EmptyMode,e)).mode
  
 giveFormalParametersValues(argl,e) ==
-  for x in argl repeat
-    e:= put(x,'value,[genSomeVariable(),get(x,'mode,e),nil],e)
+  for x in argl | IDENTP x repeat
+    e := giveVariableSomeValue(x,get(x,'mode,e),e)
   e
 
 

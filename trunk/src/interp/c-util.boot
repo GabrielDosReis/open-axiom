@@ -46,6 +46,7 @@ module c_-util where
   getFunctionReplacement: %Symbol -> %Form
   getSuccessEnvironment: (%Form,%Env) -> %Env
   getInverseEnvironment: (%Form,%Env) -> %Env
+  giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
 
 
 --%
@@ -464,6 +465,12 @@ getInverseEnvironment(a,e) ==
     e
   a is ["not",a'] => getSuccessEnvironment(a',e)
   e
+
+++ Give some abstract value to the variable `v' of mode `m' in `e'.
+++ Return the resulting environment.
+giveVariableSomeValue(x,m,e) ==
+  put(x,'value,[genSomeVariable(),m,nil],e)
+
 
 printEnv E ==
   for x in E for i in 1.. repeat
