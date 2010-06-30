@@ -295,12 +295,15 @@ OrderedType(): Category == BasicType with
 ++   a model of the category \spadtype{OrderedType}.
 )abbrev domain ORDSTRCT OrderedStructure
 OrderedStructure(T: Type,f: (T,T) -> Boolean): Public == Private where
-  Public == Join(OrderedType,HomotopicTo T)
+  Public == Join(OrderedType,HomotopicTo T) with
+    if T has CoercibleTo OutputForm then CoercibleTo OutputForm
   Private == add
     Rep == T
     coerce(x: %): T == rep x
     coerce(y: T): % == per y
     x < y  == f(rep x,rep y)
+    if T has CoercibleTo OutputForm then
+      coerce(x: %): OutputForm == rep(x)::OutputForm
 
 @
 

@@ -231,6 +231,7 @@
   (|LetAst| . LETAST)
   (|Library| . LIB)
   (|LieSquareMatrix| . LSQM)
+  (|LinearElement| . LINELT)
   (|LinearOrdinaryDifferentialOperator| . LODO)
   (|LinearSystemMatrixPackage| . LSMP)
   (|LinearSystemMatrixPackage1| . LSMP1)
