@@ -384,7 +384,7 @@ axiom_algebra_layer_0_objects = \
            $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_0))) 
 
 $(OUT)/HOMOTOP.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/KRCFROM.$(FASLEXT)
-$(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
+$(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/STREAM.$(FASLEXT)
 $(OUT)/PATAB.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/PPCURVE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/PSCURVE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
@@ -435,6 +435,7 @@ $(OUT)/PDMOD.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/PDSPC.$(FASLEXT) \
 	$(OUT)/COMRING.$(FASLEXT) $(OUT)/MODULE.$(FASLEXT)
 $(OUT)/DMEXT.$(FASLEXT): $(OUT)/DSEXT.$(FASLEXT) $(OUT)/DIFFMOD.$(FASLEXT) \
 	$(OUT)/PDMOD.$(FASLEXT)
+$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
 
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
@@ -446,8 +447,8 @@ axiom_algebra_layer_1 = \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1   BOOLE    \
-  PROPERTY ARITY    OPERCAT  OPERCAT- PAIR               \
-  RADCAT   RADCAT-  PDMOD    DMEXT
+  PROPERTY ARITY    OPERCAT  OPERCAT- PAIR      STREAM   \
+  RADCAT   RADCAT-  PDMOD    DMEXT    LZSTAGG   LZSTAGG-
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -563,13 +564,12 @@ axiom_algebra_layer_7_objects = \
 
 $(OUT)/BSTREE.$(FASLEXT): $(OUT)/BTREE.$(FASLEXT)
 $(OUT)/ITAYLOR.$(FASLEXT): $(OUT)/STREAM.$(FASLEXT)
-$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
 
 axiom_algebra_layer_8 = \
   BSTREE  BTOURN   CARD     DRAWHACK  FACTFUNC FMTC  \
   FR2     FRAC2    FRUTIL   ITAYLOR   MLO      NAALG \
   NAALG-  OP       ORDCOMP2 RANDSRC   UNISEG2  XALG  \
-  BTREE   STREAM   LZSTAGG  LZSTAGG-  ARR2CAT  ARR2CAT-
+  BTREE                               ARR2CAT  ARR2CAT-
 
 axiom_algebra_layer_8_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_8))
@@ -840,6 +840,7 @@ axiom_algebra_layer_18_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_18)))
 $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
 $(OUT)/FPARFRAC.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/FEXPR.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM           ATTRBUT \
@@ -849,7 +850,7 @@ axiom_algebra_layer_19 = \
   EP       E04AGNT  FCPAK1   FEXPR   \
   FFCAT    FFCAT-   FFCGP    FFNBP   \
   FFP      FLOAT    FPARFRAC FR      \
-  FRNAALG  FRNAALG- \
+  FRNAALG  FRNAALG- EXPR             \
            FUNCTION GDMP     HACKPI  \
   IDEAL    INFORM   INFORM1  IPRNTPK \
   IR       ISUPS             LIB     \
@@ -911,7 +912,7 @@ axiom_algebra_layer_20 = \
   SFORT    SOLVESER SUMFS    SUTS     \
   TOOLSIGN TRIGMNIP TRMANIP  ULSCCAT  \
   ULSCCAT- UPXSSING UTSODE   UTSODETL \
-  UTS2     WUTSET   EXPR
+  UTS2     WUTSET   
 
 axiom_algebra_layer_20_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_20))
