@@ -25,8 +25,9 @@
 ++ This category represents the direct product of some set with
 ++ respect to an ordered indexing set.
 
-IndexedDirectProductCategory(A:SetCategory,S:OrderedSet): Category ==
-  SetCategory with
+IndexedDirectProductCategory(A:BasicType,S:OrderedType): Category ==
+  BasicType with
+    if A has SetCategory and S has SetCategory then SetCategory
     map:           (A -> A, %) -> %
        ++ map(f,z) returns the new element created by applying the
        ++ function f to each component of the direct product element z.
@@ -63,8 +64,8 @@ IndexedDirectProductCategory(A:SetCategory,S:OrderedSet): Category ==
 ++   Indexed direct products of objects over a set \spad{A}
 ++   of generators indexed by an ordered set S. All items have finite support.
 IndexedDirectProductObject(A,S): Public == Private where
-  A: SetCategory
-  S: OrderedSet
+  A: BasicType
+  S: OrderedType
   Public == IndexedDirectProductCategory(A,S)
   Private == add
     Term == Pair(S,A)
@@ -84,9 +85,10 @@ IndexedDirectProductObject(A,S): Public == Private where
         y' := rest y'
       null x' and null y'
 
-    coerce(x:%):OutputForm ==
-       bracket [rarrow(termIndex(t)::OutputForm, termValue(t)::OutputForm)
-                 for t in rep x]
+    if A has CoercibleTo OutputForm and S has CoercibleTo OutputForm then
+      coerce(x:%):OutputForm ==
+         bracket [rarrow(termIndex(t)::OutputForm, termValue(t)::OutputForm)
+                   for t in rep x]
 
     -- sample():% == [[sample()$S,sample()$A]$Term]$Rep
 
@@ -113,11 +115,13 @@ IndexedDirectProductObject(A,S): Public == Private where
 ++ Indexed direct products of abelian monoids over an abelian monoid \spad{A} of
 ++ generators indexed by the ordered set S. All items have finite support.
 ++ Only non-zero terms are stored.
-IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
+IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedType):
     Join(AbelianMonoid,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductObject(A,S) add
     --representations
        Term ==  Pair(S,A)
+       import Term
+       import List Term
        termIndex(t: Term): S == first t
        termValue(t: Term): A == second t
 
@@ -125,7 +129,7 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
        n: NonNegativeInteger
        f: A -> A
        s: S
-       0  == per indexedDirectProductObject []
+       0  == nil$List(Term) pretend %
        zero? x ==  null terms x
 
        qsetrest!: (List Term, List Term) -> List Term
@@ -178,7 +182,7 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
 
        monomial(r,s) ==
          zero? r => 0
-         per indexedDirectProductObject [[s,r]]
+         [[s,r]] pretend %
 
        map(f,x) ==
          [[termIndex tm,a] for tm in terms x
@@ -203,7 +207,7 @@ IndexedDirectProductAbelianMonoid(A:AbelianMonoid,S:OrderedSet):
 ++ generators indexed by the ordered set S.
 ++ The inherited order is lexicographical.
 ++ All items have finite support: only non-zero terms are stored.
-IndexedDirectProductOrderedAbelianMonoid(A:OrderedAbelianMonoid,S:OrderedSet):
+IndexedDirectProductOrderedAbelianMonoid(A:OrderedAbelianMonoid,S:OrderedType):
     Join(OrderedAbelianMonoid,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductAbelianMonoid(A,S) add
     --representations
@@ -266,12 +270,8 @@ IndexedDirectProductOrderedAbelianMonoidSup(A:OrderedAbelianMonoidSup,S:OrderedS
 ++ Indexed direct products of abelian groups over an abelian group \spad{A} of
 ++ generators indexed by the ordered set S.
 ++ All items have finite support: only non-zero terms are stored.
-IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedSet):
-    Join(AbelianGroup,IndexedDirectProductCategory(A,S)) with
-      construct: List Pair(A,S) -> %
-        ++ \spad{construct l} returns an object that is a linear
-        ++ combination with support in \spad{A} and coefficients
-        ++ in \spad{A}.
+IndexedDirectProductAbelianGroup(A:AbelianGroup,S:OrderedType):
+    Join(AbelianGroup,IndexedDirectProductCategory(A,S))
  ==  IndexedDirectProductAbelianMonoid(A,S) add
     --representations
        Term == Pair(S,A)
