@@ -605,7 +605,7 @@ setqMultiple(nameList,val,m,e) ==
   [x,m',e]:= convert(T,m) or return nil
   --1.1 exit if result is a list
   m1 is ["List",D] =>
-    for y in nameList repeat e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
+    for y in nameList repeat e := giveVariableSomeValue(y,D,e)
     convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   --2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
@@ -730,7 +730,7 @@ compColon([":",f,t],m,e) ==
     put(f,"mode",t,e)
   if not $bootStrapMode and $insideFunctorIfTrue and
     makeCategoryForm(t,e) is [catform,e] then
-        e:= put(f,"value",[genSomeVariable(),t,$noEnv],e)
+        e:= giveVariableSomeValue(f,t,e)
   ["/throwAway",getmode(f,e),e]
 
 compConstruct(form,m,e) == (T := compConstruct1(form,m,e)) and markConstruct(form,T) 

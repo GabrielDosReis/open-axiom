@@ -1,5 +1,21 @@
 2010-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (giveVariableSomeValue): New.
+	* interp/compiler.boot (setqMultiple): Use it.
+	(compColon): Likewise.
+	(compRetractGuard): Likewise.
+	(compRecoverDomain): Likewise.
+	(defineMatchScrutinee): Likewise.
+	(compStepIterator): Likewise.
+	(compIterator): Likewise.
+	(compUnnamedMapping): Likewise.
+	* interp/define.boot (giveFormalParametersValues): Likewise.
+	* interp/wi1.boot (setqMultiple): Likewise.
+	* interp/wi2.boot (compIterator): Likewise.
+	(smallIntegerStep): Likewise.
+
+2010-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/vector.spad.pamphlet (LinearElement): New.
 
 2010-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>

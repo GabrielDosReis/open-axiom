@@ -659,7 +659,7 @@ optCollectVector form ==
 
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
-optRetract ["%Retract",e,m,pred] ==
+optRetract ["%retract",e,m,pred] ==
   atom e => ["check-subtype",substitute(e,"#1",pred),MKQ m,e]
   g := gensym()
   ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
@@ -682,7 +682,7 @@ for x in '( (%call         optCall) _
            (_|           optSuchthat)_
            (CATCH        optCatch)_
            (COND         optCond)_
-           (%Retract     optRetract)_
+           (%retract     optRetract)_
            (%CollectV    optCollectVector)_
            (mkRecord     optMkRecord)_
            (RECORDELT    optRECORDELT)_
