@@ -447,11 +447,60 @@ DirectProductFunctions2(dim, A, B): Exports == Implementation where
     reduce(f, v, b) == reduce(f, v::VA, b)
 
 @
+
+\section{Vector space of finite dimension given by a basis}
+
+<<domain LINELT LinearElement>>=
+)abbrev domain LINELT LinearElement
+++ Author: Gabriel Dos Reis
+++ Date Created: June 30, 2010
+++ Date Last Modified: June 30, 2010
+++ Description:
+++   A simple data structure for elements that form a
+++   vector space of finite dimension over a given field,
+++   with a given symbolic basis.
+LinearElement(K,B): Public == Private where
+  K: Field
+  B: List Symbol
+  macro Basis == OrderedVariableList B
+  Public == Join(VectorSpace K,CoercibleFrom Basis) with
+    linearElement: (List K,List Basis) -> %
+      ++ \spad{linearElement([x1,..,xn],[b1,..,bn]) constructs
+      ++ a linear element with coordinates \spad{[x1,..,xn]} with
+      ++ respect to the basis elements \spad{b1},...\spad{bn}.
+    coordinates: % -> Vector K
+      ++ \spad{coordinates x} returns the coordinates of the linear
+      ++ element with respect to the basis \spad{B}.
+  Private == FreeModule(K,Basis) add
+    coerce(b: Basis): % ==
+      per monomial(1$K,b)
+
+    dimension() ==
+      size()$Basis::CardinalNumber
+
+    linearElement(cs,bs) ==
+      null cs or null bs => per 0$Rep
+      reduce(_+@(%,%)->%,
+         [per monomial(c,b) for c in cs for b in bs])
+
+    coordinates x ==
+      n := #B
+      v: Vector K := new(n,0$K)
+      ts := terms rep x
+      for i in 1..n repeat
+        t := first ts
+        lookup first t = i => 
+          v.i := second t
+          ts := rest ts
+      v
+@
+
+
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -492,6 +541,7 @@ DirectProductFunctions2(dim, A, B): Exports == Implementation where
 <<category DIRPCAT DirectProductCategory>>
 <<domain DIRPROD DirectProduct>>
 <<package DIRPROD2 DirectProductFunctions2>>
+<<domain LINELT LinearElement>>
  
 @
 \eject

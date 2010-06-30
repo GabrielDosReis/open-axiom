@@ -1,5 +1,9 @@
 2010-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/vector.spad.pamphlet (LinearElement): New.
+
+2010-06-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (getRepresentation): Tidy.
 	* interp/define.boot (checkRepresentation): Don't compile the base
 	domain here yet.
