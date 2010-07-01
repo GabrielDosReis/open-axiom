@@ -1710,15 +1710,6 @@ compileQuietly fn ==
 --% Compile Time operation lookup for the benefit of domain inlining.
 --%
 
-++ Subroutine of lookupDefiningFunction.
-++ Called when the domain of computation `dc' is closed (this is the
-++ case of niladic constructors) to lookup up the definition function
-++ of the operation `op' with signature `sig'.
-lookupFunctionInstance(op,sig,dc) ==
-  dom := eval dc
-  sig := MSUBST(devaluate dom,dc,sig)
-  compiledLookup(op,sig,dom)
-
 ++ If `x' is a formal map variable, returns its position.
 ++ Otherwise return nil.
 isFormal: %Symbol -> %Maybe %Short
@@ -1803,7 +1794,11 @@ lookupDefiningFunction(op,sig,dc) ==
   -- 1. Read domain information, if available.
   [ctor,:args] := dc
   -- 1.1. Niladic constructors don't need approximation.
-  null args => lookupFunctionInstance(op,sig,dc)
+  --      FIXME: However, there may be cylic dependencies
+  --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
+  --      us from full evaluation.  
+  null args and ctor in $SystemInlinableConstructorNames =>
+    compiledLookup(op,sig,dc)
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil
   -- 1.2. Silently give up if the constructor is just not there
