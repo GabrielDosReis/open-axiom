@@ -1314,6 +1314,10 @@ bootStrapError(functorForm,sourceFile) ==
     [''T, ['systemError,['LIST,''%b,MKQ functorForm.op,''%d,'"from", _
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
 
+registerInlinableDomain(x,e) ==
+  macroExpand(x,e) is [ctor,:.] and constructor? ctor =>
+    nominateForInlining ctor
+
 compAdd(['add,$addForm,capsule],m,e) ==
   $bootStrapMode = true =>
     if $addForm is ["%Comma",:.] then code := nil
@@ -1327,6 +1331,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
     NRTgetLocalIndex domainForm
+    registerInlinableDomain(domainForm,e)
     --need to generate slot for add form since all $ go-get
     --  slots will need to access it
     [$addForm,.,e]:= compSubDomain1(domainForm,predicate,m,e)
@@ -1335,7 +1340,9 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
         $NRTaddForm := ["%Comma",:[NRTgetLocalIndex x for x in rest $addForm]]
+        for x in $addForm.args repeat registerInlinableDomain(x,e)
         compOrCroak(compTuple2Record $addForm,$EmptyMode,e)
+      registerInlinableDomain($addForm,e)
       compOrCroak($addForm,$EmptyMode,e)
   compCapsule(capsule,m,e)
  
