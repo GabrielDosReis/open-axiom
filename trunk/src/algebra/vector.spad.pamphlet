@@ -450,11 +450,49 @@ DirectProductFunctions2(dim, A, B): Exports == Implementation where
 
 \section{Vector space of finite dimension given by a basis}
 
+
+<<domain LINBASIS LinearBasis>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: July 2, 2010
+++ Date Last Modified: July 2, 2010
+++ Descrption:
+++   Representation of a vector space basis, given by symbols.
+)abbrev domain LINBASIS LinearBasis
+LinearBasis(vars: List Symbol): Public == Private where
+  Public == Join(OrderedFinite,CoercibleFrom OrderedVariableList vars) with
+    dual: DualBasis vars -> %
+      ++ \spad{dual f} constructs the dual vector of a linear form
+      ++ which is part of a basis.
+  Private == OrderedVariableList vars add
+    coerce(s: Rep): % == per s
+    dual f == index(lookup f)@%
+
+@
+
+<<domain DBASIS DualBasis>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: July 2, 2010
+++ Date Last Modified: July 2, 2010
+++ Descrption:
+++   Representation of a dual vector space basis, given by symbols.
+)abbrev domain DBASIS DualBasis
+DualBasis(vars: List Symbol): Public == Private where
+  Public == Join(OrderedFinite) with
+    dual: LinearBasis vars -> %
+      ++ \spad{dual x} constructs the dual vector of a linear element
+      ++ which is part of a basis.
+  Private == OrderedVariableList vars add
+    dual v == index(lookup v)@%
+    coerce(x: %): OutputForm ==
+      superscript(convert(rep x)@Symbol,['_*::OutputForm])::OutputForm
+
+@
+
 <<domain LINELT LinearElement>>=
 )abbrev domain LINELT LinearElement
 ++ Author: Gabriel Dos Reis
 ++ Date Created: June 30, 2010
-++ Date Last Modified: June 30, 2010
+++ Date Last Modified: July 2, 2010
 ++ Description:
 ++   A simple data structure for elements that form a
 ++   vector space of finite dimension over a given field,
@@ -462,12 +500,13 @@ DirectProductFunctions2(dim, A, B): Exports == Implementation where
 LinearElement(K,B): Public == Private where
   K: Field
   B: List Symbol
-  macro Basis == OrderedVariableList B
-  Public == Join(VectorSpace K,CoercibleFrom Basis) with
-    linearElement: (List K,List Basis) -> %
-      ++ \spad{linearElement([x1,..,xn],[b1,..,bn]) constructs
-      ++ a linear element with coordinates \spad{[x1,..,xn]} with
-      ++ respect to the basis elements \spad{b1},...\spad{bn}.
+  macro Basis == LinearBasis B
+  Public == Join(VectorSpace K,CoercibleFrom Basis,_
+                 IndexedDirectProductCategory(K,Basis)) with
+    linearElement: List K -> %
+      ++ \spad{linearElement [x1,..,xn]} returns a linear element
+      ++  with coordinates \spad{[x1,..,xn]} with respect to
+      ++ the basis elements \spad{B}.
     coordinates: % -> Vector K
       ++ \spad{coordinates x} returns the coordinates of the linear
       ++ element with respect to the basis \spad{B}.
@@ -478,10 +517,9 @@ LinearElement(K,B): Public == Private where
     dimension() ==
       size()$Basis::CardinalNumber
 
-    linearElement(cs,bs) ==
-      null cs or null bs => per 0$Rep
+    linearElement cs ==
       reduce(_+@(%,%)->%,
-         [per monomial(c,b) for c in cs for b in bs])
+         [per monomial(c,index(i)$Basis) for c in cs for i in 1..],0)
 
     coordinates x ==
       n := #B
@@ -496,7 +534,53 @@ LinearElement(K,B): Public == Private where
 @
 
 
+<<domain LINFORM LinearForm>>=
+)abbrev domain LINFORM LinearForm
+++ Author: Gabriel Dos Reis
+++ Date Created: July 2, 2010
+++ Date Last Modified: July 2, 2010
+++ Description:
+++   A simple data structure for linear forms on a vector space of
+++   finite dimension over a given field, with a given symbolic basis.
+LinearForm(K,B): Public == Private where
+  K: Field
+  B: List Symbol
+  macro Basis == DualBasis B
+  Public == Join(VectorSpace K,Eltable(LinearElement(K,B),K)) with
+    linearForm: List K -> %
+      ++ \spad{linearForm [x1,..,xn]} constructs
+      ++ a linear form with coordinates \spad{[x1,..,xn]} with
+      ++ respect to the basis elements \spad{DualBasis B}.
+    coordinates: % -> Vector K
+      ++ \spad{coordinates x} returns the coordinates of the linear
+      ++ form with respect to the basis \spad{DualBasis B}.
+  Private == FreeModule(K,Basis) add
+    dimension() ==
+      size()$Basis::CardinalNumber
+
+    linearForm cs ==
+      reduce(_+@(%,%)->%,
+         [per monomial(c,index(i)$Basis) for c in cs for i in 1..],0)
+
+    coordinates f ==
+      n := #B
+      v: Vector K := new(n,0$K)
+      ts := terms rep f
+      for i in 1..n repeat
+        t := first ts
+        lookup first t = i => 
+          v.i := second t
+          ts := rest ts
+      v
+
+    elt(f,x) ==
+      dot(coordinates f, coordinates x)$Vector(K)
+
+@
+
+
 \section{License}
+
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
@@ -541,7 +625,12 @@ LinearElement(K,B): Public == Private where
 <<category DIRPCAT DirectProductCategory>>
 <<domain DIRPROD DirectProduct>>
 <<package DIRPROD2 DirectProductFunctions2>>
+
+<<domain LINBASIS LinearBasis>>
+<<domain DBASIS DualBasis>>
+
 <<domain LINELT LinearElement>>
+<<domain LINFORM LinearForm>>
  
 @
 \eject
