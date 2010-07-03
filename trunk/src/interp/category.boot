@@ -55,8 +55,10 @@ isCategory a ==
 ++ envronement `e'.
 isCategoryForm: (%Form,%Env) -> %Boolean
 isCategoryForm(x,e) ==
-  atom x => u:= get(x,"macro",e) => isCategoryForm(u,e)
-  categoryForm? first x
+  atom x =>
+    u := macroExpand(x,e)
+    cons? u and categoryForm? u
+  categoryForm? x
  
 --% Functions for building categories
  

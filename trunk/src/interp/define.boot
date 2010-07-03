@@ -120,8 +120,8 @@ DomainSubstitutionFunction: (%List,%Form) -> %Form
 ++ `pred' (a VM instruction form).  Emit appropriate info into the
 ++ databases.
 emitSubdomainInfo(form,super,pred) ==
-  pred := eqSubst($AtVariables,rest form,pred)
-  super := eqSubst($AtVariables,rest form,super)
+  pred := eqSubst($AtVariables,form.args,pred)
+  super := eqSubst($AtVariables,form.args,super)
   evalAndRwriteLispForm("evalOnLoad2",["noteSubDomainInfo",
      quoteForm form.op,quoteForm super, quoteForm pred])
 
@@ -258,7 +258,7 @@ checkRepresentation(addForm,body,env) ==
           dom
         addForm
       $useRepresentationHack := false
-      env := put('Rep,'macro,domainRep,env)
+      env := putMacro('Rep,domainRep,env)
   env
 
 
@@ -268,8 +268,8 @@ compDefine1(form,m,e) ==
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
-     => [lhs,m,put(lhs.op,"macro",rhs,e)]
-  checkParameterNames rest lhs
+     => [lhs,m,putMacro(lhs.op,rhs,e)]
+  checkParameterNames lhs.args
   null signature.target and not MEMQ(KAR rhs,$BuiltinConstructorNames) and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
@@ -289,7 +289,7 @@ compDefine1(form,m,e) ==
     compDefineCategory(form,m,e,nil,$formalArgList)
   isDomainForm(rhs,e) and not $insideFunctorIfTrue =>
     if null signature.target then signature:=
-      [getTargetFromRhs(lhs,rhs,giveFormalParametersValues(rest lhs,e)),:
+      [getTargetFromRhs(lhs,rhs,giveFormalParametersValues(lhs.args,e)),:
           signature.source]
     rhs:= addEmptyCapsuleIfNecessary(signature.target,rhs)
     compDefineFunctor(['DEF,lhs,signature,specialCases,rhs],m,e,nil,
@@ -347,17 +347,31 @@ macroExpandInPlace(x,e) ==
 
 macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
-  IDENTP x and (u := get(x,"macro",e)) => macroExpand(u,e)
-  atom x => x
+  atom x =>
+    not IDENTP x or (u := get(x,'macro,e)) = nil => x
+    -- Don't expand a functional macro name by itself.
+    u is ['%mlambda,:.] => x
+    macroExpand(u,e)
   x is ['DEF,lhs,sig,spCases,rhs] =>
     ['DEF,macroExpand(lhs,e),macroExpandList(sig,e),macroExpandList(spCases,e),
       macroExpand(rhs,e)]
+  -- macros should override niladic props
+  [op,:args] := x
+  IDENTP op and args = nil and niladicConstructorFromDB op and
+    (u := get(op,'macro, e)) => macroExpand(u,e)
+  IDENTP op and (get(op,'macro,e) is ['%mlambda,parms,body]) =>
+    nargs := #args
+    nparms := #parms
+    msg :=
+      nargs < nparms => '"Too few arguments"
+      nargs > nparms => '"Too many arguments"
+      nil
+    msg => (stackMessage(strconc(msg,'" to macro %1bp"),[op]); x)
+    args' := macroExpandList(args,e)
+    SUBLISLIS(args',parms,body)
   macroExpandList(x,e)
  
 macroExpandList(l,e) ==
-  -- macros should override niladic props
-  (l is [name]) and IDENTP name and niladicConstructorFromDB name and
-        (u := get(name,"macro", e)) => macroExpand(u,e)
   [macroExpand(x,e) for x in l]
 
 --% constructor evaluation
@@ -429,7 +443,7 @@ mkCategoryPackage(form is [op,:argl],cat,def) ==
   capsuleDefAlist := fn(def,nil) where fn(x,oplist) ==
     atom x => oplist
     x is ['DEF,y,:.] => [y,:oplist]
-    fn(rest x,fn(first x,oplist))
+    fn(x.args,fn(x.op,oplist))
   catvec := eval mkEvalableCategoryForm form
   fullCatOpList:=(JoinInner([catvec],$e)).1
   catOpList :=
@@ -538,8 +552,8 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
 mkConstructor: %Form -> %Form
 mkConstructor form ==
   atom form => ['devaluate,form]
-  null rest form => ['QUOTE,[form.op]]
-  ['LIST,MKQ form.op,:[mkConstructor x for x in rest form]]
+  null form.args => ['QUOTE,[form.op]]
+  ['LIST,MKQ form.op,:[mkConstructor x for x in form.args]]
  
 compDefineCategory(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
@@ -812,7 +826,7 @@ makeFunctorArgumentParameters(argl,sigl,target) ==
       ['Join,s,['CATEGORY,'package,:ss]]
     fn(a,s) ==
       isCategoryForm(s,$CategoryFrame) =>
-        s is ["Join",:catlist] => genDomainViewList(a,rest s)
+        s is ["Join",:catlist] => genDomainViewList(a,s.args)
         [genDomainView(a,a,s,"getDomainView")]
       [a]
  
@@ -968,12 +982,12 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     $formalArgList:= [:argl,:$formalArgList]
  
     --let target and local signatures help determine modes of arguments
-    argModeList:=
-      identSig:= hasSigInTargetCategory(argl,form,signature.target,e) =>
-        (e:= checkAndDeclare(argl,form,identSig,e); rest identSig)
+    argModeList :=
+      identSig := hasSigInTargetCategory(argl,form,signature.target,e) =>
+        (e:= checkAndDeclare(argl,form,identSig,e); identSig.source)
       [getArgumentModeOrMoan(a,form,e) for a in argl]
-    argModeList:= stripOffSubdomainConditions(argModeList,argl)
-    signature':= [signature.target,:argModeList]
+    argModeList := stripOffSubdomainConditions(argModeList,argl)
+    signature' := [signature.target,:argModeList]
     if null identSig then  --make $op a local function
       $e := put($op,'mode,['Mapping,:signature'],$e)
  
@@ -1038,7 +1052,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
 getSignatureFromMode(form,e) ==
   getmode(opOf form,e) is ['Mapping,:signature] =>
     #form~=#signature => stackAndThrow ["Wrong number of arguments: ",form]
-    EQSUBSTLIST(rest form,take(#rest form,$FormalMapVariableList),signature)
+    EQSUBSTLIST(form.args,take(# form.args,$FormalMapVariableList),signature)
 
 candidateSignatures(op,nmodes,slot1) ==
   [sig for [[=op,sig,:.],:.] in slot1 | #sig = nmodes]
@@ -1338,14 +1352,15 @@ compAdd(['add,$addForm,capsule],m,e) ==
     $NRTaddForm := $addForm
     [$addForm,.,e]:=
       $addForm is ["%Comma",:.] =>
-        $NRTaddForm := ["%Comma",:[NRTgetLocalIndex x for x in rest $addForm]]
+        $NRTaddForm := ["%Comma",:[NRTgetLocalIndex x for x in $addForm.args]]
         for x in $addForm.args repeat registerInlinableDomain(x,e)
         compOrCroak(compTuple2Record $addForm,$EmptyMode,e)
       registerInlinableDomain($addForm,e)
       compOrCroak($addForm,$EmptyMode,e)
   compCapsule(capsule,m,e)
  
-compTuple2Record u == ['Record,:[[":",i,x] for i in 1.. for x in rest u]]
+compTuple2Record u ==
+  ['Record,:[[":",i,x] for i in 1.. for x in u.args]]
 
 compCapsule(['CAPSULE,:itemList],m,e) ==
   $bootStrapMode = true =>
@@ -1472,7 +1487,7 @@ doIt(item,$predl) ==
   item is ["where",b,:l] => compOrCroak(item,$EmptyMode,$e)
   item is ["MDEF",:.] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)
   item is ['DEF,[op,:.],:.] =>
-    body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
+    body := isMacro(item,$e) => $e := putMacro(op,body,$e)
     [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
     item.op := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
@@ -1644,7 +1659,7 @@ DomainSubstitutionFunction(parameters,body) ==
         [Subst(parameters,u) for u in body]
   not (body is ["Join",:.]) => body
   atom $definition => body
-  null rest $definition => body 
+  null $definition.args => body 
            --should not bother if it will only be called once
   name:= INTERN strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)

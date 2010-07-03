@@ -650,6 +650,11 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
   first(e).first := [[var,:proplist],:curContour]
   e
 
+putMacro(lhs,rhs,e) ==
+  atom lhs => put(lhs,'macro,rhs,e)
+  parms := [gensym() for p in lhs.args]
+  put(lhs.op,'macro,['%mlambda,parms,SUBLISLIS(parms,lhs.args,rhs)],e)
+
 --% Syntax manipulation
 
 ++ Build a quasiquotation form for `x'.
