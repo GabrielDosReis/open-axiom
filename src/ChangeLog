@@ -1,5 +1,13 @@
 2010-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/category.boot (isCategoryForm): Tidy.
+	* interp/compiler.boot (compMacro): Handle parameterized definition.
+	* interp/define.boot (macroExpand): Likewise.
+	(macroExpandList): Move case for niladic macros to macroExpand.
+	* interp/g-util.boot (putMacro): New utility function.
+
+2010-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/define.boot (macroExpand): Tidy.  Only identifiers are
 	allowed to be macro names.
 

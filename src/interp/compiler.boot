@@ -982,7 +982,7 @@ $macroIfTrue := false
 
 compMacro(form,m,e) ==
   $macroIfTrue: local:= true
-  ["MDEF",lhs,signature,specialCases,rhs]:= form
+  ["MDEF",lhs,signature,specialCases,rhs] := form
   if $verbose then
     prhs :=
       rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
@@ -993,7 +993,16 @@ compMacro(form,m,e) ==
     sayBrightly ['"   processing macro definition",'%b,
       :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
   m=$EmptyMode or m=$NoValueMode =>
-    ["/throwAway",$NoValueMode,put(first lhs,"macro",macroExpand(rhs,e),e)]
+    -- Macro names shall be identifiers.
+    not IDENTP lhs.op =>
+      stackMessage('"invalid left-hand-side in macro definition",nil)
+      e
+    -- We do not have the means, at this late stage, to make a distinction
+    -- between a niladic functional macro and an identifier that is
+    -- defined as a macro.
+    if lhs.args = nil then lhs := lhs.op
+    ["/throwAway",$NoValueMode,putMacro(lhs,macroExpand(rhs,e),e)]
+  nil
 
 --% SEQ
 

@@ -511,7 +511,7 @@ compMacro(form,m,e) ==
       :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
   ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   m=$EmptyMode or m=$NoValueMode =>
-    ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]
+    ["/throwAway",$NoValueMode,putMacro(lhs.op,rhs,e)]
 
 --compMacro(form,m,e) ==
 --  $macroIfTrue: local:= true
@@ -527,7 +527,7 @@ compMacro(form,m,e) ==
 --  ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
 --  m=$EmptyMode or m=$NoValueMode =>
 --    rhs := markMacro(lhs,rhs)
---    ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]
+--    ["/throwAway",$NoValueMode,putMacro(lhs.op,rhs,e)]
 
 compSetq(oform,m,E) ==
   ["%LET",form,val] := oform
@@ -1076,7 +1076,7 @@ compDefine1(form,m,e) ==
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
-     => [lhs,m,put(first lhs,"macro",rhs,e)]
+     => [lhs,m,putMacro(lhs.op,rhs,e)]
   null signature.target and not MEMQ(KAR rhs,$BuiltinConstructorNames) and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
