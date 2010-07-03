@@ -347,9 +347,8 @@ macroExpandInPlace(x,e) ==
 
 macroExpand: (%Form,%Env) -> %Form 
 macroExpand(x,e) ==   --not worked out yet
-  atom x => 
-    u:= get(x,"macro",e) => macroExpand(u,e)
-    x
+  IDENTP x and (u := get(x,"macro",e)) => macroExpand(u,e)
+  atom x => x
   x is ['DEF,lhs,sig,spCases,rhs] =>
     ['DEF,macroExpand(lhs,e),macroExpandList(sig,e),macroExpandList(spCases,e),
       macroExpand(rhs,e)]
@@ -878,8 +877,8 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
   -- 1. create sigList= list of all signatures which have embedded
   --    declarations moved into global variable $sigAlist
   sigList:=
-    [transformType fetchType(a,x,e,form) for a in rest form for x in signature.source]
-       where
+    [transformType fetchType(a,x,e,form)
+      for a in form.args for x in signature.source] where
         fetchType(a,x,e,form) ==
           x => x
           getmode(a,e) or userError concat(
@@ -889,41 +888,41 @@ compDefWhereClause(['DEF,form,signature,specialCases,body],m,e) ==
           x is [":",R,Rtype] =>
             ($sigAlist:= [[R,:transformType Rtype],:$sigAlist]; x)
           x is ['Record,:.] => x --RDJ 8/83
-          [x.op,:[transformType y for y in rest x]]
+          [x.op,:[transformType y for y in x.args]]
  
   -- 2. replace each argument of the form (|| x p) by x, recording
   --    the given predicate in global variable $predAlist
   argList:=
-    [removeSuchthat a for a in rest form] where
+    [removeSuchthat a for a in form.args] where
       removeSuchthat x ==
         x is ["|",y,p] => ($predAlist:= [[y,:p],:$predAlist]; y)
         x
  
   -- 3. obtain a list of parameter identifiers (x1 .. xn) ordered so that
   --       the type of xi is independent of xj if i < j
-  varList:=
+  varList :=
     orderByDependency(ASSOCLEFT argDepAlist,ASSOCRIGHT argDepAlist) where
-      argDepAlist:=
+      argDepAlist :=
         [[x,:dependencies] for [x,:y] in argSigAlist] where
           dependencies() ==
             union(listOfIdentifiersIn y,
               delete(x,listOfIdentifiersIn LASSOC(x,$predAlist)))
-          argSigAlist:= [:$sigAlist,:pairList(argList,sigList)]
+          argSigAlist := [:$sigAlist,:pairList(argList,sigList)]
  
   -- 4. construct a WhereList which declares and/or defines the xi's in
   --    the order constructed in step 3
-  (whereList:= [addSuchthat(x,[":",x,LASSOC(x,argSigAlist)]) for x in varList])
-     where addSuchthat(x,y) == (p:= LASSOC(x,$predAlist) => ["|",y,p]; y)
+  whereList := [addSuchthat(x,[":",x,LASSOC(x,argSigAlist)]) for x in varList]
+     where addSuchthat(x,y) ==
+             p := LASSOC(x,$predAlist) => ["|",y,p]
+             y
  
   -- 5. compile new ('DEF,("where",form',:WhereList),:.) where
   --    all argument parameters of form' are bound/declared in WhereList
   comp(form',m,e) where
-    form':=
-      ["where",defform,:whereList] where
-        defform:=
-          ['DEF,form'',signature',specialCases,body] where
-            form'':= [form.op,:argList]
-            signature':= [signature.target,:[nil for x in signature.source]]
+    form' := ["where",defform,:whereList] where
+      defform := ['DEF,form'',signature',specialCases,body] where
+        form'' := [form.op,:argList]
+        signature' := [signature.target,:[nil for x in signature.source]]
  
 orderByDependency(vl,dl) ==
   -- vl is list of variables, dl is list of dependency-lists
