@@ -922,15 +922,15 @@ compWhere: (%Form,%Mode,%Env) -> %Maybe %Triple
 compWhere([.,form,:exprList],m,eInit) ==
   $insideExpressionIfTrue: local:= false
   $insideWhereIfTrue: local:= true
-  e:= eInit
-  u:=
+  e := eInit
+  u :=
     for item in exprList repeat
       [.,.,e]:= comp(item,$EmptyMode,e) or return "failed"
   u="failed" => return nil
-  $insideWhereIfTrue:= false
-  [x,m,eAfter]:= comp(macroExpand(form,eBefore:= e),m,e) or return nil
-  eFinal:=
-    del:= deltaContour(eAfter,eBefore) => addContour(del,eInit)
+  $insideWhereIfTrue := false
+  [x,m,eAfter] := comp(macroExpand(form,eBefore := e),m,e) or return nil
+  eFinal :=
+    del := deltaContour(eAfter,eBefore) => addContour(del,eInit)
     eInit
   [x,m,eFinal]
 

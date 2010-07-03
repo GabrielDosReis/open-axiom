@@ -1,5 +1,10 @@
 2010-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/define.boot (macroExpand): Tidy.  Only identifiers are
+	allowed to be macro names.
+
+2010-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/vector.spad.pamphlet (DualBasis): New.
 	(LinearBasis): Likewise.
 	(LinearElement): Use them.
