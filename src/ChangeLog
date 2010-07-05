@@ -1,3 +1,13 @@
+2010-07-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compTopLevel): Bind $whereDecls.
+	(recordDeclarationInSideCondition): New.  Update it.
+	(compWhere): Call it.
+	* interp/define.boot ($whereDecls): Define at toplevel.
+	(typeDependencyPath): New.
+	(inferConstructorImplicitParameters): Likewise.
+	(compDefineFunctor1): Use it.
+
 2010-07-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/category.boot (isCategoryForm): Tidy.

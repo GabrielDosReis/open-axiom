@@ -103,6 +103,8 @@ $lisplibSuperDomain := nil
 $sigList := []
 $atList := []
 
+++ List of declarations appearing as side conditions of a where-expression.
+$whereDecls := nil
 
 ++ True if the current functor definition refines a domain.
 $subdomain := false
@@ -581,6 +583,26 @@ predicatesFromAttributes: %List -> %List
 predicatesFromAttributes attrList ==
   removeDuplicates [second x for x in attrList]
 
+++ Subroutine of inferConstructorImplicitParameters.
+typeDependencyPath(m,path,e) ==
+  IDENTP m and assoc(m,$whereDecls) =>
+    get(m,'value,e) => nil  -- parameter was given value
+    [[m,:reverse path],:typeDependencyPath(getmode(m,e),path,e)]
+  isAtomicForm m => nil
+  [ctor,:args] := m
+  -- We don't expect implicit parameters in builtin constructors.
+  ctor in $BuiltinConstructorNames => nil
+  -- FIXME: assume constructors cannot be parameters
+  not constructor? ctor => nil
+  [:typeDependencyPath(m',[i,:path],e) for m' in args for i in 0..]
+
+++ Given the list `parms' of explicit constructor parameters, compute
+++ a list of pairs `(p . path)' where `p' is a parameter implicitly
+++ introduced (either directly or indirectly) by a declaration of
+++ one of the explicit parameters.
+inferConstructorImplicitParameters(parms,e) ==
+  removeDuplicates
+    [:typeDependencyPath(getmode(p,e),[i],e) for p in parms for i in 0..]
  
 compDefineFunctor(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
@@ -628,7 +650,8 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $functorKind: local :=
       $functorTarget is ["CATEGORY",key,:.] => key
       "domain"
-    $e:= giveFormalParametersValues(argl,$e)
+    $e := giveFormalParametersValues(argl,$e)
+    $implicitParameters: local := inferConstructorImplicitParameters(argl,$e)
     [ds,.,$e]:= compMakeCategoryObject(target,$e) or return
        stackAndThrow('"   cannot produce category object: %1pb",[target])
     $compileExportsOnly => compDefineExports(form, ds.1, signature',$e)

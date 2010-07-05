@@ -100,7 +100,8 @@ compTopLevel(x,m,e) ==
   $NRTderivedTargetIfTrue: local := false
   $killOptimizeIfTrue: local:= false
   $forceAdd: local:= false
-  -- start with a base list of domains we may inline.
+  $whereDecls: local := nil
+  -- start with a base list of domains we may want to inline.
   $optimizableConstructorNames: local := $SystemInlinableConstructorNames
   x is ["DEF",:.] or x is ["where",["DEF",:.],:.] =>
     ([val,mode,.]:= compOrCroak(x,m,e); [val,mode,e])
@@ -918,13 +919,28 @@ compileQuasiquote(["[||]",:form],m,e) ==
 
 
 --% WHERE
+
+++ The form `item' appears in a side condition of a where-expression.
+++ Register all declarations it locally introduces.
+recordDeclarationInSideCondition(item,e) ==
+  item is [":",x,t] =>
+    t := macroExpand(t,e)
+    IDENTP x => $whereDecls := [[x,t],:$whereDecls]
+    x is ['%Comma,:.] =>
+      $whereDecls := [:[[x',t] for x' in x.args],:$whereDecls]
+  item is ['SEQ,:stmts,["exit",.,val]] =>
+    for stmt in stmts repeat
+      recordDeclarationInSideCondition(stmt,e)
+    recordDeclarationInSideCondition(val,e)
+
 compWhere: (%Form,%Mode,%Env) -> %Maybe %Triple
 compWhere([.,form,:exprList],m,eInit) ==
   $insideExpressionIfTrue: local:= false
-  $insideWhereIfTrue: local:= true
+  $insideWhereIfTrue: local := true
   e := eInit
   u :=
     for item in exprList repeat
+      recordDeclarationInSideCondition(item,e)
       [.,.,e]:= comp(item,$EmptyMode,e) or return "failed"
   u="failed" => return nil
   $insideWhereIfTrue := false
