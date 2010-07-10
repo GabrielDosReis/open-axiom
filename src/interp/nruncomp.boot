@@ -449,7 +449,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   -- category should be present.  true => always
   makeCatvecCode:= first catvecListMaker
   emptyVector := VECTOR()
-  domainShell := newShell ($NRTbase + $NRTdeltaLength)
+  domainShell := newShell($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template := newShell ($NRTbase + $NRTdeltaLength)
