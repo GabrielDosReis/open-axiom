@@ -394,68 +394,6 @@ mkTypeForm x ==
   x is [op] => MKQ x
   x is [op,:argl] => ['LIST,MKQ op,:[mkTypeForm a for a in argl]]
  
-setVector4(catNames,catsig,conditions) ==
-  if $HackSlot4 then
-    for ["%LET",name,cond,:.] in $getDomainCode repeat
-      $HackSlot4:=MSUSBT(name,cond,$HackSlot4)
-  code := ["setShellEntry",'$,4,'TrueDomain]
-  code:=['(%LET TrueDomain (nreverse TrueDomain)),:$HackSlot4,code]
-  code:=
-    [:
-      [setVector4Onecat(u,v,w)
-        for u in catNames for v in catsig for w in conditions],:code]
-  ['(%LET TrueDomain NIL),:code]
- 
-setVector4Onecat(name,instantiator,info) ==
-            --generates code to create one item in the
-            --Alist representing a domain
-            --returns a single LISP expression
-  instantiator is ['DomainSubstitutionMacro,.,body] =>
-    setVector4Onecat(name,body,info)
-  data:=
-       --CAR name.4 contains all the names except itself
-       --hence we need to add this on, by the above CONS
-    ['CONS,['CONS,mkTypeForm instantiator,['CAR,['ELT,name,4]]],
-      name]
-  data:= ['SETQ,'TrueDomain,['CONS,data,'TrueDomain]]
-  TruthP info => data
-  ['COND,[TryGDC PrepareConditional info,data],:
-    Supplementaries(instantiator,name)] where
-      Supplementaries(instantiator,name) ==
-        slist:=
-          [u for u in $supplementaries | AncestorP(first u,[instantiator])]
-        null slist => nil
-        $supplementaries:= S_-($supplementaries,slist)
-        PRETTYPRINT [instantiator,'" should solve"]
-        PRETTYPRINT slist
-        slist:=
-          [form(u,name) for u in slist] where
-            form([cat,:cond],name) ==
-              u:= ['QUOTE,[cat,:first eval(cat).4]]
-              ['COND,[TryGDC cond,['SETQ,'TrueDomain,['CONS,['CONS,u,name],
-                'TrueDomain]]]]
-        # slist=1 => [CADAR slist]
-                      --return a list, since it is CONSed
-        slist:= ['PROGN,:slist]
-        [['(QUOTE T),slist]]
- 
-setVector4part3(catNames,catvecList) ==
-    --the names are those that will be applied to the various vectors
-  generated:= nil
-  for u in catvecList for uname in catNames repeat
-    for v in third u.4 repeat
-      if w:= assoc(first v,generated)
-         then w.rest := [[rest v,:uname],:rest w]
-         else generated:= [[first v,[rest v,:uname]],:generated]
-  codeList := nil
-  for [w,:u] in generated repeat
-     code := compCategories w
-     for v in u repeat
-       code:= ["setShellEntry",rest v,first v,code]
-     if CONTAINED('$,w) then $epilogue := [code,:$epilogue]
-                        else codeList := [code,:codeList]
-  codeList
- 
 PrepareConditional u == u
  
 setVector5(catNames,locals) ==

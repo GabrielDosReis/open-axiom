@@ -85,7 +85,6 @@ $NRTdeltaListComp := []
 $template := nil
 $signature := nil
 $isOpPackageName := false
-$lisplibCategoriesExtended := []
 $lookupFunction := nil
 $byteAddress := nil
 $byteVec := nil
@@ -732,8 +731,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
         if $isOpPackageName then lisplibWrite('"slot1DataBase",
           ['updateSlot1DataBase,MKQ $NRTslot1Info],$libFile)
         $lisplibFunctionLocations := SUBLIS($pairlis,$functionLocations)
-        $lisplibCategoriesExtended := SUBLIS($pairlis,$lisplibCategoriesExtended)
-        -- see NRTsetVector4 for initial setting of $lisplibCategoriesExtended
         libFn := getConstructorAbbreviationFromDB op'
         $lookupFunction: local :=
             NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm)

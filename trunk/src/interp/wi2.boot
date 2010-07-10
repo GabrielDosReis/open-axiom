@@ -189,8 +189,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
         if $isOpPackageName then lisplibWrite('"slot1DataBase",
           ['updateSlot1DataBase,MKQ $NRTslot1Info],$libFile)
         $lisplibFunctionLocations := SUBLIS($pairlis,$functionLocations)
-        $lisplibCategoriesExtended := SUBLIS($pairlis,$lisplibCategoriesExtended)
-        -- see NRTsetVector4 for initial setting of $lisplibCategoriesExtended
         libFn := getConstructorAbbreviation op'
         $lookupFunction: local :=
             NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm)
