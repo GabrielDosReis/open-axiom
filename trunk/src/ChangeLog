@@ -1,5 +1,12 @@
 2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (addConsDB): Remove.
+	(getOperationAlistFromLisplib): Don't call it.
+	* interp/sys-driver.boot (initializeGlobalState): Remove kludge.
+	* interp/util.lisp (BUILD-INTERPSYS): Likewise.
+
+2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/database.boot (addConsDB): Move from mapConsDB.
 	* interp/nruncomp.boot (mapConsDB): Remove.
 	(catList2catPackageList): Likewise.

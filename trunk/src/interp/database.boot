@@ -677,29 +677,6 @@ markUnique x ==
   x.rest := [u,:rest x]
   rest x
 
-addConsDB x ==
-  min x where
-    min x ==
-      y:=HGET($consDB,x)
-      y => y
-      cons? x =>
-        for z in tails x repeat
-          u:=min first z
-          if not EQ(u,first z) then z.first := u
-        HashCheck x
-      REFVECP x =>
-        for i in 0..MAXINDEX x repeat
-          x.i:=min (x.i)
-        HashCheck x
-      string? x => HashCheck x
-      x
-    HashCheck x ==
-      y:=HGET($consDB,x)
-      y => y
-      HPUT($consDB,x,x)
-      x
-  x
-
 ++ Tail of most function descriptors.
 $FunctionDescriptorTail == '(NIL T ELT)
 
@@ -714,7 +691,7 @@ getOperationAlistFromLisplib x ==
 --  u := removeZeroOneDestructively u
   null u => u          -- this can happen for Object
   CAAR u = '_$unique => rest u
-  f:= addConsDB $FunctionDescriptorTail
+  f:= $FunctionDescriptorTail
   for [op,:sigList] in u repeat
     for items in tails sigList repeat
       [sig,:r] := first items
@@ -724,7 +701,6 @@ getOperationAlistFromLisplib x ==
           else s.rest := QCDDR f
         else r.rest := rest f
       else items.first.rest := f
-      items.first := addConsDB first items
   u and markUnique u
 
 getOplistForConstructorForm (form := [op,:argl]) ==
