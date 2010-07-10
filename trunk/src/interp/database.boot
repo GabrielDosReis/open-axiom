@@ -677,6 +677,28 @@ markUnique x ==
   x.rest := [u,:rest x]
   rest x
 
+addConsDB x ==
+  min x where
+    min x ==
+      y:=HGET($consDB,x)
+      y => y
+      cons? x =>
+        for z in tails x repeat
+          u:=min first z
+          if not EQ(u,first z) then z.first := u
+        HashCheck x
+      REFVECP x =>
+        for i in 0..MAXINDEX x repeat
+          x.i:=min (x.i)
+        HashCheck x
+      string? x => HashCheck x
+      x
+    HashCheck x ==
+      y:=HGET($consDB,x)
+      y => y
+      HPUT($consDB,x,x)
+      x
+  x
 
 ++ Tail of most function descriptors.
 $FunctionDescriptorTail == '(NIL T ELT)
