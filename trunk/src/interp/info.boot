@@ -223,7 +223,7 @@ actOnInfo(u,$e) ==
     compilerMessage('"augmenting %1: %2p", [name,["ATTRIBUTE",att]])
     key:= if CONTAINED("$",vmode) then "domain" else name
     cat:= ["CATEGORY",key,["ATTRIBUTE",att]]
-    $e:= put(name,"value",[vval,mkJoin(cat,vmode),$noEnv],$e)
+    $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)
       --there is nowhere %else that this sort of thing exists
   u is ["SIGNATURE",name,operator,modemap,:q] =>
     kind := 
@@ -240,7 +240,7 @@ actOnInfo(u,$e) ==
        [name,["SIGNATURE",operator,modemap,:q]])
     key:= if CONTAINED("$",vmode) then "domain" else name
     cat:= ["CATEGORY",key,["SIGNATURE",operator,modemap,:q]]
-    $e:= put(name,"value",[vval,mkJoin(cat,vmode),$noEnv],$e)
+    $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)
   u is ["has",name,cat] =>
     [vval,vmode,.]:= GetValue name
     cat=vmode => $e --stating the already known
@@ -262,7 +262,7 @@ actOnInfo(u,$e) ==
             not MEMQ(name,$functorLocalParameters) then
               $functorLocalParameters:=[:$functorLocalParameters,name]
       compilerMessage('"augmenting %1: %2p", [name,cat])
-      $e:= put(name,"value",[vval,mkJoin(cat,vmode),$noEnv],$e)
+      $e:= put(name,"value",[vval,mkJoin(cat,vmode),nil],$e)
     SAY("extension of ",vval," to ",cat," ignored")
     $e
   systemError ['"actOnInfo",u]

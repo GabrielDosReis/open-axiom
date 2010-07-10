@@ -668,9 +668,6 @@ $leaveMode ==
   $EmptyMode
 
 ++
-$noEnv == nil
-
-++
 IDENTITY == 
   function IDENTITY
 
