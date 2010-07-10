@@ -212,8 +212,6 @@ initializeGlobalState() ==
   -- 3. Databases
   if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"database"])
-  if have_to then  -- ??? remove this functiom from the system?
-    SETF(SYMBOL_-FUNCTION "addConsDB", function IDENTITY)
   if have_to then
     fillDatabasesInCore()
     mkLowerCaseConTable()
