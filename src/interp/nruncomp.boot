@@ -554,13 +554,6 @@ reverseCondlist cl ==
       u.rest := [x,:rest u]
   alist
 
-catList2catPackageList u ==
---converts ((Set) (Module R) ...) to ((Set& $) (Module& $ R)...)
-  [fn x for x in u] where
-    fn [op,:argl] ==
-      newOp := INTERN(strconc(PNAME op,"&"))
-      addConsDB [newOp,"$",:argl]
-
 NRTsetVector4a(sig,form,cond) ==
   sig = '$ =>
      domainList :=
@@ -681,32 +674,6 @@ NRTsubstDelta(initSig) ==
         first t in '(Mapping Union Record _:) =>
            [first t,:[replaceSlotTypes(x) for x in rest t]]
         t
-
-mapConsDB x == 
-  [addConsDB y for y in x]
-
-addConsDB x ==
-  min x where
-    min x ==
-      y:=HGET($consDB,x)
-      y => y
-      cons? x =>
-        for z in tails x repeat
-          u:=min first z
-          if not EQ(u,first z) then z.first := u
-        HashCheck x
-      REFVECP x =>
-        for i in 0..MAXINDEX x repeat
-          x.i:=min (x.i)
-        HashCheck x
-      string? x => HashCheck x
-      x
-    HashCheck x ==
-      y:=HGET($consDB,x)
-      y => y
-      HPUT($consDB,x,x)
-      x
-  x
 
 -----------------------------SLOT1 DATABASE------------------------------------
 

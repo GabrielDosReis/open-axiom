@@ -1,5 +1,11 @@
 2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/database.boot (addConsDB): Move from mapConsDB.
+	* interp/nruncomp.boot (mapConsDB): Remove.
+	(catList2catPackageList): Likewise.
+
+2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/functor.boot (setVector4): Remove.  Deadcode.
 	(setVector4Onecat): Likewise.
 	(setVector4part3): Likewise.
