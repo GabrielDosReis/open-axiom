@@ -39,7 +39,7 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	clammed.$(FASLEXT)	nlib.$(FASLEXT)	        \
 	comp.$(FASLEXT)	        foam_l.$(FASLEXT) \
 	pathname.$(FASLEXT)	\
-	compat.$(FASLEXT)	compress.$(FASLEXT)	\
+	compat.$(FASLEXT)	                    	\
 	serror.$(FASLEXT)	ptrees.$(FASLEXT)	\
 	cparse.$(FASLEXT)	cstream.$(FASLEXT)	\
 	g-cndata.$(FASLEXT)	database.$(FASLEXT)	\
@@ -408,7 +408,6 @@ pspad2.$(FASLEXT): pspad1.$(FASLEXT)
 pspad1.$(FASLEXT): macros.$(FASLEXT)
 g-util.$(FASLEXT): ggreater.$(FASLEXT) macros.$(FASLEXT) sys-utility.$(FASLEXT)
 g-cndata.$(FASLEXT): sys-macros.$(FASLEXT)
-compress.$(FASLEXT): sys-macros.$(FASLEXT)
 msg.$(FASLEXT): sys-macros.$(FASLEXT) astr.$(FASLEXT)
 util.$(FASLEXT): parsing.$(FASLEXT)
 fname.$(FASLEXT): macros.$(FASLEXT)
@@ -424,7 +423,7 @@ union.$(FASLEXT): vmlisp.$(FASLEXT)
 ggreater.$(FASLEXT): vmlisp.$(FASLEXT)
 axext_l.$(FASLEXT): foam_l.$(FASLEXT)
 foam_l.$(FASLEXT): vmlisp.$(FASLEXT) sys-constants.$(FASLEXT)
-sys-utility.$(FASLEXT): vmlisp.$(FASLEXT) sys-os.$(FASLEXT)
+sys-utility.$(FASLEXT): vmlisp.$(FASLEXT) sys-os.$(FASLEXT) hash.$(FASLEXT)
 vmlisp.$(FASLEXT): types.$(FASLEXT) sys-globals.$(FASLEXT)
 types.$(FASLEXT): boot-pkg.$(FASLEXT)
 boot-pkg.$(FASLEXT): boot-pkg.lisp

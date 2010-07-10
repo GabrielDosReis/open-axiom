@@ -523,7 +523,6 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
               [:codePart1,:codePart2,:codePart3],"$"]
   $getDomainCode:= nil
     --if we didn't kill this, DEFINE would insert it in the wrong place
-  ans:= minimalise ans
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]
   ans
 

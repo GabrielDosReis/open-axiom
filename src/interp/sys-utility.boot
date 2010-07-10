@@ -35,6 +35,7 @@
 
 import sys_-os
 import vmlisp
+import hash
 namespace BOOT
 
 module sys_-utility where
@@ -285,6 +286,30 @@ hashTable cmp ==
     error '"bad arg to hashTable"
   MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
 
+--% Trees to Graphs
+
+minimalise x ==
+  min(x,hashTable 'EQUAL) where
+    min(x,ht) ==
+      y := HGET(ht,x)
+      y => y
+      cons? x =>
+        z := min(first x,ht)
+        if not EQ(z,first x) then x.first := z
+        z := min(rest x,ht)
+        if not EQ(z,rest x) then x.rest := z
+        hashCheck(x,ht)
+      REFVECP x =>
+        for i in 0..MAXINDEX x repeat
+          x.i := min(x.i,ht)
+        hashCheck(x,ht)
+      string? x => hashCheck(x,ht)
+      x
+    hashCheck(x,ht) ==
+      y := HGET(ht,x)
+      y => y
+      HPUT(ht,x,x)
+      x
 
 --% File IO
 $InputIOMode == KEYWORD::INPUT
