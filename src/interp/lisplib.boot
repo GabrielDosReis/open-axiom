@@ -313,7 +313,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $lisplibKind: local := NIL
   $lisplibModemap: local := NIL
   $lisplibModemapAlist: local := NIL
-  $lisplibCategoriesExtended: local := NIL -- this is always nil. why? (tpd)
   $lisplibSlot1 : local := NIL   --used by NRT mechanisms
   $lisplibOperationAlist: local := NIL
   $lisplibOpAlist: local:= NIL
@@ -340,7 +339,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $op: local := op
   $lisplibAttributes: local := NIL
   $lisplibPredicates: local := NIL -- set by makePredicateBitVector
-  $lisplibCategoriesExtended: local := NIL -- this is always nil. why? (tpd)
   $lisplibForm: local := NIL
   $lisplibKind: local := NIL
   $lisplibAbbreviation: local := NIL

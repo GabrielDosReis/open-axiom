@@ -1,5 +1,19 @@
 2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/functor.boot (setVector4): Remove.  Deadcode.
+	(setVector4Onecat): Likewise.
+	(setVector4part3): Likewise.
+	* interp/nruncomp.boot (NRTsetVector4): Likewise.
+	(NRTsetVector4Part2): Likewise.
+	(mergeAppend): Likewise.
+	* interp/define.boot (compDefineFunctor1): Remove assignment to
+	unused $lisplibCategoriesExtented.
+	* interp/lisplib.boot (compDefineLisplib): Likewise.
+	* interp/wi1.boot (compDefineLisplib): Likewise.
+	* interp/wi2.boot (compDefineFunctor1): Likewise.
+
+2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nruncomp.boot (buildFunctor): Remove deadcode.
 
 2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>

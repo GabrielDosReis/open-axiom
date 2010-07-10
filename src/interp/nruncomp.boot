@@ -516,12 +516,12 @@ NRTcheckVector domainShell ==
   for i in $NRTbase..MAXINDEX domainShell repeat
 --Vector elements can be one of
 -- (a) T           -- item was marked
--- (b) NIL         -- item is a domain; will be filled in by setVector4part3
+-- (b) NIL         -- ???
 -- (c) categoryForm-- it was a domain view; now irrelevant
 -- (d) op-signature-- store missing function info in $CheckVectorList
     v := domainShell.i
     v=true => nil  --item is marked; ignore
-    v=nil => nil  --a domain, which setVector4part3 will fill in
+    v=nil => nil
     atom v => systemErrorHere '"CheckVector"
     atom first v => nil  --category form; ignore
     assoc(first v,alist) => nil
@@ -529,29 +529,6 @@ NRTcheckVector domainShell ==
   alist
 
 mkDomainCatName id == INTERN strconc(id,";CAT")
-
-NRTsetVector4(siglist,formlist,condlist) ==
-  $uncondList: local := nil
-  $condList: local := nil
-  $count: local := 0
-  for sig in reverse siglist for form in reverse formlist
-         for cond in reverse condlist repeat
-                  NRTsetVector4a(sig,form,cond)
-
-  $lisplibCategoriesExtended:= [$uncondList,:$condList]
-  code := ['mapConsDB,MKQ reverse removeDuplicates $uncondList]
-  if $condList then
-    localVariable := gensym()
-    code := [["%LET",localVariable,code]]
-    for [pred,list] in $condList repeat
-      code :=
-        [['COND,[pred,["%LET",localVariable,
-          ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
-            :code]
-    code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
-  g := gensym()
-  [$setelt,'$,4,['PROG2,["%LET",g,code],
-    ['VECTOR,['catList2catPackageList,g],g]]]
 
 NRTsetVector4Part1(siglist,formlist,condlist) ==
   $uncondList: local := nil
@@ -576,27 +553,6 @@ reverseCondlist cl ==
       member(x,rest u) => nil
       u.rest := [x,:rest u]
   alist
-
-NRTsetVector4Part2(uncondList,condList) ==
-  $lisplibCategoriesExtended:= [uncondList,:condList]
-  code := ['mapConsDB,MKQ reverse removeDuplicates uncondList]
-  if condList then
-    localVariable := gensym()
-    code := [["%LET",localVariable,code]]
-    for [pred,list] in condList repeat
-      code :=
-        [['COND,[predicateBitRef SUBLIS($pairlis,pred),["%LET",localVariable,
-          ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
-            :code]
-    code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
-  g := gensym()
-  [$setelt,'$,4,['PROG2,["%LET",g,code],
-    ['VECTOR,['catList2catPackageList,g],g]]]
-
-mergeAppend(l1,l2) ==
-  atom l1 => l2
-  member(first l1,l2) => mergeAppend(rest l1, l2)
-  [first l1, :mergeAppend(rest l1, l2)]
 
 catList2catPackageList u ==
 --converts ((Set) (Module R) ...) to ((Set& $) (Module& $ R)...)
