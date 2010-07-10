@@ -473,7 +473,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   codePart2:=
     argStuffCode :=
       [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
-	for arg in rest $definition]
+	for arg in args]
     if MEMQ($NRTaddForm,$locals) then
        addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
        argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
@@ -486,38 +486,22 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
                  createViewCode,createPredVecCode] where
     devaluateCode:= [[b,["devaluate",a]] for [a,:b] in $devaluateList]
     createDomainCode:=
-      [domname,['LIST,MKQ first $definition,:ASSOCRIGHT $devaluateList]]
+      [domname,['LIST,MKQ name,:ASSOCRIGHT $devaluateList]]
     createViewCode:= ["$",["newShell", $NRTbase + $NRTdeltaLength]]
     createPredVecCode := ["pv$",predBitVectorCode1]
 
   --CODE: part 1
   codePart1:= [setVector0Code, slot3Code,:slamCode] where
     setVector0Code:=[$setelt,"$",0,"dv$"]
-    slot3Code := ["setShellEntry","$",3,"pv$"]
+    slot3Code := [$setelt,"$",3,"pv$"]
     slamCode:=
-      isCategoryPackageName opOf $definition => nil
+      isCategoryPackageName name => nil
       [NRTaddToSlam($definition,"$")]
 
   --CODE: part 3
   $ConstantAssignments :=
       [NRTputInLocalReferences code for code in $ConstantAssignments]
-  codePart3:= [:constantCode1, :constantCode2,:epilogue] where
-    constantCode1:=
-      name='Integer => $ConstantAssignments
-      nil
-                      -- The above line is needed to get the recursion
-                      -- Integer => FontTable => NonNegativeInteger  => Integer
-                      -- right.  Otherwise NNI has 'unset' for 0 and 1
-  --  setVector4c:= setVector4part3($catNames,$catvecList)
-                      -- In particular, setVector4part3 and setVector5,
-                      -- which generate calls to local domain-instantiators,
-                      -- must come after operations are set in the vector.
-                      -- The symptoms of getting this wrong are that
-                      -- operations are not set which should be
-    constantCode2:= --matches previous test on Integer
-      name='Integer => nil
-      $ConstantAssignments
-    epilogue:= $epilogue
+  codePart3:= [:$ConstantAssignments,:$epilogue]
   ans := ["%bind",bindings,
            :washFunctorBody optFunctorBody
               [:codePart1,:codePart2,:codePart3],"$"]
