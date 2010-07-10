@@ -657,30 +657,28 @@ TryGDC cond ==
   cond
  
 SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
-  catNames := ['$]
-  for u in $catvecList for v in catNames repeat
-    null body => return nil
-    for catImplem in LookUpSigSlots(sig,u.1) repeat
-      catImplem is [q,.,index] and (q='ELT or q='CONST) =>
-        if q is 'CONST and body is ['CONS,a,b] then
-           body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
-        body:= ["setShellEntry",v,index,body]
-        if REFVECP $SetFunctions and TruthP flag then
-          u.index := true
-        v='$ =>            -- we are looking at the principal view
-          not REFVECP $SetFunctions => nil --packages don't set it
-          -- the function was already assigned
-          TruthP $SetFunctions.index => return body := nil
-          $SetFunctions.index :=
-            TruthP flag => true
-            not $SetFunctions.index => flag
-            ["or",$SetFunctions.index,flag]
-      catImplem is ['Subsumed,:truename] =>
-        mode='original =>
-          truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90
-          body := SetFunctionSlots(truename,body,nil,mode)
-      keyedSystemError("S2OR0002",[catImplem])
-  body is ["setShellEntry",:.] => body
+  null body => return nil
+  u := first $catvecList
+  for catImplem in LookUpSigSlots(sig,u.1) repeat
+    catImplem is [q,.,index] and (q='ELT or q='CONST) =>
+      if q is 'CONST and body is ['CONS,a,b] then
+         body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
+      body:= ['setShellEntry,'$,index,body]
+      not REFVECP $SetFunctions => nil --packages don't set it
+      if TruthP flag then             -- unconditionally defined function
+        u.index := true
+      TruthP $SetFunctions.index =>   -- the function was already assigned
+        return body := nil
+      $SetFunctions.index :=
+        TruthP flag => true
+        not $SetFunctions.index => flag
+        ['_or,$SetFunctions.index,flag]
+    catImplem is ['Subsumed,:truename] =>
+      mode='original =>
+        truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90
+        body := SetFunctionSlots(truename,body,nil,mode)
+    keyedSystemError("S2OR0002",[catImplem])
+  body is ['setShellEntry,:.] => body
   nil
  
 LookUpSigSlots(sig,siglist) ==
