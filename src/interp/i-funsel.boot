@@ -690,7 +690,7 @@ getFunctionFromDomain(op,dc,args) ==
 isOpInDomain(opName,dom,nargs) ==
   -- returns true only if there is an op in the given domain with
   -- the given number of arguments
-  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
+  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => NIL
   gotOne := NIL
@@ -705,7 +705,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
   -- a "signature" where a type position is non-NIL only if all
   -- signatures shares that type .
   first(dom) in '(Union Record Mapping) => NIL
-  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
+  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => NIL
   gotOne := NIL
@@ -720,7 +720,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
 
 findUniqueOpInDomain(op,opName,dom) ==
   -- return function named op in domain dom if unique, choose one if not
-  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
+  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList =>
     throwKeyedMsg("S2IS0021",[opName,dom])
@@ -792,7 +792,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     NIL
   fun:= NIL
-  ( p := ASSQ(op,getOperationAlistFromLisplib dcName) ) and
+  ( p := ASSQ(op,getConstructorOperationsFromDB dcName) ) and
     SL := constructSubst dc
     -- if the arglist is homogeneous, first look for homogeneous
     -- functions. If we don't find any, look at remaining ones
@@ -1586,7 +1586,7 @@ hasSig(dom,foo,sig,SL) ==
   $domPvar: local := nil
   fun:= constructor? first dom =>
     S0:= constructSubst dom
-    p := ASSQ(foo,getOperationAlistFromLisplib first dom) =>
+    p := ASSQ(foo,getConstructorOperationsFromDB dom.op) =>
       for [x,.,cond,.] in rest p until not (S='failed) repeat
         S:=
           atom cond => copy SL

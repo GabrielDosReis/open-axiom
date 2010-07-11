@@ -328,7 +328,7 @@ retractByFunction(object,u) ==
 
 getConstantFromDomain(form,domainForm) ==
     isPartialMode domainForm => NIL
-    opAlist := getOperationAlistFromLisplib first domainForm
+    opAlist := getConstructorOperationsFromDB domainForm.op
     key := opOf form
     entryList := LASSOC(key,opAlist)
     entryList isnt [[sig, ., ., .]] =>

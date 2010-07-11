@@ -399,7 +399,7 @@ koOps(conform,domname,:options) == main where
       null $packageItem => '(NIL NIL)
       isExposedConstructor opOf conform => [conform,:'(T)]
       [conform,:'(NIL)]
-    for [op,:u] in getOperationAlistFromLisplib conname repeat
+    for [op,:u] in getConstructorOperationsFromDB conname repeat
       op1 := zeroOneConvert op
       acc :=
        [[op1,:[[sig,npred,:exposureTail] for [sig,slot,pred,key,:.] in sublisFormal(subargs,u) |

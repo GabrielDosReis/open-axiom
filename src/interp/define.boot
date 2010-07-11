@@ -884,7 +884,7 @@ genDomainViewList(id,catlist) ==
 mkOpVec(dom,siglist) ==
   dom:= getPrincipalView dom
   substargs:= [['$,:dom.0],:pairList($FormalMapVariableList,rest dom.0)]
-  oplist:= getOperationAlistFromLisplib opOf dom.0
+  oplist:= getConstructorOperationsFromDB opOf dom.0
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
   ops:= MAKE_-VEC (#siglist)
   for (opSig:= [op,sig]) in siglist for i in 0.. repeat

@@ -786,7 +786,7 @@ dcAll con ==
   'done
 
 dcOps conname ==
-  for [op,:u] in reverse getOperationAlistFromLisplib conname repeat
+  for [op,:u] in reverse getConstructorOperationsFromDB conname repeat
     for [sig,slot,pred,key,:.] in u repeat
       suffix := 
         atom pred => nil

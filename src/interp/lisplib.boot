@@ -545,9 +545,6 @@ transformOperationAlist operationAlist ==
       keyedSystemError("S2IL0025",[implementation])
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
-      kind = 'ELT =>
-        condition = 'T => [sig,n]
-        [sig,n,condition]
       [sig,n,condition,kind]
     itemList:= [signatureItem,:LASSQ(op,newAlist)]
     newAlist:= insertAlist(op,itemList,newAlist)
