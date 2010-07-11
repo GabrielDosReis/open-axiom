@@ -390,7 +390,7 @@ namedConstant(id,t) ==
   doms := [getDCFromSystemModemap sysmm for sysmm in sysmms]
   candidates := nil
   for dc in doms | niladicConstructorFromDB first dc repeat
-    LASSOC(id,getOperationAlistFromLisplib first dc) is [[sig,.,.,"CONST"]] =>
+    LASSOC(id,getConstructorOperationsFromDB dc.op) is [[sig,.,.,"CONST"]] =>
       candidates := [[dc,sig],:candidates]
   null candidates => nil
   #candidates = 1 =>

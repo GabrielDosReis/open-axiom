@@ -1,3 +1,22 @@
+2010-07-11  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* interp/database.boot (markUnique): Remove.
+	($FunctionDescriptorTail): Likewise.
+	(getOperationAlistFromLisplib): Likewise.
+	(getOplistForConstructorForm): Adjust.
+	* interp/br-op1.boot (getDomainOpTable): Likewise.
+	* interp/br-op2.boot (koOps): Likewise.
+	* interp/define.boot (genDomainViewList): Likewise.
+	* interp/i-analy.boot (namedConstant): Likewise.
+	* interp/i-coerce.boot (getConstantFromDomain): Likewise.
+	* interp/i-funsel.boot (isOpInDomain): Likewise.
+	(findCommonSigInDomain): Likewise.
+	(findUniqueOpInDomain): Likewise.
+	(hasSig): Likewise.
+	* interp/i-spec2.boot (constantInDomain?): Likewise.
+	* interp/trace.boot (spadTrace): Likewise.
+	* interp/lisplib.boot (transformOperationAlist): Simplify.
+
 2010-07-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/database.boot (addConsDB): Remove.

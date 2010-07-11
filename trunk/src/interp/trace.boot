@@ -441,7 +441,8 @@ spadTrace(domain,options) ==
   domainId:= opOf domain.0
   currentEntry:= assoc(domain,_/TRACENAMES)
   currentAlist:= KDR currentEntry
-  opStructureList:= flattenOperationAlist getOperationAlistFromLisplib domainId
+  opStructureList :=
+    flattenOperationAlist getConstructorOperationsFromDB domainId
   sigSlotNumberAlist:=
     [triple
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)

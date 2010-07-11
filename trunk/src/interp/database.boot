@@ -671,45 +671,13 @@ loadDependents fn ==
 
 --% Miscellaneous Stuff
 
-markUnique x ==
-  u := first x
-  x.first := '(_$unique)
-  x.rest := [u,:rest x]
-  rest x
-
-++ Tail of most function descriptors.
-$FunctionDescriptorTail == '(NIL T ELT)
-
-++ Return the list of overload sets of operations exported by
-++ the constructor `x'.  This function differs from 
-++ getConstructorOperationsFromDB in that it uncompresses the
-++ common tail of most function descriptors.  That compression
-++ was done when the overload sets were saved in the 
-++ operation database.
-getOperationAlistFromLisplib x ==
-  u := getConstructorOperationsFromDB x
---  u := removeZeroOneDestructively u
-  null u => u          -- this can happen for Object
-  CAAR u = '_$unique => rest u
-  f:= $FunctionDescriptorTail
-  for [op,:sigList] in u repeat
-    for items in tails sigList repeat
-      [sig,:r] := first items
-      if r is [.,:s] then
-        if s is [.,:t] then
-          if t is [.] then nil
-          else s.rest := QCDDR f
-        else r.rest := rest f
-      else items.first.rest := f
-  u and markUnique u
-
 getOplistForConstructorForm (form := [op,:argl]) ==
   --  The new form is an op-Alist which has entries (<op> . signature-Alist)
   --    where signature-Alist has entries (<signature> . item)
   --      where item has form (<slotNumber> <condition> <kind>)
   --        where <kind> =  ELT | CONST | Subsumed | (XLAM..) ..
   pairlis := pairList($FormalMapVariableList,argl)
-  opAlist := getOperationAlistFromLisplib op
+  opAlist := getConstructorOperationsFromDB op
   [:getOplistWithUniqueSignatures(op,pairlis,signatureAlist)
       for [op,:signatureAlist] in opAlist]
 

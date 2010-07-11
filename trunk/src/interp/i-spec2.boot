@@ -84,7 +84,7 @@ upDEF t ==
 ++   <%Mode>: the type of the constant.
 ++   T: too many constants designated by `form'.
 constantInDomain?(form,domainForm) ==
-    opAlist := getOperationAlistFromLisplib first domainForm
+    opAlist := getConstructorOperationsFromDB domainForm.op
     key := opOf form
     entryList := [entry for (entry := [.,.,.,k]) in LASSOC(key,opAlist) 
                     | k in '(CONST ASCONST)]

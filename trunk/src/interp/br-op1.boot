@@ -934,7 +934,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
   domname := dom.0
   conname := first domname
   abb := getConstructorAbbreviation conname
-  opAlist := getOperationAlistFromLisplib conname
+  opAlist := getConstructorOperationsFromDB conname
   "append"/[removeDuplicates [[op1,:fn] for [sig,slot,pred,key,:.] in u
               | key ~= 'Subsumed and ((null ops and (op1 := op)) or (op1 := memq(op,ops)))]
                  for [op,:u] in opAlist] where
