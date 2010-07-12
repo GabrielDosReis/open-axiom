@@ -487,7 +487,7 @@ formatComments(u,op,types) ==
   u   
  
 consComments(s,plusPlus) ==
-  s is [word,:r] and null atom r => consComments(r, plusPlus)
+  s is [word,:r] and cons? r => consComments(r, plusPlus)
   s := first s
   null s => nil
   s := consCommentsTran s

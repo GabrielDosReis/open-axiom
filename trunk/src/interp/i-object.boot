@@ -249,7 +249,7 @@ getMode x ==
 ++ sets the mode for the VAT node x to y.
 putMode(x,y) ==
   x is [op,:.] => putMode(op,y)
-  null VECP x => keyedSystemError("S2II0001",[x])
+  not VECP x => keyedSystemError("S2II0001",[x])
   x.1 := y
 
 ++ returns an interpreter object that represents the value of node x.
@@ -265,7 +265,7 @@ getValue x ==
 ++ sets the value of VAT node x to interpreter object y.
 putValue(x,y) ==
   x is [op,:.] => putValue(op,y)
-  null VECP x => keyedSystemError("S2II0001",[x])
+  not VECP x => keyedSystemError("S2II0001",[x])
   x.2 := y
 
 ++ same as putValue(vec, val), except that vec is returned instead of val.
@@ -289,7 +289,7 @@ getUnname x ==
 ++ Subroutine of getUnname.
 getUnname1 x ==
   VECP x => x.0
-  null atom x => keyedSystemError("S2II0001",[x])
+  cons? x => keyedSystemError("S2II0001",[x])
   x
 
 ++ returns the mode-set of VAT node x.
@@ -302,7 +302,7 @@ getModeSet x ==
       y
     keyedSystemError("S2GE0016",['"getModeSet",'"no mode set"])
   m:= getBasicMode x => [m]
-  not atom x => getModeSet first x
+  cons? x => getModeSet first x
   keyedSystemError("S2GE0016",['"getModeSet",
     '"not an attributed tree"])
 
@@ -348,7 +348,7 @@ getModeSetUseSubdomain x ==
     keyedSystemError("S2GE0016",
       ['"getModeSetUseSubomain",'"no mode set"])
   m := getBasicMode0(x,true) => [m]
-  null atom x => getModeSetUseSubdomain first x
+  cons? x => getModeSetUseSubdomain first x
   keyedSystemError("S2GE0016",
     ['"getModeSetUseSubomain",'"not an attributed tree"])
 
@@ -371,7 +371,7 @@ putAtree(x,prop,val) ==
     -- otherwise will be pushing to deeply into calling structure
     if VECP op then putAtree(op,prop,val)
     x
-  null VECP x => x     -- just ignore it
+  not VECP x => x     -- just ignore it
   n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n := val
   x.4 := insertShortAlist(prop,val,x.4)
@@ -383,7 +383,7 @@ getAtree(x,prop) ==
     -- otherwise will be pushing to deeply into calling structure
     VECP op => getAtree(op,prop)
     NIL
-  null VECP x => NIL     -- just ignore it
+  not VECP x => NIL     -- just ignore it
   n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n
   QLASSQ(prop,x.4)

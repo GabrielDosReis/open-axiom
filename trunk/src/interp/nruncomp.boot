@@ -204,12 +204,12 @@ genDeltaEntry(opMmPair,e) ==
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
   odc := dc
-  if not atom dc then 
+  if cons? dc then 
     dc := substitute("$$","$",dc)
   opModemapPair :=
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and
-    (member(dc,$functorLocalParameters) or not atom dc) then
+    (member(dc,$functorLocalParameters) or cons? dc) then
     --create "%domain" entry to $NRTdeltaList
       $NRTdeltaList:= [["%domain",NRTaddInner dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
@@ -320,7 +320,7 @@ NRTisExported? opSig ==
   or/[u for u in $domainShell.1 | u.0 = opSig]
 
 consOpSig(op,sig,dc) ==
-  if not atom op then
+  if cons? op then
     keyedSystemError("S2GE0016",['"consOpSig",'"bad operator in table"])
   mkList [MKQ op,mkList consSig(sig,dc)]
 

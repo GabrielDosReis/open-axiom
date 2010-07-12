@@ -66,7 +66,7 @@ upDEF t ==
   -- performs map definitions.  value is thrown away
   t isnt [op,def,pred,.] => nil
   v:=addDefMap(["DEF",:def],pred)
-  null(LISTP(def)) or null(def) =>
+  not(LISTP(def)) or null(def) =>
     keyedSystemError("S2GE0016",['"upDEF",'"bad map definition"])
   mapOp := first def
   if LISTP(mapOp) then
@@ -184,7 +184,7 @@ upequation tree ==
   -- this should speed things up a bit
   tree isnt [op,lhs,rhs] => NIL
   $Boolean ~= getTarget(op) => NIL
-  null VECP op => NIL
+  not VECP op => NIL
   -- change equation into '='
   op.0 := "="
   bottomUp tree
@@ -363,7 +363,7 @@ putPvarModes(pattern,m) ==
   -- Puts the modes for the pattern variables into $env
   m isnt ["List",um] => throwKeyedMsg("S2IS0030",NIL)
   for pvar in pattern repeat
-    IDENTP pvar => (null (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
+    IDENTP pvar => (not (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
     pvar is ['_:,var] =>
       null (var=$quadSymbol) and put(var,"mode",m,$env)
     pvar is ['_=,var] =>
@@ -788,7 +788,7 @@ getInterpMacroNames() ==
 
 isInterpMacro name ==
   -- look in local and then global environment for a macro
-  null IDENTP name => NIL
+  not IDENTP name => NIL
   name in $specialOps => NIL
   (m := get("--macros--",name,$env)) => m
   (m := get("--macros--",name,$e))   => m

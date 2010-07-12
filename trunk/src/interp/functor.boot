@@ -193,7 +193,7 @@ CategoriesFromGDC x ==
  
 compCategories u ==
   atom u => u
-  not atom first u =>
+  cons? first u =>
     error ['"compCategories: need an atom in operator position", first u]
   first u = "Record" =>
     -- There is no modemap property for these guys so do it by hand.
@@ -455,7 +455,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
   n:=MAXINDEX cat
   code:=
     [u
-      for i in 6..n | not atom cat.i and not atom (sig:= first cat.i)
+      for i in 6..n | cons? cat.i and cons? (sig:= first cat.i)
          and
           (u:=
             SetFunctionSlots(SUBLIS(slist,sig),['ELT,instantiatedBase,i],flag,

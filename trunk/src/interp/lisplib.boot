@@ -207,7 +207,7 @@ loadIfNecessaryAndExists u == loadLibIfNecessary(u,nil)
  
 loadLibIfNecessary(u,mustExist) ==
   u = '$EmptyMode => u
-  null atom u => loadLibIfNecessary(first u,mustExist)
+  cons? u => loadLibIfNecessary(first u,mustExist)
   value:=
     functionp(u) or macrop(u) => u
     GETL(u,'LOADED) => u
@@ -244,7 +244,7 @@ updateCategoryFrameForCategory(category) ==
          addModemap(category, dc, sig, pred, impl, $CategoryFrame))
 
 loadFunctor u ==
-  null atom u => loadFunctor first u
+  cons? u => loadFunctor first u
   loadLibIfNotLoaded u
   u
  
@@ -320,7 +320,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $libFile: local := NIL
   $lisplibVariableAlist: local := NIL
   $lisplibSignatureAlist: local := NIL
-  if null atom fun and null rest fun then fun:= first fun -- unwrap nullary
+  if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
     throwKeyedMsg("S2IL0004",[fun])
@@ -617,7 +617,7 @@ getConstructorSignature ctor ==
  
 getSlotFromCategoryForm ([op,:argl],index) ==
   u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
-  null VECP u =>
+  not VECP u =>
     systemErrorHere '"getSlotFromCategoryForm"
   u . index
  

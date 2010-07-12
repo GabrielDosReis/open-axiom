@@ -438,7 +438,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
             formatOpSignature(op,subsumptionSig)]
         nil
       slot := domain.loc
-      null atom slot =>
+      cons? slot =>
         slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then

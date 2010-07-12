@@ -44,7 +44,7 @@ $insideCompileBodyIfTrue := false
 --% Monitoring functions
 
 lookupDisplay(op,sig,vectorOrForm,suffix) ==
-  null $NRTmonitorIfTrue => nil
+  not $NRTmonitorIfTrue => nil
   prefix := (suffix = '"" => ">"; "<")
   sayBrightly
     concat(prefix,formatOpSignature(op,sig),
@@ -151,14 +151,14 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
   someMatch := false
   while not success for [sig1,:code] in LASSQ(op,table) repeat
     success :=
-      null compareSig(sig,sig1,dollar.0,domain) => false
+      not compareSig(sig,sig1,dollar.0,domain) => false
       code is ['subsumed,a] =>
             subsumptionSig :=
                EQSUBSTLIST(rest(domain.0),$FormalMapVariableList,a)
             someMatch:=true
             false
       predIndex := QSQUOTIENT(code,8192)
-      predIndex ~= 0 and null lookupPred($predVector.predIndex,dollar,domain)
+      predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
         => false
       loc := QSQUOTIENT(QSREMAINDER(code,8192),2)
       loc = 0 =>

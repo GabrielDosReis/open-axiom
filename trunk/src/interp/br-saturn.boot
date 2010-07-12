@@ -1012,7 +1012,7 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
       atom thing => '"unconditional"
       '""
     htSay '"}"
-    if null atom thing then
+    if cons? thing then
       if constructorIfTrue then htSay('" {\em ",dbShowKind thing,'"}")
       htSay '" "
       FUNCALL(fn,thing)

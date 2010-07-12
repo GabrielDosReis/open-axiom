@@ -359,7 +359,7 @@ makeCatPred(zz, cats, thePred) ==
   if zz is ['IF,curPred := ["has",z1,z2],ats,.] then
     ats := if ats is ['PROGN,:atl] then atl else [ats]
     for at in ats repeat
-      if at is ['ATTRIBUTE,z3] and not atom z3 and
+      if at is ['ATTRIBUTE,z3] and cons? z3 and
         constructor? first z3 then
           cats:= [['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],:cats]
       at is ['IF, pred, :.] =>

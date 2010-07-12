@@ -200,7 +200,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
       i := start
       numArgs ~= (numTableArgs :=numvec.i) => nil
       predIndex := numvec.(i := QSADD1 i)
-      NE(predIndex,0) and null testBitVector(predvec,predIndex) => nil
+      NE(predIndex,0) and not testBitVector(predvec,predIndex) => nil
       loc := newCompareSig(sig,numvec,(i := QSADD1 i),dollar,domain)
       null loc => nil  --signifies no match
       loc = 1 => (someMatch := true)
@@ -216,7 +216,7 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
             formatOpSignature(op,subsumptionSig)]
         nil
       slot := domain.loc
-      null atom slot =>
+      cons? slot =>
         slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then
@@ -263,7 +263,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
     integer? KAR addFormCell =>
       or/[newLookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
-    if null VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
+    if not VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
     lookupInDomainVector(op,sig,addFormDomain.index,dollar)
   nil
  
@@ -325,7 +325,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
               packageVec.i := package
               package
           nil
-        null success =>
+        not success =>
           if $monitorNewWorld = true then
             sayBrightlyNT '"  not in: "
             pp (packageForm and devaluate package or entry)
@@ -398,7 +398,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
               packageVec.i := package
               package
           nil
-        null success =>
+        not success =>
           if $monitorNewWorld = true then
             sayBrightlyNT '"  not in: "
             pp (packageForm and devaluate package or entry)
@@ -464,7 +464,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
 --s = a
  
 lazyMatch(source,lazyt,dollar,domain) ==
-  lazyt is [op,:argl] and null atom source and op=first source
+  lazyt is [op,:argl] and cons? source and op=first source
     and #(sargl := rest source) = #argl =>
       op in '(Record Union) and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
@@ -520,11 +520,11 @@ lookupInDomainByName(op,domain,arg) ==
     i := start
     numberOfArgs :=numvec.i
     predIndex := numvec.(i := QSADD1 i)
-    NE(predIndex,0) and null testBitVector(predvec,predIndex) => nil
+    NE(predIndex,0) and not testBitVector(predvec,predIndex) => nil
     slotIndex := numvec.(i + 2 + numberOfArgs)
     newStart := QSPLUS(start,QSPLUS(numberOfArgs,4))
     slot := domain.slotIndex
-    null atom slot and EQ(first slot,first arg) and EQ(rest slot,rest arg) => return (success := true)
+    cons? slot and EQ(first slot,first arg) and EQ(rest slot,rest arg) => return (success := true)
     start := QSPLUS(start,QSPLUS(numberOfArgs,4))
   success
  
@@ -637,7 +637,7 @@ newHasTest(domform,catOrAtt) ==
       HasCategory(evalDomain a,b) => true -- for asharp domains: must return Boolean
   op := opOf catOrAtt
   isAtom := atom catOrAtt
-  null isAtom and op = 'Join =>
+  not isAtom and op = 'Join =>
     and/[newHasTest(domform,x) for x in rest catOrAtt]
 -- we will refuse to say yes for 'Cat has Cat'
 --getConstructorKindFromDB opOf domform = "category" => throwKeyedMsg("S2IS0025",NIL)
@@ -656,7 +656,7 @@ newHasTest(domform,catOrAtt) ==
              pred in '(OR or %or) => or/[evalCond i for i in l]
              pred in '(AND and %and) => and/[evalCond i for i in l]
              x  
-  null isAtom and constructor? op  =>
+  not isAtom and constructor? op  =>
     domain := eval mkEvalable domform
     newHasCategory(domain,catOrAtt)
   catOrAtt is [":",op,type] =>

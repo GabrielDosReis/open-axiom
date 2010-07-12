@@ -359,7 +359,7 @@ forge(word,w,W,entry,e,E,n) ==
 --                          String Pattern Matching
 --=======================================================================
 patternTran pattern ==
-  null hasWildCard? pattern and LITER pattern.0 and
+  not hasWildCard? pattern and LITER pattern.0 and
     UPCASE copy pattern = pattern =>
       name:= abbreviation? INTERN pattern
         or browseError [:bright pattern,

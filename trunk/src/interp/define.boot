@@ -795,7 +795,7 @@ displayMissingFunctions() ==
   null $CheckVectorList => nil
   loc := nil              -- list of local operation signatures
   exp := nil              -- list of exported operation signatures
-  for [[op,sig,:.],:pred] in $CheckVectorList  | null pred repeat
+  for [[op,sig,:.],:pred] in $CheckVectorList  | not pred repeat
     not member(op,$formalArgList) and getmode(op,$e) is ['Mapping,:.] =>
       loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
@@ -872,7 +872,7 @@ genDomainView(viewName,originalName,c,viewSelector) ==
     c
   $e:= augModemapsFromCategory(originalName,viewName,nil,c,$e)
   cd:= ["%LET",viewName,[viewSelector,originalName,mkTypeForm code]]
-  if null member(cd,$getDomainCode) then
+  if not member(cd,$getDomainCode) then
           $getDomainCode:= [cd,:$getDomainCode]
   viewName
 
@@ -1034,7 +1034,7 @@ compDefineCapsuleFunction(df is ['DEF,form,signature,specialCases,body],
     rettype:= resolve(signature'.target,$returnMode)
  
     localOrExported :=
-      null member($op,$formalArgList) and
+      not member($op,$formalArgList) and
         getmode($op,e) is ['Mapping,:.] => 'local
       'exported
  
@@ -1241,7 +1241,7 @@ compile u ==
     $savableItems := [unew, :$saveableItems] -- tested by embedded RWRITE
   optimizedBody:= optimizeFunctionDef u
   stuffToCompile:=
-    if null $insideCapsuleFunctionIfTrue
+    if not $insideCapsuleFunctionIfTrue
        then optimizedBody
        else putInLocalDomainReferences optimizedBody
   $doNotCompileJustPrint=true => (PRETTYPRINT stuffToCompile; op')
@@ -1692,7 +1692,7 @@ DomainSubstitutionFunction(parameters,body) ==
 ++ environment `env'.
 compSignature(opsig,pred,env) ==
   [op,:sig] := opsig
-  not atom op =>
+  cons? op =>
     for y in op repeat 
       compSignature([y,:sig],pred,env)
   op in '(per rep) =>

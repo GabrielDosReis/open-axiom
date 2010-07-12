@@ -432,7 +432,7 @@ popSatOutput(newmode) ==
   $saturnMode
 
 systemErrorHere what ==
-  if not atom what then
+  if cons? what then
      what := [first what, " with: ", :rest what]
   keyedSystemError("S2GE0017",[what])
 
@@ -686,7 +686,7 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 
 blankIndicator x ==
   if IDENTP x then x := PNAME x
-  null string? x or MAXINDEX x < 1 => nil
+  not string? x or MAXINDEX x < 1 => nil
   x.0 = '% and x.1 = 'x =>
     MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
     1

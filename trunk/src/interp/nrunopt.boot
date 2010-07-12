@@ -59,7 +59,7 @@ makeDomainTemplate vec ==
     null item => nil
     newVec.index :=
       atom item => item
-      null atom first item => makeGoGetSlot(item,index)
+      cons? first item => makeGoGetSlot(item,index)
       item   
   $byteVec := "append"/nreverse $byteVec
   newVec
@@ -168,7 +168,7 @@ stuffDomainSlots dollar ==
     predvec := first proto4
     packagevec := second proto4
     auxvec := LIST2VEC [fn for i in 0..MAXINDEX predvec] where fn() ==
-      null testBitVector(bitVector,predvec.i) => nil
+      not testBitVector(bitVector,predvec.i) => nil
       packagevec.i or true
     [auxvec,:CDDR proto4]
 
@@ -710,7 +710,7 @@ dcSize(:options) ==
 dcSizeAll() ==
   count := 0
   total := 0
-  for x in allConstructors() | null atom GETL(x,'infovec) repeat
+  for x in allConstructors() | cons? GETL(x,'infovec) repeat
     count := count + 1
     s := dcSize(x,'quiet)
     sayBrightly [s,'" : ",x]
@@ -848,7 +848,7 @@ extendsCategory(dom,u,v) ==
 extendsCategoryBasic0(dom,u,v) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
     uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
-    null atom c and isCategoryForm(c,nil) =>
+    cons? c and isCategoryForm(c,nil) =>
       slot4 := uVec.4
       LASSOC(c,second slot4) is [=p,:.]
     slot2 := uVec.2

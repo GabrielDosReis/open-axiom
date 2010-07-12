@@ -44,7 +44,7 @@ batchExecute() ==
 getDoc(conName,op,modemap) ==
   [dc,target,sl,pred,D] := simplifyModemap modemap
   sig := [target,:sl]
-  null atom dc =>
+  cons? dc =>
     sig := MSUSBT('$,dc,sig)
     sig := SUBLISLIS($FormalMapVariableList,rest dc,sig)
     getDocForDomain(conName,op,sig)
@@ -280,7 +280,7 @@ transformAndRecheckComments(name,lines) ==
   $exposeFlagHeading : local := 
     atom name => ['"     -- ",name]
     concat('"     --",formatOpSignature(name.0, escapePercent name.1))
-  if null $exposeFlag then sayBrightly $exposeFlagHeading
+  if not $exposeFlag then sayBrightly $exposeFlagHeading
   u := checkComments(name,lines)
   $recheckingFlag := true
   checkRewrite(name,[u])
@@ -315,7 +315,7 @@ checkRewrite(name,lines) == main where   --similar to checkComments from c-doc
     u := checkAddMacros u
     u := checkTexht u
 --  checkBalance u
-    okBefore := null $checkErrorFlag
+    okBefore := not $checkErrorFlag
     checkArguments u
     if $checkErrorFlag then u := checkFixCommonProblem u
     checkRecordHash u
@@ -1302,10 +1302,10 @@ checkDecorateForHt u ==
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
       x = '"$" or x = '"%" => checkDocError ['"Unescaped ",x]
---      null spadflag and string? x and (member(x,$argl) or #x = 1
+--      not spadflag and string? x and (member(x,$argl) or #x = 1
 --        and alphabetic? x.0) and not member(x,'("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      null spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or member(x,'("true" "false")))
+--      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or member(x,'("true" "false")))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

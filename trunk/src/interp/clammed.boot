@@ -123,7 +123,7 @@ isValidType form ==
       -- Arguments to constructors are general expressions.  Below
       -- domain constructors are not considered valid arguments (yet).
       x' := opOf x
-      not atom x' or not IDENTP x' => true   -- surely not constructors
+      cons? x' or not IDENTP x' => true   -- surely not constructors
       getConstructorKindFromDB x' ~= "domain"
 
 selectMms1(op,tar,args1,args2,$Coerce) ==
