@@ -170,7 +170,7 @@ compNoStacking1(x,m,e,$compStack) ==
 
 comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
-  --if null atom y and isDomainForm(y,e) then e := addDomain(x,e)
+  --if cons? y and isDomainForm(y,e) then e := addDomain(x,e)
         --line commented out to prevent adding derived domain forms
   m~=m' and ($bootStrapMode or isDomainForm(m',e))=>[y,m',addDomain(m',e)]
         --isDomainForm test needed to prevent error while compiling Ring
@@ -639,7 +639,7 @@ compFormWithModemap(form,m,e,modemap) ==
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
     [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
-  not atom op => nil
+  cons? op => nil
   modemapList:= get(op,"modemap",e)
   -- Within default implementations, modemaps cannot mention the
   -- current domain. 

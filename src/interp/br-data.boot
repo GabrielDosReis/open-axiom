@@ -740,7 +740,7 @@ sublisFormal(args,exp,:options) == main where
     x is [.,:.] =>
       acc := nil
       y := x
-      while null atom y repeat
+      while cons? y repeat
         acc := [sublisFormal1(args,first y,n),:acc]
         y := rest y
       r := nreverse acc

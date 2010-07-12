@@ -459,7 +459,7 @@ isSharpVar x ==
   IDENTP x and SCHAR(SYMBOL_-NAME x,0) = char "#"
  
 isSharpVarWithNum x ==
-  null isSharpVar x => nil
+  not isSharpVar x => nil
   (n := QCSIZE(p := PNAME x)) < 2 => nil
   ok := true
   c := 0
@@ -583,7 +583,7 @@ get(x,prop,e) ==
   get1(x,prop,e)
 
 get0(x,prop,e) ==
-  not atom x => get(x.op,prop,e)
+  cons? x => get(x.op,prop,e)
   u:= QLASSQ(x,first first e) => QLASSQ(prop,u)
   (tail:= rest first e) and (u:= fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
@@ -591,7 +591,7 @@ get0(x,prop,e) ==
 
 get1(x,prop,e) ==
     --this is the old get
-  not atom x => get(x.op,prop,e)
+  cons? x => get(x.op,prop,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
@@ -617,7 +617,7 @@ put(x,prop,val,e) ==
   $InteractiveMode and not EQ(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
   --e must never be $CapsuleModemapFrame
-  not atom x => put(first x,prop,val,e)
+  cons? x => put(first x,prop,val,e)
   newProplist := augProplistOf(x,prop,val,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
@@ -628,7 +628,7 @@ put(x,prop,val,e) ==
   addBinding(x,newProplist,e)
 
 putIntSymTab(x,prop,val,e) ==
-  null atom x => putIntSymTab(first x,prop,val,e)
+  cons? x => putIntSymTab(first x,prop,val,e)
   pl0 := pl := search(x,e)
   pl :=
     null pl => [[prop,:val]]
@@ -836,7 +836,7 @@ centerString(text,width,fillchar) ==
 stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
-  null (string?(pref) and string?(str)) => NIL
+  not (string?(pref) and string?(str)) => NIL
   (lp := QCSIZE pref) = 0 => true
   lp > QCSIZE str => NIL
   ok := true
@@ -851,7 +851,7 @@ stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
   if IDENTP str then str := PNAME str
-  null (string?(str) and
+  not (string?(str) and
     integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
   not digit?(d := SCHAR(str,pos)) => NIL
   DIG2FIX d
@@ -1085,7 +1085,7 @@ searchCurrentEnv: (%Thing,%List) -> %List
 searchTailEnv: (%Thing,%Env) -> %List
 
 getProplist(x,E) ==
-  not atom x => getProplist(first x,E)
+  cons? x => getProplist(first x,E)
   u:= search(x,E) => u
   --$InteractiveMode => nil
   --$InteractiveMode and (u:= search(x,$InteractiveFrame)) => u

@@ -218,7 +218,7 @@ optCatch (x is ["CATCH",g,a]) ==
   x
  
 optSPADCALL(form is ['SPADCALL,:argl]) ==
-  null $InteractiveMode => form
+  not $InteractiveMode => form
   -- last arg is function/env, but may be a form
   argl is [:argl,fun] and fun is ["ELT",dom,slot] =>
     optCall ['%call,['ELT,dom,slot],:argl]

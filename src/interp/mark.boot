@@ -761,7 +761,7 @@ markInsertChanges(code,form,t,loc) ==
   loc is [i,:r] =>
     x := form
     for j in 0..(i-1) repeat 
-      if not atom x then x := rest x
+      if cons? x then x := rest x
     atom x => 
         pp '"Translator RPLACA error"
         pp $data
@@ -1088,7 +1088,7 @@ markPrintAbbreviation [kind,a,:b] ==
   markTerpri()
 
 markSay s == 
-  null atom s =>
+  cons? s =>
     for x in s repeat
       (markSay(lispStringList2String x); markTerpri())
   PRINTEXP s
@@ -1451,7 +1451,7 @@ rplacaSubst(x, y, u) == (fn(x, y, u); u) where fn(x,y,u) ==
   atom u => nil
   while u is [p, :q] repeat
     if EQ(p, x) then u.first := y
-    if null atom p then fn(x, y, p)
+    if cons? p then fn(x, y, p)
     u := q
     
 buildNewDefinition(op,theSig,formPredAlist) ==

@@ -401,7 +401,7 @@ formatApplication u ==
   formatSelection u
 
 formatHasDotLeadOp u ==
-  u is [op,:.] and (op = "." or not atom op)
+  u is [op,:.] and (op = "." or cons? op)
 
 formatApplication0 u ==
 --format as f(x) as f x if possible
@@ -453,7 +453,7 @@ formatSelectionOp op ==
 formatSelectionOp1 f ==
   f is [op,:argl] => 
     argl is [a] => 
-      not atom op and atom a => formatSelection1 [op,a]
+      cons? op and atom a => formatSelection1 [op,a]
       formatPren f
     format f
   formatOp f

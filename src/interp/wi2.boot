@@ -653,13 +653,13 @@ genDeltaEntry(opMmPair,e) ==
   setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(sig,dc),consDomainForm(dc,nil)]]
- --if null atom dc then
+ --if cons? dc then
  --   sig := substitute('$,dc,sig)
  --   cform := substitute('$,dc,cform)
   opModemapPair :=
     [op,[dc,:[genDeltaSig x for x in sig]],['T,cform]] -- force pred to T
   if null NRTassocIndex dc and
-    (member(dc,$functorLocalParameters) or null atom dc) then
+    (member(dc,$functorLocalParameters) or cons? dc) then
     --create "%domain" entry to $NRTdeltaList
       $NRTdeltaList:= [["%domain",NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
@@ -711,7 +711,7 @@ makeSimplePredicateOrNil p == nil
 mkUserConstructorAbbreviation(c,a,type) ==
   if $AnalyzeOnly or $convert2NewCompiler then
     $abbreviationStack := [[type,a,:c],:$abbreviationStack]
-  if not atom c then c:= first c  --  Existing constructors will be wrapped
+  if cons? c then c:= first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)

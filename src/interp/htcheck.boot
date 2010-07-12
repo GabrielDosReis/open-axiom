@@ -98,7 +98,7 @@ buildHtMacroTable() ==
   $htMacroTable
 
 getHtMacroItem line ==
-  null stringPrefix?('"\newcommand{",line) => nil
+  not stringPrefix?('"\newcommand{",line) => nil
   k := charPosition(char '_},line,11)
   command := SUBSTRING(line,12,k - 12)
   numOfArgs :=

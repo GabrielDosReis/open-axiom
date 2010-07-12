@@ -65,7 +65,7 @@ put(x,prop,val,e) ==
   $InteractiveMode and not EQ(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
   --e must never be $CapsuleModemapFrame
-  null atom x => put(first x,prop,val,e)
+  cons? x => put(first x,prop,val,e)
   newProplist:= augProplistOf(x,prop,val,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
@@ -91,7 +91,7 @@ pmatchWithSl(s,p,al) ==
   s=p => al
   v:= assoc(p,al) => s=rest v or al
   MEMQ(p,$PatternVariableList) => [[p,:s],:al]
-  null atom p and null atom s and (al':= pmatchWithSl(first s,first p,al)) and
+  cons? p and cons? s and (al':= pmatchWithSl(first s,first p,al)) and
     pmatchWithSl(rest s,rest p,al')
 
 --======================================================================
@@ -568,7 +568,7 @@ setqSingle(id,val,m,E) ==
           assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= convert(T,m) or return nil
   if $profileCompiler = true then
-    null IDENTP id => nil
+    not IDENTP id => nil
     key :=
       MEMQ(id,rest $form) => 'arguments
       'locals

@@ -948,7 +948,7 @@ compareTypeLists(tl1,tl2) ==
   -- returns true if every type in tl1 is = or is a subdomain of
   -- the corresponding type in tl2
   for t1 in tl1 for t2 in tl2 repeat
-    null isEqualOrSubDomain(t1,t2) => return NIL
+    not isEqualOrSubDomain(t1,t2) => return NIL
   true
 
 coerceIntAlgebraicConstant(object,t2) ==

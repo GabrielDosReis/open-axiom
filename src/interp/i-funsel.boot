@@ -1335,7 +1335,7 @@ evalMmCat(op,sig,stack,SL) ==
       S='failed and $hope =>
         stack:= [mmC,:stack]
       S = 'failed => return S
-      not atom S =>
+      cons? S =>
         makingProgress:= 'T
         SL:= mergeSubs(S,SL)
   if stack or S='failed then 'failed else SL
@@ -1613,11 +1613,11 @@ hasAtt(dom,att,SL) ==
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until not (S='failed) repeat
           S:= unifyStruct(x,att,copy SL)
-          not atom cond and not (S='failed) => S := hasCatExpression(cond,S)
+          cons? cond and not (S='failed) => S := hasCatExpression(cond,S)
         S
       for [x,cond] in atts until not (S='failed) repeat
         S:= unifyStruct(x,att,copy SL)
-        not atom cond and not (S='failed) => S := hasCatExpression(cond,S)
+        cons? cond and not (S='failed) => S := hasCatExpression(cond,S)
       S
     'failed
   'failed
@@ -1637,8 +1637,8 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   if s1 is [":",x,.] then s1:= x
   if s2 is [":",x,.] then s2:= x
-  if not atom s1 and first s1 = '_# then s1:= # second s1
-  if not atom s2 and first s2 = '_# then s2:= # second s2
+  if cons? s1 and first s1 = '_# then s1:= # second s1
+  if cons? s2 and first s2 = '_# then s2:= # second s2
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
@@ -1659,7 +1659,7 @@ unifyStructVar(v,s,SL) ==
   (s0 := LASSOC(v, SL)) or (s0 := LASSOC(v,$Subst)) =>
     S:= unifyStruct(s0,s1,copy SL)
     S='failed =>
-      $Coerce and not atom s0 and constructor? first s0 =>
+      $Coerce and cons? s0 and constructor? first s0 =>
         containsVars s0 or containsVars s1 =>
           ns0 := subCopy(s0, SL)
           ns1 := subCopy(s1, SL)

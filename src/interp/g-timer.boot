@@ -140,7 +140,7 @@ startTimingProcess name ==
   if EQ(name, 'load) then          statRecordLoadEvent()
  
 stopTimingProcess name ==
-  (name ~= peekTimedName()) and null $InteractiveMode =>
+  (name ~= peekTimedName()) and not $InteractiveMode =>
     keyedSystemError("S2GL0015",[name,peekTimedName()])
   updateTimedName peekTimedName()
   popTimedName()

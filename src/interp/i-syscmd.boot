@@ -159,7 +159,7 @@ selectOptionLC(x,l,errorFunction) ==
 
 selectOption(x,l,errorFunction) ==
   member(x,l) => x                   --exact spellings are always OK
-  null IDENTP x =>
+  not IDENTP x =>
     errorFunction => FUNCALL(errorFunction,x,u)
     nil
   u := [y for y in l | stringPrefix?(PNAME x,PNAME y)]
@@ -1719,7 +1719,7 @@ resetInCoreHist() ==
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
-  null integer? n => sayKeyedMsg("S2IH0015",[n]) 
+  not integer? n => sayKeyedMsg("S2IH0015",[n]) 
   dif:= n-$HistListLen
   $HistListLen:= n
   l:= rest $HistList

@@ -49,7 +49,7 @@ namespace BOOT
 --    atom a => b
 --    a := conform2OutputForm a
 --    [mathform2HtString x for x in rest a]
---  if not atom a then a := first a
+--  if cons? a then a := first a
 --  da := DOWNCASE a
 --  pageName := LASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping))) =>
 --    downlink pageName              --special jump out for primitive domains
@@ -65,7 +65,7 @@ conPage(a,:b) ==
     atom a => [a,:b]
     a
   $conArgstrings: local := [form2HtString x for x in KDR a]
-  if not atom a then a := first a
+  if cons? a then a := first a
   da := DOWNCASE a
   pageName := LASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping)(enumeration . DomainEnumeration))) =>
     downlink pageName                --special jump out for primitive domains
@@ -743,7 +743,7 @@ conOpPage1(conform,:options) ==
   MEMQ(conname,$DomainNames) =>
      dbSpecialOperations conname
   domname         :=                        --> !!note!! <--
-    null atom conform => conform
+    cons? conform => conform
     nil
   line := conPageFastPath conname
   [kind,name,nargs,xflag,sig,args,abbrev,comments]:=parts:= dbXParts(line,7,1)

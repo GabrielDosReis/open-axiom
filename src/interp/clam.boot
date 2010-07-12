@@ -610,18 +610,18 @@ hputNewProp(ht,op,argList,val) ==
 listTruncate(l,n) ==
   u:= l
   n:= QSSUB1 n
-  while n ~= 0 and null atom u repeat
+  while n ~= 0 and cons? u repeat
     n:= QSSUB1 n
     u:= rest u
-  if null atom u then
-    if null atom rest u and $reportInstantiations = true then
+  if cons? u then
+    if cons? rest u and $reportInstantiations = true then
       recordInstantiation($op,CAADR u,true)
     u.rest := nil
   l
  
 lassocShift(x,l) ==
   y:= l
-  while not atom y repeat
+  while cons? y repeat
     EQUAL(x,first first y) => return (result := first y)
     y:= rest y
   result =>
@@ -633,7 +633,7 @@ lassocShift(x,l) ==
  
 lassocShiftWithFunction(x,l,fn) ==
   y:= l
-  while not atom y repeat
+  while cons? y repeat
     FUNCALL(fn,x,first first y) => return (result := first y)
     y:= rest y
   result =>
@@ -645,7 +645,7 @@ lassocShiftWithFunction(x,l,fn) ==
  
 lassocShiftQ(x,l) ==
   y:= l
-  while not atom y repeat
+  while cons? y repeat
     EQ(x,first first y) => return (result := first y)
     y:= rest y
   result =>
@@ -657,7 +657,7 @@ lassocShiftQ(x,l) ==
  
 -- rassocShiftQ(x,l) ==
 --   y:= l
---   while not atom y repeat
+--   while cons? y repeat
 --     EQ(x,rest first y) => return (result := first y)
 --     y:= rest y
 --   result =>

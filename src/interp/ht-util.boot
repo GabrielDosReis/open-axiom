@@ -397,7 +397,7 @@ pvarCondList1(pvarList, activeConds, condList) ==
   pvarCondList1(pvarList, activeConds, restConds)
 
 pvarsOfPattern pattern ==
-  null LISTP pattern => nil
+  not LISTP pattern => nil
   [pvar for pvar in rest pattern | pvar in $PatternVariableList]
 
 htMakeTemplates(templateList, numLabels) ==

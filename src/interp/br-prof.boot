@@ -248,7 +248,7 @@ hasNewInfoAlist conname ==
 
 hasNewInfoText u ==
   and/[atom op and "and"/[item is [sig,:alist] and
-    null sig or null atom sig and null atom alist for item in items] for [op,:items] in u]
+    null sig or cons? sig and cons? alist for item in items] for [op,:items] in u]
 
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"

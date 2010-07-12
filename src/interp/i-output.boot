@@ -1858,7 +1858,7 @@ keyp(u) ==
 
 absym x ==
   (NUMBERP x) and (MINUSP x) => -x
-  not (atom x) and (keyp(x) = '_-) => second x
+  cons? x and (keyp(x) = '_-) => second x
   x
 
 agg(n,u) ==
@@ -1875,7 +1875,7 @@ argsapp(u,x,y,d) == appargs(rest u,x,y,d)
 subspan u ==
   atom u => 0
   NUMBERP rest u => subspan first u
-  (not atom first u             and_
+  (cons? first u             and_
    atom CAAR u           and_
    not NUMBERP CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
@@ -1887,7 +1887,7 @@ agggsub u == subspan rest u
 superspan u ==
   atom u => 0
   NUMBERP rest u => superspan first u
-  (not atom first u               and_
+  (cons? first u               and_
    atom CAAR u             and_
    not NUMBERP CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
@@ -1966,7 +1966,7 @@ appext(u,x,y,d) ==
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
   n := MAX(WIDTH second u, WIDTH agg(4,u), temp)
   if first(z := agg(5,u)) is ["EXT",:.] and
-   (n=3 or (n > 3 and not (atom z)) ) then
+   (n=3 or (n > 3 and cons? z) ) then
      n := 1 + n
   d := APP(z, x + n, y, d)
 
@@ -1976,7 +1976,7 @@ apphor(x1,x2,y,d,char) ==
 
 syminusp x ==
   NUMBERP x => MINUSP x
-  not (atom x) and EQ(keyp x,'_-)
+  cons? x and EQ(keyp x,'_-)
 
 appsum(u, x, y, d) ==
   null u => d
@@ -2042,7 +2042,7 @@ extwidth(u) ==
            1 + WIDTH agg(2, u) + WIDTH agg(3, u) )
   nil or
          (first(z := agg(5, u)) is ["EXT",:.] and _
-          (n=3 or ((n > 3) and null atom z) )  =>
+          (n=3 or ((n > 3) and cons? z) )  =>
           n := 1 + n)
   true => n + WIDTH agg(5, u)
 

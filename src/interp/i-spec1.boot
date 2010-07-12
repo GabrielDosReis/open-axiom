@@ -379,7 +379,7 @@ upTARGET t ==
   not isLegitimateMode(m,NIL,NIL) => throwKeyedMsg("S2IE0004",[m])
   categoryForm?(m) => throwKeyedMsg("S2IE0014",[m])
   $declaredMode:= m
-  not atom(lhs) and putTarget(lhs,m)
+  cons? lhs and putTarget(lhs,m)
   ms := bottomUp lhs
   first ms ~= m =>
     throwKeyedMsg("S2IC0011",[first ms,m])
@@ -491,7 +491,7 @@ upLoopIters itrl ==
 upLoopIterIN(iter,index,s) ==
   iterMs := bottomUp s
 
-  null IDENTP index =>  throwKeyedMsg("S2IS0005",[index])
+  not IDENTP index =>  throwKeyedMsg("S2IS0005",[index])
 
   if $genValue and first iterMs is ['Union,:.] then
     v := coerceUnion2Branch getValue s
@@ -518,7 +518,7 @@ upLoopIterIN(iter,index,s) ==
   mkIteratorVariable index
 
 upLoopIterSTEP(index,lower,step,upperList) ==
-  null IDENTP index => throwKeyedMsg("S2IS0005",[index])
+  not IDENTP index => throwKeyedMsg("S2IS0005",[index])
   ltype := IFCAR bottomUpUseSubdomain(lower)
   not (typeIsASmallInteger(ltype) or isEqualOrSubDomain(ltype,$Integer))=>
     throwKeyedMsg("S2IS0007",['"lower"])

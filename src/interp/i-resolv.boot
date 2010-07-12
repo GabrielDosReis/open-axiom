@@ -515,7 +515,7 @@ resolveTMRecord(tr,mr) ==
     ra := resolveTM1(third ta, third ma)   -- resolve modes
     null ra => ok := NIL
     tt := [[first ta,second ta,ra],:tt]
-  null ok => NIL
+  not ok => NIL
   ['Record,nreverse tt]
 
 resolveTMUnion(t, m is ['Union,:ums]) ==
@@ -626,7 +626,7 @@ resolveTMEq1(ct,cm) ==
     ct := rest ct
     xm := first cm
     cm := rest cm
-    if not (atom xm) and first xm = ":"  --  i.e. Record
+    if cons? xm and first xm = ":"  --  i.e. Record
       and first xt = ":" and second xm = second xt then
         xm := third xm
         xt := third xt

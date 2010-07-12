@@ -299,7 +299,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   --condlist:=[[cond,:cond1],:condlist]
     e:= addModemapKnown(op,domainName,sig,cond,fnsel,e) -- cond was cond1
 --  for u in sig | (not member(u,$DomainsInScope)) and
---                   (not atom u) and
+--                   (cons? u) and
 --                     (not isCategoryForm(u,e)) do
 --     e:= addNewDomain(u,e)
   e

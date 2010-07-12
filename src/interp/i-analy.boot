@@ -511,7 +511,7 @@ bottomUpForm3(t,op,opName,argl,argModeSetList) ==
   bottomUpForm2(t,op,opName,argl,argModeSetList)
 
 bottomUpForm2(t,op,opName,argl,argModeSetList) ==
-  not atom t and opName="%%" => bottomUpPercent t
+  cons? t and opName="%%" => bottomUpPercent t
   opVal := getValue op
 
   -- for things with objects in operator position, be careful before
@@ -568,7 +568,7 @@ removeUnionsAtStart(argl,modeSets) ==
     m := objMode(v)
     m isnt ['Union,:.] => nil
     val := objVal(v)
-    null isWrapped val => nil
+    not isWrapped val => nil
     val' := retract v
     m' := objMode val'
     putValue(arg,val')
