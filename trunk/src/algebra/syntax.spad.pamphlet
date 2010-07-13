@@ -581,16 +581,18 @@ Literal(T: SetCategory): Public == Private where
 ++       
 )abbrev domain IDENT Identifier
 Identifier(): Public == Private where
-  Public == Join(SetCategory, CoercibleTo Symbol) with
+  Public == Join(SetCategory, CoercibleTo Symbol, CoercibleTo String) with
     gensym: () -> %  
       ++ \spad{gensym()} returns a new identifier, different from 
       ++ any other identifier in the running system
   Private == add
     import %peq: (%,%) -> Boolean from Foreign Builtin
-    import %gensym: () -> %      from Foreign Builtin
+    import %gensym: () -> %       from Foreign Builtin
+    import %sname: % -> String    from Foreign Builtin
     gensym() == %gensym()
     x = y == %peq(x,y)
     coerce(x: %): Symbol == x : Symbol
+    coerce(x: %): String == %sname x
     coerce(x: %): OutputForm == x : OutputForm
 
 @

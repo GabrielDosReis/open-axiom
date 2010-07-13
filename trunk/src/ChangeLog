@@ -1,3 +1,10 @@
+2010-07-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot: %sname is a side-effect free operator.
+	* interp/g-util.boot: Expand it.
+	* algebra/syntax.spad.pamphlet (Identifer): Now satisfies
+	CoercibleTo String.
+
 2010-07-11  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* interp/database.boot (markUnique): Remove.

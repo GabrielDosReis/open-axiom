@@ -382,6 +382,7 @@ for x in [
 
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
+    ['%sname,   :'SYMBOL_-NAME],
 
     -- string unary functions
     ['%string?, :'STRINGP],
