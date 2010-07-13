@@ -62,7 +62,7 @@ const char* htdbfile;  // Database file of the hyperdoc pages.
  * when str1 is less than str2, or a positive integer if str1 is 
  * greater than str2, according to the lexicographical order.
  */
-int 
+static int 
 pages_cmp(const char **str1, const char **str2)
 {
     return strcmp(*str1,*str2);
@@ -123,7 +123,9 @@ presea(char** links, int n, int cases, char* pattern)
 }
 
 /*
- * Set global variables.
+ * Set global variables with the locations of the
+ * Hyperdoc pages, the hthits program and the Hyperdoc
+ * pages database.
  */
 void
 setvariables(void) {
@@ -194,7 +196,7 @@ htsearch(char* pattern)
 /*
  * Display how to use the htsearch program.  
  */
-void
+static void
 usage(void)
 {
     fprintf(stderr, "Usage: htsearch pattern \n");

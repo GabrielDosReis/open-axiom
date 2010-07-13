@@ -811,3 +811,79 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
    return proc->id;
 #endif   
 }
+
+/* String manipulation functions */
+
+OPENAXIOM_EXPORT char* oa_strcat(const char* left, const char* right)
+{
+   int left_size = 0, right_size = 0;
+
+   left_size = strlen(left);
+   right_size = strlen(right);
+
+   int size = left_size + right_size;
+   char* buffer = malloc((size + 1) * sizeof(char));
+
+   memset(buffer,'\0',size+1);
+   memcpy(buffer, left, left_size);
+   memcpy(buffer+left_size, right, right_size);
+
+   return buffer;
+}
+
+OPENAXIOM_EXPORT char* oa_substr(const char* str, const size_t begin, const size_t end)
+{
+   char* substring;
+   int len;
+
+   if (str == NULL || strlen(str) == 0 ||
+      strlen(str) < begin || end >= strlen(str) ||
+      begin > end || begin < 0 || end < 0)
+         return NULL;
+
+   len = (end - begin) + 2;
+   substring = malloc(len * sizeof(char));
+   memset(substring,'\0',len);
+   memcpy(substring, str+begin, len-1);
+
+   return substring;
+}
+
+OPENAXIOM_EXPORT void oa_insert(char** list, const char* element, int* size)
+{
+   char** temp = malloc((*size + 1) * sizeof(char*));
+
+   memcpy(temp,*list,*size * sizeof(char*));
+
+   *(temp + *size) = malloc(sizeof(element) * sizeof(char*));
+   *(temp + *size) = element;
+   *size = *size + 1;
+
+   free(*list);
+   *list = temp;
+}
+
+OPENAXIOM_EXPORT char** oa_split(const char* sequence, const char** delimiter, int* size)
+{
+   int sequence_length;
+   char* result;
+   char** list;
+   char* sequence_copy;
+
+   *size = 0;
+   list = malloc(sizeof(char*));
+   sequence_length = strlen(sequence);
+
+   sequence_copy = malloc((sequence_length + 1) * sizeof(char));
+   *(sequence_copy + (sequence_length)) = '\0';
+   memcpy(sequence_copy,sequence,sequence_length * sizeof(char));
+
+   result = strtok(sequence_copy, delimiter);
+   while (result != NULL) {
+      oa_insert(&list, result, size);
+      result = strtok (NULL, delimiter);
+   }
+
+   return list;
+}
+

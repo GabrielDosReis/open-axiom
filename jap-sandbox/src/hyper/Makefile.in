@@ -100,7 +100,7 @@ ex2ht_DEPENDENCIES =
 
 htsearch_SOURCES = htsearch.c
 htsearch_objects = $(htsearch_SOURCES:.c=.$(OBJEXT))
-htsearch_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
+htsearch_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
 htsearch_DEPENDENCIES =
 
 subdir = src/hyper/
