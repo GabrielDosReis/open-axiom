@@ -299,7 +299,7 @@ minimalise x ==
         z := min(rest x,ht)
         if not EQ(z,rest x) then x.rest := z
         hashCheck(x,ht)
-      REFVECP x =>
+      vector? x =>
         for i in 0..MAXINDEX x repeat
           x.i := min(x.i,ht)
         hashCheck(x,ht)

@@ -163,7 +163,7 @@ stuffDomainSlots dollar ==
   dollar.2 := infovec.2
   proto4 := infovec.3
   dollar.4 := 
-    VECP CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
+    vector? CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
     bitVector := dollar.3
     predvec := first proto4
     packagevec := second proto4
@@ -373,7 +373,7 @@ NRTmakeCategoryAlist() ==
     ['CONS, MKQ LIST2VEC slot0,
       ['CONS, MKQ LIST2VEC [encodeCatform x for x in catformvec],
         ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
-  --NOTE: this is new form: old form satisfies VECP CDDR form
+  --NOTE: this is new form: old form satisfies vector? CDDR form
 
 encodeCatform x ==
   k := NRTassocIndex x => k
@@ -507,7 +507,7 @@ getOpSegment index ==
 getCodeVector() ==
   proto4 := $infovec.3
   u := CDDR proto4
-  VECP u => u           --old style
+  vector? u => u           --old style
   rest u                 --new style
 
 formatSlotDomain x ==
@@ -592,7 +592,7 @@ dcCats con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   u := $infovec.3
-  VECP CDDR u => dcCats1 con    --old style slot4
+  vector? CDDR u => dcCats1 con    --old style slot4
   $predvec:= getConstructorPredicatesFromDB con
   catpredvec := first u
   catinfo := second u
@@ -675,13 +675,13 @@ dcSize(:options) ==
   aSize := numberOfNodes infovec.2
   slot4 := infovec.3
   catvec := 
-    VECP CDDR slot4 => second slot4
+    vector? CDDR slot4 => second slot4
     third slot4
   n := MAXINDEX catvec
   cSize := sum(nodeSize(2),vectorSize(SIZE first slot4),vectorSize(n + 1),
                nodeSize(+/[numberOfNodes catvec.i for i in 0..n]))
   codeVector :=
-    VECP CDDR slot4 => CDDR slot4
+    vector? CDDR slot4 => CDDR slot4
     CDDDR slot4
   vSize := halfWordSize(SIZE codeVector)
   itotal := sum(tSize,oSize,aSize,cSize,vSize)

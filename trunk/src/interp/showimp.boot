@@ -155,7 +155,7 @@ getDomainExtensionsOfDomain domain ==
 
 devaluateSlotDomain(u,dollar) ==
   u = '$ => devaluate dollar
-  FIXP u and VECP (y := dollar.u) => devaluate y
+  FIXP u and vector? (y := dollar.u) => devaluate y
   u is ['NRTEVAL,y] => MKQ eval y
   u is ['QUOTE,y] => u
   u is [op,:argl] => [op,:[devaluateSlotDomain(x,dollar) for x in argl]]
@@ -168,7 +168,7 @@ getCategoriesOfDomain domain ==
      test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
      fn() ==
-       VECP x => devaluate x
+       vector? x => devaluate x
        devaluateSlotDomain(x,domain)
 
 getInheritanceByDoc(D,op,sig,:options) ==
@@ -196,14 +196,14 @@ getDomainRefName(dom,nam) ==
   cons? nam => [getDomainRefName(dom,x) for x in nam]
   not FIXP nam => nam
   slot := dom.nam
-  VECP slot => slot.0
+  vector? slot => slot.0
   slot is ["setShellEntry",:.] => 
     getDomainRefName(dom,getDomainSeteltForm slot)
   slot
 
 getDomainSeteltForm ["setShellEntry",.,.,form] ==
   form is ['evalSlotDomain,u,d] => devaluateSlotDomain(u,d)
-  VECP form => systemError()
+  vector? form => systemError()
   form
  
 showPredicates dom ==
@@ -241,7 +241,7 @@ showGoGet dom ==
     sayBrightly [i,'": ",:formatOpSignature(op,signumList),:namePart]
 
 formatLazyDomain(dom,x) ==
-  VECP x => devaluate x
+  vector? x => devaluate x
   x is [dollar,slotNumber,:form] => formatLazyDomainForm(dom,form)
   systemError nil
  

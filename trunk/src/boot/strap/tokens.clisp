@@ -231,6 +231,7 @@
                   (LIST '|symbol?| 'SYMBOLP) (LIST '|take| 'TAKE)
                   (LIST '|third| 'CADDR) (LIST '|true| 'T)
                   (LIST '|upperCase?| 'UPPER-CASE-P)
+                  (LIST '|vector?| 'SIMPLE-VECTOR-P)
                   (LIST '|writeByte| 'WRITE-BYTE)
                   (LIST '|writeLine| 'WRITE-LINE) (LIST 'PLUS '+)
                   (LIST 'MINUS '-) (LIST 'TIMES '*) (LIST 'POWER 'EXPT)

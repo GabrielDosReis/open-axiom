@@ -170,7 +170,7 @@ pushDownOnArithmeticVariables(op,target,arglist) ==
   not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
   not containsPolynomial(target)   => NIL
   for x in arglist for i in 1.. repeat
-    VECP(x) =>   -- leaf
+    vector?(x) =>   -- leaf
       transferPropsToNode(xn := getUnname(x),x)
       getValue(x) or (xn = $immediateDataSymbol) => NIL
       t := getMinimalVariableTower(xn,target) or target

@@ -682,7 +682,7 @@ globalHashtableStats(x,sortFn) ==
     pp args
  
 constructor2ConstructorForm x ==
-  VECP x => x.0
+  vector? x => x.0
   x
  
 rightJustifyString(x,maxWidth) ==

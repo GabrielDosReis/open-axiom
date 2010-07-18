@@ -1119,7 +1119,7 @@ chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==
     sayBrightly ["--> ", key, " <---"]
     hahaha(key)
   atom x => cnt
-  VECP x => systemError nil
+  vector? x => systemError nil
   for y in x repeat cnt := fn(y, cnt + 1, key)
   cnt
  

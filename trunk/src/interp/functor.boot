@@ -71,8 +71,8 @@ DomainPrint(D,brief) ==
   SAY '"-----------------------------------------------------------------------"
  
 DomainPrint1(D,brief,$e) ==
-  REFVECP D and not isDomain D => PacPrint D
-  if REFVECP D then D:= D.4
+  vector? D and not isDomain D => PacPrint D
+  if vector? D then D:= D.4
              --if we were passed a vector, go to the domain
   Sublis:=
     [:
@@ -85,11 +85,11 @@ DomainPrint1(D,brief,$e) ==
     if not brief then
       SAY ['"View number ",i,'" corresponding to categories:"]
       PRETTYPRINT first u
-    if i=1 and REFVECP uu.5 then
+    if i=1 and vector? uu.5 then
       vv:= COPY_-SEQ uu.5
       uu.5:= vv
       for j in 0..MAXINDEX vv repeat
-        if REFVECP vv.j then
+        if vector? vv.j then
           l:= ASSQ(keyItem vv.j,Sublis)
           if l
              then name:= rest l
@@ -103,13 +103,13 @@ DomainPrint1(D,brief,$e) ==
       uu.1:= uu.2:= uu.5:= '"As in first view"
     for i in 6..MAXINDEX uu repeat
       uu.i:= DomainPrintSubst(uu.i,Sublis)
-      if REFVECP uu.i then
+      if vector? uu.i then
         name:=DPname()
         Sublis:= [[keyItem uu.i,:name],:Sublis]
         $Sublis:= [first Sublis,:$Sublis]
         $WhereList:= [[name,:uu.i],:$WhereList]
         uu.i:= name
-      if uu.i is [.,:v] and REFVECP v then
+      if uu.i is [.,:v] and vector? v then
         name:=DPname()
         Sublis:= [[keyItem v,:name],:Sublis]
         $Sublis:= [first Sublis,:$Sublis]
@@ -125,7 +125,7 @@ DPname() ==
 PacPrint v ==
   vv:= COPY_-SEQ v
   for j in 0..MAXINDEX vv repeat
-    if REFVECP vv.j then
+    if vector? vv.j then
       l:= ASSQ(keyItem vv.j,Sublis)
       if l
          then name:= rest l
@@ -135,7 +135,7 @@ PacPrint v ==
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:vv.j],:$WhereList]
       vv.j:= name
-    if cons? vv.j and REFVECP(u:=rest vv.j) then
+    if cons? vv.j and vector?(u:=rest vv.j) then
       l:= ASSQ(keyItem u,Sublis)
       if l
          then name:= rest l
@@ -602,7 +602,7 @@ SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
       if q is 'CONST and body is ['CONS,a,b] then
          body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
       body:= ['setShellEntry,'$,index,body]
-      not REFVECP $SetFunctions => nil --packages don't set it
+      not vector? $SetFunctions => nil --packages don't set it
       if TruthP flag then             -- unconditionally defined function
         u.index := true
       TruthP $SetFunctions.index =>   -- the function was already assigned

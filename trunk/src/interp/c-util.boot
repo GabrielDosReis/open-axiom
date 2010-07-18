@@ -192,7 +192,7 @@ declareUnusedParameters x == (augment x; x) where
       augment x'
 
 devaluate d ==
-  not REFVECP d => d
+  not vector? d => d
   QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
     getShellEntry(d,0)
   QSGREATERP(QVSIZE d,0) =>
@@ -204,7 +204,7 @@ devaluate d ==
 devaluateList l == [devaluate d for d in l]
  
 devaluateDeeply x ==
-  VECP x => devaluate x
+  vector? x => devaluate x
   atom x => x
   [devaluateDeeply y for y in x]
 

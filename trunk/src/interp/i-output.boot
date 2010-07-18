@@ -484,7 +484,7 @@ outputTran x ==
   member(x,'("failed" "nil" "prime" "sqfr" "irred")) =>
     strconc('"_"",x,'"_"")
   string? x => x
-  VECP x =>
+  vector? x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
   NUMBERP x =>
     MINUSP x => ["-",MINUS x]
@@ -716,14 +716,14 @@ outputConstructTran x ==
   [outputTran first x,:outputConstructTran rest x]
 
 outputTranMatrix x ==
-  not VECP x =>
+  not vector? x =>
     -- assume that the only reason is that we've been done before
     ["MATRIX",:x]
     --keyedSystemError("S2GE0016",['"outputTranMatrix",
     -- '"improper internal form for matrix found in output routines"])
   ["MATRIX",nil,:[outtranRow x.i for i in 0..MAXINDEX x]] where
     outtranRow x ==
-      not VECP x =>
+      not vector? x =>
         keyedSystemError("S2GE0016",['"outputTranMatrix",
           '"improper internal form for matrix found in output routines"])
       ["ROW",:[outputTran x.i for i in 0..MAXINDEX x]]

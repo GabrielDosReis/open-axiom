@@ -880,7 +880,7 @@ getRegistry(op,sig) ==
   '""
 
 evalableConstructor2HtString domform ==
-  if VECP domform then domform := devaluate domform
+  if vector? domform then domform := devaluate domform
   conname := first domform
   coSig   := rest getDualSignatureFromDB conname
   --entries are T for arguments which are domains; NIL for computational objects
@@ -956,7 +956,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
           f = 'makeSpadConstant => 'constant
           f = function IDENTITY => 'constant
           f = 'newGoGet => substitute('_$,domname,devaluate first r)
-          not VECP r => systemError devaluateList r
+          not vector? r => systemError devaluateList r
           substitute('_$,domname,devaluate r)
         'nowhere
       [sig1,:info]

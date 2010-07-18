@@ -112,7 +112,7 @@ upDollar t ==
   (not $genValue) and "or"/[CONTAINED(var,D) for var in $localVars] =>
     keyedMsgCompFailure("S2IS0032",NIL)
   D="Lisp" => upLispCall(op,form)
-  if VECP D and (SIZE(D) > 0) then D := D.0
+  if vector? D and (SIZE(D) > 0) then D := D.0
   t := evaluateType unabbrev D
   categoryForm? t =>
     throwKeyedMsg("S2IE0012", [t])
@@ -184,7 +184,7 @@ upequation tree ==
   -- this should speed things up a bit
   tree isnt [op,lhs,rhs] => NIL
   $Boolean ~= getTarget(op) => NIL
-  not VECP op => NIL
+  not vector? op => NIL
   -- change equation into '='
   op.0 := "="
   bottomUp tree
@@ -722,7 +722,7 @@ upTableSetelt(op,lhs is [htOp,:args],rhs) ==
 
 unVectorize body ==
   -- transforms from an atree back into a tree
-  VECP body =>
+  vector? body =>
     name := getUnname body
     name ~= $immediateDataSymbol => name
     objValUnwrap getValue body
@@ -739,7 +739,7 @@ isType t ==
   -- Returns the evaluated type if t is a tree representing a type,
   -- and NIL otherwise
    op:=opOf t
-   VECP op =>
+   vector? op =>
      isMap(op:= getUnname op) => NIL
      op = 'Mapping and cons? t =>
        argTypes := [isType type for type in rest t]
@@ -1116,7 +1116,7 @@ upNullTuple(op,l,tar) ==
 
 uptypeOf form ==
   form isnt [op, arg] => NIL
-  if VECP arg then transferPropsToNode(getUnname arg,arg)
+  if vector? arg then transferPropsToNode(getUnname arg,arg)
   if m := isType(arg) then
     m := conceptualType m
   else if not (m := getMode arg) then [m] := bottomUp arg

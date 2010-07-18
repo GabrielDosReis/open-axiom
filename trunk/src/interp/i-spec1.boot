@@ -237,7 +237,7 @@ upAlgExtension t ==
 
 eq2AlgExtension eq ==
   -- transforms "a=b" to a-b for processing
-  eq is [op,:l] and VECP op and (getUnname op='equation) =>
+  eq is [op,:l] and vector? op and (getUnname op='equation) =>
     [mkAtreeNode "-",:l]
   eq
 
@@ -931,7 +931,7 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
 
 subVecNodes(new,old,form) ==
   atom form =>
-    (VECP form) and (form.0 = old) => new
+    (vector? form) and (form.0 = old) => new
     form
   [subVecNodes(new,old,first form), :subVecNodes(new,old,rest form)]
 

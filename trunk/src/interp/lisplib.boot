@@ -617,7 +617,7 @@ getConstructorSignature ctor ==
  
 getSlotFromCategoryForm ([op,:argl],index) ==
   u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
-  not VECP u =>
+  not vector? u =>
     systemErrorHere '"getSlotFromCategoryForm"
   u . index
  

@@ -610,7 +610,7 @@ rewriteMap0(op,opName,argl) ==
       else
         val:= getValue arg
       $env:=put(var,'value,val,$env)
-      if VECP arg then $env := put(var,'name,getUnname arg,$env)
+      if vector? arg then $env := put(var,'name,getUnname arg,$env)
       (m := getMode arg) => $env := put(var,'mode,m,$env)
   null (val:= interpMap(opName,tar)) =>
     throwKeyedMsg("S2IM0010",[opName])
@@ -643,7 +643,7 @@ rewriteMap1(opName,argl,sig) ==
       else
         val:= evArg
       $env:=put(var,'value,val,$env)
-      if VECP arg then $env := put(var,'name,getUnname arg,$env)
+      if vector? arg then $env := put(var,'name,getUnname arg,$env)
       (m := getMode arg) => $env := put(var,'mode,m,$env)
   val:= interpMap(opName,tar)
   removeBodyFromEnv(opName)

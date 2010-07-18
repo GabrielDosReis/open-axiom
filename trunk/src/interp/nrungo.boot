@@ -68,7 +68,7 @@ NRTevalDomain form ==
 compiledLookup(op,sig,dollar) ==
 --called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
 --  getFunctionFromDomain, optDeltaEntry, retractByFunction
-  if not VECP dollar then dollar := NRTevalDomain dollar
+  if not vector? dollar then dollar := NRTevalDomain dollar
   -- "^" is an alternate name for "**" in OpenAxiom libraries.
   -- ??? When, we get to support Aldor libraries and the equivalence
   -- ??? does not hold, we may want to do the reverse lookup too.
@@ -190,7 +190,7 @@ lookupInAddChain(op,sig,addFormDomain,dollar) ==
 
 defaultingFunction op ==
   not(op is [.,:dom]) => false
-  not VECP dom => false
+  not vector? dom => false
   not (#dom > 0) => false
   not (dom.0 is [packageName,:.]) => false
   not IDENTP packageName => false
@@ -204,7 +204,7 @@ lookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
     integer? KAR addFormCell =>
       or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
-    if not VECP addFormCell then addFormCell := eval addFormCell
+    if not vector? addFormCell then addFormCell := eval addFormCell
     lookupInDomainVector(op,sig,addFormCell,dollar)
   nil
 
@@ -253,7 +253,7 @@ lookupPred(pred,dollar,domain) ==
   pred is [op,p] and op in '(NOT not %not) => not lookupPred(p,dollar,domain)
   pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
   pred is ["has",a,b] =>
-    VECP a =>
+    vector? a =>
       keyedSystemError("S2GE0016",['"lookupPred",
         '"vector as  first argument to has"])
     a := eval mkEvalable substDollarArgs(dollar,domain,a)
@@ -289,7 +289,7 @@ compareSigEqual(s,t,dollar,domain) ==
     u :=
       t='$ => dollar
       isSharpVar t =>
-        VECP domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
+        vector? domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
         rest(domain).(POSN1(t,$FormalMapVariableList))
       string? t and IDENTP s => (s := PNAME s; t)
       nil

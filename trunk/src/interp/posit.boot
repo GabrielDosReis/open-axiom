@@ -185,7 +185,7 @@ poCharPosn posn == rest posn
 pfCharPosn posn == poCharPosn posn
  
 poLinePosn posn       ==
-    posn => lnLocalNum  poGetLineObject posn  --VECP posn =>
+    posn => lnLocalNum  poGetLineObject posn  --vector? posn =>
     CDAR posn
 
 pfLinePosn posn == poLinePosn posn
