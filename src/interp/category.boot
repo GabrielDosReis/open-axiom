@@ -48,7 +48,7 @@ $NewCatVec := nil
 ++ Returns true if `a' is a category (runtime) object.
 isCategory: %Thing -> %Boolean
 isCategory a == 
-  REFVECP a and #a > 5 and getShellEntry(a,3) = $Category
+  vector? a and #a > 5 and getShellEntry(a,3) = $Category
 
 ++ Return true if the form `x' designates an instantiaion of a
 ++ category constructor known to the global database or the
@@ -353,7 +353,7 @@ FindFundAncs l ==
  
 CatEval: %Thing -> %Shell
 CatEval x ==
-  REFVECP x => x
+  vector? x => x
   e := 
     $InteractiveMode => $CategoryFrame
     $e

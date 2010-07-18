@@ -1348,8 +1348,17 @@ bootStrapError(functorForm,sourceFile) ==
       ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
 
 registerInlinableDomain(x,e) ==
-  macroExpand(x,e) is [ctor,:.] and constructor? ctor =>
-    nominateForInlining ctor
+  x := macroExpand(x,e)
+  x is [ctor,:.] =>
+    constructor? ctor => nominateForInlining ctor
+    ctor = 'Record or ctor = 'Union =>
+      x.args is [['_:,:.],:.] =>
+        for [.,.,t] in x.args repeat
+          registerInlinableDomain(t,e)
+      for t in x.args repeat
+        registerInlinableDomain(t,e)
+    nil
+  nil
 
 compAdd(['add,$addForm,capsule],m,e) ==
   $bootStrapMode = true =>
@@ -1484,7 +1493,7 @@ doIt(item,$predl) ==
         --$Representation bound by compDefineFunctor, used in compNoStacking
         $Representation := getRepresentation $e
         if $optimizeRep then
-          nominateForInlining $Representation
+          registerInlinableDomain($Representation,$e)
     code is ["%LET",:.] =>
       item.op := "setShellEntry"
       rhsCode := rhs'

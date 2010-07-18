@@ -1224,7 +1224,7 @@ Qf2Qf(u0,[.,S],target is [.,T]) ==
   coercionFailure()
 
 -- partOf(x,i) ==
---   VECP x => x.i
+--   vector? x => x.i
 --   i=0 => first x
 --   i=1 => rest x
 --   systemError '"partOf"

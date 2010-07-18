@@ -463,12 +463,14 @@ axiom_algebra_layer_3_objects = \
 <<layer4>>=
 
 $(OUT)/ENV.$(FASLEXT): $(OUT)/SCOPE.$(FASLEXT)
+$(OUT)/COMM.$(FASLEXT): $(OUT)/OSI.$(FASLEXT)
+$(OUT)/PALETTE.$(FASLEXT): $(OUT)/COLOR.$(FASLEXT)
 
 
 axiom_algebra_layer_4 = \
-  ANON              COMM     COMPPROP ESCONT1  EXIT     \
+  ANON     OSI      COMM     COMPPROP ESCONT1  EXIT     \
   FAMONC   FORMULA1 IDPC              NONE     NUMINT   \
-  ODECAT            OMENC    ONECOMP2 OPTCAT            \
+  ODECAT   COLOR    OMENC    ONECOMP2 OPTCAT            \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
   PARSU2            PATRES2  PATTERN1 PDECAT            \
   REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
@@ -580,6 +582,7 @@ axiom_algebra_layer_8_objects = \
 
 <<layer9>>=
 $(OUT)/ODEIFTBL.$(FASLEXT): $(OUT)/TABLE.$(FASLEXT) $(OUT)/INTABL.$(FASLEXT)
+$(OUT)/FT.$(FASLEXT): $(OUT)/FST.$(FASLEXT)
 
 axiom_algebra_layer_9 = \
   AMR      AMR-     DEGRED   DLP      EAB      ESTOOLS1 \
@@ -589,7 +592,7 @@ axiom_algebra_layer_9 = \
   PTFUNC2                    RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE   TABLE    INTABL            \
                     ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
-  PDEPROB  COLOR    SIG      FMONCAT
+  PDEPROB           SIG      FMONCAT  FST
 
 
 axiom_algebra_layer_9_nrlibs = \
@@ -605,6 +608,7 @@ axiom_algebra_layer_9_objects = \
 <<layer10>>=
 $(OUT)/D01GBFA.$(FASLEXT): $(OUT)/RESULT.$(FASLEXT) $(OUT)/ANY.$(FASLEXT) \
 	$(OUT)/SEX.$(FASLEXT) $(OUT)/HASHTBL.$(FASLEXT)
+$(OUT)/ANY.$(FASLEXT): $(OUT)/SEX.$(FASLEXT)
 
 $(OUT)/SEX.$(FASLEXT): $(OUT)/SEXOF.$(FASLEXT)
 $(OUT)/LEXP.$(FASLEXT): $(OUT)/XPBWPOLY.$(FASLEXT)
@@ -619,6 +623,7 @@ $(OUT)/DIRPROD.$(FASLEXT): $(OUT)/DIRPCAT.$(FASLEXT)
 $(OUT)/DIRPCAT.$(FASLEXT): $(OUT)/VSPACE.$(FASLEXT) $(OUT)/IVECTOR.$(FASLEXT)
 $(OUT)/MATRIX.$(FASLEXT): $(OUT)/MATCAT.$(FASLEXT)
 $(OUT)/BTAGG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
+$(OUT)/PATLRES.$(FASLEXT): $(OUT)/PATRES.$(FASLEXT)
 
 axiom_algebra_layer_10 = \
   RESULT   BFUNCT   BPADIC   ANY      \
@@ -708,6 +713,7 @@ axiom_algebra_layer_12_objects = \
 <<layer13>>=
 
 $(OUT)/UPOLYC.$(FASLEXT): $(OUT)/PFECAT.$(FASLEXT)
+$(OUT)/SETMN.$(FASLEXT): $(OUT)/IBITS.$(FASLEXT)
 
 axiom_algebra_layer_13 = \
   ASSOCEQ  CARTEN   CLIF     CLIP     \
@@ -736,6 +742,7 @@ axiom_algebra_layer_13_objects = \
 <<layer14>>=
 $(OUT)/FS.$(FASLEXT): $(OUT)/UPOLYC.$(FASLEXT)
 $(OUT)/FTEM.$(FASLEXT): $(OUT)/TEXTFILE.$(FASLEXT)
+$(OUT)/FILE.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT)
 
 axiom_algebra_layer_14 = \
   FS       FS-      ACF      ACF-     \
@@ -758,7 +765,7 @@ axiom_algebra_layer_14 = \
   GBF      GBINTERN GHENSEL  GMODPOL  \
   GOSPER   GRIMAGE  GROEBSOL HDMP     \
   HDP      HEXADEC  HEUGCD   IBPTOOLS \
-  IFF      IBITS    ICARD    ICDEN    \
+  IFF               ICARD    ICDEN    \
   IDECOMP           IMATLIN  IMATQF   \
   INMODGCD INNMFACT INPSIGN  INTHERTR \
   INTRAT   INTRF    INTSLPE  INTTR    \
@@ -793,7 +800,7 @@ axiom_algebra_layer_14 = \
            WEIER    WP       \
   EQTBL    GSTBL            \
            INTFTBL  STBL     STRTBL\
-           FST      SYMS     SYMTAB \
+                    SYMS     SYMTAB \
   IOBCON   
 
 
@@ -836,12 +843,14 @@ axiom_algebra_layer_15_objects = \
 \subsection{Layer16}
 
 <<layer16>>=
+$(OUT)/SPACE3.$(FASLEXT): $(OUT)/SUBSPACE.$(FASLEXT)
+
 axiom_algebra_layer_16 = \
   DPMM     EFUPXS  FFINTBAS FRIDEAL                    \
   FRIDEAL2 FRMOD   \
   IBATOOL  INTFACT \
   MSETAGG  MONOGEN MONOGEN- NFINTBAS \
-  SPACE3  FFF
+  SPACE3   FFF     SUBSPACE
 
 axiom_algebra_layer_16_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_16))
@@ -893,6 +902,7 @@ axiom_algebra_layer_18_objects = \
 $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
 $(OUT)/FPARFRAC.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/FEXPR.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
+$(OUT)/OMERR.$(FASLEXT): $(OUT)/OMERRK.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM           ATTRBUT \
@@ -912,7 +922,7 @@ axiom_algebra_layer_19 = \
   NAGE04   NAGF07   NAGS     NAGSP   \
   NREP     NUMFMT   OC       OC-     \
   ODEPACK  ODERAT   OMERR    OMERRK  \
-  OPTPACK  OSI      PATTERN  OVAR    \
+  OPTPACK           PATTERN  OVAR    \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
            QUATCAT  QUATCAT- RFFACT  \
@@ -937,6 +947,7 @@ axiom_algebra_layer_19_objects = \
 $(OUT)/AN.$(FASLEXT): $(OUT)/IAN.$(FASLEXT)
 $(OUT)/IAN.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
 $(OUT)/SUTS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/OCT.$(FASLEXT): $(OUT)/QUAT.$(FASLEXT)
 
 axiom_algebra_layer_20 = \
   AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
@@ -1014,7 +1025,7 @@ axiom_algebra_layer_22 = \
   NTSCAT   REGSET   RGCHAIN  RSETGCD  \
   RSDCMPK  SFRTCAT  SIGNEF   SNTSCAT  \
   SOLVETRA SRDCMPK  SREGSET  STTF     \
-  SUBSPACE ZDSOLVE
+           ZDSOLVE
 
 axiom_algebra_layer_22_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_22))

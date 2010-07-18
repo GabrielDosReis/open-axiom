@@ -94,12 +94,12 @@ evalSlotDomain(u,dollar) ==
   u = '$ => dollar
   u = "$$" => dollar
   FIXP u =>
-    VECP (y := dollar.u) => y
+    vector? (y := dollar.u) => y
     y is ["setShellEntry",:.] => eval y
              --lazy domains need to marked; this is dangerous?
     y is ['SETELT,:.] => systemErrorHere "evalSlotDomain"
     y is [v,:.] =>
-      VECP v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
+      vector? v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
       IDENTP v and constructor? v 
         or v in '(Record Union Mapping Enumeration) =>
            lazyDomainSet(y,dollar,u)        --new style has lazyt
@@ -263,7 +263,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
     integer? KAR addFormCell =>
       or/[newLookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
-    if not VECP addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
+    if not vector? addFormCell then lazyDomainSet(addFormCell,addFormDomain,index)
     lookupInDomainVector(op,sig,addFormDomain.index,dollar)
   nil
  
@@ -289,7 +289,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
   for i in 0..MAXINDEX packageVec |
        (entry := packageVec.i) and entry ~= 'T repeat
     package :=
-      VECP entry =>
+      vector? entry =>
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
@@ -299,7 +299,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
         if not GETL(entry,'LOADED) then loadLib entry
         infovec := GETL(entry,'infovec)
         success :=
-          --VECP infovec =>  ----new world
+          --vector? infovec =>  ----new world
           true =>  ----new world
             opvec := infovec.1
             max := MAXINDEX opvec
@@ -365,10 +365,10 @@ newLookupInCategories1(op,sig,dom,dollar) ==
   valueList := [MKQ val for val in valueList]
   nsig := MSUBST(dom.0,dollar.0,sig)
   for i in 0..MAXINDEX packageVec | (entry := packageVec.i)
-      and (VECP entry or (predIndex := rest (node := catVec.i)) and
+      and (vector? entry or (predIndex := rest (node := catVec.i)) and
           (EQ(predIndex,0) or testBitVector(predvec,predIndex))) repeat
     package :=
-      VECP entry =>
+      vector? entry =>
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
@@ -378,7 +378,7 @@ newLookupInCategories1(op,sig,dom,dollar) ==
         if not GETL(entry,'LOADED) then loadLib entry
         infovec := GETL(entry,'infovec)
         success :=
-          VECP infovec =>
+          vector? infovec =>
             opvec := infovec.1
             max := MAXINDEX opvec
             code := getOpCode(op,opvec,max)
@@ -442,12 +442,12 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   integer? a =>
     not typeFlag => s = domain.a
     a = 6 and $isDefaultingPackage => s = devaluate dollar
-    VECP (d := domainVal(dollar,domain,a)) =>
+    vector? (d := domainVal(dollar,domain,a)) =>
       s = d.0 => true
       domainArg := ($isDefaultingPackage => domain.6.0; domain.0)
       KAR s = first d.0 and
         lazyMatchArgDollarCheck(replaceSharpCalls s,d.0,dollar.0,domainArg)
-    --VECP first d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
+    --vector? first d => lazyMatch(s,CDDR d,dollar,domain)      --old style (erase)
     lazyMatch(replaceSharpCalls s,d,dollar,domain)       --new style
   a = '$ => s = devaluate dollar
   a = "$$" => s = devaluate domain
@@ -540,9 +540,9 @@ newExpandTypeSlot(slot, dollar, domain) ==
  
  
 newExpandLocalType(lazyt,dollar,domain) ==
-  VECP lazyt => lazyt.0
+  vector? lazyt => lazyt.0
   atom lazyt => lazyt
-  lazyt is [vec,.,:lazyForm] and VECP vec =>              --old style
+  lazyt is [vec,.,:lazyForm] and vector? vec =>              --old style
     newExpandLocalTypeForm(lazyForm,dollar,domain)
   newExpandLocalTypeForm(lazyt,dollar,domain)             --new style
  
@@ -592,7 +592,7 @@ sigDomainVal(dollar,domain,index) ==
  
 lazyDomainSet(lazyForm,thisDomain,slot) ==
   form :=
-    lazyForm is [vec,.,:u] and VECP vec => u        --old style
+    lazyForm is [vec,.,:u] and vector? vec => u        --old style
     lazyForm                                        --new style
   slotDomain := evalSlotDomain(form,thisDomain)
   if $monitorNewWorld then
@@ -689,7 +689,7 @@ lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
 sayLooking(prefix,op,sig,dom) ==
   $monitorNewWorld := false
   dollar := devaluate dom
-  atom dollar or VECP dollar or "or"/[VECP x for x in dollar] => systemError nil
+  atom dollar or vector? dollar or "or"/[vector? x for x in dollar] => systemError nil
   sayBrightly
     concat(prefix,formatOpSignature(op,sig),bright '"from ",form2String dollar)
   $monitorNewWorld := true
@@ -697,7 +697,7 @@ sayLooking(prefix,op,sig,dom) ==
 sayLooking1(prefix,dom) ==
   $monitorNewWorld := false
   dollar :=
-    VECP dom => devaluate dom
+    vector? dom => devaluate dom
     devaluateList dom
   sayBrightly concat(prefix,form2String dollar)
   $monitorNewWorld := true

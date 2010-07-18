@@ -311,7 +311,7 @@ transTraceItem x ==
       (y:= domainToGenvar x) => y
       x
     x
-  VECP first x => transTraceItem devaluate first x
+  vector? first x => transTraceItem devaluate first x
   y:= domainToGenvar x => y
   throwKeyedMsg("S2IT0018",[x])
 
@@ -418,14 +418,14 @@ funfind("functor","opname") ==
   [u for u in ops | u is [[ =opname,:.],:.]]
 
 isDomainOrPackage dom ==
-  REFVECP dom and #dom>0 and isFunctor opOf dom.0
+  vector? dom and #dom>0 and isFunctor opOf dom.0
 
 isTraceGensym x == GENSYMP x
 
 spadTrace(domain,options) ==
   $fromSpadTrace:= true
   $tracedModemap:local:= nil
-  cons? domain and REFVECP first domain and (first domain).0 = 0 =>
+  cons? domain and vector? first domain and (first domain).0 = 0 =>
       aldorTrace(domain,options)
   not isDomainOrPackage domain => userError '"bad argument to trace"
   listOfOperations:=

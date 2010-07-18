@@ -285,6 +285,7 @@ for i in [ _
   ["third",      "CADDR"] , _
   ["true",           "T"]  , _
   ["upperCase?", "UPPER-CASE-P"], _
+  ["vector?", "SIMPLE-VECTOR-P"], _
   ["writeByte", "WRITE-BYTE"], _
   ["writeLine", "WRITE-LINE"], _
   ["PLUS",           "+"]  , _

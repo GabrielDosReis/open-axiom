@@ -116,7 +116,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   --converts a domain form to a lazy domain form; everything other than 
   --the operation name should be assigned a slot
   not firstTime and (k:= NRTassocIndex x) => k
-  VECP x => systemErrorHere '"NRTencode"
+  vector? x => systemErrorHere '"NRTencode"
   cons? x =>
     op := first x
     op = "Record" or x is ['Union,['_:,a,b],:.] =>

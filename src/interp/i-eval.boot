@@ -62,7 +62,7 @@ mkEvalable form ==
       [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
         typeFlag =>
           kind = "category" => MKQ x
-          VECP x => MKQ x
+          vector? x => MKQ x
           loadIfNecessary x
           mkEvalable x
         x is ['QUOTE,:.] => x
@@ -292,7 +292,7 @@ sideEffectedArg?(t,sig,opName) ==
   t = dc
 
 getArgValue(a, t) ==
-  atom a and not VECP a =>
+  atom a and not vector? a =>
     t' := coerceOrRetract(getBasicObject a,t)
     t' and getValueNormalForm t'
   v := getArgValue1(a, t) => v

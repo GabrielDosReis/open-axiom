@@ -2073,7 +2073,7 @@ writify ob ==
                 nob.first := qcar
                 nob.rest := qcdr
                 nob
-            VECP ob =>
+            vector? ob =>
                 isDomainOrPackage ob =>
                     d := mkEvalable devaluate ob
                     nob := ['WRITIFIED_!_!, 'DEVALUATED, writifyInner d]
@@ -2127,7 +2127,7 @@ writify ob ==
 
 
 unwritable? ob ==
-    cons?  ob or VECP ob       => false   -- first for speed
+    cons?  ob or vector? ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
     FLOATP ob => true
@@ -2147,7 +2147,7 @@ spadClosure? ob ==
   fun := first ob
   not (name := BPINAME fun) => nil
   vec := rest ob
-  not VECP vec => nil
+  not vector? vec => nil
   name
 
 dewritify ob ==
@@ -2222,7 +2222,7 @@ dewritify ob ==
                 nob.first := dewritifyInner qcar
                 nob.rest := dewritifyInner qcdr
                 nob
-            VECP ob =>
+            vector? ob =>
                 n   := QVMAXINDEX ob
                 nob := MAKE_-VEC(n+1)
                 HPUT($seen, ob, nob)

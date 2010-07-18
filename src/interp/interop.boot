@@ -202,7 +202,7 @@ oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    [catform,hash, pack,:.] := catenv
    opIsHasCat op => if EQL(sig, hash) then [self] else nil
    null(pack) => nil
-   if not VECP pack then
+   if not vector? pack then
        pack:=apply(pack, [self, :rest catform])
        catenv.rest.rest.first := pack
    fun := basicLookup(op, sig, pack, self) => [fun]
@@ -342,11 +342,11 @@ $oldAxiomDomainDispatch :=
 
 basicLookupCheckDefaults(op,sig,domain,dollar) ==
   box := [nil]
-  not VECP(dispatch := first dollar) => error "bad domain format"
+  not vector?(dispatch := first dollar) => error "bad domain format"
   lookupFun := dispatch.3
   dispatch.0 = 0  =>  -- new compiler domain object
        hashPercent :=
-          VECP dollar => hashType(dollar.0,0)
+          vector? dollar => hashType(dollar.0,0)
           hashType(dollar,0)
 
        hashSig :=
@@ -383,7 +383,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   if hashCode? op and EQL(op, $hashOp1) then op := 'One
   if hashCode? op and EQL(op, $hashOp0) then op := 'Zero
   hashPercent :=
-    VECP dollar => hashType(dollar.0,0)
+    vector? dollar => hashType(dollar.0,0)
     hashType(dollar,0)
   if hashCode? sig and EQL(sig, hashPercent) then 
          sig := hashType('(Mapping $), hashPercent)
@@ -479,7 +479,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   for i in 0..MAXINDEX packageVec |
        (entry := packageVec.i) and entry ~= true repeat
     package :=
-      VECP entry =>
+      vector? entry =>
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
@@ -489,7 +489,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
         if not GETL(entry,'LOADED) then loadLib entry
         infovec := GETL(entry,'infovec)
         success :=
-          --VECP infovec =>  ----new world
+          --vector? infovec =>  ----new world
           true =>  ----new world
             opvec := infovec.1
             max := MAXINDEX opvec
@@ -537,7 +537,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
 
 HasAttribute(domain,attrib) ==
   hashPercent :=
-       VECP domain => hashType(domain.0,0)
+       vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   isDomain domain =>
      FIXP((first domain).0) => 
@@ -552,7 +552,7 @@ HasAttribute(domain,attrib) ==
  
 newHasAttribute(domain,attrib) ==
   hashPercent :=
-       VECP domain => hashType(domain.0,0)
+       vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   predIndex :=
      hashCode? attrib =>
@@ -611,5 +611,5 @@ HasCategory(domain,catform') ==
 --    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
 
 domainEqual(a,b) == 
-  VECP a and VECP b and a.0 = b.0
+  vector? a and vector? b and a.0 = b.0
  

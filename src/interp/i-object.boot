@@ -93,10 +93,10 @@ wrap x ==
   isWrapped x => x
   ["WRAPPED",:x]
  
-isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or CVECP x
+isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or string? x
  
 unwrap x ==
-  NUMBERP x or FLOATP x or CVECP x => x
+  NUMBERP x or FLOATP x or string? x => x
   x is ["WRAPPED",:y] => y
   x
  
@@ -224,7 +224,7 @@ mkAtreeNode x ==
 
 ++ remove mode, value, and misc. info from attrib tree
 emptyAtree expr ==
-  VECP expr =>
+  vector? expr =>
     $immediateDataSymbol = expr.0 => nil
     expr.1:= NIL
     expr.2:= NIL
@@ -242,21 +242,21 @@ isLeaf x ==
 ++ Also used by the algebra interface to the interpreter.
 getMode x ==
   x is [op,:.] => getMode op
-  VECP x => x.1
+  vector? x => x.1
   m := getBasicMode x => m
   keyedSystemError("S2II0001",[x])
 
 ++ sets the mode for the VAT node x to y.
 putMode(x,y) ==
   x is [op,:.] => putMode(op,y)
-  not VECP x => keyedSystemError("S2II0001",[x])
+  not vector? x => keyedSystemError("S2II0001",[x])
   x.1 := y
 
 ++ returns an interpreter object that represents the value of node x.
 ++ Note that an interpreter object is a pair of mode and value.
 ++ Also used by the algebra interface to the interperter.
 getValue x ==
-  VECP x => x.2
+  vector? x => x.2
   atom x =>
     t := getBasicObject x => t
     keyedSystemError("S2II0001",[x])
@@ -265,7 +265,7 @@ getValue x ==
 ++ sets the value of VAT node x to interpreter object y.
 putValue(x,y) ==
   x is [op,:.] => putValue(op,y)
-  not VECP x => keyedSystemError("S2II0001",[x])
+  not vector? x => keyedSystemError("S2II0001",[x])
   x.2 := y
 
 ++ same as putValue(vec, val), except that vec is returned instead of val.
@@ -276,7 +276,7 @@ putValueValue(vec,val) ==
 ++ Returns the node class of x, if possible; otherwise nil.
 ++ Also used by the algebra interface to the interpreter.
 getUnnameIfCan x ==
-  VECP x => x.0
+  vector? x => x.0
   x is [op,:.] => getUnnameIfCan op
   atom x => x
   nil
@@ -288,14 +288,14 @@ getUnname x ==
 
 ++ Subroutine of getUnname.
 getUnname1 x ==
-  VECP x => x.0
+  vector? x => x.0
   cons? x => keyedSystemError("S2II0001",[x])
   x
 
 ++ returns the mode-set of VAT node x.
 getModeSet x ==
   x and cons? x => getModeSet first x
-  VECP x =>
+  vector? x =>
     y:= x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
         [m]
@@ -309,13 +309,13 @@ getModeSet x ==
 ++ Sets the mode-set of VAT node x to y.
 putModeSet(x,y) ==
   x is [op,:.] => putModeSet(op,y)
-  not VECP x => keyedSystemError("S2II0001",[x])
+  not vector? x => keyedSystemError("S2II0001",[x])
   x.3 := y
   y
 
 getModeOrFirstModeSetIfThere x ==
   x is [op,:.] => getModeOrFirstModeSetIfThere op
-  VECP x =>
+  vector? x =>
     m := x.1 => m
     val := x.2 => objMode val
     y := x.aModeSet =>
@@ -327,7 +327,7 @@ getModeOrFirstModeSetIfThere x ==
 
 getModeSetUseSubdomain x ==
   x and cons? x => getModeSetUseSubdomain first x
-  VECP(x) =>
+  vector?(x) =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x
     y := x.aModeSet =>
@@ -369,9 +369,9 @@ putAtree(x,prop,val) ==
   x is [op,:.] =>
     -- only willing to add property if op is a vector
     -- otherwise will be pushing to deeply into calling structure
-    if VECP op then putAtree(op,prop,val)
+    if vector? op then putAtree(op,prop,val)
     x
-  not VECP x => x     -- just ignore it
+  not vector? x => x     -- just ignore it
   n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n := val
   x.4 := insertShortAlist(prop,val,x.4)
@@ -381,9 +381,9 @@ getAtree(x,prop) ==
   x is [op,:.] =>
     -- only willing to get property if op is a vector
     -- otherwise will be pushing to deeply into calling structure
-    VECP op => getAtree(op,prop)
+    vector? op => getAtree(op,prop)
     NIL
-  not VECP x => NIL     -- just ignore it
+  not vector? x => NIL     -- just ignore it
   n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n
   QLASSQ(prop,x.4)
@@ -446,7 +446,7 @@ srcPosDisplay(sp) ==
 ++ Returns the calling convention vector for an operation
 ++ represented by the VAT `t'.
 getFlagArgsPos t ==
-  VECP t => getAtree(t, 'flagArgsPos)
+  vector? t => getAtree(t, 'flagArgsPos)
   atom t => keyedSystemError("S2II0001",[t])
   getFlagArgsPos first t
 
@@ -457,7 +457,7 @@ transferPropsToNode(x,t) ==
   propList := getProplist(x,$env)
   QLASSQ('Led,propList) or QLASSQ('Nud,propList) => nil
   node :=
-    VECP t => t
+    vector? t => t
     first t
   for prop in '(mode localModemap value name generatedCode)
     repeat transfer(x,node,prop)

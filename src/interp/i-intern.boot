@@ -97,7 +97,7 @@ mkAtreeExpandMacros x ==
 mkAtree1 x ==
   -- first special handler for making attrib tree
   null x => throwKeyedMsg("S2IP0005",['"NIL"])
-  VECP x => x
+  vector? x => x
   atom x =>
     x in '(%noBranch %noMapVal) => x
     x in '(nil true false) => mkAtree2([x],x,NIL)
@@ -377,7 +377,7 @@ atree2Tree1(x,evalIfTrue) ==
   (triple := getValue x) and objMode(triple) ~= $EmptyMode =>
     coerceOrCroak(triple,$OutputForm,$mapName)
   isLeaf x =>
-    VECP x => x.0
+    vector? x => x.0
     x
   [atree2Tree1(y,evalIfTrue) for y in x]
 

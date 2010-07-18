@@ -256,7 +256,7 @@ $msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 noBlankBeforeP word==
     integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
-    if CVECP word and SIZE word > 1 then
+    if string? word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
     (cons? word) and member(first word,$msgdbListPrims) => true
@@ -268,7 +268,7 @@ $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
 noBlankAfterP word==
     integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
-    if CVECP word and (s := SIZE word) > 1 then
+    if string? word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
     (cons? word) and member(first word, $msgdbListPrims) => true
@@ -705,7 +705,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
     sayString(pn,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
-  VECP x => sayString('"UNPRINTABLE",out)
+  vector? x => sayString('"UNPRINTABLE",out)
   atom x => sayString(object2String x,out)
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
@@ -731,7 +731,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
     pn := PNAME x
     sayString(pn,out)
   atom x => sayString(object2String x,out)
-  VECP x => sayString('"UNPRINTABLE",out)
+  vector? x => sayString('"UNPRINTABLE",out)
   [key,:rst] := x
   key = '"%m" => mathprint(rst,out)
   key = '"%s" => 
@@ -850,7 +850,7 @@ sayBrightlyLength1 x ==
   IDENTP x => STRINGLENGTH PNAME x
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
-  VECP x => STRINGLENGTH '"UNPRINTABLE"
+  vector? x => STRINGLENGTH '"UNPRINTABLE"
   atom x => STRINGLENGTH STRINGIMAGE x
   2 + sayBrightlyLength x
 

@@ -118,7 +118,7 @@ RecordEqual(x,y,dom) ==
     b and
        SPADCALL(rest x, rest y, rest (dom.(nargs + 9)) or
          rest (dom.(nargs + 9).rest := findEqualFun(dom.($FirstParamSlot+1))))
-  VECP x =>
+  vector? x =>
     equalfuns := dom.(nargs + 9)
     and/[SPADCALL(x.i,y.i,equalfuns.i or _
            (equalfuns.i:=findEqualFun(dom.($FirstParamSlot + i))))_
@@ -143,7 +143,7 @@ coerceRe2E(x,source) ==
     ["construct",
      ["=", source.1.1, coerceVal2E(first x,source.1.2)], _
      ["=", source.2.1, coerceVal2E(rest x,source.2.2)] ]
-  VECP x =>
+  vector? x =>
     ['construct,
      :[["=",tag,coerceVal2E(x.i, fdom)]
        for i in 0.. for [.,tag,fdom] in rest source]]
