@@ -441,12 +441,12 @@ atom2String x ==
 appChar(string,x,y,d) ==
   if CHARP string then string := PNAME string
   line:= LASSOC(y,d) =>
-    if MAXINDEX string = 1 and char(string.0) = "%" then
-      string.1="b" =>
+    if MAXINDEX string = 1 and string.0 = char "%" then
+      string.1 = char "b" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
         string.1:= EBCDIC 200
-      string.1="d" =>
+      string.1 = char "d" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
         string.1:= EBCDIC 65
@@ -595,7 +595,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and char("*") = (PNAME op).0 =>
+  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (PNAME op).0 =>
     mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -1027,7 +1027,7 @@ aggregateApp(u,x,y,d,s) ==
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
   string? u =>
     u = $EmptyString => 0
-    u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
   atom u => # atom2String u
   WIDTH COPY u
@@ -1035,7 +1035,7 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
 WIDTH u ==
   string? u =>
     u = $EmptyString => 0
-    u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
   integer? u => 
     if (u < 1) then 
@@ -1789,7 +1789,7 @@ charyMinus(u,v,start,linelength) ==
   '" "
 
 charyBinary(d,u,v,start,linelength) ==
-  member(d,'(" := " "= ")) =>
+  member(d,'(" := " " = ")) =>
     charybdis(['CONCATB,v.1,d],start,linelength)
     charybdis(v.2,start+2,linelength-2)
     '" "

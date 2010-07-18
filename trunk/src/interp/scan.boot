@@ -516,7 +516,7 @@ scanTransform x==x
 --idChar? x== scanLetter x or digit? x or x in '(_? _%)
 
 --scanLetter x==
---   if not CHARP x
+--   if not char? x
 --   then false
 --   else STRPOSL(scanTrTable,x,0,NIL)
 
