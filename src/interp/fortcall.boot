@@ -542,7 +542,7 @@ lispType u ==
 getVal(u,names,values) ==
   -- if u is the i'th element of names, return the i'th element of values,
   -- otherwise if it is an arithmetic expression evaluate it.
-  NUMBERP(u) => u
+  integer?(u) => u
   LISTP(u) => eval [first(u), :[getVal(v,names,values) for v in rest u]]
   (place := POSITION(u,names)) => NTH(place,values)
   error ['"No value found for parameter: ",u]

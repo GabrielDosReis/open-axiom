@@ -269,7 +269,7 @@ optFunctorBody x ==
  
 optFunctorBodyQuotable u ==
   null u => true
-  NUMBERP u => true
+  integer? u => true
   atom u => nil
   u is ['QUOTE,:.] => true
   nil

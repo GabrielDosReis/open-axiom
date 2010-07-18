@@ -241,7 +241,7 @@ conform2StringList(form,opFn,argFn,exception) ==
       typ := sublisFormal(args,atype)
       if x is ['QUOTE,a] then x := a
       u := mathform2HtString algCoerceInteractive(x,typ,'(OutputForm)) => [u]
-      NUMBERP x or string? x => [x]
+      integer? x or string? x => [x]
       systemError()
     keyword => [keyword,'": ",:res]
     res
@@ -277,7 +277,7 @@ dbOuttran form ==
       x is ['QUOTE,a] => a
       x
     res := mathform2HtString algCoerceInteractive(arg,typ,'(OutputForm))
-    NUMBERP res or string? res => res
+    integer? res or string? res => res
     ['QUOTE,res]
   [op,:argl]
 

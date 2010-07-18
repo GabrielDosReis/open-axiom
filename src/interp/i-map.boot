@@ -106,7 +106,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
     putHist(op,'isInterpreterRule,false,$e)
     putHist(op,'isInterpreterFunction,true,$e)
 
-  (NUMBERP(op) or op in '(true false nil % %%)) =>
+  (integer?(op) or op in '(true false nil % %%)) =>
     throwKeyedMsg("S2IM0002",[lhs])
 
   -- verify a constructor abbreviation is not used on the lhs
@@ -274,7 +274,7 @@ makeArgumentIntoNumber x ==
   x=$Zero => 0
   x=$One => 1
   atom x => x
-  x is ["-",n] and NUMBERP n => -n
+  x is ["-",n] and integer? n => -n
   [removeZeroOne first x,:removeZeroOne rest x]
 
 mkMapAlias(op,argl) ==
@@ -341,7 +341,7 @@ mkFormalArg(x,s) ==
   ['SUCHTHAT,s,["=",s,x]]
 
 isConstantArgument x ==
-  NUMBERP x => x
+  integer? x => x
   x is ["QUOTE",.] => x
 
 isPatternArgument x == x is ["construct",:.]

@@ -443,19 +443,19 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 optMINUS u ==
   u is ['MINUS,v] =>
-    NUMBERP v => -v
+    integer? v => -v
     u
   u
  
 optQSMINUS u ==
   u is ['QSMINUS,v] =>
-    NUMBERP v => -v
+    integer? v => -v
     u
   u
  
 opt_- u ==
   u is ['_-,v] =>
-    NUMBERP v => -v
+    integer? v => -v
     u
   u
  

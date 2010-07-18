@@ -184,7 +184,7 @@ consBuffer item ==
     nil
   $lineFragmentBuffer:=
     null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
-    NUMBERP item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
+    integer? item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
     string? item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
     $lineFragmentBuffer

@@ -476,7 +476,7 @@ lazyMatch(source,lazyt,dollar,domain) ==
       and/[lazyMatchArg2(s,a,dollar,domain,flag)
            for s in sargl for a in argl for flag in rest coSig]
   string? source and lazyt is ['QUOTE,=source] => true
-  NUMBERP source =>
+  integer? source =>
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
       lazyt is ['%call,'LENGTH, slotNum] => source = #(domain.slotNum)
       nil

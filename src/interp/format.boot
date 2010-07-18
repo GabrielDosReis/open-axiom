@@ -789,7 +789,7 @@ form2Fence1 x ==
   ['"  ", x]
 
 form2FenceQuote x ==
-  NUMBERP x => [STRINGIMAGE x]
+  integer? x => [STRINGIMAGE x]
   symbol? x => [FORMAT(NIL, '"|~a|", x)]
   string? x => ['"_"",x,'"_""]
   atom    x => systemErrorHere ["form2FenceQuote",x]

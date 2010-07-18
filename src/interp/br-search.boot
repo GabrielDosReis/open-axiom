@@ -211,7 +211,7 @@ grepSplit(lines,doc?) ==
   while lines is [line, :lines] repeat
     if doc? then
         N:=readInteger dbPart(line,1,-1)
-        if NUMBERP N then 
+        if integer? N then 
            FILE_-POSITION(instream2,N)
            line := READLINE instream2
     kind := dbKind line

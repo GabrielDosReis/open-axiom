@@ -420,7 +420,7 @@ APP(u,x,y,d) ==
     APP(a,x+#s,y,appChar(s,x,y,d))
   u is [[id,:.],:.] =>
     fn := GETL(id,'APP) => FUNCALL(fn,u,x,y,d)
-    not NUMBERP id and (d':= appInfix(u,x,y,d))=> d'
+    not integer? id and (d':= appInfix(u,x,y,d))=> d'
     appelse(u,x,y,d)
   appelse(u,x,y,d)
 
@@ -486,7 +486,7 @@ outputTran x ==
   string? x => x
   vector? x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
-  NUMBERP x =>
+  integer? x =>
     MINUSP x => ["-",MINUS x]
     x
   atom x =>
@@ -767,9 +767,9 @@ timesApp(u,x,y,d) ==
       d:= APP(BLANK,x,y,d)
       x:= x+1
     [d,x]:= appInfixArg(arg,x,y,d,rightPrec,"left",nil) --app in a right arg
-    wasSimple:= atom arg and not NUMBERP arg or isRationalNumber arg
+    wasSimple:= atom arg and not integer? arg or isRationalNumber arg
     wasQuotient:= isQuotient op
-    wasNumber:= NUMBERP arg
+    wasNumber:= integer? arg
     lastOp := op
     firstTime:= nil
   d
@@ -862,10 +862,10 @@ needStar(wasSimple,wasQuotient,wasNumber,cur,op) ==
   wasQuotient or isQuotient op => true
   wasSimple =>
     atom cur or keyp cur="SUB" or isRationalNumber cur or op="**" or op = "^" or
-      (atom op and not NUMBERP op and null GETL(op,"APP"))
+      (atom op and not integer? op and null GETL(op,"APP"))
   wasNumber =>
-    NUMBERP(cur) or isRationalNumber cur or
-        ((op="**" or op ="^") and NUMBERP(second cur))
+    integer?(cur) or isRationalNumber cur or
+        ((op="**" or op ="^") and integer?(second cur))
 
 isQuotient op ==
   op="/" or op="OVER"
@@ -880,9 +880,9 @@ timesWidth u ==
       w:= w+1
     if infixArgNeedsParens(arg, rightPrec, "left") then w:= w+2
     w:= w+WIDTH arg
-    wasSimple:= atom arg and not NUMBERP arg --or isRationalNumber arg
+    wasSimple:= atom arg and not integer? arg --or isRationalNumber arg
     wasQuotient:= isQuotient op
-    wasNumber:= NUMBERP arg
+    wasNumber:= integer? arg
     firstTime:= nil
   w
 
@@ -1055,9 +1055,9 @@ WIDTH u ==
   THROW('outputFailure,'outputFailure)
 
 putWidth u ==
-  atom u or u is [[.,:n],:.] and NUMBERP n => u
+  atom u or u is [[.,:n],:.] and integer? n => u
   op:= keyp u
---NUMBERP op => nil
+--integer? op => nil
   leftPrec:= getBindingPowerOf("left",u)
   rightPrec:= getBindingPowerOf("right",u)
   [firstEl,:l] := u
@@ -1090,7 +1090,7 @@ putWidth u ==
 
 opWidth(op,has2Arguments) ==
   op = "EQUATNUM" => 4
-  NUMBERP op => 2+SIZE STRINGIMAGE op
+  integer? op => 2+SIZE STRINGIMAGE op
   null has2Arguments =>
     a:= GETL(op,"PREFIXOP") => SIZE a
     2+SIZE PNAME op
@@ -1711,7 +1711,7 @@ charyTop(u,start,linelength) ==
 charyTopWidth u ==
     atom u => u
     atom first u => putWidth u
-    NUMBERP CDAR u => u
+    integer? CDAR u => u
     putWidth u
 
 charyTrouble(u,v,start,linelength) ==
@@ -1735,7 +1735,7 @@ sublisMatAlist(m,m1,u) ==
   u
 
 charyTrouble1(u,v,start,linelength) ==
-  NUMBERP u => outputNumber(start,linelength,atom2String u)
+  integer? u => outputNumber(start,linelength,atom2String u)
   atom u => outputString(start,linelength,atom2String u)
   EQ(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
   x in '(_+ _* AGGLST) => charySplit(u,v,start,linelength)
@@ -1857,7 +1857,7 @@ keyp(u) ==
   CAAR u
 
 absym x ==
-  (NUMBERP x) and (MINUSP x) => -x
+  (integer? x) and (MINUSP x) => -x
   cons? x and (keyp(x) = '_-) => second x
   x
 
@@ -1874,10 +1874,10 @@ argsapp(u,x,y,d) == appargs(rest u,x,y,d)
 
 subspan u ==
   atom u => 0
-  NUMBERP rest u => subspan first u
+  integer? rest u => subspan first u
   (cons? first u             and_
    atom CAAR u           and_
-   not NUMBERP CAAR u    and_
+   not integer? CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
    APPLX(GETL(CAAR u, 'SUBSPAN), [u])
   MAX(subspan first u, subspan rest u)
@@ -1886,10 +1886,10 @@ agggsub u == subspan rest u
 
 superspan u ==
   atom u => 0
-  NUMBERP rest u => superspan first u
+  integer? rest u => superspan first u
   (cons? first u               and_
    atom CAAR u             and_
-   not NUMBERP CAAR u      and_
+   not integer? CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
    APPLX(GETL(CAAR u, 'SUPERSPAN), [u])
   MAX(superspan first u, superspan rest u)
@@ -1975,7 +1975,7 @@ apphor(x1,x2,y,d,char) ==
   APP(char, x2, y, temp)
 
 syminusp x ==
-  NUMBERP x => MINUSP x
+  integer? x => MINUSP x
   cons? x and EQ(keyp x,'_-)
 
 appsum(u, x, y, d) ==

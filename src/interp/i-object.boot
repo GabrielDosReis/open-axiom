@@ -93,10 +93,10 @@ wrap x ==
   isWrapped x => x
   ["WRAPPED",:x]
  
-isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or string? x
+isWrapped x == x is ['WRAPPED,:.] or integer? x or FLOATP x or string? x
  
 unwrap x ==
-  NUMBERP x or FLOATP x or string? x => x
+  integer? x or FLOATP x or string? x => x
   x is ["WRAPPED",:y] => y
   x
  
@@ -131,7 +131,7 @@ instantiationNormalForm(op,argl) ==
 
 
 -- addQuote x ==
---   NUMBERP x => x
+--   integer? x => x
 --   ['QUOTE,x]
  
 --% Library compiler structures needed by the interpreter

@@ -665,7 +665,7 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
   -- see if we can give some decent messages about the availability if
   -- library messages
 
-  NUMBERP opName => NIL
+  integer? opName => NIL
 
   oo :=  object2Identifier opOf opName
   if ( oo = "%" ) or ( oo = "Domain" ) or ( domainForm? opName ) then
