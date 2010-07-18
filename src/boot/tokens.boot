@@ -239,8 +239,8 @@ for i in [ _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
+  ["char?", "CHARACTERP"]  , _
   ["cons?",      "CONSP"]  , _
-  ["readOnly?","CONSTANTP"], _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
   ["digit?",    "DIGITP"]  , _
@@ -269,6 +269,7 @@ for i in [ _
   ["readByte", "READ-BYTE"], _
   ["readInteger", "PARSE-INTEGER"], _
   ["readLine", "READ-LINE"], _
+  ["readOnly?","CONSTANTP"], _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
