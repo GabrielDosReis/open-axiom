@@ -1271,7 +1271,7 @@ spadCompileOrSetq (form is [nam,[lam,vl,body]]) ==
   -- parameters are never used in the body.
   vl := [ renameParameter for v in vl] where
     renameParameter() ==
-      NUMBERP v or IDENTP v or string? v => v
+      integer? v or IDENTP v or string? v => v
       gensym '"flag"
   clearReplacement nam   -- Make sure we have fresh info
   if $optReplaceSimpleFunctions then

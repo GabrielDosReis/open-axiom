@@ -576,7 +576,7 @@ getSystemModemaps(op,nargs) ==
   mml:= getOperationFromDB op =>
     mms := NIL
     for (x := [[.,:sig],.]) in mml repeat
-      (NUMBERP nargs) and (nargs ~= # sig.source) => 'iterate
+      (integer? nargs) and (nargs ~= # sig.source) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
         isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
       'iterate
@@ -587,7 +587,7 @@ getInCoreModemaps(modemapList,op,nargs) ==
   mml:= LASSOC (op,modemapList) =>
     mml:= first mml
     [x for (x:= [[dc,:sig],.]) in mml |
-      (NUMBERP nargs => nargs=#rest sig; true) and
+      (integer? nargs => nargs=#rest sig; true) and
         (cfn := abbreviate (domName := getDomainFromMm x)) and
           ($getUnexposedOperations or isExposedConstructor(domName))]
   nil

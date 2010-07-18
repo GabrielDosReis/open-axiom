@@ -583,7 +583,7 @@ newHasCategory(domain,catform) ==
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
 
 getCatForm(catvec, index, domain) ==
-   NUMBERP(form := QVELT(catvec,index)) => domain.form
+   integer?(form := QVELT(catvec,index)) => domain.form
    form
 
 HasSignature(domain,[op,sig]) ==

@@ -199,7 +199,7 @@ genDeltaEntry(opMmPair,e) ==
   if eltOrConst = 'Subsumed then eltOrConst := 'ELT
   if atom dc then
     dc = "$" => nsig := sig
-    if NUMBERP nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
+    if integer? nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
   setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]

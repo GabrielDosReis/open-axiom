@@ -457,7 +457,7 @@ exp2FortSpecial(op,args,nargs) ==
       if LISTP first elts and #elts=1 and first elts is [sOp,:sArgs] then
         member(sOp, ['"SEGMENT","SEGMENT"]) =>
           #sArgs=1 => fortError1 first elts
-          not(NUMBERP(first sArgs) and NUMBERP(second sArgs)) =>
+          not(integer?(first sArgs) and integer?(second sArgs)) =>
             fortError("Cannot expand segment: ",first elts)
           first sArgs > second sArgs => fortError1
             '"Lower bound of segment exceeds upper bound."
