@@ -244,6 +244,15 @@ expandIlt ['%ilt,x,y] ==
 expandIgt ['%igt,x,y] ==
   expandFlt ['%ilt,y,x]
 
+expandBitand ['%bitand,x,y] ==
+  ['BOOLE,'BOOLE_-AND,expandToVMForm x,expandToVMForm y]
+
+expandBitior ['%bitior,x,y] ==
+  ['BOOLE,'BOOLE_-IOR,expandToVMForm x,expandToVMForm y]
+
+expandBitnot ['%bitnot,x] ==
+  ['LOGNOT,expandToVMForm x]
+
 -- Floating point support
 
 expandFbase ['%fbase] ==
@@ -318,6 +327,13 @@ for x in [
     ['%cge, :'CHAR_>_=],
     ['%c2i, :'CHAR_-CODE],
     ['%i2c, :'CODE_-CHAR],
+
+    -- byte operations
+    ['%beq, :'byteEqual],
+    ['%blt, :'byteLessThan],
+    ['%ble, :'byteLessEqual],
+    ['%bgt, :'byteGreaterThan],
+    ['%bge, :'byteGreaterEqual],
 
     -- unary integer operations.
     ['%iabs,    :'ABS],
@@ -404,6 +420,9 @@ for x in [
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
+   ['%bitand,  :function expandBitand],
+   ['%bitior,  :function expandBitior],
+   ['%bitnot,  :function expandBitnot],
 
    ['%i2f,     :function expandI2f],
    ['%fbase,   :function expandFbase],
@@ -417,10 +436,10 @@ for x in [
    ['%peq,     :function expandPeq],
    ['%before?, :function expandBefore?],
 
-   ["%bind",   :function expandBind],
-   ["%store",  :function expandStore],
-   ["%dynval", :function expandDynval]
- ] repeat property(first x,"%Expander") := rest x
+   ['%bind,   :function expandBind],
+   ['%store,  :function expandStore],
+   ['%dynval, :function expandDynval]
+ ] repeat property(first x,'%Expander) := rest x
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
 getOpcodeExpander op ==

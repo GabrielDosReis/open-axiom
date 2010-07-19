@@ -19,13 +19,13 @@ import OutputForm
 )abbrev domain BYTE Byte
 ++ Author: Gabriel Dos Reis
 ++ Date Created: April 19, 2008
-++ Date Last Updated: January 6, 2009
+++ Date Last Updated: July 18, 2010
 ++ Basic Operations: byte, bitand, bitor, bitxor
 ++ Related Constructor: NonNegativeInteger
 ++ Description:
 ++   Byte is the datatype of 8-bit sized unsigned integer values.
 Byte(): Public == Private where
-  Public == Join(OrderedFinite, HomotopicTo Character) with
+  Public == Join(OrderedFinite, HomotopicTo Character,Logic) with
     byte: NonNegativeInteger -> %
       ++ byte(x) injects the unsigned integer value `v' into
       ++ the Byte algebra.  `v' must be non-negative and less than 256.
@@ -36,23 +36,35 @@ Byte(): Public == Private where
     sample: %
       ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, #1 < 256) add
+    import %beq: (%,%) -> Boolean from Foreign Builtin
+    import %blt: (%,%) -> Boolean from Foreign Builtin
+    import %bgt: (%,%) -> Boolean from Foreign Builtin
+    import %ble: (%,%) -> Boolean from Foreign Builtin
+    import %bge: (%,%) -> Boolean from Foreign Builtin
+    import %bitand: (%,%) -> %    from Foreign Builtin
+    import %bitior: (%,%) -> %    from Foreign Builtin
+    import %bitnot: % -> % from Foreign Builtin
+
     byte(x: NonNegativeInteger): % == per x
     sample = 0$Foreign(Builtin)
     coerce(c: Character) == per ord c
     coerce(x: %): Character == char rep x
-    x = y == byteEqual(x,y)$Foreign(Builtin)
-    x < y ==  byteLessThan(x,y)$Foreign(Builtin)
-    x > y ==  byteGreaterThan(x,y)$Foreign(Builtin)
-    x <= y ==  byteLessEqual(x,y)$Foreign(Builtin)
-    x >= y ==  byteGreaterEqual(x,y)$Foreign(Builtin)
+    x = y == %beq(x,y)
+    x < y == %blt(x,y)
+    x > y == %bgt(x,y)
+    x <= y == %ble(x,y)
+    x >= y == %bge(x,y)
     min() == per 0
     max() == per 255
     size() == 256
     index n == byte((n - 1) pretend NonNegativeInteger)
     lookup x == (rep x + 1) pretend PositiveInteger
     random() == byte random(size())$NonNegativeInteger
-    bitand(x,y) == bitand(x,y)$Foreign(Builtin)
-    bitior(x,y) == bitior(x,y)$Foreign(Builtin)
+    bitand(x,y) == %bitand(x,y)
+    bitior(x,y) == %bitior(x,y)
+    x /\ y == bitand(x,y)
+    x \/ y == bitior(x,y)
+    ~ x == %bitnot x
 
 @
 
@@ -175,19 +187,26 @@ Int64() == SystemInteger 64
 ++   with the hosting operating system, reading/writing external 
 ++   binary format files.
 SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
-  Public == OrderedFinite with
+  Public == Join(OrderedFinite,Logic) with
     bitand: (%,%) -> %
       ++ bitand(x,y) returns the bitwise `and' of `x' and `y'.
     bitior: (%,%) -> %
-      ++ bitor(x,y) returns the bitwise `inclusive or' of `x' and `y'.
+      ++ bitior(x,y) returns the bitwise `inclusive or' of `x' and `y'.
     sample: %
       ++ \spad{sample} gives a sample datum of type Byte.
   Private == SubDomain(NonNegativeInteger, length #1 <= N) add
+    import %bitand: (%,%) -> % from Foreign Builtin
+    import %bitior: (%,%) -> % from Foreign Builtin
+    import %bitnot: % -> %     from Foreign Builtin
+
     min == per 0
     max == per((shift(1,N)-1)::NonNegativeInteger)
     sample == min
-    bitand(x,y) == BOOLE(BOOLE_-AND$Foreign(Builtin),x,y)$Foreign(Builtin)
-    bitior(x,y) == BOOLE(BOOLE_-IOR$Foreign(Builtin),x,y)$Foreign(Builtin)
+    bitand(x,y) == %bitand(x,y)
+    bitior(x,y) == %bitior(x,y)
+    x /\ y == bitand(x,y)
+    x \/ y == bitior(x,y)
+    ~ x == %bitnot x
 
 @
 
