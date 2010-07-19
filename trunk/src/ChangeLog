@@ -1,3 +1,17 @@
+2010-07-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include
+	byte relation operators and bitmakst operators.
+	* interp/g-util.boot: Expand them.
+	* algebra/data.spad.pamphlet (Byte): Now satisfies Logic.  Tidy.
+	(SystemNonNegativeInteger): Likewise.
+	* algebra/java.spad.pamphlet (JVMBytecode): Rename from JavaBytecode.
+	(JVMClassFileAccess): New.
+	(JVMFieldAccess): Likewise.
+	(JVMMethodAccess): Likewise.
+	(JVMConstantTag): Likewise.
+	(JVMOpcode): Likewise.
+
 2010-07-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: Add char? as builtin function.
