@@ -175,10 +175,10 @@ loadLib cname ==
   -- in following, add property value false or NIL to possibly clear
   -- old value
   if null rest getConstructorFormFromDB cname then
-      MAKEPROP(cname,'NILADIC,'T)
+      property(cname,'NILADIC) := true
     else
       REMPROP(cname,'NILADIC)
-  MAKEPROP(cname,'LOADED,fullLibName)
+  property(cname,'LOADED) := fullLibName
   if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
   stopTimingProcess 'load
   'T
@@ -196,7 +196,7 @@ loadLibNoUpdate(cname, libName, fullLibName) ==
     else
      clearConstructorCache cname
      installConstructor(cname,kind)
-     MAKEPROP(cname,'LOADED,fullLibName)
+     property(cname,'LOADED) := fullLibName
      if $InteractiveMode then $CategoryFrame := $EmptyEnvironment
      stopTimingProcess 'load
   'T
@@ -207,7 +207,7 @@ loadIfNecessaryAndExists u == loadLibIfNecessary(u,nil)
  
 loadLibIfNecessary(u,mustExist) ==
   u = '$EmptyMode => u
-  null atom u => loadLibIfNecessary(first u,mustExist)
+  cons? u => loadLibIfNecessary(first u,mustExist)
   value:=
     functionp(u) or macrop(u) => u
     GETL(u,'LOADED) => u
@@ -244,7 +244,7 @@ updateCategoryFrameForCategory(category) ==
          addModemap(category, dc, sig, pred, impl, $CategoryFrame))
 
 loadFunctor u ==
-  null atom u => loadFunctor first u
+  cons? u => loadFunctor first u
   loadLibIfNotLoaded u
   u
  
@@ -313,7 +313,6 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $lisplibKind: local := NIL
   $lisplibModemap: local := NIL
   $lisplibModemapAlist: local := NIL
-  $lisplibCategoriesExtended: local := NIL -- this is always nil. why? (tpd)
   $lisplibSlot1 : local := NIL   --used by NRT mechanisms
   $lisplibOperationAlist: local := NIL
   $lisplibOpAlist: local:= NIL
@@ -321,7 +320,7 @@ compConLib1(fun,infileOrNil,outfileOrNil,auxOp,editFlag,traceFlag) ==
   $libFile: local := NIL
   $lisplibVariableAlist: local := NIL
   $lisplibSignatureAlist: local := NIL
-  if null atom fun and null rest fun then fun:= first fun -- unwrap nullary
+  if cons? fun and null rest fun then fun:= first fun -- unwrap nullary
   libName:= getConstructorAbbreviation fun
   infile:= infileOrNil or getFunctionSourceFile fun or
     throwKeyedMsg("S2IL0004",[fun])
@@ -340,7 +339,6 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   $op: local := op
   $lisplibAttributes: local := NIL
   $lisplibPredicates: local := NIL -- set by makePredicateBitVector
-  $lisplibCategoriesExtended: local := NIL -- this is always nil. why? (tpd)
   $lisplibForm: local := NIL
   $lisplibKind: local := NIL
   $lisplibAbbreviation: local := NIL
@@ -454,7 +452,7 @@ finalizeLisplib libName ==
   lisplibWrite('"slot1Info",removeZeroOne $lisplibSlot1,$libFile)
   if $profileCompiler then profileWrite()
   if $lisplibForm and null rest $lisplibForm then
-    MAKEPROP(first $lisplibForm,'NILADIC,'T)
+    property(first $lisplibForm,'NILADIC) := true
   leaveIfErrors libName
   true
 
@@ -547,9 +545,6 @@ transformOperationAlist operationAlist ==
       keyedSystemError("S2IL0025",[implementation])
     signatureItem:=
       if u:= assoc([op,sig],$functionLocations) then n := [n,:rest u]
-      kind = 'ELT =>
-        condition = 'T => [sig,n]
-        [sig,n,condition]
       [sig,n,condition,kind]
     itemList:= [signatureItem,:LASSQ(op,newAlist)]
     newAlist:= insertAlist(op,itemList,newAlist)
@@ -622,7 +617,7 @@ getConstructorSignature ctor ==
  
 getSlotFromCategoryForm ([op,:argl],index) ==
   u:= eval [op,:MAPCAR('MKQ,TAKE(#argl,$FormalMapVariableList))]
-  null VECP u =>
+  not vector? u =>
     systemErrorHere '"getSlotFromCategoryForm"
   u . index
  

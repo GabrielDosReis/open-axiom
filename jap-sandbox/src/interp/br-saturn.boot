@@ -94,7 +94,7 @@ off()==
 --  $saturn =>
 --    saturnEvalToFile(x, fn)
 --    runCommand  '"cat /tmp/sat.text"
---  EVAL x
+--  eval x
 
 
 --=======================================================================
@@ -550,7 +550,7 @@ htpAddToPageDescription(htPage, pageDescrip) ==
   newDescript :=
     string? pageDescrip => [pageDescrip, :htPage.7]
     nconc(nreverse COPY_-LIST pageDescrip, htPage.7)
-  SETELT(htPage, 7, newDescript)
+  htPage.7 := newDescript
 
 
 htProcessBcStrings strings ==
@@ -1012,7 +1012,7 @@ dbGatherThenShow(htPage,opAlist,which,data,constructorIfTrue,word,fn) ==
       atom thing => '"unconditional"
       '""
     htSay '"}"
-    if null atom thing then
+    if cons? thing then
       if constructorIfTrue then htSay('" {\em ",dbShowKind thing,'"}")
       htSay '" "
       FUNCALL(fn,thing)
@@ -1426,7 +1426,7 @@ htEndTabular() ==
 
 htPopSaturn s ==
   pageDescription := $saturnPage.7
-  pageDescription is [=s,:b] => SETELT($saturnPage, 7, rest pageDescription)
+  pageDescription is [=s,:b] => $saturnPage.7 := rest pageDescription
   nil
 
 htBeginTable() ==
@@ -1646,7 +1646,7 @@ bcConform1 form == main where
       $bcMultipleNames =>
         satTypeDownLink(s, ['"(|conPageChoose| '|",s,'"|)"])
       satTypeDownLink(s, ["(|conPage| '|",s,'"|)"])
-    (head := QCAR form) = 'QUOTE =>
+    (head := form.op) = 'QUOTE =>
       htSay('"'")
       hd second form
     head = 'SIGNATURE =>
@@ -1657,11 +1657,11 @@ bcConform1 form == main where
       hd second form
       htSay '": "
       hd third form
-    QCDR form and dbEvalableConstructor? form
+    form.args and dbEvalableConstructor? form
        => bcConstructor(form,head)
     hd head
-    null (r := QCDR form) => nil
-    tl QCDR form
+    null (r := form.args) => nil
+    tl form.args
   mapping [target,:source] ==
     tuple source
     bcHt

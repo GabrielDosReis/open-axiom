@@ -190,7 +190,7 @@ libdbTrim s ==
   k := MAXINDEX s
   k < 0 => s
   for i in 0..k repeat
-    s.i = $Newline => SETELT(s,i,char '_ )
+    s.i = $Newline => s.i := char " "
   trimString s
 
 checkCommentsForBraces(kind,sop,sigpart,comments) ==
@@ -517,7 +517,7 @@ $parentsCache := nil
 
 parentsOf con == --called by kcpPage, ancestorsRecur
   if null $parentsCache then 
-     $parentsCache := MAKE_-HASHTABLE 'ID
+     $parentsCache := hashTable 'EQ
   HGET($parentsCache,con) or
     parents := getParentsForDomain con
     HPUT($parentsCache,con,parents)
@@ -594,7 +594,7 @@ childArgCheck(argl, nargl) ==
 
 --computeDescendantsOf cat ==
 --dynamically generates descendants
---  hash := MAKE_-HASHTABLE 'UEQUAL
+--  hash := hashTable 'EQUAL
 --  for [child,:pred] in childrenOf cat repeat
 --    childForm := getConstructorForm child
 --    HPUT(hash,childForm,pred)
@@ -618,8 +618,8 @@ ancestorsOf(conform,domform) ==  --called by kcaPage, originsInOrder,...
   computeAncestorsOf(conform,domform)
 
 computeAncestorsOf(conform,domform) ==
-  $done: local := MAKE_-HASHTABLE 'UEQUAL
-  $if:   local := MAKE_-HASHTABLE 'ID
+  $done: local := hashTable 'EQUAL
+  $if:   local := hashTable 'EQ
   ancestorsRecur(conform,domform,true,true)
   acc := nil
   for op in listSort(function GLESSEQP,HKEYS $if) repeat
@@ -740,9 +740,9 @@ sublisFormal(args,exp,:options) == main where
     x is [.,:.] =>
       acc := nil
       y := x
-      while null atom y repeat
-        acc := [sublisFormal1(args,QCAR y,n),:acc]
-        y := QCDR y
+      while cons? y repeat
+        acc := [sublisFormal1(args,first y,n),:acc]
+        y := rest y
       r := nreverse acc
       if y then
         nd := LASTNODE r

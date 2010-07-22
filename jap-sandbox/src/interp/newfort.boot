@@ -180,7 +180,7 @@ exp2FortOptimize e ==
  
 exp2FortOptimizeCS e ==
   $fortCsList : local := NIL
-  $fortCsHash : local := MAKE_-HASHTABLE 'EQ
+  $fortCsHash : local := hashTable 'EQ
   $fortCsExprStack : local := NIL
   $fortCsFuncStack : local := NIL
   f := exp2FortOptimizeCS1 e
@@ -204,7 +204,7 @@ beenHere(e,n) ==
       fun = 'CAR =>
         loc.first := var
       fun = 'CDR =>
-        if cons? QCDR loc
+        if cons? rest loc
           then loc.rest := [var]
           else loc.rest := var
       SAY '"whoops"
@@ -218,7 +218,7 @@ exp2FortOptimizeCS1 e ==
   e is [op,arg] and object2Identifier op = "-" and atom arg => e
 
   -- see if we have been here before
-  not (object2Identifier QCAR e in '(ROW AGGLST)) and
+  not (object2Identifier first e in '(ROW AGGLST)) and
     (n := HGET($fortCsHash,e)) => beenHere(e,n) -- where
 
   -- descend sucessive CARs of CDRs of e
@@ -227,11 +227,11 @@ exp2FortOptimizeCS1 e ==
     pushCsStacks(f,'CAR) where pushCsStacks(x,y) ==
       $fortCsExprStack := [x,:$fortCsExprStack]
       $fortCsFuncStack := [y,:$fortCsFuncStack]
-    f.first := exp2FortOptimizeCS1 QCAR f
+    f.first := exp2FortOptimizeCS1 first f
     popCsStacks(0) where popCsStacks(x) ==
-      $fortCsFuncStack := QCDR $fortCsFuncStack
-      $fortCsExprStack := QCDR $fortCsExprStack
-    g := QCDR f
+      $fortCsFuncStack := rest $fortCsFuncStack
+      $fortCsExprStack := rest $fortCsExprStack
+    g := rest f
     -- check to see of we have an non-NIL atomic CDR
     g and atom g =>
       pushCsStacks(f,'CDR)
@@ -240,7 +240,7 @@ exp2FortOptimizeCS1 e ==
       f := NIL
     f := g
 
-  MEMQ(object2Identifier QCAR e,'(ROW AGGLST)) => e
+  MEMQ(object2Identifier first e,'(ROW AGGLST)) => e
 
   -- see if we have already seen this expression
   n := HGET($fortCsHash,e)
@@ -457,7 +457,7 @@ exp2FortSpecial(op,args,nargs) ==
       if LISTP first elts and #elts=1 and first elts is [sOp,:sArgs] then
         member(sOp, ['"SEGMENT","SEGMENT"]) =>
           #sArgs=1 => fortError1 first elts
-          not(NUMBERP(first sArgs) and NUMBERP(second sArgs)) =>
+          not(integer?(first sArgs) and integer?(second sArgs)) =>
             fortError("Cannot expand segment: ",first elts)
           first sArgs > second sArgs => fortError1
             '"Lower bound of segment exceeds upper bound."

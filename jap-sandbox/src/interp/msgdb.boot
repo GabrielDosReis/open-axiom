@@ -173,7 +173,7 @@ substituteSegmentedMsg(msg,args) ==
       l := NCONC(nreverse v,l)
 
     -- x requires parameter substitution
-    (x.0 = char "%") and (n > 1) and (DIGITP x.1) =>
+    (x.0 = char "%") and (n > 1) and (digit? x.1) =>
       a := DIG2FIX x.1
       arg :=
         a <= nargs => args.(a-1)
@@ -217,7 +217,7 @@ substituteSegmentedMsg(msg,args) ==
       for ch in '(_. _, _! _: _; _?) repeat
         if MEMQ(char ch,q) then l := [ch,:l]
 
-    c = char "%" and n > 1 and x.1 = char "x" and DIGITP x.2 =>
+    c = char "%" and n > 1 and x.1 = char "x" and digit? x.2 =>
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
     l := [x,:l]
@@ -254,9 +254,9 @@ $msgdbNoBlanksBeforeGroup := ['" ", " ", '"%", "%",_
 $msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 
 noBlankBeforeP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
-    if CVECP word and SIZE word > 1 then
+    if string? word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
     (cons? word) and member(first word,$msgdbListPrims) => true
@@ -266,9 +266,9 @@ $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
                               "[", "(", '"[", '"(" ]
 
 noBlankAfterP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
-    if CVECP word and (s := SIZE word) > 1 then
+    if string? word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
     (cons? word) and member(first word, $msgdbListPrims) => true
@@ -432,7 +432,7 @@ popSatOutput(newmode) ==
   $saturnMode
 
 systemErrorHere what ==
-  if not atom what then
+  if cons? what then
      what := [first what, " with: ", :rest what]
   keyedSystemError("S2GE0017",[what])
 
@@ -686,9 +686,9 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 
 blankIndicator x ==
   if IDENTP x then x := PNAME x
-  null string? x or MAXINDEX x < 1 => nil
+  not string? x or MAXINDEX x < 1 => nil
   x.0 = '% and x.1 = 'x =>
-    MAXINDEX x > 1 => PARSE_-INTEGER SUBSTRING(x,2,nil)
+    MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
     1
   nil
 
@@ -705,7 +705,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
     sayString(pn,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
-  VECP x => sayString('"UNPRINTABLE",out)
+  vector? x => sayString('"UNPRINTABLE",out)
   atom x => sayString(object2String x,out)
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
@@ -731,7 +731,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
     pn := PNAME x
     sayString(pn,out)
   atom x => sayString(object2String x,out)
-  VECP x => sayString('"UNPRINTABLE",out)
+  vector? x => sayString('"UNPRINTABLE",out)
   [key,:rst] := x
   key = '"%m" => mathprint(rst,out)
   key = '"%s" => 
@@ -850,7 +850,7 @@ sayBrightlyLength1 x ==
   IDENTP x => STRINGLENGTH PNAME x
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
-  VECP x => STRINGLENGTH '"UNPRINTABLE"
+  vector? x => STRINGLENGTH '"UNPRINTABLE"
   atom x => STRINGLENGTH STRINGIMAGE x
   2 + sayBrightlyLength x
 
@@ -1029,7 +1029,7 @@ escapeSpecialChars s ==
   u := LASSOC(s,$htCharAlist) => u
   member(s, $htSpecialChars) => strconc('"_\", s)
   null $saturn => s
-  ALPHA_-CHAR_-P (s.0) => s
+  alphabetic? (s.0) => s
   not (or/[dbSpecialDisplayOpChar? s.i for i in 0..MAXINDEX s]) => s
   buf := '""
   for i in 0..MAXINDEX s repeat buf :=

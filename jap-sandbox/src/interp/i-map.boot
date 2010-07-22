@@ -60,7 +60,7 @@ isInternalMapName name ==
   (not IDENTP(name)) or (name = "*") or (name = "**") => false
   sz := SIZE (name' := PNAME name)
   (sz < 7) or (char("*") ~= name'.0) => false
-  null DIGITP name'.1 => false
+  not digit? name'.1 => false
   null STRPOS('"_;",name',1,NIL) => false
   -- good enough
   true
@@ -69,10 +69,6 @@ makeInternalMapMinivectorName(name) ==
   string? name =>
     INTERN strconc(name,'";MV")
   INTERN strconc(PNAME name,'";MV")
-
-mkCacheName(name) == INTERNL(STRINGIMAGE name,'";AL")
-
-mkAuxiliaryName(name) == INTERNL(STRINGIMAGE name,'";AUX")
 
 --% Adding a function definition
 
@@ -88,10 +84,18 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
 
   -- next check is for bad forms on the lhs of the ==, such as
   -- numbers, constants.
+
+  -- FIXME: this function miguidedly characterizes constant definitions
+  -- as rules definitions.  In particular, typed constant definitions
+  -- are characterized are rules in one part, and announced to user
+  -- a niladic functions.  We try to limit the damage as much as we can.
+  defineeIsConstant := false
+
   if atom lhs then
     op := lhs
     putHist(op,'isInterpreterRule,true,$e)
     putHist(op,'isInterpreterFunction,false,$e)
+    defineeIsConstant := true
     lhs := [lhs]
   else
     -- this is a function definition. If it has been declared
@@ -102,7 +106,7 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
     putHist(op,'isInterpreterRule,false,$e)
     putHist(op,'isInterpreterFunction,true,$e)
 
-  (NUMBERP(op) or op in '(true false nil % %%)) =>
+  (integer?(op) or op in '(true false nil % %%)) =>
     throwKeyedMsg("S2IM0002",[lhs])
 
   -- verify a constructor abbreviation is not used on the lhs
@@ -132,7 +136,8 @@ addDefMap(['DEF,lhs,mapsig,.,rhs],pred) ==
   if allDecs then
     mapmode := nreverse mapmode
     putHist(op,'mode,mapmode,$e)
-    sayKeyedMsg("S2IM0006",[formatOpSignature(op,rest mapmode)])
+    if not defineeIsConstant then
+      sayKeyedMsg("S2IM0006",[formatOpSignature(op,rest mapmode)])
   else if someDecs then throwKeyedMsg("S2IM0007",[op])
 
   -- if map is declared, check that signature arg count is the
@@ -183,7 +188,7 @@ addMap(lhs,rhs,pred) ==
   null newMap =>
     sayRemoveFunctionOrValue op
     putHist(op,'alias,nil,$e)
-    ""      -- clears value--- see return from addDefMap in tree2Atree1
+    $ClearBodyToken --- see return from addDefMap in tree2Atree1
   if get(op,'isInterpreterRule,$e) then type := ['RuleCalled,op]
   else type := ['FunctionCalled,op]
   recursive :=
@@ -195,10 +200,10 @@ addMap(lhs,rhs,pred) ==
 augmentMap(op,args,pred,body,oldMap) ==
   pattern:= makePattern(args,pred)
   newMap:=deleteMap(op,pattern,oldMap)
-  body="" =>
+  body = $ClearBodyToken =>
     if newMap=oldMap then
       sayMSG ['"   Cannot find part of",:bright op,'"to delete."]
-    newMap  --just delete rule if body is 
+    newMap  --just delete rule if body is $ClearBodyToken
   entry:= [pattern,:body]
   resultMap:=
     newMap is ["%Map",:tail] => ["%Map",:tail,entry]
@@ -218,12 +223,17 @@ getUserIdentifiersIn body ==
   null body => nil
   IDENTP body =>
     isSharpVarWithNum body => nil
-    body="" => nil
+    body = $ClearBodyToken => nil
     [body]
   body is ["WRAPPED",:.] => nil
-  (body is ["COLLECT",:itl,body1]) or (body is ['REPEAT,:itl,body1]) =>
+  body is [op,:itl,body1] and op in '(COLLECT REPEAT %collect) =>
     userIds :=
       S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
+    S_-(userIds,getIteratorIds itl)
+  body is ['%loop,:itl,val,body1] =>
+    userIds :=
+      S_+(getUserIdentifiersInIterators itl,getUserIdentifiersIn body1)
+    userIds := S_+(getUserIdentifiersIn val,userIds)
     S_-(userIds,getIteratorIds itl)
   body is [op,:l] =>
     argIdList := 
@@ -243,6 +253,7 @@ getUserIdentifiersInIterators itl ==
       varList:= [:"append"/[getUserIdentifiersIn y for y in l],:varList]
     x is ["IN",.,y]   => varList:= [:getUserIdentifiersIn y,:varList]
     x is ["ON",.,y]   => varList:= [:getUserIdentifiersIn y,:varList]
+    x is ['%init,.,y]   => varList:= [:getUserIdentifiersIn y,:varList]
     x is [op,a] and op in '(_| WHILE UNTIL) =>
       varList:= [:getUserIdentifiersIn a,:varList]
     keyedSystemError("S2GE0016",['"getUserIdentifiersInIterators",
@@ -250,10 +261,12 @@ getUserIdentifiersInIterators itl ==
   removeDuplicates varList
 
 getIteratorIds itl ==
+  varList := nil
   for x in itl repeat
-    x is ["STEP",i,:.] => varList:= [i,:varList]
-    x is ["IN",y,:.]   => varList:= [y,:varList]
-    x is ["ON",y,:.]   => varList:= [y,:varList]
+    x is ["STEP",i,:.] => varList := [i,:varList]
+    x is ["IN",y,:.]   => varList := [y,:varList]
+    x is ["ON",y,:.]   => varList := [y,:varList]
+    x is ['%init,y,:.]   => varList := [y,:varList]
     nil
   varList
 
@@ -261,7 +274,7 @@ makeArgumentIntoNumber x ==
   x=$Zero => 0
   x=$One => 1
   atom x => x
-  x is ["-",n] and NUMBERP n => -n
+  x is ["-",n] and integer? n => -n
   [removeZeroOne first x,:removeZeroOne rest x]
 
 mkMapAlias(op,argl) ==
@@ -328,7 +341,7 @@ mkFormalArg(x,s) ==
   ['SUCHTHAT,s,["=",s,x]]
 
 isConstantArgument x ==
-  NUMBERP x => x
+  integer? x => x
   x is ["QUOTE",.] => x
 
 isPatternArgument x == x is ["construct",:.]
@@ -417,7 +430,7 @@ simplifyMapPattern (x,alias) ==
     sl:= getEqualSublis pred =>
       y':= SUBLIS(sl,y)
       pred:= unTrivialize SUBLIS(sl,pred) where unTrivialize x ==
-        x is [op,:l] and op in '(_and _or) =>
+        x is [op,:l] and op in '(and or) =>
           MKPF([unTrivialize y for y in l],op)
         x is [op,a,=a] and op in '(_= is)=> true
         x
@@ -459,7 +472,7 @@ predTran x ==
   x
 
 getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
-  (x:= SUBLIS(sl,x)) is [op,:l] and op in '(_and _or) =>
+  (x:= SUBLIS(sl,x)) is [op,:l] and op in '(and or) =>
     for y in l repeat sl:= fn(y,sl)
     sl
   x is ["is",a,b] => [[a,:b],:sl]
@@ -542,7 +555,7 @@ mkInterpFun(op,opName,argTypes) ==
     for argName in parms]] where argCode() ==
       ['putValueValue,['mkAtreeNode,MKQ argName],
         objNewCode(['wrap,argName],type)]
-  funName := GENSYM()
+  funName := gensym()
   body:=['rewriteMap1,MKQ opName,arglCode,MKQ sig]
   putMapCode(opName,body,sig,funName,parms,false)
   genMapCode(opName,body,sig,funName,parms,false)
@@ -597,7 +610,7 @@ rewriteMap0(op,opName,argl) ==
       else
         val:= getValue arg
       $env:=put(var,'value,val,$env)
-      if VECP arg then $env := put(var,'name,getUnname arg,$env)
+      if vector? arg then $env := put(var,'name,getUnname arg,$env)
       (m := getMode arg) => $env := put(var,'mode,m,$env)
   null (val:= interpMap(opName,tar)) =>
     throwKeyedMsg("S2IM0010",[opName])
@@ -630,7 +643,7 @@ rewriteMap1(opName,argl,sig) ==
       else
         val:= evArg
       $env:=put(var,'value,val,$env)
-      if VECP arg then $env := put(var,'name,getUnname arg,$env)
+      if vector? arg then $env := put(var,'name,getUnname arg,$env)
       (m := getMode arg) => $env := put(var,'mode,m,$env)
   val:= interpMap(opName,tar)
   removeBodyFromEnv(opName)
@@ -676,7 +689,7 @@ compileDeclaredMap(op,sig,mapDef) ==
   -- creates a local modemap and puts it into the environment
   $localVars: local := nil
   $freeVars: local := nil
-  $env:local:= [[nil]]
+  $env: local:= [[nil]]
   parms:=[var for var in $FormalMapVariableList for m in rest sig]
   for m in rest sig for var in parms repeat
     $env:= put(var,'mode,m,$env)
@@ -727,7 +740,7 @@ genMapCode(op,body,sig,fnName,parms,isRecursive) ==
   -- loop variables and variables that do have %LET expressions, but that
   -- can be finessed later.
 
-  locals := SETDIFFERENCE(COPY $localVars, parms)
+  locals := setDifference($localVars,parms)
   if locals then
     lets := [["%LET", l, ''UNINITIALIZED__VARIABLE, op] for l in locals]
     body := ['PROGN, :lets, body]
@@ -754,16 +767,15 @@ compileCoerceMap(op,argTypes,mm) ==
   name:= makeLocalModemap(op,[first sig,:argTypes])
   argCode := [objVal(coerceInteractive(objNew(arg,t1),t2) or
     throwKeyedMsg("S2IC0001",[arg,$mapName,t1,t2]))
-      for t1 in argTypes for t2 in rest sig for arg in parms]
+      for t1 in argTypes for t2 in sig.source for arg in parms]
   $insideCompileBodyIfTrue := false
   parms:= [:parms,'envArg]
   body := ['SPADCALL,:argCode,['LIST,['function,imp]]]
-  minivectorName := makeInternalMapMinivectorName(name)
-  body := declareUnusedParameters(parms,substitute(minivectorName,"$$$",body))
+  minivectorName := makeInternalMapMinivectorName name
+  body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
-  compileInteractive 
-    [name,['LAMBDA,parms,declareGlobalVariables [minivectorName],:body]]
-  first sig
+  compileInteractive [name,['LAMBDA,parms,body]]
+  sig.target
 
 depthOfRecursion(opName,body) ==
   -- returns the "depth" of recursive calls of opName in body
@@ -789,9 +801,9 @@ mapRecurDepth(opName,opList,body) ==
 
 analyzeUndeclaredMap(op,argTypes,mapDef,$mapList) ==
   -- Computes the signature of the map named op, and compiles the body
-  $freeVars:local := NIL
+  $freeVars: local := NIL
   $localVars: local := NIL
-  $env:local:= [[nil]]
+  $env: local:= [[nil]]
   $mapList := [op,:$mapList]
   parms:=[var for var in $FormalMapVariableList for m in argTypes]
   for m in argTypes for var in parms repeat
@@ -997,7 +1009,7 @@ findLocalVars1(op,form) ==
   -- sets the two lists $localVars and $freeVars
   atom form =>
     not IDENTP form or isSharpVarWithNum form => nil
-    isLocalVar(form) or isFreeVar(form) => nil
+    isLocallyBound form or isFreeVar form => nil
     mkFreeVar($mapName,form)
   form is ['local, :vars] =>
     for x in vars repeat
@@ -1021,9 +1033,14 @@ findLocalVars1(op,form) ==
     mkLocalVar(op,a)
   form is ['is,l,pattern] =>
     findLocalVars1(op,l)
-    for var in listOfVariables rest pattern repeat mkLocalVar(op,var)
-  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT) =>
+    for var in listOfVariables rest pattern repeat
+      mkLocalVar(op,var)
+  form is [oper,:itrl,body] and oper in '(REPEAT COLLECT %collect) =>
     findLocalsInLoop(op,itrl,body)
+  form is ['%loop,:itrl,val,body] =>
+    findLocalsInLoop(op,itrl,[body,val])
+  form is ['%bind,bindings,:body] =>
+    findExternalVarsInBindExpr(op,bindings,body)
   form is [y,:argl] =>
     y is "Record" or (y is "Union" and argl is [[":",.,.],:.]) => 
       -- don't pick field tags, their are not variables.
@@ -1033,30 +1050,46 @@ findLocalVars1(op,form) ==
   keyedSystemError("S2IM0020",[op])
 
 findLocalsInLoop(op,itrl,body) ==
+  savedLocalVars := $localVars
+  iterVars := nil
   for it in itrl repeat
     it is ['STEP,index,lower,step,:upperList] =>
+      iterVars := [index,:iterVars]
       mkLocalVar(op,index)
       findLocalVars1(op,lower)
       for up in upperList repeat findLocalVars1(op,up)
-    it is ['IN,index,s] =>
-      mkLocalVar(op,index) ; findLocalVars1(op,s)
-    it is ['WHILE,b] =>
-      findLocalVars1(op,b)
-    it is ['_|,pred] =>
-      findLocalVars1(op,pred)
+    it is [op,index,s] and op in '(IN %init) =>
+      iterVars := [index,:iterVars]
+      mkLocalVar(op,index)
+      findLocalVars1(op,s)
+    it is ['WHILE,b] => findLocalVars1(op,b)
+    it is ['_|,pred] => findLocalVars1(op,pred)
   findLocalVars1(op,body)
   for it in itrl repeat
     it is [op,b] and (op in '(UNTIL)) =>
       findLocalVars1(op,b)
+  $localVars := setUnion(savedLocalVars,setDifference($localVars,iterVars))
 
-isLocalVar(var) == member(var,$localVars)
+++ Subroutine of findLocalVars1.  
+++ Find variables in a bind-expressions that are external to that block.  
+findExternalVarsInBindExpr(op,bindings,stmts) ==
+  savedLocalVars := $localVars
+  boundVars := nil
+  for [var,init] in bindings repeat
+    findLocalVars1(op,init)
+    boundVars := [var,:boundVars]
+    mkLocalVar(op,var)
+  for stmt in stmts repeat
+    findLocalVars1(op,stmt)
+  $localVars := setUnion(savedLocalVars,setDifference($localVars,boundVars))
+
+isFreeVar(var) ==
+  member(var,$freeVars)
 
 mkLocalVar(op,var) ==
   -- add var to the local variable list
   isFreeVar(var) => $localVars
   $localVars:= insert(var,$localVars)
-
-isFreeVar(var) == member(var,$freeVars)
 
 mkFreeVar(op,var) ==
   -- op here for symmetry with mkLocalVar

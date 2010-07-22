@@ -89,7 +89,7 @@ shoeNextLine(s)==
   QENUM($ln,$n)=shoeTAB =>
     a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
     $ln.$n:='" ".0
-    $ln:=CONCAT(a,$ln)
+    $ln := strconc(a,$ln)
     s1:=[[$ln,:rest $f],:$r]
     shoeNextLine s1
   true
@@ -112,7 +112,7 @@ shoeLineToks(s)==
       [[dq],:$r]
     command:=shoeLisp? $ln=> shoeLispToken($r,command)
     command:=shoePackage? $ln=>
-      a:=CONCAT('"(IN-PACKAGE ",command,'")")
+      a := strconc('"(IN-PACKAGE ",command,'")")
       dq:=dqUnit shoeConstructToken
 	       ($ln,$linepos,shoeLeafLisp a,0)
       [[dq],:$r]
@@ -145,8 +145,8 @@ shoeAccumulateLines(s,string)==
       a:=STRPOS('";",command,0,nil)
       a=>
 	shoeAccumulateLines($r,
-	   CONCAT(string,SUBSTRING(command,0,a-1)))
-      shoeAccumulateLines($r,CONCAT(string,command))
+	   strconc(string,SUBSTRING(command,0,a-1)))
+      shoeAccumulateLines($r,strconc(string,command))
     shoeAccumulateLines($r,string)
   [s,:string]
 
@@ -195,7 +195,7 @@ shoeLeafInteger x==
   ["INTEGER",shoeIntValue x]
  
 shoeLeafFloat(a,w,e)==
-  b:=shoeIntValue CONCAT(a,w)
+  b:=shoeIntValue strconc(a,w)
   c:= double b *  EXPT(double 10, e-#w)
   ["FLOAT",c]
  
@@ -339,11 +339,11 @@ shoeS()==
   a := shoeEsc()
   b := 
     a =>
-      str := CONCAT(str,$ln.$n)
+      str := strconc(str,$ln.$n)
       $n := $n+1
       shoeS()
     shoeS()
-  CONCAT(str,b)
+  strconc(str,b)
  
  
  
@@ -371,7 +371,7 @@ shoeW(b)==
   bb := 
     a => shoeW(true)
     [b,'""]   --  escape finds space or newline
-  [bb.0 or b,CONCAT(str,bb.1)]
+  [bb.0 or b,strconc(str,bb.1)]
  
 shoeWord(esp) ==
    aaa:=shoeW(false)
@@ -398,7 +398,7 @@ shoeInteger1(zro) ==
   $n := $n+1
   a := shoeEsc()
   bb := shoeInteger1(zro)
-  CONCAT(str,bb)
+  strconc(str,bb)
  
 shoeIntValue(s) ==
   ns := #s
@@ -453,7 +453,7 @@ shoeError()==
   n:=$n
   $n:=$n+1
   SoftShoeError([$linepos,:n],
-    CONCAT( '"The character whose number is ",
+    strconc( '"The character whose number is ",
 	    STRINGIMAGE QENUM($ln,n),'" is not a Boot character"))
   shoeLeafError ($ln.n)
  

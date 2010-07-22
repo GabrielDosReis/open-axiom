@@ -75,21 +75,24 @@ Character: OrderedFinite() with
 	CC ==> CharacterClass()
         NNI ==> NonNegativeInteger
 	import CC
+        import %ceq: (%,%) -> Boolean from Foreign Builtin
+        import %clt: (%,%) -> Boolean from Foreign Builtin
+        import %cle: (%,%) -> Boolean from Foreign Builtin
+        import %cgt: (%,%) -> Boolean from Foreign Builtin
+        import %cge: (%,%) -> Boolean from Foreign Builtin
+        import %c2i: % -> NNI         from Foreign Builtin
+        import %i2c: NNI -> %         from Foreign Builtin
 
-	--cl: Record(dig:CC,hex:CC,upp:CC,low:CC,alpha:CC,alnum:CC) :=
-	--    [ digit(), hexDigit(),
-	--	upperCase(), lowerCase(), alphabetic(), alphanumeric() ]
-
-	a = b		       == CHAR_=(a,b)$Lisp
-	a < b		       == CHAR_<(a,b)$Lisp
-	a > b		       == CHAR_>(a,b)$Lisp
-	a <= b		       == CHAR_<_=(a,b)$Lisp
-	a >= b		       == CHAR_>_=(a,b)$Lisp
+	a = b		       == %ceq(a,b)
+	a < b		       == %clt(a,b)
+	a > b		       == %cgt(a,b)
+	a <= b		       == %cle(a,b)
+	a >= b		       == %cge(a,b)
 	size()		       == 256
 	index n		       == char((n - 1)::NNI)
 	lookup c	       == (1 + ord c)::PositiveInteger
-	char(n: NNI)	       == CODE_-CHAR(n)$Lisp
-	ord c		       == CHAR_-CODE(c)$Lisp
+	char(n: NNI)	       == %i2c n
+	ord c		       == %c2i c
 	random()	       == char(random(size())$NNI)
 	space		       == CHAR("   ", 0$Lisp)$Lisp
 	quote		       == CHAR("_" ", 0$Lisp)$Lisp
@@ -291,10 +294,16 @@ IndexedString(mn:Integer): Export == Implementation where
 	h:I := if hasHi sg then hi(sg) - mn else maxIndex s - mn
 	l < 0 or h >= m or h < l-1 => error "index out of range"
 	r := new((m-(h-l+1)+n)::N, space$C)
-        k : NonNegativeInteger
-	for k in 0.. for i in 0..l-1 repeat Qsetelt(r, k, Qelt(s, i))
-	for k in k.. for i in 0..n-1 repeat Qsetelt(r, k, Qelt(t, i))
-	for k in k.. for i in h+1..m-1 repeat Qsetelt(r, k, Qelt(s, i))
+        k: NonNegativeInteger := 0
+	for i in 0..l-1 repeat
+          Qsetelt(r, k, Qelt(s, i))
+          k := k + 1
+	for i in 0..n-1 repeat
+          Qsetelt(r, k, Qelt(t, i))
+          k := k + 1
+	for i in h+1..m-1 repeat
+          Qsetelt(r, k, Qelt(s, i))
+          k := k + 1
 	r
 
     setelt(s:%, i:I, c:C) ==
@@ -315,7 +324,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
 	startpos >= Qsize t => mn - 1
 	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
-	EQ(r, NIL$Lisp)$Lisp => mn - 1
+	%peq(r, NIL$Lisp)$Foreign(Builtin) => mn - 1
 	r + mn
     position(c: Character, t: %, startpos: I) ==
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
@@ -336,48 +345,50 @@ IndexedString(mn:Integer): Export == Implementation where
 
     split(s, c) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn..n while s.i = c repeat 0
+        i := mn
+	while i <= n and s.i = c repeat i := i + 1
 	l := empty()$List(%)
 	j:Integer -- j is conditionally intialized
 	while i <= n and (j := position(c, s, i)) >= mn repeat
 	    l := concat(s(i..j-1), l)
-	    for i in j..n while s.i = c repeat 0
+            i := j
+	    while i <= n and s.i = c repeat i := i + 1
 	if i <= n then l := concat(s(i..n), l)
 	reverse! l
 
     split(s, cc) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn..n while member?(s.i,cc) repeat 0
+        i := mn
+	while i <= n and member?(s.i,cc) repeat i := i + 1
 	l := empty()$List(%)
 	j:Integer -- j is conditionally intialized
 	while i <= n and (j := position(cc, s, i)) >= mn repeat
 	    l := concat(s(i..j-1), l)
-	    for i in j..n while member?(s.i,cc) repeat 0
+            i := j
+	    while i <= n and member?(s.i,cc) repeat i := i + 1
 	if i <= n then l := concat(s(i..n), l)
 	reverse! l
 
     leftTrim(s, c) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn .. n while s.i = c repeat 0
+        i := mn
+	while i <= n and s.i = c repeat i := i + 1
 	s(i..n)
 
     leftTrim(s, cc) ==
 	n := maxIndex s
-        i : NonNegativeInteger
-	for i in mn .. n while member?(s.i,cc) repeat 0
+        i := mn
+	while i <= n and member?(s.i,cc) repeat i := i + 1
 	s(i..n)
 
     rightTrim(s, c) ==
-        j : NonNegativeInteger
-	for j in maxIndex s .. mn by -1 while s.j = c repeat 0
+        j := maxIndex s
+	while j >=  mn and s.j = c repeat j := j - 1
 	s(minIndex(s)..j)
 
     rightTrim(s, cc) ==
-        j : NonNegativeInteger
-	for j in maxIndex s .. mn by -1 while member?(s.j, cc) repeat 0
+        j := maxIndex s
+	while j >= mn and member?(s.j, cc) repeat j := j - 1
 	s(minIndex(s)..j)
 
     concat l ==
@@ -450,8 +461,17 @@ the coercion.
 ++   This is the domain of character strings.
 MINSTRINGINDEX ==> 1	      -- as of 3/14/90.
 
-String(): StringCategory == IndexedString(MINSTRINGINDEX) add 
-    string n == STRINGIMAGE(n)$Lisp
+String(): Public == Private where
+  Public == Join(StringAggregate(), OpenMath) with
+    string: Integer -> %
+      ++ \spad{string i} returns the decimal representation of
+      ++ \spad{i} in a string
+    string: DoubleFloat -> %
+      ++ \spad{string f} returns the decimal representation of
+      ++ \spad{f} in a string
+  Private == IndexedString(MINSTRINGINDEX) add 
+    string(n: Integer) == STRINGIMAGE(n)$Lisp
+    string(f: DoubleFloat) == %f2s(f)$Foreign(Builtin)
 
     OMwrite(x: %): String ==
       s: String := ""
@@ -490,19 +510,7 @@ String(): StringCategory == IndexedString(MINSTRINGINDEX) add
         OMputEndObject(dev)
 
 @
-\section{category STRICAT StringCategory}
-<<category STRICAT StringCategory>>=
-)abbrev category STRICAT StringCategory
--- Note that StringCategory is built into the old compiler
--- redundant SetCategory added to help A# compiler
-++ Description:
-++ A category for string-like objects
 
-StringCategory():Category == Join(StringAggregate(), SetCategory, OpenMath) with
-  string: Integer -> %
-    ++ string(i) returns the decimal representation of i in a string
-
-@
 \section{License}
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
@@ -544,7 +552,6 @@ StringCategory():Category == Join(StringAggregate(), SetCategory, OpenMath) with
 <<domain CHAR Character>>
 <<domain CCLASS CharacterClass>>
 <<domain ISTRING IndexedString>>
-<<category STRICAT StringCategory>>
 <<domain STRING String>>
 @
 \eject

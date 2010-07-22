@@ -8,41 +8,41 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;true;$;2|)) 
 
-(PUT '|BOOLEAN;true;$;2| '|SPADreplace| '(XLAM NIL 'T)) 
+(PUT '|BOOLEAN;true;$;2| '|SPADreplace| '(XLAM NIL |%true|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Boolean|) |BOOLEAN;false;$;3|)) 
 
-(PUT '|BOOLEAN;false;$;3| '|SPADreplace| '(XLAM NIL NIL)) 
+(PUT '|BOOLEAN;false;$;3| '|SPADreplace| '(XLAM NIL |%false|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;not;2$;4|)) 
 
-(PUT '|BOOLEAN;not;2$;4| '|SPADreplace| 'NOT) 
+(PUT '|BOOLEAN;not;2$;4| '|SPADreplace| '|%not|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;~;2$;5|)) 
 
-(PUT '|BOOLEAN;~;2$;5| '|SPADreplace| 'NOT) 
+(PUT '|BOOLEAN;~;2$;5| '|SPADreplace| '|%not|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;and;3$;6|)) 
 
-(PUT '|BOOLEAN;and;3$;6| '|SPADreplace| 'AND) 
+(PUT '|BOOLEAN;and;3$;6| '|SPADreplace| '|%and|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;/\\;3$;7|)) 
 
-(PUT '|BOOLEAN;/\\;3$;7| '|SPADreplace| 'AND) 
+(PUT '|BOOLEAN;/\\;3$;7| '|SPADreplace| '|%and|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;or;3$;8|)) 
 
-(PUT '|BOOLEAN;or;3$;8| '|SPADreplace| 'OR) 
+(PUT '|BOOLEAN;or;3$;8| '|SPADreplace| '|%or|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;\\/;3$;9|)) 
 
-(PUT '|BOOLEAN;\\/;3$;9| '|SPADreplace| 'OR) 
+(PUT '|BOOLEAN;\\/;3$;9| '|SPADreplace| '|%or|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;xor;3$;10|)) 
@@ -56,7 +56,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;=;3$;13|)) 
 
-(PUT '|BOOLEAN;=;3$;13| '|SPADreplace| 'EQ) 
+(PUT '|BOOLEAN;=;3$;13| '|SPADreplace| '|%peq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;implies;3$;14|)) 
@@ -64,7 +64,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;equiv;3$;15|)) 
 
-(PUT '|BOOLEAN;equiv;3$;15| '|SPADreplace| 'EQ) 
+(PUT '|BOOLEAN;equiv;3$;15| '|SPADreplace| '|%peq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;<;3$;16|)) 
@@ -90,7 +90,7 @@
 
 (DEFUN |BOOLEAN;test;2$;1| (|a| $) (DECLARE (IGNORE $)) |a|) 
 
-(DEFUN |BOOLEAN;true;$;2| ($) (DECLARE (IGNORE $)) 'T) 
+(DEFUN |BOOLEAN;true;$;2| ($) (DECLARE (IGNORE $)) T) 
 
 (DEFUN |BOOLEAN;false;$;3| ($) (DECLARE (IGNORE $)) NIL) 
 
@@ -151,25 +151,23 @@
   (COND (|x| '|true|) ('T '|false|))) 
 
 (DEFUN |Boolean| ()
-  (PROG ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
+  (PROG (#0=#:G1424)
     (RETURN
-      (PROG (#0=#:G1423)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|Boolean|) |Boolean|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|Boolean;|))))))
-                 (LETT #0# T |Boolean|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))))) 
+      (COND
+        ((SETQ #0# (HGET |$ConstructorCache| '|Boolean|))
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
+                               (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
 
 (DEFUN |Boolean;| ()
   (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))
@@ -193,7 +191,7 @@
              |BOOLEAN;lookup;$Pi;19| (9 . |random|)
              |BOOLEAN;random;$;20| (|InputForm|)
              |BOOLEAN;convert;$If;21| (|OutputForm|)
-             |BOOLEAN;coerce;$Of;22| (|SingleInteger|) (|String|))
+             |BOOLEAN;coerce;$Of;22| (|String|) (|SingleInteger|))
           '#(~= 13 ~ 19 |xor| 24 |true| 30 |test| 34 |size| 39 |random|
              43 |or| 47 |not| 53 |nor| 58 |nand| 64 |min| 70 |max| 80
              |lookup| 90 |latex| 95 |index| 100 |implies| 105 |hash|
@@ -201,23 +199,23 @@
              |before?| 136 |and| 142 |\\/| 148 >= 154 > 160 = 166 <=
              172 < 178 |/\\| 184)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0))
-                (CONS '#(NIL |OrderedSet&| NIL NIL NIL |Logic&|
-                         |SetCategory&| NIL NIL |BasicType&| NIL)
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0))
+                (CONS '#(NIL NIL NIL NIL |Logic&| |SetCategory&|
+                         |OrderedType&| NIL |BasicType&| NIL NIL NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|PropositionalLogic|) (|Finite|)
-                               (|BooleanLogic|) (|Logic|)
-                               (|SetCategory|) (|ConvertibleTo| 33)
-                               (|Type|) (|BasicType|)
-                               (|CoercibleTo| 35))
+                               (|Logic|) (|SetCategory|)
+                               (|OrderedType|) (|BooleanLogic|)
+                               (|BasicType|) (|ConvertibleTo| 33)
+                               (|Type|) (|CoercibleTo| 35))
                             (|makeByteWordVec2| 38
                                 '(1 25 18 0 26 0 27 0 29 0 25 0 31 2 0
                                   18 0 0 1 1 0 0 0 10 2 0 0 0 0 15 0 0
                                   0 7 1 0 0 0 6 0 0 23 24 0 0 0 32 2 0
                                   0 0 0 13 1 0 0 0 9 2 0 0 0 0 16 2 0 0
                                   0 0 17 0 0 0 1 2 0 0 0 0 1 0 0 0 1 2
-                                  0 0 0 0 1 1 0 27 0 30 1 0 38 0 1 1 0
-                                  0 27 28 2 0 0 0 0 20 1 0 37 0 1 0 0 0
+                                  0 0 0 0 1 1 0 27 0 30 1 0 37 0 1 1 0
+                                  0 27 28 2 0 0 0 0 20 1 0 38 0 1 0 0 0
                                   8 2 0 0 0 0 21 1 0 33 0 34 1 0 35 0
                                   36 2 0 18 0 0 1 2 0 0 0 0 11 2 0 0 0
                                   0 14 2 0 18 0 0 1 2 0 18 0 0 1 2 0 18

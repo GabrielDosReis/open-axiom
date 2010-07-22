@@ -6,12 +6,12 @@
 (DEFPARAMETER |HomogeneousAggregate;AL| 'NIL) 
 
 (DEFUN |HomogeneousAggregate;| (|t#1|)
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1398
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|HomogeneousAggregate;CAT|)
                   ('T
-                   (LETT |HomogeneousAggregate;CAT|
+                   (SETQ |HomogeneousAggregate;CAT|
                          (|Join| (|Aggregate|)
                                  (|mkCategory| '|domain|
                                      '(((|map|
@@ -61,6 +61,8 @@
                                      '(((|CoercibleTo| (|OutputForm|))
                                         (|has| |t#1|
                                          (|CoercibleTo| (|OutputForm|))))
+                                       ((|BasicType|)
+                                        (|has| |t#1| (|BasicType|)))
                                        ((|SetCategory|)
                                         (|has| |t#1| (|SetCategory|)))
                                        ((|Evalable| |t#1|)
@@ -71,14 +73,13 @@
                                      '((|Boolean|)
                                        (|NonNegativeInteger|)
                                        (|List| |t#1|))
-                                     NIL))
-                         |HomogeneousAggregate|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|HomogeneousAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |HomogeneousAggregate| (#0=#:G1398)
-  (LET ((#1=#:G1399
+(DEFUN |HomogeneousAggregate| (#0=#:G1399)
+  (LET ((#1=#:G1400
             (|assoc| (|devaluate| #0#) |HomogeneousAggregate;AL|)))
     (COND
       (#1# (CDR #1#))

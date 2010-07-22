@@ -19,7 +19,7 @@
 ++ Description: Test for linear dependence.
 LinearDependence(S, R): Exports == Implementation where
   S: IntegralDomain
-  R: LinearlyExplicitRingOver S
+  R: Join(Ring,LinearlyExplicitRingOver S)
 
   Q ==> Fraction S
 
@@ -90,7 +90,7 @@ LinearDependence(S, R): Exports == Implementation where
 ++ Date Last Updated: 14 May 1991
 ++ Description: Test for linear dependence over the integers.
 IntegerLinearDependence(R): Exports == Implementation where
-  R: LinearlyExplicitRingOver Integer
+  R: Join(Ring,LinearlyExplicitRingOver Integer)
 
   Z ==> Integer
 

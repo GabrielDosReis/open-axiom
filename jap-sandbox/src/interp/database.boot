@@ -235,7 +235,7 @@ rebuildCDT(filemode) ==
 buildDatabase(filemode,expensive) ==
   $InteractiveMode: local:= true
   $constructorList := nil       --looked at by buildLibdb
-  $ConstructorCache:= MAKE_-HASHTABLE('ID)
+  $ConstructorCache:= hashTable 'EQ
   SAY '"Making constructor autoload"
   makeConstructorsAutoLoad()
   SAY '"Building category table"
@@ -576,7 +576,7 @@ getSystemModemaps(op,nargs) ==
   mml:= getOperationFromDB op =>
     mms := NIL
     for (x := [[.,:sig],.]) in mml repeat
-      (NUMBERP nargs) and (nargs ~= #QCDR sig) => 'iterate
+      (integer? nargs) and (nargs ~= # sig.source) => 'iterate
       $getUnexposedOperations or isFreeFunctionFromMm(x) or
         isExposedConstructor(getDomainFromMm(x)) => mms := [x,:mms]
       'iterate
@@ -587,7 +587,7 @@ getInCoreModemaps(modemapList,op,nargs) ==
   mml:= LASSOC (op,modemapList) =>
     mml:= first mml
     [x for (x:= [[dc,:sig],.]) in mml |
-      (NUMBERP nargs => nargs=#rest sig; true) and
+      (integer? nargs => nargs=#rest sig; true) and
         (cfn := abbreviate (domName := getDomainFromMm x)) and
           ($getUnexposedOperations or isExposedConstructor(domName))]
   nil
@@ -671,47 +671,13 @@ loadDependents fn ==
 
 --% Miscellaneous Stuff
 
-markUnique x ==
-  u := first x
-  x.first := '(_$unique)
-  x.rest := [u,:rest x]
-  rest x
-
-
-++ Tail of most function descriptors.
-$FunctionDescriptorTail == '(NIL T ELT)
-
-++ Return the list of overload sets of operations exported by
-++ the constructor `x'.  This function differs from 
-++ getConstructorOperationsFromDB in that it uncompresses the
-++ common tail of most function descriptors.  That compression
-++ was done when the overload sets were saved in the 
-++ operation database.
-getOperationAlistFromLisplib x ==
-  u := getConstructorOperationsFromDB x
---  u := removeZeroOneDestructively u
-  null u => u          -- this can happen for Object
-  CAAR u = '_$unique => rest u
-  f:= addConsDB $FunctionDescriptorTail
-  for [op,:sigList] in u repeat
-    for items in tails sigList repeat
-      [sig,:r] := first items
-      if r is [.,:s] then
-        if s is [.,:t] then
-          if t is [.] then nil
-          else s.rest := QCDDR f
-        else r.rest := QCDR f
-      else items.first.rest := f
-      items.first := addConsDB first items
-  u and markUnique u
-
 getOplistForConstructorForm (form := [op,:argl]) ==
   --  The new form is an op-Alist which has entries (<op> . signature-Alist)
   --    where signature-Alist has entries (<signature> . item)
   --      where item has form (<slotNumber> <condition> <kind>)
   --        where <kind> =  ELT | CONST | Subsumed | (XLAM..) ..
   pairlis := pairList($FormalMapVariableList,argl)
-  opAlist := getOperationAlistFromLisplib op
+  opAlist := getConstructorOperationsFromDB op
   [:getOplistWithUniqueSignatures(op,pairlis,signatureAlist)
       for [op,:signatureAlist] in opAlist]
 
@@ -738,7 +704,7 @@ dropPrefix(fn) ==
 --++  $globalExposureGroupAlist := NIL
 --++  egName  := NIL
 --++  egFiles := NIL
---++  while (not PLACEP (x:= READ_-LINE stream)) repeat
+--++  while (not PLACEP (x:= readLine stream)) repeat
 --++    x := DROPTRAILINGBLANKS x
 --++    SIZE(x) = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment

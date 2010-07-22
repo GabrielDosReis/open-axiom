@@ -6,12 +6,12 @@
 (DEFPARAMETER |UnaryRecursiveAggregate;AL| 'NIL) 
 
 (DEFUN |UnaryRecursiveAggregate;| (|t#1|)
-  (LET ((#0=#:G1424
+  (LET ((#0=#:G1425
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|UnaryRecursiveAggregate;CAT|)
                   ('T
-                   (LETT |UnaryRecursiveAggregate;CAT|
+                   (SETQ |UnaryRecursiveAggregate;CAT|
                          (|Join| (|RecursiveAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|concat| ($ $ $)) T)
@@ -74,14 +74,13 @@
                                      NIL
                                      '((|Integer|)
                                        (|NonNegativeInteger|))
-                                     NIL))
-                         |UnaryRecursiveAggregate|))))))
+                                     NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |UnaryRecursiveAggregate| (#0=#:G1425)
-  (LET ((#1=#:G1426
+(DEFUN |UnaryRecursiveAggregate| (#0=#:G1426)
+  (LET ((#1=#:G1427
             (|assoc| (|devaluate| #0#) |UnaryRecursiveAggregate;AL|)))
     (COND
       (#1# (CDR #1#))

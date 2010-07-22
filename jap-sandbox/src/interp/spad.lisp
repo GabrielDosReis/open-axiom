@@ -216,7 +216,7 @@
 (defun STRINGREST (X) (if (EQ (SIZE X) 1) (make-string 0) (SUBSTRING X 1 NIL)))
 
 (defun STREAM2UC (STRM)
-  (LET ((X (ELT (LASTATOM STRM) 1))) (SETELT X 0 (LC2UC (ELT X 0)))))
+  (LET ((X (ELT (LASTATOM STRM) 1))) (SETF (ELT X 0) (LC2UC (ELT X 0)))))
 
 (defun NEWNAMTRANS (X)
   (COND

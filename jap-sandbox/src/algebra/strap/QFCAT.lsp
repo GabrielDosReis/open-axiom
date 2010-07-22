@@ -6,12 +6,12 @@
 (DEFPARAMETER |QuotientFieldCategory;AL| 'NIL) 
 
 (DEFUN |QuotientFieldCategory;| (|t#1|)
-  (LET ((#0=#:G1398
+  (LET ((#0=#:G1399
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|QuotientFieldCategory;CAT|)
                   ('T
-                   (LETT |QuotientFieldCategory;CAT|
+                   (SETQ |QuotientFieldCategory;CAT|
                          (|Join| (|Field|) (|Algebra| '|t#1|)
                                  (|RetractableTo| '|t#1|)
                                  (|FullyEvalableOver| '|t#1|)
@@ -73,14 +73,13 @@
                                        ((|PolynomialFactorizationExplicit|)
                                         (|has| |t#1|
                                          (|PolynomialFactorizationExplicit|))))
-                                     'NIL NIL))
-                         |QuotientFieldCategory|))))))
+                                     'NIL NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|QuotientFieldCategory| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |QuotientFieldCategory| (#0=#:G1399)
-  (LET ((#1=#:G1400
+(DEFUN |QuotientFieldCategory| (#0=#:G1400)
+  (LET ((#1=#:G1401
             (|assoc| (|devaluate| #0#) |QuotientFieldCategory;AL|)))
     (COND
       (#1# (CDR #1#))

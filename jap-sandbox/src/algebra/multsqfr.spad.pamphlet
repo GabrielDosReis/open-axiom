@@ -235,7 +235,7 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
      ctf1:R:=1
      f1:BP:=1$BP
      d1:Z
-     while range<10000000000 repeat
+     while range < 10000000000 repeat
        range:=2*range
        lval:= [ran(range) for i in 1..nvr]
        member?(lval,ltry) => "new integer"
@@ -267,7 +267,8 @@ MultivariateSquareFree (E,OV,R,P) : C == T where
          ctf1:=ctf
          lval1:=lval
          d1:=d0
- 
+     error "intChoose$MULTQFR: fell off loop without value"
+         
  
         ----  Choose the leading coefficient for the lifting  ----
    coefChoose(exp:Z,sqlead:Factored(P)) : P ==

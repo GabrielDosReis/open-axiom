@@ -310,7 +310,7 @@ for x in '((+ WIDTH sumWidth)
 	   (ZAG SUPERSPAN zagSuper)
 	   (ZAG WIDTH zagWidth)) 
   repeat
-    MAKEPROP(first x, second x, third x)
+    property(first x, second x) := third x
 
 
 for x in '((+ APP plusApp)
@@ -380,7 +380,7 @@ for x in '((+ APP plusApp)
 	   (BRACE APP braceApp)
 	   (BRACE WIDTH qTWidth)) 
   repeat
-    MAKEPROP(first x, second x, third x)
+    property(first x, second x) := third x
 
 --%
 
@@ -420,7 +420,7 @@ APP(u,x,y,d) ==
     APP(a,x+#s,y,appChar(s,x,y,d))
   u is [[id,:.],:.] =>
     fn := GETL(id,'APP) => FUNCALL(fn,u,x,y,d)
-    not NUMBERP id and (d':= appInfix(u,x,y,d))=> d'
+    not integer? id and (d':= appInfix(u,x,y,d))=> d'
     appelse(u,x,y,d)
   appelse(u,x,y,d)
 
@@ -441,12 +441,12 @@ atom2String x ==
 appChar(string,x,y,d) ==
   if CHARP string then string := PNAME string
   line:= LASSOC(y,d) =>
-    if MAXINDEX string = 1 and char(string.0) = "%" then
-      string.1="b" =>
+    if MAXINDEX string = 1 and string.0 = char "%" then
+      string.1 = char "b" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
         string.1:= EBCDIC 200
-      string.1="d" =>
+      string.1 = char "d" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
         string.1:= EBCDIC 65
@@ -484,9 +484,9 @@ outputTran x ==
   member(x,'("failed" "nil" "prime" "sqfr" "irred")) =>
     strconc('"_"",x,'"_"")
   string? x => x
-  VECP x =>
+  vector? x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
-  NUMBERP x =>
+  integer? x =>
     MINUSP x => ["-",MINUS x]
     x
   atom x =>
@@ -595,7 +595,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and char("*") = (PNAME op).0 =>
+  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (PNAME op).0 =>
     mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -716,14 +716,14 @@ outputConstructTran x ==
   [outputTran first x,:outputConstructTran rest x]
 
 outputTranMatrix x ==
-  not VECP x =>
+  not vector? x =>
     -- assume that the only reason is that we've been done before
     ["MATRIX",:x]
     --keyedSystemError("S2GE0016",['"outputTranMatrix",
     -- '"improper internal form for matrix found in output routines"])
   ["MATRIX",nil,:[outtranRow x.i for i in 0..MAXINDEX x]] where
     outtranRow x ==
-      not VECP x =>
+      not vector? x =>
         keyedSystemError("S2GE0016",['"outputTranMatrix",
           '"improper internal form for matrix found in output routines"])
       ["ROW",:[outputTran x.i for i in 0..MAXINDEX x]]
@@ -734,8 +734,8 @@ mkSuperSub(op,argl) ==
 --    for f in linearFormatForm(op,argl)]
 --  strconc/l
   s:= PNAME op
-  indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
-    (DIGITP (d:= s.(maxIndex:= i)))]
+  indexList:= [readInteger PNAME d for i in 1.. while
+    (digit? (d:= s.(maxIndex:= i)))]
   cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>
@@ -767,9 +767,9 @@ timesApp(u,x,y,d) ==
       d:= APP(BLANK,x,y,d)
       x:= x+1
     [d,x]:= appInfixArg(arg,x,y,d,rightPrec,"left",nil) --app in a right arg
-    wasSimple:= atom arg and not NUMBERP arg or isRationalNumber arg
+    wasSimple:= atom arg and not integer? arg or isRationalNumber arg
     wasQuotient:= isQuotient op
-    wasNumber:= NUMBERP arg
+    wasNumber:= integer? arg
     lastOp := op
     firstTime:= nil
   d
@@ -862,10 +862,10 @@ needStar(wasSimple,wasQuotient,wasNumber,cur,op) ==
   wasQuotient or isQuotient op => true
   wasSimple =>
     atom cur or keyp cur="SUB" or isRationalNumber cur or op="**" or op = "^" or
-      (atom op and not NUMBERP op and null GETL(op,"APP"))
+      (atom op and not integer? op and null GETL(op,"APP"))
   wasNumber =>
-    NUMBERP(cur) or isRationalNumber cur or
-        ((op="**" or op ="^") and NUMBERP(second cur))
+    integer?(cur) or isRationalNumber cur or
+        ((op="**" or op ="^") and integer?(second cur))
 
 isQuotient op ==
   op="/" or op="OVER"
@@ -880,9 +880,9 @@ timesWidth u ==
       w:= w+1
     if infixArgNeedsParens(arg, rightPrec, "left") then w:= w+2
     w:= w+WIDTH arg
-    wasSimple:= atom arg and not NUMBERP arg --or isRationalNumber arg
+    wasSimple:= atom arg and not integer? arg --or isRationalNumber arg
     wasQuotient:= isQuotient op
-    wasNumber:= NUMBERP arg
+    wasNumber:= integer? arg
     firstTime:= nil
   w
 
@@ -1027,7 +1027,7 @@ aggregateApp(u,x,y,d,s) ==
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
   string? u =>
     u = $EmptyString => 0
-    u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
   atom u => # atom2String u
   WIDTH COPY u
@@ -1035,7 +1035,7 @@ outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
 WIDTH u ==
   string? u =>
     u = $EmptyString => 0
-    u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
   integer? u => 
     if (u < 1) then 
@@ -1055,9 +1055,9 @@ WIDTH u ==
   THROW('outputFailure,'outputFailure)
 
 putWidth u ==
-  atom u or u is [[.,:n],:.] and NUMBERP n => u
+  atom u or u is [[.,:n],:.] and integer? n => u
   op:= keyp u
---NUMBERP op => nil
+--integer? op => nil
   leftPrec:= getBindingPowerOf("left",u)
   rightPrec:= getBindingPowerOf("right",u)
   [firstEl,:l] := u
@@ -1090,7 +1090,7 @@ putWidth u ==
 
 opWidth(op,has2Arguments) ==
   op = "EQUATNUM" => 4
-  NUMBERP op => 2+SIZE STRINGIMAGE op
+  integer? op => 2+SIZE STRINGIMAGE op
   null has2Arguments =>
     a:= GETL(op,"PREFIXOP") => SIZE a
     2+SIZE PNAME op
@@ -1711,7 +1711,7 @@ charyTop(u,start,linelength) ==
 charyTopWidth u ==
     atom u => u
     atom first u => putWidth u
-    NUMBERP CDAR u => u
+    integer? CDAR u => u
     putWidth u
 
 charyTrouble(u,v,start,linelength) ==
@@ -1735,7 +1735,7 @@ sublisMatAlist(m,m1,u) ==
   u
 
 charyTrouble1(u,v,start,linelength) ==
-  NUMBERP u => outputNumber(start,linelength,atom2String u)
+  integer? u => outputNumber(start,linelength,atom2String u)
   atom u => outputString(start,linelength,atom2String u)
   EQ(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
   x in '(_+ _* AGGLST) => charySplit(u,v,start,linelength)
@@ -1789,7 +1789,7 @@ charyMinus(u,v,start,linelength) ==
   '" "
 
 charyBinary(d,u,v,start,linelength) ==
-  member(d,'(" := " "= ")) =>
+  member(d,'(" := " " = ")) =>
     charybdis(['CONCATB,v.1,d],start,linelength)
     charybdis(v.2,start+2,linelength-2)
     '" "
@@ -1857,8 +1857,8 @@ keyp(u) ==
   CAAR u
 
 absym x ==
-  (NUMBERP x) and (MINUSP x) => -x
-  not (atom x) and (keyp(x) = '_-) => second x
+  (integer? x) and (MINUSP x) => -x
+  cons? x and (keyp(x) = '_-) => second x
   x
 
 agg(n,u) ==
@@ -1874,10 +1874,10 @@ argsapp(u,x,y,d) == appargs(rest u,x,y,d)
 
 subspan u ==
   atom u => 0
-  NUMBERP rest u => subspan first u
-  (not atom first u             and_
+  integer? rest u => subspan first u
+  (cons? first u             and_
    atom CAAR u           and_
-   not NUMBERP CAAR u    and_
+   not integer? CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
    APPLX(GETL(CAAR u, 'SUBSPAN), [u])
   MAX(subspan first u, subspan rest u)
@@ -1886,10 +1886,10 @@ agggsub u == subspan rest u
 
 superspan u ==
   atom u => 0
-  NUMBERP rest u => superspan first u
-  (not atom first u               and_
+  integer? rest u => superspan first u
+  (cons? first u               and_
    atom CAAR u             and_
-   not NUMBERP CAAR u      and_
+   not integer? CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
    APPLX(GETL(CAAR u, 'SUPERSPAN), [u])
   MAX(superspan first u, superspan rest u)
@@ -1966,7 +1966,7 @@ appext(u,x,y,d) ==
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
   n := MAX(WIDTH second u, WIDTH agg(4,u), temp)
   if first(z := agg(5,u)) is ["EXT",:.] and
-   (n=3 or (n > 3 and not (atom z)) ) then
+   (n=3 or (n > 3 and cons? z) ) then
      n := 1 + n
   d := APP(z, x + n, y, d)
 
@@ -1975,8 +1975,8 @@ apphor(x1,x2,y,d,char) ==
   APP(char, x2, y, temp)
 
 syminusp x ==
-  NUMBERP x => MINUSP x
-  not (atom x) and EQ(keyp x,'_-)
+  integer? x => MINUSP x
+  cons? x and EQ(keyp x,'_-)
 
 appsum(u, x, y, d) ==
   null u => d
@@ -2042,7 +2042,7 @@ extwidth(u) ==
            1 + WIDTH agg(2, u) + WIDTH agg(3, u) )
   nil or
          (first(z := agg(5, u)) is ["EXT",:.] and _
-          (n=3 or ((n > 3) and null atom z) )  =>
+          (n=3 or ((n > 3) and cons? z) )  =>
           n := 1 + n)
   true => n + WIDTH agg(5, u)
 

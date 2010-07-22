@@ -6,12 +6,12 @@
 (DEFPARAMETER |Collection;AL| 'NIL) 
 
 (DEFUN |Collection;| (|t#1|)
-  (LET ((#0=#:G1396
+  (LET ((#0=#:G1397
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|Collection;CAT|)
                   ('T
-                   (LETT |Collection;CAT|
+                   (SETQ |Collection;CAT|
                          (|Join| (|HomogeneousAggregate| '|t#1|)
                                  (|mkCategory| '|domain|
                                      '(((|construct|
@@ -68,13 +68,12 @@
                                         (|has| |t#1|
                                          (|ConvertibleTo|
                                           (|InputForm|)))))
-                                     '((|List| |t#1|)) NIL))
-                         |Collection|))))))
+                                     '((|List| |t#1|)) NIL))))))))
     (|setShellEntry| #0# 0 (LIST '|Collection| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |Collection| (#0=#:G1397)
-  (LET ((#1=#:G1398 (|assoc| (|devaluate| #0#) |Collection;AL|)))
+(DEFUN |Collection| (#0=#:G1398)
+  (LET ((#1=#:G1399 (|assoc| (|devaluate| #0#) |Collection;AL|)))
     (COND
       (#1# (CDR #1#))
       (T (PROGN

@@ -191,7 +191,7 @@ oldAxiomPreCategoryParents(catform,dom) ==
   parents := parentsOf opOf catform
   PROGV(vars, vals,
     LIST2VEC
-      [EVAL quoteCatOp cat for [cat,:pred] in parents | EVAL pred])
+      [eval quoteCatOp cat for [cat,:pred] in parents | eval pred])
 
 quoteCatOp cat == 
    atom cat => MKQ cat
@@ -202,7 +202,7 @@ oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    [catform,hash, pack,:.] := catenv
    opIsHasCat op => if EQL(sig, hash) then [self] else nil
    null(pack) => nil
-   if not VECP pack then
+   if not vector? pack then
        pack:=apply(pack, [self, :rest catform])
        catenv.rest.rest.first := pack
    fun := basicLookup(op, sig, pack, self) => [fun]
@@ -213,7 +213,7 @@ oldAxiomCategoryNthParent([.,.,.,parvec,dom], n, env) ==
   catform := parvec.(n-1)
   VECTORP KAR catform => catform
   newcat := oldAxiomPreCategoryBuild(catform,dom,nil)
-  SETELT(parvec, n-1, newcat)
+  parvec.(n-1) := newcat
   newcat
 
 oldAxiomCategoryBuild([catform,:.], dom, env) ==
@@ -262,7 +262,7 @@ $attributeDispatch :=
 
 
 orderedDefaults(conform,domform) ==
-  $depthAssocCache : local := MAKE_-HASHTABLE 'ID
+  $depthAssocCache : local := hashTable 'EQ
   conList := [x for x in orderCatAnc (op := opOf conform) | hasDefaultPackage op]
   acc := nil
   ancestors := ancestorsOf(conform,domform)
@@ -342,11 +342,11 @@ $oldAxiomDomainDispatch :=
 
 basicLookupCheckDefaults(op,sig,domain,dollar) ==
   box := [nil]
-  not VECP(dispatch := first dollar) => error "bad domain format"
+  not vector?(dispatch := first dollar) => error "bad domain format"
   lookupFun := dispatch.3
   dispatch.0 = 0  =>  -- new compiler domain object
        hashPercent :=
-          VECP dollar => hashType(dollar.0,0)
+          vector? dollar => hashType(dollar.0,0)
           hashType(dollar,0)
 
        hashSig :=
@@ -383,7 +383,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   if hashCode? op and EQL(op, $hashOp1) then op := 'One
   if hashCode? op and EQL(op, $hashOp0) then op := 'Zero
   hashPercent :=
-    VECP dollar => hashType(dollar.0,0)
+    vector? dollar => hashType(dollar.0,0)
     hashType(dollar,0)
   if hashCode? sig and EQL(sig, hashPercent) then 
          sig := hashType('(Mapping $), hashPercent)
@@ -438,12 +438,12 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
             formatOpSignature(op,subsumptionSig)]
         nil
       slot := domain.loc
-      null atom slot =>
-        QCAR slot = 'newGoGet => someMatch:=true
+      cons? slot =>
+        slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
-        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot QCDR slot),
+        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)
         return (success := slot)
       slot = 'skip =>       --recursive call from above 'replaceGoGetSlot
@@ -470,7 +470,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := dom.3
-  packageVec := QCAR slot4
+  packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
@@ -479,7 +479,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   for i in 0..MAXINDEX packageVec |
        (entry := packageVec.i) and entry ~= true repeat
     package :=
-      VECP entry =>
+      vector? entry =>
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
@@ -489,7 +489,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
         if not GETL(entry,'LOADED) then loadLib entry
         infovec := GETL(entry,'infovec)
         success :=
-          --VECP infovec =>  ----new world
+          --vector? infovec =>  ----new world
           true =>  ----new world
             opvec := infovec.1
             max := MAXINDEX opvec
@@ -499,9 +499,9 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             endPos :=
               code+2 > max => SIZE byteVector
               opvec.(code+2)
-            --not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
+            --not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
-            --numOfArgs ~= #(QCDR sig) => nil
+            --numOfArgs ~= #sig.source => nil
             packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
@@ -537,7 +537,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
 
 HasAttribute(domain,attrib) ==
   hashPercent :=
-       VECP domain => hashType(domain.0,0)
+       vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   isDomain domain =>
      FIXP((first domain).0) => 
@@ -552,7 +552,7 @@ HasAttribute(domain,attrib) ==
  
 newHasAttribute(domain,attrib) ==
   hashPercent :=
-       VECP domain => hashType(domain.0,0)
+       vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   predIndex :=
      hashCode? attrib =>
@@ -583,7 +583,7 @@ newHasCategory(domain,catform) ==
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
 
 getCatForm(catvec, index, domain) ==
-   NUMBERP(form := QVELT(catvec,index)) => domain.form
+   integer?(form := QVELT(catvec,index)) => domain.form
    form
 
 HasSignature(domain,[op,sig]) ==
@@ -611,5 +611,5 @@ HasCategory(domain,catform') ==
 --    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
 
 domainEqual(a,b) == 
-  VECP a and VECP b and a.0 = b.0
+  vector? a and vector? b and a.0 = b.0
  

@@ -142,10 +142,10 @@ makeInitialModemapFrame() ==
   COPY $InitialModemapFrame
  
 isCapitalWord x ==
-  (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]
+  (y := PNAME x) and and/[upperCase? y.i for i in 0..MAXINDEX y]
  
 mkPredList listOfEntries ==
-  [['EQCAR,"#1",i] for arg in listOfEntries for i in 0..]
+  [['%ieq,['%head,"#1"],i] for arg in listOfEntries for i in 0..]
 
 
 --%
@@ -155,3 +155,24 @@ validateVariableNameOrElse var ==
   not IDENTP var => throwKeyedMsg("S2IS0016",[STRINGIMAGE var])
   var in '(% %%) => throwKeyedMsg("S2IS0050",[var])
   true
+
+--%
+
+flattenCOND body ==
+  -- transforms nested COND clauses to flat ones, if possible
+  body isnt ['COND,:.] => body
+  ['COND,:extractCONDClauses body]
+ 
+extractCONDClauses clauses ==
+  -- extracts nested COND clauses into a flat structure
+  clauses is ['COND, [pred1,:act1],:restClauses] =>
+    if act1 is [['PROGN,:acts]] then act1 := acts
+    restClauses is [[''T,restCond]] =>
+      [[pred1,:act1],:extractCONDClauses restCond]
+    [[pred1,:act1],:restClauses]
+  [[''T,clauses]]
+ 
+++ Returns true if symbol `id' is either a local variable
+++ or an iterator variable.
+isLocallyBound id ==
+  id in $localVars or id in $iteratorVars

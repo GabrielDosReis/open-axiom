@@ -45,7 +45,7 @@ nx:=0
 lamda:=new(1,14,0.0)$Matrix SF
 ny:=0
 mu:=new(1,14,0.0)$Matrix SF
-wrk:=new(1,11016,0.0)$Matrix SF;
+wrk:=new(1,11016,0.0)$Matrix SF
 result:=e02ddf(start,m,x,y,f,w,s,nxest,nyest,lwrk,liwrk,nx,lamda,ny,mu,wrk,-1)
 @
 \eject

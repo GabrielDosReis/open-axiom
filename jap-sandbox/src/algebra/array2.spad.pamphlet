@@ -355,11 +355,9 @@ InnerIndexedTwoDimensionalArray(R,mnRow,mnCol,Row,Col):_
     if R has SetCategory then
         latex(m : %) : String ==
           s : String := "\left[ \begin{array}{"
-          j : Integer
           for j in minColIndex(m)..maxColIndex(m) repeat
             s := concat(s,"c")$String
           s := concat(s,"} ")$String
-          i : Integer
           for i in minRowIndex(m)..maxRowIndex(m) repeat
             for j in minColIndex(m)..maxColIndex(m) repeat
               s := concat(s, latex(qelt(m,i,j))$R)$String

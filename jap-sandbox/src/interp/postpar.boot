@@ -217,7 +217,7 @@ postComma u ==
 postDef: %ParseTree -> %ParseForm
 postDef t ==
   t isnt [defOp,lhs,rhs] => systemErrorHere ["postDef",t]
-  lhs is ["macro",name] => postMDef ["==>",name,rhs]
+  lhs is ['macro,name] => postMDef ["==>",name,rhs]
 
   recordHeaderDocumentation nil
   if $maxSignatureLineNumber ~= 0 then
@@ -467,7 +467,7 @@ postReduce t ==
   t isnt ["%Reduce",op,expr] => systemErrorHere ["postReduce",t]
   $InteractiveMode or expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
-  postReduce ["%Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
+  postReduce ["%Reduce",op,["COLLECT",["IN",g:= gensym(),expr],
     ["construct",  g]]]
 
 postFlattenLeft: (%ParseTree, %Symbol) -> %ParseForm
@@ -631,5 +631,5 @@ for x in [["with", :"postWith"],_
           ["%Match",:"postMatch"],_
           ["^=", :"postBootNotEqual"],_
 	  ["%Comma", :"post%Comma"]] repeat
-  MAKEPROP(first x, "postTran", rest x)
+  property(first x, 'postTran) := rest x
 

@@ -89,18 +89,18 @@ makeFortranFun(name,args,fortranArgs,dummies,decls,results,file,dir,
   SYSTEM strconc("cc ",file,".c -o ",file,".spadexe ",$fortranLibraries)
 
 writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
-  WRITE_-LINE('"#include <stdio.h>",fp)
-  WRITE_-LINE('"#include <sys/select.h>",fp)
-  WRITE_-LINE('"#include <rpc/rpc.h>",fp)
-  WRITE_-LINE('"#ifndef NULL",fp)
-  WRITE_-LINE('"#define NULL 0",fp)
-  WRITE_-LINE('"#endif  NULL",fp)
-  WRITE_-LINE('"#define MAX__ARRAY(x) (x ? x :  20000)",fp)
-  WRITE_-LINE('"#define CHECK(x) if (!x) {fprintf(stderr,_"xdr failed_"); exit(1);}",fp)
-  WRITE_-LINE('"void main()",fp)
-  WRITE_-LINE('"{",fp)
-  WRITE_-LINE('"  XDR xdrs;",fp)
-  WRITE_-LINE('"  {",fp)
+  writeLine('"#include <stdio.h>",fp)
+  writeLine('"#include <sys/select.h>",fp)
+  writeLine('"#include <rpc/rpc.h>",fp)
+  writeLine('"#ifndef NULL",fp)
+  writeLine('"#define NULL 0",fp)
+  writeLine('"#endif  NULL",fp)
+  writeLine('"#define MAX__ARRAY(x) (x ? x :  20000)",fp)
+  writeLine('"#define CHECK(x) if (!x) {fprintf(stderr,_"xdr failed_"); exit(1);}",fp)
+  writeLine('"void main()",fp)
+  writeLine('"{",fp)
+  writeLine('"  XDR xdrs;",fp)
+  writeLine('"  {",fp)
   if $addUnderscoreToFortranNames then
     routineName := strconc(name,STRING CODE_-CHAR 95)
   else
@@ -117,7 +117,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
     printDec(second first argList,a,asps,fp)
   argList := nreverse argList;
   -- read in the data
-  WRITE_-LINE('"    xdrstdio__create(&xdrs, stdin, XDR__DECODE);",fp)
+  writeLine('"    xdrstdio__create(&xdrs, stdin, XDR__DECODE);",fp)
   for a in argList repeat
     if LISTP second a then writeMalloc(first a,first second a,rest second a,fp)
     not MEMQ(first a,[:dummies,:asps]) => writeXDR(a,'"&xdrs",fp)
@@ -134,16 +134,16 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
     PRINC('",",fp)
     printCName(a,isPointer?(a,decls),asps,fp)
   writeStringLengths(fortranArgs,decls,fp)
-  WRITE_-LINE('");",fp)
+  writeLine('");",fp)
   -- now export the results.
-  WRITE_-LINE('"    xdrstdio__create(&xdrs, stdout, XDR__ENCODE);",fp)
+  writeLine('"    xdrstdio__create(&xdrs, stdout, XDR__ENCODE);",fp)
   if returnType then
     writeXDR([returnName,getCType returnType],'"&xdrs",fp)
   for r in results repeat
     writeXDR([r,getCType getFortranType(r,decls)],'"&xdrs",fp)
-  WRITE_-LINE('"    exit(0);",fp)
-  WRITE_-LINE('"  }",fp)
-  WRITE_-LINE('"}",fp)
+  writeLine('"    exit(0);",fp)
+  writeLine('"  }",fp)
+  writeLine('"}",fp)
 
 writeStringLengths(fortranArgs,decls,fp) ==
   for a in fortranArgs repeat
@@ -321,7 +321,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
            [["$elt","Lisp","construct"],:mkQuote results],resPar]
   if asps then
     -- Make a unique(ish) id for asp files
-    aspId := strconc(getEnv('"SPADNUM"), GENSYM('"NAG"))
+    aspId := strconc(getEnv('"SPADNUM"), gensym('"NAG"))
     body := ["SEQ",:makeAspGenerators(asps,aspTypes,aspId),_
              makeCompilation(asps,file,aspId),_
              ["pretend",call,fType] ]
@@ -542,7 +542,7 @@ lispType u ==
 getVal(u,names,values) ==
   -- if u is the i'th element of names, return the i'th element of values,
   -- otherwise if it is an arithmetic expression evaluate it.
-  NUMBERP(u) => u
+  integer?(u) => u
   LISTP(u) => eval [first(u), :[getVal(v,names,values) for v in rest u]]
   (place := POSITION(u,names)) => NTH(place,values)
   error ['"No value found for parameter: ",u]
@@ -673,9 +673,9 @@ readData(tmpFile,results) ==
   results
 
 generateDataName()==strconc($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENSYM('"NAG"),'"data")
+    getEnv('"SPADNUM"), gensym('"NAG"),'"data")
 generateResultsName()==strconc($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENSYM('"NAG"),'"results")
+    getEnv('"SPADNUM"), gensym('"NAG"),'"results")
 
 
 fortCall(objFile,data,results) ==
@@ -755,7 +755,7 @@ multiToUnivariate f ==
   else
     vars := [second f]
   body := COPY_-TREE third f
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     body := NSUBST(["elt",newVariable,index+1],vars.(index),body)
@@ -778,7 +778,7 @@ functionAndJacobian f ==
     DF(fn,var) == 
       ["@",["convert",["differentiate",fn,var]],"InputForm"]
   jacBodies := CDDR interpret [["$elt",["List",["InputForm"]],"construct"],:jacBodies]
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)
@@ -800,7 +800,7 @@ vectorOfFunctions f ==
   else
     vars := [second f]
   funBodies := COPY_-TREE CDADDR f
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)

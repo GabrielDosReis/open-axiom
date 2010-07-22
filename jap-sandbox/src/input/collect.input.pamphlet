@@ -55,7 +55,6 @@ r : Fraction UnivariatePolynomial(x,Fraction Integer)
 r := ((x - 1) * (x - 2)) / ((x-3) * (x-4))
 continuedFraction r
 [i*i for i in convergents(z) :: Stream Float]
-[x**3 - y for x in b | even? x for y in e]
 f := [i**3 for i in 0..]
 [i**3 for i in 0..10]
 [i**3 for i in 0.. while i < 11]

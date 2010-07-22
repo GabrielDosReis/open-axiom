@@ -370,7 +370,6 @@
   (setq *load-verbose* nil)
   (|setBootAutloadProperties| translate-functions translate-files)
   (|setBootAutloadProperties| asauto-functions asauto-files)
-  (setf (symbol-function '|addConsDB|) #'identity)
   (|fillDatabasesInCore|) ; the databases into core, then close the streams
   (|closeAllDatabaseStreams|)
  )

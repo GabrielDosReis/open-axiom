@@ -294,18 +294,22 @@ UnivariateTaylorSeriesCategory(Coef): Category == Definition where
       vv :=
         zero? cen => var :: OUT
         paren(var :: OUT - cen :: OUT)
-      n : NNI ; count : NNI := _$streamCount$Lisp
+      count : NNI := _$streamCount$Lisp
       l : L OUT := empty()
-      for n in 0..count while not empty? uu repeat
+      n : NNI := 0
+      while n <= count and not empty? uu repeat
         if frst(uu) ~= 0 then
           l := concat(termOutput(n :: I,frst uu,vv),l)
         uu := rst uu
+        n := n + 1
       if showAll?() then
-        for n in (count + 1).. while explicitEntries? uu and _
+        n := count + 1
+        while explicitEntries? uu and _
                not eq?(uu,rst uu) repeat
           if frst(uu) ~= 0 then
             l := concat(termOutput(n :: I,frst uu,vv),l)
           uu := rst uu
+          n := n + 1
       l :=
         explicitlyEmpty? uu => l
         eq?(uu,rst uu) and frst uu = 0 => l

@@ -346,7 +346,7 @@
 "Something unearthly and VM-specific with respect to streams."
   (let (v) (if *eof* (fail)
                (progn (SETQ V (ELT (LASTATOM STRM) 1))
-                      (SETELT V 3 (SIZE (ELT V 0)))))))
+                      (SETF (ELT V 3) (SIZE (ELT V 0)))))))
  
 (DEFUN STRMBLANKLINE (STRM)
 "Something diabolical and VM-specific with respect to streams."
@@ -481,7 +481,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
   (let (V)
     (if (STREAM-EOF STRM) (FAIL))
     (SETQ V (LASTATOM STRM))
-    (SETELT V 4 RECNO)
+    (SETF (ELT V 4) RECNO)
     (SETQ *EOF* (STREAM-EOF STRM))
     strm))
  
@@ -492,7 +492,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
   (let (V)
     (if (STREAM-EOF STRM) (FAIL))
     (SETQ V (LASTATOM STRM))
-    (SETELT V 4 RECNO)
+    (SETF (ELT V 4) RECNO)
     (read-char STRM)
     (SETQ *EOF* (STREAM-EOF STRM))
     strm))

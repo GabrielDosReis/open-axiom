@@ -4,15 +4,7 @@
 (DEFPARAMETER |DifferentialRing;AL| 'NIL) 
 
 (DEFUN |DifferentialRing;| ()
-  (LET ((#0=#:G1396
-            (|Join| (|Ring|)
-                    (|mkCategory| '|domain|
-                        '(((|differentiate| ($ $)) T) ((D ($ $)) T)
-                          ((|differentiate|
-                               ($ $ (|NonNegativeInteger|)))
-                           T)
-                          ((D ($ $ (|NonNegativeInteger|))) T))
-                        NIL '((|NonNegativeInteger|)) NIL))))
+  (LET ((#0=#:G1397 (|Join| (|Ring|) (|DifferentialSpace|))))
     (|setShellEntry| #0# 0 '(|DifferentialRing|))
     #0#)) 
 

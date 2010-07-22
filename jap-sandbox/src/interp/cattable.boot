@@ -46,7 +46,7 @@ showCategoryTable con ==
 
 displayCategoryTable(:options) ==
   conList := IFCAR options
-  SETQ($ct,MAKE_-HASHTABLE 'ID)
+  SETQ($ct,hashTable 'EQ)
   for (key:=[a,:b]) in HKEYS _*HASCATEGORY_-HASH_* repeat
     HPUT($ct,a,[[b,:HGET(_*HASCATEGORY_-HASH_*,key)],:HGET($ct,a)])
   for id in HKEYS $ct | null conList or MEMQ(id,conList) repeat
@@ -54,8 +54,8 @@ displayCategoryTable(:options) ==
     PRINT HGET($ct,id)
 
 genCategoryTable() ==
-  SETQ(_*ANCESTORS_-HASH_*,  MAKE_-HASHTABLE 'ID)
-  SETQ(_*HASCATEGORY_-HASH_*,MAKE_-HASHTABLE 'UEQUAL)
+  SETQ(_*ANCESTORS_-HASH_*,  hashTable 'EQ)
+  SETQ(_*HASCATEGORY_-HASH_*,hashTable 'EQUAL)
   genTempCategoryTable()
   domainList:=
     [con for con in allConstructors()
@@ -115,15 +115,15 @@ simpHasPred(pred,:options) == main where
     pred in '(T etc) => pred
     null pred => nil
     pred
-  simpDevaluate a == EVAL substitute('QUOTE,'devaluate,a)
+  simpDevaluate a == eval substitute('QUOTE,'devaluate,a)
   simpHas(pred,a,b) ==
     b is ['ATTRIBUTE,attr] => simpHasAttribute(pred,a,attr)
     b is ['SIGNATURE,op,sig] => simpHasSignature(pred,a,op,sig)
     IDENTP a or hasIdent b => pred
-    npred := eval pred
+    npred := evalHas pred
     IDENTP npred or null hasIdent npred => npred
     pred
-  eval (pred := ["has",d,cat]) ==
+  evalHas (pred := ["has",d,cat]) ==
     x := hasCat(first d,first cat)
     y := rest cat =>
       npred := or/[p for [args,:p] in x | y = args] => simp npred
@@ -158,13 +158,13 @@ simpHasAttribute(pred,conform,attr) ==  --eval w/o loading
 
 simpCatHasAttribute(domform,attr) ==
   conform := getConstructorForm opOf domform
-  catval :=  EVAL mkEvalable conform
+  catval :=  eval mkEvalable conform
   if atom KDR attr then attr := IFCAR attr
   pred :=
     u := LASSOC(attr,catval . 2) => first u
     return false                            --exit: not there
   pred = true => true
-  EVAL SUBLISLIS(rest domform,rest conform,pred)
+  eval SUBLISLIS(rest domform,rest conform,pred)
 
 hasIdent pred ==
   pred is [op,:r] =>
@@ -359,7 +359,7 @@ makeCatPred(zz, cats, thePred) ==
   if zz is ['IF,curPred := ["has",z1,z2],ats,.] then
     ats := if ats is ['PROGN,:atl] then atl else [ats]
     for at in ats repeat
-      if at is ['ATTRIBUTE,z3] and not atom z3 and
+      if at is ['ATTRIBUTE,z3] and cons? z3 and
         constructor? first z3 then
           cats:= [['IF,quickAnd(["has",z1,z2], thePred),z3,'%noBranch],:cats]
       at is ['IF, pred, :.] =>
@@ -415,7 +415,7 @@ categoryParts(conform,category,:options) == main where
 compressHashTable ht ==
 -- compresses hash table ht, to give maximal sharing of cells
   sayBrightlyNT '"compressing hash table..."
-  $found: local := MAKE_-HASHTABLE 'UEQUAL
+  $found: local := hashTable 'EQUAL
   for x in HKEYS ht repeat compressSexpr(HGET(ht,x),nil,nil)
   sayBrightly   "done"
   ht

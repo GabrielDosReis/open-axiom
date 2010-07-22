@@ -54,7 +54,7 @@ $insideCategoryPackageIfTrue := false
 $profileCompiler := false
 
 ++
-$Slot1DataBase := MAKE_-HASHTABLE "ID"
+$Slot1DataBase := hashTable 'EQ
 
 ++
 $NRTdeltaList := []
@@ -116,7 +116,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
   --converts a domain form to a lazy domain form; everything other than 
   --the operation name should be assigned a slot
   not firstTime and (k:= NRTassocIndex x) => k
-  VECP x => systemErrorHere '"NRTencode"
+  vector? x => systemErrorHere '"NRTencode"
   cons? x =>
     op := first x
     op = "Record" or x is ['Union,['_:,a,b],:.] =>
@@ -164,8 +164,10 @@ needToQuoteFlags?(sig,env) ==
 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   $killOptimizeIfTrue = true => nil
+  -- references to modemaps from current domain are folded in a later
+  -- stage of the compilation process.
+  dc = '$ => nil
   ndc :=
-    dc = '$ => $functorForm
     atom dc and (dcval := get(dc,'value,$e)) => dcval.expr
     dc
   sig := MSUBST(ndc,dc,sig)
@@ -197,17 +199,17 @@ genDeltaEntry(opMmPair,e) ==
   if eltOrConst = 'Subsumed then eltOrConst := 'ELT
   if atom dc then
     dc = "$" => nsig := sig
-    if NUMBERP nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
+    if integer? nsig then nsig := MSUBST("$",dc,substitute("$$","$",sig))
   setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(nsig,dc),consDomainForm(dc,nil)]]
   odc := dc
-  if not atom dc then 
+  if cons? dc then 
     dc := substitute("$$","$",dc)
   opModemapPair :=
     [op,[dc,:[NRTgetLocalIndex x for x in nsig]],["T",cform]] -- force pred to T
   if null NRTassocIndex dc and
-    (member(dc,$functorLocalParameters) or not atom dc) then
+    (member(dc,$functorLocalParameters) or cons? dc) then
     --create "%domain" entry to $NRTdeltaList
       $NRTdeltaList:= [["%domain",NRTaddInner dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
@@ -318,7 +320,7 @@ NRTisExported? opSig ==
   or/[u for u in $domainShell.1 | u.0 = opSig]
 
 consOpSig(op,sig,dc) ==
-  if not atom op then
+  if cons? op then
     keyedSystemError("S2GE0016",['"consOpSig",'"bad operator in table"])
   mkList [MKQ op,mkList consSig(sig,dc)]
 
@@ -363,7 +365,7 @@ consDomainForm(x,dc) ==
 NRTdescendCodeTran(u,condList) ==
   null u => nil
   u is ['LIST] => nil
-  u is [op,.,i,a] and op in '(setShellEntry SETELT QSETREFV) =>
+  u is [op,.,i,a] and op in '(setShellEntry QSETREFV) =>
     null condList and a is ['CONS,fn,:.] =>
       u.first := 'LIST
       u.rest := nil
@@ -447,7 +449,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   -- category should be present.  true => always
   makeCatvecCode:= first catvecListMaker
   emptyVector := VECTOR()
-  domainShell := newShell ($NRTbase + $NRTdeltaLength)
+  domainShell := newShell($NRTbase + $NRTdeltaLength)
   for i in 0..4 repeat domainShell.i := $domainShell.i
     --we will clobber elements; copy since $domainShell may be a cached vector
   $template := newShell ($NRTbase + $NRTdeltaLength)
@@ -471,7 +473,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   codePart2:=
     argStuffCode :=
       [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
-	for arg in rest $definition]
+	for arg in args]
     if MEMQ($NRTaddForm,$locals) then
        addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
        argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
@@ -484,44 +486,27 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
                  createViewCode,createPredVecCode] where
     devaluateCode:= [[b,["devaluate",a]] for [a,:b] in $devaluateList]
     createDomainCode:=
-      [domname,['LIST,MKQ first $definition,:ASSOCRIGHT $devaluateList]]
+      [domname,['LIST,MKQ name,:ASSOCRIGHT $devaluateList]]
     createViewCode:= ["$",["newShell", $NRTbase + $NRTdeltaLength]]
     createPredVecCode := ["pv$",predBitVectorCode1]
 
   --CODE: part 1
   codePart1:= [setVector0Code, slot3Code,:slamCode] where
     setVector0Code:=[$setelt,"$",0,"dv$"]
-    slot3Code := ["setShellEntry","$",3,"pv$"]
+    slot3Code := [$setelt,"$",3,"pv$"]
     slamCode:=
-      isCategoryPackageName opOf $definition => nil
+      isCategoryPackageName name => nil
       [NRTaddToSlam($definition,"$")]
 
   --CODE: part 3
   $ConstantAssignments :=
       [NRTputInLocalReferences code for code in $ConstantAssignments]
-  codePart3:= [:constantCode1, :constantCode2,:epilogue] where
-    constantCode1:=
-      name='Integer => $ConstantAssignments
-      nil
-                      -- The above line is needed to get the recursion
-                      -- Integer => FontTable => NonNegativeInteger  => Integer
-                      -- right.  Otherwise NNI has 'unset' for 0 and 1
-  --  setVector4c:= setVector4part3($catNames,$catvecList)
-                      -- In particular, setVector4part3 and setVector5,
-                      -- which generate calls to local domain-instantiators,
-                      -- must come after operations are set in the vector.
-                      -- The symptoms of getting this wrong are that
-                      -- operations are not set which should be
-    constantCode2:= --matches previous test on Integer
-      name='Integer => nil
-      $ConstantAssignments
-    epilogue:= $epilogue
-  ans := ["%Bind",bindings,
+  codePart3:= [:$ConstantAssignments,:$epilogue]
+  ans := ["%bind",bindings,
            :washFunctorBody optFunctorBody
               [:codePart1,:codePart2,:codePart3],"$"]
   $getDomainCode:= nil
     --if we didn't kill this, DEFINE would insert it in the wrong place
-  ans:= minimalise ans
   SAY ['"time taken in buildFunctor: ",TEMPUS_-FUGIT()-oldtime]
   ans
 
@@ -531,12 +516,12 @@ NRTcheckVector domainShell ==
   for i in $NRTbase..MAXINDEX domainShell repeat
 --Vector elements can be one of
 -- (a) T           -- item was marked
--- (b) NIL         -- item is a domain; will be filled in by setVector4part3
+-- (b) NIL         -- ???
 -- (c) categoryForm-- it was a domain view; now irrelevant
 -- (d) op-signature-- store missing function info in $CheckVectorList
     v := domainShell.i
     v=true => nil  --item is marked; ignore
-    v=nil => nil  --a domain, which setVector4part3 will fill in
+    v=nil => nil
     atom v => systemErrorHere '"CheckVector"
     atom first v => nil  --category form; ignore
     assoc(first v,alist) => nil
@@ -544,29 +529,6 @@ NRTcheckVector domainShell ==
   alist
 
 mkDomainCatName id == INTERN strconc(id,";CAT")
-
-NRTsetVector4(siglist,formlist,condlist) ==
-  $uncondList: local := nil
-  $condList: local := nil
-  $count: local := 0
-  for sig in reverse siglist for form in reverse formlist
-         for cond in reverse condlist repeat
-                  NRTsetVector4a(sig,form,cond)
-
-  $lisplibCategoriesExtended:= [$uncondList,:$condList]
-  code := ['mapConsDB,MKQ reverse removeDuplicates $uncondList]
-  if $condList then
-    localVariable := GENSYM()
-    code := [["%LET",localVariable,code]]
-    for [pred,list] in $condList repeat
-      code :=
-        [['COND,[pred,["%LET",localVariable,
-          ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
-            :code]
-    code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
-  g := GENSYM()
-  [$setelt,'$,4,['PROG2,["%LET",g,code],
-    ['VECTOR,['catList2catPackageList,g],g]]]
 
 NRTsetVector4Part1(siglist,formlist,condlist) ==
   $uncondList: local := nil
@@ -591,34 +553,6 @@ reverseCondlist cl ==
       member(x,rest u) => nil
       u.rest := [x,:rest u]
   alist
-
-NRTsetVector4Part2(uncondList,condList) ==
-  $lisplibCategoriesExtended:= [uncondList,:condList]
-  code := ['mapConsDB,MKQ reverse removeDuplicates uncondList]
-  if condList then
-    localVariable := GENSYM()
-    code := [["%LET",localVariable,code]]
-    for [pred,list] in condList repeat
-      code :=
-        [['COND,[predicateBitRef SUBLIS($pairlis,pred),["%LET",localVariable,
-          ['mergeAppend,['mapConsDB,MKQ list],localVariable]]]],
-            :code]
-    code := ['PROGN,:nreverse [['NREVERSE,localVariable],:code]]
-  g := GENSYM()
-  [$setelt,'$,4,['PROG2,["%LET",g,code],
-    ['VECTOR,['catList2catPackageList,g],g]]]
-
-mergeAppend(l1,l2) ==
-  atom l1 => l2
-  member(QCAR l1,l2) => mergeAppend(QCDR l1, l2)
-  [QCAR l1, :mergeAppend(QCDR l1, l2)]
-
-catList2catPackageList u ==
---converts ((Set) (Module R) ...) to ((Set& $) (Module& $ R)...)
-  [fn x for x in u] where
-    fn [op,:argl] ==
-      newOp := INTERN(strconc(PNAME op,"&"))
-      addConsDB [newOp,"$",:argl]
 
 NRTsetVector4a(sig,form,cond) ==
   sig = '$ =>
@@ -662,10 +596,10 @@ slot1Filter opList ==
 
 NRToptimizeHas u ==
 --u is a list ((pred cond)...) -- see optFunctorBody
---produces an alist: (((HasCategory a b) . GENSYM)...)
+--produces an alist: (((HasCategory a b) . gensym)...)
   u is [a,:b] =>
     a='HasCategory => LASSOC(u,$hasCategoryAlist) or
-      $hasCategoryAlist := [[u,:(y:=GENSYM())],:$hasCategoryAlist]
+      $hasCategoryAlist := [[u,:(y:=gensym())],:$hasCategoryAlist]
       y
     a="has" => NRToptimizeHas ['HasCategory,first b,MKQ second b]
     a = 'QUOTE => u
@@ -712,12 +646,12 @@ genSlotSig(sig,$e) ==
    [NRTgetLocalIndex t for t in sig]
 
 deepChaseInferences(pred,$e) ==
-    pred is ['AND,:preds] or pred is ['and,:preds] =>
+    pred is [op,:preds] and op in '(AND and %and) =>
         for p in preds repeat $e := deepChaseInferences(p,$e)
         $e
-    pred is ['OR,pred1,:.] or pred is ['or,pred1,:.] =>
+    pred is [op,pred1,:.] and op in '(OR or %or) =>
         deepChaseInferences(pred1,$e)
-    pred is 'T or pred is ['NOT,:.] or pred is ['not,:.] => $e
+    pred is 'T or pred is [op,:.] and op in '(NOT not %not) => $e
     chaseInferences(pred,$e)
 
 vectorLocation(op,sig) ==
@@ -740,32 +674,6 @@ NRTsubstDelta(initSig) ==
         first t in '(Mapping Union Record _:) =>
            [first t,:[replaceSlotTypes(x) for x in rest t]]
         t
-
-mapConsDB x == 
-  [addConsDB y for y in x]
-
-addConsDB x ==
-  min x where
-    min x ==
-      y:=HGET($consDB,x)
-      y => y
-      cons? x =>
-        for z in tails x repeat
-          u:=min first z
-          if not EQ(u,first z) then z.first := u
-        HashCheck x
-      REFVECP x =>
-        for i in 0..MAXINDEX x repeat
-          x.i:=min (x.i)
-        HashCheck x
-      string? x => HashCheck x
-      x
-    HashCheck x ==
-      y:=HGET($consDB,x)
-      y => y
-      HPUT($consDB,x,x)
-      x
-  x
 
 -----------------------------SLOT1 DATABASE------------------------------------
 

@@ -33,7 +33,7 @@ SExpressionCategory(Str, Sym, Int, Flt, Expr): Category == Decl where
                   ConvertibleFrom List %, Eltable(Integer,%),_
                     Eltable(List Integer, %)) with
         eq:        (%,%) -> Boolean
-          ++ eq(s, t) is true if EQ(s,t) is true in Lisp.
+          ++ eq(s, t) is true if %peq(s,t) is true for pointers.
         null?:     % -> Boolean
           ++ null?(s) is true if s is the S-expression ().
         atom?:     % -> Boolean
@@ -112,7 +112,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
             paren blankSeparate l1
 
         b1 = b2        == EQUAL(b1,b2)$Lisp
-        eq(b1, b2)     == EQ(b1,b2)$Lisp
+        eq(b1, b2)     == %peq(b1,b2)$Foreign(Builtin)
 
         null? b      == NULL(b)$Lisp
         atom? b      == ATOM(b)$Lisp

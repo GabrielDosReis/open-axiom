@@ -170,7 +170,7 @@ pushDownOnArithmeticVariables(op,target,arglist) ==
   not MEMQ(op,'(_+ _- _* _*_* _/)) => NIL
   not containsPolynomial(target)   => NIL
   for x in arglist for i in 1.. repeat
-    VECP(x) =>   -- leaf
+    vector?(x) =>   -- leaf
       transferPropsToNode(xn := getUnname(x),x)
       getValue(x) or (xn = $immediateDataSymbol) => NIL
       t := getMinimalVariableTower(xn,target) or target
@@ -225,7 +225,7 @@ bottomUp t ==
       [om]
     if atom op then
       opName:= getUnname op
-      if opName in $localVars then
+      if isLocallyBound opName then
         putModeSet(op,bottomUpIdentifier(op,opName))
       else
         transferPropsToNode(opName,op)
@@ -390,7 +390,7 @@ namedConstant(id,t) ==
   doms := [getDCFromSystemModemap sysmm for sysmm in sysmms]
   candidates := nil
   for dc in doms | niladicConstructorFromDB first dc repeat
-    LASSOC(id,getOperationAlistFromLisplib first dc) is [[sig,.,.,"CONST"]] =>
+    LASSOC(id,getConstructorOperationsFromDB dc.op) is [[sig,.,.,"CONST"]] =>
       candidates := [[dc,sig],:candidates]
   null candidates => nil
   #candidates = 1 =>
@@ -470,7 +470,7 @@ bottomUpDefaultCompile(t,id,defaultMode,target,isSub) ==
   tmode := getMode t
   tval  := getValue t
   expr:=
-    id in $localVars => id
+    isLocallyBound id => id
     get(id,"mode",$env) => id       -- declared local variable
     tmode or tval =>
       envMode := tmode or objMode tval
@@ -511,7 +511,7 @@ bottomUpForm3(t,op,opName,argl,argModeSetList) ==
   bottomUpForm2(t,op,opName,argl,argModeSetList)
 
 bottomUpForm2(t,op,opName,argl,argModeSetList) ==
-  not atom t and opName="%%" => bottomUpPercent t
+  cons? t and opName="%%" => bottomUpPercent t
   opVal := getValue op
 
   -- for things with objects in operator position, be careful before
@@ -568,7 +568,7 @@ removeUnionsAtStart(argl,modeSets) ==
     m := objMode(v)
     m isnt ['Union,:.] => nil
     val := objVal(v)
-    null isWrapped val => nil
+    not isWrapped val => nil
     val' := retract v
     m' := objMode val'
     putValue(arg,val')
@@ -598,8 +598,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
     rtype := ['Record,:rargs]
     code := optRECORDCOPY(['RECORDCOPY,getArgValue(first argl, rtype),#rargs])
 
-    if $genValue then code := wrap timedEVALFUN code
-    val := objNew(code,rtype)
+    val := object(code,rtype)
     putValue(t,val)
     putModeSet(t,[rtype])
 
@@ -666,7 +665,7 @@ sayIntelligentMessageAboutOpAvailability(opName, nArgs) ==
   -- see if we can give some decent messages about the availability if
   -- library messages
 
-  NUMBERP opName => NIL
+  integer? opName => NIL
 
   oo :=  object2Identifier opOf opName
   if ( oo = "%" ) or ( oo = "Domain" ) or ( domainForm? opName ) then

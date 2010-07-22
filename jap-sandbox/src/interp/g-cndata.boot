@@ -105,7 +105,7 @@ getConstructorUnabbreviation op ==
   abbreviation?(op) or throwKeyedMsg("S2IL0019",[op])
  
 mkUserConstructorAbbreviation(c,a,type) ==
-  if not atom c then c := first c  --  Existing constructors will be wrapped
+  if cons? c then c := first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)
@@ -254,7 +254,7 @@ isConstructorName op ==
 nAssocQ(x,l,n) ==
   repeat
     if atom l then return nil
-    if EQ(x,(QCAR l).n) then return QCAR l
-    l:= QCDR l
+    if EQ(x,first(l).n) then return first l
+    l:= rest l
  
 

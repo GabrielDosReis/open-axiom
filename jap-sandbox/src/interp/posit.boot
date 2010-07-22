@@ -138,7 +138,7 @@ pfAbSynOp form ==
 
 pfAbSynOp?(form, op) ==
     hd := first form
-    EQ(hd, op) or EQCAR(hd, op)
+    EQ(hd, op) or hd is [=op,:.]
 
 pfLeaf? form ==
   pfAbSynOp form in
@@ -185,7 +185,7 @@ poCharPosn posn == rest posn
 pfCharPosn posn == poCharPosn posn
  
 poLinePosn posn       ==
-    posn => lnLocalNum  poGetLineObject posn  --VECP posn =>
+    posn => lnLocalNum  poGetLineObject posn  --vector? posn =>
     CDAR posn
 
 pfLinePosn posn == poLinePosn posn

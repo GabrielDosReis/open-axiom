@@ -75,10 +75,10 @@ commutative?()$GonshorGenetic
 associative?()$GonshorGenetic
 
 -- The canonical basis:
-e0 : GonshorGenetic := [1, 0, 0, 0] :: Vector R ;
-e1 : GonshorGenetic := [0, 1, 0, 0] :: Vector R ;
-e2 : GonshorGenetic := [0, 0, 1, 0] :: Vector R ;
-e3 : GonshorGenetic := [0, 0, 0, 1] :: Vector R ;
+e0 : GonshorGenetic := [1, 0, 0, 0] :: Vector R 
+e1 : GonshorGenetic := [0, 1, 0, 0] :: Vector R 
+e2 : GonshorGenetic := [0, 0, 1, 0] :: Vector R 
+e3 : GonshorGenetic := [0, 0, 0, 1] :: Vector R 
 
 
 -- A generic element of the algebra:

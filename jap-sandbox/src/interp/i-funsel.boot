@@ -35,10 +35,7 @@
 import i_-coerfn
 namespace BOOT
 
-$constructorExposureList := '(Boolean Integer String)
 $domPvar := nil
-
-
 
 sayFunctionSelection(op,args,target,dc,func) ==
   $abbreviateTypes : local := true
@@ -127,7 +124,7 @@ selectMms(op,args,$declaredMode) ==
 
   identType := 'Variable
   for x in types1 while not $declaredMode repeat
-      not EQCAR(x,identType) => $declaredMode:= x
+      x isnt [=identType,:.] => $declaredMode:= x
   types2 := [altTypeOf(x,y,$declaredMode) for x in types1 for y in args]
 
   mmS:=
@@ -275,7 +272,7 @@ defaultTarget(opNode,op,nargs,args) ==
 
   a1 := first args
   atom a1 => target
-  a1f := QCAR a1
+  a1f := first a1
 
   nargs = 1 =>
     op = 'kernel =>
@@ -446,8 +443,8 @@ defaultTarget(opNode,op,nargs,args) ==
 mkRationalFunction D ==  ['Fraction, ['Polynomial, D]]
 
 defaultTargetFE(a,:options) ==
-  a is ['Variable,.] or a = $RationalNumber or MEMQ(QCAR a,
-    [QCAR $Symbol, 'RationalRadicals,
+  a is ['Variable,.] or a = $RationalNumber or MEMQ(a.op,
+    [$Symbol.op, 'RationalRadicals,
      'Pi]) or typeIsASmallInteger(a) or isEqualOrSubDomain(a, $Integer) or
        a = '(AlgebraicNumber) =>
           IFCAR options => [$FunctionalExpression, ['Complex, $Integer]]
@@ -529,9 +526,9 @@ CONTAINEDisDomain(symbol,cond) ==
 -- looks for [isSubDomain,symbol,[domain]] in cond: returning T or NIL
 -- with domain being one of PositiveInteger and NonNegativeInteger
    atom cond => false
-   QCAR cond in '(AND OR and or) =>
-       or/[CONTAINEDisDomain(symbol, u) for u in QCDR cond]
-   EQ(QCAR cond,'isDomain) =>
+   cond.op in '(AND OR and or %and %or) =>
+       or/[CONTAINEDisDomain(symbol, u) for u in cond.args]
+   cond.op = 'isDomain =>
        EQ(symbol,second cond) and cons?(dom:=third cond) and
          dom in '(PositiveInteger NonNegativeInteger)
    false
@@ -693,7 +690,7 @@ getFunctionFromDomain(op,dc,args) ==
 isOpInDomain(opName,dom,nargs) ==
   -- returns true only if there is an op in the given domain with
   -- the given number of arguments
-  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
+  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => NIL
   gotOne := NIL
@@ -708,7 +705,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
   -- a "signature" where a type position is non-NIL only if all
   -- signatures shares that type .
   first(dom) in '(Union Record Mapping) => NIL
-  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
+  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList => NIL
   gotOne := NIL
@@ -723,7 +720,7 @@ findCommonSigInDomain(opName,dom,nargs) ==
 
 findUniqueOpInDomain(op,opName,dom) ==
   -- return function named op in domain dom if unique, choose one if not
-  mmList := ASSQ(opName,getOperationAlistFromLisplib first dom)
+  mmList := ASSQ(opName,getConstructorOperationsFromDB dom.op)
   mmList := subCopy(mmList,constructSubst dom)
   null mmList =>
     throwKeyedMsg("S2IS0021",[opName,dom])
@@ -795,7 +792,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     NIL
   fun:= NIL
-  ( p := ASSQ(op,getOperationAlistFromLisplib dcName) ) and
+  ( p := ASSQ(op,getConstructorOperationsFromDB dcName) ) and
     SL := constructSubst dc
     -- if the arglist is homogeneous, first look for homogeneous
     -- functions. If we don't find any, look at remaining ones
@@ -896,7 +893,7 @@ findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   if maxargs ~= -1 then
     SL:= NIL
     for i in 1..maxargs repeat
-      impls := SUBSTQ(GENSYM(),INTERNL('"#",STRINGIMAGE i),impls)
+      impls := SUBSTQ(gensym(),INTERNL('"#",STRINGIMAGE i),impls)
   impls and
     SL:= constructSubst dc
     for mm in impls repeat
@@ -911,14 +908,14 @@ matchMmCond(cond) ==
   -- tests the condition, which comes with a modemap
   -- cond is 'T or a list, but I hate to test for 'T (ALBI)
   $domPvar: local := nil
-  atom cond or
-    cond is ['AND,:conds] or cond is ['and,:conds] =>
-      and/[matchMmCond c for c in conds]
-    cond is ['OR,:conds] or cond is ['or,:conds] =>
-      or/[matchMmCond c for c in conds]
+  atom cond or 
+    cond.op in '(AND and %and) =>
+      and/[matchMmCond c for c in cond.args]
+    cond.op in '(OR or %or) =>
+      or/[matchMmCond c for c in cond.args]
     cond is ["has",dom,x] =>
       hasCaty(dom,x,NIL) ~= 'failed
-    cond is ['not,cond1] => not matchMmCond cond1
+    cond is [op,cond1] and op in '(not NOT %not) => not matchMmCond cond1
     keyedSystemError("S2GE0016",
       ['"matchMmCond",'"unknown form of condition"])
 
@@ -1040,7 +1037,7 @@ selectMmsGen(op,tar,args1,args2) ==
   for a in removeDuplicates args repeat
     a =>
       atom a => nil
-      fa := QCAR a
+      fa := a.op
       fa in '(Record Union) => NIL
       conNames := insert(STRINGIMAGE fa, conNames)
 
@@ -1168,12 +1165,13 @@ evalMmFreeFunction(op,tar,sig,mmC) ==
 
 evalMmStack(mmC) ==
   -- translates the modemap condition mmC into a list of stacks
-  mmC is ['AND,:a] =>
+  mmC is [op,:a] and op in '(AND and %and) =>
     ["NCONC"/[evalMmStackInner cond for cond in a]]
-  mmC is ['OR,:args] => [:evalMmStack a for a in args]
+  mmC is [op,:args] and op in '(OR or %or) => 
+    [:evalMmStack a for a in args]
   mmC is ['partial,:mmD] => evalMmStack mmD
   mmC is ['ofCategory,pvar,cat] and cat is ['Join,:args] =>
-    evalMmStack ['AND,:[['ofCategory,pvar,c] for c in args]]
+    evalMmStack ['%and,:[['ofCategory,pvar,c] for c in args]]
   mmC is ['ofType,:.] => [NIL]
   mmC is ["has",pat,x] =>
     x in '(ATTRIBUTE SIGNATURE) =>
@@ -1182,7 +1180,7 @@ evalMmStack(mmC) ==
   [[mmC]]
 
 evalMmStackInner(mmC) ==
-  mmC is ['OR,:args] =>
+  mmC is [op,:args] and op in '(OR or %or) =>
     keyedSystemError("S2GE0016",
       ['"evalMmStackInner",'"OR condition nested inside an AND"])
   mmC is ['partial,:mmD] => evalMmStackInner mmD
@@ -1240,7 +1238,7 @@ replaceSharpCalls t ==
 doReplaceSharpCalls t ==
   atom t => t
   t is ['_#, l] => #l
-  t is ['construct,: l] => EVAL ['LIST,:l]
+  t is ['construct,: l] => eval ['LIST,:l]
   [first t,:[ doReplaceSharpCalls u for u in rest t]]
 
 noSharpCallsHere t ==
@@ -1337,7 +1335,7 @@ evalMmCat(op,sig,stack,SL) ==
       S='failed and $hope =>
         stack:= [mmC,:stack]
       S = 'failed => return S
-      not atom S =>
+      cons? S =>
         makingProgress:= 'T
         SL:= mergeSubs(S,SL)
   if stack or S='failed then 'failed else SL
@@ -1423,14 +1421,14 @@ hasCateSpecial(v,dom,cat,SL) ==
 
 -- to be used in $newSystem only
 hasCateSpecialNew(v,dom,cat,SL) ==
-  fe := member(QCAR cat, '(ElementaryFunctionCategory
+  fe := member(cat.op, '(ElementaryFunctionCategory
        TrigonometricFunctionCategory ArcTrigonometricFunctionCategory
         HyperbolicFunctionCategory ArcHyperbolicFunctionCategory
          PrimitiveFunctionCategory SpecialFunctionCategory Evalable
           CombinatorialOpsCategory TranscendentalFunctionCategory
            AlgebraicallyClosedFunctionSpace ExpressionSpace
              LiouvillianFunctionCategory FunctionSpace))
-  alg := member(QCAR cat, '(RadicalCategory AlgebraicallyClosedField))
+  alg := member(cat.op, '(RadicalCategory AlgebraicallyClosedField))
   fefull := fe or alg or cat = $CombinatorialFunctionCategory
   partialResult :=
     dom is ["Variable",:.] or dom = $Symbol =>
@@ -1525,7 +1523,7 @@ hasCaty1(cond,SL) ==
   -- SL is augmented, if cond is true, otherwise the result is 'failed
   $domPvar: local := NIL
   cond is ["has",a,b] => hasCate(a,b,SL)
-  cond is ['AND,:args] =>
+  cond is [op,:args] and op in '(AND and %and) =>
     for x in args while not (S='failed) repeat S:=
       x is ["has",a,b] => hasCate(a,b, SL)
       -- next line is for an obscure bug in the table
@@ -1533,7 +1531,7 @@ hasCaty1(cond,SL) ==
       --'failed
       hasCaty1(x, SL)
     S
-  cond is ['OR,:args] =>
+  cond is [op,:args] and op in '(OR or %or) =>
     for x in args until not (S='failed) repeat S:=
       x is ["has",a,b] => hasCate(a,b,copy SL)
       -- next line is for an obscure bug in the table
@@ -1575,7 +1573,7 @@ hasSigOr(orCls, S0, SL) ==
       atom cls => copy SL
       cls is ["has",a,b] =>
         hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
-      cls is ['AND,:andCls] or cls is ['and,:andCls] =>
+      cls is [op,:andCls] and op in '(AND and %and) =>
         hasSigAnd(andCls, S0, SL)
       keyedSystemError("S2GE0016",
         ['"hasSigOr",'"unexpected condition for signature"])
@@ -1588,15 +1586,15 @@ hasSig(dom,foo,sig,SL) ==
   $domPvar: local := nil
   fun:= constructor? first dom =>
     S0:= constructSubst dom
-    p := ASSQ(foo,getOperationAlistFromLisplib first dom) =>
+    p := ASSQ(foo,getConstructorOperationsFromDB dom.op) =>
       for [x,.,cond,.] in rest p until not (S='failed) repeat
         S:=
           atom cond => copy SL
           cond is ["has",a,b] =>
             hasCate(subCopy(a,S0),subCopy(b,S0),copy SL)
-          cond is ['AND,:andCls] or cond is ['and,:andCls] =>
+          cond is [op,:andCls] and op in '(AND and %and) =>
             hasSigAnd(andCls, S0, SL)
-          cond is ['OR,:orCls] or cond is ['or,:orCls] =>
+          cond is [op,:orCls] and op in '(OR or %or) =>
             hasSigOr(orCls, S0, SL)
           keyedSystemError("S2GE0016",
              ['"hasSig",'"unexpected condition for signature"])
@@ -1615,19 +1613,19 @@ hasAtt(dom,att,SL) ==
         --UGH! New world has attributes stored as pairs not as lists!!
         for [x,:cond] in atts until not (S='failed) repeat
           S:= unifyStruct(x,att,copy SL)
-          not atom cond and not (S='failed) => S := hasCatExpression(cond,S)
+          cons? cond and not (S='failed) => S := hasCatExpression(cond,S)
         S
       for [x,cond] in atts until not (S='failed) repeat
         S:= unifyStruct(x,att,copy SL)
-        not atom cond and not (S='failed) => S := hasCatExpression(cond,S)
+        cons? cond and not (S='failed) => S := hasCatExpression(cond,S)
       S
     'failed
   'failed
 
 hasCatExpression(cond,SL) ==
-  cond is ["OR",:l] =>
+  cond is [op,:l] and op in '(OR or %or) =>
     or/[(y:=hasCatExpression(x,SL)) ~= 'failed for x in l] => y
-  cond is ["AND",:l] =>
+  cond is [op,:l] and op in '(AND and %and) =>
     and/[(SL:= hasCatExpression(x,SL)) ~= 'failed for x in l] => SL
   cond is ["has",a,b] => hasCate(a,b,SL)
   keyedSystemError("S2GE0016",
@@ -1639,8 +1637,8 @@ unifyStruct(s1,s2,SL) ==
   s1=s2 => SL
   if s1 is [":",x,.] then s1:= x
   if s2 is [":",x,.] then s2:= x
-  if not atom s1 and first s1 = '_# then s1:= # second s1
-  if not atom s2 and first s2 = '_# then s2:= # second s2
+  if cons? s1 and first s1 = '_# then s1:= # second s1
+  if cons? s2 and first s2 = '_# then s2:= # second s2
   s1=s2 => SL
   isPatternVar s1 => unifyStructVar(s1,s2,SL)
   isPatternVar s2 => unifyStructVar(s2,s1,SL)
@@ -1661,7 +1659,7 @@ unifyStructVar(v,s,SL) ==
   (s0 := LASSOC(v, SL)) or (s0 := LASSOC(v,$Subst)) =>
     S:= unifyStruct(s0,s1,copy SL)
     S='failed =>
-      $Coerce and not atom s0 and constructor? first s0 =>
+      $Coerce and cons? s0 and constructor? first s0 =>
         containsVars s0 or containsVars s1 =>
           ns0 := subCopy(s0, SL)
           ns1 := subCopy(s1, SL)

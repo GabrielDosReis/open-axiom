@@ -27,7 +27,7 @@ dz : der := generator(3)
 [dx,dy,dz] := [generator(i)$der for i in 1..3]
 alpha : der := f*dx + g*dy + h*dz
 beta  : der := cos(tan(x*y*z)+x*y*z)*dx + x*dy
-exteriorDifferential alpha;
+exteriorDifferential alpha
 exteriorDifferential %
 gamma := alpha * beta
 exteriorDifferential(gamma) - (exteriorDifferential(alpha)*beta - alpha * exteriorDifferential(beta))

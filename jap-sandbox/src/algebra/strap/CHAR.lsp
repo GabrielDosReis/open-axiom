@@ -4,27 +4,27 @@
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;=;2$B;1|)) 
 
-(PUT '|CHAR;=;2$B;1| '|SPADreplace| 'CHAR=) 
+(PUT '|CHAR;=;2$B;1| '|SPADreplace| '|%ceq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;<;2$B;2|)) 
 
-(PUT '|CHAR;<;2$B;2| '|SPADreplace| 'CHAR<) 
+(PUT '|CHAR;<;2$B;2| '|SPADreplace| '|%clt|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;>;2$B;3|)) 
 
-(PUT '|CHAR;>;2$B;3| '|SPADreplace| 'CHAR>) 
+(PUT '|CHAR;>;2$B;3| '|SPADreplace| '|%cgt|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;<=;2$B;4|)) 
 
-(PUT '|CHAR;<=;2$B;4| '|SPADreplace| 'CHAR<=) 
+(PUT '|CHAR;<=;2$B;4| '|SPADreplace| '|%cle|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Char| |%Shell|) |%Boolean|)
                 |CHAR;>=;2$B;5|)) 
 
-(PUT '|CHAR;>=;2$B;5| '|SPADreplace| 'CHAR>=) 
+(PUT '|CHAR;>=;2$B;5| '|SPADreplace| '|%cge|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
                 |CHAR;size;Nni;6|)) 
@@ -40,12 +40,12 @@
 (DECLAIM (FTYPE (FUNCTION ((|%IntegerSection| 0) |%Shell|) |%Char|)
                 |CHAR;char;Nni$;9|)) 
 
-(PUT '|CHAR;char;Nni$;9| '|SPADreplace| 'CODE-CHAR) 
+(PUT '|CHAR;char;Nni$;9| '|SPADreplace| '|%i2c|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) (|%IntegerSection| 0))
                 |CHAR;ord;$Nni;10|)) 
 
-(PUT '|CHAR;ord;$Nni;10| '|SPADreplace| 'CHAR-CODE) 
+(PUT '|CHAR;ord;$Nni;10| '|SPADreplace| '|%c2i|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;random;$;11|)) 
 
@@ -124,12 +124,12 @@
 
 (DEFUN |CHAR;index;Pi$;7| (|n| $)
   (CODE-CHAR
-      (LET ((#0=#:G1404 (- |n| 1)))
+      (LET ((#0=#:G1405 (- |n| 1)))
         (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))) 
 
 (DEFUN |CHAR;lookup;$Pi;8| (|c| $)
-  (LET ((#0=#:G1406 (+ 1 (CHAR-CODE |c|))))
-    (|check-subtype| (> #0# 0) '(|PositiveInteger|) #0#))) 
+  (LET ((#0=#:G1407 (+ 1 (CHAR-CODE |c|))))
+    (|check-subtype| (< 0 #0#) '(|PositiveInteger|) #0#))) 
 
 (DEFUN |CHAR;char;Nni$;9| (|n| $)
   (DECLARE (IGNORE $))
@@ -186,26 +186,23 @@
   (CHAR-DOWNCASE |c|)) 
 
 (DEFUN |Character| ()
-  (PROG ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
+  (PROG (#0=#:G1427)
     (RETURN
-      (PROG (#0=#:G1426)
-        (RETURN
-          (COND
-            ((LETT #0# (HGET |$ConstructorCache| '|Character|)
-                   |Character|)
-             (|CDRwithIncrement| (CDAR #0#)))
-            ('T
-             (UNWIND-PROTECT
-               (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
-                                   (LIST
-                                    (CONS NIL (CONS 1 (|Character;|))))))
-                 (LETT #0# T |Character|))
-               (COND
-                 ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))))) 
+      (COND
+        ((SETQ #0# (HGET |$ConstructorCache| '|Character|))
+         (|CDRwithIncrement| (CDAR #0#)))
+        ('T
+         (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
+                               (LIST (CONS NIL (CONS 1 (|Character;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
 
 (DEFUN |Character;| ()
   (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))
         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Character| NIL (CONS 1 $))
@@ -246,11 +243,12 @@
              |alphanumeric?| 210 |alphabetic?| 215 >= 220 > 226 = 232
              <= 238 < 244)
           'NIL
-          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0))
-                (CONS '#(NIL |OrderedSet&| NIL |SetCategory&|
-                         |BasicType&| NIL)
+          (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
+                (CONS '#(NIL NIL NIL |SetCategory&| |OrderedType&|
+                         |BasicType&| NIL NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
-                               (|Finite|) (|SetCategory|) (|BasicType|)
+                               (|Finite|) (|SetCategory|)
+                               (|OrderedType|) (|BasicType|) (|Type|)
                                (|CoercibleTo| 29))
                             (|makeByteWordVec2| 57
                                 '(0 14 0 15 0 12 0 16 2 17 0 0 0 18 2

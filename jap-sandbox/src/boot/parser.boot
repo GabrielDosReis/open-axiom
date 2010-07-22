@@ -257,7 +257,7 @@ bpMissingMate(close,open)==
    bpMissing close
  
 bpMissing s==
-   bpSpecificErrorHere(CONCAT(PNAME s,'" possibly missing"))
+   bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
    throw TRAPPOINT "TRAPPED"
  
 bpCompMissing s == bpEqKey s or bpMissing s
@@ -730,15 +730,19 @@ bpCatchItem() ==
 ++   LEAVE Logical
 bpLeave() ==
   bpEqKey "LEAVE" and (bpLogical() or bpTrap()) and
-    bpPush %LeaveAst bpPop1()
+    bpPush bfLeave bpPop1()
 
 ++ Return:
 ++   RETURN Assign
+++   Leave
+++   Throw
+++   And
 bpReturn()==
   (bpEqKey "RETURN" and  (bpAssign() or bpTrap()) and
 	 bpPush bfReturnNoName bpPop1()) 
-    or bpThrow()
-      or bpAnd()
+    or bpLeave()
+      or bpThrow()
+        or bpAnd()
  
  
 bpLogical()== bpLeftAssoc('(OR),function bpReturn)
@@ -1075,7 +1079,10 @@ bpAssignLHS()==
   bpEqKey "COLON" =>          -- variable declaration
     bpApplication() or bpTrap()
     bpPush bfLocal(bpPop2(),bpPop1())
-  bpArgumentList() and (bpEqPeek "DOT" or bpTrap())
+  bpArgumentList() and 
+    (bpEqPeek "DOT" 
+      or (bpEqPeek "BEC" and bpPush bfPlace bpPop1()) 
+        or bpTrap())
   bpEqKey "DOT" =>            -- field path
     bpList(function bpPrimary,"DOT") and 
       bpChecknull() and

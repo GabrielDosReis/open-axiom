@@ -766,12 +766,12 @@
 
 (DEFUN |bpLeave| ()
   (AND (|bpEqKey| 'LEAVE) (OR (|bpLogical|) (|bpTrap|))
-       (|bpPush| (|%LeaveAst| (|bpPop1|)))))
+       (|bpPush| (|bfLeave| (|bpPop1|)))))
 
 (DEFUN |bpReturn| ()
   (OR (AND (|bpEqKey| 'RETURN) (OR (|bpAssign|) (|bpTrap|))
            (|bpPush| (|bfReturnNoName| (|bpPop1|))))
-      (|bpThrow|) (|bpAnd|)))
+      (|bpLeave|) (|bpThrow|) (|bpAnd|)))
 
 (DEFUN |bpLogical| () (|bpLeftAssoc| '(OR) #'|bpReturn|))
 
@@ -1096,7 +1096,11 @@
     ((NOT (|bpName|)) NIL)
     ((|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
      (|bpPush| (|bfLocal| (|bpPop2|) (|bpPop1|))))
-    (T (AND (|bpArgumentList|) (OR (|bpEqPeek| 'DOT) (|bpTrap|)))
+    (T (AND (|bpArgumentList|)
+            (OR (|bpEqPeek| 'DOT)
+                (AND (|bpEqPeek| 'BEC)
+                     (|bpPush| (|bfPlace| (|bpPop1|))))
+                (|bpTrap|)))
        (COND
          ((|bpEqKey| 'DOT)
           (AND (|bpList| #'|bpPrimary| 'DOT) (|bpChecknull|)

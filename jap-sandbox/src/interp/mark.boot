@@ -47,9 +47,9 @@ namespace BOOT
 REMPROP("and",'parseTran)
 REMPROP("or",'parseTran)
 REMPROP("not",'parseTran)
-MAKEPROP("and",'special,'compAnd)
-MAKEPROP("or",'special,'compOr)
-MAKEPROP("not",'special,'compNot)
+property("and",'special) := 'compAnd
+property("or",'special) := 'compOr
+property("not",'special) := 'compNot
 SETQ($monitorWI,nil)
 SETQ($monitorCoerce,nil)
 SETQ($markPrimitiveNumbers,nil)  -- '(Integer SmallInteger))
@@ -152,7 +152,7 @@ markAutoWas(x,T) ==
 
 markCallCoerce(x,m,T) ==
   tcheck T
-  [mkWi("%Call",'WI,["::",x,m], T.expr),: rest T]
+  [mkWi('%call,'WI,["::",x,m], T.expr),: rest T]
 
 markCoerceByModemap(x,source,target,T, killColonColon?) == 
   tcheck T
@@ -263,14 +263,14 @@ markRepeat(form, T)        ==
   [mkWi("repeat", 'WI,form,first T), :rest T]
   
 markTran(form,form',[dc,:sig],env) ==  --from compElt/compFormWithModemap
-  dc ~= 'Rep or not ('_$ in sig) => mkWi('markTran,'WI,form,["%Call",:form'])
+  dc ~= 'Rep or not ('_$ in sig) => mkWi('markTran,'WI,form,['%call,:form'])
   argl := [u for t in rest sig for arg in rest form'] where u() ==
     t='_$ => 
       argSource := getSourceWI arg
       IDENTP argSource and getmode(argSource,env) = 'Rep => arg
       markRepper('rep,arg)
     arg
-  form' := ["%Call",first form',:argl]
+  form' := ['%call,first form',:argl]
   wi := mkWi('markTran,'WI,form,form')
   first sig = '_$ => markRepper('per,wi)
   wi
@@ -519,7 +519,7 @@ markOrigName x ==
       k := charPosition(char '_;, s, 0)
       k > MAXINDEX s => nil
       origName := INTERN SUBSTRING(s, k + 1, nil)
-      MAKEPROP(op, 'ORIGNAME, origName)
+      property(op, 'ORIGNAME) := origName
       REMPROP(op,'PNAME)
     markOrigName op
   nil
@@ -681,7 +681,7 @@ markPaths(x,y,s) ==    --x < y; find location s of x in y (initially s=nil)
                               nil)) => markCons(p,s)
 --  x is ['exit,a,b] and y is ['exit,a,c] and (p := mymy markPathsEqual(b,c)) =>
 --     markCons(p,s)
-  y is ["%Call",:r] => markPaths(x,r,s)                 --for loops
+  y is ['%call,:r] => markPaths(x,r,s)                 --for loops
   y is [fn,m,y1] and fn in '(PART CATCH THROW) => markPaths(x,y1,s) or
     append/[markPaths(x,u,markCons(i,s)) for u in y1 for i in 0..]
   append/[markPaths(x,u,markCons(i,s)) for u in y for i in 0..]
@@ -697,7 +697,7 @@ markPathsEqual(x,y) ==
   y is [fn,.,z] and fn in '(PART CATCH THROW) and markPathsEqual(x,z) => true
   y is ["%LET",a,b] and GENSYMP a and markPathsEqual(x,b) => true
   y is ['IF,a,b,:.] and GENSYMP a => markPathsEqual(x,b)  -------> ??? 
-  y is ["%Call",:r] => markPathsEqual(IFCDR x,r)
+  y is ['%call,:r] => markPathsEqual(IFCDR x,r)
   x is ['REDUCE,.,.,c,:.] and c is ['COLLECT,:u] and 
     y is ['PROGN,.,repeet,:.] and repeet is ['REPEAT,:v] => markPathsEqual(u,v)
   atom y or atom x => 
@@ -761,7 +761,7 @@ markInsertChanges(code,form,t,loc) ==
   loc is [i,:r] =>
     x := form
     for j in 0..(i-1) repeat 
-      if not atom x then x := rest x
+      if cons? x then x := rest x
     atom x => 
         pp '"Translator RPLACA error"
         pp $data
@@ -920,7 +920,7 @@ getNumberTypesInScope() ==
 getCommonImports() ==
   importList := [x for x in $importStack for y in $capsuleStack |
                    KAR KAR y = 'DEF]
-  hash := MAKE_-HASHTABLE 'EQUAL
+  hash := hashTable 'EQUAL
   for x in importList repeat
     for y in x repeat HPUT(hash,y,1 + (HGET(hash,y) or 0))
   threshold := FLOOR (.5 * #importList)
@@ -1088,7 +1088,7 @@ markPrintAbbreviation [kind,a,:b] ==
   markTerpri()
 
 markSay s == 
-  null atom s =>
+  cons? s =>
     for x in s repeat
       (markSay(lispStringList2String x); markTerpri())
   PRINTEXP s
@@ -1154,11 +1154,11 @@ markInsertBodyParts u ==
 --u is ["%LET",a,b] and constructor? opOf b => u
   u is ["%LET",a,b] and a is [op,:.] =>
     ["%LET",[markWrapPart x for x in a],markInsertBodyParts b]
-  u is [op,a,b] and op in '(_add _with IN %LET) =>
+  u is [op,a,b] and op in '(add with IN %LET) =>
     [op,markInsertBodyParts a,markInsertBodyParts b]
-  u is [op,a,b] and op in '(_: _:_: _pretend _@) =>
+  u is [op,a,b] and op in '(_: _:_: pretend _@) =>
     [op,markInsertBodyParts a,b]
-  u is [op,a,:x] and op in '(STEP return leave exit reduce) => 
+  u is [op,a,:x] and op in '(STEP _return _leave exit reduce) => 
     [op,a,:[markInsertBodyParts y for y in x]]
   u is [op,:x] and markPartOp? op => [op,:[markWrapPart y for y in x]]
   u is [op,:.] and constructor? op => u
@@ -1244,12 +1244,12 @@ changeToEqualEqual lines ==
     N := MAXINDEX x
     (n := charPosition($blank, x, 8)) > N => nil
     n = 0 => nil
-    not ALPHA_-CHAR_-P (x . (n - 1)) => nil
+    not alphabetic? (x . (n - 1)) => nil
     not substring?('":= ", x, n+1) => nil
     m := n + 3
-    while (m := m + 1) <= N and ALPHA_-CHAR_-P (x . m) repeat nil
+    while (m := m + 1) <= N and alphabetic? (x . m) repeat nil
     m = n + 2 => nil
-    not UPPER_-CASE_-P (x . (n + 4)) => nil
+    not upperCase? (x . (n + 4)) => nil
     word := INTERN SUBSTRING(x, n + 4, m - n - 4)
     expandedWord := macroExpand(word,$e)
     not (word in '(Record Union Mapping)
@@ -1389,7 +1389,7 @@ mkPaths(x,y) ==   --x < y; find location s of x in y (initially s=nil)
   x is [op, :u] and op in '(LIST VECTOR) and y is ['construct,:v] 
     and markPathsEqual(['construct,:u],y) => [y]
   (y is ["%LET",a,b] or y is ['IF,a,b,:.]) and GENSYMP a and markPathsEqual(x,b) => [y]
-  y is ["%Call",:r] => 
+  y is ['%call,:r] => 
 --  markPathsEqual(x,y1) => [y]
     mkPaths(x,r) => [y]
   y is ['PART,.,y1] => mkPaths(x,y1)
@@ -1451,7 +1451,7 @@ rplacaSubst(x, y, u) == (fn(x, y, u); u) where fn(x,y,u) ==
   atom u => nil
   while u is [p, :q] repeat
     if EQ(p, x) then u.first := y
-    if null atom p then fn(x, y, p)
+    if cons? p then fn(x, y, p)
     u := q
     
 buildNewDefinition(op,theSig,formPredAlist) ==
@@ -1525,7 +1525,6 @@ for x in [["%LET", :"compSetq"],_
           ["SubsetCategory", :"compSubsetCategory"],_
           ["SubDomain", :"compSubDomain"],_
           ["case", :"compCase"],_
-          ["String", :"compString"],_
           ["RecordCategory", :"compConstructorCategory"],_
           ["ListCategory", :"compConstructorCategory"],_
           ["VectorCategory", :"compConstructorCategory"],_
@@ -1541,4 +1540,4 @@ for x in [["%LET", :"compSetq"],_
           ["SEQ", :"compSeq"],_
           ["SETQ", :"compSetq"],_
           ["VECTOR", :"compVector"]] repeat
-  MAKEPROP(first x, "special", rest x)
+  property(first x, 'special) := rest x

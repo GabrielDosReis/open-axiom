@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -122,26 +122,6 @@
 
 ;; following was in INIT LISP
 
-(REPEAT (IN X '(
-  |Polynomial| |UnivariatePoly| |SquareMatrix| |QuotientField|
-  )) (MAKEPROP X '|status|
-     (INTERNL (STRCONC "status" (STRINGIMAGE X))) ))
-
-(REPEAT (IN X '(
-  |UnivariatePoly| |Matrix| |QuotientField| |Gaussian|
-  )) (MAKEPROP X '|dataCoerce|
-     (INTERNL (STRCONC "coerce" (STRINGIMAGE X))) ))
-
-(REPEAT (IN X '(
-  (|Integer| . (INTEGERP |#1|))
-  ;; (|Float| . (FLOATP |#1|))
-  (|DoubleFloat| . (FLOATP |#1|))
-  ;; (|Symbol| . (IDENTP |#1|))
-  ;;(|Boolean| . (BOOLEANP |#1|))  worthless predicate is always true
-  (|String| . (STRINGP |#1|))
-  (|PrimitiveSymbol| . (IDENTP |#1|))
-  )) (MAKEPROP (CAR X) '|BasicPredicate| (CDR X)))
-
 (FLAG '(|Union| |Record| |Enumration| |Mapping| |Enumeration|) 'FUNCTOR)
 
 (FLAG '(* + AND OR PROGN) 'NARY)
@@ -149,122 +129,3 @@
 (MAKEPROP 'INTEGER 'ISFUNCTION 'FIXP)
 (MAKEPROP '|Integer| '|isFunction| '|IsInteger|)
 (MAKEPROP '|Boolean| '|isFunction| '|isBoolean|)
-
-;; Many of the following are now in COMPAT LISP
-(REPEAT (IN X '(
-  (+ PLUS)
-  (|and| AND)
-  (|append| APPEND)
-  (|apply| APPLY)
-  (|atom| ATOM)
-  (|brace| REMDUP)
-  (|car| CAR)
-  (|cdr| CDR)
-  (|cons| CONS)
-  (|copy| COPY)
-  (|croak| CROAK)
-  (|drop| DROP)
-  (|exit| EXIT)
-  (|false| NIL)
-  (|first| CAR)
-  (|genvar| GENVAR)
-  (|in| |member|)
-  (|is| IS)
-  (|lastNode| LASTNODE)
-  (|list| LIST)
-  (|mkpf| MKPF)
-  (|nconc| NCONC)
-  (|nil| NIL)
-  (|not| NULL)
-  (|NOT| NULL)
-  (|nreverse| NREVERSE)
-  (|null| NULL)
-  (|or| OR)
-  (|otherwise| 'T)
-  (|removeDuplicates| REMDUP)
-  (|rest| CDR)
-  (|return| RETURN)
-  (|reverse| REVERSE)
-  (|setDifference| SETDIFFERENCE)
-  (|setIntersection| |intersection|)
-  (|setPart| SETELT)
-  (|setUnion| |union|)
-  (|size| SIZE)
-  (|strconc| STRCONC)
-  (|substitute| MSUBST)
-  (SUBST MSUBST)
-  (|take| TAKE)
-  (|true| 'T)
-  (|where| WHERE)
-  (* TIMES)
-  (** EXPT)
-  (^ NULL)
-  (^= NEQUAL)
-  (- SPADDIFFERENCE)
-  (/ QUOTIENT)
-  (= EQUAL)
-  (ASSOC  |assoc|)
-  (DELETE |delete|)
-  (GET GETL)
-  (INTERSECTION |intersection|)
-  (LAST |last|)
-  (MEMBER |member|)
-  (RASSOC |rassoc|)
-  (READ VMREAD)
-  (READ-LINE |read-line|)
-  (REDUCE SPADREDUCE)
-  (REMOVE |remove|)
-  (\| SUCHTHAT)
-  (T T$)
-  (UNION |union|)
-)) (MAKEPROP (CAR X) 'RENAME (CDR X)))
-
-;; these are accessor names for fields in data structures. Thus one would
-;; write datastructure.setName 
-(REPEAT (IN X '(
-  (|setName|  0)
-  (|setLabel| 1)
-  (|setLevel| 2)
-  (|setType|  3)
-  (|setVar|   4)
-  (|setLeaf|  5)
-  (|setDef|   6)
-  (|aGeneral| 4)
-  (|aMode| 1)
-  (|aModeSet| 3)
-  (|aTree| 0)
-  (|attributes| CADDR)
-  (|aValue| 2)
-  (|cacheCount| CADDDDR)
-  (|cacheName| CADR)
-  (|cacheReset| CADDDR)
-  (|cacheType| CADDR)
-  (|env| CADDR)
-  (|expr| CAR)
-  (|first| CAR)
-  (|mmCondition| CAADR)
-  (|mmDC| CAAR)
-  (|mmImplementation| CADADR)
-  (|mmSignature| CDAR)
-  (|mmTarget| CADAR)
-  (|mode| CADR)
-  (|op| CAR)
-  (|opcode| CADR)
-  (|opSig| CADR)
-  (|rest| CDR)
-  (|sig| CDDR)
-  (|source| CDR)
-  (|streamCode| CADDDR)
-  (|streamDef| CADDR)
-  (|streamName| CADR)
-  (|target| CAR)
-)) (MAKEPROP (CAR X) '|SEL,FUNCTION| (CADR X)))
-
-
-(REPEAT (IN X '(
-  (\: |compColonInteractive|)
-  (DEF |compDefineInteractive|)
-  (|construct| |compConstructInteractive|)
-  (%LET |compSetqInteractive|)
-)) (MAKEPROP (CAR X) 'INTERACTIVE (CADR X)))
-
