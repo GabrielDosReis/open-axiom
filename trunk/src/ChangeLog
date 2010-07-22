@@ -1,3 +1,9 @@
+2010-07-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* algebra/data.spad.pamphlet (Byte) [~]: Tidy.
+	(SystemNonNegativeInteger) [~]: Likewise.
+	* interp/g-util.boot: Better expansion of byte operations.
+
 2010-07-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include
