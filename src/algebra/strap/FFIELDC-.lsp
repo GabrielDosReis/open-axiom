@@ -298,10 +298,9 @@
                                                              |FFIELDC-;discreteLog;SNni;11|)
                                                             (EXIT
                                                              (COND
-                                                               ((EQL
+                                                               ((ZEROP
                                                                  (CAR
-                                                                  |rho|)
-                                                                 0)
+                                                                  |rho|))
                                                                 (SEQ
                                                                  (SETQ
                                                                   |found|

@@ -476,7 +476,7 @@
                                     (SPADCALL |pp|
                                      (|getShellEntry| $ 108))
                                     (|getShellEntry| $ 112))))
-                           (|check-union| (EQL (CAR #0#) 0) $ #0#)
+                           (|check-union| (ZEROP (CAR #0#)) $ #0#)
                            (CDR #0#))
                          (|getShellEntry| $ 114))
                      (|getShellEntry| $ 118))

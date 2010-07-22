@@ -134,7 +134,7 @@
 
 (DEFUN |ISTRING;empty;$;2| ($) (MAKE-FULL-CVEC 0)) 
 
-(DEFUN |ISTRING;empty?;$B;3| (|s| $) (EQL (QCSIZE |s|) 0)) 
+(DEFUN |ISTRING;empty?;$B;3| (|s| $) (ZEROP (QCSIZE |s|))) 
 
 (DEFUN |ISTRING;#;$Nni;4| (|s| $) (DECLARE (IGNORE $)) (QCSIZE |s|)) 
 

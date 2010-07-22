@@ -250,6 +250,13 @@ expandIneg ['%ineg,x] ==
   integer? x => -x
   ['_-,x]
 
+expandIeq ['%ieq,a,b] ==
+  a := expandToVMForm a
+  integer? a and a = 0 => ['ZEROP,expandToVMForm b]
+  b := expandToVMForm b
+  integer? b and b = 0 => ['ZEROP,a]
+  ['EQL,a,b]
+
 expandIlt ['%ilt,x,y] ==
   integer? x and x = 0 =>
     integer? y => y > 0
@@ -358,7 +365,6 @@ for x in [
     ['%ismall?, :'FIXNUMP],
     -- binary integer operations.
     ['%iadd,:"+"],
-    ['%ieq, :"EQL"],
     ['%igcd,:'GCD],
     ['%ige, :">="],
     ['%iinc,:"1+"],
@@ -437,6 +443,7 @@ for x in [
    ['%bge, :function expandBge],
    ['%bcompl,  :function expandBcompl],
 
+   ['%ieq,     :function expandIeq],
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],

@@ -29,7 +29,7 @@
                              (|getShellEntry| $ 12))
                          |GCDDOM-;lcm;3S;1|)
                    (EXIT (COND
-                           ((EQL (CAR LCM) 0)
+                           ((ZEROP (CAR LCM))
                             (SPADCALL |x| (CDR LCM)
                                 (|getShellEntry| $ 13)))
                            ('T (|error| "bad gcd in lcm computation"))))))))))) 
@@ -59,7 +59,7 @@
                          (LET ((#0=#:G1418
                                    (SPADCALL |p1| |c1|
                                     (|getShellEntry| $ 27))))
-                           (|check-union| (EQL (CAR #0#) 0)
+                           (|check-union| (ZEROP (CAR #0#))
                                (|SparseUnivariatePolynomial|
                                    (|getShellEntry| $ 6))
                                #0#)
@@ -67,7 +67,7 @@
                    (SETQ |p2|
                          (LET ((#0# (SPADCALL |p2| |c2|
                                      (|getShellEntry| $ 27))))
-                           (|check-union| (EQL (CAR #0#) 0)
+                           (|check-union| (ZEROP (CAR #0#))
                                (|SparseUnivariatePolynomial|
                                    (|getShellEntry| $ 6))
                                #0#)
@@ -86,7 +86,7 @@
                                             (|getShellEntry| $ 34))
                                            (|getShellEntry| $ 35))))
                                          (|check-union|
-                                          (EQL (CAR #0#) 0)
+                                          (ZEROP (CAR #0#))
                                           (|SparseUnivariatePolynomial|
                                            (|getShellEntry| $ 6))
                                           #0#)
@@ -105,7 +105,7 @@
                                             (|getShellEntry| $ 34))
                                            (|getShellEntry| $ 35))))
                                          (|check-union|
-                                          (EQL (CAR #0#) 0)
+                                          (ZEROP (CAR #0#))
                                           (|SparseUnivariatePolynomial|
                                            (|getShellEntry| $ 6))
                                           #0#)
@@ -116,12 +116,10 @@
                          (SPADCALL |c1| |c2| (|getShellEntry| $ 10)))
                    (SETQ |p1|
                          (COND
-                           ((OR (EQL (SPADCALL |p1|
-                                      (|getShellEntry| $ 37))
-                                     0)
-                                (EQL (SPADCALL |p2|
-                                      (|getShellEntry| $ 37))
-                                     0))
+                           ((OR (ZEROP (SPADCALL |p1|
+                                        (|getShellEntry| $ 37)))
+                                (ZEROP (SPADCALL |p2|
+                                        (|getShellEntry| $ 37))))
                             (SPADCALL |c1| 0 (|getShellEntry| $ 34)))
                            ('T
                             (SEQ (LETT |p|
@@ -129,10 +127,9 @@
                                         (|getShellEntry| $ 39))
                                        |GCDDOM-;gcdPolynomial;3Sup;4|)
                                  (EXIT (COND
-                                         ((EQL
+                                         ((ZEROP
                                            (SPADCALL |p|
-                                            (|getShellEntry| $ 37))
-                                           0)
+                                            (|getShellEntry| $ 37)))
                                           (SPADCALL |c1| 0
                                            (|getShellEntry| $ 34)))
                                          ('T
@@ -160,7 +157,7 @@
                                                    (|getShellEntry| $
                                                     27))))
                                                  (|check-union|
-                                                  (EQL (CAR #0#) 0)
+                                                  (ZEROP (CAR #0#))
                                                   (|SparseUnivariatePolynomial|
                                                    (|getShellEntry| $
                                                     6))
