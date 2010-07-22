@@ -230,6 +230,20 @@ expandPeq ['%peq,x,y] ==
 expandBefore? ['%before?,x,y] ==
   ['GGREATERP,expandToVMForm y,expandToVMForm x]
 
+-- Byte operations
+expandBle ['%ble,x,y] ==
+  expandToVMForm ['%not,['%blt,y,x]]
+
+expandBgt ['%bgt,x,y] ==
+  expandToVMForm ['%blt,y,x]
+
+expandBge ['%bge,x,y] ==
+  expandToVMForm ['%not,['%blt,x,y]]
+
+expandBcompl ['%bcompl,x] ==
+  integer? x => 255 - x
+  ['_+,256,['LOGNOT,expandToVMForm x]]
+
 -- Integer operations
 expandIneg ['%ineg,x] ==
   x := expandToVMForm x
@@ -237,12 +251,16 @@ expandIneg ['%ineg,x] ==
   ['_-,x]
 
 expandIlt ['%ilt,x,y] ==
-  integer? x and x = 0 => ['PLUSP,expandToVMForm y]
-  integer? y and y = 0 => ['MINUSP,expandToVMForm x]
+  integer? x and x = 0 =>
+    integer? y => y > 0
+    ['PLUSP,expandToVMForm y]
+  integer? y and y = 0 =>
+    integer? x => x < 0
+    ['MINUSP,expandToVMForm x]
   ['_<,expandToVMForm x,expandToVMForm y]
 
 expandIgt ['%igt,x,y] ==
-  expandFlt ['%ilt,y,x]
+  expandIlt ['%ilt,y,x]
 
 expandBitand ['%bitand,x,y] ==
   ['BOOLE,'BOOLE_-AND,expandToVMForm x,expandToVMForm y]
@@ -331,9 +349,6 @@ for x in [
     -- byte operations
     ['%beq, :'byteEqual],
     ['%blt, :'byteLessThan],
-    ['%ble, :'byteLessEqual],
-    ['%bgt, :'byteGreaterThan],
-    ['%bge, :'byteGreaterEqual],
 
     -- unary integer operations.
     ['%iabs,    :'ABS],
@@ -416,6 +431,11 @@ for x in [
    ['%collect, :function expandCollect],
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
+
+   ['%ble, :function expandBle],
+   ['%bgt, :function expandBgt],
+   ['%bge, :function expandBge],
+   ['%bcompl,  :function expandBcompl],
 
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],

@@ -43,7 +43,7 @@ Byte(): Public == Private where
     import %bge: (%,%) -> Boolean from Foreign Builtin
     import %bitand: (%,%) -> %    from Foreign Builtin
     import %bitior: (%,%) -> %    from Foreign Builtin
-    import %bitnot: % -> % from Foreign Builtin
+    import %bcompl: % -> %        from Foreign Builtin
 
     byte(x: NonNegativeInteger): % == per x
     sample = 0$Foreign(Builtin)
@@ -64,7 +64,7 @@ Byte(): Public == Private where
     bitior(x,y) == %bitior(x,y)
     x /\ y == bitand(x,y)
     x \/ y == bitior(x,y)
-    ~ x == %bitnot x
+    ~ x == %bcompl x
 
 @
 
@@ -200,13 +200,13 @@ SystemNonNegativeInteger(N: PositiveInteger): Public == Private where
     import %bitnot: % -> %     from Foreign Builtin
 
     min == per 0
-    max == per((shift(1,N)-1)::NonNegativeInteger)
+    max == per((shift(1,N)-1) : NonNegativeInteger)
     sample == min
     bitand(x,y) == %bitand(x,y)
     bitior(x,y) == %bitior(x,y)
     x /\ y == bitand(x,y)
     x \/ y == bitior(x,y)
-    ~ x == %bitnot x
+    ~ x == per((shift(1,N) + rep %bitnot x) : NonNegativeInteger)
 
 @
 
