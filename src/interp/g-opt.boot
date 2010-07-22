@@ -137,7 +137,13 @@ optimizeFunctionDef(def) ==
         replaceThrowByReturn(rest x,g)
   changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,groupVariableDefinitions body']]
- 
+
+++ Like `optimize', except that non-atomic form may be reduced to
+++ to atomic forms.  In particular, the address of the input may
+++ not be the same as that of the output.
+simplifyVMForm x ==
+  first optimize [x]
+
 optimize x ==
   (opt x; x) where
     opt x ==
@@ -151,8 +157,7 @@ optimize x ==
           SAY '"length mismatch in XLAM expression"
           PRETTYPRINT y
         x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)
-      atom y =>
-        optimize rest x
+      atom y => optimize rest x
       if first y="IF" then (x.first := optIF2COND y; y:= first x)
       op:= GETL(subrname first y,"OPTIMIZE") =>
         (optimize rest x; x.first := FUNCALL(op,optimize first x))
@@ -285,7 +290,7 @@ optSpecialCall(x,y,n) ==
   fn := getFunctionReplacement compileTimeBindingOf first yval.n =>
     x.rest := CDAR x
     x.first := fn
-    if fn is ["XLAM",:.] then x:=first optimize [x]
+    if fn is ["XLAM",:.] then x := simplifyVMForm x
     x is ["EQUAL",:args] => RPLACW(x,DEF_-EQUAL args)
                 --DEF-EQUAL is really an optimiser
     x
@@ -661,11 +666,52 @@ optCollectVector form ==
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
 optRetract ["%retract",e,m,pred] ==
-  atom e => ["check-subtype",substitute(e,"#1",pred),MKQ m,e]
+  atom e =>
+    cond := simplifyVMForm substitute(e,"#1",pred)
+    cond = '%true => e
+    ["check-subtype",cond,MKQ m,e]
   g := gensym()
   ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
 
-lispize x == first optimize [x]
+
+--%  Boolean expression transformers
+
+optNot(x is ['%not,a]) ==
+  a = '%true => '%false
+  a = '%false => '%true
+  a is ['%not,b] => b
+  x
+
+optAnd(x is ['%and,a,b]) ==
+  a = '%true => b
+  b = '%true => a
+  a = '%false => '%false
+  x
+
+optOr(x is ['%or,a,b]) ==
+  a = '%false => b
+  b = '%false => a
+  a = '%true => '%true
+  x
+
+optIlt(x is ['%ilt,a,b]) ==
+  integer? a and integer? b =>
+    a < b => '%true
+    '%false
+  x
+
+optIle(x is ['%ile,a,b]) ==
+  optNot ['%not,optIlt ['%ilt,b,a]]
+
+optIgt x ==
+  optIlt ['%ilt,third x, second x]
+
+optIge x ==
+  optNot ['%not,optIlt ['%ilt,second x,third x]]
+
+--%  
+
+lispize x == simplifyVMForm x
  
 --% optimizer hash table
  
@@ -674,6 +720,13 @@ for x in '( (%call         optCall) _
            (LET          optLET)_
            (LET_*        optLET_*)_
            (%bind        optBind)_
+           (%not         optNot)_
+           (%and         optAnd)_
+           (%or          optOr)_
+           (%ilt         optIlt)_
+           (%ile         optIle)_
+           (%igt         optIgt)_
+           (%ige         optIge)_
            (LIST         optLIST)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_

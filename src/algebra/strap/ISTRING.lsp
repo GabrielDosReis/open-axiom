@@ -191,13 +191,14 @@
                      (- (SPADCALL |s| (|getShellEntry| $ 47))
                         (|getShellEntry| $ 6))))))
         (SEQ (COND
-               ((OR (OR (MINUSP |l|) (>= |h| |m|)) (< |h| (- |l| 1)))
+               ((OR (OR (MINUSP |l|) (NOT (< |h| |m|)))
+                    (< |h| (- |l| 1)))
                 (EXIT (|error| "index out of range"))))
              (LETT |r|
                    (MAKE-FULL-CVEC
                        (LET ((#0=#:G1444
                                  (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
-                         (|check-subtype| (>= #0# 0)
+                         (|check-subtype| (NOT (MINUSP #0#))
                              '(|NonNegativeInteger|) #0#))
                        (|spadConstant| $ 53))
                    |ISTRING;replace;$Us2$;15|)
@@ -264,7 +265,7 @@
            (EXIT (COND
                    ((MINUSP |startpos|)
                     (|error| "index out of bounds"))
-                   ((>= |startpos| (QCSIZE |t|))
+                   ((NOT (< |startpos| (QCSIZE |t|)))
                     (- (|getShellEntry| $ 6) 1))
                    ('T
                     (SEQ (LETT |r| (STRPOS |s| |t| |startpos| NIL)
@@ -278,7 +279,7 @@
   (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
        (EXIT (COND
                ((MINUSP |startpos|) (|error| "index out of bounds"))
-               ((>= |startpos| (QCSIZE |t|))
+               ((NOT (< |startpos| (QCSIZE |t|)))
                 (- (|getShellEntry| $ 6) 1))
                ('T
                 (SEQ (LET ((|r| |startpos|)
@@ -298,7 +299,7 @@
   (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
        (EXIT (COND
                ((MINUSP |startpos|) (|error| "index out of bounds"))
-               ((>= |startpos| (QCSIZE |t|))
+               ((NOT (< |startpos| (QCSIZE |t|)))
                 (- (|getShellEntry| $ 6) 1))
                ('T
                 (SEQ (LET ((|r| |startpos|)
@@ -344,11 +345,11 @@
                  ((NOT (COND
                          ((< |n| |i|) NIL)
                          ('T
-                          (>= (LETT |j|
-                                    (|ISTRING;position;C$2I;19| |c| |s|
-                                     |i| $)
-                                    |ISTRING;split;$CL;22|)
-                              (|getShellEntry| $ 6)))))
+                          (NOT (< (LETT |j|
+                                        (|ISTRING;position;C$2I;19| |c|
+                                         |s| |i| $)
+                                        |ISTRING;split;$CL;22|)
+                                  (|getShellEntry| $ 6))))))
                   (RETURN NIL))
                  (T (SEQ (SETQ |l|
                                (SPADCALL
@@ -400,11 +401,11 @@
                  ((NOT (COND
                          ((< |n| |i|) NIL)
                          ('T
-                          (>= (LETT |j|
-                                    (|ISTRING;position;Cc$2I;20| |cc|
-                                     |s| |i| $)
-                                    |ISTRING;split;$CcL;23|)
-                              (|getShellEntry| $ 6)))))
+                          (NOT (< (LETT |j|
+                                        (|ISTRING;position;Cc$2I;20|
+                                         |cc| |s| |i| $)
+                                        |ISTRING;split;$CcL;23|)
+                                  (|getShellEntry| $ 6))))))
                   (RETURN NIL))
                  (T (SEQ (SETQ |l|
                                (SPADCALL
@@ -471,7 +472,7 @@
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((>= |j| (|getShellEntry| $ 6))
+                     ((NOT (< |j| (|getShellEntry| $ 6)))
                       (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $) |c|
                           (|getShellEntry| $ 69)))
                      ('T NIL)))
@@ -487,7 +488,7 @@
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((>= |j| (|getShellEntry| $ 6))
+                     ((NOT (< |j| (|getShellEntry| $ 6)))
                       (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $) |cc|
                           (|getShellEntry| $ 65)))
                      ('T NIL)))
@@ -553,7 +554,7 @@
                  (- (SPADCALL |s| (|getShellEntry| $ 47))
                     (|getShellEntry| $ 6))))))
     (SEQ (COND
-           ((OR (MINUSP |l|) (>= |h| (QCSIZE |s|)))
+           ((OR (MINUSP |l|) (NOT (< |h| (QCSIZE |s|))))
             (EXIT (|error| "index out of bound"))))
          (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1))))))) 
 
@@ -577,7 +578,7 @@
                                         |pattern| $)
                                        |ISTRING;match?;2$CB;34|)
                                  $)))
-                     (|check-subtype| (>= #0# 0)
+                     (|check-subtype| (NOT (MINUSP #0#))
                          '(|NonNegativeInteger|) #0#))
                    |ISTRING;match?;2$CB;34|)
              (EXIT (COND
@@ -599,7 +600,7 @@
                                         (|ISTRING;position;C$2I;19|
                                          |dontcare| |pattern| (+ |p| 1)
                                          $)))
-                                   (|check-subtype| (>= #1# 0)
+                                   (|check-subtype| (NOT (MINUSP #1#))
                                     '(|NonNegativeInteger|) #1#))
                                  |ISTRING;match?;2$CB;34|)
                            (LOOP
@@ -619,7 +620,8 @@
                                          ((#2=#:G1527
                                            (|ISTRING;position;2$2I;18|
                                             |s| |target| |i| $)))
-                                          (|check-subtype| (>= #2# 0)
+                                          (|check-subtype|
+                                           (NOT (MINUSP #2#))
                                            '(|NonNegativeInteger|) #2#)))
                                        (EXIT
                                         (COND
@@ -640,7 +642,7 @@
                                                   |dontcare| |pattern|
                                                   (+ |q| 1) $)))
                                                 (|check-subtype|
-                                                 (>= #3# 0)
+                                                 (NOT (MINUSP #3#))
                                                  '(|NonNegativeInteger|)
                                                  #3#))))))))))))
                            (COND

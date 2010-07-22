@@ -446,8 +446,8 @@
                        (|DFLOAT;log2;2$;40|
                            (FLOAT 2 |$DoubleFloatMaximum|) $)
                        (|getShellEntry| $ 32)))))
-       (|check-subtype| (AND (>= #0# 0) (< 0 #0#)) '(|PositiveInteger|)
-           #0#))))) 
+       (|check-subtype| (AND (NOT (MINUSP #0#)) (PLUSP #0#))
+           '(|PositiveInteger|) #0#))))) 
 
 (DEFUN |DFLOAT;max;$;11| ($)
   (DECLARE (IGNORE $))
@@ -636,14 +636,16 @@
 (DEFUN |DFLOAT;retract;$F;80| (|x| $)
   (|DFLOAT;rationalApproximation;$2NniF;87| |x|
       (LET ((#0=#:G1506 (- 53 1)))
-        (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
+        (|check-subtype| (NOT (MINUSP #0#)) '(|NonNegativeInteger|)
+            #0#))
       2 $)) 
 
 (DEFUN |DFLOAT;retractIfCan;$U;81| (|x| $)
   (CONS 0
         (|DFLOAT;rationalApproximation;$2NniF;87| |x|
             (LET ((#0=#:G1514 (- 53 1)))
-              (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#))
+              (|check-subtype| (NOT (MINUSP #0#))
+                  '(|NonNegativeInteger|) #0#))
             2 $))) 
 
 (DEFUN |DFLOAT;retract;$I;82| (|x| $)
@@ -706,18 +708,19 @@
         (SEQ |#G109|
              (LETT BASE 2 |DFLOAT;rationalApproximation;$2NniF;87|)
              (EXIT (COND
-                     ((>= |ex| 0)
+                     ((NOT (MINUSP |ex|))
                       (SPADCALL
                           (* |nu|
                              (EXPT BASE
-                                   (|check-subtype| (>= |ex| 0)
+                                   (|check-subtype| (NOT (MINUSP |ex|))
                                     '(|NonNegativeInteger|) |ex|)))
                           (|getShellEntry| $ 134)))
                      ('T
                       (SEQ (LETT |de|
                                  (EXPT BASE
                                        (LET ((#0=#:G1542 (- |ex|)))
-                                         (|check-subtype| (>= #0# 0)
+                                         (|check-subtype|
+                                          (NOT (MINUSP #0#))
                                           '(|NonNegativeInteger|) #0#)))
                                  |DFLOAT;rationalApproximation;$2NniF;87|)
                            (EXIT (COND

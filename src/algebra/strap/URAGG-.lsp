@@ -168,20 +168,20 @@
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((< 0 |i|)
+                     ((PLUSP |i|)
                       (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
                      ('T NIL)))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
-         (EXIT (< 0 |i|))))) 
+         (EXIT (PLUSP |i|))))) 
 
 (DEFUN |URAGG-;more?;ANniB;13| (|l| |n| $)
   (LET ((|i| |n|))
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((< 0 |i|)
+                     ((PLUSP |i|)
                       (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
                      ('T NIL)))
               (RETURN NIL))
@@ -198,7 +198,7 @@
            (COND
              ((NOT (COND
                      ((SPADCALL |l| (|getShellEntry| $ 20)) NIL)
-                     ('T (< 0 |i|))))
+                     ('T (PLUSP |i|))))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
@@ -381,8 +381,8 @@
        (SPADCALL
            (SPADCALL |x|
                (LET ((#0=#:G1502 (- |m| |n|)))
-                 (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|)
-                     #0#))
+                 (|check-subtype| (NOT (MINUSP #0#))
+                     '(|NonNegativeInteger|) #0#))
                (|getShellEntry| $ 62))
            (|getShellEntry| $ 63)))))) 
 
@@ -491,7 +491,7 @@
               (SEQ (SETQ |p|
                          (SPADCALL |p|
                              (LET ((#0=#:G1528 (- |n| 1)))
-                               (|check-subtype| (>= #0# 0)
+                               (|check-subtype| (NOT (MINUSP #0#))
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 62)))
                    (LETT |q| (SPADCALL |p| (|getShellEntry| $ 14))

@@ -78,7 +78,7 @@
               (SPADCALL
                   (SETQ |x|
                         (SPADCALL |x|
-                            (|check-subtype| (>= |i| 0)
+                            (|check-subtype| (NOT (MINUSP |i|))
                                 '(|NonNegativeInteger|) |i|)
                             (|getShellEntry| $ 25)))
                   (|getShellEntry| $ 18)))
@@ -93,11 +93,12 @@
         (COND
           ((MINUSP |l|) (|error| "index out of range"))
           ((NOT (SPADCALL |i| (|getShellEntry| $ 29)))
-           (SPADCALL (SPADCALL |x|
-                         (|check-subtype| (>= |l| 0)
-                             '(|NonNegativeInteger|) |l|)
-                         (|getShellEntry| $ 25))
-                     (|getShellEntry| $ 30)))
+           (SPADCALL
+               (SPADCALL |x|
+                   (|check-subtype| (NOT (MINUSP |l|))
+                       '(|NonNegativeInteger|) |l|)
+                   (|getShellEntry| $ 25))
+               (|getShellEntry| $ 30)))
           ('T
            (SEQ (LETT |h|
                       (- (SPADCALL |i| (|getShellEntry| $ 31))
@@ -108,11 +109,11 @@
                         ('T
                          (SPADCALL
                              (SPADCALL |x|
-                                 (|check-subtype| (>= |l| 0)
+                                 (|check-subtype| (NOT (MINUSP |l|))
                                      '(|NonNegativeInteger|) |l|)
                                  (|getShellEntry| $ 25))
                              (LET ((#0=#:G1420 (+ (- |h| |l|) 1)))
-                               (|check-subtype| (>= #0# 0)
+                               (|check-subtype| (NOT (MINUSP #0#))
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 35)))))))))))) 
 
@@ -160,7 +161,7 @@
               (SPADCALL
                   (SETQ |x|
                         (SPADCALL |x|
-                            (|check-subtype| (>= |i| 0)
+                            (|check-subtype| (NOT (MINUSP |i|))
                                 '(|NonNegativeInteger|) |i|)
                             (|getShellEntry| $ 25)))
                   (|getShellEntry| $ 18)))
@@ -187,7 +188,8 @@
                         ('T
                          (SEQ (LETT |y|
                                     (SPADCALL |x|
-                                     (|check-subtype| (>= |l| 0)
+                                     (|check-subtype|
+                                      (NOT (MINUSP |l|))
                                       '(|NonNegativeInteger|) |l|)
                                      (|getShellEntry| $ 25))
                                     |STAGG-;setelt;AUs2S;12|)
@@ -195,7 +197,8 @@
                                     (SPADCALL |y|
                                      (LET
                                       ((#0=#:G1443 (+ (- |h| |l|) 1)))
-                                       (|check-subtype| (>= #0# 0)
+                                       (|check-subtype|
+                                        (NOT (MINUSP #0#))
                                         '(|NonNegativeInteger|) #0#))
                                      (|getShellEntry| $ 25))
                                     |STAGG-;setelt;AUs2S;12|)

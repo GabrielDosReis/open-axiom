@@ -752,7 +752,9 @@
                                                          ((#10=#:G1612
                                                            (CDR |nd|)))
                                                           (|check-subtype|
-                                                           (>= #10# 0)
+                                                           (NOT
+                                                            (MINUSP
+                                                             #10#))
                                                            '(|NonNegativeInteger|)
                                                            #10#))))))
                                                    #9#)))))
@@ -936,7 +938,7 @@
                          |POLYCAT-;charthRootlv|)
                    (LOOP
                      (COND
-                       ((NOT (< 0 |d|)) (RETURN NIL))
+                       ((NOT (PLUSP |d|)) (RETURN NIL))
                        (T (SEQ (LETT |dd|
                                      (SPADCALL |d| |ch|
                                       (|getShellEntry| $ 173))
@@ -981,7 +983,7 @@
                                                    ((#0=#:G1640
                                                      (CDR |dd|)))
                                                     (|check-subtype|
-                                                     (>= #0# 0)
+                                                     (NOT (MINUSP #0#))
                                                      '(|NonNegativeInteger|)
                                                      #0#))
                                                   (|getShellEntry| $
