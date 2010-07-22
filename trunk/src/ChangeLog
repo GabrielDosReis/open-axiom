@@ -1,5 +1,15 @@
 2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (expandIeq): New expander for %ieq.
+	* interp/g-opt.boot (optIeq): New.
+	(optIadd): Likewise.
+	(optIsub): Likewise.
+	(optImul): Likewise.
+	(optIneg): Likewise.
+	(lispize): Remove.
+
+2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (simplifyVMForm): New.
 	(optRetract): Simplify the predicate when possible.
 	(optNot): New transformer.

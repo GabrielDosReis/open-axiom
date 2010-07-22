@@ -763,7 +763,7 @@
                                              (+ (* |q| |q1|) |q0|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
                                             (COND
-                                              ((OR (EQL |r| 0)
+                                              ((OR (ZEROP |r|)
                                                 (<
                                                  (SPADCALL |tol|
                                                   (ABS

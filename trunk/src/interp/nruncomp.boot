@@ -129,7 +129,7 @@ NRTencode(x,y) == encode(x,y,true) where encode(x,compForm,firstTime) ==
     -- enumeration constants are like field names, they do not need
     -- to be encoded.
     op = "Enumeration" => x
-    ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE lispize compForm]
+    ["NRTEVAL",NRTreplaceAllLocalReferences COPY_-TREE simplifyVMForm compForm]
   MEMQ(x,$formalArgList) =>
     v := $FormalMapVariableList.(POSN1(x,$formalArgList))
     firstTime => ["local",v]

@@ -694,6 +694,12 @@ optOr(x is ['%or,a,b]) ==
   a = '%true => '%true
   x
 
+optIeq(x is ['%ieq,a,b]) ==
+  integer? a and integer? b =>
+    a = b => '%true
+    '%false
+  x
+
 optIlt(x is ['%ilt,a,b]) ==
   integer? a and integer? b =>
     a < b => '%true
@@ -709,11 +715,27 @@ optIgt x ==
 optIge x ==
   optNot ['%not,optIlt ['%ilt,second x,third x]]
 
---%  
+--% Integer operations
 
-lispize x == simplifyVMForm x
- 
+optIadd(x is ['%iadd,a,b]) ==
+  integer? a and integer? b => a + b
+  x
+
+optIsub(x is ['%isub,a,b]) ==
+  integer? a and integer? b => a - b
+  x
+
+optImul(x is ['%imul,a,b]) ==
+  integer? a and integer? b => a * b
+  x
+
+optIneg(x is ['%ineg,a]) ==
+  integer? a => -a
+  x
+
+--%  
 --% optimizer hash table
+--%
  
 for x in '( (%call         optCall) _
            (SEQ          optSEQ)_
@@ -723,10 +745,15 @@ for x in '( (%call         optCall) _
            (%not         optNot)_
            (%and         optAnd)_
            (%or          optOr)_
+           (%ieq         optIeq)_
            (%ilt         optIlt)_
            (%ile         optIle)_
            (%igt         optIgt)_
            (%ige         optIge)_
+           (%ineg        optIneg)_
+           (%iadd        optIadd)_
+           (%isub        optIsub)_
+           (%imul        optImul)_
            (LIST         optLIST)_
            (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
