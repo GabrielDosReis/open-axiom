@@ -200,7 +200,8 @@
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((>= (LENGTH |ns|) 2) (ZEROP (|SPADfirst| |ns|)))
+                     ((NOT (< (LENGTH |ns|) 2))
+                      (ZEROP (|SPADfirst| |ns|)))
                      ('T NIL)))
               (RETURN NIL))
              (T (SETQ |ns| (CDR |ns|)))))
@@ -440,14 +441,15 @@
            (SETQ |xx| (STRCONC "%" |xx|))
            (SETQ |xx|
                  (COND
-                   ((>= (SPADCALL
-                            (SPADCALL |xx|
-                                (SPADCALL |xx| (|getShellEntry| $ 128))
-                                (|getShellEntry| $ 106))
-                            (|getShellEntry| $ 19)
-                            (|getShellEntry| $ 129))
-                        (SPADCALL (|getShellEntry| $ 19)
-                            (|getShellEntry| $ 117)))
+                   ((NOT (< (SPADCALL
+                                (SPADCALL |xx|
+                                    (SPADCALL |xx|
+                                     (|getShellEntry| $ 128))
+                                    (|getShellEntry| $ 106))
+                                (|getShellEntry| $ 19)
+                                (|getShellEntry| $ 129))
+                            (SPADCALL (|getShellEntry| $ 19)
+                                (|getShellEntry| $ 117))))
                     (STRCONC |xx|
                              (|SYMBOL;anyRadix| |n|
                                  (|getShellEntry| $ 21) $)))
@@ -546,7 +548,7 @@
                                           (|getShellEntry| $ 106))
                                          (|getShellEntry| $ 44))
                                         (|getShellEntry| $ 45))))
-                                  (|check-subtype| (>= #0# 0)
+                                  (|check-subtype| (NOT (MINUSP #0#))
                                       '(|NonNegativeInteger|) #0#))
                                 (|getShellEntry| $ 148))))
                        (SETQ |i| (+ |i| 1))

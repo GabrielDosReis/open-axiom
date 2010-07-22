@@ -2,7 +2,7 @@
 (/VERSIONCHECK 2) 
 
 (|noteSubDomainInfo| '|PositiveInteger| '(|NonNegativeInteger|)
-    '(|%igt| |#1| 0)) 
+    '(|%ilt| 0 |#1|)) 
 
 (DEFUN |PositiveInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

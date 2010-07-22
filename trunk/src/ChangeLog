@@ -1,3 +1,15 @@
+2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (simplifyVMForm): New.
+	(optRetract): Simplify the predicate when possible.
+	(optNot): New transformer.
+	(optAnd): Likewise.
+	(optOr): Likewise.
+	(optIlt): Likewise.
+	(optIle): Likewise.
+	(optIgt): Likewise.
+	(optIge): Likewise.
+
 2010-07-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* algebra/data.spad.pamphlet (Byte) [~]: Tidy.

@@ -148,17 +148,19 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;>;2$B;36|)) 
 
-(PUT '|INT;>;2$B;36| '|SPADreplace| '|%igt|) 
+(PUT '|INT;>;2$B;36| '|SPADreplace| '(XLAM (|x| |y|) (|%ilt| |y| |x|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;<=;2$B;37|)) 
 
-(PUT '|INT;<=;2$B;37| '|SPADreplace| '|%ile|) 
+(PUT '|INT;<=;2$B;37| '|SPADreplace|
+     '(XLAM (|x| |y|) (|%not| (|%ilt| |y| |x|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;>=;2$B;38|)) 
 
-(PUT '|INT;>=;2$B;38| '|SPADreplace| '|%ige|) 
+(PUT '|INT;>=;2$B;38| '|SPADreplace|
+     '(XLAM (|x| |y|) (|%not| (|%ilt| |x| |y|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;-;2$;39|)) 
@@ -338,7 +340,8 @@
   (INTEGER-LENGTH |a|)) 
 
 (DEFUN |INT;addmod;4$;20| (|a| |b| |p| $)
-  (LET ((|c| (+ |a| |b|))) (COND ((>= |c| |p|) (- |c| |p|)) ('T |c|)))) 
+  (LET ((|c| (+ |a| |b|)))
+    (COND ((NOT (< |c| |p|)) (- |c| |p|)) ('T |c|)))) 
 
 (DEFUN |INT;submod;4$;21| (|a| |b| |p| $)
   (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) ('T |c|)))) 
@@ -392,9 +395,13 @@
 
 (DEFUN |INT;>;2$B;36| (|x| |y| $) (DECLARE (IGNORE $)) (< |y| |x|)) 
 
-(DEFUN |INT;<=;2$B;37| (|x| |y| $) (DECLARE (IGNORE $)) (<= |x| |y|)) 
+(DEFUN |INT;<=;2$B;37| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (< |y| |x|))) 
 
-(DEFUN |INT;>=;2$B;38| (|x| |y| $) (DECLARE (IGNORE $)) (>= |x| |y|)) 
+(DEFUN |INT;>=;2$B;38| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (< |x| |y|))) 
 
 (DEFUN |INT;-;2$;39| (|x| $) (DECLARE (IGNORE $)) (- |x|)) 
 
@@ -491,7 +498,7 @@
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1525)
+  (PROG (#0=#:G1527)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))

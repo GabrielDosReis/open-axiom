@@ -223,7 +223,7 @@
            (SEQ (LETT |y|
                       (SPADCALL |x|
                           (LET ((#0=#:G1467 (- (- |i| 1) |m|)))
-                            (|check-subtype| (>= #0# 0)
+                            (|check-subtype| (NOT (MINUSP #0#))
                                 '(|NonNegativeInteger|) #0#))
                           (|getShellEntry| $ 39))
                       |LSAGG-;insert!;SAIA;7|)
@@ -244,7 +244,7 @@
            (SEQ (LETT |y|
                       (SPADCALL |x|
                           (LET ((#0=#:G1471 (- (- |i| 1) |m|)))
-                            (|check-subtype| (>= #0# 0)
+                            (|check-subtype| (NOT (MINUSP #0#))
                                 '(|NonNegativeInteger|) #0#))
                           (|getShellEntry| $ 39))
                       |LSAGG-;insert!;2AIA;8|)
@@ -307,7 +307,7 @@
            (SEQ (LETT |y|
                       (SPADCALL |x|
                           (LET ((#0=#:G1483 (- (- |i| 1) |m|)))
-                            (|check-subtype| (>= #0# 0)
+                            (|check-subtype| (NOT (MINUSP #0#))
                                 '(|NonNegativeInteger|) #0#))
                           (|getShellEntry| $ 39))
                       |LSAGG-;delete!;AIA;10|)
@@ -334,7 +334,7 @@
                         ((EQL |l| |m|)
                          (SPADCALL |x|
                              (LET ((#0=#:G1489 (- (+ |h| 1) |m|)))
-                               (|check-subtype| (>= #0# 0)
+                               (|check-subtype| (NOT (MINUSP #0#))
                                    '(|NonNegativeInteger|) #0#))
                              (|getShellEntry| $ 39)))
                         ('T
@@ -342,7 +342,8 @@
                                     (SPADCALL |x|
                                      (LET
                                       ((#1=#:G1490 (- (- |l| 1) |m|)))
-                                       (|check-subtype| (>= #1# 0)
+                                       (|check-subtype|
+                                        (NOT (MINUSP #1#))
                                         '(|NonNegativeInteger|) #1#))
                                      (|getShellEntry| $ 39))
                                     |LSAGG-;delete!;AUsA;11|)
@@ -350,7 +351,8 @@
                                   (SPADCALL |t|
                                       (LET
                                        ((#2=#:G1491 (+ (- |h| |l|) 2)))
-                                        (|check-subtype| (>= #2# 0)
+                                        (|check-subtype|
+                                         (NOT (MINUSP #2#))
                                          '(|NonNegativeInteger|) #2#))
                                       (|getShellEntry| $ 39))
                                   (|getShellEntry| $ 27))
@@ -405,7 +407,7 @@
                    ('T
                     (SEQ (LETT |l|
                                (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
-                                 (|check-subtype| (>= #0# 0)
+                                 (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                |LSAGG-;mergeSort|)
                          (LETT |q|
@@ -567,7 +569,7 @@
            (SEQ (LETT |z|
                       (SPADCALL |y|
                           (LET ((#0=#:G1552 (- |s| |m|)))
-                            (|check-subtype| (>= #0# 0)
+                            (|check-subtype| (NOT (MINUSP #0#))
                                 '(|NonNegativeInteger|) #0#))
                           (|getShellEntry| $ 39))
                       |LSAGG-;copyInto!;2AIA;22|)
@@ -598,7 +600,7 @@
            (SEQ (SETQ |x|
                       (SPADCALL |x|
                           (LET ((#0=#:G1559 (- |s| |m|)))
-                            (|check-subtype| (>= #0# 0)
+                            (|check-subtype| (NOT (MINUSP #0#))
                                 '(|NonNegativeInteger|) #0#))
                           (|getShellEntry| $ 39)))
                 (LETT |k| |s| |LSAGG-;position;SA2I;23|)

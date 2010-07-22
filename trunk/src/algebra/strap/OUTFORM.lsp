@@ -616,20 +616,20 @@
 
 (DEFUN |OUTFORM;vspace;I$;28| (|n| $)
   (COND
-    ((< 0 |n|)
+    ((PLUSP |n|)
      (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
          $))
     ('T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
   (COND
-    ((< 0 |n|) (|fillerSpaces| |n|))
+    ((PLUSP |n|) (|fillerSpaces| |n|))
     ('T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
   (SEQ (COND
-         ((< 0 |n|)
-          (COND ((NOT (< 0 |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
+         ((PLUSP |n|)
+          (COND ((NOT (PLUSP |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
          ('T (EXIT (|OUTFORM;empty;$;73| $))))
        (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
@@ -937,7 +937,7 @@
              ('T
               (SEQ (LETT |r|
                          (SPADCALL
-                             (|check-subtype| (< 0 |nn|)
+                             (|check-subtype| (PLUSP |nn|)
                                  '(|PositiveInteger|) |nn|)
                              (|getShellEntry| $ 137))
                          |OUTFORM;differentiate;$Nni$;97|)
