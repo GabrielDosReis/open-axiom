@@ -625,6 +625,8 @@ ParameterAst(): Public == Private where
       ++ object \spad{x} to \spadtype{String}.  This function
       ++ is left at the discretion of the compiler.
   Private == add
+    import %string?: % -> Boolean from Foreign Builtin
+
     x case Identifier ==
       SYMBOLP(x)$Foreign(Builtin)
 
@@ -632,7 +634,7 @@ ParameterAst(): Public == Private where
       x : Identifier
 
     x case String ==
-      STRINGP(x)$Foreign(Builtin)
+      %string? x
 
     autoCoerce(x: %): String ==
       x : String

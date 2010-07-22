@@ -474,9 +474,9 @@ optLESSP u ==
 $VMsideEffectFreeOperators ==
   '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
-     QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
-      MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
-       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER %false %true
+     QEQCAR QCDR QCAR IDENTP SYMBOLP
+      MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %false %true
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
           %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc

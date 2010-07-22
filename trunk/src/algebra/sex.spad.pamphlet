@@ -94,6 +94,13 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
     Decl ==> SExpressionCategory(Str, Sym, Int, Flt, Expr)
 
     Body ==> add
+        import %integer?: % -> Boolean from Foreign Builtin
+        import %string?: % -> Boolean  from Foreign Builtin
+        import %pair?: % -> Boolean    from Foreign Builtin
+        import %peq: (%,%) -> Boolean  from Foreign Builtin
+        import %head: % -> %           from Foreign Builtin
+        import %tail: % -> %           from Foreign Builtin
+
         Rep := Expr
 
         dotex:OutputForm := INTERN(".")$Lisp
@@ -112,20 +119,20 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
             paren blankSeparate l1
 
         b1 = b2        == EQUAL(b1,b2)$Lisp
-        eq(b1, b2)     == %peq(b1,b2)$Foreign(Builtin)
+        eq(b1, b2)     == %peq(b1,b2)
 
         null? b      == NULL(b)$Lisp
         atom? b      == ATOM(b)$Lisp
-        pair? b      == PAIRP(b)$Lisp
+        pair? b      == %pair? b
 
-        list?    b   == PAIRP(b)$Lisp or NULL(b)$Lisp
-        string?  b   == STRINGP(b)$Lisp
+        list?    b   == pair? b or null? b
+        string?  b   == %string? b
         symbol?  b   == IDENTP(b)$Lisp
-        integer? b   == INTP(b)$Lisp
+        integer? b   == %integer? b
         float?   b   == RNUMP(b)$Lisp
 
         destruct b == (list? b    => b pretend List %; error "Non-list")
-        string b == (STRINGP(b)$Lisp=> b pretend Str;error "Non-string")
+        string b == (%string? b => b pretend Str; error "Non-string")
         symbol b == (IDENTP(b)$Lisp => b pretend Sym;error "Non-symbol")
         float   b == (RNUMP(b)$Lisp  => b pretend Flt;error "Non-float")
         integer b == (INTP(b)$Lisp => b pretend Int;error "Non-integer")
@@ -138,8 +145,8 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
         convert(f:  Flt)    == f  pretend %
         convert(e:  Expr)   == e  pretend %
 
-        car b        == CAR(b)$Lisp
-        cdr b        == CDR(b)$Lisp
+        car b        == %head b
+        cdr b        == %tail b
         #   b        == LENGTH(b)$Lisp
         elt(b:%, i:Integer)       == destruct(b).i
         elt(b:%, li:List Integer) ==

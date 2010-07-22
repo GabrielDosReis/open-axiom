@@ -56,8 +56,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Boolean|)
                 |INT;negative?;$B;15|)) 
 
-(PUT '|INT;negative?;$B;15| '|SPADreplace| 'MINUSP) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
                 |INT;coerce;$Of;16|)) 
 
@@ -263,6 +261,9 @@
 
 (PUT '|INT;dec;2$;13| '|SPADreplace| '(XLAM (|x|) (|%isub| |x| 1))) 
 
+(PUT '|INT;negative?;$B;15| '|SPADreplace|
+     '(XLAM (|x|) (|%ilt| |x| 0))) 
+
 (PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
 
 (DEFUN |INT;writeOMInt| (|dev| |x| $)
@@ -372,8 +373,10 @@
   (PROG (|r|)
     (RETURN
       (COND
-        ((MINUSP (LETT |r| (REMAINDER2 |a| |b|)
-                       |INT;positiveRemainder;3$;28|))
+        ((|INT;negative?;$B;15|
+             (LETT |r| (REMAINDER2 |a| |b|)
+                   |INT;positiveRemainder;3$;28|)
+             $)
          (COND ((MINUSP |b|) (- |r| |b|)) ('T (+ |r| |b|))))
         ('T |r|))))) 
 
@@ -498,7 +501,7 @@
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1527)
+  (PROG (#0=#:G1528)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))
