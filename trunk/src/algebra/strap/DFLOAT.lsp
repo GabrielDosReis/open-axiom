@@ -294,12 +294,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Boolean|)
                 |DFLOAT;negative?;$B;66|)) 
 
-(PUT '|DFLOAT;negative?;$B;66| '|SPADreplace| 'MINUSP) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Boolean|)
                 |DFLOAT;zero?;$B;67|)) 
-
-(PUT '|DFLOAT;zero?;$B;67| '|SPADreplace| 'ZEROP) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Boolean|)
                 |DFLOAT;one?;$B;68|)) 
@@ -386,6 +382,12 @@
 (PUT '|DFLOAT;exp1;$;16| '|SPADreplace|
      '(XLAM NIL (|%fdiv| (|%i2f| 534625820200) (|%i2f| 196677847971)))) 
 
+(PUT '|DFLOAT;negative?;$B;66| '|SPADreplace|
+     '(XLAM (|x|) (|%flt| |x| (|%i2f| 0)))) 
+
+(PUT '|DFLOAT;zero?;$B;67| '|SPADreplace|
+     '(XLAM (|x|) (|%feq| |x| (|%i2f| 0)))) 
+
 (PUT '|DFLOAT;one?;$B;68| '|SPADreplace|
      '(XLAM (|x|) (|%feq| |x| (|%i2f| 1)))) 
 
@@ -440,7 +442,7 @@
     ((EQL 2 2) 53)
     ((EQL 2 16) (* 4 53))
     ('T
-     (LET ((#0=#:G1427
+     (LET ((#0=#:G1431
                (TRUNCATE
                    (SPADCALL 53
                        (|DFLOAT;log2;2$;40|
@@ -621,7 +623,7 @@
   (PROG (|theta|)
     (RETURN
       (SEQ (COND
-             ((= |x| 0.0)
+             ((ZEROP |x|)
               (COND
                 ((PLUSP |y|) (/ PI 2))
                 ((MINUSP |y|) (- (/ PI 2)))
@@ -635,7 +637,7 @@
 
 (DEFUN |DFLOAT;retract;$F;80| (|x| $)
   (|DFLOAT;rationalApproximation;$2NniF;87| |x|
-      (LET ((#0=#:G1506 (- 53 1)))
+      (LET ((#0=#:G1514 (- 53 1)))
         (|check-subtype| (NOT (MINUSP #0#)) '(|NonNegativeInteger|)
             #0#))
       2 $)) 
@@ -643,7 +645,7 @@
 (DEFUN |DFLOAT;retractIfCan;$U;81| (|x| $)
   (CONS 0
         (|DFLOAT;rationalApproximation;$2NniF;87| |x|
-            (LET ((#0=#:G1514 (- 53 1)))
+            (LET ((#0=#:G1522 (- 53 1)))
               (|check-subtype| (NOT (MINUSP #0#))
                   '(|NonNegativeInteger|) #0#))
             2 $))) 
@@ -699,13 +701,13 @@
                                (- (CDR |me|) 53)))))))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;87| (|f| |d| |b| $)
-  (PROG (BASE |de| |tol| |s| |t| |p0| |p1| |q0| |q1| |#G110| |q| |r|
-              |p2| |q2| |#G111| |#G112| |#G113| |#G114| |#G115|
-              |#G116|)
+  (PROG (BASE |de| |tol| |s| |t| |p0| |p1| |q0| |q1| |#G107| |q| |r|
+              |p2| |q2| |#G108| |#G109| |#G110| |#G111| |#G112|
+              |#G113|)
     (RETURN
-      (LET* ((|#G109| (|DFLOAT;manexp| |f| $)) (|nu| (CAR |#G109|))
-             (|ex| (CDR |#G109|)))
-        (SEQ |#G109|
+      (LET* ((|#G106| (|DFLOAT;manexp| |f| $)) (|nu| (CAR |#G106|))
+             (|ex| (CDR |#G106|)))
+        (SEQ |#G106|
              (LETT BASE 2 |DFLOAT;rationalApproximation;$2NniF;87|)
              (EXIT (COND
                      ((NOT (MINUSP |ex|))
@@ -718,7 +720,7 @@
                      ('T
                       (SEQ (LETT |de|
                                  (EXPT BASE
-                                       (LET ((#0=#:G1542 (- |ex|)))
+                                       (LET ((#0=#:G1550 (- |ex|)))
                                          (|check-subtype|
                                           (NOT (MINUSP #0#))
                                           '(|NonNegativeInteger|) #0#)))
@@ -748,14 +750,14 @@
                                           (NIL (RETURN NIL))
                                           (T
                                            (SEQ
-                                            (LETT |#G110|
+                                            (LETT |#G107|
                                              (DIVIDE2 |s| |t|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (LETT |q| (CAR |#G110|)
+                                            (LETT |q| (CAR |#G107|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (LETT |r| (CDR |#G110|)
+                                            (LETT |r| (CDR |#G107|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            |#G110|
+                                            |#G107|
                                             (LETT |p2|
                                              (+ (* |q| |p1|) |p0|)
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
@@ -777,26 +779,26 @@
                                                  (SPADCALL |p2| |q2|
                                                   (|getShellEntry| $
                                                    141)))))
-                                            (LETT |#G111| |p1|
+                                            (LETT |#G108| |p1|
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (LETT |#G112| |p2|
+                                            (LETT |#G109| |p2|
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (SETQ |p0| |#G111|)
-                                            (SETQ |p1| |#G112|)
-                                            (LETT |#G113| |q1|
+                                            (SETQ |p0| |#G108|)
+                                            (SETQ |p1| |#G109|)
+                                            (LETT |#G110| |q1|
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (LETT |#G114| |q2|
+                                            (LETT |#G111| |q2|
                                              |DFLOAT;rationalApproximation;$2NniF;87|)
-                                            (SETQ |q0| |#G113|)
-                                            (SETQ |q1| |#G114|)
+                                            (SETQ |q0| |#G110|)
+                                            (SETQ |q1| |#G111|)
                                             (EXIT
                                              (PROGN
-                                               (LETT |#G115| |t|
+                                               (LETT |#G112| |t|
                                                 |DFLOAT;rationalApproximation;$2NniF;87|)
-                                               (LETT |#G116| |r|
+                                               (LETT |#G113| |r|
                                                 |DFLOAT;rationalApproximation;$2NniF;87|)
-                                               (SETQ |s| |#G115|)
-                                               (SETQ |t| |#G116|))))))))))))))))))))) 
+                                               (SETQ |s| |#G112|)
+                                               (SETQ |t| |#G113|))))))))))))))))))))) 
 
 (DEFUN |DFLOAT;**;$F$;88| (|x| |r| $)
   (PROG (|n| |d|)
@@ -844,7 +846,7 @@
 
 (DEFUN |DoubleFloat| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1565)
+  (PROG (#0=#:G1581)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|DoubleFloat|))

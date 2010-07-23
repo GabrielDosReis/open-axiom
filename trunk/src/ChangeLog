@@ -1,5 +1,10 @@
 2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot (expandFeq): New.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Tidy.
+
+2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-util.boot (expandIeq): New expander for %ieq.
 	* interp/g-opt.boot (optIeq): New.
 	(optIadd): Likewise.

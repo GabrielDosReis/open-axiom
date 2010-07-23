@@ -300,6 +300,11 @@ expandI2f ['%i2f,x] ==
 expandFneg ['%fneg,x] ==
   ['_-,expandToVMForm x]
 
+expandFeq ['%feq,a,b] ==
+  a is ['%i2f,0] => ['ZEROP,expandToVMForm b]
+  b is ['%i2f,0] => ['ZEROP,expandToVMForm a]
+  ['_=,expandToVMForm a,expandToVMForm b]
+
 expandFlt ['%flt,x,y] ==
   x is ['%i2f,0] => ['PLUSP,expandToVMForm y]
   y is ['%i2f,0] => ['MINUSP,expandToVMForm x]
@@ -383,7 +388,6 @@ for x in [
     -- binary float operations.
     ['%fadd,  :"+"],
     ['%fdiv,  :"/"],
-    ['%feq,   :"="],
     ['%fge,   :">="],
     ['%fle,   :"<="],
     ['%fmax,  :'MAX],
@@ -453,6 +457,7 @@ for x in [
 
    ['%i2f,     :function expandI2f],
    ['%fbase,   :function expandFbase],
+   ['%feq,     :function expandFeq],
    ['%fgt,     :function expandFgt],
    ['%flt,     :function expandFlt],
    ['%fmaxval, :function expandFmaxval],
