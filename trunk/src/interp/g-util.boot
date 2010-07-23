@@ -231,15 +231,6 @@ expandBefore? ['%before?,x,y] ==
   ['GGREATERP,expandToVMForm y,expandToVMForm x]
 
 -- Byte operations
-expandBle ['%ble,x,y] ==
-  expandToVMForm ['%not,['%blt,y,x]]
-
-expandBgt ['%bgt,x,y] ==
-  expandToVMForm ['%blt,y,x]
-
-expandBge ['%bge,x,y] ==
-  expandToVMForm ['%not,['%blt,x,y]]
-
 expandBcompl ['%bcompl,x] ==
   integer? x => 255 - x
   ['_+,256,['LOGNOT,expandToVMForm x]]
@@ -442,9 +433,6 @@ for x in [
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
 
-   ['%ble, :function expandBle],
-   ['%bgt, :function expandBgt],
-   ['%bge, :function expandBge],
    ['%bcompl,  :function expandBcompl],
 
    ['%ieq,     :function expandIeq],
