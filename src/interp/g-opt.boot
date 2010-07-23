@@ -407,50 +407,37 @@ optSEQ ["SEQ",:l] ==
       aft:= after(l,before)
       null before => ["SEQ",:aft]
       null aft => ["COND",:transform,'((QUOTE T) (conderr))]
-      true => ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
+      ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
  
 optRECORDELT ["RECORDELT",name,ind,len] ==
   len=1 =>
-    ind=0 => ["%head",name]
+    ind=0 => ['%head,name]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["%head",name]
-    ind=1 => ["%tail",name]
+    ind=0 => ['%head,name]
+    ind=1 => ['%tail,name]
     keyedSystemError("S2OO0002",[ind])
   ["QVELT",name,ind]
  
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["%head",name]]
+    ind=0 => ["PROGN",["RPLACA",name,expr],['%head,name]]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["%head",name]]
-    ind=1 => ["PROGN",["RPLACD",name,expr],["%tail",name]]
+    ind=0 => ["PROGN",['%store,['%head,name],expr],['%head,name]]
+    ind=1 => ["PROGN",['%store,['%tail,name],expr],['%tail,name]]
     keyedSystemError("S2OO0002",[ind])
   ["QSETVELT",name,ind,expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len=1 => ["LIST",["CAR",name]]
-  len=2 => ["CONS",["CAR",name],["CDR",name]]
+  len=1 => ["LIST",['%head,name]]
+  len=2 => ["CONS",['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
  
---mkRecordAccessFunction(ind,len) ==
---  stringOfDs:= $EmptyString
---  for i in 0..(ind-1) do stringOfDs:= strconc(stringOfDs,PNAME "D")
---  prefix:= if ind=len-1 then PNAME "C" else PNAME "CA"
---  if $QuickCode then prefix:=strconc("Q",prefix)
---  INTERN(strconc(prefix,stringOfDs,PNAME "R"))
- 
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
- 
-optMINUS u ==
-  u is ['MINUS,v] =>
-    integer? v => -v
-    u
-  u
  
 optQSMINUS u ==
   u is ['QSMINUS,v] =>
@@ -464,18 +451,12 @@ opt_- u ==
     u
   u
  
-optLESSP u ==
-  u is ['LESSP,a,b] =>
-    b = 0 => ['MINUSP,a]
-    ['GREATERP,b,a]
-  u
- 
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR IDENTP SYMBOLP
-      MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+      GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
        CGREATERP GGREATERP CHAR GET BVEC_-GREATER %false %true
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
@@ -755,10 +736,8 @@ for x in '( (%call         optCall) _
            (%isub        optIsub)_
            (%imul        optImul)_
            (LIST         optLIST)_
-           (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
            (_-           opt_-)_
-           (LESSP        optLESSP)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
            (CATCH        optCatch)_
