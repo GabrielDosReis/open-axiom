@@ -657,7 +657,7 @@
   (CONS 'AGGSET |l|)) 
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
-  (LET* ((|c| 'CONCATB) (|l1| NIL))
+  (LET ((|c| 'CONCATB) (|l1| NIL))
     (SEQ (LET ((#0=#:G1555 (REVERSE |l|)))
            (LOOP
              (COND

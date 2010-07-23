@@ -115,8 +115,8 @@
 (DEFUN |QFCAT-;characteristic;Nni;7| ($) (|spadConstant| $ 30)) 
 
 (DEFUN |QFCAT-;differentiate;AMA;8| (|x| |deriv| $)
-  (LET* ((|n| (SPADCALL |x| (|getShellEntry| $ 8)))
-         (|d| (SPADCALL |x| (|getShellEntry| $ 11))))
+  (LET ((|n| (SPADCALL |x| (|getShellEntry| $ 8)))
+        (|d| (SPADCALL |x| (|getShellEntry| $ 11))))
     (SPADCALL
         (SPADCALL
             (SPADCALL (SPADCALL |n| |deriv|) |d|

@@ -318,8 +318,8 @@
 (DEFUN |LSAGG-;delete!;AUsA;11| (|x| |i| $)
   (PROG (|h| |t|)
     (RETURN
-      (LET* ((|l| (SPADCALL |i| (|getShellEntry| $ 46)))
-             (|m| (SPADCALL |x| (|getShellEntry| $ 33))))
+      (LET ((|l| (SPADCALL |i| (|getShellEntry| $ 46)))
+            (|m| (SPADCALL |x| (|getShellEntry| $ 33))))
         (COND
           ((< |l| |m|) (|error| "index out of range"))
           ('T

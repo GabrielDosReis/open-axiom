@@ -590,8 +590,11 @@ optLET_* form ==
   optLET form
 
 optBind form ==
-  form.first := "LET*"
-  optLET_* form
+  form isnt ['%bind,inits,body] => form  -- inline only simple expressions
+  inits = nil => body                    -- no local variable, OK.
+  inits isnt [[var,expr]] => form        -- too many local variables
+  canInlineVarDefinition(var,expr,body) => substitute(expr,var,body)
+  form
 
 optLIST form ==
   form is ["LIST"] => nil
