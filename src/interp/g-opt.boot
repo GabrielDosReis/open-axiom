@@ -445,12 +445,6 @@ optQSMINUS u ==
     u
   u
  
-opt_- u ==
-  u is ['_-,v] =>
-    integer? v => -v
-    u
-  u
- 
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
@@ -696,6 +690,20 @@ optIgt x ==
 optIge x ==
   optNot ['%not,optIlt ['%ilt,second x,third x]]
 
+--% Byte operations
+
+optBle ['%ble,a,b] ==
+  optNot ['%not,['%blt,b,a]]
+
+optBgt ['%bgt,a,b] ==
+  ['%blt,b,a]
+
+optBge ['%bge,a,b] ==
+  optBle ['%ble,b,a]
+
+
+
+
 --% Integer operations
 
 optIadd(x is ['%iadd,a,b]) ==
@@ -726,6 +734,9 @@ for x in '( (%call         optCall) _
            (%not         optNot)_
            (%and         optAnd)_
            (%or          optOr)_
+           (%ble         optBle)_
+           (%bgt         optBgt)_
+           (%bge         optBge)_
            (%ieq         optIeq)_
            (%ilt         optIlt)_
            (%ile         optIle)_
@@ -737,7 +748,6 @@ for x in '( (%call         optCall) _
            (%imul        optImul)_
            (LIST         optLIST)_
            (QSMINUS      optQSMINUS)_
-           (_-           opt_-)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
            (CATCH        optCatch)_

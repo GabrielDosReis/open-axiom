@@ -1,7 +1,11 @@
 2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot: Remove expansion for %ble, %bgt, %bge.
 	* interp/g-opt.boot (optMINUS): Remove.
 	(opt_-): Likewise.
+	(optBle): New.
+	(optBgt): Likewise.
+	(optBge): Likewise.
 
 2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
