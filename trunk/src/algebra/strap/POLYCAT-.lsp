@@ -1074,8 +1074,8 @@
          1)) 
 
 (DEFUN |POLYCAT-;before?;2SB;38| (|p| |q| $)
-  (LET* ((|dp| (SPADCALL |p| (|getShellEntry| $ 75)))
-         (|dq| (SPADCALL |q| (|getShellEntry| $ 75))))
+  (LET ((|dp| (SPADCALL |p| (|getShellEntry| $ 75)))
+        (|dq| (SPADCALL |q| (|getShellEntry| $ 75))))
     (COND
       ((SPADCALL |dp| |dq| (|getShellEntry| $ 214))
        (SPADCALL (|spadConstant| $ 28)

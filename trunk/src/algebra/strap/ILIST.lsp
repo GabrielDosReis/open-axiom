@@ -211,7 +211,7 @@
 (DEFUN |ILIST;coerce;$Of;21| (|x| $)
   (PROG (|z|)
     (RETURN
-      (LET* ((|y| NIL) (|s| (SPADCALL |x| (|getShellEntry| $ 40))))
+      (LET ((|y| NIL) (|s| (SPADCALL |x| (|getShellEntry| $ 40))))
         (SEQ (LOOP
                (COND
                  ((NOT (NOT (EQ |x| |s|))) (RETURN NIL))

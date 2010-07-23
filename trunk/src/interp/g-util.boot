@@ -305,16 +305,14 @@ expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
 -- Local variable bindings
-expandBind ['%bind,inits,body] ==
+expandBind ['%bind,inits,:body] ==
   body := expandToVMForm body
   inits := [[first x,expandToVMForm second x] for x in inits]
-  n := #inits
-  n = 0 => body
   -- FIXME: we should consider turning LET* into LET or direct inlining.
   op :=
-    n = 1 => 'LET
-    'LET_*
-  [op,inits,body]
+    or/[CONTAINED(v,x) for [[v,.],:x] in tails inits] => 'LET_*
+    'LET
+  [op,inits,:body]
 
 -- Memory load/store
 

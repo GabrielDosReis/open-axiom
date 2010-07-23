@@ -89,14 +89,14 @@
 (DEFUN |FFIELDC-;createPrimitiveElement;S;8| ($)
   (PROG (|e|)
     (RETURN
-      (LET* ((|sm1| (- (SPADCALL (|getShellEntry| $ 40)) 1))
-             (|start| (COND
-                        ((SPADCALL (SPADCALL (|getShellEntry| $ 48))
-                             (CONS 1 "polynomial")
-                             (|getShellEntry| $ 49))
-                         (|spadConstant| $ 41))
-                        ('T 1)))
-             (|found| NIL))
+      (LET ((|sm1| (- (SPADCALL (|getShellEntry| $ 40)) 1))
+            (|start| (COND
+                       ((SPADCALL (SPADCALL (|getShellEntry| $ 48))
+                            (CONS 1 "polynomial")
+                            (|getShellEntry| $ 49))
+                        (|spadConstant| $ 41))
+                       ('T 1)))
+            (|found| NIL))
         (SEQ (LET ((|i| |start|))
                (LOOP
                  (COND
