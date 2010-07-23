@@ -406,8 +406,8 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    acoth x          == checkComplex ACOTH(x)$Lisp
    asech x          == checkComplex ASECH(x)$Lisp
    x:% / y:%        == %fdiv(x,y)
-   negative? x      == MINUSP(x)$Lisp
-   zero? x          == ZEROP(x)$Lisp
+   negative? x      == x < 0
+   zero? x          == x = 0
    one? x           == x = 1
    hash x           == HASHEQ(x)$Lisp
    recip(x)         == (zero? x => "failed"; 1 / x)
@@ -426,14 +426,14 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    rationalApproximation(x, d) == rationalApproximation(x, d, 10)
 
    atan(x,y) ==
-      x = 0 =>
+      zero? x =>
          y > 0 => pi()/2
-         y < 0 => -pi()/2
+         negative? y => -pi()/2
          0
       -- Only count on first quadrant being on principal branch.
       theta := atan abs(y/x)
-      if x < 0 then theta := pi() - theta
-      if y < 0 then theta := - theta
+      if negative? x then theta := pi() - theta
+      if negative? y then theta := - theta
       theta
 
    retract(x:%):Fraction(Integer) ==
