@@ -1,5 +1,11 @@
 2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compMatchAlternative): Don't generate
+	LET-expressions. 
+	* interp/g-opt.boot (optBind): Tidy.
+
+2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optBind): Check for dependencies in
 	initializations in %bind expressions.
 	* interp/g-util.boot (expandBind): The body of s %bind expression

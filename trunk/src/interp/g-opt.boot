@@ -590,10 +590,18 @@ optLET_* form ==
   optLET form
 
 optBind form ==
-  form isnt ['%bind,inits,body] => form  -- inline only simple expressions
-  inits = nil => body                    -- no local variable, OK.
-  inits isnt [[var,expr]] => form        -- too many local variables
-  canInlineVarDefinition(var,expr,body) => substitute(expr,var,body)
+  form isnt ['%bind,inits,.] => form           -- accept only simple bodies
+  ok := true
+  while ok and inits ~= nil repeat
+    [var,expr] := first inits
+    usedSymbol?(var,rest inits) => ok := false -- no dependency, please.
+    body := third form
+    canInlineVarDefinition(var,expr,body) and isSimpleVMForm expr =>
+      third(form) := substitute_!(expr,var,body)
+      inits := rest inits
+    ok := false
+  null inits => third form                        -- no local var left
+  second(form) := inits
   form
 
 optLIST form ==

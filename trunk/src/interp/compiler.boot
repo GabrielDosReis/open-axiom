@@ -2169,8 +2169,7 @@ compMatchAlternative(sn,sm,pat,stmt,m,e) ==
             stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
   body :=
     null inits => stmtT.expr
-    atom sn => ["LET",inits,stmtT.expr]
-    ["%bind",inits,stmtT.expr]
+    ['%bind,inits,stmtT.expr]
   [[guard,body],stmtT.mode,stmtT.env,eF]
 
 ++ Analyze and generate code for `is case'-pattern where the
