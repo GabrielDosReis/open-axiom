@@ -229,6 +229,7 @@
                   (LIST '|setPart| 'SETELT) (LIST '|setUnion| 'UNION)
                   (LIST '|strconc| 'CONCAT) (LIST '|string?| 'STRINGP)
                   (LIST '|substitute| 'SUBST)
+                  (LIST '|substitute!| 'NSUBST)
                   (LIST '|symbol?| 'SYMBOLP) (LIST '|take| 'TAKE)
                   (LIST '|third| 'CADDR) (LIST '|true| 'T)
                   (LIST '|upperCase?| 'UPPER-CASE-P)

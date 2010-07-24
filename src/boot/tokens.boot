@@ -280,7 +280,8 @@ for i in [ _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
   ["string?",  "STRINGP"]  ,_
-  ["substitute", "SUBST"]  , _
+  ["substitute",  "SUBST"]  , _
+  ["substitute!", "NSUBST"]  , _
   ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
