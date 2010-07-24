@@ -125,10 +125,10 @@
      (|error| "euclideanSize called on zero"))
     ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 28))
      (LET ((#0=#:G1426 (- (SPADCALL |x| (|getShellEntry| $ 30)))))
-       (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))
+       (|check-subtype| (NOT (MINUSP #0#)) '(|NonNegativeInteger|) #0#)))
     ('T
      (LET ((#1=#:G1427 (SPADCALL |x| (|getShellEntry| $ 30))))
-       (|check-subtype| (>= #1# 0) '(|NonNegativeInteger|) #1#))))) 
+       (|check-subtype| (NOT (MINUSP #1#)) '(|NonNegativeInteger|) #1#))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))

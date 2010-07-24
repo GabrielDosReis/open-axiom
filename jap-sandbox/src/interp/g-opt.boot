@@ -137,7 +137,13 @@ optimizeFunctionDef(def) ==
         replaceThrowByReturn(rest x,g)
   changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,groupVariableDefinitions body']]
- 
+
+++ Like `optimize', except that non-atomic form may be reduced to
+++ to atomic forms.  In particular, the address of the input may
+++ not be the same as that of the output.
+simplifyVMForm x ==
+  first optimize [x]
+
 optimize x ==
   (opt x; x) where
     opt x ==
@@ -151,8 +157,7 @@ optimize x ==
           SAY '"length mismatch in XLAM expression"
           PRETTYPRINT y
         x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)
-      atom y =>
-        optimize rest x
+      atom y => optimize rest x
       if first y="IF" then (x.first := optIF2COND y; y:= first x)
       op:= GETL(subrname first y,"OPTIMIZE") =>
         (optimize rest x; x.first := FUNCALL(op,optimize first x))
@@ -285,7 +290,7 @@ optSpecialCall(x,y,n) ==
   fn := getFunctionReplacement compileTimeBindingOf first yval.n =>
     x.rest := CDAR x
     x.first := fn
-    if fn is ["XLAM",:.] then x:=first optimize [x]
+    if fn is ["XLAM",:.] then x := simplifyVMForm x
     x is ["EQUAL",:args] => RPLACW(x,DEF_-EQUAL args)
                 --DEF-EQUAL is really an optimiser
     x
@@ -402,50 +407,37 @@ optSEQ ["SEQ",:l] ==
       aft:= after(l,before)
       null before => ["SEQ",:aft]
       null aft => ["COND",:transform,'((QUOTE T) (conderr))]
-      true => ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
+      ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
  
 optRECORDELT ["RECORDELT",name,ind,len] ==
   len=1 =>
-    ind=0 => ["%head",name]
+    ind=0 => ['%head,name]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["%head",name]
-    ind=1 => ["%tail",name]
+    ind=0 => ['%head,name]
+    ind=1 => ['%tail,name]
     keyedSystemError("S2OO0002",[ind])
   ["QVELT",name,ind]
  
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["%head",name]]
+    ind=0 => ["PROGN",["RPLACA",name,expr],['%head,name]]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["%head",name]]
-    ind=1 => ["PROGN",["RPLACD",name,expr],["%tail",name]]
+    ind=0 => ["PROGN",['%store,['%head,name],expr],['%head,name]]
+    ind=1 => ["PROGN",['%store,['%tail,name],expr],['%tail,name]]
     keyedSystemError("S2OO0002",[ind])
   ["QSETVELT",name,ind,expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len=1 => ["LIST",["CAR",name]]
-  len=2 => ["CONS",["CAR",name],["CDR",name]]
+  len=1 => ["LIST",['%head,name]]
+  len=2 => ["CONS",['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
  
---mkRecordAccessFunction(ind,len) ==
---  stringOfDs:= $EmptyString
---  for i in 0..(ind-1) do stringOfDs:= strconc(stringOfDs,PNAME "D")
---  prefix:= if ind=len-1 then PNAME "C" else PNAME "CA"
---  if $QuickCode then prefix:=strconc("Q",prefix)
---  INTERN(strconc(prefix,stringOfDs,PNAME "R"))
- 
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
- 
-optMINUS u ==
-  u is ['MINUS,v] =>
-    integer? v => -v
-    u
-  u
  
 optQSMINUS u ==
   u is ['QSMINUS,v] =>
@@ -453,25 +445,13 @@ optQSMINUS u ==
     u
   u
  
-opt_- u ==
-  u is ['_-,v] =>
-    integer? v => -v
-    u
-  u
- 
-optLESSP u ==
-  u is ['LESSP,a,b] =>
-    b = 0 => ['MINUSP,a]
-    ['GREATERP,b,a]
-  u
- 
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
-     QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
-      MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
-       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER %false %true
+     QEQCAR QCDR QCAR IDENTP SYMBOLP
+      GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %false %true
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
           %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
@@ -610,8 +590,11 @@ optLET_* form ==
   optLET form
 
 optBind form ==
-  form.first := "LET*"
-  optLET_* form
+  form isnt ['%bind,inits,body] => form  -- inline only simple expressions
+  inits = nil => body                    -- no local variable, OK.
+  inits isnt [[var,expr]] => form        -- too many local variables
+  canInlineVarDefinition(var,expr,body) => substitute(expr,var,body)
+  form
 
 optLIST form ==
   form is ["LIST"] => nil
@@ -661,24 +644,113 @@ optCollectVector form ==
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
 optRetract ["%retract",e,m,pred] ==
-  atom e => ["check-subtype",substitute(e,"#1",pred),MKQ m,e]
+  atom e =>
+    cond := simplifyVMForm substitute(e,"#1",pred)
+    cond = '%true => e
+    ["check-subtype",cond,MKQ m,e]
   g := gensym()
   ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
 
-lispize x == first optimize [x]
- 
+
+--%  Boolean expression transformers
+
+optNot(x is ['%not,a]) ==
+  a = '%true => '%false
+  a = '%false => '%true
+  a is ['%not,b] => b
+  x
+
+optAnd(x is ['%and,a,b]) ==
+  a = '%true => b
+  b = '%true => a
+  a = '%false => '%false
+  x
+
+optOr(x is ['%or,a,b]) ==
+  a = '%false => b
+  b = '%false => a
+  a = '%true => '%true
+  x
+
+optIeq(x is ['%ieq,a,b]) ==
+  integer? a and integer? b =>
+    a = b => '%true
+    '%false
+  x
+
+optIlt(x is ['%ilt,a,b]) ==
+  integer? a and integer? b =>
+    a < b => '%true
+    '%false
+  x
+
+optIle(x is ['%ile,a,b]) ==
+  optNot ['%not,optIlt ['%ilt,b,a]]
+
+optIgt x ==
+  optIlt ['%ilt,third x, second x]
+
+optIge x ==
+  optNot ['%not,optIlt ['%ilt,second x,third x]]
+
+--% Byte operations
+
+optBle ['%ble,a,b] ==
+  optNot ['%not,['%blt,b,a]]
+
+optBgt ['%bgt,a,b] ==
+  ['%blt,b,a]
+
+optBge ['%bge,a,b] ==
+  optBle ['%ble,b,a]
+
+
+
+
+--% Integer operations
+
+optIadd(x is ['%iadd,a,b]) ==
+  integer? a and integer? b => a + b
+  x
+
+optIsub(x is ['%isub,a,b]) ==
+  integer? a and integer? b => a - b
+  x
+
+optImul(x is ['%imul,a,b]) ==
+  integer? a and integer? b => a * b
+  x
+
+optIneg(x is ['%ineg,a]) ==
+  integer? a => -a
+  x
+
+--%  
 --% optimizer hash table
+--%
  
 for x in '( (%call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
            (LET_*        optLET_*)_
            (%bind        optBind)_
+           (%not         optNot)_
+           (%and         optAnd)_
+           (%or          optOr)_
+           (%ble         optBle)_
+           (%bgt         optBgt)_
+           (%bge         optBge)_
+           (%ieq         optIeq)_
+           (%ilt         optIlt)_
+           (%ile         optIle)_
+           (%igt         optIgt)_
+           (%ige         optIge)_
+           (%ineg        optIneg)_
+           (%iadd        optIadd)_
+           (%isub        optIsub)_
+           (%imul        optImul)_
            (LIST         optLIST)_
-           (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
-           (_-           opt_-)_
-           (LESSP        optLESSP)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
            (CATCH        optCatch)_

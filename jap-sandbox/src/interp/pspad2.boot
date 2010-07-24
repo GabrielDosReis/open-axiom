@@ -72,7 +72,7 @@ formatDeftran(u,SEQflag) ==
     [:m,y] := [:a,:b]
     ['SEQ,:m,['exit,n,y]]
 --  u is ['not,arg] and (op := LASSOC(KAR arg,'((_= . _~_=) (_< . _>_=)))) =>
---    formatDeftran([op,:CDR arg],nil)
+--    formatDeftran([op,:rest arg],nil)
   u is ["^",a] => formatDeftran(['not,a],SEQflag)
   u is ["exquo",a,b] => formatDeftran(['xquo,a,b],SEQflag)
   u is ['IF,a,b,c] => 

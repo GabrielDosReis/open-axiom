@@ -110,7 +110,7 @@
               (SEQ (LETT |r| (SPADCALL |p| (|getShellEntry| $ 51))
                          |RNS-;patternMatch;SP2Pmr;10|)
                    (EXIT (COND
-                           ((EQL (CAR |r|) 0)
+                           ((ZEROP (CAR |r|))
                             (COND
                               ((SPADCALL
                                    (SPADCALL |x|

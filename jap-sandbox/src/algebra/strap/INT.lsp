@@ -56,8 +56,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Boolean|)
                 |INT;negative?;$B;15|)) 
 
-(PUT '|INT;negative?;$B;15| '|SPADreplace| 'MINUSP) 
-
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Thing|)
                 |INT;coerce;$Of;16|)) 
 
@@ -369,8 +367,10 @@
   (PROG (|r|)
     (RETURN
       (COND
-        ((MINUSP (LETT |r| (REMAINDER2 |a| |b|)
-                       |INT;positiveRemainder;3$;28|))
+        ((|INT;negative?;$B;15|
+             (LETT |r| (REMAINDER2 |a| |b|)
+                   |INT;positiveRemainder;3$;28|)
+             $)
          (COND ((MINUSP |b|) (- |r| |b|)) ('T (+ |r| |b|))))
         ('T |r|))))) 
 
@@ -394,7 +394,9 @@
 
 (DEFUN |INT;<=;2$B;37| (|x| |y| $) (DECLARE (IGNORE $)) (<= |x| |y|)) 
 
-(DEFUN |INT;>=;2$B;38| (|x| |y| $) (DECLARE (IGNORE $)) (>= |x| |y|)) 
+(DEFUN |INT;>=;2$B;38| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (< |x| |y|))) 
 
 (DEFUN |INT;-;2$;39| (|x| $) (DECLARE (IGNORE $)) (- |x|)) 
 

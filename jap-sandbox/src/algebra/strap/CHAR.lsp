@@ -123,13 +123,13 @@
 (DEFUN |CHAR;size;Nni;6| ($) (DECLARE (IGNORE $)) 256) 
 
 (DEFUN |CHAR;index;Pi$;7| (|n| $)
-  (CODE-CHAR
-      (LET ((#0=#:G1405 (- |n| 1)))
-        (|check-subtype| (>= #0# 0) '(|NonNegativeInteger|) #0#)))) 
+  (CODE-CHAR (LET ((#0=#:G1405 (- |n| 1)))
+               (|check-subtype| (NOT (MINUSP #0#))
+                   '(|NonNegativeInteger|) #0#)))) 
 
 (DEFUN |CHAR;lookup;$Pi;8| (|c| $)
   (LET ((#0=#:G1407 (+ 1 (CHAR-CODE |c|))))
-    (|check-subtype| (< 0 #0#) '(|PositiveInteger|) #0#))) 
+    (|check-subtype| (PLUSP #0#) '(|PositiveInteger|) #0#))) 
 
 (DEFUN |CHAR;char;Nni$;9| (|n| $)
   (DECLARE (IGNORE $))

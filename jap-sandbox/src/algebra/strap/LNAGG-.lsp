@@ -32,7 +32,7 @@
 
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
   (COND
-    ((>= |i| (SPADCALL |a| (|getShellEntry| $ 9)))
+    ((NOT (< |i| (SPADCALL |a| (|getShellEntry| $ 9))))
      (NOT (< (SPADCALL |a| (|getShellEntry| $ 10)) |i|)))
     ('T NIL))) 
 

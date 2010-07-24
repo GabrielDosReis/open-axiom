@@ -211,7 +211,7 @@
 (DEFUN |ILIST;coerce;$Of;21| (|x| $)
   (PROG (|z|)
     (RETURN
-      (LET* ((|y| NIL) (|s| (SPADCALL |x| (|getShellEntry| $ 40))))
+      (LET ((|y| NIL) (|s| (SPADCALL |x| (|getShellEntry| $ 40))))
         (SEQ (LOOP
                (COND
                  ((NOT (NOT (EQ |x| |s|))) (RETURN NIL))
@@ -387,7 +387,7 @@
               (SEQ (SETQ |p|
                          (|ILIST;rest;$Nni$;19| |p|
                              (LET ((#0=#:G1506 (- |n| 1)))
-                               (|check-subtype| (>= #0# 0)
+                               (|check-subtype| (NOT (MINUSP #0#))
                                    '(|NonNegativeInteger|) #0#))
                              $))
                    (LETT |q| (CDR |p|) |ILIST;split!;$I$;29|)
@@ -407,7 +407,7 @@
                    ('T
                     (SEQ (LETT |l|
                                (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
-                                 (|check-subtype| (>= #0# 0)
+                                 (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                |ILIST;mergeSort|)
                          (LETT |q| (|ILIST;split!;$I$;29| |p| |l| $)

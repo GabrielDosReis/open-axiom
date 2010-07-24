@@ -118,12 +118,14 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;<=;2$B;28|)) 
 
-(PUT '|SINT;<=;2$B;28| '|SPADreplace| '|%ile|) 
+(PUT '|SINT;<=;2$B;28| '|SPADreplace|
+     '(XLAM (|x| |y|) (|%not| (|%ilt| |y| |x|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;>=;2$B;29|)) 
 
-(PUT '|SINT;>=;2$B;29| '|SPADreplace| '|%ige|) 
+(PUT '|SINT;>=;2$B;29| '|SPADreplace|
+     '(XLAM (|x| |y|) (|%not| (|%ilt| |x| |y|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
                 |SINT;inc;2$;30|)) 
@@ -389,9 +391,13 @@
   (DECLARE (IGNORE $))
   (QSGREATERP |x| |y|)) 
 
-(DEFUN |SINT;<=;2$B;28| (|x| |y| $) (DECLARE (IGNORE $)) (<= |x| |y|)) 
+(DEFUN |SINT;<=;2$B;28| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (< |y| |x|))) 
 
-(DEFUN |SINT;>=;2$B;29| (|x| |y| $) (DECLARE (IGNORE $)) (>= |x| |y|)) 
+(DEFUN |SINT;>=;2$B;29| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (< |x| |y|))) 
 
 (DEFUN |SINT;inc;2$;30| (|x| $) (DECLARE (IGNORE $)) (QSADD1 |x|)) 
 

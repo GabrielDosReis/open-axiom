@@ -2814,11 +2814,6 @@
               (COND
                 ((|%hasFeature| :WIN32) (CONCAT "_" (PNAME |op'|)))
                 (T (PNAME |op'|))))
-        (SETQ |op'|
-              (COND
-                ((|%hasFeature| :WIN32)
-                 (CONCAT "_" (SYMBOL-NAME |op'|)))
-                (#1='T (SYMBOL-NAME |op'|))))
         (COND
           ((NULL |unstableArgs|)
            (LIST (LIST 'DEFUN |op| |args|

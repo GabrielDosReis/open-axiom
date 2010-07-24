@@ -231,15 +231,6 @@ expandBefore? ['%before?,x,y] ==
   ['GGREATERP,expandToVMForm y,expandToVMForm x]
 
 -- Byte operations
-expandBle ['%ble,x,y] ==
-  expandToVMForm ['%not,['%blt,y,x]]
-
-expandBgt ['%bgt,x,y] ==
-  expandToVMForm ['%blt,y,x]
-
-expandBge ['%bge,x,y] ==
-  expandToVMForm ['%not,['%blt,x,y]]
-
 expandBcompl ['%bcompl,x] ==
   integer? x => 255 - x
   ['_+,256,['LOGNOT,expandToVMForm x]]
@@ -249,6 +240,13 @@ expandIneg ['%ineg,x] ==
   x := expandToVMForm x
   integer? x => -x
   ['_-,x]
+
+expandIeq ['%ieq,a,b] ==
+  a := expandToVMForm a
+  integer? a and a = 0 => ['ZEROP,expandToVMForm b]
+  b := expandToVMForm b
+  integer? b and b = 0 => ['ZEROP,a]
+  ['EQL,a,b]
 
 expandIlt ['%ilt,x,y] ==
   integer? x and x = 0 =>
@@ -293,6 +291,11 @@ expandI2f ['%i2f,x] ==
 expandFneg ['%fneg,x] ==
   ['_-,expandToVMForm x]
 
+expandFeq ['%feq,a,b] ==
+  a is ['%i2f,0] => ['ZEROP,expandToVMForm b]
+  b is ['%i2f,0] => ['ZEROP,expandToVMForm a]
+  ['_=,expandToVMForm a,expandToVMForm b]
+
 expandFlt ['%flt,x,y] ==
   x is ['%i2f,0] => ['PLUSP,expandToVMForm y]
   y is ['%i2f,0] => ['MINUSP,expandToVMForm x]
@@ -302,16 +305,14 @@ expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
 -- Local variable bindings
-expandBind ['%bind,inits,body] ==
+expandBind ['%bind,inits,:body] ==
   body := expandToVMForm body
   inits := [[first x,expandToVMForm second x] for x in inits]
-  n := #inits
-  n = 0 => body
   -- FIXME: we should consider turning LET* into LET or direct inlining.
   op :=
-    n = 1 => 'LET
-    'LET_*
-  [op,inits,body]
+    or/[CONTAINED(v,x) for [[v,.],:x] in tails inits] => 'LET_*
+    'LET
+  [op,inits,:body]
 
 -- Memory load/store
 
@@ -358,7 +359,6 @@ for x in [
     ['%ismall?, :'FIXNUMP],
     -- binary integer operations.
     ['%iadd,:"+"],
-    ['%ieq, :"EQL"],
     ['%igcd,:'GCD],
     ['%ige, :">="],
     ['%iinc,:"1+"],
@@ -377,7 +377,6 @@ for x in [
     -- binary float operations.
     ['%fadd,  :"+"],
     ['%fdiv,  :"/"],
-    ['%feq,   :"="],
     ['%fge,   :">="],
     ['%fle,   :"<="],
     ['%fmax,  :'MAX],
@@ -432,11 +431,9 @@ for x in [
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
 
-   ['%ble, :function expandBle],
-   ['%bgt, :function expandBgt],
-   ['%bge, :function expandBge],
    ['%bcompl,  :function expandBcompl],
 
+   ['%ieq,     :function expandIeq],
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
@@ -446,6 +443,7 @@ for x in [
 
    ['%i2f,     :function expandI2f],
    ['%fbase,   :function expandFbase],
+   ['%feq,     :function expandFeq],
    ['%fgt,     :function expandFgt],
    ['%flt,     :function expandFlt],
    ['%fmaxval, :function expandFmaxval],

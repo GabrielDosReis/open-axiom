@@ -2,7 +2,7 @@
 (/VERSIONCHECK 2) 
 
 (|noteSubDomainInfo| '|NonNegativeInteger| '(|Integer|)
-    '(|%ige| |#1| 0)) 
+    '(|%not| (|%ilt| |#1| 0))) 
 
 (DECLAIM (FTYPE (FUNCTION
                     ((|%IntegerSection| 0) (|%IntegerSection| 0)
@@ -36,7 +36,8 @@
       ((MINUSP |c|) (CONS 1 "failed"))
       ('T
        (CONS 0
-             (|check-subtype| (>= |c| 0) '(|NonNegativeInteger|) |c|)))))) 
+             (|check-subtype| (NOT (MINUSP |c|))
+                 '(|NonNegativeInteger|) |c|)))))) 
 
 (DEFUN |NonNegativeInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

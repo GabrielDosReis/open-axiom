@@ -1414,7 +1414,7 @@ compSubDomain1(domainForm,predicate,m,e) ==
     compCompilerPredicate(predicate,e) or
       stackSemanticError(["predicate: ",predicate,
         " cannot be interpreted with #1: ",domainForm],nil)
-  pred := lispize u.expr
+  pred := simplifyVMForm u.expr
   -- For now, reject predicates that directly reference domains
   CONTAINED("$",pred) => 
     stackAndThrow('"predicate %1pb is not simple enough",[predicate])

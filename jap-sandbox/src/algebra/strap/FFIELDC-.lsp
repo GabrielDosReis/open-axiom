@@ -89,14 +89,14 @@
 (DEFUN |FFIELDC-;createPrimitiveElement;S;8| ($)
   (PROG (|e|)
     (RETURN
-      (LET* ((|sm1| (- (SPADCALL (|getShellEntry| $ 40)) 1))
-             (|start| (COND
-                        ((SPADCALL (SPADCALL (|getShellEntry| $ 48))
-                             (CONS 1 "polynomial")
-                             (|getShellEntry| $ 49))
-                         (|spadConstant| $ 41))
-                        ('T 1)))
-             (|found| NIL))
+      (LET ((|sm1| (- (SPADCALL (|getShellEntry| $ 40)) 1))
+            (|start| (COND
+                       ((SPADCALL (SPADCALL (|getShellEntry| $ 48))
+                            (CONS 1 "polynomial")
+                            (|getShellEntry| $ 49))
+                        (|spadConstant| $ 41))
+                       ('T 1)))
+            (|found| NIL))
         (SEQ (LET ((|i| |start|))
                (LOOP
                  (COND
@@ -104,7 +104,8 @@
                    (T (SEQ (LETT |e|
                                  (SPADCALL
                                      (|check-subtype|
-                                      (AND (>= |i| 0) (< 0 |i|))
+                                      (AND (NOT (MINUSP |i|))
+                                       (PLUSP |i|))
                                       '(|PositiveInteger|) |i|)
                                      (|getShellEntry| $ 14))
                                  |FFIELDC-;createPrimitiveElement;S;8|)
@@ -297,10 +298,9 @@
                                                              |FFIELDC-;discreteLog;SNni;11|)
                                                             (EXIT
                                                              (COND
-                                                               ((EQL
+                                                               ((ZEROP
                                                                  (CAR
-                                                                  |rho|)
-                                                                 0)
+                                                                  |rho|))
                                                                 (SEQ
                                                                  (SETQ
                                                                   |found|

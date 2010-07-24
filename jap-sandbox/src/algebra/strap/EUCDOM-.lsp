@@ -100,14 +100,14 @@
 (DEFUN |EUCDOM-;extendedEuclidean;2SR;7| (|x| |y| $)
   (PROG (|s3| |qr|)
     (RETURN
-      (LET* ((|s1| (|EUCDOM-;unitNormalizeIdealElt|
-                       (VECTOR (|spadConstant| $ 30)
-                               (|spadConstant| $ 19) |x|)
-                       $))
-             (|s2| (|EUCDOM-;unitNormalizeIdealElt|
-                       (VECTOR (|spadConstant| $ 19)
-                               (|spadConstant| $ 30) |y|)
-                       $)))
+      (LET ((|s1| (|EUCDOM-;unitNormalizeIdealElt|
+                      (VECTOR (|spadConstant| $ 30)
+                              (|spadConstant| $ 19) |x|)
+                      $))
+            (|s2| (|EUCDOM-;unitNormalizeIdealElt|
+                      (VECTOR (|spadConstant| $ 19)
+                              (|spadConstant| $ 30) |y|)
+                      $)))
         (COND
           ((SPADCALL |y| (|getShellEntry| $ 8)) |s1|)
           ((SPADCALL |x| (|getShellEntry| $ 8)) |s2|)

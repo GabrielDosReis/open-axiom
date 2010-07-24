@@ -246,9 +246,9 @@ timedAlgebraEvaluation(code) ==
 timedOptimization(code) ==
   startTimingProcess 'optimization
   $getDomainCode : local := NIL
-  r := lispize code
+  r := simplifyVMForm code
   if $reportOptimization then
-    sayBrightlyI bright '"Optimized LISP code:"
+    sayBrightlyI bright '"Optimized intermediate code:"
     pp r
   stopTimingProcess 'optimization
   r
