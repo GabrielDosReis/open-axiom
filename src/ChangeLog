@@ -1,6 +1,7 @@
 2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optCall): Don't call optimize again.
+	(optCallSpecially): Remove deadcode.
 
 2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
