@@ -14,52 +14,52 @@
                                 '(|UniversalSegment| (|Integer|))))
                     (COND
                       (|LinearAggregate;CAT|)
-                      ('T
-                       (SETQ |LinearAggregate;CAT|
-                             (|Join| (|IndexedAggregate| '#1# '|t#1|)
-                                     (|Collection| '|t#1|)
-                                     (|Eltable| '#2# '$)
-                                     (|mkCategory| '|domain|
-                                      '(((|new|
-                                          ($ (|NonNegativeInteger|)
-                                           |t#1|))
-                                         T)
-                                        ((|concat| ($ $ |t#1|)) T)
-                                        ((|concat| ($ |t#1| $)) T)
-                                        ((|concat| ($ $ $)) T)
-                                        ((|concat| ($ (|List| $))) T)
-                                        ((|map|
-                                          ($
-                                           (|Mapping| |t#1| |t#1|
-                                            |t#1|)
-                                           $ $))
-                                         T)
-                                        ((|delete| ($ $ (|Integer|)))
-                                         T)
-                                        ((|delete|
-                                          ($ $
-                                           (|UniversalSegment|
-                                            (|Integer|))))
-                                         T)
-                                        ((|insert|
-                                          ($ |t#1| $ (|Integer|)))
-                                         T)
-                                        ((|insert| ($ $ $ (|Integer|)))
-                                         T)
-                                        ((|setelt|
-                                          (|t#1| $
-                                           (|UniversalSegment|
-                                            (|Integer|))
-                                           |t#1|))
-                                         (|has| $
-                                          (ATTRIBUTE
-                                           |shallowlyMutable|))))
-                                      NIL
-                                      '((|UniversalSegment|
-                                         (|Integer|))
-                                        (|Integer|) (|List| $)
-                                        (|NonNegativeInteger|))
-                                      NIL)))))))))
+                      (T (SETQ |LinearAggregate;CAT|
+                               (|Join| (|IndexedAggregate| '#1# '|t#1|)
+                                       (|Collection| '|t#1|)
+                                       (|Eltable| '#2# '$)
+                                       (|mkCategory| '|domain|
+                                        '(((|new|
+                                            ($ (|NonNegativeInteger|)
+                                             |t#1|))
+                                           T)
+                                          ((|concat| ($ $ |t#1|)) T)
+                                          ((|concat| ($ |t#1| $)) T)
+                                          ((|concat| ($ $ $)) T)
+                                          ((|concat| ($ (|List| $))) T)
+                                          ((|map|
+                                            ($
+                                             (|Mapping| |t#1| |t#1|
+                                              |t#1|)
+                                             $ $))
+                                           T)
+                                          ((|delete| ($ $ (|Integer|)))
+                                           T)
+                                          ((|delete|
+                                            ($ $
+                                             (|UniversalSegment|
+                                              (|Integer|))))
+                                           T)
+                                          ((|insert|
+                                            ($ |t#1| $ (|Integer|)))
+                                           T)
+                                          ((|insert|
+                                            ($ $ $ (|Integer|)))
+                                           T)
+                                          ((|setelt|
+                                            (|t#1| $
+                                             (|UniversalSegment|
+                                              (|Integer|))
+                                             |t#1|))
+                                           (|has| $
+                                            (ATTRIBUTE
+                                             |shallowlyMutable|))))
+                                        NIL
+                                        '((|UniversalSegment|
+                                           (|Integer|))
+                                          (|Integer|) (|List| $)
+                                          (|NonNegativeInteger|))
+                                        NIL)))))))))
     (|setShellEntry| #0# 0
         (LIST '|LinearAggregate| (|devaluate| |t#1|)))
     #0#)) 

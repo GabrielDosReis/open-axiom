@@ -34,10 +34,9 @@
   (LET ((|c| (- |x| |y|)))
     (COND
       ((MINUSP |c|) (CONS 1 "failed"))
-      ('T
-       (CONS 0
-             (|check-subtype| (NOT (MINUSP |c|))
-                 '(|NonNegativeInteger|) |c|)))))) 
+      (T (CONS 0
+               (|check-subtype| (NOT (MINUSP |c|))
+                   '(|NonNegativeInteger|) |c|)))))) 
 
 (DEFUN |NonNegativeInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
@@ -46,16 +45,16 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|NonNegativeInteger|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache|
-                               '|NonNegativeInteger|
-                               (LIST (CONS NIL
-                                      (CONS 1 (|NonNegativeInteger;|))))))
-             (SETQ #0# T))
-           (COND
-             ((NOT #0#)
-              (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache|
+                                 '|NonNegativeInteger|
+                                 (LIST (CONS NIL
+                                        (CONS 1
+                                         (|NonNegativeInteger;|))))))
+               (SETQ #0# T))
+             (COND
+               ((NOT #0#)
+                (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))) 
 
 (DEFUN |NonNegativeInteger;| ()
   (LET ((|dv$| (LIST '|NonNegativeInteger|)) ($ (|newShell| 22))

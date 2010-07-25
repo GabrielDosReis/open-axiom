@@ -10,14 +10,13 @@
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|ListAggregate;CAT|)
-                  ('T
-                   (SETQ |ListAggregate;CAT|
-                         (|Join| (|StreamAggregate| '|t#1|)
-                                 (|FiniteLinearAggregate| '|t#1|)
-                                 (|ExtensibleLinearAggregate| '|t#1|)
-                                 (|mkCategory| '|domain|
-                                     '(((|list| ($ |t#1|)) T)) NIL 'NIL
-                                     NIL))))))))
+                  (T (SETQ |ListAggregate;CAT|
+                           (|Join| (|StreamAggregate| '|t#1|)
+                                   (|FiniteLinearAggregate| '|t#1|)
+                                   (|ExtensibleLinearAggregate| '|t#1|)
+                                   (|mkCategory| '|domain|
+                                    '(((|list| ($ |t#1|)) T)) NIL 'NIL
+                                    NIL))))))))
     (|setShellEntry| #0# 0 (LIST '|ListAggregate| (|devaluate| |t#1|)))
     #0#)) 
 

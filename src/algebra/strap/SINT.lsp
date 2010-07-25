@@ -294,7 +294,7 @@
                    (|getShellEntry| $ 15))
                (SPADCALL |dev| (QSMINUS |x|) (|getShellEntry| $ 18))
                (EXIT (SPADCALL |dev| (|getShellEntry| $ 19)))))
-         ('T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
+         (T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
 
 (DEFUN |SINT;OMwrite;$S;2| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
@@ -499,8 +499,8 @@
       ((QSMINUSP |r|)
        (COND
          ((QSMINUSP |n|) (QSDIFFERENCE |x| |n|))
-         ('T (QSPLUS |r| |n|))))
-      ('T |r|)))) 
+         (T (QSPLUS |r| |n|))))
+      (T |r|)))) 
 
 (DEFUN |SINT;coerce;I$;59| (|x| $)
   (|check-subtype| (SMINTP |x|) '(|SingleInteger|) |x|)) 
@@ -516,7 +516,7 @@
 (DEFUN |SINT;unitNormal;$R;62| (|x| $)
   (COND
     ((QSLESSP |x| 0) (VECTOR (QSMINUS 1) (QSMINUS |x|) (QSMINUS 1)))
-    ('T (VECTOR 1 |x| 1)))) 
+    (T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |SingleInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
@@ -525,14 +525,13 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|SingleInteger|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
-                               (LIST (CONS NIL
-                                      (CONS 1 (|SingleInteger;|))))))
-             (SETQ #0# T))
-           (COND
-             ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
+                                 (LIST (CONS NIL
+                                        (CONS 1 (|SingleInteger;|))))))
+               (SETQ #0# T))
+             (COND
+               ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
 
 (DEFUN |SingleInteger;| ()
   (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 116))

@@ -18,9 +18,8 @@
     (|setShellEntry| $ 6 |#1|)
     (COND
       ((|HasCategory| |#1| '(|Ring|)))
-      ('T
-       (|setShellEntry| $ 10
-           (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) $))))
+      (T (|setShellEntry| $ 10
+             (CONS (|dispatchFunction| |ABELSG-;*;Pi2S;1|) $))))
     $)) 
 
 (MAKEPROP '|AbelianSemiGroup&| '|infovec|

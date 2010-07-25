@@ -114,41 +114,39 @@
   (DECLARE (IGNORE $))
   (OR |a| |b|)) 
 
-(DEFUN |BOOLEAN;xor;3$;10| (|a| |b| $)
-  (COND (|a| (NOT |b|)) ('T |b|))) 
+(DEFUN |BOOLEAN;xor;3$;10| (|a| |b| $) (COND (|a| (NOT |b|)) (T |b|))) 
 
-(DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $)
-  (COND (|a| NIL) ('T (NOT |b|)))) 
+(DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $) (COND (|a| NIL) (T (NOT |b|)))) 
 
-(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $) (COND (|a| (NOT |b|)) ('T T))) 
+(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $) (COND (|a| (NOT |b|)) (T T))) 
 
 (DEFUN |BOOLEAN;=;3$;13| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $) (COND (|a| |b|) ('T T))) 
+(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $) (COND (|a| |b|) (T T))) 
 
 (DEFUN |BOOLEAN;equiv;3$;15| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $) (COND (|b| (NOT |a|)) ('T NIL))) 
+(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $) (COND (|b| (NOT |a|)) (T NIL))) 
 
 (DEFUN |BOOLEAN;size;Nni;17| ($) (DECLARE (IGNORE $)) 2) 
 
 (DEFUN |BOOLEAN;index;Pi$;18| (|i| $)
-  (COND ((SPADCALL |i| (|getShellEntry| $ 26)) NIL) ('T T))) 
+  (COND ((SPADCALL |i| (|getShellEntry| $ 26)) NIL) (T T))) 
 
-(DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) ('T 2))) 
+(DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) (T 2))) 
 
 (DEFUN |BOOLEAN;random;$;20| ($)
-  (COND ((SPADCALL (|random|) (|getShellEntry| $ 26)) NIL) ('T T))) 
+  (COND ((SPADCALL (|random|) (|getShellEntry| $ 26)) NIL) (T T))) 
 
 (DEFUN |BOOLEAN;convert;$If;21| (|x| $)
-  (COND (|x| '|true|) ('T '|false|))) 
+  (COND (|x| '|true|) (T '|false|))) 
 
 (DEFUN |BOOLEAN;coerce;$Of;22| (|x| $)
-  (COND (|x| '|true|) ('T '|false|))) 
+  (COND (|x| '|true|) (T '|false|))) 
 
 (DEFUN |Boolean| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
@@ -157,12 +155,11 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Boolean|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
-                               (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
-             (SETQ #0# T))
-           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
+                                 (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
+               (SETQ #0# T))
+             (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
 
 (DEFUN |Boolean;| ()
   (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))

@@ -134,10 +134,9 @@ compClam(op,argl,body,$clamList) ==
     countFl => ['CONS,1,g2]
     g2
   thirdPredPair:=
---   null argl => ['(QUOTE T),['SETQ,cacheName,computeValue]]
-    ['(QUOTE T),
-      ['SETQ,g2,computeValue],
-        ['SETQ,g3,['CAR,cacheName]],
+    ['%true,
+      ['%store,g2,computeValue],
+        ['%store,g3,['CAR,cacheName]],
           ['RPLACA,g3,g1],
             ['RPLACD,g3,resetCacheEntry],
               g2]
@@ -247,7 +246,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if cacheNameOrNil then putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['SETQ,g2,'T]],
                   ['COND,[['NOT,g2],['HREM,cacheName,MKQ op]]]]
-  thirdPredPair:= ['(QUOTE T),putCode]
+  thirdPredPair:= ['%true,putCode]
   codeBody:= ['PROG,[g2],
                :callCountCode,['RETURN,['COND,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
@@ -299,12 +298,12 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
     countFl => ['CDRwithIncrement,g2]
     g2
   getCode:= ['HGET,cacheName,cacheArgKey]
-  secondPredPair:= [['SETQ,g2,getCode],returnFoundValue]
+  secondPredPair:= [['%store,g2,getCode],returnFoundValue]
   putForm:= ['CONS,MKQ op,g1]
   putCode:=
     countFl => ['HPUT,cacheName,putForm,['CONS,1,computeValue]]
     ['HPUT,cacheName,putForm,computeValue]
-  thirdPredPair:= ['(QUOTE T),putCode]
+  thirdPredPair:= ['%true,putCode]
   codeBody:= ['PROG,[g2], ['RETURN,['COND,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]

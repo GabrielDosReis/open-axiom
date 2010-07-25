@@ -107,7 +107,7 @@
                   (SETQ #1# NIL)))))
          (SETQ #2# (CDR #2#))
          (SETQ #3# (CDR #3#)))))
-    ('T NIL))) 
+    (T NIL))) 
 
 (DEFUN |HOAGG-;count;SANni;8| (|s| |x| $)
   (SPADCALL (CONS #'|HOAGG-;count;SANni;8!0| (VECTOR $ |s|)) |x|

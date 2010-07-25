@@ -99,10 +99,9 @@
     (COND
       ((EQL (CAR |m|) 1)
        (|error| "We seem to have a Fraction of a finite object"))
-      ('T
-       (CONS 0
-             (SPADCALL (CDR |m|) (|spadConstant| $ 14)
-                 (|getShellEntry| $ 15))))))) 
+      (T (CONS 0
+               (SPADCALL (CDR |m|) (|spadConstant| $ 14)
+                   (|getShellEntry| $ 15))))))) 
 
 (DEFUN |QFCAT-;map;M2A;5| (|fn| |x| $)
   (SPADCALL (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8)) |fn|)
@@ -210,7 +209,7 @@
   (LET ((|r| (SPADCALL |x| (|getShellEntry| $ 63))))
     (COND
       ((EQL (CAR |r|) 1) (CONS 1 "failed"))
-      ('T (SPADCALL (CDR |r|) (|getShellEntry| $ 65)))))) 
+      (T (SPADCALL (CDR |r|) (|getShellEntry| $ 65)))))) 
 
 (DEFUN |QFCAT-;convert;AP;19| (|x| $)
   (SPADCALL
@@ -250,7 +249,7 @@
   (LET ((|u| (SPADCALL |x| (|getShellEntry| $ 63))))
     (COND
       ((EQL (CAR |u|) 1) (CONS 1 "failed"))
-      ('T (SPADCALL (CDR |u|) (|getShellEntry| $ 95)))))) 
+      (T (SPADCALL (CDR |u|) (|getShellEntry| $ 95)))))) 
 
 (DEFUN |QFCAT-;random;A;26| ($)
   (PROG (|d|)
@@ -331,9 +330,8 @@
          ((|HasAttribute| |#2| '|canonicalUnitNormal|)
           (|setShellEntry| $ 51
               (CONS (|dispatchFunction| |QFCAT-;<;2AB;12|) $)))
-         ('T
-          (|setShellEntry| $ 51
-              (CONS (|dispatchFunction| |QFCAT-;<;2AB;13|) $)))))
+         (T (|setShellEntry| $ 51
+                (CONS (|dispatchFunction| |QFCAT-;<;2AB;13|) $)))))
       ((|testBitVector| |pv$| 10)
        (|setShellEntry| $ 51
            (CONS (|dispatchFunction| |QFCAT-;<;2AB;14|) $))))
@@ -379,14 +377,14 @@
              (CONS (|dispatchFunction| |QFCAT-;coerce;FA;23|) $))
          (COND
            ((|domainEqual| |#2| (|Integer|)))
-           ('T
-            (PROGN
-              (|setShellEntry| $ 93
-                  (CONS (|dispatchFunction| |QFCAT-;retract;AI;24|) $))
-              (|setShellEntry| $ 96
-                  (CONS (|dispatchFunction|
-                            |QFCAT-;retractIfCan;AU;25|)
-                        $))))))))
+           (T (PROGN
+                (|setShellEntry| $ 93
+                    (CONS (|dispatchFunction| |QFCAT-;retract;AI;24|)
+                          $))
+                (|setShellEntry| $ 96
+                    (CONS (|dispatchFunction|
+                              |QFCAT-;retractIfCan;AU;25|)
+                          $))))))))
     (COND
       ((|testBitVector| |pv$| 2)
        (|setShellEntry| $ 99

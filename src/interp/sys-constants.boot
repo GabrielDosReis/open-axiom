@@ -646,14 +646,6 @@ $Zero ==
 $One ==
   '(One)
 
-
-++
-$true ==
-  ''T
-
-$false ==
-  false
-
 ++ Indicate absence of value
 $NoValue ==
   "$NoValue"

@@ -366,8 +366,8 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compSymbol(s,m,e) ==
   s="$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
-  s="true" => ['(QUOTE T),$Boolean,e]
-  s="false" => [false,$Boolean,e]
+  s="true" => ['%true,$Boolean,e]
+  s="false" => ['%false,$Boolean,e]
   s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
   v:= get(s,"value",e) =>
 --+

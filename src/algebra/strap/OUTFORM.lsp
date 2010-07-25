@@ -544,7 +544,7 @@
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
   (COND
     ((SPADCALL |s| (|getShellEntry| $ 12)) (|OUTFORM;empty;$;73| $))
-    ('T |s|))) 
+    (T |s|))) 
 
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
   (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 
@@ -619,18 +619,18 @@
     ((PLUSP |n|)
      (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
          $))
-    ('T (|OUTFORM;empty;$;73| $)))) 
+    (T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
   (COND
     ((PLUSP |n|) (|fillerSpaces| |n|))
-    ('T (|OUTFORM;empty;$;73| $)))) 
+    (T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
   (SEQ (COND
          ((PLUSP |n|)
           (COND ((NOT (PLUSP |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
-         ('T (EXIT (|OUTFORM;empty;$;73| $))))
+         (T (EXIT (|OUTFORM;empty;$;73| $))))
        (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
@@ -666,7 +666,7 @@
                     (COND
                       ((EQCAR |u| |c|)
                        (SETQ |l1| (APPEND (CDR |u|) |l1|)))
-                      ('T (SETQ |l1| (CONS |u| |l1|)))))))
+                      (T (SETQ |l1| (CONS |u| |l1|)))))))
              (SETQ #0# (CDR #0#))))
          (EXIT (CONS |c| |l1|))))) 
 
@@ -712,7 +712,7 @@
     ((NULL |l|) |a|)
     ((NULL (CDR |l|))
      (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|getShellEntry| $ 78)) $))
-    ('T (CONS 'SUPERSUB (CONS |a| |l|))))) 
+    (T (CONS 'SUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
@@ -824,8 +824,8 @@
   (LET ((|e| (COND
                ((IDENTP |a|) |a|)
                ((STRINGP |a|) (INTERN |a|))
-               ('T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))))
-    (COND ((GET |e| 'INFIXOP) T) ('T NIL)))) 
+               (T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))))
+    (COND ((GET |e| 'INFIXOP) T) (T NIL)))) 
 
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)
   (DECLARE (IGNORE $))
@@ -834,25 +834,23 @@
 (DEFUN |OUTFORM;prefix;$L$;76| (|a| |l| $)
   (COND
     ((NOT (|OUTFORM;infix?;$B;74| |a| $)) (CONS |a| |l|))
-    ('T
-     (|OUTFORM;hconcat;3$;48| |a|
-         (|OUTFORM;paren;2$;40| (CONS 'AGGLST |l|) $) $)))) 
+    (T (|OUTFORM;hconcat;3$;48| |a|
+           (|OUTFORM;paren;2$;40| (CONS 'AGGLST |l|) $) $)))) 
 
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
     ((NULL |l|) (|OUTFORM;empty;$;73| $))
     ((NULL (CDR |l|)) (SPADCALL |l| (|getShellEntry| $ 78)))
     ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
-    ('T
-     (|OUTFORM;hconcat;L$;49|
-         (LIST (SPADCALL |l| (|getShellEntry| $ 78)) |a|
-               (|OUTFORM;infix;$L$;77| |a| (CDR |l|) $))
-         $)))) 
+    (T (|OUTFORM;hconcat;L$;49|
+           (LIST (SPADCALL |l| (|getShellEntry| $ 78)) |a|
+                 (|OUTFORM;infix;$L$;77| |a| (CDR |l|) $))
+           $)))) 
 
 (DEFUN |OUTFORM;infix;4$;78| (|a| |b| |c| $)
   (COND
     ((|OUTFORM;infix?;$B;74| |a| $) (LIST |a| |b| |c|))
-    ('T (|OUTFORM;hconcat;L$;49| (LIST |b| |a| |c|) $)))) 
+    (T (|OUTFORM;hconcat;L$;49| (LIST |b| |a| |c|) $)))) 
 
 (DEFUN |OUTFORM;postfix;3$;79| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -934,17 +932,16 @@
       (SEQ (COND
              ((ZEROP |nn|) |a|)
              ((< |nn| 4) (|OUTFORM;prime;$Nni$;86| |a| |nn| $))
-             ('T
-              (SEQ (LETT |r|
-                         (SPADCALL
-                             (|check-subtype| (PLUSP |nn|)
-                                 '(|PositiveInteger|) |nn|)
-                             (|getShellEntry| $ 137))
-                         |OUTFORM;differentiate;$Nni$;97|)
-                   (LETT |s| (SPADCALL |r| (|getShellEntry| $ 138))
-                         |OUTFORM;differentiate;$Nni$;97|)
-                   (EXIT (|OUTFORM;super;3$;43| |a| (LIST 'PAREN |s|)
-                             $))))))))) 
+             (T (SEQ (LETT |r|
+                           (SPADCALL
+                               (|check-subtype| (PLUSP |nn|)
+                                   '(|PositiveInteger|) |nn|)
+                               (|getShellEntry| $ 137))
+                           |OUTFORM;differentiate;$Nni$;97|)
+                     (LETT |s| (SPADCALL |r| (|getShellEntry| $ 138))
+                           |OUTFORM;differentiate;$Nni$;97|)
+                     (EXIT (|OUTFORM;super;3$;43| |a| (LIST 'PAREN |s|)
+                               $))))))))) 
 
 (DEFUN |OUTFORM;sum;2$;98| (|a| $)
   (LIST 'SIGMA (|OUTFORM;empty;$;73| $) |a|)) 
@@ -985,13 +982,13 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|OutputForm|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
-                               (LIST (CONS NIL
-                                      (CONS 1 (|OutputForm;|))))))
-             (SETQ #0# T))
-           (COND ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
+                                 (LIST (CONS NIL
+                                        (CONS 1 (|OutputForm;|))))))
+               (SETQ #0# T))
+             (COND
+               ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
 
 (DEFUN |OutputForm;| ()
   (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))

@@ -28,9 +28,8 @@
   (COND
     ((ZEROP |n|) (|spadConstant| $ 19))
     ((PLUSP |n|) (SPADCALL |n| |x| (|getShellEntry| $ 24)))
-    ('T
-     (SPADCALL (- |n|) (SPADCALL |x| (|getShellEntry| $ 7))
-         (|getShellEntry| $ 24))))) 
+    (T (SPADCALL (- |n|) (SPADCALL |x| (|getShellEntry| $ 7))
+           (|getShellEntry| $ 24))))) 
 
 (DEFUN |AbelianGroup&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
@@ -42,9 +41,8 @@
     (|setShellEntry| $ 6 |#1|)
     (COND
       ((|HasCategory| |#1| '(|Ring|)))
-      ('T
-       (|setShellEntry| $ 26
-           (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) $))))
+      (T (|setShellEntry| $ 26
+             (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) $))))
     $)) 
 
 (MAKEPROP '|AbelianGroup&| '|infovec|

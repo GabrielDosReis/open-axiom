@@ -10,39 +10,37 @@
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|RecursiveAggregate;CAT|)
-                  ('T
-                   (SETQ |RecursiveAggregate;CAT|
-                         (|Join| (|HomogeneousAggregate| '|t#1|)
-                                 (|mkCategory| '|domain|
-                                     '(((|children| ((|List| $) $)) T)
-                                       ((|nodes| ((|List| $) $)) T)
-                                       ((|leaf?| ((|Boolean|) $)) T)
-                                       ((|value| (|t#1| $)) T)
-                                       ((|elt| (|t#1| $ "value")) T)
-                                       ((|cyclic?| ((|Boolean|) $)) T)
-                                       ((|leaves| ((|List| |t#1|) $))
-                                        T)
-                                       ((|distance| ((|Integer|) $ $))
-                                        T)
-                                       ((|child?| ((|Boolean|) $ $))
-                                        (|has| |t#1| (|SetCategory|)))
-                                       ((|node?| ((|Boolean|) $ $))
-                                        (|has| |t#1| (|SetCategory|)))
-                                       ((|setchildren!|
-                                         ($ $ (|List| $)))
-                                        (|has| $
-                                         (ATTRIBUTE |shallowlyMutable|)))
-                                       ((|setelt|
-                                         (|t#1| $ "value" |t#1|))
-                                        (|has| $
-                                         (ATTRIBUTE |shallowlyMutable|)))
-                                       ((|setvalue!| (|t#1| $ |t#1|))
-                                        (|has| $
-                                         (ATTRIBUTE |shallowlyMutable|))))
-                                     NIL
-                                     '((|List| $) (|Boolean|)
-                                       (|Integer|) (|List| |t#1|))
-                                     NIL))))))))
+                  (T (SETQ |RecursiveAggregate;CAT|
+                           (|Join| (|HomogeneousAggregate| '|t#1|)
+                                   (|mkCategory| '|domain|
+                                    '(((|children| ((|List| $) $)) T)
+                                      ((|nodes| ((|List| $) $)) T)
+                                      ((|leaf?| ((|Boolean|) $)) T)
+                                      ((|value| (|t#1| $)) T)
+                                      ((|elt| (|t#1| $ "value")) T)
+                                      ((|cyclic?| ((|Boolean|) $)) T)
+                                      ((|leaves| ((|List| |t#1|) $)) T)
+                                      ((|distance| ((|Integer|) $ $))
+                                       T)
+                                      ((|child?| ((|Boolean|) $ $))
+                                       (|has| |t#1| (|SetCategory|)))
+                                      ((|node?| ((|Boolean|) $ $))
+                                       (|has| |t#1| (|SetCategory|)))
+                                      ((|setchildren!|
+                                        ($ $ (|List| $)))
+                                       (|has| $
+                                        (ATTRIBUTE |shallowlyMutable|)))
+                                      ((|setelt|
+                                        (|t#1| $ "value" |t#1|))
+                                       (|has| $
+                                        (ATTRIBUTE |shallowlyMutable|)))
+                                      ((|setvalue!| (|t#1| $ |t#1|))
+                                       (|has| $
+                                        (ATTRIBUTE |shallowlyMutable|))))
+                                    NIL
+                                    '((|List| $) (|Boolean|)
+                                      (|Integer|) (|List| |t#1|))
+                                    NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|RecursiveAggregate| (|devaluate| |t#1|)))
     #0#)) 

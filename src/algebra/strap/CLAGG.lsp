@@ -10,65 +10,62 @@
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|Collection;CAT|)
-                  ('T
-                   (SETQ |Collection;CAT|
-                         (|Join| (|HomogeneousAggregate| '|t#1|)
-                                 (|mkCategory| '|domain|
-                                     '(((|construct|
-                                         ($ (|List| |t#1|)))
-                                        T)
-                                       ((|find|
-                                         ((|Union| |t#1| "failed")
-                                          (|Mapping| (|Boolean|) |t#1|)
-                                          $))
-                                        T)
-                                       ((|reduce|
-                                         (|t#1|
-                                          (|Mapping| |t#1| |t#1| |t#1|)
-                                          $))
+                  (T (SETQ |Collection;CAT|
+                           (|Join| (|HomogeneousAggregate| '|t#1|)
+                                   (|mkCategory| '|domain|
+                                    '(((|construct| ($ (|List| |t#1|)))
+                                       T)
+                                      ((|find|
+                                        ((|Union| |t#1| "failed")
+                                         (|Mapping| (|Boolean|) |t#1|)
+                                         $))
+                                       T)
+                                      ((|reduce|
+                                        (|t#1|
+                                         (|Mapping| |t#1| |t#1| |t#1|)
+                                         $))
+                                       (|has| $
+                                        (ATTRIBUTE |finiteAggregate|)))
+                                      ((|reduce|
+                                        (|t#1|
+                                         (|Mapping| |t#1| |t#1| |t#1|)
+                                         $ |t#1|))
+                                       (|has| $
+                                        (ATTRIBUTE |finiteAggregate|)))
+                                      ((|remove|
+                                        ($
+                                         (|Mapping| (|Boolean|) |t#1|)
+                                         $))
+                                       (|has| $
+                                        (ATTRIBUTE |finiteAggregate|)))
+                                      ((|select|
+                                        ($
+                                         (|Mapping| (|Boolean|) |t#1|)
+                                         $))
+                                       (|has| $
+                                        (ATTRIBUTE |finiteAggregate|)))
+                                      ((|reduce|
+                                        (|t#1|
+                                         (|Mapping| |t#1| |t#1| |t#1|)
+                                         $ |t#1| |t#1|))
+                                       (AND
+                                        (|has| |t#1| (|SetCategory|))
                                         (|has| $
-                                         (ATTRIBUTE |finiteAggregate|)))
-                                       ((|reduce|
-                                         (|t#1|
-                                          (|Mapping| |t#1| |t#1| |t#1|)
-                                          $ |t#1|))
+                                         (ATTRIBUTE |finiteAggregate|))))
+                                      ((|remove| ($ |t#1| $))
+                                       (AND
+                                        (|has| |t#1| (|SetCategory|))
                                         (|has| $
-                                         (ATTRIBUTE |finiteAggregate|)))
-                                       ((|remove|
-                                         ($
-                                          (|Mapping| (|Boolean|) |t#1|)
-                                          $))
+                                         (ATTRIBUTE |finiteAggregate|))))
+                                      ((|removeDuplicates| ($ $))
+                                       (AND
+                                        (|has| |t#1| (|SetCategory|))
                                         (|has| $
-                                         (ATTRIBUTE |finiteAggregate|)))
-                                       ((|select|
-                                         ($
-                                          (|Mapping| (|Boolean|) |t#1|)
-                                          $))
-                                        (|has| $
-                                         (ATTRIBUTE |finiteAggregate|)))
-                                       ((|reduce|
-                                         (|t#1|
-                                          (|Mapping| |t#1| |t#1| |t#1|)
-                                          $ |t#1| |t#1|))
-                                        (AND
-                                         (|has| |t#1| (|SetCategory|))
-                                         (|has| $
-                                          (ATTRIBUTE |finiteAggregate|))))
-                                       ((|remove| ($ |t#1| $))
-                                        (AND
-                                         (|has| |t#1| (|SetCategory|))
-                                         (|has| $
-                                          (ATTRIBUTE |finiteAggregate|))))
-                                       ((|removeDuplicates| ($ $))
-                                        (AND
-                                         (|has| |t#1| (|SetCategory|))
-                                         (|has| $
-                                          (ATTRIBUTE |finiteAggregate|)))))
-                                     '(((|ConvertibleTo| (|InputForm|))
-                                        (|has| |t#1|
-                                         (|ConvertibleTo|
-                                          (|InputForm|)))))
-                                     '((|List| |t#1|)) NIL))))))))
+                                         (ATTRIBUTE |finiteAggregate|)))))
+                                    '(((|ConvertibleTo| (|InputForm|))
+                                       (|has| |t#1|
+                                        (|ConvertibleTo| (|InputForm|)))))
+                                    '((|List| |t#1|)) NIL))))))))
     (|setShellEntry| #0# 0 (LIST '|Collection| (|devaluate| |t#1|)))
     #0#)) 
 
