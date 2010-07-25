@@ -1005,7 +1005,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
     qe(21,compSingleCapsuleItem(y,[['not, p],:$predl],getInverseEnvironment(markKillAll p,olde)))
 -->                                                      ----------- 
     y':=localExtras(oldFLP)
-  wiReplaceNode(item,["COND",[p',x,:x'],['(QUOTE T),y,:y']],12)
+  wiReplaceNode(item,["COND",[p',x,:x'],['%true,y,:y']],12)
 
 doItSeq item == 
   ['SEQ,:l,['exit,1,x]] := item

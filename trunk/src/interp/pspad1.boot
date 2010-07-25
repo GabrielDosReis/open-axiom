@@ -365,7 +365,7 @@ formatForm (u) ==
   [op,:argl] := u
   if op in '(Record Union) then 
     $fieldNames := union(getFieldNames argl,$fieldNames)
-  MEMQ(op,'((QUOTE T) true)) => format "true"
+  MEMQ(op,'(true %true)) => format "true"
   op in '(false nil) => format op
   u='(Zero) => format 0
   u='(One) => format 1

@@ -1,3 +1,19 @@
+2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cattable.boot: Use %true for truth value in VM expressions.
+	* interp/clam.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/sys-constants.boot: Remove $true and $false as unused.
+
 2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compMatchAlternative): Don't generate

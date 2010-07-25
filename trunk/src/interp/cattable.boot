@@ -105,11 +105,11 @@ simpHasPred(pred,:options) == main where
         simpHasAttribute(form,a,b)
       op in '(AND OR NOT) =>
         null (u := MKPF([simp p for p in r],op)) => nil
-        u is '(QUOTE T) => true
+        u = '%true or u is '(QUOTE T) => true
         simpBool u
       op = 'hasArgs => ($hasArgs => $hasArgs = r; pred)
       null r and opOf op = "has" => simp first pred
-      pred is '(QUOTE T) => true
+      pred = '%true or pred is '(QUOTE T) => true
       op1 := LASSOC(op,'((and . AND)(or . OR)(not . NOT))) => simp [op1,:r]
       simp first pred   --REMOVE THIS HACK !!!!
     pred in '(T etc) => pred

@@ -130,8 +130,8 @@
 (DEFUN |URAGG-;cyclic?;AB;6| (|x| $)
   (COND
     ((SPADCALL |x| (|getShellEntry| $ 20)) NIL)
-    ('T
-     (NOT (SPADCALL (|URAGG-;findCycle| |x| $) (|getShellEntry| $ 20)))))) 
+    (T (NOT (SPADCALL (|URAGG-;findCycle| |x| $)
+                (|getShellEntry| $ 20)))))) 
 
 (DEFUN |URAGG-;last;AS;7| (|x| $)
   (SPADCALL (SPADCALL |x| (|getShellEntry| $ 24))
@@ -152,7 +152,7 @@
   (LET ((|l| NIL))
     (COND
       ((SPADCALL |x| (|getShellEntry| $ 20)) |l|)
-      ('T (CONS (SPADCALL |x| (|getShellEntry| $ 14)) |l|))))) 
+      (T (CONS (SPADCALL |x| (|getShellEntry| $ 14)) |l|))))) 
 
 (DEFUN |URAGG-;leaf?;AB;10| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 20))) 
@@ -161,7 +161,7 @@
   (COND
     ((SPADCALL |x| (|getShellEntry| $ 20))
      (|error| "value of empty object"))
-    ('T (SPADCALL |x| (|getShellEntry| $ 8))))) 
+    (T (SPADCALL |x| (|getShellEntry| $ 8))))) 
 
 (DEFUN |URAGG-;less?;ANniB;12| (|l| |n| $)
   (LET ((|i| |n|))
@@ -170,7 +170,7 @@
              ((NOT (COND
                      ((PLUSP |i|)
                       (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
-                     ('T NIL)))
+                     (T NIL)))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
@@ -183,14 +183,14 @@
              ((NOT (COND
                      ((PLUSP |i|)
                       (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
-                     ('T NIL)))
+                     (T NIL)))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
          (EXIT (COND
                  ((ZEROP |i|)
                   (NOT (SPADCALL |l| (|getShellEntry| $ 20))))
-                 ('T NIL)))))) 
+                 (T NIL)))))) 
 
 (DEFUN |URAGG-;size?;ANniB;14| (|l| |n| $)
   (LET ((|i| |n|))
@@ -198,13 +198,13 @@
            (COND
              ((NOT (COND
                      ((SPADCALL |l| (|getShellEntry| $ 20)) NIL)
-                     ('T (PLUSP |i|))))
+                     (T (PLUSP |i|))))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|getShellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
          (EXIT (COND
                  ((SPADCALL |l| (|getShellEntry| $ 20)) (ZEROP |i|))
-                 ('T NIL)))))) 
+                 (T NIL)))))) 
 
 (DEFUN |URAGG-;#;ANni;15| (|x| $)
   (LET ((|k| 0))
@@ -227,26 +227,26 @@
       (SEQ (COND
              ((SPADCALL |x| (|getShellEntry| $ 20))
               (|error| "empty list"))
-             ('T
-              (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
-                         |URAGG-;tail;2A;16|)
-                   (LET ((|k| 0))
-                     (LOOP
-                       (COND
-                         ((NOT (NOT (SPADCALL |y|
-                                     (|getShellEntry| $ 20))))
-                          (RETURN NIL))
-                         (T (SEQ (COND
-                                   ((EQL |k| 1000)
-                                    (COND
-                                      ((SPADCALL |x|
-                                        (|getShellEntry| $ 48))
-                                       (EXIT (|error| "cyclic list"))))))
-                                 (EXIT (SETQ |y|
-                                        (SPADCALL (SETQ |x| |y|)
-                                         (|getShellEntry| $ 14)))))))
-                       (SETQ |k| (+ |k| 1))))
-                   (EXIT |x|)))))))) 
+             (T (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
+                           |URAGG-;tail;2A;16|)
+                     (LET ((|k| 0))
+                       (LOOP
+                         (COND
+                           ((NOT (NOT (SPADCALL |y|
+                                       (|getShellEntry| $ 20))))
+                            (RETURN NIL))
+                           (T (SEQ (COND
+                                     ((EQL |k| 1000)
+                                      (COND
+                                        ((SPADCALL |x|
+                                          (|getShellEntry| $ 48))
+                                         (EXIT (|error| "cyclic list"))))))
+                                   (EXIT
+                                    (SETQ |y|
+                                     (SPADCALL (SETQ |x| |y|)
+                                      (|getShellEntry| $ 14)))))))
+                         (SETQ |k| (+ |k| 1))))
+                     (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;findCycle| (|x| $)
   (LET ((|y| (SPADCALL |x| (|getShellEntry| $ 14))))
@@ -280,19 +280,19 @@
                         |URAGG-;cycleTail;2A;18|)
                   (|getShellEntry| $ 20))
               |x|)
-             ('T
-              (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
-                         |URAGG-;cycleTail;2A;18|)
-                   (LOOP
-                     (COND
-                       ((NOT (NOT (SPADCALL |x| |z|
-                                      (|getShellEntry| $ 54))))
-                        (RETURN NIL))
-                       (T (SEQ (LETT |y| |z| |URAGG-;cycleTail;2A;18|)
-                               (EXIT (SETQ |z|
-                                      (SPADCALL |z|
-                                       (|getShellEntry| $ 14))))))))
-                   (EXIT |y|)))))))) 
+             (T (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
+                           |URAGG-;cycleTail;2A;18|)
+                     (LOOP
+                       (COND
+                         ((NOT (NOT (SPADCALL |x| |z|
+                                     (|getShellEntry| $ 54))))
+                          (RETURN NIL))
+                         (T (SEQ (LETT |y| |z|
+                                       |URAGG-;cycleTail;2A;18|)
+                                 (EXIT (SETQ |z|
+                                        (SPADCALL |z|
+                                         (|getShellEntry| $ 14))))))))
+                     (EXIT |y|)))))))) 
 
 (DEFUN |URAGG-;cycleEntry;2A;19| (|x| $)
   (PROG (|z| |l| |y|)
@@ -304,39 +304,39 @@
                         |URAGG-;cycleEntry;2A;19|)
                   (|getShellEntry| $ 20))
               |y|)
-             ('T
-              (SEQ (LETT |z| (SPADCALL |y| (|getShellEntry| $ 14))
-                         |URAGG-;cycleEntry;2A;19|)
-                   (LETT |l| 1 |URAGG-;cycleEntry;2A;19|)
-                   (LOOP
-                     (COND
-                       ((NOT (NOT (SPADCALL |y| |z|
-                                      (|getShellEntry| $ 54))))
-                        (RETURN NIL))
-                       (T (SEQ (SETQ |z|
-                                     (SPADCALL |z|
-                                      (|getShellEntry| $ 14)))
-                               (EXIT (SETQ |l| (+ |l| 1)))))))
-                   (LETT |y| |x| |URAGG-;cycleEntry;2A;19|)
-                   (LET ((|k| 1))
+             (T (SEQ (LETT |z| (SPADCALL |y| (|getShellEntry| $ 14))
+                           |URAGG-;cycleEntry;2A;19|)
+                     (LETT |l| 1 |URAGG-;cycleEntry;2A;19|)
                      (LOOP
                        (COND
-                         ((> |k| |l|) (RETURN NIL))
-                         (T (SETQ |y|
-                                  (SPADCALL |y| (|getShellEntry| $ 14)))))
-                       (SETQ |k| (+ |k| 1))))
-                   (LOOP
-                     (COND
-                       ((NOT (NOT (SPADCALL |x| |y|
-                                      (|getShellEntry| $ 54))))
-                        (RETURN NIL))
-                       (T (SEQ (SETQ |x|
-                                     (SPADCALL |x|
-                                      (|getShellEntry| $ 14)))
-                               (EXIT (SETQ |y|
-                                      (SPADCALL |y|
-                                       (|getShellEntry| $ 14))))))))
-                   (EXIT |x|)))))))) 
+                         ((NOT (NOT (SPADCALL |y| |z|
+                                     (|getShellEntry| $ 54))))
+                          (RETURN NIL))
+                         (T (SEQ (SETQ |z|
+                                       (SPADCALL |z|
+                                        (|getShellEntry| $ 14)))
+                                 (EXIT (SETQ |l| (+ |l| 1)))))))
+                     (LETT |y| |x| |URAGG-;cycleEntry;2A;19|)
+                     (LET ((|k| 1))
+                       (LOOP
+                         (COND
+                           ((> |k| |l|) (RETURN NIL))
+                           (T (SETQ |y|
+                                    (SPADCALL |y|
+                                     (|getShellEntry| $ 14)))))
+                         (SETQ |k| (+ |k| 1))))
+                     (LOOP
+                       (COND
+                         ((NOT (NOT (SPADCALL |x| |y|
+                                     (|getShellEntry| $ 54))))
+                          (RETURN NIL))
+                         (T (SEQ (SETQ |x|
+                                       (SPADCALL |x|
+                                        (|getShellEntry| $ 14)))
+                                 (EXIT (SETQ |y|
+                                        (SPADCALL |y|
+                                         (|getShellEntry| $ 14))))))))
+                     (EXIT |x|)))))))) 
 
 (DEFUN |URAGG-;cycleLength;ANni;20| (|x| $)
   (PROG (|y| |k|)
@@ -346,20 +346,19 @@
                   (SPADCALL (SETQ |x| (|URAGG-;findCycle| |x| $))
                       (|getShellEntry| $ 20)))
               0)
-             ('T
-              (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
-                         |URAGG-;cycleLength;ANni;20|)
-                   (LETT |k| 1 |URAGG-;cycleLength;ANni;20|)
-                   (LOOP
-                     (COND
-                       ((NOT (NOT (SPADCALL |x| |y|
-                                      (|getShellEntry| $ 54))))
-                        (RETURN NIL))
-                       (T (SEQ (SETQ |y|
-                                     (SPADCALL |y|
-                                      (|getShellEntry| $ 14)))
-                               (EXIT (SETQ |k| (+ |k| 1)))))))
-                   (EXIT |k|)))))))) 
+             (T (SEQ (LETT |y| (SPADCALL |x| (|getShellEntry| $ 14))
+                           |URAGG-;cycleLength;ANni;20|)
+                     (LETT |k| 1 |URAGG-;cycleLength;ANni;20|)
+                     (LOOP
+                       (COND
+                         ((NOT (NOT (SPADCALL |x| |y|
+                                     (|getShellEntry| $ 54))))
+                          (RETURN NIL))
+                         (T (SEQ (SETQ |y|
+                                       (SPADCALL |y|
+                                        (|getShellEntry| $ 14)))
+                                 (EXIT (SETQ |k| (+ |k| 1)))))))
+                     (EXIT |k|)))))))) 
 
 (DEFUN |URAGG-;rest;ANniA;21| (|x| |n| $)
   (SEQ (LET ((|i| 1))
@@ -369,7 +368,7 @@
              (T (COND
                   ((SPADCALL |x| (|getShellEntry| $ 20))
                    (|error| "Index out of range"))
-                  ('T (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 14)))))))
+                  (T (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 14)))))))
            (SETQ |i| (+ |i| 1))))
        (EXIT |x|))) 
 
@@ -377,58 +376,55 @@
   (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 60))))
     (COND
       ((< |m| |n|) (|error| "index out of range"))
-      ('T
-       (SPADCALL
-           (SPADCALL |x|
-               (LET ((#0=#:G1502 (- |m| |n|)))
-                 (|check-subtype| (NOT (MINUSP #0#))
-                     '(|NonNegativeInteger|) #0#))
-               (|getShellEntry| $ 62))
-           (|getShellEntry| $ 63)))))) 
+      (T (SPADCALL
+             (SPADCALL |x|
+                 (LET ((#0=#:G1502 (- |m| |n|)))
+                   (|check-subtype| (NOT (MINUSP #0#))
+                       '(|NonNegativeInteger|) #0#))
+                 (|getShellEntry| $ 62))
+             (|getShellEntry| $ 63)))))) 
 
 (DEFUN |URAGG-;=;2AB;23| (|x| |y| $)
   (SEQ (COND
          ((SPADCALL |x| |y| (|getShellEntry| $ 54)) T)
-         ('T
-          (SEQ (LET ((|k| 0))
-                 (LOOP
-                   (COND
-                     ((NOT (COND
-                             ((SPADCALL |x| (|getShellEntry| $ 20))
-                              NIL)
-                             ('T
-                              (NOT (SPADCALL |y|
-                                    (|getShellEntry| $ 20))))))
-                      (RETURN NIL))
-                     (T (SEQ (COND
-                               ((EQL |k| 1000)
-                                (COND
-                                  ((SPADCALL |x|
-                                    (|getShellEntry| $ 48))
-                                   (EXIT (|error| "cyclic list"))))))
-                             (EXIT (COND
-                                     ((SPADCALL
-                                       (SPADCALL |x|
-                                        (|getShellEntry| $ 8))
-                                       (SPADCALL |y|
-                                        (|getShellEntry| $ 8))
-                                       (|getShellEntry| $ 66))
-                                      (RETURN-FROM |URAGG-;=;2AB;23|
-                                        NIL))
-                                     ('T
-                                      (SEQ
-                                       (SETQ |x|
-                                        (SPADCALL |x|
-                                         (|getShellEntry| $ 14)))
-                                       (EXIT
-                                        (SETQ |y|
+         (T (SEQ (LET ((|k| 0))
+                   (LOOP
+                     (COND
+                       ((NOT (COND
+                               ((SPADCALL |x| (|getShellEntry| $ 20))
+                                NIL)
+                               (T (NOT (SPADCALL |y|
+                                        (|getShellEntry| $ 20))))))
+                        (RETURN NIL))
+                       (T (SEQ (COND
+                                 ((EQL |k| 1000)
+                                  (COND
+                                    ((SPADCALL |x|
+                                      (|getShellEntry| $ 48))
+                                     (EXIT (|error| "cyclic list"))))))
+                               (EXIT (COND
+                                       ((SPADCALL
+                                         (SPADCALL |x|
+                                          (|getShellEntry| $ 8))
                                          (SPADCALL |y|
-                                          (|getShellEntry| $ 14)))))))))))
-                   (SETQ |k| (+ |k| 1))))
-               (EXIT (COND
-                       ((SPADCALL |x| (|getShellEntry| $ 20))
-                        (SPADCALL |y| (|getShellEntry| $ 20)))
-                       ('T NIL)))))))) 
+                                          (|getShellEntry| $ 8))
+                                         (|getShellEntry| $ 66))
+                                        (RETURN-FROM |URAGG-;=;2AB;23|
+                                          NIL))
+                                       (T
+                                        (SEQ
+                                         (SETQ |x|
+                                          (SPADCALL |x|
+                                           (|getShellEntry| $ 14)))
+                                         (EXIT
+                                          (SETQ |y|
+                                           (SPADCALL |y|
+                                            (|getShellEntry| $ 14)))))))))))
+                     (SETQ |k| (+ |k| 1))))
+                 (EXIT (COND
+                         ((SPADCALL |x| (|getShellEntry| $ 20))
+                          (SPADCALL |y| (|getShellEntry| $ 20)))
+                         (T NIL)))))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
   (SEQ (LET ((|k| 0))
@@ -439,15 +435,14 @@
              (T (COND
                   ((SPADCALL |u| |v| (|getShellEntry| $ 68))
                    (RETURN-FROM |URAGG-;node?;2AB;24| T))
-                  ('T
-                   (SEQ (COND
-                          ((EQL |k| 1000)
-                           (COND
-                             ((SPADCALL |v| (|getShellEntry| $ 48))
-                              (EXIT (|error| "cyclic list"))))))
-                        (EXIT (SETQ |v|
-                                    (SPADCALL |v|
-                                     (|getShellEntry| $ 14)))))))))
+                  (T (SEQ (COND
+                            ((EQL |k| 1000)
+                             (COND
+                               ((SPADCALL |v| (|getShellEntry| $ 48))
+                                (EXIT (|error| "cyclic list"))))))
+                          (EXIT (SETQ |v|
+                                      (SPADCALL |v|
+                                       (|getShellEntry| $ 14)))))))))
            (SETQ |k| (+ |k| 1))))
        (EXIT (SPADCALL |u| |v| (|getShellEntry| $ 68))))) 
 
@@ -468,16 +463,15 @@
   (SEQ (COND
          ((SPADCALL |x| (|getShellEntry| $ 20))
           (|error| "setlast: empty list"))
-         ('T
-          (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 24)) |s|
-                   (|getShellEntry| $ 70))
-               (EXIT |s|)))))) 
+         (T (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 24)) |s|
+                     (|getShellEntry| $ 70))
+                 (EXIT |s|)))))) 
 
 (DEFUN |URAGG-;setchildren!;ALA;30| (|u| |lv| $)
   (COND
     ((EQL (LENGTH |lv|) 1)
      (SPADCALL |u| (|SPADfirst| |lv|) (|getShellEntry| $ 74)))
-    ('T (|error| "wrong number of children specified")))) 
+    (T (|error| "wrong number of children specified")))) 
 
 (DEFUN |URAGG-;setvalue!;A2S;31| (|u| |s| $)
   (SPADCALL |u| |s| (|getShellEntry| $ 70))) 
@@ -487,18 +481,17 @@
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
-             ('T
-              (SEQ (SETQ |p|
-                         (SPADCALL |p|
-                             (LET ((#0=#:G1528 (- |n| 1)))
-                               (|check-subtype| (NOT (MINUSP #0#))
-                                   '(|NonNegativeInteger|) #0#))
-                             (|getShellEntry| $ 62)))
-                   (LETT |q| (SPADCALL |p| (|getShellEntry| $ 14))
-                         |URAGG-;split!;AIA;32|)
-                   (SPADCALL |p| (SPADCALL (|getShellEntry| $ 84))
-                       (|getShellEntry| $ 74))
-                   (EXIT |q|)))))))) 
+             (T (SEQ (SETQ |p|
+                           (SPADCALL |p|
+                               (LET ((#0=#:G1528 (- |n| 1)))
+                                 (|check-subtype| (NOT (MINUSP #0#))
+                                     '(|NonNegativeInteger|) #0#))
+                               (|getShellEntry| $ 62)))
+                     (LETT |q| (SPADCALL |p| (|getShellEntry| $ 14))
+                           |URAGG-;split!;AIA;32|)
+                     (SPADCALL |p| (SPADCALL (|getShellEntry| $ 84))
+                         (|getShellEntry| $ 74))
+                     (EXIT |q|)))))))) 
 
 (DEFUN |URAGG-;cycleSplit!;2A;33| (|x| $)
   (PROG (|y| |z|)
@@ -510,21 +503,20 @@
                       (|getShellEntry| $ 20))
                   (SPADCALL |x| |y| (|getShellEntry| $ 54)))
               |y|)
-             ('T
-              (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
-                         |URAGG-;cycleSplit!;2A;33|)
-                   (LOOP
-                     (COND
-                       ((NOT (NOT (SPADCALL |z| |y|
-                                      (|getShellEntry| $ 54))))
-                        (RETURN NIL))
-                       (T (SEQ (SETQ |x| |z|)
-                               (EXIT (SETQ |z|
-                                      (SPADCALL |z|
-                                       (|getShellEntry| $ 14))))))))
-                   (SPADCALL |x| (SPADCALL (|getShellEntry| $ 84))
-                       (|getShellEntry| $ 74))
-                   (EXIT |y|)))))))) 
+             (T (SEQ (LETT |z| (SPADCALL |x| (|getShellEntry| $ 14))
+                           |URAGG-;cycleSplit!;2A;33|)
+                     (LOOP
+                       (COND
+                         ((NOT (NOT (SPADCALL |z| |y|
+                                     (|getShellEntry| $ 54))))
+                          (RETURN NIL))
+                         (T (SEQ (SETQ |x| |z|)
+                                 (EXIT (SETQ |z|
+                                        (SPADCALL |z|
+                                         (|getShellEntry| $ 14))))))))
+                     (SPADCALL |x| (SPADCALL (|getShellEntry| $ 84))
+                         (|getShellEntry| $ 74))
+                     (EXIT |y|)))))))) 
 
 (DEFUN |UnaryRecursiveAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

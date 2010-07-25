@@ -311,20 +311,20 @@ optCond (x is ['COND,:l]) ==
   if l is [a,[aa,b]] and TruthP aa and b is ["COND",:c] then
     x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
-    if (p1 is ["NOT",=p2]) or (p2 is ["NOT",=p1]) then
-      l:=[[p1,:c1],['(QUOTE T),:c2]]
+    if (p1 is ['%not,=p2]) or (p2 is ['%not,=p1]) then
+      l:=[[p1,:c1],['%true,:c2]]
       x.rest := l
-    c1 is ['NIL] and p2 = '(QUOTE T) and first c2 = '(QUOTE T) =>
-      p1 is ["NOT",p1']=> return p1'
-      return ["NOT",p1]
+    c1 is ['NIL] and p2 = '%true and first c2 = '%true =>
+      p1 is ['%not,p1']=> return p1'
+      return ['%not,p1]
   l is [[p1,:c1],[p2,:c2],[p3,:c3]] and TruthP p3 =>
     EqualBarGensym(c1,c3) =>
-      ["COND",[["OR",p1,["NOT",p2]],:c1],[['QUOTE,true],:c2]]
-    EqualBarGensym(c1,c2) => ["COND",[["OR",p1,p2],:c1],[['QUOTE,true],:c3]]
+      ["COND",[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
+    EqualBarGensym(c1,c2) => ["COND",[['%or,p1,p2],:c1],['%true,:c3]]
     x
   for y in tails l repeat
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
-      a:=['OR,a1,a2]
+      a:=['%or,a1,a2]
       first(y).first := a
       y.rest := y'
   x
@@ -351,30 +351,25 @@ EqualBarGensym(x,y) ==
 --Called early, to change IF to COND
  
 optIF2COND ["IF",a,b,c] ==
-  b is "%noBranch" => ["COND",[["NOT",a],c]]
+  b is "%noBranch" => ["COND",[['%not,a],c]]
   c is "%noBranch" => ["COND",[a,b]]
   c is ["IF",:.] => ["COND",[a,b],:rest optIF2COND c]
   c is ["COND",:p] => ["COND",[a,b],:p]
-  ["COND",[a,b],[$true,c]]
+  ["COND",[a,b],['%true,c]]
  
 optXLAMCond x ==
   x is ["COND",u:= [p,c],:l] =>
-    (optPredicateIfTrue p => c; ["COND",u,:optCONDtail l])
+    (p = '%true => c; ["COND",u,:optCONDtail l])
   atom x => x
   x.first := optXLAMCond first x
   x.rest := optXLAMCond rest x
   x
  
-optPredicateIfTrue p ==
-  p is ['QUOTE,:.] => true
-  p is [fn,x] and MEMQ(fn,$BasicPredicates) and FUNCALL(fn,x) => true
-  nil
- 
 optCONDtail l ==
   null l => nil
   [frst:= [p,c],:l']:= l
-  optPredicateIfTrue p => [[$true,c]]
-  null rest l => [frst,[$true,["CondError"]]]
+  p = '%true => [['%true,c]]
+  null rest l => [frst,['%true,["CondError"]]]
   [frst,:optCONDtail l']
 
 ++ Determine whether the symbol `g' is the name of a temporary that
@@ -406,8 +401,8 @@ optSEQ ["SEQ",:l] ==
       before:= take(#transform,l)
       aft:= after(l,before)
       null before => ["SEQ",:aft]
-      null aft => ["COND",:transform,'((QUOTE T) (conderr))]
-      ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
+      null aft => ["COND",:transform,'(%true (conderr))]
+      ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l

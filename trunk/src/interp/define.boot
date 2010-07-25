@@ -1188,7 +1188,7 @@ addArgumentConditions($body,$functionName) ==
       fn clist ==
         clist is [[n,untypedCondition,typedCondition],:.] =>
           ['COND,[typedCondition,fn rest clist],
-            [$true,["argumentDataError",n,
+            ['%true,["argumentDataError",n,
               MKQ untypedCondition,MKQ $functionName]]]
         null clist => $body
         systemErrorHere ["addArgumentConditions",clist]
@@ -1571,7 +1571,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
   item.op := "COND"
-  item.rest := [[p',x,:x'],['(QUOTE T),y,:y']]
+  item.rest := [[p',x,:x'],['%true,y,:y']]
  where localExtras(oldFLP) ==
    EQ(oldFLP,$functorLocalParameters) => NIL
    flp1:=$functorLocalParameters
@@ -1692,7 +1692,7 @@ DomainSubstitutionFunction(parameters,body) ==
            --should not bother if it will only be called once
   name:= INTERN strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)
-  body:= ["COND",[name],['(QUOTE T),['SETQ,name,body]]]
+  body:= ["COND",[name],['%true,['%store,name,body]]]
   body
 
 

@@ -680,7 +680,7 @@ plural(n,string) ==
 
 formatIf pred ==
   not pred => nil
-  member(pred,'(T (QUOTE T))) => nil
+  member(pred,'(T %true (QUOTE T))) => nil
   concat('%b,'"if",'%d,pred2English pred)
 
 formatPredParts s ==

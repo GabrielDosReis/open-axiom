@@ -274,7 +274,7 @@
                    (|getShellEntry| $ 15))
                (SPADCALL |dev| (- |x|) (|getShellEntry| $ 18))
                (EXIT (SPADCALL |dev| (|getShellEntry| $ 19)))))
-         ('T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
+         (T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
 
 (DEFUN |INT;OMwrite;$S;2| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
@@ -342,10 +342,10 @@
 
 (DEFUN |INT;addmod;4$;20| (|a| |b| |p| $)
   (LET ((|c| (+ |a| |b|)))
-    (COND ((NOT (< |c| |p|)) (- |c| |p|)) ('T |c|)))) 
+    (COND ((NOT (< |c| |p|)) (- |c| |p|)) (T |c|)))) 
 
 (DEFUN |INT;submod;4$;21| (|a| |b| |p| $)
-  (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) ('T |c|)))) 
+  (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) (T |c|)))) 
 
 (DEFUN |INT;mulmod;4$;22| (|a| |b| |p| $)
   (REMAINDER2 (* |a| |b|) |p|)) 
@@ -377,8 +377,8 @@
              (LETT |r| (REMAINDER2 |a| |b|)
                    |INT;positiveRemainder;3$;28|)
              $)
-         (COND ((MINUSP |b|) (- |r| |b|)) ('T (+ |r| |b|))))
-        ('T |r|))))) 
+         (COND ((MINUSP |b|) (- |r| |b|)) (T (+ |r| |b|))))
+        (T |r|))))) 
 
 (DEFUN |INT;reducedSystem;2M;29| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
@@ -445,12 +445,12 @@
 (DEFUN |INT;recip;$U;52| (|x| $)
   (COND
     ((OR (EQL |x| 1) (EQL |x| -1)) (CONS 0 |x|))
-    ('T (CONS 1 "failed")))) 
+    (T (CONS 1 "failed")))) 
 
 (DEFUN |INT;gcd;3$;53| (|x| |y| $) (DECLARE (IGNORE $)) (GCD |x| |y|)) 
 
 (DEFUN |INT;unitNormal;$R;54| (|x| $)
-  (COND ((MINUSP |x|) (VECTOR -1 (- |x|) -1)) ('T (VECTOR 1 |x| 1)))) 
+  (COND ((MINUSP |x|) (VECTOR -1 (- |x|) -1)) (T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |INT;unitCanonical;2$;55| (|x| $)
   (DECLARE (IGNORE $))
@@ -468,22 +468,21 @@
       ((EQL (SPADCALL |pp| (|getShellEntry| $ 108))
             (SPADCALL |p| (|getShellEntry| $ 108)))
        (SPADCALL |p| (|getShellEntry| $ 110)))
-      ('T
-       (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
-           (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
-                     (SPADCALL
-                         (LET ((#0=#:G1499
-                                   (SPADCALL
-                                    (SPADCALL |p|
-                                     (|getShellEntry| $ 108))
-                                    (SPADCALL |pp|
-                                     (|getShellEntry| $ 108))
-                                    (|getShellEntry| $ 112))))
-                           (|check-union| (ZEROP (CAR #0#)) $ #0#)
-                           (CDR #0#))
-                         (|getShellEntry| $ 114))
-                     (|getShellEntry| $ 118))
-           (|getShellEntry| $ 120)))))) 
+      (T (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
+             (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
+                 (SPADCALL
+                     (LET ((#0=#:G1499
+                               (SPADCALL
+                                   (SPADCALL |p|
+                                    (|getShellEntry| $ 108))
+                                   (SPADCALL |pp|
+                                    (|getShellEntry| $ 108))
+                                   (|getShellEntry| $ 112))))
+                       (|check-union| (ZEROP (CAR #0#)) $ #0#)
+                       (CDR #0#))
+                     (|getShellEntry| $ 114))
+                 (|getShellEntry| $ 118))
+             (|getShellEntry| $ 120)))))) 
 
 (DEFUN |INT;factorPolynomial!0| (|#1| $)
   (SPADCALL |#1| (|getShellEntry| $ 111))) 
@@ -497,7 +496,7 @@
      (SPADCALL |q| (|getShellEntry| $ 123)))
     ((SPADCALL |q| (|getShellEntry| $ 122))
      (SPADCALL |p| (|getShellEntry| $ 123)))
-    ('T (SPADCALL (LIST |p| |q|) (|getShellEntry| $ 126))))) 
+    (T (SPADCALL (LIST |p| |q|) (|getShellEntry| $ 126))))) 
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
@@ -506,12 +505,11 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
-                               (LIST (CONS NIL (CONS 1 (|Integer;|))))))
-             (SETQ #0# T))
-           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
+                                 (LIST (CONS NIL (CONS 1 (|Integer;|))))))
+               (SETQ #0# T))
+             (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
 
 (DEFUN |Integer;| ()
   (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 141))

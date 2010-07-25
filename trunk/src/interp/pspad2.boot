@@ -549,7 +549,7 @@ nBlanks m == strconc/[char('_  ) for i in 1..m]
  
 isNewspadOperator op == GETL(op,"Led") or GETL(op,"Nud")
  
-isTrue x == x="true" or x is '(QUOTE T)
+isTrue x == x="true" or x = '%true
  
 nary2Binary(u,op) ==
   u is [a,b,:t] => (t => nary2Binary([[op,a,b],:t],op); [op,a,b])

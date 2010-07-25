@@ -175,7 +175,7 @@
     ((EQL (QCSIZE |s|) 1)
      (SPADCALL |s| (SPADCALL |s| (|getShellEntry| $ 52))
          (|getShellEntry| $ 53)))
-    ('T (|userError| "String is not a single character")))) 
+    (T (|userError| "String is not a single character")))) 
 
 (DEFUN |CHAR;upperCase;2$;24| (|c| $)
   (DECLARE (IGNORE $))
@@ -192,12 +192,13 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Character|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
-                               (LIST (CONS NIL (CONS 1 (|Character;|))))))
-             (SETQ #0# T))
-           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
+                                 (LIST (CONS NIL
+                                        (CONS 1 (|Character;|))))))
+               (SETQ #0# T))
+             (COND
+               ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
 
 (DEFUN |Character;| ()
   (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 58))

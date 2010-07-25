@@ -10,18 +10,17 @@
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|StreamAggregate;CAT|)
-                  ('T
-                   (SETQ |StreamAggregate;CAT|
-                         (|Join| (|UnaryRecursiveAggregate| '|t#1|)
-                                 (|LinearAggregate| '|t#1|)
-                                 (|mkCategory| '|domain|
-                                     '(((|explicitlyFinite?|
-                                         ((|Boolean|) $))
-                                        T)
-                                       ((|possiblyInfinite?|
-                                         ((|Boolean|) $))
-                                        T))
-                                     NIL '((|Boolean|)) NIL))))))))
+                  (T (SETQ |StreamAggregate;CAT|
+                           (|Join| (|UnaryRecursiveAggregate| '|t#1|)
+                                   (|LinearAggregate| '|t#1|)
+                                   (|mkCategory| '|domain|
+                                    '(((|explicitlyFinite?|
+                                        ((|Boolean|) $))
+                                       T)
+                                      ((|possiblyInfinite?|
+                                        ((|Boolean|) $))
+                                       T))
+                                    NIL '((|Boolean|)) NIL))))))))
     (|setShellEntry| #0# 0
         (LIST '|StreamAggregate| (|devaluate| |t#1|)))
     #0#)) 

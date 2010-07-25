@@ -11,11 +11,11 @@
   (COND
     ((ZEROP |n|) (|spadConstant| $ 10))
     ((SPADCALL |x| (|getShellEntry| $ 11))
-     (COND ((MINUSP |n|) (|error| "division by zero")) ('T |x|)))
+     (COND ((MINUSP |n|) (|error| "division by zero")) (T |x|)))
     ((MINUSP |n|)
      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15)) (- |n|)
          (|getShellEntry| $ 19)))
-    ('T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
+    (T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
 
 (DEFUN |DIVRING-;*;F2S;2| (|q| |x| $)
   (SPADCALL

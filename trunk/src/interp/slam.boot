@@ -86,7 +86,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   n:= k+minIndex
   --Check general predicate
   predOk :=
-    generalPred is '(QUOTE T) => true
+    generalPred = '%true => true
     generalPred is ['SPADCALL,m,=sharpArg,
       ["ELT",["%dynval",=MKQ minivectorName],slot]]
         and EQ(lesspSlot,$minivector.slot)=> m+1
@@ -175,9 +175,9 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
     null argl => [cacheName]
     [["%store",g3,['assocCircular,g1,["%dynval",MKQ cacheName]]],['CDR,g3]]
   thirdPredPair:=
-    null argl => ['(QUOTE T),[["%store",["%dynval",MKQ cacheName],computeValue]]]
-    ['(QUOTE T),
-      ["SETQ",g2,computeValue],
+    null argl => ['%true,[['%store,['%dynval,MKQ cacheName],computeValue]]]
+    ['%true,
+      ['%store,g2,computeValue],
         ["SETQ",g3,
             ["CAR",["%store",["%dynval",MKQ cacheName],['predCircular,["%dynval",cacheName],cacheCount]]]],
           ["RPLACA",g3,g1],
@@ -218,7 +218,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function
   secondPredPair:= [["SETQ",g2,["HGET",["%dynval",MKQ cacheName],g1]],g2]
-  thirdPredPair:= ['(QUOTE T),["HPUT",["%dynval",MKQ cacheName],g1,computeValue]]
+  thirdPredPair:= ['%true,["HPUT",['%dynval,MKQ cacheName],g1,computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",["COND",secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
@@ -335,7 +335,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       phrase3:= [["%igt",sharpArg,n],[auxfn,:argl,["LIST",n,:initCode]]]
       phrase4:= [["%igt",sharpArg,n-k],
         ["ELT",["LIST",:initCode],["QSDIFFERENCE",n,sharpArg]]]
-      phrase5:= ['(QUOTE T),['recurrenceError,MKQ op,sharpArg]]
+      phrase5:= ['%true,['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['COND,phrase1,phrase2,phrase3,phrase4,phrase5]]
   if $verbose then
     sayKeyedMsg("S2IX0001",[op])

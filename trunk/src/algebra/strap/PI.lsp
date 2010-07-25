@@ -11,14 +11,14 @@
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|PositiveInteger|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|PositiveInteger|
-                               (LIST (CONS NIL
-                                      (CONS 1 (|PositiveInteger;|))))))
-             (SETQ #0# T))
-           (COND
-             ((NOT #0#) (HREM |$ConstructorCache| '|PositiveInteger|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|PositiveInteger|
+                                 (LIST (CONS NIL
+                                        (CONS 1 (|PositiveInteger;|))))))
+               (SETQ #0# T))
+             (COND
+               ((NOT #0#)
+                (HREM |$ConstructorCache| '|PositiveInteger|))))))))) 
 
 (DEFUN |PositiveInteger;| ()
   (LET ((|dv$| (LIST '|PositiveInteger|)) ($ (|newShell| 16))
