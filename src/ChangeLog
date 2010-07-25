@@ -1,5 +1,10 @@
 2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (simplifyVMForm): Don't call optimize.
+	(optCall): Handle VM macro expansions here.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (resetTo): New.
 	(optCatch): Use it.
 	(optCall): Likewise.

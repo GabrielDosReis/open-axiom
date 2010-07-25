@@ -151,10 +151,19 @@ resetTo(x,y) ==
 simplifyVMForm x ==
   isAtomicForm x => x
   x.op = 'CLOSEDFN => x
-  x is [op,vars,body] and op in $AbstractionOperator =>
-    third(x) := simplifyVMForm body
+  atom x.op =>
+    x is [op,vars,body] and op in $AbstractionOperator =>
+      third(x) := simplifyVMForm body
+      x
+    if x.op = 'IF then
+      resetTo(x,optIF2COND x)
+    for args in tails x.args repeat
+      args.first := simplifyVMForm first args
+    opt := subrname x.op has OPTIMIZE => resetTo(x,FUNCALL(opt,x))
     x
-  first optimize [x]
+  for xs in tails x repeat
+    xs.first := simplifyVMForm first xs
+  x
 
 optimize x ==
   (opt x; x) where
@@ -241,6 +250,10 @@ optSPADCALL(form is ['SPADCALL,:argl]) ==
   form
  
 optCall (x is ['%call,:u]) ==
+  u is [['XLAM,vars,body],:args] =>
+    atom vars => body
+    #vars > #args => systemErrorHere ['optCall,x]
+    resetTo(x,optXLAMCond SUBLIS(pairList(vars,args),body))
   -- destructively optimizes this new x
   x:= optimize [u]
   -- next should happen only as result of macro expansion
