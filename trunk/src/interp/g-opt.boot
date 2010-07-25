@@ -111,7 +111,7 @@ optimizeFunctionDef(def) ==
     sayBrightlyI bright '"Original LISP code:"
     pp def
  
-  def' := optimize COPY def
+  def' := simplifyVMForm COPY def
  
   if $reportOptimization then
     sayBrightlyI bright '"Optimized LISP code:"
