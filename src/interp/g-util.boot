@@ -49,7 +49,7 @@ module g_-util where
 --%  
 
 $AbstractionOperator ==
-  '(LAM ILAM SLAM SPADSLAM LAMBDA)
+  '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA)
 
 ++ Return true if the symbol 's' is used in the form 'x'.  
 usedSymbol?(s,x) ==
