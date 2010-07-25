@@ -162,20 +162,6 @@ wantArgumentsAsTuple: (%List,%Signature) -> %Boolean
 wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ~= #sig
 
-$AbstractionOperator ==
-  '(LAM ILAM SLAM SPADSLAM LAMBDA)
-
-++ Return true if the symbol 's' is used in the form 'x'.  
-usedSymbol?(s,x) ==
-  symbol? x => s = x
-  atom x => false
-  x is ['QUOTE,:.] => false
-  x is [op,parms,:body] and op in $AbstractionOperator =>
-    x in parms => false
-    usedSymbol?(x,body)
-  or/[usedSymbol?(s,x') for x' in x]
-  
-  
 ++ We are about to seal the (Lisp) definition of a function.
 ++ Augment the body of any function definition in the form `x'
 ++ with declarations for unused parameters.
