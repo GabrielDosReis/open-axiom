@@ -610,7 +610,7 @@
 (DEFUN |SYMBOL;istring| (|n| $)
   (COND
     ((< 9 |n|) (|error| "Can have at most 9 scripts of each kind"))
-    (T (|getSimpleArrayEntry| (|getShellEntry| $ 18) (+ |n| 0))))) 
+    (T (|getSimpleArrayEntry| (|getShellEntry| $ 18) |n|)))) 
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
