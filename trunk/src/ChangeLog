@@ -1,5 +1,12 @@
 2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optIadd): More simplification if either 
+	operand is zero.
+	(optIsub): Likewise.
+	(optImul): More simplifications if either operand is one.
+
+2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (usedSymbol?): Move to g-util.boot.
 	* interp/nruncomp.boot (NRTsetVector4a): Tidy.
 

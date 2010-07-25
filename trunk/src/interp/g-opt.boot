@@ -714,14 +714,20 @@ optBge ['%bge,a,b] ==
 
 optIadd(x is ['%iadd,a,b]) ==
   integer? a and integer? b => a + b
+  integer? a and a = 0 => b
+  integer? b and b = 0 => a
   x
 
 optIsub(x is ['%isub,a,b]) ==
   integer? a and integer? b => a - b
+  integer? a and a = 0 => ['%ineg,b]
+  integer? b and b = 0 => a
   x
 
 optImul(x is ['%imul,a,b]) ==
   integer? a and integer? b => a * b
+  integer? a and a = 1 => b
+  integer? b and b = 1 => a
   x
 
 optIneg(x is ['%ineg,a]) ==
