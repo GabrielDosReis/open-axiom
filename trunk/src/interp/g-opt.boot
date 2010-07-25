@@ -114,7 +114,7 @@ optimizeFunctionDef(def) ==
   def' := simplifyVMForm COPY def
  
   if $reportOptimization then
-    sayBrightlyI bright '"Optimized LISP code:"
+    sayBrightlyI bright '"Intermediate VM code:"
     pp def'
 
   [name,[slamOrLam,args,body]] := def'
@@ -254,25 +254,24 @@ optCall (x is ['%call,:u]) ==
     atom vars => body
     #vars > #args => systemErrorHere ['optCall,x]
     resetTo(x,optXLAMCond SUBLIS(pairList(vars,args),body))
-  -- destructively optimizes this new x
-  x:= optimize [u]
-  -- next should happen only as result of macro expansion
-  atom first x => first x
-  [fn,:a] := u := first x
-  atom fn => resetTo(x,u)
-  fn is ["applyFun",name] =>
-    (x.first := "SPADCALL"; x.rest := [:a,name]; x)
+  [fn,:a] := u
+  atom fn =>
+    opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
+    resetTo(x,u)
+  fn is ['applyFun,name] =>
+    x.first := 'SPADCALL
+    x.rest := [:a,name]
+    x
   fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
-    not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
-    q="CONST" => ["spadConstant",R,n]
+    not $bootStrapMode and (w := optCallSpecially(q,x,n,R)) => resetTo(x,w)
+    q = 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)
-  systemErrorHere ["optCall",x]
+  systemErrorHere ['optCall,x]
  
 optCallSpecially(q,x,n,R) ==
     y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)
     optimizableDomain? R => optSpecialCall(x,R,n)
-    (y:= get(R,"value",$e)) and
-      optimizableDomain? y.expr =>
+    (y:= get(R,"value",$e)) and optimizableDomain? y.expr =>
         optSpecialCall(x,y.expr,n)
     (
       (y:= lookup(R,$getDomainCode)) and ([op,y,prop]:= y) and
