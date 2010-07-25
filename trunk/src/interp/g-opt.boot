@@ -138,10 +138,22 @@ optimizeFunctionDef(def) ==
   changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,groupVariableDefinitions body']]
 
+resetTo(x,y) ==
+  atom y => x := y
+  EQ(x,y) => x
+  x.first := y.first
+  x.rest := y.rest
+  x
+
 ++ Like `optimize', except that non-atomic form may be reduced to
 ++ to atomic forms.  In particular, the address of the input may
 ++ not be the same as that of the output.
 simplifyVMForm x ==
+  isAtomicForm x => x
+  x.op = 'CLOSEDFN => x
+  x is [op,vars,body] and op in $AbstractionOperator =>
+    third(x) := simplifyVMForm body
+    x
   first optimize [x]
 
 optimize x ==
@@ -214,8 +226,7 @@ optCatch (x is ["CATCH",g,a]) ==
     a.rest := [:s,["EXIT",u]]
     ["CATCH",y,a]:= optimize x
   if hasNoThrows(a,g) then
-    x.first := first a
-    x.rest := rest a
+    resetTo(x,a)
   else
     changeThrowToGo(a,g)
     x.first := "SEQ"
@@ -234,8 +245,8 @@ optCall (x is ['%call,:u]) ==
   x:= optimize [u]
   -- next should happen only as result of macro expansion
   atom first x => first x
-  [fn,:a]:= first x
-  atom fn => (x.rest := a; x.first := fn)
+  [fn,:a] := u := first x
+  atom fn => resetTo(x,u)
   fn is ["applyFun",name] =>
     (x.first := "SPADCALL"; x.rest := [:a,name]; x)
   fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
@@ -291,7 +302,7 @@ optSpecialCall(x,y,n) ==
     x.rest := CDAR x
     x.first := fn
     if fn is ["XLAM",:.] then x := simplifyVMForm x
-    x is ["EQUAL",:args] => RPLACW(x,DEF_-EQUAL args)
+    x is ["EQUAL",:args] => resetTo(x,DEF_-EQUAL args)
                 --DEF-EQUAL is really an optimiser
     x
   [fn,:a]:= first x

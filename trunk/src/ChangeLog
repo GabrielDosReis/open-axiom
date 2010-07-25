@@ -1,3 +1,12 @@
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (resetTo): New.
+	(optCatch): Use it.
+	(optCall): Likewise.
+	(optSpecialCall): Likewise.
+	(simplifyVMForm): Handle simple cases here.
+	* interp/macros.lisp (RPLACW): Remove.
+
 2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optIadd): More simplification if either 

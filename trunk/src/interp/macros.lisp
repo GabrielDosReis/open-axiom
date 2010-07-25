@@ -215,10 +215,6 @@
         ((EQL (CDR L) TL) (RPLACD L NIL))
         ((TRUNCLIST-1 (CDR L) TL))))
  
-; 15.3 Alteration of List Structure
- 
-(defun RPLACW (x w) (let (y z) (dsetq (Y . Z) w) (RPLACA X Y) (RPLACD X Z)  X))
- 
 ; 15.4 Substitution of Expressions
  
 (DEFUN SUBSTEQ (NEW OLD FORM)
