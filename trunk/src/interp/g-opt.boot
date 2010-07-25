@@ -211,7 +211,7 @@ changeThrowToGo(s,g) ==
   changeThrowToGo(rest s,g)
 
 ++ Change any `(THROW tag (%return expr))' in x to just
-++ `(%return expr) since a return-operator transfer control
+++ `(%return expr) since a %return-expression transfers control
 ++ out of the function body anyway.  Similarly, transform
 ++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
 removeNeedlessThrow x ==
@@ -269,19 +269,9 @@ optCall (x is ['%call,:u]) ==
   systemErrorHere ['optCall,x]
  
 optCallSpecially(q,x,n,R) ==
-    y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)
     optimizableDomain? R => optSpecialCall(x,R,n)
     (y:= get(R,"value",$e)) and optimizableDomain? y.expr =>
         optSpecialCall(x,y.expr,n)
-    (
-      (y:= lookup(R,$getDomainCode)) and ([op,y,prop]:= y) and
-        (yy:= LASSOC(y,$specialCaseKeyList)) =>
-         optSpecialCall(x,[op,yy,prop],n)) where
-            lookup(a,l) ==
-              null l => nil
-              [l',:l]:= l
-              l' is ["%LET", =a,l',:.] => l'
-              lookup(a,l)
     nil
  
 optCallEval u ==
