@@ -1,5 +1,10 @@
 2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (usedSymbol?): Move to g-util.boot.
+	* interp/nruncomp.boot (NRTsetVector4a): Tidy.
+
+2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/cattable.boot: Use %true for truth value in VM expressions.
 	* interp/clam.boot: Likewise.
 	* interp/define.boot: Likewise.

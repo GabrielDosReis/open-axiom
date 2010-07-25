@@ -44,8 +44,24 @@ module g_-util where
   mkList: %List -> %List
   isSubDomain: (%Mode,%Mode) -> %Form
   expandToVMForm: %Thing -> %Thing
+  usedSymbol?: (%Symbol,%Code) -> %Boolean
 
+--%  
 
+$AbstractionOperator ==
+  '(LAM ILAM SLAM SPADSLAM LAMBDA)
+
+++ Return true if the symbol 's' is used in the form 'x'.  
+usedSymbol?(s,x) ==
+  symbol? x => s = x
+  atom x => false
+  x is ['QUOTE,:.] => false
+  x is [op,parms,:body] and op in $AbstractionOperator =>
+    s in parms => false
+    usedSymbol?(s,body)
+  or/[usedSymbol?(s,x') for x' in x]
+  
+  
 --% VM forms
 
 ++ Make the assumption named `prop' for all symbols
