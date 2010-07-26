@@ -1,3 +1,9 @@
+2010-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/si.spad.pamphlet (SingleInteger): Tidy.
+	* interp/g-opt.boot (simplifyVMForm): Expand %icst0 and %icst1.
+	(optIlt): Fold more configurations.
+
 2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optCond): Simplify newly built COND-expression.
