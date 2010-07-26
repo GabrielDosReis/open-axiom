@@ -1,5 +1,12 @@
 2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optimize): Remove as no longer used.
+	* interp/define.boot (DomainSubstitutionFunction): Use
+	simplifyVMForm in lieu of optimize.
+	* interp/nruncomp.boot (NRTsetVector4a): Likewise.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (oprCond): Replace use of TruthP with direct
 	comparison to %true.
 

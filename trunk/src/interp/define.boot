@@ -1684,7 +1684,7 @@ DomainSubstitutionFunction(parameters,body) ==
         cons? $definition and
             isFunctor body.op and 
               body.op ~= $definition.op
-          =>  ['QUOTE,optimize body]
+          =>  ['QUOTE,simplifyVMForm body]
         [Subst(parameters,u) for u in body]
   not (body is ["Join",:.]) => body
   atom $definition => body
