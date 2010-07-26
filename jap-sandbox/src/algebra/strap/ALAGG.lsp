@@ -16,19 +16,19 @@
                                      (|:| |entry| |t#2|))))
                     (COND
                       (|AssociationListAggregate;CAT|)
-                      ('T
-                       (SETQ |AssociationListAggregate;CAT|
-                             (|Join| (|TableAggregate| '|t#1| '|t#2|)
-                                     (|ListAggregate| '#1#)
-                                     (|mkCategory| '|domain|
-                                      '(((|assoc|
-                                          ((|Union|
-                                            (|Record| (|:| |key| |t#1|)
-                                             (|:| |entry| |t#2|))
-                                            "failed")
-                                           |t#1| $))
-                                         T))
-                                      NIL 'NIL NIL)))))))))
+                      (T (SETQ |AssociationListAggregate;CAT|
+                               (|Join| (|TableAggregate| '|t#1| '|t#2|)
+                                       (|ListAggregate| '#1#)
+                                       (|mkCategory| '|domain|
+                                        '(((|assoc|
+                                            ((|Union|
+                                              (|Record|
+                                               (|:| |key| |t#1|)
+                                               (|:| |entry| |t#2|))
+                                              "failed")
+                                             |t#1| $))
+                                           T))
+                                        NIL 'NIL NIL)))))))))
     (|setShellEntry| #0# 0
         (LIST '|AssociationListAggregate| (|devaluate| |t#1|)
               (|devaluate| |t#2|)))

@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import macros
+import g_-util
 namespace BOOT
 
 --% 
@@ -111,10 +111,10 @@ optimizeFunctionDef(def) ==
     sayBrightlyI bright '"Original LISP code:"
     pp def
  
-  def' := optimize COPY def
+  def' := simplifyVMForm COPY def
  
   if $reportOptimization then
-    sayBrightlyI bright '"Optimized LISP code:"
+    sayBrightlyI bright '"Intermediate VM code:"
     pp def'
 
   [name,[slamOrLam,args,body]] := def'
@@ -138,31 +138,30 @@ optimizeFunctionDef(def) ==
   changeVariableDefinitionToStore(body',args)
   [name,[slamOrLam,args,groupVariableDefinitions body']]
 
-++ Like `optimize', except that non-atomic form may be reduced to
-++ to atomic forms.  In particular, the address of the input may
-++ not be the same as that of the output.
-simplifyVMForm x ==
-  first optimize [x]
+resetTo(x,y) ==
+  atom y => x := y
+  EQ(x,y) => x
+  x.first := y.first
+  x.rest := y.rest
+  x
 
-optimize x ==
-  (opt x; x) where
-    opt x ==
-      atom x => nil
-      (y:= first x)='QUOTE => nil
-      y='CLOSEDFN => nil
-      y is [["XLAM",argl,body],:a] =>
-        optimize rest x
-        argl = "ignore" => x.first := body
-        if not (# argl<= # a) then
-          SAY '"length mismatch in XLAM expression"
-          PRETTYPRINT y
-        x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)
-      atom y => optimize rest x
-      if first y="IF" then (x.first := optIF2COND y; y:= first x)
-      op:= GETL(subrname first y,"OPTIMIZE") =>
-        (optimize rest x; x.first := FUNCALL(op,optimize first x))
-      x.first := optimize first x
-      optimize rest x
+++ Simplify the VM form `x'
+simplifyVMForm x ==
+  isAtomicForm x => x
+  x.op = 'CLOSEDFN => x
+  atom x.op =>
+    x is [op,vars,body] and op in $AbstractionOperator =>
+      third(x) := simplifyVMForm body
+      x
+    if x.op = 'IF then
+      resetTo(x,optIF2COND x)
+    for args in tails x.args repeat
+      args.first := simplifyVMForm first args
+    opt := subrname x.op has OPTIMIZE => resetTo(x,FUNCALL(opt,x))
+    x
+  for xs in tails x repeat
+    xs.first := simplifyVMForm first xs
+  x
  
 subrname u ==
   IDENTP u => u
@@ -190,7 +189,7 @@ changeThrowToGo(s,g) ==
   changeThrowToGo(rest s,g)
 
 ++ Change any `(THROW tag (%return expr))' in x to just
-++ `(%return expr) since a return-operator transfer control
+++ `(%return expr) since a %return-expression transfers control
 ++ out of the function body anyway.  Similarly, transform
 ++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
 removeNeedlessThrow x ==
@@ -212,10 +211,9 @@ optCatch (x is ["CATCH",g,a]) ==
   if a is ["SEQ",:s,["THROW", =g,u]] then
     changeThrowToExit(s,g)
     a.rest := [:s,["EXIT",u]]
-    ["CATCH",y,a]:= optimize x
+    a := simplifyVMForm a
   if hasNoThrows(a,g) then
-    x.first := first a
-    x.rest := rest a
+    resetTo(x,a)
   else
     changeThrowToGo(a,g)
     x.first := "SEQ"
@@ -230,35 +228,28 @@ optSPADCALL(form is ['SPADCALL,:argl]) ==
   form
  
 optCall (x is ['%call,:u]) ==
-  -- destructively optimizes this new x
-  x:= optimize [u]
-  -- next should happen only as result of macro expansion
-  atom first x => first x
-  [fn,:a]:= first x
-  atom fn => (x.rest := a; x.first := fn)
-  fn is ["applyFun",name] =>
-    (x.first := "SPADCALL"; x.rest := [:a,name]; x)
+  u is [['XLAM,vars,body],:args] =>
+    atom vars => body
+    #vars > #args => systemErrorHere ['optCall,x]
+    resetTo(x,optXLAMCond SUBLIS(pairList(vars,args),body))
+  [fn,:a] := u
+  atom fn =>
+    opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
+    resetTo(x,u)
+  fn is ['applyFun,name] =>
+    x.first := 'SPADCALL
+    x.rest := [:a,name]
+    x
   fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
-    not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
-    q="CONST" => ["spadConstant",R,n]
+    not $bootStrapMode and (w := optCallSpecially(q,x,n,R)) => resetTo(x,w)
+    q = 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)
-  systemErrorHere ["optCall",x]
+  systemErrorHere ['optCall,x]
  
 optCallSpecially(q,x,n,R) ==
-    y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)
     optimizableDomain? R => optSpecialCall(x,R,n)
-    (y:= get(R,"value",$e)) and
-      optimizableDomain? y.expr =>
+    (y:= get(R,"value",$e)) and optimizableDomain? y.expr =>
         optSpecialCall(x,y.expr,n)
-    (
-      (y:= lookup(R,$getDomainCode)) and ([op,y,prop]:= y) and
-        (yy:= LASSOC(y,$specialCaseKeyList)) =>
-         optSpecialCall(x,[op,yy,prop],n)) where
-            lookup(a,l) ==
-              null l => nil
-              [l',:l]:= l
-              l' is ["%LET", =a,l',:.] => l'
-              lookup(a,l)
     nil
  
 optCallEval u ==
@@ -291,7 +282,7 @@ optSpecialCall(x,y,n) ==
     x.rest := CDAR x
     x.first := fn
     if fn is ["XLAM",:.] then x := simplifyVMForm x
-    x is ["EQUAL",:args] => RPLACW(x,DEF_-EQUAL args)
+    x is ["EQUAL",:args] => resetTo(x,DEF_-EQUAL args)
                 --DEF-EQUAL is really an optimiser
     x
   [fn,:a]:= first x
@@ -308,23 +299,23 @@ optMkRecord ["mkRecord",:u] ==
   ["VECTOR",:u]
  
 optCond (x is ['COND,:l]) ==
-  if l is [a,[aa,b]] and TruthP aa and b is ["COND",:c] then
+  if l is [a,[aa,b]] and aa = '%true and b is ["COND",:c] then
     x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
-    if (p1 is ["NOT",=p2]) or (p2 is ["NOT",=p1]) then
-      l:=[[p1,:c1],['(QUOTE T),:c2]]
+    if (p1 is ['%not,=p2]) or (p2 is ['%not,=p1]) then
+      l:=[[p1,:c1],['%true,:c2]]
       x.rest := l
-    c1 is ['NIL] and p2 = '(QUOTE T) and first c2 = '(QUOTE T) =>
-      p1 is ["NOT",p1']=> return p1'
-      return ["NOT",p1]
-  l is [[p1,:c1],[p2,:c2],[p3,:c3]] and TruthP p3 =>
+    c1 is ['NIL] and p2 = '%true and first c2 = '%true =>
+      p1 is ['%not,p1']=> return p1'
+      return ['%not,p1]
+  l is [[p1,:c1],[p2,:c2],[p3,:c3]] and p3 = '%true =>
     EqualBarGensym(c1,c3) =>
-      ["COND",[["OR",p1,["NOT",p2]],:c1],[['QUOTE,true],:c2]]
-    EqualBarGensym(c1,c2) => ["COND",[["OR",p1,p2],:c1],[['QUOTE,true],:c3]]
+      ["COND",[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
+    EqualBarGensym(c1,c2) => ["COND",[['%or,p1,p2],:c1],['%true,:c3]]
     x
   for y in tails l repeat
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
-      a:=['OR,a1,a2]
+      a:=['%or,a1,a2]
       first(y).first := a
       y.rest := y'
   x
@@ -351,30 +342,25 @@ EqualBarGensym(x,y) ==
 --Called early, to change IF to COND
  
 optIF2COND ["IF",a,b,c] ==
-  b is "%noBranch" => ["COND",[["NOT",a],c]]
+  b is "%noBranch" => ["COND",[['%not,a],c]]
   c is "%noBranch" => ["COND",[a,b]]
   c is ["IF",:.] => ["COND",[a,b],:rest optIF2COND c]
   c is ["COND",:p] => ["COND",[a,b],:p]
-  ["COND",[a,b],[$true,c]]
+  ["COND",[a,b],['%true,c]]
  
 optXLAMCond x ==
   x is ["COND",u:= [p,c],:l] =>
-    (optPredicateIfTrue p => c; ["COND",u,:optCONDtail l])
+    (p = '%true => c; ["COND",u,:optCONDtail l])
   atom x => x
   x.first := optXLAMCond first x
   x.rest := optXLAMCond rest x
   x
  
-optPredicateIfTrue p ==
-  p is ['QUOTE,:.] => true
-  p is [fn,x] and MEMQ(fn,$BasicPredicates) and FUNCALL(fn,x) => true
-  nil
- 
 optCONDtail l ==
   null l => nil
   [frst:= [p,c],:l']:= l
-  optPredicateIfTrue p => [[$true,c]]
-  null rest l => [frst,[$true,["CondError"]]]
+  p = '%true => [['%true,c]]
+  null rest l => [frst,['%true,["CondError"]]]
   [frst,:optCONDtail l']
 
 ++ Determine whether the symbol `g' is the name of a temporary that
@@ -406,8 +392,8 @@ optSEQ ["SEQ",:l] ==
       before:= take(#transform,l)
       aft:= after(l,before)
       null before => ["SEQ",:aft]
-      null aft => ["COND",:transform,'((QUOTE T) (conderr))]
-      ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
+      null aft => ["COND",:transform,'(%true (conderr))]
+      ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
@@ -590,10 +576,18 @@ optLET_* form ==
   optLET form
 
 optBind form ==
-  form isnt ['%bind,inits,body] => form  -- inline only simple expressions
-  inits = nil => body                    -- no local variable, OK.
-  inits isnt [[var,expr]] => form        -- too many local variables
-  canInlineVarDefinition(var,expr,body) => substitute(expr,var,body)
+  form isnt ['%bind,inits,.] => form           -- accept only simple bodies
+  ok := true
+  while ok and inits ~= nil repeat
+    [var,expr] := first inits
+    usedSymbol?(var,rest inits) => ok := false -- no dependency, please.
+    body := third form
+    canInlineVarDefinition(var,expr,body) and isSimpleVMForm expr =>
+      third(form) := substitute_!(expr,var,body)
+      inits := rest inits
+    ok := false
+  null inits => third form                        -- no local var left
+  second(form) := inits
   form
 
 optLIST form ==
@@ -711,14 +705,20 @@ optBge ['%bge,a,b] ==
 
 optIadd(x is ['%iadd,a,b]) ==
   integer? a and integer? b => a + b
+  integer? a and a = 0 => b
+  integer? b and b = 0 => a
   x
 
 optIsub(x is ['%isub,a,b]) ==
   integer? a and integer? b => a - b
+  integer? a and a = 0 => ['%ineg,b]
+  integer? b and b = 0 => a
   x
 
 optImul(x is ['%imul,a,b]) ==
   integer? a and integer? b => a * b
+  integer? a and a = 1 => b
+  integer? b and b = 1 => a
   x
 
 optIneg(x is ['%ineg,a]) ==

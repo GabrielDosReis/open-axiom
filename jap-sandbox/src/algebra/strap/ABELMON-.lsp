@@ -25,7 +25,7 @@
 (DEFUN |ABELMON-;*;Nni2S;4| (|n| |x| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 7))
-    ('T (SPADCALL |n| |x| (|getShellEntry| $ 18))))) 
+    (T (SPADCALL |n| |x| (|getShellEntry| $ 18))))) 
 
 (DEFUN |AbelianMonoid&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
@@ -37,9 +37,8 @@
     (|setShellEntry| $ 6 |#1|)
     (COND
       ((|HasCategory| |#1| '(|Ring|)))
-      ('T
-       (|setShellEntry| $ 19
-           (CONS (|dispatchFunction| |ABELMON-;*;Nni2S;4|) $))))
+      (T (|setShellEntry| $ 19
+             (CONS (|dispatchFunction| |ABELMON-;*;Nni2S;4|) $))))
     $)) 
 
 (MAKEPROP '|AbelianMonoid&| '|infovec|

@@ -28,12 +28,12 @@
 (DEFUN |INTDOM-;recip;SU;3| (|x| $)
   (COND
     ((SPADCALL |x| (|getShellEntry| $ 13)) (CONS 1 "failed"))
-    ('T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
+    (T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
 
 (DEFUN |INTDOM-;unit?;SB;4| (|x| $)
   (COND
     ((EQL (CAR (SPADCALL |x| (|getShellEntry| $ 17))) 1) NIL)
-    ('T T))) 
+    (T T))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
   (SPADCALL (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)
@@ -48,7 +48,7 @@
          (OR (EQL (CAR (SPADCALL |x| |y| (|getShellEntry| $ 15))) 1)
              (EQL (CAR (SPADCALL |y| |x| (|getShellEntry| $ 15))) 1)))
      NIL)
-    ('T T))) 
+    (T T))) 
 
 (DEFUN |IntegralDomain&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
@@ -60,16 +60,14 @@
     (|setShellEntry| $ 6 |#1|)
     (COND
       ((|HasCategory| |#1| '(|Field|)))
-      ('T
-       (|setShellEntry| $ 9
-           (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
+      (T (|setShellEntry| $ 9
+             (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
     (COND
       ((|HasAttribute| |#1| '|canonicalUnitNormal|)
        (|setShellEntry| $ 22
            (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|) $)))
-      ('T
-       (|setShellEntry| $ 22
-           (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|) $))))
+      (T (|setShellEntry| $ 22
+             (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|) $))))
     $)) 
 
 (MAKEPROP '|IntegralDomain&| '|infovec|

@@ -36,10 +36,9 @@
                    (HGET |$ConstructorCache| '|Vector|)
                    '|domainEqualList|))
          (|CDRwithIncrement| #1#))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (|Vector;| #0#) (SETQ #1# T))
-           (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (|Vector;| #0#) (SETQ #1# T))
+             (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))) 
 
 (DEFUN |Vector;| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Vector| |dv$1|))

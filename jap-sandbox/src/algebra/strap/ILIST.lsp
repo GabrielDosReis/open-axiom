@@ -150,22 +150,22 @@
 (DEFUN |ILIST;setfirst!;$2S;10| (|x| |s| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (CAR (RPLACA |x| |s|))))) 
+    (T (CAR (RPLACA |x| |s|))))) 
 
 (DEFUN |ILIST;setelt;$first2S;11| (|x| T2 |s| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (CAR (RPLACA |x| |s|))))) 
+    (T (CAR (RPLACA |x| |s|))))) 
 
 (DEFUN |ILIST;setrest!;3$;12| (|x| |y| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (CDR (RPLACD |x| |y|))))) 
+    (T (CDR (RPLACD |x| |y|))))) 
 
 (DEFUN |ILIST;setelt;$rest2$;13| (|x| T3 |y| $)
   (COND
     ((NULL |x|) (|error| "Cannot update an empty list"))
-    ('T (CDR (RPLACD |x| |y|))))) 
+    (T (CDR (RPLACD |x| |y|))))) 
 
 (DEFUN |ILIST;construct;L$;14| (|l| $) (DECLARE (IGNORE $)) |l|) 
 
@@ -223,49 +223,48 @@
              (SETQ |y| (NREVERSE |y|))
              (EXIT (COND
                      ((NULL |s|) (SPADCALL |y| (|getShellEntry| $ 45)))
-                     ('T
-                      (SEQ (LETT |z|
-                                 (SPADCALL
-                                     (SPADCALL (|SPADfirst| |x|)
-                                      (|getShellEntry| $ 41))
-                                     (|getShellEntry| $ 46))
-                                 |ILIST;coerce;$Of;21|)
-                           (LOOP
-                             (COND
-                               ((NOT (NOT (EQ |s| (CDR |x|))))
-                                (RETURN NIL))
-                               (T (SEQ (SETQ |x| (CDR |x|))
-                                       (EXIT
-                                        (SETQ |z|
-                                         (CONS
-                                          (SPADCALL (|SPADfirst| |x|)
-                                           (|getShellEntry| $ 41))
-                                          |z|)))))))
-                           (EXIT (SPADCALL
-                                     (SPADCALL |y|
-                                      (SPADCALL
-                                       (SPADCALL (NREVERSE |z|)
-                                        (|getShellEntry| $ 47))
-                                       (|getShellEntry| $ 48))
-                                      (|getShellEntry| $ 49))
-                                     (|getShellEntry| $ 45)))))))))))) 
+                     (T (SEQ (LETT |z|
+                                   (SPADCALL
+                                    (SPADCALL (|SPADfirst| |x|)
+                                     (|getShellEntry| $ 41))
+                                    (|getShellEntry| $ 46))
+                                   |ILIST;coerce;$Of;21|)
+                             (LOOP
+                               (COND
+                                 ((NOT (NOT (EQ |s| (CDR |x|))))
+                                  (RETURN NIL))
+                                 (T (SEQ (SETQ |x| (CDR |x|))
+                                     (EXIT
+                                      (SETQ |z|
+                                       (CONS
+                                        (SPADCALL (|SPADfirst| |x|)
+                                         (|getShellEntry| $ 41))
+                                        |z|)))))))
+                             (EXIT (SPADCALL
+                                    (SPADCALL |y|
+                                     (SPADCALL
+                                      (SPADCALL (NREVERSE |z|)
+                                       (|getShellEntry| $ 47))
+                                      (|getShellEntry| $ 48))
+                                     (|getShellEntry| $ 49))
+                                    (|getShellEntry| $ 45)))))))))))) 
 
 (DEFUN |ILIST;=;2$B;22| (|x| |y| $)
   (SEQ (COND
          ((EQ |x| |y|) T)
-         ('T
-          (SEQ (LOOP
-                 (COND
-                   ((NOT (COND ((NULL |x|) NIL) ('T (NOT (NULL |y|)))))
-                    (RETURN NIL))
-                   (T (COND
-                        ((SPADCALL (CAR |x|) (CAR |y|)
-                             (|getShellEntry| $ 53))
-                         (RETURN-FROM |ILIST;=;2$B;22| NIL))
-                        ('T
-                         (SEQ (SETQ |x| (CDR |x|))
-                              (EXIT (SETQ |y| (CDR |y|)))))))))
-               (EXIT (COND ((NULL |x|) (NULL |y|)) ('T NIL)))))))) 
+         (T (SEQ (LOOP
+                   (COND
+                     ((NOT (COND
+                             ((NULL |x|) NIL)
+                             (T (NOT (NULL |y|)))))
+                      (RETURN NIL))
+                     (T (COND
+                          ((SPADCALL (CAR |x|) (CAR |y|)
+                               (|getShellEntry| $ 53))
+                           (RETURN-FROM |ILIST;=;2$B;22| NIL))
+                          (T (SEQ (SETQ |x| (CDR |x|))
+                                  (EXIT (SETQ |y| (CDR |y|)))))))))
+                 (EXIT (COND ((NULL |x|) (NULL |y|)) (T NIL)))))))) 
 
 (DEFUN |ILIST;latex;$S;23| (|x| $)
   (LET ((|s| "\\left["))
@@ -289,7 +288,7 @@
            (T (COND
                 ((SPADCALL |s| (CAR |x|) (|getShellEntry| $ 59))
                  (RETURN-FROM |ILIST;member?;S$B;24| T))
-                ('T (SETQ |x| (CDR |x|)))))))
+                (T (SETQ |x| (CDR |x|)))))))
        (EXIT NIL))) 
 
 (DEFUN |ILIST;concat!;3$;25| (|x| |y| $)
@@ -299,16 +298,14 @@
              ((NULL |x|)
               (COND
                 ((NULL |y|) |x|)
-                ('T
-                 (SEQ (PUSH (|SPADfirst| |y|) |x|)
-                      (QRPLACD |x| (CDR |y|)) (EXIT |x|)))))
-             ('T
-              (SEQ (LETT |z| |x| |ILIST;concat!;3$;25|)
-                   (LOOP
-                     (COND
-                       ((NOT (NOT (NULL (CDR |z|)))) (RETURN NIL))
-                       (T (SETQ |z| (CDR |z|)))))
-                   (QRPLACD |z| |y|) (EXIT |x|)))))))) 
+                (T (SEQ (PUSH (|SPADfirst| |y|) |x|)
+                        (QRPLACD |x| (CDR |y|)) (EXIT |x|)))))
+             (T (SEQ (LETT |z| |x| |ILIST;concat!;3$;25|)
+                     (LOOP
+                       (COND
+                         ((NOT (NOT (NULL (CDR |z|)))) (RETURN NIL))
+                         (T (SETQ |z| (CDR |z|)))))
+                     (QRPLACD |z| |y|) (EXIT |x|)))))))) 
 
 (DEFUN |ILIST;removeDuplicates!;2$;26| (|l| $)
   (PROG (|pp| |f| |pr|)
@@ -335,7 +332,7 @@
                                       ((SPADCALL (CAR |pr|) |f|
                                         (|getShellEntry| $ 59))
                                        (QRPLACD |pp| (CDR |pr|)))
-                                      ('T (SETQ |pp| |pr|)))))))))))
+                                      (T (SETQ |pp| |pr|)))))))))))
              (EXIT |l|)))))) 
 
 (DEFUN |ILIST;sort!;M2$;27| (|f| |l| $)
@@ -348,50 +345,49 @@
              ((NULL |p|) |q|)
              ((NULL |q|) |p|)
              ((EQ |p| |q|) (|error| "cannot merge a list into itself"))
-             ('T
-              (SEQ (COND
-                     ((SPADCALL (CAR |p|) (CAR |q|) |f|)
-                      (SEQ (LETT |r|
-                                 (LETT |t| |p| |ILIST;merge!;M3$;28|)
-                                 |ILIST;merge!;M3$;28|)
-                           (EXIT (SETQ |p| (CDR |p|)))))
-                     ('T
-                      (SEQ (LETT |r|
-                                 (LETT |t| |q| |ILIST;merge!;M3$;28|)
-                                 |ILIST;merge!;M3$;28|)
-                           (EXIT (SETQ |q| (CDR |q|))))))
-                   (LOOP
-                     (COND
-                       ((NOT (COND
-                               ((NULL |p|) NIL)
-                               ('T (NOT (NULL |q|)))))
-                        (RETURN NIL))
-                       (T (COND
-                            ((SPADCALL (CAR |p|) (CAR |q|) |f|)
-                             (SEQ (QRPLACD |t| |p|)
-                                  (LETT |t| |p| |ILIST;merge!;M3$;28|)
-                                  (EXIT (SETQ |p| (CDR |p|)))))
-                            ('T
-                             (SEQ (QRPLACD |t| |q|)
-                                  (LETT |t| |q| |ILIST;merge!;M3$;28|)
-                                  (EXIT (SETQ |q| (CDR |q|)))))))))
-                   (QRPLACD |t| (COND ((NULL |p|) |q|) ('T |p|)))
-                   (EXIT |r|)))))))) 
+             (T (SEQ (COND
+                       ((SPADCALL (CAR |p|) (CAR |q|) |f|)
+                        (SEQ (LETT |r|
+                                   (LETT |t| |p| |ILIST;merge!;M3$;28|)
+                                   |ILIST;merge!;M3$;28|)
+                             (EXIT (SETQ |p| (CDR |p|)))))
+                       (T (SEQ (LETT |r|
+                                     (LETT |t| |q|
+                                      |ILIST;merge!;M3$;28|)
+                                     |ILIST;merge!;M3$;28|)
+                               (EXIT (SETQ |q| (CDR |q|))))))
+                     (LOOP
+                       (COND
+                         ((NOT (COND
+                                 ((NULL |p|) NIL)
+                                 (T (NOT (NULL |q|)))))
+                          (RETURN NIL))
+                         (T (COND
+                              ((SPADCALL (CAR |p|) (CAR |q|) |f|)
+                               (SEQ (QRPLACD |t| |p|)
+                                    (LETT |t| |p|
+                                     |ILIST;merge!;M3$;28|)
+                                    (EXIT (SETQ |p| (CDR |p|)))))
+                              (T (SEQ (QRPLACD |t| |q|)
+                                      (LETT |t| |q|
+                                       |ILIST;merge!;M3$;28|)
+                                      (EXIT (SETQ |q| (CDR |q|)))))))))
+                     (QRPLACD |t| (COND ((NULL |p|) |q|) (T |p|)))
+                     (EXIT |r|)))))))) 
 
 (DEFUN |ILIST;split!;$I$;29| (|p| |n| $)
   (PROG (|q|)
     (RETURN
       (SEQ (COND
              ((< |n| 1) (|error| "index out of range"))
-             ('T
-              (SEQ (SETQ |p|
-                         (|ILIST;rest;$Nni$;19| |p|
-                             (LET ((#0=#:G1506 (- |n| 1)))
-                               (|check-subtype| (NOT (MINUSP #0#))
-                                   '(|NonNegativeInteger|) #0#))
-                             $))
-                   (LETT |q| (CDR |p|) |ILIST;split!;$I$;29|)
-                   (QRPLACD |p| NIL) (EXIT |q|)))))))) 
+             (T (SEQ (SETQ |p|
+                           (|ILIST;rest;$Nni$;19| |p|
+                               (LET ((#0=#:G1506 (- |n| 1)))
+                                 (|check-subtype| (NOT (MINUSP #0#))
+                                     '(|NonNegativeInteger|) #0#))
+                               $))
+                     (LETT |q| (CDR |p|) |ILIST;split!;$I$;29|)
+                     (QRPLACD |p| NIL) (EXIT |q|)))))))) 
 
 (DEFUN |ILIST;mergeSort| (|f| |p| |n| $)
   (PROG (|l| |q|)
@@ -404,19 +400,18 @@
                  (SETQ |p| (NREVERSE |p|))))))
            (EXIT (COND
                    ((< |n| 3) |p|)
-                   ('T
-                    (SEQ (LETT |l|
-                               (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
-                                 (|check-subtype| (NOT (MINUSP #0#))
-                                     '(|NonNegativeInteger|) #0#))
-                               |ILIST;mergeSort|)
-                         (LETT |q| (|ILIST;split!;$I$;29| |p| |l| $)
-                               |ILIST;mergeSort|)
-                         (SETQ |p| (|ILIST;mergeSort| |f| |p| |l| $))
-                         (SETQ |q|
-                               (|ILIST;mergeSort| |f| |q| (- |n| |l|)
-                                   $))
-                         (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
+                   (T (SEQ (LETT |l|
+                                 (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
+                                   (|check-subtype| (NOT (MINUSP #0#))
+                                    '(|NonNegativeInteger|) #0#))
+                                 |ILIST;mergeSort|)
+                           (LETT |q| (|ILIST;split!;$I$;29| |p| |l| $)
+                                 |ILIST;mergeSort|)
+                           (SETQ |p| (|ILIST;mergeSort| |f| |p| |l| $))
+                           (SETQ |q|
+                                 (|ILIST;mergeSort| |f| |q| (- |n| |l|)
+                                     $))
+                           (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
 (DEFUN |IndexedList| (&REST #0=#:G1520 &AUX #1=#:G1518)
   (DECLARE (SPECIAL |$ConstructorCache|))
@@ -429,12 +424,11 @@
                    (HGET |$ConstructorCache| '|IndexedList|)
                    '|domainEqualList|))
          (|CDRwithIncrement| #2#))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (APPLY (|function| |IndexedList;|) #1#)
-             (SETQ #2# T))
-           (COND
-             ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (APPLY (|function| |IndexedList;|) #1#)
+               (SETQ #2# T))
+             (COND
+               ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

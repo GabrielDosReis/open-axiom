@@ -52,7 +52,6 @@
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
 (defvar |$getPutTrace| nil)
-(defvar |$specialCaseKeyList| nil "checked in optCall")
 (defvar |$formulaFormat| nil "if true produce script formula output")
 (defvar |$texFormat| nil "if true produce tex output")
 (defvar |$fortranFormat| nil "if true produce fortran output")

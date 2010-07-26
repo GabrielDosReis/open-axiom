@@ -119,7 +119,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
             paren blankSeparate l1
 
         b1 = b2        == EQUAL(b1,b2)$Lisp
-        eq(b1, b2)     == %peq(b1,b2)$Foreign(Builtin)
+        eq(b1, b2)     == %peq(b1,b2)
 
         null? b      == NULL(b)$Lisp
         atom? b      == ATOM(b)$Lisp

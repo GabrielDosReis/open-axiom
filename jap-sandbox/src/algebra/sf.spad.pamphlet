@@ -406,8 +406,8 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    acoth x          == checkComplex ACOTH(x)$Lisp
    asech x          == checkComplex ASECH(x)$Lisp
    x:% / y:%        == %fdiv(x,y)
-   negative? x      == MINUSP(x)$Lisp
-   zero? x          == ZEROP(x)$Lisp
+   negative? x      == x < 0
+   zero? x          == x = 0
    one? x           == x = 1
    hash x           == HASHEQ(x)$Lisp
    recip(x)         == (zero? x => "failed"; 1 / x)

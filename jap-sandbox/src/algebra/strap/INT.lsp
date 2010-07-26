@@ -146,17 +146,19 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;>;2$B;36|)) 
 
-(PUT '|INT;>;2$B;36| '|SPADreplace| '|%igt|) 
+(PUT '|INT;>;2$B;36| '|SPADreplace| '(XLAM (|x| |y|) (|%ilt| |y| |x|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;<=;2$B;37|)) 
 
-(PUT '|INT;<=;2$B;37| '|SPADreplace| '|%ile|) 
+(PUT '|INT;<=;2$B;37| '|SPADreplace|
+     '(XLAM (|x| |y|) (|%not| (|%ilt| |y| |x|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Boolean|)
                 |INT;>=;2$B;38|)) 
 
-(PUT '|INT;>=;2$B;38| '|SPADreplace| '|%ige|) 
+(PUT '|INT;>=;2$B;38| '|SPADreplace|
+     '(XLAM (|x| |y|) (|%not| (|%ilt| |x| |y|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;-;2$;39|)) 
@@ -259,6 +261,9 @@
 
 (PUT '|INT;dec;2$;13| '|SPADreplace| '(XLAM (|x|) (|%isub| |x| 1))) 
 
+(PUT '|INT;negative?;$B;15| '|SPADreplace|
+     '(XLAM (|x|) (|%ilt| |x| 0))) 
+
 (PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
 
 (DEFUN |INT;writeOMInt| (|dev| |x| $)
@@ -269,7 +274,7 @@
                    (|getShellEntry| $ 15))
                (SPADCALL |dev| (- |x|) (|getShellEntry| $ 18))
                (EXIT (SPADCALL |dev| (|getShellEntry| $ 19)))))
-         ('T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
+         (T (SPADCALL |dev| |x| (|getShellEntry| $ 18)))))) 
 
 (DEFUN |INT;OMwrite;$S;2| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
@@ -336,10 +341,11 @@
   (INTEGER-LENGTH |a|)) 
 
 (DEFUN |INT;addmod;4$;20| (|a| |b| |p| $)
-  (LET ((|c| (+ |a| |b|))) (COND ((>= |c| |p|) (- |c| |p|)) ('T |c|)))) 
+  (LET ((|c| (+ |a| |b|)))
+    (COND ((NOT (< |c| |p|)) (- |c| |p|)) (T |c|)))) 
 
 (DEFUN |INT;submod;4$;21| (|a| |b| |p| $)
-  (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) ('T |c|)))) 
+  (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) (T |c|)))) 
 
 (DEFUN |INT;mulmod;4$;22| (|a| |b| |p| $)
   (REMAINDER2 (* |a| |b|) |p|)) 
@@ -371,8 +377,8 @@
              (LETT |r| (REMAINDER2 |a| |b|)
                    |INT;positiveRemainder;3$;28|)
              $)
-         (COND ((MINUSP |b|) (- |r| |b|)) ('T (+ |r| |b|))))
-        ('T |r|))))) 
+         (COND ((MINUSP |b|) (- |r| |b|)) (T (+ |r| |b|))))
+        (T |r|))))) 
 
 (DEFUN |INT;reducedSystem;2M;29| (|m| $) (DECLARE (IGNORE $)) |m|) 
 
@@ -392,7 +398,9 @@
 
 (DEFUN |INT;>;2$B;36| (|x| |y| $) (DECLARE (IGNORE $)) (< |y| |x|)) 
 
-(DEFUN |INT;<=;2$B;37| (|x| |y| $) (DECLARE (IGNORE $)) (<= |x| |y|)) 
+(DEFUN |INT;<=;2$B;37| (|x| |y| $)
+  (DECLARE (IGNORE $))
+  (NOT (< |y| |x|))) 
 
 (DEFUN |INT;>=;2$B;38| (|x| |y| $)
   (DECLARE (IGNORE $))
@@ -437,12 +445,12 @@
 (DEFUN |INT;recip;$U;52| (|x| $)
   (COND
     ((OR (EQL |x| 1) (EQL |x| -1)) (CONS 0 |x|))
-    ('T (CONS 1 "failed")))) 
+    (T (CONS 1 "failed")))) 
 
 (DEFUN |INT;gcd;3$;53| (|x| |y| $) (DECLARE (IGNORE $)) (GCD |x| |y|)) 
 
 (DEFUN |INT;unitNormal;$R;54| (|x| $)
-  (COND ((MINUSP |x|) (VECTOR -1 (- |x|) -1)) ('T (VECTOR 1 |x| 1)))) 
+  (COND ((MINUSP |x|) (VECTOR -1 (- |x|) -1)) (T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |INT;unitCanonical;2$;55| (|x| $)
   (DECLARE (IGNORE $))
@@ -460,22 +468,21 @@
       ((EQL (SPADCALL |pp| (|getShellEntry| $ 108))
             (SPADCALL |p| (|getShellEntry| $ 108)))
        (SPADCALL |p| (|getShellEntry| $ 110)))
-      ('T
-       (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
-           (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
-                     (SPADCALL
-                         (LET ((#0=#:G1499
-                                   (SPADCALL
-                                    (SPADCALL |p|
-                                     (|getShellEntry| $ 108))
-                                    (SPADCALL |pp|
-                                     (|getShellEntry| $ 108))
-                                    (|getShellEntry| $ 112))))
-                           (|check-union| (EQL (CAR #0#) 0) $ #0#)
-                           (CDR #0#))
-                         (|getShellEntry| $ 114))
-                     (|getShellEntry| $ 118))
-           (|getShellEntry| $ 120)))))) 
+      (T (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 110))
+             (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
+                 (SPADCALL
+                     (LET ((#0=#:G1499
+                               (SPADCALL
+                                   (SPADCALL |p|
+                                    (|getShellEntry| $ 108))
+                                   (SPADCALL |pp|
+                                    (|getShellEntry| $ 108))
+                                   (|getShellEntry| $ 112))))
+                       (|check-union| (ZEROP (CAR #0#)) $ #0#)
+                       (CDR #0#))
+                     (|getShellEntry| $ 114))
+                 (|getShellEntry| $ 118))
+             (|getShellEntry| $ 120)))))) 
 
 (DEFUN |INT;factorPolynomial!0| (|#1| $)
   (SPADCALL |#1| (|getShellEntry| $ 111))) 
@@ -489,21 +496,20 @@
      (SPADCALL |q| (|getShellEntry| $ 123)))
     ((SPADCALL |q| (|getShellEntry| $ 122))
      (SPADCALL |p| (|getShellEntry| $ 123)))
-    ('T (SPADCALL (LIST |p| |q|) (|getShellEntry| $ 126))))) 
+    (T (SPADCALL (LIST |p| |q|) (|getShellEntry| $ 126))))) 
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1525)
+  (PROG (#0=#:G1528)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))
          (|CDRwithIncrement| (CDAR #0#)))
-        ('T
-         (UNWIND-PROTECT
-           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
-                               (LIST (CONS NIL (CONS 1 (|Integer;|))))))
-             (SETQ #0# T))
-           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
+        (T (UNWIND-PROTECT
+             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
+                                 (LIST (CONS NIL (CONS 1 (|Integer;|))))))
+               (SETQ #0# T))
+             (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
 
 (DEFUN |Integer;| ()
   (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 141))

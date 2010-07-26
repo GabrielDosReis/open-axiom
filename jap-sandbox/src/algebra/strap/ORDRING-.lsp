@@ -24,7 +24,7 @@
     ((SPADCALL |x| (|getShellEntry| $ 13)) 1)
     ((SPADCALL |x| (|getShellEntry| $ 16)) -1)
     ((SPADCALL |x| (|getShellEntry| $ 19)) 0)
-    ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
+    (T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |ORDRING-;abs;2S;4| (|x| $)
   (COND
@@ -32,7 +32,7 @@
     ((SPADCALL |x| (|getShellEntry| $ 16))
      (SPADCALL |x| (|getShellEntry| $ 22)))
     ((SPADCALL |x| (|getShellEntry| $ 19)) (|spadConstant| $ 7))
-    ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
+    (T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |OrderedRing&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

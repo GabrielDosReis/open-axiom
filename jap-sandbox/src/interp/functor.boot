@@ -253,10 +253,9 @@ optFunctorBody x ==
       [CondClause u for u in l | u and first u] where
         CondClause [pred,:conseq] ==
           [optFunctorBody pred,:optFunctorPROGN conseq]
-    l:= EFFACE('((QUOTE T)),l)
-                   --delete any trailing ("T)
+    l:= EFFACE(['%true],l) --delete any trailing ("T)
     null l => nil
-    CAAR l='(QUOTE T) =>
+    CAAR l='%true =>
       (null CDAR l => nil; null CDDAR l => CADAR l; ["PROGN",:CDAR l])
     null rest l and null CDAR l =>
             --there is no meat to this COND
@@ -525,7 +524,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
               else viewAssoc,EnvToPass) for v in rest u]
     TruthP CAAR c => ['PROGN,:CDAR c]
     while (c and (LAST c is [c1] or LAST c is [c1,[]]) and
-            (c1 = '(QUOTE T) or c1 is ['HasAttribute,:.])) repeat
+            (c1 = '%true or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end
         c:=nreverse rest nreverse c
     null c => '(LIST)
@@ -745,7 +744,7 @@ InvestigateConditions catvecListMaker ==
   ($HackSlot4:= [reshape u for u in $HackSlot4]) where
     reshape u ==
       ['COND,[TryGDC ICformat rest u],
-             ['(QUOTE T),['RPLACA,'(CAR TrueDomain),
+             ['%true,['RPLACA,'(CAR TrueDomain),
                              ['delete,['QUOTE,first u],'(CAAR TrueDomain)]]]]
   $supplementaries:=
     [u

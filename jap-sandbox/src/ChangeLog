@@ -1,3 +1,111 @@
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optimize): Remove as no longer used.
+	* interp/define.boot (DomainSubstitutionFunction): Use
+	simplifyVMForm in lieu of optimize.
+	* interp/nruncomp.boot (NRTsetVector4a): Likewise.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (oprCond): Replace use of TruthP with direct
+	comparison to %true.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCall): Don't call optimize again.
+	(optCallSpecially): Remove deadcode.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (simplifyVMForm): Don't call optimize.
+	(optCall): Handle VM macro expansions here.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (resetTo): New.
+	(optCatch): Use it.
+	(optCall): Likewise.
+	(optSpecialCall): Likewise.
+	(simplifyVMForm): Handle simple cases here.
+	* interp/macros.lisp (RPLACW): Remove.
+
+2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optIadd): More simplification if either 
+	operand is zero.
+	(optIsub): Likewise.
+	(optImul): More simplifications if either operand is one.
+
+2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (usedSymbol?): Move to g-util.boot.
+	* interp/nruncomp.boot (NRTsetVector4a): Tidy.
+
+2010-07-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/cattable.boot: Use %true for truth value in VM expressions.
+	* interp/clam.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/sys-constants.boot: Remove $true and $false as unused.
+
+2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compMatchAlternative): Don't generate
+	LET-expressions. 
+	* interp/g-opt.boot (optBind): Tidy.
+
+2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optBind): Check for dependencies in
+	initializations in %bind expressions.
+	* interp/g-util.boot (expandBind): The body of s %bind expression
+	may be a sequence of statements.
+
+2010-07-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot: Remove expansion for %ble, %bgt, %bge.
+	* interp/g-opt.boot (optMINUS): Remove.
+	(opt_-): Likewise.
+	(optBle): New.
+	(optBgt): Likewise.
+	(optBge): Likewise.
+
+2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot (expandFeq): New.
+	* algebra/sf.spad.pamphlet (DoubleFloat): Tidy.
+
+2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-util.boot (expandIeq): New expander for %ieq.
+	* interp/g-opt.boot (optIeq): New.
+	(optIadd): Likewise.
+	(optIsub): Likewise.
+	(optImul): Likewise.
+	(optIneg): Likewise.
+	(lispize): Remove.
+
+2010-07-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (simplifyVMForm): New.
+	(optRetract): Simplify the predicate when possible.
+	(optNot): New transformer.
+	(optAnd): Likewise.
+	(optOr): Likewise.
+	(optIlt): Likewise.
+	(optIle): Likewise.
+	(optIgt): Likewise.
+	(optIge): Likewise.
+
 2010-07-21  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* algebra/data.spad.pamphlet (Byte) [~]: Tidy.
