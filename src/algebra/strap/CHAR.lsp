@@ -51,15 +51,15 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;space;$;12|)) 
 
-(PUT '|CHAR;space;$;12| '|SPADreplace| '(XLAM NIL (CHAR "   " 0))) 
+(PUT '|CHAR;space;$;12| '|SPADreplace| '(XLAM NIL (|%ccst| " "))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;quote;$;13|)) 
 
-(PUT '|CHAR;quote;$;13| '|SPADreplace| '(XLAM NIL (CHAR "\" " 0))) 
+(PUT '|CHAR;quote;$;13| '|SPADreplace| '(XLAM NIL (|%ccst| "\""))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;escape;$;14|)) 
 
-(PUT '|CHAR;escape;$;14| '|SPADreplace| '(XLAM NIL (CHAR "_ " 0))) 
+(PUT '|CHAR;escape;$;14| '|SPADreplace| '(XLAM NIL (|%ccst| "_"))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Thing|)
                 |CHAR;coerce;$Of;15|)) 
@@ -141,11 +141,11 @@
 
 (DEFUN |CHAR;random;$;11| ($) (CODE-CHAR (RANDOM 256))) 
 
-(DEFUN |CHAR;space;$;12| ($) (DECLARE (IGNORE $)) (CHAR "   " 0)) 
+(DEFUN |CHAR;space;$;12| ($) (DECLARE (IGNORE $)) #\Space) 
 
-(DEFUN |CHAR;quote;$;13| ($) (DECLARE (IGNORE $)) (CHAR "\" " 0)) 
+(DEFUN |CHAR;quote;$;13| ($) (DECLARE (IGNORE $)) #\") 
 
-(DEFUN |CHAR;escape;$;14| ($) (DECLARE (IGNORE $)) (CHAR "_ " 0)) 
+(DEFUN |CHAR;escape;$;14| ($) (DECLARE (IGNORE $)) #\_) 
 
 (DEFUN |CHAR;coerce;$Of;15| (|c| $) (DECLARE (IGNORE $)) |c|) 
 

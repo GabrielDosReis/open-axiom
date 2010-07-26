@@ -115,6 +115,7 @@ NagOptimisationPackage(): Exports == Implementation where
     import AnyFunctions1(Boolean)
     import AnyFunctions1(Matrix DoubleFloat)
     import AnyFunctions1(Matrix Integer)
+    macro I == Integer
 
 
     e04dgf(nArg:Integer,esArg:DoubleFloat,fuArg:DoubleFloat,_
@@ -139,7 +140,7 @@ NagOptimisationPackage(): Exports == Implementation where
 	,"op"::S,"objf"::S,["objgrd"::S,"n"::S]$Lisp,["x"::S,"n"::S]$Lisp,["work"::S,["*"::S,13$Lisp,"n"::S]$Lisp]$Lisp,["user"::S,"*"::S]$Lisp_
 	,"objfun"::S]$Lisp_
 	,["integer"::S,"n"::S,"it"::S,"pr"::S,"sta"::S_
-	,"sto"::S,"ve"::S,"iter"::S,"ifail"::S,["iwork"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp,["iuser"::S,"*"::S]$Lisp]$Lisp_
+	,"sto"::S,"ve"::S,"iter"::S,"ifail"::S,["iwork"::S,["+"::S,"n"::S,1@I]$Lisp]$Lisp,["iuser"::S,"*"::S]$Lisp]$Lisp_
 	,["logical"::S,"list"::S]$Lisp_
 	]$Lisp,_
 	["iter"::S,"objf"::S,"objgrd"::S,"x"::S,"ifail"::S]$Lisp,_
@@ -321,11 +322,11 @@ NagOptimisationPackage(): Exports == Implementation where
 	,"cra"::S,"fea"::S,"fun"::S,"infb"::S,"infs"::S,"linf"::S,"lint"::S,"nonf"::S,"opt"::S,"ste"::S_
 	,["c"::S,"ncnln"::S]$Lisp,"objf"::S,["objgrd"::S,"n"::S]$Lisp,["cjac"::S,"nrowj"::S,"n"::S]$Lisp,["clamda"::S,["+"::S,["+"::S,"nclin"::S,"ncnln"::S]$Lisp,"n"::S]$Lisp]$Lisp_
 	,["r"::S,"nrowr"::S,"n"::S]$Lisp,["x"::S,"n"::S]$Lisp,["work"::S,"lwork"::S]$Lisp_
-	,["user"::S,1$Lisp]$Lisp,"confun"::S,"objfun"::S]$Lisp_
+	,["user"::S,1@I]$Lisp,"confun"::S,"objfun"::S]$Lisp_
 	,["integer"::S,"n"::S,"nclin"::S,"ncnln"::S_
 	,"nrowa"::S,"nrowj"::S,"nrowr"::S,"liwork"::S,"lwork"::S,"der"::S,"maji"::S,"majp"::S,"mini"::S,"minp"::S,"mon"::S,"stao"::S_
 	,"stac"::S,"stoo"::S,"stoc"::S,"ve"::S,"iter"::S,["istate"::S,["+"::S,["+"::S,"nclin"::S,"ncnln"::S]$Lisp,"n"::S]$Lisp]$Lisp_
-	,"ifail"::S,["iwork"::S,"liwork"::S]$Lisp,["iuser"::S,1$Lisp]$Lisp]$Lisp_
+	,"ifail"::S,["iwork"::S,"liwork"::S]$Lisp,["iuser"::S,1@I]$Lisp]$Lisp_
 	,["logical"::S,"sta"::S,"hes"::S,"list"::S]$Lisp_
 	]$Lisp,_
 	["iter"::S,"c"::S,"objf"::S,"objgrd"::S,"istate"::S,"cjac"::S,"clamda"::S,"r"::S,"x"::S,"ifail"::S]$Lisp,_

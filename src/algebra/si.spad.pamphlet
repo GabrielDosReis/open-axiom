@@ -210,13 +210,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
 
  == SubDomain(Integer, SMINTP(#1)$Lisp) add
 
-   seed : % := 1$Lisp               -- for random()
-   MAXINT ==> _$ShortMaximum$Lisp
-   MININT ==> _$ShortMinimum$Lisp
-   BASE ==> 67108864$Lisp           -- 2**26
-   MULTIPLIER ==> 314159269$Lisp    -- from Knuth's table
-   MODULUS ==> 2147483647$Lisp      -- 2**31-1
-
    import %icst0: %                 from Foreign Builtin
    import %icst1: %                 from Foreign Builtin
    import %iadd: (%,%) -> %         from Foreign Builtin
@@ -234,6 +227,13 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    import %ile: (%,%) -> Boolean    from Foreign Builtin
    import %igt: (%,%) -> Boolean    from Foreign Builtin
    import %ige: (%,%) -> Boolean    from Foreign Builtin
+
+   seed : % := %icst1               -- for random()
+   MAXINT ==> _$ShortMaximum$Lisp
+   MININT ==> _$ShortMinimum$Lisp
+   BASE ==> 67108864$Lisp           -- 2**26
+   MULTIPLIER ==> 314159269$Lisp    -- from Knuth's table
+   MODULUS ==> 2147483647$Lisp      -- 2**31-1
 
    writeOMSingleInt(dev: OpenMathDevice, x: %): Void ==
     if negative? x then

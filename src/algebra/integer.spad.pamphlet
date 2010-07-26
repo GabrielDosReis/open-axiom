@@ -82,17 +82,29 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
  == add
       ZP ==> SparseUnivariatePolynomial %
       ZZP ==> SparseUnivariatePolynomial Integer
+      import %icst0: %                 from Foreign Builtin
+      import %icst1: %                 from Foreign Builtin
       import %ineg: % -> %             from Foreign Builtin
+      import %iabs: % -> %             from Foreign Builtin
+      import %iodd?: % -> Boolean      from Foreign Builtin
       import %hash: % -> SingleInteger from Foreign Builtin
       import %iadd: (%,%) -> %         from Foreign Builtin
       import %isub: (%,%) -> %         from Foreign Builtin
       import %imul: (%,%) -> %         from Foreign Builtin
+      import %imax: (%,%) -> %         from Foreign Builtin
+      import %imin: (%,%) -> %         from Foreign Builtin
+      import %igcd: (%,%) -> %         from Foreign Builtin
+      import %ieq: (%,%) -> Boolean    from Foreign Builtin
+      import %ilt: (%,%) -> Boolean    from Foreign Builtin
+      import %ile: (%,%) -> Boolean    from Foreign Builtin
+      import %igt: (%,%) -> Boolean    from Foreign Builtin
+      import %ige: (%,%) -> Boolean    from Foreign Builtin
 
       x,y: %
       n: NonNegativeInteger
 
       writeOMInt(dev: OpenMathDevice, x: %): Void ==
-        if x < 0 then
+        if negative? x then
           OMputApp(dev)
           OMputSymbol(dev, "arith1", "unary__minus")
           OMputInteger(dev, (-x) pretend Integer)
@@ -102,27 +114,25 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
 
       OMwrite(x: %): String ==
         s: String := ""
-        sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-        dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
+        sp: String := OM_-STRINGTOSTRINGPTR(s)$Lisp
+        dev: OpenMathDevice := OMopenString(sp, OMencodingXML())
         OMputObject(dev)
         writeOMInt(dev, x)
         OMputEndObject(dev)
         OMclose(dev)
-        s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-        s
+        OM_-STRINGPTRTOSTRING(sp)$Lisp
 
       OMwrite(x: %, wholeObj: Boolean): String ==
         s: String := ""
-        sp := OM_-STRINGTOSTRINGPTR(s)$Lisp
-        dev: OpenMathDevice := OMopenString(sp pretend String, OMencodingXML())
+        sp: String := OM_-STRINGTOSTRINGPTR(s)$Lisp
+        dev: OpenMathDevice := OMopenString(sp, OMencodingXML())
         if wholeObj then
           OMputObject(dev)
         writeOMInt(dev, x)
         if wholeObj then
           OMputEndObject(dev)
         OMclose(dev)
-        s := OM_-STRINGPTRTOSTRING(sp)$Lisp pretend String
-        s
+        OM_-STRINGPTRTOSTRING(sp)$Lisp
 
       OMwrite(dev: OpenMathDevice, x: %): Void ==
         OMputObject(dev)
@@ -136,34 +146,36 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
         if wholeObj then
           OMputEndObject(dev)
 
-      zero? x == ZEROP(x)$Lisp
-      one? x == x = 1
-      0 == 0$Lisp
-      1 == 1$Lisp
-      base()  == 2$Lisp
+      zero? x == x = 0@%
+      one? x == x = 1@%
+      0 == %icst0
+      1 == %icst1
+      base()  == 2 pretend %
       copy x  == x
-      inc  x  == x + 1
-      dec  x  == x - 1
+      inc  x  == x + 1@%
+      dec  x  == x - 1@%
       hash x == %hash x
-      negative? x == x < 0
+      negative? x == x < 0@%
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
       length a == INTEGER_-LENGTH(a)$Lisp
       addmod(a, b, p) ==
-         (c := %iadd(a,b)) >= p => c - p
+         c := %iadd(a,b)
+         c >= p => c - p
          c
       submod(a, b, p) ==
-         (c := %isub(a,b)) < 0 => c + p
+         c := %isub(a,b)
+         negative? c => c + p
          c
       mulmod(a, b, p) == %imul(a,b) rem p
-      convert(x:%):Float       == coerce(x pretend Integer)$Float
-      convert(x:%):DoubleFloat  == coerce(x pretend Integer)$DoubleFloat
-      convert(x:%):InputForm   == convert(x pretend Integer)$InputForm
-      convert(x:%):String      == string(x pretend Integer)$String
+      convert(x:%):Float       == coerce(x)$Float
+      convert(x:%):DoubleFloat  == coerce(x)$DoubleFloat
+      convert(x:%):InputForm   == convert(x)$InputForm
+      convert(x:%):String      == string(x)$String
 
       latex(x:%):String ==
-        s : String := string(x pretend Integer)$String
+        s : String := string(x)$String
         (-1 < (x pretend Integer)) and ((x  pretend Integer) < 10) => s
         concat("{", concat(s, "}")$String)$String
 
@@ -180,33 +192,33 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
        Record(mat:Matrix(Integer), vec:Vector(Integer)) ==
         [m pretend Matrix(Integer), vec pretend Vector(Integer)]
 
-      abs(x) == %iabs(x)$Foreign(Builtin)
+      abs(x) == %iabs x
       random() == random()$Lisp
       random(x) == RANDOM(x)$Lisp
-      x = y == %ieq(x,y)$Foreign(Builtin)
-      x < y == %ilt(x,y)$Foreign(Builtin)
-      x > y == %igt(x,y)$Foreign(Builtin)
-      x <= y == %ile(x,y)$Foreign(Builtin)
-      x >= y == %ige(x,y)$Foreign(Builtin)
+      x = y == %ieq(x,y)
+      x < y == %ilt(x,y)
+      x > y == %igt(x,y)
+      x <= y == %ile(x,y)
+      x >= y == %ige(x,y)
       - x == %ineg x
       x + y == %iadd(x,y)
       x - y == %isub(x,y)
       x * y == %imul(x,y)
       (m:Integer) * (y:%) == %imul(m,y) -- for subsumption problem
       x ** n == %ipow(x,n)$Foreign(Builtin)
-      odd? x == %iodd?(x)$Foreign(Builtin)
-      max(x,y) == %imax(x,y)$Foreign(Builtin)
-      min(x,y) == %imin(x,y)$Foreign(Builtin)
+      odd? x == %iodd? x
+      max(x,y) == %imax(x,y)
+      min(x,y) == %imin(x,y)
       divide(x,y) == DIVIDE2(x,y)$Lisp
       x quo y == QUOTIENT2(x,y)$Lisp
       x rem y == REMAINDER2(x,y)$Lisp
       shift(x, y) == ASH(x,y)$Lisp
       recip(x) == if one? x or x=-1 then x else "failed"
-      gcd(x,y) == %igcd(x,y)$Foreign(Builtin)
+      gcd(x,y) == %igcd(x,y)
       UCA ==> Record(unit:%,canonical:%,associate:%)
       unitNormal x ==
-         x < 0 => [-1,-x,-1]$UCA
-         [1,x,1]$UCA
+         negative? x => [-1@%,-x,-1@%]$UCA
+         [1@%,x,1@%]$UCA
       unitCanonical x == abs x
       solveLinearPolynomialEquation(lp:List ZP,p:ZP):Union(List ZP,"failed") ==
          solveLinearPolynomialEquation(lp pretend List ZZP,
