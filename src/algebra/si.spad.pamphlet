@@ -217,8 +217,26 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    MULTIPLIER ==> 314159269$Lisp    -- from Knuth's table
    MODULUS ==> 2147483647$Lisp      -- 2**31-1
 
+   import %icst0: %                 from Foreign Builtin
+   import %icst1: %                 from Foreign Builtin
+   import %iadd: (%,%) -> %         from Foreign Builtin
+   import %isub: (%,%) -> %         from Foreign Builtin
+   import %imul: (%,%) -> %         from Foreign Builtin
+   import %ineg: % -> %             from Foreign Builtin
+   import %iabs: % -> %             from Foreign Builtin
+   import %imax: (%,%) -> %         from Foreign Builtin
+   import %imin: (%,%) -> %         from Foreign Builtin
+   import %igcd: (%,%) -> %         from Foreign Builtin
+   import %hash: % -> SingleInteger from Foreign Builtin
+   import %iodd?: % -> Boolean      from Foreign Builtin
+   import %ieq: (%,%) -> Boolean    from Foreign Builtin
+   import %ilt: (%,%) -> Boolean    from Foreign Builtin
+   import %ile: (%,%) -> Boolean    from Foreign Builtin
+   import %igt: (%,%) -> Boolean    from Foreign Builtin
+   import %ige: (%,%) -> Boolean    from Foreign Builtin
+
    writeOMSingleInt(dev: OpenMathDevice, x: %): Void ==
-    if x < 0 then
+    if negative? x then
       OMputApp(dev)
       OMputSymbol(dev, "arith1", "unary_minus")
       OMputInteger(dev, convert(-x))
@@ -265,13 +283,13 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    reducedSystem(m: Matrix %) == m pretend Matrix(Integer)
    coerce(x):OutputForm == rep(x)::OutputForm
    convert(x:%):Integer == rep x
-   i:Integer * y:%      == i::% * y
-   0         == 0$Lisp
-   1         == 1$Lisp
-   base()    == 2$Lisp
+   i:Integer * y:%      == %imul(i::%,y)
+   0         == %icst0
+   1         == %icst1
+   base()    == per 2
    max()     == MAXINT
    min()     == MININT
-   x = y     == %ieq(x,y)$Foreign(Builtin)
+   x = y     == %ieq(x,y)
    ~ x       == LOGNOT(x)$Lisp
    not(x)    == LOGNOT(x)$Lisp
    x /\ y    == LOGAND(x,y)$Lisp
@@ -282,29 +300,29 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    Or(x,y)   == LOGIOR(x,y)$Lisp
    x or y    == Or(x,y)
    xor(x,y)  == LOGXOR(x,y)$Lisp
-   x < y     == QSLESSP(x,y)$Lisp
-   x > y     == QSGREATERP(x,y)$Lisp
-   x <= y    == %ile(x,y)$Foreign(Builtin)
-   x >= y    == %ige(x,y)$Foreign(Builtin)
+   x < y     == %ilt(x,y)
+   x > y     == %igt(x,y)
+   x <= y    == %ile(x,y)
+   x >= y    == %ige(x,y)
    inc x     == QSADD1(x)$Lisp
    dec x     == QSSUB1(x)$Lisp
-   - x       == QSMINUS(x)$Lisp
-   x + y     == QSPLUS(x,y)$Lisp
-   x:% - y:% == QSDIFFERENCE(x,y)$Lisp
-   x:% * y:% == QSTIMES(x,y)$Lisp
+   - x       == %ineg x
+   x + y     == %iadd(x,y)
+   x:% - y:% == %isub(x,y)
+   x:% * y:% == %imul(x,y)
    x:% ** n:NonNegativeInteger == 
       (%ipow(x, n)$Foreign(Builtin) pretend Integer)::%
    x quo y   == QSQUOTIENT(x,y)$Lisp
    x rem y   == QSREMAINDER(x,y)$Lisp
    divide(x, y)   == CONS(QSQUOTIENT(x,y)$Lisp,QSREMAINDER(x,y)$Lisp)$Lisp
-   gcd(x,y)  == %igcd(x,y)$Foreign(Builtin)
-   abs(x)    == QSABSVAL(x)$Lisp
-   odd?(x)   == QSODDP(x)$Lisp
+   gcd(x,y)  == %igcd(x,y)
+   abs(x)    == %iabs x
+   odd?(x)   == %iodd? x
    zero?(x)  == QSZEROP(x)$Lisp
-   one?(x)   == x = 1
-   max(x,y)  == QSMAX(x,y)$Lisp
-   min(x,y)  == QSMIN(x,y)$Lisp
-   hash(x)   == HASHEQ(x)$Lisp
+   one?(x)   == x = 1@%
+   max(x,y)  == %imax(x,y)
+   min(x,y)  == %imin(x,y)
+   hash(x)   == %hash x
    length(x) == INTEGER_-LENGTH(x)$Lisp
    shift(x,n)    == QSLEFTSHIFT(x,n)$Lisp
    mulmod(a,b,p) == QSMULTMOD(a,b,p)$Lisp
@@ -322,9 +340,9 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
 
    positiveRemainder(x,n) ==
       r := QSREMAINDER(x,n)$Lisp
-      QSMINUSP(r)$Lisp =>
-          QSMINUSP(n)$Lisp => QSDIFFERENCE(x, n)$Lisp
-          QSPLUS(r, n)$Lisp
+      negative? r =>
+        negative? n => x - n 
+        r + n
       r
 
    coerce(x:Integer):% == per x
@@ -337,8 +355,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
 
    UCA ==> Record(unit:%,canonical:%,associate:%)
    unitNormal x ==
-      x < 0 => [-1,-x,-1]$UCA
-      [1,x,1]$UCA
+      negative? x => [-1@%,-x,-1@%]$UCA
+      [1@%,x,1@%]$UCA
 
 @
 

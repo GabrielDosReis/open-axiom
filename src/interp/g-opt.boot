@@ -147,6 +147,8 @@ resetTo(x,y) ==
 
 ++ Simplify the VM form `x'
 simplifyVMForm x ==
+  x = '%icst0 => 0
+  x = '%icst1 => 1
   isAtomicForm x => x
   x.op = 'CLOSEDFN => x
   atom x.op =>
@@ -440,6 +442,7 @@ $VMsideEffectFreeOperators ==
        CGREATERP GGREATERP CHAR GET BVEC_-GREATER %false %true
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
          %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
+         %icst0 %icst1
           %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
            %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
             %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
@@ -673,9 +676,14 @@ optIeq(x is ['%ieq,a,b]) ==
   x
 
 optIlt(x is ['%ilt,a,b]) ==
+  -- 1. Don't delay if both operands are literals.
   integer? a and integer? b =>
     a < b => '%true
     '%false
+  -- 2. max(a,b) cannot be negative if either a or b is zero.
+  b = 0 and a is ['%imax,:.] and (second a = 0 or third a = 0) => '%false
+  -- 3. min(a,b) cannot be positive if either a or b is zero.
+  a = 0 and b is ['%imin,:.] and (second b = 0 or third b = 0) => '%false
   x
 
 optIle(x is ['%ile,a,b]) ==
