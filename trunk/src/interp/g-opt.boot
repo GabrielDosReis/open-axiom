@@ -439,17 +439,17 @@ $VMsideEffectFreeOperators ==
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR IDENTP SYMBOLP
       GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
-       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %false %true
+       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
-         %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
-         %icst0 %icst1
-          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
-            %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
-             %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
-              %lreverse %lempty? %hash %ismall? %string? %f2s
-               %ceq %clt %cle %cgt %cge %c2i %i2c %sname
-                %vref %vlength %before?)
+        %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
+        %icst0 %icst1
+        %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
+        %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
+        %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
+        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+        %lreverse %lempty? %hash %ismall? %string? %f2s
+        %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %sname
+        %vref %vlength %before?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 

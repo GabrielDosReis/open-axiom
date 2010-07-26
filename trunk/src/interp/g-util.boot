@@ -251,6 +251,12 @@ expandBcompl ['%bcompl,x] ==
   integer? x => 255 - x
   ['_+,256,['LOGNOT,expandToVMForm x]]
 
+-- Character operations
+expandCcst ['%ccst,s] ==
+  not string? s => error "operand is not a string constant"
+  #s ~= 1 => error "string constant must contain exactly one character"
+  char s
+
 -- Integer operations
 expandIneg ['%ineg,x] ==
   x := expandToVMForm x
@@ -448,6 +454,8 @@ for x in [
    ['%return,  :function expandReturn],
 
    ['%bcompl,  :function expandBcompl],
+
+   ['%ccst,    :function expandCcst],
 
    ['%ieq,     :function expandIeq],
    ['%igt,     :function expandIgt],

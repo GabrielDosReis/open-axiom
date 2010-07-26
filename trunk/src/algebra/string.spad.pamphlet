@@ -82,6 +82,7 @@ Character: OrderedFinite() with
         import %cge: (%,%) -> Boolean from Foreign Builtin
         import %c2i: % -> NNI         from Foreign Builtin
         import %i2c: NNI -> %         from Foreign Builtin
+        import %ccst: String -> %     from Foreign Builtin
 
 	a = b		       == %ceq(a,b)
 	a < b		       == %clt(a,b)
@@ -94,9 +95,9 @@ Character: OrderedFinite() with
 	char(n: NNI)	       == %i2c n
 	ord c		       == %c2i c
 	random()	       == char(random(size())$NNI)
-	space		       == CHAR("   ", 0$Lisp)$Lisp
-	quote		       == CHAR("_" ", 0$Lisp)$Lisp
-	escape		       == CHAR("__ ", 0$Lisp)$Lisp
+	space		       == %ccst " "
+	quote		       == %ccst "_""
+	escape		       == %ccst "__"
 	coerce(c:%):OutputForm == c : OutputForm
 	digit? c	       == member?(c, digit())
 	hexDigit? c	       == member?(c, hexDigit())
@@ -272,7 +273,7 @@ IndexedString(mn:Integer): Export == Implementation where
 
 --  new n		   == MAKE_-FULL_-CVEC(n, space$C)$Lisp
     new(n, c)		   == MAKE_-FULL_-CVEC(n, c)$Lisp
-    empty()		   == MAKE_-FULL_-CVEC(0$Lisp)$Lisp
+    empty()		   == MAKE_-FULL_-CVEC(0@I)$Lisp
     empty?(s)		   == Qsize(s) = 0
     #s			   == Qsize(s)
     s = t		   == Qequal(s, t)

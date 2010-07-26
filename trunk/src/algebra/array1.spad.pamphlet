@@ -15,8 +15,10 @@
 ++ This provides a fast array type with no bound checking on elt's.
 ++ Minimum index is 0 in this type, cannot be changed
 PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
+   macro NNI == NonNegativeInteger
    import %vlength: % -> NonNegativeInteger from Foreign Builtin
    import %vref: (%,Integer) -> S           from Foreign Builtin
+   import makeSimpleArray: (Domain,NNI) -> % from Foreign Builtin
 
    #x == %vlength x
 
@@ -24,7 +26,7 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
      0
  
    empty() == 
-     makeSimpleArray(getVMType(S)$Lisp,0$Lisp)$Lisp
+     makeSimpleArray(getVMType(S)$Lisp,0)
 
    construct l ==
      makeSimpleArrayFromList(getVMType(S)$Foreign(Builtin),l)$Foreign(Builtin)
@@ -429,12 +431,12 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
      qsetelt!(x, i, s) == Qsetelt(x, i-1, s)
 
      elt(x:%, i:I) ==
-       QSLESSP(i,1$Lisp)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
+       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
          error "index out of range"
        %vref(x, i-1)
 
      setelt(x:%, i:I, s:S) ==
-       QSLESSP(i,1$Lisp)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
+       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
          error "index out of range"
        Qsetelt(x, i-1, s)
 

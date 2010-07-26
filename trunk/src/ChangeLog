@@ -1,5 +1,19 @@
 2010-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include new
+	opcodes %icst0,	%icst1, %when, and %ccst.
+	* interp/g-util.boot: Expand %ccst.
+	* algebra/alql.spad.pamphlet: Clean up.
+	* algebra/array1.spad.pamphlet: Likewise.
+	* algebra/c02.spad.pamphlet: Likewise.
+	* algebra/d03.spad.pamphlet: Likewise.
+	* algebra/e04.spad.pamphlet: Likewise.
+	* algebra/integer.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/string.spad.pamphlet: Likewise.
+
+2010-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/si.spad.pamphlet (SingleInteger): Tidy.
 	* interp/g-opt.boot (simplifyVMForm): Expand %icst0 and %icst1.
 	(optIlt): Fold more configurations.
