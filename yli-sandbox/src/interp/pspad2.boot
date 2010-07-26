@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ formatDeftran(u,SEQflag) ==
   u is ['PROGN,:l,x] => formatDeftran(['SEQ,:l,['exit,1,x]],SEQflag)
   u is ['SEQ,:l,[.,n,x]] => 
     v := [:l,x]
-    a := "APPEND"/[formatDeftranSEQ(x,true) for x in l]
+    a := append/[formatDeftranSEQ(x,true) for x in l]
     b := formatDeftranSEQ(x,false)
     if b is [:.,c] and c = '(void) then b := DROP(-1, b)
     [:m,y] := [:a,:b]
@@ -85,7 +85,7 @@ formatDeftran(u,SEQflag) ==
     ['IF,a,b,c]
   u is ['Union,:argl] => 
     ['Union,:[x for a in argl 
-      | x := (STRINGP a => [":",INTERN a,'Branch]; formatDeftran(a,nil))]]
+      | x := (string? a => [":",INTERN a,'Branch]; formatDeftran(a,nil))]]
   u is [op,:itl,body] and op in '(REPEAT COLLECT) and
     ([nitl,:nbody] := formatDeftranREPEAT(itl,body)) =>
       formatDeftran([op,:nitl,nbody],SEQflag)
@@ -168,7 +168,7 @@ formatDeftranREPEAT(itl,body) ==
   u := [x for x in itl | x is ["UNTIL",p]] or return nil
   nitl := SETDIFFERENCE(itl,u)
   pred := MKPF([p for ['UNTIL,p] in u],'or)
-  cond := ['IF,pred,['leave,n,nil],'%noBranch]
+  cond := ['IF,pred,["leave",n,nil],'%noBranch]
   nbody :=
     body is ['SEQ,:l,[.,n,x]] => ['SEQ,:l,x,['exit,n,cond]]
     ['SEQ,body,['exit,n,cond]]
@@ -327,7 +327,6 @@ formatTail1 x ==
     format ":" and formatConstructItem a and formatTail b
   format ":" and formatConstructItem x and format "]"
  
--- x = "." => format ""
 formatConstructItem x == format x
  
 formatLET ["%LET",a,b] == 
@@ -399,7 +398,7 @@ formatREDUCE ["REDUCE",op,.,u] == formatReduce1(op,u)
 formatreduce ["reduce",op,u] == formatReduce1(op,u)
 
 formatReduce1(op,u) ==
-  if STRINGP op then op := INTERN op
+  if string? op then op := INTERN op
   id := LASSOC(op,
     '((_+ Zero)(_* One)(append . NIL)(gcd Zero) (lcm One) (strconc . "")(lcm One)))
   formatFunctionCall
@@ -488,7 +487,7 @@ formatComments(u,op,types) ==
   u   
  
 consComments(s,plusPlus) ==
-  s is [word,:r] and null atom r => consComments(r, plusPlus)
+  s is [word,:r] and cons? r => consComments(r, plusPlus)
   s := first s
   null s => nil
   s := consCommentsTran s
@@ -509,7 +508,7 @@ consCommentsTran s ==
   k := or/[i for i in 0..(m - 7) | substring?('"\spad{",s,i)] =>
     r := charPosition(char '_},s,k + 6)
     r = m + 1 => s
-    STRCONC(SUBSTRING(s,0,k),'"`",SUBSTRING(s,k+6,r-k-6),'"'",consCommentsTran SUBSTRING(s,r+1,nil))
+    strconc(SUBSTRING(s,0,k),'"`",SUBSTRING(s,k+6,r-k-6),'"'",consCommentsTran SUBSTRING(s,r+1,nil))
   s
   
 formatDoCommentLine line ==
@@ -546,11 +545,11 @@ formatPileLine($m,x,newLineIfTrue) ==
 --======================================================================
 --                       Utility Functions
 --======================================================================
-nBlanks m == "STRCONC"/[char('_  ) for i in 1..m]
+nBlanks m == strconc/[char('_  ) for i in 1..m]
  
 isNewspadOperator op == GETL(op,"Led") or GETL(op,"Nud")
  
-isTrue x == x="true" or x is '(QUOTE T)
+isTrue x == x="true" or x = '%true
  
 nary2Binary(u,op) ==
   u is [a,b,:t] => (t => nary2Binary([[op,a,b],:t],op); [op,a,b])
@@ -565,12 +564,12 @@ string2PrintImage s ==
  
 ident2PrintImage s ==
   m := MAXINDEX s
-  if m > 1 and s.(m - 1) = $underScore then s := STRCONC(SUBSTRING(s,0,m-1),s.m)
+  if m > 1 and s.(m - 1) = $underScore then s := strconc(SUBSTRING(s,0,m-1),s.m)
   u:= GETSTR (2*SIZE s)
-  if not (ALPHA_-CHAR_-P s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
+  if not (alphabetic? s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
   u:= SUFFIX(s.(0),u)
   for i in 1..MAXINDEX s repeat
-    if not (DIGITP s.i or ALPHA_-CHAR_-P s.i or ((c := s.i) = char '?) 
+    if not (digit? s.i or alphabetic? s.i or ((c := s.i) = char '?) 
       or (c = char '_!)) then SUFFIX('__,u)
     u:= SUFFIX(s.i,u)
   INTERN u
@@ -579,15 +578,15 @@ isIdentifier x ==
   IDENTP x =>
     s:= PNAME x
     #s = 0 => nil
-    ALPHA_-CHAR_-P s.(0) => and/[s.i ~= char '" " for i in 1..MAXINDEX s]
+    alphabetic? s.(0) => and/[s.i ~= char '" " for i in 1..MAXINDEX s]
     #s>1 =>
-      or/[ALPHA_-CHAR_-P s.i for i in 1..(m:= MAXINDEX s)] =>
+      or/[alphabetic? s.i for i in 1..(m:= MAXINDEX s)] =>
         and/[s.i ~= char '" " for i in 1..m] => true
  
 isGensym x == 
   s := STRINGIMAGE x
   n := MAXINDEX s
-  s.0 = char '_G and and/[DIGITP s.i for i in 1..n]
+  s.0 = char '_G and and/[digit? s.i for i in 1..n]
  
 --======================================================================
 --                       Macro Helpers

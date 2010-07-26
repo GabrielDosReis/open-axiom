@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
-      [INTERN STRCONC(PNAME conname,'"&"),"$",:rest conform]
+      [INTERN strconc(PNAME conname,'"&"),"$",:rest conform]
     conform
   faTypes  := CDDAR getConstructorModemapFromDB conname
 
@@ -247,17 +247,17 @@ hasNewInfoAlist conname ==
   (u := getInfoAlist conname) and hasNewInfoText u
 
 hasNewInfoText u ==
-  and/[ATOM op and "and"/[item is [sig,:alist] and
-    null sig or null atom sig and null atom alist for item in items] for [op,:items] in u]
+  and/[atom op and "and"/[item is [sig,:alist] and
+    null sig or cons? sig and cons? alist for item in items] for [op,:items] in u]
 
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
-  if cat? then conname := INTERN STRCONC(STRINGIMAGE conname,'"&")
+  if cat? then conname := INTERN strconc(STRINGIMAGE conname,'"&")
   abb := constructor? conname or return '"not a constructor"
-  fs  := STRCONC(PNAME abb,'".NRLIB/info")
+  fs  := strconc(PNAME abb,'".NRLIB/info")
   inStream :=
     PROBE_-FILE fs => OPEN fs
-    filename := STRCONC('"/spad/int/algebra/",PNAME abb,'".NRLIB/info")
+    filename := strconc('"/spad/int/algebra/",PNAME abb,'".NRLIB/info")
     PROBE_-FILE filename => OPEN filename
     return nil
   alist := mySort READ inStream

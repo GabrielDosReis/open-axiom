@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -106,9 +106,9 @@ wordFrom(l,i) ==
     ch :=
       c = char '__   => l.(k := 1+k)  --this may exceed bounds
       c
-    buf := STRCONC(buf,ch)
+    buf := strconc(buf,ch)
     k := k + 1
-  if k = maxIndex and (c := l.k) ~= char ('_ ) then buf := STRCONC(buf,c)
+  if k = maxIndex and (c := l.k) ~= char ('_ ) then buf := strconc(buf,c)
   [buf,k+1]
 
 getKeyedMsg key == fetchKeyedMsg(key,false)
@@ -118,7 +118,7 @@ getKeyedMsg key == fetchKeyedMsg(key,false)
 segmentKeyedMsg(msg) == string2Words msg
 
 segmentedMsgPreprocess x ==
-  ATOM x => x
+  atom x => x
   [head,:tail] := x
   center := rightJust := NIL
   if member(head, '(%ceon "%ceon")) then center := true
@@ -130,9 +130,9 @@ segmentedMsgPreprocess x ==
     while tail and ok repeat
       [t,:tail] := tail
       member(t, '(%ceoff "%ceoff" %rjoff "%rjoff")) => ok := NIL
-      y := CONS(segmentedMsgPreprocess t,y)
+      y := [segmentedMsgPreprocess t,:y]
     head1 := [(center => '"%ce"; '"%rj"),:nreverse y]
-    NULL tail => [head1]
+    null tail => [head1]
     [head1,:segmentedMsgPreprocess tail]
   head1 := segmentedMsgPreprocess head
   tail1 := segmentedMsgPreprocess tail
@@ -159,8 +159,8 @@ substituteSegmentedMsg(msg,args) ==
   nargs := #args
   for x in segmentedMsgPreprocess msg repeat
     -- x is a list
-    CONSP x =>
-      l := cons(substituteSegmentedMsg(x,args),l)
+    cons? x =>
+      l := [substituteSegmentedMsg(x,args),:l]
     c := x.0
     n := STRINGLENGTH x
 
@@ -173,18 +173,18 @@ substituteSegmentedMsg(msg,args) ==
       l := NCONC(nreverse v,l)
 
     -- x requires parameter substitution
-    (x.0 = char "%") and (n > 1) and (DIGITP x.1) =>
+    (x.0 = char "%") and (n > 1) and (digit? x.1) =>
       a := DIG2FIX x.1
       arg :=
         a <= nargs => args.(a-1)
         '"???"
       -- now pull out qualifiers
       q := NIL
-      for i in 2..(n-1) repeat q := cons(x.i,q)
+      for i in 2..(n-1) repeat q := [x.i,:q]
       -- Note 'f processing must come first.
       if MEMQ(char 'f,q) then
           arg :=
-              CONSP arg => APPLY(first arg, rest arg)
+              cons? arg => apply(first arg, rest arg)
               arg
       if MEMQ(char 'm,q) then arg := [['"%m",:arg]]
       if MEMQ(char 's,q) then arg := [['"%s",:arg]]
@@ -199,42 +199,42 @@ substituteSegmentedMsg(msg,args) ==
       if MEMQ(char 'c,q) then arg := [['"%ce",:arg]]
       if MEMQ(char 'r,q) then arg := [['"%rj",:arg]]
 
-      if MEMQ(char 'l,q) then l := cons('"%l",l)
-      if MEMQ(char 'b,q) then l := cons('"%b",l)
+      if MEMQ(char 'l,q) then l := ['"%l",:l]
+      if MEMQ(char 'b,q) then l := ['"%b",:l]
       --we splice in arguments that are lists
       --if y is not specified, then the adding of blanks is
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
-         CONSP(arg) =>
-           MEMQ(char 'y,q) or (first arg = '"%y") or ((LENGTH arg) = 1)  =>
+         cons?(arg) =>
+           MEMQ(char 'y,q) or (first arg = '"%y") or ((# arg) = 1)  =>
              append(reverse arg, l)
            head := first arg
            tail := rest arg
            ['"%y",:append(reverse tail, ['"%n",head,:l ]) ]
-         cons(arg,l)
-      if MEMQ(char 'b,q) then l := cons('"%d",l)
+         [arg,:l]
+      if MEMQ(char 'b,q) then l := ['"%d",:l]
       for ch in '(_. _, _! _: _; _?) repeat
-        if MEMQ(char ch,q) then l := cons(ch,l)
+        if MEMQ(char ch,q) then l := [ch,:l]
 
-    c = char "%" and n > 1 and x.1 = char "x" and DIGITP x.2 =>
+    c = char "%" and n > 1 and x.1 = char "x" and digit? x.2 =>
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
-    l := cons(x,l)
+    l := [x,:l]
   addBlanks nreverse l
 
 addBlanks msg ==
   -- adds proper blanks
   atom msg => msg
   null msg => msg
-  LENGTH msg = 1 => msg
+  # msg = 1 => msg
   blanksOff := false
   x := first msg
   if x = '"%n" then
     blanksOff := true
     msg1 := []
   else
-    msg1 := LIST x
+    msg1 := [x]
   blank := '" "
   for y in rest msg repeat
     member(y,'("%n" %n)) => blanksOff := true
@@ -254,24 +254,24 @@ $msgdbNoBlanksBeforeGroup := ['" ", " ", '"%", "%",_
 $msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 
 noBlankBeforeP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
-    if CVECP word and SIZE word > 1 then
+    if string? word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
-    (CONSP word) and member(first word,$msgdbListPrims) => true
+    (cons? word) and member(first word,$msgdbListPrims) => true
     false
 
 $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
                               "[", "(", '"[", '"(" ]
 
 noBlankAfterP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
-    if CVECP word and (s := SIZE word) > 1 then
+    if string? word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
-    (CONSP word) and member(first word, $msgdbListPrims) => true
+    (cons? word) and member(first word, $msgdbListPrims) => true
     false
 
 cleanUpSegmentedMsg msg ==
@@ -287,7 +287,7 @@ cleanUpSegmentedMsg msg ==
   for x in msg repeat
     if haveBlank and (member(x,blanks) or member(x,prims)) then
       msg1 := rest msg1
-    msg1 := cons(x,msg1)
+    msg1 := [x,:msg1]
     haveBlank := (member(x,blanks) => true; NIL)
   msg1
 
@@ -370,7 +370,7 @@ throwListOfKeyedMsgs(descKey,descArgs,l) ==
   sayKeyedMsg(descKey,descArgs)
   sayMSG '" "
   for [key,args] in l for i in 1.. repeat
-    n := STRCONC(object2String i,'".")
+    n := strconc(object2String i,'".")
     sayKeyedMsg(key,[n,:args])
   countError()
   spadThrow()
@@ -432,7 +432,7 @@ popSatOutput(newmode) ==
   $saturnMode
 
 systemErrorHere what ==
-  if not atom what then
+  if cons? what then
      what := [first what, " with: ", :rest what]
   keyedSystemError("S2GE0017",[what])
 
@@ -496,7 +496,7 @@ flowSegmentedMsg(msg, len, offset) ==
   off1:= (offset <= 1 => '""; fillerSpaces(offset-1,'" "))
   firstLine := true
 
-  CONSP msg =>
+  cons? msg =>
     lnl := offset
     if msg is [a,:.] and member(a,'(%b %d _  "%b" "%d" " ")) then
       nl :=  [off1]
@@ -507,14 +507,14 @@ flowSegmentedMsg(msg, len, offset) ==
         actualMarg := potentialMarg
         if lnl = 99999 then nl := ['%l,:nl]
         lnl := 99999
-      CONSP(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
+      cons?(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
         nl := [f,'%l,:nl]
         lnl := 199999
       member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
         nl := [f,:nl]
-      CONSP(f) and member(first(f),'("%t" %t)) =>
+      cons?(f) and member(first(f),'("%t" %t)) =>
         potentialMarg := potentialMarg + rest f
         nl := [f,:nl]
       sbl := sayBrightlyLength f
@@ -522,8 +522,8 @@ flowSegmentedMsg(msg, len, offset) ==
       if firstLine then
         firstLine  := false
         offset := offset + offset
-        off1   := STRCONC(off, off1)
-        off    := STRCONC(off, off)
+        off1   := strconc(off, off1)
+        off    := strconc(off, off)
       if (tot <= len) or (sbl = 1 and tot = len) then
         nl := [f,:nl]
         lnl := lnl + sbl
@@ -571,11 +571,11 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 
 --% Some Standard Message Printing Functions
 
-bright x == ['"%b",:(CONSP(x) and NULL rest LASTNODE x => x; [x]),'"%d"]
---bright x == ['%b,:(ATOM x => [x]; x),'%d]
+bright x == ['"%b",:(cons?(x) and null rest LASTNODE x => x; [x]),'"%d"]
+--bright x == ['%b,:(atom x => [x]; x),'%d]
 
 mkMessage msg ==
-  msg and (CONSP msg) and member((first msg),'(%l "%l"))  and
+  msg and (cons? msg) and member((first msg),'(%l "%l"))  and
     member((last msg),'(%l "%l")) => concat msg
   concat('%l,msg,'%l)
 
@@ -625,7 +625,7 @@ brightPrint0(x,out == $OutputStream) ==
   -- don't try to give the token any special interpretation. Just print
   -- it without the backslash.
 
-  STRINGP x and STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
+  string? x and STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
     sayString(SUBSTRING(x,1,NIL),out)
   x = '"%l" =>
     sayNewLine(out)
@@ -654,7 +654,7 @@ brightPrint0(x,out == $OutputStream) ==
       or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
     not $highlightAllowed => sayString('" ",out)
     sayString($highlightFontOff,out)
-  STRINGP x => sayString(x,out)
+  string? x => sayString(x,out)
   brightPrintHighlight(x,out)
 
 brightPrint0AsTeX(x, out == $OutputStream) == 
@@ -681,20 +681,20 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
     sayString('"_"\verb!$!_"",out)
   x = '"$" => 
     sayString('"\verb!$!",out)
-  STRINGP x => sayString(x,out)
+  string? x => sayString(x,out)
   brightPrintHighlight(x,out)
 
 blankIndicator x ==
   if IDENTP x then x := PNAME x
-  null STRINGP x or MAXINDEX x < 1 => nil
+  not string? x or MAXINDEX x < 1 => nil
   x.0 = '% and x.1 = 'x =>
-    MAXINDEX x > 1 => PARSE_-INTEGER SUBSTRING(x,2,nil)
+    MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
     1
   nil
 
 brightPrint1(x, out == $OutputStream) ==
   if member(x,'(%l "%l")) then sayNewLine(out)
-  else if STRINGP x then sayString(x,out)
+  else if string? x then sayString(x,out)
        else brightPrintHighlight(x,out)
   NIL
 
@@ -705,8 +705,8 @@ brightPrintHighlight(x, out == $OutputStream) ==
     sayString(pn,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
-  VECP x => sayString('"UNPRINTABLE",out)
-  ATOM x => sayString(object2String x,out)
+  vector? x => sayString('"UNPRINTABLE",out)
+  atom x => sayString(object2String x,out)
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
   key = '"%m" => mathprint(rst,out)
@@ -730,8 +730,8 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   IDENTP x =>
     pn := PNAME x
     sayString(pn,out)
-  ATOM x => sayString(object2String x,out)
-  VECP x => sayString('"UNPRINTABLE",out)
+  atom x => sayString(object2String x,out)
+  vector? x => sayString('"UNPRINTABLE",out)
   [key,:rst] := x
   key = '"%m" => mathprint(rst,out)
   key = '"%s" => 
@@ -761,25 +761,25 @@ tabber num ==
 brightPrintCenter(x,out == $OutputStream) ==
   $texFormatting => brightPrintCenterAsTeX(x,out)
   -- centers rst within $LINELENGTH, checking for %l's
-  ATOM x =>
+  atom x =>
     x := object2String x
     wid := STRINGLENGTH x
     if wid < $LINELENGTH then
       f := DIVIDE($LINELENGTH - wid,2)
-      x := LIST(fillerSpaces(f.0,'" "),x)
+      x := [fillerSpaces(f.0,'" "),x]
     for y in x repeat brightPrint0(y,out)
     NIL
   y := NIL
   ok := true
   while x and ok repeat
     if member(first(x),'(%l "%l")) then ok := NIL
-    else y := cons(first x, y)
+    else y := [first x, :y]
     x := rest x
   y := nreverse y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
     f := DIVIDE($LINELENGTH - wid,2)
-    y := CONS(fillerSpaces(f.0,'" "),y)
+    y := [fillerSpaces(f.0,'" "),:y]
   for z in y repeat brightPrint0(z,out)
   if x then
     sayNewLine(out)
@@ -787,7 +787,7 @@ brightPrintCenter(x,out == $OutputStream) ==
   NIL
 
 brightPrintCenterAsTeX(x, out == $OutputStream) ==
-  ATOM x =>
+  atom x =>
     sayString('"\centerline{",out)
     sayString(x,out)
     sayString('"}",out)
@@ -797,7 +797,7 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
     while lst and not first(lst) = "%l" repeat
       words := [first lst,: words]
       lst := rest lst
-    if lst then lst := cdr lst
+    if lst then lst := rest lst
     sayString('"\centerline{",out)
     words := nreverse words
     for zz in words repeat
@@ -807,11 +807,11 @@ brightPrintCenterAsTeX(x, out == $OutputStream) ==
 
 brightPrintRightJustify(x, out == $OutputStream) ==
   -- right justifies rst within $LINELENGTH, checking for %l's
-  ATOM x =>
+  atom x =>
     x := object2String x
     wid := STRINGLENGTH x
     wid < $LINELENGTH =>
-      x := LIST(fillerSpaces($LINELENGTH-wid,'" "),x)
+      x := [fillerSpaces($LINELENGTH-wid,'" "),x]
       for y in x repeat brightPrint0(y,out)
       NIL
     brightPrint0(x,out)
@@ -820,12 +820,12 @@ brightPrintRightJustify(x, out == $OutputStream) ==
   ok := true
   while x and ok repeat
     if member(first(x),'(%l "%l")) then ok := NIL
-    else y := cons(first x, y)
+    else y := [first x, :y]
     x := rest x
   y := nreverse y
   wid := sayBrightlyLength y
   if wid < $LINELENGTH then
-    y := CONS(fillerSpaces($LINELENGTH-wid,'" "),y)
+    y := [fillerSpaces($LINELENGTH-wid,'" "),:y]
   for z in y repeat brightPrint0(z,out)
   if x then
     sayNewLine(out)
@@ -841,17 +841,17 @@ sayBrightlyLength l ==
 
 sayBrightlyLength1 x ==
   member(x,'("%b" "%d" %b %d)) =>
-    NULL $highlightAllowed => 1
+    null $highlightAllowed => 1
     1
   member(x,'("%l" %l)) => 0
-  STRINGP x and STRINGLENGTH x > 2 and x.0 = '"%" and x.1 = '"x" =>
+  string? x and STRINGLENGTH x > 2 and x.0 = '"%" and x.1 = '"x" =>
     INTERN x.3
-  STRINGP x => STRINGLENGTH x
+  string? x => STRINGLENGTH x
   IDENTP x => STRINGLENGTH PNAME x
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
-  VECP x => STRINGLENGTH '"UNPRINTABLE"
-  ATOM x => STRINGLENGTH STRINGIMAGE x
+  vector? x => STRINGLENGTH '"UNPRINTABLE"
+  atom x => STRINGLENGTH STRINGIMAGE x
   2 + sayBrightlyLength x
 
 sayAsManyPerLineAsPossible l ==
@@ -869,7 +869,7 @@ sayAsManyPerLineAsPossible l ==
   str := '""
   for i in 0..(n-1) repeat
     [c,:l] := l
-    str := STRCONC(str,c,fillerSpaces(w - #c,'" "))
+    str := strconc(str,c,fillerSpaces(w - #c,'" "))
     REMAINDER(i+1,p) = 0 => (sayMSG str ; str := '"" )
   if str ~= '"" then sayMSG str
   NIL
@@ -919,7 +919,7 @@ sayDisplayStringWidth x ==
   sayDisplayWidth x
 
 sayDisplayWidth x ==
-  CONSP x =>
+  cons? x =>
     +/[fn y for y in x] where fn y ==
       member(y,'(%b %d "%b" "%d")) or y=$quadSymbol => 1
       k := blankIndicator y => k
@@ -965,8 +965,8 @@ centerAndHighlight(text,:argList) ==
   f := DIVIDE(width - wid - 2,2)
   fill1 := '""
   for i in 1..(f.0) repeat
-    fill1 := STRCONC(fillchar,fill1)
-  if f.1 = 0 then fill2 := fill1 else fill2 := STRCONC(fillchar,fill1)
+    fill1 := strconc(fillchar,fill1)
+  if f.1 = 0 then fill2 := fill1 else fill2 := strconc(fillchar,fill1)
   sayBrightly [fill1,'%b,text,'%d,fill2]
   nil
 
@@ -981,8 +981,8 @@ center(text,argList) ==
   f := DIVIDE(width - wid - 2,2)
   fill1 := '""
   for i in 1..(f.0) repeat
-    fill1 := STRCONC(fillchar,fill1)
-  if f.1 = 0 then fill2 := fill1 else fill2 := STRCONC(fillchar,fill1)
+    fill1 := strconc(fillchar,fill1)
+  if f.1 = 0 then fill2 := fill1 else fill2 := strconc(fillchar,fill1)
   concat(fill1,text,fill2)
 
 splitSayBrightly u ==
@@ -1005,7 +1005,7 @@ splitListSayBrightly u ==
     y := rest x
     null y => nil
     first y = '%l =>
-      RPLACD(x,nil)
+      x.rest := nil
       ans:= [u,:rest y]
   ans
 
@@ -1027,14 +1027,14 @@ $htCharAlist == '(
 
 escapeSpecialChars s ==
   u := LASSOC(s,$htCharAlist) => u
-  member(s, $htSpecialChars) => STRCONC('"_\", s)
+  member(s, $htSpecialChars) => strconc('"_\", s)
   null $saturn => s
-  ALPHA_-CHAR_-P (s.0) => s
+  alphabetic? (s.0) => s
   not (or/[dbSpecialDisplayOpChar? s.i for i in 0..MAXINDEX s]) => s
   buf := '""
   for i in 0..MAXINDEX s repeat buf :=
-    dbSpecialDisplayOpChar?(s.i) => STRCONC(buf,'"\verb!",s.i,'"!")
-    STRCONC(buf,s.i)
+    dbSpecialDisplayOpChar?(s.i) => strconc(buf,'"\verb!",s.i,'"!")
+    strconc(buf,s.i)
   buf
 
 dbSpecialDisplayOpChar? c == (c = char '_~)

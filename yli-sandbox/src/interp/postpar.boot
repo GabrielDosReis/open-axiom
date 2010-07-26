@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,11 +39,11 @@ module postpar
 
 ++ The type of parse trees.
 %ParseTree <=> 
-  %Number or %Symbol or %String or cons
+  %Number or %Symbol or %String or %Pair
 
 ++ The result of processing a parse tree.
 %ParseForm <=>
-  %Number or %Symbol or %String or cons
+  %Number or %Symbol or %String or %Pair
 
 $postStack := []
 
@@ -61,7 +61,7 @@ postTransform y ==
   u
 
 displayPreCompilationErrors() ==
-  n:= #($postStack:= REMDUP nreverse $postStack)
+  n:= #($postStack:= removeDuplicates nreverse $postStack)
   n=0 => nil
   errors:=
     1<n => '"errors"
@@ -83,7 +83,7 @@ postTran x ==
   atom x =>
     postAtom x
   op := first x
-  SYMBOLP op and (f:= GETL(op,'postTran)) => FUNCALL(f,x)
+  symbol? op and (f:= GETL(op,'postTran)) => FUNCALL(f,x)
   op is ["elt",a,b] =>
     u:= postTran [b,:rest x]
     [postTran op,:rest u]
@@ -119,7 +119,7 @@ checkWarningIndentation() ==
 postCapsule: %ParseTree -> %ParseForm
 postCapsule x ==
   x isnt [op,:.] => checkWarningIndentation()
-  INTEGERP op or op = "==" => ["CAPSULE",postBlockItem x]
+  integer? op or op = "==" => ["CAPSULE",postBlockItem x]
   op = ";" => ["CAPSULE",:postBlockItemList postFlatten(x,";")]
   op = "if" => ["CAPSULE",postBlockItem x]
   checkWarningIndentation()
@@ -217,7 +217,7 @@ postComma u ==
 postDef: %ParseTree -> %ParseForm
 postDef t ==
   t isnt [defOp,lhs,rhs] => systemErrorHere ["postDef",t]
-  lhs is ["macro",name] => postMDef ["==>",name,rhs]
+  lhs is ['macro,name] => postMDef ["==>",name,rhs]
 
   recordHeaderDocumentation nil
   if $maxSignatureLineNumber ~= 0 then
@@ -346,8 +346,8 @@ postTranScripts a ==
 
 decodeScripts: %ParseTree -> %ParseForm
 decodeScripts a ==
-  a is ["PrefixSC",b] => STRCONC(STRINGIMAGE 0,decodeScripts b)
-  a is [";",:b] => APPLX('STRCONC,[decodeScripts x for x in b])
+  a is ["PrefixSC",b] => strconc(STRINGIMAGE 0,decodeScripts b)
+  a is [";",:b] => APPLX(function strconc,[decodeScripts x for x in b])
   a is [",",:b] =>
     STRINGIMAGE fn a where fn a == (a is [",",:b] => +/[fn x for x in b]; 1)
   STRINGIMAGE 1
@@ -467,7 +467,7 @@ postReduce t ==
   t isnt ["%Reduce",op,expr] => systemErrorHere ["postReduce",t]
   $InteractiveMode or expr is ["COLLECT",:.] =>
     ["REDUCE",op,0,postTran expr]
-  postReduce ["%Reduce",op,["COLLECT",["IN",g:= GENSYM(),expr],
+  postReduce ["%Reduce",op,["COLLECT",["IN",g:= gensym(),expr],
     ["construct",  g]]]
 
 postFlattenLeft: (%ParseTree, %Symbol) -> %ParseForm
@@ -489,7 +489,7 @@ postSignature t ==
   t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
   sig is ["->",:.] =>
     sig1:= postType sig
-    op:= postAtom (STRINGP op => INTERN op; op)
+    op:= postAtom (string? op => INTERN op; op)
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
   ["SIGNATURE",postAtom op,:postType ["->","constant",sig]]
 
@@ -503,7 +503,7 @@ killColons x ==
 postSlash: %ParseTree -> %ParseForm
 postSlash t ==
   t isnt ['_/,a,b] => systemErrorHere ["postSlash",t]
-  STRINGP a => postTran ["%Reduce",INTERN a,b]
+  string? a => postTran ["%Reduce",INTERN a,b]
   ['_/,postTran a,postTran b]
 
 removeSuperfluousMapping: %ParseTree -> %ParseForm
@@ -631,5 +631,5 @@ for x in [["with", :"postWith"],_
           ["%Match",:"postMatch"],_
           ["^=", :"postBootNotEqual"],_
 	  ["%Comma", :"post%Comma"]] repeat
-  MAKEPROP(first x, "postTran", rest x)
+  property(first x, 'postTran) := rest x
 

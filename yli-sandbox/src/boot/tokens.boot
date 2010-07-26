@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,6 +88,7 @@ shoeKeyWords == [  _
             ['"=>","EXIT" ], _
             ['"->", "ARROW"],_
             ['":=", "BEC"], _
+            ['"+->", "GIVES"], _
             ['"==", "DEF"], _
             ['"==>","MDEF" ], _
             ['"<=>", "TDEF"], _
@@ -180,7 +181,7 @@ for i in [ _
 --           "SHOEEQ", _
              "LENGTH"  _
                      ] _
-       repeat SETF (GET(i,'SHOEPRE),'T)
+       repeat property(i,'SHOEPRE) := true
  
 ++ List of infix operators.
 for i in [      _
@@ -200,7 +201,7 @@ for i in [      _
         ["GE"   ,">="], _
         ["SHOENE"  ,"~="] _
                    ]_
-       repeat SETF (GET(first i,'SHOEINF),second i)
+       repeat property(first i,'SHOEINF) := second i
  
 
 ++ List of monoid operations and their neutral elements.
@@ -216,42 +217,46 @@ for i in [ _
       ["MAX", -999999] , _
       ["MIN",  999999] , _
       ["*",         1] , _
-      ["times",         1] , _
-      ["CONS",    NIL] , _
-      ["APPEND",  NIL] , _
-      ["append",  NIL] , _
-      ["UNION",   NIL] , _
-      ["UNIONQ",  NIL] , _
-      ["union",   NIL] , _
-      ["NCONC",   NIL] , _
-      ["and",      'T] , _
-      ["or",      NIL] , _
-      ["AND",      'T] , _
-      ["OR",      NIL]   _
+      ["times",     1] , _
+      ["CONS",    nil] , _
+      ["APPEND",  nil] , _
+      ["append",  nil] , _
+      ["UNION",   nil] , _
+      ["UNIONQ",  nil] , _
+      ["union",   nil] , _
+      ["NCONC",   nil] , _
+      ["and",    true] , _
+      ["or",    false] , _
+      ["AND",    true] , _
+      ["OR",    false]   _
                          ]
  
-       repeat SETF (GET(first i,'SHOETHETA),CDR i)
+       repeat property(first i,'SHOETHETA) := rest i
 
 for i in [ _
+  ["alphabetic?", "ALPHA-CHAR-P"], _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
-  ["car",          "CAR"]  , _
-  ["cdr",          "CDR"]  , _
-  ["cons",        "CONS"]  , _
+  ["char?", "CHARACTERP"]  , _
+  ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
+  ["digit?",    "DIGITP"]  , _
   ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
   ["first",        "CAR"]  , _
   ["fourth",    "CADDDR"]  , _
   ["function","FUNCTION"] , _
+  ["gensym",    "GENSYM"]  , _
   ["genvar",    "GENVAR"]  , _
+  ["integer?","INTEGERP"]  , _
   ["lastNode",    "LAST"]  , _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
+  ["lowerCase?", "LOWER-CASE-P"], _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["nil"           ,NIL ]  , _
@@ -260,7 +265,11 @@ for i in [ _
   ["null",        "NULL"]  , _
   ["or",            "OR"]  , _
   ["otherwise",      "T"]  , _
-  ["PAIRP",      "CONSP"]  , _
+  ["property",     "GET"]  , _
+  ["readByte", "READ-BYTE"], _
+  ["readInteger", "PARSE-INTEGER"], _
+  ["readLine", "READ-LINE"], _
+  ["readOnly?","CONSTANTP"], _
   ["removeDuplicates", "REMDUP"]  , _
   ["rest",         "CDR"]  , _
   ["reverse",  "REVERSE"]  , _
@@ -270,10 +279,17 @@ for i in [ _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
-  ["substitute", "SUBST"]  , _
+  ["string?",  "STRINGP"]  ,_
+  ["substitute",  "SUBST"]  , _
+  ["substitute!", "NSUBST"]  , _
+  ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
   ["true",           "T"]  , _
+  ["upperCase?", "UPPER-CASE-P"], _
+  ["vector?", "SIMPLE-VECTOR-P"], _
+  ["writeByte", "WRITE-BYTE"], _
+  ["writeLine", "WRITE-LINE"], _
   ["PLUS",           "+"]  , _
   ["MINUS",     "-"]  , _
   ["TIMES",          "*"]  , _
@@ -287,7 +303,7 @@ for i in [ _
   ["SHOENE",        "/="], _
   ["T",               "T$"]   _
                                 ]
-       repeat SETF (GET(first i,'SHOERENAME),CDR i)
+       repeat property(first i,'SHOERENAME) := rest i
 
  
 for i in [ _
@@ -303,6 +319,7 @@ for i in [ _
   ["aModeSet",              3] , _
   ["aTree",                 0] , _
   ["aValue",                2] , _
+  ["args",              "CDR"] , _
   ["attributes",       "CADDR"] , _
   ["cacheCount",     "CADDDDR"] , _
   ["cacheName",         "CADR"] , _
@@ -328,4 +345,4 @@ for i in [ _
   ["streamName",        "CADR"] , _
   ["target",             "CAR"]  _
                              ] _
-       repeat SETF (GET(first i,'SHOESELFUNCTION),second i)
+       repeat property(first i,'SHOESELFUNCTION) := second i

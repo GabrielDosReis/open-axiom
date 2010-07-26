@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ makeFort(name,args,decls,results,returnType,aspInfo) ==
   -- and a stub Axiom function to process its arguments.
   -- the following is a list of objects for which values need not be
   -- passed by the user.
-  dummies := [SECOND(u) for u in args | EQUAL(car u,0)]
+  dummies := [second(u) for u in args | EQUAL(first u,0)]
   args := [untangle2(u) for u in args] -- lose spad Union representation
     where untangle2 u ==
       atom (v := rest(u)) => v
@@ -70,7 +70,7 @@ makeFort1(name,args,userArgs,dummies,decls,results,returnType,aspInfo) ==
   arrayArgs := [u for u in args | not member(u,scalarArgs)]
   orderedArgs := [:scalarArgs,:arrayArgs]
   file := if $fortranDirectory then
-    STRCONC($fortranDirectory,"/",STRINGIMAGE name)
+    strconc($fortranDirectory,"/",STRINGIMAGE name)
   else
     STRINGIMAGE name
   makeFortranFun(name,orderedArgs,args,dummies,decls,results,file,
@@ -82,44 +82,44 @@ makeFort1(name,args,userArgs,dummies,decls,results,returnType,aspInfo) ==
 makeFortranFun(name,args,fortranArgs,dummies,decls,results,file,dir,
                returnType,asps) ==
   -- Create a C file to call the library function, and compile it.
-  fp := MAKE_-OUTSTREAM(STRCONC(file,".c"))
+  fp := MAKE_-OUTSTREAM(strconc(file,".c"))
   writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp)
   if null dir then dir := '"."
-  asps => SYSTEM STRCONC("cc -c ",file,".c ; mv ",file,".o ",dir)
-  SYSTEM STRCONC("cc ",file,".c -o ",file,".spadexe ",$fortranLibraries)
+  asps => SYSTEM strconc("cc -c ",file,".c ; mv ",file,".o ",dir)
+  SYSTEM strconc("cc ",file,".c -o ",file,".spadexe ",$fortranLibraries)
 
 writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
-  WRITE_-LINE('"#include <stdio.h>",fp)
-  WRITE_-LINE('"#include <sys/select.h>",fp)
-  WRITE_-LINE('"#include <rpc/rpc.h>",fp)
-  WRITE_-LINE('"#ifndef NULL",fp)
-  WRITE_-LINE('"#define NULL 0",fp)
-  WRITE_-LINE('"#endif  NULL",fp)
-  WRITE_-LINE('"#define MAX__ARRAY(x) (x ? x :  20000)",fp)
-  WRITE_-LINE('"#define CHECK(x) if (!x) {fprintf(stderr,_"xdr failed_"); exit(1);}",fp)
-  WRITE_-LINE('"void main()",fp)
-  WRITE_-LINE('"{",fp)
-  WRITE_-LINE('"  XDR xdrs;",fp)
-  WRITE_-LINE('"  {",fp)
+  writeLine('"#include <stdio.h>",fp)
+  writeLine('"#include <sys/select.h>",fp)
+  writeLine('"#include <rpc/rpc.h>",fp)
+  writeLine('"#ifndef NULL",fp)
+  writeLine('"#define NULL 0",fp)
+  writeLine('"#endif  NULL",fp)
+  writeLine('"#define MAX__ARRAY(x) (x ? x :  20000)",fp)
+  writeLine('"#define CHECK(x) if (!x) {fprintf(stderr,_"xdr failed_"); exit(1);}",fp)
+  writeLine('"void main()",fp)
+  writeLine('"{",fp)
+  writeLine('"  XDR xdrs;",fp)
+  writeLine('"  {",fp)
   if $addUnderscoreToFortranNames then
-    routineName := STRCONC(name,STRING CODE_-CHAR 95)
+    routineName := strconc(name,STRING CODE_-CHAR 95)
   else
     routineName := name
   -- If it is a function then give it somewhere to stick its result:
   if returnType then
-    returnName := INTERN STRCONC(name,"__result")
+    returnName := INTERN strconc(name,"__result")
     wl(['"    ",getCType returnType,'" ",returnName,'",",routineName,'"();"],fp)
   -- print out type declarations for the Fortran parameters, and build an
   -- ordered list of pairs [<parameter> , <type>]
   argList := nil
   for a in args repeat
     argList := [[a, getCType getFortranType(a,decls)], :argList]
-    printDec(SECOND first argList,a,asps,fp)
+    printDec(second first argList,a,asps,fp)
   argList := nreverse argList;
   -- read in the data
-  WRITE_-LINE('"    xdrstdio__create(&xdrs, stdin, XDR__DECODE);",fp)
+  writeLine('"    xdrstdio__create(&xdrs, stdin, XDR__DECODE);",fp)
   for a in argList repeat
-    if LISTP SECOND a then writeMalloc(first a,first SECOND a,rest SECOND a,fp)
+    if LISTP second a then writeMalloc(first a,first second a,rest second a,fp)
     not MEMQ(first a,[:dummies,:asps]) => writeXDR(a,'"&xdrs",fp)
   -- now call the Library routine.  FORTRAN names may have an underscore
   -- appended.
@@ -134,16 +134,16 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
     PRINC('",",fp)
     printCName(a,isPointer?(a,decls),asps,fp)
   writeStringLengths(fortranArgs,decls,fp)
-  WRITE_-LINE('");",fp)
+  writeLine('");",fp)
   -- now export the results.
-  WRITE_-LINE('"    xdrstdio__create(&xdrs, stdout, XDR__ENCODE);",fp)
+  writeLine('"    xdrstdio__create(&xdrs, stdout, XDR__ENCODE);",fp)
   if returnType then
     writeXDR([returnName,getCType returnType],'"&xdrs",fp)
   for r in results repeat
     writeXDR([r,getCType getFortranType(r,decls)],'"&xdrs",fp)
-  WRITE_-LINE('"    exit(0);",fp)
-  WRITE_-LINE('"  }",fp)
-  WRITE_-LINE('"}",fp)
+  writeLine('"    exit(0);",fp)
+  writeLine('"  }",fp)
+  writeLine('"}",fp)
 
 writeStringLengths(fortranArgs,decls,fp) ==
   for a in fortranArgs repeat
@@ -194,7 +194,7 @@ getCType t ==
   error ['"Unrecognised Fortran type: ",t]
 
 XDRFun t ==
-  LISTP(ty := SECOND t) =>
+  LISTP(ty := second t) =>
     if first(ty)='"char" then '"wrapstring" else '"array"
   ty
 
@@ -218,15 +218,15 @@ writeXDR(v,str,fp) ==
   underscore := STRING CHAR('"__:",0) -- to avoid a compiler bug which won't
                                      -- parse " ... __" properly.
   wt(['"    CHECK(xdr",underscore, XDRFun(v), '"(", str, '",&", first(v)],fp)
-  if (LISTP (ty :=SECOND v)) and not EQUAL(first ty,'"char") then
+  if (LISTP (ty :=second v)) and not EQUAL(first ty,'"char") then
     wt(['",&",first(v),'"__length,MAX__ARRAY(",first(v),'"__length),"],fp)
     wt(['"sizeof(",first(ty),'"),xdr",underscore,first ty],fp)
   wl(['"));"],fp)
 
 prefix2Infix(l) ==
   atom(l) => [l]
-  #l=2 => [first l,"(",:prefix2Infix SECOND l,")"]
-  #l=3 => ["(",:prefix2Infix SECOND l,first l,:prefix2Infix THIRD l,")"]
+  #l=2 => [first l,"(",:prefix2Infix second l,")"]
+  #l=3 => ["(",:prefix2Infix second l,first l,:prefix2Infix third l,")"]
   error '"Function in array dimensions with more than two arguments"
 
 writeMalloc(name,type,dims,fp) ==
@@ -301,27 +301,27 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
 
   -- To make sure the spad interpreter isn't confused:
   if returnType then
-    returnName := INTERN STRCONC(name,"Result")
+    returnName := INTERN strconc(name,"Result")
     decls := [[returnType,returnName], :decls]
     results := [returnName, :results]
-  argNames := [INTERN STRCONC(STRINGIMAGE(u),'"__arg") for u in userArgs]
+  argNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in userArgs]
   aType := [axiomType(a,decls,asps,aspInfo) for a in userArgs]
-  aspTypes := [SECOND NTH(POSITION(u,userArgs),aType) for u in asps]
+  aspTypes := [second NTH(POSITION(u,userArgs),aType) for u in asps]
   nilLst := MAKE_-LIST(#args+1)
   decPar := [["$elt","Lisp","construct"],:makeLispList decls]
-  fargNames := [INTERN STRCONC(STRINGIMAGE(u),'"__arg") for u in args |
+  fargNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in args |
                  not (MEMQ(u,dummies) or MEMQ(u,asps)) ]
   for u in asps repeat
-    fargNames := delete(INTERN STRCONC(STRINGIMAGE(u),'"__arg"),fargNames)
+    fargNames := delete(INTERN strconc(STRINGIMAGE(u),'"__arg"),fargNames)
   resPar := ["construct",["@",["construct",:fargNames],_
              ["List",["Any"]]]]
-  call := [["$elt","Lisp","invokeFortran"],STRCONC(file,".spadexe"),_
+  call := [["$elt","Lisp","invokeFortran"],strconc(file,".spadexe"),_
            [["$elt","Lisp","construct"],:mkQuote args],_
            [["$elt","Lisp","construct"],:mkQuote union(asps,dummies)], decPar,_
            [["$elt","Lisp","construct"],:mkQuote results],resPar]
   if asps then
     -- Make a unique(ish) id for asp files
-    aspId := STRCONC(getEnv('"SPADNUM"), GENSYM('"NAG"))
+    aspId := strconc(getEnv('"SPADNUM"), gensym('"NAG"))
     body := ["SEQ",:makeAspGenerators(asps,aspTypes,aspId),_
              makeCompilation(asps,file,aspId),_
              ["pretend",call,fType] ]
@@ -363,8 +363,8 @@ makeAspGenerators(asps,types,aspId) ==
 
 makeAspGenerators1(asp,type,aspId) ==
   [[["$elt","FOP","pushFortranOutputStack"] ,_
-    ["filename",'"",STRCONC(STRINGIMAGE asp,aspId),'"f"]] , _
-   makeOutputAsFortran INTERN STRCONC(STRINGIMAGE(asp),'"__arg"), _
+    ["filename",'"",strconc(STRINGIMAGE asp,aspId),'"f"]] , _
+   makeOutputAsFortran INTERN strconc(STRINGIMAGE(asp),'"__arg"), _
    [["$elt","FOP","popFortranOutputStack"]]   _
   ]
 
@@ -374,20 +374,20 @@ makeOutputAsFortran arg ==
 
 makeCompilation(asps,file,aspId) ==
   [["$elt","Lisp","compileAndLink"],_
-   ["construct",:[STRCONC(STRINGIMAGE a,aspId,'".f") for a in asps]], _
+   ["construct",:[strconc(STRINGIMAGE a,aspId,'".f") for a in asps]], _
    $fortranCompilerName,_
-   STRCONC(file,'".o"),_
-   STRCONC(file,'".spadexe"),_
+   strconc(file,'".o"),_
+   strconc(file,'".spadexe"),_
    $fortranLibraries]
 
 
 compileAndLink(fortFileList,fortCompiler,cFile,outFile,linkerArgs) ==
-  SYSTEM STRCONC (fortCompiler, addSpaces fortFileList,_
+  SYSTEM strconc (fortCompiler, addSpaces fortFileList,_
                   cFile, " -o ",outFile," ",linkerArgs)
 
 addSpaces(stringList) ==
   l := " "
-  for s in stringList repeat l := STRCONC(l,s," ")
+  for s in stringList repeat l := strconc(l,s," ")
   l
 
 complexRows z ==
@@ -395,9 +395,9 @@ complexRows z ==
 -- make them look like a Fortran vector!
   [:[:pair2list(u.i) for u in z] for i in 0..#(z.0)-1]
 
-pair2list u == [car u,cdr u]
-vec2Lists1 u == [ELT(u,i) for i in 0..#u-1]
-vec2Lists u == [vec2Lists1 ELT(u,i) for i in 0..#u-1]
+pair2list u == [first u,rest u]
+vec2Lists1 u == [u.i for i in 0..#u-1]
+vec2Lists u == [vec2Lists1 u.i for i in 0..#u-1]
 
 spad2lisp(u) ==
   -- Turn complexes into arrays of floats
@@ -405,7 +405,7 @@ spad2lisp(u) ==
     makeVector([makeVector([second u,CDDR u],"%DoubleFloat")],NIL)
   -- Turn arrays of complexes into arrays of floats so that tarnsposing
   -- them puts them in the correct fortran order
-  first first(u)="Matrix" and first SECOND first(u) = "Complex" =>
+  first first(u)="Matrix" and first second first(u) = "Complex" =>
     makeVector([makeVector(complexRows vec2Lists rest u,"%DoubleFloat")],NIL)
   rest(u)
 
@@ -420,7 +420,7 @@ invokeFortran(objFile,args,dummies,decls,results,actual) ==
 --  -- cons cell, otherwise a vector.  This is to match the internal
 --  -- representation of an Axiom Record.
 --  #returnedValues = 1 => returnedValues
---  #returnedValues = 2 => CONS(first returnedValues,SECOND returnedValues)
+--  #returnedValues = 2 => [first returnedValues,:second returnedValues]
 --  makeVector(returnedValues,nil)
 
 int2Bool u ==
@@ -431,7 +431,7 @@ int2Bool u ==
 makeResultRecord(name,type,value) ==
   -- Take an object returned by the NAG routine and make it into an AXIOM
   -- object of type Record(key:Symbol,entry:Any) for use by Result.
-  CONS(name,CONS(spadTypeTTT type,value))
+  [name,:[spadTypeTTT type,:value]]
 
 spadify(l,results,decls,names,actual) ==
   -- The elements of list l are the output forms returned from the Fortran
@@ -444,25 +444,25 @@ spadify(l,results,decls,names,actual) ==
     name := NTH(i,results)
     ty := getFortranType(name,decls)
     -- Result is a string
-    STRINGP fort =>
+    string? fort =>
       spadForms := [makeResultRecord(name,ty,fort), :spadForms]
     -- Result is a Complex Scalar
     ty in ["double complex" , "complex"] =>
        spadForms := [makeResultRecord(name,ty, _
-                                     CONS(ELT(fort,0),ELT(fort,1)) ),:spadForms]
+                                     [fort.0,:fort.1]),:spadForms]
     -- Result is a Complex vector or array
     LISTP(ty) and first(ty) in ["double complex" , "complex"] =>
       dims := [getVal(u,names,actual) for u in rest ty]
       els := nil
       if #dims=1 then
-        els := [makeVector([CONS(ELT(fort,2*i),ELT(fort,2*i+1)) _
+        els := [makeVector([[fort.(2*i),:fort.(2*i+1)] _
                 for i in 0..(first(dims)-1)],nil)]
       else if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
-          for c in 0..(SECOND(dims) - 1) repeat
+          for c in 0..(second(dims) - 1) repeat
             offset := 2*(c*first(dims)+r)
-            innerEls := [CONS(ELT(fort,offset),ELT(fort,offset+1)),:innerEls]
+            innerEls := [[fort.offset,:fort.(offset+1)],:innerEls]
           els := [makeVector(nreverse innerEls,nil),:els]
       else
          error ['"Can't cope with complex output dimensions higher than 2"]
@@ -472,15 +472,15 @@ spadify(l,results,decls,names,actual) ==
     LISTP(ty) and first(ty)="logical" and #ty=2 =>
       dim := getVal(second ty,names,actual)
       spadForms := [makeResultRecord(name,ty,_
-                          [int2Bool ELT(fort,i) for i in 0..dim-1]), :spadForms]
+                          [int2Bool fort.i for i in 0..dim-1]), :spadForms]
     LISTP(ty) and first(ty)="logical" =>
       dims := [getVal(u,names,actual) for u in rest ty]
       els := nil
       if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
-          for c in 0..(SECOND(dims) - 1) repeat
-            innerEls := [int2Bool ELT(fort,c*first(dims)+r),:innerEls]
+          for c in 0..(second(dims) - 1) repeat
+            innerEls := [int2Bool fort.(c*first(dims)+r),:innerEls]
           els := [nreverse innerEls,:els]
       else
          error ['"Can't cope with logical output dimensions higher than 2"]
@@ -493,24 +493,24 @@ spadify(l,results,decls,names,actual) ==
       if MEMQ(0,dims) then
         els := [[]]
       else if #dims=1 then
-        els := [makeVector([ELT(fort,i) for i in 0..(first(dims)-1)],nil)]
+        els := [makeVector([fort.i for i in 0..(first(dims)-1)],nil)]
       else if #dims=2 then
         for r in 0..(first(dims) - 1) repeat
           innerEls := nil
-          for c in 0..(SECOND(dims) - 1) repeat
-            innerEls := [ELT(fort,c*first(dims)+r),:innerEls]
+          for c in 0..(second(dims) - 1) repeat
+            innerEls := [fort.(c*first(dims)+r),:innerEls]
           els := [makeVector(nreverse innerEls,nil),:els]
       else if #dims=3 then
         iDim := first(dims)
-        jDim := SECOND dims
-        kDim := THIRD dims
+        jDim := second dims
+        kDim := third dims
         for r in 0..(iDim - 1) repeat
           middleEls := nil
           for c in 0..(jDim - 1) repeat
             innerEls := nil
             for p in 0..(kDim - 1) repeat
               offset := p*jDim + c*kDim + r
-              innerEls := [ELT(fort,offset),:innerEls]
+              innerEls := [fort.offset,:innerEls]
             middleEls := [makeVector(nreverse innerEls,nil),:middleEls]
           els := [makeVector(nreverse middleEls,nil),:els]
       else
@@ -542,7 +542,7 @@ lispType u ==
 getVal(u,names,values) ==
   -- if u is the i'th element of names, return the i'th element of values,
   -- otherwise if it is an arithmetic expression evaluate it.
-  NUMBERP(u) => u
+  integer?(u) => u
   LISTP(u) => eval [first(u), :[getVal(v,names,values) for v in rest u]]
   (place := POSITION(u,names)) => NTH(place,values)
   error ['"No value found for parameter: ",u]
@@ -571,12 +571,12 @@ prepareResults(results,args,dummies,values,decls) ==
         LISTP(type) and first(type)="character" => MAKE_-STRING(1)
         LISTP(type) and first(type) in ["complex","double complex"] =>
           makeVector(  makeList(
-            2*APPLY('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
+            2*apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
             if first(type)="complex" then shortZero else longZero),_
           if first(type)="complex" then "%SingleFloat" else "%DoubleFloat" )
         LISTP type => makeVector(_
           makeList(
-            APPLY('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
+            apply('_*,[getVal(tt,argNames,actual) for tt in rest(type)]),_
             defaultValue(first type,argNames,actual)),_
           checkForBoolean lispType first(type) )
         type = "integer" => 0
@@ -596,15 +596,15 @@ prepareResults(results,args,dummies,values,decls) ==
 --        -- order (i.e. swap from C to Fortran order).
 --        els  := nil
 --        rows := first ARRAY_-DIMENSIONS(u)-1
---        cols := first ARRAY_-DIMENSIONS(ELT(u,0))-1
+--        cols := first ARRAY_-DIMENSIONS(u.0)-1
 --        -- Could be a 3D Matrix
---        if VECTORP ELT(ELT(u,0),0) then
---          planes := first ARRAY_-DIMENSIONS(ELT(ELT(u,0),0))-1
+--        if VECTORP u.0.0 then
+--          planes := first ARRAY_-DIMENSIONS(u.0.0)-1
 --          for k in 0..planes repeat for j in 0..cols repeat for i in 0..rows repeat
---            els := [ELT(ELT(ELT(u,i),j),k),:els]
+--            els := [u.i.j.k,:els]
 --        else
 --          for j in 0..cols repeat for i in 0..rows repeat
---            els := [ELT(ELT(u,i),j),:els]
+--            els := [u.i.j,:els]
 --        makeVector(nreverse els,type)
 
 
@@ -619,40 +619,40 @@ writeData(tmpFile,indata) ==
         -- the two Boolean values
         v = "T" => 
                 xdrWrite(xstr,1)
-        NULL v =>   
+        null v =>   
                 xdrWrite(xstr,0)
         -- characters  
-        STRINGP v => 
+        string? v => 
                 xdrWrite(xstr,v)
         -- some array
         VECTORP v =>  
                 rows := first ARRAY_-DIMENSIONS(v)
                 -- is it 2d or more (most likely) ?
-                VECTORP ELT(v,0) =>     
-                        cols := first ARRAY_-DIMENSIONS(ELT(v,0))
+                VECTORP v.0 =>     
+                        cols := first ARRAY_-DIMENSIONS(v.0)
                         -- is it 3d ?
-                        VECTORP ELT(ELT(v,0),0) =>
-                                planes := first ARRAY_-DIMENSIONS(ELT(ELT(v,0),0))
+                        VECTORP v.0.0 =>
+                                planes := first ARRAY_-DIMENSIONS(v.0.0)
                                 -- write 3d array
                                 xdrWrite(xstr,rows*cols*planes)
                                 for k in 0..planes-1 repeat 
                                         for j in 0..cols-1 repeat 
                                                 for i in 0..rows-1 repeat 
-                                                        xdrWrite(xstr,ELT(ELT(ELT(v,i),j),k))
+                                                        xdrWrite(xstr,v.i.j.k)
                         -- write 2d array
                         xdrWrite(xstr,rows*cols)
                         for j in 0..cols-1 repeat
-                                for i in 0..rows-1 repeat xdrWrite(xstr,ELT(ELT(v,i),j))
+                                for i in 0..rows-1 repeat xdrWrite(xstr,v.i.j)
                 -- write 1d array
                 xdrWrite(xstr,rows)
-                for i in 0..rows-1 repeat xdrWrite(xstr,ELT(v,i))
+                for i in 0..rows-1 repeat xdrWrite(xstr,v.i)
         -- this is used for lists of booleans apparently in f01
         LISTP v => 
-                xdrWrite(xstr,LENGTH v)
+                xdrWrite(xstr,# v)
                 for el in v repeat 
                         if el then xdrWrite(xstr,1) else xdrWrite(xstr,0) 
         -- integers
-        INTEGERP v => 
+        integer? v => 
                 xdrWrite(xstr,v)
         -- floats
         FLOATP v => 
@@ -667,21 +667,21 @@ readData(tmpFile,results) ==
   xstr := xdrOpen(str,false)
   results := [xdrRead1(xstr,r) for r in results] where
     xdrRead1(x,dummy) ==
-      VECTORP(dummy) and ZEROP(LENGTH dummy) => dummy
+      VECTORP(dummy) and ZEROP(# dummy) => dummy
       xdrRead(x,dummy)
   SHUT(str)
   results
 
-generateDataName()==STRCONC($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENSYM('"NAG"),'"data")
-generateResultsName()==STRCONC($fortranTmpDir,getEnv('"HOST"),
-    getEnv('"SPADNUM"), GENSYM('"NAG"),'"results")
+generateDataName()==strconc($fortranTmpDir,getEnv('"HOST"),
+    getEnv('"SPADNUM"), gensym('"NAG"),'"data")
+generateResultsName()==strconc($fortranTmpDir,getEnv('"HOST"),
+    getEnv('"SPADNUM"), gensym('"NAG"),'"results")
 
 
 fortCall(objFile,data,results) ==
   tmpFile1 := writeData(generateDataName(),data)
   tmpFile2 := generateResultsName()
-  SYSTEM STRCONC(objFile," < ",tmpFile1," > ",tmpFile2)
+  SYSTEM strconc(objFile," < ",tmpFile1," > ",tmpFile2)
   results := readData(tmpFile2,results)
   removeFile tmpFile1
   removeFile tmpFile2
@@ -694,7 +694,7 @@ invokeNagman(objFiles,nfile,args,dummies,decls,results,actual) ==
                  prepareResults(results,args,dummies,actual,decls)),_
                  results,decls,inFirstNotSecond(args,dummies),actual)
   -- Tidy up asps
-  -- if objFiles then SYSTEM STRCONC("rm -f ",addSpaces objFiles)
+  -- if objFiles then SYSTEM strconc("rm -f ",addSpaces objFiles)
   for fn in objFiles repeat removeFile fn
   result
 
@@ -704,7 +704,7 @@ nagCall(objFiles,nfile,data,results,tmpFiled,tmpFiler) ==
      $nagMessages => '"on"
      '"off"
   writeData(tmpFiled,data)
-  toSend:=STRCONC($nagHost," ",nfile," ",tmpFiler," ",tmpFiled," ",_
+  toSend:=strconc($nagHost," ",nfile," ",tmpFiler," ",tmpFiled," ",_
       STRINGIMAGE($fortPersistence)," ", nagMessagesString," ",addSpaces objFiles)
   sockSendString(8,toSend)
   if sockGetInt(8)=1 then
@@ -750,12 +750,12 @@ multiToUnivariate f ==
   -- Take an AnonymousFunction, replace the bound variables by references to
   -- elements of a vector, and compile it.
   (first f) ~= "+->" => error "in multiToUnivariate: not an AnonymousFunction"
-  if CONSP second f then
+  if cons? second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
   body := COPY_-TREE third f
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     body := NSUBST(["elt",newVariable,index+1],vars.(index),body)
@@ -767,7 +767,7 @@ functionAndJacobian f ==
   -- Take a mapping into n functions of n variables, produce code which will
   -- evaluate function and jacobian values.
   (first f) ~= "+->" => error "in functionAndJacobian: not an AnonymousFunction"
-  if CONSP second f then
+  if cons? second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
@@ -778,7 +778,7 @@ functionAndJacobian f ==
     DF(fn,var) == 
       ["@",["convert",["differentiate",fn,var]],"InputForm"]
   jacBodies := CDDR interpret [["$elt",["List",["InputForm"]],"construct"],:jacBodies]
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)
@@ -795,12 +795,12 @@ vectorOfFunctions f ==
   -- Take a mapping into n functions of m variables, produce code which will
   -- evaluate function values.
   (first f) ~= "+->" => error "in vectorOfFunctions: not an AnonymousFunction"
-  if CONSP second f then
+  if cons? second f then
     vars := CDADR f -- throw away '%Comma at start of variable list
   else
     vars := [second f]
   funBodies := COPY_-TREE CDADDR f
-  newVariable := GENSYM()
+  newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
     funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)

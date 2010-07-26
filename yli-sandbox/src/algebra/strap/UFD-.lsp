@@ -8,42 +8,29 @@
                 |UFD-;prime?;SB;2|)) 
 
 (DEFUN |UFD-;squareFreePart;2S;1| (|x| $)
-  (PROG (|s| |f| #0=#:G1418 #1=#:G1405 #2=#:G1403 #3=#:G1404)
+  (PROG (|s|)
     (RETURN
-      (SEQ (SPADCALL
-               (SPADCALL
-                   (LETT |s| (SPADCALL |x| (|getShellEntry| $ 8))
-                         |UFD-;squareFreePart;2S;1|)
-                   (|getShellEntry| $ 10))
-               (PROGN
-                 (LETT #3# NIL |UFD-;squareFreePart;2S;1|)
-                 (SEQ (LETT |f| NIL |UFD-;squareFreePart;2S;1|)
-                      (LETT #0# (SPADCALL |s| (|getShellEntry| $ 14))
-                            |UFD-;squareFreePart;2S;1|)
-                      G190
-                      (COND
-                        ((OR (ATOM #0#)
-                             (PROGN
-                               (LETT |f| (CAR #0#)
-                                     |UFD-;squareFreePart;2S;1|)
-                               NIL))
-                         (GO G191)))
-                      (PROGN
-                        (LETT #1# (QCAR |f|)
-                              |UFD-;squareFreePart;2S;1|)
-                        (COND
-                          (#3# (LETT #2#
-                                     (SPADCALL #2# #1#
-                                      (|getShellEntry| $ 15))
-                                     |UFD-;squareFreePart;2S;1|))
-                          ('T
-                           (PROGN
-                             (LETT #2# #1# |UFD-;squareFreePart;2S;1|)
-                             (LETT #3# 'T |UFD-;squareFreePart;2S;1|)))))
-                      (LETT #0# (CDR #0#) |UFD-;squareFreePart;2S;1|)
-                      (GO G190) G191 (EXIT NIL))
-                 (COND (#3# #2#) ('T (|spadConstant| $ 16))))
-               (|getShellEntry| $ 15)))))) 
+      (SPADCALL
+          (SPADCALL
+              (LETT |s| (SPADCALL |x| (|getShellEntry| $ 8))
+                    |UFD-;squareFreePart;2S;1|)
+              (|getShellEntry| $ 10))
+          (LET ((#0=#:G1405 NIL) (#1=#:G1406 T)
+                (#2=#:G1419 (SPADCALL |s| (|getShellEntry| $ 14))))
+            (LOOP
+              (COND
+                ((ATOM #2#)
+                 (RETURN (COND (#1# (|spadConstant| $ 16)) (T #0#))))
+                (T (LET ((|f| (CAR #2#)))
+                     (LET ((#3=#:G1404 (CAR |f|)))
+                       (COND
+                         (#1# (SETQ #0# #3#))
+                         (T (SETQ #0#
+                                  (SPADCALL #0# #3#
+                                      (|getShellEntry| $ 15)))))
+                       (SETQ #1# NIL)))))
+              (SETQ #2# (CDR #2#))))
+          (|getShellEntry| $ 15))))) 
 
 (DEFUN |UFD-;prime?;SB;2| (|x| $)
   (EQL (LENGTH (SPADCALL (SPADCALL |x| (|getShellEntry| $ 18))
@@ -51,19 +38,14 @@
        1)) 
 
 (DEFUN |UniqueFactorizationDomain&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|)
-              . #0=(|UniqueFactorizationDomain&|))
-        (LETT |dv$| (LIST '|UniqueFactorizationDomain&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 29) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|UniqueFactorizationDomain&| |dv$1|))
+         ($ (|newShell| 29)) (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    $)) 
 
 (MAKEPROP '|UniqueFactorizationDomain&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|Factored| $)

@@ -141,7 +141,7 @@ InnerTaylorSeries(Coef): Exports == Implementation where
 )abbrev domain UTS UnivariateTaylorSeries
 ++ Author: Clifton J. Williamson
 ++ Date Created: 21 December 1989
-++ Date Last Updated: 21 September 1993
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains: UnivariateLaurentSeries(Coef,var,cen), UnivariatePuiseuxSeries(Coef,var,cen)
 ++ Also See:
@@ -170,7 +170,8 @@ UnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
   STT  ==> StreamTaylorSeriesOperations Coef
   TERM ==> Record(k:NNI,c:Coef)
   UP   ==> UnivariatePolynomial(var,Coef)
-  Exports ==> UnivariateTaylorSeriesCategory(Coef) with
+  Exports ==> Join(UnivariateTaylorSeriesCategory(Coef),_
+                   PartialDifferentialDomain(%,Variable var)) with
     coerce: UP -> %
       ++\spad{coerce(p)} converts a univariate polynomial p in the variable
       ++\spad{var} to a univariate Taylor series in \spad{var}.
@@ -180,9 +181,6 @@ UnivariateTaylorSeries(Coef,var,cen): Exports == Implementation where
     coerce: Variable(var) -> %
       ++\spad{coerce(var)} converts the series variable \spad{var} into a
       ++ Taylor series.
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} computes the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     lagrange: % -> %
       ++\spad{lagrange(g(x))} produces the Taylor series for \spad{f(x)}
       ++ where \spad{f(x)} is implicitly defined as \spad{f(x) = x*g(f(x))}.

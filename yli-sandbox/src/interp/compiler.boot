@@ -57,7 +57,6 @@ comp3: (%Form,%Mode,%Env) -> %Maybe %Triple
 compExpression: (%Form,%Mode,%Env) -> %Maybe %Triple
 compAtom: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSymbol: (%Form,%Mode,%Env) -> %Maybe %Triple
-compString: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTypeOf: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -101,7 +100,8 @@ compTopLevel(x,m,e) ==
   $NRTderivedTargetIfTrue: local := false
   $killOptimizeIfTrue: local:= false
   $forceAdd: local:= false
-  -- start with a base list of domains we may inline.
+  $whereDecls: local := nil
+  -- start with a base list of domains we may want to inline.
   $optimizableConstructorNames: local := $SystemInlinableConstructorNames
   x is ["DEF",:.] or x is ["where",["DEF",:.],:.] =>
     ([val,mode,.]:= compOrCroak(x,m,e); [val,mode,e])
@@ -170,7 +170,7 @@ compNoStacking1(x,m,e,$compStack) ==
 
 comp2(x,m,e) ==
   [y,m',e]:= comp3(x,m,e) or return nil
-  --if null atom y and isDomainForm(y,e) then e := addDomain(x,e)
+  --if cons? y and isDomainForm(y,e) then e := addDomain(x,e)
         --line commented out to prevent adding derived domain forms
   m~=m' and ($bootStrapMode or isDomainForm(m',e))=>[y,m',addDomain(m',e)]
         --isDomainForm test needed to prevent error while compiling Ring
@@ -183,13 +183,13 @@ comp3(x,m,$e) ==
   e:= $e --for debugging purposes
   m is ["Mapping",:.] => compWithMappingMode(x,m,e)
   m is ["QUOTE",a] => (x=a => [x,m,$e]; nil)
-  STRINGP m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
+  string? m => (atom x => (m=x or m=STRINGIMAGE x => [m,m,e]; nil); nil)
   -- In quasiquote mode, x should match exactly
   (y := isQuasiquote m) =>
      y = x => [["QUOTE",x], m, $e]
      nil
   atom x => compAtom(x,m,e)
-  op:= first x
+  op:= x.op
   getmode(op,e) is ["Mapping",:ml] and (u:= applyMapping(x,m,e,ml)) => u
   op=":" => compColon(x,m,e)
   op="::" => compCoerce(x,m,e)
@@ -236,8 +236,8 @@ applyMapping([op,:argl],m,e,ml) ==
     atom op and not(op in $formalArgList) and null (u := get(op,"value",e)) =>
       emitLocalCallInsn(op,argl',e)
     -- Compiler synthetized operators are inline.
-    u ~= nil and u.expr is ["XLAM",:.] => ["call",u.expr,:argl']
-    ['call,['applyFun,op],:argl']
+    u ~= nil and u.expr is ["XLAM",:.] => ['%call,u.expr,:argl']
+    ['%call,['applyFun,op],:argl']
   pairlis := pairList($FormalMapVariableList,argl')
   convert([form,SUBLIS(pairlis,first ml),e],m)
 
@@ -257,10 +257,10 @@ applyMapping([op,:argl],m,e,ml) ==
 --   if argl'="failed" then return nil
 --   mappingHasCategoryTarget => convert([form,first ml,e],m)
 --   form:=
---     not MEMQ(op,$formalArgList) and ATOM op =>
+--     not MEMQ(op,$formalArgList) and atom op =>
 --       [op',:argl',"$"] where
---         op':= INTERN STRCONC(STRINGIMAGE $prefix,";",STRINGIMAGE op)
---     ["call",["applyFun",op],:argl']
+--         op':= INTERN strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
+--     ['%call,["applyFun",op],:argl']
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)
 
@@ -270,6 +270,88 @@ hasFormalMapVariable(x, vl) ==
   ScanOrPairVec(function hasone?,x) where
      hasone? x == MEMQ(x,$formalMapVariables)
 
+
+++ Return the usage list of free variables in a lambda expresion.
+++ The usage list is an a-list (name, number of timed used.)
+freeVarUsage([.,vars,body],env) ==
+  freeList(body,vars,nil,env) where
+    freeList(u,bound,free,e) ==
+      atom u =>
+        not IDENTP u => free
+        MEMQ(u,bound) => free
+        v := ASSQ(u,free) =>
+          v.rest := 1 + rest v
+          free
+        getmode(u,e) = nil => free
+        [[u,:1],:free]
+      op := u.op
+      op in '(QUOTE GO function) => free
+      op = "LAMBDA" =>
+        bound := UNIONQ(bound, second u)
+        for v in CDDR u repeat
+          free := freeList(v,bound,free,e)
+        free
+      op = "PROG" =>
+        bound := UNIONQ(bound, second u)
+        for v in CDDR u | cons? v repeat
+          free := freeList(v,bound,free,e)
+        free
+      op = "SEQ" =>
+        for v in rest u | cons? v repeat
+          free := freeList(v,bound,free,e)
+        free
+      op in '(COND %when) =>
+        for v in rest u repeat
+          for vv in v repeat
+            free := freeList(vv,bound,free,e)
+        free
+      if atom op then --Atomic functions aren't descended
+        u := rest u
+      for v in u repeat
+        free := freeList(v,bound,free,e)
+      free
+
+++ Finish processing a lambda expression with parameter list `vars',
+++ and `env' as the environement after the compilation its body. 
+finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
+  $FUNNAME: local := nil
+  $FUNNAME__TAIL: local := [nil]
+  expandedFunction := transformToBackendCode expr
+  frees := freeVarUsage(expandedFunction,env)
+  vec := nil          -- mini-vector
+  expandedFunction :=
+    frees = nil => ["LAMBDA",[:vars,"$$"], :CDDR expandedFunction]
+    -- At this point, we have a function that we would like to pass.
+    -- Unfortunately, it makes various free variable references outside
+    -- itself.  So we build a mini-vector that contains them all, and
+    -- pass this as the environment to our inner function.
+    -- One free can go by itself, more than one needs a vector.
+    frees is [[var,:.]] =>
+      vec := var
+      ["LAMBDA",[:vars,var],:CDDR expandedFunction]
+    scode := nil   -- list of multiple used variables, need local bindings.
+    slist := nil   -- list of single used variables, no local bindings.
+    i := -1
+    for v in frees repeat
+      i := i+1
+      vec := [first v,:vec]
+      rest v = 1 => slist := [[first v,"getShellEntry","$$",i],:slist]
+      scode := [[first v,["getShellEntry","$$",i]],:scode]
+    body :=
+      slist => SUBLISNQ(slist,CDDR expandedFunction)
+      CDDR expandedFunction
+    if scode ~= nil then
+      body := 
+        body is [["DECLARE",:.],:.] =>
+          [first body,["PROG",nreverse scode,
+            ["RETURN",["PROGN",:rest body]]]]
+        [["LET",nreverse scode,:body]]
+    vec := ["VECTOR",:nreverse vec]
+    ["LAMBDA",[:vars,"$$"],:body]
+  fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
+  frees = nil => ["LIST",fname]
+  ["CONS",fname,vec]
+
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
   $killOptimizeIfTrue: local:= true
   e:= oldE
@@ -277,7 +359,8 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
-  if STRINGP x then x:= INTERN x
+  x is ["+->",:.] => compLambda(x,m,oldE)
+  if string? x then x:= INTERN x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ~= nil) and not hasFormalMapVariable(x, vl) => return
@@ -287,87 +370,11 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
     [u,.,.] := t
     extractCodeAndConstructTriple(u, m, oldE)
   [u,.,.]:= comp(x,m',e) or return nil
-  uu:=optimizeFunctionDef [nil,["LAMBDA",vl,u]]
-  --  At this point, we have a function that we would like to pass.
-  --  Unfortunately, it makes various free variable references outside
-  --  itself.  So we build a mini-vector that contains them all, and
-  --  pass this as the environment to our inner function.
-  $FUNNAME :local := nil
-  $FUNNAME__TAIL :local := [nil]
-  expandedFunction:= transformToBackendCode second uu
-  frees:=FreeList(expandedFunction,vl,nil,e)
-    where FreeList(u,bound,free,e) ==
-      atom u =>
-        not IDENTP u => free
-        MEMQ(u,bound) => free
-        v:=ASSQ(u,free) =>
-          RPLACD(v,1 + rest v)
-          free
-        null getmode(u,e) => free
-        [[u,:1],:free]
-      op := first u
-      op in '(QUOTE GO function) => free
-      op = "LAMBDA" =>
-        bound := UNIONQ(bound, second u)
-        for v in CDDR u repeat
-          free:=FreeList(v,bound,free,e)
-        free
-      op = "PROG" =>
-        bound := UNIONQ(bound, second u)
-        for v in CDDR u | not atom v repeat
-          free:=FreeList(v,bound,free,e)
-        free
-      op = "SEQ" =>
-        for v in rest u | not atom v repeat
-          free:=FreeList(v,bound,free,e)
-        free
-      op = "COND" =>
-        for v in rest u repeat
-          for vv in v repeat
-            free:=FreeList(vv,bound,free,e)
-        free
-      if atom op then u := rest u  --Atomic functions aren't descended
-      for v in u repeat
-        free:=FreeList(v,bound,free,e)
-      free
-  expandedFunction :=
-            --One free can go by itself, more than one needs a vector
-         --An A-list name . number of times used
-    #frees = 0 => ["LAMBDA",[:vl,"$$"], :CDDR expandedFunction]
-    #frees = 1 =>
-      vec:=first first frees
-      ["LAMBDA",[:vl,vec], :CDDR expandedFunction]
-    scode:=nil
-    vec:=nil
-    slist:=nil
-    locals:=nil
-    i:=-1
-    for v in frees repeat
-      i:=i+1
-      vec:=[first v,:vec]
-      rest v = 1 =>
-                --Only used once
-        slist:=[[first v,"getShellEntry","$$",i],:slist]
-      scode:=[['SETQ,first v,["getShellEntry","$$",i]],:scode]
-      locals:=[first v,:locals]
-    body:=
-      slist => SUBLISNQ(slist,CDDR expandedFunction)
-      CDDR expandedFunction
-    if locals then
-      if body is [["DECLARE",:.],:.] then
-        body := [first body,["PROG",locals,:scode,
-                               ["RETURN",["PROGN",:rest body]]]]
-      else body:=[["PROG",locals,:scode,["RETURN",["PROGN",:body]]]]
-    vec:=["VECTOR",:nreverse vec]
-    ["LAMBDA",[:vl,"$$"],:body]
-  fname:=["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
-  uu:=
-    frees => ["CONS",fname,vec]
-    ["LIST",fname]
-  [uu,m,oldE]
+  [.,fun] := optimizeFunctionDef [nil,["LAMBDA",vl,u]]
+  [finishLambdaExpression(fun,e),m,oldE]
 
 extractCodeAndConstructTriple(u, m, oldE) ==
-  u is ["call",fn,:.] =>
+  u is ['%call,fn,:.] =>
     if fn is ["applyFun",a] then fn := a
     [fn,m,oldE]
   [op,:.,env] := u
@@ -376,7 +383,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
-  (op := first x) and IDENTP op and (fn := GET(op,"SPECIAL")) =>
+  (op := x.op) and IDENTP op and (fn := GET(op,"SPECIAL")) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
@@ -398,14 +405,14 @@ compAtom(x,m,e) ==
   t:=
     IDENTP x => compSymbol(x,m,e) or return nil
     member(m,$IOFormDomains) and primitiveType x => [x,m,e]
-    STRINGP x => [x,x,e]
+    string? x => [x,x,e]
     [x,primitiveType x or return nil,e]
   convert(t,m)
 
 primitiveType x ==
   x is nil => $EmptyMode
-  STRINGP x => $String
-  INTEGERP x =>
+  string? x => $String
+  integer? x =>
     x=0 => $NonNegativeInteger
     x>0 => $PositiveInteger
     $Integer
@@ -617,8 +624,8 @@ compFormWithModemap(form,m,e,modemap) ==
               (c1 is [":",=(second argl),=m] or EQ(c1,second argl) ) =>
       -- first is a full tag, as placed by getInverseEnvironment
       -- second is what getSuccessEnvironment will place there
-                ["CDR",z]
-        ["call",:form']
+                ['%tail,z]
+        ['%call,:form']
       e':=
         Tl => (LAST Tl).env
         e
@@ -632,7 +639,7 @@ compFormWithModemap(form,m,e,modemap) ==
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
     [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
-  not atom op => nil
+  cons? op => nil
   modemapList:= get(op,"modemap",e)
   -- Within default implementations, modemaps cannot mention the
   -- current domain. 
@@ -702,7 +709,7 @@ compApplication(op,argl,m,T) ==
         not (MEMQ(op,$formalArgList) or MEMQ(T.expr,$formalArgList)) and
           null get(T.expr,"value",e) =>
             emitLocalCallInsn(T.expr,[a.expr for a in argTl],e)
-      ['call, ['applyFun, T.expr], :[a.expr for a in argTl]]
+      ['%call, ['applyFun, T.expr], :[a.expr for a in argTl]]
     coerce([form, retm, e],resolve(retm,m))
   op = 'elt => nil
   eltForm := ['elt, op, :argl]
@@ -737,8 +744,6 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
 --% SPECIAL EVALUATION FUNCTIONS
 
 compConstructorCategory(x,m,e) == [x,resolve($Category,m),e]
-
-compString(x,m,e) == [x,resolve($StringCategory,m),e]
 
 --% SUBSET CATEGORY
 
@@ -788,7 +793,7 @@ compSetq1(form,val,m,E) ==
   IDENTP form => setqSingle(form,val,m,E)
   form is [":",x,y] =>
     [.,.,E']:= compMakeDeclaration(x,y,E)
-    compSetq(["%LET",x,val],m,E')
+    compSetq1(x,val,m,E')
   form is [op,:l] =>
     op="CONS"  => setqMultiple(uncons form,val,m,E)
     op="%Comma" => setqMultiple(l,val,m,E)
@@ -810,19 +815,17 @@ setqSingle(id,val,m,E) ==
   m'':=
     get(id,"mode",E) or getmode(id,E) or
        (if m=$NoValueMode then $EmptyMode else m)
--- m'':= LASSOC("mode",currentProplist) or $EmptyMode
-       --for above line to work, line 3 of compNoStacking is required
   T:=
     eval or return nil where
       eval() ==
         T:= comp(val,m'',E) => T
-        not get(id,"mode",E) and m'' ~= (maxm'':=maximalSuperType m'') and
+        get(id,"mode",E) = nil and m'' ~= (maxm'':=maximalSuperType m'') and
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= convert(T,m) or return nil
   if $profileCompiler = true then
-    null IDENTP id => nil
+    not IDENTP id => nil
     key :=
       id in rest $form => "arguments"
       "locals"
@@ -830,7 +833,7 @@ setqSingle(id,val,m,E) ==
   newProplist := 
     consProplistOf(id,currentProplist,"value",removeEnv [val,:rest T])
   e':= 
-    CONSP id => e'
+    cons? id => e'
     addBinding(id,newProplist,e')
   if isDomainForm(val,e') then
     if isDomainInScope(id,e') then
@@ -838,12 +841,9 @@ setqSingle(id,val,m,E) ==
     e':= augModemapsFromDomain1(id,val,e')
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
-  if k := NRTassocIndex(id) then 
-    form := ["setShellEntry","$",k,x]
-  else form:=
-         $QuickLet => ["%LET",id,x]
-         ["%LET",id,x,
-            (isDomainForm(x,e') => ['ELT,id,0];first outputComp(id,e'))]
+  form :=
+    k := NRTassocIndex(id) => ["setShellEntry","$",k,x]
+    ["%LET",id,x]
   [form,m',e']
 
 assignError(val,m',form,m) ==
@@ -855,7 +855,8 @@ assignError(val,m',form,m) ==
 setqMultiple(nameList,val,m,e) ==
   val is ["CONS",:.] and m=$NoValueMode =>
     setqMultipleExplicit(nameList,uncons val,m,e)
-  val is ["%Comma",:l] and m=$NoValueMode => setqMultipleExplicit(nameList,l,m,e)
+  val is ["%Comma",:l] and m=$NoValueMode => 
+    setqMultipleExplicit(nameList,l,m,e)
   -- 1. create a gensym, %add to local environment, compile and assign rhs
   g:= genVariable()
   e:= addBinding(g,nil,e)
@@ -865,7 +866,7 @@ setqMultiple(nameList,val,m,e) ==
   -- 1.1. exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat 
-      e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
+      e:= giveVariableSomeValue(y,D,e)
     convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   -- 2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
@@ -883,7 +884,7 @@ setqMultiple(nameList,val,m,e) ==
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
   if assignList="failed" then NIL
-  else [MKPROGN [x,:assignList,g],m',e]
+  else [mkpf([x,:assignList,g],'PROGN),m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList~=#valList =>
@@ -918,19 +919,34 @@ compileQuasiquote(["[||]",:form],m,e) ==
 
 
 --% WHERE
+
+++ The form `item' appears in a side condition of a where-expression.
+++ Register all declarations it locally introduces.
+recordDeclarationInSideCondition(item,e) ==
+  item is [":",x,t] =>
+    t := macroExpand(t,e)
+    IDENTP x => $whereDecls := [[x,t],:$whereDecls]
+    x is ['%Comma,:.] =>
+      $whereDecls := [:[[x',t] for x' in x.args],:$whereDecls]
+  item is ['SEQ,:stmts,["exit",.,val]] =>
+    for stmt in stmts repeat
+      recordDeclarationInSideCondition(stmt,e)
+    recordDeclarationInSideCondition(val,e)
+
 compWhere: (%Form,%Mode,%Env) -> %Maybe %Triple
 compWhere([.,form,:exprList],m,eInit) ==
   $insideExpressionIfTrue: local:= false
-  $insideWhereIfTrue: local:= true
-  e:= eInit
-  u:=
+  $insideWhereIfTrue: local := true
+  e := eInit
+  u :=
     for item in exprList repeat
+      recordDeclarationInSideCondition(item,e)
       [.,.,e]:= comp(item,$EmptyMode,e) or return "failed"
   u="failed" => return nil
-  $insideWhereIfTrue:= false
-  [x,m,eAfter]:= comp(macroExpand(form,eBefore:= e),m,e) or return nil
-  eFinal:=
-    del:= deltaContour(eAfter,eBefore) => addContour(del,eInit)
+  $insideWhereIfTrue := false
+  [x,m,eAfter] := comp(macroExpand(form,eBefore := e),m,e) or return nil
+  eFinal :=
+    del := deltaContour(eAfter,eBefore) => addContour(del,eInit)
     eInit
   [x,m,eFinal]
 
@@ -982,7 +998,7 @@ $macroIfTrue := false
 
 compMacro(form,m,e) ==
   $macroIfTrue: local:= true
-  ["MDEF",lhs,signature,specialCases,rhs]:= form
+  ["MDEF",lhs,signature,specialCases,rhs] := form
   if $verbose then
     prhs :=
       rhs is ['CATEGORY,:.] => ['"-- the constructor category"]
@@ -993,7 +1009,16 @@ compMacro(form,m,e) ==
     sayBrightly ['"   processing macro definition",'%b,
       :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
   m=$EmptyMode or m=$NoValueMode =>
-    ["/throwAway",$NoValueMode,put(first lhs,"macro",macroExpand(rhs,e),e)]
+    -- Macro names shall be identifiers.
+    not IDENTP lhs.op =>
+      stackMessage('"invalid left-hand-side in macro definition",nil)
+      e
+    -- We do not have the means, at this late stage, to make a distinction
+    -- between a niladic functional macro and an identifier that is
+    -- defined as a macro.
+    if lhs.args = nil then lhs := lhs.op
+    ["/throwAway",$NoValueMode,putMacro(lhs,macroExpand(rhs,e),e)]
+  nil
 
 --% SEQ
 
@@ -1013,7 +1038,7 @@ compSeq1(l,$exitModeStack,e) ==
         ($insideExpressionIfTrue:= NIL; compSeqItem(x,$NoValueMode,e) or return
           "failed")).expr for x in l]
   if c="failed" then return nil
-  catchTag:= MKQ GENSYM()
+  catchTag:= MKQ gensym()
   form:= ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",$exitModeStack.(0))]
   [["CATCH",catchTag,form],$exitModeStack.(0),$finalEnv]
 
@@ -1023,23 +1048,26 @@ compSeqItem(x,m,e) ==
 replaceExitEtc(x,tag,opFlag,opMode) ==
   (fn(x,tag,opFlag,opMode); x) where
     fn(x,tag,opFlag,opMode) ==
-      atom x => nil
-      x is ["QUOTE",:.] => nil
+      isAtomicForm x => nil
       x is [ =opFlag,n,t] =>
-        rplac(CAADDR x,replaceExitEtc(CAADDR x,tag,opFlag,opMode))
+        second(x.args).expr :=
+          replaceExitEtc(second(x.args).expr,tag,opFlag,opMode)
         n=0 =>
           $finalEnv:=
                   --bound in compSeq1 and compDefineCapsuleFunction
             $finalEnv => intersectionEnvironment($finalEnv,t.env)
             t.env
-          rplac(first x,"THROW")
-          rplac(second x,tag)
-          rplac(third x,(convertOrCroak(t,opMode)).expr)
-        true => rplac(second x,second x-1)
+          if opFlag = 'TAGGEDreturn then
+            x.op := '%return
+          else 
+            x.op := "THROW"
+            first(x.args) := tag
+          second(x.args) := convertOrCroak(t,opMode).expr
+        first(x.args) := second x-1
       x is [key,n,t] and key in '(TAGGEDreturn TAGGEDexit) =>
-        rplac(first t,replaceExitEtc(first t,tag,opFlag,opMode))
-      replaceExitEtc(first x,tag,opFlag,opMode)
-      replaceExitEtc(rest x,tag,opFlag,opMode)
+        t.expr := replaceExitEtc(t.expr,tag,opFlag,opMode)
+      replaceExitEtc(x.op,tag,opFlag,opMode)
+      replaceExitEtc(x.args,tag,opFlag,opMode)
 
 --% SUCHTHAT
 compSuchthat: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1095,11 +1123,14 @@ compBreak(x,m,e) ==
 compIterate: (%Symbol,%Mode,%Env) -> %Maybe %Triple
 compIterate(x,m,e) ==
   x ~= "iterate" or not jumpFromLoop("REPEAT",x) => nil
+  index := #$exitModeStack - 1 - ($leaveLevelStack.0 + 1)
   $iterateCount := $iterateCount + 1
-  -- We don't really produce a value; but we cannot adequately convey
-  -- that to the current 'EXIT' structure.  So, pretend we have an 
-  -- undefined value, which is a good enough approximation.
-  [["THROW","$loopBodyTag",nil],m,e]
+  u := coerce(['%nil,'$Void,e],$exitModeStack.index) or return nil
+  u := coerce(u,m) or return nil
+  modifyModeStack(u.mode,index)
+  if $loopBodyTag = nil then       -- bound in compRepeatOrCollect
+    $loopBodyTag := MKQ gensym()
+  [['THROW,$loopBodyTag,u.expr],u.mode,e]
 
 --% return
 
@@ -1122,7 +1153,8 @@ compReturn(["return",x],m,e) ==
 ++ `op' supposedly designate an external entity with language linkage
 ++ `lang'.  Return the mode of its local declaration (import).
 getExternalSymbolMode(op,lang,e) ==
-  lang = "Builtin" => "%Thing"      -- for the time being
+  lang = 'Builtin => "%Thing"      -- for the time being
+  lang = 'Lisp => "%Thing"         -- for the time being
   lang ~= "C" =>
     stackAndThrow('"Sorry: %b Foreign %1b %d is invalid at the moment",[lang])
   get(op,"%Lang",e) ~= lang =>
@@ -1155,7 +1187,7 @@ compElt(form,m,E) ==
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry([opOf anOp,:modemap],E)
-    convert([["call",val],second sig,E], m)
+    convert([['%call,val],second sig,E], m)
   compForm(form,m,E)
 
 --% HAS
@@ -1205,7 +1237,7 @@ compIf(["IF",a,b,c],m,E) ==
 
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
-  (op:= first expr)="QUOTE" => ValueFlag and level=exitCount
+  (op:= expr.op)="QUOTE" => ValueFlag and level=exitCount
   op="TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil
@@ -1222,7 +1254,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
           or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
         or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
     canReturn(data,level,exitCount,ValueFlag)
-  op = "COND" =>
+  op = "COND" or op = '%when =>
     level = exitCount =>
       or/[canReturn(last u,level,exitCount,ValueFlag) for u in rest expr]
     or/[or/[canReturn(u,level,exitCount,ValueFlag) for u in v]
@@ -1234,13 +1266,11 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
       pp expr
     canReturn(a,level,exitCount,nil) or canReturn(b,level,exitCount,ValueFlag)
       or canReturn(c,level,exitCount,ValueFlag)
-  --now we have an ordinary form
-  atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
-  op is ["XLAM",args,bods] =>
-    and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
-  op = "LET" or op = "LET*" =>
+  op in '(LET LET_* %bind) =>
     or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
        or canReturn(third expr,level,exitCount,ValueFlag)
+  --now we have an ordinary form
+  atom op => and/[canReturn(u,level,exitCount,ValueFlag) for u in expr]
   systemErrorHere ['"canReturn",expr] --for the time being
 
 ++ We are compiling a conditional expression, type check and generate
@@ -1257,40 +1287,6 @@ compPredicate(p,E) ==
   -- Consequently, we compile directly with Boolean as target.
   [p',m,E] := comp(p,$Boolean,E) or return nil
   [p',m,getSuccessEnvironment(p,E),getInverseEnvironment(p,E)]
-
-getSuccessEnvironment(a,e) ==
-  a is ["is",id,m] =>
-    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
-      e:=put(id,"specialCase",m,e)
-      currentProplist:= getProplist(id,e)
-      [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
-      newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
-      addBinding(id,newProplist,e)
-    e
-  a is ["case",x,m] and IDENTP x =>
-    put(x,"condition",[a,:get(x,"condition",e)],e)
-  a is ["and",:args] =>
-    for form in args repeat
-      e := getSuccessEnvironment(form,e)
-    e
-  a is ["not",a'] => getInverseEnvironment(a',e)
-  e
-
-getInverseEnvironment(a,e) ==
-  a is ["case",x,m] and IDENTP x =>
-    --the next two lines are necessary to get 3-branched Unions to work
-    -- old-style unions, that is
-    (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
-      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),e)
-    getUnionMode(x,e) is ["Union",:l] =>
-      l':= delete(m,l)
-      for u in l' repeat
-	 if u is ['_:,=m,:.] then l':= delete(u,l')
-      newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
-      put(x,"condition",[newpred,:get(x,"condition",e)],e)
-    e
-  a is ["not",a'] => getSuccessEnvironment(a',e)
-  e
 
 getUnionMode(x,e) ==
   m:=
@@ -1402,9 +1398,9 @@ checkExternalEntity(id,type,lang,e) ==
   get(id,"modemap",e) =>
     stackAndThrow('"%1b already names exported operations in scope",[id])
   -- We don't type check builtin declarations at the moment.
-  lang = "Builtin" => id
+  lang = 'Builtin or lang = 'Lisp => id
   -- Only functions are accepted at the moment.  And all mentioned
-  --  types must be those that are supported by the FFI.
+  -- types must be those that are supported by the FFI.
   type' := checkExternalEntityType(type,e) 
   type' isnt [=bootDenotation "Mapping",:.] =>
     stackAndThrow('"Signature for external entity must be a Mapping type",nil)
@@ -1418,7 +1414,7 @@ checkExternalEntity(id,type,lang,e) ==
 removeModifiers t ==
   for (ts := [x,:.]) in tails t repeat
      x is [m,t'] and m in $FFITypeModifier =>
-       rplac(first ts,t')
+       ts.first := t'
   t
 
 ++ Compile external entity signature import.
@@ -1426,19 +1422,24 @@ compSignatureImport: (%Form,%Mode,%Env) -> %Maybe %Triple
 compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
   -- 1. Make sure we have the right syntax.
   home isnt ["Foreign",:args] =>
-    stackAndThrow('"signature import from be from a %1bp domain",["Foreign"])
+    stackAndThrow('"signature import must be from a %1bp domain",["Foreign"])
   args isnt [lang] =>
     stackAndThrow('"%1bp takes exactly one argument",["Foreign"])
   not IDENTP lang =>
     stackAndThrow('"Argument to %1bp must be an identifier",["Foreign"])
-  not (lang in '(Builtin C)) =>
+  not (lang in '(Builtin C Lisp)) =>
     stackAndThrow('"Sorry: Only %1bp is valid at the moment",["Foreign C"])
   -- 2. Make sure this import is not subverting anything we know
   id' := checkExternalEntity(id,type,lang,e)
   -- 3. Make a local declaration for it.
-  T := compMakeDeclaration(id,removeModifiers type,e) or return nil
-  T.env := put(id,"%Lang",lang,T.env)
-  T.env:= put(id,"%Link",id',T.env)
+  T := [.,.,e] := compMakeDeclaration(id,removeModifiers type,e) or return nil
+  e := put(id,"%Lang",lang,e)
+  e := put(id,"%Link",id',e)
+  -- 4. Also make non-function externals self-evaluating so we don't
+  --    complain later for undefined variable references.
+  if T.mode isnt ['Mapping,:.] then
+    e := put(id,"value",[id',T.mode,nil],e)
+  T.env := e
   convert(T,m)
 
 
@@ -1474,7 +1475,7 @@ compLogicalNot(x,m,e) ==
     $EmptyMode
   yT := comp(y,yTarget,e) or return nil
   yT.mode = $Boolean and yTarget = $Boolean => 
-    [["NOT",yT.expr],yT.mode,yT.env]
+    [["%not",yT.expr],yT.mode,yT.env]
   compResolveCall("not",[yT],m,yT.env)
 
 
@@ -1518,8 +1519,8 @@ compCase1(x,m,e) ==
   fn := genDeltaEntry(["case",:fn],e)
   -- user-defined `case' functions really are binary, as opposed to
   -- the compiler-synthetized versions for Union instances.  
-  not isUnionMode(m',e') => [["call",fn,x',MKQ m],$Boolean,e']
-  [["call",fn,x'],$Boolean,e']
+  not isUnionMode(m',e') => [['%call,fn,x',MKQ m],$Boolean,e']
+  [['%call,fn,x'],$Boolean,e']
 
 
 ++ For `case' operation implemented in library, the second operand
@@ -1542,7 +1543,7 @@ compColon([":",f,t],m,e) ==
       (if not member(t,getDomainsInScope e) then e:= addDomain(t,e); t)
     isDomainForm(t,e) or isCategoryForm(t,e) => t
     t is ["Mapping",m',:r] => t
-    STRINGP t => t              -- literal flag types are OK
+    string? t => t              -- literal flag types are OK
     unknownTypeError t
     t
   f is ["LISTOF",:l] =>
@@ -1560,7 +1561,7 @@ compColon([":",f,t],m,e) ==
     put(f,"mode",t,e)
   if not $bootStrapMode and $insideFunctorIfTrue and
     makeCategoryForm(t,e) is [catform,e] then
-        e:= put(f,"value",[genSomeVariable(),t,$noEnv],e)
+        e := giveVariableSomeValue(f,t,e)
   ["/throwAway",getmode(f,e),e]
 
 unknownTypeError name ==
@@ -1618,7 +1619,7 @@ tryCourtesyCoercion(T,m) ==
     keyedSystemError("S2GE0016",['"coerce",
       '"function coerce called from the interpreter."])
   if $useRepresentationHack then
-    rplac(second T,MSUBST("$",$Rep,second T))
+    T.rest.first := MSUBST("$",$Rep,second T)
   T':= coerceEasy(T,m) => T'
   T':= coerceSubset(T,m) => T'
   T':= coerceHard(T,m) => T'
@@ -1651,7 +1652,7 @@ satisfies(val,pred) ==
   pred=false or pred=true => pred
   vars := findVMFreeVars pred
   vars ~= nil and vars isnt ["#1"] => false
-  eval ["LET",[["#1",val]],pred]
+  eval ['%bind,[["#1",val]],pred]
 
 
 ++ If the domain designated by the domain forms `m' and `m'' have
@@ -1672,7 +1673,7 @@ commonSuperType(m,m') ==
 coerceSubset: (%Triple,%Mode) -> %Maybe %Triple
 coerceSubset([x,m,e],m') ==
   isSubset(m,m',e) => [x,m',e]
-  INTEGERP x and (m'' := commonSuperType(m,m')) =>
+  integer? x and (m'' := commonSuperType(m,m')) =>
     -- obviously this is temporary
     satisfies(x,isSubDomain(m',m'')) => [x,m',e]
     nil
@@ -1682,13 +1683,13 @@ coerceHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceHard(T,m) ==
   $e: local:= T.env
   m':= T.mode
-  STRINGP m' and modeEqual(m,$String) => [T.expr,m,$e]
+  string? m' and modeEqual(m,$String) => [T.expr,m,$e]
   modeEqual(m',m) or
     (get(m',"value",$e) is [m'',:.] or getmode(m',$e) is ["Mapping",m'']) and
       modeEqual(m'',m) or
         (get(m,"value",$e) is [m'',:.] or getmode(m,$e) is ["Mapping",m'']) and
           modeEqual(m'',m') => [T.expr,m,T.env]
-  STRINGP T.expr and T.expr=m => [T.expr,m,$e]
+  string? T.expr and T.expr=m => [T.expr,m,$e]
   isCategoryForm(m,$e) =>
       $bootStrapMode = true => [T.expr,m,$e]
       extendsCategoryForm(T.expr,T.mode,m) => [T.expr,m,$e]
@@ -1731,7 +1732,7 @@ coerceable(m,m',e) ==
 coerceExit: (%Triple,%Mode) -> %Maybe %Triple
 coerceExit([x,m,e],m') ==
   m':= resolve(m,m')
-  x':= replaceExitEtc(x,catchTag:= MKQ GENSYM(),"TAGGEDexit",$exitMode)
+  x':= replaceExitEtc(x,catchTag:= MKQ gensym(),"TAGGEDexit",$exitMode)
   coerce([["CATCH",catchTag,x'],m,e],m')
 
 compAtSign: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1759,27 +1760,16 @@ coerceSuperset: (%Triple, %Mode) -> %Maybe %Triple
 coerceSuperset(T,sub) ==
   sub = "$" =>
     T' := coerceSuperset(T,$functorForm) or return nil
-    rplac(second T',"$")
+    T'.rest.first := "$"
     T'
   pred := isSubset(sub,T.mode,T.env) =>
-    -- Don't bother introducing a temporary if we have an
-    -- atomic expression.
-    simple? := atom T.expr and not MEMQ(T.expr,$functorLocalParameters)
-    g := 
-      simple? => T.expr
-      GENSYM()
-    result := 
-      simple? => g
-      ["%LET",g,T.expr]
-    pred := substitute(g,"#1",pred)
-    code := ["PROG1",result, ["check-subtype",pred,MKQ sub,g]]
-    [code,sub,T.env]
+    [["%retract",T.expr,sub,pred],sub,T.env]
   nil
 
 compCoerce1(x,m',e) ==
   T:= comp(x,m',e) or comp(x,$EmptyMode,e) or return nil
   m1:=
-    STRINGP T.mode => $String
+    string? T.mode => $String
     T.mode
   m':=resolve(m1,m')
   T:=[T.expr,m1,T.env]
@@ -1799,7 +1789,7 @@ coerceByModemap([x,m,e],m') ==
   --mm:= (or/[mm for (mm:=[.,[cond,.]]) in u | cond=true]) or return nil
   mm:=first u  -- patch for non-trival conditons
   fn := genDeltaEntry(['coerce,:mm],e)
-  [["call",fn,x],m',e]
+  [['%call,fn,x],m',e]
 
 autoCoerceByModemap([x,source,e],target) ==
   u:=
@@ -1811,11 +1801,11 @@ autoCoerceByModemap([x,source,e],target) ==
 
   source is ["Union",:l] and member(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])
-       => [["call",genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
+       => [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
     x="$fromCoerceable$" => nil
     stackMessage('"cannot coerce %1b of mode %2pb to %3pb without a case statement",
       [x,source,target])
-  [["call",genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
+  [['%call,genDeltaEntry(["autoCoerce", :fn],e),x],target,e]
 
 
 ++ Compile a comma separated expression list. These typically are
@@ -1847,7 +1837,7 @@ compComma(form,m,e) ==
 resolve(din,dout) ==
   din=$NoValueMode or dout=$NoValueMode => $NoValueMode
   dout=$EmptyMode => din
-  din~=dout and (STRINGP din or STRINGP dout) =>
+  din~=dout and (string? din or string? dout) =>
     modeEqual(dout,$String) => dout
     modeEqual(din,$String) => nil
     mkUnion(din,dout)
@@ -1886,7 +1876,7 @@ compCat(form is [functorName,:argl],m,e) ==
   diagnoseUnknownType(form,e)
   [funList,e]:= FUNCALL(fn,form,form,e)
   catForm:=
-    ["Join",'(SetCategory),["CATEGORY","domain",:
+    ["Join",$SetCategory,["CATEGORY","domain",:
       [["SIGNATURE",op,sig] for [op,sig,.] in funList | op~="="]]]
   --RDJ: for coercion purposes, it necessary to know it's a Set; I'm not
   --sure if it uses any of the other signatures(see extendsCategoryForm)
@@ -1965,7 +1955,7 @@ compResolveCall(op,argTs,m,$e) ==
        tryMM() ==
          not coerceable(mm.mmTarget,m,$e) =>nil
          compViableModemap(op,argTs,mm,$e) isnt [f,Ts] => nil
-         coerce([["call",f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
+         coerce([['%call,f,:[T.expr for T in Ts]],mm.mmTarget,$e],m)
   #outcomes ~= 1 => nil
   first outcomes
 
@@ -2011,14 +2001,14 @@ compRetractGuard(x,t,sn,sm,e) ==
     -- view, that temporary needs to have a lifetime that covers both
     -- the condition and the body of the alternative, so just use 
     -- assignment here and let the rest of the compiler deal with it.
-    z := GENSYM()
-    caseCode := ["PROGN",["%LET",z,retractCode],["QEQCAR",z,0]]
-    restrictCode := ["QCDR",z]
+    z := gensym()
+    caseCode := ["PROGN",["%LET",z,retractCode],['%ieq,['%head,z],0]]
+    restrictCode := ["%tail",z]
   -- 1.3. Everything else failed; nice try.
   else return stackAndThrow('"%1bp is not retractable to %2bp",[sm,t])
   -- 2.  Now declare `x'.
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
+  e := giveVariableSomeValue(x,t,e)
   -- 3.  Assemble result.
   [caseCode, [[x,restrictCode]],e,envFalse]
 
@@ -2035,9 +2025,9 @@ compRecoverDomain(x,t,sn,e) ==
   -- 2. Declare `x'.
   originalEnv := e
   [.,.,e] := compMakeDeclaration(x,t,e) or return nil
-  e := put(x,"value",[genSomeVariable(),t,$noEnv],e)
+  e := giveVariableSomeValue(x,t,e)
   -- 3.  Assemble the result
-  [caseCode,[[x,["CDR",sn]]],e,originalEnv]
+  [caseCode,[[x,['%tail,sn]]],e,originalEnv]
 
 ++ Subroutine of compAlternativeGuardItem, responsible for 
 ++ compiling a guad item of the form
@@ -2115,9 +2105,9 @@ defineMatchScrutinee(m,e) ==
       [[t for m' in rest m | [t,e] := defTemp(m',e)], e]
     defTemp(m,e)
   where defTemp(m,e) ==
-    t := GENSYM()
+    t := gensym()
     [.,.,e] := compMakeDeclaration(t,m,e)
-    [t,put(t,"value",[genSomeVariable(),m,$noEnv],e)]
+    [t,giveVariableSomeValue(t,m,e)]
 
 ++ Generate code for guard in a simple pattern where
 ++ `sn' is the name of the temporary holding the scrutinee value,
@@ -2147,7 +2137,7 @@ compAlternativeGuard(sn,sm,pat,e) ==
       warnTooManyOtherwise()
     $catchAllCount := $catchAllCount + 1
     [true,nil,e,e]
-  CONSP sn =>
+  cons? sn =>
     pat isnt ["%Comma",:.] =>
       stackAndThrow('"Pattern must be a tuple for a tuple scrutinee",nil)
     #sn ~= #rest pat =>
@@ -2179,8 +2169,7 @@ compMatchAlternative(sn,sm,pat,stmt,m,e) ==
             stackAndThrow('"could not compile %1b under mode %2pb",[stmt,m])
   body :=
     null inits => stmtT.expr
-    atom sn => ["LET",inits,stmtT.expr]
-    ["LET*",inits,stmtT.expr]
+    ['%bind,inits,stmtT.expr]
   [[guard,body],stmtT.mode,stmtT.env,eF]
 
 ++ Analyze and generate code for `is case'-pattern where the
@@ -2205,9 +2194,9 @@ compMatch(["%Match",subject,altBlock],m,env) ==
   $catchAllCount = 0 => 
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := 
-    atom sn => ["LET",[[sn,se]],["COND",:nreverse altsCode]]
-    ["LET*",[[n,e] for n in sn for e in rest se], 
-       ["COND",:nreverse altsCode]]
+    atom sn => ['%bind,[[sn,se]],['%when,:nreverse altsCode]]
+    ["%bind",[[n,e] for n in sn for e in rest se], 
+       ['%when,:nreverse altsCode]]
   [code,m,savedEnv]
 
 ++ Compile the form scheme `x'.
@@ -2240,46 +2229,48 @@ compReduce(form,m,e) ==
  compReduce1(form,m,e,$formalArgList)
 
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
-  [collectOp,:itl,body]:= collectForm
-  if STRINGP op then op:= INTERN op
+  [collectOp,:itl,body] := collectForm
+  if string? op then op := INTERN op
   collectOp ~= "COLLECT" => systemError ['"illegal reduction form:",form]
-  $sideEffectsList: local := nil
   $until: local := nil
-  $initList: local := nil
-  $endTestList: local := nil
   oldEnv := e
-  $e:= e
-  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").(0) for x in itl]
+  itl := [([.,e]:= compIterator(x,e) or return "failed").0 for x in itl]
   itl="failed" => return nil
-  e:= $e
-  acc:= GENSYM()
-  afterFirst:= GENSYM()
-  bodyVal:= GENSYM()
-  [part1,m,e]:= comp(["%LET",bodyVal,body],m,e) or return nil
-  [part2,.,e]:= comp(["%LET",acc,bodyVal],m,e) or return nil
-  [part3,.,e]:= comp(["%LET",acc,parseTran [op,acc,bodyVal]],m,e) or return nil
-  identityCode:=
-    id:= getIdentity(op,e) => u.expr where u() == comp(id,m,e) or return nil
+  b := gensym()          -- holds value of the body
+  [bval,bmode,e] := comp(['%LET,b,body],$EmptyMode,e) or return nil
+  accu := gensym()       -- holds value of the accumulator
+  [move,.,e] := comp(['%LET,accu,b],$EmptyMode,e) or return nil
+  move.op := '%store     -- in reality, we are not defining a new variable
+  [update,mode,e] := comp(['%LET,accu,[op,accu,b]],m,e) or return nil
+  update.op := '%store   -- just update the accumulation variable.
+  nval :=
+    id := getIdentity(op,e) => u.expr where
+      u() == comp(id,mode,e) or return nil
     ["IdentityError",MKQ op]
-  finalCode:=
-    ["PROGN",
-      ["%LET",afterFirst,nil],
-       ["REPEAT",:itl,
-        ["PROGN",part1,
-          ["IF", afterFirst,part3,
-                   ["PROGN",part2,["%LET",afterFirst,MKQ true]]]]],
-                    ["IF",afterFirst,acc,identityCode]]
   if $until then
-    [untilCode,.,e]:= comp($until,$Boolean,e)
-    finalCode:= substitute(["UNTIL",untilCode],'$until,finalCode)
-  [finalCode,m,oldEnv]
+    [untilCode,.,e]:= comp($until,$Boolean,e) or return nil
+    itl := substitute(["UNTIL",untilCode],'$until,itl)
+  firstTime := gensym()
+  finalCode := ['%loop,
+                 ['%init,accu,'%nil],['%init,firstTime,'%true],:itl,
+                   ['%bind,[[b,third bval]],
+                     ['%when,[firstTime,move],['%otherwise,update]],
+                       ['%store,firstTime,'%false]],
+                         ['%when,[firstTime,nval],['%otherwise,accu]]]
+  T := coerce([finalCode,mode,e],m) or return nil
+  [T.expr,T.mode,oldEnv]
 
 ++ returns the identity element of the `reduction' operation `x'
 ++ over a list -- a monoid homomorphism.   
 getIdentity(x,e) ==
-  -- The empty list should be indicated by name, not  by its
-  -- object representation.
-  GETL(x,"THETA") is [y] => (y => y; "nil")
+  GETL(x,"THETA") is [y] =>
+    y = 0 => $Zero
+    y = 1 => $One
+    -- The empty list should be indicated by name, not  by its
+    -- object representation.
+    y => y
+    "nil"
+  nil
  
 numberize x ==
   x=$Zero => 0
@@ -2293,6 +2284,33 @@ localReferenceIfThere m ==
   idx := NRTassocIndex m => ["getShellEntry","$",idx]
   quoteForm m
 
+massageLoop x == main x where
+  main x ==
+    x isnt ['CATCH,tag,['REPEAT,:iters,body]] => x
+    $mayHaveFreeIteratorVariables or CONTAINED('TAGGEDexit,x) => x
+    replaceThrowWithLeave(body,tag)
+    containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
+    ['CATCH,tag,['%loop,:iters,body,'%nil]]
+  replaceThrowWithLeave(x,tag) ==
+    isAtomicForm x => nil
+    x is ['THROW,=tag,expr] =>
+      replaceThrowWithLeave(expr,tag)
+      -- Avoid redudant THROW for return-expressions.
+      if expr is ['TAGGEDreturn,:.] then
+        x.op := expr.op
+        x.args := expr.args
+      else
+        x.op := '%leave
+        x.args := rest x.args
+    for x' in x repeat replaceThrowWithLeave(x',tag)
+  containsNonLocalControl?(x,tags) ==
+    isAtomicForm x => false
+    x is ['THROW,tag,x'] =>
+      not(tag in tags) or containsNonLocalControl?(x',tags)
+    x is ['CATCH,tag,x'] =>
+      containsNonLocalControl?(x',[tag,:tags])
+    or/[containsNonLocalControl?(x',tags) for x' in x]
+
 compRepeatOrCollect(form,m,e) ==
   fn(form,[m,:$exitModeStack],[#$exitModeStack,:$leaveLevelStack],$formalArgList
     ,e) where
@@ -2300,7 +2318,9 @@ compRepeatOrCollect(form,m,e) ==
         $until: local := nil
         $loopKind: local := nil
         $iterateCount: local := 0
+        $loopBodyTag: local := nil
         $breakCount: local := 0
+        $mayHaveFreeIteratorVariables: local := false
         oldEnv := e
         aggr := nil
         [repeatOrCollect,:itl,body]:= form
@@ -2325,18 +2345,18 @@ compRepeatOrCollect(form,m,e) ==
           -- ??? we hve a plain old loop; the return type should be Void
           $loopKind := repeatOrCollect
           $NoValueMode
-        [body',m',e']:=
-            compOrCroak(body,bodyMode,e) or return nil
+        [body',m',e'] := compOrCroak(body,bodyMode,e) or return nil
         -- Massage the loop body if we have a structured jump.
         if $iterateCount > 0 then
-           bodyTag := quoteForm GENSYM()
-           body' := ["CATCH",bodyTag,NSUBST(bodyTag,"$loopBodyTag",body')]
+           body' := ["CATCH",$loopBodyTag,body']
         if $until then
           [untilCode,.,e']:= comp($until,$Boolean,e')
           itl':= substitute(["UNTIL",untilCode],'$until,itl')
         form':= 
            repeatOrCollect = "%CollectV" => 
              ["%CollectV",localReferenceIfThere m',:itl',body']
+           -- We are phasing out use of LISP macros COLLECT and REPEAT.
+           repeatOrCollect = "COLLECT" => ['%collect,:itl',body']
            [repeatOrCollect,:itl',body']
         m'' := 
           aggr is [c,.] and c in '(List PrimitiveArray Vector) => [c,m']
@@ -2344,7 +2364,7 @@ compRepeatOrCollect(form,m,e) ==
         T := coerceExit([form',m'',e'],targetMode) or return nil
         -- iterator variables and other variables declared in
         -- in a loop are local to the loop.
-        [T.expr,T.mode,oldEnv]
+        [massageLoop T.expr,T.mode,oldEnv]
  
 --constructByModemap([x,source,e],target) ==
 --  u:=
@@ -2352,15 +2372,81 @@ compRepeatOrCollect(form,m,e) ==
 --      for (modemap:= [map,cexpr]) in getModemapList("construct",1,e) | map is [
 --        .,t,s] and modeEqual(t,target) and modeEqual(s,source)] or return nil
 --  fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
---  [["call",fn,x],target,e]
+--  [['%call,fn,x],target,e]
  
 listOrVectorElementMode x ==
   x is [a,b,:.] and member(a,'(PrimitiveArray Vector List)) => b
+
+++ Return the least Integer subdomain that can represent values
+++ of both Integer subdomains denoted by the forms `x' and `y.
+joinIntegerModes(x,y,e) ==
+  isSubset(x,y,e) => y
+  isSubset(y,x,e) => x
+  $Integer
+
+++ Subroutine of compStepIterator.
+++ We are elaborating the STEP form of a for-iterator, where all
+++ bounds and increment are expected to be integer-valued expressions.
+++ Compile the expression `x' in the context `e', under those
+++ circumstances.  When successful we return either the declared
+++ mode of the expression, or infer the tightest mode that can
+++ represents the resulting value.  Note that we do not attempt any
+++ SmallInteger optimization at this stage.  Such a transformation can
+++ be done only when we have all information about the bound.
+compIntegerValue(x,e) ==
+  -- 1. Preliminary transformation.
+  -- The literal values 0 and 1 get transformed by the parser
+  -- into calls Zero() and One(), respectively.  Undo that transformation
+  -- locally.  Note that this local transformation is OK, because
+  -- it presents semantics.
+  x :=
+    x = $Zero => 0
+    x = $One => 1
+    x
+  -- 2. Attempt to infer the type of the expression if at all possible.
+  --    The inferred mode is valid only if it is an integer (sub)domain.
+  T := comp(x,$EmptyMode,e)
+  isSubset(T.mode,$Integer,e) => T
+  -- 3. Otherwise, compile in checking mode.
+  comp(x,$PositiveInteger,e) or
+    comp(x,$NonNegativeInteger,e) or
+      compOrCroak(x,$Integer,e)
+
+++ Issue a diagnostic if `x' names a loop variable with a matching
+++ declaration  or definition in the enclosing scope.  
+complainIfShadowing(x,e) ==
+  if getmode(x,e) ~= nil then
+    $mayHaveFreeIteratorVariables := true  -- bound in compRepeatOrCollect
+    stackWarning('"loop variable %1b shadows variable from enclosing scope",[x])
+
+++ Attempt to compile a `for' iterator of the form
+++     for index in start..final by inc
+++ where the bound `final' may be missing.
+compStepIterator(index,start,final,inc,e) ==
+  checkVariableName index
+  complainIfShadowing(index,e)
+  $formalArgList := [index,:$formalArgList]
+  [start,startMode,e] := compIntegerValue(start,e) or return
+    stackMessage('"start value of index: %1b must be an integer",[start])
+  [inc,incMode,e] := compIntegerValue(inc,e) or return
+    stackMessage('"index increment: %1b must be an integer",[inc])
+  if final ~= nil then
+    [final,finalMode,e] := compIntegerValue(first final,e) or return
+      stackMessage('"final value of index: %1b must be an integer",[final])
+    final := [final]
+  indexMode :=
+    final = nil or isSubset(incMode,$NonNegativeInteger,e) => startMode
+    joinIntegerModes(startMode,finalMode,e)
+  if get(index,"mode",e) = nil then
+    [.,.,e] := compMakeDeclaration(index,indexMode,e) or return nil
+  e := giveVariableSomeValue(index,indexMode,e)
+  [["STEP",index,start,inc,:final],e]
  
 compIterator(it,e) ==
     -- ??? Allow for declared iterator variable.
   it is ["IN",x,y] =>
     checkVariableName x
+    complainIfShadowing(x,e)
     --these two lines must be in this order, to get "for f in list f"
     --to give  an error message if f is undefined
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
@@ -2370,11 +2456,12 @@ compIterator(it,e) ==
          stackMessage('"mode: %1pb must be a list of some mode",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,mUnder,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),mUnder,$noEnv],e)
+    e:= giveVariableSomeValue(x,mUnder,e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["IN",x,y''],e]
   it is ["ON",x,y] =>
     checkVariableName x
+    complainIfShadowing(x,e)
     $formalArgList:= [x,:$formalArgList]
     [y',m,e]:= comp(y,$EmptyMode,e) or return nil
     [mOver,mUnder]:=
@@ -2382,47 +2469,11 @@ compIterator(it,e) ==
         stackMessage('"mode: %1pb must be a list of other modes",[m])
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,m,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),m,$noEnv],e)
+    e:= giveVariableSomeValue(x,m,e)
     [y'',m'',e] := coerce([y',m,e], mOver) or return nil
     [["ON",x,y''],e]
   it is ["STEP",index,start,inc,:optFinal] =>
-    checkVariableName index
-    $formalArgList:= [index,:$formalArgList]
-    --if all start/inc/end compile as small integers, then loop
-    --is compiled as a small integer loop
-    final':= nil
-    (start':= comp(start,$SmallInteger,e)) and
-      (inc':= comp(inc,$NonNegativeInteger,start'.env)) and
-        (not (optFinal is [final]) or
-          (final':= comp(final,$SmallInteger,inc'.env))) =>
-            indexmode:=
-              comp(start,$NonNegativeInteger,e) =>
-                      $NonNegativeInteger
-              $SmallInteger
-            if null get(index,"mode",e) then [.,.,e]:=
-              compMakeDeclaration(index,indexmode,
-                (final' => final'.env; inc'.env)) or return nil
-            e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
-            if final' then optFinal:= [final'.expr]
-            [["ISTEP",index,start'.expr,inc'.expr,:optFinal],e]
-    [start,.,e]:=
-      comp(start,$Integer,e) or return
-        stackMessage('"start value of index: %1b must be an integer",[start])
-    [inc,.,e]:=
-      comp(inc,$Integer,e) or return
-        stackMessage('"index increment: %1b must be an integer",[inc])
-    if optFinal is [final] then
-      [final,.,e]:=
-        comp(final,$Integer,e) or return
-          stackMessage('"final value of index: %1b must be an integer",[final])
-      optFinal:= [final]
-    indexmode:=
-      comp(third it,$NonNegativeInteger,e) => $NonNegativeInteger
-      $Integer
-    if null get(index,"mode",e) then [.,.,e]:=
-      compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,$noEnv],e)
-    [["STEP",index,start,inc,:optFinal],e]
+    compStepIterator(index,start,optFinal,inc,e)
   it is ["WHILE",p] =>
     [p',m,e]:=
       comp(p,$Boolean,e) or return
@@ -2466,11 +2517,11 @@ compPer(["per",x],m,e) ==
   T := comp(x,inType,e) or return nil
   if $subdomain then
     T := 
-      INTEGERP T.expr and satisfies(T.expr,domainVMPredicate "$") => 
+      integer? T.expr and satisfies(T.expr,domainVMPredicate "$") => 
         [T.expr,"$",e]
       coerceSuperset(T,"$") or return nil
   else 
-    rplac(second T,"$")
+    T.rest.first := "$"
   coerce(T,m)
 
 ++ Compile the form `rep x' under the mode `m'.
@@ -2479,7 +2530,60 @@ compPer(["per",x],m,e) ==
 compRep(["rep",x],m,e) ==
   $useRepresentationHack => nil
   T := comp(x,"$",e) or return nil
-  rplac(second T,getRepresentation e or return nil)
+  T.rest.first := getRepresentation e or return nil
+  coerce(T,m)
+
+--% Lambda expressions
+
+compUnnamedMapping(parms,source,target,body,env) ==
+  $killOptimizeIfTrue: local := true
+  savedEnv := env
+  for p in parms for s in source repeat
+    [.,.,env] := compMakeDeclaration(p,s,env)
+    env := giveVariableSomeValue(p,get(p,'mode,env),env)
+  T := comp(body,target,env) or return nil
+  [.,fun] := optimizeFunctionDef [nil,["LAMBDA",parms,T.expr]]
+  fun := finishLambdaExpression(fun,env)
+  [fun,["Mapping",T.mode,:source],savedEnv]
+
+gatherParameterList vars == main(vars,nil,nil) where
+  main(vars,parms,source) ==
+    vars = nil => [nreverse parms,nreverse source]
+    atom vars or vars is [":",:.] => [[x] for x in check vars]
+    [v,s] := check first vars
+    main(rest vars,[v,:parms],[s,:source])
+  check var == 
+    atom var =>
+      not IDENTP var =>
+        stackAndThrow('"invalid parameter %1b in lambda expression",[var])
+      [checkVariableName var,nil]
+    var is [":",p,t] =>
+      not IDENTP p =>
+        stackAndThrow('"invalid parameter %1b in lambda expression",[p])
+      [checkVariableName p,t]
+    stackAndThrow('"invalid parameter for mapping",nil)
+
+compLambda(x is ["+->",vars,body],m,e) ==
+  -- 1. Gather parameters and their types.
+  if vars is ["%Comma",:vars'] then
+    vars := vars'
+  [parms,source] := gatherParameterList vars
+  -- 2. Compile the form
+  T := 
+    -- 2.1. No parameter is declared
+    and/[s = nil for s in source] =>
+      -- Guess from context
+      m is ["Mapping",dst,:src] =>
+        #src ~= #parms =>
+           stackAndThrow('"inappropriate function type for unnamed mapping",nil)
+        compUnnamedMapping(parms,src,dst,body,e) or return nil
+      -- Otherwise, assumes this is just purely syntactic code block.
+      [quoteForm ["+->",parms,body],$AnonymousFunction,e]
+    -- 2.2. If all parameters are declared, then compile as a mapping.
+    and/[s ~= nil for s in source] =>
+      compUnnamedMapping(parms,source,$EmptyMode,body,e) or return nil
+    -- 2.3.  Well, give up for now.
+    stackAndThrow('"parameters in a lambda expression must be all declared or none declared",nil)
   coerce(T,m)
 
 --%
@@ -2526,6 +2630,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["@", :"compAtSign"],_
 	  [":", :"compColon"],_
 	  ["::", :"compCoerce"],_
+          ["+->", :"compLambda"],_
 	  ["QUOTE", :"compQuote"],_
 	  ["add", :"compAdd"],_
 	  ["CAPSULE", :"compCapsule"],_
@@ -2570,4 +2675,4 @@ for x in [["|", :"compSuchthat"],_
           ["%Match",:"compMatch"],_
           ["%SignatureImport",:"compSignatureImport"],_
           ["[||]", :"compileQuasiquote"]] repeat
-  MAKEPROP(first x, "SPECIAL", rest x)
+  property(first x, 'SPECIAL) := rest x

@@ -243,19 +243,15 @@
             (setf (get fname 'compiler::fixed-args) t)))
    nil)
 
-#+:AKCL
-(defun compile-lib-file (fn &rest opts)
-  (unwind-protect
-      (progn
-        (trace (compiler::fast-link-proclaimed-type-p
-                :exitcond nil
-                :entrycond (spad-fixed-arg (car system::arglist))))
-        (trace (compiler::t1defun :exitcond nil
-                :entrycond (spad-fixed-arg (caar system::arglist))))
-        (apply #'compile-file fn opts))
-    (untrace compiler::fast-link-proclaimed-type-p compiler::t1defun)))
-#-:GCL
-(define-function 'compile-lib-file #'compile-file)
+(defun compile-lib-file (file)
+  (multiple-value-bind (result warning-p failure-p)
+    (compile-file file)
+    (cond ((null result)
+	   (|systemError| (list "Generated Lisp was malformed")))
+	  (failure-p
+	   (|removeFile| (namestring result))
+	   (|systemError| (list "Compilation of generated Lisp failed"))))
+    result))
 
 ;; (RDROPITEMS filearg keys) don't delete, used in files.spad
 (defun rdropitems (filearg keys &aux (ctable (|getIndexTable| filearg)))

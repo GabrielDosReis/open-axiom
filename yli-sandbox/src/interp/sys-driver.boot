@@ -101,7 +101,7 @@ systemDatabaseDirectory() ==
 loadExposureGroupData() ==
   LOAD('"./exposed", KEYWORD::VERBOSE,false,
     KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
-  LOAD(CONCAT(systemRootDirectory(),'"algebra/exposed"),
+  LOAD(strconc(systemRootDirectory(),'"algebra/exposed"),
     KEYWORD::VERBOSE,false,KEYWORD::IF_-DOES_-NOT_-EXIST,nil) => "done"
   "failed"
 
@@ -198,7 +198,7 @@ initializeGlobalState() ==
                              $defaultOptimizationLevel)
   GCMSG(NIL)
   if have_to then
-    $superHash := MAKE_-HASHTABLE('UEQUAL)
+    $superHash := hashTable 'EQUAL
   initNewWorld()
 
   -- 1. Macros.
@@ -212,8 +212,6 @@ initializeGlobalState() ==
   -- 3. Databases
   if $verbose and $displayStartMsgs then 
     sayKeyedMsg("S2IZ0053",['"database"])
-  if have_to then  -- ??? remove this functiom from the system?
-    SETF(SYMBOL_-FUNCTION "addConsDB", function IDENTITY)
   if have_to then
     fillDatabasesInCore()
     mkLowerCaseConTable()
@@ -242,7 +240,7 @@ initializeGlobalState() ==
 
   -- 7. Etc.
   if have_to and functionp 'addtopath then 
-    addtopath CONCAT(systemRootDirectory(),'"bin")
+    addtopath strconc(systemRootDirectory(),'"bin")
   -- Take off
 
 

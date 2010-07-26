@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,12 +42,13 @@ npNull x== StreamNull x
 StreamNull x==
   null x or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
-          st:=APPLY(second x,CDDR x)
-          RPLACA(x,first st)
-          RPLACD(x,rest st)
+          st:=apply(second x,CDDR x)
+          x.first := first st
+          x.rest := rest st
   x is ["nullstream",:.]
  
-Delay(f,x)==cons("nonnullstream",[f,:x])
+Delay(f,x) ==
+  ["nonnullstream",:[f,:x]]
  
 StreamNil:= ["nullstream"]
  
@@ -56,23 +57,23 @@ incRgen s==Delay(function incRgen1,[s])
 incRgen1(:z)==
         [s]:=z
         a:=shoeread_-line s
-        if NULL a
+        if null a
         then (CLOSE s;StreamNil)
 
-        else cons(a,incRgen s)
+        else [a,:incRgen s]
  
 incIgen n==Delay(function incIgen1,[n])
 incIgen1(:z)==
         [n]:=z
         n:=n+1
-        cons(n,incIgen n)
+        [n,:incIgen n]
  
 incZip(g,f1,f2)==Delay(function incZip1,[g,f1,f2])
 incZip1(:z)==
      [g,f1,f2]:=z
      StreamNull f1 => StreamNil
      StreamNull f2 => StreamNil
-     cons(FUNCALL(g,car f1,car f2),incZip(g,cdr f1,cdr f2))
+     [FUNCALL(g,first f1,first f2),:incZip(g,rest f1,rest f2)]
  
 incAppend(x,y)==Delay(function incAppend1,[x,y])
  
@@ -82,14 +83,14 @@ incAppend1(:z)==
      then if StreamNull y
           then StreamNil
           else y
-     else cons(car x,incAppend(cdr x,y))
+     else [first x,:incAppend(rest x,y)]
  
 next(f,s)==Delay(function next1,[f,s])
 next1(:z)==
       [f,s]:=z
       StreamNull s=> StreamNil
-      h:= APPLY(f, [s])
-      incAppend(car h,next(f,cdr h))
+      h:= apply(f, [s])
+      incAppend(first h,next(f,rest h))
  
 nextown(f,g,s)==Delay(function nextown1,[f,g,s])
 nextown1 (:z)==
@@ -99,14 +100,15 @@ nextown1 (:z)==
            StreamNil
       StreamNull s
       h:=spadcall2 (f, s)
-      incAppend(car h,nextown(f,g,cdr h))
+      incAppend(first h,nextown(f,g,rest h))
  
-nextown2(f,g,e,x)==nextown(cons(f,e),cons(g,e),x)
+nextown2(f,g,e,x) == 
+  nextown([f,:e],[g,:e],x)
  
 spadcall1(g)==
     [impl, :env] := g
-    APPLY(impl, [env])
+    apply(impl, [env])
  
 spadcall2(f,args) ==
     [impl, :env] := f
-    APPLY(impl, [args, env])
+    apply(impl, [args, env])

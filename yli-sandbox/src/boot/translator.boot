@@ -49,7 +49,7 @@ $foreignsDefsForCLisp := []
 
 genModuleFinalization(stream) ==
   %hasFeature KEYWORD::CLISP =>
-    null $foreignsDefsForCLisp => nil
+    $foreignsDefsForCLisp = nil => nil
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
@@ -170,7 +170,7 @@ EVAL_-BOOT_-FILE fn ==
    b := _*PACKAGE_*
    IN_-PACKAGE '"BOOTTRAN"
    infn:=shoeAddbootIfNec fn
-   outfn:=CONCAT(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
+   outfn := strconc(shoeRemovebootIfNec fn,'".",_*LISP_-SOURCE_-FILETYPE_*)
    shoeOpenInputFile(a,infn,shoeClLines(a,infn,[],outfn))
    setCurrentPackage b
    LOAD outfn
@@ -282,7 +282,7 @@ shoeTransformToFile(fn,str)==
 shoeConsoleItem (str)==
   dq := first str
   shoeConsoleLines shoeDQlines dq
-  cons(shoeParseTrees dq, rest str)
+  [shoeParseTrees dq,:rest str]
 
 bFileNext(fn,s) ==
   bDelay(function bFileNext1,[fn,s])
@@ -295,7 +295,7 @@ bFileNext1(fn,s)==
  
 shoeParseTrees dq==
   toklist := dqToList dq
-  null toklist => []
+  toklist = nil => []
   shoeOutParse toklist
  
 shoeTreeConstruct (str)==
@@ -368,7 +368,7 @@ shoeOutParse stream ==
   not bStreamNull $inputStream =>
     bpGeneralErrorHere()
     nil
-  null $stack =>
+  $stack = nil =>
     bpGeneralErrorHere()
     nil
   first $stack
@@ -377,7 +377,7 @@ shoeOutParse stream ==
 genDeclaration(n,t) ==
   t is ["%Mapping",valType,argTypes] =>
     if bfTupleP argTypes then argTypes := rest argTypes
-    if not null argTypes and SYMBOLP argTypes 
+    if argTypes ~= nil and symbol? argTypes 
     then argTypes := [argTypes]
     ["DECLAIM",["FTYPE",["FUNCTION",argTypes,valType],n]]
   ["DECLAIM",["TYPE",t,n]]
@@ -392,12 +392,12 @@ translateSignatureDeclaration d ==
 ++ A non declarative expression `expr' appears at toplevel and its
 ++ translation needs embeddeding in an `EVAL-WHEN'.
 translateToplevelExpression expr ==
-  expr' := rest rest shoeCompTran ["LAMBDA",["x"],expr]
+  expr' := rest rest shoeCompTran ["LAMBDA",nil,expr]
   -- replace "DECLARE"s with "DECLAIM"s, as the former can't appear
   -- at toplevel.
   for t in expr' repeat
     t is ["DECLARE",:.] =>
-      RPLACA(t,"DECLAIM")
+      t.first := "DECLAIM"
   expr' :=
     #expr' > 1 => ["PROGN",:expr']
     first expr'
@@ -533,11 +533,11 @@ defuse(e,x)==
   then
      $bootDefinedTwice:=
 	    nee="TOP-LEVEL"=> $bootDefinedTwice
-	    cons(nee,$bootDefinedTwice)
+	    [nee,:$bootDefinedTwice]
   else HPUT($bootDefined,nee,true)
   defuse1 (e,niens)
   for i in $used repeat
-     HPUT($bootUsed,i,cons(nee,GETHASH(i,$bootUsed)))
+     HPUT($bootUsed,i,[nee,:GETHASH(i,$bootUsed)])
  
 defuse1(e,y)==
   atom y =>
@@ -559,23 +559,23 @@ defuse1(e,y)==
   for i in y repeat defuse1(e,i)
  
 defSeparate x==
-  null x => [[],[]]
+  x = nil => [[],[]]
   f := first x
   [x1,x2] := defSeparate rest x
   bfBeginsDollar f => [[f,:x1],x2]
-  [x1,cons(f,x2)]
+  [x1,[f,:x2]]
 
 unfluidlist x==
-  NULL x => []
-  atom x=> [x]
+  x = nil => []
+  atom x => [x]
   x is ["&REST",y]=> [y]
-  cons(first x,unfluidlist rest x)
+  [first x,:unfluidlist rest x]
  
 defusebuiltin x ==  
   GETHASH(x,$lispWordTable)
  
 bootOut (l,outfn)==
-  for i in l repeat shoeFileLine (CONCAT ('"   ",PNAME i),outfn)
+  for i in l repeat shoeFileLine(strconc ('"   ",PNAME i),outfn)
  
 CLESSP(s1,s2)==
   not(SHOEGREATERP(s1,s2))
@@ -584,12 +584,12 @@ SSORT l ==
   SORT(l,function CLESSP)
  
 bootOutLines(l,outfn,s)==
-  null l => shoeFileLine(s,outfn)
+  l = nil => shoeFileLine(s,outfn)
   a := PNAME first l
   #s + #a > 70 =>
     shoeFileLine(s,outfn)
     bootOutLines(l,outfn,'" ")
-  bootOutLines(rest l,outfn,CONCAT(s,'" ",a))
+  bootOutLines(rest l,outfn,strconc(s,'" ",a))
  
  
 -- (xref "fn") produces a cross reference listing in "fn.xref"
@@ -597,11 +597,11 @@ bootOutLines(l,outfn,s)==
 -- used in "fn.boot", together with a list of functions that use it.
  
 XREF fn==
-  infn:=CONCAT(fn,'".boot")
+  infn := strconc(fn,'".boot")
   shoeOpenInputFile(a,infn,shoeXref(a,fn))
  
 shoeXref(a,fn)==
-  null a => shoeNotFound fn
+  a = nil => shoeNotFound fn
   $lispWordTable  :=MAKE_-HASHTABLE ("EQ")
   DO_-SYMBOLS(i(FIND_-PACKAGE "LISP"),HPUT($lispWordTable,i,true))
   $bootDefined  :=MAKE_-HASHTABLE "EQ"
@@ -609,7 +609,7 @@ shoeXref(a,fn)==
   $GenVarCounter  :=0
   $bfClamming :=false
   shoeDefUse shoeTransformStream a
-  out:=CONCAT(fn,'".xref")
+  out := strconc(fn,'".xref")
   shoeOpenOutputFile(stream,out,shoeXReport stream)
   out
  
@@ -618,7 +618,7 @@ shoeXReport stream==
    shoeFileLine('"USED and where DEFINED",stream)
    c:=SSORT HKEYS $bootUsed
    for i in c repeat
-      a:=CONCAT(PNAME i,'" is used in ")
+      a := strconc(PNAME i,'" is used in ")
       bootOutLines( SSORT GETHASH(i,$bootUsed),stream,a)
  
 FBO (name,fn)== 
@@ -633,14 +633,14 @@ shoeGeneralFC(f,name,fn)==
    infn:=shoeAddbootIfNec fn
    a:= shoeOpenInputFile(a,infn,shoeFindName2(fn,name, a))
    filename:= if # name > 8 then SUBSTRING(name,0,8) else name
-   a =>  FUNCALL(f, CONCAT('"/tmp/",filename))
+   a =>  FUNCALL(f, strconc('"/tmp/",filename))
    nil
  
 shoeFindName2(fn,name,a)==
   lines:=shoeFindLines(fn,name,a)
   lines =>
     filename:= if # name > 8 then SUBSTRING(name,0,8) else name
-    filename := CONCAT ('"/tmp/",filename,'".boot")
+    filename := strconc('"/tmp/",filename,'".boot")
     shoeOpenOutputFile(stream, filename,
 	 for line in lines repeat shoeFileLine (line,stream))
     true
@@ -653,7 +653,7 @@ shoeTransform2 str==
  
 shoeItem (str)==
   dq:=first str
-  cons([[first line for line in  shoeDQlines dq]],rest str)
+  [[[first line for line in  shoeDQlines dq]],:rest str]
  
 stripm (x,pk,bt)==
   atom x =>
@@ -661,7 +661,7 @@ stripm (x,pk,bt)==
       SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
       x
     x
-  CONS(stripm(first x,pk,bt),stripm(rest x,pk,bt))
+  [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]
  
 shoePCompile  fn==
     fn:=stripm(fn,_*PACKAGE_*,FIND_-PACKAGE '"BOOTTRAN")
@@ -745,12 +745,18 @@ translateBootFile(progname, options, file) ==
   outFile := getOutputPathname options or defaultBootToLispFile file
   BOOTTOCL(file, ENOUGH_-NAMESTRING outFile)
 
+retainFile? ext ==
+  Option 'all in $FilesToRetain or Option 'yes in $FilesToRetain => true
+  Option 'no in $FilesToRetain => false
+  Option ext in $FilesToRetain
+
 compileBootHandler(progname, options, file) ==
   intFile := BOOTTOCL(file, getIntermediateLispFile(file,options))
   errorCount() ~= 0 => nil
   intFile => 
     objFile := compileLispHandler(progname, options, intFile)
-    DELETE_-FILE intFile
+    if not retainFile? 'lisp then
+      DELETE_-FILE intFile
     objFile
   nil
 

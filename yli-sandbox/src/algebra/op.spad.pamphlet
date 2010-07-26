@@ -144,13 +144,13 @@ BasicOperator(): Exports == Implementation where
     display(op:$, f:O -> O)        == display(op, f first #1)
     deleteProperty!(op: %, name: String) == (remove!(name, properties op); op)
     deleteProperty!(op: %, p: Identifier) == 
-      remove!(STRING(p)$Foreign(Builtin), properties op)
+      remove!(p::String, properties op)
       op
     setProperty(op: %, name: String, valu: None) == 
       rep(op).props.name := valu
       op
     setProperty(op: %, p: Identifier, valu: None) == 
-      rep(op).props.(STRING(p)$Foreign(Builtin)@String) := valu
+      rep(op).props.(p::String) := valu
       op
     coerce(op:$):OutputForm        == name(op)::OutputForm
     input(op:$, f:List SEX -> SEX) == setProperty(op, SEXPR, f pretend None)

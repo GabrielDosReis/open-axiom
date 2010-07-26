@@ -41,12 +41,31 @@ module c_-util where
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List -> %List
   diagnoseUnknownType: (%Mode,%Env) -> %Form
-  declareUnusedParameters: (%List,%Code) -> %List
+  declareUnusedParameters: %Code -> %Code
   registerFunctionReplacement: (%Symbol,%Form) -> %Thing
   getFunctionReplacement: %Symbol -> %Form
+  getSuccessEnvironment: (%Form,%Env) -> %Env
+  getInverseEnvironment: (%Form,%Env) -> %Env
+  giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
 
 
+--%
+$SetCategory ==
+  '(SetCategory)
+  
 --% 
+
+++ Token to indicate that a function body should be ignored.
+$ClearBodyToken ==
+  KEYWORD::OpenAxiomClearBodyToken
+
+++
+$ConstructorCache := hashTable 'EQ
+
+++
+$instantRecord := hashTable 'EQ
+
+
 ++ if true continue compiling after errors
 $scanIfTrue := false
 
@@ -90,7 +109,7 @@ $optExportedFunctionReference := false
 
 ++ Quote form, if not a basic value.
 quoteMinimally form ==
-  FIXP form or STRINGP form or form = nil or form = true => form
+  FIXP form or string? form or form = nil or form = true => form
   ["QUOTE",form]
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
@@ -114,7 +133,8 @@ substituteDollarIfRepHack m ==
 ++ current functor, if any.
 getRepresentation: %Env -> %Maybe %Mode
 getRepresentation e ==
-  (get("Rep","value",e) or return nil).expr
+  u := get('Rep,'value,e) => u.expr
+  get('Rep,'macro,e)
 
 
 ++ Returns true if the form `t' is an instance of the Tuple constructor.
@@ -143,15 +163,22 @@ wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ~= #sig
 
 ++ We are about to seal the (Lisp) definition of a function.
-++ Augment the `body' with a declaration for those `parms'
+++ Augment the body of any function definition in the form `x'
+++ with declarations for unused parameters.
 ++ that are unused.
-declareUnusedParameters(parms,body) ==
-  unused := [p for p in parms | not CONTAINED(p,body)]
-  null unused => [body]
-  [["DECLARE",["IGNORE",:unused]],body]
+declareUnusedParameters x == (augment x; x) where
+  augment x == 
+    isAtomicForm x => nil
+    x is [op,parms,body] and op in $AbstractionOperator =>
+      augment body
+      unused := [p for p in parms | not usedSymbol?(p,body)]
+      null unused => [body]
+      x.rest.rest := [["DECLARE",["IGNORE",:unused]],body]
+    for x' in x repeat
+      augment x'
 
 devaluate d ==
-  not REFVECP d => d
+  not vector? d => d
   QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
     getShellEntry(d,0)
   QSGREATERP(QVSIZE d,0) =>
@@ -163,7 +190,7 @@ devaluate d ==
 devaluateList l == [devaluate d for d in l]
  
 devaluateDeeply x ==
-  VECP x => devaluate x
+  vector? x => devaluate x
   atom x => x
   [devaluateDeeply y for y in x]
 
@@ -172,10 +199,10 @@ devaluateDeeply x ==
 --CONTINUE() == continue()
 continue() == FIN comp($x,$m,$f)
  
-LEVEL(:l) == APPLY('level,l)
+LEVEL(:l) == apply('level,l)
 level(:l) ==
   null l => same()
-  l is [n] and INTEGERP n => displayComp ($level:= n)
+  l is [n] and integer? n => displayComp ($level:= n)
   SAY '"Correct format: (level n) where n is the level you want to go to"
  
 UP() == up()
@@ -188,7 +215,7 @@ DOWN() == down()
 down() == displayComp ($level:= $level+1)
  
 displaySemanticErrors() ==
-  n:= #($semanticErrorStack:= REMDUP $semanticErrorStack)
+  n:= #($semanticErrorStack:= removeDuplicates $semanticErrorStack)
   n=0 => nil
   l:= nreverse $semanticErrorStack
   $semanticErrorStack:= nil
@@ -202,7 +229,7 @@ displaySemanticError(l,stream) ==
     sayBrightly(['"      [",i,'"] ",:first x],stream)
  
 displayWarnings() ==
-  n:= #($warningStack:= REMDUP $warningStack)
+  n:= #($warningStack:= removeDuplicates $warningStack)
   n=0 => nil
   sayBrightly bright '"  Warnings:"
   l := nreverse $warningStack
@@ -238,7 +265,7 @@ mkErrorExpr level ==
           highlight(b,a) ==
             atom b =>
               substitute(var,b,a) where
-                var:= INTERN STRCONC(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
+                var:= INTERN strconc(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
             highlight1(b,a) where
               highlight1(b,a) ==
                 atom a => a
@@ -265,7 +292,7 @@ unErrorRef s ==
 consProplistOf(var,proplist,prop,val) ==
   semchkProplist(var,proplist,prop,val)
   $InteractiveMode and (u:= assoc(prop,proplist)) =>
-    RPLACD(u,val)
+    u.rest := val
     proplist
   [[prop,:val],:proplist]
  
@@ -294,8 +321,8 @@ intersectionContour(c,c') ==
   $var: local
   computeIntersection(c,c') where
     computeIntersection(c,c') ==
-      varlist:= REMDUP ASSOCLEFT c
-      varlist':= REMDUP ASSOCLEFT c'
+      varlist:= removeDuplicates ASSOCLEFT c
+      varlist':= removeDuplicates ASSOCLEFT c'
       interVars:= intersection(varlist,varlist')
       unionVars:= union(varlist,varlist')
       diffVars:= setDifference(unionVars,interVars)
@@ -323,13 +350,13 @@ intersectionContour(c,c') ==
     modeCompare(p,p') ==
       pair:= assoc("mode",p) =>
         pair':= assoc("mode",p') =>
-          m'':= unifiable(rest pair,rest pair') => LIST ["mode",:m'']
+          m'':= unifiable(rest pair,rest pair') => [["mode",:m'']]
           stackSemanticError(['%b,$var,'%d,"has two modes: "],nil)
        --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
-        LIST ["conditionalmode",:rest pair]
+        [["conditionalmode",:rest pair]]
         --LIST pair
        --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
-      pair':= assoc("mode",p') => LIST ["conditionalmode",:rest pair']
+      pair':= assoc("mode",p') => [["conditionalmode",:rest pair']]
         --LIST pair'
     unifiable(m1,m2) ==
       m1=m2 => m1
@@ -358,13 +385,13 @@ addContour(c,E is [cur,:tail]) ==
                    if member(x,$getPutTrace) then
                      pp([x,"has",pv])
                    if p="conditionalmode" then
-                     RPLACA(pv,"mode")
+                     pv.first := "mode"
                      --check for conflicts with earlier mode
                      if vv:=LASSOC("mode",e) then
                         if v ~=vv then
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
-        LIST c
+        [c]
  
 makeCommonEnvironment(e,e') ==
   interE makeSameLength(e,e') where  --$ie:=
@@ -384,7 +411,53 @@ makeCommonEnvironment(e,e') ==
           nx>ny => fn(rest x,y,nx-1,ny)
           nx<ny => fn(x,rest y,nx,ny-1)
           [x,y]
- 
+
+++ Return the lexically leftmost location in an assignment for.
+lhsOfAssignment x ==
+  x is ["%LET",lhs,:.] => lhsOfAssignment lhs
+  x
+
+getSuccessEnvironment(a,e) ==
+  a is ["is",id,m] =>
+    id := lhsOfAssignment id
+    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
+      e:=put(id,"specialCase",m,e)
+      currentProplist:= getProplist(id,e)
+      [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
+      newProplist:= consProplistOf(id,currentProplist,"value",[m,:rest removeEnv T])
+      addBinding(id,newProplist,e)
+    e
+  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+    put(x,"condition",[a,:get(x,"condition",e)],e)
+  a is ["and",:args] =>
+    for form in args repeat
+      e := getSuccessEnvironment(form,e)
+    e
+  a is ["not",a'] => getInverseEnvironment(a',e)
+  e
+
+getInverseEnvironment(a,e) ==
+  a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
+    --the next two lines are necessary to get 3-branched Unions to work
+    -- old-style unions, that is
+    (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
+      put(x,"condition",[MKPF(delete(a,oldpred),"OR")],e)
+    getUnionMode(x,e) is ["Union",:l] =>
+      l':= delete(m,l)
+      for u in l' repeat
+	 if u is ['_:,=m,:.] then l':= delete(u,l')
+      newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
+      put(x,"condition",[newpred,:get(x,"condition",e)],e)
+    e
+  a is ["not",a'] => getSuccessEnvironment(a',e)
+  e
+
+++ Give some abstract value to the variable `v' of mode `m' in `e'.
+++ Return the resulting environment.
+giveVariableSomeValue(x,m,e) ==
+  put(x,'value,[genSomeVariable(),m,nil],e)
+
+
 printEnv E ==
   for x in E for i in 1.. repeat
     for y in x for j in 1.. repeat
@@ -465,7 +538,7 @@ diagnoseUnknownType(t,e) ==
     t in '($ constant) => t
     t' := assoc(t,getDomainsInScope e) => t'
     (m := getmode(t,e)) and isKnownCategory(m,$CategoryFrame) => t
-    STRINGP t => t
+    string? t => t
     -- ??? We should not to check for $$ at this stage.  
     -- ??? This is a bug in the compiler that needs to be fixed.
     t = "$$" => t
@@ -561,6 +634,9 @@ isSubset(x,y,e) ==
   -- When using the old style definition, the current domain
   -- is considered a subset of its representation domain
   x = "$" and y = "Rep" => $useRepresentationHack
+  -- Expand domain representation form
+  x = "Rep" and not $useRepresentationHack =>
+    isSubset(getRepresentation e,y,e)
   -- Or, if x has the Subsets property set by SubsetCategory.
   pred := LASSOC(opOf x,get(opOf y,"Subsets",e)) => pred
   -- Or, they are related by subdomain chain.
@@ -599,7 +675,7 @@ isAlmostSimple x ==
         op="has" => x
         op="is" => x
         op="%LET" =>
-          IDENTP y => (setAssignment LIST x; y)
+          IDENTP y => (setAssignment [x]; y)
           (setAssignment [["%LET",g:= genVariable(),:l],["%LET",y,g]]; g)
         op = "case" and IDENTP y => x
         isSideEffectFree op => [op,:mapInto(rest x, function fn)]
@@ -626,7 +702,7 @@ adjExitLevel(x,seqnum,inc) ==
   x is [op,:l] and op in '(SEQ REPEAT COLLECT) =>
     for u in l repeat adjExitLevel(u,seqnum+1,inc)
   x is ["exit",n,u] =>
-    (adjExitLevel(u,seqnum,inc); seqnum>n => x; rplac(second x,n+inc))
+    (adjExitLevel(u,seqnum,inc); seqnum>n => x; x.rest.first := n+inc)
   x is [op,:l] => for u in l repeat adjExitLevel(u,seqnum,inc)
  
 wrapSEQExit l ==
@@ -659,17 +735,17 @@ flatten(l,key) ==
  
 genDomainVar() ==
   $Index:= $Index+1
-  INTERNL STRCONC("#D",STRINGIMAGE $Index)
+  INTERNL strconc("#D",STRINGIMAGE $Index)
  
 genVariable() ==
-  INTERNL STRCONC("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 genSomeVariable() ==
-  INTERNL STRCONC("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 listOfIdentifiersIn x ==
   IDENTP x => [x]
-  x is [op,:l] => REMDUP ("append"/[listOfIdentifiersIn y for y in l])
+  x is [op,:l] => removeDuplicates ("append"/[listOfIdentifiersIn y for y in l])
   nil
  
 mapInto(x,fn) == [FUNCALL(fn,y) for y in x]
@@ -692,7 +768,7 @@ printDashedLine() ==
 stackSemanticError(msg,expr) ==
   BUMPERRORCOUNT "semantic"
   if $insideCapsuleFunctionIfTrue then msg:= [$op,": ",:msg]
-  if atom msg then msg:= LIST msg
+  if atom msg then msg:= [msg]
   entry:= [msg,expr]
   if not member(entry,$semanticErrorStack) then $semanticErrorStack:=
     [entry,:$semanticErrorStack]
@@ -730,7 +806,7 @@ stackAndThrow(msg, args == nil) ==
   $compErrorMessageStack:= [msg,:$compErrorMessageStack]
   THROW("compOrCroak",nil)
  
-printString x == PRINTEXP (STRINGP x => x; PNAME x)
+printString x == PRINTEXP (string? x => x; PNAME x)
  
 printAny x == if atom x then printString x else PRIN1 x
  
@@ -817,7 +893,7 @@ getmodeOrMapping(x,e) ==
  
 outerProduct l ==
                 --of a list of lists
-  null l => LIST nil
+  null l => [nil]
   "append"/[[[x,:y] for y in outerProduct rest l] for x in first l]
  
 sublisR(al,u) ==
@@ -837,13 +913,13 @@ substituteOp(op',op,x) ==
 sublisV(p,e) ==
   (atom p => e; suba(p,e)) where
     suba(p,e) ==
-      STRINGP e => e
+      string? e => e
       -- no need to descend vectors unless they are categories
       isCategory e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
-      u:= suba(p,QCAR e)
-      v:= suba(p,QCDR e)
-      EQ(QCAR e,u) and EQ(QCDR e,v) => e
+      u:= suba(p,first e)
+      v:= suba(p,rest e)
+      EQ(first e,u) and EQ(rest e,v) => e
       [u,:v]
 
 --% DEBUGGING PRINT ROUTINES used in breaks
@@ -990,7 +1066,7 @@ mutateCONDFormWithUnaryFunction(form,fun) ==
   for clauses in tails body repeat
     -- a clause is a list of forms
     for subForms in tails first clauses repeat
-      rplac(first subForms, FUNCALL(fun, first subForms))
+      subForms.first := FUNCALL(fun, first subForms)
   form
 
 ++ Walk VM LET-form mutating enclosed expression forms with
@@ -1002,9 +1078,9 @@ mutateLETFormWithUnaryFunction(form,fun) ==
   for defs in tails inits repeat
     def := first defs
     atom def => nil -- no initializer
-    rplac(second def, FUNCALL(fun, second def))
+    def.rest.first := FUNCALL(fun, second def)
   for stmts in tails body repeat
-    rplac(first stmts, FUNCALL(fun, first stmts))
+    stmts.first := FUNCALL(fun, first stmts)
   form
 
 --% 
@@ -1018,14 +1094,18 @@ $middleEndMacroList ==
 
 middleEndExpand: %Form -> %Form
 middleEndExpand x ==
+  x = '%false or x = '%nil => 'NIL
+  IDENTP x and (x' := x has %Rename) => x'
   isAtomicForm x => x
-  first x in $middleEndMacroList =>
+  [op,:args] := x
+  IDENTP op and (fun := getOpcodeExpander op) =>
+    middleEndExpand apply(fun,x,nil)
+  op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
-  a := middleEndExpand first x
-  b := middleEndExpand rest x
-  EQ(a,first x) and EQ(b,rest x) => x
+  a := middleEndExpand op
+  b := middleEndExpand args
+  EQ(a,op) and EQ(b,args) => x
   [a,:b]
-
 
 
 -- A function is simple if it looks like a super combinator, and it
@@ -1053,11 +1133,6 @@ eqSubst(args,parms,body) ==
   NSUBLIS(pairList(parms,args),body,KEYWORD::TEST,function EQ)
 
 
-++ returns true if `form' does not really induce computations.
-isAtomicForm: %Form -> %Boolean
-isAtomicForm form ==
-  atom form or first form = "QUOTE"
-
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   isAtomicForm form => form
@@ -1067,23 +1142,23 @@ replaceSimpleFunctions form ==
     optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["spadConstant","$",n] =>
     null(op := getCapsuleDirectoryEntry n) => form
-    getFunctionReplacement op is ["XLAM",=nil,body] 
-      and isAtomicForm body => body
     -- Conservatively preserve object identity and storage 
     -- consumption by not folding non-atomic constant forms.
+    getFunctionReplacement op isnt ['XLAM,=nil,body] => form
+    isAtomicForm body or isVMConstantForm body => body
     form
   -- 1. process argument first.
   for args in tails rest form repeat
     arg' := replaceSimpleFunctions(arg := first args)
     not EQ(arg',arg) =>
-      rplac(first args, arg')
+      args.first := arg'
   -- 2. see if we know something about this function.
   [fun,:args] := form
   atom fun =>
     null (fun' := getFunctionReplacement fun) => form
     -- 2.1. the renaming case.
     atom fun' =>
-      rplac(first form,fun')
+      form.first := fun'
       NBUTLAST form
     -- 2.2. the substitution case.
     fun' is ["XLAM",parms,body] =>
@@ -1094,14 +1169,14 @@ replaceSimpleFunctions form ==
       -- conservatively approximate eager semantics
       and/[isAtomicForm first as for as in tails args] =>
         -- alpha rename before substitution.
-	newparms := [GENSYM() for p in parms]
+	newparms := [gensym() for p in parms]
 	body := eqSubstAndCopy(newparms,parms,body)
 	eqSubst(args,newparms,body)
       -- get cute later.
       form
     form
   fun' := replaceSimpleFunctions fun
-  not EQ(fun',fun) => rplac(first form,fun')
+  not EQ(fun',fun) => form.first := fun'
   form
 
 
@@ -1140,7 +1215,9 @@ expandableDefinition?(vars,body) ==
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
     false
-  expand? => ["XLAM",vars',body]
+  expand? =>
+    body is [fun,: =vars'] and symbol? fun => fun
+    ['XLAM,vars',body]
   nil
 
 ++ Replace all SPADCALLs to operations defined in the current
@@ -1159,8 +1236,8 @@ foldSpadcall form ==
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
   null (op := getCapsuleDirectoryEntry slot) => form
-  rplac(first fun, "$")
-  rplac(first form, op)
+  fun.first := "$"
+  form.first := op
 
 
 ++ `defs' is a list of function definitions from the current domain.
@@ -1173,14 +1250,14 @@ foldExportedFunctionReferences defs ==
     body := replaceSimpleFunctions foldSpadcall body
     form := expandableDefinition?(vars,body) =>
       registerFunctionReplacement(name,form)
-      rplac(second fun, ["LAM",vars,["DECLARE",["IGNORE",last vars]],body])
-    rplac(third lamex,body)
+      fun.rest.first := ["LAM",vars,["DECLARE",["IGNORE",last vars]],body]
+    lamex.rest.rest.first := body
   defs
 
 ++ record optimizations permitted at level `level'.
 setCompilerOptimizations level ==
   level = nil => nil
-  INTEGERP level =>
+  integer? level =>
     if level = 0 then
       -- explicit request for no optimization.
       $optProclaim := false
@@ -1233,7 +1310,7 @@ backendCompileILAM: (%Symbol,%List, %Code) -> %Symbol
 backendCompileILAM(name,args,body) ==
   args' := NLIST(#args, ["GENSYM"])
   body' := eqSubst(args',args,body)
-  MAKEPROP(name,"ILAM",true)
+  property(name,'ILAM) := true
   setDynamicBinding(name,["LAMBDA",args',:body'])
   name
 
@@ -1250,8 +1327,8 @@ backendCompileNEWNAM x ==
     if y = "CLOSEDFN" then
       u := MAKE_-CLOSEDFN_-NAME()
       PUSH([u,second x], $CLOSEDFNS)
-      RPLACA(x,"FUNCTION")
-      RPLACA(rest x,u)
+      x.first := "FUNCTION"
+      x.rest.first := u
   backendCompileNEWNAM first x
   backendCompileNEWNAM rest x
 
@@ -1263,10 +1340,10 @@ backendCompileNEWNAM x ==
 ++ as alists.
 backendCompileSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
-  al := INTERNL(name,'";AL")    -- name of the cache alist.
+  al := mkCacheName name        -- name of the cache alist.
   auxfn := INTERNL(name,'";")   -- name of the worker function.
-  g1 := GENSYM()                -- name for the parameter.
-  g2 := GENSYM()                -- name for the cache value
+  g1 := gensym()                -- name for the parameter.
+  g2 := gensym()                -- name for the cache value
   u :=                          -- body of the stub function
     null args => [nil,[auxfn]]
     null rest args => [[g1],[auxfn,g1]]
@@ -1291,32 +1368,30 @@ backendCompileSLAM(name,args,body) ==
   COMP370 [u]
   name
 
-++ Same as backendCompileSPADSLAM, except that the cache is a hash
+++ Same as backendCompileSLAM, except that the cache is a hash
 ++ table.  This backend compiler is used to compile constructors.
 backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
-  al := INTERNL(name,'";AL")   -- name of the cache hash table.
+  al := mkCacheName name       -- name of the cache hash table.
   auxfn := INTERNL(name,'";")  -- name of the worker function.
-  g1 := GENSYM()               -- name of the worker function parameter
-  g2 := GENSYM()               -- name for the cache value.
+  g1 := gensym()               -- name of the worker function parameter
+  g2 := gensym()               -- name for the cache value.
   u := 
     null args => [nil,nil,[auxfn]]
     null rest args => [[g1],["devaluate",g1],[auxfn,g1]]
     [g1,["devaluateList",g1],["APPLY",["FUNCTION",auxfn],g1]]
-  arg := first u
+  arg := first u               -- parameter list
   argtran := second u          -- devaluate argument
-  app := third u
-  codePart1 :=                 -- if value already computed, grab it.
-    null args => [al]
-    [["SETQ",g2,["assoc",argtran,al]], ["CDR",g2]]
-  codePart2 :=                 -- otherwise compute it, and cache it.
-                               -- Note: at most five values are cached.
-    null args => [true,["SETQ",al,app]]
-    [true,["SETQ",al,["cons5",["CONS",argtran, ["SETQ",g2,app]],al]],g2]
-  decl :=                      -- declare the cache variable.
-    null args => nil
-    [g2]
-  lamex := ["LAM",arg,["LET",decl,["COND",codePart1,codePart2]]]
+  app := third u               -- code to compute value
+  code := 
+    args = nil => ["COND",[al],[true,["SETQ",al,app]]]
+    ["LET",[[g2,["assoc",argtran,al]]],
+      ["COND",
+        [g2,["CDR",g2]],
+          [true, 
+            ["PROGN",["SETQ",g2,app],
+               ["SETQ",al,["cons5",["CONS",argtran, g2],al]],g2]]]]
+  lamex := ["LAM",arg,code]
   SETANDFILE(al,nil)           -- define the global cache.
   -- compile the worker function first.
   u := [auxfn,["LAMBDA",args,:body]]
@@ -1346,7 +1421,7 @@ backendCompile2 code ==
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
   IDENTP x and x ~= "$" and x ~= "$$" and
-    (PNAME x).0 = char "$" and not DIGITP((PNAME x).1) => x
+    (PNAME x).0 = char "$" and not digit?((PNAME x).1) => x
   isAtomicForm x => nil
   first x = "FLUID" => second x
   a := backendFluidize first x
@@ -1364,9 +1439,15 @@ $SpecialVars := []
 pushLocalVariable: %Symbol -> %List
 pushLocalVariable x ==
   x ~= "$" and (p := PNAME x).0 = char "$" and
-    p.1 ~= char "," and not DIGITP p.1 => nil
+    p.1 ~= char "," and not digit? p.1 => nil
   PUSH(x,$LocalVars)
 
+isLispSpecialVariable x ==
+  s := PNAME x
+  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not readOnly? x
+  
+noteSpecialVariable x ==
+  $SpecialVars := insert(x,$SpecialVars)
 
 --%
 --% Middle Env to Back End Transformations.
@@ -1422,16 +1503,16 @@ il2OldForm x ==
     %ilDeref(e,.) => ["applyFun",il2OldForm e]
     %ilCall(e,.) =>
       e is [["%ilLocal",op,:.],:.] =>
-        rplac(first e,op)
+        e.first := op
         ilTransformInsns rest e
         e
-      ["call",:ilTransformInsns e]
+      ['%call,:ilTransformInsns e]
     otherwise => ilTransformInsns x
 
 ++ Subroutines of il2OldForm to walk sequence of IL instructions.
 ilTransformInsns form ==
   for insns in tails form repeat
-    rplac(first insns, il2OldForm first insns)
+    insns.first := il2OldForm first insns
   form
 
 
@@ -1440,27 +1521,38 @@ ilTransformInsns form ==
 ++ Replace every middle end sub-forms in `x' with Lisp code.
 mutateToBackendCode: %Form -> %Void
 mutateToBackendCode x ==
+  IDENTP x and isLispSpecialVariable x => noteSpecialVariable x
   isAtomicForm x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
-    RPLACA(x,"MAKEPROP-SAY")
+    x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
-    if u ~= "DCQ" then
+    if u ~= 'DCQ and u ~= 'SETQ then
       $NEWSPAD or $FUNAME in $traceletFunctions =>
         nconc(x,$FUNNAME__TAIL)
-        RPLACA(x,"LETT")
-      $TRACELETFLAG => RPLACA(x,"/TRACE-LET")
-      u = "%LET" => RPLACA(x,"SPADLET")
+        x.first := "LETT"
+      $TRACELETFLAG => x.first := "/TRACE-LET"
+      u = "%LET" => x.first := "SPADLET"
     mutateToBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
         PUSH(CADADR x, $FluidVars)
-        rplac(second x, CADADR x)
+        x.rest.first := CADADR x
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
-    RPLACA(x, eval u)
+    x.first := eval u
     mutateToBackendCode x
+  u in '(LET LET_*) =>
+    oldVars := $LocalVars
+    vars := nil
+    for [var,init] in second x repeat
+      mutateToBackendCode init
+      $LocalVars := [var,:$LocalVars]
+      vars := [var,:vars]
+    mutateToBackendCode x.rest.rest
+    newVars := setDifference($LocalVars,setUnion(vars,oldVars))
+    $LocalVars := setUnion(oldVars,newVars)
   u in '(PROG LAMBDA) =>
     newBindings := []
     for y in second x repeat
@@ -1468,7 +1560,7 @@ mutateToBackendCode x ==
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
     res := mutateToBackendCode CDDR x
-    $LocalVars := REMOVE_-IF(function LAMBDA(y(), y in newBindings), 
+    $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
   u = "DECLARE" => nil       -- there is nothing to do convert there
@@ -1498,8 +1590,18 @@ simplifySEQ form ==
   isAtomicForm form => form
   form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
-    rplac(first stmts, simplifySEQ first stmts)
+    stmts.first := simplifySEQ first stmts
   form
+
+++ Return true if the Lisp `form' has a `RETURN' form
+++ that needs to be enclosed in a `PROG' form.
+needsPROG? form ==
+  isAtomicForm form => false
+  op := form.op
+  op = 'RETURN => true
+  op in '(LOOP PROG) => false
+  form is ['BLOCK,=nil,:.] => false
+  or/[needsPROG? x for x in form]
 
 ++ Generate Lisp code by lowering middle end defining form `x'.
 ++ x has the strucrure: <name, parms, stmt1, ...>
@@ -1513,31 +1615,36 @@ transformToBackendCode x ==
   body := skipDeclarations CDDR x
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
-    stmt := first body
-    null rest body and 
-      (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
-        body
+    body is [stmt] and
+      (atom stmt
+        or stmt.op in '(SEQ LET LET_*)
+          or not CONTAINED("EXIT",stmt)) =>
+            body
     [simplifySEQ ["SEQ",:body]]
-  $FluidVars := REMDUP nreverse $FluidVars
-  $LocalVars := S_-(S_-(REMDUP nreverse $LocalVars,$FluidVars),
+  $FluidVars := removeDuplicates nreverse $FluidVars
+  $LocalVars := S_-(S_-(removeDuplicates nreverse $LocalVars,$FluidVars),
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)
-  body := 
+  body :=
     fluids ~= nil =>
-      [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-    lvars ~= nil or CONTAINED("RETURN",body) =>
+      lvars ~= nil or needsPROG? body =>
+        [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+      body is [[op,bindings,:body']] and op in '(LET LET_*) =>
+        [[op,bindings,declareGlobalVariables fluids,:body']]
+      [declareGlobalVariables fluids,:body]
+    lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]
     body
   -- add reference parameters to the list of special variables.
   fluids := S_+(backendFluidize second x, $SpecialVars)
   lastdecl := lastDeclarationNode rest x
   if lastdecl = nil then
-    RPLACD(rest x, body)
+    x.rest.rest := body
   else
     null fluids =>
-      RPLACD(lastdecl, body)
-    RPLACD(lastdecl, [declareGlobalVariables fluids,:body])
+      lastdecl.rest := body
+    lastdecl.rest := [declareGlobalVariables fluids,:body]
   x
 
 backendCompile1 x ==
@@ -1589,15 +1696,6 @@ compileQuietly fn ==
 --% Compile Time operation lookup for the benefit of domain inlining.
 --%
 
-++ Subroutine of lookupDefiningFunction.
-++ Called when the domain of computation `dc' is closed (this is the
-++ case of niladic constructors) to lookup up the definition function
-++ of the operation `op' with signature `sig'.
-lookupFunctionInstance(op,sig,dc) ==
-  dom := eval dc
-  sig := MSUBST(devaluate dom,dc,sig)
-  compiledLookup(op,sig,dom)
-
 ++ If `x' is a formal map variable, returns its position.
 ++ Otherwise return nil.
 isFormal: %Symbol -> %Maybe %Short
@@ -1616,7 +1714,7 @@ expandFormTemplate(shell,args,slot) ==
     args.n   -- FIXME: we should probably expand with dual signature
   slot is ["NRTEVAL",val] => val
   slot is ["QUOTE",val] => 
-    STRINGP val => val
+    string? val => val
     slot
   [expandFormTemplate(shell,args,i) for i in slot]
 
@@ -1631,7 +1729,7 @@ equalFormTemplate(shell,args,slot,form) ==
     equalFormTemplate(shell,args,args.n,form)
   slot is ["NTREVAL",val] => form = val
   slot is ["QUOTE",val] => 
-     STRINGP val => val = form
+     string? val => val = form
      slot = form
   atom slot or atom form => form = slot
   #slot ~= #form => false
@@ -1682,7 +1780,11 @@ lookupDefiningFunction(op,sig,dc) ==
   -- 1. Read domain information, if available.
   [ctor,:args] := dc
   -- 1.1. Niladic constructors don't need approximation.
-  null args => lookupFunctionInstance(op,sig,dc)
+  --      FIXME: However, there may be cylic dependencies
+  --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
+  --      us from full evaluation.  
+  null args and ctor in $SystemInlinableConstructorNames =>
+    compiledLookup(op,sig,dc)
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil
   -- 1.2. Silently give up if the constructor is just not there

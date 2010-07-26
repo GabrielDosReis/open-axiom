@@ -28,10 +28,12 @@
 (DEFUN |INTDOM-;recip;SU;3| (|x| $)
   (COND
     ((SPADCALL |x| (|getShellEntry| $ 13)) (CONS 1 "failed"))
-    ('T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
+    (T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
 
 (DEFUN |INTDOM-;unit?;SB;4| (|x| $)
-  (COND ((QEQCAR (SPADCALL |x| (|getShellEntry| $ 17)) 1) NIL) ('T T))) 
+  (COND
+    ((EQL (CAR (SPADCALL |x| (|getShellEntry| $ 17))) 1) NIL)
+    (T T))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
   (SPADCALL (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)
@@ -43,38 +45,30 @@
     ((SPADCALL |x| (|getShellEntry| $ 13))
      (SPADCALL |y| (|getShellEntry| $ 13)))
     ((OR (SPADCALL |y| (|getShellEntry| $ 13))
-         (OR (QEQCAR (SPADCALL |x| |y| (|getShellEntry| $ 15)) 1)
-             (QEQCAR (SPADCALL |y| |x| (|getShellEntry| $ 15)) 1)))
+         (OR (EQL (CAR (SPADCALL |x| |y| (|getShellEntry| $ 15))) 1)
+             (EQL (CAR (SPADCALL |y| |x| (|getShellEntry| $ 15))) 1)))
      NIL)
-    ('T T))) 
+    (T T))) 
 
 (DEFUN |IntegralDomain&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|IntegralDomain&|))
-        (LETT |dv$| (LIST '|IntegralDomain&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 23) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (COND
-          ((|HasCategory| |#1| '(|Field|)))
-          ('T
-           (|setShellEntry| $ 9
-               (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
-        (COND
-          ((|HasAttribute| |#1| '|canonicalUnitNormal|)
-           (|setShellEntry| $ 22
-               (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|)
-                     $)))
-          ('T
-           (|setShellEntry| $ 22
-               (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|)
-                     $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|IntegralDomain&| |dv$1|)) ($ (|newShell| 23))
+         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (COND
+      ((|HasCategory| |#1| '(|Field|)))
+      (T (|setShellEntry| $ 9
+             (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
+    (COND
+      ((|HasAttribute| |#1| '|canonicalUnitNormal|)
+       (|setShellEntry| $ 22
+           (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|) $)))
+      (T (|setShellEntry| $ 22
+             (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|) $))))
+    $)) 
 
 (MAKEPROP '|IntegralDomain&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |One|)

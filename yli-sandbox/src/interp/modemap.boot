@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -63,9 +63,8 @@ addDomain(domain,e) ==
   -- ??? we should probably augment $DummyFunctorNames with CATEGORY
   -- ??? so that we don't have to do this special check here.  Investigate.
   isQuasiquote domain => e 
-  if not isCategoryForm(domain,e) and
-    not member(name,'(Mapping CATEGORY)) then
-      unknownTypeError name
+  if not isCategoryForm(domain,e) and name ~= "Mapping" then
+    unknownTypeError name
   e        --is not a functor
  
 domainMember(dom,domList) == or/[modeEqual(dom,d) for d in domList]
@@ -143,7 +142,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
    --hack to change selectors from strings to identifiers; and to
    --add flag identifiers as literals in the envir
   op='elt and sig is [:lt,sel] =>
-    STRINGP sel =>
+    string? sel =>
       id:= INTERN sel
       if $insideCapsuleFunctionIfTrue=true
          then $e:= makeLiteral(id,$e)
@@ -152,7 +151,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
     -- atom sel => systemErrorHere '"addEltModemap"
     addModemap1(op,mc,sig,pred,fn,e)
   op='setelt and sig is [:lt,sel,v] =>
-    STRINGP sel =>
+    string? sel =>
       id:= INTERN sel
       if $insideCapsuleFunctionIfTrue=true
          then $e:= makeLiteral(id,$e)
@@ -212,8 +211,8 @@ mergeModemap(entry is [[mc,:sig],[pred,:.],:.],modemapList,e) ==
 --mergeModemap(entry:=((mc,:sig),:.),modemapList,e) ==
 --    for (mmtail:= (((mc',:sig'),:.),:.)) in tails modemapList do
 --       mc=mc' or isSubset(mc,mc',e)  =>
---         RPLACD(mmtail,(first mmtail,: rest mmtail))
---         RPLACA(mmtail,entry)
+--         mmtail.rest := (first mmtail,: rest mmtail)
+--         mmtail.first := entry
 --         entry := nil
 --         return modemapList
 --     if entry then (:modemapList,entry) else modemapList
@@ -300,7 +299,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   --condlist:=[[cond,:cond1],:condlist]
     e:= addModemapKnown(op,domainName,sig,cond,fnsel,e) -- cond was cond1
 --  for u in sig | (not member(u,$DomainsInScope)) and
---                   (not atom u) and
+--                   (cons? u) and
 --                     (not isCategoryForm(u,e)) do
 --     e:= addNewDomain(u,e)
   e
@@ -343,7 +342,7 @@ substNames(domainName,viewName,functorForm,opalist) ==
        -- putInLocalDomainReferences
   [[:SUBSTQ("$","$$",SUBSTQ(nameForDollar,"$",modemapform)),
        [sel, viewName,if domainName = "$" then pos else
-                                         CADAR modemapform]]
+                                         modemapform.mmTarget]]
      for [:modemapform,[sel,"$",pos]] in
           EQSUBSTLIST(KDR functorForm,$FormalMapVariableList, opalist)]
  

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -50,29 +50,29 @@ inputPrompt str ==
   p := first(x) - 2
   y := $OLDLINE
   SETQ($OLDLINE,NIL)
-  y => _$SHOWLINE(STRCONC(str,EBCDIC 19,y),p)
+  y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
   0 = SIZE str => NIL
-  _$SHOWLINE(STRCONC(str,EBCDIC 19),p)
+  _$SHOWLINE(strconc(str,EBCDIC 19),p)
  
 protectedPrompt(:p) ==
   [str,:br] := p
   0 = SIZE str => inputPrompt str
   msg := EBCDIC 29                       -- start of field
   msg :=
-    if br then STRCONC(msg,EBCDIC 232)   -- bright write protect
-    else       STRCONC(msg,EBCDIC  96)   -- write protect
-  msg := STRCONC(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
+    if br then strconc(msg,EBCDIC 232)   -- bright write protect
+    else       strconc(msg,EBCDIC  96)   -- write protect
+  msg := strconc(msg,str,EBCDIC 29,EBCDIC 64)  -- unprotect again
   inputPrompt msg
  
 MKPROMPT() ==
   $inputPromptType = 'none    => '""
   $inputPromptType = 'plain   => '"-> "
   $inputPromptType = 'step    =>
-    STRCONC('"(",STRINGIMAGE $IOindex,'") -> ")
+    strconc('"(",STRINGIMAGE $IOindex,'") -> ")
   $inputPromptType = 'frame   =>
-    STRCONC(STRINGIMAGE $interpreterFrameName,
+    strconc(STRINGIMAGE $interpreterFrameName,
       '" (",STRINGIMAGE $IOindex,'") -> ")
-  STRCONC(STRINGIMAGE $interpreterFrameName,
+  strconc(STRINGIMAGE $interpreterFrameName,
    '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
     STRINGIMAGE $IOindex, '"] -> ")
  
@@ -117,7 +117,7 @@ variableNumber(x) ==
   null p => 
     $variableNumberAlist := [[x,:0], :$variableNumberAlist]
     0
-  RPLACD(p, 1+rest p)
+  p.rest := 1+rest p
   rest p
 
 newType? t == nil
@@ -129,23 +129,23 @@ Undef(:u) ==
   u':= LAST u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
-  not EQ(first ELT(domain',slot), function Undef) =>
+  not EQ(first domain'.slot, function Undef) =>
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then
       sayMessage concat ['"   Retrospective determination of slot",'%b,
         slot,'%d,'"of",'%b,:prefix2String domain,'%d]
-    APPLY(first ELT(domain',slot),[:u'',rest ELT(domain',slot)])
+    apply(first domain'.slot,[:u'',rest domain'.slot])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  
 makeInitialModemapFrame() == 
   COPY $InitialModemapFrame
  
 isCapitalWord x ==
-  (y := PNAME x) and and/[UPPER_-CASE_-P y.i for i in 0..MAXINDEX y]
+  (y := PNAME x) and and/[upperCase? y.i for i in 0..MAXINDEX y]
  
 mkPredList listOfEntries ==
-  [['EQCAR,"#1",i] for arg in listOfEntries for i in 0..]
+  [['%ieq,['%head,"#1"],i] for arg in listOfEntries for i in 0..]
 
 
 --%
@@ -155,3 +155,24 @@ validateVariableNameOrElse var ==
   not IDENTP var => throwKeyedMsg("S2IS0016",[STRINGIMAGE var])
   var in '(% %%) => throwKeyedMsg("S2IS0050",[var])
   true
+
+--%
+
+flattenCOND body ==
+  -- transforms nested COND clauses to flat ones, if possible
+  body isnt ['COND,:.] => body
+  ['COND,:extractCONDClauses body]
+ 
+extractCONDClauses clauses ==
+  -- extracts nested COND clauses into a flat structure
+  clauses is ['COND, [pred1,:act1],:restClauses] =>
+    if act1 is [['PROGN,:acts]] then act1 := acts
+    restClauses is [[''T,restCond]] =>
+      [[pred1,:act1],:extractCONDClauses restCond]
+    [[pred1,:act1],:restClauses]
+  [[''T,clauses]]
+ 
+++ Returns true if symbol `id' is either a local variable
+++ or an iterator variable.
+isLocallyBound id ==
+  id in $localVars or id in $iteratorVars

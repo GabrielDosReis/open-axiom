@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ buildFunctionTable(dicts) ==
   buildWordTable getListOfFunctionNames dicts
  
 buildWordTable u ==
-  table:= MAKE_-HASHTABLE 'ID
+  table:= hashTable 'EQ
   for s in u repeat
     key := UPCASE s.0
     HPUT(table,key,[[s,:wordsOfString s],:HGET(table,key)])
@@ -78,7 +78,7 @@ readFunctionTable() ==
     $wordDictionary = 'development => 'SPADD
     'SPADC
   stream:= readLib(name,'DATABASE)
-  table:= MAKE_-HASHTABLE 'ID
+  table:= hashTable 'EQ
   for key in RKEYIDS makePathname(name,'DATABASE,"*") repeat
     HPUT(table,kk:=object2Identifier key, rread(kk,stream,nil))
   RSHUT stream
@@ -88,7 +88,7 @@ removeDupOrderedAlist u ==
   -- removes duplicate entries in ordered alist
   -- (where duplicates are adjacent)
   for x in tails u repeat
-    (y := rest x) and first first x = first first y => RPLACD(x,rest y)
+    (y := rest x) and first first x = first first y => x.rest := rest y
   u
  
 getListOfFunctionNames(fnames) ==
@@ -97,7 +97,7 @@ getListOfFunctionNames(fnames) ==
   for fn in fnames repeat
     null IOSTATE(fn,'DIRECT,'_*) => 'iterate
     stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,fn,'DIRECT,'_*]],80,0)
-    while (not PLACEP (x:= READ_-LINE stream)) repeat
+    while (not PLACEP (x:= readLine stream)) repeat
       (s := SIZE x) < 26 => 'iterate
       res:= [SUBSTRING(x,26,NIL),:res]
     SHUT stream
@@ -359,7 +359,7 @@ forge(word,w,W,entry,e,E,n) ==
 --                          String Pattern Matching
 --=======================================================================
 patternTran pattern ==
-  null hasWildCard? pattern and LITER pattern.0 and
+  not hasWildCard? pattern and LITER pattern.0 and
     UPCASE copy pattern = pattern =>
       name:= abbreviation? INTERN pattern
         or browseError [:bright pattern,

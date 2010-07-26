@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -84,10 +84,10 @@ bcInputMatrixByFormula(htPage,junk) ==
   htMakeDoneButton('"Continue", 'bcInputMatrixByFormulaGen)
   nrows := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'rows)
-    PARSE_-INTEGER htpLabelInputString(htPage,'rows)
+    readInteger htpLabelInputString(htPage,'rows)
   ncols := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'cols)
-    PARSE_-INTEGER htpLabelInputString(htPage,'cols)
+    readInteger htpLabelInputString(htPage,'cols)
   htpSetProperty(page, 'nrows, nrows)
   htpSetProperty(page, 'ncols, ncols)
   htShowPage()
@@ -99,26 +99,26 @@ bcInputMatrixByFormulaGen htPage ==
   colVar := htpLabelInputString(htPage,'colVar)
   nrows := htpProperty(htPage,'nrows)
   ncols := htpProperty(htPage,'ncols)
-  bcGen STRCONC('"matrix([[",formula,'" for ",colVar,'" in 1..",
+  bcGen strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
     STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
 
 bcInputExplicitMatrix(htPage,junk) ==
   nrows := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'rows)
-    PARSE_-INTEGER htpLabelInputString(htPage,'rows)
+    readInteger htpLabelInputString(htPage,'rows)
   ncols := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'cols)
-    PARSE_-INTEGER htpLabelInputString(htPage,'cols)
+    readInteger htpLabelInputString(htPage,'cols)
   cond := nil
   k := 0
   wrows := # STRINGIMAGE nrows
   wcols := # STRINGIMAGE ncols
   labelList := 
     "append"/[[f for j in 1..ncols] for i in 1..nrows] where f() ==
-      rowpart := STRCONC('"{\em Row",htStringPad(i,wrows))
-      colpart := STRCONC('", Column",htStringPad(j,wcols),'":}\space{2}")
-      prefix := STRCONC(rowpart,colpart)
- --     name := INTERN STRCONC(htMkName('"row",i),htMkName('"col",j))
+      rowpart := strconc('"{\em Row",htStringPad(i,wrows))
+      colpart := strconc('", Column",htStringPad(j,wcols),'":}\space{2}")
+      prefix := strconc(rowpart,colpart)
+ --     name := INTERN strconc(htMkName('"row",i),htMkName('"col",j))
       name := INTERN STRINGIMAGE (k := k + 1)
       [prefix,'"",30, 0,name,'P]
   labelList := 
@@ -145,7 +145,7 @@ bcMatrixGen htPage ==
     formula := formula.0
     rowVar := (LASSOC('rowVar,mat)).0
     colVar := (LASSOC('colVar,mat)).0
-    STRCONC('"matrix([[",formula,'" for ",colVar,'" in 1..",
+    strconc('"matrix([[",formula,'" for ",colVar,'" in 1..",
       STRINGIMAGE ncols,'"] for ",rowVar,'" in 1..",STRINGIMAGE nrows,'"])")
   mat := htpProperty(htPage,'matrix) =>
     mat := reverse mat
@@ -153,6 +153,6 @@ bcMatrixGen htPage ==
     matform := [[mat.(k := k + 1).1
       for j in 0..(ncols-1)] for i in 0..(nrows-1)]
     matstring := bcwords2liststring [bcwords2liststring x for x in matform]
-    STRCONC('"matrix(",matstring,'")")
+    strconc('"matrix(",matstring,'")")
   systemError nil
   

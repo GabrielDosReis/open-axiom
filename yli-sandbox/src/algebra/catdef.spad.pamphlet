@@ -20,18 +20,12 @@
 ++ Date Created: May 31, 2009
 ++ Date Last Modified: May 31, 2009
 ++ Description:
-++   A set is an \spad{R}-left linear set if it is stable by left-dilation
-++   by elements in the ring \spad{R}.  This category differs from
-++   \spad{LeftModule} in that no other assumption (such as addition)
-++   is made about the underlying set.
+++   A set is an \spad{S}-left linear set if it is stable by left-dilation
+++   by elements in the semigroup \spad{S}.  
 ++ See Also: RightLinearSet.
-LeftLinearSet(R: Rng): Category == SetCategory with
-   0: %                
-     ++ \spad{0} represents the origin of the linear set
-   zero?: % -> Boolean 
-     ++ \spad{zero? x} holds is \spad{x} is the origin.
-   *: (R,%) -> %       
-     ++ \spad{r*x} is the left-dilation of \spad{x} by \spad{r}.
+LeftLinearSet(S: SemiGroup): Category == SetCategory with
+   *: (S,%) -> %       
+     ++ \spad{s*x} is the left-dilation of \spad{x} by \spad{s}.
 
 @
 
@@ -41,18 +35,12 @@ LeftLinearSet(R: Rng): Category == SetCategory with
 ++ Date Created: May 31, 2009
 ++ Date Last Modified: May 31, 2009
 ++ Description:
-++   A set is an \spad{R}-right linear set if it is stable by right-dilation
-++   by elements in the ring \spad{R}.  This category differs from
-++   \spad{RightModule} in that no other assumption (such as addition)
-++   is made about the underlying set.
+++   A set is an \spad{S}-right linear set if it is stable by right-dilation
+++   by elements in the semigroup \spad{S}.
 ++ See Also: LeftLinearSet.
-RightLinearSet(R: Rng): Category == SetCategory with
-   0: %                
-     ++ \spad{0} represents the origin of the linear set
-   zero?: % -> Boolean 
-     ++ \spad{zero? x} holds is \spad{x} is the origin.
-   *: (%,R) -> %       
-     ++ \spad{r*x} is the left-dilation of \spad{x} by \spad{r}.
+RightLinearSet(S: SemiGroup): Category == SetCategory with
+   *: (%,S) -> %       
+     ++ \spad{x*s} is the right-dilation of \spad{x} by \spad{s}.
 
 @
 
@@ -62,12 +50,10 @@ RightLinearSet(R: Rng): Category == SetCategory with
 ++ Date Created: May 31, 2009
 ++ Date Last Modified: May 31, 2009
 ++ Description:
-++   A set is an \spad{R}-linear set if it is stable by dilation
-++   by elements in the ring \spad{R}.  This category differs from
-++   \spad{Module} in that no other assumption (such as addition)
-++   is made about the underlying set.
+++   A set is an \spad{S}-linear set if it is stable by dilation
+++   by elements in the semigroup \spad{S}.
 ++ See Also: LeftLinearSet, RightLinearSet.
-LinearSet(R: Rng): Category == Join(LeftLinearSet R, RightLinearSet R)
+LinearSet(S: SemiGroup): Category == Join(LeftLinearSet S, RightLinearSet S)
 
 @
 
@@ -233,13 +219,95 @@ import Boolean
 ++ Description:
 ++ \spadtype{BasicType} is the basic category for describing a collection
 ++ of elements with \spadop{=} (equality).
-BasicType(): Category == with
+BasicType(): Category == Type with
       =: (%,%) -> Boolean    ++ x=y tests if x and y are equal.
       ~=: (%,%) -> Boolean   ++ x~=y tests if x and y are not equal.
+      before?: (%,%) -> Boolean
+        ++ \spad{before?(x,y)} holds if the system representation
+        ++ of \spad{x} is comes before that of \spad{y} in a
+        ++ an implementation defined manner.
    add
+      x = y == not before?(x,y) and not before?(y,x)
       x:% ~= y:% == not(x=y)
+      before?(x,y) == %before?(x,y)$Foreign(Builtin)
 
 @
+
+\section{Ordered Types}
+
+<<category ORDTYPE OrderedType>>=
+)abbrev category ORDTYPE OrderedType
+++ Author: Gabriel Dos Reis
+++ Date Created: June 28, 2010
+++ Date Last Modified: June 28, 2010
+++ See Also: OrderedSet
+++ Description:
+++   Category of types equipped with a total ordering.
+++ Axioms:
+++   forall(x,y)
+++     x > y  <=> y < x
+++     x <= y <=> not(y > x)
+++     x >= y <=> not(x < y)
+++     x <= y and x >= y => x = y
+OrderedType(): Category == BasicType with
+    <  : (%,%) -> Boolean
+      ++ \spad{x < y} holds if \spad{x} is less than \spad{y} in the
+      ++ current domain.
+    >  : (%,%) -> Boolean
+      ++ \spad{x > y} holds if \spad{x} is greater than \spad{y} in the
+      ++ current domain.
+    <= : (%,%) -> Boolean
+      ++ \spad{x <= y} holds if \spad{x} is less or equal than \spad{y}
+      ++ in the current domain.
+    >= : (%,%) -> Boolean
+      ++ \spad{x <= y} holds if \spad{x} is greater or equal than \spad{y}
+      ++ in the current domain.
+    max: (%,%) -> %
+      ++ \spad{max(x,y)} returns the maximum of \spad{x} and \spad{y}
+      ++ relative to the ordering.
+    min: (%,%) -> %
+      ++ \spad{min(x,y)} returns the minimum of \spad{x} and \spad{y}
+      ++ relative to the ordering.
+  add
+    x > y  == y < x
+    x <= y == not(y < x)
+    x >= y == not(x < y)
+    x = y  == not(x < y) and not(y < x)
+    max(x,y) ==
+      x < y => y
+      x
+    min(x,y) ==
+      x < y => x
+      y
+    before?(x,y) == x < y
+
+@
+
+\section{Ordered Structure}
+
+<<domain ORDSTRCT OrderedStructure>>=
+++ Author: Gabriel Dos Reis
+++ Date Created: June 28, 2010
+++ Date Last Modified: June 28, 2010
+++ See Also: OrderedType
+++ Description:
+++   This domain turns any total ordering \spad{f} on a type \spad{T} into
+++   a model of the category \spadtype{OrderedType}.
+)abbrev domain ORDSTRCT OrderedStructure
+OrderedStructure(T: Type,f: (T,T) -> Boolean): Public == Private where
+  Public == Join(OrderedType,HomotopicTo T) with
+    if T has CoercibleTo OutputForm then CoercibleTo OutputForm
+  Private == add
+    Rep == T
+    coerce(x: %): T == rep x
+    coerce(y: T): % == per y
+    x < y  == f(rep x,rep y)
+    if T has CoercibleTo OutputForm then
+      coerce(x: %): OutputForm == rep(x)::OutputForm
+
+@
+
+
 
 \section{category BMODULE BiModule}
 
@@ -353,6 +421,108 @@ CommutativeRing():Category == Join(Ring,BiModule(%,%)) with
 
 @
 
+\section{Differential Domain}
+
+<<category DIFFDOM DifferentialDomain>>=
+)abbrev category DIFFDOM DifferentialDomain
+++ Author: Gabriel Dos Reis
+++ Date Created: June 13, 2010
+++ Date Last Modified: June 13, 2010
+++ Description:
+++   This category captures the interface of domains with a distinguished
+++   operation named \spad{differentiate}.  Usually, additional properties
+++   are wanted.  For example, that it obeys the usual Leibniz identity
+++   of differentiation of product, in case of differential rings. One
+++   could also want \spad{differentiate} to obey the chain rule when
+++   considering differential manifolds.
+++   The lack of specific requirement in this category is an implicit
+++   admission that currently \Language{} is not expressive enough to
+++   express the most general notion of differentiation in an adequate
+++   manner, suitable for computational purposes.
+DifferentialDomain(T: Type): Category == Type with
+    differentiate: % -> T
+      ++ \spad{differentiate x} compute the derivative of \spad{x}.
+    D: % -> T
+      ++ \spad{D x} is a shorthand for \spad{differentiate x}
+  add
+    D x ==
+      differentiate x
+
+@
+
+\section{Differential Space}
+
+<<category DIFFSPC DifferentialSpace>>=
+)abbrev category DIFFSPC DifferentialSpace
+++ Author: Gabriel Dos Reis
+++ Date Created: June 13, 2010
+++ Date Last Modified: June 15, 2010
+++ Description:
+++   This category is like \spadtype{DifferentialDomain} where the
+++   target of the differentiation operator is the same as its source.
+DifferentialSpace(): Category == DifferentialDomain % with
+    differentiate: (%, NonNegativeInteger) -> %
+      ++ \spad{differentiate(x,n)} returns the \spad{n}-th
+      ++ derivative of \spad{x}.
+    D: (%, NonNegativeInteger) -> %
+      ++ \spad{D(x, n)} returns the \spad{n}-th derivative of \spad{x}.
+  add
+    differentiate(r, n) ==
+      for i in 1..n repeat r := differentiate r
+      r
+    D(r,n) ==
+      differentiate(r,n)
+
+@
+
+
+\section{Differential Space Extension}
+
+<<category DSEXT DifferentialSpaceExtension>>=
+)abbrev category DSEXT DifferentialSpaceExtension
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpace
+++ Also See:
+++ Description:
+++   Extension of a base differential space with a derivation.
+++
+DifferentialSpaceExtension(R: Type): Category == Type with
+    differentiate: (%,R -> R) -> %
+      ++ \spad{differentiate(x,d)} computes the derivative of
+      ++ \spad{x}, extending differentiation \spad{d} on \spad{R}.
+    differentiate: (%,R -> R,NonNegativeInteger) -> %
+      ++ \spad{differentiate(x,d,n)} computes the \spad{n}-th derivative
+      ++ of \spad{x} using a derivation extending \spad{d} on \spad{R}.
+    D: (%,R -> R) -> %
+      ++ \spad{D(x,d)} is a shorthand for \spad{differentiate(x,d)}.
+    D: (%,R -> R,NonNegativeInteger) -> %
+      ++ \spad{D(x,d,n)} is a shorthand for \spad{differentiate(x,d,n)}.
+    if R has DifferentialSpace then DifferentialSpace
+    if R has PartialDifferentialSpace Symbol then
+      PartialDifferentialSpace Symbol
+  add
+    differentiate(x: %, d: R -> R, n: NonNegativeInteger):% ==
+      for i in 1..n repeat x := differentiate(x,d)
+      x
+
+    D(x: %, d: R -> R) ==
+      differentiate(x, d)
+
+    D(x: %, d: R -> R, n: NonNegativeInteger) ==
+      differentiate(x,d,n)
+
+    if R has DifferentialSpace then
+      differentiate x == differentiate(x, differentiate$R)
+
+    if R has PartialDifferentialSpace Symbol then
+      differentiate(x:%, v: Symbol):% ==
+        differentiate(x, differentiate(#1, v)$R)
+
+@
+
+
 \section{category DIFRING DifferentialRing}
 <<category DIFRING DifferentialRing>>=
 )abbrev category DIFRING DifferentialRing
@@ -373,27 +543,37 @@ CommutativeRing():Category == Join(Ring,BiModule(%,%)) with
 ++   \spad{differentiate(x+y) = differentiate(x)+differentiate(y)}
 ++   \spad{differentiate(x*y) = x*differentiate(y) + differentiate(x)*y}
 
-DifferentialRing(): Category == Ring with
-    differentiate: % -> %
-         ++ differentiate(x) returns the derivative of x.
-         ++ This function is a simple differential operator
-         ++ where no variable needs to be specified.
-    D: % -> %
-         ++ D(x) returns the derivative of x.
-         ++ This function is a simple differential operator
-         ++ where no variable needs to be specified.
-    differentiate: (%, NonNegativeInteger) -> %
-         ++ differentiate(x, n) returns the n-th derivative of x.
-    D: (%, NonNegativeInteger) -> %
-         ++ D(x, n) returns the n-th derivative of x.
-  add
-    D r == differentiate r
-    differentiate(r, n) ==
-      for i in 1..n repeat r := differentiate r
-      r
-    D(r,n) == differentiate(r,n)
+DifferentialRing(): Category == Join(Ring,DifferentialSpace)
 
 @
+
+
+\section{Differential Module}
+
+<<category DIFFMOD DifferentialModule>>=
+)abbrev category DIFFMOD DifferentialModule
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 14, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpace
+++ Also See:
+++ Description:
+++   An R-module equipped with a distinguised differential operator.
+++   If R is a differential ring, then differentiation on the module
+++   should extend differentiation on the differential ring R.  The
+++   latter can be the null operator. In that case, the differentiation
+++   operator on the module is just an R-linear operator.  For that
+++   reason, we do not require that the ring R be a DifferentialRing; 
+++
+++ Axioms:
+++   \spad{differentiate(x + y) = differentiate(x) + differentiate(x)}
+++   \spad{differentiate(r*y) = r*differentiate(y) + differentiate(r)*y}
+
+DifferentialModule(R: Ring): Category ==
+  Join(BiModule(R,R), DifferentialSpace) with
+    if R has CommutativeRing then Module R
+@
+
 
 \section{category DIFEXT DifferentialExtension}
 <<category DIFEXT DifferentialExtension>>=
@@ -411,39 +591,35 @@ DifferentialRing(): Category == Ring with
 ++ Differential extensions of a ring R.
 ++ Given a differentiation on R, extend it to a differentiation on %.
 
-DifferentialExtension(R:Ring): Category == Ring with
-    --operations
-    differentiate: (%, R -> R) -> %
-       ++ differentiate(x, deriv) differentiates x extending
-       ++ the derivation deriv on R.
-    differentiate: (%, R -> R, NonNegativeInteger) -> %
-       ++ differentiate(x, deriv, n) differentiate x n times
-       ++ using a derivation which extends deriv on R.
-    D: (%, R -> R) -> %
-       ++ D(x, deriv) differentiates x extending
-       ++ the derivation deriv on R.
-    D: (%, R -> R, NonNegativeInteger) -> %
-       ++ D(x, deriv, n) differentiate x n times
-       ++ using a derivation which extends deriv on R.
+DifferentialExtension(R:Ring): Category ==
+  Join(Ring,DifferentialSpaceExtension R) with
     if R has DifferentialRing then DifferentialRing
     if R has PartialDifferentialRing(Symbol) then
              PartialDifferentialRing(Symbol)
-  add
-    differentiate(x:%, derivation: R -> R, n:NonNegativeInteger):% ==
-      for i in 1..n repeat x := differentiate(x, derivation)
-      x
-    D(x:%, derivation: R -> R) == differentiate(x, derivation)
-    D(x:%, derivation: R -> R, n:NonNegativeInteger) ==
-            differentiate(x, derivation, n)
-
-    if R has DifferentialRing then
-      differentiate x == differentiate(x, differentiate$R)
-
-    if R has PartialDifferentialRing Symbol then
-      differentiate(x:%, v:Symbol):% ==
-        differentiate(x, differentiate(#1, v)$R)
 
 @
+
+\section{Differential Module Extension}
+
+<<category DMEXT DifferentialModuleExtension>>=
+)abbrev category DMEXT DifferentialModuleExtension
+++ Author:  Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: Jun 16, 2010
+++ Related Constructors: Module, DifferentialSpaceExtension
+++ Also See:
+++   DifferentialExtension
+++ Description:
+++   Category of modules that extend differential rings.
+++
+DifferentialModuleExtension(R: Ring): Category ==
+  Join(BiModule(R,R),DifferentialSpaceExtension R) with
+    if R has DifferentialSpace then DifferentialModule R
+    if R has PartialDifferentialSpace Symbol then
+      PartialDifferentialModule(R,Symbol)
+@
+
+
 \section{category DIVRING DivisionRing}
 <<category DIVRING DivisionRing>>=
 )abbrev category DIVRING DivisionRing
@@ -992,7 +1168,7 @@ LeftModule(R:Rng):Category == Join(AbelianGroup, LeftLinearSet R)
 )abbrev category LINEXP LinearlyExplicitRingOver
 ++ Author:
 ++ Date Created:
-++ Date Last Updated:
+++ Date Last Updated: June 18, 2010
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1000,8 +1176,19 @@ LeftModule(R:Rng):Category == Join(AbelianGroup, LeftLinearSet R)
 ++ Keywords:
 ++ References:
 ++ Description:
-++ An extension ring with an explicit linear dependence test.
-LinearlyExplicitRingOver(R:Ring): Category == Ring with
+++    An extension of left-module with an explicit linear dependence test.
+LinearlyExplicitRingOver(R:Ring): Category == LeftModule R with
+  leftReducedSystem: Vector % -> Matrix R
+    ++ \spad{leftReducedSystem [v1,...,vn]} returns a matrix \spad{M}
+    ++ with coefficients in \spad{R} such that the system of equations
+    ++ \spad{c1*v1 + ... + cn*vn = 0$%} has the same solution as
+    ++ \spad{c * M = 0} where \spad{c} is the row vector \spad{[c1,...cn]}.
+  leftReducedSystem: (Vector %,%) -> Record(mat: Matrix R,vec: Vector R)
+    ++ \spad{reducedSystem([v1,...,vn],u)} returns a matrix \spad{M}
+    ++ with coefficients in \spad{R} and a vector \spad{w} such
+    ++ that the system of equations \spad{c1*v1 + ... + cn*vn = u}
+    ++ has the same solution as \spad{c * M = w} where \spad{c}
+    ++ is the row vector \spad{[c1,...cn]}.
   reducedSystem: Matrix % -> Matrix R
     ++ reducedSystem(A) returns a matrix B such that \spad{A x = 0} and \spad{B x = 0}
     ++ have the same solutions in R.
@@ -1328,35 +1515,93 @@ import Boolean
 ++ exactly one of the following relations holds \spad{a<b or a=b or b<a}
 ++ and the relation is transitive, i.e.  \spad{a<b and b<c => a<c}.
 
-OrderedSet(): Category == SetCategory with
-  --operations
-    <: (%,%) -> Boolean
-      ++ x < y is a strict total ordering on the elements of the set.
-    >:         (%, %) -> Boolean
-      ++ x > y is a greater than test.
-    >=:        (%, %) -> Boolean
-      ++ x >= y is a greater than or equal test.
-    <=:        (%, %) -> Boolean
-      ++ x <= y is a less than or equal test.
-
-    max: (%,%) -> %
-      ++ max(x,y) returns the maximum of x and y relative to "<".
-    min: (%,%) -> %
-      ++ min(x,y) returns the minimum of x and y relative to "<".
-  add
-    before?(x,y) == x < y
-  -- These really ought to become some sort of macro
-    max(x,y) ==
-      x > y => x
-      y
-    min(x,y) ==
-      x > y => y
-      x
-    ((x: %) >  (y: %)) : Boolean == y < x
-    ((x: %) >= (y: %)) : Boolean == not (x < y)
-    ((x: %) <= (y: %)) : Boolean == not (y < x)
+OrderedSet(): Category == Join(SetCategory,OrderedType) 
 
 @
+
+\section{Partial Differential Domain}
+
+<<category PDDOM PartialDifferentialDomain>>=
+)abbrev category PDDOM PartialDifferentialDomain
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Modified: June 16, 2010
+++ Description:
+++   This category captures the interface of domains with a distinguished
+++   operation named \spad{differentiate} for partial differentiation with
+++   respect to some domain of variables.
+++ See Also:
+++   DifferentialDomain, PartialDifferentialSpace
+PartialDifferentialDomain(T: Type, S: Type): Category == Type with
+    differentiate: (%,S) -> T
+      ++ \spad{differentiate(x,v)} computes the partial derivative
+      ++ of \spad{x} with respect to \spad{v}.
+    D: (%,S) -> T
+      ++ \spad{D(x,v)} is a shorthand for \spad{differentiate(x,v)}
+  add
+    D(x,v) ==
+      differentiate(x,v)
+
+@
+
+\section{Partial Differential Space}
+
+<<category PDSPC PartialDifferentialSpace>>=
+)abbrev category PDSPC PartialDifferentialSpace
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Modified: June 16, 2010
+++ Description:
+++   This category captures the interface of domains stable by partial
+++   differentiation with respect to variables from some domain.
+++ See Also:
+++   PartialDifferentialDomain
+PartialDifferentialSpace(S: SetCategory): Category ==
+    PartialDifferentialDomain(%,S) with
+      differentiate: (%,List S) -> %
+        ++ \spad{differentiate(x,[s1,...sn])} computes successive
+        ++ partial derivatives, i.e.
+        ++ \spad{differentiate(...differentiate(x, s1)..., sn)}.
+      differentiate: (%,S,NonNegativeInteger) -> %
+        ++ \spad{differentiate(x,s,n)} computes multiple partial
+        ++ derivatives, i.e. \spad{n}-th derivative of \spad{x}
+        ++ with respect to \spad{s}.
+      differentiate: (%,List S,List NonNegativeInteger) -> %
+        ++ \spad{differentiate(x,[s1,...,sn],[n1,...,nn])} computes
+        ++ multiple partial derivatives, i.e.
+      D: (%,List S) -> %
+        ++ \spad{D(x,[s1,...sn])} is a shorthand for
+        ++ \spad{differentiate(x,[s1,...sn])}.
+      D: (%,S,NonNegativeInteger) -> %
+        ++ \spad{D(x,s,n)} is a shorthand for \spad{differentiate(x,s,n)}.
+      D: (%,List S,List NonNegativeInteger) -> %
+        ++ \spad{D(x,[s1,...,sn],[n1,...,nn])} is a shorthand for
+        ++ \spad{differentiate(x,[s1,...,sn],[n1,...,nn])}.
+  add
+    differentiate(r: %,l: List S) ==
+      for s in l repeat r := differentiate(r, s)
+      r
+
+    differentiate(r: %,s: S,n: NonNegativeInteger) ==
+      for i in 1..n repeat r := differentiate(r, s)
+      r
+
+    differentiate(r: %,ls: List S,ln: List NonNegativeInteger) ==
+      for s in ls for n in ln repeat r := differentiate(r, s, n)
+      r
+
+    D(r: %,v: S) ==
+      differentiate(r,v)
+
+    D(r: %,lv: List S) ==
+      differentiate(r,lv)
+    D(r: %,v: S,n: NonNegativeInteger) ==
+      differentiate(r,v,n)
+    D(r: %,lv: List S,ln: List NonNegativeInteger) ==
+      differentiate(r, lv, ln)
+
+@
+
 \section{category PDRING PartialDifferentialRing}
 <<category PDRING PartialDifferentialRing>>=
 )abbrev category PDRING PartialDifferentialRing
@@ -1376,51 +1621,39 @@ OrderedSet(): Category == SetCategory with
 ++   \spad{differentiate(x+y,e) = differentiate(x,e)+differentiate(y,e)}
 ++   \spad{differentiate(x*y,e) = x*differentiate(y,e) + differentiate(x,e)*y}
 
-PartialDifferentialRing(S:SetCategory): Category == Ring with
-    differentiate: (%, S) -> %
-        ++ differentiate(x,v) computes the partial derivative of x
-        ++ with respect to v.
-    differentiate: (%, List S) -> %
-        ++ differentiate(x,[s1,...sn]) computes successive partial derivatives,
-        ++ i.e. \spad{differentiate(...differentiate(x, s1)..., sn)}.
-    differentiate: (%, S, NonNegativeInteger) -> %
-        ++ differentiate(x, s, n) computes multiple partial derivatives, i.e.
-        ++ n-th derivative of x with respect to s.
-    differentiate: (%, List S, List NonNegativeInteger) -> %
-        ++ differentiate(x, [s1,...,sn], [n1,...,nn]) computes
-        ++ multiple partial derivatives, i.e.
-    D: (%, S) -> %
-        ++ D(x,v) computes the partial derivative of x
-        ++ with respect to v.
-    D: (%, List S) -> %
-        ++ D(x,[s1,...sn]) computes successive partial derivatives,
-        ++ i.e. \spad{D(...D(x, s1)..., sn)}.
-    D: (%, S, NonNegativeInteger) -> %
-        ++ D(x, s, n) computes multiple partial derivatives, i.e.
-        ++ n-th derivative of x with respect to s.
-    D: (%, List S, List NonNegativeInteger) -> %
-        ++ D(x, [s1,...,sn], [n1,...,nn]) computes
-        ++ multiple partial derivatives, i.e.
-        ++ \spad{D(...D(x, s1, n1)..., sn, nn)}.
-  add
-    differentiate(r:%, l:List S) ==
-      for s in l repeat r := differentiate(r, s)
-      r
-
-    differentiate(r:%, s:S, n:NonNegativeInteger) ==
-      for i in 1..n repeat r := differentiate(r, s)
-      r
-
-    differentiate(r:%, ls:List S, ln:List NonNegativeInteger) ==
-      for s in ls for n in ln repeat r := differentiate(r, s, n)
-      r
-
-    D(r:%, v:S) == differentiate(r,v)
-    D(r:%, lv:List S) == differentiate(r,lv)
-    D(r:%, v:S, n:NonNegativeInteger) == differentiate(r,v,n)
-    D(r:%, lv:List S, ln:List NonNegativeInteger) == differentiate(r, lv, ln)
+PartialDifferentialRing(S:SetCategory): Category ==
+  Join(Ring,PartialDifferentialSpace S)
 
 @
+
+\section{Partial Differential Module}
+
+<<category PDMOD PartialDifferentialModule>>=
+)abbrev category PDMOD PartialDifferentialModule
+++ Author: Gabriel Dos Reis
+++ Date Created: June 16, 2010
+++ Date Last Updated: June 18, 2010
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description:
+++   A partial differential R-module with differentiations
+++   indexed by a parameter type S.
+++
+++ Axioms:
+++   \spad{differentiate(x+y,e) = differentiate(x,e)+differentiate(y,e)}
+++   \spad{differentiate(r*x,e) = r*differentiate(x,e) + differentiate(r,e)*x}
+++   \spad{differentiate(x*r,e) = x*differentiate(r,e) + differentiate(x,e)*r}
+
+PartialDifferentialModule(R: Ring,S: SetCategory): Category ==
+  Join(BiModule(R,R),PartialDifferentialSpace S) with
+     if R has CommutativeRing then Module R
+
+@
+
+
 \section{category PFECAT PolynomialFactorizationExplicit}
 <<category PFECAT PolynomialFactorizationExplicit>>=
 )abbrev category PFECAT PolynomialFactorizationExplicit
@@ -1666,7 +1899,6 @@ SemiGroup(): Category == SetCategory with
 ++ Date Created:
 ++ Date Last Updated:
 ++   09/09/92   RSS   added latex and hash
-++   May 21, 2009: added before? -- gdr
 ++ Basic Functions:
 ++ Related Constructors:
 ++ Also See:
@@ -1684,13 +1916,9 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
       hash: % -> SingleInteger  ++ hash(s) calculates a hash code for s.
       latex: % -> String       ++ latex(s) returns a LaTeX-printable output
                                ++ representation of s.
-      before?: (%,%) -> Boolean
-        ++ spad{before?(x,y)} holds if \spad{x} comes before \spad{y}
-        ++ in the internal total ordering used by OpenAxiom.
   add
       hash(s : %):  SingleInteger == SXHASH(s)$Lisp
       latex(s : %): String       == "\mbox{\bf Unimplemented}"
-      before?(x,y) == GGREATERP(y,x)$Foreign(Builtin)
 @
 
 \section{category STEP StepThrough}
@@ -1794,7 +2022,7 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reversed.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -1829,6 +2057,8 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<license>>
 
 <<category BASTYPE BasicType>>
+<<category ORDTYPE OrderedType>>
+<<domain ORDSTRCT OrderedStructure>>
 <<category SETCAT SetCategory>>
 <<category STEP StepThrough>>
 <<category SGROUP SemiGroup>>
@@ -1875,10 +2105,19 @@ VectorSpace(S:Field): Category ==  Module(S) with
 <<category ORDRING OrderedRing>>
 <<category OINTDOM OrderedIntegralDomain>>
 <<category OAMONS OrderedAbelianMonoidSup>>
+<<category DIFFDOM DifferentialDomain>>
+<<category DIFFSPC DifferentialSpace>>
 <<category DIFRING DifferentialRing>>
+<<category DIFFMOD DifferentialModule>>
+<<category DMEXT DifferentialModuleExtension>>
+<<category PDDOM PartialDifferentialDomain>>
+<<category PDSPC PartialDifferentialSpace>>
 <<category PDRING PartialDifferentialRing>>
+<<category PDMOD PartialDifferentialModule>>
 <<category DIFEXT DifferentialExtension>>
+<<category DSEXT DifferentialSpaceExtension>>
 @
+
 \eject
 \begin{thebibliography}{99}
 \bibitem{1} nothing

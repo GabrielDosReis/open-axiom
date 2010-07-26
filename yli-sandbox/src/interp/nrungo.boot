@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ $insideCompileBodyIfTrue := false
 --% Monitoring functions
 
 lookupDisplay(op,sig,vectorOrForm,suffix) ==
-  null $NRTmonitorIfTrue => nil
+  not $NRTmonitorIfTrue => nil
   prefix := (suffix = '"" => ">"; "<")
   sayBrightly
     concat(prefix,formatOpSignature(op,sig),
@@ -68,7 +68,7 @@ NRTevalDomain form ==
 compiledLookup(op,sig,dollar) ==
 --called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
 --  getFunctionFromDomain, optDeltaEntry, retractByFunction
-  if not VECP dollar then dollar := NRTevalDomain dollar
+  if not vector? dollar then dollar := NRTevalDomain dollar
   -- "^" is an alternate name for "**" in OpenAxiom libraries.
   -- ??? When, we get to support Aldor libraries and the equivalence
   -- ??? does not hold, we may want to do the reverse lookup too.
@@ -79,7 +79,7 @@ compiledLookup(op,sig,dollar) ==
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 basicLookup(op,sig,domain,dollar) ==
   item := domain.1
-  CONSP item and first item in '(lookupInDomain lookupInTable) => 
+  cons? item and first item in '(lookupInDomain lookupInTable) => 
     lookupInDomainVector(op,sig,domain,dollar)
   ----------new world code follows------------
   u := lookupInDomainAndDefaults(op,sig,domain,dollar,false) => u
@@ -116,22 +116,22 @@ goGet(:l) ==
   lookupDomain :=
      domainSlot = 0 => thisDomain
      thisDomain.domainSlot -- where we look for the operation
-  if CONSP lookupDomain then lookupDomain := NRTevalDomain lookupDomain
+  if cons? lookupDomain then lookupDomain := NRTevalDomain lookupDomain
   dollar :=                             -- what matches $ in signatures
     explicitLookupDomainIfTrue => lookupDomain
     thisDomain
-  if CONSP dollar then dollar := NRTevalDomain dollar
+  if cons? dollar then dollar := NRTevalDomain dollar
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
-  val:= APPLY(first fn,[:arglist,rest fn])
+  val:= apply(first fn,[:arglist,rest fn])
   setShellEntry(thisDomain,index,fn)
   val
 
 NRTreplaceLocalTypes(t,dom) ==
    atom t =>
-     not INTEGERP t => t
+     not integer? t => t
      t:= dom.t
-     if CONSP t then t:= NRTevalDomain t
+     if cons? t then t:= NRTevalDomain t
      t.0
    first t in '(Mapping Union Record _:) =>
       [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
@@ -151,14 +151,14 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
   someMatch := false
   while not success for [sig1,:code] in LASSQ(op,table) repeat
     success :=
-      null compareSig(sig,sig1,dollar.0,domain) => false
+      not compareSig(sig,sig1,dollar.0,domain) => false
       code is ['subsumed,a] =>
             subsumptionSig :=
                EQSUBSTLIST(rest(domain.0),$FormalMapVariableList,a)
             someMatch:=true
             false
       predIndex := QSQUOTIENT(code,8192)
-      predIndex ~= 0 and null lookupPred($predVector.predIndex,dollar,domain)
+      predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
         => false
       loc := QSQUOTIENT(QSREMAINDER(code,8192),2)
       loc = 0 =>
@@ -168,7 +168,7 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
       slot is ["goGet",:.] =>
         lookupDisplay(op,sig,domain,'" !! goGet found, will ignore")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
-      NULL slot =>
+      null slot =>
         lookupDisplay(op,sig,domain,'" !! null slot entry, continuing")
         lookupInAddChain(op,sig,domain,dollar) or 'failed
       lookupDisplay(op,sig,domain,'" !! found in NEW table!!")
@@ -190,7 +190,7 @@ lookupInAddChain(op,sig,addFormDomain,dollar) ==
 
 defaultingFunction op ==
   not(op is [.,:dom]) => false
-  not VECP dom => false
+  not vector? dom => false
   not (#dom > 0) => false
   not (dom.0 is [packageName,:.]) => false
   not IDENTP packageName => false
@@ -202,9 +202,9 @@ defaultingFunction op ==
 --=======================================================
 lookupInDomain(op,sig,addFormDomain,dollar,index) ==
   addFormCell := addFormDomain.index =>
-    INTEGERP KAR addFormCell =>
+    integer? KAR addFormCell =>
       or/[lookupInDomain(op,sig,addFormDomain,dollar,i) for i in addFormCell]
-    if not VECP addFormCell then addFormCell := eval addFormCell
+    if not vector? addFormCell then addFormCell := eval addFormCell
     lookupInDomainVector(op,sig,addFormCell,dollar)
   nil
 
@@ -246,14 +246,14 @@ lookupInCategories(op,sig,dom,dollar) ==
 --=======================================================
 lookupPred(pred,dollar,domain) ==
   pred = true => true
-  pred is ['AND,:pl] or pred is ['and,:pl] =>
+  pred is [op,:pl] and op in '(AND and %and) =>
     and/[lookupPred(p,dollar,domain) for p in pl]
-  pred is ['OR,:pl] or pred is ['or,:pl] =>
+  pred is [op,:pl] and op in '(OR or %or) =>
     or/[lookupPred(p,dollar,domain) for p in pl]
-  pred is ['NOT,p] or pred is ['not,p] => not lookupPred(p,dollar,domain)
+  pred is [op,p] and op in '(NOT not %not) => not lookupPred(p,dollar,domain)
   pred is ['is,dom1,dom2] => domainEqual(dom1,dom2)
   pred is ["has",a,b] =>
-    VECP a =>
+    vector? a =>
       keyedSystemError("S2GE0016",['"lookupPred",
         '"vector as  first argument to has"])
     a := eval mkEvalable substDollarArgs(dollar,domain,a)
@@ -275,7 +275,7 @@ compareSig(sig,tableSig,dollar,domain) ==
 
 lazyCompareSigEqual(s,tslot,dollar,domain) ==
   tslot = '$ => s = "$" or s = devaluate dollar
-  INTEGERP tslot and CONSP(lazyt:=domain.tslot) and CONSP s =>
+  integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = first s =>
           compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
@@ -285,19 +285,19 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
 
 compareSigEqual(s,t,dollar,domain) ==
   EQUAL(s,t) => true
-  ATOM t =>
+  atom t =>
     u :=
       t='$ => dollar
       isSharpVar t =>
-        VECP domain => ELT(rest domain.0,POSN1(t,$FormalMapVariableList))
-        ELT(rest domain,POSN1(t,$FormalMapVariableList))
-      STRINGP t and IDENTP s => (s := PNAME s; t)
+        vector? domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
+        rest(domain).(POSN1(t,$FormalMapVariableList))
+      string? t and IDENTP s => (s := PNAME s; t)
       nil
     s = '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
     EQUAL(s,u)
   s='$ => compareSigEqual(dollar,t,dollar,domain)
-  ATOM s => nil
+  atom s => nil
   #s ~= #t => nil
   match := true
   for u in s for v in t repeat
@@ -318,7 +318,7 @@ NRTcompiledLookup(op,sig,dom) ==
   compiledLookupCheck(op,sig,dom)
 
 NRTtypeHack t ==
-  ATOM t => t
+  atom t => t
   first t = '_# => # second t
   [first t,:[NRTtypeHack tt for tt in rest t]]
 
@@ -328,96 +328,3 @@ NRTgetMinivectorIndex(u,op,sig,domVector) ==
         for x in $minivector | EQ(x,u)] => k
   $minivector := [:$minivector,u]
   s
-
-NRTisRecurrenceRelation(op,body,minivectorName) ==
-  -- returns [body p1 p2 ... pk] for a k-term recurrence relation
-  -- where the n-th term is computed using the (n-1)st,...,(n-k)th
-  -- whose values are initially computed using the expressions
-  -- p1,...,pk respectively; body has #2,#3,... in place of
-  -- f(k-1),f(k-2),...
-
-  body isnt ['COND,:pcl] => false
-  -- body should have a conditional expression which
-  -- gives k boundary values, one general term plus possibly an
-  -- "out of domain" condition
-  --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
-  --  CONTAINED('throwKeyedMsg,mess)) => NIL
-  pcl := [x for x in pcl | not (x is [''T,:mess] and
-    (CONTAINED('throwMessage,mess) or
-      CONTAINED('throwKeyedMsg,mess)))]
-  integer := eval $Integer
-  iequalSlot:=compiledLookupCheck("=",[$Boolean,"$","$"],integer)
-  lesspSlot:=compiledLookupCheck("<",[$Boolean,"$","$"],integer)
-  notpSlot:= compiledLookupCheck("not",["$","$"],eval $Boolean)
-  for [p,c] in pcl repeat
-    p is ['SPADCALL,sharpVar,n1,['ELT,=minivectorName,slot]]
-      and EQ(iequalSlot,$minivector.slot) =>
-        initList:= [[n1,:c],:initList]
-        sharpList := insert(sharpVar,sharpList)
-        n:=n1
-    miscList:= [[p,c],:miscList]
-  miscList isnt [[generalPred,generalTerm]] or sharpList isnt [sharpArg] =>
-      return false
-    --first general term starts at n
-
-  --Must have at least one special value; insist that they be consecutive
-  null initList => false
-  specialValues:= MSORT ASSOCLEFT initList
-  or/[null INTEGERP n for n in specialValues] => false
-  minIndex:= "MIN"/specialValues
-  not (and/[i=x for i in minIndex..(minIndex+n-1) for x in specialValues]) =>
-    sayKeyedMsg("S2IX0005",
-      ["append"/[['" ",sv]  for sv in specialValues]])
-    return nil
-
-  --Determine the order k of the recurrence and index n of first general term
-  k:= #specialValues
-  n:= k+minIndex
-  --Check general predicate
-  predOk :=
-    generalPred is '(QUOTE T) => true
-    generalPred is ['SPADCALL,m,=sharpArg,['ELT,=minivectorName,slot]]
-      and EQ(lesspSlot,$minivector.slot)=> m+1
-    generalPred is ['SPADCALL,['SPADCALL,=sharpArg,m,
-      ['ELT,=minivectorName,slot]], ['ELT,=minivectorName,notSlot]]
-        and EQ(lesspSlot,$minivector.slot)
-          and EQ(notpSlot,$minivector.notSlot) => m
-    generalPred is ['NOT,['SPADCALL,=sharpArg,m,['ELT,=minivectorName, =lesspSlot]]]
-      and EQ(lesspSlot,$minivector.slot) => m
-    return nil
-  INTEGERP predOk and predOk ~= n =>
-    sayKeyedMsg("S2IX0006",[n,m])
-    return nil
-
-  --Check general term for references to just the k previous values
-  diffCell:=compiledLookupCheck("-",'($ $ $),integer)
-  diffSlot := or/[i for i in 0.. for x in $minivector | EQ(x,diffCell)]
-                or return nil
-  --Check general term for references to just the k previous values
-  sharpPosition := PARSE_-INTEGER SUBSTRING(sharpArg,1,nil)
-  al:= mkDiffAssoc(op,generalTerm,k,sharpPosition,sharpArg,diffSlot,minivectorName)
-  null al => false
-  "$failed" in al => false
-  body:= generalTerm
-  for [a,:b] in al repeat
-    body:= substitute(b,a,body)
-  result:= [body,sharpArg,n-1,:nreverse [LASSOC(i,initList) or
-      systemErrorHere('"NRTisRecurrenceRelation")
-        for i in minIndex..(n-1)]]
-
-mkDiffAssoc(op,body,k,sharpPosition,sharpArg,diffSlot,vecname) ==
-  -- returns alist which should not have any entries = $failed
-  -- form substitution list of the form:
-  -- ( ((f (,DIFFERENCE #1 1)) . #2) ((f (,DIFFERENCE #1 2)) . #3) ...)
-  --   but also checking that all difference values lie in 1..k
-  atom body => nil
-  body is ['COND,:pl] =>
-    "union"/[mkDiffAssoc(op,c,k,sharpPosition,sharpArg,diffSlot,vecname) for [p,c] in pl]
-  body is [fn,:argl] =>
-    (fn = op) and argl.(sharpPosition-1) is
-      ['SPADCALL,=sharpArg,n,['ELT,=vecname,=diffSlot]] =>
-          NUMP n and n > 0 and n <= k =>
-            [[body,:$TriangleVariableList.n]]
-          ['$failed]
-    "union"/[mkDiffAssoc(op,x,k,sharpPosition,sharpArg,diffSlot,vecname) for x in argl]
-  systemErrorHere '"mkDiffAssoc"

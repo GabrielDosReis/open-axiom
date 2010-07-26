@@ -60,7 +60,7 @@ Aggregate: Category == Type with
    if % has finiteAggregate then
      #: % -> NonNegativeInteger     ++ # u returns the number of items in u.
  add
-  eq?(a,b) == EQ(a,b)$Lisp
+  eq?(a,b) == %peq(a,b)$Foreign(Builtin)
   sample() == empty()
   if % has finiteAggregate then
     empty? a   == #a = 0
@@ -100,6 +100,7 @@ import Evalable
 ++ to be modified or updated without changing its overall value.
 HomogeneousAggregate(S:Type): Category == Aggregate with
    if S has CoercibleTo(OutputForm) then CoercibleTo(OutputForm)
+   if S has BasicType then BasicType
    if S has SetCategory then SetCategory
    if S has SetCategory then
       if S has Evalable S then Evalable S
@@ -139,17 +140,22 @@ HomogeneousAggregate(S:Type): Category == Aggregate with
   add
    if S has Evalable S then
      eval(u:%,l:List Equation S):% == map(eval(#1,l),u)
+
    if % has finiteAggregate then
      #c			  == # parts c
      any?(f, c)		  == or/[f x for x in parts c]
      every?(f, c)	  == and/[f x for x in parts c]
      count(f:S -> Boolean, c:%) == +/[1 for x in parts c | f x]
      members x		  == parts x
+
+     if S has BasicType then
+       x = y ==
+         size?(x, #y) and (and/[a = b for a in parts x for b in parts y])
+
      if S has SetCategory then
        count(s:S, x:%) == count(s = #1, x)
        member?(e, c)   == any?(e = #1,c)
-       x = y ==
-	  size?(x, #y) and (and/[a = b for a in parts x for b in parts y])
+
      if S has CoercibleTo(OutputForm) then
        coerce(x:%):OutputForm ==
 	 bracket
@@ -872,9 +878,9 @@ KeyedDictionary(Key:SetCategory, Entry:SetCategory): Category ==
 import Type
 import SetCategory
 )abbrev category ELTAB Eltable
-++ Author: Michael Monagan; revised by Manuel Bronstein and Manuel Bronstein
+++ Author: Michael Monagan; revised by Manuel Bronstein
 ++ Date Created: August 87 through August 88
-++ Date Last Updated: April 1991
+++ Date Last Updated: April 25, 2010
 ++ Basic Operations:
 ++ Related Constructors:
 ++ Also See:
@@ -882,14 +888,15 @@ import SetCategory
 ++ Keywords:
 ++ References:
 ++ Description:
-++ An eltable over domains D and I is a structure which can be viewed
-++ as a function from D to I.
+++ An eltable over domains \spad{S} and \spad{T} is a structure which
+++ can be viewed as a function from \spad{S} to \spad{T}.
 ++ Examples of eltable structures range from data structures, e.g. those
 ++ of type \spadtype{List}, to algebraic structures, e.g. \spadtype{Polynomial}.
-Eltable(S:SetCategory, Index:Type): Category == with
-  elt : (%, S) -> Index
-     ++ elt(u,i) (also written: u . i) returns the element of u indexed by i.
-     ++ Error: if i is not an index of u.
+Eltable(S: Type, T: Type): Category == Type with
+  elt : (%, S) -> T
+     ++ \spad{elt(u,s)} (also written: \spad{u.s}) returns the value
+     ++ of \spad{u} at \spad{s}.
+     ++ Error: if \spad{u} is not defined at \spad{s}.
 
 @
 
@@ -915,8 +922,6 @@ import SetCategory
 ++ as mapping 0 to 1, 1 to 7 and 2 to 4. In general, an aggregate
 ++ can map members of a domain {\em Dom} to an image domain {\em Im}.
 EltableAggregate(Dom:SetCategory, Im:Type): Category ==
--- This is separated from Eltable
--- and series won't have to support qelt's and setelt's.
   Eltable(Dom, Im) with
     elt : (%, Dom, Im) -> Im
        ++ elt(u, x, y) applies u to x if x is in the domain of u,
@@ -1574,10 +1579,11 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? l and zero? i
 
   #x ==
-    k : NonNegativeInteger
-    for k in 0.. while not empty? x repeat
+    k: NonNegativeInteger := 0
+    while not empty? x repeat
       k = cycleMax and cyclic? x => error "cyclic list"
       x := rest x
+      k := k + 1
     k
 
   tail x ==
@@ -1609,8 +1615,10 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => x
     empty?(y := findCycle x) => y
     z := rest y
-    l : NonNegativeInteger
-    for l in 1.. while not eq?(y,z) repeat z := rest z
+    l: NonNegativeInteger := 1
+    while not eq?(y,z) repeat
+      z := rest z
+      l := l + 1
     y := x
     for k in 1..l repeat y := rest y
     while not eq?(x,y) repeat (x := rest x; y := rest y)
@@ -1620,8 +1628,10 @@ UnaryRecursiveAggregate(S:Type): Category == RecursiveAggregate S with
     empty? x => 0
     empty?(x := findCycle x) => 0
     y := rest x
-    k : NonNegativeInteger
-    for k in 1.. while not eq?(x,y) repeat y := rest y
+    k: NonNegativeInteger := 1
+    while not eq?(x,y) repeat
+      y := rest y
+      k := k + 1
     k
 
   rest(x, n) ==
@@ -1812,7 +1822,8 @@ import Integer
 ++ as well to finite ones.
 ++ For finite linear aggregates, see \spadtype{FiniteLinearAggregate}.
 LinearAggregate(S:Type): Category ==
-  Join(IndexedAggregate(Integer, S), Collection(S)) with
+  Join(IndexedAggregate(Integer, S), Collection(S),_
+    Eltable(UniversalSegment Integer, %)) with
    new	 : (NonNegativeInteger,S) -> %
      ++ new(n,x) returns \axiom{fill!(new n,x)}.
    concat: (%,S) -> %
@@ -1836,10 +1847,6 @@ LinearAggregate(S:Type): Category ==
      ++ map(f,u,v) returns a new collection w with elements \axiom{z = f(x,y)}
      ++ for corresponding elements x and y from u and v.
      ++ Note: for linear aggregates, \axiom{w.i = f(u.i,v.i)}.
-   elt: (%,UniversalSegment(Integer)) -> %
-      ++ elt(u,i..j) (also written: \axiom{a(i..j)}) returns the aggregate of
-      ++ elements \axiom{u} for k from i to j in that order.
-      ++ Note: in general, \axiom{a.s = [a.k for i in s]}.
    delete: (%,Integer) -> %
       ++ delete(u,i) returns a copy of u with the \axiom{i}th element deleted.
       ++ Note: for lists, \axiom{delete(a,i) == concat(a(0..i - 1),a(i + 1,..))}.
@@ -2090,16 +2097,23 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       m := maxIndex a
       j := minIndex b
       n := maxIndex b
-      k : Integer
-      for k in minIndex(r).. while i <= m and j <= n repeat
+      k := minIndex(r)
+      while i <= m and j <= n repeat
 	if f(qelt(a, i), qelt(b, j)) then
 	  qsetelt!(r, k, qelt(a, i))
 	  i := i+1
 	else
 	  qsetelt!(r, k, qelt(b, j))
 	  j := j+1
-      for k in k.. for i in i..m repeat qsetelt!(r, k, elt(a, i))
-      for k in k.. for j in j..n repeat qsetelt!(r, k, elt(b, j))
+        k := k + 1
+      while i <= m repeat
+        qsetelt!(r, k, elt(a, i))
+        k := k + 1
+        i := i + 1
+      while j <= n repeat
+        qsetelt!(r, k, elt(b, j))
+        k := k + 1
+        j := j + 1
       r
 
     elt(a:%, s:UniversalSegment(Integer)) ==
@@ -2116,12 +2130,16 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       n := maxIndex b
       i < m or i > n => error "index out of range"
       y := stupidnew(#a + #b, a, b)
-      k : Integer
-      for k in minIndex y.. for j in m..i-1 repeat
+      k := minIndex y
+      for j in m..i-1 repeat
 	qsetelt!(y, k, qelt(b, j))
-      for k in k.. for j in minIndex a .. maxIndex a repeat
+        k := k + 1
+      for j in minIndex a .. maxIndex a repeat
 	qsetelt!(y, k, qelt(a, j))
-      for k in k.. for j in i..n repeat qsetelt!(y, k, qelt(b, j))
+        k := k + 1
+      for j in i..n repeat
+        qsetelt!(y, k, qelt(b, j))
+        k := k + 1
       y
 
     copy x ==
@@ -2149,21 +2167,25 @@ OneDimensionalArrayAggregate(S:Type): Category ==
       l < minIndex a or h > maxIndex a => error "index out of range"
       h < l => copy a
       r := stupidnew((#a - h + l - 1)::NonNegativeInteger, a, a)
-      k : Integer
-      for k in minIndex(r).. for i in minIndex a..l-1 repeat
+      k := minIndex(r)
+      for i in minIndex a..l-1 repeat
 	qsetelt!(r, k, qelt(a, i))
-      for k in k.. for i in h+1 .. maxIndex a repeat
+        k := k + 1
+      for i in h+1 .. maxIndex a repeat
 	qsetelt!(r, k, qelt(a, i))
+        k := k + 1
       r
 
     delete(x:%, i:Integer) ==
       i < minIndex x or i > maxIndex x => error "index out of range"
       y := stupidnew((#x - 1)::NonNegativeInteger, x, x)
-      i : Integer
-      for i in minIndex(y).. for j in minIndex x..i-1 repeat
-	qsetelt!(y, i, qelt(x, j))
-      for i in i .. for j in i+1 .. maxIndex x repeat
-	qsetelt!(y, i, qelt(x, j))
+      k := minIndex y
+      for j in minIndex x..i-1 repeat
+	qsetelt!(y, k, qelt(x, j))
+        k := k + 1
+      for j in i+1 .. maxIndex x repeat
+	qsetelt!(y, k, qelt(x, j))
+        k := k + 1
       y
 
     reverse! x ==
@@ -2406,9 +2428,10 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      first x
 
    position(f:S -> Boolean, x:%) ==
-     k : Integer
-     for k in minIndex(x).. while not empty? x and not f first x repeat
+     k := minIndex(x)
+     while not empty? x and not f first x repeat
        x := rest x
+       k := k + 1
      empty? x => minIndex(x) - 1
      k
 
@@ -2500,9 +2523,10 @@ ListAggregate(S:Type): Category == Join(StreamAggregate S,
      position(w, x, s) ==
        s < (m := minIndex x) => error "index out of range"
        x := rest(x, (s - m)::NonNegativeInteger)
-       k : Integer
-       for k in s.. while not empty? x and w ~= first x repeat
+       k := s
+       while not empty? x and w ~= first x repeat
 	 x := rest x
+         k := k + 1
        empty? x => minIndex x - 1
        k
 
@@ -2681,21 +2705,12 @@ import OneDimensionalArrayAggregate Boolean
 ++ The bit aggregate category models aggregates representing large
 ++ quantities of Boolean data.
 BitAggregate(): Category ==
-  Join(OrderedSet, Logic, OneDimensionalArrayAggregate Boolean) with
-    not: % -> %
-      ++ not(b) returns the logical {\em not} of bit aggregate 
-      ++ \axiom{b}.
+  Join(OrderedSet, BooleanLogic, Logic, OneDimensionalArrayAggregate Boolean) with
     nand : (%, %) -> %
       ++ nand(a,b) returns the logical {\em nand} of bit aggregates \axiom{a}
       ++ and \axiom{b}.
     nor	 : (%, %) -> %
       ++ nor(a,b) returns the logical {\em nor} of bit aggregates \axiom{a} and 
-      ++ \axiom{b}.
-    and : (%, %) -> %
-      ++ a and b returns the logical {\em and} of bit aggregates \axiom{a} and 
-      ++ \axiom{b}.
-    or	 : (%, %) -> %
-      ++ a or b returns the logical {\em or} of bit aggregates \axiom{a} and 
       ++ \axiom{b}.
     xor	 : (%, %) -> %
       ++ xor(a,b) returns the logical {\em exclusive-or} of bit aggregates

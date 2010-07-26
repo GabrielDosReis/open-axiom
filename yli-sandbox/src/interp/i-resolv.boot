@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -80,10 +80,10 @@ resolveTT1(t1,t2) ==
   t2 = '(Exit) => t1
   t1 is ['Union,:.] => resolveTTUnion(t1,t2)
   t2 is ['Union,:.] => resolveTTUnion(t2,t1)
-  STRINGP(t1) =>
+  string?(t1) =>
     t2 = $String => t2
     NIL
-  STRINGP(t2) =>
+  string?(t2) =>
     t1 = $String => t1
     NIL
   null acceptableTypesToResolve(t1,t2) => NIL
@@ -148,7 +148,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
       null (d' := resolveTT(d,t2)) => bad := true
       ud := [d',:ud]
     bad => NIL
-    ['Union,:REMDUP reverse ud]
+    ['Union,:removeDuplicates reverse ud]
   ud := nil
   bad := nil
   for d in doms2 while not bad repeat
@@ -156,7 +156,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
     null (d' := resolveTTUnion(t1,d)) => bad := true
     ud := append(ud,rest d')
   bad => NIL
-  ['Union,:REMDUP ud]
+  ['Union,:removeDuplicates ud]
 
 resolveTTSpecial(t1,t2) ==
   -- tries to resolve things that would otherwise get mangled in the
@@ -164,7 +164,7 @@ resolveTTSpecial(t1,t2) ==
   -- things. (RSS 1/-86)
 
   -- following is just an efficiency hack
-  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and CONSP(t2) and
+  (t1 = $Symbol or t1 is ['OrderedVariableList,.]) and cons?(t2) and
     first(t2) in '(Polynomial RationalFunction) => t2
 
   (t1 = $Symbol) and ofCategory(t2, '(IntegerNumberSystem)) =>
@@ -278,7 +278,7 @@ resolveTTEq1(c1,arg1,TL is [c2,arg2,:.]) ==
     [c2,arg2,:TL] := bubbleType TL
     until null arg1 or null arg2 or not t repeat
       t := resolveTT1(first arg1,first arg2) =>
-        arg := CONS(t,arg)
+        arg := [t,:arg]
         arg1 := rest arg1
         arg2 := rest arg2
     t and null arg1 and null arg2 and
@@ -344,7 +344,7 @@ resolveTTRed3(t) ==
       for x in t for cs in getDualSignatureFromDB first t ]
 
 interpOp?(op) ==
-  CONSP(op) and
+  cons?(op) and
     first(op) in '(Incl SetDiff SetComp SetInter SetUnion VarEqual SetEqual)
 
 --% Resolve Type with Category
@@ -410,10 +410,10 @@ getConditionsForCategoryOnType(t,cat) ==
   getConditionalCategoryOfType(t,[NIL],['ATTRIBUTE,cat])
 
 getConditionalCategoryOfType(t,conditions,match) ==
-  if CONSP t then t := first t
+  if cons? t then t := first t
   t in '(Union Mapping Record) => NIL
   conCat := getConstructorCategoryFromDB t
-  REMDUP rest getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
+  removeDuplicates rest getConditionalCategoryOfType1(conCat,conditions,match,[NIL])
 
 getConditionalCategoryOfType1(cat,conditions,match,seen) ==
   cat is ['Join,:cs] or cat is ['CATEGORY,:cs] =>
@@ -423,12 +423,12 @@ getConditionalCategoryOfType1(cat,conditions,match,seen) ==
        match,seen)
   cat is ['IF,., cond,.] =>
     matchUpToPatternVars(cond,match,NIL) =>
-      RPLACD(conditions,CONS(cat,rest conditions))
+      conditions.rest := [cat,:rest conditions]
       conditions
     conditions
   cat is [catName,:.] and (getConstructorKindFromDB catName = "category") =>
     member(cat, rest seen) => conditions
-    RPLACD(seen,[cat,:rest seen])
+    seen.rest := [cat,:rest seen]
     subCat := getConstructorCategoryFromDB catName
     -- substitute vars of cat into category
     for v in rest cat for vv in $TriangleVariableList repeat
@@ -447,7 +447,7 @@ matchUpToPatternVars(pat,form,patAlist) ==
     (p := assoc(pat,patAlist)) => EQUAL(form,rest p)
     patAlist := [[pat,:form],:patAlist]
     true
-  CONSP(pat) =>
+  cons?(pat) =>
     atom form => NIL
     matchUpToPatternVars(first pat, first form,patAlist) and
       matchUpToPatternVars(rest pat, rest form,patAlist)
@@ -486,10 +486,10 @@ resolveTM1(t,m) ==
     isPatternVar m =>
       p := ASSQ(m,$Subst) =>
         $Coerce =>
-          tt := resolveTT1(t,rest p) => RPLACD(p,tt) and tt
+          tt := resolveTT1(t,rest p) => (p.rest := tt) and tt
           NIL
         t=rest p and t
-      $Subst := CONS(CONS(m,t),$Subst)
+      $Subst := [[m,:t],:$Subst]
       t
     atom(t) or atom(m) => NIL
     (t is ['Record,:tr]) and (m is ['Record,:mr]) and
@@ -514,15 +514,15 @@ resolveTMRecord(tr,mr) ==
     second(ta) ~= second(ma) => ok := NIL      -- match tags
     ra := resolveTM1(third ta, third ma)   -- resolve modes
     null ra => ok := NIL
-    tt := CONS([first ta,second ta,ra],tt)
-  null ok => NIL
+    tt := [[first ta,second ta,ra],:tt]
+  not ok => NIL
   ['Record,nreverse tt]
 
 resolveTMUnion(t, m is ['Union,:ums]) ==
   isTaggedUnion m => resolveTMTaggedUnion(t,m)
   -- resolves t with a Union type
   t isnt ['Union,:uts] =>
-    ums := REMDUP spliceTypeListForEmptyMode([t],ums)
+    ums := removeDuplicates spliceTypeListForEmptyMode([t],ums)
     ums' := nil
     success := nil
     for um in ums repeat
@@ -532,14 +532,14 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
         ums' := [um',:ums']
       ums' := [um,:ums']
     -- remove any duplicate domains that might have been created
-    m' := ['Union,:REMDUP reverse ums']
+    m' := ['Union,:removeDuplicates reverse ums']
     success =>
       null CONTAINED('_*_*,m') => m'
       t = $Integer => NIL
       resolveTM1($Integer,m')
     NIL
   -- t is actually a Union if we got here
-  ums := REMDUP spliceTypeListForEmptyMode(uts,ums)
+  ums := removeDuplicates spliceTypeListForEmptyMode(uts,ums)
   bad := nil
   doms := nil
   for ut in uts while not bad repeat
@@ -547,7 +547,7 @@ resolveTMUnion(t, m is ['Union,:ums]) ==
       doms := append(rest m',doms)
     bad := true
   bad => NIL
-  ['Union,:REMDUP doms]
+  ['Union,:removeDuplicates doms]
 
 resolveTMTaggedUnion(t, m is ['Union,:ums]) ==
   NIL
@@ -595,7 +595,7 @@ resolveTMSpecial(t,m) ==
   t = $AnonymousFunction and m is ['Mapping,:.] => m
   t is ['Variable,x] and m is ['OrderedVariableList,le] =>
     isPatternVar le => ['OrderedVariableList,[x]]
-    CONSP(le) and member(x,le) => le
+    cons?(le) and member(x,le) => le
     NIL
   t is ['Fraction, ['Complex, t1]] and m is ['Complex, m1] =>
     resolveTM1(['Complex, ['Fraction, t1]], m)
@@ -626,7 +626,7 @@ resolveTMEq1(ct,cm) ==
     ct := rest ct
     xm := first cm
     cm := rest cm
-    if not (atom xm) and first xm = ":"  --  i.e. Record
+    if cons? xm and first xm = ":"  --  i.e. Record
       and first xt = ":" and second xm = second xt then
         xm := third xm
         xt := third xt
@@ -655,7 +655,7 @@ resolveTMEq2(cm,argm,TL) ==
       x2 := first argm
       argm := rest argm
       tt := resolveTM1(x1,x2) =>
-        arg := CONS(tt,arg)
+        arg := [tt,:arg]
     null argt and null argm and tt and constructM(ct,nreverse arg)
 
 resolveTMRed(t,m) ==
@@ -682,13 +682,13 @@ resolveTMRed1(t) ==
   t is ['Resolve,a,b] =>
     ( a := resolveTMRed1 a ) and ( b := resolveTMRed1 b ) and
       resolveTM1(a,b)
-  t is ['Incl,a,b] => CONSP b and member(a,b) and b
-  t is ['Diff,a,b] => CONSP a and member(b,a) and SETDIFFERENCE(a,[b])
-  t is ['SetIncl,a,b] => CONSP b and "and"/[member(x,b) for x in a] and b
-  t is ['SetDiff,a,b] => CONSP b and CONSP b and
+  t is ['Incl,a,b] => cons? b and member(a,b) and b
+  t is ['Diff,a,b] => cons? a and member(b,a) and SETDIFFERENCE(a,[b])
+  t is ['SetIncl,a,b] => cons? b and "and"/[member(x,b) for x in a] and b
+  t is ['SetDiff,a,b] => cons? b and cons? b and
                          intersection(a,b) and SETDIFFERENCE(a,b)
   t is ['VarEqual,a,b] => (a = b) and b
-  t is ['SetComp,a,b] => CONSP a and CONSP b and
+  t is ['SetComp,a,b] => cons? a and cons? b and
     "and"/[member(x,a) for x in b] and SETDIFFERENCE(a,b)
   t is ['SimpleAlgebraicExtension,a,b,p] =>  -- this is a hack. RSS
     ['SimpleAlgebraicExtension, resolveTMRed1 a, resolveTMRed1 b,p]
@@ -711,7 +711,7 @@ equiType(t) ==
   t
 
 getUnderModeOf d ==
-  not CONSP d => NIL
+  not cons? d => NIL
 --  n := LASSOC(first d,$underDomainAlist) => d.n ----> $underDomainAlist NOW always NIL
   for a in rest d for m in rest destructT d repeat
     if m then return a
@@ -723,8 +723,8 @@ getUnderModeOf d ==
 --    dt := destructT first t
 --    args := [ x for d in dt for y in t | ( x := d and y ) ]
 --    c := [ x for d in dt for y in t | ( x := not d and y ) ]
---    CONS(c,args)
---  CONS(t,NIL)
+--    [c,:args]
+--  [t,:NIL]
 
 deconstructT(t) ==
   -- M is a type, which may contain type variables
@@ -733,8 +733,8 @@ deconstructT(t) ==
     dt := destructT op
     args := [ x for d in dt for y in t | ( x := d and y ) ]
     c := [ x for d in dt for y in t | ( x := not d and y ) ]
-    CONS(c,args)
-  CONS(t,NIL)
+    [c,:args]
+  [t,:NIL]
 
 constructT(c,A) ==
   -- c is a type constructor, A a list of argument types
@@ -750,7 +750,7 @@ constructM(c,A) ==
 
 replaceLast(A,t) ==
   -- replaces the last element of the nonempty list A by t (constructively
-  nreverse RPLACA(reverse A,t)
+  nreverse (reverse(A).first := t)
 
 destructT(functor)==
   -- provides a list of booleans, which indicate whether the arguments
@@ -794,7 +794,7 @@ bubbleConstructor(TL) ==
 compareTT(t1,t2) ==
   -- 'T if type t1 is more nested than t2
   -- otherwise 'T if t1 is lexicographically greater than t2
-  EQCAR(t1,$QuotientField) or
+  t1 is [=$QuotientField,:.] or
     MEMQ(opOf t2,[$QuotientField, 'SimpleAlgebraicExtension]) => NIL
     CGREATERP(PRIN2CVEC opOf t1,PRIN2CVEC opOf t2)
 

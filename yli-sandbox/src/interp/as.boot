@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ asAll lines ==
   'done
 
 as name ==
-  astran STRCONC(STRINGIMAGE name,'".asy")
+  astran strconc(STRINGIMAGE name,'".asy")
   'done
 
 astran asyFile ==
@@ -66,13 +66,13 @@ astran asyFile ==
   $constantHash := MAKE_-HASH_-TABLE()
   $niladics : local := nil
   $asyFile: local := asyFile
-  $asFilename: local := STRCONC(PATHNAME_-NAME asyFile,'".as")
+  $asFilename: local := strconc(PATHNAME_-NAME asyFile,'".as")
   asytran asyFile
   conlist := [x for x in HKEYS $conHash | HGET($conHash,x) isnt [.,.,"function",:.]]
   $mmAlist : local :=
     [[con,:asyConstructorModemap con] for con in conlist]
   $docAlist : local :=
-    [[con,:REMDUP asyDocumentation con] for con in conlist]
+    [[con,:removeDuplicates asyDocumentation con] for con in conlist]
   $parentsHash : local := MAKE_-HASH_-TABLE()
 --$childrenHash: local := MAKE_-HASH_-TABLE()
   for con in conlist repeat
@@ -89,7 +89,7 @@ asyParents(conform) ==
   con:= opOf conform
 --formals := TAKE(#formalParams,$TriangleVariableList)
   modemap := LASSOC(con,$mmAlist)
-  $constructorCategory :local := asySubstMapping CADAR modemap
+  $constructorCategory :local := asySubstMapping modemap.mmTarget
   for x in folks $constructorCategory repeat
 --  x := SUBLISLIS(formalParams,formals,x)
 --  x := SUBLISLIS(IFCDR conform,formalParams,x)
@@ -138,23 +138,23 @@ asMakeAlist con ==
   record := HGET($conHash,con)
   [form,sig,predlist,kind,exposure,comments,typeCode,:filename] := first record
 --TTT in case we put the wrong thing in for niladic catgrs
---if ATOM(form) and kind='category then form:=[form]
-  if ATOM(form) then form:=[form]
+--if atom(form) and kind='category then form:=[form]
+  if atom(form) then form:=[form]
   kind = 'function => asMakeAlistForFunction con
   abb := asyAbbreviation(con,#(KDR sig))
   if null KDR form then PUT(opOf form,'NILADIC,'T)
   modemap := asySubstMapping LASSOC(con,$mmAlist)
-  $constructorCategory :local := CADAR modemap
+  $constructorCategory :local := modemap.mmTarget
   parents := mySort HGET($parentsHash,con)
 --children:= mySort HGET($childrenHash,con)
   alists  := HGET($opHash,con)
   opAlist := SUBLISLIS($FormalMapVariableList,KDR form,CDDR alists)
   ancestorAlist:= SUBLISLIS($FormalMapVariableList,KDR form,first alists)
   catAttrs := [[x,:true] for x in getAttributesFromCATEGORY $constructorCategory]
-  attributeAlist := REMDUP [:second alists,:catAttrs]
+  attributeAlist := removeDuplicates [:second alists,:catAttrs]
   documentation :=
     SUBLISLIS($FormalMapVariableList,KDR form,LASSOC(con,$docAlist))
-  filestring := STRCONC(PATHNAME_-NAME STRINGIMAGE filename,'".as")
+  filestring := strconc(PATHNAME_-NAME STRINGIMAGE filename,'".as")
   constantPart := HGET($constantHash,con) and [['constant,:true]]
   niladicPart := MEMQ(con,$niladics) and [['NILADIC,:true]]
   falist :=  TAKE(#KDR form,$FormalMapVariableList)
@@ -168,7 +168,7 @@ asMakeAlist con ==
   constructorModemap  := SUBLISLIS(falist,KDR form,modemap)
 --TTT fix a niladic category constructormodemap (remove the joins)
   if kind = 'category then
-     SETF(CADAR(constructorModemap),['Category])
+     constructorModemap.mmTarget := $Category
   res := [['constructorForm,:form],:constantPart,:niladicPart,
            ['constructorKind,:kind],
              ['constructorModemap,:constructorModemap],
@@ -248,7 +248,7 @@ displayDatabase x == main where
 zeroOneConversion opAlist == opAlist
 --   for u in opAlist repeat
 --     [op,:.] := u
---     DIGITP (PNAME op).0 => RPLACA(u, string2Integer PNAME op)
+--     digit? (PNAME op).0 => u.first := string2Integer PNAME op
 --   opAlist
 
 asyDisplay(con,alist) ==
@@ -375,7 +375,7 @@ asyMakeOperationAlist(con,proplist, key) ==
       pred => [sig,nil,asyPredTran pred]
       [sig]
     HPUT(ht,id,[entry,:HGET(ht,id)])
-  opalist := [[op,:REMDUP HGET(ht,op)] for op in HKEYS ht]
+  opalist := [[op,:removeDuplicates HGET(ht,op)] for op in HKEYS ht]
   --HPUT($opHash,con,[ancestorAlist,attributeAlist,:opalist])
   HPUT($opHash,con,[ancestorAlist,nil,:opalist])
 
@@ -703,7 +703,7 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
     name := PNAME id
 --  #name < 8 => INTERN UPCASE name
     parts := asySplit(name,MAXINDEX name)
-    newname := "STRCONC"/[asyShorten x for x in parts]
+    newname := strconc/[asyShorten x for x in parts]
     #newname < 8 => INTERN newname
     tryname := SUBSTRING(name,0,7)
     not createAbbreviation tryname => INTERN UPCASE tryname
@@ -748,12 +748,12 @@ asyShorten x ==
 asySplit(name,end) ==
   end < 1 => [name]
   k := 0
-  for i in 1..end while LOWER_-CASE_-P name.i repeat k := i
+  for i in 1..end while lowerCase? name.i repeat k := i
   k := k + 1
   [SUBSTRING(name,0,k),:asySplit(SUBSTRING(name,k,nil),end-k)]
 
 createAbbreviation s ==
-  if STRINGP s then s := INTERN s
+  if string? s then s := INTERN s
   a := constructor? s
   a ~= s => a
   nil
@@ -900,7 +900,7 @@ asyTypeJoinPartPred x ==
 
 asyTypeJoinItem x ==
   result := asyTypeUnit x
-  isLowerCaseLetter (PNAME opOf result).0 =>
+  isLowerCaseLetter PNAME(opOf result).0 =>
     $opStack := [[['ATTRIBUTE,result],:$predlist],:$opStack]
   $conStack := [[result,:$predlist],:$conStack]
 
@@ -956,7 +956,7 @@ asyCATEGORY x ==
     cats := r
     operations := ops
   exportPart :=
-    ['CATEGORY,'domain,:"APPEND"/[asyCatItem y for y in operations]]
+    ['CATEGORY,'domain,:append/[asyCatItem y for y in operations]]
   [attribs, na] := asyFindAttrs joins
   joins := na
   cats := "append"/[asyCattran c for c in cats]
@@ -974,7 +974,7 @@ asyFindAttrs l ==
   notattrs := []
   for x in l repeat 
     x0 := x
-    while CONSP x repeat x := first x
+    while cons? x repeat x := first x
     if MEMQ(x, $BuiltinAttributes) then attrs := [:attrs, x]
     else notattrs := [:notattrs, x0]
   [attrs, notattrs]

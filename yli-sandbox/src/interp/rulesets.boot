@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -148,8 +148,8 @@ createResolveTTRules() ==
   -- expand multivariate polynomial rules
   mps := '(MP DMP NDMP)
   mpRules := "append"/[substitute(mp,'mpoly1,$mpolyTTRules) for mp in mps]
-  $Res := CONS('(t1 t2 x y),
-    EQSUBSTLIST($nameList,$abList,append($generalTTRules,mpRules)))
+  $Res := ['(t1 t2 x y),
+    :EQSUBSTLIST($nameList,$abList,append($generalTTRules,mpRules))]
   true
 
 --% resolveTM Rules
@@ -285,17 +285,17 @@ createResolveTMRules() ==
   mps := '(MP DMP NDMP)
   mpRules0 := "append"/[substitute(mp,'mpoly1,$mpolyTMRules) for mp in mps]
   mpRules := "append"/[substitute(mp,'mpoly2,mpRules0) for mp in mps]
-  $ResMode := CONS('(t1 t2 x y),
-    EQSUBSTLIST($nameList,$abList,append(mpRules,$generalTMRules)))
+  $ResMode := ['(t1 t2 x y),
+    :EQSUBSTLIST($nameList,$abList,append(mpRules,$generalTMRules))]
   true
 
 createTypeEquivRules() ==
   -- used by eqType, for example
-  $TypeEQ := CONS('(t1), EQSUBSTLIST($nameList,$abList,'(
+  $TypeEQ := ['(t1), :EQSUBSTLIST($nameList,$abList,'(
     ((QF (P t1)) . (RF t1))
       ((QF (I)) . (RN))
-        ((RE (RN)) . (RR)) )))
-  $TypeEqui := CONS(first $TypeEQ, [[b,:a] for [a,:b] in rest $TypeEQ])
+        ((RE (RN)) . (RR)) ))]
+  $TypeEqui := [first $TypeEQ, :[[b,:a] for [a,:b] in rest $TypeEQ]]
   true
 
 initializeRuleSets() ==

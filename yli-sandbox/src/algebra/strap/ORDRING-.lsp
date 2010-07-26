@@ -24,7 +24,7 @@
     ((SPADCALL |x| (|getShellEntry| $ 13)) 1)
     ((SPADCALL |x| (|getShellEntry| $ 16)) -1)
     ((SPADCALL |x| (|getShellEntry| $ 19)) 0)
-    ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
+    (T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |ORDRING-;abs;2S;4| (|x| $)
   (COND
@@ -32,21 +32,17 @@
     ((SPADCALL |x| (|getShellEntry| $ 16))
      (SPADCALL |x| (|getShellEntry| $ 22)))
     ((SPADCALL |x| (|getShellEntry| $ 19)) (|spadConstant| $ 7))
-    ('T (|error| "x satisfies neither positive?, negative? or zero?")))) 
+    (T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |OrderedRing&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|OrderedRing&|))
-        (LETT |dv$| (LIST '|OrderedRing&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 24) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|OrderedRing&| |dv$1|)) ($ (|newShell| 24))
+         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    $)) 
 
 (MAKEPROP '|OrderedRing&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (0 . |Zero|)

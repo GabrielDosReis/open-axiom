@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ downlinkSaturn fn ==
     n := MAXINDEX line
     n < 1 => nil
     line.0 = (char '_%) => nil
-    lines := STRCONC(lines,line)
+    lines := strconc(lines,line)
   issueHTSaturn lines
 
 dbNonEmptyPattern pattern ==
@@ -124,7 +124,7 @@ htSystemVariables() == main where
 
 htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
-  if STRINGP value and fun then value := FUNCALL(fun,value)
+  if string? value and fun then value := FUNCALL(fun,value)
 --SCM::what to do???  if not FIXP value then userError ???
   setDynamicBinding(variable,value)
   htSystemVariables ()
@@ -146,7 +146,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   grepForm := mkGrepPattern(filter,'none)
   $key: local := 'none
   results := applyGrep(grepForm,'gloss)
-  defstream := MAKE_-INSTREAM STRCONC(systemRootDirectory(),'"doc/glossdef.text")
+  defstream := MAKE_-INSTREAM strconc(systemRootDirectory(),'"doc/glossdef.text")
   lines := gatherGlossLines(results,defstream)
   -- removeFile pathname 
   --SHUT instream
@@ -158,7 +158,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
     tryAgain? and #pattern > 0 =>
       (pattern.(k := MAXINDEX(pattern))) = char 's =>
         htGlossPage(htPage,SUBSTRING(pattern,0,k),true)
-      UPPER_-CASE_-P pattern.0 =>
+      upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
       errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
     errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
@@ -191,7 +191,7 @@ gatherGlossLines(results,defstream) ==
       (j := charPosition($tick,x,1)) and (nextPointer := SUBSTRING(x,0,j))
         and (nextPointer = pointer) repeat
           xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
-    acc := [STRCONC(keyAndTick,def, "STRCONC"/nreverse xtralines),:acc]
+    acc := [strconc(keyAndTick,def, strconc/nreverse xtralines),:acc]
   reverse acc
 
 htGlossSearch(htPage,junk) ==  htGloss htpLabelInputString(htPage,'filter)
@@ -268,7 +268,7 @@ htTutorialSearch pattern ==
   s := mkUnixPattern s
   source := '"$AXIOM/share/hypertex/pages/ht.db"
   target :='"/tmp/temp.text.$SPADNUM"
-  runCommand STRCONC('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
+  runCommand strconc('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
   lines := dbReadLines 'temp
   htInitPageNoScroll(nil,['"Tutorial Pages mentioning {\em ",pattern,'"}"])
   htSay('"\beginscroll\table{")
@@ -282,10 +282,10 @@ mkUnixPattern s ==
   u := mkUpDownPattern s
   starPositions := reverse [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
   for i in starPositions repeat
-    u := STRCONC(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
-  if u.0 ~= $wild then u := STRCONC('"[^a-zA-Z]",u)
+    u := strconc(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
+  if u.0 ~= $wild then u := strconc('"[^a-zA-Z]",u)
                   else u := SUBSTRING(u,1,nil)
-  if u.(k := MAXINDEX u) ~= $wild then u := STRCONC(u,'"[^a-zA-Z]")
+  if u.(k := MAXINDEX u) ~= $wild then u := strconc(u,'"[^a-zA-Z]")
                                   else u := SUBSTRING(u,0,k)
   u
 

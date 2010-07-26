@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -75,14 +75,14 @@ isValidType form ==
   -- Note that some forms are said to be invalid because they would
   -- cause problems with the interpreter. Thus things like P P I
   -- are not valid.
-  STRINGP form => true
+  string? form => true
   IDENTP  form => false
   member(form,$LangSupportTypes) => true
   form is ['Record,:selectors] =>
     and/[isValidType type for [:.,type] in selectors]
   form is ['Enumeration,:args] =>
     null (and/[IDENTP x for x in args]) => false
-    ((# args) = (# REMDUP args)) => true
+    ((# args) = (# removeDuplicates args)) => true
     false
   form is ['Mapping,:mapargs] =>
     null mapargs => NIL
@@ -92,11 +92,11 @@ isValidType form ==
     args and first args is [":",:.] =>
       and/[isValidType type for [:.,type] in args]
     null (and/[isValidType arg for arg in args]) => NIL
-    ((# args) = (# REMDUP args)) => true
+    ((# args) = (# removeDuplicates args)) => true
     sayKeyedMsg("S2IR0005",[form])
     NIL
 
-  badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))
+  badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
   form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => NIL
 
   form is [=$QuotientField,D] and not isPartialMode(D) and
@@ -123,7 +123,7 @@ isValidType form ==
       -- Arguments to constructors are general expressions.  Below
       -- domain constructors are not considered valid arguments (yet).
       x' := opOf x
-      not atom x' or not IDENTP x' => true   -- surely not constructors
+      cons? x' or not IDENTP x' => true   -- surely not constructors
       getConstructorKindFromDB x' ~= "domain"
 
 selectMms1(op,tar,args1,args2,$Coerce) ==
@@ -163,10 +163,10 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   --  variables, or two levels of Polynomial
   null t        => true    -- a terminating condition with underDomainOf
   t = $EmptyMode => true
-  STRINGP t     => true
-  ATOM t => false
+  string? t     => true
+  atom t => false
 
-  badDoubles := CONS($QuotientField, '(Gaussian Complex Polynomial Expression))
+  badDoubles := [$QuotientField,:'(Gaussian Complex Polynomial Expression)]
   t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false
 
   t is [=$QuotientField,D] and not isPartialMode(D) and
@@ -199,12 +199,12 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
     -- check for tagged union
     ml and first ml is [":",:.] => isLegitimateRecordOrTaggedUnion ml
     null (and/[isLegitimateMode(m,nil,nil) for m in ml]) => false
-    ((# ml) = (# REMDUP ml)) => true
+    ((# ml) = (# removeDuplicates ml)) => true
     false
   t is ['Record,:r] => isLegitimateRecordOrTaggedUnion r
   t is ['Enumeration,:r] =>
     null (and/[IDENTP x for x in r]) => false
-    ((# r) = (# REMDUP r)) => true
+    ((# r) = (# removeDuplicates r)) => true
     false
   false
 

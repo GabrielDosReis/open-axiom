@@ -38,20 +38,22 @@ ParadoxicalCombinatorsForStreams(A):Exports == Implementation where
       ++ a list of n streams and returns a list of n streams.
  
   Implementation ==> add
+    import %head: ST A -> A    from Foreign Builtin
+    import %tail: ST A -> ST A from Foreign Builtin
  
     Y f ==
-      y : ST A := CONS(0$I,0$I)$Lisp
+      y : ST A := %makepair(0$I,0$I)$Foreign(Builtin)
       j := f y
-      RPLACA(y,frst j)$Lisp
-      RPLACD(y,rst j)$Lisp
+      %store(%head y,frst j)$Foreign(Builtin)
+      %store(%tail y,rst j)$Foreign(Builtin)
       y
  
     Y(g,n) ==
-      x : L ST A := [CONS(0$I,0$I)$Lisp for i in 1..n]
+      x : L ST A := [%makepair(0$I,0$I)$Foreign(Builtin) for i in 1..n]
       j := g x
       for xi in x for ji in j repeat
-        RPLACA(xi,frst ji)$Lisp
-        RPLACD(xi,rst ji)$Lisp
+        %store(%head xi,frst ji)$Foreign(Builtin)
+        %store(%tail xi,rst ji)$Foreign(Builtin)
       x
 
 @

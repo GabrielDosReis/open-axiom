@@ -1,13 +1,13 @@
 Styles for Boot Codes
 ---------------------
 
-  The core of the OpenAxiom system is mostly written Boot.  A long
+  The core of the OpenAxiom system is mostly written in Boot.  A long
 time ago, Boot was essentially a Lisp DSL with a much more palatable
-syntax geared specifically for writing readable codes.  As such it
+syntax geared specifically toward  writing readable codes.  As such it
 tended to have lots of Lispism in it.
 
   There days, Boot is no longer `just a syntactic sugar over Lisp',
-even currently, we essentially translate to Lisp.  Boot is a
+even when we essentially translate to Lisp.  Boot is a
 programming language in of its own.  In fact, we would like to remove
 Lispism from Boot codes.  The `rules' below are suggestions (or
 guidelines) for writing `good Boot codes'.
@@ -31,9 +31,11 @@ guidelines) for writing `good Boot codes'.
 
       -- GOOD --
       first form in '(Mapping Record) => -- ...
+      form.first := '%LET
 
       -- BAD --
       CAR form in '(Mapping Record) => -- ...
+      RPLACA(form,'%LET)
 
 * Don't use `null' to test for Boolean values, use `not'
 
@@ -45,4 +47,11 @@ guidelines) for writing `good Boot codes'.
       -- BAD --
       null $monitorNewworld => ...
 
+* Use idiomatic Boot constructs
 
+   Example:
+     -- GOOD --
+     vars := [var,:vars]
+
+     -- BAD --
+     vars := CONS(var,vars)

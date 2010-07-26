@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ buildOperationWordTable() ==
   $opWordTable := buildWordTable [PNAME x for x in allOperations()]
  
 buildWordTable u ==
-  table:= MAKE_-HASHTABLE 'ID
+  table:= hashTable 'EQ
   for s in u repeat
     words := wordsOfString s
     key := UPCASE s.0
@@ -61,7 +61,7 @@ removeDupOrderedAlist u ==
   -- removes duplicate entries in ordered alist
   -- (where duplicates are adjacent)
   for x in tails u repeat
-    (y := rest x) and first first x = first first y => RPLACD(x,rest y)
+    (y := rest x) and first first x = first first y => x.rest := rest y
   u
  
 wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
@@ -69,13 +69,13 @@ wordsOfString(s) == [UPCASE x for x in wordsOfStringKeepCase s]
 wordsOfStringKeepCase s == wordsOfString1(s,0) or [COPY s]
  
 wordsOfString1(s,j) ==
-  k := or/[i for i in j..(MAXINDEX(s)-1) | UPPER_-CASE_-P s.i] =>
+  k := or/[i for i in j..(MAXINDEX(s)-1) | upperCase? s.i] =>
     tailWords:=
-      UPPER_-CASE_-P s.(k+1) =>
-        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not UPPER_-CASE_-P s.i]
+      upperCase? s.(k+1) =>
+        n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not upperCase? s.i]
         null n => [SUBSTRING(s,k,nil)]
         n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
-      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | UPPER_-CASE_-P s.i] =>
+      m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | upperCase? s.i] =>
         [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
       [SUBSTRING(s,k,nil)]
     k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
@@ -83,9 +83,9 @@ wordsOfString1(s,j) ==
   nil
 
 wordKeys s == 
-  REMDUP [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
+  removeDuplicates [UPCASE s.0,:fn(s,1,-1,MAXINDEX s,nil)] where fn(s,i,lastKeyIndex,n,acc) ==
     i > n => acc
-    UPPER_-CASE_-P s.i =>
+    upperCase? s.i =>
 --    i = lastKeyIndex + 1 => fn(s,i + 1,i,n,[s.i,:rest acc])
       fn(s,i + 1,i,n,[s.i,:acc])
     fn(s,i + 1,lastKeyIndex,n,acc)
@@ -125,7 +125,7 @@ findWords(word,table) ==
       $totalWords
   $lastWords := nil
 
-wordSort u == REMDUP listSort(function GLESSEQP,u)
+wordSort u == removeDuplicates listSort(function GLESSEQP,u)
 
 more() == moreWords($lastWord,$lastTable)
 
@@ -182,7 +182,7 @@ findApproximateWords(word,table) ==
 
 consAlist(x,y,alist) ==
   u := ASSOC(x,alist) => 
-    RPLACD(u,[y,:rest u])
+    u.rest := [y,:rest u]
     alist
   [[x,y],:alist]
 
@@ -267,10 +267,10 @@ findApproxSimple(words,wordList,threshold) ==
 rotateWordList u ==
   v := u
   p := first v
-  while QCDR v repeat
-    RPLACA(v,second v) 
-    v := QCDR v
-  RPLACA(v,p)
+  while rest v repeat
+    v.first := second v
+    v := rest v
+  v.first := p
   u
 
 deltaWordEntry(word,entry) ==

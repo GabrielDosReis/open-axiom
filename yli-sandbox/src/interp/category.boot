@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -48,24 +48,26 @@ $NewCatVec := nil
 ++ Returns true if `a' is a category (runtime) object.
 isCategory: %Thing -> %Boolean
 isCategory a == 
-  REFVECP a and #a > 5 and getShellEntry(a,3) = $Category
+  vector? a and #a > 5 and getShellEntry(a,3) = $Category
 
 ++ Return true if the form `x' designates an instantiaion of a
 ++ category constructor known to the global database or the
 ++ envronement `e'.
 isCategoryForm: (%Form,%Env) -> %Boolean
 isCategoryForm(x,e) ==
-  atom x => u:= get(x,"macro",e) => isCategoryForm(u,e)
-  categoryForm? first x
+  atom x =>
+    u := macroExpand(x,e)
+    cons? u and categoryForm? u
+  categoryForm? x
  
 --% Functions for building categories
  
 CategoryPrint(D,$e) ==
   SAY "--------------------------------------"
   SAY "Name (and arguments) of category:"
-  PRETTYPRINT D.(0)
+  PRETTYPRINT D.0
   SAY "operations:"
-  PRETTYPRINT D.(1)
+  PRETTYPRINT D.1
   SAY "attributes:"
   PRETTYPRINT D.2
   SAY "This is a sub-category of"
@@ -108,11 +110,11 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
      else s for s in sigList]
   NewLocals:= nil
   for s in sigList repeat
-    NewLocals:= union(NewLocals,Prepare CADAR s) where
+    NewLocals:= union(NewLocals,Prepare s.mmTarget) where
       Prepare u == "union"/[Prepare2 v for v in u]
       Prepare2 v ==
         v is "$" => nil
-        STRINGP v => nil
+        string? v => nil
         atom v => [v]
         MEMQ(first v,$PrimitiveDomainNames) => nil
           --This variable is set in INIT LISP
@@ -171,7 +173,7 @@ SigListUnion(extra,original) ==
              --same signature and same predicate
         opred = true => extra:= delete(x,extra)
    -- PRETTYPRINT ("we ought to subsume",x,o)
-      not MachineLevelSubsume(QCAR o,QCAR x) =>
+      not MachineLevelSubsume(first o,first x) =>
          '"Source level subsumption not implemented"
       extra:= delete(x,extra)
   for e in extra repeat
@@ -179,7 +181,7 @@ SigListUnion(extra,original) ==
     eimplem:=[]
     for x in SigListOpSubsume(e,original) repeat
         --PRETTYPRINT(LIST("SigListOpSubsume",e,x))
-      not MachineLevelSubsume(QCAR e,QCAR x) =>
+      not MachineLevelSubsume(first e,first x) =>
         --systemError '"Source level subsumption not implemented"
         original:= [e,:original]
         return nil -- this exits from the innermost for loop
@@ -203,7 +205,7 @@ SigListUnion(extra,original) ==
 -- present under certain conditions
         -- We must pick up the previous implementation, if any
 --+
-      if ximplem is [[q,.,index]] and INTEGERP index and (q="ELT" or q="CONST")
+      if ximplem is [[q,.,index]] and integer? index and (q="ELT" or q="CONST")
         then $NewCatVec. index:= e
     original:= [e,:original]
   original
@@ -316,7 +318,7 @@ MachineLevelSubset(a,b) ==
   --true if a is a machine-level subset of b
   a=b => true
   b is ["Union",:blist] and member(a,blist) and
-    (and/[STRINGP x for x in blist | x~=a]) => true
+    (and/[string? x for x in blist | x~=a]) => true
            --all other branches must be distinct objects
   not null isSubDomain(a,b)
              --we assume all subsets are true at the machine level
@@ -329,7 +331,7 @@ FindFundAncs l ==
   --also as two-lists with the appropriate conditions
   l=nil => nil
   f1:= CatEval CAAR l
-  f1.(0)=nil => FindFundAncs rest l
+  f1.0=nil => FindFundAncs rest l
   ans:= FindFundAncs rest l
   for u in FindFundAncs [[CatEval first x,mkAnd(CADAR l,second x)]
    for x in second f1.4] repeat
@@ -351,7 +353,7 @@ FindFundAncs l ==
  
 CatEval: %Thing -> %Shell
 CatEval x ==
-  REFVECP x => x
+  vector? x => x
   e := 
     $InteractiveMode => $CategoryFrame
     $e
@@ -361,14 +363,14 @@ CatEval x ==
 --  l=nil => nil
 --  leaves:= [first y for y in leaves]
 --               --remove the slot pointers
---  [x for x in l | not AncestorP(x.(0),leaves)]
+--  [x for x in l | not AncestorP(x.0,leaves)]
  
 AncestorP: (%Form, %List) -> %Form
 AncestorP(xname,leaves) ==
   -- checks for being a principal ancestor of one of the leaves
   member(xname,leaves) => xname
   for y in leaves repeat
-    member(xname,first (CatEval y).4) => return y
+    member(xname,first CatEval(y).4) => return y
  
 CondAncestorP(xname,leaves,condition) ==
   -- checks for being a principal ancestor of one of the leaves
@@ -377,7 +379,7 @@ CondAncestorP(xname,leaves,condition) ==
     ucond:=
       null rest u => true
       second u
-    xname = u' or member(xname,first (CatEval u').4) =>
+    xname = u' or member(xname,first CatEval(u').4) =>
       PredImplies(ucond,condition) => return u'
 
 
@@ -406,9 +408,9 @@ JoinInner(l,$e) ==
       if atom at2 then at2:=[at2]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
-      QMEMQ(QCAR at2,$Attributes) => nil
+      QMEMQ(first at2,$Attributes) => nil
       null isCategoryForm(at2,$e) =>
-        $Attributes:=[QCAR at2,:$Attributes]
+        $Attributes:=[first at2,:$Attributes]
         nil
       pred:= second at
         -- The predicate under which this category is conditional
@@ -420,18 +422,18 @@ JoinInner(l,$e) ==
           for u in rest pred | not member(u,get("$Information","special",$e))
             and not (u=true)]
       null pred' => l:= [:l,CatEval at2]
-      LENGTH pred'=1 => CondList:= [[CatEval at2,pred'],:CondList]
+      # pred'=1 => CondList:= [[CatEval at2,pred'],:CondList]
       CondList:= [[CatEval at2,["and",:pred']],:CondList]
   [$NewCatVec,:l]:= l
   l':= [:CondList,:[[u,true] for u in l]]
     -- This is a list of all the categories that this extends
     -- conditionally or unconditionally
-  sigl:= $NewCatVec.(1)
+  sigl:= $NewCatVec.1
   attl:= $NewCatVec.2
   globalDomains:= $NewCatVec.5
   FundamentalAncestors:= second $NewCatVec.4
-  if $NewCatVec.(0) then FundamentalAncestors:=
-    [[$NewCatVec.(0)],:FundamentalAncestors]
+  if $NewCatVec.0 then FundamentalAncestors:=
+    [[$NewCatVec.0],:FundamentalAncestors]
                     --principal ancestor . all those already included
   copied:= nil
   originalVector:= true
@@ -442,14 +444,14 @@ JoinInner(l,$e) ==
   for [b,condition] in FindFundAncs l' repeat
       --This loop implements Category Subsumption
           --as described in SYSTEM SCRIPT
-    if not (b.(0)=nil) then
+    if not (b.0=nil) then
                    --It's a named category
-      bname:= b.(0)
+      bname:= b.0
       CondAncestorP(bname,FundamentalAncestors,condition) => nil
       (f:=AncestorP(bname,[first u for u in FundamentalAncestors])) =>
         [.,.,index]:=assoc(f,FundamentalAncestors)
         FundamentalAncestors:=[[bname,condition,index],:FundamentalAncestors]
-      PrinAncb:= first (CatEval bname).(4)
+      PrinAncb:= first CatEval(bname).4
                --Principal Ancestors of b
       reallynew:= true
       for anc in FundamentalAncestors repeat
@@ -487,7 +489,7 @@ JoinInner(l,$e) ==
                 reallynew:= nil
                 MEMQ(b,l) =>
                        --MEMQ since category vectors are guaranteed unique
-                  (sigl:= $NewCatVec.(1); attl:= $NewCatVec.2; l:= delete(b,l))
+                  (sigl:= $NewCatVec.1; attl:= $NewCatVec.2; l:= delete(b,l))
              --     SAY("domain ",bname," subsumes")
              --     SAY("adding a conditional domain ",
              --         bname,
@@ -498,7 +500,7 @@ JoinInner(l,$e) ==
              -- value of bCond not used and could be NIL
              -- bCond:= second bCond
                 globalDomains:= $NewCatVec.5
-                for u in $NewCatVec.(1) repeat
+                for u in $NewCatVec.1 repeat
                   if not member(u,sigl) then
                     [s,c,i]:= u
                     if c=true
@@ -512,7 +514,7 @@ JoinInner(l,$e) ==
                        else attl:= [[a,["and",condition,c]],:attl]
       if reallynew then
         n:= SIZE $NewCatVec
-        FundamentalAncestors:= [[b.(0),condition,n],:FundamentalAncestors]
+        FundamentalAncestors:= [[b.0,condition,n],:FundamentalAncestors]
         $NewCatVec:= LENGTHENVEC($NewCatVec,n+1)
 -- We need to copy the vector otherwise the FundamentalAncestors
 -- list will get stepped on while compiling "If R has ... " code
@@ -520,13 +522,13 @@ JoinInner(l,$e) ==
 --        copied:= true
         copied:= false
         originalvector:= false
-        $NewCatVec.n:= b.(0)
+        $NewCatVec.n:= b.0
   if not copied then $NewCatVec:= COPY_-SEQ $NewCatVec
     -- It is important to copy the vector now,
     -- in case SigListUnion alters it while
     -- performing Operator Subsumption
   for b in l repeat
-    sigl:= SigListUnion([DropImplementations u for u in b.(1)],sigl)
+    sigl:= SigListUnion([DropImplementations u for u in b.1],sigl)
     attl:=
 -- next two lines are merely performance improvements
       MEMQ(attl,b.2) => b.2
@@ -548,7 +550,7 @@ JoinInner(l,$e) ==
         [[first u,mkOr(second v,mkAnd(newpred,second u))],:attl]
     sigl:=
       SigListUnion(
-        [AddPredicate(DropImplementations u,newpred) for u in (first b).(1)],sigl) where
+        [AddPredicate(DropImplementations u,newpred) for u in (first b).1],sigl) where
           AddPredicate(op is [sig,oldpred,:implem],newpred) ==
             newpred=true => op
             oldpred=true => [sig,newpred,:implem]
@@ -556,7 +558,7 @@ JoinInner(l,$e) ==
   FundamentalAncestors:= [x for x in FundamentalAncestors | rest x]
                --strip out the pointer to Principal Ancestor
   c:= first $NewCatVec.4
-  pName:= $NewCatVec.(0)
+  pName:= $NewCatVec.0
   if pName and not member(pName,c) then c:= [pName,:c]
   $NewCatVec.4:= [c,FundamentalAncestors,third $NewCatVec.4]
   mkCategory("domain",sigl,attl,globalDomains,$NewCatVec)
@@ -574,4 +576,4 @@ Join(:l) ==
 --                       --an incantation
 --  [c,.,.]:= compMakeCategoryObject(sig,e)
 --  -- We assume that the environment need not be kept
---  c.(1)
+--  c.1

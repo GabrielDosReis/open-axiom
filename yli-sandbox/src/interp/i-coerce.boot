@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -88,7 +88,7 @@ coerceOrThrowFailure(value, t1, t2) ==
 
 retract object ==
   type := objMode object
-  STRINGP type => 'failed
+  string? type => 'failed
   type = $EmptyMode => 'failed
   val := objVal object
   not isWrapped val and val isnt ["%Map",:.] => 'failed
@@ -103,7 +103,7 @@ retract1 object ==
   -- This is mostly for cases such as constant polynomials or
   -- quotients with 1 in the denominator.
   type := objMode object
-  STRINGP type => 'failed
+  string? type => 'failed
   val := objVal object
   type = $PositiveInteger =>    objNew(val,$NonNegativeInteger)
   type = $NonNegativeInteger => objNew(val,$Integer)
@@ -154,7 +154,7 @@ retract2Specialization object ==
 --    coerceInt(object,$Symbol)
   type is ['Polynomial,D] =>
     val' is [ =1,x,:.] =>
-      vl := REMDUP reverse varsInPoly val'
+      vl := removeDuplicates reverse varsInPoly val'
       1 = #vl => coerceInt(object,['UnivariatePolynomial,x,D])
       NIL
     val' is [ =0,:.] => coerceInt(object, D)
@@ -269,7 +269,7 @@ coerceRetract(object,t2) ==
   (c := retractByFunction(object, t2)) => c
   t1 is [D,:.] =>
     fun := GETL(D,'retract) or
-           INTERN STRCONC('"retract",STRINGIMAGE D)
+           INTERN strconc('"retract",STRINGIMAGE D)
     functionp fun =>
       PUT(D,'retract,fun)
       c := CATCH('coerceFailure,FUNCALL(fun,object,t2))
@@ -311,7 +311,7 @@ retractByFunction(object,u) ==
   fun :=
 --+
     compiledLookup(funName,[target,t],dcVector)
-  NULL fun => NIL
+  null fun => NIL
   first(fun) = function Undef => NIL
 --+
   $: fluid := dcVector
@@ -328,7 +328,7 @@ retractByFunction(object,u) ==
 
 getConstantFromDomain(form,domainForm) ==
     isPartialMode domainForm => NIL
-    opAlist := getOperationAlistFromLisplib first domainForm
+    opAlist := getConstructorOperationsFromDB domainForm.op
     key := opOf form
     entryList := LASSOC(key,opAlist)
     entryList isnt [[sig, ., ., .]] =>
@@ -415,13 +415,13 @@ canCoerce1(t1,t2) ==
       NIL
     -- next is for tagged union selectors for the time being
     t1 is ['Variable,=t2] or t2 is ['Variable,=t1] => true
-    STRINGP t1 =>
+    string? t1 =>
       t2 = $String => true
       t2 = $OutputForm => true
       t2 is ['Union,:.] => canCoerceUnion(t1,t2)
       t2 is ['Variable,v] and (t1 = PNAME(v)) => true
       NIL
-    STRINGP t2 =>
+    string? t2 =>
       t1 is ['Variable,v] and (t2 = PNAME(v)) => true
       NIL
     atom t1 or atom t2 => NIL
@@ -516,7 +516,7 @@ canCoerceExplicit2Mapping(t1,t is ['Mapping,target,:argl]) ==
     funNode := mkAtreeNode fun
     transferPropsToNode(fun,funNode)
     mms := CATCH('coerceOrCroaker, selectLocalMms(funNode,fun,argl,target))
-    CONSP mms =>
+    cons? mms =>
       mms is [[['interpOnly,:.],:.]] => nil
       mm := CAAR mms
       mm is [., targ, :.] =>
@@ -634,8 +634,8 @@ canCoercePermute(t1,t2) ==
   -- to t2 in the sense that the components of t1 are in the same order
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
-  NULL towers or NULL rest towers => NIL
-  NULL CDDR towers and t2 = second towers => NIL
+  null towers or null rest towers => NIL
+  null CDDR towers and t2 = second towers => NIL
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in rest towers while ok repeat
@@ -655,8 +655,8 @@ canCoerceByFunction1(m1,m2,fun) ==
   $reportBottomUpFlag:local:= NIL
   -- have to handle cases where we might have changed from RN to QF I
   -- make 2 lists of expanded and unexpanded types
-  l1 := REMDUP [m1,eqType m1]
-  l2 := REMDUP [m2,eqType m2]
+  l1 := removeDuplicates [m1,eqType m1]
+  l2 := removeDuplicates [m2,eqType m2]
   ans  := NIL
   for t1 in l1 while not ans repeat
     for t2 in l2 while not ans repeat
@@ -671,7 +671,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
   -- difference is a subdomain
   isEqualOrSubDomain(t1,t2) => true
   typeIsASmallInteger(t1) and t2 = $Integer => true
-  ATOM(t1) or ATOM(t2) => false
+  atom(t1) or atom(t2) => false
   [tl1,:u1] := deconstructT t1
   [tl2,:u2] := deconstructT t2
   tl1 = '(Stream) and tl2 = '(InfiniteTuple) =>
@@ -684,7 +684,7 @@ absolutelyCanCoerceByCheating(t1,t2) ==
 absolutelyCannotCoerce(t1,t2) ==
   -- response of true means "definitely cannot coerce"
   -- this is largely an efficiency hack
-  ATOM(t1) or ATOM(t2) => NIL
+  atom(t1) or atom(t2) => NIL
   t2 = $None => true
   n1   := first t1
   n2   := first t2
@@ -837,18 +837,18 @@ coerceInt1(triple,t2) ==
   -- next is for tagged union selectors for the time being
   t1 is ['Variable,=t2] or t2 is ['Variable,=t1] => objNew(val,t2)
 
-  STRINGP t2 =>
+  string? t2 =>
     t1 is ['Variable,v] and (t2 = PNAME(v)) => objNewWrap(t2,t2)
     val' := unwrap val
     (t2 = val') and ((val' = t1) or (t1 = $String)) => objNew(val,t2)
     NIL
   t1 is ['Union,:.] => coerceIntFromUnion(triple,t2)
   t2 is ['Union,:.] => coerceInt2Union(triple,t2)
-  (STRINGP t1) and (t2 = $String) => objNew(val,$String)
-  (STRINGP t1) and (t2 is ['Variable,v]) =>
+  (string? t1) and (t2 = $String) => objNew(val,$String)
+  (string? t1) and (t2 is ['Variable,v]) =>
     t1 = PNAME(v) => objNewWrap(v,t2)
     NIL
-  (STRINGP t1) and (t1 = unwrap val) =>
+  (string? t1) and (t1 = unwrap val) =>
     t2 = $OutputForm => objNew(t1,$OutputForm)
     NIL
   atom t1 => NIL
@@ -902,7 +902,7 @@ coerceInt1(triple,t2) ==
       NIL
     NIL
 
-  EQ(first(t1),'Variable) and CONSP(t2) and
+  EQ(first(t1),'Variable) and cons?(t2) and
     (isEqualOrSubDomain(t2,$Integer) or
       (t2 = [$QuotientField, $Integer]) or MEMQ(first(t2),
         '(RationalNumber BigFloat NewFloat Float DoubleFloat))) => NIL
@@ -926,10 +926,11 @@ coerceSubDomain(val, tSuper, tSub) ==
   nil
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
-  predfn := HGET($superHash, CONS(tSuper, tSub)) => predfn
-  arg := GENSYM()
-  predfn := COMPILE(nil,["LAMBDA",[arg],substitute(arg,"#1", pred)])
-  HPUT($superHash, CONS(tSuper, tSub), predfn)
+  predfn := HGET($superHash, [tSuper,:tSub]) => predfn
+  arg := gensym()
+  [predfn] := compileInteractive
+                [gensym(),['LAM,[arg],substitute(arg,"#1", pred)]]
+  HPUT($superHash, [tSuper,:tSub], predfn)
   predfn
 
 coerceIntX(val,t1, t2) ==
@@ -947,7 +948,7 @@ compareTypeLists(tl1,tl2) ==
   -- returns true if every type in tl1 is = or is a subdomain of
   -- the corresponding type in tl2
   for t1 in tl1 for t2 in tl2 repeat
-    null isEqualOrSubDomain(t1,t2) => return NIL
+    not isEqualOrSubDomain(t1,t2) => return NIL
   true
 
 coerceIntAlgebraicConstant(object,t2) ==
@@ -979,7 +980,7 @@ coerceUnion2Branch(object) ==
       predicate := pred
       targetType := typ
   null targetType => keyedSystemError("S2IC0013",NIL)
-  predicate is ['EQCAR,.,p] => objNewWrap(rest val',targetType)
+  predicate is ['%ieq,['%head,.],p] => objNewWrap(rest val',targetType)
   objNew(objVal object,targetType)
 
 coerceBranch2Union(object,union) ==
@@ -990,7 +991,7 @@ coerceBranch2Union(object,union) ==
   p := position(objMode object,doms)
   p = -1 => keyedSystemError("S2IC0014",[objMode object,union])
   val := objVal object
-  predList.p is ['EQCAR,.,tag] =>
+  predList.p is ['%ieq,['%head,.],tag] =>
     objNewWrap([removeQuote tag,:unwrap val],union)
   objNew(val,union)
 
@@ -1048,7 +1049,7 @@ coerceIntByMap(triple,t2) ==
 
   [[dc,:sig],slot,.]:= first mms
   fun := compiledLookup('map,sig,evalDomain(dc))
-  NULL fun => NIL
+  null fun => NIL
   [fn,:d]:= fun
   fn = function Undef => NIL
   -- now compile a function to do the coercion
@@ -1167,7 +1168,7 @@ coerceIntCommute(obj,target) ==
 
   source is [D,:.] =>
     fun := GETL(D,'coerceCommute) or
-           INTERN STRCONC('"commute",STRINGIMAGE D)
+           INTERN strconc('"commute",STRINGIMAGE D)
     functionp fun =>
       PUT(D,'coerceCommute,fun)
       u := objValUnwrap obj
@@ -1186,8 +1187,8 @@ coerceIntPermute(object,t2) ==
   -- to t2 in the sense that the components of t1 are in the same order
   -- as in t2. If length towers = 2 and t2 = last towers, we quit to
   -- avoid an infinte loop.
-  NULL towers or NULL rest towers => NIL
-  NULL CDDR towers and t2 = second towers => NIL
+  null towers or null rest towers => NIL
+  null CDDR towers and t2 = second towers => NIL
   -- do the coercions successively, quitting if any fail
   ok := true
   for t in rest towers while ok repeat
@@ -1208,11 +1209,11 @@ computeTTTranspositions(t1,t2) ==
   p2' := MSORT p2
   p2 = p2' => NIL
   -- if anything is repeated twice, leave
-  p2' ~= MSORT REMDUP p2' => NIL
+  p2' ~= MSORT removeDuplicates p2' => NIL
   -- create a list of permutations that transform the tower parts
   -- of t1 into the order they are in in t2
   n1 := #tl1
-  p2 := LIST2VEC compress(p2,0,# REMDUP tl1) where
+  p2 := LIST2VEC compress(p2,0,# removeDuplicates tl1) where
     compress(l,start,len) ==
       start >= len => l
       member(start,l) => compress(l,start+1,len)
@@ -1227,21 +1228,21 @@ computeTTTranspositions(t1,t2) ==
     t := tower.(first perm)
     tower.(first perm) := tower.(rest perm)
     tower.(rest perm) := t
-    towers := CONS(VEC2LIST tower,towers)
+    towers := [VEC2LIST tower,:towers]
   towers := [reassembleTowerIntoType tower for tower in towers]
-  if first(towers) ~= t2 then towers := cons(t2,towers)
+  if first(towers) ~= t2 then towers := [t2,:towers]
   nreverse towers
 
 decomposeTypeIntoTower t ==
-  ATOM t => [t]
+  atom t => [t]
   d := deconstructT t
-  NULL rest d => [t]
+  null rest d => [t]
   rd := reverse t
-  [reverse QCDR rd,:decomposeTypeIntoTower QCAR rd]
+  [reverse rest rd,:decomposeTypeIntoTower first rd]
 
 reassembleTowerIntoType tower ==
-  ATOM tower => tower
-  NULL rest tower => first tower
+  atom tower => tower
+  null rest tower => first tower
   [:top,t,s] := tower
   reassembleTowerIntoType [:top,[:t,s]]
 

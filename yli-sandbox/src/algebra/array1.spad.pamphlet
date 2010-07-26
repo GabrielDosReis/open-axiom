@@ -15,14 +15,18 @@
 ++ This provides a fast array type with no bound checking on elt's.
 ++ Minimum index is 0 in this type, cannot be changed
 PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
-   #x == 
-     sizeOfSimpleArray(x)$Lisp
+   macro NNI == NonNegativeInteger
+   import %vlength: % -> NonNegativeInteger from Foreign Builtin
+   import %vref: (%,Integer) -> S           from Foreign Builtin
+   import makeSimpleArray: (Domain,NNI) -> % from Foreign Builtin
+
+   #x == %vlength x
 
    minIndex x == 
      0
  
    empty() == 
-     makeSimpleArray(getVMType(S)$Lisp,0$Lisp)$Lisp
+     makeSimpleArray(getVMType(S)$Lisp,0)
 
    construct l ==
      makeSimpleArrayFromList(getVMType(S)$Foreign(Builtin),l)$Foreign(Builtin)
@@ -30,11 +34,8 @@ PrimitiveArray(S:Type): OneDimensionalArrayAggregate S == add
    new(n, x) == 
      makeFilledSimpleArray(getVMType(S)$Lisp,n,x)$Lisp
 
-   qelt(x, i) == 
-     getSimpleArrayEntry(x,i)$Lisp
-
-   elt(x:%, i:Integer) == 
-     getSimpleArrayEntry(x,i)$Lisp
+   qelt(x, i) == %vref(x,i)
+   elt(x:%, i:Integer) ==  %vref(x,i)
 
    qsetelt!(x, i, s) == 
      setSimpleArrayEntry(x,i,s)$Lisp
@@ -305,11 +306,14 @@ IndexedFlexibleArray(S:Type, mn: Integer): Exports == Implementation where
        m := #a; n := #b; growAdding(a, n, b)
        for i in m-1..0 by -1 for j in m+n-1.. by -1 repeat a.f.j := a.f.i
        i := n; j := 0
-       k : Integer
-       for k in 0.. while i < n+m and j < n repeat
+       k : Integer := 0
+       while i < n+m and j < n repeat
           if g(a.f.i,b.f.j) then (a.f.k := a.f.i; i := i+1)
           else (a.f.k := b.f.j; j := j+1)
-       for k in k.. for j in j..n-1 repeat a.f.k := b.f.j
+          k := k + 1
+       for j' in j..n-1 repeat
+         a.f.k := b.f.j'
+         k := k + 1
        a
 
     select!(g:(S->Boolean), a:%) ==
@@ -368,9 +372,10 @@ FlexibleArray(S: Type) == Implementation where
 
 IndexedOneDimensionalArray(S:Type, mn:Integer):
  OneDimensionalArrayAggregate S == add
+   import %vlength: % -> NonNegativeInteger from Foreign Builtin
+   import %vref: (%,Integer) -> S           from Foreign Builtin
+
    macro Qmax == maxIndexOfSimpleArray$Foreign(Builtin)
-   macro Qsize == sizeOfSimpleArray$Foreign(Builtin)
-   macro Qelt == getSimpleArrayEntry$Foreign(Builtin)
    macro Qsetelt == setSimpleArrayEntry$Foreign(Builtin)
    macro I == Integer
    Rep == PrimitiveArray S
@@ -390,14 +395,14 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
    map!(f, s1)  ==
       n: Integer := Qmax(s1)
       n < 0 => s1
-      for i in 0..n repeat Qsetelt(s1, i, f(Qelt(s1,i)))
+      for i in 0..n repeat Qsetelt(s1, i, f(%vref(s1,i)))
       s1
 
    map(f, s1)       ==
       n:Integer := Qmax(s1)
       n < 0 => s1
       ss2:% := newArray(n+1)
-      for i in 0..n repeat Qsetelt(ss2, i, f(Qelt(s1,i)))
+      for i in 0..n repeat Qsetelt(ss2, i, f(%vref(s1,i)))
       ss2
 
    map(f, a, b)   ==
@@ -405,11 +410,11 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
       maxind < 0 => empty()
       c:% := newArray(maxind+1)
       for i in 0..maxind repeat
-        Qsetelt(c, i, f(Qelt(a,i),Qelt(b,i)))
+        Qsetelt(c, i, f(%vref(a,i),%vref(b,i)))
       c
 
    if zero? mn then
-     qelt(x, i)       == Qelt(x, i)
+     qelt(x, i)       == %vref(x, i)
      qsetelt!(x, i, s) == Qsetelt(x, i, s)
 
      elt(x:%, i:I) ==
@@ -421,22 +426,22 @@ IndexedOneDimensionalArray(S:Type, mn:Integer):
        qsetelt!(x, i, s)
 
    else if one? mn then
-     maxIndex x       == Qsize x
-     qelt(x, i)       == Qelt(x, i-1)
+     maxIndex x       == %vlength x
+     qelt(x, i)       == %vref(x, i-1)
      qsetelt!(x, i, s) == Qsetelt(x, i-1, s)
 
      elt(x:%, i:I) ==
-       QSLESSP(i,1$Lisp)$Lisp or QSLESSP(Qsize x,i)$Lisp =>
+       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
          error "index out of range"
-       Qelt(x, i-1)
+       %vref(x, i-1)
 
      setelt(x:%, i:I, s:S) ==
-       QSLESSP(i,1$Lisp)$Lisp or QSLESSP(Qsize x,i)$Lisp =>
+       QSLESSP(i,1@I)$Lisp or QSLESSP(%vlength x,i)$Lisp =>
          error "index out of range"
        Qsetelt(x, i-1, s)
 
     else
-       qelt(x, i)       == Qelt(x, i - mn)
+       qelt(x, i)       == %vref(x, i - mn)
        qsetelt!(x, i, s) == Qsetelt(x, i - mn, s)
 
        elt(x:%, i:I) ==

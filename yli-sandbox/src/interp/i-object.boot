@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -67,16 +67,22 @@ $useIntegerSubdomain := true
 
 -- These are the new structure functions.
 
-objNew(val, mode) == CONS(mode,val)             -- new names as of 10/14/93
-objNewWrap(val, mode) == CONS(mode,wrap val)
+objNew(val, mode) == [mode,:val]             -- new names as of 10/14/93
+objNewWrap(val, mode) == [mode,:wrap val]
 objNewCode(val, mode) == ["CONS", MKQ mode,val ]
-objSetVal(obj,val) == RPLACD(obj,val)
-objSetMode(obj,mode) == RPLACA(obj,mode)
+objSetVal(obj,val) == obj.rest := val
+objSetMode(obj,mode) == obj.first := mode
 
 objVal obj == rest obj
 objValUnwrap obj == unwrap rest obj
 objMode obj == first obj
 objEnv obj == $EmptyEnvironment
+
+++ Return a newly constructed interpreter object, with fully evaluated
+++ underlying value if in evaluation context.
+object(v,m) ==
+  $genValue => objNewWrap(timedEVALFUN v,m)
+  objNew(v,m)
 
 objCodeVal obj == third obj
 objCodeMode obj == second obj
@@ -87,10 +93,10 @@ wrap x ==
   isWrapped x => x
   ["WRAPPED",:x]
  
-isWrapped x == x is ['WRAPPED,:.] or NUMBERP x or FLOATP x or CVECP x
+isWrapped x == x is ['WRAPPED,:.] or integer? x or FLOATP x or string? x
  
 unwrap x ==
-  NUMBERP x or FLOATP x or CVECP x => x
+  integer? x or FLOATP x or string? x => x
   x is ["WRAPPED",:y] => y
   x
  
@@ -125,7 +131,7 @@ instantiationNormalForm(op,argl) ==
 
 
 -- addQuote x ==
---   NUMBERP x => x
+--   integer? x => x
 --   ['QUOTE,x]
  
 --% Library compiler structures needed by the interpreter
@@ -133,10 +139,10 @@ instantiationNormalForm(op,argl) ==
 -- Tuples and Crosses
 
 asTupleNew(eltType,size,listOfElts) == 
-  CONS(size, makeSimpleArrayFromList(eltType,listOfElts))
+  [size,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNew0(eltType,listOfElts) == 
-  CONS(#listOfElts, makeSimpleArrayFromList(eltType,listOfElts))
+  [#listOfElts,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNewCode(eltType, size, listOfElts) == 
   ["asTupleNew", quoteForm getVMType eltType, size, ["LIST", :listOfElts]]
@@ -162,8 +168,8 @@ getBasicMode x ==  getBasicMode0(x,$useIntegerSubdomain)
 ++ Subroutine of getBasicMode.
 getBasicMode0(x,useIntegerSubdomain) ==
   x is nil => $EmptyMode
-  STRINGP x => $String
-  INTEGERP x =>
+  string? x => $String
+  integer? x =>
     useIntegerSubdomain =>
       x > 0 => $PositiveInteger
       x = 0 => $NonNegativeInteger
@@ -176,14 +182,14 @@ getBasicMode0(x,useIntegerSubdomain) ==
 ++ If x is a literal of the basic types then returns
 ++ an interpreter object denoting x, and nil otherwise.
 getBasicObject x ==
-  INTEGERP    x =>
+  integer?    x =>
     t :=
       not $useIntegerSubdomain => $Integer
       x > 0 => $PositiveInteger
       x = 0 => $NonNegativeInteger
       $Integer
     objNewWrap(x,t)
-  STRINGP x => objNewWrap(x,$String)
+  string? x => objNewWrap(x,$String)
   FLOATP  x => objNewWrap(x,$DoubleFloat)
   NIL
 
@@ -218,7 +224,7 @@ mkAtreeNode x ==
 
 ++ remove mode, value, and misc. info from attrib tree
 emptyAtree expr ==
-  VECP expr =>
+  vector? expr =>
     $immediateDataSymbol = expr.0 => nil
     expr.1:= NIL
     expr.2:= NIL
@@ -236,21 +242,21 @@ isLeaf x ==
 ++ Also used by the algebra interface to the interpreter.
 getMode x ==
   x is [op,:.] => getMode op
-  VECP x => x.1
+  vector? x => x.1
   m := getBasicMode x => m
   keyedSystemError("S2II0001",[x])
 
 ++ sets the mode for the VAT node x to y.
 putMode(x,y) ==
   x is [op,:.] => putMode(op,y)
-  null VECP x => keyedSystemError("S2II0001",[x])
+  not vector? x => keyedSystemError("S2II0001",[x])
   x.1 := y
 
 ++ returns an interpreter object that represents the value of node x.
 ++ Note that an interpreter object is a pair of mode and value.
 ++ Also used by the algebra interface to the interperter.
 getValue x ==
-  VECP x => x.2
+  vector? x => x.2
   atom x =>
     t := getBasicObject x => t
     keyedSystemError("S2II0001",[x])
@@ -259,7 +265,7 @@ getValue x ==
 ++ sets the value of VAT node x to interpreter object y.
 putValue(x,y) ==
   x is [op,:.] => putValue(op,y)
-  null VECP x => keyedSystemError("S2II0001",[x])
+  not vector? x => keyedSystemError("S2II0001",[x])
   x.2 := y
 
 ++ same as putValue(vec, val), except that vec is returned instead of val.
@@ -270,7 +276,7 @@ putValueValue(vec,val) ==
 ++ Returns the node class of x, if possible; otherwise nil.
 ++ Also used by the algebra interface to the interpreter.
 getUnnameIfCan x ==
-  VECP x => x.0
+  vector? x => x.0
   x is [op,:.] => getUnnameIfCan op
   atom x => x
   nil
@@ -282,34 +288,34 @@ getUnname x ==
 
 ++ Subroutine of getUnname.
 getUnname1 x ==
-  VECP x => x.0
-  null atom x => keyedSystemError("S2II0001",[x])
+  vector? x => x.0
+  cons? x => keyedSystemError("S2II0001",[x])
   x
 
 ++ returns the mode-set of VAT node x.
 getModeSet x ==
-  x and CONSP x => getModeSet first x
-  VECP x =>
+  x and cons? x => getModeSet first x
+  vector? x =>
     y:= x.aModeSet =>
       (y = [$EmptyMode]) and ((m := getMode x) is ['Mapping,:.]) =>
         [m]
       y
     keyedSystemError("S2GE0016",['"getModeSet",'"no mode set"])
   m:= getBasicMode x => [m]
-  not atom x => getModeSet first x
+  cons? x => getModeSet first x
   keyedSystemError("S2GE0016",['"getModeSet",
     '"not an attributed tree"])
 
 ++ Sets the mode-set of VAT node x to y.
 putModeSet(x,y) ==
   x is [op,:.] => putModeSet(op,y)
-  not VECP x => keyedSystemError("S2II0001",[x])
+  not vector? x => keyedSystemError("S2II0001",[x])
   x.3 := y
   y
 
 getModeOrFirstModeSetIfThere x ==
   x is [op,:.] => getModeOrFirstModeSetIfThere op
-  VECP x =>
+  vector? x =>
     m := x.1 => m
     val := x.2 => objMode val
     y := x.aModeSet =>
@@ -320,8 +326,8 @@ getModeOrFirstModeSetIfThere x ==
   NIL
 
 getModeSetUseSubdomain x ==
-  x and CONSP x => getModeSetUseSubdomain first x
-  VECP(x) =>
+  x and cons? x => getModeSetUseSubdomain first x
+  vector?(x) =>
     -- don't play subdomain games with retracted args
     getAtree(x,'retracted) => getModeSet x
     y := x.aModeSet =>
@@ -336,13 +342,13 @@ getModeSetUseSubdomain x ==
         [m]
       null val => y
       isEqualOrSubDomain(objMode(val),$Integer) and
-        INTEGERP(f := objValUnwrap val) =>
+        integer?(f := objValUnwrap val) =>
           [getBasicMode0(f,true)]
       y
     keyedSystemError("S2GE0016",
       ['"getModeSetUseSubomain",'"no mode set"])
   m := getBasicMode0(x,true) => [m]
-  null atom x => getModeSetUseSubdomain first x
+  cons? x => getModeSetUseSubdomain first x
   keyedSystemError("S2GE0016",
     ['"getModeSetUseSubomain",'"not an attributed tree"])
 
@@ -355,7 +361,7 @@ computedMode t ==
 
 insertShortAlist(prop,val,al) ==
   pair := QASSQ(prop,al) =>
-    RPLACD(pair,val)
+    pair.rest := val
     al
   [[prop,:val],:al]
 
@@ -363,9 +369,9 @@ putAtree(x,prop,val) ==
   x is [op,:.] =>
     -- only willing to add property if op is a vector
     -- otherwise will be pushing to deeply into calling structure
-    if VECP op then putAtree(op,prop,val)
+    if vector? op then putAtree(op,prop,val)
     x
-  null VECP x => x     -- just ignore it
+  not vector? x => x     -- just ignore it
   n := QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n := val
   x.4 := insertShortAlist(prop,val,x.4)
@@ -375,9 +381,9 @@ getAtree(x,prop) ==
   x is [op,:.] =>
     -- only willing to get property if op is a vector
     -- otherwise will be pushing to deeply into calling structure
-    VECP op => getAtree(op,prop)
+    vector? op => getAtree(op,prop)
     NIL
-  null VECP x => NIL     -- just ignore it
+  not vector? x => NIL     -- just ignore it
   n:= QLASSQ(prop,'((mode . 1) (value . 2) (modeSet . 3)))
     => x.n
   QLASSQ(prop,x.4)
@@ -426,7 +432,7 @@ srcPosColumn(sp) ==
 
 srcPosDisplay(sp) ==
   null sp => nil
-  s := STRCONC('"_"", srcPosFile sp, '"_", line ",
+  s := strconc('"_"", srcPosFile sp, '"_", line ",
       STRINGIMAGE srcPosLine sp, '": ")
   sayBrightly [s, srcPosSource sp]
   col  := srcPosColumn sp
@@ -440,9 +446,9 @@ srcPosDisplay(sp) ==
 ++ Returns the calling convention vector for an operation
 ++ represented by the VAT `t'.
 getFlagArgsPos t ==
-  VECP t => getAtree(t, 'flagArgsPos)
+  vector? t => getAtree(t, 'flagArgsPos)
   atom t => keyedSystemError("S2II0001",[t])
-  getFlagArgsPos car t
+  getFlagArgsPos first t
 
 --% Transfer of VAT properties.
 
@@ -451,7 +457,7 @@ transferPropsToNode(x,t) ==
   propList := getProplist(x,$env)
   QLASSQ('Led,propList) or QLASSQ('Nud,propList) => nil
   node :=
-    VECP t => t
+    vector? t => t
     first t
   for prop in '(mode localModemap value name generatedCode)
     repeat transfer(x,node,prop)

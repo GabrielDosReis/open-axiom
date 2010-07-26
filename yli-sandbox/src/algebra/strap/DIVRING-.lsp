@@ -11,11 +11,11 @@
   (COND
     ((ZEROP |n|) (|spadConstant| $ 10))
     ((SPADCALL |x| (|getShellEntry| $ 11))
-     (COND ((< |n| 0) (|error| "division by zero")) ('T |x|)))
-    ((< |n| 0)
+     (COND ((MINUSP |n|) (|error| "division by zero")) (T |x|)))
+    ((MINUSP |n|)
      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15)) (- |n|)
          (|getShellEntry| $ 19)))
-    ('T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
+    (T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
 
 (DEFUN |DIVRING-;*;F2S;2| (|q| |x| $)
   (SPADCALL
@@ -28,18 +28,14 @@
       |x| (|getShellEntry| $ 26))) 
 
 (DEFUN |DivisionRing&| (|#1|)
-  (PROG (|dv$1| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|DivisionRing&|))
-        (LETT |dv$| (LIST '|DivisionRing&| |dv$1|) . #0#)
-        (LETT $ (|newShell| 29) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$| (|buildPredVector| 0 0 NIL) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|))
+         (|dv$| (LIST '|DivisionRing&| |dv$1|)) ($ (|newShell| 29))
+         (|pv$| (|buildPredVector| 0 0 NIL)))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    $)) 
 
 (MAKEPROP '|DivisionRing&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|Boolean|)

@@ -96,7 +96,8 @@ UnivariatePowerSeriesCategory(Coef,Expon): Category == Definition where
   Expon  : OrderedAbelianMonoid
   Term ==> Record(k:Expon,c:Coef)
 
-  Definition ==> PowerSeriesCategory(Coef,Expon,SingletonAsOrderedSet) with
+  Definition ==> Join(PowerSeriesCategory(Coef,Expon,SingletonAsOrderedSet),_
+                    Eltable(Expon,Coef)) with
 
     terms: % -> Stream Term
       ++ \spad{terms(f(x))} returns a stream of non-zero terms, where a
@@ -106,9 +107,6 @@ UnivariatePowerSeriesCategory(Coef,Expon): Category == Definition where
       --++ \spad{series(st)} creates a series from a stream of non-zero terms,
       --++ where a term is an exponent-coefficient pair.  The terms in the
       --++ stream should be ordered by increasing order of exponents.
-    elt: (%,Expon) -> Coef
-      ++ \spad{elt(f(x),r)} returns the coefficient of the term of degree r in
-      ++ \spad{f(x)}.  This is the same as the function \spadfun{coefficient}.
     variable: % -> Symbol
       ++ \spad{variable(f)} returns the (unique) power series variable of
       ++ the power series f.
@@ -296,18 +294,22 @@ UnivariateTaylorSeriesCategory(Coef): Category == Definition where
       vv :=
         zero? cen => var :: OUT
         paren(var :: OUT - cen :: OUT)
-      n : NNI ; count : NNI := _$streamCount$Lisp
+      count : NNI := _$streamCount$Lisp
       l : L OUT := empty()
-      for n in 0..count while not empty? uu repeat
+      n : NNI := 0
+      while n <= count and not empty? uu repeat
         if frst(uu) ~= 0 then
           l := concat(termOutput(n :: I,frst uu,vv),l)
         uu := rst uu
+        n := n + 1
       if showAll?() then
-        for n in (count + 1).. while explicitEntries? uu and _
+        n := count + 1
+        while explicitEntries? uu and _
                not eq?(uu,rst uu) repeat
           if frst(uu) ~= 0 then
             l := concat(termOutput(n :: I,frst uu,vv),l)
           uu := rst uu
+          n := n + 1
       l :=
         explicitlyEmpty? uu => l
         eq?(uu,rst uu) and frst uu = 0 => l

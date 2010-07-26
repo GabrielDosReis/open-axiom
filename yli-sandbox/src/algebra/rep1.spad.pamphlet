@@ -302,7 +302,7 @@ RepresentationPackage1(R): public == private where
        -- permutations are assumed to permute {1,2,...,n}
        a : M I := zero(n :: NNI, n :: NNI)
        for i in 1..n repeat
-          a(eval(p,i)$(PERM I),i) := 1
+          a(p.i,i) := 1
        a
  
  

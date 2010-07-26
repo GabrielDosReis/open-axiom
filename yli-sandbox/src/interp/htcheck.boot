@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -84,8 +84,8 @@ $primitiveHtCommands := '(
   ("\windowlink"         . 2))
 
 buildHtMacroTable() ==
-  $htMacroTable := MAKE_-HASHTABLE 'UEQUAL
-  fn := CONCAT(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
+  $htMacroTable := hashTable 'EQUAL
+  fn := strconc(systemRootDirectory(), '"/share/hypertex/pages/util.ht")
   if PROBE_-FILE(fn) then
     instream := MAKE_-INSTREAM fn
     while not EOFP instream repeat
@@ -98,7 +98,7 @@ buildHtMacroTable() ==
   $htMacroTable
 
 getHtMacroItem line ==
-  null stringPrefix?('"\newcommand{",line) => nil
+  not stringPrefix?('"\newcommand{",line) => nil
   k := charPosition(char '_},line,11)
   command := SUBSTRING(line,12,k - 12)
   numOfArgs :=
@@ -107,8 +107,8 @@ getHtMacroItem line ==
     i = m => 0
     j := charPosition(char '_],line,i + 1)
     digitString := SUBSTRING(line,i + 1,j - i - 1)
-    and/[DIGITP digitString.i for i in 0..MAXINDEX digitString]
-      => PARSE_-INTEGER digitString
+    and/[digit? digitString.i for i in 0..MAXINDEX digitString]
+      => readInteger digitString
     return nil
   [command,:numOfArgs]
 
@@ -126,6 +126,6 @@ spadSysBranch(tree,arg) ==  --tree is (msg kind TREEorSomethingElse ...)
   kind := tree.2
   kind = 'TREE => spadSysChoose(tree.4,arg)
   kind = 'LITERALS => member(arg,tree.4)
-  kind = 'INTEGER  => INTEGERP arg
+  kind = 'INTEGER  => integer? arg
   kind = 'FUNCTION => atom arg
   systemError '"unknown tree branch"

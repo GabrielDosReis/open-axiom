@@ -532,7 +532,7 @@
          (COND
            ((|bfTupleP| |argTypes|) (SETQ |argTypes| (CDR |argTypes|))))
          (COND
-           ((AND (NOT (NULL |argTypes|)) (SYMBOLP |argTypes|))
+           ((AND |argTypes| (SYMBOLP |argTypes|))
             (SETQ |argTypes| (LIST |argTypes|))))
          (LIST 'DECLAIM
                (LIST 'FTYPE (LIST 'FUNCTION |argTypes| |valType|) |n|)))
@@ -551,8 +551,7 @@
     (RETURN
       (PROGN
         (SETQ |expr'|
-              (CDR (CDR (|shoeCompTran|
-                            (LIST 'LAMBDA (LIST '|x|) |expr|)))))
+              (CDR (CDR (|shoeCompTran| (LIST 'LAMBDA NIL |expr|)))))
         (LET ((|bfVar#9| |expr'|) (|t| NIL))
           (LOOP
             (COND
@@ -1274,6 +1273,14 @@
                   (|defaultBootToLispFile| |file|)))
         (BOOTTOCL |file| (ENOUGH-NAMESTRING |outFile|))))))
 
+(DEFUN |retainFile?| (|ext|)
+  (COND
+    ((OR (MEMBER (|Option| '|all|) |$FilesToRetain|)
+         (MEMBER (|Option| '|yes|) |$FilesToRetain|))
+     T)
+    ((MEMBER (|Option| '|no|) |$FilesToRetain|) NIL)
+    (T (MEMBER (|Option| |ext|) |$FilesToRetain|))))
+
 (DEFUN |compileBootHandler| (|progname| |options| |file|)
   (PROG (|objFile| |intFile|)
     (RETURN
@@ -1287,7 +1294,9 @@
               (SETQ |objFile|
                     (|compileLispHandler| |progname| |options|
                         |intFile|))
-              (DELETE-FILE |intFile|) |objFile|)
+              (COND
+                ((NOT (|retainFile?| '|lisp|)) (DELETE-FILE |intFile|)))
+              |objFile|)
           (T NIL))))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)

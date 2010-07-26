@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -105,7 +105,7 @@ _/MAJOR_-VERSION ==
 
 ++ Glyph for a box
 $boxString ==
-  CONCATENATE('STRING, [CODE_-CHAR 29, CODE_-CHAR 226])
+  strconc(STRING CODE_-CHAR 29, STRING CODE_-CHAR 226)
 
 ++ Glyph for an APL quad
 $quadSymbol ==
@@ -123,27 +123,27 @@ $escapeString ==
 
 ++ Marker to swicth to bold font
 $boldString ==
-  CONCATENATE('STRING, $escapeString, '"[1m")
+  strconc($escapeString, '"[1m")
 
 ++ Marker to switch to normal font
 $normalString ==
-  CONCATENATE('STRING, $escapeString, '"[0;10m")
+  strconc($escapeString, '"[0;10m")
 
 ++ Marker to switch to reverve video display
 $reverseVideoString ==
-  CONCATENATE('STRING, $escapeString, '"[7m")
+  strconc($escapeString, '"[7m")
 
 ++ Marker to underline text
 $underlineString ==
-  CONCATENATE('STRING, $escapeString, '"[4m")
+  strconc($escapeString, '"[4m")
 
 ++
 $highlightFontOn ==
-  CONCATENATE("STRING", '" ", $boldString)
+  strconc('" ", $boldString)
 
 ++
 $highlightFontOff ==
-  CONCATENATE("STRING", $normalString, '" ")
+  strconc($normalString, '" ")
 
 -- 
 -- User Interface
@@ -589,6 +589,8 @@ $SystemInlinableConstructorNames ==
     DoubleFloat        _
     PrimitiveArray     _
     Vector             _
+    Maybe              _
+    Pair               _
     Void)
 
 ++ FIXME
@@ -629,7 +631,7 @@ $EmptyVector ==
 
 ++ A symbol denoting failure
 $failure ==
-  GENSYM()
+  gensym()
 
 ++ The initial modemap frame
 $InitialModemapFrame ==
@@ -644,14 +646,6 @@ $Zero ==
 $One ==
   '(One)
 
-
-++
-$true ==
-  ''T
-
-$false ==
-  false
-
 ++ Indicate absence of value
 $NoValue ==
   "$NoValue"
@@ -664,9 +658,6 @@ $exitMode ==
 ++
 $leaveMode == 
   $EmptyMode
-
-++
-$noEnv == nil
 
 ++
 IDENTITY == 
@@ -719,7 +710,7 @@ $quitTag ==
 )elseif %hasFeature KEYWORD::SBCL
   QUOTE SB_-INT::TOPLEVEL_-CATCHER
 )else
-  GENSYM()
+  gensym()
 )endif
 
 --% Constants for OpenAxiom IPC

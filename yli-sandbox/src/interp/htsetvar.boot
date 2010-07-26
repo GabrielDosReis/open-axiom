@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ htShowSetTree(setTree) ==
   htSay('"\tab{2}\newline Variable\tab{",STRINGIMAGE (maxWidth1 + QUOTIENT(maxWidth2,3)),'"}Description\tab{",STRINGIMAGE(maxWidth2 + maxWidth1 + 2),'"}Value\newline\beginitems ")
   for setData in reverse okList repeat
       htSay '"\item"
-      label := STRCONC('"\menuitemstyle{",setData.setName,'"}")
+      label := strconc('"\menuitemstyle{",setData.setName,'"}")
       links := [label,[['text,'"\tab{",tabset1,'"}",setData.setLabel,'"\tab{",tabset2,'"}{\em ",htShowSetTreeValue setData,'"}"]],
                 'htShowSetPage, setData.setName]
       htMakePage [['bcLispLinks, links,'options,'(indent . 0)]]
@@ -92,11 +92,11 @@ htShowSetTreeValue(setData) ==
   st = 'TREE     => '"..."
   systemError()
 
-mkSetTitle() == STRCONC('"Command {\em )set ",listOfStrings2String $path,'"}")
+mkSetTitle() == strconc('"Command {\em )set ",listOfStrings2String $path,'"}")
 
 listOfStrings2String u ==
   null u => '""
-  STRCONC(listOfStrings2String rest u,'" ",stringize first u)
+  strconc(listOfStrings2String rest u,'" ",stringize first u)
 
 htShowSetPage(htPage, branch) ==
   setTree := htpProperty(htPage, 'setTree)
@@ -125,10 +125,10 @@ htSetLiterals(htPage,name,message,variable,values,functionToCall) ==
   bcHt ['"\centerline{Set {\em ", name, '"}}\newline"]
   bcHt ['"{\em Description: } ", message, '"\newline\vspace{1} "]
   bcHt '"Select one of the following: \newline\tab{3} "
-  links := [[STRCONC('"",STRINGIMAGE opt), '"\newline\tab{3}", functionToCall, opt] for opt in values]
+  links := [[strconc('"",STRINGIMAGE opt), '"\newline\tab{3}", functionToCall, opt] for opt in values]
   htMakePage [['bcLispLinks, :links]]
   bcHt ["\indent{0}\newline\vspace{1} The current setting is: {\em ",
-        translateTrueFalse2YesNo EVAL variable, '"} "]
+        translateTrueFalse2YesNo eval variable, '"} "]
   htShowPage()
 
 htSetLiteral(htPage, val) ==
@@ -170,7 +170,7 @@ htShowIntegerPage(htPage, setData) ==
 htSetInteger(htPage) ==
   htInitPage(mkSetTitle(), nil)
   val := chkRange htpLabelInputString(htPage,'value)
-  not INTEGERP val =>
+  not integer? val =>
     errorPage(htPage,['"Value Error",nil,'"\vspace{3}\centerline{{\em ",val,'"}}\vspace{2}\newline\centerline{Click on \UpBitmap{} to re-enter value}"])
   setDynamicBinding(htpProperty(htPage, 'variable), val)
   htKill(htPage,val)
@@ -193,7 +193,7 @@ htShowFunctionPageContinued(htPage) ==
   page := htInitPage(mkSetTitle(), htpPropertyList htPage)
   bcHt ['"\centerline{Set {\em ", setData.setName, '"}}\newline"]
   bcHt ['"{\em Description: } ", setData.setLabel, '"\newline\vspace{1} "]
-  currentValue := EVAL variable
+  currentValue := eval variable
   htMakePage
     [ ['domainConditions, ['Satisfies,'S,checker]],
       ['text,:phrase],
@@ -208,7 +208,7 @@ htSetvarDoneButton(message, func) ==
   if message = '"Select to Set Value" or message = '"Select to Set Values"  then
     bchtMakeButton('"\lisplink",'"\ControlBitmap{ClickToSet}", func)
   else
-    bchtMakeButton('"\lisplink",CONCAT('"\fbox{", message, '"}"), func)
+    bchtMakeButton('"\lisplink",strconc('"\fbox{", message, '"}"), func)
 
   bcHt '"} "
 
@@ -238,7 +238,7 @@ htSetFunCommandContinue(htPage,value) ==
 
 htKill(htPage,value) ==
   htInitPage('"System Command", nil)
-  string := STRCONC('"{\em )set ",listOfStrings2String [value,:$path],'"}")
+  string := strconc('"{\em )set ",listOfStrings2String [value,:$path],'"}")
   htMakePage [
      '(text
         "{Here is the AXIOM system command you could have issued:}"
@@ -253,7 +253,7 @@ htKill(htPage,value) ==
 htSetNotAvailable(htPage,whatToType) ==
   page := htInitPage('"Unavailable Set Command", htpPropertyList htPage)
   htInitPage('"Unavailable System Command", nil)
-  string := STRCONC('"{\em ",whatToType,'"}")
+  string := strconc('"{\em ",whatToType,'"}")
   htMakePage [
      '(text "\vspace{1}\newline"
         "{Sorry, but this system command is not available through HyperDoc. Please directly issue this command in an AXIOM window for more information:}"
@@ -266,32 +266,32 @@ htSetNotAvailable(htPage,whatToType) ==
 htDoNothing(htPage,command) == nil
 
 htCheck(checker,value) ==
-  CONSP checker => htCheckList(checker,parseWord value)
+  cons? checker => htCheckList(checker,parseWord value)
   FUNCALL(checker,value)
 
 parseWord x ==
-  STRINGP x =>
-    and/[DIGITP x.i for i in 0..MAXINDEX x] => PARSE_-INTEGER x
+  string? x =>
+    and/[digit? x.i for i in 0..MAXINDEX x] => readInteger x
     INTERN x
   x
 
 htCheckList(checker,value) ==
   if value in '(y ye yes Y YE YES) then value := 'yes
   if value in '(n no N NO) then value := 'no
-  checker is [n,m] and INTEGERP n =>
+  checker is [n,m] and integer? n =>
     m = n + 1 =>
       value in checker => value
       n
     null m =>
-      INTEGERP value and value >= n => value
+      integer? value and value >= n => value
       n
-    INTEGERP m =>
-      INTEGERP value and value >= n and value <= m => value
+    integer? m =>
+      integer? value and value >= n and value <= m => value
       n
   value in checker => value
   first checker
---  emlist := "STRCONC"/[STRCONC('" {\em ",PNAME x,'"} ") for x in checker]
---  STRCONC('"Please enter one of: ",emlist)
+--  emlist := strconc/[strconc('" {\em ",PNAME x,'"} ") for x in checker]
+--  strconc('"Please enter one of: ",emlist)
 
 translateYesNoToTrueFalse x ==
   x = 'yes => true
@@ -305,7 +305,7 @@ chkNameList x ==
   '"Please enter a list of identifiers separated by blanks"
 
 chkPosInteger s ==
-  (u := parseOnly s) and INTEGERP u and u > 0 => u
+  (u := parseOnly s) and integer? u and u > 0 => u
   '"Please enter a positive integer"
 
 chkOutputFileName s ==
@@ -315,16 +315,16 @@ chkOutputFileName s ==
 chkDirectory s == s
 
 chkNonNegativeInteger s ==
-  (u := ncParseFromString s) and INTEGERP u and u >= 0 => u
+  (u := ncParseFromString s) and integer? u and u >= 0 => u
   '"Please enter a non-negative integer"
 
 chkRange s ==
-  (u := ncParseFromString s) and INTEGERP u
-    and u >= $htInitial and (NULL $htFinal or u <= $htFinal)
+  (u := ncParseFromString s) and integer? u
+    and u >= $htInitial and (null $htFinal or u <= $htFinal)
       => u
   null $htFinal =>
-    STRCONC('"Please enter an integer greater than ",stringize ($htInitial - 1))
-  STRCONC('"Please enter an integer between ",stringize $htInitial,'" and ",
+    strconc('"Please enter an integer greater than ",stringize ($htInitial - 1))
+  strconc('"Please enter an integer between ",stringize $htInitial,'" and ",
             stringize $htFinal)
 
 chkAllNonNegativeInteger s ==
@@ -337,10 +337,10 @@ htMakePathKey path ==
   INTERN fn(PNAME first path,rest path) where
     fn(a,b) ==
       null b => a
-      fn(STRCONC(a,'".",PNAME first b),rest b)
+      fn(strconc(a,'".",PNAME first b),rest b)
 
 htMarkTree(tree,n) ==
-  RPLACD(LASTTAIL tree,n)
+  LASTTAIL(tree).rest := n
   for branch in tree repeat
     branch.3 = 'TREE => htMarkTree(branch.5,n + 1)
 
@@ -417,12 +417,12 @@ htCacheAddChoice htPage ==
       "For each function name, enter {\em all} or a positive integer:"))
   for i in 1.. for name in names repeat htMakePage [
       ['inputStrings,
-        [STRCONC('"Function {\em ",name,'"} will cache"),
+        [strconc('"Function {\em ",name,'"} will cache"),
           '"values",5,10,htMakeLabel('"c",i),'ALLPI]]]
   htSetvarDoneButton('"Select to Set Values",'htCacheSet)
   htShowPage()
 
-htMakeLabel(prefix,i) == INTERN STRCONC(prefix,stringize i)
+htMakeLabel(prefix,i) == INTERN strconc(prefix,stringize i)
 
 htCacheSet htPage ==
   names := htpProperty(htPage,'names)
@@ -455,7 +455,7 @@ htCacheSet htPage ==
 htAllOrNum val == bcHt
   val = 'all => '"{\em all"
   val = 0 => '"{\em no"
-  STRCONC('"the last {\em ",stringize val)
+  strconc('"the last {\em ",stringize val)
 
 htCacheOne names ==
   page := htInitPage(mkSetTitle(),nil)

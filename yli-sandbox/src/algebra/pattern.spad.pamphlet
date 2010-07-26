@@ -221,7 +221,7 @@ Pattern(R:SetCategory): Exports == Implementation where
     p1 = p2 ==
       (p1.cons? = p2.cons?) and (p1.lev = p2.lev) and
         (p1.topvar = p2.topvar) and
-          ((EQ(p1.toppred, p2.toppred)$Lisp) pretend B) and
+          ((%peq(p1.toppred,p2.toppred)$Foreign(Builtin)) pretend B) and
             pateq?(p1.pat, p2.pat)
  
     isPower p ==

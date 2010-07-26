@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ pathname p ==
   pathname? p => p
   atom p => PATHNAME p
   if #p>2 then p:=[p.0,p.1]
-  PATHNAME APPLY(FUNCTION MAKE_-FILENAME, p)
+  PATHNAME apply(FUNCTION MAKE_-FILENAME, p)
  
 namestring p == 
   null p => nil
@@ -105,7 +105,7 @@ isSystemDirectory dir ==
 _/MKINFILENAM(infile) == CATCH('FILNAM, newMKINFILENAM infile)
  
 newMKINFILENAM(infile) ==
-  NULL infile => nil
+  null infile => nil
   file := infile := pathname infile
   repeat
     fn := pathnameName file

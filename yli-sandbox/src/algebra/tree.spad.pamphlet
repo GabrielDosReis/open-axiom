@@ -87,6 +87,7 @@ Tree(S: SetCategory): T==C where
       t case empty => t
       setvalue!(t, fn value t)
       for c in children t repeat map!(fn, c)
+      t
     tree(s,lt) == [[s,lt]]
     tree(s) == [[s,[]]]
     tree(ls) ==
@@ -110,7 +111,7 @@ Tree(S: SetCategory): T==C where
       distance1(t2, t1)
     node?(t1, t2) ==
       t1 = t2 => true
-      t case empty => false
+      t2 case empty => false
       "or"/[node?(t1, t) for t in children t2]
     leaf? t == 
       t case empty => false
@@ -230,7 +231,7 @@ Tree(S: SetCategory): T==C where
     cyclicCopy(t) == cyclicCopy2(t, cyclicEntries t)
 
     cyclicCopy2(t, cycles) ==
-      eqMember?(t, cycles) => return copyCycle2(t, cycles)
+      eqMember?(t, cycles) => copyCycle2(t, cycles)
       tree(value t, [cyclicCopy2(c, cycles) for c in children t])
    
     copyCycle2(cycle, cycleList) == 

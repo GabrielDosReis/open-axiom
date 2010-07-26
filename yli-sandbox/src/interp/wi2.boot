@@ -108,7 +108,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
     $uncondAlist: local := nil
 -->>-- next global initialized here, reset by buildFunctor
     $NRTslot1PredicateList: local :=
-      REMDUP [second x for x in attributeList]
+      removeDuplicates [second x for x in attributeList]
 -->>-- next global initialized here, used by NRTgenAttributeAlist (NRUNOPT)
     $NRTattributeAlist: local := NRTgenInitialAttributeAlist attributeList
     $NRTslot1Info: local := nil --set in NRTmakeSlot1Info
@@ -130,7 +130,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                where FindRep cb ==
                  u:=
                    while cb repeat
-                     ATOM cb => return nil
+                     atom cb => return nil
                      cb is [["%LET",'Rep,v,:.],:.] => return (u:=v)
                      cb:=rest cb
                  u
@@ -189,11 +189,9 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
         if $isOpPackageName then lisplibWrite('"slot1DataBase",
           ['updateSlot1DataBase,MKQ $NRTslot1Info],$libFile)
         $lisplibFunctionLocations := SUBLIS($pairlis,$functionLocations)
-        $lisplibCategoriesExtended := SUBLIS($pairlis,$lisplibCategoriesExtended)
-        -- see NRTsetVector4 for initial setting of $lisplibCategoriesExtended
         libFn := getConstructorAbbreviation op'
         $lookupFunction: local :=
-            NRTgetLookupFunction($functorForm,CADAR $lisplibModemap,$NRTaddForm)
+            NRTgetLookupFunction($functorForm,$lisplibModemap.mmTarget,$NRTaddForm)
             --either lookupComplete (for forgetful guys) or lookupIncomplete
         $byteAddress :local := 0
         $byteVec :local := nil
@@ -385,7 +383,7 @@ mkUnion(a,b) ==
   b is ["Union",:l] => 
     member(a, l) => b
     ["Union",:setUnion([a],l)]
-  STRINGP a => ["Union",b,a]
+  string? a => ["Union",b,a]
   ["Union",a,b]
 
 compForMode(x,m,e) ==
@@ -400,7 +398,7 @@ compMakeCategoryObject(c,$e) ==
   nil
  
 macroExpand(x,e) ==   --not worked out yet
-  atom x => (u:= get(x,"macro",e) => macroExpand(u,e); x)
+  atom x => (u:= get(x,'macro,e) => macroExpand(u,e); x)
   x is ['DEF,lhs,sig,spCases,rhs] =>
     ['DEF,macroExpand(lhs,e), macroExpandList(sig,e),macroExpandList(spCases,e),
       macroExpand(rhs,e)]
@@ -408,61 +406,6 @@ macroExpand(x,e) ==   --not worked out yet
       ['MI,a,macroExpand(b,e)]
   macroExpandList(x,e)
  
-getSuccessEnvironment(a,e) ==
-  -- the next four lines try to ensure that explicit special-case tests
-  --  prevent implicit ones from being generated
-  a is ["has",x,m] =>
-    x := unLet x   
-    IDENTP x and isDomainForm(m,$EmptyEnvironment) => put(x,"specialCase",m,e)
-    e
-  a is ["is",id,m] =>
-    id := unLet id
-    IDENTP id and isDomainForm(m,$EmptyEnvironment) =>
-         e:=put(id,"specialCase",m,e)
-         currentProplist:= getProplist(id,e)
-         [.,.,e] := T := comp(m,$EmptyMode,e) or return nil -- duplicates compIs
-         newProplist:= consProplistOf(id,currentProplist,"value",removeEnv T)
-         addBinding(id,newProplist,e)
-    e
-  a is ["case",x,m] and (x := unLet x) and IDENTP x =>
-    put(x,"condition",[a,:get(x,"condition",e)],e)
-  e
- 
-getInverseEnvironment(a,E) ==
-  atom a => E
-  [op,:argl]:= a
--- the next five lines try to ensure that explicit special-case tests
--- prevent implicit ones from being generated
-  op="has" =>
-    [x,m]:= argl
-    x := unLet x
-    IDENTP x and isDomainForm(m,$EmptyEnvironment) => put(x,"specialCase",m,E)
-    E
-  a is ["case",x,m] and (x := unLet x) and IDENTP x =>
-           --the next two lines are necessary to get 3-branched Unions to work
-           -- old-style unions, that is
-    if corrupted? get(x,"condition",E) then systemError 'condition
-    (get(x,"condition",E) is [["OR",:oldpred]]) and member(a,oldpred) =>
-      put(x,"condition",LIST MKPF(delete(a,oldpred),"OR"),E)
-    getUnionMode(x,E) is ["Union",:l] or systemError 'Union
-    if corrupted? l then systemError 'list
-    l':= delete(m,l)
-    for u in l' repeat
-       if u is ['_:,=m,:.] then l':= delete(u,l')
-    newpred:= MKPF([["case",x,m'] for m' in l'],"OR")
-    put(x,"condition",[newpred,:get(x,"condition",E)],E)
-  E
-
-unLet x ==
-  x is ["%LET",u,:.] => unLet u
-  x
-
-corrupted? u ==
-  u is [op,:r] =>
-    op in '(WI MI PART) => true
-    or/[corrupted? x for x in r]
-  false
-
 --======================================================================
 --                    From apply.boot
 --======================================================================
@@ -486,13 +429,13 @@ applyMapping([op,:argl],m,e,ml) ==
       T() == [.,.,e]:= comp(x,m',e) or return "failed"
   if argl'="failed" then return nil
   form:=
-    not MEMQ(op,$formalArgList) and ATOM op and not get(op,'value,e) =>
+    not MEMQ(op,$formalArgList) and atom op and not get(op,'value,e) =>
       nprefix := $prefix or
    -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
       [op',:argl',"$"] where
-        op':= INTERN STRCONC(encodeItem nprefix,";",encodeItem op)
-    ['call,['applyFun,op],:argl']
+        op':= INTERN strconc(encodeItem nprefix,";",encodeItem op)
+    ['%call,['applyFun,op],:argl']
   pairlis := pairList(argl',$FormalMapVariableList)
   convert([form,SUBLIS(pairlis,first ml),e],m)
  
@@ -545,7 +488,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
               (c1 is ['_:,=(second argl),=m] or EQ(c1,second argl) ) =>
 -- first is a full tag, as placed by getInverseEnvironment
 -- second is what getSuccessEnvironment will place there
-                ["CDR",z]
+                ['%tail,z]
         markTran(form,form',markMap,e')
   qt(18,T)
   convert(T,m)
@@ -638,8 +581,8 @@ compMapCond''(cexpr,dc) ==
   cexpr=true => true
   --cexpr = "true" => true
 ---------------> new <----------------------
-  cexpr is [op,:l] and op in '(_and AND) => and/[compMapCond''(u,dc) for u in l]
-  cexpr is [op,:l] and op in '(_or OR)   => or/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(and AND) => and/[compMapCond''(u,dc) for u in l]
+  cexpr is [op,:l] and op in '(or OR)   => or/[compMapCond''(u,dc) for u in l]
 ---------------> new <----------------------
   cexpr is ["not",u] => not compMapCond''(u,dc)
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
@@ -710,20 +653,20 @@ genDeltaEntry(opMmPair,e) ==
   setDifference(listOfBoundVars dc,$functorLocalParameters) ~= [] =>
     ['applyFun,['compiledLookupCheck,MKQ op,
          mkList consSig(sig,dc),consDomainForm(dc,nil)]]
- --if null atom dc then
+ --if cons? dc then
  --   sig := substitute('$,dc,sig)
  --   cform := substitute('$,dc,cform)
   opModemapPair :=
     [op,[dc,:[genDeltaSig x for x in sig]],['T,cform]] -- force pred to T
   if null NRTassocIndex dc and
-    (member(dc,$functorLocalParameters) or null atom dc) then
+    (member(dc,$functorLocalParameters) or cons? dc) then
     --create "%domain" entry to $NRTdeltaList
       $NRTdeltaList:= [["%domain",NRTaddInner dc,:dc],:$NRTdeltaList]
       saveNRTdeltaListComp:= $NRTdeltaListComp:=[nil,:$NRTdeltaListComp]
       $NRTdeltaLength := $NRTdeltaLength+1
       compEntry:=
         dc
-      RPLACA(saveNRTdeltaListComp,compEntry)
+      saveNRTdeltaListComp.first := compEntry
       chk(saveNRTdeltaListComp,102)
   u :=
     [eltOrConst,'$,$NRTbase+$NRTdeltaLength-index] where index() ==
@@ -768,7 +711,7 @@ makeSimplePredicateOrNil p == nil
 mkUserConstructorAbbreviation(c,a,type) ==
   if $AnalyzeOnly or $convert2NewCompiler then
     $abbreviationStack := [[type,a,:c],:$abbreviationStack]
-  if not atom c then c:= first c  --  Existing constructors will be wrapped
+  if cons? c then c:= first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)
@@ -782,7 +725,7 @@ mkUserConstructorAbbreviation(c,a,type) ==
 compreduce(form is [.,op,x],m,e) ==
   T := compForm(form,m,e) or return nil
   y := T.expr
-  RPLACA(y,"REDUCE")
+  y.first := "REDUCE"
   ------------------<== distinquish this as the special reduce form
   (y is ["REDUCE",:.]) and (id:= getIdentity(op,e)) and (u := comp0(id,m,e)) and
     # getNumberTypesInScope() > 1 => markSimpleReduce([:y, ["@",u.expr,m]], T)
@@ -816,7 +759,7 @@ compIterator(it,e) ==
          stackMessage ["mode: ",m," must be a list or vector of some mode"]
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,mUnder,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),mUnder,e],e)
+    e:= giveVariableSomeValue(x,mUnder,e)
     markReduceIn(it, [["IN",x,y'],e])
   it is ["ON",x,y] =>
 ---------------> new <---------------------
@@ -832,7 +775,7 @@ compIterator(it,e) ==
         stackMessage ["mode: ",m," must be a list of other modes"]
     if null get(x,"mode",e) then [.,.,e]:=
       compMakeDeclaration(x,m,e) or return nil
-    e:= put(x,"value",[genSomeVariable(),m,e],e)
+    e:= giveVariableSomeValue(x,m,e)
     [["ON",x,y'],e]
   it is ["STEP",oindex,start,inc,:optFinal] =>
     index := markKillAll oindex
@@ -860,7 +803,7 @@ compIterator(it,e) ==
 --  markImport ['Segment,indexmode]
     if null get(index,"mode",e) then [.,.,e]:=
       compMakeDeclaration(index,indexmode,e) or return nil
-    e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+    e:= giveVariableSomeValue(index,indexmode,e)
     markReduceStep(it, [["STEP",markStep(index),start,inc,:optFinal],e])
   it is ["WHILE",p] =>
     [p',m,e]:=
@@ -908,7 +851,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
     givenRange => givenRange
     nil
   e:= put(index,"range",range,e)
-  e:= put(index,"value",[genSomeVariable(),indexmode,e],e)
+  e:= giveVariableSomeValue(index,indexmode,e)
   noptFinal := 
     final' => 
       [final'.expr]
@@ -982,7 +925,7 @@ chaseInferences(origPred,$e) ==
             ante is ["and",:ante'] and member(pred,ante') =>
               ante':= delete(pred,ante')
               v':=
-                LENGTH ante'=1 => first ante'
+                # ante'=1 => first ante'
                 ["and",:ante']
               v':= ["COND",[v',:conseq]]
               member(v',get("$Information","special",$e)) => nil
@@ -1044,12 +987,12 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
             -- of functorLocalParameters that were added during the
             -- conditional compilation
             nils:=ans:=[]
-            for u in flp1 repeat -- is =u form always an ATOM?
-              if ATOM u or (or/[v is [.,=u,:.] for v in $getDomainCode])
+            for u in flp1 repeat -- is =u form always an atom?
+              if atom u or (or/[v is [.,=u,:.] for v in $getDomainCode])
                 then
                   nils:=[u,:nils]
                 else
-                  gv := GENSYM()
+                  gv := gensym()
                   ans:=[["%LET",gv,u],:ans]
                   nils:=[gv,:nils]
               n:=n+1
@@ -1062,12 +1005,12 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
     qe(21,compSingleCapsuleItem(y,[['not, p],:$predl],getInverseEnvironment(markKillAll p,olde)))
 -->                                                      ----------- 
     y':=localExtras(oldFLP)
-  wiReplaceNode(item,["COND",[p',x,:x'],['(QUOTE T),y,:y']],12)
+  wiReplaceNode(item,["COND",[p',x,:x'],['%true,y,:y']],12)
 
 doItSeq item == 
   ['SEQ,:l,['exit,1,x]] := item
-  RPLACA(item,"PROGN")
-  RPLACA(LASTNODE item,x)
+  item.first := "PROGN"
+  lastNode(item).first := x
   for it1 in rest item repeat $e:= compSingleCapsuleItem(it1,$predl,$e)
 
 doItDomain item ==
@@ -1076,8 +1019,8 @@ doItDomain item ==
   markImport second u
   stackWarning ["Use: import ", [first item,:rest item]]
 --wiReplaceNode(item, u, 14)
-  RPLACA(item, first u)
-  RPLACD(item, rest u)
+  item.first := first u
+  item.rest := rest u
   doIt(item,$predl)
 
 doItLet item ==
@@ -1129,12 +1072,12 @@ rhsOfLetIsDomainForm code ==
 
 doItDef item == 
   ['DEF,[op,:.],:.] := item
-  body:= isMacro(item,$e) => $e:= put(op,"macro",body,$e)
+  body:= isMacro(item,$e) => $e := putMacro(op,body,$e)
   [.,.,$e]:= t:= compOrCroak(item,$EmptyMode,$e)
   chk(item,3)
-  RPLACA(item,"CodeDefine")
+  item.first := "CodeDefine"
         --Note that DescendCode, in CodeDefine, is looking for this
-  RPLACD(second item,[$signatureOfForm])
+  second(item).rest := [$signatureOfForm]
   chk(item,4)
       --This is how the signature is updated for buildFunctor to recognise
 --+
@@ -1151,13 +1094,13 @@ doItExpression(item,T) ==
   wiReplaceNode(item,code, 22)
 
 wiReplaceNode(node,ocode,key) ==
-  ncode := CONS(first ocode, rest ocode)
+  ncode := [first ocode,:rest ocode]
   code := replaceNodeInStructureBy(node,ncode)
   SETQ($NODE,COPY node)
   SETQ($NODE1, COPY first code)
   SETQ($NODE2, COPY rest  code)
-  RPLACA(node,first code)
-  RPLACD(node,rest  code)
+  node.first := first code
+  node.rest := rest  code
   chk(code, key)
   chk(node, key + 1)
 
@@ -1168,7 +1111,7 @@ replaceNodeInStructureBy(node, x) ==
 
 replaceNodeBy(node, x) ==
   atom x => nil
-  for y in tails x | EQCAR(x,node) repeat RPLAC(first x, $nodeCopy)
+  for y in tails x | x is [=node,:.] repeat x.first := $nodeCopy
   nil  
 
 chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==
@@ -1176,7 +1119,7 @@ chk(x,key) == fn(x,0,key) where fn(x,cnt,key) ==
     sayBrightly ["--> ", key, " <---"]
     hahaha(key)
   atom x => cnt
-  VECP x => systemError nil
+  vector? x => systemError nil
   for y in x repeat cnt := fn(y, cnt + 1, key)
   cnt
  

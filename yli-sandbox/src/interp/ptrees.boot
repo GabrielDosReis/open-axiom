@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ structure %Ast ==
 --% SPECIAL NODES
 pfListOf x          == pfTree('listOf,x)
 pfListOf? x         == pfAbSynOp?(x,'listOf)
-pfAppend list       == APPLY(function append,list)
+pfAppend list       == apply(function append,list)
 
 pfNothing ()        == pfTree('nothing, [])
 pfNothing? form     == pfAbSynOp?(form, 'nothing)
@@ -95,6 +95,9 @@ pfIdSymbol form          == pfRename tokPart form
 pfDocument strings       == pfLeaf('Document, strings)
 pfDocument? form         == pfAbSynOp?(form, 'Document)
 pfDocumentText form      == tokPart form
+
+pfDefinableName? form ==
+  pfAbSynOp form in '(id integer)
 
 pfLiteral? form ==
   pfAbSynOp form in '(integer symbol expression one zero char string float)
@@ -161,8 +164,8 @@ pfNotArg pf == second pf       -- was ==>
 pfEnSequence a==
            if null a
            then  pfTuple pfListOf a
-           else if null cdr a
-                then  car a
+           else if null rest a
+                then  first a
                 else  pfSequence pfListOf a
 pfFromDom(dom,expr)==
     if pfApplication? expr
@@ -304,12 +307,11 @@ pfDWhereExpr pf == third pf       -- was ==>
 
 -- With        := (Base: [Typed],  Within: [WithPart])
 
-pfWith(pfbase, pfwithin,pfwithon) ==
-         pfTree('With, [pfbase, pfwithin,pfwithon])
+pfWith(pfbase, pfwithin) ==
+         pfTree('With, [pfbase,pfwithin])
 pfWith?(pf) == pfAbSynOp? (pf, 'With)
-pfWithBase pf == second pf       -- was ==>
-pfWithWithin pf == third pf       -- was ==>
-pfWithWithon pf == fourth pf       -- was ==>
+pfWithBase pf == second pf 
+pfWithWithin pf == third pf
 pf0WithBase pf == pfParts pfWithBase pf
 pf0WithWithin pf == pfParts pfWithWithin pf
 
@@ -671,7 +673,7 @@ pfTaggedToTyped x==
   rt:=if pfTagged? x then pfTaggedExpr x else pfNothing()
   form:= if pfTagged? x then pfTaggedTag x else x
   not pfId? form =>
-      a:=pfId GENSYM()
+      a:=pfId gensym()
       pfTyped(pfSuch(a,
            pfInfApplication (pfId "=", a,form)),rt)
   pfTyped(form,rt)
@@ -700,7 +702,7 @@ pfPushBody(t,args,body)==
 pfCheckItOut x ==
   rt:=if pfTagged? x then pfTaggedExpr x else pfNothing()
   form:= if pfTagged? x then pfTaggedTag x else x
-  pfId? form => [pfListOf [pfTyped(form,rt)],nil,rt]
+  pfDefinableName? form => [pfListOf [pfTyped(form,rt)],nil,rt]
   pfCollect1? form =>
                 [pfListOf [pfCollectVariable1 form],nil,rt]
   pfTuple? form =>
@@ -767,9 +769,9 @@ pfSexpr pform ==
                 args :=
                     a := pfApplicationArg pform
                     if pfTuple? a then pf0TupleParts a else [a]
-                [strip p for p in cons(pfApplicationOp pform, args)]
+                [strip p for p in [pfApplicationOp pform, :args]]
  
-            cons(pfAbSynOp pform, [strip p for p in pfParts pform])
+            [pfAbSynOp pform, :[strip p for p in pfParts pform]]
  
 pfCopyWithPos( pform , pos ) == 
     pfLeaf? pform =>         pfLeaf( pfAbSynOp pform , tokPart pform , pos )

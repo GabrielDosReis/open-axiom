@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ namespace BOOT
 -- pre oldAxiomCategory is (dispatchVector . (cat form))
 -- oldAxiomCategory objects are (dispatchVector . ( (cat form)  hash defaultpack parentlist))
 
-hashCode? x == INTEGERP x
+hashCode? x == integer? x
 
 $domainTypeTokens := ['lazyOldAxiomDomain, 'oldAxiomDomain, 'oldAxiomPreCategory,
            'oldAxiomCategory, 0]
@@ -61,7 +61,7 @@ DNameTupleID  := 2
 DNameOtherID  := 3
 
 DNameToSExpr1 dname ==
-  NULL dname => error "unexpected domain name"
+  null dname => error "unexpected domain name"
   first dname = DNameStringID => 
     INTERN(CompStrToString rest dname)
   name0 := DNameToSExpr1 second dname
@@ -71,20 +71,20 @@ DNameToSExpr1 dname ==
     froms := MAPCAR(function DNameToSExpr, rest froms)
     ret   := second args -- a tuple
     ret   := DNameToSExpr second ret -- contents
-    CONS('Mapping, CONS(ret, froms))
+    ['Mapping,:[ret,:froms]]
   name0 = 'Union or name0 = 'Record =>
     sxs := MAPCAR(function DNameToSExpr, rest first args)
-    CONS(name0, sxs)
+    [name0,:sxs]
   name0 = 'Enumeration =>
-    CONS(name0, MAPCAR(function DNameFixEnum, rest first args))
-  CONS(name0, MAPCAR(function DNameToSExpr, args))
+    [name0,:MAPCAR(function DNameFixEnum, rest first args)]
+  [name0,:MAPCAR(function DNameToSExpr, args)]
 
 DNameToSExpr dname ==
   first dname = DNameOtherID  =>
         rest dname
   sx := DNameToSExpr1 dname
-  CONSP sx => sx
-  LIST sx
+  cons? sx => sx
+  [sx]
 
 DNameFixEnum arg == CompStrToString rest arg
   
@@ -108,17 +108,17 @@ SExprToDName(sexpr, cosigVal) ==
 
 -- local garbage because Compiler strings are null terminated
 StringToCompStr(str) == 
-   CONCATENATE(QUOTE STRING, str, STRING (CODE_-CHAR 0))
+   strconc(str, STRING (CODE_-CHAR 0))
 
 CompStrToString(str) == 
-   SUBSTRING(str, 0, (LENGTH str - 1))
+   SUBSTRING(str, 0, (# str - 1))
 -- local garbage ends
 
 runOldAxiomFunctor(:allArgs) ==
   [:args,env] := allArgs
   getConstructorKindFromDB env = "category" =>
       [$oldAxiomPreCategoryDispatch,: [env, :args]]
-  dom:=APPLY(env, args)
+  dom:=apply(env, args)
   makeOldAxiomDispatchDomain dom
 
 makeLazyOldAxiomDispatchDomain domform ==
@@ -131,7 +131,7 @@ makeLazyOldAxiomDispatchDomain domform ==
   dd
 
 makeOldAxiomDispatchDomain dom ==
-  CONSP dom => dom
+  cons? dom => dom
   [$oldAxiomDomainDispatch,hashTypeForm(dom.0,0),:dom]
 
 closeOldAxiomFunctor(name) ==
@@ -139,16 +139,16 @@ closeOldAxiomFunctor(name) ==
 
 lazyOldAxiomDomainLookupExport(domenv, self, op, sig, box, skipdefaults, env) ==
   dom := instantiate domenv
-  SPADCALL(rest dom, self, op, sig, box, skipdefaults, first(dom).3)
+  SPADCALL(rest dom, self, op, sig, box, skipdefaults, first dom.3)
 
 lazyOldAxiomDomainHashCode(domenv, env) == first domenv
 
 lazyOldAxiomDomainDevaluate(domenv, env) ==
   dom := instantiate domenv
-  SPADCALL(rest dom, first(dom).1)
+  SPADCALL(rest dom, first dom.1)
 
 lazyOldAxiomAddChild(domenv, kid, env) ==
-  CONS($lazyOldAxiomDomainDispatch,domenv)
+  [$lazyOldAxiomDomainDispatch,:domenv]
 
 $lazyOldAxiomDomainDispatch :=
    VECTOR('lazyOldAxiomDomain,
@@ -163,8 +163,8 @@ $lazyOldAxiomDomainDispatch :=
 -- old Axiom category objects are  (dispatch . [catform, hashcode, defaulting package, parent vector, dom])
 oldAxiomPreCategoryBuild(catform, dom, env) ==
    pack := oldAxiomCategoryDefaultPackage(catform, dom)
-   CONS($oldAxiomCategoryDispatch,
-       [catform, hashTypeForm(catform,0), pack, oldAxiomPreCategoryParents(catform,dom), dom])
+   [$oldAxiomCategoryDispatch,
+       :[catform, hashTypeForm(catform,0), pack, oldAxiomPreCategoryParents(catform,dom), dom]]
 oldAxiomPreCategoryHashCode(catform, env) == hashTypeForm(catform,0)
 oldAxiomCategoryDefaultPackage(catform, dom) ==
     hasDefaultPackage opOf catform 
@@ -191,7 +191,7 @@ oldAxiomPreCategoryParents(catform,dom) ==
   parents := parentsOf opOf catform
   PROGV(vars, vals,
     LIST2VEC
-      [EVAL quoteCatOp cat for [cat,:pred] in parents | EVAL pred])
+      [eval quoteCatOp cat for [cat,:pred] in parents | eval pred])
 
 quoteCatOp cat == 
    atom cat => MKQ cat
@@ -201,19 +201,19 @@ quoteCatOp cat ==
 oldAxiomCategoryLookupExport(catenv, self, op, sig, box, env) ==
    [catform,hash, pack,:.] := catenv
    opIsHasCat op => if EQL(sig, hash) then [self] else nil
-   NULL(pack) => nil
-   if not VECP pack then
-       pack:=apply(pack, CONS(self, rest catform))
-       RPLACA(CDDR catenv, pack)
+   null(pack) => nil
+   if not vector? pack then
+       pack:=apply(pack, [self, :rest catform])
+       catenv.rest.rest.first := pack
    fun := basicLookup(op, sig, pack, self) => [fun]
    nil
 
-oldAxiomCategoryParentCount([.,.,.,parents,.], env) == LENGTH parents
+oldAxiomCategoryParentCount([.,.,.,parents,.], env) == # parents
 oldAxiomCategoryNthParent([.,.,.,parvec,dom], n, env) ==
-  catform := ELT(parvec, n-1)
+  catform := parvec.(n-1)
   VECTORP KAR catform => catform
   newcat := oldAxiomPreCategoryBuild(catform,dom,nil)
-  SETELT(parvec, n-1, newcat)
+  parvec.(n-1) := newcat
   newcat
 
 oldAxiomCategoryBuild([catform,:.], dom, env) ==
@@ -262,7 +262,7 @@ $attributeDispatch :=
 
 
 orderedDefaults(conform,domform) ==
-  $depthAssocCache : local := MAKE_-HASHTABLE 'ID
+  $depthAssocCache : local := hashTable 'EQ
   conList := [x for x in orderCatAnc (op := opOf conform) | hasDefaultPackage op]
   acc := nil
   ancestors := ancestorsOf(conform,domform)
@@ -283,10 +283,10 @@ instantiate domenv ==
 --     fn := SYMBOL_-FUNCTION functor
 --     SETF(SYMBOL_-FUNCTION functor, ofn)
 --     PUT(functor, 'instantiate, fn)
---  domvec := APPLY(fn, args)
-  domvec := APPLY(functor, args)
-  RPLACA(oldDom, $oldAxiomDomainDispatch)
-  RPLACD(oldDom, [second oldDom,: domvec])
+--  domvec := apply(fn, args)
+  domvec := apply(functor, args)
+  oldDom.first := $oldAxiomDomainDispatch
+  oldDom.rest := [second oldDom,: domvec]
   oldDom
 
 hashTypeForm([fn,: args], percentHash) == 
@@ -318,7 +318,7 @@ oldAxiomDomainLookupExport _
        oldCompLookup(op, sig, domainVec, self)
      null val => val
      if constant then val := SPADCALL val
-     RPLACA(box, val)
+     box.first := val
      box
      
 oldAxiomDomainHashCode(domenv, env) == first domenv
@@ -328,9 +328,9 @@ oldAxiomDomainHasCategory(domenv, cat, env) ==
     HasCategory(domvec, devaluate cat)
 
 oldAxiomDomainDevaluate(domenv, env) == 
-   SExprToDName(rest(domenv).0, 'T)
+   SExprToDName(rest domenv.0, 'T)
 
-oldAxiomAddChild(domenv, child, env) == CONS($oldAxiomDomainDispatch, domenv)
+oldAxiomAddChild(domenv, child, env) == [$oldAxiomDomainDispatch,:domenv]
 
 $oldAxiomDomainDispatch :=
    VECTOR('oldAxiomDomain,
@@ -342,18 +342,18 @@ $oldAxiomDomainDispatch :=
 
 basicLookupCheckDefaults(op,sig,domain,dollar) ==
   box := [nil]
-  not VECP(dispatch := first dollar) => error "bad domain format"
+  not vector?(dispatch := first dollar) => error "bad domain format"
   lookupFun := dispatch.3
   dispatch.0 = 0  =>  -- new compiler domain object
        hashPercent :=
-          VECP dollar => hashType(dollar.0,0)
+          vector? dollar => hashType(dollar.0,0)
           hashType(dollar,0)
 
        hashSig :=
          hashCode? sig => sig
          hashType( ['Mapping,:sig], hashPercent)
 
-       if SYMBOLP op then op := hashString SYMBOL_-NAME op
+       if symbol? op then op := hashString SYMBOL_-NAME op
        first SPADCALL(rest dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
   first SPADCALL(rest dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
 
@@ -383,7 +383,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   if hashCode? op and EQL(op, $hashOp1) then op := 'One
   if hashCode? op and EQL(op, $hashOp0) then op := 'Zero
   hashPercent :=
-    VECP dollar => hashType(dollar.0,0)
+    vector? dollar => hashType(dollar.0,0)
     hashType(dollar,0)
   if hashCode? sig and EQL(sig, hashPercent) then 
          sig := hashType('(Mapping $), hashPercent)
@@ -404,7 +404,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     flag => newLookupInAddChain(op,sig,domain,dollar)
     nil
   maxIndex := MAXINDEX numvec
-  start := ELT(opvec,k)
+  start := opvec.k
   finish :=
     QSGREATERP(max,k) => opvec.(QSPLUS(k,2))
     maxIndex
@@ -438,12 +438,12 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
             formatOpSignature(op,subsumptionSig)]
         nil
       slot := domain.loc
-      null atom slot =>
-        QCAR slot = 'newGoGet => someMatch:=true
+      cons? slot =>
+        slot.op = 'newGoGet => someMatch:=true
                    --treat as if operation were not there
         --if EQ(QCAR slot,'newGoGet) then
         --  UNWIND_-PROTECT --break infinite recursion
-        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot QCDR slot),
+        --    ((SETELT(domain,loc,'skip); slot := replaceGoGetSlot rest slot),
         --      if domain.loc = 'skip then domain.loc := slot)
         return (success := slot)
       slot = 'skip =>       --recursive call from above 'replaceGoGetSlot
@@ -453,7 +453,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   (success ~= 'failed) and success =>
     if $monitorNewWorld then
       sayLooking1('"<----",uu) where uu() ==
-        CONSP success => [first success,:devaluate rest success]
+        cons? success => [first success,:devaluate rest success]
         success
     success
   subsumptionSig and (u:= basicLookup(op,subsumptionSig,domain,dollar)) => u
@@ -464,13 +464,13 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := second slot4
   SIZE catVec = 0 => nil                      --early exit if no categories
-  INTEGERP KDR catVec.0 =>
+  integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
   if $monitorNewWorld = true then sayBrightly concat('"----->",
     form2String devaluate dom,'"-----> searching default packages for ",op)
   predvec := dom.3
-  packageVec := QCAR slot4
+  packageVec := first slot4
 --the next three lines can go away with new category world
   varList := ['$,:$FormalMapVariableList]
   valueList := [dom,:[dom.(5+i) for i in 1..(# rest dom.0)]]
@@ -479,7 +479,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
   for i in 0..MAXINDEX packageVec |
        (entry := packageVec.i) and entry ~= true repeat
     package :=
-      VECP entry =>
+      vector? entry =>
          if $monitorNewWorld then
            sayLooking1('"already instantiated cat package",entry)
          entry
@@ -489,7 +489,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
         if not GETL(entry,'LOADED) then loadLib entry
         infovec := GETL(entry,'infovec)
         success :=
-          --VECP infovec =>  ----new world
+          --vector? infovec =>  ----new world
           true =>  ----new world
             opvec := infovec.1
             max := MAXINDEX opvec
@@ -499,9 +499,9 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             endPos :=
               code+2 > max => SIZE byteVector
               opvec.(code+2)
-            --not nrunNumArgCheck(#(QCDR sig),byteVector,opvec.code,endPos) => nil
+            --not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
-            --numOfArgs ~= #(QCDR sig) => nil
+            --numOfArgs ~= #sig.source => nil
             packageForm := [entry,'$,:rest cat]
             package := evalSlotDomain(packageForm,dom)
             packageVec.i := package
@@ -537,7 +537,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
 
 HasAttribute(domain,attrib) ==
   hashPercent :=
-       VECP domain => hashType(domain.0,0)
+       vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   isDomain domain =>
      FIXP((first domain).0) => 
@@ -552,7 +552,7 @@ HasAttribute(domain,attrib) ==
  
 newHasAttribute(domain,attrib) ==
   hashPercent :=
-       VECP domain => hashType(domain.0,0)
+       vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   predIndex :=
      hashCode? attrib =>
@@ -574,7 +574,7 @@ newHasCategory(domain,catform) ==
   auxvec := first slot4
   catvec := second slot4
   $isDefaultingPackage: local := isDefaultPackageForm? devaluate domain
-  #catvec > 0 and INTEGERP KDR catvec.0 =>              --old style
+  #catvec > 0 and integer? KDR catvec.0 =>              --old style
     predIndex := lazyMatchAssocV1(catform,catvec,domain)
     null predIndex => false
     predIndex = 0 => true
@@ -583,7 +583,7 @@ newHasCategory(domain,catform) ==
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
 
 getCatForm(catvec, index, domain) ==
-   NUMBERP(form := QVELT(catvec,index)) => domain.form
+   integer?(form := QVELT(catvec,index)) => domain.form
    form
 
 HasSignature(domain,[op,sig]) ==
@@ -611,5 +611,5 @@ HasCategory(domain,catform') ==
 --    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
 
 domainEqual(a,b) == 
-  VECP a and VECP b and a.0 = b.0
+  vector? a and vector? b and a.0 = b.0
  

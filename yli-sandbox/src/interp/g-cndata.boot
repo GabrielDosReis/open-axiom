@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ getCDTEntry(info,isName) ==
  
 putConstructorProperty(name,prop,val) ==
   null (entry := getCDTEntry(name,true)) => NIL
-  RPLACD(rest entry,PUTALIST(CDDR entry,prop,val))
+  entry.rest.rest := PUTALIST(CDDR entry,prop,val)
   true
 
 attribute? name == 
@@ -105,7 +105,7 @@ getConstructorUnabbreviation op ==
   abbreviation?(op) or throwKeyedMsg("S2IL0019",[op])
  
 mkUserConstructorAbbreviation(c,a,type) ==
-  if not atom c then c := first c  --  Existing constructors will be wrapped
+  if cons? c then c := first c  --  Existing constructors will be wrapped
   constructorAbbreviationErrorCheck(c,a,type,'abbreviationError)
   clearClams()
   clearConstructorCache(c)
@@ -254,7 +254,7 @@ isConstructorName op ==
 nAssocQ(x,l,n) ==
   repeat
     if atom l then return nil
-    if EQ(x,(QCAR l).n) then return QCAR l
-    l:= QCDR l
+    if EQ(x,first(l).n) then return first l
+    l:= rest l
  
 

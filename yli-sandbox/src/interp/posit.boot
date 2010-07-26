@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ pfPosOrNopos pf ==
     poNoPosition()
  
 poIsPos? pos ==
-    CONSP pos and CONSP first pos and #first pos = 5
+    cons? pos and cons? first pos and #first pos = 5
  
 lnCreate(extBl, st, gNo, :optFileStuff) ==
     lNo :=
@@ -117,7 +117,7 @@ pfSourceToken form ==
 --constructer and selectors for leaf tokens
 
 tokConstruct(hd,tok,:pos)==
-         a:=cons(hd,tok)
+         a := [hd,:tok]
          IFCAR pos =>
              pfNoPosition? first pos=> a
              ncPutQ(a,"posn",first pos)
@@ -138,7 +138,7 @@ pfAbSynOp form ==
 
 pfAbSynOp?(form, op) ==
     hd := first form
-    EQ(hd, op) or EQCAR(hd, op)
+    EQ(hd, op) or hd is [=op,:.]
 
 pfLeaf? form ==
   pfAbSynOp form in
@@ -177,7 +177,7 @@ pfSourcePositions form ==
 pfSourcePositionlist x==
       if null x
       then nil
-      else APPEND(pfSourcePositions first x,pfSourcePositionlist rest x)
+      else append(pfSourcePositions first x,pfSourcePositionlist rest x)
  
  
 poCharPosn posn == rest posn
@@ -185,7 +185,7 @@ poCharPosn posn == rest posn
 pfCharPosn posn == poCharPosn posn
  
 poLinePosn posn       ==
-    posn => lnLocalNum  poGetLineObject posn  --VECP posn =>
+    posn => lnLocalNum  poGetLineObject posn  --vector? posn =>
     CDAR posn
 
 pfLinePosn posn == poLinePosn posn

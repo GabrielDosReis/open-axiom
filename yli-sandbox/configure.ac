@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-03-10], 
+AC_INIT([OpenAxiom], [1.4.0-2010-07-18], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -357,6 +357,16 @@ if test -z $axiom_fasl_type; then
     AC_MSG_RESULT([$axiom_fasl_type])
 fi
 AC_SUBST(axiom_fasl_type)
+
+## Occaionally, we may want to keep intermediary files.
+oa_keep_files=
+AC_ARG_ENABLE([int-file-retention], 
+              [  --enable-int-file-retention   keep intermediary files],
+              [case $enableval in
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
+               esac])
+AC_SUBST(oa_keep_files)
 
 ## Does it make sense to pretend that we support multithreading?
 oa_enable_threads=no

@@ -21,24 +21,20 @@
                 |LNAGG-;maxIndex;AI;6|)) 
 
 (DEFUN |LNAGG-;indices;AL;1| (|a| $)
-  (PROG (#0=#:G1409 |i| #1=#:G1410)
-    (RETURN
-      (SEQ (PROGN
-             (LETT #0# NIL |LNAGG-;indices;AL;1|)
-             (SEQ (LETT |i| (SPADCALL |a| (|getShellEntry| $ 9))
-                        |LNAGG-;indices;AL;1|)
-                  (LETT #1# (SPADCALL |a| (|getShellEntry| $ 10))
-                        |LNAGG-;indices;AL;1|)
-                  G190 (COND ((> |i| #1#) (GO G191)))
-                  (LETT #0# (CONS |i| #0#) |LNAGG-;indices;AL;1|)
-                  (LETT |i| (+ |i| 1) |LNAGG-;indices;AL;1|) (GO G190)
-                  G191 (EXIT (NREVERSE0 #0#)))))))) 
+  (LET ((|i| (SPADCALL |a| (|getShellEntry| $ 9)))
+        (#0=#:G1412 (SPADCALL |a| (|getShellEntry| $ 10)))
+        (#1=#:G1411 NIL))
+    (LOOP
+      (COND
+        ((> |i| #0#) (RETURN (NREVERSE #1#)))
+        (T (SETQ #1# (CONS |i| #1#))))
+      (SETQ |i| (+ |i| 1))))) 
 
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
   (COND
-    ((>= |i| (SPADCALL |a| (|getShellEntry| $ 9)))
-     (NOT (> |i| (SPADCALL |a| (|getShellEntry| $ 10)))))
-    ('T NIL))) 
+    ((NOT (< |i| (SPADCALL |a| (|getShellEntry| $ 9))))
+     (NOT (< (SPADCALL |a| (|getShellEntry| $ 10)) |i|)))
+    (T NIL))) 
 
 (DEFUN |LNAGG-;concat;ASA;3| (|a| |x| $)
   (SPADCALL |a| (SPADCALL 1 |x| (|getShellEntry| $ 22))
@@ -57,26 +53,21 @@
      (SPADCALL |l| (|getShellEntry| $ 9)))) 
 
 (DEFUN |LinearAggregate&| (|#1| |#2|)
-  (PROG (|dv$1| |dv$2| |dv$| $ |pv$|)
-    (RETURN
-      (PROGN
-        (LETT |dv$1| (|devaluate| |#1|) . #0=(|LinearAggregate&|))
-        (LETT |dv$2| (|devaluate| |#2|) . #0#)
-        (LETT |dv$| (LIST '|LinearAggregate&| |dv$1| |dv$2|) . #0#)
-        (LETT $ (|newShell| 33) . #0#)
-        (|setShellEntry| $ 0 |dv$|)
-        (|setShellEntry| $ 3
-            (LETT |pv$|
-                  (|buildPredVector| 0 0
-                      (LIST (|HasAttribute| |#1| '|shallowlyMutable|))) . #0#))
-        (|stuffDomainSlots| $)
-        (|setShellEntry| $ 6 |#1|)
-        (|setShellEntry| $ 7 |#2|)
-        (COND
-          ((|HasAttribute| |#1| '|finiteAggregate|)
-           (|setShellEntry| $ 31
-               (CONS (|dispatchFunction| |LNAGG-;maxIndex;AI;6|) $))))
-        $)))) 
+  (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
+         (|dv$| (LIST '|LinearAggregate&| |dv$1| |dv$2|))
+         ($ (|newShell| 33))
+         (|pv$| (|buildPredVector| 0 0
+                    (LIST (|HasAttribute| |#1| '|shallowlyMutable|)))))
+    (|setShellEntry| $ 0 |dv$|)
+    (|setShellEntry| $ 3 |pv$|)
+    (|stuffDomainSlots| $)
+    (|setShellEntry| $ 6 |#1|)
+    (|setShellEntry| $ 7 |#2|)
+    (COND
+      ((|HasAttribute| |#1| '|finiteAggregate|)
+       (|setShellEntry| $ 31
+           (CONS (|dispatchFunction| |LNAGG-;maxIndex;AI;6|) $))))
+    $)) 
 
 (MAKEPROP '|LinearAggregate&| '|infovec|
     (LIST '#(NIL NIL NIL NIL NIL NIL (|local| |#1|) (|local| |#2|)

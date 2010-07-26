@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ showFrom(D,:option) ==
   $predicateList: local := getConstructorPredicatesFromDB nam
   for (opSig := [op,sig]) in getDomainSigs1(D,ops) repeat
     u := from?(D,op,sig)
-    x := assoc(u,alist) => RPLACD(x,[opSig,:rest x])
+    x := assoc(u,alist) => x.rest := [opSig,:rest x]
     alist := [[u,opSig],:alist]
   for [conform,:l] in alist repeat
     sayBrightly concat('"From ",form2String conform,'":")
@@ -115,7 +115,7 @@ getDomainOps D ==
   domname := D.0
   conname := first domname
   $predicateList: local := getConstructorPredicatesFromDB conname
-  REMDUP listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
+  removeDuplicates listSort(function GLESSEQP,ASSOCLEFT getDomainOpTable(D,nil))
  
 getDomainSigs(D,:option) ==
   domname := D.0
@@ -142,7 +142,7 @@ getExtensionsOfDomain domain ==
   u := getDomainExtensionsOfDomain domain
   cats := getCategoriesOfDomain domain
   for x in u repeat
-    cats := union(cats,getCategoriesOfDomain EVAL x)
+    cats := union(cats,getCategoriesOfDomain eval x)
   [:u,:cats]
 
 getDomainExtensionsOfDomain domain ==
@@ -150,12 +150,12 @@ getDomainExtensionsOfDomain domain ==
   d := domain
   while (u := devaluateSlotDomain(5,d)) repeat
     acc := [u,:acc]
-    d := EVAL u
+    d := eval u
   acc
 
 devaluateSlotDomain(u,dollar) ==
   u = '$ => devaluate dollar
-  FIXP u and VECP (y := dollar.u) => devaluate y
+  FIXP u and vector? (y := dollar.u) => devaluate y
   u is ['NRTEVAL,y] => MKQ eval y
   u is ['QUOTE,y] => u
   u is [op,:argl] => [op,:[devaluateSlotDomain(x,dollar) for x in argl]]
@@ -168,7 +168,7 @@ getCategoriesOfDomain domain ==
      test() == predkeyVec.i and 
        (x := catforms . i) isnt ['DomainSubstitutionMacro,:.]
      fn() ==
-       VECP x => devaluate x
+       vector? x => devaluate x
        devaluateSlotDomain(x,domain)
 
 getInheritanceByDoc(D,op,sig,:options) ==
@@ -193,17 +193,17 @@ showDomainsOp1(u,key) ==
   u
 
 getDomainRefName(dom,nam) ==
-  CONSP nam => [getDomainRefName(dom,x) for x in nam]
+  cons? nam => [getDomainRefName(dom,x) for x in nam]
   not FIXP nam => nam
   slot := dom.nam
-  VECP slot => slot.0
+  vector? slot => slot.0
   slot is ["setShellEntry",:.] => 
     getDomainRefName(dom,getDomainSeteltForm slot)
   slot
 
 getDomainSeteltForm ["setShellEntry",.,.,form] ==
   form is ['evalSlotDomain,u,d] => devaluateSlotDomain(u,d)
-  VECP form => systemError()
+  vector? form => systemError()
   form
  
 showPredicates dom ==
@@ -241,7 +241,7 @@ showGoGet dom ==
     sayBrightly [i,'": ",:formatOpSignature(op,signumList),:namePart]
 
 formatLazyDomain(dom,x) ==
-  VECP x => devaluate x
+  vector? x => devaluate x
   x is [dollar,slotNumber,:form] => formatLazyDomainForm(dom,form)
   systemError nil
  

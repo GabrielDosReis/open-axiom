@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ $topicSynonyms := '(
 
 $groupAssoc := '((extended . 1) (basic . 2) (hidden . 4))
 
-$topicHash := MAKE_-HASHTABLE "ID"
+$topicHash := hashTable 'EQ
 SETF(GETHASH("basic",$topicHash),2)
 SETF(GETHASH("algebraic",$topicHash),4)
 SETF(GETHASH("miscellaneous",$topicHash),13)
@@ -85,11 +85,11 @@ SETF(GETHASH("trignometric",$topicHash),11)
 --=======================================================================
 --called at build-time before making DOCUMENTATION property
 mkTopicHashTable() ==                         --given $groupAssoc = ((extended . 1)(basic . 2)(xx . 4)..)
-  $defaultsHash := MAKE_-HASHTABLE 'ID        --keys are ops, value is list of topic names
+  $defaultsHash := hashTable 'EQ        --keys are ops, value is list of topic names
   for [kind,:items] in $topicsDefaults repeat --$topicsDefaults is ((<topic> op ...) ..)
     for item in items repeat 
       HPUT($defaultsHash,item,[kind,:HGET($defaultsHash,item)])
-  $conTopicHash  := MAKE_-HASHTABLE 'EQL      --key is constructor name; value is
+  $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
   instream := OPEN '"topics.data"           
   while not EOFP instream repeat
     line := READLINE instream
@@ -107,7 +107,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
            | lst := string2OpAlist line]
     alist => HPUT($conTopicHash,con,alist)
   --initialize table of topic classes
-  $topicHash := MAKE_-HASHTABLE 'ID           --$topicHash has keys: topic and value: index
+  $topicHash := hashTable 'EQ           --$topicHash has keys: topic and value: index
   for [x,:c] in $groupAssoc repeat HPUT($topicHash,x,c)
   $topicIndex := rest LAST $groupAssoc
 
@@ -116,7 +116,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   for con in HKEYS $conTopicHash repeat
     conCode := 0
     for pair in HGET($conTopicHash,con) repeat 
-      RPLACD(pair,code := topicCode rest pair)
+      pair.rest := code := topicCode rest pair
       conCode := LOGIOR(conCode,code)
     HPUT($conTopicHash,con,
       [['constructor,:conCode],:HGET($conTopicHash,con)])      
@@ -134,7 +134,7 @@ blankLine? line ==
 string2OpAlist s ==
   m := #s
   k := skipBlanks(s,0,m) or return nil
-  UPPER_-CASE_-P s.k => nil       --skip constructor names
+  upperCase? s.k => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
     acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
@@ -163,7 +163,7 @@ topicCode lst ==
     x
   if null intersection('(basic extended hidden),u) then u := ['extended,:u]
   bitIndexList := nil
-  for x in REMDUP u repeat
+  for x in removeDuplicates u repeat
     bitIndexList := [fn x,:bitIndexList] where fn x ==
       k := HGET($topicHash,x) => k
       HPUT($topicHash,x,$topicIndex := $topicIndex * 2)
@@ -180,7 +180,7 @@ addTopic2Documentation(con,docAlist) ==
     [op,:pairlist] := x
     code := LASSOC(op,alist) or 0
     for sigDoc in pairlist repeat 
-      sigDoc is [.,.] => RPLACD(rest sigDoc,code)
+      sigDoc is [.,.] => sigDoc.rest.rest := code
       systemError sigDoc
   docAlist
     
@@ -190,7 +190,7 @@ addTopic2Documentation(con,docAlist) ==
 td con ==
   $topicClasses := ASSOCRIGHT mySort
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
-  hash := MAKE_-HASHTABLE 'ID
+  hash := hashTable 'EQ
   tdAdd(con,hash)
   tdPrint hash 
 
@@ -212,9 +212,9 @@ topics con ==
   --assumes that DOCUMENTATION property already has #s added
   $topicClasses := ASSOCRIGHT mySort
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
-  hash := MAKE_-HASHTABLE 'ID
+  hash := hashTable 'EQ
   tdAdd(con,hash)
-  for x in REMDUP [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
+  for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
   for x in HKEYS hash repeat HPUT(hash,x,mySort HGET(hash,x))
   tdPrint hash 
@@ -239,7 +239,7 @@ transferClassCodes(conform,opAlist) ==
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
     | FIXP (code := myLastAtom pair) repeat
-      u := ASSOC(QCAR pair,opAlist) => RPLACD(LASTNODE u,code)
+      u := ASSOC(pair.op,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
 --           Filter Operation by Topic

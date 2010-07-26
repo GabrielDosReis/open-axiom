@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -119,7 +119,7 @@ evalTargetedADEF(t,vars,types,body) ==
   -- this is used in the interpret-code case, but isn't so bad any way
   -- since it makes the bodies look more like regular map bodies
 
-  sublist := [[var,:GENSYM()] for var in vars]
+  sublist := [[var,:gensym()] for var in vars]
   body := sublisNQ(sublist,body)
   vars := [rest v for v in sublist]
 
@@ -153,8 +153,8 @@ compileTargetedADEF(t,vars,types,body) ==
 compileADEFBody(t,vars,types,body,computedResultType) ==
 --+
   $compiledOpNameList := [$mapName]
-  minivectorName := makeInternalMapMinivectorName(PNAME $mapName)
-  body := substitute(minivectorName,"$$$",body)
+  minivectorName := makeInternalMapMinivectorName PNAME $mapName
+  body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
 
   -- The use of the three variables $definingMap, $genValue and $compilingMap
@@ -177,18 +177,14 @@ compileADEFBody(t,vars,types,body,computedResultType) ==
   -- MCD 13/3/96
   parms := [:vars,"envArg"]
   if not $definingMap and ($genValue or $compilingMap) then
-    fun := [$mapName,["LAMBDA",parms, 
-                        declareGlobalVariables [minivectorName],
-                          :declareUnusedParameters(parms,body)]]
-    code :=  wrap compileInteractive fun
+    code := wrap compileInteractive [$mapName,["LAMBDA",parms,body]]
   else
-    $freeVariables := []
-    $boundVariables := [minivectorName,:vars]
+    $freeVariables: local := []
+    $boundVariables: local := [minivectorName,:vars]
     -- CCL does not support upwards funargs, so we check for any free variables
     -- and pass them into the lambda as part of envArg.
     body := checkForFreeVariables(body,"ALL")
-    fun := ["function",["LAMBDA",parms,
-                         :declareUnusedParameters(parms,body)]]
+    fun := ["function",["LAMBDA",parms,body]]
     code := ["CONS", fun, ["VECTOR", :reverse $freeVariables]]
 
   val := objNew(code,rt := ['Mapping,computedResultType,:rest types])
@@ -223,7 +219,7 @@ upAlgExtension t ==
   null (canonicalAE:= coerceInteractive(T,pd)) =>
     throwKeyedMsgCannotCoerceWithValue(objVal T,objMode T,pd)
   sae:= ['SimpleAlgebraicExtension,field,pd,objValUnwrap canonicalAE]
-  saeTypeSynonym := INTERN STRCONC('"SAE",STRINGIMAGE a)
+  saeTypeSynonym := INTERN strconc('"SAE",STRINGIMAGE a)
   saeTypeSynonymValue := objNew(sae,'(Domain))
   fun := getFunctionFromDomain('generator,sae,NIL)
   expr:= wrap SPADCALL(fun)
@@ -241,7 +237,7 @@ upAlgExtension t ==
 
 eq2AlgExtension eq ==
   -- transforms "a=b" to a-b for processing
-  eq is [op,:l] and VECP op and (getUnname op='equation) =>
+  eq is [op,:l] and vector? op and (getUnname op='equation) =>
     [mkAtreeNode "-",:l]
   eq
 
@@ -333,7 +329,7 @@ userDefinedCase(t is [op, lhs, rhs]) ==
   putMode(r, m)
   putValue(r, objNewWrap(MKQ rhs,m))
   putModeSet(r, [m])
-  RPLACD(cdr t, [r])                   -- fix up contained for rhs.
+  t.rest.rest := [r]                   -- fix up contained for rhs.
   nil                                  -- tell bottomUp to continue.
 
 upcase t ==
@@ -346,7 +342,7 @@ upcase t ==
   if first unionDoms is [":",.,.] then
      for i in 0.. for d in unionDoms repeat
         if d is [":",=rhs,.] then rhstag := i
-     if NULL rhstag then error '"upcase: bad Union form"
+     if null rhstag then error '"upcase: bad Union form"
      $genValue =>
         rhstag = first unwrap objVal triple => code := wrap true
         code := wrap false
@@ -383,7 +379,7 @@ upTARGET t ==
   not isLegitimateMode(m,NIL,NIL) => throwKeyedMsg("S2IE0004",[m])
   categoryForm?(m) => throwKeyedMsg("S2IE0014",[m])
   $declaredMode:= m
-  not atom(lhs) and putTarget(lhs,m)
+  cons? lhs and putTarget(lhs,m)
   ms := bottomUp lhs
   first ms ~= m =>
     throwKeyedMsg("S2IC0011",[first ms,m])
@@ -462,6 +458,7 @@ upCOLLECT1 t ==
       putTarget(body,S)
   $interpOnly => interpCOLLECT(op,itrl,body)
   isStreamCollect itrl => collectStream(t,op,itrl,body)
+  $iteratorVars: local := nil
   upLoopIters itrl
   ms:= bottomUpCompile body
   [m]:= ms
@@ -486,7 +483,7 @@ upLoopIters itrl ==
       upLoopIterSTEP(index,lower,step,upperList)
       -- following is an optimization
       typeIsASmallInteger(get(index,'mode,$env)) =>
-        RPLACA(iter,'ISTEP)
+        iter.first := 'ISTEP
     -- at this point, the AST may already be badly corrupted,
     -- but better late than never.
     throwKeyedMsg("S2IS0061",nil)
@@ -494,7 +491,7 @@ upLoopIters itrl ==
 upLoopIterIN(iter,index,s) ==
   iterMs := bottomUp s
 
-  null IDENTP index =>  throwKeyedMsg("S2IS0005",[index])
+  not IDENTP index =>  throwKeyedMsg("S2IS0005",[index])
 
   if $genValue and first iterMs is ['Union,:.] then
     v := coerceUnion2Branch getValue s
@@ -513,15 +510,15 @@ upLoopIterIN(iter,index,s) ==
       NIL
     upLoopIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,first newIter)
-    RPLACD(iter,rest newIter)
+    iter.first := first newIter
+    iter.rest := rest newIter
 
   iterMs isnt [['List,ud]] => throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
 
 upLoopIterSTEP(index,lower,step,upperList) ==
-  null IDENTP index => throwKeyedMsg("S2IS0005",[index])
+  not IDENTP index => throwKeyedMsg("S2IS0005",[index])
   ltype := IFCAR bottomUpUseSubdomain(lower)
   not (typeIsASmallInteger(ltype) or isEqualOrSubDomain(ltype,$Integer))=>
     throwKeyedMsg("S2IS0007",['"lower"])
@@ -536,17 +533,16 @@ upLoopIterSTEP(index,lower,step,upperList) ==
       throwKeyedMsg("S2IS0007",['"upper"])
   if utype then types := [utype, :types]
   else types := [stype, :types]
-  type := resolveTypeListAny REMDUP types
+  type := resolveTypeListAny removeDuplicates types
   put(index,'mode,type,$env)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
 
 evalCOLLECT(op,[:itrl,body],m) ==
   iters := [evalLoopIter itr for itr in itrl]
   bod := getArgValue(body,computedMode body)
   if bod isnt ['SPADCALL,:.] then bod := ['unwrap,bod]
-  code := timedOptimization asTupleNewCode0(second m, ['COLLECT,:iters,bod])
-  if $genValue then code := wrap timedEVALFUN code
-  putValue(op,objNew(code,m))
+  code := timedOptimization asTupleNewCode0(second m, ['%collect,:iters,bod])
+  putValue(op,object(code,m))
 
 falseFun(x) == nil
 
@@ -573,11 +569,11 @@ interpCOLLECT(op,itrl,body) ==
   emptyAtree op
   emptyAtree itrl
   emptyAtree body
-  code := ['COLLECT,:[interpIter itr for itr in itrl],
+  code := ['%collect,:[interpIter itr for itr in itrl],
     interpCOLLECTbody(body,$indexVars,$indexTypes)]
   value := timedEVALFUN code
   t :=
-    null value => '(None)
+    null value => $None
     last $collectTypeList
   rm := ['Tuple,t]
   value := [objValUnwrap coerceInteractive(objNewWrap(v,m),t)
@@ -686,14 +682,14 @@ upStreamIterIN(iter,index,s) ==
       NIL
     upStreamIterSTEP(index,lower,step,upperList)
     newIter := ['STEP,index,lower,step,:upperList]
-    RPLACA(iter,first newIter)
-    RPLACD(iter,rest newIter)
+    iter.first := first newIter
+    iter.rest := rest newIter
 
   (iterMs isnt [['List,ud]]) and (iterMs isnt [['Stream,ud]])
     and (iterMs isnt [['InfinitTuple, ud]]) =>
       throwKeyedMsg("S2IS0006",[index])
   put(index,'mode,ud,$env)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
   s :=
     iterMs is [['List,ud],:.] =>
       form:=[mkAtreeNode 'pretend, [mkAtreeNode 'COERCE,s,['Stream,ud]],
@@ -714,7 +710,7 @@ upStreamIterSTEP(index,lower,step,upperList) ==
 
   put(index,'mode,type := resolveTT(ltype,stype),$env)
   null type => throwKeyedMsg("S2IS0010", nil)
-  mkLocalVar('"the iterator expression",index)
+  mkIteratorVariable index
 
   s :=
     null upperList =>
@@ -741,7 +737,7 @@ collectOneStream(t,op,itrl,body) ==
   -- build stream collect for case of iterating over a single stream
   --  In this case we don't need to build records
   form := mkAndApplyPredicates itrl
-  bodyVec := mkIterFun(first $indexVars,body,$localVars)
+  bodyVec := mkIterFun(first $indexVars,body)
   form := [mkAtreeNode 'map,bodyVec,form]
   bottomUp form
   val := getValue form
@@ -759,20 +755,20 @@ mkAndApplyPredicates itrl ==
   for iter in itrl repeat
     iter is ['WHILE,pred] =>
       fun := 'filterWhile
-      predVec := mkIterFun(indSet,pred,$localVars)
+      predVec := mkIterFun(indSet,pred)
       s := [mkAtreeNode fun,predVec,s]
     iter is ['UNTIL,pred] =>
       fun := 'filterUntil
-      predVec := mkIterFun(indSet,pred,$localVars)
+      predVec := mkIterFun(indSet,pred)
       s := [mkAtreeNode fun,predVec,s]
     iter is ['SUCHTHAT,pred] =>
       fun := 'select
       putTarget(pred,$Boolean)
-      predVec := mkIterFun(indSet,pred,$localVars)
+      predVec := mkIterFun(indSet,pred)
       s := [mkAtreeNode fun,predVec,s]
   s
 
-mkIterFun([index,:s],funBody,$localVars) ==
+mkIterFun([index,:s],funBody) ==
   -- transform funBody into a lambda with index as the parameter
   mode := objMode getValue s
   mode isnt ['Stream, indMode] and mode isnt ['InfiniteTuple, indMode] =>
@@ -781,14 +777,15 @@ mkIterFun([index,:s],funBody,$localVars) ==
   mkLocalVar($mapName,index)
   [m]:=bottomUpCompile funBody
   mapMode := ['Mapping,m,indMode]
-  $freeVariables := []
-  $boundVariables := [index]
-  -- CCL does not support upwards funargs, so we check for any free variables
-  -- and pass them into the lambda as part of envArg.
-  body := checkForFreeVariables(getValue funBody,$localVars)
+  -- Check generated code for free variables and pass them into the
+  -- lambda as part of envArg.  Since only `index' is bound, every
+  -- other symbol in non-operator position is a free variable.
+  $freeVariables: local := []
+  $boundVariables: local := [index]
+  body := checkForFreeVariables(objVal getValue funBody,"ALL")
   parms := [index,"envArg"]
-  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
-  vec := mkAtreeNode GENSYM()
+  val:=['function,declareUnusedParameters ['LAMBDA,parms,body]]
+  vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
 
@@ -797,8 +794,8 @@ checkForFreeVariables(v,locals) ==
   -- bound variables, the parameter locals contains local variables which might
   -- be free, or the token ALL, which means that any parameter is a candidate
   -- to be free.
-  NULL v => v
-  SYMBOLP v =>
+  null v => v
+  symbol? v =>
     v="$$$" => v -- Placeholder for mini-vector
     MEMQ(v,$boundVariables) => v
     p := POSITION(v,$freeVariables) =>
@@ -815,22 +812,16 @@ checkForFreeVariables(v,locals) ==
       -- Might have a mode at the front of a list, or be calling a function
       -- which returns a function.
       [checkForFreeVariables(op,locals),:[checkForFreeVariables(a,locals) for a in args]]
+    op in '(LAMBDA QUOTE getValueFromEnvironment) => v
     op = "LETT" => -- Expands to a SETQ.
       ["SETF",:[checkForFreeVariables(a,locals) for a in args]]
-    op = "COLLECT" => -- Introduces a new bound variable?
+    op in '(COLLECT REPEAT %collect %loop) =>
       first(args) is ["STEP",var,:.] =>
        $boundVariables := [var,:$boundVariables]
-       r := ["COLLECT",:[checkForFreeVariables(a,locals) for a in args]]
+       r := [op,:[checkForFreeVariables(a,locals) for a in args]]
        $boundVariables := delete(var,$boundVariables)
        r
-      ["COLLECT",:[checkForFreeVariables(a,locals) for a in args]]
-    op = "REPEAT" => -- Introduces a new bound variable?
-      first(args) is ["STEP",var,:.] =>
-       $boundVariables := [var,:$boundVariables]
-       r := ["REPEAT",:[checkForFreeVariables(a,locals) for a in args]]
-       $boundVariables := delete(var,$boundVariables)
-       r
-      ["REPEAT",:[checkForFreeVariables(a,locals) for a in args]]
+      [op,:[checkForFreeVariables(a,locals) for a in args]]
     op = "%LET" =>
       args is [var,form,name] =>
         -- This is some bizarre %LET, not what one would expect in Common Lisp!
@@ -843,11 +834,18 @@ checkForFreeVariables(v,locals) ==
           ["getSimpleArrayEntry","envArg",positionInVec(0,#($freeVariables))]
         ["SETF",newvar,checkForFreeVariables(form,locals)]
       error "Non-simple variable bindings are not currently supported"
+    op in '(LET LET_* %bind) =>
+      vars := [first init for init in first args]
+      inits := [checkInit(init,locals) for init in first args] where
+                  checkInit([var,init],locals) ==
+                     init := checkForFreeVariables(init,locals)
+                     $boundVariables := [var,:$boundVariables]
+                     [var,init]
+      body := checkForFreeVariables(rest args,locals)
+      $boundVariables := setDifference($boundVariables,vars)
+      [op,inits,:body]
     op = "PROG" =>
       error "Non-simple variable bindings are not currently supported"
-    op = "LAMBDA" => v
-    op = "QUOTE" => v
-    op = "getValueFromEnvironment" => v
     [op,:[checkForFreeVariables(a,locals) for a in args]]
   v
 
@@ -919,21 +917,21 @@ mkIterZippedFun(indexList,funBody,zipType,$localVars) ==
   mkLocalVar($mapName,$index)
   [m]:=bottomUpCompile funBody
   mapMode := ['Mapping,m,zipType]
-  $freeVariables := []
-  $boundVariables := [$index]
+  $freeVariables: local := []
+  $boundVariables: local := [$index]
   -- CCL does not support upwards funargs, so we check for any free variables
   -- and pass them into the lambda as part of envArg.
   body :=
    [checkForFreeVariables(form,$localVars) for form in getValue funBody]
   parms := [$index,'envArg]
-  val:=['function,['LAMBDA,parms,:declareUnusedParameters(parms,objVal body)]]
-  vec := mkAtreeNode GENSYM()
+  val:=['function,declareUnusedParameters ['LAMBDA,parms,objVal body]]
+  vec := mkAtreeNode gensym()
   putValue(vec,objNew(['CONS,val,["VECTOR",:reverse $freeVariables]],mapMode))
   vec
 
 subVecNodes(new,old,form) ==
-  ATOM form =>
-    (VECP form) and (form.0 = old) => new
+  atom form =>
+    (vector? form) and (form.0 = old) => new
     form
   [subVecNodes(new,old,first form), :subVecNodes(new,old,rest form)]
 
@@ -950,7 +948,7 @@ iterVarPos var ==
     index=var => return(i)
 
 mkNestedElts n ==
-  n=0 => mkAtreeNode($index or ($index:= GENSYM()))
+  n=0 => mkAtreeNode($index or ($index:= gensym()))
   [mkAtreeNode "elt", mkNestedElts(n-1), mkAtreeNode 'part2]
 
 --% Handlers for construct
@@ -965,7 +963,7 @@ upconstruct t ==
   tar is ['Record,:types] => upRecordConstruct(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and CONSP(tar) and not isPartialMode(tar) then
+  if tar and cons?(tar) and not isPartialMode(tar) then
     first(tar) in aggs =>
       ud :=
         (l is [[realOp, :.]]) and (getUnname(realOp) = 'COLLECT) => tar
@@ -993,7 +991,7 @@ upconstruct t ==
     mode := ['Stream, td]
     evalInfiniteTupleConstruct(op, l, mode, tar)
   if not isPartialMode(tar) and tar is ['List,ud] then
-    mode := ['List, resolveTypeListAny cons(ud,eltTypes)]
+    mode := ['List, resolveTypeListAny [ud,:eltTypes]]
   else mode := ['List, resolveTypeListAny eltTypes]
   if isPartialMode tar then tar:=resolveTM(mode,tar)
   evalconstruct(op,l,mode,tar)
@@ -1007,9 +1005,7 @@ evalTupleConstruct(op,l,m,tar) ==
   ['List, ud] := m
   code := ['APPEND,
     :([["asTupleAsList", getArgValueOrThrow(x,['Tuple, ud])] for x in l])]
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
 
   (val1 := coerceInteractive(val,tar or m)) =>
     putValue(op,val1)
@@ -1021,9 +1017,7 @@ evalInfiniteTupleConstruct(op,l,m,tar) ==
   ['Stream, ud] := m
   code := first [(getArgValue(x,['InfiniteTuple, ud]) or
     throwKeyedMsg("S2IC0007",[['InifinteTuple, ud]])) for x in l]
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
   if tar then val1 := coerceInteractive(val,tar) else val1 := val
 
   val1 =>
@@ -1036,9 +1030,7 @@ evalconstruct(op,l,m,tar) ==
   [agg,:.,underMode]:= m
   code := ['LIST, :(argCode:=[(getArgValue(x,underMode) or
     throwKeyedMsg("S2IC0007",[underMode])) for x in l])]
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
   if tar then val1 := coerceInteractive(val,tar) else val1 := val
 
   val1 =>
@@ -1095,8 +1087,7 @@ upRecordConstruct(op,l,tar) ==
     (len = 1) => ["CONS", :argCode, '()]
     (len = 2) => ["CONS",:argCode]
     ['VECTOR,:argCode]
-  if $genValue then code :=  wrap timedEVALFUN code
-  putValue(op,objNew(code,tar))
+  putValue(op,object(code,tar))
   putModeSet(op,[tar])
 
 --% Handlers for declarations
@@ -1150,12 +1141,12 @@ declare(var,mode) ==
     -- otherwise it looks like (tuple #1 #2 ...)
     nargs :=
       null margs => 0
-      CONSP margs => -1 + #margs
+      cons? margs => -1 + #margs
       1
     nargs ~= #args => throwKeyedMsg("S2IM0008",[var])
   if $compilingMap then mkLocalVar($mapName,var)
   else clearDependencies(var,true)
-  isLocalVar(var) => put(var,'mode,mode,$env)
+  isLocallyBound var => put(var,'mode,mode,$env)
   mode is ['Mapping,:.] => declareMap(var,mode)
   v := get(var,'value,$e) =>
     -- only allow this if either
@@ -1177,7 +1168,8 @@ getAndEvalConstructorArgument tree ==
   triple := getValue tree
   objMode triple = '(Domain) => triple
   isWrapped objVal(triple) => triple
-  isLocalVar objVal triple => compFailure('"   Local variable or parameter used in type")
+  isLocallyBound objVal triple =>
+    compFailure('"   Local variable or parameter used in type")
   objNewWrap(timedEVALFUN objVal(triple), objMode(triple))
 
 replaceSharps(x,d) ==
@@ -1185,19 +1177,19 @@ replaceSharps(x,d) ==
   -- all replaces the triangle variables
   SL:= NIL
   for e in rest d for var in $FormalMapVariableList repeat
-    SL:= CONS(CONS(var,e),SL)
+    SL:= [[var,:e],:SL]
   x := subCopy(x,SL)
   SL:= NIL
   for e in rest d for var in $TriangleVariableList repeat
-    SL:= CONS(CONS(var,e),SL)
+    SL:= [[var,:e],:SL]
   subCopy(x,SL)
 
 isDomainValuedVariable form ==
   -- returns the value of form if form is a variable with a type value
   IDENTP form and (val := (
     get(form,'value,$InteractiveFrame) or _
-    (CONSP($env) and get(form,'value,$env)) or _
-    (CONSP($e) and get(form,'value,$e)))) and
+    (cons?($env) and get(form,'value,$env)) or _
+    (cons?($e) and get(form,'value,$e)))) and
       (member(m := objMode(val),'((Domain) (Category)))
           or conceptualType m = $Category) =>
         objValUnwrap(val)
@@ -1239,8 +1231,8 @@ isPolynomialMode m ==
     op in '(Polynomial RationalFunction AlgebraicFunction Expression
       ElementaryFunction LiouvillianFunction FunctionalExpression
         CombinatorialFunction) => 'all
-    op = 'UnivariatePolynomial => LIST a
-    op = 'Variable       => LIST a
+    op = 'UnivariatePolynomial => [a]
+    op = 'Variable       => [a]
     op in '(MultivariatePolynomial DistributedMultivariatePolynomial
       HomogeneousDistributedMultivariatePolynomial) => a
     NIL
@@ -1271,3 +1263,9 @@ deleteAll(x,l) ==
   x = first(l) => deleteAll(x,rest l)
   [first l,:deleteAll(x,rest l)]
 
+
+$iteratorVars := nil  
+
+mkIteratorVariable id ==
+  $iteratorVars := [id,:$iteratorVars]
+  -- mkLocalVar('"the iterator expression",id)

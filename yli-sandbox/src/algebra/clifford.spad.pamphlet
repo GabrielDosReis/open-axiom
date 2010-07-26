@@ -33,15 +33,12 @@ QuadraticForm(n, K): T == Impl where
     SM ==> SquareMatrix
     V  ==> DirectProduct
  
-    T ==> AbelianGroup with
+    T ==> Join(AbelianGroup, Eltable(V(n,K),K)) with
         quadraticForm: SM(n, K) -> %
             ++ quadraticForm(m) creates a quadratic form from a symmetric,
             ++ square matrix m.
         matrix: % -> SM(n, K)
             ++ matrix(qf) creates a square matrix from the quadratic form qf.
-        elt: (%, V(n, K)) -> K
-            ++ elt(qf,v) evaluates the quadratic form qf on the vector v, 
-            ++ producing a scalar.
  
     Impl ==> SM(n,K) add
         Rep := SM(n,K)

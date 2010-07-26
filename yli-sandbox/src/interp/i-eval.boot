@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ mkEvalable form ==
       [op,:[val for x in argl for typeFlag in rest cosig]] where val() ==
         typeFlag =>
           kind = "category" => MKQ x
-          VECP x => MKQ x
+          vector? x => MKQ x
           loadIfNecessary x
           mkEvalable x
         x is ['QUOTE,:.] => x
@@ -96,7 +96,7 @@ evaluateType0 form ==
   domain:= isDomainValuedVariable form => domain
   form = $EmptyMode => form
   form = "?"        => $EmptyMode
-  STRINGP form => form
+  string? form => form
   form = "$" => form
   $expandSegments : local := nil
   form is ['typeOf,.] =>
@@ -138,7 +138,7 @@ evaluateType form ==
   domain:= isDomainValuedVariable form => domain
   form = $EmptyMode => form
   form = "?"        => $EmptyMode
-  STRINGP form => form
+  string? form => form
   form = "$" => form
   $expandSegments : local := nil
   form is ['typeOf,.] =>
@@ -248,7 +248,7 @@ evalForm(op,opName,argl,mmS) ==
       form :=
         dc='local => --[fun,:form]
           atom fun =>
-            fun in $localVars => ['SPADCALL,:form,fun]
+            isLocallyBound fun => ['SPADCALL,:form,fun]
             [fun,:form,NIL]
           ['SPADCALL,:form,fun]
         dc is ["__FreeFunction__",:freeFun] =>
@@ -287,12 +287,12 @@ evalForm(op,opName,argl,mmS) ==
 
 sideEffectedArg?(t,sig,opName) ==
   opString := SYMBOL_-NAME opName
-  (opName ~= 'setelt) and (ELT(opString, #opString-1) ~= char '_!) => nil
+  (opName ~= 'setelt) and (opString.(#opString-1) ~= char '_!) => nil
   dc := first sig
   t = dc
 
 getArgValue(a, t) ==
-  atom a and not VECP a =>
+  atom a and not vector? a =>
     t' := coerceOrRetract(getBasicObject a,t)
     t' and getValueNormalForm t'
   v := getArgValue1(a, t) => v
@@ -321,7 +321,7 @@ getArgValueOrThrow(x, type) ==
   getArgValue(x,type) or throwKeyedMsg("S2IC0007",[type])
 
 getMappingArgValue(a,t,m is ['Mapping,:ml]) ==
-  (una := getUnname a) in $localVars =>
+  isLocallyBound(una := getUnname a) =>
     $genValue =>
       name := get(una,'name,$env)
       a.0 := name
@@ -355,15 +355,10 @@ getArgValueComp(arg,type,cond) ==
   keyedMsgCompFailure("S2IE0010",[n])
 
 evalFormMkValue(op,form,tm) ==
-  val:=
-    u:=
-      $genValue => wrap timedEVALFUN form
-      form
-    objNew(u,tm)
---+
+  val := object(form,tm)
   if $NRTmonitorIfTrue = true then
     sayBrightlyNT ['"Value of ",op.0,'" ===> "]
-    pp unwrap u
+    pp objValUnwrap val
   putValue(op,val)
   [tm]
 

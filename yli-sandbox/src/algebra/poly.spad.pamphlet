@@ -27,7 +27,7 @@
 ++ Each element can be expressed as a finite linear combination of
 ++ generators. Only non-zero terms are stored.
 
-FreeModule(R:Ring,S:OrderedSet):
+FreeModule(R:Ring,S:OrderedType):
         Join(BiModule(R,R),IndexedDirectProductCategory(R,S)) with
     if R has CommutativeRing then Module(R)
  == IndexedDirectProductAbelianGroup(R,S) add
@@ -66,13 +66,14 @@ FreeModule(R:Ring,S:OrderedSet):
            --map(r*#1,x)
              [[u.k,a] for u in x | (a:=u.c*r) ~= 0$R]
 
-       coerce(x) : OutputForm ==
-         null x => (0$R) :: OutputForm
-         le : List OutputForm := nil
-         for rec in reverse x repeat
-           rec.c = 1 => le := cons(rec.k :: OutputForm, le)
-           le := cons(rec.c :: OutputForm *  rec.k :: OutputForm, le)
-         reduce("+",le)
+       if S has CoercibleTo OutputForm then
+         coerce(x) : OutputForm ==
+           null x => (0$R) :: OutputForm
+           le : List OutputForm := nil
+           for rec in reverse x repeat
+             rec.c = 1 => le := cons(rec.k :: OutputForm, le)
+             le := cons(rec.c :: OutputForm *  rec.k :: OutputForm, le)
+           reduce("+",le)
 
 @
 \section{domain PR PolynomialRing}

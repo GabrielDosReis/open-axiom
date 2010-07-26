@@ -35,10 +35,18 @@
 
 import sys_-os
 import vmlisp
+import hash
 namespace BOOT
 
 module sys_-utility where
+  eval: %Thing -> %Thing
   probleReadableFile : %String -> %Maybe %String
+
+
+++ Evaluate an OpenAxiom VM form.  Eventually, this function is
+++ to be provided as a builtin by a OpenAxiom target machine.
+eval x ==
+  EVAL expandToVMForm x
 
 --%
 $COMBLOCKLIST := nil
@@ -67,7 +75,7 @@ getVMType d ==
   IDENTP d => 
     d = "*" => d
     "%Thing"
-  STRINGP d => "%Thing"            -- literal flag parameter
+  string? d => "%Thing"            -- literal flag parameter
   case (d' := devaluate d) of
     Void => "%Void"
     Identifier => "%Symbol"
@@ -118,7 +126,7 @@ functionp f ==
 ++ remove `item' from `sequence'.
 delete: (%Thing,%Sequence) -> %Sequence
 delete(item,sequence) ==
-  SYMBOLP item => 
+  symbol? item => 
     REMOVE(item,sequence,KEYWORD::TEST,function EQ)
   atom item and not ARRAYP item =>
     REMOVE(item,sequence)
@@ -128,14 +136,14 @@ delete(item,sequence) ==
 CONTAINED: (%Thing,%Thing) -> %Boolean
 CONTAINED(x,y) == main where
   main() ==
-    SYMBOLP x => eq(x,y)
+    symbol? x => eq(x,y)
     equal(x,y)
   eq(x,y) ==
     atom y => EQ(x,y)
-    eq(x, car y) or eq(x, cdr y)
+    eq(x, first y) or eq(x, rest y)
   equal(x,y) ==
     atom y => EQUAL(x,y)
-    equal(x, car y) or equal(x, cdr y)
+    equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'
 -- ??? Should not this be named `alistAllKeys'?
@@ -156,7 +164,7 @@ ASSOCRIGHT x ==
 ADDASSOC: (%Thing,%Thing,%List) -> %List
 ADDASSOC(x,y,l) ==
   atom l => [[x,:y],:l]
-  x = first first l => [[x,:y],:cdr l]
+  x = first first l => [[x,:y],:rest l]
   [first l,:ADDASSOC(x,y,rest l)]
 
 
@@ -198,7 +206,7 @@ RECLAIM() ==
 ++
 makeAbsoluteFilename: %String -> %String
 makeAbsoluteFilename name ==
-  CONCATENATE("STRING",systemRootDirectory(),name)
+  strconc(systemRootDirectory(),name)
 
 ++ returns true if `file' exists as a pathname.
 existingFile? file ==
@@ -226,7 +234,7 @@ checkMkdir path ==
 
 ++ return the pathname to the system module designated by `m'.
 getSystemModulePath m ==
-  CONCAT(systemRootDirectory(),'"algebra/",m,'".",$faslType)
+  strconc(systemRootDirectory(),'"algebra/",m,'".",$faslType)
 
 ++ load module in `path' that supposedly will define the function 
 ++ indicated by `name'.
@@ -256,23 +264,58 @@ bitior(x,y) ==
 ++ compile a function definition, augmenting the current
 ++ evaluation environement with the result of the compilation.
 COMPILE_-DEFUN(name,body) ==
-  EVAL body
+  eval body
   COMPILE name
 
 ++ Augment the current evaluation environment with a function definition.
 EVAL_-DEFUN(name,body) ==
-  EVAL MACROEXPANDALL body
+  eval MACROEXPANDALL body
 
 PRINT_-AND_-EVAL_-DEFUN(name,body) ==
-  EVAL body
+  eval body
   PRINT_-DEFUN(name,body)
 
 
+--% Hash table
+
+hashTable cmp ==
+  testFun :=
+    cmp in '(ID EQ) => function EQ
+    cmp = 'EQL => function EQL
+    cmp = 'EQUAL => function EQUAL
+    error '"bad arg to hashTable"
+  MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
+
+--% Trees to Graphs
+
+minimalise x ==
+  min(x,hashTable 'EQUAL) where
+    min(x,ht) ==
+      y := HGET(ht,x)
+      y => y
+      cons? x =>
+        z := min(first x,ht)
+        if not EQ(z,first x) then x.first := z
+        z := min(rest x,ht)
+        if not EQ(z,rest x) then x.rest := z
+        hashCheck(x,ht)
+      vector? x =>
+        for i in 0..MAXINDEX x repeat
+          x.i := min(x.i,ht)
+        hashCheck(x,ht)
+      string? x => hashCheck(x,ht)
+      x
+    hashCheck(x,ht) ==
+      y := HGET(ht,x)
+      y => y
+      HPUT(ht,x,x)
+      x
 
 --% File IO
 $InputIOMode == KEYWORD::INPUT
 $OutputIOMode == KEYWORD::OUTPUT
 $BothWaysIOMode == KEYWORD::IO
+$ClosedIOMode == KEYWORD::CLOSED
 
 ++ return a binary stream open for `file' in mode `mode'; nil
 ++ if something went wrong.  This function is used by the Algebra.
@@ -288,11 +331,11 @@ openBinaryFile(file,mode) ==
 ++ Attemp to read a byte from input file `ifile'.  If not end of
 ++ file, return the read byte; %nothing.
 readByteFromFile ifile ==
-  READ_-BYTE(ifile,false,%nothing)
+  readByte(ifile,false,%nothing)
 
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
-  WRITE_-BYTE(b,ofile)
+  writeByte(b,ofile)
 
 closeFile file ==
   CLOSE file

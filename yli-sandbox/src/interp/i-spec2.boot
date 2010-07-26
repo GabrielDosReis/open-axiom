@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ upDEF t ==
   -- performs map definitions.  value is thrown away
   t isnt [op,def,pred,.] => nil
   v:=addDefMap(["DEF",:def],pred)
-  null(LISTP(def)) or null(def) =>
+  not(LISTP(def)) or null(def) =>
     keyedSystemError("S2GE0016",['"upDEF",'"bad map definition"])
   mapOp := first def
   if LISTP(mapOp) then
@@ -84,7 +84,7 @@ upDEF t ==
 ++   <%Mode>: the type of the constant.
 ++   T: too many constants designated by `form'.
 constantInDomain?(form,domainForm) ==
-    opAlist := getOperationAlistFromLisplib first domainForm
+    opAlist := getConstructorOperationsFromDB domainForm.op
     key := opOf form
     entryList := [entry for (entry := [.,.,.,k]) in LASSOC(key,opAlist) 
                     | k in '(CONST ASCONST)]
@@ -112,7 +112,7 @@ upDollar t ==
   (not $genValue) and "or"/[CONTAINED(var,D) for var in $localVars] =>
     keyedMsgCompFailure("S2IS0032",NIL)
   D="Lisp" => upLispCall(op,form)
-  if VECP D and (SIZE(D) > 0) then D := D.0
+  if vector? D and (SIZE(D) > 0) then D := D.0
   t := evaluateType unabbrev D
   categoryForm? t =>
     throwKeyedMsg("S2IE0012", [t])
@@ -138,7 +138,7 @@ upDollar t ==
       if x then putTarget(y,x)
   putAtree(first form,"dollar",t)
   ms := bottomUp form
-  f in '(One Zero) and CONSP (ms) and first(ms) = $OutputForm =>
+  f in '(One Zero) and cons? (ms) and first(ms) = $OutputForm =>
     throwKeyedMsg("S2IS0021",[f,t])
   putValue(op,getValue first form)
   putModeSet(op,ms)
@@ -173,11 +173,8 @@ upLispCall(op,t) ==
     for arg in argl repeat bottomUp arg
     code:=[getUnname lispOp,
       :[getArgValue(arg,computedMode arg) for arg in argl]]
-  code :=
-    $genValue => wrap timedEVALFUN code
-    code
   rt := '(SExpression)
-  putValue(op,objNew(code,rt))
+  putValue(op,object(code,rt))
   putModeSet(op,[rt])
 
 --% Handlers for equation
@@ -187,7 +184,7 @@ upequation tree ==
   -- this should speed things up a bit
   tree isnt [op,lhs,rhs] => NIL
   $Boolean ~= getTarget(op) => NIL
-  null VECP op => NIL
+  not vector? op => NIL
   -- change equation into '='
   op.0 := "="
   bottomUp tree
@@ -201,7 +198,7 @@ uperror t ==
   t isnt [op,msg] => NIL
   msgMs := bottomUp putCallInfo(msg,"error",1,1)
   msgMs isnt [=$String] => NIL
-  RPLACD(t,[mkAtree object2String $mapName,msg])
+  t.rest := [mkAtree object2String $mapName,msg]
   bottomUp t
 
 --% Handlers for free and local
@@ -239,8 +236,7 @@ uphas t ==
     evaluateType0 prop => ["evaluateType", MKQ prop]
     MKQ prop
   code := ["NOT",["NULL",["newHasTest",type, catCode]]]
-  if $genValue then code := wrap timedEVALFUN code
-  putValue(op,objNew(code,$Boolean))
+  putValue(op,object(code,$Boolean))
   putModeSet(op,[$Boolean])
 
 --hasTest(a,b) ==
@@ -367,7 +363,7 @@ putPvarModes(pattern,m) ==
   -- Puts the modes for the pattern variables into $env
   m isnt ["List",um] => throwKeyedMsg("S2IS0030",NIL)
   for pvar in pattern repeat
-    IDENTP pvar => (null (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
+    IDENTP pvar => (not (pvar=$quadSymbol)) and put(pvar,'mode,um,$env)
     pvar is ['_:,var] =>
       null (var=$quadSymbol) and put(var,"mode",m,$env)
     pvar is ['_=,var] =>
@@ -383,29 +379,27 @@ evalis(op,[a,pattern],mode) ==
     code:= compileIs(a,pattern)
   else code:=[fun,getArgValue(a,mode),
     MKQ pattern,MKQ mode]
-  triple:=
-    $genValue => objNewWrap(timedEVALFUN code,$Boolean)
-    objNew(code,$Boolean)
+  triple := object(code,$Boolean)
   putValue(op,triple)
 
 isLocalPred pattern ==
-  -- returns true if the is predicate is to be compiled
+  -- returns true if this predicate is to be compiled
   for pat in pattern repeat
-    IDENTP pat and isLocalVar(pat) => return true
-    pat is [":",var] and isLocalVar(var) => return true
-    pat is ["=",var] and isLocalVar(var) => return true
+    IDENTP pat and isLocallyBound pat => return true
+    pat is [":",var] and isLocallyBound var => return true
+    pat is ["=",var] and isLocallyBound var => return true
 
 compileIs(val,pattern) ==
   -- produce code for compiled "is" predicate.  makes pattern variables
   --  into local variables of the function
   vars:= NIL
   for pat in rest pattern repeat
-    IDENTP(pat) and isLocalVar(pat) => vars:=[pat,:vars]
+    IDENTP(pat) and isLocallyBound pat => vars:=[pat,:vars]
     pat is [":",var] => vars:= [var,:vars]
     pat is ["=",var] => vars:= [var,:vars]
-  predCode:=["%LET",g:=GENSYM(),["isPatternMatch",
+  predCode:=["%LET",g:=gensym(),["isPatternMatch",
     getArgValue(val,computedMode val),MKQ removeConstruct pattern]]
-  for var in REMDUP vars repeat
+  for var in removeDuplicates vars repeat
     assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
   null $opIsIs =>
     ["COND",[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,MKQ 'T]]]
@@ -432,8 +426,8 @@ removeConstruct pat ==
   if pat is ["construct",:p] then pat:=p
   if pat is ["cons", a, b] then pat := [a, [":", b]]
   atom pat => pat
-  RPLACA(pat,removeConstruct first pat)
-  RPLACD(pat,removeConstruct rest pat)
+  pat.first := removeConstruct first pat
+  pat.rest := removeConstruct rest pat
   pat
 
 isPatternMatch(l,pats) ==
@@ -500,7 +494,7 @@ up%LET t ==
   -- binding
   t isnt [op,lhs,rhs] => nil
   $declaredMode: local := NIL
-  CONSP lhs =>
+  cons? lhs =>
     var:= getUnname first lhs
     var = "construct" => upLETWithPatternOnLhs t
     var = "QUOTE" => throwKeyedMsg("S2IS0027",['"A quoted form"])
@@ -564,7 +558,7 @@ evalLET(lhs,rhs) ==
       isWrapped(objVal v') and (v2:=coerceInteractive(v',$OutputForm)) =>
         throwKeyedMsg("S2IS0036",[objValUnwrap v2,t2])
       throwKeyedMsg("S2IS0037",[t2])
-    t2 and objNew(($genValue => wrap timedEVALFUN v ; v),t2)
+    t2 and object(v,t2)
   value => evalLETput(lhs,value)
   throwKeyedMsgCannotCoerceWithValue(objVal v,t1,getMode lhs)
 
@@ -573,7 +567,7 @@ evalLETput(lhs,value) ==
   name:= getUnname lhs
   if not $genValue then
     code:=
-      isLocalVar(name) =>
+      isLocallyBound name =>
         om := objMode(value)
         dm := get(name,'mode,$env)
         dm and not ((om = dm) or isSubDomain(om,dm) or
@@ -590,7 +584,7 @@ evalLETput(lhs,value) ==
       ['unwrap,['evalLETchangeValue,MKQ name,
         objNewCode(['wrap,objVal value],objMode value)]]
     value:= objNew(code,objMode value)
-    isLocalVar(name) =>
+    isLocallyBound name =>
       if not get(name,'mode,$env) then put(name,'autoDeclare,'T,$env)
       put(name,'mode,objMode(value),$env)
     put(name,'automode,objMode(value),$env)
@@ -619,7 +613,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
 evalLETchangeValue(name,value) ==
   -- write the value of name into the environment, clearing dependent
   --  maps if its type changes from its last value
-  localEnv := CONSP $env
+  localEnv := cons? $env
   clearCompilationsFlag :=
     val:= (localEnv and get(name,'value,$env)) or get(name,'value,$e)
     null val =>
@@ -627,7 +621,7 @@ evalLETchangeValue(name,value) ==
     objMode val ~= objMode(value)
   if clearCompilationsFlag then
     clearDependencies(name,true)
-  if localEnv and isLocalVar(name)
+  if localEnv and isLocallyBound name
     then $env:= putHist(name,'value,value,$env)
     else putIntSymTab(name,'value,value,$e)
   objVal value
@@ -643,21 +637,21 @@ upLETWithFormOnLhs(op,lhs,rhs) ==
     -- to first hold the assignments so that things like
     -- (t1,t2) := (t2,t1) will work.
     seq := []
-    temps := [GENSYM() for l in rest lhs]
+    temps := [gensym() for l in rest lhs]
     for lvar in temps repeat mkLocalVar($mapName,lvar)
     for l in reverse rest lhs for t in temps repeat
       transferPropsToNode(getUnname l,l)
       let := mkAtreeNode "%LET"
       t'  := mkAtreeNode t
       if m := getMode(l) then putMode(t',m)
-      seq := cons([let,l,t'],seq)
+      seq := [[let,l,t'],:seq]
     for t in temps for r in reverse rest rhs
       for l in reverse rest lhs repeat
         let := mkAtreeNode "%LET"
         t'  := mkAtreeNode t
         if m := getMode(l) then putMode(t',m)
-        seq := cons([let,t',r],seq)
-    seq := cons(mkAtreeNode 'SEQ,seq)
+        seq := [[let,t',r],:seq]
+    seq := [mkAtreeNode 'SEQ,:seq]
     ms := bottomUp seq
     putValue(op,getValue seq)
     putModeSet(op,ms)
@@ -728,7 +722,7 @@ upTableSetelt(op,lhs is [htOp,:args],rhs) ==
 
 unVectorize body ==
   -- transforms from an atree back into a tree
-  VECP body =>
+  vector? body =>
     name := getUnname body
     name ~= $immediateDataSymbol => name
     objValUnwrap getValue body
@@ -745,13 +739,13 @@ isType t ==
   -- Returns the evaluated type if t is a tree representing a type,
   -- and NIL otherwise
    op:=opOf t
-   VECP op =>
+   vector? op =>
      isMap(op:= getUnname op) => NIL
-     op = 'Mapping and CONSP t =>
+     op = 'Mapping and cons? t =>
        argTypes := [isType type for type in rest t]
        "or"/[null type for type in argTypes] => nil
        ['Mapping, :argTypes]
-     isLocalVar(op) => NIL
+     isLocallyBound op => NIL
      d := isDomainValuedVariable op => d
      type:=
        -- next line handles subscripted vars
@@ -769,7 +763,7 @@ upLETtype(op,lhs,type) ==
     compFailure ['"   Cannot compile type assignment to",:bright opName]
   mode := conceptualType type
   val:= objNew(type,mode)
-  if isLocalVar(opName) then put(opName,'value,val,$env)
+  if isLocallyBound opName then put(opName,'value,val,$env)
   else putHist(opName,'value,val,$e)
   putValue(op,val)
   -- have to fix the following
@@ -794,13 +788,13 @@ getInterpMacroNames() ==
 
 isInterpMacro name ==
   -- look in local and then global environment for a macro
-  null IDENTP name => NIL
+  not IDENTP name => NIL
   name in $specialOps => NIL
   (m := get("--macros--",name,$env)) => m
   (m := get("--macros--",name,$e))   => m
   (m := get("--macros--",name,$InteractiveFrame))   => m
   -- $InterpreterMacroAlist will probably be phased out soon
-  (sv := assoc(name,$InterpreterMacroAlist)) => CONS(NIL,rest sv)
+  (sv := assoc(name,$InterpreterMacroAlist)) => [NIL,:rest sv]
   NIL
 
 --% Handlers for prefix QUOTE
@@ -911,9 +905,9 @@ transformREPEAT [:itrl,body] ==
 upREPEAT t ==
   -- REPEATS always return void() of Void
   -- assures throw to interpret-code mode goes to outermost loop
-  $repeatLabel : local := MKQ GENSYM()
+  $repeatLabel : local := MKQ gensym()
   $breakCount  : local := 0
-  $repeatBodyLabel : local := MKQ GENSYM()
+  $repeatBodyLabel : local := MKQ gensym()
   $iterateCount    : local := 0
   $compilingLoop => upREPEAT1 t
   upREPEAT0 t
@@ -940,6 +934,7 @@ upREPEAT1 t ==
   $interpOnly => interpREPEAT(op,itrl,body,repeatMode)
 
   -- analyze iterators and loop body
+  $iteratorVars: local := nil
   upLoopIters itrl
   bottomUpCompile body
 
@@ -958,11 +953,10 @@ evalREPEAT(op,[:itrl,body],repeatMode) ==
   bodyCode := getArgValue(body,bodyMode)
   if $iterateCount > 0 then
     bodyCode := ["CATCH",$repeatBodyLabel,bodyCode]
-  code := ['REPEAT,:[evalLoopIter itr for itr in itrl], bodyCode]
-  if repeatMode = $Void then code := ['OR,code,'(voidValue)]
+  code := ['%loop,:[evalLoopIter itr for itr in itrl],bodyCode,voidValue()]
   code := timedOptimization code
   if $breakCount > 0 then code := ['CATCH,$repeatLabel,code]
-  val:=
+  val :=
     $genValue =>
       timedEVALFUN code
       objNewWrap(voidValue(),repeatMode)
@@ -981,9 +975,9 @@ interpREPEAT(op,itrl,body,repeatMode) ==
   $indexTypes: local := NIL
   code :=
       -- we must insert a CATCH for the iterate clause
-      ["REPEAT",:[interpIter itr for itr in itrl],
+      ['%loop,:[interpIter itr for itr in itrl],
         ["CATCH",$repeatBodyLabel,interpLoop(body,$indexVars,
-          $indexTypes,nil)]]
+          $indexTypes,nil)],voidValue()]
   SPADCATCH(eval $repeatLabel,timedEVALFUN code)
   val:= objNewWrap(voidValue(),repeatMode)
   putValue(op,val)
@@ -1075,7 +1069,7 @@ uptuple t ==
   null l => upNullTuple(op,l,tar)
   isTaggedUnion tar => upTaggedUnionConstruct(op,l,tar)
   aggs := '(List)
-  if tar and CONSP(tar) and not isPartialMode(tar) then
+  if tar and cons?(tar) and not isPartialMode(tar) then
     first(tar) in aggs =>
       ud := second tar
       for x in l repeat if not getTarget(x) then putTarget(x,ud)
@@ -1085,7 +1079,7 @@ uptuple t ==
   argModeSetList:= [bottomUp x for x in l]
   eltTypes := replaceSymbols([first x for x in argModeSetList],l)
   if not isPartialMode(tar) and tar is ['Tuple,ud] then
-    mode := ['Tuple, resolveTypeListAny cons(ud,eltTypes)]
+    mode := ['Tuple, resolveTypeListAny [ud,:eltTypes]]
   else mode := ['Tuple, resolveTypeListAny eltTypes]
   if isPartialMode tar then tar:=resolveTM(mode,tar)
   evalTuple(op,l,mode,tar)
@@ -1094,9 +1088,7 @@ evalTuple(op,l,m,tar) ==
   [agg,:.,underMode]:= m
   code := asTupleNewCode(underMode, #l,
     [(getArgValue(x,underMode) or throwKeyedMsg("S2IC0007",[underMode])) for x in l])
-  val :=
-    $genValue => objNewWrap(timedEVALFUN code,m)
-    objNew(code,m)
+  val := object(code,m)
   if tar then val1 := coerceInteractive(val,tar) else val1 := val
 
   val1 =>
@@ -1124,7 +1116,7 @@ upNullTuple(op,l,tar) ==
 
 uptypeOf form ==
   form isnt [op, arg] => NIL
-  if VECP arg then transferPropsToNode(getUnname arg,arg)
+  if vector? arg then transferPropsToNode(getUnname arg,arg)
   if m := isType(arg) then
     m := conceptualType m
   else if not (m := getMode arg) then [m] := bottomUp arg
@@ -1175,7 +1167,7 @@ copyHack(env) ==
   -- (localModemap . something)
   c:= CAAR env
   d:= [fn p for p in c] where fn(p) ==
-    CONS(first p,[(q is ["localModemap",:.] => q; copy q) for q in rest p])
+    [first p,:[(q is ["localModemap",:.] => q; copy q) for q in rest p]]
   [[d]]
 
 
@@ -1232,5 +1224,5 @@ up%Add t ==
 
 for name in $specialOps repeat
    functionName:=INTERNL('up,name)
-   MAKEPROP(name,'up,functionName)
+   property(name,'up) := functionName
 

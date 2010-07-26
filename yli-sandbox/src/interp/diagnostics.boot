@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis
+-- Copyright (C) 2007-2010, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -81,12 +81,12 @@ MESSAGEPRINT x ==
 
 MESSAGEPRINT_-1 x ==
   x = "%l" or x = '"%l" => TERPRI()
-  STRINGP x => PRINC x
+  string? x => PRINC x
   IDENTP x => PRINC x
-  ATOM x => PRINC x
+  atom x => PRINC x
   PRINC '"("
-  MESSAGEPRINT_-1 car x
-  MESSAGEPRINT_-2 cdr x
+  MESSAGEPRINT_-1 first x
+  MESSAGEPRINT_-2 rest x
   PRINC '")"
 
 MESSAGEPRINT_-2 x ==
@@ -95,6 +95,6 @@ MESSAGEPRINT_-2 x ==
       PRINC '" . "
       MESSAGEPRINT_-1 x
   PRINC '" "
-  MESSAGEPRINT_-1 car x
-  MESSAGEPRINT_-2 cdr x
+  MESSAGEPRINT_-1 first x
+  MESSAGEPRINT_-2 rest x
 

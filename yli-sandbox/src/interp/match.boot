@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ $wildCard := char "*"
 
 maskMatch?(mask,subject) ==
   null mask => true
-  if null STRINGP subject then subject := PNAME subject
+  if null string? subject then subject := PNAME subject
   or/[match?(pattern,subject) for pattern in mask]
 
 substring?(part, whole, startpos) ==
@@ -47,13 +47,13 @@ substring?(part, whole, startpos) ==
   np := SIZE part
   nw := SIZE whole
   np > nw - startpos => false
-  and/[CHAR_-EQUAL(ELT(part, ip), ELT(whole, iw))
+  and/[CHAR_-EQUAL(part.ip, whole.iw)
       for ip in 0..np-1 for iw in startpos.. ]
 
 anySubstring?(part,whole,startpos) ==
   np := SIZE part
   nw := SIZE whole
-  or/[((k := i) and "and"/[CHAR_-EQUAL(ELT(part, ip),ELT(whole, iw))
+  or/[((k := i) and "and"/[CHAR_-EQUAL(part.ip,whole.iw)
        for ip in 0..np - 1 for iw in i..]) for i in startpos..nw - np] => k
 
 charPosition(c,t,startpos) ==
@@ -61,7 +61,7 @@ charPosition(c,t,startpos) ==
   startpos < 0 or startpos > n => n
   k:= startpos
   for i in startpos .. n-1 repeat
-    c = ELT(t,i) => return nil
+    c = t.i => return nil
     k := k+1
   k
 
@@ -109,13 +109,13 @@ patternCheck pattern == main where
 --  pp pattern
     pattern
   mknew(old,i,r,new) ==
-    new := STRCONC(new,old.(i + 1))  --add underscored character to string
-    null r => STRCONC(new,subWild(SUBSTRING(old,i + 2,nil),0))
+    new := strconc(new,old.(i + 1))  --add underscored character to string
+    null r => strconc(new,subWild(SUBSTRING(old,i + 2,nil),0))
     mknew(old,first r,rest r,
-          STRCONC(new,subWild(SUBSTRING(old,i + 2,(first r) - i - 1),i + 1)))
+          strconc(new,subWild(SUBSTRING(old,i + 2,(first r) - i - 1),i + 1)))
   subWild(s,i) ==
     (k := charPosition($oldWild,s,i)) < #s =>
-      STRCONC(SUBSTRING(s,i,k - i),$wildCard,subWild(s,k + 1))
+      strconc(SUBSTRING(s,i,k - i),$wildCard,subWild(s,k + 1))
     SUBSTRING(s,i,nil)
   pos(c,s) ==
     i := 0

@@ -33,7 +33,7 @@ import OutputForm
 
 None():SetCategory == add
     coerce(none:%):OutputForm == "NONE" :: OutputForm
-    x:% = y:% == EQ(x,y)$Lisp
+    x:% = y:% == %peq(x,y)$Foreign(Builtin)
 
 @
 
@@ -53,7 +53,7 @@ RuntimeValue(): Type with
       ++ \spad{eq(x,y)} holds if both values \spad{x} and \spad{y}
       ++ resides at the same address in memory.
   == add
-    eq(x,y) == EQ(x,y)$Foreign(Builtin)
+    eq(x,y) == %peq(x,y)$Foreign(Builtin)
 @
 
 
@@ -84,9 +84,11 @@ Maybe(T: CoercibleTo OutputForm): Public == Private where
     nothing: %
       ++ \spad{nothing} represents failure or absence of value.
   Private == add
-    nothing == %nothing$Lisp
+    import %nothing: %            from Foreign Builtin
+    import %peq: (%,%) -> Boolean from Foreign Builtin
+    nothing == %nothing
     just x == x : %
-    x case nothing == EQ(x,%nothing$Lisp)$Lisp
+    x case nothing == %peq(x,%nothing)
     x case T == not(x case nothing)
     autoCoerce x == x : T
     coerce(x: T): % == just x
@@ -181,7 +183,7 @@ Any(): SetCategory with
      x = y      == 
        case (x,y) is 
          (x': exist(S: BasicType) . S, y': S) => x' = y'
-         otherwise => EQ(x,y)$Foreign(Builtin)
+         otherwise => %peq(x,y)$Foreign(Builtin)
 
      coerce(x):OutputForm ==
        case x is
@@ -281,6 +283,7 @@ Property(): Public == Private where
   Private == add
     import Boolean
     Rep == Pair(Identifier,SExpression)
+    inline Rep
 
     name x == 
       first rep x
@@ -295,7 +298,7 @@ Property(): Public == Private where
       v := value x
       val := 
          null? v => false::OutputForm
-         EQ(v,'T)$Lisp => true::OutputForm
+         %peq(v,'T)$Foreign(Builtin) => true::OutputForm
          v::OutputForm
       
       bracket(infix(outputForm '_=_>, name(x)::OutputForm, 
@@ -326,6 +329,8 @@ Binding(): Public == Private where
 
   Private == add
     Rep == Pair(Identifier, List Property)
+    import List Property
+    inline Rep
 
     name b ==
       first rep b
@@ -368,7 +373,7 @@ Contour(): Public == Private where
 
     findBinding(n,c) ==
       for b in bindings c repeat
-        EQ(n, name b)$Lisp => return just b
+        %peq(n, name b)$Foreign(Builtin) => return just b
       nothing
 
     push(b,c) ==
@@ -410,7 +415,7 @@ Scope(): Public == Private where
     import Contour
     Rep == List Contour
     empty() ==
-      per NIL$Lisp
+      per %nil$Foreign(Builtin)
 
     contours s ==
       rep s
@@ -425,10 +430,10 @@ Scope(): Public == Private where
       CONS(LIST(b)$Lisp,s)$Lisp
 
     currentScope() ==
-      CAR(_$e$Lisp)$Lisp
+      %head(_$e$Lisp)$Foreign(Builtin)
 
     currentCategoryFrame() ==
-      CAR(_$CategoryFrame$Lisp)$Lisp
+      %head(_$CategoryFrame$Lisp)$Foreign(Builtin)
 
     coerce s ==
       (contours s)::OutputForm
@@ -444,25 +449,27 @@ import List Property
 )abbrev domain ENV Environment
 ++ Author: Gabriel Dos Reis
 ++ Date Created: October 24, 2007
-++ Date Last Modified: January 19, 2008.
+++ Date Last Modified: March 18, 2010.
 ++ An `Environment' is a stack of scope.
 Environment(): Public == Private where
   Public == CoercibleTo(OutputForm) with
     empty: () -> %
-      ++ empty() constructs an empty environment
+      ++ \spad{empty()} constructs an empty environment
     scopes: % -> List Scope     
-      ++ scopes(e) returns the stack of scopes in environment e.
+      ++ \spad{scopes(e)} returns the stack of scopes in environment \spad{e}.
     getProperty: (Identifier, Identifier, %) -> Maybe SExpression
-      ++ getProperty(n,p,e) returns the value of property with name `p'
-      ++ for the symbol `n' in environment `e'. Otherwise, `nothing.
-    setProperty!: (Identifier, Identifier, SExpression, %) -> %
-      ++ setProperty!(n,p,v,e) binds the property `(p,v)' to `n'
-      ++ in the topmost scope of `e'.
+      ++ \spad{getProperty(n,p,e)} returns the value of property with name
+      ++ \spad{p} for the symbol \spad{n} in environment \spad{e}.
+      ++ Otherwise, \spad{nothing}.
+    putProperty: (Identifier, Identifier, SExpression, %) -> %
+      ++ \spad{putProperty(n,p,v,e)} binds the property \spad{(p,v)} to
+      ++ \spad{n} in the topmost scope of \spad{e}.
     getProperties: (Identifier, %) -> List Property
-      ++ getBinding(n,e) returns the list of properties of `n' in e.
-    setProperties!: (Identifier, List Property, %) -> %
-      ++ setBinding!(n,props,e) set the list of properties of `n' 
-      ++ to `props' in `e'.
+      ++ \spad{getBinding(n,e)} returns the list of properties of
+      ++ \spad{n} in \spad{e}.
+    putProperties: (Identifier, List Property, %) -> %
+      ++ \spad{putProperties(n,props,e)} set the list of properties of
+      ++ \spad{n} to \spad{props} in \spad{e}.
     currentEnv: () -> %        
       ++ the current normal environment in effect.
     interactiveEnv: () -> %        
@@ -473,7 +480,7 @@ Environment(): Public == Private where
   Private == add
     Rep == List Scope
     empty() ==
-      per NIL$Lisp
+      per %nil$Foreign(Builtin)
 
     scopes e ==
       rep e
@@ -483,13 +490,13 @@ Environment(): Public == Private where
       null? v => nothing
       just v 
 
-    setProperty!(n,p,v,e) ==
+    putProperty(n,p,v,e) ==
       put(n,p,v,e)$Lisp
 
     getProperties(n,e) ==
       getProplist(n,e)$Lisp
 
-    setProperties!(n,b,e) ==
+    putProperties(n,b,e) ==
       addBinding(n,b,e)$Lisp
 
     currentEnv() ==
@@ -511,7 +518,7 @@ Environment(): Public == Private where
 <<license>>=
 --Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 --All rights reserved.
---Copyright (C) 2007-2009, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without

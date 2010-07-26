@@ -187,7 +187,7 @@ IntegerNumberSystem(): Category ==
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
-SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
+SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenMath) with
    canonical
       ++ \spad{canonical} means that mathematical equality is implied by data structure equality.
    canonicalsClosed
@@ -196,8 +196,6 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
       ++ \spad{noetherian} all ideals are finitely generated (in fact principal).
 
    -- bit operations
-   not:   % -> %
-      ++ not(n) returns the bit-by-bit logical {\em not} of the single integer n.
    xor: (%, %) -> %
       ++ xor(n,m)  returns the bit-by-bit logical {\em xor} of
       ++ the single integers n and m.
@@ -212,7 +210,25 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
 
  == SubDomain(Integer, SMINTP(#1)$Lisp) add
 
-   seed : % := 1$Lisp               -- for random()
+   import %icst0: %                 from Foreign Builtin
+   import %icst1: %                 from Foreign Builtin
+   import %iadd: (%,%) -> %         from Foreign Builtin
+   import %isub: (%,%) -> %         from Foreign Builtin
+   import %imul: (%,%) -> %         from Foreign Builtin
+   import %ineg: % -> %             from Foreign Builtin
+   import %iabs: % -> %             from Foreign Builtin
+   import %imax: (%,%) -> %         from Foreign Builtin
+   import %imin: (%,%) -> %         from Foreign Builtin
+   import %igcd: (%,%) -> %         from Foreign Builtin
+   import %hash: % -> SingleInteger from Foreign Builtin
+   import %iodd?: % -> Boolean      from Foreign Builtin
+   import %ieq: (%,%) -> Boolean    from Foreign Builtin
+   import %ilt: (%,%) -> Boolean    from Foreign Builtin
+   import %ile: (%,%) -> Boolean    from Foreign Builtin
+   import %igt: (%,%) -> Boolean    from Foreign Builtin
+   import %ige: (%,%) -> Boolean    from Foreign Builtin
+
+   seed : % := %icst1               -- for random()
    MAXINT ==> _$ShortMaximum$Lisp
    MININT ==> _$ShortMinimum$Lisp
    BASE ==> 67108864$Lisp           -- 2**26
@@ -220,7 +236,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
    MODULUS ==> 2147483647$Lisp      -- 2**31-1
 
    writeOMSingleInt(dev: OpenMathDevice, x: %): Void ==
-    if x < 0 then
+    if negative? x then
       OMputApp(dev)
       OMputSymbol(dev, "arith1", "unary_minus")
       OMputInteger(dev, convert(-x))
@@ -264,46 +280,49 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
     if wholeObj then
       OMputEndObject(dev)
 
-   reducedSystem m      == m pretend Matrix(Integer)
+   reducedSystem(m: Matrix %) == m pretend Matrix(Integer)
    coerce(x):OutputForm == rep(x)::OutputForm
    convert(x:%):Integer == rep x
-   i:Integer * y:%      == i::% * y
-   0         == 0$Lisp
-   1         == 1$Lisp
-   base()    == 2$Lisp
+   i:Integer * y:%      == %imul(i::%,y)
+   0         == %icst0
+   1         == %icst1
+   base()    == per 2
    max()     == MAXINT
    min()     == MININT
-   x = y     == EQL(x,y)$Lisp
+   x = y     == %ieq(x,y)
    ~ x       == LOGNOT(x)$Lisp
    not(x)    == LOGNOT(x)$Lisp
    x /\ y    == LOGAND(x,y)$Lisp
    x \/ y    == LOGIOR(x,y)$Lisp
    Not(x)    == LOGNOT(x)$Lisp
    And(x,y)  == LOGAND(x,y)$Lisp
+   x and y   == And(x,y)
    Or(x,y)   == LOGIOR(x,y)$Lisp
+   x or y    == Or(x,y)
    xor(x,y)  == LOGXOR(x,y)$Lisp
-   x < y     == QSLESSP(x,y)$Lisp
-   x > y     == QSGREATERP(x,y)$Lisp
-   x <= y    == (x <= y)$Lisp
-   x >= y    == (x >= y)$Lisp
+   x < y     == %ilt(x,y)
+   x > y     == %igt(x,y)
+   x <= y    == %ile(x,y)
+   x >= y    == %ige(x,y)
    inc x     == QSADD1(x)$Lisp
    dec x     == QSSUB1(x)$Lisp
-   - x       == QSMINUS(x)$Lisp
-   x + y     == QSPLUS(x,y)$Lisp
-   x:% - y:% == QSDIFFERENCE(x,y)$Lisp
-   x:% * y:% == QSTIMES(x,y)$Lisp
-   x:% ** n:NonNegativeInteger == ((EXPT(x, n)$Lisp) pretend Integer)::%
+   - x       == %ineg x
+   x + y     == %iadd(x,y)
+   x:% - y:% == %isub(x,y)
+   x:% * y:% == %imul(x,y)
+   x:% ** n:NonNegativeInteger == 
+      (%ipow(x, n)$Foreign(Builtin) pretend Integer)::%
    x quo y   == QSQUOTIENT(x,y)$Lisp
    x rem y   == QSREMAINDER(x,y)$Lisp
    divide(x, y)   == CONS(QSQUOTIENT(x,y)$Lisp,QSREMAINDER(x,y)$Lisp)$Lisp
-   gcd(x,y)  == GCD(x,y)$Lisp
-   abs(x)    == QSABSVAL(x)$Lisp
-   odd?(x)   == QSODDP(x)$Lisp
+   gcd(x,y)  == %igcd(x,y)
+   abs(x)    == %iabs x
+   odd?(x)   == %iodd? x
    zero?(x)  == QSZEROP(x)$Lisp
-   one?(x)   == x = 1
-   max(x,y)  == QSMAX(x,y)$Lisp
-   min(x,y)  == QSMIN(x,y)$Lisp
-   hash(x)   == HASHEQ(x)$Lisp
+   one?(x)   == x = 1@%
+   max(x,y)  == %imax(x,y)
+   min(x,y)  == %imin(x,y)
+   hash(x)   == %hash x
    length(x) == INTEGER_-LENGTH(x)$Lisp
    shift(x,n)    == QSLEFTSHIFT(x,n)$Lisp
    mulmod(a,b,p) == QSMULTMOD(a,b,p)$Lisp
@@ -316,14 +335,14 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
      (x -$Lisp MININT +$Lisp 1$Lisp) pretend PositiveInteger
 
 
-   reducedSystem(m, v) ==
+   reducedSystem(m: Matrix %, v: Vector %) ==
         [m pretend Matrix(Integer), v pretend Vector(Integer)]
 
    positiveRemainder(x,n) ==
       r := QSREMAINDER(x,n)$Lisp
-      QSMINUSP(r)$Lisp =>
-          QSMINUSP(n)$Lisp => QSDIFFERENCE(x, n)$Lisp
-          QSPLUS(r, n)$Lisp
+      negative? r =>
+        negative? n => x - n 
+        r + n
       r
 
    coerce(x:Integer):% == per x
@@ -336,8 +355,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,Logic,OpenMath) with
 
    UCA ==> Record(unit:%,canonical:%,associate:%)
    unitNormal x ==
-      x < 0 => [-1,-x,-1]$UCA
-      [1,x,1]$UCA
+      negative? x => [-1@%,-x,-1@%]$UCA
+      [1@%,x,1@%]$UCA
 
 @
 

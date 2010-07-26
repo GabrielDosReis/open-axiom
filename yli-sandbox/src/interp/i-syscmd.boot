@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ $compileRecurrence := true
 $errorReportLevel := 'warning
 $sourceFileTypes := '(INPUT SPAD BOOT LISP LISP370 META)
 
-$existingFiles := MAKE_-HASHTABLE "UEQUAL"
+$existingFiles := hashTable "EQUAL"
 
 $SYSCOMMANDS := [first x for x in $systemCommands]
 
@@ -99,7 +99,7 @@ initializeSystemCommands() ==
   l := $systemCommands
   $SYSCOMMANDS := NIL
   while l repeat
-    $SYSCOMMANDS := CONS(CAAR l, $SYSCOMMANDS)
+    $SYSCOMMANDS := [CAAR l,:$SYSCOMMANDS]
     l := rest l
   $SYSCOMMANDS := nreverse $SYSCOMMANDS
 
@@ -142,7 +142,7 @@ unAbbreviateKeyword x ==
   x' :=selectOptionLC(x,$SYSCOMMANDS,'commandErrorIfAmbiguous)
   if not x' then
     x' := 'system
-    SETQ(LINE, CONCAT('")system ", SUBSTRING(LINE, 1, #LINE-1)))
+    SETQ(LINE, strconc('")system ", SUBSTRING(LINE, 1, #LINE-1)))
     $currentLine := LINE
   selectOption(x',commandsForUserLevel $systemCommands,
     'commandUserLevelError)
@@ -159,7 +159,7 @@ selectOptionLC(x,l,errorFunction) ==
 
 selectOption(x,l,errorFunction) ==
   member(x,l) => x                   --exact spellings are always OK
-  null IDENTP x =>
+  not IDENTP x =>
     errorFunction => FUNCALL(errorFunction,x,u)
     nil
   u := [y for y in l | stringPrefix?(PNAME x,PNAME y)]
@@ -299,7 +299,7 @@ clearCmdCompletely() ==
   sayKeyedMsg("S2IZ0013",NIL)
   clearClams()
   clearConstructorCaches()
-  $existingFiles := MAKE_-HASHTABLE 'UEQUAL
+  $existingFiles := hashTable 'EQUAL
   sayKeyedMsg("S2IZ0014",NIL)
   RECLAIM()
   sayKeyedMsg("S2IZ0015",NIL)
@@ -312,7 +312,7 @@ clearCmdAll() ==
   $previousBindings := nil
   $variableNumberAlist := nil
   untraceMapSubNames _/TRACENAMES
-  $InteractiveFrame := LIST LIST NIL
+  $InteractiveFrame := [[NIL]]
   resetInCoreHist()
   if $useInternalHistoryTable
     then $internalHistoryTable := NIL
@@ -350,7 +350,7 @@ clearCmdParts(l is [opt,:vl]) ==
   imacs := getInterpMacroNames()
   if vl='(all) then
     vl := ASSOCLEFT CAAR $InteractiveFrame
-    vl := REMDUP(append(vl, pmacs))
+    vl := removeDuplicates(append(vl, pmacs))
   $e : local := $InteractiveFrame
   for x in vl repeat
     clearDependencies(x,true)
@@ -362,7 +362,7 @@ clearCmdParts(l is [opt,:vl]) ==
       option='properties =>
         if isMap x then
           (lm := get(x,'localModemap,$InteractiveFrame)) =>
-            CONSP lm => untraceMapSubNames [CADAR lm]
+            cons? lm => untraceMapSubNames [CADAR lm]
           NIL
         for p2 in rest p1 repeat
           prop:= first p2
@@ -372,7 +372,7 @@ clearCmdParts(l is [opt,:vl]) ==
       p2:= assoc(option,rest p1) =>
         recordOldValue(x,option,rest p2)
         recordNewValue(x,option,NIL)
-        RPLACD(p2,NIL)
+        p2.rest := NIL
   nil
 
 --% )close
@@ -560,14 +560,14 @@ compileAsharpCmd1 args ==
         fullopt = 'library   => doLibrary  := true
         fullopt = 'nolibrary => doLibrary  := false
 
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     tempArgs :=
         pathType = '"ao" =>
             -- want to strip out -Fao
             (p := STRPOS('"-Fao", $asharpCmdlineFlags, 0, NIL)) =>
                 p = 0 => SUBSTRING($asharpCmdlineFlags, 5, NIL)
-                STRCONC(SUBSTRING($asharpCmdlineFlags, 0, p), '" ",
+                strconc(SUBSTRING($asharpCmdlineFlags, 0, p), '" ",
                     SUBSTRING($asharpCmdlineFlags, p+5, NIL))
             $asharpCmdlineFlags
         $asharpCmdlineFlags
@@ -576,19 +576,19 @@ compileAsharpCmd1 args ==
         onlyArgs =>
             s := ""
             for a in onlyArgs repeat
-                s := STRCONC(s, '" ", object2String a)
+                s := strconc(s, '" ", object2String a)
             s
         moreArgs =>
             s := tempArgs
             for a in moreArgs repeat
-                s := STRCONC(s, '" ", object2String a)
+                s := strconc(s, '" ", object2String a)
             s
         tempArgs
 
     if not beQuiet then sayKeyedMsg("S2IZ0038A",[namestring args, asharpArgs])
 
     command :=
-     STRCONC(STRCONC(getEnv('"ALDORROOT"),'"/bin/"),_
+     strconc(strconc(getEnv('"ALDORROOT"),'"/bin/"),_
                "aldor ", asharpArgs, '" ", namestring args)
     rc := runCommand command
 
@@ -643,7 +643,7 @@ compileAsharpArchiveCmd args ==
 
     cd [ object2Identifier namestring dir ]
 
-    cmd := STRCONC( '"ar x ", namestring path )
+    cmd := strconc( '"ar x ", namestring path )
     rc := runCommand cmd
     rc ~= 0 =>
         cd [ object2Identifier namestring curDir ]
@@ -694,7 +694,7 @@ compileAsharpLispCmd args ==
         fullopt = 'library   => doLibrary  := true
         fullopt = 'nolibrary => doLibrary  := false
 
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     lsp := fnameMake(pathnameDirectory path, pathnameName path, pathnameType path)
     if fnameReadable?(lsp) then
@@ -738,7 +738,7 @@ compileSpadLispCmd args ==
         fullopt = 'library   => doLibrary  := true
         fullopt = 'nolibrary => doLibrary  := false
 
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     lsp := fnameMake(pathnameDirectory path, pathnameName path, pathnameType path)
     if fnameReadable?(lsp) then
@@ -835,7 +835,7 @@ compileSpad2Cmd args ==
            null optargs => throwKeyedMsg("S2IZ0037",['")report"])
            if "insn" in optargs then
              $reportOptimization := true
-        throwKeyedMsg("S2IZ0036",[STRCONC('")",object2String optname)])
+        throwKeyedMsg("S2IZ0036",[strconc('")",object2String optname)])
 
     $InteractiveMode : local := nil
     -- avoid Boolean semantics transformations based on syntax only
@@ -863,7 +863,7 @@ convertSpadToAsFile path ==
     $abbreviationsAlreadyPrinted: local := nil    -- for spad -> as translator
     $convertingSpadFile : local := true
     $options: local := '((nolib))      -- translator shouldn't create nrlibs
-    SETQ(HT,MAKE_-HASHTABLE 'UEQUAL)
+    SETQ(HT,hashTable 'EQUAL)
 
     newName := fnameMake(pathnameDirectory path, pathnameName path, '"as")
     canDoIt := true
@@ -1050,7 +1050,7 @@ displayMacros names ==
   macros :=
      null names => append (imacs, pmacs)
      names
-  macros := REMDUP macros
+  macros := removeDuplicates macros
 
   null macros => sayBrightly '"   There are no OpenAxiom macros."
 
@@ -1080,7 +1080,7 @@ displayMacros names ==
   NIL
 
 getParserMacroNames() ==
-  REMDUP [first mac for mac in getParserMacros()]
+  removeDuplicates [first mac for mac in getParserMacros()]
 
 clearParserMacro(macro) ==
   -- first see if it is one
@@ -1092,7 +1092,7 @@ displayMacro name ==
   null m =>
     sayBrightly ['"  ",:bright name,'"is not an interpreter macro."]
   -- $op is needed in the output routines.
-  $op : local := STRCONC('"macro ",object2String name)
+  $op : local := strconc('"macro ",object2String name)
   [args,:body] := m
   args :=
     null args => nil
@@ -1134,14 +1134,14 @@ interpFunctionDepAlists() ==
   $dependeeAlist := [[NIL,:NIL]]
   for [dependee,dependent] in deps repeat
     $dependentAlist := PUTALIST($dependentAlist,dependee,
-      CONS(dependent,GETALIST($dependentAlist,dependee)))
+      [dependent,:GETALIST($dependentAlist,dependee)])
     $dependeeAlist  := PUTALIST($dependeeAlist,dependent,
-      CONS(dependee,GETALIST($dependeeAlist,dependent)))
+      [dependee,:GETALIST($dependeeAlist,dependent)])
 
 fixObjectForPrinting(v) ==
     v' := object2Identifier v
     EQ(v',"%") => '"\%"
-    member(v',$msgdbPrims) => STRCONC('"\",PNAME v')
+    member(v',$msgdbPrims) => strconc('"\",PNAME v')
     v
 
 displayProperties(option,l) ==
@@ -1150,7 +1150,7 @@ displayProperties(option,l) ==
   [opt,:vl]:= (l or ['properties])
   imacs := getInterpMacroNames()
   pmacs := getParserMacroNames()
-  macros := REMDUP append(imacs, pmacs)
+  macros := removeDuplicates append(imacs, pmacs)
   if vl is ['all] or null vl then
     vl := MSORT append(getWorkspaceNames(),macros)
   if $frameMessages then sayKeyedMsg("S2IZ0065",[$interpreterFrameName])
@@ -1252,7 +1252,7 @@ displayType($op,u,omitVariableNameIfTrue) ==
     sayMSG ['"   Type of value of ",
         fixObjectForPrinting PNAME $op,'":  (none)"]
   type := prefix2String objMode(u)
-  if ATOM type then type := [type]
+  if atom type then type := [type]
   sayMSG concat ['"   Type of value of ",fixObjectForPrinting PNAME $op,'": ",:type]
   NIL
 
@@ -1266,9 +1266,9 @@ displayValue($op,u,omitVariableNameIfTrue) ==
         rhs := '"):  "
         '"Value (has type "
     rhs := '":  "
-    STRCONC('"Value of ", PNAME $op,'": ")
+    strconc('"Value of ", PNAME $op,'": ")
   labmode := prefix2String objMode(u)
-  if ATOM labmode then labmode := [labmode]
+  if atom labmode then labmode := [labmode]
   IDENTP expr and getConstructorKindFromDB expr = "domain" =>
     sayMSG concat('"   ",label,labmode,rhs,form2String expr)
   mathprint ['CONCAT,label,:labmode,rhs,
@@ -1335,7 +1335,7 @@ newHelpSpad2Cmd args ==
   filestream := MAKE_-INSTREAM(helpFile)
   repeat
     line := read_-line(filestream,false)
-    NULL line =>
+    null line =>
       SHUT filestream
       return true
     SAY line
@@ -1360,7 +1360,7 @@ frameEnvironment fname ==
   -- is returned
   fname = frameName first $interpreterFrameRing => $InteractiveFrame
   ifr := rest $interpreterFrameRing
-  e := LIST LIST NIL
+  e := [[NIL]]
   while ifr repeat
     [f,:ifr] := ifr
     if fname = frameName f   then
@@ -1375,15 +1375,15 @@ frameSpad2Cmd args ==
   arg  := selectOptionLC(first args,frameArgs,'optionError)
   args := rest args
   if args is [a] then args := a
-  if ATOM args then args := object2Identifier args
+  if atom args then args := object2Identifier args
   arg = 'drop  =>
-    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     closeInterpreterFrame(args)
   arg = "import" =>  importFromFrame args
   arg = "last"  =>   previousInterpreterFrame()
   arg = "names" =>   displayFrameNames()
   arg = "new"   =>
-    args and CONSP(args) => throwKeyedMsg("S2IZ0017",[args])
+    args and cons?(args) => throwKeyedMsg("S2IZ0017",[args])
     addNewInterpreterFrame(args)
   arg = "next"  =>   nextInterpreterFrame()
 
@@ -1396,14 +1396,14 @@ addNewInterpreterFrame(name) ==
   for f in $interpreterFrameRing repeat
     name = frameName(f) => throwKeyedMsg("S2IZ0019",[name])
   initHistList()
-  $interpreterFrameRing := CONS(emptyInterpreterFrame(name),
-    $interpreterFrameRing)
+  $interpreterFrameRing := [emptyInterpreterFrame(name),
+    :$interpreterFrameRing]
   updateFromCurrentInterpreterFrame()
   _$ERASE histFileName()
 
 emptyInterpreterFrame(name) ==
-  LIST(name,                            -- frame name
-       LIST LIST NIL,                   -- environment
+  [name,                                -- frame name
+       [[NIL]],                         -- environment
        1,                               -- $IOindex
        $HiFiAccess,                     -- $HiFiAccess
        $HistList,                       -- $HistList
@@ -1412,7 +1412,7 @@ emptyInterpreterFrame(name) ==
        $HistRecord,                     -- $HistRecord
        NIL,                             -- $internalHistoryTable
        COPY_-SEQ $localExposureDataDefault        -- $localExposureData
-      )
+      ]
 
 closeInterpreterFrame(name) ==
   -- if name = NIL then it means the current frame
@@ -1425,7 +1425,7 @@ closeInterpreterFrame(name) ==
     found := nil
     ifr := NIL
     for f in $interpreterFrameRing repeat
-      found or (name ~= frameName(f)) => ifr := CONS(f,ifr)
+      found or (name ~= frameName(f)) => ifr := [f,:ifr]
       found := true
     not found => throwKeyedMsg("S2IZ0022",[name])
     _$ERASE makeHistFileName(name)
@@ -1448,7 +1448,7 @@ nextInterpreterFrame() ==
 
 
 createCurrentInterpreterFrame() ==
-  LIST($interpreterFrameName,           -- frame name
+  [$interpreterFrameName,           -- frame name
        $InteractiveFrame,               -- environment
        $IOindex,                        -- $IOindex
        $HiFiAccess,                     -- $HiFiAccess
@@ -1458,7 +1458,7 @@ createCurrentInterpreterFrame() ==
        $HistRecord,                     -- $HistRecord
        $internalHistoryTable,           -- $internalHistoryTable
        $localExposureData               -- $localExposureData
-      )
+      ]
 
 
 updateFromCurrentInterpreterFrame() ==
@@ -1480,7 +1480,7 @@ updateFromCurrentInterpreterFrame() ==
 
 
 updateCurrentInterpreterFrame() ==
-  RPLACA($interpreterFrameRing,createCurrentInterpreterFrame())
+  $interpreterFrameRing.first := createCurrentInterpreterFrame()
   updateFromCurrentInterpreterFrame()
   NIL
 
@@ -1527,8 +1527,8 @@ importFromFrame args ==
       vars := NIL
       for [v,:props] in CAAR fenv repeat
         v = "--macros" =>
-          for [m,:.] in props repeat vars := cons(m,vars)
-        vars := cons(v,vars)
+          for [m,:.] in props repeat vars := [m,:vars]
+        vars := [v,:vars]
       importFromFrame [fname,:vars]
     sayKeyedMsg("S2IZ0077",[fname])
   for v in args repeat
@@ -1598,10 +1598,10 @@ initHistList() ==
   -- creates $HistList as a circular list of length $HistListLen
   -- and $HistRecord
   $HistListLen:= 20
-  $HistList:= LIST NIL
+  $HistList:= [NIL]
   li:= $HistList
-  for i in 1..$HistListLen repeat li:= CONS(NIL,li)
-  RPLACD($HistList,li)
+  for i in 1..$HistListLen repeat li:= [NIL,:li]
+  $HistList.rest := li
   $HistListAct:= 0
   $HistRecord:= NIL
 
@@ -1655,10 +1655,10 @@ setHistoryCore inCore ==
     $internalHistoryTable := NIL
     if $IOindex ~= 0 then
       -- actually put something in there
-      l := LENGTH RKEYIDS histFileName()
+      l := # RKEYIDS histFileName()
       for i in 1..l repeat
         vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
-        $internalHistoryTable := CONS([i,:vec],$internalHistoryTable)
+        $internalHistoryTable := [[i,:vec],:$internalHistoryTable]
       histFileErase histFileName()
     $useInternalHistoryTable := true
     sayKeyedMsg("S2IH0032",NIL)
@@ -1683,7 +1683,7 @@ writeInputLines(fn,initial) ==
   breakChars := [" ","+"]
   for i in initial..$IOindex - 1 repeat
     vecl := first readHiFi i
-    if STRINGP vecl then vecl := [vecl]
+    if string? vecl then vecl := [vecl]
     for vec in vecl repeat
       n := SIZE vec
       while n > maxn repeat
@@ -1692,7 +1692,7 @@ writeInputLines(fn,initial) ==
         for j in 1..maxn while not done repeat
           k := 1 + maxn - j
           MEMQ(vec.k,breakChars) =>
-            svec := STRCONC(SUBSTRING(vec,0,k+1),UNDERBAR)
+            svec := strconc(SUBSTRING(vec,0,k+1),UNDERBAR)
             lineList := [svec,:lineList]
             done := true
             vec := SUBSTRING(vec,k+1,NIL)
@@ -1703,7 +1703,7 @@ writeInputLines(fn,initial) ==
   file := histInputFileName(fn)
   histFileErase file
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
-  for x in removeUndoLines nreverse lineList repeat WRITE_-LINE(x,inp)
+  for x in removeUndoLines nreverse lineList repeat writeLine(x,inp)
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
@@ -1715,20 +1715,20 @@ resetInCoreHist() ==
   $HistListAct:= 0
   for i in 1..$HistListLen repeat
     $HistList:= rest $HistList
-    RPLACA($HistList,NIL)
+    $HistList.first := NIL
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
-  NULL INTEGERP n => sayKeyedMsg("S2IH0015",[n]) 
+  not integer? n => sayKeyedMsg("S2IH0015",[n]) 
   dif:= n-$HistListLen
   $HistListLen:= n
   l:= rest $HistList
   if dif > 0 then
-    for i in 1..dif repeat l:= CONS(NIL,l)
+    for i in 1..dif repeat l:= [NIL,:l]
   if dif < 0 then
     for i in 1..-dif repeat l:= rest l
     if $HistListAct > n then $HistListAct:= n
-  RPLACD($HistList,l)
+  $HistList.rest := l
   'done
 
 updateHist() ==
@@ -1748,7 +1748,7 @@ updateHist() ==
 updateInCoreHist() ==
   -- updates $HistList and $IOindex
   $HistList:= rest($HistList)
-  RPLACA($HistList,NIL)
+  $HistList.first := NIL
   if $HistListAct < $HistListLen then $HistListAct:= $HistListAct+1
 
 putHist(x,prop,val,e) ==
@@ -1773,10 +1773,10 @@ recordNewValue0(x,prop,val) ==
   -- updateHist writes this stuff out into the history file
   p1:= ASSQ(x,$HistRecord) =>
     p2:= ASSQ(prop,rest p1) =>
-      RPLACD(p2,val)
-    RPLACD(p1,CONS(CONS(prop,val),rest p1))
-  p:= CONS(x,list CONS(prop,val))
-  $HistRecord:= CONS(p,$HistRecord)
+      p2.rest := val
+    p1.rest := [[prop,:val],:rest p1]
+  p:= [x,:list [prop,:val]]
+  $HistRecord:= [p,:$HistRecord]
 
 recordOldValue(x,prop,val) ==
   startTimingProcess 'history
@@ -1787,9 +1787,9 @@ recordOldValue0(x,prop,val) ==
   -- writes (prop . val) into $HistList
   p1:= ASSQ(x,first $HistList) =>
     not ASSQ(prop,rest p1) =>
-      RPLACD(p1,CONS(CONS(prop,val),rest p1))
-  p:= CONS(x,list CONS(prop,val))
-  RPLACA($HistList,CONS(p,first $HistList))
+      p1.rest := [[prop,:val],:rest p1]
+  p:= [x,:list [prop,:val]]
+  $HistList.first := [p,:first $HistList]
 
 undoInCore(n) ==
   -- undoes the last n>0 steps using $HistList
@@ -1823,7 +1823,7 @@ undoFromFile(n) ==
       val =>
         if not (x='%) then recordOldValue(x,prop,val)
         if $HiFiAccess then recordNewValue(x,prop,val)
-        RPLACD(p,NIL)
+        p.rest := NIL
   for i in 1..n repeat
     vec:= UNWIND_-PROTECT(rest readHiFi(i),disableHist())
     for p1 in vec repeat
@@ -1835,7 +1835,7 @@ undoFromFile(n) ==
   updateHist()
 
 saveHistory(fn) ==
-  $seen: local := MAKE_-HASHTABLE 'EQ
+  $seen: local := hashTable 'EQ
   not $HiFiAccess => sayKeyedMsg("S2IH0016",NIL)
   not $useInternalHistoryTable and
     null MAKE_-INPUT_-FILENAME histFileName() => sayKeyedMsg("S2IH0022",NIL)
@@ -1875,7 +1875,7 @@ restoreHistory(fn) ==
   histFileErase curfile
   _$FCOPY(restfile,curfile)
  
-  l:= LENGTH RKEYIDS curfile
+  l:= # RKEYIDS curfile
   $HiFiAccess:= true
   oldInternal := $useInternalHistoryTable
   $useInternalHistoryTable := NIL
@@ -1883,7 +1883,7 @@ restoreHistory(fn) ==
   for i in 1..l repeat
     vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
     if oldInternal then $internalHistoryTable :=
-      CONS([i,:vec],$internalHistoryTable)
+      [[i,:vec],:$internalHistoryTable]
     LINE:= first vec
     for p1 in rest vec repeat
       x:= first p1
@@ -1924,7 +1924,7 @@ showHistory(arg) ==
   nset := nil
   if arg then
     arg1 := first arg
-    if INTEGERP arg1 then
+    if integer? arg1 then
       n := arg1
       nset := true
       KDR arg => arg1 := second arg
@@ -1952,7 +1952,7 @@ showInput(mini,maxi) ==
     vec:= UNWIND_-PROTECT(readHiFi(ind),disableHist())
     if ind<10 then TAB 2 else if ind<100 then TAB 1
     l := first vec
-    STRINGP l =>
+    string? l =>
       sayMSG ['"   [",ind,'"] ",first vec]
     sayMSG ['"   [",ind,'"] " ]
     for ln in l repeat
@@ -1989,8 +1989,8 @@ readHiFi(n) ==
   if $useInternalHistoryTable
   then
     pair := assoc(n,$internalHistoryTable)
-    ATOM pair => keyedSystemError("S2IH0034",NIL)
-    vec := QCDR pair
+    atom pair => keyedSystemError("S2IH0034",NIL)
+    vec := rest pair
   else
     HiFi:= RDEFIOSTREAM ['(MODE . INPUT),['FILE,:histFileName()]]
     vec:= SPADRREAD(object2Identifier n,HiFi)
@@ -2001,11 +2001,11 @@ writeHiFi() ==
   -- writes the information of the current step out to history file
   if $useInternalHistoryTable
   then
-    $internalHistoryTable := CONS([$IOindex,$currentLine,:$HistRecord],
-      $internalHistoryTable)
+    $internalHistoryTable := [[$IOindex,$currentLine,:$HistRecord],
+                                 :$internalHistoryTable]
   else
     HiFi:= RDEFIOSTREAM ['(MODE . OUTPUT),['FILE,:histFileName()]]
-    SPADRWRITE(object2Identifier $IOindex, CONS($currentLine,$HistRecord),HiFi)
+    SPADRWRITE(object2Identifier $IOindex, [$currentLine,:$HistRecord],HiFi)
     RSHUT HiFi
 
 disableHist() ==
@@ -2046,7 +2046,7 @@ safeWritify ob ==
 
 writify ob ==
     not ScanOrPairVec(function(unwritable?), ob) => ob
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
     $writifyComplained: local := false
  
     writifyInner ob where
@@ -2054,26 +2054,26 @@ writify ob ==
             null ob                => nil
             (e := HGET($seen, ob)) => e
  
-            CONSP ob =>
-                qcar := QCAR ob
-                qcdr := QCDR ob
+            cons? ob =>
+                qcar := first ob
+                qcdr := rest ob
                 (name := spadClosure? ob) =>
-                   d := writifyInner QCDR ob
+                   d := writifyInner rest ob
                    nob := ['WRITIFIED_!_!, 'SPADCLOSURE, d, name]
                    HPUT($seen, ob, nob)
                    HPUT($seen, nob, nob)
                    nob
                 (ob is ['LAMBDA_-CLOSURE, ., ., x, :.]) and x =>
                   THROW('writifyTag, 'writifyFailed)
-                nob := CONS(qcar, qcdr)
+                nob := [qcar,:qcdr]
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 qcar := writifyInner qcar
                 qcdr := writifyInner qcdr
-                QRPLACA(nob, qcar)
-                QRPLACD(nob, qcdr)
+                nob.first := qcar
+                nob.rest := qcdr
                 nob
-            VECP ob =>
+            vector? ob =>
                 isDomainOrPackage ob =>
                     d := mkEvalable devaluate ob
                     nob := ['WRITIFIED_!_!, 'DEVALUATED, writifyInner d]
@@ -2099,11 +2099,11 @@ writify ob ==
                 HPUT($seen, ob,  nob)
                 HPUT($seen, nob, nob)
                 keys := HKEYS ob
-                QRPLACD(nob,
+                nob.rest := 
                         ['HASHTABLE,
                           HASHTABLE_-CLASS ob,
                             writifyInner keys,
-                              [writifyInner HGET(ob,k) for k in keys]])
+                              [writifyInner HGET(ob,k) for k in keys]]
                 nob
             PLACEP ob =>
                 nob := ['WRITIFIED_!_!, 'PLACE]
@@ -2115,7 +2115,7 @@ writify ob ==
             READTABLEP ob =>
                 THROW('writifyTag, 'writifyFailed)
             -- Default case: return the object itself.
-            STRINGP ob =>
+            string? ob =>
                 EQ(ob, $NullStream) => ['WRITIFIED_!_!, 'NULLSTREAM]
                 EQ(ob, $NonNullStream) => ['WRITIFIED_!_!, 'NONNULLSTREAM]
                 ob
@@ -2127,7 +2127,7 @@ writify ob ==
 
 
 unwritable? ob ==
-    CONSP  ob or VECP ob       => false   -- first for speed
+    cons?  ob or vector? ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
     FLOATP ob => true
@@ -2144,31 +2144,31 @@ writifyComplain s ==
    sayKeyedMsg("S2IH0027",[s]) 
 
 spadClosure? ob ==
-  fun := QCAR ob
+  fun := first ob
   not (name := BPINAME fun) => nil
-  vec := QCDR ob
-  not VECP vec => nil
+  vec := rest ob
+  not vector? vec => nil
   name
 
 dewritify ob ==
     (not ScanOrPairVec(function is?, ob)
             where  is? a == a = 'WRITIFIED_!_!) => ob
  
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
  
     dewritifyInner ob where
         dewritifyInner ob ==
             null ob => nil
             e := HGET($seen, ob) => e
  
-            CONSP ob and first ob = 'WRITIFIED_!_! =>
+            cons? ob and first ob = 'WRITIFIED_!_! =>
                 type := ob.1
                 type = 'SELF =>
                     'WRITIFIED_!_!
                 type = 'BPI =>
                     oname := ob.2
                     f :=
-                        INTP oname => EVAL GENSYMMER oname
+                        integer? oname => eval GENSYMMER oname
                         SYMBOL_-FUNCTION oname
                     not COMPILED_-FUNCTION_-P f =>
                         error '"A required BPI does not exist."
@@ -2177,14 +2177,14 @@ dewritify ob ==
                     HPUT($seen, ob, f)
                     f
                 type = 'HASHTABLE =>
-                    nob := MAKE_-HASHTABLE ob.2
+                    nob := hashTable ob.2
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     for k in ob.3 for e in ob.4 repeat
                         HPUT(nob, dewritifyInner k, dewritifyInner e)
                     nob
                 type = 'DEVALUATED =>
-                    nob := EVAL dewritifyInner ob.2
+                    nob := eval dewritifyInner ob.2
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -2192,8 +2192,8 @@ dewritify ob ==
                     vec := dewritifyInner ob.2
                     name := ob.3
                     not FBOUNDP name => 
-                       error STRCONC('"undefined function: ", SYMBOL_-NAME name)
-                    nob := CONS(SYMBOL_-FUNCTION name, vec)
+                       error strconc('"undefined function: ", SYMBOL_-NAME name)
+                    nob := [SYMBOL_-FUNCTION name,:vec]
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -2213,16 +2213,16 @@ dewritify ob ==
                    fval
                 error '"Unknown type to de-writify."
  
-            CONSP ob =>
-                qcar := QCAR ob
-                qcdr := QCDR ob
-                nob  := CONS(qcar, qcdr)
+            cons? ob =>
+                qcar := first ob
+                qcdr := rest ob
+                nob  := [qcar,:qcdr]
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
-                QRPLACA(nob, dewritifyInner qcar)
-                QRPLACD(nob, dewritifyInner qcdr)
+                nob.first := dewritifyInner qcar
+                nob.rest := dewritifyInner qcdr
                 nob
-            VECP ob =>
+            vector? ob =>
                 n   := QVMAXINDEX ob
                 nob := MAKE_-VEC(n+1)
                 HPUT($seen, ob, nob)
@@ -2374,7 +2374,7 @@ readSpad2Cmd l ==
 
 --% )savesystem
 savesystem l ==
-  #l ~= 1 or not(SYMBOLP first l) => helpSpad2Cmd '(savesystem)
+  #l ~= 1 or not(symbol? first l) => helpSpad2Cmd '(savesystem)
   SETQ($SpadServer,false)
   SETQ($openServerIfTrue,true)
 )if not %hasFeature KEYWORD::ECL
@@ -2420,7 +2420,7 @@ reportOperations(oldArg,u) ==
     sayKeyedMsg("S2IZ0064",NIL)
   u isnt ['Record,:.] and u isnt ['Union,:.] and
     null(isNameOfType u) and u isnt ['typeOf,.] =>
-      if ATOM oldArg then oldArg := [oldArg]
+      if atom oldArg then oldArg := [oldArg]
       sayKeyedMsg("S2IZ0063",NIL)
       for op in oldArg repeat
         sayKeyedMsg("S2IZ0062",[opOf op])
@@ -2489,7 +2489,7 @@ reportOpsFromUnitDirectly unitForm ==
       '"is not"
     sayBrightly ['" This constructor",:bright verb,
       '"exposed in this frame."]
-    sayBrightly ['" Issue",:bright STRCONC('")edit ",
+    sayBrightly ['" Issue",:bright strconc('")edit ",
       namestring sourceFile),'"to see algebra source code for",
         :bright abb,'%l]
 
@@ -2500,7 +2500,7 @@ reportOpsFromUnitDirectly unitForm ==
       isRecordOrUnion =>
         sayBrightly '"   Records and Unions have no attributes."
       sayBrightly '""
-      attList:= REMDUP MSORT [x for [x,:.] in unit.2]
+      attList:= removeDuplicates MSORT [x for [x,:.] in unit.2]
       say2PerLine [formatAttribute x for x in attList]
       NIL
     opt = 'operations =>
@@ -2514,11 +2514,11 @@ reportOpsFromUnitDirectly unitForm ==
             systemErrorHere ["reportOpsFromUnitDirectly",top]
           [funlist,.]:= FUNCALL(constructorFunction,"$",unitForm,
             $CategoryFrame)
-          sigList := REMDUP MSORT
+          sigList := removeDuplicates MSORT
                       [[[a,b],true,slot c] for [a,b,c] in funlist]
                              where slot c == (atom c => [c,0,1]; c)
         else
-          sigList:= REMDUP MSORT getOplistForConstructorForm unitForm
+          sigList:= removeDuplicates MSORT getOplistForConstructorForm unitForm
       say2PerLine [formatOperation(x,unit) for x in sigList]
       if $commentedOps ~= 0 then
         sayBrightly
@@ -2547,7 +2547,7 @@ reportOpsFromLisplib(op,u) ==
   sayBrightly ['" This constructor",:bright verb,
     '"exposed in this frame."]
   sourceFile := getConstructorSourceFileFromDB op
-  sayBrightly ['" Issue",:bright STRCONC('")edit ",
+  sayBrightly ['" Issue",:bright strconc('")edit ",
     namestring sourceFile),
       '"to see algebra source code for",:bright fn,'%l]
 
@@ -2560,7 +2560,7 @@ reportOpsFromLisplib(op,u) ==
     opt = 'attributes =>
       centerAndHighlight('"Attributes",$LINELENGTH,specialChar 'hbar)
       sayBrightly '""
-      attList:= REMDUP MSORT [x for [x,:.] in
+      attList:= removeDuplicates MSORT [x for [x,:.] in
         getConstructorAttributesFromDB op]
       null attList => sayBrightly
         concat('%b,form2String functorForm,'%d,"has no attributes.",'%l)
@@ -2576,7 +2576,7 @@ displayOperationsFromLisplib form ==
   opList:= getConstructorOperationsFromDB name
   null opList => 
     centerAndHighlight('"No exported operations",$LINELENGTH)
-  opl:=REMDUP MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
+  opl:=removeDuplicates MSORT EQSUBSTLIST(argl,$FormalMapVariableList,opList)
   ops:= nil
   for x in opl repeat
     ops := [:ops,:formatOperationAlistEntry(x)]
@@ -2605,7 +2605,7 @@ spool filename ==
     TERPRI()
     resetHighlight()
   PROBE_-FILE STRING first filename =>
-    systemError CONCAT('"file ", STRING first filename, '" already exists")
+    systemError strconc('"file ", STRING first filename, '" already exists")
   DRIBBLE STRING first filename
   SETQ(_*TRACE_-OUTPUT_*,_*STANDARD_-OUTPUT_*)
   TERPRI()
@@ -2663,7 +2663,7 @@ undo(l) ==
     null l => -1
     first l
   if IDENTP n then
-    n := PARSE_-INTEGER PNAME n
+    n := readInteger PNAME n
     if not FIXP n then userError '"undo argument must be an integer"
   $InteractiveFrame := undoSteps(undoCount n,undoWhen)
   nil
@@ -2677,7 +2677,7 @@ recordFrame(systemNormal) ==
     delta := ['systemCommand,:delta]
   $frameRecord := [delta,:$frameRecord]
   $previousBindings := --copy all but the individual properties
-    [CONS(first x,[CONS(first y,rest y) for y in rest x]) for x in CAAR $InteractiveFrame]
+    [[first x,:[[first y,:rest y] for y in rest x]] for x in CAAR $InteractiveFrame]
   first $frameRecord
 
 diffAlist(new,old) ==
@@ -2717,7 +2717,7 @@ diffAlist(new,old) ==
 
 reportUndo acc ==
   for [name,:proplist] in acc repeat
-    sayBrightly STRCONC("Properties of ",PNAME name,'" ::")
+    sayBrightly strconc("Properties of ",PNAME name,'" ::")
     curproplist := LASSOC(name,CAAR $InteractiveFrame)
     for [prop,:value] in proplist repeat
       sayBrightlyNT ['"  ",prop,'" was: "]
@@ -2739,7 +2739,7 @@ undoCount(n) ==  --computes the number of undo's, given $IOindex
   m :=
     n >= 0 => $IOindex - n - 1
     -n
-  m >= $IOindex => userError STRCONC('"Magnitude of undo argument must be less than step number (",STRINGIMAGE $IOindex,'").")
+  m >= $IOindex => userError strconc('"Magnitude of undo argument must be less than step number (",STRINGIMAGE $IOindex,'").")
   m
 
 
@@ -2789,10 +2789,10 @@ undoSingleStep(changes,env) ==
     pairlist := ASSQ(name,env) =>
       proplist := rest pairlist =>
         for (pair := [prop,:value]) in changeList repeat
-          node := ASSQ(prop,proplist) => RPLACD(node,value)
-          RPLACD(proplist,[first proplist,:rest proplist])
-          RPLACA(proplist,pair)
-      RPLACD(pairlist,changeList)
+          node := ASSQ(prop,proplist) => node.rest := value
+          proplist.rest := [first proplist,:rest proplist]
+          proplist.first := pair
+      pairlist.rest := changeList
     env := [change,:env]
   env
 
@@ -2803,7 +2803,7 @@ undoLocalModemapHack changeList ==
 
 removeUndoLines u == --called by writeInputLines
   xtra :=
-    STRINGP $currentLine => [$currentLine]
+    string? $currentLine => [$currentLine]
     reverse $currentLine
   xtra := [x for x in xtra | not stringPrefix?('")history",x)]
   u := [:u, :xtra]
@@ -2826,16 +2826,16 @@ removeUndoLines u == --called by writeInputLines
           s2 := trimString SUBSTRING(s1,0,m)
         n :=
            s1 = '")redo" => 0
-           s2 ~= '"" => undoCount PARSE_-INTEGER s2
+           s2 ~= '"" => undoCount readInteger s2
            -1
-        RPLACA(y,CONCAT('">",code,STRINGIMAGE n))
+        y.first := strconc('">",code,STRINGIMAGE n)
       nil
     $IOindex := $IOindex + 1   --referenced by undoCount
   acc := nil
   for y in tails nreverse u repeat
     (x := first y).0 = char '_> =>
       code := x . 1                                 --code = a,b, or r
-      n := PARSE_-INTEGER SUBSTRING(x,2,nil)        --n = number of undo steps
+      n := readInteger SUBSTRING(x,2,nil)           --n = number of undo steps
       y := rest y                                   --kill >n line
       while y repeat
         c := first y
@@ -2896,7 +2896,7 @@ filterAndFormatConstructors(constrType,label,patterns) ==
 
 whatConstructors constrType ==
   -- here constrType should be one of 'category, 'domain, 'package
-  MSORT [CONS(getConstructorAbbreviationFromDB con, STRING(con))
+  MSORT [[getConstructorAbbreviationFromDB con, :STRING(con)]
     for con in allConstructors()
       | getConstructorKindFromDB con = constrType]
 
@@ -2942,7 +2942,7 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
   sayBrightly '""
 
 whatCommands(patterns) ==
-  label := STRCONC("System Commands for User Level: ",
+  label := strconc("System Commands for User Level: ",
     STRINGIMAGE $UserLevel)
   centerAndHighlight(label,$LINELENGTH,specialChar 'hbar)
   l := filterListOfStrings(patterns,
@@ -3091,14 +3091,14 @@ processSynonyms() ==
   fun := eval fun              -- fun may have been a suspension
   to := STRPOS('")",fun,1,NIL)
   if to and to ~= SIZE(fun)-1 then
-    opt := STRCONC('" ",SUBSTRING(fun,to,NIL))
+    opt := strconc('" ",SUBSTRING(fun,to,NIL))
     fun := SUBSTRING(fun,0,to-1)
   else opt := '" "
   if (SIZE synstr) > (SIZE fun) then
     for i in (SIZE fun)..(SIZE synstr) repeat
-      fun := CONCAT (fun, '" ")
---  $currentLine := STRCONC(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
-  cl := STRCONC(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
+      fun := strconc (fun, '" ")
+--  $currentLine := strconc(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
+  cl := strconc(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
   SETQ(LINE,cl)
   SETQ(CHR,LINE.(p+1))
   processSynonyms ()
@@ -3111,11 +3111,11 @@ tabsToBlanks s ==
    n := #s
    k < n =>
       k = 0 => tabsToBlanks SUBSTRING(s,1,nil)
-      STRCONC(SUBSTRING(s,0,k),$charBlank, tabsToBlanks SUBSTRING(s,k + 1,nil))
+      strconc(SUBSTRING(s,0,k),$charBlank, tabsToBlanks SUBSTRING(s,k + 1,nil))
    s
 
 doSystemCommand string ==
-   string := CONCAT('")", EXPAND_-TABS string)
+   string := strconc('")", EXPAND_-TABS string)
    LINE: fluid := string
    processSynonyms()
    string := LINE
@@ -3162,14 +3162,14 @@ handleNoParseCommands(unab, string) ==
                   copyright )) => 
     sayKeyedMsg("S2IV0005", NIL)
     nil
-  funName := INTERN CONCAT('"np",STRING unab)
+  funName := INTERN strconc('"np",STRING unab)
   FUNCALL(funName, SUBSEQ(string, spaceIndex+1))
 
 
 npboot str ==
   sex := string2BootTree str
   FORMAT(true, '"~&~S~%", sex)
-  $ans := EVAL sex
+  $ans := eval sex
   FORMAT(true, '"~&Value = ~S~%", $ans)
 
 stripLisp str ==
@@ -3184,7 +3184,7 @@ stripLisp str ==
 
 
 nplisp str ==
-  $ans := EVAL READ_-FROM_-STRING str
+  $ans := eval READ_-FROM_-STRING str
   FORMAT(true, '"~&Value = ~S~%", $ans)
 
 npsystem(unab, str) ==
@@ -3206,7 +3206,7 @@ tokenSystemCommand(unabr, tokList) ==
   systemCommand tokList
 
 tokTran tok ==
-  STRINGP tok =>
+  string? tok =>
     #tok = 0 => nil
     isIntegerString tok => READ_-FROM_-STRING tok
     STRING tok.0 = '"_"" =>

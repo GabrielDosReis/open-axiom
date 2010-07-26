@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -310,7 +310,7 @@ for x in '((+ WIDTH sumWidth)
 	   (ZAG SUPERSPAN zagSuper)
 	   (ZAG WIDTH zagWidth)) 
   repeat
-    MAKEPROP(first x, second x, third x)
+    property(first x, second x) := third x
 
 
 for x in '((+ APP plusApp)
@@ -380,7 +380,7 @@ for x in '((+ APP plusApp)
 	   (BRACE APP braceApp)
 	   (BRACE WIDTH qTWidth)) 
   repeat
-    MAKEPROP(first x, second x, third x)
+    property(first x, second x) := third x
 
 --%
 
@@ -388,7 +388,7 @@ specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index
   -- into the EBCDIC table, and returns the appropriate character
   null (code := IFCDR ASSQ(symbol,$specialCharacterAlist)) => '"?"
-  ELT($specialCharacters,code)
+  $specialCharacters.code
 
 rbrkSch() == PNAME specialChar 'rbrk
 lbrkSch() == PNAME specialChar 'lbrk
@@ -398,7 +398,7 @@ isBinaryInfix x ==
   member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
 
 stringApp([.,u],x,y,d) ==
-  appChar(STRCONC($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)
+  appChar(strconc($DoubleQuote,atom2String u,$DoubleQuote),x,y,d)
 
 stringWidth u ==
   u is [.,u] or THROW('outputFailure,'outputFailure)
@@ -406,12 +406,12 @@ stringWidth u ==
 
 obj2String o ==
   atom o =>
-    STRINGP o => o
+    string? o => o
     o = " " => '" "
     o = ")" => '")"
     o = "(" => '"("
     STRINGIMAGE o
-  APPLY('STRCONC,[obj2String o' for o' in o])
+  apply(function strconc,[obj2String o' for o' in o])
 
 APP(u,x,y,d) ==
   atom u => appChar(atom2String u,x,y,d)
@@ -420,13 +420,13 @@ APP(u,x,y,d) ==
     APP(a,x+#s,y,appChar(s,x,y,d))
   u is [[id,:.],:.] =>
     fn := GETL(id,'APP) => FUNCALL(fn,u,x,y,d)
-    not NUMBERP id and (d':= appInfix(u,x,y,d))=> d'
+    not integer? id and (d':= appInfix(u,x,y,d))=> d'
     appelse(u,x,y,d)
   appelse(u,x,y,d)
 
 atom2String x ==
   IDENTP x => PNAME x
-  STRINGP x => x
+  string? x => x
   stringer x
 
 -- General convention in the "app..." functions:
@@ -441,12 +441,12 @@ atom2String x ==
 appChar(string,x,y,d) ==
   if CHARP string then string := PNAME string
   line:= LASSOC(y,d) =>
-    if MAXINDEX string = 1 and char(string.0) = "%" then
-      string.1="b" =>
+    if MAXINDEX string = 1 and string.0 = char "%" then
+      string.1 = char "b" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
         string.1:= EBCDIC 200
-      string.1="d" =>
+      string.1 = char "d" =>
         bumpDeltaIfTrue:= true
         string.0:= EBCDIC 29
         string.1:= EBCDIC 65
@@ -482,11 +482,11 @@ sayMath u ==
 
 outputTran x ==
   member(x,'("failed" "nil" "prime" "sqfr" "irred")) =>
-    STRCONC('"_"",x,'"_"")
-  STRINGP x => x
-  VECP x =>
+    strconc('"_"",x,'"_"")
+  string? x => x
+  vector? x =>
     outputTran ['BRACKET,['AGGLST,:[x.i for i in 0..MAXINDEX x]]]
-  NUMBERP x =>
+  integer? x =>
     MINUSP x => ["-",MINUS x]
     x
   atom x =>
@@ -494,7 +494,7 @@ outputTran x ==
     x
   x is [c,var,mode] and c in '(_pretend _: _:_: _@) =>
     var := outputTran var
-    if CONSP var then var := ['PAREN,var]
+    if cons? var then var := ['PAREN,var]
     ['CONCATB,var,c,obj2String prefix2String mode]
   x is ['ADEF,vars,.,.,body] =>
     vars :=
@@ -515,7 +515,7 @@ outputTran x ==
     ['BRACKET,['AGGLST,:[outputTran y for y in l]]]
 
   x is [["$elt",domain,"float"], x, y, z] and (domain = $DoubleFloat or
-    domain is ['Float]) and INTEGERP x and INTEGERP y and INTEGERP z and
+    domain is ['Float]) and integer? x and integer? y and integer? z and
         z > 0  and (float := getFunctionFromDomain("float",domain,[$Integer,$Integer,$PositiveInteger])) =>
             f := SPADCALL(x,y,z,float)
             o := coerceInteractive(objNewWrap(f, domain), '(OutputForm))
@@ -523,7 +523,7 @@ outputTran x ==
 
   [op,:l]:= flattenOps x
   --needed since "op" is string in some spad code
-  if STRINGP op then (op := INTERN op; x:= [op,:l])
+  if string? op then (op := INTERN op; x:= [op,:l])
   op = 'LAMBDA_-CLOSURE => 'Closure
   x is ['break,:.] => 'break
   x is ['SEGMENT,a] =>
@@ -549,7 +549,7 @@ outputTran x ==
   x is ["-",a,b] =>
     a := outputTran a
     b := outputTran b
-    INTEGERP b =>
+    integer? b =>
       b < 0 => ["+",a,-b]
       ["+",a,["-",b]]
     b is ["-",c] => ["+",a,c]
@@ -557,7 +557,7 @@ outputTran x ==
 
   -- next stuff translates exp(log(foo4)/foo3) into ROOT(foo4,foo3)
   (x is ["**", ='"%e",foo1]) and (foo1 is [ ='"/",foo2, foo3]) and
-    INTEGERP(foo3) and (foo2 is ['log,foo4]) =>
+    integer?(foo3) and (foo2 is ['log,foo4]) =>
        foo3 = 2 => ['ROOT,outputTran foo4]
        ['ROOT,outputTran foo4,outputTran foo3]
   (x is ["**", ='"%e",foo1]) and (foo1 is [op',foo2, foo3]) and
@@ -595,7 +595,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and char("*") = (PNAME op).0 =>
+  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (PNAME op).0 =>
     mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -716,27 +716,27 @@ outputConstructTran x ==
   [outputTran first x,:outputConstructTran rest x]
 
 outputTranMatrix x ==
-  not VECP x =>
+  not vector? x =>
     -- assume that the only reason is that we've been done before
     ["MATRIX",:x]
     --keyedSystemError("S2GE0016",['"outputTranMatrix",
     -- '"improper internal form for matrix found in output routines"])
   ["MATRIX",nil,:[outtranRow x.i for i in 0..MAXINDEX x]] where
     outtranRow x ==
-      not VECP x =>
+      not vector? x =>
         keyedSystemError("S2GE0016",['"outputTranMatrix",
           '"improper internal form for matrix found in output routines"])
       ["ROW",:[outputTran x.i for i in 0..MAXINDEX x]]
 
 mkSuperSub(op,argl) ==
   $linearFormatScripts => linearFormatForm(op,argl)
---  l := [(STRINGP f => f; STRINGIMAGE f)
+--  l := [(string? f => f; STRINGIMAGE f)
 --    for f in linearFormatForm(op,argl)]
---  "STRCONC"/l
+--  strconc/l
   s:= PNAME op
-  indexList:= [PARSE_-INTEGER PNAME d for i in 1.. while
-    (DIGITP (d:= s.(maxIndex:= i)))]
-  cleanOp:= INTERN ("STRCONC"/[PNAME s.i for i in maxIndex..MAXINDEX s])
+  indexList:= [readInteger PNAME d for i in 1.. while
+    (digit? (d:= s.(maxIndex:= i)))]
+  cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>
     subPart:= ['SUB,cleanOp,:take(indexList.1,argl)]
@@ -751,7 +751,7 @@ mkSuperSub(op,argl) ==
       i=0 => ['AGGLST]
       i=1 => first this
       ['AGGLST,:this]
-    superSubPart := cons(scripts,superSubPart)
+    superSubPart := [scripts,:superSubPart]
   superSub := ['SUPERSUB,cleanOp,:reverse superSubPart]
   argl => [superSub,:argl]
   superSub
@@ -767,9 +767,9 @@ timesApp(u,x,y,d) ==
       d:= APP(BLANK,x,y,d)
       x:= x+1
     [d,x]:= appInfixArg(arg,x,y,d,rightPrec,"left",nil) --app in a right arg
-    wasSimple:= atom arg and not NUMBERP arg or isRationalNumber arg
+    wasSimple:= atom arg and not integer? arg or isRationalNumber arg
     wasQuotient:= isQuotient op
-    wasNumber:= NUMBERP arg
+    wasNumber:= integer? arg
     lastOp := op
     firstTime:= nil
   d
@@ -846,7 +846,7 @@ exptApp([.,a,b],x,y,d) ==
   APP(b,x',y',d)
 
 exptNeedsPren a ==
-  atom a and null (INTEGERP a and a < 0)  => false
+  atom a and null (integer? a and a < 0)  => false
   key:= keyp a
   key = "OVER" => true  -- added JHD 2/Aug/90
   (key="SUB") or (null GETL(key,"Nud") and null GETL(key,"Led")) => false
@@ -862,10 +862,10 @@ needStar(wasSimple,wasQuotient,wasNumber,cur,op) ==
   wasQuotient or isQuotient op => true
   wasSimple =>
     atom cur or keyp cur="SUB" or isRationalNumber cur or op="**" or op = "^" or
-      (atom op and not NUMBERP op and null GETL(op,"APP"))
+      (atom op and not integer? op and null GETL(op,"APP"))
   wasNumber =>
-    NUMBERP(cur) or isRationalNumber cur or
-        ((op="**" or op ="^") and NUMBERP(second cur))
+    integer?(cur) or isRationalNumber cur or
+        ((op="**" or op ="^") and integer?(second cur))
 
 isQuotient op ==
   op="/" or op="OVER"
@@ -880,9 +880,9 @@ timesWidth u ==
       w:= w+1
     if infixArgNeedsParens(arg, rightPrec, "left") then w:= w+2
     w:= w+WIDTH arg
-    wasSimple:= atom arg and not NUMBERP arg --or isRationalNumber arg
+    wasSimple:= atom arg and not integer? arg --or isRationalNumber arg
     wasQuotient:= isQuotient op
-    wasNumber:= NUMBERP arg
+    wasNumber:= integer? arg
     firstTime:= nil
   w
 
@@ -1025,19 +1025,19 @@ aggregateApp(u,x,y,d,s) ==
 --% Function to compute Width
 
 outformWidth u ==  --WIDTH as called from OUTFORM to do a COPY
-  STRINGP u =>
+  string? u =>
     u = $EmptyString => 0
-    u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
   atom u => # atom2String u
   WIDTH COPY u
 
 WIDTH u ==
-  STRINGP u =>
+  string? u =>
     u = $EmptyString => 0
-    u.0="%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
+    u.0 = char "%" and ((u.1 = char 'b) or (u.1 = char 'd)) => 1
     #u
-  INTEGERP u => 
+  integer? u => 
     if (u < 1) then 
       negative := 1
       u := -u
@@ -1055,19 +1055,20 @@ WIDTH u ==
   THROW('outputFailure,'outputFailure)
 
 putWidth u ==
-  atom u or u is [[.,:n],:.] and NUMBERP n => u
+  atom u or u is [[.,:n],:.] and integer? n => u
   op:= keyp u
---NUMBERP op => nil
+--integer? op => nil
   leftPrec:= getBindingPowerOf("left",u)
   rightPrec:= getBindingPowerOf("right",u)
   [firstEl,:l] := u
   interSpace:=
-    SYMBOLP firstEl and GETL(firstEl,"INFIXOP") => 0
+    symbol? firstEl and GETL(firstEl,"INFIXOP") => 0
     1
   argsWidth:=
     l is [firstArg,:restArg] =>
-      RPLACA(rest u,putWidth firstArg)
-      for y in tails restArg repeat RPLACA(y,putWidth first y)
+      u.rest.first := putWidth firstArg
+      for y in tails restArg repeat 
+        y.first := putWidth first y
       widthFirstArg:=
         0=interSpace and infixArgNeedsParens(firstArg,leftPrec,"right")=>
           2+WIDTH firstArg
@@ -1084,12 +1085,12 @@ putWidth u ==
       if l then ll := rest l else ll := nil
       [oldFirst,:opWidth(oldFirst,ll)+argsWidth]
     [putWidth oldFirst,:2+WIDTH oldFirst+argsWidth]
-  RPLACA(u,newFirst)
+  u.first := newFirst
   u
 
 opWidth(op,has2Arguments) ==
   op = "EQUATNUM" => 4
-  NUMBERP op => 2+SIZE STRINGIMAGE op
+  integer? op => 2+SIZE STRINGIMAGE op
   null has2Arguments =>
     a:= GETL(op,"PREFIXOP") => SIZE a
     2+SIZE PNAME op
@@ -1139,7 +1140,7 @@ maprin0 x ==
 
 maprinChk x ==
   null $MatrixList => maPrin x
-  ATOM x and (u:= assoc(x,$MatrixList)) =>
+  atom x and (u:= assoc(x,$MatrixList)) =>
     $MatrixList := delete(u,$MatrixList)
     maPrin deMatrix rest u
   x is ["=",arg,y]  =>     --case for tracing with )math and printing matrices
@@ -1177,7 +1178,7 @@ maprinRows matrixList ==
     for [name,:m] in y for n in 0.. repeat
       if not $collectOutput then TERPRI($algebraOutputStream)
       andWhere := (name = firstName => '"where "; '"and ")
-      line := STRCONC(andWhere, PNAME name)
+      line := strconc(andWhere, PNAME name)
       maprinChk ["=",line,m]
       -- note that this could place a new element on $MatrixList, hence the loop
 
@@ -1189,7 +1190,7 @@ LargeMatrixp(u,width, dist) ==
   --  sees if there is a matrix wider than 'width' in the next 'dist'
   --  part of u, a sized charybdis structure.
   --  NIL if not, first such matrix if there is one
-  ATOM u => nil
+  atom u => nil
   CDAR u <= width => nil
        --CDAR is the width of a charybdis structure
   op:=CAAR u
@@ -1254,7 +1255,7 @@ SubstWhileDesizing(u,m) ==
     -- arg. m is always nil (historical: EU directive to increase argument lists 1991/XGII)     
     --Replaces all occurrences of matrix m by name in u
     --Taking out any outdated size information as it goes
-  ATOM u => u
+  atom u => u
   [[op,:n],:l]:=u
   --name := RASSOC(u,$MatrixList) => name
   -- doesn't work since RASSOC seems to use an EQ test, and returns the
@@ -1268,7 +1269,7 @@ SubstWhileDesizing(u,m) ==
     PushMatrix u
   l':=SubstWhileDesizingList(l,m)
   -- [op,:l']
-  ATOM op => [op,:l']
+  atom op => [op,:l']
   [SubstWhileDesizing(op,m),:l']
 
 --;SubstWhileDesizingList(u,m) ==
@@ -1284,11 +1285,12 @@ SubstWhileDesizing(u,m) ==
 SubstWhileDesizingList(u,m) ==
    u is [a,:b] =>
      res:= 
-       ATOM a => [a] 
+       atom a => [a] 
        [SubstWhileDesizing(a,m)] 
      tail:=res
      for i in b repeat
-        if ATOM i then  RPLACD(tail,[i]) else RPLACD(tail,[SubstWhileDesizing(i,m)])
+        if atom i then tail.rest := [i]
+        else tail.rest := [SubstWhileDesizing(i,m)]
         tail:=rest tail
      res   
    u  
@@ -1498,7 +1500,7 @@ splitConcat(list,maxWidth,firstTimeIfTrue) ==
       l:= x
       totalWidth:= width
   x:= rest l
-  RPLAC(rest l,nil)
+  l.rest := nil
   [list,:splitConcat(x,maxWidth,nil)]
 
 spadPrint(x,m) ==
@@ -1587,18 +1589,18 @@ outputNumber(start,linelength,num) ==
      linelength:=linelength-1 
   while SIZE(num) > linelength repeat
     if $collectOutput then
-       $outputLines := [CONCAT(blnks, SUBSTRING(num,0,linelength),under),
+       $outputLines := [strconc(blnks, SUBSTRING(num,0,linelength),under),
                         :$outputLines]
     else
       sayALGEBRA [blnks,
                   SUBSTRING(num,0,linelength),under]
     num := SUBSTRING(num,linelength,NIL)
     if firsttime then 
-         blnks:=CONCAT(blnks,'" ")
+         blnks:=strconc(blnks,'" ")
          linelength:=linelength-1
          firsttime:=NIL
   if $collectOutput then
-    $outputLines := [CONCAT(blnks, num), :$outputLines]
+    $outputLines := [strconc(blnks, num), :$outputLines]
   else
     sayALGEBRA [blnks, num]
 
@@ -1607,13 +1609,13 @@ outputString(start,linelength,str) ==
   else blnks := '""
   while SIZE(str) > linelength repeat
     if $collectOutput then
-       $outputLines := [CONCAT(blnks, SUBSTRING(str,0,linelength)),
+       $outputLines := [strconc(blnks, SUBSTRING(str,0,linelength)),
                         :$outputLines]
     else
       sayALGEBRA [blnks, SUBSTRING(str,0,linelength)]
     str := SUBSTRING(str,linelength,NIL)
   if $collectOutput then
-    $outputLines := [CONCAT(blnks, str), :$outputLines]
+    $outputLines := [strconc(blnks, str), :$outputLines]
   else
     sayALGEBRA [blnks, str]
 
@@ -1621,7 +1623,7 @@ outputDomainConstructor form ==
   if VECTORP form then form := devaluate form
   atom (u:= prefix2String form) => u
   v:= [object2String(x) for x in u]
-  return INTERNL eval ['STRCONC,:v]
+  return INTERNL apply(function strconc,v)
 
 getOutputAbbreviatedForm form ==
   form is [op,:argl] =>
@@ -1643,7 +1645,7 @@ outputOp x ==
     n:=
       GETL(op,"NARY") => 2
       #args
-    newop:= INTERN STRCONC("*",STRINGIMAGE n,PNAME op)
+    newop:= INTERN strconc("*",STRINGIMAGE n,PNAME op)
     [newop,:[outputOp y for y in args]]
   x
 
@@ -1659,7 +1661,7 @@ printMap u ==
   if not $collectOutput then TERPRI $algebraOutputStream
 
 isInitialMap u ==
-  u is [[[n],.],:l] and INTEGERP n and
+  u is [[[n],.],:l] and integer? n and
     (and/[x is [[ =i],.] for x in l for i in n+1..])
 
 printMap1(x,initialFlag) ==
@@ -1709,7 +1711,7 @@ charyTop(u,start,linelength) ==
 charyTopWidth u ==
     atom u => u
     atom first u => putWidth u
-    NUMBERP CDAR u => u
+    integer? CDAR u => u
     putWidth u
 
 charyTrouble(u,v,start,linelength) ==
@@ -1733,7 +1735,7 @@ sublisMatAlist(m,m1,u) ==
   u
 
 charyTrouble1(u,v,start,linelength) ==
-  NUMBERP u => outputNumber(start,linelength,atom2String u)
+  integer? u => outputNumber(start,linelength,atom2String u)
   atom u => outputString(start,linelength,atom2String u)
   EQ(x:= keyp u,'_-) => charyMinus(u,v,start,linelength)
   x in '(_+ _* AGGLST) => charySplit(u,v,start,linelength)
@@ -1787,7 +1789,7 @@ charyMinus(u,v,start,linelength) ==
   '" "
 
 charyBinary(d,u,v,start,linelength) ==
-  member(d,'(" := " "= ")) =>
+  member(d,'(" := " " = ")) =>
     charybdis(['CONCATB,v.1,d],start,linelength)
     charybdis(v.2,start+2,linelength-2)
     '" "
@@ -1813,20 +1815,20 @@ charySplit(u,v,start,linelength) ==
   for i in 0.. repeat
     dm := rest m
     ddm := rest dm
-    RPLACD(dm,nil)
+    dm.rest := nil
     WIDTH v > linelength - 2 => return nil
-    RPLAC(first v, first v.0)
-    RPLACD(dm,ddm)
+    v.first := first v.0
+    dm.rest := ddm
     m := rest m
-  RPLAC(first v,first v.0)
-  RPLACD(m,nil)
+  v.first := first v.0
+  m.rest := nil
   charybdis(v,start + 2,linelength - 2)
   split2(u,dm,ddm,start,linelength)
 
 split2(u,dm,ddm,start,linelength) ==
 --prnd(start,(d:= GETL(keyp u,'INFIXOP) => d; opSrch(keyp u,OPLIST)))
   prnd(start,(d:= GETL(keyp u,'INFIXOP) => d; '","))
-  RPLACD(dm,ddm)
+  dm.rest := ddm
   m:= WIDTH [keyp u,:dm]<linelength-2
   charybdis([keyp u,:dm],(m => start+2; start),(m => linelength-2; linelength))
   '" "
@@ -1841,7 +1843,7 @@ charyElse(u,v,start,linelength) ==
 scylla(n,v) ==
   y := LASSOC(n,v)
   null y => nil
-  if STRINGP(y) then y := DROPTRAILINGBLANKS COPY y
+  if string?(y) then y := DROPTRAILINGBLANKS COPY y
   if $collectOutput then
     $outputLines := [y, :$outputLines]
   else
@@ -1855,8 +1857,8 @@ keyp(u) ==
   CAAR u
 
 absym x ==
-  (NUMBERP x) and (MINUSP x) => -x
-  not (atom x) and (keyp(x) = '_-) => second x
+  (integer? x) and (MINUSP x) => -x
+  cons? x and (keyp(x) = '_-) => second x
   x
 
 agg(n,u) ==
@@ -1872,24 +1874,24 @@ argsapp(u,x,y,d) == appargs(rest u,x,y,d)
 
 subspan u ==
   atom u => 0
-  NUMBERP rest u => subspan first u
-  (not atom first u             and_
+  integer? rest u => subspan first u
+  (cons? first u             and_
    atom CAAR u           and_
-   not NUMBERP CAAR u    and_
+   not integer? CAAR u    and_
    GETL(CAAR u, 'SUBSPAN)    )    =>
-   APPLX(GETL(CAAR u, 'SUBSPAN), LIST u)
+   APPLX(GETL(CAAR u, 'SUBSPAN), [u])
   MAX(subspan first u, subspan rest u)
 
 agggsub u == subspan rest u
 
 superspan u ==
   atom u => 0
-  NUMBERP rest u => superspan first u
-  (not atom first u               and_
+  integer? rest u => superspan first u
+  (cons? first u               and_
    atom CAAR u             and_
-   not NUMBERP CAAR u      and_
+   not integer? CAAR u      and_
    GETL(CAAR u, 'SUPERSPAN)    )    =>
-   APPLX(GETL(CAAR u, 'SUPERSPAN), LIST u)
+   APPLX(GETL(CAAR u, 'SUPERSPAN), [u])
   MAX(superspan first u, superspan rest u)
 
 agggsuper u == superspan rest u
@@ -1964,7 +1966,7 @@ appext(u,x,y,d) ==
   temp := 1 + WIDTH agg(2,u) +  WIDTH agg(3,u)
   n := MAX(WIDTH second u, WIDTH agg(4,u), temp)
   if first(z := agg(5,u)) is ["EXT",:.] and
-   (n=3 or (n > 3 and not (atom z)) ) then
+   (n=3 or (n > 3 and cons? z) ) then
      n := 1 + n
   d := APP(z, x + n, y, d)
 
@@ -1973,8 +1975,8 @@ apphor(x1,x2,y,d,char) ==
   APP(char, x2, y, temp)
 
 syminusp x ==
-  NUMBERP x => MINUSP x
-  not (atom x) and EQ(keyp x,'_-)
+  integer? x => MINUSP x
+  cons? x and EQ(keyp x,'_-)
 
 appsum(u, x, y, d) ==
   null u => d
@@ -1996,7 +1998,7 @@ appsum(u, x, y, d) ==
   appsum(rest u, tempx, y, tempdblock)
 
 appneg(u, x, y, d) ==
-  appsum(LIST u, x - 1, y, d)
+  appsum([u], x - 1, y, d)
 
 appparu(u, x, y, d) ==
   bot := y - subspan u
@@ -2040,7 +2042,7 @@ extwidth(u) ==
            1 + WIDTH agg(2, u) + WIDTH agg(3, u) )
   nil or
          (first(z := agg(5, u)) is ["EXT",:.] and _
-          (n=3 or ((n > 3) and null atom z) )  =>
+          (n=3 or ((n > 3) and cons? z) )  =>
           n := 1 + n)
   true => n + WIDTH agg(5, u)
 
@@ -2095,10 +2097,10 @@ slashWidth(u) ==
 longext(u, i, n) ==
   x := reverse u
   y := first x
-  u := remWidth(REVERSEWOC(CONS('" ", rest x)))
+  u := remWidth(REVERSEWOC(['" ",:rest x]))
   charybdis(u, i, n)
   if not $collectOutput then TERPRI $algebraOutputStream
-  charybdis(CONS('ELSE, LIST y), i, n)
+  charybdis(['ELSE, :[y]], i, n)
   '" "
 
 appvertline(char, x, yl, yu, d) ==
@@ -2278,19 +2280,19 @@ matSub(x) ==
 
 matWidth(x) ==
   y := CDDR x  -- list of rows, each of form ((ROW . w) element element ...)
-  numOfColumns := LENGTH CDAR y
+  numOfColumns := # CDAR y
   widthList := matLSum2 matWList(y, NLIST(numOfColumns, 0))
     --returns ["max width of entries in column i" for i in 1..numberOfRows]
   subspanList := matLSum matSubList y
   superspanList := matLSum matSuperList y
-  RPLAC(x.1,[widthList, subspanList, superspanList])
+  x.rest.first := [widthList, subspanList, superspanList]
   CAAR x.1
 
 matLSum(x) ==
-  CONS(sumoverlist x + LENGTH x, x)
+  [sumoverlist x + # x,:x]
 
 matLSum2(x) ==
-  CONS(sumoverlist x + 2*(LENGTH x), x)
+  [sumoverlist x + 2*(# x),:x]
 
 matWList(x, y) ==
   null x => y
@@ -2298,11 +2300,11 @@ matWList(x, y) ==
 
 matWList1(x, y) ==
   null x => nil
-  true => CONS(MAX(WIDTH first x, first y), matWList1(rest x, rest y) )
+  true => [MAX(WIDTH first x, first y),:matWList1(rest x, rest y)]
 
 matSubList(x) ==  --computes the max/[subspan(e) for e in "row named x"]
   null x => nil
-  true => CONS(matSubList1(CDAR x, 0), matSubList(rest x) )
+  true => [matSubList1(CDAR x, 0),:matSubList(rest x)]
 
 matSubList1(x, y) ==
   null x => y
@@ -2310,7 +2312,7 @@ matSubList1(x, y) ==
 
 matSuperList(x) ==  --computes the max/[superspan(e) for e in "row named x"]
   null x => nil
-  true => CONS(matSuperList1(CDAR x, 0), matSuperList(rest x) )
+  true => [matSuperList1(CDAR x, 0),:matSuperList(rest x)]
 
 matSuperList1(x, y) ==
   null x => y
@@ -2323,8 +2325,8 @@ minusWidth(u) ==
 --   LASSOC(name, x) or '","
 
 bracketagglist(u, start, linelength, tchr, open, close) ==
-  u := CONS(LIST('CONCAT, open, first u),
-            [LIST('CONCAT, '" ", y) for y in rest u] )
+  u := [['CONCAT, open, first u],
+           :[['CONCAT, '" ", y] for y in rest u]]
   repeat
     s := 0
     for x in tails u repeat
@@ -2333,12 +2335,12 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
              null rest x => return(s := -1)
     nil or
        s = -1 => (nextu := nil)
-       EQ(lastx, u) => ((nextu := rest u); RPLACD(u, nil) )
-       true => ((nextu := lastx); RPLACD(PREDECESSOR(lastx, u), nil))
+       EQ(lastx, u) => ((nextu := rest u); u.rest := nil)
+       true => ((nextu := lastx); PREDECESSOR(lastx, u).rest := nil)
     for x in tails u repeat
-           RPLACA(x, LIST('CONCAT, first x, tchr))
-    if null nextu then RPLACA(CDDR LAST u, close)
-    x := ASSOCIATER('CONCAT, CONS(ichr, u))
+           x.first := ['CONCAT, first x, tchr]
+    if null nextu then LAST(u).rest.rest.first := close
+    x := ASSOCIATER('CONCAT, [ichr,:u])
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
     if $collectOutput then TERPRI $algebraOutputStream
     ichr := '" "
@@ -2348,11 +2350,11 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
 prnd(start, op) ==
 -->
   $testOutputLineFlag =>
-    string := STRCONC(fillerSpaces MAX(0,start - 1),op)
+    string := strconc(fillerSpaces MAX(0,start - 1),op)
     $testOutputLineList := [string,:$testOutputLineList]
   PRINTEXP(fillerSpaces MAX(0,start - 1),$algebraOutputStream)
   $collectOutput =>
-    string := STRCONC(fillerSpaces MAX(0,start - 1),op)
+    string := strconc(fillerSpaces MAX(0,start - 1),op)
     $outputLines := [string, :$outputLines]
   PRINTEXP(op,$algebraOutputStream)
   TERPRI $algebraOutputStream
@@ -2368,8 +2370,8 @@ qTWidth(u) ==
 
 remWidth(x) ==
   atom x => x
-  true => CONS( (atom first x => first x; true => CAAR x),
-                MMAPCAR(function remWidth, rest x) )
+  true => [(atom first x => first x; true => CAAR x),
+              :MMAPCAR(function remWidth, rest x)]
 
 subSub(u) ==
   height CDDR u
@@ -2409,7 +2411,7 @@ superSubApp(u, x, y, di) ==
   return di
 
 stringer x ==
-  STRINGP x => x
+  string? x => x
   EQ('_|, FETCHCHAR(s:= STRINGIMAGE x, 0)) =>
     RPLACSTR(s, 0, 1, "", nil, nil)
   s
@@ -2458,8 +2460,8 @@ altSuperSubApp(u, x, y, di) ==
   sublist := everyNth(u := rest u, 2)
   suplist := everyNth(IFCDR u, 2)
 
-  ysub := y - 1 - APPLY('MAX, [ab, :[superspan s for s in sublist]])
-  ysup := y + 1 + APPLY('MAX, [ar, :[subspan   s for s in sublist]])
+  ysub := y - 1 - apply('MAX, [ab, :[superspan s for s in sublist]])
+  ysup := y + 1 + apply('MAX, [ar, :[subspan   s for s in sublist]])
   for sub in sublist for sup in suplist repeat
       wsub := WIDTH sub
       wsup := WIDTH sup
@@ -2555,14 +2557,14 @@ binomialWidth u == 2 + MAX(WIDTH u.1, WIDTH u.2)
 
 mathPrint u ==
   if not $collectOutput then TERPRI $algebraOutputStream
-  (u := STRINGP mathPrint1(mathPrintTran u, nil) =>
+  (u := string? mathPrint1(mathPrintTran u, nil) =>
    PSTRING u; nil)
 
 mathPrintTran u ==
   atom u => u
   true =>
     for x in tails u repeat
-          RPLAC(first x, mathPrintTran first x)
+          x.first := mathPrintTran first x
     u
 
 mathPrint1(x,fg) ==
@@ -2599,7 +2601,7 @@ isUnaryPrefix op ==
 
 primaryForm2String x ==
   x = nil => '""
-  STRINGP x => x
+  string? x => x
   x = $EmptyMode => specialChar 'quad
   IDENTP x => 
     x = "$" => '"%"

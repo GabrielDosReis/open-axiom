@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ makeDomainTemplate vec ==
     null item => nil
     newVec.index :=
       atom item => item
-      null atom first item => makeGoGetSlot(item,index)
+      cons? first item => makeGoGetSlot(item,index)
       item   
   $byteVec := "append"/nreverse $byteVec
   newVec
@@ -80,7 +80,7 @@ makeGoGetSlot(item,index) ==
 --=======================================================================
 --> called by getInfovecCode (see top of this file) from compDefineFunctor1
 makeCompactDirect u ==
-  $predListLength :local := LENGTH $NRTslot1PredicateList
+  $predListLength :local := # $NRTslot1PredicateList
   $byteVecAcc: local := nil
   [nam,[addForm,:opList]] := u
   --pp opList 
@@ -141,7 +141,7 @@ makeCompactSigCode sig == [fn for x in sig] where
   fn() == 
     x = "$$" => 2
     x = "$" => 0
-    not INTEGERP x => 
+    not integer? x => 
       systemError ['"code vector slot is ",x,'"; must be number"]
     x
   
@@ -163,12 +163,12 @@ stuffDomainSlots dollar ==
   dollar.2 := infovec.2
   proto4 := infovec.3
   dollar.4 := 
-    VECP CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
+    vector? CDDR proto4 => [COPY_-SEQ first proto4,:rest proto4]   --old style
     bitVector := dollar.3
     predvec := first proto4
     packagevec := second proto4
     auxvec := LIST2VEC [fn for i in 0..MAXINDEX predvec] where fn() ==
-      null testBitVector(bitVector,predvec.i) => nil
+      not testBitVector(bitVector,predvec.i) => nil
       packagevec.i or true
     [auxvec,:CDDR proto4]
 
@@ -179,14 +179,14 @@ getLookupFun infovec ==
 makeSpadConstant [fn,dollar,slot] ==
   val := FUNCALL(fn,dollar)
   u:= dollar.slot
-  RPLACA(u,function IDENTITY)
-  RPLACD(u,val)
+  u.first := function IDENTITY
+  u.rest := val
   val
 
 stuffSlot(dollar,i,item) ==
   dollar.i :=
     atom item => [SYMBOL_-FUNCTION item,:dollar]
-    item is [n,:op] and INTEGERP n => ['newGoGet,dollar,:item]
+    item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
     item is ['CONS,.,['FUNCALL,a,b]] =>
       b = '$ => ['makeSpadConstant,eval a,dollar,i]
       sayBrightlyNT '"Unexpected constant environment!!"
@@ -229,7 +229,7 @@ predicateBitIndex x ==
 
 predicateBitIndexRemop p==
 --transform attribute predicates taken out by removeAttributePredicates
-  p is [op,:argl] and op in '(AND and OR or NOT not) => 
+  p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
     simpBool makePrefixForm([predicateBitIndexRemop x for x in argl],op)
   p is ["has",'$,['ATTRIBUTE,a]] => LASSOC(a,$NRTattributeAlist)
   p
@@ -276,12 +276,13 @@ augmentPredVector(dollar,value) ==
 
 isHasDollarPred pred ==
   pred is [op,:r] =>
-    op in '(AND and OR or NOT not) => or/[isHasDollarPred x for x in r]
+    op in '(AND and %and OR or %or NOT not %not) => 
+      or/[isHasDollarPred x for x in r]
     op in '(HasCategory HasAttribute) => first r = '$
   false
 
 stripOutNonDollarPreds pred ==
-  pred is [op,:r] and op in '(AND and OR or NOT not) => 
+  pred is [op,:r] and op in '(AND and %and OR or %or NOT not %not) => 
     "append"/[stripOutNonDollarPreds x for x in r]
   not isHasDollarPred pred => [pred]
   nil
@@ -289,7 +290,7 @@ stripOutNonDollarPreds pred ==
 removeAttributePredicates pl ==
   [fn p for p in pl] where
     fn p ==
-      p is [op,:argl] and op in '(AND and OR or NOT not) => 
+      p is [op,:argl] and op in '(AND and %and OR or %or NOT not %not) => 
           makePrefixForm(fnl argl,op)
       p is ["has",'$,['ATTRIBUTE,a]] =>
         sayBrightlyNT '"Predicate: "
@@ -301,7 +302,7 @@ removeAttributePredicates pl ==
  
 transHasCode x ==
   atom x => x
-  op := QCAR x
+  op := x.op
   op in '(HasCategory HasAttribute) => x
   op="has" => compHasFormat x
   [transHasCode y for y in x]
@@ -320,16 +321,16 @@ orderByContainment pl ==
   for x in rest pl repeat
     if (y := CONTAINED(max,x)) then
       if null assoc(max,$predGensymAlist)
-      then $predGensymAlist := [[max,:GENSYM()],:$predGensymAlist]
+      then $predGensymAlist := [[max,:gensym()],:$predGensymAlist]
     else if CONTAINED(x,max)
-         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:GENSYM()],:$predGensymAlist]
+         then if null assoc(x,$predGensymAlist) then $predGensymAlist := [[x,:gensym()],:$predGensymAlist]
     if y then max := x
   [max,:orderByContainment delete(max,pl)]
  
 buildBitTable(:l) == fn(reverse l,0) where fn(l,n) ==
   null l => n
   n := n + n
-  if QCAR l then n := n + 1
+  if first l then n := n + 1
   fn(rest l,n)
  
 buildPredVector(init,n,l) == fn(init,2 ** n,l) where fn(acc,n,l) ==
@@ -350,7 +351,7 @@ bitsOf n ==
 --               Generate Slot 4 Constructor Vectors
 --=======================================================================
 NRTmakeCategoryAlist() ==
-  $depthAssocCache: local := MAKE_-HASHTABLE 'ID
+  $depthAssocCache: local := hashTable 'EQ
   $catAncestorAlist: local := NIL
   pcAlist := [:[[x,:"T"] for x in $uncondAlist],:$condAlist]
   $levelAlist: local := depthAssocList [CAAR x for x in pcAlist]
@@ -362,7 +363,7 @@ NRTmakeCategoryAlist() ==
   sixEtc := [5 + i for i in 1..#$pairlis]
   formals := ASSOCRIGHT $pairlis
   for x in slot1 repeat
-       RPLACA(x,EQSUBSTLIST(CONS("$$",sixEtc),CONS('$,formals),first x))
+       x.first := EQSUBSTLIST(["$$",:sixEtc],['$,:formals],first x)
   -----------code to make a new style slot4 -----------------
   predList := ASSOCRIGHT slot1  --is list of predicate indices
   maxPredList := "MAX"/predList
@@ -372,7 +373,7 @@ NRTmakeCategoryAlist() ==
     ['CONS, MKQ LIST2VEC slot0,
       ['CONS, MKQ LIST2VEC [encodeCatform x for x in catformvec],
         ['makeByteWordVec2,maxElement,MKQ $byteVec]]]]
-  --NOTE: this is new form: old form satisfies VECP CDDR form
+  --NOTE: this is new form: old form satisfies vector? CDDR form
 
 encodeCatform x ==
   k := NRTassocIndex x => k
@@ -382,7 +383,7 @@ encodeCatform x ==
 NRTcatCompare [catform,:pred] == LASSOC(first catform,$levelAlist)
  
 hasDefaultPackage catname ==
-  defname := INTERN STRCONC(catname,'"&")
+  defname := INTERN strconc(catname,'"&")
   constructor? defname => defname
   nil
  
@@ -390,11 +391,12 @@ hasDefaultPackage catname ==
 --=======================================================================
 --             Generate Category Level Alist
 --=======================================================================
-orderCatAnc x == nreverse ASSOCLEFT SORTBY('CDR,rest depthAssoc x)
+orderCatAnc x ==
+  nreverse ASSOCLEFT SORTBY(function rest,rest depthAssoc x)
  
 depthAssocList u == 
   u := delete('DomainSubstitutionMacro,u)  --hack by RDJ 8/90
-  REMDUP ("append"/[depthAssoc(y) for y in u])
+  removeDuplicates ("append"/[depthAssoc(y) for y in u])
  
 depthAssoc x ==
   y := HGET($depthAssocCache,x) => y
@@ -474,8 +476,8 @@ dcSlots con ==
   for i in 5..MAXINDEX template repeat
     sayBrightlyNT bright i
     item := template.i
-    item is [n,:op] and INTEGERP n => dcOpLatchPrint(op,n)
-    null item and i > 5 => sayBrightly ['"arg  ",STRCONC('"#",STRINGIMAGE(i - 5))]
+    item is [n,:op] and integer? n => dcOpLatchPrint(op,n)
+    null item and i > 5 => sayBrightly ['"arg  ",strconc('"#",STRINGIMAGE(i - 5))]
     atom item => sayBrightly ['"fun  ",item]
     item is ['CONS,.,['FUNCALL,[.,a],b]] => sayBrightly ['"constant ",a]
     sayBrightly concat('"lazy ",form2String formatSlotDomain i)
@@ -505,15 +507,15 @@ getOpSegment index ==
 getCodeVector() ==
   proto4 := $infovec.3
   u := CDDR proto4
-  VECP u => u           --old style
+  vector? u => u           --old style
   rest u                 --new style
 
 formatSlotDomain x ==
   x = 0 => ["$"]
   x = 2 => ["$$"]
-  INTEGERP x =>
+  integer? x =>
     val := $infovec.0.x
-    null val => [STRCONC('"#",STRINGIMAGE (x  - 5))]
+    null val => [strconc('"#",STRINGIMAGE (x  - 5))]
     formatSlotDomain val
   atom x => x
   x is ['NRTEVAL,y] => (atom y => [y]; y)
@@ -590,7 +592,7 @@ dcCats con ==
   name := abbreviation? con or con
   $infovec: local := getInfovec name
   u := $infovec.3
-  VECP CDDR u => dcCats1 con    --old style slot4
+  vector? CDDR u => dcCats1 con    --old style slot4
   $predvec:= getConstructorPredicatesFromDB con
   catpredvec := first u
   catinfo := second u
@@ -631,7 +633,7 @@ dcData con ==
   sayBrightly '"Operation data from slot 1"
   PRINT_-FULL $infovec.1
   vec := getCodeVector()
-  vec := (CONSP vec => rest vec; vec)
+  vec := (cons? vec => rest vec; vec)
   sayBrightly ['"Information vector has ",SIZE vec,'" entries"]
   dcData1 vec
 
@@ -663,7 +665,7 @@ dcSize(:options) ==
   lazyNodes := 0 --# of nodes needed for lazy domain slots
   for i in 5..maxindex repeat
     atom (item := template.i) =>   fun := fun + 1
-    INTEGERP first item    => latch := latch + 1
+    integer? first item    => latch := latch + 1
     'T                 =>  
        lazy := lazy + 1
        lazyNodes := lazyNodes + numberOfNodes item
@@ -673,13 +675,13 @@ dcSize(:options) ==
   aSize := numberOfNodes infovec.2
   slot4 := infovec.3
   catvec := 
-    VECP CDDR slot4 => second slot4
+    vector? CDDR slot4 => second slot4
     third slot4
   n := MAXINDEX catvec
   cSize := sum(nodeSize(2),vectorSize(SIZE first slot4),vectorSize(n + 1),
                nodeSize(+/[numberOfNodes catvec.i for i in 0..n]))
   codeVector :=
-    VECP CDDR slot4 => CDDR slot4
+    vector? CDDR slot4 => CDDR slot4
     CDDDR slot4
   vSize := halfWordSize(SIZE codeVector)
   itotal := sum(tSize,oSize,aSize,cSize,vSize)
@@ -708,7 +710,7 @@ dcSize(:options) ==
 dcSizeAll() ==
   count := 0
   total := 0
-  for x in allConstructors() | null atom GETL(x,'infovec) repeat
+  for x in allConstructors() | cons? GETL(x,'infovec) repeat
     count := count + 1
     s := dcSize(x,'quiet)
     sayBrightly [s,'" : ",x]
@@ -733,7 +735,7 @@ numberOfNodes(x) ==
 
 template con ==
   con := abbreviation? con or con
-  ppTemplate (getInfovec con).0
+  ppTemplate getInfovec(con).0
 
 ppTemplate vec ==
   for i in 0..MAXINDEX vec repeat
@@ -784,7 +786,7 @@ dcAll con ==
   'done
 
 dcOps conname ==
-  for [op,:u] in reverse getOperationAlistFromLisplib conname repeat
+  for [op,:u] in reverse getConstructorOperationsFromDB conname repeat
     for [sig,slot,pred,key,:.] in u repeat
       suffix := 
         atom pred => nil
@@ -846,7 +848,7 @@ extendsCategory(dom,u,v) ==
 extendsCategoryBasic0(dom,u,v) ==
   v is ['IF,p,['ATTRIBUTE,c],.] =>
     uVec := (compMakeCategoryObject(u,$EmptyEnvironment)).expr
-    null atom c and isCategoryForm(c,nil) =>
+    cons? c and isCategoryForm(c,nil) =>
       slot4 := uVec.4
       LASSOC(c,second slot4) is [=p,:.]
     slot2 := uVec.2
@@ -897,12 +899,12 @@ expandType(lazyt,template,domform) ==
                                  for [.,tag,dom] in argl]]
   lazyt is ['local,x] =>
     n := POSN1(x,$FormalMapVariableList)
-    ELT(domform,1 + n)
+    domform.(1 + n)
   [functorName,:[expandTypeArgs(a,template,domform) for a in argl]]
  
 expandTypeArgs(u,template,domform) ==
   u = '$ => u --template.0      -------eliminate this as $ is rep by 0
-  INTEGERP u => expandType(templateVal(template, domform, u), template,domform)
+  integer? u => expandType(templateVal(template, domform, u), template,domform)
   u is ['NRTEVAL,y] => y  --eval  y
   u is ['QUOTE,y] => y
   atom u => u
