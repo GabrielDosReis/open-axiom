@@ -145,9 +145,7 @@ resetTo(x,y) ==
   x.rest := y.rest
   x
 
-++ Like `optimize', except that non-atomic form may be reduced to
-++ to atomic forms.  In particular, the address of the input may
-++ not be the same as that of the output.
+++ Simplify the VM form `x'
 simplifyVMForm x ==
   isAtomicForm x => x
   x.op = 'CLOSEDFN => x
@@ -164,26 +162,6 @@ simplifyVMForm x ==
   for xs in tails x repeat
     xs.first := simplifyVMForm first xs
   x
-
-optimize x ==
-  (opt x; x) where
-    opt x ==
-      atom x => nil
-      (y:= first x)='QUOTE => nil
-      y='CLOSEDFN => nil
-      y is [["XLAM",argl,body],:a] =>
-        optimize rest x
-        argl = "ignore" => x.first := body
-        if not (# argl<= # a) then
-          SAY '"length mismatch in XLAM expression"
-          PRETTYPRINT y
-        x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)
-      atom y => optimize rest x
-      if first y="IF" then (x.first := optIF2COND y; y:= first x)
-      op:= GETL(subrname first y,"OPTIMIZE") =>
-        (optimize rest x; x.first := FUNCALL(op,optimize first x))
-      x.first := optimize first x
-      optimize rest x
  
 subrname u ==
   IDENTP u => u
@@ -233,7 +211,7 @@ optCatch (x is ["CATCH",g,a]) ==
   if a is ["SEQ",:s,["THROW", =g,u]] then
     changeThrowToExit(s,g)
     a.rest := [:s,["EXIT",u]]
-    ["CATCH",y,a]:= optimize x
+    a := simplifyVMForm a
   if hasNoThrows(a,g) then
     resetTo(x,a)
   else

@@ -557,7 +557,7 @@ reverseCondlist cl ==
 NRTsetVector4a(sig,form,cond) ==
   sig = '$ =>
      domainList :=
-       [optimize COPY comp(d,$EmptyMode,$e).expr or d
+       [simplifyVMForm COPY comp(d,$EmptyMode,$e).expr or d
          for d in $domainShell.4.0]
      $uncondList := append(domainList,$uncondList)
      if isCategoryForm(form,$e) then $uncondList := [form,:$uncondList]
