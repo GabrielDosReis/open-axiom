@@ -393,7 +393,7 @@ optSEQ ["SEQ",:l] ==
       aft:= after(l,before)
       null before => ["SEQ",:aft]
       null aft => ["COND",:transform,'(%true (conderr))]
-      ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
+      optCond ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
