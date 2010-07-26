@@ -810,41 +810,33 @@
                 (T 0.0)))
              ((OR (SPADCALL |r| (|getShellEntry| $ 145)) (= |x| 1.0))
               1.0)
-             (T (COND
-                  ((SPADCALL |r| (|getShellEntry| $ 147)) |x|)
-                  (T (SEQ (LETT |n|
-                                (SPADCALL |r| (|getShellEntry| $ 148))
-                                |DFLOAT;**;$F$;88|)
-                          (LETT |d|
-                                (SPADCALL |r| (|getShellEntry| $ 149))
-                                |DFLOAT;**;$F$;88|)
-                          (EXIT (COND
-                                  ((MINUSP |x|)
-                                   (COND
-                                     ((ODDP |d|)
-                                      (COND
-                                        ((ODDP |n|)
-                                         (RETURN-FROM
-                                          |DFLOAT;**;$F$;88|
-                                           (-
-                                            (|DFLOAT;**;$F$;88| (- |x|)
-                                             |r| $))))
-                                        (T
-                                         (RETURN-FROM
-                                          |DFLOAT;**;$F$;88|
-                                           (|DFLOAT;**;$F$;88| (- |x|)
-                                            |r| $)))))
-                                     (T (|error| "negative root"))))
-                                  ((EQL |d| 2)
-                                   (EXPT (|DFLOAT;sqrt;2$;33| |x| $)
-                                    |n|))
-                                  (T (|DFLOAT;**;3$;36| |x|
-                                      (/
-                                       (FLOAT |n|
-                                        |$DoubleFloatMaximum|)
-                                       (FLOAT |d|
-                                        |$DoubleFloatMaximum|))
-                                      $))))))))))))) 
+             ((SPADCALL |r| (|getShellEntry| $ 147)) |x|)
+             (T (SEQ (LETT |n| (SPADCALL |r| (|getShellEntry| $ 148))
+                           |DFLOAT;**;$F$;88|)
+                     (LETT |d| (SPADCALL |r| (|getShellEntry| $ 149))
+                           |DFLOAT;**;$F$;88|)
+                     (EXIT (COND
+                             ((MINUSP |x|)
+                              (COND
+                                ((ODDP |d|)
+                                 (COND
+                                   ((ODDP |n|)
+                                    (RETURN-FROM |DFLOAT;**;$F$;88|
+                                      (-
+                                       (|DFLOAT;**;$F$;88| (- |x|) |r|
+                                        $))))
+                                   (T
+                                    (RETURN-FROM |DFLOAT;**;$F$;88|
+                                      (|DFLOAT;**;$F$;88| (- |x|) |r|
+                                       $)))))
+                                (T (|error| "negative root"))))
+                             ((EQL |d| 2)
+                              (EXPT (|DFLOAT;sqrt;2$;33| |x| $) |n|))
+                             (T (|DFLOAT;**;3$;36| |x|
+                                    (/
+                                     (FLOAT |n| |$DoubleFloatMaximum|)
+                                     (FLOAT |d| |$DoubleFloatMaximum|))
+                                    $))))))))))) 
 
 (DEFUN |DoubleFloat| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

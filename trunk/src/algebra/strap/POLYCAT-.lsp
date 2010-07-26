@@ -745,7 +745,7 @@
                                                            "failed")))
                                                        (T
                                                         (LET
-                                                         ((#10=#:G1612
+                                                         ((#10=#:G1610
                                                            (CDR |nd|)))
                                                           (|check-subtype|
                                                            (NOT
@@ -809,14 +809,14 @@
                      (T (SEQ (LETT |i| 0 |POLYCAT-;conditionP;MU;27|)
                              (EXIT (CONS 0
                                     (LET
-                                     ((#14=#:G1611
+                                     ((#14=#:G1612
                                        (|makeSimpleArray|
                                         (|getVMType|
                                          (|getShellEntry| $ 6))
                                         (SIZE |monslist|))))
                                       (LET
                                        ((#15=#:G1728 |monslist|)
-                                        (#16=#:G1610 0))
+                                        (#16=#:G1611 0))
                                         (LOOP
                                           (COND
                                             ((ATOM #15#) (RETURN #14#))

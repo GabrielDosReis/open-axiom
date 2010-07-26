@@ -1,5 +1,9 @@
 2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optCond): Simplify newly built COND-expression.
+
+2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optimize): Remove as no longer used.
 	* interp/define.boot (DomainSubstitutionFunction): Use
 	simplifyVMForm in lieu of optimize.
