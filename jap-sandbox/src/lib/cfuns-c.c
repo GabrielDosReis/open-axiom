@@ -2,7 +2,7 @@
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
 
-   Copyright (C) 2007-2009, Gabriel Dos Reis.
+   Copyright (C) 2007-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -812,22 +812,19 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
 #endif   
 }
 
-/* String manipulation functions */
-
-OPENAXIOM_EXPORT char* oa_strcat(const char* left, const char* right)
+/* Return a string object that is the result of catenating the strings
+   designated by `left' and `right'.   */
+OPENAXIOM_EXPORT const char*
+oa_strcat(const char* left, const char* right)
 {
-   int left_size = 0, right_size = 0;
-
-   left_size = strlen(left);
-   right_size = strlen(right);
-
+   int left_size = strlen(left);
+   int right_size = strlen(right);
    int size = left_size + right_size;
-   char* buffer = malloc((size + 1) * sizeof(char));
+   char* buffer = malloc(size + 1);
 
-   memset(buffer,'\0',size+1);
    memcpy(buffer, left, left_size);
-   memcpy(buffer+left_size, right, right_size);
-
+   memcpy(buffer + left_size, right, right_size);
+   buffer[size] = '\0';
    return buffer;
 }
 
