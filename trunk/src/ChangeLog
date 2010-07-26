@@ -1,5 +1,10 @@
 2010-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optCond): Work harder at denesting nested
+	if-expressions. 
+
+2010-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include new
 	opcodes %icst0,	%icst1, %when, and %ccst.
 	* interp/g-util.boot: Expand %ccst.

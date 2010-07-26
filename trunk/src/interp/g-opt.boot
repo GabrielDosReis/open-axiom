@@ -301,23 +301,22 @@ optMkRecord ["mkRecord",:u] ==
   ["VECTOR",:u]
  
 optCond (x is ['COND,:l]) ==
-  if l is [a,[aa,b]] and aa = '%true and b is ["COND",:c] then
+  if l is [a,[aa,b]] and aa = '%true and b is ['COND,:c] then
     x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
     if (p1 is ['%not,=p2]) or (p2 is ['%not,=p1]) then
       l:=[[p1,:c1],['%true,:c2]]
       x.rest := l
     c1 is ['NIL] and p2 = '%true and first c2 = '%true =>
-      p1 is ['%not,p1']=> return p1'
-      return ['%not,p1]
+      return optNot ['%not,p1]
   l is [[p1,:c1],[p2,:c2],[p3,:c3]] and p3 = '%true =>
     EqualBarGensym(c1,c3) =>
-      ["COND",[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
-    EqualBarGensym(c1,c2) => ["COND",[['%or,p1,p2],:c1],['%true,:c3]]
+      optCond ['COND,[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
+    EqualBarGensym(c1,c2) => optCond ['COND,[['%or,p1,p2],:c1],['%true,:c3]]
     x
   for y in tails l repeat
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
-      a:=['%or,a1,a2]
+      a := ['%or,a1,a2]
       first(y).first := a
       y.rest := y'
   x
