@@ -697,10 +697,12 @@
 (DEFUN |bpTimes| ()
   (OR (|bpReduce|) (|bpLeftAssoc| '(TIMES SLASH) #'|bpExpt|)))
 
+(DEFUN |bpEuclid| () (|bpLeftAssoc| '(QUO REM) #'|bpTimes|))
+
 (DEFUN |bpMinus| ()
-  (OR (AND (|bpInfGeneric| '(MINUS)) (OR (|bpTimes|) (|bpTrap|))
+  (OR (AND (|bpInfGeneric| '(MINUS)) (OR (|bpEuclid|) (|bpTrap|))
            (|bpPush| (|bfApplication| (|bpPop2|) (|bpPop1|))))
-      (|bpTimes|)))
+      (|bpEuclid|)))
 
 (DEFUN |bpArith| () (|bpLeftAssoc| '(PLUS MINUS) #'|bpMinus|))
 

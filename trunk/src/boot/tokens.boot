@@ -56,8 +56,10 @@ shoeKeyWords == [  _
             ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _
             ['"or",   "OR"] , _
+            ['"rem",  "REM"], _
             ['"repeat", "REPEAT"] , _
             ['"return", "RETURN"], _
+            ['"quo",     "QUO"], _
             ['"structure", "STRUCTURE"], _
             ['"then",  "THEN"], _
             ['"throw", "THROW"], _
@@ -187,6 +189,8 @@ for i in [ _
 for i in [      _
         ["SHOEEQ"    ,"="], _
         ["TIMES"    ,"*"], _
+        ["REM",    "rem"],_
+        ["QUO",    "quo"],_
         ["PLUS" ,"+"], _
         ["IS"   ,"is"], _
         ["ISNT" ,"isnt"], _
@@ -294,6 +298,8 @@ for i in [ _
   ["MINUS",     "-"]  , _
   ["TIMES",          "*"]  , _
   ["POWER",          "EXPT"]  , _
+  ['REM,          'REM],_
+  ['QUO,     'TRUNCATE],_
   ["SLASH",       "/"]  , _
   ["LT",              "<"], _
   ["GT",              ">"] , _
