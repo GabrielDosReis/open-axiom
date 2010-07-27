@@ -129,7 +129,7 @@ namespace BOOT
 %Instantiation <=> [%Constructor,:%Form]       -- constructor instance
 %Env <=> %List                                 -- compiling env
 %Mode <=> %Symbol or %String or %List          -- type of forms
-%Code <=> %Form                                -- generated code
+%Code <=> %Form or %Char                       -- generated code
 %Triple <=>                                    -- form + type + env
   [%Code,:[%Mode,:[%Env,:null]]]
 

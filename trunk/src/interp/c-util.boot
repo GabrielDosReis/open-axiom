@@ -1092,7 +1092,7 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
-middleEndExpand: %Form -> %Form
+--middleEndExpand: %Form -> %Code
 middleEndExpand x ==
   x = '%false or x = '%nil => 'NIL
   IDENTP x and (x' := x has %Rename) => x'
@@ -1519,8 +1519,8 @@ ilTransformInsns form ==
 --%
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.
-mutateToBackendCode: %Form -> %Void
-mutateToBackendCode x ==
+massageBackendCode: %Code -> %Void
+massageBackendCode x ==
   IDENTP x and isLispSpecialVariable x => noteSpecialVariable x
   atomic? x => nil
   -- temporarily have TRACELET report MAKEPROPs.
@@ -1533,7 +1533,7 @@ mutateToBackendCode x ==
         x.first := "LETT"
       $TRACELETFLAG => x.first := "/TRACE-LET"
       u = "%LET" => x.first := "SPADLET"
-    mutateToBackendCode CDDR x
+    massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
@@ -1542,15 +1542,15 @@ mutateToBackendCode x ==
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
-    mutateToBackendCode x
+    massageBackendCode x
   u in '(LET LET_*) =>
     oldVars := $LocalVars
     vars := nil
     for [var,init] in second x repeat
-      mutateToBackendCode init
+      massageBackendCode init
       $LocalVars := [var,:$LocalVars]
       vars := [var,:vars]
-    mutateToBackendCode x.rest.rest
+    massageBackendCode x.rest.rest
     newVars := setDifference($LocalVars,setUnion(vars,oldVars))
     $LocalVars := setUnion(oldVars,newVars)
   u in '(PROG LAMBDA) =>
@@ -1559,13 +1559,13 @@ mutateToBackendCode x ==
       not (y in $LocalVars) =>
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
-    res := mutateToBackendCode CDDR x
+    res := massageBackendCode CDDR x
     $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
   u = "DECLARE" => nil       -- there is nothing to do convert there
-  mutateToBackendCode u
-  mutateToBackendCode rest x
+  massageBackendCode u
+  massageBackendCode rest x
 
 
 skipDeclarations: %List -> %List
@@ -1611,7 +1611,7 @@ transformToBackendCode x ==
   $LocalVars: fluid := nil
   $SpecialVars: fluid := nil
   x := middleEndExpand x
-  mutateToBackendCode CDDR x
+  massageBackendCode CDDR x
   body := skipDeclarations CDDR x
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
