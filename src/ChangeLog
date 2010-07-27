@@ -1,3 +1,9 @@
+2010-07-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/types.boot (%Code): Include %Char.
+	* interp/c-util.boot (middleEndExpand): Temporarilty Comment out
+	signature.
+
 2010-07-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optCond): Work harder at denesting nested
