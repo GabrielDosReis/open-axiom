@@ -1048,7 +1048,7 @@ compSeqItem(x,m,e) ==
 replaceExitEtc(x,tag,opFlag,opMode) ==
   (fn(x,tag,opFlag,opMode); x) where
     fn(x,tag,opFlag,opMode) ==
-      isAtomicForm x => nil
+      atomic? x => nil
       x is [ =opFlag,n,t] =>
         second(x.args).expr :=
           replaceExitEtc(second(x.args).expr,tag,opFlag,opMode)
@@ -2292,7 +2292,7 @@ massageLoop x == main x where
     containsNonLocalControl?(body,nil) => systemErrorHere ['massageLoop,x]
     ['CATCH,tag,['%loop,:iters,body,'%nil]]
   replaceThrowWithLeave(x,tag) ==
-    isAtomicForm x => nil
+    atomic? x => nil
     x is ['THROW,=tag,expr] =>
       replaceThrowWithLeave(expr,tag)
       -- Avoid redudant THROW for return-expressions.
@@ -2304,7 +2304,7 @@ massageLoop x == main x where
         x.args := rest x.args
     for x' in x repeat replaceThrowWithLeave(x',tag)
   containsNonLocalControl?(x,tags) ==
-    isAtomicForm x => false
+    atomic? x => false
     x is ['THROW,tag,x'] =>
       not(tag in tags) or containsNonLocalControl?(x',tags)
     x is ['CATCH,tag,x'] =>

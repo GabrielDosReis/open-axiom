@@ -168,7 +168,7 @@ wantArgumentsAsTuple(args,sig) ==
 ++ that are unused.
 declareUnusedParameters x == (augment x; x) where
   augment x == 
-    isAtomicForm x => nil
+    atomic? x => nil
     x is [op,parms,body] and op in $AbstractionOperator =>
       augment body
       unused := [p for p in parms | not usedSymbol?(p,body)]
@@ -1092,11 +1092,11 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
-middleEndExpand: %Form -> %Form
+--middleEndExpand: %Form -> %Code
 middleEndExpand x ==
   x = '%false or x = '%nil => 'NIL
   IDENTP x and (x' := x has %Rename) => x'
-  isAtomicForm x => x
+  atomic? x => x
   [op,:args] := x
   IDENTP op and (fun := getOpcodeExpander op) =>
     middleEndExpand apply(fun,x,nil)
@@ -1135,7 +1135,7 @@ eqSubst(args,parms,body) ==
 
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
-  isAtomicForm form => form
+  atomic? form => form
   form is ["COND",:body] =>
     mutateCONDFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["LET",:.] =>
@@ -1145,7 +1145,7 @@ replaceSimpleFunctions form ==
     -- Conservatively preserve object identity and storage 
     -- consumption by not folding non-atomic constant forms.
     getFunctionReplacement op isnt ['XLAM,=nil,body] => form
-    isAtomicForm body or isVMConstantForm body => body
+    atomic? body or isVMConstantForm body => body
     form
   -- 1. process argument first.
   for args in tails rest form repeat
@@ -1167,7 +1167,7 @@ replaceSimpleFunctions form ==
       -- Identity function toos.
       parms is [=body] => first args
       -- conservatively approximate eager semantics
-      and/[isAtomicForm first as for as in tails args] =>
+      and/[atomic? first as for as in tails args] =>
         -- alpha rename before substitution.
 	newparms := [gensym() for p in parms]
 	body := eqSubstAndCopy(newparms,parms,body)
@@ -1190,7 +1190,7 @@ forwardingCall?(vars,body) ==
 
 ++ Return true if `form' has a linear usage of all variables in `vars'.
 usesVariablesLinearly?(form,vars) ==
-  isAtomicForm form => true
+  atomic? form => true
   and/[numOfOccurencesOf(var,form) < 2 for var in vars] 
 
 ++ We are processing a function definition with parameter list `vars'
@@ -1208,10 +1208,10 @@ expandableDefinition?(vars,body) ==
     -- FIXME: This should be done only for constant creators.
     null vars' => semiSimpleRelativeTo?(body,$VMsideEffectFreeOperators)
 
-    isAtomicForm body => true
+    atomic? body => true
     [op,:args] := body
     not IDENTP op => false
-    and/[isAtomicForm x for x in args] 
+    and/[atomic? x for x in args] 
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
     false
@@ -1224,7 +1224,7 @@ expandableDefinition?(vars,body) ==
 ++ domain.  Conditional operations are not folded.
 foldSpadcall: %Form -> %Form
 foldSpadcall form ==
-  isAtomicForm form => form           -- leave atomic forms alone
+  atomic? form => form           -- leave atomic forms alone
   form is ["DECLARE",:.] => form      -- don't walk declarations
   form is ["LET",inits,:body] =>
     mutateLETFormWithUnaryFunction(form,"foldSpadcall")
@@ -1321,7 +1321,7 @@ MAKE_-CLOSEDFN_-NAME() ==
 
 backendCompileNEWNAM: %Form -> %Void
 backendCompileNEWNAM x ==
-  isAtomicForm x => nil
+  atomic? x => nil
   atom(y := first x) =>
     backendCompileNEWNAM rest x
     if y = "CLOSEDFN" then
@@ -1422,7 +1422,7 @@ backendCompile2 code ==
 backendFluidize x ==
   IDENTP x and x ~= "$" and x ~= "$$" and
     (PNAME x).0 = char "$" and not digit?((PNAME x).1) => x
-  isAtomicForm x => nil
+  atomic? x => nil
   first x = "FLUID" => second x
   a := backendFluidize first x
   b := backendFluidize rest x
@@ -1519,10 +1519,10 @@ ilTransformInsns form ==
 --%
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.
-mutateToBackendCode: %Form -> %Void
-mutateToBackendCode x ==
+massageBackendCode: %Code -> %Void
+massageBackendCode x ==
   IDENTP x and isLispSpecialVariable x => noteSpecialVariable x
-  isAtomicForm x => nil
+  atomic? x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.first := "MAKEPROP-SAY"
@@ -1533,7 +1533,7 @@ mutateToBackendCode x ==
         x.first := "LETT"
       $TRACELETFLAG => x.first := "/TRACE-LET"
       u = "%LET" => x.first := "SPADLET"
-    mutateToBackendCode CDDR x
+    massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
@@ -1542,15 +1542,15 @@ mutateToBackendCode x ==
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
-    mutateToBackendCode x
+    massageBackendCode x
   u in '(LET LET_*) =>
     oldVars := $LocalVars
     vars := nil
     for [var,init] in second x repeat
-      mutateToBackendCode init
+      massageBackendCode init
       $LocalVars := [var,:$LocalVars]
       vars := [var,:vars]
-    mutateToBackendCode x.rest.rest
+    massageBackendCode x.rest.rest
     newVars := setDifference($LocalVars,setUnion(vars,oldVars))
     $LocalVars := setUnion(oldVars,newVars)
   u in '(PROG LAMBDA) =>
@@ -1559,13 +1559,13 @@ mutateToBackendCode x ==
       not (y in $LocalVars) =>
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
-    res := mutateToBackendCode CDDR x
+    res := massageBackendCode CDDR x
     $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
   u = "DECLARE" => nil       -- there is nothing to do convert there
-  mutateToBackendCode u
-  mutateToBackendCode rest x
+  massageBackendCode u
+  massageBackendCode rest x
 
 
 skipDeclarations: %List -> %List
@@ -1587,7 +1587,7 @@ declareGlobalVariables vars ==
   ["DECLARE",["SPECIAL",:vars]]
 
 simplifySEQ form ==
-  isAtomicForm form => form
+  atomic? form => form
   form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
     stmts.first := simplifySEQ first stmts
@@ -1596,7 +1596,7 @@ simplifySEQ form ==
 ++ Return true if the Lisp `form' has a `RETURN' form
 ++ that needs to be enclosed in a `PROG' form.
 needsPROG? form ==
-  isAtomicForm form => false
+  atomic? form => false
   op := form.op
   op = 'RETURN => true
   op in '(LOOP PROG) => false
@@ -1611,7 +1611,7 @@ transformToBackendCode x ==
   $LocalVars: fluid := nil
   $SpecialVars: fluid := nil
   x := middleEndExpand x
-  mutateToBackendCode CDDR x
+  massageBackendCode CDDR x
   body := skipDeclarations CDDR x
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 

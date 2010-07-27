@@ -38,7 +38,7 @@ import sys_-utility
 namespace BOOT
 
 module g_-util where
-  isAtomicForm: %Form -> %Boolean
+  atomic?: %Thing -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
@@ -145,13 +145,13 @@ expandSTEP(id,lo,step,final)==
   final := middleEndExpand final
   loopvar := [[id,lo]]
   inc :=
-    isAtomicForm step => step
+    atomic? step => step
     g1 := gensym()
     loopvar := [:loopvar,[g1,step]]
     g1
   final :=
     atom final => final
-    final is [hi] and isAtomicForm hi => hi
+    final is [hi] and atomic? hi => hi
     g2 := gensym()
     loopvar := [:loopvar,[g2,:final]]
     g2
@@ -492,7 +492,7 @@ getOpcodeExpander op ==
 expandToVMForm x ==
   x = '%false or x = '%nil => 'NIL
   IDENTP x and (x' := x has %Rename) => x'
-  isAtomicForm x => x
+  atomic? x => x
   [op,:args] := x
   IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
   op' := expandToVMForm op
@@ -530,9 +530,9 @@ isSharpVarWithNum x ==
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
-++ Returns true if `form' is either an atom or a quotation.
-isAtomicForm form ==
-  atom form or first form = "QUOTE"
+++ Returns true if `x' is either an atom or a quotation.
+atomic? x ==
+  not cons? x or x.op = 'QUOTE
 
 
 --% Sub-domains information handlers
