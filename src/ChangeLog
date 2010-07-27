@@ -1,5 +1,12 @@
 2010-07-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: quo and rem are now keywords and infix operators.
+	* boot/parser.boot (bpEuclid): New.  Parse integer quotient and
+	remainder expressions.
+	(bpMinus): Now build on bpEuclid instead of bpTimes.
+
+2010-07-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/i-analy.boot (bottomUpCompile): Use massageBackendCode in
 	lieu of mutateToBackendCode.
 
