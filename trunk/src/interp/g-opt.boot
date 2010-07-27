@@ -70,7 +70,7 @@ emitIndirectCall(fn,args,x) ==
 ++ updated as opposed to being defined. `vars' is the list of
 ++ all variable definitions in scope.
 changeVariableDefinitionToStore(form,vars) ==
-  isAtomicForm form => nil
+  atomic? form => nil
   form is ['%LET,v,expr] =>
     changeVariableDefinitionToStore(expr,vars)
     if v in vars then form.op := '%store
@@ -81,7 +81,7 @@ changeVariableDefinitionToStore(form,vars) ==
 
 ++ Return true if `x' contains control transfer to a point outside itself.
 jumpToToplevel? x ==
-  isAtomicForm x => false
+  atomic? x => false
   op := x.op
   op = 'SEQ => CONTAINED('THROW,x.args)
   op in '(EXIT THROW %leave) => true
@@ -94,7 +94,7 @@ singleAssignment? form ==
 ++ Turns `form' into a `%bind'-expression if it starts with a
 ++ a sequence of first-time variable definitions.
 groupVariableDefinitions form ==
-  isAtomicForm form => form
+  atomic? form => form
   form isnt ['SEQ,:stmts,['EXIT,val]] => form
   defs := nil
   for x in stmts while singleAssignment? x  repeat
@@ -149,7 +149,7 @@ resetTo(x,y) ==
 simplifyVMForm x ==
   x = '%icst0 => 0
   x = '%icst1 => 1
-  isAtomicForm x => x
+  atomic? x => x
   x.op = 'CLOSEDFN => x
   atom x.op =>
     x is [op,vars,body] and op in $AbstractionOperator =>
@@ -195,7 +195,7 @@ changeThrowToGo(s,g) ==
 ++ out of the function body anyway.  Similarly, transform
 ++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
 removeNeedlessThrow x ==
-  isAtomicForm x => x
+  atomic? x => x
   x is ['THROW,.,y] and y is ['%return,:.] =>
     removeNeedlessThrow third y
     x.op := y.op
@@ -371,14 +371,14 @@ optCONDtail l ==
 replaceableTemporary?(g,x) ==
   GENSYMP g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
     jumpTarget?(g,x) ==
-      isAtomicForm x => false
+      atomic? x => false
       x is ['GO,=g] => true
       or/[jumpTarget?(g,x') for x' in x]
 
 optSEQ ["SEQ",:l] ==
   tryToRemoveSEQ SEQToCOND getRidOfTemps splicePROGN l where
     splicePROGN l ==
-      isAtomicForm l => l
+      atomic? l => l
       l is [["PROGN",:stmts],:l'] => [:stmts,:l']
       l.rest := splicePROGN rest l
     getRidOfTemps l ==
@@ -459,7 +459,7 @@ $simpleVMoperators ==
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
 semiSimpleRelativeTo?(form,ops) ==
-  isAtomicForm form => true
+  atomic? form => true
   form isnt [op,:args] or not MEMQ(op,ops) => false
   and/[semiSimpleRelativeTo?(f,ops) for f in args]
 
@@ -500,7 +500,7 @@ findVMFreeVars form ==
 ++ Return true is `var' is the left hand side of an assignment
 ++ in `form'.
 varIsAssigned(var,form) ==
-  isAtomicForm form => false
+  atomic? form => false
   form is [op,=var,:.] and op in '(%LET LETT SETQ %store) => true
   or/[varIsAssigned(var,f) for f in form]
 
@@ -558,7 +558,7 @@ optLET u ==
     continue => body
     u
   not MEMQ(op,$simpleVMoperators) => u
-  not(and/[isAtomicForm arg for arg in args]) => u
+  not(and/[atomic? arg for arg in args]) => u
   -- Inline only if all parameters are used.  Get cute later.
   not(and/[MEMQ(x,args) for [x,.] in inits]) => u
   -- Munge inits into list of dotted-pairs.  Lovely Lisp.
