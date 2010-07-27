@@ -587,7 +587,7 @@ typeDependencyPath(m,path,e) ==
   IDENTP m and assoc(m,$whereDecls) =>
     get(m,'value,e) => nil  -- parameter was given value
     [[m,:reverse path],:typeDependencyPath(getmode(m,e),path,e)]
-  isAtomicForm m => nil
+  atomic? m => nil
   [ctor,:args] := m
   -- We don't expect implicit parameters in builtin constructors.
   ctor in $BuiltinConstructorNames => nil
