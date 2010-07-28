@@ -401,7 +401,7 @@
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|
-                                 (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
+                                 (LET ((#0=#:G1511 (TRUNCATE |n| 2)))
                                    (|check-subtype| (NOT (MINUSP #0#))
                                     '(|NonNegativeInteger|) #0#))
                                  |ILIST;mergeSort|)

@@ -207,7 +207,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Pair|)
                 |INT;divide;2$R;48|)) 
 
-(PUT '|INT;divide;2$R;48| '|SPADreplace| 'DIVIDE2) 
+(PUT '|INT;divide;2$R;48| '|SPADreplace| '|%idivide|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;quo;3$;49|)) 
@@ -430,7 +430,7 @@
 
 (DEFUN |INT;divide;2$R;48| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (DIVIDE2 |x| |y|)) 
+  (MULTIPLE-VALUE-CALL #'CONS (TRUNCATE |x| |y|))) 
 
 (DEFUN |INT;quo;3$;49| (|x| |y| $)
   (DECLARE (IGNORE $))
