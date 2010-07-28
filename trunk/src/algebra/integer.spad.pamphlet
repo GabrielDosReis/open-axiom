@@ -91,6 +91,8 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %iadd: (%,%) -> %         from Foreign Builtin
       import %isub: (%,%) -> %         from Foreign Builtin
       import %imul: (%,%) -> %         from Foreign Builtin
+      import %irem: (%,%) -> %         from Foreign Builtin
+      import %iquo: (%,%) -> %         from Foreign Builtin
       import %imax: (%,%) -> %         from Foreign Builtin
       import %imin: (%,%) -> %         from Foreign Builtin
       import %igcd: (%,%) -> %         from Foreign Builtin
@@ -210,8 +212,8 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       max(x,y) == %imax(x,y)
       min(x,y) == %imin(x,y)
       divide(x,y) == DIVIDE2(x,y)$Lisp
-      x quo y == QUOTIENT2(x,y)$Lisp
-      x rem y == REMAINDER2(x,y)$Lisp
+      x quo y == %iquo(x,y)
+      x rem y == %irem(x,y)
       shift(x, y) == ASH(x,y)$Lisp
       recip(x) == if one? x or x=-1 then x else "failed"
       gcd(x,y) == %igcd(x,y)
