@@ -178,7 +178,7 @@ consBuffer item ==
     $autoLine =>
                    --is true except within try
       formatOutput reverse $lineFragmentBuffer
-      $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
+      $c:= ($m+2*($numberOfSpills:= $numberOfSpills+1)) rem $lineLength
       $lineFragmentBuffer:= [nBlanks $c]
       consBuffer item
     nil

@@ -104,12 +104,12 @@ goGet(:l) ==
   [:arglist,env] := l
   arglist is ['goGet,:.] => stop()
   [[.,[op,initSig,:code]],thisDomain] := env
-  domainSlot := QSQUOTIENT(code,8192)
-  code1 := QSREMAINDER(code,8192)
+  domainSlot := code quo 8192
+  code1 := code rem 8192
   if QSODDP code1 then isConstant := true
-  code2 := QSQUOTIENT(code1,2)
+  code2 := code1 quo 2
   if QSODDP code2 then explicitLookupDomainIfTrue := true
-  index := QSQUOTIENT(code2,2)
+  index := code2 quo 2
   kind := (isConstant = true => 'CONST; 'ELT)
   sig := [NRTreplaceLocalTypes(s,thisDomain) for s in initSig]
   sig := substDomainArgs(thisDomain,sig)
@@ -157,10 +157,10 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
                EQSUBSTLIST(rest(domain.0),$FormalMapVariableList,a)
             someMatch:=true
             false
-      predIndex := QSQUOTIENT(code,8192)
+      predIndex := code quo 8192
       predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
         => false
-      loc := QSQUOTIENT(QSREMAINDER(code,8192),2)
+      loc := (code rem 8192) quo 2
       loc = 0 =>
         someMatch := true
         nil

@@ -53,13 +53,13 @@ ElseifSkipPart  == 22
 ElseSkipToEnd   == 30
 ElseKeepPart    == 31
  
-Top?     (st) == QUOTIENT(st,10) = 0
-If?      (st) == QUOTIENT(st,10) = 1
-Elseif?  (st) == QUOTIENT(st,10) = 2
-Else?    (st) == QUOTIENT(st,10) = 3
-SkipEnd? (st) == REMAINDER(st,10) = 0
-KeepPart?(st) == REMAINDER(st,10) = 1
-SkipPart?(st) == REMAINDER(st,10) = 2
+Top?     (st) == st quo 10 = 0
+If?      (st) == st quo 10 = 1
+Elseif?  (st) == st quo 10 = 2
+Else?    (st) == st quo 10 = 3
+SkipEnd? (st) == st rem 10 = 0
+KeepPart?(st) == st rem 10 = 1
+SkipPart?(st) == st rem 10 = 2
 Skipping?(st) == not KeepPart? st
  
 incStringStream s==

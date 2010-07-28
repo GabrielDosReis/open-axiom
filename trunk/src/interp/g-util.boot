@@ -1069,7 +1069,7 @@ mergeSort(f,g,p,n) ==
       t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
-   l := QSQUOTIENT(n,2)
+   l := n quo 2
    t := p
    for i in 1..l-1 repeat t := rest t
    q := rest t

@@ -778,11 +778,6 @@
       (multiple-value-list (truncate x y))
       (list (QUOTIENT x y) (REMAINDER x y))))
 
-(defun QSQUOTIENT (a b) (the fixnum (truncate (the fixnum a) (the fixnum b))))
-
-(defun QSREMAINDER (a b) (the fixnum (rem (the fixnum a) (the fixnum b))))
-
-
 ; 13.3 Updating
 
 
