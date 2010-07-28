@@ -174,6 +174,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Pair|)
                 |SINT;divide;2$R;39|)) 
 
+(PUT '|SINT;divide;2$R;39| '|SPADreplace| '|%idivide|) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;gcd;3$;40|)) 
 
@@ -420,7 +422,8 @@
   (REM |x| |y|)) 
 
 (DEFUN |SINT;divide;2$R;39| (|x| |y| $)
-  (CONS (QSQUOTIENT |x| |y|) (QSREMAINDER |x| |y|))) 
+  (DECLARE (IGNORE $))
+  (MULTIPLE-VALUE-CALL #'CONS (TRUNCATE |x| |y|))) 
 
 (DEFUN |SINT;gcd;3$;40| (|x| |y| $)
   (DECLARE (IGNORE $))

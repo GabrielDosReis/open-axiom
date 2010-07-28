@@ -1,4 +1,12 @@
-2010-07-28  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2010-07-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($VariableCount): Remove.
+	* interp/spad.lisp (QUOTIENT2): Remove.
+	(REMAINDER2): Likewise.
+	* algebra/integer.spad.pamphlet (Integer): Use builtin  %idivide.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+
+2010-07-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/integer.spad.pamphlet (Integer): Use builtin functions
 	%irem and %iquo.

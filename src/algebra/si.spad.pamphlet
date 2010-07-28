@@ -316,7 +316,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
       (%ipow(x, n)$Foreign(Builtin) pretend Integer)::%
    x quo y   == %iquo(x,y)
    x rem y   == %irem(x,y)
-   divide(x, y)   == CONS(QSQUOTIENT(x,y)$Lisp,QSREMAINDER(x,y)$Lisp)$Lisp
+   divide(x, y)   == %idivide(x,y)$Foreign(Builtin)
    gcd(x,y)  == %igcd(x,y)
    abs(x)    == %iabs x
    odd?(x)   == %iodd? x

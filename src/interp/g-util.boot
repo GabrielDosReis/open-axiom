@@ -263,6 +263,10 @@ expandIneg ['%ineg,x] ==
   integer? x => -x
   ['_-,x]
 
+expandIdivide ['%idivide,x,y] ==
+  ['MULTIPLE_-VALUE_-CALL,['FUNCTION,'CONS],
+    ['TRUNCATE,expandToVMForm x,expandToVMForm y]]
+
 expandIeq ['%ieq,a,b] ==
   a := expandToVMForm a
   integer? a and a = 0 => ['ZEROP,expandToVMForm b]
@@ -463,6 +467,7 @@ for x in [
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
+   ['%idivide, :function expandIdivide],
    ['%bitand,  :function expandBitand],
    ['%bitior,  :function expandBitior],
    ['%bitnot,  :function expandBitnot],

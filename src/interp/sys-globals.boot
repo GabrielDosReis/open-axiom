@@ -209,9 +209,6 @@ $PrettyPrint := false
 $previousTime := 0
 
 ++
-$VariableCount := 0
-
-++
 $useBFasDefault := true
 
 ++

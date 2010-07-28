@@ -299,7 +299,7 @@
           (T (SEQ (LETT |l1| (SPADCALL |l| (|getShellEntry| $ 58))
                         |EUCDOM-;multiEuclidean;LSU;11|)
                   (LETT |l2|
-                        (SPADCALL |l1| (QUOTIENT2 |n| 2)
+                        (SPADCALL |l1| (TRUNCATE |n| 2)
                             (|getShellEntry| $ 61))
                         |EUCDOM-;multiEuclidean;LSU;11|)
                   (LETT |u|

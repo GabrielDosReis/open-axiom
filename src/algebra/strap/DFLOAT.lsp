@@ -748,7 +748,9 @@
                                             (T
                                              (SEQ
                                               (LETT |#G107|
-                                               (DIVIDE2 |s| |t|)
+                                               (MULTIPLE-VALUE-CALL
+                                                #'CONS
+                                                (TRUNCATE |s| |t|))
                                                |DFLOAT;rationalApproximation;$2NniF;87|)
                                               (LETT |q| (CAR |#G107|)
                                                |DFLOAT;rationalApproximation;$2NniF;87|)
