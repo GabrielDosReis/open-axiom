@@ -102,8 +102,8 @@ normalizeStatAndStringify t ==
   integer? t =>
       K := 1024
       M := K*K
-      t > 9*M => strconc(STRINGIMAGE QUOTIENT(t + 512*K,M), '"M")
-      t > 9*K => strconc(STRINGIMAGE QUOTIENT(t + 512,K),   '"K")
+      t > 9*M => strconc(STRINGIMAGE((t + 512*K) quo M), '"M")
+      t > 9*K => strconc(STRINGIMAGE((t + 512) quo K),   '"K")
       STRINGIMAGE t
   STRINGIMAGE t
  
