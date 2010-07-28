@@ -212,12 +212,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;quo;3$;49|)) 
 
-(PUT '|INT;quo;3$;49| '|SPADreplace| 'QUOTIENT2) 
+(PUT '|INT;quo;3$;49| '|SPADreplace| '|%iquo|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;rem;3$;50|)) 
 
-(PUT '|INT;rem;3$;50| '|SPADreplace| 'REMAINDER2) 
+(PUT '|INT;rem;3$;50| '|SPADreplace| '|%irem|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;shift;3$;51|)) 
@@ -263,6 +263,9 @@
 
 (PUT '|INT;negative?;$B;15| '|SPADreplace|
      '(XLAM (|x|) (|%ilt| |x| 0))) 
+
+(PUT '|INT;mulmod;4$;22| '|SPADreplace|
+     '(XLAM (|a| |b| |p|) (|%irem| (|%imul| |a| |b|) |p|))) 
 
 (PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
 
@@ -348,7 +351,8 @@
   (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) (T |c|)))) 
 
 (DEFUN |INT;mulmod;4$;22| (|a| |b| |p| $)
-  (REMAINDER2 (* |a| |b|) |p|)) 
+  (DECLARE (IGNORE $))
+  (REM (* |a| |b|) |p|)) 
 
 (DEFUN |INT;convert;$F;23| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 53))) 
@@ -374,9 +378,7 @@
     (RETURN
       (COND
         ((|INT;negative?;$B;15|
-             (LETT |r| (REMAINDER2 |a| |b|)
-                   |INT;positiveRemainder;3$;28|)
-             $)
+             (LETT |r| (REM |a| |b|) |INT;positiveRemainder;3$;28|) $)
          (COND ((MINUSP |b|) (- |r| |b|)) (T (+ |r| |b|))))
         (T |r|))))) 
 
@@ -432,11 +434,9 @@
 
 (DEFUN |INT;quo;3$;49| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (QUOTIENT2 |x| |y|)) 
+  (TRUNCATE |x| |y|)) 
 
-(DEFUN |INT;rem;3$;50| (|x| |y| $)
-  (DECLARE (IGNORE $))
-  (REMAINDER2 |x| |y|)) 
+(DEFUN |INT;rem;3$;50| (|x| |y| $) (DECLARE (IGNORE $)) (REM |x| |y|)) 
 
 (DEFUN |INT;shift;3$;51| (|x| |y| $)
   (DECLARE (IGNORE $))

@@ -164,12 +164,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;quo;3$;37|)) 
 
-(PUT '|SINT;quo;3$;37| '|SPADreplace| 'QSQUOTIENT) 
+(PUT '|SINT;quo;3$;37| '|SPADreplace| '|%iquo|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;rem;3$;38|)) 
 
-(PUT '|SINT;rem;3$;38| '|SPADreplace| 'QSREMAINDER) 
+(PUT '|SINT;rem;3$;38| '|SPADreplace| '|%irem|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Pair|)
                 |SINT;divide;2$R;39|)) 
@@ -413,11 +413,11 @@
 
 (DEFUN |SINT;quo;3$;37| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (QSQUOTIENT |x| |y|)) 
+  (TRUNCATE |x| |y|)) 
 
 (DEFUN |SINT;rem;3$;38| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (QSREMAINDER |x| |y|)) 
+  (REM |x| |y|)) 
 
 (DEFUN |SINT;divide;2$R;39| (|x| |y| $)
   (CONS (QSQUOTIENT |x| |y|) (QSREMAINDER |x| |y|))) 
@@ -485,7 +485,7 @@
   (CONS |m| |v|)) 
 
 (DEFUN |SINT;positiveRemainder;3$;58| (|x| |n| $)
-  (LET ((|r| (QSREMAINDER |x| |n|)))
+  (LET ((|r| (REM |x| |n|)))
     (COND
       ((QSMINUSP |r|)
        (COND ((QSMINUSP |n|) (- |x| |n|)) (T (+ |r| |n|))))
@@ -496,9 +496,8 @@
 
 (DEFUN |SINT;random;$;60| ($)
   (SEQ (|setShellEntry| $ 6
-           (REMAINDER (TIMES 314159269 (|getShellEntry| $ 6))
-               2147483647))
-       (EXIT (REMAINDER (|getShellEntry| $ 6) 67108864)))) 
+           (REM (TIMES 314159269 (|getShellEntry| $ 6)) 2147483647))
+       (EXIT (REM (|getShellEntry| $ 6) 67108864)))) 
 
 (DEFUN |SINT;random;2$;61| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 
 

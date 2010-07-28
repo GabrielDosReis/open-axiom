@@ -1,3 +1,9 @@
+2010-07-28  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+
+	* algebra/integer.spad.pamphlet (Integer): Use builtin functions
+	%irem and %iquo.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+
 2010-07-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot: Transform %iquo and %irem expressions.
