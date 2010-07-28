@@ -443,6 +443,7 @@ $VMsideEffectFreeOperators ==
         %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
         %icst0 %icst1
         %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
+        %irem %iquo
         %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
         %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
         %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
@@ -732,6 +733,14 @@ optIneg(x is ['%ineg,a]) ==
   integer? a => -a
   x
 
+optIrem(x is ['%irem,a,b]) ==
+  integer? a and integer? b => a rem b
+  x
+
+optIquo(x is ['%iquo,a,b]) ==
+  integer? a and integer? b => a quo b
+  x
+
 --%  
 --% optimizer hash table
 --%
@@ -755,6 +764,8 @@ for x in '( (%call         optCall) _
            (%ineg        optIneg)_
            (%iadd        optIadd)_
            (%isub        optIsub)_
+           (%irem        optIrem)_
+           (%iquo        optIquo)_
            (%imul        optImul)_
            (LIST         optLIST)_
            (QSMINUS      optQSMINUS)_
