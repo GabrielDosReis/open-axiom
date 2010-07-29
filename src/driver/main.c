@@ -106,7 +106,8 @@ main(int argc, char* argv[])
 
    case openaxiom_execute_driver:
       return oa_spawn(&command.core,
-                      openaxiom_spawn_search_path | openaxiom_spawn_replace);
+                      openaxiom_spawn_flags
+                      (openaxiom_spawn_search_path | openaxiom_spawn_replace));
 
    case openaxiom_sman_driver:
       break;
