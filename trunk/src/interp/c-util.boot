@@ -1603,6 +1603,16 @@ needsPROG? form ==
   form is ['BLOCK,=nil,:.] => false
   or/[needsPROG? x for x in form]
 
+++ We are processing the complete `body' of a function definition.
+++ If this body is a multiway test, there is no need to have
+++ a RETURN-FROM operator in the immediate consequence of a branch.
+removeToplevelRETURN_-FROM body ==
+  if body is [['COND,:stmts]] then
+    for stmt in stmts repeat
+      stmt is [.,['RETURN_-FROM,.,expr]] =>
+        second(stmt) := expr
+  body
+
 ++ Generate Lisp code by lowering middle end defining form `x'.
 ++ x has the strucrure: <name, parms, stmt1, ...>
 transformToBackendCode: %Form -> %Code
@@ -1635,7 +1645,7 @@ transformToBackendCode x ==
       [declareGlobalVariables fluids,:body]
     lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]
-    body
+    removeToplevelRETURN_-FROM body
   -- add reference parameters to the list of special variables.
   fluids := S_+(backendFluidize second x, $SpecialVars)
   lastdecl := lastDeclarationNode rest x
