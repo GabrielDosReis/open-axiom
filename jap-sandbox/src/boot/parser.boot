@@ -651,11 +651,14 @@ bpReduce()==
  
 bpTimes()==
     bpReduce() or bpLeftAssoc('(TIMES  SLASH),function bpExpt)
+
+bpEuclid() ==
+  bpLeftAssoc('(QUO REM),function bpTimes)
  
 bpMinus()==
-  bpInfGeneric '(MINUS) and (bpTimes() or bpTrap())
+  bpInfGeneric '(MINUS) and (bpEuclid() or bpTrap())
     and bpPush(bfApplication(bpPop2(),bpPop1()))
-      or bpTimes()
+      or bpEuclid()
  
 bpArith()==bpLeftAssoc('(PLUS MINUS),function bpMinus)
  

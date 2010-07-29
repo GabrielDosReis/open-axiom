@@ -296,7 +296,7 @@ computeTypeWithVariablesTarget(p, q) ==
 bottomUpCompile t ==
   $genValue:local := false
   ms := bottomUp t
-  mutateToBackendCode objVal getValue t
+  massageBackendCode objVal getValue t
   ms
 
 bottomUpUseSubdomain t ==

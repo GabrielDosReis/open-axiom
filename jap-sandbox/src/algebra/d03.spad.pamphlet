@@ -64,6 +64,7 @@ NagPartialDifferentialEquationsPackage(): Exports == Implementation where
     import FortranPackage
     import Union(fn:FileName,fp:Asp73(PDEF))
     import Union(fn:FileName,fp:Asp74(BNDY))
+    macro I == Integer
 
 
 
@@ -136,11 +137,11 @@ NagPartialDifferentialEquationsPackage(): Exports == Implementation where
 	,"lwrk"::S,"pertrb"::S,"ifail"::S,"bdxs"::S,"bdxf"::S,"bdys"::S,"bdyf"::S,"bdzs"::S_
 	,"bdzf"::S,"f"::S,"w"::S]$Lisp,_
 	["pertrb"::S,"w"::S]$Lisp,_
-	[["double"::S,"xs"::S,"xf"::S,["bdxs"::S,"mdimf"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp_
-	,["bdxf"::S,"mdimf"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp,"ys"::S,"yf"::S,["bdys"::S,"ldimf"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp_
-	,["bdyf"::S,"ldimf"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp,"zs"::S_
-	,"zf"::S,["bdzs"::S,"ldimf"::S,["+"::S,"m"::S,1$Lisp]$Lisp]$Lisp,["bdzf"::S,"ldimf"::S,["+"::S,"m"::S,1$Lisp]$Lisp]$Lisp_
-	,"lambda"::S,"pertrb"::S,["f"::S,"ldimf"::S,"mdimf"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp,["w"::S,"lwrk"::S]$Lisp]$Lisp_
+	[["double"::S,"xs"::S,"xf"::S,["bdxs"::S,"mdimf"::S,["+"::S,"n"::S,1@I]$Lisp]$Lisp_
+	,["bdxf"::S,"mdimf"::S,["+"::S,"n"::S,1@I]$Lisp]$Lisp,"ys"::S,"yf"::S,["bdys"::S,"ldimf"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp_
+	,["bdyf"::S,"ldimf"::S,["+"::S,"n"::S,1@I]$Lisp]$Lisp,"zs"::S_
+	,"zf"::S,["bdzs"::S,"ldimf"::S,["+"::S,"m"::S,1@I]$Lisp]$Lisp,["bdzf"::S,"ldimf"::S,["+"::S,"m"::S,1$Lisp]$Lisp]$Lisp_
+	,"lambda"::S,"pertrb"::S,["f"::S,"ldimf"::S,"mdimf"::S,["+"::S,"n"::S,1@I]$Lisp]$Lisp,["w"::S,"lwrk"::S]$Lisp]$Lisp_
 	,["integer"::S,"l"::S,"lbdcnd"::S,"m"::S,"mbdcnd"::S_
 	,"n"::S,"nbdcnd"::S,"ldimf"::S,"mdimf"::S,"lwrk"::S,"ifail"::S]$Lisp_
 	]$Lisp,_

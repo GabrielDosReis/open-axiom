@@ -1,6 +1,14 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int checker(int  , int  , char * );
 extern char * getmemWithLine(int  , char *  , int );
 extern char * saymemWithLine(char *  , int  , int  , int );
 extern void myfree(void *  , int );
 extern XPoint getWindowPositionXY(Display *  , Window );
 extern XPoint getWindowSizeXY(Display *  , Window );
+
+#ifdef __cplusplus
+}
+#endif

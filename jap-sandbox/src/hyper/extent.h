@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -68,6 +68,23 @@
 #define dash_width 5
 #define dash_y     4
 
+extern void compute_header_extent(HyperDocPage * page);
+extern void compute_footer_extent(HyperDocPage * page);
+extern void compute_scrolling_extent(HyperDocPage * page);
+extern void compute_title_extent(HyperDocPage * page);
+extern void compute_text_extent(TextNode * node);
+extern void init_extents(void );
+extern void init_text(void );
+extern void init_title_extents(HyperDocPage * page);
+extern void insert_bitmap_file(TextNode * node);
+extern void insert_pixmap_file(TextNode * node);
+extern int max_x(TextNode * node , int Ender);
+extern int plh(int height);
+extern void start_newline(int distance , TextNode * node);
+extern int text_height(TextNode * node , int Ender);
+extern int text_width(TextNode * node , int Ender);
+extern int total_width(TextNode * node , int Ender);
+extern int trailing_space(TextNode * node);
 
 /* next two from display.h. Reorg! */
 

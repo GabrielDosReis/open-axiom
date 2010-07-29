@@ -864,17 +864,17 @@ sayAsManyPerLineAsPossible l ==
     NIL
   w := MIN(m + 3,$LINELENGTH)
   -- p is the number of elements per line
-  p := QUOTIENT($LINELENGTH,w)
+  p := $LINELENGTH quo w
   n := # l
   str := '""
   for i in 0..(n-1) repeat
     [c,:l] := l
     str := strconc(str,c,fillerSpaces(w - #c,'" "))
-    REMAINDER(i+1,p) = 0 => (sayMSG str ; str := '"" )
+    (i+1) rem p = 0 => (sayMSG str ; str := '"" )
   if str ~= '"" then sayMSG str
   NIL
 
-say2PerLine l == say2PerLineWidth(l, QUOTIENT($LINELENGTH,2))
+say2PerLine l == say2PerLineWidth(l, $LINELENGTH quo 2)
 
 say2PerLineWidth(l,n) ==
   [short,long] := say2Split(l,nil,nil,n)
@@ -907,7 +907,7 @@ say2PerLineThatFit l ==
   while l repeat
     sayBrightlyNT first l
     sayBrightlyNT
-      fillerSpaces((QUOTIENT($LINELENGTH,2)-sayDisplayWidth first l),'" ")
+      fillerSpaces(($LINELENGTH quo 2 - sayDisplayWidth first l),'" ")
     (l:= rest l) =>
       sayBrightlyNT first l
       l:= rest l
@@ -938,7 +938,7 @@ pp2Cols(al) ==
     ppPair(abb,name)
     if canFit2ndEntry(name,al) then
       [[abb,:name],:al]:= al
-      TAB QUOTIENT($LINELENGTH,2)
+      TAB($LINELENGTH quo 2)
       ppPair(abb,name)
     sayNewLine()
   nil
@@ -947,7 +947,7 @@ ppPair(abb,name) ==
     sayBrightlyNT [:bright abb,fillerSpaces(8-entryWidth abb," "),name]
 
 canFit2ndEntry(name,al) ==
-  wid := QUOTIENT($LINELENGTH,2) - 10
+  wid := $LINELENGTH quo 2 - 10
   null al => nil
   entryWidth name > wid => nil
   entryWidth CDAR al > wid => nil

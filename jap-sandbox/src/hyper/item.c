@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -35,12 +35,9 @@
 
 #include "openaxiom-c-macros.h"
 #include "sockio.h"
-#define _ITEM_C
 #include "debug.h"
 #include "halloc.h"
 #include "extent.h"
-
-#include "all_hyper_proto.H1"
 
 /*
  * Here are structures needed for manipulating the item stack
@@ -92,25 +89,25 @@ pop_item_stack(void)
 ItemStack *
 copy_item_stack(void)
 {
-    ItemStack *new = NULL;
+    ItemStack *stack = NULL;
     ItemStack *prev = NULL;
     ItemStack *trace = gTopOfItemStack;
     ItemStack *first = NULL;
 
     while (trace) {
-        new = (ItemStack *) halloc(sizeof(ItemStack), "Item stack");
-        new->indent = trace->indent;
-        new->item_indent = trace->item_indent;
-        new->in_item = gInItem;
+        stack = (ItemStack *) halloc(sizeof(ItemStack), "Item stack");
+        stack->indent = trace->indent;
+        stack->item_indent = trace->item_indent;
+        stack->in_item = gInItem;
         if (!first)
-            first = new;
+            first = stack;
         else
-            prev->next = new;
-        prev = new;
+            prev->next = stack;
+        prev = stack;
         trace = trace->next;
     }
-    if (new)
-        new->next = NULL;
+    if (stack)
+        stack->next = NULL;
     return first;
 }
 

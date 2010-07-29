@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reversed.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,18 +40,25 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _MEM_C
 
 #include "debug.h"
-
 #include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
 #include "group.h"
 #include "event.h"
+#include "parse.h"
 
-#include "all_hyper_proto.H1"
-
+static void free_cond(CondNode * cond);
+static void free_depend(SpadcomDepend * sd);
+static void free_lines(LineStruct * lines);
+static void dont_free(void * link);
+static void free_if_non_NULL(void * p);
+static void free_input_box(InputBox * box);
+static void free_paste(PasteNode * paste , short des);
+static void free_pastearea(TextNode * node , short des);
+static void free_pastebutton(TextNode * node , short des);
+static void free_radio_boxes(RadioBoxes * radio);
 
 
 extern HashTable init_page_hash;

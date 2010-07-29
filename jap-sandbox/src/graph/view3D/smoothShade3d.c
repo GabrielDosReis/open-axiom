@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@
 #include "volume.h"
 #include "mode.h"   /* for #define components */
 
-#include "spadcolors.H1"
+#include "spadcolors.h"
 #include "Gfun.H1"
 #include "util.H1"
 #include "XSpadFill.H1"

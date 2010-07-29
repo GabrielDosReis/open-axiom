@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -41,21 +41,23 @@
  *
  ****************************************************************************/
 
-#define _EXTENT2_C
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
-
 #include "halloc.h"
 #include "sockio.h"
 #include "extent.h"
 #include "group.h"
 #include "titlebar.h"
-
-#include "all_hyper_proto.H1"
-#include "pixmap.H1"
 #include "cfuns.h"
 
+static void center_nodes(TextNode * begin_node , TextNode * end_node);
+static int input_string_width(TextNode * node);
+static int punctuation_width(TextNode * node);
+static int text_height1(TextNode * node , int Ender);
+static int verbatim_width(TextNode * node);
+static int width_of_dash(TextNode * node);
+static int word_width(TextNode * node);
+static int x_value(TextNode * node);
 
 static int cur_height = 0;
 static int max_x_value = 0;

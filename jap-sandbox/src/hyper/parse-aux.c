@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reverved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,6 @@
 */
 
 #include "openaxiom-c-macros.h"
-#define _PARSE_AUX_C
-
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -44,8 +42,8 @@
 #include "lex.h"
 #include "hyper.h"
 
-#include "all_hyper_proto.H1"
-
+static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , char * db_file);
+static HyperDocPage * make_special_page(int type , char * name);
 
 extern int make_input_file;
 extern int gverify_dates;

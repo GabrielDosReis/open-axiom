@@ -60,7 +60,7 @@ htShowSetTree(setTree) ==
   maxWidth2 := MAX(41,maxWidth2)
   tabset1 := STRINGIMAGE (maxWidth1)
   tabset2 := STRINGIMAGE (maxWidth2 + maxWidth1 - 1)
-  htSay('"\tab{2}\newline Variable\tab{",STRINGIMAGE (maxWidth1 + QUOTIENT(maxWidth2,3)),'"}Description\tab{",STRINGIMAGE(maxWidth2 + maxWidth1 + 2),'"}Value\newline\beginitems ")
+  htSay('"\tab{2}\newline Variable\tab{",STRINGIMAGE (maxWidth1 + (maxWidth2 quo 3)),'"}Description\tab{",STRINGIMAGE(maxWidth2 + maxWidth1 + 2),'"}Value\newline\beginitems ")
   for setData in reverse okList repeat
       htSay '"\item"
       label := strconc('"\menuitemstyle{",setData.setName,'"}")

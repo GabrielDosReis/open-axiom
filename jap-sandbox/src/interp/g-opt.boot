@@ -70,7 +70,7 @@ emitIndirectCall(fn,args,x) ==
 ++ updated as opposed to being defined. `vars' is the list of
 ++ all variable definitions in scope.
 changeVariableDefinitionToStore(form,vars) ==
-  isAtomicForm form => nil
+  atomic? form => nil
   form is ['%LET,v,expr] =>
     changeVariableDefinitionToStore(expr,vars)
     if v in vars then form.op := '%store
@@ -81,7 +81,7 @@ changeVariableDefinitionToStore(form,vars) ==
 
 ++ Return true if `x' contains control transfer to a point outside itself.
 jumpToToplevel? x ==
-  isAtomicForm x => false
+  atomic? x => false
   op := x.op
   op = 'SEQ => CONTAINED('THROW,x.args)
   op in '(EXIT THROW %leave) => true
@@ -94,7 +94,7 @@ singleAssignment? form ==
 ++ Turns `form' into a `%bind'-expression if it starts with a
 ++ a sequence of first-time variable definitions.
 groupVariableDefinitions form ==
-  isAtomicForm form => form
+  atomic? form => form
   form isnt ['SEQ,:stmts,['EXIT,val]] => form
   defs := nil
   for x in stmts while singleAssignment? x  repeat
@@ -147,7 +147,9 @@ resetTo(x,y) ==
 
 ++ Simplify the VM form `x'
 simplifyVMForm x ==
-  isAtomicForm x => x
+  x = '%icst0 => 0
+  x = '%icst1 => 1
+  atomic? x => x
   x.op = 'CLOSEDFN => x
   atom x.op =>
     x is [op,vars,body] and op in $AbstractionOperator =>
@@ -193,7 +195,7 @@ changeThrowToGo(s,g) ==
 ++ out of the function body anyway.  Similarly, transform
 ++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
 removeNeedlessThrow x ==
-  isAtomicForm x => x
+  atomic? x => x
   x is ['THROW,.,y] and y is ['%return,:.] =>
     removeNeedlessThrow third y
     x.op := y.op
@@ -299,23 +301,22 @@ optMkRecord ["mkRecord",:u] ==
   ["VECTOR",:u]
  
 optCond (x is ['COND,:l]) ==
-  if l is [a,[aa,b]] and aa = '%true and b is ["COND",:c] then
+  if l is [a,[aa,b]] and aa = '%true and b is ['COND,:c] then
     x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
     if (p1 is ['%not,=p2]) or (p2 is ['%not,=p1]) then
       l:=[[p1,:c1],['%true,:c2]]
       x.rest := l
     c1 is ['NIL] and p2 = '%true and first c2 = '%true =>
-      p1 is ['%not,p1']=> return p1'
-      return ['%not,p1]
+      return optNot ['%not,p1]
   l is [[p1,:c1],[p2,:c2],[p3,:c3]] and p3 = '%true =>
     EqualBarGensym(c1,c3) =>
-      ["COND",[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
-    EqualBarGensym(c1,c2) => ["COND",[['%or,p1,p2],:c1],['%true,:c3]]
+      optCond ['COND,[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
+    EqualBarGensym(c1,c2) => optCond ['COND,[['%or,p1,p2],:c1],['%true,:c3]]
     x
   for y in tails l repeat
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
-      a:=['%or,a1,a2]
+      a := ['%or,a1,a2]
       first(y).first := a
       y.rest := y'
   x
@@ -370,14 +371,14 @@ optCONDtail l ==
 replaceableTemporary?(g,x) ==
   GENSYMP g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
     jumpTarget?(g,x) ==
-      isAtomicForm x => false
+      atomic? x => false
       x is ['GO,=g] => true
       or/[jumpTarget?(g,x') for x' in x]
 
 optSEQ ["SEQ",:l] ==
   tryToRemoveSEQ SEQToCOND getRidOfTemps splicePROGN l where
     splicePROGN l ==
-      isAtomicForm l => l
+      atomic? l => l
       l is [["PROGN",:stmts],:l'] => [:stmts,:l']
       l.rest := splicePROGN rest l
     getRidOfTemps l ==
@@ -393,7 +394,7 @@ optSEQ ["SEQ",:l] ==
       aft:= after(l,before)
       null before => ["SEQ",:aft]
       null aft => ["COND",:transform,'(%true (conderr))]
-      ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
+      optCond ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
@@ -437,16 +438,20 @@ $VMsideEffectFreeOperators ==
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR IDENTP SYMBOLP
       GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
-       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %false %true
+       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
-         %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
-          %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-           %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
-            %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
-             %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
-              %lreverse %lempty? %hash %ismall? %string? %f2s
-               %ceq %clt %cle %cgt %cge %c2i %i2c %sname
-                %vref %vlength %before?)
+        %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
+        %icst0 %icst1
+        %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
+        %irem %iquo %idivide
+        %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
+        %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
+        %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
+        %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
+        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+        %lreverse %lempty? %hash %ismall? %string? %f2s
+        %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %sname
+        %vref %vlength %before?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
@@ -457,7 +462,7 @@ $simpleVMoperators ==
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
 semiSimpleRelativeTo?(form,ops) ==
-  isAtomicForm form => true
+  atomic? form => true
   form isnt [op,:args] or not MEMQ(op,ops) => false
   and/[semiSimpleRelativeTo?(f,ops) for f in args]
 
@@ -498,7 +503,7 @@ findVMFreeVars form ==
 ++ Return true is `var' is the left hand side of an assignment
 ++ in `form'.
 varIsAssigned(var,form) ==
-  isAtomicForm form => false
+  atomic? form => false
   form is [op,=var,:.] and op in '(%LET LETT SETQ %store) => true
   or/[varIsAssigned(var,f) for f in form]
 
@@ -556,7 +561,7 @@ optLET u ==
     continue => body
     u
   not MEMQ(op,$simpleVMoperators) => u
-  not(and/[isAtomicForm arg for arg in args]) => u
+  not(and/[atomic? arg for arg in args]) => u
   -- Inline only if all parameters are used.  Get cute later.
   not(and/[MEMQ(x,args) for [x,.] in inits]) => u
   -- Munge inits into list of dotted-pairs.  Lovely Lisp.
@@ -673,9 +678,14 @@ optIeq(x is ['%ieq,a,b]) ==
   x
 
 optIlt(x is ['%ilt,a,b]) ==
+  -- 1. Don't delay if both operands are literals.
   integer? a and integer? b =>
     a < b => '%true
     '%false
+  -- 2. max(a,b) cannot be negative if either a or b is zero.
+  b = 0 and a is ['%imax,:.] and (second a = 0 or third a = 0) => '%false
+  -- 3. min(a,b) cannot be positive if either a or b is zero.
+  a = 0 and b is ['%imin,:.] and (second b = 0 or third b = 0) => '%false
   x
 
 optIle(x is ['%ile,a,b]) ==
@@ -725,6 +735,14 @@ optIneg(x is ['%ineg,a]) ==
   integer? a => -a
   x
 
+optIrem(x is ['%irem,a,b]) ==
+  integer? a and integer? b => a rem b
+  x
+
+optIquo(x is ['%iquo,a,b]) ==
+  integer? a and integer? b => a quo b
+  x
+
 --%  
 --% optimizer hash table
 --%
@@ -748,6 +766,8 @@ for x in '( (%call         optCall) _
            (%ineg        optIneg)_
            (%iadd        optIadd)_
            (%isub        optIsub)_
+           (%irem        optIrem)_
+           (%iquo        optIquo)_
            (%imul        optImul)_
            (LIST         optLIST)_
            (QSMINUS      optQSMINUS)_

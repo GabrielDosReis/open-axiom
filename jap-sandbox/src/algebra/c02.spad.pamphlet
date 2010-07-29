@@ -48,6 +48,7 @@ NagPolynomialRootsPackage(): Exports == Implementation where
     import AnyFunctions1(Matrix DoubleFloat)
     import AnyFunctions1(Integer)
     import AnyFunctions1(Boolean)
+    macro I == Integer
 
 
     c02aff(aArg:Matrix DoubleFloat,nArg:Integer,scaleArg:Boolean,_
@@ -56,8 +57,8 @@ NagPolynomialRootsPackage(): Exports == Implementation where
 	"c02aff",_
 	["n"::S,"scale"::S,"ifail"::S,"a"::S,"z"::S,"w"::S]$Lisp,_
 	["z"::S,"w"::S]$Lisp,_
-	[["double"::S,["a"::S,2$Lisp,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp_
-	,["z"::S,2$Lisp,"n"::S]$Lisp,["w"::S,["*"::S,["+"::S,"n"::S,1$Lisp]$Lisp,4$Lisp]$Lisp]$Lisp]$Lisp_
+	[["double"::S,["a"::S,2$Lisp,["+"::S,"n"::S,1@I]$Lisp]$Lisp_
+	,["z"::S,2$Lisp,"n"::S]$Lisp,["w"::S,["*"::S,["+"::S,"n"::S,1@I]$Lisp,4$Lisp]$Lisp]$Lisp]$Lisp_
 	,["integer"::S,"n"::S,"ifail"::S]$Lisp_
 	,["logical"::S,"scale"::S]$Lisp_
 	]$Lisp,_
@@ -74,8 +75,8 @@ NagPolynomialRootsPackage(): Exports == Implementation where
 	"c02agf",_
 	["n"::S,"scale"::S,"ifail"::S,"a"::S,"z"::S,"w"::S]$Lisp,_
 	["z"::S,"w"::S]$Lisp,_
-	[["double"::S,["a"::S,["+"::S,"n"::S,1$Lisp]$Lisp]$Lisp_
-	,["z"::S,2$Lisp,"n"::S]$Lisp,["w"::S,["*"::S,["+"::S,"n"::S,1$Lisp]$Lisp,2$Lisp]$Lisp]$Lisp]$Lisp_
+	[["double"::S,["a"::S,["+"::S,"n"::S,1@I]$Lisp]$Lisp_
+	,["z"::S,2$Lisp,"n"::S]$Lisp,["w"::S,["*"::S,["+"::S,"n"::S,1@I]$Lisp,2$Lisp]$Lisp]$Lisp]$Lisp_
 	,["integer"::S,"n"::S,"ifail"::S]$Lisp_
 	,["logical"::S,"scale"::S]$Lisp_
 	]$Lisp,_

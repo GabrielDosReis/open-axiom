@@ -388,7 +388,9 @@
         (LOOP
           (COND
             (NIL (RETURN NIL))
-            (T (SEQ (LETT |qr| (DIVIDE2 |n| (QCSIZE |s|))
+            (T (SEQ (LETT |qr|
+                          (MULTIPLE-VALUE-CALL #'CONS
+                              (TRUNCATE |n| (QCSIZE |s|)))
                           |SYMBOL;anyRadix|)
                     (SETQ |n| (CAR |qr|))
                     (SETQ |ns|

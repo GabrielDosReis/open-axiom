@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,17 +33,14 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _READBITMAP_C
-
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
 
-#include "all_hyper_proto.H1"
-#include "pixmap.H1"
+static int read_hot(FILE * fd , char Line[] , int * x_hot , int * y_hot);
+static int read_w_and_h(FILE * fd , unsigned int * width , unsigned int * height);
 
 #define MAXLINE      256
 

@@ -594,8 +594,8 @@
 
 (DEFUN |OUTFORM;center;$I$;22| (|a| |w| $)
   (|OUTFORM;hconcat;3$;48|
-      (|OUTFORM;hspace;I$;29|
-          (QUOTIENT2 (- |w| (|outformWidth| |a|)) 2) $)
+      (|OUTFORM;hspace;I$;29| (TRUNCATE (- |w| (|outformWidth| |a|)) 2)
+          $)
       |a| $)) 
 
 (DEFUN |OUTFORM;left;$I$;23| (|a| |w| $)

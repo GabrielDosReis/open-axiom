@@ -221,7 +221,7 @@ topics con ==
 
 code2Classes cc ==
   cc := 2*cc
-  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := QUOTIENT(cc,2))]
+  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := cc quo 2)]
   
 myLastAtom x == 
   while x is [.,:x] repeat nil

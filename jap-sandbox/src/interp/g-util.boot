@@ -38,7 +38,7 @@ import sys_-utility
 namespace BOOT
 
 module g_-util where
-  isAtomicForm: %Form -> %Boolean
+  atomic?: %Thing -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
@@ -145,13 +145,13 @@ expandSTEP(id,lo,step,final)==
   final := middleEndExpand final
   loopvar := [[id,lo]]
   inc :=
-    isAtomicForm step => step
+    atomic? step => step
     g1 := gensym()
     loopvar := [:loopvar,[g1,step]]
     g1
   final :=
     atom final => final
-    final is [hi] and isAtomicForm hi => hi
+    final is [hi] and atomic? hi => hi
     g2 := gensym()
     loopvar := [:loopvar,[g2,:final]]
     g2
@@ -251,11 +251,21 @@ expandBcompl ['%bcompl,x] ==
   integer? x => 255 - x
   ['_+,256,['LOGNOT,expandToVMForm x]]
 
+-- Character operations
+expandCcst ['%ccst,s] ==
+  not string? s => error "operand is not a string constant"
+  #s ~= 1 => error "string constant must contain exactly one character"
+  char s
+
 -- Integer operations
 expandIneg ['%ineg,x] ==
   x := expandToVMForm x
   integer? x => -x
   ['_-,x]
+
+expandIdivide ['%idivide,x,y] ==
+  ['MULTIPLE_-VALUE_-CALL,['FUNCTION,'CONS],
+    ['TRUNCATE,expandToVMForm x,expandToVMForm y]]
 
 expandIeq ['%ieq,a,b] ==
   a := expandToVMForm a
@@ -374,17 +384,19 @@ for x in [
     ['%iodd?,   :'ODDP],
     ['%ismall?, :'FIXNUMP],
     -- binary integer operations.
-    ['%iadd,:"+"],
-    ['%igcd,:'GCD],
-    ['%ige, :">="],
-    ['%iinc,:"1+"],
-    ['%ilcm,:'LCM],
-    ['%ile, :"<="],
-    ['%imax,:'MAX],
-    ['%imin,:'MIN],
-    ['%imul,:"*"],
-    ['%ipow,:'EXPT],
-    ['%isub,:"-"],
+    ['%iadd,    :"+"],
+    ['%igcd,    :'GCD],
+    ['%ige,     :">="],
+    ['%iinc,    :"1+"],
+    ['%ilcm,    :'LCM],
+    ['%ile,     :"<="],
+    ['%imax,    :'MAX],
+    ['%imin,    :'MIN],
+    ['%imul,    :"*"],
+    ['%irem,    :'REM],
+    ['%iquo,    :'TRUNCATE],
+    ['%ipow,    :'EXPT],
+    ['%isub,    :"-"],
 
     -- unary float operations.
     ['%fabs,  :'ABS],
@@ -400,6 +412,23 @@ for x in [
     ['%fmul,  :"*"],
     ['%fpow,  :'EXPT],
     ['%fsub,  :"-"],
+
+    ['%fsin,   :'SIN],
+    ['%fcos,   :'COS],
+    ['%ftan,   :'TAN],
+    ['%fcot,   :'COT],
+    ['%fsec,   :'SEC],
+    ['%fcsc,   :'CSC],
+    ['%fatan,  :'ATAN],
+    ['%facot,  :'ACOT],
+    ['%fsinh,  :'SINH],
+    ['%fcosh,  :'COSH],
+    ['%ftanh,  :'TANH],
+    ['%fcsch,  :'CSCH],
+    ['%fcoth,  :'COTH],
+    ['%fsech,  :'SECH],
+    ['%fasinh, :'ASINH],
+    ['%facsch, :'ACSCH],
 
     -- string operations
     ['%f2s,   :'DFLOAT_-FORMAT_-GENERAL],
@@ -449,10 +478,13 @@ for x in [
 
    ['%bcompl,  :function expandBcompl],
 
+   ['%ccst,    :function expandCcst],
+
    ['%ieq,     :function expandIeq],
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
+   ['%idivide, :function expandIdivide],
    ['%bitand,  :function expandBitand],
    ['%bitior,  :function expandBitior],
    ['%bitnot,  :function expandBitnot],
@@ -484,7 +516,7 @@ getOpcodeExpander op ==
 expandToVMForm x ==
   x = '%false or x = '%nil => 'NIL
   IDENTP x and (x' := x has %Rename) => x'
-  isAtomicForm x => x
+  atomic? x => x
   [op,:args] := x
   IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
   op' := expandToVMForm op
@@ -522,9 +554,9 @@ isSharpVarWithNum x ==
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
-++ Returns true if `form' is either an atom or a quotation.
-isAtomicForm form ==
-  atom form or first form = "QUOTE"
+++ Returns true if `x' is either an atom or a quotation.
+atomic? x ==
+  not cons? x or x.op = 'QUOTE
 
 
 --% Sub-domains information handlers
@@ -1054,7 +1086,7 @@ mergeSort(f,g,p,n) ==
       t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
-   l := QSQUOTIENT(n,2)
+   l := n quo 2
    t := p
    for i in 1..l-1 repeat t := rest t
    q := rest t

@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -43,14 +43,6 @@
 
 /* Include all the needed include files  */
 
-#define _HYPER_C
-
-#include "debug.h"
-
-#include "sockio.h"
-#include "hyper.h"
-#include "lex.h"
-
 #include <sys/signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -59,14 +51,24 @@
 #include <stdlib.h>
 #include <locale.h>
 
+#include "debug.h"
+#include "sockio.h"
+#include "hyper.h"
+#include "lex.h"
 #include "keyin.h"
 #include "initx.h"
 #include "event.h"
 #include "hyper.h"
 #include "bsdsignal.h"
-
-#include "all_hyper_proto.H1"
 #include "sockio.h"
+#include "parse.h"
+
+static void init_hash(void);
+static void make_server_connections(void);
+static void check_arguments(void);
+static void init_hash(void);
+static void make_server_connections(void);
+static void check_arguments(void);
 
 /*
  * Here is a flag used to tell me whether I made a good connection to the

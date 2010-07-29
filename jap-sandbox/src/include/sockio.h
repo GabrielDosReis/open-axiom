@@ -53,6 +53,11 @@
 #include "openaxiom-c-macros.h"
 #include "open-axiom.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
+
 /* On Windows, a socket identifier is not a file descriptor.  It is
    represented by an integer type, but that integer type is not just
    plain int as in the Unix world.  It is an unsigned integer.
@@ -220,5 +225,9 @@ OPENAXIOM_EXPORT extern openaxiom_sio clients[];
 OPENAXIOM_EXPORT extern fd_set socket_mask;
 OPENAXIOM_EXPORT extern fd_set server_mask;
 
+
+#ifdef __cplusplus
+}
+#endif   
 
 #endif /* OPENAXIOM_SOCKIO_included */

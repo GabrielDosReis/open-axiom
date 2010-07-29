@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,14 @@
 #ifndef OPENAXIOM_HALLOC
 #define OPENAXIOM_HALLOC
 
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
 extern char * halloc(int, const char*);
+
+#ifdef __cplusplus
+}
+#endif   
 
 #endif /* OPENAXIOM_HALLOC */

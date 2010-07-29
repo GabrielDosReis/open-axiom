@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -85,16 +85,16 @@ stamp:	$(OUTLIB)/session$(EXEEXT) \
 		-I$(top_srcdir)/src/driver $<
 
 ${OUTLIB}/session$(EXEEXT): $(session_objects) $(session_DEPENDENCIES)
-	$(LINK) -o $@ $(session_objects) $(session_LDADD)
+	$(CXXLINK) -o $@ $(session_objects) $(session_LDADD)
 
 ${OUTLIB}/spadclient$(EXEEXT): $(spadclient_objects) $(spadclient_DEPENDENCIES)
-	$(LINK) -o $@ $(spadclient_objects) $(spadclient_LDADD)
+	$(CXXLINK) -o $@ $(spadclient_objects) $(spadclient_LDADD)
 
 spadclient.$(OBJEXT): ${INC}/useproto.h ${INC}/spadclient.H1 \
 			$(axiom_configdir)/axiom-c-macros.h
 
 ${OUT}/sman$(EXEEXT): $(sman_objects) $(sman_DEPENDENCIES)
-	$(LINK) -o $@ $(sman_objects) $(sman_LDADD)
+	$(CXXLINK) -o $@ $(sman_objects) $(sman_LDADD)
 
 $(sman_objects): sman.h $(axiom_c_macros_h)
 

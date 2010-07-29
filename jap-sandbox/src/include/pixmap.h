@@ -1,8 +1,8 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2010, Gabriel Dos Reis.
-  All rights reserbed.
+  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are
@@ -12,7 +12,7 @@
         notice, this list of conditions and the following disclaimer.
 
       - Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in
+       notice, this list of conditions and the following disclaimer in
         the documentation and/or other materials provided with the
         distribution.
 
@@ -33,22 +33,21 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _EVENT_H_
-#define _EVENT_H_ 1
+#ifndef OPENAXIOM_PIXMAP_included
+#define OPENAXIOM_PIXMAP_included
 
-#include "hyper.h"
+#ifdef __cplusplus
+extern "C" {
+#endif   
 
-extern void sigusr2_handler(int sig);
-extern void sigcld_handler(int sig);
-extern void clean_socket(void);
-extern void init_page_structs(HDWindow * w);
-extern void helpForHyperDoc(void);
-extern void quitHyperDoc(void);
-extern void exitHyperDoc(void);
-extern void mainEventLoop(void);
-extern void make_window_link(char*);
+extern int file_exists(char * );
+extern FILE * zzopen(char *  , char * );
+extern void write_pixmap_file(Display *  , int  , char *  , Window  , int  , int  , int  , int );
+extern int read_pixmap_file(Display *  , int  , char *  , XImage * *  , int *  , int * );
 
-extern Window gActiveWindow;
-extern int    gNeedIconName;
 
+#ifdef __cplusplus
+}
+#endif   
+   
 #endif

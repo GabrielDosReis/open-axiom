@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,12 +34,8 @@
 */
 
 #define _EVENT_C
+
 #include "openaxiom-c-macros.h"
-
-#include "debug.h"
-
-#include "sockio.h"
-#include "hyper.h"
 
 #include <X11/X.h>
 #include <X11/Xatom.h>
@@ -49,6 +45,9 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
+#include "debug.h"
+#include "sockio.h"
+#include "hyper.h"
 #include "event.h"
 #include "keyin.h"
 #include "hyper.h"
@@ -59,8 +58,6 @@
 #include "scrollbar.h"
 #include "group.h"
 #include "lex.h"
-
-#include "all_hyper_proto.H1"
 #include "sockio.h"
 
 jmp_buf env;
@@ -71,317 +68,197 @@ unsigned long bigmask= 0xffffffff;
 static HyperLink *gSavedInputAreaLink = NULL;
 
 
-
-/*
- * This is the main X loop. It keeps grabbing events. Since the only way the
- * window can die is through an event, it never actually end. One of the
- * subroutines it calls is responsible for killing everything
- */
-
-void
-mainEventLoop(void)
+static int
+HyperDocErrorHandler(Display *display, XErrorEvent *xe)
 {
-    XEvent event;
-    int  Xcon;
-    fd_set rd, dum1, dum2;
-    motion = 0;
-    gActiveWindow = -1;
-    set_error_handlers();
-    Xcon = ConnectionNumber(gXDisplay);
+    if (xe->request_code != 15) {
+        char buf[1024];
 
-    while (1) {
-/*        fprintf(stderr,"event:mainEventLoop: loop top\n");*/
-        while (gSessionHashTable.num_entries == 0)
-            pause();
+        XGetErrorText(display, xe->error_code, buf, sizeof(buf));
 
-        /* XFlush(gXDisplay);      */
+        fprintf(stderr, "error code = %d\n", xe->error_code);
+        fprintf(stderr, "major op code = %d\n", xe->request_code);
+        fprintf(stderr, "minor op code = %d\n", xe->minor_code);
+        fprintf(stderr, "XID = %ld\n", xe->resourceid);
+        fprintf(stderr, "%s\n", buf);
 
-        if (!motion)
-            init_cursor_states();
-        motion = 0;
-
-        if (!spad_socket == 0) {
-            FD_ZERO(&rd);
-            FD_ZERO(&dum1);
-            FD_ZERO(&dum2);
-            FD_CLR(0, &dum1);
-            FD_CLR(0, &dum2);
-            FD_CLR(0, &rd);
-            FD_SET(spad_socket->socket, &rd);
-            FD_SET(Xcon, &rd);
-            if (!session_server == 0) {
-                FD_SET(session_server->socket, &rd);
-            }
-            if (XEventsQueued(gXDisplay, QueuedAlready)) {
-                XNextEvent(gXDisplay, &event);
-                handle_event(&event);
-            }
-            else {
-              select(FD_SETSIZE,(void *)&rd,(void *)&dum1,(void *)&dum2,NULL);
-              if (FD_ISSET(Xcon, &rd) || 
-                  XEventsQueued(gXDisplay, QueuedAfterFlush)) {
-                    XNextEvent(gXDisplay, &event);
-                    handle_event(&event);
-                }
-              else if (FD_ISSET(spad_socket->socket, &rd))
-                    /*
-                     * Axiom Socket do what handle_event does The 100 is
-                     * $SpadStuff in hypertex.boot
-                     */
-                {
-                    if (100 == get_int(spad_socket)) {
-                        set_window(gParentWindow->fMainWindow);
-                        make_busy_cursors();
-                        get_new_window();
-                    }
-                }
-                /*
-                 * Session Socket Telling us about the death of a spadbuf
-                 * (plus maybe more later) service_session_socket in
-                 * spadint.c
-                 */
-                else 
-                 if (session_server && FD_ISSET(session_server->socket, &rd)) {
-                    service_session_socket();
-                 }
-            }
-        }
-        else {
-            XNextEvent(gXDisplay, &event);
-            handle_event(&event);
-        }
-    }
+        if (xe->request_code != 15)
+            exit(-1);
+      }
+    return(0);
 }
 
 static void
-handle_event(XEvent * event)
+set_error_handlers(void)
 {
-    XWindowAttributes wa;
-/*    fprintf(stderr,"event:handle_event entered\n");*/
-    set_window(event->xany.window);
-    if (event->type == MotionNotify) {
-/*        fprintf(stderr,"event:handle_event type=MotionNotify\n");*/
-        handle_motion_event((XMotionEvent *)event);
-        motion = 1;
-        return;
+    XSetErrorHandler(HyperDocErrorHandler);
+}
+
+static int
+set_window(Window window)
+{
+    Window root, parent, *children, grandparent,myarg;
+    HDWindow *htw;
+    unsigned int nchildren;
+    int st;
+
+    myarg=window;
+    nchildren = 0;
+    htw = (HDWindow *) hash_find(&gSessionHashTable, (char *)&myarg);
+    if (htw != NULL) {
+        gWindow = htw;
+        return 1;
     }
-    make_busy_cursors();
-    switch (event->type) {
-      case DestroyNotify:
-/*        fprintf(stderr,"event:handle_event type=DestroyNotify\n");*/
-        break;
-      case Expose:
-/*        fprintf(stderr,"event:handle_event type=Expose\n");*/
-        XGetWindowAttributes(gXDisplay, gWindow->fMainWindow, &wa);
-        if ((gWindow->width == 0 && gWindow->height == 0) ||
-            (wa.width != gWindow->width || wa.height != gWindow->height)) {
-            gWindow->width = wa.width;
-            gWindow->height = wa.height;
-            display_page(gWindow->page);
-            gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;
+    st = XQueryTree(gXDisplay, myarg, &root, &parent, &children, &nchildren);
+    if (st==0) goto ERROR;
+    if (nchildren > 0)
+        XFree(children);
+    htw = (HDWindow *) hash_find(&gSessionHashTable, (char *)&parent);
+    if (htw != NULL) {
+        gWindow = htw;
+        return 1;
+
+    }
+    else {
+        /* check for a grandparent */
+        st = XQueryTree(gXDisplay, parent, &root, &grandparent, &children, &nchildren);
+        if (st==0) goto ERROR;
+        if (nchildren > 0)
+            XFree(children);
+        htw = (HDWindow *) hash_find(&gSessionHashTable, (char *)&grandparent);
+        if (htw != NULL) {
+            gWindow = htw;
+            return 1;
         }
-        else                    /** just redraw the thing **/
-            expose_page(gWindow->page);
-        XFlush(gXDisplay);
-        clear_exposures(gWindow->fMainWindow);
-        clear_exposures(gWindow->fScrollWindow);
-        break;
-      case ButtonPress:
-/*        fprintf(stderr,"event:handle_event type=ButtonPress\n");*/
-        handle_button(event->xbutton.button, (XButtonEvent *)event);
-        XFlush(gXDisplay);
-        if (gWindow) {
-            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fMainWindow,
-                                          Expose, event));
-            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fScrollWindow,
-                                          Expose, event));
-        }
-        break;
-      case KeyPress:
-/*        fprintf(stderr,"event:handle_event type=KeyPress\n");*/
-        handle_key(event);
-        if (gWindow) {
-            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fMainWindow,
-                                          Expose, event));
-            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fScrollWindow,
-                                          Expose, event));
-        }
-        break;
-      case MapNotify:
-/*        fprintf(stderr,"event:handle_event type=MapNotify\n");*/
-        create_window();
-        break;
-
-      case SelectionNotify:
-/*        fprintf(stderr,"event:handle_event type=SelectionNotify\n");*/
-        /* this is in response to a previous request in an input area */
-        if ( gSavedInputAreaLink ) {
-            XSelectionEvent *pSelEvent;
-            Atom dataProperty;
-            pSelEvent = (XSelectionEvent *) event;
-            dataProperty = XInternAtom(gXDisplay, "PASTE_SELECTION", False);
-            /* change the input focus */
-
-        /*  change_input_focus(gSavedInputAreaLink); */
-
-            /* try to get the selection as a window property */
-
-            if ( pSelEvent->requestor == gWindow->fMainWindow &&
-                 pSelEvent->selection == XA_PRIMARY &&
-            /*   pSelEvent->time      == CurrentTime && */
-                 pSelEvent->target    == XA_STRING &&
-                 pSelEvent->property == dataProperty )
-            {
-                Atom actual_type;
-                int  actual_format;
-                unsigned long nitems, leftover;
-                char *pSelection = NULL;
-
-                if (Success == XGetWindowProperty(gXDisplay,
-                    gWindow->fMainWindow,
-                    pSelEvent->property, 0L, 100000000L, True,
-                    AnyPropertyType, &actual_type, &actual_format,
-                    &nitems, &leftover, (unsigned char **) &pSelection) )
-                {
-                    char *pBuffer;
-                    InputItem *item = gSavedInputAreaLink->reference.string;
-
-                    for (pBuffer = pSelection; *pBuffer; ++pBuffer)
-                        add_buffer_to_sym(pBuffer, item);
-
-                    XFree(pSelection);
-                }
-            }
-
-            /* clear the link info */
-
-            gSavedInputAreaLink = NULL;
-        }
-        break;
-
-      default:
-/*        fprintf(stderr,"event:handle_event type=default\n");*/
-        break;
     }
 
+    /*
+     * fprintf(stderr, "window(%d) and it's parent(%d) aren't in
+     * gSessionHashTable\n", window, parent);
+     
+     we never found that window. this happens if (not iff) we exit from 
+     an unfocused non-main window under certain wm's and click-to-type. the program returns here with
+     the window handle that was just destroyed. So let's set the global gWindow
+     to the main window.
+     */
+
+ERROR:
+    gWindow=gParentWindow;
+    return 0;
+}
+
+
+static HyperLink *
+findButtonInList(HDWindow * window, int x, int y)
+{
+    ButtonList *bl;
+
+    if (!window || window->page->type == UnloadedPageType)
+        return NULL;
+    for (bl = window->page->s_button_list; bl != NULL; bl = bl->next)
+        if (x >= bl->x0 && x <= bl->x1 && y >= bl->y0 && y <= bl->y1)
+            return bl->link;
+    for (bl = window->page->button_list; bl != NULL; bl = bl->next)
+        if (x >= bl->x0 && x <= bl->x1 && y >= bl->y0 && y <= bl->y1)
+            return bl->link;
+    return NULL;
 }
 
 static void
-create_window(void)
+set_cursor(HDWindow *window,Cursor state)
 {
-    XWindowAttributes wa;
-
-    XGetWindowAttributes(gXDisplay, gWindow->fMainWindow, &wa);
-
-    gWindow->width = wa.width;
-    gWindow->height = wa.height;
-    display_page(gWindow->page);
-    gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;
-
-    /* then select for the events I normally would like to catch */
-    XSelectInput(gXDisplay, gWindow->fMainWindow, ButtonPress | KeyPressMask |
-                 PointerMotionMask |
-                 ExposureMask /* | EnterWindowMask | LeaveWindowMask */ );
-    XSelectInput(gXDisplay, gWindow->fScrollWindow, ExposureMask);
-
-}
-
-/*
- * This routine is called when the quitbutton is hit. For the moment I am
- * just going to leave it all behind
- */
-
-void
-quitHyperDoc(void)
-{
-    HyperDocPage *page;
-
-    if (gSessionHashTable.num_entries == 1 || gParentWindow == gWindow) {
-        if (!strcmp(gWindow->page->name, "ProtectedQuitPage")){
-        exitHyperDoc();
-                }
-        page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "ProtectedQuitPage");
-        if (page == NULL) {
-            fprintf(stderr, "Unknown page name %s\n", "ProtectedQuitPage");
-            exitHyperDoc();
-            return;
-        }
-        if (gWindow->fDownLinkStackIndex == MaxDownlinkDepth)
-            fprintf(stderr, "exceeded maximum link nesting level\n");
-        else
-            gWindow->fDownLinkStack[gWindow->fDownLinkStackIndex++] = gWindow->page;
-        gWindow->page = page;
-        display_page(gWindow->page);
-        gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;
-    }
+    if (state == gBusyCursor)
+        XDefineCursor(gXDisplay, window->fMainWindow, gBusyCursor);
+    else if (state == gActiveCursor)
+        XDefineCursor(gXDisplay, window->fMainWindow, gActiveCursor);
     else
-        exitHyperDoc();
+        XDefineCursor(gXDisplay, window->fMainWindow, gNormalCursor);
+    XFlush(gXDisplay);
+}
+
+static void
+change_cursor(Cursor state, HDWindow *window)
+{
+    if (window->fDisplayedCursor == state)
+        return;
+    window->fDisplayedCursor = state;
+    set_cursor(window, state);
+}
+
+
+static void
+make_busy_cursor(HDWindow *window)
+{
+    change_cursor(gBusyCursor, window);
+}
+
+static void
+make_busy_cursors(void)
+{
+    hash_map(&gSessionHashTable, (MappableFunction)make_busy_cursor);
+}
+
+static void
+handle_motion_event(XMotionEvent *event)
+{
+    if (!gWindow)
+        return;
+    if (findButtonInList(gWindow, event->x, event->y) != NULL)
+        change_cursor(gActiveCursor, gWindow);
+    else
+        change_cursor(gNormalCursor, gWindow);
 }
 
 
 /*
- * find_page takes as an argument the HyperDoc for a page name and returns
- * the associated page
+ * This procedure whips thru the stack and clears all expose events for the
+ * given routine
  */
+static void
+clear_exposures(Window w)
+{
+    XEvent report;
+
+    XFlush(gXDisplay);
+    while (XCheckTypedWindowEvent(gXDisplay, w, Expose, &report));
+}
+
+static HyperLink *
+get_hyper_link(XButtonEvent * event)
+{
+    HyperLink *l1, *l2;
+
+    l1 = (HyperLink *) hash_find(gWindow->fWindowHashTable, (char *)&(event->window));
+    if (l1)
+        return l1;
+    l2 = findButtonInList(gWindow, event->x, event->y);
+    return l2;
+}
+
 
 static HyperDocPage *
-find_page(TextNode * node)
+paste_button(PasteNode * paste)
 {
-    char *page_name;
-    HyperDocPage *page;
+    HyperDocPage *page = NULL;
+    int pastewhere=paste->where;
 
-    /* try and find the page name */
-    page_name = print_to_string(node);
-    page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, page_name);
 
-    if (page == NULL) {
-        /* try to find the unknown page */
-        page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "UnknownPage");
-        if (page == NULL) {
-            /* Yikes, Even that could not be found */
-            fprintf(stderr, "Unknown page name %s\n", page_name);
+    if ( paste->end_node ==NULL || paste->begin_node==NULL || paste->arg_node==NULL ){
+        BeepAtTheUser();
+        return NULL;
         }
-        else {
-            if (page->type == UnloadedPageType)
-                page->type = UlUnknownPage;
-            else
-                page->type = UnknownPage;
-        }
+
+    page=parse_patch(paste);
+/* paste has changed after this call so use pastewhere*/
+
+    if (pastewhere && page ) {
+        if (0 == strcmp(page->name, "ErrorPage"))
+            page = NULL;
     }
-    return page;
-}
-
-/*
- * These are macros for taking care of the downlink stack, and the memolink
- * stack.
- */
-
-#define NotSpecial(t) \
-  ((t == openaxiom_Quitbutton_token || t == openaxiom_Returnbutton_token \
-    || t == openaxiom_Upbutton_token || t == UnknownPage \
-    || t == UlUnknownPage || t == ErrorPage) \
-   ?(0):(1))
-
-/* pushes a page onto the down link stack */
-
-static void
-downlink(void)
-{
-    if (gWindow->fDownLinkStackIndex == MaxDownlinkDepth)
-        fprintf(stderr, "exceeded maximum link nesting level\n");
     else
-        gWindow->fDownLinkStack[gWindow->fDownLinkStackIndex++] = gWindow->page;
-}
+        BeepAtTheUser();
 
-static void
-memolink(void)
-{
-    if (gWindow->fMemoStackIndex == MaxMemoDepth)
-        fprintf(stderr, "exceeded maximum link nesting level\n");
-    else {
-        gWindow->fMemoStack[gWindow->fMemoStackIndex] = gWindow->page;
-        gWindow->fDownLinkStackTop[gWindow->fMemoStackIndex++] = gWindow->fDownLinkStackIndex;
-    }
+    return page;
 }
 
 static void
@@ -442,6 +319,60 @@ uplink(void)
     }
 }
 
+/*
+ * find_page takes as an argument the HyperDoc for a page name and returns
+ * the associated page
+ */
+
+static HyperDocPage *
+find_page(TextNode * node)
+{
+    char *page_name;
+    HyperDocPage *page;
+
+    /* try and find the page name */
+    page_name = print_to_string(node);
+    page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, page_name);
+
+    if (page == NULL) {
+        /* try to find the unknown page */
+        page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "UnknownPage");
+        if (page == NULL) {
+            /* Yikes, Even that could not be found */
+            fprintf(stderr, "Unknown page name %s\n", page_name);
+        }
+        else {
+            if (page->type == UnloadedPageType)
+                page->type = UlUnknownPage;
+            else
+                page->type = UnknownPage;
+        }
+    }
+    return page;
+}
+
+/* pushes a page onto the down link stack */
+
+static void
+downlink(void)
+{
+    if (gWindow->fDownLinkStackIndex == MaxDownlinkDepth)
+        fprintf(stderr, "exceeded maximum link nesting level\n");
+    else
+        gWindow->fDownLinkStack[gWindow->fDownLinkStackIndex++] = gWindow->page;
+}
+
+static void
+memolink(void)
+{
+    if (gWindow->fMemoStackIndex == MaxMemoDepth)
+        fprintf(stderr, "exceeded maximum link nesting level\n");
+    else {
+        gWindow->fMemoStack[gWindow->fMemoStackIndex] = gWindow->page;
+        gWindow->fDownLinkStackTop[gWindow->fMemoStackIndex++] = gWindow->fDownLinkStackIndex;
+    }
+}
+
 static void
 windowlink_handler(TextNode * node)
 {
@@ -455,14 +386,6 @@ windowlink_handler(TextNode * node)
     }
 /*    gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;*/
 }
-
-void
-make_window_link(char *name)
-{
-    if (init_top_window(name) != -1)
-{}/*        gWindow->fWindowHashTable = gWindow->page->fLinkHashTable; */
-}
-
 
 static void
 lispwindowlink_handler(HyperLink * link)
@@ -484,86 +407,36 @@ lispwindowlink_handler(HyperLink * link)
     }
 }
 
-static HyperDocPage *
-paste_button(PasteNode * paste)
+static void
+create_window(void)
 {
-    HyperDocPage *page = NULL;
-    int pastewhere=paste->where;
+    XWindowAttributes wa;
 
+    XGetWindowAttributes(gXDisplay, gWindow->fMainWindow, &wa);
 
-    if ( paste->end_node ==NULL || paste->begin_node==NULL || paste->arg_node==NULL ){
-        BeepAtTheUser();
-        return NULL;
-        }
+    gWindow->width = wa.width;
+    gWindow->height = wa.height;
+    display_page(gWindow->page);
+    gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;
 
-    page=parse_patch(paste);
-/* paste has changed after this call so use pastewhere*/
+    /* then select for the events I normally would like to catch */
+    XSelectInput(gXDisplay, gWindow->fMainWindow, ButtonPress | KeyPressMask |
+                 PointerMotionMask |
+                 ExposureMask /* | EnterWindowMask | LeaveWindowMask */ );
+    XSelectInput(gXDisplay, gWindow->fScrollWindow, ExposureMask);
 
-    if (pastewhere && page ) {
-        if (0 == strcmp(page->name, "ErrorPage"))
-            page = NULL;
-    }
-    else
-        BeepAtTheUser();
-
-    return page;
 }
 
-void
-helpForHyperDoc(void)
-{
-    HyperDocPage *page = NULL;
+/*
+ * These are macros for taking care of the downlink stack, and the memolink
+ * stack.
+ */
 
-    /* do not do anything if we are already at the "no more help" page */
-
-    if (0 == strcmp(gWindow->page->name, NoMoreHelpPage))
-        return;
-
-    /* if no help page recorded, use the standard "no more help" page */
-
-    if (!gWindow->page->helppage)
-        gWindow->page->helppage = alloc_string(NoMoreHelpPage);
-
-    /* if we are on the main help page, use "no more help" page */
-
-    if (0 == strcmp(gWindow->page->name, TopLevelHelpPage))
-        gWindow->page->helppage = alloc_string(NoMoreHelpPage);
-
-    page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, gWindow->page->helppage);
-
-    if (page)
-        make_window_link(gWindow->page->helppage);
-    else
-        BeepAtTheUser();
-}
-
-static HyperLink *
-findButtonInList(HDWindow * window, int x, int y)
-{
-    ButtonList *bl;
-
-    if (!window || window->page->type == UnloadedPageType)
-        return NULL;
-    for (bl = window->page->s_button_list; bl != NULL; bl = bl->next)
-        if (x >= bl->x0 && x <= bl->x1 && y >= bl->y0 && y <= bl->y1)
-            return bl->link;
-    for (bl = window->page->button_list; bl != NULL; bl = bl->next)
-        if (x >= bl->x0 && x <= bl->x1 && y >= bl->y0 && y <= bl->y1)
-            return bl->link;
-    return NULL;
-}
-
-static HyperLink *
-get_hyper_link(XButtonEvent * event)
-{
-    HyperLink *l1, *l2;
-
-    l1 = (HyperLink *) hash_find(gWindow->fWindowHashTable, (char *)&(event->window));
-    if (l1)
-        return l1;
-    l2 = findButtonInList(gWindow, event->x, event->y);
-    return l2;
-}
+#define NotSpecial(t) \
+  ((t == openaxiom_Quitbutton_token || t == openaxiom_Returnbutton_token \
+    || t == openaxiom_Upbutton_token || t == UnknownPage \
+    || t == UlUnknownPage || t == ErrorPage) \
+   ?(0):(1))
 
 /*
  * Handle a button pressed event. window is the subwindow in which the event
@@ -736,6 +609,190 @@ handle_button(int button, XButtonEvent * event)
 }
 
 
+static void
+handle_event(XEvent * event)
+{
+    XWindowAttributes wa;
+/*    fprintf(stderr,"event:handle_event entered\n");*/
+    set_window(event->xany.window);
+    if (event->type == MotionNotify) {
+/*        fprintf(stderr,"event:handle_event type=MotionNotify\n");*/
+        handle_motion_event((XMotionEvent *)event);
+        motion = 1;
+        return;
+    }
+    make_busy_cursors();
+    switch (event->type) {
+      case DestroyNotify:
+/*        fprintf(stderr,"event:handle_event type=DestroyNotify\n");*/
+        break;
+      case Expose:
+/*        fprintf(stderr,"event:handle_event type=Expose\n");*/
+        XGetWindowAttributes(gXDisplay, gWindow->fMainWindow, &wa);
+        if ((gWindow->width == 0 && gWindow->height == 0) ||
+            (wa.width != gWindow->width || wa.height != gWindow->height)) {
+            gWindow->width = wa.width;
+            gWindow->height = wa.height;
+            display_page(gWindow->page);
+            gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;
+        }
+        else                    /** just redraw the thing **/
+            expose_page(gWindow->page);
+        XFlush(gXDisplay);
+        clear_exposures(gWindow->fMainWindow);
+        clear_exposures(gWindow->fScrollWindow);
+        break;
+      case ButtonPress:
+/*        fprintf(stderr,"event:handle_event type=ButtonPress\n");*/
+        handle_button(event->xbutton.button, (XButtonEvent *)event);
+        XFlush(gXDisplay);
+        if (gWindow) {
+            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fMainWindow,
+                                          Expose, event));
+            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fScrollWindow,
+                                          Expose, event));
+        }
+        break;
+      case KeyPress:
+/*        fprintf(stderr,"event:handle_event type=KeyPress\n");*/
+        handle_key(event);
+        if (gWindow) {
+            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fMainWindow,
+                                          Expose, event));
+            while (XCheckTypedWindowEvent(gXDisplay, gWindow->fScrollWindow,
+                                          Expose, event));
+        }
+        break;
+      case MapNotify:
+/*        fprintf(stderr,"event:handle_event type=MapNotify\n");*/
+        create_window();
+        break;
+
+      case SelectionNotify:
+/*        fprintf(stderr,"event:handle_event type=SelectionNotify\n");*/
+        /* this is in response to a previous request in an input area */
+        if ( gSavedInputAreaLink ) {
+            XSelectionEvent *pSelEvent;
+            Atom dataProperty;
+            pSelEvent = (XSelectionEvent *) event;
+            dataProperty = XInternAtom(gXDisplay, "PASTE_SELECTION", False);
+            /* change the input focus */
+
+        /*  change_input_focus(gSavedInputAreaLink); */
+
+            /* try to get the selection as a window property */
+
+            if ( pSelEvent->requestor == gWindow->fMainWindow &&
+                 pSelEvent->selection == XA_PRIMARY &&
+            /*   pSelEvent->time      == CurrentTime && */
+                 pSelEvent->target    == XA_STRING &&
+                 pSelEvent->property == dataProperty )
+            {
+                Atom actual_type;
+                int  actual_format;
+                unsigned long nitems, leftover;
+                char *pSelection = NULL;
+
+                if (Success == XGetWindowProperty(gXDisplay,
+                    gWindow->fMainWindow,
+                    pSelEvent->property, 0L, 100000000L, True,
+                    AnyPropertyType, &actual_type, &actual_format,
+                    &nitems, &leftover, (unsigned char **) &pSelection) )
+                {
+                    char *pBuffer;
+                    InputItem *item = gSavedInputAreaLink->reference.string;
+
+                    for (pBuffer = pSelection; *pBuffer; ++pBuffer)
+                        add_buffer_to_sym(pBuffer, item);
+
+                    XFree(pSelection);
+                }
+            }
+
+            /* clear the link info */
+
+            gSavedInputAreaLink = NULL;
+        }
+        break;
+
+      default:
+/*        fprintf(stderr,"event:handle_event type=default\n");*/
+        break;
+    }
+
+}
+
+/*
+ * This routine is called when the quitbutton is hit. For the moment I am
+ * just going to leave it all behind
+ */
+
+void
+quitHyperDoc(void)
+{
+    HyperDocPage *page;
+
+    if (gSessionHashTable.num_entries == 1 || gParentWindow == gWindow) {
+        if (!strcmp(gWindow->page->name, "ProtectedQuitPage")){
+        exitHyperDoc();
+                }
+        page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, "ProtectedQuitPage");
+        if (page == NULL) {
+            fprintf(stderr, "Unknown page name %s\n", "ProtectedQuitPage");
+            exitHyperDoc();
+            return;
+        }
+        if (gWindow->fDownLinkStackIndex == MaxDownlinkDepth)
+            fprintf(stderr, "exceeded maximum link nesting level\n");
+        else
+            gWindow->fDownLinkStack[gWindow->fDownLinkStackIndex++] = gWindow->page;
+        gWindow->page = page;
+        display_page(gWindow->page);
+        gWindow->fWindowHashTable = gWindow->page->fLinkHashTable;
+    }
+    else
+        exitHyperDoc();
+}
+
+
+
+void
+make_window_link(char *name)
+{
+    if (init_top_window(name) != -1)
+{}/*        gWindow->fWindowHashTable = gWindow->page->fLinkHashTable; */
+}
+
+
+void
+helpForHyperDoc(void)
+{
+    HyperDocPage *page = NULL;
+
+    /* do not do anything if we are already at the "no more help" page */
+
+    if (0 == strcmp(gWindow->page->name, NoMoreHelpPage))
+        return;
+
+    /* if no help page recorded, use the standard "no more help" page */
+
+    if (!gWindow->page->helppage)
+        gWindow->page->helppage = alloc_string(NoMoreHelpPage);
+
+    /* if we are on the main help page, use "no more help" page */
+
+    if (0 == strcmp(gWindow->page->name, TopLevelHelpPage))
+        gWindow->page->helppage = alloc_string(NoMoreHelpPage);
+
+    page = (HyperDocPage *) hash_find(gWindow->fPageHashTable, gWindow->page->helppage);
+
+    if (page)
+        make_window_link(gWindow->page->helppage);
+    else
+        BeepAtTheUser();
+}
+
+
 void
 exitHyperDoc(void)
 {
@@ -776,71 +833,6 @@ exitHyperDoc(void)
     XFlush(gXDisplay);
 }
 
-static int
-set_window(Window window)
-{
-    Window root, parent, *children, grandparent,myarg;
-    HDWindow *htw;
-    unsigned int nchildren;
-    int st;
-
-    myarg=window;
-    nchildren = 0;
-    htw = (HDWindow *) hash_find(&gSessionHashTable, (char *)&myarg);
-    if (htw != NULL) {
-        gWindow = htw;
-        return 1;
-    }
-    st = XQueryTree(gXDisplay, myarg, &root, &parent, &children, &nchildren);
-    if (st==0) goto ERROR;
-    if (nchildren > 0)
-        XFree(children);
-    htw = (HDWindow *) hash_find(&gSessionHashTable, (char *)&parent);
-    if (htw != NULL) {
-        gWindow = htw;
-        return 1;
-
-    }
-    else {
-        /* check for a grandparent */
-        st = XQueryTree(gXDisplay, parent, &root, &grandparent, &children, &nchildren);
-        if (st==0) goto ERROR;
-        if (nchildren > 0)
-            XFree(children);
-        htw = (HDWindow *) hash_find(&gSessionHashTable, (char *)&grandparent);
-        if (htw != NULL) {
-            gWindow = htw;
-            return 1;
-        }
-    }
-
-    /*
-     * fprintf(stderr, "window(%d) and it's parent(%d) aren't in
-     * gSessionHashTable\n", window, parent);
-     
-     we never found that window. this happens if (not iff) we exit from 
-     an unfocused non-main window under certain wm's and click-to-type. the program returns here with
-     the window handle that was just destroyed. So let's set the global gWindow
-     to the main window.
-     */
-
-ERROR:
-    gWindow=gParentWindow;
-    return 0;
-}
-
-/*
- * This procedure whips thru the stack and clears all expose events for the
- * given routine
- */
-static void
-clear_exposures(Window w)
-{
-    XEvent report;
-
-    XFlush(gXDisplay);
-    while (XCheckTypedWindowEvent(gXDisplay, w, Expose, &report));
-}
 void
 get_new_window(void)
 {
@@ -963,37 +955,6 @@ get_new_window(void)
           }
         break;
     }
-  }
-static void
-set_cursor(HDWindow *window,Cursor state)
-{
-    if (state == gBusyCursor)
-        XDefineCursor(gXDisplay, window->fMainWindow, gBusyCursor);
-    else if (state == gActiveCursor)
-        XDefineCursor(gXDisplay, window->fMainWindow, gActiveCursor);
-    else
-        XDefineCursor(gXDisplay, window->fMainWindow, gNormalCursor);
-    XFlush(gXDisplay);
-}
-
-static void
-change_cursor(Cursor state, HDWindow *window)
-{
-    if (window->fDisplayedCursor == state)
-        return;
-    window->fDisplayedCursor = state;
-    set_cursor(window, state);
-}
-
-static void
-handle_motion_event(XMotionEvent *event)
-{
-    if (!gWindow)
-        return;
-    if (findButtonInList(gWindow, event->x, event->y) != NULL)
-        change_cursor(gActiveCursor, gWindow);
-    else
-        change_cursor(gNormalCursor, gWindow);
 }
 
 static void
@@ -1019,42 +980,83 @@ init_cursor_states(void)
 }
 
 
-static void
-make_busy_cursor(HDWindow *window)
+/*
+ * This is the main X loop. It keeps grabbing events. Since the only way the
+ * window can die is through an event, it never actually end. One of the
+ * subroutines it calls is responsible for killing everything
+ */
+
+void
+mainEventLoop(void)
 {
-    change_cursor(gBusyCursor, window);
-}
+    XEvent event;
+    int  Xcon;
+    fd_set rd, dum1, dum2;
+    motion = 0;
+    gActiveWindow = -1;
+    set_error_handlers();
+    Xcon = ConnectionNumber(gXDisplay);
 
-static void
-make_busy_cursors(void)
-{
-    hash_map(&gSessionHashTable, (MappableFunction)make_busy_cursor);
-}
+    while (1) {
+/*        fprintf(stderr,"event:mainEventLoop: loop top\n");*/
+        while (gSessionHashTable.num_entries == 0)
+            pause();
 
-static int
-HyperDocErrorHandler(Display *display, XErrorEvent *xe)
-{
-    if (xe->request_code != 15) {
-        char buf[1024];
+        /* XFlush(gXDisplay);      */
 
-        XGetErrorText(display, xe->error_code, buf, sizeof(buf));
+        if (!motion)
+            init_cursor_states();
+        motion = 0;
 
-        fprintf(stderr, "error code = %d\n", xe->error_code);
-        fprintf(stderr, "major op code = %d\n", xe->request_code);
-        fprintf(stderr, "minor op code = %d\n", xe->minor_code);
-        fprintf(stderr, "XID = %ld\n", xe->resourceid);
-        fprintf(stderr, "%s\n", buf);
-
-        if (xe->request_code != 15)
-            exit(-1);
-      }
-    return(0);
-}
-
-
-
-static void
-set_error_handlers(void)
-{
-    XSetErrorHandler(HyperDocErrorHandler);
+        if (!spad_socket == 0) {
+            FD_ZERO(&rd);
+            FD_ZERO(&dum1);
+            FD_ZERO(&dum2);
+            FD_CLR(0, &dum1);
+            FD_CLR(0, &dum2);
+            FD_CLR(0, &rd);
+            FD_SET(spad_socket->socket, &rd);
+            FD_SET(Xcon, &rd);
+            if (!session_server == 0) {
+                FD_SET(session_server->socket, &rd);
+            }
+            if (XEventsQueued(gXDisplay, QueuedAlready)) {
+                XNextEvent(gXDisplay, &event);
+                handle_event(&event);
+            }
+            else {
+              select(FD_SETSIZE, &rd, &dum1, &dum2, NULL);
+              if (FD_ISSET(Xcon, &rd) || 
+                  XEventsQueued(gXDisplay, QueuedAfterFlush)) {
+                    XNextEvent(gXDisplay, &event);
+                    handle_event(&event);
+                }
+              else if (FD_ISSET(spad_socket->socket, &rd))
+                    /*
+                     * Axiom Socket do what handle_event does The 100 is
+                     * $SpadStuff in hypertex.boot
+                     */
+                {
+                    if (100 == get_int(spad_socket)) {
+                        set_window(gParentWindow->fMainWindow);
+                        make_busy_cursors();
+                        get_new_window();
+                    }
+                }
+                /*
+                 * Session Socket Telling us about the death of a spadbuf
+                 * (plus maybe more later) service_session_socket in
+                 * spadint.c
+                 */
+                else 
+                 if (session_server && FD_ISSET(session_server->socket, &rd)) {
+                    service_session_socket();
+                 }
+            }
+        }
+        else {
+            XNextEvent(gXDisplay, &event);
+            handle_event(&event);
+        }
+    }
 }

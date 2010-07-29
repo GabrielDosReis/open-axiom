@@ -31,7 +31,16 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <X11/X.h>
+#ifndef OPENAXIOM_SPADCOLORS_included
+#define OPENAXIOM_SPADCOLORS_included
+
+#include <X11/Xlib.h>
+#include "rgb.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
 #define numOfColors 240
 #define totalHuesConst   27 
 #define totalShadesConst 5 
@@ -41,9 +50,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define numPlanes 1
 #define numColors 10
 #define startColor 0
-#define endColor   startColor+numColors
+#define endColor   (startColor+numColors)
 
-#define colorStep (maxColors+1)/numColors
+#define colorStep ((maxColors+1)/numColors)
 
 #define yes 1
 #define no 0
@@ -51,8 +60,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define smoothConst  50
 #define saymem(a,b,c) saymemWithLine(a,b,c,0)
 #define Colorcells 256   /* KF number of elements in permutation vector */
-#define shade 5
+/* #define shade 5  */
 #define saturation   0.8
+
+extern RGB HSVtoRGB(HSV );
+extern RGB HLStoRGB(HLS );
+extern float value(float  , float  , float );
+extern int makeColors(Display *  , int  , Colormap *  , unsigned long * *  , int * );
+extern int makePermVector(Display *  , int  , unsigned long * * );
+extern int makeNewColorMap(Display *  , Colormap  , int );
+extern unsigned long XPixelColor(int );
+extern void FreePixels(Display *  , Colormap  , int );
+extern int AllocCells(Display *  , Colormap  , int );
 
 extern int       smoothHue;
 extern Colormap  colorMap;
@@ -61,4 +80,11 @@ extern int       scrn;
 
 #define maxColors DisplayCells(dsply,scrn)-1
 
-#include "rgb.h"
+
+
+#ifdef __cplusplus
+}
+#endif   
+   
+
+#endif  /* OPENAXIOM_SPADCOLORS_included */

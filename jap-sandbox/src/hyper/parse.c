@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,6 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _PARSE_C
-
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -50,8 +48,17 @@
 #include "scrollbar.h"
 #include "titlebar.h"
 
-#include "all_hyper_proto.H1"
-
+static void end_a_page(void );
+static HyperDocPage * format_page(UnloadedPage * ulpage);
+static void parse_page(HyperDocPage * page);
+static void parse_replacepage(void );
+static void start_footer(void );
+static void start_scrolling(void );
+static void Push_MR(void );
+static void Pop_MR(void );
+static void parse_title(HyperDocPage * page);
+static void parse_header(HyperDocPage * page);
+static void init_parse_page(HyperDocPage * page);
 
 
 TextNode *curr_node;            /* current node being parsed. It is to be the

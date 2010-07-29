@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* This file is to be included by all the viewport files */
 
 #define check(code)	checker(code,__LINE__,"")
+#undef saymem
 #define saymem(a,b,c)	saymemWithLine(a,b,c,__LINE__)
 #define exitWithAck(ACK,ACKsize,i) \
 		check(write(Socket,&(ACK),sizeof(ACKsize)));  exit(i);

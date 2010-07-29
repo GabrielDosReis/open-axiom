@@ -279,6 +279,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
 
  == add
    MER ==> Record(MANTISSA:Integer,EXPONENT:Integer)
+   import %hash: % -> SingleInteger     from Foreign Builtin
    import %fminval: () -> %             from Foreign Builtin
    import %fmaxval: () -> %             from Foreign Builtin
    import %fbase: () -> PositiveInteger from Foreign Builtin
@@ -298,6 +299,22 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fle: (%,%) -> Boolean        from Foreign Builtin
    import %fgt: (%,%) -> Boolean        from Foreign Builtin
    import %fge: (%,%) -> Boolean        from Foreign Builtin
+   import %fsin: % -> %                 from Foreign Builtin
+   import %fcos: % -> %                 from Foreign Builtin
+   import %ftan: % -> %                 from Foreign Builtin
+   import %fcot: % -> %                 from Foreign Builtin
+   import %fsec: % -> %                 from Foreign Builtin
+   import %fcsc: % -> %                 from Foreign Builtin
+   import %fatan: % -> %                from Foreign Builtin
+   import %facot: % -> %                from Foreign Builtin
+   import %fsinh: % -> %                from Foreign Builtin
+   import %fcosh: % -> %                from Foreign Builtin
+   import %ftanh: % -> %                from Foreign Builtin
+   import %fcsch: % -> %                from Foreign Builtin
+   import %fcoth: % -> %                from Foreign Builtin
+   import %fsech: % -> %                from Foreign Builtin
+   import %fasinh: % -> %               from Foreign Builtin
+   import %facsch: % -> %               from Foreign Builtin
 
    manexp: % -> MER
 
@@ -381,35 +398,35 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    exp x            == EXP(x)$Lisp
    log x            == checkComplex LN(x)$Lisp
    log2 x           == checkComplex LOG2(x)$Lisp
-   sin x            == SIN(x)$Lisp
-   cos x            == COS(x)$Lisp
-   tan x            == TAN(x)$Lisp
-   cot x            == COT(x)$Lisp
-   sec x            == SEC(x)$Lisp
-   csc x            == CSC(x)$Lisp
+   sin x            == %fsin x
+   cos x            == %fcos x
+   tan x            == %ftan x
+   cot x            == %fcot x
+   sec x            == %fsec x
+   csc x            == %fcsc x
    asin x           == checkComplex ASIN(x)$Lisp -- can be complex
    acos x           == checkComplex ACOS(x)$Lisp -- can be complex
-   atan x           == ATAN(x)$Lisp
+   atan x           == %fatan x
    acsc x           == checkComplex ACSC(x)$Lisp
-   acot x           == ACOT(x)$Lisp
+   acot x           == %facot x
    asec x           == checkComplex ASEC(x)$Lisp
-   sinh x           == SINH(x)$Lisp
-   cosh x           == COSH(x)$Lisp
-   tanh x           == TANH(x)$Lisp
-   csch x           == CSCH(x)$Lisp
-   coth x           == COTH(x)$Lisp
-   sech x           == SECH(x)$Lisp
-   asinh x          == ASINH(x)$Lisp
+   sinh x           == %fsinh x
+   cosh x           == %fcosh x
+   tanh x           == %ftanh x
+   csch x           == %fcsch x
+   coth x           == %fcoth x
+   sech x           == %fsech x
+   asinh x          == %fasinh x
    acosh x          == checkComplex ACOSH(x)$Lisp -- can be complex
    atanh x          == checkComplex ATANH(x)$Lisp -- can be complex
-   acsch x          == ACSCH(x)$Lisp
+   acsch x          == %facsch x
    acoth x          == checkComplex ACOTH(x)$Lisp
    asech x          == checkComplex ASECH(x)$Lisp
    x:% / y:%        == %fdiv(x,y)
    negative? x      == x < 0
    zero? x          == x = 0
    one? x           == x = 1
-   hash x           == HASHEQ(x)$Lisp
+   hash x           == %hash x
    recip(x)         == (zero? x => "failed"; 1 / x)
    differentiate x  == 0
 

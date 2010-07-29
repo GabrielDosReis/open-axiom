@@ -55,6 +55,7 @@ IndexCard() : Exports == Implementation where
       ++ \axiom{s} is not of the right format then an error will occur when using
       ++ it.
   Implementation == add
+    macro I == Integer
     Rep == String
 
     x<y == rep x < rep y
@@ -63,15 +64,15 @@ IndexCard() : Exports == Implementation where
 
     display(x) ==
       name : OutputForm := dbName(x)$Lisp
-      type : OutputForm := dbPart(x,4,1$Lisp)$Lisp
+      type : OutputForm := dbPart(x,4,1@I)$Lisp
       output(hconcat(name,hconcat(" : ",type)))$OutputPackage
 
     fullDisplay(x) ==
       name : OutputForm := dbName(x)$Lisp
-      type : OutputForm := dbPart(x,4,1$Lisp)$Lisp
+      type : OutputForm := dbPart(x,4,1@I)$Lisp
       origin:OutputForm := hconcat(alqlGetOrigin(x$Lisp)$Lisp,alqlGetParams(x$Lisp)$Lisp)
       fromPart : OutputForm := hconcat(" from ",origin)
-      condition : String := dbPart(x,6,1$Lisp)$Lisp
+      condition : String := dbPart(x,6,1@I)$Lisp
       ifPart : OutputForm :=
         condition = "" => empty()
         hconcat(" if ",condition::OutputForm)
@@ -89,14 +90,14 @@ IndexCard() : Exports == Implementation where
 
     elt(x,sel) ==
       sel = 'name => dbName(x)$Lisp
-      sel = 'nargs => dbPart(x,2,1$Lisp)$Lisp
+      sel = 'nargs => dbPart(x,2,1@I)$Lisp
       sel = 'exposed => SUBSTRING(dbPart(x,3,1)$Lisp,0,1)$Lisp 
-      sel = 'type => dbPart(x,4,1$Lisp)$Lisp
-      sel = 'abbreviation => dbPart(x,5,1$Lisp)$Lisp
+      sel = 'type => dbPart(x,4,1@I)$Lisp
+      sel = 'abbreviation => dbPart(x,5,1@I)$Lisp
       sel = 'kind => alqlGetKindString(x)$Lisp
       sel = 'origin => alqlGetOrigin(x)$Lisp
       sel = 'params => alqlGetParams(x)$Lisp
-      sel = 'condition => dbPart(x,6,1$Lisp)$Lisp
+      sel = 'condition => dbPart(x,6,1@I)$Lisp
       sel = 'doc => dbComments(x)$Lisp
       userError "unknown selector"
 
