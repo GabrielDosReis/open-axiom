@@ -48,7 +48,7 @@
 typedef struct spad_proc {
   int   proc_id;        /* process id of child */
   int   death_action;   /* one of the above constants */
-  char  *command;       /* sh command line to restart the process */
+  const char* command;       /* sh command line to restart the process */
   struct spad_proc *next;
 } SpadProcess;
 

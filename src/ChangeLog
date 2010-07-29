@@ -1,5 +1,12 @@
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* clef/Makefile.in: Build and link programs by a C++ compiler.
+	* clef/edible.c: Make it acceptable to a C++ compiler.
+	* driver/utils.c: Likewise.
+	* sman/sman.c: Likewise.
+
+2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lib/XSpadFill.c: Tidy.
 	* lib/pixmap.c: Likewise.
 	* lib/spadcolors.c: Likewise.

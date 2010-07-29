@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008-2009, Gabriel Dos Reis.
+   Copyright (C) 2008-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -135,19 +135,20 @@ openaxiom_build_rts_options(openaxiom_command* command,
          command->rt_argc = 3;
          command->rt_argv = (char **)
             malloc(command->rt_argc * sizeof (char*));
-         command->rt_argv[0] = "-batch";
-         command->rt_argv[1] = "-eval";
-         command->rt_argv[2] = "(" OPENAXIOM_LISP_CORE_ENTRY_POINT ")";
+         command->rt_argv[0] = (char*) "-batch";
+         command->rt_argv[1] = (char*) "-eval";
+         command->rt_argv[2] =
+            (char*) ("(" OPENAXIOM_LISP_CORE_ENTRY_POINT ")");
          break;
 
       case openaxiom_sbcl_runtime:
          command->rt_argc = 4;
          command->rt_argv = (char **)
             malloc(command->rt_argc * sizeof (char*));
-         command->rt_argv[0] = "--noinform";
-         command->rt_argv[1] = "--end-runtime-options";
-         command->rt_argv[2] = "--noprint";
-         command->rt_argv[3] = "--end-toplevel-options";
+         command->rt_argv[0] = (char*) "--noinform";
+         command->rt_argv[1] = (char*) "--end-runtime-options";
+         command->rt_argv[2] = (char*) "--noprint";
+         command->rt_argv[3] = (char*) "--end-toplevel-options";
          break;
          
       default:
@@ -288,7 +289,7 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
             command->core.argv =
                (char**) malloc((other + 2) * sizeof(char*));
             command->core.argv[0] = argv[0];
-            command->core.argv[1] = "--script";
+            command->core.argv[1] = (char*) "--script";
             for (i = 0; i < other; ++i)
                command->core.argv[2 + i] = argv[1 + i];
             driver = openaxiom_script_driver;
@@ -390,7 +391,7 @@ openaxiom_execute_core(const openaxiom_command* command,
    /* GCL has this oddity that it wants to believe that argv[0] has
       something to tell about what GCL's own runtime is.  Silly.  */
    if (OPENAXIOM_BASE_RTS == openaxiom_gcl_runtime)
-      args[0] = "";
+      args[0] = (char*) "";
    /* And CLISP wants to believe that argv[0] is where it hides stuff
       from the saved image.  */
    else if (OPENAXIOM_BASE_RTS == openaxiom_clisp_runtime)
@@ -407,7 +408,7 @@ openaxiom_execute_core(const openaxiom_command* command,
          differentiate this from the base runtime system arguments.
          We do this by inserting a doubledash to indicate beginning
          of arguments.  */
-      args[command->rt_argc + 1] = "--";
+      args[command->rt_argc + 1] = (char*) "--";
       /* Then, copy over the arguments received from the command line.  */
       for (i = 1; i < command->core.argc; ++i)
          args[command->rt_argc + i + 1] = command->core.argv[i];
