@@ -1,5 +1,15 @@
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/sf.spad.pamphlet (DoubleFloat): Use builtin
+	trigonometric functions.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include them.
+	* interp/g-util.boot: Expand them.
+	* include/edible.H1: Move declarations to clef/edible.c.  Remove.
+	* driver/utils.h: Give G linkage to declarations.
+	* sman/Makefile.in: Link programs against C++ runtime.
+
+2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* driver/main.c (main): Add explicit conversion to
 	openaxiom_spawn_flags. 
 	* driver/utils.c (openaxiom_execute_core): The system want the

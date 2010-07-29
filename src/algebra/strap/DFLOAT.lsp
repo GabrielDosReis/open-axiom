@@ -184,32 +184,32 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sin;2$;41|)) 
 
-(PUT '|DFLOAT;sin;2$;41| '|SPADreplace| 'SIN) 
+(PUT '|DFLOAT;sin;2$;41| '|SPADreplace| '|%fsin|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;cos;2$;42|)) 
 
-(PUT '|DFLOAT;cos;2$;42| '|SPADreplace| 'COS) 
+(PUT '|DFLOAT;cos;2$;42| '|SPADreplace| '|%fcos|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;tan;2$;43|)) 
 
-(PUT '|DFLOAT;tan;2$;43| '|SPADreplace| 'TAN) 
+(PUT '|DFLOAT;tan;2$;43| '|SPADreplace| '|%ftan|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;cot;2$;44|)) 
 
-(PUT '|DFLOAT;cot;2$;44| '|SPADreplace| 'COT) 
+(PUT '|DFLOAT;cot;2$;44| '|SPADreplace| '|%fcot|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sec;2$;45|)) 
 
-(PUT '|DFLOAT;sec;2$;45| '|SPADreplace| 'SEC) 
+(PUT '|DFLOAT;sec;2$;45| '|SPADreplace| '|%fsec|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;csc;2$;46|)) 
 
-(PUT '|DFLOAT;csc;2$;46| '|SPADreplace| 'CSC) 
+(PUT '|DFLOAT;csc;2$;46| '|SPADreplace| '|%fcsc|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asin;2$;47|)) 
@@ -220,7 +220,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;atan;2$;49|)) 
 
-(PUT '|DFLOAT;atan;2$;49| '|SPADreplace| 'ATAN) 
+(PUT '|DFLOAT;atan;2$;49| '|SPADreplace| '|%fatan|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acsc;2$;50|)) 
@@ -228,7 +228,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acot;2$;51|)) 
 
-(PUT '|DFLOAT;acot;2$;51| '|SPADreplace| 'ACOT) 
+(PUT '|DFLOAT;acot;2$;51| '|SPADreplace| '|%facot|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asec;2$;52|)) 
@@ -236,37 +236,37 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sinh;2$;53|)) 
 
-(PUT '|DFLOAT;sinh;2$;53| '|SPADreplace| 'SINH) 
+(PUT '|DFLOAT;sinh;2$;53| '|SPADreplace| '|%fsinh|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;cosh;2$;54|)) 
 
-(PUT '|DFLOAT;cosh;2$;54| '|SPADreplace| 'COSH) 
+(PUT '|DFLOAT;cosh;2$;54| '|SPADreplace| '|%fcosh|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;tanh;2$;55|)) 
 
-(PUT '|DFLOAT;tanh;2$;55| '|SPADreplace| 'TANH) 
+(PUT '|DFLOAT;tanh;2$;55| '|SPADreplace| '|%ftanh|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;csch;2$;56|)) 
 
-(PUT '|DFLOAT;csch;2$;56| '|SPADreplace| 'CSCH) 
+(PUT '|DFLOAT;csch;2$;56| '|SPADreplace| '|%fcsch|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;coth;2$;57|)) 
 
-(PUT '|DFLOAT;coth;2$;57| '|SPADreplace| 'COTH) 
+(PUT '|DFLOAT;coth;2$;57| '|SPADreplace| '|%fcoth|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sech;2$;58|)) 
 
-(PUT '|DFLOAT;sech;2$;58| '|SPADreplace| 'SECH) 
+(PUT '|DFLOAT;sech;2$;58| '|SPADreplace| '|%fsech|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asinh;2$;59|)) 
 
-(PUT '|DFLOAT;asinh;2$;59| '|SPADreplace| 'ASINH) 
+(PUT '|DFLOAT;asinh;2$;59| '|SPADreplace| '|%fasinh|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acosh;2$;60|)) 
@@ -277,7 +277,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acsch;2$;62|)) 
 
-(PUT '|DFLOAT;acsch;2$;62| '|SPADreplace| 'ACSCH) 
+(PUT '|DFLOAT;acsch;2$;62| '|SPADreplace| '|%facsch|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acoth;2$;63|)) 
@@ -303,7 +303,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Short|)
                 |DFLOAT;hash;$Si;69|)) 
 
-(PUT '|DFLOAT;hash;$Si;69| '|SPADreplace| 'HASHEQ) 
+(PUT '|DFLOAT;hash;$Si;69| '|SPADreplace| '|%hash|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Pair|)
                 |DFLOAT;recip;$U;70|)) 
@@ -590,7 +590,7 @@
 
 (DEFUN |DFLOAT;one?;$B;68| (|x| $) (DECLARE (IGNORE $)) (= |x| 1.0)) 
 
-(DEFUN |DFLOAT;hash;$Si;69| (|x| $) (DECLARE (IGNORE $)) (HASHEQ |x|)) 
+(DEFUN |DFLOAT;hash;$Si;69| (|x| $) (DECLARE (IGNORE $)) (SXHASH |x|)) 
 
 (DEFUN |DFLOAT;recip;$U;70| (|x| $)
   (COND ((ZEROP |x|) (CONS 1 "failed")) (T (CONS 0 (/ 1.0 |x|))))) 
