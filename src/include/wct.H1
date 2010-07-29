@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern time_t ftime(char * );
 extern void fatal(char *  , char * );
 extern off_t fsize(char * );
@@ -24,3 +28,7 @@ extern void  skim_wct(void);
 extern void  rescan_wct(void);
 extern void  find_wct(void);
 
+
+#ifdef __cplusplus
+}
+#endif

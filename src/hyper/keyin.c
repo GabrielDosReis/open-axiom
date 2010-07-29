@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,10 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _KEYIN_C
+
+#include <X11/keysym.h>
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
-
 #include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
@@ -52,9 +51,6 @@
 #include "event.h"
 #include "parse.h"
 #include "scrollbar.h"
-
-#include "all_hyper_proto.H1"
-#include <X11/keysym.h>
 
 
 #define min(x,y)     ( (x<y)?(x):(y))

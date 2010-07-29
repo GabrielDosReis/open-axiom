@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2008, Gabriel Dos Reis.
+   Copyright (C) 2007-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -36,22 +36,26 @@
 /* Still a problem with close_client */
 
 /* Communication interface for external OpenAxiom buffers */
-#define _SPADINT_C
 
 #include "open-axiom.h"
 #include "debug.h"
-
 #include <signal.h>
 #include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
 #include "parse.h"
 #include "bsdsignal.h"
-
-#include "all_hyper_proto.H1"
 #include "sockio.h"
 #include "cfuns.h"
 
+static void start_user_buffer(HyperDocPage * page);
+static void clear_execution_marks(HashTable * depend_hash);
+static void issue_dependent_commands(HyperDocPage * page , TextNode * command , int type);
+static void send_pile(openaxiom_sio * sock , char * str);
+static void mark_as_executed(HyperDocPage * page , TextNode * command , int type);
+static void accept_menu_server_connection(HyperDocPage * page);
+static void switch_frames(void );
+static void close_client(int pid);
 
 typedef struct sock_list {      /* linked list of openaxiom_sio */
     openaxiom_sio Socket;
@@ -59,8 +63,6 @@ typedef struct sock_list {      /* linked list of openaxiom_sio */
 }   Sock_List;
 
 Sock_List *plSock = (Sock_List *) 0;
-openaxiom_sio *spad_socket = (openaxiom_sio *) 0; /* to_server socket for SpadServer */
-
 
 /* connect to OpenAxiom , return 0 if succesful, 1 if not */
 int

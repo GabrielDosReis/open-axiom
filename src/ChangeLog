@@ -1,5 +1,98 @@
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/XSpadFill.c: Tidy.
+	* lib/pixmap.c: Likewise.
+	* lib/spadcolors.c: Likewise.
+	* include/ReadBitmap.H1: Remove.
+	* include/all_hyper_proto.H1: Likewise.
+	* include/cond.H1: Likewise.
+	* include/cursor.H1: Likewise.
+	* include/dialog.H1: Likewise.
+	* include/display.H1: Likewise.
+	* include/event.H1: Likewise.
+	* include/extent1.H1: Likewise.
+	* include/extent2.H1: Likewise.
+	* include/form_ext.H1: Likewise.
+	* include/group.H1: Likewise.
+	* include/htinp.H1: Likewise.
+	* include/hyper.H1: Likewise.
+	* include/initx.H1: Likewise.
+	* include/input.H1: Likewise.
+	* include/item.H1: Likewise.
+	* include/keyin.H1: Likewise.
+	* include/macro.H1: Likewise.
+	* include/mem.H1: Likewise.
+	* include/parse.H1: Likewise.
+	* include/parse_aux.H1: Likewise.
+	* include/parse_input.H1: Likewise.
+	* include/parse_paste.H1: Likewise.
+	* include/parse_types.H1: Likewise.
+	* include/scrollbar.H1: Likewise.
+	* include/show_types.H1: Likewise.
+	* include/spadcolors.H1: Likewise.
+	* include/spadint.H1: Likewise.
+	* include/titlebar.H1: Likewise.
+	* hyper/Makefile.in: Compile and Link with a C++ compiler.
+	* hyper/ReadBitmap.c: Make it acceptable to a C++ compiler.
+	* hyper/cond.c: Likewise.
+	* hyper/dialog.c: Likewise.
+	* hyper/display.c: Likewise.
+	* hyper/display.h: Likewise.
+	* hyper/event.c: Likewise.
+	* hyper/event.h: Likewise.
+	* hyper/extent.h: Likewise.
+	* hyper/extent1.c: Likewise.
+	* hyper/extent2.c: Likewise.
+	* hyper/form-ext.c: Likewise.
+	* hyper/group.c: Likewise.
+	* hyper/group.h: Likewise.
+	* hyper/htadd.c: Likewise.
+	* hyper/htinp.c: Likewise.
+	* hyper/hyper.c: Likewise.
+	* hyper/hyper.h: Likewise.
+	* hyper/initx.c: Likewise.
+	* hyper/initx.h: Likewise.
+	* hyper/input.c: Likewise.
+	* hyper/item.c: Likewise.
+	* hyper/keyin.h: Likewise.
+	* hyper/keyin.c: Likewise.
+	* hyper/macro.c: Likewise.
+	* hyper/mem.c: Likewise.
+	* hyper/parse-aux.c: Likewise.
+	* hyper/parse-input.c: Likewise.
+	* hyper/parse-paste.c: Likewise.
+	* hyper/parse-paste.h: Likewise.
+	* hyper/parse-types.h: Likewise.
+	* hyper/parse-types.c: Likewise.
+	* hyper/parse.h: Likewise.
+	* hyper/parse.c: Likewise.
+	* hyper/scrollbar.c: Likewise.
+	* hyper/scrollbar.h: Likewise.
+	* hyper/show-types.c: Likewise.
+	* hyper/spadint.c: Likewise.
+	* hyper/titlebar.c: Likewise.
+	* hyper/titlebar.h: Likewise.
+	* graph/view3D/smoothShade3d.c: Include spadcolors.h
+	* graph/view3D/stuff3d.c: Likewise.
+	* graph/include/view.h (saymem): #undef before #define.
+	* graph/view2D/write2d.c: Include pixmap.h.
+	* graph/view3D/process3d.c: Likewise.
+	* graph/view3D/write3d.c: Likewise.
+	* graph/view3D/header.h: Remove macro definition for endColor and
+	colorStep. 
+	* include/bsdsignal.h: Remove.
+	* include/edin.H1: Likewise.
+	* include/fnct_key.H1: Likewise.
+	* include/halloc.h: Likewise.
+	* include/hash.h: Likewise.
+	* include/prt.H1: Likewise.
+	* include/rgb.H1: Likewise.
+	* include/sockio.h: Likewise.
+	* include/util.h: Likewise.
+	* include/pixmap.h: Rename from pixmap.H1
+
+2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/sf.spad.pamphlet (DoubleFloat): Use builtin
 	trigonometric functions.
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include them.

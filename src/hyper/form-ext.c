@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,18 +33,18 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _FORM_EXT_C
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
-
 #include "sockio.h"
 #include "extent.h"
 #include "group.h"
 #include "scrollbar.h"
 
-#include "all_hyper_proto.H1"
 
+static int window_height(HyperDocPage * page);
+static void form_header_extent(HyperDocPage * page);
+static void form_footer_extent(HyperDocPage * page);
+static void form_scrolling_extent(HyperDocPage * page);
 
 
 /*

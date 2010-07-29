@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,12 @@
 #define _INITX_H_ 1
 
 #include "hyper.h"
+
+extern void change_text(int color , XFontStruct * font);
+extern int init_form_window(char * name , int cols);
+extern int init_top_window(char * name);
+extern void initializeWindowSystem(void);
+extern int is_it_850(XFontStruct * fontarg);
 
 extern int gBorderColor;
 

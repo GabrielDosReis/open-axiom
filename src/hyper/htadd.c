@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -75,8 +75,6 @@ extern int line_number;         /* keeps track of which line a page starts on
                                  * in a file. This way someone can start
                                  * including a line number counter into
                                  * HyperDoc. */
-/* for compatibility with HyperDoc */
-openaxiom_sio *spad_socket = NULL;
 int fresh = 0;
 
 #define Delete 1

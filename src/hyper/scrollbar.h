@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,21 @@
 #define _SCROLLBAR_H_ 1
 
 #include "hyper.h"
+
+extern void calculateScrollBarMeasures(void );
+extern void drawScrollLines(void );
+extern void hideScrollBars(HDWindow * hdWindow);
+extern void getScrollBarMinimumSize(int * width , int * height);
+extern void linkScrollBars(void );
+extern void makeScrollBarWindows(void );
+extern void moveScroller(HDWindow * hdWindow);
+extern void scrollDown(void );
+extern void scrollDownPage(void );
+extern void scrollScroller(XButtonEvent * event);
+extern void scrollToFirstPage(void );
+extern void scrollUp(void );
+extern void scrollUpPage(void );
+extern void showScrollBars(HDWindow * hdWindow);
 
 extern int  gScrollbarWidth;
 
