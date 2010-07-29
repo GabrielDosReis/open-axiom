@@ -1,5 +1,14 @@
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* driver/main.c (main): Add explicit conversion to
+	openaxiom_spawn_flags. 
+	* driver/utils.c (openaxiom_execute_core): The system want the
+	excepath to be writable.
+	* driver/Makefile.in (%.lo): Compile source programs as C++ programs.
+	(open-axiom$(EXEEXT)): Link as a C++ program.
+
+2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (removeToplevelRETURN_-FROM): New.
 	(transformToBackendCode): Use it to clean function body.
 

@@ -1,3 +1,9 @@
+2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Support C++ as implementation language.
+	* config/var-def.mk (CXXCOMPILE): New.
+	(CXXLINK): Likewise.
+
 2010-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
 
 	* configure.ac.pamphlet: Add new option: --enable-int-file-retention.

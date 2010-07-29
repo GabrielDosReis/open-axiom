@@ -68,12 +68,14 @@ LIBTOOL = $(top_builddir)/libtool
 
 ## Command used to compile a C program 
 COMPILE = $(LIBTOOL) --mode=compile $(CC) -c
+CXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) -c
 
 ## Sadly, at the moment, the C parts of the OpenAxiom system is not
 ## well structured enough to allow for clean dynamic libraries
 ## and dynamic linking.  So, we build static programs.
 ## This situation is to be fixed when I have time.
 LINK = $(LIBTOOL) --mode=link $(CC) -static
+CXXLINK = $(LIBTOOL) --mode=link $(CXX) -static
 
 ## Libtool is a disaster for building DLLs on Cygwin, and insists
 ## on adding silly extensions where it should not on MinGW, so we have

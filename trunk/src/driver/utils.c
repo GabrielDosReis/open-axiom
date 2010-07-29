@@ -316,8 +316,7 @@ int
 openaxiom_execute_core(const openaxiom_command* command,
                        openaxiom_driver driver)
 {
-   const char* execpath =
-      openaxiom_make_path_for(command->root_dir, driver);
+   char* execpath = (char*) openaxiom_make_path_for(command->root_dir, driver);
 #ifdef __WIN32__
    char* command_line;
    int cur = strlen(command->core.argv[0]);
