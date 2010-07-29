@@ -446,6 +446,8 @@ $VMsideEffectFreeOperators ==
         %irem %iquo %idivide
         %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
         %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
+        %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
+        %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
         %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
         %lreverse %lempty? %hash %ismall? %string? %f2s
         %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %sname

@@ -55,7 +55,6 @@
 #include "prt.H1"
 #include "edin.H1"
 #include "wct.H1"
-#include "edible.H1"
 #include "fnct_key.H1"
 #include "cfuns.h"
 
@@ -67,6 +66,13 @@
 
 
 #define Cursor_shape(x) 
+
+static void check_flip(void);
+static void catch_signals(void);
+static void init_parent(void);
+static void set_function_chars(void);
+static void flip_canonical(int );
+static void flip_raw(int );
 
 
 #ifdef siglog
@@ -324,7 +330,7 @@ main(int argc, char *argv[])
 }
 
 
-void
+static void
 init_parent(void)
 {
   
@@ -370,7 +376,7 @@ init_parent(void)
 }
 
 
-void 
+static void 
 hangup_handler(int sig)
 {
 #ifdef siglog
@@ -392,7 +398,7 @@ hangup_handler(int sig)
   exit(-1);
 }
 
-void 
+static void 
 terminate_handler(int sig)
 {
 #ifdef siglog
@@ -414,7 +420,7 @@ terminate_handler(int sig)
   exit(0);
 }
 
-void 
+static void 
 interrupt_handler(int sig)
 {
 #ifdef siglog
@@ -426,7 +432,7 @@ interrupt_handler(int sig)
   kill(child_pid, SIGINT);
 }
 
-void 
+static void 
 child_handler(int sig)
 {
 #ifdef siglog
@@ -448,7 +454,7 @@ child_handler(int sig)
   exit(0);
 }
 
-void 
+static void 
 alarm_handler(int sig)
 {
   int newppid = getppid();
@@ -478,7 +484,7 @@ alarm_handler(int sig)
 }
 
 /* a procedure which tells my parent how to catch signals from its children */
-void
+static void
 catch_signals(void) 
 {
 #ifdef siglog
@@ -498,7 +504,7 @@ catch_signals(void)
 /* Here is where I check the child's termio settings, and try to copy them.
    I simply trace through the main modes (CLEFRAW,  CLEFCANONICAL) and
    try to simulate them */
-void 
+static void 
 check_flip(void)
 {
   return;
@@ -529,7 +535,7 @@ check_flip(void)
 
 
 
-void
+static void
 flip_raw(int chann)
 {
   
@@ -543,7 +549,7 @@ flip_raw(int chann)
 }
 
 
-void
+static void
 flip_canonical(int chann)
 {
   if(tcsetattr(0, TCSAFLUSH, &canonbuf) == -1) {
@@ -556,22 +562,10 @@ flip_canonical(int chann)
     Cursor_shape(2);
 }
 
-void
-etc_get_next_line(char * line,int * nr,int  fd)
-{
-  *nr = read(fd, line, 1024);
-  if(*nr == -1) {
-    perror("Reading /etc/master");
-  }
-  if(*nr == 0) {
-    fprintf(stderr, "Not found \n");
-  }
-}
-
 #define etc_whitespace(c) ((c == ' ' || c == '\t')?(1):(0))
 
 
-void
+static void
 set_function_chars(void)
 {
   /* get the special characters */

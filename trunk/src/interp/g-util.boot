@@ -413,6 +413,23 @@ for x in [
     ['%fpow,  :'EXPT],
     ['%fsub,  :"-"],
 
+    ['%fsin,   :'SIN],
+    ['%fcos,   :'COS],
+    ['%ftan,   :'TAN],
+    ['%fcot,   :'COT],
+    ['%fsec,   :'SEC],
+    ['%fcsc,   :'CSC],
+    ['%fatan,  :'ATAN],
+    ['%facot,  :'ACOT],
+    ['%fsinh,  :'SINH],
+    ['%fcosh,  :'COSH],
+    ['%ftanh,  :'TANH],
+    ['%fcsch,  :'CSCH],
+    ['%fcoth,  :'COTH],
+    ['%fsech,  :'SECH],
+    ['%fasinh, :'ASINH],
+    ['%facsch, :'ACSCH],
+
     -- string operations
     ['%f2s,   :'DFLOAT_-FORMAT_-GENERAL],
 

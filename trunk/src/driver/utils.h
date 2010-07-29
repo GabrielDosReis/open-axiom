@@ -42,6 +42,10 @@
 #  include <windows.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
 /* A list of drivers for OpenAxiom.  */
 typedef enum openaxiom_driver {
    openaxiom_unknown_driver,    /* unknown driver */
@@ -80,5 +84,11 @@ void openaxiom_build_rts_options(openaxiom_command*, openaxiom_driver);
 
 openaxiom_driver
   openaxiom_preprocess_arguments(openaxiom_command*, int, char**);
+
+
+
+#ifdef __cplusplus
+}
+#endif   
 
 #endif /* OPENAXIOM_UTILS_INCLUDED */
