@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,15 +34,12 @@
 */
 
 #include "openaxiom-c-macros.h"
-#define _PARSE_INPUT_C
 /***
   Contains all the code needed to parse input items,
   InputString
   SimpleBox
   RadioBox.
   ****/
-
-
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -50,7 +47,9 @@
 #include "lex.h"
 #include "hyper.h"
 
-#include "all_hyper_proto.H1"
+static void insert_item(InputItem * item);
+static void add_box_to_rb_list(char * name , InputBox * box);
+static int check_others(InputBox * list);
 
 /* create an unmapped input window for getting strings * */
 extern int make_input_file;

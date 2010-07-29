@@ -1,1 +1,9 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int Cursor_shape(int );
+
+#ifdef __cplusplus
+}
+#endif

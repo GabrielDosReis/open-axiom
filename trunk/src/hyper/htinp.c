@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,15 +33,12 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _HTINP_C
-#include "openaxiom-c-macros.h"
-
-#include "debug.h"
-
 #include <sys/stat.h>
 #include <sys/signal.h>
 #include <setjmp.h>
 
+#include "openaxiom-c-macros.h"
+#include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
 #include "hyper.h"
@@ -49,8 +46,6 @@
 #include "parse.h"
 #include "bsdsignal.h"
 #include "cfuns.h"
-
-#include "all_hyper_proto.H1"
 #include "sockio.h"
 
 extern char **input_file_list;
@@ -59,6 +54,15 @@ extern int make_patch_files;
 extern int kill_spad;
 extern jmp_buf jmpbuf;
 
+static void make_input_file_list(void );
+static char * make_input_file_name(char * buf , char * filename);
+static char * make_paste_file_name(char * buf , char * filename);
+static void make_the_input_file(UnloadedPage * page);
+static void make_input_file_from_page(HyperDocPage * page);
+static int inListAndNewer(char * inputFile , char * htFile);
+static void print_paste(FILE * pfile , char * realcom , char * command , char * pagename , int com_type);
+static void print_graph_paste(FILE * pfile , char * realcom , char * command , char * pagename , int com_type);
+static void send_command(char * command , int com_type);
 
 #define MaxInputFiles 256
 char *active_file_list[MaxInputFiles];

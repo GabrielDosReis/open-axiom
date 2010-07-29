@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@
 
 /* #define DEBUG  1 */
 
-#define _INITX_C
 #include "openaxiom-c-macros.h"
 
 #include <unistd.h>
@@ -67,18 +66,23 @@ extern int gethostname(char *, int );
 #include "hyper.h"
 #include "scrollbar.h"
 #include "titlebar.h"
-
-#include "all_hyper_proto.H1"
 #include "util.H1"
 #include "cfuns.h"
-
 #include "spadcolors.h"
-#include "spadcolors.H1"
-
 
 #include "mouse11.bitmap"
 #include "mouse11.mask"
 
+static void get_GCs(HDWindow * window);
+static int get_border_properties(void);
+static int get_color(char * , char * , int, Colormap*);
+static void ingItColors_and_fonts(void);
+static void load_font(XFontStruct * * font_info , char * fontname);
+static void mergeDatabases(void);
+static void open_form_window(void);
+static void open_window(Window w);
+static void set_name_and_icon(void);
+static void set_size_hints(Window w);
 
 static GContext server_font;
 unsigned long *spadColors;
@@ -893,7 +897,7 @@ change_text(int color, XFontStruct *font)
  */
 
 static int
-get_color(char *name, char *class, int def, Colormap *map)
+get_color(char *name, char *klass, int def, Colormap *map)
 {
     char fullname[256];
     char fullclass[256];
@@ -911,7 +915,7 @@ get_color(char *name, char *class, int def, Colormap *map)
     strcpy(fullname, "OpenAxiom.hyperdoc.");
     strcat(fullname, name);
     strcpy(fullclass,"OpenAxiom.hyperdoc.");
-    strcat(fullclass,class);
+    strcat(fullclass, klass);
 
     if (XrmGetResource(rDB, fullname, fullclass, str_type, &value) == True) {
         (void) strncpy(prop, value.addr, (int) value.size);

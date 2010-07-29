@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -139,6 +139,8 @@
 #define totalHuesConst  27
 
 #define hueEnd          360
+
+#undef hueStep
 #define hueStep         (hueEnd/totalHuesConst)
 
 #define black           BlackPixel(dsply,scrn)
@@ -146,11 +148,8 @@
 #define numPlanes       1
 #define numColors       10
 #define startColor      0
-#define endColor        (startColor+numColors)
 #define maxColors       (DisplayCells(dsply,scrn)-1)
 #define maxPlanes       (DefaultVisual((dpy),(scr))->bits_per_rgb)
-
-#define colorStep       ((maxColors+1)/numColors)
 
                       /**********************************/
                       /***    Screen and Window Sizes   */

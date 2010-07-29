@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,46 @@
 #include "hyper.h"
 
 #include <setjmp.h>
+
+extern void display_page(HyperDocPage * page);
+extern void init_parse_patch(HyperDocPage * page);
+extern void load_page(HyperDocPage * page);
+extern void parse_HyperDoc(void );
+extern void parse_from_string(char * str);
+extern HyperDocPage * parse_page_from_socket(void );
+extern HyperDocPage * parse_page_from_unixfd(void );
+extern HyperLink * make_input_window(InputItem * item);
+extern HyperLink * make_box_window(InputBox * box , int type);
+extern void initialize_default(InputItem * item , char * buff);
+extern void parse_inputstring(void);
+extern void parse_simplebox(void);
+extern void parse_radiobox(void);
+extern void init_paste_item(InputItem * item);
+extern void repaste_item(void);
+extern InputItem * current_item(void);
+extern int already_there(char * name);
+extern void parse_radioboxes(void);
+extern void add_dependencies(void );
+extern FILE * find_fp(FilePosition fp);
+extern char * get_input_string(void );
+extern HyperLink * make_link_window(TextNode * link_node , int type , int isSubWin);
+extern HyperLink * make_paste_window(PasteNode * paste);
+extern void make_special_pages(HashTable * pageHashTable);
+extern int window_code(Window * w , int size);
+extern int window_equal(Window * w1 , Window * w2);
+extern char * window_id(Window w);
+extern void read_ht_db(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash);
+extern int get_filename(void);
+extern int is_number(char * str);
+extern void parser_error(char * str);
+extern int get_where(void);
+extern void scan_HyperDoc(void);
+extern int number(char * str);
+extern ParameterList init_parameter_elem(int number);
+extern int push_parameters(ParameterList);
+extern int pop_parameters(void);
+extern int parse_macro(void);
+extern void parse_parameters(void);
 
 extern jmp_buf  jmpbuf;
 extern int      vbuff;

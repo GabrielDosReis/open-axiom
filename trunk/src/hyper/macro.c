@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,9 +33,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _MACRO_C
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -43,8 +41,8 @@
 #include "hyper.h"
 #include "lex.h"
 
-#include "all_hyper_proto.H1"
-
+static char * load_macro(MacroStore * macro);
+static void get_parameter_strings(int number , char * macro_name);
 
 /* #define DEBUG 1 */
 
@@ -178,35 +176,35 @@ ParameterList parameters = NULL;
 ParameterList
 init_parameter_elem(int number)
 {
-    ParameterList new;
+    ParameterList parms;
     int count;
 
     /** allocate the space neeeded **/
-    new = (ParameterList) halloc(sizeof(struct parameter_list_type),
+    parms = (ParameterList) halloc(sizeof(struct parameter_list_type),
                                  "ParameterList");
     /** now allocate the memeory  for the pointers to the  parameters **/
     if (number) {
-        new->list = (char **) halloc(number * sizeof(char *), "Parameter List");
+        parms->list = (char **) halloc(number * sizeof(char *), "Parameter List");
 
         /** initialize my pointers **/
         for (count = 0; count < number; count++)
-            (new->list)[count] = NULL;
+            (parms->list)[count] = NULL;
     }
-    new->number = number;
-    return new;
+    parms->number = number;
+    return parms;
 }
 
 int
-push_parameters(ParameterList new)
+push_parameters(ParameterList parms)
 {
 
-    if (new == NULL) {
+    if (parms == NULL) {
         fprintf(stderr, "Tried pushing a null list onto the parameter stack\n");
         longjmp(jmpbuf, 1);
     }
 
-    new->next = parameters;
-    parameters = new;
+    parms->next = parameters;
+    parameters = parms;
     return 1;
 }
 int
@@ -291,13 +289,13 @@ get_parameter_strings(int number,char * macro_name)
     int lbrace_counter;
     char c;
     int size;
-    ParameterList new = init_parameter_elem(number);
+    ParameterList parms = init_parameter_elem(number);
     int pnum;
     char pnum_chars[5];
     int pc;
 
     if (!number) {              /* nothing to be done */
-        push_parameters(new);
+        push_parameters(parms);
         return;
     }
     for (count = 0; count < number; count++) {
@@ -362,10 +360,10 @@ get_parameter_strings(int number,char * macro_name)
         *buffer_pntr = '\0';
         /*** Now add it to the current parameter list **/
         size = strlen(buffer) + 1;
-        new->list[count] = (char *) halloc(size, "Parameter Strings");
-        strcpy(new->list[count], buffer);
+        parms->list[count] = (char *) halloc(size, "Parameter Strings");
+        strcpy(parms->list[count], buffer);
     }
-    push_parameters(new);
+    push_parameters(parms);
     return ;
 }
 void

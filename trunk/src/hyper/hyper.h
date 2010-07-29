@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -47,6 +47,7 @@
 #include "token.h"
 #include "hash.h"
 #include "node.h"
+#include "pixmap.h"
 
 #define boolean unsigned short int
 
@@ -56,6 +57,78 @@
 #ifndef FALSE
 #define FALSE  ((boolean) 0x0)
 #endif
+
+extern void sigusr2_handler(int sig);
+extern void sigcld_handler(int sig);
+extern void clean_socket(void);
+extern void init_page_structs(HDWindow * w);
+extern void push_item_stack(void);
+extern void clear_item_stack(void);
+extern void pop_item_stack(void);
+extern ItemStack * copy_item_stack(void);
+extern void free_item_stack(ItemStack * is);
+extern ButtonList * alloc_button_list(void);
+extern CondNode * alloc_condnode(void);
+extern HDWindow * alloc_hd_window(void);
+extern IfNode * alloc_ifnode(void);
+extern InputBox * alloc_inputbox(void);
+extern LineStruct * alloc_inputline(int size);
+extern TextNode * alloc_node(void);
+extern HyperDocPage * alloc_page(char * name);
+extern PasteNode * alloc_paste_node(char * name);
+extern RadioBoxes * alloc_rbs(void);
+extern void free_button_list(ButtonList * bl);
+extern void free_hd_window(HDWindow * w);
+extern void free_input_item(InputItem * sym , short des);
+extern void free_input_list(InputItem * il);
+extern void free_node(TextNode * node , short des);
+extern void free_page(HyperDocPage * page);
+extern void free_patch(PatchStore * p);
+extern void free_string(char * str);
+extern char * resizeBuffer(int size , char * oldBuf , int * oldSize);
+extern PatchStore * alloc_patchstore(void);
+extern InputItem * return_item(char * name);
+extern void fill_box(Window w , ImageStruct * image);
+extern void toggle_input_box(HyperLink * link);
+extern void toggle_radio_box(HyperLink * link);
+extern void change_input_focus(HyperLink * link);
+extern void next_input_focus(void);
+extern void prev_input_focus(void);
+extern int delete_item(char * name);
+extern XImage * HTReadBitmapFile(Display * display , int screen , char * filename , int * width , int * height);
+extern ImageStruct * insert_image_struct(char * filename);
+extern void compute_form_page(HyperDocPage * page);
+extern int window_width(int cols);
+extern void ht2_input(void );
+extern void make_record(void );
+extern void verify_record(void );
+extern char * strCopy(char * s);
+extern void print_paste_line(FILE * pfile , char * str);
+extern void get_spad_output(FILE * pfile , char * command , int com_type);
+extern void get_graph_output(char * command , char * pagename , int com_type);
+extern void add_buffer_to_sym(char * buffer , InputItem * sym);
+extern void dialog(XEvent * event , KeySym keysym , char * buffer);
+extern void draw_inputsymbol(InputItem * sym);
+extern void update_inputsymbol(InputItem * sym);
+extern HyperDocPage * issue_server_command(HyperLink * link);
+extern HyperDocPage * issue_unixlink(TextNode * node);
+extern char * print_to_string(TextNode * command);
+extern void issue_spadcommand(HyperDocPage * page , TextNode * command , int immediate , int type);
+extern openaxiom_sio * accept_menu_connection(openaxiom_sio * server_sock);
+extern char * print_to_string1(TextNode * command , int * sizeBuf);
+extern int issue_serverpaste(TextNode * command);
+extern void issue_unixcommand(TextNode * node);
+extern int issue_unixpaste(TextNode * node);
+extern void service_session_socket(void);
+extern void send_lisp_command(char * command);
+extern void escape_string(char * s);
+extern void unescape_string(char * s);
+extern char * print_source_to_string1(TextNode * command , int * sizeBuf);
+extern char * print_source_to_string(TextNode * command);
+extern void change_cond(char * label , char * newcond);
+extern int check_condition(TextNode * node);
+extern void insert_cond(char * label , char * cond);
+
 
 #ifndef HTADD
 extern int MenuServerOpened;

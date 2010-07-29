@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -49,8 +49,6 @@
  */
 
 
-#include "openaxiom-c-macros.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -60,12 +58,11 @@
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 
+#include "openaxiom-c-macros.h"
 #include "spadcolors.h"
-
 #include "XSpadFill.H1"
 #include "XShade.H1"
 #include "XDither.H1"
-#include "spadcolors.H1"
 
 extern unsigned long *spadColors;
 static GC  stippleGC, solidGC;

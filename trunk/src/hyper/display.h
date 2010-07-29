@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,11 @@
 #define _DISPLAY_H_ 1
 
 #include "hyper.h"
+
+extern void expose_page(HyperDocPage * page);
+extern void paste_page(TextNode * node);
+extern void scroll_page(HyperDocPage * page);
+extern void show_page(HyperDocPage * page);
 
 extern short int    gDisplayRegion;
 extern int          gRegionOffset;

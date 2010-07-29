@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2009, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -141,7 +141,7 @@ distclean-local: clean-local
 .PRECIOUS: %.lo %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
-	$(COMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+	$(CXXCOMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
@@ -169,17 +169,17 @@ ${OUTLIB}/presea: presea
 	cp -p $< $@ && chmod +x $@
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
-	${LINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
+	${CXXLINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
 
 $(OUTLIB)/htadd$(EXEEXT): $(htadd_objects) $(htadd_DEPENDENCIES)
-	${LINK} -o $@ $(htadd_objects) $(htadd_LDADD)
+	${CXXLINK} -o $@ $(htadd_objects) $(htadd_LDADD)
 
 ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
-	${LINK} -o $@ $(hthits_objects) $(hthits_LDADD)
+	${CXXLINK} -o $@ $(hthits_objects) $(hthits_LDADD)
 
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)
-	 ${LINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
+	 ${CXXLINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
 
 ${OUTLIB}/spadbuf$(EXEEXT): $(spadbuf_objects) $(spadbuf_DEPENDENCIES)
-	${LINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD)
+	${CXXLINK} -o $@ $(spadbuf_objects) $(spadbuf_LDADD)
