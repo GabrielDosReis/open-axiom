@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ stamp: $(axiom_target_bindir)/clef$(EXEEXT)
 	$(STAMP) stamp
 
 $(axiom_target_bindir)/clef$(EXEEXT): $(clef_objects) $(clef_DEPENDENCIES)
-	$(LINK) -o $@ $(clef_objects) $(clef_LDADD) ${LDF}
+	$(CXXLINK) -o $@ $(clef_objects) $(clef_LDADD) ${LDF}
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .h
@@ -68,7 +68,7 @@ $(axiom_target_bindir)/clef$(EXEEXT): $(clef_objects) $(clef_DEPENDENCIES)
 	$(axiom_configdir)/openaxiom-c-macros.h
 
 %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) -o $@ ${CCF} $(axiom_includes) $<
+	$(CXXCOMPILE) -o $@ ${CCF} $(axiom_includes) $<
 
 mostlyclean-local:
 	@rm -f $(clef_objects)

@@ -36,7 +36,6 @@
 /* HyperDoc database file manager */
 
 
-#define _HTADD_C
 #include "openaxiom-c-macros.h"
 
 #include <errno.h>
