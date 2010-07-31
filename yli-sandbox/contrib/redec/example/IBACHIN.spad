@@ -83,7 +83,7 @@ ChineseRemainderToolsForIntegralBases(K,R,UP): Exports == Implementation where
       for i in 1..n repeat
         pp : UP := 0
         for j in 0..n1 repeat
-          pp := pp + monomial(lcm quo den)$UP * qelt(mat,i,j+1),j)
+          pp := pp + monomial((lcm quo den)$R * qelt(mat,i,j+1),j)
         outList := concat(pp,outList)
       reverse_! outList
 
