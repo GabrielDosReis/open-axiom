@@ -1,3 +1,8 @@
+2010-08-01  Aleksej Saushev  <asau@inbox.ru>
+
+	* hyper/event.c: Include <sys/types.h> before other system headers.
+	* hyper/hyper.c: Likewise.
+
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* clef/Makefile.in: Build and link programs by a C++ compiler.
