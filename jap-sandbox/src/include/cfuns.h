@@ -68,9 +68,9 @@ OPENAXIOM_EXPORT double minus_infinity(void);
 OPENAXIOM_EXPORT double quiet_double_NaN(void);
 OPENAXIOM_EXPORT openaxiom_byteorder oa_get_host_byteorder(void);
 
+OPENAXIOM_EXPORT const char* oa_concatenate_string(const char*, const char*);
 OPENAXIOM_EXPORT const char* oa_strcat(const char*, const char*);
 OPENAXIOM_EXPORT char* oa_substr(const char*, const size_t, const size_t);
-OPENAXIOM_EXPORT void oa_insert(char**, const char*, int*);
 OPENAXIOM_EXPORT char** oa_split(const char*, const char**, int*);
 
 #ifdef __cplusplus

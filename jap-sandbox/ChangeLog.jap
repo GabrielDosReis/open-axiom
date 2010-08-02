@@ -1,13 +1,3 @@
-2010-07-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* src/lib/cfuns-c.c (oa_strcat): Document and tidy.
-
-2010-07-12  Alfredo Portes  <doyenatccny@gmail.com>
-
-    * src/hyper/Makefile.in: Adjust.
-    * src/hyper/htsearch.c: Add more documentation.
-    * src/lib/cfuns-c.c: Add String manipulation functions.
-
 2009-07-16  Alfredo Portes  <doyenatccny@gmail.com>
 
     * configure.ac.pamphlet: Remove presea.

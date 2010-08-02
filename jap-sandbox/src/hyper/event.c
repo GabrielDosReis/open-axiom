@@ -40,9 +40,9 @@
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
+#include <sys/types.h>
 #include <sys/signal.h>
 #include <setjmp.h>
-#include <sys/types.h>
 #include <sys/time.h>
 
 #include "debug.h"

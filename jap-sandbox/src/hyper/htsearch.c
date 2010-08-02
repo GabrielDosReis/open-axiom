@@ -1,9 +1,9 @@
 /* 
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
-  Copyright (C) 2009, Alfredo Portes.
+  Copyright (C) 2009-2010, Alfredo Portes.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -41,16 +41,20 @@
  * result.
  */
 
+#define _HTSEARCH_C
+
+using namespace std;
+
 #include "openaxiom-c-macros.h"
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <iomanip>
+#include <iostream>
 #include <cfuns.h>
-#include <string.h>
+#include <string>
 
-const char* htpagedir; // Directory containing the hyperdoc pages.
-const char* hthitscmd; // Location of the hthits program.
-const char* htdbfile;  // Database file of the hyperdoc pages.
+const string htpagedir; // Directory containing the hyperdoc pages.
+const string hthitscmd; // Location of the hthits program.
+const string htdbfile;  // Database file of the hyperdoc pages.
 
 /*
  * pages_cmp compares two strings.
@@ -102,13 +106,13 @@ presea(char** links, int n, int cases, char* pattern)
 
     for (i = 0; i < n; i++) {
 
-        tokens = oa_split(links[i],delimiter,&j);
+        tokens = split(links[i],delimiter,&j);
         if (j >= 2)
             m = m + atol(oa_substr(tokens[1],0,strlen(tokens[1])-2));
     }
 
     if (cases==1)
-        printf("\\begin{page}{staticsearchpage}{No matches found}\n");
+        cout("\\begin{page}{staticsearchpage}{No matches found}\n");
     else if ( n==0 || m==0 )
         printf("\\begin{page}{staticsearchpage}{No matches found for {\\em %s}}\n",pattern);
     else
@@ -130,10 +134,10 @@ presea(char** links, int n, int cases, char* pattern)
 void
 setvariables(void) {
 
-    const char* oavariable = oa_getenv("AXIOM");
+    const string oavariable = oa_getenv("AXIOM");
 
     if (oavariable == NULL) {
-        printf("%s\n", "OpenAxiom variable is not set.");
+        cout("%s\n", "OpenAxiom variable is not set.");
         exit(-1);
     }
 
@@ -150,7 +154,7 @@ setvariables(void) {
  * HyperDoc pages.
  */
 void 
-htsearch(char* pattern)
+htsearch(string pattern)
 {
     FILE* hits;
     char buf[1024];
@@ -170,14 +174,14 @@ htsearch(char* pattern)
             exit(-1);
 
         // Call hthits with: hthits pattern ht.db
-        hthitscmd = oa_strcat(hthitscmd, " ");
-        hthitscmd = oa_strcat(hthitscmd, pattern);
-        hthitscmd = oa_strcat(hthitscmd, " ");
-        hthitscmd = oa_strcat(hthitscmd, htdbfile);
+        hthitscmd = strcat(hthitscmd, " ");
+        hthitscmd = strcat(hthitscmd, pattern);
+        hthitscmd = strcat(hthitscmd, " ");
+        hthitscmd = strcat(hthitscmd, htdbfile);
 
         if ((hits = popen(hthitscmd, "r")) != NULL) {
             while (fgets(buf, 1024, hits) != NULL)
-                matches = oa_strcat(matches,buf);
+                matches = strcat(matches,buf);
             pclose(hits);
         }
         else {
@@ -185,9 +189,7 @@ htsearch(char* pattern)
             exit(-1);
         }
 
-        printf("matches: %s\n", matches);
- 
-        sorted_hits = oa_split(matches,delimiter,&size);
+        sorted_hits = split(matches,delimiter,&size);
         sort_pages(sorted_hits, size);
         presea(sorted_hits,size,0,pattern);
     }

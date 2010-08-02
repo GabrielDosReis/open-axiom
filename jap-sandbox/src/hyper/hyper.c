@@ -43,8 +43,8 @@
 
 /* Include all the needed include files  */
 
-#include <sys/signal.h>
 #include <sys/types.h>
+#include <sys/signal.h>
 #include <sys/wait.h>
 #include <setjmp.h>
 #include <X11/cursorfont.h>

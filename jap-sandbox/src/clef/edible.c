@@ -1,7 +1,7 @@
 /*
     Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2009, Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -135,7 +135,7 @@ main(int argc, char *argv[])
   
   
 
-  putenv("LC_ALL=C");
+  putenv((char*) "LC_ALL=C");
   setlocale(LC_ALL, "");
   /* try to get a pseudoterminal to play with */
   if (ptyopen(&contNum, &serverNum, serverPath) == -1) {
@@ -280,11 +280,11 @@ main(int argc, char *argv[])
     }
 #endif
     
-    code = select(FD_SETSIZE,(void *) &rfds, NULL, NULL, NULL);
+    code = select(FD_SETSIZE, &rfds, NULL, NULL, NULL);
     for(; code < 0 ;) {
       if(errno == EINTR) {
         check_flip();
-        code = select(FD_SETSIZE,(void *) &rfds, NULL, NULL, NULL);
+        code = select(FD_SETSIZE, &rfds, NULL, NULL, NULL);
       }
       else  {
         perror("clef select failure");

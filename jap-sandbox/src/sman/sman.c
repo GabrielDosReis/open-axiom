@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -65,12 +65,12 @@ static void death_handler(int);
 static void sman_catch_signals(void);
 static void fix_env(int);
 static void init_term_io(void);
-static char* strPrefix(char* , char*);
-static void check_spad_proc(char* , char*);
+static const char* strPrefix(const char* , const char*);
+static void check_spad_proc(const char* , const char*);
 static void clean_up_old_sockets(void);
 static SpadProcess* fork_you(int);
-static void exec_command_env(char*);
-static SpadProcess* spawn_of_hell(char* , int);
+static void exec_command_env(const char*);
+static SpadProcess* spawn_of_hell(const char* , int);
 static void start_the_spadclient(void);
 static void start_the_local_spadclient(void);
 static void start_the_session_manager(void);
@@ -104,12 +104,12 @@ int server_num;                 /* OpenAxiom server number */
 /* definitions of programs which sman can start */
 /************************************************/
 
-char    *GraphicsProgram        = "$AXIOM/lib/viewman";
-char    *HypertexProgram        = "$AXIOM/lib/hypertex -s";
-char    *ClefProgram            = 
+const char    *GraphicsProgram        = "$AXIOM/lib/viewman";
+const char    *HypertexProgram        = "$AXIOM/lib/hypertex -s";
+const char    *ClefProgram            = 
            "$AXIOM/bin/clef -f $AXIOM/lib/command.list -e ";
-char    *SessionManagerProgram  = "$AXIOM/lib/session";
-char    *SpadClientProgram      = "$AXIOM/lib/spadclient";
+const char    *SessionManagerProgram  = "$AXIOM/lib/session";
+const char    *SpadClientProgram      = "$AXIOM/lib/spadclient";
 char    *PasteFile              = NULL;
 char    *MakeRecordFile         = NULL;
 char    *VerifyRecordFile       = NULL;
@@ -319,8 +319,8 @@ init_term_io(void)
   _EOL = oldbuf.c_cc[VEOL];
 }
 
-static char *
-strPrefix(char *prefix,char * s)
+static const char*
+strPrefix(const char* prefix, const char* s)
 {
   while (*prefix != '\0' && *prefix == *s) {
     prefix++;
@@ -331,9 +331,9 @@ strPrefix(char *prefix,char * s)
 }
 
 static void
-check_spad_proc(char *file, char *prefix)
+check_spad_proc(const char *file, const char *prefix)
 {
-  char *num;
+  const char *num;
   int pid;
   if ((num = strPrefix(prefix, file))) {
     pid = atoi(num);
@@ -392,7 +392,7 @@ fork_you(int death_action)
 }
 
 static void
-exec_command_env(char *command)
+exec_command_env(const char *command)
 {
   char new_command[512];
   sprintf(new_command, "exec %s", command);
@@ -400,7 +400,7 @@ exec_command_env(char *command)
 }
 
 static SpadProcess *
-spawn_of_hell(char *command, int death_action)
+spawn_of_hell(const char *command, int death_action)
 {
   SpadProcess *proc = fork_you(death_action);
   if (proc != NULL) {
@@ -529,8 +529,8 @@ fork_Axiom(openaxiom_command* cmd)
     /* Tell the Core that it is being invoked in server mode.   */
     oa_allocate_process_argv(&cmd->core, 2);
     cmd->core.argv[0] =
-       openaxiom_make_path_for(cmd->root_dir, openaxiom_core_driver);
-    cmd->core.argv[1] = "--role=server";
+       (char*) openaxiom_make_path_for(cmd->root_dir, openaxiom_core_driver);
+    cmd->core.argv[1] = (char*) "--role=server";
     openaxiom_execute_core(cmd, openaxiom_core_driver);
   }
 }
@@ -762,7 +762,7 @@ main(int argc, char *argv[])
    command.root_dir = openaxiom_get_systemdir(argc, argv);
    process_options(&command, argc, argv);
 
-  putenv("LC_ALL=C");
+  putenv((char*) "LC_ALL=C");
   setlocale(LC_ALL, "");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();
