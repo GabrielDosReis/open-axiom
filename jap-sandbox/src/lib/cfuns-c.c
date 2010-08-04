@@ -846,26 +846,28 @@ OPENAXIOM_EXPORT char* oa_substr(const char* str, const size_t begin, const size
    return substring;
 }
 
-OPENAXIOM_EXPORT char** split(const char* sequence, const char** delimiter, int* size)
+OPENAXIOM_EXPORT char** oa_split(const char* sequence, const char* delimiter, int* size)
 {
    int sequence_length = 0, newsize = 0;
    char* token;
-   char** tokens = (char**) malloc(0);
+   char** tokens = NULL;
    char* sequence_copy;
    
-   /*sequence_length = strlen(sequence);
+   sequence_length = strlen(sequence);
    sequence_copy = (char*) malloc((sequence_length + 1) * sizeof(char*));
    strcpy(sequence_copy,sequence);
+   sequence_copy[sequence_length] = '\0';
 
    token = strtok(sequence_copy, delimiter);
    while (token != NULL) {
+
+      tokens = (char**) realloc(tokens,(newsize + 1) * sizeof(char*));   
+      tokens[newsize] = token;
       newsize++;
-      tokens = realloc(tokens,newsize);
       token = strtok (NULL, delimiter);
    }
 
-   *size = newsize;*/
-
+   *size = newsize;
 
    return tokens; 
 }

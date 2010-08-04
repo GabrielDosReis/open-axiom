@@ -43,18 +43,16 @@
 
 #define _HTSEARCH_C
 
-using namespace std;
-
 #include "openaxiom-c-macros.h"
 
-#include <iomanip>
-#include <iostream>
-#include <cfuns.h>
-#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "cfuns.h"
 
-const string htpagedir; // Directory containing the hyperdoc pages.
-const string hthitscmd; // Location of the hthits program.
-const string htdbfile;  // Database file of the hyperdoc pages.
+char* htpagedir; // Directory containing the hyperdoc pages.
+char* hthitscmd; // Location of the hthits program.
+char* htdbfile;  // Database file of the hyperdoc pages.
 
 /*
  * pages_cmp compares two strings.
@@ -67,9 +65,9 @@ const string htdbfile;  // Database file of the hyperdoc pages.
  * greater than str2, according to the lexicographical order.
  */
 static int 
-pages_cmp(const char **str1, const char **str2)
+pages_cmp(const void* str1, const void* str2)
 {
-    return strcmp(*str1,*str2);
+    return strcmp((char*)str1,(char*)str2);
 }
 
 /*
@@ -83,7 +81,7 @@ pages_cmp(const char **str1, const char **str2)
 void 
 sort_pages(char** links, int size)
 {
-    qsort(links, size, sizeof(char*), pages_cmp);
+    qsort((void*) links, size, sizeof(char*), pages_cmp);
 }
 
 /*
@@ -102,17 +100,17 @@ presea(char** links, int n, int cases, char* pattern)
 {
     int m = 0, i = 0, j = 0;
     char** tokens = NULL;
-    const char** delimiter = "{";
+    const char* delimiter = (char*) "{";
 
     for (i = 0; i < n; i++) {
 
-        tokens = split(links[i],delimiter,&j);
+        tokens = oa_split(links[i],delimiter,&j);
         if (j >= 2)
             m = m + atol(oa_substr(tokens[1],0,strlen(tokens[1])-2));
     }
 
     if (cases==1)
-        cout("\\begin{page}{staticsearchpage}{No matches found}\n");
+        printf("\\begin{page}{staticsearchpage}{No matches found}\n");
     else if ( n==0 || m==0 )
         printf("\\begin{page}{staticsearchpage}{No matches found for {\\em %s}}\n",pattern);
     else
@@ -134,16 +132,16 @@ presea(char** links, int n, int cases, char* pattern)
 void
 setvariables(void) {
 
-    const string oavariable = oa_getenv("AXIOM");
+    char* oavariable = oa_getenv("AXIOM");
 
     if (oavariable == NULL) {
-        cout("%s\n", "OpenAxiom variable is not set.");
+        printf("%s\n", "OpenAxiom variable is not set.");
         exit(-1);
     }
 
-    htpagedir = oa_strcat(oavariable,"/share/hypertex/pages/");
-    hthitscmd = oa_strcat(oavariable,"/lib/hthits");
-    htdbfile = oa_strcat(htpagedir,"ht.db");
+    htpagedir = (char*) oa_strcat(oavariable,"/share/hypertex/pages/");
+    hthitscmd = (char*) oa_strcat(oavariable,"/lib/hthits");
+    htdbfile = (char*) oa_strcat(htpagedir,"ht.db");
 }
 
 /* 
@@ -154,34 +152,37 @@ setvariables(void) {
  * HyperDoc pages.
  */
 void 
-htsearch(string pattern)
+htsearch(char* pattern)
 {
     FILE* hits;
     char buf[1024];
     char** sorted_hits;
-    char* matches = "";
+    char* matches = (char*) "";
     int size = 0;
-    const char** delimiter = "\n";
+    char* delimiter = (char*) "\n";
 
     setvariables();
 
     if (strcmp(pattern,"") == 0)
         presea(NULL,size,1,pattern);
     else {
+
         // hthits requires to change directory
         // to where the HyperDoc pages reside.
-        if (oa_chdir(htpagedir) == -1)
+        if (oa_chdir(htpagedir) == -1) {
+            printf("Cannot change the page directory: %s\n", htpagedir);
             exit(-1);
-
+        }
+       
         // Call hthits with: hthits pattern ht.db
-        hthitscmd = strcat(hthitscmd, " ");
-        hthitscmd = strcat(hthitscmd, pattern);
-        hthitscmd = strcat(hthitscmd, " ");
-        hthitscmd = strcat(hthitscmd, htdbfile);
+        hthitscmd = (char*) oa_strcat(hthitscmd, " ");
+        hthitscmd = (char*) oa_strcat(hthitscmd, pattern);
+        hthitscmd = (char*) oa_strcat(hthitscmd, " ");
+        hthitscmd = (char*) oa_strcat(hthitscmd, htdbfile);
 
         if ((hits = popen(hthitscmd, "r")) != NULL) {
             while (fgets(buf, 1024, hits) != NULL)
-                matches = strcat(matches,buf);
+                matches = (char*) oa_strcat(matches,buf);
             pclose(hits);
         }
         else {
@@ -189,7 +190,7 @@ htsearch(string pattern)
             exit(-1);
         }
 
-        sorted_hits = split(matches,delimiter,&size);
+        sorted_hits = oa_split(matches,delimiter,&size);
         sort_pages(sorted_hits, size);
         presea(sorted_hits,size,0,pattern);
     }
@@ -216,7 +217,7 @@ void
 cmdline(int argc, char** argv)
 {
     if (argc == 1)
-        htsearch("");
+        htsearch((char*)"");
     else if (argc == 2) {
 
         if (!strcmp(argv[1],"--help"))
