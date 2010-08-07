@@ -1333,6 +1333,7 @@ oa_shrlib_flags=
 LT_INIT([pic-only dlopen win32-dll shared])
 AC_SUBST([LIBTOOL_DEPS])
 # Give me extension of libraries
+module=yes
 eval shared_ext=\"$shrext_cmds\"
 AC_SUBST(shared_ext)
 AC_SUBST(libext)

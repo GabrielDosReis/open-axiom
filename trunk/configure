@@ -15116,6 +15116,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Give me extension of libraries
+module=yes
 eval shared_ext=\"$shrext_cmds\"
 
 
