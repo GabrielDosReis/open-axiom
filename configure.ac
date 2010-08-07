@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-07-29], 
+AC_INIT([OpenAxiom], [1.4.0-2010-08-07], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -55,7 +55,7 @@ case $host in
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'
-       oa_shrlib_flags='-dynamiclib -undefined suppress -flat_namespace'
+       oa_shrlib_flags='-bundle -undefined suppress -flat_namespace'
        ;;
     *)
        oa_shrobj_flags='-prefer-pic'
