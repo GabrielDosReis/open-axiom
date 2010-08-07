@@ -58,7 +58,7 @@ OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
 # this includes leading period
 SHREXT = @shared_ext@
-# this does not include period
+# extension of the archive library; this does not include period
 LIBEXT = @libext@
 
 PACKAGE_STRING = @PACKAGE_STRING@
