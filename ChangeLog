@@ -1,3 +1,8 @@
+2010-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (CXXCOMPILE): Specify TAG.
+	(COMPILE): Likewise.
+
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Support C++ as implementation language.
