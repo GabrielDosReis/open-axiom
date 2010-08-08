@@ -86,14 +86,14 @@ scan_HyperDoc(void)
 }
 
 int
-number(char *str)
+number(const char *str)
 {
-    char *t = str;
-
-    while (*t)
-        if (!isdigit(*t++))
-            return 0;
-    return 1;
+   const char *t = str;
+   
+   while (*t)
+      if (!isdigit(*t++))
+         return 0;
+   return 1;
 }
 
 /* Parse a given macro given the pointer to the unlaoded macro ** */

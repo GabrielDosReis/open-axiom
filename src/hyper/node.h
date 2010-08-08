@@ -255,7 +255,7 @@ typedef struct ButtonList {
 
 typedef struct HyperDocPage {
    short type;                   /* Normal, Quitbutton, Upbutton etc.       */
-   char *name;                   /* ID of page                              */
+   const char *name;             /* ID of page                              */
    char *filename;               /* The name of the file in which the page
                                     occurs, Null if not                     */
    int scroll_off;             /* The offset in the scrolling region        */

@@ -1,3 +1,21 @@
+2010-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* hyper/ex2ht.c (strPrefix): Be const-correct.
+	* hyper/htinp.c (get_graph_output): Likewise.
+	(print_paste): Likewise.
+	(print_graph_paste): Likewise.
+	* hyper/initx.c (get_color): Likewise.
+	* hyper/keyin.c (handle_key): Likewise.
+	* hyper/lex.c (token_table): Likewise.
+	* hyper/macro.c (number): Likewise.
+	* hyper/mem.c (alloc_page): Likewise.
+	* hyper/parse-aux.c (make_special_page): Likewise.
+	(is_number): Likewise.
+	* hyper/parse-types.c (errmess): Likewise.
+	* lib/sockio-c.c (oa_socket_read): Cast to second argument to
+	appropriate type.
+	(oa_socket_read_byte): Likewise.
+
 2010-08-01  Aleksej Saushev  <asau@inbox.ru>
 
 	* hyper/event.c: Include <sys/types.h> before other system headers.
