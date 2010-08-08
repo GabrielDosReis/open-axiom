@@ -43,7 +43,7 @@
 #include "hyper.h"
 
 static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , char * db_file);
-static HyperDocPage * make_special_page(int type , char * name);
+static HyperDocPage * make_special_page(int type , const char * name);
 
 extern int make_input_file;
 extern int gverify_dates;
@@ -387,7 +387,7 @@ make_paste_window(PasteNode *paste)
 /* create a HyperDoc page structure with the given type and name */
 
 static HyperDocPage *
-make_special_page(int type, char *name)
+make_special_page(int type, const char *name)
 {
     HyperDocPage *page = alloc_page(name);
 
@@ -470,9 +470,9 @@ add_dependencies(void)
 /* Returns true iff the TextNode contains a single integer */
 
 int
-is_number(char * str)
+is_number(const char * str)
 {
-    char *s;
+    const char *s;
 
     for (s = str; *s != '\0'; s++) {
         if (!(isdigit(*s) || *s == '-'))

@@ -51,7 +51,7 @@
 
 typedef struct Token {
    int type;              /* token type.  One of those listed below */
-   char *id;                  /* string value if type == Identifier */
+   const char *id;                  /* string value if type == Identifier */
 } Token;
 
 /*
@@ -239,7 +239,7 @@ typedef enum openaxiom_token_kind {
 } openaxiom_token_kind;
 
 
-extern char *token_table[];
+extern const char *token_table[];
 
 
 /* places from which input may be read */

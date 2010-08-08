@@ -60,8 +60,8 @@ static char * make_paste_file_name(char * buf , char * filename);
 static void make_the_input_file(UnloadedPage * page);
 static void make_input_file_from_page(HyperDocPage * page);
 static int inListAndNewer(char * inputFile , char * htFile);
-static void print_paste(FILE * pfile , char * realcom , char * command , char * pagename , int com_type);
-static void print_graph_paste(FILE * pfile , char * realcom , char * command , char * pagename , int com_type);
+static void print_paste(FILE*, char* , char*, const char*, int);
+static void print_graph_paste(FILE*, char*, char* , const char*, int);
 static void send_command(char * command , int com_type);
 
 #define MaxInputFiles 256
@@ -406,7 +406,7 @@ get_spad_output(FILE *pfile,char *command,int com_type)
  * health of the viewport. We do this after the (|close|).
  */
 void
-get_graph_output(char *command,char *pagename,int com_type)
+get_graph_output(char* command, const char* pagename, int com_type)
 {
     int n, i;
     char buf[1024];
@@ -453,7 +453,8 @@ send_command(char *command,int com_type)
 }
 
 static void
-print_paste(FILE *pfile,char *realcom,char *command,char *pagename,int com_type)
+print_paste(FILE* pfile, char* realcom, char* command,
+            const char* pagename, int com_type)
 {
     fprintf(pfile, "\\begin{patch}{%sPatch%d}\n", pagename, example_number);
     fprintf(pfile, "\\begin{paste}{%sFull%d}{%sEmpty%d}\n",
@@ -480,7 +481,8 @@ print_paste(FILE *pfile,char *realcom,char *command,char *pagename,int com_type)
     fflush(pfile);
 }
 static void
-print_graph_paste(FILE *pfile,char *realcom,char *command,char *pagename,int com_type)
+print_graph_paste(FILE* pfile, char* realcom, char* command,
+                  const char* pagename, int com_type)
 {
     fprintf(pfile, "\\begin{patch}{%sPatch%d}\n", pagename, example_number);
     fprintf(pfile, "\\begin{paste}{%sFull%d}{%sEmpty%d}\n",
