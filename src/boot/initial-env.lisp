@@ -54,6 +54,11 @@
 
 (in-package "BOOTTRAN")
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn
+	     (setq *read-default-float-format* 'double-float)
+	     (setq *load-verbose* nil)))
+
 ;## need the conditional here so it appears in boottran
 #+:ieee-floating-point (defparameter $ieee t)
 #-:ieee-floating-point (defparameter $ieee nil)
