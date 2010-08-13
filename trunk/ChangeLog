@@ -1,3 +1,8 @@
+2010-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_STANDARD_INTEGER_TYPES): New macro.
+ 	* configure.ac.pamphlet: Use it.
+
 2010-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/var-def.mk (CXXCOMPILE): Specify TAG.
