@@ -208,7 +208,7 @@ we have a strong preference for POSIX-conformant semantics.
 
 <<C headers and libraries>>=
 AC_CHECK_HEADERS([stdint.h inttypes.h])
-AC_TYPE_UINT8_T
+OPENAXIOM_STANDARD_INTEGER_TYPES
 AC_CHECK_HEADERS([signal.h],
                  [],
                  [AC_MSG_ERROR([OpenAxiom needs signal support.])])
@@ -360,8 +360,8 @@ if test x"$ac_cv_have_decl_fork" = xyes \
     axiom_c_runtime="$axiom_c_runtime terminal_io"
     axiom_src_all="$axiom_src_all all-sman all-clef"
     axiom_src_subdirs="$axiom_src_subdirs clef sman"
-    AXIOM_MAKEFILE([src/clef/Makefile])
-    AXIOM_MAKEFILE([src/sman/Makefile])
+    OPENAXIOM_MAKEFILE([src/clef/Makefile])
+    OPENAXIOM_MAKEFILE([src/sman/Makefile])
 else
     axiom_use_sman=0
     AC_MSG_NOTICE([Superman component is disabled.])
@@ -441,12 +441,12 @@ if test -z $no_x; then
     axiom_c_runtime="$axiom_c_runtime graphics"
     axiom_src_all="$axiom_src_all all-graph"
     axiom_src_subdirs="$axiom_src_subdirs graph"
-    AXIOM_MAKEFILE([src/graph/Makefile])
-    AXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
-    AXIOM_MAKEFILE([src/graph/view2D/Makefile])
-    AXIOM_MAKEFILE([src/graph/view3D/Makefile])
-    AXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
-    AXIOM_MAKEFILE([src/graph/viewman/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
 else
     AC_MSG_NOTICE([The Garphics component is disabled.])
 fi
@@ -1269,19 +1269,19 @@ AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
 \subsubsection{Instantiating configuration files}
 
 <<instantiate config files>>=
-AXIOM_MAKEFILE([Makefile])
-AXIOM_MAKEFILE([src/Makefile])
-AXIOM_MAKEFILE([src/lib/Makefile])
-AXIOM_MAKEFILE([src/hyper/Makefile])
-AXIOM_MAKEFILE([src/driver/Makefile])
-AXIOM_MAKEFILE([src/lisp/Makefile])
-AXIOM_MAKEFILE([src/boot/Makefile])
-AXIOM_MAKEFILE([src/interp/Makefile])
-AXIOM_MAKEFILE([src/share/Makefile])
-AXIOM_MAKEFILE([src/algebra/Makefile])
-AXIOM_MAKEFILE([src/input/Makefile])
-AXIOM_MAKEFILE([src/etc/Makefile])
-AXIOM_MAKEFILE([src/doc/Makefile])
+OPENAXIOM_MAKEFILE([Makefile])
+OPENAXIOM_MAKEFILE([src/Makefile])
+OPENAXIOM_MAKEFILE([src/lib/Makefile])
+OPENAXIOM_MAKEFILE([src/hyper/Makefile])
+OPENAXIOM_MAKEFILE([src/driver/Makefile])
+OPENAXIOM_MAKEFILE([src/lisp/Makefile])
+OPENAXIOM_MAKEFILE([src/boot/Makefile])
+OPENAXIOM_MAKEFILE([src/interp/Makefile])
+OPENAXIOM_MAKEFILE([src/share/Makefile])
+OPENAXIOM_MAKEFILE([src/algebra/Makefile])
+OPENAXIOM_MAKEFILE([src/input/Makefile])
+OPENAXIOM_MAKEFILE([src/etc/Makefile])
+OPENAXIOM_MAKEFILE([src/doc/Makefile])
 
 AC_CONFIG_FILES([src/hyper/presea], [chmod +x src/hyper/presea])
 
