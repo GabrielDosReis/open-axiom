@@ -808,103 +808,16 @@ fi
 
 \paragraph{The Lisp platform.}
 
-\Tool{OpenAxiom} uses Lisp as its main platform.  If no Lisp implementation
-is available in the build environment (or if \Tool{OpenAxiom} is told not
-to look for one) then \Tool{OpenAxiom} must build its own version from the
-copy of \Tool{GCL} sources it keeps in the \File{gcl/} directory.
-<<find lisp>>=
-## ------------------------
-## -- Which Lisp to use? --
-## ------------------------
-##
-## We will default to GCL later, if no lisp implementation is specified.
-axiom_lisp=
-axiom_lisp_flavor=unknown
-# Most Lisp systems don't use conventional methods for building programs.
-oa_standard_linking=no
-AC_ARG_WITH([lisp], [ --with-lisp=L         use L as Lisp platform],
-              [axiom_lisp=$withval])
-@
-
-The [[configure]] option \verb!--with-lisp=L! specifies which
-Lisp implementation flavor to use for building OpenAxiom.  For all values
-of [[L]], except \Tool{GCL}, the assumption is that the Lisp
-image [[L]] is available in the build environment.  For \Tool{GCL}, 
-we make an exception: if no GCL image is available, or if
-the option \verb!--enable-gcl! is specified then \Tool{OpenAxiom}
-builds its own version from the source tree.
-<<find lisp>>=
-## If --enable-gcl is specified, we need to check for coonsistency
-axiom_include_gcl=
-if test -z $axiom_lisp; then
-    AC_ARG_ENABLE([gcl], [  --enable-gcl   build GCL from OpenAxiom source],
-                  [case $enableval in
-                       yes|no) axiom_include_gcl=$enableval ;;
-                       *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
-                   esac])
-fi
-@
-
-Do we need to build our own version of \Tool{GCL}?  The answer is yes, if
-\begin{itemize}
-\item the option \verb!--with-lisp! is not specified, and
-   no Lisp image is available in the build environment; or
-\item we found a \Tool{GCL} image, but it is too old for OpenAxiom.
-\end{itemize}
-Consequently, we need to check for \Tool{GCL} and its version:
-<<find lisp>>=
-## We need to build our own GCL if none is avalaible.
-if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl ccl64])
-    ## A lisp may not be available AND the GCL source may also
-    ## be missing.  Instruct user to either build one or get
-    ## the dependencies from our website.
-    if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website.])
-    fi
-    axiom_lisp=$AXIOM_LISP
-else
-    ## Honor use of Lisp image specified on command line
-    AXIOM_LISP=$axiom_lisp
-    AC_SUBST(AXIOM_LISP)
-    :
-fi
-
-## Some Lisp systems are just too buggy to use.
-case $AXIOM_LISP in
-   *gcl*)
-      AC_MSG_CHECKING([$AXIOM_LISP version])
-      v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-      AC_MSG_RESULT([$v])
-      case $v in
-	*2.6.7*|*2.6.8*) ;;         # OK
-	*)
-	  AC_MSG_WARN([$v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored.])
-	  AXIOM_LISP=
-	  ;;
-      esac
-      ;;
-   # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
-   *sbcl*)
-      AC_MSG_CHECKING([$AXIOM_LISP version])
-      v=`$AXIOM_LISP --version`
-      AC_MSG_RESULT([$v])
-      case $v in
-	*1.0.29)
-	   AC_MSG_ERROR([This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher.])
-	   ;;
-      esac
-      ;;
-esac
-
-@
-
 We may be presented with incoherent options if
 \begin{itemize}
 \item \verb!--disable-gcl! is used without specifying a Lisp image, or
 \item \verb!--with-lisp! is used but we are also told to build \Tool{GCL}.
 \end{itemize}
 <<find lisp>>=
+## Most Lisp systems don't use conventional methods for building programs.
+oa_standard_linking=no
+AC_SUBST(oa_standard_linking)
+ 
 ## Coherence check for GCL inclusion.
 case $axiom_include_gcl,$axiom_lisp in
     ,|no,|yes*)
@@ -1367,6 +1280,12 @@ AC_SUBST(oa_shrlib_flags)
 <<Autoconf init>>
 <<sanity check>>
 <<host build target platfoms>>
+
+OPENAXIOM_PROG_LISP
+## Some Lisp systems are just too buggy for use.
+OPENAXIOM_REJECT_ROTTED_LISP($AXIOM_LISP)
+
+
 <<find C compiler>>
 
 <<initialize shared libraries tool>>

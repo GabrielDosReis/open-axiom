@@ -821,10 +821,8 @@ axiom_eval_flags
 axiom_quiet_flags
 axiom_cflags
 axiom_gcl_rsym_hack
-oa_standard_linking
-axiom_lisp_flavor
 axiom_include_gcl
-AXIOM_LISP
+oa_standard_linking
 NOWEAVE
 NOTANGLE
 MAKEINDEX
@@ -880,6 +878,8 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+AXIOM_LISP
+axiom_lisp_flavor
 open_axiom_installdir
 target_os
 target_vendor
@@ -933,14 +933,14 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_lisp
+enable_gcl
 with_pic
 enable_shared
 enable_static
 enable_fast_install
 with_gnu_ld
 enable_libtool_lock
-with_lisp
-enable_gcl
 enable_int_file_retention
 enable_threads
 enable_checking
@@ -1591,12 +1591,12 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-gcl   build GCL from OpenAxiom source
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-gcl   build GCL from OpenAxiom source
   --enable-int-file-retention   keep intermediary files
   --enable-threads   turn on threads support
   --enable-checking  turn runtime checking on
@@ -1605,10 +1605,10 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+ --with-lisp=L         use L as Lisp platform
   --with-pic              try to use only PIC/non-PIC objects [default=use
                           both]
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
- --with-lisp=L         use L as Lisp platform
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -2249,6 +2249,138 @@ $as_echo "$as_me: WARNING: Please notify open-axiom-devel@open-axiom.org if you 
 fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
+
+
+## host Lisp system flavor
+axiom_lisp_flavor=unknown
+
+
+## Was a host Lisp system specified?
+axiom_lisp=
+
+# Check whether --with-lisp was given.
+if test "${with_lisp+set}" = set; then
+  withval=$with_lisp; axiom_lisp=$withval
+fi
+
+
+## For all values of L, except gcl, the assumption is that the Lisp
+## image L is available in the build environment.  For  gcl,
+## we make an exception: if no GCL image is available, or if
+## the option --enable-gcl is specified then OpenAxiom builds its
+## own version from the source tree.
+## If --enable-gcl is specified, we need to check for coonsistency
+axiom_include_gcl=
+if test -z $axiom_lisp; then
+    # Check whether --enable-gcl was given.
+if test "${enable_gcl+set}" = set; then
+  enableval=$enable_gcl; case $enableval in
+                       yes|no) axiom_include_gcl=$enableval ;;
+                       *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-gcl" >&5
+$as_echo "$as_me: error: erroneous value for --enable-gcl" >&2;}
+   { (exit 1); exit 1; }; } ;;
+                   esac
+fi
+
+fi
+
+## We need to build our own GCL if none is avalaible.
+if test -z $axiom_lisp; then
+    for ac_prog in sbcl gcl ecl clisp ccl ccl64
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_AXIOM_LISP+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$AXIOM_LISP"; then
+  ac_cv_prog_AXIOM_LISP="$AXIOM_LISP" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_AXIOM_LISP="$ac_prog"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+AXIOM_LISP=$ac_cv_prog_AXIOM_LISP
+if test -n "$AXIOM_LISP"; then
+  { $as_echo "$as_me:$LINENO: result: $AXIOM_LISP" >&5
+$as_echo "$AXIOM_LISP" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$AXIOM_LISP" && break
+done
+
+    ## A lisp may not be available AND the GCL source may also
+    ## be missing.  Instruct user to either build one or get
+    ## the dependencies from our website.
+    if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
+       { { $as_echo "$as_me:$LINENO: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website." >&5
+$as_echo "$as_me: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website." >&2;}
+   { (exit 1); exit 1; }; }
+    fi
+    axiom_lisp=$AXIOM_LISP
+else
+    ## Honor use of Lisp image specified on command line
+    AXIOM_LISP=$axiom_lisp
+
+    :
+fi
+
+## Some Lisp systems are just too buggy for use.
+
+case $AXIOM_LISP in
+   *gcl*)
+      { $as_echo "$as_me:$LINENO: checking $AXIOM_LISP version" >&5
+$as_echo_n "checking $AXIOM_LISP version... " >&6; }
+      v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
+      { $as_echo "$as_me:$LINENO: result: $v" >&5
+$as_echo "$v" >&6; }
+      case $v in
+	*2.6.7*|*2.6.8*) ;;         # OK
+	*)
+	  { $as_echo "$as_me:$LINENO: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&5
+$as_echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&2;}
+	  AXIOM_LISP=
+	  ;;
+      esac
+      ;;
+   # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
+   *sbcl*)
+      { $as_echo "$as_me:$LINENO: checking $AXIOM_LISP version" >&5
+$as_echo_n "checking $AXIOM_LISP version... " >&6; }
+      v=`$AXIOM_LISP --version`
+      { $as_echo "$as_me:$LINENO: result: $v" >&5
+$as_echo "$v" >&6; }
+      case $v in
+	*1.0.29)
+	   { { $as_echo "$as_me:$LINENO: error: This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher." >&5
+$as_echo "$as_me: error: This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher." >&2;}
+   { (exit 1); exit 1; }; }
+	   ;;
+      esac
+      ;;
+esac
+
+
+
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5085,13 +5217,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:5088: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:5220: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5091: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:5223: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:5094: output\"" >&5)
+  (eval echo "\"\$as_me:5226: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -6293,7 +6425,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 6296 "configure"' > conftest.$ac_ext
+  echo '#line 6428 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8564,11 +8696,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8567: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8699: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8571: \$? = $ac_status" >&5
+   echo "$as_me:8703: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8903,11 +9035,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8906: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9038: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8910: \$? = $ac_status" >&5
+   echo "$as_me:9042: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9008,11 +9140,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9011: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9143: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9015: \$? = $ac_status" >&5
+   echo "$as_me:9147: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9063,11 +9195,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9066: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9198: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9070: \$? = $ac_status" >&5
+   echo "$as_me:9202: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11863,7 +11995,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11866 "configure"
+#line 11998 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11959,7 +12091,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 11962 "configure"
+#line 12094 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13979,11 +14111,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13982: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14114: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13986: \$? = $ac_status" >&5
+   echo "$as_me:14118: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14078,11 +14210,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14081: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14213: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14085: \$? = $ac_status" >&5
+   echo "$as_me:14217: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14130,11 +14262,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14133: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14265: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14137: \$? = $ac_status" >&5
+   echo "$as_me:14269: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15897,128 +16029,9 @@ $as_echo "$as_me: error: Please get the tarball of dependencies and reconfigure"
     axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 
-## ------------------------
-## -- Which Lisp to use? --
-## ------------------------
-##
-## We will default to GCL later, if no lisp implementation is specified.
-axiom_lisp=
-axiom_lisp_flavor=unknown
-# Most Lisp systems don't use conventional methods for building programs.
+## Most Lisp systems don't use conventional methods for building programs.
 oa_standard_linking=no
 
-# Check whether --with-lisp was given.
-if test "${with_lisp+set}" = set; then
-  withval=$with_lisp; axiom_lisp=$withval
-fi
-
-## If --enable-gcl is specified, we need to check for coonsistency
-axiom_include_gcl=
-if test -z $axiom_lisp; then
-    # Check whether --enable-gcl was given.
-if test "${enable_gcl+set}" = set; then
-  enableval=$enable_gcl; case $enableval in
-                       yes|no) axiom_include_gcl=$enableval ;;
-                       *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-gcl" >&5
-$as_echo "$as_me: error: erroneous value for --enable-gcl" >&2;}
-   { (exit 1); exit 1; }; } ;;
-                   esac
-fi
-
-fi
-## We need to build our own GCL if none is avalaible.
-if test -z $axiom_lisp; then
-    for ac_prog in sbcl gcl ecl clisp ccl ccl64
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_AXIOM_LISP+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$AXIOM_LISP"; then
-  ac_cv_prog_AXIOM_LISP="$AXIOM_LISP" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_AXIOM_LISP="$ac_prog"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-AXIOM_LISP=$ac_cv_prog_AXIOM_LISP
-if test -n "$AXIOM_LISP"; then
-  { $as_echo "$as_me:$LINENO: result: $AXIOM_LISP" >&5
-$as_echo "$AXIOM_LISP" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$AXIOM_LISP" && break
-done
-
-    ## A lisp may not be available AND the GCL source may also
-    ## be missing.  Instruct user to either build one or get
-    ## the dependencies from our website.
-    if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       { { $as_echo "$as_me:$LINENO: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website." >&5
-$as_echo "$as_me: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website." >&2;}
-   { (exit 1); exit 1; }; }
-    fi
-    axiom_lisp=$AXIOM_LISP
-else
-    ## Honor use of Lisp image specified on command line
-    AXIOM_LISP=$axiom_lisp
-
-    :
-fi
-
-## Some Lisp systems are just too buggy to use.
-case $AXIOM_LISP in
-   *gcl*)
-      { $as_echo "$as_me:$LINENO: checking $AXIOM_LISP version" >&5
-$as_echo_n "checking $AXIOM_LISP version... " >&6; }
-      v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-      { $as_echo "$as_me:$LINENO: result: $v" >&5
-$as_echo "$v" >&6; }
-      case $v in
-        *2.6.7*|*2.6.8*) ;;         # OK
-        *)
-          { $as_echo "$as_me:$LINENO: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&5
-$as_echo "$as_me: WARNING: $v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored." >&2;}
-          AXIOM_LISP=
-          ;;
-      esac
-      ;;
-   # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
-   *sbcl*)
-      { $as_echo "$as_me:$LINENO: checking $AXIOM_LISP version" >&5
-$as_echo_n "checking $AXIOM_LISP version... " >&6; }
-      v=`$AXIOM_LISP --version`
-      { $as_echo "$as_me:$LINENO: result: $v" >&5
-$as_echo "$v" >&6; }
-      case $v in
-        *1.0.29)
-           { { $as_echo "$as_me:$LINENO: error: This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher." >&5
-$as_echo "$as_me: error: This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher." >&2;}
-   { (exit 1); exit 1; }; }
-           ;;
-      esac
-      ;;
-esac
 
 ## Coherence check for GCL inclusion.
 case $axiom_include_gcl,$axiom_lisp in

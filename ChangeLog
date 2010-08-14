@@ -1,3 +1,9 @@
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_REJECT_ROTTED_LISP): New.
+	(OPENAXIOM_PROG_LISP): Likewise.
+	* configure.ac.pamphlet: Use them. Simplify.
+
 2010-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (OPENAXIOM_STANDARD_INTEGER_TYPES): New macro.
