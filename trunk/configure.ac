@@ -20,6 +20,12 @@ if test $build != $target; then
 fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
+
+OPENAXIOM_PROG_LISP
+## Some Lisp systems are just too buggy for use.
+OPENAXIOM_REJECT_ROTTED_LISP($AXIOM_LISP)
+
+
 AC_PROG_CC
 AC_PROG_CXX
 
@@ -145,70 +151,10 @@ if test -z $NOTANGLE -o -z $NOWEAVE ; then
     axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 
-## ------------------------
-## -- Which Lisp to use? --
-## ------------------------
-##
-## We will default to GCL later, if no lisp implementation is specified.
-axiom_lisp=
-axiom_lisp_flavor=unknown
-# Most Lisp systems don't use conventional methods for building programs.
+## Most Lisp systems don't use conventional methods for building programs.
 oa_standard_linking=no
-AC_ARG_WITH([lisp], [ --with-lisp=L         use L as Lisp platform],
-              [axiom_lisp=$withval])
-## If --enable-gcl is specified, we need to check for coonsistency
-axiom_include_gcl=
-if test -z $axiom_lisp; then
-    AC_ARG_ENABLE([gcl], [  --enable-gcl   build GCL from OpenAxiom source],
-                  [case $enableval in
-                       yes|no) axiom_include_gcl=$enableval ;;
-                       *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
-                   esac])
-fi
-## We need to build our own GCL if none is avalaible.
-if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl ccl64])
-    ## A lisp may not be available AND the GCL source may also
-    ## be missing.  Instruct user to either build one or get
-    ## the dependencies from our website.
-    if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website.])
-    fi
-    axiom_lisp=$AXIOM_LISP
-else
-    ## Honor use of Lisp image specified on command line
-    AXIOM_LISP=$axiom_lisp
-    AC_SUBST(AXIOM_LISP)
-    :
-fi
-
-## Some Lisp systems are just too buggy to use.
-case $AXIOM_LISP in
-   *gcl*)
-      AC_MSG_CHECKING([$AXIOM_LISP version])
-      v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-      AC_MSG_RESULT([$v])
-      case $v in
-        *2.6.7*|*2.6.8*) ;;         # OK
-        *)
-          AC_MSG_WARN([$v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored.])
-          AXIOM_LISP=
-          ;;
-      esac
-      ;;
-   # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
-   *sbcl*)
-      AC_MSG_CHECKING([$AXIOM_LISP version])
-      v=`$AXIOM_LISP --version`
-      AC_MSG_RESULT([$v])
-      case $v in
-        *1.0.29)
-           AC_MSG_ERROR([This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher.])
-           ;;
-      esac
-      ;;
-esac
-
+AC_SUBST(oa_standard_linking)
+ 
 ## Coherence check for GCL inclusion.
 case $axiom_include_gcl,$axiom_lisp in
     ,|no,|yes*)
