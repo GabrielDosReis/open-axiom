@@ -1121,6 +1121,8 @@ TwoDimensionalViewport ():Exports == Implementation where
           sendI(VIEW,0$I)$Lisp     -- no more types of things to write
           getI(VIEW)$Lisp          -- acknowledge
           Filename
+        ""  -- FIXME: We should be indicating failure
+      ""  -- FIXME: We should be indicating failure
 
 @
 \subsection{TEST VIEW2D}

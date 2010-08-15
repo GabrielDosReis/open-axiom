@@ -1,3 +1,10 @@
+2010-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/float.spad.pamphlet (Float): Tidy.
+	* algebra/limitps.spad.pamphlet (ElementaryFunctionSign): Likewise.
+	* algebra/view2D.spad.pamphlet (TwoDimensionalViewport): Likewise.
+	* algebra/view2D.spad.pamphlet (ThreeDimensionalViewport): Likewise.
+
 2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lib/Makefile.in (libopen-axiom-core.$(LIBEXT)): Use LINK.
