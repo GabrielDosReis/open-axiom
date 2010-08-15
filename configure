@@ -834,9 +834,6 @@ INSTALL_PROGRAM
 MAKE
 oa_editor
 axiom_src_subdirs
-oa_shrlib_flags
-oa_shrobj_flags
-oa_use_libtool_for_shared_lib
 libext
 shared_ext
 LIBTOOL_DEPS
@@ -861,6 +858,9 @@ LIBTOOL
 OBJDUMP
 DLLTOOL
 AS
+oa_shrlib_flags
+oa_shrobj_flags
+oa_use_libtool_for_shared_lib
 EGREP
 GREP
 axiom_gcl_rsym_hack
@@ -6469,12 +6469,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-
-oa_use_libtool_for_shared_lib=yes
-oa_shrobj_flags=
-oa_shrlib_flags=
-# Tell Libtool to assume `dlopen' so that it does not have to
-# emulate it.
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:$LINENO: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -6960,13 +6954,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:6963: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:6957: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6966: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:6960: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6969: output\"" >&5)
+  (eval echo "\"\$as_me:6963: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -8168,7 +8162,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 8171 "configure"' > conftest.$ac_ext
+  echo '#line 8165 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9648,6 +9642,15 @@ fi
 
 
 
+
+
+oa_use_libtool_for_shared_lib=no
+oa_shrobj_flags=
+oa_shrlib_flags=
+## Tell Libtool to assume `dlopen' so that it does not have to
+## emulate it.
+
+
 # Set options
 
 # Check whether --with-pic was given.
@@ -10439,11 +10442,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10442: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10445: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10446: \$? = $ac_status" >&5
+   echo "$as_me:10449: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10778,11 +10781,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10781: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10784: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10785: \$? = $ac_status" >&5
+   echo "$as_me:10788: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10883,11 +10886,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10886: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10889: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10890: \$? = $ac_status" >&5
+   echo "$as_me:10893: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10938,11 +10941,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10941: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10944: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10945: \$? = $ac_status" >&5
+   echo "$as_me:10948: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -13738,7 +13741,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 13741 "configure"
+#line 13744 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13834,7 +13837,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 13837 "configure"
+#line 13840 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -15854,11 +15857,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15857: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15860: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15861: \$? = $ac_status" >&5
+   echo "$as_me:15864: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15953,11 +15956,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15956: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15959: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15960: \$? = $ac_status" >&5
+   echo "$as_me:15963: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16005,11 +16008,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16008: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16011: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16012: \$? = $ac_status" >&5
+   echo "$as_me:16015: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16991,17 +16994,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Give me extension of libraries
+
+
 module=yes
 eval shared_ext=\"$shrext_cmds\"
-
-
-## Don't use Libtool for building actual DLLs on MinGW and Cygwin
-## Libool has been improved to the point of being useless
-## for building in-place shared libraries.
-oa_use_libtool_for_shared_lib=no
 case $host in
     *mingw*|*cygwin*)
-       # oa_use_libtool_for_shared_lib=no
        oa_shrobj_flags='-prefer-pic'
        oa_shrlib_flags="-shared --export-all-symbols"
        ;;
@@ -17014,8 +17012,6 @@ case $host in
        oa_shrlib_flags='-shared'
        ;;
 esac
-
-
 
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"

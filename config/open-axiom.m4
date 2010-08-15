@@ -432,3 +432,48 @@ AC_DEFINE_UNQUOTED([OPENAXIOM_HOST_LISP_PRECISION],
                    [$openaxiom_host_lisp_precision],
                    [The width of the host Lisp and CPU registers.])
 ])
+
+dnl --------------------------------------
+dnl -- OPENAXIOM_DYNAMIC_MODULE_SUPPORT --
+dnl --------------------------------------
+dnl Infer compiler flags and file extensions associated
+dnl with dynamic module support.
+dnl We need to link some C object files into in the Lisp images we
+dnl use.  Some Lisps (e.g. GCL, ECL) support inclusion of ``ordinary''
+dnl object files.  Other Lisps (e.g. SBCL, Clozure CL) support only dynamic
+dnl or shared libraries.  However, the exact minutia of  portably
+dnl building shared libraries are known to be fraught with all kinds
+dnl of traps.  Consequently, we sought to use dedicated tools such
+dnl Libtool.  Unfortunately, Libtool has been steadily improved over the years
+dnl to become nearly useless when mixed with non-libtool components.
+AC_DEFUN([OPENAXIOM_DYNAMIC_MODULE_SUPPORT],[
+AC_SUBST(oa_use_libtool_for_shared_lib)
+AC_SUBST(oa_shrobj_flags)
+AC_SUBST(oa_shrlib_flags)
+oa_use_libtool_for_shared_lib=no
+oa_shrobj_flags=
+oa_shrlib_flags=
+## Tell Libtool to assume `dlopen' so that it does not have to
+## emulate it.
+LT_INIT([pic-only dlopen win32-dll shared])
+AC_SUBST([LIBTOOL_DEPS])
+# Give me extension of libraries
+AC_SUBST(shared_ext)
+AC_SUBST(libext)
+module=yes
+eval shared_ext=\"$shrext_cmds\"
+case $host in
+    *mingw*|*cygwin*)
+       oa_shrobj_flags='-prefer-pic'
+       oa_shrlib_flags="-shared --export-all-symbols"
+       ;;
+    *darwin*)
+       oa_shrobj_flags='-dynamic'
+       oa_shrlib_flags='-bundle -undefined suppress -flat_namespace'
+       ;;
+    *)
+       oa_shrobj_flags='-prefer-pic'
+       oa_shrlib_flags='-shared'
+       ;;
+esac
+])
