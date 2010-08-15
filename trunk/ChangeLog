@@ -1,5 +1,19 @@
 2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_GCL_INCLUSION): New macro.
+	(OPENAXIOM_LISP_FLAVOR): Likewise.
+	(OPENAXIOM_HOST_COMPILERS): Likewise.
+	(OPENAXIOM_GCL_HACKS): Likewise.
+	(OPENAXIOM_SATISFY_GCL_NEEDS): Likewise.
+	(OPENAXIOM_LISP_FLAGS): Likewise.
+	(OPENAXIOM_FILE_EXTENSIONS): Likewise.
+	(OPENAXIOM_FFI_TYPE_TABLE): Likewise.
+	(OPENAXIOM_HOST_LISP_CPU_PRECISION): Likewise.
+	(OPENAXIOM_HOST_DATA_PROPERTIES): Likewise.
+	* configure.ac.pamphlet: Use them.
+
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* config/open-axiom.m4 (OPENAXIOM_REJECT_ROTTED_LISP): New.
 	(OPENAXIOM_PROG_LISP): Likewise.
 	* configure.ac.pamphlet: Use them. Simplify.

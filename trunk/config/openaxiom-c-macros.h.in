@@ -121,6 +121,9 @@
 /* Extension of executable file. */
 #undef OPENAXIOM_EXEEXT
 
+/* The width of the host Lisp and CPU registers. */
+#undef OPENAXIOM_HOST_LISP_PRECISION
+
 /* Whether to use the session manager as driver. */
 #undef OPENAXIOM_USE_SMAN
 
@@ -138,6 +141,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* The size of `void*', as computed by sizeof. */
+#undef SIZEOF_VOIDP
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
