@@ -85,11 +85,11 @@ CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) -static $(LDFLAGS)
 ## to be very selective about when and where to use.  Sadly, that ends
 ## up negating the whole point of having Libtool in the first place.
 ifeq (@oa_use_libtool_for_shared_lib@,no)
-LINK_SHRLIB = $(CC)
-CXXLINK_SHRLIB = $(CXX)
+LINK_SHRLIB = $(CC) $(LDFLAGS)
+CXXLINK_SHRLIB = $(CXX) $(LDFLAGS)
 else
-LINK_SHRLIB = $(LIBTOOL) --tag=CC --mode=link $(CC)
-CXXLINK_SHRLIB = $(LIBTOOL) --tag=CXX --mode=link $(CC)
+LINK_SHRLIB = $(LIBTOOL) --tag=CC --mode=link $(CC) $(LDFLAGS)
+CXXLINK_SHRLIB = $(LIBTOOL) --tag=CXX --mode=link $(CC) $(LDFLAGS)
 endif
 
 
