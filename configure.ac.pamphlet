@@ -207,8 +207,6 @@ is currently written.  We ask for a POSIX or ISO C semantics, though
 we have a strong preference for POSIX-conformant semantics.
 
 <<C headers and libraries>>=
-AC_CHECK_HEADERS([stdint.h inttypes.h])
-OPENAXIOM_STANDARD_INTEGER_TYPES
 AC_CHECK_HEADERS([signal.h],
                  [],
                  [AC_MSG_ERROR([OpenAxiom needs signal support.])])
@@ -641,9 +639,9 @@ axiom_all_prerequisites=
 
 <<doc utils>>
 
-<<find lisp>>
-<<lisp options>>
-<<compiled lisp extension>>
+OPENAXIOM_LISP_FLAGS
+
+OPENAXIOM_FILE_EXTENSIONS($axiom_lisp)
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
@@ -702,24 +700,6 @@ case $build in
 	fi
 	;;
 esac
-
-@
-
-\paragraph{C compiler}
-First of all, check for a C compiler.  As written, this test is OK 
-because currently we support only native builds.  However,
- it needs to be more carefully written when we move to cross-compilation.
-<<find C compiler>>=
-AC_PROG_CC
-AC_PROG_CXX
-
-## What is the extension of object and executable files on this platform?
-AC_OBJEXT
-AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
-                   [Extension of executable file.])
-
-## Byte order of the host.
-AC_C_BIGENDIAN
 
 @
 
@@ -805,252 +785,6 @@ if test -z $NOTANGLE -o -z $NOWEAVE ; then
     axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 @
-
-\paragraph{The Lisp platform.}
-
-We may be presented with incoherent options if
-\begin{itemize}
-\item \verb!--disable-gcl! is used without specifying a Lisp image, or
-\item \verb!--with-lisp! is used but we are also told to build \Tool{GCL}.
-\end{itemize}
-<<find lisp>>=
-## Most Lisp systems don't use conventional methods for building programs.
-oa_standard_linking=no
-AC_SUBST(oa_standard_linking)
- 
-## Coherence check for GCL inclusion.
-case $axiom_include_gcl,$axiom_lisp in
-    ,|no,|yes*)
-       ## It doesn't make sense not to include GCL when no Lisp image
-       ## is available.  Give up.
-       if test $axiom_include_gcl,$AXIOM_LISP = no,; then
-	   AC_MSG_ERROR([--disable-gcl specified but no GCL image found])
-       fi
-
-       ## No Lisp image was specified and none was available from
-       ## the build environment; build GCL from OpenAxiom source.
-       ## User may explicilty specify --enable-gcl, but may be missing
-       ## the dependency tarball.
-       if test ! -d ${srcdir}/gcl; then
-          AC_MSG_ERROR([The OpenAxiom dependency tarball is missing; please get it from our website.])
-       fi
-       AXIOM_LISP='$(axiom_build_bindir)/gcl'
-       axiom_all_prerequisites="$axiom_all_prerequisites all-gcl"
-       axiom_include_gcl=yes
-       axiom_lisp_flavor=gcl
-       axiom_fasl_type=o
-       ;;
-    yes,*)
-       AC_MSG_ERROR([--with-lisp=$axiom_lisp conflicts with --enable-gcl])
-       ;;
-    *)
-       ## As of this writting, the Lisp systems ECL, GCL, SBCL, and CLisp all
-       ## exist at the end of standard input.
-       AC_MSG_CHECKING([which flavor of Lisp])
-       what=`echo '(lisp-implementation-type)' | $axiom_lisp`
-       case $what in
-	   *GCL*) 
-	       axiom_lisp_flavor=gcl
-	       ;;
-	   *"ECL"*) 
-	       axiom_lisp_flavor=ecl 
-	       oa_standard_linking=yes
-	       ;;
-	   *"SBCL"*) 
-	       axiom_lisp_flavor=sbcl 
-	       ;;
-	   *"CLISP"*)
-               ## Not all variants of CLisp have FFI support.  FFI is used
-               ## internally used by OpenAxiom in essential way.
-               if ! $axiom_lisp -q -x '*features*' | grep ':FFI' > /dev/null
-               then
-                 AC_MSG_ERROR([$axiom_lisp does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
-               fi
-	       axiom_lisp_flavor=clisp
-	       ;;
-	   *"Armed Bear Common Lisp"*) 
-	       axiom_lisp_flavor=abcl 
-	       ;;
-           *"Clozure Common Lisp"*)
-               axiom_lisp_flavor=clozure
-               ;;
-       esac
-       AC_MSG_RESULT([$axiom_lisp_flavor])
-esac
-
-AC_SUBST(axiom_include_gcl)
-AC_SUBST(axiom_lisp_flavor)
-AC_SUBST(oa_standard_linking)
-AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
-                   [openaxiom_${axiom_lisp_flavor}_runtime],
-                   [The kind of base runtime system for this build.])
-
-## The following is a horrible hack to arrange for GCL to successfully
-## rebuild symbol tables with "rsym" on Windows platform.  It should
-## go away as soon as GCL upstream is fixed.
-case $axiom_lisp_flavor,$target in
-    gcl,*mingw*)
-        axiom_gcl_rsym_hack='d=`echo "(format nil \"~a\" si::*system-directory*)" | $(AXIOM_LISP) | grep "/gcl.*/" | sed -e "s,\",,g"`; cp $$d/rsym$(EXEEXT) .'
-	;;
-    *) 
-        ## Breath.
-        axiom_gcl_rsym_hack=':'
-	;;
-esac
-AC_SUBST(axiom_gcl_rsym_hack)
-
-
-## If we are using GCL as the base runtime system, then we do really need
-# a C compiler from GNU.  Well, at least for the moment.
-case $axiom_lisp_flavor,$GCC in
-   gcl,yes)
-       axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
-       ;;
-   
-   gcl,*)
-       AC_MSG_ERROR([We need a GNU C compiler])
-       ;;
-esac
-AC_SUBST(axiom_cflags)
-
-@
-
-\paragraph{Lisp system options.}  Lisp implementations greatly vary in
-the command line options they support.  Here we attempt to abstract
-over those variations of Lisp systems we plan to support.  In particular,
-we need to know how to iinvoke a Lisp compiler with a set of
-files to process in batch mode.
-<<lisp options>>=
-## Can we use dynamically linked libraries?  
-## Tentatively answer `yes' -- this is modern time.
-oa_use_dynamic_lib=yes
-
-## How are we supposed to tell the Lisp system to eval an expression
-## in batch mode?  What is the extension of a compiled Lisp file?
-case $axiom_lisp_flavor in
-    gcl) 
-       axiom_quiet_flags='-batch'
-       axiom_eval_flags='-eval'
-       oa_use_dynamic_lib=no  
-       ;;
-    ecl) 
-       axiom_quiet_flags=
-       axiom_eval_flags='-norc -eval'
-       oa_use_dynamic_lib=no  
-       ;;
-    sbcl) 
-       axiom_quiet_flags='--noinform --noprint'
-       axiom_eval_flags='--eval'
-       ;;
-    clisp) 
-       axiom_quiet_flags='--quiet'
-       axiom_eval_flags='-norc -x'
-       ;;
-    clozure)
-       axiom_quiet_flags='--quiet --no-init'
-       axiom_eval_flags='--eval'
-       ;;
-    *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $axiom_lisp]) ;;
-esac
-AC_SUBST(axiom_quiet_flags)
-AC_SUBST(axiom_eval_flags)
-AC_SUBST(oa_use_dynamic_lib)
-@
-
-\paragraph{Compiled Lisp file extensions.}
-The file extension for compiled Lisp files is implementation defined.
-There does not seem to have an established existing practice as would
-be found in the majority of Unix world.  Consequently we need to
-determine that by looking at the Lisp type of the pathname that
-Lisp's [[compile-file]] would produce.
-<<compiled lisp extension>>=
-if test -z $axiom_fasl_type; then
-    AC_MSG_CHECKING([compiled Lisp file extension])
-    ## We set the IFS to <space> as we don't want automatic
-    ## replacement of <newline> by <space>.
-    axiom_save_IFS=$IFS
-    IFS=' '
-    axiom_fasl_type=`$axiom_lisp $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
-
-    ## Now pull out the fasl type.  ECL has the habit of spitting noise
-    ## about internal loading.  Therefore, we must look only for a line that
-    ## begins with axiom_fasl_type.
-    axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
-    IFS=$axiom_save_IFS
-    axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-    if test -z $axiom_fasl_type; then
-	AC_MSG_ERROR([Could not determine extension for compiled Lisp files])
-    fi
-    AC_MSG_RESULT([$axiom_fasl_type])
-fi
-AC_SUBST(axiom_fasl_type)
-@
-
-\paragraph{Native data types}
-OpenAxiom needs to communicate to the hosting operation systems
-through a set of C interface.  Consequently we need an automated
-translation mechanism that shields Boot code from the variability
-of Lisp systems for so-called `foreign function interface'.  Here,
-we compute a translation table for supported Lisp systems. This table
-is used by the Boot translator for generating codes for import of
-native routines.
-<<nativeTypeTable>>=
-case $axiom_lisp_flavor in
-   gcl)
-      void_type='void'
-      char_type='char'
-      int_type='int'
-      float_type='float'
-      double_type='double'
-      string_type='string'
-      ;;
-   sbcl)
-      void_type='void'
-      char_type='char'
-      int_type='int'
-      float_type='float'
-      double_type='double'
-      string_type='c-string'
-      ;;
-   clisp)
-      void_type='nil'
-      char_type='character'
-      int_type='int'
-      float_type='single-float'
-      double_type='double-float'
-      string_type='c-string'
-      ;;
-   ecl)
-      void_type=':void'
-      char_type=':char'
-      int_type=':int'
-      float_type=':float'
-      double_type=':double'
-      string_type=':cstring'
-      ;;
-   clozure)
-      void_type=':void'
-      # FIXME: this is not really what we want, but good enough for now.
-      char_type=':unsigned-byte'
-      int_type=':signed-fullword'
-      float_type=':single-float'
-      double_type=':double-float'
-      # Clozure CL wants you to deal with your own mess
-      string_type=':address'
-      ;;
-   *)
-      AC_MSG_ERROR([We do not know how to translate native types for this Lisp])
-      ;;
-esac
-AC_SUBST(void_type)
-AC_SUBST(char_type)
-AC_SUBST(int_type)
-AC_SUBST(float_type)
-AC_SUBST(double_type)
-AC_SUBST(string_type)
-
-@
-
 
 \section{Configuration options}
 \label{sec:config-options}
@@ -1281,12 +1015,9 @@ AC_SUBST(oa_shrlib_flags)
 <<sanity check>>
 <<host build target platfoms>>
 
-OPENAXIOM_PROG_LISP
-## Some Lisp systems are just too buggy for use.
-OPENAXIOM_REJECT_ROTTED_LISP($AXIOM_LISP)
-
-
-<<find C compiler>>
+OPENAXIOM_HOST_COMPILERS
+OPENAXIOM_GCL_HACKS
+OPENAXIOM_HOST_DATA_PROPERTIES
 
 <<initialize shared libraries tool>>
 
@@ -1319,7 +1050,7 @@ AC_SUBST(axiom_c_runtime)
 <<C headers and libraries>>
 
 <<platform specific bits>>
-<<nativeTypeTable>>
+OPENAXIOM_FFI_TYPE_TABLE
 <<instantiate config files>>
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"
 @
