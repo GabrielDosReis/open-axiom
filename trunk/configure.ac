@@ -24,41 +24,7 @@ axiom_build_sharedir=$axiom_builddir/share
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
-
-oa_use_libtool_for_shared_lib=yes
-oa_shrobj_flags=
-oa_shrlib_flags=
-# Tell Libtool to assume `dlopen' so that it does not have to
-# emulate it.
-LT_INIT([pic-only dlopen win32-dll shared])
-AC_SUBST([LIBTOOL_DEPS])
-# Give me extension of libraries
-module=yes
-eval shared_ext=\"$shrext_cmds\"
-AC_SUBST(shared_ext)
-AC_SUBST(libext)
-## Don't use Libtool for building actual DLLs on MinGW and Cygwin
-## Libool has been improved to the point of being useless
-## for building in-place shared libraries.
-oa_use_libtool_for_shared_lib=no
-case $host in
-    *mingw*|*cygwin*)
-       # oa_use_libtool_for_shared_lib=no
-       oa_shrobj_flags='-prefer-pic'
-       oa_shrlib_flags="-shared --export-all-symbols"
-       ;;
-    *darwin*)
-       oa_shrobj_flags='-dynamic'
-       oa_shrlib_flags='-bundle -undefined suppress -flat_namespace'
-       ;;
-    *)
-       oa_shrobj_flags='-prefer-pic'
-       oa_shrlib_flags='-shared'
-       ;;
-esac
-AC_SUBST(oa_use_libtool_for_shared_lib)
-AC_SUBST(oa_shrobj_flags)
-AC_SUBST(oa_shrlib_flags)
+OPENAXIOM_DYNAMIC_MODULE_SUPPORT
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
