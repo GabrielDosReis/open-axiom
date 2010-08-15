@@ -98,14 +98,19 @@ asq_SOURCES = $(addsuffix .pamphlet, $(asq_sources))
 asq_objects = $(asq_sources:.c=.$(OBJEXT))
 asq_LDADD = $(libspad_la) -L$(build_libdir) $(openaxiom_c_libs)
 
-$(axiom_target_bindir)/asq$(EXEEXT): asq.c $(axiom_c_macros_h)
-	@echo making $@ from $<
-	${CC} ${CCF} $(axiom_includes) -o asq$(EXEEXT) asq.c \
-		$(asq_LDADD)
-	cp -p asq$(EXEEXT) $(axiom_target_bindir)
+$(axiom_target_bindir)/asq$(EXEEXT): asq$(EXEEXT)
+	cp -p $< $(axiom_target_bindir)
+
+asq$(EXEEXT): $(asq_objects)
+	$(LINK) -o $@ $(asq_objects) $(asq_LDADD)
+
+%.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
+	$(COMPILE) $(CFLAGS) $(axiom_includes) -o $@ $<
+
 
 asq.c: $(srcdir)/asq.c.pamphlet
 	$(axiom_build_document) --tangle --output=$@ $<
+
 $(axiom_target_libdir)/summary: $(srcdir)/summary
 	cp -p $< $@ 
 
@@ -116,7 +121,7 @@ $(axiom_target_libdir)/copyright: $(srcdir)/copyright
 	cp $< cp $@
 
 mostlyclean-local:
-	rm -f $(asq_sources) $(asq_objects)
+	rm -f $(asq_sources) $(asq_objects) $(bin_PROGRAMS)
 	rm -f $(openaxiom_databases)
 	rm -f $(openaxiom_glossfiles)
 	rm -f stamp
@@ -124,7 +129,6 @@ mostlyclean-local:
 clean-local: mostlyclean-local
 	rm -f $(axiom_target_libdir)/summary
 	rm -f $(axiom_target_libdir)/copyright
-	rm -f $(axiom_target_bindir)/axiom
 	rm -f $(axiom_target_bindir)/asq$(EXEEXT)
 
 distclean-local: clean-local
