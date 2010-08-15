@@ -661,14 +661,15 @@ ElementaryFunctionSign(R,F): Exports == Implementation where
            (ua := retractIfCan(a)@Union(RF,"failed")) case RF =>
             sign(uf::RF, x, ua::RF, st)
       eq : Equation F := equation(x :: F,a)
-      (u := limit(f,eq,st)) case "failed" => "failed"
-      u case OFE =>
-        (n := whatInfinity(u::OFE)) ~= 0 => convert(n)@Z
-        (v := retract(u::OFE)@F) = 0 =>
-          (s := psign(differentiate(f,x),x,a,st,m + 1)) case "failed"=>
-            "failed"
-          direction(st) * s::Z
-        sign v
+      u := limit(f,eq,st)
+      u  case "failed" => "failed"
+      (n := whatInfinity(u@OFE)) ~= 0 => convert(n)@Z
+      v := retract(u@OFE)@F
+      v = 0 =>
+        s := psign(differentiate(f,x),x,a,st,m + 1)
+        s case "failed"=> "failed"
+        direction(st) * s@Z
+      sign v
 
     smpsign p ==
       (r := retractIfCan(p)@Union(R,"failed")) case R => sign(r::R)

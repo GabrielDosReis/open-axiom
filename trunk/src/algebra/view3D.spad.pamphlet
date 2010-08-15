@@ -691,6 +691,7 @@ ThreeDimensionalViewport(): Exports == Implementation where
 	    [ theta_sf, phi_sf, scale_sf, scaleX_sf, scaleY_sf, scaleZ_sf, 
 	      deltaX_sf, deltaY_sf ]
         viewport.viewpoint
+      viewport.viewpoint
 
     viewpoint (viewport:%, viewpt:V):Void ==
       viewport.viewpoint := viewpt
@@ -871,6 +872,8 @@ ThreeDimensionalViewport(): Exports == Implementation where
           sendI(VIEW,0$I)$Lisp     -- no more types of things to write
           getI(VIEW)$Lisp          -- acknowledge
           Filename
+        ""  -- FIXME: We should be indicating failure
+      ""  -- FIXME: We should be indicating failure
 
     perspective (viewport,onOff) ==
       if onOff = "on" then viewport.perspective.perspectiveField := yes
