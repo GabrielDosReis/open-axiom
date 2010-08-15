@@ -1,3 +1,9 @@
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lib/Makefile.in (libopen-axiom-core.$(LIBEXT)): Use LINK.
+	(libspad.$(LIBEXT)): Likewise.
+	(%.$(OBJEXT) %.lo): Honor CFLAGS.
+
 2010-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* hyper/ex2ht.c (strPrefix): Be const-correct.

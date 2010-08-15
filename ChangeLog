@@ -1,5 +1,18 @@
 2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* config/var-def.mk (CPPFLAGS): New expanded variable.
+	(LDFLAGS): Likewise.
+	(COMPILE): Include CPPFLAGS.
+	(CXXCOMPILE): Likewise.
+	(LINK): Include LDFLAGS.
+	(CXXLINK): Likewise.
+	(CXXLINK_SHRLIB): New.
+	* config/open-axiom.m4 (OPENAXIOM_HOST_DATA_PROPERTIES): Move
+	ABI flags setting to OPENAXIOM_HOST_COMPILERS.  The CPPFLAGS and
+	LDFLAGS instead of CFLAGS and CXXFLAGS.
+
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* config/open-axiom.m4 (OPENAXIOM_CHECK_GCL_INCLUSION): New macro.
 	(OPENAXIOM_LISP_FLAVOR): Likewise.
 	(OPENAXIOM_HOST_COMPILERS): Likewise.
