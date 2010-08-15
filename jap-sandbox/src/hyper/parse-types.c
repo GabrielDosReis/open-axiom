@@ -61,7 +61,7 @@ boolean gInItems = FALSE;
 boolean gInOptional = FALSE;
 
 
-static char *errmess[] =  {
+static const char* errmess[] =  {
   "place holder",
   "parsing condition node",
   "unrecognized keyword"
@@ -78,7 +78,7 @@ static char *errmess[] =  {
  */
 
 static void
-htperror(char *msg, int erno)
+htperror(const char* msg, int erno)
 {
     char obuff[256];
 

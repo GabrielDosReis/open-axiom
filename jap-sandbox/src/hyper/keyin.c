@@ -127,7 +127,7 @@ handle_key(XEvent *event)
   XComposeStatus compstatus;
   int charcount;
   int display_again = 0;
-  char *name;
+  const char *name;
   char *filename;
   /*char *head = "echo htadd -l ";*/
   /*char *blank1 = "                                        ";*/

@@ -164,7 +164,7 @@ emitFooter(FILE *outFile)
 
 
 static char *
-strPrefix(char* prefix, char *s)
+strPrefix(const char* prefix, char *s)
 {
     while (*prefix != '\0' && *prefix == *s) {
         prefix++;

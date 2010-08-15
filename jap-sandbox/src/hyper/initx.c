@@ -75,7 +75,7 @@ extern int gethostname(char *, int );
 
 static void get_GCs(HDWindow * window);
 static int get_border_properties(void);
-static int get_color(char * , char * , int, Colormap*);
+static int get_color(const char* , const char* , int, Colormap*);
 static void ingItColors_and_fonts(void);
 static void load_font(XFontStruct * * font_info , char * fontname);
 static void mergeDatabases(void);
@@ -897,7 +897,7 @@ change_text(int color, XFontStruct *font)
  */
 
 static int
-get_color(char *name, char *klass, int def, Colormap *map)
+get_color(const char *name, const char *klass, int def, Colormap *map)
 {
     char fullname[256];
     char fullclass[256];

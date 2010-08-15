@@ -376,7 +376,7 @@ free_cond(CondNode *cond)
 /* Allocate a new HyperDoc page */
 
 HyperDocPage *
-alloc_page(char *name)
+alloc_page(const char *name)
 {
   HyperDocPage *page;
 

@@ -1,3 +1,47 @@
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (CPPFLAGS): New expanded variable.
+	(LDFLAGS): Likewise.
+	(COMPILE): Include CPPFLAGS.
+	(CXXCOMPILE): Likewise.
+	(LINK): Include LDFLAGS.
+	(CXXLINK): Likewise.
+	(CXXLINK_SHRLIB): New.
+	* config/open-axiom.m4 (OPENAXIOM_HOST_DATA_PROPERTIES): Move
+	ABI flags setting to OPENAXIOM_HOST_COMPILERS.  The CPPFLAGS and
+	LDFLAGS instead of CFLAGS and CXXFLAGS.
+
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_CHECK_GCL_INCLUSION): New macro.
+	(OPENAXIOM_LISP_FLAVOR): Likewise.
+	(OPENAXIOM_HOST_COMPILERS): Likewise.
+	(OPENAXIOM_GCL_HACKS): Likewise.
+	(OPENAXIOM_SATISFY_GCL_NEEDS): Likewise.
+	(OPENAXIOM_LISP_FLAGS): Likewise.
+	(OPENAXIOM_FILE_EXTENSIONS): Likewise.
+	(OPENAXIOM_FFI_TYPE_TABLE): Likewise.
+	(OPENAXIOM_HOST_LISP_CPU_PRECISION): Likewise.
+	(OPENAXIOM_HOST_DATA_PROPERTIES): Likewise.
+	* configure.ac.pamphlet: Use them.
+
+2010-08-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_REJECT_ROTTED_LISP): New.
+	(OPENAXIOM_PROG_LISP): Likewise.
+	* configure.ac.pamphlet: Use them. Simplify.
+
+2010-08-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_STANDARD_INTEGER_TYPES): New macro.
+ 	* configure.ac.pamphlet: Use it.
+
+2010-08-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/var-def.mk (CXXCOMPILE): Specify TAG.
+	(COMPILE): Likewise.
+	(CXXLINK): Likewise.
+
 2010-07-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Support C++ as implementation language.

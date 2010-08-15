@@ -1,6 +1,6 @@
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-07-29], 
+AC_INIT([OpenAxiom], [1.4.0-2010-08-07], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -20,17 +20,10 @@ if test $build != $target; then
 fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
-AC_PROG_CC
-AC_PROG_CXX
 
-## What is the extension of object and executable files on this platform?
-AC_OBJEXT
-AC_DEFINE_UNQUOTED([OPENAXIOM_EXEEXT], ["$ac_cv_exeext"], 
-                   [Extension of executable file.])
-
-## Byte order of the host.
-AC_C_BIGENDIAN
-
+OPENAXIOM_HOST_COMPILERS
+OPENAXIOM_GCL_HACKS
+OPENAXIOM_HOST_DATA_PROPERTIES
 
 oa_use_libtool_for_shared_lib=yes
 oa_shrobj_flags=
@@ -40,6 +33,7 @@ oa_shrlib_flags=
 LT_INIT([pic-only dlopen win32-dll shared])
 AC_SUBST([LIBTOOL_DEPS])
 # Give me extension of libraries
+module=yes
 eval shared_ext=\"$shrext_cmds\"
 AC_SUBST(shared_ext)
 AC_SUBST(libext)
@@ -55,7 +49,7 @@ case $host in
        ;;
     *darwin*)
        oa_shrobj_flags='-dynamic'
-       oa_shrlib_flags='-dynamiclib -undefined suppress -flat_namespace'
+       oa_shrlib_flags='-bundle -undefined suppress -flat_namespace'
        ;;
     *)
        oa_shrobj_flags='-prefer-pic'
@@ -144,219 +138,9 @@ if test -z $NOTANGLE -o -z $NOWEAVE ; then
     axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
 fi
 
-## ------------------------
-## -- Which Lisp to use? --
-## ------------------------
-##
-## We will default to GCL later, if no lisp implementation is specified.
-axiom_lisp=
-axiom_lisp_flavor=unknown
-# Most Lisp systems don't use conventional methods for building programs.
-oa_standard_linking=no
-AC_ARG_WITH([lisp], [ --with-lisp=L         use L as Lisp platform],
-              [axiom_lisp=$withval])
-## If --enable-gcl is specified, we need to check for coonsistency
-axiom_include_gcl=
-if test -z $axiom_lisp; then
-    AC_ARG_ENABLE([gcl], [  --enable-gcl   build GCL from OpenAxiom source],
-                  [case $enableval in
-                       yes|no) axiom_include_gcl=$enableval ;;
-                       *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
-                   esac])
-fi
-## We need to build our own GCL if none is avalaible.
-if test -z $axiom_lisp; then
-    AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl ccl64])
-    ## A lisp may not be available AND the GCL source may also
-    ## be missing.  Instruct user to either build one or get
-    ## the dependencies from our website.
-    if test -z $AXIOM_LISP && test ! -d ${srcdir}/gcl; then
-       AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, CLisp), or get the dependency tarball from OpenAxiom download website.])
-    fi
-    axiom_lisp=$AXIOM_LISP
-else
-    ## Honor use of Lisp image specified on command line
-    AXIOM_LISP=$axiom_lisp
-    AC_SUBST(AXIOM_LISP)
-    :
-fi
+OPENAXIOM_LISP_FLAGS
 
-## Some Lisp systems are just too buggy to use.
-case $AXIOM_LISP in
-   *gcl*)
-      AC_MSG_CHECKING([$AXIOM_LISP version])
-      v=`$AXIOM_LISP -batch -eval "(format t \"~S\" (lisp-implementation-version))"`
-      AC_MSG_RESULT([$v])
-      case $v in
-        *2.6.7*|*2.6.8*) ;;         # OK
-        *)
-          AC_MSG_WARN([$v is not supported by this version of OpenAxiom.  $AXIOM_LISP will be ignored.])
-          AXIOM_LISP=
-          ;;
-      esac
-      ;;
-   # SBCL-1.0.29 has a nasty regression that prevents OpenAxiom build
-   *sbcl*)
-      AC_MSG_CHECKING([$AXIOM_LISP version])
-      v=`$AXIOM_LISP --version`
-      AC_MSG_RESULT([$v])
-      case $v in
-        *1.0.29)
-           AC_MSG_ERROR([This version of SBCL has a bug that breaks OpenAxiom build.  Consider SBCL-1.0.30 or higher.])
-           ;;
-      esac
-      ;;
-esac
-
-## Coherence check for GCL inclusion.
-case $axiom_include_gcl,$axiom_lisp in
-    ,|no,|yes*)
-       ## It doesn't make sense not to include GCL when no Lisp image
-       ## is available.  Give up.
-       if test $axiom_include_gcl,$AXIOM_LISP = no,; then
-           AC_MSG_ERROR([--disable-gcl specified but no GCL image found])
-       fi
-
-       ## No Lisp image was specified and none was available from
-       ## the build environment; build GCL from OpenAxiom source.
-       ## User may explicilty specify --enable-gcl, but may be missing
-       ## the dependency tarball.
-       if test ! -d ${srcdir}/gcl; then
-          AC_MSG_ERROR([The OpenAxiom dependency tarball is missing; please get it from our website.])
-       fi
-       AXIOM_LISP='$(axiom_build_bindir)/gcl'
-       axiom_all_prerequisites="$axiom_all_prerequisites all-gcl"
-       axiom_include_gcl=yes
-       axiom_lisp_flavor=gcl
-       axiom_fasl_type=o
-       ;;
-    yes,*)
-       AC_MSG_ERROR([--with-lisp=$axiom_lisp conflicts with --enable-gcl])
-       ;;
-    *)
-       ## As of this writting, the Lisp systems ECL, GCL, SBCL, and CLisp all
-       ## exist at the end of standard input.
-       AC_MSG_CHECKING([which flavor of Lisp])
-       what=`echo '(lisp-implementation-type)' | $axiom_lisp`
-       case $what in
-           *GCL*) 
-               axiom_lisp_flavor=gcl
-               ;;
-           *"ECL"*) 
-               axiom_lisp_flavor=ecl 
-               oa_standard_linking=yes
-               ;;
-           *"SBCL"*) 
-               axiom_lisp_flavor=sbcl 
-               ;;
-           *"CLISP"*)
-               ## Not all variants of CLisp have FFI support.  FFI is used
-               ## internally used by OpenAxiom in essential way.
-               if ! $axiom_lisp -q -x '*features*' | grep ':FFI' > /dev/null
-               then
-                 AC_MSG_ERROR([$axiom_lisp does not support Foreign Function Interface.  Please upgrade to a better version of CLisp or install SBCL.])
-               fi
-               axiom_lisp_flavor=clisp
-               ;;
-           *"Armed Bear Common Lisp"*) 
-               axiom_lisp_flavor=abcl 
-               ;;
-           *"Clozure Common Lisp"*)
-               axiom_lisp_flavor=clozure
-               ;;
-       esac
-       AC_MSG_RESULT([$axiom_lisp_flavor])
-esac
-
-AC_SUBST(axiom_include_gcl)
-AC_SUBST(axiom_lisp_flavor)
-AC_SUBST(oa_standard_linking)
-AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
-                   [openaxiom_${axiom_lisp_flavor}_runtime],
-                   [The kind of base runtime system for this build.])
-
-## The following is a horrible hack to arrange for GCL to successfully
-## rebuild symbol tables with "rsym" on Windows platform.  It should
-## go away as soon as GCL upstream is fixed.
-case $axiom_lisp_flavor,$target in
-    gcl,*mingw*)
-        axiom_gcl_rsym_hack='d=`echo "(format nil \"~a\" si::*system-directory*)" | $(AXIOM_LISP) | grep "/gcl.*/" | sed -e "s,\",,g"`; cp $$d/rsym$(EXEEXT) .'
-        ;;
-    *) 
-        ## Breath.
-        axiom_gcl_rsym_hack=':'
-        ;;
-esac
-AC_SUBST(axiom_gcl_rsym_hack)
-
-
-## If we are using GCL as the base runtime system, then we do really need
-# a C compiler from GNU.  Well, at least for the moment.
-case $axiom_lisp_flavor,$GCC in
-   gcl,yes)
-       axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
-       ;;
-   
-   gcl,*)
-       AC_MSG_ERROR([We need a GNU C compiler])
-       ;;
-esac
-AC_SUBST(axiom_cflags)
-
-## Can we use dynamically linked libraries?  
-## Tentatively answer `yes' -- this is modern time.
-oa_use_dynamic_lib=yes
-
-## How are we supposed to tell the Lisp system to eval an expression
-## in batch mode?  What is the extension of a compiled Lisp file?
-case $axiom_lisp_flavor in
-    gcl) 
-       axiom_quiet_flags='-batch'
-       axiom_eval_flags='-eval'
-       oa_use_dynamic_lib=no  
-       ;;
-    ecl) 
-       axiom_quiet_flags=
-       axiom_eval_flags='-norc -eval'
-       oa_use_dynamic_lib=no  
-       ;;
-    sbcl) 
-       axiom_quiet_flags='--noinform --noprint'
-       axiom_eval_flags='--eval'
-       ;;
-    clisp) 
-       axiom_quiet_flags='--quiet'
-       axiom_eval_flags='-norc -x'
-       ;;
-    clozure)
-       axiom_quiet_flags='--quiet --no-init'
-       axiom_eval_flags='--eval'
-       ;;
-    *) AC_MSG_ERROR([We do not know how to build OpenAxiom this $axiom_lisp]) ;;
-esac
-AC_SUBST(axiom_quiet_flags)
-AC_SUBST(axiom_eval_flags)
-AC_SUBST(oa_use_dynamic_lib)
-if test -z $axiom_fasl_type; then
-    AC_MSG_CHECKING([compiled Lisp file extension])
-    ## We set the IFS to <space> as we don't want automatic
-    ## replacement of <newline> by <space>.
-    axiom_save_IFS=$IFS
-    IFS=' '
-    axiom_fasl_type=`$axiom_lisp $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
-
-    ## Now pull out the fasl type.  ECL has the habit of spitting noise
-    ## about internal loading.  Therefore, we must look only for a line that
-    ## begins with axiom_fasl_type.
-    axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
-    IFS=$axiom_save_IFS
-    axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-    if test -z $axiom_fasl_type; then
-        AC_MSG_ERROR([Could not determine extension for compiled Lisp files])
-    fi
-    AC_MSG_RESULT([$axiom_fasl_type])
-fi
-AC_SUBST(axiom_fasl_type)
+OPENAXIOM_FILE_EXTENSIONS($axiom_lisp)
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
@@ -421,8 +205,6 @@ AC_SUBST(oa_enable_profiling)
 axiom_c_runtime=
 AC_SUBST(axiom_c_runtime)
 
-AC_CHECK_HEADERS([stdint.h inttypes.h])
-AC_TYPE_UINT8_T
 AC_CHECK_HEADERS([signal.h],
                  [],
                  [AC_MSG_ERROR([OpenAxiom needs signal support.])])
@@ -545,8 +327,8 @@ if test x"$ac_cv_have_decl_fork" = xyes \
     axiom_c_runtime="$axiom_c_runtime terminal_io"
     axiom_src_all="$axiom_src_all all-sman all-clef"
     axiom_src_subdirs="$axiom_src_subdirs clef sman"
-    AXIOM_MAKEFILE([src/clef/Makefile])
-    AXIOM_MAKEFILE([src/sman/Makefile])
+    OPENAXIOM_MAKEFILE([src/clef/Makefile])
+    OPENAXIOM_MAKEFILE([src/sman/Makefile])
 else
     axiom_use_sman=0
     AC_MSG_NOTICE([Superman component is disabled.])
@@ -600,12 +382,12 @@ if test -z $no_x; then
     axiom_c_runtime="$axiom_c_runtime graphics"
     axiom_src_all="$axiom_src_all all-graph"
     axiom_src_subdirs="$axiom_src_subdirs graph"
-    AXIOM_MAKEFILE([src/graph/Makefile])
-    AXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
-    AXIOM_MAKEFILE([src/graph/view2D/Makefile])
-    AXIOM_MAKEFILE([src/graph/view3D/Makefile])
-    AXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
-    AXIOM_MAKEFILE([src/graph/viewman/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
 else
     AC_MSG_NOTICE([The Garphics component is disabled.])
 fi
@@ -669,73 +451,20 @@ GCLOPTS="$axiom_gcl_emacs $axiom_gcl_bfd_option $axiom_gcl_mm_option $axiom_gcl_
 
 AC_SUBST(CCF)
 AC_SUBST(GCLOPTS)
-case $axiom_lisp_flavor in
-   gcl)
-      void_type='void'
-      char_type='char'
-      int_type='int'
-      float_type='float'
-      double_type='double'
-      string_type='string'
-      ;;
-   sbcl)
-      void_type='void'
-      char_type='char'
-      int_type='int'
-      float_type='float'
-      double_type='double'
-      string_type='c-string'
-      ;;
-   clisp)
-      void_type='nil'
-      char_type='character'
-      int_type='int'
-      float_type='single-float'
-      double_type='double-float'
-      string_type='c-string'
-      ;;
-   ecl)
-      void_type=':void'
-      char_type=':char'
-      int_type=':int'
-      float_type=':float'
-      double_type=':double'
-      string_type=':cstring'
-      ;;
-   clozure)
-      void_type=':void'
-      # FIXME: this is not really what we want, but good enough for now.
-      char_type=':unsigned-byte'
-      int_type=':signed-fullword'
-      float_type=':single-float'
-      double_type=':double-float'
-      # Clozure CL wants you to deal with your own mess
-      string_type=':address'
-      ;;
-   *)
-      AC_MSG_ERROR([We do not know how to translate native types for this Lisp])
-      ;;
-esac
-AC_SUBST(void_type)
-AC_SUBST(char_type)
-AC_SUBST(int_type)
-AC_SUBST(float_type)
-AC_SUBST(double_type)
-AC_SUBST(string_type)
-
-AXIOM_MAKEFILE([Makefile])
-AXIOM_MAKEFILE([src/Makefile])
-AXIOM_MAKEFILE([src/lib/Makefile])
-AXIOM_MAKEFILE([src/hyper/Makefile])
-AXIOM_MAKEFILE([src/driver/Makefile])
-AXIOM_MAKEFILE([src/lisp/Makefile])
-AXIOM_MAKEFILE([src/boot/Makefile])
-AXIOM_MAKEFILE([src/interp/Makefile])
-AXIOM_MAKEFILE([src/share/Makefile])
-AXIOM_MAKEFILE([src/algebra/Makefile])
-AXIOM_MAKEFILE([src/input/Makefile])
-AXIOM_MAKEFILE([src/etc/Makefile])
-AXIOM_MAKEFILE([src/doc/Makefile])
+OPENAXIOM_FFI_TYPE_TABLE
+OPENAXIOM_MAKEFILE([Makefile])
+OPENAXIOM_MAKEFILE([src/Makefile])
+OPENAXIOM_MAKEFILE([src/lib/Makefile])
+OPENAXIOM_MAKEFILE([src/hyper/Makefile])
+OPENAXIOM_MAKEFILE([src/driver/Makefile])
+OPENAXIOM_MAKEFILE([src/lisp/Makefile])
+OPENAXIOM_MAKEFILE([src/boot/Makefile])
+OPENAXIOM_MAKEFILE([src/interp/Makefile])
+OPENAXIOM_MAKEFILE([src/share/Makefile])
+OPENAXIOM_MAKEFILE([src/algebra/Makefile])
+OPENAXIOM_MAKEFILE([src/input/Makefile])
+OPENAXIOM_MAKEFILE([src/etc/Makefile])
+OPENAXIOM_MAKEFILE([src/doc/Makefile])
 
 ## We now generate the "document" script and support files at configure time.
 ## We put them in the build directory because they are intended to be 

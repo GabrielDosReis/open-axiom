@@ -53,12 +53,15 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 
 AR = @AR@
 CC = @CC@
+CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
+LDFLAGS = @LDFLAGS@
 OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
 # this includes leading period
 SHREXT = @shared_ext@
-# this does not include period
+# extension of the archive library; this does not include period
 LIBEXT = @libext@
 
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -67,24 +70,26 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIBTOOL = $(top_builddir)/libtool
 
 ## Command used to compile a C program 
-COMPILE = $(LIBTOOL) --mode=compile $(CC) -c
-CXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) -c
+COMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) -c $(CPPFLAGS)
+CXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CPPFLAGS)
 
 ## Sadly, at the moment, the C parts of the OpenAxiom system is not
 ## well structured enough to allow for clean dynamic libraries
 ## and dynamic linking.  So, we build static programs.
 ## This situation is to be fixed when I have time.
-LINK = $(LIBTOOL) --mode=link $(CC) -static
-CXXLINK = $(LIBTOOL) --mode=link $(CXX) -static
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CC) -static $(LDFLAGS)
+CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) -static $(LDFLAGS)
 
 ## Libtool is a disaster for building DLLs on Cygwin, and insists
 ## on adding silly extensions where it should not on MinGW, so we have
 ## to be very selective about when and where to use.  Sadly, that ends
 ## up negating the whole point of having Libtool in the first place.
 ifeq (@oa_use_libtool_for_shared_lib@,no)
-LINK_SHRLIB = $(CC)
+LINK_SHRLIB = $(CC) $(LDFLAGS)
+CXXLINK_SHRLIB = $(CXX) $(LDFLAGS)
 else
-LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC)
+LINK_SHRLIB = $(LIBTOOL) --tag=CC --mode=link $(CC) $(LDFLAGS)
+CXXLINK_SHRLIB = $(LIBTOOL) --tag=CXX --mode=link $(CC) $(LDFLAGS)
 endif
 
 
