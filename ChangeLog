@@ -1,5 +1,11 @@
 2010-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* config/open-axiom.m4 (OPENAXIOM_BUILD_TOOLS): New.  Abstract
+	over build tool requirements.
+	* configure.ac.pamphlet: Use it.
+
+2010-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* config/open-axiom.m4 (OPENAXIOM_DYNAMIC_MODULE_SUPPORT): New.
 	* configure.ac.pamphlet: Use it.
 

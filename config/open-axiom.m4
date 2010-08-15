@@ -477,3 +477,48 @@ case $host in
        ;;
 esac
 ])
+
+
+dnl ---------------------------
+dnl -- OPENAXIOM_BUILD_TOOLS --
+dnl ---------------------------
+dnl Check for utilities we need for building the system.
+AC_DEFUN([OPENAXIOM_BUILD_TOOLS],[
+AC_CHECK_PROG([TOUCH], [touch],
+              [touch], [AC_MSG_ERROR(['touch' program is missing.])])
+AC_PROG_INSTALL
+AC_CHECK_PROGS([MKTEMP], [mktemp])
+AC_PROG_AWK
+
+## Find GNU Make
+case $build in
+    *linux*)
+	# GNU/Linux systems come equipped with GNU Make, called `make'
+        AC_CHECK_PROGS([MAKE], [make],
+                       [AC_MSG_ERROR([Make utility missing.])])
+	;;
+    *)
+        # Other systems tend to spell it `gmake' and such
+        AC_CHECK_PROGS([MAKE], [gmake make],
+                       [AC_MSG_ERROR([Make utility missing.])])
+	if ! $MAKE --version | grep 'GNU' 2>/dev/null; then
+	    AC_MSG_ERROR([OpenAxiom build system needs GNU Make.])
+	fi
+	;;
+esac
+
+## Make sure noweb executable is available
+AC_CHECK_PROGS([NOTANGLE], [notangle])
+AC_CHECK_PROGS([NOWEAVE], [noweave])
+## In case noweb is missing we need to build our own.
+if test -z $NOTANGLE -o -z $NOWEAVE ; then
+    ## Yes, but do we have the source files to build from?
+    if test ! -d ${srcdir}/noweb; then
+       AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
+       AC_MSG_ERROR([Please get the tarball of dependencies and reconfigure])
+    fi
+    NOTANGLE='$(axiom_build_bindir)/notangle'
+    NOWEAVE='$(axiom_build_bindir)/noweave'
+    axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
+fi
+])

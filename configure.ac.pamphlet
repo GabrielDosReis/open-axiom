@@ -629,10 +629,6 @@ platforms.
 ## It is vital that noweb is present in the build environement.
 axiom_all_prerequisites=
 
-<<find make>>
-
-<<file utils>>
-
 <<awk and tar program>>
 
 <<binary utils>>
@@ -675,54 +671,9 @@ AC_SUBST(axiom_all_prerequisites)
 The next paragraphs detail each of the cluster of build utilities
 [[configure]] looks for.
 
-\paragraph{The \Tool{Make} program.}
-
-Of course, no build can proceed with \File{Tool} inexisting from
-the build-environment.  We insist on GNU \Tool{Make} program as there 
-are way too many variations, way too many incompatible implementations 
-and extensions.  Please, note that this requirement just reflects
-\Tool{OpenAxiom}'s dependencies on external toos:  \Tool{OpenAxiom} relies on 
-\Tool{GCL}, which in turn uses \Tool{GCC}.  Building \Tool{GCC} requires
-\Tool{GNU Make}, and \Tool{GCL} itself requires \Tool{GNU Make}.
-<<find make>>=
-case $build in
-    *linux*)
-	# GNU/Linux systems come equipped with GNU Make, called `make'
-        AC_CHECK_PROGS([MAKE], [make],
-                       [AC_MSG_ERROR([Make utility missing.])])
-	;;
-    *)
-        # Other systems tend to spell it `gmake' and such
-        AC_CHECK_PROGS([MAKE], [gmake make],
-                       [AC_MSG_ERROR([Make utility missing.])])
-	if ! $MAKE --version | grep 'GNU' 2>/dev/null; then
-	    AC_MSG_ERROR([OpenAxiom build system needs GNU Make.])
-	fi
-	;;
-esac
-
-@
-
 \paragraph{File utils}
 Then, check for a usable [[install]] program.  Also, find out
 way to hard- or soft-link files.  
-
-After a recent migration to
-\Tool{Autoconf-2.60}, it turns out that all possibilities of
-soft-linking are tried (to ``play safe''), and if any variation
-fails then, [[LN_S]] is defined to [[cp -p]], which works
-only for files as sources.  But, the only way we currently
-use [[LN_S]] is when the first argument is a directory.  So, the 
-``portability help'' we get from \Tool{Autoconf} is no help.  
-Consequently, the test for
-[[ln -s]] is commented out for the moment.
-<<file utils>>=
-AC_PROG_INSTALL
-# AC_PROG_LN_S
-AC_CHECK_PROG([TOUCH], [touch],
-              [touch], [AC_MSG_ERROR(['touch' program is missing.])])
-AC_CHECK_PROGS([MKTEMP], [mktemp])
-@
 
 \paragraph{The [[awk]] program}
 The old build machinery needs \Tool{awk} on the build machine for
@@ -732,7 +683,6 @@ the moment we do not make a distinction between the build machine
 and the host machine (though that may change in the future).
 
 <<awk and tar program>>=
-AC_PROG_AWK
 AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 @
@@ -766,24 +716,6 @@ if test -z "$PDFLATEX"; then
 fi
 
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
-
-## ---------------------------------------
-## Make sure noweb executable is available
-## ---------------------------------------
-AC_CHECK_PROGS([NOTANGLE], [notangle])
-AC_CHECK_PROGS([NOWEAVE], [noweave])
-
-## In case noweb is missing we need to build our own.
-if test -z $NOTANGLE -o -z $NOWEAVE ; then
-    ## Yes, but do we have the source files to build from?
-    if test ! -d ${srcdir}/noweb; then
-       AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
-       AC_MSG_ERROR([Please get the tarball of dependencies and reconfigure])
-    fi
-    NOTANGLE='$(axiom_build_bindir)/notangle'
-    NOWEAVE='$(axiom_build_bindir)/noweave'
-    axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
-fi
 @
 
 \section{Configuration options}
@@ -972,6 +904,8 @@ OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
 OPENAXIOM_DYNAMIC_MODULE_SUPPORT
+
+OPENAXIOM_BUILD_TOOLS
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
