@@ -189,8 +189,19 @@ AC_DEFUN([OPENAXIOM_HOST_COMPILERS],[
 OPENAXIOM_PROG_LISP
 OPENAXIOM_LISP_FLAVOR($axiom_lisp)
 OPENAXIOM_REJECT_ROTTED_LISP($AXIOM_LISP)
+OPENAXIOM_HOST_LISP_CPU_PRECISION
 AC_PROG_CC
 AC_PROG_CXX
+## Augment C and C++ compiler flags with ABI directives as appropriate.
+case $GCC in
+  yes)
+    CPPFLAGS="$CPPFLAGS -m$openaxiom_host_lisp_precision"
+    LDFLAGS="$LDFLAGS -m$openaxiom_host_lisp_precision"
+    ;;
+  no)
+    # cross fingers and pray.
+    ;;
+esac
 OPENAXIOM_SATISFY_GCL_NEEDS
 AC_PROG_CPP
 ])
@@ -406,7 +417,6 @@ dnl ------------------------------------
 dnl -- OPENAXIOM_HOST_DATA_PROPERTIES --
 dnl ------------------------------------
 AC_DEFUN([OPENAXIOM_HOST_DATA_PROPERTIES],[
-OPENAXIOM_HOST_LISP_CPU_PRECISION
 ## Byte order of the host.
 AC_C_BIGENDIAN
 AC_CHECK_HEADERS([stdint.h inttypes.h])
@@ -421,15 +431,4 @@ fi
 AC_DEFINE_UNQUOTED([OPENAXIOM_HOST_LISP_PRECISION],
                    [$openaxiom_host_lisp_precision],
                    [The width of the host Lisp and CPU registers.])
-
-## Augment compiler flags with ABI directives as appropriate.
-case $GCC in
-  yes)
-    CFLAGS="$CFLAGS -m$openaxiom_host_lisp_precision"
-    CXXFLAGS="$CXXFLAGS -m$openaxiom_host_lisp_precision"
-    ;;
-  no)
-    # cross fingers and pray.
-    ;;
-esac
 ])
