@@ -30,45 +30,20 @@ AC_SUBST(oa_all_prerequisites)
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
-OPENAXIOM_DYNAMIC_MODULE_SUPPORT
 
+OPENAXIOM_DYNAMIC_MODULE_SUPPORT
 OPENAXIOM_BUILD_TOOLS
+OPENAXIOM_LISP_FLAGS
+OPENAXIOM_FILE_EXTENSIONS
+
+OPENAXIOM_HOST_PROGS
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
-## On Windows system, we prefer the default installation
-## location to be 'C:/Program Files/OpenAxiom', following Windows 
-## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
-## to operate unconditionally.  Therefore, we resort to this dirty
-## trick stepping over Autoconf's internals.
-case $host in
-    *mingw*)
-        ac_default_prefix="C:/Program Files/OpenAxiom"
-        AC_PATH_PROGS([oa_editor],[notepad.exe])
-        ;;
-    *)  
-        AC_PATH_PROGS([oa_editor],[vi])
-        ;;
-esac
-AC_SUBST(oa_editor)
-
-AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
-
 
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
 
-AC_PATH_PROG([PDFLATEX], [pdflatex])
-if test -z "$PDFLATEX"; then
-   AC_PATH_PROG([LATEX], [latex],
-                [AC_MSG_NOTICE([Documentation is disabled.])])
-fi
-
-AC_CHECK_PROGS([MAKEINDEX], [makeindex])
-
-OPENAXIOM_LISP_FLAGS
-
-OPENAXIOM_FILE_EXTENSIONS
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=

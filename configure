@@ -814,16 +814,16 @@ axiom_optimize_options
 axiom_enable_checking
 oa_enable_threads
 oa_keep_files
-axiom_fasl_type
-oa_use_dynamic_lib
-axiom_eval_flags
-axiom_quiet_flags
+axiom_src_subdirs
 MAKEINDEX
 LATEX
 PDFLATEX
 HOST_AWK
 oa_editor
-axiom_src_subdirs
+axiom_fasl_type
+oa_use_dynamic_lib
+axiom_eval_flags
+axiom_quiet_flags
 NOWEAVE
 NOTANGLE
 MAKE
@@ -6473,6 +6473,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
+
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:$LINENO: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -6958,13 +6959,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:6961: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:6962: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6964: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:6965: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:6967: output\"" >&5)
+  (eval echo "\"\$as_me:6968: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -8166,7 +8167,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 8169 "configure"' > conftest.$ac_ext
+  echo '#line 8170 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -10446,11 +10447,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10449: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10450: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10453: \$? = $ac_status" >&5
+   echo "$as_me:10454: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10785,11 +10786,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10788: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10789: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10792: \$? = $ac_status" >&5
+   echo "$as_me:10793: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10890,11 +10891,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10893: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10894: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10897: \$? = $ac_status" >&5
+   echo "$as_me:10898: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10945,11 +10946,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10948: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10949: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10952: \$? = $ac_status" >&5
+   echo "$as_me:10953: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -13745,7 +13746,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 13748 "configure"
+#line 13749 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13841,7 +13842,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 13844 "configure"
+#line 13845 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -15861,11 +15862,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15864: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15865: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15868: \$? = $ac_status" >&5
+   echo "$as_me:15869: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15960,11 +15961,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15963: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15964: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15967: \$? = $ac_status" >&5
+   echo "$as_me:15968: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16012,11 +16013,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16015: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16016: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16019: \$? = $ac_status" >&5
+   echo "$as_me:16020: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17018,7 +17019,6 @@ case $host in
 esac
 
 
-
 # Extract the first word of "touch", so it can be a program name with args.
 set dummy touch; ac_word=$2
 { $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -17443,7 +17443,82 @@ $as_echo "$as_me: error: Please get the tarball of dependencies and reconfigure"
 fi
 
 
-axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
+
+
+
+## Can we use dynamically linked libraries?
+## Tentatively answer `yes' -- this is modern time.
+oa_use_dynamic_lib=yes
+
+
+## How are we supposed to tell the Lisp system to eval an expression
+## in batch mode?  What is the extension of a compiled Lisp file?
+case $axiom_lisp_flavor in
+    gcl)
+       axiom_quiet_flags='-batch'
+       axiom_eval_flags='-eval'
+       oa_use_dynamic_lib=no
+       ;;
+    ecl)
+       axiom_quiet_flags=
+       axiom_eval_flags='-norc -eval'
+       oa_use_dynamic_lib=no
+       ;;
+    sbcl)
+       axiom_quiet_flags='--noinform --noprint'
+       axiom_eval_flags='--eval'
+       ;;
+    clisp)
+       axiom_quiet_flags='--quiet'
+       axiom_eval_flags='-norc -x'
+       ;;
+    clozure)
+       axiom_quiet_flags='--quiet --no-init'
+       axiom_eval_flags='--eval'
+       ;;
+    *) { { $as_echo "$as_me:$LINENO: error: We do not know how to build OpenAxiom this $AXIOM_LISP" >&5
+$as_echo "$as_me: error: We do not know how to build OpenAxiom this $AXIOM_LISP" >&2;}
+   { (exit 1); exit 1; }; } ;;
+esac
+
+
+
+{ $as_echo "$as_me:$LINENO: checking compiled Lisp file extension" >&5
+$as_echo_n "checking compiled Lisp file extension... " >&6; }
+if test x"$oa_include_gcl" = xyes; then
+   axiom_fasl_type=o
+else
+   ## We set the IFS to <space> as we don't want automatic
+   ## replacement of <newline> by <space>.
+   openaxiom_save_IFS=$IFS
+   IFS=' '
+   axiom_fasl_type=`$AXIOM_LISP $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
+
+   ## Now pull out the fasl type.  ECL has the habit of spitting noise
+   ## about internal loading.  Therefore, we must look only for a line that
+   ## begins with axiom_fasl_type.
+   axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
+   IFS=$openaxiom_save_IFS
+   axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
+   if test -z $axiom_fasl_type; then
+       { { $as_echo "$as_me:$LINENO: error: Could not determine extension for compiled Lisp files" >&5
+$as_echo "$as_me: error: Could not determine extension for compiled Lisp files" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+fi
+{ $as_echo "$as_me:$LINENO: result: $axiom_fasl_type" >&5
+$as_echo "$axiom_fasl_type" >&6; }
+
+## What is the extension of object and executable files on this platform?
+
+
+cat >>confdefs.h <<_ACEOF
+#define OPENAXIOM_EXEEXT "$ac_cv_exeext"
+_ACEOF
+
+
+
+
 
 
 ## On Windows system, we prefer the default installation
@@ -17499,7 +17574,7 @@ fi
   test -n "$oa_editor" && break
 done
 
-        ;;
+	;;
     *)
         for ac_prog in vi
 do
@@ -17549,7 +17624,6 @@ done
         ;;
 esac
 
-
 for ac_prog in awk nawk gawk mawk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -17594,48 +17668,6 @@ fi
 
   test -n "$HOST_AWK" && break
 done
-
-
-
-# Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_AR+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$AR"; then
-  ac_cv_prog_AR="$AR" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_AR="ar"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_AR" && ac_cv_prog_AR="{ { $as_echo "$as_me:$LINENO: error: program 'ar' is missing" >&5
-$as_echo "$as_me: error: program 'ar' is missing" >&2;}
-   { (exit 1); exit 1; }; }"
-fi
-fi
-AR=$ac_cv_prog_AR
-if test -n "$AR"; then
-  { $as_echo "$as_me:$LINENO: result: $AR" >&5
-$as_echo "$AR" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
 
 
 # Extract the first word of "pdflatex", so it can be a program name with args.
@@ -17722,7 +17754,6 @@ fi
 
 
 fi
-
 for ac_prog in makeindex
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -17767,79 +17798,49 @@ done
 
 
 
+axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 
 
 
-## Can we use dynamically linked libraries?
-## Tentatively answer `yes' -- this is modern time.
-oa_use_dynamic_lib=yes
-
-
-## How are we supposed to tell the Lisp system to eval an expression
-## in batch mode?  What is the extension of a compiled Lisp file?
-case $axiom_lisp_flavor in
-    gcl)
-       axiom_quiet_flags='-batch'
-       axiom_eval_flags='-eval'
-       oa_use_dynamic_lib=no
-       ;;
-    ecl)
-       axiom_quiet_flags=
-       axiom_eval_flags='-norc -eval'
-       oa_use_dynamic_lib=no
-       ;;
-    sbcl)
-       axiom_quiet_flags='--noinform --noprint'
-       axiom_eval_flags='--eval'
-       ;;
-    clisp)
-       axiom_quiet_flags='--quiet'
-       axiom_eval_flags='-norc -x'
-       ;;
-    clozure)
-       axiom_quiet_flags='--quiet --no-init'
-       axiom_eval_flags='--eval'
-       ;;
-    *) { { $as_echo "$as_me:$LINENO: error: We do not know how to build OpenAxiom this $AXIOM_LISP" >&5
-$as_echo "$as_me: error: We do not know how to build OpenAxiom this $AXIOM_LISP" >&2;}
-   { (exit 1); exit 1; }; } ;;
-esac
-
-
-
-
-{ $as_echo "$as_me:$LINENO: checking compiled Lisp file extension" >&5
-$as_echo_n "checking compiled Lisp file extension... " >&6; }
-if test x"$oa_include_gcl" = xyes; then
-   axiom_fasl_type=o
+# Extract the first word of "ar", so it can be a program name with args.
+set dummy ar; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_AR+set}" = set; then
+  $as_echo_n "(cached) " >&6
 else
-   ## We set the IFS to <space> as we don't want automatic
-   ## replacement of <newline> by <space>.
-   openaxiom_save_IFS=$IFS
-   IFS=' '
-   axiom_fasl_type=`$AXIOM_LISP $axiom_quiet_flags $axiom_eval_flags '(progn (format t "axiom_fasl_type=~a" (pathname-type (compile-file-pathname "foo.lisp"))) (quit))'`
+  if test -n "$AR"; then
+  ac_cv_prog_AR="$AR" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_AR="ar"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
 
-   ## Now pull out the fasl type.  ECL has the habit of spitting noise
-   ## about internal loading.  Therefore, we must look only for a line that
-   ## begins with axiom_fasl_type.
-   axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
-   IFS=$openaxiom_save_IFS
-   axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-   if test -z $axiom_fasl_type; then
-       { { $as_echo "$as_me:$LINENO: error: Could not determine extension for compiled Lisp files" >&5
-$as_echo "$as_me: error: Could not determine extension for compiled Lisp files" >&2;}
-   { (exit 1); exit 1; }; }
-   fi
+  test -z "$ac_cv_prog_AR" && ac_cv_prog_AR="{ { $as_echo "$as_me:$LINENO: error: program 'ar' is missing" >&5
+$as_echo "$as_me: error: program 'ar' is missing" >&2;}
+   { (exit 1); exit 1; }; }"
 fi
-{ $as_echo "$as_me:$LINENO: result: $axiom_fasl_type" >&5
-$as_echo "$axiom_fasl_type" >&6; }
+fi
+AR=$ac_cv_prog_AR
+if test -n "$AR"; then
+  { $as_echo "$as_me:$LINENO: result: $AR" >&5
+$as_echo "$AR" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
-## What is the extension of object and executable files on this platform?
-
-
-cat >>confdefs.h <<_ACEOF
-#define OPENAXIOM_EXEEXT "$ac_cv_exeext"
-_ACEOF
 
 
 

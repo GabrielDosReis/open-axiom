@@ -626,15 +626,9 @@ environment.  However, notice that since we only support \emph{native}
 build at the moment, the tests are also for the host and target
 platforms.
 <<build utils>>=
-<<awk and tar program>>
 
 <<binary utils>>
 
-<<doc utils>>
-
-OPENAXIOM_LISP_FLAGS
-
-OPENAXIOM_FILE_EXTENSIONS
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
@@ -671,47 +665,11 @@ The next paragraphs detail each of the cluster of build utilities
 Then, check for a usable [[install]] program.  Also, find out
 way to hard- or soft-link files.  
 
-\paragraph{The [[awk]] program}
-The old build machinery needs \Tool{awk} on the build machine for
-extracting algebra definitions.  The same tool is needed on the
-host machine for proper run of HyperDoc utilities.  Note that at
-the moment we do not make a distinction between the build machine
-and the host machine (though that may change in the future).
-
-<<awk and tar program>>=
-AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
-
-@
-
 \paragraph{Binary utils.}
 
 We need to know how to put object files into archives.
 <<binary utils>>=
 AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
-@
-
-\paragraph{Doc utils.}
-
-OpenAxiom sources is literate, and it uses the \Tool{noweb} technology.
-\Tool{noweb} is used to extract both the actual source code from the
-pamphlet files, and the documentation as \LaTeX{} source files.
-There are many platforms on which \Tool{noweb} is not installed
-by default.  There is tarball of the dependencies on OpenAxiom's
-web site to people to grab in case they don't have \Tool{noweb}
-or \Tool{GCL}.  What we do is that if noweb is not found, then
-we try to build one from the tarball of dependency.  For that
-to work, the protocol is that the user has placed \Tool{noweb}'s source
-files in a directory named \File{noweb/} at the top level.  Normally, 
-this works right when one follows the installation instructions.
-%
-<<doc utils>>=
-AC_PATH_PROG([PDFLATEX], [pdflatex])
-if test -z "$PDFLATEX"; then
-   AC_PATH_PROG([LATEX], [latex],
-                [AC_MSG_NOTICE([Documentation is disabled.])])
-fi
-
-AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 @
 
 \section{Configuration options}
@@ -904,28 +862,16 @@ AC_SUBST(oa_all_prerequisites)
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
-OPENAXIOM_DYNAMIC_MODULE_SUPPORT
 
+OPENAXIOM_DYNAMIC_MODULE_SUPPORT
 OPENAXIOM_BUILD_TOOLS
+OPENAXIOM_LISP_FLAGS
+OPENAXIOM_FILE_EXTENSIONS
+
+OPENAXIOM_HOST_PROGS
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
-
-## On Windows system, we prefer the default installation
-## location to be 'C:/Program Files/OpenAxiom', following Windows 
-## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
-## to operate unconditionally.  Therefore, we resort to this dirty
-## trick stepping over Autoconf's internals.
-case $host in
-    *mingw*)
-        ac_default_prefix="C:/Program Files/OpenAxiom"
-        AC_PATH_PROGS([oa_editor],[notepad.exe])
-	;;
-    *)  
-        AC_PATH_PROGS([oa_editor],[vi])
-        ;;
-esac
-AC_SUBST(oa_editor)
 
 <<build utils>>
 <<runtime checking>>
