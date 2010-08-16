@@ -243,6 +243,52 @@ esac
 AC_SUBST(axiom_cflags)
 ])
 
+dnl ---------------------------------
+dnl -- OPENAXIOM_GCL_BUILD_OPTIONS --
+dnl ---------------------------------
+dnl Determine options needed to build included GCL, if need be.
+AC_DEFUN([OPENAXIOM_GCL_BUILD_OPTIONS],[
+oa_host_has_libbfd=
+## Check for these only if we are going to build GCL from source.
+case $oa_all_prerequisites in
+    *all-gcl*)
+	AC_CHECK_HEADER([bfd.h])
+	AC_HAVE_LIBRARY([bfd], [oa_host_has_libbfd=yes])
+
+	oa_gcl_bfd_option=
+	if test x"$ac_cv_header_bfd_h" = xyes \
+	    && test x"$oa_host_has_libbfd" = xyes; then
+	    oa_gcl_bfd_option="--disable-dynsysbfd"
+	else
+	    oa_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+	fi
+        ;;
+    *)    
+        # Nothing to worry about
+        ;;
+esac
+
+case $host in
+   powerpc*darwin*)
+      axiom_gcl_bfd_option="--disable-statsysbfd \
+                                --enable-machine=powerpc-macosx"
+      axiom_gcl_mm_option="--enable-vssize=65536*2"
+      ;;
+esac
+
+## We don't need GCL to build support for X Window system or TCL/TK:
+oa_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl --disable-tcltk"
+
+## Under some unusual circumstances, GLC's configure will
+## fail to properly detect usable Emacs directories, and the
+## build will mysteriously fail later.  We temporarily work
+## around that bug as follows:
+oa_gcl_emacs="--enable-emacs=correct"
+
+GCLOPTS="$oa_gcl_emacs $oa_gcl_bfd_option $oa_gcl_mm_option $oa_gcl_x_option"
+AC_SUBST(GCLOPTS)
+])
+
 dnl --------------------------
 dnl -- OPENAXIOM_LISP_FLAGS --
 dnl --------------------------
@@ -917,4 +963,32 @@ AC_DEFUN([OPENAXIOM_CHECK_GRAPHICS],[
 OPENAXIOM_CHECK_X11
 OPENAXIOM_CHECK_QT
 OPENAXIOM_CHECK_BROWSER_SUPPORT
+])
+
+
+dnl --------------------------
+dnl -- OPENAXIOM_CHECK_MISC --
+dnl --------------------------
+AC_DEFUN([OPENAXIOM_CHECK_MISC],[
+case $GCC in
+  yes)
+     CCF="-O2 -Wall -D_GNU_SOURCE"
+     ;;
+esac
+
+case $target in
+    *bsd*|*dragonfly*)
+	CCF="-O2 -Wall"
+	;;
+    *solaris*)
+        ## This should be taken out.
+        AC_DEFINE([SUNplatform], [], [SunOS flavour])
+	;;
+    powerpc*darwin*)
+	CCF="-O2 -Wall -D_GNU_SOURCE \
+	    -I/usr/include -I/usr/include/sys"
+	;;
+esac
+
+AC_SUBST(CCF)
 ])
