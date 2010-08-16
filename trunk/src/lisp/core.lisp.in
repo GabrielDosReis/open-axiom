@@ -143,9 +143,9 @@
 
 ;; Lisp compiler optimization settings.
 (defconstant |$LispOptimizeOptions|
-  '(@axiom_optimize_options@))
+  '(@oa_optimize_options@))
 
-(proclaim '(optimize @axiom_optimize_options@))
+(proclaim '(optimize @oa_optimize_options@))
 
 ;; Enablig profiling of generated Lisp codes.
 (defconstant |$EnableLispProfiling| @oa_enable_profiling@)

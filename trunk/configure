@@ -809,17 +809,17 @@ X_CFLAGS
 XMKMF
 axiom_c_runtime_extra
 axiom_c_runtime
-oa_enable_profiling
-axiom_optimize_options
-axiom_enable_checking
-oa_enable_threads
-oa_keep_files
 axiom_src_subdirs
 MAKEINDEX
 LATEX
 PDFLATEX
 HOST_AWK
 oa_editor
+oa_optimize_options
+oa_enable_checking
+oa_enable_profiling
+oa_keep_files
+oa_enable_threads
 axiom_fasl_type
 oa_use_dynamic_lib
 axiom_eval_flags
@@ -941,10 +941,10 @@ enable_static
 enable_fast_install
 with_gnu_ld
 enable_libtool_lock
-enable_int_file_retention
 enable_threads
-enable_checking
+enable_int_file_retention
 enable_profiling
+enable_checking
 with_x
 '
       ac_precious_vars='build_alias
@@ -1597,10 +1597,10 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
-  --enable-int-file-retention   keep intermediary files
   --enable-threads   turn on threads support
-  --enable-checking  turn runtime checking on
+  --enable-int-file-retention   keep intermediary files
   --enable-profiling  turn profiling on
+  --enable-checking  turn runtime checking on
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -17519,6 +17519,82 @@ _ACEOF
 
 
 
+## Does it make sense to pretend that we support multithreading?
+oa_enable_threads=no
+# Check whether --enable-threads was given.
+if test "${enable_threads+set}" = set; then
+  enableval=$enable_threads; case $enableval in
+                  yes|no) oa_enable_threads=$enableval ;;
+                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-threads" >&5
+$as_echo "$as_me: error: erroneous value for --enable-threads" >&2;}
+   { (exit 1); exit 1; }; } ;;
+               esac
+fi
+
+# GNU compilers want hints about multithreading.
+case $GCC,$oa_enable_threads in
+   yes,yes)
+     axiom_cflags="$axiom_cflags -pthread"
+esac
+
+
+## Occaionally, we may want to keep intermediary files.
+oa_keep_files=
+# Check whether --enable-int-file-retention was given.
+if test "${enable_int_file_retention+set}" = set; then
+  enableval=$enable_int_file_retention; case $enableval in
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-int-file-retention" >&5
+$as_echo "$as_me: error: erroneous value for --enable-int-file-retention" >&2;}
+   { (exit 1); exit 1; }; } ;;
+               esac
+fi
+
+
+
+## Parse args for profiling-enabled build.
+oa_enable_profiling=no
+# Check whether --enable-profiling was given.
+if test "${enable_profiling+set}" = set; then
+  enableval=$enable_profiling; case $enableval in
+                  yes|no) oa_enable_profiling=$enableval ;;
+                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-profiling" >&5
+$as_echo "$as_me: error: erroneous value for --enable-profiling" >&2;}
+   { (exit 1); exit 1; }; } ;;
+               esac
+fi
+
+
+
+## Lisp optimization settings
+oa_optimize_options=speed
+## Shall we proclaim safety?
+oa_enable_checking=no          # don't turn on checking by default.
+# Check whether --enable-checking was given.
+if test "${enable_checking+set}" = set; then
+  enableval=$enable_checking; case $enableval in
+                  yes|no) oa_enable_checking=$enableval ;;
+                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-checking" >&5
+$as_echo "$as_me: error: erroneous value for --enable-checking" >&2;}
+   { (exit 1); exit 1; }; } ;;
+               esac
+fi
+
+if test x"$oa_enable_checking" = xyes; then
+   case $axiom_lisp_flavor in
+     gcl) # GCL-2.6.x does not understand debug.
+        oa_optimize_options="$oa_optimize_options safety"
+        ;;
+     *) oa_optimize_options="$oa_optimize_options safety debug"
+        ;;
+   esac
+   { $as_echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
+$as_echo "$as_me: runtime checking may increase compilation time" >&6;}
+fi
+
+
+
+
 
 
 ## On Windows system, we prefer the default installation
@@ -17799,125 +17875,6 @@ done
 
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
-
-
-
-# Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_AR+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$AR"; then
-  ac_cv_prog_AR="$AR" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_AR="ar"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_AR" && ac_cv_prog_AR="{ { $as_echo "$as_me:$LINENO: error: program 'ar' is missing" >&5
-$as_echo "$as_me: error: program 'ar' is missing" >&2;}
-   { (exit 1); exit 1; }; }"
-fi
-fi
-AR=$ac_cv_prog_AR
-if test -n "$AR"; then
-  { $as_echo "$as_me:$LINENO: result: $AR" >&5
-$as_echo "$AR" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-
-
-## Occaionally, we may want to keep intermediary files.
-oa_keep_files=
-# Check whether --enable-int-file-retention was given.
-if test "${enable_int_file_retention+set}" = set; then
-  enableval=$enable_int_file_retention; case $enableval in
-                  yes|no) oa_keep_files=$enableval ;;
-                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-int-file-retention" >&5
-$as_echo "$as_me: error: erroneous value for --enable-int-file-retention" >&2;}
-   { (exit 1); exit 1; }; } ;;
-               esac
-fi
-
-
-
-## Does it make sense to pretend that we support multithreading?
-oa_enable_threads=no
-# Check whether --enable-threads was given.
-if test "${enable_threads+set}" = set; then
-  enableval=$enable_threads; case $enableval in
-                  yes|no) oa_enable_threads=$enableval ;;
-                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-threads" >&5
-$as_echo "$as_me: error: erroneous value for --enable-threads" >&2;}
-   { (exit 1); exit 1; }; } ;;
-               esac
-fi
-
-
-# GNU compiler wants to have a hint about multithreading.
-case $GCC,$oa_enable_threads in
-   yes,yes)
-     axiom_cflags="$axiom_cflags -pthread"
-esac
-
-
-
-axiom_optimize_options=speed
-## Shall we proclaim safety?
-axiom_enable_checking=no          # don't turn on checking by default.
-# Check whether --enable-checking was given.
-if test "${enable_checking+set}" = set; then
-  enableval=$enable_checking; case $enableval in
-                  yes|no) axiom_enable_checking=$enableval ;;
-                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-checking" >&5
-$as_echo "$as_me: error: erroneous value for --enable-checking" >&2;}
-   { (exit 1); exit 1; }; } ;;
-               esac
-fi
-
-if test x"$axiom_enable_checking" = xyes; then
-   case $axiom_lisp_flavor in
-     gcl) # GCL-2.6.x does not understand debug.
-        axiom_optimize_options="$axiom_optimize_options safety"
-        ;;
-     *) axiom_optimize_options="$axiom_optimize_options safety debug"
-        ;;
-   esac
-   { $as_echo "$as_me:$LINENO: runtime checking may increase compilation time" >&5
-$as_echo "$as_me: runtime checking may increase compilation time" >&6;}
-fi
-
-
-
-
-## Parse args for profiling-enabled build.
-oa_enable_profiling=no
-# Check whether --enable-profiling was given.
-if test "${enable_profiling+set}" = set; then
-  enableval=$enable_profiling; case $enableval in
-                  yes|no) oa_enable_profiling=$enableval ;;
-                  *) { { $as_echo "$as_me:$LINENO: error: erroneous value for --enable-profiling" >&5
-$as_echo "$as_me: error: erroneous value for --enable-profiling" >&2;}
-   { (exit 1); exit 1; }; } ;;
-               esac
-fi
 
 
 

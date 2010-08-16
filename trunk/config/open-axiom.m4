@@ -559,3 +559,65 @@ if test -z "$PDFLATEX"; then
 fi
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 ])
+
+
+dnl -----------------------------
+dnl -- OPENAXIOM_BUILD_OPTIONS --
+dnl -----------------------------
+dnl Process build options specified on the command line.
+AC_DEFUN([OPENAXIOM_BUILD_OPTIONS],[
+## Does it make sense to pretend that we support multithreading?
+oa_enable_threads=no
+AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
+              [case $enableval in
+                  yes|no) oa_enable_threads=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
+               esac])
+# GNU compilers want hints about multithreading.
+case $GCC,$oa_enable_threads in
+   yes,yes)
+     axiom_cflags="$axiom_cflags -pthread"
+esac
+AC_SUBST(oa_enable_threads)
+
+## Occaionally, we may want to keep intermediary files.
+oa_keep_files=
+AC_ARG_ENABLE([int-file-retention], 
+              [  --enable-int-file-retention   keep intermediary files],
+              [case $enableval in
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
+               esac])
+AC_SUBST(oa_keep_files)
+
+## Parse args for profiling-enabled build.
+oa_enable_profiling=no
+AC_ARG_ENABLE([profiling], [  --enable-profiling  turn profiling on],
+              [case $enableval in
+                  yes|no) oa_enable_profiling=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-profiling]) ;;
+               esac])
+AC_SUBST(oa_enable_profiling)
+
+## Lisp optimization settings
+oa_optimize_options=speed
+## Shall we proclaim safety?
+oa_enable_checking=no          # don't turn on checking by default.
+AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
+              [case $enableval in
+                  yes|no) oa_enable_checking=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
+               esac])
+if test x"$oa_enable_checking" = xyes; then
+   case $axiom_lisp_flavor in
+     gcl) # GCL-2.6.x does not understand debug.
+        oa_optimize_options="$oa_optimize_options safety" 
+        ;;
+     *) oa_optimize_options="$oa_optimize_options safety debug" 
+        ;;
+   esac
+   AC_MSG_NOTICE([runtime checking may increase compilation time])
+fi
+AC_SUBST(oa_enable_checking)
+AC_SUBST(oa_optimize_options)
+])
