@@ -21,44 +21,18 @@ fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
 
+
+## Accumulate list of utils needed for the build platform
+## It is vital that noweb is present in the build environement.
+oa_all_prerequisites=
+AC_SUBST(oa_all_prerequisites)
+
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
+OPENAXIOM_DYNAMIC_MODULE_SUPPORT
 
-oa_use_libtool_for_shared_lib=yes
-oa_shrobj_flags=
-oa_shrlib_flags=
-# Tell Libtool to assume `dlopen' so that it does not have to
-# emulate it.
-LT_INIT([pic-only dlopen win32-dll shared])
-AC_SUBST([LIBTOOL_DEPS])
-# Give me extension of libraries
-module=yes
-eval shared_ext=\"$shrext_cmds\"
-AC_SUBST(shared_ext)
-AC_SUBST(libext)
-## Don't use Libtool for building actual DLLs on MinGW and Cygwin
-## Libool has been improved to the point of being useless
-## for building in-place shared libraries.
-oa_use_libtool_for_shared_lib=no
-case $host in
-    *mingw*|*cygwin*)
-       # oa_use_libtool_for_shared_lib=no
-       oa_shrobj_flags='-prefer-pic'
-       oa_shrlib_flags="-shared --export-all-symbols"
-       ;;
-    *darwin*)
-       oa_shrobj_flags='-dynamic'
-       oa_shrlib_flags='-bundle -undefined suppress -flat_namespace'
-       ;;
-    *)
-       oa_shrobj_flags='-prefer-pic'
-       oa_shrlib_flags='-shared'
-       ;;
-esac
-AC_SUBST(oa_use_libtool_for_shared_lib)
-AC_SUBST(oa_shrobj_flags)
-AC_SUBST(oa_shrlib_flags)
+OPENAXIOM_BUILD_TOOLS
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
@@ -79,34 +53,6 @@ case $host in
 esac
 AC_SUBST(oa_editor)
 
-## Accumulate list of utils needed for the build platform
-## It is vital that noweb is present in the build environement.
-axiom_all_prerequisites=
-
-case $build in
-    *linux*)
-        # GNU/Linux systems come equipped with GNU Make, called `make'
-        AC_CHECK_PROGS([MAKE], [make],
-                       [AC_MSG_ERROR([Make utility missing.])])
-        ;;
-    *)
-        # Other systems tend to spell it `gmake' and such
-        AC_CHECK_PROGS([MAKE], [gmake make],
-                       [AC_MSG_ERROR([Make utility missing.])])
-        if ! $MAKE --version | grep 'GNU' 2>/dev/null; then
-            AC_MSG_ERROR([OpenAxiom build system needs GNU Make.])
-        fi
-        ;;
-esac
-
-
-AC_PROG_INSTALL
-# AC_PROG_LN_S
-AC_CHECK_PROG([TOUCH], [touch],
-              [touch], [AC_MSG_ERROR(['touch' program is missing.])])
-AC_CHECK_PROGS([MKTEMP], [mktemp])
-
-AC_PROG_AWK
 AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 
@@ -120,27 +66,9 @@ fi
 
 AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 
-## ---------------------------------------
-## Make sure noweb executable is available
-## ---------------------------------------
-AC_CHECK_PROGS([NOTANGLE], [notangle])
-AC_CHECK_PROGS([NOWEAVE], [noweave])
-
-## In case noweb is missing we need to build our own.
-if test -z $NOTANGLE -o -z $NOWEAVE ; then
-    ## Yes, but do we have the source files to build from?
-    if test ! -d ${srcdir}/noweb; then
-       AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
-       AC_MSG_ERROR([Please get the tarball of dependencies and reconfigure])
-    fi
-    NOTANGLE='$(axiom_build_bindir)/notangle'
-    NOWEAVE='$(axiom_build_bindir)/noweave'
-    axiom_all_prerequisites="$axiom_all_prerequisites all-noweb"
-fi
-
 OPENAXIOM_LISP_FLAGS
 
-OPENAXIOM_FILE_EXTENSIONS($axiom_lisp)
+OPENAXIOM_FILE_EXTENSIONS
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
@@ -168,7 +96,6 @@ esac
 
 AC_SUBST(oa_enable_threads)
 
-AC_SUBST(axiom_all_prerequisites)
 axiom_optimize_options=speed
 ## Shall we proclaim safety?
 axiom_enable_checking=no          # don't turn on checking by default.
@@ -401,7 +328,7 @@ AC_SUBST(openaxiom_host_has_regex)
 
 axiom_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
-case $axiom_all_prerequisites in
+case $oa_all_prerequisites in
     *all-gcl*)
         AC_CHECK_HEADER([bfd.h])
         AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])

@@ -331,9 +331,9 @@ all-ax: all-src
 	@echo finished system build on `date` | tee > lastBuildDate
 
 $(AXIOM_SRC_TARGETS): stamp-rootdirs
-all-src: stamp-rootdirs @axiom_all_prerequisites@
+all-src: stamp-rootdirs @oa_all_prerequisites@
 
-ifeq ($(strip $(axiom_include_gcl)),yes)
+ifeq ($(strip $(oa_include_gcl)),yes)
 all-boot all-lisp all-interpsys all-axiomsys \
   all-algebra all-input: all-gcl
 endif
