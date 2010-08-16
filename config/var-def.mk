@@ -205,7 +205,7 @@ open_axiom_installdir = @open_axiom_installdir@
 
 INC=$(top_srcdir)/src/include
 CCF=@CCF@
-oa_c_runtime_extra = @LIBS@ @axiom_c_runtime_extra@ -lm
+oa_c_runtime_extra = @LIBS@ @oa_c_runtime_extra@ -lm
 oa_c_libs = -lopen-axiom-core $(oa_c_runtime_extra) -lm
 
 oa_yesno_to_lisp_boolean = $(subst yes,t,$(subst no,nil,$(1)))
