@@ -482,37 +482,6 @@ runtime checks.  This may be useful when chasing Heinsenbugs.
 It probably should be the default mode on development or experimental
 branches.
 <<runtime checking>>=
-axiom_optimize_options=speed
-## Shall we proclaim safety?
-axiom_enable_checking=no          # don't turn on checking by default.
-AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
-              [case $enableval in
-                  yes|no) axiom_enable_checking=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
-               esac])
-if test x"$axiom_enable_checking" = xyes; then
-   case $axiom_lisp_flavor in
-     gcl) # GCL-2.6.x does not understand debug.
-        axiom_optimize_options="$axiom_optimize_options safety" 
-        ;;
-     *) axiom_optimize_options="$axiom_optimize_options safety debug" 
-        ;;
-   esac
-   AC_MSG_NOTICE([runtime checking may increase compilation time])
-fi
-
-AC_SUBST(axiom_enable_checking)
-AC_SUBST(axiom_optimize_options)
-
-## Parse args for profiling-enabled build.
-oa_enable_profiling=no
-AC_ARG_ENABLE([profiling], [  --enable-profiling  turn profiling on],
-              [case $enableval in
-                  yes|no) oa_enable_profiling=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-profiling]) ;;
-               esac])
-
-AC_SUBST(oa_enable_profiling)
 @
 
 
@@ -617,60 +586,6 @@ removed from the source base.  Any source file using those should be
 properly documented as its needs are, and a narrowed, specific configure
 test should be added.
 
-
-\section{The build platform}
-
-\subsection{Build utilities}
-Most of the tools we're testing for are with respect to the build
-environment.  However, notice that since we only support \emph{native}
-build at the moment, the tests are also for the host and target
-platforms.
-<<build utils>>=
-
-<<binary utils>>
-
-
-## Occaionally, we may want to keep intermediary files.
-oa_keep_files=
-AC_ARG_ENABLE([int-file-retention], 
-              [  --enable-int-file-retention   keep intermediary files],
-              [case $enableval in
-                  yes|no) oa_keep_files=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
-               esac])
-AC_SUBST(oa_keep_files)
-
-## Does it make sense to pretend that we support multithreading?
-oa_enable_threads=no
-AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
-              [case $enableval in
-                  yes|no) oa_enable_threads=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
-               esac])
-
-# GNU compiler wants to have a hint about multithreading.
-case $GCC,$oa_enable_threads in
-   yes,yes)
-     axiom_cflags="$axiom_cflags -pthread"
-esac
-
-AC_SUBST(oa_enable_threads)
-
-@
-
-The next paragraphs detail each of the cluster of build utilities
-[[configure]] looks for.
-
-\paragraph{File utils}
-Then, check for a usable [[install]] program.  Also, find out
-way to hard- or soft-link files.  
-
-\paragraph{Binary utils.}
-
-We need to know how to put object files into archives.
-<<binary utils>>=
-AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
-@
 
 \section{Configuration options}
 \label{sec:config-options}
@@ -868,12 +783,12 @@ OPENAXIOM_BUILD_TOOLS
 OPENAXIOM_LISP_FLAGS
 OPENAXIOM_FILE_EXTENSIONS
 
+OPENAXIOM_BUILD_OPTIONS
 OPENAXIOM_HOST_PROGS
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
-<<build utils>>
 <<runtime checking>>
 
 # FIXME: Move this out of here.  

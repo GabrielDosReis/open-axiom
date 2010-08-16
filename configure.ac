@@ -36,72 +36,13 @@ OPENAXIOM_BUILD_TOOLS
 OPENAXIOM_LISP_FLAGS
 OPENAXIOM_FILE_EXTENSIONS
 
+OPENAXIOM_BUILD_OPTIONS
 OPENAXIOM_HOST_PROGS
 
 axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
 AC_SUBST(axiom_src_subdirs)
 
 
-AC_CHECK_PROG([AR], [ar], [ar], [AC_MSG_ERROR([program 'ar' is missing])])
-
-
-## Occaionally, we may want to keep intermediary files.
-oa_keep_files=
-AC_ARG_ENABLE([int-file-retention], 
-              [  --enable-int-file-retention   keep intermediary files],
-              [case $enableval in
-                  yes|no) oa_keep_files=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
-               esac])
-AC_SUBST(oa_keep_files)
-
-## Does it make sense to pretend that we support multithreading?
-oa_enable_threads=no
-AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
-              [case $enableval in
-                  yes|no) oa_enable_threads=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
-               esac])
-
-# GNU compiler wants to have a hint about multithreading.
-case $GCC,$oa_enable_threads in
-   yes,yes)
-     axiom_cflags="$axiom_cflags -pthread"
-esac
-
-AC_SUBST(oa_enable_threads)
-
-axiom_optimize_options=speed
-## Shall we proclaim safety?
-axiom_enable_checking=no          # don't turn on checking by default.
-AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
-              [case $enableval in
-                  yes|no) axiom_enable_checking=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
-               esac])
-if test x"$axiom_enable_checking" = xyes; then
-   case $axiom_lisp_flavor in
-     gcl) # GCL-2.6.x does not understand debug.
-        axiom_optimize_options="$axiom_optimize_options safety" 
-        ;;
-     *) axiom_optimize_options="$axiom_optimize_options safety debug" 
-        ;;
-   esac
-   AC_MSG_NOTICE([runtime checking may increase compilation time])
-fi
-
-AC_SUBST(axiom_enable_checking)
-AC_SUBST(axiom_optimize_options)
-
-## Parse args for profiling-enabled build.
-oa_enable_profiling=no
-AC_ARG_ENABLE([profiling], [  --enable-profiling  turn profiling on],
-              [case $enableval in
-                  yes|no) oa_enable_profiling=$enableval ;;
-                  *) AC_MSG_ERROR([erroneous value for --enable-profiling]) ;;
-               esac])
-
-AC_SUBST(oa_enable_profiling)
 
 # FIXME: Move this out of here.  
 axiom_c_runtime=
