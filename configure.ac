@@ -1,24 +1,80 @@
+dnl Copyright (C) 2006-2010, Gabriel Dos Reis.
+dnl All rights reserved.
+dnl
+dnl Redistribution and use in source and binary forms, with or without
+dnl modification, are permitted provided that the following conditions are
+dnl met:
+dnl
+dnl     - Redistributions of source code must retain the above copyright
+dnl       notice, this list of conditions and the following disclaimer.
+dnl
+dnl     - Redistributions in binary form must reproduce the above copyright
+dnl       notice, this list of conditions and the following disclaimer in
+dnl       the documentation and/or other materials provided with the
+dnl       distribution.
+dnl
+dnl THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+dnl IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+dnl TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+dnl PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+dnl OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+dnl EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+dnl PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+dnl PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+dnl LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+dnl NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+dnl SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+dnl
+dnl  This configure template details the configuration process of setting up 
+dnl  OpenAxiom for build from source codes.  The  process scrutinizes the 
+dnl  build, host,  and target environments, and finally instantiates 
+dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
+dnl  auxiliary tools where appropriate.
+dnl
+
+dnl Most of the macros used in this configure.ac are defined in files
+dnl located in the subdirectory config/
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-08-07], 
+AC_INIT([OpenAxiom], [1.4.0-2010-08-16], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_MACRO_DIR(config)
+
+dnl Put all configuration macros here
 AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
+
+dnl We don't use Automake yet.
 # AM_INIT_AUTOMAKE([foreign])
 AC_PREREQ([2.62])
+
+dnl Simple sanity check.
 AC_CONFIG_SRCDIR(src/Makefile.pamphlet)
+
 AC_CANONICAL_SYSTEM
 
 open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
 AC_SUBST(open_axiom_installdir)
 
+dnl For the moment, the OpenAxiom base source code is written
+dnl in a way that does not support cross build.  However, we do
+dnl want to make cross build possible; consequently we issue
+dnl a warning when we detect attempt at cross build.
+dnl Note that we do not stop the configuration process because we do seek
+dnl contributions for cross build support.
 if test $build != $target; then
    AC_MSG_WARN([Cross build is not supported.])
    AC_MSG_WARN([Please notify open-axiom-devel@open-axiom.org if you succeed.])
 fi
-## Where tools for the build platform are sequestered
+
+## Although OpenAxiom does not support cross build yet, let
+## alone Canadian cross, we want to make sure that we do not write
+## the build machinery in a way that actively unsupports 
+## cross build.  Consequently, in the build tree, we sequester
+## tools that we build and use on the build platform,
+## in  sub-directories different from others.
 axiom_build_sharedir=$axiom_builddir/share
 
 
@@ -50,6 +106,7 @@ OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS
 OPENAXIOM_CHECK_MISC
 
+## We are ready to instantiate makefiles.
 OPENAXIOM_MAKEFILE([Makefile])
 OPENAXIOM_MAKEFILE([src/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
@@ -65,7 +122,6 @@ OPENAXIOM_MAKEFILE([src/etc/Makefile])
 OPENAXIOM_MAKEFILE([src/doc/Makefile])
 
 AC_CONFIG_FILES([src/hyper/presea], [chmod +x src/hyper/presea])
-
 
 ## We now generate the "document" script and support files at configure time.
 ## We put them in the build directory because they are intended to be 
@@ -95,3 +151,5 @@ $srcdir/config/move-if-change \
 
 
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"
+
+dnl That is all folks.
