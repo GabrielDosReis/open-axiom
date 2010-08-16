@@ -184,6 +184,7 @@ in  sub-directories different from others.
 <<host build target platfoms>>=
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
+
 @
 
 \section{Host characteristics}
@@ -524,7 +525,7 @@ be taken care of by \Tool{GCL} itself.
 <<gcl options>>=
 axiom_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
-case $axiom_all_prerequisites in
+case $oa_all_prerequisites in
     *all-gcl*)
 	AC_CHECK_HEADER([bfd.h])
 	AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])
@@ -625,10 +626,6 @@ environment.  However, notice that since we only support \emph{native}
 build at the moment, the tests are also for the host and target
 platforms.
 <<build utils>>=
-## Accumulate list of utils needed for the build platform
-## It is vital that noweb is present in the build environement.
-axiom_all_prerequisites=
-
 <<awk and tar program>>
 
 <<binary utils>>
@@ -637,7 +634,7 @@ axiom_all_prerequisites=
 
 OPENAXIOM_LISP_FLAGS
 
-OPENAXIOM_FILE_EXTENSIONS($axiom_lisp)
+OPENAXIOM_FILE_EXTENSIONS
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
@@ -665,7 +662,6 @@ esac
 
 AC_SUBST(oa_enable_threads)
 
-AC_SUBST(axiom_all_prerequisites)
 @
 
 The next paragraphs detail each of the cluster of build utilities
@@ -899,6 +895,11 @@ $srcdir/config/move-if-change \
 <<Autoconf init>>
 <<sanity check>>
 <<host build target platfoms>>
+
+## Accumulate list of utils needed for the build platform
+## It is vital that noweb is present in the build environement.
+oa_all_prerequisites=
+AC_SUBST(oa_all_prerequisites)
 
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
