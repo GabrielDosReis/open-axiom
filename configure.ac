@@ -46,59 +46,10 @@ OPENAXIOM_CHECK_CORE_SUPPORT
 OPENAXIOM_CHECK_IO
 OPENAXIOM_CHECK_GRAPHICS
 
-axiom_host_has_libbfd=
-## Check for these only if we are going to build GCL from source.
-case $oa_all_prerequisites in
-    *all-gcl*)
-        AC_CHECK_HEADER([bfd.h])
-        AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])
-
-        axiom_gcl_bfd_option=
-        if test x"$ac_cv_header_bfd_h" = xyes \
-            && test x"$axiom_host_has_libbfd" = xyes; then
-            axiom_gcl_bfd_option="--disable-dynsysbfd"
-        else
-            axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
-        fi
-        ;;
-    *)    
-        # Nothing to worry about
-        ;;
-esac
-# axiom_gcl_mm_option="--enable-maxpage=256*1024"
-axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
-axiom_gcl_emacs="--enable-emacs=correct"
-
-case $GCC in
-  yes)
-     CCF="-O2 -Wall -D_GNU_SOURCE"
-     ;;
-esac
-
-case $target in
-    *bsd*|*dragonfly*)
-        CCF="-O2 -Wall"
-        ;;
-    windows)
-        SRCDIRS=bootdir interpdir sharedir algebradir etcdir docdir inputdir
-        ;;
-    *solaris*)
-        AC_DEFINE([SUNplatform], [], [SunOS flavour])
-        ;;
-    powerpc*darwin*)
-        CCF="-O2 -Wall -D_GNU_SOURCE \
-            -I/usr/include -I/usr/include/sys"
-        axiom_gcl_bfd_option="--disable-statsysbfd \
-                                --enable-machine=powerpc-macosx"
-        axiom_gcl_mm_option="--enable-vssize=65536*2"
-        ;;
-esac
-
-GCLOPTS="$axiom_gcl_emacs $axiom_gcl_bfd_option $axiom_gcl_mm_option $axiom_gcl_x_option"
-
-AC_SUBST(CCF)
-AC_SUBST(GCLOPTS)
 OPENAXIOM_FFI_TYPE_TABLE
+OPENAXIOM_GCL_BUILD_OPTIONS
+OPENAXIOM_CHECK_MISC
+
 OPENAXIOM_MAKEFILE([Makefile])
 OPENAXIOM_MAKEFILE([src/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
@@ -141,5 +92,6 @@ EOF
 echo done
 $srcdir/config/move-if-change \
     src/algebra/tmp-extract-spad.mk src/algebra/extract-spad.mk
+
 
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"

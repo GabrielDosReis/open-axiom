@@ -788,14 +788,14 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+CCF
+GCLOPTS
 string_type
 double_type
 float_type
 int_type
 char_type
 void_type
-GCLOPTS
-CCF
 openaxiom_host_has_regex
 OA_QT_QMAKE
 OA_QT_MOC
@@ -21809,11 +21809,70 @@ fi
 
 
 
-axiom_host_has_libbfd=
+
+
+
+
+
+
+
+
+case $axiom_lisp_flavor in
+   gcl)
+      void_type='void'
+      char_type='char'
+      int_type='int'
+      float_type='float'
+      double_type='double'
+      string_type='string'
+      ;;
+   sbcl)
+      void_type='void'
+      char_type='char'
+      int_type='int'
+      float_type='float'
+      double_type='double'
+      string_type='c-string'
+      ;;
+   clisp)
+      void_type='nil'
+      char_type='character'
+      int_type='int'
+      float_type='single-float'
+      double_type='double-float'
+      string_type='c-string'
+      ;;
+   ecl)
+      void_type=':void'
+      char_type=':char'
+      int_type=':int'
+      float_type=':float'
+      double_type=':double'
+      string_type=':cstring'
+      ;;
+   clozure)
+      void_type=':void'
+      # FIXME: this is not really what we want, but good enough for now.
+      char_type=':unsigned-byte'
+      int_type=':signed-fullword'
+      float_type=':single-float'
+      double_type=':double-float'
+      # Clozure CL wants you to deal with your own mess
+      string_type=':address'
+      ;;
+   *)
+      { { $as_echo "$as_me:$LINENO: error: We do not know how to translate native types for this Lisp" >&5
+$as_echo "$as_me: error: We do not know how to translate native types for this Lisp" >&2;}
+   { (exit 1); exit 1; }; }
+      ;;
+esac
+
+
+oa_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
 case $oa_all_prerequisites in
     *all-gcl*)
-        if test "${ac_cv_header_bfd_h+set}" = set; then
+	if test "${ac_cv_header_bfd_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for bfd.h" >&5
 $as_echo_n "checking for bfd.h... " >&6; }
 if test "${ac_cv_header_bfd_h+set}" = set; then
@@ -21947,7 +22006,7 @@ $as_echo "$ac_cv_header_bfd_h" >&6; }
 fi
 
 
-        { $as_echo "$as_me:$LINENO: checking for main in -lbfd" >&5
+	{ $as_echo "$as_me:$LINENO: checking for main in -lbfd" >&5
 $as_echo_n "checking for main in -lbfd... " >&6; }
 if test "${ac_cv_lib_bfd_main+set}" = set; then
   $as_echo_n "(cached) " >&6
@@ -22007,26 +22066,44 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_lib_bfd_main" >&5
 $as_echo "$ac_cv_lib_bfd_main" >&6; }
 if test "x$ac_cv_lib_bfd_main" = x""yes; then
-  axiom_host_has_libbfd=yes
+  oa_host_has_libbfd=yes
 fi
 ac_cv_lib_bfd=ac_cv_lib_bfd_main
 
 
-        axiom_gcl_bfd_option=
-        if test x"$ac_cv_header_bfd_h" = xyes \
-            && test x"$axiom_host_has_libbfd" = xyes; then
-            axiom_gcl_bfd_option="--disable-dynsysbfd"
-        else
-            axiom_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
-        fi
+	oa_gcl_bfd_option=
+	if test x"$ac_cv_header_bfd_h" = xyes \
+	    && test x"$oa_host_has_libbfd" = xyes; then
+	    oa_gcl_bfd_option="--disable-dynsysbfd"
+	else
+	    oa_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+	fi
         ;;
     *)
         # Nothing to worry about
         ;;
 esac
-# axiom_gcl_mm_option="--enable-maxpage=256*1024"
-axiom_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl"
-axiom_gcl_emacs="--enable-emacs=correct"
+
+case $host in
+   powerpc*darwin*)
+      axiom_gcl_bfd_option="--disable-statsysbfd \
+                                --enable-machine=powerpc-macosx"
+      axiom_gcl_mm_option="--enable-vssize=65536*2"
+      ;;
+esac
+
+## We don't need GCL to build support for X Window system or TCL/TK:
+oa_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl --disable-tcltk"
+
+## Under some unusual circumstances, GLC's configure will
+## fail to properly detect usable Emacs directories, and the
+## build will mysteriously fail later.  We temporarily work
+## around that bug as follows:
+oa_gcl_emacs="--enable-emacs=correct"
+
+GCLOPTS="$oa_gcl_emacs $oa_gcl_bfd_option $oa_gcl_mm_option $oa_gcl_x_option"
+
+
 
 case $GCC in
   yes)
@@ -22036,88 +22113,24 @@ esac
 
 case $target in
     *bsd*|*dragonfly*)
-        CCF="-O2 -Wall"
-        ;;
-    windows)
-        SRCDIRS=bootdir interpdir sharedir algebradir etcdir docdir inputdir
-        ;;
+	CCF="-O2 -Wall"
+	;;
     *solaris*)
+        ## This should be taken out.
 
 cat >>confdefs.h <<\_ACEOF
 #define SUNplatform /**/
 _ACEOF
 
-        ;;
+	;;
     powerpc*darwin*)
-        CCF="-O2 -Wall -D_GNU_SOURCE \
-            -I/usr/include -I/usr/include/sys"
-        axiom_gcl_bfd_option="--disable-statsysbfd \
-                                --enable-machine=powerpc-macosx"
-        axiom_gcl_mm_option="--enable-vssize=65536*2"
-        ;;
+	CCF="-O2 -Wall -D_GNU_SOURCE \
+	    -I/usr/include -I/usr/include/sys"
+	;;
 esac
 
-GCLOPTS="$axiom_gcl_emacs $axiom_gcl_bfd_option $axiom_gcl_mm_option $axiom_gcl_x_option"
 
 
-
-
-
-
-
-
-
-
-
-case $axiom_lisp_flavor in
-   gcl)
-      void_type='void'
-      char_type='char'
-      int_type='int'
-      float_type='float'
-      double_type='double'
-      string_type='string'
-      ;;
-   sbcl)
-      void_type='void'
-      char_type='char'
-      int_type='int'
-      float_type='float'
-      double_type='double'
-      string_type='c-string'
-      ;;
-   clisp)
-      void_type='nil'
-      char_type='character'
-      int_type='int'
-      float_type='single-float'
-      double_type='double-float'
-      string_type='c-string'
-      ;;
-   ecl)
-      void_type=':void'
-      char_type=':char'
-      int_type=':int'
-      float_type=':float'
-      double_type=':double'
-      string_type=':cstring'
-      ;;
-   clozure)
-      void_type=':void'
-      # FIXME: this is not really what we want, but good enough for now.
-      char_type=':unsigned-byte'
-      int_type=':signed-fullword'
-      float_type=':single-float'
-      double_type=':double-float'
-      # Clozure CL wants you to deal with your own mess
-      string_type=':address'
-      ;;
-   *)
-      { { $as_echo "$as_me:$LINENO: error: We do not know how to translate native types for this Lisp" >&5
-$as_echo "$as_me: error: We do not know how to translate native types for this Lisp" >&2;}
-   { (exit 1); exit 1; }; }
-      ;;
-esac
 
 ac_config_files="$ac_config_files Makefile:config/var-def.mk:Makefile.in:config/setup-dep.mk"
 
@@ -24621,5 +24634,6 @@ EOF
 echo done
 $srcdir/config/move-if-change \
     src/algebra/tmp-extract-spad.mk src/algebra/extract-spad.mk
+
 
 echo "Type '${MAKE}' (without quotes) to build OpenAxiom"
