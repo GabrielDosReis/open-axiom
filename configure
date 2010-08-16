@@ -2298,10 +2298,10 @@ fi
 
 ## If nothing was said about preferred Lisp, guess one.
 
-if test -n $oa_user_lisp; then
+if test -n "$oa_user_lisp"; then
     ## Honor use of Lisp image specified on command line
     AXIOM_LISP=$oa_user_lisp
-elif test -z $oa_include_gcl; then
+elif test -z "$oa_include_gcl"; then
     for ac_prog in sbcl gcl ecl clisp ccl64 ccl32 ccl
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -2366,7 +2366,7 @@ $as_echo "$as_me: error: --disable-gcl specified but no Lisp system found" >&2;}
 	  AXIOM_LISP='$(axiom_build_bindir)/gcl'
 	  oa_all_prerequisites="$oa_all_prerequisites all-gcl"
 	  oa_include_gcl=yes
-       elif test -z $oa_include_gcl; then
+       elif test -z "$oa_include_gcl"; then
 	  { { $as_echo "$as_me:$LINENO: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website." >&5
 $as_echo "$as_me: error: OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website." >&2;}
    { (exit 1); exit 1; }; }
@@ -17438,7 +17438,7 @@ fi
 done
 
 ## In case noweb is missing we need to build our own.
-if test -z $NOTANGLE -o -z $NOWEAVE ; then
+if test -z "$NOTANGLE" -o -z "$NOWEAVE" ; then
     ## Yes, but do we have the source files to build from?
     if test ! -d ${srcdir}/noweb; then
        { $as_echo "$as_me:$LINENO: OpenAxiom requires noweb utilties" >&5
@@ -17510,7 +17510,7 @@ else
    axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
    IFS=$openaxiom_save_IFS
    axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-   if test -z $axiom_fasl_type; then
+   if test -z "$axiom_fasl_type"; then
        { { $as_echo "$as_me:$LINENO: error: Could not determine extension for compiled Lisp files" >&5
 $as_echo "$as_me: error: Could not determine extension for compiled Lisp files" >&2;}
    { (exit 1); exit 1; }; }
@@ -21550,7 +21550,7 @@ X_PRE_LIBS="-lXpm $X_PRE_LIBS"
 
 ## If the system supports X11, then build graphics
 axiom_use_x=no
-if test -z $no_x; then
+if test -z "$no_x"; then
     axiom_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
     axiom_src_all="$axiom_src_all all-graph"

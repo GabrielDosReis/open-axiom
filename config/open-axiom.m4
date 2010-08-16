@@ -79,10 +79,10 @@ AC_ARG_ENABLE([gcl], [  --enable-gcl            build GCL from OpenAxiom source]
 
 ## If nothing was said about preferred Lisp, guess one.
 AC_SUBST(AXIOM_LISP)
-if test -n $oa_user_lisp; then
+if test -n "$oa_user_lisp"; then
     ## Honor use of Lisp image specified on command line
     AXIOM_LISP=$oa_user_lisp
-elif test -z $oa_include_gcl; then
+elif test -z "$oa_include_gcl"; then
     AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl64 ccl32 ccl])
 fi
 ])
@@ -108,7 +108,7 @@ case $oa_include_gcl,$AXIOM_LISP in
 	  AXIOM_LISP='$(axiom_build_bindir)/gcl'
 	  oa_all_prerequisites="$oa_all_prerequisites all-gcl"
 	  oa_include_gcl=yes
-       elif test -z $oa_include_gcl; then
+       elif test -z "$oa_include_gcl"; then
 	  AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website.])
        else
           AC_MSG_ERROR([The OpenAxiom dependency tarball is missing; please get it from our website.])
@@ -356,7 +356,7 @@ else
    axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
    IFS=$openaxiom_save_IFS
    axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-   if test -z $axiom_fasl_type; then
+   if test -z "$axiom_fasl_type"; then
        AC_MSG_ERROR([Could not determine extension for compiled Lisp files])
    fi
 fi
@@ -555,7 +555,7 @@ esac
 AC_CHECK_PROGS([NOTANGLE], [notangle])
 AC_CHECK_PROGS([NOWEAVE], [noweave])
 ## In case noweb is missing we need to build our own.
-if test -z $NOTANGLE -o -z $NOWEAVE ; then
+if test -z "$NOTANGLE" -o -z "$NOWEAVE" ; then
     ## Yes, but do we have the source files to build from?
     if test ! -d ${srcdir}/noweb; then
        AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
@@ -899,7 +899,7 @@ AC_SUBST(X_PRE_LIBS)
 
 ## If the system supports X11, then build graphics
 axiom_use_x=no
-if test -z $no_x; then
+if test -z "$no_x"; then
     axiom_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
     axiom_src_all="$axiom_src_all all-graph"
