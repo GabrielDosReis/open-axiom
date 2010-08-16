@@ -520,3 +520,42 @@ if test -z $NOTANGLE -o -z $NOWEAVE ; then
     oa_all_prerequisites="$oa_all_prerequisites all-noweb"
 fi
 ])
+
+dnl ---------------------------
+dnl -- OPENAXIOM_HOST_EDITOR --
+dnl ---------------------------
+dnl Check for a text editor for use when
+dnl the system is up and running.
+AC_DEFUN([OPENAXIOM_HOST_EDITOR],[
+AC_SUBST(oa_editor)
+## On Windows system, we prefer the default installation
+## location to be 'C:/Program Files/OpenAxiom', following Windows 
+## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
+## to operate unconditionally.  Therefore, we resort to this dirty
+## trick stepping over Autoconf's internals.
+case $host in
+    *mingw*)
+        ac_default_prefix="C:/Program Files/OpenAxiom"
+        AC_PATH_PROGS([oa_editor],[notepad.exe])
+	;;
+    *)  
+        AC_PATH_PROGS([oa_editor],[vi])
+        ;;
+esac
+])
+
+dnl --------------------------
+dnl -- OPENAXIOM_HOST_PROGS --
+dnl --------------------------
+dnl Check for programs we need in the host environment.
+AC_DEFUN([OPENAXIOM_HOST_PROGS],[
+OPENAXIOM_HOST_EDITOR
+AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
+
+AC_PATH_PROG([PDFLATEX], [pdflatex])
+if test -z "$PDFLATEX"; then
+   AC_PATH_PROG([LATEX], [latex],
+                [AC_MSG_NOTICE([Documentation is disabled.])])
+fi
+AC_CHECK_PROGS([MAKEINDEX], [makeindex])
+])
