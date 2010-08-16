@@ -21,6 +21,12 @@ fi
 ## Where tools for the build platform are sequestered
 axiom_build_sharedir=$axiom_builddir/share
 
+
+## Accumulate list of utils needed for the build platform
+## It is vital that noweb is present in the build environement.
+oa_all_prerequisites=
+AC_SUBST(oa_all_prerequisites)
+
 OPENAXIOM_HOST_COMPILERS
 OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
@@ -47,10 +53,6 @@ case $host in
 esac
 AC_SUBST(oa_editor)
 
-## Accumulate list of utils needed for the build platform
-## It is vital that noweb is present in the build environement.
-axiom_all_prerequisites=
-
 AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
 
 
@@ -66,7 +68,7 @@ AC_CHECK_PROGS([MAKEINDEX], [makeindex])
 
 OPENAXIOM_LISP_FLAGS
 
-OPENAXIOM_FILE_EXTENSIONS($axiom_lisp)
+OPENAXIOM_FILE_EXTENSIONS
 
 ## Occaionally, we may want to keep intermediary files.
 oa_keep_files=
@@ -94,7 +96,6 @@ esac
 
 AC_SUBST(oa_enable_threads)
 
-AC_SUBST(axiom_all_prerequisites)
 axiom_optimize_options=speed
 ## Shall we proclaim safety?
 axiom_enable_checking=no          # don't turn on checking by default.
@@ -327,7 +328,7 @@ AC_SUBST(openaxiom_host_has_regex)
 
 axiom_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
-case $axiom_all_prerequisites in
+case $oa_all_prerequisites in
     *all-gcl*)
         AC_CHECK_HEADER([bfd.h])
         AC_HAVE_LIBRARY([bfd], [axiom_host_has_libbfd=yes])

@@ -231,7 +231,7 @@ DAASE = $(axiom_src_datadir)
 TMP=$(axiom_builddir)
 
 ## Shall we build GCL?
-axiom_include_gcl = @axiom_include_gcl@
+oa_include_gcl = @oa_include_gcl@
 
 ## -------------------------------------------
 ## -- Files generated for the build machine --

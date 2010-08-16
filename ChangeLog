@@ -1,5 +1,15 @@
 2010-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* config/open-axiom.m4 (OPENAXIOM_REJECT_ROTTED_LISP): Tidy.
+	(OPENAXIOM_CHECK_GCL_INCLUSION): Likewise.
+	(OPENAXIOM_LISP_FLAVOR): Likewise.
+	(OPENAXIOM_HOST_COMPILERS): Likewise.
+	(OPENAXIOM_PROG_LISP): Honor --enable-gcl properly.
+	* Makefile.pamphlet (all-src): Rename axiom_all_prerequisites to
+	oa_all_prerequisites. 
+
+2010-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* config/open-axiom.m4 (OPENAXIOM_BUILD_TOOLS): New.  Abstract
 	over build tool requirements.
 	* configure.ac.pamphlet: Use it.
