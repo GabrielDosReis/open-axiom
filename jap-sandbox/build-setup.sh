@@ -7,10 +7,6 @@ error() {
 
 # set -x
 
-notangle ./configure.ac.pamphlet > ./tmp-configure.ac \
-   || error "could not extract configure.ac from pamphlet file"
-config/move-if-change tmp-configure.ac configure.ac
-
 autoheader || error "could not re-generate config/openaxiom-c-macros.h"
 autoconf || error "could not re-generate configure"
 

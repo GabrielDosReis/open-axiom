@@ -44,7 +44,7 @@ graphics_SOURCES = \
 		XSpadFill.c
 
 libspad_SOURCES = $(foreach comp, \
-			 $(addsuffix _SOURCES, @axiom_c_runtime@), \
+			 $(addsuffix _SOURCES, @oa_c_runtime@), \
 			 $($(comp))) \
 		halloc.c hash.c 
 
@@ -88,7 +88,7 @@ $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(mkdir_p) $(axiom_target_libdir)
 	$(LINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
 		$(libopen_axiom_core_objects) \
-		@axiom_c_runtime_extra@ -lm
+		@oa_c_runtime_extra@ -lm
 
 libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
 	$(LINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)

@@ -126,7 +126,7 @@ $(oa_target_lispdir)/linkset: $(oa_target_lispdir)/core.$(LNKEXT)
 	rm -f $@
 	echo '$(base_lisp_objects)' > $@
 
-axiom_optimize_options = @axiom_optimize_options@
+oa_optimize_options = @oa_optimize_options@
 
 oa_editor = @oa_editor@
 
@@ -143,7 +143,7 @@ oa_keep_files = $(patsubst %,|%|,$(subst $(oa_comma), ,@oa_keep_files@))
 
 edit = sed \
 	-e 's|@open_axiom_installdir[@]|$(open_axiom_installdir)|g' \
-	-e 's|@axiom_optimize_options[@]|$(axiom_optimize_options)|g' \
+	-e 's|@oa_optimize_options[@]|$(oa_optimize_options)|g' \
 	-e 's|@oa_editor[@]|$(oa_editor)|g' \
 	-e 's/@oa_keep_files[@]/$(oa_keep_files)/g' \
 	-e 's|@host[@]|$(host)|g' \
