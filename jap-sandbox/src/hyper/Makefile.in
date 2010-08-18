@@ -98,8 +98,8 @@ ex2ht_objects = $(ex2ht_SOURCES:.c=.$(OBJEXT))
 ex2ht_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
 ex2ht_DEPENDENCIES =
 
-htsearch_SOURCES = htsearch.c
-htsearch_objects = $(htsearch_SOURCES:.c=.$(OBJEXT))
+htsearch_SOURCES = htsearch.cc
+htsearch_objects = $(htsearch_SOURCES:.cc=.$(OBJEXT))
 htsearch_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
 htsearch_DEPENDENCIES =
 
@@ -107,7 +107,7 @@ subdir = src/hyper/
 
 .PHONY: all all-hyper all-hyper-pre all-hyper-post
 .SUFFIXES:
-.SUFFIXES: .c .$(OBJEXT) .h
+.SUFFIXES: .c .cc .$(OBJEXT) .h
 
 all: all-ax
 
@@ -142,6 +142,9 @@ distclean-local: clean-local
 
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
 	$(CXXCOMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+
+%.$(OBJEXT) %.lo: %.cc $(HEADERS)
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory

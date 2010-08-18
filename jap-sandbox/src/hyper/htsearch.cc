@@ -46,16 +46,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
+#include <iostream>
 #include "cfuns.h"
 
- // Directory containing the hyperdoc pages.
-static const char* htpagedir = NULL;
+ // Path to the directory containing the hyperdoc pages.
+static std::string htpagedir;
 
-// Location of the hthits program.
-static const char* hthitscmd = NULL;
+// Path to the  hthits program.
+static std::string hthitscmd;
 
-// Database file of the hyperdoc pages.
-static const char* htdbfile = NULL;
+// Path to the database file of the hyperdoc pages.
+static std::string htdbfile;
 
 /*
  * pages_cmp compares two strings.
@@ -136,16 +138,16 @@ presea(char** links, int n, int cases, const char* pattern)
  */
 static void
 set_variables(void) {
-   const char* systemdir = oa_getenv("AXIOM");
+   const std::string systemdir(oa_getenv("AXIOM"));
    
-   if (systemdir == NULL) {
-      printf("%s\n", "OpenAxiom variable is not set.");
+   if (systemdir.empty()) {
+      std::cerr << "Could not locate OpenAxiom installation." << std::endl;
       exit(-1);
    }
    
-   htpagedir = oa_strcat(systemdir,"/share/hypertex/pages/");
-   hthitscmd = oa_strcat(systemdir,"/lib/hthits");
-   htdbfile = oa_strcat(htpagedir,"ht.db");
+   htpagedir = systemdir + "/share/hypertex/pages/";
+   hthitscmd = systemdir + "/lib/hthits";
+   htdbfile = htpagedir + "ht.db";
 }
 
 /* 
@@ -173,24 +175,21 @@ htsearch(const char* pattern)
 
         // hthits requires to change directory
         // to where the HyperDoc pages reside.
-        if (oa_chdir(htpagedir) == -1) {
-            printf("Cannot change the page directory: %s\n", htpagedir);
+       if (oa_chdir(htpagedir.c_str()) == -1) {
+          std::cerr << "Cannot change the page directory: "
+                    << htpagedir << std::endl;
             exit(-1);
         }
         
         // Call hthits with: hthits pattern ht.db
-        hthitscmd = oa_strcat(hthitscmd, " ");
-        hthitscmd = oa_strcat(hthitscmd, pattern);
-        hthitscmd = oa_strcat(hthitscmd, " ");
-        hthitscmd = oa_strcat(hthitscmd, htdbfile);
-
-        if ((hits = popen(hthitscmd, "r")) != NULL) {
+        hthitscmd = hthitscmd + " " + pattern + " " + htdbfile;
+        if ((hits = popen(hthitscmd.c_str(), "r")) != NULL) {
             while (fgets(buf, 1024, hits) != NULL)
                 matches = oa_strcat(matches,buf);
             pclose(hits);
         }
         else {
-            printf("Could not execute %s", hthitscmd);
+           std::cerr << "Could not execute " << hthitscmd << std::endl;
             exit(-1);
         }
 
@@ -206,7 +205,7 @@ htsearch(const char* pattern)
 static void
 usage(void)
 {
-    fprintf(stderr, "Usage: htsearch pattern \n");
+   std::cerr << "Usage: htsearch pattern" << std::endl;
     exit(1);
 }
 

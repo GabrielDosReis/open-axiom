@@ -1,5 +1,9 @@
 2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* hyper/htsearch.cc: Rename from htsearch.c to avoid confusions.
+
+2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* hyper/htsearch.c: Tidy.
 
 2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
