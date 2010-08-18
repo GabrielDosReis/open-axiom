@@ -1,3 +1,43 @@
+2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ChangeLog.jap: Merge into here.  Remove
+	
+   2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	   * hyper/htsearch.cc: Rename from htsearch.c to avoid confusions.
+
+   2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	   * hyper/htsearch.c: Tidy.
+
+   2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	   * hyper/Makefile.in (${OUTLIB}/htsearch$(EXEEXT)): Link with a C++
+	   compiler. 
+
+   2010-07-25  Alfredo Portes <doyenatccny@gmail.com>
+
+       * src/lib/cfuns-c.c: (oa_insert) Change return value.
+	     Misc cleanup.
+       * src/include/cfuns.h: Adjust.
+
+   2010-07-12  Alfredo Portes  <doyenatccny@gmail.com>
+
+       * src/hyper/Makefile.in: Adjust.
+       * src/hyper/htsearch.c: Add more documentation.
+       * src/lib/cfuns-c.c: Add String manipulation functions.
+
+   2009-07-16  Alfredo Portes  <doyenatccny@gmail.com>
+
+       * lib/cfuns-c.c: New string manipulation functions.
+       * include/cfuns.h: Likewise.
+       * hyper/htsearch.c: Add new C replacement for htsearch 
+			   and presea scripts.
+       * hyper/htsearch: Remove.
+       * hyper/presea.in: Remove. 
+       * hyper/Makefile.in: Adjust.
+	
+
 2010-08-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/float.spad.pamphlet (Float): Tidy.
