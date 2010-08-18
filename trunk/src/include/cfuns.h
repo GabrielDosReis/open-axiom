@@ -4,7 +4,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights resrved.
 
   Redistribution and use in source and binary forms, with or without
@@ -68,6 +68,10 @@ OPENAXIOM_EXPORT double minus_infinity(void);
 OPENAXIOM_EXPORT double quiet_double_NaN(void);
 OPENAXIOM_EXPORT openaxiom_byteorder oa_get_host_byteorder(void);
 
+OPENAXIOM_EXPORT const char* oa_concatenate_string(const char*, const char*);
+OPENAXIOM_EXPORT const char* oa_strcat(const char*, const char*);
+OPENAXIOM_EXPORT char* oa_substr(const char*, const size_t, const size_t);
+OPENAXIOM_EXPORT char** oa_split(const char*, const char*, int*);
 
 #ifdef __cplusplus
 }

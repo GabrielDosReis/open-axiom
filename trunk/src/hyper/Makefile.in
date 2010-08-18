@@ -29,40 +29,36 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 openaxiom_host_has_regex = @openaxiom_host_has_regex@
 
 bin_PROGRAMS = htadd$(EXEEXT) ex2ht$(EXEEXT)
 ifeq ($(strip $(openaxiom_host_has_regex)),yes)
-bin_PROGRAMS += hthits$(EXEEXT)
+bin_PROGRAMS += hthits$(EXEEXT) htsearch$(EXEEXT)
 endif
 ifeq ($(strip $(axiom_use_x)),yes)
 bin_PROGRAMS += hypertex$(EXEEXT) spadbuf$(EXEEXT)
 endif
 
 # this is where to put the various commands
-OUTLIB=	$(axiom_target_libdir)
+OUTLIB = $(axiom_target_libdir)
 
 # this is where the include files live
-INC=    $(axiom_src_srcdir)/include
+INC = $(axiom_src_srcdir)/include
 
 # this is where the hypertex documentation files are
 HYPER=$(axiom_target_datadir)/hypertex
 
-HTADD=$(OUTLIB)/htadd
+HTADD = $(OUTLIB)/htadd
 
 BITMAPS = mouse11.bitmap mouse11.mask sdown3d.bitmap sdown3dpr.bitmap \
 	sdown.bitmap sup3d.bitmap sup3dpr.bitmap sup.bitmap ht_icon
 
-SCRIPTS=${OUTLIB}/htsearch ${OUTLIB}/presea
-
-BINFILES= $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
+BINFILES = $(addprefix $(OUTLIB)/,$(bin_PROGRAMS))
 
 HEADERS = display.h event.h extent.h node.h \
 	group.h hyper.h initx.h keyin.h lex.h \
 	parse.h parse-paste.h parse-types.h scrollbar.h \
 	titlebar.h token.h $(axiom_c_macros_h)
-
 
 build_libdir = $(top_builddir)/src/lib
 
@@ -102,11 +98,16 @@ ex2ht_objects = $(ex2ht_SOURCES:.c=.$(OBJEXT))
 ex2ht_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
 ex2ht_DEPENDENCIES =
 
+htsearch_SOURCES = htsearch.cc
+htsearch_objects = $(htsearch_SOURCES:.cc=.$(OBJEXT))
+htsearch_LDADD = $(libspad_la) -L$(build_libdir) $(oa_c_libs)
+htsearch_DEPENDENCIES =
+
 subdir = src/hyper/
 
 .PHONY: all all-hyper all-hyper-pre all-hyper-post
 .SUFFIXES:
-.SUFFIXES: .c .$(OBJEXT) .h
+.SUFFIXES: .c .cc .$(OBJEXT) .h
 
 all: all-ax
 
@@ -117,7 +118,7 @@ stamp: all-hyper-post
 	-rm -f stamp
 	$(STAMP) stamp
 
-all-hyper-pre: $(BINFILES) $(SCRIPTS) $(HYPER)/pages/util.ht
+all-hyper-pre: $(BINFILES) $(HYPER)/pages/util.ht
 
 $(HYPER)/pages/util.ht: $(srcdir)/pages/util.ht
 	rm -f $@
@@ -128,12 +129,11 @@ all-hyper-post: all-hyper-pre $(HYPER)/pages/ht.db
 
 mostclean-local:
 	$(LIBTOOL) --mode=clean rm -f $(hypertex_objects) $(htadd_objects) \
-		$(spadbuf_objects) $(hthits_objects) $(ex2ht_objects)
+		$(spadbuf_objects) $(hthits_objects) $(ex2ht_objects) $(htsearch_objects)
 
 clean-local: mostclean-local
 	-rm -f $(BINFILES)
 	-rm -rf $(HYPER)/pages
-	-rm -f $(SCRIPTS)
 	-rm -f stamp
 
 distclean-local: clean-local
@@ -142,6 +142,9 @@ distclean-local: clean-local
 
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
 	$(CXXCOMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+
+%.$(OBJEXT) %.lo: %.cc $(HEADERS)
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@echo making ${HYPER}/pages from $(axiom_src_srcdir)/pages directory
@@ -161,12 +164,8 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	    cp -p $$f "$(HYPER)"/bitmaps; done
 	@ # cp -pr "$(srcdir)"/viewports "$(axiom_target_datadir)"
 
-
-${OUTLIB}/htsearch: htsearch
-	cp -p $< $@ && chmod +x $@
-
-${OUTLIB}/presea: presea
-	cp -p $< $@ && chmod +x $@
+${OUTLIB}/htsearch$(EXEEXT): $(htsearch_objects) $(htsearch_DEPENDENCIES)
+	${CXXLINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
 	${CXXLINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
@@ -176,7 +175,6 @@ $(OUTLIB)/htadd$(EXEEXT): $(htadd_objects) $(htadd_DEPENDENCIES)
 
 ${OUTLIB}/hthits$(EXEEXT): $(hthits_objects) $(hthits_DEPENDENCIES)
 	${CXXLINK} -o $@ $(hthits_objects) $(hthits_LDADD)
-
 
 $(OUTLIB)/hypertex$(EXEEXT): $(hypertex_objects) $(hypertex_DEPENDENCIES)
 	 ${CXXLINK} -o $@ $(hypertex_objects) $(hypertex_LDADD)
