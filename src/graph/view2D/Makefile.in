@@ -54,7 +54,7 @@ view2D_DEPENDENCIES = $(Gfun_objects)
 
 subdir = src/graph/view2D/
 
-AXIOM_CFLAGS  = ${CCF} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I$(srcdir) \
+AXIOM_CFLAGS  = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I$(srcdir) \
 			$(axiom_includes)
 
 GDRAW_OBJS = ../Gdraws/Gfun.lo

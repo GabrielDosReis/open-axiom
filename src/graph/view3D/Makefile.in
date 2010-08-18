@@ -62,7 +62,7 @@ view3D_DEPENDENCIES = $(Gfun_objects)
 
 subdir = src/graph/view3D/
 
-AXIOM_CFLAGS  = ${CCF} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I${IN} \
+AXIOM_CFLAGS  = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I${LINC} -I${GINC} -I${IN} \
 			$(axiom_includes)
 
 HEADERS = ${IN}/header.h ${IN}/globals.h \

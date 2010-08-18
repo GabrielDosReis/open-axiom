@@ -53,7 +53,7 @@ stamp: $(bin_PROGRAMS)
 .PRECIOUS: %.lo %.obj
 
 %.lo: %.c 
-	$(CXXCOMPILE) ${CCF} -o $@ \
+	$(CXXCOMPILE) ${CXXFLAGS} -o $@ \
 		-DOPENAXIOM_ROOT_DIRECTORY="\"$(open_axiom_installdir)\"" \
 		$(axiom_includes) $<
 
