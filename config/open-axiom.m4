@@ -175,6 +175,28 @@ AC_DEFINE_UNQUOTED([OPENAXIOM_BASE_RTS],
                    [The kind of base runtime system for this build.])
 ])
 
+dnl --------------------------------------------
+dnl -- OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS --
+dnl --------------------------------------------
+dnl Adjust CPPFLAGS before detecting several vendor lock-ins (or not.)
+AC_DEFUN([OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS],[
+case $host in
+  *linux*)
+     CPPFLAGS="$CPPFLAGS -D_GNU_SOURCE"
+     ;;
+  *bsd*|*dragonfly*)
+     CPPFLAGS="$CPPFLAGS -D_BSD_SOURCE"
+     ;;
+  *mingw*)
+     CPPFLAGS="$CPPFLAGS -DOPENAXIOM_MS_WINDOWS_HOST"
+     ;;
+  *solaris*)
+     ## FIXME: This should disappear
+     CPPFLAGS="$CPPFLAGS -DSUNplatform"
+     ;;
+esac
+])
+
 dnl ------------------------------
 dnl -- OPENAXIOM_HOST_COMPILERS --
 dnl ------------------------------
@@ -201,6 +223,7 @@ if test -n "$openaxiom_host_lisp_precision"; then
 fi
 OPENAXIOM_SATISFY_GCL_NEEDS
 AC_PROG_CPP
+OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS
 ])
 
 dnl -------------------------
@@ -964,29 +987,51 @@ OPENAXIOM_CHECK_BROWSER_SUPPORT
 ])
 
 
+dnl ------------------------
+dnl -- OPENAXIOM_CHECK_MM --
+dnl ------------------------
+dnl Check for host capability of memory mapping.
+AC_DEFUN([OPENAXIOM_CHECK_MM],[
+AC_CHECK_HEADERS([sys/mman.h])
+## We want annonymous mapping for memory allocation.  Unfortunately,
+## the flag for anonymous mapping is not standardized.  Popular names
+##  are MAP_ANONYMOUS and MAP_ANON.
+if test x"$ac_cv_header_sys_mman_h" = xyes; then
+   AC_MSG_CHECKING([for flag to request anonymous memory mapping])
+   AC_EGREP_CPP([MAP_ANONYMOUS],
+                [#include <sys/mman.h>
+#ifdef MAP_ANONYMOUS
+   "MAP_ANONYMOUS"
+#endif],
+                [openaxiom_mm_anonymous_flag=MAP_ANONYMOUS])
+   if test -z "$openaxiom_mm_anonymous_flag"; then
+      AC_EGREP_CPP([MAP_ANON],
+                   [#include <sys/mman.h>
+#ifdef MAP_ANON
+   "MAP_ANON"
+#endif],
+                   [openaxiom_mm_anonymous_flag=MAP_ANON])
+   fi
+   ## It would be curious that we don't have an anonymous mapping
+   ## capability.  Let that be known loudly.
+   if test -n "$openaxiom_mm_anonymous_flag"; then
+      AC_MSG_RESULT([$openaxiom_mm_anonymous_flag])
+   else
+      AC_MSG_ERROR([Could not find flag for anonymous map])
+   fi
+   AC_DEFINE_UNQUOTED([OPENAXIOM_MM_ANONYMOUS_MAP_FLAG],
+                      [$openaxiom_mm_anonymous_flag],
+                      [mmap anonymous flag])
+fi
+])
+
 dnl --------------------------
 dnl -- OPENAXIOM_CHECK_MISC --
 dnl --------------------------
 AC_DEFUN([OPENAXIOM_CHECK_MISC],[
 case $GCC in
   yes)
-     CCF="-O2 -Wall -D_GNU_SOURCE"
+     CFLAGS="$CFLAGS -O2 -Wall"
      ;;
 esac
-
-case $target in
-    *bsd*|*dragonfly*)
-	CCF="-O2 -Wall"
-	;;
-    *solaris*)
-        ## This should be taken out.
-        AC_DEFINE([SUNplatform], [], [SunOS flavour])
-	;;
-    powerpc*darwin*)
-	CCF="-O2 -Wall -D_GNU_SOURCE \
-	    -I/usr/include -I/usr/include/sys"
-	;;
-esac
-
-AC_SUBST(CCF)
 ])
