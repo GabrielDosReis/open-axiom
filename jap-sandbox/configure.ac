@@ -121,8 +121,6 @@ OPENAXIOM_MAKEFILE([src/input/Makefile])
 OPENAXIOM_MAKEFILE([src/etc/Makefile])
 OPENAXIOM_MAKEFILE([src/doc/Makefile])
 
-AC_CONFIG_FILES([src/hyper/presea], [chmod +x src/hyper/presea])
-
 ## We now generate the "document" script and support files at configure time.
 ## We put them in the build directory because they are intended to be 
 ## build support utils only.
