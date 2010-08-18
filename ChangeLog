@@ -1,3 +1,16 @@
+2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* ChangeLog.jap: Merge with this ChangeLog.  Remove.
+
+   2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	   * config/open-axiom.m4 (OPENAXIOM_HOST_PROGS): Don't check for awk
+	   anymore.
+
+   2009-07-16  Alfredo Portes  <doyenatccny@gmail.com>
+
+       * configure.ac.pamphlet: Remove presea.
+
 2010-08-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* configure.ac.pamphlet: Remove.
