@@ -828,7 +828,8 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
 #endif   
 }
 
-OPENAXIOM_EXPORT char* oa_substr(const char* str, const size_t begin, const size_t end)
+OPENAXIOM_EXPORT char*
+oa_substr(const char* str, const size_t begin, const size_t end)
 {
    char* substring;
    int len;
@@ -846,7 +847,8 @@ OPENAXIOM_EXPORT char* oa_substr(const char* str, const size_t begin, const size
    return substring;
 }
 
-OPENAXIOM_EXPORT char** oa_split(const char* sequence, const char* delimiter, int* size)
+OPENAXIOM_EXPORT char**
+oa_split(const char* sequence, const char* delimiter, int* size)
 {
    int sequence_length = 0, newsize = 0;
    char* token;

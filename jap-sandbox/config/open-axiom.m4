@@ -596,8 +596,6 @@ dnl --------------------------
 dnl Check for programs we need in the host environment.
 AC_DEFUN([OPENAXIOM_HOST_PROGS],[
 OPENAXIOM_HOST_EDITOR
-AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
-
 AC_PATH_PROG([PDFLATEX], [pdflatex])
 if test -z "$PDFLATEX"; then
    AC_PATH_PROG([LATEX], [latex],
