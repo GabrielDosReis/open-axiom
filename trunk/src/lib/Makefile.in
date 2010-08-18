@@ -99,7 +99,7 @@ libspad.$(LIBEXT): $(libspad_objects)
 .PRECIOUS: %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CCF) $(CFLAGS) \
+	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
 		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and

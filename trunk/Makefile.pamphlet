@@ -595,8 +595,6 @@ environment variables that are specific to this platform.
 
 \subsubsection{The [[PLF]] variable }
 
-\subsubsection{The [[CCF]] variable }
-
 \subsubsection{The [[LDF]] variable }
 
 The LDF variable is the generic loader flags. This gives information

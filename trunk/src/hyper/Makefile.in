@@ -141,7 +141,7 @@ distclean-local: clean-local
 .PRECIOUS: %.lo %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(HEADERS)
-	$(CXXCOMPILE) -o $@ $(CFLAGS) ${CCF} $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
+	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<
 
 %.$(OBJEXT) %.lo: %.cc $(HEADERS)
 	$(CXXCOMPILE) -o $@ $(CXXFLAGS) $(axiom_includes) $(AXIOM_X11_CFLAGS) -I. $<

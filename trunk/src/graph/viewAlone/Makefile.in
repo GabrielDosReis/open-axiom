@@ -49,7 +49,7 @@ viewAlone_DEPENDENCIES =
 
 subdir = src/graph/viewAlone/
 
-AXIOM_CFLAGS = ${CCF} ${AXIOM_X11_CFLAGS} -I$(srcdir) -I${LINC} -I${GINC} \
+AXIOM_CFLAGS = ${CXXFLAGS} ${AXIOM_X11_CFLAGS} -I$(srcdir) -I${LINC} -I${GINC} \
 			$(axiom_includes)
 
 HEADERS= $(srcdir)/viewAlone.h     ${LINC}/component.h ${LINC}/view2D.h  \
