@@ -79,10 +79,10 @@ AC_ARG_ENABLE([gcl], [  --enable-gcl            build GCL from OpenAxiom source]
 
 ## If nothing was said about preferred Lisp, guess one.
 AC_SUBST(AXIOM_LISP)
-if test -n $oa_user_lisp; then
+if test -n "$oa_user_lisp"; then
     ## Honor use of Lisp image specified on command line
     AXIOM_LISP=$oa_user_lisp
-elif test -z $oa_include_gcl; then
+elif test -z "$oa_include_gcl"; then
     AC_CHECK_PROGS([AXIOM_LISP], [sbcl gcl ecl clisp ccl64 ccl32 ccl])
 fi
 ])
@@ -108,7 +108,7 @@ case $oa_include_gcl,$AXIOM_LISP in
 	  AXIOM_LISP='$(axiom_build_bindir)/gcl'
 	  oa_all_prerequisites="$oa_all_prerequisites all-gcl"
 	  oa_include_gcl=yes
-       elif test -z $oa_include_gcl; then
+       elif test -z "$oa_include_gcl"; then
 	  AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website.])
        else
           AC_MSG_ERROR([The OpenAxiom dependency tarball is missing; please get it from our website.])
@@ -243,6 +243,52 @@ esac
 AC_SUBST(axiom_cflags)
 ])
 
+dnl ---------------------------------
+dnl -- OPENAXIOM_GCL_BUILD_OPTIONS --
+dnl ---------------------------------
+dnl Determine options needed to build included GCL, if need be.
+AC_DEFUN([OPENAXIOM_GCL_BUILD_OPTIONS],[
+oa_host_has_libbfd=
+## Check for these only if we are going to build GCL from source.
+case $oa_all_prerequisites in
+    *all-gcl*)
+	AC_CHECK_HEADER([bfd.h])
+	AC_HAVE_LIBRARY([bfd], [oa_host_has_libbfd=yes])
+
+	oa_gcl_bfd_option=
+	if test x"$ac_cv_header_bfd_h" = xyes \
+	    && test x"$oa_host_has_libbfd" = xyes; then
+	    oa_gcl_bfd_option="--disable-dynsysbfd"
+	else
+	    oa_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+	fi
+        ;;
+    *)    
+        # Nothing to worry about
+        ;;
+esac
+
+case $host in
+   powerpc*darwin*)
+      axiom_gcl_bfd_option="--disable-statsysbfd \
+                                --enable-machine=powerpc-macosx"
+      axiom_gcl_mm_option="--enable-vssize=65536*2"
+      ;;
+esac
+
+## We don't need GCL to build support for X Window system or TCL/TK:
+oa_gcl_x_option="--disable-tkconfig --disable-x --disable-xgcl --disable-tcltk"
+
+## Under some unusual circumstances, GLC's configure will
+## fail to properly detect usable Emacs directories, and the
+## build will mysteriously fail later.  We temporarily work
+## around that bug as follows:
+oa_gcl_emacs="--enable-emacs=correct"
+
+GCLOPTS="$oa_gcl_emacs $oa_gcl_bfd_option $oa_gcl_mm_option $oa_gcl_x_option"
+AC_SUBST(GCLOPTS)
+])
+
 dnl --------------------------
 dnl -- OPENAXIOM_LISP_FLAGS --
 dnl --------------------------
@@ -310,7 +356,7 @@ else
    axiom_fasl_type=`echo $axiom_fasl_type | grep '^axiom_fasl_type'`
    IFS=$openaxiom_save_IFS
    axiom_fasl_type=`echo $axiom_fasl_type | sed -e 's/axiom_fasl_type=//'`
-   if test -z $axiom_fasl_type; then
+   if test -z "$axiom_fasl_type"; then
        AC_MSG_ERROR([Could not determine extension for compiled Lisp files])
    fi
 fi
@@ -509,7 +555,7 @@ esac
 AC_CHECK_PROGS([NOTANGLE], [notangle])
 AC_CHECK_PROGS([NOWEAVE], [noweave])
 ## In case noweb is missing we need to build our own.
-if test -z $NOTANGLE -o -z $NOWEAVE ; then
+if test -z "$NOTANGLE" -o -z "$NOWEAVE" ; then
     ## Yes, but do we have the source files to build from?
     if test ! -d ${srcdir}/noweb; then
        AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
@@ -519,4 +565,430 @@ if test -z $NOTANGLE -o -z $NOWEAVE ; then
     NOWEAVE='$(axiom_build_bindir)/noweave'
     oa_all_prerequisites="$oa_all_prerequisites all-noweb"
 fi
+])
+
+dnl ---------------------------
+dnl -- OPENAXIOM_HOST_EDITOR --
+dnl ---------------------------
+dnl Check for a text editor for use when
+dnl the system is up and running.
+AC_DEFUN([OPENAXIOM_HOST_EDITOR],[
+AC_SUBST(oa_editor)
+## On Windows system, we prefer the default installation
+## location to be 'C:/Program Files/OpenAxiom', following Windows 
+## convention.  We cannot use AC_PREFIX_DEFAULT directly as it seems 
+## to operate unconditionally.  Therefore, we resort to this dirty
+## trick stepping over Autoconf's internals.
+case $host in
+    *mingw*)
+        ac_default_prefix="C:/Program Files/OpenAxiom"
+        AC_PATH_PROGS([oa_editor],[notepad.exe])
+	;;
+    *)  
+        AC_PATH_PROGS([oa_editor],[vi])
+        ;;
+esac
+])
+
+dnl --------------------------
+dnl -- OPENAXIOM_HOST_PROGS --
+dnl --------------------------
+dnl Check for programs we need in the host environment.
+AC_DEFUN([OPENAXIOM_HOST_PROGS],[
+OPENAXIOM_HOST_EDITOR
+AC_PATH_PROGS([HOST_AWK],[awk nawk gawk mawk])
+
+AC_PATH_PROG([PDFLATEX], [pdflatex])
+if test -z "$PDFLATEX"; then
+   AC_PATH_PROG([LATEX], [latex],
+                [AC_MSG_NOTICE([Documentation is disabled.])])
+fi
+AC_CHECK_PROGS([MAKEINDEX], [makeindex])
+])
+
+
+dnl -----------------------------
+dnl -- OPENAXIOM_BUILD_OPTIONS --
+dnl -----------------------------
+dnl Process build options specified on the command line.
+AC_DEFUN([OPENAXIOM_BUILD_OPTIONS],[
+## Does it make sense to pretend that we support multithreading?
+oa_enable_threads=no
+AC_ARG_ENABLE([threads], [  --enable-threads   turn on threads support],
+              [case $enableval in
+                  yes|no) oa_enable_threads=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-threads]) ;;
+               esac])
+# GNU compilers want hints about multithreading.
+case $GCC,$oa_enable_threads in
+   yes,yes)
+     axiom_cflags="$axiom_cflags -pthread"
+esac
+AC_SUBST(oa_enable_threads)
+
+## Occaionally, we may want to keep intermediary files.
+oa_keep_files=
+AC_ARG_ENABLE([int-file-retention], 
+              [  --enable-int-file-retention   keep intermediary files],
+              [case $enableval in
+                  yes|no) oa_keep_files=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-int-file-retention]) ;;
+               esac])
+AC_SUBST(oa_keep_files)
+
+## Parse args for profiling-enabled build.
+oa_enable_profiling=no
+AC_ARG_ENABLE([profiling], [  --enable-profiling  turn profiling on],
+              [case $enableval in
+                  yes|no) oa_enable_profiling=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-profiling]) ;;
+               esac])
+AC_SUBST(oa_enable_profiling)
+
+## Lisp optimization settings
+oa_optimize_options=speed
+## Shall we proclaim safety?
+oa_enable_checking=no          # don't turn on checking by default.
+AC_ARG_ENABLE([checking], [  --enable-checking  turn runtime checking on],
+              [case $enableval in
+                  yes|no) oa_enable_checking=$enableval ;;
+                  *) AC_MSG_ERROR([erroneous value for --enable-checking]) ;;
+               esac])
+if test x"$oa_enable_checking" = xyes; then
+   case $axiom_lisp_flavor in
+     gcl) # GCL-2.6.x does not understand debug.
+        oa_optimize_options="$oa_optimize_options safety" 
+        ;;
+     *) oa_optimize_options="$oa_optimize_options safety debug" 
+        ;;
+   esac
+   AC_MSG_NOTICE([runtime checking may increase compilation time])
+fi
+AC_SUBST(oa_enable_checking)
+AC_SUBST(oa_optimize_options)
+])
+
+
+dnl -----------------------------
+dnl -- OPENAXIOM_CHECK_SIGNALS --
+dnl -----------------------------
+dnl The host platform must be able to handle signals.  Although, this is 
+dnl not strictly necessary, that is the way OpenAxiom source code
+dnl is currently written.  We ask for a POSIX or ISO C semantics, though
+dnl we have a strong preference for POSIX-conformant semantics.
+AC_DEFUN([OPENAXIOM_CHECK_SIGNALS],[
+AC_CHECK_HEADERS([signal.h],
+                 [],
+                 [AC_MSG_ERROR([OpenAxiom needs signal support.])])
+AC_CHECK_DECLS([sigaction], [], [], 
+               [#include <signal.h>])
+AC_CHECK_DECLS([kill], [], [],
+               [#include <signal.h>])
+])
+
+
+dnl -----------------------------
+dnl -- OPENAXIOM_CHECK_SOCKETS --
+dnl -----------------------------
+dnl The host environment must be capable of handling communication through
+dnl sockets.  This is required for interfacing AXIOMsys
+dnl and Superman.  Notice that ideally, we should decouple
+dnl that interface in such a way that we can still build OpenAxiom
+dnl when uperman is not needed or a socket library is not
+dnl available.
+AC_DEFUN([OPENAXIOM_CHECK_SOCKETS],[
+case $host in
+    *mingw*)
+	AC_CHECK_HEADERS([winsock2.h],
+	                [axiom_host_has_socket=yes],
+			[])
+	oa_c_runtime_extra="-lwsock32"
+	;;
+    *)
+        AC_CHECK_HEADERS([sys/socket.h], 
+                         [axiom_host_has_socket=yes],
+		         [])
+	;;
+esac
+if test x$axiom_host_has_socket != xyes; then \
+    AC_MSG_ERROR([OpenAxiom needs suport for sockets.])
+fi
+## solaris-based systems tend to hide the socket library.
+case $host in
+    *solaris*)
+       AC_SEARCH_LIBS([accept], [socket],
+	   [], [AC_MSG_ERROR([socket library not found])])
+       AC_SEARCH_LIBS([gethostbyname], [nsl])
+       ;;
+    *) ;;
+esac
+
+AC_EGREP_CPP([has_af_local],
+             [#if HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#else
+#  include <winsock2.h>
+#endif
+#ifdef AF_LOCAL
+   has_af_local
+#endif
+             ],
+             [AC_DEFINE([HAVE_AF_LOCAL], [1], [Host has AF_LOCAL])])
+
+
+AC_EGREP_CPP([has_af_unix],
+             [#if HAVE_SYS_SOCKET_H
+#  include <sys/socket.h>
+#else
+#  include <winsock2.h>
+#endif
+#ifdef AF_UNIX
+   has_af_unix
+#endif
+             ],
+             [AC_DEFINE([HAVE_AF_UNIX], [1], [Host has AF_UNIX])])
+])
+
+dnl --------------------------------
+dnl -- OPENAXIOM_CHECK_FILESYSTEM --
+dnl --------------------------------
+dnl Some parts of OpenAxiom manipulate files and directories.  They
+dnl more or less directly reflect the underlying platform semantics.
+dnl For the moment, we require POSIX semantics, though that does not
+dnl seem necessary.  That restriction should be removed as soon as possible.
+AC_DEFUN([OPENAXIOM_CHECK_FILESYSTEM],[
+AC_CHECK_HEADERS([sys/stat.h],
+                 [],
+		 [AC_MSG_ERROR([OpenAxiom needs <sys/stat.h>])])
+case $host in
+    *mingw*)
+        ;;
+    *)
+	AC_CHECK_HEADERS([dirent.h],
+			 [],
+			 [AC_MSG_ERROR([OpenAxiom needs <dirent.h>])])
+        ;;
+esac
+
+AC_CHECK_HEADERS([unistd.h], [],
+                 [AC_MSG_ERROR([OpenAxiom needs <unistd.h>])])
+])
+
+dnl -----------------------------
+dnl -- OPENAXIOM_CHECK_PROCESS --
+dnl -----------------------------
+AC_DEFUN([OPENAXIOM_CHECK_PROCESS],[
+AC_CHECK_DECLS([getuid, geteuid, getgid, getegid], [], [],
+               [#include <unistd.h>])
+AC_CHECK_HEADERS([sys/wait.h])
+if test x"$ac_cv_header_sys_wait_h" = xyes; then \
+    AC_CHECK_DECLS([wait], 
+                   [], 
+                   [], 
+                   [#include <sys/wait.h>])
+fi
+AC_CHECK_DECLS([fork],
+               [],
+               [],
+               [#include <unistd.h>])
+])
+
+dnl ----------------------------------
+dnl -- OPENAXIOM_CHECK_CORE_SUPPORT --
+dnl ----------------------------------
+AC_DEFUN([OPENAXIOM_CHECK_CORE_SUPPORT],[
+oa_c_runtime=
+AC_SUBST(oa_c_runtime)
+
+oa_c_runtime_extra=
+AC_SUBST(oa_c_runtime_extra)
+
+OPENAXIOM_CHECK_FILESYSTEM
+OPENAXIOM_CHECK_SIGNALS
+OPENAXIOM_CHECK_SOCKETS
+OPENAXIOM_CHECK_PROCESS
+])
+
+dnl ------------------------
+dnl -- OPENAXIOM_CHECK_IO --
+dnl ------------------------
+AC_DEFUN([OPENAXIOM_CHECK_IO],[
+## Does this system have openpty or shall we emulate?
+AC_CHECK_HEADERS([sys/ioctl.h pty.h util.h libutil.h termios.h])
+AC_CHECK_DECLS([openpty],[],[],
+   [#if HAVE_PTY_H
+#  include <pty.h>
+#endif
+#if HAVE_UTIL_H
+#  include <util.h>
+#endif
+#if HAVE_SYS_IOCTL_H
+#  include <sys/ioctl.h>
+#endif
+#if HAVE_TERMIOS_H
+#  include <termios.h>
+#endif
+#if HAVE_LIBUTIL_H
+#  include <sys/types.h>
+#  include <libutil.h>
+#endif
+   ])
+if test x"$ac_cv_have_decl_openpty" = xyes; then \
+   AC_SEARCH_LIBS([openpty],[util])
+fi
+
+axiom_use_sman=1
+if test x"$ac_cv_have_decl_fork" = xyes \
+     -a x"$ac_cv_have_decl_wait" = xyes; then \
+    oa_c_runtime="$oa_c_runtime terminal_io"
+    axiom_src_all="$axiom_src_all all-sman all-clef"
+    axiom_src_subdirs="$axiom_src_subdirs clef sman"
+    OPENAXIOM_MAKEFILE([src/clef/Makefile])
+    OPENAXIOM_MAKEFILE([src/sman/Makefile])
+else
+    axiom_use_sman=0
+    AC_MSG_NOTICE([Superman component is disabled.])
+fi
+
+AC_DEFINE_UNQUOTED([OPENAXIOM_USE_SMAN], [$axiom_use_sman],
+                   [Whether to use the session manager as driver.])
+
+axiom_src_all="all-input $axiom_src_all"
+])
+
+
+dnl -------------------------
+dnl -- OPENAXIOM_CHECK_X11 --
+dnl -------------------------
+dnl One of the thorniest issues with programs that use the X Window System
+dnl is portability.  There exist many implementations of the X11
+dnl specification, each with its own variations, extensions, and what
+dnl not.  Designing hand-written makefiles for such programs can be a
+dnl daunting task, fraut with all kinds of traps.  Fortunately, Autoconf
+dnl provides us with some help, namely the macro [[AC_PATH_X]] and 
+dnl [[AC_PATH_XTRA]].  The former searches the directories where the
+dnl X11 include files and the library files reside.  The latter is an
+dnl enhanced version that:
+dnl  1. computes the C compiler flags required by X11;
+dnl  2. computes the linker flags required by X11;
+dnl  3. checks for special libraries that some systems need in order to
+dnl     compile X11 programs;
+dnl  4. checks for special X11R6 libraries that need to be linked before
+dnl      the flag [[-lX11]].
+AC_DEFUN([OPENAXIOM_CHECK_X11],[
+AC_PATH_XTRA
+## Output directives for the C compiler
+AC_SUBST(X_CLFAGS)
+## Output directives for the linker
+AC_SUBST(X_LIBS)
+## Output any extra libraries required by X11
+AC_SUBST(X_EXTRA_LIBS)
+
+## Finally, output the list of libraries that need to appear before -lX11
+## Some part of OpenAxiom depends on Xpm.  That library has kind uncertain
+## future.  At some point in the past, it was deprecated, to be
+## replaced by xpm-nox; then came back again.  So, its support may
+## vary from system to system.  For the moment, we assume that if X11
+## is found then, Xpm is already present.  Though, clearly that is a
+## very optimistic assumption.  Long term, OpenAxiom should get rid of
+## dependence on Xpm.  A nearly fool-proof test would be probably
+## inspired by AC_PATH_XTRA.  I don't have time to get to that 
+## complication right now.  Will fix later.
+X_PRE_LIBS="-lXpm $X_PRE_LIBS"
+AC_SUBST(X_PRE_LIBS)
+
+## If the system supports X11, then build graphics
+axiom_use_x=no
+if test -z "$no_x"; then
+    axiom_use_x=yes
+    oa_c_runtime="$oa_c_runtime graphics"
+    axiom_src_all="$axiom_src_all all-graph"
+    axiom_src_subdirs="$axiom_src_subdirs graph"
+    OPENAXIOM_MAKEFILE([src/graph/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
+    OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
+else
+    AC_MSG_NOTICE([The Garphics component is disabled.])
+fi
+AC_SUBST(axiom_src_all)
+AC_SUBST(axiom_use_x)
+])
+
+dnl ------------------------
+dnl -- OPENAXIOM_CHECK_QT --
+dnl ------------------------
+AC_DEFUN([OPENAXIOM_CHECK_QT],[
+# Check for Qt utilities.
+AC_CHECK_PROGS([OA_QT_MOC], [moc])
+AC_CHECK_PROGS([OA_QT_QMAKE], [qmake])
+if test -n "$OA_QT_MOC"; then
+  AC_MSG_CHECKING([Qt version])
+  oa_qt_version=`"$OA_QT_MOC" -v 2>&1 | sed -e 's/^.*(\(.*\))$/\1/'`
+  AC_MSG_RESULT([$oa_qt_version])
+  case $oa_qt_version in
+    *[1-3]\.[0-9]+\.[0-9]+)
+       AC_MSG_WARN([This version of Qt is too old for OpenAxiom.])
+       ;;
+  esac
+fi
+])
+
+dnl -------------------------------------
+dnl -- OPENAXIOM_CHECK_BROWSER_SUPPORT --
+dnl -------------------------------------
+dnl The HyperDoc component needs string pattern matching.  
+dnl We require [[<regex.h>]], with POSIX-conformant definition.  We used
+dnl to key build of HyperDoc component on the availability of X11
+dnl functionalities.  That, however, is a severe restriction.  Not all
+dnl of the HyperDoc components need X11.  Some, such as [[htadd]], don't
+dnl need X11 at all.  Therefore we have lifted part of the restrictions.
+dnl See \File{src/hyper/Makefile} for more details.  Note that is we don't
+dnl build the HyperDoc component, the compilation of algebra files are
+dnl drawn in [[Unexpected HT command]] noise.
+AC_DEFUN([OPENAXIOM_CHECK_BROWSER_SUPPORT],[
+openaxiom_host_has_regex=
+AC_CHECK_HEADER([regex.h], 
+		[openaxiom_host_has_regex=yes],
+		[openaxiom_host_has_regex=no])
+AC_SUBST(openaxiom_host_has_regex)
+])
+
+dnl ------------------------------
+dnl -- OPENAXIOM_CHECK_GRAPHICS --
+dnl ------------------------------
+AC_DEFUN([OPENAXIOM_CHECK_GRAPHICS],[
+OPENAXIOM_CHECK_X11
+OPENAXIOM_CHECK_QT
+OPENAXIOM_CHECK_BROWSER_SUPPORT
+])
+
+
+dnl --------------------------
+dnl -- OPENAXIOM_CHECK_MISC --
+dnl --------------------------
+AC_DEFUN([OPENAXIOM_CHECK_MISC],[
+case $GCC in
+  yes)
+     CCF="-O2 -Wall -D_GNU_SOURCE"
+     ;;
+esac
+
+case $target in
+    *bsd*|*dragonfly*)
+	CCF="-O2 -Wall"
+	;;
+    *solaris*)
+        ## This should be taken out.
+        AC_DEFINE([SUNplatform], [], [SunOS flavour])
+	;;
+    powerpc*darwin*)
+	CCF="-O2 -Wall -D_GNU_SOURCE \
+	    -I/usr/include -I/usr/include/sys"
+	;;
+esac
+
+AC_SUBST(CCF)
 ])
