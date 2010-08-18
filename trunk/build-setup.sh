@@ -7,6 +7,7 @@ error() {
 
 # set -x
 
+rm -rf autom4te.cache
 autoheader || error "could not re-generate config/openaxiom-c-macros.h"
 autoconf || error "could not re-generate configure"
 

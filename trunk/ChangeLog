@@ -1,3 +1,9 @@
+2010-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS): 
+	New. Abstract over vendor lock-ins CPP flags.
+	(OPENAXIOM_CHECK_MM): Check for file mapping capability.
+
 2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ChangeLog.jap: Merge with this ChangeLog.  Remove.
