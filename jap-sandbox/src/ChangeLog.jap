@@ -1,3 +1,8 @@
+2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* hyper/Makefile.in (${OUTLIB}/htsearch$(EXEEXT)): Link with a C++
+	compiler. 
+
 2010-07-25  Alfredo Portes <doyenatccny@gmail.com>
 
     * src/lib/cfuns-c.c: (oa_insert) Change return value.

@@ -162,7 +162,7 @@ ${HYPER}/pages/ht.db: all-hyper-pre $(srcdir)/pages/*.pht
 	@ # cp -pr "$(srcdir)"/viewports "$(axiom_target_datadir)"
 
 ${OUTLIB}/htsearch$(EXEEXT): $(htsearch_objects) $(htsearch_DEPENDENCIES)
-	${LINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)
+	${CXXLINK} -o $@ $(htsearch_objects) $(htsearch_LDADD)
 
 ${OUTLIB}/ex2ht$(EXEEXT): $(ex2ht_objects) $(ex2ht_DEPENDENCIES)
 	${CXXLINK} -o $@ $(ex2ht_objects) $(ex2ht_LDADD)
