@@ -1418,13 +1418,13 @@ TESTS=${INPUT}/INTHEORY.input ${INPUT}/VIEW2D.input ${INPUT}/TESTFR.input
 <<testrules>>=
 
 ${INPUT}/TESTFR.input: $(srcdir)/fr.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST FR' --output=$@ $<
+	$(oa_hammer) --tangle='TEST FR' --output=$@ $<
 
 ${INPUT}/INTHEORY.input: $(srcdir)/numtheor.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST INTHEORY' --output=$@ $<
+	$(oa_hammer) --tangle='TEST INTHEORY' --output=$@ $<
 
 ${INPUT}/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST VIEW2D' --output=$@ $<
+	$(oa_hammer) --tangle='TEST VIEW2D' --output=$@ $<
 
 @
 
@@ -1580,7 +1580,7 @@ strap/%.$(FASLEXT): $(srcdir)/strap/%.lsp
 $(OUTSRC)/%.spad: mk-target-src-algabra-dir
 
 ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
+	$(oa_hammer) --tangle --output=$@ $<
 
 .PHONY: mk-target-src-algabra-dir
 mk-target-src-algabra-dir:
@@ -1604,10 +1604,10 @@ $(builddir)/%.dvi: $(axiom_build_texdir)/diagrams.tex \
 		   $(axiom_build_texdir)/axiom.sty
 
 $(builddir)/%.dvi: $(builddir)/%.tex
-	$(axiom_build_document) --latex $<
+	$(oa_hammer) --latex $<
 
 $(builddir)/%.tex: $(srcdir)/%.pamphlet
-	$(axiom_build_document) --weave --output=$@ $<
+	$(oa_hammer) --weave --output=$@ $<
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	@cp -p $< $@
@@ -1723,7 +1723,7 @@ the case above this would resolve to [[\${MID}/LEXTRIPK.spad]].
 For the line given above it outputs the following:
 \begin{verbatim}
 ${MID}/LEXTRIPK.spad: $(srcdir)/zerodim.spad.pamphlet
-	$(axiom_build_document) --tangle='package LEXTRIPK LexTriangularPackage' --output=$@ $<
+	$(oa_hammer) --tangle='package LEXTRIPK LexTriangularPackage' --output=$@ $<
 \end{verbatim}
 
 

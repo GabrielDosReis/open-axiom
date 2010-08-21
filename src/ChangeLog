@@ -1,3 +1,16 @@
+2010-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet (all-interpsys): Require all-utils.
+	(all-asq): Likewise.
+	(all-utils): New tule.
+	* algebra/Makefile.pamphlet: Replace $(axiom_build_document) with
+	$(oa_hammer). 
+	* etc/Makefile.in: Likewise.
+	* graph/Makefile.in: Likewise.
+	* input/Makefile.pamphlet: Likewise.
+	* interp/Makefile.pamphlet: Likewise.
+	* utils/: New component.
+
 2010-08-17  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* ChangeLog.jap: Merge into here.  Remove

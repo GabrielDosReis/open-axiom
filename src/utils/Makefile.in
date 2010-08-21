@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2010, Gabriel Dos Reis.
+# Copyright (C) 2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,61 +29,49 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+subdir = src/utils/
 
+bin_PROGRAMS = hammer$(EXEEXT)
+hammer_SOURCES = hammer.cc
+hammer_OBJECTS = $(hammer_SOURCES:.cc=.lo)
+hammer_LDADD = -L. -lOpenAxiom
 
-SUBDIRS = Gdraws viewman view2D view3D viewAlone
+libOpenAxiom_HEADERS = storage.H
+libOpenAxiom_SOURCES = storage.cc
+libOpenAxiom_OBJECTS = $(libOpenAxiom_SOURCES:.cc=.lo)
 
-pamphlets = fileformats.pamphlet Makefile.pamphlet
+.PHONY: all all-ax all-utils
+.SUFFIXES:
+.SUFFIXES: .cc .H $(OBJEXT) $(LIBEXT)
 
-subdir = src/graph/
-
-.PHONY: all all-ax all-graph
 all: all-ax
 
-all-ax all-graph: stamp
-	@ echo 24 finished ${IN}
+all-ax all-utils: stamp
 
-stamp: all-subdirs parabola/data parabola/graph0
+stamp: libOpenAxiom.$(LIBEXT) hammer$(EXEEXT)
+	-rm -f stamp
 	$(STAMP) stamp
 
-.PHONY: all-subdirs
-all-subdirs: all-subdirs.pre all-subdirs.rest
+.SUFFIXES:
+.SUFFIXES: .c .h .lo .$(OBJEXT)
+.PRECIOUS: %.lo %.obj
 
+hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
+	$(CXXLINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
 
-.PHONY: all-PS
-all-PS: all-Gdraws $(srcdir)/PS/*.ps
-	cp -p $(srcdir)/PS/*.ps $(axiom_target_libdir)/graph/
+libOpenAxiom.$(LIBEXT): $(libOpenAxiom_OBJECTS)
+	$(CXXLINK) -o $@ $(libOpenAxiom_OBJECTS)
 
-.PHONY: all-subdirs.pre
-all-subdirs.pre:
-	-rm -f stamp
-	$(mkdir_p) parabola
+%.lo: %.cc $(libOpenAxiom_HEADERS)
+	$(CXXCOMPILE) ${CXXFLAGS} -I. -I$(top_builddir)/config -o $@ $<
 
-.PHONY: all-subdirs.rest
-all-subdirs.rest: all-subdirs.pre all-Gdraws all-viewman \
-		  all-view2D all-view3D all-viewAlone all-PS
-
-
-all-viewman: all-Gdraws
-	cd viewman && ${MAKE}
-all-Gdraws: 
-	@$(mkdir_p) $(axiom_target_libdir)/graph
-	cd Gdraws && ${MAKE}
-all-view3D: all-Gdraws
-	cd view3D && ${MAKE}
-all-view2D: all-Gdraws
-	cd view2D && ${MAKE}
-all-viewAlone: all-Gdraws
-	cd viewAlone && ${MAKE}
-
-
-parabola/data parabola/graph0: $(srcdir)/fileformats.pamphlet
-	$(oa_hammer) --tangle=`basename $@` --output=$@ $<
 
 mostlyclean-local:
+	@rm -rf .libs
+	@rm -f $(libOpenAxiom_OBJECTS)
+	@rm -f *~ core
 
 clean-local: mostlyclean-local
-	@rm -f parabola/data parabola/graph0
 
 distclean-local: clean-local
 

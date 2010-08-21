@@ -1,3 +1,15 @@
+2010-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	External tool noweb is no longer required.
+	* INSTALL: Update instructions.
+	* Makefile.pamphlet: Remove rules for building noweb.
+	(AXIOM_SRC_TARGETS): Include all-utils.
+	* config/open-axiom.m4 (OPENAXIOM_BUILD_TOOLS): Don't check for
+	notangle and noweave.
+	* config/setup-dep.mk: Remove rules for generating document.
+	* config/var-def.mk: Remove NOTANGLE and NOWEAVE variables.
+	* configure.ac: Instantiate Makefile for src/utils.
+
 2010-08-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (OPENAXIOM_CPPFLAGS_FOR_VENDOR_LOCK_INS): 
