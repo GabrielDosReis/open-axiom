@@ -573,21 +573,6 @@ case $build in
 	fi
 	;;
 esac
-
-## Make sure noweb executable is available
-AC_CHECK_PROGS([NOTANGLE], [notangle])
-AC_CHECK_PROGS([NOWEAVE], [noweave])
-## In case noweb is missing we need to build our own.
-if test -z "$NOTANGLE" -o -z "$NOWEAVE" ; then
-    ## Yes, but do we have the source files to build from?
-    if test ! -d ${srcdir}/noweb; then
-       AC_MSG_NOTICE([OpenAxiom requires noweb utilties])
-       AC_MSG_ERROR([Please get the tarball of dependencies and reconfigure])
-    fi
-    NOTANGLE='$(axiom_build_bindir)/notangle'
-    NOWEAVE='$(axiom_build_bindir)/noweave'
-    oa_all_prerequisites="$oa_all_prerequisites all-noweb"
-fi
 ])
 
 dnl ---------------------------
@@ -992,7 +977,7 @@ dnl -- OPENAXIOM_CHECK_MM --
 dnl ------------------------
 dnl Check for host capability of memory mapping.
 AC_DEFUN([OPENAXIOM_CHECK_MM],[
-AC_CHECK_HEADERS([sys/mman.h])
+AC_CHECK_HEADERS([sys/mman.h fcntl.h])
 ## We want annonymous mapping for memory allocation.  Unfortunately,
 ## the flag for anonymous mapping is not standardized.  Popular names
 ##  are MAP_ANONYMOUS and MAP_ANON.
@@ -1032,6 +1017,7 @@ AC_DEFUN([OPENAXIOM_CHECK_MISC],[
 case $GCC in
   yes)
      CFLAGS="$CFLAGS -O2 -Wall"
+     CXXFLAGS="$CXXFLAGS -O2 -Wall"
      ;;
 esac
 ])

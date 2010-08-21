@@ -235,14 +235,7 @@ oa_include_gcl = @oa_include_gcl@
 ## -------------------------------------------
 ## -- Files generated for the build machine --
 ## -------------------------------------------
-axiom_build_document = $(axiom_top_builddir)/scripts/document
-axiom_build_nowebdir = $(axiom_builddir)/noweb
-
-TANGLE = @NOTANGLE@
-WEAVE = @NOWEAVE@
-## We export TANGLE and WEAVE for use in subshells, such as document.
-export TANGLE
-export WEAVE
+oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 AXIOM_LISP = @AXIOM_LISP@
 # Extension of the output file name returned by compile-file

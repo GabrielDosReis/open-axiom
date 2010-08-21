@@ -57,13 +57,13 @@ ${OUT}/%.input: %.input
 .PRECIOUS: %.input
 
 %.input: ${IN}/%.input.pamphlet
-	@$(axiom_build_document) --output=$@ --tangle $<
+	@$(oa_hammer) --output=$@ --tangle $<
 
 ${OUT}/%.as: %.as
 	@cp -p $< $@
 
 %.as: ${IN}/%.as.pamphlet
-	@ $(axiom_build_document) --output=$@ --tangle $<
+	@ $(oa_hammer) --output=$@ --tangle $<
 
 pamphlets = \
 	Makefile.pamphlet \

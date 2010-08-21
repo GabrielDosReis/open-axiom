@@ -109,7 +109,7 @@ asq$(EXEEXT): $(asq_objects)
 
 
 asq.c: $(srcdir)/asq.c.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
+	$(oa_hammer) --tangle --output=$@ $<
 
 $(axiom_target_libdir)/summary: $(srcdir)/summary
 	cp -p $< $@ 

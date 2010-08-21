@@ -37,7 +37,7 @@ dnl Most of the macros used in this configure.ac are defined in files
 dnl located in the subdirectory config/
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-08-16], 
+AC_INIT([OpenAxiom], [1.4.0-2010-08-20], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -79,7 +79,6 @@ axiom_build_sharedir=$axiom_builddir/share
 
 
 ## Accumulate list of utils needed for the build platform
-## It is vital that noweb is present in the build environement.
 oa_all_prerequisites=
 AC_SUBST(oa_all_prerequisites)
 
@@ -111,6 +110,7 @@ OPENAXIOM_CHECK_MISC
 OPENAXIOM_MAKEFILE([Makefile])
 OPENAXIOM_MAKEFILE([src/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
+OPENAXIOM_MAKEFILE([src/utils/Makefile])
 OPENAXIOM_MAKEFILE([src/hyper/Makefile])
 OPENAXIOM_MAKEFILE([src/driver/Makefile])
 OPENAXIOM_MAKEFILE([src/lisp/Makefile])
@@ -121,12 +121,6 @@ OPENAXIOM_MAKEFILE([src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/input/Makefile])
 OPENAXIOM_MAKEFILE([src/etc/Makefile])
 OPENAXIOM_MAKEFILE([src/doc/Makefile])
-
-## We now generate the "document" script and support files at configure time.
-## We put them in the build directory because they are intended to be 
-## build support utils only.
-AC_CONFIG_FILES(build/scripts/document:$srcdir/src/scripts/document.in, \
-                [chmod +x build/scripts/document])
 
 AC_OUTPUT
 
@@ -140,7 +134,7 @@ egrep '<<(category|domain|package) .*>>=' \
         set $chunk_desc; spad_abbrev=$2
         cat >> src/algebra/tmp-extract-spad.mk <<EOF
 $spad_abbrev.spad: \$(srcdir)/`basename $spad_file` ; \
-    @\$(axiom_build_document) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
+    @\$(oa_hammer) --output=\$@.tmp --tangle="$chunk_desc" \$< && \
     \$(top_confdir)/move-if-change \$@.tmp \$@
 EOF
     done 

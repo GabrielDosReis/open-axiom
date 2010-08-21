@@ -124,7 +124,7 @@ all-boot: all-lisp
 Once \Tool{bootsys} exists we need to build 
 \Tool{interpsys}. 
 <<interpdir>>=
-all-interpsys: all-boot all-hyper-pre
+all-interpsys: all-boot all-hyper-pre all-utils
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
@@ -211,7 +211,7 @@ The \Tool{asq} \cite{2} command, contained in this directory, is useful
 for finding detailed information about domains, packages, and
 categories from the shell without running Axiom.
 <<etcdir>>=
-all-asq: all-hyper-post
+all-asq: all-hyper-post all-utils
 	cd etc && $(MAKE) $@
 
 .PHONY: all-databases
@@ -252,7 +252,7 @@ subdir = src/
 
 SUBDIRS = @axiom_src_subdirs@
 
-.PHONY: all all-ax all-src all-clef all-sman all-driver
+.PHONY: all all-ax all-src all-clef all-sman all-driver all-utils
 
 all: all-ax
 
@@ -265,6 +265,9 @@ stamp: @axiom_src_all@ all-driver
 
 all-driver: all-lib
 	@cd driver && $(MAKE) $@
+
+all-utils:
+	@cd utils && $(MAKE) $@
 
 <<clefdir>>
 <<smandir>>
