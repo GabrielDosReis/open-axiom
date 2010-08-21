@@ -227,8 +227,6 @@ AXIOM = $(top_builddir)/$(target)
 ## Where to find OpenAxiom data bases.
 DAASE = $(axiom_src_datadir)
 
-TMP=$(axiom_builddir)
-
 ## Shall we build GCL?
 oa_include_gcl = @oa_include_gcl@
 
