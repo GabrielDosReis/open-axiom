@@ -1373,7 +1373,7 @@ getBootType t ==
       getBasicFFIType ret or return nil
     args' := [getFFIDatatype arg or return "failed" for arg in args]
     args' = "failed" => return nil
-    [bootDenotation "Mapping",ret',args']
+    [bootDenotation "%Mapping",ret',args']
   nil
 
 ++ Verify that mode `t' is admissible in an external entity signature
@@ -1402,10 +1402,10 @@ checkExternalEntity(id,type,lang,e) ==
   -- Only functions are accepted at the moment.  And all mentioned
   -- types must be those that are supported by the FFI.
   type' := checkExternalEntityType(type,e) 
-  type' isnt [=bootDenotation "Mapping",:.] =>
+  type' isnt [=bootDenotation "%Mapping",:.] =>
     stackAndThrow('"Signature for external entity must be a Mapping type",nil)
   id' := encodeLocalFunctionName id
-  [def] := genImportDeclaration(id',[bootDenotation "Signature",id,type'])
+  [def] := genImportDeclaration(id',[bootDenotation "%Signature",id,type'])
   compileLispDefinition(id,def)
   id'
 
