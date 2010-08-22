@@ -1,5 +1,10 @@
 2010-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/openmath.spad.pamphlet (outputOMFunction): Coerce
+	symbol to string for error display.
+
+2010-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/e04Package.spad.pamphlet (goodnessOfFit): Add explicit
 	package call to ErrorFunctions.
 
