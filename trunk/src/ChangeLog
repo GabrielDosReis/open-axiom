@@ -1,3 +1,8 @@
+2010-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/e04Package.spad.pamphlet (goodnessOfFit): Add explicit
+	package call to ErrorFunctions.
+
 2010-08-21  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (getBootType): Prefix Mapping with %.
