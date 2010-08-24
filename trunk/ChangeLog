@@ -1,3 +1,8 @@
+2010-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_ALIGNMENT_OPERATOR): New.  Check
+	for alignment operator.
+
 2010-08-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	External tool noweb is no longer required.

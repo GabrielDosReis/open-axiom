@@ -29,6 +29,15 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// --% Author: Gabriel Dos Reis.
+// --% Description:
+// --%   This program implements basic functionalities for untangling
+// --%   algebra source code from the pamphlets.  The syntax is that
+// --%   of `noweb'.  A chunk definition starts with a pattern
+// --%   <<name>>= on a line by itself, and ends with `@' by itself
+// --%   on a line.  A chunk can refer to another chunk through
+// --%   a pattern of the form `<<name>>'.
+
 #include <string.h>
 #include <stdlib.h>
 #include <utility>
@@ -40,13 +49,6 @@
 #include <vector>
 #include <map>
 #include "storage.H"
-
-// -- This program implements basic functionalities for untangling
-// -- algebra source code from the pamphlets.  The syntax is that
-// -- of `noweb'.  A chunk definition starts with a pattern
-// -- <<name>>= on a line by itself, and ends with `@' by itself
-// -- on a line.  A chunk can refer to another chunk through
-// -- a pattern of the form `<<name>>'.
 
 namespace OpenAxiom {
    namespace Hammer {
