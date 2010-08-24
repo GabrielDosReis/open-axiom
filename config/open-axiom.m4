@@ -1010,10 +1010,30 @@ if test x"$ac_cv_header_sys_mman_h" = xyes; then
 fi
 ])
 
+dnl ----------------------------------
+dnl -- OPENAXIOM_ALIGNMENT_OPERATOR --
+dnl ----------------------------------
+dnl Check that the C/C++ compiler understand
+dnl alignment operator, i.e. either `alignof',
+dnl or vendor lock-ins such as `__alignof'.
+AC_DEFUN([OPENAXIOM_ALIGNMENT_OPERATOR],[
+AC_MSG_CHECKING([name of alignment query operator])
+oa_alignment=
+AC_COMPILE_IFELSE([int a = __alignof(int);],
+                  [oa_alignment="__alignof"],
+                  [AC_COMPILE_IFELSE([int a = alignof(int);],
+                                     [oa_alignment="alignof"],
+                                     [AC_MSG_ERROR([C/C++ compiler does not support alignment query operator])])])
+AC_DEFINE_UNQUOTED([openaxiom_alignment],[$oa_alignment],
+                   [Alignment query operator])
+AC_MSG_RESULT([$oa_alignment])
+])
+
 dnl --------------------------
 dnl -- OPENAXIOM_CHECK_MISC --
 dnl --------------------------
 AC_DEFUN([OPENAXIOM_CHECK_MISC],[
+OPENAXIOM_ALIGNMENT_OPERATOR
 case $GCC in
   yes)
      CFLAGS="$CFLAGS -O2 -Wall"

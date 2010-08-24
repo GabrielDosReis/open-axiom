@@ -36,8 +36,8 @@ hammer_SOURCES = hammer.cc
 hammer_OBJECTS = $(hammer_SOURCES:.cc=.lo)
 hammer_LDADD = -L. -lOpenAxiom
 
-libOpenAxiom_HEADERS = storage.H
-libOpenAxiom_SOURCES = storage.cc
+libOpenAxiom_HEADERS = storage.H hash-table.H string-pool.H sexpr.H
+libOpenAxiom_SOURCES = storage.cc string-pool.cc sexpr.cc
 libOpenAxiom_OBJECTS = $(libOpenAxiom_SOURCES:.cc=.lo)
 
 .PHONY: all all-ax all-utils

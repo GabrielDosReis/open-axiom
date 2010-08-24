@@ -29,6 +29,8 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// --%: Gabriel Dos Reis.
+
 #include "openaxiom-c-macros.h"
 
 #ifdef HAVE_SYS_TYPES_H
@@ -53,6 +55,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <new>                  // for placement new.
 #include "storage.H"
 
 namespace OpenAxiom {
@@ -122,6 +125,40 @@ namespace OpenAxiom {
 #else
          free(p);
 #endif            
+      }
+
+      // -------------
+      // -- Storage --
+      // -------------
+      Storage*
+      Storage::acquire(size_t alignment, size_t byte_count) {
+         // Adjust for overhead, and page boundary.
+         byte_count = round_up(byte_count + sizeof(Storage), page_size());
+         Storage* mem = new(os_acquire_raw_memory(byte_count)) Storage;
+         mem->limit_top = mem->base() + round_up(sizeof(Storage), alignment);
+         mem->limit_bot = mem->base() + byte_count;
+         mem->free = mem->limit_top;
+         return mem;
+      }
+
+      void
+      Storage::release(Storage* store) {
+         os_release_raw_memory(store, store->extent());
+      }
+
+      bool
+      Storage::align_to(size_t alignment) {
+         if (alignment == 0)    // protect against nuts
+            return true;
+         if (alignment == 1)    // no preferred alignment at all
+            return true;
+         Byte* b = base();
+         const size_t offset = round_up(free - b, alignment);
+         if (offset < size_t(limit_bot - b)) {
+            free = b + offset;
+            return true;
+         }
+         return false;          // not enough room left
       }
 
       // -----------------
