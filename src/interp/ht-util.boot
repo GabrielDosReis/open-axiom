@@ -236,15 +236,6 @@ stringize s ==
   string? s => s
   PRINC_-TO_-STRING s
 
---htInitPageNoHeading(propList) ==
------------------------> replaced by htInitPageNoScroll
--- start defining a hyperTeX page
---  $curPage := htpMakeEmptyPage(propList)
---  if $saturn then $saturnPage := htpMakeEmptyPage(propList)
---  $newPage := true
---  $htLineList := nil
---  $curPage
-
 htQuote s ==
 -- wrap quotes around a piece of hyperTeX
   iht '"_""

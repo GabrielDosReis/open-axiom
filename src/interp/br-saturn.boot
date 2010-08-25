@@ -40,7 +40,7 @@ namespace BOOT
 $aixTestSaturn := false
 --These will be set in patches.lisp:
 --$saturn := false  --true to write SATURN output to $browserOutputStream
---$standard:= true  --true to write browser output on AIX
+$standard := true  --true to write browser output on AIX
 $saturnAmpersand := '"\&\&"
 $saturnFileNumber --true to write DOS files for Thinkpad (testing only)
    := false

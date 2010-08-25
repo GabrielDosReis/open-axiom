@@ -1,3 +1,16 @@
+2010-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/br-saturn.boot ($saturn): Define here.
+	* interp/br-search.boot: Remove $saturn-related codes.
+	* interp/g-error.boot: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/patches.lisp: Likewise.
+
 2010-08-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/openmath.spad.pamphlet (outputOMFunction): Coerce
