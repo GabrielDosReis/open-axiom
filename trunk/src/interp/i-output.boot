@@ -217,8 +217,6 @@ MATBORCH == '"*"
 
 _*TALLPAR := false
 
-$collectOutput := false
-
 --% Output functions dispatch tables.
 
 for x in '((+ WIDTH sumWidth)
@@ -384,6 +382,14 @@ for x in '((+ APP plusApp)
 
 --%
 
+$collectOutput := false
+
+++ Start a a new line if we are in 2-d ASCII art display mode.
+newlineIfDisplaying() ==
+  if not $collectOutput then
+    TERPRI $algebraOutputStream
+
+
 specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index
   -- into the EBCDIC table, and returns the appropriate character
@@ -463,8 +469,15 @@ print(x,domain) ==
   $dontDisplayEquatnum: local:= true
   output(x,dom)
 
-mathprintWithNumber x ==
+++ Write x as an asgard form on the standard output.
+outputAsgardForm(x,t) ==
+  f := ['%OBJECT,x,devaluate t]
+  WRITE(f,KEYWORD::STREAM,$algebraOutputStream)
+  FRESH_-LINE $algebraOutputStream
+
+mathprintWithNumber(x,t) ==
   x:= outputTran x
+  $asgardForm => outputAsgardForm(x,t)
   maprin
     $IOindex => ['EQUATNUM,$IOindex,x]
     x
@@ -1162,20 +1175,20 @@ maprinChk x ==
       -- deleteAssoc no longer exists
       $MatrixList := delete(u,$MatrixList)
       maPrin ['EQUATNUM,n,rest u]
-      if not $collectOutput then TERPRI $algebraOutputStream
+      newlineIfDisplaying()
     maPrin x
   maPrin x
   -- above line added JHD 13/2/93 since otherwise x gets lost
 
 maprinRows matrixList ==
-  if not $collectOutput then TERPRI($algebraOutputStream)
+  newlineIfDisplaying()
   while matrixList repeat
     y:=nreverse matrixList
     --Makes the matrices come out in order, since CONSed on backwards
     matrixList:=nil
     firstName := first first y
     for [name,:m] in y for n in 0.. repeat
-      if not $collectOutput then TERPRI($algebraOutputStream)
+      newlineIfDisplaying()
       andWhere := (name = firstName => '"where "; '"and ")
       line := strconc(andWhere, PNAME name)
       maprinChk ["=",line,m]
@@ -1504,9 +1517,9 @@ splitConcat(list,maxWidth,firstTimeIfTrue) ==
 
 spadPrint(x,m) ==
   m = $NoValueMode => x
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
   output(x,m)
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
 
 formulaFormat expr ==
   sff := '(ScriptFormulaFormat)
@@ -1553,10 +1566,10 @@ output(expr,domain) ==
     if $formulaFormat then formulaFormat expr
     if $texFormat     then texFormat expr
     if $mathmlFormat  then mathmlFormat expr
-    if $algebraFormat then mathprintWithNumber expr
+    if $algebraFormat then mathprintWithNumber(expr,domain)
   categoryForm? domain or member(domain,'((Mode) (Domain) (Type))) =>
     if $algebraFormat then
-      mathprintWithNumber outputDomainConstructor expr
+      mathprintWithNumber(outputDomainConstructor expr,domain)
     if $texFormat     then
       texFormat outputDomainConstructor expr
   T := coerceInteractive(objNewWrap(expr,domain),$OutputForm) =>
@@ -1567,7 +1580,7 @@ output(expr,domain) ==
       if not $collectOutput then TERPRI $fortranOutputStream
       FORCE_-OUTPUT $fortranOutputStream
     if $algebraFormat then
-      mathprintWithNumber x
+      mathprintWithNumber(x,domain)
     if $texFormat     then texFormat x
     if $mathmlFormat  then mathmlFormat x
   (FUNCTIONP(opOf domain)) and
@@ -1657,7 +1670,7 @@ printMap u ==
     printMap1(x,initialFlag and x is [[n],:.] and n=1)
     for y in l repeat (printBasic " , "; printMap1(y,initialFlag))
   printBasic specialChar 'rbrk
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
 
 isInitialMap u ==
   u is [[[n],.],:l] and integer? n and
@@ -2098,7 +2111,7 @@ longext(u, i, n) ==
   y := first x
   u := remWidth(REVERSEWOC(['" ",:rest x]))
   charybdis(u, i, n)
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
   charybdis(['ELSE, :[y]], i, n)
   '" "
 
@@ -2341,7 +2354,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
     if null nextu then LAST(u).rest.rest.first := close
     x := ASSOCIATER('CONCAT, [ichr,:u])
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
-    if $collectOutput then TERPRI $algebraOutputStream
+    newlineIfDisplaying()
     ichr := '" "
     u := nextu
     null u => return(nil)
@@ -2555,7 +2568,7 @@ binomialSuper u == height u.1 + 1
 binomialWidth u == 2 + MAX(WIDTH u.1, WIDTH u.2)
 
 mathPrint u ==
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
   (u := string? mathPrint1(mathPrintTran u, nil) =>
    PSTRING u; nil)
 
@@ -2567,9 +2580,9 @@ mathPrintTran u ==
     u
 
 mathPrint1(x,fg) ==
-  if fg and not $collectOutput then TERPRI $algebraOutputStream
+  if fg then newlineIfDisplaying()
   maPrin x
-  if fg and not $collectOutput then TERPRI $algebraOutputStream
+  if fg then newlineIfDisplaying()
 
 maPrin u ==
   null u => nil
