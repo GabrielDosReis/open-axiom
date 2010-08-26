@@ -554,6 +554,8 @@ AC_DEFUN([OPENAXIOM_BUILD_TOOLS],[
 AC_CHECK_PROG([TOUCH], [touch],
               [touch], [AC_MSG_ERROR(['touch' program is missing.])])
 AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_SED
 AC_CHECK_PROGS([MKTEMP], [mktemp])
 AC_PROG_AWK
 

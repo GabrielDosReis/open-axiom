@@ -31,7 +31,7 @@
 
 // --%: Gabriel Dos Reis.
 
-#include "openaxiom-c-macros.h"
+#include <open-axiom/config>
 
 #ifdef HAVE_SYS_TYPES_H
 #  include <sys/types.h>
@@ -56,7 +56,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <new>                  // for placement new.
-#include "storage.H"
+#include <open-axiom/storage>
 
 namespace OpenAxiom {
    // ----------------

@@ -40,9 +40,18 @@ libOpenAxiom_HEADERS = storage.H hash-table.H string-pool.H sexpr.H
 libOpenAxiom_SOURCES = storage.cc string-pool.cc sexpr.cc
 libOpenAxiom_OBJECTS = $(libOpenAxiom_SOURCES:.cc=.lo)
 
+oa_public_headers = storage hash-table string-pool sexpr
+
+## Where we store public header files
+oa_target_headerdir = $(oa_target_includedir)/open-axiom
+
+oa_include_flags = -I. -I$(oa_target_includedir) -I$(top_builddir)/config
+
 .PHONY: all all-ax all-utils
 .SUFFIXES:
-.SUFFIXES: .cc .H $(OBJEXT) $(LIBEXT)
+.SUFFIXES: .cc .H .$(OBJEXT) .$(LIBEXT)
+.PRECIOUS: %.lo %.$(OBJEXT)
+
 
 all: all-ax
 
@@ -52,9 +61,23 @@ stamp: libOpenAxiom.$(LIBEXT) hammer$(EXEEXT)
 	-rm -f stamp
 	$(STAMP) stamp
 
-.SUFFIXES:
-.SUFFIXES: .c .h .lo .$(OBJEXT)
-.PRECIOUS: %.lo %.obj
+stamp-headers: $(libOpenAxiom_HEADERS) Makefile
+	rm -f stamp-headers
+	if [ ! -d $(oa_target_headerdir) ]; then \
+	   mkdir -p -- $(oa_target_headerdir) || exit 1; \
+	fi ; \
+	c1=$(top_builddir)/config/openaxiom-c-macros.h; \
+	c2=$(oa_target_headerdir)/config; \
+	if [ ! -r $$c2 ] || ! cmp -s $$c1 $$c2 ; then \
+	   cp -p $$c1 $$c2; \
+	fi ; \
+	for h in $(oa_public_headers); do \
+           f1=$(srcdir)/$$h.H; f2=$(oa_target_headerdir)/$$h; \
+	   if [ ! -r $$f2 ] || ! cmp -s $$f1 $$f2 ; then \
+	      cp -p $$f1 $$f2; \
+	   fi; \
+	done ; \
+	$(STAMP) stamp-headers
 
 hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
 	$(CXXLINK) -o $@ $(hammer_OBJECTS)  $(hammer_LDADD) $(LDFLAGS)
@@ -62,12 +85,13 @@ hammer$(EXEEXT): $(hammer_OBJECTS) libOpenAxiom.$(LIBEXT)
 libOpenAxiom.$(LIBEXT): $(libOpenAxiom_OBJECTS)
 	$(CXXLINK) -o $@ $(libOpenAxiom_OBJECTS)
 
-%.lo: %.cc $(libOpenAxiom_HEADERS)
-	$(CXXCOMPILE) ${CXXFLAGS} -I. -I$(top_builddir)/config -o $@ $<
+%.lo: %.cc stamp-headers
+	$(CXXCOMPILE) ${CXXFLAGS} $(oa_include_flags) -o $@ $<
 
 
 mostlyclean-local:
 	@rm -rf .libs
+	@rm -rf $(oa_include_headerdir) stamp-headers
 	@rm -f $(libOpenAxiom_OBJECTS)
 	@rm -f *~ core
 

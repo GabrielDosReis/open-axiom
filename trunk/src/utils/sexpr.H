@@ -44,7 +44,7 @@
 #include <iosfwd>
 #include <vector>
 #include <set>
-#include "string-pool.H"
+#include <open-axiom/string-pool>
 
 // Helpers for defining token type values for lexeme with more
 // than characters.

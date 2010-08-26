@@ -48,7 +48,7 @@
 #include <list>
 #include <vector>
 #include <map>
-#include "storage.H"
+#include <open-axiom/storage>
 
 namespace OpenAxiom {
    namespace Hammer {
