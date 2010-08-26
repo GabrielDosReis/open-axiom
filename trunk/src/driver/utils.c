@@ -120,6 +120,7 @@ openaxiom_build_rts_options(openaxiom_command* command,
                             openaxiom_driver driver)
 {
    switch (driver) {
+   case openaxiom_config_driver:
    case openaxiom_sman_driver:
    case openaxiom_execute_driver:
    case openaxiom_unknown_driver:
@@ -232,6 +233,8 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
          driver = openaxiom_core_driver;
       else if (strcmp(argv[i], "--server") == 0)
          driver = openaxiom_sman_driver;
+      else if (strcmp(argv[i], "--config") == 0)
+         driver = openaxiom_config_driver;
       else if (strcmp(argv[i], "--execute") == 0) {
          driver = openaxiom_execute_driver;
          break;

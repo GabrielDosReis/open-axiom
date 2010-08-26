@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008-2009, Gabriel Dos Reis.
+   Copyright (C) 2008-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -85,6 +85,25 @@ upgrade_environment(const char* sysdir) {
    publish_systemdir(sysdir);
 }
 
+/* Print configuration info. */
+static int
+print_configuration_info(openaxiom_command* command) {
+   int i;
+   for (i = 1; i < command->core.argc; ++i) {
+      if (strcmp(command->core.argv[i], "include") == 0)
+         printf(" -I\"%s\"/include", command->root_dir);
+      else if (strcmp(command->core.argv[i], "lib") == 0)
+         printf(" -L\"%s\"/lib -lOpenAxiom", command->root_dir);
+      else {
+         fprintf(stderr, "open-axiom: invalid request %s\n",
+                 command->core.argv[i]);
+         return 1;
+      }
+   }
+   fflush(stdout);
+   return 0;
+}
+
 
 int
 main(int argc, char* argv[])
@@ -97,6 +116,10 @@ main(int argc, char* argv[])
    switch (driver) {
    case openaxiom_null_driver:
       return 0;                 /* Bye.  */
+
+   case openaxiom_config_driver:
+      return print_configuration_info(&command);
+
    case openaxiom_core_driver:
    case openaxiom_script_driver:
    case openaxiom_compiler_driver:

@@ -1,5 +1,13 @@
 2010-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* utils/Makefile.in: Install libOpenAxiom.a
+	* driver/main.c (print_configuration_info): New.
+	(main): Handle --config.
+	* driver/utils.c (openaxiom_build_rts_options): Likewise.
+	* driver/utils.h (openaxiom_config_driver): New driver enumerator.
+
+2010-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* utils/Makefile.in: Install headers.
 
 2010-08-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
