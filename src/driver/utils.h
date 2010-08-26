@@ -50,6 +50,7 @@ extern "C" {
 typedef enum openaxiom_driver {
    openaxiom_unknown_driver,    /* unknown driver */
    openaxiom_null_driver,       /* do nothing */
+   openaxiom_config_driver,     /* print out configuration information */
    openaxiom_sman_driver,       /* start Superman as master process */
    openaxiom_core_driver,       /* start the core system as master process */
    openaxiom_script_driver,     /* start the core system in script mode. */
