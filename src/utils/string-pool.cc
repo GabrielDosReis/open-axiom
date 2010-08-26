@@ -31,7 +31,7 @@
 
 // --% Author: Gabriel Dos Reis
 
-#include "string-pool.H"
+#include <open-axiom/string-pool>
 
 namespace OpenAxiom {
    // ----------------

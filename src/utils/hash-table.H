@@ -37,7 +37,7 @@
 // --%   Simple hash table facility.  To be replaced by C++0x
 // --%   hash tables when C++0x compilers become common place.
 
-#include "storage.H"
+#include <open-axiom/storage>
 
 namespace OpenAxiom {
    // --------------------

@@ -34,7 +34,7 @@
 #include <ctype.h>
 #include <iostream>
 #include <iterator>
-#include "sexpr.H"
+#include <open-axiom/sexpr>
 
 namespace OpenAxiom {
    namespace Sexpr {

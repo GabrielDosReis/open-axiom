@@ -1,3 +1,9 @@
+2010-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_BUILD_TOOLS): Check for ln -s
+	and sed.
+	* config/var-def.mk (oa_target_includedir): New.
+
 2010-08-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (OPENAXIOM_ALIGNMENT_OPERATOR): New.  Check

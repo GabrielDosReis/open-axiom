@@ -43,7 +43,7 @@
 #include <cmath>
 #include <string>
 
-#include "openaxiom-c-macros.h"
+#include <open-axiom/config>
 
 namespace OpenAxiom {
    // -----------------

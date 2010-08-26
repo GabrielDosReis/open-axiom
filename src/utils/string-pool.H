@@ -33,7 +33,7 @@
 #define OPENAXIOM_STRING_POOL_INCLUDED
 
 #include <string.h>
-#include "hash-table.H"
+#include <open-axiom/hash-table>
 
 // --% Author: Gabriel Dos Reis.
 // --% Description:

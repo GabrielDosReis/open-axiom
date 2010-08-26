@@ -194,6 +194,7 @@ axiom_target_srcdir = $(axiom_targetdir)/src
 axiom_target_docdir = $(axiom_targetdir)/doc
 axiom_target_datadir = $(axiom_targetdir)/share
 axiom_target_texdir = $(axiom_target_datadir)/texmf/tex
+oa_target_includedir = $(axiom_targetdir)/include
 
 
 ## Where OpenAxiom keeps the tarballs for optional components
