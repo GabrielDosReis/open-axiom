@@ -91,7 +91,7 @@ print_configuration_info(openaxiom_command* command) {
    int i;
    for (i = 1; i < command->core.argc; ++i) {
       if (strcmp(command->core.argv[i], "include") == 0)
-         printf(" -I\"%s\"/include", command->root_dir);
+         printf("\"%s\"/include ", command->root_dir);
       else if (strcmp(command->core.argv[i], "lib") == 0)
          printf(" -L\"%s\"/lib -lOpenAxiom", command->root_dir);
       else {
