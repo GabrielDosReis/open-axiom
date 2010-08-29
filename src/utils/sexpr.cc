@@ -395,7 +395,7 @@ namespace OpenAxiom {
       // ---------------
       // -- Allocator --
       // ---------------
-      Allocator::Allocator() : lists(4 * 1024), vectors(1024) { }
+      Allocator::Allocator() { }
 
       // This destructor is defined here so that it provides
       // a single instantiation point for destructors of all
@@ -446,14 +446,14 @@ namespace OpenAxiom {
       Allocator::make_list(const std::vector<const Syntax*>& elts) {
          if (elts.empty())
             return &empty_list;
-         return new(lists.allocate(1)) List(elts);
+         return lists.make(elts);
       }
 
       const Vector*
       Allocator::make_vector(const std::vector<const Syntax*>& elts) {
          if (elts.empty())
             return &empty_vector;
-         return new(vectors.allocate(1)) Vector(elts);
+         return vectors.make(elts);
       }
 
       // ------------

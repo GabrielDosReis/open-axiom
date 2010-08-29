@@ -1,3 +1,12 @@
+2010-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/Makefile.in ($(oa_target_oalib)): Create contaning
+	directory if necessary.
+	* utils/storage.H (Memory::Factory): New.  Allocate, construct,
+	and destroy objects. 
+	* utils/sexpr.H (Sexpr::Allocator): Use Memory::Factory.
+	* utils/sexpr.cc: Adjust implementation.
+
 2010-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/Makefile.in: Install libOpenAxiom.a

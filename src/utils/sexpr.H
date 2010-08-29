@@ -348,8 +348,8 @@ namespace OpenAxiom {
          UniqueAllocator<Quote> quotes;
          UniqueAllocator<Function> funs;
          UniqueAllocator<Pair> pairs;
-         Memory::Arena<List> lists;
-         Memory::Arena<Vector> vectors;
+         Memory::Factory<List> lists;
+         Memory::Factory<Vector> vectors;
          List empty_list;
          Vector empty_vector;
       };

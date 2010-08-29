@@ -64,6 +64,9 @@ stamp: $(oa_target_oalib) hammer$(EXEEXT)
 	$(STAMP) stamp
 
 $(oa_target_oalib): libOpenAxiom.$(LIBEXT)
+	if [ ! -d $(axiom_target_libdir) ]; then \
+	   mkdir -p $(axiom_target_libdir); \
+	fi
 	cp $< $@
 
 stamp-headers: $(libOpenAxiom_HEADERS) Makefile
