@@ -40,6 +40,7 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <new>
 #include <cmath>
 #include <string>
 
@@ -184,15 +185,12 @@ namespace OpenAxiom {
       // The totality of all objects held in such a storage does not
       // necessarily constitute a contiguous block.  However,
       // it is guaranteed that objects allocated in a single call
-      // to `allocate()' occupy a contiguous block of memory.
-      // Objects are destroyed when the arena is destroyed.  So,
-      // allocators of this type implement a form of sticky object
-      // allocator.
+      // to `allocate()' occupy a contiguous block of storage.
       template<typename T>
       struct Arena {
          // Acquire storage capable of holding `n' objects of type `T'.
          explicit Arena(size_t);
-         // Destroy allocated objects when done.
+         // Release all storage acquired by this object, upon end of life.
          ~Arena();
          // allocate storage for `n' more objects of type `T'.
          T* allocate(size_t);
@@ -216,14 +214,14 @@ namespace OpenAxiom {
             return last_object(s) - first_object(s);
          }
 
-      private:
-         Storage* store;        // active storage to allocate from
-
          // The `previous' link in the chain of storage.
          static Storage*& previous(Storage* s) {
             return *static_cast<Storage**>(s->at_offset(0));
          }
 
+         Storage* store;        // active storage to allocate from
+
+      private:
          // Acquire storage large enough to hold `n' objects of type `T'.
          static Storage* acquire(size_t);
       };
@@ -257,12 +255,6 @@ namespace OpenAxiom {
          // Destroy objects in the reverse order of their
          // their allocation.
          while (store != 0) {
-            // The first allocated object is right after the `previous'
-            // link in the storage chain.
-            T* first = first_object(store);
-            T* last = last_object(store);
-            for (--last; first >= last; --last)
-               last->~T();
             Storage* current = store;
             store = previous(store);
             Storage::release(current);
@@ -282,6 +274,61 @@ namespace OpenAxiom {
          previous(s) = 0;
          s->align_to(openaxiom_alignment(T));
          return s;
+      }
+
+      // -------------
+      // -- Factory --
+      // -------------
+      template<typename T>
+      struct Factory : Arena<T> {
+         Factory() : Arena<T>(nominal_population()) { }
+         ~Factory();
+
+         // Allocate storage and value-construct an object of type `T'.
+         T* make() {
+            return new(this->allocate(1)) T();
+         }
+
+         // Allocate storage and construct an object of type `T'.
+         template<typename U>
+         T* make(const U& u) {
+            return new(this->allocate(1)) T(u);
+         }
+
+         // Allocate storage and construct an object of type `T'.
+         template<typename U, typename V>
+         T* make(const U& u, const V& v) {
+            return new(this->allocate(1)) T(u, v);
+         }
+
+         // Allocate storage and construct an object of type `T'.
+         template<typename U, typename V, typename W>
+         T* make(const U& u, const V& v, const W& w) {
+            return new(this->allocate(1)) T(u, v, w);
+         }
+
+      private:
+         // Return 1 or the number of objects that can fit in a page unit.
+         static size_t nominal_population() {
+            const size_t overhead =
+               Storage::round_up(sizeof(Storage),
+                                  openaxiom_alignment(Storage*))
+               + Storage::round_up(sizeof(Storage*), openaxiom_alignment(T));
+            const size_t psz = page_size();
+            if (overhead + sizeof (T) > psz)
+               return 1;
+            return (psz - overhead) / sizeof(T);
+         }
+      };
+
+      // Destroy objects in the reverse order of their construction.
+      template<typename T>
+      Factory<T>::~Factory() {
+         for (Storage* s = this->store; s != 0; s = Arena<T>::previous(s)) {
+            T* last = Arena<T>::last_object(s);
+            for (--last; last >= Arena<T>::first_object(s); --last)
+               last->~T();
+         }
       }
 
       // -----------------
