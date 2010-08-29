@@ -525,7 +525,7 @@ pfCollect2Atree pf ==
 --  patternVarsOf1(expr, varList) ==
 --    null expr => varList
 --    atom expr =>
---      null symbol? expr => varList
+--      not symbol? expr => varList
 --      SymMemQ(expr, varList) => varList
 --      [expr, :varList]
 --    expr is [op, :argl] =>
@@ -547,7 +547,7 @@ pfCollect2Atree pf ==
 --
 
 --  pfSuchThat2Atree args ==
---    name := GENSYM()
+--    name := gensym()
 --    argList := pf0TupleParts args
 --    lhsSex := pf2Atree1 first argList
 --    rhsSex := pf2Atree second argList

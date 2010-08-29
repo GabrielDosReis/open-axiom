@@ -64,7 +64,7 @@ $topicSynonyms := '(
 
 $groupAssoc := '((extended . 1) (basic . 2) (hidden . 4))
 
-$topicHash := MAKE_-HASHTABLE "ID"
+$topicHash := hashTable 'EQ
 SETF(GETHASH("basic",$topicHash),2)
 SETF(GETHASH("algebraic",$topicHash),4)
 SETF(GETHASH("miscellaneous",$topicHash),13)
@@ -85,11 +85,11 @@ SETF(GETHASH("trignometric",$topicHash),11)
 --=======================================================================
 --called at build-time before making DOCUMENTATION property
 mkTopicHashTable() ==                         --given $groupAssoc = ((extended . 1)(basic . 2)(xx . 4)..)
-  $defaultsHash := MAKE_-HASHTABLE 'ID        --keys are ops, value is list of topic names
+  $defaultsHash := hashTable 'EQ        --keys are ops, value is list of topic names
   for [kind,:items] in $topicsDefaults repeat --$topicsDefaults is ((<topic> op ...) ..)
     for item in items repeat 
       HPUT($defaultsHash,item,[kind,:HGET($defaultsHash,item)])
-  $conTopicHash  := MAKE_-HASHTABLE 'EQL      --key is constructor name; value is
+  $conTopicHash  := hashTable 'EQL      --key is constructor name; value is
   instream := OPEN '"topics.data"           
   while not EOFP instream repeat
     line := READLINE instream
@@ -107,7 +107,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
            | lst := string2OpAlist line]
     alist => HPUT($conTopicHash,con,alist)
   --initialize table of topic classes
-  $topicHash := MAKE_-HASHTABLE 'ID           --$topicHash has keys: topic and value: index
+  $topicHash := hashTable 'EQ           --$topicHash has keys: topic and value: index
   for [x,:c] in $groupAssoc repeat HPUT($topicHash,x,c)
   $topicIndex := rest LAST $groupAssoc
 
@@ -134,7 +134,7 @@ blankLine? line ==
 string2OpAlist s ==
   m := #s
   k := skipBlanks(s,0,m) or return nil
-  UPPER_-CASE_-P s.k => nil       --skip constructor names
+  upperCase? s.k => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
     acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
@@ -190,7 +190,7 @@ addTopic2Documentation(con,docAlist) ==
 td con ==
   $topicClasses := ASSOCRIGHT mySort
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
-  hash := MAKE_-HASHTABLE 'ID
+  hash := hashTable 'EQ
   tdAdd(con,hash)
   tdPrint hash 
 
@@ -212,7 +212,7 @@ topics con ==
   --assumes that DOCUMENTATION property already has #s added
   $topicClasses := ASSOCRIGHT mySort
       [[HGET($topicHash,key),:key] for key in HKEYS $topicHash]      
-  hash := MAKE_-HASHTABLE 'ID
+  hash := hashTable 'EQ
   tdAdd(con,hash)
   for x in removeDuplicates [CAAR y for y in ancestorsOf(getConstructorForm con,nil)] repeat
     tdAdd(x,hash)
@@ -221,7 +221,7 @@ topics con ==
 
 code2Classes cc ==
   cc := 2*cc
-  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := QUOTIENT(cc,2))]
+  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := cc quo 2)]
   
 myLastAtom x == 
   while x is [.,:x] repeat nil
@@ -239,7 +239,7 @@ transferClassCodes(conform,opAlist) ==
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
     | FIXP (code := myLastAtom pair) repeat
-      u := ASSOC(QCAR pair,opAlist) => lastNode(u).rest := code
+      u := ASSOC(pair.op,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
 --           Filter Operation by Topic

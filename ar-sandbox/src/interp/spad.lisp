@@ -52,7 +52,6 @@
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
 (defvar |$getPutTrace| nil)
-(defvar |$specialCaseKeyList| nil "checked in optCall")
 (defvar |$formulaFormat| nil "if true produce script formula output")
 (defvar |$texFormat| nil "if true produce tex output")
 (defvar |$fortranFormat| nil "if true produce fortran output")
@@ -216,7 +215,7 @@
 (defun STRINGREST (X) (if (EQ (SIZE X) 1) (make-string 0) (SUBSTRING X 1 NIL)))
 
 (defun STREAM2UC (STRM)
-  (LET ((X (ELT (LASTATOM STRM) 1))) (SETELT X 0 (LC2UC (ELT X 0)))))
+  (LET ((X (ELT (LASTATOM STRM) 1))) (SETF (ELT X 0) (LC2UC (ELT X 0)))))
 
 (defun NEWNAMTRANS (X)
   (COND
@@ -243,20 +242,6 @@
 
 (defun |sort| (seq spadfn)
     (sort (copy-seq seq) (function (lambda (x y) (SPADCALL X Y SPADFN)))))
-
-#-Lucid
-(defun QUOTIENT2 (X Y) (values (TRUNCATE X Y)))
-
-#+Lucid
-(defun QUOTIENT2 (X Y) ; following to force error check in division by zero
-  (values (if (zerop y) (truncate 1 Y) (TRUNCATE X Y))))
-
-#-Lucid
-(define-function 'REMAINDER2 #'REM)
-
-#+Lucid
-(defun REMAINDER2 (X Y)
-  (if (zerop y) (REM 1 Y) (REM X Y)))
 
 #-Lucid
 (defun DIVIDE2 (X Y) (multiple-value-call #'cons (TRUNCATE X Y)))
@@ -291,7 +276,6 @@
         |$insideCategoryIfTrue| |$insideCapsuleFunctionIfTrue| |$form|
         (|$e| |$EmptyEnvironment|)
         (|$genSDVar| 0)
-        (|$VariableCount| 0)
         (|$previousTime| (TEMPUS-FUGIT)))
     (|compileParseTree| X)))
 

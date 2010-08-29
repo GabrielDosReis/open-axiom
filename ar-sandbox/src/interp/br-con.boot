@@ -49,7 +49,7 @@ namespace BOOT
 --    atom a => b
 --    a := conform2OutputForm a
 --    [mathform2HtString x for x in rest a]
---  if not atom a then a := first a
+--  if cons? a then a := first a
 --  da := DOWNCASE a
 --  pageName := LASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping))) =>
 --    downlink pageName              --special jump out for primitive domains
@@ -65,7 +65,7 @@ conPage(a,:b) ==
     atom a => [a,:b]
     a
   $conArgstrings: local := [form2HtString x for x in KDR a]
-  if not atom a then a := first a
+  if cons? a then a := first a
   da := DOWNCASE a
   pageName := LASSQ(da,'((type . CategoryType)(union . DomainUnion)(record . DomainRecord)(mapping . DomainMapping)(enumeration . DomainEnumeration))) =>
     downlink pageName                --special jump out for primitive domains
@@ -371,7 +371,7 @@ ksPage(htPage,junk) ==
   if domname then
     htpSetProperty(htPage,'domname,domname)
     htpSetProperty(htPage,'heading,heading)
-  domain  := (kind = '"category" => nil; EVAL domname)
+  domain  := (kind = '"category" => nil; eval domname)
   conform:= htpProperty(htPage,'conform)
   page := htInitPageNoScroll(htCopyProplist htPage,
                              ['"Search order for ",:heading])
@@ -397,7 +397,7 @@ dbSearchOrder(conform,domname,$domain) ==  --domain = nil or set to live domain
     test() ==
       pred := simpCatPredicate
         p:=SUBLISLIS(rest conform,$FormalMapVariableList,kTestPred catpredvec.i)
-        $domain => EVAL p
+        $domain => eval p
         p
       if domname and CONTAINED('$,pred) then pred := substitute(domname,'$,pred)
 --    which = '"attribute" => pred    --all categories
@@ -415,7 +415,7 @@ kcPage(htPage,junk) ==
   [kind,name,nargs,xpart,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   domname         := kDomainName(htPage,kind,name,nargs)
   domname is ['error,:.] => errorPage(htPage,domname)
---  domain          := (kind = '"category" => nil; EVAL domname)
+--  domain          := (kind = '"category" => nil; eval domname)
   conform := htpProperty(htPage,'conform)
   conname := opOf conform
   heading :=
@@ -743,7 +743,7 @@ conOpPage1(conform,:options) ==
   MEMQ(conname,$DomainNames) =>
      dbSpecialOperations conname
   domname         :=                        --> !!note!! <--
-    null atom conform => conform
+    cons? conform => conform
     nil
   line := conPageFastPath conname
   [kind,name,nargs,xflag,sig,args,abbrev,comments]:=parts:= dbXParts(line,7,1)
@@ -840,7 +840,7 @@ dbConstructorDoc(conform,$op,$sig) == fn conform where
 dbDocTable conform ==
 --assumes $docTableHash bound --see dbExpandOpAlistIfNecessary
   table := HGET($docTableHash,conform) => table
-  $docTable : local := MAKE_-HASHTABLE 'ID
+  $docTable : local := hashTable 'EQ
   --process in reverse order so that closest cover up farthest
   for x in originsInOrder conform repeat dbAddDocTable x
   dbAddDocTable conform
@@ -876,7 +876,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
     if null FIXP op and
-      DIGITP((s := STRINGIMAGE op).0) then op := string2Integer s
+      digit?((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>
       doc := dbConstructorDoc(first aux,$op,$sig)
@@ -1309,7 +1309,7 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 mkConArgSublis args ==
   [[arg,:INTERN digits2Names PNAME arg] for arg in args
-     | (s := PNAME arg) and "or"/[DIGITP s.i for i in 0..MAXINDEX s]]
+     | (s := PNAME arg) and "or"/[digit? s.i for i in 0..MAXINDEX s]]
 
 digits2Names s ==
 --This is necessary since arguments of conforms CANNOT have digits in TechExplorer

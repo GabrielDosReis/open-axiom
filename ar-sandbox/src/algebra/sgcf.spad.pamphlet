@@ -361,10 +361,9 @@ SymmetricGroupCombinatoricFunctions(): public == private where
  
  
     listYoungTableaus(lambda) ==
-      lattice   : L I
       ytab      : M I
       younglist : L M I := nil$(L M I)
-      lattice   := nextLatticePermutation(lambda,lattice,false)
+      lattice   := nextLatticePermutation(lambda,nil,false)
       until null lattice repeat
         ytab      := makeYoungTableau(lambda,lattice)
         younglist := append(younglist,[ytab]$(L M I))$(L M I)

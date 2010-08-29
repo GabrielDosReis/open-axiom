@@ -42,7 +42,7 @@ $compileRecurrence := true
 $errorReportLevel := 'warning
 $sourceFileTypes := '(INPUT SPAD BOOT LISP LISP370 META)
 
-$existingFiles := MAKE_-HASHTABLE "UEQUAL"
+$existingFiles := hashTable "EQUAL"
 
 $SYSCOMMANDS := [first x for x in $systemCommands]
 
@@ -159,7 +159,7 @@ selectOptionLC(x,l,errorFunction) ==
 
 selectOption(x,l,errorFunction) ==
   member(x,l) => x                   --exact spellings are always OK
-  null IDENTP x =>
+  not IDENTP x =>
     errorFunction => FUNCALL(errorFunction,x,u)
     nil
   u := [y for y in l | stringPrefix?(PNAME x,PNAME y)]
@@ -299,7 +299,7 @@ clearCmdCompletely() ==
   sayKeyedMsg("S2IZ0013",NIL)
   clearClams()
   clearConstructorCaches()
-  $existingFiles := MAKE_-HASHTABLE 'UEQUAL
+  $existingFiles := hashTable 'EQUAL
   sayKeyedMsg("S2IZ0014",NIL)
   RECLAIM()
   sayKeyedMsg("S2IZ0015",NIL)
@@ -384,10 +384,6 @@ queryClients () ==
 
 
 close args ==
-  $saturn => 
-    sayErrorly('"Obsolete system command", _
-      ['" The )close  system command is obsolete in this version of AXIOM.",
-       '" Please use Close from the File menu instead."])
   quiet:local:= false
   null $SpadServer =>
     throwKeyedMsg('"S2IZ0071", [])
@@ -863,7 +859,7 @@ convertSpadToAsFile path ==
     $abbreviationsAlreadyPrinted: local := nil    -- for spad -> as translator
     $convertingSpadFile : local := true
     $options: local := '((nolib))      -- translator shouldn't create nrlibs
-    SETQ(HT,MAKE_-HASHTABLE 'UEQUAL)
+    SETQ(HT,hashTable 'EQUAL)
 
     newName := fnameMake(pathnameDirectory path, pathnameName path, '"as")
     canDoIt := true
@@ -1703,7 +1699,7 @@ writeInputLines(fn,initial) ==
   file := histInputFileName(fn)
   histFileErase file
   inp:= DEFIOSTREAM(['(MODE . OUTPUT),['FILE,:file]],255,0)
-  for x in removeUndoLines nreverse lineList repeat WRITE_-LINE(x,inp)
+  for x in removeUndoLines nreverse lineList repeat writeLine(x,inp)
   -- see file "undo" for definition of removeUndoLines
   if fn ~= 'redo then sayKeyedMsg("S2IH0014",[namestring file])
   SHUT inp
@@ -1719,7 +1715,7 @@ resetInCoreHist() ==
 
 changeHistListLen(n) ==
   -- changes the length of $HistList.  n must be nonnegative
-  null integer? n => sayKeyedMsg("S2IH0015",[n]) 
+  not integer? n => sayKeyedMsg("S2IH0015",[n]) 
   dif:= n-$HistListLen
   $HistListLen:= n
   l:= rest $HistList
@@ -1835,7 +1831,7 @@ undoFromFile(n) ==
   updateHist()
 
 saveHistory(fn) ==
-  $seen: local := MAKE_-HASHTABLE 'EQ
+  $seen: local := hashTable 'EQ
   not $HiFiAccess => sayKeyedMsg("S2IH0016",NIL)
   not $useInternalHistoryTable and
     null MAKE_-INPUT_-FILENAME histFileName() => sayKeyedMsg("S2IH0022",NIL)
@@ -1990,7 +1986,7 @@ readHiFi(n) ==
   then
     pair := assoc(n,$internalHistoryTable)
     atom pair => keyedSystemError("S2IH0034",NIL)
-    vec := QCDR pair
+    vec := rest pair
   else
     HiFi:= RDEFIOSTREAM ['(MODE . INPUT),['FILE,:histFileName()]]
     vec:= SPADRREAD(object2Identifier n,HiFi)
@@ -2046,7 +2042,7 @@ safeWritify ob ==
 
 writify ob ==
     not ScanOrPairVec(function(unwritable?), ob) => ob
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
     $writifyComplained: local := false
  
     writifyInner ob where
@@ -2055,10 +2051,10 @@ writify ob ==
             (e := HGET($seen, ob)) => e
  
             cons? ob =>
-                qcar := QCAR ob
-                qcdr := QCDR ob
+                qcar := first ob
+                qcdr := rest ob
                 (name := spadClosure? ob) =>
-                   d := writifyInner QCDR ob
+                   d := writifyInner rest ob
                    nob := ['WRITIFIED_!_!, 'SPADCLOSURE, d, name]
                    HPUT($seen, ob, nob)
                    HPUT($seen, nob, nob)
@@ -2073,7 +2069,7 @@ writify ob ==
                 nob.first := qcar
                 nob.rest := qcdr
                 nob
-            VECP ob =>
+            vector? ob =>
                 isDomainOrPackage ob =>
                     d := mkEvalable devaluate ob
                     nob := ['WRITIFIED_!_!, 'DEVALUATED, writifyInner d]
@@ -2127,7 +2123,7 @@ writify ob ==
 
 
 unwritable? ob ==
-    cons?  ob or VECP ob       => false   -- first for speed
+    cons?  ob or vector? ob       => false   -- first for speed
     COMPILED_-FUNCTION_-P   ob or HASHTABLEP ob => true
     PLACEP ob or READTABLEP ob => true
     FLOATP ob => true
@@ -2144,17 +2140,17 @@ writifyComplain s ==
    sayKeyedMsg("S2IH0027",[s]) 
 
 spadClosure? ob ==
-  fun := QCAR ob
+  fun := first ob
   not (name := BPINAME fun) => nil
-  vec := QCDR ob
-  not VECP vec => nil
+  vec := rest ob
+  not vector? vec => nil
   name
 
 dewritify ob ==
     (not ScanOrPairVec(function is?, ob)
             where  is? a == a = 'WRITIFIED_!_!) => ob
  
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
  
     dewritifyInner ob where
         dewritifyInner ob ==
@@ -2168,7 +2164,7 @@ dewritify ob ==
                 type = 'BPI =>
                     oname := ob.2
                     f :=
-                        INTP oname => EVAL GENSYMMER oname
+                        integer? oname => eval GENSYMMER oname
                         SYMBOL_-FUNCTION oname
                     not COMPILED_-FUNCTION_-P f =>
                         error '"A required BPI does not exist."
@@ -2177,14 +2173,14 @@ dewritify ob ==
                     HPUT($seen, ob, f)
                     f
                 type = 'HASHTABLE =>
-                    nob := MAKE_-HASHTABLE ob.2
+                    nob := hashTable ob.2
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     for k in ob.3 for e in ob.4 repeat
                         HPUT(nob, dewritifyInner k, dewritifyInner e)
                     nob
                 type = 'DEVALUATED =>
-                    nob := EVAL dewritifyInner ob.2
+                    nob := eval dewritifyInner ob.2
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
@@ -2214,15 +2210,15 @@ dewritify ob ==
                 error '"Unknown type to de-writify."
  
             cons? ob =>
-                qcar := QCAR ob
-                qcdr := QCDR ob
+                qcar := first ob
+                qcdr := rest ob
                 nob  := [qcar,:qcdr]
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 nob.first := dewritifyInner qcar
                 nob.rest := dewritifyInner qcdr
                 nob
-            VECP ob =>
+            vector? ob =>
                 n   := QVMAXINDEX ob
                 nob := MAKE_-VEC(n+1)
                 HPUT($seen, ob, nob)
@@ -2305,20 +2301,12 @@ library args ==
 pquit() == pquitSpad2Cmd()
 
 pquitSpad2Cmd() ==
-  $saturn =>
-    sayErrorly('"Obsolete system command", _
-      ['" The )pquit system command is obsolete in this version of AXIOM.",
-       '" Please select Exit from the File Menu instead."])
   $quitCommandType :local := 'protected
   quitSpad2Cmd()
 
 quit() == quitSpad2Cmd()
 
 quitSpad2Cmd() ==
-  $saturn =>
-    sayErrorly('"Obsolete system command", _
-      ['" The )quit system command is obsolete in this version of AXIOM.",
-       '" Please select Exit from the File Menu instead."])
   $quitCommandType ~= 'protected => leaveScratchpad()
   x := UPCASE queryUserKeyedMsg("S2IZ0031",NIL)
   STRING2ID_-N(x,1) in '(Y YES) => leaveScratchpad()
@@ -2333,10 +2321,6 @@ leaveScratchpad () ==
 read l == readSpad2Cmd l
 
 readSpad2Cmd l ==
-  ---$saturn =>
-  ---  sayErrorly('"Obsolete system command", _
-  ---    ['" The )read  system command is obsolete in this version of AXIOM.",
-  ---     '" Please use Open from the File menu instead."])
   $InteractiveMode : local := true
   quiet := nil
   ifthere := nil
@@ -2663,7 +2647,7 @@ undo(l) ==
     null l => -1
     first l
   if IDENTP n then
-    n := PARSE_-INTEGER PNAME n
+    n := readInteger PNAME n
     if not FIXP n then userError '"undo argument must be an integer"
   $InteractiveFrame := undoSteps(undoCount n,undoWhen)
   nil
@@ -2826,7 +2810,7 @@ removeUndoLines u == --called by writeInputLines
           s2 := trimString SUBSTRING(s1,0,m)
         n :=
            s1 = '")redo" => 0
-           s2 ~= '"" => undoCount PARSE_-INTEGER s2
+           s2 ~= '"" => undoCount readInteger s2
            -1
         y.first := strconc('">",code,STRINGIMAGE n)
       nil
@@ -2835,7 +2819,7 @@ removeUndoLines u == --called by writeInputLines
   for y in tails nreverse u repeat
     (x := first y).0 = char '_> =>
       code := x . 1                                 --code = a,b, or r
-      n := PARSE_-INTEGER SUBSTRING(x,2,nil)        --n = number of undo steps
+      n := readInteger SUBSTRING(x,2,nil)           --n = number of undo steps
       y := rest y                                   --kill >n line
       while y repeat
         c := first y
@@ -3169,7 +3153,7 @@ handleNoParseCommands(unab, string) ==
 npboot str ==
   sex := string2BootTree str
   FORMAT(true, '"~&~S~%", sex)
-  $ans := EVAL sex
+  $ans := eval sex
   FORMAT(true, '"~&Value = ~S~%", $ans)
 
 stripLisp str ==
@@ -3184,7 +3168,7 @@ stripLisp str ==
 
 
 nplisp str ==
-  $ans := EVAL READ_-FROM_-STRING str
+  $ans := eval READ_-FROM_-STRING str
   FORMAT(true, '"~&Value = ~S~%", $ans)
 
 npsystem(unab, str) ==

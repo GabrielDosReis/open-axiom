@@ -80,9 +80,6 @@ $compCount := 0
 $compUniquelyIfTrue := false
 
 ++
-$ConstructorCache := MAKE_-HASHTABLE "ID"
-
-++
 $createUpdateFiles := false
 
 ++
@@ -152,9 +149,6 @@ $insideFunctorIfTrue := false
 $insideWhereIfTrue := false
 
 ++
-$instantRecord := MAKE_-HASHTABLE "ID"
-
-++
 $InteractiveFrame := $EmptyEnvironment
 $e := $EmptyEnvironment
 $env := [[nil]]
@@ -213,9 +207,6 @@ $PrettyPrint := false
 
 ++
 $previousTime := 0
-
-++
-$VariableCount := 0
 
 ++
 $useBFasDefault := true

@@ -114,7 +114,7 @@ char sock_buf[1024];            /* buffer for socket input */
 
 static HashTable tokenHashTable;           /* hash table of parser tokens */
 
-char* token_table[] = {
+const char* token_table[] = {
   "",           /* Dummy token name */
   "word",
   "page",
@@ -476,7 +476,7 @@ get_token(void)
         last_token = 0;
         token.type = unget_toke.type;
         strcpy(buffer, unget_toke.id);
-        free(unget_toke.id);
+        free((char*) unget_toke.id);
         token.id = buffer + 1;
         if (token.type == EOF)
             return EOF;

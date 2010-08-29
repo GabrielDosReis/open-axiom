@@ -31,6 +31,9 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef OPENAXIOM_RGB_included
+#define OPENAXIOM_RGB_included
+
 typedef struct _RGB {
   float r,g,b;
 } RGB ;
@@ -44,8 +47,4 @@ typedef struct _HLS {
 } HLS ;
 
 
-
-
-
-
-
+#endif

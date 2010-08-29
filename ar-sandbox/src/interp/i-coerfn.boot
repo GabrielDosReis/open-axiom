@@ -35,7 +35,7 @@
 import i_-coerce
 namespace BOOT
 
-$coerceFailure := GENSYM()
+$coerceFailure := gensym()
 
 position1(x,y) ==
   -- this is used where we want to assume a 1-based index
@@ -1224,7 +1224,7 @@ Qf2Qf(u0,[.,S],target is [.,T]) ==
   coercionFailure()
 
 -- partOf(x,i) ==
---   VECP x => x.i
+--   vector? x => x.i
 --   i=0 => first x
 --   i=1 => rest x
 --   systemError '"partOf"
@@ -1284,7 +1284,7 @@ Sm2PolyType(u,source is [sm,n,S], target is [pol,vl,T]) ==
   -- first want to check case S is Polynomial
   S is ['Polynomial,S'] =>
     -- check to see if variable occurs in any of the terms
-    if ATOM vl
+    if atom vl
       then vl' := [vl]
       else vl' := vl
     novars := true

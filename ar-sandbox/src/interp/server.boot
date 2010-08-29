@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2008, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ serverReadLine(stream) ==
        $NeedToSignalSessionManager := true
        return l
      action = $CreateFrame =>
-       frameName := GENSYM('"frame")
+       frameName := gensym('"frame")
        addNewInterpreterFrame(frameName)
        $frameAlist := [[$frameNumber,:frameName], :$frameAlist]
        $currentFrameNum := $frameNumber
@@ -158,6 +158,6 @@ parseAndEvalStr1 string ==
 protectedEVAL x ==
   error := true
   val := NIL
-  UNWIND_-PROTECT((val := EVAL x; error := NIL),
+  UNWIND_-PROTECT((val := eval x; error := NIL),
                    error => (resetStackLimits(); sendHTErrorSignal()))
   val

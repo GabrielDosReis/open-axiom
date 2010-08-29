@@ -35,6 +35,7 @@
 import bits
 import dq
 import incl
+import sys_-utility
 namespace BOOT
 module scan
 
@@ -165,7 +166,7 @@ scanKeyWords == [ _
 
 
 scanKeyTableCons()==
-   KeyTable:=MAKE_-HASHTABLE("CVEC",true)
+   KeyTable := hashTable 'EQUAL
    for st in scanKeyWords repeat
       HPUT(KeyTable,first st,second st)
    KeyTable
@@ -215,7 +216,7 @@ scanPunCons()==
 scanPun:=scanPunCons()
 
 --for i in ["COLON","MINUS"] repeat
---   MAKEPROP(i,'PREGENERIC,'TRUE)
+--   property(i,'PREGENERIC) := true
 
 for i in   [ _
    ["EQUAL"    ,"="], _
@@ -247,7 +248,7 @@ for i in   [ _
    ["LARROW"       ,"<-"], _
    ["BAR"       ,"|"], _
    ["SEG"       ,".."] _
-    ] repeat MAKEPROP(first i,'INFGENERIC,second i)
+    ] repeat property(first i,'INFGENERIC) := second i
 
 -- Scanner
 
@@ -512,10 +513,10 @@ scanS()==
                   strconc(str,b)
 scanTransform x==x
 
---idChar? x== scanLetter x or DIGITP x or x in '(_? _%)
+--idChar? x== scanLetter x or digit? x or x in '(_? _%)
 
 --scanLetter x==
---   if not CHARP x
+--   if not char? x
 --   then false
 --   else STRPOSL(scanTrTable,x,0,NIL)
 
@@ -528,7 +529,6 @@ posend(line,n)==
 --     n
 
 --startsId? x==  scanLetter x or x in '(_? _%)
-digit? x== DIGITP x
 
 scanW(b)==             -- starts pointing to first char
        n1:=$n         -- store starting character position
@@ -585,7 +585,7 @@ spleI1(dig,zro) ==
              strconc(str,bb)
 
 scanCheckRadix(a,w)==
-  r := PARSE_-INTEGER a
+  r := readInteger a
   ns:=#w
   ns = 0 => 
     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0004",[a])

@@ -49,6 +49,11 @@
 
 (in-package "BOOT")
   
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn
+	     (setq *read-default-float-format* 'double-float)
+	     (setq *load-verbose* nil)))
+
 (eval-when 
  #+:common-lisp (:compile-toplevel :load-toplevel :execute)
  #-:common-lisp (compile load eval)

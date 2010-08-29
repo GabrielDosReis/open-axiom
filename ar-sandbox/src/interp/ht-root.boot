@@ -39,20 +39,9 @@ $historyDisplayWidth := 120
 $newline := char 10
 
 downlink page ==
-  $saturn => downlinkSaturn page
   htInitPage('"Bridge",nil)
   htSay('"\replacepage{", page, '"}")
   htShowPage()
-
-downlinkSaturn fn ==
-  u := dbReadLines(fn)
-  lines := '""
-  while u is [line,:u] repeat
-    n := MAXINDEX line
-    n < 1 => nil
-    line.0 = (char '_%) => nil
-    lines := strconc(lines,line)
-  issueHTSaturn lines
 
 dbNonEmptyPattern pattern ==
   null pattern => '"*"
@@ -158,7 +147,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
     tryAgain? and #pattern > 0 =>
       (pattern.(k := MAXINDEX(pattern))) = char 's =>
         htGlossPage(htPage,SUBSTRING(pattern,0,k),true)
-      UPPER_-CASE_-P pattern.0 =>
+      upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
       errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
     errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])

@@ -324,13 +324,13 @@ streamChop(n,s)==
             [[d,:a],b]
  
 ncloopPrintLines lines ==
-        for line in lines repeat WRITE_-LINE rest line
-        WRITE_-LINE '" "
+        for line in lines repeat writeLine rest line
+        writeLine '" "
  
 ncloopIncFileName string==
                 fn := incFileName string
                 not fn =>
-                    WRITE_-LINE (strconc(string, '" not found"))
+                    writeLine (strconc(string, '" not found"))
                     []
                 fn
 

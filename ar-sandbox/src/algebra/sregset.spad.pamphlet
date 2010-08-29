@@ -287,7 +287,6 @@ SquareFreeQuasiComponentPackage(R,E,V,P,TS): Exports == Implementation where
      removeSuperfluousCases (cases:List LpWT) ==
        #cases < 2 => cases
        toSee := sort(supDimElseRittWu?(#1.tower,#2.tower),cases)
-       lpwt1,lpwt2 : LpWT
        toSave,headmaxcases,maxcases,copymaxcases : List LpWT
        while not empty? toSee repeat
          lpwt1 := first toSee

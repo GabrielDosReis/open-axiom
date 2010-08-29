@@ -44,10 +44,10 @@ namespace BOOT
 printTimeIfTrue := false
 $printStorageIfTrue := false
  
-printNamedStatsByProperty(listofnames, property) ==
-  total := +/[GETL(name,property) for [name,:.] in listofnames]
+printNamedStatsByProperty(listofnames, prop) ==
+  total := +/[GETL(name,prop) for [name,:.] in listofnames]
   for [name,:.] in listofnames repeat
-    n := GETL(name, property)
+    n := GETL(name, prop)
     strname := STRINGIMAGE name
     strval  := STRINGIMAGE n
     sayBrightly concat(bright strname,
@@ -57,15 +57,15 @@ printNamedStatsByProperty(listofnames, property) ==
     fillerSpaces(65-# STRINGIMAGE total,'"."),bright STRINGIMAGE total)
  
 makeLongStatStringByProperty _
- (listofnames, listofclasses, property, classproperty, units, flag) ==
+ (listofnames, listofclasses, prop, classprop, units, flag) ==
   total := 0
   str := '""
-  otherStatTotal := GETL('other, property)
+  otherStatTotal := GETL('other, prop)
   for [name,class,:ab] in listofnames repeat
     name = 'other => 'iterate
     cl := first LASSOC(class,listofclasses)
-    n := GETL( name, property)
-    PUT(cl,classproperty, n + GETL(cl,classproperty))
+    n := GETL( name, prop)
+    PUT(cl,classprop, n + GETL(cl,classprop))
     total := total + n
     if n >= 0.01
       then timestr := normalizeStatAndStringify n
@@ -74,18 +74,18 @@ makeLongStatStringByProperty _
         otherStatTotal := otherStatTotal + n
     str := makeStatString(str,timestr,ab,flag)
   otherStatTotal := otherStatTotal
-  PUT('other, property, otherStatTotal)
+  PUT('other, prop, otherStatTotal)
   if otherStatTotal > 0 then
     str := makeStatString(str,normalizeStatAndStringify otherStatTotal,'O,flag)
     total := total + otherStatTotal
     cl := first LASSOC('other,listofnames)
     cl := first LASSOC(cl,listofclasses)
-    PUT(cl,classproperty, otherStatTotal + GETL(cl,classproperty))
+    PUT(cl,classprop, otherStatTotal + GETL(cl,classprop))
   if flag ~= 'long then
     total := 0
     str := '""
     for [class,name,:ab] in listofclasses repeat
-      n := GETL(name, classproperty)
+      n := GETL(name, classprop)
       n = 0.0 => 'iterate
       total := total + n
       timestr := normalizeStatAndStringify n
@@ -99,17 +99,17 @@ normalizeStatAndStringify t ==
       t := roundStat t
       t = 0.0 => '"0"
       FORMAT(nil,'"~,2F",t)
-  INTP t =>
+  integer? t =>
       K := 1024
       M := K*K
-      t > 9*M => strconc(STRINGIMAGE QUOTIENT(t + 512*K,M), '"M")
-      t > 9*K => strconc(STRINGIMAGE QUOTIENT(t + 512,K),   '"K")
+      t > 9*M => strconc(STRINGIMAGE((t + 512*K) quo M), '"M")
+      t > 9*K => strconc(STRINGIMAGE((t + 512) quo K),   '"K")
       STRINGIMAGE t
   STRINGIMAGE t
  
 significantStat t ==
    RNUMP t => (t > 0.01)
-   INTP  t => (t > 100)
+   integer?  t => (t > 100)
    true
  
 roundStat t ==
@@ -140,7 +140,7 @@ startTimingProcess name ==
   if EQ(name, 'load) then          statRecordLoadEvent()
  
 stopTimingProcess name ==
-  (name ~= peekTimedName()) and null $InteractiveMode =>
+  (name ~= peekTimedName()) and not $InteractiveMode =>
     keyedSystemError("S2GL0015",[name,peekTimedName()])
   updateTimedName peekTimedName()
   popTimedName()
@@ -246,9 +246,9 @@ timedAlgebraEvaluation(code) ==
 timedOptimization(code) ==
   startTimingProcess 'optimization
   $getDomainCode : local := NIL
-  r := lispize code
+  r := simplifyVMForm code
   if $reportOptimization then
-    sayBrightlyI bright '"Optimized LISP code:"
+    sayBrightlyI bright '"Optimized intermediate code:"
     pp r
   stopTimingProcess 'optimization
   r

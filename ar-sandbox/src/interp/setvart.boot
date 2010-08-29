@@ -1129,6 +1129,7 @@ $setOptions := '(
 -- -----------------------------------------------------------------
 -- abbreviate  abbreviate type names                    off 
 -- algebra     display output in algebraic form         On:CONSOLE 
+-- asgard      show output in asgard form               off 
 -- characters  choose special output character set      plain 
 -- script      display output in SCRIPT formula format  Off:CONSOLE 
 -- fortran     create output in FORTRAN format          Off:CONSOLE 
@@ -1209,6 +1210,25 @@ $setOptions := '(
         chkOutputFileName
         "console"))
       NIL)
+
+-- -------------------- The Asgard Form Option --------------------
+--
+--  Description: show output in asgard form
+--
+--  The abbreviate option may be followed by any one of the 
+--  following:
+--
+--     on
+--  -> off 
+--
+--  The current setting is indicated within the list.
+     (asgard
+      "show output in asgard form"
+      interpreter
+      LITERALS
+      $asgardForm
+      (on off)
+      off)
 
 -- -------------------- The characters Option --------------------
 --

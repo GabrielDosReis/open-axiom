@@ -42,12 +42,11 @@ import SetCategory
 ++ Description:  This domain provides a very simple representation
 ++ of the notion of `pair of objects'.  It does not try to achieve
 ++ all possible imaginable things.
-Pair(S: Type, T: Type): Public == Private where
-  Public ==> Type with
+Pair(S: Type,T: Type): Public == Private where
+  Public == Type with
 
     if S has CoercibleTo OutputForm and T has CoercibleTo OutputForm then
       CoercibleTo OutputForm
-
     if S has SetCategory and T has SetCategory then SetCategory
 
     pair: (S,T) -> %
@@ -59,20 +58,20 @@ Pair(S: Type, T: Type): Public == Private where
     second: % -> T
       ++ second(p) extracts the second components of `p'.
 
-  Private ==> add
-    Rep := Record(fst: S, snd: T)
+  Private == add
+    Rep == Record(fst: S, snd: T)
 
     pair(s,t) ==
-      [s,t]$Rep
+      per [s,t]$Rep
 
     construct(s,t) ==
       pair(s,t)
 
     first x ==
-      x.fst
+      rep(x).fst
 
     second x ==
-      x.snd
+      rep(x).snd
 
     if S has CoercibleTo OutputForm and T has CoercibleTo OutputForm then
       coerce x ==
@@ -81,6 +80,7 @@ Pair(S: Type, T: Type): Public == Private where
     if S has SetCategory and T has SetCategory then
       x = y ==
         first(x) = first(y) and second(x) = second(y)
+
 @
 
 

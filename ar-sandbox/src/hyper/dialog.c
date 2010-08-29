@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,8 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
+#include <X11/keysym.h>
+
 #define _DIALOG_C
 #include "openaxiom-c-macros.h"
 
@@ -50,13 +52,40 @@
 #include "keyin.h"
 #include "display.h"
 #include "group.h"
+#include "event.h"
 
-#include <X11/keysym.h>
 
 #define min(x,y)     ( (x<y)?(x):(y))
 
-#include "all_hyper_proto.H1"
 
+
+static void back_over_char(InputItem * sym);
+static void back_over_eoln(InputItem * sym);
+static void clear_cursor(InputItem * sym);
+static void clear_cursorline(InputItem * sym);
+static void dec_line_numbers(LineStruct * line);
+static void decrease_line_numbers(LineStruct * line , int am);
+static void delete_char(InputItem * sym);
+static void delete_eoln(InputItem * sym);
+static int delete_one_char(InputItem * sym);
+static void delete_rest_of_line(InputItem * sym);
+static void draw_cursor(InputItem * sym);
+static void enter_new_line(InputItem * sym);
+static void inc_line_numbers(LineStruct * line);
+static void insert_buffer(char * buffer , InputItem * sym);
+static int move_back_one_char(InputItem * sym);
+static void move_cursor_backward(InputItem * sym);
+static void move_cursor_down(InputItem * sym);
+static void move_cursor_end(InputItem * sym);
+static void move_cursor_forward(InputItem * sym);
+static void move_cursor_home(InputItem * sym);
+static void move_cursor_up(InputItem * sym);
+static char move_rest_back(LineStruct * line , int size);
+static int move_sym_forward(LineStruct * line , int num , int size , InputItem * sym);
+static char * mystrncpy(char * buff1 , char * buff2 , int n);
+static void overwrite_buffer(char * buffer , InputItem * item);
+static void redraw_win(void);
+static void tough_enter(InputItem * sym);
 
 static void
 redraw_win()

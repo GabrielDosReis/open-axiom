@@ -38,16 +38,503 @@ import sys_-utility
 namespace BOOT
 
 module g_-util where
-  isAtomicForm: %Form -> %Boolean
+  atomic?: %Thing -> %Boolean
   getTypeOfSyntax: %Form -> %Mode
   pairList: (%List,%List) -> %List
   mkList: %List -> %List
   isSubDomain: (%Mode,%Mode) -> %Form
+  expandToVMForm: %Thing -> %Thing
+  usedSymbol?: (%Symbol,%Code) -> %Boolean
 
+--%  
+
+$AbstractionOperator ==
+  '(LAM ILAM SLAM XLAM SPADSLAM LAMBDA)
+
+++ Return true if the symbol 's' is used in the form 'x'.  
+usedSymbol?(s,x) ==
+  symbol? x => s = x
+  atom x => false
+  x is ['QUOTE,:.] => false
+  x is [op,parms,:body] and op in $AbstractionOperator =>
+    s in parms => false
+    usedSymbol?(s,body)
+  or/[usedSymbol?(s,x') for x' in x]
+  
+  
+--% VM forms
+
+++ Make the assumption named `prop' for all symbols
+++ on the lis `syms'.
+assumeProperty(syms,prop) ==
+  for s in syms repeat
+    property(s,prop) := true
+
+assumeProperty('(%and %or),'%nary)
+
+++ We are about to construct a middle end expression
+++ with operator `op, and aguments `form'.  Try to
+++ simplify the structure of the expression.
+flattenVMForm(form,op) == main where
+  main() ==
+    atom form => form
+    EQ(form.op,op) => [op,:flatten(form.args,op,nil)]
+    [flattenVMForm(form.op,op),:flattenVMForm(form.args,op)]
+  flatten(forms,op,accu) ==
+    forms = nil => accu
+    x := flattenVMForm(first forms,op)
+    cons? x and EQ(x.op,op) => flatten(rest forms,op,[:accu,:x.args])
+    flatten(rest forms,op,[:accu,x])
+
+++ Build a midde end expression with given operator and arguments.    
+mkVMForm(op,args) ==
+  if op has %nary then
+    args := flattenVMForm(args,op)
+  op = '%or =>
+    args := REMOVE('%false,args)
+    args = nil => '%false
+    args is [arg] => arg
+    [op,:args]
+  op = '%and =>
+    args := REMOVE('%true,args)
+    args = nil => '%true
+    args is [arg] => arg
+    [op,:args]
+  op = '%not =>
+    [arg] := args
+    arg = '%false => '%true
+    arg = '%true => '%false
+    arg is ['%not,arg'] => arg'
+    ['%not,:args]
+
+--%
+--% Opcode expansion to VM codes.
+--%
+
+
+--%
+--% Iteration control structures
+--%
+--% Code generation for an iterator produces a sequence of 
+--% length 5, whose components have the following meanings:
+--%  0. list of loop-wide variables and their initializers
+--%  1. list of body-wide variables and their initializers
+--%  2. update code for next iteration
+--%  3. predicate guarding loop body execution
+--%  4. loop termination predicate
+
+++ Generate code that sequentially visits each component of a list.
+expandIN(x,l,early?) ==
+  g := gensym()           -- rest of the list yet to be visited
+  early? =>               -- give the loop variable a wider scope.
+    [[[g,middleEndExpand l],[x,'NIL]],
+      nil,[['SETQ,g,['CDR,g]]],
+        nil,[['ATOM,g],['PROGN,['SETQ,x,['CAR,g]],'NIL]]]
+  [[[g,middleEndExpand l]],
+    [[x,['CAR,g]]],[['SETQ,g,['CDR,g]]],
+      nil,[['ATOM,g]]]
+
+expandON(x,l) ==
+  [[[x,middleEndExpand l]],nil,[["SETQ",x,["CDR",x]]],nil,[["ATOM",x]]]
+  
+++ Generate code that traverses an interval with lower bound 'lo',
+++ arithmetic progression `step, and possible upper bound `final'.
+expandSTEP(id,lo,step,final)==
+  lo := middleEndExpand lo
+  step := middleEndExpand step
+  final := middleEndExpand final
+  loopvar := [[id,lo]]
+  inc :=
+    atomic? step => step
+    g1 := gensym()
+    loopvar := [:loopvar,[g1,step]]
+    g1
+  final :=
+    atom final => final
+    final is [hi] and atomic? hi => hi
+    g2 := gensym()
+    loopvar := [:loopvar,[g2,:final]]
+    g2
+  ex :=
+     final = nil => nil
+     integer? inc =>
+       pred :=
+	 MINUSP inc => "<"
+	 ">"
+       [[pred,id,final]]
+     [['COND,[['MINUSP,inc],
+	   ["<",id,final]],['T,[">",id,final]]]]
+  suc := [["SETQ",id,["+",id,inc]]]
+  [loopvar,nil,suc,nil,ex]
+
+++ Generate code for iterators that filter out execution state
+++ not satisfying predicate `p'.
+expandSUCHTHAT p == 
+  [nil,nil,nil,[middleEndExpand p],nil]
+
+++ Generate code for iterators that stop loop iteration when the
+++ state fails predicate `p'.
+expandWHILE p == 
+  [nil,nil,nil,nil,[["NOT",middleEndExpand p]]]
+
+expandUNTIL p ==
+  g := gensym()
+  [[[g,false]],nil,[["SETQ",g,middleEndExpand p]],nil,[g]]
+
+expandInit(var,val) ==
+  [[[var,middleEndExpand val]],nil,nil,nil,nil]
+
+expandIterators iters ==
+  -- Exit predicates may reference iterator variables.  In that case,
+  -- the scope the variables must cover the generated loop body.  The
+  -- following is much more coarse approximation than we may want,
+  -- but it will do.  For now.
+  early? := or/[ it.op in '(WHILE UNTIL) for it in iters]
+  [toLisp(it,early?) or leave "failed" for it in iters] where
+     toLisp(it,early?) ==
+       it is ["STEP",var,lo,inc,:hi] => expandSTEP(var,lo,inc,hi)
+       it is ["IN",var,seq] => expandIN(var,seq,early?)
+       it is ["ON",var,seq] => expandON(var,seq)
+       it is ["WHILE",pred] => expandWHILE pred
+       it is [op,pred] and op in '(SUCHTHAT _|) => expandSUCHTHAT pred
+       it is ["UNTIL",pred] => expandUNTIL pred
+       it is ["%init",var,val] => expandInit(var,val)
+       nil
+
+expandLoop ['%loop,:iters,body,ret] ==
+  itersCode := expandIterators iters
+  itersCode = "failed" => systemErrorHere ["expandLoop",iters]
+  body := middleEndExpand body
+  itersCode := "coagulate"/itersCode
+    where
+      coagulate(it1,it2) == [append(it1.k,it2.k) for k in 0..4]
+  [loopInits,bodyInits,cont,filters,exits] := itersCode
+  -- Guard the execution of the body by the filters.
+  if filters ~= nil then
+    body := mkpf([:filters,body],"AND")
+  -- If there is any body-wide initialization, now is the time.
+  if bodyInits ~= nil then
+    body := ["LET",bodyInits,body]
+  exits := ["COND",
+             [mkpf(exits,"OR"),["RETURN",expandToVMForm ret]],
+               [true,body]]
+  body := ["LOOP",exits,:cont]
+  -- Finally, set up loop-wide initializations.
+  loopInits = nil => body
+  ["LET",loopInits,body]
+
+++ Generate code for list comprehension.
+expandCollect ['%collect,:iters,body] ==
+  val := gensym()    -- result of the list comprehension
+  -- Transform the body to build the list as we go.
+  body := ["SETQ",val,["CONS",middleEndExpand body,val]]
+  -- Initialize the variable holding the result; expand as 
+  -- if ordinary loop.  But don't forget we built the result
+  -- in reverse order.
+  expandLoop ['%loop,:iters,["%init",val,nil],body,["NREVERSE",val]]
+
+expandReturn(x is ['%return,.,y]) ==
+  $FUNNAME = nil => systemErrorHere ['expandReturn,x]
+  ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
+  
+-- Pointer operations
+expandPeq ['%peq,x,y] ==
+  x = '%nil => ['NULL,expandToVMForm y]
+  y = '%nil => ['NULL,expandToVMForm x]
+  ['EQ,expandToVMForm x, expandToVMForm y]
+
+expandBefore? ['%before?,x,y] ==
+  ['GGREATERP,expandToVMForm y,expandToVMForm x]
+
+-- Byte operations
+expandBcompl ['%bcompl,x] ==
+  integer? x => 255 - x
+  ['_+,256,['LOGNOT,expandToVMForm x]]
+
+-- Character operations
+expandCcst ['%ccst,s] ==
+  not string? s => error "operand is not a string constant"
+  #s ~= 1 => error "string constant must contain exactly one character"
+  char s
+
+-- Integer operations
+expandIneg ['%ineg,x] ==
+  x := expandToVMForm x
+  integer? x => -x
+  ['_-,x]
+
+expandIdivide ['%idivide,x,y] ==
+  ['MULTIPLE_-VALUE_-CALL,['FUNCTION,'CONS],
+    ['TRUNCATE,expandToVMForm x,expandToVMForm y]]
+
+expandIeq ['%ieq,a,b] ==
+  a := expandToVMForm a
+  integer? a and a = 0 => ['ZEROP,expandToVMForm b]
+  b := expandToVMForm b
+  integer? b and b = 0 => ['ZEROP,a]
+  ['EQL,a,b]
+
+expandIlt ['%ilt,x,y] ==
+  integer? x and x = 0 =>
+    integer? y => y > 0
+    ['PLUSP,expandToVMForm y]
+  integer? y and y = 0 =>
+    integer? x => x < 0
+    ['MINUSP,expandToVMForm x]
+  ['_<,expandToVMForm x,expandToVMForm y]
+
+expandIgt ['%igt,x,y] ==
+  expandIlt ['%ilt,y,x]
+
+expandBitand ['%bitand,x,y] ==
+  ['BOOLE,'BOOLE_-AND,expandToVMForm x,expandToVMForm y]
+
+expandBitior ['%bitior,x,y] ==
+  ['BOOLE,'BOOLE_-IOR,expandToVMForm x,expandToVMForm y]
+
+expandBitnot ['%bitnot,x] ==
+  ['LOGNOT,expandToVMForm x]
+
+-- Floating point support
+
+expandFbase ['%fbase] ==
+  FLOAT_-RADIX $DoubleFloatMaximum
+
+expandFprec ['%fprec] ==
+  FLOAT_-DIGITS $DoubleFloatMaximum
+
+expandFminval ['%fminval] ==
+  '$DoubleFloatMinimum
+
+expandFmaxval ['%fmaxval] ==
+  '$DoubleFloatMaximum
+
+expandI2f ['%i2f,x] ==
+  x := expandToVMForm x
+  integer? x and (x = 0 or x = 1) => FLOAT(x,$DoubleFloatMaximum)
+  ['FLOAT,x,'$DoubleFloatMaximum]
+
+expandFneg ['%fneg,x] ==
+  ['_-,expandToVMForm x]
+
+expandFeq ['%feq,a,b] ==
+  a is ['%i2f,0] => ['ZEROP,expandToVMForm b]
+  b is ['%i2f,0] => ['ZEROP,expandToVMForm a]
+  ['_=,expandToVMForm a,expandToVMForm b]
+
+expandFlt ['%flt,x,y] ==
+  x is ['%i2f,0] => ['PLUSP,expandToVMForm y]
+  y is ['%i2f,0] => ['MINUSP,expandToVMForm x]
+  ['_<,expandToVMForm x,expandToVMForm y]
+
+expandFgt ['%fgt,x,y] ==
+  expandFlt ['%flt,y,x]
+
+-- Local variable bindings
+expandBind ['%bind,inits,:body] ==
+  body := expandToVMForm body
+  inits := [[first x,expandToVMForm second x] for x in inits]
+  -- FIXME: we should consider turning LET* into LET or direct inlining.
+  op :=
+    or/[CONTAINED(v,x) for [[v,.],:x] in tails inits] => 'LET_*
+    'LET
+  [op,inits,:body]
+
+-- Memory load/store
+
+expandDynval ["%dynval",:args] ==
+  ["SYMBOL-VALUE",:expandToVMForm args]
+
+expandStore ["%store",place,value] ==
+  value := expandToVMForm value
+  place is ['%head,x] => ['RPLACA,expandToVMForm x,value]
+  place is ['%tail,x] => ['RPLACD,expandToVMForm x,value]
+  place := expandToVMForm place
+  cons? place => ["SETF",place,value]
+  ["SETQ",place,value]
+
+++ Opcodes with direct mapping to target operations.
+for x in [
+    -- Boolean constants
+    -- ['%false, :'NIL],
+    ['%true,  :'T],
+    -- unary Boolean operations
+    ['%not, :'NOT],
+    -- binary Boolean operations
+    ['%and, :'AND],
+    ['%or,  :'OR],
+
+    -- character binary operations
+    ['%ceq, :'CHAR_=],
+    ['%clt, :'CHAR_<],
+    ['%cle, :'CHAR_<_=],
+    ['%cgt, :'CHAR_>],
+    ['%cge, :'CHAR_>_=],
+    ['%c2i, :'CHAR_-CODE],
+    ['%i2c, :'CODE_-CHAR],
+
+    -- byte operations
+    ['%beq, :'byteEqual],
+    ['%blt, :'byteLessThan],
+
+    -- unary integer operations.
+    ['%iabs,    :'ABS],
+    ['%ieven?,  :'EVENP],
+    ['%integer?,:'INTEGERP],
+    ['%iodd?,   :'ODDP],
+    ['%ismall?, :'FIXNUMP],
+    -- binary integer operations.
+    ['%iadd,    :"+"],
+    ['%igcd,    :'GCD],
+    ['%ige,     :">="],
+    ['%iinc,    :"1+"],
+    ['%ilcm,    :'LCM],
+    ['%ile,     :"<="],
+    ['%imax,    :'MAX],
+    ['%imin,    :'MIN],
+    ['%imul,    :"*"],
+    ['%irem,    :'REM],
+    ['%iquo,    :'TRUNCATE],
+    ['%ipow,    :'EXPT],
+    ['%isub,    :"-"],
+
+    -- unary float operations.
+    ['%fabs,  :'ABS],
+    ['%float?,:'FLOATP],
+    ['%ftrunc,:'TRUNCATE],
+    -- binary float operations.
+    ['%fadd,  :"+"],
+    ['%fdiv,  :"/"],
+    ['%fge,   :">="],
+    ['%fle,   :"<="],
+    ['%fmax,  :'MAX],
+    ['%fmin,  :'MIN],
+    ['%fmul,  :"*"],
+    ['%fpow,  :'EXPT],
+    ['%fsub,  :"-"],
+
+    ['%fsin,   :'SIN],
+    ['%fcos,   :'COS],
+    ['%ftan,   :'TAN],
+    ['%fcot,   :'COT],
+    ['%fsec,   :'SEC],
+    ['%fcsc,   :'CSC],
+    ['%fatan,  :'ATAN],
+    ['%facot,  :'ACOT],
+    ['%fsinh,  :'SINH],
+    ['%fcosh,  :'COSH],
+    ['%ftanh,  :'TANH],
+    ['%fcsch,  :'CSCH],
+    ['%fcoth,  :'COTH],
+    ['%fsech,  :'SECH],
+    ['%fasinh, :'ASINH],
+    ['%facsch, :'ACSCH],
+
+    -- string operations
+    ['%f2s,   :'DFLOAT_-FORMAT_-GENERAL],
+
+    -- list contants
+    -- ['%nil, :'NIL],
+    -- unary list operations
+    ['%head,      :'CAR],
+    ['%makepair,  :'CONS],
+    ['%lempty?,   :'NULL],
+    ['%lfirst,    :'CAR],
+    ['%llength,   :'LIST_-LENGTH],
+    ['%lreverse,  :'REVERSE],
+    ['%lreverse_!,:'NREVERSE],
+    ['%lsecond,   :'CADR],
+    ['%lthird,    :'CADDR],
+    ['%pair?,     :'CONSP],
+    ['%tail,      :'CDR],
+    -- binary list operations
+    ['%lconcat,   :'APPEND],
+
+    -- simple vector operations
+    ['%vfill,     :'FILL],
+    ['%vlength,   :'sizeOfSimpleArray],
+    ['%vref,      :'getSimpleArrayEntry],
+
+    -- symbol unary functions
+    ['%gensym,  :'GENSYM],
+    ['%sname,   :'SYMBOL_-NAME],
+
+    -- string unary functions
+    ['%string?, :'STRINGP],
+
+    -- general utility
+    ['%hash,     :'SXHASH],
+    ['%lam,      :'LAMBDA],
+    ['%leave,    :'RETURN],
+    ['%otherwise,:'T],
+    ['%when,     :'COND]
+  ] repeat property(first x,'%Rename) := rest x
+
+++ Table of opcode-expander pairs.  
+for x in [
+   ['%collect, :function expandCollect],
+   ['%loop,    :function expandLoop],
+   ['%return,  :function expandReturn],
+
+   ['%bcompl,  :function expandBcompl],
+
+   ['%ccst,    :function expandCcst],
+
+   ['%ieq,     :function expandIeq],
+   ['%igt,     :function expandIgt],
+   ['%ilt,     :function expandIlt],
+   ['%ineg,    :function expandIneg],
+   ['%idivide, :function expandIdivide],
+   ['%bitand,  :function expandBitand],
+   ['%bitior,  :function expandBitior],
+   ['%bitnot,  :function expandBitnot],
+
+   ['%i2f,     :function expandI2f],
+   ['%fbase,   :function expandFbase],
+   ['%feq,     :function expandFeq],
+   ['%fgt,     :function expandFgt],
+   ['%flt,     :function expandFlt],
+   ['%fmaxval, :function expandFmaxval],
+   ['%fminval, :function expandFminval],
+   ['%fneg,    :function expandFneg],
+   ['%fprec,   :function expandFprec],
+
+   ['%peq,     :function expandPeq],
+   ['%before?, :function expandBefore?],
+
+   ['%bind,   :function expandBind],
+   ['%store,  :function expandStore],
+   ['%dynval, :function expandDynval]
+ ] repeat property(first x,'%Expander) := rest x
+
+++ Return the expander of a middle-end opcode, or nil if there is none.
+getOpcodeExpander op ==
+  op has %Expander
+
+++ Expand all opcodes contained in the form `x' into a form
+++ suitable for evaluation by the VM.
+expandToVMForm x ==
+  x = '%false or x = '%nil => 'NIL
+  IDENTP x and (x' := x has %Rename) => x'
+  atomic? x => x
+  [op,:args] := x
+  IDENTP op and (fun:= getOpcodeExpander op) => apply(fun,x,nil)
+  op' := expandToVMForm op
+  args' := expandToVMForm args
+  EQ(op,op') and EQ(args,args') => x
+  [op',:args']
+  
 ++
 $interpOnly := false
 
 --% Utility Functions of General Use
+
+mkCacheName(name) ==
+  INTERN strconc(PNAME name,'";AL")
+
+mkAuxiliaryName(name) ==
+  INTERN strconc(PNAME name,'";AUX")
+
 
 homogeneousListToVector(t,l) ==
   makeSimpleArrayFromList(t,l)
@@ -58,18 +545,18 @@ isSharpVar x ==
   IDENTP x and SCHAR(SYMBOL_-NAME x,0) = char "#"
  
 isSharpVarWithNum x ==
-  null isSharpVar x => nil
+  not isSharpVar x => nil
   (n := QCSIZE(p := PNAME x)) < 2 => nil
   ok := true
   c := 0
   for i in 1..(n-1) while ok repeat
     d := p.i
-    ok := DIGITP d => c := 10*c + DIG2FIX d
+    ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
-++ Returns true if `form' is either an atom or a quotation.
-isAtomicForm form ==
-  atom form or first form = "QUOTE"
+++ Returns true if `x' is either an atom or a quotation.
+atomic? x ==
+  not cons? x or x.op = 'QUOTE
 
 
 --% Sub-domains information handlers
@@ -152,15 +639,15 @@ PPtoFile(x, fname) ==
     x
 
 ScanOrPairVec(f, ob) ==
-    $seen:     local := MAKE_-HASHTABLE 'EQ
+    $seen:     local := hashTable 'EQ
  
     CATCH('ScanOrPairVecAnswer, ScanOrInner(f, ob)) where
         ScanOrInner(f, ob) ==
             HGET($seen, ob) => nil
             cons? ob =>
                 HPUT($seen, ob, true)
-                ScanOrInner(f, QCAR ob)
-                ScanOrInner(f, QCDR ob)
+                ScanOrInner(f, first ob)
+                ScanOrInner(f, rest ob)
                 nil
             VECP ob =>
                 HPUT($seen, ob, true)
@@ -182,15 +669,15 @@ get(x,prop,e) ==
   get1(x,prop,e)
 
 get0(x,prop,e) ==
-  not atom x => get(QCAR x,prop,e)
-  u:= QLASSQ(x,first QCAR e) => QLASSQ(prop,u)
-  (tail:= rest QCAR e) and (u:= fastSearchCurrentEnv(x,tail)) =>
+  cons? x => get(x.op,prop,e)
+  u:= QLASSQ(x,first first e) => QLASSQ(prop,u)
+  (tail:= rest first e) and (u:= fastSearchCurrentEnv(x,tail)) =>
     QLASSQ(prop,u)
   nil
 
 get1(x,prop,e) ==
     --this is the old get
-  not atom x => get(QCAR x,prop,e)
+  cons? x => get(x.op,prop,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     LASSOC("modemap",getProplist(x,$CapsuleModemapFrame))
       or get2(x,prop)
@@ -216,7 +703,7 @@ put(x,prop,val,e) ==
   $InteractiveMode and not EQ(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
   --e must never be $CapsuleModemapFrame
-  not atom x => put(first x,prop,val,e)
+  cons? x => put(first x,prop,val,e)
   newProplist := augProplistOf(x,prop,val,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
@@ -227,7 +714,7 @@ put(x,prop,val,e) ==
   addBinding(x,newProplist,e)
 
 putIntSymTab(x,prop,val,e) ==
-  null atom x => putIntSymTab(first x,prop,val,e)
+  cons? x => putIntSymTab(first x,prop,val,e)
   pl0 := pl := search(x,e)
   pl :=
     null pl => [[prop,:val]]
@@ -248,6 +735,11 @@ addIntSymTabBinding(var,proplist,e is [[curContour,:.],:.]) ==
     e
   first(e).first := [[var,:proplist],:curContour]
   e
+
+putMacro(lhs,rhs,e) ==
+  atom lhs => put(lhs,'macro,rhs,e)
+  parms := [gensym() for p in lhs.args]
+  put(lhs.op,'macro,['%mlambda,parms,SUBLISLIS(parms,lhs.args,rhs)],e)
 
 --% Syntax manipulation
 
@@ -310,13 +802,14 @@ getTypeOfSyntax t ==
 bool: %Thing -> %Boolean
 bool x ==
     null null x
- 
+
+++ Return true is the form `x' is a predicate known to always
+++ evaluate to true.
 TruthP x ==
-    --True if x is a predicate that's always true
-  x is nil => nil
-  x=true => true
+  x = nil or x = '%false => false
+  x = true or x = '%true => true
   x is ['QUOTE,:.] => true
-  nil
+  false
 
 --% Record and Union utils.
 
@@ -337,9 +830,9 @@ getUnionOrRecordTags u ==
 
 Identity x == x
 
-length1? l == cons? l and not cons? QCDR l
+length1? l == cons? l and not cons? rest l
 
-length2? l == cons? l and cons? (l := QCDR l) and not cons? QCDR l
+length2? l == cons? l and cons? (l := rest l) and not cons? rest l
 
 pairList(u,v) == [[x,:y] for x in u for y in v]
 
@@ -371,7 +864,7 @@ REMALIST(alist,prop) ==
     p = prop =>
       ok := NIL
       l.rest := r
-    if null (l := QCDR l) or null rest l then ok := NIL
+    if null (l := rest l) or null rest l then ok := NIL
   alist
 
 deleteLassoc(x,y) ==
@@ -429,7 +922,7 @@ centerString(text,width,fillchar) ==
 stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
-  null (string?(pref) and string?(str)) => NIL
+  not (string?(pref) and string?(str)) => NIL
   (lp := QCSIZE pref) = 0 => true
   lp > QCSIZE str => NIL
   ok := true
@@ -444,9 +937,9 @@ stringChar2Integer(str,pos) ==
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
   if IDENTP str then str := PNAME str
-  null (string?(str) and
+  not (string?(str) and
     integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
-  not DIGITP(d := SCHAR(str,pos)) => NIL
+  not digit?(d := SCHAR(str,pos)) => NIL
   DIG2FIX d
 
 dropLeadingBlanks str ==
@@ -531,13 +1024,13 @@ flattenSexpr s ==
   [:flattenSexpr f,:flattenSexpr r]
 
 isLowerCaseLetter c ==
-  LOWER_-CASE_-P c
+  lowerCase? c
 
 isUpperCaseLetter c ==
-  UPPER_-CASE_-P c
+  upperCase? c
 
 isLetter c ==
-  ALPHA_-CHAR_-P c
+  alphabetic? c
 
 update() ==
   runCommand
@@ -575,27 +1068,27 @@ mergeInPlace(f,g,p,q) ==
    -- merge the two sorted lists p and q
    if null p then return p
    if null q then return q
-   if FUNCALL(f,FUNCALL(g, QCAR p),FUNCALL(g, QCAR q))
-   then (r := t := p; p := QCDR p)
-   else (r := t := q; q := QCDR q)
+   if FUNCALL(f,FUNCALL(g, first p),FUNCALL(g, first q))
+   then (r := t := p; p := rest p)
+   else (r := t := q; q := rest q)
    while not null p and not null q repeat
-      if FUNCALL(f,FUNCALL(g,QCAR p),FUNCALL(g,QCAR q))
-      then (t.rest := p; t := p; p := QCDR p)
-      else (t.rest := q; t := q; q := QCDR q)
+      if FUNCALL(f,FUNCALL(g,first p),FUNCALL(g,first q))
+      then (t.rest := p; t := p; p := rest p)
+      else (t.rest := q; t := q; q := rest q)
    if null p then t.rest := q else t.rest := p
    r
 
 mergeSort(f,g,p,n) ==
-   if n=2 and FUNCALL(f,FUNCALL(g,QCADR p),FUNCALL(g,QCAR p)) then
+   if n=2 and FUNCALL(f,FUNCALL(g,second p),FUNCALL(g,first p)) then
       t := p
-      p := QCDR p
+      p := rest p
       p.rest := t
       t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
-   l := QSQUOTIENT(n,2)
+   l := n quo 2
    t := p
-   for i in 1..l-1 repeat t := QCDR t
+   for i in 1..l-1 repeat t := rest t
    q := rest t
    t.rest := NIL
    p := mergeSort(f,g,p,l)
@@ -620,7 +1113,7 @@ formatUnabbreviatedSig sig ==
   [target,:args] := dollarPercentTran sig
   target := formatUnabbreviated target
   null args => ['"() -> ",:target]
-  null rest args => [:formatUnabbreviated QCAR args,'" -> ",:target]
+  null rest args => [:formatUnabbreviated first args,'" -> ",:target]
   args := formatUnabbreviatedTuple args
   ['"(",:args,'") -> ",:target]
 
@@ -628,9 +1121,9 @@ formatUnabbreviatedTuple t ==
   -- t is a list of types
   null t => t
   atom t => [t]
-  t0 := formatUnabbreviated QCAR t
+  t0 := formatUnabbreviated t.op
   null rest t => t0
-  [:t0,'",",:formatUnabbreviatedTuple QCDR t]
+  [:t0,'",",:formatUnabbreviatedTuple rest t]
 
 formatUnabbreviated t ==
   null t =>
@@ -678,7 +1171,7 @@ searchCurrentEnv: (%Thing,%List) -> %List
 searchTailEnv: (%Thing,%Env) -> %List
 
 getProplist(x,E) ==
-  not atom x => getProplist(first x,E)
+  cons? x => getProplist(first x,E)
   u:= search(x,E) => u
   --$InteractiveMode => nil
   --$InteractiveMode and (u:= search(x,$InteractiveFrame)) => u
@@ -804,7 +1297,7 @@ quickOr(a,b) ==
 
 intern x ==
   string? x =>
-    DIGITP x.0 => string2Integer x
+    digit? x.0 => string2Integer x
     INTERN x
   x
 

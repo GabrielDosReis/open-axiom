@@ -126,6 +126,7 @@ structure %Ast ==
   %Append(%Sequence)                    -- concatenate lists
   %Case(%Ast,%Sequence)                 -- case x of ...
   %Return(%Ast)                         -- return x
+  %Leave(%Ast)                          -- leave x
   %Throw(%Ast)                          -- throw OutOfRange 3
   %Catch(%Ast)                          -- catch OutOfRange
   %Try(%Ast,%Sequence)                  -- try x / y catch DivisionByZero
@@ -145,8 +146,8 @@ quote x ==
 
 bfGenSymbol: () -> %Symbol 
 bfGenSymbol()==
-    $GenVarCounter:=$GenVarCounter+1
-    INTERN(CONCAT ('"bfVar#",STRINGIMAGE $GenVarCounter))
+    $GenVarCounter := $GenVarCounter+1
+    INTERN strconc('"bfVar#",STRINGIMAGE $GenVarCounter)
 
 bfColon: %Thing -> %List
 bfColon x== 
@@ -155,8 +156,8 @@ bfColon x==
 bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
   %hasFeature KEYWORD::CLISP and package in '(EXT FFI) =>
-    FIND_-SYMBOL(SYMBOL_-NAME name,package)
-  INTERN(SYMBOL_-NAME name, package)
+    FIND_-SYMBOL(PNAME name,package)
+  INTERN(PNAME name, package)
 
 bfSymbol: %Thing -> %Thing 
 bfSymbol x==
@@ -208,6 +209,9 @@ compFluidize x==
   x is ["QUOTE",:.] => x
   [compFluidize(first x),:compFluidize(rest x)]
  
+bfPlace x ==
+  ["%Place",:x]
+
 bfTuple x == 
   ["TUPLE",:x]
  
@@ -461,6 +465,9 @@ bfDrop(n,x)==
  
 bfReturnNoName a ==
   ["RETURN",a]
+
+bfLeave x ==
+  ["%Leave",x]
  
 bfSUBLIS(p,e)==
   atom e=>bfSUBLIS1(p,e)
@@ -487,7 +494,7 @@ defSheepAndGoats(x)==
       argl = nil =>
 	opassoc := [[op,:body]]
 	[opassoc,[],[]]
-      op1 := INTERN CONCAT(PNAME $op,'",",PNAME op)
+      op1 := INTERN strconc(PNAME $op,'",",PNAME op)
       opassoc := [[op,:op1]]
       defstack := [[op1,args,body]]
       [opassoc,defstack,[]]
@@ -521,7 +528,7 @@ bfLET1(lhs,rhs) ==
     l2 is ["PROGN",:.] => bfMKPROGN [l1,:rest l2]
     if IDENTP first l2 then l2 := [l2,:nil]
     bfMKPROGN [l1,:l2,name]
-  g := INTERN CONCAT('"LETTMP#",STRINGIMAGE $letGenVarCounter)
+  g := INTERN strconc('"LETTMP#",STRINGIMAGE $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(lhs,g)
@@ -558,7 +565,7 @@ bfLET2(lhs,rhs) ==
   lhs is ['APPEND,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['REVERSE,rhs]
-    g := INTERN CONCAT('"LETTMP#", STRINGIMAGE $letGenVarCounter)
+    g := INTERN strconc('"LETTMP#", STRINGIMAGE $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := bfLET2(patrev,g)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
@@ -641,7 +648,7 @@ bfIS1(lhs,rhs) ==
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
   rhs is ["EQUAL",a] => bfQ(lhs,a)
   cons? lhs =>
-    g := INTERN CONCAT('"ISTMP#",STRINGIMAGE $isGenVarCounter)
+    g := INTERN strconc('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
@@ -658,7 +665,7 @@ bfIS1(lhs,rhs) ==
     bfAND [['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := bfISReverse(b,a)
-    g := INTERN CONCAT('"ISTMP#",STRINGIMAGE $isGenVarCounter)
+    g := INTERN strconc('"ISTMP#",STRINGIMAGE $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],'T]]
     l2 := bfIS1(g,patrev)
@@ -783,7 +790,7 @@ bfDef1 [op,args,body] ==
  
 shoeLAM (op,args,control,body)==
   margs :=bfGenSymbol()
-  innerfunc:=INTERN(CONCAT(PNAME op,",LAM"))
+  innerfunc:=INTERN strconc(PNAME op,",LAM")
   [[innerfunc,["LAMBDA",args,body]],
      [op,["MLAMBDA",["&REST",margs],["CONS",["QUOTE", innerfunc],
                     ["WRAP",margs, ["QUOTE", control]]]]]]
@@ -802,7 +809,6 @@ shoeComp x==
   a:=shoeCompTran second x
   a is ["LAMBDA",:.] => ["DEFUN",first x,second a,:CDDR a]
   ["DEFMACRO",first x,second a,:CDDR a]
-
 
 ++ Translate function parameter list to Lisp.
 ++ We are processing a function definition.  `p2' is the list of
@@ -927,6 +933,7 @@ shoeCompTran1 x==
 	 MEMQ(second l,$fluidVars)=>$fluidVars
 	 [second l,:$fluidVars]
       x.rest.first := second l
+  U = "%Leave" => x.first := "RETURN"
   U in '(PROG LAMBDA) =>
     newbindings:=nil
     for y in second x repeat
@@ -950,6 +957,7 @@ bfTagged(a,b)==
  
 bfAssign(l,r)==
   bfTupleP l => bfSetelt(second l,CDDR l ,r)
+  l is ["%Place",:l'] => ["SETF",l',r]
   bfLET(l,r)
  
 bfSetelt(e,l,r)==
@@ -1040,7 +1048,7 @@ bfWhere (context,expr)==
   a:=[[first d,second d,bfSUBLIS(opassoc,third d)]
                for d in defs]
   $wheredefs:=append(a,$wheredefs)
-  bfMKPROGN bfSUBLIS(opassoc,NCONC(nondefs,[expr]))
+  bfMKPROGN bfSUBLIS(opassoc,nconc(nondefs,[expr]))
  
 --shoeReadLispString(s,n)==
 --    n>= # s => nil
@@ -1049,7 +1057,7 @@ bfWhere (context,expr)==
 --    [exp,:shoeReadLispString(s,ind)]
  
 bfCompHash(op,argl,body) ==
-  auxfn:= INTERN CONCAT (PNAME op,'";")
+  auxfn:= INTERN strconc(PNAME op,'";")
   computeFunction:= ["DEFUN",auxfn,argl,:body]
   bfTuple [computeFunction,:bfMain(auxfn,op)]
  
@@ -1063,7 +1071,7 @@ bfMain(auxfn,op)==
   g1:= bfGenSymbol()
   arg:=["&REST",g1]
   computeValue := ['APPLY,["FUNCTION",auxfn],g1]
-  cacheName:= INTERN CONCAT (PNAME op,'";AL")
+  cacheName:= INTERN strconc(PNAME op,'";AL")
   g2:= bfGenSymbol()
   getCode:=   ['GETHASH,g1,cacheName]
   secondPredPair:= [['SETQ,g2,getCode],g2]
@@ -1135,12 +1143,12 @@ bfCI(g,x,y)==
 
 bfCARCDR: (%Short,%Thing) -> %List 
 bfCARCDR(n,g) ==
-  [INTERN CONCAT ('"CA",bfDs n,'"R"),g]
+  [INTERN strconc('"CA",bfDs n,'"R"),g]
 
 bfDs: %Short -> %String 
 bfDs n == 
   n = 0 => '""
-  CONCAT('"D",bfDs(n-1))
+  strconc('"D",bfDs(n-1))
 
 
 ++ Generate code for try-catch expressions.
@@ -1258,15 +1266,15 @@ isSimpleNativeType t ==
 
 coreSymbol: %Symbol -> %Symbol
 coreSymbol s ==
-  INTERN(SYMBOL_-NAME s, "AxiomCore")
+  INTERN(PNAME s, "AxiomCore")
 
 bootSymbol: %Symbol -> %Symbol
 bootSymbol s ==
-  INTERN SYMBOL_-NAME s
+  INTERN PNAME s
 
 
 unknownNativeTypeError t ==
-  fatalError CONCAT('"unsupported native type: ", SYMBOL_-NAME t)
+  fatalError strconc('"unsupported native type: ", PNAME t)
 
 
 nativeType t ==
@@ -1358,7 +1366,7 @@ nativeType t ==
 nativeReturnType t ==
   t in $NativeSimpleReturnTypes => nativeType t
   coreError strconc('"invalid return type for native function: ", 
-              SYMBOL_-NAME t)
+              PNAME t)
 
 ++ Check that `t' is a valid parameter type for a native function,
 ++ and returns its translation.
@@ -1397,7 +1405,7 @@ coerceToNativeType(a,t) ==
     c = "pointer" => [bfColonColon("SB-SYS","ALIEN-SAP"),a]
     needsStableReference? t =>
       fatalError strconc('"don't know how to coerce argument for native type",
-        SYMBOL_-NAME c)
+        PNAME c)
   fatalError '"don't know how to coerce argument for native type"
 
 
@@ -1409,15 +1417,15 @@ genGCLnativeTranslation(op,s,t,op') ==
   rettype := nativeReturnType t
   -- If a simpel DEFENTRY will do, go for it
   and/[isSimpleNativeType x for x in [t,:s]] =>
-    [["DEFENTRY", op, argtypes, [rettype, SYMBOL_-NAME op']]]
+    [["DEFENTRY", op, argtypes, [rettype, PNAME op']]]
   -- Otherwise, do it the hard way.
   [["CLINES",ccode], ["DEFENTRY", op, argtypes, [rettype, cop]]] where
-    cop := strconc(SYMBOL_-NAME op','"__stub")
+    cop := strconc(PNAME op','"__stub")
     ccode := 
       "strconc"/[gclTypeInC t, '" ", cop, '"(",
 	 :[cparm(x,a) for x in tails s for a in tails cargs],
 	   '") { ", (t ~= "void" => '"return "; ""),
-	     SYMBOL_-NAME op', '"(",
+	     PNAME op', '"(",
 	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
 		  '"); }" ]
                 where cargs := [mkCArgName i for i in 0..(#s - 1)]
@@ -1426,7 +1434,7 @@ genGCLnativeTranslation(op,s,t,op') ==
       strconc(gclTypeInC first x, '" ", first a,
 	(rest x => '", "; '""))
     gclTypeInC x ==
-      x in $NativeSimpleDataTypes => SYMBOL_-NAME x
+      x in $NativeSimpleDataTypes => PNAME x
       x = "void" => '"void"
       x = "string" => '"char*"
       x is [.,["pointer",.]] => "fixnum"
@@ -1451,7 +1459,7 @@ genECLnativeTranslation(op,s,t,op') ==
   argtypes := nil
   for x in s repeat
      argtypes := [nativeArgumentType x,:argtypes]
-     args := [GENSYM(),:args]
+     args := [gensym(),:args]
   args := reverse args
   rettype := nativeReturnType t
   [["DEFUN",op, args,
@@ -1459,7 +1467,7 @@ genECLnativeTranslation(op,s,t,op') ==
       rettype, callTemplate(op',#args,s), 
         KEYWORD::ONE_-LINER, true]]] where
 	  callTemplate(op,n,s) ==
-	    "strconc"/[SYMBOL_-NAME op,'"(",
+	    "strconc"/[PNAME op,'"(",
 	      :[sharpArg(i,x) for i in 0..(n-1) for x in s],'")"]
 	  sharpArg(i,x) == 
 	    i = 0 => strconc('"(#0)",selectDatum x)
@@ -1495,8 +1503,8 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- from the same class.  Consequently, we must allocate C-storage,
   -- copy data there, pass pointers to them, and possibly copy
   -- them back.  Ugh.  
-  n := INTERN strconc(SYMBOL_-NAME op, '"%clisp-hack")
-  parms := [GENSYM '"parm" for x in s]  -- parameters of the forward decl.
+  n := INTERN strconc(PNAME op, '"%clisp-hack")
+  parms := [gensym '"parm" for x in s]  -- parameters of the forward decl.
 
   -- Now, separate non-simple data from the rest.  This is a triple-list
   -- of the form ((parameter boot-type . ffi-type) ...)
@@ -1509,7 +1517,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- parameter of non-simple datatype are described as being pointers.
   foreignDecl := 
     [bfColonColon("FFI","DEF-CALL-OUT"),n,
-      [KEYWORD::NAME,SYMBOL_-NAME op'],
+      [KEYWORD::NAME,PNAME op'],
 	[KEYWORD::ARGUMENTS,:[[a, x] for x in argtypes for a in parms]],
 	  [KEYWORD::RETURN_-TYPE, rettype],
 	      [KEYWORD::LANGUAGE,KEYWORD::STDC]]
@@ -1521,7 +1529,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- gigantic buffer, you might find out that it is insanely inefficient.
   forwardingFun := 
     unstableArgs = nil => ["DEFUN",op,parms, [n,:parms]]
-    localPairs := [[a,x,y,:GENSYM '"loc"] for [a,x,:y] in unstableArgs]
+    localPairs := [[a,x,y,:gensym '"loc"] for [a,x,:y] in unstableArgs]
     call := 
       [n,:[actualArg(p,localPairs) for p in parms]] where
 	    actualArg(p,pairs) ==
@@ -1555,7 +1563,7 @@ genSBCLnativeTranslation(op,s,t,op') ==
   rettype := nativeReturnType t
   argtypes := [nativeArgumentType x for x in s]
 
-  args := [GENSYM() for x in s]
+  args := [gensym() for x in s]
   unstableArgs := nil
   newArgs := nil
   for a in args for x in s repeat
@@ -1564,8 +1572,8 @@ genSBCLnativeTranslation(op,s,t,op') ==
       unstableArgs := [a,:unstableArgs]
   
   op' :=
-    %hasFeature KEYWORD::WIN32 => strconc('"__",SYMBOL_-NAME op')
-    SYMBOL_-NAME op'
+    %hasFeature KEYWORD::WIN32 => strconc('"__",PNAME op')
+    PNAME op'
     
   unstableArgs = nil =>
     [["DEFUN",op,args,
@@ -1587,7 +1595,7 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   argtypes := [nativeArgumentType x for x in s]
 
   -- Build parameter list for the forwarding function
-  parms := [GENSYM '"parm" for x in s]
+  parms := [gensym '"parm" for x in s]
 
   -- Separate string arguments and array arguments from scalars.
   -- These array arguments need to be pinned down, and the string
@@ -1595,8 +1603,8 @@ genCLOZUREnativeTranslation(op,s,t,op') ==
   strPairs := nil 
   aryPairs := nil
   for p in parms for x in s repeat
-    x = "string" => strPairs := [[p,:GENSYM '"loc"], :strPairs]
-    x is [.,["buffer",.]] => aryPairs := [[p,:GENSYM '"loc"], :aryPairs]
+    x = "string" => strPairs := [[p,:gensym '"loc"], :strPairs]
+    x is [.,["buffer",.]] => aryPairs := [[p,:gensym '"loc"], :aryPairs]
 
   -- Build the actual foreign function call.
   -- Note that Clozure CL does not mangle foreign function call for

@@ -107,7 +107,7 @@ leq
 ------------------------------------------------------------------------
 )clear all
 PZ := UP(x,INT); Vect := DPMM(3, PZ, SQMATRIX(3,PZ), PZ);
-Modo := LODO2(SQMATRIX(3,PZ), Vect);
+Modo := LODO2(SQMATRIX(3,PZ), Vect)
  
 p := directProduct([3*x**2 + 1, 2*x, 7*x**3 + 2*x]::(VECTOR(PZ)))@Vect
 m := [[x**2, 1, 0], [1, x**4, 0], [0, 0, 4*x**2]]::(SQMATRIX(3,PZ))

@@ -2,7 +2,7 @@
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
 
-   Copyright (C) 2007-2009, Gabriel Dos Reis.
+   Copyright (C) 2007-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -544,6 +544,22 @@ oa_concatenate_string(const char* lhs, const char* rhs)
    }
 }
 
+/* Return a string object that is the result of catenating the strings
+   designated by `left' and `right'.   */
+OPENAXIOM_EXPORT const char*
+oa_strcat(const char* left, const char* right)
+{
+   int left_size = strlen(left);
+   int right_size = strlen(right);
+   int size = left_size + right_size;
+   char* buffer = malloc(size + 1);
+
+   memcpy(buffer, left, left_size);
+   memcpy(buffer + left_size, right, right_size);
+   buffer[size] = '\0';
+   return buffer;
+}
+
 /* Return the value of an environment variable.  */
 OPENAXIOM_EXPORT char*
 oa_getenv(const char* var)
@@ -811,3 +827,50 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
    return proc->id;
 #endif   
 }
+
+OPENAXIOM_EXPORT char*
+oa_substr(const char* str, const size_t begin, const size_t end)
+{
+   char* substring;
+   int len;
+
+   if (str == NULL || strlen(str) == 0 ||
+      strlen(str) < begin || end >= strlen(str) ||
+      begin > end || begin < 0 || end < 0)
+         return NULL;
+
+   len = (end - begin) + 2;
+   substring = malloc(len * sizeof(char));
+   memset(substring,'\0',len);
+   memcpy(substring, str+begin, len-1);
+
+   return substring;
+}
+
+OPENAXIOM_EXPORT char**
+oa_split(const char* sequence, const char* delimiter, int* size)
+{
+   int sequence_length = 0, newsize = 0;
+   char* token;
+   char** tokens = NULL;
+   char* sequence_copy;
+   
+   sequence_length = strlen(sequence);
+   sequence_copy = (char*) malloc((sequence_length + 1) * sizeof(char*));
+   strcpy(sequence_copy,sequence);
+   sequence_copy[sequence_length] = '\0';
+
+   token = strtok(sequence_copy, delimiter);
+   while (token != NULL) {
+
+      tokens = (char**) realloc(tokens,(newsize + 1) * sizeof(char*));   
+      tokens[newsize] = token;
+      newsize++;
+      token = strtok (NULL, delimiter);
+   }
+
+   *size = newsize;
+
+   return tokens; 
+}
+

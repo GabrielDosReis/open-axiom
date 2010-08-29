@@ -279,6 +279,42 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
 
  == add
    MER ==> Record(MANTISSA:Integer,EXPONENT:Integer)
+   import %hash: % -> SingleInteger     from Foreign Builtin
+   import %fminval: () -> %             from Foreign Builtin
+   import %fmaxval: () -> %             from Foreign Builtin
+   import %fbase: () -> PositiveInteger from Foreign Builtin
+   import %fprec: () -> PositiveInteger from Foreign Builtin
+   import %i2f: Integer -> %            from Foreign Builtin
+   import %fabs: % -> %                 from Foreign Builtin
+   import %fneg: % -> %                 from Foreign Builtin
+   import %ftrunc: % -> Integer         from Foreign Builtin
+   import %fmul: (%,%) -> %             from Foreign Builtin
+   import %fadd: (%,%) -> %             from Foreign Builtin
+   import %fsub: (%,%) -> %             from Foreign Builtin
+   import %fdiv: (%,%) -> %             from Foreign Builtin
+   import %fmin: (%,%) -> %             from Foreign Builtin
+   import %fmax: (%,%) -> %             from Foreign Builtin
+   import %feq: (%,%) -> Boolean        from Foreign Builtin
+   import %flt: (%,%) -> Boolean        from Foreign Builtin
+   import %fle: (%,%) -> Boolean        from Foreign Builtin
+   import %fgt: (%,%) -> Boolean        from Foreign Builtin
+   import %fge: (%,%) -> Boolean        from Foreign Builtin
+   import %fsin: % -> %                 from Foreign Builtin
+   import %fcos: % -> %                 from Foreign Builtin
+   import %ftan: % -> %                 from Foreign Builtin
+   import %fcot: % -> %                 from Foreign Builtin
+   import %fsec: % -> %                 from Foreign Builtin
+   import %fcsc: % -> %                 from Foreign Builtin
+   import %fatan: % -> %                from Foreign Builtin
+   import %facot: % -> %                from Foreign Builtin
+   import %fsinh: % -> %                from Foreign Builtin
+   import %fcosh: % -> %                from Foreign Builtin
+   import %ftanh: % -> %                from Foreign Builtin
+   import %fcsch: % -> %                from Foreign Builtin
+   import %fcoth: % -> %                from Foreign Builtin
+   import %fsech: % -> %                from Foreign Builtin
+   import %fasinh: % -> %               from Foreign Builtin
+   import %facsch: % -> %               from Foreign Builtin
 
    manexp: % -> MER
 
@@ -323,74 +359,74 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    -- complex to get the correct behaviour.
    --makeComplex(x: %):% == COMPLEX(x, 0$%)$Lisp
 
-   base()           == FLOAT_-RADIX(0$%)$Lisp
+   base()           == %fbase()
    mantissa x       == manexp(x).MANTISSA
    exponent x       == manexp(x).EXPONENT
-   precision()      == FLOAT_-DIGITS(0$%)$Lisp
+   precision()      == %fprec()
    bits()           ==
      base() = 2 => precision()
      base() = 16 => 4*precision()
-     wholePart(precision()*log2(base()::%))::PositiveInteger
-   max()            == _$DoubleFloatMaximum$Lisp
-   min()            == _$DoubleFloatMinimum$Lisp
+     wholePart(precision() * log2 %i2f base())::PositiveInteger
+   max()            == %fmaxval()
+   min()            == %fminval()
    order(a) == precision() + exponent a - 1
-   0                == FLOAT(0$Lisp,_$DoubleFloatMaximum$Lisp)$Lisp
-   1                == FLOAT(1$Lisp,_$DoubleFloatMaximum$Lisp)$Lisp
+   0                == %i2f(0@Integer)
+   1                == %i2f(1@Integer)
    -- rational approximation to e accurate to 23 digits
-   exp1()           == FLOAT(534625820200,_$DoubleFloatMaximum$Lisp)$Lisp / FLOAT(196677847971,_$DoubleFloatMaximum$Lisp)$Lisp
+   exp1()           == %i2f(534625820200) / %i2f(196677847971)
    pi()             == PI$Lisp
    coerce(x:%):OutputForm == outputForm x
    convert(x:%):InputForm == convert(x pretend DoubleFloat)$InputForm
-   x < y            == (x<y)$Lisp
-   x > y            == (x > y)$Lisp        -- help inliner
-   x <= y           == (x <= y)$Lisp       -- ditto
-   x >= y           == (x >= y)$Lisp       -- ditto
-   - x              == (-x)$Lisp
-   x + y            == (x+y)$Lisp
-   x:% - y:%        == (x-y)$Lisp
-   x:% * y:%        == (x*y)$Lisp
+   x < y            == %flt(x,y)
+   x > y            == %fgt(x,y)
+   x <= y           == %fle(x,y)
+   x >= y           == %fge(x,y)
+   - x              == %fneg x
+   x + y            == %fadd(x,y)
+   x:% - y:%        == %fsub(x,y)
+   x:% * y:%        == %fmul(x,y)
    i:Integer * x:%  == (i*x)$Lisp
-   max(x,y)         == MAX(x,y)$Lisp
-   min(x,y)         == MIN(x,y)$Lisp
-   x = y            == (x=y)$Lisp
+   max(x,y)         == %fmax(x,y)
+   min(x,y)         == %fmin(x,y)
+   x = y            == %feq(x,y)
    x:% / i:Integer  == (x/i)$Lisp
    sqrt x           == checkComplex SQRT(x)$Lisp
    log10 x          == checkComplex log(x)$Lisp
    x:% ** i:Integer == EXPT(x,i)$Lisp
    x:% ** y:%       == checkComplex EXPT(x,y)$Lisp
-   coerce(i:Integer):% == FLOAT(i,_$DoubleFloatMaximum$Lisp)$Lisp
+   coerce(i:Integer):% == %i2f i
    exp x            == EXP(x)$Lisp
    log x            == checkComplex LN(x)$Lisp
    log2 x           == checkComplex LOG2(x)$Lisp
-   sin x            == SIN(x)$Lisp
-   cos x            == COS(x)$Lisp
-   tan x            == TAN(x)$Lisp
-   cot x            == COT(x)$Lisp
-   sec x            == SEC(x)$Lisp
-   csc x            == CSC(x)$Lisp
+   sin x            == %fsin x
+   cos x            == %fcos x
+   tan x            == %ftan x
+   cot x            == %fcot x
+   sec x            == %fsec x
+   csc x            == %fcsc x
    asin x           == checkComplex ASIN(x)$Lisp -- can be complex
    acos x           == checkComplex ACOS(x)$Lisp -- can be complex
-   atan x           == ATAN(x)$Lisp
+   atan x           == %fatan x
    acsc x           == checkComplex ACSC(x)$Lisp
-   acot x           == ACOT(x)$Lisp
+   acot x           == %facot x
    asec x           == checkComplex ASEC(x)$Lisp
-   sinh x           == SINH(x)$Lisp
-   cosh x           == COSH(x)$Lisp
-   tanh x           == TANH(x)$Lisp
-   csch x           == CSCH(x)$Lisp
-   coth x           == COTH(x)$Lisp
-   sech x           == SECH(x)$Lisp
-   asinh x          == ASINH(x)$Lisp
+   sinh x           == %fsinh x
+   cosh x           == %fcosh x
+   tanh x           == %ftanh x
+   csch x           == %fcsch x
+   coth x           == %fcoth x
+   sech x           == %fsech x
+   asinh x          == %fasinh x
    acosh x          == checkComplex ACOSH(x)$Lisp -- can be complex
    atanh x          == checkComplex ATANH(x)$Lisp -- can be complex
-   acsch x          == ACSCH(x)$Lisp
+   acsch x          == %facsch x
    acoth x          == checkComplex ACOTH(x)$Lisp
    asech x          == checkComplex ASECH(x)$Lisp
-   x:% / y:%        == (x/y)$Lisp
-   negative? x      == MINUSP(x)$Lisp
-   zero? x          == ZEROP(x)$Lisp
+   x:% / y:%        == %fdiv(x,y)
+   negative? x      == x < 0
+   zero? x          == x = 0
    one? x           == x = 1
-   hash x           == HASHEQ(x)$Lisp
+   hash x           == %hash x
    recip(x)         == (zero? x => "failed"; 1 / x)
    differentiate x  == 0
 
@@ -400,21 +436,21 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    Gamma x          == Gamma(sfx)$SFSFUN pretend %
    Beta(x,y)        == Beta(sfx,sfy)$SFSFUN pretend %
 
-   wholePart x            == FIX(x)$Lisp
-   float(ma,ex,b)   == ma*(b::%)**ex
+   wholePart x      == %ftrunc x
+   float(ma,ex,b)   == ma * %i2f(b)**ex
    convert(x:%):DoubleFloat == x pretend DoubleFloat
    convert(x:%):Float == convert(x pretend DoubleFloat)$Float
    rationalApproximation(x, d) == rationalApproximation(x, d, 10)
 
    atan(x,y) ==
-      x = 0 =>
+      zero? x =>
          y > 0 => pi()/2
-         y < 0 => -pi()/2
+         negative? y => -pi()/2
          0
       -- Only count on first quadrant being on principal branch.
       theta := atan abs(y/x)
-      if x < 0 then theta := pi() - theta
-      if y < 0 then theta := - theta
+      if negative? x then theta := pi() - theta
+      if negative? y then theta := - theta
       theta
 
    retract(x:%):Fraction(Integer) ==
@@ -424,15 +460,15 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
      rationalApproximation(x, (precision() - 1)::NonNegativeInteger, base())
 
    retract(x:%):Integer ==
-     x = ((n := wholePart x)::%) => n
+     x = (%i2f(n := wholePart x)) => n
      error "Not an integer"
 
    retractIfCan(x:%):Union(Integer, "failed") ==
-     x = ((n := wholePart x)::%) => n
+     x = (%i2f(n := wholePart x)) => n
      "failed"
 
    sign(x) == retract FLOAT_-SIGN(x,1)$Lisp
-   abs x   == FLOAT_-SIGN(1,x)$Lisp
+   abs x   == %fabs x
 
 
    

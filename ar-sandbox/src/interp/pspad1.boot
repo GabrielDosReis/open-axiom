@@ -178,13 +178,13 @@ consBuffer item ==
     $autoLine =>
                    --is true except within try
       formatOutput reverse $lineFragmentBuffer
-      $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
+      $c:= ($m+2*($numberOfSpills:= $numberOfSpills+1)) rem $lineLength
       $lineFragmentBuffer:= [nBlanks $c]
       consBuffer item
     nil
   $lineFragmentBuffer:=
     null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
-    NUMBERP item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
+    integer? item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
     string? item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
     $lineFragmentBuffer
@@ -264,9 +264,9 @@ format(x,:options) ==
       if op = "return" then argl := rest argl
       n := #argl
       op is ['elt,y,"construct"] => formatDollar(y,'construct,argl)
-      op is ['elt,name,p] and UPPER_-CASE_-P STRINGIMAGE(opOf name).0 => 
+      op is ['elt,name,p] and upperCase? STRINGIMAGE(opOf name).0 => 
         formatDollar(name,p,argl)
-      op = 'elt and UPPER_-CASE_-P STRINGIMAGE(opOf first argl).0 => 
+      op = 'elt and upperCase? STRINGIMAGE(opOf first argl).0 => 
         formatDollar1(first argl,second argl)
       fn:= GETL(op,"PSPAD") => formatFn(fn,x,$m,$c)
       if op in '(AND OR NOT) then op:= DOWNCASE op
@@ -365,7 +365,7 @@ formatForm (u) ==
   [op,:argl] := u
   if op in '(Record Union) then 
     $fieldNames := union(getFieldNames argl,$fieldNames)
-  MEMQ(op,'((QUOTE T) true)) => format "true"
+  MEMQ(op,'(true %true)) => format "true"
   op in '(false nil) => format op
   u='(Zero) => format 0
   u='(One) => format 1
@@ -401,7 +401,7 @@ formatApplication u ==
   formatSelection u
 
 formatHasDotLeadOp u ==
-  u is [op,:.] and (op = "." or not atom op)
+  u is [op,:.] and (op = "." or cons? op)
 
 formatApplication0 u ==
 --format as f(x) as f x if possible
@@ -420,7 +420,7 @@ formatHasDollarOp x ==
   x is ["elt",a,b] and isTypeProbably? a 
 
 isTypeProbably? x ==
-  IDENTP x and UPPER_-CASE_-P PNAME(x).0
+  IDENTP x and upperCase? PNAME(x).0
 
 formatOpPren(op,x) == formatOp op and formatPren x
 
@@ -453,7 +453,7 @@ formatSelectionOp op ==
 formatSelectionOp1 f ==
   f is [op,:argl] => 
     argl is [a] => 
-      not atom op and atom a => formatSelection1 [op,a]
+      cons? op and atom a => formatSelection1 [op,a]
       formatPren f
     format f
   formatOp f

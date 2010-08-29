@@ -207,8 +207,8 @@ getTraceOption (x is [key,:l]) ==
   key="of" =>
     ["of",:[hn y for y in l]] where
       hn x ==
-        atom x and not UPPER_-CASE_-P STRINGIMAGE(x).0 =>
-          isDomainOrPackage EVAL x => x
+        atom x and not upperCase? STRINGIMAGE(x).0 =>
+          isDomainOrPackage eval x => x
           stackTraceOptionError ["S2IT0013",[x]]
         g:= domainToGenvar x => g
         stackTraceOptionError ["S2IT0013",[x]]
@@ -245,19 +245,19 @@ ptimers() ==
   null _/TIMERLIST => sayBrightly '"   no functions are timed"
   for timer in _/TIMERLIST repeat
     sayBrightly ["  ",:bright timer,'_:,'" ",
-      EVAL(INTERN strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
+      eval(INTERN strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
 
 pspacers() ==
   null _/SPACELIST => sayBrightly '"   no functions have space monitored"
   for spacer in _/SPACELIST repeat
     sayBrightly ["  ",:bright spacer,'_:,'" ",
-      EVAL INTERN strconc(spacer,'"_,SPACE"),'" bytes"]
+      eval INTERN strconc(spacer,'"_,SPACE"),'" bytes"]
 
 pcounters() ==
   null _/COUNTLIST => sayBrightly '"   no functions are being counted"
   for k in _/COUNTLIST repeat
     sayBrightly ["  ",:bright k,'_:,'" ",
-      EVAL INTERN strconc(k,'"_,COUNT"),'" times"]
+      eval INTERN strconc(k,'"_,COUNT"),'" times"]
 
 transOnlyOption l ==
   l is [n,:y] =>
@@ -305,13 +305,13 @@ transTraceItem x ==
         x := objVal value
         (y:= domainToGenvar x) => y
         x
-    UPPER_-CASE_-P STRINGIMAGE(x).0 =>
+    upperCase? STRINGIMAGE(x).0 =>
       y := opOf unabbrev x
       constructor? y => y
       (y:= domainToGenvar x) => y
       x
     x
-  VECP first x => transTraceItem devaluate first x
+  vector? first x => transTraceItem devaluate first x
   y:= domainToGenvar x => y
   throwKeyedMsg("S2IT0018",[x])
 
@@ -418,14 +418,14 @@ funfind("functor","opname") ==
   [u for u in ops | u is [[ =opname,:.],:.]]
 
 isDomainOrPackage dom ==
-  REFVECP dom and #dom>0 and isFunctor opOf dom.0
+  vector? dom and #dom>0 and isFunctor opOf dom.0
 
 isTraceGensym x == GENSYMP x
 
 spadTrace(domain,options) ==
   $fromSpadTrace:= true
   $tracedModemap:local:= nil
-  cons? domain and REFVECP first domain and (first domain).0 = 0 =>
+  cons? domain and vector? first domain and (first domain).0 = 0 =>
       aldorTrace(domain,options)
   not isDomainOrPackage domain => userError '"bad argument to trace"
   listOfOperations:=
@@ -441,7 +441,8 @@ spadTrace(domain,options) ==
   domainId:= opOf domain.0
   currentEntry:= assoc(domain,_/TRACENAMES)
   currentAlist:= KDR currentEntry
-  opStructureList:= flattenOperationAlist getOperationAlistFromLisplib domainId
+  opStructureList :=
+    flattenOperationAlist getConstructorOperationsFromDB domainId
   sigSlotNumberAlist:=
     [triple
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
@@ -730,7 +731,7 @@ traceReply() ==
     atom x =>
       isFunctor x => addTraceItem x
       (IS__GENVAR x =>
-        addTraceItem EVAL x; functionList:= [x,:functionList])
+        addTraceItem eval x; functionList:= [x,:functionList])
     userError '"bad argument to trace"
   functionList:= "append"/[[rassocSub(x,$mapSubNameAlist),'" "]
     for x in functionList | not isSubForRedundantMapName x]
@@ -780,8 +781,8 @@ _?t() ==
     TERPRI()
 
 tracelet(fn,vars) ==
-  if GENSYMP fn and stupidIsSpadFunction EVAL fn then
-    fn := EVAL fn
+  if GENSYMP fn and stupidIsSpadFunction eval fn then
+    fn := eval fn
     if COMPILED_-FUNCTION_-P fn then fn:=BPINAME fn
   fn = 'Undef => nil
   vars:=
@@ -800,8 +801,8 @@ tracelet(fn,vars) ==
 breaklet(fn,vars) ==
                        --vars is "all" or a list of variables
   --$letAssoc ==> (.. (=fn .. (BREAK . all))) OR (.. (=fn .. (BREAK . vl)))
-  if GENSYMP fn and stupidIsSpadFunction EVAL fn then
-    fn := EVAL fn
+  if GENSYMP fn and stupidIsSpadFunction eval fn then
+    fn := eval fn
     if COMPILED_-FUNCTION_-P fn then fn:= BPINAME fn
   fn = "Undef" => nil
   fnEntry:= LASSOC(fn,$letAssoc)
@@ -826,7 +827,7 @@ stupidIsSpadFunction fn ==
 
 break msg ==
   condition:= MONITOR_,EVALTRAN(_/BREAKCONDITION,nil)
-  EVAL condition =>
+  eval condition =>
     sayBrightly msg
     INTERRUPT()
 

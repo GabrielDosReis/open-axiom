@@ -551,8 +551,7 @@
     (RETURN
       (PROGN
         (SETQ |expr'|
-              (CDR (CDR (|shoeCompTran|
-                            (LIST 'LAMBDA (LIST '|x|) |expr|)))))
+              (CDR (CDR (|shoeCompTran| (LIST 'LAMBDA NIL |expr|)))))
         (LET ((|bfVar#9| |expr'|) (|t| NIL))
           (LOOP
             (COND

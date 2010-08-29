@@ -93,8 +93,8 @@ grepForAbbrev(s,key) ==
   someUpperCaseChar := false
   for i in 0..MAXINDEX s repeat
     c := s . i
-    LOWER_-CASE_-P c => return (someLowerCaseChar := true)
-    UPPER_-CASE_-P c => someUpperCaseChar := true
+    lowerCase? c => return (someLowerCaseChar := true)
+    upperCase? c => someUpperCaseChar := true
   someLowerCaseChar or not someUpperCaseChar => false
   pattern := DOWNCASE s
   ['Abbreviations ,:[getConstructorFormFromDB x
@@ -103,7 +103,7 @@ grepForAbbrev(s,key) ==
          a := getConstructorAbbreviationFromDB x
          match?(pattern,PNAME a) and not HGET($defaultPackageNamesHT,x)
 
-applyGrep(x,filename) ==   --OBSELETE with $saturn--> see applyGrepSaturn
+applyGrep(x,filename) ==
   atom x => grepFile(x,filename,'i)
   $localLibdb =>
     a := purgeNewConstructorLines(grepf(x,filename,false),$newConstructorList)
@@ -210,8 +210,8 @@ grepSplit(lines,doc?) ==
   cons := atts := doms := nil
   while lines is [line, :lines] repeat
     if doc? then
-        N:=PARSE_-INTEGER dbPart(line,1,-1)
-        if NUMBERP N then 
+        N:=readInteger dbPart(line,1,-1)
+        if integer? N then 
            FILE_-POSITION(instream2,N)
            line := READLINE instream2
     kind := dbKind line
@@ -240,7 +240,7 @@ mkUpDownPattern s == recurse(s,0,#s) where
     i = n => '""
     strconc(fixchar(s.i),recurse(s,i + 1,n))
   fixchar(c) ==
-    ALPHA_-CHAR_-P c =>
+    alphabetic? c =>
       strconc(char '_[,CHAR_-UPCASE c,CHAR_-DOWNCASE c,char '_])
     c
 
@@ -603,7 +603,8 @@ stripOffSegments(s,n) ==
 replaceTicksBySpaces s ==
   n := -1
   max := MAXINDEX s
-  while (n := charPosition(char '_`,s,n + 1)) <= max repeat SETELT(s,n,char '_ )
+  while (n := charPosition(char '_`,s,n + 1)) <= max repeat 
+    s.n := char " "
   s
 
 checkFilter filter ==
@@ -870,9 +871,7 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
   main() ==
     nottick := '"[^`]"
     name := replaceGrepStar name
-    firstPart :=
-      $saturn => strconc(char "^",name)
-      strconc(char "^",kind,name)
+    firstPart := strconc(char "^",kind,name)
     nargsPart := replaceGrepStar nargs
     exposedPart := char '_.   --always get exposed/unexposed
     patPart := replaceGrepStar argOrSig
@@ -908,14 +907,6 @@ underscoreDollars(s) == fn(s,0,MAXINDEX s) where
     strconc(SUBSTRING(s,i,m - i),'"___$",fn(s,m + 1,n))
 
 --=======================================================================
---                     Code dependent on $saturn
---=======================================================================
-
-obey x ==
-  $saturn and not $aixTestSaturn => nil
-  runCommand x
-
---=======================================================================
 --                         I/O Code
 --=======================================================================
 
@@ -945,7 +936,7 @@ dbGetCommentOrigin line ==
   key := INTERN SUBSTRING(firstPart,0,1)    --extract this and throw away
   address := SUBSTRING(firstPart, 1, nil)   --address in libdb
   instream := OPEN grepSource key           --this always returns libdb now
-  FILE_-POSITION(instream,PARSE_-INTEGER address)
+  FILE_-POSITION(instream,readInteger address)
   line := READLINE instream
   CLOSE instream
   line
@@ -961,12 +952,13 @@ grepSource key ==
 mkGrepTextfile s == 
   strconc(systemRootDirectory(),"/algebra/", STRINGIMAGE s, '".text")
 
+getTemporaryDirectory() ==
+  getEnv '"TMP" or getEnv '"TEMP"
+    or strconc(systemRootDirectory(),'"/algebra/")
+
 mkGrepFile s ==  --called to generate a path name for a temporary grep file
-  prefix :=
-    $standard or $aixTestSaturn => '"/tmp/"
-    strconc(systemRootDirectory(),'"/algebra/")
   suffix := getEnv '"SPADNUM"
-  strconc(prefix, PNAME s,'".txt.", suffix)
+  strconc(getTemporaryDirectory(), PNAME s,'".txt.", suffix)
 
 --=======================================================================
 --                     Grepping Code
@@ -977,21 +969,16 @@ grepFile(pattern,:options) ==
   source := grepSource key
   lines :=
     not PROBE_-FILE source => NIL
-    $standard or $aixTestSaturn =>
-    -----AIX Version----------
-      target := getTempPath 'target
-      casepart :=
-        'iv in options => '"-vi"
-        '"-i"
-      command := strconc('"grep ",casepart,'" _'",pattern,'"_' ",source)
-      obey
-        member(key,'(a o c d p x)) =>
-          strconc(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
-        strconc(command, '" > ",target)
-      dbReadLines target
-    ----Windows Version------
-    invert? := 'iv in options
-    GREP(source, pattern, false, not invert?)
+    target := getTempPath 'target
+    casepart :=
+      'iv in options => '"-vi"
+      '"-i"
+    command := strconc('"grep ",casepart,'" _'",pattern,'"_' ",source)
+    runCommand
+      member(key,'(a o c d p x)) =>
+        strconc(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
+      strconc(command, '" > ",target)
+    dbReadLines target
   dbUnpatchLines lines
 
 dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines

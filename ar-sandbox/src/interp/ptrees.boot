@@ -96,6 +96,9 @@ pfDocument strings       == pfLeaf('Document, strings)
 pfDocument? form         == pfAbSynOp?(form, 'Document)
 pfDocumentText form      == tokPart form
 
+pfDefinableName? form ==
+  pfAbSynOp form in '(id integer)
+
 pfLiteral? form ==
   pfAbSynOp form in '(integer symbol expression one zero char string float)
 
@@ -304,12 +307,11 @@ pfDWhereExpr pf == third pf       -- was ==>
 
 -- With        := (Base: [Typed],  Within: [WithPart])
 
-pfWith(pfbase, pfwithin,pfwithon) ==
-         pfTree('With, [pfbase, pfwithin,pfwithon])
+pfWith(pfbase, pfwithin) ==
+         pfTree('With, [pfbase,pfwithin])
 pfWith?(pf) == pfAbSynOp? (pf, 'With)
-pfWithBase pf == second pf       -- was ==>
-pfWithWithin pf == third pf       -- was ==>
-pfWithWithon pf == fourth pf       -- was ==>
+pfWithBase pf == second pf 
+pfWithWithin pf == third pf
 pf0WithBase pf == pfParts pfWithBase pf
 pf0WithWithin pf == pfParts pfWithWithin pf
 
@@ -671,7 +673,7 @@ pfTaggedToTyped x==
   rt:=if pfTagged? x then pfTaggedExpr x else pfNothing()
   form:= if pfTagged? x then pfTaggedTag x else x
   not pfId? form =>
-      a:=pfId GENSYM()
+      a:=pfId gensym()
       pfTyped(pfSuch(a,
            pfInfApplication (pfId "=", a,form)),rt)
   pfTyped(form,rt)
@@ -700,7 +702,7 @@ pfPushBody(t,args,body)==
 pfCheckItOut x ==
   rt:=if pfTagged? x then pfTaggedExpr x else pfNothing()
   form:= if pfTagged? x then pfTaggedTag x else x
-  pfId? form => [pfListOf [pfTyped(form,rt)],nil,rt]
+  pfDefinableName? form => [pfListOf [pfTyped(form,rt)],nil,rt]
   pfCollect1? form =>
                 [pfListOf [pfCollectVariable1 form],nil,rt]
   pfTuple? form =>

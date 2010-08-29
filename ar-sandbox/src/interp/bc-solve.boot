@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -134,7 +134,7 @@ bcInputSolveInfo htPage ==
 bcInputEquations(htPage,solutionMethod) ==
   numEqs := 
     htpProperty(htPage, 'systemType) = 'onePolynomial => 1
-    $bcParseOnly => PARSE_-INTEGER htpLabelInputString(htPage,'numberOfEquations)
+    $bcParseOnly => readInteger htpLabelInputString(htPage,'numberOfEquations)
     objValUnwrap htpLabelSpadValue(htPage, 'numberOfEquations)
   linearPred := htpProperty(htPage,'systemType) = 'linear
   labelList := 

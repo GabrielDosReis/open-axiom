@@ -241,7 +241,7 @@ conform2StringList(form,opFn,argFn,exception) ==
       typ := sublisFormal(args,atype)
       if x is ['QUOTE,a] then x := a
       u := mathform2HtString algCoerceInteractive(x,typ,'(OutputForm)) => [u]
-      NUMBERP x or string? x => [x]
+      integer? x or string? x => [x]
       systemError()
     keyword => [keyword,'": ",:res]
     res
@@ -277,7 +277,7 @@ dbOuttran form ==
       x is ['QUOTE,a] => a
       x
     res := mathform2HtString algCoerceInteractive(arg,typ,'(OutputForm))
-    NUMBERP res or string? res => res
+    integer? res or string? res => res
     ['QUOTE,res]
   [op,:argl]
 
@@ -390,7 +390,7 @@ dbGatherDataImplementation(htPage,opAlist) ==
 --  where entry has form ((op sig . implementor) . stuff)
   conform := htpProperty(htPage,'conform)
   domainForm  := htpProperty(htPage,'domname)
-  dom     := EVAL domainForm
+  dom     := eval domainForm
   which   := '"operation"
   [nam,:$domainArgs] := domainForm
   $predicateList: local := getConstructorPredicatesFromDB nam
@@ -737,7 +737,7 @@ reduceOpAlistForDomain(opAlist,domform,conform) ==
     pair.rest := [test for item in rest pair | test] where test() ==
       [head,:tail] := item
       first tail = true => item
-      pred := simpHasPred SUBLISLIS(form1,form2,QCAR tail)
+      pred := simpHasPred SUBLISLIS(form1,form2,first tail)
       null pred => false
       item.rest := [pred]
       item
@@ -818,12 +818,12 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
         --Case 1: Already expanded; just cons it onto ACC
           null string? line => --already expanded
             if condition? then --this could have been expanded at a lower level
-              if null atom (pred := second line) then value := pred
+              if cons? (pred := second line) then value := pred
             acc := [line,:acc] --this one is already expanded; record it anyway
         --Case 2: unexpanded; expand it then cons it onto ACC
           [name,nargs,xflag,sigs,conname,pred,comments] := dbParts(line,7,1)
           predicate := ncParseFromString pred
-          if condition? and null atom predicate then value := predicate
+          if condition? and cons? predicate then value := predicate
           sig := ncParseFromString sigs --is (Mapping,:.)
           if which = '"operation" then
             if sig isnt ['Mapping,:.]
@@ -842,7 +842,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
     expandFlag = 'lists => --lists are partially expanded
       -- entry is [sig, predicate, origin, exposeFlag, comments]
       $value: local := nil
-      $docTableHash := MAKE_-HASHTABLE 'EQUAL
+      $docTableHash := hashTable 'EQUAL
       packageSymbol := false
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then
@@ -853,7 +853,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
       for [op,:alist] in opAlist repeat
         for [sig,:tail] in alist repeat
           condition? => --the only purpose here is to find a non-trivial pred
-            null atom (pred := first tail) => return ($value := pred)
+            cons? (pred := first tail) => return ($value := pred)
             'skip
           u :=
             tail is [.,origin,:.] and origin =>
@@ -864,7 +864,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
             dbGetDocTable(op,sig,docTable,which,nil)
           origin := IFCAR u or origin
           docCode := IFCDR u   --> (doc . code)
---        if null FIXP rest docCode then harhar(op) -->
+--        if not FIXP rest docCode then harhar(op) -->
           if null doc and which = '"attribute" then doc := getRegistry(op,sig)
           tail.rest := [origin,isExposedConstructor opOf origin,:docCode]
         $value => return $value
@@ -880,7 +880,7 @@ getRegistry(op,sig) ==
   '""
 
 evalableConstructor2HtString domform ==
-  if VECP domform then domform := devaluate domform
+  if vector? domform then domform := devaluate domform
   conname := first domform
   coSig   := rest getDualSignatureFromDB conname
   --entries are T for arguments which are domains; NIL for computational objects
@@ -934,7 +934,7 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
   domname := dom.0
   conname := first domname
   abb := getConstructorAbbreviation conname
-  opAlist := getOperationAlistFromLisplib conname
+  opAlist := getConstructorOperationsFromDB conname
   "append"/[removeDuplicates [[op1,:fn] for [sig,slot,pred,key,:.] in u
               | key ~= 'Subsumed and ((null ops and (op1 := op)) or (op1 := memq(op,ops)))]
                  for [op,:u] in opAlist] where
@@ -949,14 +949,14 @@ getDomainOpTable(dom,fromIfTrue,:options) ==
       info :=
         null predValue =>
           1   -- signifies not exported
-        null fromIfTrue => nil
+        not fromIfTrue => nil
         cell := compiledLookup(op,sig1,dom) =>
           [f,:r] := cell
           f = 'nowhere => 'nowhere           --see replaceGoGetSlot
           f = 'makeSpadConstant => 'constant
           f = function IDENTITY => 'constant
           f = 'newGoGet => substitute('_$,domname,devaluate first r)
-          null VECP r => systemError devaluateList r
+          not vector? r => systemError devaluateList r
           substitute('_$,domname,devaluate r)
         'nowhere
       [sig1,:info]

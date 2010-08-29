@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,19 +40,22 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _SHOW_TYPES_C
+
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
-
 #include "sockio.h"
 #include "hyper.h"
 #include "display.h"
 #include "extent.h"
 #include "group.h"
 
-#include "all_hyper_proto.H1"
-
+static void show_image(TextNode * node , GC gc);
+static void show_input(TextNode * node);
+static void show_link(TextNode * node);
+static void show_paste(TextNode * node);
+static void show_pastebutton(TextNode * node);
+static void show_simple_box(TextNode * node);
+static void show_spadcommand(TextNode * node);
 
 
 /*

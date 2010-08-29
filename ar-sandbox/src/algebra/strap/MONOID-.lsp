@@ -21,12 +21,12 @@
 (DEFUN |MONOID-;recip;SU;3| (|x| $)
   (COND
     ((SPADCALL |x| (|getShellEntry| $ 12)) (CONS 0 |x|))
-    ('T (CONS 1 "failed")))) 
+    (T (CONS 1 "failed")))) 
 
 (DEFUN |MONOID-;**;SNniS;4| (|x| |n| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 7))
-    ('T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
+    (T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
 
 (DEFUN |Monoid&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Monoid&| |dv$1|))

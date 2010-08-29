@@ -57,7 +57,7 @@ eval_flags="@axiom_eval_flags@"
 lisp_flavor=@axiom_lisp_flavor@
 
 # safety option -- used only when saving image.
-enable_checking=@axiom_enable_checking@
+enable_checking=@oa_enable_checking@
 
 # Issue a diagnostic message and exit with non-zero status.
 error() {

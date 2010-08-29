@@ -29,7 +29,7 @@
 
 HashTable(Key, Entry, hashfn): Exports == Implementation where
     Key, Entry: SetCategory
-    hashfn: String --  Union("EQ", "UEQUAL", "CVEC", "ID")
+    hashfn: String --  Union("EQ", "EQL", "EQUAL", "UEQUAL", "CVEC", "ID")
 
     Exports ==> TableAggregate(Key, Entry) with
                      finiteAggregate
@@ -39,24 +39,23 @@ HashTable(Key, Entry, hashfn): Exports == Implementation where
         Ex   ==> OutputForm
         failMsg := GENSYM()$Lisp
 
-        t1 = t2              == EQ(t1, t2)$Lisp
+        t1 = t2              == %peq(t1,t2)$Foreign(Builtin)
         keys t               == HKEYS(t)$Lisp
         # t                  == HCOUNT(t)$Lisp
         setelt(t, k, e)      == HPUT(t,k,e)$Lisp
         remove!(k:Key, t:%) ==
           r := HGET(t,k,failMsg)$Lisp
-          not EQ(r,failMsg)$Lisp =>
+          not %peq(r,failMsg)$Foreign(Builtin) =>
             HREM(t, k)$Lisp
             r pretend Entry
           "failed"
 
         empty() ==
-            MAKE_-HASHTABLE(INTERN(hashfn)$Lisp,
-                            INTERN("STRONG")$Lisp)$Lisp
+            hashTable(INTERN(hashfn)$Lisp)$Lisp
 
         search(k:Key, t:%)  ==
             r := HGET(t, k, failMsg)$Lisp
-            not EQ(r, failMsg)$Lisp => r pretend Entry
+            not %peq(r,failMsg)$Foreign(Builtin) => r pretend Entry
             "failed"
 
 @
@@ -110,7 +109,7 @@ Table(Key: SetCategory, Entry: SetCategory):Exports == Implementation where
                      finiteAggregate
 
     Implementation ==> InnerTable(Key, Entry,
-        if hashable(Key)$Lisp then HashTable(Key, Entry, "UEQUAL")
+        if hashable(Key)$Lisp then HashTable(Key, Entry, "EQUAL")
           else AssociationList(Key, Entry))
 
 @
@@ -152,7 +151,7 @@ EqTable(Key: SetCategory, Entry: SetCategory) ==
 ++   This domain provides tables where the keys are strings.
 ++   A specialized hash function for strings is used.
 StringTable(Entry: SetCategory) ==
-    HashTable(String, Entry, "CVEC")
+    HashTable(String, Entry, "EQUAL")
 
 @
 \section{domain GSTBL GeneralSparseTable}

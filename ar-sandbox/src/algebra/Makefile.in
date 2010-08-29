@@ -186,7 +186,7 @@ axiom_algebra_bootstrap = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- \
   ABELSG   ABELSG-  ALAGG    BOOLEAN  \
   CABMON   CHAR     CLAGG    CLAGG-   \
-  COMRING  DFLOAT   DIFRING  DIFRING- \
+  COMRING  DFLOAT   DIFRING           \
   DIVRING  DIVRING- ENTIRER           \
            EUCDOM   EUCDOM-  FFIELDC  \
   FFIELDC- FPS      FPS-     GCDDOM   \
@@ -258,17 +258,19 @@ $(OUT)/PRQAGG.$(FASLEXT): $(OUT)/BGAGG.$(FASLEXT)
 $(OUT)/FLAGG.$(FASLEXT): $(OUT)/BMODULE.$(FASLEXT) $(OUT)/PID.$(FASLEXT) \
 	$(OUT)/OAGROUP.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT) \
 	$(OUT)/LINEXP.$(FASLEXT) $(OUT)/PATMAB.$(FASLEXT) \
-	$(OUT)/REAL.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT)
+	$(OUT)/REAL.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT) \
+	$(OUT)/DIFFSPC.$(FASLEXT)
 $(OUT)/A1AGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/LOGIC.$(FASLEXT) \
-	$(OUT)/FLAGG.$(FASLEXT) $(OUT)/LOGIC-.$(FASLEXT)
+	$(OUT)/FLAGG.$(FASLEXT) $(OUT)/LOGIC-.$(FASLEXT) \
+	$(OUT)/ORDTYPE-.$(FASLEXT)
 $(OUT)/SRAGG.$(FASLEXT): $(OUT)/A1AGG.$(FASLEXT)
-$(OUT)/ISTRING.$(FASLEXT): $(OUT)/SRAGG.$(FASLEXT)
+$(OUT)/ISTRING.$(FASLEXT): $(OUT)/SRAGG.$(FASLEXT) \
+	$(OUT)/DIFFSPC-.$(FASLEXT) $(OUT)/DIFFDOM-.$(FASLEXT)
 $(OUT)/STAGG.$(FASLEXT): $(OUT)/URAGG.$(FASLEXT) $(OUT)/LNAGG.$(FASLEXT)
 $(OUT)/LNAGG.$(FASLEXT): $(OUT)/SEGCAT.$(FASLEXT)
 $(OUT)/SEGCAT.$(FASLEXT): $(OUT)/KRCFROM.$(FASLEXT)
 $(OUT)/SETAGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/CLAGG.$(FASLEXT)
-$(OUT)/STRICAT.$(FASLEXT): $(OUT)/SRAGG.$(FASLEXT)
-$(OUT)/STRING.$(FASLEXT): $(OUT)/STRICAT.$(FASLEXT) $(OUT)/ORDFIN.$(FASLEXT)
+$(OUT)/STRING.$(FASLEXT): $(OUT)/SRAGG.$(FASLEXT) $(OUT)/ORDFIN.$(FASLEXT)
 $(OUT)/DIOPS.$(FASLEXT): $(OUT)/STRING.$(FASLEXT)
 $(OUT)/DIAGG.$(FASLEXT): $(OUT)/DIOPS.$(FASLEXT)
 $(OUT)/KDAGG.$(FASLEXT): $(OUT)/DIAGG.$(FASLEXT)
@@ -291,7 +293,8 @@ $(OUT)/BASTYPE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/SETCAT.$(FASLEXT) $(OUT)/SETCAT-.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
 
 $(OUT)/FINITE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
-$(OUT)/ORDSET.$(FASLEXT) $(OUT)/ORDSET-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
+$(OUT)/ORDSET.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
+	$(OUT)/ORDTYPE.$(FASLEXT)
 $(OUT)/FILECAT.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/SEXCAT.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/PID.$(FASLEXT) \
 	$(OUT)/OAGROUP.$(FASLEXT) $(OUT)/LINEXP.$(FASLEXT) \
@@ -308,7 +311,8 @@ $(OUT)/LOGIC.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
 
 $(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/ABELSG.$(FASLEXT) $(OUT)/ABELSG-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
-$(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/LLINSET.$(FASLEXT)
+$(OUT)/LMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) \
+	$(OUT)/LLINSET.$(FASLEXT) $(OUT)/SGROUP.$(FASLEXT)
 $(OUT)/RMODULE.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/RLINSET.$(FASLEXT)
 $(OUT)/BMODULE.$(FASLEXT): $(OUT)/LMODULE.$(FASLEXT) \
 	$(OUT)/RMODULE.$(FASLEXT) $(OUT)/SGROUP.$(FASLEXT)
@@ -335,6 +339,15 @@ $(OUT)/SYSPTR.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/VOID.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/OUT.$(FASLEXT): $(OUT)/VOID.$(FASLEXT)
 
+$(OUT)/DIFFDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/DIFFSPC.$(FASLEXT): $(OUT)/DIFFDOM.$(FASLEXT)
+$(OUT)/DIFFMOD.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/PDDOM.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/PDSPC.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/DSEXT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT) $(OUT)/PDSPC.$(FASLEXT)
+$(OUT)/ORDTYPE.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
+$(OUT)/ORDSTRCT.$(FASLEXT): $(OUT)/ORDTYPE.$(FASLEXT) $(OUT)/HOMOTOP.$(FASLEXT)
+
 axiom_algebra_layer_0 = \
   AHYP     ATTREG   CFCAT    ELTAB    KOERCE   KONVERT  \
   KRCFROM  KVTFROM  IEVALAB  IEVALAB- EVALAB   EVALAB-  \
@@ -343,7 +356,7 @@ axiom_algebra_layer_0 = \
   PRIMCAT  PRINT    PTRANFN  SPFCAT   TYPE     UTYPE    \
   BMODULE           BASTYPE  BASTYPE- STEP     LMODULE  \
   RMODULE  ALGEBRA  ALGEBRA- SGROUP   SGROUP-  ABELSG   \
-  ABELSG-  ORDSET   ORDSET-  OASGP    FILECAT  SEXCAT   \
+  ABELSG-  ORDSET            OASGP    FILECAT  SEXCAT   \
   MODULE   MODULE-  PID      OAGROUP  OCAMON   OAMON    \
   RNG      ORDFIN   LLINSET  RLINSET  LINSET   OAMONS   \
   MKBCFUNC MKRECORD MKUCFUNC DROPT1   PLOT1    ITFUN2   \
@@ -357,10 +370,11 @@ axiom_algebra_layer_0 = \
   FSAGG    FSAGG-   STAGG    STAGG-   CLAGG    CLAGG-   \
   RCAGG    RCAGG-   SETAGG   SETAGG-  HOAGG    HOAGG-   \
   TBAGG    TBAGG-   KDAGG    KDAGG-   DIAGG    DIAGG-   \
-  DIOPS    DIOPS-   STRING   STRICAT  ISTRING  ILIST    \
-  LIST                                                  \
+  DIOPS    DIOPS-   STRING            ISTRING  ILIST    \
+  LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC- DIFFMOD  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
-  RTVALUE  SYSPTR
+  RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-   \
+  DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -370,7 +384,7 @@ axiom_algebra_layer_0_objects = \
            $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_0))) 
 
 $(OUT)/HOMOTOP.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/KRCFROM.$(FASLEXT)
-$(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
+$(OUT)/ITUPLE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/STREAM.$(FASLEXT)
 $(OUT)/PATAB.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/PPCURVE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
 $(OUT)/PSCURVE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT)
@@ -404,7 +418,8 @@ $(OUT)/GCDDOM.$(FASLEXT): $(OUT)/INTDOM.$(FASLEXT)
 $(OUT)/UFD.$(FASLEXT): $(OUT)/GCDDOM.$(FASLEXT) $(OUT)/ES.$(FASLEXT)
 $(OUT)/ES.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/CACHSET.$(FASLEXT) \
 	$(OUT)/REF.$(FASLEXT) $(OUT)/ALIST.$(FASLEXT) \
-	$(OUT)/PATAB.$(FASLEXT) $(OUT)/PRIMARR.$(FASLEXT)
+	$(OUT)/PATAB.$(FASLEXT) $(OUT)/PRIMARR.$(FASLEXT) \
+	$(OUT)/MAYBE.$(FASLEXT)
 $(OUT)/CACHSET.$(FASLEXT): $(OUT)/ORDSET.$(FASLEXT)
 $(OUT)/ALIST.$(FASLEXT): $(OUT)/ALAGG.$(FASLEXT)
 $(OUT)/PATAB.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
@@ -415,19 +430,25 @@ $(OUT)/PROPERTY.$(FASLEXT): $(OUT)/IDENT.$(FASLEXT) $(OUT)/PAIR.$(FASLEXT)
 $(OUT)/BINDING.$(FASLEXT): $(OUT)/PROPERTY.$(FASLEXT)
 $(OUT)/OPERCAT.$(FASLEXT): $(OUT)/ARITY.$(FASLEXT)
 $(OUT)/REF.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/IDENT.$(FASLEXT)
+$(OUT)/DIFRING.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/PDMOD.$(FASLEXT): $(OUT)/RING.$(FASLEXT) $(OUT)/PDSPC.$(FASLEXT) \
+	$(OUT)/COMRING.$(FASLEXT) $(OUT)/MODULE.$(FASLEXT)
+$(OUT)/DMEXT.$(FASLEXT): $(OUT)/DSEXT.$(FASLEXT) $(OUT)/DIFFMOD.$(FASLEXT) \
+	$(OUT)/PDMOD.$(FASLEXT)
+$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
 
 axiom_algebra_layer_1 = \
   ABELGRP  ABELGRP- ABELMON  ABELMON- FORTCAT   ITUPLE   \
   CABMON   MONOID   MONOID-  RING     RING-     COMRING  \
-  DIFRING  DIFRING- ENTIRER  INTDOM   INTDOM-   OINTDOM  \
+  DIFRING           ENTIRER  INTDOM   INTDOM-   OINTDOM  \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
   PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
   IDENT             BINDING  ALIST    BOOLEAN   PRIMARR  \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1   BOOLE    \
-  PROPERTY ARITY    OPERCAT  OPERCAT- PAIR               \
-  RADCAT   RADCAT-
+  PROPERTY ARITY    OPERCAT  OPERCAT- PAIR      STREAM   \
+  RADCAT   RADCAT-  PDMOD    DMEXT    LZSTAGG   LZSTAGG-
 
 axiom_algebra_layer_1_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_1))
@@ -468,12 +489,14 @@ axiom_algebra_layer_3_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_3)))
 
 $(OUT)/ENV.$(FASLEXT): $(OUT)/SCOPE.$(FASLEXT)
+$(OUT)/COMM.$(FASLEXT): $(OUT)/OSI.$(FASLEXT)
+$(OUT)/PALETTE.$(FASLEXT): $(OUT)/COLOR.$(FASLEXT)
 
 
 axiom_algebra_layer_4 = \
-  ANON              COMM     COMPPROP ESCONT1  EXIT     \
+  ANON     OSI      COMM     COMPPROP ESCONT1  EXIT     \
   FAMONC   FORMULA1 IDPC              NONE     NUMINT   \
-  ODECAT            OMENC    ONECOMP2 OPTCAT            \
+  ODECAT   COLOR    OMENC    ONECOMP2 OPTCAT            \
   PALETTE  PARPCURV PARPC2   PARSCURV PARSC2   PARSURF  \
   PARSU2            PATRES2  PATTERN1 PDECAT            \
   REPSQ    REPDB    RFDIST   RIDIST   SPACEC   SPLNODE  \
@@ -489,13 +512,15 @@ axiom_algebra_layer_4_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_4)))
 
 $(OUT)/KERNEL.$(FASLEXT): $(OUT)/KERNEL2.$(FASLEXT)
+$(OUT)/DVARCAT.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/PDRING.$(FASLEXT): $(OUT)/PDSPC.$(FASLEXT)
 
 axiom_algebra_layer_5 = \
            CHARNZ            DVARCAT  DVARCAT- ELEMFUN  \
   ELEMFUN- ESTOOLS2 FCOMP    FPATMAB  IDPAM    IDPO     \
   INCRMAPS KERNEL2           MODMONOM MONADWU  MONADWU- \
   MRF2     NARNG    NARNG-   NSUP2    ODVAR    OPQUERY  \
-           ORDMON   PATMATCH PERMCAT  PDRING   PDRING-  \
+           ORDMON   PATMATCH PERMCAT  PDRING            \
   SDVAR    SUP2     TRIGCAT  TRIGCAT- ULS2     UP2      \
   ELABEXPR KERNEL
 
@@ -511,10 +536,13 @@ $(OUT)/PROPFRML.$(FASLEXT): $(OUT)/KERNEL.$(FASLEXT)
 $(OUT)/KTVLOGIC.$(FASLEXT): $(OUT)/PROPLOG.$(FASLEXT) $(OUT)/BYTE.$(FASLEXT)
 $(OUT)/PROPFUN1.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
 $(OUT)/PROPFUN2.$(FASLEXT): $(OUT)/PROPFRML.$(FASLEXT)
+$(OUT)/DIFEXT.$(FASLEXT): $(OUT)/DSEXT.$(FASLEXT)
+$(OUT)/BYTE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
+$(OUT)/SYSNNI.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT) $(OUT)/ORDFIN.$(FASLEXT)
 
 axiom_algebra_layer_6 = \
   PROPFRML PROPFUN1 AUTOMOR  CARTEN2 CHARPOL  COMPLEX2 \
-  DIFEXT   DIFEXT-  ES1      ES2     GRMOD    GRMOD-   \
+  DIFEXT            ES1      ES2     GRMOD    GRMOD-   \
   HYPCAT   HYPCAT-           MODRING NASRING  NASRING- \
   SORTPAK  ZMOD     PROPFUN2                           \
   KTVLOGIC                   BYTE    SYSINT   SYSNNI
@@ -540,13 +568,12 @@ axiom_algebra_layer_7_objects = \
 
 $(OUT)/BSTREE.$(FASLEXT): $(OUT)/BTREE.$(FASLEXT)
 $(OUT)/ITAYLOR.$(FASLEXT): $(OUT)/STREAM.$(FASLEXT)
-$(OUT)/STREAM.$(FASLEXT): $(OUT)/LZSTAGG.$(FASLEXT)
 
 axiom_algebra_layer_8 = \
   BSTREE  BTOURN   CARD     DRAWHACK  FACTFUNC FMTC  \
   FR2     FRAC2    FRUTIL   ITAYLOR   MLO      NAALG \
   NAALG-  OP       ORDCOMP2 RANDSRC   UNISEG2  XALG  \
-  BTREE   STREAM   LZSTAGG  LZSTAGG-  ARR2CAT  ARR2CAT-
+  BTREE                               ARR2CAT  ARR2CAT-
 
 axiom_algebra_layer_8_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_8))
@@ -555,6 +582,7 @@ axiom_algebra_layer_8_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_8)))
 $(OUT)/ODEIFTBL.$(FASLEXT): $(OUT)/TABLE.$(FASLEXT) $(OUT)/INTABL.$(FASLEXT)
+$(OUT)/FT.$(FASLEXT): $(OUT)/FST.$(FASLEXT)
 
 axiom_algebra_layer_9 = \
   AMR      AMR-     DEGRED   DLP      EAB      ESTOOLS1 \
@@ -564,7 +592,7 @@ axiom_algebra_layer_9 = \
   PTFUNC2                    RATRET   RADUTIL  UPXS2    \
   XFALG    ZLINDEP  BBTREE   TABLE    INTABL            \
                     ODEIFTBL NIPROB   ODEPROB  OPTPROB  \
-  PDEPROB  COLOR    SIG      FMONCAT
+  PDEPROB           SIG      FMONCAT  FST
 
 
 axiom_algebra_layer_9_nrlibs = \
@@ -575,6 +603,7 @@ axiom_algebra_layer_9_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_9)))
 $(OUT)/D01GBFA.$(FASLEXT): $(OUT)/RESULT.$(FASLEXT) $(OUT)/ANY.$(FASLEXT) \
 	$(OUT)/SEX.$(FASLEXT) $(OUT)/HASHTBL.$(FASLEXT)
+$(OUT)/ANY.$(FASLEXT): $(OUT)/SEX.$(FASLEXT)
 
 $(OUT)/SEX.$(FASLEXT): $(OUT)/SEXOF.$(FASLEXT)
 $(OUT)/LEXP.$(FASLEXT): $(OUT)/XPBWPOLY.$(FASLEXT)
@@ -589,6 +618,7 @@ $(OUT)/DIRPROD.$(FASLEXT): $(OUT)/DIRPCAT.$(FASLEXT)
 $(OUT)/DIRPCAT.$(FASLEXT): $(OUT)/VSPACE.$(FASLEXT) $(OUT)/IVECTOR.$(FASLEXT)
 $(OUT)/MATRIX.$(FASLEXT): $(OUT)/MATCAT.$(FASLEXT)
 $(OUT)/BTAGG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
+$(OUT)/PATLRES.$(FASLEXT): $(OUT)/PATRES.$(FASLEXT)
 
 axiom_algebra_layer_10 = \
   RESULT   BFUNCT   BPADIC   ANY      \
@@ -617,7 +647,7 @@ axiom_algebra_layer_10 = \
   FUNDESC  XPBWPOLY SMATCAT  SMATCAT- \
   RMATRIX  RMATCAT  RMATCAT- DIRPROD \
   DIRPCAT  DIRPCAT- IVECTOR  MATRIX  \
-  MATCAT   MATCAT-  IIARRAY2
+  MATCAT   MATCAT-  IIARRAY2 
 
 
 axiom_algebra_layer_10_nrlibs = \
@@ -663,6 +693,7 @@ axiom_algebra_layer_12_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_12)))
 
 $(OUT)/UPOLYC.$(FASLEXT): $(OUT)/PFECAT.$(FASLEXT)
+$(OUT)/SETMN.$(FASLEXT): $(OUT)/IBITS.$(FASLEXT)
 
 axiom_algebra_layer_13 = \
   ASSOCEQ  CARTEN   CLIF     CLIP     \
@@ -686,6 +717,7 @@ axiom_algebra_layer_13_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_13)))
 $(OUT)/FS.$(FASLEXT): $(OUT)/UPOLYC.$(FASLEXT)
 $(OUT)/FTEM.$(FASLEXT): $(OUT)/TEXTFILE.$(FASLEXT)
+$(OUT)/FILE.$(FASLEXT): $(OUT)/FNAME.$(FASLEXT)
 
 axiom_algebra_layer_14 = \
   FS       FS-      ACF      ACF-     \
@@ -708,7 +740,7 @@ axiom_algebra_layer_14 = \
   GBF      GBINTERN GHENSEL  GMODPOL  \
   GOSPER   GRIMAGE  GROEBSOL HDMP     \
   HDP      HEXADEC  HEUGCD   IBPTOOLS \
-  IFF      IBITS    ICARD    ICDEN    \
+  IFF               ICARD    ICDEN    \
   IDECOMP           IMATLIN  IMATQF   \
   INMODGCD INNMFACT INPSIGN  INTHERTR \
   INTRAT   INTRF    INTSLPE  INTTR    \
@@ -743,7 +775,7 @@ axiom_algebra_layer_14 = \
            WEIER    WP       \
   EQTBL    GSTBL            \
            INTFTBL  STBL     STRTBL\
-           FST      SYMS     SYMTAB \
+                    SYMS     SYMTAB \
   IOBCON   
 
 
@@ -755,19 +787,19 @@ axiom_algebra_layer_14_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_14)))
 $(OUT)/EXPUPXS.$(FASLEXT): $(OUT)/UPXS.$(FASLEXT)
 $(OUT)/UPXS.$(FASLEXT): $(OUT)/UPXSCAT.$(FASLEXT) $(OUT)/UPXSCONS.$(FASLEXT) \
-	$(OUT)/ULS.$(FASLEXT)
+	$(OUT)/ULS.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
 $(OUT)/UPXSCONS.$(FASLEXT): $(OUT)/UPXSCCA.$(FASLEXT)
-$(OUT)/ULS.$(FASLEXT): $(OUT)/ULSCONS.$(FASLEXT)
+$(OUT)/ULS.$(FASLEXT): $(OUT)/ULSCONS.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
 $(OUT)/ULSCONS.$(FASLEXT): $(OUT)/ULSCCAT.$(FASLEXT)
 $(OUT)/ULSCCAT.$(FASLEXT): $(OUT)/UTS.$(FASLEXT)
-$(OUT)/UTS.$(FASLEXT): $(OUT)/UTSCAT.$(FASLEXT)
+$(OUT)/UTS.$(FASLEXT): $(OUT)/UTSCAT.$(FASLEXT) $(OUT)/PDDOM.$(FASLEXT)
 
 axiom_algebra_layer_15 = \
   DSMP     EXPUPXS  UPXS     UPXSCONS \
   FRAMALG  FRAMALG- MDAGG    ODPOL   \
   PLOT     RMCAT2   ROIRC    SDPOL   \
   ULS      ULSCONS  TUBETOOL UPXSCCA \
-  UPXSCCA- JAVACODE POLY       BYTEBUF    OVERSET \
+  UPXSCCA- JVMBCODE POLY       BYTEBUF    OVERSET \
   ULSCCAT  ULSCCAT- UTS      UTSCAT  UTSCAT-
 
 axiom_algebra_layer_15_nrlibs = \
@@ -776,12 +808,14 @@ axiom_algebra_layer_15_nrlibs = \
 axiom_algebra_layer_15_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_15)))
+$(OUT)/SPACE3.$(FASLEXT): $(OUT)/SUBSPACE.$(FASLEXT)
+
 axiom_algebra_layer_16 = \
   DPMM     EFUPXS  FFINTBAS FRIDEAL                    \
   FRIDEAL2 FRMOD   \
   IBATOOL  INTFACT \
   MSETAGG  MONOGEN MONOGEN- NFINTBAS \
-  SPACE3  FFF
+  SPACE3   FFF     SUBSPACE
 
 axiom_algebra_layer_16_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_16))
@@ -816,6 +850,9 @@ axiom_algebra_layer_18_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_18)))
 $(OUT)/TSETCAT.$(FASLEXT): $(OUT)/PSETCAT.$(FASLEXT) $(OUT)/RPOLCAT.$(FASLEXT)
+$(OUT)/FPARFRAC.$(FASLEXT): $(OUT)/DIFFSPC.$(FASLEXT)
+$(OUT)/FEXPR.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
+$(OUT)/OMERR.$(FASLEXT): $(OUT)/OMERRK.$(FASLEXT)
 
 axiom_algebra_layer_19 = \
   ACPLOT   ANTISYM           ATTRBUT \
@@ -825,7 +862,7 @@ axiom_algebra_layer_19 = \
   EP       E04AGNT  FCPAK1   FEXPR   \
   FFCAT    FFCAT-   FFCGP    FFNBP   \
   FFP      FLOAT    FPARFRAC FR      \
-  FRNAALG  FRNAALG- \
+  FRNAALG  FRNAALG- EXPR             \
            FUNCTION GDMP     HACKPI  \
   IDEAL    INFORM   INFORM1  IPRNTPK \
   IR       ISUPS             LIB     \
@@ -835,7 +872,7 @@ axiom_algebra_layer_19 = \
   NAGE04   NAGF07   NAGS     NAGSP   \
   NREP     NUMFMT   OC       OC-     \
   ODEPACK  ODERAT   OMERR    OMERRK  \
-  OPTPACK  OSI      PATTERN  OVAR    \
+  OPTPACK           PATTERN  OVAR    \
   PMKERNEL PMSYM             PRIMELT \
   QALGSET2 QEQUAT   RECLOS   REP1    \
            QUATCAT  QUATCAT- RFFACT  \
@@ -854,6 +891,8 @@ axiom_algebra_layer_19_objects = \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_19)))
 $(OUT)/AN.$(FASLEXT): $(OUT)/IAN.$(FASLEXT)
 $(OUT)/IAN.$(FASLEXT): $(OUT)/EXPR.$(FASLEXT)
+$(OUT)/SUTS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/OCT.$(FASLEXT): $(OUT)/QUAT.$(FASLEXT)
 
 axiom_algebra_layer_20 = \
   AF       ALGFACT  ALGFF    ALGMANIP ALGMFACT ALGPKG   \
@@ -886,7 +925,7 @@ axiom_algebra_layer_20 = \
   SFORT    SOLVESER SUMFS    SUTS     \
   TOOLSIGN TRIGMNIP TRMANIP  ULSCCAT  \
   ULSCCAT- UPXSSING UTSODE   UTSODETL \
-  UTS2     WUTSET   EXPR
+  UTS2     WUTSET   
 
 axiom_algebra_layer_20_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_20))
@@ -895,6 +934,9 @@ axiom_algebra_layer_20_objects = \
 	$(addprefix $(OUT)/, \
 	   $(addsuffix .$(FASLEXT),$(axiom_algebra_layer_20)))
 $(OUT)/FDIV.$(FASLEXT): $(OUT)/HELLFDIV.$(FASLEXT)
+$(OUT)/GSERIES.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/SULS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
+$(OUT)/SUPXS.$(FASLEXT): $(OUT)/PDDOM.$(FASLEXT)
 
 axiom_algebra_layer_21 = \
   DEFINTEF DFINTTLS DEFINTRF D01TRNS  \
@@ -918,7 +960,7 @@ axiom_algebra_layer_22 = \
   NTSCAT   REGSET   RGCHAIN  RSETGCD  \
   RSDCMPK  SFRTCAT  SIGNEF   SNTSCAT  \
   SOLVETRA SRDCMPK  SREGSET  STTF     \
-  SUBSPACE ZDSOLVE
+           ZDSOLVE
 
 axiom_algebra_layer_22_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_22))
@@ -953,7 +995,9 @@ axiom_algebra_layer_user =  \
         ASP78    ASP9     ASP12    ASP55    ASP8     ASP19    \
         ASP20    ASP30    ASP31    ASP35    ASP41    ASP42    \
 	ASP74    ASP77    ASP80    ASP29    IRFORM   COMPILER \
-	ITFORM   ELABOR   TALGOP   YDIAGRAM
+	ITFORM   ELABOR   TALGOP   YDIAGRAM LINELT   DBASIS   \
+	LINFORM  LINBASIS JVMOP    JVMCFACC JVMFDACC JVMMDACC \
+	JVMCSTTG
 
 axiom_algebra_layer_user_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_user))
@@ -1034,6 +1078,18 @@ $(OUT)/ELABOR.$(FASLEXT): $(OUT)/ITFORM.$(FASLEXT) $(OUT)/ENV.$(FASLEXT) \
 	$(OUT)/IRFORM.$(FASLEXT)
 
 
+$(OUT)/LINBASIS.$(FASLEXT): $(OUT)/ORDFIN.$(FASLEXT) $(OUT)/OVAR.$(FASLEXT)
+$(OUT)/LINELT.$(FASLEXT): $(OUT)/VSPACE.$(FASLEXT) $(OUT)/FM.$(FASLEXT)
+$(OUT)/DBASIS.$(FASLEXT): $(OUT)/ORDFIN.$(FASLEXT) $(OUT)/KVTFROM.$(FASLEXT)
+$(OUT)/LINFORM.$(FASLEXT): $(OUT)/DBASIS.$(FASLEXT) \
+	$(OUT)/VSPACE.$(FASLEXT) $(OUT)/LINELT.$(FASLEXT)
+
+$(OUT)/JVMOP.$(FASLEXT): $(OUT)/JVMBCODE.$(FASLEXT)
+$(OUT)/JVMCFACC.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
+$(OUT)/JVMFDACC.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
+$(OUT)/JVMMDACC.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
+
+
 .PHONY: all all-algebra mkdir-output-directory
 all: all-ax
 
@@ -1075,7 +1131,7 @@ strap/%.$(FASLEXT): $(srcdir)/strap/%.lsp
 $(OUTSRC)/%.spad: mk-target-src-algabra-dir
 
 ${OUTSRC}/%.spad: $(srcdir)/%.spad.pamphlet
-	$(axiom_build_document) --tangle --output=$@ $<
+	$(oa_hammer) --tangle --output=$@ $<
 
 .PHONY: mk-target-src-algabra-dir
 mk-target-src-algabra-dir:
@@ -1097,10 +1153,10 @@ $(builddir)/%.dvi: $(axiom_build_texdir)/diagrams.tex \
 		   $(axiom_build_texdir)/axiom.sty
 
 $(builddir)/%.dvi: $(builddir)/%.tex
-	$(axiom_build_document) --latex $<
+	$(oa_hammer) --latex $<
 
 $(builddir)/%.tex: $(srcdir)/%.pamphlet
-	$(axiom_build_document) --weave --output=$@ $<
+	$(oa_hammer) --weave --output=$@ $<
 
 $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	@cp -p $< $@
@@ -1114,13 +1170,13 @@ PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
 
 
 ${INPUT}/TESTFR.input: $(srcdir)/fr.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST FR' --output=$@ $<
+	$(oa_hammer) --tangle='TEST FR' --output=$@ $<
 
 ${INPUT}/INTHEORY.input: $(srcdir)/numtheor.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST INTHEORY' --output=$@ $<
+	$(oa_hammer) --tangle='TEST INTHEORY' --output=$@ $<
 
 ${INPUT}/VIEW2D.input: $(srcdir)/view2D.spad.pamphlet
-	$(axiom_build_document) --tangle='TEST VIEW2D' --output=$@ $<
+	$(oa_hammer) --tangle='TEST VIEW2D' --output=$@ $<
 
 
 ${DOC}/diagrams.tex: $(axiom_src_docdir)/diagrams.tex

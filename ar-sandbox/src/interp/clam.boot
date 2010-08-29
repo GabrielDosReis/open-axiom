@@ -99,11 +99,11 @@ compClam(op,argl,body,$clamList) ==
     [:bright cacheCount,'"computed values"]
   sayBrightly [:bright op,'"will save last",:phrase]
   auxfn:= INTERNL(op,'";")
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,computeValue] :=
     argl is [.] => [[g1],[auxfn,g1]]  --g1 is a parameter
     [g1,['APPLX,['function,auxfn],g1]]          --g1 is a parameter list
-  cacheName:= INTERNL(op,'";AL")
+  cacheName:= mkCacheName op
   if $reportCounts=true then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
@@ -111,8 +111,8 @@ compClam(op,argl,body,$clamList) ==
     setDynamicBinding(callCounter,0)
     callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
     hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
-  g2:= GENSYM()  --length of cache or arg-value pair
-  g3:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --length of cache or arg-value pair
+  g3:= gensym()  --value computed by calling function
   lookUpFunction:=
     shiftFl =>
       countFl => 'assocCacheShiftCount
@@ -134,10 +134,9 @@ compClam(op,argl,body,$clamList) ==
     countFl => ['CONS,1,g2]
     g2
   thirdPredPair:=
---   null argl => ['(QUOTE T),['SETQ,cacheName,computeValue]]
-    ['(QUOTE T),
-      ['SETQ,g2,computeValue],
-        ['SETQ,g3,['CAR,cacheName]],
+    ['%true,
+      ['%store,g2,computeValue],
+        ['%store,g3,['CAR,cacheName]],
           ['RPLACA,g3,g1],
             ['RPLACD,g3,resetCacheEntry],
               g2]
@@ -183,7 +182,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if null argl then
     null cacheNameOrNil => keyedSystemError("S2GE0011",[op])
     nil
-  (not cacheNameOrNil) and not (eqEtc in '(EQ CVEC UEQUAL)) =>
+  (not cacheNameOrNil) and not (eqEtc in '(EQ EQL EQUAL CVEC UEQUAL)) =>
     keyedSystemError("S2GE0012",[op])
 --withWithout := (countFl => "with"; "without")
 --middle:=
@@ -192,7 +191,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 --sayBrightly
 --  ["%b",op,"%d","hashes ",:middle,withWithout," reference counts"]
   auxfn:= INTERNL(op,'";")
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
   --    cacheArgKey: the form used to look up the value in the cache
@@ -203,7 +202,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
       [[g1],['LIST,key],[auxfn,g1]]  --g1 is a parameter
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
-  cacheName:= cacheNameOrNil or INTERNL(op,'";AL")
+  cacheName:= cacheNameOrNil or mkCacheName op
   if $reportCounts=true then
     hitCounter:= INTERNL(op,'";hit")
     callCounter:= INTERNL(op,'";calls")
@@ -211,7 +210,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     setDynamicBinding(callCounter,0)
     callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
     hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
-  g2:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --value computed by calling function
   returnFoundValue:=
     null argl =>
     --  if we have a global hastable, functions with no arguments are
@@ -247,7 +246,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if cacheNameOrNil then putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['SETQ,g2,'T]],
                   ['COND,[['NOT,g2],['HREM,cacheName,MKQ op]]]]
-  thirdPredPair:= ['(QUOTE T),putCode]
+  thirdPredPair:= ['%true,putCode]
   codeBody:= ['PROG,[g2],
                :callCountCode,['RETURN,['COND,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
@@ -270,7 +269,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     weakStrong:= (countFl => 'STRONG; 'WEAK)
       --note: WEAK means that key/value pairs disappear at garbage collection
     cacheResetCode:=
-      ['SETQ,cacheName,['MAKE_-HASHTABLE,MKQ eqEtc]]
+      ['SETQ,cacheName,['hashTable,MKQ eqEtc]]
     cacheCountCode:= ['hashCount,cacheName]
     cacheVector:=
       mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)
@@ -284,7 +283,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   if (not (eqEtc in '(UEQUAL))) then
     sayBrightly "for hash option, only EQ, CVEC, and UEQUAL are allowed"
   auxfn:= INTERNL(op,'";")
-  g1:= GENSYM()  --argument or argument list
+  g1:= gensym()  --argument or argument list
   [arg,cacheArgKey,computeValue] :=
   --    arg: to be used as formal argument of lambda construction;
   --    cacheArgKey: the form used to look up the value in the cache
@@ -294,17 +293,17 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
       argl is [.] => [auxfn,g1]  --g1 is a parameter
       ['APPLX,['function,auxfn],g1]          --g1 is a parameter list
     [g1,['consForHashLookup,MKQ op,g1],application]
-  g2:= GENSYM()  --value computed by calling function
+  g2:= gensym()  --value computed by calling function
   returnFoundValue:=
     countFl => ['CDRwithIncrement,g2]
     g2
   getCode:= ['HGET,cacheName,cacheArgKey]
-  secondPredPair:= [['SETQ,g2,getCode],returnFoundValue]
+  secondPredPair:= [['%store,g2,getCode],returnFoundValue]
   putForm:= ['CONS,MKQ op,g1]
   putCode:=
     countFl => ['HPUT,cacheName,putForm,['CONS,1,computeValue]]
     ['HPUT,cacheName,putForm,computeValue]
-  thirdPredPair:= ['(QUOTE T),putCode]
+  thirdPredPair:= ['%true,putCode]
   codeBody:= ['PROG,[g2], ['RETURN,['COND,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
@@ -355,14 +354,13 @@ clearConstructorAndLisplibCaches() ==
 clearCategoryCaches() ==
   for name in allConstructors() repeat
     if getConstructorKindFromDB name = "category" then
-      if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";AL"))
+      if BOUNDP(cacheName:= mkCacheName name)
             then setDynamicBinding(cacheName,nil)
     if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
           then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==
-  cacheName:= INTERNL strconc(PNAME catName,'";AL")
-  setDynamicBinding(cacheName,nil)
+  setDynamicBinding(mkCacheName catName,nil)
  
 displayHashtable x ==
   l:= nreverse SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
@@ -611,42 +609,42 @@ hputNewProp(ht,op,argList,val) ==
 listTruncate(l,n) ==
   u:= l
   n:= QSSUB1 n
-  while n ~= 0 and null atom u repeat
+  while n ~= 0 and cons? u repeat
     n:= QSSUB1 n
-    u:= QCDR u
-  if null atom u then
-    if null atom rest u and $reportInstantiations = true then
+    u:= rest u
+  if cons? u then
+    if cons? rest u and $reportInstantiations = true then
       recordInstantiation($op,CAADR u,true)
     u.rest := nil
   l
  
 lassocShift(x,l) ==
   y:= l
-  while not atom y repeat
-    EQUAL(x,first QCAR y) => return (result := QCAR y)
-    y:= QCDR y
+  while cons? y repeat
+    EQUAL(x,first first y) => return (result := first y)
+    y:= rest y
   result =>
     if not EQ(y,l) then
       y.first := first l
       l.first := result
-    QCDR result
+    rest result
   nil
  
 lassocShiftWithFunction(x,l,fn) ==
   y:= l
-  while not atom y repeat
-    FUNCALL(fn,x,first QCAR y) => return (result := QCAR y)
-    y:= QCDR y
+  while cons? y repeat
+    FUNCALL(fn,x,first first y) => return (result := first y)
+    y:= rest y
   result =>
     if not EQ(y,l) then
       y.first := first l
       l.first := result
-    QCDR result
+    rest result
   nil
  
 lassocShiftQ(x,l) ==
   y:= l
-  while not atom y repeat
+  while cons? y repeat
     EQ(x,first first y) => return (result := first y)
     y:= rest y
   result =>
@@ -658,7 +656,7 @@ lassocShiftQ(x,l) ==
  
 -- rassocShiftQ(x,l) ==
 --   y:= l
---   while not atom y repeat
+--   while cons? y repeat
 --     EQ(x,rest first y) => return (result := first y)
 --     y:= rest y
 --   result =>
@@ -683,7 +681,7 @@ globalHashtableStats(x,sortFn) ==
     pp args
  
 constructor2ConstructorForm x ==
-  VECP x => x.0
+  vector? x => x.0
   x
  
 rightJustifyString(x,maxWidth) ==

@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -33,15 +33,12 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _INPUT_C
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
 #include "sockio.h"
 #include "hyper.h"
 
-#include "all_hyper_proto.H1"
-
+static void clear_rbs(InputBox * list);
 
 void
 fill_box(Window w,ImageStruct * image)

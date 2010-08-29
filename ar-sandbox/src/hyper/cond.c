@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,19 +40,16 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _COND_C
+
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
-
 #include "sockio.h"
 #include "halloc.h"
 #include "lex.h"
 #include "hyper.h"
-
-#include "all_hyper_proto.H1"
 #include "sockio.h"
 
+static int check_memostack(TextNode * node);
 
 void
 insert_cond(char *label, char *cond)

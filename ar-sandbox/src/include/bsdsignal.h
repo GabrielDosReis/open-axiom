@@ -36,9 +36,14 @@
 #ifndef OPENAXIOM_BSDSIGNAL_included
 #define OPENAXIOM_BSDSIGNAL_included
 
+#include <signal.h>
+
 #include "open-axiom.h"
 
-#include <signal.h>
+#ifdef __cplusplus
+extern "C" {
+#endif   
+
 
 #ifdef SIGCHLD
 #  define OPENAXIOM_SIGCHLD SIGCHLD
@@ -52,5 +57,9 @@
 
 typedef void (* SignalHandlerFunc)(int);
 OPENAXIOM_EXPORT SignalHandlerFunc bsdSignal(int, SignalHandlerFunc, int);
+
+#ifdef __cplusplus
+}
+#endif   
 
 #endif	    /* OPENAXIOM_BSDSIGNAL_included */

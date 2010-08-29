@@ -32,7 +32,7 @@
 -- SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import def
+import g_-util
 namespace BOOT
 
 --% 
@@ -65,16 +65,56 @@ emitIndirectCall(fn,args,x) ==
   x
 
 --% OPTIMIZER
- 
+
+++ Change (%LET id expr) to (%store id expr) if `id' is being
+++ updated as opposed to being defined. `vars' is the list of
+++ all variable definitions in scope.
+changeVariableDefinitionToStore(form,vars) ==
+  atomic? form => nil
+  form is ['%LET,v,expr] =>
+    changeVariableDefinitionToStore(expr,vars)
+    if v in vars then form.op := '%store
+  for x in form repeat
+    changeVariableDefinitionToStore(x,vars)
+    x is ['%LET,v,:.] and not (v in vars) =>
+      vars := [v,:vars]
+
+++ Return true if `x' contains control transfer to a point outside itself.
+jumpToToplevel? x ==
+  atomic? x => false
+  op := x.op
+  op = 'SEQ => CONTAINED('THROW,x.args)
+  op in '(EXIT THROW %leave) => true
+  or/[jumpToToplevel? x' for x' in x]
+
+++ Return true if `form' is just one assignment expression.
+singleAssignment? form ==
+  form is ['%LET,.,rhs] and not CONTAINED('%LET,rhs)
+
+++ Turns `form' into a `%bind'-expression if it starts with a
+++ a sequence of first-time variable definitions.
+groupVariableDefinitions form ==
+  atomic? form => form
+  form isnt ['SEQ,:stmts,['EXIT,val]] => form
+  defs := nil
+  for x in stmts while singleAssignment? x  repeat
+    defs := [x.args,:defs]
+  defs = nil or jumpToToplevel? defs => form
+  stmts := drop(#defs,stmts)
+  expr :=
+    stmts = nil => val
+    ['SEQ,:stmts,['EXIT,val]]
+  ['%bind,nreverse defs,expr]
+
 optimizeFunctionDef(def) ==
   if $reportOptimization then
     sayBrightlyI bright '"Original LISP code:"
     pp def
  
-  def' := optimize COPY def
+  def' := simplifyVMForm COPY def
  
   if $reportOptimization then
-    sayBrightlyI bright '"Optimized LISP code:"
+    sayBrightlyI bright '"Intermediate VM code:"
     pp def'
 
   [name,[slamOrLam,args,body]] := def'
@@ -95,28 +135,35 @@ optimizeFunctionDef(def) ==
         atom x => nil
         replaceThrowByReturn(first x,g)
         replaceThrowByReturn(rest x,g)
-  [name,[slamOrLam,args,body']]
- 
-optimize x ==
-  (opt x; x) where
-    opt x ==
-      atom x => nil
-      (y:= first x)='QUOTE => nil
-      y='CLOSEDFN => nil
-      y is [["XLAM",argl,body],:a] =>
-        optimize rest x
-        argl = "ignore" => x.first := body
-        if not (# argl<= # a) then
-          SAY '"length mismatch in XLAM expression"
-          PRETTYPRINT y
-        x.first := optimize optXLAMCond SUBLIS(pairList(argl,a),body)
-      atom y =>
-        optimize rest x
-      if first y="IF" then (x.first := optIF2COND y; y:= first x)
-      op:= GETL(subrname first y,"OPTIMIZE") =>
-        (optimize rest x; x.first := FUNCALL(op,optimize first x))
-      x.first := optimize first x
-      optimize rest x
+  changeVariableDefinitionToStore(body',args)
+  [name,[slamOrLam,args,groupVariableDefinitions body']]
+
+resetTo(x,y) ==
+  atom y => x := y
+  EQ(x,y) => x
+  x.first := y.first
+  x.rest := y.rest
+  x
+
+++ Simplify the VM form `x'
+simplifyVMForm x ==
+  x = '%icst0 => 0
+  x = '%icst1 => 1
+  atomic? x => x
+  x.op = 'CLOSEDFN => x
+  atom x.op =>
+    x is [op,vars,body] and op in $AbstractionOperator =>
+      third(x) := simplifyVMForm body
+      x
+    if x.op = 'IF then
+      resetTo(x,optIF2COND x)
+    for args in tails x.args repeat
+      args.first := simplifyVMForm first args
+    opt := subrname x.op has OPTIMIZE => resetTo(x,FUNCALL(opt,x))
+    x
+  for xs in tails x repeat
+    xs.first := simplifyVMForm first xs
+  x
  
 subrname u ==
   IDENTP u => u
@@ -124,7 +171,7 @@ subrname u ==
   nil
  
 changeThrowToExit(s,g) ==
-  atom s or first s in '(QUOTE SEQ REPEAT COLLECT) => nil
+  atom s or s.op in '(QUOTE SEQ REPEAT COLLECT %collect %loop) => nil
   s is ["THROW", =g,:u] => (s.first := "EXIT"; s.rest := u)
   changeThrowToExit(first s,g)
   changeThrowToExit(rest s,g)
@@ -143,16 +190,32 @@ changeThrowToGo(s,g) ==
   changeThrowToGo(first s,g)
   changeThrowToGo(rest s,g)
 
+++ Change any `(THROW tag (%return expr))' in x to just
+++ `(%return expr) since a %return-expression transfers control
+++ out of the function body anyway.  Similarly, transform
+++ reudant `(THROW tag (THROW tag expr))' to `(THROW tag expr)'.
+removeNeedlessThrow x ==
+  atomic? x => x
+  x is ['THROW,.,y] and y is ['%return,:.] =>
+    removeNeedlessThrow third y
+    x.op := y.op
+    x.args := y.args
+  x is ['THROW,g,y] and y is ['THROW,=g,z] =>
+    removeNeedlessThrow z
+    second(x.args) := z
+  for x' in x repeat
+    removeNeedlessThrow x'
+
 optCatch (x is ["CATCH",g,a]) ==
   $InteractiveMode => x
   atom a => a
+  removeNeedlessThrow a
   if a is ["SEQ",:s,["THROW", =g,u]] then
     changeThrowToExit(s,g)
     a.rest := [:s,["EXIT",u]]
-    ["CATCH",y,a]:= optimize x
+    a := simplifyVMForm a
   if hasNoThrows(a,g) then
-    x.first := first a
-    x.rest := rest a
+    resetTo(x,a)
   else
     changeThrowToGo(a,g)
     x.first := "SEQ"
@@ -160,42 +223,35 @@ optCatch (x is ["CATCH",g,a]) ==
   x
  
 optSPADCALL(form is ['SPADCALL,:argl]) ==
-  null $InteractiveMode => form
+  not $InteractiveMode => form
   -- last arg is function/env, but may be a form
   argl is [:argl,fun] and fun is ["ELT",dom,slot] =>
-    optCall ["%Call",['ELT,dom,slot],:argl]
+    optCall ['%call,['ELT,dom,slot],:argl]
   form
  
-optCall (x is ["%Call",:u]) ==
-  -- destructively optimizes this new x
-  x:= optimize [u]
-  -- next should happen only as result of macro expansion
-  atom first x => first x
-  [fn,:a]:= first x
-  atom fn => (x.rest := a; x.first := fn)
-  fn is ["applyFun",name] =>
-    (x.first := "SPADCALL"; x.rest := [:a,name]; x)
+optCall (x is ['%call,:u]) ==
+  u is [['XLAM,vars,body],:args] =>
+    atom vars => body
+    #vars > #args => systemErrorHere ['optCall,x]
+    resetTo(x,optXLAMCond SUBLIS(pairList(vars,args),body))
+  [fn,:a] := u
+  atom fn =>
+    opt := fn has OPTIMIZE => resetTo(x,FUNCALL(opt,u))
+    resetTo(x,u)
+  fn is ['applyFun,name] =>
+    x.first := 'SPADCALL
+    x.rest := [:a,name]
+    x
   fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
-    not $bootStrapMode and (w:= optCallSpecially(q,x,n,R)) => w
-    q="CONST" => ["spadConstant",R,n]
+    not $bootStrapMode and (w := optCallSpecially(q,x,n,R)) => resetTo(x,w)
+    q = 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)
-  systemErrorHere ["optCall",x]
+  systemErrorHere ['optCall,x]
  
 optCallSpecially(q,x,n,R) ==
-    y:= LASSOC(R,$specialCaseKeyList) => optSpecialCall(x,y,n)
     optimizableDomain? R => optSpecialCall(x,R,n)
-    (y:= get(R,"value",$e)) and
-      optimizableDomain? y.expr =>
+    (y:= get(R,"value",$e)) and optimizableDomain? y.expr =>
         optSpecialCall(x,y.expr,n)
-    (
-      (y:= lookup(R,$getDomainCode)) and ([op,y,prop]:= y) and
-        (yy:= LASSOC(y,$specialCaseKeyList)) =>
-         optSpecialCall(x,[op,yy,prop],n)) where
-            lookup(a,l) ==
-              null l => nil
-              [l',:l]:= l
-              l' is ["%LET", =a,l',:.] => l'
-              lookup(a,l)
     nil
  
 optCallEval u ==
@@ -227,8 +283,8 @@ optSpecialCall(x,y,n) ==
   fn := getFunctionReplacement compileTimeBindingOf first yval.n =>
     x.rest := CDAR x
     x.first := fn
-    if fn is ["XLAM",:.] then x:=first optimize [x]
-    x is ["EQUAL",:args] => RPLACW(x,DEF_-EQUAL args)
+    if fn is ["XLAM",:.] then x := simplifyVMForm x
+    x is ["EQUAL",:args] => resetTo(x,DEF_-EQUAL args)
                 --DEF-EQUAL is really an optimiser
     x
   [fn,:a]:= first x
@@ -245,23 +301,22 @@ optMkRecord ["mkRecord",:u] ==
   ["VECTOR",:u]
  
 optCond (x is ['COND,:l]) ==
-  if l is [a,[aa,b]] and TruthP aa and b is ["COND",:c] then
+  if l is [a,[aa,b]] and aa = '%true and b is ['COND,:c] then
     x.rest.rest := c
   if l is [[p1,:c1],[p2,:c2],:.] then
-    if (p1 is ["NOT",=p2]) or (p2 is ["NOT",=p1]) then
-      l:=[[p1,:c1],['(QUOTE T),:c2]]
+    if (p1 is ['%not,=p2]) or (p2 is ['%not,=p1]) then
+      l:=[[p1,:c1],['%true,:c2]]
       x.rest := l
-    c1 is ['NIL] and p2 = '(QUOTE T) and first c2 = '(QUOTE T) =>
-      p1 is ["NOT",p1']=> return p1'
-      return ["NOT",p1]
-  l is [[p1,:c1],[p2,:c2],[p3,:c3]] and TruthP p3 =>
+    c1 is ['NIL] and p2 = '%true and first c2 = '%true =>
+      return optNot ['%not,p1]
+  l is [[p1,:c1],[p2,:c2],[p3,:c3]] and p3 = '%true =>
     EqualBarGensym(c1,c3) =>
-      ["COND",[["OR",p1,["NOT",p2]],:c1],[['QUOTE,true],:c2]]
-    EqualBarGensym(c1,c2) => ["COND",[["OR",p1,p2],:c1],[['QUOTE,true],:c3]]
+      optCond ['COND,[['%or,p1,['%not,p2]],:c1],['%true,:c2]]
+    EqualBarGensym(c1,c2) => optCond ['COND,[['%or,p1,p2],:c1],['%true,:c3]]
     x
   for y in tails l repeat
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
-      a:=['OR,a1,a2]
+      a := ['%or,a1,a2]
       first(y).first := a
       y.rest := y'
   x
@@ -288,41 +343,47 @@ EqualBarGensym(x,y) ==
 --Called early, to change IF to COND
  
 optIF2COND ["IF",a,b,c] ==
-  b is "%noBranch" => ["COND",[["NOT",a],c]]
+  b is "%noBranch" => ["COND",[['%not,a],c]]
   c is "%noBranch" => ["COND",[a,b]]
   c is ["IF",:.] => ["COND",[a,b],:rest optIF2COND c]
   c is ["COND",:p] => ["COND",[a,b],:p]
-  ["COND",[a,b],[$true,c]]
+  ["COND",[a,b],['%true,c]]
  
 optXLAMCond x ==
   x is ["COND",u:= [p,c],:l] =>
-    (optPredicateIfTrue p => c; ["COND",u,:optCONDtail l])
+    (p = '%true => c; ["COND",u,:optCONDtail l])
   atom x => x
   x.first := optXLAMCond first x
   x.rest := optXLAMCond rest x
   x
  
-optPredicateIfTrue p ==
-  p is ['QUOTE,:.] => true
-  p is [fn,x] and MEMQ(fn,$BasicPredicates) and FUNCALL(fn,x) => true
-  nil
- 
 optCONDtail l ==
   null l => nil
   [frst:= [p,c],:l']:= l
-  optPredicateIfTrue p => [[$true,c]]
-  null rest l => [frst,[$true,["CondError"]]]
+  p = '%true => [['%true,c]]
+  null rest l => [frst,['%true,["CondError"]]]
   [frst,:optCONDtail l']
- 
+
+++ Determine whether the symbol `g' is the name of a temporary that
+++ can be replaced in the form `x', if it is of linear usage and not
+++ the name of a program point.  The latter occurs when THROW forms
+++ are changed to %LET form followed by a GO form -- see optCatch.
+replaceableTemporary?(g,x) ==
+  GENSYMP g and numOfOccurencesOf(g,x) < 2 and not jumpTarget?(g,x) where
+    jumpTarget?(g,x) ==
+      atomic? x => false
+      x is ['GO,=g] => true
+      or/[jumpTarget?(g,x') for x' in x]
+
 optSEQ ["SEQ",:l] ==
   tryToRemoveSEQ SEQToCOND getRidOfTemps splicePROGN l where
     splicePROGN l ==
-      isAtomicForm l => l
+      atomic? l => l
       l is [["PROGN",:stmts],:l'] => [:stmts,:l']
       l.rest := splicePROGN rest l
     getRidOfTemps l ==
       null l => nil
-      l is [["%LET",g,x,:.],:r] and GENSYMP g and 2>numOfOccurencesOf(g,r) =>
+      l is [["%LET",g,x],:r] and replaceableTemporary?(g,r) =>
         getRidOfTemps substitute(x,g,r)
       first l="/throwAway" => getRidOfTemps rest l
       --this gets rid of unwanted labels generated by declarations in SEQs
@@ -332,88 +393,76 @@ optSEQ ["SEQ",:l] ==
       before:= take(#transform,l)
       aft:= after(l,before)
       null before => ["SEQ",:aft]
-      null aft => ["COND",:transform,'((QUOTE T) (conderr))]
-      true => ["COND",:transform,['(QUOTE T),optSEQ ["SEQ",:aft]]]
+      null aft => ["COND",:transform,'(%true (conderr))]
+      optCond ["COND",:transform,['%true,optSEQ ["SEQ",:aft]]]
     tryToRemoveSEQ l ==
       l is ["SEQ",[op,a]] and op in '(EXIT RETURN THROW) => a
       l
  
 optRECORDELT ["RECORDELT",name,ind,len] ==
   len=1 =>
-    ind=0 => ["QCAR",name]
+    ind=0 => ['%head,name]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["QCAR",name]
-    ind=1 => ["QCDR",name]
+    ind=0 => ['%head,name]
+    ind=1 => ['%tail,name]
     keyedSystemError("S2OO0002",[ind])
   ["QVELT",name,ind]
  
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["QCAR",name]]
+    ind=0 => ["PROGN",["RPLACA",name,expr],['%head,name]]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],["QCAR",name]]
-    ind=1 => ["PROGN",["RPLACD",name,expr],["QCDR",name]]
+    ind=0 => ["PROGN",['%store,['%head,name],expr],['%head,name]]
+    ind=1 => ["PROGN",['%store,['%tail,name],expr],['%tail,name]]
     keyedSystemError("S2OO0002",[ind])
   ["QSETVELT",name,ind,expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len=1 => ["LIST",["CAR",name]]
-  len=2 => ["CONS",["CAR",name],["CDR",name]]
+  len=1 => ["LIST",['%head,name]]
+  len=2 => ["CONS",['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
- 
---mkRecordAccessFunction(ind,len) ==
---  stringOfDs:= $EmptyString
---  for i in 0..(ind-1) do stringOfDs:= strconc(stringOfDs,PNAME "D")
---  prefix:= if ind=len-1 then PNAME "C" else PNAME "CA"
---  if $QuickCode then prefix:=strconc("Q",prefix)
---  INTERN(strconc(prefix,stringOfDs,PNAME "R"))
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
-optMINUS u ==
-  u is ['MINUS,v] =>
-    NUMBERP v => -v
-    u
-  u
- 
 optQSMINUS u ==
   u is ['QSMINUS,v] =>
-    NUMBERP v => -v
+    integer? v => -v
     u
-  u
- 
-opt_- u ==
-  u is ['_-,v] =>
-    NUMBERP v => -v
-    u
-  u
- 
-optLESSP u ==
-  u is ['LESSP,a,b] =>
-    b = 0 => ['MINUSP,a]
-    ['GREATERP,b,a]
   u
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
     SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
-     QEQCAR QCDR QCAR INTEGERP FLOATP STRINGP IDENTP SYMBOLP
-      MINUSP GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN FLOAT_-DIGITS
-       CGREATERP GGREATERP CHAR BOOLE GET BVEC_-GREATER FUNCALL)
+     QEQCAR QCDR QCAR IDENTP SYMBOLP
+      GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
+        %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
+        %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
+        %icst0 %icst1
+        %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
+        %irem %iquo %idivide
+        %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
+        %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
+        %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
+        %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
+        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+        %lreverse %lempty? %hash %ismall? %string? %f2s
+        %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %sname
+        %vref %vlength %before?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ["CONS","LIST","VECTOR","STRINGIMAGE",
+    ['CONS,'LIST,'VECTOR,'STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
       "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
 semiSimpleRelativeTo?(form,ops) ==
-  isAtomicForm form => true
+  atomic? form => true
   form isnt [op,:args] or not MEMQ(op,ops) => false
   and/[semiSimpleRelativeTo?(f,ops) for f in args]
 
@@ -438,10 +487,8 @@ isFloatableVMForm form ==
 isVMConstantForm: %Code -> %Boolean
 isVMConstantForm form ==
   integer? form or string? form => true
-  form=nil or form=true => true
   form isnt [op,:args] => false
-  op = "QUOTE" => true
-  MEMQ(op,$simpleVMoperators) and 
+  MEMQ(op,$VMsideEffectFreeOperators) and 
     "and"/[isVMConstantForm arg for arg in args]
 
 ++ Return the set of free variables in the VM form `form'.
@@ -456,8 +503,8 @@ findVMFreeVars form ==
 ++ Return true is `var' is the left hand side of an assignment
 ++ in `form'.
 varIsAssigned(var,form) ==
-  isAtomicForm form => false
-  form is [op,=var,:.] and op in '(%LET LETT SETQ) => true
+  atomic? form => false
+  form is [op,=var,:.] and op in '(%LET LETT SETQ %store) => true
   or/[varIsAssigned(var,f) for f in form]
 
 ++ Subroutine of optLET.  Return true if the variable `var' locally
@@ -514,7 +561,7 @@ optLET u ==
     continue => body
     u
   not MEMQ(op,$simpleVMoperators) => u
-  not(and/[isAtomicForm arg for arg in args]) => u
+  not(and/[atomic? arg for arg in args]) => u
   -- Inline only if all parameters are used.  Get cute later.
   not(and/[MEMQ(x,args) for [x,.] in inits]) => u
   -- Munge inits into list of dotted-pairs.  Lovely Lisp.
@@ -534,8 +581,19 @@ optLET_* form ==
   optLET form
 
 optBind form ==
-  form.first := "LET*"
-  optLET_* form
+  form isnt ['%bind,inits,.] => form           -- accept only simple bodies
+  ok := true
+  while ok and inits ~= nil repeat
+    [var,expr] := first inits
+    usedSymbol?(var,rest inits) => ok := false -- no dependency, please.
+    body := third form
+    canInlineVarDefinition(var,expr,body) and isSimpleVMForm expr =>
+      third(form) := substitute_!(expr,var,body)
+      inits := rest inits
+    ok := false
+  null inits => third form                        -- no local var left
+  second(form) := inits
+  form
 
 optLIST form ==
   form is ["LIST"] => nil
@@ -568,7 +626,7 @@ optCollectVector form ==
     systemErrorHere ["optCollectVector", iter]
   -- if we draw from a list, then just build a list and convert to vector.
   fromList => 
-    ["homogeneousListToVector",["getVMType",eltType], ["COLLECT",:iters,body]]
+    ["homogeneousListToVector",["getVMType",eltType], ['%collect,:iters,body]]
   vecSize = nil => systemErrorHere ["optCollectVector",form]
   -- get the actual size of the vector.
   vecSize :=
@@ -576,44 +634,153 @@ optCollectVector form ==
     ["MIN",:nreverse vecSize]
   -- if no suitable loop index was found, introduce one.
   if index = nil then
-    index := GENSYM()
-    iters := [:iters,["ISTEP",index,0,1]]
-  vec := GENSYM()
+    index := gensym()
+    iters := [:iters,['STEP,index,0,1]]
+  vec := gensym()
   ["LET",[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
-    ["REPEAT",:iters,["setSimpleArrayEntry",vec,index,body]], 
-      vec]
+    ['%loop,:iters,["setSimpleArrayEntry",vec,index,body],vec]]
 
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
 ++ defined by predicate `pred',
-optRetract ["%Retract",e,m,pred] ==
-  atom e => ["check-subtype",substitute(e,"#1",pred),MKQ m,e]
-  g := GENSYM()
+optRetract ["%retract",e,m,pred] ==
+  atom e =>
+    cond := simplifyVMForm substitute(e,"#1",pred)
+    cond = '%true => e
+    ["check-subtype",cond,MKQ m,e]
+  g := gensym()
   ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
 
-lispize x == first optimize [x]
- 
+
+--%  Boolean expression transformers
+
+optNot(x is ['%not,a]) ==
+  a = '%true => '%false
+  a = '%false => '%true
+  a is ['%not,b] => b
+  x
+
+optAnd(x is ['%and,a,b]) ==
+  a = '%true => b
+  b = '%true => a
+  a = '%false => '%false
+  x
+
+optOr(x is ['%or,a,b]) ==
+  a = '%false => b
+  b = '%false => a
+  a = '%true => '%true
+  x
+
+optIeq(x is ['%ieq,a,b]) ==
+  integer? a and integer? b =>
+    a = b => '%true
+    '%false
+  x
+
+optIlt(x is ['%ilt,a,b]) ==
+  -- 1. Don't delay if both operands are literals.
+  integer? a and integer? b =>
+    a < b => '%true
+    '%false
+  -- 2. max(a,b) cannot be negative if either a or b is zero.
+  b = 0 and a is ['%imax,:.] and (second a = 0 or third a = 0) => '%false
+  -- 3. min(a,b) cannot be positive if either a or b is zero.
+  a = 0 and b is ['%imin,:.] and (second b = 0 or third b = 0) => '%false
+  x
+
+optIle(x is ['%ile,a,b]) ==
+  optNot ['%not,optIlt ['%ilt,b,a]]
+
+optIgt x ==
+  optIlt ['%ilt,third x, second x]
+
+optIge x ==
+  optNot ['%not,optIlt ['%ilt,second x,third x]]
+
+--% Byte operations
+
+optBle ['%ble,a,b] ==
+  optNot ['%not,['%blt,b,a]]
+
+optBgt ['%bgt,a,b] ==
+  ['%blt,b,a]
+
+optBge ['%bge,a,b] ==
+  optBle ['%ble,b,a]
+
+
+
+
+--% Integer operations
+
+optIadd(x is ['%iadd,a,b]) ==
+  integer? a and integer? b => a + b
+  integer? a and a = 0 => b
+  integer? b and b = 0 => a
+  x
+
+optIsub(x is ['%isub,a,b]) ==
+  integer? a and integer? b => a - b
+  integer? a and a = 0 => ['%ineg,b]
+  integer? b and b = 0 => a
+  x
+
+optImul(x is ['%imul,a,b]) ==
+  integer? a and integer? b => a * b
+  integer? a and a = 1 => b
+  integer? b and b = 1 => a
+  x
+
+optIneg(x is ['%ineg,a]) ==
+  integer? a => -a
+  x
+
+optIrem(x is ['%irem,a,b]) ==
+  integer? a and integer? b => a rem b
+  x
+
+optIquo(x is ['%iquo,a,b]) ==
+  integer? a and integer? b => a quo b
+  x
+
+--%  
 --% optimizer hash table
+--%
  
-for x in '( (%Call         optCall) _
+for x in '( (%call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
            (LET_*        optLET_*)_
-           (%Bind        optBind)_
+           (%bind        optBind)_
+           (%not         optNot)_
+           (%and         optAnd)_
+           (%or          optOr)_
+           (%ble         optBle)_
+           (%bgt         optBgt)_
+           (%bge         optBge)_
+           (%ieq         optIeq)_
+           (%ilt         optIlt)_
+           (%ile         optIle)_
+           (%igt         optIgt)_
+           (%ige         optIge)_
+           (%ineg        optIneg)_
+           (%iadd        optIadd)_
+           (%isub        optIsub)_
+           (%irem        optIrem)_
+           (%iquo        optIquo)_
+           (%imul        optImul)_
            (LIST         optLIST)_
-           (MINUS        optMINUS)_
            (QSMINUS      optQSMINUS)_
-           (_-           opt_-)_
-           (LESSP        optLESSP)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
            (CATCH        optCatch)_
            (COND         optCond)_
-           (%Retract     optRetract)_
+           (%retract     optRetract)_
            (%CollectV    optCollectVector)_
            (mkRecord     optMkRecord)_
            (RECORDELT    optRECORDELT)_
            (SETRECORDELT optSETRECORDELT)_
            (RECORDCOPY   optRECORDCOPY)) _
-   repeat MAKEPROP(first x,'OPTIMIZE, second x)
+   repeat property(first x,'OPTIMIZE) := second x
        --much quicker to call functions if they have an SBC
 

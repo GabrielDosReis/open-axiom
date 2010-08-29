@@ -173,7 +173,7 @@ substituteSegmentedMsg(msg,args) ==
       l := NCONC(nreverse v,l)
 
     -- x requires parameter substitution
-    (x.0 = char "%") and (n > 1) and (DIGITP x.1) =>
+    (x.0 = char "%") and (n > 1) and (digit? x.1) =>
       a := DIG2FIX x.1
       arg :=
         a <= nargs => args.(a-1)
@@ -217,7 +217,7 @@ substituteSegmentedMsg(msg,args) ==
       for ch in '(_. _, _! _: _; _?) repeat
         if MEMQ(char ch,q) then l := [ch,:l]
 
-    c = char "%" and n > 1 and x.1 = char "x" and DIGITP x.2 =>
+    c = char "%" and n > 1 and x.1 = char "x" and digit? x.2 =>
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]
     --x is a plain word
     l := [x,:l]
@@ -254,9 +254,9 @@ $msgdbNoBlanksBeforeGroup := ['" ", " ", '"%", "%",_
 $msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 
 noBlankBeforeP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
-    if CVECP word and SIZE word > 1 then
+    if string? word and SIZE word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
     (cons? word) and member(first word,$msgdbListPrims) => true
@@ -266,9 +266,9 @@ $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
                               "[", "(", '"[", '"(" ]
 
 noBlankAfterP word==
-    INTP word => false
+    integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
-    if CVECP word and (s := SIZE word) > 1 then
+    if string? word and (s := SIZE word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
     (cons? word) and member(first word, $msgdbListPrims) => true
@@ -340,19 +340,6 @@ throwKeyedMsgSP(key,args,atree) ==
     throwKeyedMsg(key,args)
 
 throwKeyedMsg(key,args) ==
-  $saturn => saturnThrowKeyedMsg(key, args)
-  throwKeyedMsg1(key, args)
-
-saturnThrowKeyedMsg(key,args) ==
-  SETQ($OutputStream, $texOutputStream)
-  last := pushSatOutput("line")
-  sayString '"\bgroup\color{red}\begin{list}\item{} "
-  sayKeyedMsgAsTeX(key,args)
-  sayString '"\end{list}\egroup"
-  popSatOutput(last)
-  spadThrow()
-
-throwKeyedMsg1(key,args) ==
   SETQ($OutputStream, $texOutputStream)
   sayMSG '" "
   if $testingSystem then sayMSG $testingErrorPrefix
@@ -384,55 +371,11 @@ breakKeyedMsg(key,args) ==
   handleLispBreakLoop($BreakMode)
 
 keyedSystemError(key,args) ==
-  $saturn => saturnKeyedSystemError(key, args)
-  keyedSystemError1(key, args)
-
-saturnKeyedSystemError(key, args) ==
-  SETQ($OutputStream, $texOutputStream)
-  sayString '"\bgroup\color{red}"
-  sayString '"\begin{verbatim}"
-  sayKeyedMsg("S2GE0000",NIL)
-  BUMPERRORCOUNT "semantic"
-  sayKeyedMsgAsTeX(key,args)
-  sayString '"\end{verbatim}"
-  sayString '"\egroup"
-  handleLispBreakLoop($BreakMode)
-
-keyedSystemError1(key,args) ==
   sayKeyedMsg("S2GE0000",NIL)
   breakKeyedMsg(key,args)
 
--- these 2 functions control the mode of saturn output.
--- having the stream writing functions control this would
--- be better (eg. sayText, sayCommands)
-
-pushSatOutput(arg) ==
-  $saturnMode = arg => arg
-  was := $saturnMode
-  arg = "verb" => 
-    $saturnMode := "verb"
-    sayString '"\begin{verbatim}"
-    was
-  arg = "line" =>
-    $saturnMode := "line"
-    sayString '"\end{verbatim}"
-    was
-  sayString FORMAT(nil, '"What is: ~a", $saturnMode)
-  $saturnMode
- 
-popSatOutput(newmode) == 
-  newmode = $saturnMode => nil
-  newmode = "verb" => 
-    $saturnMode := "verb"
-    sayString '"\begin{verbatim}"
-  newmode = "line" =>
-    $saturnMode := "line"
-    sayString '"\end{verbatim}"
-  sayString FORMAT(nil, '"What is: ~a", $saturnMode)
-  $saturnMode
-
 systemErrorHere what ==
-  if not atom what then
+  if cons? what then
      what := [first what, " with: ", :rest what]
   keyedSystemError("S2GE0017",[what])
 
@@ -686,9 +629,9 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 
 blankIndicator x ==
   if IDENTP x then x := PNAME x
-  null string? x or MAXINDEX x < 1 => nil
+  not string? x or MAXINDEX x < 1 => nil
   x.0 = '% and x.1 = 'x =>
-    MAXINDEX x > 1 => PARSE_-INTEGER SUBSTRING(x,2,nil)
+    MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
     1
   nil
 
@@ -705,7 +648,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
     sayString(pn,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
-  VECP x => sayString('"UNPRINTABLE",out)
+  vector? x => sayString('"UNPRINTABLE",out)
   atom x => sayString(object2String x,out)
   [key,:rst] := x
   if IDENTP key then key:=PNAME key
@@ -731,7 +674,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
     pn := PNAME x
     sayString(pn,out)
   atom x => sayString(object2String x,out)
-  VECP x => sayString('"UNPRINTABLE",out)
+  vector? x => sayString('"UNPRINTABLE",out)
   [key,:rst] := x
   key = '"%m" => mathprint(rst,out)
   key = '"%s" => 
@@ -850,7 +793,7 @@ sayBrightlyLength1 x ==
   IDENTP x => STRINGLENGTH PNAME x
   -- following line helps find certain bugs that slip through
   -- also see brightPrintHighlight
-  VECP x => STRINGLENGTH '"UNPRINTABLE"
+  vector? x => STRINGLENGTH '"UNPRINTABLE"
   atom x => STRINGLENGTH STRINGIMAGE x
   2 + sayBrightlyLength x
 
@@ -864,17 +807,17 @@ sayAsManyPerLineAsPossible l ==
     NIL
   w := MIN(m + 3,$LINELENGTH)
   -- p is the number of elements per line
-  p := QUOTIENT($LINELENGTH,w)
+  p := $LINELENGTH quo w
   n := # l
   str := '""
   for i in 0..(n-1) repeat
     [c,:l] := l
     str := strconc(str,c,fillerSpaces(w - #c,'" "))
-    REMAINDER(i+1,p) = 0 => (sayMSG str ; str := '"" )
+    (i+1) rem p = 0 => (sayMSG str ; str := '"" )
   if str ~= '"" then sayMSG str
   NIL
 
-say2PerLine l == say2PerLineWidth(l, QUOTIENT($LINELENGTH,2))
+say2PerLine l == say2PerLineWidth(l, $LINELENGTH quo 2)
 
 say2PerLineWidth(l,n) ==
   [short,long] := say2Split(l,nil,nil,n)
@@ -907,7 +850,7 @@ say2PerLineThatFit l ==
   while l repeat
     sayBrightlyNT first l
     sayBrightlyNT
-      fillerSpaces((QUOTIENT($LINELENGTH,2)-sayDisplayWidth first l),'" ")
+      fillerSpaces(($LINELENGTH quo 2 - sayDisplayWidth first l),'" ")
     (l:= rest l) =>
       sayBrightlyNT first l
       l:= rest l
@@ -938,7 +881,7 @@ pp2Cols(al) ==
     ppPair(abb,name)
     if canFit2ndEntry(name,al) then
       [[abb,:name],:al]:= al
-      TAB QUOTIENT($LINELENGTH,2)
+      TAB($LINELENGTH quo 2)
       ppPair(abb,name)
     sayNewLine()
   nil
@@ -947,7 +890,7 @@ ppPair(abb,name) ==
     sayBrightlyNT [:bright abb,fillerSpaces(8-entryWidth abb," "),name]
 
 canFit2ndEntry(name,al) ==
-  wid := QUOTIENT($LINELENGTH,2) - 10
+  wid := $LINELENGTH quo 2 - 10
   null al => nil
   entryWidth name > wid => nil
   entryWidth CDAR al > wid => nil
@@ -1028,14 +971,4 @@ $htCharAlist == '(
 escapeSpecialChars s ==
   u := LASSOC(s,$htCharAlist) => u
   member(s, $htSpecialChars) => strconc('"_\", s)
-  null $saturn => s
-  ALPHA_-CHAR_-P (s.0) => s
-  not (or/[dbSpecialDisplayOpChar? s.i for i in 0..MAXINDEX s]) => s
-  buf := '""
-  for i in 0..MAXINDEX s repeat buf :=
-    dbSpecialDisplayOpChar?(s.i) => strconc(buf,'"\verb!",s.i,'"!")
-    strconc(buf,s.i)
-  buf
-
-dbSpecialDisplayOpChar? c == (c = char '_~)
-
+  s

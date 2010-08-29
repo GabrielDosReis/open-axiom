@@ -328,7 +328,7 @@ retractByFunction(object,u) ==
 
 getConstantFromDomain(form,domainForm) ==
     isPartialMode domainForm => NIL
-    opAlist := getOperationAlistFromLisplib first domainForm
+    opAlist := getConstructorOperationsFromDB domainForm.op
     key := opOf form
     entryList := LASSOC(key,opAlist)
     entryList isnt [[sig, ., ., .]] =>
@@ -927,8 +927,9 @@ coerceSubDomain(val, tSuper, tSub) ==
 
 getSubDomainPredicate(tSuper, tSub, pred) ==
   predfn := HGET($superHash, [tSuper,:tSub]) => predfn
-  arg := GENSYM()
-  predfn := COMPILE(nil,["LAMBDA",[arg],substitute(arg,"#1", pred)])
+  arg := gensym()
+  [predfn] := compileInteractive
+                [gensym(),['LAM,[arg],substitute(arg,"#1", pred)]]
   HPUT($superHash, [tSuper,:tSub], predfn)
   predfn
 
@@ -947,7 +948,7 @@ compareTypeLists(tl1,tl2) ==
   -- returns true if every type in tl1 is = or is a subdomain of
   -- the corresponding type in tl2
   for t1 in tl1 for t2 in tl2 repeat
-    null isEqualOrSubDomain(t1,t2) => return NIL
+    not isEqualOrSubDomain(t1,t2) => return NIL
   true
 
 coerceIntAlgebraicConstant(object,t2) ==
@@ -979,7 +980,7 @@ coerceUnion2Branch(object) ==
       predicate := pred
       targetType := typ
   null targetType => keyedSystemError("S2IC0013",NIL)
-  predicate is ['EQCAR,.,p] => objNewWrap(rest val',targetType)
+  predicate is ['%ieq,['%head,.],p] => objNewWrap(rest val',targetType)
   objNew(objVal object,targetType)
 
 coerceBranch2Union(object,union) ==
@@ -990,7 +991,7 @@ coerceBranch2Union(object,union) ==
   p := position(objMode object,doms)
   p = -1 => keyedSystemError("S2IC0014",[objMode object,union])
   val := objVal object
-  predList.p is ['EQCAR,.,tag] =>
+  predList.p is ['%ieq,['%head,.],tag] =>
     objNewWrap([removeQuote tag,:unwrap val],union)
   objNew(val,union)
 
@@ -1237,7 +1238,7 @@ decomposeTypeIntoTower t ==
   d := deconstructT t
   null rest d => [t]
   rd := reverse t
-  [reverse QCDR rd,:decomposeTypeIntoTower QCAR rd]
+  [reverse rest rd,:decomposeTypeIntoTower first rd]
 
 reassembleTowerIntoType tower ==
   atom tower => tower

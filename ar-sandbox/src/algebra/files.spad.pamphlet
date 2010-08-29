@@ -38,7 +38,7 @@ IOMode(): Public == Private where
     output == _$OutputIOMode$Foreign(Builtin)
     bothWays == _$BothWaysIOMode$Foreign(Builtin)
     closed == _$ClosedIOMode$Foreign(Builtin)
-    x = y == EQ(x,y)$Foreign(Builtin)
+    x = y == %peq(x,y)$Foreign(Builtin)
     coerce m ==
       m = input => outputForm 'input
       m = output => outputForm 'output

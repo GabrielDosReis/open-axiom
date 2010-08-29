@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007, Gabriel Dos Reis.
+-- Copyright (C) 2007-2010, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -84,10 +84,10 @@ bcInputMatrixByFormula(htPage,junk) ==
   htMakeDoneButton('"Continue", 'bcInputMatrixByFormulaGen)
   nrows := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'rows)
-    PARSE_-INTEGER htpLabelInputString(htPage,'rows)
+    readInteger htpLabelInputString(htPage,'rows)
   ncols := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'cols)
-    PARSE_-INTEGER htpLabelInputString(htPage,'cols)
+    readInteger htpLabelInputString(htPage,'cols)
   htpSetProperty(page, 'nrows, nrows)
   htpSetProperty(page, 'ncols, ncols)
   htShowPage()
@@ -105,10 +105,10 @@ bcInputMatrixByFormulaGen htPage ==
 bcInputExplicitMatrix(htPage,junk) ==
   nrows := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'rows)
-    PARSE_-INTEGER htpLabelInputString(htPage,'rows)
+    readInteger htpLabelInputString(htPage,'rows)
   ncols := 
     null $bcParseOnly => objValUnwrap htpLabelSpadValue(htPage,'cols)
-    PARSE_-INTEGER htpLabelInputString(htPage,'cols)
+    readInteger htpLabelInputString(htPage,'cols)
   cond := nil
   k := 0
   wrows := # STRINGIMAGE nrows

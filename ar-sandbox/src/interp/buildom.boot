@@ -53,7 +53,7 @@ $commonCategoryAncestors ==
 ++ Default category packages for Record, Union, Mapping and 
 ++ Enumeration domains.
 $commonCategoryDefaults ==
-  ['(SetCategory_& $), '(BasicType_& $), NIL]
+  ['(SetCategory_& $), '(BasicType_& $), nil]
 
 ++ The slot number in a domain shell that holds the first parameter to
 ++ a domain constructor.
@@ -92,8 +92,8 @@ Record(:args) ==
 	  ["~=",[[$Boolean,"$","$"],:0]], 
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := NIL
-  dom.3 := ["RecordCategory",:QCDR dom.0]
+  dom.2 := nil
+  dom.3 := ["RecordCategory",:rest dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := third a
@@ -102,7 +102,7 @@ Record(:args) ==
   dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
 -- following is cache for equality functions
   dom.($FirstParamSlot + nargs + 3) := if nargs <= 2
-	    then [NIL,:NIL]
+	    then [nil,:nil]
 	    else newShell nargs
   -- remember this instantiation for future re-use.
   haddProp($ConstructorCache,"Record",srcArgs,[1,:dom])
@@ -118,7 +118,7 @@ RecordEqual(x,y,dom) ==
     b and
        SPADCALL(rest x, rest y, rest (dom.(nargs + 9)) or
          rest (dom.(nargs + 9).rest := findEqualFun(dom.($FirstParamSlot+1))))
-  VECP x =>
+  vector? x =>
     equalfuns := dom.(nargs + 9)
     and/[SPADCALL(x.i,y.i,equalfuns.i or _
            (equalfuns.i:=findEqualFun(dom.($FirstParamSlot + i))))_
@@ -143,7 +143,7 @@ coerceRe2E(x,source) ==
     ["construct",
      ["=", source.1.1, coerceVal2E(first x,source.1.2)], _
      ["=", source.2.1, coerceVal2E(rest x,source.2.2)] ]
-  VECP x =>
+  vector? x =>
     ['construct,
      :[["=",tag,coerceVal2E(x.i, fdom)]
        for i in 0.. for [.,tag,fdom] in rest source]]
@@ -167,8 +167,8 @@ Union(:args) ==
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
-  dom.2 := NIL
-  dom.3 := ["UnionCategory",:QCDR dom.0]
+  dom.2 := nil
+  dom.3 := ["UnionCategory",:rest dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -183,10 +183,10 @@ UnionEqual(x, y, dom) ==
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
-    typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
+    typeFun := eval ['%lam,'(_#1),p]
     FUNCALL(typeFun,x) and FUNCALL(typeFun,y) =>
       string? b => same := (x = y)
-      if p is ["EQCAR", :.] then (x := rest x; y := rest y)
+      if p is ['%ieq,['%head,.],:.] then (x := rest x; y := rest y)
       same := SPADCALL(x, y, findEqualFun(evalDomain b))
   same
 
@@ -195,11 +195,11 @@ UnionPrint(x, dom) == coerceUn2E(x, dom.0)
 coerceUn2E(x,source) ==
   ["Union",:branches] := source
   predlist := mkPredList branches
-  byGeorge := byJane := GENSYM()
+  byGeorge := byJane := gensym()
   for b in stripUnionTags branches for p in predlist  repeat
-    typeFun := COERCE(["LAMBDA", '(_#1), p],"FUNCTION")
+    typeFun := eval ['%lam,'(_#1),p]
     if FUNCALL(typeFun,x) then return
-      if p is ["EQCAR", :.] then x := rest x
+      if p is ['%ieq,['%head,.],:.] then x := rest x
 --    string? b => return x  -- to catch "failed" etc.
       string? b => byGeorge := x  -- to catch "failed" etc.
       byGeorge := coerceVal2E(x,b)
@@ -223,8 +223,8 @@ Mapping(:args) ==
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := NIL
-  dom.3 := '(SetCategory)
+  dom.2 := nil
+  dom.3 := $SetCategory
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -240,7 +240,7 @@ MappingPrint(x, dom) == coerceMap2E(x)
 coerceMap2E(x) ==
   -- nrlib domain
   ARRAYP rest x => ["theMap", BPINAME first x,
-    if $testingSystem then 0 else REMAINDER(HASHEQ rest x, 1000)]
+    if $testingSystem then 0 else HASHEQ(rest x) rem 1000]
   -- aldor 
   ["theMap", BPINAME first x  ]
 
@@ -261,8 +261,8 @@ Enumeration(:"args") ==
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
                 [["$", $Symbol], :oldSlotCode(nargs+2)]]
                   ]]
-  dom.2 := NIL
-  dom.3 := ["EnumerationCategory",:QCDR dom.0]
+  dom.2 := nil
+  dom.3 := ["EnumerationCategory",:rest dom.0]
   dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
   dom.5 := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
@@ -300,7 +300,7 @@ constructorCategory (title is [op,:.]) ==
   [funlist,.]:= FUNCALL(constructorFunction,"$",title,$CategoryFrame)
   oplist:= [[[a,b],true,c] for [a,b,c] in funlist]
   cat:=
-    JoinInner([eval ["SetCategory"],mkCategory("domain",oplist,nil,nil,nil)],
+    JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
   cat.(0):= title
   cat
@@ -308,7 +308,7 @@ constructorCategory (title is [op,:.]) ==
 --mkMappingFunList(nam,mapForm,e) == [[],e]
 mkMappingFunList(nam,mapForm,e) ==
   nargs := #rest mapForm
-  dc := GENSYM()
+  dc := gensym()
   sigFunAlist:=
     [["=",[$Boolean,nam ,nam], ["ELT",dc,$FirstParamSlot + nargs]], 
       ["~=",[$Boolean,nam,nam],["ELT",dc,0]],
@@ -319,7 +319,7 @@ mkMappingFunList(nam,mapForm,e) ==
 
 mkRecordFunList(nam,["Record",:Alist],e) ==
   len:= #Alist
-  dc := GENSYM()
+  dc := gensym()
   sigFunAlist:=
     [["construct",[nam,:[A for [.,a,A] in Alist]],"mkRecord"],
       ["=",[$Boolean,nam ,nam],["ELT",dc,$FirstParamSlot + len]],
@@ -346,18 +346,20 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
         ["hash",[$SingleInteger,name],["ELT",dc,0]],
 	 ["coerce",[$OutputForm,name],["ELT",dc,$FirstParamSlot+nargs+1]],:
 	   ("append"/
-	    [[["construct",[name,type],["XLAM",["#1"],["CONS",i,"#1"]]],
+	    [[["construct",[name,type],["XLAM",["#1"],["%makepair",i,"#1"]]],
 	      ["elt",[type,name,tag],cdownFun],
 		["case",[$Boolean,name,tag],
-		   ["XLAM",["#1"],["QEQCAR","#1",i]]]]
+		   ["XLAM",["#1"],['%ieq,['%head,"#1"],i]]]]
 		     for [.,tag,type] in listOfEntries for i in 0..])] where
 		       cdownFun() ==
-			gg:=GENSYM()
+			gg:=gensym()
 			$InteractiveMode =>
-			  ["XLAM",["#1"],["PROG1",["QCDR","#1"],
-			    ["check-union",["QEQCAR","#1",i],type,"#1"]]]
-			["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],["QCDR",gg],
-			  ["check-union",["QEQCAR",gg,i],type,gg]]]
+			  ["XLAM",["#1"],["PROG1",["%tail","#1"],
+			    ["check-union",['%ieq,['%head,"#1"],i],type,"#1"]]]
+			["XLAM",["#1"],
+                          ['%bind,[[gg,"#1"]],
+                            ["check-union",['%ieq,['%head,gg],i],type,gg],
+                              ["%tail",gg]]]
   [cList,e]
 
 mkEnumerationFunList(nam,["Enumeration",:SL],e) ==
@@ -376,7 +378,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
   nargs := #listOfEntries
   --1. create representations of subtypes
   predList:= mkPredList listOfEntries
-  g:=GENSYM()
+  g:=gensym()
   --2. create coercions from subtypes to subUnion
   cList:=
    [["=",[$Boolean,g ,g],["ELT",op,$FirstParamSlot + nargs]],
@@ -390,25 +392,26 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 	   ["case",[$Boolean,g,t],typeFun]]
 	     for p in predList for t in listOfEntries])] where
 		upFun() ==
-		  p is ["EQCAR",x,n] => ["XLAM",["#1"],["CONS",n,"#1"]]
+		  p is ['%ieq,['%head,x],n] =>
+                    ["XLAM",["#1"],["%makepair",n,"#1"]]
 		  ["XLAM",["#1"],"#1"]
 		cdownFun() ==
-		  gg:=GENSYM()
-		  if p is ["EQCAR",x,n] then
-		     ref:=["QCDR",gg]
-		     q:= ["QEQCAR", gg, n]
+		  gg:=gensym()
+		  if p is ['%ieq,['%head,x],n] then
+		     ref:=["%tail",gg]
+		     q:= ['%ieq,['%head,gg],n]
 		  else
 		     ref:=gg
 		     q:= substitute(gg,"#1",p)
-		  ["XLAM",["#1"],["PROG2",["%LET",gg,"#1"],ref,
-		       ["check-union",q,t,gg]]]
+		  ["XLAM",["#1"],
+                    ['%bind,[[gg,"#1"]],["check-union",q,t,gg],ref]]
 		downFun() ==
-		   p is ["EQCAR",x,.] =>
-		     ["XLAM",["#1"],["QCDR","#1"]]
+		   p is ['%ieq,['%head,x],.] =>
+		     ["XLAM",["#1"],["%tail","#1"]]
 		   ["XLAM",["#1"],"#1"]
 		typeFun() ==
-		   p is ["EQCAR",x,n] =>
-		     ["XLAM",["#1"],["QEQCAR",x,n]]
+		   p is ['%ieq,['%head,x],n] =>
+		     ["XLAM",["#1"],['%ieq,['%head,x],n]]
 		   ["XLAM",["#1"],p]
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
@@ -419,5 +422,5 @@ for x in '((Record mkRecordFunList)
            (Mapping mkMappingFunList)
            (Enumeration mkEnumerationFunList)) 
  repeat
-   MAKEPROP(first x, "makeFunctionList", second x)
+   property(first x, 'makeFunctionList) := second x
 

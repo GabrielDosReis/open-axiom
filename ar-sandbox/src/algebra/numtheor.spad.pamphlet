@@ -405,8 +405,10 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
     even? b and positiveRemainder(a,4) > 1 =>
       error "J(a/b) not defined for b even and a = 2 or 3 (mod 4)"
     even? b and even? a => 0
-    k : Integer
-    for k in 0.. while even? b repeat b := b quo 2
+    k : Integer := 0
+    while even? b repeat
+      b := b quo 2
+      k := k + 1
     j:I := (odd? k and positiveRemainder(a,8) = 5 => -1; 1)
     b = 1 => j
     a := positiveRemainder(a,b)
@@ -418,7 +420,10 @@ IntegerNumberTheoryFunctions(): Exports == Implementation where
         (a,b) := (b rem a,a)
       else
         -- J(2*a/b) = J(a/b) (-1) (b**2-1)/8
-        for k in 0.. until odd? a repeat a := a quo 2
+        k := 0
+        until odd? a repeat
+          a := a quo 2
+          k := k + 1
         if odd? k and (b+2) rem 8 > 4 then j := -j
     a = 0 => 0
     j

@@ -48,15 +48,17 @@ $NewCatVec := nil
 ++ Returns true if `a' is a category (runtime) object.
 isCategory: %Thing -> %Boolean
 isCategory a == 
-  REFVECP a and #a > 5 and getShellEntry(a,3) = $Category
+  vector? a and #a > 5 and getShellEntry(a,3) = $Category
 
 ++ Return true if the form `x' designates an instantiaion of a
 ++ category constructor known to the global database or the
 ++ envronement `e'.
 isCategoryForm: (%Form,%Env) -> %Boolean
 isCategoryForm(x,e) ==
-  atom x => u:= get(x,"macro",e) => isCategoryForm(u,e)
-  categoryForm? first x
+  atom x =>
+    u := macroExpand(x,e)
+    cons? u and categoryForm? u
+  categoryForm? x
  
 --% Functions for building categories
  
@@ -108,7 +110,7 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
      else s for s in sigList]
   NewLocals:= nil
   for s in sigList repeat
-    NewLocals:= union(NewLocals,Prepare CADAR s) where
+    NewLocals:= union(NewLocals,Prepare s.mmTarget) where
       Prepare u == "union"/[Prepare2 v for v in u]
       Prepare2 v ==
         v is "$" => nil
@@ -171,7 +173,7 @@ SigListUnion(extra,original) ==
              --same signature and same predicate
         opred = true => extra:= delete(x,extra)
    -- PRETTYPRINT ("we ought to subsume",x,o)
-      not MachineLevelSubsume(QCAR o,QCAR x) =>
+      not MachineLevelSubsume(first o,first x) =>
          '"Source level subsumption not implemented"
       extra:= delete(x,extra)
   for e in extra repeat
@@ -179,7 +181,7 @@ SigListUnion(extra,original) ==
     eimplem:=[]
     for x in SigListOpSubsume(e,original) repeat
         --PRETTYPRINT(LIST("SigListOpSubsume",e,x))
-      not MachineLevelSubsume(QCAR e,QCAR x) =>
+      not MachineLevelSubsume(first e,first x) =>
         --systemError '"Source level subsumption not implemented"
         original:= [e,:original]
         return nil -- this exits from the innermost for loop
@@ -351,7 +353,7 @@ FindFundAncs l ==
  
 CatEval: %Thing -> %Shell
 CatEval x ==
-  REFVECP x => x
+  vector? x => x
   e := 
     $InteractiveMode => $CategoryFrame
     $e
@@ -406,9 +408,9 @@ JoinInner(l,$e) ==
       if atom at2 then at2:=[at2]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
-      QMEMQ(QCAR at2,$Attributes) => nil
+      QMEMQ(first at2,$Attributes) => nil
       null isCategoryForm(at2,$e) =>
-        $Attributes:=[QCAR at2,:$Attributes]
+        $Attributes:=[first at2,:$Attributes]
         nil
       pred:= second at
         -- The predicate under which this category is conditional

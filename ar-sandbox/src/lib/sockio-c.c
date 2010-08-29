@@ -390,7 +390,7 @@ oa_connect_ip_port_stream(const openaxiom_byte* addr, int prot,
 OPENAXIOM_EXPORT int
 oa_socket_read(openaxiom_socket sock, openaxiom_byte* buf, int size)
 {
-   return recv(sock, buf, size, 0);
+   return recv(sock, (char*) buf, size, 0);
 }
 
 /* Attempt to read a byte from scoket `sock'.
@@ -412,7 +412,7 @@ oa_socket_read_byte(openaxiom_socket sock)
 OPENAXIOM_EXPORT int
 oa_socket_write(openaxiom_socket sock, const openaxiom_byte* buf, int size)
 {
-   return send(sock, buf, size, 0);
+   return send(sock, (const char*) buf, size, 0);
 }
 
 /* Send one byte to socket `sock'.  */

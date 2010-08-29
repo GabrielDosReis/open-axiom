@@ -106,7 +106,7 @@ start(:l) ==
     SAY fillerSpaces($LINELENGTH,'"=")
     TERPRI()
     $OLDLINE := NIL
-  $superHash := MAKE_-HASHTABLE('UEQUAL)
+  $superHash := hashTable 'EQUAL
   if null l then runspad()
   'EndOfSpad
 
@@ -195,7 +195,7 @@ recordAndPrint(x,md) ==
   $outputMode: local := md   --used by DEMO BOOT
   mode:= (md=$EmptyMode => quadSch(); md)
   if (md ~= $Void) or $printVoidIfTrue then
-    if null $collectOutput then TERPRI $algebraOutputStream
+    newlineIfDisplaying()
     if $QuietCommand = false then
       output(x',md')
   putHist('%,'value,objNewWrap(x,md),$e)
@@ -210,7 +210,6 @@ recordAndPrint(x,md) ==
   'done
 
 printTypeAndTime(x,m) ==  --m is the mode/type of the result
-  $saturn => printTypeAndTimeSaturn(x, m)
   printTypeAndTimeNormal(x, m)
 
 printTypeAndTimeNormal(x,m) ==
@@ -233,31 +232,6 @@ printTypeAndTimeNormal(x,m) ==
     $collectOutput =>
       $outputLines := [justifyMyType msgText("S2GL0012", [m]), :$outputLines]
     sayKeyedMsg("S2GL0012",[m])
-
-printTypeAndTimeSaturn(x, m) ==
-  -- header
-  if $printTimeIfTrue then
-    timeString := makeLongTimeString($interpreterTimedNames,
-      $interpreterTimedClasses)
-  else
-    timeString := '""
-  if $printTypeIfTrue then
-    typeString := form2StringAsTeX devaluate m
-  else
-    typeString := '""
-  if $printTypeIfTrue then
-    printAsTeX('"\axPrintType{")
-    if cons? typeString then
-      MAPC(FUNCTION printAsTeX, typeString)
-    else
-      printAsTeX(typeString)
-    printAsTeX('"}")
-  if $printTimeIfTrue then
-    printAsTeX('"\axPrintTime{")
-    printAsTeX(timeString)
-    printAsTeX('"}")
-
-printAsTeX(x) == PRINC(x, $texOutputStream)
 
 sameUnionBranch(uArg, m) ==
   uArg is [":", ., t] => t = m

@@ -359,7 +359,7 @@ makeSimplePredicateOrNil: %ParseForm -> %Form
 makeSimplePredicateOrNil p ==
   isSimple p => nil
   u:= isAlmostSimple p => u
-  wrapSEQExit [["%LET",g:= GENSYM(),p],g]
+  wrapSEQExit [["%LET",g:= gensym(),p],g]
  
 
 parseWhere: %List -> %Form
@@ -469,4 +469,4 @@ for x in [["<=", :"parseLessEqual"],_
 	  ["SEQ", :"parseSeq"],_
 	  ["VCONS", :"parseVCONS"],_
 	  ["where", :"parseWhere"]] repeat
-  MAKEPROP(first x, "parseTran", rest x)
+  property(first x,'parseTran) := rest x

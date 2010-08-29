@@ -494,7 +494,7 @@ setMsgCatlessAttr(msg,attr) ==
 whichCat attr ==
     found := 'catless
     for cat in $attrCats repeat
-        if ListMember? (attr,EVAL cat) then
+        if ListMember? (attr,eval cat) then
           found := cat
           return found
     found

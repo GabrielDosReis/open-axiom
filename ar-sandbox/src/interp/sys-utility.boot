@@ -35,10 +35,18 @@
 
 import sys_-os
 import vmlisp
+import hash
 namespace BOOT
 
 module sys_-utility where
+  eval: %Thing -> %Thing
   probleReadableFile : %String -> %Maybe %String
+
+
+++ Evaluate an OpenAxiom VM form.  Eventually, this function is
+++ to be provided as a builtin by a OpenAxiom target machine.
+eval x ==
+  EVAL expandToVMForm x
 
 --%
 $COMBLOCKLIST := nil
@@ -256,18 +264,52 @@ bitior(x,y) ==
 ++ compile a function definition, augmenting the current
 ++ evaluation environement with the result of the compilation.
 COMPILE_-DEFUN(name,body) ==
-  EVAL body
+  eval body
   COMPILE name
 
 ++ Augment the current evaluation environment with a function definition.
 EVAL_-DEFUN(name,body) ==
-  EVAL MACROEXPANDALL body
+  eval MACROEXPANDALL body
 
 PRINT_-AND_-EVAL_-DEFUN(name,body) ==
-  EVAL body
+  eval body
   PRINT_-DEFUN(name,body)
 
 
+--% Hash table
+
+hashTable cmp ==
+  testFun :=
+    cmp in '(ID EQ) => function EQ
+    cmp = 'EQL => function EQL
+    cmp = 'EQUAL => function EQUAL
+    error '"bad arg to hashTable"
+  MAKE_-HASH_-TABLE(KEYWORD::TEST,testFun)
+
+--% Trees to Graphs
+
+minimalise x ==
+  min(x,hashTable 'EQUAL) where
+    min(x,ht) ==
+      y := HGET(ht,x)
+      y => y
+      cons? x =>
+        z := min(first x,ht)
+        if not EQ(z,first x) then x.first := z
+        z := min(rest x,ht)
+        if not EQ(z,rest x) then x.rest := z
+        hashCheck(x,ht)
+      vector? x =>
+        for i in 0..MAXINDEX x repeat
+          x.i := min(x.i,ht)
+        hashCheck(x,ht)
+      string? x => hashCheck(x,ht)
+      x
+    hashCheck(x,ht) ==
+      y := HGET(ht,x)
+      y => y
+      HPUT(ht,x,x)
+      x
 
 --% File IO
 $InputIOMode == KEYWORD::INPUT
@@ -289,11 +331,11 @@ openBinaryFile(file,mode) ==
 ++ Attemp to read a byte from input file `ifile'.  If not end of
 ++ file, return the read byte; %nothing.
 readByteFromFile ifile ==
-  READ_-BYTE(ifile,false,%nothing)
+  readByte(ifile,false,%nothing)
 
 ++ Write byte `b' to output binary file `ofile'.
 writeByteToFile(ofile,b) ==
-  WRITE_-BYTE(b,ofile)
+  writeByte(b,ofile)
 
 closeFile file ==
   CLOSE file

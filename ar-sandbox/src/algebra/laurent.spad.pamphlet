@@ -14,7 +14,7 @@
 )abbrev category ULSCCAT UnivariateLaurentSeriesConstructorCategory
 ++ Author: Clifton J. Williamson
 ++ Date Created: 6 February 1990
-++ Date Last Updated: 10 May 1990
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains:
 ++ Also See:
@@ -207,7 +207,7 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
 --% predicates
 
     x = y ==
-      EQ(x,y)$Lisp => true
+      %peq(x,y)$Foreign(Builtin) => true
       (expDiff := getExpon(x) - getExpon(y)) = 0 =>
         getUTS(x) = getUTS(y)
       abs(expDiff) > _$streamCount$Lisp => false
@@ -501,17 +501,21 @@ UnivariateLaurentSeriesConstructor(Coef,UTS):_
     termsToOutputForm(m,uu,xxx) ==
       l : L OUT := empty()
       empty? uu => (0$Coef) :: OUT
-      n : NNI ; count : NNI := _$streamCount$Lisp
-      for n in 0..count while not empty? uu repeat
+      count : NNI := _$streamCount$Lisp
+      n : NNI := 0
+      while n <= count and not empty? uu repeat
         if frst(uu) ~= 0 then
           l := concat(termOutput((n :: I) + m,frst(uu),xxx),l)
         uu := rst uu
+        n := n + 1
       if showAll?() then
-        for n in (count + 1).. while explicitEntries? uu and _
+        n := count + 1
+        while explicitEntries? uu and _
                not eq?(uu,rst uu) repeat
           if frst(uu) ~= 0 then
             l := concat(termOutput((n::I) + m,frst(uu),xxx),l)
           uu := rst uu
+          n := n + 1
       l :=
         explicitlyEmpty? uu => l
         eq?(uu,rst uu) and frst uu = 0 => l
@@ -558,13 +562,11 @@ UnivariateLaurentSeries(Coef,var,cen): Exports == Implementation where
   I   ==> Integer
   UTS ==> UnivariateTaylorSeries(Coef,var,cen)
 
-  Exports ==> UnivariateLaurentSeriesConstructorCategory(Coef,UTS) with
+  Exports ==> Join(UnivariateLaurentSeriesConstructorCategory(Coef,UTS),_
+                   PartialDifferentialDomain(%,Variable var)) with
     coerce: Variable(var) -> %
       ++ \spad{coerce(var)} converts the series variable \spad{var} into a
       ++ Laurent series.
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} returns the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     if Coef has Algebra Fraction Integer then
       integrate: (%,Variable(var)) -> %
         ++ \spad{integrate(f(x))} returns an anti-derivative of the power

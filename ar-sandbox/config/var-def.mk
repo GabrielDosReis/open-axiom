@@ -53,12 +53,15 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 
 AR = @AR@
 CC = @CC@
+CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@
+CXXFLAGS = @CXXFLAGS@
+LDFLAGS = @LDFLAGS@
 OBJEXT = @OBJEXT@
 EXEEXT = @EXEEXT@
 # this includes leading period
 SHREXT = @shared_ext@
-# this does not include period
+# extension of the archive library; this does not include period
 LIBEXT = @libext@
 
 PACKAGE_STRING = @PACKAGE_STRING@
@@ -67,22 +70,26 @@ LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LIBTOOL = $(top_builddir)/libtool
 
 ## Command used to compile a C program 
-COMPILE = $(LIBTOOL) --mode=compile $(CC) -c
+COMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) -c $(CPPFLAGS)
+CXXCOMPILE = $(LIBTOOL) --tag=CXX --mode=compile $(CXX) -c $(CPPFLAGS)
 
 ## Sadly, at the moment, the C parts of the OpenAxiom system is not
 ## well structured enough to allow for clean dynamic libraries
 ## and dynamic linking.  So, we build static programs.
 ## This situation is to be fixed when I have time.
-LINK = $(LIBTOOL) --mode=link $(CC) -static
+LINK = $(LIBTOOL) --tag=CC --mode=link $(CC) -static $(LDFLAGS)
+CXXLINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) -static $(LDFLAGS)
 
 ## Libtool is a disaster for building DLLs on Cygwin, and insists
 ## on adding silly extensions where it should not on MinGW, so we have
 ## to be very selective about when and where to use.  Sadly, that ends
 ## up negating the whole point of having Libtool in the first place.
 ifeq (@oa_use_libtool_for_shared_lib@,no)
-LINK_SHRLIB = $(CC)
+LINK_SHRLIB = $(CC) $(LDFLAGS)
+CXXLINK_SHRLIB = $(CXX) $(LDFLAGS)
 else
-LINK_SHRLIB = $(LIBTOOL) --mode=link $(CC)
+LINK_SHRLIB = $(LIBTOOL) --tag=CC --mode=link $(CC) $(LDFLAGS)
+CXXLINK_SHRLIB = $(LIBTOOL) --tag=CXX --mode=link $(CC) $(LDFLAGS)
 endif
 
 
@@ -187,6 +194,7 @@ axiom_target_srcdir = $(axiom_targetdir)/src
 axiom_target_docdir = $(axiom_targetdir)/doc
 axiom_target_datadir = $(axiom_targetdir)/share
 axiom_target_texdir = $(axiom_target_datadir)/texmf/tex
+oa_target_includedir = $(axiom_targetdir)/include
 
 
 ## Where OpenAxiom keeps the tarballs for optional components
@@ -197,8 +205,7 @@ axiom_optional_srcdir = $(abs_top_srcdir)/zips
 open_axiom_installdir = @open_axiom_installdir@
 
 INC=$(top_srcdir)/src/include
-CCF=@CCF@
-oa_c_runtime_extra = @LIBS@ @axiom_c_runtime_extra@ -lm
+oa_c_runtime_extra = @LIBS@ @oa_c_runtime_extra@ -lm
 oa_c_libs = -lopen-axiom-core $(oa_c_runtime_extra) -lm
 
 oa_yesno_to_lisp_boolean = $(subst yes,t,$(subst no,nil,$(1)))
@@ -221,22 +228,13 @@ AXIOM = $(top_builddir)/$(target)
 ## Where to find OpenAxiom data bases.
 DAASE = $(axiom_src_datadir)
 
-TMP=$(axiom_builddir)
-
 ## Shall we build GCL?
-axiom_include_gcl = @axiom_include_gcl@
+oa_include_gcl = @oa_include_gcl@
 
 ## -------------------------------------------
 ## -- Files generated for the build machine --
 ## -------------------------------------------
-axiom_build_document = $(axiom_top_builddir)/scripts/document
-axiom_build_nowebdir = $(axiom_builddir)/noweb
-
-TANGLE = @NOTANGLE@
-WEAVE = @NOWEAVE@
-## We export TANGLE and WEAVE for use in subshells, such as document.
-export TANGLE
-export WEAVE
+oa_hammer = $(top_builddir)/src/utils/hammer$(EXEEXT)
 
 AXIOM_LISP = @AXIOM_LISP@
 # Extension of the output file name returned by compile-file

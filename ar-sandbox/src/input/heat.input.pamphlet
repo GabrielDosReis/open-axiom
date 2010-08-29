@@ -20,10 +20,10 @@
 )set messages autoload off
 )set quit unprotected
 -- This is the heat equation
-u:= operator('u);
+u:= operator('u)
 heat:= D(u(x, t), t) - D(u(x, t), x, 2) = 0
 -- This is the similarity form of the proposed solution
-f:= operator('f);
+f:= operator('f)
 s:= rule(u(x, t) == f(x/sqrt(t))/sqrt(t))
 -- Apply s to the heat equation
 s(lhs(heat)) = 0

@@ -71,7 +71,7 @@ $predvec  := nil             --bound in koOps
 $exposedOnlyIfTrue := nil    --see repeatSearch, dbShowOps, dbShowCon
 $bcMultipleNames := nil      --see bcNameConTable
 $bcConformBincount := nil    --see bcConform1
-$docTableHash := MAKE_-HASHTABLE 'EQUAL  --see dbExpandOpAlistIfNecessary
+$docTableHash := hashTable 'EQUAL  --see dbExpandOpAlistIfNecessary
 $groupChoice := nil  --see dbShowOperationsFromConform
 
 ------------------> Initial Settings <---------------------
@@ -106,7 +106,7 @@ capitalize s ==
       ("default package" . "Default Package"))) 
    or
     res := COPY_-SEQ s
-    SETELT(res,0,UPCASE res.0)
+    res.0 := UPCASE res.0
     res
 
 escapeSpecialIds u ==   --very expensive function
@@ -264,7 +264,7 @@ args2LispString x ==
       strconc('",",form2LispString first x,fnTailTail rest x)
 
 dbConstructorKind x ==
-  target := CADAR getConstructorModemapFromDB x
+  target := getConstructorModemapFromDB(x).mmTarget
   target = '(Category) => 'category
   target is ['CATEGORY,'package,:.] => 'package
   HGET($defaultPackageNamesHT,x) => 'default_ package
@@ -534,7 +534,7 @@ emptySearchPage(kind,filter,:options) ==
 isLoaded? conform == GETL(constructor? opOf conform,'LOADED)
 
 string2Integer s ==
-  and/[DIGIT_-CHAR_-P (s.i) for i in 0..MAXINDEX s] => PARSE_-INTEGER s
+  and/[DIGIT_-CHAR_-P (s.i) for i in 0..MAXINDEX s] => readInteger s
   nil
 
 dbGetInputString htPage ==
@@ -618,7 +618,7 @@ dbPart(line,n,k) ==  --returns part n of line (n=1,..) beginning in column k
 
 dbXParts(line,n,m) ==
   [.,nargs,:r] := dbParts(line,n,m)
-  [dbKindString line.0,dbName line,PARSE_-INTEGER nargs,:r]
+  [dbKindString line.0,dbName line,readInteger nargs,:r]
 
 dbParts(line,n,m) ==  --split line into n parts beginning in column m
   n = 0 => nil

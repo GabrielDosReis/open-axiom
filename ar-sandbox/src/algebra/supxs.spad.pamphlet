@@ -14,7 +14,7 @@
 )abbrev domain SUPXS SparseUnivariatePuiseuxSeries
 ++ Author: Clifton J. Williamson
 ++ Date Created: 11 November 1994
-++ Date Last Updated: 28 February 1995
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains: InnerSparseUnivariatePowerSeries,
 ++   SparseUnivariateTaylorSeries, SparseUnivariateLaurentSeries
@@ -43,10 +43,8 @@ SparseUnivariatePuiseuxSeries(Coef,var,cen): Exports == Implementation where
   SUPS ==> InnerSparseUnivariatePowerSeries(Coef)
 
   Exports ==> Join(UnivariatePuiseuxSeriesConstructorCategory(Coef,SULS),_
+                   PartialDifferentialDomain(%,Variable var),_
                    RetractableTo SUTS,CoercibleFrom Variable var) with
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} returns the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     if Coef has Algebra Fraction Integer then
       integrate: (%,Variable(var)) -> %
         ++ \spad{integrate(f(x))} returns an anti-derivative of the power

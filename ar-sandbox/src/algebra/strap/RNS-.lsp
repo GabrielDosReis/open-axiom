@@ -47,7 +47,7 @@
          (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15))
              (|getShellEntry| $ 16))
          (|getShellEntry| $ 15)))
-    ('T (SPADCALL |x| (|getShellEntry| $ 16))))) 
+    (T (SPADCALL |x| (|getShellEntry| $ 16))))) 
 
 (DEFUN |RNS-;round;2S;4| (|x| $)
   (COND
@@ -59,14 +59,13 @@
                  (|getShellEntry| $ 21))
              (|getShellEntry| $ 11))
          (|getShellEntry| $ 10)))
-    ('T
-     (SPADCALL
-         (SPADCALL |x|
-             (SPADCALL (|spadConstant| $ 18)
-                 (SPADCALL 2 (|getShellEntry| $ 20))
-                 (|getShellEntry| $ 21))
-             (|getShellEntry| $ 24))
-         (|getShellEntry| $ 10))))) 
+    (T (SPADCALL
+           (SPADCALL |x|
+               (SPADCALL (|spadConstant| $ 18)
+                   (SPADCALL 2 (|getShellEntry| $ 20))
+                   (|getShellEntry| $ 21))
+               (|getShellEntry| $ 24))
+           (|getShellEntry| $ 10))))) 
 
 (DEFUN |RNS-;norm;2S;5| (|x| $) (SPADCALL |x| (|getShellEntry| $ 26))) 
 
@@ -83,34 +82,22 @@
       (|getShellEntry| $ 35))) 
 
 (DEFUN |RNS-;floor;2S;8| (|x| $)
-  (PROG (|x1|)
-    (RETURN
-      (SEQ (LETT |x1|
-                 (SPADCALL (SPADCALL |x| (|getShellEntry| $ 37))
-                     (|getShellEntry| $ 20))
-                 |RNS-;floor;2S;8|)
-           (EXIT (COND
-                   ((SPADCALL |x| |x1| (|getShellEntry| $ 38)) |x|)
-                   ((SPADCALL |x| (|spadConstant| $ 39)
-                        (|getShellEntry| $ 41))
-                    (SPADCALL |x1| (|spadConstant| $ 18)
-                        (|getShellEntry| $ 11)))
-                   ('T |x1|))))))) 
+  (LET ((|x1| (SPADCALL (SPADCALL |x| (|getShellEntry| $ 37))
+                  (|getShellEntry| $ 20))))
+    (COND
+      ((SPADCALL |x| |x1| (|getShellEntry| $ 38)) |x|)
+      ((SPADCALL |x| (|spadConstant| $ 39) (|getShellEntry| $ 41))
+       (SPADCALL |x1| (|spadConstant| $ 18) (|getShellEntry| $ 11)))
+      (T |x1|)))) 
 
 (DEFUN |RNS-;ceiling;2S;9| (|x| $)
-  (PROG (|x1|)
-    (RETURN
-      (SEQ (LETT |x1|
-                 (SPADCALL (SPADCALL |x| (|getShellEntry| $ 37))
-                     (|getShellEntry| $ 20))
-                 |RNS-;ceiling;2S;9|)
-           (EXIT (COND
-                   ((SPADCALL |x| |x1| (|getShellEntry| $ 38)) |x|)
-                   ((SPADCALL |x| (|spadConstant| $ 39)
-                        (|getShellEntry| $ 44))
-                    (SPADCALL |x1| (|spadConstant| $ 18)
-                        (|getShellEntry| $ 24)))
-                   ('T |x1|))))))) 
+  (LET ((|x1| (SPADCALL (SPADCALL |x| (|getShellEntry| $ 37))
+                  (|getShellEntry| $ 20))))
+    (COND
+      ((SPADCALL |x| |x1| (|getShellEntry| $ 38)) |x|)
+      ((SPADCALL |x| (|spadConstant| $ 39) (|getShellEntry| $ 44))
+       (SPADCALL |x1| (|spadConstant| $ 18) (|getShellEntry| $ 24)))
+      (T |x1|)))) 
 
 (DEFUN |RNS-;patternMatch;SP2Pmr;10| (|x| |p| |l| $)
   (PROG (|r|)
@@ -122,16 +109,16 @@
               (SEQ (LETT |r| (SPADCALL |p| (|getShellEntry| $ 51))
                          |RNS-;patternMatch;SP2Pmr;10|)
                    (EXIT (COND
-                           ((QEQCAR |r| 0)
+                           ((ZEROP (CAR |r|))
                             (COND
                               ((SPADCALL
                                    (SPADCALL |x|
                                     (|getShellEntry| $ 33))
-                                   (QCDR |r|) (|getShellEntry| $ 52))
+                                   (CDR |r|) (|getShellEntry| $ 52))
                                |l|)
-                              ('T (SPADCALL (|getShellEntry| $ 53)))))
-                           ('T (SPADCALL (|getShellEntry| $ 53)))))))
-             ('T (SPADCALL (|getShellEntry| $ 53)))))))) 
+                              (T (SPADCALL (|getShellEntry| $ 53)))))
+                           (T (SPADCALL (|getShellEntry| $ 53)))))))
+             (T (SPADCALL (|getShellEntry| $ 53)))))))) 
 
 (DEFUN |RealNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

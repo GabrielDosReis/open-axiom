@@ -14,7 +14,7 @@
 )abbrev domain GSERIES GeneralUnivariatePowerSeries
 ++ Author: Clifton J. Williamson
 ++ Date Created: 22 September 1993
-++ Date Last Updated: 23 September 1993
+++ Date Last Updated: June 18, 2010
 ++ Basic Operations:
 ++ Related Domains:
 ++ Also See:
@@ -40,15 +40,13 @@ GeneralUnivariatePowerSeries(Coef,var,cen): Exports == Implementation where
   EFUPXS ==> ElementaryFunctionsUnivariatePuiseuxSeries
   FS2UPS ==> FunctionSpaceToUnivariatePowerSeries
 
-  Exports ==> UnivariatePuiseuxSeriesCategory Coef with
+  Exports ==> Join(UnivariatePuiseuxSeriesCategory Coef,_
+                   PartialDifferentialDomain(%,Variable var)) with
     coerce: Variable(var) -> %
       ++ coerce(var) converts the series variable \spad{var} into a
       ++ Puiseux series.
     coerce: UPXS(Coef,var,cen) -> %
       ++ coerce(f) converts a Puiseux series to a general power series.
-    differentiate: (%,Variable(var)) -> %
-      ++ \spad{differentiate(f(x),x)} returns the derivative of
-      ++ \spad{f(x)} with respect to \spad{x}.
     if Coef has Algebra Fraction Integer then
       integrate: (%,Variable(var)) -> %
         ++ \spad{integrate(f(x))} returns an anti-derivative of the power

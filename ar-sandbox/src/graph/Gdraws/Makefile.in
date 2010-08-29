@@ -55,7 +55,7 @@ DOTH=	$(axiom_src_srcdir)/graph/viewman
 # a .c file in the library subdirectory
 DOTC=	$(axiom_src_srcdir)/lib
 
-AXIOM_CFLAGS = ${CCF} -I${LINC} -I${GINC} -I$(srcdir) -I${HINC} \
+AXIOM_CFLAGS = ${CXXFLAGS)} -I${LINC} -I${GINC} -I$(srcdir) -I${HINC} \
 		$(axiom_includes) ${AXIOM_X11_CFLAGS}
 
 

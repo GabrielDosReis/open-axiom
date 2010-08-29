@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,9 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _PARSE_PASTE_C
+
 #include "openaxiom-c-macros.h"
-
 #include "debug.h"
-
 #include "halloc.h"
 #include "sockio.h"
 #include "parse.h"
@@ -53,8 +51,7 @@
 #include "group.h"
 #include "lex.h"
 
-#include "all_hyper_proto.H1"
-
+static void load_patch(PatchStore * patch);
 
 short int gInPaste;
 
@@ -212,11 +209,11 @@ parse_pastebutton(void)
 HyperDocPage *
 parse_patch(PasteNode *paste)
 {
-    TextNode *new;
+    TextNode *new_paste;
     TextNode *end_node;
     TextNode *begin_node;
     TextNode *arg_node;
-    TextNode *throw;
+    TextNode *old;
     TextNode *next_node;
     InputItem *paste_item = paste->paste_item;
     int where = paste->where;
@@ -231,7 +228,7 @@ parse_patch(PasteNode *paste)
     next_node = end_node->next;
     begin_node = paste->begin_node;
     arg_node = paste->arg_node;
-    throw = begin_node->next;
+    old = begin_node->next;
 
     /* now read the new stuff and add it in between all this stuff */
 
@@ -289,7 +286,7 @@ parse_patch(PasteNode *paste)
 
 
     end_node->next = 0;
-    free_node(throw, 1);
+    free_node(old, 1);
 
     init_parse_patch(gWindow->page);
     init_paste_item(paste_item);
@@ -324,14 +321,14 @@ parse_patch(PasteNode *paste)
             jump();
         }
     }
-    new = alloc_node();
-    curr_node = new;
+    new_paste = alloc_node();
+    curr_node = new_paste;
     parse_HyperDoc();
 
     /* Once I am back, I need only reallign all the text structures */
     curr_node->type = openaxiom_Noop_token;
     curr_node->next = next_node;
-    begin_node->next = new;
+    begin_node->next = new_paste;
     begin_node->type = openaxiom_Noop_token;
     free(begin_node->data.text);
     begin_node->data.text = 0;

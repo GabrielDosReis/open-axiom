@@ -159,8 +159,6 @@ Kernel(S: SetCategory): Exports == Implementation where
 
     Rep == Record(op: OP, arg: List S, nest: N, posit: N)
 
-    clearCache()
-
     B2Z   : Boolean -> Integer
     triage: (%, %)  -> Integer
     preds : OP      -> List Any

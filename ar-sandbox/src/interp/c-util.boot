@@ -41,14 +41,31 @@ module c_-util where
   replaceSimpleFunctions: %Form -> %Form
   foldExportedFunctionReferences: %List -> %List
   diagnoseUnknownType: (%Mode,%Env) -> %Form
-  declareUnusedParameters: (%List,%Code) -> %List
+  declareUnusedParameters: %Code -> %Code
   registerFunctionReplacement: (%Symbol,%Form) -> %Thing
   getFunctionReplacement: %Symbol -> %Form
   getSuccessEnvironment: (%Form,%Env) -> %Env
   getInverseEnvironment: (%Form,%Env) -> %Env
+  giveVariableSomeValue: (%Symbol,%Mode,%Env) -> %Env
 
 
+--%
+$SetCategory ==
+  '(SetCategory)
+  
 --% 
+
+++ Token to indicate that a function body should be ignored.
+$ClearBodyToken ==
+  KEYWORD::OpenAxiomClearBodyToken
+
+++
+$ConstructorCache := hashTable 'EQ
+
+++
+$instantRecord := hashTable 'EQ
+
+
 ++ if true continue compiling after errors
 $scanIfTrue := false
 
@@ -116,7 +133,8 @@ substituteDollarIfRepHack m ==
 ++ current functor, if any.
 getRepresentation: %Env -> %Maybe %Mode
 getRepresentation e ==
-  (get("Rep","value",e) or return nil).expr
+  u := get('Rep,'value,e) => u.expr
+  get('Rep,'macro,e)
 
 
 ++ Returns true if the form `t' is an instance of the Tuple constructor.
@@ -145,15 +163,22 @@ wantArgumentsAsTuple(args,sig) ==
   isHomoegenousVarargSignature sig and #args ~= #sig
 
 ++ We are about to seal the (Lisp) definition of a function.
-++ Augment the `body' with a declaration for those `parms'
+++ Augment the body of any function definition in the form `x'
+++ with declarations for unused parameters.
 ++ that are unused.
-declareUnusedParameters(parms,body) ==
-  unused := [p for p in parms | not CONTAINED(p,body)]
-  null unused => [body]
-  [["DECLARE",["IGNORE",:unused]],body]
+declareUnusedParameters x == (augment x; x) where
+  augment x == 
+    atomic? x => nil
+    x is [op,parms,body] and op in $AbstractionOperator =>
+      augment body
+      unused := [p for p in parms | not usedSymbol?(p,body)]
+      null unused => [body]
+      x.rest.rest := [["DECLARE",["IGNORE",:unused]],body]
+    for x' in x repeat
+      augment x'
 
 devaluate d ==
-  not REFVECP d => d
+  not vector? d => d
   QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
     getShellEntry(d,0)
   QSGREATERP(QVSIZE d,0) =>
@@ -165,7 +190,7 @@ devaluate d ==
 devaluateList l == [devaluate d for d in l]
  
 devaluateDeeply x ==
-  VECP x => devaluate x
+  vector? x => devaluate x
   atom x => x
   [devaluateDeeply y for y in x]
 
@@ -426,6 +451,12 @@ getInverseEnvironment(a,e) ==
     e
   a is ["not",a'] => getSuccessEnvironment(a',e)
   e
+
+++ Give some abstract value to the variable `v' of mode `m' in `e'.
+++ Return the resulting environment.
+giveVariableSomeValue(x,m,e) ==
+  put(x,'value,[genSomeVariable(),m,nil],e)
+
 
 printEnv E ==
   for x in E for i in 1.. repeat
@@ -886,9 +917,9 @@ sublisV(p,e) ==
       -- no need to descend vectors unless they are categories
       isCategory e => LIST2VEC [suba(p,e.i) for i in 0..MAXINDEX e]
       atom e => (y:= ASSQ(e,p) => rest y; e)
-      u:= suba(p,QCAR e)
-      v:= suba(p,QCDR e)
-      EQ(QCAR e,u) and EQ(QCDR e,v) => e
+      u:= suba(p,first e)
+      v:= suba(p,rest e)
+      EQ(first e,u) and EQ(rest e,v) => e
       [u,:v]
 
 --% DEBUGGING PRINT ROUTINES used in breaks
@@ -1061,16 +1092,20 @@ mutateLETFormWithUnaryFunction(form,fun) ==
 $middleEndMacroList == 
   '(COLLECT REPEAT SUCHTHATCLAUSE THETA THETA1 SPADREDUCE SPADDO)
 
-middleEndExpand: %Form -> %Form
+--middleEndExpand: %Form -> %Code
 middleEndExpand x ==
-  isAtomicForm x => x
-  first x in $middleEndMacroList =>
+  x = '%false or x = '%nil => 'NIL
+  IDENTP x and (x' := x has %Rename) => x'
+  atomic? x => x
+  [op,:args] := x
+  IDENTP op and (fun := getOpcodeExpander op) =>
+    middleEndExpand apply(fun,x,nil)
+  op in $middleEndMacroList =>
     middleEndExpand MACROEXPAND_-1 x
-  a := middleEndExpand first x
-  b := middleEndExpand rest x
-  EQ(a,first x) and EQ(b,rest x) => x
+  a := middleEndExpand op
+  b := middleEndExpand args
+  EQ(a,op) and EQ(b,args) => x
   [a,:b]
-
 
 
 -- A function is simple if it looks like a super combinator, and it
@@ -1100,17 +1135,17 @@ eqSubst(args,parms,body) ==
 
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
-  isAtomicForm form => form
+  atomic? form => form
   form is ["COND",:body] =>
     mutateCONDFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["LET",:.] =>
     optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["spadConstant","$",n] =>
     null(op := getCapsuleDirectoryEntry n) => form
-    getFunctionReplacement op is ["XLAM",=nil,body] 
-      and isAtomicForm body => body
     -- Conservatively preserve object identity and storage 
     -- consumption by not folding non-atomic constant forms.
+    getFunctionReplacement op isnt ['XLAM,=nil,body] => form
+    atomic? body or isVMConstantForm body => body
     form
   -- 1. process argument first.
   for args in tails rest form repeat
@@ -1132,9 +1167,9 @@ replaceSimpleFunctions form ==
       -- Identity function toos.
       parms is [=body] => first args
       -- conservatively approximate eager semantics
-      and/[isAtomicForm first as for as in tails args] =>
+      and/[atomic? first as for as in tails args] =>
         -- alpha rename before substitution.
-	newparms := [GENSYM() for p in parms]
+	newparms := [gensym() for p in parms]
 	body := eqSubstAndCopy(newparms,parms,body)
 	eqSubst(args,newparms,body)
       -- get cute later.
@@ -1155,7 +1190,7 @@ forwardingCall?(vars,body) ==
 
 ++ Return true if `form' has a linear usage of all variables in `vars'.
 usesVariablesLinearly?(form,vars) ==
-  isAtomicForm form => true
+  atomic? form => true
   and/[numOfOccurencesOf(var,form) < 2 for var in vars] 
 
 ++ We are processing a function definition with parameter list `vars'
@@ -1173,21 +1208,23 @@ expandableDefinition?(vars,body) ==
     -- FIXME: This should be done only for constant creators.
     null vars' => semiSimpleRelativeTo?(body,$VMsideEffectFreeOperators)
 
-    isAtomicForm body => true
+    atomic? body => true
     [op,:args] := body
     not IDENTP op => false
-    and/[isAtomicForm x for x in args] 
+    and/[atomic? x for x in args] 
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')
     false
-  expand? => ["XLAM",vars',body]
+  expand? =>
+    body is [fun,: =vars'] and symbol? fun => fun
+    ['XLAM,vars',body]
   nil
 
 ++ Replace all SPADCALLs to operations defined in the current
 ++ domain.  Conditional operations are not folded.
 foldSpadcall: %Form -> %Form
 foldSpadcall form ==
-  isAtomicForm form => form           -- leave atomic forms alone
+  atomic? form => form           -- leave atomic forms alone
   form is ["DECLARE",:.] => form      -- don't walk declarations
   form is ["LET",inits,:body] =>
     mutateLETFormWithUnaryFunction(form,"foldSpadcall")
@@ -1273,7 +1310,7 @@ backendCompileILAM: (%Symbol,%List, %Code) -> %Symbol
 backendCompileILAM(name,args,body) ==
   args' := NLIST(#args, ["GENSYM"])
   body' := eqSubst(args',args,body)
-  MAKEPROP(name,"ILAM",true)
+  property(name,'ILAM) := true
   setDynamicBinding(name,["LAMBDA",args',:body'])
   name
 
@@ -1284,7 +1321,7 @@ MAKE_-CLOSEDFN_-NAME() ==
 
 backendCompileNEWNAM: %Form -> %Void
 backendCompileNEWNAM x ==
-  isAtomicForm x => nil
+  atomic? x => nil
   atom(y := first x) =>
     backendCompileNEWNAM rest x
     if y = "CLOSEDFN" then
@@ -1303,10 +1340,10 @@ backendCompileNEWNAM x ==
 ++ as alists.
 backendCompileSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSLAM(name,args,body) ==
-  al := INTERNL(name,'";AL")    -- name of the cache alist.
+  al := mkCacheName name        -- name of the cache alist.
   auxfn := INTERNL(name,'";")   -- name of the worker function.
-  g1 := GENSYM()                -- name for the parameter.
-  g2 := GENSYM()                -- name for the cache value
+  g1 := gensym()                -- name for the parameter.
+  g2 := gensym()                -- name for the cache value
   u :=                          -- body of the stub function
     null args => [nil,[auxfn]]
     null rest args => [[g1],[auxfn,g1]]
@@ -1335,10 +1372,10 @@ backendCompileSLAM(name,args,body) ==
 ++ table.  This backend compiler is used to compile constructors.
 backendCompileSPADSLAM: (%Symbol,%List,%Code) -> %Symbol
 backendCompileSPADSLAM(name,args,body) ==
-  al := INTERNL(name,'";AL")   -- name of the cache hash table.
+  al := mkCacheName name       -- name of the cache hash table.
   auxfn := INTERNL(name,'";")  -- name of the worker function.
-  g1 := GENSYM()               -- name of the worker function parameter
-  g2 := GENSYM()               -- name for the cache value.
+  g1 := gensym()               -- name of the worker function parameter
+  g2 := gensym()               -- name for the cache value.
   u := 
     null args => [nil,nil,[auxfn]]
     null rest args => [[g1],["devaluate",g1],[auxfn,g1]]
@@ -1384,8 +1421,8 @@ backendCompile2 code ==
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
   IDENTP x and x ~= "$" and x ~= "$$" and
-    (PNAME x).0 = char "$" and not DIGITP((PNAME x).1) => x
-  isAtomicForm x => nil
+    (PNAME x).0 = char "$" and not digit?((PNAME x).1) => x
+  atomic? x => nil
   first x = "FLUID" => second x
   a := backendFluidize first x
   b := backendFluidize rest x
@@ -1402,9 +1439,15 @@ $SpecialVars := []
 pushLocalVariable: %Symbol -> %List
 pushLocalVariable x ==
   x ~= "$" and (p := PNAME x).0 = char "$" and
-    p.1 ~= char "," and not DIGITP p.1 => nil
+    p.1 ~= char "," and not digit? p.1 => nil
   PUSH(x,$LocalVars)
 
+isLispSpecialVariable x ==
+  s := PNAME x
+  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not readOnly? x
+  
+noteSpecialVariable x ==
+  $SpecialVars := insert(x,$SpecialVars)
 
 --%
 --% Middle Env to Back End Transformations.
@@ -1463,7 +1506,7 @@ il2OldForm x ==
         e.first := op
         ilTransformInsns rest e
         e
-      ["%Call",:ilTransformInsns e]
+      ['%call,:ilTransformInsns e]
     otherwise => ilTransformInsns x
 
 ++ Subroutines of il2OldForm to walk sequence of IL instructions.
@@ -1476,20 +1519,21 @@ ilTransformInsns form ==
 --%
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.
-mutateToBackendCode: %Form -> %Void
-mutateToBackendCode x ==
-  isAtomicForm x => nil
+massageBackendCode: %Code -> %Void
+massageBackendCode x ==
+  IDENTP x and isLispSpecialVariable x => noteSpecialVariable x
+  atomic? x => nil
   -- temporarily have TRACELET report MAKEPROPs.
   if (u := first x) = "MAKEPROP" and $TRACELETFLAG then
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
-    if u ~= "DCQ" then
+    if u ~= 'DCQ and u ~= 'SETQ then
       $NEWSPAD or $FUNAME in $traceletFunctions =>
         nconc(x,$FUNNAME__TAIL)
         x.first := "LETT"
       $TRACELETFLAG => x.first := "/TRACE-LET"
       u = "%LET" => x.first := "SPADLET"
-    mutateToBackendCode CDDR x
+    massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
       second x is ["FLUID",:.] =>
@@ -1498,20 +1542,30 @@ mutateToBackendCode x ==
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
-    mutateToBackendCode x
+    massageBackendCode x
+  u in '(LET LET_*) =>
+    oldVars := $LocalVars
+    vars := nil
+    for [var,init] in second x repeat
+      massageBackendCode init
+      $LocalVars := [var,:$LocalVars]
+      vars := [var,:vars]
+    massageBackendCode x.rest.rest
+    newVars := setDifference($LocalVars,setUnion(vars,oldVars))
+    $LocalVars := setUnion(oldVars,newVars)
   u in '(PROG LAMBDA) =>
     newBindings := []
     for y in second x repeat
       not (y in $LocalVars) =>
         $LocalVars := [y,:$LocalVars]
         newBindings := [y,:newBindings]
-    res := mutateToBackendCode CDDR x
+    res := massageBackendCode CDDR x
     $LocalVars := REMOVE_-IF(function (y +-> y in newBindings), 
                      $LocalVars)
     [u,second x,:res]
   u = "DECLARE" => nil       -- there is nothing to do convert there
-  mutateToBackendCode u
-  mutateToBackendCode rest x
+  massageBackendCode u
+  massageBackendCode rest x
 
 
 skipDeclarations: %List -> %List
@@ -1533,11 +1587,31 @@ declareGlobalVariables vars ==
   ["DECLARE",["SPECIAL",:vars]]
 
 simplifySEQ form ==
-  isAtomicForm form => form
+  atomic? form => form
   form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
   for stmts in tails form repeat
     stmts.first := simplifySEQ first stmts
   form
+
+++ Return true if the Lisp `form' has a `RETURN' form
+++ that needs to be enclosed in a `PROG' form.
+needsPROG? form ==
+  atomic? form => false
+  op := form.op
+  op = 'RETURN => true
+  op in '(LOOP PROG) => false
+  form is ['BLOCK,=nil,:.] => false
+  or/[needsPROG? x for x in form]
+
+++ We are processing the complete `body' of a function definition.
+++ If this body is a multiway test, there is no need to have
+++ a RETURN-FROM operator in the immediate consequence of a branch.
+removeToplevelRETURN_-FROM body ==
+  if body is [['COND,:stmts]] then
+    for stmt in stmts repeat
+      stmt is [.,['RETURN_-FROM,.,expr]] =>
+        second(stmt) := expr
+  body
 
 ++ Generate Lisp code by lowering middle end defining form `x'.
 ++ x has the strucrure: <name, parms, stmt1, ...>
@@ -1547,26 +1621,31 @@ transformToBackendCode x ==
   $LocalVars: fluid := nil
   $SpecialVars: fluid := nil
   x := middleEndExpand x
-  mutateToBackendCode CDDR x
+  massageBackendCode CDDR x
   body := skipDeclarations CDDR x
   -- Make it explicitly a sequence of statements if it is not a one liner.
   body := 
-    stmt := first body
-    null rest body and 
-      (atom stmt or first stmt = "SEQ" or not CONTAINED("EXIT",stmt)) =>
-        body
+    body is [stmt] and
+      (atom stmt
+        or stmt.op in '(SEQ LET LET_*)
+          or not CONTAINED("EXIT",stmt)) =>
+            body
     [simplifySEQ ["SEQ",:body]]
   $FluidVars := removeDuplicates nreverse $FluidVars
   $LocalVars := S_-(S_-(removeDuplicates nreverse $LocalVars,$FluidVars),
                   LISTOFATOMS second x)
   lvars := [:$FluidVars,:$LocalVars]
   fluids := S_+($FluidVars,$SpecialVars)
-  body := 
+  body :=
     fluids ~= nil =>
-      [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-    lvars ~= nil or CONTAINED("RETURN",body) =>
+      lvars ~= nil or needsPROG? body =>
+        [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
+      body is [[op,bindings,:body']] and op in '(LET LET_*) =>
+        [[op,bindings,declareGlobalVariables fluids,:body']]
+      [declareGlobalVariables fluids,:body]
+    lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]
-    body
+    removeToplevelRETURN_-FROM body
   -- add reference parameters to the list of special variables.
   fluids := S_+(backendFluidize second x, $SpecialVars)
   lastdecl := lastDeclarationNode rest x
@@ -1626,15 +1705,6 @@ compileQuietly fn ==
 --%
 --% Compile Time operation lookup for the benefit of domain inlining.
 --%
-
-++ Subroutine of lookupDefiningFunction.
-++ Called when the domain of computation `dc' is closed (this is the
-++ case of niladic constructors) to lookup up the definition function
-++ of the operation `op' with signature `sig'.
-lookupFunctionInstance(op,sig,dc) ==
-  dom := eval dc
-  sig := MSUBST(devaluate dom,dc,sig)
-  compiledLookup(op,sig,dom)
 
 ++ If `x' is a formal map variable, returns its position.
 ++ Otherwise return nil.
@@ -1720,7 +1790,11 @@ lookupDefiningFunction(op,sig,dc) ==
   -- 1. Read domain information, if available.
   [ctor,:args] := dc
   -- 1.1. Niladic constructors don't need approximation.
-  null args => lookupFunctionInstance(op,sig,dc)
+  --      FIXME: However, there may be cylic dependencies
+  --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
+  --      us from full evaluation.  
+  null args and ctor in $SystemInlinableConstructorNames =>
+    compiledLookup(op,sig,dc)
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil
   -- 1.2. Silently give up if the constructor is just not there

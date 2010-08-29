@@ -71,8 +71,8 @@ DomainPrint(D,brief) ==
   SAY '"-----------------------------------------------------------------------"
  
 DomainPrint1(D,brief,$e) ==
-  REFVECP D and not isDomain D => PacPrint D
-  if REFVECP D then D:= D.4
+  vector? D and not isDomain D => PacPrint D
+  if vector? D then D:= D.4
              --if we were passed a vector, go to the domain
   Sublis:=
     [:
@@ -85,11 +85,11 @@ DomainPrint1(D,brief,$e) ==
     if not brief then
       SAY ['"View number ",i,'" corresponding to categories:"]
       PRETTYPRINT first u
-    if i=1 and REFVECP uu.5 then
+    if i=1 and vector? uu.5 then
       vv:= COPY_-SEQ uu.5
       uu.5:= vv
       for j in 0..MAXINDEX vv repeat
-        if REFVECP vv.j then
+        if vector? vv.j then
           l:= ASSQ(keyItem vv.j,Sublis)
           if l
              then name:= rest l
@@ -103,13 +103,13 @@ DomainPrint1(D,brief,$e) ==
       uu.1:= uu.2:= uu.5:= '"As in first view"
     for i in 6..MAXINDEX uu repeat
       uu.i:= DomainPrintSubst(uu.i,Sublis)
-      if REFVECP uu.i then
+      if vector? uu.i then
         name:=DPname()
         Sublis:= [[keyItem uu.i,:name],:Sublis]
         $Sublis:= [first Sublis,:$Sublis]
         $WhereList:= [[name,:uu.i],:$WhereList]
         uu.i:= name
-      if uu.i is [.,:v] and REFVECP v then
+      if uu.i is [.,:v] and vector? v then
         name:=DPname()
         Sublis:= [[keyItem v,:name],:Sublis]
         $Sublis:= [first Sublis,:$Sublis]
@@ -125,7 +125,7 @@ DPname() ==
 PacPrint v ==
   vv:= COPY_-SEQ v
   for j in 0..MAXINDEX vv repeat
-    if REFVECP vv.j then
+    if vector? vv.j then
       l:= ASSQ(keyItem vv.j,Sublis)
       if l
          then name:= rest l
@@ -135,7 +135,7 @@ PacPrint v ==
           $Sublis:= [first Sublis,:$Sublis]
           $WhereList:= [[name,:vv.j],:$WhereList]
       vv.j:= name
-    if cons? vv.j and REFVECP(u:=rest vv.j) then
+    if cons? vv.j and vector?(u:=rest vv.j) then
       l:= ASSQ(keyItem u,Sublis)
       if l
          then name:= rest l
@@ -193,14 +193,14 @@ CategoriesFromGDC x ==
  
 compCategories u ==
   atom u => u
-  not atom first u =>
+  cons? first u =>
     error ['"compCategories: need an atom in operator position", first u]
   first u = "Record" =>
     -- There is no modemap property for these guys so do it by hand.
-    [first u, :[[":", a.1, compCategories1(a.2,'(SetCategory))] for a in rest u]]
+    [first u, :[[":", a.1, compCategories1(a.2,$SetCategory)] for a in rest u]]
   first u = "Union" or first u = "Mapping" =>
     -- There is no modemap property for these guys so do it by hand.
-    [first u, :[compCategories1(a,'(SetCategory)) for a in rest u]]
+    [first u, :[compCategories1(a,$SetCategory) for a in rest u]]
   u is ['SubDomain,D,.] => compCategories D
   v:=get(first u,'modemap,$e)
   atom v =>
@@ -253,10 +253,9 @@ optFunctorBody x ==
       [CondClause u for u in l | u and first u] where
         CondClause [pred,:conseq] ==
           [optFunctorBody pred,:optFunctorPROGN conseq]
-    l:= EFFACE('((QUOTE T)),l)
-                   --delete any trailing ("T)
+    l:= EFFACE(['%true],l) --delete any trailing ("T)
     null l => nil
-    CAAR l='(QUOTE T) =>
+    CAAR l='%true =>
       (null CDAR l => nil; null CDDAR l => CADAR l; ["PROGN",:CDAR l])
     null rest l and null CDAR l =>
             --there is no meat to this COND
@@ -269,7 +268,7 @@ optFunctorBody x ==
  
 optFunctorBodyQuotable u ==
   null u => true
-  NUMBERP u => true
+  integer? u => true
   atom u => nil
   u is ['QUOTE,:.] => true
   nil
@@ -388,73 +387,11 @@ mkTypeForm x ==
     ['LIST,MKQ 'Record,:[mkTypeForm y for y in argl]]
   x is ['Join,:argl] =>
     ['LIST,MKQ 'Join,:[mkTypeForm y for y in argl]]
-  x is ["%Call",:argl] => ['MKQ, optCall x]
+  x is ['%call,:argl] => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD
   x is [op] => MKQ x
   x is [op,:argl] => ['LIST,MKQ op,:[mkTypeForm a for a in argl]]
- 
-setVector4(catNames,catsig,conditions) ==
-  if $HackSlot4 then
-    for ["%LET",name,cond,:.] in $getDomainCode repeat
-      $HackSlot4:=MSUSBT(name,cond,$HackSlot4)
-  code := ["setShellEntry",'$,4,'TrueDomain]
-  code:=['(%LET TrueDomain (nreverse TrueDomain)),:$HackSlot4,code]
-  code:=
-    [:
-      [setVector4Onecat(u,v,w)
-        for u in catNames for v in catsig for w in conditions],:code]
-  ['(%LET TrueDomain NIL),:code]
- 
-setVector4Onecat(name,instantiator,info) ==
-            --generates code to create one item in the
-            --Alist representing a domain
-            --returns a single LISP expression
-  instantiator is ['DomainSubstitutionMacro,.,body] =>
-    setVector4Onecat(name,body,info)
-  data:=
-       --CAR name.4 contains all the names except itself
-       --hence we need to add this on, by the above CONS
-    ['CONS,['CONS,mkTypeForm instantiator,['CAR,['ELT,name,4]]],
-      name]
-  data:= ['SETQ,'TrueDomain,['CONS,data,'TrueDomain]]
-  TruthP info => data
-  ['COND,[TryGDC PrepareConditional info,data],:
-    Supplementaries(instantiator,name)] where
-      Supplementaries(instantiator,name) ==
-        slist:=
-          [u for u in $supplementaries | AncestorP(first u,[instantiator])]
-        null slist => nil
-        $supplementaries:= S_-($supplementaries,slist)
-        PRETTYPRINT [instantiator,'" should solve"]
-        PRETTYPRINT slist
-        slist:=
-          [form(u,name) for u in slist] where
-            form([cat,:cond],name) ==
-              u:= ['QUOTE,[cat,:first eval(cat).4]]
-              ['COND,[TryGDC cond,['SETQ,'TrueDomain,['CONS,['CONS,u,name],
-                'TrueDomain]]]]
-        # slist=1 => [CADAR slist]
-                      --return a list, since it is CONSed
-        slist:= ['PROGN,:slist]
-        [['(QUOTE T),slist]]
- 
-setVector4part3(catNames,catvecList) ==
-    --the names are those that will be applied to the various vectors
-  generated:= nil
-  for u in catvecList for uname in catNames repeat
-    for v in third u.4 repeat
-      if w:= assoc(first v,generated)
-         then w.rest := [[rest v,:uname],:rest w]
-         else generated:= [[first v,[rest v,:uname]],:generated]
-  codeList := nil
-  for [w,:u] in generated repeat
-     code := compCategories w
-     for v in u repeat
-       code:= ["setShellEntry",rest v,first v,code]
-     if CONTAINED('$,w) then $epilogue := [code,:$epilogue]
-                        else codeList := [code,:codeList]
-  codeList
  
 PrepareConditional u == u
  
@@ -517,7 +454,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
   n:=MAXINDEX cat
   code:=
     [u
-      for i in 6..n | not atom cat.i and not atom (sig:= first cat.i)
+      for i in 6..n | cons? cat.i and cons? (sig:= first cat.i)
          and
           (u:=
             SetFunctionSlots(SUBLIS(slist,sig),['ELT,instantiatedBase,i],flag,
@@ -529,10 +466,10 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
       atom code =>nil
-      QCAR code in '(getShellEntry ELT QREFELT) =>
+      code.op in '(getShellEntry ELT QREFELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
-      code is [x,name,number,u'] and x in '(setShellEntry SETELT QSETREFV) =>
+      code is [x,name,number,u'] and x in '(setShellEntry QSETREFV) =>
         update(u',copyvec,[[name,:number],:sofar])
   for i in 6..n repeat
     for u in copyvec.i repeat
@@ -587,7 +524,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
               else viewAssoc,EnvToPass) for v in rest u]
     TruthP CAAR c => ['PROGN,:CDAR c]
     while (c and (LAST c is [c1] or LAST c is [c1,[]]) and
-            (c1 = '(QUOTE T) or c1 is ['HasAttribute,:.])) repeat
+            (c1 = '%true or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end
         c:=nreverse rest nreverse c
     null c => '(LIST)
@@ -625,7 +562,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
   code is ['LIST,:.] => nil
   code is ['devaluate,:.] => nil
   code is ['MDEF,:.] => nil
-  code is ["%Call",:.] => code
+  code is ['%call,:.] => code
   code is ["setShellEntry",:.] => code -- can be generated by doItIf
   code is ['SETELT,:.] => systemErrorHere ["DescendCode",code]
   code is ['QSETREFV,:.] => systemErrorHere ["DescendCode",code]
@@ -634,7 +571,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
  
 ConstantCreator u ==
   null u => false
-  u is [q,.,.,u'] and (q in '(setShellEntry SETELT QSETREFV)) => 
+  u is [q,.,.,u'] and (q in '(setShellEntry QSETREFV)) => 
     ConstantCreator u'
   u is ['CONS,:.] => false
   true
@@ -657,30 +594,28 @@ TryGDC cond ==
   cond
  
 SetFunctionSlots(sig,body,flag,mode) == --mode is either "original" or "adding"
-  catNames := ['$]
-  for u in $catvecList for v in catNames repeat
-    null body => return nil
-    for catImplem in LookUpSigSlots(sig,u.1) repeat
-      catImplem is [q,.,index] and (q='ELT or q='CONST) =>
-        if q is 'CONST and body is ['CONS,a,b] then
-           body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
-        body:= ["setShellEntry",v,index,body]
-        if REFVECP $SetFunctions and TruthP flag then
-          u.index := true
-        v='$ =>            -- we are looking at the principal view
-          not REFVECP $SetFunctions => nil --packages don't set it
-          -- the function was already assigned
-          TruthP $SetFunctions.index => return body := nil
-          $SetFunctions.index :=
-            TruthP flag => true
-            not $SetFunctions.index => flag
-            ["or",$SetFunctions.index,flag]
-      catImplem is ['Subsumed,:truename] =>
-        mode='original =>
-          truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90
-          body := SetFunctionSlots(truename,body,nil,mode)
-      keyedSystemError("S2OR0002",[catImplem])
-  body is ["setShellEntry",:.] => body
+  null body => return nil
+  u := first $catvecList
+  for catImplem in LookUpSigSlots(sig,u.1) repeat
+    catImplem is [q,.,index] and (q='ELT or q='CONST) =>
+      if q is 'CONST and body is ['CONS,a,b] then
+         body := ['CONS,'IDENTITY,['FUNCALL,a,b]]
+      body:= ['setShellEntry,'$,index,body]
+      not vector? $SetFunctions => nil --packages don't set it
+      if TruthP flag then             -- unconditionally defined function
+        u.index := true
+      TruthP $SetFunctions.index =>   -- the function was already assigned
+        return body := nil
+      $SetFunctions.index :=
+        TruthP flag => true
+        not $SetFunctions.index => flag
+        ['_or,$SetFunctions.index,flag]
+    catImplem is ['Subsumed,:truename] =>
+      mode='original =>
+        truename is [fn,:.] and fn in '(Zero One) => nil --hack by RDJ 8/90
+        body := SetFunctionSlots(truename,body,nil,mode)
+    keyedSystemError("S2OR0002",[catImplem])
+  body is ['setShellEntry,:.] => body
   nil
  
 LookUpSigSlots(sig,siglist) ==
@@ -809,7 +744,7 @@ InvestigateConditions catvecListMaker ==
   ($HackSlot4:= [reshape u for u in $HackSlot4]) where
     reshape u ==
       ['COND,[TryGDC ICformat rest u],
-             ['(QUOTE T),['RPLACA,'(CAR TrueDomain),
+             ['%true,['RPLACA,'(CAR TrueDomain),
                              ['delete,['QUOTE,first u],'(CAAR TrueDomain)]]]]
   $supplementaries:=
     [u
@@ -975,7 +910,7 @@ encodeItem x ==
  
 getCaps x ==
   s:= STRINGIMAGE x
-  clist:= [c for i in 0..MAXINDEX s | UPPER_-CASE_-P (c:= s.i)]
+  clist:= [c for i in 0..MAXINDEX s | upperCase? (c:= s.i)]
   null clist => '"__"
   strconc/[first clist,:[L_-CASE u for u in rest clist]]
  
@@ -1006,7 +941,7 @@ alistSize c ==
       count(CDAR x,level+1)+count(rest x,level)
  
 addSuffix(n,u) ==
-  ALPHA_-CHAR_-P((s:= STRINGIMAGE u).(MAXINDEX s)) => 
+  alphabetic?((s:= STRINGIMAGE u).(MAXINDEX s)) => 
     INTERN strconc(s,STRINGIMAGE n)
   INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  

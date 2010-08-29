@@ -65,7 +65,7 @@ put(x,prop,val,e) ==
   $InteractiveMode and not EQ(e,$CategoryFrame) =>
     putIntSymTab(x,prop,val,e)
   --e must never be $CapsuleModemapFrame
-  null atom x => put(first x,prop,val,e)
+  cons? x => put(first x,prop,val,e)
   newProplist:= augProplistOf(x,prop,val,e)
   prop="modemap" and $insideCapsuleFunctionIfTrue=true =>
     SAY ["**** modemap PUT on CapsuleModemapFrame: ",val]
@@ -91,7 +91,7 @@ pmatchWithSl(s,p,al) ==
   s=p => al
   v:= assoc(p,al) => s=rest v or al
   MEMQ(p,$PatternVariableList) => [[p,:s],:al]
-  null atom p and null atom s and (al':= pmatchWithSl(first s,first p,al)) and
+  cons? p and cons? s and (al':= pmatchWithSl(first s,first p,al)) and
     pmatchWithSl(rest s,rest p,al')
 
 --======================================================================
@@ -140,7 +140,6 @@ compDefineLisplib(df,m,e,prefix,fal,fn) ==
   $op: local := op
   $lisplibAttributes: local := NIL
   $lisplibPredicates: local := NIL -- set by makePredicateBitVector
-  $lisplibCategoriesExtended: local := NIL -- this is always nil. why? (tpd)
   $lisplibForm: local := NIL
   $lisplibKind: local := NIL
   $lisplibModemap: local := NIL
@@ -358,7 +357,7 @@ compAtom(x,m,e) ==
 
 extractCodeAndConstructTriple(u, m, oldE) ==
   u := markKillAll u
-  u is ["%Call",fn,:.] =>
+  u is ['%call,fn,:.] =>
     if fn is ["applyFun",a] then fn := a
     [fn,m,oldE]
   [op,:.,env] := u
@@ -367,8 +366,8 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compSymbol(s,m,e) ==
   s="$NoValue" => ["$NoValue",$NoValueMode,e]
   isFluid s => [s,getmode(s,e) or return nil,e]
-  s="true" => ['(QUOTE T),$Boolean,e]
-  s="false" => [false,$Boolean,e]
+  s="true" => ['%true,$Boolean,e]
+  s="false" => ['%false,$Boolean,e]
   s=m or isLiteral(s,e) => [["QUOTE",s],s,e]
   v:= get(s,"value",e) =>
 --+
@@ -511,7 +510,7 @@ compMacro(form,m,e) ==
       :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
   ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   m=$EmptyMode or m=$NoValueMode =>
-    ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]
+    ["/throwAway",$NoValueMode,putMacro(lhs.op,rhs,e)]
 
 --compMacro(form,m,e) ==
 --  $macroIfTrue: local:= true
@@ -527,7 +526,7 @@ compMacro(form,m,e) ==
 --  ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
 --  m=$EmptyMode or m=$NoValueMode =>
 --    rhs := markMacro(lhs,rhs)
---    ["/throwAway",$NoValueMode,put(first lhs,"macro",rhs,e)]
+--    ["/throwAway",$NoValueMode,putMacro(lhs.op,rhs,e)]
 
 compSetq(oform,m,E) ==
   ["%LET",form,val] := oform
@@ -569,7 +568,7 @@ setqSingle(id,val,m,E) ==
           assignError(val,T.mode,id,m'')
   T':= [x,m',e']:= convert(T,m) or return nil
   if $profileCompiler = true then
-    null IDENTP id => nil
+    not IDENTP id => nil
     key :=
       MEMQ(id,rest $form) => 'arguments
       'locals
@@ -605,7 +604,7 @@ setqMultiple(nameList,val,m,e) ==
   [x,m',e]:= convert(T,m) or return nil
   --1.1 exit if result is a list
   m1 is ["List",D] =>
-    for y in nameList repeat e:= put(y,"value",[genSomeVariable(),D,$noEnv],e)
+    for y in nameList repeat e := giveVariableSomeValue(y,D,e)
     convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   --2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
@@ -623,7 +622,7 @@ setqMultiple(nameList,val,m,e) ==
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
   if assignList="failed" then NIL
-  else [MKPROGN [x,:assignList,g],m',e]
+  else [mkpf([x,:assignList,g],'PROGN),m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList ~= #valList =>
@@ -730,7 +729,7 @@ compColon([":",f,t],m,e) ==
     put(f,"mode",t,e)
   if not $bootStrapMode and $insideFunctorIfTrue and
     makeCategoryForm(t,e) is [catform,e] then
-        e:= put(f,"value",[genSomeVariable(),t,$noEnv],e)
+        e:= giveVariableSomeValue(f,t,e)
   ["/throwAway",getmode(f,e),e]
 
 compConstruct(form,m,e) == (T := compConstruct1(form,m,e)) and markConstruct(form,T) 
@@ -853,7 +852,7 @@ spadCompileOrSetq form ==
         --bizarre hack to take account of the existence of "known" functions
         --good for performance (LISPLLIB size, BPI size, NILSEC)
   [nam,[lam,vl,body]] := form
-  CONTAINED("",body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
+  CONTAINED($ClearBodyToken,body) => sayBrightly ['"  ",:bright nam,'" not compiled"]
   if vl is [:vl',E] and body is [nam',: =vl'] then
       LAM_,EVALANDFILEACTQ ['PUT,MKQ nam,MKQ 'SPADreplace,MKQ nam']
       sayBrightly ['"     ",:bright nam,'"is replaced by",:bright nam']
@@ -918,7 +917,7 @@ compCoerce1(x,m',e) ==
   T':= coerce(T,m') => T'
   T':= coerceByModemap(T,m') => T'
   pred:=isSubset(m',T.mode,e) =>
-    gg:=GENSYM()
+    gg:=gensym()
     pred:= substitute(gg,"#1",pred)
     code:= ['PROG1,["%LET",gg,T.expr], ['check_-subtype,pred,MKQ m',gg]]
     [code,m',T.env]
@@ -932,7 +931,7 @@ coerceByModemap([x,m,e],m') ==
            and (modeEqual(s,m) or isSubset(m,s,e))] or return nil
   mm:=first u  -- patch for non-trival conditons
   fn := genDeltaEntry(['coerce,:mm],e)
-  T := [["%Call",fn,x],m',e]
+  T := [['%call,fn,x],m',e]
   markCoerceByModemap(x,m,m',markCallCoerce(x,m',T),nil)
  
 autoCoerceByModemap([x,source,e],target) ==
@@ -941,7 +940,7 @@ autoCoerceByModemap([x,source,e],target) ==
       for (modemap:= [map,cexpr]) in getModemapList("autoCoerce",1,e) | map is [
         .,t,s] and modeEqual(t,target) and modeEqual(s,source)] or return nil
   fn:= (or/[selfn for [cond,selfn] in u | cond=true]) or return nil
-  markCoerceByModemap(x,source,target,[["%Call",fn,x],target,e],true)
+  markCoerceByModemap(x,source,target,[['%call,fn,x],target,e],true)
 
 --======================================================================
 --                    From compiler.boot
@@ -1008,7 +1007,7 @@ compCase1(x,m,e) ==
   x1 :=
     switchMode => markRepper('rep, x)
     x
-  markCase(x, tag, markCaseWas(x1,[["%Call",fn,x'],$Boolean,e']))
+  markCase(x, tag, markCaseWas(x1,[['%call,fn,x'],$Boolean,e']))
 
 genCaseTag(t,l,n) ==
   l is [x, :l] =>
@@ -1076,7 +1075,7 @@ compDefine1(form,m,e) ==
   --1. decompose after macro-expanding form
   ['DEF,lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   $insideWhereIfTrue and isMacro(form,e) and (m=$EmptyMode or m=$NoValueMode)
-     => [lhs,m,put(first lhs,"macro",rhs,e)]
+     => [lhs,m,putMacro(lhs.op,rhs,e)]
   null signature.target and not MEMQ(KAR rhs,$BuiltinConstructorNames) and
     (sig:= getSignatureFromMode(lhs,e)) =>
   -- here signature of lhs is determined by a previous declaration
@@ -1217,7 +1216,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
         ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
-      ['PROG1,["%LET",g:= GENSYM(),body],
+      ['PROG1,["%LET",g:= gensym(),body],
          ["setShellEntry",g,0,mkConstructor $functorForm]]
     fun:= compile [op',['LAM,sargl,body]]
 

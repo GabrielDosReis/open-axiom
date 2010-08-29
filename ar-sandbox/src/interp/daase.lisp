@@ -327,6 +327,8 @@
 (defvar *asharpflags*
   "-O -laxiom -Fasy -Flsp" "library compiler flags")
 
+(defvar |$ConstructorCache| nil)
+
 (defun asharp (file &optional (flags *asharpflags*))
  "call the asharp compiler"
  (|runProgram|

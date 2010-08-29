@@ -183,9 +183,9 @@ pfLiteral2Sex pf ==
   type = 'integer =>
     txt := pfLiteralString pf
     MULTIPLE_-VALUE_-BIND(part1 pos1,
-      PARSE_-INTEGER(txt,KEYWORD::JUNK_-ALLOWED,true),
+      readInteger(txt,KEYWORD::JUNK_-ALLOWED,true),
         if pos1 = #txt then part1
-        else PARSE_-INTEGER(SUBSTRING(txt,pos1+1,nil),
+        else readInteger(SUBSTRING(txt,pos1+1,nil),
                KEYWORD::RADIX, part1))
   type = 'string or type = 'char =>
     pfLiteralString pf
@@ -307,8 +307,19 @@ pfDefinition2Sex pf ==
     systemError '"lhs of definition must be a single item in the interpreter"
   id := first idList
   rhs := pfDefinitionRhs pf
-  [argList, :body] := pfLambdaTran rhs
-  ["DEF", (argList = 'id => id; [id, :argList]), :body]
+  lhs := nil
+  body := nil
+  -- Sometimes, a typed constant definition is mischaracterized as
+  -- a definition of the colon delimiter.  
+  if id is [":",id',t] then
+    id := id'
+  if pfLambda? rhs then
+    [argList, :body] := pfLambdaTran rhs
+    lhs := [id,:argList]
+  else
+    lhs := id
+    body := [[t],[nil],pf2Sex1 rhs]
+  ["DEF",lhs,:body]
 
 pfLambdaTran pf ==
   pfLambda? pf =>
@@ -463,7 +474,7 @@ patternVarsOf expr ==
 patternVarsOf1(expr, varList) ==
   null expr => varList
   atom expr =>
-    null symbol? expr => varList
+    not symbol? expr => varList
     SymMemQ(expr, varList) => varList
     [expr, :varList]
   expr is [op, :argl] =>
@@ -482,7 +493,7 @@ pfRhsRule2Sex rhs ==
   pf2Sex1 rhs
 
 pfSuchThat2Sex args ==
-  name := GENSYM()
+  name := gensym()
   argList := pf0TupleParts args
   lhsSex := pf2Sex1 first argList
   rhsSex := pf2Sex second argList
@@ -510,11 +521,10 @@ pfDoc2SexOrNil pf ==
 
 pfWith2Sex pf ==
   ["%With", pfType2SexOrNil pfWithBase pf, 
-    [pf2Sex1 s for s in pf0WithWithin pf], 
-      pfType2SexOrNil pfWithWithon pf]
+    [pf2Sex1 s for s in pf0WithWithin pf]]
 
 pfAdd2Sex pf ==
-  ["%Add", pf2Sex1 pfAddBase pf, pf2Sex1 pfAddAddin pf,
+  ["%Add", pfType2SexOrNil pfAddBase pf, pf2Sex1 pfAddAddin pf,
     pfType2SexOrNil pfAddAddon pf]
 
 pfWDeclare2Sex pf ==

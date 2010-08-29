@@ -31,10 +31,12 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _HASH_H_
-#define _HASH_H_ 1
+#ifndef OPENAXIOM_HASH_INCLUDED
+#define OPENAXIOM_HASH_INCLUDED
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif   
 
 typedef struct HashEntry {
    const char *key;             /* pointer to key data */
@@ -67,4 +69,8 @@ extern char* hash_replace(HashTable*, char*, const char*);
 extern int string_equal(const char*, const char*);
 extern int string_hash(const char*, int size);
 
-#endif
+#ifdef __cplusplus
+}
+#endif   
+
+#endif  /* OPENAXIOM_HASH_INCLUDED */

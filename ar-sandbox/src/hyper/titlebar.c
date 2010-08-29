@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2008, Gabriel Dos Reis.
+   Copyright (C) 2007-2010, Gabriel Dos Reis.
    All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -40,13 +40,10 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _TITLEBAR_C
-#include "openaxiom-c-macros.h"
-
-#include "debug.h"
 
 #include <stdlib.h>
-
+#include "openaxiom-c-macros.h"
+#include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
 #include "titlebar.h"
@@ -55,8 +52,9 @@
 #include "initx.h"
 #include "parse.h"
 #include "cfuns.h"
+#include "parse-types.h"
 
-#include "all_hyper_proto.H1"
+static void readTitleBarImages(void);
 
 extern int y_off;               /* y offset for scrolling regions */
 

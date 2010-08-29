@@ -446,9 +446,6 @@
    (setq ,id ,item)
    (lam\,fileactq ',id (list 'setq ',id (list 'quote ,id)))))
 
-(defmacro setelt (vec ind val)
- `(setf (elt ,vec ,ind) ,val))
-
 (defmacro setqp (&whole form pattern exp)
   `(,(dcqexp pattern '=) ,exp))
 
@@ -781,15 +778,6 @@
       (multiple-value-list (truncate x y))
       (list (QUOTIENT x y) (REMAINDER x y))))
 
-(defun QSQUOTIENT (a b) (the fixnum (truncate (the fixnum a) (the fixnum b))))
-
-(defun QSREMAINDER (a b) (the fixnum (rem (the fixnum a) (the fixnum b))))
-
-
-;(defun IFCAR (x) (if (consp x) (car (the cons x))))
-
-;(defun IFCDR (x) (if (consp x) (cdr (the cons x))))
-
 ; 13.3 Updating
 
 
@@ -970,14 +958,6 @@
   (if length (subseq cvec start (+ start length)) (subseq cvec start)))
 
 ; 17.3 Searching
-
-;;- (defun strpos (what in start dontcare)
-;;-    (setq what (string what) in (string in))
-;;-    (if dontcare (progn (setq dontcare (character dontcare))
-;;-                    (search what in :start2 start
-;;-                            :test #'(lambda (x y) (or (eql x dontcare)
-;;-                                                      (eql x y)))))
-;;-                 (search what in :start2 start)))
 
 (defun strpos (what in start dontcare)
    (setq what (string what) in (string in))
@@ -1330,7 +1310,7 @@
                       (IDENTP A)
                       (NUMP A)
                       (AND (consp A) (EQ (car A) 'QUOTE)))
-                    `((SETELT ,sv ,i ,a)))
+                    `((SETF (ELT ,sv ,i) ,a)))
                   ( (OR (consp A) (simple-vector-p A))
                     `((setq ,w (ELT ,sv ,i))
                       ,@(RCQGENEXP W A QFLAG))))

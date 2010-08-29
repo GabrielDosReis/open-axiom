@@ -5,7 +5,7 @@ subdir = src/
 
 SUBDIRS = @axiom_src_subdirs@
 
-.PHONY: all all-ax all-src all-clef all-sman all-driver
+.PHONY: all all-ax all-src all-clef all-sman all-driver all-utils
 
 all: all-ax
 
@@ -18,6 +18,9 @@ stamp: @axiom_src_all@ all-driver
 
 all-driver: all-lib
 	@cd driver && $(MAKE) $@
+
+all-utils:
+	@cd utils && $(MAKE) $@
 
 all-clef: all-lib
 	@$(mkdir_p) "$(axiom_target_bindir)"
@@ -41,7 +44,7 @@ all-lisp: all-lib
 	cd lisp && $(MAKE) all-lisp
 all-boot: all-lisp
 	@cd boot && $(MAKE) $@
-all-interpsys: all-boot all-hyper-pre
+all-interpsys: all-boot all-hyper-pre all-utils
 	cd interp && ${MAKE} all-interpsys
 
 all-axiomsys: all-asq
@@ -54,7 +57,7 @@ all-hyper-pre: all-lib
 	cd hyper && $(MAKE) all-hyper-pre
 all-input: all-axiomsys all-doc
 	cd input && ${MAKE}
-all-asq: all-hyper-post
+all-asq: all-hyper-post all-utils
 	cd etc && $(MAKE) $@
 
 .PHONY: all-databases

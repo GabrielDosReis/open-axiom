@@ -4,7 +4,7 @@
 (DEFPARAMETER |Monoid;AL| 'NIL) 
 
 (DEFUN |Monoid;| ()
-  (LET ((#0=#:G1398
+  (LET ((#0=#:G1399
             (|Join| (|SemiGroup|)
                     (|mkCategory| '|domain|
                         '(((|One| ($) |constant|) T)

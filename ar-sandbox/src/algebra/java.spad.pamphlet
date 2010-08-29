@@ -11,16 +11,203 @@
 \tableofcontents
 \eject
 
-\section{The JavaBytecode domain}
-<<domain JAVACODE JavaBytecode>>=
-)abbrev domain JAVACODE JavaBytecode
+\section{Class file access flags}
+
+<<domain JVMCFACC JVMClassFileAccess>>=
+)abbrev domain JVMCFACC JVMClassFileAccess
+++ Date Created: July 18, 2008
+++ Data Last Modified: July 18, 2010
+++ Description:  JVM class file access bitmask and values.
+JVMClassFileAccess(): Public == Private where
+  Public == Join(SetCategory,Logic) with
+    jvmPublic: %
+      ++ The class was declared public, therefore may be accessed
+      ++ from outside its package
+    jvmFinal: %
+      ++ The class was declared final; therefore no derived class allowed.
+    jvmSuper: %
+      ++ Instruct the JVM to treat base clss method invokation specially.
+    jvmInterface: %
+      ++ The class file represents an interface, not a class.
+    jvmAbstract: %
+      ++ The class was declared abstract; therefore object of this class
+      ++ may not be created.
+  Private == UInt16 add
+    jvmPublic == per(16r0001::Rep)
+    jvmFinal == per(16r0010::Rep)
+    jvmSuper == per(16r0020::Rep)
+    jvmInterface == per(16r0200::Rep)
+    jvmAbstract == per(16r0400::Rep)
+@
+
+\section{JVM field access flags}
+
+<<domain JVMFDACC JVMFieldAccess>>=
+)abbrev domain JVMFDACC JVMFieldAccess
+++ Date Created: July 18, 2008
+++ Data Last Modified: July 18, 2010
+++ Description:
+++   JVM class field access bitmask and values.
+JVMFieldAccess(): Public == Private where
+  Public == Join(SetCategory,Logic) with
+    jvmPublic: %
+      ++ The field was declared public; therefore mey accessed from
+      ++ outside its package.
+    jvmPrivate: %
+      ++ The field was declared private; threfore can be accessed only
+      ++ within the defining class.
+    jvmProtected: %
+      ++ The field was declared protected; therefore may be accessed
+      ++ withing derived classes.
+    jvmStatic: %
+      ++ The field was declared static.
+    jvmFinal: %
+      ++ The field was declared final; therefore may not be modified
+      ++ after initialization.
+    jvmVolatile: %
+      ++ The field was declared volatile.
+    jvmTransient: %
+      ++ The field was declared transient.
+  Private == UInt16 add
+    jvmPublic == per(16r0001::Rep)
+    jvmPrivate == per(16r0002::Rep)
+    jvmProtected == per(16r0004::Rep)
+    jvmStatic == per(16r0008::Rep)
+    jvmFinal == per(16r0010::Rep)
+    jvmVolatile == per(16r0040::Rep)
+    jvmTransient == per(16r0080::Rep)
+@
+
+
+\section{JVM method access flags}
+
+<<domain JVMMDACC JVMMethodAccess>>=
+)abbrev domain JVMMDACC JVMMethodAccess
+)abbrev domain JVMFDACC JVMFieldAccess
+++ Date Created: July 18, 2008
+++ Data Last Modified: July 18, 2010
+++ Description:
+++   JVM class method access bitmask and values.
+JVMMethodAccess(): Public == Private where
+  Public == Join(SetCategory,Logic) with
+    jvmPublic: %
+      ++ The method was declared public; therefore mey accessed from
+      ++ outside its package.
+    jvmPrivate: %
+      ++ The method was declared private; threfore can be accessed only
+      ++ within the defining class.
+    jvmProtected: %
+      ++ The method was declared protected; therefore may be accessed
+      ++ withing derived classes.
+    jvmStatic: %
+      ++ The method was declared static.
+    jvmFinal: %
+      ++ The method was declared final; therefore may not be overriden.
+      ++ in derived classes.
+    jvmSynchronized: %
+      ++ The method was declared synchronized.
+    jvmNative: %
+      ++ The method was declared native; therefore implemented in a language
+      ++ other than Java.
+    jvmAbstract: %
+      ++ The method was declared abstract; therefore no implementation
+      ++ is provided. 
+    jvmStrict: %
+      ++ The method was declared fpstrict; therefore floating-point mode
+      ++ is FP-strict.
+  Private == UInt16 add
+    jvmPublic == per(16r0001::Rep)
+    jvmPrivate == per(16r0002::Rep)
+    jvmProtected == per(16r0004::Rep)
+    jvmStatic == per(16r0008::Rep)
+    jvmFinal == per(16r0010::Rep)
+    jvmSynchronized == per(16r0020::Rep)
+    jvmNative == per(16r0100::Rep)
+    jvmAbstract == per(16r0400::Rep)
+    jvmStrict == per(16r0800::Rep)
+
+@
+
+\section{JVM constant pool tags}
+
+<<domain JVMCSTTG JVMConstantTag>>=
+)abbrev domain JVMCSTTG JVMConstantTag
+++ Date Created: July 18, 2008
+++ Data Last Modified: July 18, 2010
+++ Description:
+++   JVM class file constant pool tags.
+JVMConstantTag(): Public == Private where
+  Public == Join(SetCategory,CoercibleTo Byte) with
+    jvmUTF8ConstantTag: %
+      ++ The corresponding constant pool entry is sequence of bytes
+      ++ representing Java UTF8 string constant.
+    jvmIntegerConstantTag: %
+      ++ The corresponding constant pool entry is an integer constant info.
+    jvmFloatConstantTag: %
+      ++ The corresponding constant pool entry is a float constant info.
+    jvmLongConstantTag: %
+      ++ The corresponding constant pool entry is a long constant info.
+    jvmDoubleConstantTag: %
+      ++ The corresponding constant pool entry is a double constant info.
+    jvmClassConstantTag: %
+      ++ The corresponding constant pool entry represents a class or
+      ++ and interface.
+    jvmStringConstantTag: %
+      ++ The corresponding constant pool entry is a string constant info.
+    jvmFieldrefConstantTag: %
+      ++ The corresponding constant pool entry represents a class field info.
+    jvmMethodrefConstantTag: %
+      ++ The correspondong constant pool entry represents a class method info.
+    jvmInterfaceMethodConstantTag: %
+      ++ The correspondong constant pool entry represents an interface
+      ++ method info.
+    jvmNameAndTypeConstantTag: %
+      ++ The correspondong constant pool entry represents the name
+      ++ and type of a field or method info.
+  Private == Byte add
+    jvmUTF8ConstantTag == per byte 1
+    jvmIntegerConstantTag == per byte 3
+    jvmFloatConstantTag == per byte 4
+    jvmLongConstantTag == per byte 5
+    jvmDoubleConstantTag == per byte 6
+    jvmClassConstantTag == per byte 7
+    jvmStringConstantTag == per byte 8
+    jvmFieldrefConstantTag == per byte 9
+    jvmMethodrefConstantTag == per byte 10
+    jvmInterfaceMethodConstantTag == per byte 11
+    jvmNameAndTypeConstantTag == per byte 12
+@
+
+
+\section{The JVMBytecode domain}
+<<domain JVMBCODE JVMBytecode>>=
+)abbrev domain JVMBCODE JVMBytecode
 ++ Author: Gabriel Dos Reis
 ++ Date Created: May 08, 2008
-++ Description:  This domain defines the datatype for the Java
-++ Virtual Machine byte codes.
-JavaBytecode(): Public == Private where
-  Public == Join(CoercibleTo OutputForm, HomotopicTo Byte)
-  Private == add
+++ Data Last Modified: July 18, 2010
+++ Description:
+++   This is the datatype for the JVM bytecodes.
+JVMBytecode(): Public == Private where
+  Public == Join(SetCategory, HomotopicTo Byte)
+  Private == Byte add
+    coerce(b: Byte): % ==
+      per b
+
+    coerce(x: %): Byte ==
+      rep x
+@
+
+\section{JVM Opcodes}
+
+<<domain JVMOP JVMOpcode>>=
+)abbrev domain JVMOP JVMOpcode
+++ Date Created: July 18, 2008
+++ Data Last Modified: July 18, 2010
+++ Description:
+++   This is the datatype for the JVM opcodes.
+JVMOpcode(): Public == Private where
+  Public == Join(SetCategory,HomotopicTo JVMBytecode,HomotopicTo Byte)
+  Private == JVMBytecode add
     -- mnemonics equivalent of bytecodes.
     mnemonics : PrimitiveArray Symbol := 
       [['nop, 'aconst__null, 'iconst__m1, 'iconst__0, 'iconst__1,  _
@@ -77,22 +264,17 @@ JavaBytecode(): Public == Private where
        'unknownopcode49, 'unknownopcode50,       _
        'impldep1, 'impldep2 ]]$PrimitiveArray(Symbol)
 
-    Rep == Byte
-
-    coerce(x: Byte): % ==
-      per x
-
-    coerce(x: %): Byte ==
-      rep x
-
+    coerce(x: %): JVMBytecode == rep x
+    coerce(b: JVMBytecode): % == per b
     coerce(x: %): OutputForm ==
       mnemonics.(x::Byte::Integer) :: OutputForm
+
 @
 
 
 \section{License}
 <<license>>=
---Copyright (C) 2007-2008, Gabriel Dos Reis.
+--Copyright (C) 2007-2010, Gabriel Dos Reis.
 --All rights reserved.
 --
 --Redistribution and use in source and binary forms, with or without
@@ -126,7 +308,14 @@ JavaBytecode(): Public == Private where
 
 <<*>>=
 <<license>>
-<<domain JAVACODE JavaBytecode>>
+
+<<domain JVMCFACC JVMClassFileAccess>>
+<<domain JVMFDACC JVMFieldAccess>>
+<<domain JVMMDACC JVMMethodAccess>>
+<<domain JVMCSTTG JVMConstantTag>>
+<<domain JVMBCODE JVMBytecode>>
+<<domain JVMOP JVMOpcode>>
+
 @
 
 \end{document}

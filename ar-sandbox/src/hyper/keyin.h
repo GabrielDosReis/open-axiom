@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,9 @@
 
 #ifndef _KEYIN_H_
 #define _KEYIN_H_ 1
+
+extern void handle_key(XEvent * event);
+extern void init_keyin(void);
 
 extern int in_cursor_height;
 extern int in_cursor_width;

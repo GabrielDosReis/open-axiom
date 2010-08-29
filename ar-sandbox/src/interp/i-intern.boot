@@ -97,7 +97,7 @@ mkAtreeExpandMacros x ==
 mkAtree1 x ==
   -- first special handler for making attrib tree
   null x => throwKeyedMsg("S2IP0005",['"NIL"])
-  VECP x => x
+  vector? x => x
   atom x =>
     x in '(%noBranch %noMapVal) => x
     x in '(nil true false) => mkAtree2([x],x,NIL)
@@ -307,7 +307,7 @@ flagArguments(op, nargs) ==
 signatureFromModemap m ==
   [sig,pred,:.]  := m
   pred = true => rest sig
-  first pred = "AND" =>
+  pred.op in '(AND %and) =>
     sl := [[a,:b] for [.,a,b] in rest pred]
     rest SUBLIS(sl,sig)
   
@@ -377,7 +377,7 @@ atree2Tree1(x,evalIfTrue) ==
   (triple := getValue x) and objMode(triple) ~= $EmptyMode =>
     coerceOrCroak(triple,$OutputForm,$mapName)
   isLeaf x =>
-    VECP x => x.0
+    vector? x => x.0
     x
   [atree2Tree1(y,evalIfTrue) for y in x]
 
@@ -450,7 +450,7 @@ remprop(x,prop,e) ==
 
 fastSearchCurrentEnv(x,currentEnv) ==
   u:= QLASSQ(x,first currentEnv) => u
-  while (currentEnv:= QCDR currentEnv) repeat
+  while (currentEnv:= rest currentEnv) repeat
     u:= QLASSQ(x,first currentEnv) => u
 
 transformCollect [:itrl,body] ==
