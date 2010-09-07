@@ -431,6 +431,7 @@
                ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|IndexedList| |dv$1| |dv$2|))
          ($ (|newShell| 86))
@@ -468,7 +469,6 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedList| (LIST |dv$1| |dv$2|)

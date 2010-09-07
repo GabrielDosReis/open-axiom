@@ -663,6 +663,7 @@
                ((NOT #1#) (HREM |$ConstructorCache| '|IndexedString|))))))))) 
 
 (DEFUN |IndexedString;| (|#1|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IndexedString| |dv$1|)) ($ (|newShell| 100))
          (|pv$| (|buildPredVector| 0 0
@@ -703,7 +704,6 @@
                                    '(|SetCategory|))
                                (|HasCategory| (|Character|)
                                    (LIST '|Evalable| '(|Character|))))))))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedString| (LIST |dv$1|)

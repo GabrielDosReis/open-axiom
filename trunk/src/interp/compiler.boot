@@ -2660,7 +2660,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["REPEAT", :"compRepeatOrCollect"],_
 	  ["return", :"compReturn"],_
 	  ["SEQ", :"compSeq"],_
-	  ["SETQ", :"compSetq"],_
 	  ["SubDomain", :"compSubDomain"],_
 	  ["SubsetCategory", :"compSubsetCategory"],_
 	  ["Union", :"compCat"],_

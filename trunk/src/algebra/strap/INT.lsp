@@ -512,9 +512,9 @@
              (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
 
 (DEFUN |Integer;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 140))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))

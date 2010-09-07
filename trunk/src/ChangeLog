@@ -1,3 +1,13 @@
+2010-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (massageBackendCode): Remove conditional on
+	$NEWSPAD since it always true.  Keep note of Lisp-level special
+	variable even if it is set with SETQ.
+	(transformToBackendCode): Declare special variables before fluid
+	and local variables.
+	* interp/compiler.boot: Don't compile SETQ forms as if they were
+	Spad codes.
+
 2010-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/Makefile.in ($(oa_target_oalib)): Create contaning
