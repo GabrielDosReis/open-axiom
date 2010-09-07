@@ -21,9 +21,9 @@
                 (HREM |$ConstructorCache| '|PositiveInteger|))))))))) 
 
 (DEFUN |PositiveInteger;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|PositiveInteger|)) ($ (|newShell| 16))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|PositiveInteger| NIL (CONS 1 $))

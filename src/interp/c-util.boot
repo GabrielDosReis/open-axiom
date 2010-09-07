@@ -1528,11 +1528,8 @@ massageBackendCode x ==
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
     if u ~= 'DCQ and u ~= 'SETQ then
-      $NEWSPAD or $FUNAME in $traceletFunctions =>
-        nconc(x,$FUNNAME__TAIL)
-        x.first := "LETT"
-      $TRACELETFLAG => x.first := "/TRACE-LET"
-      u = "%LET" => x.first := "SPADLET"
+      nconc(x,$FUNNAME__TAIL)
+      x.first := "LETT"
     massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
@@ -1540,6 +1537,11 @@ massageBackendCode x ==
         PUSH(CADADR x, $FluidVars)
         x.rest.first := CADADR x
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
+    -- Even if user used Lisp-level instructions to assign to
+    -- this variable, we still want to note that it is a Lisp-level
+    -- special variable.
+    u = 'SETQ and isLispSpecialVariable second x =>
+      noteSpecialVariable second x
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
     massageBackendCode x
@@ -1640,8 +1642,10 @@ transformToBackendCode x ==
     fluids ~= nil =>
       lvars ~= nil or needsPROG? body =>
         [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-      body is [[op,bindings,:body']] and op in '(LET LET_*) =>
-        [[op,bindings,declareGlobalVariables fluids,:body']]
+      body is [[op,inits,:body']] and op in '(LET LET_*)
+        and $FluidVars ~= nil =>
+           [declareGlobalVariables $SpecialVars,
+              [op,inits,declareGlobalVariables fluids,:body']]
       [declareGlobalVariables fluids,:body]
     lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]

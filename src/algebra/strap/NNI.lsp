@@ -57,9 +57,9 @@
                 (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))) 
 
 (DEFUN |NonNegativeInteger;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|NonNegativeInteger|)) ($ (|newShell| 22))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|NonNegativeInteger| NIL
