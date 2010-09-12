@@ -52,6 +52,7 @@ namespace OpenAxiom {
          case Token::sharp_apostrophe: os << "SHARP_APOSTROPHE"; break;
          case Token::sharp_colon: os << "SHARP_COLON"; break;
          case Token::integer: os << "INTEGER"; break;
+         case Token::character: os << "CHARACTER"; break;
          case Token::string: os << "STRING"; break;
          case Token::identifier: os << "IDENTIFIER"; break;
          case Token::sharp_integer_sharp:
@@ -200,6 +201,12 @@ namespace OpenAxiom {
                   t.lexeme = strings.intern(start, cur - start + 1);
                   ++cur;
                }
+               else if (cur + 1 < end and cur[1] == '\\') {
+                  start = cur += 2;
+                  skip_to_word_boundary(cur, end);
+                  t.type = Token::character;
+                  t.lexeme = strings.intern(start, cur - start);
+               }
                else {
                   skip_to_word_boundary(cur, end);
                   t.lexeme = strings.intern(start, cur - start);
@@ -260,6 +267,16 @@ namespace OpenAxiom {
 
       void
       Integer::accept(Visitor& v) const {
+         v.visit(*this);
+      }
+
+      // ---------------
+      // -- Character --
+      // ---------------
+      Character::Character(const Token& t) : Atom(t) { }
+
+      void
+      Character::accept(Visitor& v) const {
          v.visit(*this);
       }
 
@@ -375,6 +392,11 @@ namespace OpenAxiom {
       void
       Syntax::Visitor::visit(const Integer& i) {
          visit(as<Atom>(i));
+      }
+
+      void
+      Syntax::Visitor::visit(const Character& c) {
+         visit(as<Atom>(c));
       }
 
       void
@@ -504,6 +526,14 @@ namespace OpenAxiom {
          return alloc.make_symbol(*cur++, kind);
       }
 
+      const Character*
+      Parser::parse_character(const Token*& cur, const Token* last) {
+         // NOTE: For the time being, accept only simple characters.
+         if (cur->lexeme->size() != 1)
+            parse_error("invalid literal character syntax");
+         return alloc.make_character(*cur++);
+      }
+
       // Parse an anchor definition of the form #n=<syntax>
       const Anchor*
       Parser::parse_anchor(const Token*& cur, const Token* last) {
@@ -596,6 +626,9 @@ namespace OpenAxiom {
          switch (cur->type) {
          case Token::integer:
             return alloc.make_integer(*cur++);
+
+         case Token::character:
+            return parse_character(cur, last);
             
          case Token::string:
             return alloc.make_string(*cur++);

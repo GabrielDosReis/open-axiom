@@ -71,6 +71,7 @@ namespace OpenAxiom {
             sharp_colon      = OPENAXIOM_SEXPR_TOKEN2('#',':'),  // "#:"
             digraph_end      = OPENAXIOM_SEXPR_TOKEN2(256,256),
             integer,                // integer literal
+            character,              // character literal
             string,                 // string literal
             identifier,             // plain identifier
             sharp_integer_equal,    // anchor definition, #n=<form>
@@ -133,6 +134,14 @@ namespace OpenAxiom {
       // -------------
       struct Integer : Atom {
          explicit Integer(const Token&);
+         void accept(Visitor&) const;
+      };
+
+      // ---------------
+      // -- Character --
+      // ---------------
+      struct Character : Atom {
+         explicit Character(const Token&);
          void accept(Visitor&) const;
       };
 
@@ -259,6 +268,7 @@ namespace OpenAxiom {
       struct Syntax::Visitor {
          virtual void visit(const Atom&) = 0;
          virtual void visit(const Integer&);
+         virtual void visit(const Character&);
          virtual void visit(const String&);
          virtual void visit(const Symbol&);
          virtual void visit(const Reference&);
@@ -329,6 +339,7 @@ namespace OpenAxiom {
          ~Allocator();
 
          const Integer* make_integer(const Token&);
+         const Character* make_character(const Token&);
          const String* make_string(const Token&);
          const Symbol* make_symbol(const Token&, Symbol::Kind);
          const Reference* make_reference(const Token&, size_t);
@@ -341,6 +352,7 @@ namespace OpenAxiom {
          
       private:
          UniqueAllocator<Integer> ints;
+         UniqueAllocator<Character> chars;
          UniqueAllocator<String> strs;
          UniqueAllocator<Symbol> syms;
          UniqueAllocator<Anchor> ancs;
@@ -370,6 +382,7 @@ namespace OpenAxiom {
          std::vector<const Syntax*>& syns;
 
          const Symbol* parse_symbol(const Token*&, const Token*);
+         const Character* parse_character(const Token*&, const Token*);
          const Anchor* parse_anchor(const Token*&, const Token*);
          const Reference* parse_reference(const Token*&, const Token*);
          const Symbol* parse_uninterned(const Token*&, const Token*);

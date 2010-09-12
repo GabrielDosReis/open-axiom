@@ -1,3 +1,15 @@
+2010-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/sexpr.H (Token::character): New token type.
+	(Character): New.
+	(Syntax::Visitor::visit): Overload for Character.
+	(Allocator::make_character): Declare.
+	(Parser::parse_character): Likewise.
+	* utils/sexpr.cc (operator<<) [Token::character]: Print data for
+	character token.
+	(Lexer::tokenize): Recognize a character literal.
+	(Parser::parse_character): Define.
+
 2010-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (massageBackendCode): Remove conditional on
