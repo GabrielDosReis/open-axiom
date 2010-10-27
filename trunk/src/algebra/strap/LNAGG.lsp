@@ -6,10 +6,10 @@
 (DEFPARAMETER |LinearAggregate;AL| 'NIL) 
 
 (DEFUN |LinearAggregate;| (|t#1|)
-  (LET ((#0=#:G1400
+  (LET ((#0=#:G1375
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (|sublisV|
-                    (PAIR '(#1=#:G1398 #2=#:G1399)
+                    (PAIR '(#1=#:G1373 #2=#:G1374)
                           (LIST '(|Integer|)
                                 '(|UniversalSegment| (|Integer|))))
                     (COND
@@ -64,8 +64,8 @@
         (LIST '|LinearAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |LinearAggregate| (#0=#:G1401)
-  (LET ((#1=#:G1402 (|assoc| (|devaluate| #0#) |LinearAggregate;AL|)))
+(DEFUN |LinearAggregate| (#0=#:G1376)
+  (LET ((#1=#:G1377 (|assoc| (|devaluate| #0#) |LinearAggregate;AL|)))
     (COND
       (#1# (CDR #1#))
       (T (PROGN

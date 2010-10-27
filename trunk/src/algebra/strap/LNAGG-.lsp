@@ -22,8 +22,8 @@
 
 (DEFUN |LNAGG-;indices;AL;1| (|a| $)
   (LET ((|i| (SPADCALL |a| (|getShellEntry| $ 9)))
-        (#0=#:G1412 (SPADCALL |a| (|getShellEntry| $ 10)))
-        (#1=#:G1411 NIL))
+        (#0=#:G1387 (SPADCALL |a| (|getShellEntry| $ 10)))
+        (#1=#:G1386 NIL))
     (LOOP
       (COND
         ((> |i| #0#) (RETURN (NREVERSE #1#)))

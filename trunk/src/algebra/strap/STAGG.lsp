@@ -6,7 +6,7 @@
 (DEFPARAMETER |StreamAggregate;AL| 'NIL) 
 
 (DEFUN |StreamAggregate;| (|t#1|)
-  (LET ((#0=#:G1404
+  (LET ((#0=#:G1379
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|StreamAggregate;CAT|)
@@ -25,8 +25,8 @@
         (LIST '|StreamAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |StreamAggregate| (#0=#:G1405)
-  (LET ((#1=#:G1406 (|assoc| (|devaluate| #0#) |StreamAggregate;AL|)))
+(DEFUN |StreamAggregate| (#0=#:G1380)
+  (LET ((#1=#:G1381 (|assoc| (|devaluate| #0#) |StreamAggregate;AL|)))
     (COND
       (#1# (CDR #1#))
       (T (PROGN

@@ -26,9 +26,9 @@
                       (|getShellEntry| $ 17)))
       (|getShellEntry| $ 19))) 
 
-(DEFUN |Vector| (#0=#:G1408)
+(DEFUN |Vector| (#0=#:G1383)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1409)
+  (PROG (#1=#:G1384)
     (RETURN
       (COND
         ((SETQ #1#

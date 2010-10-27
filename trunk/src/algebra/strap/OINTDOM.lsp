@@ -4,7 +4,7 @@
 (DEFPARAMETER |OrderedIntegralDomain;AL| 'NIL) 
 
 (DEFUN |OrderedIntegralDomain;| ()
-  (LET ((#0=#:G1397 (|Join| (|IntegralDomain|) (|OrderedRing|))))
+  (LET ((#0=#:G1372 (|Join| (|IntegralDomain|) (|OrderedRing|))))
     (|setShellEntry| #0# 0 '(|OrderedIntegralDomain|))
     #0#)) 
 

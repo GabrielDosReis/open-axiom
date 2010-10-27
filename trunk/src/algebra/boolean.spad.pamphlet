@@ -438,7 +438,7 @@ Reference(S:Type): Type with
 ++ e.g., boolean algebra.
 
 
-Logic: Category == BasicType with
+Logic: Category == Type with
        ~:        % -> %
 	++ ~(x) returns the logical complement of x.
        /\:       (%, %) -> %

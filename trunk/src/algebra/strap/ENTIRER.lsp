@@ -4,7 +4,7 @@
 (DEFPARAMETER |EntireRing;AL| 'NIL) 
 
 (DEFUN |EntireRing;| ()
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1372
             (|Join| (|Ring|) (|BiModule| '$ '$)
                     (|mkCategory| '|package| NIL
                         '((|noZeroDivisors| T)) 'NIL NIL))))

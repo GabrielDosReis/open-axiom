@@ -4,8 +4,8 @@
 (DEFPARAMETER |AbelianGroup;AL| 'NIL) 
 
 (DEFUN |AbelianGroup;| ()
-  (LET ((#0=#:G1399
-            (|sublisV| (PAIR '(#1=#:G1398) (LIST '(|Integer|)))
+  (LET ((#0=#:G1374
+            (|sublisV| (PAIR '(#1=#:G1373) (LIST '(|Integer|)))
                        (|Join| (|CancellationAbelianMonoid|)
                                (|LeftLinearSet| '#1#)
                                (|mkCategory| '|domain|

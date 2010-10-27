@@ -45,14 +45,14 @@
   (LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
 
 (DEFUN |CLAGG-;count;MANni;2| (|f| |c| $)
-  (LET ((#0=#:G1402 NIL) (#1=#:G1403 T)
-        (#2=#:G1429 (SPADCALL |c| (|getShellEntry| $ 9))))
+  (LET ((#0=#:G1377 NIL) (#1=#:G1378 T)
+        (#2=#:G1404 (SPADCALL |c| (|getShellEntry| $ 9))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
         (T (LET ((|x| (CAR #2#)))
              (AND (SPADCALL |x| |f|)
-                  (LET ((#3=#:G1401 1))
+                  (LET ((#3=#:G1376 1))
                     (COND
                       (#1# (SETQ #0# #3#))
                       (T (SETQ #0# (+ #0# #3#))))
@@ -60,25 +60,25 @@
       (SETQ #2# (CDR #2#))))) 
 
 (DEFUN |CLAGG-;any?;MAB;3| (|f| |c| $)
-  (LET ((#0=#:G1407 NIL) (#1=#:G1408 T)
-        (#2=#:G1430 (SPADCALL |c| (|getShellEntry| $ 9))))
+  (LET ((#0=#:G1382 NIL) (#1=#:G1383 T)
+        (#2=#:G1405 (SPADCALL |c| (|getShellEntry| $ 9))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# NIL) (T #0#))))
         (T (LET ((|x| (CAR #2#)))
-             (LET ((#3=#:G1406 (SPADCALL |x| |f|)))
+             (LET ((#3=#:G1381 (SPADCALL |x| |f|)))
                (COND (#1# (SETQ #0# #3#)) (T (SETQ #0# (OR #0# #3#))))
                (SETQ #1# NIL)))))
       (SETQ #2# (CDR #2#))))) 
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
-  (LET ((#0=#:G1411 NIL) (#1=#:G1412 T)
-        (#2=#:G1431 (SPADCALL |c| (|getShellEntry| $ 9))))
+  (LET ((#0=#:G1386 NIL) (#1=#:G1387 T)
+        (#2=#:G1406 (SPADCALL |c| (|getShellEntry| $ 9))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# T) (T #0#))))
         (T (LET ((|x| (CAR #2#)))
-             (LET ((#3=#:G1410 (SPADCALL |x| |f|)))
+             (LET ((#3=#:G1385 (SPADCALL |x| |f|)))
                (COND
                  (#1# (SETQ #0# #3#))
                  (T (SETQ #0# (AND #0# #3#))))

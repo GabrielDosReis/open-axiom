@@ -154,7 +154,7 @@
 (DEFUN |LIST;convert;$If;13| (|x| $)
   (SPADCALL
       (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
-            (LET ((#0=#:G1444 |x|) (#1=#:G1443 NIL))
+            (LET ((#0=#:G1419 |x|) (#1=#:G1418 NIL))
               (LOOP
                 (COND
                   ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -166,9 +166,9 @@
                 (SETQ #0# (CDR #0#)))))
       (|getShellEntry| $ 52))) 
 
-(DEFUN |List| (#0=#:G1445)
+(DEFUN |List| (#0=#:G1420)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1446)
+  (PROG (#1=#:G1421)
     (RETURN
       (COND
         ((SETQ #1#

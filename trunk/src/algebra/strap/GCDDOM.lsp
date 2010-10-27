@@ -4,7 +4,7 @@
 (DEFPARAMETER |GcdDomain;AL| 'NIL) 
 
 (DEFUN |GcdDomain;| ()
-  (LET ((#0=#:G1403
+  (LET ((#0=#:G1378
             (|Join| (|IntegralDomain|)
                     (|mkCategory| '|domain|
                         '(((|gcd| ($ $ $)) T)

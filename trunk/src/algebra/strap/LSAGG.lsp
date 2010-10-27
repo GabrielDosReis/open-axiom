@@ -6,7 +6,7 @@
 (DEFPARAMETER |ListAggregate;AL| 'NIL) 
 
 (DEFUN |ListAggregate;| (|t#1|)
-  (LET ((#0=#:G1430
+  (LET ((#0=#:G1405
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|ListAggregate;CAT|)
@@ -20,8 +20,8 @@
     (|setShellEntry| #0# 0 (LIST '|ListAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |ListAggregate| (#0=#:G1431)
-  (LET ((#1=#:G1432 (|assoc| (|devaluate| #0#) |ListAggregate;AL|)))
+(DEFUN |ListAggregate| (#0=#:G1406)
+  (LET ((#1=#:G1407 (|assoc| (|devaluate| #0#) |ListAggregate;AL|)))
     (COND
       (#1# (CDR #1#))
       (T (PROGN
