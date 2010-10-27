@@ -1,5 +1,9 @@
 2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/boolean.spad.pamphlet (BooleanLogic): Extends Logic.
+
+2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (Logic): Now extend Type.
 
 2010-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>

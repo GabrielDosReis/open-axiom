@@ -197,12 +197,13 @@
              172 < 178 |/\\| 184)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0))
-                (CONS '#(NIL NIL NIL NIL |SetCategory&| |OrderedType&|
-                         NIL |Logic&| |BasicType&| NIL NIL NIL)
+                (CONS '#(NIL NIL NIL NIL NIL |SetCategory&|
+                         |OrderedType&| |Logic&| |BasicType&| NIL NIL
+                         NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|PropositionalLogic|) (|Finite|)
-                               (|SetCategory|) (|OrderedType|)
-                               (|BooleanLogic|) (|Logic|) (|BasicType|)
+                               (|BooleanLogic|) (|SetCategory|)
+                               (|OrderedType|) (|Logic|) (|BasicType|)
                                (|ConvertibleTo| 33) (|Type|)
                                (|CoercibleTo| 35))
                             (|makeByteWordVec2| 38

@@ -627,12 +627,11 @@
                          |Ring&| NIL NIL NIL NIL NIL NIL
                          |AbelianGroup&| NIL NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL NIL NIL NIL
-                         NIL |AbelianSemiGroup&| |SemiGroup&| NIL
+                         NIL |AbelianSemiGroup&| |SemiGroup&| NIL NIL
                          |DifferentialSpace&| |OrderedType&|
-                         |SetCategory&| |Logic&| NIL NIL
-                         |RetractableTo&| |DifferentialDomain&|
-                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL NIL
-                         NIL NIL NIL)
+                         |SetCategory&| |Logic&| NIL |RetractableTo&|
+                         |DifferentialDomain&| |BasicType&| NIL NIL NIL
+                         NIL NIL NIL NIL NIL NIL NIL NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -660,11 +659,10 @@
                                (|LeftLinearSet| $$)
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
-                               (|LeftLinearSet| 5)
+                               (|LeftLinearSet| 5) (|BooleanLogic|)
                                (|DifferentialSpace|) (|OrderedType|)
                                (|SetCategory|) (|Logic|)
-                               (|BooleanLogic|) (|RealConstant|)
-                               (|RetractableTo| 5)
+                               (|RealConstant|) (|RetractableTo| 5)
                                (|DifferentialDomain| $$) (|BasicType|)
                                (|OpenMath|) (|ConvertibleTo| 100)
                                (|ConvertibleTo| 101)
