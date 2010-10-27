@@ -127,7 +127,7 @@
                      (LETT |q| (- (SPADCALL (|getShellEntry| $ 40)) 1)
                            |FFIELDC-;primitive?;SB;9|)
                      (LETT |equalone| NIL |FFIELDC-;primitive?;SB;9|)
-                     (LET ((#0=#:G1513 |explist|) (|exp| NIL))
+                     (LET ((#0=#:G1488 |explist|) (|exp| NIL))
                        (LOOP
                          (COND
                            ((OR (ATOM #0#)
@@ -155,7 +155,7 @@
                            |FFIELDC-;order;SPi;10|)
                      (LETT |lof| (SPADCALL (|getShellEntry| $ 56))
                            |FFIELDC-;order;SPi;10|)
-                     (LET ((#0=#:G1514 |lof|))
+                     (LET ((#0=#:G1489 |lof|))
                        (LOOP
                          (COND
                            ((ATOM #0#) (RETURN NIL))
@@ -173,7 +173,7 @@
                                       |FFIELDC-;order;SPi;10|)
                                      (LET
                                       ((|j| 0)
-                                       (#1=#:G1515 (- (CDR |rec|) 2)))
+                                       (#1=#:G1490 (- (CDR |rec|) 2)))
                                        (LOOP
                                          (COND
                                            ((OR (> |j| #1#)
@@ -224,7 +224,7 @@
                                       |FFIELDC-;discreteLog;SNni;11|)
                                      (LETT |exp| |groupord|
                                       |FFIELDC-;discreteLog;SNni;11|)
-                                     (LET ((#0=#:G1516 |faclist|))
+                                     (LET ((#0=#:G1491 |faclist|))
                                        (LOOP
                                          (COND
                                            ((ATOM #0#) (RETURN NIL))
@@ -236,7 +236,7 @@
                                                (EXIT
                                                 (LET
                                                  ((|t| 0)
-                                                  (#1=#:G1517
+                                                  (#1=#:G1492
                                                    (- (CDR |f|) 1)))
                                                   (LOOP
                                                     (COND
@@ -414,7 +414,7 @@
                           (LETT |mult| 1 |FFIELDC-;discreteLog;2SU;12|)
                           (LETT |exp| |groupord|
                                 |FFIELDC-;discreteLog;2SU;12|)
-                          (LET ((#0=#:G1518 |faclist|))
+                          (LET ((#0=#:G1493 |faclist|))
                             (LOOP
                               (COND
                                 ((ATOM #0#) (RETURN NIL))
@@ -430,7 +430,7 @@
                                       (EXIT
                                        (LET
                                         ((|t| 0)
-                                         (#1=#:G1519 (- (CDR |f|) 1)))
+                                         (#1=#:G1494 (- (CDR |f|) 1)))
                                          (LOOP
                                            (COND
                                              ((> |t| #1#) (RETURN NIL))
@@ -497,8 +497,8 @@
                      (EXIT (SPADCALL
                                (SPADCALL (CAR |flist|)
                                    (|getShellEntry| $ 106))
-                               (LET ((#0=#:G1508 NIL) (#1=#:G1509 T)
-                                     (#2=#:G1520 (CDR |flist|)))
+                               (LET ((#0=#:G1483 NIL) (#1=#:G1484 T)
+                                     (#2=#:G1495 (CDR |flist|)))
                                  (LOOP
                                    (COND
                                      ((ATOM #2#)
@@ -509,7 +509,7 @@
                                      (T
                                       (LET ((|u| (CAR #2#)))
                                         (LET
-                                         ((#3=#:G1507
+                                         ((#3=#:G1482
                                            (SPADCALL (CAR |u|)
                                             (CDR |u|)
                                             (|getShellEntry| $ 107))))

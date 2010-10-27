@@ -45,25 +45,25 @@
   (LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
 
 (DEFUN |HOAGG-;any?;MAB;3| (|f| |c| $)
-  (LET ((#0=#:G1405 NIL) (#1=#:G1406 T)
-        (#2=#:G1428 (SPADCALL |c| (|getShellEntry| $ 15))))
+  (LET ((#0=#:G1380 NIL) (#1=#:G1381 T)
+        (#2=#:G1403 (SPADCALL |c| (|getShellEntry| $ 15))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# NIL) (T #0#))))
         (T (LET ((|x| (CAR #2#)))
-             (LET ((#3=#:G1404 (SPADCALL |x| |f|)))
+             (LET ((#3=#:G1379 (SPADCALL |x| |f|)))
                (COND (#1# (SETQ #0# #3#)) (T (SETQ #0# (OR #0# #3#))))
                (SETQ #1# NIL)))))
       (SETQ #2# (CDR #2#))))) 
 
 (DEFUN |HOAGG-;every?;MAB;4| (|f| |c| $)
-  (LET ((#0=#:G1410 NIL) (#1=#:G1411 T)
-        (#2=#:G1429 (SPADCALL |c| (|getShellEntry| $ 15))))
+  (LET ((#0=#:G1385 NIL) (#1=#:G1386 T)
+        (#2=#:G1404 (SPADCALL |c| (|getShellEntry| $ 15))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# T) (T #0#))))
         (T (LET ((|x| (CAR #2#)))
-             (LET ((#3=#:G1409 (SPADCALL |x| |f|)))
+             (LET ((#3=#:G1384 (SPADCALL |x| |f|)))
                (COND
                  (#1# (SETQ #0# #3#))
                  (T (SETQ #0# (AND #0# #3#))))
@@ -71,14 +71,14 @@
       (SETQ #2# (CDR #2#))))) 
 
 (DEFUN |HOAGG-;count;MANni;5| (|f| |c| $)
-  (LET ((#0=#:G1414 NIL) (#1=#:G1415 T)
-        (#2=#:G1430 (SPADCALL |c| (|getShellEntry| $ 15))))
+  (LET ((#0=#:G1389 NIL) (#1=#:G1390 T)
+        (#2=#:G1405 (SPADCALL |c| (|getShellEntry| $ 15))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
         (T (LET ((|x| (CAR #2#)))
              (AND (SPADCALL |x| |f|)
-                  (LET ((#3=#:G1413 1))
+                  (LET ((#3=#:G1388 1))
                     (COND
                       (#1# (SETQ #0# #3#))
                       (T (SETQ #0# (+ #0# #3#))))
@@ -92,14 +92,14 @@
   (COND
     ((SPADCALL |x| (SPADCALL |y| (|getShellEntry| $ 32))
          (|getShellEntry| $ 33))
-     (LET ((#0=#:G1419 NIL) (#1=#:G1420 T)
-           (#2=#:G1431 (SPADCALL |x| (|getShellEntry| $ 15)))
-           (#3=#:G1432 (SPADCALL |y| (|getShellEntry| $ 15))))
+     (LET ((#0=#:G1394 NIL) (#1=#:G1395 T)
+           (#2=#:G1406 (SPADCALL |x| (|getShellEntry| $ 15)))
+           (#3=#:G1407 (SPADCALL |y| (|getShellEntry| $ 15))))
        (LOOP
          (COND
            ((OR (ATOM #2#) (ATOM #3#)) (RETURN (COND (#1# T) (T #0#))))
            (T (LET ((|a| (CAR #2#)) (|b| (CAR #3#)))
-                (LET ((#4=#:G1418
+                (LET ((#4=#:G1393
                           (SPADCALL |a| |b| (|getShellEntry| $ 34))))
                   (COND
                     (#1# (SETQ #0# #4#))
@@ -128,8 +128,8 @@
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
   (SPADCALL
       (SPADCALL
-          (LET ((#0=#:G1434 (SPADCALL |x| (|getShellEntry| $ 15)))
-                (#1=#:G1433 NIL))
+          (LET ((#0=#:G1409 (SPADCALL |x| (|getShellEntry| $ 15)))
+                (#1=#:G1408 NIL))
             (LOOP
               (COND
                 ((ATOM #0#) (RETURN (NREVERSE #1#)))

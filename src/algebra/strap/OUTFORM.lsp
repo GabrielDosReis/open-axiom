@@ -635,7 +635,7 @@
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (LET ((|lv| (LET ((#0=#:G1554 |ll|) (#1=#:G1553 NIL))
+  (LET ((|lv| (LET ((#0=#:G1529 |ll|) (#1=#:G1528 NIL))
                 (LOOP
                   (COND
                     ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -658,7 +658,7 @@
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
   (LET ((|c| 'CONCATB) (|l1| NIL))
-    (SEQ (LET ((#0=#:G1555 (REVERSE |l|)))
+    (SEQ (LET ((#0=#:G1530 (REVERSE |l|)))
            (LOOP
              (COND
                ((ATOM #0#) (RETURN NIL))
@@ -977,7 +977,7 @@
 
 (DEFUN |OutputForm| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1557)
+  (PROG (#0=#:G1532)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|OutputForm|))

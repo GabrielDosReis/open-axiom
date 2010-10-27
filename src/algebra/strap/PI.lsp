@@ -6,7 +6,7 @@
 
 (DEFUN |PositiveInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1401)
+  (PROG (#0=#:G1376)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|PositiveInteger|))

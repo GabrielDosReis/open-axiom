@@ -225,7 +225,7 @@
           ((EQL |i| |m|) (SPADCALL |s| |x| (|getShellEntry| $ 14)))
           (T (SEQ (LETT |y|
                         (SPADCALL |x|
-                            (LET ((#0=#:G1467 (- (- |i| 1) |m|)))
+                            (LET ((#0=#:G1442 (- (- |i| 1) |m|)))
                               (|check-subtype| (NOT (MINUSP #0#))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 39))
@@ -246,7 +246,7 @@
           ((EQL |i| |m|) (SPADCALL |w| |x| (|getShellEntry| $ 41)))
           (T (SEQ (LETT |y|
                         (SPADCALL |x|
-                            (LET ((#0=#:G1471 (- (- |i| 1) |m|)))
+                            (LET ((#0=#:G1446 (- (- |i| 1) |m|)))
                               (|check-subtype| (NOT (MINUSP #0#))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 39))
@@ -307,7 +307,7 @@
           ((EQL |i| |m|) (SPADCALL |x| (|getShellEntry| $ 17)))
           (T (SEQ (LETT |y|
                         (SPADCALL |x|
-                            (LET ((#0=#:G1483 (- (- |i| 1) |m|)))
+                            (LET ((#0=#:G1458 (- (- |i| 1) |m|)))
                               (|check-subtype| (NOT (MINUSP #0#))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 39))
@@ -333,14 +333,14 @@
                           ((< |h| |l|) |x|)
                           ((EQL |l| |m|)
                            (SPADCALL |x|
-                               (LET ((#0=#:G1489 (- (+ |h| 1) |m|)))
+                               (LET ((#0=#:G1464 (- (+ |h| 1) |m|)))
                                  (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                (|getShellEntry| $ 39)))
                           (T (SEQ (LETT |t|
                                         (SPADCALL |x|
                                          (LET
-                                          ((#1=#:G1490
+                                          ((#1=#:G1465
                                             (- (- |l| 1) |m|)))
                                            (|check-subtype|
                                             (NOT (MINUSP #1#))
@@ -351,7 +351,7 @@
                                   (SPADCALL |t|
                                       (SPADCALL |t|
                                        (LET
-                                        ((#2=#:G1491 (+ (- |h| |l|) 2)))
+                                        ((#2=#:G1466 (+ (- |h| |l|) 2)))
                                          (|check-subtype|
                                           (NOT (MINUSP #2#))
                                           '(|NonNegativeInteger|) #2#))
@@ -405,7 +405,7 @@
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|
-                                 (LET ((#0=#:G1511 (TRUNCATE |n| 2)))
+                                 (LET ((#0=#:G1486 (TRUNCATE |n| 2)))
                                    (|check-subtype| (NOT (MINUSP #0#))
                                     '(|NonNegativeInteger|) #0#))
                                  |LSAGG-;mergeSort|)
@@ -569,7 +569,7 @@
           ((< |s| |m|) (|error| "index out of range"))
           (T (SEQ (LETT |z|
                         (SPADCALL |y|
-                            (LET ((#0=#:G1552 (- |s| |m|)))
+                            (LET ((#0=#:G1527 (- |s| |m|)))
                               (|check-subtype| (NOT (MINUSP #0#))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 39))
@@ -601,7 +601,7 @@
           ((< |s| |m|) (|error| "index out of range"))
           (T (SEQ (SETQ |x|
                         (SPADCALL |x|
-                            (LET ((#0=#:G1559 (- |s| |m|)))
+                            (LET ((#0=#:G1534 (- |s| |m|)))
                               (|check-subtype| (NOT (MINUSP #0#))
                                   '(|NonNegativeInteger|) #0#))
                             (|getShellEntry| $ 39)))

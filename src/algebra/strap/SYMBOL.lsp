@@ -209,8 +209,8 @@
                    (CONS (STRCONC (|getShellEntry| $ 38)
                                   (|SYMBOL;istring|
                                       (LENGTH (QVELT |sc| 4)) $))
-                         (LET ((#0=#:G1549 (NREVERSE |ns|))
-                               (#1=#:G1548 NIL))
+                         (LET ((#0=#:G1524 (NREVERSE |ns|))
+                               (#1=#:G1523 NIL))
                            (LOOP
                              (COND
                                ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -464,7 +464,7 @@
 
 (DEFUN |SYMBOL;resetNew;V;29| ($)
   (SEQ (SPADCALL (|getShellEntry| $ 10) 0 (|getShellEntry| $ 121))
-       (EXIT (LET ((#0=#:G1550
+       (EXIT (LET ((#0=#:G1525
                        (SPADCALL (|getShellEntry| $ 13)
                            (|getShellEntry| $ 133))))
                (LOOP
@@ -489,7 +489,7 @@
                                $)
                            |SYMBOL;name;2$;31|)
                      (LET ((|i| (+ (|getShellEntry| $ 41) 1))
-                           (#0=#:G1551 (QCSIZE |str|)))
+                           (#0=#:G1526 (QCSIZE |str|)))
                        (LOOP
                          (COND
                            ((> |i| #0#) (RETURN NIL))
@@ -541,7 +541,7 @@
                                       (|getShellEntry| $ 139))))
                             (RETURN NIL))
                            (T (SPADCALL |nscripts| |i|
-                                  (LET ((#0=#:G1542
+                                  (LET ((#0=#:G1517
                                          (-
                                           (SPADCALL
                                            (SPADCALL |str| |j|
@@ -563,7 +563,7 @@
                      (SETQ |m|
                            (SPADCALL |lscripts|
                                (|getShellEntry| $ 153)))
-                     (LET ((|i| |m|) (#1=#:G1552 |nscripts|))
+                     (LET ((|i| |m|) (#1=#:G1527 |nscripts|))
                        (LOOP
                          (COND
                            ((ATOM #1#) (RETURN NIL))
@@ -575,10 +575,10 @@
                                   (T (SEQ
                                       (SPADCALL |lscripts| |i|
                                        (LET
-                                        ((#2=#:G1554
+                                        ((#2=#:G1529
                                           (SPADCALL |allscripts| |n|
                                            (|getShellEntry| $ 156)))
-                                         (#3=#:G1553 NIL))
+                                         (#3=#:G1528 NIL))
                                          (LOOP
                                            (COND
                                              ((ATOM #2#)
@@ -624,7 +624,7 @@
 
 (DEFUN |Symbol| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1556)
+  (PROG (#0=#:G1531)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Symbol|))

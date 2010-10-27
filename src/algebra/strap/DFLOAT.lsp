@@ -441,7 +441,7 @@
   (COND
     ((EQL 2 2) 53)
     ((EQL 2 16) (* 4 53))
-    (T (LET ((#0=#:G1431
+    (T (LET ((#0=#:G1406
                  (TRUNCATE
                      (SPADCALL 53
                          (|DFLOAT;log2;2$;40|
@@ -636,7 +636,7 @@
 
 (DEFUN |DFLOAT;retract;$F;80| (|x| $)
   (|DFLOAT;rationalApproximation;$2NniF;87| |x|
-      (LET ((#0=#:G1514 (- 53 1)))
+      (LET ((#0=#:G1489 (- 53 1)))
         (|check-subtype| (NOT (MINUSP #0#)) '(|NonNegativeInteger|)
             #0#))
       2 $)) 
@@ -644,7 +644,7 @@
 (DEFUN |DFLOAT;retractIfCan;$U;81| (|x| $)
   (CONS 0
         (|DFLOAT;rationalApproximation;$2NniF;87| |x|
-            (LET ((#0=#:G1522 (- 53 1)))
+            (LET ((#0=#:G1497 (- 53 1)))
               (|check-subtype| (NOT (MINUSP #0#))
                   '(|NonNegativeInteger|) #0#))
             2 $))) 
@@ -717,7 +717,7 @@
                           (|getShellEntry| $ 134)))
                      (T (SEQ (LETT |de|
                                    (EXPT BASE
-                                    (LET ((#0=#:G1550 (- |ex|)))
+                                    (LET ((#0=#:G1525 (- |ex|)))
                                       (|check-subtype|
                                        (NOT (MINUSP #0#))
                                        '(|NonNegativeInteger|) #0#)))
@@ -842,7 +842,7 @@
 
 (DEFUN |DoubleFloat| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1581)
+  (PROG (#0=#:G1556)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|DoubleFloat|))

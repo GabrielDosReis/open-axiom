@@ -40,7 +40,7 @@
 
 (DEFUN |NonNegativeInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1409)
+  (PROG (#0=#:G1384)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|NonNegativeInteger|))

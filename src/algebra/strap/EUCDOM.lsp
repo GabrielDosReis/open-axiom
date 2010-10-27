@@ -4,7 +4,7 @@
 (DEFPARAMETER |EuclideanDomain;AL| 'NIL) 
 
 (DEFUN |EuclideanDomain;| ()
-  (LET ((#0=#:G1414
+  (LET ((#0=#:G1389
             (|Join| (|PrincipalIdealDomain|)
                     (|mkCategory| '|domain|
                         '(((|sizeLess?| ((|Boolean|) $ $)) T)

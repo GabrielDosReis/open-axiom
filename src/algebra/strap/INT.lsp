@@ -471,7 +471,7 @@
       (T (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 109))
              (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
                  (SPADCALL
-                     (LET ((#0=#:G1504
+                     (LET ((#0=#:G1479
                                (SPADCALL
                                    (SPADCALL |p|
                                     (|getShellEntry| $ 107))
@@ -500,7 +500,7 @@
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1536)
+  (PROG (#0=#:G1511)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))

@@ -4,7 +4,7 @@
 (DEFPARAMETER |UniqueFactorizationDomain;AL| 'NIL) 
 
 (DEFUN |UniqueFactorizationDomain;| ()
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1372
             (|Join| (|GcdDomain|)
                     (|mkCategory| '|domain|
                         '(((|prime?| ((|Boolean|) $)) T)

@@ -15,14 +15,14 @@
               (LETT |s| (SPADCALL |x| (|getShellEntry| $ 8))
                     |UFD-;squareFreePart;2S;1|)
               (|getShellEntry| $ 10))
-          (LET ((#0=#:G1405 NIL) (#1=#:G1406 T)
-                (#2=#:G1419 (SPADCALL |s| (|getShellEntry| $ 14))))
+          (LET ((#0=#:G1380 NIL) (#1=#:G1381 T)
+                (#2=#:G1394 (SPADCALL |s| (|getShellEntry| $ 14))))
             (LOOP
               (COND
                 ((ATOM #2#)
                  (RETURN (COND (#1# (|spadConstant| $ 16)) (T #0#))))
                 (T (LET ((|f| (CAR #2#)))
-                     (LET ((#3=#:G1404 (CAR |f|)))
+                     (LET ((#3=#:G1379 (CAR |f|)))
                        (COND
                          (#1# (SETQ #0# #3#))
                          (T (SETQ #0#
