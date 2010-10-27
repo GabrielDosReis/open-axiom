@@ -627,11 +627,12 @@
                          |Ring&| NIL NIL NIL NIL NIL NIL
                          |AbelianGroup&| NIL NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL NIL NIL NIL
-                         NIL |AbelianSemiGroup&| |SemiGroup&| NIL NIL
-                         |DifferentialSpace&| |OrderedType&|
-                         |SetCategory&| |Logic&| NIL |RetractableTo&|
-                         |DifferentialDomain&| |BasicType&| NIL NIL NIL
-                         NIL NIL NIL NIL NIL NIL NIL NIL)
+                         NIL |AbelianSemiGroup&| |SemiGroup&| NIL
+                         |BooleanLogic&| |DifferentialSpace&|
+                         |OrderedType&| |SetCategory&| |Logic&| NIL
+                         |RetractableTo&| |DifferentialDomain&|
+                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL NIL
+                         NIL NIL NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
