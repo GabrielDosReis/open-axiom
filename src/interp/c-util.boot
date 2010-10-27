@@ -303,7 +303,6 @@ intersectionEnvironment(e,e') ==
   ce:= makeCommonEnvironment(e,e')
   ic:= intersectionContour(deltaContour(e,ce),deltaContour(e',ce))
   e'':= (ic => addContour(ic,ce); ce)
-  --$ie:= e''   this line is for debugging purposes only
  
 deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
   not EQ(el,el') => systemError '"deltaContour" --a cop out for now
@@ -394,16 +393,17 @@ addContour(c,E is [cur,:tail]) ==
         [c]
  
 makeCommonEnvironment(e,e') ==
-  interE makeSameLength(e,e') where  --$ie:=
+  interE makeSameLength(e,e') where
     interE [e,e'] ==
-      rest e=rest e' => [interLocalE makeSameLength(first e,first e'),:rest e]
+      EQ(rest e,rest e') =>
+        [interLocalE makeSameLength(first e,first e'),:rest e]
       interE [rest e,rest e']
     interLocalE [le,le'] ==
-      rest le=rest le' =>
+      EQ(rest le,rest le') =>
         [interC makeSameLength(first le,first le'),:rest le]
       interLocalE [rest le,rest le']
     interC [c,c'] ==
-      c=c' => c
+      EQ(c,c') => c
       interC [rest c,rest c']
     makeSameLength(x,y) ==
       fn(x,y,#x,#y) where

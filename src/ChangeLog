@@ -1,5 +1,10 @@
 2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (makeCommonEnvironment): Use list node pointer
+	comparaison, not object comparaison.
+
+2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/boolean.spad.pamphlet (BooleanLogic) [~]: Add defaut.
 
 2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
