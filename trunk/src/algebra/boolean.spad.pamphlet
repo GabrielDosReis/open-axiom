@@ -21,7 +21,7 @@
 ++ Date Last Modified: April 04, 2010
 ++ Description:
 ++   This is the category of Boolean logic structures.
-BooleanLogic(): Category == Type with
+BooleanLogic(): Category == Logic with
   not: % -> %
     ++ \spad{not x} returns the complement or negation of \spad{x}.
   and: (%,%) -> %
@@ -461,7 +461,7 @@ Logic: Category == Type with
 ++ Description:  \spadtype{Boolean} is the elementary logic with 2 values:
 ++ true and false
 
-Boolean(): Join(OrderedFinite, Logic, PropositionalLogic, ConvertibleTo InputForm) with
+Boolean(): Join(OrderedFinite, PropositionalLogic, ConvertibleTo InputForm) with
     xor    : (%, %) -> %
       ++ xor(a,b) returns the logical exclusive {\em or}
       ++ of Boolean \spad{a} and b.
