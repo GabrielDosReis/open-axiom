@@ -22,12 +22,14 @@
 ++ Description:
 ++   This is the category of Boolean logic structures.
 BooleanLogic(): Category == Logic with
-  not: % -> %
-    ++ \spad{not x} returns the complement or negation of \spad{x}.
-  and: (%,%) -> %
-    ++ \spad{x and y} returns the conjunction of \spad{x} and \spad{y}.
-  or: (%,%) -> %
-    ++ \spad{x or y} returns the disjunction of \spad{x} and \spad{y}.
+    not: % -> %
+      ++ \spad{not x} returns the complement or negation of \spad{x}.
+    and: (%,%) -> %
+      ++ \spad{x and y} returns the conjunction of \spad{x} and \spad{y}.
+    or: (%,%) -> %
+      ++ \spad{x or y} returns the disjunction of \spad{x} and \spad{y}.
+  add
+    ~ x == not x
 @
 
 <<category PROPLOG PropositionalLogic>>=
