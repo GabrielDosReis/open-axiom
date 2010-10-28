@@ -1,3 +1,7 @@
+2010-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Cleanup.
+
 2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (makeCommonEnvironment): Use list node pointer
