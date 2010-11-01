@@ -37,7 +37,7 @@ dnl Most of the macros used in this configure.ac are defined in files
 dnl located in the subdirectory config/
 sinclude(config/open-axiom.m4)
 sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-10-27], 
+AC_INIT([OpenAxiom], [1.4.0-2010-11-01], 
         [open-axiom-bugs@lists.sf.net])
 
 AC_CONFIG_AUX_DIR(config)
@@ -83,7 +83,6 @@ oa_all_prerequisites=
 AC_SUBST(oa_all_prerequisites)
 
 OPENAXIOM_HOST_COMPILERS
-OPENAXIOM_GCL_HACKS
 OPENAXIOM_HOST_DATA_PROPERTIES
 
 OPENAXIOM_DYNAMIC_MODULE_SUPPORT
