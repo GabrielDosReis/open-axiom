@@ -1,3 +1,8 @@
+2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/Makefile.in ($(OUT)/lisp$(EXEEXT)): Remove GCL-specific
+	hack for rsym.
+
 2010-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot: Cleanup.

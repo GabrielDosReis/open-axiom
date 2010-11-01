@@ -1,3 +1,9 @@
+2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (OPENAXIOM_GCL_HACKS): Remove.  No longer
+	necesary with newer GCL-2.6.8pre.
+	* configure.ac: Dont' call it.
+
 2010-08-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (OPENAXIOM_BUILD_TOOLS): Check for ln -s
