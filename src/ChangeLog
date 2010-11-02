@@ -1,5 +1,9 @@
 2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* Makefile.pamphlet: Remove.
+
+2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/Makefile.in ($(OUT)/lisp$(EXEEXT)): Remove GCL-specific
 	hack for rsym.
 
