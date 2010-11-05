@@ -1,7 +1,8 @@
 2010-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* algebra/Makefile.pamphlet: Likewise.
 	* interp/Makefile.pamphlet: Remove.
+	* algebra/Makefile.pamphlet: Likewise.
+	* input/Makefile.pamphlet: Likewise.
 
 2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
