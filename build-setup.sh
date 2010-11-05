@@ -12,9 +12,7 @@ autoheader || error "could not re-generate config/openaxiom-c-macros.h"
 autoconf || error "could not re-generate configure"
 
 ## subdirectories that contain Makefile pamphlets of interest
-SUBDIRS="	  src/interp             \
-		  src/algebra            \
-		  src/input              \
+SUBDIRS="		  src/input              \
 "
 
 
