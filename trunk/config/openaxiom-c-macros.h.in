@@ -63,6 +63,9 @@
 /* Define to 1 if you have the <libutil.h> header file. */
 #undef HAVE_LIBUTIL_H
 
+/* Define to 1 if you support file names longer than 14 characters. */
+#undef HAVE_LONG_FILE_NAMES
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
@@ -174,6 +177,12 @@
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
+
+/* Number of bits in a file offset, on hosts where this is settable. */
+#undef _FILE_OFFSET_BITS
+
+/* Define for large files, on AIX-style hosts. */
+#undef _LARGE_FILES
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the

@@ -800,6 +800,12 @@ dnl ------------------------
 dnl -- OPENAXIOM_CHECK_IO --
 dnl ------------------------
 AC_DEFUN([OPENAXIOM_CHECK_IO],[
+# Honor support for large files
+AC_SYS_LARGEFILE
+# What about long file names?
+AC_SYS_LONG_FILE_NAMES
+# Posix terminal IO?
+AC_SYS_POSIX_TERMIOS
 ## Does this system have openpty or shall we emulate?
 AC_CHECK_HEADERS([sys/ioctl.h pty.h util.h libutil.h termios.h])
 AC_CHECK_DECLS([openpty],[],[],
