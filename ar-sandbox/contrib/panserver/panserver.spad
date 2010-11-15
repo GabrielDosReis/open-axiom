@@ -3,7 +3,7 @@
 SockLib(): Public == Private where
 
     Public == Type with
-        
+
 	listener: SingleInteger -> SingleInteger
               ++ Set up listening server.  SOCKETERROR = -1,
 	      ++ BINDERROR = -2, LISTENERROR = -3.  listener
@@ -37,8 +37,12 @@ SockLib(): Public == Private where
 	      ++
         panServer: SingleInteger -> SingleInteger
               ++ webServer(port) requires port = port number
+        
 
     Private == add
+
+        import parseAndEvalToStringEqNum: String -> List String
+	    from Foreign Builtin
 
 	loadNativeModule("./socklib.so")$System
 
@@ -89,6 +93,7 @@ SockLib(): Public == Private where
         handleInsert: (SingleInteger,String) -> SingleInteger
         sendInsertFile: SingleInteger -> SingleInteger
 
+
 --  'panServer' listens on any interface, INADDR_ANY in the C code,
 --  and on port number 'port'.  However on the javascript side the
 --  port is still hardcoded as '8085' so for now it will only work
@@ -127,7 +132,16 @@ SockLib(): Public == Private where
             messagePrint("panServer end" )$OutputForm
             retval
 
-
+--  I've eliminated the use of regular expressions but would like to 
+--  have them for dealing with strings.  In 'headersplit' I do a rudimentary
+--  transformation of the headers received from the browser but would like
+--  to do more although I'm not certain what the final form should be like.
+--  
+--  The previous use of regular expressions depended on GCL's implementation
+--  and SBCL doesn't even have them.  They are not part of the common lisp
+--  specification.  To get lisp agnostic regular expressions probably means
+--  interfacing the C regular expressions but I've so far found it difficult
+--  to do so because of need to pass non-atomic parameters between spad and C.
 
         multiServ(connfd) ==
             retval := 0:SingleInteger
@@ -242,6 +256,7 @@ SockLib(): Public == Private where
             text := concat(text,htmlfoot)
             writeBytes!(connfd,text)
             0            
+
 --  'sendFile' provides the standard response to GET requests.
 
         sendFile(connfd,pathvar) ==
@@ -272,12 +287,13 @@ SockLib(): Public == Private where
             retval := 0:SingleInteger
             p := position("command=",headers,1)$String
             command := headers((p+8)..)
-            SETQ(tmpmathml$Lisp, MAKE_-STRING_-OUTPUT_-STREAM()$Lisp)$Lisp
-            SETQ(tmpalgebra$Lisp, MAKE_-STRING_-OUTPUT_-STREAM()$Lisp)$Lisp
-            SETQ(savemathml$Lisp, _$texOutputStream$Lisp)$Lisp
-            SETQ(savealgebra$Lisp, _$algebraOutputStream$Lisp)$Lisp
-            SETQ(_$texOutputStream$Lisp,tmpmathml$Lisp)$Lisp
-            SETQ(_$algebraOutputStream$Lisp,tmpalgebra$Lisp)$Lisp
+            WriteLine$Lisp "command:" command ":command"
+            tmpmathml := MAKE_-STRING_-OUTPUT_-STREAM()$Lisp
+	    tmpalgebra := MAKE_-STRING_-OUTPUT_-STREAM()$Lisp
+	    savemathml := _$texOutputStream$Lisp
+	    savealgebra := _$algebraOutputStream$Lisp
+            SETQ(_$texOutputStream$Lisp,tmpmathml)$Lisp
+            SETQ(_$algebraOutputStream$Lisp,tmpalgebra)$Lisp
             --      parseAndInterpret$Lisp command
             --      parseAndEvalStr$Lisp command
             -- The previous two commands don't exit nicely when a syntactically incorrect command is
@@ -288,30 +304,32 @@ SockLib(): Public == Private where
             -- works and doesn't crash on a syntax error.
             --        v := CATCH('SPAD__READER, CATCH('top__level, parseAndEvalStr$Lisp command)$Lisp)$Lisp
             --        v = 'restart => ['"error"]
-            ans := string parseAndEvalToStringEqNum$Lisp command
+	    ans:String := concat parseAndEvalToStringEqNum command
             WriteLine$Lisp concat ["parse answer: ",ans]
-            SETQ(resultmathml$Lisp,GET_-OUTPUT_-STREAM_-STRING(_$texOutputStream$Lisp)$Lisp)$Lisp
-            SETQ(resultalgebra$Lisp,GET_-OUTPUT_-STREAM_-STRING(_$algebraOutputStream$Lisp)$Lisp)$Lisp
-            SETQ(_$texOutputStream$Lisp,savemathml$Lisp)$Lisp
-            SETQ(_$algebraOutputStream$Lisp,savealgebra$Lisp)$Lisp
-            CLOSE(tmpmathml$Lisp)$Lisp
-            CLOSE(tmpalgebra$Lisp)$Lisp
+            resultmathml := GET_-OUTPUT_-STREAM_-STRING(_$texOutputStream$Lisp)$Lisp
+            resultalgebra := GET_-OUTPUT_-STREAM_-STRING(_$algebraOutputStream$Lisp)$Lisp
+            SETQ(_$texOutputStream$Lisp,savemathml)$Lisp
+            SETQ(_$algebraOutputStream$Lisp,savealgebra)$Lisp
+            CLOSE(tmpmathml)$Lisp
+            CLOSE(tmpalgebra)$Lisp
             -- Since strings returned from axiom are going to be displayed in html I
             -- should really check for the characters &,<,> and replace them with
             -- &amp;,&lt;,&gt;.  At present I only check for ampersands in formatMessages.
-            mathml:String := string(resultmathml$Lisp)
-            algebra:String := string(resultalgebra$Lisp)
+	    mathml:String := resultmathml
+	    algebra:String := resultalgebra
             algebra := formatMessages(algebra)
             --algebra:String := ""
             -- At this point mathml contains the mathml for the output but does not
             -- include step number or type information.  We should also save the command.
             -- I get the type from 'ans' and step number from the $internalHistoryTable
-            axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
+            --axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
+	    axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
 --            WriteLine$Lisp concat ["mathml answer: ",mathml]
 --            WriteLine$Lisp concat ["algebra answer: ",algebra]
             length := # axans - 1
             for i in 0..length repeat
                 writeByte!(connfd,(ord(elt(axans,i+1)$String)$Character)::Byte)
+            WriteLine$Lisp "sendCommand end"            
             retval
 
         formatMessages(str) ==
@@ -327,19 +345,18 @@ SockLib(): Public == Private where
             strlen:Integer := #str
             str := str.(1..(#str - 5))
             -- Here I split the string into lines and put each line in a "div".
-            strlist := split(str, char string NewLine$Lisp)
+	    strlist := split(str, NewLine$Lisp)
             str := ""
             for s in strlist repeat
                 str := concat [str,"<div>",s,"</div>"]
             str
 
         lastStep ==
-            --string CAR(CAR(_$internalHistoryTable$Lisp)$Lisp)$Lisp
-            string HistoryTable()$Lisp
+	    WRITE_-TO_-STRING(CAR(CAR(_$internalHistoryTable$Lisp)$Lisp)$Lisp)$Lisp
 
         getType(ans) ==
             p := position("Type: ",ans,1)$String
-            ans((p+6)..(#ans-1))
+            ans((p+6)..(#ans))
 
 --  These next functions provide a minimal way to save and restore work.
 --  This is complicated in a html web interface because of the javascript
@@ -369,7 +386,7 @@ SockLib(): Public == Private where
             retval := 0:SingleInteger
             p := position("compCellString=",headers,1)$String
             compCellString := headers((p+15)..)
-            SETQ(COMPCELLSTRING$Lisp,compCellString)$Lisp
+            SETQ(_$COMPCELLSTRING$Lisp,compCellString)$Lisp
             print message(compCellString)$OutputForm
             length := # compCellString - 1
             for i in 0..length repeat
@@ -384,15 +401,16 @@ SockLib(): Public == Private where
             sendString := concat [sendString,"HTTP/1.1 200 OK",STRING(NewLine$Lisp)$Lisp]
             sendString := concat [sendString,"Content-Type: text/xml",STRING(NewLine$Lisp)$Lisp]
             sendString := concat [sendString,STRING(NewLine$Lisp)$Lisp]
-            sendString := concat [sendString,COMPCELLSTRING$Lisp]
+            sendString := concat [sendString,_$COMPCELLSTRING$Lisp]
             length := # sendString - 1
             for i in 0..length repeat
                 writeByte!(connfd,(ord(elt(sendString,i+1)$String)$Character)::Byte)
             WriteLine$Lisp "sendCompCellString end"
             retval
 
+
         handleInsert(connfd,headers) ==
-            retval := 0:SingleInteger
+            retval:SingleInteger := 0
 --            WriteLine$Lisp "handleInsert begin"
             response:String := "HTTP/1.1 204 OK"
             length := # response - 1
@@ -405,16 +423,13 @@ SockLib(): Public == Private where
             while (n := position("</div>",headers,n+1)$String) > 0 repeat pend := n
             pend := pend + 5
             fileInsert := headers(pstart..pend) 
---            WriteLine$Lisp "file start"
---            WriteLine$Lisp fileInsert
---            WriteLine$Lisp "file end"
-            SETQ(FILEINSERT$Lisp,fileInsert)$Lisp
+            SETQ(_$FILEINSERT$Lisp,fileInsert)$Lisp
 --            WriteLine$Lisp "handleInsert end"
             retval
 
         sendInsertFile(connfd) ==
-            retval := 0:SingleInteger
-            fileInsert:String := FILEINSERT$Lisp
+            retval:SingleInteger := 0
+            fileInsert:String := _$FILEINSERT$Lisp
             length := # fileInsert - 1
             for i in 0..length repeat
                 writeByte!(connfd,(ord(elt(fileInsert,i+1)$String)$Character)::Byte)
