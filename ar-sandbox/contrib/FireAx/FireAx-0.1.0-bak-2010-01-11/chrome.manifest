@@ -1,9 +1,0 @@
-content FireAx chrome/content/
-
-overlay chrome://browser/content/browser.xul chrome://FireAx/content/overlay.xul
-
-locale FireAx en-US locale/en-US
-
-skin FireAx classic/1.0 skin/
-
-style chrome://global/content/customizeToolbar.xul chrome://FireAx/skin/overlay.css
