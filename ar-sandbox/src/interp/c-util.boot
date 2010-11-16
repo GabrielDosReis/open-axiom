@@ -301,14 +301,15 @@ warnLiteral x ==
  
 intersectionEnvironment(e,e') ==
   ce:= makeCommonEnvironment(e,e')
-  ic:= intersectionContour(deltaContour(e,ce),deltaContour(e',ce))
-  e'':= (ic => addContour(ic,ce); ce)
-  --$ie:= e''   this line is for debugging purposes only
+  ic := intersectionContour(deltaContour(e,ce),deltaContour(e',ce)) =>
+    addContour(ic,ce)
+  ce
  
 deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
   not EQ(el,el') => systemError '"deltaContour" --a cop out for now
   eliminateDuplicatePropertyLists contourDifference(c,c') where
-    contourDifference(c,c') == [first x for x in tails c while (x~=c')]
+    contourDifference(c,c') ==
+      [first x for x in tails c while not EQ(x,c')]
     eliminateDuplicatePropertyLists contour ==
       contour is [[x,:.],:contour'] =>
         LASSOC(x,contour') =>
@@ -318,7 +319,7 @@ deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
       nil
  
 intersectionContour(c,c') ==
-  $var: local
+  $var: local := nil
   computeIntersection(c,c') where
     computeIntersection(c,c') ==
       varlist:= removeDuplicates ASSOCLEFT c
@@ -382,8 +383,6 @@ addContour(c,E is [cur,:tail]) ==
                 for pv in p repeat fn3(x,pv,ee) where
                  fn3(x,pv,e) ==
                    [p,:v]:=pv
-                   if member(x,$getPutTrace) then
-                     pp([x,"has",pv])
                    if p="conditionalmode" then
                      pv.first := "mode"
                      --check for conflicts with earlier mode
@@ -392,18 +391,23 @@ addContour(c,E is [cur,:tail]) ==
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
         [c]
- 
+
+++ Return the common root of the environments e and e'.
+++ Note: we use cell pointer comparison instead of general object
+++ equality comparison because both are expected to build from
+++ a commont cell node.
 makeCommonEnvironment(e,e') ==
-  interE makeSameLength(e,e') where  --$ie:=
+  interE makeSameLength(e,e') where
     interE [e,e'] ==
-      rest e=rest e' => [interLocalE makeSameLength(first e,first e'),:rest e]
+      EQ(rest e,rest e') =>
+        [interLocalE makeSameLength(first e,first e'),:rest e]
       interE [rest e,rest e']
     interLocalE [le,le'] ==
-      rest le=rest le' =>
+      EQ(rest le,rest le') =>
         [interC makeSameLength(first le,first le'),:rest le]
       interLocalE [rest le,rest le']
     interC [c,c'] ==
-      c=c' => c
+      EQ(c,c') => c
       interC [rest c,rest c']
     makeSameLength(x,y) ==
       fn(x,y,#x,#y) where
@@ -924,16 +928,6 @@ sublisV(p,e) ==
 
 --% DEBUGGING PRINT ROUTINES used in breaks
  
-_?MODEMAPS x == _?modemaps x
-_?modemaps x ==
-  env:=
-    $insideCapsuleFunctionIfTrue=true => $CapsuleModemapFrame
-    $f
-  x="all" => displayModemaps env
-  -- displayOpModemaps(x,old2NewModemaps get(x,"modemap",env))
-  displayOpModemaps(x,get(x,"modemap",env))
-
-
 old2NewModemaps x ==
 --  [[dcSig,pred] for [dcSig,[pred,:.],:.] in x]
   x is [dcSig,[pred,:.],:.]  =>  [dcSig,pred]
@@ -945,11 +939,6 @@ traceUp() ==
     u:= comp(y,$EmptyMode,$f) =>
       sayBrightly [y,'" ==> mode",'%b,u.mode,'%d]
     sayBrightly [y,'" does not compile"]
- 
-_?M x == _?m x
-_?m x ==
-  u:= comp(x,$EmptyMode,$f) => u.mode
-  nil
  
 traceDown() ==
   mmList:= getFormModemaps($x,$f) =>
@@ -968,26 +957,6 @@ qArg(a,m) ==
     "no"
   sayBrightly [a," --> ",m,'%b,yesOrNo,'%d]
   yesOrNo="yes"
- 
-_?COMP x == _?comp x
-_?comp x ==
-  msg:=
-    u:= comp(x,$EmptyMode,$f) =>
-      [MAKESTRING "compiles to mode",'%b,u.mode,'%d]
-    nil
-  sayBrightly msg
- 
-_?domains() == pp getDomainsInScope $f
-_?DOMAINS() == ?domains()
- 
-_?mode x == displayProplist(x,[["mode",:getmode(x,$f)]])
-_?MODE x == _?mode x
- 
-_?properties x == displayProplist(x,getProplist(x,$f))
-_?PROPERTIES x == _?properties x
- 
-_?value x == displayProplist(x,[["value",:get(x,"value",$f)]])
-_?VALUE x == _?value x
  
 displayProplist(x,alist) ==
   sayBrightly ["properties of",'%b,x,'%d,":"]
@@ -1450,73 +1419,6 @@ noteSpecialVariable x ==
   $SpecialVars := insert(x,$SpecialVars)
 
 --%
---% Middle Env to Back End Transformations.
---%
-
---% e ::=
---%     (%ilConst  <c> <type>)                   -- constant
---%     (%ilInert  <e> <type>)                   -- inert form
---%     (%ilCtx    <d> <type>)                   -- context
---%     (%ilVar    <n> <type>)                   -- variable
---%     (%ilLisp   <e> <type>)                   -- Lisp form
---%     (%ilFun    <e> <type>)                   -- function object
---%     (%ilMm     <e> <type>)                   -- modemap
---%     (%ilLocal  <n> <type>)                   -- local function
---%     (%ilCtor   <n> <type>)                   -- constructor
---%     (%ilTag    <e> <type>)                   -- tag of union object
---%     (%ilVal    <e> <type>)                   -- value of union object
---%     (%ilCall   <e...e> <type>)               -- a call
---%     (%ilXLAM   <e> <type>)                   -- XLAM form
---%     (%ilLAM    <e> <type>)                   -- LAMBDA form
-
-structure ILInsn ==
-  %ilConst(c,t)                             -- constant
-  %ilInert(e,t)                             -- inert form
-  %ilContext(e,t)                           -- context
-  %ilVar(n,t)                               -- variable
-  %ilCtor(n,t)                              -- constructor
-  %ilLocal(op,t)                            -- local function
-  %ilLisp(e,t)                              -- Lisp form
-  %ilModemap(e,t)                           -- exported function modemap
-  %ilUnionTag e                             -- union object tag
-  %ilUnionValue(e,t)                        -- union object value
-  %ilDeref(e,t)                             -- deref function pointer
-  %ilCall(e,t)                              -- call
-  %ilType(d,t)                              -- type instantiation request
-  %ilReturn(n,T,t)                          -- `return' expression
-  %ilExit(n,T,t)                            -- `exit' expression
-
-++ Convert middle end IL forms to old back end forms.
-il2OldForm x ==
-  atom x => x                     -- ideally should not happen
-  x is ["QUOTE",:.] => x          -- idem.
-  case x of
-    %ilConst(c,.) => c
-    %ilInert(e,.) => e
-    %ilVar(n,.) => n
-    %ilCtor(n,.) => n
-    %ilContext(e,.) => e
-    %ilLisp(e,.) => e
-    %ilModemap(e,.) => e
-    %ilUnionTag(e,.) => ["CAR",il2OldForm e]
-    %ilUnionValue(e,.) => ["CAR",il2OldForm e]
-    %ilDeref(e,.) => ["applyFun",il2OldForm e]
-    %ilCall(e,.) =>
-      e is [["%ilLocal",op,:.],:.] =>
-        e.first := op
-        ilTransformInsns rest e
-        e
-      ['%call,:ilTransformInsns e]
-    otherwise => ilTransformInsns x
-
-++ Subroutines of il2OldForm to walk sequence of IL instructions.
-ilTransformInsns form ==
-  for insns in tails form repeat
-    insns.first := il2OldForm first insns
-  form
-
-
---%
 
 ++ Replace every middle end sub-forms in `x' with Lisp code.
 massageBackendCode: %Code -> %Void
@@ -1528,11 +1430,8 @@ massageBackendCode x ==
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
     if u ~= 'DCQ and u ~= 'SETQ then
-      $NEWSPAD or $FUNAME in $traceletFunctions =>
-        nconc(x,$FUNNAME__TAIL)
-        x.first := "LETT"
-      $TRACELETFLAG => x.first := "/TRACE-LET"
-      u = "%LET" => x.first := "SPADLET"
+      nconc(x,$FUNNAME__TAIL)
+      x.first := "LETT"
     massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
@@ -1540,6 +1439,11 @@ massageBackendCode x ==
         PUSH(CADADR x, $FluidVars)
         x.rest.first := CADADR x
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
+    -- Even if user used Lisp-level instructions to assign to
+    -- this variable, we still want to note that it is a Lisp-level
+    -- special variable.
+    u = 'SETQ and isLispSpecialVariable second x =>
+      noteSpecialVariable second x
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
     massageBackendCode x
@@ -1640,8 +1544,10 @@ transformToBackendCode x ==
     fluids ~= nil =>
       lvars ~= nil or needsPROG? body =>
         [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-      body is [[op,bindings,:body']] and op in '(LET LET_*) =>
-        [[op,bindings,declareGlobalVariables fluids,:body']]
+      body is [[op,inits,:body']] and op in '(LET LET_*)
+        and $FluidVars ~= nil =>
+           [declareGlobalVariables $SpecialVars,
+              [op,inits,declareGlobalVariables fluids,:body']]
       [declareGlobalVariables fluids,:body]
     lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]

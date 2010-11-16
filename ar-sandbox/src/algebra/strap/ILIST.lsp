@@ -382,7 +382,7 @@
              ((< |n| 1) (|error| "index out of range"))
              (T (SEQ (SETQ |p|
                            (|ILIST;rest;$Nni$;19| |p|
-                               (LET ((#0=#:G1506 (- |n| 1)))
+                               (LET ((#0=#:G1481 (- |n| 1)))
                                  (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                $))
@@ -401,7 +401,7 @@
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|
-                                 (LET ((#0=#:G1511 (TRUNCATE |n| 2)))
+                                 (LET ((#0=#:G1486 (TRUNCATE |n| 2)))
                                    (|check-subtype| (NOT (MINUSP #0#))
                                     '(|NonNegativeInteger|) #0#))
                                  |ILIST;mergeSort|)
@@ -413,10 +413,10 @@
                                      $))
                            (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
-(DEFUN |IndexedList| (&REST #0=#:G1520 &AUX #1=#:G1518)
+(DEFUN |IndexedList| (&REST #0=#:G1495 &AUX #1=#:G1493)
   (DECLARE (SPECIAL |$ConstructorCache|))
   (DSETQ #1# #0#)
-  (PROG (#2=#:G1519)
+  (PROG (#2=#:G1494)
     (RETURN
       (COND
         ((SETQ #2#
@@ -431,6 +431,7 @@
                ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|IndexedList| |dv$1| |dv$2|))
          ($ (|newShell| 86))
@@ -468,7 +469,6 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedList| (LIST |dv$1| |dv$2|)

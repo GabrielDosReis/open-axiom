@@ -229,8 +229,8 @@
                            |EUCDOM-;principalIdeal;LR;9|)
                      (EXIT (CONS (CONS (QVELT |u| 0)
                                        (LET
-                                        ((#0=#:G1519 (CAR |v|))
-                                         (#1=#:G1518 NIL))
+                                        ((#0=#:G1494 (CAR |v|))
+                                         (#1=#:G1493 NIL))
                                          (LOOP
                                            (COND
                                              ((ATOM #0#)
@@ -254,7 +254,7 @@
              ((SPADCALL |z| (|spadConstant| $ 19)
                   (|getShellEntry| $ 51))
               (CONS 0
-                    (LET ((#0=#:G1521 |l|) (#1=#:G1520 NIL))
+                    (LET ((#0=#:G1496 |l|) (#1=#:G1495 NIL))
                       (LOOP
                         (COND
                           ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -272,8 +272,8 @@
                              ((EQL (CAR |q|) 1) (CONS 1 "failed"))
                              (T (CONS 0
                                       (LET
-                                       ((#2=#:G1523 (CAR |pid|))
-                                        (#3=#:G1522 NIL))
+                                       ((#2=#:G1498 (CAR |pid|))
+                                        (#3=#:G1497 NIL))
                                         (LOOP
                                           (COND
                                             ((ATOM #2#)
@@ -304,8 +304,8 @@
                         |EUCDOM-;multiEuclidean;LSU;11|)
                   (LETT |u|
                         (SPADCALL
-                            (LET ((#0=#:G1504 NIL) (#1=#:G1505 T)
-                                  (#2=#:G1524 |l1|))
+                            (LET ((#0=#:G1479 NIL) (#1=#:G1480 T)
+                                  (#2=#:G1499 |l1|))
                               (LOOP
                                 (COND
                                   ((ATOM #2#)
@@ -313,8 +313,8 @@
                                      (COND
                                        (#1# (|spadConstant| $ 30))
                                        (T #0#))))
-                                  (T (LET ((#3=#:G1397 (CAR #2#)))
-                                       (LET ((#4=#:G1503 #3#))
+                                  (T (LET ((#3=#:G1372 (CAR #2#)))
+                                       (LET ((#4=#:G1478 #3#))
                                          (COND
                                            (#1# (SETQ #0# #4#))
                                            (T
@@ -323,8 +323,8 @@
                                               (|getShellEntry| $ 29)))))
                                          (SETQ #1# NIL)))))
                                 (SETQ #2# (CDR #2#))))
-                            (LET ((#5=#:G1507 NIL) (#6=#:G1508 T)
-                                  (#7=#:G1525 |l2|))
+                            (LET ((#5=#:G1482 NIL) (#6=#:G1483 T)
+                                  (#7=#:G1500 |l2|))
                               (LOOP
                                 (COND
                                   ((ATOM #7#)
@@ -332,8 +332,8 @@
                                      (COND
                                        (#6# (|spadConstant| $ 30))
                                        (T #5#))))
-                                  (T (LET ((#8=#:G1398 (CAR #7#)))
-                                       (LET ((#9=#:G1506 #8#))
+                                  (T (LET ((#8=#:G1373 (CAR #7#)))
+                                       (LET ((#9=#:G1481 #8#))
                                          (COND
                                            (#6# (SETQ #5# #9#))
                                            (T

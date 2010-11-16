@@ -4,7 +4,7 @@
 (DEFPARAMETER |IntegralDomain;AL| 'NIL) 
 
 (DEFUN |IntegralDomain;| ()
-  (LET ((#0=#:G1403
+  (LET ((#0=#:G1378
             (|Join| (|CommutativeRing|) (|Algebra| '$) (|EntireRing|)
                     (|mkCategory| '|domain|
                         '(((|exquo| ((|Union| $ "failed") $ $)) T)

@@ -1,3 +1,92 @@
+## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+## All rights reserved.
+## Copyright (C) 2007-2010, Gabriel Dos Reis.
+## All rights reserved.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions are
+## met:
+##
+##     - Redistributions of source code must retain the above copyright
+##       notice, this list of conditions and the following disclaimer.
+##
+##     - Redistributions in binary form must reproduce the above copyright
+##       notice, this list of conditions and the following disclaimer in
+##       the documentation and/or other materials provided with the
+##       distribution.
+##
+##     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+##       names of its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+## IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+## TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+## PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+## OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+## EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+## PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+## PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+## LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+##
+
+# * Adding new algebra
+#
+# This is a complex process by its very nature. Developers and Maintainers
+# who undertake the process need to understand quite a lot of detail. The
+# ultimate steps to add algebra are tedious but simple. Note that only
+# algebra code that gets shipped with the system needs to undergo this
+# process. User code can be compiled once the distributed algebra exists
+# and does not need either this Makefile or this installation process.
+#
+# NOTE: If you add new algebra to this file you must also update
+#
+# \File{exposed.lsp.pamphlet}
+#
+# otherwise the new algebra won't be loaded by the interpreter when needed.
+#
+# The first idea that you need to understand is the overall process
+# of adding algebra code. Lets assume that you have a brand new spad
+# file, called \File{foo.spad} containing a simple domain `BAR'. The
+# steps in the process of adding this file are:
+#  1. Find out where the algebra code lives in the lattice.
+#     You do this by 
+#       a. starting a new interpsys session
+#       b. collecting all the names of the algebra files BAR requires
+#       c. determining which layer each of the required files resides
+#       d. determine the highest layer (e.g. 14) that contains
+#          the required files
+#
+#  2. insert the documentation into the next layer (e.g. 15)
+#
+#  3. insert the [[\${OUT}/BAR.$(FASLEXT)]] file into the layer's file list
+#
+# * Rebuilding the algebra from scratch
+#
+# Compile order is important. Here we try to define the ordered lattice
+# of spad file dependencies. However this is, in reality, a graph rather
+# than a lattice. In order to break cycles in this graph we explicitly
+# cache a few of the intermediate generated lisp code for certain files.
+# These are marked throughout (both here and in the various pamphlet
+# files) with the word {\bf BOOTSTRAP}.
+#
+# If we take a cycle such as `RING' we discover that in order to
+# compile the spad code we must load the compiled definition of [[RING]].
+# In this case we must compile the cached lisp code before we try to 
+# compile the spad file.
+#
+# It is highly recommended that you try to become a developer of OpenAxiom
+# and read the archived mailing lists before you decide to change a
+# cached file. In the fullness of time we will rewrite the whole algebra
+# structure into a proper lattice if possible. Alternatively we'll
+# reimplement the compiler to handle graphs. Or deeply adopt the
+# extensible domains. Whatever we do will be much discussed (and cause
+# much disgust) around the campfire. If you come up with a brilliant
+# plan that gets adopted we'll even inscribe your name on a log and add
+# it to the fire.
+
 
 IN=$(srcdir)
 OUT=$(axiom_targetdir)/algebra
@@ -243,7 +332,7 @@ $(OUT)/CFCAT.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
 
 
-$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/AGG.$(FASLEXT) $(OUT)/AGG-.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT)
 $(OUT)/ELTAGG.$(FASLEXT): $(OUT)/AGG.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/IXAGG.$(FASLEXT): $(OUT)/ELTAGG.$(FASLEXT) $(OUT)/EVALAB.$(FASLEXT)
 $(OUT)/RCAGG.$(FASLEXT): $(OUT)/EVALAB.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT) \
@@ -260,7 +349,7 @@ $(OUT)/FLAGG.$(FASLEXT): $(OUT)/BMODULE.$(FASLEXT) $(OUT)/PID.$(FASLEXT) \
 	$(OUT)/LINEXP.$(FASLEXT) $(OUT)/PATMAB.$(FASLEXT) \
 	$(OUT)/REAL.$(FASLEXT) $(OUT)/CHARZ.$(FASLEXT) \
 	$(OUT)/DIFFSPC.$(FASLEXT)
-$(OUT)/A1AGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/LOGIC.$(FASLEXT) \
+$(OUT)/A1AGG.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT) $(OUT)/BOOLE-.$(FASLEXT) \
 	$(OUT)/FLAGG.$(FASLEXT) $(OUT)/LOGIC-.$(FASLEXT) \
 	$(OUT)/ORDTYPE-.$(FASLEXT)
 $(OUT)/SRAGG.$(FASLEXT): $(OUT)/A1AGG.$(FASLEXT)
@@ -306,7 +395,8 @@ $(OUT)/STEP.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/PATMAB.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
 $(OUT)/REAL.$(FASLEXT): $(OUT)/KONVERT.$(FASLEXT)
 
-$(OUT)/LOGIC.$(FASLEXT): $(OUT)/BASTYPE.$(FASLEXT)
+$(OUT)/LOGIC.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
+$(OUT)/BOOLE.$(FASLEXT): $(OUT)/LOGIC.$(FASLEXT)
 
 
 $(OUT)/SGROUP.$(FASLEXT) $(OUT)/SGROUP-.$(FASLEXT): $(OUT)/SETCAT.$(FASLEXT)
@@ -374,7 +464,8 @@ axiom_algebra_layer_0 = \
   LIST     DIFFDOM  DIFFDOM- DIFFSPC  DIFFSPC- DIFFMOD  \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
   RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-   \
-  DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT
+  DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT          \
+  BOOLE    BOOLE-
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -394,7 +485,6 @@ $(OUT)/IEVALAB.$(FASLEXT) $(OUT)/IEVALAB-.$(FASLEXT): \
 $(OUT)/EVALAB.$(FASLEXT) $(OUT)/EVALAB-.$(FASLEXT): \
 	$(OUT)/IEVALAB.$(FASLEXT)
 
-$(OUT)/BOOLE.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 $(OUT)/PROPLOG.$(FASLEXT): $(OUT)/BOOLE.$(FASLEXT) $(OUT)/SETCAT.$(FASLEXT)
 
 $(OUT)/MAYBE.$(FASLEXT): $(OUT)/KOERCE.$(FASLEXT) $(OUT)/RETRACT.$(FASLEXT)
@@ -444,9 +534,9 @@ axiom_algebra_layer_1 = \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
   PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
   IDENT             BINDING  ALIST    BOOLEAN   PRIMARR  \
-  ORDRING  ORDRING-          FEVALAB  FEVALAB-           \
+  ORDRING  ORDRING-          FEVALAB  FEVALAB-  IARRAY1  \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
-  FIELD    FIELD-   VECTCAT  VECTCAT- IARRAY1   BOOLE    \
+  FIELD    FIELD-   VECTCAT  VECTCAT- \
   PROPERTY ARITY    OPERCAT  OPERCAT- PAIR      STREAM   \
   RADCAT   RADCAT-  PDMOD    DMEXT    LZSTAGG   LZSTAGG-
 

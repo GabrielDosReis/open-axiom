@@ -4,7 +4,7 @@
 (DEFPARAMETER |AbelianSemiGroup;AL| 'NIL) 
 
 (DEFUN |AbelianSemiGroup;| ()
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1372
             (|Join| (|SetCategory|)
                     (|mkCategory| '|domain|
                         '(((+ ($ $ $)) T)

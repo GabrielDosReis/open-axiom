@@ -1,9 +1,45 @@
+## Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
+## All rights reserved.
+## Copyright (C) 2007-2010, Gabriel Dos Reis.
+## All rights reserved.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions are
+## met:
+##
+##     - Redistributions of source code must retain the above copyright
+##       notice, this list of conditions and the following disclaimer.
+##
+##     - Redistributions in binary form must reproduce the above copyright
+##       notice, this list of conditions and the following disclaimer in
+##       the documentation and/or other materials provided with the
+##       distribution.
+##
+##     - Neither the name of The Numerical ALgorithms Group Ltd. nor the
+##       names of its contributors may be used to endorse or promote products
+##       derived from this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+## IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+## TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+## PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+## OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+## EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+## PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+## PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+## LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+## NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+## SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+##
+
 
 subdir = src/interp/
 
 IN=$(srcdir)
 DOC=$(axiom_target_docdir)/src/interp
 BOOK=$(axiom_target_docdir)
+
+# Do we still need this?
 AUTO=$(axiom_targetdir)/autoload
 
 autoload_objects =
@@ -12,9 +48,13 @@ autoload_objects =
 # derived Lisp images (interpsys, AXIOMsys)
 LISPSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
 
+# Translator from Boot to Lisp (or machine code)
 BOOTSYS= $(axiom_target_bindir)/bootsys$(EXEEXT) -- --syslib=$(axiom_target_libdir)
 
+# Minimal OpenAxiom image necessary to build the algebra
 SAVESYS= interpsys$(EXEEXT)
+
+# Complete OpenAxiom image after completion of algebra, ready to install.
 AXIOMSYS= $(axiom_target_bindir)/AXIOMsys$(EXEEXT)
 
 OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
@@ -88,8 +128,11 @@ OBJS=   boot-pkg.$(FASLEXT)	types.$(FASLEXT)	 \
 	fortcall.$(FASLEXT) 	i-parser.$(FASLEXT) 	\
 	$(OCOBJS) $(BROBJS) $(ASCOMP) $(INOBJS)
 
+# Last minite patches.
+# FIXMEL: should be folded into the main object list.
 INOBJS=	setvart.$(FASLEXT) interop.$(FASLEXT) patches.$(FASLEXT)
 
+# Main compiler files.
 OCOBJS=	\
 	info.$(FASLEXT)		modemap.$(FASLEXT)	\
 	category.$(FASLEXT)	define.$(FASLEXT)	\
@@ -100,6 +143,7 @@ OCOBJS=	\
 
 autoload_objects += $(OCOBJS)
 
+# Browser component files.
 BROBJS=	bc-matrix.$(FASLEXT)				\
 	bc-misc.$(FASLEXT)	bc-solve.$(FASLEXT)	\
 	htsetvar.$(FASLEXT)	\
@@ -113,6 +157,8 @@ BROBJS=	bc-matrix.$(FASLEXT)				\
 
 autoload_objects += $(BFOBJS)
 
+# Translator from `old Spad' to `new spad (Aldor)' code.
+# FIXME: is this still relevant?
 TRANOBJS= ${AUTO}/wi1.$(FASLEXT) ${AUTO}/wi2.$(FASLEXT) ${AUTO}/pspad1.$(FASLEXT) \
 	  ${AUTO}/pspad2.$(FASLEXT) ${AUTO}/mark.$(FASLEXT) ${AUTO}/nspadaux.$(FASLEXT)
 

@@ -476,7 +476,7 @@
   (+ (- |$ShortMaximum| |$ShortMinimum|) 1)) 
 
 (DEFUN |SINT;index;Pi$;55| (|i| $)
-  (LET ((#0=#:G1464 (- (+ |i| |$ShortMinimum|) 1)))
+  (LET ((#0=#:G1439 (- (+ |i| |$ShortMinimum|) 1)))
     (|check-subtype| (SMINTP #0#) '(|SingleInteger|) #0#))) 
 
 (DEFUN |SINT;lookup;$Pi;56| (|x| $)
@@ -509,7 +509,7 @@
 
 (DEFUN |SingleInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1499)
+  (PROG (#0=#:G1474)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|SingleInteger|))
@@ -523,9 +523,9 @@
                ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
 
 (DEFUN |SingleInteger;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 114))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|SingleInteger| NIL (CONS 1 $))
@@ -628,10 +628,11 @@
                          |AbelianGroup&| NIL NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL NIL NIL NIL
                          NIL |AbelianSemiGroup&| |SemiGroup&| NIL
-                         |Logic&| |DifferentialSpace&| |OrderedType&|
-                         |SetCategory&| NIL NIL |RetractableTo&|
-                         |DifferentialDomain&| |BasicType&| NIL NIL NIL
-                         NIL NIL NIL NIL NIL NIL NIL NIL)
+                         |BooleanLogic&| |DifferentialSpace&|
+                         |OrderedType&| |SetCategory&| |Logic&| NIL
+                         |RetractableTo&| |DifferentialDomain&|
+                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL NIL
+                         NIL NIL NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -659,9 +660,9 @@
                                (|LeftLinearSet| $$)
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
-                               (|LeftLinearSet| 5) (|Logic|)
+                               (|LeftLinearSet| 5) (|BooleanLogic|)
                                (|DifferentialSpace|) (|OrderedType|)
-                               (|SetCategory|) (|BooleanLogic|)
+                               (|SetCategory|) (|Logic|)
                                (|RealConstant|) (|RetractableTo| 5)
                                (|DifferentialDomain| $$) (|BasicType|)
                                (|OpenMath|) (|ConvertibleTo| 100)

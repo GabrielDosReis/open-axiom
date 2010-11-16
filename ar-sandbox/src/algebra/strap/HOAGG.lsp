@@ -6,7 +6,7 @@
 (DEFPARAMETER |HomogeneousAggregate;AL| 'NIL) 
 
 (DEFUN |HomogeneousAggregate;| (|t#1|)
-  (LET ((#0=#:G1398
+  (LET ((#0=#:G1373
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|HomogeneousAggregate;CAT|)
@@ -77,8 +77,8 @@
         (LIST '|HomogeneousAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |HomogeneousAggregate| (#0=#:G1399)
-  (LET ((#1=#:G1400
+(DEFUN |HomogeneousAggregate| (#0=#:G1374)
+  (LET ((#1=#:G1375
             (|assoc| (|devaluate| #0#) |HomogeneousAggregate;AL|)))
     (COND
       (#1# (CDR #1#))

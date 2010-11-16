@@ -55,7 +55,7 @@
                      (LETT |c2| (SPADCALL |p2| (|getShellEntry| $ 26))
                            |GCDDOM-;gcdPolynomial;3Sup;4|)
                      (SETQ |p1|
-                           (LET ((#0=#:G1418
+                           (LET ((#0=#:G1393
                                      (SPADCALL |p1| |c1|
                                       (|getShellEntry| $ 27))))
                              (|check-union| (ZEROP (CAR #0#))

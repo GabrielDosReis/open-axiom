@@ -4,7 +4,7 @@
 (DEFPARAMETER |CommutativeRing;AL| 'NIL) 
 
 (DEFUN |CommutativeRing;| ()
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1372
             (|Join| (|Ring|) (|BiModule| '$ '$)
                     (|mkCategory| '|package| NIL
                         '(((|commutative| "*") T)) 'NIL NIL))))

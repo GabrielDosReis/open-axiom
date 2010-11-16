@@ -1,3 +1,61 @@
+2010-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/Makefile.pamphlet: Remove.
+	* algebra/Makefile.pamphlet: Likewise.
+	* input/Makefile.pamphlet: Likewise.
+
+2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.pamphlet: Remove.
+
+2010-11-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* lisp/Makefile.in ($(OUT)/lisp$(EXEEXT)): Remove GCL-specific
+	hack for rsym.
+
+2010-10-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot: Cleanup.
+
+2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (makeCommonEnvironment): Use list node pointer
+	comparaison, not object comparaison.
+
+2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (BooleanLogic) [~]: Add defaut.
+
+2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (BooleanLogic): Extends Logic.
+
+2010-10-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/boolean.spad.pamphlet (Logic): Now extend Type.
+
+2010-09-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* utils/sexpr.H (Token::character): New token type.
+	(Character): New.
+	(Syntax::Visitor::visit): Overload for Character.
+	(Allocator::make_character): Declare.
+	(Parser::parse_character): Likewise.
+	* utils/sexpr.cc (operator<<) [Token::character]: Print data for
+	character token.
+	(Lexer::tokenize): Recognize a character literal.
+	(Parser::parse_character): Define.
+
+2010-09-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (massageBackendCode): Remove conditional on
+	$NEWSPAD since it always true.  Keep note of Lisp-level special
+	variable even if it is set with SETQ.
+	(transformToBackendCode): Declare special variables before fluid
+	and local variables.
+	* interp/compiler.boot: Don't compile SETQ forms as if they were
+	Spad codes.
+
 2010-08-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* utils/Makefile.in ($(oa_target_oalib)): Create contaning

@@ -6,7 +6,7 @@
 (DEFPARAMETER |Collection;AL| 'NIL) 
 
 (DEFUN |Collection;| (|t#1|)
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1372
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (COND
                   (|Collection;CAT|)
@@ -69,8 +69,8 @@
     (|setShellEntry| #0# 0 (LIST '|Collection| (|devaluate| |t#1|)))
     #0#)) 
 
-(DEFUN |Collection| (#0=#:G1398)
-  (LET ((#1=#:G1399 (|assoc| (|devaluate| #0#) |Collection;AL|)))
+(DEFUN |Collection| (#0=#:G1373)
+  (LET ((#1=#:G1374 (|assoc| (|devaluate| #0#) |Collection;AL|)))
     (COND
       (#1# (CDR #1#))
       (T (PROGN

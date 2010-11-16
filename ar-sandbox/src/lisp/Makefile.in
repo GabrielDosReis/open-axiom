@@ -92,7 +92,6 @@ lisp_c_objects = \
 
 $(OUT)/lisp$(EXEEXT): base-lisp$(EXEEXT)
 ifeq (@axiom_lisp_flavor@,gcl)
-	@axiom_gcl_rsym_hack@
 	echo '(let* ((sys-cc compiler::*cc*) ' \
 	     '      (sys-ld compiler::*ld*) ' \
 	     '      (compiler::*cc* (concatenate (quote string) ' \
