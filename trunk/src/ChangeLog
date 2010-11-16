@@ -1,3 +1,25 @@
+2010-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %s2c
+	builtin. 
+	* interp/g-util.boot (stringToChar): New.
+	(expandCst): Use it.
+	(expandS2c): Likewise. New.
+	* interp/spad.lisp (|$Newline): Move to interp/sys-macros.lisp.
+	* interp/sys-macros.lisp (|$Backspace): New.
+	(|$HorizontalTab|): Likewise.
+	(|$VerticalTab|): Likewise.
+	(|$FormFeed|): Likewise.
+	(|$CarriageReturn|): Likewise.
+	* algebra/string.spad.pamphlet (Character) [newline]: New.
+	[carriageReturn]: Likewise.
+	[linefeed]: Likewise.
+	[formfeed]: Likewise.
+	[backspace]: Likewise.
+	[horizontalTab]: Likewise.
+	[verticalTab]: Likewise.
+	[char]: Tidy.
+
 2010-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/Makefile.pamphlet: Remove.

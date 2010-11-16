@@ -42,6 +42,20 @@ Character: OrderedFinite() with
 	    ++ \spad{escape} provides the escape character, \spad{_}, which
 	    ++ is used to allow quotes and other characters {\em within}
 	    ++ strings.
+        newline: %
+            ++ \spad{newline} designates the new line character.
+        carriageReturn: %
+            ++ \spad{carriageReturn} designates carriage return.
+        linefeed: %
+            ++ \spad{linefeed} designates the line feed character.
+        formfeed: %
+            ++ \spad{formfeed} designates the form feed character.
+        backspace: %
+            ++ \spad{backspace} designates the backspace character.
+        horizontalTab: %
+            ++ \spad{horizontalTab} designates horizontal tab.
+        verticalTab: %
+            ++ \spad{verticalTab} designates vertical tab.
 	upperCase: % -> %
 	    ++ upperCase(c) converts a lower case letter to the corresponding
 	    ++ upper case letter.  If c is not a lower case letter, then
@@ -83,6 +97,7 @@ Character: OrderedFinite() with
         import %c2i: % -> NNI         from Foreign Builtin
         import %i2c: NNI -> %         from Foreign Builtin
         import %ccst: String -> %     from Foreign Builtin
+        import %s2c: String -> %      from Foreign Builtin
 
 	a = b		       == %ceq(a,b)
 	a < b		       == %clt(a,b)
@@ -98,6 +113,13 @@ Character: OrderedFinite() with
 	space		       == %ccst " "
 	quote		       == %ccst "_""
 	escape		       == %ccst "__"
+        newline                == %ccst "\n"
+        carriageReturn         == %ccst "\r"
+        linefeed               == %i2c 10
+        formfeed               == %ccst "\f"
+        backspace              == %ccst "\b"
+        horizontalTab          == %ccst "\t"
+        verticalTab            == %ccst "\v"
 	coerce(c:%):OutputForm == c : OutputForm
 	digit? c	       == member?(c, digit())
 	hexDigit? c	       == member?(c, hexDigit())
@@ -109,9 +131,8 @@ Character: OrderedFinite() with
 	latex c ==
 	  concat("\mbox{`", concat(new(1,c)$String, "'}")$String)$String
 
-	char(s:String) ==
-	  one?(#s) => s(minIndex s)
-	  userError "String is not a single character"
+	char(s: String) ==
+          %s2c s
 
 	upperCase c ==
 	  CHAR_-UPCASE(c)$Lisp : %

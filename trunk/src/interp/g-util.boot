@@ -61,6 +61,19 @@ usedSymbol?(s,x) ==
     usedSymbol?(s,body)
   or/[usedSymbol?(s,x') for x' in x]
   
+
+++ Return the character designated by the string `s'.
+stringToChar: %String -> %Char
+stringToChar s ==
+  #s = 1 => char s
+  s = '"\a" => $Bell
+  s = '"\n" => $Newline
+  s = '"\f" => $FormFeed
+  s = '"\r" => $CarriageReturn
+  s = '"\b" => $Backspace
+  s = '"\t" => $HorizontalTab
+  s = '"\v" => $VerticalTab
+  error strconc("invalid character designator: ", s)
   
 --% VM forms
 
@@ -253,9 +266,14 @@ expandBcompl ['%bcompl,x] ==
 
 -- Character operations
 expandCcst ['%ccst,s] ==
+  -- FIXME: this expander should return forms, instead of character constants
   not string? s => error "operand is not a string constant"
-  #s ~= 1 => error "string constant must contain exactly one character"
-  char s
+  stringToChar s
+
+++ string-to-character conversion.  
+expandS2c ['%s2c, x] ==
+  string? x => expandCcst ['%ccst, x]
+  ['stringToChar, x]
 
 -- Integer operations
 expandIneg ['%ineg,x] ==
@@ -364,7 +382,7 @@ for x in [
     ['%and, :'AND],
     ['%or,  :'OR],
 
-    -- character binary operations
+    -- character operations
     ['%ceq, :'CHAR_=],
     ['%clt, :'CHAR_<],
     ['%cle, :'CHAR_<_=],
@@ -479,6 +497,7 @@ for x in [
    ['%bcompl,  :function expandBcompl],
 
    ['%ccst,    :function expandCcst],
+   ['%s2c,     :function expandS2c],
 
    ['%ieq,     :function expandIeq],
    ['%igt,     :function expandIgt],
