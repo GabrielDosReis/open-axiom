@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://FireAx/skin/overlay.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://FireAx/locale/overlay.dtd">
+<overlay id="fireax-overlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <script src="overlay.js"/>
+
+  <menupopup id="menu_ToolsPopup">
+    <menuitem id="FireAx-hello" label="FireAx" 
+              oncommand="FireAx.onMenuItemCommand(event);"/>
+  </menupopup>
+</overlay>

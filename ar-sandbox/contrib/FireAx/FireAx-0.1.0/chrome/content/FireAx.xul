@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="resource://gre/res/mathml.css" type="text/css"?>
+<?xml-stylesheet href="chrome://FireAx/content/FireAx.css" type="text/css"?>
+
+<!DOCTYPE window SYSTEM "file.dtd" [
+<!ENTITY % mon SYSTEM "resource://gre/res/dtd/mathml.dtd">
+%mon;
+]> 
+
+<window
+    id="FireAx-main"
+    title="FireAx"
+    orient="vertical"
+    align="start"
+    flex="1"
+    scrolling="yes"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="FireAx.js"/>
+
+  <box id="main" style="overflow-x: auto; overflow-y: auto; border: solid 1px red; position: relative;">
+    <vbox class="rootCompCell">
+      <hbox>
+	<textbox class="inComm" onkeypress="keyPressed(event)"/>
+      </hbox>
+    </vbox>
+  </box>
+
+  
+    <menupopup id="cellmenu">
+      <menuitem label="hide/show cell" oncommand="showCell(event)"/>
+      <menuitem label="hide/show branch" oncommand="showBranch(event)"/>
+      <menuitem label="hide/show except head" oncommand="showHead(event)"/>
+      <menuitem label="rotate to top" oncommand="rotateToTop(event)"/>
+    </menupopup>
+  
+  
+
+  <script type="application/x-javascript">
+    window.onload = function(){
+    //alert('fullScreen: '+window.fullScreen+'\ninnerHeight: '+window.innerHeight+'\ninnerWidth: '+window.innerWidth+'\nouterHeight: '+window.outerHeight+'\nouterWidth: '+window.outerWidth+'\nscreen.height: '+window.screen.height+'\nscreen.width: '+window.screen.width);
+    var mainBox = document.getElementById('main');
+    mainBox.style.width = window.innerWidth + "px";
+    mainBox.style.height = window.innerHeight + "px";
+    }
+  </script>
+</window>
+

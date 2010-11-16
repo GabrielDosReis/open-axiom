@@ -1,0 +1,15 @@
+FireAx is a beginning interface for OpenAxiom as a Firefox XUL extension.
+I haven't packaged it for addon installation yet.
+
+To try it out place a file called FireAx@mathbrane.ca in your Firefox 
+extensions directory with the single line
+
+/absolute/path/to/FireAx/FireAx-0.1.0/
+
+Start panserver in OpenAxiom and then restart Firefox so it registers the
+new extension.  FireAx will appear under the Firefox tools menu but I find
+I get more agreeable behaviour if I start it by typing
+
+chrome://fireax/content/FireAx.xul
+
+into the URL box which then opens FireAx in the current tab.

@@ -1,0 +1,23 @@
+.rootCompCell {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+.compCell {
+    border: solid 1px blue;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+.inComm {
+    width: 600px;
+}
+.mathml {
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    //overflow: auto;
+}
+.hide {
+    display: none;
+}

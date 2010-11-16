@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="resource://gre/res/mathml.css" type="text/css"?>
+<?xml-stylesheet href="chrome://FireAx/skin/FireAx.css" type="text/css"?>
+
+<!DOCTYPE window SYSTEM "file.dtd" [
+<!ENTITY % mon SYSTEM "resource://gre/res/dtd/mathml.dtd">
+%mon;
+]> 
+
+<window
+    id="FireAx-main"
+    title="FireAx"
+    orient="vertical"
+    height="500"
+    width="800"
+    align="start"
+    flex="1"
+
+xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/x-javascript" src="FireAx.js"/>
+
+  <hbox>
+    <spacer width="50px"/>
+    <vbox>
+<!--
+      <toolbox id="toolbox" width="300">
+	<toolbar id="file-toolbar">
+	  <toolbarbutton label="Save" oncommand="saveWork();"/>
+	  <toolbarbutton label="Restore" oncommand="restoreWork();"/>
+	</toolbar>
+	  <spacer flex="1"/>
+      </toolbox>
+-->
+      <spacer height="2px" flex="0"/>
+      <vbox id="headbox">
+	<spacer height="10" flex="1"/>
+	<hbox id="header">
+	  <spacer width="300" flex="1"/>
+	  <description style="font-size: 16px; font-weight: bold;"></description>
+	  <spacer width="300" flex="1"/>
+	</hbox>
+	<spacer height="10" flex="1"/>
+      </vbox>
+
+      <hbox>
+
+	<vbox id="main" flex="1" >
+
+	  <hbox id="combox" oncommand="makeRequest();">
+	    <vbox>
+	      <label value="Enter command:" control="axcom"/>
+	      <button id="excom" label="Send command"/>
+	      <spacer flex="1"/>
+	    </vbox>
+	    <textbox id="axcom" multiline="true" rows="2" cols="75"/>
+	  </hbox>
+          <spacer height="20" flex="1"/>
+
+<!--
+	  <hbox id="combox" oncommand="makeRequest(event);">
+	    <textbox id="axcom" multiline="true" rows="2" cols="75" onkeypress="keyPressed(event)"/>
+	  </hbox>
+-->
+	</vbox>
+
+
+      </hbox>
+
+      <vbox id="mathAns" style="overflow: scroll;" maxheight="400" maxwidth="1200">
+	<hbox></hbox>
+      </vbox>
+    </vbox>
+  </hbox>
+</window>
+
