@@ -42,7 +42,6 @@
 
 ;;; Common  Block
 
-(defconstant |$Newline| #\Newline)
 (defvar |$preserveSystemLisplib| t "if nil finalizeLisplib does MA REP")
 (defvar |$reportInstantiations| nil)
 (defvar |$reportEachInstantiation| nil)
