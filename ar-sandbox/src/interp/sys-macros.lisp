@@ -42,6 +42,16 @@
 ;; -*- Charcters and Strings -*-
 ;; 
 
+;; Special character constants
+(defconstant |$Bell| (code-char 7))
+(defconstant |$Backspace| #\Backspace)
+(defconstant |$HorizontalTab| #\Tab)
+(defconstant |$Newline| #\Newline)
+(defconstant |$VerticalTab| (code-char 11))
+(defconstant |$FormFeed| #\Page)
+(defconstant |$CarriageReturn| #\Return)
+
+
 (defmacro |char| (arg)
   (cond ((stringp arg)
 	 (character arg))
