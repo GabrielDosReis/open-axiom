@@ -42,12 +42,8 @@
 #  include <windows.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
-
 /* A list of drivers for OpenAxiom.  */
-typedef enum openaxiom_driver {
+enum openaxiom_driver {
    openaxiom_unknown_driver,    /* unknown driver */
    openaxiom_null_driver,       /* do nothing */
    openaxiom_config_driver,     /* print out configuration information */
@@ -56,26 +52,26 @@ typedef enum openaxiom_driver {
    openaxiom_script_driver,     /* start the core system in script mode. */
    openaxiom_compiler_driver,   /* start the core system in compiler mode. */
    openaxiom_execute_driver     /* Execute a command.  */
-} openaxiom_driver;
+};
 
 /* A list of runtime support systems for OpenAxiom. */
-typedef enum openaxiom_runtime {
+enum openaxiom_runtime {
    openaxiom_unknown_runtime,
-   openaxiom_gcl_runtime,
-   openaxiom_sbcl_runtime,
-   openaxiom_clisp_runtime,
-   openaxiom_ecl_runtime,
-   openaxiom_clozure_runtime,
-   openaxiom_bemol_runtime
-} openaxiom_runtime;
+   openaxiom_gcl_runtime,       /* GCL-based runtime  */
+   openaxiom_sbcl_runtime,      /* SBCL-based runtime */
+   openaxiom_clisp_runtime,     /* CLISP-based runtime */
+   openaxiom_ecl_runtime,       /* ECL-based runtime */
+   openaxiom_clozure_runtime,   /* Clozure CL-based runtime */
+   openaxiom_bemol_runtime      /* Bemol-based runtime */
+};
 
 /* A description of external command to be executed.  */
-typedef struct openaxiom_command {
+struct openaxiom_command {
    openaxiom_process core;      /* arguments for actual executable.  */
    char** rt_argv;              /* arguments to the base RT, if any.  */
    int rt_argc;                 /* number of such arguments.  */
    const char* root_dir;        /* path to the OpenAxiom system. */
-} openaxiom_command;
+};
 
 const char* openaxiom_get_systemdir(int argc, char*[]);
 const char* openaxiom_make_path_for(const char*, openaxiom_driver);
@@ -86,10 +82,5 @@ void openaxiom_build_rts_options(openaxiom_command*, openaxiom_driver);
 openaxiom_driver
   openaxiom_preprocess_arguments(openaxiom_command*, int, char**);
 
-
-
-#ifdef __cplusplus
-}
-#endif   
 
 #endif /* OPENAXIOM_UTILS_INCLUDED */

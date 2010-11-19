@@ -1,3 +1,9 @@
+2010-11-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* driver/utils.c (openaxiom_allocate_argv): New.
+	(openaxiom_build_rts_options): Use it.  Tidy.  Handle Clozure CL
+	and CLISP.
+
 2010-11-16  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %s2c
