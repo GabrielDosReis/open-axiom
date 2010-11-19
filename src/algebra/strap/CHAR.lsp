@@ -57,9 +57,9 @@
 
 (PUT '|CHAR;quote;$;13| '|SPADreplace| '(XLAM NIL (|%ccst| "\""))) 
 
-(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;escape;$;14|)) 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;underscore;$;14|)) 
 
-(PUT '|CHAR;escape;$;14| '|SPADreplace| '(XLAM NIL (|%ccst| "_"))) 
+(PUT '|CHAR;underscore;$;14| '|SPADreplace| '(XLAM NIL (|%ccst| "_"))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;newline;$;15|)) 
 
@@ -180,7 +180,7 @@
 
 (DEFUN |CHAR;quote;$;13| ($) (DECLARE (IGNORE $)) #\") 
 
-(DEFUN |CHAR;escape;$;14| ($) (DECLARE (IGNORE $)) #\_) 
+(DEFUN |CHAR;underscore;$;14| ($) (DECLARE (IGNORE $)) #\_) 
 
 (DEFUN |CHAR;newline;$;15| ($) (DECLARE (IGNORE $)) #\Newline) 
 
@@ -269,7 +269,8 @@
              (CONS IDENTITY
                    (FUNCALL (|dispatchFunction| |CHAR;quote;$;13|) $))
              (CONS IDENTITY
-                   (FUNCALL (|dispatchFunction| |CHAR;escape;$;14|) $))
+                   (FUNCALL (|dispatchFunction| |CHAR;underscore;$;14|)
+                            $))
              (CONS IDENTITY
                    (FUNCALL (|dispatchFunction| |CHAR;newline;$;15|) $))
              (CONS IDENTITY
@@ -305,14 +306,14 @@
              |CHAR;upperCase;2$;31| |CHAR;lowerCase;2$;32|
              (|SingleInteger|))
           '#(~= 67 |verticalTab| 73 |upperCase?| 77 |upperCase| 82
-             |space| 87 |size| 91 |random| 95 |quote| 99 |ord| 103
-             |newline| 108 |min| 112 |max| 122 |lowerCase?| 132
-             |lowerCase| 137 |lookup| 142 |linefeed| 147 |latex| 151
-             |index| 156 |horizontalTab| 161 |hexDigit?| 165 |hash| 170
-             |formfeed| 175 |escape| 179 |digit?| 183 |coerce| 188
-             |char| 193 |carriageReturn| 203 |before?| 207 |backspace|
-             213 |alphanumeric?| 217 |alphabetic?| 222 >= 227 > 233 =
-             239 <= 245 < 251)
+             |underscore| 87 |space| 91 |size| 95 |random| 99 |quote|
+             103 |ord| 107 |newline| 112 |min| 116 |max| 126
+             |lowerCase?| 136 |lowerCase| 141 |lookup| 146 |linefeed|
+             151 |latex| 155 |index| 160 |horizontalTab| 165
+             |hexDigit?| 169 |hash| 174 |formfeed| 179 |digit?| 183
+             |coerce| 188 |char| 193 |carriageReturn| 203 |before?| 207
+             |backspace| 213 |alphanumeric?| 217 |alphabetic?| 222 >=
+             227 > 233 = 239 <= 245 < 251)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL |SetCategory&| |OrderedType&|
@@ -327,17 +328,17 @@
                                   38 6 40 0 41 0 38 0 43 0 38 0 45 0 38
                                   0 47 0 38 0 49 0 38 0 51 2 53 0 12 40
                                   54 2 53 0 0 0 55 2 0 6 0 0 1 0 0 0 35
-                                  1 0 6 0 46 1 0 0 0 58 0 0 0 26 0 0 12
-                                  13 0 0 0 25 0 0 0 27 1 0 12 0 21 0 0
-                                  0 29 0 0 0 1 2 0 0 0 0 1 0 0 0 1 2 0
-                                  0 0 0 1 1 0 6 0 48 1 0 0 0 59 1 0 14
-                                  0 23 0 0 0 31 1 0 53 0 56 1 0 0 14 20
-                                  0 0 0 34 1 0 6 0 44 1 0 60 0 1 0 0 0
-                                  32 0 0 0 28 1 0 6 0 42 1 0 36 0 37 1
-                                  0 0 53 57 1 0 0 12 19 0 0 0 30 2 0 6
-                                  0 0 1 0 0 0 33 1 0 6 0 52 1 0 6 0 50
-                                  2 0 6 0 0 11 2 0 6 0 0 9 2 0 6 0 0 7
-                                  2 0 6 0 0 10 2 0 6 0 0 8)))))
+                                  1 0 6 0 46 1 0 0 0 58 0 0 0 28 0 0 0
+                                  26 0 0 12 13 0 0 0 25 0 0 0 27 1 0 12
+                                  0 21 0 0 0 29 0 0 0 1 2 0 0 0 0 1 0 0
+                                  0 1 2 0 0 0 0 1 1 0 6 0 48 1 0 0 0 59
+                                  1 0 14 0 23 0 0 0 31 1 0 53 0 56 1 0
+                                  0 14 20 0 0 0 34 1 0 6 0 44 1 0 60 0
+                                  1 0 0 0 32 1 0 6 0 42 1 0 36 0 37 1 0
+                                  0 53 57 1 0 0 12 19 0 0 0 30 2 0 6 0
+                                  0 1 0 0 0 33 1 0 6 0 52 1 0 6 0 50 2
+                                  0 6 0 0 11 2 0 6 0 0 9 2 0 6 0 0 7 2
+                                  0 6 0 0 10 2 0 6 0 0 8)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Character| 'NILADIC T) 
