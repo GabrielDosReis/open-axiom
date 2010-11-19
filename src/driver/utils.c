@@ -113,6 +113,15 @@ openaxiom_make_path_for(const char* prefix, openaxiom_driver driver)
    return execpath;
 }
 
+/* Allocate a nul-terminated vector for holding pointers to arguments
+   for the base Lisp runtime.   */
+static void
+openaxiom_allocate_argv(openaxiom_command* command, int n) {
+   command->rt_argc = n;
+   command->rt_argv = (char**) malloc((n + 1) * sizeof(char*));
+   command->rt_argv[n] = 0;
+}
+
 /* Build arguments, if any, to be supplied to the runtime system
    of `driver'.  */
 void
@@ -133,9 +142,7 @@ openaxiom_build_rts_options(openaxiom_command* command,
    case openaxiom_script_driver:
       switch (OPENAXIOM_BASE_RTS) {
       case openaxiom_gcl_runtime:
-         command->rt_argc = 3;
-         command->rt_argv = (char **)
-            malloc(command->rt_argc * sizeof (char*));
+         openaxiom_allocate_argv(command, 3);
          command->rt_argv[0] = (char*) "-batch";
          command->rt_argv[1] = (char*) "-eval";
          command->rt_argv[2] =
@@ -143,13 +150,23 @@ openaxiom_build_rts_options(openaxiom_command* command,
          break;
 
       case openaxiom_sbcl_runtime:
-         command->rt_argc = 4;
-         command->rt_argv = (char **)
-            malloc(command->rt_argc * sizeof (char*));
+         openaxiom_allocate_argv(command, 4);
          command->rt_argv[0] = (char*) "--noinform";
          command->rt_argv[1] = (char*) "--end-runtime-options";
          command->rt_argv[2] = (char*) "--noprint";
          command->rt_argv[3] = (char*) "--end-toplevel-options";
+         break;
+
+      case openaxiom_clozure_runtime:
+         openaxiom_allocate_argv(command, 2);
+         command->rt_argv[0] = (char*) "--quiet";
+         command->rt_argv[1] = (char*) "--batch";
+         break;
+
+      case openaxiom_clisp_runtime:
+         openaxiom_allocate_argv(command, 2);
+         command->rt_argv[0] = (char*) "--quiet";
+         command->rt_argv[1] = (char*) "-norc";
          break;
          
       default:
