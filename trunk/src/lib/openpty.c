@@ -58,7 +58,7 @@
 #endif
 
 
-#include "openpty.H1"
+#include "openpty.h"
 
 static void makeNextPtyNames(char *  , char * );
 

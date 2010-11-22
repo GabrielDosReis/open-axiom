@@ -57,8 +57,8 @@
 #include "util.H1"
 #include "Gfun.H1"
 #include "pixmap.h"
-#include "XShade.H1"
-#include "XSpadFill.H1"
+#include "XShade.h"
+#include "XSpadFill.h"
 #include "all_3d.H1"
 #include "cfuns.h"
 

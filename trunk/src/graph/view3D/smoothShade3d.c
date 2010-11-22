@@ -48,7 +48,7 @@
 #include "spadcolors.h"
 #include "Gfun.H1"
 #include "util.H1"
-#include "XSpadFill.H1"
+#include "XSpadFill.h"
 #include "all_3d.H1"
 
 #define SAFE_VALUE 892347
