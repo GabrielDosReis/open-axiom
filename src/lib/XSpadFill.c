@@ -60,9 +60,9 @@
 
 #include "openaxiom-c-macros.h"
 #include "spadcolors.h"
-#include "XSpadFill.H1"
-#include "XShade.H1"
-#include "XDither.H1"
+#include "XSpadFill.h"
+#include "XShade.h"
+#include "XDither.h"
 
 extern unsigned long *spadColors;
 static GC  stippleGC, solidGC;

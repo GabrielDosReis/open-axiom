@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -67,11 +67,11 @@ extern int buff_flag[1024];  /* flags for whether buff chars
 int buff_pntr;                     /* present length of  buff */
 
 
-#include "edin.H1"
-#include "prt.H1"
-#include "wct.H1"
-#include "cursor.H1"
-#include "fnct_key.H1"
+#include "edin.h"
+#include "prt.h"
+#include "wct.h"
+#include "cursor.h"
+#include "fnct_key.h"
 
 
 

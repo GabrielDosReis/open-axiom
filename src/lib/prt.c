@@ -37,8 +37,8 @@
 #include <sys/types.h>
 #include "edible.h"
 
-#include "prt.H1"
-#include "edin.H1"
+#include "prt.h"
+#include "edin.h"
 
 void
 myputchar(char c)

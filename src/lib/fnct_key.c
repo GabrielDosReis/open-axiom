@@ -48,9 +48,9 @@
 #include "bsdsignal.h"
 
 
-#include "fnct_key.H1"
-#include "prt.H1"
-#include "edin.H1"
+#include "fnct_key.h"
+#include "prt.h"
+#include "edin.h"
 
 
 /** Some constants for functio key defs ****/

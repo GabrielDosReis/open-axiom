@@ -45,7 +45,7 @@
 
 
 #include "pixmap.h"
-#include "XShade.H1"
+#include "XShade.h"
 #include "Gfun.H1"
 
 #include "all_3d.H1"

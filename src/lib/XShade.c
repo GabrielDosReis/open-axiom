@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ char XShadeBits[] = {
    0x0f, 0x0f, 0x0f, 0x0e,
    0x0f, 0x0f, 0x0f, 0x0f};
 
-#include "XShade.H1"
+#include "XShade.h"
 
 Pixmap XShade[XShadeMax];
 GC  TileGC;

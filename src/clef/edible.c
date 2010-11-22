@@ -51,11 +51,11 @@
 #include "com.h"
 #include "bsdsignal.h"
 
-#include "openpty.H1"
-#include "prt.H1"
-#include "edin.H1"
-#include "wct.H1"
-#include "fnct_key.H1"
+#include "openpty.h"
+#include "prt.h"
+#include "edin.h"
+#include "wct.h"
+#include "fnct_key.h"
 #include "cfuns.h"
 
 #ifdef AXIOM_UNLIKELY

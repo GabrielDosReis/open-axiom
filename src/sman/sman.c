@@ -53,7 +53,7 @@
 #include "sman.h"
 
 #include "sockio.h"
-#include "openpty.H1"
+#include "openpty.h"
 #include "cfuns.h"
 #include "utils.h"
 

@@ -1,6 +1,8 @@
 /*
    Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
    All rights reserved.
+   Copyright (C) 2007-2010, Gabriel Dos Reis.
+   All rights reserved.
 
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions are
@@ -34,7 +36,7 @@
 #include <stdlib.h>
 #include "openaxiom-c-macros.h"
 
-#include "cursor.H1"
+#include "cursor.h"
 
 /*
  * This routine changes the shape of the cursor. it is a modified version of
