@@ -54,6 +54,8 @@ Character: OrderedFinite() with
             ++ \spad{horizontalTab} designates horizontal tab.
         verticalTab: %
             ++ \spad{verticalTab} designates vertical tab.
+        escape: %
+            ++ \spad{escape} designate the escape character.
 	upperCase: % -> %
 	    ++ upperCase(c) converts a lower case letter to the corresponding
 	    ++ upper case letter.  If c is not a lower case letter, then
@@ -118,6 +120,7 @@ Character: OrderedFinite() with
         backspace              == %i2c 8
         horizontalTab          == %i2c 9
         verticalTab            == %i2c 11
+        escape                 == %i2c 27
 	coerce(c:%):OutputForm == c : OutputForm
 	digit? c	       == member?(c, digit())
 	hexDigit? c	       == member?(c, hexDigit())
