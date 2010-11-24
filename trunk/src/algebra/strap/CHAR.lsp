@@ -92,46 +92,50 @@
 
 (PUT '|CHAR;verticalTab;$;21| '|SPADreplace| '(XLAM NIL (|%i2c| 11))) 
 
+(DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;escape;$;22|)) 
+
+(PUT '|CHAR;escape;$;22| '|SPADreplace| '(XLAM NIL (|%i2c| 27))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Thing|)
-                |CHAR;coerce;$Of;22|)) 
+                |CHAR;coerce;$Of;23|)) 
 
-(PUT '|CHAR;coerce;$Of;22| '|SPADreplace| '(XLAM (|c|) |c|)) 
-
-(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
-                |CHAR;digit?;$B;23|)) 
+(PUT '|CHAR;coerce;$Of;23| '|SPADreplace| '(XLAM (|c|) |c|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
-                |CHAR;hexDigit?;$B;24|)) 
+                |CHAR;digit?;$B;24|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
-                |CHAR;upperCase?;$B;25|)) 
+                |CHAR;hexDigit?;$B;25|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
-                |CHAR;lowerCase?;$B;26|)) 
+                |CHAR;upperCase?;$B;26|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
-                |CHAR;alphabetic?;$B;27|)) 
+                |CHAR;lowerCase?;$B;27|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
-                |CHAR;alphanumeric?;$B;28|)) 
+                |CHAR;alphabetic?;$B;28|)) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Boolean|)
+                |CHAR;alphanumeric?;$B;29|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%String|)
-                |CHAR;latex;$S;29|)) 
+                |CHAR;latex;$S;30|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Char|)
-                |CHAR;char;S$;30|)) 
+                |CHAR;char;S$;31|)) 
 
-(PUT '|CHAR;char;S$;30| '|SPADreplace| '|%s2c|) 
-
-(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
-                |CHAR;upperCase;2$;31|)) 
-
-(PUT '|CHAR;upperCase;2$;31| '|SPADreplace| 'CHAR-UPCASE) 
+(PUT '|CHAR;char;S$;31| '|SPADreplace| '|%s2c|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
-                |CHAR;lowerCase;2$;32|)) 
+                |CHAR;upperCase;2$;32|)) 
 
-(PUT '|CHAR;lowerCase;2$;32| '|SPADreplace| 'CHAR-DOWNCASE) 
+(PUT '|CHAR;upperCase;2$;32| '|SPADreplace| 'CHAR-UPCASE) 
+
+(DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
+                |CHAR;lowerCase;2$;33|)) 
+
+(PUT '|CHAR;lowerCase;2$;33| '|SPADreplace| 'CHAR-DOWNCASE) 
 
 (DEFUN |CHAR;=;2$B;1| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -200,44 +204,46 @@
   (DECLARE (IGNORE $))
   (CODE-CHAR 11)) 
 
-(DEFUN |CHAR;coerce;$Of;22| (|c| $) (DECLARE (IGNORE $)) |c|) 
+(DEFUN |CHAR;escape;$;22| ($) (DECLARE (IGNORE $)) (CODE-CHAR 27)) 
 
-(DEFUN |CHAR;digit?;$B;23| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 39) (|getShellEntry| $ 41))) 
+(DEFUN |CHAR;coerce;$Of;23| (|c| $) (DECLARE (IGNORE $)) |c|) 
 
-(DEFUN |CHAR;hexDigit?;$B;24| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 43) (|getShellEntry| $ 41))) 
+(DEFUN |CHAR;digit?;$B;24| (|c| $)
+  (SPADCALL |c| (|spadConstant| $ 40) (|getShellEntry| $ 42))) 
 
-(DEFUN |CHAR;upperCase?;$B;25| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 45) (|getShellEntry| $ 41))) 
+(DEFUN |CHAR;hexDigit?;$B;25| (|c| $)
+  (SPADCALL |c| (|spadConstant| $ 44) (|getShellEntry| $ 42))) 
 
-(DEFUN |CHAR;lowerCase?;$B;26| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 47) (|getShellEntry| $ 41))) 
+(DEFUN |CHAR;upperCase?;$B;26| (|c| $)
+  (SPADCALL |c| (|spadConstant| $ 46) (|getShellEntry| $ 42))) 
 
-(DEFUN |CHAR;alphabetic?;$B;27| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 49) (|getShellEntry| $ 41))) 
+(DEFUN |CHAR;lowerCase?;$B;27| (|c| $)
+  (SPADCALL |c| (|spadConstant| $ 48) (|getShellEntry| $ 42))) 
 
-(DEFUN |CHAR;alphanumeric?;$B;28| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 51) (|getShellEntry| $ 41))) 
+(DEFUN |CHAR;alphabetic?;$B;28| (|c| $)
+  (SPADCALL |c| (|spadConstant| $ 50) (|getShellEntry| $ 42))) 
 
-(DEFUN |CHAR;latex;$S;29| (|c| $)
+(DEFUN |CHAR;alphanumeric?;$B;29| (|c| $)
+  (SPADCALL |c| (|spadConstant| $ 52) (|getShellEntry| $ 42))) 
+
+(DEFUN |CHAR;latex;$S;30| (|c| $)
   (STRCONC "\\mbox{`" (STRCONC (MAKE-FULL-CVEC 1 |c|) "'}"))) 
 
-(DEFUN |CHAR;char;S$;30| (|s| $)
+(DEFUN |CHAR;char;S$;31| (|s| $)
   (DECLARE (IGNORE $))
   (|stringToChar| |s|)) 
 
-(DEFUN |CHAR;upperCase;2$;31| (|c| $)
+(DEFUN |CHAR;upperCase;2$;32| (|c| $)
   (DECLARE (IGNORE $))
   (CHAR-UPCASE |c|)) 
 
-(DEFUN |CHAR;lowerCase;2$;32| (|c| $)
+(DEFUN |CHAR;lowerCase;2$;33| (|c| $)
   (DECLARE (IGNORE $))
   (CHAR-DOWNCASE |c|)) 
 
 (DEFUN |Character| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1407)
+  (PROG (#0=#:G1408)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Character|))
@@ -252,7 +258,7 @@
 
 (DEFUN |Character;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 61))
+  (LET ((|dv$| (LIST '|Character|)) ($ (|newShell| 62))
         (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
@@ -298,26 +304,28 @@
                    (FUNCALL (|dispatchFunction|
                                 |CHAR;verticalTab;$;21|)
                             $))
-             (|OutputForm|) |CHAR;coerce;$Of;22| (|CharacterClass|)
+             (CONS IDENTITY
+                   (FUNCALL (|dispatchFunction| |CHAR;escape;$;22|) $))
+             (|OutputForm|) |CHAR;coerce;$Of;23| (|CharacterClass|)
              (25 . |digit|) (|Character|) (29 . |member?|)
-             |CHAR;digit?;$B;23| (35 . |hexDigit|)
-             |CHAR;hexDigit?;$B;24| (39 . |upperCase|)
-             |CHAR;upperCase?;$B;25| (43 . |lowerCase|)
-             |CHAR;lowerCase?;$B;26| (47 . |alphabetic|)
-             |CHAR;alphabetic?;$B;27| (51 . |alphanumeric|)
-             |CHAR;alphanumeric?;$B;28| (|String|) (55 . |new|)
-             (61 . |concat|) |CHAR;latex;$S;29| |CHAR;char;S$;30|
-             |CHAR;upperCase;2$;31| |CHAR;lowerCase;2$;32|
+             |CHAR;digit?;$B;24| (35 . |hexDigit|)
+             |CHAR;hexDigit?;$B;25| (39 . |upperCase|)
+             |CHAR;upperCase?;$B;26| (43 . |lowerCase|)
+             |CHAR;lowerCase?;$B;27| (47 . |alphabetic|)
+             |CHAR;alphabetic?;$B;28| (51 . |alphanumeric|)
+             |CHAR;alphanumeric?;$B;29| (|String|) (55 . |new|)
+             (61 . |concat|) |CHAR;latex;$S;30| |CHAR;char;S$;31|
+             |CHAR;upperCase;2$;32| |CHAR;lowerCase;2$;33|
              (|SingleInteger|))
           '#(~= 67 |verticalTab| 73 |upperCase?| 77 |upperCase| 82
              |underscore| 87 |space| 91 |size| 95 |random| 99 |quote|
              103 |ord| 107 |newline| 112 |min| 116 |max| 126
              |lowerCase?| 136 |lowerCase| 141 |lookup| 146 |linefeed|
              151 |latex| 155 |index| 160 |horizontalTab| 165
-             |hexDigit?| 169 |hash| 174 |formfeed| 179 |digit?| 183
-             |coerce| 188 |char| 193 |carriageReturn| 203 |before?| 207
-             |backspace| 213 |alphanumeric?| 217 |alphabetic?| 222 >=
-             227 > 233 = 239 <= 245 < 251)
+             |hexDigit?| 169 |hash| 174 |formfeed| 179 |escape| 183
+             |digit?| 187 |coerce| 192 |char| 197 |carriageReturn| 207
+             |before?| 211 |backspace| 217 |alphanumeric?| 221
+             |alphabetic?| 226 >= 231 > 237 = 243 <= 249 < 255)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0))
                 (CONS '#(NIL NIL NIL |SetCategory&| |OrderedType&|
@@ -325,24 +333,24 @@
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|Finite|) (|SetCategory|)
                                (|OrderedType|) (|BasicType|) (|Type|)
-                               (|CoercibleTo| 36))
-                            (|makeByteWordVec2| 60
+                               (|CoercibleTo| 37))
+                            (|makeByteWordVec2| 61
                                 '(0 14 0 15 0 12 0 16 2 17 0 0 0 18 2
-                                  12 0 0 0 22 1 12 0 0 24 0 38 0 39 2
-                                  38 6 40 0 41 0 38 0 43 0 38 0 45 0 38
-                                  0 47 0 38 0 49 0 38 0 51 2 53 0 12 40
-                                  54 2 53 0 0 0 55 2 0 6 0 0 1 0 0 0 35
-                                  1 0 6 0 46 1 0 0 0 58 0 0 0 28 0 0 0
+                                  12 0 0 0 22 1 12 0 0 24 0 39 0 40 2
+                                  39 6 41 0 42 0 39 0 44 0 39 0 46 0 39
+                                  0 48 0 39 0 50 0 39 0 52 2 54 0 12 41
+                                  55 2 54 0 0 0 56 2 0 6 0 0 1 0 0 0 35
+                                  1 0 6 0 47 1 0 0 0 59 0 0 0 28 0 0 0
                                   26 0 0 12 13 0 0 0 25 0 0 0 27 1 0 12
                                   0 21 0 0 0 29 0 0 0 1 2 0 0 0 0 1 0 0
-                                  0 1 2 0 0 0 0 1 1 0 6 0 48 1 0 0 0 59
-                                  1 0 14 0 23 0 0 0 31 1 0 53 0 56 1 0
-                                  0 14 20 0 0 0 34 1 0 6 0 44 1 0 60 0
-                                  1 0 0 0 32 1 0 6 0 42 1 0 36 0 37 1 0
-                                  0 53 57 1 0 0 12 19 0 0 0 30 2 0 6 0
-                                  0 1 0 0 0 33 1 0 6 0 52 1 0 6 0 50 2
-                                  0 6 0 0 11 2 0 6 0 0 9 2 0 6 0 0 7 2
-                                  0 6 0 0 10 2 0 6 0 0 8)))))
+                                  0 1 2 0 0 0 0 1 1 0 6 0 49 1 0 0 0 60
+                                  1 0 14 0 23 0 0 0 31 1 0 54 0 57 1 0
+                                  0 14 20 0 0 0 34 1 0 6 0 45 1 0 61 0
+                                  1 0 0 0 32 0 0 0 36 1 0 6 0 43 1 0 37
+                                  0 38 1 0 0 54 58 1 0 0 12 19 0 0 0 30
+                                  2 0 6 0 0 1 0 0 0 33 1 0 6 0 53 1 0 6
+                                  0 51 2 0 6 0 0 11 2 0 6 0 0 9 2 0 6 0
+                                  0 7 2 0 6 0 0 10 2 0 6 0 0 8)))))
           '|lookupComplete|)) 
 
 (MAKEPROP '|Character| 'NILADIC T) 
