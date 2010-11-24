@@ -69,7 +69,7 @@
                 |CHAR;carriageReturn;$;16|)) 
 
 (PUT '|CHAR;carriageReturn;$;16| '|SPADreplace|
-     '(XLAM NIL (|%ccst| "\\r"))) 
+     '(XLAM NIL (|%i2c| 13))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;linefeed;$;17|)) 
 
@@ -77,22 +77,20 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;formfeed;$;18|)) 
 
-(PUT '|CHAR;formfeed;$;18| '|SPADreplace| '(XLAM NIL (|%ccst| "\\f"))) 
+(PUT '|CHAR;formfeed;$;18| '|SPADreplace| '(XLAM NIL (|%i2c| 12))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;backspace;$;19|)) 
 
-(PUT '|CHAR;backspace;$;19| '|SPADreplace| '(XLAM NIL (|%ccst| "\\b"))) 
+(PUT '|CHAR;backspace;$;19| '|SPADreplace| '(XLAM NIL (|%i2c| 8))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|)
                 |CHAR;horizontalTab;$;20|)) 
 
-(PUT '|CHAR;horizontalTab;$;20| '|SPADreplace|
-     '(XLAM NIL (|%ccst| "\\t"))) 
+(PUT '|CHAR;horizontalTab;$;20| '|SPADreplace| '(XLAM NIL (|%i2c| 9))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Char|) |CHAR;verticalTab;$;21|)) 
 
-(PUT '|CHAR;verticalTab;$;21| '|SPADreplace|
-     '(XLAM NIL (|%ccst| "\\v"))) 
+(PUT '|CHAR;verticalTab;$;21| '|SPADreplace| '(XLAM NIL (|%i2c| 11))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Thing|)
                 |CHAR;coerce;$Of;22|)) 
@@ -184,17 +182,23 @@
 
 (DEFUN |CHAR;newline;$;15| ($) (DECLARE (IGNORE $)) #\Newline) 
 
-(DEFUN |CHAR;carriageReturn;$;16| ($) (DECLARE (IGNORE $)) #\Return) 
+(DEFUN |CHAR;carriageReturn;$;16| ($)
+  (DECLARE (IGNORE $))
+  (CODE-CHAR 13)) 
 
 (DEFUN |CHAR;linefeed;$;17| ($) (DECLARE (IGNORE $)) (CODE-CHAR 10)) 
 
-(DEFUN |CHAR;formfeed;$;18| ($) (DECLARE (IGNORE $)) #\Page) 
+(DEFUN |CHAR;formfeed;$;18| ($) (DECLARE (IGNORE $)) (CODE-CHAR 12)) 
 
-(DEFUN |CHAR;backspace;$;19| ($) (DECLARE (IGNORE $)) #\Backspace) 
+(DEFUN |CHAR;backspace;$;19| ($) (DECLARE (IGNORE $)) (CODE-CHAR 8)) 
 
-(DEFUN |CHAR;horizontalTab;$;20| ($) (DECLARE (IGNORE $)) #\Tab) 
+(DEFUN |CHAR;horizontalTab;$;20| ($)
+  (DECLARE (IGNORE $))
+  (CODE-CHAR 9)) 
 
-(DEFUN |CHAR;verticalTab;$;21| ($) (DECLARE (IGNORE $)) #\^K) 
+(DEFUN |CHAR;verticalTab;$;21| ($)
+  (DECLARE (IGNORE $))
+  (CODE-CHAR 11)) 
 
 (DEFUN |CHAR;coerce;$Of;22| (|c| $) (DECLARE (IGNORE $)) |c|) 
 

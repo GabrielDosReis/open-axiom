@@ -112,12 +112,12 @@ Character: OrderedFinite() with
 	quote		       == %ccst "_""
 	underscore	       == %ccst "__"
         newline                == %ccst "\n"
-        carriageReturn         == %ccst "\r"
+        carriageReturn         == %i2c 13
         linefeed               == %i2c 10
-        formfeed               == %ccst "\f"
-        backspace              == %ccst "\b"
-        horizontalTab          == %ccst "\t"
-        verticalTab            == %ccst "\v"
+        formfeed               == %i2c 12
+        backspace              == %i2c 8
+        horizontalTab          == %i2c 9
+        verticalTab            == %i2c 11
 	coerce(c:%):OutputForm == c : OutputForm
 	digit? c	       == member?(c, digit())
 	hexDigit? c	       == member?(c, hexDigit())
