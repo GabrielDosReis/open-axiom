@@ -45,6 +45,9 @@ ACLOCAL_AMFLAGS = -I config --install --output=config/aclocal.m4
 
 SUBDIRS = @oa_gcldir@ src
 
+oa_builddir = $(abs_top_builddir)/build/$(target)
+oa_installdir = @open_axiom_installdir@
+
 # Configure options to GCL.
 GCLOPTS=@GCLOPTS@
 
@@ -70,8 +73,7 @@ OA_SRC_TARGETS = \
 
 .PHONY: all-oa $(OA_SRC_TARGETS)
 
-$(OA_SRC_TARGETS): stamp-rootdirs
-all-src: stamp-rootdirs @oa_all_prerequisites@
+all-src: @oa_all_prerequisites@
 
 if OA_BUILD_GCL
 all-recursive all-boot all-lisp all-interpsys all-axiomsys \
@@ -85,24 +87,20 @@ $(OA_SRC_TARGETS):
 all-algstrap:
 	cd src/algebra && $(MAKE) $@
 
-stamp-rootdirs:
-	@$(STAMP) stamp-rootdirs
-
-
 .PHONY: all-gcl
-all-gcl: $(axiom_build_bindir)/gcl$(EXEEXT)
+all-gcl: $(oa_builddir)/bin/gcl$(EXEEXT)
 
-$(axiom_build_bindir)/gcl$(EXEEXT):
+$(oa_builddir)/bin/gcl$(EXEEXT):
 	if test "$(srcdir)" != "$(builddir)" -a ! -d gcl; then \
 	   cp -r "$(srcdir)"/gcl "$(builddir)"; \
 	fi; cd gcl; \
-	./configure --prefix="$(axiom_abs_builddir)" ${GCLOPTS} && \
+	./configure --prefix="$(oa_builddir)" ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
 
 install-exec-local:
 	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
-	@$(mkinstalldirs) "$(DESTDIR)$(open_axiom_installdir)"
-	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(open_axiom_installdir)"
+	@$(mkinstalldirs) "$(DESTDIR)$(oa_installdir)"
+	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(oa_installdir)"
 	rm -f "$(DESTDIR)$(bindir)"/open-axiom
 	@$(mkinstalldirs) "$(DESTDIR)$(bindir)"
 	$(INSTALL_PROGRAM) src/driver/open-axiom$(EXEEXT) "$(DESTDIR)$(bindir)"
@@ -112,8 +110,6 @@ install-exec-local:
 check:
 	cd src && $(MAKE) all-check
 
-
 clean-local:
-	@-rm -rf "$(axiom_targetdir)"
+	@-rm -rf $(target)
 	@-rm -rf build
-	@-rm -f stamp-*
