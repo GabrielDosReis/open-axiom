@@ -197,9 +197,6 @@ axiom_target_texdir = $(axiom_target_datadir)/texmf/tex
 oa_target_includedir = $(axiom_targetdir)/include
 
 
-## Where OpenAxiom keeps the tarballs for optional components
-axiom_optional_srcdir = $(abs_top_srcdir)/zips
-
 ## The final directory where OpenAxiom is installed.  This is usually
 ## the directory deduced or specified at configuration time.
 open_axiom_installdir = @open_axiom_installdir@
