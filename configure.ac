@@ -33,27 +33,27 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-dnl Most of the macros used in this configure.ac are defined in files
-dnl located in the subdirectory config/
-sinclude(config/open-axiom.m4)
-sinclude(config/aclocal.m4)
-AC_INIT([OpenAxiom], [1.4.0-2010-11-19], 
+AC_INIT([OpenAxiom], [1.4.0-2010-11-25], 
         [open-axiom-bugs@lists.sf.net])
 
-AC_CONFIG_AUX_DIR(config)
-AC_CONFIG_MACRO_DIR(config)
+dnl Most of the macros used in this configure.ac are defined in files
+dnl located in the subdirectory config/
+m4_include([config/aclocal.m4])
+AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([config])
 
 dnl Put all configuration macros here
 AC_CONFIG_HEADERS([config/openaxiom-c-macros.h])
 
-dnl We don't use Automake yet.
-# AM_INIT_AUTOMAKE([foreign])
+AC_CANONICAL_SYSTEM
+
+dnl Page Automake
+AM_INIT_AUTOMAKE([foreign])
 AC_PREREQ([2.62])
 
 dnl Simple sanity check.
 AC_CONFIG_SRCDIR(src/Makefile.in)
 
-AC_CANONICAL_SYSTEM
 
 open_axiom_installdir=$libdir/open-axiom/$target/$PACKAGE_VERSION
 AC_SUBST(open_axiom_installdir)
@@ -83,6 +83,8 @@ oa_all_prerequisites=
 AC_SUBST(oa_all_prerequisites)
 
 OPENAXIOM_HOST_COMPILERS
+AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
+
 OPENAXIOM_HOST_DATA_PROPERTIES
 
 OPENAXIOM_DYNAMIC_MODULE_SUPPORT
@@ -106,7 +108,7 @@ OPENAXIOM_CHECK_MM
 OPENAXIOM_CHECK_MISC
 
 ## We are ready to instantiate makefiles.
-OPENAXIOM_MAKEFILE([Makefile])
+AC_CONFIG_FILES([Makefile])
 OPENAXIOM_MAKEFILE([src/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])
