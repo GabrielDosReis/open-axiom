@@ -69,13 +69,18 @@ AC_ARG_WITH([lisp], [ --with-lisp=L         use L as Lisp platform],
 ## the option --enable-gcl is specified then OpenAxiom builds its 
 ## own version from the source tree.
 ## If --enable-gcl is specified, we need to check for coonsistency
-AC_SUBST(oa_include_gcl)
 oa_include_gcl=
+oa_gcldir=
+AC_SUBST(oa_gcldir)
+AC_SUBST(oa_gcldir)
 AC_ARG_ENABLE([gcl], [  --enable-gcl            build GCL from OpenAxiom source],
 	      [case $enableval in
 		   yes|no) oa_include_gcl=$enableval ;;
 		   *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
 	       esac])
+if test "$oa_include_gcl" = xyes; then
+   oa_gcldir=gcl
+fi
 
 ## If nothing was said about preferred Lisp, guess one.
 AC_SUBST(AXIOM_LISP)
@@ -501,6 +506,7 @@ oa_shrobj_flags=
 oa_shrlib_flags=
 ## Tell Libtool to assume `dlopen' so that it does not have to
 ## emulate it.
+LT_PREREQ([2.2.6])
 LT_INIT([pic-only dlopen win32-dll shared])
 AC_SUBST([LIBTOOL_DEPS])
 # Give me extension of libraries

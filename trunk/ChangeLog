@@ -1,3 +1,9 @@
+2010-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.am: New.  Automake existing top-level Makefile.in.
+	* Makefile.in: Generate from Makefile.am.
+	* config/aclocal.m4: Regenerate.
+
 2010-11-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* build-setup.sh: Simplify.
