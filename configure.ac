@@ -96,7 +96,9 @@ AC_SUBST(axiom_src_subdirs)
 
 OPENAXIOM_CHECK_CORE_SUPPORT
 OPENAXIOM_CHECK_IO
+AM_CONDITIONAL([OA_BUILD_SMAN], [test $oa_use_sman = 1])
 OPENAXIOM_CHECK_GRAPHICS
+AM_CONDITIONAL([OA_BUILD_GRAPHICS], [test $axiom_use_x = xyes])
 
 OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS
@@ -118,6 +120,14 @@ OPENAXIOM_MAKEFILE([src/algebra/Makefile])
 OPENAXIOM_MAKEFILE([src/input/Makefile])
 OPENAXIOM_MAKEFILE([src/etc/Makefile])
 OPENAXIOM_MAKEFILE([src/doc/Makefile])
+OPENAXIOM_MAKEFILE([src/clef/Makefile])
+OPENAXIOM_MAKEFILE([src/sman/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
+OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
 
 AC_OUTPUT
 

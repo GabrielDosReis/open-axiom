@@ -754,6 +754,8 @@ float_type
 int_type
 char_type
 void_type
+OA_BUILD_GRAPHICS_FALSE
+OA_BUILD_GRAPHICS_TRUE
 openaxiom_host_has_regex
 OA_QT_QMAKE
 OA_QT_MOC
@@ -765,6 +767,8 @@ X_LIBS
 X_PRE_LIBS
 X_CFLAGS
 XMKMF
+OA_BUILD_SMAN_FALSE
+OA_BUILD_SMAN_TRUE
 oa_c_runtime_extra
 oa_c_runtime
 axiom_src_subdirs
@@ -8496,13 +8500,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:8499: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:8503: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:8502: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:8506: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:8505: output\"" >&5)
+  (eval echo "\"\$as_me:8509: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -9704,7 +9708,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 9707 "configure"' > conftest.$ac_ext
+  echo '#line 9711 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -11798,11 +11802,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11801: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11805: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11805: \$? = $ac_status" >&5
+   echo "$as_me:11809: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12137,11 +12141,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12140: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12144: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:12144: \$? = $ac_status" >&5
+   echo "$as_me:12148: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12242,11 +12246,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12245: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12249: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12249: \$? = $ac_status" >&5
+   echo "$as_me:12253: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12297,11 +12301,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12300: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12304: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12304: \$? = $ac_status" >&5
+   echo "$as_me:12308: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14664,7 +14668,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 14667 "configure"
+#line 14671 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14760,7 +14764,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 14763 "configure"
+#line 14767 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -16716,11 +16720,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16719: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16723: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16723: \$? = $ac_status" >&5
+   echo "$as_me:16727: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16815,11 +16819,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16818: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16822: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16822: \$? = $ac_status" >&5
+   echo "$as_me:16826: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16867,11 +16871,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16870: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16874: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16874: \$? = $ac_status" >&5
+   echo "$as_me:16878: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -19279,29 +19283,33 @@ fi
 
 fi
 
-axiom_use_sman=1
+oa_use_sman=1
 if test x"$ac_cv_have_decl_fork" = xyes \
      -a x"$ac_cv_have_decl_wait" = xyes; then \
     oa_c_runtime="$oa_c_runtime terminal_io"
     axiom_src_all="$axiom_src_all all-sman all-clef"
     axiom_src_subdirs="$axiom_src_subdirs clef sman"
-    ac_config_files="$ac_config_files src/clef/Makefile:config/var-def.mk:src/clef/Makefile.in:config/setup-dep.mk"
-
-    ac_config_files="$ac_config_files src/sman/Makefile:config/var-def.mk:src/sman/Makefile.in:config/setup-dep.mk"
-
 else
-    axiom_use_sman=0
+    oa_use_sman=0
     { $as_echo "$as_me:${as_lineno-$LINENO}: Superman component is disabled." >&5
 $as_echo "$as_me: Superman component is disabled." >&6;}
 fi
 
 
 cat >>confdefs.h <<_ACEOF
-#define OPENAXIOM_USE_SMAN $axiom_use_sman
+#define OPENAXIOM_USE_SMAN $oa_use_sman
 _ACEOF
 
 
 axiom_src_all="all-input $axiom_src_all"
+
+ if test $oa_use_sman = 1; then
+  OA_BUILD_SMAN_TRUE=
+  OA_BUILD_SMAN_FALSE='#'
+else
+  OA_BUILD_SMAN_TRUE='#'
+  OA_BUILD_SMAN_FALSE=
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for X" >&5
 $as_echo_n "checking for X... " >&6; }
@@ -20015,18 +20023,6 @@ if test -z "$no_x"; then
     oa_c_runtime="$oa_c_runtime graphics"
     axiom_src_all="$axiom_src_all all-graph"
     axiom_src_subdirs="$axiom_src_subdirs graph"
-    ac_config_files="$ac_config_files src/graph/Makefile:config/var-def.mk:src/graph/Makefile.in:config/setup-dep.mk"
-
-    ac_config_files="$ac_config_files src/graph/Gdraws/Makefile:config/var-def.mk:src/graph/Gdraws/Makefile.in:config/setup-dep.mk"
-
-    ac_config_files="$ac_config_files src/graph/view2D/Makefile:config/var-def.mk:src/graph/view2D/Makefile.in:config/setup-dep.mk"
-
-    ac_config_files="$ac_config_files src/graph/view3D/Makefile:config/var-def.mk:src/graph/view3D/Makefile.in:config/setup-dep.mk"
-
-    ac_config_files="$ac_config_files src/graph/viewAlone/Makefile:config/var-def.mk:src/graph/viewAlone/Makefile.in:config/setup-dep.mk"
-
-    ac_config_files="$ac_config_files src/graph/viewman/Makefile:config/var-def.mk:src/graph/viewman/Makefile.in:config/setup-dep.mk"
-
 else
     { $as_echo "$as_me:${as_lineno-$LINENO}: The Garphics component is disabled." >&5
 $as_echo "$as_me: The Garphics component is disabled." >&6;}
@@ -20146,6 +20142,14 @@ fi
 
 
 
+
+ if test $axiom_use_x = xyes; then
+  OA_BUILD_GRAPHICS_TRUE=
+  OA_BUILD_GRAPHICS_FALSE='#'
+else
+  OA_BUILD_GRAPHICS_TRUE='#'
+  OA_BUILD_GRAPHICS_FALSE=
+fi
 
 
 
@@ -20412,6 +20416,22 @@ ac_config_files="$ac_config_files src/etc/Makefile:config/var-def.mk:src/etc/Mak
 
 ac_config_files="$ac_config_files src/doc/Makefile:config/var-def.mk:src/doc/Makefile.in:config/setup-dep.mk"
 
+ac_config_files="$ac_config_files src/clef/Makefile:config/var-def.mk:src/clef/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/sman/Makefile:config/var-def.mk:src/sman/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/graph/Makefile:config/var-def.mk:src/graph/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/graph/Gdraws/Makefile:config/var-def.mk:src/graph/Gdraws/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/graph/view2D/Makefile:config/var-def.mk:src/graph/view2D/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/graph/view3D/Makefile:config/var-def.mk:src/graph/view3D/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/graph/viewAlone/Makefile:config/var-def.mk:src/graph/viewAlone/Makefile.in:config/setup-dep.mk"
+
+ac_config_files="$ac_config_files src/graph/viewman/Makefile:config/var-def.mk:src/graph/viewman/Makefile.in:config/setup-dep.mk"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -20537,6 +20557,14 @@ fi
 
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OA_BUILD_SMAN_TRUE}" && test -z "${OA_BUILD_SMAN_FALSE}"; then
+  as_fn_error "conditional \"OA_BUILD_SMAN\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${OA_BUILD_GRAPHICS_TRUE}" && test -z "${OA_BUILD_GRAPHICS_FALSE}"; then
+  as_fn_error "conditional \"OA_BUILD_GRAPHICS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -21491,14 +21519,6 @@ do
     "config/openaxiom-c-macros.h") CONFIG_HEADERS="$CONFIG_HEADERS config/openaxiom-c-macros.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
-    "src/clef/Makefile") CONFIG_FILES="$CONFIG_FILES src/clef/Makefile:config/var-def.mk:src/clef/Makefile.in:config/setup-dep.mk" ;;
-    "src/sman/Makefile") CONFIG_FILES="$CONFIG_FILES src/sman/Makefile:config/var-def.mk:src/sman/Makefile.in:config/setup-dep.mk" ;;
-    "src/graph/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/Makefile:config/var-def.mk:src/graph/Makefile.in:config/setup-dep.mk" ;;
-    "src/graph/Gdraws/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/Gdraws/Makefile:config/var-def.mk:src/graph/Gdraws/Makefile.in:config/setup-dep.mk" ;;
-    "src/graph/view2D/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/view2D/Makefile:config/var-def.mk:src/graph/view2D/Makefile.in:config/setup-dep.mk" ;;
-    "src/graph/view3D/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/view3D/Makefile:config/var-def.mk:src/graph/view3D/Makefile.in:config/setup-dep.mk" ;;
-    "src/graph/viewAlone/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/viewAlone/Makefile:config/var-def.mk:src/graph/viewAlone/Makefile.in:config/setup-dep.mk" ;;
-    "src/graph/viewman/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/viewman/Makefile:config/var-def.mk:src/graph/viewman/Makefile.in:config/setup-dep.mk" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile:config/var-def.mk:src/Makefile.in:config/setup-dep.mk" ;;
     "src/lib/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk" ;;
@@ -21513,6 +21533,14 @@ do
     "src/input/Makefile") CONFIG_FILES="$CONFIG_FILES src/input/Makefile:config/var-def.mk:src/input/Makefile.in:config/setup-dep.mk" ;;
     "src/etc/Makefile") CONFIG_FILES="$CONFIG_FILES src/etc/Makefile:config/var-def.mk:src/etc/Makefile.in:config/setup-dep.mk" ;;
     "src/doc/Makefile") CONFIG_FILES="$CONFIG_FILES src/doc/Makefile:config/var-def.mk:src/doc/Makefile.in:config/setup-dep.mk" ;;
+    "src/clef/Makefile") CONFIG_FILES="$CONFIG_FILES src/clef/Makefile:config/var-def.mk:src/clef/Makefile.in:config/setup-dep.mk" ;;
+    "src/sman/Makefile") CONFIG_FILES="$CONFIG_FILES src/sman/Makefile:config/var-def.mk:src/sman/Makefile.in:config/setup-dep.mk" ;;
+    "src/graph/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/Makefile:config/var-def.mk:src/graph/Makefile.in:config/setup-dep.mk" ;;
+    "src/graph/Gdraws/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/Gdraws/Makefile:config/var-def.mk:src/graph/Gdraws/Makefile.in:config/setup-dep.mk" ;;
+    "src/graph/view2D/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/view2D/Makefile:config/var-def.mk:src/graph/view2D/Makefile.in:config/setup-dep.mk" ;;
+    "src/graph/view3D/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/view3D/Makefile:config/var-def.mk:src/graph/view3D/Makefile.in:config/setup-dep.mk" ;;
+    "src/graph/viewAlone/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/viewAlone/Makefile:config/var-def.mk:src/graph/viewAlone/Makefile.in:config/setup-dep.mk" ;;
+    "src/graph/viewman/Makefile") CONFIG_FILES="$CONFIG_FILES src/graph/viewman/Makefile:config/var-def.mk:src/graph/viewman/Makefile.in:config/setup-dep.mk" ;;
 
   *) as_fn_error "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

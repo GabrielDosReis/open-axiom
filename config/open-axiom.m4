@@ -824,20 +824,18 @@ if test x"$ac_cv_have_decl_openpty" = xyes; then \
    AC_SEARCH_LIBS([openpty],[util])
 fi
 
-axiom_use_sman=1
+oa_use_sman=1
 if test x"$ac_cv_have_decl_fork" = xyes \
      -a x"$ac_cv_have_decl_wait" = xyes; then \
     oa_c_runtime="$oa_c_runtime terminal_io"
     axiom_src_all="$axiom_src_all all-sman all-clef"
     axiom_src_subdirs="$axiom_src_subdirs clef sman"
-    OPENAXIOM_MAKEFILE([src/clef/Makefile])
-    OPENAXIOM_MAKEFILE([src/sman/Makefile])
 else
-    axiom_use_sman=0
+    oa_use_sman=0
     AC_MSG_NOTICE([Superman component is disabled.])
 fi
 
-AC_DEFINE_UNQUOTED([OPENAXIOM_USE_SMAN], [$axiom_use_sman],
+AC_DEFINE_UNQUOTED([OPENAXIOM_USE_SMAN], [$oa_use_sman],
                    [Whether to use the session manager as driver.])
 
 axiom_src_all="all-input $axiom_src_all"
@@ -891,12 +889,6 @@ if test -z "$no_x"; then
     oa_c_runtime="$oa_c_runtime graphics"
     axiom_src_all="$axiom_src_all all-graph"
     axiom_src_subdirs="$axiom_src_subdirs graph"
-    OPENAXIOM_MAKEFILE([src/graph/Makefile])
-    OPENAXIOM_MAKEFILE([src/graph/Gdraws/Makefile])
-    OPENAXIOM_MAKEFILE([src/graph/view2D/Makefile])
-    OPENAXIOM_MAKEFILE([src/graph/view3D/Makefile])
-    OPENAXIOM_MAKEFILE([src/graph/viewAlone/Makefile])
-    OPENAXIOM_MAKEFILE([src/graph/viewman/Makefile])
 else
     AC_MSG_NOTICE([The Garphics component is disabled.])
 fi
