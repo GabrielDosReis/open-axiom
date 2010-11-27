@@ -120,15 +120,14 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/openaxiom-c-macros.h
-CONFIG_CLEAN_FILES = src/clef/Makefile src/sman/Makefile \
-	src/graph/Makefile src/graph/Gdraws/Makefile \
-	src/graph/view2D/Makefile src/graph/view3D/Makefile \
-	src/graph/viewAlone/Makefile src/graph/viewman/Makefile \
-	src/Makefile src/lib/Makefile src/utils/Makefile \
+CONFIG_CLEAN_FILES = src/Makefile src/lib/Makefile src/utils/Makefile \
 	src/hyper/Makefile src/driver/Makefile src/lisp/Makefile \
 	src/boot/Makefile src/interp/Makefile src/share/Makefile \
 	src/algebra/Makefile src/input/Makefile src/etc/Makefile \
-	src/doc/Makefile
+	src/doc/Makefile src/clef/Makefile src/sman/Makefile \
+	src/graph/Makefile src/graph/Gdraws/Makefile \
+	src/graph/view2D/Makefile src/graph/view3D/Makefile \
+	src/graph/viewAlone/Makefile src/graph/viewman/Makefile
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -429,22 +428,6 @@ $(top_srcdir)/config/openaxiom-c-macros.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config/openaxiom-c-macros.h config/stamp-h1
-src/clef/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/clef/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/sman/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/sman/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/graph/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/graph/Gdraws/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/Gdraws/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/graph/view2D/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/view2D/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/graph/view3D/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/view3D/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/graph/viewAlone/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/viewAlone/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-src/graph/viewman/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/viewman/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/lib/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/lib/Makefile.in $(top_srcdir)/config/setup-dep.mk
@@ -470,6 +453,22 @@ src/input/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.m
 src/etc/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/etc/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/doc/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/doc/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/clef/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/clef/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/sman/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/sman/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/graph/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/graph/Gdraws/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/Gdraws/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/graph/view2D/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/view2D/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/graph/view3D/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/view3D/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/graph/viewAlone/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/viewAlone/Makefile.in $(top_srcdir)/config/setup-dep.mk
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+src/graph/viewman/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/graph/viewman/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:
