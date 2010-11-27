@@ -70,17 +70,11 @@ AC_ARG_WITH([lisp], [ --with-lisp=L         use L as Lisp platform],
 ## own version from the source tree.
 ## If --enable-gcl is specified, we need to check for coonsistency
 oa_include_gcl=
-oa_gcldir=
-AC_SUBST(oa_gcldir)
-AC_SUBST(oa_gcldir)
 AC_ARG_ENABLE([gcl], [  --enable-gcl            build GCL from OpenAxiom source],
 	      [case $enableval in
 		   yes|no) oa_include_gcl=$enableval ;;
 		   *) AC_MSG_ERROR([erroneous value for --enable-gcl]) ;;
 	       esac])
-if test "$oa_include_gcl" = xyes; then
-   oa_gcldir=gcl
-fi
 
 ## If nothing was said about preferred Lisp, guess one.
 AC_SUBST(AXIOM_LISP)
@@ -111,7 +105,6 @@ case $oa_include_gcl,$AXIOM_LISP in
        ## the dependency tarball.
        if test -d ${srcdir}/gcl; then
 	  AXIOM_LISP='$(axiom_build_bindir)/gcl'
-	  oa_all_prerequisites="$oa_all_prerequisites all-gcl"
 	  oa_include_gcl=yes
        elif test -z "$oa_include_gcl"; then
 	  AC_MSG_ERROR([OpenAxiom requires a Lisp system.  Either separately build one (GCL-2.6.7, GCL-2.6.8, SBCL, ECL, CLisp, Clozure CL), or get the dependency tarball from OpenAxiom download website.])
@@ -257,23 +250,18 @@ dnl Determine options needed to build included GCL, if need be.
 AC_DEFUN([OPENAXIOM_GCL_BUILD_OPTIONS],[
 oa_host_has_libbfd=
 ## Check for these only if we are going to build GCL from source.
-case $oa_all_prerequisites in
-    *all-gcl*)
-	AC_CHECK_HEADER([bfd.h])
-	AC_HAVE_LIBRARY([bfd], [oa_host_has_libbfd=yes])
+if test x"$oa_include_gcl" = xyes; then
+    AC_CHECK_HEADER([bfd.h])
+    AC_HAVE_LIBRARY([bfd], [oa_host_has_libbfd=yes])
 
-	oa_gcl_bfd_option=
-	if test x"$ac_cv_header_bfd_h" = xyes \
-	    && test x"$oa_host_has_libbfd" = xyes; then
-	    oa_gcl_bfd_option="--disable-dynsysbfd"
-	else
-	    oa_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
-	fi
-        ;;
-    *)    
-        # Nothing to worry about
-        ;;
-esac
+    oa_gcl_bfd_option=
+    if test x"$ac_cv_header_bfd_h" = xyes \
+	&& test x"$oa_host_has_libbfd" = xyes; then
+	oa_gcl_bfd_option="--disable-dynsysbfd"
+    else
+	oa_gcl_bfd_option="--disable-statsysbfd --enable-locbfd"
+    fi
+fi
 
 case $host in
    powerpc*darwin*)

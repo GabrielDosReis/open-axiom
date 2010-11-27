@@ -33,7 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.4.0-2010-11-25], 
+AC_INIT([OpenAxiom], [1.4.0-2010-11-27], 
         [open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
@@ -77,10 +77,6 @@ fi
 ## in  sub-directories different from others.
 axiom_build_sharedir=$axiom_builddir/share
 
-
-## Accumulate list of utils needed for the build platform
-oa_all_prerequisites=
-AC_SUBST(oa_all_prerequisites)
 
 OPENAXIOM_HOST_COMPILERS
 AM_CONDITIONAL([OA_BUILD_GCL], [test x$oa_include_gcl = xyes])
