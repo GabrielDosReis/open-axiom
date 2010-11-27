@@ -102,10 +102,10 @@ $(axiom_target_bindir)/asq$(EXEEXT): asq$(EXEEXT)
 	cp -p $< $(axiom_target_bindir)
 
 asq$(EXEEXT): $(asq_objects)
-	$(LINK) -o $@ $(asq_objects) $(asq_LDADD)
+	$(CXXLINK) -o $@ $(asq_objects) $(asq_LDADD)
 
 %.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) $(CFLAGS) $(axiom_includes) -o $@ $<
+	$(CXXCOMPILE) $(CXXCFLAGS) $(axiom_includes) -o $@ $<
 
 
 asq.c: $(srcdir)/asq.c.pamphlet

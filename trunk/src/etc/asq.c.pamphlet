@@ -524,12 +524,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* printhelp    -- print the help info                                      */
 /* main                                                                     */
 
+#include "openaxiom-c-macros.h"
+
+#include <ctype.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "openaxiom-c-macros.h"
 #include "cfuns.h"
 
 /* we need to predeclare some functions so their signatures are known */
@@ -537,11 +539,6 @@ int printandor(char *list);
 int printlist(char *list);
 int pprintobject(char *list);
 int pprintcond(int seekpt,char *path);
-
-/* this bogucity is apparently due to the introduction of unicode */
-/* since we don't use unicode we default to the K&R C signatures  */
-int isdigit(int c);
-int isspace(int c);
 
 /*defvar*/  char *AXIOM;         /* the AXIOM shell variable    */
 
@@ -603,7 +600,7 @@ int isspace(int c);
   return 1;
 }
 
-/*defun*/ char* N2S(int n)
+/*defun*/ const char* N2S(int n)
 {
   return ((n<=0 && n>-Nct) ? ct[-n] : "the unknown thing");
 }
@@ -1457,7 +1454,7 @@ int isspace(int c);
 /*defun*/ int main(int argc, char *argv[])
 {
 /*  FILE *test;         when testing we leave tombstones     */
-  char *ssearch =""; /* the domain or abbreviation           */
+  const char *ssearch =""; /* the domain or abbreviation           */
   char *property=""; /* the property we want (e.g. niladic)  */
   int found=1;       /* did we find the domain? print if yes */
   char c;            /* a temporary                          */
@@ -1491,7 +1488,7 @@ int isspace(int c);
   opencompress();
   fseek(compress,seekcompress,SEEK_SET);
   fscanf(compress,"%d",&Nct);
-  ct = malloc(Nct*sizeof(char *));
+  ct = (char**) malloc(Nct*sizeof(char *));
   /* put entries in ct */
   {
     int foo1,foo2;
