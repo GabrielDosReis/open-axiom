@@ -79,6 +79,7 @@ all-recursive all-boot all-lisp all-interpsys all-axiomsys \
   all-algebra all-input all-src all-local: all-gcl
 endif
 
+all: all-local
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 
