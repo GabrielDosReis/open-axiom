@@ -78,6 +78,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = .
+SUBDIRS =
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in \
 	$(top_srcdir)/config/openaxiom-c-macros.h.in \
@@ -145,7 +146,6 @@ AM_RECURSIVE_TARGETS = $(RECURSIVE_TARGETS:-recursive=) \
 	distdir dist dist-all distcheck
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -319,14 +319,12 @@ localstatedir = @localstatedir@
 lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
-oa_all_prerequisites = @oa_all_prerequisites@
 oa_c_runtime = @oa_c_runtime@
 oa_c_runtime_extra = @oa_c_runtime_extra@
 oa_editor = @oa_editor@
 oa_enable_checking = @oa_enable_checking@
 oa_enable_profiling = @oa_enable_profiling@
 oa_enable_threads = @oa_enable_threads@
-oa_gcldir = @oa_gcldir@
 oa_keep_files = @oa_keep_files@
 oa_optimize_options = @oa_optimize_options@
 oa_shrlib_flags = @oa_shrlib_flags@
@@ -357,10 +355,11 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 void_type = @void_type@
 ACLOCAL_AMFLAGS = -I config --install --output=config/aclocal.m4
-SUBDIRS = @oa_gcldir@ src
+DIST_SUBDIRS = src
 oa_builddir = $(abs_top_builddir)/build/$(target)
 oa_installdir = @open_axiom_installdir@
 OA_SRC_TARGETS = \
+	all-src \
 	all-algebra \
 	all-asq \
 	all-axiomsys \
@@ -376,7 +375,6 @@ OA_SRC_TARGETS = \
 	all-lisp \
 	all-sman \
 	all-driver \
-	all-src  \
 	all-databases \
 	all-utils
 
@@ -795,10 +793,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile
+all-am: Makefile all-local
 installdirs: installdirs-recursive
 installdirs-am:
-install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -851,7 +848,7 @@ install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-exec-local
+install-exec-am:
 
 install-html: install-html-recursive
 
@@ -897,30 +894,29 @@ uninstall-am:
 	install-am install-strip tags-recursive
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am am--refresh check check-am clean clean-generic \
-	clean-libtool clean-local ctags ctags-recursive dist dist-all \
-	dist-bzip2 dist-gzip dist-lzma dist-shar dist-tarZ dist-xz \
-	dist-zip distcheck distclean distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-exec-local \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
-	uninstall uninstall-am
+	all all-am all-local am--refresh check check-am clean \
+	clean-generic clean-libtool clean-local ctags ctags-recursive \
+	dist dist-all dist-bzip2 dist-gzip dist-lzma dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-recursive uninstall uninstall-am
 
 
-.PHONY: all-oa $(OA_SRC_TARGETS)
-
-all-src: @oa_all_prerequisites@
+.PHONY: $(OA_SRC_TARGETS)
 
 @OA_BUILD_GCL_TRUE@all-recursive all-boot all-lisp all-interpsys all-axiomsys \
-@OA_BUILD_GCL_TRUE@  all-algebra all-input: all-gcl
+@OA_BUILD_GCL_TRUE@  all-algebra all-input all-src: all-gcl
 
+all-local: all-src
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 
@@ -938,7 +934,7 @@ $(oa_builddir)/bin/gcl$(EXEEXT):
 	./configure --prefix="$(oa_builddir)" ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
 
-install-exec-local:
+install:
 	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
 	@$(mkinstalldirs) "$(DESTDIR)$(oa_installdir)"
 	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(oa_installdir)"

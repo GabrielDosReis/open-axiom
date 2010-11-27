@@ -43,7 +43,7 @@
 
 ACLOCAL_AMFLAGS = -I config --install --output=config/aclocal.m4
 
-SUBDIRS = @oa_gcldir@ src
+DIST_SUBDIRS = src
 
 oa_builddir = $(abs_top_builddir)/build/$(target)
 oa_installdir = @open_axiom_installdir@
@@ -52,6 +52,7 @@ oa_installdir = @open_axiom_installdir@
 GCLOPTS=@GCLOPTS@
 
 OA_SRC_TARGETS = \
+	all-src \
 	all-algebra \
 	all-asq \
 	all-axiomsys \
@@ -67,19 +68,17 @@ OA_SRC_TARGETS = \
 	all-lisp \
 	all-sman \
 	all-driver \
-	all-src  \
 	all-databases \
 	all-utils
 
-.PHONY: all-oa $(OA_SRC_TARGETS)
-
-all-src: @oa_all_prerequisites@
+.PHONY: $(OA_SRC_TARGETS)
 
 if OA_BUILD_GCL
 all-recursive all-boot all-lisp all-interpsys all-axiomsys \
-  all-algebra all-input: all-gcl
+  all-algebra all-input all-src: all-gcl
 endif
 
+all-local: all-src
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 
@@ -97,7 +96,7 @@ $(oa_builddir)/bin/gcl$(EXEEXT):
 	./configure --prefix="$(oa_builddir)" ${GCLOPTS} && \
 		$(MAKE) && $(MAKE) install
 
-install-exec-local:
+install:
 	@echo Installing OpenAxiom in $(DESTDIR)$(prefix)
 	@$(mkinstalldirs) "$(DESTDIR)$(oa_installdir)"
 	cp -pr "$(builddir)"/$(target)/* "$(DESTDIR)$(oa_installdir)"
