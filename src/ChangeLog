@@ -1,5 +1,10 @@
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/Makefile.in (GCL_LTCC): Specify the tag.
+	(GCL_LTLD): Likewise.
+
+2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* Makefile.am: Automake Makefile.in.
 	* Makefile.in: Regenerate.
 
