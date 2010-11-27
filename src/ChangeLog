@@ -1,5 +1,11 @@
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* etc/Makefile.in: Compile and link with a C++ compiler.
+	* etc/asq.c.pamphlet: Fix bogus declarations of standard
+	functions.  Fix const-correctness for string literals.
+
+2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/Makefile.in (GCL_LTCC): Specify the tag.
 	(GCL_LTLD): Likewise.
 

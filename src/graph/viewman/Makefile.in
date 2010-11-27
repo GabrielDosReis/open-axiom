@@ -76,10 +76,10 @@ stamp: $(axiom_target_libdir)/viewman$(EXEEXT)
 %.lo: $(viewman_HEADERS)
 
 %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
+	$(CXXCOMPILE) -o $@ $(CFLAGS) $(AXIOM_CFLAGS) $<
 
 $(axiom_target_libdir)/viewman$(EXEEXT): $(viewman_objects) $(viewman_DEPENDENCIES)
-	$(LINK) -o $@ $(viewman_objects) $(viewman_LDADD)
+	$(CXXLINK) -o $@ $(viewman_objects) $(viewman_LDADD)
 
 mostlyclean-local:
 
