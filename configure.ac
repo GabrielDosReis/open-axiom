@@ -91,9 +91,6 @@ OPENAXIOM_FILE_EXTENSIONS
 OPENAXIOM_BUILD_OPTIONS
 OPENAXIOM_HOST_PROGS
 
-axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
-AC_SUBST(axiom_src_subdirs)
-
 OPENAXIOM_CHECK_CORE_SUPPORT
 OPENAXIOM_CHECK_IO
 AM_CONDITIONAL([OA_BUILD_SMAN], [test $oa_use_sman = 1])
@@ -106,8 +103,7 @@ OPENAXIOM_CHECK_MM
 OPENAXIOM_CHECK_MISC
 
 ## We are ready to instantiate makefiles.
-AC_CONFIG_FILES([Makefile])
-OPENAXIOM_MAKEFILE([src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 OPENAXIOM_MAKEFILE([src/lib/Makefile])
 OPENAXIOM_MAKEFILE([src/utils/Makefile])
 OPENAXIOM_MAKEFILE([src/hyper/Makefile])

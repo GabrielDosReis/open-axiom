@@ -760,7 +760,6 @@ openaxiom_host_has_regex
 OA_QT_QMAKE
 OA_QT_MOC
 axiom_use_x
-axiom_src_all
 X_CLFAGS
 X_EXTRA_LIBS
 X_LIBS
@@ -771,7 +770,6 @@ OA_BUILD_SMAN_FALSE
 OA_BUILD_SMAN_TRUE
 oa_c_runtime_extra
 oa_c_runtime
-axiom_src_subdirs
 MAKEINDEX
 LATEX
 PDFLATEX
@@ -8500,13 +8498,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:8503: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:8501: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:8506: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:8504: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:8509: output\"" >&5)
+  (eval echo "\"\$as_me:8507: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -9708,7 +9706,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 9711 "configure"' > conftest.$ac_ext
+  echo '#line 9709 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -11802,11 +11800,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11805: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11803: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11809: \$? = $ac_status" >&5
+   echo "$as_me:11807: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12141,11 +12139,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12144: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12142: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:12148: \$? = $ac_status" >&5
+   echo "$as_me:12146: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12246,11 +12244,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12249: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12247: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12253: \$? = $ac_status" >&5
+   echo "$as_me:12251: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12301,11 +12299,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12304: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12302: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12308: \$? = $ac_status" >&5
+   echo "$as_me:12306: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14668,7 +14666,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 14671 "configure"
+#line 14669 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14764,7 +14762,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 14767 "configure"
+#line 14765 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -16720,11 +16718,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16723: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16721: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16727: \$? = $ac_status" >&5
+   echo "$as_me:16725: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16819,11 +16817,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16822: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16820: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16826: \$? = $ac_status" >&5
+   echo "$as_me:16824: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16871,11 +16869,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16874: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16872: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16878: \$? = $ac_status" >&5
+   echo "$as_me:16876: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18522,9 +18520,6 @@ done
 
 
 
-axiom_src_subdirs="lib hyper lisp boot interp share algebra input etc doc"
-
-
 
 oa_c_runtime=
 
@@ -19287,8 +19282,6 @@ oa_use_sman=1
 if test x"$ac_cv_have_decl_fork" = xyes \
      -a x"$ac_cv_have_decl_wait" = xyes; then \
     oa_c_runtime="$oa_c_runtime terminal_io"
-    axiom_src_all="$axiom_src_all all-sman all-clef"
-    axiom_src_subdirs="$axiom_src_subdirs clef sman"
 else
     oa_use_sman=0
     { $as_echo "$as_me:${as_lineno-$LINENO}: Superman component is disabled." >&5
@@ -19300,8 +19293,6 @@ cat >>confdefs.h <<_ACEOF
 #define OPENAXIOM_USE_SMAN $oa_use_sman
 _ACEOF
 
-
-axiom_src_all="all-input $axiom_src_all"
 
  if test $oa_use_sman = 1; then
   OA_BUILD_SMAN_TRUE=
@@ -20021,13 +20012,10 @@ axiom_use_x=no
 if test -z "$no_x"; then
     axiom_use_x=yes
     oa_c_runtime="$oa_c_runtime graphics"
-    axiom_src_all="$axiom_src_all all-graph"
-    axiom_src_subdirs="$axiom_src_subdirs graph"
 else
     { $as_echo "$as_me:${as_lineno-$LINENO}: The Garphics component is disabled." >&5
 $as_echo "$as_me: The Garphics component is disabled." >&6;}
 fi
-
 
 
 
@@ -20388,9 +20376,7 @@ esac
 
 
 ## We are ready to instantiate makefiles.
-ac_config_files="$ac_config_files Makefile"
-
-ac_config_files="$ac_config_files src/Makefile:config/var-def.mk:src/Makefile.in:config/setup-dep.mk"
+ac_config_files="$ac_config_files Makefile src/Makefile"
 
 ac_config_files="$ac_config_files src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk"
 
@@ -21520,7 +21506,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile:config/var-def.mk:src/Makefile.in:config/setup-dep.mk" ;;
+    "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/lib/Makefile") CONFIG_FILES="$CONFIG_FILES src/lib/Makefile:config/var-def.mk:src/lib/Makefile.in:config/setup-dep.mk" ;;
     "src/utils/Makefile") CONFIG_FILES="$CONFIG_FILES src/utils/Makefile:config/var-def.mk:src/utils/Makefile.in:config/setup-dep.mk" ;;
     "src/hyper/Makefile") CONFIG_FILES="$CONFIG_FILES src/hyper/Makefile:config/var-def.mk:src/hyper/Makefile.in:config/setup-dep.mk" ;;
