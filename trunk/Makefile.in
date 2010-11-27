@@ -910,6 +910,7 @@ uninstall-am:
 @OA_BUILD_GCL_TRUE@all-recursive all-boot all-lisp all-interpsys all-axiomsys \
 @OA_BUILD_GCL_TRUE@  all-algebra all-input all-src all-local: all-gcl
 
+all: all-local
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 
