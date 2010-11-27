@@ -52,6 +52,7 @@ oa_installdir = @open_axiom_installdir@
 GCLOPTS=@GCLOPTS@
 
 OA_SRC_TARGETS = \
+	all-local \
 	all-src \
 	all-algebra \
 	all-asq \
@@ -75,10 +76,9 @@ OA_SRC_TARGETS = \
 
 if OA_BUILD_GCL
 all-recursive all-boot all-lisp all-interpsys all-axiomsys \
-  all-algebra all-input all-src: all-gcl
+  all-algebra all-input all-src all-local: all-gcl
 endif
 
-all-local: all-src
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 

@@ -1,3 +1,8 @@
+2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* Makefile.am: Automake Makefile.in.
+	* Makefile.in: Regenerate.
+
 2010-11-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* driver/utils.c (openaxiom_allocate_argv): New.

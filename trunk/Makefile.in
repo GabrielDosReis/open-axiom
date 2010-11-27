@@ -84,7 +84,6 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(top_srcdir)/config/openaxiom-c-macros.h.in \
 	$(top_srcdir)/config/setup-dep.mk \
 	$(top_srcdir)/config/var-def.mk $(top_srcdir)/configure \
-	$(top_srcdir)/src/Makefile.in \
 	$(top_srcdir)/src/algebra/Makefile.in \
 	$(top_srcdir)/src/boot/Makefile.in \
 	$(top_srcdir)/src/clef/Makefile.in \
@@ -120,7 +119,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/openaxiom-c-macros.h
-CONFIG_CLEAN_FILES = src/Makefile src/lib/Makefile src/utils/Makefile \
+CONFIG_CLEAN_FILES = src/lib/Makefile src/utils/Makefile \
 	src/hyper/Makefile src/driver/Makefile src/lisp/Makefile \
 	src/boot/Makefile src/interp/Makefile src/share/Makefile \
 	src/algebra/Makefile src/input/Makefile src/etc/Makefile \
@@ -282,8 +281,6 @@ axiom_eval_flags = @axiom_eval_flags@
 axiom_fasl_type = @axiom_fasl_type@
 axiom_lisp_flavor = @axiom_lisp_flavor@
 axiom_quiet_flags = @axiom_quiet_flags@
-axiom_src_all = @axiom_src_all@
-axiom_src_subdirs = @axiom_src_subdirs@
 axiom_use_x = @axiom_use_x@
 bindir = @bindir@
 build = @build@
@@ -358,6 +355,7 @@ DIST_SUBDIRS = src
 oa_builddir = $(abs_top_builddir)/build/$(target)
 oa_installdir = @open_axiom_installdir@
 OA_SRC_TARGETS = \
+	all-local \
 	all-src \
 	all-algebra \
 	all-asq \
@@ -428,8 +426,6 @@ $(top_srcdir)/config/openaxiom-c-macros.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config/openaxiom-c-macros.h config/stamp-h1
-src/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/Makefile.in $(top_srcdir)/config/setup-dep.mk
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/lib/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/lib/Makefile.in $(top_srcdir)/config/setup-dep.mk
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 src/utils/Makefile: $(top_builddir)/config.status $(top_srcdir)/config/var-def.mk $(top_srcdir)/src/utils/Makefile.in $(top_srcdir)/config/setup-dep.mk
@@ -792,7 +788,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile all-local
+all-am: Makefile
 installdirs: installdirs-recursive
 installdirs-am:
 install-exec: install-exec-recursive
@@ -893,29 +889,27 @@ uninstall-am:
 	install-am install-strip tags-recursive
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am all-local am--refresh check check-am clean \
-	clean-generic clean-libtool clean-local ctags ctags-recursive \
-	dist dist-all dist-bzip2 dist-gzip dist-lzma dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-generic distclean-hdr distclean-libtool \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am
+	all all-am am--refresh check check-am clean clean-generic \
+	clean-libtool clean-local ctags ctags-recursive dist dist-all \
+	dist-bzip2 dist-gzip dist-lzma dist-shar dist-tarZ dist-xz \
+	dist-zip distcheck distclean distclean-generic distclean-hdr \
+	distclean-libtool distclean-tags distcleancheck distdir \
+	distuninstallcheck dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
+	ps ps-am tags tags-recursive uninstall uninstall-am
 
 
 .PHONY: $(OA_SRC_TARGETS)
 
 @OA_BUILD_GCL_TRUE@all-recursive all-boot all-lisp all-interpsys all-axiomsys \
-@OA_BUILD_GCL_TRUE@  all-algebra all-input all-src: all-gcl
+@OA_BUILD_GCL_TRUE@  all-algebra all-input all-src all-local: all-gcl
 
-all-local: all-src
 $(OA_SRC_TARGETS):
 	cd src && $(MAKE) $@
 

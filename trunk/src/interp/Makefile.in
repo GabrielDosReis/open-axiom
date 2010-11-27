@@ -379,7 +379,7 @@ server.$(FASLEXT): macros.$(FASLEXT)
 ## While in theory that should work, in practice it turns out that 
 ## people tend to override functions in the autoload part, correcting
 ## bugs only there.  The consequence is that the same function will
-## bahave very differently based on the history of the seesion.  Ideal
+## behave very differently based on the history of the seesion.  Ideal
 ## recipe for creating heisenbugs.
 ##
 

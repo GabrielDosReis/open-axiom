@@ -1,3 +1,11 @@
+2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* config/open-axiom.m4 (axiom_src_all): Remove.
+	(axiom_src_subdirs): Likewise.
+	* configure.ac: Likewise.
+	* Makefile.am (OA_SRC_TARGETS): Include all-local.
+	* Makefile.in: Regenerate.
+
 2010-11-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* Makefile.am: New.  Automake existing top-level Makefile.in.
