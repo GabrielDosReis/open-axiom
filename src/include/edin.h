@@ -36,10 +36,6 @@
 #ifndef OPENAXIOM_edin_INCLUDED
 #define OPENAXIOM_edin_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern void init_reader(void);
 extern void init_flag(int *  , int );
 extern void do_reading(void);
@@ -57,9 +53,5 @@ extern void flagcpy(int *  , int * );
 extern void flagncpy(int *  , int *  , int );
 extern void send_function_to_child(void);
 extern void send_buff_to_child(int );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* OPENAXIOM_edin_INCLUDED */

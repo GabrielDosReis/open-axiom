@@ -811,7 +811,7 @@ void
 insert_queue(void)
 {
   QueStruct *trace;
-  QueStruct *new;
+  QueStruct *new_q;
   int c;
   
   if (!ECHOIT)
@@ -840,21 +840,21 @@ insert_queue(void)
    * simply places the buff command into the front of the queue
    */
   if (ring_size < MAXRING) {
-    new = (QueStruct *) malloc(sizeof(struct que_struct));
-    if (new == NULL) {
+    new_q = (QueStruct *) malloc(sizeof(struct que_struct));
+    if (new_q == NULL) {
       fprintf(stderr, "Malloc Error: Ran out of memory\n");
       exit(-1);
     }
     if (ring_size == 0) {
-      ring = new;
-      ring->prev = ring->next = new;
+      ring = new_q;
+      ring->prev = ring->next = new_q;
     }
     else {
-      new->next = ring->next;
-      new->prev = ring;
-      ring->next = new;
-      new->next->prev = new;
-      ring = new;
+      new_q->next = ring->next;
+      new_q->prev = ring;
+      ring->next = new_q;
+      new_q->next->prev = new_q;
+      ring = new_q;
     }
     ring_size++;
   }

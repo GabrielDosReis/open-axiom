@@ -36,20 +36,11 @@
 #ifndef OPENAXIOM_fnct_key_INCLUDED
 #define OPENAXIOM_fnct_key_INCLUDED
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern void set_editor_key(void);
 extern void define_function_keys(void);
 extern int get_key(int  , char * );
 extern int get_str(int  , char * );
 extern void null_fnct(int );
 extern void handle_function_key(int  , int );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* OPENAXIOM_fnct_key_INCLUDED */

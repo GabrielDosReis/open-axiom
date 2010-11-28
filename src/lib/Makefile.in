@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2008, Gabriel Dos Reis.
+# Copyright (C) 2007-2010, Gabriel Dos Reis.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -86,20 +86,20 @@ $(axiom_target_libdir)/libopen-axiom-core.$(LIBEXT): \
 $(axiom_target_libdir)/libopen-axiom-core$(SHREXT): \
 	$(libopen_axiom_core_objects)
 	$(mkdir_p) $(axiom_target_libdir)
-	$(LINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
+	$(CXXLINK_SHRLIB) $(oa_shrlib_flags) -o $@ \
 		$(libopen_axiom_core_objects) \
 		@oa_c_runtime_extra@ -lm
 
 libopen-axiom-core.$(LIBEXT): $(libopen_axiom_core_SOURCES:.c=.lo)
-	$(LINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)
+	$(CXXLINK) -o $@ $(libopen_axiom_core_SOURCES:.c=.lo)
 
 libspad.$(LIBEXT): $(libspad_objects)
-	$(LINK) -o $@ $(libspad_objects)
+	$(CXXLINK) -o $@ $(libspad_objects)
 
 .PRECIOUS: %.$(OBJEXT)
 
 %.$(OBJEXT) %.lo: %.c $(axiom_c_macros_h)
-	$(COMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
+	$(CXXCOMPILE) $(oa_shrobj_flags) -no-suppress -o $@ $(CFLAGS) \
 		$(axiom_includes) $(AXIOM_X11_CFLAGS) $<
 
 # This is a support library, so it does not change often and

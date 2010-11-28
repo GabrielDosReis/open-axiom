@@ -36,10 +36,6 @@
 #ifndef OPENAXIOM_wct_INCLUDED
 #define OPENAXIOM_wct_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern time_t ftime(char * );
 extern void fatal(char *  , char * );
 extern off_t fsize(char * );
@@ -65,10 +61,5 @@ extern void load_wct_file(char * );
 extern void  skim_wct(void);
 extern void  rescan_wct(void);
 extern void  find_wct(void);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* OPENAXIOM_wct_INCLUDED */

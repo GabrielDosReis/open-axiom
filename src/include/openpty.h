@@ -36,14 +36,6 @@
 #ifndef OPENAXIOM_openpty_INCLUDED
 #define OPENAXIOM_openpty_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern int ptyopen(int*, int*, char*);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* OPENAXIOM_openpty_INCLUDED */

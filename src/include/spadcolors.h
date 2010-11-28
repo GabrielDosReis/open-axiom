@@ -1,6 +1,8 @@
 /*
 Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 All rights reserved.
+  Copyright (C) 2007-2010, Gabriel Dos Reis
+  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -36,10 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <X11/Xlib.h>
 #include "rgb.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif   
 
 #define numOfColors 240
 #define totalHuesConst   27 
@@ -79,12 +77,5 @@ extern int       num;
 extern int       scrn;
 
 #define maxColors DisplayCells(dsply,scrn)-1
-
-
-
-#ifdef __cplusplus
-}
-#endif   
-   
 
 #endif  /* OPENAXIOM_SPADCOLORS_included */

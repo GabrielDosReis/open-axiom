@@ -36,10 +36,6 @@
 #ifndef OPENAXIOM_ptr_INCLUDED
 #define OPENAXIOM_ptr_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern void myputchar(char );
 extern void clear_buff(void);
 extern void move_end(void);
@@ -59,9 +55,5 @@ extern void print_whole_buff(void);
 extern void move_ahead(void);
 extern void move_back(void);
 extern void back_over_current_char(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* OPENAXIOM_ptr_INCLUDED */
