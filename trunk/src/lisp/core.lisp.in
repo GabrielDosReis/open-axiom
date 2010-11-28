@@ -131,6 +131,10 @@
 (defconstant |$buildPlatform| "@build@")
 (defconstant |$targetPlatform| "@target@")
 
+;; How to invoke the host C++ compiler and linker flags
+(defconstant oa-cxx "@CXX@")
+(defconstant oa-ldflags "@LDFLAGS@")
+
 ;; The directory that contains the final installation directory, as
 ;; specified at configuration time (or in exoteric cases, as overriden
 ;; on the Make command line). 
@@ -636,23 +640,30 @@
 			  &optional (entry-point nil) (prologue nil))
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
-  #-:ecl (progn
-           (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
-	   (eval prologue)
-           (|saveCore| core-image entry-point))
-  #+:ecl (progn
-           (unless entry-point
-             (setq entry-point #'si::top-level))
-           (c:build-program core-image 
-                            :lisp-files 
-			    (complete-fasl-list-for-link lisp-files)
-			    :ld-flags (extra-runtime-libs)
-                            :epilogue-code 
-			    `(progn
-			       (pushnew :open-axiom-base-lisp *features*)
-			       ,prologue
-			       (funcall ,entry-point)))
-           (|coreQuit|)))
+  #-:ecl 
+  (progn
+    (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
+    (eval prologue)
+    (|saveCore| core-image entry-point))
+  #+:ecl 
+  (let* ((compiler::*ld* oa-cxx)
+	 (compiler::*ld-flags* (concatenate 'string 
+					    compiler::*ld-flags*
+					    " " oa-ldflags)))
+    (progn
+      (unless entry-point
+	(setq entry-point #'si::top-level))
+      (c:build-program core-image 
+		       :lisp-files 
+		       (complete-fasl-list-for-link lisp-files)
+		       :ld-flags (extra-runtime-libs)
+		       :epilogue-code 
+		       `(progn
+			  (pushnew :open-axiom-base-lisp *features*)
+			  ,prologue
+			  (funcall ,entry-point)))
+      (|coreQuit|)))
+  )
 
 
 ;; 
