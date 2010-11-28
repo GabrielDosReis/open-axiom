@@ -50,69 +50,70 @@
 
 namespace OpenAxiom {
 
-/* Publish the system exec prefix for use by sub-processes.  */
-static void
-publish_systemdir(const char* dir)
-{
-   if (!oa_setenv(OPENAXIOM_GLOBAL_ENV, dir)) {
-      perror("publish_systemdir");
-      abort();
-   }
-}
-
-static void
-augment_variable(const char* name, const char* value) {
-   const char* oldval = oa_getenv(name);
-   const int value_length = strlen(value);
-   const int oldval_length = oldval == 0 ? 0 : strlen(oldval);
-   const int newval_length = value_length + 1 + oldval_length;
-   char* newval = (char*) malloc(newval_length + 1);
-
-   strcpy(newval,value);
-   if (oldval != 0) {
-      newval[value_length] = openaxiom_ifs;
-      strcpy(newval + value_length + 1, oldval);
-   }
-
-   if (!oa_setenv(name, newval))
-      perror("oa_augment_environment_variable");
-}
-
-static void
-upgrade_environment(const char* sysdir) {
-   augment_variable("TEXINPUTS",
-                    oa_concatenate_string(sysdir, OPENAXIOM_TEXINPUTS_PATH));
-   augment_variable("BIBINPUTS",
-                    oa_concatenate_string(sysdir, OPENAXIOM_BIBINPUTS_PATH));
-   publish_systemdir(sysdir);
-}
-
-/* Print configuration info. */
-static int
-print_configuration_info(Command* command) {
-   int i;
-   for (i = 1; i < command->core.argc; ++i) {
-      if (strcmp(command->core.argv[i], "include") == 0)
-         printf("\"%s\"/include ", command->root_dir);
-      else if (strcmp(command->core.argv[i], "lib") == 0)
-         printf(" -L\"%s\"/lib -lOpenAxiom", command->root_dir);
-      else {
-         fprintf(stderr, "open-axiom: invalid request %s\n",
-                 command->core.argv[i]);
-         return 1;
+   // Publish the system exec prefix for use by sub-processes.
+   static void
+   publish_systemdir(const char* dir)
+   {
+      if (!oa_setenv(OPENAXIOM_GLOBAL_ENV, dir)) {
+         perror("publish_systemdir");
+         abort();
       }
    }
-   fflush(stdout);
-   return 0;
-}
+   
+   static void
+   augment_variable(const char* name, const char* value) {
+      const char* oldval = oa_getenv(name);
+      const int value_length = strlen(value);
+      const int oldval_length = oldval == 0 ? 0 : strlen(oldval);
+      const int newval_length = value_length + 1 + oldval_length;
+      char* newval = (char*) malloc(newval_length + 1);
+      
+      strcpy(newval,value);
+      if (oldval != 0) {
+         newval[value_length] = openaxiom_ifs;
+         strcpy(newval + value_length + 1, oldval);
+      }
+      
+      if (!oa_setenv(name, newval))
+         perror("oa_augment_environment_variable");
+   }
 
+   static void
+   upgrade_environment(const char* sysdir) {
+      augment_variable("TEXINPUTS",
+                       oa_concatenate_string(sysdir, OPENAXIOM_TEXINPUTS_PATH));
+      augment_variable("BIBINPUTS",
+                       oa_concatenate_string(sysdir, OPENAXIOM_BIBINPUTS_PATH));
+      augment_variable("LD_LIBRARY_PATH",
+                       oa_concatenate_string(sysdir, "/lib"));
+      publish_systemdir(sysdir);
+   }
+
+   // Print configuration info.
+   static int
+   print_configuration_info(Command* command) {
+      int i;
+      for (i = 1; i < command->core.argc; ++i) {
+         if (strcmp(command->core.argv[i], "include") == 0)
+            printf("\"%s\"/include ", command->root_dir);
+         else if (strcmp(command->core.argv[i], "lib") == 0)
+            printf(" -L\"%s\"/lib -lOpenAxiom", command->root_dir);
+         else {
+            fprintf(stderr, "open-axiom: invalid request %s\n",
+                    command->core.argv[i]);
+            return 1;
+         }
+      }
+      fflush(stdout);
+      return 0;
+   }
 }
 
 int
 main(int argc, char* argv[])
 {
    using namespace OpenAxiom;
-   Command command = { };
+   Command command;
    Driver driver = preprocess_arguments(&command, argc, argv);
    upgrade_environment(command.root_dir);
 

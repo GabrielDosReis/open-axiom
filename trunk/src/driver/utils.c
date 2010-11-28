@@ -62,7 +62,42 @@ namespace OpenAxiom {
 #define OPENAXIOM_LISP_CORE_ENTRY_POINT \
    "|AxiomCore|::|topLevel|"
 
+   // -- Arguments --
+   Arguments::Arguments(int n) : std::vector<char*>(n > 0 ? n + 1 : 0)
+   { }
 
+   int Arguments::size() const {
+      return empty() ? 0 : std::vector<char*>::size() - 1;
+   }
+   
+   void Arguments::allocate(int n) {
+      resize(n + 1);
+   }
+
+   char* const* Arguments::data() const {
+      return &*begin();
+   };
+
+   // -- Command --
+   Command::Command()
+         : core(),
+           rt_args(),
+           root_dir(),
+           exec_path()
+   { }
+
+   // -- Return non-null if `lhs' is a prefix of `rhs'.  When non-null
+   // -- the pointer points to the '=' character that starts of the
+   // -- value supplied to the argument.
+   template<int N>
+   const char* is_prefix(const char (&lhs)[N], const char* rhs) {
+      for (int i = 0; i < N - 1; ++i)
+         if (lhs[i] != rhs[i])
+            return 0;
+      return rhs + N - 1;
+   }
+
+   
 /* Return a path to the running system, either as specified on command
    line through --system=, or as specified at configuration time.  */
 const char*
@@ -97,6 +132,9 @@ get_driver_name(Driver driver)
    case core_driver:
       return OPENAXIOM_CORE_PATH;
 
+   case alien_driver:
+      return 0;
+
    default:
       abort();
    }
@@ -115,15 +153,6 @@ make_path_for(const char* prefix, Driver driver)
    return execpath;
 }
 
-/* Allocate a nul-terminated vector for holding pointers to arguments
-   for the base Lisp runtime.   */
-static void
-openaxiom_allocate_argv(Command* command, int n) {
-   command->rt_argc = n;
-   command->rt_argv = (char**) malloc((n + 1) * sizeof(char*));
-   command->rt_argv[n] = 0;
-}
-
 /* Build arguments, if any, to be supplied to the runtime system
    of `driver'.  */
 void
@@ -134,6 +163,7 @@ build_rts_options(Command* command, Driver driver)
    case sman_driver:
    case execute_driver:
    case unknown_driver:
+   case alien_driver:
       break;
 
    case core_driver:
@@ -143,31 +173,31 @@ build_rts_options(Command* command, Driver driver)
    case script_driver:
       switch (OPENAXIOM_BASE_RTS) {
       case gcl_runtime:
-         openaxiom_allocate_argv(command, 3);
-         command->rt_argv[0] = (char*) "-batch";
-         command->rt_argv[1] = (char*) "-eval";
-         command->rt_argv[2] =
+         command->rt_args.allocate(3);
+         command->rt_args[0] = (char*) "-batch";
+         command->rt_args[1] = (char*) "-eval";
+         command->rt_args[2] =
             (char*) ("(" OPENAXIOM_LISP_CORE_ENTRY_POINT ")");
          break;
 
       case sbcl_runtime:
-         openaxiom_allocate_argv(command, 4);
-         command->rt_argv[0] = (char*) "--noinform";
-         command->rt_argv[1] = (char*) "--end-runtime-options";
-         command->rt_argv[2] = (char*) "--noprint";
-         command->rt_argv[3] = (char*) "--end-toplevel-options";
+         command->rt_args.allocate(4);
+         command->rt_args[0] = (char*) "--noinform";
+         command->rt_args[1] = (char*) "--end-runtime-options";
+         command->rt_args[2] = (char*) "--noprint";
+         command->rt_args[3] = (char*) "--end-toplevel-options";
          break;
 
       case clozure_runtime:
-         openaxiom_allocate_argv(command, 2);
-         command->rt_argv[0] = (char*) "--quiet";
-         command->rt_argv[1] = (char*) "--batch";
+         command->rt_args.allocate(2);
+         command->rt_args[0] = (char*) "--quiet";
+         command->rt_args[1] = (char*) "--batch";
          break;
 
       case clisp_runtime:
-         openaxiom_allocate_argv(command, 2);
-         command->rt_argv[0] = (char*) "--quiet";
-         command->rt_argv[1] = (char*) "-norc";
+         command->rt_args.allocate(2);
+         command->rt_args[0] = (char*) "--quiet";
+         command->rt_args[1] = (char*) "-norc";
          break;
          
       default:
@@ -266,6 +296,11 @@ preprocess_arguments(Command* command, int argc, char** argv)
          driver = null_driver;
          break;
       }
+      else if (const char* val = is_prefix("--execpath=", argv[i])) {
+            command->exec_path = val;
+            driver = alien_driver;
+            break;
+      }
       else {
          /* Apparently we will invoke the Core system; we need to
             pass on this option.  */
@@ -327,7 +362,14 @@ preprocess_arguments(Command* command, int argc, char** argv)
    return driver;
 }
 
-   
+   // Return a pointer to the path to the program to execute, as
+   // specified by `command' and `driver'.
+   static const char*
+   executable_path(const Command* command, Driver driver) {
+      return command->exec_path != 0
+         ? command->exec_path
+         : make_path_for(command->root_dir, driver);
+   }
 
 
 /* Execute the Core Executable as described by `command'.  On
@@ -336,7 +378,7 @@ preprocess_arguments(Command* command, int argc, char** argv)
 int
 execute_core(const Command* command, Driver driver)
 {
-   char* execpath = (char*) make_path_for(command->root_dir, driver);
+   char* execpath = (char*) executable_path(command, driver);
 #ifdef __WIN32__
    char* command_line;
    int cur = strlen(command->core.argv[0]);
@@ -349,10 +391,10 @@ execute_core(const Command* command, Driver driver)
 
    /* How long is the final command line for the MS system? */
    command_line_length += cur;
-   for (i = 0; i < command->rt_argc; ++i)
+   for (i = 0; i < command->rt_args.size(); ++i)
       command_line_length += 1  /* blank char as separator */
 	 + 2			/* quotes around every argument.  */
-         + strlen(command->rt_argv[i]); /* room for each argument */
+         + strlen(command->rt_args[i]); /* room for each argument */
    /* Don't forget room for the doubledash string.  */
    command_line_length += sizeof("--") - 1;
    /* And arguments to the actual command.  */
@@ -363,11 +405,11 @@ execute_core(const Command* command, Driver driver)
       concatenating the arguments into a single string. */
    command_line = (char*) malloc(command_line_length + 1);
    strcpy(command_line, command->core.argv[0]);
-   for (i = 0; i < command->rt_argc; ++i) {
-      const int arg_length = strlen(command->rt_argv[i]);
+   for (i = 0; i < command->rt_args.size(); ++i) {
+      const int arg_length = strlen(command->rt_args[i]);
       command_line[cur++] = ' ';
       command_line[cur++] = '"';
-      strcpy(command_line + cur, command->rt_argv[i]);
+      strcpy(command_line + cur, command->rt_args[i]);
       cur += arg_length;
       command_line[cur++] = '"';
    }
@@ -405,8 +447,7 @@ execute_core(const Command* command, Driver driver)
                         
 #else  /* __WIN32__ */
    int i;
-   char** args = (char**)
-      malloc(sizeof (char*) * (command->rt_argc + command->core.argc + 2));
+   Arguments args(command->rt_args.size() + command->core.argc + 2);
    /* GCL has this oddity that it wants to believe that argv[0] has
       something to tell about what GCL's own runtime is.  Silly.  */
    if (OPENAXIOM_BASE_RTS == gcl_runtime)
@@ -419,24 +460,24 @@ execute_core(const Command* command, Driver driver)
       args[0] = command->core.argv[0];
    /* Now, make sure we copy whatever arguments are required by the
       runtime system.  */
-   for (i = 0; i < command->rt_argc; ++i)
-      args[i + 1] = command->rt_argv[i];
+   for (i = 0; i < command->rt_args.size(); ++i)
+      args[i + 1] = command->rt_args[i];
 
    if (command->core.argc > 1) {
       /* We do have arguments from the command line.  We want to
          differentiate this from the base runtime system arguments.
          We do this by inserting a doubledash to indicate beginning
          of arguments.  */
-      args[command->rt_argc + 1] = (char*) "--";
+      args[command->rt_args.size() + 1] = (char*) "--";
       /* Then, copy over the arguments received from the command line.  */
       for (i = 1; i < command->core.argc; ++i)
-         args[command->rt_argc + i + 1] = command->core.argv[i];
-      args[command->rt_argc + command->core.argc + 1] = NULL;
+         args[command->rt_args.size() + i + 1] = command->core.argv[i];
+      args[command->rt_args.size() + command->core.argc + 1] = NULL;
    }
    else
-      args[command->rt_argc + command->core.argc] = NULL;
+      args[command->rt_args.size() + command->core.argc] = NULL;
 
-   execv(execpath, args);
+   execv(execpath, args.data());
    perror(strerror(errno));
    return -1;
 #endif /* __WIN32__ */

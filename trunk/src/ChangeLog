@@ -8,6 +8,10 @@
 	* sman/: Likewise.
 	* Makefile.am (OA_SMAN_TARGETS): New.
 	(OA_GRAPHICS_TARGETS): Likewise.
+	(all-lisp): Require all-driver.
+	* driver/utils.c: Tidy.
+	* driver/utils.h: Likewise.
+	* sman/sman.c: Likewise.
 
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
