@@ -42,47 +42,60 @@
 #  include <windows.h>
 #endif
 
+#include <vector>
+
 namespace OpenAxiom {
+   // A list of drivers for OpenAxiom. 
+   enum Driver {
+      unknown_driver,    // unknown driver
+      null_driver,       // do nothing
+      config_driver,     // print out configuration information
+      sman_driver,       // start Superman as master process
+      core_driver,       // start the core system as master process
+      script_driver,     // start the core system in script mode.
+      compiler_driver,   // start the core system in compiler mode.
+      execute_driver,    // Execute a command.
+      alien_driver       // Alien driver.
+   };
+   
+   // A list of runtime support systems for OpenAxiom.
+   enum Runtime {
+      unknown_runtime,
+      gcl_runtime,       // GCL-based runtime 
+      sbcl_runtime,      // SBCL-based runtime
+      clisp_runtime,     // CLISP-based runtime
+      ecl_runtime,       // ECL-based runtime
+      clozure_runtime,   // Clozure CL-based runtime
+      bemol_runtime      // Bemol-based runtime
+   };
 
-/* A list of drivers for OpenAxiom.  */
-enum Driver {
-   unknown_driver,    /* unknown driver */
-   null_driver,       /* do nothing */
-   config_driver,     /* print out configuration information */
-   sman_driver,       /* start Superman as master process */
-   core_driver,       /* start the core system as master process */
-   script_driver,     /* start the core system in script mode. */
-   compiler_driver,   /* start the core system in compiler mode. */
-   execute_driver     /* Execute a command.  */
-};
+   // Command line arguments.
+   // When non empty, this vector really is of length one more than
+   // what size() reports, as it is always null-terminated, to comply
+   // with POSIX-style operating system requirements.
+   struct Arguments : std::vector<char*> {
+      explicit Arguments(int n = 0);
+      int size() const;
+      void allocate(int);
+      char* const* data() const;
+   };
+   
+   // A description of external command to be executed. 
+   struct Command {
+      Process core;           // arguments for actual executable.
+      Arguments rt_args;      // arguments to the base RT, if any. 
+      const char* root_dir;   // path to the OpenAxiom system.
+      const char* exec_path;  // path to the program to execute.
+      Command();
+   };
 
-/* A list of runtime support systems for OpenAxiom. */
-enum Runtime {
-   unknown_runtime,
-   gcl_runtime,       /* GCL-based runtime  */
-   sbcl_runtime,      /* SBCL-based runtime */
-   clisp_runtime,     /* CLISP-based runtime */
-   ecl_runtime,       /* ECL-based runtime */
-   clozure_runtime,   /* Clozure CL-based runtime */
-   bemol_runtime      /* Bemol-based runtime */
-};
+   const char* get_systemdir(int argc, char*[]);
+   const char* make_path_for(const char*, Driver);
 
-/* A description of external command to be executed.  */
-struct Command {
-   Process core;      /* arguments for actual executable.  */
-   char** rt_argv;              /* arguments to the base RT, if any.  */
-   int rt_argc;                 /* number of such arguments.  */
-   const char* root_dir;        /* path to the OpenAxiom system. */
-};
-
-const char* get_systemdir(int argc, char*[]);
-const char* make_path_for(const char*, Driver);
-
-int execute_core(const Command*, Driver);
-void build_rts_options(Command*, Driver);
-
-Driver preprocess_arguments(Command*, int, char**);
-
+   int execute_core(const Command*, Driver);
+   void build_rts_options(Command*, Driver);
+   
+   Driver preprocess_arguments(Command*, int, char**);
 }
 
 #endif /* OPENAXIOM_UTILS_INCLUDED */

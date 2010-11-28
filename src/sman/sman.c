@@ -759,7 +759,7 @@ monitor_children(void)
 int
 main(int argc, char *argv[])
 {
-   Command command = { };
+   Command command;
    command.root_dir = get_systemdir(argc, argv);
    process_options(&command, argc, argv);
 

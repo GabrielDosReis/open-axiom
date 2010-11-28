@@ -691,7 +691,7 @@ all-doc: stamp-subdirs
 all-lib: stamp-subdirs
 	cd lib && $(MAKE) $(AM_MAKEFLAGS) $@
 
-all-lisp: all-lib
+all-lisp: all-lib all-driver
 	cd lisp && $(MAKE) $(AM_MAKEFLAGS) $@
 
 all-boot: all-lisp
