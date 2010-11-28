@@ -34,7 +34,7 @@
 */
 
 extern viewManager *viewports,*slot,*stepSlot;
-extern openaxiom_sio* spadSock;
+extern OpenAxiom::openaxiom_sio* spadSock;
 extern int         viewType, viewCommand; 
 extern fd_set         filedes;
 extern int             acknow;

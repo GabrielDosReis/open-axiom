@@ -50,6 +50,9 @@
 #include <iostream>
 #include "cfuns.h"
 
+// FIXME: Remove kludge
+using namespace OpenAxiom;
+
  // Path to the directory containing the hyperdoc pages.
 static std::string htpagedir;
 

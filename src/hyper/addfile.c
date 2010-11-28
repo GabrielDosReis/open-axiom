@@ -46,6 +46,8 @@
 #include "sockio.h"
 #include "addfile.h"
 
+/* FIXME: Remove this kludge */
+using namespace OpenAxiom;
 
 
 static int build_ht_filename(char*, char*, char*);

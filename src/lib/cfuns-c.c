@@ -77,6 +77,8 @@
 #  define getegid() getgid()
 #endif
 
+namespace OpenAxiom {
+
 OPENAXIOM_C_EXPORT int
 addtopath(char *dir)
 {
@@ -741,19 +743,19 @@ quiet_double_NaN(void)
 }
 
 
-OPENAXIOM_C_EXPORT openaxiom_byteorder
+OPENAXIOM_C_EXPORT Byteorder
 oa_get_host_byteorder(void)
 {
 #ifdef WORDS_BIGENDIAN
-   return oa_big_endian;
+   return big_endian;
 #else
-   return oa_little_endian;
+   return little_endian;
 #endif   
 }
 
 
 OPENAXIOM_C_EXPORT void
-oa_allocate_process_argv(openaxiom_process* proc, int argc)
+oa_allocate_process_argv(Process* proc, int argc)
 {
    proc->argc = argc;
    proc->argv = (char**) malloc((1 + argc) * sizeof (char*));
@@ -761,7 +763,7 @@ oa_allocate_process_argv(openaxiom_process* proc, int argc)
 }
 
 OPENAXIOM_C_EXPORT int
-oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
+oa_spawn(Process* proc, SpawnFlags flags)
 {
 #ifdef __WIN32__
    const char* path = NULL;
@@ -812,16 +814,16 @@ oa_spawn(openaxiom_process* proc, openaxiom_spawn_flags flags)
 
 #else
    proc->id = 0;
-   if ((flags & openaxiom_spawn_replace) == 0)
+   if ((flags & spawn_replace) == 0)
       proc->id = fork();
    if (proc->id == 0) {
-      if (flags & openaxiom_spawn_search_path)
+      if (flags & spawn_search_path)
          execvp(proc->argv[0], proc->argv);
       else
          execv(proc->argv[0], proc->argv);
       perror(strerror(errno));
       /* Don't keep useless clones around.  */
-      if ((flags & openaxiom_spawn_replace) == 0)
+      if ((flags & spawn_replace) == 0)
          exit(-1);
    }
    return proc->id;
@@ -874,3 +876,4 @@ oa_split(const char* sequence, const char* delimiter, int* size)
    return tokens; 
 }
 
+}

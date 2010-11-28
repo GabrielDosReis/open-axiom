@@ -114,7 +114,7 @@ extern HyperDocPage * issue_server_command(HyperLink * link);
 extern HyperDocPage * issue_unixlink(TextNode * node);
 extern char * print_to_string(TextNode * command);
 extern void issue_spadcommand(HyperDocPage * page , TextNode * command , int immediate , int type);
-extern openaxiom_sio * accept_menu_connection(openaxiom_sio * server_sock);
+extern OpenAxiom::openaxiom_sio * accept_menu_connection(OpenAxiom::openaxiom_sio * server_sock);
 extern char * print_to_string1(TextNode * command , int * sizeBuf);
 extern int issue_serverpaste(TextNode * command);
 extern void issue_unixcommand(TextNode * node);
@@ -173,8 +173,8 @@ extern int gSwitch_to_mono;
 extern unsigned long * spadColors;
 extern int gIsEndOfOutput;
 extern HDWindow *gWindow;
-extern openaxiom_sio *session_server;
-extern openaxiom_sio *spad_socket;
+extern OpenAxiom::openaxiom_sio *session_server;
+extern OpenAxiom::openaxiom_sio *spad_socket;
 extern HashTable gFileHashTable;
 extern HashTable gImageHashTable;           /* A global hash table for images */
 extern openaxiom_cursor gNormalCursor; /* The normal mouse cursor. */

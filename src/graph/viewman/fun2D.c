@@ -52,6 +52,8 @@
 #include "make2D.H1"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 #define writeEach
 
 void 

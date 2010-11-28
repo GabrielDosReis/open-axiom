@@ -57,10 +57,12 @@
 #include "cfuns.h"
 #include "utils.h"
 
-static void process_arguments(openaxiom_command*, int, char**);
+using namespace OpenAxiom;
+
+static void process_arguments(Command*, int, char**);
 static int in_X(void);
 static void set_up_defaults(void);
-static void process_options(openaxiom_command*, int, char**);
+static void process_options(Command*, int, char**);
 static void death_handler(int);
 static void sman_catch_signals(void);
 static void fix_env(int);
@@ -76,8 +78,8 @@ static void start_the_local_spadclient(void);
 static void start_the_session_manager(void);
 static void start_the_hypertex(void);
 static void start_the_graphics(void);
-static void fork_Axiom(openaxiom_command*);
-static void start_the_Axiom(openaxiom_command*);
+static void fork_Axiom(Command*);
+static void start_the_Axiom(Command*);
 static void clean_up_sockets(void);
 static void clean_hypertex_socket(void);
 static void read_from_spad_io(int);
@@ -149,7 +151,7 @@ struct termios childbuf;         /* terminal structure for user i/o */
 int death_signal = 0;
 
 static void
-process_arguments(openaxiom_command* command, int argc,char ** argv)
+process_arguments(Command* command, int argc,char ** argv)
 {
   int arg;
   int other = 0;
@@ -246,7 +248,7 @@ set_up_defaults(void)
 }
 
 static void
-process_options(openaxiom_command* command, int argc, char **argv)
+process_options(Command* command, int argc, char **argv)
 {
   set_up_defaults();
   process_arguments(command, argc, argv);
@@ -472,7 +474,7 @@ start_the_graphics(void)
 /* Start the core executable session in a separate process, */
 /* using a pseudo-terminal to catch all input and output */
 static void 
-fork_Axiom(openaxiom_command* cmd)
+fork_Axiom(Command* cmd)
 {
   SpadProcess *proc;
 
@@ -528,15 +530,14 @@ fork_Axiom(openaxiom_command* cmd)
 
     /* Tell the Core that it is being invoked in server mode.   */
     oa_allocate_process_argv(&cmd->core, 2);
-    cmd->core.argv[0] =
-       (char*) openaxiom_make_path_for(cmd->root_dir, openaxiom_core_driver);
+    cmd->core.argv[0] = (char*) make_path_for(cmd->root_dir, core_driver);
     cmd->core.argv[1] = (char*) "--role=server";
-    openaxiom_execute_core(cmd, openaxiom_core_driver);
+    execute_core(cmd, core_driver);
   }
 }
 
 static void
-start_the_Axiom(openaxiom_command* cmd)
+start_the_Axiom(Command* cmd)
 {
   server_num = make_server_number();
   clean_up_old_sockets();
@@ -598,7 +599,7 @@ read_from_spad_io(int ptcNum)
     }
   }
   else
-    ret_code = swrite(session_io, oa_buffer_address(big_bad_buf), ret_code,
+    ret_code = swrite(session_io, byte_address(big_bad_buf), ret_code,
                       "writing to session man");
   if (ret_code == -1) {
     perror("writing output to session manager");
@@ -611,7 +612,7 @@ static void
 read_from_manager(int ptcNum)
 {
   int ret_code;
-  ret_code = sread(session_io, oa_buffer_address(big_bad_buf), BufSize,
+  ret_code = sread(session_io, byte_address(big_bad_buf), BufSize,
                    "reading session io");
   if (ret_code == -1) {
     return;
@@ -758,8 +759,8 @@ monitor_children(void)
 int
 main(int argc, char *argv[])
 {
-   openaxiom_command command = { };
-   command.root_dir = openaxiom_get_systemdir(argc, argv);
+   Command command = { };
+   command.root_dir = get_systemdir(argc, argv);
    process_options(&command, argc, argv);
 
   putenv((char*) "LC_ALL=C");

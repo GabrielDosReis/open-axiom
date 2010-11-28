@@ -53,6 +53,8 @@
 #include "openaxiom-c-macros.h"
 #include "open-axiom.h"
 
+namespace OpenAxiom {
+
 /* On Windows, a socket identifier is not a file descriptor.  It is
    represented by an integer type, but that integer type is not just
    plain int as in the Unix world.  It is an unsigned integer.
@@ -87,36 +89,34 @@ struct openaxiom_sio {
 
 OPENAXIOM_C_EXPORT openaxiom_filedesc
    oa_open_local_client_stream_socket(const char*);
-OPENAXIOM_C_EXPORT int oa_inet_pton(const char*, int, openaxiom_byte*);
-OPENAXIOM_C_EXPORT int oa_get_host_address(const char*, int, openaxiom_byte*);
+OPENAXIOM_C_EXPORT int oa_inet_pton(const char*, int, Byte*);
+OPENAXIOM_C_EXPORT int oa_get_host_address(const char*, int, Byte*);
 OPENAXIOM_C_EXPORT int oa_open_local_server_stream_socket(const char*);
 OPENAXIOM_C_EXPORT openaxiom_socket
-   oa_connect_ip_port_stream(const openaxiom_byte*, int, openaxiom_port);
+   oa_connect_ip_port_stream(const Byte*, int, openaxiom_port);
 
-OPENAXIOM_C_EXPORT int oa_socket_write(openaxiom_socket,
-                                     const openaxiom_byte*, int);
-OPENAXIOM_C_EXPORT int oa_socket_write_byte(openaxiom_socket, openaxiom_byte);
+OPENAXIOM_C_EXPORT int oa_socket_write(openaxiom_socket, const Byte*, int);
+OPENAXIOM_C_EXPORT int oa_socket_write_byte(openaxiom_socket, Byte);
 
-OPENAXIOM_C_EXPORT int oa_socket_read(openaxiom_socket,
-                                    openaxiom_byte*, int);
+OPENAXIOM_C_EXPORT int oa_socket_read(openaxiom_socket, Byte*, int);
 OPENAXIOM_C_EXPORT int oa_socket_read_byte(openaxiom_socket);
 
 OPENAXIOM_C_EXPORT void oa_close_socket(openaxiom_socket);
 
 OPENAXIOM_C_EXPORT int 
-oa_filedesc_write(openaxiom_filedesc, const openaxiom_byte*, int);
+oa_filedesc_write(openaxiom_filedesc, const Byte*, int);
 OPENAXIOM_C_EXPORT int 
-oa_filedesc_read(openaxiom_filedesc, openaxiom_byte*, int);
+oa_filedesc_read(openaxiom_filedesc, Byte*, int);
 OPENAXIOM_C_EXPORT int oa_filedesc_close(openaxiom_filedesc);
 
-OPENAXIOM_C_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
-OPENAXIOM_C_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
+OPENAXIOM_C_EXPORT int sread(openaxiom_sio*, Byte*, int, const char*);
+OPENAXIOM_C_EXPORT int swrite(openaxiom_sio*, const Byte*, int,
                             const char*);
 
-OPENAXIOM_C_EXPORT int wait_for_client_read(openaxiom_sio*, openaxiom_byte*,
+OPENAXIOM_C_EXPORT int wait_for_client_read(openaxiom_sio*, Byte*,
                                           int, const char*);
 OPENAXIOM_C_EXPORT int wait_for_client_write(openaxiom_sio*,
-                                           const openaxiom_byte*, int,
+                                           const Byte*, int,
                                            const char*);
 
 OPENAXIOM_C_EXPORT int make_server_name(char*, const char*);
@@ -133,7 +133,7 @@ OPENAXIOM_C_EXPORT double sock_get_float(int);
 OPENAXIOM_C_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
 OPENAXIOM_C_EXPORT char* get_string(openaxiom_sio*);
 OPENAXIOM_C_EXPORT void sigpipe_handler(int);
-OPENAXIOM_C_EXPORT int fill_buf(openaxiom_sio*, openaxiom_byte*, int,
+OPENAXIOM_C_EXPORT int fill_buf(openaxiom_sio*, Byte*, int,
                               const char*);
 OPENAXIOM_C_EXPORT int sock_get_int(int);
 OPENAXIOM_C_EXPORT int get_ints(openaxiom_sio*, int*, int);
@@ -218,5 +218,7 @@ OPENAXIOM_C_EXPORT openaxiom_sio server[];
 OPENAXIOM_C_EXPORT openaxiom_sio clients[];
 OPENAXIOM_C_EXPORT fd_set socket_mask;
 OPENAXIOM_C_EXPORT fd_set server_mask;
+
+}
 
 #endif /* OPENAXIOM_SOCKIO_included */

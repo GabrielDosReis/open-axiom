@@ -48,6 +48,8 @@
 
 #define OPENAXIOM_GLOBAL_ENV   "AXIOM"
 
+namespace OpenAxiom {
+
 /* Publish the system exec prefix for use by sub-processes.  */
 static void
 publish_systemdir(const char* dir)
@@ -87,7 +89,7 @@ upgrade_environment(const char* sysdir) {
 
 /* Print configuration info. */
 static int
-print_configuration_info(openaxiom_command* command) {
+print_configuration_info(Command* command) {
    int i;
    for (i = 1; i < command->core.argc; ++i) {
       if (strcmp(command->core.argv[i], "include") == 0)
@@ -104,35 +106,35 @@ print_configuration_info(openaxiom_command* command) {
    return 0;
 }
 
+}
 
 int
 main(int argc, char* argv[])
 {
-   openaxiom_command command = { };
-   openaxiom_driver driver =
-      openaxiom_preprocess_arguments(&command, argc, argv);
+   using namespace OpenAxiom;
+   Command command = { };
+   Driver driver = preprocess_arguments(&command, argc, argv);
    upgrade_environment(command.root_dir);
 
    switch (driver) {
-   case openaxiom_null_driver:
+   case null_driver:
       return 0;                 /* Bye.  */
 
-   case openaxiom_config_driver:
+   case config_driver:
       return print_configuration_info(&command);
 
-   case openaxiom_core_driver:
-   case openaxiom_script_driver:
-   case openaxiom_compiler_driver:
+   case core_driver:
+   case script_driver:
+   case compiler_driver:
       putenv("LC_ALL=C");
       setlocale(LC_ALL, "");
-      return openaxiom_execute_core(&command, driver);
+      return execute_core(&command, driver);
 
-   case openaxiom_execute_driver:
+   case execute_driver:
       return oa_spawn(&command.core,
-                      openaxiom_spawn_flags
-                      (openaxiom_spawn_search_path | openaxiom_spawn_replace));
+                      SpawnFlags(spawn_search_path | spawn_replace));
 
-   case openaxiom_sman_driver:
+   case sman_driver:
       break;
 
    default:
@@ -143,8 +145,7 @@ main(int argc, char* argv[])
    /* Should not happen on MS platforms.  */
    abort();
 #else  /* __WIN32__ */
-   execv(openaxiom_make_path_for(command.root_dir, openaxiom_sman_driver),
-         argv);
+   execv(make_path_for(command.root_dir, sman_driver), argv);
    perror(strerror(errno));
    return -1;
 #endif /* __WIN32__ */

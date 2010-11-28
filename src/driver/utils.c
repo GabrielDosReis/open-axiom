@@ -37,6 +37,8 @@
 #include <stdio.h>
 #include "utils.h"
 
+namespace OpenAxiom {
+
 /* The basename of the file holding the OpenAxiom core executable.  */
 #define OPENAXIOM_CORE_EXECUTABLE \
    "AXIOMsys" OPENAXIOM_EXEEXT
@@ -64,7 +66,7 @@
 /* Return a path to the running system, either as specified on command
    line through --system=, or as specified at configuration time.  */
 const char*
-openaxiom_get_systemdir(int argc, char* argv[])
+get_systemdir(int argc, char* argv[])
 {
    int i;
 
@@ -84,15 +86,15 @@ openaxiom_get_systemdir(int argc, char* argv[])
 
 /* Return the path to `driver'. */
 static const char*
-get_driver_name(openaxiom_driver driver)
+get_driver_name(Driver driver)
 {
    switch (driver) {
-   case openaxiom_sman_driver:
+   case sman_driver:
       return OPENAXIOM_SMAN_PATH;
 
-   case openaxiom_script_driver:
-   case openaxiom_compiler_driver:
-   case openaxiom_core_driver:
+   case script_driver:
+   case compiler_driver:
+   case core_driver:
       return OPENAXIOM_CORE_PATH;
 
    default:
@@ -103,7 +105,7 @@ get_driver_name(openaxiom_driver driver)
 
 /* Return a path for PROG specified as a relative path to PREFIX.  */
 const char*
-openaxiom_make_path_for(const char* prefix, openaxiom_driver driver)
+make_path_for(const char* prefix, Driver driver)
 {
    const int prefix_length = strlen(prefix);
    const char* prog = get_driver_name(driver);
@@ -116,7 +118,7 @@ openaxiom_make_path_for(const char* prefix, openaxiom_driver driver)
 /* Allocate a nul-terminated vector for holding pointers to arguments
    for the base Lisp runtime.   */
 static void
-openaxiom_allocate_argv(openaxiom_command* command, int n) {
+openaxiom_allocate_argv(Command* command, int n) {
    command->rt_argc = n;
    command->rt_argv = (char**) malloc((n + 1) * sizeof(char*));
    command->rt_argv[n] = 0;
@@ -125,23 +127,22 @@ openaxiom_allocate_argv(openaxiom_command* command, int n) {
 /* Build arguments, if any, to be supplied to the runtime system
    of `driver'.  */
 void
-openaxiom_build_rts_options(openaxiom_command* command,
-                            openaxiom_driver driver)
+build_rts_options(Command* command, Driver driver)
 {
    switch (driver) {
-   case openaxiom_config_driver:
-   case openaxiom_sman_driver:
-   case openaxiom_execute_driver:
-   case openaxiom_unknown_driver:
+   case config_driver:
+   case sman_driver:
+   case execute_driver:
+   case unknown_driver:
       break;
 
-   case openaxiom_core_driver:
+   case core_driver:
       break;
 
-   case openaxiom_compiler_driver:
-   case openaxiom_script_driver:
+   case compiler_driver:
+   case script_driver:
       switch (OPENAXIOM_BASE_RTS) {
-      case openaxiom_gcl_runtime:
+      case gcl_runtime:
          openaxiom_allocate_argv(command, 3);
          command->rt_argv[0] = (char*) "-batch";
          command->rt_argv[1] = (char*) "-eval";
@@ -149,7 +150,7 @@ openaxiom_build_rts_options(openaxiom_command* command,
             (char*) ("(" OPENAXIOM_LISP_CORE_ENTRY_POINT ")");
          break;
 
-      case openaxiom_sbcl_runtime:
+      case sbcl_runtime:
          openaxiom_allocate_argv(command, 4);
          command->rt_argv[0] = (char*) "--noinform";
          command->rt_argv[1] = (char*) "--end-runtime-options";
@@ -157,13 +158,13 @@ openaxiom_build_rts_options(openaxiom_command* command,
          command->rt_argv[3] = (char*) "--end-toplevel-options";
          break;
 
-      case openaxiom_clozure_runtime:
+      case clozure_runtime:
          openaxiom_allocate_argv(command, 2);
          command->rt_argv[0] = (char*) "--quiet";
          command->rt_argv[1] = (char*) "--batch";
          break;
 
-      case openaxiom_clisp_runtime:
+      case clisp_runtime:
          openaxiom_allocate_argv(command, 2);
          command->rt_argv[0] = (char*) "--quiet";
          command->rt_argv[1] = (char*) "-norc";
@@ -180,9 +181,9 @@ openaxiom_build_rts_options(openaxiom_command* command,
 }
 
 #if OPENAXIOM_USE_SMAN
-#  define OPENAXIOM_DEFAULT_DRIVER openaxiom_sman_driver
+#  define OPENAXIOM_DEFAULT_DRIVER sman_driver
 #else
-#  define OPENAXIOM_DEFAULT_DRIVER openaxiom_core_driver
+#  define OPENAXIOM_DEFAULT_DRIVER core_driver
 #endif
 
 
@@ -235,44 +236,43 @@ static void print_usage(void) {
 }
 
 /* Determine driver to be used for executing `command'.  */
-openaxiom_driver
-openaxiom_preprocess_arguments(openaxiom_command* command,
-                               int argc, char** argv)
+Driver
+preprocess_arguments(Command* command, int argc, char** argv)
 {
    int i;
    int other = 1;
    int files = 0;
-   openaxiom_driver driver = openaxiom_unknown_driver;
+   Driver driver = unknown_driver;
 
-   command->root_dir = openaxiom_get_systemdir(argc, argv);
+   command->root_dir = get_systemdir(argc, argv);
    for (i = 1; i < argc; ++i)
       if(strcmp(argv[i], "--no-server") == 0)
-         driver = openaxiom_core_driver;
+         driver = core_driver;
       else if (strcmp(argv[i], "--server") == 0)
-         driver = openaxiom_sman_driver;
+         driver = sman_driver;
       else if (strcmp(argv[i], "--config") == 0)
-         driver = openaxiom_config_driver;
+         driver = config_driver;
       else if (strcmp(argv[i], "--execute") == 0) {
-         driver = openaxiom_execute_driver;
+         driver = execute_driver;
          break;
       }
       else if (strcmp(argv[i], "--help") == 0) {
          print_usage();
-         driver = openaxiom_null_driver;
+         driver = null_driver;
          break;
       }
       else if (strcmp(argv[i], "--version") == 0) {
          print_version();
-         driver = openaxiom_null_driver;
+         driver = null_driver;
          break;
       }
       else {
          /* Apparently we will invoke the Core system; we need to
             pass on this option.  */
          if (strcmp(argv[i], "--script") == 0)
-            driver = openaxiom_script_driver;
+            driver = script_driver;
          else if(strcmp(argv[i], "--compile") == 0)
-            driver = openaxiom_compiler_driver;
+            driver = compiler_driver;
          else {
             if (argv[i][0] == '-')
                /* Maybe option for the driver.  */
@@ -289,7 +289,7 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
       }
 
    /* Determine argument vector.  */
-   if (driver == openaxiom_execute_driver) {
+   if (driver == execute_driver) {
       command->core.argc = argc - i - 1;
       command->core.argv = argv + i + 1;
    }
@@ -298,13 +298,13 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
       command->core.argv = argv;
    }
 
-   if (driver != openaxiom_null_driver) {
+   if (driver != null_driver) {
       /* If we have a file but not instructed to compile, assume
          we are asked to interpret a script.  */
       if (files > 0)
          switch (driver) {
-         case openaxiom_unknown_driver:
-         case openaxiom_sman_driver:
+         case unknown_driver:
+         case sman_driver:
             command->core.argc += 1;
             command->core.argv =
                (char**) malloc((other + 2) * sizeof(char*));
@@ -312,17 +312,17 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
             command->core.argv[1] = (char*) "--script";
             for (i = 0; i < other; ++i)
                command->core.argv[2 + i] = argv[1 + i];
-            driver = openaxiom_script_driver;
+            driver = script_driver;
             break;
          default:
             /* Driver specified by user.  */
             break;
          }
-      else if (driver == openaxiom_unknown_driver)
+      else if (driver == unknown_driver)
          driver = OPENAXIOM_DEFAULT_DRIVER;
       command->core.argv[command->core.argc] = NULL;
       
-      openaxiom_build_rts_options(command, driver);
+      build_rts_options(command, driver);
    }
    return driver;
 }
@@ -334,10 +334,9 @@ openaxiom_preprocess_arguments(openaxiom_command* command,
    POSIX systems, this is a non-return function on success.
    See execv().  */
 int
-openaxiom_execute_core(const openaxiom_command* command,
-                       openaxiom_driver driver)
+execute_core(const Command* command, Driver driver)
 {
-   char* execpath = (char*) openaxiom_make_path_for(command->root_dir, driver);
+   char* execpath = (char*) make_path_for(command->root_dir, driver);
 #ifdef __WIN32__
    char* command_line;
    int cur = strlen(command->core.argv[0]);
@@ -410,11 +409,11 @@ openaxiom_execute_core(const openaxiom_command* command,
       malloc(sizeof (char*) * (command->rt_argc + command->core.argc + 2));
    /* GCL has this oddity that it wants to believe that argv[0] has
       something to tell about what GCL's own runtime is.  Silly.  */
-   if (OPENAXIOM_BASE_RTS == openaxiom_gcl_runtime)
+   if (OPENAXIOM_BASE_RTS == gcl_runtime)
       args[0] = (char*) "";
    /* And CLISP wants to believe that argv[0] is where it hides stuff
       from the saved image.  */
-   else if (OPENAXIOM_BASE_RTS == openaxiom_clisp_runtime)
+   else if (OPENAXIOM_BASE_RTS == clisp_runtime)
       args[0] = execpath;
    else
       args[0] = command->core.argv[0];
@@ -441,4 +440,6 @@ openaxiom_execute_core(const openaxiom_command* command,
    perror(strerror(errno));
    return -1;
 #endif /* __WIN32__ */
+}
+
 }

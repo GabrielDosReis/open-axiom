@@ -39,13 +39,12 @@ DIST_SUBDIRS = \
 
 oa_targetdir = $(top_builddir)/$(target)
 
-OA_OPTIONAL_TARGETS=
 if OA_BUILD_SMAN
-OA_OPTIONAL_TARGETS += all-sman all-clef
+OA_SMAN_TARGETS = all-sman all-clef
 endif
 
 if OA_BUILD_GRAPHICS
-OA_OPTIONAL_TARGETS += all-graph
+OA_GRAPHICS_TARGETS = all-graph
 endif
 
 
@@ -54,7 +53,7 @@ all-local: all-src
 .PHONY: all-src
 all-src: all-lib all-utils all-driver all-lisp all-boot \
 	all-interpsys all-algebra all-axiomsys all-share \
-	all-asq all-input all-doc $(OA_OPTIONAL_TARGETS)
+	all-asq all-input all-doc $(OA_SMAN_TARGETS) $(OA_GRAPHICS_TARGETS)
 
 stamp-subdirs:
 	rm -f stamp-subdirs

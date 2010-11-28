@@ -1,3 +1,14 @@
+2010-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* clef/: Add using directive at toplevel.
+	* etc/: Likewise.
+	* graph/: Likewise.
+	* hyper/: Likewise.
+	* lib/: Likewise.
+	* sman/: Likewise.
+	* Makefile.am (OA_SMAN_TARGETS): New.
+	(OA_GRAPHICS_TARGETS): Likewise.
+
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* lib/Makefile.in: Build libopen-axiom-core and libspad with a C++

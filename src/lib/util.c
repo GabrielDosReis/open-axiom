@@ -47,6 +47,8 @@
 #include "util.H1"
 
 
+/* FIXME: Remove this kludge */
+using namespace OpenAxiom;
 
 
 int

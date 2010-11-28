@@ -58,6 +58,8 @@
 #include "fnct_key.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 #ifdef AXIOM_UNLIKELY
 #define log 1
 #define logterm 1

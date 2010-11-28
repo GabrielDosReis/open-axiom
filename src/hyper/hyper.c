@@ -63,6 +63,8 @@
 #include "sockio.h"
 #include "parse.h"
 
+using namespace OpenAxiom;
+
 static void init_hash(void);
 static void make_server_connections(void);
 static void check_arguments(void);

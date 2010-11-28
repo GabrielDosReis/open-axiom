@@ -54,6 +54,8 @@
 #include "cfuns.h"
 #include "parse-types.h"
 
+using namespace OpenAxiom;
+
 static void readTitleBarImages(void);
 
 extern int y_off;               /* y offset for scrolling regions */

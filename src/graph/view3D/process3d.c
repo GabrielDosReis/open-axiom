@@ -913,7 +913,7 @@ processEvents(void)
         break;
       }
       if (!followMouse) 
-        len=select(FD_SETSIZE,(void *)&rd,0,0,0); 
+        len=select(FD_SETSIZE, &rd,0,0,0); 
       else 
         len=1;
     }

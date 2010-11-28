@@ -65,14 +65,10 @@
 #elif defined (HAVE_INTTYPES_H)
 #  include <inttypes.h>
 #endif
-typedef uint8_t openaxiom_byte;
 
 /* The opaque datatype.  */
 #ifdef __WIN32__
-#include <windows.h>
-typedef HANDLE openaxiom_handle;
-#else
-typedef void* openaxiom_handle;
+#  include <windows.h>
 #endif
 
 #include <unistd.h>
@@ -84,27 +80,40 @@ typedef void* openaxiom_handle;
 #  define OPENAXIOM_HAVE_GRAPHICS 1
 #endif
 
-/* Byte order enumeration.  */
-enum openaxiom_byteorder {
-   oa_unknown_endian, oa_little_endian, oa_big_endian
-};
+namespace OpenAxiom {
+   // A name for the byte datatype.
+   typedef uint8_t Byte;
 
+   // An opaque datatype
+#ifdef __WIN32__
+   typedef HANDLE Handle;
+#else
+   typedef void* Handle;
+#endif
 
-/* Datatype for packaging information necessary tolaunch a process. */
-struct openaxiom_process {
-   int argc;
-   char** argv;
-   int id;
-};
+   // Byte order of machine word data.
+   enum Byteorder {
+      unknown_endian, little_endian, big_endian
+   };
+   
+   // Datatype for packaging information necessary tolaunch a process.
+   struct Process {
+      int argc;
+      char** argv;
+      int id;
+   };
 
-enum openaxiom_spawn_flags {
-   openaxiom_spawn_search_path = 0x01,
-   openaxiom_spawn_replace     = 0x02,
-};
+   enum SpawnFlags {
+      spawn_search_path = 0x01,
+      spawn_replace     = 0x02,
+   };
 
    
-/* Return the address of the data buffer `BUF'.  */
-#define oa_buffer_address(BUF) ((openaxiom_byte*)&BUF[0])
+   // Return the address of the byte array object representation of `t'.
+   template<typename T>
+   inline Byte* byte_address(T& t) {
+      return reinterpret_cast<Byte*>(&t);
+   }
 
 /* Internal field separator character.  */
 #ifdef __WIN32__
@@ -124,19 +133,20 @@ enum openaxiom_spawn_flags {
    of magnitude of difference when compared to the Unix world.
    We abstract over that difference here.  */
 
-static inline void
-openaxiom_sleep(int n)
-{
+   static inline void
+   openaxiom_sleep(int n)
+   {
 #ifdef __WIN32__
-   Sleep(n * 1000);
+      Sleep(n * 1000);
 #else
-   sleep(n);
+      sleep(n);
 #endif   
+   }
+
+   OPENAXIOM_C_EXPORT void oa_allocate_process_argv(Process*, int);
+   OPENAXIOM_C_EXPORT int oa_spawn(Process*, SpawnFlags);   
+   OPENAXIOM_C_EXPORT const char* oa_concatenate_string(const char*, const char*);
+
 }
-
-
-OPENAXIOM_C_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
-OPENAXIOM_C_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
-OPENAXIOM_C_EXPORT const char* oa_concatenate_string(const char*, const char*);
    
 #endif /* OPENAXIOM_included */

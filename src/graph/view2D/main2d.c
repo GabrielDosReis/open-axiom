@@ -51,6 +51,8 @@
 #include "XSpadFill.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 
 /**********************/
 /** global variables **/

@@ -66,8 +66,6 @@
 #include "debug.h"
 #include "sockio.h"
 
-int useAscii;
-
 #define PARSER 1
 
 #include "halloc.h"
@@ -75,9 +73,15 @@ int useAscii;
 #include "node.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 static int get_char1(void );
 static void spad_error_handler(void );
 static int keyword_type(void );
+
+
+
+int useAscii;
 
 extern int gTtFontIs850;
 extern HDWindow *gWindow;

@@ -54,6 +54,8 @@
 #include "XSpadFill.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 
 static int doit=0;  /* globish variable for picking/dropping/clearing - all sorts of
                 2 button sequence events (command & graph #). */
@@ -533,7 +535,7 @@ processEvents(void)
         break;
       }
       if (!followMouse) 
-        len=select(FD_SETSIZE,(void *) &rd,0,0,0); 
+        len=select(FD_SETSIZE, &rd,0,0,0); 
       else 
         len=1;
     }

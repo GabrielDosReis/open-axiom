@@ -52,6 +52,9 @@
 #include "addfile.h"
 #include "node.h"
 
+/* FIXME: Remove this kludge */
+using namespace OpenAxiom;
+
 static void add_file(char*, char*, int);
 static void add_new_pages(FILE*, FILE*, char*, char*);
 static int build_db_filename(short, char*, char*);

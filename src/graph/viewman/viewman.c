@@ -57,6 +57,8 @@
 #include "cleanup.H1"
 #include "sselect.H1"
 
+using namespace OpenAxiom;
+
 /************* global variables **************/
 
 Display *dsply;
@@ -125,9 +127,9 @@ main (void)
 #ifdef DEBUG
     fprintf(stderr,"Selection for filedes of %x \n",filedes);
 #endif
-    code = check(superSelect(FD_SETSIZE,(void *) &filedes,0,0,0));
+    code = check(superSelect(FD_SETSIZE, &filedes,0,0,0));
     for (;code<=0;) 
-      code = check(superSelect(FD_SETSIZE,(void *)&filedes,0,0,0));
+      code = check(superSelect(FD_SETSIZE, &filedes,0,0,0));
     
     slot = viewports;
     keepLooking = 1;

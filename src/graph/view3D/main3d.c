@@ -54,6 +54,8 @@
 #include "all_3d.H1"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
                                  /**********************/
                                  /** global variables **/
                                  /**********************/

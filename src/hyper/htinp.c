@@ -48,6 +48,8 @@
 #include "cfuns.h"
 #include "sockio.h"
 
+using namespace OpenAxiom;
+
 extern char **input_file_list;
 extern int input_file_count;
 extern int make_patch_files;
