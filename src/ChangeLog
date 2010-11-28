@@ -1,5 +1,11 @@
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/Makefile.in: Link the basic core with a C++ compiler when
+	GCL or ECL.
+	* lisp/core.lisp.in: Implement appropriate change.
+
+2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* etc/Makefile.in: Compile and link with a C++ compiler.
 	* etc/asq.c.pamphlet: Fix bogus declarations of standard
 	functions.  Fix const-correctness for string literals.
