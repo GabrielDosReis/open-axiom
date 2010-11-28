@@ -96,7 +96,7 @@ ifeq (@axiom_lisp_flavor@,gcl)
 	     '      (compiler::*cc* (concatenate (quote string) ' \
 	     '                                   $(GCL_LTCC)    ' \
 	     '                                   sys-cc))       ' \
-	     '      (compiler::*ld* $(GCL_LTLD)))               ' \
+	     '      (compiler::*ld* (if (member :mingw32 *features*) compiler::*ld* $(GCL_LTLD))))               ' \
              '(compiler::link (quote ($(FASLS))) "lisp$(EXEEXT)" ' \
              ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
                                         ' (si::*load-types* ~S)))' \
