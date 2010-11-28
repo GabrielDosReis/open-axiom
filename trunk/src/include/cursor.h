@@ -36,14 +36,6 @@
 #ifndef OPENAXIOM_cursor_INCLUDED
 #define OPENAXIOM_cursor_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern int Cursor_shape(int );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* OPENAXIOM_cursor_INCLUDED */

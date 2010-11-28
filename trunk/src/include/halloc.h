@@ -36,14 +36,6 @@
 #ifndef OPENAXIOM_HALLOC
 #define OPENAXIOM_HALLOC
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
-
 extern char * halloc(int, const char*);
-
-#ifdef __cplusplus
-}
-#endif   
 
 #endif /* OPENAXIOM_HALLOC */

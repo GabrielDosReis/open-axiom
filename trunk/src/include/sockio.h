@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis
+  Copyright (C) 2007-2010, Gabriel Dos Reis
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -53,11 +53,6 @@
 #include "openaxiom-c-macros.h"
 #include "open-axiom.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
-
-
 /* On Windows, a socket identifier is not a file descriptor.  It is
    represented by an integer type, but that integer type is not just
    plain int as in the Unix world.  It is an unsigned integer.
@@ -73,7 +68,7 @@ typedef int openaxiom_filedesc;
 #endif
 typedef int openaxiom_port;
 
-typedef struct openaxiom_sio {
+struct openaxiom_sio {
   openaxiom_socket socket; /* descriptor of this socket I/O endpoint.  */
   int type;             /* socket type (AF_UNIX or AF_INET) */
   int purpose;          /* can be SessionManager, GraphicsServer, etc. */
@@ -86,103 +81,102 @@ typedef struct openaxiom_sio {
   } addr;
   char *host_name;      /* name of foreign host if type == AF_INET */
    size_t nbytes_pending;       /* pending bytes for read.  */
-} openaxiom_sio;
+};
 
 
 
-OPENAXIOM_EXPORT openaxiom_filedesc
+OPENAXIOM_C_EXPORT openaxiom_filedesc
    oa_open_local_client_stream_socket(const char*);
-OPENAXIOM_EXPORT int oa_inet_pton(const char*, int, openaxiom_byte*);
-OPENAXIOM_EXPORT int oa_get_host_address(const char*, int, openaxiom_byte*);
-OPENAXIOM_EXPORT int oa_open_local_server_stream_socket(const char*);
-OPENAXIOM_EXPORT openaxiom_socket
+OPENAXIOM_C_EXPORT int oa_inet_pton(const char*, int, openaxiom_byte*);
+OPENAXIOM_C_EXPORT int oa_get_host_address(const char*, int, openaxiom_byte*);
+OPENAXIOM_C_EXPORT int oa_open_local_server_stream_socket(const char*);
+OPENAXIOM_C_EXPORT openaxiom_socket
    oa_connect_ip_port_stream(const openaxiom_byte*, int, openaxiom_port);
 
-OPENAXIOM_EXPORT int oa_socket_write(openaxiom_socket,
+OPENAXIOM_C_EXPORT int oa_socket_write(openaxiom_socket,
                                      const openaxiom_byte*, int);
-OPENAXIOM_EXPORT int oa_socket_write_byte(openaxiom_socket, openaxiom_byte);
+OPENAXIOM_C_EXPORT int oa_socket_write_byte(openaxiom_socket, openaxiom_byte);
 
-OPENAXIOM_EXPORT int oa_socket_read(openaxiom_socket,
+OPENAXIOM_C_EXPORT int oa_socket_read(openaxiom_socket,
                                     openaxiom_byte*, int);
-OPENAXIOM_EXPORT int oa_socket_read_byte(openaxiom_socket);
+OPENAXIOM_C_EXPORT int oa_socket_read_byte(openaxiom_socket);
 
-OPENAXIOM_EXPORT void oa_close_socket(openaxiom_socket);
+OPENAXIOM_C_EXPORT void oa_close_socket(openaxiom_socket);
 
-OPENAXIOM_EXPORT int 
+OPENAXIOM_C_EXPORT int 
 oa_filedesc_write(openaxiom_filedesc, const openaxiom_byte*, int);
-OPENAXIOM_EXPORT int 
+OPENAXIOM_C_EXPORT int 
 oa_filedesc_read(openaxiom_filedesc, openaxiom_byte*, int);
-OPENAXIOM_EXPORT int oa_filedesc_close(openaxiom_filedesc);
+OPENAXIOM_C_EXPORT int oa_filedesc_close(openaxiom_filedesc);
 
-OPENAXIOM_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
-OPENAXIOM_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
+OPENAXIOM_C_EXPORT int sread(openaxiom_sio*, openaxiom_byte*, int, const char*);
+OPENAXIOM_C_EXPORT int swrite(openaxiom_sio*, const openaxiom_byte*, int,
                             const char*);
 
-OPENAXIOM_EXPORT int wait_for_client_read(openaxiom_sio*, openaxiom_byte*,
+OPENAXIOM_C_EXPORT int wait_for_client_read(openaxiom_sio*, openaxiom_byte*,
                                           int, const char*);
-OPENAXIOM_EXPORT int wait_for_client_write(openaxiom_sio*,
+OPENAXIOM_C_EXPORT int wait_for_client_write(openaxiom_sio*,
                                            const openaxiom_byte*, int,
                                            const char*);
 
-OPENAXIOM_EXPORT int make_server_name(char*, const char*);
-OPENAXIOM_EXPORT int make_server_number(void);
-OPENAXIOM_EXPORT openaxiom_sio* connect_to_local_server(char*, int, int);
-OPENAXIOM_EXPORT int open_server(const char*);
-OPENAXIOM_EXPORT int accept_connection(openaxiom_sio*);
-OPENAXIOM_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
-OPENAXIOM_EXPORT void close_socket(openaxiom_socket, const char*);
+OPENAXIOM_C_EXPORT int make_server_name(char*, const char*);
+OPENAXIOM_C_EXPORT int make_server_number(void);
+OPENAXIOM_C_EXPORT openaxiom_sio* connect_to_local_server(char*, int, int);
+OPENAXIOM_C_EXPORT int open_server(const char*);
+OPENAXIOM_C_EXPORT int accept_connection(openaxiom_sio*);
+OPENAXIOM_C_EXPORT int sselect(int, fd_set*, fd_set*, fd_set*, void*);
+OPENAXIOM_C_EXPORT void close_socket(openaxiom_socket, const char*);
 
-OPENAXIOM_EXPORT int get_int(openaxiom_sio*);
-OPENAXIOM_EXPORT double get_float(openaxiom_sio*);
-OPENAXIOM_EXPORT double sock_get_float(int);
-OPENAXIOM_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
-OPENAXIOM_EXPORT char* get_string(openaxiom_sio*);
-OPENAXIOM_EXPORT void sigpipe_handler(int);
-OPENAXIOM_EXPORT int fill_buf(openaxiom_sio*, openaxiom_byte*, int,
+OPENAXIOM_C_EXPORT int get_int(openaxiom_sio*);
+OPENAXIOM_C_EXPORT double get_float(openaxiom_sio*);
+OPENAXIOM_C_EXPORT double sock_get_float(int);
+OPENAXIOM_C_EXPORT int get_sfloats(openaxiom_sio*, float*, int);
+OPENAXIOM_C_EXPORT char* get_string(openaxiom_sio*);
+OPENAXIOM_C_EXPORT void sigpipe_handler(int);
+OPENAXIOM_C_EXPORT int fill_buf(openaxiom_sio*, openaxiom_byte*, int,
                               const char*);
-OPENAXIOM_EXPORT int sock_get_int(int);
-OPENAXIOM_EXPORT int get_ints(openaxiom_sio*, int*, int);
-OPENAXIOM_EXPORT int sock_get_ints(int, int*, int);
-OPENAXIOM_EXPORT int send_int(openaxiom_sio*, int);
-OPENAXIOM_EXPORT int sock_send_int(int, int);
-OPENAXIOM_EXPORT int send_ints(openaxiom_sio*, const int*, int);
-OPENAXIOM_EXPORT int sock_send_ints(int, const int*, int);
-OPENAXIOM_EXPORT int send_string(openaxiom_sio*, const char*);
-OPENAXIOM_EXPORT int send_string_len(openaxiom_sio*, const char*, int);
-OPENAXIOM_EXPORT int sock_send_string(int, const char*);
-OPENAXIOM_EXPORT int sock_send_string_len(int, const char*, int);
-OPENAXIOM_EXPORT int send_strings(openaxiom_sio*, const char**, int);
-OPENAXIOM_EXPORT int sock_send_strings(int, const char**, int);
-OPENAXIOM_EXPORT char* sock_get_string(int);
-OPENAXIOM_EXPORT char* get_string_buf(openaxiom_sio*, char*, int);
-OPENAXIOM_EXPORT char* sock_get_string_buf(int, char*, int);
-OPENAXIOM_EXPORT int get_strings(openaxiom_sio*, char**, int);
-OPENAXIOM_EXPORT int sock_get_strings(int, char**, int);
-OPENAXIOM_EXPORT int send_float(openaxiom_sio*, double);
-OPENAXIOM_EXPORT int sock_send_float(int, double);
-OPENAXIOM_EXPORT int send_sfloats(openaxiom_sio*, const float*, int);
-OPENAXIOM_EXPORT int sock_send_sfloats(int, const float*, int);
-OPENAXIOM_EXPORT int send_floats(openaxiom_sio*, const double*, int);
-OPENAXIOM_EXPORT int sock_send_floats(int, const double*, int);
-OPENAXIOM_EXPORT int sock_get_sfloats(int, float*, int);
-OPENAXIOM_EXPORT int get_floats(openaxiom_sio*, double*, int);
-OPENAXIOM_EXPORT int sock_get_floats(int, double*, int);
-OPENAXIOM_EXPORT int wait_for_client_kill(openaxiom_sio*, int);
-OPENAXIOM_EXPORT int sock_get_remote_fd(int);
-OPENAXIOM_EXPORT int send_signal(openaxiom_sio*, int);
-OPENAXIOM_EXPORT int sock_send_signal(int, int);
-OPENAXIOM_EXPORT int send_wakeup(openaxiom_sio*);
-OPENAXIOM_EXPORT int sock_send_wakeup(int);
-OPENAXIOM_EXPORT void remote_stdio(openaxiom_sio*);
-OPENAXIOM_EXPORT void init_purpose_table(void);
-OPENAXIOM_EXPORT void get_socket_type(openaxiom_sio*);
-OPENAXIOM_EXPORT int sock_accept_connection(int);
-OPENAXIOM_EXPORT void redirect_stdio(openaxiom_sio*);
-OPENAXIOM_EXPORT void init_socks(void);
-OPENAXIOM_EXPORT int server_switch(void);
-OPENAXIOM_EXPORT void flush_stdout(void);
-OPENAXIOM_EXPORT void print_line(const char*);
-
+OPENAXIOM_C_EXPORT int sock_get_int(int);
+OPENAXIOM_C_EXPORT int get_ints(openaxiom_sio*, int*, int);
+OPENAXIOM_C_EXPORT int sock_get_ints(int, int*, int);
+OPENAXIOM_C_EXPORT int send_int(openaxiom_sio*, int);
+OPENAXIOM_C_EXPORT int sock_send_int(int, int);
+OPENAXIOM_C_EXPORT int send_ints(openaxiom_sio*, const int*, int);
+OPENAXIOM_C_EXPORT int sock_send_ints(int, const int*, int);
+OPENAXIOM_C_EXPORT int send_string(openaxiom_sio*, const char*);
+OPENAXIOM_C_EXPORT int send_string_len(openaxiom_sio*, const char*, int);
+OPENAXIOM_C_EXPORT int sock_send_string(int, const char*);
+OPENAXIOM_C_EXPORT int sock_send_string_len(int, const char*, int);
+OPENAXIOM_C_EXPORT int send_strings(openaxiom_sio*, const char**, int);
+OPENAXIOM_C_EXPORT int sock_send_strings(int, const char**, int);
+OPENAXIOM_C_EXPORT char* sock_get_string(int);
+OPENAXIOM_C_EXPORT char* get_string_buf(openaxiom_sio*, char*, int);
+OPENAXIOM_C_EXPORT char* sock_get_string_buf(int, char*, int);
+OPENAXIOM_C_EXPORT int get_strings(openaxiom_sio*, char**, int);
+OPENAXIOM_C_EXPORT int sock_get_strings(int, char**, int);
+OPENAXIOM_C_EXPORT int send_float(openaxiom_sio*, double);
+OPENAXIOM_C_EXPORT int sock_send_float(int, double);
+OPENAXIOM_C_EXPORT int send_sfloats(openaxiom_sio*, const float*, int);
+OPENAXIOM_C_EXPORT int sock_send_sfloats(int, const float*, int);
+OPENAXIOM_C_EXPORT int send_floats(openaxiom_sio*, const double*, int);
+OPENAXIOM_C_EXPORT int sock_send_floats(int, const double*, int);
+OPENAXIOM_C_EXPORT int sock_get_sfloats(int, float*, int);
+OPENAXIOM_C_EXPORT int get_floats(openaxiom_sio*, double*, int);
+OPENAXIOM_C_EXPORT int sock_get_floats(int, double*, int);
+OPENAXIOM_C_EXPORT int wait_for_client_kill(openaxiom_sio*, int);
+OPENAXIOM_C_EXPORT int sock_get_remote_fd(int);
+OPENAXIOM_C_EXPORT int send_signal(openaxiom_sio*, int);
+OPENAXIOM_C_EXPORT int sock_send_signal(int, int);
+OPENAXIOM_C_EXPORT int send_wakeup(openaxiom_sio*);
+OPENAXIOM_C_EXPORT int sock_send_wakeup(int);
+OPENAXIOM_C_EXPORT void remote_stdio(openaxiom_sio*);
+OPENAXIOM_C_EXPORT void init_purpose_table(void);
+OPENAXIOM_C_EXPORT void get_socket_type(openaxiom_sio*);
+OPENAXIOM_C_EXPORT int sock_accept_connection(int);
+OPENAXIOM_C_EXPORT void redirect_stdio(openaxiom_sio*);
+OPENAXIOM_C_EXPORT void init_socks(void);
+OPENAXIOM_C_EXPORT int server_switch(void);
+OPENAXIOM_C_EXPORT void flush_stdout(void);
+OPENAXIOM_C_EXPORT void print_line(const char*);
 
 #define MaxClients      150
 
@@ -219,15 +213,10 @@ OPENAXIOM_EXPORT void print_line(const char*);
 
 /* table of dedicated socket types */
 
-OPENAXIOM_EXPORT extern openaxiom_sio *purpose_table[];
-OPENAXIOM_EXPORT extern openaxiom_sio server[];
-OPENAXIOM_EXPORT extern openaxiom_sio clients[];
-OPENAXIOM_EXPORT extern fd_set socket_mask;
-OPENAXIOM_EXPORT extern fd_set server_mask;
-
-
-#ifdef __cplusplus
-}
-#endif   
+OPENAXIOM_C_EXPORT openaxiom_sio *purpose_table[];
+OPENAXIOM_C_EXPORT openaxiom_sio server[];
+OPENAXIOM_C_EXPORT openaxiom_sio clients[];
+OPENAXIOM_C_EXPORT fd_set socket_mask;
+OPENAXIOM_C_EXPORT fd_set server_mask;
 
 #endif /* OPENAXIOM_SOCKIO_included */

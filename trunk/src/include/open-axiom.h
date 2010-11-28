@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,13 @@
 
 #include "openaxiom-c-macros.h"
 
+/* Annotation to request C calling convention */
+#ifdef __cplusplus
+#  define OPENAXIOM_C_CALL extern "C"
+#else
+#  define OPENAXIOM_C_CALL
+#endif
+
 /* Cope with MS-platform oddities.  */
 #ifdef __WIN32__
 #  ifdef  DLL_EXPORT
@@ -50,6 +57,8 @@
 #ifndef OPENAXIOM_EXPORT
 #  define OPENAXIOM_EXPORT  /* nothing */
 #endif /* OPENAXIOM_EXPORT */
+
+#define OPENAXIOM_C_EXPORT OPENAXIOM_C_CALL OPENAXIOM_EXPORT
 
 #if defined(HAVE_STDINT_H)
 #  include <stdint.h>
@@ -68,10 +77,6 @@ typedef void* openaxiom_handle;
 
 #include <unistd.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
-
 /* Do we have graphics support?  */
 #ifdef X_DISPLAY_MISSING
 #  define OPENAXIOM_HAVE_GRAPHICS 0
@@ -80,22 +85,22 @@ extern "C" {
 #endif
 
 /* Byte order enumeration.  */
-typedef enum openaxiom_byteorder {
+enum openaxiom_byteorder {
    oa_unknown_endian, oa_little_endian, oa_big_endian
-} openaxiom_byteorder;
+};
 
 
 /* Datatype for packaging information necessary tolaunch a process. */
-typedef struct openaxiom_process {
+struct openaxiom_process {
    int argc;
    char** argv;
    int id;
-} openaxiom_process;
+};
 
-typedef enum openaxiom_spawn_flags {
+enum openaxiom_spawn_flags {
    openaxiom_spawn_search_path = 0x01,
    openaxiom_spawn_replace     = 0x02,
-} openaxiom_spawn_flags;
+};
 
    
 /* Return the address of the data buffer `BUF'.  */
@@ -130,12 +135,8 @@ openaxiom_sleep(int n)
 }
 
 
-OPENAXIOM_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
-OPENAXIOM_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
-OPENAXIOM_EXPORT const char* oa_concatenate_string(const char*, const char*);
-
-#ifdef __cplusplus
-}
-#endif   
+OPENAXIOM_C_EXPORT void oa_allocate_process_argv(openaxiom_process*, int);
+OPENAXIOM_C_EXPORT int oa_spawn(openaxiom_process*, openaxiom_spawn_flags);   
+OPENAXIOM_C_EXPORT const char* oa_concatenate_string(const char*, const char*);
    
 #endif /* OPENAXIOM_included */

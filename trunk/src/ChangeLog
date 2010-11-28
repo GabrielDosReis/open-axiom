@@ -1,5 +1,31 @@
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lib/Makefile.in: Build libopen-axiom-core and libspad with a C++
+	compiler and linker.
+	* lib/bsdsignal.c: Fix C calling convention annotation.
+	* lib/cfuns-c.c: Likewise.
+	* lib/edin.c: Likewise.
+	* lib/sockio-c.c: Likewise.
+	* include/bsdsignal.h: Remove 'extern "C"'-block annotation.
+	* include/cfuns.h: Likewise.
+	* include/cursor.h: Likewise.
+	* include/edin.h: Likewise.
+	* include/fnct_key.h: Likewise.
+	* include/halloc.h: Likewise.
+	* include/hash.h: Likewise.
+	* include/openpty.h: Likewise.
+	* include/pixmap.h: Likewise.
+	* include/prt.h: Likewise.
+	* include/sockio.h: Likewise.
+	* include/spadcolors.h: Likewise.
+	* include/util.H1: Likewise.
+	* include/view.h: Likewise.
+	* include/wct.h: Likewise.
+	* include/open-axiom.h (OPENAXIOM_C_CALL): New macro.
+	(OPENAXIOM_C_EXPORT): Likewise.
+
+2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/Makefile.in: Link the basic core with a C++ compiler when
 	GCL or ECL.
 	* lisp/core.lisp.in: Implement appropriate change.

@@ -1,6 +1,8 @@
 /*
 Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 All rights reserved.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
+  All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -34,27 +36,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef OPENAXIOM_HASH_INCLUDED
 #define OPENAXIOM_HASH_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
-
-typedef struct HashEntry {
+struct HashEntry {
    const char *key;             /* pointer to key data */
    char *data;			/* Pointer to entry */
    struct HashEntry *next;	/* Link to next entry */
-} HashEntry;
+};
 
 typedef int (*EqualFunction)(const void*, const void*);
 typedef int (*HashcodeFunction)(const void*,int);
 typedef void (*MappableFunction) (const void*);
 typedef void (*FreeFunction) (void *);
-typedef struct HashTable {
+struct HashTable {
   HashEntry **table;		/* the actual table */
   int size;			/* size of table */
   int num_entries;		/* number of elements in a hash table */
   EqualFunction equal;		/* equality predicate for keys */
   HashcodeFunction hash_code;	/* create hash code for a key */
-} HashTable;
+};
 
 extern char* alloc_string(const char*);
 extern HashEntry* hash_copy_entry(HashEntry*);
@@ -68,9 +66,5 @@ extern void hash_map(HashTable*, MappableFunction func);
 extern char* hash_replace(HashTable*, char*, const char*);
 extern int string_equal(const char*, const char*);
 extern int string_hash(const char*, int size);
-
-#ifdef __cplusplus
-}
-#endif   
 
 #endif  /* OPENAXIOM_HASH_INCLUDED */

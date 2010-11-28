@@ -36,18 +36,10 @@
 #ifndef OPENAXIOM_PIXMAP_included
 #define OPENAXIOM_PIXMAP_included
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
-
 extern int file_exists(char * );
 extern FILE * zzopen(char *  , char * );
 extern void write_pixmap_file(Display *  , int  , char *  , Window  , int  , int  , int  , int );
 extern int read_pixmap_file(Display *  , int  , char *  , XImage * *  , int *  , int * );
 
-
-#ifdef __cplusplus
-}
-#endif   
    
 #endif

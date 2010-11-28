@@ -1,7 +1,7 @@
 /*
     Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
     All rights reserved.
-    Copyright (C) Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
 #include <signal.h> 
 #include "bsdsignal.h"
 
-OPENAXIOM_EXPORT SignalHandlerFunc
+OPENAXIOM_C_EXPORT SignalHandlerFunc
 bsdSignal(int sig, SignalHandlerFunc action, int restartSystemCall)
 {
 #if HAVE_DECL_SIGACTION
