@@ -265,7 +265,7 @@ typedef struct HyperDocPage {
    TextNode *header;             /* formatted version of page               */
    TextNode *scrolling;          /* Top of scrolling region                 */
    TextNode *footer;             /* top of non-scrolling region at bottom   */
-   openaxiom_sio *sock;          /* socket connection for spad buffer       */
+   OpenAxiom::openaxiom_sio *sock;          /* socket connection for spad buffer       */
    HashTable *fLinkHashTable;         /* active link hash table                  */
    ButtonList *s_button_list;    /* active buttons on page                  */
    ButtonList *button_list;      /* active buttons on page                  */

@@ -48,6 +48,8 @@
 
 #include "sockio.h"
 
+using namespace OpenAxiom;
+
 openaxiom_sio* sock;
 
 static void 

@@ -73,6 +73,8 @@ extern int gethostname(char *, int );
 #include "mouse11.bitmap"
 #include "mouse11.mask"
 
+using namespace OpenAxiom;
+
 static void get_GCs(HDWindow * window);
 static int get_border_properties(void);
 static int get_color(const char* , const char* , int, Colormap*);

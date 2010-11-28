@@ -60,6 +60,8 @@
 #include "cursor.h"
 #include "fnct_key.h"
 
+using namespace OpenAxiom;
+
 static void spadbuf_inter_handler(int);
 static void spadbuf_function_chars(void);
 static void interp_io(void);
@@ -137,7 +139,7 @@ interp_io(void)
             return;
         }
         if (FD_ISSET(session_sock->socket, &rd)) {
-            len = sread(session_sock, (openaxiom_byte*) buf, 1024, "stdio");
+           len = sread(session_sock, byte_address(buf), 1024, "stdio");
             if (len == -1)
                 return;
             else {

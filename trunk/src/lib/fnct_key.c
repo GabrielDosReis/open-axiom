@@ -52,6 +52,8 @@
 #include "prt.h"
 #include "edin.h"
 
+/* FIXME: Remove this in complete rewrite */
+using namespace OpenAxiom;
 
 /** Some constants for functio key defs ****/
 #define DELAYED 0

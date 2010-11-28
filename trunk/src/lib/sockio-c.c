@@ -58,6 +58,9 @@
 #include "sockio.h"
 #include "com.h"
 #include "bsdsignal.h"
+#include "sockio.h"
+
+namespace OpenAxiom {
 
 #define TotalMaxPurposes 50
 #define MaxServerNumbers 100
@@ -97,8 +100,6 @@ int socket_closed;
 /* spad server number used in sman */
 int spad_server_number = -1;    
 
-
-#include "sockio.h"
 
 /* Non zero if the host system module support for socket is activated.
    This is needed only for MS platforms.  */
@@ -145,7 +146,7 @@ openaxiom_load_socket_module(void)
    to numeric form.  The result is stored in the last argument.
    Success is indicated by a return value 0; failure is -1.  */
 OPENAXIOM_C_EXPORT int
-oa_inet_pton(const char* addr, int prot, openaxiom_byte* bytes)
+oa_inet_pton(const char* addr, int prot, Byte* bytes)
 {
    openaxiom_load_socket_module();
    switch (prot) {
@@ -173,7 +174,7 @@ oa_inet_pton(const char* addr, int prot, openaxiom_byte* bytes)
 /* Resolve a hostname to its IP address.  On success return 0,
    otherwise -1.  */
 OPENAXIOM_C_EXPORT int
-oa_get_host_address(const char* n, int prot, openaxiom_byte* bytes)
+oa_get_host_address(const char* n, int prot, Byte* bytes)
 {
    struct hostent* h;
    openaxiom_load_socket_module();
@@ -304,7 +305,7 @@ oa_open_local_client_stream_socket(const char* path)
 }
 
 OPENAXIOM_C_EXPORT int
-oa_filedesc_read(openaxiom_filedesc desc, openaxiom_byte* buf, int size)
+oa_filedesc_read(openaxiom_filedesc desc, Byte* buf, int size)
 {
 #ifdef __WIN32__
    DWORD count = -1;
@@ -321,7 +322,7 @@ oa_filedesc_read(openaxiom_filedesc desc, openaxiom_byte* buf, int size)
 }
 
 OPENAXIOM_C_EXPORT int
-oa_filedesc_write(openaxiom_filedesc desc, const openaxiom_byte* buf, int size)
+oa_filedesc_write(openaxiom_filedesc desc, const Byte* buf, int size)
 {
 #ifdef __WIN32__
    DWORD count = -1;
@@ -351,8 +352,7 @@ oa_filedesc_close(openaxiom_filedesc desc)
 */
 
 OPENAXIOM_C_EXPORT openaxiom_socket
-oa_connect_ip_port_stream(const openaxiom_byte* addr, int prot,
-                          openaxiom_port port)
+oa_connect_ip_port_stream(const Byte* addr, int prot, openaxiom_port port)
 {
    struct sockaddr_in server;
    openaxiom_socket sock;
@@ -387,7 +387,7 @@ oa_connect_ip_port_stream(const openaxiom_byte* addr, int prot,
    actually read.  */
 
 OPENAXIOM_C_EXPORT int
-oa_socket_read(openaxiom_socket sock, openaxiom_byte* buf, int size)
+oa_socket_read(openaxiom_socket sock, Byte* buf, int size)
 {
    return recv(sock, (char*) buf, size, 0);
 }
@@ -398,7 +398,7 @@ oa_socket_read(openaxiom_socket sock, openaxiom_byte* buf, int size)
 OPENAXIOM_C_EXPORT int
 oa_socket_read_byte(openaxiom_socket sock)
 {
-   openaxiom_byte byte;
+   Byte byte;
    if(oa_socket_read(sock, &byte, 1) < 1)
       return -1;
    return byte;
@@ -409,14 +409,14 @@ oa_socket_read_byte(openaxiom_socket sock)
    Return -1 on failured; the number of actualy write bytes on success.  */
 
 OPENAXIOM_C_EXPORT int
-oa_socket_write(openaxiom_socket sock, const openaxiom_byte* buf, int size)
+oa_socket_write(openaxiom_socket sock, const Byte* buf, int size)
 {
    return send(sock, (const char*) buf, size, 0);
 }
 
 /* Send one byte to socket `sock'.  */
 OPENAXIOM_C_EXPORT int
-oa_socket_write_byte(openaxiom_socket sock, openaxiom_byte byte)
+oa_socket_write_byte(openaxiom_socket sock, Byte byte)
 {
    return oa_socket_write(sock, &byte, 1) < 1 ? -1 : byte;
 }
@@ -454,7 +454,7 @@ sigpipe_handler(int sig)
 }
 
 OPENAXIOM_C_EXPORT int 
-wait_for_client_read(openaxiom_sio *sock, openaxiom_byte* buf, int buf_size,
+wait_for_client_read(openaxiom_sio *sock, Byte* buf, int buf_size,
                      const char* msg)
 {
   int ret_val;
@@ -472,7 +472,7 @@ wait_for_client_read(openaxiom_sio *sock, openaxiom_byte* buf, int buf_size,
 }
 
 OPENAXIOM_C_EXPORT int 
-wait_for_client_write(openaxiom_sio* sock, const openaxiom_byte* buf,
+wait_for_client_write(openaxiom_sio* sock, const Byte* buf,
                       int buf_size, const char* msg)
 {
   int ret_val;
@@ -490,7 +490,7 @@ wait_for_client_write(openaxiom_sio* sock, const openaxiom_byte* buf,
 }
 
 OPENAXIOM_C_EXPORT int 
-sread(openaxiom_sio* sock, openaxiom_byte* buf, int buf_size, const char *msg)
+sread(openaxiom_sio* sock, Byte* buf, int buf_size, const char *msg)
 {
   int ret_val;
   char err_msg[256];
@@ -515,7 +515,7 @@ sread(openaxiom_sio* sock, openaxiom_byte* buf, int buf_size, const char *msg)
 }
 
 OPENAXIOM_C_EXPORT int 
-swrite(openaxiom_sio* sock, const openaxiom_byte* buf, int buf_size,
+swrite(openaxiom_sio* sock, const Byte* buf, int buf_size,
        const char* msg)
 {
   int ret_val;
@@ -552,7 +552,7 @@ sselect(int n,fd_set  *rd, fd_set  *wr, fd_set *ex, void *timeout)
 }
 
 OPENAXIOM_C_EXPORT int 
-fill_buf(openaxiom_sio *sock, openaxiom_byte* buf, int len, const char* msg)
+fill_buf(openaxiom_sio *sock, Byte* buf, int len, const char* msg)
 {
   int bytes =  0, ret_val;
   while(bytes < len) {
@@ -567,7 +567,7 @@ OPENAXIOM_C_EXPORT int
 get_int(openaxiom_sio *sock)
 {
   int val = -1, len;
-  len = fill_buf(sock, (openaxiom_byte*)&val, sizeof(int), "get_int");
+  len = fill_buf(sock, byte_address(val), sizeof(int), "get_int");
   if (len != sizeof(int)) {
 #ifdef DEBUG
   fprintf(stderr,"get_int: caught error\n",val);
@@ -609,7 +609,7 @@ OPENAXIOM_C_EXPORT int
 send_int(openaxiom_sio *sock,int val)
 {
   int ret_val;
-  ret_val = swrite(sock, (const openaxiom_byte*)&val, sizeof(int), "send_int");
+  ret_val = swrite(sock, byte_address(val), sizeof(int), "send_int");
   if (ret_val == -1) {
     return -1;
   }
@@ -652,14 +652,14 @@ send_string_len(openaxiom_sio *sock, const char *str,int len)
     strncpy(buf,str,len);
     buf[len]='\0';
     send_int(sock,len+1);
-    val = swrite(sock, (const openaxiom_byte*) buf, len+1, "send_string_len");
+    val = swrite(sock, (const Byte*) buf, len+1, "send_string_len");
     free(buf);
   } else {
     static char buf[1024];
     strncpy(buf, str, len);
     buf[len] = '\0';
     send_int(sock, len+1);
-    val = swrite(sock, (const openaxiom_byte*) buf, len+1, "send_string_len");
+    val = swrite(sock, (const Byte*) buf, len+1, "send_string_len");
   }
   if (val == -1) {
     return -1;
@@ -672,7 +672,7 @@ send_string(openaxiom_sio* sock, const char* str)
 {
   int val, len = strlen(str);
   send_int(sock, len+1);
-  val = swrite(sock, (const openaxiom_byte*) str, len+1, "send_string");
+  val = swrite(sock, (const Byte*) str, len+1, "send_string");
   if (val == -1) {
     return -1;
   }
@@ -722,7 +722,7 @@ get_string(openaxiom_sio *sock)
   len = get_int(sock);
   if (len <0) return NULL;
   buf = (char*) malloc(len*sizeof(char));
-  val = fill_buf(sock, (openaxiom_byte*) buf, len, "get_string");
+  val = fill_buf(sock, (Byte*) buf, len, "get_string");
   if (val == -1){
         free(buf);
         return NULL;
@@ -752,7 +752,7 @@ get_string_buf(openaxiom_sio *sock, char *buf, int buf_len)
    nbytes_to_read = sock->nbytes_pending > buf_len
       ? buf_len
       : sock->nbytes_pending;
-   nbytes_read = fill_buf(sock, (openaxiom_byte*)buf, nbytes_to_read,
+   nbytes_read = fill_buf(sock, (Byte*)buf, nbytes_to_read,
                           "get_string_buf");
    if (nbytes_read == -1) {
       sock->nbytes_pending = 0;
@@ -791,7 +791,7 @@ OPENAXIOM_C_EXPORT int
 send_float(openaxiom_sio *sock, double num)
 {
   int val;
-  val = swrite(sock, (const openaxiom_byte*)&num, sizeof(double),"send_float");
+  val = swrite(sock, byte_address(num), sizeof(double),"send_float");
   if (val == -1) {
     return -1;
   }
@@ -847,7 +847,7 @@ get_float(openaxiom_sio *sock)
 {
   int val;
   double num = -1.0;
-  val = fill_buf(sock, (openaxiom_byte*)&num, sizeof(double), "get_float");
+  val = fill_buf(sock, byte_address(num), sizeof(double), "get_float");
 #ifdef DEBUG
   fprintf(stderr,"get_float: received %f\n",num);
 #endif
@@ -1094,10 +1094,10 @@ remote_stdio(openaxiom_sio *sock)
     if (FD_ISSET(0, &rd)) {
       fgets(buf,1024,stdin);
       len = strlen(buf);
-      swrite(sock, (const openaxiom_byte*)buf, len, "remote_stdio::write");
+      swrite(sock, byte_address(buf), len, "remote_stdio::write");
     }
     if (FD_ISSET(sock->socket, &rd)) {
-      len = sread(sock, (openaxiom_byte*)buf, 1024, "remote_stdio::read");
+       len = sread(sock, byte_address(buf), 1024, "remote_stdio::read");
       if (len == -1)
         return;
       else {
@@ -1385,4 +1385,6 @@ OPENAXIOM_C_EXPORT void
 print_line(const char* s)
 {
   printf("%s\n", s);
+}
+
 }

@@ -533,6 +533,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "cfuns.h"
+using namespace OpenAxiom;
 
 /* we need to predeclare some functions so their signatures are known */
 int printandor(char *list);

@@ -50,6 +50,8 @@
 #include "titlebar.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 static void center_nodes(TextNode * begin_node , TextNode * end_node);
 static int input_string_width(TextNode * node);
 static int punctuation_width(TextNode * node);

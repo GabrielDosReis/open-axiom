@@ -1,3 +1,9 @@
+2010-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac: Fix thinko.
+	* config/open-axiom.m4: Don't prepend 'openaxiom' to the name of
+	runtime. 
+
 2010-11-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* config/open-axiom.m4 (axiom_src_all): Remove.

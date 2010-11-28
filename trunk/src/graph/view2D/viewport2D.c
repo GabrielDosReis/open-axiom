@@ -60,6 +60,8 @@
 #include "spadBitmap.bitmap"
 #include "spadMask.mask"
 
+using namespace OpenAxiom;
+
 #define rint(z) ((int)(z))
 
 Atom    wm_delete_window;               

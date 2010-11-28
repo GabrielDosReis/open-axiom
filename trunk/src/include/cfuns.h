@@ -1,6 +1,3 @@
-#ifndef OPENAXIOM_CFUNS_included
-#define OPENAXIOM_CFUNS_included
-
 /*
   Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
@@ -36,7 +33,12 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef OPENAXIOM_CFUNS_included
+#define OPENAXIOM_CFUNS_included
+
 #include "open-axiom.h"
+
+namespace OpenAxiom {
 
 OPENAXIOM_C_EXPORT int addtopath(char*);
 OPENAXIOM_C_EXPORT int directoryp(char*);
@@ -62,11 +64,13 @@ OPENAXIOM_C_EXPORT int oa_copy_file(const char*, const char*);
 OPENAXIOM_C_EXPORT double plus_infinity(void);
 OPENAXIOM_C_EXPORT double minus_infinity(void);
 OPENAXIOM_C_EXPORT double quiet_double_NaN(void);
-OPENAXIOM_C_EXPORT openaxiom_byteorder oa_get_host_byteorder(void);
+OPENAXIOM_C_EXPORT Byteorder oa_get_host_byteorder(void);
 
 OPENAXIOM_C_EXPORT const char* oa_concatenate_string(const char*, const char*);
 OPENAXIOM_C_EXPORT const char* oa_strcat(const char*, const char*);
 OPENAXIOM_C_EXPORT char* oa_substr(const char*, const size_t, const size_t);
 OPENAXIOM_C_EXPORT char** oa_split(const char*, const char*, int*);
-   
+
+}
+
 #endif /* OPENAXIOM_CFUNS_included */

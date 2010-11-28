@@ -48,6 +48,8 @@
 #include "sockio.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 static void start_user_buffer(HyperDocPage * page);
 static void clear_execution_marks(HashTable * depend_hash);
 static void issue_dependent_commands(HyperDocPage * page , TextNode * command , int type);

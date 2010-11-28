@@ -33,7 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.4.0-2010-11-27], 
+AC_INIT([OpenAxiom], [1.4.0-2010-11-28], 
         [open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
@@ -95,7 +95,7 @@ OPENAXIOM_CHECK_CORE_SUPPORT
 OPENAXIOM_CHECK_IO
 AM_CONDITIONAL([OA_BUILD_SMAN], [test $oa_use_sman = 1])
 OPENAXIOM_CHECK_GRAPHICS
-AM_CONDITIONAL([OA_BUILD_GRAPHICS], [test $axiom_use_x = xyes])
+AM_CONDITIONAL([OA_BUILD_GRAPHICS], [test x$axiom_use_x = xyes])
 
 OPENAXIOM_FFI_TYPE_TABLE
 OPENAXIOM_GCL_BUILD_OPTIONS

@@ -48,6 +48,8 @@
 #include "Gfun.H1"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 
 /*
  * Given 2 file pointers, this function copies file ifp to file ofp
