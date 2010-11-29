@@ -50,12 +50,12 @@ typedef GC openaxiom_graphic_context;
 typedef XFontStruct openaxiom_font;
 typedef Cursor openaxiom_cursor;
 #else                            /* X_DISPLAY_MISSING */
-typedef openaxiom_handle openaxiom_window;
-typedef openaxiom_handle openaxiom_pixmap;
-typedef openaxiom_handle openaxiom_image;
-typedef openaxiom_handle openaxiom_graphic_context;
-typedef openaxiom_handle openaxiom_cursor;
-typedef openaxiom_handle openaxiom_font;
+typedef OpenAxiom::Handle openaxiom_window;
+typedef OpenAxiom::Handle openaxiom_pixmap;
+typedef OpenAxiom::Handle openaxiom_image;
+typedef OpenAxiom::Handle openaxiom_graphic_context;
+typedef OpenAxiom::Handle openaxiom_cursor;
+typedef OpenAxiom::Handle openaxiom_font;
 #endif /* X_DISPLAY_MISSING */
 
 /* Struct forward declarations */
