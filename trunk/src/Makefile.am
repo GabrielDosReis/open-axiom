@@ -37,6 +37,11 @@ DIST_SUBDIRS = \
 	lisp scripts share sman \
 	testsuite utils
 
+subdirs = \
+	algebra boot clef doc driver \
+	etc graph hyper input interp \
+	lib lisp share sman utils
+
 oa_targetdir = $(top_builddir)/$(target)
 
 if OA_BUILD_SMAN
@@ -134,4 +139,17 @@ all-check:
 	cd input && $(MAKE) $(AM_MAKEFLAGS) all-check
 
 mostlyclean-local:
+	for d in $(subdirs); do \
+	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) mostlyclean); \
+	done
 	-rm -f stamp-subdirs
+
+clean-local:
+	for d in $(subdirs); do \
+	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) clean); \
+	done
+
+distclean-local:
+	for d in $(subdirs); do \
+	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) distclean); \
+	done

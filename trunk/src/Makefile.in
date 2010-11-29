@@ -298,6 +298,11 @@ DIST_SUBDIRS = \
 	lisp scripts share sman \
 	testsuite utils
 
+subdirs = \
+	algebra boot clef doc driver \
+	etc graph hyper input interp \
+	lib lisp share sman utils
+
 oa_targetdir = $(top_builddir)/$(target)
 @OA_BUILD_SMAN_TRUE@OA_SMAN_TARGETS = all-sman all-clef
 @OA_BUILD_GRAPHICS_TRUE@OA_GRAPHICS_TARGETS = all-graph
@@ -563,11 +568,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-generic distclean-local \
+	distclean-tags
 
 dvi: dvi-recursive
 
@@ -633,17 +639,18 @@ uninstall-am:
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am all-local check check-am clean clean-generic \
-	clean-libtool ctags ctags-recursive distclean \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
-	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am
+	clean-libtool clean-local ctags ctags-recursive distclean \
+	distclean-generic distclean-libtool distclean-local \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-local pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am
 
 
 all-local: all-src
@@ -732,7 +739,20 @@ all-check:
 	cd input && $(MAKE) $(AM_MAKEFLAGS) all-check
 
 mostlyclean-local:
+	for d in $(subdirs); do \
+	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) mostlyclean); \
+	done
 	-rm -f stamp-subdirs
+
+clean-local:
+	for d in $(subdirs); do \
+	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) clean); \
+	done
+
+distclean-local:
+	for d in $(subdirs); do \
+	  (cd $$d && $(MAKE) $(AM_MAKEFLAGS) distclean); \
+	done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

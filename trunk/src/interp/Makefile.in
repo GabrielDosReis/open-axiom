@@ -44,12 +44,11 @@ AUTO=$(axiom_targetdir)/autoload
 
 autoload_objects =
 
-# Build platform-dependent Lisp image, at the base of other
-# derived Lisp images (interpsys, AXIOMsys)
-LISPSYS= $(axiom_build_bindir)/lisp$(EXEEXT)
+# Driver to launch translation and compilation
+DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
 
 # Translator from Boot to Lisp (or machine code)
-BOOTSYS= $(axiom_target_bindir)/bootsys$(EXEEXT) -- --syslib=$(axiom_target_libdir)
+BOOTSYS = $(axiom_target_bindir)/bootsys$(EXEEXT)
 
 # Minimal OpenAxiom image necessary to build the algebra
 SAVESYS= interpsys$(EXEEXT)
@@ -242,7 +241,9 @@ ${SAVESYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
 		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
-	$(BOOTSYS) -- --system="$(AXIOM)/" --system-algebra \
+	$(DRIVER) --execpath=$(BOOTSYS) \
+		--syslib=$(axiom_target_libdir) \
+		--system="$(AXIOM)/" --system-algebra \
 		--sysalg="$(axiom_src_datadir)/algebra/" \
 		--prologue="(pushnew :open-axiom-basic-system *features*)" \
 		--make --output=$@ --main="BOOT::|systemMain|" \
@@ -257,7 +258,8 @@ ${AXIOMSYS}: database.date \
 		$(axiom_targetdir)/algebra/exposed.$(FASLEXT) \
 		$(axiom_target_datadir)/msgs/s2-us.msgs \
 		$(ASAUTO) $(TRANOBJS) $(OBJS) makeint.$(LNKEXT)
-	$(BOOTSYS) -- \
+	$(DRIVER) --execpath=$(BOOTSYS) \
+		--syslib=$(axiom_target_libdir) \
 		--system="$(AXIOM)/" \
 		--sysalg="$(axiom_targetdir)/algebra/" \
 		--prologue="(pushnew :open-axiom-algebra-system *features*)" \
@@ -269,7 +271,8 @@ exposed.lsp: $(axiom_src_algdir)/exposed.lsp.pamphlet
 
 $(axiom_targetdir)/algebra/exposed.$(FASLEXT) : exposed.lsp boot-pkg.$(LNKEXT)
 	$(mkdir_p) $(axiom_targetdir)/algebra
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+		--compile --output=$@ --load-directory=. $<
 
 database.date:
 	@ echo 617 the database was updated...remaking interpsys
@@ -283,10 +286,12 @@ $(AUTO)/%.$(FASLEXT): %.$(FASLEXT)
 	@cp -p $< $@
 
 %.$(LNKEXT) %.$(FASLEXT): %.boot
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+		--compile --output=$@ --load-directory=. $<
 
 %.$(LNKEXT) %.$(FASLEXT): %.lisp
-	$(BOOTSYS) --compile --output=$@ --load-directory=. $<
+	$(DRIVER) --execpath=$(BOOTSYS) --syslib=$(axiom_target_libdir) \
+		--compile --output=$@ --load-directory=. $<
 
 ## Translation to Fortran
 fortcall.$(FASLEXT): sys-macros.$(FASLEXT)

@@ -47,6 +47,7 @@
 ## That image is used to build Boot translator executable through the
 ## entire bootstrap process.
 
+DRIVER = $(top_builddir)/src/driver/open-axiom$(EXEEXT)
 AXIOM_LOCAL_LISP_sources = initial-env.lisp
 AXIOM_LOCAL_LISP = ../lisp/lisp$(EXEEXT)
 
@@ -73,14 +74,10 @@ boot_fn = $(boot_sources:.boot=.fn)
 subdir = src/boot/
  
 ## Make rule toplevel entry points.
-.PHONY: all-ax all-boot
-all: all-ax all-boot
+.PHONY: all-boot
+all: all-boot
 
-all-ax all-boot: stamp
-
-stamp: $(axiom_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
-	@rm -f stamp
-	$(STAMP) $@
+all-boot: $(axiom_target_bindir)/bootsys$(EXEEXT) $(oa_boot_linkset)
 
 ## The final `bootsys' image.
 $(axiom_target_bindir)/bootsys$(EXEEXT): stage2/bootsys$(EXEEXT)
@@ -116,7 +113,7 @@ strap/stamp: strap/bootsys$(EXEEXT)
 	@$(STAMP) $@
 
 strap/bootsys$(EXEEXT): $(strap_boot_objects)
-	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|"\
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --make --main="|AxiomCore|::|topLevel|"\
 		--system=$(axiom_targetdir) \
 		--prologue='(pushnew :open-axiom-boot *features*)' \
 		 --output=$@ --load-directory=strap $(strap_boot_objects)
@@ -142,13 +139,13 @@ stage1/stamp: stage1/bootsys$(EXEEXT)
 	$(STAMP) $@
 
 stage1/bootsys$(EXEEXT): $(stage1_boot_objects)
-	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|" \
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --make --main="|AxiomCore|::|topLevel|" \
 		--system=$(axiom_targetdir) \
 		--prologue='(pushnew :open-axiom-boot *features*)' \
 		 --output=$@ --load-directory=stage1 $(stage1_boot_objects)
 
 stage1/%.clisp: %.boot strap/stamp stage1/.started
-	strap/bootsys -- --translate --import=skip --output=$@ $<
+	$(DRIVER) --execpath=strap/bootsys$(EXEEXT) --translate --import=skip --output=$@ $<
 
 
 ##
@@ -169,13 +166,13 @@ stage2/stamp: stage2/bootsys$(EXEEXT)
 	$(STAMP) $@
 
 stage2/bootsys$(EXEEXT): $(stage2_boot_objects)
-	$(AXIOM_LOCAL_LISP) -- --make --main="|AxiomCore|::|topLevel|" \
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --make --main="|AxiomCore|::|topLevel|" \
 		--system=$(axiom_targetdir) \
 		--prologue='(pushnew :open-axiom-boot *features*)' \
 		--output=$@ --load-directory=stage2 $(stage2_boot_objects)
 
 stage2/%.clisp: %.boot stage1/stamp stage2/.started
-	stage1/bootsys -- --translate --import=skip --output=$@ $<
+	$(DRIVER) --execpath=stage1/bootsys$(EXEEXT) --translate --import=skip --output=$@ $<
 
 ##
 ## Generic rules for compiling FASLs
@@ -191,31 +188,31 @@ stage2/%.clisp: %.boot stage1/stamp stage2/.started
 ## Boot source file at packaging time.
 
 %/initial-env.$(LNKEXT): initial-env.lisp %/.started
-	$(AXIOM_LOCAL_LISP) -- --compile --output=$@ $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --compile --output=$@ $<
 
 %/tokens.$(LNKEXT): %/tokens.clisp %/initial-env.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/includer.$(LNKEXT): %/includer.clisp %/tokens.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/scanner.$(LNKEXT): %/scanner.clisp %/tokens.$(LNKEXT) %/includer.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/pile.$(LNKEXT): %/pile.clisp %/scanner.$(LNKEXT) %/includer.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/ast.$(LNKEXT): %/ast.clisp %/includer.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/parser.$(LNKEXT): %/parser.clisp %/ast.$(LNKEXT) %/scanner.$(LNKEXT) \
 		 %/includer.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 %/translator.$(LNKEXT): %/translator.clisp %/parser.$(LNKEXT) \
 		%/ast.$(LNKEXT) %/pile.$(LNKEXT) %/scanner.$(LNKEXT) \
 		%/includer.$(LNKEXT)
-	$(AXIOM_LOCAL_LISP) -- --output=$@ --compile --load-directory=$* $<
+	$(DRIVER) --execpath=$(AXIOM_LOCAL_LISP) --output=$@ --compile --load-directory=$* $<
 
 
 ##
@@ -228,7 +225,6 @@ mostlyclean-local:
 	@rm -rf strap stage1 stage2
 	@rm -rf $(oa_target_bootdir)
 	@rm -f *.data *.fn
-	@rm -f stamp
 
 clean-local: mostlyclean-local
 	@rm -f *.clisp

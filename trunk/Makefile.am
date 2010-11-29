@@ -110,6 +110,13 @@ install:
 check:
 	cd src && $(MAKE) all-check
 
+mostlyclean-local:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) mostlyclean
+
 clean-local:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) clean
 	@-rm -rf $(target)
 	@-rm -rf build
+
+distclean-local:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) distclean

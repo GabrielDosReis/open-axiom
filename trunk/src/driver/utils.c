@@ -130,10 +130,9 @@ get_driver_name(Driver driver)
    case script_driver:
    case compiler_driver:
    case core_driver:
+   case translator_driver:
+   case linker_driver:
       return OPENAXIOM_CORE_PATH;
-
-   case alien_driver:
-      return 0;
 
    default:
       abort();
@@ -163,7 +162,6 @@ build_rts_options(Command* command, Driver driver)
    case sman_driver:
    case execute_driver:
    case unknown_driver:
-   case alien_driver:
       break;
 
    case core_driver:
@@ -171,6 +169,8 @@ build_rts_options(Command* command, Driver driver)
 
    case compiler_driver:
    case script_driver:
+   case translator_driver:
+   case linker_driver:
       switch (OPENAXIOM_BASE_RTS) {
       case gcl_runtime:
          command->rt_args.allocate(3);
@@ -200,6 +200,12 @@ build_rts_options(Command* command, Driver driver)
          command->rt_args[1] = (char*) "-norc";
          break;
          
+      case ecl_runtime:
+         command->rt_args.allocate(2);
+         command->rt_args[0] = (char*) "-q";
+         command->rt_args[1] = (char*) "-norc";
+         break;
+
       default:
          abort();
       }
@@ -298,16 +304,17 @@ preprocess_arguments(Command* command, int argc, char** argv)
       }
       else if (const char* val = is_prefix("--execpath=", argv[i])) {
             command->exec_path = val;
-            driver = alien_driver;
-            break;
       }
       else {
          /* Apparently we will invoke the Core system; we need to
             pass on this option.  */
          if (strcmp(argv[i], "--script") == 0)
             driver = script_driver;
-         else if(strcmp(argv[i], "--compile") == 0)
+         else if(strcmp(argv[i], "--compile") == 0
+                 or strcmp(argv[i], "--translate") == 0)
             driver = compiler_driver;
+         else if (strcmp(argv[i], "--make") == 0)
+            driver = linker_driver;
          else {
             if (argv[i][0] == '-')
                /* Maybe option for the driver.  */
@@ -478,7 +485,7 @@ execute_core(const Command* command, Driver driver)
       args[command->rt_args.size() + command->core.argc] = NULL;
 
    execv(execpath, args.data());
-   perror(strerror(errno));
+   perror(execpath);
    return -1;
 #endif /* __WIN32__ */
 }
