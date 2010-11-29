@@ -127,6 +127,8 @@ main(int argc, char* argv[])
    case core_driver:
    case script_driver:
    case compiler_driver:
+   case translator_driver:
+   case linker_driver:
       putenv("LC_ALL=C");
       setlocale(LC_ALL, "");
       return execute_core(&command, driver);

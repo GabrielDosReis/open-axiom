@@ -94,13 +94,23 @@ DOC=$(axiom_target_docdir)/src/algebra
 OUTSRC=$(axiom_target_srcdir)/algebra
 INPUT=../input
 
+# Name of the driver to launch the compiler
+DRIVER = ../driver/open-axiom$(EXEEXT)
+
+INTERPSYS = ../interp/interpsys$(EXEEXT)
+
+COMPILE_SPAD = $(DRIVER) --execpath=$(INTERPSYS) \
+		--system="$(AXIOM)" \
+		--sysalg="$(axiom_src_datadir)/algebra/" \
+		--strap=strap --optimize=3 \
+		--system-algebra --compile $<
+
 ## We use interpsys, built from previous stage, to bootstrap the algebra
 ## files.  In fact, we use interpsys to build everything.
-COMPILE_LISP = $(INTERPSYS) --compile --output=$@ $<
-
-
-INTERPSYS = ../interp/interpsys$(EXEEXT) -- --system="$(AXIOM)" \
-		--sysalg="$(axiom_src_datadir)/algebra/"
+COMPILE_LISP = $(DRIVER) --execpath=$(INTERPSYS) \
+		--system="$(AXIOM)" \
+		--sysalg="$(axiom_src_datadir)/algebra/" \
+		--compile --output=$@ $<
 
 
 SPADFILES= \
@@ -1210,7 +1220,7 @@ ${OUT}/%.$(FASLEXT): %.NRLIB/code.$(FASLEXT)
 .PREVIOUS: %.spad
 .PRECIOUS: %.NRLIB/code.$(FASLEXT)
 %.NRLIB/code.$(FASLEXT): %.spad
-	${INTERPSYS} --strap=strap --system-algebra --optimize=3 --compile $<
+	$(COMPILE_SPAD)
 
 # Compile bootstrap file to machine object code, and the result
 # immediately available for AXIOMsys consumption.
@@ -1252,11 +1262,10 @@ $(axiom_build_texdir)/diagrams.tex: $(axiom_src_docdir)/diagrams.tex
 	@cp -p $< $@
 
 SPADPRSR.NRLIB/code.$(FASLEXT): spad-parser.spad
-	${INTERPSYS} --system-algebra --compile $<
+	$(COMPILE_SPAD)
 
 PARSER.NRLIB/code.$(FASLEXT): script-parser.spad
-	${INTERPSYS} --system-algebra --compile $<
-
+	$(COMPILE_SPAD)
 
 
 ${INPUT}/TESTFR.input: $(srcdir)/fr.spad.pamphlet

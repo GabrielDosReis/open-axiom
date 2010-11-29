@@ -55,7 +55,8 @@ namespace OpenAxiom {
       script_driver,     // start the core system in script mode.
       compiler_driver,   // start the core system in compiler mode.
       execute_driver,    // Execute a command.
-      alien_driver       // Alien driver.
+      translator_driver, // Start the core system in translator mode.
+      linker_driver      // start the core system in linking mode.
    };
    
    // A list of runtime support systems for OpenAxiom.
