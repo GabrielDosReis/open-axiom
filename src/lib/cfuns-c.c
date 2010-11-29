@@ -620,7 +620,7 @@ oa_getcwd(void)
       exit(-1);
    }
    else if (n > bufsz) {
-      buf = realloc(buf,n);
+     buf = (char*) realloc(buf,n);
       if (GetCurrentDirectory(n, buf) != n) {
          perror("oa_getcwd");
          exit(-1);
@@ -787,7 +787,7 @@ oa_spawn(Process* proc, SpawnFlags flags)
    }
    cmd_line[curpos] = '\0';
 
-   if ((flags & openaxiom_spawn_search_path) == 0)
+   if ((flags & spawn_search_path) == 0)
       path = proc->argv[0];
 
    if(CreateProcess(/* lpApplicationName */ path,
@@ -804,7 +804,7 @@ oa_spawn(Process* proc, SpawnFlags flags)
       return proc->id = -1;
    }
    proc->id = proc_info.dwProcessId;
-   if ((flags & openaxiom_spawn_replace) == 0)
+   if ((flags & spawn_replace) == 0)
       return proc->id;
    WaitForSingleObject(proc_info.hProcess, INFINITE);
    GetExitCodeProcess(proc_info.hProcess, &status);

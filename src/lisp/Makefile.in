@@ -47,7 +47,7 @@ build_libdir = ./$(top_builddir)/src/lib
 ## Consequently we temporarily give up here, e.g., we don't
 ## instruct GCL to use Libtool on Windows.
 GCL_LTCC = $(if $(findstring mingw, $(target)),"","$(LIBTOOL) --tag=CC --mode=compile ")
-GCL_LTLD = $(if $(findstring mingw, $(target)),"$(CXX) $(LDFLAGS) -o ","$(CXXLINK) -o ")
+GCL_LTLD = $(if $(findstring mingw, $(target)),"$(CXX) $(LDFLAGS) ","$(CXXLINK) ")
 
 ## Again, ideally, we would like GCL to link with the compiled Lisp
 ## code from core.lisp.  However, the general interface compiler::link
@@ -90,13 +90,22 @@ lisp_c_objects = \
 		$(build_libdir)/cfuns-c.$(OBJEXT) \
 		$(build_libdir)/sockio-c.$(OBJEXT)
 
+## The splitting shenaningan below about GCL's COMPILER::*LD* is because
+## GCL does not -- currently -- separate the linker proper from arguments,
+## therefore forcing us to use brittle tricks to guess what the linker is.
+
 $(OUT)/lisp$(EXEEXT): base-lisp$(EXEEXT)
 ifeq (@axiom_lisp_flavor@,gcl)
 	echo '(let* ((sys-cc compiler::*cc*) ' \
+	     '       (sys-ld compiler::*ld*) ' \
 	     '      (compiler::*cc* (concatenate (quote string) ' \
 	     '                                   $(GCL_LTCC)    ' \
 	     '                                   sys-cc))       ' \
-	     '      (compiler::*ld* (if (member :mingw32 *features*) compiler::*ld* $(GCL_LTLD))))               ' \
+	     '      (compiler::*ld*                             ' \
+	     '         (concatenate (quote string)              ' \
+	     '            $(GCL_LTLD)                           ' \
+	     '            (subseq sys-ld                        ' \
+	     '            (position (character " ") sys-ld))))) ' \
              '(compiler::link (quote ($(FASLS))) "lisp$(EXEEXT)" ' \
              ' (format nil "(progn (let ((*load-path* (cons ~S *load-path*))'\
                                         ' (si::*load-types* ~S)))' \
