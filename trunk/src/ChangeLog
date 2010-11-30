@@ -1,3 +1,14 @@
+2010-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* etc/Makefile.in: Use the driver.
+	* driver/utils.c (get_suffix): New.
+	(option_value): Likewise.
+	(preprocess_arguments): Handle --translate and --build-databases.
+	* driver/main.c (upgrade_environment): Change argument type to
+	Command. Upgrade LD_LIBRARY_PATH too.
+	* boot/translator.boot (loadSystemRuntimeCore): Don't prefix the
+	shared library file name with the system path.
+
 2010-11-28  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* clef/: Add using directive at toplevel.

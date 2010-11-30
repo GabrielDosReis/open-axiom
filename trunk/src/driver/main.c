@@ -79,13 +79,16 @@ namespace OpenAxiom {
    }
 
    static void
-   upgrade_environment(const char* sysdir) {
+   upgrade_environment(const Command* command) {
+      const char* sysdir = command->root_dir;
       augment_variable("TEXINPUTS",
                        oa_concatenate_string(sysdir, OPENAXIOM_TEXINPUTS_PATH));
       augment_variable("BIBINPUTS",
                        oa_concatenate_string(sysdir, OPENAXIOM_BIBINPUTS_PATH));
-      augment_variable("LD_LIBRARY_PATH",
-                       oa_concatenate_string(sysdir, "/lib"));
+      const char* ldd_path = option_value(command, "--syslib");
+      if (ldd_path == 0)
+         ldd_path = oa_concatenate_string(sysdir, "/lib");
+      augment_variable("LD_LIBRARY_PATH", ldd_path);
       publish_systemdir(sysdir);
    }
 
@@ -115,7 +118,7 @@ main(int argc, char* argv[])
    using namespace OpenAxiom;
    Command command;
    Driver driver = preprocess_arguments(&command, argc, argv);
-   upgrade_environment(command.root_dir);
+   upgrade_environment(&command);
 
    switch (driver) {
    case null_driver:
