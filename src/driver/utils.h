@@ -93,6 +93,9 @@ namespace OpenAxiom {
    const char* get_systemdir(int argc, char*[]);
    const char* make_path_for(const char*, Driver);
 
+   // Return a pointer the string value associated with an option.
+   const char* option_value(const Command*, const char*);
+
    int execute_core(const Command*, Driver);
    void build_rts_options(Command*, Driver);
    

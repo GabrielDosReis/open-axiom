@@ -783,5 +783,4 @@ loadNativeModule m ==
 
 loadSystemRuntimeCore() ==
   %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
-  loadNativeModule strconc(systemLibraryDirectory(),
-    '"libopen-axiom-core",$NativeModuleExt)
+  loadNativeModule strconc('"libopen-axiom-core",$NativeModuleExt)

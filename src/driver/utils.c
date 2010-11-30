@@ -86,6 +86,14 @@ namespace OpenAxiom {
            exec_path()
    { }
 
+   static const char*
+   get_suffix(const char* first, const char* last, const char* seq) {
+      for (; first < last; ++first, ++seq)
+         if (*first != *seq)
+            return 0;
+      return seq;
+   }
+   
    // -- Return non-null if `lhs' is a prefix of `rhs'.  When non-null
    // -- the pointer points to the '=' character that starts of the
    // -- value supplied to the argument.
@@ -97,6 +105,21 @@ namespace OpenAxiom {
       return rhs + N - 1;
    }
 
+   const char*
+   option_value(const Command* command, const char* opt) {
+      const int n = strlen(opt);
+      for (int i = 1; i < command->core.argc; ++i) {
+         const char* arg = command->core.argv[i];
+         if (strlen(arg) < n)
+            continue;
+         if(const char* val = get_suffix(opt, opt + n, arg)) {
+            if (*val++ == '=')
+               return val;
+            break;
+         }
+      }
+      return 0;
+   }
    
 /* Return a path to the running system, either as specified on command
    line through --system=, or as specified at configuration time.  */
@@ -311,7 +334,8 @@ preprocess_arguments(Command* command, int argc, char** argv)
          if (strcmp(argv[i], "--script") == 0)
             driver = script_driver;
          else if(strcmp(argv[i], "--compile") == 0
-                 or strcmp(argv[i], "--translate") == 0)
+                 or strcmp(argv[i], "--translate") == 0
+                 or strcmp(argv[i], "--build-databases") == 0)
             driver = compiler_driver;
          else if (strcmp(argv[i], "--make") == 0)
             driver = linker_driver;
