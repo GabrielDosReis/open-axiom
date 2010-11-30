@@ -294,6 +294,30 @@ static void print_usage(void) {
    print_line("Submit bug report to " PACKAGE_BUGREPORT);
 }
 
+   // Map a option to the driver that implement that action.
+   struct DriverMap {
+      const char* action;
+      const Driver driver;
+   };
+
+   static const DriverMap driver_table[] = {
+      { "--script", script_driver },
+      { "--compile", compiler_driver },
+      { "--translate", compiler_driver },
+      { "--build-databases", compiler_driver },
+      { "--make", linker_driver },
+   };
+
+   // Obtain the driver that implement a specific action requested
+   // on command line.
+   static Driver
+   option_driver(const char* opt) {
+      for (int i = 0; i < length(driver_table); ++i)
+         if (strcmp(opt, driver_table[i].action) == 0)
+            return driver_table[i].driver;
+      return unknown_driver;
+   }
+   
 /* Determine driver to be used for executing `command'.  */
 Driver
 preprocess_arguments(Command* command, int argc, char** argv)
@@ -331,14 +355,8 @@ preprocess_arguments(Command* command, int argc, char** argv)
       else {
          /* Apparently we will invoke the Core system; we need to
             pass on this option.  */
-         if (strcmp(argv[i], "--script") == 0)
-            driver = script_driver;
-         else if(strcmp(argv[i], "--compile") == 0
-                 or strcmp(argv[i], "--translate") == 0
-                 or strcmp(argv[i], "--build-databases") == 0)
-            driver = compiler_driver;
-         else if (strcmp(argv[i], "--make") == 0)
-            driver = linker_driver;
+         if (const Driver d = option_driver(argv[i]))
+            driver = d;
          else {
             if (argv[i][0] == '-')
                /* Maybe option for the driver.  */

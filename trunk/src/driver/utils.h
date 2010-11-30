@@ -100,6 +100,12 @@ namespace OpenAxiom {
    void build_rts_options(Command*, Driver);
    
    Driver preprocess_arguments(Command*, int, char**);
+
+   // Return the length of an array literal.
+   template<typename T, int N>
+   inline int length(T(&)[N]) {
+      return N;
+   }
 }
 
 #endif /* OPENAXIOM_UTILS_INCLUDED */

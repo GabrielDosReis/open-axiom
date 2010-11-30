@@ -1,5 +1,9 @@
 2010-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* driver/utils.cc: Commonalize some of option handling code.
+
+2010-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	Fix SF/2110371
 	* interp/i-toplev.boot (recordAndPrint): Tidy.
 	(SpadInterpretFile): Move to int-top.boot.
