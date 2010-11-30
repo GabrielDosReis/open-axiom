@@ -987,10 +987,11 @@ setOutputAlgebra arg ==
 
   -- try to figure out what the argument is
 
-  if arg is [fn] and
-    fn in '(Y N YE YES NO O ON OF OFF CONSOLE y n ye yes no o on of off console)
-      then 'ok
-      else arg := [fn,'spout]
+  if arg is [fn] then
+    arg := 
+      fn in '(Y N YE YES NO O ON OF OFF CONSOLE
+                y n ye yes no o on of off console) => arg
+      [fn,'spout]
 
   arg is [fn] =>
     UPCASE(fn) in '(Y N YE O OF) =>
@@ -1047,6 +1048,12 @@ describeSetOutputAlgebra() ==
   '"the one you set with the )cd system command.",'%l,_
   '"The current setting is: ",'%b,setOutputAlgebra "%display%",'%d]
 
+
+++ In case we are catching the output, we are also interested in 
+++ redirecting traffic on the standard output to that capturing stream.
+setStandardOutputToAlgebraStream() ==
+  $OutputStream := $algebraOutputStream
+  
 
 -- See the subsection output characters in setvart.boot
 -- 

@@ -196,7 +196,7 @@ recordAndPrint(x,md) ==
   mode:= (md=$EmptyMode => quadSch(); md)
   if (md ~= $Void) or $printVoidIfTrue then
     newlineIfDisplaying()
-    if $QuietCommand = false then
+    if not $QuietCommand then
       output(x',md')
   putHist('%,'value,objNewWrap(x,md),$e)
   if $printTimeIfTrue or $printTypeIfTrue then printTypeAndTime(x',md')
@@ -330,9 +330,6 @@ intProcessSynonyms str ==
 
 intInterpretPform pf ==
   processInteractive(zeroOneTran packageTran pf2Sex pf, pf)
-
-SpadInterpretFile fn ==
-  SpadInterpretStream(1, fn, nil)
 
 intNewFloat() ==
   ["Float"]

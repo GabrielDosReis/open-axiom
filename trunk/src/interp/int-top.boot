@@ -44,14 +44,9 @@ ncParseFromString s ==
   zeroOneTran packageTran CATCH($SpadReaderTag, parseFromString s)
 
 ncINTERPFILE(file, echo) ==
-  savedEcho := $EchoLines
-  savedReadingFile := $ReadingFile
-  $EchoLines: fluid := echo
-  $ReadingFile: fluid := true
-  result := SpadInterpretFile file
-  $EchoLines := savedEcho
-  $ReadingFile := savedReadingFile
-  result
+  $EchoLines: local := echo
+  $ReadingFile: local := true
+  SpadInterpretFile file
 
 ncGetFunction(op, dom, sig) ==
   applyInPackage(function getNCfunction,_
@@ -149,6 +144,9 @@ SpadInterpretStream(str, source, interactive?) ==
     []
  
     -----------------------------------------------------------------
+
+SpadInterpretFile fn ==
+  SpadInterpretStream(1, fn, nil)
 
 intloopReadConsole(b, n)==
     a:= serverReadLine $InputStream
@@ -324,15 +322,15 @@ streamChop(n,s)==
             [[d,:a],b]
  
 ncloopPrintLines lines ==
-        for line in lines repeat writeLine rest line
-        writeLine '" "
+        for line in lines repeat writeLine(rest line,$OutputStream)
+        writeLine('" ",$OutputStream)
  
 ncloopIncFileName string==
-                fn := incFileName string
-                not fn =>
-                    writeLine (strconc(string, '" not found"))
-                    []
-                fn
+      fn := incFileName string
+      not fn =>
+          writeLine(strconc(string, '" not found"),$ErrorStream)
+          []
+      fn
 
 ncloopParse s==
          [dq,stream]:=first s

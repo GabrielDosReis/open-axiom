@@ -246,17 +246,26 @@ initializeGlobalState() ==
 
 ++ execute Spad script
 executeSpadScript(progname,options,file) ==
-  $displayStartMsgs := false
+  -- By default, we want script execution to be as quiet as possible.
+  $displayStartMsgs: local := false
+  -- $ProcessInteractiveValue: local := true
+  $verbose: local := false
   initializeGlobalState()
-  if $verbose then
-    $options := []
-    $ProcessInteractiveValue := false
-  else
-    $options := [["quiet"]]
-    $ProcessInteractiveValue := true
-  $PrintCompilerMessageIfTrue := $verbose
+  outfile := getOptionValue "output"
+  talkative := outfile or $verbose
+  setOutputAlgebra [(talkative => 'on; 'off)]
+  -- FIXME: redirect standard output to null if not talkative
+  $printVoidIfTrue: local := talkative
+  $printTypeIfTrue: local := talkative
+  $options :=
+    talkative => []
+    [["quiet"]]
+  $PrintCompilerMessageIfTrue: local := talkative
+  if outfile ~= nil then
+    setOutputAlgebra [outfile]
+    setStandardOutputToAlgebraStream()
   CATCH($intCoerceFailure,
-   CATCH($SpadReaderTag,read [file]))
+    CATCH($SpadReaderTag,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)
 
 associateRequestWithFileType(Option '"script", '"input",
