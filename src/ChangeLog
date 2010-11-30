@@ -1,3 +1,16 @@
+2010-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Fix SF/2110371
+	* interp/i-toplev.boot (recordAndPrint): Tidy.
+	(SpadInterpretFile): Move to int-top.boot.
+	* interp/int-top.boot (ncINTERPFILE): Simplify.
+	(ncloopPrintLines): Output onto the standard output stream.
+	(ncloopIncFileName): Issue diagnostic on error output stream.
+	* interp/setvars.boot (setOutputAlgebra): Fix thinko.
+	(setStandardOutputToAlgebraStream): New.
+	* interp/sys-driver.boot (executeSpadScript): Use it.
+	Set verbosity level as appropriate.  Redirect output if requested.
+
 2010-11-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* etc/Makefile.in: Use the driver.
