@@ -94,7 +94,6 @@
 
 	   "getOptionValue"
            "getCommandLineArguments"
-           "processCommandLine"
            "handleCommandLine"
            "$originalLispTopLevel"
            "link"
@@ -407,19 +406,34 @@
 ;; of the command line into a list.  The processing stop as soon as
 ;; a non-option form is encountered. OPTIONS-SO-FAR accumulates the
 ;; the list of processed options.
-(defun |processCommandLine| (argv options-so-far)
-  (if (and argv (>= (length (car argv)) 2)
-           (equal "--" (subseq (car argv) 0 2)))
-      (let ((option (|parseOption| (car argv))))
-        (cond ((symbolp option)
-               (|processCommandLine| (cdr argv)
-                                     (cons (cons option t) options-so-far)))
-              ((consp option) 
-               (|processCommandLine| (cdr argv) (cons option options-so-far)))
-              (t (|internalError|
-                  (format nil "processCommandLine: unknown option ~S"
-                          option)))))
-    (values options-so-far argv)))
+(defun |processCommandLine| (argv options-so-far args-so-far)
+  (cond ((null argv)
+	 ;; no more command-line argument to process
+	 (values options-so-far (nreverse args-so-far)))
+	((equal "--" (car argv))
+	 ;; end of command-line options
+	 (values options-so-far (concatenate 'list 
+					     (nreverse args-so-far)
+					     (cdr argv))))
+	((or (< (length (car argv)) 2)
+	     (not (equal "--" (subseq (car argv) 0 2))))
+	 ;; not a command-line option
+	 (|processCommandLine| (cdr argv) 
+	                       options-so-far 
+	                       (cons (car argv) args-so-far)))
+	(t (let ((option (|parseOption| (car argv))))
+	     (cond ((symbolp option)
+		    (|processCommandLine| (cdr argv)
+		                          (cons (cons option t)
+						options-so-far)
+					  args-so-far))
+		   ((consp option) 
+		    (|processCommandLine| (cdr argv) 
+		                          (cons option options-so-far)
+					  args-so-far))
+		   (t (|internalError|
+		       (format nil "processCommandLine: unknown option ~S"
+			       option))))))))
 
 ;; 
 ;; -*- Building New Lisp Images -*-
@@ -718,7 +732,6 @@
 
 )
 
-
 ;; 
 ;; -*- --help Handler -*-
 ;; 
@@ -872,8 +885,8 @@
 
 ;; The top level entry point to most saved Lisp image.
 (defun |topLevel|()
-  (setq *package* (find-package "AxiomCore"))
-  (let ((command-args (|getCommandLineArguments|)))
+  (let ((*package* (find-package "AxiomCore"))
+	(command-args (|getCommandLineArguments|)))
     (when (null command-args) 
       (|internalError| "empty command line args"))
     ;; Existing system programming practive, and POSIX, have it
@@ -884,7 +897,7 @@
     ;;    (1) either one of --help or --version, or
     ;;        a filename.
     (multiple-value-bind 
-     (options args) (|processCommandLine| (cdr command-args) nil)
+     (options args) (|processCommandLine| (cdr command-args) nil nil)
 
      (setq |$sysOpts| options)
      (setq |$sysArgs| args)
