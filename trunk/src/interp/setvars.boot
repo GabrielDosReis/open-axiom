@@ -1016,7 +1016,8 @@ setOutputAlgebra arg ==
       SHUT $algebraOutputStream
       $algebraOutputStream := testStream
       $algebraOutputFile := object2String filename
-      sayKeyedMsg("S2IV0004",['"Algebra",$algebraOutputFile])
+      -- Inform of redirection only if verbosity is desired.
+      $verbose and sayKeyedMsg("S2IV0004",['"Algebra",$algebraOutputFile])
     sayKeyedMsg("S2IV0003",[fn,ft,fm])
 
   sayKeyedMsg("S2IV0005",NIL)
