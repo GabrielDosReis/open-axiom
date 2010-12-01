@@ -252,7 +252,8 @@ executeSpadScript(progname,options,file) ==
   $verbose: local := false
   initializeGlobalState()
   outfile := getOptionValue "output"
-  talkative := outfile or $verbose
+  testing := getOptionValue "test"
+  talkative := outfile or testing or $verbose
   setOutputAlgebra [(talkative => 'on; 'off)]
   -- FIXME: redirect standard output to null if not talkative
   $printVoidIfTrue: local := talkative
@@ -264,6 +265,9 @@ executeSpadScript(progname,options,file) ==
   if outfile ~= nil then
     setOutputAlgebra [outfile]
     setStandardOutputToAlgebraStream()
+  -- Accomodate for testsuite stream.
+  if testing then
+    set ["message","testing","on"]
   CATCH($intCoerceFailure,
     CATCH($SpadReaderTag,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)

@@ -1,5 +1,12 @@
 2010-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (executeSpadScript): Handle --test
+	option.
+	* interp/setvars.boot (setOutputAlgebra): Control informative
+	message about algebra stream redirection by $verbose.
+
+2010-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* lisp/core.lisp.in (handleCommandLine): Don't export. Rewrite.
 	(RUN-DRIVER): Split from handleCommandLine.
 
