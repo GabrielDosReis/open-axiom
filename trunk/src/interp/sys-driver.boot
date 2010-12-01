@@ -248,6 +248,7 @@ initializeGlobalState() ==
 executeSpadScript(progname,options,file) ==
   -- By default, we want script execution to be as quiet as possible.
   $displayStartMsgs: local := false
+  $ReadingFile: local := true
   -- $ProcessInteractiveValue: local := true
   $verbose: local := false
   initializeGlobalState()
