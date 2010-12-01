@@ -94,7 +94,6 @@
 
 	   "getOptionValue"
            "getCommandLineArguments"
-           "handleCommandLine"
            "$originalLispTopLevel"
            "link"
            "installDriver"
@@ -694,43 +693,45 @@
     (funcall driver prog-name options args)))
 
 (defun |hasHandler?| (request)
-  (|getDriver| request))
+  (or (|getDriver| request)
+      (|useFileType?| request)))
+
+(defun run-driver (prog-name action options args)
+  (cond ((|useFileType?| (car action))
+	 ;; If the action is file-type dependent, make sure
+	 ;; we have at least one file.
+	 (unless (not (null args))
+	   (|coreError| "missing input files"))
+	 (dolist (f args t)
+	   (let* ((name (car action))
+		  (file-type (or (|getFileType| f)
+				 (|useFileType?| name)))
+		  (request (cons name file-type)))
+	     (unless (|handleRequest| prog-name request options f)
+	       (return nil)))))
+	(t (|handleRequest| prog-name (car action) options args))))
+
 
 (defun |handleCommandLine| (prog-name options args)
   (when (or options args)
-  (dolist (opt options nil)
-    (cond ((eq (car opt) (|Option| "help")) ; print help, get out of here
-           (|helpHandler| prog-name))
-       
-	  ;; If we need to do an action based on the extension of 
-	  ;; input file, make sure we have at least one.
-          ((|useFileType?| (car opt))
-	   (unless args
-	     (|coreError| "missing input files")
-	     (return t))
-           (dolist (f args)
-             (let* ((opt-name (car opt))
-		    (file-type (or (|getFileType| f) 
-				   (|useFileType?| opt-name)))
-                    (request (cons opt-name file-type)))
-               (unless (|handleRequest| prog-name request options f)
-		 (return nil))))
-	   (return t))
+    (let (action)
+      (dolist (opt options)
+	(cond ((stringp (cdr opt))
+	       ;; In general, nothing is to be done for option value 
+	       ;; specifications, except when they require special handlers.
+	       (when (|hasHandler?| (car opt))
+		 (unless (|handleRequest| prog-name (car opt) options args)
+		   (return nil))))
 
-	  ;; In general, nothing is to be done for option value 
-	  ;; specification.  However, some specifications may require
-	  ;; some special handlers.
-          ((stringp (cdr opt))
-	   (when (|hasHandler?| (car opt))
-	     (unless (|handleRequest| prog-name (car opt) options args)
-	       (return nil))))
-          
-	  ;; By now, we are assumed to execute a driver associated
-	  ;; with the option.  Hope one is installed...
-	  (t (unless (|handleRequest| prog-name (car opt) options args)
-	       (return nil))))))
-
-)
+	      ;; Don't allow for more than one driver request.
+	      ((|hasHandler?| (car opt))
+	       (if (not (null action))
+		   (|coreError| "multiple driver request")
+		 (setq action opt)))))
+      ;; By now, we hope to have figured out what action to perform.
+      (cond ((consp action)
+	     (run-driver prog-name action options args))
+	    (t nil)))))
 
 ;; 
 ;; -*- --help Handler -*-
@@ -750,7 +751,8 @@
   (write-line "   --load-directory=<dir>   use <dir> as search path for modules")
   (write-line "   --make                   create an executable"))
 
-(defun |helpHandler|(prog-name)
+(defun |helpHandler|(prog-name options args)
+  (declare (ignore options args))
   (|printUsage| prog-name)
   (|coreQuit|))
 
