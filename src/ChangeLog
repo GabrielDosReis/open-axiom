@@ -1,5 +1,12 @@
 2010-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* lisp/core.lisp.in (processCommandLine): Don't export.
+	Rewrite to pull out command line options wherever they are
+	except the ones after "--".
+	(topLevel): Bind *PACKAGE*; don't set it.
+
+2010-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* driver/utils.cc: Commonalize some of option handling code.
 
 2010-11-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
