@@ -38,13 +38,12 @@
 ;; 
 ;; -*- Abstract -*-
 ;; 
-;;  This pamphlet defines the core of the system utilities for building
+;;  This file defines the core of the system utilities for building
 ;;  Boot and OpenAxiom executable.  It essentially etablishes a namespace
 ;;  (package AxiomCore) and defines some macros and functions
-;;  that need to be present during during compilation and executable
+;;  that need to be present during compilation and executable
 ;;  image construction.
 ;; 
-
 
 (defpackage "AxiomCore"
   #+:common-lisp (:use "COMMON-LISP")
@@ -334,7 +333,7 @@
 ;;    --prologue=<lisp-code>: Run <lisp-code> just before the main entry point.
 ;;    --make: boot, lisp, or fasl files
 (defparameter |$driverTable| 
-  (make-hash-table :test #'equal :size 5))
+  (make-hash-table :test #'equal :size 10))
 
 
 ;; Look up the driver that can handle REQUEST.  Returns nil when
@@ -343,10 +342,14 @@
   (gethash request |$driverTable|))
 
 ;; Associate DRIVER with REQUEST.
+;; There can exist at most one driver per request.
 (defun |installDriver| (request driver)
   (when (|getDriver| request) 
     (|internalError| "attempt to override driver"))
   (setf (gethash request |$driverTable|) driver))
+
+(defun |useFileType?| (request)
+  (get request 'use-file-type))
 
 ;; Register DRIVER for a REQUEST for a file with FILE-TYPE extension.
 (defun |associateRequestWithFileType| (request file-type driver)
@@ -432,7 +435,7 @@
   (let ((output-option (assoc (|Option| "output") options)))
     (when output-option
         ;; If an output file name was specified on the command line, it
-        ;; is so relative to the current workding directory.  In 
+        ;; is so relative to the current working directory.  In 
         ;; particular we want to prevent overly zelous SBCL to mess
         ;; around with the output file when we call compile-file-pathname. 
         ;; The SBCL-specific hack below does not work all the time, but in
@@ -599,14 +602,14 @@
 ;; passing mechanism from the shell to the application.  That 
 ;; mechanism works fine with GCL.  Some Lisp implementations such as
 ;; SBCL or CLISP will insist on processing the command lines.  Some
-;; such CLISP will barfle when they hit an option they don't 
+;; such as CLISP will baffle when they hit an option they don't 
 ;; understand.  Which is silly.  It seems like the only common ground,
 ;; as ever, is to go with the most annoying behaviour and penalize
 ;; the good "citizen", sensible, Lisp implementations interfaces.
-;; Consequently, we have standardize on the the following practice:
+;; Consequently, we have standardized on the the following practice:
 ;; always issue a double bash (--) after the command line, and afterwards
 ;; supply options and other arguments.  The double dash has the effect
-;; of disuading the underlying lisp implementation of trying to
+;; of dissuading the underlying lisp implementation of trying to
 ;; process whatever comes after as options.  
 
 ;; Command line arguments: equivalent of traditional `argv[]' from
@@ -678,9 +681,6 @@
 
 (defun |hasHandler?| (request)
   (|getDriver| request))
-
-(defun |useFileType?| (request)
-  (get request 'use-file-type))
 
 (defun |handleCommandLine| (prog-name options args)
   (when (or options args)
