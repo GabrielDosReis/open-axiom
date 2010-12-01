@@ -573,9 +573,14 @@ distclean-local: clean-local
 
 .SUFFIXES:
 .SUFFIXES: .input .output
+
+DRIVER = ../driver/open-axiom$(EXEEXT)
  
-TESTSYS= $(axiom_target_bindir)/AXIOMsys -- --system="$(AXIOM)" \
-		 --sysalg="$(axiom_targetdir)/algebra/"
+TESTSYS= \
+	$(DRIVER) --execpath=$(axiom_target_bindir)/AXIOMsys$(EXEEXT) \
+		--system="$(AXIOM)" \
+		--sysalg="$(axiom_targetdir)/algebra/" \
+		--test
  
 SKIP= antoine.output as-eg1.output as-eg2.output    \
       as-eg3.output    as-eg4.output    as-eg5.output    as-eg6.output    \
@@ -775,12 +780,6 @@ all-check: ${OUTS}
 	@ echo 1 finished ./$(top_builddir)/int/input
  
 %.output: %.input
-	(echo running test file $< ; \
-	echo ')set message test on' > tmp.input; \
-	echo ')set message auto off' >> tmp.input ; \
-	echo ')read $*' >> tmp.input ; \
-	echo ')boot coreQuit()' >> tmp.input ; \
-	echo 'systemCommand "read tmp.input"' | ${TESTSYS} | tee $*.output; \
-	rm tmp.input )
+	$(TESTSYS) $< | tee $*.output
 
 

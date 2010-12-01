@@ -1,5 +1,14 @@
 2010-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-driver.boot (executeSpadScript): Inform the system
+	that we are going to read from a file.
+	* interp/g-error.boot(handleLispBreakLoop): Return to reading from
+	file if that was what were doing.
+	* input/Makefile.in (TESTSYS): Use driver and --test option.
+	(%.output): Simplify.
+
+2010-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-driver.boot (executeSpadScript): Handle --test
 	option.
 	* interp/setvars.boot (setOutputAlgebra): Control informative

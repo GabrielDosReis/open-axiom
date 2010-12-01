@@ -132,7 +132,7 @@ handleLispBreakLoop($BreakMode) ==
       sayBrightly
         '"   Processing will continue where it was interrupted."
       THROW($SpadReaderTag, nil)
-  $BreakMode = 'resume =>
+  $BreakMode = 'resume or $ReadingFile =>
     returnToReader()
   returnToTopLevel()
 
