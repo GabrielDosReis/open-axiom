@@ -570,7 +570,7 @@ empty (if File-Closed (return nil))
 
 
 (defconstant Keywords 
-  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist|
+  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist| |try|
     |has| |with| |add| |case| |in| |by| |pretend| |mod|
     |exquo| |div| |quo| |else| |rem| |then| |suchthat|
     |if| |yield| |iterate| |break| |from| |exit| |leave| |return|

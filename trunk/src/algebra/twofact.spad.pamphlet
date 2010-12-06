@@ -220,12 +220,12 @@ TwoFactorize(F) : C == T
        -- find the substitution for x
        look:Boolean:=true
        dm:=degree m
-       try:Integer:=min(5,size()$F)
+       tryCount:Integer:=min(5,size()$F)
        i:Integer:=0
        lcm := leadingCoefficient m
        umv : R
        vval : F
-       while look and i < try repeat
+       while look and i < tryCount repeat
           vval := random()$F
           i:=i+1
           zero? elt(lcm, vval) => "next value"

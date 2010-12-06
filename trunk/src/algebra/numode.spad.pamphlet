@@ -116,7 +116,7 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
   NNI   ==> NonNegativeInteger
   VOID  ==> Void
   OFORM ==> OutputForm
-  RK4STEP ==> Record(try:NF, did:NF, next:NF)
+  RK4STEP ==> Record(tryValue:NF, did:NF, next:NF)
 
   Exports ==> with
 --header definitions here
@@ -203,11 +203,11 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
 --compute the derivative
          derivs(dydx,y,x)
 --if overshoot, the set h accordingly
-         if (x + step.try - x2) > 0.0 then
-            step.try := x2 - x
+         if (x + step.tryValue - x2) > 0.0 then
+            step.tryValue := x2 - x
 --find the correct scaling
          for i in 1..m repeat
-            yscal(i) := abs(y(i)) + abs(step.try * dydx(i)) + tiny
+            yscal(i) := abs(y(i)) + abs(step.tryValue * dydx(i)) + tiny
 --take a quality controlled runge-kutta step
          rk4qclocal(y,dydx,nvar,x,step,eps,yscal,derivs
                    ,t1,t2,t3,t4,t5,t6)
@@ -216,7 +216,7 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
          if (x-x2) >= 0.0 then
             leave
 --next stepsize to use
-         step.try := step.next
+         step.tryValue := step.next
          iter := iter + 1
 --end nstep repeat
       if iter = (nstep+1) then
@@ -255,7 +255,7 @@ NumericalOrdinaryDifferentialEquations(): Exports == Implementation where
    rk4qclocal(y,dydx,n,x,step,eps,yscal,derivs
              ,t1,t2,t3,ysav,dysav,ytemp) ==
       xsav   : NF := x
-      h      : NF := step.try
+      h      : NF := step.tryValue
       fcor   : NF := 1.0/15.0
       safety : NF := 0.9
       grow   : NF := -0.20
