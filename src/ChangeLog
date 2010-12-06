@@ -1,3 +1,9 @@
+2010-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/metalex.lisp (KEYWORDS): Include try.
+	* algebra/numode.spad.pamphlet: Change field try to tryValue.
+	* algebra/multsqfr.spad.pamphlet: Change identifier try to tryCount.
+
 2010-12-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-driver.boot (executeSpadScript): Inform the system
