@@ -371,6 +371,39 @@ expandStore ["%store",place,value] ==
   cons? place => ["SETF",place,value]
   ["SETQ",place,value]
 
+-- non-local control transfer
+
+$OpenAxiomCatchTag == KEYWORD::OpenAxiomCatchPoint
+
+expandThrow ['%throw,m,x] ==
+  ['THROW,$OpenAxiomCatchTag,
+    ['CONS,$OpenAxiomCatchTag,
+      ['CONS,expandToVMForm m,expandToVMForm x]]]
+
+++ Subroutine of expandTry.  Generate code for domain matching
+++ of object `obj' with domain `dom'.
+domainMatchCode(dom,obj) ==
+  -- FIXME: Instead of domain equality, we should also consider
+  -- FIXME: cases of sub-domains, or domain schemes with constraints.
+  ['domainEqual,dom,['%head,obj]]
+
+expandTry ['%try,expr,handlers,cleanup] ==
+  g := gensym()              -- hold the exception object
+  ys := [[domainMatchCode(mode,['%tail,g]),
+          ['%bind,[[var,['%tail,['%tail,g]]]],stmt]]
+            for [.,var,mode,stmt] in handlers]
+  handlerBody :=
+    ys = nil => g
+    ys := [:ys,['%true,['THROW,$OpenAxiomCatchTag,g]]]
+    ['%when,
+      [['%and,['%pair?,g],
+        ['%peq,['%head,g],$OpenAxiomCatchTag]], ['%when,:ys]],
+          ['%true,g]]
+  tryBlock := expandBind
+    ['%bind,[[g,['CATCH,$OpenAxiomCatchTag,expr]]],handlerBody]
+  cleanup = nil => tryBlock
+  ['UNWIND_-PROTECT,tryBlock,:expandToVMForm rest cleanup]
+  
 ++ Opcodes with direct mapping to target operations.
 for x in [
     -- Boolean constants
@@ -523,7 +556,9 @@ for x in [
 
    ['%bind,   :function expandBind],
    ['%store,  :function expandStore],
-   ['%dynval, :function expandDynval]
+   ['%dynval, :function expandDynval],
+   ['%throw,  :function expandThrow],
+   ['%try,    :function expandTry]
  ] repeat property(first x,'%Expander) := rest x
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.

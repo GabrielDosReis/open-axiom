@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -171,14 +171,6 @@ the stack, then stack a NIL. Return the value of prod."
 ;       (3) Line handling:      Next Line, Print Next Line
 ;       (X) Random Stuff
 
-; A good test for lexing is:
-
-(defmacro test-lexing ()
-  '(with-open-file (in-stream "lisp>meta.meta" :direction :input)
-    (with-open-file (out-stream "lisp>foo.pars" :direction :output :if-exists :supersede)
-      (loop (let ((z (advance-token)))
-              (if z (Token-Print z out-stream) (return nil)))))))
-
 ; 3A (0). String grabbing
 
 ; String grabbing is the art of matching initial segments of the current
@@ -215,11 +207,28 @@ the stack, then stack a NIL. Return the value of prod."
                                    :nonBlank nonblank))
                  t))))
 
+(defun match-advance-keyword (str)
+  (and (match-token (current-token) 'keyword (intern str))
+       (action (advance-token))))
+
+(defun match-advance-glyph (str)
+  (and (match-token (current-token) 'gliph (intern str))
+       (action (advance-token))))
+
+(defun match-advance-special (str)
+  (and (match-token (current-token) 'special-char (character str))
+       (action (advance-token))))
+
+(defun match-special (str)
+  (match-token (current-token) 'special-char (character str)))
+
+(defun match-keyword-next (str)
+  (match-token (next-token) 'keyword (intern str)))
+
 (defun initial-substring-p (part whole)
   "Returns length of part if part matches initial segment of whole."
   (let ((x (string<= part whole)))
     (and x (= x (length part)) x)))
-
 
 
 ; 3A 3. Line Handling.
@@ -400,18 +409,6 @@ the stack, then stack a NIL. Return the value of prod."
         (y (|sayBrightlyNT| `(|%b| ,rule |%d|))
            (format t " reduced ~A~%" y)))
   y)
-
-#+Symbolics
-(defmacro rtrace (&rest rules)
-  `(compiler-let () .
-        ,(mapcar #'(lambda (x)
-                    (let ((rule (intern (strconc "PARSE-" x))))
-                      `(zl:advise ,rule :around nil nil
-                               (reduction-print :do-it ',rule))))
-                rules)))
-
-#+Symbolics
-(defmacro runtrace () `(zl:unadvise))
 
 (defmacro tracemeta (&rest l) `(trmeta ',l))
 

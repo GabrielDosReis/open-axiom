@@ -1,3 +1,33 @@
+2010-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add support for exception handling.
+	* interp/parsing.lisp (TEST-LEXING): Remove.
+	(RTRACE): Likewise.
+	(RUNTRACE): Likewise.
+	(MATCH-ADVANCE-KEYWORD): New.
+	(MATCH-ADVANCE-GLYPH): Likewise.
+	(MATCH-ADVANCE-SPECIAL): Likewise.
+	(MATCH-SPECIAL): Likewise.
+	(MATCH-KEYWORD-NEXT): Likewise.
+	* interp/newaux.lisp: Make try and throw prefix operators.
+	* interp/metalex.lisp (KEYWORDS): Include finally, catch and throw.
+	* interp/fnewmeta.lisp (PARSE-Throw): New. Parse throw-expressions.
+	(PARSE-Catch): New.  Parse catch-expressions.
+	(PARSE-Finally): New. Parse finally-expressions.
+	(PARSE-Try): New. Parse try-expressions.
+	* interp/compiler.boot (compThrow): New. Register to compile
+	throw-expressions. 
+	(compTry): New. Register to compiler try-expressions.
+	(compCatch): New. Compile catch-handler expression.
+	* interp/g-opt.boot (optTry): New.  Simplify simple expressions in
+	the try operand.
+	* interp/g-util.boot (expandThrow): New.  Expand %throw forms.
+	(domainMatchCode): New.
+	(expandTry): New. Expand %try forms.
+	* doc/msgs/s2-us.msgs: Add new message with key S2GE0020.
+	* interp/g-error.boot (systemErrorHandler): Handle possible
+	uncaucght expression condition.
+
 2010-12-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/metalex.lisp (KEYWORDS): Include try.

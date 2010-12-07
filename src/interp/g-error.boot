@@ -188,6 +188,7 @@ systemErrorHandler c ==
   $BreakMode = "validate" => 
     systemError ERROR_-FORMAT('"~a",[c])
   not $inLispVM and $BreakMode in '(nobreak query resume) =>
+    TYPEP(c,'CONTROL_-ERROR) => keyedSystemError('S2GE0020,nil)
     LET(($inLispVM true)(), systemError ERROR_-FORMAT('"~a",[c]))
   $BreakMode = "letPrint2" =>
     $BreakMode := nil

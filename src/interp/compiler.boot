@@ -1148,6 +1148,34 @@ compReturn(["return",x],m,e) ==
     modifyModeStack(m',index)
   [["TAGGEDreturn",0,u],m,e']
 
+--% throw expressions
+
+compThrow: (%Form,%Mode,%Env) -> %Maybe %Triple
+compThrow(["%Throw",x],m,e) ==
+  T := comp(x,$EmptyMode,e) or return nil
+  -- FIXME: at the moment, throwable expressions must be of type
+  -- FIXME: instantiated from niladic constructors.
+  T.mode isnt [c] or not(niladicConstructorFromDB c) =>
+    stackAndThrow('"throw-operand %1b must be of known niladic type",[x])
+  -- An exception does not use the normal exit/return route, so
+  -- we don't take into account neither $exitModeStack nor $returnMode.
+  [['%throw,T.mode,T.expr],$NoValueMode,T.env]
+
+compCatch: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCatch([x,s],m,e) ==
+  [x',m',e] := compMakeDeclaration(second x, third x,e)
+  T := compOrCroak(s,m,e)
+  [['%catch,second x,m',T.expr],T.mode,e]
+  
+compTry: (%Form,%Mode,%Env) -> %Maybe %Triple
+compTry(['%Try,x,ys,z],m,e) ==
+  x' := compOrCroak(x,m,e).expr
+  ys' := [compCatch(y,m,e).expr for y in ys]
+  z' :=
+    z ~= nil => ['%finally,compOrCroak(z,$NoValueMode,e).expr]
+    nil
+  [['%try,x',ys',z'],m,e]
+  
 --% ELT
 
 ++ `op' supposedly designate an external entity with language linkage
@@ -2673,5 +2701,7 @@ for x in [["|", :"compSuchthat"],_
           ["%Forall", : "compSceheme"] , _
           ["%Match",:"compMatch"],_
           ["%SignatureImport",:"compSignatureImport"],_
+          ['%Throw,:'compThrow],
+          ['%Try, :'compTry],
           ["[||]", :"compileQuasiquote"]] repeat
   property(first x, 'SPECIAL) := rest x

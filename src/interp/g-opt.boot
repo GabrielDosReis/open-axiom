@@ -595,6 +595,10 @@ optBind form ==
   second(form) := inits
   form
 
+optTry form ==
+  form isnt ['try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
+  e
+
 optLIST form ==
   form is ["LIST"] => nil
   form
@@ -752,6 +756,7 @@ for x in '( (%call         optCall) _
            (LET          optLET)_
            (LET_*        optLET_*)_
            (%bind        optBind)_
+           (%try         optTry)_
            (%not         optNot)_
            (%and         optAnd)_
            (%or          optOr)_
