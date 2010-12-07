@@ -1152,28 +1152,24 @@ compReturn(["return",x],m,e) ==
 
 compThrow: (%Form,%Mode,%Env) -> %Maybe %Triple
 compThrow(["%Throw",x],m,e) ==
-  T := comp(x,$EmptyMode,e) or return nil
-  -- FIXME: at the moment, throwable expressions must be of type
-  -- FIXME: instantiated from niladic constructors.
-  T.mode isnt [c] or not(niladicConstructorFromDB c) =>
-    stackAndThrow('"throw-operand %1b must be of known niladic type",[x])
+  T := compOrCroak(x,$EmptyMode,e)
   -- An exception does not use the normal exit/return route, so
   -- we don't take into account neither $exitModeStack nor $returnMode.
   [['%throw,T.mode,T.expr],$NoValueMode,T.env]
 
 compCatch: (%Form,%Mode,%Env) -> %Maybe %Triple
 compCatch([x,s],m,e) ==
-  [x',m',e] := compMakeDeclaration(second x, third x,e)
+  [.,m',e] := compMakeDeclaration(second x, third x,e)
   T := compOrCroak(s,m,e)
-  [['%catch,second x,m',T.expr],T.mode,e]
+  [['%catch,second x,m',T.expr],T.mode,T.env]
   
 compTry: (%Form,%Mode,%Env) -> %Maybe %Triple
 compTry(['%Try,x,ys,z],m,e) ==
   x' := compOrCroak(x,m,e).expr
   ys' := [compCatch(y,m,e).expr for y in ys]
   z' :=
-    z ~= nil => ['%finally,compOrCroak(z,$NoValueMode,e).expr]
-    nil
+    z = nil => nil
+    ['%finally,compOrCroak(z,$NoValueMode,e).expr]
   [['%try,x',ys',z'],m,e]
   
 --% ELT

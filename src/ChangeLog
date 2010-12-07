@@ -1,3 +1,9 @@
+2010-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compThrow): Remove niladic type restriction.
+	(compCatch): Tidy.
+	(compTry): Likewise.
+
 2010-12-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add support for exception handling.
