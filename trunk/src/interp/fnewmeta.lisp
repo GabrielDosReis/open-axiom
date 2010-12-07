@@ -50,7 +50,6 @@
 (defun |isTokenDelimiter| () 
        (MEMBER (CURRENT-SYMBOL) '(\) END\_UNIT NIL)))
 
-
 (DEFUN |PARSE-NewExpr| ()
   (OR (AND (MATCH-STRING ")") (ACTION (|processSynonyms|))
            (MUST (|PARSE-Command|)))
@@ -321,11 +320,61 @@
        (PUSH-REDUCTION '|PARSE-SemiColon|
            (CONS '|;| (CONS (POP-STACK-2) (CONS (POP-STACK-1) NIL)))))) 
 
-
+;; We should factorize these boilerplates
 (DEFUN |PARSE-Return| ()
   (AND (MATCH-ADVANCE-STRING "return") (MUST (|PARSE-Expression|))
        (PUSH-REDUCTION '|PARSE-Return|
            (CONS '|return| (CONS (POP-STACK-1) NIL))))) 
+
+(DEFUN |PARSE-Throw| ()
+  (AND (MATCH-ADVANCE-KEYWORD "throw")
+       (MUST (|PARSE-Expression|))
+       (PUSH-REDUCTION '|PARSE-Throw|
+           (CONS '|%Throw| (CONS (POP-STACK-1) NIL))))) 
+
+(DEFUN |PARSE-Catch| ()
+  (AND (MATCH-SPECIAL ";")
+       (MATCH-KEYWORD-NEXT "catch")
+       (ACTION (ADVANCE-TOKEN))
+       (ACTION (ADVANCE-TOKEN))
+       (MUST (MATCH-ADVANCE-GLYPH "("))
+       (MUST (|PARSE-QuantifiedVariable|))
+       (MUST (MATCH-ADVANCE-SPECIAL ")"))
+       (MUST (MATCH-ADVANCE-GLYPH "=>"))
+       (MUST (|PARSE-Expression|))
+       (PUSH-REDUCTION '|PARSE-Catch|
+	  (CONS (POP-STACK-2)
+		(CONS (POP-STACK-1) NIL)))))
+
+(DEFUN |PARSE-Finally| ()
+  (AND (MATCH-SPECIAL ";")
+       (MATCH-KEYWORD-NEXT "finally")
+       (ACTION (ADVANCE-TOKEN))
+       (ACTION (ADVANCE-TOKEN))
+       (MUST (|PARSE-Expression|))))
+
+(DEFUN |PARSE-Try| ()
+  (AND (MATCH-ADVANCE-KEYWORD "try")
+       (MUST (|PARSE-Expression|))
+       ;; exception handlers: either a finally-expression, or
+       ;; a series of catch-expressions optionally followed by
+       ;; a finally-expression.
+       (MUST (OR (AND (|PARSE-Finally|)
+		      (PUSH-REDUCTION '|PARSE-Try|
+                         (CONS '|%Try| 
+			       (CONS (POP-STACK-2)
+				     (CONS NIL
+					   (CONS (POP-STACK-1) NIL))))))
+		 (AND (MUST (STAR REPEATOR (|PARSE-Catch|)))
+		      (BANG FIL_TEST
+			    (OPTIONAL (|PARSE-Finally|)))
+		      (PUSH-REDUCTION '|PARSE-Try|
+                         (CONS '|%Try|
+			       (CONS (POP-STACK-3)
+				     (CONS (POP-STACK-2)
+					   (CONS (POP-STACK-1) 
+						 NIL))))))))))
+
 
 (DEFUN |PARSE-Jump| ()
   (LET ((S (CURRENT-SYMBOL)))

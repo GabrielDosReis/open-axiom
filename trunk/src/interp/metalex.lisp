@@ -571,8 +571,8 @@ empty (if File-Closed (return nil))
 
 (defconstant Keywords 
   '(|or| |and| |isnt| |is| |when| |where| |forall| |exist| |try|
-    |has| |with| |add| |case| |in| |by| |pretend| |mod|
-    |exquo| |div| |quo| |else| |rem| |then| |suchthat|
+    |has| |with| |add| |case| |in| |by| |pretend| |mod| |finally|
+    |exquo| |div| |quo| |else| |rem| |then| |suchthat| |catch| |throw|
     |if| |yield| |iterate| |break| |from| |exit| |leave| |return|
     |not| |unless| |repeat| |until| |while| |for| |import| |inline|)
 

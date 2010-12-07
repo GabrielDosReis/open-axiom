@@ -1138,6 +1138,8 @@ S2GE0016
  Unexpected error or improper call to system function %1b: %2
 S2GE0017
  Unexpected error in call to system function %1b
+S2GE0020
+ Uncaught exception
 S2GL0001
  %ceon
  %b OpenAxiom: The Open Scientific Computation Platform %d %l
