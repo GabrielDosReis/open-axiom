@@ -1,3 +1,8 @@
+2010-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/fnewmeta.lisp (PARSE-OpenBracket): Tidy.
+	(PARSE-OpenBrace): Likewise.
+
 2010-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/acplot.spad.pamphlet: Fix decimal constant notation.
