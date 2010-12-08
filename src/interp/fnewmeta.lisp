@@ -337,10 +337,10 @@
        (MATCH-KEYWORD-NEXT "catch")
        (ACTION (ADVANCE-TOKEN))
        (ACTION (ADVANCE-TOKEN))
-       (MUST (MATCH-ADVANCE-GLYPH "("))
+       (MUST (|PARSE-GlyphTok| "("))
        (MUST (|PARSE-QuantifiedVariable|))
        (MUST (MATCH-ADVANCE-SPECIAL ")"))
-       (MUST (MATCH-ADVANCE-GLYPH "=>"))
+       (MUST (|PARSE-GlyphTok| "=>"))
        (MUST (|PARSE-Expression|))
        (PUSH-REDUCTION '|PARSE-Catch|
 	  (CONS (POP-STACK-2)
@@ -400,7 +400,7 @@
 
 
 (DEFUN |PARSE-Seg| ()
-  (AND (|PARSE-GliphTok| '|..|)
+  (AND (|PARSE-GlyphTok| "..")
        (BANG FIL_TEST (OPTIONAL (|PARSE-Expression|)))
        (PUSH-REDUCTION '|PARSE-Seg|
            (CONS 'SEGMENT
@@ -772,7 +772,7 @@
                  (OPTIONAL
                      (AND (STAR REPEATOR (|PARSE-Sexpr1|))
                           (OPTIONAL
-                              (AND (|PARSE-GliphTok| '|.|)
+                              (AND (|PARSE-GlyphTok| ".")
                                    (MUST (|PARSE-Sexpr1|))
                                    (PUSH-REDUCTION '|PARSE-Sexpr1|
                                     (NCONC (POP-STACK-2) (POP-STACK-1))))))))
@@ -785,9 +785,10 @@
        (ACTION (ADVANCE-TOKEN)))) 
 
 
-(DEFUN |PARSE-GliphTok| (|tok|)
+(DEFUN |PARSE-GlyphTok| (|tok|)
   (DECLARE (SPECIAL |tok|))
-  (AND (MATCH-CURRENT-TOKEN 'GLIPH |tok|) (ACTION (ADVANCE-TOKEN)))) 
+  (AND (MATCH-CURRENT-TOKEN 'GLIPH (INTERN |tok|))
+       (ACTION (ADVANCE-TOKEN)))) 
 
 
 (DEFUN |PARSE-AnyId| ()

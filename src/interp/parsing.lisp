@@ -211,10 +211,6 @@ the stack, then stack a NIL. Return the value of prod."
   (and (match-token (current-token) 'keyword (intern str))
        (action (advance-token))))
 
-(defun match-advance-glyph (str)
-  (and (match-token (current-token) 'gliph (intern str))
-       (action (advance-token))))
-
 (defun match-advance-special (str)
   (and (match-token (current-token) 'special-char (character str))
        (action (advance-token))))
