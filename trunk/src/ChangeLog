@@ -1,5 +1,11 @@
 2010-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/acplot.spad.pamphlet: Fix decimal constant notation.
+	* interp/fnewmeta.lisp: Replace MATCH-ADVANCE-STRING with
+	MATCH-ADVANCE-KEYWORD when matching for keywords.
+
+2010-12-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compThrow): Remove niladic type restriction.
 	(compCatch): Tidy.
 	(compTry): Likewise.
