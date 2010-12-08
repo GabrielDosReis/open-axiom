@@ -822,29 +822,27 @@
 
 
 (DEFUN |PARSE-OpenBracket| ()
-  (PROG (G1)
-    (RETURN
-      (AND (EQ (|getToken| (SETQ G1 (CURRENT-SYMBOL))) '[)
-           (MUST (OR (AND (EQCAR G1 '|elt|)
-                          (PUSH-REDUCTION '|PARSE-OpenBracket|
-                              (CONS '|elt|
-                                    (CONS (CADR G1)
-                                     (CONS '|construct| NIL)))))
-                     (PUSH-REDUCTION '|PARSE-OpenBracket| '|construct|)))
-           (ACTION (ADVANCE-TOKEN)))))) 
+  (LET ((G1 (CURRENT-SYMBOL)))
+    (AND (EQ (|getToken| G1) '[)
+	 (MUST (OR (AND (EQCAR G1 '|elt|)
+			(PUSH-REDUCTION '|PARSE-OpenBracket|
+			    (CONS '|elt|
+				  (CONS (CADR G1)
+				   (CONS '|construct| NIL)))))
+		   (PUSH-REDUCTION '|PARSE-OpenBracket| '|construct|)))
+	 (ACTION (ADVANCE-TOKEN)))))
 
 
 (DEFUN |PARSE-OpenBrace| ()
-  (PROG (G1)
-    (RETURN
-      (AND (EQ (|getToken| (SETQ G1 (CURRENT-SYMBOL))) '{)
-           (MUST (OR (AND (EQCAR G1 '|elt|)
-                          (PUSH-REDUCTION '|PARSE-OpenBrace|
-                              (CONS '|elt|
-                                    (CONS (CADR G1)
-                                     (CONS '|brace| NIL)))))
-                     (PUSH-REDUCTION '|PARSE-OpenBrace| '|construct|)))
-           (ACTION (ADVANCE-TOKEN)))))) 
+  (LET ((G1 (CURRENT-SYMBOL)))
+    (AND (EQ (|getToken| G1) '{)
+	 (MUST (OR (AND (EQCAR G1 '|elt|)
+			(PUSH-REDUCTION '|PARSE-OpenBrace|
+			    (CONS '|elt|
+				  (CONS (CADR G1)
+				   (CONS '|brace| NIL)))))
+		   (PUSH-REDUCTION '|PARSE-OpenBrace| '|construct|)))
+	 (ACTION (ADVANCE-TOKEN)))))
 
 
 (DEFUN |PARSE-IteratorTail| ()
