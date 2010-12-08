@@ -1,5 +1,12 @@
 2010-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/fnewmeta.lisp: Replace MATCH-ADVANCE-GLYPH with
+	PARSE-GlyphTok. 
+	(PARSE-GlyphTok): Now accept string instead of symbol.
+	* interp/parsing.lisp (MATCH-ADVANCE-GLYPH): Remove as redundant.
+
+2010-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/fnewmeta.lisp (PARSE-OpenBracket): Tidy.
 	(PARSE-OpenBrace): Likewise.
 
