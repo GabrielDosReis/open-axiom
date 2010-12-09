@@ -1,3 +1,7 @@
+2010-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/pile.boot: Clean up.
+
 2010-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/fnewmeta.lisp: Replace MATCH-ADVANCE-GLYPH with

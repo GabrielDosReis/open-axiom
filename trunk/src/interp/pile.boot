@@ -46,108 +46,94 @@ namespace BOOT
 -- the root of the first tree is concatenated with its forest.
 -- column t is the number of spaces before the first non-space in line t
  
-pileColumn t== rest tokPosn CAAR t
-pileComment t== EQ(tokType CAAR t,"negcomment")
-pilePlusComment t== EQ(tokType CAAR t,"comment")
+pileColumn t ==
+  rest tokPosn CAAR t
+
+pileComment t ==
+  tokType CAAR t = "negcomment"
+
+pilePlusComment t ==
+  tokType CAAR t = "comment"
  
 -- insertpile is used by next so s is non-null
 -- bite off a line-tree, return it and the remaining line-list.
  
 insertpile (s)==
-     if npNull s
-     then [false,0,[],s]
-     else
-       [h,t]:=[first s,rest s]
-       if pilePlusComment h
-       then
-          [h1,t1]:=pilePlusComments s
-          a:=pileTree(-1,t1)
-          [[pileCforest [:h1,a.2]],:a.3]
-       else
-         stream:=CADAR s
-         a:=pileTree(-1,s)
-         [[[a.2,stream]],:a.3]
+  npNull s => [false,0,[],s]
+  [h,t] := [first s,rest s]
+  pilePlusComment h =>
+    [h1,t1] := pilePlusComments s
+    a := pileTree(-1,t1)
+    [[pileCforest [:h1,a.2]],:a.3]
+  stream := CADAR s
+  a := pileTree(-1,s)
+  [[[a.2,stream]],:a.3]
  
 pilePlusComments s==
-      if npNull s
-      then [[],s]
-      else
-       [h,t]:=[first s,rest s]
-       if pilePlusComment h
-       then
-         [h1,t1]:=pilePlusComments t
-         [[h,:h1],t1]
-       else [[],s]
+  npNull s => [[],s]
+  [h,t] := [first s,rest s]
+  pilePlusComment h =>
+    [h1,t1]:=pilePlusComments t
+    [[h,:h1],t1]
+  [[],s]
  
 pileTree(n,s)==
-    if npNull s
-    then [false,n,[],s]
-    else
-        [h,t]:=[first s,rest s]
-        hh:=pileColumn first h
-        if hh > n
-        then pileForests(first h,hh,t)
-        else [false,n,[],s]
+  npNull s => [false,n,[],s]
+  [h,t] := [first s,rest s]
+  hh := pileColumn first h
+  hh > n => pileForests(first h,hh,t)
+  [false,n,[],s]
  
 eqpileTree(n,s)==
-    if npNull s
-    then [false,n,[],s]
-    else
-        [h,t]:=[first s,rest s]
-        hh:=pileColumn first h
-        if hh = n
-        then pileForests(first h,hh,t)
-        else [false,n,[],s]
+  npNull s => [false,n,[],s]
+  [h,t] := [first s,rest s]
+  hh := pileColumn first h
+  hh = n => pileForests(first h,hh,t)
+  [false,n,[],s]
  
 pileForest(n,s)==
-     [b,hh,h,t]:= pileTree(n,s)
-     if b
-     then
-       [h1,t1]:=pileForest1(hh,t)
-       [[h,:h1],t1]
-     else [[],s]
+  [b,hh,h,t] := pileTree(n,s)
+  b => 
+    [h1,t1]:=pileForest1(hh,t)
+    [[h,:h1],t1]
+  [[],s]
  
 pileForest1(n,s)==
-     [b,n1,h,t]:= eqpileTree(n,s)
-     if b
-     then
-       [h1,t1]:=pileForest1(n,t)
-       [[h,:h1],t1]
-     else [[],s]
+  [b,n1,h,t] := eqpileTree(n,s)
+  b =>
+    [h1,t1]:=pileForest1(n,t)
+    [[h,:h1],t1]
+  [[],s]
  
 pileForests(h,n,s)==
-      [h1,t1]:=pileForest(n,s)
-      if npNull h1
-      then [true,n,h,s]
-      else pileForests(pileCtree(h,h1),n,t1)
+  [h1,t1] := pileForest(n,s)
+  npNull h1 => [true,n,h,s]
+  pileForests(pileCtree(h,h1),n,t1)
  
-pileCtree(x,y)==dqAppend(x,pileCforest y)
+pileCtree(x,y)==
+  dqAppend(x,pileCforest y)
  
 -- only enpiles forests with >=2 trees
  
 pileCforest x==
-   if null x
-   then []
-   else if null rest x
-        then
-           f:= first x
-           if EQ(tokPart CAAR f,"IF")
-           then enPile f
-           else f
-        else enPile separatePiles x
+  x = nil => []
+  x is [f] =>
+    tokPart CAAR f = "IF" => enPile f
+    f
+  enPile separatePiles x
  
-firstTokPosn t== tokPosn CAAR t
-lastTokPosn  t== tokPosn second t
+firstTokPosn t ==
+  tokPosn CAAR t
+
+lastTokPosn t ==
+  tokPosn second t
  
 separatePiles x==
-  if null x
-  then []
-  else if null rest x
-       then first x
-       else
-         a:=first x
-         semicolon:=dqUnit tokConstruct("key", "BACKSET",lastTokPosn a)
-         dqConcat [a,semicolon,separatePiles rest x]
+  x = nil => []
+  x is [a] => a
+  a := first x
+  semicolon := dqUnit tokConstruct("key", "BACKSET",lastTokPosn a)
+  dqConcat [a,semicolon,separatePiles rest x]
  
 enPile x==
    dqConcat [dqUnit tokConstruct("key","SETTAB",firstTokPosn x),
