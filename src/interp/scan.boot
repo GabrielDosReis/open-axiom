@@ -655,26 +655,24 @@ subMatch(l,i) ==
   substringMatch(l,scanDict,i)
 
 substringMatch (l,d,i)==
-       h:= QENUM(l, i)
-       u:=d.h
-       ll:=SIZE l
-       done:=false
-       s1:='""
-       for j in 0.. SIZE u - 1 while not done repeat
-          s:=u.j
-          ls:=SIZE s
-          done:=if ls+i > ll
-                then false
-                else
-                 eql:= true
-                 for k in 1..ls-1 while eql repeat
-                    eql:= EQL(QENUM(s,k),QENUM(l,k+i))
-                 if eql
-                 then
-                   s1:=s
-                   true
-                 else false
-       s1
+  h := QENUM(l, i)
+  u := d.h
+  ll := #l
+  done := false
+  s1 := '""
+  for j in 0..#u - 1 while not done repeat
+     s := u.j
+     ls := #s
+     done :=
+       ls+i > ll => false
+       eql := true
+       for k in 1..ls-1 while eql repeat
+         eql := QENUM(s,k) = QENUM(l,k+i)
+       eql =>
+         s1 := s
+         true
+       false
+  s1
 
 
 
