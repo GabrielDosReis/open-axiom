@@ -509,8 +509,9 @@ scanTransform x ==
 --   else STRPOSL(scanTrTable,x,0,NIL)
 
 posend(line,n)==
-     while n<#line and idChar? line.n repeat n:=n+1
-     n
+  while n<#line and idChar? line.n repeat
+    n := n+1
+  n
 
 --numend(line,n)==
 --     while n<#line and digit? line.n repeat n:=n+1
@@ -519,70 +520,63 @@ posend(line,n)==
 --startsId? x==  scanLetter x or x in '(_? _%)
 
 scanW(b)==             -- starts pointing to first char
-       n1:=$n         -- store starting character position
-       $n:=$n+1          -- the first character is not tested
-       l:=$sz
-       endid:=posend($ln,$n)
-       if endid=l or QENUM($ln,endid) ~= ESCAPE
-       then -- not escaped
-           $n:=endid
-           [b,SUBSTRING($ln,n1,endid-n1)]   -- l overflows
-       else -- escape and endid ~= l
-           str:=SUBSTRING($ln,n1,endid-n1)
-           $n:=endid+1
-           a:=scanEsc()
-           bb:=if a -- escape nonspace
-               then scanW(true)
-               else
-                  if $n>=$sz
-                  then [b,'""]
-                  else
-                    if idChar?($ln.$n)
-                    then scanW(b)
-                    else [b,'""]
-           [bb.0 or b,strconc(str,bb.1)]
+  n1 := $n         -- store starting character position
+  $n := $n+1          -- the first character is not tested
+  l := $sz
+  endid := posend($ln,$n)
+  endid=l or QENUM($ln,endid) ~= ESCAPE =>
+     -- not escaped
+    $n:=endid
+    [b,SUBSTRING($ln,n1,endid-n1)]   -- l overflows
+  -- escape and endid ~= l
+  str := SUBSTRING($ln,n1,endid-n1)
+  $n := endid+1
+  a := scanEsc()
+  bb :=
+    a => scanW(true) -- escape nonspace
+    $n >= $sz => [b,'""]
+    idChar?($ln.$n) => scanW(b)
+    [b,'""]
+  [bb.0 or b,strconc(str,bb.1)]
 
 scanWord(esp) ==
-          aaa:=scanW(false)
-          w:=aaa.1
-          $floatok:=false
-          if esp or aaa.0
-          then lfid w
-          else if keyword? w
-               then
-                  $floatok:=true
-                  lfkey w
-               else lfid  w
+  aaa := scanW(false)
+  w := aaa.1
+  $floatok := false
+  esp or aaa.0 => lfid w
+  keyword? w =>
+     $floatok:=true
+     lfkey w
+  lfid  w
 
+spleI(dig) ==
+  spleI1(dig,false)
 
-
-spleI(dig)==spleI1(dig,false)
 spleI1(dig,zro) ==
-       n:=$n
-       l:= $sz
-       while $n<l and FUNCALL(dig,($ln.$n)) repeat $n:=$n+1
-       if $n=l or QENUM($ln,$n) ~= ESCAPE
-       then if n=$n and zro
-            then '"0"
-            else SUBSTRING($ln,n,$n-n)
-       else  -- escaped
-             str:=SUBSTRING($ln,n,$n-n)
-             $n:=$n+1
-             a:=scanEsc()
-             bb:=spleI1(dig,zro)-- escape, anyno spaces are ignored
-             strconc(str,bb)
+  n := $n
+  l := $sz
+  while $n<l and FUNCALL(dig,($ln.$n)) repeat
+    $n := $n+1
+  $n = l or QENUM($ln,$n) ~= ESCAPE =>
+     n = $n and zro => '"0"
+     SUBSTRING($ln,n,$n-n)
+  -- escaped
+  str:=SUBSTRING($ln,n,$n-n)
+  $n:=$n+1
+  a:=scanEsc()
+  bb:=spleI1(dig,zro)-- escape, anyno spaces are ignored
+  strconc(str,bb)
 
 scanCheckRadix(a,w)==
   r := readInteger a
-  ns:=#w
+  ns := #w
   ns = 0 => 
     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0004",[a])
-  done:=false
+  done := false
   for i in 0..ns-1  repeat
-    a:=rdigit? w.i
-    if null a or a>=r
-    then  ncSoftError([$linepos,:lnExtraBlanks $linepos+$n-ns+i],
-	       "S2CN0002", [w.i])
+    a := rdigit? w.i
+    a = nil or a>=r =>
+      ncSoftError([$linepos,:lnExtraBlanks $linepos+$n-ns+i],"S2CN0002", [w.i])
 
 scanNumber() ==
        a := spleI(function digit?)
