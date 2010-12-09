@@ -301,39 +301,41 @@ lineoftoks(s)==
 
 
 scanToken() ==
-      ln:=$ln
-      c:=QENUM($ln,$n)
-      linepos:=$linepos
-      n:=$n
-      ch:=$ln.$n
-      b:=
-            startsComment?()          =>
-                           scanComment()
-                           []
-            startsNegComment?()       =>
-                           scanNegComment()
-                           []
-            c= QUESTION               =>
-                               $n:=$n+1
-                               lfid '"?"
-            punctuation? c            => scanPunct ()
-            startsId? ch              => scanWord  (false)
-            c=$SPACE                   =>
-                           scanSpace ()
-                           []
-            c = STRING_CHAR           => scanString ()
-            digit? ch                 => scanNumber ()
-            c=ESCAPE                  => scanEscape()
-            scanError ()
-      null b => nil
-      dqUnit constoken(ln,linepos,b,n+lnExtraBlanks linepos)
+  ln := $ln
+  c := QENUM($ln,$n)
+  linepos := $linepos
+  n := $n
+  ch := $ln.$n
+  b :=
+    startsComment?() =>
+      scanComment()
+      []
+    startsNegComment?() =>
+      scanNegComment()
+      []
+    c = QUESTION =>
+      $n := $n+1
+      lfid '"?"
+    punctuation? c => scanPunct()
+    startsId? ch => scanWord(false)
+    c = $SPACE =>
+      scanSpace()
+      []
+    c = STRING_CHAR => scanString()
+    digit? ch => scanNumber()
+    c = ESCAPE => scanEscape()
+    scanError()
+  null b => nil
+  dqUnit constoken(ln,linepos,b,n+lnExtraBlanks linepos)
 
 -- to pair badge and badgee
 
 -- lfid x== ["id",INTERN x]
-lfid x== ["id",INTERN(x, '"BOOT")]
+lfid x ==
+  ["id",INTERN(x, '"BOOT")]
 
-lfkey x==["key",keyword x]
+lfkey x ==
+  ["key",keyword x]
 
 lfinteger x==
            ["integer",x]
@@ -343,25 +345,40 @@ lfinteger x==
 --          then ["id",INTERN x]
 --          else ["integer",x]
 
-lfrinteger (r,x)==["integer",strconc (r,strconc('"r",x))]
+lfrinteger (r,x)==
+  ["integer",strconc (r,strconc('"r",x))]
+
 --lfrfloat(a,w,v)==["rfloat",strconc(a,'"r.",v)]
-lffloat(a,w,e)==["float",strconc(a,'".",w,'"e",e)]
-lfstring x==if #x=1 then ["char",x] else ["string",x]
-lfcomment x== ["comment", x]
-lfnegcomment x== ["negcomment", x]
-lferror x==["error",x]
-lfspaces x==["spaces",x]
+
+lffloat(a,w,e)==
+  ["float",strconc(a,'".",w,'"e",e)]
+
+lfstring x==
+  #x = 1 => ["char",x]
+  ["string",x]
+
+lfcomment x==
+  ["comment", x]
+
+lfnegcomment x ==
+  ["negcomment", x]
+
+lferror x ==
+  ["error",x]
+
+lfspaces x ==
+  ["spaces",x]
 
 constoken(ln,lp,b,n)==
 --  [b.0,b.1,[lp,:n]]
-       a:=[b.0,:b.1]
-       ncPutQ(a,"posn",[lp,:n])
-       a
+  a := [b.0,:b.1]
+  ncPutQ(a,"posn",[lp,:n])
+  a
 
 scanEscape()==
-         $n:=$n+1
-         a:=scanEsc()
-         if a then scanWord true else nil
+  $n:=$n+1
+  a:=scanEsc()
+  if a then scanWord true else nil
 
 scanEsc()==
      if $n>=$sz
