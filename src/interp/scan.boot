@@ -166,52 +166,57 @@ scanKeyWords == [ _
 
 
 scanKeyTableCons()==
-   KeyTable := hashTable 'EQUAL
-   for st in scanKeyWords repeat
-      HPUT(KeyTable,first st,second st)
-   KeyTable
+  KeyTable := hashTable 'EQUAL
+  for st in scanKeyWords repeat
+    HPUT(KeyTable,first st,second st)
+  KeyTable
 
 scanKeyTable:=scanKeyTableCons()
 
 
 scanInsert(s,d) ==
-      l := #s
-      h := QENUM(s,0)
-      u := d.h
-      n := #u
-      k:=0
-      while l <= #(u.k) repeat
-          k:=k+1
-      v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,u.i)
-      VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,u.i)
-      VEC_-SETELT(d,h,v)
-      s
+  l := #s
+  h := QENUM(s,0)
+  u := d.h
+  n := #u
+  k:=0
+  while l <= #(u.k) repeat
+    k := k+1
+  v := MAKE_-VEC(n+1)
+  for i in 0..k-1 repeat
+    VEC_-SETELT(v,i,u.i)
+  VEC_-SETELT(v,k,s)
+  for i in k..n-1 repeat
+    VEC_-SETELT(v,i+1,u.i)
+  VEC_-SETELT(d,h,v)
+  s
 
 scanDictCons()==
-      l:= HKEYS scanKeyTable
-      d :=
-          a:=MAKE_-VEC(256)
-          b:=MAKE_-VEC(1)
-          VEC_-SETELT(b,0,MAKE_-CVEC 0)
-          for i in 0..255 repeat VEC_-SETELT(a,i,b)
-          a
-      for s in l repeat scanInsert(s,d)
-      d
+  l:= HKEYS scanKeyTable
+  d :=
+    a := MAKE_-VEC(256)
+    b := MAKE_-VEC(1)
+    VEC_-SETELT(b,0,MAKE_-CVEC 0)
+    for i in 0..255 repeat
+      VEC_-SETELT(a,i,b)
+    a
+  for s in l repeat
+    scanInsert(s,d)
+  d
 
 scanDict:=scanDictCons()
 
 
 scanPunCons()==
-    listing := HKEYS scanKeyTable
-    a:=MAKE_-BVEC 256
+  listing := HKEYS scanKeyTable
+  a := MAKE_-BVEC 256
 --  SETSIZE(a,256)
-    for i in 0..255 repeat BVEC_-SETELT(a,i,0)
-    for k in listing repeat
-       if not startsId? k.0
-       then BVEC_-SETELT(a,QENUM(k,0),1)
-    a
+  for i in 0..255 repeat
+    BVEC_-SETELT(a,i,0)
+  for k in listing repeat
+    if not startsId? k.0
+    then BVEC_-SETELT(a,QENUM(k,0),1)
+  a
 
 scanPun:=scanPunCons()
 
@@ -256,54 +261,43 @@ for i in   [ _
 --  returning the token-dq and the rest of the line-stream
 
 scanIgnoreLine(ln,n)==
-    if null n
-    then n
-    else
-       fst:=QENUM(ln,0)
-       if EQ(fst,CLOSEPAREN)
-       then if incPrefix?('"command",1,ln)
-            then true
-            else nil
-       else n
+  n = nil => n
+  fst := QENUM(ln,0)
+  fst = CLOSEPAREN =>
+    incPrefix?('"command",1,ln) => true
+    nil
+  n
 
 nextline(s)==
-     if npNull s
-     then false
-     else
-       $f:= first s
-       $r:= rest s
-       $ln := rest $f
-       $linepos:=CAAR $f
-       $n:=STRPOSL('" ",$ln,0,true)-- spaces at beginning
-       $sz :=# $ln
-       true
-
+  npNull s => false
+  $f := first s
+  $r := rest s
+  $ln := rest $f
+  $linepos := CAAR $f
+  $n := STRPOSL('" ",$ln,0,true)-- spaces at beginning
+  $sz := #$ln
+  true
 
 lineoftoks(s)==
-   $f: local:=nil
-   $r:local :=nil
-   $ln:local :=nil
-   $linepos:local:=nil
-   $n:local:=nil
-   $sz:local := nil
-   $floatok:local:=true
-   if not nextline s
-   then [nil,:nil]
-   else
-     if null scanIgnoreLine($ln,$n) -- line of spaces or starts ) or >
-     then [nil,:$r]
-     else
-      toks:=[]
-      a:= incPrefix?('"command",1,$ln)
-      a =>
-                 $ln:=SUBSTRING($ln,8,nil)
-                 b:= dqUnit constoken($ln,$linepos,["command",$ln],0)
-                 [[[b,s]],:$r]
-
-      while $n<$sz repeat toks:=dqAppend(toks,scanToken())
-      if null toks
-      then [[],:$r]
-      else [[[toks,s]],:$r]
+  $f: local := nil
+  $r: local := nil
+  $ln: local := nil
+  $linepos: local := nil
+  $n: local := nil
+  $sz: local := nil
+  $floatok: local := true
+  not nextline s => [nil,:nil]
+  null scanIgnoreLine($ln,$n) => [nil,:$r] -- line of spaces or starts ) or >
+  toks := []
+  a := incPrefix?('"command",1,$ln)
+  a =>
+    $ln := SUBSTRING($ln,8,nil)
+    b := dqUnit constoken($ln,$linepos,["command",$ln],0)
+    [[[b,s]],:$r]
+  while $n<$sz repeat
+    toks := dqAppend(toks,scanToken())
+  null toks => [[],:$r]
+  [[[toks,s]],:$r]
 
 
 scanToken() ==
