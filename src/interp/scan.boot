@@ -376,153 +376,130 @@ constoken(ln,lp,b,n)==
   a
 
 scanEscape()==
-  $n:=$n+1
-  a:=scanEsc()
+  $n := $n+1
+  a := scanEsc()
   if a then scanWord true else nil
 
 scanEsc()==
-     if $n>=$sz
-     then if nextline($r)
-          then
-             while null $n repeat nextline($r)
-             scanEsc()
-             false
-          else false
-     else
-           n1:=STRPOSL('" ",$ln,$n,true)
-           if null n1
-           then if nextline($r)
-                then
-                  while null $n repeat nextline($r)
-                  scanEsc()
-                  false
-                else false
-           else
-                if $n=n1
-                then true
-                else if QENUM($ln,n1)=ESCAPE
-                     then
-                       $n:=n1+1
-                       scanEsc()
-                       false
-                     else
-                       $n:=n1
-                       startsNegComment?() or startsComment?() =>
-                                 nextline($r)
-                                 scanEsc()
-                                 false
-                       false
+  $n >= $sz =>
+     nextline($r) =>
+       while null $n repeat nextline($r)
+       scanEsc()
+       false
+     false
+  n1 := STRPOSL('" ",$ln,$n,true)
+  n1 = nil =>
+    nextline($r) =>
+      while null $n repeat
+        nextline($r)
+      scanEsc()
+      false
+    false
+  $n = n1 => true
+  QENUM($ln,n1) = ESCAPE =>
+    $n:=n1+1
+    scanEsc()
+    false
+  $n := n1
+  startsNegComment?() or startsComment?() =>
+    nextline($r)
+    scanEsc()
+    false
+  false
 
 startsComment?()==
-    if $n<$sz
-    then
-         if QENUM($ln,$n)=PLUSCOMMENT
-         then
-            www:=$n+1
-            if www>=$sz
-            then false
-            else QENUM($ln,www) = PLUSCOMMENT
-          else false
-    else false
+  $n < $sz => 
+    QENUM($ln,$n) = PLUSCOMMENT =>
+      www := $n+1
+      www >= $sz => false
+      QENUM($ln,www) = PLUSCOMMENT
+    false
+  false
 
 startsNegComment?()==
-    if $n< $sz
-    then
-         if QENUM($ln,$n)=MINUSCOMMENT
-         then
-            www:=$n+1
-            if www>=$sz
-            then false
-            else QENUM($ln,www) = MINUSCOMMENT
-          else false
-    else false
+  $n < $sz =>
+    QENUM($ln,$n) = MINUSCOMMENT =>
+      www := $n+1
+      www >= $sz => false
+      QENUM($ln,www) = MINUSCOMMENT
+    false
+  false
 
 scanNegComment()==
-      n:=$n
-      $n:=$sz
-      lfnegcomment SUBSTRING($ln,n,nil)
+  n := $n
+  $n := $sz
+  lfnegcomment SUBSTRING($ln,n,nil)
 
 scanComment()==
-      n:=$n
-      $n:=$sz
-      lfcomment SUBSTRING($ln,n,nil)
-
+  n := $n
+  $n := $sz
+  lfcomment SUBSTRING($ln,n,nil)
 
 scanPunct()==
-            sss:=subMatch($ln,$n)
-            a:= # sss
-            if a=0
-            then
-               scanError()
-            else
-               $n:=$n+a
-               scanKeyTr sss
+  sss := subMatch($ln,$n)
+  a := #sss
+  a = 0 => scanError()
+  $n := $n+a
+  scanKeyTr sss
 
 scanKeyTr w==
-       if keyword w = "DOT"
-       then if $floatok
-            then scanPossFloat(w)
-            else lfkey w
-       else
-            $floatok:=not scanCloser? w
-            lfkey w
+  keyword w = "DOT" =>
+    $floatok => scanPossFloat(w)
+    lfkey w
+  $floatok := not scanCloser? w
+  lfkey w
 
 scanPossFloat (w)==
-     if $n>=$sz or not digit? $ln.$n
-     then lfkey w
-     else
-       w:=spleI(function digit?)
-       scanExponent('"0",w)
+  $n>=$sz or not digit? $ln.$n => lfkey w
+  w := spleI(function digit?)
+  scanExponent('"0",w)
 
 scanCloser == [")","}","]","|)","|}","|]"]
 
 scanCloser? w== MEMQ(keyword w,scanCloser)
 
 scanSpace()==
-           n:=$n
-           $n:=STRPOSL('" ",$ln,$n,true)
-           if null $n then $n:=# $ln
-           $floatok:=true
-           lfspaces ($n-n)
+  n := $n
+  $n := STRPOSL('" ",$ln,$n,true)
+  if $n = nil then $n := #$ln
+  $floatok := true
+  lfspaces($n-n)
 
 scanString()==
-            $n:=$n+1
-            $floatok:=false
-            lfstring scanS ()
+  $n := $n+1
+  $floatok := false
+  lfstring scanS()
 
 scanS()==
-   if $n>=$sz
-   then
-     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0001",[])
-     '""
-   else
-           n:=$n
-           strsym :=STRPOS ('"_"",$ln,$n,nil) or $sz
-           escsym:=STRPOS ('"__"
-                          ,$ln,$n,nil)  or $sz
-           mn:=MIN(strsym,escsym)
-           if mn=$sz
-           then
-                 $n:=$sz
-                 ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
-                         "S2CN0001",[])
-                 SUBSTRING($ln,n,nil)
-           else if mn=strsym
-                then
-                   $n:=mn+1
-                   SUBSTRING($ln,n,mn-n)
-                else     --escape is found first
-                  str:=SUBSTRING($ln,n,mn-n)-- before escape
-                  $n:=mn+1
-                  a:=scanEsc() -- case of end of line when false
-                  b:=if a
-                     then
-                       str:=strconc(str,scanTransform($ln.$n))
-                       $n:=$n+1
-                       scanS()
-                      else scanS()
-                  strconc(str,b)
-scanTransform x==x
+  $n >= $sz =>
+    ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0001",[])
+    '""
+  n := $n
+  strsym := STRPOS ('"_"",$ln,$n,nil) or $sz
+  escsym := STRPOS ('"__",$ln,$n,nil) or $sz
+  mn := MIN(strsym,escsym)
+  mn = $sz =>
+    $n:=$sz
+    ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
+            "S2CN0001",[])
+    SUBSTRING($ln,n,nil)
+  mn = strsym =>
+    $n:=mn+1
+    SUBSTRING($ln,n,mn-n)
+  --escape is found first
+  str := SUBSTRING($ln,n,mn-n)-- before escape
+  $n := mn+1
+  a := scanEsc() -- case of end of line when false
+  b :=
+    a =>
+      str := strconc(str,scanTransform($ln.$n))
+      $n := $n+1
+      scanS()
+    scanS()
+  strconc(str,b)
+
+scanTransform x ==
+  x
 
 --idChar? x== scanLetter x or digit? x or x in '(_? _%)
 
