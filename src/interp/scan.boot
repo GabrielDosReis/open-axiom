@@ -579,82 +579,60 @@ scanCheckRadix(a,w)==
       ncSoftError([$linepos,:lnExtraBlanks $linepos+$n-ns+i],"S2CN0002", [w.i])
 
 scanNumber() ==
-       a := spleI(function digit?)
-       if $n>=$sz
-       then lfinteger a
-       else
-         if QENUM($ln,$n) ~= RADIX_CHAR
-         then
-           if $floatok and QENUM($ln,$n)=DOT
-           then
-             n:=$n
-             $n:=$n+1
-             if  $n<$sz and QENUM($ln,$n)=DOT
-             then
-               $n:=n
-               lfinteger a
-             else
-               w:=spleI1(function digit?,true)
-               scanExponent(a,w)
-           else lfinteger a
-         else
-             $n:=$n+1
-             w:=spleI1(function rdigit?,false)
-             scanCheckRadix(a,w)
-             if $n>=$sz
-             then
-                lfrinteger(a,w)
-             else if QENUM($ln,$n)=DOT
-                  then
-                    n:=$n
-                    $n:=$n+1
-                    if  $n<$sz and QENUM($ln,$n)=DOT
-                    then
-                       $n:=n
-                       lfrinteger(a,w)
-                    else
-                    --$n:=$n+1
-                      v:=spleI1(function rdigit?,true)
-                      scanCheckRadix(a,v)
-                      scanExponent(strconc(a,'"r",w),v)
-                  else lfrinteger(a,w)
+  a := spleI(function digit?)
+  $n >= $sz => lfinteger a
+  QENUM($ln,$n) ~= RADIX_CHAR =>
+    if $floatok and QENUM($ln,$n)=DOT
+    then
+      n:=$n
+      $n:=$n+1
+      if  $n<$sz and QENUM($ln,$n)=DOT
+      then
+        $n:=n
+        lfinteger a
+      else
+        w:=spleI1(function digit?,true)
+        scanExponent(a,w)
+    else lfinteger a
+  $n := $n+1
+  w := spleI1(function rdigit?,false)
+  scanCheckRadix(a,w)
+  $n >= $sz => lfrinteger(a,w)
+  QENUM($ln,$n) = DOT =>
+    n := $n
+    $n := $n+1
+    $n < $sz and QENUM($ln,$n) = DOT =>
+      $n :=n
+      lfrinteger(a,w)
+    v := spleI1(function rdigit?,true)
+    scanCheckRadix(a,v)
+    scanExponent(strconc(a,'"r",w),v)
+  lfrinteger(a,w)
 
 scanExponent(a,w)==
-     if $n>=$sz
-     then lffloat(a,w,'"0")
-     else
-        n:=$n
-        c:=QENUM($ln,$n)
-        if c=EXPONENT1 or c=EXPONENT2
-        then
-           $n:=$n+1
-           if $n>=$sz
-           then
-             $n:=n
-             lffloat(a,w,'"0")
-           else if digit?($ln.$n)
-                then
-                  e:=spleI(function digit?)
-                  lffloat(a,w,e)
-                else
-                  c1:=QENUM($ln,$n)
-                  if c1=PLUSCOMMENT or c1=MINUSCOMMENT
-                  then
-                    $n:=$n+1
-                    if $n>=$sz
-                    then
-                      $n:=n
-                      lffloat(a,w,'"0")
-                    else
-                      if digit?($ln.$n)
-                      then
-                        e:=spleI(function digit?)
-                        lffloat(a,w,
-                          (if c1=MINUSCOMMENT then strconc('"-",e)else e))
-                      else
-                        $n:=n
-                        lffloat(a,w,'"0")
-        else lffloat(a,w,'"0")
+  $n >= $sz => lffloat(a,w,'"0")
+  n := $n
+  c := QENUM($ln,$n)
+  c = EXPONENT1 or c = EXPONENT2 =>
+    $n := $n+1
+    $n >= $sz =>
+      $n:=n
+      lffloat(a,w,'"0")
+    digit?($ln.$n) =>
+      e := spleI(function digit?)
+      lffloat(a,w,e)
+    c1 := QENUM($ln,$n)
+    c1 = PLUSCOMMENT or c1 = MINUSCOMMENT =>
+      $n := $n+1
+      $n >= $sz =>
+        $n:=n
+        lffloat(a,w,'"0")
+      digit?($ln.$n) =>
+        e := spleI(function digit?)
+        lffloat(a,w,(c1 = MINUSCOMMENT => strconc('"-",e); e))
+      $n := n
+      lffloat(a,w,'"0")
+  lffloat(a,w,'"0")
 
 rdigit? x==
    d := STRPOS(x,$RDigits,0,nil) => d
@@ -662,18 +640,19 @@ rdigit? x==
    nil
 
 scanError()==
-      n:=$n
-      $n:=$n+1
-      ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
-         "S2CN0003",[$ln.n])
-      lferror ($ln.n)
+  n := $n
+  $n := $n+1
+  ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],"S2CN0003",[$ln.n])
+  lferror($ln.n)
 
+keyword st ==
+  HGET(scanKeyTable,st)
 
-keyword st   == HGET(scanKeyTable,st)
+keyword? st ==
+  not null HGET(scanKeyTable,st)
 
-keyword? st  ==  not null HGET(scanKeyTable,st)
-
-subMatch(l,i)==substringMatch(l,scanDict,i)
+subMatch(l,i) ==
+  substringMatch(l,scanDict,i)
 
 substringMatch (l,d,i)==
        h:= QENUM(l, i)
@@ -699,5 +678,6 @@ substringMatch (l,d,i)==
 
 
 
-punctuation? c== scanPun.c=1
+punctuation? c ==
+  scanPun.c=1
 
