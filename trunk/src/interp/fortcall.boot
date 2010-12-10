@@ -50,7 +50,7 @@ makeFort(name,args,decls,results,returnType,aspInfo) ==
   -- and a stub Axiom function to process its arguments.
   -- the following is a list of objects for which values need not be
   -- passed by the user.
-  dummies := [second(u) for u in args | EQUAL(first u,0)]
+  dummies := [second(u) for u in args | first u = 0]
   args := [untangle2(u) for u in args] -- lose spad Union representation
     where untangle2 u ==
       atom (v := rest(u)) => v
@@ -150,8 +150,8 @@ writeStringLengths(fortranArgs,decls,fp) ==
     if isString?(a,decls) then wt(['",&",a,'"__length"],fp)
 
 isString?(u,decls) ==
-  EQUAL(ty := getFortranType(u,decls),"character") or
-    LISTP(ty) and EQUAL(first ty,"character")
+  (ty := getFortranType(u,decls)) = "character" or
+    LISTP(ty) and first ty = "character"
 
 isPointer?(u,decls) ==
   ty := getFortranType(u,decls)
@@ -218,7 +218,7 @@ writeXDR(v,str,fp) ==
   underscore := STRING CHAR('"__:",0) -- to avoid a compiler bug which won't
                                      -- parse " ... __" properly.
   wt(['"    CHECK(xdr",underscore, XDRFun(v), '"(", str, '",&", first(v)],fp)
-  if (LISTP (ty :=second v)) and not EQUAL(first ty,'"char") then
+  if (LISTP (ty :=second v)) and first ty ~= '"char" then
     wt(['",&",first(v),'"__length,MAX__ARRAY(",first(v),'"__length),"],fp)
     wt(['"sizeof(",first(ty),'"),xdr",underscore,first ty],fp)
   wl(['"));"],fp)

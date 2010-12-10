@@ -75,7 +75,7 @@ stringPosition(s,t,startpos) ==
   if startpos < 0 or startpos > n then error '"index out of range"
   if SIZE s = 0 then return startpos -- bug in STRPOS
   r := STRPOS(s,t,startpos,NIL)
-  if EQ(r,NIL) then n else r
+  if r = nil then n else r
 
 superMatch?(opattern,subject) ==  --subject assumed to be DOWNCASEd
   $wildCard : local := char "*"

@@ -621,7 +621,7 @@ listTruncate(l,n) ==
 lassocShift(x,l) ==
   y:= l
   while cons? y repeat
-    EQUAL(x,first first y) => return (result := first y)
+    x = first first y => return (result := first y)
     y:= rest y
   result =>
     if not EQ(y,l) then

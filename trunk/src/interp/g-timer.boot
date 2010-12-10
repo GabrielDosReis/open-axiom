@@ -137,7 +137,7 @@ pushTimedName name ==
 startTimingProcess name ==
   updateTimedName peekTimedName()
   pushTimedName name
-  if EQ(name, 'load) then          statRecordLoadEvent()
+  if name = 'load then          statRecordLoadEvent()
  
 stopTimingProcess name ==
   (name ~= peekTimedName()) and not $InteractiveMode =>

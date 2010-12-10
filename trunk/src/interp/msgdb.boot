@@ -659,7 +659,7 @@ brightPrintHighlight(x, out == $OutputStream) ==
   key = '"%t"  => $MARG := $MARG + tabber rst
   sayString('"(",out)
   brightPrint1(key,out)
-  if EQ(key,'TAGGEDreturn) then
+  if key = 'TAGGEDreturn then
     rst:=[first rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)
@@ -686,7 +686,7 @@ brightPrintHighlightAsTeX(x, out == $OutputStream) ==
   -- unhandled junk (print verbatim(ish)
   sayString('"(",out)
   brightPrint1(key,out)
-  if EQ(key,'TAGGEDreturn) then
+  if key = 'TAGGEDreturn then
     rst:=[first rst,second rst,third rst, '"environment (omitted)"]
   for y in rst repeat
     sayString('" ",out)

@@ -196,7 +196,8 @@ isSpecialBufferItem item ==
   item = "; " or string? item => true
   false
 
-isCloseDelimiter item ==   EQ(item,")") or EQ(item,"]") or EQ(item,"}") 
+isCloseDelimiter item ==
+  item = ")" or item = "]" or item = "}" 
 
 --======================================================================
 --               Formatting/Line Control Functions

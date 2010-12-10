@@ -142,7 +142,7 @@ CONTAINED(x,y) == main where
     atom y => EQ(x,y)
     eq(x, first y) or eq(x, rest y)
   equal(x,y) ==
-    atom y => EQUAL(x,y)
+    atom y => x = y
     equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'

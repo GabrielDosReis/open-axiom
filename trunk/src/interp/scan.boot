@@ -339,9 +339,9 @@ lfkey x ==
 
 lfinteger x==
            ["integer",x]
---     if EQUAL(x,'"0")
+--     if x = '"0"
 --     then ["id",INTERN x]
---     else if EQUAL(x,'"1")
+--     else if x = '"1"
 --          then ["id",INTERN x]
 --          else ["integer",x]
 

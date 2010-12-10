@@ -1,5 +1,9 @@
 2010-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (reclaim): Remove duplicate.
+
+2010-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/pile.boot: Clean up.
 
 2010-12-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
