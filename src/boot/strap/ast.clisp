@@ -1079,38 +1079,40 @@
     (RETURN
       (COND ((SETQ |a| (GET |x| 'SHOERENAME)) (CAR |a|)) (T |x|)))))
 
+(DEFUN |sequence?| (|x| |pred|)
+  (PROG (|seq| |ISTMP#1|)
+    (RETURN
+      (AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE)
+           (PROGN
+             (SETQ |ISTMP#1| (CDR |x|))
+             (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
+                  (PROGN (SETQ |seq| (CAR |ISTMP#1|)) T)))
+           (CONSP |seq|)
+           (LET ((|bfVar#91| T) (|bfVar#90| |seq|) (|y| NIL))
+             (LOOP
+               (COND
+                 ((OR (ATOM |bfVar#90|)
+                      (PROGN (SETQ |y| (CAR |bfVar#90|)) NIL))
+                  (RETURN |bfVar#91|))
+                 (T (PROGN
+                      (SETQ |bfVar#91| (APPLY |pred| |y| NIL))
+                      (COND ((NOT |bfVar#91|) (RETURN NIL))))))
+               (SETQ |bfVar#90| (CDR |bfVar#90|))))))))
+
 (DEFUN |bfMember| (|var| |seq|)
-  (PROG (|var'| |seq'| |ISTMP#1|)
+  (PROG (|ISTMP#1|)
     (RETURN
       (COND
-        ((AND (CONSP |seq|) (EQ (CAR |seq|) 'QUOTE)
-              (PROGN
-                (SETQ |ISTMP#1| (CDR |seq|))
-                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
-                     (PROGN (SETQ |seq'| (CAR |ISTMP#1|)) T)))
-              (LET ((|bfVar#91| T) (|bfVar#90| |seq'|) (|x| NIL))
-                (LOOP
-                  (COND
-                    ((OR (ATOM |bfVar#90|)
-                         (PROGN (SETQ |x| (CAR |bfVar#90|)) NIL))
-                     (RETURN |bfVar#91|))
-                    (T (PROGN
-                         (SETQ |bfVar#91| (SYMBOLP |x|))
-                         (COND ((NOT |bfVar#91|) (RETURN NIL))))))
-                  (SETQ |bfVar#90| (CDR |bfVar#90|)))))
-         (LIST 'MEMQ |var| |seq|))
-        ((AND (CONSP |var|) (EQ (CAR |var|) 'QUOTE)
-              (PROGN
-                (SETQ |ISTMP#1| (CDR |var|))
-                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
-                     (PROGN (SETQ |var'| (CAR |ISTMP#1|)) T)))
-              (SYMBOLP |var'|))
-         (LIST 'MEMQ |var| |seq|))
-        ((AND (CONSP |var|) (EQ (CAR |var|) '|char|)
-              (PROGN
-                (SETQ |ISTMP#1| (CDR |var|))
-                (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+        ((OR (AND (CONSP |var|) (EQ (CAR |var|) '|char|)
+                  (PROGN
+                    (SETQ |ISTMP#1| (CDR |var|))
+                    (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
+             (|sequence?| |seq| #'INTEGERP))
          (LIST 'MEMBER |var| |seq| :TEST 'EQL))
+        ((OR (|defQuoteId| |var|) (|sequence?| |seq| #'SYMBOLP))
+         (LIST 'MEMQ |var| |seq|))
+        ((|sequence?| |seq| #'STRINGP)
+         (LIST 'MEMBER |var| |seq| :TEST 'STRING=))
         (T (LIST 'MEMBER |var| |seq|))))))
 
 (DEFUN |bfInfApplication| (|op| |left| |right|)
