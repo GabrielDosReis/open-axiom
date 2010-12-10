@@ -644,5 +644,17 @@ mySort u == listSort(function GLESSEQP,u)
 
 
 
+quickAnd(a,b) ==
+  a = true => b
+  b = true => a
+  a = false or b = false => false
+  simpBool ['AND,a,b]
+
+quickOr(a,b) ==
+  a = true or b = true => true
+  b = false => a
+  a = false => b
+  simpCatPredicate simpBool ['OR,a,b]
+
 
 

@@ -1669,13 +1669,6 @@
     (setq ext:*gc-verbose* x))
   )
 
-(defun reclaim ()
-  #+Lucid (system:gc)
-  #+:cmulisp (ext:gc)
-  #+(OR IBCL KCL) (gbc t)
-  #+:allegro (excl::gc t)
-  )
-
 (defun bpiname (func)
   #+Lucid (if (functionp func)
 	      (if (symbolp func) func
