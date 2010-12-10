@@ -803,3 +803,45 @@ form2FenceQuoteTail x ==
 form2StringList u ==
   atom (r := form2String u) => [r]
   r
+
+--% Type Formatting Without Abbreviation
+
+formatUnabbreviatedSig sig ==
+  null sig => ['"() -> ()"]
+  [target,:args] := dollarPercentTran sig
+  target := formatUnabbreviated target
+  null args => ['"() -> ",:target]
+  null rest args => [:formatUnabbreviated first args,'" -> ",:target]
+  args := formatUnabbreviatedTuple args
+  ['"(",:args,'") -> ",:target]
+
+formatUnabbreviatedTuple t ==
+  -- t is a list of types
+  null t => t
+  atom t => [t]
+  t0 := formatUnabbreviated t.op
+  null rest t => t0
+  [:t0,'",",:formatUnabbreviatedTuple rest t]
+
+formatUnabbreviated t ==
+  null t =>
+    ['"()"]
+  atom t =>
+    [t]
+  t is [p,sel,arg] and p = ":" =>
+    [sel,'": ",:formatUnabbreviated arg]
+  t is ['Union,:args] =>
+    ['Union,'"(",:formatUnabbreviatedTuple args,'")"]
+  t is ['Mapping,:args] =>
+    formatUnabbreviatedSig args
+  t is ['Record,:args] =>
+    ['Record,'"(",:formatUnabbreviatedTuple args,'")"]
+  t is [arg] =>
+    t
+  t is [arg,arg1] =>
+    [arg,'" ",:formatUnabbreviated arg1]
+  t is [arg,:args] =>
+    [arg,'"(",:formatUnabbreviatedTuple args,'")"]
+  t
+
+  

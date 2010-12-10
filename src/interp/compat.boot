@@ -59,6 +59,11 @@ system() ==
 editFile file ==
   runCommand strconc(textEditor(),'" ",namestring pathname file)
 
+update() ==
+  runCommand
+    strconc(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
+  _/UPDATE()
+
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]
 

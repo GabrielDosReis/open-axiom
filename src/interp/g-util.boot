@@ -1086,11 +1086,6 @@ isUpperCaseLetter c ==
 isLetter c ==
   alphabetic? c
 
-update() ==
-  runCommand
-    strconc(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
-  _/UPDATE()
-
 --% Inplace Merge Sort for Lists
 -- MBM April/88
 
@@ -1159,46 +1154,6 @@ spadThrow() ==
 spadThrowBrightly x ==
   sayBrightly x
   spadThrow()
-
---% Type Formatting Without Abbreviation
-
-formatUnabbreviatedSig sig ==
-  null sig => ['"() -> ()"]
-  [target,:args] := dollarPercentTran sig
-  target := formatUnabbreviated target
-  null args => ['"() -> ",:target]
-  null rest args => [:formatUnabbreviated first args,'" -> ",:target]
-  args := formatUnabbreviatedTuple args
-  ['"(",:args,'") -> ",:target]
-
-formatUnabbreviatedTuple t ==
-  -- t is a list of types
-  null t => t
-  atom t => [t]
-  t0 := formatUnabbreviated t.op
-  null rest t => t0
-  [:t0,'",",:formatUnabbreviatedTuple rest t]
-
-formatUnabbreviated t ==
-  null t =>
-    ['"()"]
-  atom t =>
-    [t]
-  t is [p,sel,arg] and p = ":" =>
-    [sel,'": ",:formatUnabbreviated arg]
-  t is ['Union,:args] =>
-    ['Union,'"(",:formatUnabbreviatedTuple args,'")"]
-  t is ['Mapping,:args] =>
-    formatUnabbreviatedSig args
-  t is ['Record,:args] =>
-    ['Record,'"(",:formatUnabbreviatedTuple args,'")"]
-  t is [arg] =>
-    t
-  t is [arg,arg1] =>
-    [arg,'" ",:formatUnabbreviated arg1]
-  t is [arg,:args] =>
-    [arg,'"(",:formatUnabbreviatedTuple args,'")"]
-  t
 
 sublisNQ(al,e) ==
   atom al => e
@@ -1336,18 +1291,6 @@ pp x ==
 pr x ==
   F_,PRINT_-ONE x
   nil
-
-quickAnd(a,b) ==
-  a = true => b
-  b = true => a
-  a = false or b = false => false
-  simpBool ['AND,a,b]
-
-quickOr(a,b) ==
-  a = true or b = true => true
-  b = false => a
-  a = false => b
-  simpCatPredicate simpBool ['OR,a,b]
 
 intern x ==
   string? x =>
