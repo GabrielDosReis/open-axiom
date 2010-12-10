@@ -1325,6 +1325,5 @@
   (COND
     ((OR (|%hasFeature| :ECL) (|%hasFeature| :GCL)) NIL)
     (T (|loadNativeModule|
-           (CONCAT (|systemLibraryDirectory|) "libopen-axiom-core"
-                   |$NativeModuleExt|)))))
+           (CONCAT "libopen-axiom-core" |$NativeModuleExt|)))))
 

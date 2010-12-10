@@ -736,7 +736,7 @@ defQuoteId x==
   x is ["QUOTE",:.] and IDENTP second x
  
 bfSmintable x==
-  integer? x or cons? x and first x in '(SIZE LENGTH char)
+  integer? x or cons? x and first x in '(SIZE LENGTH char QENUM)
  
 bfQ(l,r)==
   bfSmintable l or bfSmintable r => ["EQL",l,r]

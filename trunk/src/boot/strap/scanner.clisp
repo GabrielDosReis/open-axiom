@@ -49,7 +49,7 @@
            (SETQ |$sz| (LENGTH |$ln|))
            (COND
              ((NULL |$n|) T)
-             ((EQUAL (QENUM |$ln| |$n|) |shoeTAB|)
+             ((EQL (QENUM |$ln| |$n|) |shoeTAB|)
               (SETQ |a| (MAKE-FULL-CVEC (- 7 (REM |$n| 8)) " "))
               (SETF (ELT |$ln| |$n|) (ELT " " 0))
               (SETQ |$ln| (CONCAT |a| |$ln|))
@@ -269,11 +269,11 @@
       (COND
         ((< |$n| |$sz|)
          (COND
-           ((EQUAL (QENUM |$ln| |$n|) |shoePLUSCOMMENT|)
+           ((EQL (QENUM |$ln| |$n|) |shoePLUSCOMMENT|)
             (SETQ |www| (+ |$n| 1))
             (COND
               ((NOT (< |www| |$sz|)) NIL)
-              (T (EQUAL (QENUM |$ln| |www|) |shoePLUSCOMMENT|))))
+              (T (EQL (QENUM |$ln| |www|) |shoePLUSCOMMENT|))))
            (T NIL)))
         (T NIL)))))
 
@@ -284,11 +284,11 @@
       (COND
         ((< |$n| |$sz|)
          (COND
-           ((EQUAL (QENUM |$ln| |$n|) |shoeMINUSCOMMENT|)
+           ((EQL (QENUM |$ln| |$n|) |shoeMINUSCOMMENT|)
             (SETQ |www| (+ |$n| 1))
             (COND
               ((NOT (< |www| |$sz|)) NIL)
-              (T (EQUAL (QENUM |$ln| |www|) |shoeMINUSCOMMENT|))))
+              (T (EQL (QENUM |$ln| |www|) |shoeMINUSCOMMENT|))))
            (T NIL)))
         (T NIL)))))
 
@@ -402,7 +402,7 @@
         (SETQ |endid| (|shoeIdEnd| |$ln| |$n|))
         (COND
           ((OR (EQUAL |endid| |l|)
-               (NOT (EQUAL (QENUM |$ln| |endid|) |shoeESCAPE|)))
+               (NOT (EQL (QENUM |$ln| |endid|) |shoeESCAPE|)))
            (SETQ |$n| |endid|)
            (LIST |b| (SUBSTRING |$ln| |n1| (- |endid| |n1|))))
           (T (SETQ |str| (SUBSTRING |$ln| |n1| (- |endid| |n1|)))
@@ -440,7 +440,7 @@
             (T (SETQ |$n| (+ |$n| 1)))))
         (COND
           ((OR (EQUAL |$n| |l|)
-               (NOT (EQUAL (QENUM |$ln| |$n|) |shoeESCAPE|)))
+               (NOT (EQL (QENUM |$ln| |$n|) |shoeESCAPE|)))
            (COND
              ((AND (EQUAL |n| |$n|) |zro|) "0")
              (T (SUBSTRING |$ln| |n| (- |$n| |n|)))))
@@ -472,10 +472,10 @@
         (SETQ |a| (|shoeInteger|))
         (COND
           ((NOT (< |$n| |$sz|)) (|shoeLeafInteger| |a|))
-          ((AND |$floatok| (EQUAL (QENUM |$ln| |$n|) |shoeDOT|))
+          ((AND |$floatok| (EQL (QENUM |$ln| |$n|) |shoeDOT|))
            (SETQ |n| |$n|) (SETQ |$n| (+ |$n| 1))
            (COND
-             ((AND (< |$n| |$sz|) (EQUAL (QENUM |$ln| |$n|) |shoeDOT|))
+             ((AND (< |$n| |$sz|) (EQL (QENUM |$ln| |$n|) |shoeDOT|))
               (SETQ |$n| |n|) (|shoeLeafInteger| |a|))
              (T (SETQ |w| (|shoeInteger1| T)) (|shoeExponent| |a| |w|))))
           (T (|shoeLeafInteger| |a|)))))))
