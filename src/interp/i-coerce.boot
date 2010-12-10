@@ -755,7 +755,7 @@ coerceInteractive(triple,t2) ==
     if $compilingMap then clearDependentMaps($mapName,nil)
     throwKeyedMsg("S2IC0009",[t2,$mapName])
   $insideCoerceInteractive: local := true
-  expr2 := EQUAL(t2,$OutputForm)
+  expr2 := t2 = $OutputForm
   if expr2 then startTimingProcess 'print
   else startTimingProcess 'coercion
   -- next 2 lines handle cases like '"failed"

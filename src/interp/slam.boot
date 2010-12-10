@@ -253,7 +253,7 @@ assocCircular(x,al) ==  --like ASSOC except that al is circular
   forwardPointer:= al
   val:= nil
   until EQ(forwardPointer,al) repeat
-    EQUAL(CAAR forwardPointer,x) => return (val:= first forwardPointer)
+    CAAR forwardPointer = x => return (val:= first forwardPointer)
     forwardPointer:= rest forwardPointer
   val
  

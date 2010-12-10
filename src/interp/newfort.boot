@@ -265,7 +265,7 @@ exp2FortOptimizeArray e ==
       $exprStack := [[op,var,['AGGLST,:exp2FortOptimizeArray elts]],
         :$exprStack]
       var
-  EQ(op1,'MATRIX) =>
+  op1 = 'MATRIX =>
     -- var := newFortranTempVar()
     var := $fortName
     -- args looks like [NIL,[ROW,...],[ROW,...]]

@@ -1136,7 +1136,7 @@ interpFunctionDepAlists() ==
 
 fixObjectForPrinting(v) ==
     v' := object2Identifier v
-    EQ(v',"%") => '"\%"
+    v' = "%" => '"\%"
     member(v',$msgdbPrims) => strconc('"\",PNAME v')
     v
 

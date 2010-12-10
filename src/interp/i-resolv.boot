@@ -441,10 +441,10 @@ matchUpToPatternVars(pat,form,patAlist) ==
   -- against expressions in form. If one is found, it is checked
   -- against the patAlist to make sure we are using the same expression
   -- each time.
-  EQUAL(pat,form) => true
+  pat = form => true
   isSharpVarWithNum(pat) =>
     -- see is pattern variable is in alist
-    (p := assoc(pat,patAlist)) => EQUAL(form,rest p)
+    (p := assoc(pat,patAlist)) => form = rest p
     patAlist := [[pat,:form],:patAlist]
     true
   cons?(pat) =>
@@ -580,7 +580,7 @@ resolveTMEq(t,m) ==
     b :=
       c =>
         SL := resolveTMEq1(ct,cm)
-        not EQ(SL,'failed)
+        SL ~= 'failed
       ct=cm
     not b =>
       TL := [ct,argt,:TL]

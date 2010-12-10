@@ -1249,7 +1249,7 @@ PushMatrix m ==
     --Adds the matrix to the look-aside list, and returns a name for it
   name:=
     for v in $MatrixList repeat
-        EQUAL(m,rest v) => return first v
+        m = rest v => return first v
   name => name
   name:=INTERNL('"matrix",STRINGIMAGE($MatrixCount:=$MatrixCount+1))
   $MatrixList:=[[name,:m],:$MatrixList]

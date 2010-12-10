@@ -312,7 +312,7 @@ ncloopDQlines (dq,stream)==
 streamChop(n,s)==
     if StreamNull s
     then [nil,nil]
-    else if EQL(n,0)
+    else if n = 0
          then [nil,s]
          else
             [a,b]:= streamChop(n-1,rest s)

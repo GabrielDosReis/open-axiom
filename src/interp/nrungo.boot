@@ -284,7 +284,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
 
 
 compareSigEqual(s,t,dollar,domain) ==
-  EQUAL(s,t) => true
+  s = t => true
   atom t =>
     u :=
       t='$ => dollar
@@ -295,7 +295,7 @@ compareSigEqual(s,t,dollar,domain) ==
       nil
     s = '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
-    EQUAL(s,u)
+    s = u
   s='$ => compareSigEqual(dollar,t,dollar,domain)
   atom s => nil
   #s ~= #t => nil
