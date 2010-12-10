@@ -377,6 +377,8 @@ LINE := nil
 CHR := nil
 TOK := nil
 
+$Echo := false
+
 ++ answers x has y category questions
 _*HASCATEGORY_-HASH_* := nil
 
@@ -449,9 +451,6 @@ $formulaOutputStream :=
 
 conOutStream := 
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
-
-
-
 
 $InputStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-INPUT*"

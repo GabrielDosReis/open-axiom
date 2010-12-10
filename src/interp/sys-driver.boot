@@ -280,8 +280,7 @@ associateRequestWithFileType(Option '"script", '"input",
 compileSpadLibrary(progname,options,file) ==
   $displayStartMsgs := false
   initializeGlobalState()
-  $EchoLines := false
-  ECHO_-META : fluid := false
+  $Echo: local := false
   $verbose := false
   $ProcessInteractiveValue := true
   $PrintCompilerMessageIfTrue := $verbose

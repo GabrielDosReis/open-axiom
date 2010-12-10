@@ -226,13 +226,6 @@ the stack, then stack a NIL. Return the value of prod."
   (let ((x (string<= part whole)))
     (and x (= x (length part)) x)))
 
-
-; 3A 3. Line Handling.
-
-; PARAMETERS DEFINED IN THIS SECTION:
-;
-;       Echo-Meta
-
 ; 3B. Error handling
 
 (defparameter errcol nil)

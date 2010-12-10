@@ -44,7 +44,7 @@ ncParseFromString s ==
   zeroOneTran packageTran CATCH($SpadReaderTag, parseFromString s)
 
 ncINTERPFILE(file, echo) ==
-  $EchoLines: local := echo
+  $Echo: local := echo
   $ReadingFile: local := true
   SpadInterpretFile file
 
@@ -199,7 +199,7 @@ intloopEchoParse s==
          [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,$lines)
          setCurrentLine(mkLineList(lines))
-         if $EchoLines then ncloopPrintLines lines
+         if $Echo then ncloopPrintLines lines
          $lines:=rest
          [[[lines,npParse dqToList dq]],:rest s]
  

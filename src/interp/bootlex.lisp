@@ -84,7 +84,6 @@
               (*spad-input-file* nil)
               (*spad-output-file* nil)
              &aux
-         ;;  (Echo-Meta *spad-input-file*)
          ;;  (*comp370-apply* (function print-and-eval-defun))
            (*comp370-apply* (function print-defun))
            (*fileactq-apply* (function print-defun))
@@ -95,7 +94,7 @@
            (File-Closed NIL)
            (/editfile *spad-input-file*)
            in-stream out-stream)
-  (declare (special echo-meta /editfile *comp370-apply* *EOF*
+  (declare (special |$Echo| /editfile *comp370-apply* *EOF*
                     File-Closed Xcape))
   (setq |$InteractiveMode| nil)
   ;; only rebind |$InteractiveFrame| if compiling
