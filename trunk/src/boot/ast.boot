@@ -689,15 +689,19 @@ bfReName x==
   a := x has SHOERENAME => first a
   x
 
+sequence?(x,pred) ==
+  x is ["QUOTE",seq] and cons? seq and
+    "and"/[apply(pred,y,nil) for y in seq]
 
 ++ Generate code for a membership test `x in seq' where `seq'
 ++ is a sequence (e.g. a list)
 bfMember(var,seq) ==
-  seq is ["QUOTE",seq'] and "and"/[symbol? x for x in seq'] =>
+  var is ["char",.] or sequence?(seq,function integer?) =>
+    ["MEMBER",var,seq,KEYWORD::TEST,"EQL"]
+  defQuoteId var or sequence?(seq,function symbol?) =>
     ["MEMQ",var,seq]
-  var is ["QUOTE",var'] and symbol? var' =>
-    ["MEMQ",var,seq]
-  var is ["char",.] => ["MEMBER",var,seq,KEYWORD::TEST,"EQL"]
+  sequence?(seq,function string?) =>
+    ["MEMBER",var,seq,KEYWORD::TEST,"STRING="]
   ["MEMBER",var,seq]
   
 bfInfApplication(op,left,right)==
