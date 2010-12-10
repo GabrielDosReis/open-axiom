@@ -1186,7 +1186,7 @@
 
 (DEFUN |bfSmintable| (|x|)
   (OR (INTEGERP |x|)
-      (AND (CONSP |x|) (MEMQ (CAR |x|) '(SIZE LENGTH |char|)))))
+      (AND (CONSP |x|) (MEMQ (CAR |x|) '(SIZE LENGTH |char| QENUM)))))
 
 (DEFUN |bfQ| (|l| |r|)
   (COND

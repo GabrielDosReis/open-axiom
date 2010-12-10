@@ -32,7 +32,7 @@
 // --% Author: Gabriel Dos Reis
 // --% Description:
 // --%   Memory management facility.  Acquire raw memory directly
-// --%   directly for the host OS.  Provide random access read to
+// --%   from the host OS.  Provide random access read to
 // --%   files through file mapping.
 
 #ifndef OPENAXIOM_STORAGE_INCLUDED
@@ -252,7 +252,7 @@ namespace OpenAxiom {
       
       template<typename T>
       Arena<T>::~Arena() {
-         // Destroy objects in the reverse order of their
+         // Release storage in the reverse order of their
          // their allocation.
          while (store != 0) {
             Storage* current = store;
