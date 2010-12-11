@@ -903,8 +903,7 @@ compilerDoitWithScreenedLisplib(constructor, fun) ==
                           VALUE)
                          ((NOT NIL)
                           (RWRITE KEY VALUE STREAM)))) )
-    UNWIND_-PROTECT(compilerDoit(constructor,fun),
-                   SEQ(UNEMBED 'RWRITE))
+    (try compilerDoit(constructor,fun); finally SEQ(UNEMBED 'RWRITE))
 
 
 withAsharpCmd args ==
@@ -1653,7 +1652,7 @@ setHistoryCore inCore ==
       -- actually put something in there
       l := # RKEYIDS histFileName()
       for i in 1..l repeat
-        vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
+        vec:= (try readHiFi(i); finally disableHist())
         $internalHistoryTable := [[i,:vec],:$internalHistoryTable]
       histFileErase histFileName()
     $useInternalHistoryTable := true
@@ -1733,7 +1732,7 @@ updateHist() ==
   startTimingProcess 'history
   updateInCoreHist()
   if $HiFiAccess then
-    UNWIND_-PROTECT(writeHiFi(),disableHist())
+    (try writeHiFi(); finally disableHist())
     $HistRecord:= NIL
   $IOindex:= $IOindex+1
   updateCurrentInterpreterFrame()
@@ -1796,7 +1795,7 @@ undoInCore(n) ==
   n:= $IOindex-n-1
   n>0 and
     $HiFiAccess =>
-      vec:= rest UNWIND_-PROTECT(readHiFi(n),disableHist())
+      vec:= rest (try readHiFi(n); finally disableHist())
       val:= ( p:= ASSQ('%,vec) ) and ( p1:= ASSQ('value,rest p) ) and
         rest p1
     sayKeyedMsg("S2IH0019",[n])
@@ -1821,7 +1820,7 @@ undoFromFile(n) ==
         if $HiFiAccess then recordNewValue(x,prop,val)
         p.rest := NIL
   for i in 1..n repeat
-    vec:= UNWIND_-PROTECT(rest readHiFi(i),disableHist())
+    vec:= (try rest readHiFi(i); finally disableHist())
     for p1 in vec repeat
       x:= first p1
       for p2 in rest p1 repeat
@@ -1877,7 +1876,7 @@ restoreHistory(fn) ==
   $useInternalHistoryTable := NIL
   if oldInternal then $internalHistoryTable := NIL
   for i in 1..l repeat
-    vec:= UNWIND_-PROTECT(readHiFi(i),disableHist())
+    vec:= (try readHiFi(i); finally disableHist())
     if oldInternal then $internalHistoryTable :=
       [[i,:vec],:$internalHistoryTable]
     LINE:= first vec
@@ -1935,7 +1934,7 @@ showHistory(arg) ==
   mini:= $IOindex-n
   maxi:= $IOindex-1
   showInputOrBoth = 'both =>
-    UNWIND_-PROTECT(showInOut(mini,maxi),setIOindex(maxi+1))
+    (try showInOut(mini,maxi); finally setIOindex(maxi+1))
   showInput(mini,maxi)
 
 setIOindex(n) ==
@@ -1945,7 +1944,7 @@ setIOindex(n) ==
 showInput(mini,maxi) ==
   -- displays all input lines from mini to maxi
   for ind in mini..maxi repeat
-    vec:= UNWIND_-PROTECT(readHiFi(ind),disableHist())
+    vec:= (try readHiFi(ind); finally disableHist())
     if ind<10 then TAB 2 else if ind<100 then TAB 1
     l := first vec
     string? l =>
@@ -1957,7 +1956,7 @@ showInput(mini,maxi) ==
 showInOut(mini,maxi) ==
   -- displays all steps from mini to maxi
   for ind in mini..maxi repeat
-    vec:= UNWIND_-PROTECT(readHiFi(ind),disableHist())
+    vec:= (try readHiFi(ind); finally disableHist())
     sayMSG [first vec]
     Alist:= ASSQ('%,rest vec) =>
       triple:= rest ASSQ('value,rest Alist)
@@ -1973,7 +1972,7 @@ fetchOutput(n) ==
       n
     n >= $IOindex => throwKeyedMsg("S2IH0001",[n])
     n < 1        => throwKeyedMsg("S2IH0002",[n])
-    vec:= UNWIND_-PROTECT(readHiFi(n),disableHist())
+    vec:= (try readHiFi(n); finally disableHist())
     Alist:= ASSQ('%,rest vec) =>
       val:= rest ASSQ('value,rest Alist) => val
       throwKeyedMsg("S2IH0003",[n])

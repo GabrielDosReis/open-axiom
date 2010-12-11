@@ -408,7 +408,7 @@ ncConversationPhase(fn, args) ==
     $ncMsgList: local := []
     $convPhase: local := 'NoPhase
  
-    UNWIND_-PROTECT( apply(fn, args), wrapup(carrier) ) where
+    (try apply(fn, args); finally wrapup(carrier)) where
         wrapup(carrier) ==
             for m in $ncMsgList repeat
                 ncPutQ(carrier, 'messages, [m, :ncEltQ(carrier, 'messages)])

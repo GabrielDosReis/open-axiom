@@ -369,12 +369,12 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   -- finalizeLisplib libName
   -- following guarantee's compiler output files get closed.
   ok := false;
-  UNWIND_-PROTECT(
-      PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
-            leaveIfErrors(libName),
-            sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
-            ok := finalizeLisplib libName),
-      RSHUT $libFile)
+  try
+    res:= FUNCALL(fn,df,m,e,prefix,fal)
+    leaveIfErrors(libName)
+    sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
+    ok := finalizeLisplib libName
+  finally RSHUT $libFile
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
   RPACKFILE filearg

@@ -1,5 +1,14 @@
 2010-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/i-syscmd.boot: Use try-finally expression instead of Lisp
+	primitive UNWIND-PROJECT.
+	* interp/int-top.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/server.boot: Likewise.
+	* boot/parser.boot (bpHandler): Allow semicolon separation.
+
+2010-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/tokens.boot: `finally' is now a keyword.
 	* boot/parser.boot (bpMissing): Use a BootParserException exception.
 	(bpTrap): Likewise.
