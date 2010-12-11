@@ -803,7 +803,9 @@
       (PROGN
         (SETQ |s| (|bpState|))
         (COND
-          ((AND (|bpEqKey| 'BACKSET) (|bpEqKey| |key|)) T)
+          ((AND (OR (|bpEqKey| 'BACKSET) (|bpEqKey| 'SEMICOLON))
+                (|bpEqKey| |key|))
+           T)
           (T (|bpRestore| |s|) NIL))))))
 
 (DEFUN |bpLeave| ()

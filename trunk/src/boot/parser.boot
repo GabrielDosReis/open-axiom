@@ -728,7 +728,7 @@ bpFinally() ==
 
 bpHandler key ==
   s := bpState()
-  bpEqKey "BACKSET" and bpEqKey key => true
+  (bpEqKey "BACKSET" or bpEqKey "SEMICOLON") and bpEqKey key => true
   bpRestore s
   false
 
