@@ -103,6 +103,7 @@ structure %Ast ==
   %BoundedSgement(%Ast,%Ast)            -- 2..4
   %Tuple(%List)                         -- comma-separated expression sequence
   %ColonAppend(%Ast,%Ast)               -- [:y] or [x, :y]
+  %Pretend(%Ast,%Ast)                   -- e : t     -- hard coercion
   %Is(%Ast,%Ast)                        -- e is p    -- patterns
   %Isnt(%Ast,%Ast)                      -- e isnt p  -- patterns
   %Reduce(%Ast,%Ast)                    -- +/[...]
@@ -128,7 +129,8 @@ structure %Ast ==
   %Return(%Ast)                         -- return x
   %Leave(%Ast)                          -- leave x
   %Throw(%Ast)                          -- throw OutOfRange 3
-  %Catch(%Ast)                          -- catch OutOfRange
+  %Catch(%Signature,%Ast)               -- catch(x: OutOfRange) => print x
+  %Finally(%Ast)                        -- finally closeFile f
   %Try(%Ast,%Sequence)                  -- try x / y catch DivisionByZero
   %Where(%Ast,%Sequence)                -- e where f x == y
   %Structure(%Ast,%Sequence)            -- structure Foo == ...
@@ -1154,22 +1156,49 @@ bfDs n ==
   n = 0 => '""
   strconc('"D",bfDs(n-1))
 
+bfHandlers(n,e,hs) == main(n,e,hs,nil) where
+  main(n,e,hs,xs) ==
+    hs = nil =>
+      ["COND",
+        nreverse
+          [[true,["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,n]],:xs]]
+    hs is [['%Catch,['%Signature,v,t],s],:hs'] =>
+      t := 
+        symbol? t => ["QUOTE",[t]] -- instantiate niladic type ctor
+        ["QUOTE",t]
+      main(n,e,hs',[[bfQ(["CAR",e],t),["LET",[[v,["CDR",e]]],s]],:xs])
+    bpTrap()
+
+codeForCatchHandlers(g,e,cs) ==
+  ehTest := ['AND,['CONSP,g],
+              [bfQ(['CAR,g],KEYWORD::OPEN_-AXIOM_-CATCH_-POINT)]]
+  ["LET",[[g,["CATCH",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,e]]],
+    ["COND",[ehTest,bfHandlers(g,["CDR",g],cs)],[true,g]]]
 
 ++ Generate code for try-catch expressions.
 bfTry: (%Thing,%List) -> %Thing
 bfTry(e,cs) ==
-  cs = nil => e
-  case first cs of
-    %Catch(tag) => 
-      atom tag => bfTry(["CATCH",["QUOTE",tag],e],rest cs)
-      bpTrap()  -- sorry
-    otherwise => bpTrap()
+  g := gensym()
+  cs is [:cs',f] and f is ['%Finally,s] =>
+    cs' = nil => ["UNWIND-PROTECT",e,s]
+    ["UNWIND-PROTECT",codeForCatchHandlers(g,e,cs'),s]
+  codeForCatchHandlers(g,e,cs)
 
 ++ Generate code for `throw'-expressions
 bfThrow e ==
-  atom e => ["THROW",["QUOTE",e],nil]
-  not atom first e => bpTrap()
-  ["THROW",["QUOTE",first e],:rest e]
+  t := nil
+  x := nil
+  if e is ["%Pretend",:.] then
+    t := third e
+    x := second e
+  else
+    t := "SystemException"
+    x := e
+  t :=
+    symbol? t => ["QUOTE",[t]]
+    ["QOUTE",t]
+  ["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,
+    ["CONS",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,["CONS",t,x]]]
 
 --% Type alias definition
 

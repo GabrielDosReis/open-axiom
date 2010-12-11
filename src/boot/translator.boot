@@ -363,7 +363,7 @@ shoeOutParse stream ==
   $bpCount := 0
   $bpParenCount := 0
   bpFirstTok()
-  found := try bpOutItem() catch TRAPPOINT
+  found := CATCH('TRAPPOINT,bpOutItem()) --try bpOutItem() catch TRAPPOINT
   found = "TRAPPED" => nil
   not bStreamNull $inputStream =>
     bpGeneralErrorHere()

@@ -1,3 +1,23 @@
+2010-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/parser.boot (bpListAndRecover): Use Lisp-level CATCH.
+	(bpTry): Rewrite.
+	(bpTry): Likewise.
+	(bpSimpleCatch): Remove.
+	(bpPiledCatchItems): Likewise.
+	(bpCatchItemList): Likewise.
+	(bpExceptionHead): Likewise.
+	(bpExceptionTail): Likewise.
+	(bpExceptionVariable): New.
+	(bpFinally): Likewise.
+	* boot/ast.boot (%Ast): Add %Pretend and %Finally.
+	%Catch now takes two arguments.
+	(bfTry): Rewrite.
+	(bfThrow): Likewise.
+	(bfHandlers): New.
+	(codeForCatchHandlers): Likewise.
+	* boot/translator.boot (shoeOutParse): Use Lisp-level CATCH.
+
 2010-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfMmeber): Tidy.

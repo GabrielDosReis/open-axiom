@@ -281,7 +281,9 @@ bpListAndRecover(f)==
   done := false
   c := $inputStream
   while not done repeat
-    found := try apply(f,nil) catch TRAPPOINT
+    found := CATCH('TRAPPOINT,apply(f,nil))
+--      try apply(f,nil)
+--      catch TRAPPOINT --(e) => e
     if found = "TRAPPED"
     then
        $inputStream:=c
@@ -683,51 +685,52 @@ bpAnd() ==
   bpLeftAssoc('(AND),function bpCompare)
 
 bpThrow() ==
-  bpEqKey "THROW" and bpApplication() and 
+  bpEqKey "THROW" and bpApplication() =>
+    -- Allow user-supplied matching type tag
+    if bpEqKey "COLON" then
+      bpApplication() or bpTrap()
+      bpPush %Pretend(bpPop2(),bpPop1())
     bpPush bfThrow bpPop1()
+  nil
 
 ++  Try:
 ++    try Assign CatchItems
 bpTry() ==
-  bpEqKey "TRY" and bpAssign() and 
-    (bpEqKey "BACKSET" or true) and 
-      (bpEqKey "CATCH" or bpMissing "CATCH") and
-        (bpPiledCatchItems() or bpSimpleCatch() or bpTrap()) and
-           bpPush bfTry(bpPop2(), bpPop1())
+  bpEqKey "TRY" =>
+    bpAssign()
+    cs := []
+    while bpHandler "CATCH" repeat
+      bpCatchItem()
+      cs := [bpPop1(),:cs]
+    bpHandler "FINALLY" =>
+      bpFinally() and
+        bpPush bfTry(bpPop2(),nreverse [bpPop1(),:cs])
+    cs = nil => bpTrap() -- missing handlers
+    bpPush bfTry(bpPop1(),nreverse cs)
+  nil            
 
-++ SimpleCatch:
-++   catch Name
-bpSimpleCatch() ==
-  bpCatchItem() and bpPush [bpPop1()]
-
-bpPiledCatchItems() ==
-  bpPileBracketed function bpCatchItemList
-
-bpCatchItemList() ==
-  bpListAndRecover function bpCatchItem
-
-bpExceptionHead() ==
-  (bpName() or bpTrap()) and
-    ((bpParenthesized function bpIdList and
-      bpPush bfNameArgs (bpPop2(),bpPop1()))
-	or bpName() and bpPush bfNameArgs(bpPop2(),bpPop1()))
-          or true
-
-bpExceptionTail() ==
-  bpEqKey "EXIT" and (bpAssign() or bpTrap()) and
-    bpPush %Exit(bpPop2(),bpPop1())
-
-++ Exception:
-++   ExpcetionHead
-++   ExceptionHead => Assign
-bpException() ==
-  bpExceptionHead() and (bpExceptionTail() or true)
-
-++ Catch:
-++   catch Exception
 bpCatchItem() ==
-  (bpException() or bpTrap()) and 
-    bpPush %Catch bpPop1()
+  (bpExceptionVariable() or bpTrap()) and
+    (bpEqKey "EXIT" or bpTrap()) and
+      (bpAssign() or bpTrap()) and
+        bpPush %Catch(bpPop2(),bpPop1())
+
+bpExceptionVariable() ==
+  t := $stok
+  bpEqKey "OPAREN" and 
+    (bpSignature() or bpTrap()) and
+      (bpEqKey "CPAREN" or bpMissing t)
+        or bpTrap()
+
+bpFinally() ==
+  (bpAssign() or bpTrap()) and
+    bpPush %Finally bpPop1()
+
+bpHandler key ==
+  s := bpState()
+  bpEqKey "BACKSET" and bpEqKey key => true
+  bpRestore s
+  false
 
 ++ Leave:
 ++   LEAVE Logical

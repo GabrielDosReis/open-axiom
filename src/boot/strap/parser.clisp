@@ -317,12 +317,18 @@
 (DEFUN |bpMissing| (|s|)
   (PROGN
     (|bpSpecificErrorHere| (CONCAT (PNAME |s|) " possibly missing"))
-    (THROW 'TRAPPOINT 'TRAPPED)))
+    (THROW :OPEN-AXIOM-CATCH-POINT
+      (CONS :OPEN-AXIOM-CATCH-POINT
+            (CONS '(|SystemException|) (TRAPPOINT 'TRAPPED))))))
 
 (DEFUN |bpCompMissing| (|s|) (OR (|bpEqKey| |s|) (|bpMissing| |s|)))
 
 (DEFUN |bpTrap| ()
-  (PROGN (|bpGeneralErrorHere|) (THROW 'TRAPPOINT 'TRAPPED)))
+  (PROGN
+    (|bpGeneralErrorHere|)
+    (THROW :OPEN-AXIOM-CATCH-POINT
+      (CONS :OPEN-AXIOM-CATCH-POINT
+            (CONS '(|SystemException|) (TRAPPOINT 'TRAPPED))))))
 
 (DEFUN |bpRecoverTrap| ()
   (PROG (|pos2| |pos1|)
@@ -731,40 +737,61 @@
 (DEFUN |bpAnd| () (|bpLeftAssoc| '(AND) #'|bpCompare|))
 
 (DEFUN |bpThrow| ()
-  (AND (|bpEqKey| 'THROW) (|bpApplication|)
-       (|bpPush| (|bfThrow| (|bpPop1|)))))
+  (COND
+    ((AND (|bpEqKey| 'THROW) (|bpApplication|))
+     (COND
+       ((|bpEqKey| 'COLON) (OR (|bpApplication|) (|bpTrap|))
+        (|bpPush| (|%Pretend| (|bpPop2|) (|bpPop1|)))))
+     (|bpPush| (|bfThrow| (|bpPop1|))))
+    (T NIL)))
 
 (DEFUN |bpTry| ()
-  (AND (|bpEqKey| 'TRY) (|bpAssign|) (OR (|bpEqKey| 'BACKSET) T)
-       (OR (|bpEqKey| 'CATCH) (|bpMissing| 'CATCH))
-       (OR (|bpPiledCatchItems|) (|bpSimpleCatch|) (|bpTrap|))
-       (|bpPush| (|bfTry| (|bpPop2|) (|bpPop1|)))))
-
-(DEFUN |bpSimpleCatch| ()
-  (AND (|bpCatchItem|) (|bpPush| (LIST (|bpPop1|)))))
-
-(DEFUN |bpPiledCatchItems| () (|bpPileBracketed| #'|bpCatchItemList|))
-
-(DEFUN |bpCatchItemList| () (|bpListAndRecover| #'|bpCatchItem|))
-
-(DEFUN |bpExceptionHead| ()
-  (OR (AND (OR (|bpName|) (|bpTrap|))
-           (OR (AND (|bpParenthesized| #'|bpIdList|)
-                    (|bpPush| (|bfNameArgs| (|bpPop2|) (|bpPop1|))))
-               (AND (|bpName|)
-                    (|bpPush| (|bfNameArgs| (|bpPop2|) (|bpPop1|))))))
-      T))
-
-(DEFUN |bpExceptionTail| ()
-  (AND (|bpEqKey| 'EXIT) (OR (|bpAssign|) (|bpTrap|))
-       (|bpPush| (|%Exit| (|bpPop2|) (|bpPop1|)))))
-
-(DEFUN |bpException| ()
-  (AND (|bpExceptionHead|) (OR (|bpExceptionTail|) T)))
+  (PROG (|cs|)
+    (RETURN
+      (COND
+        ((|bpEqKey| 'TRY) (|bpAssign|) (SETQ |cs| NIL)
+         (LOOP
+           (COND
+             ((NOT (|bpHandler| 'CATCH)) (RETURN NIL))
+             (T (PROGN
+                  (|bpCatchItem|)
+                  (SETQ |cs| (CONS (|bpPop1|) |cs|))))))
+         (COND
+           ((|bpHandler| 'FINALLY)
+            (AND (|bpFinally|)
+                 (|bpPush|
+                     (|bfTry| (|bpPop2|)
+                              (NREVERSE (CONS (|bpPop1|) |cs|))))))
+           ((NULL |cs|) (|bpTrap|))
+           (T (|bpPush| (|bfTry| (|bpPop1|) (NREVERSE |cs|))))))
+        (T NIL)))))
 
 (DEFUN |bpCatchItem| ()
-  (AND (OR (|bpException|) (|bpTrap|))
-       (|bpPush| (|%Catch| (|bpPop1|)))))
+  (AND (OR (|bpExceptionVariable|) (|bpTrap|))
+       (OR (|bpEqKey| 'EXIT) (|bpTrap|)) (OR (|bpAssign|) (|bpTrap|))
+       (|bpPush| (|%Catch| (|bpPop2|) (|bpPop1|)))))
+
+(DEFUN |bpExceptionVariable| ()
+  (PROG (|t|)
+    (DECLARE (SPECIAL |$stok|))
+    (RETURN
+      (PROGN
+        (SETQ |t| |$stok|)
+        (OR (AND (|bpEqKey| 'OPAREN) (OR (|bpSignature|) (|bpTrap|))
+                 (OR (|bpEqKey| 'CPAREN) (|bpMissing| |t|)))
+            (|bpTrap|))))))
+
+(DEFUN |bpFinally| ()
+  (AND (OR (|bpAssign|) (|bpTrap|)) (|bpPush| (|%Finally| (|bpPop1|)))))
+
+(DEFUN |bpHandler| (|key|)
+  (PROG (|s|)
+    (RETURN
+      (PROGN
+        (SETQ |s| (|bpState|))
+        (COND
+          ((AND (|bpEqKey| 'BACKSET) (|bpEqKey| |key|)) T)
+          (T (|bpRestore| |s|) NIL))))))
 
 (DEFUN |bpLeave| ()
   (AND (|bpEqKey| 'LEAVE) (OR (|bpLogical|) (|bpTrap|))
