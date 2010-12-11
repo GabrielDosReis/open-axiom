@@ -505,7 +505,8 @@ dbSayItems(countOrPrefix,singular,plural,:options) ==
   for x in options repeat bcHt x
   if count ~= 0 then bcHt '":"
 
-dbBasicConstructor? conname == member(dbSourceFile conname,'("catdef" "coerce"))
+dbBasicConstructor? conname ==
+  dbSourceFile conname in '("catdef" "coerce")
 
 nothingFoundPage(:options) ==
   htInitPage('"Sorry, no match found",nil)

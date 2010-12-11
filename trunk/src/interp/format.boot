@@ -389,17 +389,17 @@ form2String1 u ==
     u=$EmptyMode or u=$quadSymbol => formWrapId specialChar 'quad
     IDENTP u =>
       constructor? u => app2StringWrap(formWrapId u, [u])
-      u
+      formWrapId u
     SUBRP u => formWrapId BPINAME u
     string? u => formWrapId u
-    WRITE_-TO_-STRING formWrapId u
+    formWrapId WRITE_-TO_-STRING u
   u1 := u
   [op,:argl] := u
   op='Join or op= 'mkCategory => formJoin1(op,argl)
   $InteractiveMode and IDENTP op and (u:= constructor? op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
-    op = "NTuple"  => [ form2String1 first argl, "*"]
-    op = "Map"     => ["(",:formatSignature0 [argl.1,argl.0],")"]
+    op = "NTuple"  => [ form2String1 first argl, '"*"]
+    op = "Map"     => ['"(",:formatSignature0 [argl.1,argl.0],'")"]
     op = "Record" => record2String(argl)
     null (conSig := getConstructorSignature op) =>
       application2String(constructorName op,[form2String1(a) for a in argl], u1)
@@ -411,7 +411,7 @@ form2String1 u ==
       -- extra null check to handle mutable domain hack.
     null argl => constructorName op
     application2String(constructorName op,argl, u1)
-  op = "Mapping" => ["(",:formatSignature argl,")"]
+  op = "Mapping" => ['"(",:formatSignature argl,'")"]
   op = "Record" => record2String(argl)
   op = "Union"  =>
     application2String(op,[form2String1 x for x in argl], u1)
@@ -420,18 +420,18 @@ form2String1 u ==
       null rest argl => [ '":", form2String1 first argl ]
       formDecl2String(argl.0,argl.1)
   op = "#" and cons? argl and LISTP first argl =>
-    STRINGIMAGE SIZE first argl
+    STRINGIMAGE #first argl
   op = 'Join => formJoin2String argl
   op = "ATTRIBUTE" => form2String1 first argl
-  op='Zero => 0
-  op='One => 1
+  op='Zero => '"0"
+  op='One => '"1"
   op = 'AGGLST => tuple2String argl
   op = 'BRACKET =>
     argl' := form2String1 first argl
-    ["[",:(atom argl' => [argl']; argl'),"]"]
+    ['"[",:(atom argl' => [argl']; argl'),'"]"]
   op = 'PAREN =>
     argl' := form2String1 first argl
-    ["(",:(atom argl' => [argl']; argl'),")"]
+    ['"(",:(atom argl' => [argl']; argl'),'")"]
   op = "SIGNATURE" =>
      [operation,sig] := argl
      concat(operation,'": ",formatSignature sig)
@@ -450,11 +450,11 @@ form2String1 u ==
   application2String(op,[form2String1 x for x in argl], u1)
 
 formWrapId id == 
-  $formatSigAsTeX = 1 => id
+  $formatSigAsTeX = 1 => PNAME id
   $formatSigAsTeX = 2 => 
     sep := '"`"
     FORMAT(NIL,'"\verb~a~a~a",sep, id, sep)
-  error "Bad formatSigValue"
+  error '"Bad formatSigValue"
 
 formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
   fn(x,m) ==
@@ -519,23 +519,23 @@ formJoin2 argl ==
 
 formJoin2String (u:=[:argl,last]) ==
   last is ["CATEGORY",.,:atsigList] =>
-    postString:= concat("_(",formTuple2String atsigList,"_)")
+    postString:= concat('"_(",formTuple2String atsigList,'"_)")
     #argl=1 => concat(first argl,'" with ",postString)
     concat(application2String('Join,argl, NIL)," with ",postString)
   application2String('Join,u, NIL)
 
 formCollect2String [:itl,body] ==
-  ["_(",body,:"append"/[formIterator2String x for x in itl],"_)"]
+  ['"_(",body,:"append"/[formIterator2String x for x in itl],'"_)"]
 
 formIterator2String x ==
   x is ["STEP",y,s,.,:l] =>
     tail:= (l is [f] => form2StringLocal f; nil)
-    concat("for ",y," in ",s,'"..",tail)
-  x is ["tails",y] => concat("tails ",formatIterator y)
-  x is ["reverse",y] => concat("reverse ",formatIterator y)
-  x is ["|",y,p] => concat(formatIterator y," | ",form2StringLocal p)
-  x is ["until",p] => concat("until ",form2StringLocal p)
-  x is ["while",p] => concat("while ",form2StringLocal p)
+    concat('"for ",y,'" in ",s,'"..",tail)
+  x is ["tails",y] => concat('"tails ",formatIterator y)
+  x is ["reverse",y] => concat('"reverse ",formatIterator y)
+  x is ["|",y,p] => concat(formatIterator y,'" | ",form2StringLocal p)
+  x is ["until",p] => concat('"until ",form2StringLocal p)
+  x is ["while",p] => concat('"while ",form2StringLocal p)
   systemErrorHere ["formatIterator",x]
 
 tuple2String argl ==
@@ -633,7 +633,7 @@ application2String(op,argl, linkInfo) ==
   null argl =>
     (op' := isInternalFunctionName(op)) => op'
     app2StringWrap(formWrapId op, linkInfo)
-  op = "[||]" => concat("[|",concat(prefix2String0 argl,"|]"))
+  op = "[||]" => concat('"[|",concat(prefix2String0 argl,'"|]"))
   1=#argl =>
     arg := first argl
     arg is ["<",:.] or arg is ["(",:.] => concat(op,arg)
@@ -668,9 +668,9 @@ app2StringWrap(string, linkInfo) ==
 record2String x ==
   argPart := NIL
   for [":",a,b] in x repeat argPart:=
-    concat(argPart,",",a,": ",form2StringLocal b)
+    concat(argPart,'",",a,'": ",form2StringLocal b)
   null argPart => '"Record()"
-  concat("Record_(",rest argPart,"_)")
+  concat('"Record_(",rest argPart,'"_)")
 
 plural(n,string) ==
   suffix:=

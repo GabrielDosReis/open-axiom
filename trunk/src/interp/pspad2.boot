@@ -558,7 +558,7 @@ nary2Binary(u,op) ==
 string2PrintImage s ==
   u:= GETSTR (2*SIZE s)
   for i in 0..MAXINDEX s repeat
-    (if MEMQ(s.i,'(_( _{ _) _} _! _")) then
+    (if s.i in '(_( _{ _) _} _! _") then
       SUFFIX('__,u); u:= SUFFIX(s.i,u))
   u
  

@@ -265,7 +265,7 @@ defaultTarget(opNode,op,nargs,args) ==
     op = 'infinity =>
       putTarget(opNode, target := ['OnePointCompletion, $Integer])
       target
-    member(op, '(plusInfinity minusInfinity)) =>
+    op in '(plusInfinity minusInfinity) =>
       putTarget(opNode, target := ['OrderedCompletion, $Integer])
       target
     target
@@ -773,7 +773,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   -- tar may be NIL (= unknown)
   null isLegitimateMode(tar, nil, nil) => nil
   dcName:= first dc
-  member(dcName,'(Union Record Mapping Enumeration)) =>
+  dcName in '(Union Record Mapping Enumeration) =>
     -- First cut code that ignores args2, $Coerce and $SubDom
     -- When domains no longer have to have Set, the hard coded 6 and 7
     -- should go.
@@ -788,7 +788,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
         args1.0 ~= dc => NIL
         tar and tar ~= $Expression => NIL
         [[[dc, $Expression, dc], [$Expression,'$], [NIL, NIL]]]
-    member(dcName,'(Record Union)) =>
+    dcName in '(Record Union) =>
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     NIL
   fun:= NIL
@@ -1421,14 +1421,14 @@ hasCateSpecial(v,dom,cat,SL) ==
 
 -- to be used in $newSystem only
 hasCateSpecialNew(v,dom,cat,SL) ==
-  fe := member(cat.op, '(ElementaryFunctionCategory
+  fe := cat.op in '(ElementaryFunctionCategory
        TrigonometricFunctionCategory ArcTrigonometricFunctionCategory
         HyperbolicFunctionCategory ArcHyperbolicFunctionCategory
          PrimitiveFunctionCategory SpecialFunctionCategory Evalable
           CombinatorialOpsCategory TranscendentalFunctionCategory
            AlgebraicallyClosedFunctionSpace ExpressionSpace
-             LiouvillianFunctionCategory FunctionSpace))
-  alg := member(cat.op, '(RadicalCategory AlgebraicallyClosedField))
+             LiouvillianFunctionCategory FunctionSpace)
+  alg := cat.op in '(RadicalCategory AlgebraicallyClosedField)
   fefull := fe or alg or cat = $CombinatorialFunctionCategory
   partialResult :=
     dom is ["Variable",:.] or dom = $Symbol =>

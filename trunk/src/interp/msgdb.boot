@@ -182,40 +182,40 @@ substituteSegmentedMsg(msg,args) ==
       q := NIL
       for i in 2..(n-1) repeat q := [x.i,:q]
       -- Note 'f processing must come first.
-      if MEMQ(char 'f,q) then
+      if char 'f in q then
           arg :=
               cons? arg => apply(first arg, rest arg)
               arg
-      if MEMQ(char 'm,q) then arg := [['"%m",:arg]]
-      if MEMQ(char 's,q) then arg := [['"%s",:arg]]
-      if MEMQ(char 'p,q) then 
+      if char 'm in q then arg := [['"%m",:arg]]
+      if char 's in q then arg := [['"%s",:arg]]
+      if char 'p in q then 
           $texFormatting => arg := prefix2StringAsTeX arg
           arg := prefix2String arg 
-      if MEMQ(char 'P,q) then
+      if char 'P in q then
           $texFormatting => arg := [prefix2StringAsTeX x for x in arg]
           arg := [prefix2String x for x in arg]
-      if MEMQ(char 'o, q) and $texFormatting then arg := operationLink(arg)
+      if char 'o in  q and $texFormatting then arg := operationLink(arg)
 
-      if MEMQ(char 'c,q) then arg := [['"%ce",:arg]]
-      if MEMQ(char 'r,q) then arg := [['"%rj",:arg]]
+      if char 'c in q then arg := [['"%ce",:arg]]
+      if char 'r in q then arg := [['"%rj",:arg]]
 
-      if MEMQ(char 'l,q) then l := ['"%l",:l]
-      if MEMQ(char 'b,q) then l := ['"%b",:l]
+      if char 'l in q then l := ['"%l",:l]
+      if char 'b in q then l := ['"%b",:l]
       --we splice in arguments that are lists
       --if y is not specified, then the adding of blanks is
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
          cons?(arg) =>
-           MEMQ(char 'y,q) or (first arg = '"%y") or ((# arg) = 1)  =>
+           char 'y in q or (first arg = '"%y") or ((# arg) = 1)  =>
              append(reverse arg, l)
            head := first arg
            tail := rest arg
            ['"%y",:append(reverse tail, ['"%n",head,:l ]) ]
          [arg,:l]
-      if MEMQ(char 'b,q) then l := ['"%d",:l]
+      if char 'b in q then l := ['"%d",:l]
       for ch in '(_. _, _! _: _; _?) repeat
-        if MEMQ(char ch,q) then l := [ch,:l]
+        if char ch in q then l := [ch,:l]
 
     c = char "%" and n > 1 and x.1 = char "x" and digit? x.2 =>
       l := [fillerSpaces(DIG2FIX x.2, '" "),:l]

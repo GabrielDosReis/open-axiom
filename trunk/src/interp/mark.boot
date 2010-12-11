@@ -1469,7 +1469,7 @@ buildNewDefinition(op,theSig,formPredAlist) ==
   theAlist := [[pred, first form, :theArgl] for [pred,:form] in alist]
   theNils := [nil for x in theForm]
   thePred :=
-     member(outerPred, '(T %true)) => nil
+     outerPred in '(T %true) => nil
      outerPred
   def := ['DEF, theForm, theSig, theNils, ifize theAlist]
   value :=

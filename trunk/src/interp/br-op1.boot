@@ -370,12 +370,12 @@ dbGatherData(htPage,opAlist,which,key) ==
           u
         data := [y := [entry,exposeFlag,:tail],:data]
         y                                   --no, create new entry in DATA
-      if member(key,'(origins conditions)) then
+      if key in '(origins conditions) then
         r := CDDR newEntry
         if atom r then r := nil             --clear out possible 'ASCONST
         newEntry.rest.rest :=               --store op/sigs under key if needed
           insert([dbMakeSignature(op,item),exposeFlag,:tail],r)
-  if member(key,'(origins conditions)) then
+  if key in '(origins conditions) then
     for entry in data repeat   --sort list of entries (after the 2nd)
       tail := CDDR entry
       tail :=
@@ -618,7 +618,7 @@ dbShowOpParameters(htPage,opAlist,which,data) ==
         dbShowOpParameterJump(ops,which,count,single?)
         htSay('" {\em ",KAR KDR args,'"}")
       dbShowOpParameterJump(ops,which,count,single?)
-      tail = 'ASCONST or member(op,'(0 1)) or which = '"attribute" and null IFCAR args => 'skip
+      tail = 'ASCONST or op in '(0 1) or which = '"attribute" and null IFCAR args => 'skip
       htSay('"(")
       if IFCAR args then htSay('"{\em ",IFCAR args,'"}")
       for x in IFCDR args repeat
@@ -658,7 +658,7 @@ dbShowOpDocumentation(htPage,opAlist,which,data) ==
       exposeFlag or not $exposedOnlyIfTrue =>
         if comments ~= '"" and string? comments and (k := string2Integer comments) then
           comments :=
-            MEMQ(k,'(0 1)) => '""
+            k in '(0 1) => '""
             dbReadComments k
           tail := CDDDDR item
           tail.first := comments
