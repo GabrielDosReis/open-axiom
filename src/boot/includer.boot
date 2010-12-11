@@ -77,10 +77,6 @@ PNAME x ==
 char x ==
   CHAR(PNAME x, 0)
 
--- returns the string representation of object X.
-STRINGIMAGE x ==
-  toString x
-
 -- close STREAM.
 shoeCLOSE stream ==
   CLOSE stream
@@ -112,11 +108,11 @@ shoeSpaces n  ==
 
 diagnosticLocation tok ==
   pos := shoeTokPosn tok
-  strconc('"line ", STRINGIMAGE lineNo pos, '", column ", 
-    STRINGIMAGE lineCharacter pos)
+  strconc('"line ", toString lineNo pos, '", column ", 
+    toString lineCharacter pos)
 
 SoftShoeError(posn,key)==
-    coreError ['"in line ", STRINGIMAGE lineNo posn]
+    coreError ['"in line ", toString lineNo posn]
     shoeConsole lineString posn
     shoeConsole strconc(shoeSpaces lineCharacter posn,'"|")
     shoeConsole key
@@ -130,10 +126,10 @@ bpSpecificErrorHere(key) ==  bpSpecificErrorAtToken($stok, key)
 bpGeneralErrorHere() ==  bpSpecificErrorHere('"syntax error")
  
 bpIgnoredFromTo(pos1, pos2) ==
-    shoeConsole strconc('"ignored from line ", STRINGIMAGE lineNo pos1)
+    shoeConsole strconc('"ignored from line ", toString lineNo pos1)
     shoeConsole lineString pos1
     shoeConsole strconc(shoeSpaces lineCharacter pos1,'"|")
-    shoeConsole strconc('"ignored through line ", STRINGIMAGE lineNo pos2)
+    shoeConsole strconc('"ignored through line ", toString lineNo pos2)
     shoeConsole lineString pos2
     shoeConsole strconc(shoeSpaces lineCharacter pos2,'"|")
 
@@ -395,12 +391,12 @@ shoeElse1(keep,b,s)==
  
 shoeLineSyntaxError(h)==
   shoeConsole strconc('"INCLUSION SYNTAX ERROR IN LINE ",
-			     STRINGIMAGE rest h)
+			     toString rest h)
   shoeConsole first h
   shoeConsole '"LINE IGNORED"
  
 bPremStreamNil(h)==
-  shoeConsole strconc('"UNEXPECTED )fin IN LINE ",STRINGIMAGE rest h)
+  shoeConsole strconc('"UNEXPECTED )fin IN LINE ",toString rest h)
   shoeConsole first h
   shoeConsole '"REST OF FILE IGNORED"
   $bStreamNil

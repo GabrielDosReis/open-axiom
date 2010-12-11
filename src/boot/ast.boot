@@ -147,7 +147,7 @@ quote x ==
 bfGenSymbol: () -> %Symbol 
 bfGenSymbol()==
     $GenVarCounter := $GenVarCounter+1
-    INTERN strconc('"bfVar#",STRINGIMAGE $GenVarCounter)
+    INTERN strconc('"bfVar#",toString $GenVarCounter)
 
 bfColon: %Thing -> %List
 bfColon x== 
@@ -528,7 +528,7 @@ bfLET1(lhs,rhs) ==
     l2 is ["PROGN",:.] => bfMKPROGN [l1,:rest l2]
     if IDENTP first l2 then l2 := [l2,:nil]
     bfMKPROGN [l1,:l2,name]
-  g := INTERN strconc('"LETTMP#",STRINGIMAGE $letGenVarCounter)
+  g := INTERN strconc('"LETTMP#",toString $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(lhs,g)
@@ -565,7 +565,7 @@ bfLET2(lhs,rhs) ==
   lhs is ['APPEND,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['REVERSE,rhs]
-    g := INTERN strconc('"LETTMP#", STRINGIMAGE $letGenVarCounter)
+    g := INTERN strconc('"LETTMP#", toString $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := bfLET2(patrev,g)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
@@ -648,7 +648,7 @@ bfIS1(lhs,rhs) ==
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
   rhs is ["EQUAL",a] => bfQ(lhs,a)
   cons? lhs =>
-    g := INTERN strconc('"ISTMP#",STRINGIMAGE $isGenVarCounter)
+    g := INTERN strconc('"ISTMP#",toString $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
@@ -665,7 +665,7 @@ bfIS1(lhs,rhs) ==
     bfAND [['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := bfISReverse(b,a)
-    g := INTERN strconc('"ISTMP#",STRINGIMAGE $isGenVarCounter)
+    g := INTERN strconc('"ISTMP#",toString $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],'T]]
     l2 := bfIS1(g,patrev)
@@ -1433,7 +1433,7 @@ genGCLnativeTranslation(op,s,t,op') ==
 	       :[gclArgsInC(x,a) for x in tails s for a in tails cargs],
 		  '"); }" ]
                 where cargs := [mkCArgName i for i in 0..(#s - 1)]
-    mkCArgName i == strconc('"x",STRINGIMAGE i)
+    mkCArgName i == strconc('"x",toString i)
     cparm(x,a) ==
       strconc(gclTypeInC first x, '" ", first a,
 	(rest x => '", "; '""))
@@ -1475,7 +1475,7 @@ genECLnativeTranslation(op,s,t,op') ==
 	      :[sharpArg(i,x) for i in 0..(n-1) for x in s],'")"]
 	  sharpArg(i,x) == 
 	    i = 0 => strconc('"(#0)",selectDatum x)
-	    strconc('",",'"(#", STRINGIMAGE i, '")", selectDatum x)
+	    strconc('",",'"(#", toString i, '")", selectDatum x)
 	  selectDatum x ==
 	    isSimpleNativeType x => '""
 	    [.,[c,y]] := x
