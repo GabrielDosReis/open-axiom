@@ -8,9 +8,10 @@
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
           (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
-          (LIST "else" 'ELSE) (LIST "for" 'FOR) (LIST "has" 'HAS)
-          (LIST "if" 'IF) (LIST "import" 'IMPORT) (LIST "in" 'IN)
-          (LIST "is" 'IS) (LIST "isnt" 'ISNT) (LIST "leave" 'LEAVE)
+          (LIST "else" 'ELSE) (LIST "finally" 'FINALLY)
+          (LIST "for" 'FOR) (LIST "has" 'HAS) (LIST "if" 'IF)
+          (LIST "import" 'IMPORT) (LIST "in" 'IN) (LIST "is" 'IS)
+          (LIST "isnt" 'ISNT) (LIST "leave" 'LEAVE)
           (LIST "module" 'MODULE) (LIST "namespace" 'NAMESPACE)
           (LIST "of" 'OF) (LIST "or" 'OR) (LIST "rem" 'REM)
           (LIST "repeat" 'REPEAT) (LIST "return" 'RETURN)

@@ -1,5 +1,15 @@
 2010-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: `finally' is now a keyword.
+	* boot/parser.boot (bpMissing): Use a BootParserException exception.
+	(bpTrap): Likewise.
+	(bpListAndRecover): Catch them.
+	* boot/parser.boot (shoeOutParse): Likewise.
+	* boot/ast.boot (bfHandlers): Fix thinko.
+	(codeForCatchHandlers): Likewise.
+
+2010-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/parser.boot (bpListAndRecover): Use Lisp-level CATCH.
 	(bpTry): Rewrite.
 	(bpTry): Likewise.

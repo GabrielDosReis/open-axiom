@@ -2082,7 +2082,7 @@
     (RETURN
       (COND
         ((NULL |hs|)
-         (LIST 'COND
+         (CONS 'COND
                (NREVERSE (CONS (LIST T
                                      (LIST 'THROW
                                       :OPEN-AXIOM-CATCH-POINT |n|))
@@ -2135,8 +2135,7 @@
       (PROGN
         (SETQ |ehTest|
               (LIST 'AND (LIST 'CONSP |g|)
-                    (LIST (|bfQ| (LIST 'CAR |g|)
-                                 :OPEN-AXIOM-CATCH-POINT))))
+                    (|bfQ| (LIST 'CAR |g|) :OPEN-AXIOM-CATCH-POINT)))
         (LIST 'LET
               (LIST (LIST |g|
                           (LIST 'CATCH :OPEN-AXIOM-CATCH-POINT |e|)))
