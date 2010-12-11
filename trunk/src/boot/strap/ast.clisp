@@ -163,7 +163,7 @@
   (DECLARE (SPECIAL |$GenVarCounter|))
   (PROGN
     (SETQ |$GenVarCounter| (+ |$GenVarCounter| 1))
-    (INTERN (CONCAT "bfVar#" (STRINGIMAGE |$GenVarCounter|)))))
+    (INTERN (CONCAT "bfVar#" (WRITE-TO-STRING |$GenVarCounter|)))))
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%List|) |bfColon|))
 
@@ -742,7 +742,7 @@
               (|bfMKPROGN| (CONS |l1| (APPEND |l2| (CONS |name| NIL)))))))
         (T (SETQ |g|
                  (INTERN (CONCAT "LETTMP#"
-                                 (STRINGIMAGE |$letGenVarCounter|))))
+                                 (WRITE-TO-STRING |$letGenVarCounter|))))
            (SETQ |$letGenVarCounter| (+ |$letGenVarCounter| 1))
            (SETQ |rhs1| (LIST 'L%T |g| |rhs|))
            (SETQ |let1| (|bfLET1| |lhs| |g|))
@@ -834,7 +834,7 @@
          (SETQ |rev| (LIST 'REVERSE |rhs|))
          (SETQ |g|
                (INTERN (CONCAT "LETTMP#"
-                               (STRINGIMAGE |$letGenVarCounter|))))
+                               (WRITE-TO-STRING |$letGenVarCounter|))))
          (SETQ |$letGenVarCounter| (+ |$letGenVarCounter| 1))
          (SETQ |l2| (|bfLET2| |patrev| |g|))
          (COND
@@ -982,7 +982,7 @@
         ((CONSP |lhs|)
          (SETQ |g|
                (INTERN (CONCAT "ISTMP#"
-                               (STRINGIMAGE |$isGenVarCounter|))))
+                               (WRITE-TO-STRING |$isGenVarCounter|))))
          (SETQ |$isGenVarCounter| (+ |$isGenVarCounter| 1))
          (|bfMKPROGN| (LIST (LIST 'L%T |g| |lhs|) (|bfIS1| |g| |rhs|))))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'CONS)
@@ -1039,7 +1039,7 @@
          (SETQ |patrev| (|bfISReverse| |b| |a|))
          (SETQ |g|
                (INTERN (CONCAT "ISTMP#"
-                               (STRINGIMAGE |$isGenVarCounter|))))
+                               (WRITE-TO-STRING |$isGenVarCounter|))))
          (SETQ |$isGenVarCounter| (+ |$isGenVarCounter| 1))
          (SETQ |rev|
                (|bfAND| (LIST (LIST 'CONSP |lhs|)
@@ -2412,7 +2412,7 @@
                          (LIST |rettype| |cop|)))))))))
 
 (DEFUN |genGCLnativeTranslation,mkCArgName| (|i|)
-  (CONCAT "x" (STRINGIMAGE |i|)))
+  (CONCAT "x" (WRITE-TO-STRING |i|)))
 
 (DEFUN |genGCLnativeTranslation,cparm| (|x| |a|)
   (CONCAT (|genGCLnativeTranslation,gclTypeInC| (CAR |x|)) " "
@@ -2525,7 +2525,7 @@
   (COND
     ((EQL |i| 0)
      (CONCAT "(#0)" (|genECLnativeTranslation,selectDatum| |x|)))
-    (T (CONCAT "," "(#" (STRINGIMAGE |i|) ")"
+    (T (CONCAT "," "(#" (WRITE-TO-STRING |i|) ")"
                (|genECLnativeTranslation,selectDatum| |x|)))))
 
 (DEFUN |genECLnativeTranslation,selectDatum| (|x|)

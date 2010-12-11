@@ -454,7 +454,7 @@ shoeError()==
   $n:=$n+1
   SoftShoeError([$linepos,:n],
     strconc( '"The character whose number is ",
-	    STRINGIMAGE QENUM($ln,n),'" is not a Boot character"))
+	    toString QENUM($ln,n),'" is not a Boot character"))
   shoeLeafError ($ln.n)
  
 shoeOrdToNum x== 

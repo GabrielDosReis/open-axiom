@@ -526,7 +526,7 @@
         (SETQ |$n| (+ |$n| 1))
         (|SoftShoeError| (CONS |$linepos| |n|)
             (CONCAT "The character whose number is "
-                    (STRINGIMAGE (QENUM |$ln| |n|))
+                    (WRITE-TO-STRING (QENUM |$ln| |n|))
                     " is not a Boot character"))
         (|shoeLeafError| (ELT |$ln| |n|))))))
 

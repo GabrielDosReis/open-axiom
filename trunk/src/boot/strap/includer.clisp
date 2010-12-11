@@ -13,8 +13,6 @@
 
 (DEFUN |char| (|x|) (CHAR (PNAME |x|) 0))
 
-(DEFUN STRINGIMAGE (|x|) (WRITE-TO-STRING |x|))
-
 (DEFUN |shoeCLOSE| (|stream|) (CLOSE |stream|))
 
 (DEFUN |shoeNotFound| (|fn|)
@@ -41,12 +39,12 @@
     (RETURN
       (PROGN
         (SETQ |pos| (|shoeTokPosn| |tok|))
-        (CONCAT "line " (STRINGIMAGE (|lineNo| |pos|)) ", column "
-                (STRINGIMAGE (|lineCharacter| |pos|)))))))
+        (CONCAT "line " (WRITE-TO-STRING (|lineNo| |pos|)) ", column "
+                (WRITE-TO-STRING (|lineCharacter| |pos|)))))))
 
 (DEFUN |SoftShoeError| (|posn| |key|)
   (PROGN
-    (|coreError| (LIST "in line " (STRINGIMAGE (|lineNo| |posn|))))
+    (|coreError| (LIST "in line " (WRITE-TO-STRING (|lineNo| |posn|))))
     (|shoeConsole| (|lineString| |posn|))
     (|shoeConsole|
         (CONCAT (|shoeSpaces| (|lineCharacter| |posn|)) "|"))
@@ -68,13 +66,14 @@
 (DEFUN |bpIgnoredFromTo| (|pos1| |pos2|)
   (PROGN
     (|shoeConsole|
-        (CONCAT "ignored from line " (STRINGIMAGE (|lineNo| |pos1|))))
+        (CONCAT "ignored from line "
+                (WRITE-TO-STRING (|lineNo| |pos1|))))
     (|shoeConsole| (|lineString| |pos1|))
     (|shoeConsole|
         (CONCAT (|shoeSpaces| (|lineCharacter| |pos1|)) "|"))
     (|shoeConsole|
         (CONCAT "ignored through line "
-                (STRINGIMAGE (|lineNo| |pos2|))))
+                (WRITE-TO-STRING (|lineNo| |pos2|))))
     (|shoeConsole| (|lineString| |pos2|))
     (|shoeConsole|
         (CONCAT (|shoeSpaces| (|lineCharacter| |pos2|)) "|"))))
@@ -454,7 +453,7 @@
   (PROGN
     (|shoeConsole|
         (CONCAT "INCLUSION SYNTAX ERROR IN LINE "
-                (STRINGIMAGE (CDR |h|))))
+                (WRITE-TO-STRING (CDR |h|))))
     (|shoeConsole| (CAR |h|))
     (|shoeConsole| "LINE IGNORED")))
 
@@ -462,7 +461,7 @@
   (DECLARE (SPECIAL |$bStreamNil|))
   (PROGN
     (|shoeConsole|
-        (CONCAT "UNEXPECTED )fin IN LINE " (STRINGIMAGE (CDR |h|))))
+        (CONCAT "UNEXPECTED )fin IN LINE " (WRITE-TO-STRING (CDR |h|))))
     (|shoeConsole| (CAR |h|))
     (|shoeConsole| "REST OF FILE IGNORED")
     |$bStreamNil|))
