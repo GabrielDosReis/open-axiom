@@ -295,7 +295,7 @@ $TriangleVariableList ==
 
 
 $AtVariables ==
-  [INTERN strconc('"@",WRITE_-TO_-STRING i) for i in 1..50]
+  [INTERN strconc('"@",toString i) for i in 1..50]
 
 ++ List of basic predicates the system has a built-in optimization
 ++ support for.

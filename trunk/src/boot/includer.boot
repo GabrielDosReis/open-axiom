@@ -79,7 +79,7 @@ char x ==
 
 -- returns the string representation of object X.
 STRINGIMAGE x ==
-  WRITE_-TO_-STRING x
+  toString x
 
 -- close STREAM.
 shoeCLOSE stream ==
@@ -102,7 +102,7 @@ shoeReadLine stream ==
 
 -- write LINE to standard terminal I/O.
 shoeConsole line ==
-  WRITE_-LINE(line, _*TERMINAL_-IO_*)
+  writeLine(line, _*TERMINAL_-IO_*)
  
 shoeSpaces n  ==  
   MAKE_-FULL_-CVEC(n, '".")

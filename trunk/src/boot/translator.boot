@@ -324,7 +324,7 @@ shoeConsoleLines lines ==
   shoeConsole '" "
  
 shoeFileLine(x, stream) ==
-    WRITE_-LINE(x, stream)
+    writeLine(x, stream)
     x
  
 shoeFileTrees(s,st)==
@@ -697,7 +697,7 @@ PSTTOMC string==
 BOOTLOOP() ==
   a:=READ_-LINE()
   #a=0=>
-       WRITE_-LINE '"Boot Loop; to exit type ] "
+       writeLine '"Boot Loop; to exit type ] "
        BOOTLOOP()
   b:=shoePrefix? ('")console",a)
   b =>
@@ -711,7 +711,7 @@ BOOTLOOP() ==
 BOOTPO() ==
   a:=READ_-LINE()
   #a=0=>
-       WRITE_-LINE '"Boot Loop; to exit type ] "
+       writeLine '"Boot Loop; to exit type ] "
        BOOTPO()
   b:=shoePrefix? ('")console",a)
   b =>

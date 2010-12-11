@@ -2619,7 +2619,7 @@ primaryForm2String x ==
     x = "$" => '"%"
     x = "$$" => '"%%"
     SYMBOL_-NAME x
-  atom x => WRITE_-TO_-STRING x
+  atom x => toString x
   strconc('"(",inputForm2String x, '")")
 
 callForm2String x ==
@@ -2636,8 +2636,8 @@ callForm2String x ==
   op = "$elt" => typedForm2String("$", second args, first args)
   op is ["$elt",t,op'] => typedForm2String("$",[op',:args], t)
   "strconc"/[inputForm2String op, '"(",:args','")"] where
-    args' := [toString(a,i) for a in args for i in 0..]
-    toString(a,i) ==
+    args' := [stringify(a,i) for a in args for i in 0..]
+    stringify(a,i) ==
       i = 0 => inputForm2String a
       strconc('",",inputForm2String a)
   
