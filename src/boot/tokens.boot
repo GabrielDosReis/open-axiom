@@ -289,6 +289,7 @@ for i in [ _
   ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
+  ["toString", "WRITE-TO-STRING"], _
   ["true",           "T"]  , _
   ["upperCase?", "UPPER-CASE-P"], _
   ["vector?", "SIMPLE-VECTOR-P"], _

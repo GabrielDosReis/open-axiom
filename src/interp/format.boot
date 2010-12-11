@@ -392,7 +392,7 @@ form2String1 u ==
       formWrapId u
     SUBRP u => formWrapId BPINAME u
     string? u => formWrapId u
-    formWrapId WRITE_-TO_-STRING u
+    formWrapId toString u
   u1 := u
   [op,:argl] := u
   op='Join or op= 'mkCategory => formJoin1(op,argl)
@@ -735,12 +735,12 @@ object2String x ==
   IDENTP x  => PNAME x
   null x    => '""
   cons?  x  => strconc(object2String first x, object2String rest x)
-  WRITE_-TO_-STRING x
+  toString x
 
 object2Identifier x ==
   IDENTP x  => x
   string? x => INTERN x
-  INTERN WRITE_-TO_-STRING x
+  INTERN toString x
 
 blankList x == "append"/[[BLANK,y] for y in x]
 
