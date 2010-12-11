@@ -240,7 +240,7 @@ exp2FortOptimizeCS1 e ==
       f := NIL
     f := g
 
-  MEMQ(object2Identifier first e,'(ROW AGGLST)) => e
+  object2Identifier first e in '(ROW AGGLST) => e
 
   -- see if we have already seen this expression
   n := HGET($fortCsHash,e)

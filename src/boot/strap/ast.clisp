@@ -1103,16 +1103,17 @@
   (PROG (|ISTMP#1|)
     (RETURN
       (COND
-        ((OR (AND (CONSP |var|) (EQ (CAR |var|) '|char|)
+        ((OR (INTEGERP |var|)
+             (AND (CONSP |var|) (EQ (CAR |var|) '|char|)
                   (PROGN
                     (SETQ |ISTMP#1| (CDR |var|))
                     (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
              (|sequence?| |seq| #'INTEGERP))
-         (LIST 'MEMBER |var| |seq| :TEST 'EQL))
+         (LIST 'MEMBER |var| |seq| :TEST (LIST 'FUNCTION 'EQL)))
         ((OR (|defQuoteId| |var|) (|sequence?| |seq| #'SYMBOLP))
          (LIST 'MEMQ |var| |seq|))
-        ((|sequence?| |seq| #'STRINGP)
-         (LIST 'MEMBER |var| |seq| :TEST 'STRING=))
+        ((OR (STRINGP |var|) (|sequence?| |seq| #'STRINGP))
+         (LIST 'MEMBER |var| |seq| :TEST (LIST 'FUNCTION 'STRING=)))
         (T (LIST 'MEMBER |var| |seq|))))))
 
 (DEFUN |bfInfApplication| (|op| |left| |right|)

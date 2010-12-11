@@ -633,7 +633,7 @@ letPrint3(x,xval,printfn,currentFunction) ==
          if flag='letPrint2 then print xval
       if (y:= hasPair("BREAK",y)) and
         (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+          (not (PNAME(x).0 in '($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               xval]
   x

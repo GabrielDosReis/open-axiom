@@ -95,7 +95,7 @@ htSayExplicitExports r ==
     systemError()
 
 displayBreakIntoAnds pred ==
-  pred is [op,:u] and member(op,'(and AND)) => u
+  pred is [op,:u] and op in '(and AND) => u
   [pred]
 
 htSayValue t ==

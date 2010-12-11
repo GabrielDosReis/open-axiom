@@ -79,9 +79,9 @@ errorSupervisor(errorType,errorMsg) ==
   errorSupervisor1(errorType,errorMsg,$BreakMode)
 
 needsToSplitMessage msg ==
-  member("%b", msg) or member('"%b",msg) => false
-  member("%d",msg) or member('"%d",msg) => false
-  member("%l",msg) or member('"%l",msg) => false
+  "%b" in msg or '"%b" in msg => false
+  "%d" in msg or '"%d" in msg => false
+  "%l" in msg or '"%l" in msg => false
   true
 
 errorSupervisor1(errorType,errorMsg,$BreakMode) ==

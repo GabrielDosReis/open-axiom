@@ -396,7 +396,7 @@ checkRecordHash u ==
             checkDocError ['"Unknown \spadtype: ", s]
           atom key => 'ok
           checkDocError ['"Wrong number of arguments: ",form2HtString key]
-      else if member(x,'("\spadop" "\keyword")) and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
+      else if x in '("\spadop" "\keyword") and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           x := intern checkGetStringBeforeRightBrace u
           not (GETL(x,'Led) or GETL(x,'Nud)) =>
             checkDocError ['"Unknown \spadop: ",x]
@@ -773,15 +773,15 @@ checkDecorate u ==
           mathSymbolsOk := count - 1
           spadflag := count - 1
         else checkDocError ['"\em must be enclosed in braces"]
-      if member(x,'("\spadpaste" "\spad" "\spadop")) then mathSymbolsOk := count
-      if member(x,'("\s" "\spadtype" "\spadsys" "\example" "\andexample" "\spadop" "\spad" "\spadignore" "\spadpaste" "\spadcommand" "\footnote")) then spadflag := count
+      if x in '("\spadpaste" "\spad" "\spadop") then mathSymbolsOk := count
+      if x in '("\s" "\spadtype" "\spadsys" "\example" "\andexample" "\spadop" "\spad" "\spadignore" "\spadpaste" "\spadcommand" "\footnote") then spadflag := count
       else if x = $charLbrace then
         count := count + 1
       else if x = $charRbrace then
         count := count - 1
         if mathSymbolsOk = count then mathSymbolsOk := false
         if spadflag = count then spadflag := false
-      else if not mathSymbolsOk and member(x,'("+" "*" "=" "==" "->")) then
+      else if not mathSymbolsOk and x in '("+" "*" "=" "==" "->") then
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
 
@@ -814,7 +814,7 @@ checkDecorate u ==
       not spadflag and
         (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and ((string? x and not x.0 = $charBack and digit?(x.(MAXINDEX x))) or member(x,'("true" "false"))) =>
+      not spadflag and ((string? x and not x.0 = $charBack and digit?(x.(MAXINDEX x))) or x in '("true" "false")) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
       xcount := SIZE x
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
@@ -822,7 +822,7 @@ checkDecorate u ==
       xcount = 4 and x.1 = char '_- and x.2 = char 't and x.3 = char 'h =>
         ['"-th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
       not spadflag and (xcount = 2 and x.1 = char 'i or  --wrap ei, xi, hi
-         xcount > 0 and xcount < 4 and not member(x,'("th" "rd" "st")) and
+         xcount > 0 and xcount < 4 and not x in '("th" "rd" "st") and
            hasNoVowels x) =>                    --wrap words with no vowels
              [$charRbrace,x,$charLbrace,'"\spad",:acc]
       [checkAddBackSlashes x,:acc]
@@ -1293,19 +1293,19 @@ checkDecorateForHt u ==
       if x = '"\em" then
         if count > 0 then spadflag := count - 1
         else checkDocError ['"\em must be enclosed in braces"]
-      if member(x,'("\s" "\spadop" "\spadtype" "\spad" "\spadpaste" "\spadcommand" "\footnote")) then spadflag := count
+      if x in '("\s" "\spadop" "\spadtype" "\spad" "\spadpaste" "\spadcommand" "\footnote") then spadflag := count
       else if x = $charLbrace then count := count + 1
       else if x = $charRbrace then
         count := count - 1
         if spadflag = count then spadflag := false
-      else if not spadflag and member(x,'("+" "*" "=" "==" "->")) then
+      else if not spadflag and x in '("+" "*" "=" "==" "->") then
         if $checkingXmptex? then
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
       x = '"$" or x = '"%" => checkDocError ['"Unescaped ",x]
 --      not spadflag and string? x and (member(x,$argl) or #x = 1
---        and alphabetic? x.0) and not member(x,'("a" "A")) =>
+--        and alphabetic? x.0) and not (x in '("a" "A")) =>
 --          checkDocError1 ['"Naked ",x]
---      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or member(x,'("true" "false")))
+--      not spadflag and string? x and (not x.0 = $charBack and not digit?(x.0) and digit?(x.(MAXINDEX x))or x in '("true" "false"))
 --        => checkDocError1 ["Naked ",x]
     u := rest u
   u

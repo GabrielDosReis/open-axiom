@@ -1126,9 +1126,9 @@ dbConsHeading(htPage,conlist,view,kind) ==
     nil
   heading := [:prefix,:placepart]
   connective :=
-    member(view,'(abbrs files kinds)) => '" as "
+    view in '(abbrs files kinds) => '" as "
     '" with "
-  if count ~= 0 and member(view,'(abbrs files parameters conditions)) then heading:= [:heading,'" viewed",connective,'"{\em ",STRINGIMAGE view,'"}"]
+  if count ~= 0 and view in '(abbrs files parameters conditions) then heading:= [:heading,'" viewed",connective,'"{\em ",STRINGIMAGE view,'"}"]
   heading
 
 dbShowConstructorLines lines ==

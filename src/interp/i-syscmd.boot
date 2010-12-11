@@ -3139,11 +3139,11 @@ handleNoParseCommands(unab, string) ==
     npsynonym(unab, (null spaceIndex => '""; SUBSEQ(string, spaceIndex+1)))
   null spaceIndex =>
     FUNCALL unab
-  member(unab, '( quit     _
-                  fin      _
-                  pquit    _
-                  credits  _
-                  copyright )) => 
+  unab in '( quit     _
+             fin      _
+             pquit    _
+             credits  _
+             copyright ) => 
     sayKeyedMsg("S2IV0005", NIL)
     nil
   funName := INTERN strconc('"np",STRING unab)

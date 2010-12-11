@@ -769,15 +769,15 @@ dbPresentCons(htPage,kind,:exclusions) ==
   star?  := true     --always include information on exposed/unexposed   4/92
   if $standard then htBeginTable()
   htSay '"{"
-  if one? or member('abbrs,exclusions)
+  if one? or 'abbrs in exclusions
     then htSay '"{\em Abbreviations}"
     else htMakePage [['bcLispLinks,['"Abbreviations",'"",'dbShowCons,'abbrs]]]
   htSay '"}{"
-  if one? or member('conditions,exclusions) or "and"/[rest x = true for x in cAlist]
+  if one? or 'conditions in exclusions or "and"/[rest x = true for x in cAlist]
     then htSay '"{\em Conditions}"
     else htMakePage [['bcLispLinks,['"Conditions",'"",'dbShowCons,'conditions]]]
   htSay '"}{"
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSay '"{\em Descriptions}"
     else htMakePage [['bcLispLinks,['"Descriptions",'"",'dbShowCons,'documentation]]]
   htSay '"}{"
@@ -786,15 +786,15 @@ dbPresentCons(htPage,kind,:exclusions) ==
     else htMakePage
       [['bcLinks,['"Filter",'"",'htFilterPage,['dbShowCons,'filter]]]]
   htSay '"}{"
-  if one? or member('kinds,exclusions) or kind ~= 'constructor
+  if one? or 'kinds in exclusions or kind ~= 'constructor
     then htSay '"{\em Kinds}"
     else htMakePage [['bcLispLinks,['"Kinds",'"",'dbShowCons,'kinds]]]
   htSay '"}{"
-  if one? or member('names,exclusions)
+  if one? or 'names in exclusions
     then htSay '"{\em Names}"
     else htMakePage [['bcLispLinks,['"Names",'"",'dbShowCons,'names]]]
   htSay '"}{"
-  if one? or member('parameters,exclusions) or not ("or"/[CDAR x for x in cAlist])
+  if one? or 'parameters in exclusions or not ("or"/[CDAR x for x in cAlist])
     then htSay '"{\em Parameters}"
     else htMakePage [['bcLispLinks,['"Parameters",'"",'dbShowCons,'parameters]]]
   htSay '"}{"
@@ -821,25 +821,25 @@ dbPresentConsSaturn(htPage,kind,exclusions) ==
   exposedUnexposedFlag := $includeUnexposed? --used to be star?       4/92
   star?  := true     --always include information on exposed/unexposed   4/92
   if $standard then htBeginTable()
-  if one? or member('abbrs,exclusions)
+  if one? or 'abbrs in exclusions
     then htSayCold '"\&Abbreviations"
     else htMakePage [['bcLispLinks,['"\&Abbreviations",'"",'dbShowCons,'abbrs]]]
-  if one? or member('conditions,exclusions) or "and"/[rest x = true for x in cAlist]
+  if one? or 'conditions in exclusions or "and"/[rest x = true for x in cAlist]
     then htSayCold '"\&Conditions"
     else htMakePage [['bcLispLinks,['"\&Conditions",'"",'dbShowCons,'conditions]]]
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSayCold '"\&Descriptions"
     else htMakePage [['bcLispLinks,['"\&Descriptions",'"",'dbShowCons,'documentation]]]
   if one? or null rest cAlist
     then htSayCold '"\&Filter"
     else htMakeSaturnFilterPage ['dbShowCons, 'filter]
-  if one? or member('kinds,exclusions) or kind ~= 'constructor
+  if one? or 'kinds in exclusions or kind ~= 'constructor
     then htSayCold '"\&Kinds"
     else htMakePage [['bcLispLinks,['"\&Kinds",'"",'dbShowCons,'kinds]]]
-  if one? or member('names,exclusions)
+  if one? or 'names in exclusions
     then htSayCold '"\&Names"
     else htMakePage [['bcLispLinks,['"\&Names",'"",'dbShowCons,'names]]]
-  if one? or member('parameters,exclusions) or not ("or"/[CDAR x for x in cAlist])
+  if one? or 'parameters in exclusions or not ("or"/[CDAR x for x in cAlist])
     then htSayCold '"\&Parameters"
     else htMakePage [['bcLispLinks,['"\&Parameters",'"",'dbShowCons,'parameters]]]
   htSaySaturn '"\hrule"
@@ -1040,12 +1040,12 @@ dbPresentOps(htPage,which,:exclusions) ==
   one? := empty? or one?
   htBeginTable()
   htSay '"{"
-  if one? or member('conditions,exclusions)
+  if one? or 'conditions in exclusions
                  or (htpProperty(htPage,'condition?) = 'no)
       then htSay '"{\em Conditions}"
       else htMakePage [['bcLispLinks,['"Conditions",'"",'dbShowOps,which,'conditions]]]
   htSay '"}{"
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSay '"{\em Descriptions}"
     else htMakePage [['bcLispLinks,['"Descriptions",'"",'dbShowOps,which,'documentation]]]
   htSay '"}{"
@@ -1053,29 +1053,29 @@ dbPresentOps(htPage,which,:exclusions) ==
     then htSay '"{\em Filter}"
     else htMakePage [['bcLinks,['"Filter ",'"",'htFilterPage,['dbShowOps,which,'filter]]]]
   htSay '"}{"
-  if one? or member('names,exclusions) or null KDR opAlist
+  if one? or 'names in exclusions or null KDR opAlist
     then htSay '"{\em Names}"
     else htMakePage [['bcLispLinks,['"Names",'"",'dbShowOps,which,'names]]]
   if not star? then
     htSay '"}{"
-    if not implementation? or member('implementation,exclusions) or which = '"attribute" or
+    if not implementation? or 'implementation in exclusions or which = '"attribute" or
       ((conname := opOf htpProperty(htPage,'conform))
         and getConstructorKindFromDB conname = "category")
     then htSay '"{\em Implementations}"
     else htMakePage
       [['bcLispLinks,['"Implementations",'"",'dbShowOps,which,'implementation]]]
   htSay '"}{"
-  if one? or member('origins,exclusions)
+  if one? or 'origins in exclusions
     then htSay '"{\em Origins}"
     else htMakePage [['bcLispLinks,['"Origins",'"",'dbShowOps,which,'origins]]]
   htSay '"}{"
-  if one? or member('parameters,exclusions) --also test for some parameter
+  if one? or 'parameters in exclusions --also test for some parameter
       or not dbDoesOneOpHaveParameters? opAlist
     then htSay '"{\em Parameters}"
     else htMakePage [['bcLispLinks,['"Parameters",'"",'dbShowOps,which,'parameters]]]
   htSay '"}{"
   if which ~= '"attribute" then
-    if one? or member('signatures,exclusions)
+    if one? or 'signatures in exclusions
       then htSay '"{\em Signatures}"
       else htMakePage [['bcLispLinks,['"Signatures",'"",'dbShowOps,which,'signatures]]]
   htSay '"}"
@@ -1109,34 +1109,34 @@ dbPresentOpsSaturn(htPage,which,exclusions) ==
   empty? := null opAlist
   one?   := opAlist is [entry] and 2 = #entry
   one? := empty? or one?
-  if one? or member('conditions,exclusions)
+  if one? or 'conditions in exclusions
                  or (htpProperty(htPage,'condition?) = 'no)
       then htSayCold '"\&Conditions"
       else htMakePage [['bcLispLinks,['"\&Conditions",'"",'dbShowOps,which,'conditions]]]
-  if empty? or member('documentation,exclusions)
+  if empty? or 'documentation in exclusions
     then htSayCold '"\&Descriptions"
     else htMakePage [['bcLispLinks,['"\&Descriptions",'"",'dbShowOps,which,'documentation]]]
   if null IFCDR opAlist
     then htSayCold '"\&Filter"
     else htMakeSaturnFilterPage ['dbShowOps, which, 'filter]
-  if not implementation? or member('implementation,exclusions) or which = '"attribute" or
+  if not implementation? or 'implementation in exclusions or which = '"attribute" or
       ((conname := opOf htpProperty(htPage,'conform))
         and getConstructorKindFromDB conname = "category")
     then htSayCold '"\&Implementations"
     else htMakePage
       [['bcLispLinks,['"\&Implementations",'"",'dbShowOps,which,'implementation]]]
-  if one? or member('names,exclusions) or null KDR opAlist
+  if one? or 'names in exclusions or null KDR opAlist
     then htSayCold '"\&Names"
     else htMakePage [['bcLispLinks,['"\&Names",'"",'dbShowOps,which,'names]]]
-  if one? or member('origins,exclusions)
+  if one? or 'origins in exclusions
     then htSayCold '"\&Origins"
     else htMakePage [['bcLispLinks,['"\&Origins",'"",'dbShowOps,which,'origins]]]
-  if one? or member('parameters,exclusions) --also test for some parameter
+  if one? or 'parameters in exclusions --also test for some parameter
       or not dbDoesOneOpHaveParameters? opAlist
     then htSayCold '"\&Parameters"
     else htMakePage [['bcLispLinks,['"\&Parameters",'"",'dbShowOps,which,'parameters]]]
   if which ~= '"attribute" then
-    if one? or member('signatures,exclusions)
+    if one? or 'signatures in exclusions
       then htSayCold '"\&Signatures"
       else htMakePage [['bcLispLinks,['"\&Signatures",'"",'dbShowOps,which,'signatures]]]
   if star? then
@@ -1228,7 +1228,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
     if unexposed? and $includeUnexposed? then
       htSayUnexposed()
     htSay(ops)
-    predicate='ASCONST or operationIsNiladicConstructor op or member(op,'(0 1)) => 'skip
+    predicate='ASCONST or operationIsNiladicConstructor op or op in '(0 1) => 'skip
     which = '"attribute" and null args => 'skip
     htSay('"(")
     if IFCAR args then htSay('"{\em ",quickForm2HtString IFCAR args,'"}")
@@ -1261,7 +1261,7 @@ displayDomainOp(htPage,which,origin,op,sig,predicate,
   -----------------------------------------------------------
   htSaySaturn '"\begin{tabular}{lp{0in}}"
   -----------------------------------------------------------
-  if member(which,'("operation" "constructor")) then
+  if which in '("operation" "constructor") then
     $displayReturnValue: local := nil
     if args then
       htSayStandard('"\newline\tab{2}{\em Arguments:}")

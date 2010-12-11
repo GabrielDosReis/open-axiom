@@ -188,7 +188,7 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
     j := firstDelim(s,i + 1) or siz
     t := gn(s,i,j - 1)
     middle :=
-      member(t,'("and" "or" "not")) => t
+      t in '("and" "or" "not") => t
       --the following 2 lines make commutative("*") parse correctly!!!!
       t.0 = char '_" => t
       j < siz - 1 and s.j = char '_( => t
@@ -258,7 +258,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       IFCAR sl = '"" => h(IFCDR sl,[$wild1])
       h(sl,nil)
     g s  ==    --remove "*"s around pattern for text match
-      not MEMQ('w,$options) => s
+      not ('w in $options) => s
       if s.0 = char '_* then s := SUBSTRING(s,1,nil)
       if s.(k := MAXINDEX s) = char '_* then s := SUBSTRING(s,0,k)
       s
@@ -681,7 +681,7 @@ conSpecialString?(filter,:options) ==
   secondTime := IFCAR options
   parse :=
     words := string2Words filter is [s] => ncParseFromString s
-    and/[not member(x,'("and" "or" "not")) for x in words] => ncParseFromString filter
+    and/[not (x in '("and" "or" "not")) for x in words] => ncParseFromString filter
     false
   null parse => nil
   form := conLowerCaseConTran parse
@@ -740,11 +740,11 @@ dbSearch(lines,kind,filter) == --called by attribute, operation, constructor sea
   lines is ['error,:.] => bcErrorPage lines
   null filter => nil      --means filter error
   lines is ['Abbreviations,:r] => dbSearchAbbrev(lines,kind,filter)
-  if member(kind,'("attribute" "operation")) then --should not be necessary!!
+  if kind in '("attribute" "operation") then --should not be necessary!!
     lines := dbScreenForDefaultFunctions lines
   count := #lines
   count = 0 => emptySearchPage(kind,filter)
-  member(kind,'("attribute" "operation")) => dbShowOperationLines(kind,lines)
+  kind in '("attribute" "operation") => dbShowOperationLines(kind,lines)
   dbShowConstructorLines lines
 
 dbSearchAbbrev([.,:conlist],kind,filter) ==
@@ -975,7 +975,7 @@ grepFile(pattern,:options) ==
       '"-i"
     command := strconc('"grep ",casepart,'" _'",pattern,'"_' ",source)
     runCommand
-      member(key,'(a o c d p x)) =>
+      key in '(a o c d p x) =>
         strconc(command, '" | sed 's/~/", STRINGIMAGE key, '"/' > ", target)
       strconc(command, '" > ",target)
     dbReadLines target

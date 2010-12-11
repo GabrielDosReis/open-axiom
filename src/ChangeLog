@@ -1,3 +1,24 @@
+2010-12-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfMmeber): Tidy.
+	* interp/alql.boot: Clean up.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-saturn.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/g-error.boot: Likewise.
+	* interp/i-funsel.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/trace.boot: Likewise.
+
 2010-12-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (reclaim): Remove duplicate.
