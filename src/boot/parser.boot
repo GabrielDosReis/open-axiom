@@ -258,13 +258,13 @@ bpMissingMate(close,open)==
  
 bpMissing s==
    bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
-   throw TRAPPOINT "TRAPPED"
+   throw 'TRAPPED : BootParserException
  
 bpCompMissing s == bpEqKey s or bpMissing s
  
 bpTrap()==
    bpGeneralErrorHere()
-   throw TRAPPOINT "TRAPPED"
+   throw 'TRAPPED : BootParserException
  
 bpRecoverTrap()==
   bpFirstToken()
@@ -281,9 +281,9 @@ bpListAndRecover(f)==
   done := false
   c := $inputStream
   while not done repeat
-    found := CATCH('TRAPPOINT,apply(f,nil))
---      try apply(f,nil)
---      catch TRAPPOINT --(e) => e
+    found :=
+      try apply(f,nil)
+      catch(e: BootParserException) => e
     if found = "TRAPPED"
     then
        $inputStream:=c

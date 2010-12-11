@@ -1160,7 +1160,7 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
   main(n,e,hs,xs) ==
     hs = nil =>
       ["COND",
-        nreverse
+        :nreverse
           [[true,["THROW",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,n]],:xs]]
     hs is [['%Catch,['%Signature,v,t],s],:hs'] =>
       t := 
@@ -1171,7 +1171,7 @@ bfHandlers(n,e,hs) == main(n,e,hs,nil) where
 
 codeForCatchHandlers(g,e,cs) ==
   ehTest := ['AND,['CONSP,g],
-              [bfQ(['CAR,g],KEYWORD::OPEN_-AXIOM_-CATCH_-POINT)]]
+              bfQ(['CAR,g],KEYWORD::OPEN_-AXIOM_-CATCH_-POINT)]
   ["LET",[[g,["CATCH",KEYWORD::OPEN_-AXIOM_-CATCH_-POINT,e]]],
     ["COND",[ehTest,bfHandlers(g,["CDR",g],cs)],[true,g]]]
 

@@ -319,7 +319,7 @@
     (|bpSpecificErrorHere| (CONCAT (PNAME |s|) " possibly missing"))
     (THROW :OPEN-AXIOM-CATCH-POINT
       (CONS :OPEN-AXIOM-CATCH-POINT
-            (CONS '(|SystemException|) (TRAPPOINT 'TRAPPED))))))
+            (CONS '(|BootParserException|) 'TRAPPED)))))
 
 (DEFUN |bpCompMissing| (|s|) (OR (|bpEqKey| |s|) (|bpMissing| |s|)))
 
@@ -328,7 +328,7 @@
     (|bpGeneralErrorHere|)
     (THROW :OPEN-AXIOM-CATCH-POINT
       (CONS :OPEN-AXIOM-CATCH-POINT
-            (CONS '(|SystemException|) (TRAPPOINT 'TRAPPED))))))
+            (CONS '(|BootParserException|) 'TRAPPED)))))
 
 (DEFUN |bpRecoverTrap| ()
   (PROG (|pos2| |pos1|)
@@ -356,7 +356,20 @@
           (COND
             (|done| (RETURN NIL))
             (T (PROGN
-                 (SETQ |found| (CATCH 'TRAPPOINT (APPLY |f| NIL)))
+                 (SETQ |found|
+                       (LET ((#0=#:G1354
+                                 (CATCH :OPEN-AXIOM-CATCH-POINT
+                                   (APPLY |f| NIL))))
+                         (COND
+                           ((AND (CONSP #0#)
+                                 (EQUAL (CAR #0#)
+                                        :OPEN-AXIOM-CATCH-POINT))
+                            (COND
+                              ((EQUAL (CAR #1=(CDR #0#))
+                                      '(|BootParserException|))
+                               (LET ((|e| (CDR #1#))) |e|))
+                              (T (THROW :OPEN-AXIOM-CATCH-POINT #0#))))
+                           (T #0#))))
                  (COND
                    ((EQ |found| 'TRAPPED) (SETQ |$inputStream| |c|)
                     (|bpRecoverTrap|))
