@@ -547,7 +547,7 @@ canCoerceUnion(t1,t2) ==
         for ud1 in unionDoms1]
     or/[canCoerce(t1,ud) for ud in unionDoms2]
   -- next, a little lie
-  t1 is ['Union,d1, ='"failed"] and t2 = d1 => true
+  t1 is ['Union,d1,'"failed"] and t2 = d1 => true
   isUnion1 =>
     and/[canCoerce(ud,t2) for ud in unionDoms1]
   keyedSystemError("S2GE0016",['"canCoerceUnion",
