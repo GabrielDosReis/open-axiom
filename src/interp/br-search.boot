@@ -192,7 +192,7 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
       --the following 2 lines make commutative("*") parse correctly!!!!
       t.0 = char '_" => t
       j < siz - 1 and s.j = char '_( => t
-      strconc(char '_",t,char '_")
+      strconc('"_"",t,'"_"")
     strconc(SUBSTRING(s,n,i - n),middle,fn(s,j,siz))
   gn(s,i,j) ==    --replace each underscore by 4 underscores!
     n := or/[k for k in i..j | s.k = $charUnderscore] =>
@@ -241,7 +241,7 @@ mkUpDownPattern s == recurse(s,0,#s) where
     strconc(fixchar(s.i),recurse(s,i + 1,n))
   fixchar(c) ==
     alphabetic? c =>
-      strconc(char '_[,CHAR_-UPCASE c,CHAR_-DOWNCASE c,char '_])
+      strconc('"[",CHAR_-UPCASE c,CHAR_-DOWNCASE c,'"]")
     c
 
 mkGrepPattern(s,key) ==
@@ -834,14 +834,14 @@ generalSearchDo(htPage,flag) ==
     which = 'ops => char 'o
     which = 'attrs => char 'a
     acc := '""
-    if htButtonOn?(htPage,'cats) then acc := strconc(char 'c,acc)
-    if htButtonOn?(htPage,'doms) then acc := strconc(char 'd,acc)
-    if htButtonOn?(htPage,'paks) then acc := strconc(char 'p,acc)
-    if htButtonOn?(htPage,'defs) then acc := strconc(char 'x,acc)
+    if htButtonOn?(htPage,'cats) then acc := strconc('"c",acc)
+    if htButtonOn?(htPage,'doms) then acc := strconc('"d",acc)
+    if htButtonOn?(htPage,'paks) then acc := strconc('"p",acc)
+    if htButtonOn?(htPage,'defs) then acc := strconc('"x",acc)
     n := #acc
     n = 0 or n = 4 => '"[cdpx]"
     n = 1 => acc
-    strconc(char '_[,acc,char '_])
+    strconc('"[",acc,'"]")
   form := mkDetailedGrepPattern(kindCode,name,nargs,npat)
   lines := applyGrep(form,'libdb)
 --lines := dbReadLines resultFile
@@ -871,7 +871,7 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
   main() ==
     nottick := '"[^`]"
     name := replaceGrepStar name
-    firstPart := strconc(char "^",kind,name)
+    firstPart := strconc('"^",kind,name)
     nargsPart := replaceGrepStar nargs
     exposedPart := char '_.   --always get exposed/unexposed
     patPart := replaceGrepStar argOrSig
@@ -897,8 +897,8 @@ replaceGrepStar s ==
 standardizeSignature(s) == underscoreDollars
   s.0 = char '_( => s
   k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
-  s.(k - 1) = char '_) => strconc(char '_(,s)
-  strconc(char '_(,SUBSTRING(s,0,k),char '_),SUBSTRING(s,k,nil))
+  s.(k - 1) = char '_) => strconc('"(",s)
+  strconc('"(",SUBSTRING(s,0,k),'")",SUBSTRING(s,k,nil))
 
 underscoreDollars(s) == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
@@ -950,7 +950,7 @@ grepSource key ==
     'comdb
 
 mkGrepTextfile s == 
-  strconc(systemRootDirectory(),"/algebra/", STRINGIMAGE s, '".text")
+  strconc(systemRootDirectory(),'"/algebra/", STRINGIMAGE s, '".text")
 
 getTemporaryDirectory() ==
   getEnv '"TMP" or getEnv '"TEMP"

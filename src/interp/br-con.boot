@@ -427,7 +427,7 @@ kcPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   if kind = '"category" and dbpHasDefaultCategory? xpart then
     htSay '"This category has default package "
-    bcCon(strconc(name,char '_&),'"")
+    bcCon(strconc(name,'"&"),'"")
   htSayStandard '"\newline"
   htBeginMenu(3)
   htSayStandard '"\item "
@@ -581,9 +581,9 @@ kcdePage(htPage,junk) ==
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
---  kind = '"category" => INTERN strconc(name,char '_&)
+--  kind = '"category" => INTERN strconc(name,'"&")
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -597,9 +597,9 @@ kcuPage(htPage,junk) ==
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
-    kind = '"category" => INTERN strconc(name,char '_&)
+    kind = '"category" => INTERN strconc(name,'"&")
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -620,7 +620,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN strconc(PNAME name,char '_&)
+    kind = '"category" => INTERN strconc(PNAME name,'"&")
     opOf conform
   domList := getImports pakname
   if domname then
@@ -711,7 +711,7 @@ mkConform(kind,name,argString) ==
       systemError '"Keywords in argument list?"
     atom parse => [parse]
     parse
-  [INTERN name,:rest ncParseFromString strconc(char 'd,argString)]  --& case
+  [INTERN name,:rest ncParseFromString strconc('"d",argString)]  --& case
 
 --=======================================================================
 --           Operation Page for a Domain Form from Scratch

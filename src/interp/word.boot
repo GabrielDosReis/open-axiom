@@ -376,12 +376,12 @@ maskConvert str ==
   j:= 0  --index into res
   final := MAXINDEX str
   for i in 0..final repeat
-    char := str.i
-    if char = '__ and i < final then
-      i:= i+1
-      char := str.i
-     else if char = '_? then char := '_&
-    SUFFIX(char,buf)
+    c := str.i
+    if c = char "__" and i < final then
+      i := i+1
+      c := str.i
+     else if c = char "?" then c := char "&"
+    SUFFIX(c,buf)
   buf
  
  

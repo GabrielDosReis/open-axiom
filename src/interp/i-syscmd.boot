@@ -2700,7 +2700,7 @@ diffAlist(new,old) ==
 
 reportUndo acc ==
   for [name,:proplist] in acc repeat
-    sayBrightly strconc("Properties of ",PNAME name,'" ::")
+    sayBrightly strconc('"Properties of ",PNAME name,'" ::")
     curproplist := LASSOC(name,CAAR $InteractiveFrame)
     for [prop,:value] in proplist repeat
       sayBrightlyNT ['"  ",prop,'" was: "]
@@ -2925,7 +2925,7 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
   sayBrightly '""
 
 whatCommands(patterns) ==
-  label := strconc("System Commands for User Level: ",
+  label := strconc('"System Commands for User Level: ",
     STRINGIMAGE $UserLevel)
   centerAndHighlight(label,$LINELENGTH,specialChar 'hbar)
   l := filterListOfStrings(patterns,

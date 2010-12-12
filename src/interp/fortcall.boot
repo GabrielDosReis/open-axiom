@@ -70,7 +70,7 @@ makeFort1(name,args,userArgs,dummies,decls,results,returnType,aspInfo) ==
   arrayArgs := [u for u in args | not member(u,scalarArgs)]
   orderedArgs := [:scalarArgs,:arrayArgs]
   file := if $fortranDirectory then
-    strconc($fortranDirectory,"/",STRINGIMAGE name)
+    strconc($fortranDirectory,'"/",STRINGIMAGE name)
   else
     STRINGIMAGE name
   makeFortranFun(name,orderedArgs,args,dummies,decls,results,file,
@@ -82,11 +82,11 @@ makeFort1(name,args,userArgs,dummies,decls,results,returnType,aspInfo) ==
 makeFortranFun(name,args,fortranArgs,dummies,decls,results,file,dir,
                returnType,asps) ==
   -- Create a C file to call the library function, and compile it.
-  fp := MAKE_-OUTSTREAM(strconc(file,".c"))
+  fp := MAKE_-OUTSTREAM(strconc(file,'".c"))
   writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp)
   if null dir then dir := '"."
-  asps => SYSTEM strconc("cc -c ",file,".c ; mv ",file,".o ",dir)
-  SYSTEM strconc("cc ",file,".c -o ",file,".spadexe ",$fortranLibraries)
+  asps => SYSTEM strconc('"cc -c ",file,'".c ; mv ",file,'".o ",dir)
+  SYSTEM strconc('"cc ",file,'".c -o ",file,'".spadexe ",$fortranLibraries)
 
 writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
   writeLine('"#include <stdio.h>",fp)
@@ -107,7 +107,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
     routineName := name
   -- If it is a function then give it somewhere to stick its result:
   if returnType then
-    returnName := INTERN strconc(name,"__result")
+    returnName := INTERN strconc(name,'"__result")
     wl(['"    ",getCType returnType,'" ",returnName,'",",routineName,'"();"],fp)
   -- print out type declarations for the Fortran parameters, and build an
   -- ordered list of pairs [<parameter> , <type>]
@@ -301,7 +301,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
 
   -- To make sure the spad interpreter isn't confused:
   if returnType then
-    returnName := INTERN strconc(name,"Result")
+    returnName := INTERN strconc(name,'"Result")
     decls := [[returnType,returnName], :decls]
     results := [returnName, :results]
   argNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in userArgs]
@@ -315,7 +315,7 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
     fargNames := delete(INTERN strconc(STRINGIMAGE(u),'"__arg"),fargNames)
   resPar := ["construct",["@",["construct",:fargNames],_
              ["List",["Any"]]]]
-  call := [["$elt","Lisp","invokeFortran"],strconc(file,".spadexe"),_
+  call := [["$elt","Lisp","invokeFortran"],strconc(file,'".spadexe"),_
            [["$elt","Lisp","construct"],:mkQuote args],_
            [["$elt","Lisp","construct"],:mkQuote union(asps,dummies)], decPar,_
            [["$elt","Lisp","construct"],:mkQuote results],resPar]
@@ -387,7 +387,7 @@ compileAndLink(fortFileList,fortCompiler,cFile,outFile,linkerArgs) ==
 
 addSpaces(stringList) ==
   l := " "
-  for s in stringList repeat l := strconc(l,s," ")
+  for s in stringList repeat l := strconc(l,s,'" ")
   l
 
 complexRows z ==
@@ -681,7 +681,7 @@ generateResultsName()==strconc($fortranTmpDir,getEnv('"HOST"),
 fortCall(objFile,data,results) ==
   tmpFile1 := writeData(generateDataName(),data)
   tmpFile2 := generateResultsName()
-  SYSTEM strconc(objFile," < ",tmpFile1," > ",tmpFile2)
+  SYSTEM strconc(objFile,'" < ",tmpFile1,'" > ",tmpFile2)
   results := readData(tmpFile2,results)
   removeFile tmpFile1
   removeFile tmpFile2
@@ -694,7 +694,7 @@ invokeNagman(objFiles,nfile,args,dummies,decls,results,actual) ==
                  prepareResults(results,args,dummies,actual,decls)),_
                  results,decls,inFirstNotSecond(args,dummies),actual)
   -- Tidy up asps
-  -- if objFiles then SYSTEM strconc("rm -f ",addSpaces objFiles)
+  -- if objFiles then SYSTEM strconc('"rm -f ",addSpaces objFiles)
   for fn in objFiles repeat removeFile fn
   result
 
@@ -704,8 +704,8 @@ nagCall(objFiles,nfile,data,results,tmpFiled,tmpFiler) ==
      $nagMessages => '"on"
      '"off"
   writeData(tmpFiled,data)
-  toSend:=strconc($nagHost," ",nfile," ",tmpFiler," ",tmpFiled," ",_
-      STRINGIMAGE($fortPersistence)," ", nagMessagesString," ",addSpaces objFiles)
+  toSend:=strconc($nagHost,'" ",nfile,'" ",tmpFiler,'" ",tmpFiled,'" ",_
+      STRINGIMAGE($fortPersistence),'" ", nagMessagesString,'" ",addSpaces objFiles)
   sockSendString(8,toSend)
   if sockGetInt(8)=1 then
     results := readData(tmpFiler,results)
