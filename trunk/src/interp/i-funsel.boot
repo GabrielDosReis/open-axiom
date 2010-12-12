@@ -43,7 +43,7 @@ sayFunctionSelection(op,args,target,dc,func) ==
   fsig := formatSignatureArgs args
   if not LISTP fsig then fsig := LIST fsig
   if func then func := bright ['"by ",func]
-  sayMSG concat ['%l,:bright '"Function Selection for",op,:func,'%l,
+  sayMSG concat ['"%l",:bright '"Function Selection for",op,:func,'"%l",
     '"      Arguments:",:bright fsig]
   if target then sayMSG concat ['"      Target type:",
     :bright prefix2String target]
@@ -1050,7 +1050,7 @@ selectMmsGen(op,tar,args1,args2) ==
   mmS := NIL
 
   if $reportBottomUpFlag then
-    sayMSG ['%l,:bright '"Modemaps from Associated Packages"]
+    sayMSG ['"%l",:bright '"Modemaps from Associated Packages"]
 
   if haves then
     [havesExact,havesInexact] := exact?(haves,tar,args1)
@@ -1068,7 +1068,7 @@ selectMmsGen(op,tar,args1,args2) ==
   mmS => mmS
 
   if $reportBottomUpFlag then
-    sayMSG ['%l,:bright '"Remaining General Modemaps"]
+    sayMSG ['"%l",:bright '"Remaining General Modemaps"]
   --  for mm in havenots for i in 1.. repeat sayModemapWithNumber(mm,i)
 
   if havenots then

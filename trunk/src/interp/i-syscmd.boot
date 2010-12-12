@@ -276,7 +276,7 @@ clearSpad2Cmd l ==
     "and"/[selectOptionLC(opt,'(except),'optionError) =
              'except for [opt,:.] in $options]
   null l =>
-    optList:= "append"/[['%l,'"       ",x] for x in $clearOptions]
+    optList:= "append"/[['"%l",'"       ",x] for x in $clearOptions]
     sayKeyedMsg("S2IZ0010",[optList])
   arg := selectOptionLC(first l,'(all completely scaches),NIL)
   arg = 'all          => clearCmdAll()
@@ -893,7 +893,7 @@ compilerDoit(constructor, fun) ==
       _/RQ_,LIB()
       for ii in $byConstructors repeat
         null member(ii,$constructorsSeen) =>
-          sayBrightly ['">>> Warning ",'%b,ii,'%d,'" was not found"]
+          sayBrightly ['">>> Warning ",'"%b",ii,'"%d",'" was not found"]
 
 compilerDoitWithScreenedLisplib(constructor, fun) ==
     EMBED('RWRITE,
@@ -1034,9 +1034,9 @@ displaySpad2Cmd l ==
       option = "macros" =>         displayMacros vl
       option = 'names =>          displayWorkspaceNames()
       displayProperties(option,l)
-  optList:= [:['%l,'"        ",x] for x in $displayOptions]
+  optList:= [:['"%l",'"        ",x] for x in $displayOptions]
   msg := [:bright '"  )display",'"keyword arguments are",
-    :bright optList,'%l,'"   or abbreviations thereof."]
+    :bright optList,'"%l",'"   or abbreviations thereof."]
   sayMessage msg
 
 displayMacros names ==
@@ -1055,11 +1055,11 @@ displayMacros names ==
   for macro in macros repeat
     macro in pmacs =>
         if first then
-            sayBrightly ['%l,'"User-defined macros:"]
+            sayBrightly ['"%l",'"User-defined macros:"]
             first := NIL
         displayParserMacro macro
     macro in imacs => 'iterate
-    sayBrightly (["   ",'%b, macro, '%d, " is not a known OpenAxiom macro."])
+    sayBrightly (["   ",'"%b", macro, '"%d", " is not a known OpenAxiom macro."])
 
   -- now system ones
 
@@ -1068,7 +1068,7 @@ displayMacros names ==
     macro in imacs =>
         macro in pmacs => 'iterate
         if first then
-            sayBrightly ['%l,'"System-defined macros:"]
+            sayBrightly ['"%l",'"System-defined macros:"]
             first := NIL
         displayMacro macro
     macro in pmacs => 'iterate
@@ -1239,8 +1239,8 @@ displayCondition(v,condition,giveVariableIfNil) ==
   sayBrightly concat("   condition",varPart,":  ",pred2English condPart)
 
 getAndSay(v,prop) ==
-  val:= getI(v,prop) => sayMSG ["    ",val,'%l]
-  sayMSG ["    none",'%l]
+  val:= getI(v,prop) => sayMSG ["    ",val,'"%l"]
+  sayMSG ["    none",'"%l"]
 
 displayType($op,u,omitVariableNameIfTrue) ==
   null u =>
@@ -1502,7 +1502,7 @@ findFrameInRing(name) ==
   val
 
 displayFrameNames() ==
-  fs := "append"/[ ['%l,'"     ",:bright frameName f] for f in
+  fs := "append"/[ ['"%l",'"     ",:bright frameName f] for f in
     $interpreterFrameRing]
   sayKeyedMsg("S2IZ0024",[fs])
 
@@ -2461,8 +2461,8 @@ reportOpsFromUnitDirectly unitForm ==
   top:= first unitForm
   kind:= getConstructorKindFromDB top
 
-  sayBrightly concat('%b,formatOpType unitForm,
-    '%d,'"is a",'%b,kind,'%d, '"constructor.")
+  sayBrightly concat('"%b",formatOpType unitForm,
+    '"%d",'"is a",'"%b",kind,'"%d", '"constructor.")
   if not isRecordOrUnion then
     abb := getConstructorAbbreviationFromDB top
     sourceFile := getConstructorSourceFileFromDB top
@@ -2474,7 +2474,7 @@ reportOpsFromUnitDirectly unitForm ==
       '"exposed in this frame."]
     sayBrightly ['" Issue",:bright strconc('")edit ",
       namestring sourceFile),'"to see algebra source code for",
-        :bright abb,'%l]
+        :bright abb,'"%l"]
 
   for [opt] in $options repeat
     opt := selectOptionLC(opt,$showOptions,'optionError)
@@ -2532,7 +2532,7 @@ reportOpsFromLisplib(op,u) ==
   sourceFile := getConstructorSourceFileFromDB op
   sayBrightly ['" Issue",:bright strconc('")edit ",
     namestring sourceFile),
-      '"to see algebra source code for",:bright fn,'%l]
+      '"to see algebra source code for",:bright fn,'"%l"]
 
   for [opt] in $options repeat
     opt := selectOptionLC(opt,$showOptions,'optionError)
@@ -2546,7 +2546,7 @@ reportOpsFromLisplib(op,u) ==
       attList:= removeDuplicates MSORT [x for [x,:.] in
         getConstructorAttributesFromDB op]
       null attList => sayBrightly
-        concat('%b,form2String functorForm,'%d,"has no attributes.",'%l)
+        concat('"%b",form2String functorForm,'"%d","has no attributes.",'"%l")
       say2PerLine [formatAttribute x for x in attList]
       NIL
     opt = 'operations => displayOperationsFromLisplib functorForm
@@ -2872,9 +2872,9 @@ filterAndFormatConstructors(constrType,label,patterns) ==
   if patterns then
     null l =>
       sayMessage ['"   No ",label,'" with names matching patterns:",
-        '%l,'"   ",'%b,:blankList patterns,'%d]
+        '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
     sayMessage [label,'" with names matching patterns:",
-      '%l,'"   ",'%b,:blankList patterns,'%d]
+      '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
   l => pp2Cols l
 
 whatConstructors constrType ==
@@ -2912,15 +2912,15 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
     null patterns =>
       sayMessage ['"   No ",label1,'"-defined ",label2,'" in effect."]
     sayMessage ['"   No ",label1,'"-defined ",label2,'" satisfying patterns:",
-     '%l,'"     ",'%b,:blankList patterns,'%d]
+     '"%l",'"     ",'"%b",:blankList patterns,'"%d"]
   if patterns then
     sayMessage [label1,'"-defined ",label2,'" satisfying patterns:",
-     '%l,'"   ",'%b,:blankList patterns,'%d]
+     '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
   for [syn,:comm] in ls repeat
     if SUBSTRING(syn,0,1) = '"|" then syn := SUBSTRING(syn,1,NIL)
     if syn = '"%i" then syn := '"%i "
     wid := MAX(30 - (entryWidth syn),1)
-    sayBrightly concat('%b,prefix,syn,'%d,
+    sayBrightly concat('"%b",prefix,syn,'"%d",
       fillerSpaces(wid,'"."),'" ",prefix,comm)
   sayBrightly '""
 
@@ -2933,9 +2933,9 @@ whatCommands(patterns) ==
   if patterns then
     null l =>
       sayMessage ['"No system commands at this level matching patterns:",
-        '%l,'"   ",'%b,:blankList patterns,'%d]
+        '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
     sayMessage ['"System commands at this level matching patterns:",
-      '%l,'"   ",'%b,:blankList patterns,'%d]
+      '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
   if l then
     sayAsManyPerLineAsPossible l
     SAY " "
@@ -2944,11 +2944,11 @@ whatCommands(patterns) ==
   nil
 
 reportWhatOptions() ==
-  optList1:= "append"/[['%l,'"        ",x] for x in $whatOptions]
+  optList1:= "append"/[['"%l",'"        ",x] for x in $whatOptions]
   sayBrightly
-    ['%b,'"  )what",'%d,'"argument keywords are",'%b,:optList1,'%d,'%l,
-      '"   or abbreviations thereof.",'%l,
-        '%l,'"   Issue",'%b,'")what ?",'%d,'"for more information."]
+    ['"%b",'"  )what",'"%d",'"argument keywords are",'"%b",:optList1,'"%d",'"%l",
+      '"   or abbreviations thereof.",'"%l",
+        '"%l",'"   Issue",'"%b",'")what ?",'"%d",'"for more information."]
 
 filterListOfStrings(patterns,names) ==
   -- names and patterns are lists of strings
@@ -3050,7 +3050,7 @@ zsystemdevelopment1(l,im) ==
       sayMessage '"   Update/patch is completed."
     null optargs =>
       sayBrightly ['"   An argument is required for",:bright opt]
-    sayMessage ['"   Unknown option:",:bright opt,"    ",'%l,
+    sayMessage ['"   Unknown option:",:bright opt,"    ",'"%l",
       '"   Available options are", _
       :bright '"c ct e ec ect cls pause update patch compare record"]
 

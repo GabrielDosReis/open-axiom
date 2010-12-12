@@ -1482,7 +1482,7 @@ xLate(l,x,y,d) ==
 concatTrouble(u,d,start,lineLength,$addBlankIfTrue) ==
   [x,:l] := splitConcat(u,lineLength,true)
   null l =>
-    sayALGEBRA ['%l,'%b,'"  Too wide to Print",'%d]
+    sayALGEBRA ['"%l",'"%b",'"  Too wide to Print",'"%d"]
     THROW('output,nil)
   charybdis(fixUp x,start,lineLength)
   for y in l repeat
@@ -1588,9 +1588,9 @@ output(expr,domain) ==
        and (textwrit := compiledLookup("print", '($), TextWriter())) =>
      sayMSGNT [:bright '"AXIOM-XL",'"output:   "]
      SPADCALL(SPADCALL textwrit, expr, printfun)
-     sayMSGNT '%l
+     sayMSGNT '"%l"
 
-  sayALGEBRA [:bright '"LISP",'"output:",'%l,expr or '"NIL"]
+  sayALGEBRA [:bright '"LISP",'"output:",'"%l",expr or '"NIL"]
 
 outputNumber(start,linelength,num) ==
   if start > 1 then blnks := fillerSpaces(start-1,'" ")

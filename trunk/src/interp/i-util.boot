@@ -133,8 +133,8 @@ Undef(:u) ==
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then
-      sayMessage concat ['"   Retrospective determination of slot",'%b,
-        slot,'%d,'"of",'%b,:prefix2String domain,'%d]
+      sayMessage concat ['"   Retrospective determination of slot",'"%b",
+        slot,'"%d",'"of",'"%b",:prefix2String domain,'"%d"]
     apply(first domain'.slot,[:u'',rest domain'.slot])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  

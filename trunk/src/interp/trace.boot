@@ -666,11 +666,11 @@ getOption(opt,l) ==
 
 reportSpadTrace(header,[op,sig,n,:t]) ==
   null $traceNoisely => nil
-  msg:= [header,'%b,op,":",'%d,rest sig," -> ",first sig," in slot ",n]
+  msg:= [header,'"%b",op,":",'"%d",rest sig," -> ",first sig," in slot ",n]
   namePart:= nil --(t is (.,.,name,:.) => (" named ",name); NIL)
   tracePart:=
     t is [y,:.] and not null y =>
-      (y="all" => ['%b,"all",'%d,"vars"]; [" vars: ",y])
+      (y="all" => ['"%b","all",'"%d","vars"]; [" vars: ",y])
     NIL
   sayBrightly [:msg,:namePart,:tracePart]
 
@@ -776,7 +776,7 @@ _?t() ==
     suffix:=
       isDomain d => '"domain"
       '"package"
-    sayBrightly ['"   Functions traced in ",suffix,'%b,devaluate d,'%d,":"]
+    sayBrightly ['"   Functions traced in ",suffix,'"%b",devaluate d,'"%d",":"]
     for x in orderBySlotNumber l repeat reportSpadTrace("   ",take(4,x))
     TERPRI()
 
