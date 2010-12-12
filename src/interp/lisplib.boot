@@ -572,7 +572,7 @@ findConstructorSlotNumber(domainForm,domain,op,sig) ==
   systemErrorHere ["findConstructorSlotNumber",domainForm]
  
 bustUnion d ==
-  d is ["Union",domain,utype] and utype='"failed" => domain
+  d is ["Union",domain,'"failed"] => domain
   d
  
 getSlotNumberFromOperationAlist(domainForm,op,sig) ==

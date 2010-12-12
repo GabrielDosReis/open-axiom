@@ -80,14 +80,13 @@ MESSAGEPRINT x ==
   MAPC(function MESSAGEPRINT_-1, x)
 
 MESSAGEPRINT_-1 x ==
-  x = "%l" or x = '"%l" => TERPRI()
-  string? x => PRINC x
-  IDENTP x => PRINC x
-  atom x => PRINC x
-  PRINC '"("
-  MESSAGEPRINT_-1 first x
-  MESSAGEPRINT_-2 rest x
-  PRINC '")"
+  cons? x =>
+    PRINC '"("
+    MESSAGEPRINT_-1 first x
+    MESSAGEPRINT_-2 rest x
+    PRINC '")"
+  x = "%l" or x is '"%l" => TERPRI()
+  PRINC x
 
 MESSAGEPRINT_-2 x ==
   atom x =>

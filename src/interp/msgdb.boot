@@ -563,12 +563,13 @@ brightPrint(x,out == $OutputStream) ==
 brightPrint0(x,out == $OutputStream) ==
   $texFormatting => brightPrint0AsTeX(x,out)
   if IDENTP x then x := PNAME x
+  not string? x => brightPrintHighlight(x,out)
 
   -- if the first character is a backslash and the second is a percent sign,
   -- don't try to give the token any special interpretation. Just print
   -- it without the backslash.
 
-  string? x and STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
+  STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
     sayString(SUBSTRING(x,1,NIL),out)
   x = '"%l" =>
     sayNewLine(out)
@@ -597,8 +598,7 @@ brightPrint0(x,out == $OutputStream) ==
       or stdStreamIsTerminal(1) = 0 => sayString('" ",out)
     not $highlightAllowed => sayString('" ",out)
     sayString($highlightFontOff,out)
-  string? x => sayString(x,out)
-  brightPrintHighlight(x,out)
+  sayString(x,out)
 
 brightPrint0AsTeX(x, out == $OutputStream) == 
   x = '"%l" =>

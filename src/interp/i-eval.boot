@@ -363,7 +363,7 @@ evalFormMkValue(op,form,tm) ==
   [tm]
 
 failCheck x ==
-  x = '"failed" =>
+  x is '"failed" =>
     stopTimingProcess peekTimedName()
     THROW('interpreter,objNewWrap('"failed",$String))
   x = $coerceFailure =>

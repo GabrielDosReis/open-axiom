@@ -430,7 +430,7 @@ modemapPattern(mmPattern,sig) ==
   partial := false
   for xTails in tails mmPattern repeat
     x := first xTails
-    if x is ['Union,dom,tag] and tag = '"failed" and xTails=sig then
+    if x is ['Union,dom,'"failed"] and xTails=sig then
       x := dom
       partial := true
     patvar := rassoc(x,patternAlist)
