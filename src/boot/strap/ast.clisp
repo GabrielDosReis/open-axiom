@@ -956,7 +956,9 @@
     (RETURN
       (COND
         ((NULL |rhs|) (LIST 'NULL |lhs|))
-        ((STRINGP |rhs|) (LIST 'EQ |lhs| (LIST 'QUOTE (INTERN |rhs|))))
+        ((STRINGP |rhs|)
+         (|bfAND| (LIST (LIST 'STRINGP |lhs|)
+                        (LIST 'STRING= |lhs| |rhs|))))
         ((INTEGERP |rhs|) (LIST 'EQL |lhs| |rhs|))
         ((ATOM |rhs|) (LIST 'PROGN (|bfLetForm| |rhs| |lhs|) 'T))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'QUOTE)
