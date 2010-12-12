@@ -952,8 +952,8 @@ matchMmSigTar(t1,t2) ==
   null t1 or
     isEqualOrSubDomain(t2,t1) => true
     if t2 is ['Union,a,b] then
-      if a='"failed" then return matchMmSigTar(t1, b)
-      if b='"failed" then return matchMmSigTar(t1, a)
+      if a is '"failed" then return matchMmSigTar(t1, b)
+      if b is '"failed" then return matchMmSigTar(t1, a)
     $Coerce and
       isPartialMode t1 => resolveTM(t2,t1)
 -- I think this should be true  -SCM

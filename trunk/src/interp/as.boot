@@ -318,7 +318,7 @@ asyExtractDescription str ==
   str
 
 trimComments str ==
-  null str or str = '"" => '""
+  str = nil or str = '"" => '""
   m := MAXINDEX str
   str := SUBSTRING(str,0,m)
   trimString str

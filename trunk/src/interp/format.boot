@@ -290,8 +290,8 @@ dollarPercentTran x ==
         z1 := dollarPercentTran z
         EQ(y, y1) and EQ(z, z1) => x
         [y1, :z1]
-    x = "$" or x = '"$" => "%%"
-    x = "T$" or x = '"T$" => "T"
+    x is "$" or x is '"$" => "%%"
+    x is "T$" or x is '"T$" => "T"
     x
 
 formatSignatureAsTeX sig == 

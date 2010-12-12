@@ -195,7 +195,7 @@ getCType t ==
 
 XDRFun t ==
   LISTP(ty := second t) =>
-    if first(ty)='"char" then '"wrapstring" else '"array"
+    if first(ty) is '"char" then '"wrapstring" else '"array"
   ty
 
 printDec(type,dec,asps,fp) ==

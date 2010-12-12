@@ -144,7 +144,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
     ud := nil
     bad := nil
     for d in doms while not bad repeat
-      d = '"failed" => ud := [d,:ud]
+      d is '"failed" => ud := [d,:ud]
       null (d' := resolveTT(d,t2)) => bad := true
       ud := [d',:ud]
     bad => NIL
@@ -152,7 +152,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
   ud := nil
   bad := nil
   for d in doms2 while not bad repeat
-    d = '"failed" => ud := append(ud,[d])
+    d is '"failed" => ud := append(ud,[d])
     null (d' := resolveTTUnion(t1,d)) => bad := true
     ud := append(ud,rest d')
   bad => NIL
