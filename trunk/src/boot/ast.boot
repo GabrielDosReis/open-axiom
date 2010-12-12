@@ -639,7 +639,7 @@ bfISReverse(x,a) ==
  
 bfIS1(lhs,rhs) ==
   rhs = nil => ['NULL,lhs]
-  string? rhs => ['EQ,lhs,['QUOTE,INTERN rhs]]
+  string? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
   integer? rhs => ['EQL,lhs,rhs]
   atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
   rhs is ['QUOTE,a] =>
