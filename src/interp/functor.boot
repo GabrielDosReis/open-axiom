@@ -206,7 +206,7 @@ compCategories u ==
   atom v =>
     error ['"compCategories: could not get proper modemap for operator",first u]
   if rest v then
-    sayBrightly ['"compCategories: ", '%b, '"Warning", '%d,
+    sayBrightly ['"compCategories: ", '"%b", '"Warning", '"%d",
                  '"ignoring unexpected stuff at end of modemap"]
     pp rest v
   -- the next line "fixes" a bad modemap which sometimes appears ....

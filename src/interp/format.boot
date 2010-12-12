@@ -60,7 +60,7 @@ displayOpModemaps(op,modemaps) ==
   TERPRI()
   count:= #modemaps
   phrase:= (count=1 => 'modemap;'modemaps)
-  sayMSG ['%b,count,'%d,phrase,'" for",'%b,op,'%d,'":"]
+  sayMSG ['"%b",count,'"%d",phrase,'" for",'"%b",op,'"%d",'":"]
   for modemap in modemaps repeat sayModemap modemap
 
 displayTranModemap (mm is [[x,:sig],[pred,:y],:z]) ==
@@ -151,20 +151,20 @@ formatModemap modemap ==
     ['"_(",:argTypeList,'"_)"]
   fromPart:=
     if dc = 'D and D
-      then concat('%b,'"from",'%d,prefix2String D)
-      else concat('%b,'"from",'%d,prefix2String dc)
+      then concat('"%b",'"from",'"%d",prefix2String D)
+      else concat('"%b",'"from",'"%d",prefix2String dc)
   firstPart:= concat('" ",argPart,'" -> ",targetPart)
   sayWidth firstPart + sayWidth fromPart > 74 => --allow 5 spaces for " [n]"
     fromPart:= concat('" ",fromPart)
     secondPart :=
       sayWidth fromPart + sayWidth predPart < 75 =>
         concat(fromPart,predPart)
-      concat(fromPart,'%l,predPart)
-    concat(firstPart,'%l,secondPart)
+      concat(fromPart,'"%l",predPart)
+    concat(firstPart,'"%l",secondPart)
   firstPart:= concat(firstPart,fromPart)
   sayWidth firstPart + sayWidth predPart < 80 =>
     concat(firstPart,predPart)
-  concat(firstPart,'%l,predPart)
+  concat(firstPart,'"%l",predPart)
 
 substInOrder(alist,x) ==
   alist is [[a,:b],:y] => substInOrder(y,substitute(b,a,x))
@@ -233,10 +233,10 @@ formatOperation([[op,sig],.,[fn,.,n]],domain) ==
   opSigString
 
 formatOpSignature(op,sig) ==
-  concat('%b,formatOpSymbol(op,sig),'%d,": ",formatSignature sig)
+  concat('"%b",formatOpSymbol(op,sig),'"%d",": ",formatSignature sig)
 
 formatOpConstant op ==
-  concat('%b,formatOpSymbol(op,'($)),'%d,'": constant")
+  concat('"%b",formatOpSymbol(op,'($)),'"%d",'": constant")
 
 formatOpSymbol(op,sig) ==
   if op = 'Zero then op := "0"
@@ -276,7 +276,7 @@ formatAttributeArg x ==
   string? x and x ='"*" => "_"*_""
   atom x => formatOpSymbol (x,nil)
   x is [":",op,["Mapping",:sig]] =>
-    concat('%b,formatOpSymbol(op,sig),": ",'%d,formatMapping sig)
+    concat('"%b",formatOpSymbol(op,sig),": ",'"%d",formatMapping sig)
   prefix2String0 x
 
 formatMapping sig ==
@@ -353,7 +353,7 @@ form2StringWithWhere u ==
   $permitWhere : local := true
   $whereList: local := nil
   s:= form2String u
-  $whereList => concat(s,'%b,'"where",'%d,"%i",$whereList,"%u")
+  $whereList => concat(s,'"%b",'"where",'"%d","%i",$whereList,'"%u")
   s
 
 form2StringWithPrens form ==
@@ -479,14 +479,14 @@ formDecl2String(left,right) ==
 formJoin1(op,u) ==
   if op = 'Join then [:argl,last] := u else (argl := nil; last := [op,:u])
   last is [id,.,:r] and id in '(mkCategory CATEGORY) =>
-    $abbreviateJoin = true => concat(formJoin2 argl,'%b,'"with",'%d,'"...")
+    $abbreviateJoin = true => concat(formJoin2 argl,'"%b",'"with",'"%d",'"...")
     $permitWhere = true =>
       opList:= formatJoinKey(r,id)
       $whereList:= concat($whereList,"%l",$declVar,": ",
-        formJoin2 argl,'%b,'"with",'%d,"%i",opList,"%u")
+        formJoin2 argl,'"%b",'"with",'"%d","%i",opList,"%u")
       formJoin2 argl
     opList:= formatJoinKey(r,id)
-    suffix := concat('%b,'"with",'%d,"%i",opList,"%u")
+    suffix := concat('"%b",'"with",'"%d","%i",opList,"%u")
     concat(formJoin2 argl,suffix)
   formJoin2 u
 
@@ -681,7 +681,7 @@ plural(n,string) ==
 formatIf pred ==
   not pred => nil
   member(pred,'(T %true (QUOTE T))) => nil
-  concat('%b,'"if",'%d,pred2English pred)
+  concat('"%b",'"if",'"%d",pred2English pred)
 
 formatPredParts s ==
   s is ['QUOTE,s1] => formatPredParts s1
@@ -709,9 +709,9 @@ pred2English x ==
   x is ['NOT,l] =>
     concat('"not ",pred2English l)
   x is [op,a,b] and op in '(_has ofCategory) =>
-    concat(pred2English a,'%b,'"has",'%d,form2String abbreviate b)
+    concat(pred2English a,'"%b",'"has",'"%d",form2String abbreviate b)
   x is [op,a,b] and op in '(HasSignature HasAttribute HasCategory) =>
-    concat(prefix2String0 formatPredParts a,'%b,'"has",'%d,
+    concat(prefix2String0 formatPredParts a,'"%b",'"has",'"%d",
       prefix2String0 formatPredParts b)
   x is [op,a,b] and op in '(ofType getDomainView) =>
     if b is ['QUOTE,b'] then b := b'

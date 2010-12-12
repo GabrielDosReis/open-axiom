@@ -115,7 +115,7 @@ processKeyedError msg ==
     getMsgTag? msg = 'old  =>                                 --temp
         erMsg := getMsgKey msg                                --temp
         if pre := getMsgPrefix? msg then                      --temp
-          erMsg := ['%b, pre, '%d, :erMsg]                    --temp
+          erMsg := ['"%b", pre, '"%d", :erMsg]                --temp
         sayBrightly ['"old msg from ",_
           CallerName 4,:erMsg]                  --temp
     msgImPr? msg =>
@@ -383,11 +383,11 @@ getPosStL msg ==
     printedFileName :=  ['"%x2",'"[",:remLine fullPrintedPos,'"]" ]
     printedLineNum  :=  ['"%x2",'"[",:remFile fullPrintedPos,'"]" ]
     printedOrigin   :=  ['"%x2",'"[",:fullPrintedPos,'"]" ]
-    howMuch  = 'ORG  => [$optKeyBlanks,:printedOrigin, '%l]
-    howMuch  = 'LINE => [$optKeyBlanks,:printedLineNum, '%l]
-    howMuch  = 'FILE => [$optKeyBlanks,:printedFileName, '%l]
-    howMuch  = 'ALL  => [$optKeyBlanks,:printedFileName, '%l,_
-                         $optKeyBlanks,:printedLineNum,  '%l]
+    howMuch  = 'ORG  => [$optKeyBlanks,:printedOrigin, '"%l"]
+    howMuch  = 'LINE => [$optKeyBlanks,:printedLineNum, '"%l"]
+    howMuch  = 'FILE => [$optKeyBlanks,:printedFileName, '"%l"]
+    howMuch  = 'ALL  => [$optKeyBlanks,:printedFileName, '"%l",_
+                         $optKeyBlanks,:printedLineNum,  '"%l"]
     '""
  
 showMsgPos? msg ==
@@ -429,7 +429,7 @@ getPreStL optPre ==
       (extraPlaces := ($preLength - (SIZE optPre) - 3)) > 0 =>
         MAKE_-FULL_-CVEC extraPlaces
       '""
-    ['%b, optPre,spses,'":", '%d]
+    ['"%b", optPre,spses,'":", '"%d"]
  
 -------------------
 --%   a-list stuff

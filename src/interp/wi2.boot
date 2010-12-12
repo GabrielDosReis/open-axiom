@@ -588,12 +588,12 @@ compMapCond''(cexpr,dc) ==
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
         --for the time being we'll stop here - shouldn't happen so far
         --$disregardConditionIfTrue => true
-        --stackSemanticError(("not known that",'%b,name,
-        -- '%d,"has",'%b,cat,'%d),nil)
+        --stackSemanticError(("not known that",'"%b",name,
+        -- '"%d","has",'"%b",cat,'"%d"),nil)
   --now it must be an attribute
   member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
   --for the time being we'll stop here - shouldn't happen so far
-  stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
+  stackMessage ["not known that",'"%b",dc,'"%d","has",'"%b",cexpr,'"%d"]
   false
  
 --======================================================================

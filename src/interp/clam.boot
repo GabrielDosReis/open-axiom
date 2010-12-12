@@ -365,7 +365,7 @@ clearCategoryCache catName ==
 displayHashtable x ==
   l:= nreverse SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
   for [a,b] in l repeat
-    sayBrightlyNT ['%b,a,'%d]
+    sayBrightlyNT ['"%b",a,'"%d"]
     pp b
  
 cacheStats() ==
@@ -704,5 +704,5 @@ domainEqualList(argl1,argl2) ==
  
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
-    sayBrightly ['"Un-clamming function",'%b,fun,'%d]
+    sayBrightly ['"Un-clamming function",'"%b",fun,'"%d"]
     setDynamicBinding(fun,eval INTERN strconc(STRINGIMAGE fun,'";"))

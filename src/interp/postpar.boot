@@ -72,7 +72,7 @@ displayPreCompilationErrors() ==
       heading:=
         $topOp ~= '$topOp => ['"   ",$topOp,'" has"]
         ['"   You have"]
-      sayBrightly [:heading,'%b,n,'%d,'"precompilation ",errors,'":"]
+      sayBrightly [:heading,'"%b",n,'"%d",'"precompilation ",errors,'":"]
   if 1<n then
     (for x in $postStack for i in 1.. repeat sayMath ['"   ",i,'"_) ",:x])
     else sayMath ['"    ",:first $postStack]
@@ -305,7 +305,7 @@ postForm u ==
     u:= postTranList u
     if u is [["%Comma",:.],:.] then
       postError ['"  ",:bright u,
-        '"is illegal because tuples cannot be applied_!",'%l,
+        '"is illegal because tuples cannot be applied_!",'"%l",
           '"   Did you misuse infix dot?"]
     u
   x is [.,["%Comma",:y]] => [first x,:y]

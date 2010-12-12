@@ -1006,8 +1006,8 @@ compMacro(form,m,e) ==
       rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
       rhs is ['add,:.]      => ['"-- the constructor capsule"]
       formatUnabbreviated rhs
-    sayBrightly ['"   processing macro definition",'%b,
-      :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
+    sayBrightly ['"   processing macro definition",'"%b",
+      :formatUnabbreviated lhs,'" ==> ",:prhs,'"%d"]
   m=$EmptyMode or m=$NoValueMode =>
     -- Macro names shall be identifiers.
     not IDENTP lhs.op =>
@@ -1957,8 +1957,8 @@ compMapCond'(cexpr,dc) ==
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
         --for the time being we'll stop here - shouldn't happen so far
         --$disregardConditionIfTrue => true
-        --stackSemanticError(("not known that",'%b,name,
-        -- '%d,"has",'%b,cat,'%d),nil)
+        --stackSemanticError(("not known that",'"%b",name,
+        -- '"%d","has",'"%b",cat,'"%d"),nil)
   --now it must be an attribute
   member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
   --for the time being we'll stop here - shouldn't happen so far

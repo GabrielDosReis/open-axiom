@@ -506,8 +506,8 @@ compMacro(form,m,e) ==
       rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
       rhs is ['add,:.]      => ['"-- the constructor capsule"]
       formatUnabbreviated rhs
-    sayBrightly ['"   processing macro definition",'%b,
-      :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
+    sayBrightly ['"   processing macro definition",'"%b",
+      :formatUnabbreviated lhs,'" ==> ",:rhs,'"%d"]
   ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   m=$EmptyMode or m=$NoValueMode =>
     ["/throwAway",$NoValueMode,putMacro(lhs.op,rhs,e)]
@@ -521,8 +521,8 @@ compMacro(form,m,e) ==
 --    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
 --    rhs is ['add,:.]      => ['"-- the constructor capsule"]
 --    formatUnabbreviated rhs
---  sayBrightly ['"   processing macro definition",'%b,
---    :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
+--  sayBrightly ['"   processing macro definition",'"%b",
+--    :formatUnabbreviated lhs,'" ==> ",:rhs,'"%d"]
 --  ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
 --  m=$EmptyMode or m=$NoValueMode =>
 --    rhs := markMacro(lhs,rhs)

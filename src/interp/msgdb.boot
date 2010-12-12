@@ -165,7 +165,7 @@ substituteSegmentedMsg(msg,args) ==
     n := STRINGLENGTH x
 
     -- x is a special case
-    (n > 2) and (c = "%") and (x.1 = "k") =>
+    (n > 2) and c = char "%" and x.1 = char "k" =>
         l := NCONC(nreverse pkey SUBSTRING(x,2,NIL),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
@@ -206,11 +206,9 @@ substituteSegmentedMsg(msg,args) ==
       --stifled after the first item in the list until the
       --end of the list. (using %n and %y)
       l :=
-         cons?(arg) =>
-           char 'y in q or (first arg = '"%y") or ((# arg) = 1)  =>
+         arg is [head,:tail] =>
+           char 'y in q or (head is '"%y") or (tail = nil)  =>
              append(reverse arg, l)
-           head := first arg
-           tail := rest arg
            ['"%y",:append(reverse tail, ['"%n",head,:l ]) ]
          [arg,:l]
       if char 'b in q then l := ['"%d",:l]
@@ -391,7 +389,7 @@ sayKeyedMsgFromDb(key,args,dbName) ==
   $msgDatabaseName : fluid := pathname dbName
   msg := segmentKeyedMsg getKeyedMsg key
   msg := substituteSegmentedMsg(msg,args)
-  if $displayMsgNumber then msg := ['"%b",key,":",'%d,:msg]
+  if $displayMsgNumber then msg := ['"%b",key,":",'"%d",:msg]
 --sayMSG flowSegmentedMsg(msg,$LINELENGTH,3)
   u := flowSegmentedMsg(msg,$LINELENGTH,3)
   sayBrightly u
@@ -448,11 +446,11 @@ flowSegmentedMsg(msg, len, offset) ==
     for f in msg repeat
       member(f,'("%l" %l)) =>
         actualMarg := potentialMarg
-        if lnl = 99999 then nl := ['%l,:nl]
+        if lnl = 99999 then nl := ['"%l",:nl]
         lnl := 99999
-      cons?(f) and member(first(f),'("%m" %m '%ce "%ce" %rj "%rj")) =>
+      cons?(f) and member(first(f),'("%m" %m %ce "%ce" %rj "%rj")) =>
         actualMarg := potentialMarg
-        nl := [f,'%l,:nl]
+        nl := [f,'"%l",:nl]
         lnl := 199999
       member(f,'("%i" %i )) =>
         potentialMarg := potentialMarg + 3
@@ -472,13 +470,13 @@ flowSegmentedMsg(msg, len, offset) ==
         lnl := lnl + sbl
       else
         member(f,'(%b %d _  "%b" "%d" " ")) =>
-          nl := [f,off1,'%l,:nl]
+          nl := [f,off1,'"%l",:nl]
           actualMarg := potentialMarg
           lnl := -1 + offset + sbl
-        nl := [f,off,'%l,:nl]
+        nl := [f,off,'"%l",:nl]
         lnl := offset + sbl
     concat nreverse nl
-  concat('%l,off,msg)
+  concat('"%l",off,msg)
 
 --% Other handy things
 
@@ -515,12 +513,12 @@ throwKeyedMsgCannotCoerceWithValue(val,t1,t2) ==
 --% Some Standard Message Printing Functions
 
 bright x == ['"%b",:(cons?(x) and null rest LASTNODE x => x; [x]),'"%d"]
---bright x == ['%b,:(atom x => [x]; x),'%d]
+--bright x == ['"%b",:(atom x => [x]; x),'"%d"]
 
 mkMessage msg ==
   msg and (cons? msg) and member((first msg),'(%l "%l"))  and
     member((last msg),'(%l "%l")) => concat msg
-  concat('%l,msg,'%l)
+  concat('"%l",msg,'"%l")
 
 sayMessage msg == sayMSG mkMessage msg
 
@@ -630,7 +628,7 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 blankIndicator x ==
   if IDENTP x then x := PNAME x
   not string? x or MAXINDEX x < 1 => nil
-  x.0 = '% and x.1 = 'x =>
+  x.0 = char '% and x.1 = char 'x =>
     MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
     1
   nil
@@ -643,58 +641,54 @@ brightPrint1(x, out == $OutputStream) ==
 
 brightPrintHighlight(x, out == $OutputStream) ==
   $texFormatting => brightPrintHighlightAsTeX(x,out)
-  IDENTP x =>
-    pn := PNAME x
-    sayString(pn,out)
+  x is [key,:rst] =>
+    if IDENTP key then key := PNAME key
+    key is '"%m" => mathprint(rst,out)
+    string? key and key in '("%p" "%s") => PRETTYPRIN0(rst,out)
+    key is '"%ce" => brightPrintCenter(rst,out)
+    key is '"%rj" => brightPrintRightJustify(rst,out)
+    key is '"%t"  => $MARG := $MARG + tabber rst
+    sayString('"(",out)
+    brightPrint1(key,out)
+    if key = 'TAGGEDreturn then
+      rst:=[first rst,second rst,third rst, '"environment (omitted)"]
+    for y in rst repeat
+      sayString('" ",out)
+      brightPrint1(y,out)
+    if rst and (la := LASTATOM rst) then
+      sayString('" . ",out)
+      brightPrint1(la,out)
+    sayString('")",out)
+  IDENTP x => sayString(PNAME x,out)
   -- following line helps find certain bugs that slip through
   -- also see sayBrightlyLength1
   vector? x => sayString('"UNPRINTABLE",out)
-  atom x => sayString(object2String x,out)
-  [key,:rst] := x
-  if IDENTP key then key:=PNAME key
-  key = '"%m" => mathprint(rst,out)
-  member(key,'("%p" "%s")) => PRETTYPRIN0(rst,out)
-  key = '"%ce" => brightPrintCenter(rst,out)
-  key = '"%rj" => brightPrintRightJustify(rst,out)
-  key = '"%t"  => $MARG := $MARG + tabber rst
-  sayString('"(",out)
-  brightPrint1(key,out)
-  if key = 'TAGGEDreturn then
-    rst:=[first rst,second rst,third rst, '"environment (omitted)"]
-  for y in rst repeat
-    sayString('" ",out)
-    brightPrint1(y,out)
-  if rst and (la := LASTATOM rst) then
-    sayString('" . ",out)
-    brightPrint1(la,out)
-  sayString('")",out)
+  sayString(object2String x,out)
 
 brightPrintHighlightAsTeX(x, out == $OutputStream) ==
-  IDENTP x =>
-    pn := PNAME x
-    sayString(pn,out)
-  atom x => sayString(object2String x,out)
+  x is [key,:rst] =>
+    key is '"%m" => mathprint(rst,out)
+    key is '"%s" => 
+      sayString('"\verb__",out)
+      PRETTYPRIN0(rst,out)
+      sayString('"__",out)
+    key is '"%ce" => brightPrintCenter(rst,out)
+    key is '"%t"  => $MARG := $MARG + tabber rst
+    -- unhandled junk (print verbatim(ish)
+    sayString('"(",out)
+    brightPrint1(key,out)
+    if key = 'TAGGEDreturn then
+      rst:=[first rst,second rst,third rst, '"environment (omitted)"]
+    for y in rst repeat
+      sayString('" ",out)
+      brightPrint1(y,out)
+    if rst and (la := LASTATOM rst) then
+      sayString('" . ",out)
+      brightPrint1(la,out)
+    sayString('")",out)
+  IDENTP x => sayString(PNAME x,out)
   vector? x => sayString('"UNPRINTABLE",out)
-  [key,:rst] := x
-  key = '"%m" => mathprint(rst,out)
-  key = '"%s" => 
-    sayString('"\verb__",out)
-    PRETTYPRIN0(rst,out)
-    sayString('"__",out)
-  key = '"%ce" => brightPrintCenter(rst,out)
-  key = '"%t"  => $MARG := $MARG + tabber rst
-  -- unhandled junk (print verbatim(ish)
-  sayString('"(",out)
-  brightPrint1(key,out)
-  if key = 'TAGGEDreturn then
-    rst:=[first rst,second rst,third rst, '"environment (omitted)"]
-  for y in rst repeat
-    sayString('" ",out)
-    brightPrint1(y,out)
-  if rst and (la := LASTATOM rst) then
-    sayString('" . ",out)
-    brightPrint1(la,out)
-  sayString('")",out)
+  sayString(object2String x,out)
 
 tabber num ==
     maxTab := 50
@@ -904,13 +898,13 @@ centerAndHighlight(text,:argList) ==
   width := IFCAR argList or $LINELENGTH
   fillchar := IFCAR IFCDR argList or '" "
   wid := entryWidth text + 2
-  wid >= width - 2 => sayBrightly ['%b,text,'%d]
+  wid >= width - 2 => sayBrightly ['"%b",text,'"%d"]
   f := DIVIDE(width - wid - 2,2)
   fill1 := '""
   for i in 1..(f.0) repeat
     fill1 := strconc(fillchar,fill1)
   if f.1 = 0 then fill2 := fill1 else fill2 := strconc(fillchar,fill1)
-  sayBrightly [fill1,'%b,text,'%d,fill2]
+  sayBrightly [fill1,'"%b",text,'"%d",fill2]
   nil
 
 centerNoHighlight(text,:argList) == sayBrightly center(text,argList)
@@ -947,7 +941,7 @@ splitListSayBrightly u ==
   for x in tails u repeat
     y := rest x
     null y => nil
-    first y = '%l =>
+    first y = '"%l" =>
       x.rest := nil
       ans:= [u,:rest y]
   ans

@@ -800,12 +800,12 @@ displayMissingFunctions() ==
       loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
   if loc then
-    sayBrightly ['%l,:bright '"  Missing Local Functions:"]
+    sayBrightly ['"%l",:bright '"  Missing Local Functions:"]
     for [op,sig] in loc for i in 1.. repeat
       sayBrightly ['"      [",i,'"]",:bright op,
         ": ",:formatUnabbreviatedSig sig]
   if exp then
-    sayBrightly ['%l,:bright '"  Missing Exported Functions:"]
+    sayBrightly ['"%l",:bright '"  Missing Exported Functions:"]
     for [op,sig] in exp for i in 1.. repeat
       sayBrightly ['"      [",i,'"]",:bright op,
         ": ",:formatUnabbreviatedSig sig]
@@ -1123,11 +1123,11 @@ checkAndDeclare(argl,form,sig,e) ==
     m1:= getArgumentMode(a,e) =>
       not modeEqual(m1,m) =>
         stack:= ["   ",:bright a,'"must have type ",m,
-          '" not ",m1,'%l,:stack]
+          '" not ",m1,'"%l",:stack]
     e:= put(a,'mode,m,e)
   if stack then
     sayBrightly ['"   Parameters of ",:bright form.op,
-      '" are of wrong type:",'%l,:stack]
+      '" are of wrong type:",'"%l",:stack]
   e
  
 getSignature(op,argModeList,$e) ==
@@ -1214,7 +1214,7 @@ compile u ==
             DC='_$ and (opexport:=true) and
              (and/[modeEqual(x,y) for x in sig for y in $signatureOfForm])]
       isLocalFunction op =>
-        if opexport then userError ['%b,op,'%d,'" is local and exported"]
+        if opexport then userError ['"%b",op,'"%d",'" is local and exported"]
         INTERN strconc(encodeItem $prefix,'";",encodeItem op) 
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
@@ -1344,8 +1344,8 @@ bootStrapError(functorForm,sourceFile) ==
   ['COND, _
     ['$bootStrapMode, _
         ['VECTOR,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
-    [''T, ['systemError,['LIST,''%b,MKQ functorForm.op,''%d,'"from", _
-      ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
+    [''T, ['systemError,['LIST,'"%b",MKQ functorForm.op,'"%d",'"from", _
+      '"%b",MKQ namestring sourceFile,'"%d",'"needs to be compiled"]]]]
 
 registerInlinableDomain(x,e) ==
   x := macroExpand(x,e)
@@ -1367,8 +1367,8 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [['COND, _
        ['$bootStrapMode, _
            code],_
-       [''T, ['systemError,['LIST,''%b,MKQ $functorForm.op,''%d,'"from", _
-         ''%b,MKQ namestring _/EDITFILE,''%d,'"needs to be compiled"]]]],m,e]
+       [''T, ['systemError,['LIST,'"%b",MKQ $functorForm.op,'"%d",'"from", _
+         '"%b",MKQ namestring _/EDITFILE,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
