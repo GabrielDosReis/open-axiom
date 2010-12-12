@@ -957,7 +957,7 @@
       (COND
         ((NULL |rhs|) (LIST 'NULL |lhs|))
         ((STRINGP |rhs|) (LIST 'EQ |lhs| (LIST 'QUOTE (INTERN |rhs|))))
-        ((NUMBERP |rhs|) (LIST 'EQUAL |lhs| |rhs|))
+        ((INTEGERP |rhs|) (LIST 'EQL |lhs| |rhs|))
         ((ATOM |rhs|) (LIST 'PROGN (|bfLetForm| |rhs| |lhs|) 'T))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'QUOTE)
               (PROGN
@@ -965,7 +965,10 @@
                 (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|))
                      (PROGN (SETQ |a| (CAR |ISTMP#1|)) T))))
          (COND
-           ((IDENTP |a|) (LIST 'EQ |lhs| |rhs|))
+           ((SYMBOLP |a|) (LIST 'EQ |lhs| |rhs|))
+           ((STRINGP |a|)
+            (|bfAND| (LIST (LIST 'STRINGP |lhs|)
+                           (LIST 'STRING= |lhs| |a|))))
            (T (LIST 'EQUAL |lhs| |rhs|))))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'L%T)
               (PROGN

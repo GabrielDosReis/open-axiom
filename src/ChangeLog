@@ -1,3 +1,7 @@
+2010-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfIS1): Tidy.
+
 2010-12-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/i-syscmd.boot: Use try-finally expression instead of Lisp
