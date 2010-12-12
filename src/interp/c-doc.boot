@@ -136,7 +136,7 @@ finalizeDocumentation() ==
   if u := [sig for [sig,:doc] in docList | null doc] then
     for y in u repeat
       y = 'constructor => noHeading := true
-      y is [x,b] and b is [='attribute,:r] =>
+      y is [x,b] and b is ['attribute,:r] =>
         attributes := [[x,:r],:attributes]
       signatures := [y,:signatures]
     name := first $lisplibForm

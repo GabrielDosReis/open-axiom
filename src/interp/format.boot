@@ -460,7 +460,7 @@ formArguments2String(argl,ml) == [fn(x,m) for x in argl for m in ml] where
   fn(x,m) ==
     x=$EmptyMode or x=$quadSymbol => specialChar 'quad
     string?(x) or IDENTP(x) => x
-    x is [ ='_:,:.] => form2String1 x
+    x is ['_:,:.] => form2String1 x
     isValidType(m) and cons?(m) and
       (getConstructorKindFromDB first(m) = "domain") =>
         (x' := coerceInteractive(objNewWrap(x,m),$OutputForm)) =>
@@ -494,14 +494,14 @@ formatJoinKey(r,key) ==
   key = 'mkCategory =>
     r is [opPart,catPart,:.] =>
       opString :=
-        opPart is [='LIST,:u] =>
+        opPart is ['LIST,:u] =>
           "append"/[concat("%l",formatOpSignature(op,sig),formatIf pred)
-            for [='QUOTE,[[op,sig],pred]] in u]
+            for ['QUOTE,[[op,sig],pred]] in u]
         nil
       catString :=
-        catPart is [='LIST,:u] =>
+        catPart is ['LIST,:u] =>
           "append"/[concat("%l",'" ",form2StringLocal con,formatIf pred)
-            for [='QUOTE,[con,pred]] in u]
+            for ['QUOTE,[con,pred]] in u]
         nil
       concat(opString,catString)
     '"?? unknown mkCategory format ??"

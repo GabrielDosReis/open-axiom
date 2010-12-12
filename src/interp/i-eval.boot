@@ -216,7 +216,7 @@ makeOrdinal i ==
 
 evaluateSignature sig ==
   -- calls evaluateType on a signature
-  sig is [ ='SIGNATURE,fun,sigl] =>
+  sig is ['SIGNATURE,fun,sigl] =>
     ['SIGNATURE,fun,
       [(t = '_$ => t; evaluateType(t)) for t in sigl]]
   sig

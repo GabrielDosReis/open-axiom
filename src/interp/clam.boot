@@ -380,7 +380,7 @@ reportCircularCacheStats(fn,n) ==
   infovec:= GETL(fn,'cacheInfo)
   circList:= eval infovec.cacheName
   numberUsed :=
-    +/[1 for i in 1..n for x in circList while x isnt [='_$failed,:.]]
+    +/[1 for i in 1..n for x in circList while x isnt ['_$failed,:.]]
   sayBrightly ["%b",fn,"%d","has","%b",numberUsed,"%d","/ ",n," values cached"]
   displayCacheFrequency mkCircularCountAlist(circList,n)
   TERPRI()

@@ -657,7 +657,7 @@ deepChaseInferences(pred,$e) ==
 
 vectorLocation(op,sig) ==
   u := or/[i for i in 1.. for u in $NRTdeltaList
-        | u is [=op,[='$,: xsig],:.] and sig=NRTsubstDelta(xsig) ]
+        | u is [=op,['$,: xsig],:.] and sig=NRTsubstDelta(xsig) ]
   u => $NRTdeltaLength - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
 

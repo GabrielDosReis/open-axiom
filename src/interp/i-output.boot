@@ -568,11 +568,11 @@ outputTran x ==
     ["+",a,["-",b]]
 
   -- next stuff translates exp(log(foo4)/foo3) into ROOT(foo4,foo3)
-  (x is ["**", ='"%e",foo1]) and (foo1 is [ ='"/",foo2, foo3]) and
+  (x is ["**",'"%e",foo1]) and (foo1 is ['"/",foo2, foo3]) and
     integer?(foo3) and (foo2 is ['log,foo4]) =>
        foo3 = 2 => ['ROOT,outputTran foo4]
        ['ROOT,outputTran foo4,outputTran foo3]
-  (x is ["**", ='"%e",foo1]) and (foo1 is [op',foo2, foo3]) and
+  (x is ["**",'"%e",foo1]) and (foo1 is [op',foo2, foo3]) and
     (op' = '"*") and ((foo3 is ['log,foo4]) or (foo2 is ['log,foo4])) =>
        foo3 is ['log,foo4] =>
          ["**", outputTran foo4, outputTran foo2]
