@@ -1657,7 +1657,7 @@ outputOp x ==
     n:=
       GETL(op,"NARY") => 2
       #args
-    newop:= INTERN strconc("*",STRINGIMAGE n,PNAME op)
+    newop:= INTERN strconc('"*",STRINGIMAGE n,PNAME op)
     [newop,:[outputOp y for y in args]]
   x
 
@@ -2686,10 +2686,10 @@ parms2String x ==
   x is [var] => var
   if x is ["tuple",:.] then x := rest x
   paren [parm xs for xs in tails x] where
-    paren l == "strconc"/["(",:l,")"]
+    paren l == "strconc"/['"(",:l,'")"]
     parm xs == 
       null rest xs => first xs
-      strconc(first xs, ", ")
+      strconc(first xs, '", ")
 
 inputForm2String x ==
   atom x => primaryForm2String x
@@ -2706,7 +2706,7 @@ inputForm2String x ==
     op in '(_@ _:_: pretend) =>
       typedForm2String(op, first args, second args)
     op = "+->" =>
-       strconc(parms2String second x, " ", first x, " ",
+       strconc(parms2String second x, '" ", first x, '" ",
           inputForm2String third x)
     callForm2String x
   callForm2String x

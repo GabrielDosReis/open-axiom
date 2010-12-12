@@ -1633,7 +1633,7 @@ bcConform1 form == main where
       -- too, until we fix that.
       string? form or not isConstructorName form =>
         s := 
-          string? form => strconc("_"",form,"_"")
+          string? form => strconc('"_"",form,'"_"")
           STRINGIMAGE form
         (s.0 = char '_#) =>
            (n := POSN1(form, $FormalFunctionParameterList)) =>

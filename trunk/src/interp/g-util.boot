@@ -73,7 +73,7 @@ stringToChar s ==
   s = '"\b" => $Backspace
   s = '"\t" => $HorizontalTab
   s = '"\v" => $VerticalTab
-  error strconc("invalid character designator: ", s)
+  error strconc('"invalid character designator: ", s)
   
 --% VM forms
 

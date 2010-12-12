@@ -184,26 +184,26 @@ bcCreateVariableString(i) ==
    strconc('"x",STRINGIMAGE i)
 
 bcMakeUnknowns(number)==
-   apply(function strconc,[strconc(bcCreateVariableString(i)," ") for i in 1..number])
+   apply(function strconc,[strconc(bcCreateVariableString(i),'" ") for i in 1..number])
    
 bcMakeEquations(i,number)==
-   number =1 => strconc(bcCreateVariableString(1),"^2+1")
+   number =1 => strconc(bcCreateVariableString(1),'"^2+1")
    bcCreateVariableString(i)
    strconc(
      strconc(
-      apply(function strconc,[strconc(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-        strconc("-2*",strconc(bcCreateVariableString(i),"^2")))
+      apply(function strconc,[strconc(bcCreateVariableString(j),'"+") for j in 1..number]),'"1"),
+        strconc('"-2*",strconc(bcCreateVariableString(i),'"^2")))
 
 
 bcMakeLinearEquations(i,number)==
    number = 1 => bcCreateVariableString(1)
    number = 2 => 
-        i=1 => strconc(bcCreateVariableString(1),strconc("+",bcCreateVariableString(2)))
-        strconc(bcCreateVariableString(1),strconc("-",bcCreateVariableString(2)))
+        i=1 => strconc(bcCreateVariableString(1),strconc('"+",bcCreateVariableString(2)))
+        strconc(bcCreateVariableString(1),strconc('"-",bcCreateVariableString(2)))
    strconc(
      strconc(
-      apply(function strconc,[strconc(bcCreateVariableString(j),"+") for j in 1..number]),"1"),
-        strconc("-2*",bcCreateVariableString(i)))
+      apply(function strconc,[strconc(bcCreateVariableString(j),'"+") for j in 1..number]),'"1"),
+        strconc('"-2*",bcCreateVariableString(i)))
       
 
 bcInputEquationsEnd htPage ==

@@ -337,7 +337,7 @@ fortError1 u ==
  
 fortError(u,v) ==
   $fortError := "t"
-  msg := strconc("   ",STRINGIMAGE u);
+  msg := strconc('"   ",STRINGIMAGE u);
   sayErrorly("Fortran translation error",msg)
   mathPrint v
  
@@ -844,7 +844,7 @@ fortPreRoot e ==
 fix2FortranFloat e ==
   -- Return a Fortran float for a given integer.
   $fortranPrecision = "double" => strconc(STRINGIMAGE(e),".0D0")
-  strconc(STRINGIMAGE(e),".")
+  strconc(STRINGIMAGE(e),'".")
  
 isFloat e ==
   FLOATP(e) or string?(e) and FIND(char ".",e)
@@ -860,7 +860,7 @@ checkPrecision e ==
       ePos => SUBSEQ(e,period+1,ePos)
       period+1 < # e => SUBSEQ(e,period+1)
       "0"
-    strconc(iPart,rPart,"D",expt)
+    strconc(iPart,rPart,'"D",expt)
   e
  
 ----------------- segment.boot -----------------------

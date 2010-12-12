@@ -340,7 +340,7 @@ formatUnion(['Union,:r]) ==
     x is [":",y,'Branch] => fn STRINGIMAGE y
     string? x => [":", INTERN x, ['Enumeration,x]]
     x is [":",:.] => x
-    tag := INTERN strconc("value",STRINGIMAGE ($count := $count + 1))
+    tag := INTERN strconc('"value",STRINGIMAGE ($count := $count + 1))
     [":", tag, x]      
 
 formatTestForPartial u ==

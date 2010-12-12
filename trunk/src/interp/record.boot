@@ -135,7 +135,7 @@ hyperize(u,w) ==
   res := reverse $testOutputLineList
   null res => '""
   null rest res => first res
-  strconc/[first res,:[strconc("\newline ",x) for x in rest res]]
+  strconc/[first res,:[strconc('"\newline ",x) for x in rest res]]
  
 verbatimize u ==
   u = '"" => u
