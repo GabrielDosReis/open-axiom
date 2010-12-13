@@ -1595,7 +1595,7 @@ output(expr,domain) ==
 outputNumber(start,linelength,num) ==
   if start > 1 then blnks := fillerSpaces(start-1,'" ")
   else blnks := '""
-  under:='"__"
+  under := '"__"
   firsttime:=(linelength>3)
   if linelength>2 then
      linelength:=linelength-1 

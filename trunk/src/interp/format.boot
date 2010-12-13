@@ -273,7 +273,7 @@ formatAttribute x ==
     ["  ",op]
 
 formatAttributeArg x ==
-  string? x and x ='"*" => "_"*_""
+  x is '"*" => "_"*_""
   atom x => formatOpSymbol (x,nil)
   x is [":",op,["Mapping",:sig]] =>
     concat('"%b",formatOpSymbol(op,sig),": ",'"%d",formatMapping sig)

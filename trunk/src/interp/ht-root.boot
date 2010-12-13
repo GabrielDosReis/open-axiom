@@ -256,7 +256,7 @@ htTutorialSearch pattern ==
     errorPage(nil,['"Empty search key",nil,'"\vspace{3}\centerline{You must enter some search string"])
   s := mkUnixPattern s
   source := '"$AXIOM/share/hypertex/pages/ht.db"
-  target :='"/tmp/temp.text.$SPADNUM"
+  target := '"/tmp/temp.text.$SPADNUM"
   runCommand strconc('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
   lines := dbReadLines 'temp
   htInitPageNoScroll(nil,['"Tutorial Pages mentioning {\em ",pattern,'"}"])
