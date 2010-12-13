@@ -296,8 +296,8 @@ ncloopEscaped x==
      done:=false
      for i in (# x) - 1 .. 0 by -1 while not done repeat
          done:=
-              x.i='" ".0 =>false
-              x.i='"__".0=>
+              x.i = char " " => false
+              x.i = char "__" =>
                        esc:=true
                        true
               true

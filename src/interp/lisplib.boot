@@ -676,7 +676,7 @@ getAllAldorObjectFiles dir ==
   -- only sensical .asy files.
   dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
   [asys,[f for f in asos 
-          | PATHNAME_-NAME f='"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
+          | PATHNAME_-NAME f = '"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
     
 
 
