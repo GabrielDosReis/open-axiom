@@ -2424,7 +2424,7 @@ superSubApp(u, x, y, di) ==
 
 stringer x ==
   string? x => x
-  EQ('_|, FETCHCHAR(s:= STRINGIMAGE x, 0)) =>
+  '_| = FETCHCHAR(s:= STRINGIMAGE x, 0) =>
     RPLACSTR(s, 0, 1, "", nil, nil)
   s
 

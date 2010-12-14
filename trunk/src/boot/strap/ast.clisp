@@ -1209,6 +1209,7 @@
     ((NULL |l|) (LIST 'NULL |r|))
     ((NULL |r|) (LIST 'NULL |l|))
     ((OR (EQ |l| T) (EQ |r| T)) (LIST 'EQ |l| |r|))
+    ((OR (STRINGP |l|) (STRINGP |r|)) (LIST 'STRING= |l| |r|))
     (T (LIST 'EQUAL |l| |r|))))
 
 (DEFUN |bfLessp| (|l| |r|)

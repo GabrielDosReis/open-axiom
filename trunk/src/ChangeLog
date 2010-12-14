@@ -1,3 +1,8 @@
+2010-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/ast.boot (bfQ): Emit STRING= for string comparison.
+	* interp/i-output.boot: Fix type violation in equality comparison.
+
 2010-12-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/ast.boot (bfIS1): Tidy.
