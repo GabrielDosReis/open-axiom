@@ -92,7 +92,7 @@
         (T (SETQ |a| (CAAR |stream|))
            (COND
              ((AND (NOT (< (LENGTH |a|) 8))
-                   (EQUAL (SUBSTRING |a| 0 8) ")package"))
+                   (STRING= (SUBSTRING |a| 0 8) ")package"))
               (|shoePackageStartsAt| (CONS (CAAR |stream|) |lines|)
                   |sz| |name| (CDR |stream|)))
              ((< (LENGTH |a|) |sz|)

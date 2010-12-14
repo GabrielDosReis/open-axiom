@@ -623,8 +623,8 @@
                  (LET ((|m| (CADR |b|)))
                    (PROGN
                      (COND
-                       ((NOT (EQUAL (|getOptionValue| '|import|)
-                                    "skip"))
+                       ((NOT (STRING= (|getOptionValue| '|import|)
+                                      "skip"))
                         (|bootImport| (STRING |m|))))
                      (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
              (|%ImportSignature|
