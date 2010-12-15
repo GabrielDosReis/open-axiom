@@ -156,12 +156,15 @@ removeAttributes msg ==
 applyPrefix2String args ==
   [:f x for x in args] where
     f x ==
-      -- FIXME: we should in fact check for formatting codes
-      cons? x => g x
-      [x]
+      listify
+        cons? x => g x  -- FIXME: should check for formatting codes
+        x
     g x ==
       $texFormatting => prefix2StringAsTeX x
       prefix2String x
+    listify x ==
+      cons? x => x
+      [x]
 
 substituteSegmentedMsg(msg,args) ==
   -- this does substitution of the parameters

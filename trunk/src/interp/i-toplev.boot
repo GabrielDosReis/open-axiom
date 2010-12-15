@@ -217,7 +217,7 @@ printTypeAndTimeNormal(x,m) ==
   if m is ['Union, :argl] then
     x' := retract(objNewWrap(x,m))
     m' := objMode x'
-    m := ['Union, :[arg for arg in argl | sameUnionBranch(arg, m')], '"..."]
+    m := ['Union, :[arg for arg in argl | sameUnionBranch(arg, m')], "..."]
   if $printTimeIfTrue then
     timeString := makeLongTimeString($interpreterTimedNames,
       $interpreterTimedClasses)
