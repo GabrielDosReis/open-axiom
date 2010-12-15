@@ -153,6 +153,16 @@ removeAttributes msg ==
     attList := rest attList
     [msg,attList]
 
+applyPrefix2String args ==
+  [:f x for x in args] where
+    f x ==
+      -- FIXME: we should in fact check for formatting codes
+      cons? x => g x
+      [x]
+    g x ==
+      $texFormatting => prefix2StringAsTeX x
+      prefix2String x
+
 substituteSegmentedMsg(msg,args) ==
   -- this does substitution of the parameters
   l := NIL
@@ -192,9 +202,9 @@ substituteSegmentedMsg(msg,args) ==
           $texFormatting => arg := prefix2StringAsTeX arg
           arg := prefix2String arg 
       if char 'P in q then
-          $texFormatting => arg := [prefix2StringAsTeX x for x in arg]
-          arg := [prefix2String x for x in arg]
-      if char 'o in  q and $texFormatting then arg := operationLink(arg)
+        arg := applyPrefix2String arg
+      if char 'o in  q and $texFormatting then
+        arg := operationLink(arg)
 
       if char 'c in q then arg := [['"%ce",:arg]]
       if char 'r in q then arg := [['"%rj",:arg]]
