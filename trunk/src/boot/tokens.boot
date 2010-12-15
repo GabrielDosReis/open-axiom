@@ -244,6 +244,7 @@ for i in [ _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
+  ["canonicalFilename", "PROBE-FILE"], _
   ["char?", "CHARACTERP"]  , _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _

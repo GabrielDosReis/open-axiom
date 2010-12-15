@@ -206,6 +206,7 @@
             (LIST (LIST '|alphabetic?| 'ALPHA-CHAR-P)
                   (LIST '|and| 'AND) (LIST '|append| 'APPEND)
                   (LIST '|apply| 'APPLY) (LIST '|atom| 'ATOM)
+                  (LIST '|canonicalFilename| 'PROBE-FILE)
                   (LIST '|char?| 'CHARACTERP) (LIST '|cons?| 'CONSP)
                   (LIST '|copy| 'COPY) (LIST '|croak| 'CROAK)
                   (LIST '|digit?| 'DIGITP) (LIST '|drop| 'DROP)

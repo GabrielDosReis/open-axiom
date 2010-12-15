@@ -1,5 +1,10 @@
 2010-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: canonicalFilename is now a builtin function.
+	* interp/sys-driver.boot (executeSpadScript): Announce input file.
+
+2010-12-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/ast.boot (bfQ): Emit STRING= for string comparison.
 	* interp/i-output.boot: Fix type violation in equality comparison.
 
