@@ -269,6 +269,7 @@ executeSpadScript(progname,options,file) ==
   -- Accomodate for testsuite stream.
   if testing then
     set ["message","testing","on"]
+    sayKeyedMsg('S2IZ0100,[NAMESTRING canonicalFilename file])
   CATCH($intCoerceFailure,
     CATCH($SpadReaderTag,read [file]))
   coreQuit (errorCount()> 0 => 1; 0)

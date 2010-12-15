@@ -1069,6 +1069,8 @@ S2IZ0090
 S2IZ0091
  OpenAxiom could not find a suitable text editor.  Please set and export
  the environment variable %b EDITOR %d and start again.
+S2IZ0100
+ -- Running test script from file %1
 S2GE0000
  Internal Error
 S2GE0001
