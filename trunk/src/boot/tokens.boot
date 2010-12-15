@@ -289,6 +289,7 @@ for i in [ _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _
   ["symbol?",  "SYMBOLP"]  , _
+  ["symbolName", "SYMBOL-NAME"], _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
   ["toString", "WRITE-TO-STRING"], _

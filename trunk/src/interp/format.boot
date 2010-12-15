@@ -391,8 +391,7 @@ form2String1 u ==
       constructor? u => app2StringWrap(formWrapId u, [u])
       formWrapId u
     SUBRP u => formWrapId BPINAME u
-    string? u => formWrapId u
-    formWrapId toString u
+    stringImage u
   u1 := u
   [op,:argl] := u
   op='Join or op= 'mkCategory => formJoin1(op,argl)

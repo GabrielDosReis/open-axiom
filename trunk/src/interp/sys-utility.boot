@@ -341,6 +341,12 @@ closeFile file ==
   CLOSE file
   nil
 
+--%
+stringImage x ==
+  symbol? x => symbolName x
+  string? x => strconc('"_"",x,'"_"")
+  toString x
+
 --% Socket I/O
 
 ++ Attempt to establish a client TCP/IP socket connection.  The IP numeric
