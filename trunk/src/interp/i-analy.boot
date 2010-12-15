@@ -579,9 +579,9 @@ removeUnionsAtStart(argl,modeSets) ==
 printableArgModeSetList() ==
   amsl := nil
   for a in reverse $origArgModeSetList repeat
-    b := prefix2String first a
+    b := first a
     if atom b then b := [b]
-    amsl := ['"%l",:b,:amsl]
+    amsl := ['"%l",b,:amsl]
   if amsl then amsl := rest amsl
   amsl
 
@@ -642,7 +642,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
 
   if null(opName1) then
     opName1 :=
-        (o := getValue op0) => prefix2String objMode o
+        (o := getValue op0) => objMode o
         '"<unknown type>"
     msgKey :=
         null amsl => "S2IB0013"
