@@ -473,7 +473,7 @@ formDecl2String(left,right) ==
   ls:= form2StringLocal left
   rs:= form2StringLocal right
   NE($whereList,whereBefore) and $permitWhere => ls
-  concat(form2StringLocal ls,'": ",rs)
+  concat(ls,'": ",rs)
 
 formJoin1(op,u) ==
   if op = 'Join then [:argl,last] := u else (argl := nil; last := [op,:u])
