@@ -1,5 +1,10 @@
 2010-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/format.boot (form2String1): Handle string literals
+	masquerading as constructors.
+
+2010-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/format.boot: More fixes for confusion between strings and
 	symbols. 
 
