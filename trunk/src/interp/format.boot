@@ -394,6 +394,9 @@ form2String1 u ==
     stringImage u
   u1 := u
   [op,:argl] := u
+  string? op and argl = nil =>
+    -- string literals (e.g. "failed") masquerading as constructors
+    stringImage op
   op='Join or op= 'mkCategory => formJoin1(op,argl)
   $InteractiveMode and IDENTP op and (u:= constructor? op) =>
     null argl => app2StringWrap(formWrapId constructorName op, u1)
