@@ -1,5 +1,10 @@
 2010-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/format.boot: More fixes for confusion between strings and
+	symbols. 
+
+2010-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/format.boot (formDecl2String): Tidy.
 	* interp/i-toplev.boot (printTypeAndTimeNormal): Likewise.
 	* interp/msgdb.boot (applyPrefix2String): Likewise.
