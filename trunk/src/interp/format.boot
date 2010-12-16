@@ -145,10 +145,10 @@ formatModemap modemap ==
     concat(prefix2String first sl,fn(rest sl)) where
       fn l ==
         null l => nil
-        concat(",",prefix2String first l,fn rest l)
+        concat('",",prefix2String first l,fn rest l)
   argPart:=
     #sl<2 => argTypeList
-    ['"_(",:argTypeList,'"_)"]
+    ['"(",:argTypeList,'")"]
   fromPart:=
     if dc = 'D and D
       then concat('"%b",'"from",'"%d",prefix2String D)
@@ -233,7 +233,7 @@ formatOperation([[op,sig],.,[fn,.,n]],domain) ==
   opSigString
 
 formatOpSignature(op,sig) ==
-  concat('"%b",formatOpSymbol(op,sig),'"%d",": ",formatSignature sig)
+  concat('"%b",formatOpSymbol(op,sig),'"%d",'": ",formatSignature sig)
 
 formatOpConstant op ==
   concat('"%b",formatOpSymbol(op,'($)),'"%d",'": constant")
@@ -268,8 +268,8 @@ formatAttribute x ==
   atom x => ["  ",x]
   x is [op,:argl] =>
     for x in argl repeat
-      argPart:= NCONC(argPart,concat(",",formatAttributeArg x))
-    argPart => concat("  ",op,"_(",rest argPart,"_)")
+      argPart:= NCONC(argPart,concat('",",formatAttributeArg x))
+    argPart => concat('"  ",op,'"(",rest argPart,'")")
     ["  ",op]
 
 formatAttributeArg x ==
@@ -280,7 +280,7 @@ formatAttributeArg x ==
   prefix2String0 x
 
 formatMapping sig ==
-  strconc/concat("Mapping(",formatSignature sig,")")
+  strconc/concat('"Mapping(",formatSignature sig,'")")
 
 dollarPercentTran x ==
     -- Translate $ to %. We actually return %% so that the message
@@ -316,12 +316,12 @@ formatSignature0 sig ==
 
 formatSignatureArgs0(sml) ==
 -- formats the arguments of a signature
-  null sml => ["_(_)"]
+  null sml => ['"()"]
   null rest sml => prefix2String0 first sml
   argList:= prefix2String0 first sml
   for m in rest sml repeat
-    argList:= concat(argList,concat(",",prefix2String0 m))
-  concat("_(",concat(argList,"_)"))
+    argList:= concat(argList,concat('",",prefix2String0 m))
+  concat('"(",concat(argList,'")"))
 
 --% Conversions to string form
 
@@ -358,7 +358,7 @@ form2StringWithWhere u ==
 
 form2StringWithPrens form ==
   null (argl := rest form) => [first form]
-  null rest argl => [first form,"(",first argl,")"]
+  null rest argl => [first form,'"(",first argl,'")"]
   form2String form
 
 formString u ==
@@ -518,13 +518,13 @@ formJoin2 argl ==
 
 formJoin2String (u:=[:argl,last]) ==
   last is ["CATEGORY",.,:atsigList] =>
-    postString:= concat('"_(",formTuple2String atsigList,'"_)")
+    postString:= concat('"(",formTuple2String atsigList,'")")
     #argl=1 => concat(first argl,'" with ",postString)
     concat(application2String('Join,argl, NIL)," with ",postString)
   application2String('Join,u, NIL)
 
 formCollect2String [:itl,body] ==
-  ['"_(",body,:"append"/[formIterator2String x for x in itl],'"_)"]
+  ['"(",body,:"append"/[formIterator2String x for x in itl],'")"]
 
 formIterator2String x ==
   x is ["STEP",y,s,.,:l] =>
@@ -548,7 +548,7 @@ tuple2String argl ==
   for x in rest argl repeat
     if member(x,'("failed" "nil" "prime" "sqfr" "irred")) then
       x := strconc('"_"",x,'"_"")
-    string:= concat(string,concat(",",f x))
+    string:= concat(string,concat('",",f x))
   string
  where
   f x ==
@@ -569,9 +569,9 @@ linearFormat x ==
   atom x => x
   x is [op,:argl] and atom op =>
     argPart:=
-      argl is [a,:l] => [a,:"append"/[[",",x] for x in l]]
+      argl is [a,:l] => [a,:"append"/[['",",x] for x in l]]
       nil
-    [op,"(",:argPart,")"]
+    [op,'"(",:argPart,'")"]
   [linearFormat y for y in x]
 
 numOfSpadArguments id ==
@@ -606,14 +606,14 @@ formatArgList l ==
   null l => nil
   acc:= linearFormat first l
   for x in rest l repeat
-    acc:= concat(acc,",",linearFormat x)
+    acc:= concat(acc,'",",linearFormat x)
   acc
 
 formTuple2String argl ==
   null argl => nil
   string:= form2StringLocal first argl
   for x in rest argl repeat
-    string:= concat(string,concat(",",form2StringLocal x))
+    string:= concat(string,concat('",",form2StringLocal x))
   string
 
 isInternalFunctionName(op) ==
@@ -636,12 +636,12 @@ application2String(op,argl, linkInfo) ==
   1=#argl =>
     arg := first argl
     arg is ["<",:.] or arg is ["(",:.] => concat(op,arg)
-    concat(app2StringWrap(formWrapId op, linkInfo)," ",arg)
+    concat(app2StringWrap(formWrapId op, linkInfo),'" ",arg)
 --op in '(UP SM) =>
 --  newop:= (op = "UP" => "P";"M")
 --  concat(newop,concat(lbrkSch(),argl.0,rbrkSch(),argl.1))
 --op='RM  =>concat("M",concat(lbrkSch(),
---                     argl.0,",",argl.1,rbrkSch(),argl.2))
+--                     argl.0,'",",argl.1,rbrkSch(),argl.2))
 --op='MP =>concat("P",concat(argl.0,argl.1))
   op='SEGMENT =>
     null argl => '".."
@@ -649,7 +649,7 @@ application2String(op,argl, linkInfo) ==
       concat(first argl, '"..")
     concat(first argl, concat('"..", second argl))
   concat(app2StringWrap(formWrapId op, linkInfo) ,
-                        concat("_(",concat(tuple2String argl,"_)")))
+                        concat('"(",concat(tuple2String argl,'")")))
 
 app2StringConcat0(x,y) ==
   FORMAT(NIL, '"~a ~a", x, y)
@@ -669,7 +669,7 @@ record2String x ==
   for [":",a,b] in x repeat argPart:=
     concat(argPart,'",",a,'": ",form2StringLocal b)
   null argPart => '"Record()"
-  concat('"Record_(",rest argPart,'"_)")
+  concat('"Record(",rest argPart,'")")
 
 plural(n,string) ==
   suffix:=
