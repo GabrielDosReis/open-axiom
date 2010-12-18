@@ -84,7 +84,7 @@
           (COND
             ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
             (T (SETQ |k| (+ |k| 1)))))
-        (SETQ |v| (MAKE-VEC (+ |n| 1)))
+        (SETQ |v| (MAKE-ARRAY (+ |n| 1)))
         (LET ((|bfVar#2| (- |k| 1)) (|i| 0))
           (LOOP
             (COND
@@ -108,9 +108,9 @@
         (SETQ |l| (HKEYS |shoeKeyTable|))
         (SETQ |d|
               (PROGN
-                (SETQ |a| (MAKE-VEC 256))
-                (SETQ |b| (MAKE-VEC 1))
-                (SETF (ELT |b| 0) (MAKE-CVEC 0))
+                (SETQ |a| (MAKE-ARRAY 256))
+                (SETQ |b| (MAKE-ARRAY 1))
+                (SETF (ELT |b| 0) (MAKE-STRING 0))
                 (LET ((|i| 0))
                   (LOOP
                     (COND
@@ -209,7 +209,7 @@
                   (LIST '|canonicalFilename| 'PROBE-FILE)
                   (LIST '|char?| 'CHARACTERP) (LIST '|cons?| 'CONSP)
                   (LIST '|copy| 'COPY) (LIST '|croak| 'CROAK)
-                  (LIST '|digit?| 'DIGITP) (LIST '|drop| 'DROP)
+                  (LIST '|digit?| 'DIGIT-CHAR-P) (LIST '|drop| 'DROP)
                   (LIST '|exit| 'EXIT) (LIST '|false| 'NIL)
                   (LIST '|first| 'CAR) (LIST '|fourth| 'CADDDR)
                   (LIST '|function| 'FUNCTION) (LIST '|gensym| 'GENSYM)
@@ -218,10 +218,12 @@
                   (LIST '|list| 'LIST)
                   (LIST '|lowerCase?| 'LOWER-CASE-P)
                   (LIST '|mkpf| 'MKPF) (LIST '|nconc| 'NCONC)
-                  (LIST '|nil| NIL) (LIST '|not| 'NOT)
-                  (LIST '|nreverse| 'NREVERSE) (LIST '|null| 'NULL)
-                  (LIST '|or| 'OR) (LIST '|otherwise| 'T)
-                  (LIST '|property| 'GET) (LIST '|readByte| 'READ-BYTE)
+                  (LIST '|newString| 'MAKE-STRING)
+                  (LIST '|newVector| 'MAKE-ARRAY) (LIST '|nil| NIL)
+                  (LIST '|not| 'NOT) (LIST '|nreverse| 'NREVERSE)
+                  (LIST '|null| 'NULL) (LIST '|or| 'OR)
+                  (LIST '|otherwise| 'T) (LIST '|property| 'GET)
+                  (LIST '|readByte| 'READ-BYTE)
                   (LIST '|readInteger| 'PARSE-INTEGER)
                   (LIST '|readLine| 'READ-LINE)
                   (LIST '|readOnly?| 'CONSTANTP)

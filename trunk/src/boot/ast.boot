@@ -860,7 +860,7 @@ shoeCompTran x==
   $locVars:local:=nil
   $dollarVars:local:=nil
   shoeCompTran1 body
-  $locVars:=SETDIFFERENCE(SETDIFFERENCE($locVars,
+  $locVars:=setDifference(setDifference($locVars,
 				 $fluidVars),shoeATOMs args)
   body:=
     lvars:=append($fluidVars,$locVars)

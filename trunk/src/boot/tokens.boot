@@ -145,7 +145,7 @@ shoeInsert(s,d) ==
       k:=0
       while l <= #u.k repeat
           k:=k+1
-      v := MAKE_-VEC(n+1)
+      v := newVector(n+1)
       for i in 0..k-1 repeat
         v.i := u.i
       v.k := s
@@ -157,9 +157,9 @@ shoeInsert(s,d) ==
 shoeDictCons()==
       l := HKEYS shoeKeyTable
       d :=
-          a := MAKE_-VEC(256)
-          b := MAKE_-VEC(1)
-          b.0 := MAKE_-CVEC 0
+          a := newVector 256
+          b := newVector 1
+          b.0 := newString 0
           for i in 0..255 repeat
             a.i := b
           a
@@ -172,7 +172,7 @@ shoeDict:=shoeDictCons()
  
 shoePunCons()==
     listing := HKEYS shoeKeyTable
-    a:=MAKE_-BVEC 256
+    a := MAKE_-BVEC 256
     for i in 0..255 repeat BVEC_-SETELT(a,i,0)
     for k in listing repeat
        if not shoeStartsId k.0
@@ -253,7 +253,7 @@ for i in [ _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
-  ["digit?",    "DIGITP"]  , _
+  ["digit?",    "DIGIT-CHAR-P"]  , _
   ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
@@ -269,6 +269,8 @@ for i in [ _
   ["lowerCase?", "LOWER-CASE-P"], _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
+  ["newString", "MAKE-STRING"], _
+  ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _
   ["nreverse", "NREVERSE"]  , _

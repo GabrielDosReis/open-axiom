@@ -77,12 +77,6 @@
 (defun setdifference (x y)
   (set-difference x y))
 
-(defun make-cvec (sint)
-  (make-string sint))
-
-(defun MAKE-VEC (n) 
-  (make-array n))
-
 (defun |shoeInputFile| (filespec )
   (open filespec :direction :input :if-does-not-exist nil))
 
@@ -194,11 +188,6 @@
  
 (defun bvec-setelt (bv i x)
   (setf (sbit bv i) x))
-
-(defun size (l)
-  (cond ((vectorp l) (length l))
-        ((consp l) (list-length l))
-        (t 0)))
 
 (defun identp (a) 
   (and (symbolp a) a))

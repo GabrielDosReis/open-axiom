@@ -545,16 +545,16 @@
       (PROGN
         (SETQ |h| (QENUM |l| |i|))
         (SETQ |u| (ELT |d| |h|))
-        (SETQ |ll| (SIZE |l|))
+        (SETQ |ll| (LENGTH |l|))
         (SETQ |done| NIL)
         (SETQ |s1| "")
-        (LET ((|bfVar#2| (- (SIZE |u|) 1)) (|j| 0))
+        (LET ((|bfVar#2| (- (LENGTH |u|) 1)) (|j| 0))
           (LOOP
             (COND
               ((OR (> |j| |bfVar#2|) |done|) (RETURN NIL))
               (T (PROGN
                    (SETQ |s| (ELT |u| |j|))
-                   (SETQ |ls| (SIZE |s|))
+                   (SETQ |ls| (LENGTH |s|))
                    (SETQ |done|
                          (COND
                            ((< |ll| (+ |ls| |i|)) NIL)
