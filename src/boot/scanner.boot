@@ -458,7 +458,7 @@ shoeError()==
   shoeLeafError ($ln.n)
  
 shoeOrdToNum x== 
-  DIGIT_-CHAR_-P x
+  digit? x
  
 shoeKeyWord st   == 
   GETHASH(st,shoeKeyTable)
@@ -472,12 +472,12 @@ shoeMatch(l,i) ==
 shoeSubStringMatch (l,d,i)==
   h := QENUM(l, i)
   u := d.h
-  ll := SIZE l
+  ll := #l
   done := false
   s1 := '""
-  for j in 0.. SIZE u - 1 while not done repeat
+  for j in 0.. #u - 1 while not done repeat
     s := u.j
-    ls := SIZE s
+    ls := #s
     done := 
       ls+i > ll => false
       eql := true

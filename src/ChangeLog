@@ -1,5 +1,11 @@
 2010-12-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/initial-env.lisp (SIZE): Remove.
+	(MAKE-VEC): Likewise.
+	(MAKE-CVEC): Likewise.
+
+2010-12-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/initial-env.lisp (VEC-SETELT): Remove.
 	* boot/scanner.boot (shoeIntValue): Tidy.
 	(shoeSubString): Likewise.
