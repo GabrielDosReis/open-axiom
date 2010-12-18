@@ -1,3 +1,11 @@
+2010-12-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/initial-env.lisp (VEC-SETELT): Remove.
+	* boot/scanner.boot (shoeIntValue): Tidy.
+	(shoeSubString): Likewise.
+	* boot/tokens.boot (shoeInsert): Likewise.
+	(shoeDictCons): Likewise.
+
 2010-12-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/format.boot (form2String1): Handle string literals

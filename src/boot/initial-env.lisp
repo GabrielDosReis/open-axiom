@@ -184,9 +184,6 @@
 	      :test-not #'(lambda (x y) (position y x))
               :start sint)))
 
-(defun VEC-SETELT (vec ind val) 
-  (setf (elt vec ind) val))
-
 (defun  bvec-make-full (n x)
   (make-array (list n) 
 	      :element-type 'bit
