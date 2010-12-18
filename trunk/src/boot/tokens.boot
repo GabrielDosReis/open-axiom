@@ -140,27 +140,31 @@ shoeTAB == 9
 shoeInsert(s,d) ==
       l := #s
       h := QENUM(s,0)
-      u := ELT(d,h)
+      u := d.h
       n := #u
       k:=0
-      while l <= #(ELT(u,k)) repeat
+      while l <= #u.k repeat
           k:=k+1
       v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
-      VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
-      VEC_-SETELT(d,h,v)
+      for i in 0..k-1 repeat
+        v.i := u.i
+      v.k := s
+      for i in k..n-1 repeat
+        v.(i+1) := u.i
+      d.h := v
       s
  
 shoeDictCons()==
-      l:= HKEYS shoeKeyTable
+      l := HKEYS shoeKeyTable
       d :=
-          a:=MAKE_-VEC(256)
-          b:=MAKE_-VEC(1)
-          VEC_-SETELT(b,0,MAKE_-CVEC 0)
-          for i in 0..255 repeat VEC_-SETELT(a,i,b)
+          a := MAKE_-VEC(256)
+          b := MAKE_-VEC(1)
+          b.0 := MAKE_-CVEC 0
+          for i in 0..255 repeat
+            a.i := b
           a
-      for s in l repeat shoeInsert(s,d)
+      for s in l repeat
+        shoeInsert(s,d)
       d
  
 shoeDict:=shoeDictCons()

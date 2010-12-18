@@ -404,7 +404,7 @@ shoeIntValue(s) ==
   ns := #s
   ival := 0
   for i in 0..ns-1 repeat
-      d := shoeOrdToNum ELT(s,i)
+      d := shoeOrdToNum s.i
       ival := 10*ival + d
   ival
  
@@ -471,18 +471,18 @@ shoeMatch(l,i) ==
  
 shoeSubStringMatch (l,d,i)==
   h := QENUM(l, i)
-  u := ELT(d,h)
+  u := d.h
   ll := SIZE l
   done := false
   s1 := '""
   for j in 0.. SIZE u - 1 while not done repeat
-    s := ELT(u,j)
+    s := u.j
     ls := SIZE s
     done := 
       ls+i > ll => false
       eql := true
       for k in 1..ls-1 while eql repeat
-	 eql := EQL(QENUM(s,k),QENUM(l,k+i))
+	 eql := QENUM(s,k) = QENUM(l,k+i)
       eql => 
 	s1:=s
 	true

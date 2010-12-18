@@ -89,16 +89,16 @@
           (LOOP
             (COND
               ((> |i| |bfVar#2|) (RETURN NIL))
-              (T (VEC-SETELT |v| |i| (ELT |u| |i|))))
+              (T (SETF (ELT |v| |i|) (ELT |u| |i|))))
             (SETQ |i| (+ |i| 1))))
-        (VEC-SETELT |v| |k| |s|)
+        (SETF (ELT |v| |k|) |s|)
         (LET ((|bfVar#3| (- |n| 1)) (|i| |k|))
           (LOOP
             (COND
               ((> |i| |bfVar#3|) (RETURN NIL))
-              (T (VEC-SETELT |v| (+ |i| 1) (ELT |u| |i|))))
+              (T (SETF (ELT |v| (+ |i| 1)) (ELT |u| |i|))))
             (SETQ |i| (+ |i| 1))))
-        (VEC-SETELT |d| |h| |v|)
+        (SETF (ELT |d| |h|) |v|)
         |s|))))
 
 (DEFUN |shoeDictCons| ()
@@ -110,12 +110,12 @@
               (PROGN
                 (SETQ |a| (MAKE-VEC 256))
                 (SETQ |b| (MAKE-VEC 1))
-                (VEC-SETELT |b| 0 (MAKE-CVEC 0))
+                (SETF (ELT |b| 0) (MAKE-CVEC 0))
                 (LET ((|i| 0))
                   (LOOP
                     (COND
                       ((> |i| 255) (RETURN NIL))
-                      (T (VEC-SETELT |a| |i| |b|)))
+                      (T (SETF (ELT |a| |i|) |b|)))
                     (SETQ |i| (+ |i| 1))))
                 |a|))
         (LET ((|bfVar#4| |l|) (|s| NIL))
@@ -234,8 +234,9 @@
                   (LIST '|strconc| 'CONCAT) (LIST '|string?| 'STRINGP)
                   (LIST '|substitute| 'SUBST)
                   (LIST '|substitute!| 'NSUBST)
-                  (LIST '|symbol?| 'SYMBOLP) (LIST '|take| 'TAKE)
-                  (LIST '|third| 'CADDR)
+                  (LIST '|symbol?| 'SYMBOLP)
+                  (LIST '|symbolName| 'SYMBOL-NAME)
+                  (LIST '|take| 'TAKE) (LIST '|third| 'CADDR)
                   (LIST '|toString| 'WRITE-TO-STRING) (LIST '|true| 'T)
                   (LIST '|upperCase?| 'UPPER-CASE-P)
                   (LIST '|vector?| 'SIMPLE-VECTOR-P)
