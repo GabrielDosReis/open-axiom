@@ -280,7 +280,7 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       [SUBSTRING(s,i,f-i)
         while ((i := f + 1) <= max) and (f := charPosition(char,s,i))]
     charPosition(c,t,startpos) ==  --honors underscores
-      n := SIZE t
+      n := # t
       if startpos < 0 or startpos > n then error "index out of range"
       k:= startpos
       for i in startpos .. n-1 while c ~= t.i

@@ -307,7 +307,7 @@ fortran2Lines1 f ==
     line := normPref
     ff := first f
     while ok repeat
-      (ll + (sff := SIZE ff)) <= $fortLength =>
+      (ll + (sff := # ff)) <= $fortLength =>
         ll := ll + sff
         line := strconc(line,ff)
         f := rest f

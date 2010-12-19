@@ -768,13 +768,15 @@ checkDecorate u ==
     x := first u
 
     if not verbatim then
-      if x = '"\em" then
+      if x is '"\em" then
         if count > 0 then
           mathSymbolsOk := count - 1
           spadflag := count - 1
         else checkDocError ['"\em must be enclosed in braces"]
-      if x in '("\spadpaste" "\spad" "\spadop") then mathSymbolsOk := count
-      if x in '("\s" "\spadtype" "\spadsys" "\example" "\andexample" "\spadop" "\spad" "\spadignore" "\spadpaste" "\spadcommand" "\footnote") then spadflag := count
+      if string? x and x in '("\spadpaste" "\spad" "\spadop") then
+        mathSymbolsOk := count
+      if string? x and x in '("\s" "\spadtype" "\spadsys" "\example" "\andexample" "\spadop" "\spad" "\spadignore" "\spadpaste" "\spadcommand" "\footnote") then
+        spadflag := count
       else if x = $charLbrace then
         count := count + 1
       else if x = $charRbrace then
@@ -786,37 +788,37 @@ checkDecorate u ==
           checkDocError ["Symbol ",x,'" appearing outside \spad{}"]
 
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
 
-      x = '"\begin" and first (v := IFCDR u) = $charLbrace and
-        first (v := IFCDR v) = '"detail" and first (v := IFCDR v) = $charRbrace
+      x is '"\begin" and first(v := IFCDR u) = $charLbrace and
+        first(v := IFCDR v) is '"detail" and first(v := IFCDR v) = $charRbrace
           =>
             u := v
             ['"\blankline ",:acc]
-      x = '"\end" and first (v := IFCDR u) = $charLbrace and
-        first (v := IFCDR v) = '"detail" and first (v := IFCDR v) = $charRbrace
+      x is '"\end" and first(v := IFCDR u) = $charLbrace and
+        first(v := IFCDR v) is '"detail" and first(v := IFCDR v) = $charRbrace
           =>
             u := v
             acc
-      x = char '_$ or x = '"$"  => ['"\$",:acc]
-      x = char '_% or x = '"%"  => ['"\%",:acc]
-      x = char '_, or x = '","  => 
+      x = char '_$ or x is '"$"  => ['"\$",:acc]
+      x = char '_% or x is '"%"  => ['"\%",:acc]
+      x = char '_, or x is '","  => 
         spadflag => ['",",:acc]
         ['",{}",:acc]
-      x = '"\spad" => ['"\spad",:acc]
+      x is '"\spad" => ['"\spad",:acc]
       string? x and digit? x.0 => [x,:acc]
       not spadflag and
         (CHARP x and alphabetic? x and not MEMQ(x,$charExclusions) or
           member(x,$argl)) => [$charRbrace,x,$charLbrace,'"\spad",:acc]
-      not spadflag and ((string? x and not x.0 = $charBack and digit?(x.(MAXINDEX x))) or x in '("true" "false")) =>
+      not spadflag and string? x and ((x.0 ~= $charBack and digit?(x.(MAXINDEX x))) or x in '("true" "false")) =>
         [$charRbrace,x,$charLbrace,'"\spad",:acc]  --wrap x1, alpha3, etc
-      xcount := SIZE x
+      xcount := (string? x => # x; 0)
       xcount = 3 and x.1 = char 't and x.2 = char 'h =>
         ['"th",$charRbrace,x.0,$charLbrace,'"\spad",:acc]
       xcount = 4 and x.1 = char '_- and x.2 = char 't and x.3 = char 'h =>

@@ -180,7 +180,7 @@ reportOpSymbol op1 ==
   null modemaps =>
     ok := true
     sayKeyedMsg("S2IF0010",[op1])
-    if SIZE PNAME op1 < 3 then
+    if # PNAME op1 < 3 then
       x := UPCASE queryUserKeyedMsg("S2IZ0060",[op1])
       null (STRING2ID_-N(x,1) in '(Y YES)) =>
         ok := nil
@@ -621,7 +621,7 @@ formTuple2String argl ==
 
 isInternalFunctionName(op) ==
   (not IDENTP(op)) or (op = "*") or (op = "**") => NIL
-  (1 = SIZE(op':= PNAME op)) or (char("*") ~= op'.0) => NIL
+  (1 = #(op':= PNAME op)) or (char("*") ~= op'.0) => NIL
   -- if there is a semicolon in the name then it is the name of
   -- a compiled spad function
   null (e := STRPOS('"_;",op',1,NIL)) => NIL

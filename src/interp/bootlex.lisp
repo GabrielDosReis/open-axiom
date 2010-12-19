@@ -358,7 +358,7 @@ or the chracters ?, !, ' or %"
 
 (defun TRANSLABEL1 (X AL)
  "Transforms X according to AL = ((<label> . Sexpr) ..)."
-  (COND ((REFVECP X)
+  (COND ((simple-vector-p X)
          (do ((i 0 (1+ i))
               (k (maxindex x)))
              ((> i k))

@@ -112,7 +112,7 @@ upDollar t ==
   (not $genValue) and "or"/[CONTAINED(var,D) for var in $localVars] =>
     keyedMsgCompFailure("S2IS0032",NIL)
   D="Lisp" => upLispCall(op,form)
-  if vector? D and (SIZE(D) > 0) then D := D.0
+  if vector? D and (# D > 0) then D := D.0
   t := evaluateType unabbrev D
   categoryForm? t =>
     throwKeyedMsg("S2IE0012", [t])

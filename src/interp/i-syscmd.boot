@@ -235,7 +235,7 @@ abbreviationsSpad2Cmd l ==
       abbQuery(key)
     type is 'remove =>
       DELDATABASE(key,'ABBREVIATION)
-    ODDP SIZE al => sayKeyedMsg("S2IZ0002",[type])
+    ODDP # al => sayKeyedMsg("S2IZ0002",[type])
     repeat
       null al => return 'fromLoop
       [a,b,:al] := al
@@ -1680,7 +1680,7 @@ writeInputLines(fn,initial) ==
     vecl := first readHiFi i
     if string? vecl then vecl := [vecl]
     for vec in vecl repeat
-      n := SIZE vec
+      n := # vec
       while n > maxn repeat
         -- search backwards for a blank
         done := nil
@@ -1691,7 +1691,7 @@ writeInputLines(fn,initial) ==
             lineList := [svec,:lineList]
             done := true
             vec := SUBSTRING(vec,k+1,NIL)
-            n := SIZE vec
+            n := # vec
         -- in case we can't find a breaking point
         if not done then n := 0
       lineList := [vec,:lineList]
@@ -3073,15 +3073,15 @@ processSynonyms() ==
   null (fun := LASSOC (syn, $CommandSynonymAlist)) => NIL
   fun := eval fun              -- fun may have been a suspension
   to := STRPOS('")",fun,1,NIL)
-  if to and to ~= SIZE(fun)-1 then
+  if to and to ~= #(fun)-1 then
     opt := strconc('" ",SUBSTRING(fun,to,NIL))
     fun := SUBSTRING(fun,0,to-1)
   else opt := '" "
-  if (SIZE synstr) > (SIZE fun) then
-    for i in (SIZE fun)..(SIZE synstr) repeat
+  if # synstr > # fun then
+    for i in (# fun)..(# synstr) repeat
       fun := strconc (fun, '" ")
---  $currentLine := strconc(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
-  cl := strconc(fill,RPLACSTR(line, 1, SIZE synstr, fun),opt)
+--  $currentLine := strconc(fill,RPLACSTR(line, 1, # synstr, fun),opt)
+  cl := strconc(fill,RPLACSTR(line, 1, # synstr, fun),opt)
   SETQ(LINE,cl)
   SETQ(CHR,LINE.(p+1))
   processSynonyms ()

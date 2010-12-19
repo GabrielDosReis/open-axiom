@@ -93,9 +93,6 @@
 (defmacro |copyList| (x) 
  `(copy-list ,x))
 
-(defmacro cvecp (x)
- `(stringp ,x))
-
 (defmacro dcq (&rest args)
  (cons 'setqp args))
 
@@ -330,10 +327,6 @@
 (defmacro qlength (a)
  `(length ,a))
 
-; (defmacro qmemq (a b)
-; `(member ,a ,b :test #'eq))
-(defmacro qmemq (a b) `(memq ,a ,b))
-
 (defmacro qrefelt (vec ind)
  `(svref ,vec ,ind))
 
@@ -423,8 +416,6 @@
 (defmacro qvsize (x)
  `(the fixnum (length (the simple-vector ,x))))
 
-(defmacro refvecp (v) `(simple-vector-p ,v))
-
 (defmacro resetq (a b)
  `(prog1 ,a (setq ,a ,b)))
 
@@ -475,8 +466,6 @@
 
 (defmacro vec-setelt (vec ind val)
  `(setf (svref ,vec ,ind) ,val))
-
-(defmacro vecp (v) `(simple-vector-p ,v))
 
 (defmacro zero? (x)
   `(and (typep ,x 'fixnum) (zerop (the fixnum ,x))))
@@ -1514,7 +1503,7 @@
         (COND
           ( (VARP BV-LIST)
             (LIST BV-LIST) )
-          ( (REFVECP BV-LIST)
+          ( (simple-vector-p BV-LIST)
             (FLAT-BV-LIST (VEC2LIST (MAPELT #'FLAT-BV-LIST BV-LIST))) )
           ( (NOT (consp BV-LIST))
             NIL )
@@ -1522,7 +1511,7 @@
             (FLAT-BV-LIST (QCDR BV-LIST)) )
           ( (VARP TMP1)
             (CONS TMP1 (FLAT-BV-LIST (QCDR BV-LIST))) )
-          ( (AND (NOT (consp TMP1)) (NOT (REFVECP TMP1)))
+          ( (AND (NOT (consp TMP1)) (NOT (simple-vector-p TMP1)))
             (FLAT-BV-LIST (QCDR BV-LIST)) )
           ( 'T
             (NCONC (FLAT-BV-LIST TMP1) (FLAT-BV-LIST (QCDR BV-LIST))) ) )) ))

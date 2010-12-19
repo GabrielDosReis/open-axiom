@@ -85,7 +85,7 @@
                    ((IDENTP V) NIL)
                    ((STRINGP U) (AND (STRINGP V) (string> V U)))
                    ((STRINGP V) NIL)
-                   ((AND (VECP U) (VECP V))
+                   ((AND (simple-vector-p U) (simple-vector-p V))
                     (AND (> (SIZE V) (SIZE U))
                          (DO ((I 0 (1+ I)))
                              ((GT I (MAXINDEX U)) 'T)

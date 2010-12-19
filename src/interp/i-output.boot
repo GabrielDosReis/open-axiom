@@ -552,11 +552,11 @@ outputTran x ==
   op is ["$elt",targ,fun] or not $InteractiveMode and op is ["elt",targ,fun] =>
     -- l has the args
     targ' := obj2String prefix2String targ
-    if 2 = SIZE targ then targ' := ['PAREN,targ']
+    if 2 = # targ then targ' := ['PAREN,targ']
     ['CONCAT,outputTran [fun,:l],'"$",targ']
   x is ["$elt",targ,c] or not $InteractiveMode and x is ["elt",targ,c] =>
     targ' := obj2String prefix2String targ
-    if 2 = SIZE targ then targ' := ['PAREN,targ']
+    if 2 = # targ then targ' := ['PAREN,targ']
     ['CONCAT,outputTran c,'"$",targ']
   x is ["-",a,b] =>
     a := outputTran a
@@ -1102,12 +1102,12 @@ putWidth u ==
 
 opWidth(op,has2Arguments) ==
   op = "EQUATNUM" => 4
-  integer? op => 2+SIZE STRINGIMAGE op
+  integer? op => 2 + # STRINGIMAGE op
   null has2Arguments =>
-    a:= GETL(op,"PREFIXOP") => SIZE a
-    2+SIZE PNAME op
-  a:= GETL(op,"INFIXOP") => SIZE a
-  2+SIZE PNAME op
+    a:= GETL(op,"PREFIXOP") => # a
+    2 + # PNAME op
+  a:= GETL(op,"INFIXOP") => # a
+  2 + # PNAME op
 
 matrixBorder(x,y1,y2,d,leftOrRight) ==
   y1 = y2 =>
@@ -1342,11 +1342,11 @@ bigopAppAux(bot,top,arg,x,y,d,kind) ==
   xCenter := half(maxWidth-1) + x
   d:=APP(arg,x+2+maxWidth,y,d)
   d:=
-      atom bot and SIZE atom2String bot = 1 => APP(bot,xCenter,y-2,d)
+      atom bot and # atom2String bot = 1 => APP(bot,xCenter,y-2,d)
       APP(bot,x + half(maxWidth - botWidth),y-2-superspan bot,d)
   if top then
     d:=
-      atom top and SIZE atom2String top = 1 => APP(top,xCenter,y+2,d)
+      atom top and # atom2String top = 1 => APP(top,xCenter,y+2,d)
       APP(top,x + half(maxWidth - topWidth),y+2+subspan top,d)
   delta := (kind = 'pi => 2; 1)
   opCode :=
@@ -1599,7 +1599,7 @@ outputNumber(start,linelength,num) ==
   firsttime:=(linelength>3)
   if linelength>2 then
      linelength:=linelength-1 
-  while SIZE(num) > linelength repeat
+  while # num > linelength repeat
     if $collectOutput then
        $outputLines := [strconc(blnks, SUBSTRING(num,0,linelength),under),
                         :$outputLines]
@@ -1619,7 +1619,7 @@ outputNumber(start,linelength,num) ==
 outputString(start,linelength,str) ==
   if start > 1 then blnks := fillerSpaces(start-1,'" ")
   else blnks := '""
-  while SIZE(str) > linelength repeat
+  while # str > linelength repeat
     if $collectOutput then
        $outputLines := [strconc(blnks, SUBSTRING(str,0,linelength)),
                         :$outputLines]

@@ -53,7 +53,7 @@ getInfovecCode() ==
 makeDomainTemplate vec ==   
 --NOTES: This function is called at compile time to create the template
 --  (slot 0 of the infovec); called by getInfovecCode from compDefineFunctor1
-  newVec := newShell SIZE vec
+  newVec := newShell # vec
   for index in 0..MAXINDEX vec repeat
     item := vec.index
     null item => nil
@@ -634,7 +634,7 @@ dcData con ==
   PRINT_-FULL $infovec.1
   vec := getCodeVector()
   vec := (cons? vec => rest vec; vec)
-  sayBrightly ['"Information vector has ",SIZE vec,'" entries"]
+  sayBrightly ['"Information vector has ",# vec,'" entries"]
   dcData1 vec
 
 dcData1 vec ==
@@ -671,19 +671,19 @@ dcSize(:options) ==
        lazyNodes := lazyNodes + numberOfNodes item
   tSize := sum(vectorSize(1 + maxindex),nodeSize(lazyNodes + latch))
   -- functions are free in the template vector
-  oSize := vectorSize(SIZE infovec.1)
+  oSize := vectorSize(# infovec.1)
   aSize := numberOfNodes infovec.2
   slot4 := infovec.3
   catvec := 
     vector? CDDR slot4 => second slot4
     third slot4
   n := MAXINDEX catvec
-  cSize := sum(nodeSize(2),vectorSize(SIZE first slot4),vectorSize(n + 1),
+  cSize := sum(nodeSize(2),vectorSize(# first slot4),vectorSize(n + 1),
                nodeSize(+/[numberOfNodes catvec.i for i in 0..n]))
   codeVector :=
     vector? CDDR slot4 => CDDR slot4
     CDDDR slot4
-  vSize := halfWordSize(SIZE codeVector)
+  vSize := halfWordSize(# codeVector)
   itotal := sum(tSize,oSize,aSize,cSize,vSize)
   if null quiet then sayBrightly ['"infovec total = ",itotal,'" BYTES"]
   if null quiet then

@@ -556,7 +556,7 @@ nary2Binary(u,op) ==
   errhuh()
  
 string2PrintImage s ==
-  u:= GETSTR (2*SIZE s)
+  u:= GETSTR (2*# s)
   for i in 0..MAXINDEX s repeat
     (if s.i in '(_( _{ _) _} _! _") then
       SUFFIX('__,u); u:= SUFFIX(s.i,u))
@@ -565,7 +565,7 @@ string2PrintImage s ==
 ident2PrintImage s ==
   m := MAXINDEX s
   if m > 1 and s.(m - 1) = $underScore then s := strconc(SUBSTRING(s,0,m-1),s.m)
-  u:= GETSTR (2*SIZE s)
+  u:= GETSTR (2*# s)
   if not (alphabetic? s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
   u:= SUFFIX(s.(0),u)
   for i in 1..MAXINDEX s repeat
