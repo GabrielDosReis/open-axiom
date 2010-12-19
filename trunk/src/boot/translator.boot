@@ -86,14 +86,14 @@ shoeCOMPILE_-FILE lspFileName ==
 
  
 BOOTTOCL(fn, out) ==
-  UNWIND_-PROTECT(
-    PROGN(startCompileDuration(),
-      callingPackage := _*PACKAGE_*,
-      IN_-PACKAGE '"BOOTTRAN",
-      result := BOOTTOCLLINES(nil,fn, out),
-      setCurrentPackage callingPackage,
-      result),
-    endCompileDuration())
+  try
+    startCompileDuration()
+    callingPackage := _*PACKAGE_*
+    IN_-PACKAGE '"BOOTTRAN"
+    result := BOOTTOCLLINES(nil,fn, out)
+    setCurrentPackage callingPackage
+    result
+  finally endCompileDuration()
  
 ++ (bootclam "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" , producing, for each function
@@ -124,14 +124,14 @@ shoeClLines(a,fn,lines,outfn)==
 ++ the common lisp file "filename.clisp" with the original boot
 ++ code as comments
 BOOTTOCLC(fn, out)==
-  UNWIND_-PROTECT(
-    PROGN(startCompileDuration(),
-      callingPackage := _*PACKAGE_*,
-      IN_-PACKAGE '"BOOTTRAN",
-      result := BOOTTOCLCLINES(nil, fn, out),
-      setCurrentPackage callingPackage,
-      result),
-    endCompileDuration())
+  try
+    startCompileDuration()
+    callingPackage := _*PACKAGE_*
+    IN_-PACKAGE '"BOOTTRAN"
+    result := BOOTTOCLCLINES(nil, fn, out)
+    setCurrentPackage callingPackage
+    result
+  finally endCompileDuration()
  
 BOOTTOCLCLINES(lines, fn, outfn)==
   infn:=shoeAddbootIfNec fn

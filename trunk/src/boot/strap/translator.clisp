@@ -507,7 +507,7 @@
         (SETQ |$bpParenCount| 0)
         (|bpFirstTok|)
         (SETQ |found|
-              (LET ((#0=#:G1354
+              (LET ((#0=#:G1356
                         (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem|))))
                 (COND
                   ((AND (CONSP #0#)
