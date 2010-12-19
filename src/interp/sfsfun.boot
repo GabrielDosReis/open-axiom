@@ -197,7 +197,7 @@ gammaRatkernel(x) ==
 
 -- cgammat is auxiliary "t" function (see p. 263 Kuki)
 cgammat(x) ==
-        MAX(0.1, MIN(10.0, 10.0*SQRT(2.0) - ABS(x)))
+        MAX(0.1, MIN(10.0, 10.0*SQRT(2.0) - abs(x)))
 
 cgamma (z) ==
         z2 := IMAGPART(z)
@@ -372,7 +372,7 @@ rPsiW(n,x) ==
         then
                 a := MIN(0,1.0/float(n)*LOG($DoubleFloatPrecision/MIN(1.0,x)))
                 c := EXP(a)
-                if ABS(a) >= 0.001
+                if abs(a) >= 0.001
                 then
                         fln := x/c*(1.0-c)
                 else
@@ -475,11 +475,11 @@ cPsi(n,z) ==
                 return COMPLEX(REALPART(conjresult),-IMAGPART(conjresult))
         nterms := 22
         bound := 10.0
-        if x<0.0 --- and ABS(z)>bound and ABS(y)<bound
+        if x<0.0 --- and abs(z)>bound and abs(y)<bound
         then
                 FloatError('"Psi implementation can't compute at ~S ",[n,z])
 ---             return cpsireflect(n,x,y,z)
-        else if (x>0.0 and ABS(z)>bound ) --- or (x<0.0 and ABS(y)>bound)
+        else if (x>0.0 and abs(z)>bound ) --- or (x<0.0 and abs(y)>bound)
         then
                 return PsiXotic(n,PsiAsymptotic(n,z))
         else            --- use recursion formula
@@ -509,7 +509,7 @@ chebf01 (c,z) ==
 ---  indexed from 0 to n+1.
 --- See Luke's books for further explanation
         n := 75 --- ad hoc decision
----     if ABS(z)/ABS(c) > 200.0 and ABS(z)>10000.0
+---     if abs(z)/abs(c) > 200.0 and abs(z)>10000.0
 ---     then
 ---             FloatError('"cheb0F1 not implemented for ~S < 1",[c,z])
         w := 2.0*z
@@ -577,7 +577,7 @@ f01(c,z)==
         then
                 FloatError('"0F1 not defined for negative integer parameter value ~S",c)
 -- conditions when we'll permit the computation
-        else if ABS(c)<1000.0 and ABS(z)<1000.0
+        else if abs(c)<1000.0 and abs(z)<1000.0
         then
                 brutef01(c,z)
         else if ZEROP IMAGPART(z) and ZEROP IMAGPART(c) and z>=0.0 and c>=0.0
@@ -587,13 +587,13 @@ f01(c,z)==
 ---             t := SQRT(-z)
 ---             c1 := c-1.0
 ---             p := PHASE(c)
----             if ABS(c)>10.0*ABS(t) and p>=0.0 and PHASE(c)<.90*PI
+---             if abs(c)>10.0*abs(t) and p>=0.0 and PHASE(c)<.90*PI
 ---             then BesselJAsymptOrder(c1,2*t)*cgamma(c/(t**(c1)))
----             else if ABS(t)>10.0*ABS(c) and ABS(t)>50.0
+---             else if abs(t)>10.0*abs(c) and abs(t)>50.0
 ---             then BesselJAsympt(c1,2*t)*cgamma(c/(t**(c1)))
 ---             else
 ---                     FloatError('"0F1 not implemented for ~S",[c,z])
-        else if (10.0*ABS(c)>ABS(z)) and ABS(c)<1.0E4 and ABS(z)<1.0E4
+        else if (10.0*abs(c)>abs(z)) and abs(c)<1.0E4 and abs(z)<1.0E4
         then
                 brutef01(c,z)
         else
@@ -740,8 +740,8 @@ BesselJ(v,z) ==
            ZEROP IMAGPART(v) and REALPART(v)>=0.0)) =>  --- zero arg, pos. real order
             ZEROP v => 1.0  --- J(0,0)=1
             0.0  --- J(v,0)=0 for real v>0
-        rv := ABS(v)
-        rz := ABS(z)
+        rv := abs(v)
+        rz := abs(z)
         (rz>B1) and (rz > B2*rv) =>  --- asymptotic argument
             BesselJAsympt(v,z)
         (rv>B1) and (rv > B2*rz) => --- asymptotic order
@@ -765,10 +765,10 @@ BesselJRecur(v,z) ==
         --Numerical.Recipes. suggest so:=v+sqrt(n.s.f.^2*v)
         so:=15.0*z
         -- reduce order until non-zero
-        while ZEROP ABS(BesselJAsymptOrder(so,z)) repeat so:=so/2.0 
-        if ABS(so)<ABS(z) then so:=v+18.*SQRT(v)
-        m:= FLOOR(ABS(so-v))+1
-        w:=MAKE_-ARRAY(m)
+        while ZEROP abs(BesselJAsymptOrder(so,z)) repeat so:=so/2.0 
+        if abs(so)<abs(z) then so:=v+18.*SQRT(v)
+        m:= FLOOR(abs(so-v))+1
+        w := newVector m
         SETF(AREF(w,m-1),BesselJAsymptOrder(v+m-1,z))
         SETF(AREF(w,m-2),BesselJAsymptOrder(v+m-2,z))
         for i in m-3 .. 0 by -1 repeat
@@ -789,9 +789,9 @@ BesselI(v,z) ==
         REALPART(v)<0.0 and not ZEROP IMAGPART(v) and FLOATP(z) =>
               CONJUGATE(BesselI(CONJUGATE(v),z))
 ---We now know that Re(z)>= 0.0
-        ABS(z) > B1 =>    --- asymptotic argument case
+        abs(z) > B1 =>    --- asymptotic argument case
                                 FloatError('"BesselI not implemented for ~S",[v,z])
-        ABS(v) > B1 =>
+        abs(v) > B1 =>
                                 FloatError('"BesselI not implemented for ~S",[v,z])
 ---     case of small argument and order
         REALPART(v)>= 0.0 =>  besselIback(v,z)
@@ -917,7 +917,7 @@ BesselIAsympt(v,z,n) ==
                 term1 := -term1 *(fourvsq-(two*float(r)-1.0)**2)/_
                         (float(r)*eight*z)
                 sum1 := sum1 + term1
-                sum2 := sum2 + ABS(term1)
+                sum2 := sum2 + abs(term1)
         sqrttwopiz := SQRT(two*PI*z)
         EXP(z)/sqrttwopiz*(1.0 + sum1 ) +_
                 EXP(-(float(n)+.5)*PI*i)*EXP(-z)/sqrttwopiz*(1.0+ sum2)

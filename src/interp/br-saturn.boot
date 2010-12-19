@@ -1406,7 +1406,7 @@ htSaySourceFile conname ==
 
 htSayIndentRel(n,:options) ==
   flag := IFCAR options
-  m := ABSVAL n
+  m := abs n
   if flag then m := m + 2
   if $standard then htSayStandard
     n > 0 =>

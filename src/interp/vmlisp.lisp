@@ -67,9 +67,6 @@
 ;; DEFMACROS
 
 
-(defmacro absval (x)
- `(abs ,x))
-
 (defmacro add1 (x)
  `(1+ ,x))
 
