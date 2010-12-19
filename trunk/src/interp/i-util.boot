@@ -51,12 +51,12 @@ inputPrompt str ==
   y := $OLDLINE
   SETQ($OLDLINE,NIL)
   y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
-  0 = SIZE str => NIL
+  0 = # str => NIL
   _$SHOWLINE(strconc(str,EBCDIC 19),p)
  
 protectedPrompt(:p) ==
   [str,:br] := p
-  0 = SIZE str => inputPrompt str
+  0 = # str => inputPrompt str
   msg := EBCDIC 29                       -- start of field
   msg :=
     if br then strconc(msg,EBCDIC 232)   -- bright write protect

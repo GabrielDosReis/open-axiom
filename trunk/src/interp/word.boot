@@ -98,7 +98,7 @@ getListOfFunctionNames(fnames) ==
     null IOSTATE(fn,'DIRECT,'_*) => 'iterate
     stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,fn,'DIRECT,'_*]],80,0)
     while (not PLACEP (x:= readLine stream)) repeat
-      (s := SIZE x) < 26 => 'iterate
+      (s := # x) < 26 => 'iterate
       res:= [SUBSTRING(x,26,NIL),:res]
     SHUT stream
   res
@@ -268,7 +268,7 @@ findApproximateWords(word,table) ==
  
   --no winners, so try flattening to upper case and checking again
  
-  wordSize := SIZE word
+  wordSize := # word
   lastThreshold := MAX(3,wordSize/2)
   vec := GETREFV lastThreshold
   for [x,:.] in alist repeat
@@ -277,7 +277,7 @@ findApproximateWords(word,table) ==
   or/[vec.k for k in 0..MAXINDEX vec]
  
 guessFromList(key,stringList) ==
-  threshold := MAX(3,(SIZE key)/2)
+  threshold := MAX(3,(# key)/2)
   vec := GETREFV threshold
   for x in stringList repeat
     k := deltaWordEntry(key,x)
@@ -286,7 +286,7 @@ guessFromList(key,stringList) ==
  
 deltaWordEntry(word,entry) ==
   word = entry => 0
-  ABS(diff := SIZE word - SIZE entry) > 4 => 1000
+  ABS(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions

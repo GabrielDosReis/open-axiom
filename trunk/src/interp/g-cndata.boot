@@ -130,7 +130,7 @@ constructorNameConflict(name,kind) ==
       "%l",'"please choose another ",kind]
 
 constructorAbbreviationErrorCheck(c,a,typ,errmess) ==
-  siz := SIZE (s := PNAME a)
+  siz := # (s := PNAME a)
   if typ = "category" and siz > 7
     then throwKeyedErrorMsg('precompilation,"S2IL0021",NIL)
   if siz > 8 then throwKeyedErrorMsg('precompilation,"S2IL0006",NIL)

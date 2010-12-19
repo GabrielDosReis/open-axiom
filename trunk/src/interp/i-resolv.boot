@@ -373,8 +373,8 @@ resolveTCat(t,c) ==
 
   sd := superType t => resolveTCat(sd,c)
 
-  SIZE(td := deconstructT t) ~= 2=> NIL
-  SIZE(tc := deconstructT c) ~= 2 => NIL
+  #(td := deconstructT t) ~= 2=> NIL
+  #(tc := deconstructT c) ~= 2 => NIL
   ut := underDomainOf t
   null isValidType(uc := last tc) => NIL
   null canCoerceFrom(ut,uc) => NIL

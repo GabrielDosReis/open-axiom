@@ -226,9 +226,10 @@ compCategories1(u,v) ==
   error 'compCategories1
  
 NewbFVectorCopy(u,domName) ==
-  v:= newShell SIZE u
+  v:= newShell # u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | cons? u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
+  for i in 6..MAXINDEX v | cons? u.i repeat
+    v.i:= [function Undef,[domName,i],:first u.i]
   v
  
 mkVector u ==

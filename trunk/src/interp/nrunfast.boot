@@ -273,7 +273,7 @@ newLookupInDomain(op,sig,addFormDomain,dollar,index) ==
 newLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := second slot4
-  SIZE catVec = 0 => nil                      --early exit if no categories
+  # catVec = 0 => nil                      --early exit if no categories
   integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
@@ -307,7 +307,7 @@ newLookupInCategories(op,sig,dom,dollar) ==
             null code => nil
             byteVector := CDDDR infovec.3
             endPos :=
-              code+2 > max => SIZE byteVector
+              code+2 > max => # byteVector
               opvec.(code+2)
             not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)

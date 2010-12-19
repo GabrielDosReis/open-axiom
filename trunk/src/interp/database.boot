@@ -706,7 +706,7 @@ dropPrefix(fn) ==
 --++  egFiles := NIL
 --++  while (not PLACEP (x:= readLine stream)) repeat
 --++    x := DROPTRAILINGBLANKS x
---++    SIZE(x) = 0 => 'iterate                         -- blank line
+--++    # x = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment
 --++    x.0 = char " " =>
 --++       -- possible exposure group member name and library name
@@ -719,7 +719,7 @@ dropPrefix(fn) ==
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       n := object2Identifier SUBSTRING(x,0,p)
 --++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)
---++       SIZE(x) = 0 =>
+--++       # x = 0 =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       egFiles := [[n,:object2Identifier x],:egFiles]
 --++    -- have a new group name

@@ -58,7 +58,7 @@ makeInternalMapName(userName,numArgs,numMms,extraPart) ==
 isInternalMapName name ==
   -- this only returns true or false as a "best guess"
   (not IDENTP(name)) or (name = "*") or (name = "**") => false
-  sz := SIZE (name' := PNAME name)
+  sz := # (name' := PNAME name)
   (sz < 7) or (char("*") ~= name'.0) => false
   not digit? name'.1 => false
   null STRPOS('"_;",name',1,NIL) => false

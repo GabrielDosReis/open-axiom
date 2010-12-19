@@ -123,7 +123,7 @@ escapeString com ==   --this makes changes on single comment lines
 -- was htexCom
   look := 0
   while look repeat
-    look >= SIZE com => look := []
+    look >= #com => look := []
 
 
     look := STRPOSL ('"${}#%", com, look, [])

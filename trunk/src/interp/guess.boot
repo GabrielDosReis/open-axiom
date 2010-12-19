@@ -170,7 +170,7 @@ findApproximateWords(word,table) ==
       
     if i = 1 and null alist then
         --no winners, so try flattening to upper case and checking again
-        wordSize := SIZE word
+        wordSize := # word
         lastThreshold := MAX(threshold - 1,wordSize/2)
         for [x,:.] in wordAlist repeat
           k := deltaWordEntry(upperWord,UPCASE x)
@@ -277,7 +277,7 @@ deltaWordEntry(word,entry) ==
   word = entry => 0
   word.0 ~= entry.0 => 1000
   #word > 2 and stringPrefix?(word,entry) => 1
-  ABS(diff := SIZE word - SIZE entry) > 4 => 1000
+  ABS(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions

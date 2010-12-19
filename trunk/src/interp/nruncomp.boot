@@ -455,7 +455,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $template := newShell ($NRTbase + $NRTdeltaLength)
   $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
-  $SetFunctions:= newShell SIZE domainShell
+  $SetFunctions:= newShell # domainShell
   $catNames:= ['$,:[genvar() for u in rest catvecListMaker]]
   domname:='dv_$
 

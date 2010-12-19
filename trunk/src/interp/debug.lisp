@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2008, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -828,7 +828,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 (DEFUN SMALL-ENOUGH-COUNT (X N M)
   "Returns number if number of nodes < M otherwise nil."
   (COND ((< M N) NIL)
-        ((VECP X)
+        ((simple-vector-p X)
          (do ((i 0 (1+ i)) (k (maxindex x)))
              ((> i k) n)
            (if (NOT (SETQ N (SMALL-ENOUGH-COUNT (ELT X I) (1+ N) M)))
@@ -1116,7 +1116,7 @@ EXAMINE (SETQ RECNO (NOTE |$InputStream|))
 (MAKEPROP '|compFormWithModemap| '/TRANSFORM '(& * * & *))
  
 (defun UNVEC (X)
-  (COND ((REFVECP X) (CONS '$ (VEC_TO_TREE X)))
+  (COND ((simple-vector-p X) (CONS '$ (VEC_TO_TREE X)))
         ((ATOM X) X)
         ((CONS (UNVEC (CAR X)) (UNVEC (CDR X))))))
  

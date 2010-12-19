@@ -44,20 +44,20 @@ maskMatch?(mask,subject) ==
 
 substring?(part, whole, startpos) ==
 --This function should be replaced by STRING<
-  np := SIZE part
-  nw := SIZE whole
+  np := # part
+  nw := # whole
   np > nw - startpos => false
   and/[CHAR_-EQUAL(part.ip, whole.iw)
       for ip in 0..np-1 for iw in startpos.. ]
 
 anySubstring?(part,whole,startpos) ==
-  np := SIZE part
-  nw := SIZE whole
+  np := # part
+  nw := # whole
   or/[((k := i) and "and"/[CHAR_-EQUAL(part.ip,whole.iw)
        for ip in 0..np - 1 for iw in i..]) for i in startpos..nw - np] => k
 
 charPosition(c,t,startpos) ==
-  n := SIZE t
+  n := # t
   startpos < 0 or startpos > n => n
   k:= startpos
   for i in startpos .. n-1 repeat
@@ -71,9 +71,9 @@ rightCharPosition(c,t,startpos) == --startpos often equals MAXINDEX t (rightmost
   k
 
 stringPosition(s,t,startpos) ==
-  n := SIZE t
+  n := # t
   if startpos < 0 or startpos > n then error '"index out of range"
-  if SIZE s = 0 then return startpos -- bug in STRPOS
+  if # s = 0 then return startpos -- bug in STRPOS
   r := STRPOS(s,t,startpos,NIL)
   if r = nil then n else r
 

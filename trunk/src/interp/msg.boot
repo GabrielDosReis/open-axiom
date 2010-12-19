@@ -166,7 +166,7 @@ processChPosesForOneLine msgList ==
         posLetter := rest assoc(poCharPosn getMsgPos msg,chPosList)
         oldPre := getMsgPrefix msg
         setMsgPrefix (msg,strconc(oldPre,_
-                     MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
+                     MAKE_-FULL_-CVEC ($preLength - 4 - # oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
     NCONC(msgList,[leaderMsg])  --a back cons
  
@@ -426,7 +426,7 @@ listDecideHowMuch(pos,oldPos) ==
 getPreStL optPre ==
     null optPre => [MAKE_-FULL_-CVEC 2]
     spses :=
-      (extraPlaces := ($preLength - (SIZE optPre) - 3)) > 0 =>
+      (extraPlaces := ($preLength - (# optPre) - 3)) > 0 =>
         MAKE_-FULL_-CVEC extraPlaces
       '""
     ['"%b", optPre,spses,'":", '"%d"]
@@ -518,7 +518,7 @@ makeMsgFromLine line ==
     localNumOfLine  :=
         i := poLinePosn posOfLine
         stNum := STRINGIMAGE i
-        strconc(rep(char " ", ($preLength - 7 - SIZE stNum)),_
+        strconc(rep(char " ", ($preLength - 7 - # stNum)),_
          stNum)
     ['line,posOfLine,NIL,NIL, strconc('"Line", localNumOfLine),_
         textOfLine]

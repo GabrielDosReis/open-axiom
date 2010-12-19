@@ -127,7 +127,7 @@ trace1 l ==
     newOptions:= delete(a,$options)
     null l => trace1 oldL
     for x in l repeat
-      x is [domain,:opList] and VECP domain =>
+      x is [domain,:opList] and vector? domain =>
         sayKeyedMsg("S2IT0003",[devaluate domain])
       $options:= [:newOptions,:LASSOC(x,$optionAlist)]
       trace1 LIST x

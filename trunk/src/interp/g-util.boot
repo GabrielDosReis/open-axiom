@@ -703,7 +703,7 @@ ScanOrPairVec(f, ob) ==
                 ScanOrInner(f, first ob)
                 ScanOrInner(f, rest ob)
                 nil
-            VECP ob =>
+            vector? ob =>
                 HPUT($seen, ob, true)
                 for i in 0..#ob-1 repeat ScanOrInner(f, ob.i)
                 nil
@@ -1299,7 +1299,7 @@ intern x ==
   x
 
 isDomain a ==
-  cons? a and VECP(first a) and
+  cons? a and vector? first a and
     member(first a.0, $domainTypeTokens)
 
 -- variables used by browser

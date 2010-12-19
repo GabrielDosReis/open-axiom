@@ -267,7 +267,7 @@ $msgdbListPrims == '(%m %s %ce %rj "%m" "%s" "%ce" "%rj")
 noBlankBeforeP word==
     integer? word => false
     member(word,$msgdbNoBlanksBeforeGroup) => true
-    if string? word and SIZE word > 1 then
+    if string? word and # word > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.0 = char " " => return true
     (cons? word) and member(first word,$msgdbListPrims) => true
@@ -279,7 +279,7 @@ $msgdbNoBlanksAfterGroup == ['" ", " ",'"%" ,"%", :$msgdbPrims,
 noBlankAfterP word==
     integer? word => false
     member(word,$msgdbNoBlanksAfterGroup) => true
-    if string? word and (s := SIZE word) > 1 then
+    if string? word and (s := # word) > 1 then
        word.0 = char '% and word.1 = char 'x => return true
        word.(s-1) = char " " => return true
     (cons? word) and member(first word, $msgdbListPrims) => true
@@ -807,7 +807,7 @@ sayBrightlyLength1 x ==
 sayAsManyPerLineAsPossible l ==
   -- it is assumed that l is a list of strings
   l := [atom2String a for a in l]
-  m := 1 + "MAX"/[SIZE(a) for a in l]
+  m := 1 + "MAX"/[# a for a in l]
   -- w will be the field width in which we will display the elements
   m > $LINELENGTH =>
     for a in l repeat sayMSG a

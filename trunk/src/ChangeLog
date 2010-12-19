@@ -1,3 +1,43 @@
+2010-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (VECP): Remove.
+	(REFVECP): Likewise.
+	(CVECP): Likewise.
+	(QMEMQ): Likewise.
+	* interp/bootlex.lisp (TRANSLABEL1): Adjust.
+	* interp/br-search.boot: Likewise.
+	* interp/br-util.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/category.boot: Likewise.
+	* interp/database.boot: Likewise.
+	* interp/debug.lisp: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-cndata.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/ggreater.lisp: Likewise.
+	* interp/guess.boot: Likewise.
+	* interp/i-coerfn.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-resolv.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/union.lisp: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/pathname.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/msg.boot: Likewise.
+	* interp/match.boot: Likewise.
+	* interp/word.boot: Likewise.
+
 2010-12-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/translator.boot (BOOTTOCL): Replace Lisp-level contruct
