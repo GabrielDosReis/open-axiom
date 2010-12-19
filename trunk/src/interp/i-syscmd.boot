@@ -2076,7 +2076,7 @@ writify ob ==
                     HPUT($seen, nob, nob)
                     nob
                 n   := QVMAXINDEX ob
-                nob := MAKE_-VEC(n+1)
+                nob := newVector(n+1)
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 for i in 0..n repeat
@@ -2219,7 +2219,7 @@ dewritify ob ==
                 nob
             vector? ob =>
                 n   := QVMAXINDEX ob
-                nob := MAKE_-VEC(n+1)
+                nob := newVector(n+1)
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 for i in 0..n repeat

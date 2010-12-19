@@ -182,7 +182,7 @@ scanInsert(s,d) ==
   k:=0
   while l <= #(u.k) repeat
     k := k+1
-  v := MAKE_-VEC(n+1)
+  v := newVector(n+1)
   for i in 0..k-1 repeat
     VEC_-SETELT(v,i,u.i)
   VEC_-SETELT(v,k,s)
@@ -194,8 +194,8 @@ scanInsert(s,d) ==
 scanDictCons()==
   l:= HKEYS scanKeyTable
   d :=
-    a := MAKE_-VEC(256)
-    b := MAKE_-VEC(1)
+    a := newVector 256
+    b := newVector 1
     VEC_-SETELT(b,0,MAKE_-CVEC 0)
     for i in 0..255 repeat
       VEC_-SETELT(a,i,b)

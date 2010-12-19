@@ -886,7 +886,7 @@ mkOpVec(dom,siglist) ==
   substargs:= [['$,:dom.0],:pairList($FormalMapVariableList,rest dom.0)]
   oplist:= getConstructorOperationsFromDB opOf dom.0
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
-  ops:= MAKE_-VEC (#siglist)
+  ops := newVector #siglist
   for (opSig:= [op,sig]) in siglist for i in 0.. repeat
     u:= ASSQ(op,oplist)
     assoc(sig,u) is [.,n,.,'ELT] => ops.i := dom.n
