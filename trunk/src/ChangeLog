@@ -1,5 +1,10 @@
 2010-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/files.spad.pamphlet (KeyedAccessFile): Use try/finally
+	instead of Lisp-level UNWIND-PROTECT.
+
+2010-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/vmlisp.lisp (VECP): Remove.
 	(REFVECP): Likewise.
 	(CVECP): Likewise.
