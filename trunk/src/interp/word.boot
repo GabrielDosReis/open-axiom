@@ -286,7 +286,7 @@ guessFromList(key,stringList) ==
  
 deltaWordEntry(word,entry) ==
   word = entry => 0
-  ABS(diff := # word - # entry) > 4 => 1000
+  abs(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions

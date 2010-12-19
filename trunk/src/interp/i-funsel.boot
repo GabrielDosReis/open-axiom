@@ -755,7 +755,7 @@ selectMostGeneralMm mmList ==
   while mml repeat
     [mm,:mml] := mml
     sz := #first mm
-    if (met := ABS(sz - 3)) < min then
+    if (met := abs(sz - 3)) < min then
       min := met
       fsz := sz
   mmList := [mm for mm in mmList | (#first mm) = fsz]

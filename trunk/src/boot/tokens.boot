@@ -243,6 +243,7 @@ for i in [ _
        repeat property(first i,'SHOETHETA) := rest i
 
 for i in [ _
+  ["abs",        "ABS"], _
   ["alphabetic?", "ALPHA-CHAR-P"], _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _

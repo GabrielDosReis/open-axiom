@@ -833,7 +833,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
   null (inc':= comp(inc,$SmallInteger,start'.env)) => nil
   if optFinal is [final] and not (final':= comp(final,$SmallInteger,inc'.env)) then
 --    not (FIXP startNum and FIXP incNum) => return nil
---    null FIXP startNum or ABSVAL startNum > 100 => return nil
+--    null FIXP startNum or abs startNum > 100 => return nil
     -----> assume that optFinal is $SmallInteger
     T := comp(final,$EmptyMode,inc'.env) or return nil
     final' := T

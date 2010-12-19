@@ -301,11 +301,11 @@ checkRewrite(name,lines) == main where   --similar to checkComments from c-doc
     for x in u repeat
         w := newString2Words x
         verbatim =>
-          w and first w = '"\end{verbatim}" =>
+          w and first w is '"\end{verbatim}" =>
             verbatim := false
             u2 := append(u2, w)
           u2 := append(u2, [x])
-        w and first w = '"\begin{verbatim}" =>
+        w and first w is '"\begin{verbatim}" =>
             verbatim := true
             u2 := append(u2, w)
         u2 := append(u2, w)
@@ -327,7 +327,7 @@ checkTexht u ==
   acc   := nil
   while u repeat
     x := first u
-    if x = '"\texht" and (u := IFCDR u) then
+    if x is '"\texht" and (u := IFCDR u) then
         if not (IFCAR u = $charLbrace) then
            checkDocError '"First left brace after \texht missing"
         count := 1  -- drop first argument including braces of \texht
@@ -335,7 +335,7 @@ checkTexht u ==
           if y = $charLbrace then count := count + 1
           if y = $charRbrace then count := count - 1
         x :=  IFCAR (u := rest u)  -- drop first right brace of 1st arg
-    if x = '"\httex" and (u := IFCDR u) and (IFCAR u = $charLbrace) then
+    if x is '"\httex" and (u := IFCDR u) and (IFCAR u = $charLbrace) then
         acc := [IFCAR u,:acc]      --left  brace: add it
         while (y := IFCAR (u := rest u)) ~= $charRbrace repeat (acc := [y,:acc])
         acc := [IFCAR u,:acc]      --right brace: add it
@@ -373,19 +373,19 @@ checkRecordHash u ==
           htname := intern checkGetStringBeforeRightBrace u
           entry := HGET($glossHash,htname) or [nil]
           HPUT($glossHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
-      else if x = '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
+      else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
           if s.0 = char '_) then s := SUBSTRING(s,1,nil)
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           not member(opOf parse,$currentSysList) =>
             checkDocError ['"Bad system command: ",s]
-          atom parse or not (parse is ['set,arg]) => 'ok  ---assume ok
+          atom parse or (parse isnt ['set,arg]) => 'ok  ---assume ok
           not spadSysChoose($setOptions,arg) =>
             checkDocError ['"Incorrect \spadsys: ",s]
             entry := HGET($sysHash,htname) or [nil]
             HPUT($sysHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
-      else if x = '"\spadtype" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
+      else if x is '"\spadtype" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
@@ -548,11 +548,11 @@ checkAddMacros u ==
   while u repeat
     x := first u
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
       y := LASSOC(x,$HTmacs) => [:y,:acc]
@@ -574,11 +574,11 @@ checkComments(nameSig,lines) == main where
     for x in u repeat
         w := newString2Words x
         verbatim =>
-          w and first w = '"\end{verbatim}" =>
+          w and first w is '"\end{verbatim}" =>
             verbatim := false
             u2 := append(u2, w)
           u2 := append(u2, [x])
-        w and first w = '"\begin{verbatim}" =>
+        w and first w is '"\begin{verbatim}" =>
             verbatim := true
             u2 := append(u2, w)
         u2 := append(u2, w)
@@ -867,14 +867,14 @@ checkAddSpaces u ==
     -- since this might be written to a file, we can't really use
     -- newline characters. The Browser and HD will do the translation
     -- later.
-    if f = '"\begin{verbatim}" then
+    if f is '"\begin{verbatim}" then
         space := $charFauxNewline
         if null u2 then u2 := [space]
 
     if i > 1 then u2 := [:u2, space, f]
     else u2 := [:u2, f]
 
-    if f = '"\end{verbatim}" then
+    if f is '"\end{verbatim}" then
         u2 := [:u2, space]
         space := $charBlank
   u2
@@ -885,11 +885,11 @@ checkIeEg u ==
   while u repeat
     x := first u
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
       z := checkIeEgfun x => [:nreverse z,:acc]
@@ -899,7 +899,7 @@ checkIeEg u ==
 
 checkIeEgfun x ==
   CHARP x => nil
-  x = '"" => nil
+  x is '"" => nil
   m := MAXINDEX x
   for k in 0..(m - 3) repeat
     x.(k + 1) = $charPeriod and x.(k + 3) = $charPeriod and
@@ -915,11 +915,11 @@ checkSplit2Words u ==
   while u repeat
     x := first u
     acc :=
-      x = '"\end{verbatim}" =>
+      x is '"\end{verbatim}" =>
         verbatim := false
         [x, :acc]
       verbatim => [x, :acc]
-      x = '"\begin{verbatim}" =>
+      x is '"\begin{verbatim}" =>
         verbatim := true
         [x, :acc]
       z := checkSplitBrace x => [:nreverse z,:acc]
@@ -956,7 +956,7 @@ checkSplitBackslash x ==
   [x]
 
 checkSplitPunctuation x ==
-  CHARP x => [x]
+  not string? x => [x]
   m := MAXINDEX x
   m < 1 => [x]
   lastchar := x.m
@@ -982,7 +982,7 @@ checkSplitPunctuation x ==
   [x]
 
 checkSplitOn(x) ==
-  CHARP x => [x]
+  not string? x => [x]
   l := $charSplitList
   m := MAXINDEX x
   while l repeat
@@ -1041,21 +1041,21 @@ checkBeginEnd u ==
             (substring?('"\radiobox",x,0) or substring?('"\inputbox",x,0))=>
              --allow 0 argument guys to pass through
               checkDocError ["Unexpected HT command: ",x]
-      x = '"\beginitems" =>
+      x is '"\beginitems" =>
         beginEndStack := ["items",:beginEndStack]
-      x = '"\begin" =>
+      x is '"\begin" =>
         u is [.,=$charLbrace,y,:r] and first r = $charRbrace =>
           if not member(y,$beginEndList) then
             checkDocError ['"Unknown begin type: \begin{",y,'"}"]
           beginEndStack := [y,:beginEndStack]
           u := r
         checkDocError ['"Improper \begin command"]
-      x = '"\item" =>
+      x is '"\item" =>
         member(IFCAR beginEndStack,'("items" "menu")) => nil
         null beginEndStack =>
           checkDocError ['"\item appears outside a \begin-\end"]
         checkDocError ['"\item appears within a \begin{",IFCAR beginEndStack,'"}.."]
-      x = '"\end" =>
+      x is '"\end" =>
         u is [.,=$charLbrace,y,:r] and first r = $charRbrace =>
           y = IFCAR beginEndStack =>
             beginEndStack := rest beginEndStack
@@ -1109,7 +1109,7 @@ checkLookForRightBrace(u) ==  --return line beginning with right brace
 checkInteger s ==
   CHARP s => false
   s = '"" => false
-  and/[DIGIT_-CHAR_-P s.i for i in 0..MAXINDEX s]
+  and/[digit? s.i for i in 0..MAXINDEX s]
 
 checkTransformFirsts(opname,u,margin) ==
 --case 1: \spad{...

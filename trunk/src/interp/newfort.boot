@@ -803,7 +803,7 @@ fortPre1 e ==
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
     (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
-    (FIXP exponent and ABS(exponent) < 32768) => ["**",fortPre1 rand,exponent]
+    (FIXP exponent and abs(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]
