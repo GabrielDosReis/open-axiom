@@ -391,8 +391,8 @@ KeyedAccessFile(Entry): KAFcategory == KAFcapsule where
         setelt(f,k,e) ==
             -- Leaves f in a safe, closed state.  For speed use "write".
             reopen!(f, "output")
-            UNWIND_-PROTECT(write!(f, [k,e]), close! f)$Lisp
-            close! f
+            try write!(f, [k,e])
+            finally close! f
             e
         search(k,f) ==
             not member?(k, keys f) => "failed"   -- can't trap RREAD error
