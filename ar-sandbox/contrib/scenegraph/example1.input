@@ -1,0 +1,20 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SCartesian(2)
+fnsin(x:DF):DF == sin(x)
+fntan(x:DF):DF == tan(x)
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(-1,-1)$PT,sipnt(3,1)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+gd := addSceneGrid(sc,view)$Scene(PT)
+addSceneRuler(sc,1,spnt(0::DF,-0.1::DF)$PT,view)$Scene(PT)
+addSceneRuler(sc,2,spnt(-0.1::DF,0::DF)$PT,view)$Scene(PT)
+mt1 := addSceneMaterial(sc,3::DF,"blue","green")$Scene(PT)
+ln1 := addPlot1Din2D(mt1,fnsin,0..3::DF,49)$Scene(PT)
+mt2 := addSceneMaterial(sc,3::DF,"green","green")$Scene(PT)
+bb:BOUNDS := [sipnt(0,-1)$PT,sipnt(3,1)$PT]
+bb2 := addSceneClip(mt2,bb)$Scene(PT)
+ln2 := addPlot1Din2D(bb2,fntan,0..3::DF,49)$Scene(PT)
+addSceneText(sc,"sin(theta)",32::NNI,spnt(0.5::DF,0.4::DF)$PT)$Scene(PT)
+addSceneText(sc,"tan(theta)",32::NNI,spnt(0.1::DF,0.6::DF)$PT)$Scene(PT)
+writeSvg(sc,"example1.svg")

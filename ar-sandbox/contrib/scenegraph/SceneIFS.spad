@@ -1,0 +1,269 @@
+)abbrev domain SCIFS SceneIFS
+++ Author: Martin Baker (some parts adapted from NumericTubePlot by
+++         Clifton J. Williamson)
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations:
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ Description: Generates various surfaces (2 dimentional subsets
+++ of 3D space). When 1 Dimentional subspace (a line) needs to be
+++ represented in a 3D editor then we convert the line into a tube.
+++ Many of the functions here are from NumericTubePlot and related
+++ packages. However I needed them to be defined over SPointCategory
+++ so I adapted them here.
+SceneIFS(PT): Exports == Implementation where
+ PT:SPointCategory
+
+ NNI==> NonNegativeInteger
+ DF==> DoubleFloat
+ SEG  ==> Segment DF
+ Triad ==> Record(tang:PT,norm:PT,bin:PT)
+ Clipd ==> Record(source: DF -> PT,_
+                   ranges: List SEG,_
+                   knots: List DF,_
+                   points: List PT)
+
+ Exports== with
+  smesh: (ptin:List List PT,clos: Boolean) -> %
+    ++ constuct a ifs representation of a mesh from a 2 dimentional
+    ++ array of points
+  singleFace: (ptin:List PT) -> %
+    ++ constuct a ifs representation of a face from an array of points
+  subdivide: (me:%) -> %
+    ++ for each face calculate a new point in the centre of the face, then
+    ++ build a new set of faces which include the new point.
+  sierpinskiDivide: (me:%,level:NNI) -> %
+    ++ for each edge of each face calculate a new point in the centre of
+    ++ the edge, then build a new set of faces which include the new points.
+  displayIFS: (me:%) -> Void
+    ++ list this instance to the command line
+  stube: (functions:List Clipd,r:DF,n:Integer) -> %
+    ++ tube(c,r,n) creates a tube of radius r around the curve c.
+  curveLoops:(pts1:List PT,r:DF,nn:Integer) ->List List PT
+    ++ generates ifs from line
+  indexes: (me:%) -> List List NNI
+    ++ returns indexes
+  pointList: (me:%) -> List PT
+    ++ returns points
+  testIFS:() -> Void
+    ++ test output
+
+ Implementation == add
+  Rep := Record(inx: List List NNI,pts: List PT)
+
+  -- returns indexes
+  indexes(me:%):List List NNI == me.inx
+
+  -- returns points
+  pointList(me:%):List PT == me.pts
+
+  meshIndex(i:Integer,j:Integer,c:Integer):NNI == ((j*(c)) + i)::NNI
+
+  -- constuct a ifs representation of a mesh from a 2 dimentional
+  -- array of points
+  smesh(ptin:List List PT,clos: Boolean): % ==
+   pt2: List PT := nil()
+   in2: List List NNI := nil()
+   rowLength := #ptin
+   colLength := #(first ptin)
+   j := 0
+   for lpt in ptin repeat
+     i := 0
+     for p in lpt repeat
+       pt2 := concat(pt2,p)
+       if i > 0 and j > 0 then
+         thisLine:List NNI := [meshIndex(i-1,j-1,colLength),_
+                               meshIndex(i,j-1,colLength),_
+                               meshIndex(i,j,colLength),_
+                               meshIndex(i-1,j,colLength)]
+         in2 := concat(in2,thisLine)
+       i := i+ 1
+     if clos and j > 0 then
+       thisLine:List NNI := [meshIndex(i-1,j-1,colLength),_
+                               meshIndex(0,j-1,colLength),_
+                               meshIndex(0,j,colLength),_
+                               meshIndex(i-1,j,colLength)]
+       in2 := concat(in2,thisLine)
+     j := j+1
+   [in2,pt2]
+
+  -- constuct a ifs representation of a face from an array of points
+  singleFace(ptin:List PT):% ==
+   pt2: List PT := ptin
+   --in2: List List NNI := [concat([i for i in 0..(#ptin - 1)],0)]
+   in2: List List NNI := [[i for i in 0..(#ptin - 1)]]
+   [in2,pt2]
+
+  -- for each face calculate a new point in the centre of the face, then
+  -- build a new set of faces which include the new point.
+  subdivide(me:%):% ==
+    indexSize:NNI := #(me.pts)
+    pt2: List PT := [(me.pts).i for i in 1..indexSize]
+    in2: List List NNI := nil()
+    for faceIx in me.inx repeat
+      -- create new point as the average value of all the points in the face
+      newPt := sipnt(0,0,0)
+      for ptIx in faceIx repeat
+        newPt := newPt + pt2.(ptIx+1)
+      newPt :=  (1 / #faceIx)::DF * newPt
+      -- add new point to list of points
+      pt2 := concat(pt2,newPt)
+      indexPos := 1
+      -- build face indexes
+      for ptIx in faceIx repeat
+        newFace:List NNI := [faceIx.j for j in 1..(#(faceIx))]
+        newFace.indexPos := indexSize
+        indexPos := indexPos + 1
+        in2 := concat(in2,newFace)
+      indexSize := indexSize + 1
+    [in2,pt2]
+
+  -- for each edge of each face calculate a new point in the centre of
+  -- the edge, then build a new set of faces which include the new points.
+  sierpinskiDivide(me:%,level:NNI):% ==
+    indexSize:NNI := #(me.pts)
+    pt2: List PT := [(me.pts).i for i in 1..indexSize]
+    in2: List List NNI := nil()
+    for faceIx in me.inx repeat
+      -- create new point as the average value of edge ends
+      for offset in 1..#faceIx repeat
+        ix1:NNI := offset
+        ix2:NNI := offset+1
+        if ix2 > #faceIx then ix2 := 1
+        newPt := pt2.((faceIx.ix1) + 1) + pt2.((faceIx.ix2) + 1)
+        newPt :=  0.5::DF * newPt
+        pt2 := concat(pt2,newPt)
+      index1:NNI := ((#faceIx) - 1)::NNI
+      index2:NNI := 0
+      -- build face indexes
+      for offset in 1..#faceIx repeat
+        ix3 := indexSize+index1
+        ix4 := indexSize+index2
+        newFace:List NNI := [faceIx.offset,ix3,ix4]
+        index1 := index1 + 1
+        if index1 = #faceIx then index1 := 0
+        index2 := index2 + 1
+        if index2 = #faceIx then index2 := 0
+        in2 := concat(in2,newFace)
+      indexSize := indexSize + #faceIx
+    if level < 1 then return [in2,pt2]
+    sierpinskiDivide([in2,pt2],(level-1)::NNI)
+
+  -- list this instance to the command line
+  displayIFS(me:%):Void ==
+    ptStr:List String := nil() -- string to hold result
+    for p in me.pts repeat
+      ptStr := concat(ptStr,(mathObject2String$Lisp p)@String)
+      ptStr := concat(ptStr," ")
+    sayTeX$Lisp ptStr
+    for faceIx in me.inx repeat
+      ptStr := nil() -- string to hold result
+      for pIx in faceIx repeat
+        ptStr := concat(ptStr,(mathObject2String$Lisp pIx)@String)
+        ptStr := concat(ptStr," ")
+      sayTeX$Lisp ptStr
+    Void
+
+  -- listBranches(c) returns a list of lists of points, representing the
+  -- branches of the curve c.
+  listBranches(functions:List Clipd):List List PT ==
+    outList : List List PT := nil()
+    for curve in functions repeat
+      outList := concat(curve.points,outList)
+    outList
+
+  LINMAX  := convert(0.995)@DF
+  XHAT := sipnt(1,0,0)
+  YHAT := sipnt(0,1,0)
+  PREV0 := sipnt(1,1,0)
+  PREV := PREV0
+
+  orthog(x:PT,y:PT):PT ==
+      if colinearity(x,y) > LINMAX then y := PREV
+      if colinearity(x,y) > LINMAX then
+        y := (colinearity(x,XHAT) < LINMAX => XHAT; YHAT)
+      a:DF := -parallel(x,y)/parallel(x,x)
+      PREV := a*x + y
+
+  poTriad(pl:PT,po:PT,pr:PT):Triad ==
+      -- use divided difference for t.
+      t := unitVector(pr - pl)
+      -- compute n as orthogonal to t in plane containing po.
+      pol := pl - po
+      n   := unitVector orthog(t,pol)
+      [t,n,perpendicular(t,n)]
+
+  curveTriads(l:List PT):List Triad ==
+      (k := #l) < 2 => error "Need at least 2 points to specify a curve"
+      PREV := PREV0
+      k = 2 =>
+        t := unitVector(second l - first l)
+        n := unitVector(t - XHAT)
+        b := perpendicular(t,n)
+        triad : Triad := [t,n,b]
+        [triad,triad]
+      -- compute interior triads using divided differences
+      midtriads : List Triad :=
+        [poTriad(pl,po,pr) for pl in l for po in rest l _
+               for pr in rest rest l]
+      -- compute first triad using a forward difference
+      x := first midtriads
+      t := unitVector(second l - first l)
+      n := unitVector orthog(t,x.norm)
+      begtriad : Triad := [t,n,perpendicular(t,n)]
+      -- compute last triad using a backward difference
+      x := last midtriads
+      -- efficiency!!
+      t := unitVector(l.k - l.(k-1))
+      n := unitVector orthog(t,x.norm)
+      endtriad : Triad := [t,n,perpendicular(t,n)]
+      concat(begtriad,concat(midtriads,endtriad))
+
+  -- cosSinInfo(n) returns the list of lists of values for n, in the
+  -- form: [[cos(n - 1) a,sin(n - 1) a],...,[cos 2 a,sin 2 a],[cos a,sin a]]
+  -- where a = 2 pi/n.  Note: n should be greater than 2.
+  cosSinInfo(n:Integer):List List DF ==
+      ans : List List DF := nil()
+      theta : DF := 2 * pi()/n
+      for i in 1..(n-1) repeat             --!! make more efficient
+        angle := i * theta
+        ans := concat([cos angle,sin angle],ans)
+      ans
+
+  -- loopPoints(p,n,b,r,lls) creates and returns a list of points
+  -- which form the loop with radius r, around the center point
+  -- indicated by the point p, with the principal normal vector of
+  -- the space curve at point p given by the point(vector) n, and the
+  -- binormal vector given by the point(vector) b, and a list of lists,
+  -- lls, which is the \spadfun{cosSinInfo} of the number of points
+  -- defining the loop.
+  loopPoints(ctr:PT,pNorm:PT,bNorm:PT,rad:DF,cosSin:List List DF):List PT ==
+      ans : List PT := nil()
+      while not null cosSin repeat
+        cossin := first cosSin; cos := first cossin; sin := second cossin
+        ans := cons(ctr + rad * (cos * pNorm + sin * bNorm),ans)
+        cosSin := rest cosSin
+      pt := ctr + rad * pNorm
+      concat(pt,concat(ans,pt))
+
+  curveLoops(pts1:List PT,r:DF,nn:Integer):List List PT ==
+      triads := curveTriads pts1
+      cosSin := cosSinInfo nn
+      loops : List List PT := nil()
+      for pt in pts1 for triad in triads repeat
+        n := triad.norm; b := triad.bin
+        loops := concat(loopPoints(pt,n,b,r,cosSin),loops)
+      reverse_! loops
+
+  -- tube(c,r,n) creates a tube of radius r around the curve c.
+  stube(functions:List Clipd,r:DF,n:Integer):% ==
+    n < 3 => error "tube: n should be at least 3"
+    brans := listBranches functions
+    loops : List List PT := nil()
+    for bran in brans repeat
+      loops := concat(loops,curveLoops(bran,r,n))
+    smesh(loops,true)

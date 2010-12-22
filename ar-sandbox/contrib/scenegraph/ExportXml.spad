@@ -1,0 +1,54 @@
+)abbrev package XML ExportXml
+++ Author: Martin John Baker
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations: writeXml,writeVRML
+++ Related Constructors: xmlAttribute,xmlElement
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ http://www.euclideanspace.com/maths/standards/program/mycode/graph/
+++ Description:
+++ This package provides support for XML files
+
+
+ExportXml(): with
+
+  writeXml:(XmlElement,String) -> Void
+    ++ writes an xml element and all the elements below it to an xml
+    ++ file. This assumes that all elements, in a file, have a single
+    ++ root which is usually the case.
+  writeVRML:(XmlElement,String) -> Void
+    ++ VRML2 is not xml but it has the same semantics and node names as X3D
+    ++ but a different syntax so it makes sense to create an XML structure
+    ++ and then format the output differently.
+
+ == add
+
+  writeXml(content: XmlElement, filename:String):Void ==
+    f1:TextFile:=open(filename::FileName,"output")
+    s1:String := "<?xml version="
+    s1 := concat(s1,quote())
+    s1 := concat(s1,"1.0")
+    s1 := concat(s1,quote())
+    s1 := concat(s1," encoding=")
+    s1 := concat(s1,quote())
+    s1 := concat(s1,"UTF-8")
+    s1 := concat(s1,quote())
+    s1 := concat(s1," standalone=")
+    s1 := concat(s1,quote())
+    s1 := concat(s1,"no")
+    s1 := concat(s1,quote())
+    s1 := concat(s1,"?>")
+    writeLine!(f1,s1)
+    lines := content::List String
+    for line in lines repeat
+      writeLine!(f1,line)
+    close! f1
+
+  writeVRML(content: XmlElement, filename:String):Void ==
+    f1:TextFile:=open(filename::FileName,"output")
+    writeLine!(f1,"#VRML V2.0 utf8")
+    outputVRML(content,f1)
+    close! f1

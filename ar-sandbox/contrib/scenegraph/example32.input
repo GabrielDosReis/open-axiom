@@ -1,0 +1,11 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SArgand
+C ==> Complex DoubleFloat
+fnexp(x:C):C == exp(x::C/complex(100::DF,0::DF))
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(0,-500)$PT,sipnt(1200,500)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+tr2 := addSceneTransform(sc,stransform(fnexp::(C -> C)))$Scene(PT)
+gd := addScenePattern(tr2,2,4,view)$Scene(PT)
+writeSvg(sc,"example32.svg")

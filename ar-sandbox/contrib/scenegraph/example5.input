@@ -1,0 +1,14 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SCartesian(3)
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(0,-500)$PT,sipnt(1200,500)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+tr2 := addSceneTransform(_
+       sc,stransform([[0.7::DF,0.7::DF,0::DF,0::DF],_
+                    [-0.7::DF,0.7::DF,0::DF,0::DF],_
+                    [0::DF,0::DF,1::DF,0::DF],_
+                    [0::DF,0::DF,0::DF,1::DF]]_
+                      )$STransform(PT))$Scene(PT)
+box := addSceneBox(tr2,1::DF)$Scene(PT)
+writeX3d(sc,"example5.x3d")

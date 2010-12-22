@@ -1,0 +1,332 @@
+)abbrev domain STR STransform
+++ Author: Martin Baker
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations: spnt,sipnt,svec,sivec,screenCoords
+++ Related Constructors: SCartesian, SArgand, SConformal
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ http://www.euclideanspace.com/maths/standards/program/mycode/graph/
+++ Description:
+++ This domain implements transforms from SPoint to SPoint
+
+STransform(PT) : Exports == Implementation where
+  ++ Domains for transform from SPoint to SPoint
+  ++ STransform transform domain can by used to represent linear transforms
+  ++ for instance when working with SCartesian
+  ++ where its Representation is a matrix of DoubleFloat
+  ++ Other transform domains may not nessarily
+  ++ be linear and will have different representatons
+
+  PT:SPointCategory
+
+  PI ==> PositiveInteger
+  NNI ==> NonNegativeInteger
+  DF ==> DoubleFloat
+  TRAN ==> PT -> PT
+  C ==> Complex DF
+  FCV ==> C -> C
+  PARAMS==> Union(mtx:PrimitiveArray PrimitiveArray DF,_
+                 general:TRAN,_
+                 multiv: PrimitiveArray DF,_
+                 iden:"iden")
+
+  Exports == with
+
+    stransform: (m:List List DF) -> %
+      ++ construct with given matrix elements
+    stransform: (gen:PT -> PT) -> %
+      ++ construct transform in general form as a mapping from PT to PT
+    stransform: (cpx:C -> C) -> %
+      ++ construct transform as function of complex variable
+      ++ can only be used when PT is SArgand so this can be
+      ++ converted to PT -> PT
+    stransform: (m: List DF) -> %
+      ++ construct with a multivector
+    stranslate: (offsetx:DF,offsety:DF,offsetz:DF,scalex:DF,_
+                 scaley:DF,scalez:DF) -> %
+      ++ construct transform which represents pure translation
+      ++ we can also combine with scale which, for instance, is useful
+      ++ when writing to SVG file because the y dimension is inverted
+    identity: () -> %
+      ++ returns the identity element which is do nothing transform
+    xform:(tr:%,inpt:PT) -> PT
+      ++ apply transform to a point producing another point
+    compound: (tr:%,inpt:%) -> %
+      ++ combine two transforms
+    coerce: (tr: %) -> OutputForm
+      ++ output
+
+  Implementation ==  add
+
+    Rep := PARAMS
+
+    -- qelt(m,i,j) returns the element in the ith row and jth
+    -- column of the array m
+    -- NO error check to determine if indices are in proper ranges
+    qelt(m:%,i:Integer,j:Integer):DF ==
+      qelt(qelt(m.mtx,i)$(PrimitiveArray PrimitiveArray DF),j)
+
+    -- construct with given matrix elements
+    stransform(m:List List DF) ==
+      PT is SCartesian(2) =>
+        arr : PrimitiveArray PrimitiveArray DF := new(3,empty())
+        --sayTeX$Lisp concat([_
+        --  "stransform(",(mathObject2String$Lisp m)@String,")"])$String
+        for i in 0..2 repeat
+          qsetelt_!(arr,i,new(3,0::DF))
+          for j in 0..2 repeat
+            (arr.i).j := (m.(i+1)).(j+1)
+        [arr]
+      PT is SCartesian(3) =>
+        arr : PrimitiveArray PrimitiveArray DF := new(4,empty())
+        --sayTeX$Lisp concat([_
+        --     "stransform(",(mathObject2String$Lisp m)@String,")"])$String
+        for i in 0..3 repeat
+          qsetelt_!(arr,i,new(4,0::DF))
+          for j in 0..3 repeat
+            (arr.i).j := (m.(i+1)).(j+1)
+        [arr]
+      error "invalid point type in transform constructor"
+      identity()
+
+    -- construct with a general mapping from PT to PT
+    stransform(gen:PT -> PT) ==
+      [gen]
+ 
+
+    stransform(cpx:C -> C) ==
+      pp:(PT -> PT) := ((x:PT) +-> _
+         (cpx((x pretend SArgand):: C))::SArgand pretend PT)
+      [pp]
+
+
+    -- construct with a multivector
+    stransform(m: List DF) ==
+      [construct m]
+
+    -- construct transform which represents pure translation
+    -- we can also combine with scale which, for instance, is useful
+    -- when writing to SVG file because the y dimension is inverted
+    stranslate(offsetx,offsety,offsetz,scalex,scaley,scalez) ==
+      --sayTeX$Lisp concat([_
+      --     "stranslate(",(mathObject2String$Lisp type)@String,_
+      --     ",",(mathObject2String$Lisp offsetx)@String,_
+      --     ",",(mathObject2String$Lisp offsety)@String,")"])$String
+      if PT is SCartesian(2) then
+        return stransform([_
+             [scalex,0::DF,offsetx],_
+             [0::DF,scaley,offsety],_
+             [0::DF,0::DF,1::DF]])
+      if PT is SCartesian(3) then
+        return stransform([_
+             [scalex,0::DF,0::DF,offsetx],_
+             [0::DF,scaley,0::DF,offsety],_
+             [0::DF,0::DF,scalez,offsetz],_
+             [0::DF,0::DF,0::DF,1::DF]])
+      if PT is SConformal(2) then
+        m := matrix([[0,1,0,0],[1,0,0,0],[0,0,1,0],[0,0,0,1]])$Matrix(DF)
+        CA := CliffordAlgebra(4,DF,squareMatrix(m)$SquareMatrix(4,DF))
+        tmp:List DF := [1,0,0,0,0,0,offsetx/2,0,0,0,offsetx/2,0,0,0,0,0]
+        trConf := multivector(tmp)$CA
+        --inptConf:CA := multivector([1::DF,0::DF,0::DF,0::DF,_
+        --        0::DF,0::DF,0::DF,0::DF,_
+        --        0::DF,1::DF,0::DF,0::DF,_
+        --        0::DF,0::DF,0::DF,0::DF])$CA
+        --resConf:CA := trConf*inptConf
+        --return [resConf pretend PrimitiveArray DF]
+        return [trConf pretend PrimitiveArray DF]
+      if PT is SArgand then
+        pp:(PT -> PT) := ((x:PT) +-> _
+          (((x pretend SArgand):: C)+ complex(offsetx,offsety))::SArgand pretend PT)
+        return [pp]
+      identity()
+
+    -- returns the identity element which is 'do-nothing' transform
+    identity() == ["iden"]
+
+    -- apply transform to a point producing another point
+    applyTransPt2(tr:%,inpt:SCartesian(2)):SCartesian(2) ==
+      --sayTeX$Lisp concat(["applyTrans pt=",_
+      --  (mathObject2String$Lisp inpt)@String,_
+      --  " tr=",(mathObject2String$Lisp tr)@String])$String
+      if tr case iden then return inpt
+      if tr case general then
+        sayTeX$Lisp "can't transform Euclidean point using general function"
+        return inpt
+      vin:List DF := extendedCoords(inpt)$SCartesian(2)
+      a:DF := tr.mtx.0.0 * vin.1 + tr.mtx.0.1 * vin.2 + tr.mtx.0.2 * vin.3
+      b:DF := tr.mtx.1.0 * vin.1 + tr.mtx.1.1 * vin.2 + tr.mtx.1.2 * vin.3
+      --sayTeX$Lisp concat(["applyTrans pt=",_
+      -- (mathObject2String$Lisp inpt)@String,_
+      --  " tr=",(mathObject2String$Lisp tr)@String,_
+      --  " res=",(mathObject2String$Lisp_
+      --  spnt(a,b)$SCartesian(2))@String])$String
+      spnt(a,b)$SCartesian(2)
+
+    -- apply transform to a point producing another point
+    applyTransPt3(tr:%,inpt:SCartesian(3)):SCartesian(3) ==
+      --sayTeX$Lisp concat([_
+      --     "applyTransPt3(",(mathObject2String$Lisp tr.mtx)@String,")",_
+      --     "appled to",(mathObject2String$Lisp inpt)@String,")"])$String
+      if tr case iden then return inpt
+      if tr case general then
+        sayTeX$Lisp "can't transform Euclidean point using general function"
+        return inpt
+      vin:List DF := extendedCoords(inpt)$SCartesian(3)
+      a:DF := tr.mtx.0.0 * vin.1 + tr.mtx.0.1 * vin.2_
+            + tr.mtx.0.2 * vin.3 + tr.mtx.0.3 * vin.4
+      b:DF := tr.mtx.1.0 * vin.1 + tr.mtx.1.1 * vin.2_
+            + tr.mtx.1.2 * vin.3 + tr.mtx.1.3 * vin.4
+      c:DF := tr.mtx.2.0 * vin.1 + tr.mtx.2.1 * vin.2_
+            + tr.mtx.2.2 * vin.3 + tr.mtx.2.3 * vin.4
+      --sayTeX$Lisp concat([_
+      --     "result=",(mathObject2String$Lisp a)@String,_
+      --     ",",(mathObject2String$Lisp b)@String,_
+      --     ",",(mathObject2String$Lisp c)@String])$String
+      spnt(a,b,c)$SCartesian(3)
+
+    -- apply transform to a (complex number) point producing another point
+    applyTransCx(tr:%,inpt:SArgand):SArgand ==
+      if tr case iden then return inpt
+      if tr case mtx then
+        sayTeX$Lisp "can't transform complex using matrix"
+        sayTeX$Lisp concat([_
+             "applyTrans(",(mathObject2String$Lisp tr)@String,")"])$String
+        return inpt
+--      res := inpt::Complex DF
+--      for f in tr.fcv repeat
+--        --sayTeX$Lisp concat([_
+--        --     "applyTrans(",(mathObject2String$Lisp 1)@String,")"])$String
+--        res := f(res)
+--      res::SArgand
+      f := tr.general
+      res := f(inpt pretend PT)
+      res pretend SArgand
+
+    -- apply transform to a 2D conformal point producing another point
+    applyTransConf2(tr:%,inpt:SConformal(2)):SConformal(2) ==
+      if tr case iden then return inpt
+      if not (tr case multiv) then
+        sayTeX$Lisp "this transform not compatible with conformal"
+        sayTeX$Lisp concat([_
+             "applyTrans(",(mathObject2String$Lisp tr)@String,")"])$String
+        return inpt
+      m := matrix([[0::DF,1::DF,0::DF,0::DF],_
+                           [1::DF,0::DF,0::DF,0::DF],_
+                           [0::DF,0::DF,1::DF,0::DF],_
+                           [0::DF,0::DF,0::DF,1::DF]])$Matrix(DF)
+      CA := CliffordAlgebra(4,DF,squareMatrix(m)$SquareMatrix(4,DF))
+      ptConf:CA := inpt pretend CA
+      trConf:CA := (tr.multiv) pretend CA
+      conjugation := trConf * ptConf * reverse(trConf)
+      res := conjugation pretend SConformal(2)
+      --sayTeX$Lisp concat(["xform pt=",_
+      --  (mathObject2String$Lisp ptConf)@String])$String
+      --sayTeX$Lisp concat(["tr=",_
+      --  (mathObject2String$Lisp trConf)@String])$String
+      --sayTeX$Lisp concat(["res=",_
+      --   (mathObject2String$Lisp res)@String])$String
+      normalisePoint(res)
+
+
+    -- apply transform to a point producing another point
+    xform(tr,inpt) ==
+      PT is SCartesian(2) => _
+        applyTransPt2(tr,inpt pretend SCartesian(2)) pretend PT
+      PT is SCartesian(3) => _
+        applyTransPt3(tr,inpt pretend SCartesian(3)) pretend PT
+      PT is SArgand => applyTransCx(tr,inpt pretend SArgand) pretend PT
+      PT is SConformal(2) => _
+        applyTransConf2(tr,inpt pretend SConformal(2)) pretend PT
+      error "invalid point type in transform"
+      spnt(0::DF,0::DF)$SCartesian(2) pretend PT
+
+    -- combine two 2D transforms
+    compound2(tr:%,inpt:%):% ==
+      arr : PrimitiveArray PrimitiveArray DF := new(3,empty())
+      for i in 0..2 repeat
+        qsetelt_!(arr,i,new(3,0::DF))
+        for j in 0..2 repeat
+          (arr.i).j := tr.mtx.0.j * inpt.mtx.i.0_
+                     + tr.mtx.1.j * inpt.mtx.i.1_
+                     + tr.mtx.2.j * inpt.mtx.i.2
+      --sayTeX$Lisp concat([_
+      --  "compound2(",(mathObject2String$Lisp tr)@String,_
+      --  ":",(mathObject2String$Lisp inpt)@String,_
+      --  "):=",(mathObject2String$Lisp arr)@String,_
+      --  ":"])$String
+      return [arr]
+
+    -- combine two 3D transforms
+    compound3(tr:%,inpt:%):% ==
+      arr : PrimitiveArray PrimitiveArray DF := new(4,empty())
+      for i in 0..3 repeat
+        qsetelt_!(arr,i,new(4,0::DF))
+        for j in 0..3 repeat
+          (arr.i).j := tr.mtx.0.j * inpt.mtx.i.0_
+                     + tr.mtx.1.j * inpt.mtx.i.1_
+                     + tr.mtx.2.j * inpt.mtx.i.2_
+                     + tr.mtx.3.j * inpt.mtx.i.3
+      --sayTeX$Lisp concat([_
+      --  "compound3(",(mathObject2String$Lisp tr)@String,_
+      --  ":",(mathObject2String$Lisp inpt)@String,_
+      --  "):=",(mathObject2String$Lisp arr)@String,_
+      --  ":"])$String
+      return [arr]
+
+    -- combine two 2D conformal transforms
+    compoundConf2(tr:%,inpt:%):% ==
+      m := matrix([[0::DF,1::DF,0::DF,0::DF],_
+                           [1::DF,0::DF,0::DF,0::DF],_
+                           [0::DF,0::DF,1::DF,0::DF],_
+                           [0::DF,0::DF,0::DF,1::DF]])$Matrix(DF)
+      CA := CliffordAlgebra(4,DF,squareMatrix(m)$SquareMatrix(4,DF))
+      trConf:CA := (tr.multiv) pretend CA
+      inptConf:CA := (inpt.multiv) pretend CA
+      resConf:CA := trConf*inptConf
+      --sayTeX$Lisp concat(["compound tr=",_
+      --  (mathObject2String$Lisp trConf)@String])$String
+      --sayTeX$Lisp concat(_
+      --  ["inpt=",(mathObject2String$Lisp inptConf)@String])$String
+      --sayTeX$Lisp concat(["res=",_
+      --  (mathObject2String$Lisp resConf)@String])$String
+      return [resConf pretend PrimitiveArray DF]
+
+
+    -- combine two transforms
+    compound(tr,inpt) ==
+      -- first check for simple case where one of the operands is identity
+      --sayTeX$Lisp concat([_
+      --  "compound(",(mathObject2String$Lisp tr)@String,_
+      --  ":",(mathObject2String$Lisp inpt)@String,_
+      --  ")"])$String
+      if tr case iden then return inpt -- iden*inpt = inpt
+      if inpt case iden then return tr -- tr*iden = tr
+      if tr case mtx and inpt case mtx then
+        if PT is SCartesian(2) then return compound2(tr,inpt)
+        if PT is SCartesian(3) then return compound3(tr,inpt)
+        --sayTeX$Lisp concat([_
+        --  "compound(",(mathObject2String$Lisp tr)@String,_
+        --  ":",(mathObject2String$Lisp inpt)@String,_
+        --  "):=",(mathObject2String$Lisp arr)@String,_
+        --  ":"])$String
+      if tr case general and inpt case general then
+        in1 : PT -> PT := tr.general
+        in2 : PT -> PT := inpt.general
+        fn: PT -> PT := _*(in1,in2)$MappingPackage3(PT,PT,PT)
+        return [fn]
+      if tr case multiv and inpt case multiv then
+        return compoundConf2(tr,inpt)
+      identity()
+
+    -- output
+    coerce(pt) ==
+      s:String := "err"
+      if PT is SCartesian(2) then s := "2Dtransform"
+      if PT is SCartesian(3) then s := "3Dtransform"
+      if PT is SArgand then s := "complex transform"
+      if PT is SConformal(2) then s := "2D Conformal"
+      s::OutputForm

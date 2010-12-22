@@ -1,0 +1,48 @@
+)abbrev domain XMLAT XmlAttribute
+++ Author: Martin John Baker
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations: writeXml,writeVRML
+++ Related Constructors: xmlAttribute,xmlElement
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ http://www.euclideanspace.com/maths/standards/program/mycode/graph/
+++ Description:
+++ This package provides support for XML files
+
+XmlAttribute(): Exports==Implementation where
+ Exports == with
+  xmlAttribute:(name:String,value:String) -> %
+    ++ construct a xmlAttribute from its name and value
+  xmlAttribute:(name:String,values:List String) -> %
+    ++ construct a xmlAttribute from its name and list of values
+  coerce: % -> String
+  outputVRML:(rp:%,f1:TextFile) -> Void
+
+ Implementation == add
+
+  Rep := Record(n:String,v:List String)
+
+  -- construct a xmlAttribute from its name and value
+  xmlAttribute(name:String,value:String): % == [name,[value]]
+
+  -- construct a xmlAttribute from its name and list of values
+  xmlAttribute(name:String,values:List String): % == [name,values]
+
+  coerce(rp:%): String ==
+   val:String := ""
+   for vn in rp.v repeat
+     if val = "" then val := vn
+     else val := concat([val," ",vn])$String
+   concat([" ",rp.n,concat("=",quote()),concat(val,quote())])$String
+
+  outputVRML(rp:%,f1:TextFile):Void ==
+   val:String := ""
+   for vn in rp.v repeat
+     if val = "" then
+       val := vn
+     else val := concat([val,",",vn])$String
+   writeLine!(f1,concat([rp.n," ",val])$String)
+   Void

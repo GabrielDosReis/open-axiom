@@ -1,0 +1,75 @@
+)abbrev domain XMLEL XmlElement
+++ Author: Martin John Baker
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations: writeXml,writeVRML
+++ Related Constructors: xmlAttribute,xmlElement
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ http://www.euclideanspace.com/maths/standards/program/mycode/graph/
+++ Description:
+++ This package provides support for XML files
+
+XmlElement(): Exports==Implementation where
+
+ NNI==> NonNegativeInteger
+
+ Exports == with
+  xmlElement:(name:String,elements:List %,attributes:List XmlAttribute) -> %
+  xmlElement:(name:String,txt: String,attributes:List XmlAttribute) -> %
+  empty?:(el:%) -> Boolean
+  coerce: % -> List String
+  outputVRML:(rp:%,f1:TextFile) -> Void
+
+ Implementation == add
+  Rep := Record(n:String,e:List %,a:List XmlAttribute,content:String)
+
+  -- constuct an element without unstructured text
+  xmlElement(name:String,elements:List %,attributes:List XmlAttribute): % ==
+   [name,elements,attributes,""]
+
+  -- constuct an element with unstructured text
+  xmlElement(name:String,txt: String,attributes:List XmlAttribute): % ==
+   [name,[],attributes,txt]
+
+  outputStructured(rp:%): List String ==
+   atts := concat([s::String for s in rp.a ])$String
+   #(rp.e) < 1 =>
+    [concat(["<",rp.n,atts," />"])$String]
+   res:List String := [concat(["<",rp.n,atts,">"])$String]
+   for el in rp.e repeat
+     --sayTeX$Lisp (mathObject2String$Lisp el)@String
+     res := concat(res,el::(List String))$(List String)
+   concat(res,concat(["</",rp.n,">"])$String)$(List String)
+
+  outputUnstructured(rp:%): List String ==
+   atts := concat([s::String for s in rp.a ])$String
+   res:List String := [concat(["<",rp.n,atts,">"])$String]
+   res := concat(res,rp.content)$(List String)
+   concat(res,concat(["</",rp.n,">"])$String)$(List String)
+
+  coerce(rp:%): List String ==
+   rp.content = "" => outputStructured(rp)
+   outputUnstructured(rp)
+
+  empty?(el:%):Boolean ==
+   if el.n = "" then true else false
+
+  outputVRML(rp:%,f1:TextFile):Void ==
+   if rp.n = "X3D" or rp.n = "Scene" then
+     for el in rp.e repeat
+       outputVRML(el,f1)
+     return Void
+   writeLine!(f1,concat(rp.n,"{"))
+   if rp.n = "Shape" then writeLine!(f1,"geometry")
+   for att in rp.a repeat
+     outputVRML(att,f1)$XmlAttribute
+   if (#(rp.e))::NNI > 0::NNI then
+     if rp.n = "Transform" then writeLine!(f1,"children[")
+     for el in rp.e repeat
+       outputVRML(el,f1)
+     if rp.n = "Transform" then writeLine!(f1,"]")
+   writeLine!(f1,"}")
+   Void

@@ -1,0 +1,12 @@
+)co QuadraticForm.spad
+)co CliffordAlgebra.spad
+)co SPointCategory.spad
+)co SCartesian.spad
+)co SConformal.spad
+)co SArgand.spad
+)co SceneIFS.spad
+)co STransform.spad
+)co XmlAttribute.spad
+)co XmlElement.spad
+)co ExportXml.spad
+)co Scene.spad

@@ -1,0 +1,48 @@
+)abbrev domain QFORM QuadraticForm
+++ Author: Stephen M. Watt
+++ Date Created: August 1988
+++ Date Last Updated: May 17, 1991
+++ Basic Operations: quadraticForm, elt
+++ Related Domains: Matrix, SquareMatrix
+++ Also See:
+++ AMS Classifications:
+++ Keywords: quadratic form
+++ Examples:
+++ References:
+++
+++ Description:
+++   This domain provides modest support for quadratic forms.
+QuadraticForm(n, K): T == Impl where
+    n: PositiveInteger
+    K: Field
+    SM ==> SquareMatrix
+    V  ==> DirectProduct
+
+    T ==> AbelianGroup with
+        quadraticForm: SM(n, K) -> %
+            ++ quadraticForm(m) creates a quadratic form from a symmetric,
+            ++ square matrix m.
+        matrix: % -> SM(n, K)
+            ++ matrix(qf) creates a square matrix from the quadratic form qf.
+        elt: (%, V(n, K)) -> K
+            ++ elt(qf,v) evaluates the quadratic form qf on the vector v,
+            ++ producing a scalar.
+        if SM(n, K) has ConvertibleTo InputForm then ConvertibleTo InputForm
+
+
+    Impl ==> SM(n,K) add
+        Rep := SM(n,K)
+
+        quadraticForm m ==
+            not symmetric? m =>
+                error "quadraticForm requires a symmetric matrix"
+            m::%
+        matrix q == q pretend SM(n,K)
+        elt(q,v) == dot(v, (matrix q * v))
+
+        if SM(n, K) has ConvertibleTo InputForm then
+            convert(q:%):InputForm ==
+               -- without package call we get infinite recursion
+               mif := (convert(matrix q)$(SM(n, K)))@InputForm
+               qf := convert(convert('quadraticForm)@SExpression)@InputForm
+               convert([qf, mif])$InputForm

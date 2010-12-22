@@ -1,0 +1,15 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SCartesian(3)
+PSC  ==> ParametricSpaceCurve(DF -> DF)
+ysin(t:DF):DF == sin(t)*3::DF
+ycos(t:DF):DF == cos(t)*3::DF
+ytan(t:DF):DF == t::DF
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(-500,-500)$PT,sipnt(500,500)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+tr2 := addSceneTransform(sc,_
+       identity()$STransform(PT))$Scene(PT)
+gd := addPlot1Din3Dparametric(tr2,curve(ysin,_
+               ycos,ytan)$PSC,0..(6::DF),49)$Scene(PT)
+writeX3d(sc,"example6.x3d")

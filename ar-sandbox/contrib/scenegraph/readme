@@ -1,0 +1,25 @@
+2010-12-21
+
+These files enable Martin Baker's Scenegraph graphics framework for
+OpenAxiom.  Compile everything by executing
+
+)read scene.input
+
+assuming OpenAxiom is started from this directory.  The exampleN.input
+files run the examples from Martin's website
+
+http://www.euclideanspace.com/maths/standards/program/mycode/graph/examples/index.htm
+
+and the file test.input runs the code from here
+
+http://www.euclideanspace.com/maths/standards/program/mycode/graph/tutorial/index.htm
+
+The examples all work except for example32.input which fails at the writeSvg
+command.  I also found that I needed to execute a ")clear all" between some of
+the examples so I included this at the start of each input file.
+
+Martin updated panAxia's QuadraticForm and CliffordAlgebra domains.  I still
+have to include the pamphlet files clifford.spad.pamphlet and
+scene.spad.pamphlet which have Martin's documentation. 
+
+Arthur Ralfs

@@ -1,0 +1,243 @@
+)abbrev domain SCRT SCartesian
+++ Author: Martin Baker
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations: point, elt, setelt, copy, dimension, minIndex, maxIndex,
+++ convert
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ http://www.euclideanspace.com/maths/standards/program/mycode/graph/
+++ Description: an implementation of PointCategory to represent points and
+++ vectors in three dimensional coordinate space
+
+SCartesian(n) : Exports == Implementation where
+  -- Domains for points, subspaces and properties of components in
+  -- a subspace
+  n: PositiveInteger
+  PI   ==> PositiveInteger
+  DF   ==> DoubleFloat
+
+  Exports == SPointCategory()
+
+  Implementation == add
+    ---- start of common code to all SPointCategory implementations ----
+    -- I would like to define these in SPointCategory but that won't work
+    -- due to lack of polymorphism in spad
+
+    -- Measure of how parallel two vectors are independant of the length
+    -- of the vectors:
+    -- 1.0 is complelely parallel
+    -- 0.0 is completely perpendicular
+    -- returned value will be these or between these 
+    colinearity(x:%,y:%):DoubleFloat == parallel(x,y)**2/_
+                 (parallel(x,x) * parallel(y,y))
+
+    -- convenience constructors which allow us to construct using
+    -- integer values
+    sipnt(a:Integer,b:Integer):% == spnt(a::DoubleFloat,b::DoubleFloat)
+    sipnt(a:Integer,b:Integer,c:Integer):% ==
+      spnt(a::DoubleFloat,b::DoubleFloat,c::DoubleFloat)
+    sivec(a:Integer,b:Integer):% == svec(a::DoubleFloat,b::DoubleFloat)
+    sivec(a:Integer,b:Integer,c:Integer):% ==
+      svec(a::DoubleFloat,b::DoubleFloat,c::DoubleFloat)
+
+    -- returns the distance between the points p1 and p2
+    -- there are 2 metrics associated with any SPointCategory
+    -- the underlying space and the space that it is embedded in
+    -- this is the distance in the underlying space.
+    distance(p1:%,p2:%):DoubleFloat ==
+      sqrt(distanceSquared(p1,p2))
+
+    ---- end of common code to all SPointCategory implementations ----
+
+    Rep := PrimitiveArray DF
+
+    -- spnt(a,b) constructs a 2D point defined by a and b
+    -- of type DF
+    spnt(a:DF,b:DF):% ==
+      --sayTeX$Lisp concat([_
+      --  "spnt(",(mathObject2String$Lisp a)@String,_
+      --  ",",(mathObject2String$Lisp b)@String,_
+      --  ")"])$String
+      pt := new(n+1,0$DF)$Rep
+      pt.0 := a
+      pt.1 := b
+      pt.n := 1@DF
+      pt
+
+    -- spnt(a,b,c) constructs a 3D point defined by a,b and c
+    -- of type DF
+    spnt(a:DF,b:DF,c:DF):% ==
+      pt := new(n+1,0$DF)$Rep
+      pt.0 := a
+      pt.1 := b
+      if n>2 then pt.2 := c
+      pt.n := 1@DF
+      pt
+
+    -- svec(a,b) constructs a 2D vector defined by a and b
+    -- of type DF
+    svec(a:DF,b:DF):% ==
+      pt := new(n+1,0$DF)$Rep
+      pt.0 := a
+      pt.1 := b
+      pt.n := 0@DF
+      pt
+
+    -- svec(a,b,c) constructs a 3D vector defined by a,b and c
+    -- of type DF
+    svec(a:DF,b:DF,c:DF):% ==
+      pt := new(n+1,0$DF)$Rep
+      pt.0 := a
+      pt.1 := b
+      if n>2 then pt.2 := c
+      pt.n := 0@DF
+      pt
+
+    dimension p == 3  -- dimension of base space
+
+    -- Test for NaN (Not a Number)
+    -- That is have we divided by zero or taken sqrt of negative number at
+    -- some stage?
+    -- Common Lisp does not support NaN ? So we need some sort of test for
+    -- invalid numbers
+    -- If not equal to itself then we assume that its not a valid number
+    -- an altenative approach is to check for complex numbers 
+    -- COMPLEXP(x)$Lisp since lisp supports complex numbers?
+    nan?(x:DF):Boolean == x ~= x
+
+    -- Is this a valid point? if any of its elements are not valid
+    -- then return true
+    -- Examples of invalid floating point numbers are when have we
+    -- have divided a given element by zero or taken
+    -- sqrt of negative number at some stage?
+    -- Note: we can still represent a point at infinity and we can
+    -- represent points using complex numbers, but we do this using
+    -- projective or conformal space or by using the appropriate
+    -- instance of SPointCategory, not by using invalid floating
+    -- point numbers.
+    Pnan?(p:%):Boolean == 
+      nan?(p.0) => true
+      nan?(p.1) => true
+      if n>2 then nan?(p.2) => true
+      false
+
+    -- This returns the length of the parallel component of two vectors
+    -- in the case of Euclidean space this is the dot product of two
+    -- vectors. We use this function to test the colinearity
+    parallel(x:%,y:%):DF == x.0 * y.0 + x.1 * y.1 + x.2 * y.2
+
+    -- scale until length is 1
+    unitVector(p:%):% ==
+      factor := if n>2 then sqrt(p.0*p.0 + p.1*p.1+ p.2*p.2) else_
+                            sqrt(p.0*p.0 + p.1*p.1)
+      pt := new(n+1,0$DF)$Rep
+      pt.0 := p.0/factor
+      pt.1 := p.1/factor
+      if n>2 then pt.2 := p.2/factor
+      pt.n := 0@DF
+      pt
+
+    -- returns the distance between the points p1 and p2
+    -- there are 2 metrics associated with any SPointCategory
+    -- the underlying space and the space that it is embedded in
+    -- this is the distance in the underlying space.
+    distanceSquared(p1:%,p2:%):DF ==
+      if n>2 then return (p1.0 - p2.0)**2 + (p1.1 - p2.1)**2 + (p1.2 - p2.2)**2
+      (p1.0 - p2.0)**2 + (p1.1 - p2.1)**2
+
+    -- This returns a vector perpendicular to the two vectors
+    -- in the case of 3D Euclidean space this is the cross product of the
+    -- two vectors. We use this function to compute orthogonal
+    perpendicular(x:%,y:%):% ==
+      pt := new(n+1,0$DF)$Rep
+      if n<3 then return sipnt(0,0)
+      pt.0 := x.1 * y.2 - x.2 * y.1
+      pt.1 := x.2 * y.0 - x.0 * y.2
+      pt.2 := x.0 * y.1 - x.1 * y.0
+      pt.n := 0@DF
+      pt
+
+    -- scalar multiplication
+    _*(s:DF,x:%):% ==
+      pt := new(n+1,0$DF)$Rep
+      pt.0 := x.0 * s
+      pt.1 := x.1 * s
+      if n>2 then pt.2 := x.2 * s
+      pt.n := 1@DF
+      pt
+
+    -- addition
+    _+(x:%,y:%):% ==
+      pt := new(4,0$DF)$Rep
+      pt.0 := x.0 + y.0
+      pt.1 := x.1 + y.1
+      if n>2 then pt.2 := x.2 + y.2
+      pt.n := 1@DF
+      pt
+
+    -- subtraction
+    _-(x:%,y:%):% ==
+      pt := new(4,0$DF)$Rep
+      pt.0 := x.0 - y.0
+      pt.1 := x.1 - y.1
+      if n>2 then pt.2 := x.2 - y.2
+      pt.n := 1@DF
+      pt
+
+    -- return true if param is inside bounding box
+    -- where bounding box is specified by min and max
+    inBounds?(pt: %,mns: %,mxs: %):Boolean ==
+      -- left of box - check minimum x
+      qelt(pt,0) < qelt(mns,0) => false
+      -- right of box - check maximum x
+      qelt(pt,0) > qelt(mxs,0) => false
+      -- below box - check minimum y
+      qelt(pt,1) < qelt(mns,1) => false
+      -- above box - check maximum y
+      qelt(pt,1) > qelt(mxs,1) => false
+      -- inside box so return true
+      true
+
+    -- returns the 'x'(left to right) screen coordinate
+    screenCoordX(pt: %):DF == pt.0
+
+    -- returns the 'y'(bottom to top) screen coordinate
+    screenCoordY(pt: %):DF == pt.1
+
+    -- returns the 'z'(out from screen) screen coordinate
+    screenCoordZ(pt: %):DF == if n>2 then pt.2 else 0@DF
+
+    -- returns screen coordinates as a list
+    screenCoords(pt: %):List DF ==
+      if n>2 then [pt.0,pt.1,pt.2]
+      [pt.0,pt.1]
+
+    -- returns extended coordinates as a list
+    extendedCoords(pt: %):List DF == entries(pt)
+
+    -- start of SetCategory definitions --
+
+    hash(s:%): SingleInteger == 0$SingleInteger
+
+    latex(s:%): String == "\mbox{\bf Unimplemented}"
+
+    -- returns true if x equals y
+    _=(x:%,y:%):Boolean ==
+      for i in 0..n+1 repeat
+        if x.i ~= y.i then return false
+      true
+
+    -- returns true if x is not equal to y
+    _~_=(x:%,y:%) : Boolean == not(x=y)
+
+    -- output
+    coerce(pt: %):OutputForm ==
+      s:String := "proj"
+      if pt.n = 0@DF then s := "v"
+      if pt.n = 1@DF then s := "p"
+      paren([s::OutputForm,(pt.0)::OutputForm,(pt.1)::OutputForm,_
+              (pt.2)::OutputForm])$OutputForm

@@ -1,0 +1,20 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SArgand
+fnsin(x:DF):DF == sin(x/100::DF)*400::DF
+fntan(x:DF):DF == tan(x/100::DF)*400::DF
+C ==> Complex DoubleFloat
+fnexp(x:C):C == exp(x::C/complex(100::DF,0::DF))
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(0,-500)$PT,sipnt(1200,500)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+gd := addSceneGrid(sc,view)$Scene(PT)
+mt1 := addSceneMaterial(sc,3::DF,"blue","green")$Scene(PT)
+ln1 := addPlot1Din2D(mt1,fnsin,0..1000::DF,49)$Scene(PT)
+mt2 := addSceneMaterial(sc,3::DF,"green","green")$Scene(PT)
+tr2 := addSceneTransform(mt2,stransform(fnexp::(C -> C)))$Scene(PT)
+bb:BOUNDS := [sipnt(100,-400)$PT,sipnt(1100,400)$PT]
+bb2 := addSceneClip(tr2,bb)$Scene(PT)
+ln2 := addPlot1Din2D(bb2,fntan,0..1000::DF,49)$Scene(PT)
+tx := addSceneText(sc,"sin(theta)",32::NNI,sipnt(200,400)$PT)$Scene(PT)
+writeSvg(sc,"example2.svg")

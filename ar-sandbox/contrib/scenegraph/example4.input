@@ -1,0 +1,12 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SCartesian(2)
+PPC  ==> ParametricPlaneCurve(DF -> DF)
+xsin(t:DF):DF == sin(t)*500::DF
+xcos(t:DF):DF == cos(t)*500::DF + 500::DF
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(0,-500)$PT,sipnt(1200,500)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+tr2 := addSceneTransform(sc,identity()$STransform(PT))$Scene(PT)
+gd := addPlot1Din2Dparametric(tr2,curve(xsin,xcos)$PPC,0..6::DF,49)$Scene(PT)
+writeSvg(sc,"example4.svg")

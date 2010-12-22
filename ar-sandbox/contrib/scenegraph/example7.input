@@ -1,0 +1,10 @@
+)clear all
+DF ==> DoubleFloat
+PT ==> SCartesian(3)
+xyfn(x:DF,y:DF):DF == x*x-y*y
+BOUNDS ==> Record(mins:PT,maxs:PT)
+view:BOUNDS := [sipnt(0,-500)$PT,sipnt(1200,500)$PT]
+sc := createSceneRoot(view)$Scene(PT)
+tr2 := addSceneTransform(sc,identity()$STransform(PT))$Scene(PT)
+gd := addPlot2Din3D(tr2,xyfn,-1..1,-1..1,49)$Scene(PT)
+writeX3d(sc,"example7.x3d")

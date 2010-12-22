@@ -1,0 +1,105 @@
+)abbrev category SPTCAT SPointCategory
+++ Author: Martin Baker
+++ Date Created: September 2010
+++ Date Last Updated: September 2010
+++ Basic Operations: point, elt, setelt, copy, dimension, minIndex, maxIndex,
+++ convert
+++ Related Constructors:
+++ Also See:
+++ AMS Classifications:
+++ Keywords:
+++ References:
+++ http://www.euclideanspace.com/maths/standards/program/mycode/graph/
+++ Description: PointCategory is the category of points and vectors in space.
+++ Points may be used to represent shapes in a scenegraph such as: the
+++ verticies of a cube or points along a line. 
+++ Shapes such as these may be defined explicitly or may be plotted.
+++ We implement SetCategory to allow us to curry transforms from one
+++ point to another.
+
+SPointCategory() : Category == SetCategory with
+  spnt:(a:DoubleFloat,b:DoubleFloat) -> %
+    ++ spnt(a,b) constructs a 2D point defined by a and b
+    ++ of type R
+  sipnt:(a:Integer,b:Integer) -> %
+    ++ sipnt(a,b) constructs a 2D point defined by a and b
+    ++ of type Integer
+  spnt:(a:DoubleFloat,b:DoubleFloat,c:DoubleFloat) -> %
+    ++ spnt(a,b,c) constructs a 3D point defined by a,b and c
+    ++ of type R
+  sipnt:(a:Integer,b:Integer,c:Integer) -> %
+    ++ sipnt(a,b,c) constructs a 3D point defined by a,b and c
+    ++ of type Integer
+  svec:(a:DoubleFloat,b:DoubleFloat) -> %
+    ++ svec(a,b) constructs a 2D vector defined by a and b
+    ++ of type R
+  sivec:(a:Integer,b:Integer) -> %
+    ++ sivec(a,b) constructs a 2D vector defined by a and b
+    ++ of type Integer
+  svec:(a:DoubleFloat,b:DoubleFloat,c:DoubleFloat) -> %
+    ++ svec(a,b,c) constructs a 3D vector defined by a,b and c
+    ++ of type R
+  sivec:(a:Integer,b:Integer,c:Integer) -> %
+    ++ sivec(a,b,c) constructs a 3D vector defined by a,b and c
+    ++ of type Integer
+  dimension:(p:%) -> PositiveInteger
+    ++ dimension(p) returns the number of dimensions that make up the
+    ++ point category p.
+  Pnan?:(p:%) -> Boolean
+    ++ Is this a valid point? if any of its elements are not valid
+    ++ then return true
+    ++ Examples of invalid floating point numbers are when have we
+    ++ have divided a given element by zero or taken
+    ++ sqrt of negative number at some stage?
+    ++ Note: we can still represent a point at infinity and we can
+    ++ represent points using complex numbers, but we do this using
+    ++ projective or conformal space or by using the appropriate
+    ++ instance of SPointCategory, not by using invalid floating
+    ++ point numbers.
+  unitVector:(p:%) -> %
+    ++ scale until length is 1
+  distanceSquared:(p1:%,p2:%) -> DoubleFloat
+    ++ returns the distance between the points p1 and p2
+    ++ there are 2 metrics associated with any SPointCategory
+    ++ the underlying space and the space that it is embedded in
+    ++ this is the distance in the underlying space.
+  distance:(p1:%,p2:%) -> DoubleFloat
+    ++ returns the distance between the points p1 and p2
+    ++ there are 2 metrics associated with any SPointCategory
+    ++ the underlying space and the space that it is embedded in
+    ++ this is the distance in the underlying space.
+  parallel:(x:%,y:%) -> DoubleFloat
+    ++ This returns the length of the parallel component of two vectors
+    ++ in the case of Euclidean space this is the dot product of two
+    ++ vectors. We use this function to test the colinearity
+  colinearity:(x:%,y:%) -> DoubleFloat
+    ++ Measure of how parallel two vectors are independant of the length
+    ++ of the vectors:
+    ++ 1.0 is complelely parallel
+    ++ 0.0 is completely perpendicular
+    ++ returned value will be between these 
+  perpendicular:(x:%,y:%) -> %
+    ++ This returns a vector perpendicular to the two vectors
+    ++ in the case of 3D Euclidean space this is the cros product of the
+    ++ two vectors. We use this function to compute orthogonal
+  _+:(x:%,y:%) -> %
+    ++ addition
+  _-:(x:%,y:%) -> %
+    ++ subtraction
+  _*:(s:DoubleFloat,x:%) -> %
+    ++ scalar multiplication
+  inBounds?:(pt: %,mns: %,mxs: %) -> Boolean
+    ++ return true if param is inside bounding box
+    ++ where bounding box is specified by min and max
+  screenCoordX: (pt: %) -> DoubleFloat
+    ++ returns the 'x'(left to right) screen coordinate
+  screenCoordY: (pt: %) -> DoubleFloat
+    ++ returns the 'y'(bottom to top) screen coordinate
+  screenCoordZ: (pt: %) -> DoubleFloat
+    ++ returns the 'z'(out from screen) screen coordinate
+  screenCoords: (pt: %) -> List DoubleFloat
+    ++ returns screen coordinates as a list
+  extendedCoords: (pt: %) -> List DoubleFloat
+    ++ returns extended coordinates as a list
+  coerce: (pt: %) -> OutputForm
+    ++ output
