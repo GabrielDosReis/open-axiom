@@ -146,6 +146,13 @@ namespace OpenAxiom {
          os_release_raw_memory(store, store->extent());
       }
 
+      void*
+      Storage::allocate(size_t n) {
+         void* result = free;
+         free += n;
+         return memset(result, 0, n);
+      }
+
       bool
       Storage::align_to(size_t alignment) {
          if (alignment == 0)    // protect against nuts

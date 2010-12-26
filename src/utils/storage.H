@@ -39,7 +39,6 @@
 #define OPENAXIOM_STORAGE_INCLUDED
 
 #include <stddef.h>
-#include <string.h>
 #include <new>
 #include <cmath>
 #include <string>
@@ -100,11 +99,13 @@ namespace OpenAxiom {
       // This class is a low-level abstraction intented for use
       // to implement higher level storage abstraction.
       struct Storage {
-         // Acquire storage chunk of `n' bytes, and align
-         // the first allocatable address to `a' booundary.
+         // Acquire storage chunk of at least `n' bytes, and align
+         // the first allocatable address to `a' boundary.
          // The result is a pointer to a storage object.  That object
          // `result' is constructed such that `result->free' points
          // to the next allocatable address, with alignment `a'.
+         // After allocation, the real capacity of the allocated
+         // object is reported by `result->capacity()'.
          static Storage* acquire(size_t a, size_t n);
          
          // Return the storage pointed to by the operand.  It
@@ -115,31 +116,27 @@ namespace OpenAxiom {
          // Count of bytes that can fit in this storage.
          size_t capacity() const { return limit_bot - limit_top; }
 
-         // Count of avaliable allocatable bytes in this storage.
+         // Count of available allocatable bytes in this storage.
          size_t room() const { return limit_bot - free; }
 
-         // Count of allocated storage in this storage.
+         // Count of used bytes in this storage.
          size_t occupancy() const { return free - limit_top; }
 
-         // Align next allocatable address to a boundary (operand).
-         // Return true on success.
+         // Align next allocatable address to boundary given by operand.
+         // Return true on success, otherwise false.
          bool align_to(size_t);
 
-         // Allocate `n' bytes of storage.  It is assumed that prior
+         // Allocate `n' bytes from this storage.  It is assumed that prior
          // to calling this function, `n' is less than `room()'.
          // The allocated storage is guaranteed to contain only zeros.
-         void* allocate(size_t n) {
-            void* result = free;
-            free += n;
-            return memset(result, 0, n);
-         }
+         void* allocate(size_t);
 
          // Next unused address
          void* next_available() { return free; }
 
-         // address at offset `o' from the first allocatable address.
-         void* at_offset(size_t o) {
-            return limit_top + o;
+         // address at offset `off' from the first allocatable address.
+         void* at_offset(size_t off) {
+            return limit_top + off;
          }
 
          // Round up `n' to a multiple of `a', a power of 2.
