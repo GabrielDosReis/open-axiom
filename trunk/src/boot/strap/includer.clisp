@@ -11,8 +11,6 @@
     ((CHARACTERP |x|) (STRING |x|))
     (T NIL)))
 
-(DEFUN |char| (|x|) (CHAR (PNAME |x|) 0))
-
 (DEFUN |shoeCLOSE| (|stream|) (CLOSE |stream|))
 
 (DEFUN |shoeNotFound| (|fn|)

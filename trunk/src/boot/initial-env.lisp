@@ -146,17 +146,6 @@
 (defun QENUM (cvec ind)
   (char-code (char cvec ind)))
  
-(defun charmem (a b)
-  (member  a  b :test #'eql))
-
-(defun |shoeIdChar| (x)
-  (or (ALPHANUMERICP x)
-      (charmem x '(#\' #\? #\%))))
-
-(defun |shoeStartsId| (x)
-  (or (alpha-char-p x)
-      (charmem x '(#\$ #\? #\%))))
- 
 (defun strpos (what in start dontcare)
   (setq what (string what) in (string in))
   (if dontcare

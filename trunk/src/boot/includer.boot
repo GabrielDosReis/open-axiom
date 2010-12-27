@@ -66,16 +66,12 @@ module includer
 --
 -- ElseLines ::= )else SimpleLine* | )elseif SimpleLine* ElseLines | empty
 
--- returns a printable representation of X, when it is a symbol
--- or a character, as string.  Otherwise, returns nil.
+++ returns a printable representation of `x', when it is a symbol
+++ or a character, as string.  Otherwise, returns nil.
 PNAME x ==
-  symbol? x => SYMBOL_-NAME x
-  CHARACTERP x => STRING x
+  symbol? x => symbolName x
+  char? x => STRING x
   nil
-
--- converts X, a 1-length string, to a character.
-char x ==
-  CHAR(PNAME x, 0)
 
 -- close STREAM.
 shoeCLOSE stream ==

@@ -5,6 +5,16 @@
 
 (PROVIDE "tokens")
 
+(DEFUN |char| (|x|) (CHAR (SYMBOL-NAME |x|) 0))
+
+(DEFUN |shoeStartsId| (|x|)
+  (OR (ALPHA-CHAR-P |x|)
+      (MEMBER |x| (LIST (|char| '$) (|char| '?) (|char| '%)))))
+
+(DEFUN |shoeIdChar| (|x|)
+  (OR (ALPHANUMERICP |x|)
+      (MEMBER |x| (LIST (|char| '|'|) (|char| '?) (|char| '%)))))
+
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
           (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
@@ -203,7 +213,9 @@
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
   (LET ((|bfVar#9|
-            (LIST (LIST '|alphabetic?| 'ALPHA-CHAR-P)
+            (LIST (LIST '|abs| 'ABS)
+                  (LIST '|alphabetic?| 'ALPHA-CHAR-P)
+                  (LIST '|alphanumeric?| 'ALPHANUMERICP)
                   (LIST '|and| 'AND) (LIST '|append| 'APPEND)
                   (LIST '|apply| 'APPLY) (LIST '|atom| 'ATOM)
                   (LIST '|canonicalFilename| 'PROBE-FILE)

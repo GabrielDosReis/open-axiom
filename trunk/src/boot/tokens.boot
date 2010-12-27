@@ -36,6 +36,16 @@ import initial_-env
 namespace BOOTTRAN
 module tokens
 
+++ converts `x', a 1-length symbol, to a character.
+char x ==
+  CHAR(symbolName x, 0)
+
+shoeStartsId x ==
+  alphabetic? x or x in [char "$", char "?", char "%"]
+
+shoeIdChar x ==
+  alphanumeric? x or x in [char "'", char "?", char "%"]
+
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
             ['"and","AND"] , _
@@ -245,6 +255,7 @@ for i in [ _
 for i in [ _
   ["abs",        "ABS"], _
   ["alphabetic?", "ALPHA-CHAR-P"], _
+  ["alphanumeric?", "ALPHANUMERICP"], _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _

@@ -1,3 +1,10 @@
+2010-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* boot/includer.boot (char): Move to token.boot.
+	* boot/tokens.boot (shoeStartsId): Move from initial-env.lisp
+	(shoeIdChar): Likewise.
+	* boot/initial-env.lisp (CHARMEM): Remove.
+
 2010-12-19  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/files.spad.pamphlet (KeyedAccessFile): Use try/finally
