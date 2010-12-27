@@ -1221,7 +1221,7 @@
                              (AND (CONSP |ISTMP#2|)
                                   (NULL (CDR |ISTMP#2|))
                                   (PROGN (SETQ |r| (CAR |ISTMP#2|)) T)))))
-                    (IDENTP |l|))
+                    (SYMBOLP |l|))
                (COND
                  (|$InteractiveMode| (LIST (LIST 'SETQ |l| |r|)))
                  (T (LIST (LIST 'DEFPARAMETER |l| |r|)))))

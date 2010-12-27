@@ -1159,7 +1159,7 @@ bpOutItem()==
   b:=bpPop1()
   bpPush 
     b is ["+LINE",:.] => [ b ]
-    b is ["L%T",l,r] and IDENTP l => 
+    b is ["L%T",l,r] and symbol? l => 
       $InteractiveMode => [["SETQ",l,r]]
       [["DEFPARAMETER",l,r]]
     translateToplevel(b,false)

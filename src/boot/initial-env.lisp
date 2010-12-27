@@ -178,9 +178,6 @@
 (defun bvec-setelt (bv i x)
   (setf (sbit bv i) x))
 
-(defun identp (a) 
-  (and (symbolp a) a))
-
 (defun |shoeReadLisp| (s n)
   (multiple-value-list (read-from-string s nil nil :start n)))
 

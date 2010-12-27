@@ -1,5 +1,12 @@
 2010-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/initial-env.lisp (IDENTP): Remove.
+	* boot/ast.boot: Replace IDENTP with symbol? where appropriate.
+	* boot/parser.boot: Likewise.
+	* boot/translator.boot: Likewise.
+
+2010-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* boot/includer.boot (char): Move to token.boot.
 	* boot/tokens.boot (shoeStartsId): Move from initial-env.lisp
 	(shoeIdChar): Likewise.
