@@ -234,7 +234,8 @@
 
 (DEFUN |compFluidize| (|x|)
   (COND
-    ((AND (IDENTP |x|) (|bfBeginsDollar| |x|)) (|compFluid| |x|))
+    ((NULL |x|) NIL)
+    ((AND (SYMBOLP |x|) (|bfBeginsDollar| |x|)) (|compFluid| |x|))
     ((ATOM |x|) |x|)
     ((AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE)) |x|)
     (T (CONS (|compFluidize| (CAR |x|)) (|compFluidize| (CDR |x|))))))
@@ -721,13 +722,13 @@
     (DECLARE (SPECIAL |$letGenVarCounter|))
     (RETURN
       (COND
-        ((IDENTP |lhs|) (|bfLetForm| |lhs| |rhs|))
+        ((SYMBOLP |lhs|) (|bfLetForm| |lhs| |rhs|))
         ((AND (CONSP |lhs|) (EQ (CAR |lhs|) 'FLUID)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |lhs|))
                 (AND (CONSP |ISTMP#1|) (NULL (CDR |ISTMP#1|)))))
          (|bfLetForm| |lhs| |rhs|))
-        ((AND (IDENTP |rhs|) (NOT (|bfCONTAINED| |rhs| |lhs|)))
+        ((AND (SYMBOLP |rhs|) (NOT (|bfCONTAINED| |rhs| |lhs|)))
          (SETQ |rhs1| (|bfLET2| |lhs| |rhs|))
          (COND
            ((AND (CONSP |rhs1|) (EQ (CAR |rhs1|) 'L%T))
@@ -735,16 +736,18 @@
            ((AND (CONSP |rhs1|) (EQ (CAR |rhs1|) 'PROGN))
             (APPEND |rhs1| (LIST |rhs|)))
            (T (COND
-                ((IDENTP (CAR |rhs1|)) (SETQ |rhs1| (CONS |rhs1| NIL))))
+                ((SYMBOLP (CAR |rhs1|))
+                 (SETQ |rhs1| (CONS |rhs1| NIL))))
               (|bfMKPROGN| (APPEND |rhs1| (CONS |rhs| NIL))))))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'L%T)
-              (IDENTP (SETQ |name| (CADR |rhs|))))
+              (SYMBOLP (SETQ |name| (CADR |rhs|))))
          (SETQ |l1| (|bfLET1| |name| (CADDR |rhs|)))
          (SETQ |l2| (|bfLET1| |lhs| |name|))
          (COND
            ((AND (CONSP |l2|) (EQ (CAR |l2|) 'PROGN))
             (|bfMKPROGN| (CONS |l1| (CDR |l2|))))
-           (T (COND ((IDENTP (CAR |l2|)) (SETQ |l2| (CONS |l2| NIL))))
+           (T (COND
+                ((SYMBOLP (CAR |l2|)) (SETQ |l2| (CONS |l2| NIL))))
               (|bfMKPROGN| (CONS |l1| (APPEND |l2| (CONS |name| NIL)))))))
         (T (SETQ |g|
                  (INTERN (CONCAT "LETTMP#"
@@ -756,7 +759,7 @@
              ((AND (CONSP |let1|) (EQ (CAR |let1|) 'PROGN))
               (|bfMKPROGN| (CONS |rhs1| (CDR |let1|))))
              (T (COND
-                  ((IDENTP (CAR |let1|))
+                  ((SYMBOLP (CAR |let1|))
                    (SETQ |let1| (CONS |let1| NIL))))
                 (|bfMKPROGN|
                     (CONS |rhs1| (APPEND |let1| (CONS |g| NIL)))))))))))
@@ -773,8 +776,8 @@
     (DECLARE (SPECIAL |$inDefIS| |$letGenVarCounter|))
     (RETURN
       (COND
-        ((IDENTP |lhs|) (|bfLetForm| |lhs| |rhs|))
         ((NULL |lhs|) NIL)
+        ((SYMBOLP |lhs|) (|bfLetForm| |lhs| |rhs|))
         ((AND (CONSP |lhs|) (EQ (CAR |lhs|) 'FLUID)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |lhs|))
@@ -815,7 +818,7 @@
                      ((AND (CONSP |l1|) (ATOM (CAR |l1|)))
                       (SETQ |l1| (CONS |l1| NIL))))
                    (COND
-                     ((IDENTP |var2|)
+                     ((SYMBOLP |var2|)
                       (APPEND |l1|
                               (CONS (|bfLetForm| |var2|
                                      (|addCARorCDR| 'CDR |rhs|))
@@ -1077,7 +1080,7 @@
 
 (DEFUN |bfHas| (|expr| |prop|)
   (COND
-    ((IDENTP |prop|) (LIST 'GET |expr| (LIST 'QUOTE |prop|)))
+    ((SYMBOLP |prop|) (LIST 'GET |expr| (LIST 'QUOTE |prop|)))
     (T (|bpSpecificErrorHere| "expected identifier as property name"))))
 
 (DEFUN |bfApplication| (|bfop| |bfarg|)
@@ -1196,7 +1199,7 @@
                  (SETQ |bfVar#98| (CDR |bfVar#98|))))))))
 
 (DEFUN |defQuoteId| (|x|)
-  (AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE) (IDENTP (CADR |x|))))
+  (AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE) (SYMBOLP (CADR |x|))))
 
 (DEFUN |bfSmintable| (|x|)
   (OR (INTEGERP |x|)
@@ -1445,7 +1448,7 @@
                             (PROGN (SETQ |r| (CAR |ISTMP#2|)) T))))))
          (LIST NIL NIL |l|
                (|bfMKPROGN| (LIST (|bfLET| |r| |l|) |body|))))
-        ((IDENTP |y|) (LIST NIL NIL |y| |body|))
+        ((SYMBOLP |y|) (LIST NIL NIL |y| |body|))
         ((AND (CONSP |y|) (EQ (CAR |y|) 'BVQUOTE)
               (PROGN
                 (SETQ |ISTMP#1| (CDR |y|))
@@ -1546,7 +1549,7 @@
 (DEFUN |shoeFluids| (|x|)
   (COND
     ((NULL |x|) NIL)
-    ((AND (IDENTP |x|) (|bfBeginsDollar| |x|)) (LIST |x|))
+    ((AND (SYMBOLP |x|) (|bfBeginsDollar| |x|)) (LIST |x|))
     ((ATOM |x|) NIL)
     ((AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE)) NIL)
     (T (APPEND (|shoeFluids| (CAR |x|)) (|shoeFluids| (CDR |x|))))))
@@ -1562,7 +1565,7 @@
     (DECLARE (SPECIAL |$activeNamespace| |$constantIdentifiers|))
     (RETURN
       (COND
-        ((AND (IDENTP |x|) (|bfBeginsDollar| |x|))
+        ((AND (SYMBOLP |x|) (|bfBeginsDollar| |x|))
          (COND
            ((MEMQ |x| |$constantIdentifiers|) NIL)
            ((CONSTANTP |x|) NIL)
@@ -1600,7 +1603,7 @@
                                  (PROGN (SETQ |r| (CAR |ISTMP#2|)) T))))))
               (RPLACA |x| 'SETQ) (|shoeCompTran1| |r|)
               (COND
-                ((IDENTP |l|)
+                ((SYMBOLP |l|)
                  (COND
                    ((NOT (|bfBeginsDollar| |l|))
                     (SETQ |$locVars|
@@ -1655,7 +1658,7 @@
   (DECLARE (SPECIAL |$typings| |$op|))
   (COND
     ((NULL |$op|) (|%Signature| |a| |b|))
-    ((IDENTP |a|)
+    ((SYMBOLP |a|)
      (COND
        ((EQ |b| 'FLUID) (|bfLET| (|compFluid| |a|) NIL))
        ((EQ |b| '|fluid|) (|bfLET| (|compFluid| |a|) NIL))

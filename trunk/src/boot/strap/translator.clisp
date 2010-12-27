@@ -920,7 +920,7 @@
       (COND
         ((ATOM |y|)
          (COND
-           ((IDENTP |y|)
+           ((SYMBOLP |y|)
             (SETQ |$used|
                   (COND
                     ((MEMQ |y| |e|) |$used|)
@@ -1148,7 +1148,7 @@
   (COND
     ((ATOM |x|)
      (COND
-       ((IDENTP |x|)
+       ((SYMBOLP |x|)
         (COND
           ((EQUAL (SYMBOL-PACKAGE |x|) |bt|) (INTERN (PNAME |x|) |pk|))
           (T |x|)))

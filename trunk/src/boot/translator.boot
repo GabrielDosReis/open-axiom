@@ -543,7 +543,7 @@ defuse(e,x)==
  
 defuse1(e,y)==
   atom y =>
-      IDENTP y =>
+      symbol? y =>
 	 $used:=
 	      MEMQ(y,e)=>$used
 	      MEMQ(y,$used)=>$used
@@ -659,7 +659,7 @@ shoeItem (str)==
  
 stripm (x,pk,bt)==
   atom x =>
-    IDENTP x =>
+    symbol? x =>
       SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
       x
     x

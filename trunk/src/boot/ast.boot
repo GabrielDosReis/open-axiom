@@ -206,7 +206,8 @@ compFluid id ==
   ["FLUID",id]
  
 compFluidize x==
-  IDENTP x and bfBeginsDollar x=>compFluid x
+  x = nil => nil
+  symbol? x and bfBeginsDollar x=>compFluid x
   atom x => x
   x is ["QUOTE",:.] => x
   [compFluidize(first x),:compFluidize(rest x)]
@@ -515,27 +516,27 @@ bfLetForm(lhs,rhs) ==
   ['L%T,lhs,rhs]
  
 bfLET1(lhs,rhs) ==
-  IDENTP lhs        => bfLetForm(lhs,rhs)
+  symbol? lhs        => bfLetForm(lhs,rhs)
   lhs is ['FLUID,.] => bfLetForm(lhs,rhs)
-  IDENTP rhs and not bfCONTAINED(rhs,lhs) =>
+  symbol? rhs and not bfCONTAINED(rhs,lhs) =>
     rhs1 := bfLET2(lhs,rhs)
     rhs1 is ["L%T",:.]   => bfMKPROGN [rhs1,rhs]
     rhs1 is ["PROGN",:.] => [:rhs1,:[rhs]]
-    if IDENTP first rhs1 then rhs1 := [rhs1,:nil]
+    if symbol? first rhs1 then rhs1 := [rhs1,:nil]
     bfMKPROGN [:rhs1,rhs]
-  rhs is ["L%T",:.] and IDENTP(name := second rhs) =>
+  rhs is ["L%T",:.] and symbol?(name := second rhs) =>
     -- handle things like [a] := x := foo
     l1 := bfLET1(name,third rhs)
     l2 := bfLET1(lhs,name)
     l2 is ["PROGN",:.] => bfMKPROGN [l1,:rest l2]
-    if IDENTP first l2 then l2 := [l2,:nil]
+    if symbol? first l2 then l2 := [l2,:nil]
     bfMKPROGN [l1,:l2,name]
   g := INTERN strconc('"LETTMP#",toString $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(lhs,g)
   let1 is ["PROGN",:.] => bfMKPROGN [rhs1,:rest let1]
-  if IDENTP first let1 then let1 := [let1,:nil]
+  if symbol? first let1 then let1 := [let1,:nil]
   bfMKPROGN [rhs1,:let1,g]
  
 bfCONTAINED(x,y)==
@@ -544,8 +545,8 @@ bfCONTAINED(x,y)==
     bfCONTAINED(x,first y) or bfCONTAINED(x,rest y)
  
 bfLET2(lhs,rhs) ==
-  IDENTP lhs => bfLetForm(lhs,rhs)
   lhs = nil => nil
+  symbol? lhs => bfLetForm(lhs,rhs)
   lhs is ['FLUID,.] => bfLetForm(lhs,rhs)
   lhs is ['L%T,a,b] =>
     a := bfLET2(a,rhs)
@@ -559,7 +560,7 @@ bfLET2(lhs,rhs) ==
     l1 := bfLET2(var1,addCARorCDR('CAR,rhs))
     var2 = nil or var2 = "DOT" =>l1
     if cons? l1 and atom first l1 then l1 := [l1,:nil]
-    IDENTP var2 =>
+    symbol? var2 =>
       [:l1,bfLetForm(var2,addCARorCDR('CDR,rhs))]
     l2 := bfLET2(var2,addCARorCDR('CDR,rhs))
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
@@ -680,7 +681,7 @@ bfIS1(lhs,rhs) ==
 
 
 bfHas(expr,prop) ==
-  IDENTP prop => ["GET",expr,["QUOTE",prop]]
+  symbol? prop => ["GET",expr,["QUOTE",prop]]
   bpSpecificErrorHere('"expected identifier as property name")
   
 bfApplication(bfop, bfarg) ==
@@ -740,7 +741,7 @@ bfAND l ==
  
  
 defQuoteId x==  
-  x is ["QUOTE",:.] and IDENTP second x
+  x is ["QUOTE",:.] and symbol? second x
  
 bfSmintable x==
   integer? x or cons? x and first x in '(SIZE LENGTH char QENUM)
@@ -844,7 +845,7 @@ bfInsertLet(x,body)==
  
 bfInsertLet1(y,body)==
   y is ["L%T",l,r] => [false,nil,l,bfMKPROGN [bfLET(r,l),body]]
-  IDENTP y => [false,nil,y,body]
+  symbol? y => [false,nil,y,body]
   y is ["BVQUOTE",b] => [true,"QUOTE",b,body]
   g:=bfGenSymbol()
   atom y => [false,nil,g,body]
@@ -895,7 +896,7 @@ shoePROG(v,b)==
 
 shoeFluids x==
   x = nil => nil
-  IDENTP x and bfBeginsDollar x => [x]
+  symbol? x and bfBeginsDollar x => [x]
   atom x => nil
   x is ["QUOTE",:.] => nil
   [:shoeFluids first x,:shoeFluids rest x]
@@ -908,7 +909,7 @@ shoeATOMs x ==
 ++ Return true if `x' is an identifier name that designates a
 ++ dynamic (e.g. Lisp special) variable.  
 isDynamicVariable x ==
-  IDENTP x and bfBeginsDollar x =>
+  symbol? x and bfBeginsDollar x =>
     MEMQ(x,$constantIdentifiers) => false
     CONSTANTP x => false
     BOUNDP x or $activeNamespace = nil => true
@@ -928,7 +929,7 @@ shoeCompTran1 x==
   x is ["L%T",l,r] =>
     x.first := "SETQ"
     shoeCompTran1 r
-    IDENTP l =>
+    symbol? l =>
       not bfBeginsDollar l=>
 	$locVars:=
 	   MEMQ(l,$locVars)=>$locVars
@@ -955,7 +956,7 @@ shoeCompTran1 x==
  
 bfTagged(a,b)==
   $op = nil => %Signature(a,b)        -- surely a toplevel decl
-  IDENTP a =>
+  symbol? a =>
     b = "FLUID" =>  bfLET(compFluid a,nil)
     b = "fluid" =>  bfLET(compFluid a,nil)
     b = "local" =>  bfLET(compFluid a,nil)
