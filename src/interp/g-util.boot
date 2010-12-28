@@ -1326,11 +1326,11 @@ $charRbrace == char '_}
 $charBack == char '_\
 $charDash == char '_-
 
-$charTab            == CODE_-CHAR(9)
-$charNewline        == CODE_-CHAR(10)
-$charFauxNewline    == CODE_-CHAR(25)
-$stringNewline      == PNAME CODE_-CHAR(10)
-$stringFauxNewline  == PNAME CODE_-CHAR(25)
+$charTab            == abstractChar 9
+$charNewline        == abstractChar 10
+$charFauxNewline    == abstractChar 25
+$stringNewline      == charString abstractChar 10
+$stringFauxNewline  == charString abstractChar 25
 
 $charExclusions == [char 'a, char 'A]
 $charQuote == char '_'

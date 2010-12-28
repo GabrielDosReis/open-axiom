@@ -561,8 +561,8 @@ bracketString string == strconc('"[",string,'"]")
 
 quoteString string == strconc('"_"", string, '"_"")
 
-$funnyQuote := char 127
-$funnyBacks := char 128
+$funnyQuote := abstractChar 127
+$funnyBacks := abstractChar 128
 
 htEscapeString str ==
   str := SUBSTITUTE($funnyQuote, char '_", str)

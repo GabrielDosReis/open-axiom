@@ -498,7 +498,7 @@ formatPrefix(op,arg,lbp,rbp,:options) ==
  
 formatPrefixOp(op,:options) ==
   qualification := IFCAR options
-  op=char '" " => format " ="
+  op = char " " => format " ="
   qualification or GETL(op,"Nud") and not MEMQ(op,$spadTightList) => 
     formatQual(op,qualification) and format " "
   format op

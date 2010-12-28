@@ -108,7 +108,7 @@ SExprToDName(sexpr, cosigVal) ==
 
 -- local garbage because Compiler strings are null terminated
 StringToCompStr(str) == 
-   strconc(str, STRING (CODE_-CHAR 0))
+   strconc(str, charString abstractChar 0)
 
 CompStrToString(str) == 
    SUBSTRING(str, 0, (# str - 1))

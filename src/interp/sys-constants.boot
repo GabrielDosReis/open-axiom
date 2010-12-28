@@ -105,7 +105,7 @@ _/MAJOR_-VERSION ==
 
 ++ Glyph for a box
 $boxString ==
-  strconc(STRING CODE_-CHAR 29, STRING CODE_-CHAR 226)
+  strconc(charString abstractChar 29, charString abstractChar 226)
 
 ++ Glyph for an APL quad
 $quadSymbol ==
@@ -119,7 +119,7 @@ $quadSymbol ==
 
 ++ The escape character, in string form
 $escapeString ==
-  STRING CODE_-CHAR 27
+  charString abstractChar 27
 
 ++ Marker to swicth to bold font
 $boldString ==

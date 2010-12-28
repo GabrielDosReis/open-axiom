@@ -302,7 +302,7 @@ constructorCategory (title is [op,:.]) ==
   cat:=
     JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
-  cat.(0):= title
+  cat.0 := title
   cat
 
 --mkMappingFunList(nam,mapForm,e) == [[],e]

@@ -151,7 +151,7 @@ parseAndEvalStr string ==
   parseAndEvalStr1 string
 
 parseAndEvalStr1 string ==
-  string.0 = char '")" =>
+  string.0 = char ")" =>
     doSystemCommand SUBSEQ(string, 1)
   processInteractive(ncParseFromString string, NIL)
 

@@ -166,9 +166,9 @@ $plainRTspecialCharacters == [
 
 ++ End of Transmission character; usually to the Algebra Output
 ++ Stream in lean mode.
-$RecordSeparator == CODE_-CHAR 30
+$RecordSeparator == abstractChar 30
 
-makeCharacter n ==> INTERN(STRING(CODE_-CHAR n))
+makeCharacter n ==> INTERN(charString abstractChar n)
 
 $RTspecialCharacters == [
     makeCharacter 218,      -- upper left corner   (+)

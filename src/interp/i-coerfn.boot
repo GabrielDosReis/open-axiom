@@ -706,7 +706,7 @@ M2Rm(x,source is [.,R],[.,p,q,S]) ==
 M2Sm(x,source is [.,R],[.,p,S]) ==
   x = '_$fromCoerceable_$ => nil
   n:= #x
-  m:= #x.(0)
+  m:= #x.0
   n=m and m=p => M2M(x,source,[nil,S])
   coercionFailure()
 

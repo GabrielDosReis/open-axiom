@@ -517,7 +517,7 @@ argCouldBelongToSubdomain(op, nargs) ==
   -- each signature has form
   -- [domain of implementation, target, arg1, arg2, ...]
   for [sig,cond,:.] in mms repeat
-    for t in CDDR sig for i in 0..(nargs) repeat
+    for t in CDDR sig for i in 0..nargs repeat
       CONTAINEDisDomain(t,cond) =>
           v.i := 1 + v.i
   v
