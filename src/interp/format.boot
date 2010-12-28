@@ -729,7 +729,7 @@ pred2English x ==
   form2String x
 
 mathObject2String x ==
-  CHARACTERP x => COERCE([x],'STRING)
+  char? x => COERCE([x],'STRING)
   object2String x
 
 object2String x ==

@@ -851,7 +851,7 @@ isFloat e ==
  
 checkPrecision e ==
   -- Do we have a string?
-  string?(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
+  string?(e) and codePoint CHAR(e,0) = 34 => e
   e := delete(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
     iPart := SUBSEQ(e,0,(period:=POSITION(char ".",e))+1)

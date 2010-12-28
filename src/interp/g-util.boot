@@ -596,7 +596,7 @@ homogeneousListToVector(t,l) ==
 
 ++ tests if x is an identifier beginning with #
 isSharpVar x ==
-  IDENTP x and SCHAR(SYMBOL_-NAME x,0) = char "#"
+  IDENTP x and SCHAR(symbolName x,0) = char "#"
  
 isSharpVarWithNum x ==
   not isSharpVar x => nil
