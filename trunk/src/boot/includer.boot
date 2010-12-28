@@ -70,7 +70,7 @@ module includer
 ++ or a character, as string.  Otherwise, returns nil.
 PNAME x ==
   symbol? x => symbolName x
-  char? x => STRING x
+  char? x => charString x
   nil
 
 -- close STREAM.
@@ -90,7 +90,7 @@ shoeReadLispString(s,n) ==
 
 -- read a line from stream
 shoeReadLine stream ==
-  READ_-LINE(stream, nil, nil)
+  readLine(stream, nil, nil)
 
 -- write LINE to standard terminal I/O.
 shoeConsole line ==
@@ -171,9 +171,9 @@ $bStreamNil:=["nullstream"]
 bStreamNull x==
   x = nil or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
-          st:=apply(second x,CDDR x)
-          x.first := first st
-          x.rest := rest st
+    st:=apply(second x,CDDR x)
+    x.first := first st
+    x.rest := rest st
   x is ["nullstream",:.]
  
 bMap(f,x) == 
@@ -188,8 +188,8 @@ bMap1(:z)==
 shoeFileMap(f, fn)==
   a:=shoeInputFile fn
   a = nil =>
-     shoeConsole strconc(fn,'" NOT FOUND")
-     $bStreamNil
+    shoeConsole strconc(fn,'" NOT FOUND")
+    $bStreamNil
   shoeConsole strconc('"READING ",fn)
   shoeInclude  bAddLineNumber(bMap(f,bRgen a),bIgen 0)
 
@@ -380,8 +380,8 @@ shoeElse1(keep,b,s)==
     keep1 and b1=> shoeThen([true,:keep],[STTOMC command,:b],t)
     shoeThen([false,:keep],[false,:b],t)
   command :=shoeEndIf? string =>
-       rest b = nil =>  shoeInclude t
-       shoeThen(rest keep,rest b,t)
+    rest b = nil =>  shoeInclude t
+    shoeThen(rest keep,rest b,t)
   keep1 and b1 => bAppend(shoeSimpleLine h,shoeElse(keep,b,t))
   shoeElse(keep,b,t)
  

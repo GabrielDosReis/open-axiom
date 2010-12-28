@@ -51,7 +51,7 @@
              ((NULL |$n|) T)
              ((EQL (QENUM |$ln| |$n|) |shoeTAB|)
               (SETQ |a| (MAKE-FULL-CVEC (- 7 (REM |$n| 8)) " "))
-              (SETF (ELT |$ln| |$n|) (ELT " " 0))
+              (SETF (ELT |$ln| |$n|) (|char| '| |))
               (SETQ |$ln| (CONCAT |a| |$ln|))
               (SETQ |s1| (CONS (CONS |$ln| (CDR |$f|)) |$r|))
               (|shoeNextLine| |s1|))

@@ -213,12 +213,13 @@
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
   (LET ((|bfVar#9|
-            (LIST (LIST '|abs| 'ABS)
+            (LIST (LIST '|abs| 'ABS) (LIST '|abstractChar| 'CODE-CHAR)
                   (LIST '|alphabetic?| 'ALPHA-CHAR-P)
                   (LIST '|alphanumeric?| 'ALPHANUMERICP)
                   (LIST '|and| 'AND) (LIST '|append| 'APPEND)
                   (LIST '|apply| 'APPLY) (LIST '|atom| 'ATOM)
                   (LIST '|canonicalFilename| 'PROBE-FILE)
+                  (LIST '|charString| 'STRING)
                   (LIST '|char?| 'CHARACTERP)
                   (LIST '|codePoint| 'CHAR-CODE) (LIST '|cons?| 'CONSP)
                   (LIST '|copy| 'COPY) (LIST '|croak| 'CROAK)

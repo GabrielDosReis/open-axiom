@@ -148,46 +148,46 @@ shoeCLOSEPAREN  == QENUM('")   ", 0)
 shoeTAB == 9
  
 shoeInsert(s,d) ==
-      l := #s
-      h := QENUM(s,0)
-      u := d.h
-      n := #u
-      k:=0
-      while l <= #u.k repeat
-          k:=k+1
-      v := newVector(n+1)
-      for i in 0..k-1 repeat
-        v.i := u.i
-      v.k := s
-      for i in k..n-1 repeat
-        v.(i+1) := u.i
-      d.h := v
-      s
+  l := #s
+  h := QENUM(s,0)
+  u := d.h
+  n := #u
+  k:=0
+  while l <= #u.k repeat
+      k:=k+1
+  v := newVector(n+1)
+  for i in 0..k-1 repeat
+    v.i := u.i
+  v.k := s
+  for i in k..n-1 repeat
+    v.(i+1) := u.i
+  d.h := v
+  s
  
 shoeDictCons()==
-      l := HKEYS shoeKeyTable
-      d :=
-          a := newVector 256
-          b := newVector 1
-          b.0 := newString 0
-          for i in 0..255 repeat
-            a.i := b
-          a
-      for s in l repeat
-        shoeInsert(s,d)
-      d
+  l := HKEYS shoeKeyTable
+  d :=
+    a := newVector 256
+    b := newVector 1
+    b.0 := newString 0
+    for i in 0..255 repeat
+      a.i := b
+    a
+  for s in l repeat
+    shoeInsert(s,d)
+  d
  
 shoeDict:=shoeDictCons()
  
  
 shoePunCons()==
-    listing := HKEYS shoeKeyTable
-    a := MAKE_-BVEC 256
-    for i in 0..255 repeat BVEC_-SETELT(a,i,0)
-    for k in listing repeat
-       if not shoeStartsId k.0
-       then BVEC_-SETELT(a,QENUM(k,0),1)
-    a
+  listing := HKEYS shoeKeyTable
+  a := MAKE_-BVEC 256
+  for i in 0..255 repeat BVEC_-SETELT(a,i,0)
+  for k in listing repeat
+     if not shoeStartsId k.0
+     then BVEC_-SETELT(a,QENUM(k,0),1)
+  a
  
 shoePun:=shoePunCons()
 
@@ -254,6 +254,7 @@ for i in [ _
 
 for i in [ _
   ["abs",        "ABS"], _
+  ["abstractChar", "CODE-CHAR"], _
   ["alphabetic?", "ALPHA-CHAR-P"], _
   ["alphanumeric?", "ALPHANUMERICP"], _
   ["and",          "AND"]  , _
@@ -261,6 +262,7 @@ for i in [ _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
   ["canonicalFilename", "PROBE-FILE"], _
+  ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _
   ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _

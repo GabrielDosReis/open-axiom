@@ -416,13 +416,13 @@ translateToplevel(b,export?) ==
     %Module(m,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      [["PROVIDE", STRING m],
+      [["PROVIDE", symbolName m],
         :[first translateToplevel(d,true) for d in ds]]
 
     %Import(m) => 
       if getOptionValue "import" ~= '"skip" then
-        bootImport STRING m
-      [["IMPORT-MODULE", STRING m]]
+        bootImport symbolName m
+      [["IMPORT-MODULE", symbolName m]]
 
     %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
@@ -450,8 +450,8 @@ translateToplevel(b,export?) ==
     %Structure(t,alts) => [bfCreateDef alt for alt in alts]
 
     %Namespace n =>
-      $activeNamespace := STRING n
-      [["IN-PACKAGE",STRING n]]
+      $activeNamespace := symbolName n
+      [["IN-PACKAGE",symbolName n]]
 
     %Lisp s => shoeReadLispString(s,0)
 
@@ -697,30 +697,30 @@ PSTTOMC string==
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
-  a:=READ_-LINE()
+  a := readLine()
   #a=0=>
-       writeLine '"Boot Loop; to exit type ] "
-       BOOTLOOP()
+    writeLine '"Boot Loop; to exit type ] "
+    BOOTLOOP()
   b:=shoePrefix? ('")console",a)
   b =>
-       stream:= _*TERMINAL_-IO_*
-       PSTTOMC bRgen stream
-       BOOTLOOP()
-  a.0='"]".0 => nil
+    stream:= _*TERMINAL_-IO_*
+    PSTTOMC bRgen stream
+    BOOTLOOP()
+  a.0 = char "]" => nil
   PSTTOMC [a]
   BOOTLOOP()
  
 BOOTPO() ==
-  a:=READ_-LINE()
+  a := readLine()
   #a=0=>
-       writeLine '"Boot Loop; to exit type ] "
-       BOOTPO()
+    writeLine '"Boot Loop; to exit type ] "
+    BOOTPO()
   b:=shoePrefix? ('")console",a)
   b =>
-       stream:= _*TERMINAL_-IO_*
-       PSTOUT bRgen stream
-       BOOTPO()
-  a.0='"]".0 => nil
+    stream:= _*TERMINAL_-IO_*
+    PSTOUT bRgen stream
+    BOOTPO()
+  a.0 = char "]" => nil
   PSTOUT [a]
   BOOTPO()
  
