@@ -604,7 +604,7 @@
                    (PROGN
                      (SETQ |$currentModuleName| |m|)
                      (SETQ |$foreignsDefsForCLisp| NIL)
-                     (CONS (LIST 'PROVIDE (STRING |m|))
+                     (CONS (LIST 'PROVIDE (SYMBOL-NAME |m|))
                            (LET ((|bfVar#11| NIL) (|bfVar#10| |ds|)
                                  (|d| NIL))
                              (LOOP
@@ -625,8 +625,8 @@
                      (COND
                        ((NOT (STRING= (|getOptionValue| '|import|)
                                       "skip"))
-                        (|bootImport| (STRING |m|))))
-                     (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
+                        (|bootImport| (SYMBOL-NAME |m|))))
+                     (LIST (LIST 'IMPORT-MODULE (SYMBOL-NAME |m|))))))
              (|%ImportSignature|
                  (LET ((|x| (CADR |b|)) (|sig| (CADDR |b|)))
                    (|genImportDeclaration| |x| |sig|)))
@@ -702,8 +702,8 @@
              (|%Namespace|
                  (LET ((|n| (CADR |b|)))
                    (PROGN
-                     (SETQ |$activeNamespace| (STRING |n|))
-                     (LIST (LIST 'IN-PACKAGE (STRING |n|))))))
+                     (SETQ |$activeNamespace| (SYMBOL-NAME |n|))
+                     (LIST (LIST 'IN-PACKAGE (SYMBOL-NAME |n|))))))
              (|%Lisp| (LET ((|s| (CADR |b|)))
                         (|shoeReadLispString| |s| 0)))
              (T (LIST (|translateToplevelExpression| |b|)))))))))
@@ -1230,7 +1230,7 @@
              (COND
                (|b| (SETQ |stream| *TERMINAL-IO*)
                     (PSTTOMC (|bRgen| |stream|)) (BOOTLOOP))
-               ((EQUAL (ELT |a| 0) (ELT "]" 0)) NIL)
+               ((CHAR= (ELT |a| 0) (|char| '])) NIL)
                (T (PSTTOMC (LIST |a|)) (BOOTLOOP)))))))))
 
 (DEFUN BOOTPO ()
@@ -1245,7 +1245,7 @@
              (COND
                (|b| (SETQ |stream| *TERMINAL-IO*)
                     (PSTOUT (|bRgen| |stream|)) (BOOTPO))
-               ((EQUAL (ELT |a| 0) (ELT "]" 0)) NIL)
+               ((CHAR= (ELT |a| 0) (|char| '])) NIL)
                (T (PSTOUT (LIST |a|)) (BOOTPO)))))))))
 
 (DEFUN PSTOUT (|string|)

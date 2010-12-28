@@ -228,7 +228,7 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfBeginsDollar|))
 
-(DEFUN |bfBeginsDollar| (|x|) (EQL (ELT (PNAME |x|) 0) (|char| '$)))
+(DEFUN |bfBeginsDollar| (|x|) (CHAR= (ELT (PNAME |x|) 0) (|char| '$)))
 
 (DEFUN |compFluid| (|id|) (LIST 'FLUID |id|))
 
@@ -959,9 +959,12 @@
     (RETURN
       (COND
         ((NULL |rhs|) (LIST 'NULL |lhs|))
-        ((STRINGP |rhs|)
+        ((|bfString?| |rhs|)
          (|bfAND| (LIST (LIST 'STRINGP |lhs|)
                         (LIST 'STRING= |lhs| |rhs|))))
+        ((|bfChar?| |rhs|)
+         (|bfAND| (LIST (LIST 'CHARACTERP |lhs|)
+                        (LIST 'CHAR= |lhs| |rhs|))))
         ((INTEGERP |rhs|) (LIST 'EQL |lhs| |rhs|))
         ((ATOM |rhs|) (LIST 'PROGN (|bfLetForm| |rhs| |lhs|) 'T))
         ((AND (CONSP |rhs|) (EQ (CAR |rhs|) 'QUOTE)
@@ -1201,24 +1204,35 @@
 (DEFUN |defQuoteId| (|x|)
   (AND (CONSP |x|) (EQ (CAR |x|) 'QUOTE) (SYMBOLP (CADR |x|))))
 
+(DEFUN |bfChar?| (|x|)
+  (OR (CHARACTERP |x|)
+      (AND (CONSP |x|) (MEMQ (CAR |x|) '(|char| |abstractChar|)))))
+
 (DEFUN |bfSmintable| (|x|)
   (OR (INTEGERP |x|)
-      (AND (CONSP |x|) (MEMQ (CAR |x|) '(SIZE LENGTH |char| QENUM)))))
+      (AND (CONSP |x|) (MEMQ (CAR |x|) '(SIZE LENGTH QENUM)))))
+
+(DEFUN |bfString?| (|x|)
+  (OR (STRINGP |x|)
+      (AND (CONSP |x|)
+           (MEMQ (CAR |x|) '(|charString| |symbolName| |toString|)))))
 
 (DEFUN |bfQ| (|l| |r|)
   (COND
+    ((OR (|bfChar?| |l|) (|bfChar?| |r|)) (LIST 'CHAR= |l| |r|))
     ((OR (|bfSmintable| |l|) (|bfSmintable| |r|)) (LIST 'EQL |l| |r|))
     ((OR (|defQuoteId| |l|) (|defQuoteId| |r|)) (LIST 'EQ |l| |r|))
     ((NULL |l|) (LIST 'NULL |r|))
     ((NULL |r|) (LIST 'NULL |l|))
     ((OR (EQ |l| T) (EQ |r| T)) (LIST 'EQ |l| |r|))
-    ((OR (STRINGP |l|) (STRINGP |r|)) (LIST 'STRING= |l| |r|))
+    ((OR (|bfString?| |l|) (|bfString?| |r|)) (LIST 'STRING= |l| |r|))
     (T (LIST 'EQUAL |l| |r|))))
 
 (DEFUN |bfLessp| (|l| |r|)
   (COND
     ((EQL |l| 0) (LIST 'PLUSP |r|))
     ((EQL |r| 0) (LIST 'MINUSP |l|))
+    ((OR (|bfChar?| |l|) (|bfChar?| |r|)) (LIST 'CHAR< |l| |r|))
     (T (LIST '< |l| |r|))))
 
 (DEFUN |bfLambda| (|vars| |body|)
@@ -1570,7 +1584,8 @@
            ((MEMQ |x| |$constantIdentifiers|) NIL)
            ((CONSTANTP |x|) NIL)
            ((OR (BOUNDP |x|) (NULL |$activeNamespace|)) T)
-           ((SETQ |y| (FIND-SYMBOL (STRING |x|) |$activeNamespace|))
+           ((SETQ |y|
+                  (FIND-SYMBOL (SYMBOL-NAME |x|) |$activeNamespace|))
             (NOT (CONSTANTP |y|)))
            (T T)))
         (T NIL)))))

@@ -289,7 +289,7 @@ bfSTEP(id,fst,step,lst)==
      lst = nil => []
      integer? inc =>
        pred :=
-	 MINUSP inc => "<"
+	 inc < 0 => "<"
 	 ">"
        [[pred,id,final]]
      [['COND,[['MINUSP,inc],
@@ -640,7 +640,8 @@ bfISReverse(x,a) ==
  
 bfIS1(lhs,rhs) ==
   rhs = nil => ['NULL,lhs]
-  string? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
+  bfString? rhs => bfAND [['STRINGP,lhs],["STRING=",lhs,rhs]]
+  bfChar? rhs => bfAND [['CHARACTERP,lhs],["CHAR=",lhs,rhs]]
   integer? rhs => ['EQL,lhs,rhs]
   atom rhs => ['PROGN,bfLetForm(rhs,lhs),'T]
   rhs is ['QUOTE,a] =>
@@ -743,21 +744,29 @@ bfAND l ==
 defQuoteId x==  
   x is ["QUOTE",:.] and symbol? second x
  
-bfSmintable x==
-  integer? x or cons? x and first x in '(SIZE LENGTH char QENUM)
+bfChar? x ==
+  char? x or cons? x and first x in '(char abstractChar)
  
+bfSmintable x==
+  integer? x or cons? x and first x in '(SIZE LENGTH QENUM)
+
+bfString? x ==
+  string? x or cons? x and first x in '(charString symbolName toString)
+
 bfQ(l,r)==
+  bfChar? l or bfChar? r => ["CHAR=",l,r]
   bfSmintable l or bfSmintable r => ["EQL",l,r]
   defQuoteId l or defQuoteId r => ["EQ",l,r]
   l = nil => ["NULL",r]
   r = nil => ["NULL",l]
   l = true or r = true => ["EQ",l,r]
-  string? l or string? r => ["STRING=",l,r]
+  bfString? l or bfString? r => ["STRING=",l,r]
   ["EQUAL",l,r]
  
 bfLessp(l,r)==
   l = 0 => ["PLUSP",r]
   r = 0 => ["MINUSP", l]
+  bfChar? l or bfChar? r => ["CHAR<",l,r]
   ["<",l,r]
 
 bfLambda(vars,body) ==
@@ -913,7 +922,7 @@ isDynamicVariable x ==
     MEMQ(x,$constantIdentifiers) => false
     CONSTANTP x => false
     BOUNDP x or $activeNamespace = nil => true
-    y := FIND_-SYMBOL(STRING x,$activeNamespace) => not CONSTANTP y
+    y := FIND_-SYMBOL(symbolName x,$activeNamespace) => not CONSTANTP y
     true
   false
  

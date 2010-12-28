@@ -88,7 +88,7 @@ shoeNextLine(s)==
   $n = nil => true
   QENUM($ln,$n)=shoeTAB =>
     a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
-    $ln.$n:='" ".0
+    $ln.$n := char " "
     $ln := strconc(a,$ln)
     s1:=[[$ln,:rest $f],:$r]
     shoeNextLine s1
@@ -124,7 +124,7 @@ shoeLineToks(s)==
  
 shoeLispToken(s,string)==
   string:=
-    # string=0 or EQL(QENUM(string,0),QENUM('";",0))=> '""
+    # string=0 or QENUM(string,0) = QENUM('";",0) => '""
     string
   ln:=$ln
   linepos:=$linepos
@@ -161,26 +161,25 @@ shoeToken () ==
   n:=$n
   ch:=$ln.$n
   b:=
-    shoeStartsComment()          =>
-		   shoeComment()
-		   []
-    shoeStartsNegComment()       =>
-		   shoeNegComment()
-		   []
-    c=shoeLispESCAPE      =>
-		   shoeLispEscape()
-    shoePunctuation c        => shoePunct ()
-    shoeStartsId ch          => shoeWord  (false)
-    c=shoeSPACE              =>
-		   shoeSpace ()
-		   []
-    c = shoeSTRING_CHAR        => shoeString ()
-    shoeDigit ch               => shoeNumber ()
-    c=shoeESCAPE               => shoeEscape()
-    c=shoeTAB                  =>
-			       $n:=$n+1
-			       []
-    shoeError ()
+    shoeStartsComment() =>
+      shoeComment()
+      []
+    shoeStartsNegComment() =>
+      shoeNegComment()
+      []
+    c=shoeLispESCAPE => shoeLispEscape()
+    shoePunctuation c => shoePunct()
+    shoeStartsId ch => shoeWord(false)
+    c=shoeSPACE =>
+      shoeSpace()
+      []
+    c = shoeSTRING_CHAR => shoeString()
+    shoeDigit ch => shoeNumber()
+    c=shoeESCAPE => shoeEscape()
+    c=shoeTAB =>
+      $n:=$n+1
+      []
+    shoeError()
   b = nil => nil
   dqUnit shoeConstructToken(ln,linepos,b,n)
  
@@ -404,8 +403,8 @@ shoeIntValue(s) ==
   ns := #s
   ival := 0
   for i in 0..ns-1 repeat
-      d := shoeOrdToNum s.i
-      ival := 10*ival + d
+    d := shoeOrdToNum s.i
+    ival := 10*ival + d
   ival
  
 shoeNumber() ==
