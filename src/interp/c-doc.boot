@@ -806,9 +806,9 @@ checkDecorate u ==
           =>
             u := v
             acc
-      x = char '_$ or x is '"$"  => ['"\$",:acc]
-      x = char '_% or x is '"%"  => ['"\%",:acc]
-      x = char '_, or x is '","  => 
+      char? x and x = char '_$ or x is '"$"  => ['"\$",:acc]
+      char? x and x = char '_% or x is '"%"  => ['"\%",:acc]
+      char? x and x = char '_, or x is '","  => 
         spadflag => ['",",:acc]
         ['",{}",:acc]
       x is '"\spad" => ['"\spad",:acc]
