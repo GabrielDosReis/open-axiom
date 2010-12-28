@@ -604,7 +604,8 @@ isConstantId(name,e) ==
  
 isFalse() == nil
  
-isFluid s == atom s and "$"=(PNAME s).(0)
+isFluid s ==
+  atom s and char "$" = PNAME(s).0
  
 isFunction(x,e) ==
   get(x,"modemap",e) or GETL(x,"SPECIAL") or x="case" or getmode(x,e) is [
@@ -621,7 +622,7 @@ makeLiteral(x,e) ==
   put(x,"isLiteral","true",e)
  
 isSomeDomainVariable s ==
-  IDENTP s and #(x:= PNAME s)>2 and x.(0)="#" and x.(1)="#"
+  IDENTP s and #(x:= PNAME s)>2 and x.0 = char "#" and x.1 = char "#"
 
 ++ Return non-nil is the domain form `x' is a `subset' of domain
 ++ form `y' in the environment `e'.  The relation of subdomain
@@ -868,9 +869,9 @@ extendsCategoryForm(domain,form,form') ==
     formVec:=(compMakeCategoryObject(form,$e)).expr
             --Must be $e to pick up locally bound domains
     form' is ["SIGNATURE",op,args,:.] =>
-        assoc([op,args],formVec.(1)) or
+        assoc([op,args],formVec.1) or
             assoc(SUBSTQ(domain,"$",[op,args]),
-                  SUBSTQ(domain,"$",formVec.(1)))
+                  SUBSTQ(domain,"$",formVec.1))
     form' is ["ATTRIBUTE",at] =>
          assoc(at,formVec.2) or
             assoc(SUBSTQ(domain,"$",at),SUBSTQ(domain,"$",formVec.2))

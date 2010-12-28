@@ -1040,7 +1040,7 @@ compSeq1(l,$exitModeStack,e) ==
   if c="failed" then return nil
   catchTag:= MKQ gensym()
   form:= ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",$exitModeStack.(0))]
-  [["CATCH",catchTag,form],$exitModeStack.(0),$finalEnv]
+  [["CATCH",catchTag,form],$exitModeStack.0,$finalEnv]
 
 compSeqItem(x,m,e) == 
   comp(macroExpand(x,e),m,e)
@@ -1200,14 +1200,14 @@ compElt(form,m,E) ==
     modemap:=
       -- FIXME: do this only for constants.
       n:=#mmList
-      1=n => mmList.(0)
+      1=n => mmList.0
       0=n =>
         return
           stackMessage('"Operation %1b missing from domain: %2p",
             [anOp,aDomain])
       stackWarning('"more than 1 modemap for: %1 with dc = %2p ===> %3",
         [anOp,aDomain,mmList])
-      mmList.(0)
+      mmList.0
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry([opOf anOp,:modemap],E)

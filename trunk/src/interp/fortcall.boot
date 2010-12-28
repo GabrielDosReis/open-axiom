@@ -102,7 +102,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
   writeLine('"  XDR xdrs;",fp)
   writeLine('"  {",fp)
   if $addUnderscoreToFortranNames then
-    routineName := strconc(name,STRING CODE_-CHAR 95)
+    routineName := strconc(name,charString abstractChar 95)
   else
     routineName := name
   -- If it is a function then give it somewhere to stick its result:
@@ -160,7 +160,7 @@ isPointer?(u,decls) ==
 printCName(u,ispointer,asps,fp) ==
   member(u,asps) =>
     PRINC(u,fp)
-    if $addUnderscoreToFortranNames then PRINC(STRING CODE_-CHAR 95,fp)
+    if $addUnderscoreToFortranNames then PRINC(charString abstractChar 95,fp)
   if not ispointer then PRINC('"&",fp)
   PRINC(u,fp)
 
@@ -202,7 +202,7 @@ printDec(type,dec,asps,fp) ==
   wt(['"    ",if LISTP(type) then first(type) else type,'" "],fp)
   member(dec,asps) =>
     if $addUnderscoreToFortranNames then
-      wl([dec,STRING CODE_-CHAR 95,'"();"],fp)
+      wl([dec,charString abstractChar 95,'"();"],fp)
     else
       wl([dec,'"();"],fp)
   LISTP(type) =>
@@ -758,7 +758,7 @@ multiToUnivariate f ==
   newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
-    body := NSUBST(["elt",newVariable,index+1],vars.(index),body)
+    body := NSUBST(["elt",newVariable,index+1],vars.index,body)
   -- We want a Vector DoubleFloat -> DoubleFloat
   target := [["DoubleFloat"],["Vector",["DoubleFloat"]]]
   rest interpret ["ADEF",[newVariable],target,[[],[]],body]
@@ -781,8 +781,8 @@ functionAndJacobian f ==
   newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
-    funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)
-    jacBodies := NSUBST(["elt",newVariable,index+1],vars.(index),jacBodies)
+    funBodies := NSUBST(["elt",newVariable,index+1],vars.index,funBodies)
+    jacBodies := NSUBST(["elt",newVariable,index+1],vars.index,jacBodies)
   target := [["Vector",["DoubleFloat"]],["Vector",["DoubleFloat"]],["Integer"]]
   rest interpret
     ["ADEF",[newVariable,"flag"],target,[[],[],[]],_
@@ -803,7 +803,7 @@ vectorOfFunctions f ==
   newVariable := gensym()
   for index in 0..#vars-1 repeat
     -- Remember that AXIOM lists, vectors etc are indexed from 1
-    funBodies := NSUBST(["elt",newVariable,index+1],vars.(index),funBodies)
+    funBodies := NSUBST(["elt",newVariable,index+1],vars.index,funBodies)
   target := [["Vector",["DoubleFloat"]],["Vector",["DoubleFloat"]]]
   rest interpret ["ADEF",[newVariable],target,[[],[]],["vector",["construct",:funBodies]]]
 

@@ -342,8 +342,8 @@ saturnTERPRI() ==
   TERPRI()
 
 writeSaturnTable line ==
-  open := charPosition(char '"_{",line,0)
-  close:= charPosition(char '"_}",line,0)
+  open := charPosition(char "{",line,0)
+  close:= charPosition(char "}",line,0)
   open < close =>
     close := findBalancingBrace(line,open + 1,MAXINDEX line,0) or error '"no balancing brace"
     writeSaturnPrint SUBSTRING(line,0,close + 1)

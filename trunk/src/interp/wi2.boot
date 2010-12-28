@@ -137,7 +137,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
       else $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
     $signature:= signature'
-    operationAlist:= SUBLIS($pairlis,$domainShell.(1))
+    operationAlist:= SUBLIS($pairlis,$domainShell.1)
     parSignature:= SUBLIS($pairlis,signature')
     parForm:= SUBLIS($pairlis,form)
  
@@ -477,7 +477,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
       Tl => (LAST Tl).env
       e
     [x',m',e'] where
-      m':= SUBLIS(sl,map.(1))
+      m':= SUBLIS(sl,map.1)
       x':=
         form':= [f,:[t.expr for t in Tl]]
         m'=$Category or isCategoryForm(m',e) => form'
@@ -509,7 +509,7 @@ compElt(origForm,m,E) ==
     mmList:= getModemapListFromDomain(anOp,0,aDomain,E)
     modemap:=
       n:=#mmList
-      1=n => mmList.(0)
+      1=n => mmList.0
       0=n =>
         return
           stackMessage ['"Operation ","%b",anOp,"%d",
@@ -517,7 +517,7 @@ compElt(origForm,m,E) ==
       stackWarning ['"more than 1 modemap for: ",anOp,
                   '" with dc=",aDomain,'" ===>"
         ,mmList]
-      mmList.(0)
+      mmList.0
 ----------> new: <-----------
     if aDomain = 'Rep then
       modemap := SUBST('Rep,'_$,modemap)
@@ -736,7 +736,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   markImport m
   [collectOp,:itl,body]:= collectForm
   $e:= e
-  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").(0) for x in itl]
+  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").0 for x in itl]
   itl="failed" => return nil
   e:= $e
   T0 := comp0(body,m,e) or return nil
