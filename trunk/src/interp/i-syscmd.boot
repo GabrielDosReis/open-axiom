@@ -2187,7 +2187,7 @@ dewritify ob ==
                     vec := dewritifyInner ob.2
                     name := ob.3
                     not FBOUNDP name => 
-                       error strconc('"undefined function: ", SYMBOL_-NAME name)
+                       error strconc('"undefined function: ", symbolName name)
                     nob := [SYMBOL_-FUNCTION name,:vec]
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
@@ -2361,7 +2361,7 @@ savesystem l ==
   SETQ($SpadServer,false)
   SETQ($openServerIfTrue,true)
 )if not %hasFeature KEYWORD::ECL
-  AxiomCore::saveCore SYMBOL_-NAME first l
+  AxiomCore::saveCore symbolName first l
 )else
   fatalError '"don't know how to save image"
 )endif
@@ -3199,7 +3199,7 @@ tokTran tok ==
 
 isIntegerString tok ==
   for i in 0..#tok-1 repeat
-    val := DIGIT_-CHAR_-P tok.i
+    val := digit? tok.i
     not val => return nil
   val
 

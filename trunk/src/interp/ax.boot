@@ -121,7 +121,7 @@ modemapToAx(modemap) ==
      null args =>
         ['Extend, ['Define, ['Declare, constructor, resultType],
             ['Add, ['PretendTo, ['Add, [], []], resultType], []]]]
-     conscat := INTERN(strconc(SYMBOL_-NAME(constructor), "ExtendCategory"),"BOOT")
+     conscat := INTERN(strconc(symbolName(constructor), "ExtendCategory"),"BOOT")
      rtype := ['Apply, conscat, :args]
 --     if resultType is ['With,a,b] then
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]

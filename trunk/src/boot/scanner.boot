@@ -355,7 +355,7 @@ shoeIdEnd(line,n)==
  
  
 shoeDigit x== 
-  DIGIT_-CHAR_-P x
+  digit? x
  
 shoeW(b)==
   n1 := $n

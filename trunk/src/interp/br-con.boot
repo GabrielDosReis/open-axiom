@@ -1317,7 +1317,7 @@ digits2Names s ==
   for i in 0..MAXINDEX s repeat
     c := s.i
     segment :=
-      n := DIGIT_-CHAR_-P c =>
+      n := digit? c =>
         ('("Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine")).n
       c
     strconc(str, segment)

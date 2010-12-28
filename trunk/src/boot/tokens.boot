@@ -262,6 +262,7 @@ for i in [ _
   ["atom",        "ATOM"]  , _
   ["canonicalFilename", "PROBE-FILE"], _
   ["char?", "CHARACTERP"]  , _
+  ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _

@@ -2618,7 +2618,7 @@ primaryForm2String x ==
   IDENTP x => 
     x = "$" => '"%"
     x = "$$" => '"%%"
-    SYMBOL_-NAME x
+    symbolName x
   atom x => toString x
   strconc('"(",inputForm2String x, '")")
 
@@ -2644,7 +2644,7 @@ callForm2String x ==
 typedForm2String(s,x,t) ==
   s = "pretend" =>
     strconc(callForm2String x, '" pretend ", callForm2String t)
-  strconc(callForm2String x, SYMBOL_-NAME s, callForm2String t)
+  strconc(callForm2String x, symbolName s, callForm2String t)
 
 expForm2String x ==
   x is [op,lhs,rhs] and op in '(** _^) =>

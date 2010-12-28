@@ -98,7 +98,7 @@ SExprToDName(sexpr, cosigVal) ==
          [DNameStringID,: StringToCompStr '"->"],
               [DNameTupleID, : rest args],
                  [DNameTupleID, first args]]
-  name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME first sexpr]
+  name0 :=   [DNameStringID, : StringToCompStr symbolName first sexpr]
   first sexpr = 'Union or first sexpr = 'Record =>
     [DNameApplyID, name0, 
         [DNameTupleID,: [ SExprToDName(sx,true) for sx in rest sexpr]]]
@@ -123,7 +123,7 @@ runOldAxiomFunctor(:allArgs) ==
 
 makeLazyOldAxiomDispatchDomain domform ==
   attribute? domform =>
-      [$attributeDispatch, domform, hashString(SYMBOL_-NAME domform)]
+      [$attributeDispatch, domform, hashString(symbolName domform)]
   getConstructorKindFromDB opOf domform = "category" =>
       [$oldAxiomPreCategoryDispatch,: domform]
   dd := [$lazyOldAxiomDomainDispatch, hashTypeForm(domform,0), domform]
@@ -232,7 +232,7 @@ $oldAxiomCategoryDispatch :=
 
 attributeDevaluate(attrObj, env) ==
    [name, hash] := attrObj
-   StringToCompStr SYMBOL_-NAME name
+   StringToCompStr symbolName name
 
 attributeLookupExport(attrObj, self, op, sig, box, env) ==
    [name, hash] := attrObj
@@ -353,7 +353,7 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
          hashCode? sig => sig
          hashType( ['Mapping,:sig], hashPercent)
 
-       if symbol? op then op := hashString SYMBOL_-NAME op
+       if symbol? op then op := hashString symbolName op
        first SPADCALL(rest dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
   first SPADCALL(rest dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
 

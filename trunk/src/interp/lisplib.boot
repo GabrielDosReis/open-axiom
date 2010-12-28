@@ -381,7 +381,7 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,'"-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE([SYMBOL_-NAME getConstructorAbbreviationFromDB op],NIL)
+  LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  

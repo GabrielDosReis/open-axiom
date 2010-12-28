@@ -535,7 +535,7 @@ emptySearchPage(kind,filter,:options) ==
 isLoaded? conform == GETL(constructor? opOf conform,'LOADED)
 
 string2Integer s ==
-  and/[DIGIT_-CHAR_-P (s.i) for i in 0..MAXINDEX s] => readInteger s
+  and/[digit? (s.i) for i in 0..MAXINDEX s] => readInteger s
   nil
 
 dbGetInputString htPage ==

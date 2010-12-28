@@ -1338,7 +1338,7 @@ compImport(["import",:doms],m,e) ==
 
 bootDenotation: %Symbol -> %Symbol
 bootDenotation s == 
-  INTERN(SYMBOL_-NAME s,"BOOTTRAN")
+  INTERN(symbolName s,"BOOTTRAN")
 
 ++ Return the Boot denotation of a basic FFI type.
 getBasicFFIType: %Mode -> %Symbol
