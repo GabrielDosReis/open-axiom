@@ -200,7 +200,7 @@ bfColonAppend(x,y) ==
 
 bfBeginsDollar: %Thing -> %Boolean 
 bfBeginsDollar x ==  
-  (PNAME x).0 = char "$"
+  stringChar(PNAME x,0) = char "$"
  
 compFluid id == 
   ["FLUID",id]
@@ -745,7 +745,7 @@ defQuoteId x==
   x is ["QUOTE",:.] and symbol? second x
  
 bfChar? x ==
-  char? x or cons? x and first x in '(char abstractChar)
+  char? x or cons? x and first x in '(char CODE_-CHAR SCHAR)
  
 bfSmintable x==
   integer? x or cons? x and first x in '(SIZE LENGTH QENUM)

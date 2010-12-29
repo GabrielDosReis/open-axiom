@@ -5,7 +5,7 @@
 
 (PROVIDE "tokens")
 
-(DEFUN |char| (|x|) (CHAR (SYMBOL-NAME |x|) 0))
+(DEFUN |char| (|x|) (SCHAR (SYMBOL-NAME |x|) 0))
 
 (DEFUN |shoeStartsId| (|x|)
   (OR (ALPHA-CHAR-P |x|)
@@ -19,6 +19,8 @@
   (COND
     ((NULL |n|) (SUBSEQ |s| |f|))
     (T (SUBSEQ |s| |f| (+ |f| |n|)))))
+
+(DEFUN QENUM (|s| |i|) (CHAR-CODE (SCHAR |s| |i|)))
 
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
@@ -63,28 +65,6 @@
         |KeyTable|))))
 
 (DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
-
-(DEFCONSTANT |shoeSPACE| (QENUM "    " 0))
-
-(DEFCONSTANT |shoeESCAPE| (QENUM "_  " 0))
-
-(DEFPARAMETER |shoeLispESCAPE| (QENUM "!  " 0))
-
-(DEFCONSTANT |shoeSTRINGCHAR| (QENUM "\"  " 0))
-
-(DEFCONSTANT |shoePLUSCOMMENT| (QENUM "+   " 0))
-
-(DEFCONSTANT |shoeMINUSCOMMENT| (QENUM "-   " 0))
-
-(DEFCONSTANT |shoeDOT| (QENUM ".   " 0))
-
-(DEFCONSTANT |shoeEXPONENT1| (QENUM "E   " 0))
-
-(DEFCONSTANT |shoeEXPONENT2| (QENUM "e   " 0))
-
-(DEFCONSTANT |shoeCLOSEPAREN| (QENUM ")   " 0))
-
-(DEFCONSTANT |shoeTAB| 9)
 
 (DEFUN |shoeInsert| (|s| |d|)
   (PROG (|v| |k| |n| |u| |h| |l|)
@@ -252,7 +232,8 @@
                   (LIST '|setDifference| 'SETDIFFERENCE)
                   (LIST '|setIntersection| 'INTERSECTION)
                   (LIST '|setPart| 'SETELT) (LIST '|setUnion| 'UNION)
-                  (LIST '|strconc| 'CONCAT) (LIST '|string?| 'STRINGP)
+                  (LIST '|strconc| 'CONCAT) (LIST '|stringChar| 'SCHAR)
+                  (LIST '|string?| 'STRINGP)
                   (LIST '|subSequence| 'SUBSEQ)
                   (LIST '|substitute| 'SUBST)
                   (LIST '|substitute!| 'NSUBST)

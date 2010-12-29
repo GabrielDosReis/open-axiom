@@ -259,13 +259,13 @@ shoePrefix?(prefix,whole) ==
   #prefix > #whole => false
   good:=true
   for i in 0..#prefix-1 for j in 0.. while good repeat
-    good:= prefix.i = whole.j
+    good := stringChar(prefix,i) = stringChar(whole,j)
   good => subString(whole,#prefix) 
   good
  
 shoePlainLine?(s) ==
   #s = 0 =>  true
-  s.0 ~= char ")"
+  stringChar(s,0) ~= char ")"
  
 shoeSay?          s  == shoePrefix?('")say",         s)
 shoeEval?         s  == shoePrefix?('")eval",        s)

@@ -96,7 +96,7 @@
              ((< (LENGTH |a|) |sz|)
               (|shoePackageStartsAt| |lines| |sz| |name|
                   (CDR |stream|)))
-             ((AND (EQUAL (|subString| |a| 0 |sz|) |name|)
+             ((AND (STRING= (|subString| |a| 0 |sz|) |name|)
                    (< |sz| (LENGTH |a|))
                    (NOT (|shoeIdChar| (ELT |a| |sz|))))
               (LIST |lines| |stream|))
@@ -242,7 +242,8 @@
                (COND
                  ((OR (> |i| |bfVar#1|) (NOT |good|)) (RETURN NIL))
                  (T (SETQ |good|
-                          (EQUAL (ELT |prefix| |i|) (ELT |whole| |j|)))))
+                          (CHAR= (SCHAR |prefix| |i|)
+                                 (SCHAR |whole| |j|)))))
                (SETQ |i| (+ |i| 1))
                (SETQ |j| (+ |j| 1))))
            (COND
@@ -252,7 +253,7 @@
 (DEFUN |shoePlainLine?| (|s|)
   (COND
     ((EQL (LENGTH |s|) 0) T)
-    (T (NOT (CHAR= (ELT |s| 0) (|char| '|)|))))))
+    (T (NOT (CHAR= (SCHAR |s| 0) (|char| '|)|))))))
 
 (DEFUN |shoeSay?| (|s|) (|shoePrefix?| ")say" |s|))
 
