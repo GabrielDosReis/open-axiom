@@ -51,23 +51,23 @@ SConformal(n) : Exports == Implementation where
     -- 1.0 is complelely parallel
     -- 0.0 is completely perpendicular
     -- returned value will be these or between these 
-    colinearity(x:%,y:%):DoubleFloat == parallel(x,y)**2/_
+    colinearity(x,y) == parallel(x,y)**2/_
                  (parallel(x,x) * parallel(y,y))
 
     -- convenience constructors which allow us to construct using
     -- integer values
-    sipnt(a:Integer,b:Integer):% == spnt(a::DoubleFloat,b::DoubleFloat)
-    sipnt(a:Integer,b:Integer,c:Integer):% ==
+    sipnt(a,b) == spnt(a::DoubleFloat,b::DoubleFloat)
+    sipnt(a,b,c) ==
       spnt(a::DoubleFloat,b::DoubleFloat,c::DoubleFloat)
-    sivec(a:Integer,b:Integer):% == svec(a::DoubleFloat,b::DoubleFloat)
-    sivec(a:Integer,b:Integer,c:Integer):% ==
+    sivec(a,b) == svec(a::DoubleFloat,b::DoubleFloat)
+    sivec(a,b,c) ==
       svec(a::DoubleFloat,b::DoubleFloat,c::DoubleFloat)
 
     -- returns the distance between the points p1 and p2
     -- there are 2 metrics associated with any SPointCategory
     -- the underlying space and the space that it is embedded in
     -- this is the distance in the underlying space.
-    distance(p1:%,p2:%):DoubleFloat ==
+    distance(p1,p2) ==
       sqrt(distanceSquared(p1,p2))
 
     ---- end of common code to all SPointCategory implementations ----
@@ -88,7 +88,7 @@ SConformal(n) : Exports == Implementation where
     -- z.2 is point at infinity which is set to a^2 + b^2
     -- z.4 is a
     -- z.8 is b
-    spnt(a:DF,b:DF):% ==
+    spnt(a,b) ==
       inf:DF := (a*a + b*b)*0.5::DF
       (z := New; z.1 := -1@DF; z.2 := inf; z.4 := a; z.8 := b; z)
 
@@ -99,7 +99,7 @@ SConformal(n) : Exports == Implementation where
     -- z.4 is a
     -- z.8 is b
     -- z.16 is c
-    spnt(a:DF,b:DF,c:DF):% ==
+    spnt(a,b,c) ==
       inf:DF := (a*a + b*b + c*c)*0.5::DF
       z := New; z.1 := -1@DF; z.2 := inf
       z.4 := a; z.8 := b
@@ -108,14 +108,14 @@ SConformal(n) : Exports == Implementation where
 
     -- svec(a,b) constructs a 2D vector defined by a and b
     -- of type DF
-    svec(a:DF,b:DF):% ==
+    svec(a,b) ==
       inf:DF := (a*a + b*b)*0.5::DF
       (z := New; z.1 := -1@DF; z.2 := inf; z.4 := a; z.8 := b; z)
 
     -- svec(a,b,c) constructs a 3D vector defined by a,b and c
     -- of type DF
     -- since this is a 2D space we ignore 3rd dimension
-    svec(a:DF,b:DF,c:DF):% ==
+    svec(a,b,c) ==
       inf:DF := (a*a + b*b + c*c)*0.5::DF
       z := New; z.1 := -1@DF; z.2 := inf
       z.4 := a; z.8 := b
@@ -144,13 +144,13 @@ SConformal(n) : Exports == Implementation where
     -- projective or conformal space or by using the appropriate
     -- instance of SPointCategory, not by using invalid floating
     -- point numbers.
-    Pnan?(p:%):Boolean ==
+    Pnan?(p) ==
       nan?(p.4) => true
       nan?(p.8) => true
       false
 
     -- scale until length is 1
-    unitVector(p:%):% ==
+    unitVector(p) ==
       factor := sqrt(p.4*p.4 + p.8*p.8)
       pt := New
       pt.4 := p.4/factor
@@ -162,12 +162,12 @@ SConformal(n) : Exports == Implementation where
     -- This returns the length of the parallel component of two vectors
     -- in the case of Euclidean space this is the dot product of two
     -- vectors. We use this function to test the colinearity
-    parallel(x:%,y:%):DF == x.6 * y.6 + x.10 * y.10
+    parallel(x,y) == x.6 * y.6 + x.10 * y.10
 
     -- This returns a vector perpendicular to the two vectors
     -- in the case of 3D Euclidean space this is the cross product of the
     -- two vectors. We use this function to compute orthogonal
-    perpendicular(x:%,y:%):% ==
+    perpendicular(x,y) ==
       pt := New
       pt.4 := 0@DF
       pt.8 := 1@DF
@@ -176,7 +176,7 @@ SConformal(n) : Exports == Implementation where
       pt
 
     -- scalar multiplication
-    _*(s:DF,x:%):% ==
+    _*(s,x) ==
       pt := New
       pt.4 := x.4 * s
       pt.8 := x.8 * s
@@ -185,7 +185,7 @@ SConformal(n) : Exports == Implementation where
       pt
 
     -- addition
-    _+(x:%,y:%):% ==
+    _+(x,y) ==
       pt := New
       pt.4 := x.4 + y.4
       pt.8 := x.8 + y.8
@@ -194,7 +194,7 @@ SConformal(n) : Exports == Implementation where
       pt
 
     -- subtraction
-    _-(x:%,y:%):% ==
+    _-(x,y) ==
       pt := New
       pt.4 := x.4 - y.4
       pt.8 := x.8 - y.8
@@ -204,7 +204,7 @@ SConformal(n) : Exports == Implementation where
 
     -- return true if param is inside bounding box
     -- where bounding box is specified by min and max
-    inBounds?(pt: %,mns: %,mxs: %):Boolean ==
+    inBounds?(pt,mns,mxs) ==
      -- left of box - check minimum x
       qelt(pt,4) < qelt(mns,4) => false
       -- right of box - check maximum x
@@ -217,26 +217,26 @@ SConformal(n) : Exports == Implementation where
       true
 
    -- returns the 'x'(left to right) screen coordinate
-    screenCoordX(pt: %):DF == pt.4
+    screenCoordX(pt) == pt.4
 
     -- returns the 'y'(bottom to top) screen coordinate
-    screenCoordY(pt: %):DF == pt.8
+    screenCoordY(pt) == pt.8
 
     -- returns the 'z'(out from screen) screen coordinate
-    screenCoordZ(pt: %):DF == if n>2 then pt.16 else 0@DF
+    screenCoordZ(pt) == if n>2 then pt.16 else 0@DF
 
     -- returns screen coordinates as a list
-    screenCoords(pt: %):List DF ==
+    screenCoords(pt) ==
       if n>2 then return [pt.4,pt.8,pt.16]
       [pt.4,pt.8]
 
     -- returns extended coordinates as a list
-    extendedCoords(pt: %):List DF == entries(pt)
+    extendedCoords(pt) == entries(pt)
 
 
-    -- normalalised point has scalar value of one, if this is not the
+    -- normalised point has scalar value of one, if this is not the
     -- case then scale values
-    normalisePoint(pt:%):% ==
+    normalisePoint(pt) ==
       scaleFactor:DF := pt.1
       if scaleFactor < 0.01::DF and scaleFactor > -0.01::DF then
         sayTeX$Lisp "can't apply normalisePoint to a vector"
@@ -265,21 +265,21 @@ SConformal(n) : Exports == Implementation where
 
     -- start of SetCategory definitions --
 
-    hash(s:%): SingleInteger == 0$SingleInteger
+    hash(s) == 0$SingleInteger
 
-    latex(s:%): String == "\mbox{\bf Unimplemented}"
+    latex(s) == "\mbox{\bf Unimplemented}"
 
     -- returns true if x equals y
-    _=(x:%,y:%):Boolean ==
+    _=(x,y) ==
       for i in 0..(dim-1) repeat
         if x.i ~= y.i then return false
       true
 
     -- returns true if x is not equal to y
-    _~_=(x:%,y:%) : Boolean == not(x=y)
+    _~_=(x,y) == not(x=y)
 
     -- output
-    coerce(pt: %):OutputForm ==
+    coerce(pt) ==
       s:String := "proj"
       if pt.4 = 0@DF then s := "v"
       if pt.4 = 1@DF then s := "p"

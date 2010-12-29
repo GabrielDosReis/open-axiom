@@ -296,26 +296,26 @@ Scene(PT): Exports == Implementation where
 
   -- Constructs the root node, all other nodes are contained in
   -- a tree structure under this node
-  createSceneRoot(bb: BOUNDS): % == [1::NNI,[],[bb]]
+  createSceneRoot(bb: BOUNDS) == [1::NNI,[],[bb]]
 
   -- Constructs the root node, all other nodes are contained in
   -- a tree structure under this node
-  createSceneRoot(minx:I,miny:I,maxx:I,maxy:I): % ==
+  createSceneRoot(minx:I,miny:I,maxx:I,maxy:I) ==
     bb:BOUNDS := [sipnt(minx,miny)$PT,sipnt(maxx,maxy)$PT]
     [1::NNI,[],[bb]]
 
   -- Constructs the root node, all other nodes are contained in
   -- a tree structure under this node
-  createSceneRoot(): % ==
+  createSceneRoot() ==
     bb:BOUNDS := [sipnt(0::I,0::I)$PT,sipnt(1200::I,800::I)$PT]
     [1::NNI,[],[bb]]
 
   -- Constructs a group node, this node does not do anything itself
   -- but contains other nodes
-  createSceneGroup(): % == [2::NNI,[],["empty"]]
+  createSceneGroup() == [2::NNI,[],["empty"]]
 
   -- a convenience function which combines createSceneGroup with addChild!
-  addSceneGroup(n:%): % ==
+  addSceneGroup(n) ==
     c := createSceneGroup()
     addChild!(n,c)
     c
@@ -324,10 +324,10 @@ Scene(PT): Exports == Implementation where
   -- list of points) in n-dimensional space. The space is implicit
   -- in the PT and TR parameters supplied when this Scene was
   -- created.
-  createSceneLine(line: List PT): % == [3::NNI,[],[[line]]]
+  createSceneLine(line) == [3::NNI,[],[[line]]]
 
   -- a convenience function which combines createSceneLine with addChild!
-  addSceneLine(n:%,line: List PT): % ==
+  addSceneLine(n,line) ==
     c := createSceneLine(line)
     addChild!(n,c)
     c
@@ -336,10 +336,10 @@ Scene(PT): Exports == Implementation where
   -- list of points) in n-dimensional space. The space is implicit
   -- in the PT and TR parameters supplied when this Scene was
   -- created.
-  createSceneLines(lines: LINES): % == [3::NNI,[],[lines]]
+  createSceneLines(lines) == [3::NNI,[],[lines]]
 
   -- a convenience function which combines createSceneLines with addChild!
-  addSceneLines(n:%,lines: LINES): % ==
+  addSceneLines(n,lines) ==
     c := createSceneLines(lines)
     addChild!(n,c)
     c
@@ -348,43 +348,43 @@ Scene(PT): Exports == Implementation where
   -- list of points) in n-dimensional space. The space is implicit
   -- in the PT and TR parameters supplied when this Scene was
   -- created.
-  createSceneArrows(lines: List List PT,ls:NNI,le:NNI): % ==
+  createSceneArrows(lines,ls,le) ==
     ar:ARROWS := [lines,ls,le]
     [9::NNI,[],[ar]]
 
   -- a convenience function which combines createSceneArrows with addChild!
-  addSceneArrows(n:%,lines: List List PT,ls:NNI,le:NNI): % ==
+  addSceneArrows(n,lines,ls,le) ==
     c := createSceneArrows(lines,ls,le)
     addChild!(n,c)
     c
 
   -- Constructs an indexed face set node, this defines a surface
   -- represented by a set of polygons in n-dimensional space.
-  createSceneIFS(inx1: List List NNI,pts1: List PT):% ==
+  createSceneIFS(inx1,pts1) ==
     [8::NNI,[],[[inx1,pts1]]]
 
   -- a convenience function which combines createSceneIFS with addChild!
-  addSceneIFS(n:%,inx1: List List NNI,pts1: List PT):% ==
+  addSceneIFS(n,inx1,pts1) ==
     c := createSceneIFS(inx1,pts1)
     addChild!(n,c)
     c
 
   -- Constructs an indexed face set node, this defines a surface
   -- represented by a set of polygons in n-dimensional space.
-  createSceneIFS(in1: SceneIFS(PT)):% ==
+  createSceneIFS(in1) ==
     inx1: List List NNI := indexes(in1)
     pts1: List PT :=pointList(in1)
     [8::NNI,[],[[inx1,pts1]]]
 
   -- a convenience function which combines createSceneIFS with addChild!
-  addSceneIFS(n:%,in1: SceneIFS(PT)):% ==
+  addSceneIFS(n,in1) ==
     c := createSceneIFS(in1)
     addChild!(n,c)
     c
 
   -- Constructs an indexed face set node which is a 3D box of a
   -- given size
-  createSceneBox(size:DF):% ==
+  createSceneBox(size) ==
     pts: List PT := [_
       spnt(size,-size,size)$PT,_
       spnt(size,size,size)$PT,_
@@ -405,47 +405,47 @@ Scene(PT): Exports == Implementation where
     createSceneIFS(inx,pts)
 
   -- a convenience function which combines createSceneBox with addChild!
-  addSceneBox(n:%,size:DF):% ==
+  addSceneBox(n,size) ==
     c := createSceneBox(size)
     addChild!(n,c)
     c
 
   -- Constructs a text node, text can be used for labelling anything
   -- such as graphs, axes and so on.
-  createSceneText(text: TEXT): % == [5::NNI,[],[text]]
+  createSceneText(text) == [5::NNI,[],[text]]
 
   -- a convenience function which combines createSceneText with addChild!
-  addSceneText(n:%,text: TEXT): % ==
+  addSceneText(n,text) ==
     c := createSceneText(text)
     addChild!(n,c)
     c
 
   -- Constructs a text node, text can be used for labelling anything
   -- such as graphs, axes and so on.
-  createSceneText(str:String,sz:NNI,pz:PT): % ==
+  createSceneText(str,sz,pz) ==
     text: TEXT := [str,sz,pz]
     [5::NNI,[],[text]]
 
   -- a convenience function which combines createSceneText with addChild!
-  addSceneText(n:%,str:String,sz:NNI,pz:PT): % ==
+  addSceneText(n,str,sz,pz) ==
     c := createSceneText(str,sz,pz)
     addChild!(n,c)
     c
 
   -- Constructs a clip node, clips its sub nodes in the coordinate
   -- system in force at the clip node.
-  createSceneClip(bb: BOUNDS):% ==
+  createSceneClip(bb) ==
     [7::NNI,[],[bb]]
 
   -- a convenience function which combines createSceneClip with addChild!
-  addSceneClip(n:%,bb: BOUNDS):% ==
+  addSceneClip(n,bb) ==
     c := createSceneClip(bb)
     addChild!(n,c)
     c
 
   -- contruct a grid in the current clip boundary and current material
   -- with a spacing between lines given by the step parameter
-  createSceneGrid(stepSize:DF,bb: BOUNDS): % ==
+  createSceneGrid(stepSize,bb) ==
     minx:DF := screenCoordX(bb.mins)
     miny:DF := screenCoordY(bb.mins)
     maxx:DF := screenCoordX(bb.maxs)
@@ -466,7 +466,7 @@ Scene(PT): Exports == Implementation where
     gp
 
   -- a convenience function which combines createSceneGrid with addChild!
-  addSceneGrid(n:%,stepSize:DF,bb: BOUNDS): % ==
+  addSceneGrid(n,stepSize,bb) ==
     c := createSceneGrid(stepSize,bb)
     addChild!(n,c)
     c
@@ -475,7 +475,7 @@ Scene(PT): Exports == Implementation where
   -- narrow blue lines evey 20 units 
   -- wide blue lines evey 100 units 
   -- wide red lines evey 200 units 
-  createSceneGrid(bb: BOUNDS): % ==
+  createSceneGrid(bb) ==
     minx:DF := screenCoordX(bb.mins)
     maxx:DF := screenCoordX(bb.maxs)
     stepSize:DF := (maxx-minx)/100
@@ -489,7 +489,7 @@ Scene(PT): Exports == Implementation where
     gp
 
   -- a convenience function which combines createSceneGrid with addChild!
-  addSceneGrid(n:%,bb: BOUNDS): % ==
+  addSceneGrid(n,bb) ==
     c := createSceneGrid(bb)
     addChild!(n,c)
     c
@@ -587,13 +587,13 @@ Scene(PT): Exports == Implementation where
   -- ptype=2: constructs a Sierpinski fractel. step parameter gives the
   -- level of subdivision.
   -- ptype=3: constructs a house shape.
-  createScenePattern(ptype:NNI,step:NNI,bb: BOUNDS): % ==
+  createScenePattern(ptype,step,bb) ==
     if ptype = 1 then return createScenePattern1(step,bb)
     if ptype = 2 then return createScenePattern2(step,bb)
     createScenePattern3(step,bb)
 
   -- a convenience function which combines createScenePattern with addChild!
-  addScenePattern(n:%,ptype:NNI,step:NNI,bb: BOUNDS):% ==
+  addScenePattern(n,ptype,step,bb) ==
     c := createScenePattern(ptype,step,bb)
     addChild!(n,c)
     c
@@ -603,7 +603,7 @@ Scene(PT): Exports == Implementation where
   -- ptype=1: horizontal axis.
   -- ptype=2: vertical axis.
   -- ptype=3: debth axis.
-  createSceneRuler(ptype:NNI,offset:PT,bb: BOUNDS): % ==    
+  createSceneRuler(ptype,offset,bb) ==    
     minPrimary:DF := screenCoordX(bb.mins)
     minSecondary:DF := screenCoordY(bb.mins)
     maxPrimary:DF := screenCoordX(bb.maxs)
@@ -693,7 +693,7 @@ Scene(PT): Exports == Implementation where
 
   -- a convenience function which combines createSceneRuler with
   -- addChild!
-  addSceneRuler(n:%,ptype:NNI,offset:PT,bb: BOUNDS):% ==
+  addSceneRuler(n,ptype,offset,bb) ==
     c := createSceneRuler(ptype,offset,bb)
     addChild!(n,c)
     c
@@ -703,12 +703,12 @@ Scene(PT): Exports == Implementation where
   -- this, unless overridden by another material node.
   -- That is the material parameters that apply to a given node are
   -- those of the closest material node above it in the heirarchy
-  createSceneMaterial(mat:MATERIAL): % ==
+  createSceneMaterial(mat) ==
     [4::NNI,[],[mat]]
 
   -- a convenience function which combines createSceneMaterial with
   -- addChild!
-  addSceneMaterial(n:%,mat:MATERIAL): % ==
+  addSceneMaterial(n,mat) ==
     c := createSceneMaterial(mat)
     addChild!(n,c)
     c
@@ -718,13 +718,13 @@ Scene(PT): Exports == Implementation where
   -- this, unless overridden by another material node.
   -- That is the material parameters that apply to a given node are
   -- those of the closest material node above it in the heirarchy
-  createSceneMaterial(lineW:DF,lineC:String,fillC:String): % ==
+  createSceneMaterial(lineW,lineC,fillC) ==
     mat:MATERIAL := [lineW,lineC,fillC,1::DF]
     [4::NNI,[],[mat]]
 
   -- a convenience function which combines createSceneMaterial with
   -- addChild!
-  addSceneMaterial(n:%,lineW:DF,lineC:String,fillC:String): % ==
+  addSceneMaterial(n,lineW,lineC,fillC) ==
     c := createSceneMaterial(lineW,lineC,fillC)
     addChild!(n,c)
     c
@@ -733,18 +733,18 @@ Scene(PT): Exports == Implementation where
   -- This transforms the points and vectors below this node
   -- If a given node has more than one transform node above
   -- it in the heirarchy then the transforms are compoundd
-  createSceneTransform(tran:TR): % ==
+  createSceneTransform(tran) ==
     [6::NNI,[],[tran]]
 
   -- a convenience function which combines createSceneTransform with
   -- addChild!
-  addSceneTransform(n:%,tran:TR): % ==
+  addSceneTransform(n,tran) ==
     c := createSceneTransform(tran)
     addChild!(n,c)
     c
 
   -- creates arrows to represent output for each input point
-  createArrows2Din2D(ptFun:PT -> PT,uSeg:SEG,vSeg:SEG,numPts:NNI):% ==
+  createArrows2Din2D(ptFun,uSeg,vSeg,numPts) ==
     arrows : List List PT := nil()
     ustep := (lo uSeg - hi uSeg)/numPts
     vstep := (lo vSeg - hi vSeg)/numPts
@@ -768,23 +768,23 @@ Scene(PT): Exports == Implementation where
     createSceneArrows(arrows,1,0)
 
   -- a convenience function which combines createArrows2Din2D with addChild!
-  addArrows2Din2D(n:%,ptFun:PT -> PT,uSeg:SEG,vSeg:SEG,numPts:NNI):% ==
+  addArrows2Din2D(n,ptFun,uSeg,vSeg,numPts) ==
     c := createArrows2Din2D(ptFun,uSeg,vSeg,numPts)
     addChild!(n,c)
     c
 
   -- add the specified child node 'c' below node 'n'
-  addChild!(n:%,c:%):Void ==
+  addChild!(n,c) ==
     n.children := concat(n.children,c)
 
   -- remove the specified child node 'c' below node 'n'
   -- I can't get this to compile
-  removeChild!(n:%,c:%):Void ==
+  removeChild!(n,c) ==
     --n.children := remove(c,n.children)$List %
     error "removeChild! not yet implemented"
 
   -- changes the transform without altering the scene heirachy
-  setTransform!(n:%,tran:TR):Void ==
+  setTransform!(n,tran) ==
     n.type ~= 6 => error "use setTransform! on transform only"
     n.parameters := [tran]
 
@@ -954,8 +954,7 @@ Scene(PT): Exports == Implementation where
   -- M0,0 = move to 0,0
   -- L100,0z = line to 100,0
   -- z after last point in line indicates closed shape
-  toSVG(n:%,mat:MATERIAL,tran:TR,bb: BOUNDS,scale:DF,clipEn:Boolean,_
-        useInteger:Boolean):XmlElement ==
+  toSVG(n,mat,tran,bb,scale,clipEn,useInteger) ==
     nodeName:String := ""
     --sayTeX$Lisp concat([_
     --  "toSVG(",(mathObject2String$Lisp n.type)@String,_
@@ -1098,7 +1097,7 @@ Scene(PT): Exports == Implementation where
     xmlElement(nodeName,nodeEles,nodeAtts)
 
   -- Write an 'SVG' repesentation of node 'n' to the filename supplied.
-  writeSvg(n:%,filename:String):Void ==
+  writeSvg(n,filename) ==
     defaultMaterial:MATERIAL := [2::DF,"black","black",1::DF]
     defaultTransform:TR := identity()$TR
     defaultBounds:BOUNDS := [spnt(-9000::DF,-9000::DF),_
@@ -1107,7 +1106,7 @@ Scene(PT): Exports == Implementation where
            false,false),filename)$ExportXml
 
   -- Write an 'SVG' repesentation of node 'n' to the filename supplied.
-  writeSvgQuantised(n:%,filename:String):Void ==
+  writeSvgQuantised(n,filename) ==
     defaultMaterial:MATERIAL := [2::DF,"black","black",1::DF]
     defaultTransform:TR := identity()$TR
     defaultBounds:BOUNDS := [spnt(-9000::DF,-9000::DF),_
@@ -1181,7 +1180,7 @@ Scene(PT): Exports == Implementation where
   --  </IndexedFaceSet>
   -- </Shape>
   --</Scene>
-  toX3D(n:%,mat:MATERIAL,tran:TR,bb: BOUNDS):XmlElement ==
+  toX3D(n,mat,tran,bb) ==
     nodeName:String := setX3DNodeName(n.type)
     --sayTeX$Lisp concat([_
     --  "toX3D(",(mathObject2String$Lisp n.type)@String,_
@@ -1270,7 +1269,7 @@ Scene(PT): Exports == Implementation where
     xmlElement(nodeName,nodeEles,nodeAtts)
 
   -- Write an 'X3D' repesentation of node 'n' to the filename supplied.
-  writeX3d(n:%,filename:String):Void ==
+  writeX3d(n,filename) ==
     defaultMaterial:MATERIAL := [2::DoubleFloat,"black","black",1::DF]
     defaultTransform:TR := identity()$TR
     defaultBounds:BOUNDS := [spnt(-9000::DF,-9000::DF),_
@@ -1282,8 +1281,7 @@ Scene(PT): Exports == Implementation where
   -- structure
   -- called recursivley for each node, so when called on root node
   -- in scenegraph all other nodes in the scenegraph will get called.
-  toObj(n:%,ptLst: Reference List PT,indexLst:Reference List List NNI,_
-                   indexNxt:Reference NNI,tran:TR,bb: BOUNDS):Void ==
+  toObj(n,ptLst,indexLst,indexNxt,tran,bb) ==
     nodeName:String := setX3DNodeName(n.type)
     --sayTeX$Lisp concat([_
     --  "toObj(",(mathObject2String$Lisp n.type)@String,_
@@ -1401,7 +1399,7 @@ Scene(PT): Exports == Implementation where
 
   -- Write an 'OBJ' (Wavefront) repesentation of node 'n' to the filename
   -- supplied.
-  writeObj(n:%,filename:String):Void ==
+  writeObj(n,filename) ==
     ptLst: Reference List PT := ref([])
     indexLst:Reference List List NNI := ref(nil())
     indexNxt:Reference NNI := ref(0::NNI)
@@ -1426,7 +1424,7 @@ Scene(PT): Exports == Implementation where
     Void
 
   -- Write an 'VRML' repesentation of node 'n' to the filename supplied.
-  writeVRML(n:%,filename:String):Void ==
+  writeVRML(n,filename) ==
     defaultMaterial:MATERIAL := [2::DoubleFloat,"black","black",1::DF]
     defaultTransform:TR := identity()$TR
     defaultBounds:BOUNDS := [spnt(-9000::DF,-9000::DF),
@@ -1489,7 +1487,7 @@ Scene(PT): Exports == Implementation where
   -- of outputting to TwoDimensionalViewport we output to a
   -- scenegraph node.
   -- The input is a Plot defined in plot.spad
-  createPlot1Din2D(f:DF -> PT,tRange:SEG,numPts:NNI):% ==
+  createPlot1Din2D(f:DF -> PT,tRange:SEG,numPts:NNI) ==
       --sayTeX$Lisp concat([_
       --  "createPlot1Din2D(",(mathObject2String$Lisp 10)@String,_
       --  ")"])$String
@@ -1516,7 +1514,7 @@ Scene(PT): Exports == Implementation where
     createSceneLines(branches)
 
   -- a convenience function which combines createPlot1Din2D with addChild!
-  addPlot1Din2D(n:%,f:DF -> PT,tRange:SEG,numPts:NNI):% ==
+  addPlot1Din2D(n:%,f:DF -> PT,tRange:SEG,numPts:NNI) ==
     c := createPlot1Din2D(f,tRange,numPts)
     addChild!(n,c)
     c
@@ -1545,7 +1543,7 @@ Scene(PT): Exports == Implementation where
   -- PPC is ParametricPlaneCurve(DF -> DF) which is created with curve(f1,f2)
   -- where f1 and f2 are functions of type ComponentFunction, in this case
   -- DF -> DF
-  createPlot1Din2Dparametric(ppc:PPC,seg:SEG,numPts:NNI) ==
+  createPlot1Din2Dparametric(ppc,seg,numPts) ==
     -- create function DF -> Point DF
     f := coordinate(ppc,1); g := coordinate(ppc,2)
     -- create an anonymous function of type DF->PT
@@ -1556,7 +1554,7 @@ Scene(PT): Exports == Implementation where
 
   -- a convenience function which combines createPlot1Din2Dparametric with
   -- addChild!
-  addPlot1Din2Dparametric(n:%,ppc:PPC,seg:SEG,numPts:NNI) ==
+  addPlot1Din2Dparametric(n,ppc,seg,numPts) ==
     c := createPlot1Din2Dparametric(ppc,seg,numPts)
     addChild!(n,c)
     c
@@ -1569,7 +1567,7 @@ Scene(PT): Exports == Implementation where
   -- PSC ParametricSpaceCurve(DF -> DF) is created with curve(f1,f2,f3)
   -- where f1,f2 and f3 are functions of type ComponentFunction, in this case
   -- DF -> DF
-  createPlot1Din3Dparametric(psc:PSC,seg:SEG,numPts:NNI):% ==
+  createPlot1Din3Dparametric(psc:PSC,seg:SEG,numPts:NNI) ==
       f := coordinate(psc,1); g := coordinate(psc,2); h := coordinate(psc,3)
       -- create an anonymous function of type DF->PT
       fcn : DF -> PT := x +-> spnt(applyfxTrap(f, x), applyfxTrap(g, x),_
@@ -1578,7 +1576,7 @@ Scene(PT): Exports == Implementation where
 
   -- a convenience function which combines createPlot1Din3Dparametric with
   -- addChild!
-  addPlot1Din3Dparametric(n:%,psc:PSC,seg:SEG,numPts:NNI):% ==
+  addPlot1Din3Dparametric(n:%,psc:PSC,seg:SEG,numPts:NNI) ==
     c := createPlot1Din3Dparametric(psc,seg,numPts)
     addChild!(n,c)
     c
@@ -1589,7 +1587,7 @@ Scene(PT): Exports == Implementation where
   -- so we give it a width given by the material node that is
   -- applicable in this part of the scene graph
   -- PCFUN is a function from float to point: DF -> PT
-  createPlot1Din3Dparametric(psc:PCFUN,seg:SEG,numPts:NNI):% ==
+  createPlot1Din3Dparametric(psc:PCFUN,seg:SEG,numPts:NNI) ==
     f := psc
     tRange := normalize seg
     checkRange tRange; l := lo tRange; h := hi tRange
@@ -1604,7 +1602,7 @@ Scene(PT): Exports == Implementation where
 
   -- a convenience function which combines createPlot1Din3Dparametric with
   -- addChild!
-  addPlot1Din3Dparametric(n:%,psc:PCFUN,seg:SEG,numPts:NNI):% ==
+  addPlot1Din3Dparametric(n:%,psc:PCFUN,seg:SEG,numPts:NNI) ==
     c := createPlot1Din3Dparametric(psc,seg,numPts)
     addChild!(n,c)
     c
@@ -1612,7 +1610,7 @@ Scene(PT): Exports == Implementation where
   -- parameterized equations of two variables
   -- from mesh.spad
   -- PSFUN is (DF, DF) -> PT
-  createPlot2Din3D(ptFun:PSFUN,uSeg:SEG,vSeg:SEG,numPts:NNI):% ==
+  createPlot2Din3D(ptFun:PSFUN,uSeg:SEG,vSeg:SEG,numPts:NNI) ==
     llp : List List PT := nil()
     ustep := (lo uSeg - hi uSeg)/numPts
     vstep := (lo vSeg - hi vSeg)/numPts
@@ -1641,7 +1639,7 @@ Scene(PT): Exports == Implementation where
   -- which contains the graph of z = f(x,y)
   -- as x ranges from min(a,b) to max(a,b) and y ranges from
   -- min(c,d) to max(c,d).
-  createPlot2Din3D(f:(DF,DF) -> DF,xSeg:SEG,ySeg:SEG,numPts:NNI):% ==
+  createPlot2Din3D(f:(DF,DF) -> DF,xSeg:SEG,ySeg:SEG,numPts:NNI) ==
     --sp := space l
     -- process color function of two variables
     --col2 : List((DF,DF) -> DF) := [xCoord]     -- dummy color function
@@ -1654,7 +1652,7 @@ Scene(PT): Exports == Implementation where
     createPlot2Din3D(first fcn,normalize xSeg,normalize ySeg,numPts)
 
   -- a convenience function which combines createPlot2Din3D with addChild!
-  addPlot2Din3D(n:%,f:(DF,DF) -> DF,xSeg:SEG,ySeg:SEG,numPts:NNI):% ==
+  addPlot2Din3D(n:%,f:(DF,DF) -> DF,xSeg:SEG,ySeg:SEG,numPts:NNI) ==
     c := createPlot2Din3D(f,xSeg,ySeg,numPts)
     addChild!(n,c)
     c
@@ -1679,7 +1677,7 @@ Scene(PT): Exports == Implementation where
 
   -- a convenience function which combines createPlot2Din3Dparametric with
   -- addChild!
-  addPlot2Din3Dparametric(n:%,s:PSF,uSeg:SEG,vSeg:SEG,numPts:NNI):% ==
+  addPlot2Din3Dparametric(n:%,s:PSF,uSeg:SEG,vSeg:SEG,numPts:NNI) ==
     c := createPlot2Din3Dparametric(s,uSeg,vSeg,numPts)
     addChild!(n,c)
     c
@@ -1696,7 +1694,7 @@ Scene(PT): Exports == Implementation where
 
   -- a convenience function which combines createPlot2Din3Dparametric with
   -- addChild!
-  addPlot2Din3Dparametric(n:%,s:PSFUN,uSeg:SEG,vSeg:SEG,numPts:NNI):% ==
+  addPlot2Din3Dparametric(n:%,s:PSFUN,uSeg:SEG,vSeg:SEG,numPts:NNI) ==
     c := createPlot2Din3Dparametric(s,uSeg,vSeg,numPts)
     addChild!(n,c)
     c

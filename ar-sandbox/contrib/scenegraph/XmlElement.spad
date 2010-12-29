@@ -27,11 +27,11 @@ XmlElement(): Exports==Implementation where
   Rep := Record(n:String,e:List %,a:List XmlAttribute,content:String)
 
   -- constuct an element without unstructured text
-  xmlElement(name:String,elements:List %,attributes:List XmlAttribute): % ==
+  xmlElement(name:String,elements:List %,attributes:List XmlAttribute) ==
    [name,elements,attributes,""]
 
   -- constuct an element with unstructured text
-  xmlElement(name:String,txt: String,attributes:List XmlAttribute): % ==
+  xmlElement(name:String,txt: String,attributes:List XmlAttribute) ==
    [name,[],attributes,txt]
 
   outputStructured(rp:%): List String ==
@@ -50,14 +50,14 @@ XmlElement(): Exports==Implementation where
    res := concat(res,rp.content)$(List String)
    concat(res,concat(["</",rp.n,">"])$String)$(List String)
 
-  coerce(rp:%): List String ==
+  coerce(rp) ==
    rp.content = "" => outputStructured(rp)
    outputUnstructured(rp)
 
-  empty?(el:%):Boolean ==
+  empty?(el) ==
    if el.n = "" then true else false
 
-  outputVRML(rp:%,f1:TextFile):Void ==
+  outputVRML(rp,f1) ==
    if rp.n = "X3D" or rp.n = "Scene" then
      for el in rp.e repeat
        outputVRML(el,f1)

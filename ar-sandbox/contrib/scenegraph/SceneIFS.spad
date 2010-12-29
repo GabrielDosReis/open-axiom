@@ -9,8 +9,8 @@
 ++ AMS Classifications:
 ++ Keywords:
 ++ References:
-++ Description: Generates various surfaces (2 dimentional subsets
-++ of 3D space). When 1 Dimentional subspace (a line) needs to be
+++ Description: Generates various surfaces (2 dimensional subsets
+++ of 3D space). When 1 Dimensional subspace (a line) needs to be
 ++ represented in a 3D editor then we convert the line into a tube.
 ++ Many of the functions here are from NumericTubePlot and related
 ++ packages. However I needed them to be defined over SPointCategory
@@ -29,7 +29,7 @@ SceneIFS(PT): Exports == Implementation where
 
  Exports== with
   smesh: (ptin:List List PT,clos: Boolean) -> %
-    ++ constuct a ifs representation of a mesh from a 2 dimentional
+    ++ constuct a ifs representation of a mesh from a 2 dimensional
     ++ array of points
   singleFace: (ptin:List PT) -> %
     ++ constuct a ifs representation of a face from an array of points
@@ -43,7 +43,7 @@ SceneIFS(PT): Exports == Implementation where
     ++ list this instance to the command line
   stube: (functions:List Clipd,r:DF,n:Integer) -> %
     ++ tube(c,r,n) creates a tube of radius r around the curve c.
-  curveLoops:(pts1:List PT,r:DF,nn:Integer) ->List List PT
+  curveLoops:(pts1:List PT,r:DF,nn:Integer) -> List List PT
     ++ generates ifs from line
   indexes: (me:%) -> List List NNI
     ++ returns indexes
@@ -56,16 +56,16 @@ SceneIFS(PT): Exports == Implementation where
   Rep := Record(inx: List List NNI,pts: List PT)
 
   -- returns indexes
-  indexes(me:%):List List NNI == me.inx
+  indexes(me) == me.inx
 
   -- returns points
-  pointList(me:%):List PT == me.pts
+  pointList(me) == me.pts
 
   meshIndex(i:Integer,j:Integer,c:Integer):NNI == ((j*(c)) + i)::NNI
 
-  -- constuct a ifs representation of a mesh from a 2 dimentional
+  -- construct a ifs representation of a mesh from a 2 dimensional
   -- array of points
-  smesh(ptin:List List PT,clos: Boolean): % ==
+  smesh(ptin,clos) ==
    pt2: List PT := nil()
    in2: List List NNI := nil()
    rowLength := #ptin
@@ -92,7 +92,7 @@ SceneIFS(PT): Exports == Implementation where
    [in2,pt2]
 
   -- constuct a ifs representation of a face from an array of points
-  singleFace(ptin:List PT):% ==
+  singleFace(ptin) ==
    pt2: List PT := ptin
    --in2: List List NNI := [concat([i for i in 0..(#ptin - 1)],0)]
    in2: List List NNI := [[i for i in 0..(#ptin - 1)]]
@@ -100,7 +100,7 @@ SceneIFS(PT): Exports == Implementation where
 
   -- for each face calculate a new point in the centre of the face, then
   -- build a new set of faces which include the new point.
-  subdivide(me:%):% ==
+  subdivide(me) ==
     indexSize:NNI := #(me.pts)
     pt2: List PT := [(me.pts).i for i in 1..indexSize]
     in2: List List NNI := nil()
@@ -124,7 +124,7 @@ SceneIFS(PT): Exports == Implementation where
 
   -- for each edge of each face calculate a new point in the centre of
   -- the edge, then build a new set of faces which include the new points.
-  sierpinskiDivide(me:%,level:NNI):% ==
+  sierpinskiDivide(me,level) ==
     indexSize:NNI := #(me.pts)
     pt2: List PT := [(me.pts).i for i in 1..indexSize]
     in2: List List NNI := nil()
@@ -154,7 +154,7 @@ SceneIFS(PT): Exports == Implementation where
     sierpinskiDivide([in2,pt2],(level-1)::NNI)
 
   -- list this instance to the command line
-  displayIFS(me:%):Void ==
+  displayIFS(me) ==
     ptStr:List String := nil() -- string to hold result
     for p in me.pts repeat
       ptStr := concat(ptStr,(mathObject2String$Lisp p)@String)
@@ -250,7 +250,7 @@ SceneIFS(PT): Exports == Implementation where
       pt := ctr + rad * pNorm
       concat(pt,concat(ans,pt))
 
-  curveLoops(pts1:List PT,r:DF,nn:Integer):List List PT ==
+  curveLoops(pts1,r,nn) ==
       triads := curveTriads pts1
       cosSin := cosSinInfo nn
       loops : List List PT := nil()
@@ -260,7 +260,7 @@ SceneIFS(PT): Exports == Implementation where
       reverse_! loops
 
   -- tube(c,r,n) creates a tube of radius r around the curve c.
-  stube(functions:List Clipd,r:DF,n:Integer):% ==
+  stube(functions,r,n) ==
     n < 3 => error "tube: n should be at least 3"
     brans := listBranches functions
     loops : List List PT := nil()

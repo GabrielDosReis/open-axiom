@@ -34,23 +34,23 @@ SArgand() : Exports == Implementation where
     -- 1.0 is complelely parallel
     -- 0.0 is completely perpendicular
     -- returned value will be these or between these 
-    colinearity(x:%,y:%):DoubleFloat == parallel(x,y)**2/_
+    colinearity(x,y) == parallel(x,y)**2/_
                  (parallel(x,x) * parallel(y,y))
 
     -- convenience constructors which allow us to construct using
     -- integer values
-    sipnt(a:Integer,b:Integer):% == spnt(a::DoubleFloat,b::DoubleFloat)
-    sipnt(a:Integer,b:Integer,c:Integer):% ==
+    sipnt(a,b) == spnt(a::DoubleFloat,b::DoubleFloat)
+    sipnt(a,b,c) ==
       spnt(a::DoubleFloat,b::DoubleFloat,c::DoubleFloat)
-    sivec(a:Integer,b:Integer):% == svec(a::DoubleFloat,b::DoubleFloat)
-    sivec(a:Integer,b:Integer,c:Integer):% ==
+    sivec(a,b) == svec(a::DoubleFloat,b::DoubleFloat)
+    sivec(a,b,c) ==
       svec(a::DoubleFloat,b::DoubleFloat,c::DoubleFloat)
 
     -- returns the distance between the points p1 and p2
     -- there are 2 metrics associated with any SPointCategory
     -- the underlying space and the space that it is embedded in
     -- this is the distance in the underlying space.
-    distance(p1:%,p2:%):DoubleFloat ==
+    distance(p1,p2) ==
       sqrt(distanceSquared(p1,p2))
 
     ---- end of common code to all SPointCategory implementations ----
@@ -59,7 +59,7 @@ SArgand() : Exports == Implementation where
 
     -- spnt(a,b) constructs a 2D point defined by a and b
     -- of type DF
-    spnt(a:DF,b:DF):% ==
+    spnt(a,b) ==
       --sayTeX$Lisp concat([_
       --  "spnt(",(mathObject2String$Lisp a)@String,_
       --  ",",(mathObject2String$Lisp b)@String,_
@@ -68,17 +68,17 @@ SArgand() : Exports == Implementation where
 
     -- spnt(a,b,c) constructs a 3D point defined by a,b and c
     -- of type DF
-    spnt(a:DF,b:DF,c:DF):% ==
+    spnt(a,b,c) ==
       [a,b]
 
     -- svec(a,b) constructs a 2D vector defined by a and b
     -- of type DF
-    svec(a:DF,b:DF):% ==
+    svec(a,b) ==
       [a,b]
 
     -- svec(a,b,c) constructs a 3D vector defined by a,b and c
     -- of type DF
-    svec(a:DF,b:DF,c:DF):% ==
+    svec(a,b,c) ==
       [a,b]
 
     dimension p == 2  -- dimension of base space
@@ -102,13 +102,13 @@ SArgand() : Exports == Implementation where
     -- projective or conformal space or by using the appropriate
     -- instance of SPointCategory, not by using invalid floating
     -- point numbers.
-    Pnan?(p:%):Boolean == 
+    Pnan?(p) == 
       nan?(p.r) => true
       nan?(p.i) => true
       false
 
     -- scale until length is 1
-    unitVector(p:%):% ==
+    unitVector(p) ==
       factor := sqrt(p.r * p.r + p.i * p.i)
       [p.r/factor,p.i/factor]
 
@@ -116,36 +116,36 @@ SArgand() : Exports == Implementation where
     -- there are 2 metrics associated with any SPointCategory
     -- the underlying space and the space that it is embedded in
     -- this is the distance in the underlying space.
-    distanceSquared(p1:%,p2:%):DF ==
+    distanceSquared(p1,p2) ==
       (p1.r - p2.r)**2 + (p1.i - p2.i)**2
 
     -- This returns the length of the parallel component of two vectors
     -- in the case of Euclidean space this is the dot product of two
     -- vectors. We use this function to test the colinearity
-    parallel(x:%,y:%):DF == x.r * y.r + x.i * y.i
+    parallel(x,y) == x.r * y.r + x.i * y.i
 
     -- This returns a vector perpendicular to the two vectors
     -- in the case of 3D Euclidean space this is the cross product of the
     -- two vectors. We use this function to compute orthogonal
     -- In this case set to arbitary value
-    perpendicular(x:%,y:%):% ==
+    perpendicular(x,y) ==
       [0@DF,1@DF]
 
     -- scalar multiplication
-    _*(s:DF,x:%):% ==
+    _*(s,x) ==
       [x.r * s,x.i * s]
 
     -- addition
-    _+(x:%,y:%):% ==
+    _+(x,y) ==
       [x.r + y.r,x.i + y.i]
 
     -- addition
-    _-(x:%,y:%):% ==
+    _-(x,y) ==
       [x.r - y.r,x.i - y.i]
 
     -- return true if param is inside bounding box
     -- where bounding box is specified by min and max
-    inBounds?(pt: %,mns: %,mxs: %):Boolean ==
+    inBounds?(pt,mns,mxs) ==
       -- left of box - check minimum x
       pt.r pretend DoubleFloat < mns.r pretend DoubleFloat => false
       -- right of box - check maximum x
@@ -158,19 +158,19 @@ SArgand() : Exports == Implementation where
       true
 
     -- returns the 'x'(left to right) screen coordinate
-    screenCoordX(pt: %):DF == pt.r
+    screenCoordX(pt) == pt.r
 
     -- returns the 'y'(bottom to top) screen coordinate
-    screenCoordY(pt: %):DF == pt.i
+    screenCoordY(pt) == pt.i
 
     -- returns the 'z'(out from screen) screen coordinate
-    screenCoordZ(pt: %):DF == 0@DF
+    screenCoordZ(pt) == 0@DF
 
     -- returns screen coordinates as a list
-    screenCoords(pt: %):List DF == [pt.r,pt.i]
+    screenCoords(pt) == [pt.r,pt.i]
 
     -- returns extended coordinates as a list
-    extendedCoords(pt: %):List DF == [pt.r,pt.i]
+    extendedCoords(pt) == [pt.r,pt.i]
 
     coerce(me: %):C ==
       complex(me.r,me.i)
@@ -180,18 +180,18 @@ SArgand() : Exports == Implementation where
 
     -- start of SetCategory definitions --
 
-    hash(s:%): SingleInteger == 0$SingleInteger
+    hash(s) == 0$SingleInteger
 
-    latex(s:%): String == "\mbox{\bf Unimplemented}"
+    latex(s) == "\mbox{\bf Unimplemented}"
 
     -- returns true if x equals y
-    _=(x:%,y:%):Boolean ==
+    _=(x,y) ==
       if x.r ~= y.r then return false
       if x.i ~= y.i then return false
       true
 
     -- returns true if x is not equal to y
-    _~_=(x:%,y:%) : Boolean == not(x=y)
+    _~_=(x,y) == not(x=y)
 
     -- output
     coerce(pt: %):OutputForm ==

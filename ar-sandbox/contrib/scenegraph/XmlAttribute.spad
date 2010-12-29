@@ -31,14 +31,14 @@ XmlAttribute(): Exports==Implementation where
   -- construct a xmlAttribute from its name and list of values
   xmlAttribute(name:String,values:List String): % == [name,values]
 
-  coerce(rp:%): String ==
+  coerce(rp) ==
    val:String := ""
    for vn in rp.v repeat
      if val = "" then val := vn
      else val := concat([val," ",vn])$String
    concat([" ",rp.n,concat("=",quote()),concat(val,quote())])$String
 
-  outputVRML(rp:%,f1:TextFile):Void ==
+  outputVRML(rp,f1) ==
    val:String := ""
    for vn in rp.v repeat
      if val = "" then

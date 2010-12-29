@@ -26,7 +26,7 @@ ExportXml(): with
 
  == add
 
-  writeXml(content: XmlElement, filename:String):Void ==
+  writeXml(content, filename) ==
     f1:TextFile:=open(filename::FileName,"output")
     s1:String := "<?xml version="
     s1 := concat(s1,quote())
@@ -47,7 +47,7 @@ ExportXml(): with
       writeLine!(f1,line)
     close! f1
 
-  writeVRML(content: XmlElement, filename:String):Void ==
+  writeVRML(content, filename) ==
     f1:TextFile:=open(filename::FileName,"output")
     writeLine!(f1,"#VRML V2.0 utf8")
     outputVRML(content,f1)
