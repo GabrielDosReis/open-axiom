@@ -20,8 +20,6 @@
     ((NULL |n|) (SUBSEQ |s| |f|))
     (T (SUBSEQ |s| |f| (+ |f| |n|)))))
 
-(DEFUN QENUM (|s| |i|) (CHAR-CODE (SCHAR |s| |i|)))
-
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
           (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
@@ -71,7 +69,7 @@
     (RETURN
       (PROGN
         (SETQ |l| (LENGTH |s|))
-        (SETQ |h| (QENUM |s| 0))
+        (SETQ |h| (CHAR-CODE (SCHAR |s| 0)))
         (SETQ |u| (ELT |d| |h|))
         (SETQ |n| (LENGTH |u|))
         (SETQ |k| 0)
@@ -145,7 +143,7 @@
                (RETURN NIL))
               (T (COND
                    ((NOT (|shoeStartsId| (ELT |k| 0)))
-                    (BVEC-SETELT |a| (QENUM |k| 0) 1)))))
+                    (BVEC-SETELT |a| (CHAR-CODE (SCHAR |k| 0)) 1)))))
             (SETQ |bfVar#6| (CDR |bfVar#6|))))
         |a|))))
 
