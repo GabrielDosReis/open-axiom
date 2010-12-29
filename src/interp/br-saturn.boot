@@ -454,7 +454,7 @@ saturnTranText x ==
   error nil
 
 isMenuItemStyle? s ==
-  15 = STRING_<('"\menuitemstyle{", s) => subString(s,15,(MAXINDEX s) - 15)
+  15 = ('"\menuitemstyle{" < s) => subString(s,15,(MAXINDEX s) - 15)
   nil
 
 getCallBack callTail ==
@@ -1499,7 +1499,7 @@ unTab s ==
   [unTab1 first s, :rest s]
 
 unTab1 s ==
-  STRING_<('"\tab{", s) = 5 and (k := charPosition(char '_}, s, 4)) =>
+  ('"\tab{" < s) = 5 and (k := charPosition(char '_}, s, 4)) =>
       subString(s, k + 1)
   s
 

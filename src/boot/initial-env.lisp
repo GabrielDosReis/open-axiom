@@ -119,11 +119,6 @@
 (defun |shoePLACEP| (item) 
   (eq item nil))
 
-(defun substring (cvec start length)
-  (if length 
-      (subseq cvec start (+ start length))
-    (subseq cvec start)))
-
 (defun MAKE-HASHTABLE (id1)
   (let ((test (case id1
                     ((EQ ID) #'eq)

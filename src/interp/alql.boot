@@ -53,7 +53,7 @@ alqlGetOrigin(x) ==
 alqlGetParams(x) ==
   field :=dbPart(x,5,1)
   k := charPosition(char '_(,field,2)
-  subString(field,k,nil)
+  subString(field,k)
 
 
 

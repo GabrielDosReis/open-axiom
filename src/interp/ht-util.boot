@@ -230,11 +230,11 @@ basicStringize s ==
     s = '"{\em $}" => '"{\em \%}"
     s
   s = '_$ => '"\%"
-  PRINC_-TO_-STRING s
+  toString s
 
 stringize s ==
   string? s => s
-  PRINC_-TO_-STRING s
+  toString s
 
 htQuote s ==
 -- wrap quotes around a piece of hyperTeX
@@ -396,7 +396,7 @@ htMakeTemplates(templateList, numLabels) ==
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
       cons? template =>
-        INTERN strconc(first template, PRINC_-TO_-STRING i, rest template)
+        INTERN strconc(first template, toString i, rest template)
       template
 
 templateParts template ==

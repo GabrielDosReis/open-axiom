@@ -721,7 +721,7 @@ compDefineExports(form,ops,sig,e) ==
             entry.rest.rest.first := [op,a,nil]
     ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
-  exportsFile := strconc(STRING libName,'".sig")
+  exportsFile := strconc(symbolName libName,'".sig")
   removeFile exportsFile
   withOutputFile(s,exportsFile, 
     PRETTYPRINT(

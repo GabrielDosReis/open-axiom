@@ -633,7 +633,7 @@ newWordFrom(l,i,m) ==
   while i <= m and not done repeat
     ch := l.i
     ch = $charBlank or ch = $charFauxNewline => done := true
-    buf := strconc(buf, STRING ch)
+    buf := strconc(buf, charString ch)
     i := i + 1
   [buf,i]
 
