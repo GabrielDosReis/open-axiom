@@ -52,9 +52,6 @@ subString(s,f,n == nil) ==
   n = nil => subSequence(s,f)
   subSequence(s,f,f + n)
 
-QENUM(s,i) ==
-  codePoint stringChar(s,i)
-
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
             ['"and","AND"] , _
@@ -136,7 +133,7 @@ shoeKeyTable:=shoeKeyTableCons()
  
 shoeInsert(s,d) ==
   l := #s
-  h := QENUM(s,0)
+  h := codePoint stringChar(s,0)
   u := d.h
   n := #u
   k:=0
@@ -173,7 +170,7 @@ shoePunCons()==
   for i in 0..255 repeat BVEC_-SETELT(a,i,0)
   for k in listing repeat
      if not shoeStartsId k.0
-     then BVEC_-SETELT(a,QENUM(k,0),1)
+     then BVEC_-SETELT(a,codePoint stringChar(k,0),1)
   a
  
 shoePun:=shoePunCons()
