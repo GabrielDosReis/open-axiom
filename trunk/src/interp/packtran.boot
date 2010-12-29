@@ -44,7 +44,7 @@ packageTran sex ==
 -- current package
   symbol? sex =>
     EQ(_*PACKAGE_*, SYMBOL_-PACKAGE sex) => sex
-    INTERN STRING sex
+    INTERN symbolName sex
   cons? sex =>
     sex.first := packageTran first sex
     sex.rest := packageTran rest sex

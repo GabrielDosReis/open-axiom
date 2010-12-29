@@ -67,7 +67,7 @@ hashType(type, percentHash) ==
                 hashCombine(retCode, hash)
         op = 'Enumeration =>
                 for arg in args repeat
-                        hash := hashCombine(hashString(STRING arg), hash)
+                  hash := hashCombine(hashString(symbolName arg), hash)
                 hash
         op in $DomainsWithoutLisplibs =>
                 for arg in args repeat

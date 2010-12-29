@@ -215,8 +215,7 @@ printDec(type,dec,asps,fp) ==
 writeXDR(v,str,fp) ==
   -- Generate the calls to the filters which will read from the temp
   -- file.  The CHECK macro ensures that the translation worked.
-  underscore := STRING CHAR('"__:",0) -- to avoid a compiler bug which won't
-                                     -- parse " ... __" properly.
+  underscore := '"__"
   wt(['"    CHECK(xdr",underscore, XDRFun(v), '"(", str, '",&", first(v)],fp)
   if (LISTP (ty :=second v)) and first ty ~= '"char" then
     wt(['",&",first(v),'"__length,MAX__ARRAY(",first(v),'"__length),"],fp)

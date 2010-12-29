@@ -751,7 +751,8 @@ bfSmintable x==
   integer? x or cons? x and first x in '(SIZE LENGTH QENUM)
 
 bfString? x ==
-  string? x or cons? x and first x in '(charString symbolName toString)
+  string? x
+    or cons? x and first x in '(charString symbolName toString subString)
 
 bfQ(l,r)==
   bfChar? l or bfChar? r => ["CHAR=",l,r]
@@ -767,6 +768,7 @@ bfLessp(l,r)==
   l = 0 => ["PLUSP",r]
   r = 0 => ["MINUSP", l]
   bfChar? l or bfChar? r => ["CHAR<",l,r]
+  bfString? l or bfString? r => ["STRING<",l,r]
   ["<",l,r]
 
 bfLambda(vars,body) ==

@@ -3192,7 +3192,7 @@ tokTran tok ==
   string? tok =>
     #tok = 0 => nil
     isIntegerString tok => READ_-FROM_-STRING tok
-    STRING tok.0 = '"_"" =>
+    tok.0 = char "_"" =>
       subSequence(tok, 1, #tok-1)
     INTERN tok
   tok
@@ -3209,13 +3209,13 @@ splitIntoOptionBlocks str ==
   blockStart := 0
   parenCount := 0
   for i in 0..#str-1 repeat
-    STRING str.i = '"_"" =>
+    str.i = char "_"" =>
       inString := not inString
-    if STRING str.i = '"(" and not inString
+    if str.i = char "(" and not inString
     then parenCount := parenCount + 1
-    if STRING str.i = '")" and not inString
+    if str.i = char ")" and not inString
     then parenCount := parenCount - 1
-    STRING str.i = '")" and not inString and parenCount = -1 =>
+    str.i = char ")" and not inString and parenCount = -1 =>
       block := stripSpaces subSequence(str, blockStart, i)
       blockList := [block, :blockList]
       blockStart := i+1
@@ -3230,10 +3230,10 @@ dumbTokenize str ==
   tokenStart := 0
   previousSpace := false
   for i in 0..#str-1 repeat
-    STRING str.i = '"_"" =>
+    str.i = char "_"" =>
       inString := not inString
       previousSpace := false
-    STRING str.i = '" " and not inString =>
+    str.i = char " " and not inString =>
       previousSpace => nil
       token := stripSpaces subSequence(str, tokenStart, i)
       tokenList := [token, :tokenList]
