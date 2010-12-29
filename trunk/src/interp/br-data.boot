@@ -118,7 +118,7 @@ buildLibdbConEntry conname ==
     conComments :=
       LASSOC('constructor,$doc) is [[=nil,:r]] => libdbTrim concatWithBlanks r
       '""
-    argpart:= SUBSTRING(form2HtString ['f,:argl],1,nil)
+    argpart:= subString(form2HtString ['f,:argl],1)
     sigpart:= libConstructorSig $conform
     header := strconc($kind,PNAME conname)
     buildLibdbString [header,#argl,$exposed?,sigpart,argpart,abb,conComments]
@@ -161,8 +161,8 @@ writedb(u) ==
   TERPRI $outStream
 
 addPatchesToLongLines(s,n) ==
-  #s > n => strconc(SUBSTRING(s,0,n),
-              addPatchesToLongLines(strconc('"--",SUBSTRING(s,n,nil)),n))
+  #s > n => strconc(subString(s,0,n),
+              addPatchesToLongLines(strconc('"--",subString(s,n)),n))
   s
 
 buildLibOps oplist == for [op,sig,:pred] in oplist repeat buildLibOp(op,sig,pred)
@@ -216,7 +216,7 @@ buildLibAttrs attrlist ==
 buildLibAttr(name,argl,pred) ==
 --attributes      AKname\#\args\conname\pred\comments (K is U or C)
   header := strconc('"a",STRINGIMAGE name)
-  argPart:= SUBSTRING(form2LispString ['f,:argl],1,nil)
+  argPart:= subString(form2LispString ['f,:argl],1)
   pred := SUBLISLIS(rest $conform,$FormalMapVariableList,pred)
   predString := (pred = 'T => '""; form2LispString pred)
   header := strconc('"a",STRINGIMAGE name)
@@ -263,11 +263,11 @@ dbReadComments(n) ==
   FILE_-POSITION(instream,n)
   line := READLINE instream
   k := dbTickIndex(line,1,1)
-  line := SUBSTRING(line,k + 1,nil)
+  line := subString(line,k + 1)
   while not EOFP instream and (x := READLINE instream) and
     (k := MAXINDEX x) and (j := dbTickIndex(x,1,1)) and (j < k) and
       x.(j := j + 1) = char '_- and x.(j := j + 1) = char '_- repeat
-        xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
+        xtralines := [subString(x,j + 1),:xtralines]
   SHUT instream
   strconc(line, strconc/nreverse xtralines)
 
@@ -307,17 +307,17 @@ dbSplitLibdb() ==
 
 dbSplit(line,n,k) ==
   k := charPosition($tick,line,k + 1)
-  n = 1 => [SUBSTRING(line,0,k),:dbSpreadComments(SUBSTRING(line,k + 1,nil),0)]
+  n = 1 => [subString(line,0,k),:dbSpreadComments(subString(line,k + 1),0)]
   dbSplit(line,n - 1,k)
 
 dbSpreadComments(line,n) ==
   line = '"" => nil
   k := charPosition(char '_-,line,n + 2)
-  k >= MAXINDEX line => [SUBSTRING(line,n,nil)]
+  k >= MAXINDEX line => [subString(line,n)]
   line.(k + 1) ~= char '_- =>
     u := dbSpreadComments(line,k)
-    [strconc(SUBSTRING(line,n,k - n),first u),:rest u]
-  [SUBSTRING(line,n,k - n),:dbSpreadComments(SUBSTRING(line,k,nil),0)]
+    [strconc(subString(line,n,k - n),first u),:rest u]
+  [subString(line,n,k - n),:dbSpreadComments(subString(line,k),0)]
 
 --============================================================================
 --                  Build Glossary
@@ -380,7 +380,7 @@ spreadGlossText(line) ==
 --where XXX is the file position of key1
 --this is because grepping will only pick up the first 512 characters
   line = '"" => nil
-  MAXINDEX line > 500 => [SUBSTRING(line,0,500),:spreadGlossText(SUBSTRING(line,500,nil))]
+  MAXINDEX line > 500 => [subString(line,0,500),:spreadGlossText(subString(line,500))]
   [line]
 
 getGlossLines instream ==
@@ -409,8 +409,8 @@ getGlossLines instream ==
       lastLineHadTick := false
       text := [strconc(last,fill,line),:rest text]
     lastLineHadTick := true
-    keys := [SUBSTRING(line,0,n),:keys]
-    text := [SUBSTRING(line,n + 1,nil),:text]
+    keys := [subString(line,0,n),:keys]
+    text := [subString(line,n + 1),:text]
   ASSOCRIGHT listSort(function GLESSEQP,[[DOWNCASE key,key,:def] for key in keys for def in text])
   --this complication sorts them after lower casing the keys
 
@@ -433,7 +433,7 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
   $usersTb
 
 getDefaultPackageClients con ==  --called by mkUsersHashTable
-  catname := INTERN SUBSTRING(s := PNAME con,0,MAXINDEX s)
+  catname := INTERN subString(s := PNAME con,0,MAXINDEX s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
     pakname := INTERN strconc(PNAME catAncestor,'"&")
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]

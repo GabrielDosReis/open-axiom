@@ -115,7 +115,7 @@ newMKINFILENAM(infile) ==
       if fn = '"*" or fn = '"NIL" then sayKeyedMsg("S2IL0016",NIL)
       else              sayKeyedMsg("S2IL0003",[namestring file])
       ans := queryUserKeyedMsg("S2IL0017",NIL)
-      if (#(ans) > 0) and ('")" = SUBSTRING(ans,0,1)) then n := 2
+      if (#(ans) > 0) and ('")" = subString(ans,0,1)) then n := 2
       else n := 1
       nfn := UPCASE STRING2ID_-N(ans,n)
       (nfn = 0) or (nfn = 'QUIT) =>

@@ -1005,7 +1005,7 @@ dropLeadingBlanks str ==
     if SCHAR(str,i) ~= char " " then nb := i
     else i := i + 1
   nb = 0 => str
-  nb => SUBSTRING(str,nb,NIL)
+  nb => subString(str,nb)
   '""
 
 concat(:l) == concatList l
@@ -1273,7 +1273,7 @@ leftTrim s ==
   k < 0 => s
   s.0 = $blank =>
     for i in 0..k while s.i = $blank repeat (j := i)
-    SUBSTRING(s,j + 1,nil)
+    subString(s,j + 1)
   s
 
 rightTrim s ==  -- assumed a non-empty string
@@ -1281,7 +1281,7 @@ rightTrim s ==  -- assumed a non-empty string
   k < 0 => s
   s.k = $blank =>
     for i in k..0 by -1 while s.i = $blank repeat (j := i)
-    SUBSTRING(s,0,j)
+    subString(s,0,j)
   s
 
 pp x ==

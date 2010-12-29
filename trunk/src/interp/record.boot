@@ -238,14 +238,14 @@ htFile2InputFile(pathname,:option) ==
 htCommandToInputLine s == fn(s,0) where fn(s,init) ==
 --similar to htTrimAtBackSlash except removes all \
   k := or/[i for i in init..MAXINDEX s | s.i = char '_\] =>
-    member(s.(k + 1),[char 'f,char 'b]) => SUBSTRING(s,init,k - init)
-    strconc(SUBSTRING(s,init,k - init),fn(s,k + 1))
-  SUBSTRING(s,init,nil)
+    member(s.(k + 1),[char 'f,char 'b]) => subString(s,init,k - init)
+    strconc(subString(s,init,k - init),fn(s,k + 1))
+  subString(s,init)
  
 htTrimAtBackSlash s ==
   backslash := char '_\
   k := or/[i for i in 0..MAXINDEX s | s.i = backslash 
-          and member(s.(i + 1),[char 'f,char 'b])] => SUBSTRING(s,0,k - 1)
+          and member(s.(i + 1),[char 'f,char 'b])] => subString(s,0,k - 1)
   s
  
 htMkPath(directory,name,typ) ==
@@ -269,7 +269,7 @@ recordAndPrintTest md ==  --called by recordAndPrint
       x is [y,:r] =>     
         y.(k := MAXINDEX y) = char '__ => 
           u := fn r
-          [strconc(SUBSTRING(y,0,k),'" ",first u),:rest u]
+          [strconc(subString(y,0,k),'" ",first u),:rest u]
         [y,:fn r]
       x
   output := nreverse $mkTestOutputStack -- set by maPrin

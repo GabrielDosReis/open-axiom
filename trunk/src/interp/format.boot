@@ -629,7 +629,7 @@ isInternalFunctionName(op) ==
   table := MAKETRTTABLE('"0123456789",NIL)
   s := STRPOSL(table,op',1,true)
   null(s) or s > e => NIL
-  SUBSTRING(op',s,e-s)
+  subString(op',s,e-s)
 
 application2String(op,argl, linkInfo) ==
   null argl =>

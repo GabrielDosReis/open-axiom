@@ -46,7 +46,7 @@ shoeIntern (s)==
    f:=first s
    # f < 8 => shoeIntern rest s
    f.0=char " " =>shoeIntern rest s
-   a:=INTERN SUBSTRING (f,0,8)
+   a:=INTERN subString(f,0,8)
    [b,c]:= shoeStrings rest s
    SETF(GET (a,"MSGS"),b)
    shoeIntern c

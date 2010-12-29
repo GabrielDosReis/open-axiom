@@ -184,7 +184,7 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
   hn x == SUBLISLIS('(and or not),'("and" "or" "not"),x)
   fn(s,n,siz) ==  --main function: s is string, n is origin
     n = siz => '""
-    i := firstNonDelim(s,n) or return SUBSTRING(s,n,nil)
+    i := firstNonDelim(s,n) or return subString(s,n)
     j := firstDelim(s,i + 1) or siz
     t := gn(s,i,j - 1)
     middle :=
@@ -193,11 +193,11 @@ pmPreparse s == hn fn(s,0,#s) where--stupid insertion of chars to get correct pa
       t.0 = char '_" => t
       j < siz - 1 and s.j = char '_( => t
       strconc('"_"",t,'"_"")
-    strconc(SUBSTRING(s,n,i - n),middle,fn(s,j,siz))
+    strconc(subString(s,n,i - n),middle,fn(s,j,siz))
   gn(s,i,j) ==    --replace each underscore by 4 underscores!
     n := or/[k for k in i..j | s.k = $charUnderscore] =>
-      strconc(SUBSTRING(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
-    SUBSTRING(s,i,j - i + 1)
+      strconc(subString(s,i,n - i + 1),$charUnderscore,gn(s,n + 1,j))
+    subString(s,i,j - i + 1)
 
 firstNonDelim(s,n) ==  or/[k for k in n..MAXINDEX s | not isFilterDelimiter? s.k]
 firstDelim(s,n) ==  or/[k for k in n..MAXINDEX s | isFilterDelimiter? s.k]
@@ -259,8 +259,8 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       h(sl,nil)
     g s  ==    --remove "*"s around pattern for text match
       not ('w in $options) => s
-      if s.0 = char '_* then s := SUBSTRING(s,1,nil)
-      if s.(k := MAXINDEX s) = char '_* then s := SUBSTRING(s,0,k)
+      if s.0 = char '_* then s := subString(s,1)
+      if s.(k := MAXINDEX s) = char '_* then s := subString(s,0,k)
       s
     h(sl,res) == --helper for wild cards
       sl is [s,:r] => h(r,[$wild1,s,:res])
@@ -271,13 +271,13 @@ mkGrepPattern1(x,:options) == --called by mkGrepPattern (and grepConstructName?)
       strconc/nreverse res
     remUnderscores s ==
       (k := charPosition(char $charUnderscore,s,0)) < MAXINDEX s =>
-        strconc(SUBSTRING(s,0,k),'"[",s.(k + 1),'"]",
-                remUnderscores(SUBSTRING(s,k + 2,nil)))
+        strconc(subString(s,0,k),'"[",s.(k + 1),'"]",
+                remUnderscores(subString(s,k + 2)))
       s
     split(s,char) ==
       max := MAXINDEX s + 1
       f := -1
-      [SUBSTRING(s,i,f-i)
+      [subString(s,i,f-i)
         while ((i := f + 1) <= max) and (f := charPosition(char,s,i))]
     charPosition(c,t,startpos) ==  --honors underscores
       n := # t
@@ -369,7 +369,7 @@ looksLikeDomainForm x ==
 
 spadSys(x) ==   --called by \spadsyscom{x}
   s := PNAME x
-  if s.0 = char '_) then s := SUBSTRING(s,1,nil)
+  if s.0 = char '_) then s := subString(s,1)
   form := ncParseFromString s or
            systemError ['"Argument: ",s,'" to spadType won't parse"]
   htSystemCommands PNAME opOf form
@@ -527,7 +527,7 @@ genSearchUniqueCount(u) ==
       lastid := id
   count
 
-dbGetName line == SUBSTRING(line,1,charPosition($tick,line,1) - 1)
+dbGetName line == subString(line,1,charPosition($tick,line,1) - 1)
 
 pluralSay(count,singular,plural,:options) ==
   item := (options is [x,:options] => x; '"")
@@ -570,8 +570,8 @@ docSearch1(filter,doc) ==
 
 removeSurroundingStars filter ==
   key := STRINGIMAGE filter
-  if key.0 = char '_* then key := SUBSTRING(key,1,nil)
-  if key.(max := MAXINDEX key) = char '_* then key := SUBSTRING(key,0,max)
+  if key.0 = char '_* then key := subString(key,1)
+  if key.(max := MAXINDEX key) = char '_* then key := subString(key,0,max)
   key
 
 showNamedDoc([kind,:lines],index) ==
@@ -594,7 +594,7 @@ stripOffSegments(s,n) ==
   while n > 0 and progress = true repeat
     n := n - 1
     k := charPosition(char '_`,s,0)
-    new := SUBSTRING(s,k + 1,nil)
+    new := subString(s,k + 1)
     #new < #s => s := new
     progress := false
   n = 0 => s
@@ -884,7 +884,7 @@ mkDetailedGrepPattern(kind,name,nargs,argOrSig) == main where
     m > 6 and a.(m-5) = char '_[ and a.(m-4) = char "^"
       and     a.(m-3) = $tick    and a.(m-2) = char '_]
           and a.(m-1) = char '_* and a.m = $tick
-            => simp SUBSTRING(a,0,m-5)
+            => simp subString(a,0,m-5)
     a
 
 replaceGrepStar s ==
@@ -892,19 +892,19 @@ replaceGrepStar s ==
   final := MAXINDEX s
   i := charPosition(char '_*,s,0)
   i > final => s
-  strconc(SUBSTRING(s,0,i),'"[^`]*",replaceGrepStar SUBSTRING(s,i + 1,nil))
+  strconc(subString(s,0,i),'"[^`]*",replaceGrepStar subString(s,i + 1))
 
 standardizeSignature(s) == underscoreDollars
   s.0 = char '_( => s
   k := STRPOS('"->",s,0,nil) or return s --will fail except perhaps on constants
   s.(k - 1) = char '_) => strconc('"(",s)
-  strconc('"(",SUBSTRING(s,0,k),'")",SUBSTRING(s,k,nil))
+  strconc('"(",subString(s,0,k),'")",subString(s,k))
 
 underscoreDollars(s) == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => '""
-    (m := charPosition(char '_$,s,i)) > n => SUBSTRING(s,i,nil)
-    strconc(SUBSTRING(s,i,m - i),'"___$",fn(s,m + 1,n))
+    (m := charPosition(char '_$,s,i)) > n => subString(s,i)
+    strconc(subString(s,i,m - i),'"___$",fn(s,m + 1,n))
 
 --=======================================================================
 --                         I/O Code
@@ -933,8 +933,8 @@ dbGetCommentOrigin line ==
 --Comment lines have format  [dcpxoa]xxxxxx`ccccc... where
 --x's give pointer into libdb, c's are comments
   firstPart := dbPart(line,1,-1)
-  key := INTERN SUBSTRING(firstPart,0,1)    --extract this and throw away
-  address := SUBSTRING(firstPart, 1, nil)   --address in libdb
+  key := INTERN subString(firstPart,0,1)    --extract this and throw away
+  address := subString(firstPart, 1)        --address in libdb
   instream := OPEN grepSource key           --this always returns libdb now
   FILE_-POSITION(instream,readInteger address)
   line := READLINE instream
@@ -988,7 +988,7 @@ dbUnpatchLines lines ==  --concatenate long lines together, skip blank lines
     #line = 0 => 'skip     --skip blank lines
     acc :=
       line.0 = dash and line.1 = dash =>
-        [strconc(first acc,SUBSTRING(line,2,nil)),:rest acc]
+        [strconc(first acc,subString(line,2)),:rest acc]
       [line,:acc]
   -- following call to nreverse needed to keep lines properly sorted
   nreverse acc  ------> added by BMT 12/95

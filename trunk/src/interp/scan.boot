@@ -291,7 +291,7 @@ lineoftoks(s)==
   toks := []
   a := incPrefix?('"command",1,$ln)
   a =>
-    $ln := SUBSTRING($ln,8,nil)
+    $ln := subString($ln,8)
     b := dqUnit constoken($ln,$linepos,["command",$ln],0)
     [[[b,s]],:$r]
   while $n<$sz repeat
@@ -428,12 +428,12 @@ startsNegComment?()==
 scanNegComment()==
   n := $n
   $n := $sz
-  lfnegcomment SUBSTRING($ln,n,nil)
+  lfnegcomment subString($ln,n)
 
 scanComment()==
   n := $n
   $n := $sz
-  lfcomment SUBSTRING($ln,n,nil)
+  lfcomment subString($ln,n)
 
 scanPunct()==
   sss := subMatch($ln,$n)
@@ -482,12 +482,12 @@ scanS()==
     $n:=$sz
     ncSoftError([$linepos,:lnExtraBlanks $linepos+$n],
             "S2CN0001",[])
-    SUBSTRING($ln,n,nil)
+    subString($ln,n)
   mn = strsym =>
     $n:=mn+1
-    SUBSTRING($ln,n,mn-n)
+    subString($ln,n,mn-n)
   --escape is found first
-  str := SUBSTRING($ln,n,mn-n)-- before escape
+  str := subString($ln,n,mn-n)-- before escape
   $n := mn+1
   a := scanEsc() -- case of end of line when false
   b :=
@@ -527,9 +527,9 @@ scanW(b)==             -- starts pointing to first char
   endid=l or QENUM($ln,endid) ~= ESCAPE =>
      -- not escaped
     $n:=endid
-    [b,SUBSTRING($ln,n1,endid-n1)]   -- l overflows
+    [b,subString($ln,n1,endid-n1)]   -- l overflows
   -- escape and endid ~= l
-  str := SUBSTRING($ln,n1,endid-n1)
+  str := subString($ln,n1,endid-n1)
   $n := endid+1
   a := scanEsc()
   bb :=
@@ -559,9 +559,9 @@ spleI1(dig,zro) ==
     $n := $n+1
   $n = l or QENUM($ln,$n) ~= ESCAPE =>
      n = $n and zro => '"0"
-     SUBSTRING($ln,n,$n-n)
+     subString($ln,n,$n-n)
   -- escaped
-  str:=SUBSTRING($ln,n,$n-n)
+  str:=subString($ln,n,$n-n)
   $n:=$n+1
   a:=scanEsc()
   bb:=spleI1(dig,zro)-- escape, anyno spaces are ignored

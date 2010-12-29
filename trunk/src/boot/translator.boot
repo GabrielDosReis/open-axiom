@@ -473,7 +473,7 @@ shoeAddStringIfNec(str,s)==
 shoeRemoveStringIfNec(str,s)==
   n := SEARCH(str,s,KEYWORD::FROM_-END,true)
   n = nil => s
-  SUBSTRING(s,0,n)
+  subString(s,0,n)
  
 -- DEFUSE prints the definitions not used and the words used and
 -- not defined in the input file and common lisp.
@@ -634,14 +634,14 @@ shoeGeneralFC(f,name,fn)==
    $GenVarCounter  := 0
    infn:=shoeAddbootIfNec fn
    a:= shoeOpenInputFile(a,infn,shoeFindName2(fn,name, a))
-   filename:= if # name > 8 then SUBSTRING(name,0,8) else name
+   filename:= if # name > 8 then subString(name,0,8) else name
    a =>  FUNCALL(f, strconc('"/tmp/",filename))
    nil
  
 shoeFindName2(fn,name,a)==
   lines:=shoeFindLines(fn,name,a)
   lines =>
-    filename:= if # name > 8 then SUBSTRING(name,0,8) else name
+    filename:= if # name > 8 then subString(name,0,8) else name
     filename := strconc('"/tmp/",filename,'".boot")
     shoeOpenOutputFile(stream, filename,
 	 for line in lines repeat shoeFileLine (line,stream))

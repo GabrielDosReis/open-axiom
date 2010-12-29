@@ -99,7 +99,7 @@ getListOfFunctionNames(fnames) ==
     stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,fn,'DIRECT,'_*]],80,0)
     while (not PLACEP (x:= readLine stream)) repeat
       (s := # x) < 26 => 'iterate
-      res:= [SUBSTRING(x,26,NIL),:res]
+      res:= [subString(x,26),:res]
     SHUT stream
   res
  
@@ -112,12 +112,12 @@ wordsOfString1(s,j) ==
     tailWords:=
       isBreakCharacter s.(k+1) =>
         n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not isBreakCharacter s.i]
-        null n => [SUBSTRING(s,k,nil)]
-        n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
+        null n => [subString(s,k)]
+        n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
       m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | isBreakCharacter s.i] =>
-        [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
-      [SUBSTRING(s,k,nil)]
-    k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
+        [subString(s,k,m-k),:wordsOfString1(s,m)]
+      [subString(s,k)]
+    k > j+1 => [subString(s,j,k-j),:tailWords]
     tailWords
   nil
  

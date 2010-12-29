@@ -249,33 +249,33 @@ writeSaturn(line) ==
       true
     repeat (k := k + 1)
   k > n => writeSaturnPrint(line)
-  segment := SUBSTRING(line,0,k)
+  segment := subString(line,0,k)
   writeSaturnPrint(segment)
   code = 1 =>
     writeSaturnPrint('"\\")
-    writeSaturn SUBSTRING(line,k + 2, nil)
+    writeSaturn subString(line,k + 2)
   code = 2 =>
     writeSaturnPrint('"  &")
-    writeSaturn SUBSTRING(line,k + 4, nil)
+    writeSaturn subString(line,k + 4)
   code = 3 =>
     writeSaturnPrint('"\item")
-    writeSaturn SUBSTRING(line,k + 5,nil)
+    writeSaturn subString(line,k + 5)
   code = 4 =>
     writeSaturnPrint('"\newline")
-    writeSaturn SUBSTRING(line,k + 8,nil)
+    writeSaturn subString(line,k + 8)
   code = 5 =>
     writeSaturnPrint('"\table{")
     $marg := $marg + 3
-    writeSaturnTable SUBSTRING(line,k + 7,nil)
+    writeSaturnTable subString(line,k + 7)
   code = 6 =>
     i := charPosition(char '_},line,k + 4)
-    tabCode := SUBSTRING(line,k, i - k + 1)
+    tabCode := subString(line,k, i - k + 1)
     writeSaturnPrint tabCode
-    line := SUBSTRING(line,i + 1, nil)
+    line := subString(line,i + 1)
     writeSaturn line
   code = 7 =>
     saturnTERPRI()
-    writeSaturn SUBSTRING(line, k + 2,nil)
+    writeSaturn subString(line, k + 2)
   code = 8 =>
     i :=
       substring?('"\beginmenu",  line,k) => k + 9
@@ -283,18 +283,18 @@ writeSaturn(line) ==
       charPosition(char '_},line,k)
     if char '_[ = line.(i + 1) then
       i := charPosition(char '_], line, i + 2)
-    beginCode := SUBSTRING(line,k, i - k + 1)
+    beginCode := subString(line,k, i - k + 1)
     writeSaturnPrint(beginCode)
-    line := SUBSTRING(line,i + 1,nil)
+    line := subString(line,i + 1)
     writeSaturn line
   code = 9 =>
     i :=
       substring?('"\endmenu",line,k)   => k + 7
       substring?('"\endscroll",line,k) => k + 9
       charPosition(char '_},line,k)
-    endCode := SUBSTRING(line,k, i - k + 1)
+    endCode := subString(line,k, i - k + 1)
     writeSaturnPrint(endCode)
-    line := SUBSTRING(line,i + 1,nil)
+    line := subString(line,i + 1)
     $marg := $marg - 3
     writeSaturn line
   systemError code
@@ -346,11 +346,11 @@ writeSaturnTable line ==
   close:= charPosition(char "}",line,0)
   open < close =>
     close := findBalancingBrace(line,open + 1,MAXINDEX line,0) or error '"no balancing brace"
-    writeSaturnPrint SUBSTRING(line,0,close + 1)
-    writeSaturnTable SUBSTRING(line,close + 1,nil)
+    writeSaturnPrint subString(line,0,close + 1)
+    writeSaturnTable subString(line,close + 1)
   $marg := $marg - 3
-  writeSaturnPrint SUBSTRING(line,0,close + 1)
-  writeSaturn SUBSTRING(line, close + 1,nil)
+  writeSaturnPrint subString(line,0,close + 1)
+  writeSaturn subString(line, close + 1)
 
 findBalancingBrace(s,k,n,level) ==
   k > n => nil
@@ -454,7 +454,7 @@ saturnTranText x ==
   error nil
 
 isMenuItemStyle? s ==
-  15 = STRING_<('"\menuitemstyle{", s) => SUBSTRING(s,15,(MAXINDEX s) - 15)
+  15 = STRING_<('"\menuitemstyle{", s) => subString(s,15,(MAXINDEX s) - 15)
   nil
 
 getCallBack callTail ==
@@ -1500,7 +1500,7 @@ unTab s ==
 
 unTab1 s ==
   STRING_<('"\tab{", s) = 5 and (k := charPosition(char '_}, s, 4)) =>
-      SUBSTRING(s, k + 1, nil)
+      subString(s, k + 1)
   s
 
 satBreak() ==
@@ -1721,7 +1721,7 @@ screenLocalLine(line, conlist) ==
     k = char 'o or k = char 'a =>
       s := dbPart(line,5,1)
       k := charPosition(char '_(,s,1)
-      SUBSTRING(s,1,k - 1)
+      subString(s,1,k - 1)
     dbName line
   MEMQ(con, conlist)
 

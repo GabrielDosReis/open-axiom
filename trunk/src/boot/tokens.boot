@@ -46,6 +46,12 @@ shoeStartsId x ==
 shoeIdChar x ==
   alphanumeric? x or x in [char "'", char "?", char "%"]
 
+++ return the sub-string of `s' starting from `f'.
+++ When non-nil, `n' designates the length of the sub-string.
+subString(s,f,n == nil) ==
+  n = nil => subSequence(s,f)
+  subSequence(s,f,f + n)
+
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
             ['"and","AND"] , _
@@ -307,6 +313,7 @@ for i in [ _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
   ["string?",  "STRINGP"]  ,_
+  ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _
   ["symbol?",  "SYMBOLP"]  , _

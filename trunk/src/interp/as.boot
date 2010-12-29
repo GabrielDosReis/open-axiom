@@ -313,14 +313,14 @@ asyDocumentation con ==
   [:u,['constructor,[nil,comments]]]
 
 asyExtractDescription str ==
-  k := STRPOS('"Description:",str,0,nil) => asyExtractDescription SUBSTRING(str,k + 12,nil)
-  k := STRPOS('"Author:",str,0,nil) => asyExtractDescription SUBSTRING(str,0,k)
+  k := STRPOS('"Description:",str,0,nil) => asyExtractDescription subString(str,k + 12)
+  k := STRPOS('"Author:",str,0,nil) => asyExtractDescription subString(str,0,k)
   str
 
 trimComments str ==
   str = nil or str = '"" => '""
   m := MAXINDEX str
-  str := SUBSTRING(str,0,m)
+  str := subString(str,0,m)
   trimString str
 
 asyExportAlist con ==
@@ -705,7 +705,7 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
     parts := asySplit(name,MAXINDEX name)
     newname := strconc/[asyShorten x for x in parts]
     #newname < 8 => INTERN newname
-    tryname := SUBSTRING(name,0,7)
+    tryname := subString(name,0,7)
     not createAbbreviation tryname => INTERN UPCASE tryname
     nil
   chk(conname,abb) ==
@@ -731,9 +731,9 @@ asyGetAbbrevFromComments con ==
 
 asyExtractAbbreviation str ==
         not (k:= STRPOS('"Abbrev: ",str,0,nil)) => NIL
-        str := SUBSTRING(str, k+8, nil)
+        str := subString(str, k+8)
         k := STRPOS($stringNewline, str,0,nil)
-        k => SUBSTRING(str, 0, k)
+        k => subString(str, 0, k)
         str
 
 asyShorten x ==
@@ -750,7 +750,7 @@ asySplit(name,end) ==
   k := 0
   for i in 1..end while lowerCase? name.i repeat k := i
   k := k + 1
-  [SUBSTRING(name,0,k),:asySplit(SUBSTRING(name,k,nil),end-k)]
+  [subString(name,0,k),:asySplit(subString(name,k),end-k)]
 
 createAbbreviation s ==
   if string? s then s := INTERN s

@@ -100,13 +100,13 @@ buildHtMacroTable() ==
 getHtMacroItem line ==
   not stringPrefix?('"\newcommand{",line) => nil
   k := charPosition(char '_},line,11)
-  command := SUBSTRING(line,12,k - 12)
+  command := subString(line,12,k - 12)
   numOfArgs :=
     m := #line
     i := charPosition(char '_[,line,k)
     i = m => 0
     j := charPosition(char '_],line,i + 1)
-    digitString := SUBSTRING(line,i + 1,j - i - 1)
+    digitString := subString(line,i + 1,j - i - 1)
     and/[digit? digitString.i for i in 0..MAXINDEX digitString]
       => readInteger digitString
     return nil

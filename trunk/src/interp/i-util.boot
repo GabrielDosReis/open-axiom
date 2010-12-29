@@ -73,7 +73,7 @@ MKPROMPT() ==
     strconc(STRINGIMAGE $interpreterFrameName,
       '" (",STRINGIMAGE $IOindex,'") -> ")
   strconc(STRINGIMAGE $interpreterFrameName,
-   '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
+   '" [", subString(CURRENTTIME(),8),'"] [",
     STRINGIMAGE $IOindex, '"] -> ")
  
 

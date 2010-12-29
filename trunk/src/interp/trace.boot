@@ -641,7 +641,7 @@ letPrint3(x,xval,printfn,currentFunction) ==
 getAliasIfTracedMapParameter(x,currentFunction) ==
   isSharpVarWithNum x =>
     aliasList:= get(currentFunction,'alias,$InteractiveFrame) =>
-      aliasList.(STRING2PINT_-N(SUBSTRING(PNAME x,1,NIL),1)-1)
+      aliasList.(STRING2PINT_-N(subString(PNAME x,1,NIL),1)-1)
   x
 
 getBpiNameIfTracedMap(name) ==

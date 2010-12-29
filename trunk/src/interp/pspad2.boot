@@ -496,9 +496,9 @@ consComments(s,plusPlus) ==
   while (m := MAXINDEX s) >= columnsLeft repeat
     k := or/[i for i in (columnsLeft - 1)..1 by -1 | s.i = $charBlank] 
     k := (k => k + 1; columnsLeft)
-    piece := SUBSTRING(s,0,k)
+    piece := subString(s,0,k)
     formatDoCommentLine [plusPlus,piece]
-    s := SUBSTRING(s,k,nil)
+    s := subString(s,k)
   formatDoCommentLine [plusPlus,s]
   undent()
   $m
@@ -508,7 +508,7 @@ consCommentsTran s ==
   k := or/[i for i in 0..(m - 7) | substring?('"\spad{",s,i)] =>
     r := charPosition(char '_},s,k + 6)
     r = m + 1 => s
-    strconc(SUBSTRING(s,0,k),'"`",SUBSTRING(s,k+6,r-k-6),'"'",consCommentsTran SUBSTRING(s,r+1,nil))
+    strconc(subString(s,0,k),'"`",subString(s,k+6,r-k-6),'"'",consCommentsTran subString(s,r+1))
   s
   
 formatDoCommentLine line ==
@@ -564,7 +564,7 @@ string2PrintImage s ==
  
 ident2PrintImage s ==
   m := MAXINDEX s
-  if m > 1 and s.(m - 1) = $underScore then s := strconc(SUBSTRING(s,0,m-1),s.m)
+  if m > 1 and s.(m - 1) = $underScore then s := strconc(subString(s,0,m-1),s.m)
   u:= GETSTR (2*# s)
   if not (alphabetic? s.0 or s.0 = char "$") then SUFFIX('__,u)
   u:= SUFFIX(s.0,u)

@@ -320,8 +320,8 @@ fortran2Lines1 f ==
       -- legal format. MCD
       if (ll < $fortLength) and (ll + sff) > $fortLength then
         spaceLeft := $fortLength - ll
-        line := strconc(line,SUBSEQ(ff,0,spaceLeft))
-        ff := SUBSEQ(ff,spaceLeft)
+        line := strconc(line,subSequence(ff,0,spaceLeft))
+        ff := subSequence(ff,spaceLeft)
       lines := [line,:lines]
       ll := $fortIndent
       line := contPref
@@ -619,7 +619,7 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
   labString := STRINGIMAGE label1
   for i in #(labString)..5 repeat labString := strconc(labString,'" ")
   lines := fortran2Lines nreverse [:nreverse l,'"IF(",:r]
-  lines := [strconc(labString,SUBSEQ(first lines,6)),:rest lines]
+  lines := [strconc(labString,subSequence(first lines,6)),:rest lines]
   checkLines lines
 
 fortFormatIf(switch) ==
@@ -796,7 +796,7 @@ fortPre1 e ==
   imags := ['"%i","%i"]
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
-  STRINGIMAGE(e).0 = "%" => SUBSEQ(STRINGIMAGE e,1)
+  STRINGIMAGE(e).0 = char "%" => subSequence(STRINGIMAGE e,1)
   atom e => e
   [op, :args] := e
   member(op,["**" , '"**"]) =>
@@ -854,11 +854,11 @@ checkPrecision e ==
   string?(e) and codePoint CHAR(e,0) = 34 => e
   e := delete(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
-    iPart := SUBSEQ(e,0,(period:=POSITION(char ".",e))+1)
-    expt  := if ePos := POSITION(char "E",e) then SUBSEQ(e,ePos+1) else "0"
+    iPart := subSequence(e,0,(period:=POSITION(char ".",e))+1)
+    expt  := if ePos := POSITION(char "E",e) then subSequence(e,ePos+1) else "0"
     rPart :=
-      ePos => SUBSEQ(e,period+1,ePos)
-      period+1 < # e => SUBSEQ(e,period+1)
+      ePos => subSequence(e,period+1,ePos)
+      period+1 < # e => subSequence(e,period+1)
       "0"
     strconc(iPart,rPart,'"D",expt)
   e

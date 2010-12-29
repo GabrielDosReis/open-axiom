@@ -86,7 +86,7 @@ shoeNotFound fn ==
 shoeReadLispString(s,n) ==
     l:=# s
     n >= l => nil
-    READ_-FROM_-STRING strconc ( "(", SUBSTRING(s,n,l-n) ,")")
+    READ_-FROM_-STRING strconc ( "(", subString(s,n,l-n) ,")")
 
 -- read a line from stream
 shoeReadLine stream ==
@@ -143,11 +143,11 @@ lineCharacter p ==
 shoePackageStartsAt (lines,sz,name,stream)==
   bStreamNull stream => [[],['nullstream]]
   a := CAAR stream
-  #a >= 8 and SUBSTRING(a,0,8)='")package" =>
+  #a >= 8 and subString(a,0,8)='")package" =>
     shoePackageStartsAt([CAAR stream,:lines],sz,name,rest stream)
   #a < sz =>
     shoePackageStartsAt(lines, sz,name,rest stream)
-  SUBSTRING(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
+  subString(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
     [lines,stream]
   shoePackageStartsAt(lines,sz,name,rest stream)
  
@@ -260,7 +260,7 @@ shoePrefix?(prefix,whole) ==
   good:=true
   for i in 0..#prefix-1 for j in 0.. while good repeat
     good:= prefix.i = whole.j
-  good => SUBSTRING(whole,#prefix,nil) 
+  good => subString(whole,#prefix) 
   good
  
 shoePlainLine?(s) ==
@@ -286,8 +286,8 @@ shoeBiteOff x==
   n:=STRPOSL('" ",x,0,true)
   n = nil =>  false
   n1:=STRPOSL ('" ",x,n,nil)
-  n1 = nil =>  [SUBSTRING(x,n,nil),'""]
-  [SUBSTRING(x,n,n1-n),SUBSTRING(x,n1,nil)]
+  n1 = nil =>  [subString(x,n),'""]
+  [subString(x,n,n1-n),subString(x,n1)]
  
 shoeFileName x==
   a:=shoeBiteOff x

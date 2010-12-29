@@ -100,7 +100,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
     line := trimString line                   --3-n    ...
     m := MAXINDEX line                        --     (blank line) ...
     line.m ~= (char '_:) => systemError('"wrong heading")
-    con := INTERN SUBSTRING(line,0,m)
+    con := INTERN subString(line,0,m)
     alist := [lst while not EOFP instream and 
        not (blankLine? (line := READLINE instream)) and
          line.0 ~= char '_- for i in 1..
@@ -137,7 +137,7 @@ string2OpAlist s ==
   upperCase? s.k => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
-    acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
+    acc := [INTERN subString(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
   acc := nreverse acc
   --now add defaults 
   if u := getDefaultProps first acc then acc := [first acc,:u,:rest acc]

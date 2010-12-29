@@ -146,7 +146,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   null lines =>
     tryAgain? and #pattern > 0 =>
       (pattern.(k := MAXINDEX(pattern))) = char 's =>
-        htGlossPage(htPage,SUBSTRING(pattern,0,k),true)
+        htGlossPage(htPage,subString(pattern,0,k),true)
       upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
       errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
@@ -155,7 +155,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   htSay('"\beginscroll\beginmenu")
   for line in lines repeat
     tick := charPosition($tick,line,1)
-    htSay('"\item{\em \menuitemstyle{}}\tab{0}{\em ",escapeString SUBSTRING(line,0,tick),'"} ",SUBSTRING(line,tick + 1,nil))
+    htSay('"\item{\em \menuitemstyle{}}\tab{0}{\em ",escapeString subString(line,0,tick),'"} ",subString(line,tick + 1))
   htSay '"\endmenu "
   htSay '"\endscroll\newline "
   htMakePage [['bcLinks,['"Search",'"",'htGlossSearch,nil]]]
@@ -168,18 +168,18 @@ gatherGlossLines(results,defstream) ==
   for keyline in results repeat
     --keyline := READLINE instream
     n := charPosition($tick,keyline,0)
-    keyAndTick := SUBSTRING(keyline,0,n + 1)
-    byteAddress := string2Integer SUBSTRING(keyline,n + 1,nil)
+    keyAndTick := subString(keyline,0,n + 1)
+    byteAddress := string2Integer subString(keyline,n + 1)
     FILE_-POSITION(defstream,byteAddress)
     line := READLINE defstream
     k := charPosition($tick,line,1)
-    pointer := SUBSTRING(line,0,k)
-    def := SUBSTRING(line,k + 1,nil)
+    pointer := subString(line,0,k)
+    def := subString(line,k + 1)
     xtralines := nil
     while not EOFP defstream and (x := READLINE defstream) and
-      (j := charPosition($tick,x,1)) and (nextPointer := SUBSTRING(x,0,j))
+      (j := charPosition($tick,x,1)) and (nextPointer := subString(x,0,j))
         and (nextPointer = pointer) repeat
-          xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
+          xtralines := [subString(x,j + 1),:xtralines]
     acc := [strconc(keyAndTick,def, strconc/nreverse xtralines),:acc]
   reverse acc
 
@@ -271,11 +271,11 @@ mkUnixPattern s ==
   u := mkUpDownPattern s
   starPositions := reverse [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
   for i in starPositions repeat
-    u := strconc(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
+    u := strconc(subString(u,0,i),'".*",subString(u,i + 1))
   if u.0 ~= $wild then u := strconc('"[^a-zA-Z]",u)
-                  else u := SUBSTRING(u,1,nil)
+                  else u := subString(u,1)
   if u.(k := MAXINDEX u) ~= $wild then u := strconc(u,'"[^a-zA-Z]")
-                                  else u := SUBSTRING(u,0,k)
+                                  else u := subString(u,0,k)
   u
 
 

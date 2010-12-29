@@ -692,7 +692,7 @@ getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
 --% Exposure Group Code
 
 dropPrefix(fn) ==
-  member(fn.0,[char "?",char "-",char "+"]) => SUBSTRING(fn,1,nil)
+  member(fn.0,[char "?",char "-",char "+"]) => subString(fn,1)
   fn
 
 --moved to util.lisp
@@ -717,8 +717,8 @@ dropPrefix(fn) ==
 --++       p := STRPOS('" ",x,1,NIL)
 --++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
---++       n := object2Identifier SUBSTRING(x,0,p)
---++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)
+--++       n := object2Identifier subString(x,0,p)
+--++       x := dropLeadingBlanks subString(x,p+1)
 --++       # x = 0 =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       egFiles := [[n,:object2Identifier x],:egFiles]

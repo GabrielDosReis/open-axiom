@@ -142,7 +142,7 @@ unAbbreviateKeyword x ==
   x' :=selectOptionLC(x,$SYSCOMMANDS,'commandErrorIfAmbiguous)
   if not x' then
     x' := 'system
-    SETQ(LINE, strconc('")system ", SUBSTRING(LINE, 1, #LINE-1)))
+    SETQ(LINE, strconc('")system ", subString(LINE, 1, #LINE-1)))
     $currentLine := LINE
   selectOption(x',commandsForUserLevel $systemCommands,
     'commandUserLevelError)
@@ -204,11 +204,11 @@ commandAmbiguityError(kind,x,u) ==
 
 getSystemCommandLine() ==
   p := STRPOS('")",$currentLine,0,NIL)
-  line := if p then SUBSTRING($currentLine,p,NIL) else $currentLine
+  line := if p then subString($currentLine,p) else $currentLine
   maxIndex:= MAXINDEX line
   for i in 0..maxIndex while (line.i ~= " ") repeat index:= i
   if index=maxIndex then line := '""
-  else line := SUBSTRING(line,index+2,nil)
+  else line := subString(line,index+2)
   line
 
 ------------ start of commands ------------------------------------------
@@ -562,9 +562,9 @@ compileAsharpCmd1 args ==
         pathType = '"ao" =>
             -- want to strip out -Fao
             (p := STRPOS('"-Fao", $asharpCmdlineFlags, 0, NIL)) =>
-                p = 0 => SUBSTRING($asharpCmdlineFlags, 5, NIL)
-                strconc(SUBSTRING($asharpCmdlineFlags, 0, p), '" ",
-                    SUBSTRING($asharpCmdlineFlags, p+5, NIL))
+                p = 0 => subString($asharpCmdlineFlags, 5)
+                strconc(subString($asharpCmdlineFlags, 0, p), '" ",
+                    subString($asharpCmdlineFlags, p+5))
             $asharpCmdlineFlags
         $asharpCmdlineFlags
 
@@ -1687,10 +1687,10 @@ writeInputLines(fn,initial) ==
         for j in 1..maxn while not done repeat
           k := 1 + maxn - j
           MEMQ(vec.k,breakChars) =>
-            svec := strconc(SUBSTRING(vec,0,k+1),UNDERBAR)
+            svec := strconc(subString(vec,0,k+1),UNDERBAR)
             lineList := [svec,:lineList]
             done := true
-            vec := SUBSTRING(vec,k+1,NIL)
+            vec := subString(vec,k+1)
             n := # vec
         -- in case we can't find a breaking point
         if not done then n := 0
@@ -2617,7 +2617,7 @@ processSynonymLine line ==
       for i in 0..mx repeat
         line.i = " " =>
           return (for j in (i+1)..mx repeat
-            line.j ~= " " => return (SUBSTRING (line, j, nil)))
+            line.j ~= " " => return (subString(line, j)))
   [key, :value]
 
 
@@ -2800,13 +2800,13 @@ removeUndoLines u == --called by writeInputLines
   for y in tails u repeat
     (x := first y).0 = char '_) =>
       stringPrefix?('")undo",s := trimString x) => --parse "undo )option"
-        s1 := trimString SUBSTRING(s,5,nil)
+        s1 := trimString subString(s,5)
         if s1 ~= '")redo" then
           m := charPosition(char '_),s1,0)
           code :=
             m < MAXINDEX s1 => s1.(m + 1)
             char 'a
-          s2 := trimString SUBSTRING(s1,0,m)
+          s2 := trimString subString(s1,0,m)
         n :=
            s1 = '")redo" => 0
            s2 ~= '"" => undoCount readInteger s2
@@ -2818,7 +2818,7 @@ removeUndoLines u == --called by writeInputLines
   for y in tails nreverse u repeat
     (x := first y).0 = char '_> =>
       code := x . 1                                 --code = a,b, or r
-      n := readInteger SUBSTRING(x,2,nil)           --n = number of undo steps
+      n := readInteger subString(x,2)               --n = number of undo steps
       y := rest y                                   --kill >n line
       while y repeat
         c := first y
@@ -2917,7 +2917,7 @@ printLabelledList(ls,label1,label2,prefix,patterns) ==
     sayMessage [label1,'"-defined ",label2,'" satisfying patterns:",
      '"%l",'"   ",'"%b",:blankList patterns,'"%d"]
   for [syn,:comm] in ls repeat
-    if SUBSTRING(syn,0,1) = '"|" then syn := SUBSTRING(syn,1,NIL)
+    if subString(syn,0,1) = '"|" then syn := subString(syn,1,NIL)
     if syn = '"%i" then syn := '"%i "
     wid := MAX(30 - (entryWidth syn),1)
     sayBrightly concat('"%b",prefix,syn,'"%d",
@@ -3061,21 +3061,21 @@ processSynonyms() ==
   fill := '""
   if p
     then
-      line := SUBSTRING(LINE,p,NIL)
-      if p > 0 then fill := SUBSTRING(LINE,0,p)
+      line := subString(LINE,p)
+      if p > 0 then fill := subString(LINE,0,p)
     else
       p := 0
       line := LINE
   to := STRPOS ('" ", line, 1, nil)
   if to then to := to - 1
-  synstr := SUBSTRING (line, 1, to)
+  synstr := subString(line, 1, to)
   syn := STRING2ID_-N (synstr, 1)
   null (fun := LASSOC (syn, $CommandSynonymAlist)) => NIL
   fun := eval fun              -- fun may have been a suspension
   to := STRPOS('")",fun,1,NIL)
   if to and to ~= #(fun)-1 then
-    opt := strconc('" ",SUBSTRING(fun,to,NIL))
-    fun := SUBSTRING(fun,0,to-1)
+    opt := strconc('" ",subString(fun,to))
+    fun := subString(fun,0,to-1)
   else opt := '" "
   if # synstr > # fun then
     for i in (# fun)..(# synstr) repeat
@@ -3093,8 +3093,8 @@ tabsToBlanks s ==
    k := charPosition($charTab,s,0)
    n := #s
    k < n =>
-      k = 0 => tabsToBlanks SUBSTRING(s,1,nil)
-      strconc(SUBSTRING(s,0,k),$charBlank, tabsToBlanks SUBSTRING(s,k + 1,nil))
+      k = 0 => tabsToBlanks subString(s,1)
+      strconc(subString(s,0,k),$charBlank, tabsToBlanks subString(s,k + 1))
    s
 
 doSystemCommand string ==
@@ -3102,7 +3102,7 @@ doSystemCommand string ==
    LINE: fluid := string
    processSynonyms()
    string := LINE
-   string:=SUBSTRING(string,1,nil)
+   string:=subString(string,1)
    string = '"" => nil
    tok:=getFirstWord(string)
    tok =>
@@ -3128,14 +3128,14 @@ handleNoParseCommands(unab, string) ==
     if (null spaceIndex) then
       sayKeyedMsg("S2IV0005", NIL)
       nil
-    else npboot(SUBSEQ(string, spaceIndex+1))
+    else npboot(subSequence(string, spaceIndex+1))
   unab = "system" =>
     if (null spaceIndex) then
       sayKeyedMsg("S2IV0005", NIL)
       nil
     else npsystem(unab, string)
   unab = "synonym" =>
-    npsynonym(unab, (null spaceIndex => '""; SUBSEQ(string, spaceIndex+1)))
+    npsynonym(unab, (null spaceIndex => '""; subSequence(string, spaceIndex+1)))
   null spaceIndex =>
     FUNCALL unab
   unab in '( quit     _
@@ -3146,7 +3146,7 @@ handleNoParseCommands(unab, string) ==
     sayKeyedMsg("S2IV0005", NIL)
     nil
   funName := INTERN strconc('"np",STRING unab)
-  FUNCALL(funName, SUBSEQ(string, spaceIndex+1))
+  FUNCALL(funName, subSequence(string, spaceIndex+1))
 
 
 npboot str ==
@@ -3163,7 +3163,7 @@ stripLisp str ==
     (char str.c0) ~= (char lispStr.c1) =>
       return nil
     strIndex := c0+1
-  SUBSEQ(str, strIndex)
+  subSequence(str, strIndex)
 
 
 nplisp str ==
@@ -3174,12 +3174,12 @@ npsystem(unab, str) ==
   spaceIndex := SEARCH('" ", str)
   null spaceIndex =>
     sayKeyedMsg('"S2IZ0080", [str])
-  sysPart := SUBSEQ(str, 0, spaceIndex)
+  sysPart := subSequence(str, 0, spaceIndex)
   -- The following is a hack required by the fact that unAbbreviateKeyword
   -- returns the word "system" for unknown words
   null SEARCH(sysPart, STRING unab) =>
     sayKeyedMsg('"S2IZ0080", [sysPart])
-  command := SUBSEQ(str, spaceIndex+1)
+  command := subSequence(str, spaceIndex+1)
   runCommand command
 
 npsynonym(unab, str) ==
@@ -3193,7 +3193,7 @@ tokTran tok ==
     #tok = 0 => nil
     isIntegerString tok => READ_-FROM_-STRING tok
     STRING tok.0 = '"_"" =>
-      SUBSEQ(tok, 1, #tok-1)
+      subSequence(tok, 1, #tok-1)
     INTERN tok
   tok
 
@@ -3216,11 +3216,11 @@ splitIntoOptionBlocks str ==
     if STRING str.i = '")" and not inString
     then parenCount := parenCount - 1
     STRING str.i = '")" and not inString and parenCount = -1 =>
-      block := stripSpaces SUBSEQ(str, blockStart, i)
+      block := stripSpaces subSequence(str, blockStart, i)
       blockList := [block, :blockList]
       blockStart := i+1
       parenCount := 0
-  blockList := [stripSpaces SUBSEQ(str, blockStart), :blockList]
+  blockList := [stripSpaces subSequence(str, blockStart), :blockList]
   nreverse blockList
 
 dumbTokenize str ==
@@ -3235,12 +3235,12 @@ dumbTokenize str ==
       previousSpace := false
     STRING str.i = '" " and not inString =>
       previousSpace => nil
-      token := stripSpaces SUBSEQ(str, tokenStart, i)
+      token := stripSpaces subSequence(str, tokenStart, i)
       tokenList := [token, :tokenList]
       tokenStart := i+1
       previousSpace := true
     previousSpace := false
-  tokenList := [stripSpaces SUBSEQ(str, tokenStart), :tokenList]
+  tokenList := [stripSpaces subSequence(str, tokenStart), :tokenList]
   nreverse tokenList
 
 handleParsedSystemCommands(unabr, optionList) ==
@@ -3252,8 +3252,8 @@ handleParsedSystemCommands(unabr, optionList) ==
 parseSystemCmd opt ==
   spaceIndex := SEARCH('" ", opt)
   spaceIndex =>
-    commandString := stripSpaces SUBSEQ(opt, 0, spaceIndex)
-    argString := stripSpaces SUBSEQ(opt, spaceIndex)
+    commandString := stripSpaces subSequence(opt, 0, spaceIndex)
+    argString := stripSpaces subSequence(opt, spaceIndex)
     command := tokTran commandString
     pform := parseFromString argString
     [command, pform]
@@ -3273,7 +3273,7 @@ handleTokensizeSystemCommands(unabr, optionList) ==
 getFirstWord string ==
   spaceIndex := SEARCH('" ", string)
   null spaceIndex => string
-  stripSpaces SUBSEQ(string, 0, spaceIndex)
+  stripSpaces subSequence(string, 0, spaceIndex)
 
 ltrace l == trace l
 

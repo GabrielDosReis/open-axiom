@@ -24,7 +24,7 @@
         (COND
           ((NOT (< |n| |l|)) NIL)
           (T (READ-FROM-STRING
-                 (CONCAT '|(| (SUBSTRING |s| |n| (- |l| |n|)) '|)|))))))))
+                 (CONCAT '|(| (|subString| |s| |n| (- |l| |n|)) '|)|))))))))
 
 (DEFUN |shoeReadLine| (|stream|) (READ-LINE |stream| NIL NIL))
 
@@ -90,13 +90,13 @@
         (T (SETQ |a| (CAAR |stream|))
            (COND
              ((AND (NOT (< (LENGTH |a|) 8))
-                   (STRING= (SUBSTRING |a| 0 8) ")package"))
+                   (STRING= (|subString| |a| 0 8) ")package"))
               (|shoePackageStartsAt| (CONS (CAAR |stream|) |lines|)
                   |sz| |name| (CDR |stream|)))
              ((< (LENGTH |a|) |sz|)
               (|shoePackageStartsAt| |lines| |sz| |name|
                   (CDR |stream|)))
-             ((AND (EQUAL (SUBSTRING |a| 0 |sz|) |name|)
+             ((AND (EQUAL (|subString| |a| 0 |sz|) |name|)
                    (< |sz| (LENGTH |a|))
                    (NOT (|shoeIdChar| (ELT |a| |sz|))))
               (LIST |lines| |stream|))
@@ -246,7 +246,7 @@
                (SETQ |i| (+ |i| 1))
                (SETQ |j| (+ |j| 1))))
            (COND
-             (|good| (SUBSTRING |whole| (LENGTH |prefix|) NIL))
+             (|good| (|subString| |whole| (LENGTH |prefix|)))
              (T |good|)))))))
 
 (DEFUN |shoePlainLine?| (|s|)
@@ -292,9 +292,9 @@
           ((NULL |n|) NIL)
           (T (SETQ |n1| (STRPOSL " " |x| |n| NIL))
              (COND
-               ((NULL |n1|) (LIST (SUBSTRING |x| |n| NIL) ""))
-               (T (LIST (SUBSTRING |x| |n| (- |n1| |n|))
-                        (SUBSTRING |x| |n1| NIL))))))))))
+               ((NULL |n1|) (LIST (|subString| |x| |n|) ""))
+               (T (LIST (|subString| |x| |n| (- |n1| |n|))
+                        (|subString| |x| |n1|))))))))))
 
 (DEFUN |shoeFileName| (|x|)
   (PROG (|c| |a|)

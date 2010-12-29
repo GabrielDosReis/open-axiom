@@ -145,7 +145,7 @@ shoeAccumulateLines(s,string)==
       a:=STRPOS('";",command,0,nil)
       a=>
 	shoeAccumulateLines($r,
-	   strconc(string,SUBSTRING(command,0,a-1)))
+	   strconc(string,subString(command,0,a-1)))
       shoeAccumulateLines($r,strconc(string,command))
     shoeAccumulateLines($r,string)
   [s,:string]
@@ -280,12 +280,12 @@ shoeStartsNegComment()==
 shoeNegComment()==
   n := $n
   $n := $sz
-  shoeLeafNegComment SUBSTRING($ln,n,nil)
+  shoeLeafNegComment subString($ln,n)
  
 shoeComment()==
   n := $n
   $n := $sz
-  shoeLeafComment SUBSTRING($ln,n,nil)
+  shoeLeafComment subString($ln,n)
  
 shoePunct()==
   sss := shoeMatch($ln,$n)
@@ -329,11 +329,11 @@ shoeS()==
   mn=$sz =>
     $n:=$sz
     SoftShoeError([$linepos,:$n],'"quote added")
-    SUBSTRING($ln,n,nil)
+    subString($ln,n)
   mn = strsym =>
     $n:=mn+1
-    SUBSTRING($ln,n,mn-n)
-  str := SUBSTRING($ln,n,mn-n)
+    subString($ln,n,mn-n)
+  str := subString($ln,n,mn-n)
   $n := mn+1
   a := shoeEsc()
   b := 
@@ -363,8 +363,8 @@ shoeW(b)==
   endid := shoeIdEnd($ln,$n)
   endid=l or QENUM($ln,endid) ~= shoeESCAPE => 
     $n := endid
-    [b,SUBSTRING($ln,n1,endid-n1)]
-  str := SUBSTRING($ln,n1,endid-n1)
+    [b,subString($ln,n1,endid-n1)]
+  str := subString($ln,n1,endid-n1)
   $n := endid+1
   a := shoeEsc()
   bb := 
@@ -392,8 +392,8 @@ shoeInteger1(zro) ==
     $n := $n+1
   $n=l or QENUM($ln,$n)~=shoeESCAPE =>
     n = $n and zro => '"0"
-    SUBSTRING($ln,n,$n-n)
-  str := SUBSTRING($ln,n,$n-n)
+    subString($ln,n,$n-n)
+  str := subString($ln,n,$n-n)
   $n := $n+1
   a := shoeEsc()
   bb := shoeInteger1(zro)

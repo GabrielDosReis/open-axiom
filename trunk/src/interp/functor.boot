@@ -890,10 +890,10 @@ splitEncodedFunctionName(encodedName, sep) ==
     null (p2 := STRPOS(sep0, encodedName, p1+1, '"*")) => 'inner
 --  This is picked up in compile for inner functions in partial compilation
     null (p3 := STRPOS(sep,  encodedName, p2+1, '"*")) => nil
-    s1 := SUBSTRING(encodedName, 0,    p1)
-    s2 := SUBSTRING(encodedName, p1+1, p2-p1-1)
-    s3 := SUBSTRING(encodedName, p2+1, p3-p2-1)
-    s4 := SUBSTRING(encodedName, p3+1, nil)
+    s1 := subString(encodedName, 0,    p1)
+    s2 := subString(encodedName, p1+1, p2-p1-1)
+    s3 := subString(encodedName, p2+1, p3-p2-1)
+    s4 := subString(encodedName, p3+1)
     [s1, s2, s3, s4]
  
 mkRepititionAssoc l ==
