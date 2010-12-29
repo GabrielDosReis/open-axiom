@@ -38,7 +38,7 @@ module tokens
 
 ++ converts `x', a 1-length symbol, to a character.
 char x ==
-  CHAR(symbolName x, 0)
+  stringChar(symbolName x, 0)
 
 shoeStartsId x ==
   alphabetic? x or x in [char "$", char "?", char "%"]
@@ -51,6 +51,9 @@ shoeIdChar x ==
 subString(s,f,n == nil) ==
   n = nil => subSequence(s,f)
   subSequence(s,f,f + n)
+
+QENUM(s,i) ==
+  codePoint stringChar(s,i)
 
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
@@ -130,28 +133,6 @@ shoeKeyTableCons()==
    KeyTable
  
 shoeKeyTable:=shoeKeyTableCons()
- 
-shoeSPACE       == QENUM('"    ", 0)
- 
-shoeESCAPE      == QENUM('"__  ", 0)
-shoeLispESCAPE      := QENUM('"!  ", 0)
- 
-shoeSTRING_CHAR == QENUM('"_"  ", 0)
- 
-shoePLUSCOMMENT == QENUM('"+   ", 0)
- 
-shoeMINUSCOMMENT == QENUM('"-   ", 0)
- 
-shoeDOT          == QENUM('".   ", 0)
- 
-shoeEXPONENT1   == QENUM('"E   ", 0)
- 
-shoeEXPONENT2   == QENUM('"e   ", 0)
- 
-shoeCLOSEPAREN  == QENUM('")   ", 0)
- 
---shoeCLOSEANGLE  == QENUM('">   ", 0)
-shoeTAB == 9
  
 shoeInsert(s,d) ==
   l := #s
@@ -312,6 +293,7 @@ for i in [ _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
+  ["stringChar", "SCHAR"] , _
   ["string?",  "STRINGP"]  ,_
   ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _

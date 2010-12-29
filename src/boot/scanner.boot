@@ -38,6 +38,27 @@ import includer
 namespace BOOTTRAN
 module scanner
 
+shoeSPACE       == QENUM('"    ", 0)
+ 
+shoeESCAPE      == QENUM('"__  ", 0)
+shoeLispESCAPE      := QENUM('"!  ", 0)
+ 
+shoeSTRING_CHAR == QENUM('"_"  ", 0)
+ 
+shoePLUSCOMMENT == QENUM('"+   ", 0)
+ 
+shoeMINUSCOMMENT == QENUM('"-   ", 0)
+ 
+shoeDOT          == QENUM('".   ", 0)
+ 
+shoeEXPONENT1   == QENUM('"E   ", 0)
+ 
+shoeEXPONENT2   == QENUM('"e   ", 0)
+ 
+shoeCLOSEPAREN  == QENUM('")   ", 0)
+ 
+shoeTAB == 9
+ 
 -- converts X to double-float.
 double x ==
   FLOAT(x, 1.0)
@@ -159,7 +180,7 @@ shoeToken () ==
   c:=QENUM($ln,$n)
   linepos:=$linepos
   n:=$n
-  ch:=$ln.$n
+  ch := stringChar($ln,$n)
   b:=
     shoeStartsComment() =>
       shoeComment()
@@ -226,11 +247,11 @@ shoeLispEscape()==
   $n:=$n+1
   $n >= $sz =>
     SoftShoeError([$linepos,:$n],'"lisp escape error")
-    shoeLeafError ($ln.$n)
+    shoeLeafError stringChar($ln,$n)
   a:=shoeReadLispString($ln,$n)
   a = nil =>
     SoftShoeError([$linepos,:$n],'"lisp escape error")
-    shoeLeafError ($ln.$n)
+    shoeLeafError stringChar($ln,$n)
   [exp,n]:=a
   n = nil =>
     $n:= $sz
@@ -300,7 +321,7 @@ shoeKeyTr w==
   shoeLeafKey w
  
 shoePossFloat (w)==
-  $n>=$sz or not shoeDigit $ln.$n => shoeLeafKey w
+  $n>=$sz or not shoeDigit stringChar($ln,$n) => shoeLeafKey w
   w := shoeInteger()
   shoeExponent('"0",w)
  
@@ -338,7 +359,7 @@ shoeS()==
   a := shoeEsc()
   b := 
     a =>
-      str := strconc(str,$ln.$n)
+      str := strconc(str,charString stringChar($ln,$n))
       $n := $n+1
       shoeS()
     shoeS()
@@ -348,7 +369,7 @@ shoeS()==
  
  
 shoeIdEnd(line,n)==
-  while n<#line and shoeIdChar line.n repeat 
+  while n<#line and shoeIdChar stringChar(line,n) repeat 
     n := n+1
   n
  
@@ -388,7 +409,7 @@ shoeInteger() ==
 shoeInteger1(zro) ==
   n := $n
   l := $sz
-  while $n <l and shoeDigit($ln.$n) repeat 
+  while $n <l and shoeDigit stringChar($ln,$n) repeat 
     $n := $n+1
   $n=l or QENUM($ln,$n)~=shoeESCAPE =>
     n = $n and zro => '"0"
@@ -403,7 +424,7 @@ shoeIntValue(s) ==
   ns := #s
   ival := 0
   for i in 0..ns-1 repeat
-    d := shoeOrdToNum s.i
+    d := shoeOrdToNum stringChar(s,i)
     ival := 10*ival + d
   ival
  
@@ -429,7 +450,7 @@ shoeExponent(a,w)==
     $n >= $sz =>
       $n := n
       shoeLeafFloat(a,w,0)
-    shoeDigit($ln.$n) =>
+    shoeDigit stringChar($ln,$n) =>
       e := shoeInteger()
       e := shoeIntValue e
       shoeLeafFloat(a,w,e)
@@ -439,7 +460,7 @@ shoeExponent(a,w)==
       $n >= $sz =>
 	$n := n
 	shoeLeafFloat(a,w,0)
-      shoeDigit($ln.$n) =>
+      shoeDigit stringChar($ln,$n) =>
 	e := shoeInteger()
 	e := shoeIntValue e
 	shoeLeafFloat(a,w,(c1=shoeMINUSCOMMENT => MINUS e; e))
@@ -454,7 +475,7 @@ shoeError()==
   SoftShoeError([$linepos,:n],
     strconc( '"The character whose number is ",
 	    toString QENUM($ln,n),'" is not a Boot character"))
-  shoeLeafError ($ln.n)
+  shoeLeafError stringChar($ln,n)
  
 shoeOrdToNum x== 
   digit? x

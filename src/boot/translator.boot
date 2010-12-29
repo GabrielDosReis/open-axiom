@@ -706,7 +706,7 @@ BOOTLOOP() ==
     stream:= _*TERMINAL_-IO_*
     PSTTOMC bRgen stream
     BOOTLOOP()
-  a.0 = char "]" => nil
+  stringChar(a,0) = char "]" => nil
   PSTTOMC [a]
   BOOTLOOP()
  
@@ -720,7 +720,7 @@ BOOTPO() ==
     stream:= _*TERMINAL_-IO_*
     PSTOUT bRgen stream
     BOOTPO()
-  a.0 = char "]" => nil
+  stringChar(a,0) = char "]" => nil
   PSTOUT [a]
   BOOTPO()
  

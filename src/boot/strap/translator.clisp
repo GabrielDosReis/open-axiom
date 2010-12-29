@@ -1230,7 +1230,7 @@
              (COND
                (|b| (SETQ |stream| *TERMINAL-IO*)
                     (PSTTOMC (|bRgen| |stream|)) (BOOTLOOP))
-               ((CHAR= (ELT |a| 0) (|char| '])) NIL)
+               ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
                (T (PSTTOMC (LIST |a|)) (BOOTLOOP)))))))))
 
 (DEFUN BOOTPO ()
@@ -1245,7 +1245,7 @@
              (COND
                (|b| (SETQ |stream| *TERMINAL-IO*)
                     (PSTOUT (|bRgen| |stream|)) (BOOTPO))
-               ((CHAR= (ELT |a| 0) (|char| '])) NIL)
+               ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
                (T (PSTOUT (LIST |a|)) (BOOTPO)))))))))
 
 (DEFUN PSTOUT (|string|)

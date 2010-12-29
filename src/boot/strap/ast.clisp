@@ -228,7 +228,8 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing|) |%Boolean|) |bfBeginsDollar|))
 
-(DEFUN |bfBeginsDollar| (|x|) (CHAR= (ELT (PNAME |x|) 0) (|char| '$)))
+(DEFUN |bfBeginsDollar| (|x|)
+  (CHAR= (SCHAR (PNAME |x|) 0) (|char| '$)))
 
 (DEFUN |compFluid| (|id|) (LIST 'FLUID |id|))
 
@@ -1206,7 +1207,7 @@
 
 (DEFUN |bfChar?| (|x|)
   (OR (CHARACTERP |x|)
-      (AND (CONSP |x|) (MEMQ (CAR |x|) '(|char| |abstractChar|)))))
+      (AND (CONSP |x|) (MEMQ (CAR |x|) '(|char| CODE-CHAR SCHAR)))))
 
 (DEFUN |bfSmintable| (|x|)
   (OR (INTEGERP |x|)
@@ -1215,7 +1216,8 @@
 (DEFUN |bfString?| (|x|)
   (OR (STRINGP |x|)
       (AND (CONSP |x|)
-           (MEMQ (CAR |x|) '(|charString| |symbolName| |toString|)))))
+           (MEMQ (CAR |x|)
+                 '(|charString| |symbolName| |toString| |subString|)))))
 
 (DEFUN |bfQ| (|l| |r|)
   (COND
@@ -1233,6 +1235,7 @@
     ((EQL |l| 0) (LIST 'PLUSP |r|))
     ((EQL |r| 0) (LIST 'MINUSP |l|))
     ((OR (|bfChar?| |l|) (|bfChar?| |r|)) (LIST 'CHAR< |l| |r|))
+    ((OR (|bfString?| |l|) (|bfString?| |r|)) (LIST 'STRING< |l| |r|))
     (T (LIST '< |l| |r|))))
 
 (DEFUN |bfLambda| (|vars| |body|)

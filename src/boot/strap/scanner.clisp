@@ -7,6 +7,28 @@
 
 (PROVIDE "scanner")
 
+(DEFCONSTANT |shoeSPACE| (QENUM "    " 0))
+
+(DEFCONSTANT |shoeESCAPE| (QENUM "_  " 0))
+
+(DEFPARAMETER |shoeLispESCAPE| (QENUM "!  " 0))
+
+(DEFCONSTANT |shoeSTRINGCHAR| (QENUM "\"  " 0))
+
+(DEFCONSTANT |shoePLUSCOMMENT| (QENUM "+   " 0))
+
+(DEFCONSTANT |shoeMINUSCOMMENT| (QENUM "-   " 0))
+
+(DEFCONSTANT |shoeDOT| (QENUM ".   " 0))
+
+(DEFCONSTANT |shoeEXPONENT1| (QENUM "E   " 0))
+
+(DEFCONSTANT |shoeEXPONENT2| (QENUM "e   " 0))
+
+(DEFCONSTANT |shoeCLOSEPAREN| (QENUM ")   " 0))
+
+(DEFCONSTANT |shoeTAB| 9)
+
 (DEFUN |double| (|x|) (FLOAT |x| 1.0))
 
 (DEFUN |dqUnit| (|s|)
@@ -164,7 +186,7 @@
         (SETQ |c| (QENUM |$ln| |$n|))
         (SETQ |linepos| |$linepos|)
         (SETQ |n| |$n|)
-        (SETQ |ch| (ELT |$ln| |$n|))
+        (SETQ |ch| (SCHAR |$ln| |$n|))
         (SETQ |b|
               (COND
                 ((|shoeStartsComment|) (|shoeComment|) NIL)
@@ -223,13 +245,13 @@
         (COND
           ((NOT (< |$n| |$sz|))
            (|SoftShoeError| (CONS |$linepos| |$n|) "lisp escape error")
-           (|shoeLeafError| (ELT |$ln| |$n|)))
+           (|shoeLeafError| (SCHAR |$ln| |$n|)))
           (T (SETQ |a| (|shoeReadLispString| |$ln| |$n|))
              (COND
                ((NULL |a|)
                 (|SoftShoeError| (CONS |$linepos| |$n|)
                     "lisp escape error")
-                (|shoeLeafError| (ELT |$ln| |$n|)))
+                (|shoeLeafError| (SCHAR |$ln| |$n|)))
                (T (SETQ |exp| (CAR |a|)) (SETQ |n| (CADR |a|))
                   (COND
                     ((NULL |n|) (SETQ |$n| |$sz|)
@@ -329,7 +351,7 @@
 (DEFUN |shoePossFloat| (|w|)
   (DECLARE (SPECIAL |$ln| |$sz| |$n|))
   (COND
-    ((OR (NOT (< |$n| |$sz|)) (NOT (|shoeDigit| (ELT |$ln| |$n|))))
+    ((OR (NOT (< |$n| |$sz|)) (NOT (|shoeDigit| (SCHAR |$ln| |$n|))))
      (|shoeLeafKey| |w|))
     (T (SETQ |w| (|shoeInteger|)) (|shoeExponent| "0" |w|))))
 
@@ -374,7 +396,8 @@
                 (SETQ |b|
                       (COND
                         (|a| (SETQ |str|
-                                   (CONCAT |str| (ELT |$ln| |$n|)))
+                                   (CONCAT |str|
+                                    (STRING (SCHAR |$ln| |$n|))))
                              (SETQ |$n| (+ |$n| 1)) (|shoeS|))
                         (T (|shoeS|))))
                 (CONCAT |str| |b|))))))))
@@ -384,7 +407,7 @@
     (LOOP
       (COND
         ((NOT (AND (< |n| (LENGTH |line|))
-                   (|shoeIdChar| (ELT |line| |n|))))
+                   (|shoeIdChar| (SCHAR |line| |n|))))
          (RETURN NIL))
         (T (SETQ |n| (+ |n| 1)))))
     |n|))
@@ -435,7 +458,7 @@
         (SETQ |l| |$sz|)
         (LOOP
           (COND
-            ((NOT (AND (< |$n| |l|) (|shoeDigit| (ELT |$ln| |$n|))))
+            ((NOT (AND (< |$n| |l|) (|shoeDigit| (SCHAR |$ln| |$n|))))
              (RETURN NIL))
             (T (SETQ |$n| (+ |$n| 1)))))
         (COND
@@ -459,7 +482,7 @@
             (COND
               ((> |i| |bfVar#1|) (RETURN NIL))
               (T (PROGN
-                   (SETQ |d| (|shoeOrdToNum| (ELT |s| |i|)))
+                   (SETQ |d| (|shoeOrdToNum| (SCHAR |s| |i|)))
                    (SETQ |ival| (+ (* 10 |ival|) |d|)))))
             (SETQ |i| (+ |i| 1))))
         |ival|))))
@@ -494,7 +517,7 @@
               (COND
                 ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
                  (|shoeLeafFloat| |a| |w| 0))
-                ((|shoeDigit| (ELT |$ln| |$n|))
+                ((|shoeDigit| (SCHAR |$ln| |$n|))
                  (SETQ |e| (|shoeInteger|))
                  (SETQ |e| (|shoeIntValue| |e|))
                  (|shoeLeafFloat| |a| |w| |e|))
@@ -506,7 +529,7 @@
                       (COND
                         ((NOT (< |$n| |$sz|)) (SETQ |$n| |n|)
                          (|shoeLeafFloat| |a| |w| 0))
-                        ((|shoeDigit| (ELT |$ln| |$n|))
+                        ((|shoeDigit| (SCHAR |$ln| |$n|))
                          (SETQ |e| (|shoeInteger|))
                          (SETQ |e| (|shoeIntValue| |e|))
                          (|shoeLeafFloat| |a| |w|
@@ -528,7 +551,7 @@
             (CONCAT "The character whose number is "
                     (WRITE-TO-STRING (QENUM |$ln| |n|))
                     " is not a Boot character"))
-        (|shoeLeafError| (ELT |$ln| |n|))))))
+        (|shoeLeafError| (SCHAR |$ln| |n|))))))
 
 (DEFUN |shoeOrdToNum| (|x|) (DIGIT-CHAR-P |x|))
 
