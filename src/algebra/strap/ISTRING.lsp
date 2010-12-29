@@ -12,10 +12,13 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;empty?;$B;3|)) 
 
+(PUT '|ISTRING;empty?;$B;3| '|SPADreplace|
+     '(XLAM (|s|) (|%ieq| (|%strlength| |s|) 0))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
                 |ISTRING;#;$Nni;4|)) 
 
-(PUT '|ISTRING;#;$Nni;4| '|SPADreplace| 'QCSIZE) 
+(PUT '|ISTRING;#;$Nni;4| '|SPADreplace| '|%strlength|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;=;2$B;5|)) 
@@ -134,9 +137,11 @@
 
 (DEFUN |ISTRING;empty;$;2| ($) (MAKE-FULL-CVEC 0)) 
 
-(DEFUN |ISTRING;empty?;$B;3| (|s| $) (ZEROP (QCSIZE |s|))) 
+(DEFUN |ISTRING;empty?;$B;3| (|s| $)
+  (DECLARE (IGNORE $))
+  (ZEROP (LENGTH |s|))) 
 
-(DEFUN |ISTRING;#;$Nni;4| (|s| $) (DECLARE (IGNORE $)) (QCSIZE |s|)) 
+(DEFUN |ISTRING;#;$Nni;4| (|s| $) (DECLARE (IGNORE $)) (LENGTH |s|)) 
 
 (DEFUN |ISTRING;=;2$B;5| (|s| |t| $)
   (DECLARE (IGNORE $))
@@ -234,7 +239,7 @@
                  (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (LET ((|np| (QCSIZE |part|)) (|nw| (QCSIZE |whole|)))
+  (LET ((|np| (LENGTH |part|)) (|nw| (LENGTH |whole|)))
     (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
          (EXIT (COND
                  ((MINUSP |startpos|) (|error| "index out of bounds"))
@@ -262,7 +267,7 @@
            (EXIT (COND
                    ((MINUSP |startpos|)
                     (|error| "index out of bounds"))
-                   ((NOT (< |startpos| (QCSIZE |t|)))
+                   ((NOT (< |startpos| (LENGTH |t|)))
                     (- (|getShellEntry| $ 6) 1))
                    (T (SEQ (LETT |r| (STRPOS |s| |t| |startpos| NIL)
                                  |ISTRING;position;2$2I;18|)
@@ -275,10 +280,10 @@
   (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
        (EXIT (COND
                ((MINUSP |startpos|) (|error| "index out of bounds"))
-               ((NOT (< |startpos| (QCSIZE |t|)))
+               ((NOT (< |startpos| (LENGTH |t|)))
                 (- (|getShellEntry| $ 6) 1))
                (T (SEQ (LET ((|r| |startpos|)
-                             (#0=#:G1514 (- (QCSIZE |t|) 1)))
+                             (#0=#:G1514 (- (LENGTH |t|) 1)))
                          (LOOP
                            (COND
                              ((> |r| #0#) (RETURN NIL))
@@ -294,10 +299,10 @@
   (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
        (EXIT (COND
                ((MINUSP |startpos|) (|error| "index out of bounds"))
-               ((NOT (< |startpos| (QCSIZE |t|)))
+               ((NOT (< |startpos| (LENGTH |t|)))
                 (- (|getShellEntry| $ 6) 1))
                (T (SEQ (LET ((|r| |startpos|)
-                             (#0=#:G1515 (- (QCSIZE |t|) 1)))
+                             (#0=#:G1515 (- (LENGTH |t|) 1)))
                          (LOOP
                            (COND
                              ((> |r| #0#) (RETURN NIL))

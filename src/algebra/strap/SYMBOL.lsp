@@ -278,7 +278,7 @@
     (RETURN
       (LET ((|s| (PNAME (SPADCALL |e| (|getShellEntry| $ 100)))))
         (SEQ (COND
-               ((< 1 (QCSIZE |s|))
+               ((< 1 (LENGTH |s|))
                 (COND
                   ((SPADCALL (SPADCALL |s| 1 (|getShellEntry| $ 106))
                        (SPADCALL "\\" (|getShellEntry| $ 43))
@@ -390,7 +390,7 @@
             (NIL (RETURN NIL))
             (T (SEQ (LETT |qr|
                           (MULTIPLE-VALUE-CALL #'CONS
-                              (TRUNCATE |n| (QCSIZE |s|)))
+                              (TRUNCATE |n| (LENGTH |s|)))
                           |SYMBOL;anyRadix|)
                     (SETQ |n| (CAR |qr|))
                     (SETQ |ns|
@@ -489,7 +489,7 @@
                                $)
                            |SYMBOL;name;2$;31|)
                      (LET ((|i| (+ (|getShellEntry| $ 41) 1))
-                           (#0=#:G1526 (QCSIZE |str|)))
+                           (#0=#:G1526 (LENGTH |str|)))
                        (LOOP
                          (COND
                            ((> |i| #0#) (RETURN NIL))
@@ -501,7 +501,7 @@
                                  (RETURN-FROM |SYMBOL;name;2$;31|
                                    (|SYMBOL;coerce;S$;8|
                                     (SPADCALL |str|
-                                     (SPADCALL |i| (QCSIZE |str|)
+                                     (SPADCALL |i| (LENGTH |str|)
                                       (|getShellEntry| $ 141))
                                      (|getShellEntry| $ 142))
                                     $))))))
@@ -524,7 +524,7 @@
                                    (|getShellEntry| $ 137))
                                $)
                            |SYMBOL;scripts;$R;32|)
-                     (LETT |nstr| (QCSIZE |str|)
+                     (LETT |nstr| (LENGTH |str|)
                            |SYMBOL;scripts;$R;32|)
                      (LETT |m|
                            (SPADCALL |nscripts|
@@ -652,7 +652,7 @@
     (|setShellEntry| $ 20 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     (|setShellEntry| $ 21 "abcdefghijklmnopqrstuvwxyz")
     (|setShellEntry| $ 38 "*")
-    (|setShellEntry| $ 41 (QCSIZE (|getShellEntry| $ 38)))
+    (|setShellEntry| $ 41 (LENGTH (|getShellEntry| $ 38)))
     (|setShellEntry| $ 45
         (SPADCALL (SPADCALL "0" (|getShellEntry| $ 43))
             (|getShellEntry| $ 44)))

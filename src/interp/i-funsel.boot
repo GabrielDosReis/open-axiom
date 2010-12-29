@@ -1016,7 +1016,7 @@ selectMmsGen(op,tar,args1,args2) ==
   $Subst: local := NIL
   $SymbolType: local := NIL
 
-  null (S := getModemapsFromDatabase(op,QLENGTH args1)) => NIL
+  null (S := getModemapsFromDatabase(op,#args1)) => NIL
 
   if (op = 'map) and (2 = #args1) and
     (first(args1) is ['Mapping,., elem]) and
@@ -1702,7 +1702,7 @@ printMms(mmS) ==
   sayMSG '" "
   for [sig,imp,.] in mmS for i in 1.. repeat
     istr := strconc('"[",STRINGIMAGE i,'"]")
-    if QCSIZE(istr) = 3 then istr := strconc(istr,'" ")
+    if #istr = 3 then istr := strconc(istr,'" ")
     sayMSG [:bright istr,'"signature:   ",:formatSignature rest sig]
     first sig='local =>
       sayMSG ['"      implemented: local function ",imp]

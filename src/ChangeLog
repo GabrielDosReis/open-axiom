@@ -1,3 +1,9 @@
+2010-12-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %strlength.
+	* interp/g-util.boot: Expand it.
+	* algebra/string.spad.pamphlet (String): Remove use of QCSIZE.
+
 2010-12-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/initial-env.lisp (IDENTP): Remove.

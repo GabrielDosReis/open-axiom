@@ -268,7 +268,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 ++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
 -- The following Lisp dependencies are divided into two groups
 -- Those that are required
--- QENUM QESET QCSIZE MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
+-- QENUM QESET MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
 -- Those that can are included for efficiency only
 -- COPY STRCONC SUBSTRING STRPOS RPLACSTR DOWNCASE UPCASE CGREATERP
 ++ Description:
@@ -287,8 +287,8 @@ IndexedString(mn:Integer): Export == Implementation where
     Qelt    ==> CHAR$Lisp
     Qequal  ==> EQUAL$Lisp
     Qsetelt ==> QESET$Lisp
-    Qsize   ==> QCSIZE$Lisp
     Cheq    ==> CHAR_=$Lisp
+    import %strlength: % -> N from Foreign Builtin
 
     c:	Character
     cc: CharacterClass
@@ -296,8 +296,8 @@ IndexedString(mn:Integer): Export == Implementation where
 --  new n		   == MAKE_-FULL_-CVEC(n, space$C)$Lisp
     new(n, c)		   == MAKE_-FULL_-CVEC(n, c)$Lisp
     empty()		   == MAKE_-FULL_-CVEC(0@I)$Lisp
-    empty?(s)		   == Qsize(s) = 0
-    #s			   == Qsize(s)
+    empty?(s)		   == %strlength s = 0
+    #s			   == %strlength s
     s = t		   == Qequal(s, t)
     s < t		   == CGREATERP(t,s)$Lisp
     concat(s:%,t:%)	   == STRCONC(s,t)$Lisp
@@ -335,8 +335,8 @@ IndexedString(mn:Integer): Export == Implementation where
 	c
 
     substring?(part, whole, startpos) ==
-	np:I := Qsize part
-	nw:I := Qsize whole
+	np:I := %strlength part
+	nw:I := %strlength whole
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
 	np > nw - startpos => false
 	for ip in 0..np-1 for iw in startpos.. repeat
@@ -345,20 +345,20 @@ IndexedString(mn:Integer): Export == Implementation where
 
     position(s:%, t:%, startpos:I) ==
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
-	startpos >= Qsize t => mn - 1
+	startpos >= %strlength t => mn - 1
 	r:I := STRPOS(s, t, startpos, NIL$Lisp)$Lisp
 	%peq(r, NIL$Lisp)$Foreign(Builtin) => mn - 1
 	r + mn
     position(c: Character, t: %, startpos: I) ==
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
-	startpos >= Qsize t => mn - 1
-	for r in startpos..Qsize t - 1 repeat
+	startpos >= %strlength t => mn - 1
+	for r in startpos..%strlength t - 1 repeat
 	    if Cheq(Qelt(t, r), c) then return r + mn
 	mn - 1
     position(cc: CharacterClass, t: %, startpos: I) ==
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
-	startpos >= Qsize t => mn - 1
-	for r in startpos..Qsize t - 1 repeat
+	startpos >= %strlength t => mn - 1
+	for r in startpos..%strlength t - 1 repeat
 	    if member?(Qelt(t,r), cc) then return r + mn
 	mn - 1
 
