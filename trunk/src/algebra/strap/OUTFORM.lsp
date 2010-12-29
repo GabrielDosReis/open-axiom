@@ -542,9 +542,7 @@
   (|mathprint| |x|)) 
 
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
-  (COND
-    ((SPADCALL |s| (|getShellEntry| $ 12)) (|OUTFORM;empty;$;73| $))
-    (T |s|))) 
+  (COND ((ZEROP (LENGTH |s|)) (|OUTFORM;empty;$;73| $)) (T |s|))) 
 
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
   (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 

@@ -512,6 +512,7 @@ for x in [
 
     -- string unary functions
     ['%string?, :'STRINGP],
+    ['%strlength, :'LENGTH],
 
     -- general utility
     ['%hash,     :'SXHASH],
@@ -600,7 +601,7 @@ isSharpVar x ==
  
 isSharpVarWithNum x ==
   not isSharpVar x => nil
-  (n := QCSIZE(p := PNAME x)) < 2 => nil
+  (n := #(p := PNAME x)) < 2 => nil
   ok := true
   c := 0
   for i in 1..(n-1) while ok repeat
@@ -977,8 +978,8 @@ stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
   not (string?(pref) and string?(str)) => NIL
-  (lp := QCSIZE pref) = 0 => true
-  lp > QCSIZE str => NIL
+  (lp := # pref) = 0 => true
+  lp > # str => NIL
   ok := true
   i := 0
   while ok and (i < lp) repeat
@@ -992,13 +993,13 @@ stringChar2Integer(str,pos) ==
   -- in string str. Returns NIL if not a digit or other error.
   if IDENTP str then str := PNAME str
   not (string?(str) and
-    integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
+    integer?(pos) and (pos >= 0) and (pos < #str)) => NIL
   not digit?(d := SCHAR(str,pos)) => NIL
   DIG2FIX d
 
 dropLeadingBlanks str ==
   str := object2String str
-  l := QCSIZE str
+  l := # str
   nb := NIL
   i := 0
   while (i < l) and not nb repeat
