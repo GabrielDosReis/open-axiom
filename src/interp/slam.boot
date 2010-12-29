@@ -108,7 +108,7 @@ isRecurrenceRelation(op,body,minivectorName) ==
   diffSlot := or/[i for i in 0.. for x in $minivector | EQ(x,diffCell)]
                 or return nil
   --Check general term for references to just the k previous values
-  sharpPosition := readInteger SUBSTRING(sharpArg,1,nil)
+  sharpPosition := readInteger subString(sharpArg,1)
   al:= mkDiffAssoc(op,generalTerm,k,sharpPosition,sharpArg,diffSlot,minivectorName)
   null al => false
   "$failed" in al => false

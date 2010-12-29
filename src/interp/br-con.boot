@@ -175,7 +175,7 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   htSayStandard '"\indentrel{2}"
   if nargs > 0 then kPageArgs(conform,signature)
   htSayStandard '"\indentrel{-2}"
-  if name.(#name-1) = char "&" then name := SUBSEQ(name, 0, #name-1)
+  if name.(#name-1) = char "&" then name := subSequence(name, 0, #name-1)
 --sourceFileName := dbSourceFile INTERN name
   sourceFileName := getConstructorSourceFileFromDB INTERN name
   filename := extractFileNameFromPath sourceFileName

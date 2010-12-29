@@ -15,6 +15,11 @@
   (OR (ALPHANUMERICP |x|)
       (MEMBER |x| (LIST (|char| '|'|) (|char| '?) (|char| '%)))))
 
+(DEFUN |subString| (|s| |f| &OPTIONAL (|n| NIL))
+  (COND
+    ((NULL |n|) (SUBSEQ |s| |f|))
+    (T (SUBSEQ |s| |f| (+ |f| |n|)))))
+
 (DEFCONSTANT |shoeKeyWords|
     (LIST (LIST "and" 'AND) (LIST "by" 'BY) (LIST "case" 'CASE)
           (LIST "catch" 'CATCH) (LIST "cross" 'CROSS)
@@ -47,14 +52,14 @@
     (RETURN
       (PROGN
         (SETQ |KeyTable| (MAKE-HASHTABLE 'CVEC))
-        (LET ((|bfVar#1| |shoeKeyWords|) (|st| NIL))
+        (LET ((|bfVar#2| |shoeKeyWords|) (|st| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#1|)
-                   (PROGN (SETQ |st| (CAR |bfVar#1|)) NIL))
+              ((OR (ATOM |bfVar#2|)
+                   (PROGN (SETQ |st| (CAR |bfVar#2|)) NIL))
                (RETURN NIL))
               (T (HPUT |KeyTable| (CAR |st|) (CADR |st|))))
-            (SETQ |bfVar#1| (CDR |bfVar#1|))))
+            (SETQ |bfVar#2| (CDR |bfVar#2|))))
         |KeyTable|))))
 
 (DEFPARAMETER |shoeKeyTable| (|shoeKeyTableCons|))
@@ -95,17 +100,17 @@
             ((< (LENGTH (ELT |u| |k|)) |l|) (RETURN NIL))
             (T (SETQ |k| (+ |k| 1)))))
         (SETQ |v| (MAKE-ARRAY (+ |n| 1)))
-        (LET ((|bfVar#2| (- |k| 1)) (|i| 0))
-          (LOOP
-            (COND
-              ((> |i| |bfVar#2|) (RETURN NIL))
-              (T (SETF (ELT |v| |i|) (ELT |u| |i|))))
-            (SETQ |i| (+ |i| 1))))
-        (SETF (ELT |v| |k|) |s|)
-        (LET ((|bfVar#3| (- |n| 1)) (|i| |k|))
+        (LET ((|bfVar#3| (- |k| 1)) (|i| 0))
           (LOOP
             (COND
               ((> |i| |bfVar#3|) (RETURN NIL))
+              (T (SETF (ELT |v| |i|) (ELT |u| |i|))))
+            (SETQ |i| (+ |i| 1))))
+        (SETF (ELT |v| |k|) |s|)
+        (LET ((|bfVar#4| (- |n| 1)) (|i| |k|))
+          (LOOP
+            (COND
+              ((> |i| |bfVar#4|) (RETURN NIL))
               (T (SETF (ELT |v| (+ |i| 1)) (ELT |u| |i|))))
             (SETQ |i| (+ |i| 1))))
         (SETF (ELT |d| |h|) |v|)
@@ -128,14 +133,14 @@
                       (T (SETF (ELT |a| |i|) |b|)))
                     (SETQ |i| (+ |i| 1))))
                 |a|))
-        (LET ((|bfVar#4| |l|) (|s| NIL))
+        (LET ((|bfVar#5| |l|) (|s| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#4|)
-                   (PROGN (SETQ |s| (CAR |bfVar#4|)) NIL))
+              ((OR (ATOM |bfVar#5|)
+                   (PROGN (SETQ |s| (CAR |bfVar#5|)) NIL))
                (RETURN NIL))
               (T (|shoeInsert| |s| |d|)))
-            (SETQ |bfVar#4| (CDR |bfVar#4|))))
+            (SETQ |bfVar#5| (CDR |bfVar#5|))))
         |d|))))
 
 (DEFPARAMETER |shoeDict| (|shoeDictCons|))
@@ -152,31 +157,31 @@
               ((> |i| 255) (RETURN NIL))
               (T (BVEC-SETELT |a| |i| 0)))
             (SETQ |i| (+ |i| 1))))
-        (LET ((|bfVar#5| |listing|) (|k| NIL))
+        (LET ((|bfVar#6| |listing|) (|k| NIL))
           (LOOP
             (COND
-              ((OR (ATOM |bfVar#5|)
-                   (PROGN (SETQ |k| (CAR |bfVar#5|)) NIL))
+              ((OR (ATOM |bfVar#6|)
+                   (PROGN (SETQ |k| (CAR |bfVar#6|)) NIL))
                (RETURN NIL))
               (T (COND
                    ((NOT (|shoeStartsId| (ELT |k| 0)))
                     (BVEC-SETELT |a| (QENUM |k| 0) 1)))))
-            (SETQ |bfVar#5| (CDR |bfVar#5|))))
+            (SETQ |bfVar#6| (CDR |bfVar#6|))))
         |a|))))
 
 (DEFPARAMETER |shoePun| (|shoePunCons|))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (LET ((|bfVar#6| (LIST 'NOT 'LENGTH)) (|i| NIL))
+  (LET ((|bfVar#7| (LIST 'NOT 'LENGTH)) (|i| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#6|) (PROGN (SETQ |i| (CAR |bfVar#6|)) NIL))
+        ((OR (ATOM |bfVar#7|) (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
          (RETURN NIL))
         (T (SETF (GET |i| 'SHOEPRE) T)))
-      (SETQ |bfVar#6| (CDR |bfVar#6|)))))
+      (SETQ |bfVar#7| (CDR |bfVar#7|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (LET ((|bfVar#7| (LIST (LIST 'SHOEEQ '=) (LIST 'TIMES '*)
+  (LET ((|bfVar#8| (LIST (LIST 'SHOEEQ '=) (LIST 'TIMES '*)
                          (LIST 'REM '|rem|) (LIST 'QUO '|quo|)
                          (LIST 'PLUS '+) (LIST 'IS '|is|)
                          (LIST 'ISNT '|isnt|) (LIST 'AND '|and|)
@@ -187,13 +192,13 @@
         (|i| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#7|) (PROGN (SETQ |i| (CAR |bfVar#7|)) NIL))
+        ((OR (ATOM |bfVar#8|) (PROGN (SETQ |i| (CAR |bfVar#8|)) NIL))
          (RETURN NIL))
         (T (SETF (GET (CAR |i|) 'SHOEINF) (CADR |i|))))
-      (SETQ |bfVar#7| (CDR |bfVar#7|)))))
+      (SETQ |bfVar#8| (CDR |bfVar#8|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (LET ((|bfVar#8|
+  (LET ((|bfVar#9|
             (LIST (LIST '+ 0) (LIST '|gcd| 0) (LIST '|lcm| 1)
                   (LIST 'STRCONC "") (LIST '|strconc| "")
                   (LIST 'CONCAT "") (LIST 'MAX (- 999999))
@@ -206,13 +211,13 @@
         (|i| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#8|) (PROGN (SETQ |i| (CAR |bfVar#8|)) NIL))
+        ((OR (ATOM |bfVar#9|) (PROGN (SETQ |i| (CAR |bfVar#9|)) NIL))
          (RETURN NIL))
         (T (SETF (GET (CAR |i|) 'SHOETHETA) (CDR |i|))))
-      (SETQ |bfVar#8| (CDR |bfVar#8|)))))
+      (SETQ |bfVar#9| (CDR |bfVar#9|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (LET ((|bfVar#9|
+  (LET ((|bfVar#10|
             (LIST (LIST '|abs| 'ABS) (LIST '|abstractChar| 'CODE-CHAR)
                   (LIST '|alphabetic?| 'ALPHA-CHAR-P)
                   (LIST '|alphanumeric?| 'ALPHANUMERICP)
@@ -248,6 +253,7 @@
                   (LIST '|setIntersection| 'INTERSECTION)
                   (LIST '|setPart| 'SETELT) (LIST '|setUnion| 'UNION)
                   (LIST '|strconc| 'CONCAT) (LIST '|string?| 'STRINGP)
+                  (LIST '|subSequence| 'SUBSEQ)
                   (LIST '|substitute| 'SUBST)
                   (LIST '|substitute!| 'NSUBST)
                   (LIST '|symbol?| 'SYMBOLP)
@@ -266,13 +272,13 @@
         (|i| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#9|) (PROGN (SETQ |i| (CAR |bfVar#9|)) NIL))
+        ((OR (ATOM |bfVar#10|) (PROGN (SETQ |i| (CAR |bfVar#10|)) NIL))
          (RETURN NIL))
         (T (SETF (GET (CAR |i|) 'SHOERENAME) (CDR |i|))))
-      (SETQ |bfVar#9| (CDR |bfVar#9|)))))
+      (SETQ |bfVar#10| (CDR |bfVar#10|)))))
 
 (EVAL-WHEN (:EXECUTE :LOAD-TOPLEVEL)
-  (LET ((|bfVar#10| (LIST (LIST '|setName| 0) (LIST '|setLabel| 1)
+  (LET ((|bfVar#11| (LIST (LIST '|setName| 0) (LIST '|setLabel| 1)
                           (LIST '|setLevel| 2) (LIST '|setType| 3)
                           (LIST '|setVar| 4) (LIST '|setLeaf| 5)
                           (LIST '|setDef| 6) (LIST '|aGeneral| 4)
@@ -301,8 +307,8 @@
         (|i| NIL))
     (LOOP
       (COND
-        ((OR (ATOM |bfVar#10|) (PROGN (SETQ |i| (CAR |bfVar#10|)) NIL))
+        ((OR (ATOM |bfVar#11|) (PROGN (SETQ |i| (CAR |bfVar#11|)) NIL))
          (RETURN NIL))
         (T (SETF (GET (CAR |i|) 'SHOESELFUNCTION) (CADR |i|))))
-      (SETQ |bfVar#10| (CDR |bfVar#10|)))))
+      (SETQ |bfVar#11| (CDR |bfVar#11|)))))
 

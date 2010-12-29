@@ -375,7 +375,7 @@ checkRecordHash u ==
           HPUT($glossHash,htname,[first entry,:[[$name,:$origin],:rest entry]])
       else if x is '"\spadsys" and (u := checkLookForLeftBrace IFCDR u) and (u := IFCDR u) then
           s := checkGetStringBeforeRightBrace u
-          if s.0 = char '_) then s := SUBSTRING(s,1,nil)
+          if s.0 = char '_) then s := subString(s,1)
           parse := checkGetParse s
           null parse => checkDocError ['"Unparseable \spadtype: ",s]
           not member(opOf parse,$currentSysList) =>
@@ -409,8 +409,8 @@ checkGetParse s == ncParseFromString removeBackslashes s
 removeBackslashes s ==
     s = '"" => '""
     (k := charPosition($charBack,s,0)) < #s =>
-      k = 0 => removeBackslashes SUBSTRING(s,1,nil)
-      strconc(SUBSTRING(s,0,k),removeBackslashes SUBSTRING(s,k + 1,nil))
+      k = 0 => removeBackslashes subString(s,1)
+      strconc(subString(s,0,k),removeBackslashes subString(s,k + 1))
     s
 
 ++ returns the arity (as known to the global DB) of the functor
@@ -440,7 +440,7 @@ checkIsValidType form == main where
 checkGetLispFunctionName s ==
   n := #s
   (k := charPosition(char '_|,s,1)) and k < n and
-    (j := charPosition(char '_|,s,k + 1)) and j < n => SUBSTRING(s,k + 1,j-k-1)
+    (j := charPosition(char '_|,s,k + 1)) and j < n => subString(s,k + 1,j-k-1)
   checkDocError ['"Ill-formed lisp expression : ",s]
   'illformed
 
@@ -530,7 +530,7 @@ checkTrimCommented line ==
   k = 0 => '""
   --remarks beginning with %% are comments
   k >= n - 1 or line.(k + 1) ~= char '_% => line
-  k < #line => SUBSTRING(line,0,k)
+  k < #line => subString(line,0,k)
   line
 
 htcharPosition(char,line,i) ==
@@ -604,14 +604,14 @@ checkIndentedLines(u, margin) ==
     k = -1 =>
         verbatim => u2 := [:u2, $charFauxNewline]
         u2 := [:u2, '"\blankline "]
-    s := SUBSTRING(x, k, nil)
+    s := subString(x, k)
     s = '"\begin{verbatim}" =>
         verbatim := true
         u2 := [:u2, s]
     s = '"\end{verbatim}" =>
         verbatim := false
         u2 := [:u2, s]
-    verbatim => u2 := [:u2, SUBSTRING(x, margin, nil)]
+    verbatim => u2 := [:u2, subString(x, margin)]
     margin = k => u2 := [:u2, s]
     u2 := [:u2, strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(s,0),'"}")]
   u2
@@ -650,16 +650,16 @@ checkGetArgs u ==
   NOT string? u => nil
   m := MAXINDEX u
   k := firstNonBlankPosition(u)
-  k > 0 => checkGetArgs SUBSTRING(u,k,nil)
+  k > 0 => checkGetArgs subString(u,k)
   stringPrefix?('"\spad{",u) =>
     k := getMatchingRightPren(u,6,char '_{,char '_}) or m
-    checkGetArgs SUBSTRING(u,6,k-6)
+    checkGetArgs subString(u,6,k-6)
   (i := charPosition(char '_(,u,0)) > m => nil
   (u . m) ~= char '_) => nil
   while (k := charPosition($charComma,u,i + 1)) < m repeat
-    acc := [trimString SUBSTRING(u,i + 1,k - i - 1),:acc]
+    acc := [trimString subString(u,i + 1,k - i - 1),:acc]
     i := k
-  nreverse [SUBSTRING(u,i + 1,m - i - 1),:acc]
+  nreverse [subString(u,i + 1,m - i - 1),:acc]
 
 checkGetMargin lines ==
   while lines repeat
@@ -682,7 +682,7 @@ checkAddIndented(x,margin) ==
   k := firstNonBlankPosition x
   k = -1 => '"\blankline "
   margin = k => x
-  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(SUBSTRING(x,k,nil),0),'"}")
+  strconc('"\indented{",STRINGIMAGE(k-margin),'"}{",checkAddSpaceSegments(subString(x,k),0),'"}")
 
 checkAddSpaceSegments(u,k) ==
   m := MAXINDEX u
@@ -691,8 +691,8 @@ checkAddSpaceSegments(u,k) ==
   j := i
   while (j := j + 1) < m and u.j = (char '_  ) repeat 'continue
   n := j - i   --number of blanks
-  n > 1 => strconc(SUBSTRING(u,0,i),'"\space{",
-             STRINGIMAGE n,'"}",checkAddSpaceSegments(SUBSTRING(u,i + n,nil),0))
+  n > 1 => strconc(subString(u,0,i),'"\space{",
+             STRINGIMAGE n,'"}",checkAddSpaceSegments(subString(u,i + n),0))
   checkAddSpaceSegments(u,j)
 
 checkTrim($x,lines) == main where
@@ -711,11 +711,11 @@ checkTrim($x,lines) == main where
     k
   trim(s) ==
     k := wherePP(s)
-    return SUBSTRING(s,k + 2,nil)
+    return subString(s,k + 2)
     m := MAXINDEX s
     n := k + 2
     for j in (k + 2)..m while s.j = $charBlank repeat (n := n + 1)
-    SUBSTRING(s,n,nil)
+    subString(s,n)
 
 checkExtract(header,lines) ==
   while lines repeat
@@ -729,7 +729,7 @@ checkExtract(header,lines) ==
   margin := k
   firstLines :=
     (k := firstNonBlankPosition(u,j + 1)) ~= -1 =>
-      [SUBSTRING(u,j + 1,nil),:rest lines]
+      [subString(u,j + 1),:rest lines]
     rest lines
   --now look for another header; if found skip all rest of these lines
   acc := nil
@@ -854,7 +854,7 @@ checkAddBackSlashes s ==
       char = $charBack => k := k + 2
       MEMQ(char,$charEscapeList) => return (insertIndex := k)
     k := k + 1
-  insertIndex => checkAddBackSlashes strconc(SUBSTRING(s,0,insertIndex),$charBack,s.k,SUBSTRING(s,insertIndex + 1,nil))
+  insertIndex => checkAddBackSlashes strconc(subString(s,0,insertIndex),$charBack,s.k,subString(s,insertIndex + 1))
   s
 
 checkAddSpaces u ==
@@ -905,9 +905,9 @@ checkIeEgfun x ==
     x.(k + 1) = $charPeriod and x.(k + 3) = $charPeriod and
      (x.k = char 'i and x.(k + 2) = char 'e and (key := '"that is")
        or x.k = char 'e and x.(k + 2) = char 'g and (key := '"for example")) =>
-          firstPart := (k > 0 => [SUBSTRING(x,0,k)]; nil)
-          result := [:firstPart,'"\spadignore{",SUBSTRING(x,k,4),'"}",
-                     :checkIeEgfun SUBSTRING(x,k+4,nil)]
+          firstPart := (k > 0 => [subString(x,0,k)]; nil)
+          result := [:firstPart,'"\spadignore{",subString(x,k,4),'"}",
+                     :checkIeEgfun subString(x,k+4)]
   result
 
 checkSplit2Words u ==
@@ -945,14 +945,14 @@ checkSplitBackslash x ==
   (k := charPosition($charBack,x,0)) < m =>
     m = 1 or alphabetic?(x . (k + 1)) =>        --starts with a backslash so..
       (k := charPosition($charBack,x,1)) < m => --..see if there is another
-         [SUBSTRING(x,0,k),:checkSplitBackslash SUBSTRING(x,k,nil)]  -- yup
+         [subString(x,0,k),:checkSplitBackslash subString(x,k)]  -- yup
       [x]                                       --no, just return line
     k = 0 => --starts with backspace but x.1 is not a letter; break it up
-      [SUBSTRING(x,0,2),:checkSplitBackslash SUBSTRING(x,2,nil)]
-    u := SUBSTRING(x,0,k)
-    v := SUBSTRING(x,k,2)
+      [subString(x,0,2),:checkSplitBackslash subString(x,2)]
+    u := subString(x,0,k)
+    v := subString(x,k,2)
     k + 1 = m => [u,v]
-    [u,v,:checkSplitBackslash SUBSTRING(x,k + 2,nil)]
+    [u,v,:checkSplitBackslash subString(x,k + 2)]
   [x]
 
 checkSplitPunctuation x ==
@@ -963,22 +963,22 @@ checkSplitPunctuation x ==
   lastchar = $charPeriod and x.(m - 1) = $charPeriod =>
     m = 1 => [x]
     m > 3 and x.(m-2) = $charPeriod =>
-      [:checkSplitPunctuation SUBSTRING(x,0,m-2),'"..."]
-    [:checkSplitPunctuation SUBSTRING(x,0,m-1),'".."]
+      [:checkSplitPunctuation subString(x,0,m-2),'"..."]
+    [:checkSplitPunctuation subString(x,0,m-1),'".."]
   lastchar = $charPeriod or lastchar = $charSemiColon or lastchar = $charComma
-    => [SUBSTRING(x,0,m),lastchar]
-  m > 1 and x.(m - 1) = $charQuote => [SUBSTRING(x,0,m - 1),SUBSTRING(x,m-1,nil)]
+    => [subString(x,0,m),lastchar]
+  m > 1 and x.(m - 1) = $charQuote => [subString(x,0,m - 1),subString(x,m-1)]
   (k := charPosition($charBack,x,0)) < m =>
     k = 0 =>
       m = 1 or HGET($htMacroTable,x) or alphabetic? x.1 => [x]
-      v := SUBSTRING(x,2,nil)
-      [SUBSTRING(x,0,2),:checkSplitPunctuation v]
-    u := SUBSTRING(x,0,k)
-    v := SUBSTRING(x,k,nil)
+      v := subString(x,2)
+      [subString(x,0,2),:checkSplitPunctuation v]
+    u := subString(x,0,k)
+    v := subString(x,k)
     [:checkSplitPunctuation u,:checkSplitPunctuation v]
   (k := charPosition($charDash,x,1)) < m =>
-    u := SUBSTRING(x,k + 1,nil)
-    [SUBSTRING(x,0,k),$charDash,:checkSplitPunctuation u]
+    u := subString(x,k + 1)
+    [subString(x,0,k),$charDash,:checkSplitPunctuation u]
   [x]
 
 checkSplitOn(x) ==
@@ -995,9 +995,9 @@ checkSplitOn(x) ==
     l := rest l
   null l => [x]
   k = -1 => [char]
-  k = 0 => [char,SUBSTRING(x,1,nil)]
-  k = MAXINDEX x => [SUBSTRING(x,0,k),char]
-  [SUBSTRING(x,0,k),char,:checkSplitOn SUBSTRING(x,k + 1,nil)]
+  k = 0 => [char,subString(x,1)]
+  k = MAXINDEX x => [subString(x,0,k),char]
+  [subString(x,0,k),char,:checkSplitOn subString(x,k + 1)]
 
 
 checkBalance u ==
@@ -1133,7 +1133,7 @@ checkTransformFirsts(opname,u,margin) ==
     open = char '_[ and (close := char '_]) or
           open = char '_(  and (close := char '_)) =>
       k := getMatchingRightPren(u,j + 1,open,close)
-      namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+      namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
       null k =>
@@ -1141,43 +1141,43 @@ checkTransformFirsts(opname,u,margin) ==
            then checkDocError ['"Missing close bracket on first line: ", u]
            else checkDocError ['"Missing close parenthesis on first line: ", u]
          u
-      strconc('"\spad{",SUBSTRING(u,0,k + 1),'"}",SUBSTRING(u,k + 1,nil))
+      strconc('"\spad{",subString(u,0,k + 1),'"}",subString(u,k + 1))
     k := checkSkipToken(u,j,m) or return u
-    infixOp := INTERN SUBSTRING(u,j,k - j)
+    infixOp := INTERN subString(u,j,k - j)
     not GETL(infixOp,'Led) =>                                     --case 3
-      namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+      namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
       #(p := PNAME infixOp) = 1 and (open := p.0) and
         (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
           if l > MAXINDEX u then l := k - 1
-          strconc('"\spad{",SUBSTRING(u,0,l + 1),'"}",SUBSTRING(u,l + 1,nil))
-      strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+          strconc('"\spad{",subString(u,0,l + 1),'"}",subString(u,l + 1))
+      strconc('"\spad{",subString(u,0,k),'"}",subString(u,k))
     l := checkSkipBlanks(u,k,m) or return u
     n := checkSkipToken(u,l,m) or return u
     namestring ~= PNAME infixOp =>
       checkDocError ['"Improper initial operator in comments: ",infixOp]
       u
-    strconc('"\spad{",SUBSTRING(u,0,n),'"}",SUBSTRING(u,n,nil))   --case 5
+    strconc('"\spad{",subString(u,0,n),'"}",subString(u,n))   --case 5
   true =>          -- not alphabetic? u.0 =>
     i := checkSkipToken(u,0,m) or return u
-    namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+    namestring ~= (firstWord := subString(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    prefixOp := INTERN SUBSTRING(u,0,i)
+    prefixOp := INTERN subString(u,0,i)
     not GETL(prefixOp,'Nud) =>
       u ---what could this be?
     j := checkSkipBlanks(u,i,m) or return u
     u.j = char '_( =>                                            --case 4
       j := getMatchingRightPren(u,j + 1,char '_(,char '_))
       j > m => u
-      strconc('"\spad{",SUBSTRING(u,0,j + 1),'"}",SUBSTRING(u,j + 1,nil))
+      strconc('"\spad{",subString(u,0,j + 1),'"}",subString(u,j + 1))
     k := checkSkipToken(u,j,m) or return u
-    namestring ~= (firstWord := SUBSTRING(u,0,i)) =>
+    namestring ~= (firstWord := subString(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    strconc('"\spad{",SUBSTRING(u,0,k),'"}",SUBSTRING(u,k,nil))
+    strconc('"\spad{",subString(u,0,k),'"}",subString(u,k))
 
 getMatchingRightPren(u,j,open,close) ==
   count := 0

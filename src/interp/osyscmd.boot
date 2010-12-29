@@ -43,7 +43,7 @@ InterpExecuteSpadSystemCommand string ==
 ExecuteInterpSystemCommand string ==
    string := intProcessSynonyms(string)
    $currentLine:local:=string
-   string:=SUBSTRING(string,1,nil)
+   string:=subString(string,1)
    string = '"" => nil
    doSystemCommand string
 

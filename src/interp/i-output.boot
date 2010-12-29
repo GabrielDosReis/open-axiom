@@ -1601,12 +1601,12 @@ outputNumber(start,linelength,num) ==
      linelength:=linelength-1 
   while # num > linelength repeat
     if $collectOutput then
-       $outputLines := [strconc(blnks, SUBSTRING(num,0,linelength),under),
+       $outputLines := [strconc(blnks, subString(num,0,linelength),under),
                         :$outputLines]
     else
       sayALGEBRA [blnks,
-                  SUBSTRING(num,0,linelength),under]
-    num := SUBSTRING(num,linelength,NIL)
+                  subString(num,0,linelength),under]
+    num := subString(num,linelength)
     if firsttime then 
          blnks:=strconc(blnks,'" ")
          linelength:=linelength-1
@@ -1621,11 +1621,11 @@ outputString(start,linelength,str) ==
   else blnks := '""
   while # str > linelength repeat
     if $collectOutput then
-       $outputLines := [strconc(blnks, SUBSTRING(str,0,linelength)),
+       $outputLines := [strconc(blnks, subString(str,0,linelength)),
                         :$outputLines]
     else
-      sayALGEBRA [blnks, SUBSTRING(str,0,linelength)]
-    str := SUBSTRING(str,linelength,NIL)
+      sayALGEBRA [blnks, subString(str,0,linelength)]
+    str := subString(str,linelength)
   if $collectOutput then
     $outputLines := [strconc(blnks, str), :$outputLines]
   else

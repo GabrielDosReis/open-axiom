@@ -111,7 +111,7 @@ StringToCompStr(str) ==
    strconc(str, charString abstractChar 0)
 
 CompStrToString(str) == 
-   SUBSTRING(str, 0, (# str - 1))
+   subString(str, 0, #str - 1)
 -- local garbage ends
 
 runOldAxiomFunctor(:allArgs) ==

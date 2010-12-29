@@ -179,7 +179,7 @@ substituteSegmentedMsg(msg,args) ==
 
     -- x is a special case
     (n > 2) and c = char "%" and x.1 = char "k" =>
-        l := NCONC(nreverse pkey SUBSTRING(x,2,NIL),l)
+        l := NCONC(nreverse pkey subString(x,2),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
     (x.0 = char "?") and n > 1 and (v := pushOrTypeFuture(INTERN x,nil)) =>
@@ -581,7 +581,7 @@ brightPrint0(x,out == $OutputStream) ==
   -- it without the backslash.
 
   STRINGLENGTH x > 1 and x.0 = char "\" and x.1 = char "%" =>
-    sayString(SUBSTRING(x,1,NIL),out)
+    sayString(subString(x,1),out)
   x = '"%l" =>
     sayNewLine(out)
     for i in 1..$MARG repeat sayString('" ",out)
@@ -642,7 +642,7 @@ blankIndicator x ==
   if IDENTP x then x := PNAME x
   not string? x or MAXINDEX x < 1 => nil
   x.0 = char '% and x.1 = char 'x =>
-    MAXINDEX x > 1 => readInteger SUBSTRING(x,2,nil)
+    MAXINDEX x > 1 => readInteger subString(x,2)
     1
   nil
 

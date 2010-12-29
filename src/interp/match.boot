@@ -104,19 +104,19 @@ patternCheck pattern == main where
 --  pp c
     $oldWild  :local := $wildCard
     $wildCard := c
-    pattern := mknew(pattern,first u,rest u,SUBSTRING(pattern,0,first u))
+    pattern := mknew(pattern,first u,rest u,subString(pattern,0,first u))
 --  sayBrightlyNT ['"Replacing pattern by"]
 --  pp pattern
     pattern
   mknew(old,i,r,new) ==
     new := strconc(new,old.(i + 1))  --add underscored character to string
-    null r => strconc(new,subWild(SUBSTRING(old,i + 2,nil),0))
+    null r => strconc(new,subWild(subString(old,i + 2),0))
     mknew(old,first r,rest r,
-          strconc(new,subWild(SUBSTRING(old,i + 2,(first r) - i - 1),i + 1)))
+          strconc(new,subWild(subString(old,i + 2,(first r) - i - 1),i + 1)))
   subWild(s,i) ==
     (k := charPosition($oldWild,s,i)) < #s =>
-      strconc(SUBSTRING(s,i,k - i),$wildCard,subWild(s,k + 1))
-    SUBSTRING(s,i,nil)
+      strconc(subString(s,i,k - i),$wildCard,subWild(s,k + 1))
+    subString(s,i)
   pos(c,s) ==
     i := 0
     n := MAXINDEX s
@@ -152,14 +152,14 @@ basicMatch?(pattern,target) ==
   if p ~= 0 then
      -- pattern does not begin with a wild card
      ans := 0
-     s := SUBSTRING(pattern,0,p) --[pattern.i for i in 0..p-1]
+     s := subString(pattern,0,p) --[pattern.i for i in 0..p-1]
      not substring?(s,target,0) => return false
   else if n = 1 then return 0
   i := p   -- starting position for searching the target
   q := charPosition($wildCard,pattern,p+1)
   ltarget := #target
   while q ~= n repeat
-     s := SUBSTRING(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
+     s := subString(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
      i := stringPosition(s,target,i)
      if null ans then ans := stringPosition(s,target,p)
      -- for patterns beginning with wildcard, ans gives position of first match
@@ -170,7 +170,7 @@ basicMatch?(pattern,target) ==
   returnFlag => false
   if p ~= q-1 then
      -- pattern does not end with a wildcard
-     s := SUBSTRING(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
+     s := subString(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
      if not suffix?(s,target) then return false
      if null ans then ans := 1  --pattern is a word preceded by a *
   ans
@@ -187,19 +187,19 @@ matchAnySegment?(pattern,target,k,nc) ==  --k = start position; nc=#chars or NIL
     null nc => true
     m <= k + nc - n
   if k ~= 0 and nc then
-    target := SUBSTRING(target,k,nc)
+    target := subString(target,k,nc)
     k := 0
   if p ~= 0 then
      -- pattern does not begin with a wild card
      ans := 0
-     s := SUBSTRING(pattern,0,p) --[pattern.i for i in 0..p-1]
+     s := subString(pattern,0,p) --[pattern.i for i in 0..p-1]
      not substring?(s,target,k) => return false
   else if n = 1 then return true
   i := p + k  -- starting position for searching the target
   q := charPosition($wildCard,pattern,p+1)
   ltarget := #target
   while q ~= n repeat
-     s := SUBSTRING(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
+     s := subString(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
      i := stringPosition(s,target,i)
      if i = ltarget then return (returnFlag := true)
      i := i + #s
@@ -208,7 +208,7 @@ matchAnySegment?(pattern,target,k,nc) ==  --k = start position; nc=#chars or NIL
   returnFlag => false
   if p ~= q-1 then
      -- pattern does not end with a '&
-     s := SUBSTRING(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
+     s := subString(pattern,p+1,q-p-1) --[pattern.i for i in (p+1..q-1)]
      if not suffix?(s,target) then return false
      if null ans then ans := 1  --pattern is a word preceded by a *
   true

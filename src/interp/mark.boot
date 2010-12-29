@@ -518,7 +518,7 @@ markOrigName x ==
       s := PNAME op
       k := charPosition(char '_;, s, 0)
       k > MAXINDEX s => nil
-      origName := INTERN SUBSTRING(s, k + 1, nil)
+      origName := INTERN subString(s, k + 1)
       property(op, 'ORIGNAME) := origName
       REMPROP(op,'PNAME)
     markOrigName op
@@ -1250,7 +1250,7 @@ changeToEqualEqual lines ==
     while (m := m + 1) <= N and alphabetic? (x . m) repeat nil
     m = n + 2 => nil
     not upperCase? (x . (n + 4)) => nil
-    word := INTERN SUBSTRING(x, n + 4, m - n - 4)
+    word := INTERN subString(x, n + 4, m - n - 4)
     expandedWord := macroExpand(word,$e)
     not (word in '(Record Union Mapping)
       or getConstructorFormFromDB opOf expandedWord) => nil
@@ -1275,10 +1275,10 @@ moveImportsAfterDefinitions lines ==
     m < 0 => nil
     ((n := charPosition($blank ,x,1 + m)) < N) and
       substring?('"== ", x, n+1) => 
-        name := SUBSTRING(x, m, n - m)
+        name := subString(x, m, n - m)
         defineAlist := [[name, :i], :defineAlist]
     (k := leadingSubstring?('"import from ",x, 0)) =>
-      importAlist := [[SUBSTRING(x,k + 12,nil), :i], :importAlist]
+      importAlist := [[subString(x,k + 12), :i], :importAlist]
 --  pp defineAlist
 --  pp importAlist
   for [name, :i] in defineAlist repeat

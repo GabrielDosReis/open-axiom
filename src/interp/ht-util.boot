@@ -137,8 +137,8 @@ htpLabelFilteredInputString(htPage, label) ==
 replacePercentByDollar s == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => '""
-    (m := charPosition(char "%",s,i)) > n => SUBSTRING(s,i,nil)
-    strconc(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
+    (m := charPosition(char "%",s,i)) > n => subString(s,i)
+    strconc(subString(s,i,m - i),'"$",fn(s,m + 1,n))
 
 htpSetLabelInputString(htPage, label, val) ==
 -- value user typed as input string on page
@@ -403,7 +403,7 @@ templateParts template ==
   null string? template => template
   i := SEARCH('"%l", template)
   null i => template
-  [SUBSEQ(template, 0, i), : SUBSEQ(template, i+2)]
+  [subSequence(template, 0, i), : subSequence(template, i+2)]
 
 htMakeDoneButton(message, func) ==
   bcHt '"\newline\vspace{1}\centerline{"

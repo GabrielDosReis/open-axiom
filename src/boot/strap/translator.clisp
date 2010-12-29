@@ -725,7 +725,7 @@
     (RETURN
       (PROGN
         (SETQ |n| (SEARCH |str| |s| :FROM-END T))
-        (COND ((NULL |n|) |s|) (T (SUBSTRING |s| 0 |n|)))))))
+        (COND ((NULL |n|) |s|) (T (|subString| |s| 0 |n|)))))))
 
 (DEFUN DEFUSE (|fn|)
   (PROG (|infn|)
@@ -1087,7 +1087,7 @@
                   (|shoeFindName2| |fn| |name| |a|)))
         (SETQ |filename|
               (COND
-                ((< 8 (LENGTH |name|)) (SUBSTRING |name| 0 8))
+                ((< 8 (LENGTH |name|)) (|subString| |name| 0 8))
                 (T |name|)))
         (COND (|a| (FUNCALL |f| (CONCAT "/tmp/" |filename|))) (T NIL))))))
 
@@ -1100,7 +1100,7 @@
           (|lines| (SETQ |filename|
                          (COND
                            ((< 8 (LENGTH |name|))
-                            (SUBSTRING |name| 0 8))
+                            (|subString| |name| 0 8))
                            (T |name|)))
                    (SETQ |filename|
                          (CONCAT "/tmp/" |filename| ".boot"))

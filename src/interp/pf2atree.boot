@@ -417,15 +417,15 @@ pfSequence2Atree0(seqList, pf) ==
 --  float2Atree num ==
 --    eIndex := SEARCH('"e", num)
 --    mantPart :=
---      eIndex => SUBSEQ(num, 0, eIndex)
+--      eIndex => subSequence(num, 0, eIndex)
 --      num
---    expPart := (eIndex => READ_-FROM_-STRING SUBSEQ(num, eIndex+1); 0)
+--    expPart := (eIndex => READ_-FROM_-STRING subSequence(num, eIndex+1); 0)
 --    dotIndex := SEARCH('".", mantPart)
 --    intPart :=
---      dotIndex => READ_-FROM_-STRING SUBSEQ(mantPart, 0, dotIndex)
+--      dotIndex => READ_-FROM_-STRING subSequence(mantPart, 0, dotIndex)
 --      READ_-FROM_-STRING mantPart
 --    fracPartString :=
---      dotIndex => SUBSEQ(mantPart, dotIndex+1)
+--      dotIndex => subSequence(mantPart, dotIndex+1)
 --      '"0"
 --    bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
 --      # fracPartString, expPart)

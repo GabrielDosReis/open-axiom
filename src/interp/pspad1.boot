@@ -152,8 +152,8 @@ mkCommentLines [.,n,.,s] ==
  
 breakComments s ==
   n:= containsString(s,PNAME "ENDOFLINECHR") =>
-    #s>n+12 => [SUBSTRING(s,0,n),:breakComments SUBSTRING(s,n+12,NIL)]
-    [SUBSTRING(s,0,n)]
+    #s>n+12 => [subString(s,0,n),:breakComments subString(s,n+12)]
+    [subString(s,0,n)]
   [s]
  
 containsString(x,y) ==

@@ -162,7 +162,7 @@ intloopReadConsole(b, n)==
              not $leanMode and printPrompt()
              intloopReadConsole('"", c)
     a:=strconc(b,a)
-    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (# a) - 1),n)
+    ncloopEscaped a => intloopReadConsole(subSequence(a, 0, #a - 1),n)
     c := intloopProcessString(a, n)
     not $leanMode and printPrompt()
     intloopReadConsole('"", c)
@@ -182,7 +182,7 @@ intloopPrefix?(prefix,whole) ==
          spaces := spaces + 1
        else leading := false
      spaces = wlen => nil
-     if good then SUBSTRING(whole,spaces,nil) else good
+     if good then subString(whole,spaces) else good
  
  
 intloopProcess(n,interactive,s)==
@@ -418,7 +418,7 @@ ncloopPrefix?(prefix,whole) ==
      good:=true
      for i in 0..#prefix-1 for j in 0.. while good repeat
                 good:= prefix.i = whole.j
-     if good then SUBSTRING(whole,#prefix,nil) else good
+     if good then subString(whole,#prefix) else good
 
 $ncmPhase :=      NIL
  

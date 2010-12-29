@@ -146,7 +146,7 @@
                       (COND
                         (|a| (|shoeAccumulateLines| |$r|
                                  (CONCAT |string|
-                                         (SUBSTRING |command| 0
+                                         (|subString| |command| 0
                                           (- |a| 1)))))
                         (T (|shoeAccumulateLines| |$r|
                                (CONCAT |string| |command|)))))))
@@ -299,7 +299,7 @@
       (PROGN
         (SETQ |n| |$n|)
         (SETQ |$n| |$sz|)
-        (|shoeLeafNegComment| (SUBSTRING |$ln| |n| NIL))))))
+        (|shoeLeafNegComment| (|subString| |$ln| |n|))))))
 
 (DEFUN |shoeComment| ()
   (PROG (|n|)
@@ -308,7 +308,7 @@
       (PROGN
         (SETQ |n| |$n|)
         (SETQ |$n| |$sz|)
-        (|shoeLeafComment| (SUBSTRING |$ln| |n| NIL))))))
+        (|shoeLeafComment| (|subString| |$ln| |n|))))))
 
 (DEFUN |shoePunct| ()
   (PROG (|sss|)
@@ -366,10 +366,10 @@
            (COND
              ((EQUAL |mn| |$sz|) (SETQ |$n| |$sz|)
               (|SoftShoeError| (CONS |$linepos| |$n|) "quote added")
-              (SUBSTRING |$ln| |n| NIL))
+              (|subString| |$ln| |n|))
              ((EQUAL |mn| |strsym|) (SETQ |$n| (+ |mn| 1))
-              (SUBSTRING |$ln| |n| (- |mn| |n|)))
-             (T (SETQ |str| (SUBSTRING |$ln| |n| (- |mn| |n|)))
+              (|subString| |$ln| |n| (- |mn| |n|)))
+             (T (SETQ |str| (|subString| |$ln| |n| (- |mn| |n|)))
                 (SETQ |$n| (+ |mn| 1)) (SETQ |a| (|shoeEsc|))
                 (SETQ |b|
                       (COND
@@ -404,8 +404,8 @@
           ((OR (EQUAL |endid| |l|)
                (NOT (EQL (QENUM |$ln| |endid|) |shoeESCAPE|)))
            (SETQ |$n| |endid|)
-           (LIST |b| (SUBSTRING |$ln| |n1| (- |endid| |n1|))))
-          (T (SETQ |str| (SUBSTRING |$ln| |n1| (- |endid| |n1|)))
+           (LIST |b| (|subString| |$ln| |n1| (- |endid| |n1|))))
+          (T (SETQ |str| (|subString| |$ln| |n1| (- |endid| |n1|)))
              (SETQ |$n| (+ |endid| 1)) (SETQ |a| (|shoeEsc|))
              (SETQ |bb| (COND (|a| (|shoeW| T)) (T (LIST |b| ""))))
              (LIST (OR (ELT |bb| 0) |b|) (CONCAT |str| (ELT |bb| 1)))))))))
@@ -443,8 +443,8 @@
                (NOT (EQL (QENUM |$ln| |$n|) |shoeESCAPE|)))
            (COND
              ((AND (EQUAL |n| |$n|) |zro|) "0")
-             (T (SUBSTRING |$ln| |n| (- |$n| |n|)))))
-          (T (SETQ |str| (SUBSTRING |$ln| |n| (- |$n| |n|)))
+             (T (|subString| |$ln| |n| (- |$n| |n|)))))
+          (T (SETQ |str| (|subString| |$ln| |n| (- |$n| |n|)))
              (SETQ |$n| (+ |$n| 1)) (SETQ |a| (|shoeEsc|))
              (SETQ |bb| (|shoeInteger1| |zro|)) (CONCAT |str| |bb|)))))))
 
