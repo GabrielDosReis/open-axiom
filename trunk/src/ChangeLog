@@ -1,3 +1,18 @@
+2010-12-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (QSTRING): Remove.
+	(QSTRINGLENGTH): Likewise.
+	(STRINGLENGTH): Likewise.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %i2s.
+	* interp/g-util.boot: Expand it.
+	* interp/debug.lisp (/LOCATE): Replace STRINGLENGTH with LENGTH.
+	* algebra/fortran.spad.pamphlet: Don't use STRINGIMAGE from Lisp.
+	* algebra/generic.spad.pamphlet: Likewise.
+	* algebra/naalg.spad.pamphlet: Likewise.
+	* algebra/naalgc.spad.pamphlet: Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/string.spad.pamphlet: Likewise.
+
 2010-12-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %strlength.

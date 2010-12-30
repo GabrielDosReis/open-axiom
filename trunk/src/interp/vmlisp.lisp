@@ -395,9 +395,6 @@
 (defmacro qstimes (x y)
  `(the fixnum (* (the fixnum ,x) (the fixnum ,y))))
 
-(defmacro qstringlength (x)
- `(the fixnum (length (the simple-string ,x))))
-
 (defmacro qszerop (x)
  `(zerop (the fixnum ,x)))
 
@@ -448,9 +445,6 @@
 
 (defmacro smintp (n)
  `(typep ,n 'fixnum))
-
-(defmacro stringlength (x)
- `(length (the string ,x)))
 
 (defmacro subrp (x)
  `(compiled-function-p ,x))

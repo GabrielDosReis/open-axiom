@@ -492,8 +492,9 @@ String(): Public == Private where
     string: DoubleFloat -> %
       ++ \spad{string f} returns the decimal representation of
       ++ \spad{f} in a string
-  Private == IndexedString(MINSTRINGINDEX) add 
-    string(n: Integer) == STRINGIMAGE(n)$Lisp
+  Private == IndexedString(MINSTRINGINDEX) add
+    import %i2s: Integer -> % from Foreign Builtin
+    string(n: Integer) == %i2s n
     string(f: DoubleFloat) == %f2s(f)$Foreign(Builtin)
 
     OMwrite(x: %): String ==

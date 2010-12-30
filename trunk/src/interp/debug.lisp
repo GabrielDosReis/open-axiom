@@ -310,7 +310,7 @@
                     (NOT (make-input-filename INFILE)))
             (RETURN NIL))
         (SETQ FT (UPCASE (|object2Identifier| (|pathnameType| INFILE))))
-        (SETQ KEYLENGTH (STRINGLENGTH KEY))
+        (SETQ KEYLENGTH (LENGTH KEY))
         (WHEN (> INITRECNO 1)  ;; we think we know where it is
               (POINT INITRECNO |$InputStream|)
               (SETQ LN (READ-LINE |$InputStream| NIL NIL))
