@@ -422,7 +422,8 @@ form2String1 u ==
       null rest argl => [ '":", form2String1 first argl ]
       formDecl2String(argl.0,argl.1)
   op = "#" and cons? argl and LISTP first argl =>
-    STRINGIMAGE #first argl
+    -- FIXME: is the argument list always a simple atom?
+    toString #first argl
   op = 'Join => formJoin2String argl
   op = "ATTRIBUTE" => form2String1 first argl
   op='Zero => '"0"
@@ -447,7 +448,7 @@ form2String1 u ==
     argl := rest argl
     (null argl) or null (first argl) => [lo, '".."]
     [lo, '"..", form2String1 first argl]
-  isBinaryInfix op => formatAsFortranExpresion [op,:argl]
+  isBinaryInfix op => formatAsFortranExpression [op,:argl]
   -- COMPILED_-FUNCTION_-P(op) => form2String1 coerceMap2E(u1,NIL)
   application2String(op,[form2String1 x for x in argl], u1)
 
@@ -621,11 +622,12 @@ formTuple2String argl ==
 
 isInternalFunctionName(op) ==
   (not IDENTP(op)) or (op = "*") or (op = "**") => NIL
-  (1 = #(op':= PNAME op)) or (char("*") ~= op'.0) => NIL
+  op' := symbolName op
+  1 = #op' or char "*" ~= stringChar(op',0) => NIL
   -- if there is a semicolon in the name then it is the name of
   -- a compiled spad function
   null (e := STRPOS('"_;",op',1,NIL)) => NIL
-  (char(" ") = (y := op'.1)) or (char("*") = y) => NIL
+  char " " = stringChar(op',1) or char "*" = stringChar(op',1) => NIL
   table := MAKETRTTABLE('"0123456789",NIL)
   s := STRPOSL(table,op',1,true)
   null(s) or s > e => NIL
@@ -733,16 +735,16 @@ mathObject2String x ==
   object2String x
 
 object2String x ==
-  string? x => x
-  IDENTP x  => PNAME x
-  null x    => '""
   cons?  x  => strconc(object2String first x, object2String rest x)
+  string? x => x
+  null x    => '""
+  symbol? x  => symbolName x
+  char? x => charString x
   toString x
 
 object2Identifier x ==
   IDENTP x  => x
-  string? x => INTERN x
-  INTERN toString x
+  INTERN object2String x
 
 blankList x == "append"/[[BLANK,y] for y in x]
 

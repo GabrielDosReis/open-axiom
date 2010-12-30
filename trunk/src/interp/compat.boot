@@ -40,11 +40,11 @@ namespace BOOT
  
 -- RREAD which takes erroval to return if key is missing
 rread(key,rstream,errorval) ==
-  if IDENTP key then key := PNAME key
+  if IDENTP key then key := symbolName key
   RREAD(key,rstream,errorval)   
 
 rwrite(key,val,stream) ==
-  if IDENTP key then key := PNAME key
+  if IDENTP key then key := symbolName key
   RWRITE(key,val,stream) 
 
 -- issuing commands to the operating system

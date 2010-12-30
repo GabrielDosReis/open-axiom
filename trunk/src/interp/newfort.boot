@@ -364,10 +364,10 @@ fortexp0 x ==
     l := [t,:l]
   nreverse ['"...",:l]
 
-++ This formating routine is essentially used to print
-++ values/expreions used to instantiate constructors.
-formatAsFortranExpresion x ==
-  $fortInts2Floats := false
+++ This formatting routine is essentially used to print
+++ values/expressions used to instantiate constructors.
+formatAsFortranExpression x ==
+  $fortInts2Floats: local := false
   fortranCleanUp exp2Fort1 segment fortPre outputTran x
 
  

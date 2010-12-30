@@ -432,7 +432,7 @@ makeCategoryPredicates(form,u) ==
           pl
  
 mkCategoryPackage(form is [op,:argl],cat,def) ==
-  packageName:= INTERN(strconc(PNAME op,'"&"))
+  packageName:= INTERN(strconc(symbolName op,'"&"))
   packageAbb := INTERN(strconc(getConstructorAbbreviationFromDB op,'"-"))
   $options:local := []
   -- This stops the next line from becoming confused

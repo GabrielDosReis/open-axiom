@@ -622,7 +622,8 @@ makeLiteral(x,e) ==
   put(x,"isLiteral","true",e)
  
 isSomeDomainVariable s ==
-  IDENTP s and #(x:= PNAME s)>2 and x.0 = char "#" and x.1 = char "#"
+  IDENTP s and #(x:= symbolName s) > 2 and
+    stringChar(x,0) = char "#" and stringChar(x,1) = char "#"
 
 ++ Return non-nil is the domain form `x' is a `subset' of domain
 ++ form `y' in the environment `e'.  The relation of subdomain
@@ -1391,7 +1392,8 @@ backendCompile2 code ==
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
   IDENTP x and x ~= "$" and x ~= "$$" and
-    (PNAME x).0 = char "$" and not digit?((PNAME x).1) => x
+    stringChar(symbolName x,0) = char "$" and
+      not digit? stringChar(symbolName x,1) => x
   atomic? x => nil
   first x = "FLUID" => second x
   a := backendFluidize first x
@@ -1408,13 +1410,15 @@ $SpecialVars := []
 ++ push `x' into the list of local variables.
 pushLocalVariable: %Symbol -> %List
 pushLocalVariable x ==
-  x ~= "$" and (p := PNAME x).0 = char "$" and
-    p.1 ~= char "," and not digit? p.1 => nil
+  p := symbolName x
+  x ~= "$" and stringChar(p,0) = char "$" and
+    stringChar(p,1) ~= char "," and not digit? stringChar(p,1) => nil
   PUSH(x,$LocalVars)
 
 isLispSpecialVariable x ==
-  s := PNAME x
-  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not readOnly? x
+  s := symbolName x
+  stringChar(s,0) = char "$" and #s > 1 and
+    alphabetic? stringChar(s,1) and not readOnly? x
   
 noteSpecialVariable x ==
   $SpecialVars := insert(x,$SpecialVars)

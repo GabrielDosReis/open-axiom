@@ -331,7 +331,7 @@ getScriptName(op,a,numberOfFunctionalArgs) ==
   if not IDENTP op then
     postError ['"   ",op,'" cannot have scripts"]
   INTERNL("*",STRINGIMAGE numberOfFunctionalArgs,
-    decodeScripts a,PNAME op)
+    decodeScripts a,symbolName op)
 
 postTranScripts: %ParseTree -> %ParseForm
 postTranScripts a ==

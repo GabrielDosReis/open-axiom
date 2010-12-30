@@ -39,7 +39,7 @@ $wildCard := char "*"
 
 maskMatch?(mask,subject) ==
   null mask => true
-  if null string? subject then subject := PNAME subject
+  if not string? subject then subject := PNAME subject
   or/[match?(pattern,subject) for pattern in mask]
 
 substring?(part, whole, startpos) ==

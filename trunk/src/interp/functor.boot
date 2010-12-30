@@ -846,8 +846,7 @@ resolvePatternVars(p,args) ==
 --% Code Processing Packages
 
 isCategoryPackageName nam ==
-  p := PNAME opOf nam
-  p.(MAXINDEX p) = char '_&
+  isDefaultPackageName opOf nam
 
 mkOperatorEntry(opSig is [op,sig,:flag],pred,count) ==
   null flag => [opSig,pred,["ELT","$",count]]
@@ -906,7 +905,7 @@ mkRepititionAssoc l ==
  
 encodeItem x ==
   x is [op,:argl] => getCaps op
-  IDENTP x => PNAME x
+  IDENTP x => symbolName x
   STRINGIMAGE x
  
 getCaps x ==

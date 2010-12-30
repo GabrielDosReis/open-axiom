@@ -284,7 +284,7 @@ markImport(d,:option) ==   --from compFormWithModemap/genDeltaEntry/compImport
   declared? := IFCAR option
   null d or d = $Representation => nil
   d is [op,:.] and op in '(Boolean Mapping Void Segment UniversalSegment) => nil
-  string? d or (IDENTP d and (PNAME d).0 = char '_#) => nil
+  string? d or (IDENTP d and stringchar(symbolName d,0) = char '_#) => nil
   d in '(_$ _$NoValueMode _$EmptyMode Void) => nil
 -------=======+> WHY DOESN'T THIS WORK????????????
 --if (d' := macroExpand(d,$e)) ~= d then markImport(d',declared?)
@@ -515,7 +515,7 @@ markOrigName x ==
     op = 'TAGGEDreturn and x is [.,a,[y,:.]] => markOrigName y
     for y in r repeat markOrigName y     
     IDENTP op =>
-      s := PNAME op
+      s := symbolName op
       k := charPosition(char '_;, s, 0)
       k > MAXINDEX s => nil
       origName := INTERN subString(s, k + 1)
@@ -702,7 +702,7 @@ markPathsEqual(x,y) ==
     y is ['PROGN,.,repeet,:.] and repeet is ['REPEAT,:v] => markPathsEqual(u,v)
   atom y or atom x => 
     IDENTP y and IDENTP x and y = GETL(x,'ORIGNAME)  => true --> see 
---  IDENTP y and IDENTP x and anySubstring?(PNAME y,PNAME x,0) => true
+--  IDENTP y and IDENTP x and anySubstring?(symbolName y,symbolName x,0) => true
     IDENTP y and (z := markPathsMacro y) => markPathsEqual(x,z)
     false
   "and"/[markPathsEqual(u,v) for u in x for v in y]
