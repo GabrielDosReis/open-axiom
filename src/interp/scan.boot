@@ -47,22 +47,6 @@ $RDigits ==
 $smallLetters ==
   '"abcdefghijklmnopqrstuvwxyz"
 
---% Separators
-
-$SPACE       == QENUM('"    ", 0)
-ESCAPE       == QENUM('"__  ", 0)
-STRING_CHAR  == QENUM('"_"  ", 0)
-PLUSCOMMENT  == QENUM('"+   ", 0)
-MINUSCOMMENT == QENUM('"-   ", 0)
-RADIX_CHAR   == QENUM('"r   ", 0)
-DOT          == QENUM('".   ", 0)
-EXPONENT1    == QENUM('"E   ", 0)
-EXPONENT2    == QENUM('"e   ", 0)
-CLOSEPAREN   == QENUM('")   ", 0)
-CLOSEANGLE   == QENUM('">   ", 0)
-QUESTION     == QENUM('"?   ",0)
-
-
 --% Keywords
 
 scanKeyWords == [ _
@@ -176,7 +160,7 @@ scanKeyTable:=scanKeyTableCons()
 
 scanInsert(s,d) ==
   l := #s
-  h := QENUM(s,0)
+  h := codePoint stringChar(s,0)
   u := d.h
   n := #u
   k:=0
@@ -215,7 +199,7 @@ scanPunCons()==
     BVEC_-SETELT(a,i,0)
   for k in listing repeat
     if not startsId? k.0
-    then BVEC_-SETELT(a,QENUM(k,0),1)
+    then BVEC_-SETELT(a,codePoint stringChar(k,0),1)
   a
 
 scanPun:=scanPunCons()
@@ -262,8 +246,7 @@ for i in   [ _
 
 scanIgnoreLine(ln,n)==
   n = nil => n
-  fst := QENUM(ln,0)
-  fst = CLOSEPAREN =>
+  stringChar(ln,0) = char ")" =>
     incPrefix?('"command",1,ln) => true
     nil
   n
@@ -302,10 +285,9 @@ lineoftoks(s)==
 
 scanToken() ==
   ln := $ln
-  c := QENUM($ln,$n)
   linepos := $linepos
   n := $n
-  ch := $ln.$n
+  ch := stringChar($ln,$n)
   b :=
     startsComment?() =>
       scanComment()
@@ -313,17 +295,17 @@ scanToken() ==
     startsNegComment?() =>
       scanNegComment()
       []
-    c = QUESTION =>
+    ch = char "?" =>
       $n := $n+1
       lfid '"?"
-    punctuation? c => scanPunct()
+    punctuation? codePoint ch => scanPunct()
     startsId? ch => scanWord(false)
-    c = $SPACE =>
+    ch = char " " =>
       scanSpace()
       []
-    c = STRING_CHAR => scanString()
+    ch = char "_"" => scanString()
     digit? ch => scanNumber()
-    c = ESCAPE => scanEscape()
+    ch = char "__" => scanEscape()
     scanError()
   null b => nil
   dqUnit constoken(ln,linepos,b,n+lnExtraBlanks linepos)
@@ -396,7 +378,7 @@ scanEsc()==
       false
     false
   $n = n1 => true
-  QENUM($ln,n1) = ESCAPE =>
+  stringChar($ln,n1) = char "__" =>
     $n:=n1+1
     scanEsc()
     false
@@ -409,19 +391,19 @@ scanEsc()==
 
 startsComment?()==
   $n < $sz => 
-    QENUM($ln,$n) = PLUSCOMMENT =>
-      www := $n+1
+    stringChar($ln,$n) = char "+" =>
+      www := $n + 1
       www >= $sz => false
-      QENUM($ln,www) = PLUSCOMMENT
+      stringChar($ln,www) = char "+"
     false
   false
 
 startsNegComment?()==
   $n < $sz =>
-    QENUM($ln,$n) = MINUSCOMMENT =>
+    stringChar($ln,$n) = char "-" =>
       www := $n+1
       www >= $sz => false
-      QENUM($ln,www) = MINUSCOMMENT
+      stringChar($ln,www) = char "-"
     false
   false
 
@@ -524,7 +506,7 @@ scanW(b)==             -- starts pointing to first char
   $n := $n+1          -- the first character is not tested
   l := $sz
   endid := posend($ln,$n)
-  endid=l or QENUM($ln,endid) ~= ESCAPE =>
+  endid=l or stringChar($ln,endid) ~= char "__" =>
      -- not escaped
     $n:=endid
     [b,subString($ln,n1,endid-n1)]   -- l overflows
@@ -557,7 +539,7 @@ spleI1(dig,zro) ==
   l := $sz
   while $n<l and FUNCALL(dig,($ln.$n)) repeat
     $n := $n+1
-  $n = l or QENUM($ln,$n) ~= ESCAPE =>
+  $n = l or stringChar($ln,$n) ~= char "__" =>
      n = $n and zro => '"0"
      subString($ln,n,$n-n)
   -- escaped
@@ -581,12 +563,12 @@ scanCheckRadix(a,w)==
 scanNumber() ==
   a := spleI(function digit?)
   $n >= $sz => lfinteger a
-  QENUM($ln,$n) ~= RADIX_CHAR =>
-    if $floatok and QENUM($ln,$n)=DOT
+  stringChar($ln,$n) ~= char "r" =>
+    if $floatok and stringChar($ln,$n) = char "."
     then
       n:=$n
       $n:=$n+1
-      if  $n<$sz and QENUM($ln,$n)=DOT
+      if  $n<$sz and stringChar($ln,$n) = char "."
       then
         $n:=n
         lfinteger a
@@ -598,10 +580,10 @@ scanNumber() ==
   w := spleI1(function rdigit?,false)
   scanCheckRadix(a,w)
   $n >= $sz => lfrinteger(a,w)
-  QENUM($ln,$n) = DOT =>
+  stringChar($ln,$n) = char "." =>
     n := $n
     $n := $n+1
-    $n < $sz and QENUM($ln,$n) = DOT =>
+    $n < $sz and stringChar($ln,$n) = char "." =>
       $n :=n
       lfrinteger(a,w)
     v := spleI1(function rdigit?,true)
@@ -612,24 +594,24 @@ scanNumber() ==
 scanExponent(a,w)==
   $n >= $sz => lffloat(a,w,'"0")
   n := $n
-  c := QENUM($ln,$n)
-  c = EXPONENT1 or c = EXPONENT2 =>
-    $n := $n+1
+  c := stringChar($ln,$n)
+  c = char "E" or c = char "e" =>
+    $n := $n + 1
     $n >= $sz =>
       $n:=n
       lffloat(a,w,'"0")
     digit?($ln.$n) =>
       e := spleI(function digit?)
       lffloat(a,w,e)
-    c1 := QENUM($ln,$n)
-    c1 = PLUSCOMMENT or c1 = MINUSCOMMENT =>
-      $n := $n+1
+    c := stringChar($ln,$n)
+    c = char "+" or c = char "-" =>
+      $n := $n + 1
       $n >= $sz =>
-        $n:=n
+        $n := n
         lffloat(a,w,'"0")
-      digit?($ln.$n) =>
+      digit? stringChar($ln,$n) =>
         e := spleI(function digit?)
-        lffloat(a,w,(c1 = MINUSCOMMENT => strconc('"-",e); e))
+        lffloat(a,w,(c = char "-" => strconc('"-",e); e))
       $n := n
       lffloat(a,w,'"0")
   lffloat(a,w,'"0")
@@ -655,7 +637,7 @@ subMatch(l,i) ==
   substringMatch(l,scanDict,i)
 
 substringMatch (l,d,i)==
-  h := QENUM(l, i)
+  h := codePoint stringChar(l, i)
   u := d.h
   ll := #l
   done := false
@@ -667,7 +649,7 @@ substringMatch (l,d,i)==
        ls+i > ll => false
        eql := true
        for k in 1..ls-1 while eql repeat
-         eql := QENUM(s,k) = QENUM(l,k+i)
+         eql := stringChar(s,k) = stringChar(l,k+i)
        eql =>
          s1 := s
          true

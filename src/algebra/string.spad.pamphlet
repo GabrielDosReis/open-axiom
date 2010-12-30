@@ -268,7 +268,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 ++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
 -- The following Lisp dependencies are divided into two groups
 -- Those that are required
--- QENUM QESET MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
+-- QESET MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
 -- Those that can are included for efficiency only
 -- COPY STRCONC SUBSTRING STRPOS RPLACSTR DOWNCASE UPCASE CGREATERP
 ++ Description:

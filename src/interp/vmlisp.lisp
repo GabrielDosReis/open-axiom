@@ -923,8 +923,6 @@
 
 ; 17.2 Accessing
 
-(defun QENUM (cvec ind) (char-code (char cvec ind)))
-
 (defun QESET (cvec ind c)
   (setf (char cvec ind) c))
 

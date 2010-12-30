@@ -748,7 +748,7 @@ bfChar? x ==
   char? x or cons? x and first x in '(char CODE_-CHAR SCHAR)
  
 bfSmintable x==
-  integer? x or cons? x and first x in '(SIZE LENGTH QENUM)
+  integer? x or cons? x and first x in '(SIZE LENGTH)
 
 bfString? x ==
   string? x
