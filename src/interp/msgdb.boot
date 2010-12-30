@@ -641,7 +641,7 @@ brightPrint0AsTeX(x, out == $OutputStream) ==
 blankIndicator x ==
   if IDENTP x then x := symbolName x
   not string? x or MAXINDEX x < 1 => nil
-  x.0 = char '% and x.1 = char 'x =>
+  stringChar(x,0) = char '% and stringChar(x,1) = char 'x =>
     MAXINDEX x > 1 => readInteger subString(x,2)
     1
   nil
@@ -795,7 +795,7 @@ sayBrightlyLength1 x ==
     1
   member(x,'("%l" %l)) => 0
   string? x and # x > 2 and x.0 = char "%" and x.1 = char "x" =>
-    readInteger(x,2)
+    readInteger subString(x,2)
   string? x => # x
   IDENTP x => # symbolName x
   -- following line helps find certain bugs that slip through

@@ -1148,7 +1148,7 @@ checkTransformFirsts(opname,u,margin) ==
       namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
         u
-      #(p := PNAME infixOp) = 1 and (open := p.0) and
+      #(p := symbolName infixOp) = 1 and (open := p.0) and
         (close := LASSOC(open,$checkPrenAlist)) =>  --have an open bracket
           l := getMatchingRightPren(u,k + 1,open,close)
           if l > MAXINDEX u then l := k - 1
@@ -1156,7 +1156,7 @@ checkTransformFirsts(opname,u,margin) ==
       strconc('"\spad{",subString(u,0,k),'"}",subString(u,k))
     l := checkSkipBlanks(u,k,m) or return u
     n := checkSkipToken(u,l,m) or return u
-    namestring ~= PNAME infixOp =>
+    namestring ~= symbolName infixOp =>
       checkDocError ['"Improper initial operator in comments: ",infixOp]
       u
     strconc('"\spad{",subString(u,0,n),'"}",subString(u,n))   --case 5

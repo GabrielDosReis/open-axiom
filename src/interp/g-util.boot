@@ -45,6 +45,7 @@ module g_-util where
   isSubDomain: (%Mode,%Mode) -> %Form
   expandToVMForm: %Thing -> %Thing
   usedSymbol?: (%Symbol,%Code) -> %Boolean
+  isDefaultPackageName: %Symbol -> %Boolean
 
 --%  
 
@@ -586,10 +587,10 @@ $interpOnly := false
 --% Utility Functions of General Use
 
 mkCacheName(name) ==
-  INTERN strconc(PNAME name,'";AL")
+  INTERN strconc(symbolName name,'";AL")
 
 mkAuxiliaryName(name) ==
-  INTERN strconc(PNAME name,'";AUX")
+  INTERN strconc(symbolName name,'";AUX")
 
 
 homogeneousListToVector(t,l) ==
@@ -598,15 +599,16 @@ homogeneousListToVector(t,l) ==
 
 ++ tests if x is an identifier beginning with #
 isSharpVar x ==
-  IDENTP x and SCHAR(symbolName x,0) = char "#"
+  IDENTP x and stringChar(symbolName x,0) = char "#"
  
 isSharpVarWithNum x ==
   not isSharpVar x => nil
-  (n := #(p := PNAME x)) < 2 => nil
+  p := symbolName x
+  (n := #p) < 2 => nil
   ok := true
   c := 0
   for i in 1..(n-1) while ok repeat
-    d := p.i
+    d := stringChar(p,i)
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
@@ -984,7 +986,7 @@ stringPrefix?(pref,str) ==
   ok := true
   i := 0
   while ok and (i < lp) repeat
-    not EQ(SCHAR(pref,i),SCHAR(str,i)) => ok := NIL
+    stringChar(pref,i) ~= stringChar(str,i) => ok := NIL
     i := i + 1
   ok
 
@@ -992,10 +994,10 @@ stringChar2Integer(str,pos) ==
   -- replaces GETSTRINGDIGIT in UT LISP
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
-  if IDENTP str then str := PNAME str
+  if IDENTP str then str := symbolName str
   not (string?(str) and
     integer?(pos) and (pos >= 0) and (pos < #str)) => NIL
-  not digit?(d := SCHAR(str,pos)) => NIL
+  not digit?(d := stringChar(str,pos)) => NIL
   DIG2FIX d
 
 dropLeadingBlanks str ==
@@ -1003,8 +1005,8 @@ dropLeadingBlanks str ==
   l := # str
   nb := NIL
   i := 0
-  while (i < l) and not nb repeat
-    if SCHAR(str,i) ~= char " " then nb := i
+  while (i < l) and nb = nil repeat
+    if stringChar(str,i) ~= char " " then nb := i
     else i := i + 1
   nb = 0 => str
   nb => subString(str,nb)
@@ -1376,8 +1378,12 @@ $beginEndList := '(
   "verbatim"
   "detail")
 
-isDefaultPackageName x == (s := PNAME x).(MAXINDEX s) = char '_&
+isDefaultPackageName x ==
+  s := symbolName x
+  stringChar(s,MAXINDEX s) = char '_&
 
+isDefaultPackageForm? x ==
+  x is [op,:.] and IDENTP op and isDefaultPackageName op
 
 -- gensym utils
 
@@ -1391,9 +1397,10 @@ charDigitVal c ==
 
 gensymInt g ==
   not GENSYMP g => error '"Need a GENSYM"
-  p := PNAME g
+  p := symbolName g
   n := 0
-  for i in 2..#p-1 repeat n := 10 * n + charDigitVal p.i
+  for i in 2..#p-1 repeat
+    n := 10 * n + charDigitVal stringChar(p,i)
   n
 
 ++ Returns a newly allocated domain shell (a simple vector) of length `n'.

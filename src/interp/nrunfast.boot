@@ -239,10 +239,6 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
   nil
  
  
-isDefaultPackageForm? x == x is [op,:.]
-  and IDENTP op and (s := PNAME op).(MAXINDEX s) = "&"
- 
- 
 --=======================================================
 --       Lookup Addlist (from lookupInDomainTable or lookupInDomain)
 --=======================================================
@@ -454,7 +450,7 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   string? a =>
     string? s => a = s
     s is ['QUOTE,y] and PNAME y = a
-    IDENTP s and PNAME s = a
+    IDENTP s and symbolName s = a
   atom a =>  a = s
   op := opOf a
   op  = 'NRTEVAL => s = nrtEval(second a,domain)

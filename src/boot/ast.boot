@@ -748,11 +748,11 @@ bfChar? x ==
   char? x or cons? x and first x in '(char CODE_-CHAR SCHAR)
  
 bfSmintable x==
-  integer? x or cons? x and first x in '(SIZE LENGTH)
+  integer? x or cons? x and first x in '(SIZE LENGTH CHAR_-CODE)
 
 bfString? x ==
   string? x
-    or cons? x and first x in '(charString symbolName toString subString)
+    or cons? x and first x in '(STRING SYMBOL_-NAME subString)
 
 bfQ(l,r)==
   bfChar? l or bfChar? r => ["CHAR=",l,r]

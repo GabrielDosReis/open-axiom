@@ -153,7 +153,7 @@ compileTargetedADEF(t,vars,types,body) ==
 compileADEFBody(t,vars,types,body,computedResultType) ==
 --+
   $compiledOpNameList := [$mapName]
-  minivectorName := makeInternalMapMinivectorName PNAME $mapName
+  minivectorName := makeInternalMapMinivectorName symbolName $mapName
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
 

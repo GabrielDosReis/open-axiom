@@ -356,7 +356,7 @@ clearCategoryCaches() ==
     if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= mkCacheName name)
             then setDynamicBinding(cacheName,nil)
-    if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
+    if BOUNDP(cacheName:= INTERNL strconc(symbolName name,'";CAT"))
           then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==

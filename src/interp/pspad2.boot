@@ -450,7 +450,7 @@ formatSEGMENT ["SEGMENT",a,b] ==
  
 formatSexpr x ==
   atom x =>
-    null x or IDENTP x => consBuffer ident2PrintImage PNAME x
+    null x or IDENTP x => consBuffer ident2PrintImage symbolName x
     consBuffer x
   spill("formatNonAtom",x)
  
@@ -576,7 +576,7 @@ ident2PrintImage s ==
  
 isIdentifier x ==
   IDENTP x =>
-    s:= PNAME x
+    s:= symbolName x
     #s = 0 => nil
     alphabetic? s.0 => and/[s.i ~= char " " for i in 1..MAXINDEX s]
     #s>1 =>

@@ -396,9 +396,9 @@ specialChar(symbol) ==
   null (code := IFCDR ASSQ(symbol,$specialCharacterAlist)) => '"?"
   $specialCharacters.code
 
-rbrkSch() == PNAME specialChar 'rbrk
-lbrkSch() == PNAME specialChar 'lbrk
-quadSch() == PNAME specialChar 'quad
+rbrkSch() == symbolName specialChar 'rbrk
+lbrkSch() == symbolName specialChar 'lbrk
+quadSch() == symbolName specialChar 'quad
 
 isBinaryInfix x ==
   member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
@@ -431,7 +431,7 @@ APP(u,x,y,d) ==
   appelse(u,x,y,d)
 
 atom2String x ==
-  IDENTP x => PNAME x
+  IDENTP x => symbolName x
   string? x => x
   stringer x
 
@@ -607,7 +607,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (PNAME op).0 =>
+  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (symbolName op).0 =>
     mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -1685,7 +1685,7 @@ printMap1(x,initialFlag) ==
 printBasic x ==
   x='(One) => PRIN1(1,$algebraOutputStream)
   x='(Zero) => PRIN1(0,$algebraOutputStream)
-  IDENTP x => PRINTEXP(PNAME x,$algebraOutputStream)
+  IDENTP x => PRINTEXP(symbolName x,$algebraOutputStream)
   atom x => PRIN1(x,$algebraOutputStream)
   PRIN1(x,$algebraOutputStream)
 

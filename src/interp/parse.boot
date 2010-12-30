@@ -420,7 +420,7 @@ superSub(name,x) ==
   code:=
     x is [[u]] => $quadSymbol
     strconc('"_(",scriptTranRow first x,scriptTran rest x,'"_)")
-  [INTERNL(PNAME name,"$",code),:y]
+  [INTERNL(symbolName name,"$",code),:y]
  
 scriptTran: %List -> %String
 scriptTran x ==

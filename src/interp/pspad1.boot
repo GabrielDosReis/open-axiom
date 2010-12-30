@@ -168,7 +168,7 @@ consBuffer item ==
   if item = '"failed" then item := 'failed
   n:=
     string? item => 2+#item
-    IDENTP item => #PNAME item
+    IDENTP item => #symbolName item
     #STRINGIMAGE item
   columnsLeft:= $lineLength-$c
   if columnsLeft <= 0 and isCloseDelimiter item then $lineLength := $lineLength + 2
@@ -183,7 +183,7 @@ consBuffer item ==
       consBuffer item
     nil
   $lineFragmentBuffer:=
-    null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
+    null item or IDENTP item => [symbolName item,:$lineFragmentBuffer]
     integer? item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
     string? item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
@@ -421,7 +421,7 @@ formatHasDollarOp x ==
   x is ["elt",a,b] and isTypeProbably? a 
 
 isTypeProbably? x ==
-  IDENTP x and upperCase? PNAME(x).0
+  IDENTP x and upperCase? stringChar(symbolName x,0)
 
 formatOpPren(op,x) == formatOp op and formatPren x
 

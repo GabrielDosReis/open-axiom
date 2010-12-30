@@ -194,8 +194,7 @@ defaultingFunction op ==
   not (#dom > 0) => false
   not (dom.0 is [packageName,:.]) => false
   not IDENTP packageName => false
-  pname := PNAME packageName
-  pname.(MAXINDEX pname) = char "&"
+  isDefaultPackageName packageName
 
 --=======================================================
 --   Lookup In Domain (from lookupInAddChain)
@@ -291,7 +290,7 @@ compareSigEqual(s,t,dollar,domain) ==
       isSharpVar t =>
         vector? domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
         rest(domain).(POSN1(t,$FormalMapVariableList))
-      string? t and IDENTP s => (s := PNAME s; t)
+      string? t and IDENTP s => (s := symbolName s; t)
       nil
     s = '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
