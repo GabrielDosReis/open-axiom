@@ -123,7 +123,7 @@ NumberFormats(): NFexports == NFimplementation where
         pren:C  := char ")"
         ichar:C := char "I"
 
-        FormatArabic n == STRINGIMAGE(n)$Lisp
+        FormatArabic n == string(n)$String
         ScanArabic   s == PARSE_-INTEGER(s)$Lisp
 
         FormatRoman pn ==

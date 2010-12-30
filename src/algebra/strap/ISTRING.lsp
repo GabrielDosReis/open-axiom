@@ -187,7 +187,7 @@
     (RETURN
       (LET ((|l| (- (SPADCALL |sg| (|getShellEntry| $ 44))
                     (|getShellEntry| $ 6)))
-            (|m| (QCSIZE |s|)) (|n| (QCSIZE |t|))
+            (|m| (LENGTH |s|)) (|n| (LENGTH |t|))
             (|h| (COND
                    ((SPADCALL |sg| (|getShellEntry| $ 45))
                     (- (SPADCALL |sg| (|getShellEntry| $ 46))
@@ -515,12 +515,12 @@
                ((ATOM #4#) (RETURN NIL))
                (T (LET ((|s| (CAR #4#)))
                     (SEQ (|ISTRING;copyInto!;2$I$;29| |t| |s| |i| $)
-                         (EXIT (SETQ |i| (+ |i| (QCSIZE |s|))))))))
+                         (EXIT (SETQ |i| (+ |i| (LENGTH |s|))))))))
              (SETQ #4# (CDR #4#))))
          (EXIT |t|)))) 
 
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)
-  (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 16))) (|n| (QCSIZE |y|)))
+  (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 16))) (|n| (LENGTH |y|)))
     (SEQ (SETQ |s| (- |s| (|getShellEntry| $ 6)))
          (COND
            ((OR (MINUSP |s|) (< |n| (+ |s| |m|)))
@@ -544,7 +544,7 @@
                (T (- (SPADCALL |s| (|getShellEntry| $ 47))
                      (|getShellEntry| $ 6))))))
     (SEQ (COND
-           ((OR (MINUSP |l|) (NOT (< |h| (QCSIZE |s|))))
+           ((OR (MINUSP |l|) (NOT (< |h| (LENGTH |s|))))
             (EXIT (|error| "index out of bound"))))
          (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1))))))) 
 
@@ -625,7 +625,7 @@
                                         (T
                                          (SEQ
                                           (SETQ |i|
-                                           (+ |i| (QCSIZE |s|)))
+                                           (+ |i| (LENGTH |s|)))
                                           (SETQ |p| |q|)
                                           (EXIT
                                            (SETQ |q|

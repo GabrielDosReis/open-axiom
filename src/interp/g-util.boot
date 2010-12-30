@@ -434,6 +434,7 @@ for x in [
     ['%integer?,:'INTEGERP],
     ['%iodd?,   :'ODDP],
     ['%ismall?, :'FIXNUMP],
+    ['%i2s,   :'WRITE_-TO_-STRING],
     -- binary integer operations.
     ['%iadd,    :"+"],
     ['%igcd,    :'GCD],

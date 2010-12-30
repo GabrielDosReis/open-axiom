@@ -98,7 +98,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%String|)
                 |INT;convert;$S;26|)) 
 
-(PUT '|INT;convert;$S;26| '|SPADreplace| 'STRINGIMAGE) 
+(PUT '|INT;convert;$S;26| '|SPADreplace| '|%i2s|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%String|)
                 |INT;latex;$S;27|)) 
@@ -366,10 +366,10 @@
 
 (DEFUN |INT;convert;$S;26| (|x| $)
   (DECLARE (IGNORE $))
-  (STRINGIMAGE |x|)) 
+  (WRITE-TO-STRING |x|)) 
 
 (DEFUN |INT;latex;$S;27| (|x| $)
-  (LET ((|s| (STRINGIMAGE |x|)))
+  (LET ((|s| (WRITE-TO-STRING |x|)))
     (SEQ (COND ((< -1 |x|) (COND ((< |x| 10) (EXIT |s|)))))
          (EXIT (STRCONC "{" (STRCONC |s| "}")))))) 
 
