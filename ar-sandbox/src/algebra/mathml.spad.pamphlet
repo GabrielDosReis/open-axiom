@@ -1,5 +1,5 @@
 \documentclass{article}
-\usepackage{open-axiom}
+\usepackage{axiom}
 \begin{document}
 \title{\$SPAD/src/algebra mathml.spad}
 \author{Arthur C. Ralfs}
@@ -72,6 +72,9 @@ nicely in Firefox.
 
 Here's a list of test cases that currently format correctly:
 
+On 2010-12-29 I ran through these test cases to see how well they format
+in Opera as well as checking Firefox in OpenAxiom.  I make a few comments.
+
 1. (x+y)**2
 
 2. integrate(x**x,x)
@@ -82,15 +85,37 @@ Here's a list of test cases that currently format correctly:
 
 5. set $[$1,2,3$]$
 
+The preceding used to work in Axiom but does not work now (2010-12-29) in
+OpenAxiom instead:
+
+5a. set [1,2,3]
+
 6. multiset $[$x rem 5 for x in primes(2,1000)$]$
+
+Similarly the dollar signs are not necessary in OpenAxiom so:
+
+6a. multiset [x rem 5 for x in primes(2,1000)]
 
 7. series(sin(a*x),x=0)
 
 8. matrix $[$ $[$x**i + y**j for i in 1..10$]$ for j in 1..10$]$
 
+Remove dollar signs for OpenAxiom
+
+8a.  matrix [[x**i + y**j for i in 1..10] for j in 1..10]
+
+In both Opera and Firefox the matrix brackets don't format to an appropriately
+large size so this is an outstanding bug.
+
 9. y := operator 'y
    a. D(y(x,z),$[$x,x,z,x$]$)
+
+Formats correctly in Firefox but the 'z' doesn't in Opera.  A bug in Opera's
+implementation.  Remove dollar signs in OpenAxiom
+
    b. D(y x,x,2)
+
+Formats correctly but the primes are typographically unsatisfactory.
 
 10. x := series 'x
     a. sin(1+x)
@@ -98,6 +123,8 @@ Here's a list of test cases that currently format correctly:
 11. series(1/log(y),y=1)
 
 12. y:UTS(FLOAT,'z,0) := exp(z)
+
+Again the z font is incorrect in Opera.
 
 13. a. c := continuedFraction(314159/100000)
     b. c := continuedFraction(14159/100000)
@@ -109,6 +136,25 @@ Here's a list of test cases that currently format correctly:
     a := F(x z,y z,z**2) + x y(z+1)
     D(a,z)
 
+15. a[1,2]
+
+16. M:=FreeModule(Integer,Symbol)
+    N:=FreeModule(Integer,Symbol)
+    MxN ==> TensorProduct(Integer,Symbol,Symbol,M,N)
+    a:='a::M
+    b:='b::N
+    tensor(a,b)$MxN
+
+This example doesn't work in OpenAxiom because the TensorProduct domain does
+not exist.  It exists in Fricas.
+
+17. presub(F::OutputForm,2::OutputForm) or presub(F,2)$OutputForm
+    scripts(F::OutputForm,[2::OutputForm,empty()$OutputForm,empty()$OutputForm,1::OutputForm]) or
+    scripts(F,[2,empty(),empty(),1])$OutputForm
+
+Opera does not format the scripts output properly missing the postscript.
+
+
 The \spadtype{TexFormat} domain has the capability to format an object with
 subscripts, superscripts, presubscripts and presuperscripts however
 I don't know of any Axiom command that produces such an object. In
@@ -116,6 +162,8 @@ fact at present I see the case of "SUPERSUB" being used for putting
 primes in the superscript position to denote ordinary differentiation.
 I also only see the "SUB" case being used to denote partial
 derivatives.
+
+2010-02-11:  examples 15 and 17 show how some different types of scripts can arise.
 
 \section{)set output mathml on}
 
@@ -126,12 +174,12 @@ and seems to be undocumented.  I document my experience here
 in case it proves useful to somebody else trying to get a new
 output format from Axiom.
 
-In \spadtype{MathMLFormat} the functions 
+In \spadtype{MathMLFormat} the functions
 \spadfun{coerce(expr : OutputForm) : String} and
 \spadfun{display(s : String) : Void} provide the desired mathml output.
 Note that this package was constructed by close examination of
 Robert Sutor's \spadtype{TexFormat} domain and much remains from that source.
-To have mathml displayed as output we need to get Axiom to 
+To have mathml displayed as output we need to get Axiom to
 call display(coerce(expr)) at the appropriate place.  Here's what
 I did to get that to happen. Note that my starting point here was
 an attempt by Andrey Grozin to do the same.  To figure things out
@@ -173,7 +221,7 @@ and the relevant variables are:
 
 
 Create an output mathml section in "setvart.boot.pamphlet" again
-patterned after the tex section.  I changed the default file 
+patterned after the tex section.  I changed the default file
 extension from ".stex" to ".smml".
 
 To the "section{output}" table I added the line
@@ -201,10 +249,10 @@ to "mathml", "Tex" to "Mathml" and "TeX" to "MathML".
 
 
 The file "src/algebra/tex.spad.pamphlet" contains
-the domain \spadtype{TexFormat} (TEX) and the package 
+the domain \spadtype{TexFormat} (TEX) and the package
 \spadtype{TexFormat1} (TEX1).
 However the sole function of \spadtype{TexFormat1} is to \spadfun{coerce}
-objects from a domain into \spadtype{OutputForm} and then apply 
+objects from a domain into \spadtype{OutputForm} and then apply
 \spadtype{TexFormat}
 to them.  It is to save programmers the trouble of doing
 the coercion themselves from inside spad code.  It does
@@ -225,7 +273,7 @@ which confused me at first because mathml.spad compiled
 under a running axiom.  By examining the file "obj/tmp/trace"
 I saw that a new dependency had been introduced, compared
 to TexFormat, with the function eltName depending on the
-domain FSAGG in layer 16.  So the lines had to be moved 
+domain FSAGG in layer 16.  So the lines had to be moved
 from layer 14 to layer 17.
 
 Added appropriate lines to "SPADFILES" and "DOCFILES".
@@ -247,7 +295,7 @@ Added mathml.spad subsection to "src/doc/axiom.bib.pamphlet".
 \subsection{File interp/i-output.boot.pamphlet}
 
 
-This is where the \spadfun{coerce} and \spadfun{display} functions 
+This is where the \spadfun{coerce} and \spadfun{display} functions
 from MathMLFormat
 actually get called.  The following was added:
 
@@ -266,7 +314,7 @@ mathmlFormat expr ==
 Note that compared to the texFormat function there are a couple
 of differences.  Since \spadtype{MathMLFormat} is currently a package rather
 than a domain there is the "mmlrep" variable whereas in texFormat
-the argument of the "display" function is an instance of the 
+the argument of the "display" function is an instance of the
 domain.  Also the \spadfun{coerce} function here only has one argument,
 namely "\$OutputForm".
 
@@ -310,7 +358,7 @@ is the MathML string in one long line.  These functions can be used,
 for instance, to get the MathML for the previous result by typing
 coerceL(%)\$MMLFORM.
 
-    \spadfun{exprex: E -$>$ S}  Converts \spadtype{OutputForm} to 
+    \spadfun{exprex: E -$>$ S}  Converts \spadtype{OutputForm} to
 \spadtype{String} with
 the structure preserved with braces.  This is useful in developing this
 package. Actually this is not quite accurate.  The function
@@ -327,10 +375,10 @@ long line, adding "math" tags: <math ...$>$ ... </math$>$.  Thus the output
 from this can be stuck directly into an appropriate html/xhtml page and will
 be displayed nicely by a MathML aware browser.
 
-    \spadfun{displayF: S -$>$ Void}  This function doesn't exist 
+    \spadfun{displayF: S -$>$ Void}  This function doesn't exist
 yet but it would be nice
 to have a humanly readable formatted output as well.  The basics do exist in
-the coerceS function however the formatting still needs some work to be 
+the coerceS function however the formatting still needs some work to be
 really good.
 
 <<public declarations>>=
@@ -364,11 +412,11 @@ MathMLFormat(): public == private where
     exprex:    E -> S
       ++ coverts \spadtype{OutputForm} to \spadtype{String} with the
       ++ structure preserved with braces.  Actually this is not quite
-      ++ accurate.  The function \spadfun{precondition} is first 
+      ++ accurate.  The function \spadfun{precondition} is first
       ++ applied to the
-      ++ \spadtype{OutputForm} expression before \spadfun{exprex}.  
+      ++ \spadtype{OutputForm} expression before \spadfun{exprex}.
       ++ The raw \spadtype{OutputForm} and
-      ++ the nature of the \spadfun{precondition} function is 
+      ++ the nature of the \spadfun{precondition} function is
       ++ still obscure to me
       ++ at the time of this writing (2007-02-14).
     display:   S -> Void
@@ -394,12 +442,12 @@ MathMLFormat(): public == private where
     maxPrec       : I   := 1000000
     minPrec       : I   := 0
 
-    unaryOps      : L S := ["-","^"]$(L S)
-    unaryPrecs    : L I := [700,260]$(L I)
+    unaryOps      : L S := ["-"]$(L S)
+    unaryPrecs    : L I := [700]$(L I)
 
     -- the precedence of / in the following is relatively low because
     -- the bar obviates the need for parentheses.
-    binaryOps     : L S := ["+->","|","**","/","<",">","=","OVER"]$(L S)
+    binaryOps     : L S := ["+->","|","^","/","<",">","=","OVER"]$(L S)
     binaryPrecs   : L I := [0,0,900, 700,400,400,400,   700]$(L I)
 
     naryOps       : L S := ["-","+","*",blank,",",";"," ","ROW","",
@@ -414,7 +462,7 @@ MathMLFormat(): public == private where
     specialOps    : L S := ["MATRIX","BRACKET","BRACE","CONCATB","VCONCAT",  _
                             "AGGLST","CONCAT","OVERBAR","ROOT","SUB","TAG", _
                             "SUPERSUB","ZAG","AGGSET","SC","PAREN", _
-                            "SEGMENT","QUOTE","theMap" ]
+                            "SEGMENT","QUOTE","theMap", "SLASH"]
 
     -- the next two lists provide translations for some strings for
     -- which MML provides special macros.
@@ -486,7 +534,7 @@ These are the local functions:
     postcondition:S -$>$ S
       this function is applied after all other OutputForm -$>$ MathML
       transformations.  In the TexFormat domain the ungroup function
-      first peels off the outermost set of braces however I have 
+      first peels off the outermost set of braces however I have
       replaced braces with <mrow$>$s here and sometimes the outermost set
       of <mrow$>$s is necessary to get proper display in Firefox.  For instance
       with getting the correct size of brackets on a matrix the whole
@@ -529,11 +577,12 @@ These are the local functions:
     formatSub:      (E, L E, I) -> S
     formatSuperSub: (E, L E, I) -> S
     formatSuperSub1: (E, L E, I) -> S
+    formatTensor:   (E, L E, I) -> S
     formatUnary:    (S,  E, I) -> S
     formatMml:      (E,I) -> S
     formatZag:      L E -> S
     formatZag1:     L E -> S
-    newWithNum:     I -> $
+    newWithNum:     I -> %
     parenthesize:   S -> S
     precondition:   E -> E
     postcondition:  S -> S
@@ -552,7 +601,7 @@ what the difference is between them at this point.  sayTeX$Lisp does the
 job so for the time being I'll use that until I learn more.
 
 The functions coerceS and coerceL should probably be changed to display
-functions, {\it i.e.}\/ \spadfun{displayS} and \spadfun{display L}, 
+functions, {\it i.e.}\/ \spadfun{displayS} and \spadfun{display L},
 returning Void.  I really only need the one coerce function.
 
 <<public function definitions>>=
@@ -580,6 +629,7 @@ returning Void.  I really only need the one coerce function.
       sayTeX$Lisp "<math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_">"
       sayTeX$Lisp mathml
       sayTeX$Lisp "</math>"
+      void()$Void
 
 
 
@@ -590,8 +640,8 @@ returning Void.  I really only need the one coerce function.
       a : E
       expr := precondition expr
 --      sayTeX$Lisp "0: "stringify expr
-      (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") => 
-        concat ["{",stringify expr,"}"]      
+      (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") =>
+        concat ["{",stringify expr,"}"]
       le : L E := (expr pretend L E)
       op := first le
       sop : S := exprex op
@@ -656,6 +706,7 @@ returning Void.  I really only need the one coerce function.
         u := segment(enE+1,end)$US
         displayElt(mathML.u)
 
+      void()$Void
 
     eltName(pos:I,mathML:S): S ==
       -- Assuming pos is the position of "<" for a start tag of a mathML
@@ -717,7 +768,7 @@ In formatPlex the case op = "INTSIGN" is now passed off to
 formatIntSign which is a change from the TexFormat domain.
 This is done here for presentation mark up to replace the
 ugly bound variable that Axiom delivers.  For content mark up
-this has to be done anyway.  
+this has to be done anyway.
 
 The formatPlex function also allows for op = "INDEFINTEGRAL".
 However I don't know what Axiom command gives rise to this case.
@@ -734,9 +785,9 @@ pre-subscripts and pre-superscripts but I am so far unaware of any
 Axiom command that produces such a multiscripted object.
 
 Another question is how to represent derivatives.  At present I have
-differential notation for partials and prime notation for ordinary 
-derivatives, 
-but it would be nice to allow for different derivative notations in 
+differential notation for partials and prime notation for ordinary
+derivatives,
+but it would be nice to allow for different derivative notations in
 different circumstances, maybe some options to )set output mathml on.
 
 Ordinary derivatives are formatted in formatSuperSub and there are
@@ -751,7 +802,7 @@ have to be switched by swapping names.
       le : L E := nil()
       a : E
       letmp : L E
-      (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") => 
+      (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") =>
         le := append(le,list(expr))
       letmp := expr pretend L E
       for a in letmp repeat
@@ -819,6 +870,9 @@ have to be switched by swapping names.
                       "<mo>&#x02192;</mo>",
                         formatMml(second args,prec)]
                          --RightArrow
+      op = "SLASH" =>
+        group concat [formatMml(first args, prec),
+                      "<mo>/</mo>", formatMml(second args,prec)]
       op = "VCONCAT" =>
         group concat("<mtable><mtr>",
                      concat(concat([concat("<mtd>",concat(formatMml(u, minPrec),"</mtd>"))
@@ -895,7 +949,7 @@ have to be switched by swapping names.
       -- If the SUB case handles anything else I'm not aware of it.
       -- This an example of the 4th partial of y(x,z) w.r.t. x,x,z,x
       -- {{{SUB}{y}{{CONCAT}{{CONCAT}{{CONCAT}{{CONCAT}{,}{1}}{{CONCAT}{,}{1}}}{{CONCAT}{,}{2}}}{{CONCAT}{,}{1}}}}{x}{z}}
-      atomE : L E := atomize(expr)      
+      atomE : L E := atomize(expr)
       op : S := stringify first atomE
       op ~= "SUB" => "<mtext>Mistake in formatSub: no SUB</mtext>"
       stringify first rest rest atomE ~= "CONCAT" => "<mtext>Mistake in formatSub: no CONCAT</mtext>"
@@ -929,7 +983,7 @@ have to be switched by swapping names.
       tmpS: S := stringify atomE.2
       if ndiffs = 1 then
         s : S := "<mfrac><mo>&#x02202;</mo><mi>"tmpS"</mi><mrow>"
-      else        
+      else
         s : S := "<mfrac><mrow><msup><mo>&#x02202;</mo><mn>"string(ndiffs)"</mn></msup><mi>"tmpS"</mi></mrow><mrow>"
       -- need to find the order of the differentiation w.r.t. the i-th
       -- variable
@@ -967,9 +1021,22 @@ have to be switched by swapping names.
       -- This an example of the 4th partial of y(x,z) w.r.t. x,x,z,x
       -- {{{SUB}{y}{{CONCAT}{{CONCAT}{{CONCAT}{{CONCAT}{,}{1}}
       -- {{CONCAT}{,}{1}}}{{CONCAT}{,}{2}}}{{CONCAT}{,}{1}}}}{x}{z}},
-      -- here expr is everything in the first set of braces and 
+      -- here expr is everything in the first set of braces and
       -- args is {{x}{z}}
-      atomE : L E := atomize(expr)      
+      -- 2010-02-08:  subscripts can also be produced by, e.g., a[1,2]
+      -- so I now test for the presence of 'CONCAT' in expr to see if
+      -- it's really a partial derivative, a hack for now.
+      position("CONCAT",stringify expr,1) = 0 =>
+        tmp : S := formatMml(first args, 0)
+        s : S := concat ["<msub>" tmp "<mrow>"]
+        args := rest args
+        while not(null(args)) repeat
+          tmp := formatMml(first args, 0)
+          s := concat [s tmp]
+          if #args > 1 then s:= concat [s "<mo>,</mo>"]
+          args := rest args
+        s := concat [s "</mrow></msub>"]
+      atomE : L E := atomize(expr)
       op : S := stringify first atomE
       op ~= "SUB" => "<mtext>Mistake in formatSub: no SUB</mtext>"
       stringify first rest rest atomE ~= "CONCAT" => "<mtext>Mistake in formatSub: no CONCAT</mtext>"
@@ -1020,7 +1087,20 @@ have to be switched by swapping names.
     formatSuperSub(expr : E, args : L E, opPrec : I) : S ==
       -- this produces prime notation ordinary derivatives.
       -- first have to divine the semantics, add cases as needed
-      atomE : L E := atomize(expr)      
+      -- 2010-02-11: SUPERSUB also handles general scripts in pre and post,
+      -- sub and super positions.  To distinguish from derivatives I test for
+      -- presence of a comma in 'expr', at least for now.
+      position(",", stringify expr, 1) = 0 =>
+        --{{SUPERSUB}{F}{1}{2}{3}{4}}  puts 1 in subscript position and then
+        --adds scripts counter clockwise.  Some of the scripts can be empty.
+        tmp : L S := [""," "]$(L S)
+        tmp1 : S := formatMml(args.1,minPrec)
+        if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+        if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+        if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+        if member?((tmp5 : S := formatMml(args.5,minPrec)),tmp) then tmp5 := "<none/>"
+        "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/>" tmp5 tmp4 "</mmultiscripts>" 
+      atomE : L E := atomize(expr)
       op : S := stringify first atomE
       op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB1</mtext>"
       #args ~= 1 => "<mtext>Mistake in SuperSub1: #args <> 1</mtext>"
@@ -1049,7 +1129,7 @@ have to be switched by swapping names.
       -- This one produces ordinary derivatives with differential notation,
       -- it needs a little more work yet.
       -- first have to divine the semantics, add cases as needed
-      atomE : L E := atomize(expr)      
+      atomE : L E := atomize(expr)
       op : S := stringify first atomE
       op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB</mtext>"
       #args ~= 1 => "<mtext>Mistake in SuperSub: #args <> 1</mtext>"
@@ -1069,6 +1149,14 @@ have to be switched by swapping names.
         commaTest := commaTest","
       s : S := "<mfrac><mrow><msup><mo>&#x02146;</mo><mn>"string(ndiffs)"</mn></msup><mi>"funcS"</mi></mrow><mrow><mo>&#x02146;</mo><msup><mi>"formatMml(first args,minPrec)"</mi><mn>"string(ndiffs)"</mn></msup></mrow></mfrac><mo>&#x02061;</mo><mo>(</mo><mi>"formatMml(first args,minPrec)"</mi><mo>)</mo>"
 
+    formatTensor(expr : E, args : L E, opPrec : I) : S ==
+      s : S := formatMml(first args,minPrec)
+      args := rest args
+      while #args > 0 repeat
+        s := s "<mo>&#x02297;</mo>" formatMml(first args,minPrec)
+        args := rest args
+      s
+
     formatPlex(op : S, args : L E, prec : I) : S ==
       checkarg:Boolean := false
       hold : S
@@ -1079,19 +1167,19 @@ have to be switched by swapping names.
       n : I := #args
       (n ~= 2) and (n ~= 3) => error "wrong number of arguments for plex"
       s : S :=
-        op = "SIGMA"   => 
+        op = "SIGMA"   =>
           checkarg := true
           "<mo>&#x02211;</mo>"
         -- Sum
-        op = "SIGMA2"   => 
+        op = "SIGMA2"   =>
           checkarg := true
           "<mo>&#x02211;</mo>"
         -- Sum
-        op = "PI"      => 
+        op = "PI"      =>
           checkarg := true
           "<mo>&#x0220F;</mo>"
         -- Product
-        op = "PI2"     => 
+        op = "PI2"     =>
           checkarg := true
           "<mo>&#x0220F;</mo>"
         -- Product
@@ -1166,7 +1254,7 @@ have to be switched by swapping names.
       bvarS : S := stringify bvar
       tmpLE : L E := ((first rest rest args) pretend L E)
       integrand : S := formatMml(first rest tmpLE,minPrec)
-      concat ["<mrow><munderover><mo>&#x0222B;</mo><mi>" lowlim "</mi><mi>" highlim "</mi></munderover>" integrand "<mo>&#x02146;</mo><mi>" bvarS "</mi></mrow>"] 
+      concat ["<mrow><munderover><mo>&#x0222B;</mo><mi>" lowlim "</mi><mi>" highlim "</mi></munderover>" integrand "<mo>&#x02146;</mo><mi>" bvarS "</mi></mrow>"]
 
 
     formatMatrix(args : L E) : S ==
@@ -1202,14 +1290,14 @@ have to be switched by swapping names.
       else
         la : L E := (first args pretend L E)
         opa : S := stringify first la
-      if (opa = "SIGMA" or opa = "SIGMA2" or opa = "PI" or opa = "PI2") and op = "**" then
+      if (opa = "SIGMA" or opa = "SIGMA2" or opa = "PI" or opa = "PI2") and op = "^" then
         s1 : S := concat ["<mo>(</mo>",formatMml(first args, opPrec),"<mo>)</mo>"]
-      else 
+      else
         s1 : S := formatMml(first args, opPrec)
       s2 : S := formatMml(first rest args, opPrec)
       op :=
         op = "|"     =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
-        op = "**"    =>  s := concat ["<msup><mrow>",s1,"</mrow><mrow>",s2,"</mrow></msup>"]
+        op = "^"    =>  s := concat ["<msup><mrow>",s1,"</mrow><mrow>",s2,"</mrow></msup>"]
         op = "/"     =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
         op = "OVER"  =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
@@ -1260,7 +1348,7 @@ have to be switched by swapping names.
            concat [formatMml(first args,minPrec) "<mo>+</mo>" formatZag(rest args)]
       -- At least for the ops "*","+","-" we need to test to see if a sigma or pi
       -- is one of their arguments because we might need parentheses as indicated
-      -- by the problem with summation(operator(f)(i),i=1..n)+1 versus 
+      -- by the problem with summation(operator(f)(i),i=1..n)+1 versus
       -- summation(operator(f)(i)+1,i=1..n) having identical displays as of
       -- 2007-12-21
       op :=
@@ -1272,10 +1360,10 @@ have to be switched by swapping names.
         -- InvisibleTimes
         op = " "     => "<mspace width='0.5em'/>"
         op = "ROW"   => "</mtd><mtd>"
-        op = "+"     => 
+        op = "+"     =>
             checkargs := true
             "<mo>+</mo>"
-        op = "-"     => 
+        op = "-"     =>
             checkargs := true
             "<mo>-</mo>"
         op
@@ -1383,6 +1471,8 @@ have to be switched by swapping names.
       -- now test for SUB
       position("SUB",op,1) > 0 =>
         formatSub1(first l,args,minPrec)
+      position("TENSOR",op,1) >0 =>
+        formatTensor(first l,args,minPrec)
 
       -- special cases
       member?(op, specialOps) => formatSpecial(op,args,prec)
