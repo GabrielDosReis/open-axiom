@@ -917,9 +917,6 @@
 
 ; 17.2 Accessing
 
-(defun QESET (cvec ind c)
-  (setf (char cvec ind) c))
-
 (defun string2id-n (cvec sint)
   (if (< sint 1)
       nil

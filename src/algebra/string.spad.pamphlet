@@ -94,6 +94,8 @@ Character: OrderedFinite() with
         import %cle: (%,%) -> Boolean from Foreign Builtin
         import %cgt: (%,%) -> Boolean from Foreign Builtin
         import %cge: (%,%) -> Boolean from Foreign Builtin
+        import %cup: % -> %           from Foreign Builtin
+        import %cdown: % -> %         from Foreign Builtin
         import %c2i: % -> NNI         from Foreign Builtin
         import %i2c: NNI -> %         from Foreign Builtin
         import %ccst: String -> %     from Foreign Builtin
@@ -136,10 +138,10 @@ Character: OrderedFinite() with
           %s2c s
 
 	upperCase c ==
-	  CHAR_-UPCASE(c)$Lisp : %
+          %cup c
 
 	lowerCase c ==
-	  CHAR_-DOWNCASE(c)$Lisp : %
+          %cdown c
 
 @
 
@@ -268,9 +270,9 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 ++ Authors: Stephen Watt, Michael Monagan, Manuel Bronstein 1986 .. 1991
 -- The following Lisp dependencies are divided into two groups
 -- Those that are required
--- QESET MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
+-- MAKE-FULL-CVEC
 -- Those that can are included for efficiency only
--- COPY SUBSTRING STRPOS RPLACSTR DOWNCASE UPCASE CGREATERP
+-- SUBSTRING STRPOS RPLACSTR
 ++ Description:
 ++ This domain implements low-level strings
 
@@ -283,8 +285,6 @@ IndexedString(mn:Integer): Export == Implementation where
 
   Export == StringAggregate()
   Implementation == add
-    -- These assume Character's Rep is Small I
-    Qsetelt ==> QESET$Lisp
     import %strlength: % -> N from Foreign Builtin
     import %streq: (%,%) -> Boolean from Foreign Builtin
     import %strlt: (%,%) -> Boolean from Foreign Builtin
@@ -292,6 +292,7 @@ IndexedString(mn:Integer): Export == Implementation where
     import %schar: (%,I) -> Character from Foreign Builtin
     import %strconc: (%,%) -> % from Foreign Builtin
     import %strcopy: % -> % from Foreign Builtin
+    import %strstc: (%,Integer,Character) -> Void from Foreign Builtin
     import %hash : % -> SingleInteger from Foreign Builtin
 
     c:	Character
@@ -323,19 +324,19 @@ IndexedString(mn:Integer): Export == Implementation where
 	r := new((m-(h-l+1)+n)::N, space$C)
         k: NonNegativeInteger := 0
 	for i in 0..l-1 repeat
-          Qsetelt(r, k, %schar(s, i))
+          %strstc(r, k, %schar(s, i))
           k := k + 1
 	for i in 0..n-1 repeat
-          Qsetelt(r, k, %schar(t, i))
+          %strstc(r, k, %schar(t, i))
           k := k + 1
 	for i in h+1..m-1 repeat
-          Qsetelt(r, k, %schar(s, i))
+          %strstc(r, k, %schar(s, i))
           k := k + 1
 	r
 
     setelt(s:%, i:I, c:C) ==
 	i < mn or i > maxIndex(s) => error "index out of range"
-	Qsetelt(s, i - mn, c)
+	%strstc(s, i - mn, c)
 	c
 
     substring?(part, whole, startpos) ==

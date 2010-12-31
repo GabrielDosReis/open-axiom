@@ -135,12 +135,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
                 |CHAR;upperCase;2$;32|)) 
 
-(PUT '|CHAR;upperCase;2$;32| '|SPADreplace| 'CHAR-UPCASE) 
+(PUT '|CHAR;upperCase;2$;32| '|SPADreplace| '|%cup|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%Char|)
                 |CHAR;lowerCase;2$;33|)) 
 
-(PUT '|CHAR;lowerCase;2$;33| '|SPADreplace| 'CHAR-DOWNCASE) 
+(PUT '|CHAR;lowerCase;2$;33| '|SPADreplace| '|%cdown|) 
 
 (DEFUN |CHAR;=;2$B;1| (|a| |b| $)
   (DECLARE (IGNORE $))

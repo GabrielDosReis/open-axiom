@@ -1,5 +1,13 @@
 2010-12-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %cup and
+	%cdown. 
+	* interp/g-util.boot: Expand them.
+	* interp/vmlisp.lisp (QESET): Remove.
+	* algebra/string.spad.pamphlet (String): Don't use QESET.
+
+2010-12-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include new
 	builtin functions %strlt, %streq, %strcopy, and %strconc.
 	* interp/g-util.boot: Expand them.
