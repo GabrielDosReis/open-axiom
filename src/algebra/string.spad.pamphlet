@@ -270,7 +270,7 @@ CharacterClass: Join(SetCategory, ConvertibleTo String,
 -- Those that are required
 -- QESET MAKE-FULL-CVEC EQ QSLESSP QSGREATERP
 -- Those that can are included for efficiency only
--- COPY STRCONC SUBSTRING STRPOS RPLACSTR DOWNCASE UPCASE CGREATERP
+-- COPY SUBSTRING STRPOS RPLACSTR DOWNCASE UPCASE CGREATERP
 ++ Description:
 ++ This domain implements low-level strings
 
@@ -284,11 +284,15 @@ IndexedString(mn:Integer): Export == Implementation where
   Export == StringAggregate()
   Implementation == add
     -- These assume Character's Rep is Small I
-    Qelt    ==> CHAR$Lisp
-    Qequal  ==> EQUAL$Lisp
     Qsetelt ==> QESET$Lisp
-    Cheq    ==> CHAR_=$Lisp
     import %strlength: % -> N from Foreign Builtin
+    import %streq: (%,%) -> Boolean from Foreign Builtin
+    import %strlt: (%,%) -> Boolean from Foreign Builtin
+    import %ceq: (Character, Character) -> Boolean from Foreign Builtin
+    import %schar: (%,I) -> Character from Foreign Builtin
+    import %strconc: (%,%) -> % from Foreign Builtin
+    import %strcopy: % -> % from Foreign Builtin
+    import %hash : % -> SingleInteger from Foreign Builtin
 
     c:	Character
     cc: CharacterClass
@@ -298,10 +302,10 @@ IndexedString(mn:Integer): Export == Implementation where
     empty()		   == MAKE_-FULL_-CVEC(0@I)$Lisp
     empty?(s)		   == %strlength s = 0
     #s			   == %strlength s
-    s = t		   == Qequal(s, t)
-    s < t		   == CGREATERP(t,s)$Lisp
-    concat(s:%,t:%)	   == STRCONC(s,t)$Lisp
-    copy s		   == COPY_-SEQ(s)$Lisp
+    s = t		   == %streq(s,t)
+    s < t		   == %strlt(s,t)
+    concat(s:%,t:%)	   == %strconc(s,t)
+    copy s		   == %strcopy s
     insert(s:%, t:%, i:I)  == concat(concat(s(mn..i-1), t), s(i..))
     coerce(s:%):OutputForm == outputForm(s pretend String)
     minIndex s		   == mn
@@ -319,13 +323,13 @@ IndexedString(mn:Integer): Export == Implementation where
 	r := new((m-(h-l+1)+n)::N, space$C)
         k: NonNegativeInteger := 0
 	for i in 0..l-1 repeat
-          Qsetelt(r, k, Qelt(s, i))
+          Qsetelt(r, k, %schar(s, i))
           k := k + 1
 	for i in 0..n-1 repeat
-          Qsetelt(r, k, Qelt(t, i))
+          Qsetelt(r, k, %schar(t, i))
           k := k + 1
 	for i in h+1..m-1 repeat
-          Qsetelt(r, k, Qelt(s, i))
+          Qsetelt(r, k, %schar(s, i))
           k := k + 1
 	r
 
@@ -340,7 +344,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
 	np > nw - startpos => false
 	for ip in 0..np-1 for iw in startpos.. repeat
-	    not Cheq(Qelt(part, ip), Qelt(whole, iw)) => return false
+	    not %ceq(%schar(part, ip), %schar(whole, iw)) => return false
 	true
 
     position(s:%, t:%, startpos:I) ==
@@ -353,13 +357,13 @@ IndexedString(mn:Integer): Export == Implementation where
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
 	startpos >= %strlength t => mn - 1
 	for r in startpos..%strlength t - 1 repeat
-	    if Cheq(Qelt(t, r), c) then return r + mn
+	    if %ceq(%schar(t, r), c) then return r + mn
 	mn - 1
     position(cc: CharacterClass, t: %, startpos: I) ==
 	(startpos := startpos - mn) < 0 => error "index out of bounds"
 	startpos >= %strlength t => mn - 1
 	for r in startpos..%strlength t - 1 repeat
-	    if member?(Qelt(t,r), cc) then return r + mn
+	    if member?(%schar(t,r), cc) then return r + mn
 	mn - 1
 
     suffix?(s, t) ==
@@ -432,7 +436,7 @@ IndexedString(mn:Integer): Export == Implementation where
 
     elt(s:%, i:I) ==
 	i < mn or i > maxIndex(s) => error "index out of range"
-	Qelt(s, i - mn)
+	%schar(s, i - mn)
 
     elt(s:%, sg:U) ==
 	l := lo(sg) - mn
@@ -441,7 +445,7 @@ IndexedString(mn:Integer): Export == Implementation where
 	SUBSTRING(s, l, max(0, h-l+1))$Lisp
 
     hash s ==
-        SXHASH(s)$Foreign(Builtin)
+        %hash s
 
     match(pattern,target,wildcard) == stringMatch(pattern,target,CHARACTER(wildcard)$Lisp)$Lisp
  
