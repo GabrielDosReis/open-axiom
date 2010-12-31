@@ -23,23 +23,22 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;=;2$B;5|)) 
 
-(PUT '|ISTRING;=;2$B;5| '|SPADreplace| 'EQUAL) 
+(PUT '|ISTRING;=;2$B;5| '|SPADreplace| '|%streq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;<;2$B;6|)) 
 
-(PUT '|ISTRING;<;2$B;6| '|SPADreplace|
-     '(XLAM (|s| |t|) (CGREATERP |t| |s|))) 
+(PUT '|ISTRING;<;2$B;6| '|SPADreplace| '|%strlt|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |ISTRING;concat;3$;7|)) 
 
-(PUT '|ISTRING;concat;3$;7| '|SPADreplace| 'STRCONC) 
+(PUT '|ISTRING;concat;3$;7| '|SPADreplace| '|%strconc|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |ISTRING;copy;2$;8|)) 
 
-(PUT '|ISTRING;copy;2$;8| '|SPADreplace| 'COPY-SEQ) 
+(PUT '|ISTRING;copy;2$;8| '|SPADreplace| '|%strcopy|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
                     |%Thing|)
@@ -59,6 +58,9 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%String|)
                 |ISTRING;latex;$S;14|)) 
+
+(PUT '|ISTRING;latex;$S;14| '|SPADreplace|
+     '(XLAM (|s|) (|%strconc| "\\mbox{``" (|%strconc| |s| "''}")))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
                     |%Thing|)
@@ -121,7 +123,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Short|)
                 |ISTRING;hash;$Si;32|)) 
 
-(PUT '|ISTRING;hash;$Si;32| '|SPADreplace| 'SXHASH) 
+(PUT '|ISTRING;hash;$Si;32| '|SPADreplace| '|%hash|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Char| |%Shell|)
                     (|%IntegerSection| 0))
@@ -145,11 +147,11 @@
 
 (DEFUN |ISTRING;=;2$B;5| (|s| |t| $)
   (DECLARE (IGNORE $))
-  (EQUAL |s| |t|)) 
+  (NOT (NULL (STRING= |s| |t|)))) 
 
 (DEFUN |ISTRING;<;2$B;6| (|s| |t| $)
   (DECLARE (IGNORE $))
-  (CGREATERP |t| |s|)) 
+  (NOT (NULL (STRING< |s| |t|)))) 
 
 (DEFUN |ISTRING;concat;3$;7| (|s| |t| $)
   (DECLARE (IGNORE $))
@@ -180,6 +182,7 @@
   (SPADCALL (ELT $ 40) |s| (|getShellEntry| $ 37))) 
 
 (DEFUN |ISTRING;latex;$S;14| (|s| $)
+  (DECLARE (IGNORE $))
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
@@ -572,7 +575,8 @@
                          '(|NonNegativeInteger|) #0#))
                    |ISTRING;match?;2$CB;34|)
              (EXIT (COND
-                     ((EQL |p| (- |m| 1)) (EQUAL |pattern| |target|))
+                     ((EQL |p| (- |m| 1))
+                      (NOT (NULL (STRING= |pattern| |target|))))
                      (T (SEQ (COND
                                ((SPADCALL |p| |m|
                                     (|getShellEntry| $ 87))

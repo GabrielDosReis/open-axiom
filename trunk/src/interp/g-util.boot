@@ -349,6 +349,13 @@ expandFlt ['%flt,x,y] ==
 expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
+-- String operations  
+expandStreq ['%streq,x,y] ==
+  expandToVMForm ['%not,['%peq,['STRING_=,x,y],'%nil]]
+
+expandStrlt ['%strlt,x,y] ==
+  expandToVMForm ['%not,['%peq,['STRING_<,x,y],'%nil]]
+
 -- Local variable bindings
 expandBind ['%bind,inits,:body] ==
   body := expandToVMForm body
@@ -515,6 +522,9 @@ for x in [
     -- string unary functions
     ['%string?, :'STRINGP],
     ['%strlength, :'LENGTH],
+    ['%schar,     :'CHAR],
+    ['%strconc,   :'STRCONC],
+    ['%strcopy,   :'COPY_-SEQ],
 
     -- general utility
     ['%hash,     :'SXHASH],
@@ -553,6 +563,9 @@ for x in [
    ['%fminval, :function expandFminval],
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
+
+   ['%streq,   :function expandStreq],
+   ['%strlt,   :function expandStrlt],
 
    ['%peq,     :function expandPeq],
    ['%before?, :function expandBefore?],

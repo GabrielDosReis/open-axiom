@@ -1,3 +1,11 @@
+2010-12-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include new
+	builtin functions %strlt, %streq, %strcopy, and %strconc.
+	* interp/g-util.boot: Expand them.
+	* algebra/string.spad.pamphlet (String): Remove uses of
+	Lisp-level functions CHAR, EQUAL, CHAR=, ans SXHASH.
+
 2010-12-30  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (QSTRING): Remove.

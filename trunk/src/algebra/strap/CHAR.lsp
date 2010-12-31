@@ -122,6 +122,11 @@
 (DECLAIM (FTYPE (FUNCTION (|%Char| |%Shell|) |%String|)
                 |CHAR;latex;$S;30|)) 
 
+(PUT '|CHAR;latex;$S;30| '|SPADreplace|
+     '(XLAM (|c|)
+            (|%strconc| "\\mbox{`"
+                (|%strconc| (MAKE-FULL-CVEC 1 |c|) "'}")))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%String| |%Shell|) |%Char|)
                 |CHAR;char;S$;31|)) 
 
@@ -227,6 +232,7 @@
   (SPADCALL |c| (|spadConstant| $ 52) (|getShellEntry| $ 42))) 
 
 (DEFUN |CHAR;latex;$S;30| (|c| $)
+  (DECLARE (IGNORE $))
   (STRCONC "\\mbox{`" (STRCONC (MAKE-FULL-CVEC 1 |c|) "'}"))) 
 
 (DEFUN |CHAR;char;S$;31| (|s| $)
