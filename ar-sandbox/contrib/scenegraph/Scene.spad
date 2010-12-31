@@ -278,6 +278,8 @@ Scene(PT): Exports == Implementation where
     ++ in scenegraph all other nodes in the scenegraph will get called.
   writeSvg:(n:%,filename:String) -> Void
     ++ Write an 'SVG' repesentation of node 'n' to the filename supplied.
+  serializeSvg:(n:%) -> String
+    ++ serialize SVG content.
   writeSvgQuantised:(n:%,filename:String) -> Void
     ++ Write an 'SVG' repesentation of node 'n' to the filename supplied.
   writeX3d:(n:%,filename:String) -> Void
@@ -1104,6 +1106,20 @@ Scene(PT): Exports == Implementation where
                              spnt(9000::DF,9000::DF)]
     writeXml(toSVG(n,defaultMaterial,defaultTransform,defaultBounds,1$DF,_
            false,false),filename)$ExportXml
+
+  -- Output svg as string for sending to browser via panserver.
+  serializeSvg(n) ==
+    defaultMaterial:MATERIAL := [2::DF,"black","black",1::DF]
+    defaultTransform:TR := identity()$TR
+    defaultBounds:BOUNDS := [spnt(-9000::DF,-9000::DF),_
+                             spnt(9000::DF,9000::DF)]
+    content := toSVG(n,defaultMaterial,defaultTransform,defaultBounds,1$DF,_
+           false,false)
+    lines := content::List String
+    str:String := ""
+    for line in lines repeat
+      str := concat(str,line)
+    str
 
   -- Write an 'SVG' repesentation of node 'n' to the filename supplied.
   writeSvgQuantised(n,filename) ==
