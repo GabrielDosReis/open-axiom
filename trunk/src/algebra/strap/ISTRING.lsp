@@ -214,21 +214,21 @@
                (LOOP
                  (COND
                    ((> |i| #1#) (RETURN NIL))
-                   (T (SEQ (QESET |r| |k| (CHAR |s| |i|))
+                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
                            (EXIT (SETQ |k| (+ |k| 1))))))
                  (SETQ |i| (+ |i| 1))))
              (LET ((|i| 0) (#2=#:G1511 (- |n| 1)))
                (LOOP
                  (COND
                    ((> |i| #2#) (RETURN NIL))
-                   (T (SEQ (QESET |r| |k| (CHAR |t| |i|))
+                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |t| |i|))
                            (EXIT (SETQ |k| (+ |k| 1))))))
                  (SETQ |i| (+ |i| 1))))
              (LET ((|i| (+ |h| 1)) (#3=#:G1512 (- |m| 1)))
                (LOOP
                  (COND
                    ((> |i| #3#) (RETURN NIL))
-                   (T (SEQ (QESET |r| |k| (CHAR |s| |i|))
+                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
                            (EXIT (SETQ |k| (+ |k| 1))))))
                  (SETQ |i| (+ |i| 1))))
              (EXIT |r|)))))) 
@@ -238,7 +238,7 @@
          ((OR (< |i| (|getShellEntry| $ 6))
               (< (SPADCALL |s| (|getShellEntry| $ 47)) |i|))
           (|error| "index out of range"))
-         (T (SEQ (QESET |s| (- |i| (|getShellEntry| $ 6)) |c|)
+         (T (SEQ (SETF (CHAR |s| (- |i| (|getShellEntry| $ 6))) |c|)
                  (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)

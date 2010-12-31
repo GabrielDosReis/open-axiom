@@ -349,12 +349,19 @@ expandFlt ['%flt,x,y] ==
 expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
--- String operations  
+-- String operations
+
+++ string equality comparison
 expandStreq ['%streq,x,y] ==
   expandToVMForm ['%not,['%peq,['STRING_=,x,y],'%nil]]
 
+++ string lexicographic comparison  
 expandStrlt ['%strlt,x,y] ==
   expandToVMForm ['%not,['%peq,['STRING_<,x,y],'%nil]]
+
+++ deposit a character `z' at slot number `y' in string object `x'.  
+expandStrstc ['%strstc,x,y,z] ==
+  expandToVMForm ['%store,['%schar,x,y],z]
 
 -- Local variable bindings
 expandBind ['%bind,inits,:body] ==
@@ -424,13 +431,15 @@ for x in [
     ['%or,  :'OR],
 
     -- character operations
-    ['%ceq, :'CHAR_=],
-    ['%clt, :'CHAR_<],
-    ['%cle, :'CHAR_<_=],
-    ['%cgt, :'CHAR_>],
-    ['%cge, :'CHAR_>_=],
-    ['%c2i, :'CHAR_-CODE],
-    ['%i2c, :'CODE_-CHAR],
+    ['%ceq,    :'CHAR_=],
+    ['%clt,    :'CHAR_<],
+    ['%cle,    :'CHAR_<_=],
+    ['%cgt,    :'CHAR_>],
+    ['%cge,    :'CHAR_>_=],
+    ['%cup,    :'CHAR_-UPCASE],
+    ['%cdown,  :'CHAR_-DOWNCASE],
+    ['%c2i,    :'CHAR_-CODE],
+    ['%i2c,    :'CODE_-CHAR],
 
     -- byte operations
     ['%beq, :'byteEqual],
@@ -519,7 +528,7 @@ for x in [
     ['%gensym,  :'GENSYM],
     ['%sname,   :'SYMBOL_-NAME],
 
-    -- string unary functions
+    -- string functions
     ['%string?, :'STRINGP],
     ['%strlength, :'LENGTH],
     ['%schar,     :'CHAR],
@@ -566,6 +575,7 @@ for x in [
 
    ['%streq,   :function expandStreq],
    ['%strlt,   :function expandStrlt],
+   ['%strstc,  :function expandStrstc],
 
    ['%peq,     :function expandPeq],
    ['%before?, :function expandBefore?],
