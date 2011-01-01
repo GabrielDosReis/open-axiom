@@ -185,7 +185,7 @@ makeSpadConstant [fn,dollar,slot] ==
 
 stuffSlot(dollar,i,item) ==
   dollar.i :=
-    atom item => [SYMBOL_-FUNCTION item,:dollar]
+    atom item => [symbolFunction item,:dollar]
     item is [n,:op] and integer? n => ['newGoGet,dollar,:item]
     item is ['CONS,.,['FUNCALL,a,b]] =>
       b = '$ => ['makeSpadConstant,eval a,dollar,i]

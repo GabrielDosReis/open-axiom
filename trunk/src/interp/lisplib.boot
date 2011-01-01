@@ -268,23 +268,23 @@ systemDependentMkAutoload(fn,cnam) ==
          kind = 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
-    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+    SETF(symbolFunction cnam,mkAutoLoad(fn, cnam))
 
 autoLoad(abb,cname) ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
   cname in $BuiltinConstructorNames => cname
   if not GETL(cname,'LOADED) then loadLib cname
-  SYMBOL_-FUNCTION cname
+  symbolFunction cname
 
 setAutoLoadProperty(name) ==
 --  abb := constructor? name
   REMPROP(name,'LOADED)
-  SETF(SYMBOL_-FUNCTION name,mkAutoLoad(constructor? name, name))
+  SETF(symbolFunction name,mkAutoLoad(constructor? name, name))
 
 unloadOneConstructor(cnam,fn) ==
     REMPROP(cnam,'LOADED)
-    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+    SETF(symbolFunction cnam,mkAutoLoad(fn, cnam))
 
 --% Compilation
  

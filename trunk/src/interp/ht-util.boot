@@ -130,7 +130,7 @@ htpLabelFilteredInputString(htPage, label) ==
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
     #props > 5 and props.6 =>
-      FUNCALL(SYMBOL_-FUNCTION props.6, props.0)
+      FUNCALL(symbolFunction props.6, props.0)
     replacePercentByDollar props.0
   nil
 

@@ -485,7 +485,7 @@ htDoneButton(func, htPage, :optionalArgs) ==
     htMakeErrorPage htPage
   not FBOUNDP func =>
     systemError ['"unknown function", func]
-  FUNCALL(SYMBOL_-FUNCTION func, htPage)
+  FUNCALL(symbolFunction func, htPage)
 
 htBcLinks(links,:options) ==
   skipStateInfo? := IFCAR options

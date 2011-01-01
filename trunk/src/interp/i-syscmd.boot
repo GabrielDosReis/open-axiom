@@ -2164,7 +2164,7 @@ dewritify ob ==
                     oname := ob.2
                     f :=
                         integer? oname => eval GENSYMMER oname
-                        SYMBOL_-FUNCTION oname
+                        symbolFunction oname
                     not COMPILED_-FUNCTION_-P f =>
                         error '"A required BPI does not exist."
                     #ob > 3 and HASHEQ f ~= ob.3 =>
@@ -2188,7 +2188,7 @@ dewritify ob ==
                     name := ob.3
                     not FBOUNDP name => 
                        error strconc('"undefined function: ", symbolName name)
-                    nob := [SYMBOL_-FUNCTION name,:vec]
+                    nob := [symbolFunction name,:vec]
                     HPUT($seen, ob, nob)
                     HPUT($seen, nob, nob)
                     nob
