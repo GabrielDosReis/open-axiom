@@ -268,9 +268,13 @@ List(S:Type): Exports == Implementation where
 
  Implementation ==>
    IndexedList(S, LISTMININDEX) add
-      nil                      == NIL$Lisp
-      null l                   == NULL(l)$Lisp
-      cons(s, l)               == CONS(s, l)$Lisp
+      import %nil: %                 from Foreign Builtin
+      import %peq: (%,%) -> Boolean  from Foreign Builtin
+      import %makepair: (S,%) -> S   from Foreign Builtin
+
+      nil                      == %nil
+      null l                   == %peq(l,%nil)
+      cons(s, l)               == %makepair(s,l)
       append(l:%, t:%)         == APPEND(l, t)$Lisp
 
       if S has OpenMath then
