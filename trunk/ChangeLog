@@ -1,0 +1,5 @@
+2011-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* configure.ac: Reject ECL on Mac OS X as it cannot give reliable
+	information about its binary personality.
+

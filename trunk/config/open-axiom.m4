@@ -49,6 +49,13 @@ if test x"$oa_include_gcl" != xyes; then
 	      ;;
 	 esac
 	 ;;
+      # ECL does not provide useful information for dectecing CPU precision
+      *ecl*)
+         case $target in
+           *darwin*)
+              AC_MSG_ERROR([We do not know how to extend this Lisp system with native libraries.  Please consider SBCL or better])
+         esac
+         ;;
    esac
 fi
 ])
