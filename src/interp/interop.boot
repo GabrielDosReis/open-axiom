@@ -135,7 +135,7 @@ makeOldAxiomDispatchDomain dom ==
   [$oldAxiomDomainDispatch,hashTypeForm(dom.0,0),:dom]
 
 closeOldAxiomFunctor(name) ==
-   [function runOldAxiomFunctor,:SYMBOL_-FUNCTION name]
+   [function runOldAxiomFunctor,:symbolFunction name]
 
 lazyOldAxiomDomainLookupExport(domenv, self, op, sig, box, skipdefaults, env) ==
   dom := instantiate domenv
@@ -278,10 +278,10 @@ instantiate domenv ==
   oldDom := CDDR domenv
   [functor,:args] := callForm
 --  if null(fn := GETL(functor,'instantiate)) then
---     ofn := SYMBOL_-FUNCTION functor
+--     ofn := symbolFunction functor
 --     loadFunctor functor
---     fn := SYMBOL_-FUNCTION functor
---     SETF(SYMBOL_-FUNCTION functor, ofn)
+--     fn := symbolFunction functor
+--     SETF(symbolFunction functor, ofn)
 --     PUT(functor, 'instantiate, fn)
 --  domvec := apply(fn, args)
   domvec := apply(functor, args)
@@ -608,7 +608,7 @@ HasCategory(domain,catform') ==
 
 --systemDependentMkAutoload(fn,cnam) ==
 --    FBOUNDP(cnam) => "next"
---    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+--    SETF(symbolFunction cnam,mkAutoLoad(fn, cnam))
 
 domainEqual(a,b) == 
   vector? a and vector? b and a.0 = b.0

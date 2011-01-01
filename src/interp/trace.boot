@@ -793,7 +793,7 @@ tracelet(fn,vars) ==
   if $letAssoc then SETLETPRINTFLAG true
   $TRACELETFLAG : local := true
   $QuickLet : local := false
-  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P SYMBOL_-FUNCTION fn
+  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
     and not stupidIsSpadFunction fn and not GENSYMP fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
        $traceletFunctions:= delete(fn,$traceletFunctions) )

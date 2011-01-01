@@ -67,11 +67,11 @@ genOptimizeOptions stream ==
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
   if %hasFeature KEYWORD::GCL then
-    SETF(SYMBOL_-VALUE
+    SETF(symbolValue
       bfColonColon("COMPILER","*COMPILE-VERBOSE*"),false)
-    SETF(SYMBOL_-VALUE 
+    SETF(symbolValue
       bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*"),false)
-    SETF(SYMBOL_-VALUE 
+    SETF(symbolValue
       bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*"),true)
 
 ++ Make x, the current package

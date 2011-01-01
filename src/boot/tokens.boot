@@ -295,8 +295,10 @@ for i in [ _
   ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _
-  ["symbol?",  "SYMBOLP"]  , _
+  ["symbolFunction", "SYMBOL-FUNCTION"], _
   ["symbolName", "SYMBOL-NAME"], _
+  ["symbolValue", "SYMBOL-VALUE"], _
+  ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
   ["toString", "WRITE-TO-STRING"], _
