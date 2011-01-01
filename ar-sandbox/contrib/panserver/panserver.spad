@@ -304,28 +304,39 @@ SockLib(): Public == Private where
             -- works and doesn't crash on a syntax error.
             --        v := CATCH('SPAD__READER, CATCH('top__level, parseAndEvalStr$Lisp command)$Lisp)$Lisp
             --        v = 'restart => ['"error"]
+	    -- update 2011.01.01  In OpenAxiom the parseAndEvalToStringEqNum started crashing on syntax
+	    -- errors too.  It turns out 'ans' is empty in that case so I now test for that and issue a
+	    -- non-specific error message in that case.
 	    ans:String := concat parseAndEvalToStringEqNum command
-            WriteLine$Lisp concat ["parse answer: ",ans]
-            resultmathml := GET_-OUTPUT_-STREAM_-STRING(_$texOutputStream$Lisp)$Lisp
-            resultalgebra := GET_-OUTPUT_-STREAM_-STRING(_$algebraOutputStream$Lisp)$Lisp
-            SETQ(_$texOutputStream$Lisp,savemathml)$Lisp
-            SETQ(_$algebraOutputStream$Lisp,savealgebra)$Lisp
-            CLOSE(tmpmathml)$Lisp
-            CLOSE(tmpalgebra)$Lisp
-            -- Since strings returned from axiom are going to be displayed in html I
-            -- should really check for the characters &,<,> and replace them with
-            -- &amp;,&lt;,&gt;.  At present I only check for ampersands in formatMessages.
-            mathml:String := resultmathml
-            algebra:String := resultalgebra
-            algebra := formatMessages(algebra)
-            --algebra:String := ""
-            -- At this point mathml contains the mathml for the output but does not
-            -- include step number or type information.  We should also save the command.
-            -- I get the type from 'ans' and step number from the $internalHistoryTable
-            --axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
-	    axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
---            WriteLine$Lisp concat ["mathml answer: ",mathml]
---            WriteLine$Lisp concat ["algebra answer: ",algebra]
+	    if ans ~= "" 
+	        then
+                    WriteLine$Lisp concat ["parse answer: ",ans]
+                    resultmathml := GET_-OUTPUT_-STREAM_-STRING(_$texOutputStream$Lisp)$Lisp
+                    resultalgebra := GET_-OUTPUT_-STREAM_-STRING(_$algebraOutputStream$Lisp)$Lisp
+                    SETQ(_$texOutputStream$Lisp,savemathml)$Lisp
+                    SETQ(_$algebraOutputStream$Lisp,savealgebra)$Lisp
+                    CLOSE(tmpmathml)$Lisp
+                    CLOSE(tmpalgebra)$Lisp
+                    -- Since strings returned from axiom are going to be displayed in html I
+                    -- should really check for the characters &,<,> and replace them with
+                    -- &amp;,&lt;,&gt;.  At present I only check for ampersands in formatMessages.
+                    mathml:String := resultmathml
+                    algebra:String := resultalgebra
+                    algebra := formatMessages(algebra)
+                    --algebra:String := ""
+                    -- At this point mathml contains the mathml for the output but does not
+                    -- include step number or type information.  We should also save the command.
+                    -- I get the type from 'ans' and step number from the $internalHistoryTable
+                    --axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
+        	    axans:String := concat ["<div class=_"stepnum_">", lastStep(), "</div><div class=_"command_">", command, "</div><div class=_"algebra_">",algebra,"</div><div class=_"mathml_">",mathml,"</div><div class=_"type_">",getType(ans),"</div>"]
+        --            WriteLine$Lisp concat ["mathml answer: ",mathml]
+        --            WriteLine$Lisp concat ["algebra answer: ",algebra]
+                else
+        	    axans:String := concat ["<div class=_"stepnum_">-1</div><div class=_"command_">", command, "</div><div class=_"algebra_"></div><div class=_"mathml_"><math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_"><mtext>There is something wrong with your command, probably a syntax error.</mtext></math></div><div class=_"type_">Error</div>"]		                  
+                    SETQ(_$texOutputStream$Lisp,savemathml)$Lisp
+                    SETQ(_$algebraOutputStream$Lisp,savealgebra)$Lisp
+                    CLOSE(tmpmathml)$Lisp
+                    CLOSE(tmpalgebra)$Lisp
             length := # axans - 1
             for i in 0..length repeat
                 writeByte!(connfd,(ord(elt(axans,i+1)$String)$Character)::Byte)
