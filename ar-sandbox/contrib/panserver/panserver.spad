@@ -315,8 +315,8 @@ SockLib(): Public == Private where
             -- Since strings returned from axiom are going to be displayed in html I
             -- should really check for the characters &,<,> and replace them with
             -- &amp;,&lt;,&gt;.  At present I only check for ampersands in formatMessages.
-	    mathml:String := resultmathml
-	    algebra:String := resultalgebra
+            mathml:String := resultmathml
+            algebra:String := resultalgebra
             algebra := formatMessages(algebra)
             --algebra:String := ""
             -- At this point mathml contains the mathml for the output but does not
@@ -329,7 +329,7 @@ SockLib(): Public == Private where
             length := # axans - 1
             for i in 0..length repeat
                 writeByte!(connfd,(ord(elt(axans,i+1)$String)$Character)::Byte)
-            WriteLine$Lisp "sendCommand end"            
+            WriteLine$Lisp "sendCommand end"
             retval
 
         formatMessages(str) ==
@@ -345,7 +345,9 @@ SockLib(): Public == Private where
             strlen:Integer := #str
             str := str.(1..(#str - 5))
             -- Here I split the string into lines and put each line in a "div".
-	    strlist := split(str, NewLine$Lisp)
+	    --strlist := split(str, NewLine$Lisp)
+	    --strlist := split(str,char(STRING(NewLine$Lisp)$Lisp)$Character)
+            strlist := split(str,newline)
             str := ""
             for s in strlist repeat
                 str := concat [str,"<div>",s,"</div>"]

@@ -286,6 +286,15 @@ rootCompCell or an ordinary compCell.
 */
 
 function makeCompCell(mathString,parent) {
+    //First test mathString to see if it really contains an svg element as math text
+    //i.e. <math ...><mtext>"<svg ...> ... </svg>"</mtext></math>
+    //if so strip out the non-svg stuff at the beginning and end.
+    var svgPattern = /<math.*><mtext>\"<svg.*<\/svg>\"<\/mtext><\/math>/;
+    var svgResult;
+    if ( svgPattern.test(mathString)) {
+	mathString.replace(/math.*><mtext>\"/,"");
+	mathString.replace(/\"<\/mtext><\/math>/,"");
+    }
     var compCell = document.createElementNS('http://www.w3.org/1999/xhtml','div');
     compCell.setAttribute('class','compCell');
     var resultBox = document.createElementNS('http://www.w3.org/1999/xhtml','div');
@@ -323,6 +332,7 @@ function makeCompCell(mathString,parent) {
     typeBox.insertBefore(document.createTextNode('Type: '),typeBox.firstChild);
     commandBox.removeChild(commandBox.firstChild);
     commandBox.appendChild(formBox);
+    // this test should be changed to a CSSClass.is test
     if (parent.className == "compCell") {
         //insert before parents resultBox
 	parent.insertBefore(compCell,getResultBox(parent));
