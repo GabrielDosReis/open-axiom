@@ -419,10 +419,10 @@ PsiIntpart(x) ==
 cotdiffeval(n,z,skipit) ==
 ---skip=1 if arg z is known to be an exact multiple of Pi/2
         a := MAKE_-ARRAY(n+2)
-        SETF(AREF(a,0),0.0)
-        SETF(AREF(a,1),1.0)
+        AREF(a,0) := 0.0
+        AREF(a,1) := 1.0
         for i in 2..n repeat
-                SETF(AREF(a,i),0.0)
+          AREF(a,i) := 0.0
         for l in 1..n repeat
                 m := MOD(l+1,2)
                 for k in m..l+1 by 2 repeat
@@ -436,7 +436,7 @@ cotdiffeval(n,z,skipit) ==
                                 t2 := 0
                         else
                                 t2 := -AREF(a,k+1)*(k+1)
-                        SETF(AREF(a,k), t1+t2)
+                        AREF(a,k) := t1+t2
         --- evaluate d^N/dX^N cot(z) via Horner-like rule
         v := COT(z)
         sq := v**2
@@ -524,19 +524,18 @@ chebf01 (c,z) ==
         z1 := four/w
         ncount := n1
         arr := MAKE_-ARRAY(n2)
-        SETF(AREF(arr,ncount) , start)  -- start off
+        AREF(arr,ncount) := start  -- start off
         x1 := n2
         c1 := 1.0 - c
         for ncount in n..0 by -1 repeat
                 divfac := 1.0/x1
                 x1 := x1 -1.0
-                SETF(AREF(arr,ncount) ,_
-                        x1*((divfac+z1*(x1-c1))*a1 +_
-                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3))
+                AREF(arr,ncount) := x1*((divfac+z1*(x1-c1))*a1 +_
+                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3)
                 a3 := a2
                 a2 := a1
                 a1 := AREF(arr,ncount)
-        SETF(AREF(arr,0),AREF(arr,0)/2.0)
+        AREF(arr,0) := AREF(arr,0)/2.0
 --  compute scale factor
         rho := AREF(arr,0)
         sum := rho
@@ -546,7 +545,7 @@ chebf01 (c,z) ==
                 sum := sum+AREF(arr,i)
                 p := -p
         for l in 0..n1 repeat
-                SETF(AREF(arr,l), AREF(arr,l)/rho)
+          AREF(arr,l) := AREF(arr,l)/rho
         sum := sum/rho
 ---     Now evaluate array at argument
         b := 0.0
@@ -618,19 +617,18 @@ chebf01coefmake (c,w,n) ==
         z1 := four/w
         ncount := n1
         arr := MAKE_-ARRAY(n2)
-        SETF(AREF(arr,ncount) , start)  -- start off
+        AREF(arr,ncount) := start  -- start off
         x1 := n2
         c1 := 1.0 - c
         for ncount in n..0 by -1 repeat
                 divfac := 1.0/x1
                 x1 := x1 -1.0
-                SETF(AREF(arr,ncount) ,_
-                        x1*((divfac+z1*(x1-c1))*a1 +_
-                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3))
+                AREF(arr,ncount) := x1*((divfac+z1*(x1-c1))*a1 +_
+                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3)
                 a3 := a2
                 a2 := a1
                 a1 := AREF(arr,ncount)
-        SETF(AREF(arr,0),AREF(arr,0)/2.0)
+        AREF(arr,0) := AREF(arr,0)/2.0
 --  compute scale factor
         rho := AREF(arr,0)
         sum := rho
@@ -640,7 +638,7 @@ chebf01coefmake (c,w,n) ==
                 sum := sum+AREF(arr,i)
                 p := -p
         for l in 0..n1 repeat
-                SETF(AREF(arr,l), AREF(arr,l)/rho)
+          AREF(arr,l) := AREF(arr,l)/rho
         sum := sum/rho
         return([sum,arr])
 
@@ -769,10 +767,10 @@ BesselJRecur(v,z) ==
         if abs(so)<abs(z) then so:=v+18.*SQRT(v)
         m:= FLOOR(abs(so-v))+1
         w := newVector m
-        SETF(AREF(w,m-1),BesselJAsymptOrder(v+m-1,z))
-        SETF(AREF(w,m-2),BesselJAsymptOrder(v+m-2,z))
+        AREF(w,m-1) := BesselJAsymptOrder(v+m-1,z)
+        AREF(w,m-2) := BesselJAsymptOrder(v+m-2,z)
         for i in m-3 .. 0 by -1 repeat
-          SETF(AREF(w,i), 2.0 * (v+i+1.0) * AREF(w,i+1) /z -AREF(w,i+2)) 
+          AREF(w,i) := 2.0 * (v+i+1.0) * AREF(w,i+1) /z -AREF(w,i+2)
         AREF(w,0)
 
 BesselI(v,z) ==
@@ -831,20 +829,20 @@ BesselIBackRecur(largev,argm,v,z,type,n) ==
         z2 := two/z
         m2 := n+3
         w:=MAKE_-ARRAY(m2+1)
-        SETF(AREF(w,m2), zero) --- start off
+        AREF(w,m2) := zero --- start off
         if type = '"I"
         then
                 val := one
         else
                 val := -one
         m1 := n+2
-        SETF(AREF(w,m1), start)
+        AREF(w,m1) := start
         m := n+1
         xm := float(m)
         ct1 := z2*(xm+v)
         --- initialize
         for m in (n+1)..1 by -1 repeat
-                SETF(AREF(w,m), AREF(w,m+1)*ct1 + val*AREF(w,m+2))
+                AREF(w,m) := AREF(w,m+1)*ct1 + val*AREF(w,m+2)
                 ct1 := ct1 - z2
         m := 1 + FLOOR(n/2)
         m2 := m + m -1
@@ -866,7 +864,7 @@ BesselIBackRecur(largev,argm,v,z,type,n) ==
                 pn := AREF(w,1) - val * pn
         m1 := n+2
         for m in 1..m1 repeat
-                SETF(AREF(w,m), AREF(w,m)/pn)
+                AREF(w,m) := AREF(w,m)/pn
         AREF(w,argm+1)
 
 

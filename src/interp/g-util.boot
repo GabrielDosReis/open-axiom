@@ -1439,7 +1439,7 @@ getShellEntry(s,i) ==
 ++ sets the nth nth entry of a domain shell to an item.
 setShellEntry: (%Shell,%Short,%Thing) -> %Thing
 setShellEntry(s,i,t) ==
-  SETF(SVREF(s,i),t)
+  SVREF(s,i) := t
 
 
 -- Push into the BOOT package when invoked in batch mode.

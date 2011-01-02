@@ -268,7 +268,7 @@ systemDependentMkAutoload(fn,cnam) ==
          kind = 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
-    SETF(symbolFunction cnam,mkAutoLoad(fn, cnam))
+    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 autoLoad(abb,cname) ==
   -- builtin constructors are always loaded.  By definition, there
@@ -280,11 +280,11 @@ autoLoad(abb,cname) ==
 setAutoLoadProperty(name) ==
 --  abb := constructor? name
   REMPROP(name,'LOADED)
-  SETF(symbolFunction name,mkAutoLoad(constructor? name, name))
+  symbolFunction(name) := mkAutoLoad(constructor? name, name)
 
 unloadOneConstructor(cnam,fn) ==
     REMPROP(cnam,'LOADED)
-    SETF(symbolFunction cnam,mkAutoLoad(fn, cnam))
+    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 --% Compilation
  
