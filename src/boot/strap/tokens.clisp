@@ -235,7 +235,7 @@
                   (LIST '|subSequence| 'SUBSEQ)
                   (LIST '|substitute| 'SUBST)
                   (LIST '|substitute!| 'NSUBST)
-                  (LIST '|symbolFunction| '|SYMBOL-Function|)
+                  (LIST '|symbolFunction| 'SYMBOL-FUNCTION)
                   (LIST '|symbolName| 'SYMBOL-NAME)
                   (LIST '|symbolValue| 'SYMBOL-VALUE)
                   (LIST '|symbol?| 'SYMBOLP) (LIST '|take| 'TAKE)

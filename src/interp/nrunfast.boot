@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -90,11 +90,12 @@ getOpCode(op,vec,max) ==
 evalSlotDomain(u,dollar) ==
   $returnNowhereFromGoGet: local := false
   $ : fluid := dollar                      -- ??? substitute
-  $lookupDefaults : local := nil -- new world
+  $lookupDefaults : local := false -- new world
   u = '$ => dollar
   u = "$$" => dollar
   FIXP u =>
-    vector? (y := dollar.u) => y
+    y := dollar.u
+    vector? y => y
     y is ["setShellEntry",:.] => eval y
              --lazy domains need to marked; this is dangerous?
     y is ['SETELT,:.] => systemErrorHere "evalSlotDomain"
@@ -105,7 +106,7 @@ evalSlotDomain(u,dollar) ==
            lazyDomainSet(y,dollar,u)        --new style has lazyt
       y
     y
-  u is ['NRTEVAL,y] => eval  y
+  u is ['NRTEVAL,y] => eval y
   u is ['QUOTE,y] => y
   u is ['Record,:argl] =>
      apply('Record,[[":",tag,evalSlotDomain(dom,dollar)]
@@ -114,7 +115,11 @@ evalSlotDomain(u,dollar) ==
      apply('Union,[['_:,tag,evalSlotDomain(dom,dollar)]
                                  for [.,tag,dom] in argl])
   u is ["Enumeration",:.] => eval u
-  u is [op,:argl] => apply(op,[evalSlotDomain(x,dollar) for x in argl])
+  cons? u =>
+    -- The domain form may value arguments, get VM form first.
+    u := expandToVMForm u
+    cons? u => apply(u.op,[evalSlotDomain(x,dollar) for x in u.args])
+    u
   systemErrorHere '"evalSlotDomain"
 
 --=======================================================
@@ -474,7 +479,8 @@ lazyMatch(source,lazyt,dollar,domain) ==
   string? source and lazyt is ['QUOTE,=source] => true
   integer? source =>
       lazyt is ['_#, slotNum] => source = #(domain.slotNum)
-      lazyt is ['%call,'LENGTH, slotNum] => source = #(domain.slotNum)
+      lazyt is ['%call,f,slotNum] and f in '(LENGTH %llength) =>
+        source = #(domain.slotNum)
       nil
 
   -- A hideous hack on the same lines as the previous four lines JHD/MCD

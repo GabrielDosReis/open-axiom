@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -349,6 +349,9 @@ expandFlt ['%flt,x,y] ==
 expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
+expandFcstpi ['%fcstpi] ==
+  ['COERCE,'PI,quoteForm '%DoubleFloat]
+
 -- String operations
 
 ++ string equality comparison
@@ -425,10 +428,12 @@ for x in [
     -- ['%false, :'NIL],
     ['%true,  :'T],
     -- unary Boolean operations
-    ['%not, :'NOT],
+    ['%not,   :'NOT],
+    ['%2bit,  :'TRUTH_-TO_-BIT],
+    ['%2bool, :'BIT_-TO_-TRUTH],
     -- binary Boolean operations
-    ['%and, :'AND],
-    ['%or,  :'OR],
+    ['%and,   :'AND],
+    ['%or,    :'OR],
 
     -- character operations
     ['%ceq,    :'CHAR_=],
@@ -572,6 +577,7 @@ for x in [
    ['%fminval, :function expandFminval],
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
+   ['%fcstpi,  :function expandFcstpi],
 
    ['%streq,   :function expandStreq],
    ['%strlt,   :function expandStrlt],

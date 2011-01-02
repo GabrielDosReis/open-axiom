@@ -42,7 +42,7 @@
       (|getShellEntry| (|getShellEntry| $$ 0) 10))) 
 
 (DEFUN |HOAGG-;#;ANni;2| (|c| $)
-  (LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
+  (LIST-LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
 
 (DEFUN |HOAGG-;any?;MAB;3| (|f| |c| $)
   (LET ((#0=#:G1380 NIL) (#1=#:G1381 T)

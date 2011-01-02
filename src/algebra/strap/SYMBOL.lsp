@@ -195,12 +195,14 @@
   (SPADCALL |x| (|getShellEntry| $ 79))) 
 
 (DEFUN |SYMBOL;syprefix| (|sc| $)
-  (LET ((|ns| (LIST (LENGTH (QVELT |sc| 3)) (LENGTH (QVELT |sc| 2))
-                    (LENGTH (QVELT |sc| 1)) (LENGTH (QVELT |sc| 0)))))
+  (LET ((|ns| (LIST (LIST-LENGTH (QVELT |sc| 3))
+                    (LIST-LENGTH (QVELT |sc| 2))
+                    (LIST-LENGTH (QVELT |sc| 1))
+                    (LIST-LENGTH (QVELT |sc| 0)))))
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((NOT (< (LENGTH |ns|) 2))
+                     ((NOT (< (LIST-LENGTH |ns|) 2))
                       (ZEROP (|SPADfirst| |ns|)))
                      (T NIL)))
               (RETURN NIL))
@@ -208,7 +210,7 @@
          (EXIT (SPADCALL
                    (CONS (STRCONC (|getShellEntry| $ 38)
                                   (|SYMBOL;istring|
-                                      (LENGTH (QVELT |sc| 4)) $))
+                                      (LIST-LENGTH (QVELT |sc| 4)) $))
                          (LET ((#0=#:G1524 (NREVERSE |ns|))
                                (#1=#:G1523 NIL))
                            (LOOP
@@ -569,7 +571,7 @@
                            ((ATOM #1#) (RETURN NIL))
                            (T (LET ((|n| (CAR #1#)))
                                 (COND
-                                  ((< (LENGTH |allscripts|) |n|)
+                                  ((< (LIST-LENGTH |allscripts|) |n|)
                                    (|error|
                                     "Improper script count in symbol"))
                                   (T (SEQ

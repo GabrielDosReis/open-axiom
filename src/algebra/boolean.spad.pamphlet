@@ -564,7 +564,7 @@ IndexedBits(mn:Integer): BitAggregate() with
               s.i := if v.j then t else f
             s::OutputForm
 
-        new(n, b)       == BVEC_-MAKE_-FULL(n,TRUTH_-TO_-BIT(b)$Lisp)$Lisp
+        new(n, b)       == BVEC_-MAKE_-FULL(n, %2bit(b)$Foreign(Builtin))$Lisp
         empty()         == BVEC_-MAKE_-FULL(0,0)$Lisp
         copy v          == BVEC_-COPY(v)$Lisp
         #v              == BVEC_-SIZE(v)$Lisp
@@ -574,10 +574,10 @@ IndexedBits(mn:Integer): BitAggregate() with
         u or v          == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
         xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
         setelt(v:%, i:Integer, f:Boolean) ==
-          BIT_-TO_-TRUTH(BVEC_-SETELT(v, range(v, i-mn), 
-            TRUTH_-TO_-BIT(f)$Lisp)$Lisp)$Lisp
+          %2bool(BVEC_-SETELT(v, range(v, i-mn), 
+            %2bit(f)$Foreign(Builtin))$Lisp)$Foreign(Builtin)
         elt(v:%, i:Integer) ==
-          BIT_-TO_-TRUTH(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Lisp
+          %2bool(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Foreign(Builtin)
 
         Not v           == BVEC_-NOT(v)$Lisp
         And(u, v)       == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))

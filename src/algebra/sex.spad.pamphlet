@@ -100,6 +100,8 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
         import %peq: (%,%) -> Boolean  from Foreign Builtin
         import %head: % -> %           from Foreign Builtin
         import %tail: % -> %           from Foreign Builtin
+        import %llength: % -> Integer  from Foreign Builtin
+        import %nil: %                 from Foreign Builtin
 
         Rep := Expr
 
@@ -121,7 +123,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
         b1 = b2        == EQUAL(b1,b2)$Lisp
         eq(b1, b2)     == %peq(b1,b2)
 
-        null? b      == NULL(b)$Lisp
+        null? b      == %peq(b,%nil)
         atom? b      == ATOM(b)$Lisp
         pair? b      == %pair? b
 
@@ -147,7 +149,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
 
         car b        == %head b
         cdr b        == %tail b
-        #   b        == LENGTH(b)$Lisp
+        #   b        == %llength b
         elt(b:%, i:Integer)       == destruct(b).i
         elt(b:%, li:List Integer) ==
           for i in li repeat b := destruct(b).i

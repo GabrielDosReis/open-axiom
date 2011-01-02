@@ -559,7 +559,7 @@
                                       (|getShellEntry| $ 75))
                                      #3#)))))
                   (SETQ #2# (CDR #2#)))))
-         (|n| (LENGTH |d|))
+         (|n| (LIST-LENGTH |d|))
          (|mm| (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d| $))
          (|w| (|POLYCAT-;P2R| (|SPADfirst| |r|) |d| |n| $)))
     (SEQ (SETQ |l| (CDR |l|)) (SETQ |r| (CDR |r|))

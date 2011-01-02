@@ -4,7 +4,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) (|%IntegerSection| 0))
                 |ILIST;#;$Nni;1|)) 
 
-(PUT '|ILIST;#;$Nni;1| '|SPADreplace| 'LENGTH) 
+(PUT '|ILIST;#;$Nni;1| '|SPADreplace| '|%llength|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |ILIST;concat;S2$;2|)) 
@@ -73,12 +73,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
                 |ILIST;reverse!;2$;16|)) 
 
-(PUT '|ILIST;reverse!;2$;16| '|SPADreplace| 'NREVERSE) 
+(PUT '|ILIST;reverse!;2$;16| '|SPADreplace| '|%lreverse!|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
                 |ILIST;reverse;2$;17|)) 
 
-(PUT '|ILIST;reverse;2$;17| '|SPADreplace| 'REVERSE) 
+(PUT '|ILIST;reverse;2$;17| '|SPADreplace| '|%lreverse|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Integer|)
                 |ILIST;minIndex;$I;18|)) 
@@ -121,7 +121,9 @@
                     |%List|)
                 |ILIST;mergeSort|)) 
 
-(DEFUN |ILIST;#;$Nni;1| (|x| $) (DECLARE (IGNORE $)) (LENGTH |x|)) 
+(DEFUN |ILIST;#;$Nni;1| (|x| $)
+  (DECLARE (IGNORE $))
+  (LIST-LENGTH |x|)) 
 
 (DEFUN |ILIST;concat;S2$;2| (|s| |x| $)
   (DECLARE (IGNORE $))
@@ -336,7 +338,7 @@
              (EXIT |l|)))))) 
 
 (DEFUN |ILIST;sort!;M2$;27| (|f| |l| $)
-  (|ILIST;mergeSort| |f| |l| (LENGTH |l|) $)) 
+  (|ILIST;mergeSort| |f| |l| (LIST-LENGTH |l|) $)) 
 
 (DEFUN |ILIST;merge!;M3$;28| (|f| |p| |q| $)
   (PROG (|r| |t|)

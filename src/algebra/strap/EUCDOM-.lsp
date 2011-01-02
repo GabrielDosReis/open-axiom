@@ -292,7 +292,7 @@
 (DEFUN |EUCDOM-;multiEuclidean;LSU;11| (|l| |z| $)
   (PROG (|l1| |l2| |u| |v1| |v2|)
     (RETURN
-      (LET ((|n| (LENGTH |l|)))
+      (LET ((|n| (LIST-LENGTH |l|)))
         (COND
           ((ZEROP |n|) (|error| "empty list passed to multiEuclidean"))
           ((EQL |n| 1) (CONS 0 (LIST |z|)))

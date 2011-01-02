@@ -1,0 +1,18 @@
+2011-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/nrunfast.boot (evalSlotDomain): Expand to VM forms before
+	value argument evaluation.
+	(lazyMatch): Check for %llength too.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %2bit
+	and %2bool.
+	* interp/g-util.boot: Expand them.
+	* interp/define.boot (compJoin): Check for %llenght too.
+	* algebra/boolean.spad.pamphlet: Tidy.
+	* algebra/domain.spad.pamphlet: Likewise.
+	* algebra/draw.spad.pamphlet: Likewise.
+	* algebra/files.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+	* algebra/sf.spad.pamphlet: Likewise.
+

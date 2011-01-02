@@ -130,19 +130,20 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;pile;L$;32|)) 
 
-(PUT '|OUTFORM;pile;L$;32| '|SPADreplace| '(XLAM (|l|) (CONS 'SC |l|))) 
+(PUT '|OUTFORM;pile;L$;32| '|SPADreplace|
+     '(XLAM (|l|) (|%makepair| 'SC |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;commaSeparate;L$;33|)) 
 
 (PUT '|OUTFORM;commaSeparate;L$;33| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'AGGLST |l|))) 
+     '(XLAM (|l|) (|%makepair| 'AGGLST |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;semicolonSeparate;L$;34|)) 
 
 (PUT '|OUTFORM;semicolonSeparate;L$;34| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'AGGSET |l|))) 
+     '(XLAM (|l|) (|%makepair| 'AGGSET |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;blankSeparate;L$;35|)) 
@@ -214,7 +215,7 @@
                 |OUTFORM;hconcat;L$;49|)) 
 
 (PUT '|OUTFORM;hconcat;L$;49| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'CONCAT |l|))) 
+     '(XLAM (|l|) (|%makepair| 'CONCAT |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;vconcat;3$;50|)) 
@@ -226,7 +227,7 @@
                 |OUTFORM;vconcat;L$;51|)) 
 
 (PUT '|OUTFORM;vconcat;L$;51| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'VCONCAT |l|))) 
+     '(XLAM (|l|) (|%makepair| 'VCONCAT |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;~=;3$;52|)) 
@@ -361,7 +362,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;elt;$L$;75|)) 
 
-(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| 'CONS) 
+(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| '|%makepair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;prefix;$L$;76|)) 
@@ -714,7 +715,7 @@
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
-         ((ODDP (LENGTH |l|))
+         ((ODDP (LIST-LENGTH |l|))
           (SETQ |l| (APPEND |l| (LIST (|OUTFORM;empty;$;73| $))))))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 

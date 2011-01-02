@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -439,6 +439,7 @@ $VMsideEffectFreeOperators ==
      QEQCAR QCDR QCAR IDENTP SYMBOLP
       GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
        CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
+       %2bit %2bool
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
         %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
         %icst0 %icst1

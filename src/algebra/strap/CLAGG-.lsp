@@ -42,7 +42,7 @@
                 |CLAGG-;removeDuplicates;2A;12|)) 
 
 (DEFUN |CLAGG-;#;ANni;1| (|c| $)
-  (LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
+  (LIST-LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
 
 (DEFUN |CLAGG-;count;MANni;2| (|f| |c| $)
   (LET ((#0=#:G1377 NIL) (#1=#:G1378 T)
