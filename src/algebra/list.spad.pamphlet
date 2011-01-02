@@ -270,7 +270,7 @@ List(S:Type): Exports == Implementation where
    IndexedList(S, LISTMININDEX) add
       import %nil: %                 from Foreign Builtin
       import %peq: (%,%) -> Boolean  from Foreign Builtin
-      import %makepair: (S,%) -> S   from Foreign Builtin
+      import %makepair: (S,%) -> %   from Foreign Builtin
 
       nil                      == %nil
       null l                   == %peq(l,%nil)
