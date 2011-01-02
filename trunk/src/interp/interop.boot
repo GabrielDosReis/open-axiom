@@ -281,7 +281,7 @@ instantiate domenv ==
 --     ofn := symbolFunction functor
 --     loadFunctor functor
 --     fn := symbolFunction functor
---     SETF(symbolFunction functor, ofn)
+--     symbolFunction(functor) := ofn
 --     PUT(functor, 'instantiate, fn)
 --  domvec := apply(fn, args)
   domvec := apply(functor, args)
@@ -608,7 +608,7 @@ HasCategory(domain,catform') ==
 
 --systemDependentMkAutoload(fn,cnam) ==
 --    FBOUNDP(cnam) => "next"
---    SETF(symbolFunction cnam,mkAutoLoad(fn, cnam))
+--    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 domainEqual(a,b) == 
   vector? a and vector? b and a.0 = b.0

@@ -368,7 +368,7 @@ clearCmdParts(l is [opt,:vl]) ==
           prop:= first p2
           recordOldValue(x,prop,rest p2)
           recordNewValue(x,prop,NIL)
-        SETF(CAAR $InteractiveFrame,deleteAssoc(x,CAAR $InteractiveFrame))
+        CAAR($InteractiveFrame) := deleteAssoc(x,CAAR $InteractiveFrame)
       p2:= assoc(option,rest p1) =>
         recordOldValue(x,option,rest p2)
         recordNewValue(x,option,NIL)

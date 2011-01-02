@@ -48,7 +48,7 @@ shoeIntern (s)==
    f.0=char " " =>shoeIntern rest s
    a:=INTERN subString(f,0,8)
    [b,c]:= shoeStrings rest s
-   SETF(GET (a,"MSGS"),b)
+   GET(a,"MSGS") := b
    shoeIntern c
  
 shoeStrings (stream)==
