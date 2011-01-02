@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1620,7 +1620,7 @@ compJoin(["Join",:argl],m,e) ==
                 atom y =>
                   isDomainForm(y,e) => [y]
                   nil
-                y is ['LENGTH,y'] => [y,y']
+                y is [op,y'] and op in '(LENGTH %llength) => [y,y']
                 [y]
           x
         x is ["DomainSubstitutionMacro",pl,body] =>

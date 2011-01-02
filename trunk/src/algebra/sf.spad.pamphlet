@@ -315,6 +315,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fsech: % -> %                from Foreign Builtin
    import %fasinh: % -> %               from Foreign Builtin
    import %facsch: % -> %               from Foreign Builtin
+   import %fcstpi: () -> %              from Foreign Builtin
 
    manexp: % -> MER
 
@@ -374,7 +375,7 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    1                == %i2f(1@Integer)
    -- rational approximation to e accurate to 23 digits
    exp1()           == %i2f(534625820200) / %i2f(196677847971)
-   pi()             == PI$Lisp
+   pi()             == %fcstpi()
    coerce(x:%):OutputForm == outputForm x
    convert(x:%):InputForm == convert(x pretend DoubleFloat)$InputForm
    x < y            == %flt(x,y)

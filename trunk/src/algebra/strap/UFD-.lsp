@@ -33,8 +33,9 @@
           (|getShellEntry| $ 15))))) 
 
 (DEFUN |UFD-;prime?;SB;2| (|x| $)
-  (EQL (LENGTH (SPADCALL (SPADCALL |x| (|getShellEntry| $ 18))
-                   (|getShellEntry| $ 22)))
+  (EQL (LIST-LENGTH
+           (SPADCALL (SPADCALL |x| (|getShellEntry| $ 18))
+               (|getShellEntry| $ 22)))
        1)) 
 
 (DEFUN |UniqueFactorizationDomain&| (|#1|)

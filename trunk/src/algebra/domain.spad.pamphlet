@@ -108,10 +108,10 @@ ConstructorCategory(): Category == OperatorCategory Identifier with
        ++ exported by instantiations of constructor \spad{c}.
        ++ The operators are partitioned into overload sets.
   add
-    kind x == getConstructorKind(x)$Lisp
-    arity x == getConstructorArity(x)$Lisp
-    dualSignature x == getDualSignatureFromDB(x)$Lisp
-    operations x == getConstructorOperationsFromDB(x)$Lisp
+    kind x == getConstructorKind(x)$Foreign(Builtin)
+    arity x == getConstructorArity(x)$Foreign(Builtin)
+    dualSignature x == getDualSignatureFromDB(x)$Foreign(Builtin)
+    operations x == getConstructorOperationsFromDB(x)$Foreign(Builtin)
 
 @
 
@@ -133,10 +133,11 @@ Constructor(): ConstructorCategory with
   == add
     Rep == Identifier
     name x == rep x
-    kind x == getConstructorKind(x)$Lisp
-    arity x == getConstructorArity(x)$Lisp
+    kind x == getConstructorKind(x)$Foreign(Builtin)
+    arity x == getConstructorArity(x)$Foreign(Builtin)
     findConstructor s ==
-      isConstructorName(s)$Lisp => just per(s pretend Identifier)
+      isConstructorName(s)$Foreign(Builtin) =>
+        just per(s pretend Identifier)
       nothing
 
 @
@@ -177,7 +178,7 @@ ConstructorCall(C: ConstructorCategory): Public == Private where
       EQUAL(x,y)$Lisp
 
     coerce(x: %): OutputForm ==
-      outputDomainConstructor(x)$Lisp
+      outputDomainConstructor(x)$Foreign(Builtin)
 
 @
 

@@ -485,7 +485,7 @@ OutputForm(): SetCategory with
         --   bug in product, paren blankSeparate []
         --   uniformize integrals, products, etc as plexes.
 
-        cons ==> CONS$Lisp
+        cons ==> %makepair$Foreign(Builtin)
         car  ==> %head$Foreign(Builtin)
         cdr  ==> %tail$Foreign(Builtin)
 

@@ -55,16 +55,17 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
  Exports ==> ListAggregate S 
  Implementation ==>
   add
-   import %nil: %                from Foreign Builtin
-   import %makepair: (S,%) -> %  from Foreign Builtin
-   import %peq: (%,%) -> Boolean  from Foreign Builtin
-   import %lempty?: % -> Boolean from Foreign Builtin
-   import %head: % -> S          from Foreign Builtin
-   import %tail: % -> %          from Foreign Builtin
-   import %lreverse: % -> %      from Foreign Builtin
-   import %lreverse!: % -> %     from Foreign Builtin
+   import %nil: %                           from Foreign Builtin
+   import %makepair: (S,%) -> %             from Foreign Builtin
+   import %peq: (%,%) -> Boolean            from Foreign Builtin
+   import %lempty?: % -> Boolean            from Foreign Builtin
+   import %head: % -> S                     from Foreign Builtin
+   import %tail: % -> %                     from Foreign Builtin
+   import %lreverse: % -> %                 from Foreign Builtin
+   import %lreverse!: % -> %                from Foreign Builtin
+   import %llength: % -> NonNegativeInteger from Foreign Builtin
    
-   #x                  == LENGTH(x)$Lisp
+   #x                  == %llength x
    concat(s:S,x:%)     == %makepair(s,x)
    eq?(x,y)            == %peq(x,y)
    first x             == SPADfirst(x)$Lisp
@@ -87,8 +88,8 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
       %tail RPLACD(x,y)$Lisp
    construct l         == l pretend %
    parts s             == s pretend List S
-   reverse! x         == NREVERSE(x)$Lisp
-   reverse x           == REVERSE(x)$Lisp
+   reverse! x         == %lreverse! x
+   reverse x           == %lreverse x
    minIndex x          == mn
 
    rest(x, n) ==
@@ -103,7 +104,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
          if i = cycleMax and cyclic? x then error "cyclic list"
          y := %makepair(%head x,y)
          x := %tail x
-      (NREVERSE(y)$Lisp)@%
+      %lreverse! y
 
    if S has CoercibleTo(OutputForm) then
      coerce(x):OutputForm ==

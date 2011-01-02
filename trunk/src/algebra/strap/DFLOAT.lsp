@@ -64,7 +64,7 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%DoubleFloat|) |DFLOAT;pi;$;17|)) 
 
-(PUT '|DFLOAT;pi;$;17| '|SPADreplace| '(XLAM NIL PI)) 
+(PUT '|DFLOAT;pi;$;17| '|SPADreplace| '|%fcstpi|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%Thing|)
                 |DFLOAT;coerce;$Of;18|)) 
@@ -470,7 +470,9 @@
   (/ (FLOAT 534625820200 |$DoubleFloatMaximum|)
      (FLOAT 196677847971 |$DoubleFloatMaximum|))) 
 
-(DEFUN |DFLOAT;pi;$;17| ($) (DECLARE (IGNORE $)) PI) 
+(DEFUN |DFLOAT;pi;$;17| ($)
+  (DECLARE (IGNORE $))
+  (COERCE PI 'DOUBLE-FLOAT)) 
 
 (DEFUN |DFLOAT;coerce;$Of;18| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 48))) 
@@ -624,13 +626,15 @@
       (SEQ (COND
              ((ZEROP |x|)
               (COND
-                ((PLUSP |y|) (/ PI 2))
-                ((MINUSP |y|) (- (/ PI 2)))
+                ((PLUSP |y|) (/ (COERCE PI 'DOUBLE-FLOAT) 2))
+                ((MINUSP |y|) (- (/ (COERCE PI 'DOUBLE-FLOAT) 2)))
                 (T 0.0)))
              (T (SEQ (LETT |theta| (ATAN (ABS (/ |y| |x|)))
                            |DFLOAT;atan;3$;79|)
                      (COND
-                       ((MINUSP |x|) (SETQ |theta| (- PI |theta|))))
+                       ((MINUSP |x|)
+                        (SETQ |theta|
+                              (- (COERCE PI 'DOUBLE-FLOAT) |theta|))))
                      (COND ((MINUSP |y|) (SETQ |theta| (- |theta|))))
                      (EXIT |theta|)))))))) 
 

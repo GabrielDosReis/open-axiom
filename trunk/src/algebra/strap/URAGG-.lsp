@@ -469,7 +469,7 @@
 
 (DEFUN |URAGG-;setchildren!;ALA;30| (|u| |lv| $)
   (COND
-    ((EQL (LENGTH |lv|) 1)
+    ((EQL (LIST-LENGTH |lv|) 1)
      (SPADCALL |u| (|SPADfirst| |lv|) (|getShellEntry| $ 74)))
     (T (|error| "wrong number of children specified")))) 
 
