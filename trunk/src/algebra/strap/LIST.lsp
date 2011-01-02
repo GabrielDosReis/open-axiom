@@ -3,17 +3,18 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%List|) |LIST;nil;$;1|)) 
 
-(PUT '|LIST;nil;$;1| '|SPADreplace| '(XLAM NIL NIL)) 
+(PUT '|LIST;nil;$;1| '|SPADreplace| '(XLAM NIL |%nil|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Boolean|)
                 |LIST;null;$B;2|)) 
 
-(PUT '|LIST;null;$B;2| '|SPADreplace| 'NULL) 
+(PUT '|LIST;null;$B;2| '|SPADreplace|
+     '(XLAM (|l|) (|%peq| |l| |%nil|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |LIST;cons;S2$;3|)) 
 
-(PUT '|LIST;cons;S2$;3| '|SPADreplace| 'CONS) 
+(PUT '|LIST;cons;S2$;3| '|SPADreplace| '|%makepair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
                 |LIST;append;3$;4|)) 
