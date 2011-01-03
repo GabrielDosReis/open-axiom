@@ -167,9 +167,6 @@
 (defun make-bvec (n)
   (bvec-make-full n 0))
  
-(defun bvec-setelt (bv i x)
-  (setf (sbit bv i) x))
-
 (defun |shoeReadLisp| (s n)
   (multiple-value-list (read-from-string s nil nil :start n)))
 

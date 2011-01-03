@@ -5782,7 +5782,7 @@ $as_echo "$v" >&6; }
 	      ;;
 	 esac
 	 ;;
-      # ECL does not provide useful information for dectecing CPU precision
+      # ECL does not provide useful information for detecting CPU precision
       *ecl*)
          case $target in
            *darwin*)
@@ -7129,7 +7129,7 @@ if test -n "$openaxiom_host_lisp_precision"; then
 fi
 
 ## If we are using GCL as the base runtime system, then we do really need
-# a C compiler from GNU.  Well, at least for the moment.
+## a C compiler from GNU.  Well, at least for the moment.
 case $axiom_lisp_flavor,$GCC in
    gcl,yes)
        axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
@@ -20293,7 +20293,7 @@ fi
 
 done
 
-## We want annonymous mapping for memory allocation.  Unfortunately,
+## We want anonymous mapping for memory allocation.  Unfortunately,
 ## the flag for anonymous mapping is not standardized.  Popular names
 ##  are MAP_ANONYMOUS and MAP_ANON.
 if test x"$ac_cv_header_sys_mman_h" = xyes; then

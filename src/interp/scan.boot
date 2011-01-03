@@ -196,10 +196,10 @@ scanPunCons()==
   a := MAKE_-BVEC 256
 --  SETSIZE(a,256)
   for i in 0..255 repeat
-    BVEC_-SETELT(a,i,0)
+    bitmask(a,i) := 0
   for k in listing repeat
     if not startsId? k.0
-    then BVEC_-SETELT(a,codePoint stringChar(k,0),1)
+    then bitmask(a,codePoint stringChar(k,0)) := 1
   a
 
 scanPun:=scanPunCons()
