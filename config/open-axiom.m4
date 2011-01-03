@@ -49,7 +49,7 @@ if test x"$oa_include_gcl" != xyes; then
 	      ;;
 	 esac
 	 ;;
-      # ECL does not provide useful information for dectecing CPU precision
+      # ECL does not provide useful information for detecting CPU precision
       *ecl*)
          case $target in
            *darwin*)
@@ -237,7 +237,7 @@ dnl ---------------------------------
 dnl GCL assumes that the C compiler is from GNU.
 AC_DEFUN([OPENAXIOM_SATISFY_GCL_NEEDS],[
 ## If we are using GCL as the base runtime system, then we do really need
-# a C compiler from GNU.  Well, at least for the moment.
+## a C compiler from GNU.  Well, at least for the moment.
 case $axiom_lisp_flavor,$GCC in
    gcl,yes)
        axiom_cflags="-O2 -Wall -D_GNU_SOURCE"
@@ -294,7 +294,7 @@ AC_SUBST(GCLOPTS)
 dnl --------------------------
 dnl -- OPENAXIOM_LISP_FLAGS --
 dnl --------------------------
-dnl Determine how to invoke the host Lisp systemin batch mode.
+dnl Determine how to invoke the host Lisp system in batch mode.
 dnl We also take the opportunity to determine whether we can use
 dnl dynamically loaded modules.
 AC_DEFUN([OPENAXIOM_LISP_FLAGS],[
@@ -682,7 +682,7 @@ dnl The host environment must be capable of handling communication through
 dnl sockets.  This is required for interfacing AXIOMsys
 dnl and Superman.  Notice that ideally, we should decouple
 dnl that interface in such a way that we can still build OpenAxiom
-dnl when uperman is not needed or a socket library is not
+dnl when Superman is not needed or a socket library is not
 dnl available.
 AC_DEFUN([OPENAXIOM_CHECK_SOCKETS],[
 case $host in
@@ -951,7 +951,7 @@ dnl ------------------------
 dnl Check for host capability of memory mapping.
 AC_DEFUN([OPENAXIOM_CHECK_MM],[
 AC_CHECK_HEADERS([sys/mman.h fcntl.h])
-## We want annonymous mapping for memory allocation.  Unfortunately,
+## We want anonymous mapping for memory allocation.  Unfortunately,
 ## the flag for anonymous mapping is not standardized.  Popular names
 ##  are MAP_ANONYMOUS and MAP_ANON.
 if test x"$ac_cv_header_sys_mman_h" = xyes; then
