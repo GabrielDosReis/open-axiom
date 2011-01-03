@@ -366,6 +366,45 @@ expandStrlt ['%strlt,x,y] ==
 expandStrstc ['%strstc,x,y,z] ==
   expandToVMForm ['%store,['%schar,x,y],z]
 
+-- bit vector operations
+expandBitvecnot ['%bitvecnot,x] ==
+  ['BIT_-NOT,expandToVMForm x]
+
+expandBitvecand ['%bitvecand,x,y] ==
+  ['BIT_-AND,expandToVMForm x,expandToVMForm y]
+
+expandBitvecnand ['%bitvecnand,x,y] ==
+  ['BIT_-NAND,expandToVMForm x,expandToVMForm y]
+
+expandBitvecor ['%bitvecor,x,y] ==
+  ['BIT_-IOR,expandToVMForm x,expandToVMForm y]
+
+expandBitvecnor ['%bitvecnor,x,y] ==
+  ['BIT_-NOR,expandToVMForm x,expandToVMForm y]
+
+expandBitvecxor ['%bitvecxor,x,y] ==
+  ['BIT_-XOR,expandToVMForm x,expandToVMForm y]
+
+expandBitveclength ['%bitveclength,x] ==
+  ['LENGTH,expandToVMForm x]
+
+expandBitveccopy ['%bitveccopy,x] ==
+  ['COPY_-SEQ,expandToVMForm x]
+
+expandBitvecconc ['%bitvecconc,x,y] ==
+  ['CONCATENATE, quoteForm '%BitVector,expandToVMForm x,expandToVMForm y]
+
+expandBitvecref ['%bitvecref,x,y] ==
+  ['SBIT,expandToVMForm x,expandToVMForm y]
+
+expandBitveceq ['%bitveceq,x,y] ==
+  ['EQUAL,expandToVMForm x,expandToVMForm y]
+
+expandMakebitvec ['%makebitvec,x,y] ==
+  ['MAKE_-ARRAY,['LIST,expandToVMForm x],
+     KEYWORD::ELEMENT_-TYPE,quoteForm '%Bit,
+       KEYWORD::INITIAL_-ELEMENT,expandToVMForm y]
+
 -- Local variable bindings
 expandBind ['%bind,inits,:body] ==
   body := expandToVMForm body
@@ -582,6 +621,19 @@ for x in [
    ['%streq,   :function expandStreq],
    ['%strlt,   :function expandStrlt],
    ['%strstc,  :function expandStrstc],
+
+   ['%bitvecnot,    :function expandBitvecnot],
+   ['%bitvecand,    :function expandBitvecand],
+   ['%bitvecnand,   :function expandBitvecnand],
+   ['%bitvecor,     :function expandBitvecor],
+   ['%bitvecxor,    :function expandBitvecxor],
+   ['%bitvecnor,    :function expandBitvecnor],
+   ['%bitveclength, :function expandBitveclength],
+   ['%bitveccopy,   :function expandBitveccopy],
+   ['%bitvecconc,   :function expandBitvecconc],
+   ['%bitveceq,     :function expandBitveceq],
+   ['%bitvecref,   :function expandBitvecref],
+   ['%makebitvec,   :function expandMakebitvec],
 
    ['%peq,     :function expandPeq],
    ['%before?, :function expandBefore?],

@@ -546,13 +546,24 @@ IndexedBits(mn:Integer): BitAggregate() with
             ++ And(n,m)  returns the bit-by-bit logical {\em And} of
             ++ n and m.
     == add
-
-        range: (%, Integer) -> Integer
-          --++ range(j,i) returnes the range i of the boolean j.
+        import %2bool: NonNegativeInteger -> Boolean  from Foreign Builtin
+        import %2bit: Boolean -> NonNegativeInteger   from Foreign Builtin
+        import %bitveccopy: % -> %                    from Foreign Builtin
+        import %bitveclength: % -> NonNegativeInteger from Foreign Builtin
+        import %bitvecref: (%,Integer) -> NonNegativeInteger
+                                                      from Foreign Builtin
+        import %bitveceq: (%,%) -> Boolean            from Foreign Builtin
+        import %bitvecnot: % -> %                     from Foreign Builtin
+        import %bitvecand: (%,%) -> %                 from Foreign Builtin
+        import %bitvecor: (%,%) -> %                  from Foreign Builtin
+        import %bitvecxor: (%,%) -> %                 from Foreign Builtin
+        import %makebitvec: (NonNegativeInteger,NonNegativeInteger) -> %
+                                                      from Foreign Builtin
 
         minIndex u  == mn
 
-        range(v, i) ==
+        -- range check index of `i' into `v'.
+        range(v: %, i: Integer): Integer ==
           i >= 0 and i < #v => i
           error "Index out of range"
 
@@ -564,24 +575,23 @@ IndexedBits(mn:Integer): BitAggregate() with
               s.i := if v.j then t else f
             s::OutputForm
 
-        new(n, b)       == BVEC_-MAKE_-FULL(n, %2bit(b)$Foreign(Builtin))$Lisp
-        empty()         == BVEC_-MAKE_-FULL(0,0)$Lisp
-        copy v          == BVEC_-COPY(v)$Lisp
-        #v              == BVEC_-SIZE(v)$Lisp
-        v = u           == BVEC_-EQUAL(v, u)$Lisp
+        new(n, b)       == %makebitvec(n, %2bit(b)$Foreign(Builtin))
+        empty()         == %makebitvec(0,0)
+        copy v          == %bitveccopy v
+        #v              == %bitveclength v
+        v = u           == %bitveceq(v,u)
         v < u           == BVEC_-GREATER(u, v)$Lisp
-        u and v         == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
-        u or v          == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
-        xor(v,u)        == (#v=#u => BVEC_-XOR(v,u)$Lisp; map("xor",v,u))
+        u and v         == (#v=#u => %bitvecand(v,u); map("and",v,u))
+        u or v          == (#v=#u => %bitvecor(v,u); map("or", v,u))
+        xor(v,u)        == (#v=#u => %bitvecxor(v,u); map("xor",v,u))
         setelt(v:%, i:Integer, f:Boolean) ==
-          %2bool(BVEC_-SETELT(v, range(v, i-mn), 
-            %2bit(f)$Foreign(Builtin))$Lisp)$Foreign(Builtin)
+          %2bool %store(%bitvecref(v,range(v,i-mn)),%2bit f)$Foreign(Builtin)
         elt(v:%, i:Integer) ==
-          %2bool(BVEC_-ELT(v, range(v, i-mn))$Lisp)$Foreign(Builtin)
+          %2bool %bitvecref(v,range(v,i-mn))
 
-        Not v           == BVEC_-NOT(v)$Lisp
-        And(u, v)       == (#v=#u => BVEC_-AND(v,u)$Lisp; map("and",v,u))
-        Or(u, v)        == (#v=#u => BVEC_-OR(v, u)$Lisp; map("or", v,u))
+        Not v           == %bitvecnot v
+        And(u, v)       == (#v=#u => %bitvecand(v,u); map("and",v,u))
+        Or(u, v)        == (#v=#u => %bitvecor(v,u); map("or", v,u))
 
 @
 \section{domain BITS Bits}
