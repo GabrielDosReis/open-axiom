@@ -453,13 +453,16 @@ $VMsideEffectFreeOperators ==
         %lreverse %lempty? %hash %ismall? %string? %f2s
         %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
         %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
-        %vref %vlength %before?)
+        %vref %vlength
+        %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
+        %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
+        %before?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
     ['CONS,'LIST,'VECTOR,'STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
-      '%strstc,"MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
+      '%strstc,'%makebitvec,"MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
@@ -749,6 +752,18 @@ optIquo(x is ['%iquo,a,b]) ==
   integer? a and integer? b => a quo b
   x
 
+-- Boolean <-> bit conversion.
+opt2bit(x is ['%2bit,a]) ==
+  a is '%true => 1
+  a is '%false => 0
+  x
+
+opt2bool(x is ['%2bool,a]) ==
+  integer? a =>
+    a = 1 => '%true
+    '%false
+  x
+
 --%  
 --% optimizer hash table
 --%
@@ -776,6 +791,8 @@ for x in '( (%call         optCall) _
            (%irem        optIrem)_
            (%iquo        optIquo)_
            (%imul        optImul)_
+           (%2bit        opt2bit)_
+           (%2bool       opt2bool)_
            (LIST         optLIST)_
            (QSMINUS      optQSMINUS)_
            (SPADCALL     optSPADCALL)_

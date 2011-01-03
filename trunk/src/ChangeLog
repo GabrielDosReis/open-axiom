@@ -1,5 +1,23 @@
 2011-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-util.boot: Expand new bit vector operators.
+	* interp/g-opt.boot (opt2bit): New.
+	(opt2bool): Likewise.
+	* interp/bits.lisp (BVEC-SIZE): Remove.
+	(BVEC-COPY): Likewise.
+	(BVEC-CONCAT): Likewise.
+	(BVEC-EQUAL): Likewise.
+	(BVEC-AND): Likewise.
+	(BVEC-OR): Likewise.
+	(BVEC-XOR): Likewise.
+	(BVEC-NAND): Likewise.
+	(BVEC-NOR): Likewise.
+	(BVEC-NOT): Likewise.
+	* algebra/boolean.spad.pamphlet (IndexedBits): Remove uses of
+	Lisp-level functions.
+
+2011-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nrunfast.boot (evalSlotDomain): Expand to VM forms before
 	value argument evaluation.
 	(lazyMatch): Check for %llength too.

@@ -472,7 +472,7 @@
 
 (DEFUN |DFLOAT;pi;$;17| ($)
   (DECLARE (IGNORE $))
-  (COERCE PI 'DOUBLE-FLOAT)) 
+  (COERCE PI '|%DoubleFloat|)) 
 
 (DEFUN |DFLOAT;coerce;$Of;18| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 48))) 
@@ -626,15 +626,15 @@
       (SEQ (COND
              ((ZEROP |x|)
               (COND
-                ((PLUSP |y|) (/ (COERCE PI 'DOUBLE-FLOAT) 2))
-                ((MINUSP |y|) (- (/ (COERCE PI 'DOUBLE-FLOAT) 2)))
+                ((PLUSP |y|) (/ (COERCE PI '|%DoubleFloat|) 2))
+                ((MINUSP |y|) (- (/ (COERCE PI '|%DoubleFloat|) 2)))
                 (T 0.0)))
              (T (SEQ (LETT |theta| (ATAN (ABS (/ |y| |x|)))
                            |DFLOAT;atan;3$;79|)
                      (COND
                        ((MINUSP |x|)
                         (SETQ |theta|
-                              (- (COERCE PI 'DOUBLE-FLOAT) |theta|))))
+                              (- (COERCE PI '|%DoubleFloat|) |theta|))))
                      (COND ((MINUSP |y|) (SETQ |theta| (- |theta|))))
                      (EXIT |theta|)))))))) 
 
