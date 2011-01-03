@@ -167,10 +167,11 @@ shoeDict:=shoeDictCons()
 shoePunCons()==
   listing := HKEYS shoeKeyTable
   a := MAKE_-BVEC 256
-  for i in 0..255 repeat BVEC_-SETELT(a,i,0)
+  for i in 0..255 repeat
+    bitmask(a,i) := 0
   for k in listing repeat
-     if not shoeStartsId k.0
-     then BVEC_-SETELT(a,codePoint stringChar(k,0),1)
+    shoeStartsId k.0 => nil
+    bitmask(a,codePoint stringChar(k,0)) := 1
   a
  
 shoePun:=shoePunCons()
@@ -245,6 +246,7 @@ for i in [ _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
+  ["bitmask",   "SBIT"] , _
   ["canonicalFilename", "PROBE-FILE"], _
   ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _

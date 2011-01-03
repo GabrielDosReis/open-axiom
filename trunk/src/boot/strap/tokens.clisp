@@ -133,7 +133,7 @@
           (LOOP
             (COND
               ((> |i| 255) (RETURN NIL))
-              (T (BVEC-SETELT |a| |i| 0)))
+              (T (SETF (SBIT |a| |i|) 0)))
             (SETQ |i| (+ |i| 1))))
         (LET ((|bfVar#6| |listing|) (|k| NIL))
           (LOOP
@@ -142,8 +142,8 @@
                    (PROGN (SETQ |k| (CAR |bfVar#6|)) NIL))
                (RETURN NIL))
               (T (COND
-                   ((NOT (|shoeStartsId| (ELT |k| 0)))
-                    (BVEC-SETELT |a| (CHAR-CODE (SCHAR |k| 0)) 1)))))
+                   ((|shoeStartsId| (ELT |k| 0)) NIL)
+                   (T (SETF (SBIT |a| (CHAR-CODE (SCHAR |k| 0))) 1)))))
             (SETQ |bfVar#6| (CDR |bfVar#6|))))
         |a|))))
 
@@ -201,6 +201,7 @@
                   (LIST '|alphanumeric?| 'ALPHANUMERICP)
                   (LIST '|and| 'AND) (LIST '|append| 'APPEND)
                   (LIST '|apply| 'APPLY) (LIST '|atom| 'ATOM)
+                  (LIST '|bitmask| 'SBIT)
                   (LIST '|canonicalFilename| 'PROBE-FILE)
                   (LIST '|charString| 'STRING)
                   (LIST '|char?| 'CHARACTERP)
