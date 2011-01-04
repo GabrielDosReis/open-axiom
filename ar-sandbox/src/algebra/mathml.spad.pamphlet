@@ -154,6 +154,70 @@ not exist.  It exists in Fricas.
 
 Opera does not format the scripts output properly missing the postscript.
 
+2011-01-03  Here's a bunch more test cases supplied by Waldek.
+
+mT := MoebiusTransform(Fraction(Integer))
+moebius(2, 1,1, 1)$mT
+sum(sin(x), x=1..n)
+product(sin(x), x=1..n)
+D(besselJ(v, z), v)
+D(besselJ(v, z), v, 3)
+of1 := ('f)::OutputForm
+of2 := ('z)::OutputForm
+of3:=('+)::OutputForm
+prefix(of1, [of2 for i in 1..5])
+infix(of3,[of2 for i in 1..4])
+infix(of3, of1, of2)
+postfix(of3, of1)
+box(prefix(of1, [of2 for i in 1..5]))
+label(prefix(of1, [of2 for i in 1..5]), of2)
+(matrix$OutputForm)([[of1, of2], [of2, of1]])
+zag(zag(of1, of2),zag(of1, of2))
+root(of1)
+root(of1, of2)
+over(of1, of2)
+slash(of1, of2)
+assign(of1, of2)
+rarrow(of1, of2)
+differentiate(of1, 15)
+binomial(of1, of2)
+tensor(of1,of2)
+sub(of1, of2)
+super(of1, of2)
+presub(of1, of2)
+presuper(of1, of2)
+scripts(of1, [of2, of3, of2, of3])
+scripts(of1, [of2, empty()$OutputForm, of3, empty()$OutputForm])
+quote(of1)
+dot(of1)
+dot(of1,3)
+dot(of1,4)
+prime(of1)
+prime(of1, 5)
+overbar(of1)
+overlabel(of2, of1)
+sum(of1)
+sum(of1, of2)
+sum(of1,of2,of3)
+prod(of1)
+prod(of1, of2)
+prod(of1,of2,of3)
+int(of1)
+int(of1, of2)
+int(of1, of2, of3)
+brace(of1)
+brace([of1 for i in 1..4])
+bracket(of1)
+bracket([of1 for i in 1..4])
+paren(of1)
+paren([of1 for i in 1..4])
+semicolonSeparate([of1 for i in 1..4])
+of1 < of2
+exquo(of1, of2)
+SEGMENT(of1,of2)
+SEGMENT(of1)
+
+
 
 The \spadtype{TexFormat} domain has the capability to format an object with
 subscripts, superscripts, presubscripts and presuperscripts however
@@ -410,7 +474,7 @@ MathMLFormat(): public == private where
       ++ coerceS(o) changes o in the standard output format to MathML
       ++ format and displays result as one long string.
     exprex:    E -> S
-      ++ coverts \spadtype{OutputForm} to \spadtype{String} with the
+      ++ converts \spadtype{OutputForm} to \spadtype{String} with the
       ++ structure preserved with braces.  Actually this is not quite
       ++ accurate.  The function \spadfun{precondition} is first
       ++ applied to the
@@ -447,8 +511,8 @@ MathMLFormat(): public == private where
 
     -- the precedence of / in the following is relatively low because
     -- the bar obviates the need for parentheses.
-    binaryOps     : L S := ["+->","|","^","/","<",">","=","OVER"]$(L S)
-    binaryPrecs   : L I := [0,0,900, 700,400,400,400,   700]$(L I)
+    binaryOps     : L S := ["+->","|","^","/","<",">","=","OVER","RARROW","%LET"]$(L S)
+    binaryPrecs   : L I := [0,0,900, 700,400,400,400,700,0,0]$(L I)
 
     naryOps       : L S := ["-","+","*",blank,",",";"," ","ROW","",
        " \cr ","&","</mtd></mtr><mtr><mtd>"]$(L S)
@@ -462,7 +526,8 @@ MathMLFormat(): public == private where
     specialOps    : L S := ["MATRIX","BRACKET","BRACE","CONCATB","VCONCAT",  _
                             "AGGLST","CONCAT","OVERBAR","ROOT","SUB","TAG", _
                             "SUPERSUB","ZAG","AGGSET","SC","PAREN", _
-                            "SEGMENT","QUOTE","theMap", "SLASH"]
+                            "SEGMENT","QUOTE","theMap", "SLASH","BOX","EQUATNUM", _
+			    "BINOMIAL","NOTHING"]
 
     -- the next two lists provide translations for some strings for
     -- which MML provides special macros.
@@ -475,7 +540,6 @@ MathMLFormat(): public == private where
       ["<mo>cos</mo>","<mo>cot</mo>","<mo>csc</mo>","<mo>log</mo>","<mo>sec</mo>","<mo>sin</mo>","<mo>tan</mo>",
         "<mo>cosh</mo>","<mo>coth</mo>","<mo>csch</mo>","<mo>sech</mo>","<mo>sinh</mo>","<mo>tanh</mo>",
           "<mo>arccos</mo>","<mo>arcsin</mo>","<mo>arctan</mo>","<mo>erf</mo>","<mo>&#x2026;</mo>","<mo>$</mo>","<mo>&#x221E;</mo>","<mo>&#x0413;</mo>"]
-
 @
 \subsection{Private Function Declarations}
 
@@ -933,12 +997,29 @@ have to be switched by swapping names.
         tmp := formatNaryNoGroup("</mtd></mtr><mtr><mtd>", args, minPrec)
         group concat ["<mtable><mtr><mtd>",tmp,"</mtd></mtr></mtable>"]
       op = "MATRIX" => formatMatrix rest args
-      op = "ZAG" =>
--- {{+}{3}{{ZAG}{1}{7}}{{ZAG}{1}{15}}{{ZAG}{1}{1}}{{ZAG}{1}{25}}{{ZAG}{1}{1}}{{ZAG}{1}{7}}{{ZAG}{1}{4}}}
--- to format continued fraction traditionally need to intercept it at the
--- formatNary of the "+"
-        concat [" \zag{",formatMml(first args, minPrec),"}{",
-          formatMml(first rest args,minPrec),"}"]
+      op = "BOX" => 
+        null args => ""
+	tmp := formatNaryNoGroup("",args,minPrec)
+	group concat ["<mtable frame=_"solid_"><mtr><mtd>",tmp,"</mtd></mtr></mtable>"]
+      op = "EQUATNUM" =>
+        concat ["<mtable><mtr><mtd>",formatMml(args.1,minPrec),"</mtd><mtd style=_"padding-left: 50px;_">",formatMml(args.2,minPrec),"</mtd></mtr></mtable>"]
+      op = "BINOMIAL" =>
+        -- binomial('f:OutputForm,'z:OutputForm) produces
+	-- {{BINOMIAL}{f}{z}}
+	concat ["<mrow><mo stretchy=_"true_">(</mo><mfrac linethickness=_"0_">",formatMml(args.1,minPrec),formatMml(args.2,minPrec),"</mfrac><mo>)</mo></mrow>"]
+      op = "NOTHING" =>
+        "<none/>"
+      op = "ZAG" => 
+        -- this is the output from continuedFraction(314159/100000)
+        -- {{+}{3}{{ZAG}{1}{7}}{{ZAG}{1}{15}}{{ZAG}{1}{1}}{{ZAG}{1}{25}}{{ZAG}{1}{1}}{{ZAG}{1}{7}}{{ZAG}{1}{4}}}
+        -- to format continued fraction traditionally need to intercept it at the
+        -- formatNary of the "+"
+        --  concat [" \zag{",formatMml(first args, minPrec),"}{",
+        --    formatMml(first rest args,minPrec),"}"]
+	concat ["<mtable><mtr><mtd style=_"border-right: solid 1px black; 
+	  border-bottom: solid 1px black; padding-right: 2px; padding-left: 2px;_">",formatMml(first args, minPrec),
+	    "</mtd></mtr><mtr><mtd style=_"border-left: solid 1px black; padding-left: 2px; padding-right: 2px;_">",
+              formatMml(first rest args,minPrec),"</mtd></mtr></mtable>"]
       concat ["<mtext>not done yet for: ",op,"</mtext>"]
 
     formatSub(expr : E, args : L E, opPrec : I) : S ==
@@ -1090,20 +1171,50 @@ have to be switched by swapping names.
       -- 2010-02-11: SUPERSUB also handles general scripts in pre and post,
       -- sub and super positions.  To distinguish from derivatives I test for
       -- presence of a comma in 'expr', at least for now.
+      -- 2011-01-03: D(f x,x) produces
+      -- {{{SUPERSUB}{f}{ }{,}}{x}}
+      -- D(f x,x,3) produces
+      -- {{{SUPERSUB}{f}{ }{,,,}}{x}}
+      -- scripts(F,[1,2,3,4])$OutputForm produces
+      -- {{SUPERSUB}{F}{1}{2}{3}{4}}
+      -- scripts(F,[1,empty(),empty(),2])$OutputForm produces
+      -- {{SUPERSUB}{F}{1}{NOTHING}{NOTHING}{2}}
       position(",", stringify expr, 1) = 0 =>
-        --{{SUPERSUB}{F}{1}{2}{3}{4}}  puts 1 in subscript position and then
-        --adds scripts counter clockwise.  Some of the scripts can be empty.
-        tmp : L S := [""," "]$(L S)
-        tmp1 : S := formatMml(args.1,minPrec)
-        if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
-        if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
-        if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
-        if member?((tmp5 : S := formatMml(args.5,minPrec)),tmp) then tmp5 := "<none/>"
-        "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/>" tmp5 tmp4 "</mmultiscripts>" 
+        -- Test whether SUPERSUB has 3 or 5 arguments
+	if #args = 5 
+	  then
+            --{{SUPERSUB}{F}{1}{2}{3}{4}}  puts 1 in subscript position and then
+            --adds scripts counter clockwise.  Some of the scripts can be empty.
+            tmp : L S := [""," "]$(L S)
+            tmp1 : S := formatMml(args.1,minPrec)
+            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+            if member?((tmp5 : S := formatMml(args.5,minPrec)),tmp) then tmp5 := "<none/>"
+            "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/>" tmp5 tmp4 "</mmultiscripts>"
+	  else if #args = 4 then
+	    -- presuper(of1,of2) produces
+	    -- {{SUPERSUB}{f}{ }{ }{z}}
+            tmp : L S := [""," "]$(L S)
+            tmp1 : S := formatMml(args.1,minPrec)
+            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+            "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/><none/>" tmp4 "</mmultiscripts>"    
+	  else if #args = 3 then
+	    -- super(of1,of2) produces
+	    -- {{SUPERSUB}{f}{ }{z}}
+            tmp : L S := [""," "]$(L S)
+            tmp1 : S := formatMml(args.1,minPrec)
+            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            "<mmultiscripts>" tmp1 tmp2 tmp3 "</mmultiscripts>"    
+	  else
+	    "<mtext>Problem with number of args in SUPERSUB</mtext>"
       atomE : L E := atomize(expr)
       op : S := stringify first atomE
-      op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB1</mtext>"
-      #args ~= 1 => "<mtext>Mistake in SuperSub1: #args <> 1</mtext>"
+      op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB</mtext>"
+      #args ~= 1 => "<mtext>Mistake in SuperSub: #args <> 1</mtext>"
       var : E := first args
       -- should be looking at something like {{SUPERSUB}{var}{ }{,,...,}} for
       -- example here's the second derivative of y w.r.t. x
@@ -1162,29 +1273,48 @@ have to be switched by swapping names.
       hold : S
       p : I := position(op,plexOps)
       p < 1 => error "unknown plex op"
-      op = "INTSIGN" => formatIntSign(args,minPrec)
+--      op = "INTSIGN" => formatIntSign(args,minPrec)
       opPrec := plexPrecs.p
       n : I := #args
       (n ~= 2) and (n ~= 3) => error "wrong number of arguments for plex"
+      op = "SIGMA" =>
+	  if #args = 2 then
+	    -- sum(a::OutputForm,b::OutputForm) produces
+	    -- {{SIGMA}{b}{a}}
+	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><none/></munderover>",formatMml(args.2,minPrec)]
+	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
+      op = "SIGMA2" =>
+	  if #args = 3 then
+	    -- sum(a::OutputForm,b::OutputForm,c::OutputForm) produces
+	    -- {{SIGMA2}{b}{c}{a}}
+	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatMml(args.1,minPrec),"</mrow>",formatMml(args.2,minPrec),"</munderover>",formatMml(args.3,minPrec)]
+          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
+      --  checkarg := true
+      --  "<mo>&#x02211;</mo>"
+      -- Sum
+      op = "PI" =>
+	  if #args = 2 then
+	    -- prod(a::OutputForm,b::OutputForm) produces
+	    -- {{PI}{b}{a}}
+	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><none/></munderover>",formatMml(args.2,minPrec)]
+	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
+      op = "PI2" =>
+	  if #args = 3 then
+	    -- prod(a::OutputForm,b::OutputForm,c::OutputForm) produces
+	    -- {{PI2}{b}{c}{a}}
+	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatMml(args.1,minPrec),"</mrow>",formatMml(args.2,minPrec),"</munderover>",formatMml(args.3,minPrec)]
+          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
+      op = "INTSIGN" =>
+          -- int(a::OutputForm) produces
+	  -- {{INTSIGN}{NOTHING}{NOTHING}{a}}
+	  -- int(a::OutputForm,b::OutputForm) produces
+	  -- {{INTSIGN}{b}{NOTHING}{a}}
+	  -- int(a::OutputForm,b::OutputForm,c::OutputForm) produces
+	  -- {{INTSIGN}{b}{c}{a}}
+	  if #args = 3 then
+	    concat ["<munderover><mo>&int;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><mrow>",formatMml(args.2,minPrec),"</mrow></munderover>",formatMml(args.3,minPrec)]
+          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
       s : S :=
-        op = "SIGMA"   =>
-          checkarg := true
-          "<mo>&#x02211;</mo>"
-        -- Sum
-        op = "SIGMA2"   =>
-          checkarg := true
-          "<mo>&#x02211;</mo>"
-        -- Sum
-        op = "PI"      =>
-          checkarg := true
-          "<mo>&#x0220F;</mo>"
-        -- Product
-        op = "PI2"     =>
-          checkarg := true
-          "<mo>&#x0220F;</mo>"
-        -- Product
---        op = "INTSIGN" => "<mo>&#x0222B;</mo>"
-        -- Integral, int
         op = "INDEFINTEGRAL" => "<mo>&#x0222B;</mo>"
         -- Integral, int
         "????"
@@ -1301,11 +1431,14 @@ have to be switched by swapping names.
         op = "/"     =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
         op = "OVER"  =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
+	op = "RARROW" => s := concat ["<mrow>",s1,"</mrow><mo>","&#x27f6;","</mo><mrow>",s2,"</mrow>"]
+	op = "%LET" => s := concat ["<mrow>",s1,"</mrow><mo>:=</mo><mrow>",s2,"</mrow>"]
+	op = "<" => s := concat ["<mrow>",s1,"</mrow><mo>","&lt;","</mo><mrow>",s2,"</mrow>"]
         s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
       group
         op = "OVER" => s
---        opPrec < prec => parenthesize s
--- ugly parentheses?
+        -- opPrec < prec => parenthesize s
+        -- ugly parentheses?
         s
 
     formatNary(op : S, args : L E, prec : I) : S ==
