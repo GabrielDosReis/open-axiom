@@ -373,6 +373,11 @@
       nil 
     (sayBrightly1 x |$texOutputStream|)))
  
+(defun |sayMml| (x)
+  (if (null x)
+      nil
+    (sayBrightly1 x |$mathmlOutputStream|)))
+
 (defvar |$sayBrightlyStream| nil "if not nil, gives stream for sayBrightly output")
  
 (defun |sayBrightly| (x &optional (out-stream |$OutputStream|))

@@ -441,6 +441,8 @@ $algebraOutputStream :=
 ++
 $texOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 
+$mathmlOutputStream := MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
+
 $fortranOutputStream :=
   MAKE_-SYNONYM_-STREAM "*STANDARD-OUTPUT*"
 

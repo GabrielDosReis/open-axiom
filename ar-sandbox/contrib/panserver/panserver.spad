@@ -290,9 +290,9 @@ SockLib(): Public == Private where
             WriteLine$Lisp "command:" command ":command"
             tmpmathml := MAKE_-STRING_-OUTPUT_-STREAM()$Lisp
 	    tmpalgebra := MAKE_-STRING_-OUTPUT_-STREAM()$Lisp
-	    savemathml := _$texOutputStream$Lisp
+	    savemathml := _$mathmlOutputStream$Lisp
 	    savealgebra := _$algebraOutputStream$Lisp
-            SETQ(_$texOutputStream$Lisp,tmpmathml)$Lisp
+	    SETQ(_$mathmlOutputStream$Lisp,tmpmathml)$Lisp
             SETQ(_$algebraOutputStream$Lisp,tmpalgebra)$Lisp
             --      parseAndInterpret$Lisp command
             --      parseAndEvalStr$Lisp command
@@ -311,9 +311,10 @@ SockLib(): Public == Private where
 	    if ans ~= "" 
 	        then
                     WriteLine$Lisp concat ["parse answer: ",ans]
-                    resultmathml := GET_-OUTPUT_-STREAM_-STRING(_$texOutputStream$Lisp)$Lisp
+		    resultmathml := GET_-OUTPUT_-STREAM_-STRING(_$mathmlOutputStream$Lisp)$Lisp
+                    --resultmathml := GET_-OUTPUT_-STREAM_-STRING(_$texOutputStream$Lisp)$Lisp
                     resultalgebra := GET_-OUTPUT_-STREAM_-STRING(_$algebraOutputStream$Lisp)$Lisp
-                    SETQ(_$texOutputStream$Lisp,savemathml)$Lisp
+		    SETQ(_$mathmlOutputStream$Lisp,savemathml)$Lisp
                     SETQ(_$algebraOutputStream$Lisp,savealgebra)$Lisp
                     CLOSE(tmpmathml)$Lisp
                     CLOSE(tmpalgebra)$Lisp
@@ -333,7 +334,7 @@ SockLib(): Public == Private where
         --            WriteLine$Lisp concat ["algebra answer: ",algebra]
                 else
         	    axans:String := concat ["<div class=_"stepnum_">-1</div><div class=_"command_">", command, "</div><div class=_"algebra_"></div><div class=_"mathml_"><math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_"><mtext>There is something wrong with your command, probably a syntax error.</mtext></math></div><div class=_"type_">Error</div>"]		                  
-                    SETQ(_$texOutputStream$Lisp,savemathml)$Lisp
+		    SETQ(_$mathmlOutputStream$Lisp,savemathml)$Lisp
                     SETQ(_$algebraOutputStream$Lisp,savealgebra)$Lisp
                     CLOSE(tmpmathml)$Lisp
                     CLOSE(tmpalgebra)$Lisp
