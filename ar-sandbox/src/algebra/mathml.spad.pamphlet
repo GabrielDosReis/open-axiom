@@ -511,7 +511,7 @@ MathMLFormat(): public == private where
 
     -- the precedence of / in the following is relatively low because
     -- the bar obviates the need for parentheses.
-    binaryOps     : L S := ["+->","|","^","/","<",">","=","OVER","RARROW","%LET"]$(L S)
+    binaryOps     : L S := ["+->","|","**","/","<",">","=","OVER","RARROW","%LET"]$(L S)
     binaryPrecs   : L I := [0,0,900, 700,400,400,400,700,0,0]$(L I)
 
     naryOps       : L S := ["-","+","*",blank,",",";"," ","ROW","",
@@ -1428,6 +1428,7 @@ have to be switched by swapping names.
       op :=
         op = "|"     =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
         op = "^"    =>  s := concat ["<msup><mrow>",s1,"</mrow><mrow>",s2,"</mrow></msup>"]
+        op = "**"    =>  s := concat ["<msup><mrow>",s1,"</mrow><mrow>",s2,"</mrow></msup>"]
         op = "/"     =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
         op = "OVER"  =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
