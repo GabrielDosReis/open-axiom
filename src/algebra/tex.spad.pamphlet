@@ -583,7 +583,7 @@ TexFormat(): public == private where
       ATOM(expr)$Lisp pretend Boolean =>
         str := stringify expr
         len := #str
-        FIXP$Lisp expr =>
+        %integer?(expr)$Foreign(Builtin) =>
           i := expr pretend Integer
           if (i < 0) or (i > 9)
             then

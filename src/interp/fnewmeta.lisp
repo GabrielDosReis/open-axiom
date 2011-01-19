@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -611,10 +611,10 @@
 
 
 (DEFUN |PARSE-FloatBase| ()
-  (OR (AND (FIXP (CURRENT-SYMBOL)) (CHAR-EQ (CURRENT-CHAR) ".")
+  (OR (AND (INTEGERP (CURRENT-SYMBOL)) (CHAR-EQ (CURRENT-CHAR) ".")
            (CHAR-NE (NEXT-CHAR) ".") (|PARSE-IntegerTok|)
            (MUST (|PARSE-FloatBasePart|)))
-      (AND (FIXP (CURRENT-SYMBOL))
+      (AND (INTEGERP (CURRENT-SYMBOL))
            (CHAR-EQ (CHAR-UPCASE (CURRENT-CHAR)) 'E)
            (|PARSE-IntegerTok|) (PUSH-REDUCTION '|PARSE-FloatBase| 0)
            (PUSH-REDUCTION '|PARSE-FloatBase| 0))

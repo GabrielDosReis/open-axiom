@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -832,8 +832,8 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
   null (start':= comp(start,$SmallInteger,e)) => nil
   null (inc':= comp(inc,$SmallInteger,start'.env)) => nil
   if optFinal is [final] and not (final':= comp(final,$SmallInteger,inc'.env)) then
---    not (FIXP startNum and FIXP incNum) => return nil
---    null FIXP startNum or abs startNum > 100 => return nil
+--    not (integer? startNum and integer? incNum) => return nil
+--    null integer? startNum or abs startNum > 100 => return nil
     -----> assume that optFinal is $SmallInteger
     T := comp(final,$EmptyMode,inc'.env) or return nil
     final' := T
@@ -843,7 +843,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
   [.,.,e]:= compMakeDeclaration(index,indexmode,
      (final' => final'.env; inc'.env)) or return nil
   range :=
-    FIXP startNum and FIXP incNum =>
+    integer? startNum and integer? incNum =>
       startNum >  0 and incNum > 0 => $PositiveInteger
       startNum <  0 and incNum < 0 => $NegativeInteger
       incNum >  0 => $NonNegativeInteger   --startNum = 0

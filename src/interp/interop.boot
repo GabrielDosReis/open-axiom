@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -540,7 +540,7 @@ HasAttribute(domain,attrib) ==
        vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   isDomain domain =>
-     FIXP((first domain).0) => 
+     integer?((first domain).0) => 
         -- following call to hashType was missing 2nd arg. 
         -- getDomainHash domain added on 4/01/94 by RSS
         basicLookup("%%",hashType(attrib, hashPercent),domain,domain)
@@ -593,7 +593,7 @@ HasCategory(domain,catform') ==
   catform' is ['SIGNATURE,:f] => HasSignature(domain,f)
   catform' is ['ATTRIBUTE,f] => HasAttribute(domain,f)
   isDomain domain =>
-     FIXP((first domain).0) =>
+     integer?((first domain).0) =>
         catform' := devaluate catform'
         basicLookup("%%",catform',domain,domain)
      HasCategory(CDDR domain, catform')

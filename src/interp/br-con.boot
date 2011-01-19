@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -875,7 +875,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --docTable is [[origin,entry1,...,:code] ...] where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
-    if null FIXP op and
+    if not integer? op and
       digit?((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>

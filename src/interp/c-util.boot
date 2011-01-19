@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -109,7 +109,7 @@ $optExportedFunctionReference := false
 
 ++ Quote form, if not a basic value.
 quoteMinimally form ==
-  FIXP form or string? form or form = nil or form = true => form
+  integer? form or string? form or form = nil or form = true => form
   ["QUOTE",form]
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
@@ -1626,7 +1626,7 @@ isFormal x ==
 ++ Expand the form at position `slot' in the domain template `shell'
 ++ with argument list `args'.
 expandFormTemplate(shell,args,slot) ==
-  FIXP slot =>
+  integer? slot =>
     slot = 0 => "$"
     slot = 2 => "$$"
     expandFormTemplate(shell,args,getShellEntry(shell,slot))
@@ -1642,7 +1642,7 @@ expandFormTemplate(shell,args,slot) ==
 ++ Compare the form at `slot' in the domain templare `shell'
 ++ for equality with `form'.
 equalFormTemplate(shell,args,slot,form) ==
-  FIXP slot =>
+  integer? slot =>
     slot = 0 => form = "$"
     slot = 2 => form = "$$"
     equalFormTemplate(shell,args,getShellEntry(shell,slot),form)
@@ -1680,7 +1680,7 @@ getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
            for k in i.. for t in sig] => nil
       -- Grab the location of this match
       loc := 
-        FIXP loc => "ambiguous"
+        integer? loc => "ambiguous"
         funDesc.(i + n + 1)
     start := start + n + 4
   loc
@@ -1744,7 +1744,7 @@ lookupDefiningFunction(op,sig,dc) ==
   fun is [.,.,[.,["dispatchFunction",fun'],.]] => fun'
   -- 6.2. An inherited function?
   fun is [idx,:.] => 
-    not FIXP idx => nil          -- a UFO?
+    not integer? idx => nil          -- a UFO?
     loc := funDesc.(idx + 1)
     if loc = 0 then loc := 5
     shell.loc = nil => nil

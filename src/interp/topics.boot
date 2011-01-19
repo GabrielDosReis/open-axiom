@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -198,7 +198,7 @@ tdAdd(con,hash) ==
   v := HGET($conTopicHash,con)
   u := addTopic2Documentation(con,v)
 --u := getConstructorDocumentationFromDB con
-  for pair in u | FIXP (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
+  for pair in u | integer? (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
     for x in (names := code2Classes code) repeat HPUT(hash,x,insert(op,HGET(hash,x)))
 
 tdPrint hash ==
@@ -238,7 +238,7 @@ transferClassCodes(conform,opAlist) ==
 
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
-    | FIXP (code := myLastAtom pair) repeat
+    | integer? (code := myLastAtom pair) repeat
       u := ASSOC(pair.op,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
@@ -248,12 +248,12 @@ transferCodeCon(con,opAlist) ==
 filterByTopic(opAlist,topic) ==
   bitNumber := HGET($topicHash,topic)
   [x for x in opAlist 
-    | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
+    | integer? (code := myLastAtom x) and LOGBITP(bitNumber,code)]
 
 listOfTopics(conname) ==
   doc := getConstructorDocumentationFromDB conname
   u := ASSOC('constructor,doc) or return nil
   code := myLastAtom u
---null FIXP code => nil
+--not integer? code => nil
   mySort [key for key in HKEYS($topicHash) | LOGBITP(HGET($topicHash,key),code)]
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -199,10 +199,10 @@ getTraceOption (x is [key,:l]) ==
     l is [a] => [key,:l]
     stackTraceOptionError ["S2IT0011",[strconc('")",object2String key)]]
   key='depth =>
-    l is [n] and FIXP n => x
+    l is [n] and integer? n => x
     stackTraceOptionError ["S2IT0012",['")depth"]]
   key='count =>
-    (null l) or (l is [n] and FIXP n) => x
+    (null l) or (l is [n] and integer? n) => x
     stackTraceOptionError ["S2IT0012",['")count"]]
   key="of" =>
     ["of",:[hn y for y in l]] where
@@ -261,7 +261,7 @@ pcounters() ==
 
 transOnlyOption l ==
   l is [n,:y] =>
-    FIXP n => [n,:transOnlyOption y]
+    integer? n => [n,:transOnlyOption y]
     MEMQ(n:= UPCASE n,'(V A C)) => [n,:transOnlyOption y]
     stackTraceOptionError ["S2IT0006",[n]]
     transOnlyOption y
@@ -448,7 +448,7 @@ spadTrace(domain,options) ==
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
       for [op,sig,n,.,kind] in opStructureList | kind = 'ELT
         and (anyifTrue or MEMQ(op,listOfOperations)) and
-         FIXP n and
+         integer? n and
           isTraceable(triple:= [op,sig,n],domain)] where
             isTraceable(x is [.,.,n,:.],domain) ==
               atom domain.n => nil

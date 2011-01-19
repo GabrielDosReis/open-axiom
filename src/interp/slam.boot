@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -156,7 +156,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
     compileInteractive [nam,["LAMBDA",parms,body]]
     nam
   num :=
-    FIXP cacheCount =>
+    integer? cacheCount =>
       cacheCount < 1 =>
         keyedSystemError("S2IM0019",[cacheCount,op])
       cacheCount

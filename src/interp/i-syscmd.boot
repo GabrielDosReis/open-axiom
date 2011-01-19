@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -2647,7 +2647,7 @@ undo(l) ==
     first l
   if IDENTP n then
     n := readInteger PNAME n
-    if not FIXP n then userError '"undo argument must be an integer"
+    if not integer? n then userError '"undo argument must be an integer"
   $InteractiveFrame := undoSteps(undoCount n,undoWhen)
   nil
 
