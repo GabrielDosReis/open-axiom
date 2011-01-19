@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -564,8 +564,8 @@ markRecord(source,target,u) ==
   if source='Rep and target='_$ then
     target := 'per
   item := first u
-  FIXP item or item = $One or item = $Zero => nil
-  item is ["-",a] and (FIXP a or a = $One or a = $Zero) => nil
+  integer? item or item = $One or item = $Zero => nil
+  item is ["-",a] and (integer? a or a = $One or a = $Zero) => nil
   string? item => nil
   item is [op,.,t] and op in '( _:_: _@ _pretend)
     and macroExpand(t,$e) = target => nil
@@ -786,7 +786,7 @@ markInsertChanges(code,form,t,loc) ==
       op in '(_: _pretend) => form
       op = code and b = t => form
       markNumCheck(code,form,t)
-    FIXP form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
+    integer? form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
     [code,form,t]
   code in '(_@ _:_: _:) and form is [op,a] and 
     (op='rep and t = 'Rep or op='per and t = "$") => form
@@ -798,15 +798,15 @@ markInsertChanges(code,form,t,loc) ==
     t = 'per and form is ["rep",:.] => second form
     [t,form]
   code is [op,x,t1] and op in '(_@ _: _:_: _pretend) and t1 = t => form
-  FIXP form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
+  integer? form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
   markNumCheck("::",form,t)
 
 markNumCheck(op,form,t) ==
   op = "::" and opOf t in '(Integer) =>
      s := form = $One and 1 or form = $Zero and 0 => ['DOLLAR, s , t]
-     FIXP form                   => ["@", form, t]
-     form is ["-", =$One]        => ['DOLLAR, -1,   t]
-     form is ["-", n] and FIXP n => ["@", MINUS n, t]
+     integer? form                   => ["@", form, t]
+     form is ["-", =$One]            => ['DOLLAR, -1,   t]
+     form is ["-", n] and integer? n => ["@", MINUS n, t]
      [op, form, t]
   [op,form,t]
 

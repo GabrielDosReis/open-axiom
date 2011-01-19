@@ -93,7 +93,7 @@ evalSlotDomain(u,dollar) ==
   $lookupDefaults : local := false -- new world
   u = '$ => dollar
   u = "$$" => dollar
-  FIXP u =>
+  integer? u =>
     y := dollar.u
     vector? y => y
     y is ["setShellEntry",:.] => eval y

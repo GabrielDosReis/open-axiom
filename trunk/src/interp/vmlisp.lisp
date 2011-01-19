@@ -141,9 +141,6 @@
 (defmacro fetchchar (x i)
  `(char ,x ,i))
 
-(defmacro fixp (x)
- `(integerp ,x))
-
 (defmacro greaterp (&rest args)
  `(> ,@args))
 

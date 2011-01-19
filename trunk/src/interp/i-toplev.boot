@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -202,7 +202,7 @@ recordAndPrint(x,md) ==
   if $printTimeIfTrue or $printTypeIfTrue then printTypeAndTime(x',md')
   if $printStorageIfTrue then printStorage()
   if $printStatisticsSummaryIfTrue then printStatisticsSummary()
-  if FIXP $HTCompanionWindowID then mkCompanionPage md
+  if integer? $HTCompanionWindowID then mkCompanionPage md
   $mkTestFlag = true => recordAndPrintTest md
   $runTestFlag =>
     $mkTestOutputType := md

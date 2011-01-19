@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -566,7 +566,7 @@ findConstructorSlotNumber(domainForm,domain,op,sig) ==
   tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
     "and"/[compare for a in sig for b in sig1]] where compare() ==
       a=b => true
-      FIXP b => a=constructorArglist.b
+      integer? b => a=constructorArglist.b
       isSubset(bustUnion a,bustUnion b,$CategoryFrame)
   tail is [.,["ELT",.,n]] => n
   systemErrorHere ["findConstructorSlotNumber",domainForm]
@@ -592,7 +592,7 @@ sigsMatch(sig,sig1,domainForm) ==
   while sig and sig1 repeat
     partsMatch:=
       (item:= first sig)=(item1:= first sig1) => true --ok, go to next iteration
-      FIXP item1 => item = domainForm.item1       --item1=n means nth arg
+      integer? item1 => item = domainForm.item1       --item1=n means nth arg
       isSubset(bustUnion item1,bustUnion item,$CategoryFrame)
     null partsMatch => return nil
     sig:= rest sig; sig1 := rest sig1

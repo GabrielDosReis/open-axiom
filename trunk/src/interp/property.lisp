@@ -126,6 +126,6 @@
 
 (FLAG '(* + AND OR PROGN) 'NARY)
 
-(MAKEPROP 'INTEGER 'ISFUNCTION 'FIXP)
+(MAKEPROP 'INTEGER 'ISFUNCTION 'INTEGERP)
 (MAKEPROP '|Integer| '|isFunction| '|IsInteger|)
 (MAKEPROP '|Boolean| '|isFunction| '|isBoolean|)

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -186,7 +186,7 @@ pickANumber(word,list) ==
   center80 ['"Anything else means",:bright 'no]
   y := queryUser nil
   x:= string2Integer y
-  FIXP x and x >= 1 and x <= #list => list.(x-1)
+  integer? x and x >= 1 and x <= #list => list.(x-1)
   nil
  
 bootSearch word ==

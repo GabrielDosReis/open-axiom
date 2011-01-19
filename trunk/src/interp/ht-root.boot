@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -114,7 +114,7 @@ htSystemVariables() == main where
 htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
   if string? value and fun then value := FUNCALL(fun,value)
---SCM::what to do???  if not FIXP value then userError ???
+--SCM::what to do???  if not integer? value then userError ???
   setDynamicBinding(variable,value)
   htSystemVariables ()
 

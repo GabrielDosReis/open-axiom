@@ -1,3 +1,30 @@
+2011-01-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp (FIXP): Remove.
+	* interp/alql.boot: Use integer? instead of FIXP.
+	* interp/br-con.boot: Likewise.
+	* interp/br-op1.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/fnewmeta.lisp: Likewise.
+	* interp/ht-root.boot: Likewise.
+	* interp/i-analy.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-toplev.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/lisplib.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/setvars.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/word.boot: Likewise.
+
 2011-01-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-util.boot: Expand new bit vector operators.

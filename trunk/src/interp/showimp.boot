@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ showImp(dom,:options) ==
   --sort into 4 groups: domain exports, unexports, default exports, others
   for (x := [.,.,:key]) in u repeat
     key = domainForm => domexports := [x,:domexports]
-    FIXP key => unexports := [x,:unexports]
+    integer? key => unexports := [x,:unexports]
     isDefaultPackageForm? key => defexports := [x,:defexports]
     key = 'nowhere => nowheres := [x,:nowheres]
     key = 'constant => constants := [x,:constants]
@@ -155,7 +155,7 @@ getDomainExtensionsOfDomain domain ==
 
 devaluateSlotDomain(u,dollar) ==
   u = '$ => devaluate dollar
-  FIXP u and vector? (y := dollar.u) => devaluate y
+  integer? u and vector? (y := dollar.u) => devaluate y
   u is ['NRTEVAL,y] => MKQ eval y
   u is ['QUOTE,y] => u
   u is [op,:argl] => [op,:[devaluateSlotDomain(x,dollar) for x in argl]]
@@ -194,7 +194,7 @@ showDomainsOp1(u,key) ==
 
 getDomainRefName(dom,nam) ==
   cons? nam => [getDomainRefName(dom,x) for x in nam]
-  not FIXP nam => nam
+  not integer? nam => nam
   slot := dom.nam
   vector? slot => slot.0
   slot is ["setShellEntry",:.] => 
@@ -247,7 +247,7 @@ formatLazyDomain(dom,x) ==
  
 formatLazyDomainForm(dom,x) ==
   x = 0 => ["$"]
-  FIXP x => formatLazyDomain(dom,dom.x)
+  integer? x => formatLazyDomain(dom,dom.x)
   atom x => x
   x is ['NRTEVAL,y] => (atom y => [y]; y)
   [first x,:[formatLazyDomainForm(dom,y) for y in rest x]]

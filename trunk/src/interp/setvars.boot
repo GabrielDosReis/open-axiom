@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -227,7 +227,7 @@ set1(l,setTree) ==
     -- validate the option, allowing the user to set the default
     arg2 :=
       num := l.1
-      (FIXP num) and (num >= (setData.setLeaf).0) and
+      (integer? num) and (num >= (setData.setLeaf).0) and
         (null (upperlimit := setData.setLeaf.1) or num <= upperlimit) => num
       selectOption(l.1,['default,:setData.setLeaf],nil)
     if arg2 = 'DEFAULT
@@ -763,7 +763,7 @@ setFunctionsCache arg ==
     TERPRI()
     sayAllCacheCounts()
   n := first arg
-  (n ~= 'all) and ((not FIXP n) or (n < 0)) =>
+  (n ~= 'all) and ((not integer? n) or (n < 0)) =>
     sayMessage ['"Your value of",:bright n,'"is invalid because ..."]
     describeSetFunctionsCache()
     terminateSystemCommand()
@@ -1705,7 +1705,7 @@ setStreamsCalculate arg ==
   (null arg) or (arg = "%describe%") or (first arg = '_?) =>
     describeSetStreamsCalculate()
   n := first arg
-  (n ~= 'all) and ((not FIXP n) or (n < 0)) =>
+  (n ~= 'all) and ((not integer? n) or (n < 0)) =>
     sayMessage ['"Your value of",:bright n,'"is invalid because ..."]
     describeSetStreamsCalculate()
     terminateSystemCommand()

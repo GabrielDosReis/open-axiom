@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -803,7 +803,7 @@ fortPre1 e ==
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
     (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
-    (FIXP exponent and abs(exponent) < 32768) => ["**",fortPre1 rand,exponent]
+    (integer? exponent and abs(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]

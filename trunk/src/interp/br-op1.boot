@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ reduceByGroup(htPage,opAlist) ==
   res := [[op,:newItems] for [op,:items] in opAlist | newItems] where
     newItems() ==
       null bitNumber => items
-      [x for x in items | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
+      [x for x in items | integer? (code := myLastAtom x) and LOGBITP(bitNumber,code)]
   res
 
 
@@ -864,7 +864,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
             dbGetDocTable(op,sig,docTable,which,nil)
           origin := IFCAR u or origin
           docCode := IFCDR u   --> (doc . code)
---        if not FIXP rest docCode then harhar(op) -->
+--        if not integer? rest docCode then harhar(op) -->
           if null doc and which = '"attribute" then doc := getRegistry(op,sig)
           tail.rest := [origin,isExposedConstructor opOf origin,:docCode]
         $value => return $value
