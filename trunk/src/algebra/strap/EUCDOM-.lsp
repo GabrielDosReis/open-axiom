@@ -84,15 +84,15 @@
            (EXIT |x|))))) 
 
 (DEFUN |EUCDOM-;unitNormalizeIdealElt| (|s| $)
-  (LET* ((|#G16| (SPADCALL (QVELT |s| 2) (|getShellEntry| $ 27)))
-         (|u| (QVELT |#G16| 0)) (|c| (QVELT |#G16| 1))
-         (|a| (QVELT |#G16| 2)))
+  (LET* ((|#G16| (SPADCALL (SVREF |s| 2) (|getShellEntry| $ 27)))
+         (|u| (SVREF |#G16| 0)) (|c| (SVREF |#G16| 1))
+         (|a| (SVREF |#G16| 2)))
     (SEQ |#G16|
          (EXIT (COND
                  ((SPADCALL |a| (|getShellEntry| $ 28)) |s|)
-                 (T (VECTOR (SPADCALL |a| (QVELT |s| 0)
+                 (T (VECTOR (SPADCALL |a| (SVREF |s| 0)
                                 (|getShellEntry| $ 29))
-                            (SPADCALL |a| (QVELT |s| 1)
+                            (SPADCALL |a| (SVREF |s| 1)
                                 (|getShellEntry| $ 29))
                             |c|))))))) 
 
@@ -112,24 +112,24 @@
           ((SPADCALL |x| (|getShellEntry| $ 8)) |s2|)
           (T (SEQ (LOOP
                     (COND
-                      ((NOT (NOT (SPADCALL (QVELT |s2| 2)
+                      ((NOT (NOT (SPADCALL (SVREF |s2| 2)
                                      (|getShellEntry| $ 8))))
                        (RETURN NIL))
                       (T (SEQ (LETT |qr|
-                                    (SPADCALL (QVELT |s1| 2)
-                                     (QVELT |s2| 2)
+                                    (SPADCALL (SVREF |s1| 2)
+                                     (SVREF |s2| 2)
                                      (|getShellEntry| $ 16))
                                     |EUCDOM-;extendedEuclidean;2SR;7|)
                               (LETT |s3|
                                     (VECTOR
-                                     (SPADCALL (QVELT |s1| 0)
+                                     (SPADCALL (SVREF |s1| 0)
                                       (SPADCALL (CAR |qr|)
-                                       (QVELT |s2| 0)
+                                       (SVREF |s2| 0)
                                        (|getShellEntry| $ 29))
                                       (|getShellEntry| $ 31))
-                                     (SPADCALL (QVELT |s1| 1)
+                                     (SPADCALL (SVREF |s1| 1)
                                       (SPADCALL (CAR |qr|)
-                                       (QVELT |s2| 1)
+                                       (SVREF |s2| 1)
                                        (|getShellEntry| $ 29))
                                       (|getShellEntry| $ 31))
                                      (CDR |qr|))
@@ -139,21 +139,21 @@
                                      (|EUCDOM-;unitNormalizeIdealElt|
                                       |s3| $)))))))
                   (COND
-                    ((NOT (SPADCALL (QVELT |s1| 0)
+                    ((NOT (SPADCALL (SVREF |s1| 0)
                               (|getShellEntry| $ 8)))
                      (COND
-                       ((NOT (SPADCALL (QVELT |s1| 0) |y|
+                       ((NOT (SPADCALL (SVREF |s1| 0) |y|
                                  (|getShellEntry| $ 32)))
                         (SEQ (LETT |qr|
-                                   (SPADCALL (QVELT |s1| 0) |y|
+                                   (SPADCALL (SVREF |s1| 0) |y|
                                     (|getShellEntry| $ 16))
                                    |EUCDOM-;extendedEuclidean;2SR;7|)
-                             (QSETVELT |s1| 0 (CDR |qr|))
-                             (QSETVELT |s1| 1
-                                 (SPADCALL (QVELT |s1| 1)
-                                     (SPADCALL (CAR |qr|) |x|
-                                      (|getShellEntry| $ 29))
-                                     (|getShellEntry| $ 33)))
+                             (SETF (SVREF |s1| 0) (CDR |qr|))
+                             (SETF (SVREF |s1| 1)
+                                   (SPADCALL (SVREF |s1| 1)
+                                    (SPADCALL (CAR |qr|) |x|
+                                     (|getShellEntry| $ 29))
+                                    (|getShellEntry| $ 33)))
                              (EXIT (SETQ |s1|
                                     (|EUCDOM-;unitNormalizeIdealElt|
                                      |s1| $))))))))
@@ -170,7 +170,7 @@
                            (SPADCALL |x| |y| (|getShellEntry| $ 36))
                            |EUCDOM-;extendedEuclidean;3SU;8|)
                      (LETT |w|
-                           (SPADCALL |z| (QVELT |s| 2)
+                           (SPADCALL |z| (SVREF |s| 2)
                                (|getShellEntry| $ 37))
                            |EUCDOM-;extendedEuclidean;3SU;8|)
                      (EXIT (COND
@@ -178,13 +178,13 @@
                              ((SPADCALL |y| (|getShellEntry| $ 8))
                               (CONS 0
                                     (CONS
-                                     (SPADCALL (QVELT |s| 0) (CDR |w|)
+                                     (SPADCALL (SVREF |s| 0) (CDR |w|)
                                       (|getShellEntry| $ 29))
-                                     (SPADCALL (QVELT |s| 1) (CDR |w|)
+                                     (SPADCALL (SVREF |s| 1) (CDR |w|)
                                       (|getShellEntry| $ 29)))))
                              (T (SEQ (LETT |qr|
                                       (SPADCALL
-                                       (SPADCALL (QVELT |s| 0)
+                                       (SPADCALL (SVREF |s| 0)
                                         (CDR |w|)
                                         (|getShellEntry| $ 29))
                                        |y| (|getShellEntry| $ 16))
@@ -193,7 +193,7 @@
                                       (CONS 0
                                        (CONS (CDR |qr|)
                                         (SPADCALL
-                                         (SPADCALL (QVELT |s| 1)
+                                         (SPADCALL (SVREF |s| 1)
                                           (CDR |w|)
                                           (|getShellEntry| $ 29))
                                          (SPADCALL (CAR |qr|) |x|
@@ -211,15 +211,15 @@
                          (SPADCALL (|SPADfirst| |l|)
                              (|getShellEntry| $ 27))
                          |EUCDOM-;principalIdeal;LR;9|)
-                   (EXIT (CONS (LIST (QVELT |uca| 0)) (QVELT |uca| 1)))))
+                   (EXIT (CONS (LIST (SVREF |uca| 0)) (SVREF |uca| 1)))))
              ((SPADCALL (CDR (CDR |l|)) NIL (|getShellEntry| $ 42))
               (SEQ (LETT |u|
                          (SPADCALL (|SPADfirst| |l|)
                              (SPADCALL |l| (|getShellEntry| $ 45))
                              (|getShellEntry| $ 36))
                          |EUCDOM-;principalIdeal;LR;9|)
-                   (EXIT (CONS (LIST (QVELT |u| 0) (QVELT |u| 1))
-                               (QVELT |u| 2)))))
+                   (EXIT (CONS (LIST (SVREF |u| 0) (SVREF |u| 1))
+                               (SVREF |u| 2)))))
              (T (SEQ (LETT |v|
                            (SPADCALL (CDR |l|) (|getShellEntry| $ 48))
                            |EUCDOM-;principalIdeal;LR;9|)
@@ -227,7 +227,7 @@
                            (SPADCALL (|SPADfirst| |l|) (CDR |v|)
                                (|getShellEntry| $ 36))
                            |EUCDOM-;principalIdeal;LR;9|)
-                     (EXIT (CONS (CONS (QVELT |u| 0)
+                     (EXIT (CONS (CONS (SVREF |u| 0)
                                        (LET
                                         ((#0=#:G1494 (CAR |v|))
                                          (#1=#:G1493 NIL))
@@ -240,12 +240,12 @@
                                                 (SETQ #1#
                                                  (CONS
                                                   (SPADCALL
-                                                   (QVELT |u| 1) |vv|
+                                                   (SVREF |u| 1) |vv|
                                                    (|getShellEntry| $
                                                     29))
                                                   #1#)))))
                                            (SETQ #0# (CDR #0#)))))
-                                 (QVELT |u| 2)))))))))) 
+                                 (SVREF |u| 2)))))))))) 
 
 (DEFUN |EUCDOM-;expressIdealMember;LSU;10| (|l| |z| $)
   (PROG (|pid| |q|)

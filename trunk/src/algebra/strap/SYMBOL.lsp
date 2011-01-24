@@ -195,10 +195,10 @@
   (SPADCALL |x| (|getShellEntry| $ 79))) 
 
 (DEFUN |SYMBOL;syprefix| (|sc| $)
-  (LET ((|ns| (LIST (LIST-LENGTH (QVELT |sc| 3))
-                    (LIST-LENGTH (QVELT |sc| 2))
-                    (LIST-LENGTH (QVELT |sc| 1))
-                    (LIST-LENGTH (QVELT |sc| 0)))))
+  (LET ((|ns| (LIST (LIST-LENGTH (SVREF |sc| 3))
+                    (LIST-LENGTH (SVREF |sc| 2))
+                    (LIST-LENGTH (SVREF |sc| 1))
+                    (LIST-LENGTH (SVREF |sc| 0)))))
     (SEQ (LOOP
            (COND
              ((NOT (COND
@@ -210,7 +210,7 @@
          (EXIT (SPADCALL
                    (CONS (STRCONC (|getShellEntry| $ 38)
                                   (|SYMBOL;istring|
-                                      (LIST-LENGTH (QVELT |sc| 4)) $))
+                                      (LIST-LENGTH (SVREF |sc| 4)) $))
                          (LET ((#0=#:G1524 (NREVERSE |ns|))
                                (#1=#:G1523 NIL))
                            (LOOP
@@ -224,36 +224,36 @@
                    (|getShellEntry| $ 93)))))) 
 
 (DEFUN |SYMBOL;syscripts| (|sc| $)
-  (LET ((|all| (QVELT |sc| 3)))
+  (LET ((|all| (SVREF |sc| 3)))
     (SEQ (SETQ |all|
-               (SPADCALL (QVELT |sc| 2) |all| (|getShellEntry| $ 94)))
+               (SPADCALL (SVREF |sc| 2) |all| (|getShellEntry| $ 94)))
          (SETQ |all|
-               (SPADCALL (QVELT |sc| 1) |all| (|getShellEntry| $ 94)))
+               (SPADCALL (SVREF |sc| 1) |all| (|getShellEntry| $ 94)))
          (SETQ |all|
-               (SPADCALL (QVELT |sc| 0) |all| (|getShellEntry| $ 94)))
-         (EXIT (SPADCALL |all| (QVELT |sc| 4) (|getShellEntry| $ 94)))))) 
+               (SPADCALL (SVREF |sc| 0) |all| (|getShellEntry| $ 94)))
+         (EXIT (SPADCALL |all| (SVREF |sc| 4) (|getShellEntry| $ 94)))))) 
 
 (DEFUN |SYMBOL;script;$L$;22| (|sy| |ls| $)
   (LET ((|sc| (VECTOR NIL NIL NIL NIL NIL)))
     (SEQ (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 0 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 0) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 1 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 1) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 2 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 2) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 3 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 3) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 4 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 4) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (EXIT (|SYMBOL;script;$R$;23| |sy| |sc| $))))) 
 
@@ -291,7 +291,7 @@
                ((NOT (|SYMBOL;scripted?;$B;30| |e| $)) (EXIT |s|)))
              (LETT |ss| (|SYMBOL;scripts;$R;32| |e| $)
                    |SYMBOL;latex;$S;25|)
-             (LETT |lo| (QVELT |ss| 0) |SYMBOL;latex;$S;25|)
+             (LETT |lo| (SVREF |ss| 0) |SYMBOL;latex;$S;25|)
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "_{" |SYMBOL;latex;$S;25|)
@@ -309,7 +309,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |s| |sc|))))))
-             (SETQ |lo| (QVELT |ss| 1))
+             (SETQ |lo| (SVREF |ss| 1))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "^{" |SYMBOL;latex;$S;25|)
@@ -327,7 +327,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |s| |sc|))))))
-             (SETQ |lo| (QVELT |ss| 2))
+             (SETQ |lo| (SVREF |ss| 2))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "{}^{" |SYMBOL;latex;$S;25|)
@@ -345,7 +345,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |sc| |s|))))))
-             (SETQ |lo| (QVELT |ss| 3))
+             (SETQ |lo| (SVREF |ss| 3))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "{}_{" |SYMBOL;latex;$S;25|)
@@ -363,7 +363,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |sc| |s|))))))
-             (SETQ |lo| (QVELT |ss| 4))
+             (SETQ |lo| (SVREF |ss| 4))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "\\left( {" |SYMBOL;latex;$S;25|)
