@@ -1,5 +1,11 @@
 2011-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optMkRecord): Generate %makepair forms.
+	($VMsideEffectFreeOperators): Include %listlit and %veclit.
+	* interp/g-util.boot: Translate them.
+
+2011-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/array1.spad.pamphlet: Use %aref instead of %vref.
 	* interp/g-opt.boot (optSETRECORDELT): Tidy code generation.
 	(optRECORDCOPY): Likewise.
