@@ -1,3 +1,11 @@
+2011-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/array1.spad.pamphlet: Use %aref instead of %vref.
+	* interp/g-opt.boot (optSETRECORDELT): Tidy code generation.
+	(optRECORDCOPY): Likewise.
+	(optRECORDELT): Likewise.
+	($VMsideEffectFreeOperators): Include %aref.  Translate.
+
 2011-01-18  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp (FIXP): Remove.

@@ -566,7 +566,8 @@ for x in [
     -- simple vector operations
     ['%vfill,     :'FILL],
     ['%vlength,   :'sizeOfSimpleArray],
-    ['%vref,      :'getSimpleArrayEntry],
+    ['%vref,      :'SVREF],
+    ['%aref,      :'getSimpleArrayEntry],
 
     -- symbol unary functions
     ['%gensym,  :'GENSYM],

@@ -615,10 +615,10 @@
                                 (T (LET ((|w| (CAR #0#)))
                                      (SETQ #1#
                                       (CONS
-                                       (VECTOR (QVELT |w| 0)
-                                        (SPADCALL (QVELT |w| 1)
+                                       (VECTOR (SVREF |w| 0)
+                                        (SPADCALL (SVREF |w| 1)
                                          (|getShellEntry| $ 51))
-                                        (QVELT |w| 2))
+                                        (SVREF |w| 2))
                                        #1#)))))
                               (SETQ #0# (CDR #0#))))
                           (|getShellEntry| $ 159)))))
@@ -643,11 +643,11 @@
                                   (T (LET ((|ww| (CAR #2#)))
                                        (SETQ #3#
                                         (CONS
-                                         (VECTOR (QVELT |ww| 0)
-                                          (SPADCALL (QVELT |ww| 1)
+                                         (VECTOR (SVREF |ww| 0)
+                                          (SPADCALL (SVREF |ww| 1)
                                            (CDR |v|)
                                            (|getShellEntry| $ 161))
-                                          (QVELT |ww| 2))
+                                          (SVREF |ww| 2))
                                          #3#)))))
                                 (SETQ #2# (CDR #2#))))
                             (|getShellEntry| $ 159)))))))))) 
@@ -1036,7 +1036,7 @@
       (|getShellEntry| $ 204))) 
 
 (DEFUN |POLYCAT-;primitivePart;2S;36| (|p| $)
-  (QVELT (SPADCALL
+  (SVREF (SPADCALL
              (LET ((#0=#:G1633
                        (SPADCALL |p|
                            (SPADCALL |p| (|getShellEntry| $ 206))
@@ -1048,7 +1048,7 @@
          1)) 
 
 (DEFUN |POLYCAT-;primitivePart;SVarSetS;37| (|p| |v| $)
-  (QVELT (SPADCALL
+  (SVREF (SPADCALL
              (LET ((#0=#:G1639
                        (SPADCALL |p|
                            (SPADCALL |p| |v| (|getShellEntry| $ 211))

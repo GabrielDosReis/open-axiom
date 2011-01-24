@@ -407,21 +407,21 @@ optRECORDELT ["RECORDELT",name,ind,len] ==
     ind=0 => ['%head,name]
     ind=1 => ['%tail,name]
     keyedSystemError("S2OO0002",[ind])
-  ["QVELT",name,ind]
+  ['%vref,name,ind]
  
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],['%head,name]]
+    ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["PROGN",['%store,['%head,name],expr],['%head,name]]
-    ind=1 => ["PROGN",['%store,['%tail,name],expr],['%tail,name]]
+    ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
+    ind = 1 => ['SEQ,['%store,['%tail,name],expr],['EXIT,['%tail,name]]]
     keyedSystemError("S2OO0002",[ind])
-  ["QSETVELT",name,ind,expr]
+  ['%store,['%vref,name,ind],expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len=1 => ["LIST",['%head,name]]
-  len=2 => ["CONS",['%head,name],['%tail,name]]
+  len = 1 => ["LIST",['%head,name]]
+  len = 2 => ['%makepair,['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
@@ -453,7 +453,7 @@ $VMsideEffectFreeOperators ==
         %lreverse %lempty? %hash %ismall? %string? %f2s
         %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
         %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
-        %vref %vlength
+        %aref %vref %vlength
         %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
         %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
         %before?)
