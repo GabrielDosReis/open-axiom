@@ -297,7 +297,7 @@ compileTimeBindingOf u ==
  
 optMkRecord ["mkRecord",:u] ==
   u is [x] => ["LIST",x]
-  #u=2 => ["CONS",:u]
+  #u=2 => ['%makepair,:u]
   ["VECTOR",:u]
  
 optCond (x is ['COND,:l]) ==
@@ -449,11 +449,11 @@ $VMsideEffectFreeOperators ==
         %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
         %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
         %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
-        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird %listlit
         %lreverse %lempty? %hash %ismall? %string? %f2s
         %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
         %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
-        %aref %vref %vlength
+        %aref %vref %vlength %veclit
         %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
         %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
         %before?)
@@ -462,7 +462,8 @@ $VMsideEffectFreeOperators ==
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
     ['CONS,'LIST,'VECTOR,'STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
-      '%strstc,'%makebitvec,"MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
+      '%strstc,'%makebitvec,'%makevector,
+        "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.

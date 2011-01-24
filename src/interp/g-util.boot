@@ -560,14 +560,17 @@ for x in [
     ['%lthird,    :'CADDR],
     ['%pair?,     :'CONSP],
     ['%tail,      :'CDR],
+    ['%listlit,   :'LIST],
     -- binary list operations
     ['%lconcat,   :'APPEND],
 
     -- simple vector operations
     ['%vfill,     :'FILL],
     ['%vlength,   :'sizeOfSimpleArray],
+    ['%veclit,    :'VECTOR],
     ['%vref,      :'SVREF],
     ['%aref,      :'getSimpleArrayEntry],
+    ['%makevector,:'MAKE_-ARRAY],
 
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
