@@ -1,0 +1,349 @@
+)abbrev package ATRCOL AttributeCollection
+++ Author: Yue Li
+++ Date Created: March 15, 2010
+++ Date Last Updated: March 20, 2010
+++ Description: 
+++ This package implements functions for collecting all the 
+++ built-in attributes from the category AttributeRegistry
+AttributeCollection(): Public == Private where
+  Public == with
+    collectAttributes: () -> List Syntax
+      ++ returns the complete set of OpenAxiom built-in attributes
+    allAttributes: () -> List Syntax
+      ++ returns the global variable which stores the attribute set
+  Private == add
+    -- global list for storing all extracted built-in attributes
+    builtinAttributes: List Syntax := []
+    allAttributes == builtinAttributes
+    fileDirectory(): FileName ==
+      f := DIRECTORY("ATTREG.spad")$Lisp
+      l := f pretend List(FileName)
+      first l     
+    collectAttributes ==
+      s := parse(fileDirectory()::String)$SpadParser
+      attrs := rest getOperands last getOperands(s.1)
+      builtinAttributes := [first(getOperands(e)) for e in attrs]
+
+
+)abbrev package CEXCOL CategoryExtensionCollection
+++ Author: Yue Li
+++ Date Created: March 15, 2010
+++ Date Last Updated: April 4, 2010
+++ Description: 
+++ This package provides library functions which traverse a category 
+++ definition, and collect the category constructor data, storing them 
+++ in a category constructor database.
+CategoryExtensionCollection(): Public == Private where
+  macro EXTP  == Pair(Syntax, List Syntax) -- (category extensios, predicate)
+  macro LEXTP == List EXTP
+  macro LAP   == LEXTP    -- for attributes, i.e. conditional and unconditional
+  macro LSP   == LEXTP    -- for signatures, i.e. conditional and unconditional
+  macro CEXTR == Record(catname: Identifier, catpars: List Identifier,_ 
+                        partyps: List Syntax, declarations: LSP,_
+                        extensions: LEXTP, attributes: LAP)
+  macro CEXTDB == List CEXTR
+  Public == with
+    collectAllConstructorData: Void
+      ++ This function traverse all the spad file in some directory, 
+      ++ if a spad file contains category definition, it further collects 
+      ++ category constructor data, i.e., function declarations, attributes, 
+      ++ category extensions, each element in each kind of data is associated 
+      ++ with a predicate in disjunctive normal form
+    getCategoryConstructorData: Identifier -> CEXTR
+      ++ This function takes in a category name, and retrieves its category 
+      ++ constructor data
+
+  Private == add
+    import SyntaxHelper
+    import AttributeCollection
+
+    -- forward declaration for bootstrapping compilation
+    collectConditional: (Syntax, List Syntax) -> Void
+
+    -- global variables   
+    -- global database for storing constructor data of all the 
+    -- categories
+    globalDatabase : CEXTDB := empty()
+
+    -- a global record storing the constructor data for the 
+    -- current category constructor, this record will be
+    -- updated into the globalDatabase
+    dbrec: CEXTR := [makeUnknown(), [], [], [], [], []]
+
+    -- a global table for storing all macro definitions
+    -- of the current constructor definition
+    constructorMacros: Table(Syntax, Syntax) := empty()
+
+    -- collect macro from macro definition
+    collectMacro(t: MacroAst): Void ==
+      macroHead := head(t)$MacroAst
+      macroBody := (body(t)$MacroAst)::Syntax
+      macroName := (name(macroHead)$HeadAst)::Syntax
+      constructorMacros.macroName := macroBody
+
+    -- does macro expansion for an expression
+    macroExpansion2(s: Syntax): Syntax ==
+      for m in keys constructorMacros repeat
+        mac := constructorMacros.m
+        sub := m
+        s := replace(sub, s, mac)$SyntaxHelper
+      s
+  
+    -- does macro expansion twice for an expression
+    -- this is for handling nested macros
+    -- the ideal algorithm is a fix point iteration until 
+    -- no more macro needs to be expanded, however, 
+    -- we don't take that expansive solution here, instead, we 
+    -- only iterate twice, which is already sufficient as we found.
+    macroExpansion(s: Syntax): Syntax ==
+      empty? constructorMacros => s
+      -- expand the macro twice to make sure all nested macros have
+      -- been expanded.
+      s' := macroExpansion2(s)
+      s' := macroExpansion2(s')
+      s'
+
+    -- obtain constructor kind of some constructor
+    getCtorKind(c: Identifier): ConstructorKind == 
+      kind(retract(findConstructor(c_
+        )$Constructor)$(Maybe Constructor))$Constructor
+
+    -- given a constructor name, finds out the kind of the constructor
+    getCtorKindInString(c: Identifier): String ==
+      k : ConstructorKind := getCtorKind(c)
+      k = category$ConstructorKind =>  "Category"
+      k = package$ConstructorKind  =>  "Package"
+      "Domain"
+
+    -- collect an unconditional category extension
+    collectSingleCategoryExtension(s: Syntax): Void ==
+      dbrec.extensions := concat(dbrec.extensions,_
+                                 pair(macroExpansion(s), [makeTrue()]))
+
+    -- collect category extension with its predicate, and update
+    -- the corresponding database record field for the current category
+    collectSingleCategoryExtensionWithPredicate(s: Syntax,_
+                                                pred: List Syntax): Void ==
+      dbrec.extensions := concat(dbrec.extensions,_
+                                 pair(macroExpansion(s), pred))
+
+    -- collect function declaration with its predicate, and update 
+    -- the corresponding database record field for the current category 
+    collectSignature(s: Syntax, pred: List Syntax): Void ==
+      dbrec.declarations := concat(dbrec.declarations,_
+                                   pair(macroExpansion(s), pred))
+
+    -- collect attribute declaration with its predicate, and update 
+    -- the corresponding database record field for the current category
+    collectAttribute(s: Syntax, pred: List Syntax): Void ==
+      op := getOperator(name(s::AttributeAst)::Syntax)
+      att : Syntax := makeTrue()
+      if op case Syntax then 
+        att := op::Syntax
+      if op case Identifier then 
+        att := op::Identifier::Syntax
+      member?(att, allAttributes()$AttributeCollection) =>
+        dbrec.attributes := concat(dbrec.attributes, pair(att, pred))
+      dbrec.extensions := concat(dbrec.extensions,_
+                                 pair(macroExpansion(att), pred))
+
+    -- collect constructor data from each category extension/declaration 
+    -- listed in a conditional category extension/declaration construct
+    collectStatement(s: Syntax, pred: List Syntax): Void ==
+      s' := s::SpadAst
+      isProgn?(s)$SyntaxHelper => 
+        for e in getOperands(s) repeat
+          collectStatement(e, pred)
+      s' case AttributeAst => collectAttribute(s, pred)
+      s' case IfAst => collectConditional(s, pred)
+      s' case SignatureAst => collectSignature(s, pred)
+      print(s::OutputForm)
+      userError "unexpected statement!"
+
+    -- collect constructor data from the then branch of
+    -- some conditional category extension/declaration
+    collectThenBranch(s: Syntax, pred: List Syntax): Void ==
+      collectStatement(s: Syntax, pred)
+
+    -- collect constructor data from the else branch of 
+    -- some conditional category extension/declaration
+    collectElseBranch(s: Syntax, pred: List Syntax): Void ==
+      collectStatement(s: Syntax, pred)
+
+    -- build syntax for the negation of some predicate
+    negateCondition(pred: Syntax): Syntax ==
+      buildSyntax('not, [pred])
+
+    -- collect constructor data from a conditional 
+    -- category extension/declaration
+    collectConditional(s: Syntax, pred: List Syntax): Void ==
+      s' := s::SpadAst::IfAst
+      -- extract the predicate and attach to the category extension
+      -- or declaration listed in its branches.
+      -- condition gets negated for else branch
+      cond := condition(s')::Syntax
+      if hasThenBranch?(s')$SyntaxHelper then
+        newpred : List Syntax := concat(pred, cond)
+        collectThenBranch(thenBranch(s')::Syntax, newpred)
+      if hasElseBranch?(s')$SyntaxHelper then
+        newpred : List Syntax := concat(pred, negateCondition(cond))
+        collectElseBranch(elseBranch(s')::Syntax, newpred)
+
+    -- collect constructor data from the category ast used in add ast
+    collectEachInCAST(s: Syntax, pred: List Syntax): Void ==
+      s' := s::SpadAst
+      s' case SignatureAst => collectSignature(s, pred)
+      s' case IfAst        => collectConditional(s, pred)
+      s' case AttributeAst => collectAttribute(s, pred)
+      userError "unexpected syntax in CAST"
+
+    -- collect from each element listed in a category ast
+    collectCAST(s: Syntax): Void ==
+      for e in body(s::CategoryAst) repeat
+        collectEachInCAST(e::Syntax, [makeTrue()])
+
+    -- collect constructor data from a join ast
+    collectJoin(s: Syntax): Void ==
+      not isJoin?(s)$SyntaxHelper => userError "not join ast!"
+      exports : List TypeAst := categories(s::JoinAst)
+      for e in exports repeat
+        e' := e::Syntax::SpadAst
+        e' case CategoryAst => collectCAST(e'::Syntax)
+        collectSingleCategoryExtension(e'::Syntax)
+
+    -- collect constructor data from an add ast
+    collectAdd(s: Syntax): Void ==
+      not isAdd?(s)$SyntaxHelper => userError "not add ast!"
+      j := base(s::AddAst)$AddAst::Syntax
+      isJoin?(j)$SyntaxHelper => collectJoin(j)
+      (j::SpadAst) case CategoryAst => collectCAST(j)    
+      compound?(j) => collectSingleCategoryExtension(j)
+      userError "unexpected syntax in add ast"
+
+    -- collect constructor data from category written using where clause
+    collectCategory2(s: Syntax, ctor: Identifier): Void ==
+      getCtorKindInString(ctor) ~= "Category" => void()
+      ctorPar' := parameters(head(mainExpression(_
+                 s::WhereAst)$WhereAst::Syntax::DefinitionAst_
+                 )$DefinitionAst)$HeadAst
+      ctorPar := [id::Identifier for id in ctorPar']
+      qual := qualifier(s::WhereAst)$WhereAst
+      seq  := qual::Syntax::SequenceAst
+      seqBody := body(seq)$SequenceAst
+      b : List SpadAst
+      for st in seqBody repeat
+        if (st case MacroAst) then collectMacro(st::Syntax::MacroAst)
+        if (st case ExitAst) then
+          a := expression(st::Syntax::ExitAst)$ExitAst
+          b := body(a::Syntax::CapsuleAst)$CapsuleAst
+      for x in b repeat
+        x' := x::Syntax
+        id := getOperator(x')
+        if (id case Identifier) then
+          id' := id::Identifier
+          if (id'::Symbol = 'add) then
+            collectAdd(x')
+          if (id'::Symbol = 'Join) then
+            collectJoin(x')
+      globalDatabase := concat(globalDatabase, dbrec)
+
+    -- collects constructor data from a category written in definition ast
+    -- i.e.,  Cats():Category == Cat with ... add..
+    collectCategory(s: Syntax, ctor: Identifier): Void == 
+      getCtorKindInString(ctor) ~= "Category" => void()
+      cDef := (s::DefinitionAst)
+      cBody := body(cDef)$DefinitionAst::Syntax
+      isJoin?(cBody)$SyntaxHelper => 
+        collectJoin(cBody)
+        globalDatabase := concat(globalDatabase, dbrec)
+      isAdd?(cBody)$SyntaxHelper =>
+        collectAdd(cBody)
+        globalDatabase := concat(globalDatabase, dbrec)
+      (cBody::SpadAst) case CategoryAst => 
+        collectCAST(cBody)
+        globalDatabase := concat(globalDatabase, dbrec)
+      collectSingleCategoryExtension(cBody)
+      globalDatabase := concat(globalDatabase, dbrec)
+
+    -- filter out the import statement before the category definition
+    importFilter(l: List Syntax): Syntax ==
+      for s in l repeat
+        s' := s::SpadAst
+        s' case MacroAst => collectMacro(s::MacroAst)
+        s' case DefinitionAst or s' case WhereAst => return s
+      l.last
+
+    -- initialize a record in the constructor database
+    -- where, the constructor name is x, constructor parameters are in y
+    -- and constructor parameters' types are in z
+    fillCurrentDBRecSlot(x: Identifier, y: List Identifier,_
+                         z: List Syntax): CEXTR == 
+      dbrec := [x, y, z, [], [], []]
+
+    -- collect constructor data for category written using where clause
+    collectFromCategoryInWhere(s: Syntax): Void ==
+      mainexp := mainExpression(s::WhereAst)$WhereAst::Syntax::DefinitionAst
+      ctorName : Identifier := name(head(mainexp)$DefinitionAst)$HeadAst
+      ctorPar  :=[id::Identifier for id in parameters(head(mainexp)$DefinitionAst)$HeadAst]
+      ctorSig  := signature(mainexp)$DefinitionAst
+      ctorTps  := source(ctorSig)
+      loadLib(ctorName::Symbol)$Lisp
+      fillCurrentDBRecSlot(ctorName, ctorPar, ctorTps)
+      collectCategory2(s, ctorName)
+
+    -- collect constructor data for category written in definition ast
+    collectFromCategoryInDefinitionAst(s: Syntax): Void ==
+      ctorName : Identifier := name(head(s::DefinitionAst)$DefinitionAst)$HeadAst
+      ctorPar  := [id::Identifier for id in parameters(head(s::DefinitionAst)$DefinitionAst)$HeadAst]
+      ctorSig  := signature(s::DefinitionAst)$DefinitionAst
+      ctorTps  := source(ctorSig)
+      -- caution!, the following line is for the latest OpenAxiom syntax library
+      --ctorPar' : List Identifier := [(e::Identifier) for e in ctorPar]
+      loadLib(ctorName::Symbol)$Lisp
+      fillCurrentDBRecSlot(ctorName, ctorPar, ctorTps)
+      sig := signature(s::DefinitionAst)$DefinitionAst
+      tar := target(sig)$Signature
+      if tar = buildSyntax('Category,[]) then
+        collectCategory(s, ctorName)
+        
+
+    -- collect category constructor data from each file
+    -- if the syntax is not a category then 
+    -- directory skip this file
+    lookatEach(l: List Syntax): Void ==
+      constructorMacros := empty()
+      s := importFilter(l)
+      sast := s::SpadAst
+      sast case WhereAst => collectFromCategoryInWhere(s)
+      sast case DefinitionAst => collectFromCategoryInDefinitionAst(s) 
+
+    -- obtain a list of file names stored in some directory
+    getAllFileName: List FileName ==
+      sex := DIRECTORY(_
+      "/Users/yli/Work/svns/yue.li/reduce-detect/example/*.spad")$Lisp
+      sexLst := sex pretend List(FileName)
+      sexLst
+
+    -- collects constructor data for each category
+    -- defined in each Spad file stored in some directory
+    collectAllConstructorData ==
+      collectAttributes()$AttributeCollection
+      fileNames :List FileName := getAllFileName() 
+      for s in fileNames repeat
+        fileName := s::String
+        syntaxFromParser := parse(fileName)$SpadParser
+        lookatEach(syntaxFromParser)
+
+    -- use the name of some category to query the 
+    -- constructor database, obtaining the entry 
+    -- if data exsits
+    getCategoryConstructorData(cname: Identifier): CEXTR ==
+      for r in globalDatabase repeat
+        r.catname = cname => return r
+      print(cname::OutputForm)
+      userError "category extension record not found!"
+
+
+
+
+

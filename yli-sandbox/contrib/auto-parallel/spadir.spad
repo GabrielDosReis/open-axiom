@@ -1,0 +1,1703 @@
+
+)abbrev category IRCAT IntermediateRepresentationCategory
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This domain represents the base domain
+++   for Spad intermediate representation
+IntermediateRepresentationCategory(): Category == Join(SetCategory, CoercibleTo OutputForm) with
+      coerce: % -> OutputForm
+        ++ coerce to OutputForm
+      getTree: % -> Syntax
+        ++ obtain the syntax tree of the current IR
+
+)abbrev category SIRCAT StatementIrCategory
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This category defines the type of StatemenIr domain
+StatementIrCategory(): Category == IntermediateRepresentationCategory
+
+)abbrev category EIRCAT ExpressionIrCategory
+++ Author: Yue Li
+++ Date Created: Sept 30, 2010
+++ Date Last Modified: Sept 30, 2010
+++ Description: This category defines the type of ExpressionIr domain
+ExpressionIrCategory(): Category == StatementIrCategory
+ --   typeOf: % -> TypeIr
+      ++ obtain the type of the current IR
+
+)abbrev domain TYPEIR TypeIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Jan 21, 2011
+++ Description: This domain represents the intermediate representation
+++ of a variable in Spad program
+TypeIr(): Public == Private where
+  Public == IntermediateRepresentationCategory with
+    buildTypeIr: Syntax -> %
+      ++ creates an IR for a Spad type, this could be either a
+      ++ package, domain, or category w/o parameterization
+    buildTypeIr: (Syntax, String) -> %
+      ++ creates an IR for a Spad type whose kind is also known
+    buildTypeIrForMapping: List Syntax -> %
+      ++ creates an IR for a mapping type
+      ++ the last element in the list is the resulting type
+    buildTypeIrForMapping: List % -> %
+      ++ creates an IR for a mapping type
+      ++ the last element in the list is the resulting type's IR
+    getKind: % -> String
+      ++ returns the kind of the type
+    getResultType: % -> %
+      ++ obtain the IR of the resultant type from a signature
+
+  Private == add
+    Rep == Record(tree: Syntax, kind: String)
+
+    buildTypeIr s == per [s, "unknown"]
+
+    buildTypeIr(s, k) == 
+      k ~= "mapping" and k ~= "failed" and_
+      k ~= "package" and k ~= "domain" and k ~= "category" and k ~= "unknown" =>
+        userError "Unknown string representing the kind of the type"
+      --enforce Mapping(T, T, T) type to have kind mapping instead of domain
+      compound? s and s::SpadAst case MappingAst => per [s, "mapping"]
+      per [s, k]
+
+    buildTypeIrForMapping(ts: List Syntax): % ==
+      buildTypeIr(buildSyntax('signature::Identifier, ts), "mapping")
+
+    buildTypeIrForMapping(ts: List %): % ==
+      buildTypeIrForMapping([getTree t for t in ts])
+
+    getResultType(x: %) ==
+      syn := rep(x).tree
+      per [getOperands(syn).last, "domain"]
+
+    getKind(x: %): String == (rep x).kind
+
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev package TIRUTIL TypeIrUtility
+++ Author: Yue Li
+++ Date Created: Oct 1, 2010
+++ Date Last Modified: Oct 5, 2010
+++ Description: This domain represents the intermediate representation
+++ of a variable in Spad program
+TypeIrUtility(): Public == Private where
+  Public == with
+    makeThisIr: () -> TypeIr
+      ++ this creates a TypeIR value represents % in Spad
+    makeVoidTypeIr: () -> TypeIr
+      ++ creates TypeIr for type Void
+      ++ used as type of iterators, loops, etc.
+    makeBooleanTypeIr: () -> TypeIr
+      ++ creates TypeIr for type Boolean
+    makeIntegerTypeIr: () -> TypeIr
+      ++ creates TypeIr for type Integer
+    isMappingTypeIr?: TypeIr -> Boolean 
+      ++ checks whether the type ir is representing a function signature
+    getInputTypesFromMapping: TypeIr -> List TypeIr
+      ++ obtains all the input type irs from a mapping type ir
+    getOutputTypeFromMapping: TypeIr -> TypeIr
+      ++ obtains the output type ir from a mapping type ir
+    getIOTypesFromMappingInSyntax: TypeIr -> List Syntax
+      ++ obtains the syntax of the input and output types
+    getInputTypesFromMappingInSyntax: TypeIr -> List Syntax
+      ++ obtains the syntax of the input types 
+    getOutputTypeFromMappingInSyntax: TypeIr -> Syntax
+      ++ obtains the syntax of the output type
+    isPackage?: TypeIr -> Boolean 
+      ++ checks whether the type ir is a package
+    isCategory?: TypeIr -> Boolean 
+      ++ checks whether the type ir is a category
+    isDomain?: TypeIr -> Boolean 
+      ++ checks whether the type ir is a domain
+
+  Private == add
+    import SyntaxHelper
+
+    makeThisIr()     == buildTypeIr(makePercentage(), "domain")
+
+    makeVoidTypeIr() == buildTypeIr(makeVoidType(), "domain")
+
+    makeBooleanTypeIr() == buildTypeIr(makeBooleanType(), "domain")
+
+    makeIntegerTypeIr() == buildTypeIr(makeIntegerType(), "domain")
+
+    isMappingTypeIr? t == getKind t = "mapping"
+
+    getInputTypesFromMapping t == 
+      isMappingTypeIr? t => 
+        inputTypeSyntax : List Syntax := reverse rest reverse getOperands getTree t
+        [buildTypeIr(s, "domain") for s in inputTypeSyntax]
+      print(t::OutputForm)
+      userError "TypeIr utility: not a mapping type ir!"
+
+    getOutputTypeFromMapping t ==
+      isMappingTypeIr? t => 
+        outputTypeSyntax : Syntax := last getOperands getTree t
+        buildTypeIr(outputTypeSyntax, "domain")
+      print(t::OutputForm)
+      userError "TypeIr utility: not a mapping type ir!"
+
+    getIOTypesFromMappingInSyntax t ==
+      isMappingTypeIr? t =>
+        getOperands getTree t
+      print(t::OutputForm)
+      userError "TypeIr utility: not a mapping type ir!"
+
+    getInputTypesFromMappingInSyntax t ==
+      isMappingTypeIr? t =>
+        [getTree tp for tp in getInputTypesFromMapping t]
+      print(t::OutputForm)
+      userError "TypeIr utility: not a mapping type ir!"
+
+    getOutputTypeFromMappingInSyntax t ==
+      isMappingTypeIr? t => getTree getOutputTypeFromMapping t
+      print(t::OutputForm)
+      userError "TypeIr utility: not a mapping type ir!"
+
+    isPackage? t == isPackage? getTree t
+
+    isDomain? t == isDomain? getTree t
+  
+    isCategory? t == isCategory? getTree t
+
+)abbrev domain TCTORIR TypeConstructorIr
+++ Author: Yue Li
+++ Date Created: Sept 29, 2010
+++ Date Last Modified: Sept 29, 2010
+++ Description: This domain represents the intermediate representation
+++ of a variable in Spad program
+++ FIXME: to be implemented
+TypeConstructorIr(): Public == Private where
+  Public == IntermediateRepresentationCategory with
+
+    buildTypeConstructorIr: Syntax -> %
+      ++ creates an IR for a Spad type constructor, this could be either a
+      ++ package, domain, or category w/o parameterization
+
+    buildUnknownTypeConstructorIr: () -> %
+      ++ creates an empty type constructor which represents the type ctor 
+      ++ is unknown
+
+  Private == add
+    Rep == Record(tree: Syntax, kind: String)
+
+    buildTypeConstructorIr s == per [s, "unknown"]
+
+    buildUnknownTypeConstructorIr == per ['unknown::Identifier::Syntax, "unknown"]
+
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain VALIR ValueIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This domain represents the intermediate representation
+++ of a constant in Spad program
+ValueIr(): Public == Private where
+  Public == ExpressionIrCategory with 
+    buildValIr: (Syntax, TypeIr) -> %
+      ++ obtain the IR for a Spad constant
+    typeOf: % -> TypeIr
+    updateType!: (%, TypeIr) -> TypeIr
+      ++ update the type of the variable ir
+  Private == add
+    Rep == Record(tree: Syntax, type: TypeIr) 
+
+    buildValIr(s, t) == per [s, t]
+
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+
+    typeOf(x: %): TypeIr == (rep x).type
+
+    getTree(x: %): Syntax == (rep x).tree
+
+    updateType!(x, t) == (rep x).type := t
+
+)abbrev domain VARIR VariableIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This domain represents the intermediate representation
+++ of a variable in Spad program
+VariableIr(): Public == Private where
+  Public == ExpressionIrCategory with 
+    buildVarIr: (Syntax, TypeIr) -> %
+      ++ obtain the IR for a Spad variable
+    buildVarIrs: (List Syntax, List TypeIr) -> List %
+      ++ obtain the IRs for a list of Spad variables
+    getName: % -> Identifier
+      ++ obtain the name of a variable
+    updateType!: (%, TypeIr) -> TypeIr
+      ++ update the type of the variable ir
+    typeOf: % -> TypeIr
+
+  Private == add
+    Rep == Record(tree: Syntax, name: Identifier, type: TypeIr) 
+
+    buildVarIr(s, t) == per [s, s::Identifier, t]
+
+    buildVarIrs(ss, ts) == 
+      #ss ~= #ts => 
+        userError "numbers of variables and their types should be equivalent"
+      irs : List % := empty()
+      for s in ss for t in ts repeat
+        irs := cons(per [s, s::Identifier, t], irs)
+      reverse! irs
+
+    updateType!(v, t) == (rep v).type := t
+
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+
+    getName(x: %): Identifier == (rep x).name
+
+    typeOf(x: %): TypeIr == (rep x).type
+
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain OPIR OperatorIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This domain represents the intermediate representation
+++ of an operator in Spad program
+OperatorIr(): Public == Private where
+  Public == ExpressionIrCategory with 
+    buildOperatorIr: (Syntax, TypeIr, Integer, TypeIr) -> %
+      ++ creates the IR for a Spad operator
+    buildOperatorIr: (Syntax, TypeIr, TypeIr) -> %
+      ++ creates the IR for a Spad operator
+    buildEmptyOperatorIr: () -> %
+      ++ creates the IR for an empty operator
+    getName: % -> Identifier
+      ++ obtains the name of the IR
+    getArity: % -> Integer
+      ++ obtains the arity of the operator
+    definedIn: % -> TypeIr
+      ++ obtains the ir of the type where the operator is defined
+    updateTree!: (%, Syntax) -> Void
+      ++ update the tree of an operator ir
+      ++ the name will also automatically updated
+    updateType!: (%, TypeIr) -> Void
+      ++ updates the type of an operator ir
+    updateArity!: (%, Integer) -> Void
+      ++ updates the arity of an operator ir
+    updateSource!: (%, TypeIr) -> Void
+      ++ updates the source where the operator is defined
+    typeOf: % -> TypeIr
+  Private == add
+    import Syntax
+    import TypeIr
+    -- the last TypeIr is the resultant type in the rep of the type
+    -- FIXME: the last TypeIr should be the constructor where this function
+    -- is defined or resolved from
+    -- the first type should have kind mapping
+    Rep == Record(tree: Syntax, name: Identifier, type: TypeIr,_
+                                arity: Integer, source: TypeIr) 
+
+    buildOperatorIr(s, sig, a, src) ==
+      per [s, s::Identifier, sig, a, src]
+
+    buildOperatorIr(s, sig, src) ==
+      getKind(sig) = "mapping" => 
+        a := #getOperands(getTree(sig)) - 1
+        per [s, s::Identifier, sig, a, src]
+      userError "Signature of the operator does not have mapping kind"
+
+    buildEmptyOperatorIr() ==
+      opName  := 'nop::Identifier
+      nowhere := 'nowhere::Identifier::Syntax
+      per [opName::Syntax, opName, buildTypeIr(nowhere), 0, buildTypeIr(nowhere)]
+
+    updateTree!(x, s) == (rep x).tree := s
+    
+    updateType!(x, t) == (rep x).type := t
+
+    updateArity!(x, a) == (rep x).arity := a
+ 
+    updateSource!(x, src) == (rep x).source := src
+
+    getName(x: %): Identifier == (rep x).name
+
+    getArity(x: %): Integer == (rep x).arity
+
+    definedIn(x: %): TypeIr == (rep x).source
+
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+
+    typeOf(x: %) == (rep x).type
+
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain LCIR LispCallIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This domain represents the intermediate representation
+++ of an operator in Spad program
+LispCallIr(): Public == Private where
+  Public == ExpressionIrCategory with 
+    buildLispCallIr: (Syntax, TypeIr) -> %
+    typeOf: % -> TypeIr
+    updateType!: (%, TypeIr) -> Void
+      ++ updates the type of a LispCallIr
+
+  Private == add
+    import Syntax
+    import TypeIr
+    Rep == Record(tree: Syntax, type: TypeIr)
+    buildLispCallIr(s, t) == per [s, t]
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+    updateType!(x, t) == (rep x).type := t
+
+-----------------forward declarations--------------------------------------
+)abbrev category INIRX InIteratorIrExports
+InIteratorIrExports(): Category == ExpressionIrCategory with
+    buildInIteratorIr: (Syntax, VariableIr, ExpressionIr(), TypeIr) -> %
+      ++ build the IR for an in iterator in a for-loop
+    sequence: % -> ExpressionIr()
+      ++ obtain the range to be iterated on by the for-loop
+    iterationVar: % -> VariableIr
+      ++ obtain the iteration variable of the for-loop
+    updateSequence!: (%, StatementIr()) -> Void
+      ++ update the sequence of an in-iterator ir
+    updateType!: (%, TypeIr) -> Void 
+      ++ update the typ eof an in-iterator ir
+    typeOf: % -> TypeIr
+
+)abbrev category WYLIRX WhileIteratorIrExports
+WhileIteratorIrExports(): Category == ExpressionIrCategory with
+    buildWhileIteratorIr: (Syntax, StatementIr(), TypeIr) -> %
+      ++ build the IR for an in iterator in a for-loop
+    condition: % -> StatementIr()
+      ++ obtain the condition of the while-loop
+    updateCondition!: (%, StatementIr()) -> Void
+      ++ update the predicate of a while-iterator
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a while-iterator
+    typeOf: % -> TypeIr
+
+)abbrev category STPIRX StepIteratorIrExports
+StepIteratorIrExports(): Category == ExpressionIrCategory with
+    buildStepIteratorIr: (Syntax, VariableIr, List StatementIr(),_
+                          List StatementIr(), StatementIr()) -> %
+      ++ build the IR for an in iterator in a for-loop
+    iterationVar: % -> VariableIr
+      ++ obtain the iteration variable from the step-ir
+    lowerBound: % -> StatementIr()
+      ++ obtain the lower bound of the iteration range
+    upperBound: % -> StatementIr()
+      ++ obtain the upper bound of the iteration range
+    hasUpperBound?: % -> Boolean
+      ++ checks whether the iteration range has an end
+    step: % -> StatementIr()
+      ++ obtain the value of each step increase
+    updateLowerBound!: (%, StatementIr()) -> Void
+      ++ update the lower bound of the step-iterator
+    updateUpperBound!: (%, StatementIr()) -> Void
+      ++ update the upper bound of the step-iterator
+    updateStep!: (%, StatementIr()) -> Void
+      ++ update the step of a step-iterator
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a step-iterator
+    typeOf: % -> TypeIr
+
+)abbrev category STIRX SuchThatIrExports
+SuchThatIrExports(): Category == ExpressionIrCategory with
+    buildSuchThatIr: (Syntax, StatementIr()) -> %
+      ++ build the IR for an such that iterator used with for-loop
+    predicate: % -> StatementIr()
+      ++ obtains the predicate of a such that iterator
+    updatePredicate!: (%, StatementIr()) -> Void
+      ++ update the predicate of a such-that ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a such-that ir
+    typeOf: % -> TypeIr
+
+)abbrev category EOPIRX ExpressionWithOperatorIrExports
+ExpressionWithOperatorIrExports(): Category == ExpressionIrCategory with
+    buildExpressionWithOperatorIr: (Syntax, OperatorIr, List StatementIr(), TypeIr) -> %
+      ++ the first way for building an expression IR 
+      ++ pass in the syntax
+    operator: % -> OperatorIr
+      ++ obtains the operator used in an expression
+    operands: % -> List StatementIr()
+      ++ obtains the operands used in an expression
+    updateOperand!: (%, StatementIr(), Integer) -> Void
+      ++ updates the n-th operand of an expression ir
+    updateOperator!: (%, StatementIr()) -> Void
+      ++ updates the operator of an expression ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of an expression (with operator) ir
+    typeOf: % -> TypeIr
+
+)abbrev category CLLIRX CollectIrExports
+CollectIrExports(): Category == ExpressionIrCategory with
+    buildCollectIr: (Syntax, StatementIr(), List StatementIr(), TypeIr) -> %
+      ++ build the ir of a collect ast
+    body: % -> StatementIr()
+      ++ body of the collect statement
+    iterators: % -> List StatementIr()
+      ++ iterators of the collect ast
+    updateBody!: (%, StatementIr()) -> Void
+      ++ update the body of a collect ir
+    updateIterator!: (%, StatementIr(), Integer) -> Void
+      ++ update one of the iterators in a collect ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a collect ir
+    typeOf: % -> TypeIr
+
+)abbrev category PRTIRX PretendIrExports
+PretendIrExports(): Category == ExpressionIrCategory with
+    buildPretendIr: (Syntax, StatementIr(), TypeIr, TypeIr) -> %
+      ++ build the ir of a pretend expression
+    expression: % -> StatementIr()
+      ++ expression to be coerced
+    target: % -> TypeIr
+      ++ the type of the expression to be coerced to be
+    updateExpression!: (%, StatementIr()) -> Void
+      ++ update the expression of a pretend ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a pretend ir
+    typeOf: % -> TypeIr
+
+)abbrev category COEIRX CoerceIrExports
+CoerceIrExports(): Category == ExpressionIrCategory with
+    buildCoerceIr: (Syntax, StatementIr(), TypeIr, TypeIr) -> %
+      ++ build the ir of a coerce expression
+    expression: % -> StatementIr()
+      ++ expression to be coerced
+    target: % -> TypeIr
+      ++ the type of the expression to be coerced to be
+    updateExpression!: (%, StatementIr()) -> Void
+      ++ update the expression of a coerce ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a coerce ir
+    typeOf: % -> TypeIr
+
+)abbrev category CONSIRX ConstructIrExports
+ConstructIrExports(): Category == ExpressionIrCategory with
+    buildHomoConstructIr: (Syntax, List StatementIr(), TypeIr, TypeIr) -> %
+      ++ build the ir of a homogeneous construct ir
+    buildNonHomoConstructIr: (Syntax, List StatementIr(), List TypeIr, TypeIr) -> %
+      ++ build the ir of a non-homogenous construct ir
+    homogeneous?: % -> Boolean 
+      ++ checks whether a construct ir is constructing a homogeneous list
+    elements: % -> List StatementIr()
+      ++ returns the elements to be constructed
+    elementType: % -> TypeIr
+      ++ obtains types of all the elements
+    updateElement!: (%, StatementIr(), Integer) -> Void
+      ++ update one of the elements in a construct ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a construct ir
+    typeOf: % -> TypeIr
+
+)abbrev category REDIRX ReduceIrExports
+ReduceIrExports(): Category == ExpressionIrCategory with
+    buildReduceIr: (Syntax, OperatorIr, StatementIr(), StatementIr(), TypeIr) -> %
+      ++ build the ir of a reduce form
+    operator: % -> OperatorIr
+      ++ obtans the binary operator of the reduce form
+    neutralValue: % -> StatementIr()
+      ++ obtains the neutral value of the binary operator
+    sequence: % -> StatementIr()
+      ++ obtains the sequence that the binary operator is being reduced over
+    updateOperator!: (%, StatementIr()) -> Void
+      ++ update the binary operator of the reduce form ir
+    updateNeutralValue!: (%, StatementIr()) -> Void
+      ++ updates the neutral value
+    updateSequence!: (%, StatementIr()) -> Void
+      ++ updates the sequence of the reduce ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a reduce ir
+    typeOf: % -> TypeIr
+
+)abbrev category AFUNX AnonymousFunctionIrExports
+AnonymousFunctionIrExports(): Category == ExpressionIrCategory with
+    buildAnonyFunIr: (Syntax, List VariableIr, TypeIr, StatementIr()) -> %
+      ++ build the ir of an anonymous function
+    getBody: % -> StatementIr()
+      ++ obtains the function body of an anonymous function
+    updateBody!: (%, StatementIr()) -> Void
+      ++ update the body of an anonymous function
+    updateParameter!: (%, StatementIr, Integer) -> Void
+      ++ update the n-th parameter in the parameter list
+    parameters: % -> List VariableIr
+      ++ returns the parameter list of an anonymous function
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of an anonymous function IR
+    typeOf: % -> TypeIr
+      ++ obtain the signature of this anonymous function
+
+)boot $bootStrapMode := true
+)abbrev domain INIR InIteratorIr
+InIteratorIr(): InIteratorIrExports == add
+  Rep == Void()
+
+)abbrev domain WYLIR WhileIteratorIr
+WhileIteratorIr(): WhileIteratorIrExports == add
+  Rep == Void()
+
+)abbrev domain STPIR StepIteratorIr
+StepIteratorIr(): StepIteratorIrExports == add
+  Rep == Void()
+
+)abbrev domain STIR SuchThatIr
+SuchThatIr(): SuchThatIrExports == add
+  Rep == Void()
+
+)abbrev domain EOPIR ExpressionWithOperatorIr
+ExpressionWithOperatorIr(): ExpressionWithOperatorIrExports == add
+  Rep == Void()
+
+)abbrev domain CLLIR CollectIr
+CollectIr(): CollectIrExports == add
+  Rep == Void()
+
+)abbrev domain COEIR CoerceIr
+CoerceIr(): CoerceIrExports == add
+  Rep == Void()
+
+)abbrev domain PRETIR PretendIr
+PretendIr(): PretendIrExports == add
+  Rep == Void()
+
+)abbrev domain CONSIR ConstructIr
+ConstructIr(): ConstructIrExports == add
+  Rep == Void()
+
+)abbrev domain REDIR ReduceIr
+ReduceIr(): ReduceIrExports == add
+  Rep == Void()
+
+)abbrev domain AFUN AnonymousFunctionIr
+AnonymousFunctionIr(): AnonymousFunctionIrExports == add
+  Rep == Void()
+)boot $bootStrapMode := false
+-----------------forward declarations--------------------------------------
+
+
+)abbrev domain EXPIR ExpressionIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 30, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad expression
+ExpressionIr(): Public == Private where
+  Public == Join(ExpressionIrCategory, UnionType) with
+    coerce: ValueIr -> %
+
+    _case: (%, [| ValueIr |]) -> Boolean
+
+    autoCoerce: % -> ValueIr
+
+    coerce: VariableIr -> %
+
+    _case: (%, [| VariableIr |]) -> Boolean
+
+    autoCoerce: % -> VariableIr
+
+    coerce: OperatorIr -> %
+
+    _case: (%, [| OperatorIr |]) -> Boolean
+
+    autoCoerce: % -> OperatorIr
+
+    coerce: ExpressionWithOperatorIr -> %
+
+    _case: (%, [| ExpressionWithOperatorIr |]) -> Boolean
+
+    autoCoerce: % -> ExpressionWithOperatorIr
+
+    coerce: InIteratorIr -> %
+
+    _case: (%, [| InIteratorIr |]) -> Boolean
+
+    autoCoerce: % -> InIteratorIr
+
+    coerce: WhileIteratorIr -> %
+
+    _case: (%, [| WhileIteratorIr |]) -> Boolean
+
+    autoCoerce: % -> WhileIteratorIr
+
+    coerce: StepIteratorIr -> %
+
+    _case: (%, [| StepIteratorIr |]) -> Boolean
+
+    autoCoerce: % -> StepIteratorIr
+
+    coerce: SuchThatIr -> %
+
+    _case: (%, [| SuchThatIr |]) -> Boolean
+
+    autoCoerce: % -> SuchThatIr
+
+    coerce: CollectIr -> %
+
+    _case: (%, [| CollectIr |]) -> Boolean
+
+    autoCoerce: % -> CollectIr
+
+    coerce: CoerceIr -> %
+
+    _case: (%, [| CoerceIr |]) -> Boolean
+
+    autoCoerce: % -> CoerceIr
+
+    coerce: PretendIr -> %
+
+    _case: (%, [| PretendIr |]) -> Boolean
+
+    autoCoerce: % -> PretendIr
+
+    coerce: ConstructIr -> %
+
+    _case: (%, [| ConstructIr |]) -> Boolean
+
+    autoCoerce: % -> ConstructIr
+
+    coerce: LispCallIr -> %
+
+    _case: (%, [| LispCallIr |]) -> Boolean
+
+    autoCoerce: % -> LispCallIr
+
+    coerce: ReduceIr -> %
+
+    _case: (%, [| ReduceIr |]) -> Boolean
+
+    autoCoerce: % -> ReduceIr
+
+    coerce: AnonymousFunctionIr -> %
+
+    _case: (%, [| AnonymousFunctionIr |]) -> Boolean
+
+    autoCoerce: % -> AnonymousFunctionIr
+
+    typeOf: % -> TypeIr
+
+  Private == add
+    import TypeIr
+    import ValueIr
+    import VariableIr
+    import InIteratorIr
+    import WhileIteratorIr
+    import StepIteratorIr
+    import ExpressionWithOperatorIr
+    import OperatorIr
+    import CollectIr
+    import CoerceIr
+    import ConstructIr
+    import LispCallIr
+    import PretendIr
+    import ReduceIr
+    import SuchThatIr
+    import AnonymousFunctionIr
+
+    Rep == Union(ValueIr, VariableIr, OperatorIr, ExpressionWithOperatorIr,_
+                 InIteratorIr, WhileIteratorIr, SuchThatIr, StepIteratorIr,_
+              CollectIr, CoerceIr, ConstructIr, LispCallIr, PretendIr, ReduceIr,_
+              AnonymousFunctionIr)
+
+    coerce(x: ValueIr): % == per(x::Rep)
+    x case ValueIr == rep(x) case ValueIr
+    autoCoerce(x: %): ValueIr == rep(x)::ValueIr
+
+    coerce(x: VariableIr): % == per(x::Rep)
+    x case VariableIr == rep(x) case VariableIr
+    autoCoerce(x: %): VariableIr == rep(x)::VariableIr
+
+    coerce(x: OperatorIr): % == per(x::Rep)
+    x case OperatorIr == rep(x) case OperatorIr
+    autoCoerce(x: %): OperatorIr == rep(x)::OperatorIr
+
+    coerce(x: ExpressionWithOperatorIr): % == per(x::Rep)
+    x case ExpressionWithOperatorIr == rep(x) case ExpressionWithOperatorIr
+    autoCoerce(x: %): ExpressionWithOperatorIr == rep(x)::ExpressionWithOperatorIr
+
+    coerce(x: InIteratorIr): % == per(x::Rep)
+    x case InIteratorIr == rep(x) case InIteratorIr
+    autoCoerce(x: %): InIteratorIr == rep(x)::InIteratorIr
+
+    coerce(x: WhileIteratorIr): % == per(x::Rep)
+    x case WhileIteratorIr == rep(x) case WhileIteratorIr
+    autoCoerce(x: %): WhileIteratorIr == rep(x)::WhileIteratorIr
+
+    coerce(x: StepIteratorIr): % == per(x::Rep)
+    x case StepIteratorIr == rep(x) case StepIteratorIr
+    autoCoerce(x: %): StepIteratorIr == rep(x)::StepIteratorIr
+
+    coerce(x: SuchThatIr): % == per(x::Rep)
+    x case SuchThatIr == rep(x) case SuchThatIr
+    autoCoerce(x: %): SuchThatIr == rep(x)::SuchThatIr
+
+    coerce(x: CollectIr): % == per(x::Rep)
+    x case CollectIr == rep(x) case CollectIr
+    autoCoerce(x: %): CollectIr == rep(x)::CollectIr
+
+    coerce(x: CoerceIr): % == per(x::Rep)
+    x case CoerceIr == rep(x) case CoerceIr
+    autoCoerce(x: %): CoerceIr == rep(x)::CoerceIr
+
+    coerce(x: PretendIr): % == per(x::Rep)
+    x case PretendIr == rep(x) case PretendIr
+    autoCoerce(x: %): PretendIr == rep(x)::PretendIr
+
+    coerce(x: ConstructIr): % == per(x::Rep)
+    x case ConstructIr == rep(x) case ConstructIr
+    autoCoerce(x: %): ConstructIr == rep(x)::ConstructIr
+
+    coerce(x: LispCallIr): % == per(x::Rep)
+    x case LispCallIr == rep(x) case LispCallIr
+    autoCoerce(x: %): LispCallIr == rep(x)::LispCallIr
+
+    coerce(x: ReduceIr): % == per(x::Rep)
+    x case ReduceIr == rep(x) case ReduceIr
+    autoCoerce(x: %): ReduceIr == rep(x)::ReduceIr
+
+    coerce(x: AnonymousFunctionIr): % == per(x::Rep)
+    x case AnonymousFunctionIr == rep(x) case AnonymousFunctionIr
+    autoCoerce(x: %): AnonymousFunctionIr == rep(x)::AnonymousFunctionIr
+
+    coerce(x: %): OutputForm ==
+      x case ValueIr                     => rep(x)::ValueIr::OutputForm
+      x case VariableIr                  => rep(x)::VariableIr::OutputForm
+      x case OperatorIr                  => rep(x)::OperatorIr::OutputForm
+      x case ExpressionWithOperatorIr    => rep(x)::ExpressionWithOperatorIr::OutputForm
+      x case InIteratorIr                => rep(x)::InIteratorIr::OutputForm
+      x case WhileIteratorIr             => rep(x)::WhileIteratorIr::OutputForm
+      x case StepIteratorIr              => rep(x)::StepIteratorIr::OutputForm
+      x case CollectIr                   => rep(x)::CollectIr::OutputForm
+      x case CoerceIr                    => rep(x)::CoerceIr::OutputForm
+      x case PretendIr                   => rep(x)::PretendIr::OutputForm
+      x case ConstructIr                 => rep(x)::ConstructIr::OutputForm
+      x case LispCallIr                  => rep(x)::LispCallIr::OutputForm
+      x case ReduceIr                    => rep(x)::ReduceIr::OutputForm
+      x case SuchThatIr                  => rep(x)::SuchThatIr::OutputForm
+      x case AnonymousFunctionIr         => rep(x)::AnonymousFunctionIr::OutputForm
+      userError "unexpected type of expression ir"
+
+    getTree(x: %): Syntax ==
+      x case ValueIr                         => getTree(rep(x)::ValueIr)
+      x case VariableIr                      => getTree(rep(x)::VariableIr)
+      x case OperatorIr                      => getTree(rep(x)::OperatorIr)
+      x case ExpressionWithOperatorIr        => getTree(rep(x)::ExpressionWithOperatorIr)
+      x case InIteratorIr                    => getTree(rep(x)::InIteratorIr)
+      x case WhileIteratorIr                 => getTree(rep(x)::WhileIteratorIr)
+      x case StepIteratorIr                  => getTree(rep(x)::StepIteratorIr)
+      x case CollectIr                       => getTree(rep(x)::CollectIr)
+      x case CoerceIr                        => getTree(rep(x)::CoerceIr)
+      x case PretendIr                       => getTree(rep(x)::PretendIr)
+      x case ConstructIr                     => getTree(rep(x)::ConstructIr)
+      x case LispCallIr                      => getTree(rep(x)::LispCallIr)
+      x case ReduceIr                        => getTree(rep(x)::ReduceIr)
+      x case SuchThatIr                      => getTree(rep(x)::SuchThatIr)
+      x case AnonymousFunctionIr             => getTree(rep(x)::AnonymousFunctionIr)
+      userError "unexpected type of expression ir"
+
+    typeOf(x: %): TypeIr ==
+      x case ValueIr                         => typeOf(rep(x)::ValueIr)
+      x case VariableIr                      => typeOf(rep(x)::VariableIr)
+      x case OperatorIr                      => typeOf(rep(x)::OperatorIr)
+      x case ExpressionWithOperatorIr        => typeOf(rep(x)::ExpressionWithOperatorIr)
+      x case InIteratorIr                    => typeOf(rep(x)::InIteratorIr)
+      x case WhileIteratorIr                 => typeOf(rep(x)::WhileIteratorIr)
+      x case StepIteratorIr                  => typeOf(rep(x)::StepIteratorIr)
+      x case CollectIr                       => typeOf(rep(x)::CollectIr)
+      x case CoerceIr                        => typeOf(rep(x)::CoerceIr)
+      x case PretendIr                       => typeOf(rep(x)::PretendIr)
+      x case ConstructIr                     => typeOf(rep(x)::ConstructIr)
+      x case LispCallIr                      => typeOf(rep(x)::LispCallIr)
+      x case ReduceIr                        => typeOf(rep(x)::ReduceIr)
+      x case SuchThatIr                      => typeOf(rep(x)::SuchThatIr)
+      x case AnonymousFunctionIr             => typeOf(rep(x)::AnonymousFunctionIr)
+      userError "unexpected type of expression ir"
+
+)abbrev category COLNIRX ColonIrExports
+-- FIXME: the name is going to be changed to vardecl
+ColonIrExports(): Category == StatementIrCategory with
+    buildColonIr: (Syntax, List StatementIr(), TypeIr, TypeIr) -> %
+      ++ creates the IR for a Spad colon statement, e.g. x : Integer
+    lhs: % -> List StatementIr()
+      ++ obtain the expression at the left hand side of the colon statement
+    rhs: % -> TypeIr
+      ++ obtain the expression at the righ hand side of the colon statement
+    isListDecl?: % -> Boolean
+      ++ checks whether a declaration is used for declaring a list of variables
+    updateLhs!: (%, StatementIr(), Integer) -> Void
+      ++ updates the left hand side of a colon ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a colon ir
+    typeOf: % -> TypeIr
+
+)abbrev category LETIRX LetIrExports
+LetIrExports(): Category == StatementIrCategory with
+    buildLetIr: (Syntax, StatementIr(), StatementIr(), TypeIr) -> %
+      ++ creates the IR for a Spad let statement
+    lhs: % -> StatementIr()
+      ++ obtains the left hand side of the assignment
+    rhs: % -> StatementIr()
+      ++ obtains the right hand side of the assignment
+    updateType!: (%, TypeIr) -> TypeIr
+      ++ update the type of the assignment
+    updateLhs!: (%, StatementIr()) -> Void
+      ++ update the lhs of an assignment ir
+    updateRhs!: (%, StatementIr()) -> Void
+      ++ update the rhs of an assignment ir 
+    typeOf: % -> TypeIr
+
+)abbrev category IFIRX IfIrExports
+IfIrExports(): Category == StatementIrCategory with
+    buildIfIr: (Syntax, StatementIr(), List StatementIr(), List StatementIr(), TypeIr) -> %
+      ++ creates the IR for a Spad if-statement
+      ++ type of a if-statement is the Union(typeOf(then-branch), typeOf(else-branch))
+    thenBranch: % -> StatementIr()
+      ++ obtain the IR of the then-branch from an If-ir
+    elseBranch: % -> StatementIr()
+      ++ obtain the IR of the else-branch from an If-ir
+    condition:  % -> StatementIr()
+      ++ obtain the IR of the condition from an If-ir
+    withThenBranch?: % -> Boolean
+      ++ checks whether the tree has then-branch
+    withElseBranch?: % -> Boolean 
+      ++ checks whether the tree has else-branch
+    withBothBranches?: % -> Boolean
+      ++ checks whether the tree has both branches
+    updateThenBranch!: (%, StatementIr()) -> Void
+      ++ update the then branch of an if-ir
+    updateElseBranch!: (%, StatementIr()) -> Void
+      ++ update the else branch of an if-ir
+    updateCondition!: (%, StatementIr()) -> Void
+      ++ update the condition of an if-ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of an if ir
+    typeOf: % -> TypeIr
+
+)abbrev category REPIRX RepeatIrExports
+RepeatIrExports(): Category == StatementIrCategory with
+    buildRepeatIr: (Syntax, List ExpressionIr, StatementIr(), TypeIr) -> %
+      ++ creates the IR for a Spad if-statement
+      ++ FIXME: iterator's IR has type ExpressionIr
+      ++ Repeat has type Void
+    iterators: % -> List ExpressionIr
+      ++ obtains the iterator IR from Repeat IR
+    body: % -> StatementIr()
+      ++ obtains the IR of the loop body
+    updateIterator!: (%, StatementIr(), Integer) -> Void
+      ++ update one of the iterators in a repeat ir
+    updateBody!: (%, StatementIr()) -> Void
+      ++ update the body of a repeat ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a repeat ir
+    typeOf: % -> TypeIr
+
+
+)abbrev category SEQIRX SequenceIrExports
+SequenceIrExports(): Category == StatementIrCategory with
+    buildSequenceIr: (Syntax, List StatementIr(), TypeIr) -> %
+      ++ creates the IR for a Spad sequence statement
+    body: % -> List StatementIr()
+      ++ returns all the statements in the sequence as a list
+    last: % -> StatementIr()
+      ++ returns the last statement in the sequence
+    updateBody!: (%, StatementIr(), Integer) -> Void
+      ++ updates the n-th statement in the seqeunce
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a sequence ir
+    typeOf: % -> TypeIr
+
+
+)abbrev category EXIRX ExitIrExports
+ExitIrExports(): Category == StatementIrCategory with
+    buildExitIr: (Syntax, StatementIr(), TypeIr) -> %
+      ++ creates the IR for an exit statement
+    body: % -> StatementIr()
+      ++ obtains the expression wrapped in the exit statement
+    updateBody!: (%, StatementIr()) -> Void
+      ++ update the body of an exit-ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of an exit ir
+    typeOf: % -> TypeIr
+
+)abbrev category CASEIRX CaseIrExports
+CaseIrExports(): Category == StatementIrCategory with
+    buildCaseIr: (Syntax, StatementIr(), TypeIr) -> %
+      ++ creates the IR for a case predicate used in an if-statement
+    lhs: % -> StatementIr()
+      ++ obtains the left hand side from the case IR
+    rhs: % -> TypeIr
+      ++ obtains the right hand side from the case IR
+    updateLhs!: (%, StatementIr()) -> Void
+      ++ update the lhs of a case-ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a case ir
+    typeOf: % -> TypeIr
+
+)abbrev category RETIRX ReturnIrExports
+ReturnIrExports(): Category == StatementIrCategory with
+    buildReturnIr: (Syntax, StatementIr(), TypeIr) -> %
+      ++ creates the IR for a return statement
+    expression: % -> StatementIr()
+      ++ obtains the statement wrapped in a return ir
+    updateExpression!: (%, StatementIr()) -> Void
+      ++ updates the expression wrapped in a return ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a return ir
+    typeOf: % -> TypeIr
+
+)abbrev category FUNIRX FunctionDeclarationIrExports
+FunctionDeclarationIrExports(): Category == StatementIrCategory with
+    buildFunDeclIr: (Syntax, Identifier, List VariableIr, TypeIr,_
+                     List StatementIr(), TypeConstructorIr) -> %
+      ++ create an IR of a function declaration
+      ++ by function declaration, we mean its signature + an optional body
+    withBody?: % -> Boolean
+      ++ asks the IR whether he/she has a body with him/her.
+    getBody: % -> StatementIr()
+      ++ returns the function definition body
+    definedIn: % -> TypeConstructorIr
+      ++ returns the type constructor ir that the function is being defined in
+    getName: % -> Identifier
+      ++ returns the name of the function
+    parameters: % -> List VariableIr
+      ++ returns the input parameter list
+    updateBody!: (%, StatementIr()) -> Void
+      ++ updates the body of a function declaration ir
+    updateParameter!: (%, StatementIr(), Integer) -> Void
+      ++ updates one of the parameters of a function decalration ir
+    updateType!: (%, TypeIr) -> Void
+      ++ update the type of a function declaration ir
+    typeOf: % -> TypeIr
+      ++ returns the type of the function delaration 
+      ++ which should have a mapping kind
+
+
+)boot $bootStrapMode := true
+-- These definitions are only workarounds in the current version of
+-- OpenAxiom which does not fully support forward declaration. 
+)abbrev domain COLNIR ColonIr
+ColonIr(): ColonIrExports == add
+  Rep == Void
+
+)abbrev domain LETIR LetIr 
+LetIr(): LetIrExports == add 
+  Rep == Void
+
+)abbrev domain IFIR IfIr
+IfIr(): IfIrExports == add
+  Rep == Void
+
+)abbrev domain REPIR RepeatIr
+RepeatIr(): RepeatIrExports == add
+  Rep == Void
+
+)abbrev domain SEQIR SequenceIr
+SequenceIr(): SequenceIrExports == add
+  Rep == Void
+
+)abbrev domain EXIR ExitIr
+ExitIr(): ExitIrExports == add
+  Rep == Void
+
+)abbrev domain CASEIR CaseIr
+CaseIr(): CaseIrExports == add
+  Rep == Void
+
+)abbrev domain RETIR ReturnIr
+ReturnIr(): ReturnIrExports == add
+  Rep == Void
+
+)abbrev domain FDECIR FunctionDeclarationIr
+FunctionDeclarationIr(): FunctionDeclarationIrExports == add
+  Rep == Void
+)boot $bootStrapMode := false
+
+
+)abbrev domain STMIR StatementIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 29, 2010
+++ Description: This domain represents the intermediate representation of
+++ a Spad statement
+StatementIr(): Public == Private where
+  Public == Join(StatementIrCategory, UnionType) with
+    coerce: IfIr -> %
+      ++ coerce(w) views the if ir `w' as an if ir, in abstract.
+    _case: (%, [| IfIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a IfIr.
+    autoCoerce: % -> IfIr
+      ++ autoCoerce(s) implicitly returns the IfIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: ColonIr -> %
+      ++ coerce(w) views the if ir `w' as a colon ir, in abstract.
+    _case: (%, [| ColonIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a ColonIr.
+    autoCoerce: % -> ColonIr
+      ++ autoCoerce(s) implicitly returns the ColonIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.    
+    coerce: LetIr -> %
+      ++ coerce(w) views the if ir `w' as a let ir, in abstract.
+    _case: (%, [| LetIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a LetIr.
+    autoCoerce: % -> LetIr
+      ++ autoCoerce(s) implicitly returns the LetIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: RepeatIr -> %
+      ++ coerce(w) views the if ir `w' as a repeat ir, in abstract.
+    _case: (%, [| RepeatIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a RepeatIr.
+    autoCoerce: % -> RepeatIr
+      ++ autoCoerce(s) implicitly returns the RepeatIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: SequenceIr -> %
+      ++ coerce(w) views the if ir `w' as a sequence ir, in abstract.
+    _case: (%, [| SequenceIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a SequenceIr.
+    autoCoerce: % -> SequenceIr
+      ++ autoCoerce(s) implicitly returns the SequenceIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: ExitIr -> %
+      ++ coerce(w) views the if ir `w' as a ExitIr, in abstract.
+    _case: (%, [| ExitIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a ExitIr.
+    autoCoerce: % -> ExitIr
+      ++ autoCoerce(s) implicitly returns the ExitIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: CaseIr -> %
+      ++ coerce(w) views the if ir `w' as a CaseIr, in abstract.
+    _case: (%, [| CaseIr |]) -> Boolean
+      ++ s case CaseIr returns true if `s' really is a CaseIr.
+    autoCoerce: % -> CaseIr
+      ++ autoCoerce(s) implicitly returns the CaseIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: ReturnIr -> %
+      ++ coerce(w) views the if ir `w' as a ExitIr, in abstract.
+    _case: (%, [| ReturnIr |]) -> Boolean
+      ++ s case ReturnIr returns true if `s' really is a ReturnIr.
+    autoCoerce: % -> ReturnIr
+      ++ autoCoerce(s) implicitly returns the ExitIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: ExpressionIr -> %
+      ++ coerce(w) views the if ir `w' as an expression ir, in abstract.
+    _case: (%, [| ExpressionIr |]) -> Boolean
+      ++ s case ExpressionIr returns true if `s' really is a ExpressionIr.
+    autoCoerce: % -> ExpressionIr
+      ++ autoCoerce(s) implicitly returns the ExpressionIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    coerce: FunctionDeclarationIr -> %
+      ++ coerce(w) views the if ir `w' as an function declaration ir, in abstract.
+    _case: (%, [| FunctionDeclarationIr |]) -> Boolean
+      ++ s case WhileLet returns true if `s' really is a FunctionDeclarationIr.
+    autoCoerce: % -> FunctionDeclarationIr
+      ++ autoCoerce(s) implicitly returns the FunctionDeclarationIr view of `s'.
+      ++ The use of this function is left at the discretion of
+      ++ the OpenAxiom compiler.
+    typeOf: % -> TypeIr
+
+  Private == add
+    import LetIr
+    import IfIr
+    import RepeatIr
+    import SequenceIr
+    import ExpressionIr
+    import ExitIr
+    import CaseIr
+    import ReturnIr
+    import ColonIr
+    import FunctionDeclarationIr
+    Rep == Union(LetIr, IfIr, RepeatIr, SequenceIr, ExpressionIr,_
+                 ExitIr, CaseIr, ReturnIr, ColonIr, FunctionDeclarationIr)
+
+    coerce(x: IfIr): % == per(x::Rep)
+    x case IfIr == rep(x) case IfIr
+    autoCoerce(x: %): IfIr == rep(x)::IfIr
+
+    coerce(x: ColonIr): % == per(x::Rep)
+    x case ColonIr == rep(x) case ColonIr
+    autoCoerce(x: %): ColonIr == rep(x)::ColonIr
+
+    coerce(x: LetIr): % == per(x::Rep)
+    x case LetIr == rep(x) case LetIr
+    autoCoerce(x: %): LetIr == rep(x)::LetIr
+
+    coerce(x: RepeatIr): % == per(x::Rep)
+    x case RepeatIr == rep(x) case RepeatIr
+    autoCoerce(x: %): RepeatIr == rep(x)::RepeatIr
+
+    coerce(x: SequenceIr): % == per(x::Rep)
+    x case SequenceIr == rep(x) case SequenceIr
+    autoCoerce(x: %): SequenceIr == rep(x)::SequenceIr
+
+    coerce(x: ExpressionIr): % == per(x::Rep)
+    x case ExpressionIr == rep(x) case ExpressionIr
+    autoCoerce(x: %): ExpressionIr == rep(x)::ExpressionIr
+
+    coerce(x: ExitIr): % == per(x::Rep)
+    x case ExitIr == rep(x) case ExitIr
+    autoCoerce(x: %): ExitIr == rep(x)::ExitIr
+
+    coerce(x: CaseIr): % == per(x::Rep)
+    x case CaseIr == rep(x) case CaseIr
+    autoCoerce(x: %): CaseIr == rep(x)::CaseIr
+
+    coerce(x: ReturnIr): % == per(x::Rep)
+    x case ReturnIr == rep(x) case ReturnIr
+    autoCoerce(x: %): ReturnIr == rep(x)::ReturnIr
+
+    coerce(x: FunctionDeclarationIr): % == per(x::Rep)
+    x case FunctionDeclarationIr == rep(x) case FunctionDeclarationIr
+    autoCoerce(x: %): FunctionDeclarationIr == rep(x)::FunctionDeclarationIr
+
+    coerce(x: %): OutputForm ==
+      x case IfIr                  => rep(x)::IfIr::OutputForm
+      x case RepeatIr              => rep(x)::RepeatIr::OutputForm
+      x case ColonIr               => rep(x)::ColonIr::OutputForm
+      x case LetIr                 => rep(x)::LetIr::OutputForm
+      x case SequenceIr            => rep(x)::SequenceIr::OutputForm
+      x case ExpressionIr          => rep(x)::ExpressionIr::OutputForm
+      x case ExitIr                => rep(x)::ExitIr::OutputForm
+      x case CaseIr                => rep(x)::CaseIr::OutputForm
+      x case ReturnIr              => rep(x)::ReturnIr::OutputForm
+      x case FunctionDeclarationIr => rep(x)::FunctionDeclarationIr::OutputForm
+      userError "unexpected type of statement ir"
+
+    getTree(x: %): Syntax ==
+      x case IfIr                  => getTree(rep(x)::IfIr)
+      x case RepeatIr              => getTree(rep(x)::RepeatIr)
+      x case ColonIr               => getTree(rep(x)::ColonIr)
+      x case LetIr                 => getTree(rep(x)::LetIr)
+      x case SequenceIr            => getTree(rep(x)::SequenceIr)
+      x case ExpressionIr          => getTree(rep(x)::ExpressionIr)
+      x case ExitIr                => getTree(rep(x)::ExitIr)
+      x case CaseIr                => getTree(rep(x)::CaseIr)
+      x case ReturnIr              => getTree(rep(x)::ReturnIr)
+      x case FunctionDeclarationIr => getTree(rep(x)::FunctionDeclarationIr)
+      userError "unexpected type of statement ir"
+
+    typeOf(x: %): TypeIr ==
+      x case IfIr         => typeOf(rep(x)::IfIr)
+      x case RepeatIr     => typeOf(rep(x)::RepeatIr)
+      x case ColonIr      => typeOf(rep(x)::ColonIr)
+      x case LetIr        => typeOf(rep(x)::LetIr)
+      x case SequenceIr   => typeOf(rep(x)::SequenceIr)
+      x case ExpressionIr => typeOf(rep(x)::ExpressionIr)
+      x case ExitIr       => typeOf(rep(x)::ExitIr)
+      x case CaseIr       => typeOf(rep(x)::CaseIr)
+      x case ReturnIr     => typeOf(rep(x)::ReturnIr)
+      x case FunctionDeclarationIr => typeOf(rep(x)::FunctionDeclarationIr)
+      userError "unexpected type of statement ir"
+
+
+)abbrev domain COLNIR ColonIr
+++ Author: Yue Li
+++ Date Created: Oct 4, 2010
+++ Date Last Modified: Oct 4, 2010
+++ Description: This domain represents the intermediate representation
+++ of a colon statement
+ColonIr(): ColonIrExports == add
+    import ColonIr
+    Rep == Record(tree: Syntax, lhs: List StatementIr, rhs: TypeIr, type: TypeIr)
+    buildColonIr(s, l, r, t) == per [s, l, r, t]
+    lhs x == (rep x).lhs
+    rhs x == (rep x).rhs
+    updateLhs!(x, s, n) == (rep x).lhs.n := s
+    isListDecl? x == #(rep x).lhs > 1
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain LETIR LetIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 28, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad expression
+LetIr(): LetIrExports == add
+    import StatementIr
+    Rep == Record(tree: Syntax, lhs: StatementIr, rhs: StatementIr, type: TypeIr)
+    buildLetIr(s, l, r, t) == per([s, l, r, t])
+    lhs x == (rep x).lhs
+    rhs x == (rep x).rhs
+    updateLhs!(x, s) == (rep x).lhs := s
+    updateRhs!(x, s) == (rep x).rhs := s
+    updateType!(x, t) == (rep x).type := t
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain IFIR IfIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Sept 30, 2010
+++ Description: This domain represents the intermediate representation
+++ of a if-statement
+IfIr(): IfIrExports == add
+    import StatementIr
+    -- when a branch's IR is an empty list, we know for sure that the conditional
+    -- does not have that branch
+    Rep == Record(tree: Syntax, cond: StatementIr, tbranch: List StatementIr,_
+                  ebranch: List StatementIr, type: TypeIr)
+    buildIfIr(s, p, tb, eb, t) == per [s, p, tb, eb, t]
+    thenBranch(x: %) == first (rep x).tbranch
+    elseBranch(x: %) == first (rep x).ebranch
+    condition(x: %) == (rep x).cond
+    withThenBranch?(x: %) == not empty? (rep x).tbranch
+    withElseBranch?(x: %) == not empty? (rep x).ebranch
+    withBothBranches?(x: %) == 
+      withThenBranch? x and withElseBranch? x
+    updateCondition!(x, s) == (rep x).cond := s
+    updateElseBranch!(x, s) == (rep x).tbranch := [s]
+    updateThenBranch!(x, s) == (rep x).ebranch := [s]
+    updateType!(x, t) == (rep x).type := t
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain REPIR RepeatIr
+++ Author: Yue Li
+++ Date Created: Sept 28, 2010
+++ Date Last Modified: Oct 2, 2010
+++ Description: This domain represents the intermediate representation
+++ of a repeat-statement
+RepeatIr(): RepeatIrExports  == add
+    import StatementIr
+    import TypeIr
+    Rep == Record(tree: Syntax, iters: List ExpressionIr, loopbody: StatementIr, type: TypeIr)
+    buildRepeatIr(s, its, b, t) == per [s, its, b, t]
+    iterators(x: %) == (rep x).iters
+    body(x: %) == (rep x).loopbody
+    updateBody!(x, s) == (rep x).loopbody := s
+    updateIterator!(x, s, n) == 
+      s case ExpressionIr => (rep x).iters.n := s::ExpressionIr
+      userError "s is not an expression ir"
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain SEQIR SequenceIr
+++ Author: Yue Li
+++ Date Created: Sept 29, 2010
+++ Date Last Modified: Oct 2, 2010
+++ Description: This domain represents the intermediate representation
+++ of a repeat-statement
+SequenceIr(): SequenceIrExports  == add
+    import StatementIr
+    import TypeIr
+    Rep == Record(tree: Syntax, statements: List StatementIr, type: TypeIr)
+    buildSequenceIr(s, b, t) == per [s, b, t]
+    body(x: %) == (rep x).statements
+    updateBody!(x, s, n) == (rep x).statements.n := s
+    last(x: %) == last (rep x).statements
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain EXIR ExitIr
+++ Author: Yue Li
+++ Date Created: Sept 29, 2010
+++ Date Last Modified: Oct 2, 2010
+++ Description: This domain represents the intermediate representation of
+++ a Spad exit statement
+ExitIr(): ExitIrExports == add
+    import StatementIr
+    Rep == Record(tree: Syntax, statement: StatementIr, type: TypeIr)
+    buildExitIr(s, b, t) == per [s, b, t]
+    body(x: %) == (rep x).statement
+    updateBody!(x, s) == (rep x).statement := s
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain CASEIR CaseIr
+++ Author: Yue Li
+++ Date Created: Oct 4, 2010
+++ Date Last Modified: Oct 4, 2010
+++ Description: This domain represents the intermediate representation of
+++ a case statement
+CaseIr(): CaseIrExports == add
+    import StatementIr
+    import TypeIrUtility
+    Rep == Record(tree: Syntax, left: StatementIr, right: TypeIr, type: TypeIr)
+    buildCaseIr(s, l, r) == per [s, l, r, makeBooleanTypeIr()]
+    lhs(x: %) == (rep x).left
+    rhs(x: %) == (rep x).right
+    updateLhs!(x, s) == (rep x).left := s
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain RETIR ReturnIr
+++ Author: Yue Li
+++ Date Created: Oct 4, 2010
+++ Date Last Modified: Oct 4, 2010
+++ Description: This domain represents the intermediate representation of
+++ a return statement
+ReturnIr(): ReturnIrExports == add
+    import StatementIr
+    Rep == Record(tree: Syntax, toreturn: StatementIr, type: TypeIr)
+    buildReturnIr(s, e, t) == per [s, e, t]
+    expression(x: %) == (rep x).toreturn
+    updateExpression!(x, s) == (rep x).toreturn := s
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain INIR InIteratorIr
+++ Author: Yue Li
+++ Date Created: Sept 30, 2010
+++ Date Last Modified: Sept 30, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad in-iterator used in a for-loop
+InIteratorIr(): InIteratorIrExports == add
+    import ExpressionIr
+    import StatementIr
+    import TypeIr
+    Rep == Record(tree: Syntax, iterVar: VariableIr,_
+                  seq: ExpressionIr, type: TypeIr)
+    buildInIteratorIr(s, v, range, t) == per [s, v, range, t]
+    sequence(x: %) == (rep x).seq
+    updateSequence!(x, e) == 
+      e case ExpressionIr => 
+        (rep x).seq := e::ExpressionIr
+      userError "updateSequence: e is not an expression ir"
+    iterationVar(x: %) == (rep x).iterVar
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain WYLIR WhileIteratorIr
+++ Author: Yue Li
+++ Date Created: Sept 30, 2010
+++ Date Last Modified: Sept 30, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad while-iterator used in a while-loop
+WhileIteratorIr(): WhileIteratorIrExports == add
+    import StatementIr
+    Rep == Record(tree: Syntax, cond: StatementIr, type: TypeIr)
+    buildWhileIteratorIr(s, c, t) == per [s, c, t]
+    condition(x: %) == (rep x).cond
+    updateCondition!(x, s) == (rep x).cond := s
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    getTree(x: %): Syntax == (rep x).tree
+
+
+)abbrev domain STPIR StepIteratorIr
+++ Author: Yue Li
+++ Date Created: Oct 3, 2010
+++ Date Last Modified: Oct 3, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad step-iterator used in a for-loop
+StepIteratorIr(): StepIteratorIrExports == add
+    import StatementIr
+    import TypeIrUtility
+    import VariableIr
+    Rep == Record(tree: Syntax, iterVar: VariableIr, low: List StatementIr,_
+                  high: List StatementIr, stp: StatementIr, type: TypeIr)
+    buildStepIteratorIr(s, v, l, h, st) == per [s, v, l, h, st, makeVoidTypeIr()]
+    hasUpperBound?(x: %) == not empty?(rep(x).high)
+    iterationVar(x: %) == (rep x).iterVar
+    lowerBound(x: %) == first (rep x).low
+    upperBound(x: %) == 
+      hasUpperBound?  x => first rep(x).high
+      userError "Iteration range does not have higher bound" 
+    updateLowerBound!(x, s) == (rep x).low := [s]
+    updateUpperBound!(x, s) == (rep x).high := [s]
+    step(x: %) == rep(x).stp
+    updateStep!(x, s) == (rep x).stp := s
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain STIR SuchThatIr
+++ Author: Yue Li
+++ Date Created: Oct 20, 2010
+++ Date Last Modified: Oct 20, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad step-iterator used in a for-loop
+SuchThatIr(): SuchThatIrExports == add
+    import StatementIr
+    import TypeIrUtility
+    import VariableIr
+    Rep == Record(tree: Syntax, pred: StatementIr, type: TypeIr)
+    buildSuchThatIr(t, p) == per [t, p, makeVoidTypeIr()]
+    predicate(x: %) == (rep x).pred
+    updatePredicate!(x: %, p: StatementIr) ==
+      (rep x).pred := p
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree    
+
+)abbrev domain EOPIR ExpressionWithOperatorIr
+++ Author: Yue Li
+++ Date Created: Sept 30, 2010
+++ Date Last Modified: Sept 30, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad expression
+ExpressionWithOperatorIr(): ExpressionWithOperatorIrExports == add
+    import TypeIr
+    import StatementIr
+    Rep == Record(tree: Syntax, operator: OperatorIr,_
+                  operands: List StatementIr, type: TypeIr)
+    buildExpressionWithOperatorIr(s, opir, oprir, tir) == 
+      r : Rep := [s, opir, oprir, tir]
+      per r
+    operator(x: %) == (rep x).operator
+    updateOperator!(x, s) == 
+      s case ExpressionIr and (s::ExpressionIr) case OperatorIr =>
+        (rep x).operator := s::ExpressionIr::OperatorIr
+      userError "s is not an operator ir"
+    operands(x: %) == (rep x).operands
+    updateOperand!(x: %, newopr: StatementIr, n: Integer) ==
+      rep(x).operands.n := newopr
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain CLLIR CollectIr
+++ Author: Yue Li
+++ Date Created: Oct 8, 2010
+++ Date Last Modified: Oct 8, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad collection expression e.g. [e for e in l]
+CollectIr(): CollectIrExports == add
+    import TypeIr
+    import StatementIr
+    Rep == Record(tree: Syntax, bd: StatementIr,_
+                  iters: List StatementIr, type: TypeIr)
+    buildCollectIr(s, b, i, t) == per [s, b, i, t]
+    body(x: %) == (rep x).bd
+    updateBody!(x, s) == (rep x).bd := s
+    iterators(x: %) == (rep x).iters
+    updateIterator!(x, s, n) == (rep x).iters.n := s
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain COEIR CoerceIr
+++ Author: Yue Li
+++ Date Created: Oct 8, 2010
+++ Date Last Modified: Oct 8, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad coerce expression
+CoerceIr(): CoerceIrExports == add
+    import TypeIr
+    import StatementIr
+    Rep == Record(tree: Syntax, exp: StatementIr, tar: TypeIr, type: TypeIr)
+    buildCoerceIr(s, e, t, tp) == per [s, e, t, tp]
+    expression(x: %) == (rep x).exp
+    updateExpression!(x, s) == (rep x).exp := s
+    target(x: %) == (rep x).tar
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain PRETIR PretendIr
+++ Author: Yue Li
+++ Date Created: Oct 9, 2010
+++ Date Last Modified: Oct 9, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad coerce expression
+PretendIr(): PretendIrExports == add
+    import TypeIr
+    import StatementIr
+    Rep == Record(tree: Syntax, exp: StatementIr, tar: TypeIr, type: TypeIr)
+    buildPretendIr(s, e, t, tp) == per [s, e, t, tp]
+    expression(x: %) == (rep x).exp
+    updateExpression!(x, s) == (rep x).exp := s
+    target(x: %) == (rep x).tar
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain CONSIR ConstructIr
+++ Author: Yue Li
+++ Date Created: Oct 8, 2010
+++ Date Last Modified: Oct 8, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Spad list/vector/set construct expression
+++ FIXME: This construct expression may cause bugs due to the imperfect
+++ handling in typechecker
+++ we support both homogeneous (scalar) and non-homogeneous construction (record)
+ConstructIr(): ConstructIrExports == add
+    import TypeIr
+    import StatementIr
+    Rep == Record(tree: Syntax, elts: List StatementIr,_
+                  eltype: List TypeIr, type: TypeIr)
+    buildHomoConstructIr(s, es, et, t)    == per [s, es, [et], t]
+    buildNonHomoConstructIr(s, es, ts, t) == per [s, es, ts, t]
+     -- we hope there's no 1-field record construction
+    homogeneous?(x: %) == #(rep x).eltype = 1  
+    elements(x: %) == (rep x).elts
+    updateElement!(x, s, n) == (rep x).elts.n := s
+    elementType(x: %) ==
+      homogeneous? x => first (rep x).eltype
+      userError "ConstructIr: not a homogeneous construction"
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain REDIR ReduceIr
+++ Author: Yue Li
+++ Date Created: Oct 9, 2010
+++ Date Last Modified: Oct 9, 2010
+++ Description: This domain represents the intermediate representation
+++ of a Lisp reduce form allowed by Spad compiler
+ReduceIr(): ReduceIrExports == add
+    import TypeIr
+    import StatementIr
+    import OperatorIr
+    Rep == Record(tree: Syntax, op: OperatorIr, seq: StatementIr,_
+                  identity: StatementIr, type: TypeIr)
+    buildReduceIr(s, o, ss, id, t) == per [s, o, ss, id, t]
+    operator(x: %) == (rep x).op
+    updateOperator!(x, s) == 
+      s case ExpressionIr and (s::ExpressionIr) case OperatorIr =>
+        (rep x).op := s::ExpressionIr::OperatorIr
+      userError "s is not an operator ir"
+    sequence(x: %) == (rep x).seq
+    updateSequence!(x, s) == (rep x).seq := s
+    neutralValue(x: %) == (rep x).identity
+    updateNeutralValue!(x, s) == (rep x).identity := s
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %): TypeIr == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev category AFUN AnonymousFunctionIr
+++ Author: Yue Li
+++ Date Created: Sept 29, 2010
+++ Date Last Modified: Jan 23, 2011
+++ Description: This domain represents the intermediate representation of
+++ a Spad anonymous function
+AnonymousFunctionIr(): AnonymousFunctionIrExports == add
+    import TypeIr
+    import StatementIr
+    import VariableIr
+    -- note that, the type field stores the resultant type as
+    -- the function decl IR does.
+    -- the signature can be easily built with parameters' type and
+    -- this resultant type
+    Rep == Record(tree: Syntax, pars: List VariableIr,_
+                  type: TypeIr, funbody : StatementIr)
+    buildAnonyFunIr(s, ps, t, b) == per [s, ps, t, b]
+    getBody(x: %) == rep(x).funbody
+    updateBody!(x, s) == (rep x).funbody := s
+    updateParameter!(x, s, n) ==
+      s case ExpressionIr and (s::ExpressionIr) case VariableIr => 
+        (rep x).pars.n := s::ExpressionIr::VariableIr
+      userError "s is not a variable ir"
+    parameters(x: %) == (rep x).pars
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+)abbrev domain FDECIR FunctionDeclarationIr
+++ Author: Yue Li
+++ Date Created: Sept 29, 2010
+++ Date Last Modified: Oct 20, 2010
+++ Description: This domain represents the intermediate representation of
+++ a Spad function declaration
+++ FIXME: I think the current type environment before entering the fun def
+++ should also be added as its internal representation
+FunctionDeclarationIr(): FunctionDeclarationIrExports == add
+    import TypeIr
+    import TypeConstructorIr
+    import StatementIr
+    Rep == Record(tree: Syntax, name: Identifier, pars: List VariableIr,_
+         type: TypeIr, funbody : List StatementIr, definedin: TypeConstructorIr)
+
+    buildFunDeclIr(s, id, ps, t, b, ctor) == per [s, id, ps, t, b, ctor]
+    withBody?(x: %) == not empty?(rep(x).funbody)
+    getBody(x: %) ==
+      empty?(rep(x).funbody) => userError "The function body is empty!"
+      first rep(x).funbody
+    updateBody!(x, s) == (rep x).funbody := [s]
+    updateParameter!(x, s, n) == 
+      s case ExpressionIr and (s::ExpressionIr) case VariableIr =>
+        (rep x).pars.n := s::ExpressionIr::VariableIr
+      userError "s is not a variable ir"
+    definedIn(x: %) == (rep x).definedin
+    getName(x: %) == (rep x).name
+    parameters(x: %) == (rep x).pars
+    coerce(x: %): OutputForm == (rep x)::OutputForm
+    updateType!(x, t) == (rep x).type := t
+    typeOf(x: %) == (rep x).type
+    getTree(x: %): Syntax == (rep x).tree
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

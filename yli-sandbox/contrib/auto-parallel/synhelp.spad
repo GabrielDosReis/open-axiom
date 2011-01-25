@@ -1,0 +1,752 @@
+
+)abbrev package SYNHELP SyntaxHelper
+++ Authors: Yue Li
+++ Date Created: November 23, 2009
+++ Date Last Updated: Oct 7, 2010
+++ Description: This package provides helper functions for
+++ manipulating syntax and ast
+SyntaxHelper(): Public == Private where
+  Public == with
+    getLhs: LetAst -> Syntax
+      ++ returns the variable being assigned (the left hand side)
+    unlist: Syntax -> List Syntax
+      ++ unwraps a compound syntax form into a syntax list containing 
+      ++ its operator, and operands
+    flatten: Syntax -> List Syntax
+      ++ flattens a syntax tree using unlist
+    within?: (Syntax, Syntax) -> Boolean
+      ++ checks whether a syntax is a subexpression of another syntax
+    listWithin?: (List Syntax, Syntax) -> Boolean
+      ++ checks whether each syntax in a syntax list is a subexpression
+      ++ of another syntax
+    replace: (Syntax, Syntax, Syntax) -> Syntax
+      ++ replace(a, b, c)
+      ++ replaces all the appearances of a in b with c
+    replace: (Syntax, DomainTemplate) -> Syntax
+      ++ replace number slots with the elements stored in a domain template 
+      ++ those elements are indexed by the numbers in the number slots
+    replaceLetRhs: (Syntax, LetAst, Syntax) -> LetAst
+      ++ replaceLetRhs(a, b, c)
+      ++ replaces all occurrances of a in the rhs(b) with c
+    toString: Syntax -> String
+      ++ convert a syntax to string for pretty printing purpose
+    listColonAst: ColonAst -> List Syntax
+      ++ checks whether the left hand side of a ColonAst is a list of variables
+      ++ e.g., x, y, z : Integer, if true, return the list of elements.
+    hasThenBranch?: IfAst -> Boolean
+      ++ checks whether an if statement has then branch
+    hasElseBranch?: IfAst -> Boolean
+      ++ checks whether an if statement has else branch
+    hasOperands?: Syntax -> Boolean 
+      ++ checks whether a function application has operands
+    mappingAstToSignature: MappingAst -> Signature
+      ++ converts a mapping ast to signature
+    isBinaryExpression?: Syntax -> Boolean
+      ++ checks whether an expression has a binary operator
+    isTrinaryExpression?: Syntax -> Boolean
+      ++ checks whether an expression has a trinary operator
+    isJoin?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Join
+    isAdd?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Add
+    isProgn?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier PROGN
+    isNil?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier nil
+    isType?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Type
+    isRecord?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Record
+    isInteger?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of identifier Integer
+    isMatrix?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Matrix
+    isList?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier List
+    isTable?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Table
+    isVector?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Vector       
+    isTuple?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Tuple
+    isUnion?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Union      
+    isVoid?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Void
+    isExit?: Syntax -> Boolean 
+       ++ checks whether a syntax is the one of identifier Exit
+    isAny?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Any
+    isTrue?: Syntax -> Boolean 
+       ++ checks whether a syntax is the one of identifier True       
+    isFalse?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier False
+    isBool?: Syntax -> Boolean
+       ++ checks whether a syntax represents a Boolean value
+    isLisp? : Syntax -> Boolean
+       ++ checks whether a syntax is the one of identifier Lisp
+    isSingleIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type SingleInteger
+    isNonNegativeIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type NonNegativeInteger
+    isPositiveIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type PositiveInteger
+    isIntegerType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type Integer
+    isDoubleFloatType?: Syntax -> Boolean
+       ++ checks whether a syntax is the one of type DoubleFloat
+    isDoubleColon?: Syntax -> Boolean
+       ++ checks whether a syntax is the type coercion operator ::
+    isElt?: Syntax -> Boolean
+       ++ checks whether a syntax is compound and its operator is elt ($ in Spad)
+    stepAst?: SpadAst -> Boolean
+       ++ checks whether a Spad ast is an step ast
+    untilAst?: SpadAst -> Boolean
+       ++ checks whether a Spad ast is an until ast
+    toDomainConstructor: Constructor -> DomainConstructor
+      ++ convert a domain constructor with type Constructor 
+      ++ to type DomainConstructor
+    makeNumberSlot: Integer -> Syntax
+      ++ make the syntax of a number slot, e.g., #1
+    makeLocalNumberSlot: Integer -> Syntax
+      ++ make a compound syntax for a local number slot, e.g., 
+      ++ (local #1)
+    makeDoubleColon: () -> Syntax
+      ++ creates an uncompound syntax for coerce function ::
+    makeDoubleDollar: () -> Syntax
+      ++ creates an uncompound syntax for identifier $$
+    makeSetCategory: () -> Syntax
+      ++ creates an uncompound syntax for identifier SetCategory
+    makeType: () -> Syntax
+      ++ creates an uncompound syntax for identifier Type
+    makePercentage: () -> Syntax
+      ++ creates an uncompound syntax for identifier %
+    makeCase: () -> Syntax
+      ++ creates an uncompound syntax for identifier Case
+    makeTrue: () -> Syntax
+      ++ creates an uncompound syntax for identifier True
+    makeNil:  () -> Syntax
+      ++ creates an uncompound syntax for identifier Nil
+    makeJoin: () -> Syntax
+      ++ creates an uncompound syntax for identifier Join
+    makeUnknown: () -> Syntax
+      ++ creates an uncompound syntax for identifier ?
+    makeFalse: () -> Syntax
+      ++ creates an uncompound syntax for identifier False
+    makeOne: () -> Syntax
+      ++ creates an uncompound syntax for identifier One
+    makeZero: () -> Syntax
+      ++ creates an uncompound syntax for identifier Zero
+    makeVoid: () -> Syntax
+      ++ creates an uncompound syntax for identifier Void
+    makeVoidType: () -> Syntax
+      ++ creates a compound syntax for type Void
+    makeSTEP: () -> Syntax
+      ++ creates an uncompound syntax for identifier STEP
+    makeMatrix: () -> Syntax 
+      ++ creates an uncompound syntax for identifier Matrix
+    makeList: () -> Syntax
+      ++ creates an uncompound syntax for identifier List
+    makeTable: () -> Syntax
+      ++ creates an uncompound syntax for identifier Table
+    makeVector: () -> Syntax
+      ++ creates an uncompound syntax for identifier Vector
+    makeSingleInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier SingleInteger
+    makeSingleIntegerType: () -> Syntax
+      ++ creates a compound syntax for type SingleInteger
+    makeNonNegativeInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier NonNegativeInteger
+    makeNonNegativeIntegerType: () -> Syntax
+      ++ creates a compound syntax for type NonNegativeInteger
+    makePositiveInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier PositiveInteger
+    makePositiveIntegerType: () -> Syntax
+      ++ creates a compound syntax for type PositiveInteger
+    makeInteger: () -> Syntax
+      ++ creates an uncompound syntax for identifier Integer
+    makeIntegerType: () -> Syntax
+      ++ creates a compound syntax for type Integer
+    makeBoolean: () -> Syntax
+      ++ creates an uncompound syntax for identifier Boolean
+    makeBooleanType: () -> Syntax
+      ++ creates an compound syntax for Boolean type
+    makeSymbol: () -> Syntax
+      ++ creates an uncompound syntax for identifier Symbol
+    makeDoubleFloat: () -> Syntax
+      ++ creates an uncompound syntax for identifier DoubleFloat
+    makeDoubleFloatType: () -> Syntax
+      ++ creates a compound syntax for type DoubleFloat    
+    makeFloat: () -> Syntax
+      ++ creates an uncompound syntax for identifier Float     
+    makeFloatType: () -> Syntax
+      ++ creates a compound syntax for type Float 
+    makeString: () -> Syntax
+      ++ creates an uncompound syntax for identifier String
+    makeIdentifier: () -> Syntax
+      ++ creates an uncompound syntax for identifier Identifier
+    makeElt: () -> Syntax
+      ++ creates an uncompound syntax for identifier elt
+    makeCoerce: () -> Syntax
+      ++ creates an uncompound syntax for identifier coerce
+    makeExit: () -> Syntax
+      ++ creates an uncompound syntax for identifier Exit
+    makeExitType: () -> Syntax
+      ++ creates a syntax for domain Exit
+    makeError: () -> Syntax
+      ++ creates an uncompound syntax for identifier error
+    makeErrorFunctions: () -> Syntax
+      ++ creates a compound syntax for package ErrorFunctions
+    makeErrorFunctionsType: () -> Syntax
+      ++ creates a compound syntax for package ErrorFunctions
+    makeAny: () -> Syntax
+      ++ creates an uncompound syntax for identifier Any
+    makeLisp: () -> Syntax
+      ++ creates an uncompound syntax for identifier Lisp
+    makeConstruct: () -> Syntax
+      ++ creates an uncompound syntax for identifier construct
+    makeVariable: () -> Syntax
+      ++ creates an uncompound syntax for identifier Variable
+    makeREDUCE: () -> Syntax
+      ++ creates an uncompound syntax for identifier REDUCE
+    makeCOLLECT: () -> Syntax
+      ++ creates an uncompound syntax for identifier COLLECT
+    makeTuple: () -> Syntax
+      ++ creates an uncompound syntax for identifier Tuple
+    makeUnion: () -> Syntax
+      ++ creates an uncompound syntax for identifier Union
+    makeUNTIL: () -> Syntax
+      ++ creates an uncompound syntax for identifier UNTIL
+    makeQelt: () -> Syntax
+      ++ creates an uncompound syntax for identifier qelt
+    makeRep: () -> Syntax
+      ++ creates an uncompound syntax for identifier Rep
+    makeLISTOF: () -> Syntax
+      ++ creates an uncompound syntax for identifier LISTOF 
+    getOperatorName: Syntax -> Identifier
+      ++ obtain the operator name of some compound syntax
+    isDomain?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of some domain name
+    isCategory?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of some category name 
+    isPackage?: Syntax -> Boolean
+      ++ checks whether a syntax is the one of some package name
+    isZero?: Identifier -> Boolean 
+      ++ checks whether the name of a function is Zero
+    isOne?: Identifier -> Boolean 
+      ++ checks whether the name of a function is One
+    isErrorFunction?: Identifier -> Boolean   
+      ++ checks whether the name of a function is Error
+    containExclamation?: Syntax -> Boolean
+      ++ checks whether a syntax contains exclamation                             
+    isAnnotated?: Syntax -> Boolean
+      ++ checks whether an expression is an annotated function application
+    stripAnnotation: Syntax -> Syntax
+      ++ returns the compound function application syntax wrapped by 
+      ++ the annotation syntax
+    getConstructor: Syntax -> Constructor
+      ++ returns the constructor of a type syntax
+    getConstructorIfCan: Syntax -> Union(Constructor, "failed")
+      ++ returns the constructor of a type syntax if possible
+      ++ otherwise returns "failed"
+    getConstructorKindInString: Syntax -> String
+      ++ returns the kind of constructor in string
+    getArityFromSignature: Signature -> Integer
+      ++ compute the arity of an operator via its signature
+    getTypesFromSignature: Signature -> List Syntax
+      ++ obtains all the types from a signature in syntax
+    freshVariables: Integer -> List Syntax
+      ++ generate a list of random identifiers, and convert them to 
+      ++ syntax, the cardinality of the list is specified by the input integer
+  Private == add
+    import Syntax
+    import Constructor
+    import Maybe Constructor
+    import ConstructorKind
+    import Signature
+ 
+    getTypesFromSignature(s: Signature): List Syntax ==
+      -- the last one is the return type
+      concat(source s, target s)
+
+    getArityFromSignature(s: Signature): Integer == 
+      #(source s)
+
+    getConstructor(t: Syntax): Constructor ==
+      not compound? t =>
+        print(t::OutputForm) 
+        userError "the type syntax is not compound"
+      c := getOperator(t)::Identifier
+      retract(findConstructor(c)$Constructor)$(Maybe Constructor)
+
+    getConstructorIfCan(t: Syntax): Union(Constructor, "failed") ==
+      not compound? t =>
+        print(t::OutputForm) 
+        userError "the type syntax is not compound"
+      c := getOperator(t)::Identifier
+      retractIfCan(findConstructor(c)$Constructor)$(Maybe Constructor)
+
+    getConstructorKind(c: Identifier): ConstructorKind == 
+      kind(retract(findConstructor(c)_
+        $Constructor)$(Maybe Constructor))$Constructor
+
+    getConstructorKindInString2(c: Constructor): String ==
+      k : ConstructorKind := getConstructorKind(name c)
+      k = category$ConstructorKind =>  "category"
+      k = package$ConstructorKind  =>  "package"
+      "domain"
+
+    getConstructorKindInString(s: Syntax): String ==
+      not compound? s or (k := getConstructorIfCan(s)) case "failed" => "unknown"
+      getOperator(s)::Identifier = 'Mapping::Identifier => "mapping"
+      getConstructorKindInString2(k)
+
+    isAnnotated?(e: Syntax): Boolean ==
+      (op := getOperator(e)) case Syntax =>
+        (op' := getOperator(op::Syntax)) case Identifier and_
+        op'::Identifier = 'elt and #getOperands(op::Syntax) = 2 
+      false
+
+    stripAnnotation(s: Syntax): Syntax ==
+      compound?(s) and isAnnotated?(s) =>
+        op := getOperands(getOperator(s)::Syntax).last
+        oprs := getOperands(s)
+        buildSyntax(op, oprs)
+      s
+
+    hasOperands?(s: Syntax): Boolean ==
+      compound?(s) and #getOperands(s) > 0
+
+    isBinaryExpression?(e: Syntax): Boolean ==
+      compound?(e) and #getOperands(e) = 2
+
+    isTrinaryExpression?(e: Syntax): Boolean ==
+      compound?(e) and #getOperands(e) = 3
+
+    getOperatorName(op: Syntax): Identifier ==
+      compound? op =>
+        opr := getOperator op
+        opr case Identifier and opr::Identifier = 'elt::Identifier =>
+          (second getOperands op)::Identifier
+        opr case Identifier and opr::Identifier = '_@::Identifier =>
+          getOperatorName(first getOperands op)
+        opr case Identifier and member?(char "#", entries(toString op)) =>
+          opr::Identifier
+        opr case Identifier => opr::Identifier
+        print(op::Syntax::OutputForm)
+        userError "unexpected operator syntax"
+      op case String => (op::String::Symbol) pretend Identifier
+      op::Identifier
+
+    toDomainConstructor c == c pretend DomainConstructor
+
+    makeNumberSlot(i: Integer): Syntax ==
+      x := concat("#", convert(i)@String)::Symbol
+      (x pretend Identifier)::Syntax
+
+    makeLocalNumberSlot(i: Integer): Syntax == 
+      l : Identifier := 'local::Identifier
+      buildSyntax(l, [makeNumberSlot(i)])
+
+    makeDoubleDollar(): Syntax ==
+      x := "$$"::Symbol
+      (x pretend Identifier)::Syntax
+
+    getLhs b ==
+      l := lhs b
+      r := rhs b
+      compound?(l::Syntax) and l case ColonAst =>
+        k := lhs(l::Syntax::ColonAst)::Syntax
+      l::Syntax      
+
+    within?(e: Syntax, set: Syntax): Boolean ==
+      e = set => true
+      compound? set =>
+        for u in unlist set repeat
+          within?(e, u) => return true
+        false
+      false
+
+    listWithin?(vs: List Syntax, s: Syntax): Boolean ==
+      for v in vs repeat
+        within?(v, s) => return true
+      false
+
+    unlist(x: Syntax): List Syntax ==
+      compound? x =>
+        op := getOperator x
+        r : Syntax := convert(convert([])$SExpression)
+        if op case Integer then r := op::Integer::Syntax
+        if op case DoubleFloat then r := op::DoubleFloat::Syntax
+        if op case Identifier then r := op::Identifier::Syntax
+        if op case String then r := op::String::Syntax
+        if op case Syntax then r := op::Syntax
+        ops := getOperands x
+        concat(r, ops)
+      [x]
+
+    flatten(x: Syntax): List Syntax ==
+      not compound? x => [x]
+      result : List Syntax := []
+      for e in unlist x repeat
+        result := concat(flatten e, result)
+      result
+      
+    toString x ==
+      compound? x =>
+        uls : List Syntax := unlist x
+        bparts : List String := [toString opd for opd in rest uls]
+        body : String := ""
+        for bdx in 1..#bparts repeat
+          bpart := bparts.bdx
+          if bdx < #bparts then
+            body := concat([body, bpart, ", "])
+          else
+            body := concat([body, bpart])
+        (operator := toString first uls) = "QUOTE" => 
+          concat(["'", body])
+        body = "" => operator
+        concat([operator, "(", body, ")"])
+      x = makeOne()  => "1"
+      x = makeZero() => "0"
+      x case Integer => string(x::Integer)
+      x case DoubleFloat => 
+        userError "DoubleFloat conversion to string is not supported."
+      x case String => concat ["_"", x::String, "_""]
+      x case Identifier => string(x::Identifier::Symbol)
+
+    replace(needle, haystack, brick) ==
+      needle = haystack => brick
+      compound? haystack =>
+        haystacks : List Syntax := []
+        for straw in unlist haystack repeat
+          haystacks := concat(haystacks, replace(needle, straw, brick))
+        buildSyntax(first haystacks, rest haystacks)
+      haystack
+
+    replace(haystack, domtemplate) ==
+      haystack case Integer => 
+        ind := haystack::Integer::NonNegativeInteger
+        s := domtemplate.ind
+        replace(s, domtemplate)
+      compound? haystack =>
+        haystacks : List Syntax := []
+        for straw in unlist haystack repeat
+          haystacks := concat(haystacks, replace(straw, domtemplate))
+        buildSyntax(first haystacks, rest haystacks)
+      haystack
+
+    replaceLetRhs(a, b, c) ==
+      s := b::Syntax
+      op := (getOperator s)::Identifier
+      l := first getOperands s
+      r := second getOperands s
+      r := replace(a, r, c)
+      s := buildSyntax(op, [l, r])
+      s::SpadAst::LetAst
+
+    makeLISTOF: Syntax                == 'LISTOF::Identifier::Syntax
+
+    listColonAst c ==
+      left := lhs(c)::Syntax
+      compound? left and_ 
+      (opr := getOperator(left)) case Identifier and_
+      opr::Identifier = makeLISTOF()::Identifier => getOperands left
+      [left]
+
+    makeDoubleColon: Syntax         == ('_:_:)::Identifier::Syntax
+  
+    makeUnknown: Syntax             == '_?::Identifier::Syntax
+
+    makeJoin: Syntax                == 'Join::Identifier::Syntax
+
+    makeAdd: Syntax                 == 'add::Identifier::Syntax
+
+    makeProgn: Syntax               == 'PROGN::Identifier::Syntax
+
+    makeNil: Syntax                 == 'nil::Identifier::Syntax
+
+    makeType: Syntax                == 'Type::Identifier::Syntax
+
+    makeRecord: Syntax              == 'Record::Identifier::Syntax
+
+    makeSetCategory: Syntax         == 'SetCategory::Identifier::Syntax
+
+    makePercentage: Syntax          == '%::Identifier::Syntax
+
+    makeCase: Syntax                == 'case::Identifier::Syntax
+
+    makeTrue: Syntax                == 'true::Identifier::Syntax
+
+    makeFalse: Syntax                  == 'false::Identifier::Syntax
+
+    makeOne:  Syntax                   == 'One::Identifier::Syntax
+
+    makeZero: Syntax                   == 'Zero::Identifier::Syntax
+
+    makeVoid: Syntax                   == 'Void::Identifier::Syntax
+
+    makeVoidType: Syntax               == buildSyntax(makeVoid(), [])
+
+    makeSTEP: Syntax                   == 'STEP::Identifier::Syntax
+
+    makeMatrix: Syntax                 == 'Matrix::Identifier::Syntax
+
+    makeList: Syntax                   == 'List::Identifier::Syntax
+
+    makeTable: Syntax                  == 'Table::Identifier::Syntax
+
+    makeVector: Syntax                 == 'Vector::Identifier::Syntax
+
+    makeSingleInteger: Syntax          == 'SingleInteger::Identifier::Syntax
+
+    makeSingleIntegerType: Syntax      == buildSyntax(makeSingleInteger(), [])
+
+    makeNonNegativeInteger: Syntax   == 'NonNegativeInteger::Identifier::Syntax
+
+    makeNonNegativeIntegerType:Syntax== buildSyntax(makeNonNegativeInteger(),[])
+
+    makePositiveInteger: Syntax        == 'PositiveInteger::Identifier::Syntax
+
+    makePositiveIntegerType: Syntax    == buildSyntax(makePositiveInteger(), [])
+
+    makeInteger: Syntax                == 'Integer::Identifier::Syntax
+
+    makeIntegerType: Syntax            == buildSyntax(makeInteger(), [])
+
+    makeBoolean: Syntax                == 'Boolean::Identifier::Syntax
+
+    makeBooleanType: Syntax            == buildSyntax(makeBoolean(), [])
+
+    makeSymbol: Syntax                 == 'Symbol::Identifier::Syntax
+
+    makeDoubleFloat: Syntax            == 'DoubleFloat::Identifier::Syntax
+
+    makeDoubleFloatType: Syntax        == buildSyntax(makeDoubleFloat(), [])
+
+    makeFloat: Syntax            == 'Float::Identifier::Syntax
+
+    makeFloatType: Syntax        == buildSyntax(makeFloat(), [])
+
+    makeString: Syntax                 == 'String::Identifier::Syntax
+
+    makeIdentifier: Syntax             == 'Identifier::Identifier::Syntax
+
+    makeElt: Syntax                    == 'elt::Identifier::Syntax
+
+    makeCoerce: Syntax                 == 'coerce::Identifier::Syntax
+
+    makeExit: Syntax                   == 'Exit::Identifier::Syntax
+
+    makeError: Syntax                  == 'error::Identifier::Syntax
+
+    makeErrorFunctions: Syntax          == 'ErrorFunctions::Identifier::Syntax
+
+    makeAny: Syntax                    == 'Any::Identifier::Syntax
+
+    makeLisp: Syntax                   == 'Lisp::Identifier::Syntax
+
+    makeConstruct: Syntax              == 'construct::Identifier::Syntax
+
+    makeVariable: Syntax               == 'Variable::Identifier::Syntax
+
+    makeREDUCE: Syntax                 == 'REDUCE::Identifier::Syntax
+
+    makeCOLLECT: Syntax                == 'COLLECT::Identifier::Syntax
+
+    makeTuple: Syntax                  == 'Tuple::Identifier::Syntax
+
+    makeUnion: Syntax                  == 'Union::Identifier::Syntax
+
+    makeUNTIL: Syntax                  == 'UNTIL::Identifier::Syntax
+
+    makeQelt: Syntax                   == 'qelt::Identifier::Syntax
+
+    makeRep: Syntax                    == 'Rep::Identifier::Syntax
+
+    makeExitType: Syntax == buildSyntax(makeExit(), [])
+
+    makeErrorFunctionsType: Syntax     == buildSyntax(makeErrorFunctions(), [])
+
+    isZero?(f: Identifier): Boolean == f = makeZero()
+
+    isOne?(f: Identifier): Boolean == f = makeOne()
+
+    isErrorFunction?(f: Identifier): Boolean == f = makeError()::Identifier
+
+    isJoin?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeJoin() 
+        false
+      false
+
+    isAdd?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeAdd() 
+        false
+      false
+
+    isProgn?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => (op::Identifier) = makeProgn() 
+        false
+      false
+
+    isNil?(t: Syntax): Boolean ==
+      not compound? t => t = makeNil()
+      false
+
+    isType?(t: Syntax): Boolean ==
+      compound? t =>
+        (op := getOperator(t)) case Identifier => 
+          (op::Identifier) = makeType()
+        false
+      false
+
+    isDoubleColon?(t: Syntax): Boolean ==
+      not compound? t => t = makeDoubleColon()
+      false
+
+    isRecord?(t: Syntax): Boolean ==
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeRecord()
+      false
+
+    isInteger?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeInteger()
+      false
+
+    isMatrix?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeMatrix()
+      false
+
+    isList?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeList()
+      false
+
+    isTable?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeTable()
+      false
+
+    isVector?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeVector()
+      false
+
+    isTuple?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeTuple()
+      false
+
+    isUnion?(t: Syntax): Boolean == 
+      compound? t and (x' := getOperator(t)) case Identifier =>
+        (x'::Identifier::Syntax) = makeUnion()
+      false
+
+    isVoid?(t: Syntax): Boolean == 
+      (compound? t) and (t = buildSyntax(makeVoid(), []))
+
+    isExit?(t: Syntax): Boolean == 
+      (compound? t) and (t = buildSyntax(makeExit(), []))
+
+    isAny?(t: Syntax): Boolean == 
+      (compound? t) and (t = buildSyntax(makeAny(), []))
+
+    isTrue?(s: Syntax): Boolean == s = makeTrue()
+
+    isFalse?(s: Syntax): Boolean == s = makeFalse()
+
+    isBool?(s: Syntax): Boolean == 
+      s = makeTrue() or s = makeFalse()
+
+    isLisp?(s: Syntax): Boolean == s = makeLisp()
+
+    isSingleIntegerType?(s: Syntax): Boolean == s = makeSingleIntegerType()
+
+    isNonNegativeIntegerType?(s: Syntax): Boolean == 
+      s = makeNonNegativeIntegerType()
+
+    isPositiveIntegerType?(s: Syntax): Boolean == s = makePositiveIntegerType()
+
+    isIntegerType?(s: Syntax): Boolean == s = makeIntegerType()
+
+    isDoubleFloatType?(s: Syntax): Boolean == s = makeDoubleFloatType()
+
+    isElt?(s: Syntax): Boolean == 
+      not compound?(s) => false
+      not ((op := getOperator(s)) case Identifier) => false
+      op::Identifier = 'elt::Syntax::Identifier
+
+    stepAst?(i: SpadAst): Boolean ==
+      compound?(i':=i::Syntax) => 
+        (op := getOperator i') case Identifier => (op::Identifier) = makeSTEP()
+        false
+      false
+      
+    untilAst?(i: SpadAst): Boolean ==
+      compound?(i' := i::Syntax) =>
+        (op := getOperator i') case Identifier => (op::Identifier) = makeUNTIL()
+        false
+      false
+
+    hasElseBranch?(f: IfAst): Boolean == 
+      not((elseBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+
+    hasThenBranch?(f: IfAst): Boolean == 
+      not((thenBranch(f)::Syntax) = '%noBranch::Identifier::Syntax) 
+
+    mappingAstToSignature(m: MappingAst): Signature ==
+      src : List Syntax := []
+      tar := (target m)::Syntax
+      for s in source m repeat
+        src := concat(src, s::Syntax)
+      signature(src, tar)
+
+    getCtorKind(c: Identifier): ConstructorKind == 
+      kind(retract(findConstructor(_
+           c)$Constructor)$(Maybe Constructor))$Constructor
+
+    isDomain?(c: Syntax): Boolean ==      
+      compound? c and (opr := getOperator c) case Identifier => 
+        not(getCtorKind(opr::Identifier) = category$ConstructorKind) and_
+        not(getCtorKind(opr::Identifier) = package$ConstructorKind)
+      false
+
+    isCategory?(c: Syntax): Boolean ==
+      compound? c and (opr := getOperator c) case Identifier => 
+        getCtorKind(opr::Identifier) = category$ConstructorKind
+      false
+
+    isPackage?(c: Syntax): Boolean ==
+      compound? c and (opr := getOperator c) case Identifier =>
+        getCtorKind(opr::Identifier) = package$ConstructorKind
+      false
+
+    containExclamation?(r: Syntax): Boolean ==
+      member?(char("!"::String)$Character, entries(toString(r))) 
+
+    freshVariables(n: Integer): List Syntax ==
+      n < 0 => userError "number of random identifiers should be non-negative"
+      [(gensym()$Identifier)::Syntax for i in 1..n]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

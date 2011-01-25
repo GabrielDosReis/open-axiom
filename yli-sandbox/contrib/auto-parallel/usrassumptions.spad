@@ -1,0 +1,124 @@
+
+-- Note:
+-- forall has become a key word, therefore, one need to add "_" before forall
+-- to make the parser happy.
+
+
+-- example 1: operator +
+--assume MonoidOperator(Integer, _+$Integer) where
+--  neutralValue == 0$Integer
+
+--assume MonoidOperator(NonNegativeInteger, _+$NonNegativeInteger) where
+--  neutralValue == 0$NonNegativeInteger
+
+--assume AssociativeOperator(PositiveInteger, _+$PositiveInteger) where nil
+
+-- Example 2: operator *
+--assume MonoidOperator(Integer, _*$Integer) where
+--  neutralValue == 1$Integer
+
+--assume MonoidOperator(NonNegativeInteger, _*$NonNegativeInteger) where
+--  neutralValue == 1$NonNegativeInteger
+
+--assume AssociativeOperator(PositiveInteger, _*$PositiveInteger) where nil
+
+--assume MonoidOperator(Integer, gcd$Integer) where
+--  absorbantValue == 1$Integer
+--  neutralValue   == 0$Integer
+
+-- Example 3: concat over String
+--assume MonoidOperator(String, concat$String) where
+--  neutralValue   == ""
+
+--assume MonoidOperator(List DoubleFloat, append$(List DoubleFloat)) where
+--  neutralValue   == []
+
+-- Example 4: max over Integer
+--assume AssociativeOperator(Integer, max$Integer) where nil
+
+--assume MonoidOperator(NonNegativeInteger, max$NonNegativeInteger) where
+--  neutralValue == 0$NonNegativeInteger
+
+--assume MonoidOperator(PositiveInteger, max$PositiveInteger) where
+--  neutralValue == 1$PositiveInteger
+
+-- Example 5: min over Integer
+--assume AssociativeOperator(Integer, min$Integer) where nil
+
+--assume AssociativeOperator(NonNegativeInteger, min$NonNegativeInteger) where nil
+
+--assume AssociativeOperator(PositiveInteger, min$PositiveInteger) where nil
+
+-- example 1: operator +
+--assume MonoidOperator(Polynomial(Integer), _+$Polynomial(Integer)) where
+--  neutralValue == 0$Polynomial(Integer)
+
+--assume MonoidOperator(NonNegativeInteger, _+$NonNegativeInteger) where
+--  neutralValue == 0$NonNegativeInteger
+
+--assume AssociativeOperator(PositiveInteger, _+$PositiveInteger) where nil
+
+-- Example 6: generic +
+_forall(T: IntegralDomain) 
+  assume MonoidOperator(T, _+) where 
+    neutralValue   == 0$T
+
+-- Example 7: generic *
+--_forall(T: IntegralDomain)
+--  assume MonoidOperator(T, _*) where
+--    neutralValue   == 1$T
+
+-- Example 8: generic gcd
+--forall(T: GcdDomain)
+--  assume MonoidOperator(T, _gcd) where
+--    neutralValue   == 0$T
+
+-- Example 8: generic lcm
+--forall(T: GcdDomain)
+--  assume MonoidOperator(T, _lcm) where
+--    neutralValue   == 1$T
+
+-- Example 9: generic concat
+--_forall(T: Type)
+--  assume MonoidOperator((List T), _concat) where
+--    neutralValue   == empty()$(List T)
+
+-- Example 10: generic append
+--forall(T: Type)
+--  assume MonoidOperator((List T), _append) where
+--    neutralValue   == empty()$(List T)
+
+-- Example 11: generic max 
+--_forall(T: OrderedSet)
+--  assume AssociativeOperator(T, max) where nil
+
+-- Example 12: generic min 
+--forall(T: OrderedSet)
+--  assume AssociativeOperator(T, min) where nil
+
+-- Example 14: generic + from AbelianMonoid
+--_forall(T: AbelianMonoid)
+--  assume MonoidOperator(T, _+) where
+--    neutralValue   == 0$T
+
+-- Example 15: generic * from Monoid
+--_forall(T: Monoid)
+--  assume MonoidOperator(T, _*) where
+--    neutralValue   == 1$T
+
+-- Example 16: generic horizConcat 
+--forall(T: Type)
+--  assume AssociativeOperator(Matrix(T), horizConcat) where nil
+
+-- Example 17: generic vertConcat 
+--forall(T: Type)
+--  assume AssociativeOperator(Matrix(T), vertConcat) where nil
+
+-- Example 18: generic setUnion
+--forall(T: Type)
+--  assume MonoidOperator((List T), setUnion) where
+--    neutralValue   == empty()$(List T)
+
+
+
+

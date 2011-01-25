@@ -1,0 +1,383 @@
+)abbrev category ANALCAT ProgramAnalysisCategory
+++ Author: Yue Li
+++ Date Created: Oct 28, 2010
+++ Date Last Updated: Jan 24, 2011
+++ Description:  this category specifies the requirements on the function  
+++ interfaces of all its instance analysis packages
+ProgramAnalysisCategory(): Category == with
+    -- for analyzing statements
+    analyze: (SequenceIr,  StatementIr -> Void) -> Void
+      ++ analyze a sequence statement
+    analyze: (IfIr,  StatementIr -> Void) -> Void
+      ++ analyze a if-statement
+    analyze: (ColonIr,  StatementIr -> Void) -> Void
+      ++ analyze a colon statement
+    analyze: (LetIr,  StatementIr -> Void) -> Void
+      ++ analyze an assignment
+    analyze: (RepeatIr,  StatementIr -> Void) -> Void
+      ++ analyze a loop
+    analyze: (ExitIr,  StatementIr -> Void) -> Void
+      ++ analyze an exit statement
+    analyze: (CaseIr,  StatementIr -> Void) -> Void
+      ++ analyze a case statement
+    analyze: (ReturnIr,  StatementIr -> Void) -> Void
+      ++ analyze a return statement
+    analyze: (FunctionDeclarationIr,  StatementIr -> Void) -> Void
+      ++ analyze a function declaration
+    -- for analyzing expressions
+    analyze: (ValueIr,  StatementIr -> Void) -> Void
+      ++ analyze a value
+    analyze: (VariableIr,  StatementIr -> Void) -> Void
+      ++ analyze a variable
+    analyze: (ExpressionWithOperatorIr,  StatementIr -> Void) -> Void
+      ++ analyze an expression 
+    analyze: (InIteratorIr,  StatementIr -> Void) -> Void
+      ++ analyze an in-iterator
+    analyze: (WhileIteratorIr,  StatementIr -> Void) -> Void
+      ++ analyze a while-iterator
+    analyze: (StepIteratorIr,  StatementIr -> Void) -> Void
+      ++ analyze a step-iterator
+    analyze: (SuchThatIr,  StatementIr -> Void) -> Void
+      ++ analyze a such-that expression 
+    analyze: (CollectIr,  StatementIr -> Void) -> Void
+      ++ analyze a collect-ir statement
+    analyze: (CoerceIr,  StatementIr -> Void) -> Void
+      ++ analyze a type coersion statement
+    analyze: (PretendIr,  StatementIr -> Void) -> Void
+      ++ analyze a pretend expression
+    analyze: (ConstructIr,  StatementIr -> Void) -> Void
+      ++ analyze a list construct statement
+    analyze: (LispCallIr,  StatementIr -> Void) -> Void
+      ++ analyze a lisp function call
+    analyze: (ReduceIr,  StatementIr -> Void) -> Void
+      ++ analyze a reduce form
+    analyze: (OperatorIr,  StatementIr -> Void) -> Void
+      ++ analyze an operator
+
+)abbrev package GFAP GenericFlowAnalysisPackage
+++ Author: Yue Li
+++ Date Created: Oct 28, 2010
+++ Date Last Updated: Oct 28, 2010
+++ Description:  
+++ This package provides a generic program analysis framework.
+++ The package is parameterized by a specific analysis domain. The analysis
+++ domain is responsible for implementing all the analyze functions which 
+++ do the actual analysis.
+GenericFlowAnalysisPackage(D: ProgramAnalysisCategory): Public == Private where
+  Public == with
+    visitFunctionDecl: FunctionDeclarationIr -> Void
+      ++ visit a function declaration ir node
+    visit: FunctionDeclarationIr -> Void
+      ++ visit a function declaration ir node
+    visit: List StatementIr -> Void
+      ++ visit each element of a ir node list
+      ++ used in scripting mode
+  Private == add 
+    import SyntaxHelper
+    import ExpressionIr
+    import TypeIr
+    import ValueIr
+    import VariableIr
+    import TypeConstructorIr
+    import OperatorIr
+    import InIteratorIr
+    import TypeIrUtility
+    import StepIteratorIr
+    import SuchThatIr
+    import CaseIr
+    import ReturnIr
+    import ColonIr
+    import FunctionDeclarationIr
+    import CollectIr
+    import CoerceIr
+    import ConstructIr
+    import LispCallIr
+    import PretendIr
+    import ReduceIr
+    import SpadIrToSpad
+    import SequenceIr
+    import IfIr
+    import AnalysisDomain
+
+    --- forward declarations ---
+    visitStatement: (StatementIr, StatementIr -> Void) -> Void
+    visitExpression: (ExpressionIr, StatementIr -> Void) -> Void
+
+    -- visit a type ir node
+    visitType(t: TypeIr, updateParent: StatementIr -> Void): Void ==
+      getTree t
+
+    -- visit the body of a sequence ir node
+    visitSequence(s: SequenceIr, updateParent: StatementIr -> Void): Void ==
+      analyze(s, updateParent)
+      i : Integer := 1
+      for st in body s repeat
+        visitStatement(st, (x) +-> updateBody!(s, x, i))
+        i := inc i
+
+    -- visit an if ir
+    visitIf(i: IfIr, updateParent: StatementIr -> Void): Void ==
+      analyze(i, updateParent)
+      visitStatement(condition i, (x) +-> updateCondition!(i, x))
+      withBothBranches? i =>
+        visitStatement(thenBranch i, (x) +-> updateThenBranch!(i, x))
+        visitStatement(elseBranch i, (x) +-> updateElseBranch!(i, x))
+      withThenBranch? i =>
+        visitStatement(thenBranch i, (x) +-> updateThenBranch!(i, x))
+      withElseBranch? i =>
+        visitStatement(elseBranch i, (x) +-> updateElseBranch!(i, x))
+      userError "unexpected if node structure"
+
+    -- visit a colon ir node
+    visitColon(c: ColonIr, updateParent: StatementIr -> Void): Void ==
+      analyze(c, updateParent)
+      i : Integer := 1
+      for v in lhs c repeat
+        visitStatement(v, (x) +-> updateLhs!(c, v, i))
+        i := inc i
+      -- we don't visit rhs of a colon node 
+
+    -- visit a let ir node
+    visitLet(l: LetIr, updateParent: StatementIr -> Void): Void ==
+      analyze(l, updateParent)
+      t    : TypeIr := typeOf l
+      if not((x := updateTypeIrIfCan t) = t) then
+        updateType!(l, x)
+      visitStatement(lhs l, (x) +-> updateLhs!(l, x))
+      visitStatement(rhs l, (x) +-> updateRhs!(l, x))
+
+    -- visit a repeat ir node
+    visitRepeat(r: RepeatIr, updateParent: StatementIr -> Void): Void ==
+      analyze(r, updateParent)
+      -- visit iterators
+      i : Integer := 1
+      for iter in iterators r repeat
+        visitExpression(iter, (x) +-> updateIterator!(r, x, i))
+        i := inc i
+      visitStatement(body r, (x) +-> updateBody!(r, x))
+ 
+    -- visit an exit ir node
+    visitExit(e: ExitIr, updateParent: StatementIr -> Void): Void ==
+      analyze(e, updateParent)
+      visitStatement(body e, (x) +-> updateBody!(e, x))
+
+    -- visit a case ir node
+    visitCase(c: CaseIr, updateParent: StatementIr -> Void): Void ==
+      analyze(c, updateParent)
+      visitStatement(lhs c, (x) +-> updateLhs!(c, x))
+      -- we don't visit the rhs of the case ir
+
+    -- visit a return ir node
+    visitReturn(r: ReturnIr, updateParent: StatementIr -> Void): Void ==
+      analyze(r, updateParent)
+      visitStatement(expression r, (x) +-> updateExpression!(r, x))
+
+    -- visit a value ir node
+    visitValue(v: ValueIr, updateParent: StatementIr -> Void): Void ==
+      analyze(v, updateParent)
+      getTree v
+
+    -- visit a variable ir node
+    visitVariable(v: VariableIr, updateParent: StatementIr -> Void): Void ==
+      analyze(v, updateParent)
+      t : TypeIr := typeOf v
+      if not((x := updateTypeIrIfCan t) = t) then
+        updateType!(v, x)
+      getTree v
+
+    -- visit an operator ir node
+    visitOperator(op: OperatorIr, updateParent: StatementIr -> Void): Void ==
+      analyze(op, updateParent)
+      getTree op
+
+    -- visit an operator ir node
+    visitOp(op: OperatorIr, updateParent: StatementIr -> Void): Void ==
+      analyze(op, updateParent)
+      getTree op    
+
+    -- visit an expression ir node
+    visitExpressionWithOperator(e: ExpressionWithOperatorIr,_
+                                updateParent: StatementIr -> Void): Void ==
+      analyze(e, updateParent)
+      visitOp(operator e, (x) +-> updateOperator!(e, x))
+      i : Integer := 1
+      for opr in operands e repeat
+        visitStatement(opr, (x) +-> updateOperand!(e, x, i))
+        i := inc i
+
+    -- visit an in-iterator ir node
+    visitInIterator(iter: InIteratorIr, updateParent: StatementIr->Void):Void ==
+      analyze(iter, updateParent)
+      visitExpression(sequence iter, (x) +-> updateSequence!(iter, x))
+
+    -- visit a while-iterator ir node
+    visitWhileIterator(iter: WhileIteratorIr,_
+                       updateParent: StatementIr -> Void): Void ==
+      analyze(iter, updateParent)
+      visitStatement(condition iter, (x) +-> updateCondition!(iter, x))
+
+    -- visit a step-iterator ir node
+    visitStepIterator(iter: StepIteratorIr,_
+                      updateParent: StatementIr -> Void): Void ==
+      analyze(iter, updateParent)
+      visitStatement(lowerBound iter, (x) +-> updateLowerBound!(iter, x))
+      if hasUpperBound? iter then
+        visitStatement(upperBound iter, (x) +-> updateUpperBound!(iter, x))
+      visitStatement(step iter, (x) +-> updateStep!(iter, x))
+
+    -- visit a such ir node
+    visitSuchThatIr(st: SuchThatIr, updateParent: StatementIr -> Void): Void ==
+      analyze(st, updateParent)
+      visitStatement(predicate st, (x) +-> updatePredicate!(st, x))
+
+    -- visit a collect ir node
+    visitCollect(c: CollectIr, updateParent: StatementIr -> Void): Void ==
+      analyze(c, updateParent)
+      i: Integer := 1
+      for iter in iterators c repeat
+        visitStatement(iter, (x) +-> updateIterator!(c, x, i))
+        i := inc i
+
+    -- visit a coerce ir node
+    visitCoerce(c: CoerceIr, updateParent: StatementIr -> Void): Void ==
+      analyze(c, updateParent)
+      visitStatement(expression c, (x) +-> updateExpression!(c, x))
+      -- we don't visit the rhs of a coerce ir
+
+    -- visit a pretend ir node
+    visitPretend(p: PretendIr, updateParent: StatementIr -> Void): Void ==
+      analyze(p, updateParent)
+      visitStatement(expression p, (x) +-> updateExpression!(p, x))   
+
+    -- visit a constrct ir node
+    visitConstruct(c: ConstructIr, updateParent: StatementIr -> Void): Void ==
+      analyze(c, updateParent)
+      i : Integer := 1
+      for elt in elements c repeat
+        visitStatement(elt, (x) +-> updateElement!(c, x, i))
+        i := inc i
+
+    -- visit a lisp ir node
+    visitLispCall(l: LispCallIr, updateParent: StatementIr -> Void): Void ==
+      analyze(l, updateParent)
+      getTree l
+
+    -- visit a reduce ir node
+    visitReduce(r: ReduceIr, updateParent: StatementIr -> Void): Void ==
+      analyze(r, updateParent)
+      visitOp(operator r, (x) +-> updateOperator!(r, x))
+      visitStatement(sequence r, (x) +-> updateSequence!(r, x))
+      visitStatement(sequence r, (x) +-> updateNeutralValue!(r, x))
+
+    -- visit function parameters
+    visitFunctionParameters(f: FunctionDeclarationIr): Void ==
+      i : Integer := 1
+      for p in parameters f repeat
+        visitVariable(p, (x) +-> updateParameter!(f, x, i))
+        i := inc i
+
+    -- visit body of a function ir node
+    visitFunctionBody(f: FunctionDeclarationIr): Void == 
+      visitStatement(getBody f, (x) +-> updateBody!(f, x))
+
+    -- visit a function decalration ir node
+    visitFunctionDecl(f: FunctionDeclarationIr): Void == 
+      --analyze f
+      visitFunctionParameters f
+      withBody? f => visitFunctionBody f
+
+    -- visit a function decalration ir node
+    visitFunDecl(f: FunctionDeclarationIr,_
+                 updateParent: StatementIr -> Void): Void == 
+      -- update type information
+      analyze(f, updateParent)
+      visitFunctionParameters f
+      withBody? f => visitFunctionBody f
+
+    -- visit an expression ir
+    visitExpression(e: ExpressionIr, updateParent: StatementIr -> Void): Void ==
+      e case ValueIr                   => 
+        visitValue(e::ValueIr, updateParent)
+      e case VariableIr                => 
+        visitVariable(e::VariableIr, updateParent)
+      e case ExpressionWithOperatorIr  => 
+        visitExpressionWithOperator(e::ExpressionWithOperatorIr, updateParent)
+      e case InIteratorIr              => 
+        visitInIterator(e::InIteratorIr, updateParent)
+      e case WhileIteratorIr           => 
+        visitWhileIterator(e::WhileIteratorIr, updateParent)
+      e case StepIteratorIr            => 
+        visitStepIterator(e::StepIteratorIr, updateParent)
+      e case SuchThatIr                =>
+        visitSuchThatIr(e::SuchThatIr, updateParent)
+      e case CollectIr                 => 
+        visitCollect(e::CollectIr, updateParent)
+      e case CoerceIr                  => 
+        visitCoerce(e::CoerceIr, updateParent)
+      e case PretendIr                 => 
+        visitPretend(e::PretendIr, updateParent)
+      e case ConstructIr               => 
+        visitConstruct(e::ConstructIr, updateParent)
+      e case LispCallIr                => 
+        visitLispCall(e::LispCallIr, updateParent)
+      e case ReduceIr                  => 
+        visitReduce(e::ReduceIr, updateParent)      
+      e case OperatorIr                =>
+        visitOperator(e::OperatorIr, updateParent)
+      userError "bug: unexpected internal representation of an expression ir"
+
+    -- visit a statement ir
+    visitStatement(s: StatementIr, updateParent: StatementIr -> Void): Void ==
+      s case SequenceIr       => visitSequence(s::SequenceIr, updateParent)
+      s case IfIr             => visitIf(s::IfIr, updateParent)        
+      s case ColonIr          => visitColon(s::ColonIr, updateParent)    
+      s case LetIr            => visitLet(s::LetIr, updateParent)       
+      s case RepeatIr         => visitRepeat(s::RepeatIr, updateParent)   
+      s case ExitIr           => visitExit(s::ExitIr, updateParent)     
+      s case CaseIr           => visitCase(s::CaseIr, updateParent)    
+      s case ReturnIr         => visitReturn(s::ReturnIr, updateParent)   
+      s case ExpressionIr     => visitExpression(s::ExpressionIr, updateParent)
+      s case FunctionDeclarationIr => 
+        visitFunDecl(s::FunctionDeclarationIr, updateParent)
+      userError "bug: unexpected internal representation of a statement ir"
+
+    -- visit a top ir node
+    visit(f: FunctionDeclarationIr): Void ==
+      visitFunctionDecl f
+
+    -- visit a list of ir nodes
+    -- used for scripting
+    visit(l: List StatementIr): Void ==
+      index : Integer := 1
+      for ir in l repeat visitStatement(ir, (x) +-> setelt(l, index, x))  
+
+
+-- notes:
+-- 1. analysis domain should be parameterized by the analysis target domain
+-- Here are two examples:
+--   1. a package above provides analyze functions to update the value of 
+--   fresh type variables left by the typechecker
+--   2. a package which provides analyze functions for extracting reductions
+--   this package has been implemented in analysis.spad. But will be moved to 
+--   here using the generic framework.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

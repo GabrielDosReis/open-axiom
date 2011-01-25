@@ -1,0 +1,2004 @@
+import STMIR
+import UTYPE
+
+)abbrev package IRGEN SpadIrGenerator
+++ Author: Yue Li
+++ Date Created: Sep 29, 2010
+++ Date Last Updated: Oct 7, 2010
+++ Description:  
+++ This package provides library functions which typecheck a spad syntax
+++ and generates the IR data structure for the corresponding IR
+SpadIrGenerator(): Public == Private where
+  macro TENV == Table(Syntax, Syntax)  -- for type environment
+  macro MTB  == Table(Syntax, Syntax)  -- for macro mapping table
+  macro FREC == Record(funname: Identifier,signature: Signature, arity: Integer)
+  macro REDF == Record(reduceform: Syntax, reduceop: Identifier,_
+                         signature: Signature, tenv: TENV)
+  macro L    == List
+  Public == with
+    generateIr: String -> FunctionDeclarationIr
+      ++ generateIr(s) generates the IR data structure for a function definition 
+      ++ stored in the file whose name is s. This is for supporting Spad compiler
+    genIrScript: String -> List StatementIr
+      ++ genIrScript(s) generates the IR data structure for an input script
+      ++ "s.input". This is for supporting scripting
+    generateIrToFile: (String, String) -> Void
+      ++ generate(i, o) generates IR for program stored in file whose name is i
+      ++ and store the IR in the file named o
+    getTypeEnv: () -> Record(te: TENV, ttvar: TENV, tfreshvar: TENV)
+      ++ getTypeEnv() returns the complete set of type environments
+    isFreshTypeVariable?: Syntax -> Boolean
+      ++ checks whether a type syntax represents a fresh type variable
+    valueOfFreshTypeVar: Syntax -> Syntax
+      ++ retrieve the value of a fresh type variable
+    resolveAnnotatedFunction: (Syntax, List Syntax, Syntax, Identifier, TENV)_
+                                 -> Pair(Boolean, Signature)
+      ++ Resolves the signature of an operator that is annotated with its domain
+
+  Private == add
+    import SyntaxHelper
+    import SpadParser
+
+    -- import IR domains
+    import ExpressionIr
+    import TypeIr
+    import ValueIr
+    import VariableIr
+    import TypeConstructorIr
+    import OperatorIr
+    import InIteratorIr
+    import TypeIrUtility
+    import StepIteratorIr
+    import CaseIr
+    import ReturnIr
+    import ColonIr
+    import FunctionDeclarationIr
+    import CollectIr
+    import CoerceIr
+    import ConstructIr
+    import LispCallIr
+    import PretendIr
+    import ReduceIr
+    import SuchThatIr
+
+    ---------------------- forward declarations --------------------------------
+    checkIterators: L SpadAst -> Boolean
+      ++ does typechecking for each iterator in the list of iterators of a loop
+
+    genIterators: L SpadAst -> List ExpressionIr
+      ++ generates IR for an iterator ast used in loops and collect asts
+
+    checkStatement: (SpadAst, Syntax) -> Syntax
+      ++ does typechecking for a statement
+
+    genStatement: (SpadAst, Syntax) -> StatementIr()
+      ++ IR generation for statement
+
+    checkTypeofTypeVariablesInType: Syntax -> Void
+      ++ does tyepchecking for a type variable
+
+    resolveExportedFunction: (L Syntax, Syntax,_
+                                        Identifier) -> Pair(Boolean, Signature)
+      ++ resolves a function signature from its input and output types
+    ----------------------------------------------------------------------------
+
+    -- global variable storing the return type of the current 
+    -- function whose definition is being typechecked
+    functionReturnType: Syntax := makeUnknown()
+
+    -- type environment for one function definition
+    typeEnv: TENV := empty()
+
+    -- a global table for storing all the types of the type variables 
+    -- used in a type expression
+    typeOfTypeVariable: TENV := empty()
+
+    -- global table storing the fresh variables introduced during the 
+    -- type inference and their actual values which are assigned when doing 
+    -- unifications
+    freshVariableMapping: TENV := empty()
+
+    -- returns the complete type environment
+    getTypeEnv () == [typeEnv, typeOfTypeVariable, freshVariableMapping]
+
+    -- global variable for storing the current constructor definition name
+    -- initialized with an arbitrary identifier
+    constructorName: Identifier  := makeUnknown()::Identifier
+
+    -- global variable for storing the current constructor parameters
+    constructorParameters: L Syntax              := []
+
+    -- global database for storing the information of all the local functions
+    -- which are not exported by the current type
+    localUnexportedSignatureDatabase : L FREC    := []
+
+    -- global database for storing the information of all the functions
+    -- which are exported by the current type
+    localExportedSignatureDatabase : L FREC      := [] 
+
+    -- list for storing import statement
+    importList : L ImportAst                     := []    
+
+    -- global table for storing the mapping between all the macros and their 
+    -- actual names used by the current compiler 
+    constructorMacros : MTB := empty()
+
+    -- global variable for storing the origin domain/category of the
+    -- function being resolved
+    functionOrigin: Syntax := makeUnknown()
+
+    -- introduce a fresh variable 
+    -- this function is used during typechecking
+    freshVariable(): Syntax == 
+      alpha := (gensym()$Identifier)::Syntax
+      freshVariableMapping.alpha := makeUnknown()
+      alpha
+ 
+    -- query the value of a fresh type variable
+    valueOfFreshTypeVar(v: Syntax): Syntax ==
+      key?(v, freshVariableMapping) => freshVariableMapping.v
+      print(v::OutputForm)
+      userError "fresh type variable does not exist in the typing environment"
+
+
+    -- does macro expansion for a syntax
+    macroExpansionForSyntax(s: Syntax): Syntax ==
+      s' := s
+      for m in keys constructorMacros repeat
+        mac := constructorMacros.m
+        sub := m
+        --if compound? mac then
+        --  sub := buildSyntax(m, [])
+        s' := replace(sub, s', mac)$SyntaxHelper
+      s'
+
+    -- returns the internal representation type of the current domain definition
+    extractRep(): Syntax ==
+      for k in keys constructorMacros repeat
+        k = makeRep() => return (macroExpansionForSyntax(constructorMacros.k))
+      makeUnknown()
+
+    -- build a constructor call form with the current constructor name
+    -- and the parameters used in the constructor definition
+    constructorCallForm(): Syntax == 
+      buildSyntax(constructorName, constructorParameters)
+
+    -- checks whether a type syntax is the internal representation type of
+    -- declared in the capsule of the current domain definition
+    isInternalRepresentationType?(t: Syntax): Boolean == 
+      t = makeUnknown() => false
+      t = extractRep()
+
+    -- checks whether a type syntax is the current constructor itself
+    isMyself?(t: Syntax): Boolean == t = constructorCallForm()
+
+    -- checks whether a variable is a fresh type variable introduced during
+    -- type inference
+    isFreshTypeVariable?(s: Syntax): Boolean == key?(s, freshVariableMapping)
+
+    -- checks whether a uncompound syntax is a type variable
+    isTypeVariable?(tp: Syntax): Boolean == 
+      not compound?(tp) and_
+      (tp case Identifier) and_
+      not isFreshTypeVariable?(tp)
+
+    -- checks whether an operator of a function application is a unary operator
+    isUnaryOperator?(s: SpadAst): Boolean ==
+      s' := s::Syntax
+      compound?(s') and #getOperands(s') = 1
+
+    -- checks whether an operator of a function application is a binary operator
+    isBinaryOperator?(s: SpadAst): Boolean ==
+      s' := s::Syntax
+      compound?(s') and #getOperands(s') = 2
+
+    -- checks whether the syntax is an access form which queries some element
+    -- of a container
+    isAccessForm?(s: SpadAst): Boolean ==
+      -- unary: record, vector, list, Table
+      -- binary: matrix m(1, 2)
+      (isUnaryOperator?(s) or isBinaryOperator?(s)) => 
+        (op := getOperator(s::Syntax)) case Identifier =>
+          key?((k := op::Identifier::Syntax), typeEnv) =>  
+            not compound?(typeEnv.k) or_
+            not ((typeEnv.k)::SpadAst case MappingAst)              
+            -- type variable
+            -- typeAst but not MappingAst, this should be allowed later (maybe)
+          false
+        op case Syntax and compound?(op::Syntax)
+      false
+
+    -- checks whether a compound syntax is an annotated function application
+    -- if so, returns the type annotation alone with the newly constructed call 
+    -- form whose type annotation is removed.
+    isAnnotatedExpression?(e: SpadAst): Pair(Boolean, L Syntax) ==
+      (op := getOperator(e::Syntax)) case Syntax =>
+        compound?(op::Syntax) and_
+        (innerOp := getOperator(op::Syntax)) case Identifier =>
+          (innerOp::Identifier::Syntax) = makeElt() => pair(true, getOperands op)
+          pair(false, [])
+        pair(false, [])
+      -- to handle an annotated function call of function 0()
+      (op' := getOperator(e::Syntax)) case Identifier =>
+        opr := getOperands(e::Syntax)
+        ((op'::Identifier::Syntax) = makeElt()) and compound?(opr.2) =>
+          (innerOp := getOperator(opr.2)) case Identifier => 
+            pair(true, [opr.1, innerOp::Identifier::Syntax])
+          pair(false, [])
+        pair(false, [])
+      pair(false, [])
+
+    -- given an container type, e.g., List, Array, etc, figure out 
+    -- the type of the element of the container
+    getContainerElementType(t: Syntax): Syntax == first getOperands t
+
+    -- obtain the type of the keys of a table from the table's type
+    getTableKeyType(t: Syntax): Syntax == first getOperands t
+
+    -- obtain the type of elements stored in a table from the table's type
+    getTableContentType(t: Syntax): Syntax == second getOperands t
+      
+    -- checks the subtyping relationships between integer types
+    ((actual: Syntax) < (expect: Syntax)): Boolean ==
+      isNonNegativeIntegerType?(actual) and isIntegerType?(expect) => true
+      isPositiveIntegerType?(actual) and isIntegerType?(expect) => true
+      isPositiveIntegerType?(actual) and isNonNegativeIntegerType?(expect)=>true
+      isIntegerType?(actual)         and isDoubleFloatType?(expect) => true      
+      isPositiveIntegerType?(actual)  and isDoubleFloatType?(expect) => true
+      isNonNegativeIntegerType?(actual)  and isDoubleFloatType?(expect) => true
+      isSingleIntegerType?(actual) and isDoubleFloatType?(expect) => true
+      isSingleIntegerType?(actual) and isIntegerType?(expect) => true
+      isSingleIntegerType?(actual) and isNonNegativeIntegerType?(expect) => true
+      false
+
+    -- checks the supertyping relationships between integer types
+    ((actual: Syntax) > (expect: Syntax)): Boolean ==
+      isNonNegativeIntegerType?(expect) and isIntegerType?(actual) => true
+      isPositiveIntegerType?(expect) and isIntegerType?(actual) => true
+      isPositiveIntegerType?(expect) and isNonNegativeIntegerType?(actual)=>true
+      isIntegerType?(expect)         and isDoubleFloatType?(actual) => true      
+      isPositiveIntegerType?(expect)  and isDoubleFloatType?(actual) => true
+      isNonNegativeIntegerType?(expect)  and isDoubleFloatType?(actual) => true      
+      isSingleIntegerType?(expect) and isDoubleFloatType?(actual) => true
+      isSingleIntegerType?(expect) and isIntegerType?(actual) => true
+      isSingleIntegerType?(expect) and isNonNegativeIntegerType?(actual) => true
+      false
+
+    -- checks whether two compound syntax have the same operands
+    sameOperands?(actual: Syntax, expect: Syntax): Boolean == 
+      compound? actual and compound? expect and_
+      getOperands(actual) = getOperands(expect)
+
+    -- does unification for two input types. Type unification returns more 
+    -- refined one between the actual and expect types
+    unification(actual: Syntax, expect: Syntax): Syntax ==
+      isFreshTypeVariable?(expect) => freshVariableMapping.expect := actual
+      isFreshTypeVariable?(actual) =>  freshVariableMapping.actual := expect
+      isExit?(actual) => actual
+      isExit?(expect) => expect
+      isVoid?(actual) => expect
+      isVoid?(expect) => actual
+      actual = expect => actual
+      actual < expect => actual
+      actual > expect => expect 
+      isList?(actual) and_
+      isVector?(expect) and_
+      sameOperands?(actual, expect) => expect
+      isList?(actual) and_
+      isTuple?(expect) and_
+      sameOperands?(actual, expect) => expect
+      isList?(actual) and isList?(expect) => 
+        buildSyntax(makeList(),_
+              [unification(first getOperands actual, first getOperands expect)])
+      isUnion?(actual) and member?(expect, getOperands(actual)) => expect
+      isUnion?(expect) and member?(actual, getOperands(expect)) => actual
+      isInternalRepresentationType?(actual) and isMyself?(expect) => expect
+      isMyself?(actual) and isInternalRepresentationType?(expect) => expect
+      print(actual::OutputForm)
+      print(expect::OutputForm)
+      userError "unification error"
+
+    -- extracted the identifier representing the outer
+    -- most type constructor from a type syntax
+    getIdentifier(tp: Syntax): Identifier ==
+      not compound?(tp) => 
+        print(tp::OutputForm)
+        print(typeEnv::OutputForm)
+        userError "the type syntax is not compound!"
+      (tid := getOperator(tp)) case Identifier => tid::Identifier
+      userError "unexpected type of a type identifier"
+
+    -- obtain the constructor of a specific type (not type variable)
+    getConstructor(tp: Syntax): Constructor ==
+      tid := getIdentifier(tp)
+      --print(tp::OutputForm)
+      retract(findConstructor(tid)$Constructor)$(Maybe Constructor)
+
+    -- instantiate number slots with category/domain parameters
+    instantiateNumberSlots(current: Syntax, t: Syntax): Syntax ==
+      typeParameters := getOperands current
+      #typeParameters > 0 =>
+        for i in 1 .. #typeParameters repeat
+          t := replace(makeNumberSlot(i), t, typeParameters.i)$SyntaxHelper
+        t
+      t
+
+    -- instantiate a percentage with the actual domain
+    instantiatePercentages(current: Syntax, t: Syntax): Syntax ==
+      replace(makePercentage(), t, current)$SyntaxHelper
+
+    -- does symbolic instantiation for a type syntax in the signature 
+    -- we instantiate number slots with category parameters
+    instantiateTypeSyntax2(current: Syntax, tvar: Syntax, t: Syntax): Syntax ==
+      t' := instantiatePercentages(current, t)
+      t' := instantiateNumberSlots(tvar, t')
+      t'      
+
+    -- does symbolic instantiation for a type syntax in the signature     
+    -- we instantiate number slots with domain parameters
+    instantiateTypeSyntax(current: Syntax, t: Syntax): Syntax ==
+      t' := instantiatePercentages(current, t)
+      t' := instantiateNumberSlots(current, t')
+      t'
+
+    -- does symbolic instantiation for the target of a signature
+    -- the signature is obtained from a function descriptor
+    instantiateTarget2(current: Syntax, tvar: Syntax, tar: Syntax): Syntax ==
+      instantiateTypeSyntax2(current, tvar, tar)     
+
+    -- does symbolic instantiation for the target of a signature
+    -- the signature is obtained from a function descriptor
+    instantiateTarget(current: Syntax, tar: Syntax): Syntax ==
+      instantiateTypeSyntax(current, tar)
+
+    -- does symbolic instantiation for the source of a signature
+    -- the signature is obtained from a function descriptor
+    instantiateSource2(current: Syntax, tvar: Syntax,_
+                       src: L Syntax): L Syntax ==
+      for i in 1..#src repeat
+        src.i := instantiateTypeSyntax2(current, tvar, src.i)
+      src      
+
+    -- does symbolic instantiation for the source of a signature
+    -- the signature is obtained from a function descriptor
+    instantiateSource(current: Syntax, src: L Syntax): L Syntax ==
+      for i in 1..#src repeat
+        src.i := instantiateTypeSyntax(current, src.i)
+      src
+
+    -- instantiate a signature with actual domain and domain parameters
+    -- this instantiation is used for instantiating function descriptor obtained
+    -- from some category which is implemented by the domain, therefore, the 
+    -- instantiation is different from the one used in instantiateSignature
+    -- in the sense that the parameter is instantiated with the category's 
+    -- parameter not the domain's parameter
+    instantiateSignature2(current: Syntax, tvar: Syntax,_
+                                                   s: Signature): Signature ==
+      -- source s returns the reference to the original 
+      -- syntax of the source of the signature
+      src := instantiateSource2(current, tvar, copy source s)
+      tar := instantiateTarget2(current, tvar, target s)
+      signature(src, tar)
+
+    -- instantiate a signature with actual domain and domain parameters
+    instantiateSignature(current: Syntax, s: Signature): Signature ==
+      src := instantiateSource(current, copy source s)
+      tar := instantiateTarget(current, target s)
+      signature(src, tar)
+
+    -- create a database record for a category function descriptor database
+    -- i.e., extract each function information from each function descriptor, 
+    -- symbolically instantiate the function signature with actual 
+    -- domain and category parameters (not domain parameters)
+    createRecord2(fn: Identifier, x: L FunctionDescriptor,_
+                                   current: Syntax, tvar: Syntax): L FREC ==
+      result : L FREC := empty()
+      for x' in x repeat 
+        s := signature x'
+        a := #(source s)
+        s' := instantiateSignature2(current, tvar, s)
+        t : FREC := [fn, s', a]          
+        result := concat(result, t)
+      result
+
+    -- create a database record for a domain function descriptor database
+    -- i.e., extract each function information from each function descriptor, 
+    -- symbolically instantiate the function signature with actual domain and 
+    -- domain parameters
+    createRecord(fn: Identifier, x: L FunctionDescriptor,_
+                                                current: Syntax): L FREC ==
+      result : L FREC := empty()
+      for x' in x repeat
+        s := signature x'
+        a := #(source s)
+        s' := instantiateSignature(current, s)
+        t : FREC := [fn, s', a]       
+        result := concat(result, t)
+      result
+
+    -- creates a database storing all the function descriptors of a specific 
+    -- domain. The function descriptors are obtained from the categories that 
+    -- the domain implements. Appearances of % and number slot #x in the 
+    -- signature of each  function in the database are instantiated by 
+    -- the actual domain and domain parameters    
+    createCategoryFunctionDescriptorDatabase(current: Syntax, tvar: Syntax,_
+                                        opList: L OverloadSet): L FREC ==
+      database: L FREC := empty()
+      for f in opList repeat
+        newRecord := createRecord2(name f, members f, current, tvar)
+        database := concat(database, newRecord)
+      database
+
+    -- creates a database storing all the function descriptors of a specific 
+    -- domain. Appearances of % and number slot #x in the signature of each 
+    -- function in the database are instantiated by the actual domain and domain
+    -- parameters
+    createDomainFunctionDescriptorDatabase(current: Syntax,_
+                                  opList: L OverloadSet): L FREC ==
+      database: L FREC := empty()
+      for f in opList repeat
+        newRecord := createRecord(name f, members f, current)
+        database := concat(database, newRecord)
+      database
+
+    -- does unification for two input types. 
+    -- If we can not find a unification for them, we return unknown instead of
+    -- throwing a type error
+    gentleUnification(actual: Syntax, expect: Syntax): Syntax ==
+      isFreshTypeVariable?(expect) => freshVariableMapping.expect := actual
+      isFreshTypeVariable?(actual) =>  freshVariableMapping.actual := expect
+      isVoid?(actual) => actual
+      isVoid?(expect) => expect
+      actual = expect => actual
+      actual < expect => actual
+      actual > expect => expect
+      isList?(actual) and_
+      isVector?(expect) and_
+      sameOperands?(actual, expect) => expect
+      isList?(actual) and_
+      isTuple?(expect) and_
+      sameOperands?(actual, expect) => expect
+      isUnion?(actual) and member?(expect, getOperands(actual)) => expect
+      isUnion?(expect) and member?(actual, getOperands(expect)) => actual
+      makeUnknown()
+
+    -- checks the actual type against the expected type
+    -- typechecks here means either there exists a type which is the unification
+    -- of the two types, or the actual type is a subtype of the expected type
+    compareTypes(l: Syntax, r: Syntax): Boolean ==  
+       (gentleUnification(l, r) = r) or (l < r)
+
+    -- given a list of actual types and a list of expected types
+    -- this function does typechecking for each type pair, where one
+    -- type from the pair is from actual type list and the other one
+    -- is from the expected type list
+    listTypeChecking(ll: L Syntax, rl: L Syntax): Boolean ==
+      for l in ll for r in rl repeat
+        if not(compareTypes(l, r)) then 
+          return false
+      return true
+
+    -- the database entry matching function
+    -- compares the search key with a key stored in the table.
+    matchRecord?(fn: Identifier, tps: L Syntax,_
+                 rtn: Syntax, record: FREC): Boolean ==
+      (#tps = record.arity) and_
+      (fn = record.funname) and_
+      (listTypeChecking(tps, source(record.signature))) and_
+      compareTypes(rtn, target(record.signature))
+
+    -- search for the signature of a given function from the function overload 
+    -- set of some category constructor, note that, signatures from that set
+    -- needs to be instantiated by the domain which implements the category
+    searchCurrentCategoryFunctionSet(current: Syntax, tvar: Syntax,_
+                                     tps: L Syntax, rtn: Syntax,_
+          fn: Identifier, opList: L OverloadSet): Pair(Boolean, Signature) ==
+      database:=createCategoryFunctionDescriptorDatabase(current, tvar, opList)
+      --print(database::OutputForm)
+      for record in database repeat
+        -- warning: we don't handle @ annotation (don't use this type to do 
+        -- resolution) may add this case in the future, that is pass in the 
+        -- return type and compare it here if there is no @, we could use ?.
+        if matchRecord?(fn, tps, rtn, record) then
+          return pair(true, record.signature)
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- search for the signature of a given function from the function overload 
+    -- set of some domain constructor
+    searchCurrentFunctionSet(current: Syntax, tps: L Syntax, rtn: Syntax,_
+         fn: Identifier, opList: L OverloadSet): Pair(Boolean, Signature) ==
+      database := createDomainFunctionDescriptorDatabase(current, opList)
+      for record in database repeat
+        -- warning: we don't handle @ annotation (don't use this type 
+        -- to do resolution) may add this case in the future, that is 
+        -- pass in the return type and compare it here if there is 
+        -- no @, we could use ?.
+        if matchRecord?(fn, tps, rtn, record) then
+          return pair(true, record.signature)
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- search for the signature of a given function from the local operator
+    -- database
+    searchLocalSignatureDatabase(tps: L Syntax, rtn: Syntax,_
+                    fn: Identifier, db: L FREC): Pair(Boolean, Signature) ==
+      for entry in db repeat
+        entry' := copy entry
+        entry'.signature := instantiateSignature(buildSyntax(constructorName,_
+                                       constructorParameters), entry'.signature)
+        matchRecord?(fn, tps, rtn, entry') => 
+          return pair(true, entry'.signature)
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- resolve the local functions which are not exported
+    resolveLocalFunction(tps: L Syntax, rtn: Syntax, fn: Identifier):_
+                                                    Pair(Boolean, Signature) ==
+      first(x := searchLocalSignatureDatabase(tps,_
+                               rtn, fn, localUnexportedSignatureDatabase)) => x      
+      searchLocalSignatureDatabase(tps, rtn, fn, localExportedSignatureDatabase)
+
+    -- extract each element type from a union type
+    extractUnionElements(t: Syntax): L Syntax ==
+      [e for e in getOperands t | not e case String]
+
+    -- resolves a function signature from one of its input or output types, 
+    -- where the type is a Union of types
+    resolveFromUnionType(tp: Syntax, tps: L Syntax, rtn: Syntax,_
+                   fn: Identifier, index: Integer): Pair(Boolean, Signature) ==
+      unionElements : L Syntax := extractUnionElements(tp)
+      for elementType in unionElements repeat
+        tl' := copy concat(tps, rtn)
+        tl'.index := elementType
+        rtn' := last tl'
+        tps' := remove(last tl', tl')
+        first(ufr := resolveExportedFunction(tps', rtn', fn)) => return ufr
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- resolves a function signature from one of its input or output types, 
+    -- where the type is a type variable
+    resolveFromTypeOfTypeVariable(tp: Syntax, tps: L Syntax, rtn: Syntax,_
+                                  fn: Identifier): Pair(Boolean, Signature) ==
+      key?(tp, typeEnv) =>
+        tvar := typeEnv.tp
+        typesOftvar : L Syntax := [tvar]
+        if isJoin?(tvar) then typesOftvar := getOperands(tvar)
+        for cat in typesOftvar repeat
+          catCtor := getConstructor cat
+          opList := copy operations catCtor          
+          res := searchCurrentCategoryFunctionSet(tp,cat,tps, rtn, fn, opList)
+          first res => return res
+        pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+      print(tp::OutputForm)
+      print(typeEnv::OutputForm)
+      userError "the type of this type variable can not be found in type environment"          
+
+    -- resolves a function signature from one of its input or output types
+    resolveFromEachType(tp: Syntax, tps: L Syntax, rtn: Syntax,_
+                   fn: Identifier, index: Integer): Pair(Boolean, Signature) ==
+      isTypeVariable?(tp) => resolveFromTypeOfTypeVariable(tp, tps, rtn, fn)
+      isUnion?(tp) => resolveFromUnionType(tp, tps, rtn, fn, index)
+      ctor   := getConstructor(tp)
+      ary    := arity ctor              
+      opList := copy operations ctor
+      if isNonNegativeIntegerType?(tp) or isPositiveIntegerType?(tp) then 
+        opList := concat(opList, copy(operations(getConstructor(makeIntegerType()))))
+      first(resolutionResult := searchCurrentFunctionSet(tp, tps,rtn, fn, opList)) =>
+        return resolutionResult
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- resolves a function signature from its input and output types
+    resolveExportedFunction(tps: L Syntax, rtn: Syntax,_
+                                  fn: Identifier): Pair(Boolean, Signature) ==
+      -- if the type of this parameter is unknown, 
+      -- we don't do any resolution, but directly skip
+      index: PositiveInteger := 1
+      tl := concat(tps, rtn)
+      for tp in tl | not isFreshTypeVariable?(tp) and not isRecord?(tp) repeat
+        res := resolveFromEachType(tp, tps, rtn, fn, index)
+        first res => 
+          functionOrigin := tp
+          return res
+        index := index + 1
+      pair(false, signature([makeUnknown()], makeUnknown()))
+
+    -- does function resolution for annotated function calls
+    -- whose annotations are type variables, i.e., resolve the function
+    -- from the type of the type annotation
+    resolveFunctionFromTypeOfTypeAnnotation(tpAnot: Syntax, tps: L Syntax,_
+                  rtn: Syntax, fn: Identifier): Pair(Boolean, Signature) ==
+      tvar := typeEnv.tpAnot
+      typesOftvar : L Syntax := [tvar]
+      if isJoin?(tvar) then typesOftvar := getOperands(tvar)
+      for cat in typesOftvar repeat
+        catCtor := getConstructor cat
+        opList := copy operations catCtor          
+        res := searchCurrentCategoryFunctionSet(tpAnot,cat,tps, rtn, fn, opList)
+        first res => return res
+      pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+
+    -- does function resolution for annotated function calls 
+    -- whose annotations are type variables
+    resolveFunctionWithTypeVariableAnnotation(tpAnot: Syntax, tps: L Syntax,_
+                  rtn: Syntax, fn: Identifier): Pair(Boolean, Signature) ==
+      key?(tpAnot, typeEnv) => 
+        resolveFunctionFromTypeOfTypeAnnotation(tpAnot, tps, rtn, fn)
+      print(fn::OutputForm)
+      print(tps::OutputForm)
+      print(rtn::OutputForm)
+      print(tpAnot::OutputForm)
+      print(typeEnv::OutputForm)
+      userError "Annotated function resolver: the type of this type variable_
+                 can not be found in type environment"  
+
+    -- does function resolution for annotated function calls
+    resolveFunctionWithAnnotation(tpAnot: Syntax, tps: L Syntax,_
+                  rtn: Syntax, fn: Identifier): Pair(Boolean, Signature) ==
+      -- if this function call is annotated using $ with the package/domain name, 
+      -- we directly go to that domain/package/category
+      -- assumption: we don't handle $%, which won't actually occur.
+      isTypeVariable?(tpAnot) => 
+        resolveFunctionWithTypeVariableAnnotation(tpAnot, tps, rtn, fn)
+      ctor   := getConstructor(tpAnot)           
+      opList := copy operations ctor
+      resolutionResult := searchCurrentFunctionSet(tpAnot, tps, rtn, fn, opList)
+      first resolutionResult => 
+        return resolutionResult
+      pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+
+
+    -- try to resolve a given function from the domain/package/category
+    -- imported by the current constructor definition
+    resolveFunctionFromImports(tps: L Syntax, rtn: Syntax,_
+                               fn: Identifier): Pair(Boolean, Signature) ==
+      for il in importList repeat
+        for i in imports il repeat
+          i' := i::Syntax
+          if not compound? i' and not isTypeVariable?(i') then
+            i' := buildSyntax(i', [])
+          first(r := resolveFunctionWithAnnotation(i', tps, rtn, fn)) => 
+            functionOrigin := i'
+            return r
+      pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+
+    -- resolves the signature of a function used in a function application
+    -- given its input and output types
+    functionResolution(tps: L Syntax, rtn: Syntax,_
+                                  fn: Identifier): Pair(Boolean, Signature) ==
+      -- search in the local capsule first, not implemented
+      
+      functionOrigin := makeUnknown()
+      first(lr := resolveLocalFunction(tps, rtn, fn)) => 
+        functionOrigin := constructorCallForm() 
+        lr
+      -- if can not find, search each parameters' type constructors
+      first(gr := resolveExportedFunction(tps, rtn, fn)) => gr
+      -- if still can not find the function, return false
+      -- search in the imported domain/category
+      first(ir := resolveFunctionFromImports(tps, rtn, fn)) => ir
+      pair(false, signature([makeVoid(), makeVoid()], makeVoid()))
+
+    -- does typechecking for an element access form. 
+    -- Instead of directly checking the aceess form syntax, we generate an 
+    -- elt function and does typechecking on that
+    checkIndexAgainstContainer(typeOfContainer: Syntax,_
+                           typeOfIndex: L Syntax, expect: Syntax): Syntax ==
+      -- actually the algorithm in this case should 
+      -- be adpated to typechecking all the access form
+      first(r := resolveFunctionWithAnnotation(typeOfContainer,_
+       concat(typeOfContainer, typeOfIndex), expect, makeElt()::Identifier)) =>
+        unification(target second r, expect)
+      print(typeOfContainer::OutputForm)
+      print(typeOfIndex::OutputForm)
+      userError "the type of index does not match with the container's expectation!"       
+
+
+    genContainerWithIndex(a: Syntax, oprsir: L StatementIr, typeOfContainer: Syntax,_
+                           typeOfIndex: L Syntax, expect: Syntax): ExpressionWithOperatorIr ==
+      -- actually the algorithm in this case should 
+      -- be adpated to typechecking all the access form
+      first(r := resolveFunctionWithAnnotation(typeOfContainer,_
+       concat(typeOfContainer, typeOfIndex), expect, makeElt()::Identifier)) =>
+        sig : Signature := second r
+        src : List Syntax := source sig
+        tar : Syntax := target sig
+        tar : Syntax := unification(tar, expect)
+        exptypir := buildTypeIr(tar, getConstructorKindInString tar)
+        optypir := buildTypeIrForMapping(concat(src, tar))
+        resolvedFrom := buildTypeIr('nowhere::Identifier::Syntax)
+        opir := buildOperatorIr(makeElt(), optypir, #src, resolvedFrom)
+        buildExpressionWithOperatorIr(a, opir, oprsir, exptypir)
+
+      print(typeOfContainer::OutputForm)
+      print(typeOfIndex::OutputForm)
+      userError "the type of index does not match with the container's expectation!" 
+ 
+
+
+    -- obtain the name of the container from an access form
+    getContainerName(a: SpadAst): Syntax ==
+      (left := getOperator(a::Syntax)) case Identifier => left::Identifier::Syntax
+      userError "unexpected type of the container at array access form checking"
+
+    -- does typechecking for each parameter of a function application
+    checkOperands(exp: SpadAst): L Syntax ==
+      opr :=  getOperands(exp::Syntax)
+      compound?(exp::Syntax) and exp case CoerceAst =>
+        opr := delete(opr, #opr)
+        -- don't do typechecking for the last type annotation, at least for now.
+        [checkStatement(operand::SpadAst, freshVariable()) for operand in opr]  
+      [checkStatement(operand::SpadAst, freshVariable()) for operand in opr]
+
+    -- generates IR for each parameter of a function application
+    genOperands(exp: SpadAst): L StatementIr ==
+      opr := getOperands(exp::Syntax)
+      compound?(exp::Syntax) and exp case CoerceAst =>
+        opr := delete(opr, #opr)
+        -- don't do typechecking for the last type annotation, at least for now.
+        [genStatement(operand::SpadAst, freshVariable()) for operand in opr]
+      [genStatement(operand::SpadAst, freshVariable()) for operand in opr]
+
+
+    -- does typechecking for record type
+    checkRecord(tp: Syntax, indexName: Syntax, expect: Syntax): Syntax ==
+      for f in getOperands tp repeat
+        first getOperands f = indexName => 
+          return unification(second getOperands f, expect)
+      print(indexName::OutputForm)
+      userError "checking record: can not find the corresponding type of this field"
+
+    -- get all the element type from a union type
+    stripUnion(s: Syntax): Syntax ==
+      isUnion?(s) => first getOperands s
+      s
+
+    -- examine whether the access form is like x.1.2 or rep(x).2
+    multiAccess?(a: SpadAst): Boolean == 
+      (op := getOperator(a::Syntax)) case Syntax and compound?(op::Syntax)
+
+    -- does typechecking for the access form
+    checkAccessForm(a: SpadAst, expect: Syntax): Syntax ==
+      typeOfLeft := makeUnknown()
+      if multiAccess?(a) then
+        typeOfLeft := checkStatement(getOperator(a::Syntax)::Syntax::SpadAst,_
+                                     freshVariable())
+      else
+        left := getContainerName(a)
+        typeOfLeft := typeEnv.left
+      if isUnion? typeOfLeft then 
+        typeOfLeft := first getOperands typeOfLeft
+      isRecord?(typeOfLeft) => 
+        checkRecord(typeOfLeft, first(getOperands(a::Syntax)), expect)
+      isMyself?(typeOfLeft) and isRecord?(r := extractRep()) => 
+        checkRecord(r, first(getOperands(a::Syntax)), expect)
+      typeOfRight := checkOperands(a)
+      checkIndexAgainstContainer(typeOfLeft, typeOfRight, expect)
+
+
+    -- generates IR for an access form for array/vector/matrix/list/stream
+    genAccessForm(a: SpadAst, expect: Syntax): ExpressionWithOperatorIr ==
+      typeOfLeft := makeUnknown()
+      left := makeUnknown()
+      if multiAccess? a then
+        typeOfLeft := checkStatement(getOperator(a::Syntax)::Syntax::SpadAst, freshVariable())
+      else
+        left := getContainerName a
+        typeOfLeft := typeEnv.left
+      if isUnion? typeOfLeft then
+        userError "genAccessForm: union not supported"
+      isRecord? typeOfLeft => 
+        userError "genAccessForm: record not supported"    
+      isMyself? typeOfLeft and isRecord?(r := extractRep()) =>
+        userError "genAccessForm: percentage not supported"
+      rightir : L StatementIr := genOperands a
+      typeOfRight := [getTree(typeOf oprir) for oprir in rightir]
+      oprsir := cons(genStatement(left::SpadAst, typeOfLeft), rightir)
+      genContainerWithIndex(a::Syntax, oprsir, typeOfLeft, typeOfRight, expect)
+
+    -- obtain the function name from the syntax of a function call
+    getFunctionName(e: SpadAst): Identifier ==
+      (functionName:= getOperator(e::Syntax)) case Identifier => 
+        functionName::Identifier
+      print(e::Syntax::OutputForm)
+      userError "unexpected operator of the expression syntax"
+
+    -- does typechecking of a collection syntax
+    -- e.g. [i for i in 1..10]
+    checkCollectAst(c: CollectAst, expect: Syntax): Syntax ==
+      checkIterators(iterators c)
+      elementExpectType := freshVariable()
+      if isList?(expect) or isVector?(expect) then
+        elementExpectType := first getOperands expect
+      elementType := checkStatement(body c, elementExpectType)
+      unification(buildSyntax(makeList(), [elementType]), expect)
+
+    -- generates IR for a collect ast
+    genCollectAst(c: CollectAst, expect: Syntax): CollectIr ==
+      print("in gen collect ast00!!!!"::OutputForm)
+      itersir : List ExpressionIr := genIterators(iterators c)
+      elementExpectType := freshVariable()
+
+      print("in gen collect ast0!!!!"::OutputForm)
+      if isList? expect or isVector? expect then
+        elementExpectType := first getOperands expect
+      bodyir : StatementIr := genStatement(body c, elementExpectType)
+
+      print("in gen collect ast1!!!!"::OutputForm)
+      elementType := getTree(typeOf bodyir)
+      tp := unification(buildSyntax(makeList(), [elementType]), expect)
+      tir := buildTypeIr(tp, getConstructorKindInString tp)
+      buildCollectIr(c::Syntax, bodyir, [iter::StatementIr for iter in itersir], tir)
+      
+    -- checks the type of each element in a construct syntax
+    checkElements(els: L SpadAst, expect: Syntax): Syntax ==
+      expect' := freshVariable()
+      if isList?(expect) then 
+        expect' := first getOperands expect
+      elementTypes : L Syntax := [checkStatement(e, expect') for e in els]
+      if ((x := reduce(gentleUnification, elementTypes)) = makeUnknown()) then
+        return freshVariable()
+      x
+
+    -- generates IR for each element in a construct syntax
+    genElements(els: L SpadAst, expect: Syntax): Pair(L StatementIr, TypeIr) ==
+      expect' := freshVariable()
+      if isList?(expect) then 
+        expect' := first getOperands expect
+      elementirs : L StatementIr := [genStatement(e, expect') for e in els]
+      elementTypes : L Syntax := [getTree(typeOf elir) for elir in elementirs]
+      if ((x := reduce(gentleUnification, elementTypes)) = makeUnknown()) then
+        return pair(elementirs, buildTypeIr(freshVariable(), "domain"))
+      pair(elementirs, buildTypeIr(x, getConstructorKindInString x))
+
+    -- collects all the record, vector and list types used in an Union type
+    lookForRecLstVecInUnion(u: Syntax): L Syntax ==
+      [opr for opr in getOperands(u) |_
+       isRecord?(opr) or isVector?(opr) or isList?(opr)]
+
+    -- does typechecking for a list construct syntax
+    -- e.g. [1, 2, 3, 4]
+    checkConstructAst(c: ConstructAst, expect: Syntax): Syntax ==
+      empty? elements c => expect 
+      isUnion?(expect) and_
+      not empty?(e := lookForRecLstVecInUnion(expect)) => first e 
+      isRecord?(expect) or isVector?(expect) => expect
+      isMyself?(expect) and isRecord?(extractRep()) => expect
+      elementType := checkElements(elements c, expect)
+      unification(buildSyntax(makeList(), [elementType]), expect)
+
+    -- generates IR for a construct ast e.g., [1,2,3,4]
+    -- status: incomplete on several cases
+    genConstructAst(c: ConstructAst, expect: Syntax): ConstructIr ==
+      empty? elements c => 
+        elementtype := makeUnknown()
+        if isList?(expect) then 
+          elementtype := first getOperands expect
+        eltypeir := buildTypeIr(elementtype, getConstructorKindInString elementtype)
+        tir := buildTypeIr(expect, getConstructorKindInString expect)
+        buildHomoConstructIr(c::Syntax, [], eltypeir, tir)
+      isUnion?(expect) and_
+      not empty?(e := lookForRecLstVecInUnion(expect)) =>
+        userError "genConstructAst: union is not supported"
+      isRecord?(expect) or isVector?(expect) => 
+        userError "genConstructAst: record and vector are not supported"
+      isMyself?(expect) and isRecord?(extractRep()) =>
+        userError "genConstructAst: rep is not supported"
+      p :  Pair(L StatementIr, TypeIr) := genElements(elements c, expect)
+      elementTypeIr : TypeIr := second p
+      elementType   : Syntax := getTree elementTypeIr
+      elementirs    : L StatementIr := first p
+      tir := buildTypeIr(x := unification(buildSyntax(makeList(), [elementType]), expect),_
+                         getConstructorKindInString x)
+      buildHomoConstructIr(c::Syntax, elementirs, elementTypeIr, tir)
+
+
+    -- does typechecking for has statement
+    checkHasAst(h: HasAst, expect: Syntax): Syntax == 
+      -- need to check the expressions of HasAst first, 
+      -- but we do a simple version here.
+      unification(buildSyntax(makeBoolean(), []), expect)
+
+    -- does typechecking for pretend expression 
+    checkPretendAst(p: PretendAst, expect: Syntax): Syntax == 
+      -- need to check the expression of PretendAst first, 
+      -- but we do a simple version here.
+      unification(target(p)::Syntax, expect)
+
+    -- generates ir for pretend expression
+    genPretendAst(p: PretendAst, expect: Syntax): PretendIr ==
+      tar := target(p)::Syntax
+      tarir := buildTypeIr(tar, "domain")
+      u := unification(tar, expect)
+      tir := buildTypeIr(u, "domain")
+      expir := genStatement(expression p, freshVariable())
+      buildPretendIr(p::Syntax, expir, tarir, tir)
+
+    -- does typechecking for RestrictAst
+    checkRestrictAst(r: RestrictAst, expect: Syntax): Syntax ==
+      target(r)::Syntax
+
+    -- checks whether an ast is a reduce form
+    isReduceForm?(r: SpadAst): Boolean ==
+      r' := r::Syntax
+      not compound? r' => false
+      (id := getOperator(r::Syntax)) case Identifier and_ 
+      (id::Identifier) = (makeREDUCE()::Identifier) => 
+        true
+      false
+
+    -- obtain the type of a type variable
+    checkTypeVariable(t: Syntax): Void ==
+      key?(t, typeEnv) =>
+        tp := typeEnv.t
+        typeOfTypeVariable.t := tp
+        checkTypeofTypeVariablesInType tp
+
+    -- obtain the type of each type variable used in a type syntax
+    checkTypeofTypeVariablesInType(t: Syntax): Void ==
+      isTypeVariable?(t) => checkTypeVariable(t)
+      isFreshTypeVariable?(t) => void()
+      t case String or t case Integer or t case DoubleFloat => void()
+      not compound? t =>
+        print(t::OutputForm)
+        userError "unexpected uncompound type syntax"
+      for opr in (oprs := getOperands t) repeat
+        checkTypeofTypeVariablesInType opr
+
+    -- obtain the type of each type variable which appears in a signature
+    checkTypeofTypeVariablesInSignature(sig: Signature): TENV ==
+      typeOfTypeVariable := empty()
+      for t in concat(source sig, target sig) repeat
+        checkTypeofTypeVariablesInType t
+      typeOfTypeVariable
+
+    -- this helper function does the opposite direction of 
+    -- the symbolic instantiation for % appeared in a function signature
+    replaceSignatureBack(s: Signature, callform: Syntax): Signature ==
+      src := copy source s
+      tar := target s
+      for i in 1..#src repeat
+        src.i := replace(callform, src.i, makePercentage())$SyntaxHelper
+      tar := replace(callform, tar, makePercentage())$SyntaxHelper
+      signature(src, tar)
+
+    -- checks whether the call form constructed from the current constructor
+    -- name and parameters has been replaced into some type of a signature
+    callformWithinSignature?(s: Signature, callform: Syntax): Boolean ==
+      for s' in concat(source s, target s) repeat
+        within?(callform, s')$SyntaxHelper => return true
+      false
+
+    -- does typechecking for a reduce form
+    checkReduceForm(r: SpadAst, expect: Syntax): Syntax ==
+      lst := getOperands(r::Syntax).last
+      isList?(lstTyp := checkStatement(lst::SpadAst, freshVariable())) => 
+        t := unification(first getOperands lstTyp, expect)
+        op := first(getOperands(r::Syntax))::Identifier
+        id := second(getOperands(r::Syntax))::SpadAst
+        sig := signature([t, t], t)$Signature
+        --rec : REDF := [r::Syntax, op, sig,_
+        --                             checkTypeofTypeVariablesInSignature sig]
+        --if (constructorName ~= makeUnknown()::Identifier) and isCategory?(constructorCallForm())$SyntaxHelper and_
+        --   callformWithinSignature?(rec.signature, constructorCallForm()) then
+        --  rec.signature := replaceSignatureBack(rec.signature,_
+        --                                                 constructorCallForm())
+        --  k := makePercentage()
+        --  tb := copy rec.tenv
+        --  tb.k := constructorCallForm()
+        --  rec.tenv := copy tb 
+        t
+      userError "the last operand in REDUCE form is not a list"
+
+    -- does typechecking for a reduce form
+    genReduceForm(r: SpadAst, expect: Syntax): ReduceIr ==
+      lst := getOperands(r::Syntax).last
+      lstir := genStatement(lst::SpadAst, freshVariable())
+      lstType := getTree(typeOf lstir)
+      isList? lstType => 
+        t := unification(first getOperands lstType, expect)
+        op  := first(getOperands(r::Syntax))
+        id := second(getOperands(r::Syntax))::SpadAst
+        sig := signature([t, t], t)$Signature
+        tir := buildTypeIr(t, getConstructorKindInString t)
+        idir := buildValIr(id::Syntax, tir)::ExpressionIr::StatementIr
+        sigir:= buildTypeIrForMapping [t, t, t]        
+        opir := buildOperatorIr(op, sigir, 2, tir)
+        buildReduceIr(r::Syntax, opir, lstir, idir, tir)
+
+      print(lstType::OutputForm)
+      userError "the last operand in REDUCE form is not a list"  
+
+
+    -- does typechecking for each parameter of an expression
+    checkOperands2(exp: SpadAst, ats: L Syntax, ets: L Syntax): L Syntax ==
+      refinedOperandTypes : L Syntax := copy ats
+      opr :=  getOperands(exp::Syntax)
+      if compound?(exp::Syntax) and exp case CoerceAst then
+        opr := delete(opr, #opr)
+      for i in 1..#refinedOperandTypes for expectType in ets repeat
+        if isFreshTypeVariable?(ats.i) then
+          refinedOperandTypes.i := checkStatement((opr.i)::SpadAst, expectType)    
+      refinedOperandTypes
+
+    -- generates IR for each parameter of an expression
+    -- status: ready
+    genOperands2(exp: SpadAst, ats: L Syntax, ets: L Syntax, operandsir: L StatementIr): L StatementIr ==
+      refinedOperandTypes : L Syntax := copy ats
+      opr := getOperands(exp::Syntax)
+      if compound?(exp::Syntax) and exp case CoerceAst then
+        opr := delete(opr, #opr)
+      for i in 1..#refinedOperandTypes for expectType in ets repeat
+        if isFreshTypeVariable?(ats.i) then
+          operandsir.i := genStatement((opr.i)::SpadAst, expectType)
+      operandsir
+
+
+    -- if the operator can be resolved, we check the type of the function 
+    -- obtained from function resolution against the expected type
+    checkApplication(functionName: Identifier, t: Pair(Boolean, Signature),_
+           typesOfOperands: L Syntax, e: SpadAst, expect: Syntax): Syntax ==
+      parameterTypes := source second t
+      typesOfOperands' := checkOperands2(e, typesOfOperands, parameterTypes)
+      for actualType in typesOfOperands' for expectType in parameterTypes repeat
+        unification(actualType, expectType)
+      unification(target second t, expect)
+
+    -- generates IR for a resolved function application
+    -- status: ready
+    genApplication(functionName: Identifier, t: Pair(Boolean, Signature), typeAnot: Syntax,_
+           typesOfOperands: L Syntax, e: SpadAst, operandsir: L StatementIr, expect: Syntax): ExpressionWithOperatorIr ==
+      parameterTypes := source second t
+      operandsir := genOperands2(e, typesOfOperands, parameterTypes, operandsir)
+      typesOfOperands': List Syntax := [getTree(typeOf operandir) for operandir in operandsir]
+      typesOfOperandsAfterUnification : List Syntax := []
+      for actualType in typesOfOperands' for expectType in parameterTypes repeat
+        typesOfOperandsAfterUnification := concat(typesOfOperandsAfterUnification, unification(actualType, expectType))
+      outputType := unification(target second t, expect)
+      otypeir := buildTypeIr(outputType, getConstructorKindInString outputType)
+      signatureir := buildTypeIrForMapping(concat(typesOfOperandsAfterUnification, outputType))
+      originir := buildTypeIr(typeAnot, getConstructorKindInString typeAnot)
+      opir := buildOperatorIr(functionName::Syntax, signatureir, originir)
+      buildExpressionWithOperatorIr(e::Syntax, opir, operandsir, otypeir)
+
+    -- print out the information of the function whose function resolution fails
+    cryIfFail(functionName: Identifier,_
+                              typesOfOperands: L Syntax, x: Integer): Void ==
+      if x = 1 then
+        print("Unannotated function resolver: resolution fails "::OutputForm)
+      else
+        print("Annotated function resolver: resolution fails "::OutputForm)
+      print(functionName::OutputForm)
+      print(typesOfOperands::OutputForm)
+
+    -- does typechecking for unannotated function application
+    checkUnannotatedFunctionApplication(e: SpadAst, expect: Syntax): Syntax==   
+      typesOfOperands := checkOperands e
+      functionName := (getFunctionName e)::Syntax
+
+      -- the function is a local value
+      -- then don't try to resolve it
+      key?(functionName, typeEnv) => 
+        sig := typeEnv.functionName
+        returnType := first(getOperands sig)
+        unification(returnType, expect)
+      
+      -- 0 and 1 in Spad are functions
+      isZero?(functionName) or isOne?(functionName) => 
+        -- by default 0 has type NonNegativeInteger
+        -- by default 1 has type PositiveInteger
+        unification(freshVariable(), expect)
+
+      isErrorFunction?(functionName) => unification(makeExitType(), expect)
+      t := functionResolution(typesOfOperands, expect, functionName)
+      first t => checkApplication(functionName, t, typesOfOperands, e, expect)
+      cryIfFail(functionName, typesOfOperands, 1)
+      freshVariable()
+
+
+    -- generates IR for an unannotated function application
+    -- status: ready
+    -- FIXME: here all the src field of a OperatorIr value is wrongly set
+    genUnannotatedFunctionApplication(e: SpadAst, expect: Syntax):_
+                                                  ExpressionWithOperatorIr ==
+      operandsir : L StatementIr := genOperands e
+      typesOfOperands := [getTree(typeOf operand) for operand in operandsir]
+      functionName := (getFunctionName e)::Syntax
+
+      -- the function is a local value, don't try to resolve it
+      key?(functionName, typeEnv) =>
+        -- previously the first element is the return type
+        -- the rest of them are input types
+        sig   := typeEnv.functionName
+        returnType := first getOperands(sig)
+        sig'  := concat(rest getOperands(sig), returnType)
+        sigir := buildTypeIrForMapping(sig')
+        opir  := buildOperatorIr(functionName, sigir, makeThisIr())
+        otypeir := buildTypeIr(returnType, getConstructorKindInString returnType)
+        buildExpressionWithOperatorIr(functionName, opir, operandsir, otypeir)
+      -- 0 and 1 in Spad are functions
+      isZero?(functionName) or isOne?(functionName) =>
+        -- by default 0 has type NonNegativeInteger
+        -- by default 1 has type PositiveInteger
+        -- FIXME: this should not be that simple
+         t := unification(freshVariable(), expect)
+         sigir := buildTypeIrForMapping [t]
+         srcir := buildTypeIr(t, getConstructorKindInString t)
+         opir := buildOperatorIr(functionName, sigir, 0, srcir)
+         tir := buildTypeIr(t, getConstructorKindInString t)
+         buildExpressionWithOperatorIr(e::Syntax, opir, [], tir)   
+
+      isErrorFunction?(functionName) =>
+        -- FIXME: error function should be albe to be resolved by our
+        -- function signature resolver, instead of being treated as a special
+        -- case here.
+        srcir := buildTypeIr(makeErrorFunctionsType, getConstructorKindInString makeErrorFunctionsType)
+        sigir := buildTypeIrForMapping(concat(typesOfOperands, makeExitType()))
+        opir := buildOperatorIr(functionName, sigir, #operandsir, srcir)
+        tir := buildTypeIr(makeExitType(), getConstructorKindInString(makeExitType()))
+        buildExpressionWithOperatorIr(e::Syntax, opir, operandsir, tir)
+
+
+      t := functionResolution(typesOfOperands, expect, functionName)
+      first t => 
+        genApplication(functionName, t, functionOrigin,_
+                       typesOfOperands, e, operandsir, expect)
+      cryIfFail(functionName, typesOfOperands, 1)
+      srcir := buildTypeIr(expect, getConstructorKindInString expect)
+      outputType := freshVariable()
+      otypeir := buildTypeIr(outputType, getConstructorKindInString outputType)
+      opir := buildOperatorIr(functionName, buildTypeIrForMapping(concat(typesOfOperands, outputType)), srcir)
+      buildExpressionWithOperatorIr(e::Syntax, opir, operandsir, otypeir)
+
+    -- does typechecking for unannotated expression
+    checkUnannotatedExpression(e: SpadAst, expect: Syntax): Syntax ==
+      -- 1. unary and is in array access form
+      -- 2. normal expressions, 0-aryity, unary, binary, ...
+      e' := e::Syntax
+      e case RestrictAst  => checkRestrictAst(e'::RestrictAst, expect)
+      e case PretendAst   => checkPretendAst(e'::PretendAst, expect)
+      e case HasAst       => checkHasAst(e'::HasAst, expect)
+      e case CollectAst   => checkCollectAst(e'::CollectAst, expect)
+      e case ConstructAst => checkConstructAst(e'::ConstructAst, expect)
+      isReduceForm?(e)    => checkReduceForm(e, expect)
+      isAccessForm?(e)    => checkAccessForm(e, expect)
+      e case CoerceAst    => target(e'::CoerceAst)::Syntax  --FIXME: don't do typechecking for the exp?
+      checkUnannotatedFunctionApplication(e, expect)
+
+    -- generates IR for a coerce ast
+    genCoerceAst(c: CoerceAst): CoerceIr ==
+      tar   := target(c)::Syntax
+      tarir := buildTypeIr(tar, getConstructorKindInString tar)
+      exp   := genStatement(expression c, freshVariable())
+      buildCoerceIr(c::Syntax, exp, tarir, tarir)
+           
+    -- does typechecking for unannotated expression
+    -- status: incomplete
+    genUnannotatedExpression(e: SpadAst, expect: Syntax): ExpressionIr ==
+      -- 1. unary and is in array access form
+      -- 2. normal expressions, 0-aryity, unary, binary, ... 
+      e' := e::Syntax
+      print("in gen unannotated expression"::OutputForm)
+      print(e'::OutputForm)
+      e case RestrictAst    => userError "genUnannotatedExpression: RestrictAst not supported"
+      e case PretendAst     => genPretendAst(e'::PretendAst, expect)::ExpressionIr
+      e case HasAst         => userError "genUnannotatedExpression: HasAst not supported"
+      e case CollectAst     => genCollectAst(e'::CollectAst, expect)::ExpressionIr
+      e case ConstructAst   => genConstructAst(e'::ConstructAst, expect)::ExpressionIr
+      isReduceForm?(e)      => genReduceForm(e, expect)::ExpressionIr
+      isAccessForm?(e)      => genAccessForm(e, expect)::ExpressionIr
+      e case CoerceAst      => genCoerceAst(e'::CoerceAst)::ExpressionIr
+      genUnannotatedFunctionApplication(e, expect)::ExpressionIr
+
+    -- does typechecking for an annotated expression/function application
+    checkAnnotatedExpression(e: SpadAst, eltOperands: L Syntax,_
+                                                     expect: Syntax): Syntax ==
+      -- access form won't be used with $ sign at the same time
+      tpAnot := first eltOperands
+      functionName := second eltOperands
+      -- if this is an annotated construct, then just return the type annotation.
+      (functionName = makeConstruct()) => unification(tpAnot, expect)
+      -- if this is an annotated collect, also just return the type annotation.
+      (functionName = makeCOLLECT())   => unification(tpAnot, expect)
+      isZero?(functionName)            => unification(tpAnot, expect)
+      isOne?(functionName)             => unification(tpAnot, expect)
+      typesOfOperands := checkOperands(e)
+      t:= resolveFunctionWithAnnotation(tpAnot, typesOfOperands, expect, functionName)      
+      first t => checkApplication(functionName, t, typesOfOperands, e, expect)
+      cryIfFail(functionName, typesOfOperands, 2)
+      freshVariable()
+
+    -- generates IR for an annotated expression/function application
+    -- status: ready
+    genAnnotatedExpression(e: SpadAst, eltOperands: L Syntax,_
+                           expect: Syntax): ExpressionIr ==
+      -- access form won't be used with $ sign at the same time
+      tpAnot := first eltOperands
+      functionName := second eltOperands
+      -- if this is an annotated construct, then just return the type annotation.
+      (functionName = makeConstruct()) => 
+        -- operator name: functionName::Identifier
+        -- tree: functionName
+        -- arity: 1
+        -- signature: ??
+        -- source: tpAnot
+        userError "can't handle construct"
+      (functionName = makeCOLLECT())   =>
+        -- operator name: functionName::Identifier
+        -- tree: functionName
+        -- arity: 1
+        -- signature: ??
+        -- source: tpAnot        
+        userError "can't handle collect"
+      isZero? functionName or isOne? functionName => 
+        t := unification(tpAnot, expect)
+        sigir := buildTypeIrForMapping [t]
+        srcir := buildTypeIr(tpAnot, getConstructorKindInString tpAnot)
+        opir := buildOperatorIr(functionName, sigir, 0, srcir)
+        tir := buildTypeIr(t, getConstructorKindInString t)
+        buildExpressionWithOperatorIr(e::Syntax, opir, [], tir)::ExpressionIr
+
+      operandsir : L StatementIr := genOperands e
+      typesOfOperands := [getTree(typeOf operand) for operand in operandsir]
+      t := resolveFunctionWithAnnotation(tpAnot, typesOfOperands, expect, functionName)
+      first t => 
+        genApplication(functionName, t, tpAnot, typesOfOperands, e, operandsir, expect) :: ExpressionIr
+      cryIfFail(functionName, typesOfOperands, 2)
+      srcir := buildTypeIr(tpAnot, getConstructorKindInString tpAnot)
+      outputType := freshVariable()
+      otypeir := buildTypeIr(otypeir, getConstructorKindInString otypeir)
+      opir := buildOperatorIr(functionName, buildTypeIrForMapping(concat(typesOfOperands, outputType)), srcir)
+      buildExpressionWithOperatorIr(e::Syntax, opir, operandsir, otypeir) :: ExpressionIr
+
+
+    -- does typechecking for an expression
+    checkExpression(e: SpadAst, expect: Syntax): Syntax ==
+      first (judge := isAnnotatedExpression?(e)) => 
+        isLisp?(tpanot := first second judge) => expect
+        checkAnnotatedExpression(e, second judge, expect)
+      -- note that, the parser does a simplification to eliminate the annotation of coerce ast.
+      -- therefore, coerceAst will never be annotated after parsing.
+      checkUnannotatedExpression(e, expect)
+
+
+    -- generate IR for an expression
+    -- FIXME: this function is suppose to generate only ExpressionWithOperatorIr
+    genExpression(e: SpadAst, expect: Syntax): ExpressionIr ==
+      --print("gen Expression!!!!"::OutputForm)
+      first (judge := isAnnotatedExpression? e) =>
+        isLisp?(tpanot := first second judge) =>
+          -- FIXME: low priority fix 
+          fname := second second judge
+          oprs := getOperands(e::Syntax)
+          buildLispCallIr(buildSyntax(fname, oprs), buildTypeIr(expect, getConstructorKindInString expect))::ExpressionIr
+        genAnnotatedExpression(e, second judge, expect)
+
+      --print("gen Expression!!!!"::OutputForm)
+      --print(e::Syntax::OutputForm)
+      genUnannotatedExpression(e, expect)
+
+
+    -- typechecks a colon expression (in declaration, or immediate init)
+    checkColon(c: ColonAst, expect: Syntax): Syntax ==
+      -- if left hand side is varaible, just directly update type environment
+      -- assumption: we don't check the type on the rhs is instantiated correctly
+      not compound?(v := ((lhs c)::Syntax)) => 
+        typeEnv.v := rhs(c)::Syntax      
+      -- check LISTOF for declaring a list of variables e.g. x, y, z: Integer
+      compound? v and_ 
+      (opr:= getOperator v) case Identifier and_
+      opr::Identifier = makeLISTOF()::Identifier =>
+        tp := rhs(c)::Syntax 
+        for e in getOperands v repeat typeEnv.e := tp
+      not(checkStatement(lhs(c), freshVariable()) = rhs(c)::Syntax) => 
+        print(lhs(c)::OutputForm)
+        userError "Left hand side of the colon ast does not have the expected type"
+ 
+      --FIXME: why???
+      unification(buildSyntax(makeInteger(), []), expect)
+
+    -- generates IR for a colon statement ast
+    -- type at the right hand side of a declaration requires to be  a domain
+    genColon(c: ColonAst, expect: Syntax): ColonIr == 
+      not compound?(v := ((lhs c)::Syntax)) =>
+        -- this is a variable
+        rhstype := rhs(c)::Syntax
+        typeEnv.v := rhstype
+        rhsir := buildTypeIr(rhstype, getConstructorKindInString rhstype)
+        tir := rhsir
+        lhsir := buildVarIr(v, rhsir)::ExpressionIr::StatementIr -- I hate this
+        buildColonIr(c::Syntax, [lhsir], rhsir, tir)
+
+      compound? v and (opr := getOperator v) case Identifier and_
+      opr::Identifier = makeLISTOF()::Identifier =>  
+        tp := rhs(c)::Syntax
+        rhsir := buildTypeIr(tp, getConstructorKindInString tp)
+        listvarir : List StatementIr := []
+        tir := rhsir
+        for e in getOperands v repeat 
+          typeEnv.e := tp
+          varir := buildVarIr(e, tir)::ExpressionIr::StatementIr
+          listvarir := concat(listvarir, varir)
+        buildColonIr(c::Syntax, listvarir, rhsir, tir)
+
+      lhsir := genStatement(lhs c, freshVariable())
+      not(getTree(typeOf lhsir) = rhs(c)::Syntax) => 
+        print(lhs(c)::OutputForm)
+        userError "Left hand side of the colon ast does not have the expected type"
+
+      userError "unexpected cases at the left hand side of a colon statement" 
+
+
+    -- typechecks the lhs exp of a binding
+    checkLeftofLet(left: SpadAst, expect: Syntax): Syntax ==
+      left' := left::Syntax
+      compound?(left') => 
+        (left case ColonAst) => 
+          checkColon(left'::ColonAst, buildSyntax(makeVoid(), []))
+          lv := lhs(left'::ColonAst)::Syntax
+          unification(typeEnv.lv, expect)
+        checkStatement(left, expect)
+      -- if the left hand side is not in the type environment, return Void, meaning that
+      -- the type is going to be infered from the right hand side of the let ast
+      not(key?(left', typeEnv)) => unification(freshVariable(), expect) -- don't know what's the type right now
+      unification(typeEnv.left', expect)
+
+
+    -- generates IR for the left of a let-assignment
+    -- FIXME: we assume everything at the lhs has type which is a domain
+    -- status: ready
+    genLeftofLet(left: SpadAst, expect: Syntax): StatementIr ==
+      left' := left::Syntax
+      compound? left' =>
+        (left case ColonAst) =>
+          checkColon(left'::ColonAst, buildSyntax(makeVoid(), []))
+          lv := lhs(left'::ColonAst)::Syntax      
+          -- basically, we strip off the colon ast
+          genStatement(lv::SpadAst, unification(typeEnv.lv, expect))
+        genStatement(left, expect)
+      not(key?(left', typeEnv)) => 
+        -- the type of the variable/field access/array, vector access is unknown
+        tir := buildTypeIr(x := unification(freshVariable(), expect), getConstructorKindInString x)
+        buildVarIr(left', tir)::ExpressionIr::StatementIr 
+
+      tir := buildTypeIr(x := unification(typeEnv.left', expect), getConstructorKindInString x)
+      buildVarIr(left', tir)::ExpressionIr::StatementIr
+
+
+    -- typechecks the rhs exp of a binding
+    checkRightofLet(right: SpadAst, expect: Syntax): Syntax ==
+      checkStatement(right, expect)
+
+    -- generates the IR of the right hand side of a let-assignment
+    -- status: ready
+    genRightofLet(right: SpadAst, expect: Syntax): StatementIr ==
+      genStatement(right, expect)
+
+    -- typechecks an assignment
+    checkLet(l: LetAst, expect: Syntax): Syntax ==
+      k := (getLhs l)$SyntaxHelper
+      lt := checkLeftofLet(lhs l, expect)
+      rt := checkRightofLet(rhs l, lt)
+      isFreshTypeVariable?(t := unification(lt, rt)) =>
+        (rhs l)::Syntax = buildSyntax(makeZero(), []) => 
+          typeEnv.k := unification(makeNonNegativeIntegerType(), expect)
+        (rhs l)::Syntax = buildSyntax(makeOne(), []) =>  
+          typeEnv.k := unification(makePositiveIntegerType(), expect)
+        typeEnv.k := expect
+      isFreshTypeVariable?(lt) => 
+        typeEnv.k := unification(lt, rt)
+      t := unification(rt, expect)
+
+    -- generate IR for an assignment
+    -- status: ready
+    genLet(l: LetAst, expect: Syntax): LetIr ==
+      l' := l::Syntax
+      k := (getLhs l)$SyntaxHelper
+      lt := genLeftofLet(lhs l, expect)
+      rt := genRightofLet(rhs l, getTree(typeOf(lt)))
+
+      --print("in genLet"::OutputForm)
+      isFreshTypeVariable?(t := unification(getTree(typeOf(lt)), getTree(typeOf(rt)))) =>
+
+        (rhs l)::Syntax = buildSyntax(makeZero(), []) => 
+          --print("in genLet1"::OutputForm)
+          typeEnv.k := unification(makeNonNegativeIntegerType(), expect)
+          tir := buildTypeIr(typeEnv.k, getConstructorKindInString typeEnv.k)
+          buildLetIr(l', lt, rt, tir)
+        (rhs l)::Syntax = buildSyntax(makeOne(), []) =>  
+         -- print("in genLet2"::OutputForm)
+          typeEnv.k := unification(makePositiveIntegerType(), expect)
+          tir := buildTypeIr(typeEnv.k, getConstructorKindInString typeEnv.k)
+          buildLetIr(l', lt, rt, tir)
+
+        --print("in genLet3"::OutputForm)
+        tir := buildTypeIr(expect, getConstructorKindInString expect)
+        typeEnv.k := expect
+        r := buildLetIr(l', lt, rt, tir)
+        --print(r::OutputForm) 
+        r
+
+      isFreshTypeVariable?(getTree(typeOf lt)) => 
+        --print("in genLet4"::OutputForm)
+        typeEnv.k := unification(getTree typeOf(lt), getTree typeOf(rt))
+        tir := buildTypeIr(typeEnv.k, getConstructorKindInString typeEnv.k)
+        buildLetIr(l', lt, rt, tir)
+
+      --print("in genLet5"::OutputForm)
+      tir := buildTypeIr(x := unification(getTree typeOf(rt), expect), getConstructorKindInString x)
+      buildLetIr(l', lt, rt, tir)
+      
+    -- does typechecking for an exit ast
+    checkExit(e: ExitAst, expect: Syntax): Syntax ==
+      unification(checkStatement(expression e, expect), expect)
+
+    -- generate IR for an exit statement
+    -- status: ready
+    genExit(e: ExitAst, expect: Syntax): ExitIr ==
+      bdir := genStatement(expression e, expect)
+      tir := buildTypeIr(x := unification(getTree(typeOf bdir), expect), getConstructorKindInString x)
+      buildExitIr(e::Syntax, bdir, tir)
+
+    -- does typechecking for an if-statement
+    checkIf(f: IfAst, expect: Syntax): Syntax ==
+      thBranch := thenBranch f
+      elBranch := elseBranch f
+      typeOfThen := freshVariable()
+      typeOfElse := freshVariable()
+      -- check condition
+      checkStatement(condition f, buildSyntax(makeBoolean(), []))
+      -- check the body of the if statement
+      hasElseBranch?(f) and not hasThenBranch?(f) =>
+        typeOfElse := checkStatement(elBranch, expect)
+        unification(typeOfElse, expect)
+      hasThenBranch?(f) and not hasElseBranch?(f) =>
+        typeOfThen := checkStatement(thBranch, expect)
+        unification(typeOfThen, expect)
+      typeOfThen := checkStatement(thBranch, expect)
+      typeOfElse := checkStatement(elBranch, expect)
+
+    -- generates IR for an if-statement
+    genIf(f: IfAst, expect: Syntax): IfIr ==
+      f' := f::Syntax
+      thBranch := thenBranch f
+      elBranch := elseBranch f
+      typeOfThen := freshVariable()
+      typeOfElse := freshVariable()
+      -- check condition
+      cond := genStatement(condition f, buildSyntax(makeBoolean(), []))
+      -- check the body of the if statement
+      hasElseBranch? f and not hasThenBranch? f =>
+        elir := genStatement(elBranch, expect)
+        typeOfElse := getTree(typeOf elir)
+        tir := buildTypeIr(x := unification(typeOfElse, expect), getConstructorKindInString x)
+        buildIfIr(f', cond, [], [elir], tir)
+      hasThenBranch? f and not hasElseBranch? f =>
+        thir := genStatement(thBranch, expect)
+        typeOfThen := getTree(typeOf thir)
+        tir := buildTypeIr(x := unification(typeOfThen, expect), getConstructorKindInString x)
+        buildIfIr(f', cond, [thir], [], tir)
+      thir := genStatement(thBranch, expect)
+      elir := genStatement(elBranch, expect)
+      typeOfThen := getTree(typeOf thir)
+      typeOfElse := getTree(typeOf elir)
+      tirThen := buildTypeIr(x := unification(typeOfThen, expect), getConstructorKindInString x)
+      tirElse := buildTypeIr(x := unification(typeOfElse, expect), getConstructorKindInString x)
+      -- the type follow the type of the else branch
+      -- FIXME: this may be a potential bug
+      tir := tirElse
+      buildIfIr(f', cond, [thir], [elir], tir)
+
+    -- does typechecking for an InAst used in loop iterator
+    checkIn(i: InAst): Syntax ==
+      typeOfSequence := checkStatement(sequence i, freshVariable())  
+        -- this is a lie, actually we know we expect List of something
+      typeOfSequence := stripUnion(typeOfSequence)
+      iterationVariable := (iterationVar i)::Syntax
+      -- the sequence right now can only be list
+      getIdentifier(typeOfSequence) = makeList() => 
+        typeEnv.iterationVariable := first getOperands typeOfSequence
+        buildSyntax(makeVoid(), [])
+      isMyself?(typeOfSequence) and isList?(rp := extractRep()) => 
+        typeEnv.iterationVariable := first getOperands rp
+        buildSyntax(makeVoid(), [])
+      userError "the sequence is not a list"
+
+    -- generates IR for an in-iterator
+    -- FIXME: i..j such sequence can not be handled, there's no such ds in spad ir
+    -- status: ready
+    genInIr(i: InAst): InIteratorIr ==
+      -- the sequence has to be an expression, so we force its type by ::
+      seqir := genStatement(sequence i, freshVariable())::ExpressionIr
+      typeOfSequence := getTree(typeOf seqir)
+      typeOfSequence := stripUnion(typeOfSequence)
+      iterationVariable := (iterationVar i)::Syntax
+      -- the sequence right now can only be list
+      getIdentifier(typeOfSequence) = makeList() =>
+        typeEnv.iterationVariable := first getOperands typeOfSequence
+        tir := buildTypeIr(x := typeEnv.iterationVariable, getConstructorKindInString x)
+        ivarir := buildVarIr(iterationVariable, tir)
+        intir := buildTypeIr(x := buildSyntax(makeVoid(), []), getConstructorKindInString x)
+        buildInIteratorIr(i::Syntax, ivarir, seqir, intir)
+      isMyself? typeOfSequence and isList?(rp := extractRep()) =>
+        typeEnv.iterationVariable := first getOperands rp
+        tir := buildTypeIr(x := typeEnv.iterationVariable, getConstructorKindInString x)
+        ivarir := buildVarIr(iterationVariable, tir)
+        intir := buildTypeIr(x := buildSyntax(makeVoid(), []), getConstructorKindInString x)
+        buildInIteratorIr(i::Syntax, ivarir, seqir, intir)
+      userError "the sequence is not a list"
+
+    -- does typechecking for a whileAst used in loop iterator
+    checkWhile(i: WhileAst): Syntax ==
+      cond := first getOperands(i::Syntax)
+      checkStatement(cond::SpadAst, buildSyntax(makeBoolean(), []))
+      buildSyntax(makeVoid(), [])
+
+    -- generates IR for a while-iterator in a loop
+    genWhileIr(i: WhileAst): WhileIteratorIr ==
+      cond := first getOperands(i::Syntax)
+      condir := genStatement(cond::SpadAst, buildSyntax(makeBoolean(), []))
+      tir := buildTypeIr(x := buildSyntax(makeVoid(), []), getConstructorKindInString x)
+      buildWhileIteratorIr(i::Syntax, condir, tir)
+
+    -- does typechecking for an until ast used in loop iterator
+    checkUntil(i: SpadAst): Syntax ==
+      cond := first getOperands(i::Syntax)
+      checkStatement(cond::SpadAst, buildSyntax(makeBoolean(), []))
+      buildSyntax(makeVoid(), [])
+      
+    -- checks whether a step iterator specifies the upper bound of the iterator
+    endless?(i: SpadAst): Boolean ==
+      #getOperands(i::Syntax) = 3
+
+    -- does typechecking for an element in the step ast
+    checkStepElement(typeOfElement: Syntax): Syntax ==
+      unification(typeOfElement, makeIntegerType())
+
+    -- typechecks an endless step iter which does not have upper bound
+    checkEndLessStep(typeOfBegin: Syntax, typeOfStep: Syntax,_
+                                         iterationVariable: Syntax): Syntax ==
+      checkStepElement(typeOfBegin)
+      checkStepElement(typeOfStep)
+      typeEnv.iterationVariable := typeOfBegin
+      buildSyntax(makeVoid(), [])
+
+    -- generates the IR of an endless step ast
+    genEndLessStep(i: Syntax, beginir: StatementIr, typeOfBegin: Syntax,_ 
+                   stepir: StatementIr,  typeOfStep: Syntax,_
+                   iterationVariable: Syntax): StepIteratorIr ==
+      checkStepElement(typeOfBegin)
+      checkStepElement(typeOfStep)
+      typeEnv. iterationVariable := typeOfBegin
+      tir := buildTypeIr(typeOfBegin, getConstructorKindInString typeOfBegin)
+      iterVarIr := buildVarIr(iterationVariable, tir)
+      buildStepIteratorIr(i, iterVarIr, [beginir], [], stepir)
+
+    -- does typechecking for a step ast whose end
+    checkStepWithEnd(typeOfBegin: Syntax, typeOfStep: Syntax,_
+                      typeOfEnd: Syntax, iterationVariable: Syntax): Syntax ==
+      checkStepElement(typeOfBegin)
+      checkStepElement(typeOfStep)
+      checkStepElement(typeOfEnd)
+      typeEnv.iterationVariable := typeOfBegin
+      buildSyntax(makeVoid(), [])      
+
+    -- endir: StatementIr, typeOfEnd: Syntax,
+    -- generates the IR of a normal step ast (which has is not endless)
+    genNormalStep(i: Syntax, beginir: StatementIr, typeOfBegin: Syntax, endir: StatementIr, typeOfEnd: Syntax,_ 
+                   stepir: StatementIr,  typeOfStep: Syntax,_
+                   iterationVariable: Syntax): StepIteratorIr ==
+      checkStepElement(typeOfBegin)
+      checkStepElement(typeOfStep)
+      checkStepElement(typeOfEnd)
+      typeEnv. iterationVariable := typeOfBegin
+      tir := buildTypeIr(typeOfBegin, getConstructorKindInString typeOfBegin)
+      iterVarIr := buildVarIr(iterationVariable, tir)
+      buildStepIteratorIr(i, iterVarIr, [beginir], [endir], stepir)
+
+    -- does typechecking for a step ast
+    checkStep(i: SpadAst): Syntax ==
+      stepComponents := getOperands(i::Syntax)
+      iterationVariable := stepComponents.1
+      typeOfBegin := checkStatement((stepComponents.2)::SpadAst, makeIntegerType())
+      typeOfStep  := checkStatement((stepComponents.3)::SpadAst, makeIntegerType())      
+      endless?(i) => checkEndLessStep(typeOfBegin, typeOfStep, iterationVariable)
+      typeOfEnd   := checkStatement((stepComponents.4)::SpadAst, makeIntegerType())
+      checkStepWithEnd(typeOfBegin, typeOfStep, typeOfEnd, iterationVariable)
+      buildSyntax(makeVoid(), [])
+
+    -- generates IR for a step ast
+    genStepIr(i: SpadAst): StepIteratorIr ==
+      stepComponents := getOperands(i::Syntax)
+      iterationVariable := stepComponents.1
+      beginir     := genStatement((stepComponents.2)::SpadAst, makeIntegerType())
+      typeOfBegin := getTree typeOf(beginir)
+      stepir      := genStatement((stepComponents.3)::SpadAst, makeIntegerType())
+      typeOfStep  := getTree typeOf(stepir)
+      endless? i  => genEndLessStep(i::Syntax, beginir, typeOfBegin,_
+                                    stepir, typeOfStep, iterationVariable)
+
+      endir       := genStatement((stepComponents.4)::SpadAst, makeIntegerType())
+      typeOfEnd   := getTree typeOf(endir)
+      genNormalStep(i::Syntax, beginir, typeOfBegin, endir, typeOfEnd, stepir, typeOfStep, iterationVariable)
+
+    -- does typechecking for SuchThatAst which is
+    -- used as loop predicate in a loop iterator
+    checkSuchThat(i: SuchThatAst): Syntax ==
+      checkStatement(predicate(i), buildSyntax(makeBoolean(), []))
+
+    -- generates IR for SuchThatAst.
+    -- FIXME: should have a SuchThatIr as an ExpressionIr
+    genSuchThat(i: SuchThatAst): StatementIr ==
+      pred := genStatement(predicate(i), buildSyntax(makeBoolean(), []))
+      buildSuchThatIr(i::Syntax, pred)::ExpressionIr::StatementIr
+      
+
+    -- does typechecking for a iterator of a loop
+    checkIterator(i: SpadAst): Syntax ==
+      i case InAst       => checkIn(i::Syntax::InAst)
+      stepAst?(i)        => checkStep(i)
+      i case SuchThatAst => checkSuchThat(i::Syntax::SuchThatAst)
+      i case WhileAst    => checkWhile(i::Syntax::WhileAst)
+      untilAst?(i)       => checkUntil(i)
+      print(i::Syntax::OutputForm)
+      userError "unexpected iterator kind"
+
+    -- generates IR for one iterator
+    -- status: incomplete
+    genIterator(i: SpadAst): ExpressionIr ==
+      i case InAst      =>  genInIr(i::Syntax::InAst)::ExpressionIr
+      i case WhileAst   =>  genWhileIr(i::Syntax::WhileAst)::ExpressionIr
+      stepAst? i        =>  genStepIr(i)::ExpressionIr
+      i case SuchThatAst => genSuchThat(i::Syntax::SuchThatAst)::ExpressionIr
+      -- untilAst? i     =>
+      print(i::Syntax::OutputForm)
+      userError "unexpected iterator kind"
+
+    -- does typechecking for all the iterators of a loop
+    checkIterators(its: L SpadAst): Void ==
+      for it in its repeat checkIterator(it)
+
+    -- generates an IR for each iterator of the current loop
+    -- status: ready
+    genIterators(its: L SpadAst): List ExpressionIr ==
+      iterirs : List ExpressionIr := []
+      for it in its repeat
+        iterirs := concat(iterirs, genIterator it)
+      print("come out from iteration of geniterators"::OutputForm)
+      iterirs
+
+    -- does typechecking for a loop
+    checkRepeat(r: RepeatAst, expect: Syntax): Syntax ==
+      its := iterators r
+      checkIterators(its)
+      checkStatement(body r, freshVariable())
+      unification(buildSyntax(makeVoid(), []), expect)
+
+    -- generates IR for a loop (repeat ast)
+    -- status: ready
+    genRepeat(r: RepeatAst, expect: Syntax): RepeatIr ==
+      its   := iterators r
+      itsir := genIterators(its)
+      bdir  := genStatement(body r, freshVariable())
+      tir   := buildTypeIr(x := unification(buildSyntax(makeVoid(), []), expect), getConstructorKindInString x)
+      buildRepeatIr(r::Syntax, itsir, bdir, tir)
+
+    -- does typechecking for all the statements in a sequence 
+    -- except the last one
+    checkFirstFew(s: SequenceAst): Void ==
+      for s' in body s | not((s'::Syntax) = (last body s)::Syntax) repeat 
+        checkStatement(s', freshVariable())
+
+    -- generate the IRs for all the statements in a sequence statement
+    -- except for the last statement
+    genFirstFew(s: SequenceAst): List StatementIr ==
+      firstFew: List StatementIr := empty()
+      -- FIXME: need to count the index instead of comparing with the last stmt
+      for s' in body s | not((s'::Syntax) = (last body s)::Syntax) repeat
+        firstFew := cons(genStatement(s', freshVariable()), firstFew)
+      reverse! firstFew
+
+    -- does type checking for the last statement of a sequence
+    checkLast(s: SequenceAst, expect: Syntax): Syntax ==
+      checkStatement(last body s, expect)
+
+    -- generates IR for the last statement of a sequence
+    genLast(s: SequenceAst, expect: Syntax): StatementIr ==
+      genStatement(last body s, expect)
+
+    -- does typechecking for a sequence statement
+    checkSequence(s: SequenceAst, expect: Syntax): Syntax ==
+      checkFirstFew(s)
+      unification(checkLast(s, expect), expect)
+
+
+    -- generates IR for a sequence statement
+    genSequence(s: SequenceAst, expect: Syntax): SequenceIr ==
+      firstFew : List StatementIr := genFirstFew s
+      lastOne := genLast(s, expect)
+      tir := buildTypeIr(x := unification(getTree(typeOf lastOne), expect), getConstructorKindInString x)
+      buildSequenceIr(s::Syntax, concat(firstFew, lastOne), tir)
+
+
+    -- updates type environment with the type of parameters of 
+    -- the current function definition
+    updateTypeEnvironmentWithParameterType(pars: L Identifier,_
+                                           ptps: L Syntax): Void ==
+      for i in 1..#pars repeat
+        k := (pars.i)::Syntax
+        typeEnv.k := ptps.i
+
+    
+    -- checks whether a function is exported in the constructor definition
+    inLocalExported?(s: Syntax): Pair(Boolean, Syntax) ==
+      for rec in localExportedSignatureDatabase repeat
+        s = (rec.funname)::Syntax => 
+          return pair(true, (rec.signature)::MappingAst::Syntax)
+      pair(false, s)
+
+
+    -- checks whether a function is an unexported function of the constructor
+    inLocalUnexported?(s: Syntax): Pair(Boolean, Syntax) ==
+      for rec in localUnexportedSignatureDatabase repeat
+        s = (rec.funname)::Syntax => 
+          return pair(true, (rec.signature)::MappingAst::Syntax)
+      pair(false, s)
+
+
+    -- checks the type of a noncompound syntax
+    checkNoncompound(s: Syntax, expect: Syntax): Syntax ==
+      isBool? s =>  unification(buildSyntax(makeBoolean(), []), expect)
+      s case Integer               => unification(makeIntegerType(), expect)
+      s case String                =>
+        s = "failed"::Syntax       => s
+        unification(buildSyntax(makeString(), []), expect)
+      s case DoubleFloat                => unification(makeDoubleFloatType(), expect)
+      key?(s, typeEnv)                  => unification(typeEnv.s, expect)
+      first(r := inLocalExported?(s))   => unification(second r, expect)
+      first(t := inLocalUnexported?(s)) => unification(second t, expect)
+      unification(freshVariable(), expect)
+
+
+    -- generate IR for nocompound syntax
+    -- status: finished
+    genNoncompound(s: Syntax, expect: Syntax): ExpressionIr ==
+      isBool? s =>
+        tir := buildTypeIr(x := unification(buildSyntax(makeBoolean(), []), expect), getConstructorKindInString x)
+        buildValIr(s, tir) :: ExpressionIr
+      s case Integer => 
+        tir := buildTypeIr(x := unification(makeIntegerType(), expect), getConstructorKindInString x)
+        buildValIr(s, tir) :: ExpressionIr
+      s case String  =>
+        s = "failed"::Syntax =>  
+          tir := buildTypeIr(s, "unknown")
+          buildValIr(s, tir) :: ExpressionIr
+        tir := buildTypeIr(x := unification(buildSyntax(makeString(), []), expect), getConstructorKindInString x)
+        buildValIr(s, tir) :: ExpressionIr
+      s case DoubleFloat =>
+        tir := buildTypeIr(x := unification(buildSyntax(makeDoubleFloatType(), []), expect), getConstructorKindInString x)
+        buildValIr(s, tir) :: ExpressionIr
+      key?(s, typeEnv) => 
+        tir := buildTypeIr(x := unification(typeEnv.s, expect), getConstructorKindInString x)
+        buildVarIr(s, tir) :: ExpressionIr
+      originir := buildTypeIr(makePercentage(), "domain")
+      first(r := inLocalExported? s) => 
+        tir := buildTypeIr(unification(second r, expect), "mapping")
+        buildOperatorIr(s, tir, originir) :: ExpressionIr
+      first(t := inLocalUnexported? s) => 
+        tir := buildTypeIr(unification(second t, expect), "mapping")
+        buildOperatorIr(s, tir, originir) :: ExpressionIr
+      -- otherwise, treat it as a variable whose type is unknown 
+      -- this case is due to the buggy typechecker implementation
+      -- we may miss the types of some variables
+
+      tir := buildTypeIr(x := unification(freshVariable(), expect), getConstructorKindInString x)
+      isMappingTypeIr? tir => 
+        its : L Syntax := getInputTypesFromMappingInSyntax tir
+        ot : Syntax := getOutputTypeFromMappingInSyntax tir
+        fn  : Identifier := s::Identifier
+        srcir : TypeIr := buildTypeIr(makeUnknown())
+        if first(z := functionResolution(its, ot, fn)) then
+          srcir := buildTypeIr(functionOrigin, getConstructorKindInString functionOrigin)
+        buildOperatorIr(s, tir, srcir) :: ExpressionIr
+      buildVarIr(s, tir) :: ExpressionIr
+      
+    -- does typechecking for a return statement
+    checkReturn(s: ReturnAst, expect: Syntax): Syntax == 
+      exp := (first(getOperands(s::Syntax)))::SpadAst
+      checkStatement(exp, functionReturnType)
+
+    -- generates IR for a return statement
+    genReturn(s: ReturnAst, expect: Syntax): ReturnIr ==
+      -- bug in the expression function of domain ReturnAst
+      exp := (first(getOperands(s::Syntax)))::SpadAst 
+      expir := genStatement(exp, functionReturnType)
+      buildReturnIr(s::Syntax, expir, buildTypeIr(functionReturnType, getConstructorKindInString functionReturnType))
+      
+    -- does typechecking for a case statement
+    checkCase(s: CaseAst, expect: Syntax): Syntax ==
+      checkStatement(lhs s, freshVariable())
+      unification(buildSyntax(makeBoolean(), []), expect)
+
+    -- generate IR for a case statement
+    -- we treat a case statement as a function application
+    -- the operator is "case"
+    genCase(s: CaseAst, expect: Syntax): CaseIr == 
+      lhsir := genStatement(lhs s, freshVariable())
+      rhsir := buildTypeIr(x := (rhs s)::Syntax, getConstructorKindInString x)
+      buildCaseIr(s::Syntax, lhsir, rhsir)
+
+    -- generate IR for a DefinitionAst during typechecking
+    genFunDecl(d: DefinitionAst): FunctionDeclarationIr ==
+      -- obtain type information from type parameter
+      -- 1.a obtain input and output types
+      sig := signature d
+      src := source sig
+      -- 1.b obtain IR for input parameters
+      -- we assume all the types of input parameters are domains
+      srcTypeIr : List TypeIr := [buildTypeIr(e, getConstructorKindInString e) for e in src]
+
+      -- global var used for checking ReturnAst
+      functionReturnType := target sig
+
+      -- 2.a obtain name and parameter identifiers of the function
+      fn  := name head d
+      pars := [p::Identifier for p in parameters head d]
+
+      -- 2.b obtain the IR for the whole parameter list
+      parsSyntax: List Syntax := [p::Syntax for p in pars]
+      parsIrs: List VariableIr := buildVarIrs(parsSyntax, srcTypeIr)
+
+      -- 3. update type environment
+      updateTypeEnvironmentWithParameterType(pars, src)
+
+      -- 4. check the function body, obtaining the inferred type
+      funBodyIr := genStatement(body d, functionReturnType)
+      rtp := getTree typeOf(funBodyIr)
+
+      -- 5. do unification between specified and inferred resultant type
+      unification(rtp, functionReturnType) ~= rtp => 
+        print(fn::OutputForm)
+        print(sig::OutputForm)
+        userError "type error: resultant type of the function does not_
+                   refine the target type in the signature"
+
+      -- 6. build the function declaration IR
+      buildFunDeclIr(d::Syntax, fn, parsIrs, buildTypeIr(rtp, getConstructorKindInString rtp),_
+                     [funBodyIr], buildUnknownTypeConstructorIr())
+
+    -- checks the type of a statement
+    checkStatement(s: SpadAst, expect: Syntax): Syntax ==
+      s' := s::Syntax
+      not compound?(s')         => checkNoncompound(s', expect)
+      s case LetAst             => checkLet(s'::LetAst, expect)
+      s case SequenceAst        => checkSequence(s'::SequenceAst, expect)
+      s case IfAst              => checkIf(s'::IfAst, expect)
+      s case RepeatAst          => checkRepeat(s'::RepeatAst, expect)
+      s case ExitAst            => checkExit(s'::ExitAst, expect)
+      s case ColonAst           => checkColon(s'::ColonAst, expect)
+      s case ReturnAst          => checkReturn(s'::ReturnAst, expect)
+      s case CaseAst            => checkCase(s'::CaseAst, expect)
+      checkExpression(s, expect)
+
+    -- checks the type of a statement
+    genStatement(s: SpadAst, expect: Syntax): StatementIr ==
+      s' := s::Syntax
+      --print("gen statement!!!!"::OutputForm)
+      --print(s'::OutputForm)
+      not compound?(s')    => genNoncompound(s', expect)::StatementIr
+      s case LetAst        => genLet(s'::LetAst, expect)::StatementIr
+      s case SequenceAst   => genSequence(s'::SequenceAst, expect)::StatementIr
+      s case IfAst         => genIf(s'::IfAst, expect)::StatementIr
+      s case RepeatAst     => genRepeat(s'::RepeatAst, expect)::StatementIr
+      s case ExitAst       => genExit(s'::ExitAst, expect)::StatementIr
+      s case ColonAst      => genColon(s'::ColonAst, expect)::StatementIr
+      s case ReturnAst     => genReturn(s'::ReturnAst, expect)::StatementIr
+      s case CaseAst       => genCase(s'::CaseAst, expect)::StatementIr
+      s case DefinitionAst => genFunDecl(s'::DefinitionAst)::StatementIr
+      genExpression(s, expect)::StatementIr
+
+    -- initializes type environment and the table for storing
+    -- fresh variables which are used in type inference algorithm
+    initTypeEnv(): Void ==
+      typeEnv := empty()
+      freshVariableMapping := empty()
+
+    -- main entry for the code generator
+    generateIr s ==
+      tree := first parse s
+      not((ast := tree::SpadAst) case DefinitionAst) => 
+        userError "not a definition ast"
+      initTypeEnv()
+      genFunDecl(ast::DefinitionAst)
+
+    -- main entry for generating Spad code from spad ir
+    generateIrToFile(s, name): Void == 
+      fname : FileName := filename(".", name, "ir")
+      file := open(fname, "output")$File(OutputForm)
+      write!(file, (generateIr s)::OutputForm)
+
+    -- resolves the signature of an annotated operator       
+    resolveAnnotatedFunction(tpAnot: Syntax, tps: List Syntax,_ 
+                             rtn: Syntax, fn: Identifier,_
+                             typeEnvironment: TENV): Pair(Boolean, Signature) == 
+      typeEnv := copy typeEnvironment
+      resolveFunctionWithAnnotation(tpAnot, tps, rtn, fn)
+
+    -- generate IR for each instruction of an input script
+    -- return the IRs as a list
+    genInstList(l: List SpadAst): List StatementIr ==
+      [genStatement(i, freshVariable())  for i in l]
+
+    -- generate IR for an input script
+    genIrScript s ==
+      treeList : List Syntax  := parse s
+      astList  : List SpadAst := [tree::SpadAst for tree in treeList]
+      initTypeEnv()
+      genInstList astList
+
+
+
+
+
+
+
+-- Problem: 
+-- 1. How to handle the type of local variables? After going back to the top
+-- level of a function definition, we lost all the type information of local variables
+-- 2. IfAst should check both branches first, then do a unification on both branches, 
+--    the unification results the type of the if statement
+-- 3. Need to pass the expected type around, if the expected is unknown, then introduce a 
+--    meta variable, say gensym(). We maintain a table from these symbol to their type value.
+-- 4. for unitifcation, I think TOP === random fresh variable. BOTTOM === Void()
+-- interesting syntax to be handled:
+--   FLAS: FiniteLinearAggregate(S) with finiteAggregate
+--- v.i :=  should be interpreted together as setelt function.
+--- v.i on the right hand side such as Table, Matrix, Vector, List, should be intepreted as elt function.
+-- record's operator should be generated by us manually.
+
+
+
+-- Assumptions:
+-- 0. For checking the access form, we don't handle record.
+-- 1. All the function definitions should annotate their signatures in 
+-- their heads of the definitions, or give their signatures in the capsule.
+-- 2. Rightnow, assume there is no imported packages
+-- 3. Rightnow, assume there is no $ annotated function
+-- Based on 2, 3, we only look at the local constructor, and the parameters' constructor to 
+-- do function resolution, using the types of parameters, we infer the result type.
+-- 4. there is not collection such as [], such that |
+-- 5. for access form, we only handle List, no record, no table
+-- 6. only Integer, NonNegativeInteger, PositiveInteger have subtyping/subdomain checking.
+
+
+
+-- Constants: Integer, Boolean
+--
+
+
+-- checkLet has two cases
+-- 1. the one with ColonAst on the left hand side
+-- 2. the one without ...
+ 
+-- x: Integer := y + z
+-- x: SetCategory := Integer
+-- x := y + z
+-- 
+
+-- Notes:
+-- Some useful domains: Constructor, FunctionDescriptor, CategoryConstructor, Domain, Category
+-- OverloadSet
+--1. Function resolution strategy
+--1.a If the function call has been annotated by "$", then directly go to that constructor
+-- and find the function, if can not find, report type error.
+--1.b Else, search the current constructor to find the correct function
+--        if can not find in the current constructor, 
+--          then try to find the function in the imported packages
+--          if still can not find the function, then
+--            go to the constructor of the each parameter
+--            if the function was found in one of the constructor, return the signature, and 
+--               the function call is type checked.
+--            else the correct function can not be found, 
+--              then pick the function which looks most similar and report type error
+
+
+
+
+-- checks the type of a noncompound syntax

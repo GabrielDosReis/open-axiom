@@ -1,0 +1,648 @@
+
+)abbrev package IR2SPD SpadIrToSpad
+++ Author: Yue Li
+++ Date Created: Oct 5, 2010
+++ Date Last Updated: Oct 7, 2010
+++ Description:  
+++ This package provides library functions which translate each kind of Spad
+++ intermediate representation back to the corresponding Spad syntax
+SpadIrToSpad(): Public == Private where
+  Public == with
+    genSpad:  (FunctionDeclarationIr, String) -> Void
+      ++ translates a FunctionDeclarationIr to Spad
+    genSpad:  (StatementIr, String) -> Void
+      ++ translates a StatementIr to Spad
+    genSpad:  (List StatementIr, String) -> Void
+      ++ translates a list of StatementIr to Spad
+    setMode: String -> String
+      ++ sets the code generation mode 
+      ++ two options: 
+      ++ "compiler" : generate code which can be compiled using Spad compiler
+      ++ "interp": generate code which is target at interpreter
+    updateTypeIrIfCan: TypeIr -> TypeIr
+      ++ update the value of type variables with its real type value
+
+  Private == add
+    import ExpressionIr
+    import TypeIr
+    import ValueIr
+    import VariableIr
+    import TypeConstructorIr
+    import OperatorIr
+    import InIteratorIr
+    import TypeIrUtility
+    import StepIteratorIr
+    import CaseIr
+    import ReturnIr
+    import ColonIr
+    import FunctionDeclarationIr
+    import FileName
+    import SyntaxHelper
+    import SpadIrGenerator
+    import CollectIr
+    import CoerceIr
+    import ConstructIr
+    import PretendIr
+    import ReduceIr
+    import SuchThatIr
+
+    -- forward declarations ----
+    statementIr2Spad:  StatementIr  ->  String
+    expressionIr2Spad: ExpressionIr ->  String
+    -- end of declarations  ----
+
+    -- code generation mode
+    mode: String := "compiler"
+
+    -- set the code generation mode
+    setMode s == 
+      s ~= "compiler" and s ~= "interp" => userError "unknown code gen mode!"
+      oldMode := mode
+      mode := s
+      oldMode
+
+    -- generate file suffix for generated code
+    getSuffix(): String ==
+      mode = "compiler" => "spad"
+      "input"
+    
+    -- output directory for my mac
+    --outputDir:String:="/Users/yli/Work/svns/yue.li/auto-parallel/testoutput"
+    -- output directory
+    outputDir: String := "/users/yli/group__svn/yue.li/auto-parallel/testoutput"
+
+    -- the number of indentation to be preinserted before generating
+    -- each spad string
+    currentIndent : Integer := 0
+
+    -- we use \n\r to indicate the next line
+    nextline: String := "\n\r"
+
+    -- : in Spad syntax
+    colon: String := ": "
+
+    -- :: in Spad syntax
+    coloncolon: String := "::"
+
+    -- == in Spad syntax
+    equalequal: String := " == "
+
+    -- +-> in Spad anonymous function
+    definedAs: String := " +->"
+
+    -- := in Spad syntax
+    colonequal: String := " := "
+
+    -- "," in Spad syntax
+    coma: String := ", "
+
+    -- -> in Spad syntax
+    rarrow: String := " -> "
+
+    -- => used in case statement
+    equalarrow: String := " => "
+
+    -- left paren
+    lparen: String := "("
+
+    -- right paren
+    rparen: String := ")"
+ 
+    -- left angle bracket
+    langle: String := "["
+
+    -- right angle bracket
+    rangle: String := "]"
+
+    -- the set of infix binary operators
+    infixops : List String := ["+", "-", "*", "**", "/",_
+                               "=", "~=", "<", ">", ">=", "<="_
+                               "and", "or", "."]
+
+    -- creates a colon syntax 
+    -- e.g., x : y
+    colonPair(x: String, y: String): String ==
+      concat(concat(x, colon), y)
+
+    -- put the input between parentheses
+    inparens(x: String): String == 
+      chars : List Character := entries x
+      #chars < 2 => concat([lparen, x, rparen])
+      chars.1 = char(lparen) and chars.last = char(rparen) => x
+      concat([lparen, x, rparen])
+
+    -- increase the indentation space by 2
+    nextLevel(): Integer == 
+      currentIndent := currentIndent + 2
+
+    -- decrease the indentation space by 2
+    lastLevel(): Integer ==
+      currentIndent := currentIndent - 2
+
+    -- creates the indentation string 
+    -- which has currentIndent amount of spaces
+    tab(): String == 
+      id : String := ""
+      counter : Integer := 1
+      while (counter <= currentIndent) repeat
+        id := concat(id, " ")
+        counter := inc counter
+      id
+
+    -- put indentation before a line
+    -- if the line has already been indented, we don't do that again
+    indentLine(l: String): String == 
+      chars : List Character := entries l
+      #chars > currentIndent => 
+        construct(first(chars, currentIndent::NonNegativeInteger))$String = tab() => l
+        concat [tab(), l]
+      concat [tab(), l]
+  
+    -- checks whether the last four characters of a String is nextline
+    nextline?(s: String): Boolean ==
+      chars : List Character := entries s
+      #chars >= 4 => construct(last(chars, 4))$String = nextline
+      false
+
+    -- concat a line carrier to the end of s if there's no line end 
+    nextLine(s: String): String ==
+      nextline? s => s
+      concat [s, nextline]
+
+    -- checks whether the string contains indentation at the very beginning
+    indented?(s: String): Boolean ==
+      chars : List Character := entries s
+      #chars >= currentIndent => 
+        construct(first(chars, currentIndent::NonNegativeInteger))$String = tab()
+      false
+      
+    -- removes the nextline at the end of the string if there's one
+    removeNextlineIfCan(s: String): String ==
+      nextline? s => 
+        chars : List Character := entries s
+        n := #chars - 4
+        construct(first(chars, n::NonNegativeInteger))$String
+      s
+
+    -- removes the indentation at the beginning of the string if there's one
+    removeIndentIfCan(s: String): String ==
+      indented? s =>
+        chars : List Character := entries s
+        n := #chars - currentIndent
+        construct(last(chars, n::NonNegativeInteger))$String
+      s 
+
+    -- remove both indent and nextline if can
+    beNaked(s: String): String ==  removeIndentIfCan removeNextlineIfCan s
+
+    -- if s represents a fresh type variable, and its type is available 
+    -- in the fresh variable mapping table, obtain its value, and create
+    -- an updated type ir
+    updateTypeIrIfCan(t: TypeIr): TypeIr ==
+      isFreshTypeVariable?(tree := getTree t) =>
+        valoft : Syntax := valueOfFreshTypeVar tree
+        (valoft = makeUnknown()) or  isFreshTypeVariable? valoft => t
+        k : String := getConstructorKindInString valoft
+        buildTypeIr(valoft, k)
+      t
+
+    -- translates a type syntax
+    type2Spad(t : TypeIr): String == toString getTree t
+
+    -- translates a list var decls' ir to Spad syntax in string
+    listColonIr2Spad(col: ColonIr): String ==
+      varList : List String := []
+      type : String := type2Spad rhs col
+      for v in lhs col repeat
+        varList := concat(varList, coma)
+        varList := concat(varList, statementIr2Spad v)
+      varList := rest varList
+      indentLine concat concat(varList, [colon, type, nextline])
+
+    -- translates a colon ir
+    colonIr2Spad(col: ColonIr): String ==
+      isListDecl? col => listColonIr2Spad col
+      var  : String := statementIr2Spad first lhs col
+      type : String := type2Spad rhs col
+      indentLine concat [var, colon, type, nextline]
+
+
+    -- translates let statement ir
+    letIr2Spad(let: LetIr): String ==
+      print(let::OutputForm)
+      t    : TypeIr := typeOf let
+      leftir : StatementIr := lhs let
+      left : String := statementIr2Spad lhs let
+      --FIXME: this can be rewritten to be more generic
+      --every ir domain should have such an update function
+      if not((x := updateTypeIrIfCan t) = t) then
+        updateType!(let, x)
+      type : String := type2Spad x
+      right: String := statementIr2Spad rhs let
+      (leftir case ExpressionIr) and_
+      (leftir::ExpressionIr) case ExpressionWithOperatorIr =>
+        indentLine concat [left, colonequal, right, nextline]
+      indentLine concat [left, colon, type, colonequal, right, nextline]
+
+
+    -- translates statements in a sequence ir
+    sequenceIr2Spad(seq: SequenceIr): String ==
+      stringList : List String := []
+      for statement in body seq repeat
+        -- print the statement
+        stringList := concat(stringList, statementIr2Spad statement)
+        -- change to the next line, cursor is at the first character
+        stringList := concat(stringList, nextline)
+      concat stringList
+
+    -- translates an if-statement ir which has both branches    
+    ifirWithBothBranches(cond: String,_
+      tbranch: StatementIr, ebranch: StatementIr): String ==
+      -- if cond is an expression, then there will be no carrier otherwise it has
+      x : String := indentLine concat ["if ", cond, nextline]
+      yhead : String := indentLine concat ["then", nextline]
+      nextLevel() -- one level further to indent then-branch
+      ybody : String := indentLine concat [beNaked statementIr2Spad tbranch, nextline]
+      lastLevel() -- cursor walks back by two spaces 
+      zhead : String := indentLine concat ["else", nextline]
+      nextLevel() -- one level further to indent else-branch
+      zbody: String := indentLine concat [beNaked statementIr2Spad ebranch, nextline]
+      lastLevel()
+      concat [x, yhead, ybody, zhead, zbody]
+
+    -- translates an if-statement ir which only has then branch
+    ifirWithThenBranch(cond: String, branch: StatementIr): String ==
+      x : String := indentLine concat ["if ", cond, nextline]
+      yhead : String := indentLine concat ["then", nextline]
+      nextLevel()
+      ybody : String := indentLine concat [beNaked statementIr2Spad branch, nextline]
+      lastLevel()
+      concat [x, yhead, ybody]
+
+    -- translates the ir of an if-statement
+    ifir2Spad(ifir: IfIr): String ==
+      cond : String := statementIr2Spad condition ifir
+      withBothBranches? ifir => 
+        ifirWithBothBranches(cond, thenBranch ifir, elseBranch ifir)
+      withThenBranch? ifir => 
+        ifirWithThenBranch(cond, thenBranch ifir)
+      withElseBranch? ifir =>
+        cond := concat ["not", inparens cond]
+        ifirWithThenBranch(cond, elseBranch ifir)
+      print(ifir::OutputForm)
+      userError "bug: unexpected structure of a if-ir"
+
+    -- translate the iterator list of a repeat ir
+    iteratorList2Spad(iters: List ExpressionIr): String ==
+      result : List String := []
+      for iter in iters repeat
+        result := concat(result, " ")
+        result := concat(result, expressionIr2Spad iter)
+      concat rest result
+
+    -- translates the ir of a repeat-loop
+    repeatIr2Spad(r: RepeatIr): String ==
+      iters : List ExpressionIr := iterators r
+      iterString : String :=_
+        indentLine concat [iteratorList2Spad iters, "repeat", nextline]
+      nextLevel()
+      bodyString : String := indentLine statementIr2Spad body r
+      lastLevel()
+      concat [iterString, bodyString]
+
+    -- translates the ir of an exit ir
+    exitIr2Spad(e: ExitIr): String == 
+      (bir := body e) case ExpressionIr => indentLine statementIr2Spad bir
+      statementIr2Spad bir
+
+    -- translates the ir of a return statement
+    returnIr2Spad(r: ReturnIr): String == 
+      statement : String := statementIr2Spad expression r
+      -- incase the body of the return is an expression (without nextline)
+      -- we insert one more nextline
+      indentLine concat ["return", " ", statement, nextline]
+
+    -- translates the ir of a case statement
+    -- note: we don't indent and don't go to the next line since this will 
+    -- be only used as the predicate of an if-statement
+    -- Shall we move CaseIr into the ExpressionIr instead of making it a statement?
+    caseIr2Spad(c: CaseIr): String == 
+      left : String := removeNextlineIfCan statementIr2Spad lhs c
+      type : String := type2Spad rhs c
+      inparens concat [left, " case ", type]
+
+    -- translates a value ir to Spad
+    valueIr2Spad(v: ValueIr): String == 
+      --print((getTree v)::OutputForm)
+      toString getTree v
+
+    -- translates a variable ir to Spad
+    variableIr2Spad(v: VariableIr): String == 
+      t : TypeIr := typeOf v
+      if not((x := updateTypeIrIfCan t) = t) then
+        updateType!(v, x)
+      (getName v)::String
+
+    -- translates an operator ir to Spad
+    operatorIr2Spad(op: OperatorIr): String == (getName op)::String
+
+    -- translates operand irs to Spad
+    operandIr2Spad(oprs: List StatementIr): String == 
+      result : List String := []
+      for opr in oprs repeat
+        result := concat(result, coma)
+        result := concat(result, beNaked statementIr2Spad opr)
+      concat rest result
+
+    -- translates operand irs to Spad
+    operandIr2Spad2(oprs: List StatementIr): List String == 
+      [beNaked statementIr2Spad opr for opr in oprs]
+
+    -- generate string representation of a $ annotation
+    makeFunCallAnnot(tir: TypeIr): String ==
+      concat ["$", type2Spad tir] 
+
+    -- translates an expression ir to Spad
+    expressionWithOpIr2Spad(e: ExpressionWithOperatorIr): String ==
+      --print(e::OutputForm)
+      opir : OperatorIr := operator e
+      op  : String := operatorIr2Spad opir
+      oprs: String := operandIr2Spad operands e
+      op = "One" and oprs = "" => "1"
+      op = "Zero" and oprs = "" => "0"
+      member?(op, infixops) and #(operands e) = 2 =>
+        vs := operandIr2Spad2 operands e
+        inparens concat [vs.1, " ", op, " ", vs.2]
+      srcir : TypeIr := definedIn opir
+      getKind srcir = "package" or isPackage? srcir =>
+        concat [op, inparens oprs, makeFunCallAnnot srcir]
+      concat [op, inparens oprs]
+
+    -- translates an in-iterator ir to Spad
+    inIteratorIr2Spad(i: InIteratorIr): String ==
+      var : String := variableIr2Spad iterationVar i
+      seq : String := expressionIr2Spad sequence i
+      concat ["for ", var, " in ", seq]
+
+    -- translates an if-statement ir which has both branches    
+    ifirWithBothBranches2(cond: String,_
+      tbranch: StatementIr, ebranch: StatementIr): String ==
+      -- if cond is an expression, there will be no carrier otherwise it has
+      x : String := concat ["if ", cond]
+      yhead : String := " then "
+      ybody : String := beNaked statementIr2Spad tbranch
+      zhead : String := " else "
+      zbody: String := beNaked statementIr2Spad ebranch
+      concat [x, yhead, ybody, zhead, zbody]
+
+    -- translates an if-statement ir which only has then branch
+    ifirWithThenBranch2(cond: String, branch: StatementIr): String ==
+      x : String := concat ["if ", cond]
+      yhead : String := " then "
+      ybody : String := beNaked statementIr2Spad branch
+      concat [x, yhead, ybody]
+
+    -- translates the ir of an if-statement
+    ifir2SpadWithoutNextLine(ifir: IfIr): String ==
+      cond : String := beNaked statementIr2Spad condition ifir
+      withBothBranches? ifir => 
+        ifirWithBothBranches2(cond, thenBranch ifir, elseBranch ifir)
+      withThenBranch? ifir => 
+        ifirWithThenBranch2(cond, thenBranch ifir)
+      withElseBranch? ifir =>
+        cond := concat ["not", inparens cond]
+        ifirWithThenBranch2(cond, elseBranch ifir)
+      print(ifir::OutputForm)
+      userError "bug: unexpected structure of a if-ir"
+
+    -- translates an while-iterator ir to Spad
+    whileIteratorIr2Spad(i: WhileIteratorIr): String ==
+      cond : StatementIr := condition i
+      predicate : String := ""
+      if cond case IfIr then 
+        predicate := ifir2SpadWithoutNextLine(cond::IfIr)
+      else
+        predicate := beNaked statementIr2Spad cond
+
+      concat ["while ", inparens predicate, " "]
+
+    -- translates a step-iterator ir to Spad
+    stepIteratorIr2Spad(stp: StepIteratorIr): String ==
+      var : String := variableIr2Spad iterationVar stp
+      low : String := beNaked statementIr2Spad lowerBound stp
+      high : String := ""
+      if hasUpperBound? stp then
+        high := beNaked statementIr2Spad upperBound stp
+      step : String := beNaked statementIr2Spad step stp
+      concat ["for ", var, " in ", inparens low,_
+              "..", inparens high, " by ", step, " "]
+
+    -- translates a such-that iterator ir to Spad
+    suchThatIr2Spad(st: SuchThatIr): String ==
+      pred: String := beNaked statementIr2Spad predicate st
+      concat ["| ", pred]
+
+    -- translates a collect ir to Spad
+    collectIr2Spad(c: CollectIr): String == 
+      body  : String := beNaked statementIr2Spad body c
+      iters : String := iteratorList2Spad [iter::ExpressionIr for iter in iterators c]
+      concat [langle, " ", body, " ", iters, " ", rangle]
+
+    -- translates a colon ir to Spad
+    coerceIr2Spad(c: CoerceIr): String ==
+      exp := beNaked statementIr2Spad expression c
+      typ := type2Spad target c
+      inparens concat [exp, coloncolon, typ]
+
+    -- translates a pretend ir to Spad
+    pretendIr2Spad(p: PretendIr): String ==
+      exp := beNaked statementIr2Spad expression p
+      typ := type2Spad target p
+      inparens concat [exp, " pretend ", typ]
+
+    -- translates a construct ir to Spad
+    constructIr2Spad(c: ConstructIr): String ==
+      elts : List StatementIr := elements c
+      eltStringList : List String := []
+      for elt in elts repeat
+        eltStringList := concat(eltStringList, coma)
+        eltStringList := concat(eltStringList, beNaked statementIr2Spad elt)
+      concat [langle, concat rest eltStringList, rangle]
+
+    -- translates a lisp function call to Spad
+    lispCallIr2Spad(l: LispCallIr): String == 
+      concat [toString(getTree l), "$Lisp"]
+
+    -- translates a low level reduce form to Spad
+    -- we allow two options: 
+    -- 1. in interpretation mode: we generate reduce function call
+    -- 2. in compiler mode: we generate slash form, e.g., +/l
+    reduceIr2Spad(r: ReduceIr): String ==
+      opstring  : String := operatorIr2Spad operator r
+      seqstring : String := beNaked statementIr2Spad sequence r
+      typeanot  : String := type2Spad typeOf sequence r
+      neutral   : String := beNaked statementIr2Spad neutralValue r
+      mode = "interp" => 
+        concat ["reduce", lparen, opstring, coma, seqstring,_
+                coma, neutral, rparen, "$", inparens typeanot]
+      inparens concat [opstring, " / ", seqstring]
+
+    -- translates the body of a function declaration
+    funBody2Spad(funbody: StatementIr): String == 
+      b := statementIr2Spad(funbody)      
+      if funbody case ExpressionIr then
+        -- if the function body is only a single expression
+        -- we need to indent the expression
+        return indentLine b
+      b
+
+    -- translates a list of strings representing a decl list
+    -- by adding comas between each colon pair
+    declList2Spad(decls: List String): String ==
+      colonPairList : List String := []
+      for decl in decls repeat
+        colonPairList := concat(colonPairList, coma)
+        colonPairList := concat(colonPairList, decl)
+      concat(rest colonPairList)
+
+    -- translates the parameter list of a function declaration
+    parameterList2Spad(pars: List VariableIr, inputTypes: List TypeIr): String ==
+      colonPairList : List String := []
+      for p in pars for t in inputTypes repeat
+        p' : String := getName(p)::String
+        colonPairList := concat(colonPairList, colonPair(p', type2Spad t))
+      decllist : String := declList2Spad colonPairList
+      inparens decllist
+
+    -- translates the head of a function declaration
+    funHead2Spad(fname: Identifier, pars: List VariableIr,_
+                 inputTypes: List TypeIr, returnType: TypeIr): String ==
+      funname   : String := fname::String
+      funpars   : String := parameterList2Spad(pars, inputTypes)
+      rettype   : String := type2Spad returnType
+      indentLine concat([funname, funpars, colon, rettype])
+
+    -- translates the head of a function declaration
+    aFunHead2Spad(pars: List VariableIr,_
+                 inputTypes: List TypeIr, returnType: TypeIr): String ==
+      funpars   : String := parameterList2Spad(pars, inputTypes)
+      rettype   : String := type2Spad returnType
+      concat([funpars, colon, rettype])
+
+    -- translates an anonymous function ir to Spad syntax in string
+    anonyFunIr2Spad(fir: AnonymousFunctionIr): String ==
+      inputTypes : List TypeIr := [typeOf(v) for v in parameters fir]
+      outputType : TypeIr := typeOf fir
+      funhead : String := aFunHead2Spad(parameters fir, inputTypes, outputType)
+      funbody : String := funBody2Spad(getBody fir)
+      concat [funhead, definedAs, funbody]
+      
+    -- translates a function declaration ir to Spad syntax in string
+    funDeclIr2Spad(fir: FunctionDeclarationIr):String == 
+      inputTypes : List TypeIr := [typeOf(v) for v in parameters fir]
+      outputType : TypeIr      := typeOf fir
+      funhead : String := funHead2Spad(getName fir, parameters fir,_
+                                       inputTypes, outputType)
+      funbody : String := ""
+      withBody? fir =>
+        nextLevel() -- adjust the indentation amount for the function body
+        funbody := funBody2Spad(getBody fir)
+        lastLevel() -- adjust the indentation amount back after finishing body
+        concat [funhead, equalequal, nextline, funbody, nextline]
+      concat [funhead, nextline]
+
+    -- translates an expression ir
+    -- note: no nextline will be generated at the end of each produced string
+    -- and no indentation as well
+    expressionIr2Spad(e: ExpressionIr): String ==
+      e case ValueIr                   => valueIr2Spad(e::ValueIr)
+      e case VariableIr                => variableIr2Spad(e::VariableIr)
+      e case ExpressionWithOperatorIr  => expressionWithOpIr2Spad(e::ExpressionWithOperatorIr)
+      e case InIteratorIr              => inIteratorIr2Spad(e::InIteratorIr)
+      e case WhileIteratorIr           => whileIteratorIr2Spad(e::WhileIteratorIr)
+      e case StepIteratorIr            => stepIteratorIr2Spad(e::StepIteratorIr)
+      e case SuchThatIr                => suchThatIr2Spad(e::SuchThatIr)
+      e case CollectIr                 => collectIr2Spad(e::CollectIr)
+      e case CoerceIr                  => coerceIr2Spad(e::CoerceIr)
+      e case PretendIr                 => pretendIr2Spad(e::PretendIr)
+      e case ConstructIr               => constructIr2Spad(e::ConstructIr)
+      e case LispCallIr                => lispCallIr2Spad(e::LispCallIr)
+      e case ReduceIr                  => reduceIr2Spad(e::ReduceIr)
+      e case OperatorIr                => operatorIr2Spad(e::OperatorIr)
+      e case AnonymousFunctionIr       => anonyFunIr2Spad(e::AnonymousFunctionIr)
+      print(e::OutputForm)
+      userError "bug: unexpected internal representation of an expression ir"
+
+    -- translates a statement ir
+    -- note: a nextline will be inserted at the end of each produced string
+    statementIr2Spad(s: StatementIr): String ==
+      s case SequenceIr            => sequenceIr2Spad(s::SequenceIr)
+      s case IfIr                  => ifir2Spad(s::IfIr)
+      s case ColonIr               => colonIr2Spad(s::ColonIr)
+      s case LetIr                 => letIr2Spad(s::LetIr)
+      s case RepeatIr              => repeatIr2Spad(s::RepeatIr)
+      s case ExitIr                => exitIr2Spad(s::ExitIr)
+      s case CaseIr                => caseIr2Spad(s::CaseIr)
+      s case ReturnIr              => returnIr2Spad(s::ReturnIr)
+      s case ExpressionIr          => expressionIr2Spad(s::ExpressionIr)
+      s case FunctionDeclarationIr => funDeclIr2Spad(s::FunctionDeclarationIr)
+      userError "bug: unexpected internal representation of a statement ir"
+
+    -- main entry for generating Spad code from spad function decl ir
+    genSpad(fir: FunctionDeclarationIr, name: String): Void == 
+      currentIndent := 0
+      --fname : FileName := filename(outputDir, name, getSuffix())
+      fname: FileName := filename(outputDir, name, getSuffix())
+      file := open(fname, "output")$File(String)
+      write!(file, funDeclIr2Spad fir)
+
+    -- main entry for generating Spad code from a spad statement ir
+    genSpad(ir: StatementIr, name: String): Void == 
+      currentIndent := 0
+      --fname : FileName := filename(outputDir, name, getSuffix())
+      fname: FileName := filename(outputDir, name, getSuffix())
+      file := open(fname, "output")$File(String)
+      write!(file, statementIr2Spad ir)
+
+    -- main entry for generating Spad code from a spad statement ir
+    genSpad(irl: List StatementIr, name: String): Void == 
+      currentIndent := 0
+      --fname : FileName := filename(outputDir, name, getSuffix())
+      fname: FileName := filename(outputDir, name, getSuffix())
+      spadstring := concat [nextLine statementIr2Spad ir for ir in irl]
+      file := open(fname, "output")$File(String)
+      write!(file, spadstring)
+  
+
+-- Notes:
+-- 1. function for printing each statement is responsible for "pressing" return
+-- and then tab buttons.
+-- 2. currently, for all the let statement ir, we will print out its colon ast
+-- thanks to the IR design -- we can retrieve the type of any kind of statement
+-- 3. probably we need to add a flag, so that we can enable the following modes:
+--   a. normal mode: print as usual spad program
+--   b. informative mode: 
+-- 4. Maybe, adding a carrier should be done in the statementIr2Spad function
+-- instead of doing that in each subrountines for each case this due to the 
+-- concern caused by if-statement
+-- 5. "_"" is written as \", \n\r becomes \\n\\r how to get rid of this kind of 
+-- formating stuff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

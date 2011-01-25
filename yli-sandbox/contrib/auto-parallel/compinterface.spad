@@ -1,0 +1,27 @@
+)abbrev package PCOMP ParallelCompiler
+++ Author: Yue Li
+++ Date Created: Jan 18, 2011
+++ Date Last Updated: Jan 18, 2011
+++ Description:  
+++ This package provides interfaces for doing parallelizing compilation.
+ParallelCompiler(): Public == Private where
+  Public == with
+    compile: (String, String) -> Void
+      ++ compile(s, t) takes in the source code named s, and generate source code
+      ++ named t. In between, it parallelizes reductions of s using a source-to-
+      ++ source transformation
+
+  Private == add
+    import SpadIrGenerator
+    import SpadIrToSpad
+
+    compile(s, o) ==
+      -- generate IR data structure from source code
+      ir := generateIr(s)
+      -- update fresh type variables
+      visitFunctionDecl(ir)$GenericFlowAnalysisPackage(UpdateTypePackage)
+      -- reduction detection and transformation
+      visitFunctionDecl(ir)$GenericFlowAnalysisPackage(ReduceDetectionPackage)
+      -- generates Spad code from the transformed IR
+      genSpad(ir, o)
+
