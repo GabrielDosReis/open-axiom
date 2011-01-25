@@ -84,7 +84,7 @@ intCodeGenCOERCE(triple,t2) ==
   t2 = '(Any) => objNew(['CONS,MKQ t1,val],t2)
 
   -- optimize coerces from Any
-  (t1 = '(Any)) and (val is [ ='CONS,t1',val']) =>
+  (t1 = '(Any)) and (val is ['CONS,t1',val']) =>
     intCodeGenCOERCE(objNew(val',removeQuote t1'),t2)
 
   -- specially handle coerce from Equation to Boolean

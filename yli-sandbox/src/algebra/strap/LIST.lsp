@@ -3,17 +3,18 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%List|) |LIST;nil;$;1|)) 
 
-(PUT '|LIST;nil;$;1| '|SPADreplace| '(XLAM NIL NIL)) 
+(PUT '|LIST;nil;$;1| '|SPADreplace| '(XLAM NIL |%nil|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Boolean|)
                 |LIST;null;$B;2|)) 
 
-(PUT '|LIST;null;$B;2| '|SPADreplace| 'NULL) 
+(PUT '|LIST;null;$B;2| '|SPADreplace|
+     '(XLAM (|l|) (|%peq| |l| |%nil|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |LIST;cons;S2$;3|)) 
 
-(PUT '|LIST;cons;S2$;3| '|SPADreplace| 'CONS) 
+(PUT '|LIST;cons;S2$;3| '|SPADreplace| '|%makepair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
                 |LIST;append;3$;4|)) 
@@ -154,7 +155,7 @@
 (DEFUN |LIST;convert;$If;13| (|x| $)
   (SPADCALL
       (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
-            (LET ((#0=#:G1444 |x|) (#1=#:G1443 NIL))
+            (LET ((#0=#:G1420 |x|) (#1=#:G1419 NIL))
               (LOOP
                 (COND
                   ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -166,9 +167,9 @@
                 (SETQ #0# (CDR #0#)))))
       (|getShellEntry| $ 52))) 
 
-(DEFUN |List| (#0=#:G1445)
+(DEFUN |List| (#0=#:G1421)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1446)
+  (PROG (#1=#:G1422)
     (RETURN
       (COND
         ((SETQ #1#
@@ -181,6 +182,7 @@
              (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))) 
 
 (DEFUN |List;| (|#1|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|List| |dv$1|))
          ($ (|newShell| 70))
          (|pv$| (|buildPredVector| 0 0
@@ -218,7 +220,6 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|List| (LIST |dv$1|) (CONS 1 $))

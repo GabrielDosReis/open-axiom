@@ -197,7 +197,7 @@ gammaRatkernel(x) ==
 
 -- cgammat is auxiliary "t" function (see p. 263 Kuki)
 cgammat(x) ==
-        MAX(0.1, MIN(10.0, 10.0*SQRT(2.0) - ABS(x)))
+        MAX(0.1, MIN(10.0, 10.0*SQRT(2.0) - abs(x)))
 
 cgamma (z) ==
         z2 := IMAGPART(z)
@@ -372,7 +372,7 @@ rPsiW(n,x) ==
         then
                 a := MIN(0,1.0/float(n)*LOG($DoubleFloatPrecision/MIN(1.0,x)))
                 c := EXP(a)
-                if ABS(a) >= 0.001
+                if abs(a) >= 0.001
                 then
                         fln := x/c*(1.0-c)
                 else
@@ -419,10 +419,10 @@ PsiIntpart(x) ==
 cotdiffeval(n,z,skipit) ==
 ---skip=1 if arg z is known to be an exact multiple of Pi/2
         a := MAKE_-ARRAY(n+2)
-        SETF(AREF(a,0),0.0)
-        SETF(AREF(a,1),1.0)
+        AREF(a,0) := 0.0
+        AREF(a,1) := 1.0
         for i in 2..n repeat
-                SETF(AREF(a,i),0.0)
+          AREF(a,i) := 0.0
         for l in 1..n repeat
                 m := MOD(l+1,2)
                 for k in m..l+1 by 2 repeat
@@ -436,7 +436,7 @@ cotdiffeval(n,z,skipit) ==
                                 t2 := 0
                         else
                                 t2 := -AREF(a,k+1)*(k+1)
-                        SETF(AREF(a,k), t1+t2)
+                        AREF(a,k) := t1+t2
         --- evaluate d^N/dX^N cot(z) via Horner-like rule
         v := COT(z)
         sq := v**2
@@ -475,11 +475,11 @@ cPsi(n,z) ==
                 return COMPLEX(REALPART(conjresult),-IMAGPART(conjresult))
         nterms := 22
         bound := 10.0
-        if x<0.0 --- and ABS(z)>bound and ABS(y)<bound
+        if x<0.0 --- and abs(z)>bound and abs(y)<bound
         then
                 FloatError('"Psi implementation can't compute at ~S ",[n,z])
 ---             return cpsireflect(n,x,y,z)
-        else if (x>0.0 and ABS(z)>bound ) --- or (x<0.0 and ABS(y)>bound)
+        else if (x>0.0 and abs(z)>bound ) --- or (x<0.0 and abs(y)>bound)
         then
                 return PsiXotic(n,PsiAsymptotic(n,z))
         else            --- use recursion formula
@@ -509,7 +509,7 @@ chebf01 (c,z) ==
 ---  indexed from 0 to n+1.
 --- See Luke's books for further explanation
         n := 75 --- ad hoc decision
----     if ABS(z)/ABS(c) > 200.0 and ABS(z)>10000.0
+---     if abs(z)/abs(c) > 200.0 and abs(z)>10000.0
 ---     then
 ---             FloatError('"cheb0F1 not implemented for ~S < 1",[c,z])
         w := 2.0*z
@@ -524,19 +524,18 @@ chebf01 (c,z) ==
         z1 := four/w
         ncount := n1
         arr := MAKE_-ARRAY(n2)
-        SETF(AREF(arr,ncount) , start)  -- start off
+        AREF(arr,ncount) := start  -- start off
         x1 := n2
         c1 := 1.0 - c
         for ncount in n..0 by -1 repeat
                 divfac := 1.0/x1
                 x1 := x1 -1.0
-                SETF(AREF(arr,ncount) ,_
-                        x1*((divfac+z1*(x1-c1))*a1 +_
-                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3))
+                AREF(arr,ncount) := x1*((divfac+z1*(x1-c1))*a1 +_
+                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3)
                 a3 := a2
                 a2 := a1
                 a1 := AREF(arr,ncount)
-        SETF(AREF(arr,0),AREF(arr,0)/2.0)
+        AREF(arr,0) := AREF(arr,0)/2.0
 --  compute scale factor
         rho := AREF(arr,0)
         sum := rho
@@ -546,7 +545,7 @@ chebf01 (c,z) ==
                 sum := sum+AREF(arr,i)
                 p := -p
         for l in 0..n1 repeat
-                SETF(AREF(arr,l), AREF(arr,l)/rho)
+          AREF(arr,l) := AREF(arr,l)/rho
         sum := sum/rho
 ---     Now evaluate array at argument
         b := 0.0
@@ -577,7 +576,7 @@ f01(c,z)==
         then
                 FloatError('"0F1 not defined for negative integer parameter value ~S",c)
 -- conditions when we'll permit the computation
-        else if ABS(c)<1000.0 and ABS(z)<1000.0
+        else if abs(c)<1000.0 and abs(z)<1000.0
         then
                 brutef01(c,z)
         else if ZEROP IMAGPART(z) and ZEROP IMAGPART(c) and z>=0.0 and c>=0.0
@@ -587,13 +586,13 @@ f01(c,z)==
 ---             t := SQRT(-z)
 ---             c1 := c-1.0
 ---             p := PHASE(c)
----             if ABS(c)>10.0*ABS(t) and p>=0.0 and PHASE(c)<.90*PI
+---             if abs(c)>10.0*abs(t) and p>=0.0 and PHASE(c)<.90*PI
 ---             then BesselJAsymptOrder(c1,2*t)*cgamma(c/(t**(c1)))
----             else if ABS(t)>10.0*ABS(c) and ABS(t)>50.0
+---             else if abs(t)>10.0*abs(c) and abs(t)>50.0
 ---             then BesselJAsympt(c1,2*t)*cgamma(c/(t**(c1)))
 ---             else
 ---                     FloatError('"0F1 not implemented for ~S",[c,z])
-        else if (10.0*ABS(c)>ABS(z)) and ABS(c)<1.0E4 and ABS(z)<1.0E4
+        else if (10.0*abs(c)>abs(z)) and abs(c)<1.0E4 and abs(z)<1.0E4
         then
                 brutef01(c,z)
         else
@@ -618,19 +617,18 @@ chebf01coefmake (c,w,n) ==
         z1 := four/w
         ncount := n1
         arr := MAKE_-ARRAY(n2)
-        SETF(AREF(arr,ncount) , start)  -- start off
+        AREF(arr,ncount) := start  -- start off
         x1 := n2
         c1 := 1.0 - c
         for ncount in n..0 by -1 repeat
                 divfac := 1.0/x1
                 x1 := x1 -1.0
-                SETF(AREF(arr,ncount) ,_
-                        x1*((divfac+z1*(x1-c1))*a1 +_
-                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3))
+                AREF(arr,ncount) := x1*((divfac+z1*(x1-c1))*a1 +_
+                        (1.0/x1 + z1*(x1+c1+1.0))*a2-divfac*a3)
                 a3 := a2
                 a2 := a1
                 a1 := AREF(arr,ncount)
-        SETF(AREF(arr,0),AREF(arr,0)/2.0)
+        AREF(arr,0) := AREF(arr,0)/2.0
 --  compute scale factor
         rho := AREF(arr,0)
         sum := rho
@@ -640,7 +638,7 @@ chebf01coefmake (c,w,n) ==
                 sum := sum+AREF(arr,i)
                 p := -p
         for l in 0..n1 repeat
-                SETF(AREF(arr,l), AREF(arr,l)/rho)
+          AREF(arr,l) := AREF(arr,l)/rho
         sum := sum/rho
         return([sum,arr])
 
@@ -740,8 +738,8 @@ BesselJ(v,z) ==
            ZEROP IMAGPART(v) and REALPART(v)>=0.0)) =>  --- zero arg, pos. real order
             ZEROP v => 1.0  --- J(0,0)=1
             0.0  --- J(v,0)=0 for real v>0
-        rv := ABS(v)
-        rz := ABS(z)
+        rv := abs(v)
+        rz := abs(z)
         (rz>B1) and (rz > B2*rv) =>  --- asymptotic argument
             BesselJAsympt(v,z)
         (rv>B1) and (rv > B2*rz) => --- asymptotic order
@@ -765,14 +763,14 @@ BesselJRecur(v,z) ==
         --Numerical.Recipes. suggest so:=v+sqrt(n.s.f.^2*v)
         so:=15.0*z
         -- reduce order until non-zero
-        while ZEROP ABS(BesselJAsymptOrder(so,z)) repeat so:=so/2.0 
-        if ABS(so)<ABS(z) then so:=v+18.*SQRT(v)
-        m:= FLOOR(ABS(so-v))+1
-        w:=MAKE_-ARRAY(m)
-        SETF(AREF(w,m-1),BesselJAsymptOrder(v+m-1,z))
-        SETF(AREF(w,m-2),BesselJAsymptOrder(v+m-2,z))
+        while ZEROP abs(BesselJAsymptOrder(so,z)) repeat so:=so/2.0 
+        if abs(so)<abs(z) then so:=v+18.*SQRT(v)
+        m:= FLOOR(abs(so-v))+1
+        w := newVector m
+        AREF(w,m-1) := BesselJAsymptOrder(v+m-1,z)
+        AREF(w,m-2) := BesselJAsymptOrder(v+m-2,z)
         for i in m-3 .. 0 by -1 repeat
-          SETF(AREF(w,i), 2.0 * (v+i+1.0) * AREF(w,i+1) /z -AREF(w,i+2)) 
+          AREF(w,i) := 2.0 * (v+i+1.0) * AREF(w,i+1) /z -AREF(w,i+2)
         AREF(w,0)
 
 BesselI(v,z) ==
@@ -789,9 +787,9 @@ BesselI(v,z) ==
         REALPART(v)<0.0 and not ZEROP IMAGPART(v) and FLOATP(z) =>
               CONJUGATE(BesselI(CONJUGATE(v),z))
 ---We now know that Re(z)>= 0.0
-        ABS(z) > B1 =>    --- asymptotic argument case
+        abs(z) > B1 =>    --- asymptotic argument case
                                 FloatError('"BesselI not implemented for ~S",[v,z])
-        ABS(v) > B1 =>
+        abs(v) > B1 =>
                                 FloatError('"BesselI not implemented for ~S",[v,z])
 ---     case of small argument and order
         REALPART(v)>= 0.0 =>  besselIback(v,z)
@@ -831,20 +829,20 @@ BesselIBackRecur(largev,argm,v,z,type,n) ==
         z2 := two/z
         m2 := n+3
         w:=MAKE_-ARRAY(m2+1)
-        SETF(AREF(w,m2), zero) --- start off
+        AREF(w,m2) := zero --- start off
         if type = '"I"
         then
                 val := one
         else
                 val := -one
         m1 := n+2
-        SETF(AREF(w,m1), start)
+        AREF(w,m1) := start
         m := n+1
         xm := float(m)
         ct1 := z2*(xm+v)
         --- initialize
         for m in (n+1)..1 by -1 repeat
-                SETF(AREF(w,m), AREF(w,m+1)*ct1 + val*AREF(w,m+2))
+                AREF(w,m) := AREF(w,m+1)*ct1 + val*AREF(w,m+2)
                 ct1 := ct1 - z2
         m := 1 + FLOOR(n/2)
         m2 := m + m -1
@@ -866,7 +864,7 @@ BesselIBackRecur(largev,argm,v,z,type,n) ==
                 pn := AREF(w,1) - val * pn
         m1 := n+2
         for m in 1..m1 repeat
-                SETF(AREF(w,m), AREF(w,m)/pn)
+                AREF(w,m) := AREF(w,m)/pn
         AREF(w,argm+1)
 
 
@@ -917,7 +915,7 @@ BesselIAsympt(v,z,n) ==
                 term1 := -term1 *(fourvsq-(two*float(r)-1.0)**2)/_
                         (float(r)*eight*z)
                 sum1 := sum1 + term1
-                sum2 := sum2 + ABS(term1)
+                sum2 := sum2 + abs(term1)
         sqrttwopiz := SQRT(two*PI*z)
         EXP(z)/sqrttwopiz*(1.0 + sum1 ) +_
                 EXP(-(float(n)+.5)*PI*i)*EXP(-z)/sqrttwopiz*(1.0+ sum2)

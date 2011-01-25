@@ -1333,7 +1333,7 @@ have to be switched by swapping names.
         str := stringify expr
         len := #str
         -- this bit seems to deal with integers
-        FIXP$Lisp expr =>
+        %integer?(expr)$Foreign(Builtin) =>
           i := expr pretend Integer
           if (i < 0) or (i > 9)
             then

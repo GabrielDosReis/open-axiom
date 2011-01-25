@@ -60,14 +60,14 @@
  *******************************************/
  
 int 
-superSelect(int n, int *rd, int *wr, int *ex, char *timeout)
+superSelect(int n, fd_set *rd, fd_set *wr, fd_set *ex, timeval *timeout)
 {
   
   int waiting;
   viewManager *viewport;
   int ret_val;
   
-  ret_val = select(n, (void *)rd, (void *)wr, (void *)ex, (void *)timeout);
+  ret_val = select(n, rd, wr, ex, timeout);
   while (ret_val == -1 && errno == EINTR) {
     /* checkClosedChild gets set by the SIGCHLD handler */
     if (checkClosedChild) {
@@ -84,7 +84,7 @@ superSelect(int n, int *rd, int *wr, int *ex, char *timeout)
         bsdSignal(OPENAXIOM_SIGCHLD,endChild,DontRestartSystemCalls);
       }
     }
-    ret_val = select(n, (void *)rd, (void *)wr, (void *)ex, (void *)timeout);
+    ret_val = select(n, rd, wr, ex, timeout);
   }
   return ret_val;
 }

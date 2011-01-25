@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -109,7 +109,7 @@ $optExportedFunctionReference := false
 
 ++ Quote form, if not a basic value.
 quoteMinimally form ==
-  FIXP form or string? form or form = nil or form = true => form
+  integer? form or string? form or form = nil or form = true => form
   ["QUOTE",form]
 
 ++ If using old `Rep' definition semantics, return `$' when m is `Rep'.
@@ -245,7 +245,7 @@ displayComp level ==
   $bright:= " << "
   $dim:= " >> "
   if $insideCapsuleFunctionIfTrue=true then
-    sayBrightly ['"error in function",:bright $op,'%l]
+    sayBrightly ['"error in function",:bright $op,'"%l"]
   --mathprint removeZeroOne mkErrorExpr level
   pp removeZeroOne mkErrorExpr level
   sayBrightly ['"****** level",:bright level,'" ******"]
@@ -301,14 +301,15 @@ warnLiteral x ==
  
 intersectionEnvironment(e,e') ==
   ce:= makeCommonEnvironment(e,e')
-  ic:= intersectionContour(deltaContour(e,ce),deltaContour(e',ce))
-  e'':= (ic => addContour(ic,ce); ce)
-  --$ie:= e''   this line is for debugging purposes only
+  ic := intersectionContour(deltaContour(e,ce),deltaContour(e',ce)) =>
+    addContour(ic,ce)
+  ce
  
 deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
   not EQ(el,el') => systemError '"deltaContour" --a cop out for now
   eliminateDuplicatePropertyLists contourDifference(c,c') where
-    contourDifference(c,c') == [first x for x in tails c while (x~=c')]
+    contourDifference(c,c') ==
+      [first x for x in tails c while not EQ(x,c')]
     eliminateDuplicatePropertyLists contour ==
       contour is [[x,:.],:contour'] =>
         LASSOC(x,contour') =>
@@ -318,7 +319,7 @@ deltaContour([[c,:cl],:el],[[c',:cl'],:el']) ==
       nil
  
 intersectionContour(c,c') ==
-  $var: local
+  $var: local := nil
   computeIntersection(c,c') where
     computeIntersection(c,c') ==
       varlist:= removeDuplicates ASSOCLEFT c
@@ -351,11 +352,11 @@ intersectionContour(c,c') ==
       pair:= assoc("mode",p) =>
         pair':= assoc("mode",p') =>
           m'':= unifiable(rest pair,rest pair') => [["mode",:m'']]
-          stackSemanticError(['%b,$var,'%d,"has two modes: "],nil)
-       --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
+          stackSemanticError(['"%b",$var,'"%d","has two modes: "],nil)
+       --stackWarning ("mode for",'"%b",$var,'"%d","introduced conditionally")
         [["conditionalmode",:rest pair]]
         --LIST pair
-       --stackWarning ("mode for",'%b,$var,'%d,"introduced conditionally")
+       --stackWarning ("mode for",'"%b",$var,'"%d","introduced conditionally")
       pair':= assoc("mode",p') => [["conditionalmode",:rest pair']]
         --LIST pair'
     unifiable(m1,m2) ==
@@ -382,8 +383,6 @@ addContour(c,E is [cur,:tail]) ==
                 for pv in p repeat fn3(x,pv,ee) where
                  fn3(x,pv,e) ==
                    [p,:v]:=pv
-                   if member(x,$getPutTrace) then
-                     pp([x,"has",pv])
                    if p="conditionalmode" then
                      pv.first := "mode"
                      --check for conflicts with earlier mode
@@ -392,18 +391,23 @@ addContour(c,E is [cur,:tail]) ==
                           stackWarning('"The conditional modes %1p and %2p conflict",
                             [v,vv])
         [c]
- 
+
+++ Return the common root of the environments e and e'.
+++ Note: we use cell pointer comparison instead of general object
+++ equality comparison because both are expected to build from
+++ a commont cell node.
 makeCommonEnvironment(e,e') ==
-  interE makeSameLength(e,e') where  --$ie:=
+  interE makeSameLength(e,e') where
     interE [e,e'] ==
-      rest e=rest e' => [interLocalE makeSameLength(first e,first e'),:rest e]
+      EQ(rest e,rest e') =>
+        [interLocalE makeSameLength(first e,first e'),:rest e]
       interE [rest e,rest e']
     interLocalE [le,le'] ==
-      rest le=rest le' =>
+      EQ(rest le,rest le') =>
         [interC makeSameLength(first le,first le'),:rest le]
       interLocalE [rest le,rest le']
     interC [c,c'] ==
-      c=c' => c
+      EQ(c,c') => c
       interC [rest c,rest c']
     makeSameLength(x,y) ==
       fn(x,y,#x,#y) where
@@ -600,7 +604,8 @@ isConstantId(name,e) ==
  
 isFalse() == nil
  
-isFluid s == atom s and "$"=(PNAME s).(0)
+isFluid s ==
+  atom s and char "$" = PNAME(s).0
  
 isFunction(x,e) ==
   get(x,"modemap",e) or GETL(x,"SPECIAL") or x="case" or getmode(x,e) is [
@@ -617,7 +622,8 @@ makeLiteral(x,e) ==
   put(x,"isLiteral","true",e)
  
 isSomeDomainVariable s ==
-  IDENTP s and #(x:= PNAME s)>2 and x.(0)="#" and x.(1)="#"
+  IDENTP s and #(x:= symbolName s) > 2 and
+    stringChar(x,0) = char "#" and stringChar(x,1) = char "#"
 
 ++ Return non-nil is the domain form `x' is a `subset' of domain
 ++ form `y' in the environment `e'.  The relation of subdomain
@@ -735,13 +741,13 @@ flatten(l,key) ==
  
 genDomainVar() ==
   $Index:= $Index+1
-  INTERNL strconc("#D",STRINGIMAGE $Index)
+  INTERNL strconc('"#D",STRINGIMAGE $Index)
  
 genVariable() ==
-  INTERNL strconc("#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc('"#G",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 genSomeVariable() ==
-  INTERNL strconc("##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
+  INTERNL strconc('"##",STRINGIMAGE ($genSDVar:= $genSDVar+1))
  
 listOfIdentifiersIn x ==
   IDENTP x => [x]
@@ -864,9 +870,9 @@ extendsCategoryForm(domain,form,form') ==
     formVec:=(compMakeCategoryObject(form,$e)).expr
             --Must be $e to pick up locally bound domains
     form' is ["SIGNATURE",op,args,:.] =>
-        assoc([op,args],formVec.(1)) or
+        assoc([op,args],formVec.1) or
             assoc(SUBSTQ(domain,"$",[op,args]),
-                  SUBSTQ(domain,"$",formVec.(1)))
+                  SUBSTQ(domain,"$",formVec.1))
     form' is ["ATTRIBUTE",at] =>
          assoc(at,formVec.2) or
             assoc(SUBSTQ(domain,"$",at),SUBSTQ(domain,"$",formVec.2))
@@ -924,16 +930,6 @@ sublisV(p,e) ==
 
 --% DEBUGGING PRINT ROUTINES used in breaks
  
-_?MODEMAPS x == _?modemaps x
-_?modemaps x ==
-  env:=
-    $insideCapsuleFunctionIfTrue=true => $CapsuleModemapFrame
-    $f
-  x="all" => displayModemaps env
-  -- displayOpModemaps(x,old2NewModemaps get(x,"modemap",env))
-  displayOpModemaps(x,get(x,"modemap",env))
-
-
 old2NewModemaps x ==
 --  [[dcSig,pred] for [dcSig,[pred,:.],:.] in x]
   x is [dcSig,[pred,:.],:.]  =>  [dcSig,pred]
@@ -943,13 +939,8 @@ traceUp() ==
   atom $x => sayBrightly "$x is an atom"
   for y in rest $x repeat
     u:= comp(y,$EmptyMode,$f) =>
-      sayBrightly [y,'" ==> mode",'%b,u.mode,'%d]
+      sayBrightly [y,'" ==> mode",'"%b",u.mode,'"%d"]
     sayBrightly [y,'" does not compile"]
- 
-_?M x == _?m x
-_?m x ==
-  u:= comp(x,$EmptyMode,$f) => u.mode
-  nil
  
 traceDown() ==
   mmList:= getFormModemaps($x,$f) =>
@@ -957,45 +948,25 @@ traceDown() ==
   sayBrightly "no modemaps for $x"
  
 qModemap mm ==
-  sayBrightly ['%b,"modemap",'%d,:formatModemap mm]
+  sayBrightly ['"%b","modemap",'"%d",:formatModemap mm]
   [[dc,target,:sl],[pred,:.]]:= mm
   and/[qArg(a,m) for a in rest $x for m in sl] => target
-  sayBrightly ['%b,"fails",'%d,'%l]
+  sayBrightly ['"%b","fails",'"%d",'"%l"]
  
 qArg(a,m) ==
   yesOrNo:=
     u:= comp(a,m,$f) => "yes"
     "no"
-  sayBrightly [a," --> ",m,'%b,yesOrNo,'%d]
+  sayBrightly [a," --> ",m,'"%b",yesOrNo,'"%d"]
   yesOrNo="yes"
  
-_?COMP x == _?comp x
-_?comp x ==
-  msg:=
-    u:= comp(x,$EmptyMode,$f) =>
-      [MAKESTRING "compiles to mode",'%b,u.mode,'%d]
-    nil
-  sayBrightly msg
- 
-_?domains() == pp getDomainsInScope $f
-_?DOMAINS() == ?domains()
- 
-_?mode x == displayProplist(x,[["mode",:getmode(x,$f)]])
-_?MODE x == _?mode x
- 
-_?properties x == displayProplist(x,getProplist(x,$f))
-_?PROPERTIES x == _?properties x
- 
-_?value x == displayProplist(x,[["value",:get(x,"value",$f)]])
-_?VALUE x == _?value x
- 
 displayProplist(x,alist) ==
-  sayBrightly ["properties of",'%b,x,'%d,":"]
+  sayBrightly ["properties of",'"%b",x,'"%d",":"]
   fn alist where
     fn alist ==
       alist is [[prop,:val],:l] =>
         if prop="value" then val:= [val.expr,val.mode,'"..."]
-        sayBrightly ["   ",'%b,prop,'%d,": ",val]
+        sayBrightly ["   ",'"%b",prop,'"%d",": ",val]
         fn deleteAssoc(prop,l)
  
 displayModemaps E ==
@@ -1421,7 +1392,8 @@ backendCompile2 code ==
 ++ identifiers starting with '$', except domain variable names.
 backendFluidize x ==
   IDENTP x and x ~= "$" and x ~= "$$" and
-    (PNAME x).0 = char "$" and not digit?((PNAME x).1) => x
+    stringChar(symbolName x,0) = char "$" and
+      not digit? stringChar(symbolName x,1) => x
   atomic? x => nil
   first x = "FLUID" => second x
   a := backendFluidize first x
@@ -1438,83 +1410,18 @@ $SpecialVars := []
 ++ push `x' into the list of local variables.
 pushLocalVariable: %Symbol -> %List
 pushLocalVariable x ==
-  x ~= "$" and (p := PNAME x).0 = char "$" and
-    p.1 ~= char "," and not digit? p.1 => nil
+  p := symbolName x
+  x ~= "$" and stringChar(p,0) = char "$" and
+    stringChar(p,1) ~= char "," and not digit? stringChar(p,1) => nil
   PUSH(x,$LocalVars)
 
 isLispSpecialVariable x ==
-  s := PNAME x
-  s.0 = char "$" and #s > 1 and alphabetic? s.1 and not readOnly? x
+  s := symbolName x
+  stringChar(s,0) = char "$" and #s > 1 and
+    alphabetic? stringChar(s,1) and not readOnly? x
   
 noteSpecialVariable x ==
   $SpecialVars := insert(x,$SpecialVars)
-
---%
---% Middle Env to Back End Transformations.
---%
-
---% e ::=
---%     (%ilConst  <c> <type>)                   -- constant
---%     (%ilInert  <e> <type>)                   -- inert form
---%     (%ilCtx    <d> <type>)                   -- context
---%     (%ilVar    <n> <type>)                   -- variable
---%     (%ilLisp   <e> <type>)                   -- Lisp form
---%     (%ilFun    <e> <type>)                   -- function object
---%     (%ilMm     <e> <type>)                   -- modemap
---%     (%ilLocal  <n> <type>)                   -- local function
---%     (%ilCtor   <n> <type>)                   -- constructor
---%     (%ilTag    <e> <type>)                   -- tag of union object
---%     (%ilVal    <e> <type>)                   -- value of union object
---%     (%ilCall   <e...e> <type>)               -- a call
---%     (%ilXLAM   <e> <type>)                   -- XLAM form
---%     (%ilLAM    <e> <type>)                   -- LAMBDA form
-
-structure ILInsn ==
-  %ilConst(c,t)                             -- constant
-  %ilInert(e,t)                             -- inert form
-  %ilContext(e,t)                           -- context
-  %ilVar(n,t)                               -- variable
-  %ilCtor(n,t)                              -- constructor
-  %ilLocal(op,t)                            -- local function
-  %ilLisp(e,t)                              -- Lisp form
-  %ilModemap(e,t)                           -- exported function modemap
-  %ilUnionTag e                             -- union object tag
-  %ilUnionValue(e,t)                        -- union object value
-  %ilDeref(e,t)                             -- deref function pointer
-  %ilCall(e,t)                              -- call
-  %ilType(d,t)                              -- type instantiation request
-  %ilReturn(n,T,t)                          -- `return' expression
-  %ilExit(n,T,t)                            -- `exit' expression
-
-++ Convert middle end IL forms to old back end forms.
-il2OldForm x ==
-  atom x => x                     -- ideally should not happen
-  x is ["QUOTE",:.] => x          -- idem.
-  case x of
-    %ilConst(c,.) => c
-    %ilInert(e,.) => e
-    %ilVar(n,.) => n
-    %ilCtor(n,.) => n
-    %ilContext(e,.) => e
-    %ilLisp(e,.) => e
-    %ilModemap(e,.) => e
-    %ilUnionTag(e,.) => ["CAR",il2OldForm e]
-    %ilUnionValue(e,.) => ["CAR",il2OldForm e]
-    %ilDeref(e,.) => ["applyFun",il2OldForm e]
-    %ilCall(e,.) =>
-      e is [["%ilLocal",op,:.],:.] =>
-        e.first := op
-        ilTransformInsns rest e
-        e
-      ['%call,:ilTransformInsns e]
-    otherwise => ilTransformInsns x
-
-++ Subroutines of il2OldForm to walk sequence of IL instructions.
-ilTransformInsns form ==
-  for insns in tails form repeat
-    insns.first := il2OldForm first insns
-  form
-
 
 --%
 
@@ -1528,11 +1435,8 @@ massageBackendCode x ==
     x.first := "MAKEPROP-SAY"
   u in '(DCQ RELET PRELET SPADLET SETQ %LET) =>
     if u ~= 'DCQ and u ~= 'SETQ then
-      $NEWSPAD or $FUNAME in $traceletFunctions =>
-        nconc(x,$FUNNAME__TAIL)
-        x.first := "LETT"
-      $TRACELETFLAG => x.first := "/TRACE-LET"
-      u = "%LET" => x.first := "SPADLET"
+      nconc(x,$FUNNAME__TAIL)
+      x.first := "LETT"
     massageBackendCode CDDR x
     if not (u in '(SETQ RELET)) then
       IDENTP second x => pushLocalVariable second x
@@ -1540,6 +1444,11 @@ massageBackendCode x ==
         PUSH(CADADR x, $FluidVars)
         x.rest.first := CADADR x
       MAPC(function pushLocalVariable, LISTOFATOMS second x)
+    -- Even if user used Lisp-level instructions to assign to
+    -- this variable, we still want to note that it is a Lisp-level
+    -- special variable.
+    u = 'SETQ and isLispSpecialVariable second x =>
+      noteSpecialVariable second x
   IDENTP u and GET(u,"ILAM") ~= nil =>
     x.first := eval u
     massageBackendCode x
@@ -1603,6 +1512,16 @@ needsPROG? form ==
   form is ['BLOCK,=nil,:.] => false
   or/[needsPROG? x for x in form]
 
+++ We are processing the complete `body' of a function definition.
+++ If this body is a multiway test, there is no need to have
+++ a RETURN-FROM operator in the immediate consequence of a branch.
+removeToplevelRETURN_-FROM body ==
+  if body is [['COND,:stmts]] then
+    for stmt in stmts repeat
+      stmt is [.,['RETURN_-FROM,.,expr]] =>
+        second(stmt) := expr
+  body
+
 ++ Generate Lisp code by lowering middle end defining form `x'.
 ++ x has the strucrure: <name, parms, stmt1, ...>
 transformToBackendCode: %Form -> %Code
@@ -1630,12 +1549,14 @@ transformToBackendCode x ==
     fluids ~= nil =>
       lvars ~= nil or needsPROG? body =>
         [["PROG",lvars,declareGlobalVariables fluids, ["RETURN",:body]]]
-      body is [[op,bindings,:body']] and op in '(LET LET_*) =>
-        [[op,bindings,declareGlobalVariables fluids,:body']]
+      body is [[op,inits,:body']] and op in '(LET LET_*)
+        and $FluidVars ~= nil =>
+           [declareGlobalVariables $SpecialVars,
+              [op,inits,declareGlobalVariables fluids,:body']]
       [declareGlobalVariables fluids,:body]
     lvars ~= nil or needsPROG? body =>
       [["PROG",lvars,["RETURN",:body]]]
-    body
+    removeToplevelRETURN_-FROM body
   -- add reference parameters to the list of special variables.
   fluids := S_+(backendFluidize second x, $SpecialVars)
   lastdecl := lastDeclarationNode rest x
@@ -1705,7 +1626,7 @@ isFormal x ==
 ++ Expand the form at position `slot' in the domain template `shell'
 ++ with argument list `args'.
 expandFormTemplate(shell,args,slot) ==
-  FIXP slot =>
+  integer? slot =>
     slot = 0 => "$"
     slot = 2 => "$$"
     expandFormTemplate(shell,args,getShellEntry(shell,slot))
@@ -1721,7 +1642,7 @@ expandFormTemplate(shell,args,slot) ==
 ++ Compare the form at `slot' in the domain templare `shell'
 ++ for equality with `form'.
 equalFormTemplate(shell,args,slot,form) ==
-  FIXP slot =>
+  integer? slot =>
     slot = 0 => form = "$"
     slot = 2 => form = "$$"
     equalFormTemplate(shell,args,getShellEntry(shell,slot),form)
@@ -1759,7 +1680,7 @@ getFunctionTemplate(sig,start,end,shell,args,funDesc) ==
            for k in i.. for t in sig] => nil
       -- Grab the location of this match
       loc := 
-        FIXP loc => "ambiguous"
+        integer? loc => "ambiguous"
         funDesc.(i + n + 1)
     start := start + n + 4
   loc
@@ -1823,7 +1744,7 @@ lookupDefiningFunction(op,sig,dc) ==
   fun is [.,.,[.,["dispatchFunction",fun'],.]] => fun'
   -- 6.2. An inherited function?
   fun is [idx,:.] => 
-    not FIXP idx => nil          -- a UFO?
+    not integer? idx => nil          -- a UFO?
     loc := funDesc.(idx + 1)
     if loc = 0 then loc := 5
     shell.loc = nil => nil

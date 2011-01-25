@@ -919,7 +919,7 @@ bcComplexLimitGen htPage ==
         comp = '"1" => '"%i"
         strconc(comp,'"*%i")
       real = '"0" =>
-        complexPart = '"" => "0"
+        complexPart = '"" => '"0"
         complexPart
       complexPart = '"" => real
       strconc(real,'" + ",complexPart)

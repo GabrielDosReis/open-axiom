@@ -48,10 +48,12 @@
 #include "bsdsignal.h"
 
 
-#include "fnct_key.H1"
-#include "prt.H1"
-#include "edin.H1"
+#include "fnct_key.h"
+#include "prt.h"
+#include "edin.h"
 
+/* FIXME: Remove this in complete rewrite */
+using namespace OpenAxiom;
 
 /** Some constants for functio key defs ****/
 #define DELAYED 0

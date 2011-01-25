@@ -67,12 +67,9 @@ genOptimizeOptions stream ==
 AxiomCore::%sysInit() ==
   SETQ(_*LOAD_-VERBOSE_*,false)
   if %hasFeature KEYWORD::GCL then
-    SETF(SYMBOL_-VALUE
-      bfColonColon("COMPILER","*COMPILE-VERBOSE*"),false)
-    SETF(SYMBOL_-VALUE 
-      bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*"),false)
-    SETF(SYMBOL_-VALUE 
-      bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*"),true)
+    symbolValue(bfColonColon("COMPILER","*COMPILE-VERBOSE*")) := false
+    symbolValue(bfColonColon("COMPILER","SUPPRESS-COMPILER-WARNINGS*")) := false
+    symbolValue(bfColonColon("COMPILER","SUPPRESS-COMPILER-NOTES*")) := true
 
 ++ Make x, the current package
 setCurrentPackage: %Thing -> %Thing
@@ -86,14 +83,14 @@ shoeCOMPILE_-FILE lspFileName ==
 
  
 BOOTTOCL(fn, out) ==
-  UNWIND_-PROTECT(
-    PROGN(startCompileDuration(),
-      callingPackage := _*PACKAGE_*,
-      IN_-PACKAGE '"BOOTTRAN",
-      result := BOOTTOCLLINES(nil,fn, out),
-      setCurrentPackage callingPackage,
-      result),
-    endCompileDuration())
+  try
+    startCompileDuration()
+    callingPackage := _*PACKAGE_*
+    IN_-PACKAGE '"BOOTTRAN"
+    result := BOOTTOCLLINES(nil,fn, out)
+    setCurrentPackage callingPackage
+    result
+  finally endCompileDuration()
  
 ++ (bootclam "filename") translates the file "filename.boot" to
 ++ the common lisp file "filename.clisp" , producing, for each function
@@ -124,14 +121,14 @@ shoeClLines(a,fn,lines,outfn)==
 ++ the common lisp file "filename.clisp" with the original boot
 ++ code as comments
 BOOTTOCLC(fn, out)==
-  UNWIND_-PROTECT(
-    PROGN(startCompileDuration(),
-      callingPackage := _*PACKAGE_*,
-      IN_-PACKAGE '"BOOTTRAN",
-      result := BOOTTOCLCLINES(nil, fn, out),
-      setCurrentPackage callingPackage,
-      result),
-    endCompileDuration())
+  try
+    startCompileDuration()
+    callingPackage := _*PACKAGE_*
+    IN_-PACKAGE '"BOOTTRAN"
+    result := BOOTTOCLCLINES(nil, fn, out)
+    setCurrentPackage callingPackage
+    result
+  finally endCompileDuration()
  
 BOOTTOCLCLINES(lines, fn, outfn)==
   infn:=shoeAddbootIfNec fn
@@ -324,7 +321,7 @@ shoeConsoleLines lines ==
   shoeConsole '" "
  
 shoeFileLine(x, stream) ==
-    WRITE_-LINE(x, stream)
+    writeLine(x, stream)
     x
  
 shoeFileTrees(s,st)==
@@ -363,8 +360,10 @@ shoeOutParse stream ==
   $bpCount := 0
   $bpParenCount := 0
   bpFirstTok()
-  found := try bpOutItem() catch TRAPPOINT
-  found = "TRAPPED" => nil
+  found :=
+    try bpOutItem()
+    catch(e: BootParserException) => e
+  found = 'TRAPPED => nil
   not bStreamNull $inputStream =>
     bpGeneralErrorHere()
     nil
@@ -414,13 +413,13 @@ translateToplevel(b,export?) ==
     %Module(m,ds) =>
       $currentModuleName := m 
       $foreignsDefsForCLisp := nil
-      [["PROVIDE", STRING m],
+      [["PROVIDE", symbolName m],
         :[first translateToplevel(d,true) for d in ds]]
 
     %Import(m) => 
       if getOptionValue "import" ~= '"skip" then
-        bootImport STRING m
-      [["IMPORT-MODULE", STRING m]]
+        bootImport symbolName m
+      [["IMPORT-MODULE", symbolName m]]
 
     %ImportSignature(x, sig) =>
       genImportDeclaration(x, sig)
@@ -448,8 +447,8 @@ translateToplevel(b,export?) ==
     %Structure(t,alts) => [bfCreateDef alt for alt in alts]
 
     %Namespace n =>
-      $activeNamespace := STRING n
-      [["IN-PACKAGE",STRING n]]
+      $activeNamespace := symbolName n
+      [["IN-PACKAGE",symbolName n]]
 
     %Lisp s => shoeReadLispString(s,0)
 
@@ -471,7 +470,7 @@ shoeAddStringIfNec(str,s)==
 shoeRemoveStringIfNec(str,s)==
   n := SEARCH(str,s,KEYWORD::FROM_-END,true)
   n = nil => s
-  SUBSTRING(s,0,n)
+  subString(s,0,n)
  
 -- DEFUSE prints the definitions not used and the words used and
 -- not defined in the input file and common lisp.
@@ -541,7 +540,7 @@ defuse(e,x)==
  
 defuse1(e,y)==
   atom y =>
-      IDENTP y =>
+      symbol? y =>
 	 $used:=
 	      MEMQ(y,e)=>$used
 	      MEMQ(y,$used)=>$used
@@ -632,14 +631,14 @@ shoeGeneralFC(f,name,fn)==
    $GenVarCounter  := 0
    infn:=shoeAddbootIfNec fn
    a:= shoeOpenInputFile(a,infn,shoeFindName2(fn,name, a))
-   filename:= if # name > 8 then SUBSTRING(name,0,8) else name
+   filename:= if # name > 8 then subString(name,0,8) else name
    a =>  FUNCALL(f, strconc('"/tmp/",filename))
    nil
  
 shoeFindName2(fn,name,a)==
   lines:=shoeFindLines(fn,name,a)
   lines =>
-    filename:= if # name > 8 then SUBSTRING(name,0,8) else name
+    filename:= if # name > 8 then subString(name,0,8) else name
     filename := strconc('"/tmp/",filename,'".boot")
     shoeOpenOutputFile(stream, filename,
 	 for line in lines repeat shoeFileLine (line,stream))
@@ -657,7 +656,7 @@ shoeItem (str)==
  
 stripm (x,pk,bt)==
   atom x =>
-    IDENTP x =>
+    symbol? x =>
       SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
       x
     x
@@ -695,30 +694,30 @@ PSTTOMC string==
   shoePCompileTrees shoeTransformString string
  
 BOOTLOOP() ==
-  a:=READ_-LINE()
+  a := readLine()
   #a=0=>
-       WRITE_-LINE '"Boot Loop; to exit type ] "
-       BOOTLOOP()
+    writeLine '"Boot Loop; to exit type ] "
+    BOOTLOOP()
   b:=shoePrefix? ('")console",a)
   b =>
-       stream:= _*TERMINAL_-IO_*
-       PSTTOMC bRgen stream
-       BOOTLOOP()
-  a.0='"]".0 => nil
+    stream:= _*TERMINAL_-IO_*
+    PSTTOMC bRgen stream
+    BOOTLOOP()
+  stringChar(a,0) = char "]" => nil
   PSTTOMC [a]
   BOOTLOOP()
  
 BOOTPO() ==
-  a:=READ_-LINE()
+  a := readLine()
   #a=0=>
-       WRITE_-LINE '"Boot Loop; to exit type ] "
-       BOOTPO()
+    writeLine '"Boot Loop; to exit type ] "
+    BOOTPO()
   b:=shoePrefix? ('")console",a)
   b =>
-       stream:= _*TERMINAL_-IO_*
-       PSTOUT bRgen stream
-       BOOTPO()
-  a.0='"]".0 => nil
+    stream:= _*TERMINAL_-IO_*
+    PSTOUT bRgen stream
+    BOOTPO()
+  stringChar(a,0) = char "]" => nil
   PSTOUT [a]
   BOOTPO()
  
@@ -783,5 +782,4 @@ loadNativeModule m ==
 
 loadSystemRuntimeCore() ==
   %hasFeature KEYWORD::ECL or %hasFeature KEYWORD::GCL => nil
-  loadNativeModule strconc(systemLibraryDirectory(),
-    '"libopen-axiom-core",$NativeModuleExt)
+  loadNativeModule strconc('"libopen-axiom-core",$NativeModuleExt)

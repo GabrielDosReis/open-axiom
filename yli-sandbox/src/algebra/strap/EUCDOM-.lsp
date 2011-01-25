@@ -84,15 +84,15 @@
            (EXIT |x|))))) 
 
 (DEFUN |EUCDOM-;unitNormalizeIdealElt| (|s| $)
-  (LET* ((|#G16| (SPADCALL (QVELT |s| 2) (|getShellEntry| $ 27)))
-         (|u| (QVELT |#G16| 0)) (|c| (QVELT |#G16| 1))
-         (|a| (QVELT |#G16| 2)))
+  (LET* ((|#G16| (SPADCALL (SVREF |s| 2) (|getShellEntry| $ 27)))
+         (|u| (SVREF |#G16| 0)) (|c| (SVREF |#G16| 1))
+         (|a| (SVREF |#G16| 2)))
     (SEQ |#G16|
          (EXIT (COND
                  ((SPADCALL |a| (|getShellEntry| $ 28)) |s|)
-                 (T (VECTOR (SPADCALL |a| (QVELT |s| 0)
+                 (T (VECTOR (SPADCALL |a| (SVREF |s| 0)
                                 (|getShellEntry| $ 29))
-                            (SPADCALL |a| (QVELT |s| 1)
+                            (SPADCALL |a| (SVREF |s| 1)
                                 (|getShellEntry| $ 29))
                             |c|))))))) 
 
@@ -112,24 +112,24 @@
           ((SPADCALL |x| (|getShellEntry| $ 8)) |s2|)
           (T (SEQ (LOOP
                     (COND
-                      ((NOT (NOT (SPADCALL (QVELT |s2| 2)
+                      ((NOT (NOT (SPADCALL (SVREF |s2| 2)
                                      (|getShellEntry| $ 8))))
                        (RETURN NIL))
                       (T (SEQ (LETT |qr|
-                                    (SPADCALL (QVELT |s1| 2)
-                                     (QVELT |s2| 2)
+                                    (SPADCALL (SVREF |s1| 2)
+                                     (SVREF |s2| 2)
                                      (|getShellEntry| $ 16))
                                     |EUCDOM-;extendedEuclidean;2SR;7|)
                               (LETT |s3|
                                     (VECTOR
-                                     (SPADCALL (QVELT |s1| 0)
+                                     (SPADCALL (SVREF |s1| 0)
                                       (SPADCALL (CAR |qr|)
-                                       (QVELT |s2| 0)
+                                       (SVREF |s2| 0)
                                        (|getShellEntry| $ 29))
                                       (|getShellEntry| $ 31))
-                                     (SPADCALL (QVELT |s1| 1)
+                                     (SPADCALL (SVREF |s1| 1)
                                       (SPADCALL (CAR |qr|)
-                                       (QVELT |s2| 1)
+                                       (SVREF |s2| 1)
                                        (|getShellEntry| $ 29))
                                       (|getShellEntry| $ 31))
                                      (CDR |qr|))
@@ -139,21 +139,21 @@
                                      (|EUCDOM-;unitNormalizeIdealElt|
                                       |s3| $)))))))
                   (COND
-                    ((NOT (SPADCALL (QVELT |s1| 0)
+                    ((NOT (SPADCALL (SVREF |s1| 0)
                               (|getShellEntry| $ 8)))
                      (COND
-                       ((NOT (SPADCALL (QVELT |s1| 0) |y|
+                       ((NOT (SPADCALL (SVREF |s1| 0) |y|
                                  (|getShellEntry| $ 32)))
                         (SEQ (LETT |qr|
-                                   (SPADCALL (QVELT |s1| 0) |y|
+                                   (SPADCALL (SVREF |s1| 0) |y|
                                     (|getShellEntry| $ 16))
                                    |EUCDOM-;extendedEuclidean;2SR;7|)
-                             (QSETVELT |s1| 0 (CDR |qr|))
-                             (QSETVELT |s1| 1
-                                 (SPADCALL (QVELT |s1| 1)
-                                     (SPADCALL (CAR |qr|) |x|
-                                      (|getShellEntry| $ 29))
-                                     (|getShellEntry| $ 33)))
+                             (SETF (SVREF |s1| 0) (CDR |qr|))
+                             (SETF (SVREF |s1| 1)
+                                   (SPADCALL (SVREF |s1| 1)
+                                    (SPADCALL (CAR |qr|) |x|
+                                     (|getShellEntry| $ 29))
+                                    (|getShellEntry| $ 33)))
                              (EXIT (SETQ |s1|
                                     (|EUCDOM-;unitNormalizeIdealElt|
                                      |s1| $))))))))
@@ -170,7 +170,7 @@
                            (SPADCALL |x| |y| (|getShellEntry| $ 36))
                            |EUCDOM-;extendedEuclidean;3SU;8|)
                      (LETT |w|
-                           (SPADCALL |z| (QVELT |s| 2)
+                           (SPADCALL |z| (SVREF |s| 2)
                                (|getShellEntry| $ 37))
                            |EUCDOM-;extendedEuclidean;3SU;8|)
                      (EXIT (COND
@@ -178,13 +178,13 @@
                              ((SPADCALL |y| (|getShellEntry| $ 8))
                               (CONS 0
                                     (CONS
-                                     (SPADCALL (QVELT |s| 0) (CDR |w|)
+                                     (SPADCALL (SVREF |s| 0) (CDR |w|)
                                       (|getShellEntry| $ 29))
-                                     (SPADCALL (QVELT |s| 1) (CDR |w|)
+                                     (SPADCALL (SVREF |s| 1) (CDR |w|)
                                       (|getShellEntry| $ 29)))))
                              (T (SEQ (LETT |qr|
                                       (SPADCALL
-                                       (SPADCALL (QVELT |s| 0)
+                                       (SPADCALL (SVREF |s| 0)
                                         (CDR |w|)
                                         (|getShellEntry| $ 29))
                                        |y| (|getShellEntry| $ 16))
@@ -193,7 +193,7 @@
                                       (CONS 0
                                        (CONS (CDR |qr|)
                                         (SPADCALL
-                                         (SPADCALL (QVELT |s| 1)
+                                         (SPADCALL (SVREF |s| 1)
                                           (CDR |w|)
                                           (|getShellEntry| $ 29))
                                          (SPADCALL (CAR |qr|) |x|
@@ -211,15 +211,15 @@
                          (SPADCALL (|SPADfirst| |l|)
                              (|getShellEntry| $ 27))
                          |EUCDOM-;principalIdeal;LR;9|)
-                   (EXIT (CONS (LIST (QVELT |uca| 0)) (QVELT |uca| 1)))))
+                   (EXIT (CONS (LIST (SVREF |uca| 0)) (SVREF |uca| 1)))))
              ((SPADCALL (CDR (CDR |l|)) NIL (|getShellEntry| $ 42))
               (SEQ (LETT |u|
                          (SPADCALL (|SPADfirst| |l|)
                              (SPADCALL |l| (|getShellEntry| $ 45))
                              (|getShellEntry| $ 36))
                          |EUCDOM-;principalIdeal;LR;9|)
-                   (EXIT (CONS (LIST (QVELT |u| 0) (QVELT |u| 1))
-                               (QVELT |u| 2)))))
+                   (EXIT (CONS (LIST (SVREF |u| 0) (SVREF |u| 1))
+                               (SVREF |u| 2)))))
              (T (SEQ (LETT |v|
                            (SPADCALL (CDR |l|) (|getShellEntry| $ 48))
                            |EUCDOM-;principalIdeal;LR;9|)
@@ -227,10 +227,10 @@
                            (SPADCALL (|SPADfirst| |l|) (CDR |v|)
                                (|getShellEntry| $ 36))
                            |EUCDOM-;principalIdeal;LR;9|)
-                     (EXIT (CONS (CONS (QVELT |u| 0)
+                     (EXIT (CONS (CONS (SVREF |u| 0)
                                        (LET
-                                        ((#0=#:G1519 (CAR |v|))
-                                         (#1=#:G1518 NIL))
+                                        ((#0=#:G1494 (CAR |v|))
+                                         (#1=#:G1493 NIL))
                                          (LOOP
                                            (COND
                                              ((ATOM #0#)
@@ -240,12 +240,12 @@
                                                 (SETQ #1#
                                                  (CONS
                                                   (SPADCALL
-                                                   (QVELT |u| 1) |vv|
+                                                   (SVREF |u| 1) |vv|
                                                    (|getShellEntry| $
                                                     29))
                                                   #1#)))))
                                            (SETQ #0# (CDR #0#)))))
-                                 (QVELT |u| 2)))))))))) 
+                                 (SVREF |u| 2)))))))))) 
 
 (DEFUN |EUCDOM-;expressIdealMember;LSU;10| (|l| |z| $)
   (PROG (|pid| |q|)
@@ -254,7 +254,7 @@
              ((SPADCALL |z| (|spadConstant| $ 19)
                   (|getShellEntry| $ 51))
               (CONS 0
-                    (LET ((#0=#:G1521 |l|) (#1=#:G1520 NIL))
+                    (LET ((#0=#:G1496 |l|) (#1=#:G1495 NIL))
                       (LOOP
                         (COND
                           ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -272,8 +272,8 @@
                              ((EQL (CAR |q|) 1) (CONS 1 "failed"))
                              (T (CONS 0
                                       (LET
-                                       ((#2=#:G1523 (CAR |pid|))
-                                        (#3=#:G1522 NIL))
+                                       ((#2=#:G1498 (CAR |pid|))
+                                        (#3=#:G1497 NIL))
                                         (LOOP
                                           (COND
                                             ((ATOM #2#)
@@ -292,20 +292,20 @@
 (DEFUN |EUCDOM-;multiEuclidean;LSU;11| (|l| |z| $)
   (PROG (|l1| |l2| |u| |v1| |v2|)
     (RETURN
-      (LET ((|n| (LENGTH |l|)))
+      (LET ((|n| (LIST-LENGTH |l|)))
         (COND
           ((ZEROP |n|) (|error| "empty list passed to multiEuclidean"))
           ((EQL |n| 1) (CONS 0 (LIST |z|)))
           (T (SEQ (LETT |l1| (SPADCALL |l| (|getShellEntry| $ 58))
                         |EUCDOM-;multiEuclidean;LSU;11|)
                   (LETT |l2|
-                        (SPADCALL |l1| (QUOTIENT2 |n| 2)
+                        (SPADCALL |l1| (TRUNCATE |n| 2)
                             (|getShellEntry| $ 61))
                         |EUCDOM-;multiEuclidean;LSU;11|)
                   (LETT |u|
                         (SPADCALL
-                            (LET ((#0=#:G1504 NIL) (#1=#:G1505 T)
-                                  (#2=#:G1524 |l1|))
+                            (LET ((#0=#:G1479 NIL) (#1=#:G1480 T)
+                                  (#2=#:G1499 |l1|))
                               (LOOP
                                 (COND
                                   ((ATOM #2#)
@@ -313,8 +313,8 @@
                                      (COND
                                        (#1# (|spadConstant| $ 30))
                                        (T #0#))))
-                                  (T (LET ((#3=#:G1397 (CAR #2#)))
-                                       (LET ((#4=#:G1503 #3#))
+                                  (T (LET ((#3=#:G1372 (CAR #2#)))
+                                       (LET ((#4=#:G1478 #3#))
                                          (COND
                                            (#1# (SETQ #0# #4#))
                                            (T
@@ -323,8 +323,8 @@
                                               (|getShellEntry| $ 29)))))
                                          (SETQ #1# NIL)))))
                                 (SETQ #2# (CDR #2#))))
-                            (LET ((#5=#:G1507 NIL) (#6=#:G1508 T)
-                                  (#7=#:G1525 |l2|))
+                            (LET ((#5=#:G1482 NIL) (#6=#:G1483 T)
+                                  (#7=#:G1500 |l2|))
                               (LOOP
                                 (COND
                                   ((ATOM #7#)
@@ -332,8 +332,8 @@
                                      (COND
                                        (#6# (|spadConstant| $ 30))
                                        (T #5#))))
-                                  (T (LET ((#8=#:G1398 (CAR #7#)))
-                                       (LET ((#9=#:G1506 #8#))
+                                  (T (LET ((#8=#:G1373 (CAR #7#)))
+                                       (LET ((#9=#:G1481 #8#))
                                          (COND
                                            (#6# (SETQ #5# #9#))
                                            (T

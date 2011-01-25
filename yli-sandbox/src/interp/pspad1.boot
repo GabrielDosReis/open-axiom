@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -152,8 +152,8 @@ mkCommentLines [.,n,.,s] ==
  
 breakComments s ==
   n:= containsString(s,PNAME "ENDOFLINECHR") =>
-    #s>n+12 => [SUBSTRING(s,0,n),:breakComments SUBSTRING(s,n+12,NIL)]
-    [SUBSTRING(s,0,n)]
+    #s>n+12 => [subString(s,0,n),:breakComments subString(s,n+12)]
+    [subString(s,0,n)]
   [s]
  
 containsString(x,y) ==
@@ -168,7 +168,7 @@ consBuffer item ==
   if item = '"failed" then item := 'failed
   n:=
     string? item => 2+#item
-    IDENTP item => #PNAME item
+    IDENTP item => #symbolName item
     #STRINGIMAGE item
   columnsLeft:= $lineLength-$c
   if columnsLeft <= 0 and isCloseDelimiter item then $lineLength := $lineLength + 2
@@ -178,12 +178,12 @@ consBuffer item ==
     $autoLine =>
                    --is true except within try
       formatOutput reverse $lineFragmentBuffer
-      $c:= REMAINDER($m+2*($numberOfSpills:= $numberOfSpills+1), $lineLength)
+      $c:= ($m+2*($numberOfSpills:= $numberOfSpills+1)) rem $lineLength
       $lineFragmentBuffer:= [nBlanks $c]
       consBuffer item
     nil
   $lineFragmentBuffer:=
-    null item or IDENTP item => [PNAME item,:$lineFragmentBuffer]
+    null item or IDENTP item => [symbolName item,:$lineFragmentBuffer]
     integer? item or CHARP item => [STRINGIMAGE item,:$lineFragmentBuffer]
     string? item => ["_"",string2PrintImage item,"_"",:$lineFragmentBuffer]
     sayBrightly ['"Unexpected line buffer item: ", STRINGIMAGE item]
@@ -196,7 +196,8 @@ isSpecialBufferItem item ==
   item = "; " or string? item => true
   false
 
-isCloseDelimiter item ==   EQ(item,")") or EQ(item,"]") or EQ(item,"}") 
+isCloseDelimiter item ==
+  item = ")" or item = "]" or item = "}" 
 
 --======================================================================
 --               Formatting/Line Control Functions
@@ -277,7 +278,7 @@ format(x,:options) ==
       formatForm x
     formatAtom x
   null newCOrNil => ($c:= oldC; nil)
-  null FIXP newCOrNil => error()
+  not integer? newCOrNil => error()
   $c:= newCOrNil
  
 
@@ -339,7 +340,7 @@ formatUnion(['Union,:r]) ==
     x is [":",y,'Branch] => fn STRINGIMAGE y
     string? x => [":", INTERN x, ['Enumeration,x]]
     x is [":",:.] => x
-    tag := INTERN strconc("value",STRINGIMAGE ($count := $count + 1))
+    tag := INTERN strconc('"value",STRINGIMAGE ($count := $count + 1))
     [":", tag, x]      
 
 formatTestForPartial u ==
@@ -365,7 +366,7 @@ formatForm (u) ==
   [op,:argl] := u
   if op in '(Record Union) then 
     $fieldNames := union(getFieldNames argl,$fieldNames)
-  MEMQ(op,'(true %true)) => format "true"
+  op in '(true %true) => format "true"
   op in '(false nil) => format op
   u='(Zero) => format 0
   u='(One) => format 1
@@ -420,7 +421,7 @@ formatHasDollarOp x ==
   x is ["elt",a,b] and isTypeProbably? a 
 
 isTypeProbably? x ==
-  IDENTP x and upperCase? PNAME(x).0
+  IDENTP x and upperCase? stringChar(symbolName x,0)
 
 formatOpPren(op,x) == formatOp op and formatPren x
 
@@ -497,7 +498,7 @@ formatPrefix(op,arg,lbp,rbp,:options) ==
  
 formatPrefixOp(op,:options) ==
   qualification := IFCAR options
-  op=char '" " => format " ="
+  op = char " " => format " ="
   qualification or GETL(op,"Nud") and not MEMQ(op,$spadTightList) => 
     formatQual(op,qualification) and format " "
   format op

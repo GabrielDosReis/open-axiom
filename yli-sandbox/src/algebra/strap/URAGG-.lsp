@@ -378,7 +378,7 @@
       ((< |m| |n|) (|error| "index out of range"))
       (T (SPADCALL
              (SPADCALL |x|
-                 (LET ((#0=#:G1502 (- |m| |n|)))
+                 (LET ((#0=#:G1477 (- |m| |n|)))
                    (|check-subtype| (NOT (MINUSP #0#))
                        '(|NonNegativeInteger|) #0#))
                  (|getShellEntry| $ 62))
@@ -469,7 +469,7 @@
 
 (DEFUN |URAGG-;setchildren!;ALA;30| (|u| |lv| $)
   (COND
-    ((EQL (LENGTH |lv|) 1)
+    ((EQL (LIST-LENGTH |lv|) 1)
      (SPADCALL |u| (|SPADfirst| |lv|) (|getShellEntry| $ 74)))
     (T (|error| "wrong number of children specified")))) 
 
@@ -483,7 +483,7 @@
              ((< |n| 1) (|error| "index out of range"))
              (T (SEQ (SETQ |p|
                            (SPADCALL |p|
-                               (LET ((#0=#:G1528 (- |n| 1)))
+                               (LET ((#0=#:G1503 (- |n| 1)))
                                  (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                (|getShellEntry| $ 62)))

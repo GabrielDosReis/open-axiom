@@ -48,15 +48,15 @@ hashType(type, percentHash) ==
         symbol? type  =>
            type = '$ => percentHash
            type = "%" => percentHash
-           hashString SYMBOL_-NAME type
+           hashString symbolName type
         string? type  => hashCombine(hashString type, 
                                         hashString('"Enumeration"))
         type is ['QUOTE, val] => hashType(val, percentHash)
-        type is [dom] => hashString SYMBOL_-NAME dom
+        type is [dom] => hashString symbolName dom
         type is ['_:, ., type2] => hashType(type2, percentHash)
         isDomain type => getDomainHash type
         [op, :args] := type
-        hash := hashString SYMBOL_-NAME op
+        hash := hashString symbolName op
         op = 'Mapping =>
                 hash := hashString '"->"
                 [retType, :mapArgs] := args
@@ -67,7 +67,7 @@ hashType(type, percentHash) ==
                 hashCombine(retCode, hash)
         op = 'Enumeration =>
                 for arg in args repeat
-                        hash := hashCombine(hashString(STRING arg), hash)
+                  hash := hashCombine(hashString(symbolName arg), hash)
                 hash
         op in $DomainsWithoutLisplibs =>
                 for arg in args repeat
@@ -95,7 +95,7 @@ $hashModulus := 1073741789                      -- largest 30-bit prime
 hashString str ==
         h := 0
         for i in 0..#str-1 repeat
-                j := CHAR_-CODE char str.i
+                j := codePoint char str.i
                 h := LOGXOR(h, ASH(h, 8))
                 h := h + j + 200041
                 h := LOGAND(h, 1073741823)      -- 0x3FFFFFFF

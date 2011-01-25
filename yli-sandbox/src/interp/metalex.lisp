@@ -168,7 +168,6 @@
 
 ; *** Next Line
 
-(defparameter Echo-Meta nil                 "T if you want a listing of what has been read.")
 (defparameter Line-Handler 'next-META-line "Who grabs lines for us.")
 
 (defun next-line (&optional (in-stream t)) (funcall Line-Handler in-stream))
@@ -461,7 +460,7 @@ empty (if File-Closed (return nil))
                                           (get-a-line in-stream))))
       (if (= (length string) 0) (go empty))
       (Line-New-Line (suffix #\Space string) Current-Line)
-      (if Echo-Meta (Print-New-Line (Line-Buffer Current-Line) out-stream))
+      (if |$Echo| (Print-New-Line (Line-Buffer Current-Line) out-stream))
       (return t)))
  
 (defparameter Comment-Character #\% "Delimiter of comments in Meta code.")
@@ -570,9 +569,9 @@ empty (if File-Closed (return nil))
 
 
 (defconstant Keywords 
-  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist|
-    |has| |with| |add| |case| |in| |by| |pretend| |mod|
-    |exquo| |div| |quo| |else| |rem| |then| |suchthat|
+  '(|or| |and| |isnt| |is| |when| |where| |forall| |exist| |try|
+    |has| |with| |add| |case| |in| |by| |pretend| |mod| |finally|
+    |exquo| |div| |quo| |else| |rem| |then| |suchthat| |catch| |throw|
     |if| |yield| |iterate| |break| |from| |exit| |leave| |return|
     |not| |unless| |repeat| |until| |while| |for| |import| |inline|)
 

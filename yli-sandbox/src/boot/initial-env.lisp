@@ -54,6 +54,11 @@
 
 (in-package "BOOTTRAN")
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+	   (progn
+	     (setq *read-default-float-format* 'double-float)
+	     (setq *load-verbose* nil)))
+
 ;## need the conditional here so it appears in boottran
 #+:ieee-floating-point (defparameter $ieee t)
 #-:ieee-floating-point (defparameter $ieee nil)
@@ -71,12 +76,6 @@
 
 (defun setdifference (x y)
   (set-difference x y))
-
-(defun make-cvec (sint)
-  (make-string sint))
-
-(defun MAKE-VEC (n) 
-  (make-array n))
 
 (defun |shoeInputFile| (filespec )
   (open filespec :direction :input :if-does-not-exist nil))
@@ -120,11 +119,6 @@
 (defun |shoePLACEP| (item) 
   (eq item nil))
 
-(defun substring (cvec start length)
-  (if length 
-      (subseq cvec start (+ start length))
-    (subseq cvec start)))
-
 (defun MAKE-HASHTABLE (id1)
   (let ((test (case id1
                     ((EQ ID) #'eq)
@@ -143,20 +137,6 @@
 
 (defun HPUT (table key value)
   (setf (gethash key table) value))
- 
-(defun QENUM (cvec ind)
-  (char-code (char cvec ind)))
- 
-(defun charmem (a b)
-  (member  a  b :test #'eql))
-
-(defun |shoeIdChar| (x)
-  (or (ALPHANUMERICP x)
-      (charmem x '(#\' #\? #\%))))
-
-(defun |shoeStartsId| (x)
-  (or (alpha-char-p x)
-      (charmem x '(#\$ #\? #\%))))
  
 (defun strpos (what in start dontcare)
   (setq what (string what) in (string in))
@@ -179,9 +159,6 @@
 	      :test-not #'(lambda (x y) (position y x))
               :start sint)))
 
-(defun VEC-SETELT (vec ind val) 
-  (setf (elt vec ind) val))
-
 (defun  bvec-make-full (n x)
   (make-array (list n) 
 	      :element-type 'bit
@@ -190,17 +167,6 @@
 (defun make-bvec (n)
   (bvec-make-full n 0))
  
-(defun bvec-setelt (bv i x)
-  (setf (sbit bv i) x))
-
-(defun size (l)
-  (cond ((vectorp l) (length l))
-        ((consp l) (list-length l))
-        (t 0)))
-
-(defun identp (a) 
-  (and (symbolp a) a))
-
 (defun |shoeReadLisp| (s n)
   (multiple-value-list (read-from-string s nil nil :start n)))
 

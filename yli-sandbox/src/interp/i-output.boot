@@ -166,9 +166,9 @@ $plainRTspecialCharacters == [
 
 ++ End of Transmission character; usually to the Algebra Output
 ++ Stream in lean mode.
-$RecordSeparator == CODE_-CHAR 30
+$RecordSeparator == abstractChar 30
 
-makeCharacter n ==> INTERN(STRING(CODE_-CHAR n))
+makeCharacter n ==> INTERN(charString abstractChar n)
 
 $RTspecialCharacters == [
     makeCharacter 218,      -- upper left corner   (+)
@@ -216,8 +216,6 @@ $specialCharacterAlist == '(
 MATBORCH == '"*"
 
 _*TALLPAR := false
-
-$collectOutput := false
 
 --% Output functions dispatch tables.
 
@@ -384,15 +382,23 @@ for x in '((+ APP plusApp)
 
 --%
 
+$collectOutput := false
+
+++ Start a a new line if we are in 2-d ASCII art display mode.
+newlineIfDisplaying() ==
+  if not $collectOutput then
+    TERPRI $algebraOutputStream
+
+
 specialChar(symbol) ==
   -- looks up symbol in $specialCharacterAlist, gets the index
   -- into the EBCDIC table, and returns the appropriate character
   null (code := IFCDR ASSQ(symbol,$specialCharacterAlist)) => '"?"
   $specialCharacters.code
 
-rbrkSch() == PNAME specialChar 'rbrk
-lbrkSch() == PNAME specialChar 'lbrk
-quadSch() == PNAME specialChar 'quad
+rbrkSch() == symbolName specialChar 'rbrk
+lbrkSch() == symbolName specialChar 'lbrk
+quadSch() == symbolName specialChar 'quad
 
 isBinaryInfix x ==
   member(x, '(_= _+ _- _* _/ _*_* _^ "=" "+" "-" "*" "/" "**" "^"))
@@ -425,7 +431,7 @@ APP(u,x,y,d) ==
   appelse(u,x,y,d)
 
 atom2String x ==
-  IDENTP x => PNAME x
+  IDENTP x => symbolName x
   string? x => x
   stringer x
 
@@ -463,15 +469,21 @@ print(x,domain) ==
   $dontDisplayEquatnum: local:= true
   output(x,dom)
 
-mathprintWithNumber x ==
+++ Write x as an asgard form on the standard output.
+outputAsgardForm(x,t) ==
+  f := ['%OBJECT,x,devaluate t]
+  WRITE(f,KEYWORD::STREAM,$algebraOutputStream)
+  FRESH_-LINE $algebraOutputStream
+
+mathprintWithNumber(x,t) ==
   x:= outputTran x
+  $asgardForm => outputAsgardForm(x,t)
   maprin
     $IOindex => ['EQUATNUM,$IOindex,x]
     x
 
 mathprint(x,out == $OutputStream) == 
    x := outputTran x
-   $saturn => texFormat1 x
    maprin x
 
 sayMath u ==
@@ -540,11 +552,11 @@ outputTran x ==
   op is ["$elt",targ,fun] or not $InteractiveMode and op is ["elt",targ,fun] =>
     -- l has the args
     targ' := obj2String prefix2String targ
-    if 2 = SIZE targ then targ' := ['PAREN,targ']
+    if 2 = # targ then targ' := ['PAREN,targ']
     ['CONCAT,outputTran [fun,:l],'"$",targ']
   x is ["$elt",targ,c] or not $InteractiveMode and x is ["elt",targ,c] =>
     targ' := obj2String prefix2String targ
-    if 2 = SIZE targ then targ' := ['PAREN,targ']
+    if 2 = # targ then targ' := ['PAREN,targ']
     ['CONCAT,outputTran c,'"$",targ']
   x is ["-",a,b] =>
     a := outputTran a
@@ -556,11 +568,11 @@ outputTran x ==
     ["+",a,["-",b]]
 
   -- next stuff translates exp(log(foo4)/foo3) into ROOT(foo4,foo3)
-  (x is ["**", ='"%e",foo1]) and (foo1 is [ ='"/",foo2, foo3]) and
+  (x is ["**",'"%e",foo1]) and (foo1 is ['"/",foo2, foo3]) and
     integer?(foo3) and (foo2 is ['log,foo4]) =>
        foo3 = 2 => ['ROOT,outputTran foo4]
        ['ROOT,outputTran foo4,outputTran foo3]
-  (x is ["**", ='"%e",foo1]) and (foo1 is [op',foo2, foo3]) and
+  (x is ["**",'"%e",foo1]) and (foo1 is [op',foo2, foo3]) and
     (op' = '"*") and ((foo3 is ['log,foo4]) or (foo2 is ['log,foo4])) =>
        foo3 is ['log,foo4] =>
          ["**", outputTran foo4, outputTran foo2]
@@ -595,7 +607,7 @@ outputTran x ==
     ['PAREN,["|",['AGGLST,:l],pred]]
   op="tuple"  => ['PAREN,['AGGLST,:l]]
   op='LISTOF => ['AGGLST,:l]
-  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (PNAME op).0 =>
+  IDENTP op and not (op in '(_* _*_*) ) and char "*" = (symbolName op).0 =>
     mkSuperSub(op,l)
   [outputTran op,:l]
 
@@ -1090,12 +1102,12 @@ putWidth u ==
 
 opWidth(op,has2Arguments) ==
   op = "EQUATNUM" => 4
-  integer? op => 2+SIZE STRINGIMAGE op
+  integer? op => 2 + # STRINGIMAGE op
   null has2Arguments =>
-    a:= GETL(op,"PREFIXOP") => SIZE a
-    2+SIZE PNAME op
-  a:= GETL(op,"INFIXOP") => SIZE a
-  2+SIZE PNAME op
+    a:= GETL(op,"PREFIXOP") => # a
+    2 + # PNAME op
+  a:= GETL(op,"INFIXOP") => # a
+  2 + # PNAME op
 
 matrixBorder(x,y1,y2,d,leftOrRight) ==
   y1 = y2 =>
@@ -1163,20 +1175,20 @@ maprinChk x ==
       -- deleteAssoc no longer exists
       $MatrixList := delete(u,$MatrixList)
       maPrin ['EQUATNUM,n,rest u]
-      if not $collectOutput then TERPRI $algebraOutputStream
+      newlineIfDisplaying()
     maPrin x
   maPrin x
   -- above line added JHD 13/2/93 since otherwise x gets lost
 
 maprinRows matrixList ==
-  if not $collectOutput then TERPRI($algebraOutputStream)
+  newlineIfDisplaying()
   while matrixList repeat
     y:=nreverse matrixList
     --Makes the matrices come out in order, since CONSed on backwards
     matrixList:=nil
     firstName := first first y
     for [name,:m] in y for n in 0.. repeat
-      if not $collectOutput then TERPRI($algebraOutputStream)
+      newlineIfDisplaying()
       andWhere := (name = firstName => '"where "; '"and ")
       line := strconc(andWhere, PNAME name)
       maprinChk ["=",line,m]
@@ -1237,7 +1249,7 @@ PushMatrix m ==
     --Adds the matrix to the look-aside list, and returns a name for it
   name:=
     for v in $MatrixList repeat
-        EQUAL(m,rest v) => return first v
+        m = rest v => return first v
   name => name
   name:=INTERNL('"matrix",STRINGIMAGE($MatrixCount:=$MatrixCount+1))
   $MatrixList:=[[name,:m],:$MatrixList]
@@ -1318,7 +1330,7 @@ bigopWidth(bot,top,arg,kind) ==
   MAX(kindWidth,WIDTH bot,(top => WIDTH top; 0)) + 2 + WIDTH arg
 
 half x ==>
-  QUOTIENT(x, 2)
+  x quo 2
 
 bigopAppAux(bot,top,arg,x,y,d,kind) ==
   botWidth := (bot => WIDTH bot; 0)
@@ -1330,11 +1342,11 @@ bigopAppAux(bot,top,arg,x,y,d,kind) ==
   xCenter := half(maxWidth-1) + x
   d:=APP(arg,x+2+maxWidth,y,d)
   d:=
-      atom bot and SIZE atom2String bot = 1 => APP(bot,xCenter,y-2,d)
+      atom bot and # atom2String bot = 1 => APP(bot,xCenter,y-2,d)
       APP(bot,x + half(maxWidth - botWidth),y-2-superspan bot,d)
   if top then
     d:=
-      atom top and SIZE atom2String top = 1 => APP(top,xCenter,y+2,d)
+      atom top and # atom2String top = 1 => APP(top,xCenter,y+2,d)
       APP(top,x + half(maxWidth - topWidth),y+2+subspan top,d)
   delta := (kind = 'pi => 2; 1)
   opCode :=
@@ -1404,7 +1416,7 @@ overlabelWidth [.,a,b] == WIDTH b
 overlabelApp([.,a,b], x, y, d) ==
   underApp:= APP(b,x,y,d)
   endPoint := x + WIDTH b - 1
-  middle := QUOTIENT(x + endPoint,2)
+  middle := (x + endPoint) quo 2
   h := y + superspan b + 1
   d := APP(a,middle,h + 1,d)
   apphor(x,x+WIDTH b-1,y+superspan b+1,d,"|")
@@ -1470,7 +1482,7 @@ xLate(l,x,y,d) ==
 concatTrouble(u,d,start,lineLength,$addBlankIfTrue) ==
   [x,:l] := splitConcat(u,lineLength,true)
   null l =>
-    sayALGEBRA ['%l,'%b,'"  Too wide to Print",'%d]
+    sayALGEBRA ['"%l",'"%b",'"  Too wide to Print",'"%d"]
     THROW('output,nil)
   charybdis(fixUp x,start,lineLength)
   for y in l repeat
@@ -1505,9 +1517,9 @@ splitConcat(list,maxWidth,firstTimeIfTrue) ==
 
 spadPrint(x,m) ==
   m = $NoValueMode => x
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
   output(x,m)
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
 
 formulaFormat expr ==
   sff := '(ScriptFormulaFormat)
@@ -1554,10 +1566,10 @@ output(expr,domain) ==
     if $formulaFormat then formulaFormat expr
     if $texFormat     then texFormat expr
     if $mathmlFormat  then mathmlFormat expr
-    if $algebraFormat then mathprintWithNumber expr
+    if $algebraFormat then mathprintWithNumber(expr,domain)
   categoryForm? domain or member(domain,'((Mode) (Domain) (Type))) =>
     if $algebraFormat then
-      mathprintWithNumber outputDomainConstructor expr
+      mathprintWithNumber(outputDomainConstructor expr,domain)
     if $texFormat     then
       texFormat outputDomainConstructor expr
   T := coerceInteractive(objNewWrap(expr,domain),$OutputForm) =>
@@ -1568,7 +1580,7 @@ output(expr,domain) ==
       if not $collectOutput then TERPRI $fortranOutputStream
       FORCE_-OUTPUT $fortranOutputStream
     if $algebraFormat then
-      mathprintWithNumber x
+      mathprintWithNumber(x,domain)
     if $texFormat     then texFormat x
     if $mathmlFormat  then mathmlFormat x
   (FUNCTIONP(opOf domain)) and
@@ -1576,25 +1588,25 @@ output(expr,domain) ==
        and (textwrit := compiledLookup("print", '($), TextWriter())) =>
      sayMSGNT [:bright '"AXIOM-XL",'"output:   "]
      SPADCALL(SPADCALL textwrit, expr, printfun)
-     sayMSGNT '%l
+     sayMSGNT '"%l"
 
-  sayALGEBRA [:bright '"LISP",'"output:",'%l,expr or '"NIL"]
+  sayALGEBRA [:bright '"LISP",'"output:",'"%l",expr or '"NIL"]
 
 outputNumber(start,linelength,num) ==
   if start > 1 then blnks := fillerSpaces(start-1,'" ")
   else blnks := '""
-  under:='"__"
+  under := '"__"
   firsttime:=(linelength>3)
   if linelength>2 then
      linelength:=linelength-1 
-  while SIZE(num) > linelength repeat
+  while # num > linelength repeat
     if $collectOutput then
-       $outputLines := [strconc(blnks, SUBSTRING(num,0,linelength),under),
+       $outputLines := [strconc(blnks, subString(num,0,linelength),under),
                         :$outputLines]
     else
       sayALGEBRA [blnks,
-                  SUBSTRING(num,0,linelength),under]
-    num := SUBSTRING(num,linelength,NIL)
+                  subString(num,0,linelength),under]
+    num := subString(num,linelength)
     if firsttime then 
          blnks:=strconc(blnks,'" ")
          linelength:=linelength-1
@@ -1607,13 +1619,13 @@ outputNumber(start,linelength,num) ==
 outputString(start,linelength,str) ==
   if start > 1 then blnks := fillerSpaces(start-1,'" ")
   else blnks := '""
-  while SIZE(str) > linelength repeat
+  while # str > linelength repeat
     if $collectOutput then
-       $outputLines := [strconc(blnks, SUBSTRING(str,0,linelength)),
+       $outputLines := [strconc(blnks, subString(str,0,linelength)),
                         :$outputLines]
     else
-      sayALGEBRA [blnks, SUBSTRING(str,0,linelength)]
-    str := SUBSTRING(str,linelength,NIL)
+      sayALGEBRA [blnks, subString(str,0,linelength)]
+    str := subString(str,linelength)
   if $collectOutput then
     $outputLines := [strconc(blnks, str), :$outputLines]
   else
@@ -1645,7 +1657,7 @@ outputOp x ==
     n:=
       GETL(op,"NARY") => 2
       #args
-    newop:= INTERN strconc("*",STRINGIMAGE n,PNAME op)
+    newop:= INTERN strconc('"*",STRINGIMAGE n,PNAME op)
     [newop,:[outputOp y for y in args]]
   x
 
@@ -1658,7 +1670,7 @@ printMap u ==
     printMap1(x,initialFlag and x is [[n],:.] and n=1)
     for y in l repeat (printBasic " , "; printMap1(y,initialFlag))
   printBasic specialChar 'rbrk
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
 
 isInitialMap u ==
   u is [[[n],.],:l] and integer? n and
@@ -1673,7 +1685,7 @@ printMap1(x,initialFlag) ==
 printBasic x ==
   x='(One) => PRIN1(1,$algebraOutputStream)
   x='(Zero) => PRIN1(0,$algebraOutputStream)
-  IDENTP x => PRINTEXP(PNAME x,$algebraOutputStream)
+  IDENTP x => PRINTEXP(symbolName x,$algebraOutputStream)
   atom x => PRIN1(x,$algebraOutputStream)
   PRIN1(x,$algebraOutputStream)
 
@@ -2051,12 +2063,12 @@ appfrac(u, x, y, d) ==
   -- not possible, expressions are offset to the right rather than left.
   -- MCD 16-8-95
   w := WIDTH u
-  tempx := x + QUOTIENT(1+w - WIDTH second rest u, 2)
+  tempx := x + (1+w - WIDTH second rest u) quo 2
   tempy := y - superspan second rest u - 1
   temparg3 := APP(second rest u, tempx, tempy, d)
   temparg4 := apphor(x, x + w - 1, y, temparg3,specialChar('hbar))
   APP(second u,
-        x + QUOTIENT(1+w - WIDTH second u, 2),
+        x + (1+w - WIDTH second u) quo 2,
           y + 1 + subspan second u,
             temparg4)
 
@@ -2099,7 +2111,7 @@ longext(u, i, n) ==
   y := first x
   u := remWidth(REVERSEWOC(['" ",:rest x]))
   charybdis(u, i, n)
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
   charybdis(['ELSE, :[y]], i, n)
   '" "
 
@@ -2192,10 +2204,10 @@ nothingApp(u, x, y, d) ==
 
 zagApp(u, x, y, d) ==
     w := WIDTH u
-    denx := x + QUOTIENT(w - WIDTH second rest u, 2)
+    denx := x + (w - WIDTH second rest u) quo 2
     deny := y - superspan second rest u - 1
     d    := APP(second rest u, denx, deny, d)
-    numx := x + QUOTIENT(w - WIDTH second u, 2)
+    numx := x + (w - WIDTH second u) quo 2
     numy := y+1 + subspan second u
     d    := APP(second u, numx, numy, d)
     a := 1 + zagSuper u
@@ -2263,7 +2275,7 @@ appmat(u, x, y, d) ==
                      rows := rest rows
                      return(flag  := '"ON"; nil)
             d := APP(first row,
-                     xc + QUOTIENT(first w - WIDTH first row, 2),
+                     xc + (first w - WIDTH first row) quo 2,
                      yc,
                      d)
             xc := xc + 2 + first w
@@ -2271,11 +2283,11 @@ appmat(u, x, y, d) ==
             w := rest w
 
 matSuper(x) ==
-  (x := x.1) => -1 + QUOTIENT(first x.1 + first x.2, 2)
+  (x := x.1) => -1 + (first x.1 + first x.2) quo 2
   true => ERROR('MAT)
 
 matSub(x) ==
-  (x := x.1) => QUOTIENT(-1 + first x.1 + first x.2, 2)
+  (x := x.1) => (-1 + first x.1 + first x.2) quo 2
   true => ERROR('MAT)
 
 matWidth(x) ==
@@ -2342,7 +2354,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
     if null nextu then LAST(u).rest.rest.first := close
     x := ASSOCIATER('CONCAT, [ichr,:u])
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
-    if $collectOutput then TERPRI $algebraOutputStream
+    newlineIfDisplaying()
     ichr := '" "
     u := nextu
     null u => return(nil)
@@ -2412,7 +2424,7 @@ superSubApp(u, x, y, di) ==
 
 stringer x ==
   string? x => x
-  EQ('_|, FETCHCHAR(s:= STRINGIMAGE x, 0)) =>
+  '_| = FETCHCHAR(s:= STRINGIMAGE x, 0) =>
     RPLACSTR(s, 0, 1, "", nil, nil)
   s
 
@@ -2522,7 +2534,7 @@ vconcatapp(u, x, y, d) ==
   y := y + superspan u.1 + 1
   for a in rest u repeat
       y := y - superspan a - 1
-      xoff := QUOTIENT(w - WIDTH a, 2)
+      xoff := (w - WIDTH a) quo 2
       d := APP(a, x + xoff, y, d)
       y := y - subspan a
   d
@@ -2533,10 +2545,10 @@ binomialApp(u, x, y, d) ==
   d := APP('"(",x,y,d)
   x := x + 1
   y1 := y - height a
-  xoff := QUOTIENT(w - WIDTH a, 2)
+  xoff := (w - WIDTH a) quo 2
   d := APP(a, x + xoff, y1, d)
   y2 := y + height b
-  xoff := QUOTIENT(w - WIDTH b, 2)
+  xoff := (w - WIDTH b) quo 2
   d := APP(b, x + xoff, y2, d)
   x := x + w
   APP('")",x,y,d)
@@ -2556,7 +2568,7 @@ binomialSuper u == height u.1 + 1
 binomialWidth u == 2 + MAX(WIDTH u.1, WIDTH u.2)
 
 mathPrint u ==
-  if not $collectOutput then TERPRI $algebraOutputStream
+  newlineIfDisplaying()
   (u := string? mathPrint1(mathPrintTran u, nil) =>
    PSTRING u; nil)
 
@@ -2568,9 +2580,9 @@ mathPrintTran u ==
     u
 
 mathPrint1(x,fg) ==
-  if fg and not $collectOutput then TERPRI $algebraOutputStream
+  if fg then newlineIfDisplaying()
   maPrin x
-  if fg and not $collectOutput then TERPRI $algebraOutputStream
+  if fg then newlineIfDisplaying()
 
 maPrin u ==
   null u => nil
@@ -2606,8 +2618,8 @@ primaryForm2String x ==
   IDENTP x => 
     x = "$" => '"%"
     x = "$$" => '"%%"
-    SYMBOL_-NAME x
-  atom x => WRITE_-TO_-STRING x
+    symbolName x
+  atom x => toString x
   strconc('"(",inputForm2String x, '")")
 
 callForm2String x ==
@@ -2624,15 +2636,15 @@ callForm2String x ==
   op = "$elt" => typedForm2String("$", second args, first args)
   op is ["$elt",t,op'] => typedForm2String("$",[op',:args], t)
   "strconc"/[inputForm2String op, '"(",:args','")"] where
-    args' := [toString(a,i) for a in args for i in 0..]
-    toString(a,i) ==
+    args' := [stringify(a,i) for a in args for i in 0..]
+    stringify(a,i) ==
       i = 0 => inputForm2String a
       strconc('",",inputForm2String a)
   
 typedForm2String(s,x,t) ==
   s = "pretend" =>
     strconc(callForm2String x, '" pretend ", callForm2String t)
-  strconc(callForm2String x, SYMBOL_-NAME s, callForm2String t)
+  strconc(callForm2String x, symbolName s, callForm2String t)
 
 expForm2String x ==
   x is [op,lhs,rhs] and op in '(** _^) =>
@@ -2674,10 +2686,10 @@ parms2String x ==
   x is [var] => var
   if x is ["tuple",:.] then x := rest x
   paren [parm xs for xs in tails x] where
-    paren l == "strconc"/["(",:l,")"]
+    paren l == "strconc"/['"(",:l,'")"]
     parm xs == 
       null rest xs => first xs
-      strconc(first xs, ", ")
+      strconc(first xs, '", ")
 
 inputForm2String x ==
   atom x => primaryForm2String x
@@ -2694,7 +2706,7 @@ inputForm2String x ==
     op in '(_@ _:_: pretend) =>
       typedForm2String(op, first args, second args)
     op = "+->" =>
-       strconc(parms2String second x, " ", first x, " ",
+       strconc(parms2String second x, '" ", first x, '" ",
           inputForm2String third x)
     callForm2String x
   callForm2String x

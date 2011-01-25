@@ -36,6 +36,22 @@ import initial_-env
 namespace BOOTTRAN
 module tokens
 
+++ converts `x', a 1-length symbol, to a character.
+char x ==
+  stringChar(symbolName x, 0)
+
+shoeStartsId x ==
+  alphabetic? x or x in [char "$", char "?", char "%"]
+
+shoeIdChar x ==
+  alphanumeric? x or x in [char "'", char "?", char "%"]
+
+++ return the sub-string of `s' starting from `f'.
+++ When non-nil, `n' designates the length of the sub-string.
+subString(s,f,n == nil) ==
+  n = nil => subSequence(s,f)
+  subSequence(s,f,f + n)
+
 ++ Table of Boot keywords and their token name.
 shoeKeyWords == [  _
             ['"and","AND"] , _
@@ -44,6 +60,7 @@ shoeKeyWords == [  _
             ['"catch","CATCH"], _
             ['"cross","CROSS"] , _
             ['"else", "ELSE"] , _
+            ['"finally", "FINALLY"], _
             ['"for",  "FOR"] , _
             ['"has", "HAS"] , _
             ['"if", "IF"], _
@@ -56,8 +73,10 @@ shoeKeyWords == [  _
             ['"namespace", "NAMESPACE"], _
             ['"of",   "OF"] , _
             ['"or",   "OR"] , _
+            ['"rem",  "REM"], _
             ['"repeat", "REPEAT"] , _
             ['"return", "RETURN"], _
+            ['"quo",     "QUO"], _
             ['"structure", "STRUCTURE"], _
             ['"then",  "THEN"], _
             ['"throw", "THROW"], _
@@ -112,65 +131,48 @@ shoeKeyTableCons()==
  
 shoeKeyTable:=shoeKeyTableCons()
  
-shoeSPACE       == QENUM('"    ", 0)
- 
-shoeESCAPE      == QENUM('"__  ", 0)
-shoeLispESCAPE      := QENUM('"!  ", 0)
- 
-shoeSTRING_CHAR == QENUM('"_"  ", 0)
- 
-shoePLUSCOMMENT == QENUM('"+   ", 0)
- 
-shoeMINUSCOMMENT == QENUM('"-   ", 0)
- 
-shoeDOT          == QENUM('".   ", 0)
- 
-shoeEXPONENT1   == QENUM('"E   ", 0)
- 
-shoeEXPONENT2   == QENUM('"e   ", 0)
- 
-shoeCLOSEPAREN  == QENUM('")   ", 0)
- 
---shoeCLOSEANGLE  == QENUM('">   ", 0)
-shoeTAB == 9
- 
 shoeInsert(s,d) ==
-      l := #s
-      h := QENUM(s,0)
-      u := ELT(d,h)
-      n := #u
-      k:=0
-      while l <= #(ELT(u,k)) repeat
-          k:=k+1
-      v := MAKE_-VEC(n+1)
-      for i in 0..k-1 repeat VEC_-SETELT(v,i,ELT(u,i))
-      VEC_-SETELT(v,k,s)
-      for i in k..n-1 repeat VEC_-SETELT(v,i+1,ELT(u,i))
-      VEC_-SETELT(d,h,v)
-      s
+  l := #s
+  h := codePoint stringChar(s,0)
+  u := d.h
+  n := #u
+  k:=0
+  while l <= #u.k repeat
+      k:=k+1
+  v := newVector(n+1)
+  for i in 0..k-1 repeat
+    v.i := u.i
+  v.k := s
+  for i in k..n-1 repeat
+    v.(i+1) := u.i
+  d.h := v
+  s
  
 shoeDictCons()==
-      l:= HKEYS shoeKeyTable
-      d :=
-          a:=MAKE_-VEC(256)
-          b:=MAKE_-VEC(1)
-          VEC_-SETELT(b,0,MAKE_-CVEC 0)
-          for i in 0..255 repeat VEC_-SETELT(a,i,b)
-          a
-      for s in l repeat shoeInsert(s,d)
-      d
+  l := HKEYS shoeKeyTable
+  d :=
+    a := newVector 256
+    b := newVector 1
+    b.0 := newString 0
+    for i in 0..255 repeat
+      a.i := b
+    a
+  for s in l repeat
+    shoeInsert(s,d)
+  d
  
 shoeDict:=shoeDictCons()
  
  
 shoePunCons()==
-    listing := HKEYS shoeKeyTable
-    a:=MAKE_-BVEC 256
-    for i in 0..255 repeat BVEC_-SETELT(a,i,0)
-    for k in listing repeat
-       if not shoeStartsId k.0
-       then BVEC_-SETELT(a,QENUM(k,0),1)
-    a
+  listing := HKEYS shoeKeyTable
+  a := MAKE_-BVEC 256
+  for i in 0..255 repeat
+    bitmask(a,i) := 0
+  for k in listing repeat
+    shoeStartsId k.0 => nil
+    bitmask(a,codePoint stringChar(k,0)) := 1
+  a
  
 shoePun:=shoePunCons()
 
@@ -187,6 +189,8 @@ for i in [ _
 for i in [      _
         ["SHOEEQ"    ,"="], _
         ["TIMES"    ,"*"], _
+        ["REM",    "rem"],_
+        ["QUO",    "quo"],_
         ["PLUS" ,"+"], _
         ["IS"   ,"is"], _
         ["ISNT" ,"isnt"], _
@@ -234,16 +238,23 @@ for i in [ _
        repeat property(first i,'SHOETHETA) := rest i
 
 for i in [ _
+  ["abs",        "ABS"], _
+  ["abstractChar", "CODE-CHAR"], _
   ["alphabetic?", "ALPHA-CHAR-P"], _
+  ["alphanumeric?", "ALPHANUMERICP"], _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
   ["atom",        "ATOM"]  , _
+  ["bitmask",   "SBIT"] , _
+  ["canonicalFilename", "PROBE-FILE"], _
+  ["charString", "STRING"] , _
   ["char?", "CHARACTERP"]  , _
+  ["codePoint", "CHAR-CODE"], _
   ["cons?",      "CONSP"]  , _
   ["copy",        "COPY"]  , _
   ["croak",      "CROAK"]  , _
-  ["digit?",    "DIGITP"]  , _
+  ["digit?",    "DIGIT-CHAR-P"]  , _
   ["drop",        "DROP"]  , _
   ["exit",        "EXIT"]  , _
   ["false",        'NIL]   , _
@@ -259,6 +270,8 @@ for i in [ _
   ["lowerCase?", "LOWER-CASE-P"], _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
+  ["newString", "MAKE-STRING"], _
+  ["newVector", "MAKE-ARRAY"], _
   ["nil"           ,NIL ]  , _
   ["not",         "NOT"]  , _
   ["nreverse", "NREVERSE"]  , _
@@ -279,12 +292,18 @@ for i in [ _
   ["setPart",   "SETELT"]  , _
   ["setUnion",   "UNION"]  , _
   ["strconc",  "CONCAT"]  , _
+  ["stringChar", "SCHAR"] , _
   ["string?",  "STRINGP"]  ,_
+  ["subSequence", "SUBSEQ"] , _
   ["substitute",  "SUBST"]  , _
   ["substitute!", "NSUBST"]  , _
+  ["symbolFunction", "SYMBOL-FUNCTION"], _
+  ["symbolName", "SYMBOL-NAME"], _
+  ["symbolValue", "SYMBOL-VALUE"], _
   ["symbol?",  "SYMBOLP"]  , _
   ["take",        "TAKE"]  , 
   ["third",      "CADDR"] , _
+  ["toString", "WRITE-TO-STRING"], _
   ["true",           "T"]  , _
   ["upperCase?", "UPPER-CASE-P"], _
   ["vector?", "SIMPLE-VECTOR-P"], _
@@ -294,6 +313,8 @@ for i in [ _
   ["MINUS",     "-"]  , _
   ["TIMES",          "*"]  , _
   ["POWER",          "EXPT"]  , _
+  ['REM,          'REM],_
+  ['QUO,     'TRUNCATE],_
   ["SLASH",       "/"]  , _
   ["LT",              "<"], _
   ["GT",              ">"] , _

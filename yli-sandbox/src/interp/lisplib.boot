@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -268,23 +268,23 @@ systemDependentMkAutoload(fn,cnam) ==
          kind = 'category =>
               ASHARPMKAUTOLOADCATEGORY(file, cnam, asharpName, cosig)
          ASHARPMKAUTOLOADFUNCTOR(file, cnam, asharpName, cosig)
-    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 autoLoad(abb,cname) ==
   -- builtin constructors are always loaded.  By definition, there
   -- is no way to unload them and load them again.
   cname in $BuiltinConstructorNames => cname
   if not GETL(cname,'LOADED) then loadLib cname
-  SYMBOL_-FUNCTION cname
+  symbolFunction cname
 
 setAutoLoadProperty(name) ==
 --  abb := constructor? name
   REMPROP(name,'LOADED)
-  SETF(SYMBOL_-FUNCTION name,mkAutoLoad(constructor? name, name))
+  symbolFunction(name) := mkAutoLoad(constructor? name, name)
 
 unloadOneConstructor(cnam,fn) ==
     REMPROP(cnam,'LOADED)
-    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 --% Compilation
  
@@ -369,19 +369,19 @@ compDefineLisplib(df:=["DEF",[op,:.],:.],m,e,prefix,fal,fn) ==
   -- finalizeLisplib libName
   -- following guarantee's compiler output files get closed.
   ok := false;
-  UNWIND_-PROTECT(
-      PROGN(res:= FUNCALL(fn,df,m,e,prefix,fal),
-            leaveIfErrors(libName),
-            sayMSG ['"   finalizing ",$spadLibFT,:bright libName],
-            ok := finalizeLisplib libName),
-      RSHUT $libFile)
+  try
+    res:= FUNCALL(fn,df,m,e,prefix,fal)
+    leaveIfErrors(libName)
+    sayMSG ['"   finalizing ",$spadLibFT,:bright libName]
+    ok := finalizeLisplib libName
+  finally RSHUT $libFile
   if ok then lisplibDoRename(libName)
   filearg := $FILEP(libName,$spadLibFT,$libraryDirectory)
   RPACKFILE filearg
   FRESH_-LINE $algebraOutputStream
   sayMSG fillerSpaces(72,'"-")
   unloadOneConstructor(op,libName)
-  LOCALDATABASE([SYMBOL_-NAME getConstructorAbbreviationFromDB op],NIL)
+  LOCALDATABASE([symbolName getConstructorAbbreviationFromDB op],NIL)
   $newConlist := [op, :$newConlist]  ---------->  bound in function "compiler"
   res
  
@@ -566,13 +566,13 @@ findConstructorSlotNumber(domainForm,domain,op,sig) ==
   tail:= or/[r for [[op1,sig1],:r] in domain.1 | op=op1 and nsig=#sig1 and
     "and"/[compare for a in sig for b in sig1]] where compare() ==
       a=b => true
-      FIXP b => a=constructorArglist.b
+      integer? b => a=constructorArglist.b
       isSubset(bustUnion a,bustUnion b,$CategoryFrame)
   tail is [.,["ELT",.,n]] => n
   systemErrorHere ["findConstructorSlotNumber",domainForm]
  
 bustUnion d ==
-  d is ["Union",domain,utype] and utype='"failed" => domain
+  d is ["Union",domain,'"failed"] => domain
   d
  
 getSlotNumberFromOperationAlist(domainForm,op,sig) ==
@@ -592,7 +592,7 @@ sigsMatch(sig,sig1,domainForm) ==
   while sig and sig1 repeat
     partsMatch:=
       (item:= first sig)=(item1:= first sig1) => true --ok, go to next iteration
-      FIXP item1 => item = domainForm.item1       --item1=n means nth arg
+      integer? item1 => item = domainForm.item1       --item1=n means nth arg
       isSubset(bustUnion item1,bustUnion item,$CategoryFrame)
     null partsMatch => return nil
     sig:= rest sig; sig1 := rest sig1
@@ -676,7 +676,7 @@ getAllAldorObjectFiles dir ==
   -- only sensical .asy files.
   dupAOs := MAPCAN(function PATHNAME_-NAME,asys)
   [asys,[f for f in asos 
-          | PATHNAME_-NAME f='"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
+          | PATHNAME_-NAME f = '"ao" and not member(PATHNAME_-NAME f,dupAOs)]]
     
 
 
@@ -721,7 +721,7 @@ compDefineExports(form,ops,sig,e) ==
             entry.rest.rest.first := [op,a,nil]
     ops := listSort(function GGREATERP, ops, function first)
   libName := getConstructorAbbreviation op
-  exportsFile := strconc(STRING libName,'".sig")
+  exportsFile := strconc(symbolName libName,'".sig")
   removeFile exportsFile
   withOutputFile(s,exportsFile, 
     PRETTYPRINT(

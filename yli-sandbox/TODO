@@ -21,8 +21,6 @@
 * Better support on Windows platform (MinGW/MSYS)
 * Modernize algebras
 * Better documentations
-* Find better documentation tools and formats that do not get in
-  the way of building the system on more platforms.
 * Interfaces to mainstream programming languages
 * Improve Boot, Spad
 * Integrate to development environments
@@ -57,6 +55,13 @@
 ============
 === DONE ===
 ============
+
+* Remove dependency on noweb.
+
+* The installed system no longer requires AWK.
+
+* Find better documentation tools and formats that do not get in
+  the way of building the system on more platforms.
 
 * FFI support for Spad
 

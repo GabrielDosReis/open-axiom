@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,9 +36,9 @@
 #ifndef OPENAXIOM_BSDSIGNAL_included
 #define OPENAXIOM_BSDSIGNAL_included
 
-#include "open-axiom.h"
-
 #include <signal.h>
+
+#include "open-axiom.h"
 
 #ifdef SIGCHLD
 #  define OPENAXIOM_SIGCHLD SIGCHLD
@@ -51,6 +51,6 @@
 
 
 typedef void (* SignalHandlerFunc)(int);
-OPENAXIOM_EXPORT SignalHandlerFunc bsdSignal(int, SignalHandlerFunc, int);
+OPENAXIOM_C_EXPORT SignalHandlerFunc bsdSignal(int, SignalHandlerFunc, int);
 
 #endif	    /* OPENAXIOM_BSDSIGNAL_included */

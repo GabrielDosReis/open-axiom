@@ -1,10 +1,7 @@
-#ifndef OPENAXIOM_CFUNS_included
-#define OPENAXIOM_CFUNS_included
-
 /*
   Copyright (C) 1991-2002, The Numerical ALgorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights resrved.
 
   Redistribution and use in source and binary forms, with or without
@@ -36,41 +33,44 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef OPENAXIOM_CFUNS_included
+#define OPENAXIOM_CFUNS_included
+
 #include "open-axiom.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif   
+namespace OpenAxiom {
 
-OPENAXIOM_EXPORT int addtopath(char*);
-OPENAXIOM_EXPORT int directoryp(char*);
-OPENAXIOM_EXPORT int make_path_from_file(char*, char*);
-OPENAXIOM_EXPORT int writeablep(char*);
-OPENAXIOM_EXPORT int readablep(char*);
-OPENAXIOM_EXPORT long findString(char*, char*);
-OPENAXIOM_EXPORT int copyEnvValue(char*, char*);
-OPENAXIOM_EXPORT int oa_chdir(const char*);
-OPENAXIOM_EXPORT int oa_unlink(const char*);
-OPENAXIOM_EXPORT int oa_rename(const char*, const char*);
-OPENAXIOM_EXPORT int oa_mkdir(const char*);
-OPENAXIOM_EXPORT int oa_system(const char*);
-OPENAXIOM_EXPORT char* oa_getenv(const char*);
-OPENAXIOM_EXPORT int oa_setenv(const char*, const char*);
-OPENAXIOM_EXPORT int oa_getpid(void);
-OPENAXIOM_EXPORT char* oa_getcwd(void);
-OPENAXIOM_EXPORT int oa_access_file_for_read(const char*);
-OPENAXIOM_EXPORT char* oa_dirname(const char*);
-OPENAXIOM_EXPORT const char* oa_get_tmpdir(void);
-OPENAXIOM_EXPORT int oa_copy_file(const char*, const char*);
+OPENAXIOM_C_EXPORT int addtopath(char*);
+OPENAXIOM_C_EXPORT int directoryp(char*);
+OPENAXIOM_C_EXPORT int make_path_from_file(char*, char*);
+OPENAXIOM_C_EXPORT int writeablep(char*);
+OPENAXIOM_C_EXPORT int readablep(char*);
+OPENAXIOM_C_EXPORT long findString(char*, char*);
+OPENAXIOM_C_EXPORT int copyEnvValue(char*, char*);
+OPENAXIOM_C_EXPORT int oa_chdir(const char*);
+OPENAXIOM_C_EXPORT int oa_unlink(const char*);
+OPENAXIOM_C_EXPORT int oa_rename(const char*, const char*);
+OPENAXIOM_C_EXPORT int oa_mkdir(const char*);
+OPENAXIOM_C_EXPORT int oa_system(const char*);
+OPENAXIOM_C_EXPORT char* oa_getenv(const char*);
+OPENAXIOM_C_EXPORT int oa_setenv(const char*, const char*);
+OPENAXIOM_C_EXPORT int oa_getpid(void);
+OPENAXIOM_C_EXPORT char* oa_getcwd(void);
+OPENAXIOM_C_EXPORT int oa_access_file_for_read(const char*);
+OPENAXIOM_C_EXPORT char* oa_dirname(const char*);
+OPENAXIOM_C_EXPORT const char* oa_get_tmpdir(void);
+OPENAXIOM_C_EXPORT int oa_copy_file(const char*, const char*);
 
-OPENAXIOM_EXPORT double plus_infinity(void);
-OPENAXIOM_EXPORT double minus_infinity(void);
-OPENAXIOM_EXPORT double quiet_double_NaN(void);
-OPENAXIOM_EXPORT openaxiom_byteorder oa_get_host_byteorder(void);
+OPENAXIOM_C_EXPORT double plus_infinity(void);
+OPENAXIOM_C_EXPORT double minus_infinity(void);
+OPENAXIOM_C_EXPORT double quiet_double_NaN(void);
+OPENAXIOM_C_EXPORT Byteorder oa_get_host_byteorder(void);
 
+OPENAXIOM_C_EXPORT const char* oa_concatenate_string(const char*, const char*);
+OPENAXIOM_C_EXPORT const char* oa_strcat(const char*, const char*);
+OPENAXIOM_C_EXPORT char* oa_substr(const char*, const size_t, const size_t);
+OPENAXIOM_C_EXPORT char** oa_split(const char*, const char*, int*);
 
-#ifdef __cplusplus
 }
-#endif   
-   
+
 #endif /* OPENAXIOM_CFUNS_included */

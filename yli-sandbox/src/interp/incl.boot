@@ -53,13 +53,13 @@ ElseifSkipPart  == 22
 ElseSkipToEnd   == 30
 ElseKeepPart    == 31
  
-Top?     (st) == QUOTIENT(st,10) = 0
-If?      (st) == QUOTIENT(st,10) = 1
-Elseif?  (st) == QUOTIENT(st,10) = 2
-Else?    (st) == QUOTIENT(st,10) = 3
-SkipEnd? (st) == REMAINDER(st,10) = 0
-KeepPart?(st) == REMAINDER(st,10) = 1
-SkipPart?(st) == REMAINDER(st,10) = 2
+Top?     (st) == st quo 10 = 0
+If?      (st) == st quo 10 = 1
+Elseif?  (st) == st quo 10 = 2
+Else?    (st) == st quo 10 = 3
+SkipEnd? (st) == st rem 10 = 0
+KeepPart?(st) == st rem 10 = 1
+SkipPart?(st) == st rem 10 = 2
 Skipping?(st) == not KeepPart? st
  
 incStringStream s==
@@ -136,7 +136,7 @@ incCommandTail(s, info) ==
  
 incDrop(n, b) ==
             n >= #b => ""
-            SUBSTRING(b,n,nil)
+            subString(b,n)
  
  
 inclFname(s, info) == incFileName incCommandTail(s, info)
@@ -148,12 +148,12 @@ incBiteOff x ==
           else
              n1:=STRPOSL ('" ",x,n,nil)
              if null n1 -- all nonspaces
-             then [SUBSTRING(x,n,nil),'""]
-             else [SUBSTRING(x,n,n1-n),SUBSTRING(x,n1,nil)]
+             then [subString(x,n),'""]
+             else [subString(x,n,n1-n),subString(x,n1)]
  
 incTrunc (n,x)==
      if #x>n
-     then SUBSTRING(x,0,n)
+     then subString(x,0,n)
      else x
  
 incFileName x == first incBiteOff x

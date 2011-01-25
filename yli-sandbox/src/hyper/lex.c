@@ -66,8 +66,6 @@
 #include "debug.h"
 #include "sockio.h"
 
-int useAscii;
-
 #define PARSER 1
 
 #include "halloc.h"
@@ -75,9 +73,15 @@ int useAscii;
 #include "node.h"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 static int get_char1(void );
 static void spad_error_handler(void );
 static int keyword_type(void );
+
+
+
+int useAscii;
 
 extern int gTtFontIs850;
 extern HDWindow *gWindow;
@@ -114,7 +118,7 @@ char sock_buf[1024];            /* buffer for socket input */
 
 static HashTable tokenHashTable;           /* hash table of parser tokens */
 
-char* token_table[] = {
+const char* token_table[] = {
   "",           /* Dummy token name */
   "word",
   "page",
@@ -476,7 +480,7 @@ get_token(void)
         last_token = 0;
         token.type = unget_toke.type;
         strcpy(buffer, unget_toke.id);
-        free(unget_toke.id);
+        free((char*) unget_toke.id);
         token.id = buffer + 1;
         if (token.type == EOF)
             return EOF;

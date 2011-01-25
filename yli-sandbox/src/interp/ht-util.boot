@@ -130,15 +130,15 @@ htpLabelFilteredInputString(htPage, label) ==
   props := LASSOC(label, htpInputAreaAlist htPage)
   props =>
     #props > 5 and props.6 =>
-      FUNCALL(SYMBOL_-FUNCTION props.6, props.0)
+      FUNCALL(symbolFunction props.6, props.0)
     replacePercentByDollar props.0
   nil
 
 replacePercentByDollar s == fn(s,0,MAXINDEX s) where
   fn(s,i,n) ==
     i > n => '""
-    (m := charPosition(char "%",s,i)) > n => SUBSTRING(s,i,nil)
-    strconc(SUBSTRING(s,i,m - i),'"$",fn(s,m + 1,n))
+    (m := charPosition(char "%",s,i)) > n => subString(s,i)
+    strconc(subString(s,i,m - i),'"$",fn(s,m + 1,n))
 
 htpSetLabelInputString(htPage, label, val) ==
 -- value user typed as input string on page
@@ -230,20 +230,11 @@ basicStringize s ==
     s = '"{\em $}" => '"{\em \%}"
     s
   s = '_$ => '"\%"
-  PRINC_-TO_-STRING s
+  toString s
 
 stringize s ==
   string? s => s
-  PRINC_-TO_-STRING s
-
---htInitPageNoHeading(propList) ==
------------------------> replaced by htInitPageNoScroll
--- start defining a hyperTeX page
---  $curPage := htpMakeEmptyPage(propList)
---  if $saturn then $saturnPage := htpMakeEmptyPage(propList)
---  $newPage := true
---  $htLineList := nil
---  $curPage
+  toString s
 
 htQuote s ==
 -- wrap quotes around a piece of hyperTeX
@@ -405,14 +396,14 @@ htMakeTemplates(templateList, numLabels) ==
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
       cons? template =>
-        INTERN strconc(first template, PRINC_-TO_-STRING i, rest template)
+        INTERN strconc(first template, toString i, rest template)
       template
 
 templateParts template ==
   null string? template => template
   i := SEARCH('"%l", template)
   null i => template
-  [SUBSEQ(template, 0, i), : SUBSEQ(template, i+2)]
+  [subSequence(template, 0, i), : subSequence(template, i+2)]
 
 htMakeDoneButton(message, func) ==
   bcHt '"\newline\vspace{1}\centerline{"
@@ -570,8 +561,8 @@ bracketString string == strconc('"[",string,'"]")
 
 quoteString string == strconc('"_"", string, '"_"")
 
-$funnyQuote := char 127
-$funnyBacks := char 128
+$funnyQuote := abstractChar 127
+$funnyBacks := abstractChar 128
 
 htEscapeString str ==
   str := SUBSTITUTE($funnyQuote, char '_", str)

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -175,7 +175,7 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   htSayStandard '"\indentrel{2}"
   if nargs > 0 then kPageArgs(conform,signature)
   htSayStandard '"\indentrel{-2}"
-  if name.(#name-1) = char "&" then name := SUBSEQ(name, 0, #name-1)
+  if name.(#name-1) = char "&" then name := subSequence(name, 0, #name-1)
 --sourceFileName := dbSourceFile INTERN name
   sourceFileName := getConstructorSourceFileFromDB INTERN name
   filename := extractFileNameFromPath sourceFileName
@@ -427,7 +427,7 @@ kcPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   if kind = '"category" and dbpHasDefaultCategory? xpart then
     htSay '"This category has default package "
-    bcCon(strconc(name,char '_&),'"")
+    bcCon(strconc(name,'"&"),'"")
   htSayStandard '"\newline"
   htBeginMenu(3)
   htSayStandard '"\item "
@@ -581,9 +581,9 @@ kcdePage(htPage,junk) ==
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
---  kind = '"category" => INTERN strconc(name,char '_&)
+--  kind = '"category" => INTERN strconc(name,'"&")
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -597,9 +597,9 @@ kcuPage(htPage,junk) ==
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc(char 'd,args)]  --because of &
+    [INTERN name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
-    kind = '"category" => INTERN strconc(name,char '_&)
+    kind = '"category" => INTERN strconc(name,'"&")
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -620,7 +620,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN strconc(PNAME name,char '_&)
+    kind = '"category" => INTERN strconc(PNAME name,'"&")
     opOf conform
   domList := getImports pakname
   if domname then
@@ -711,7 +711,7 @@ mkConform(kind,name,argString) ==
       systemError '"Keywords in argument list?"
     atom parse => [parse]
     parse
-  [INTERN name,:rest ncParseFromString strconc(char 'd,argString)]  --& case
+  [INTERN name,:rest ncParseFromString strconc('"d",argString)]  --& case
 
 --=======================================================================
 --           Operation Page for a Domain Form from Scratch
@@ -875,7 +875,7 @@ dbGetDocTable(op,$sig,docTable,$which,aux) == main where
 --docTable is [[origin,entry1,...,:code] ...] where
 --  each entry is [sig,doc] and code is NIL or else a topic code for op
   main() ==
-    if null FIXP op and
+    if not integer? op and
       digit?((s := STRINGIMAGE op).0) then op := string2Integer s
     -- the above hack should be removed after 3/94 when 0 is not |0|
     aux is [[packageName,:.],:pred] =>
@@ -1126,9 +1126,9 @@ dbConsHeading(htPage,conlist,view,kind) ==
     nil
   heading := [:prefix,:placepart]
   connective :=
-    member(view,'(abbrs files kinds)) => '" as "
+    view in '(abbrs files kinds) => '" as "
     '" with "
-  if count ~= 0 and member(view,'(abbrs files parameters conditions)) then heading:= [:heading,'" viewed",connective,'"{\em ",STRINGIMAGE view,'"}"]
+  if count ~= 0 and view in '(abbrs files parameters conditions) then heading:= [:heading,'" viewed",connective,'"{\em ",STRINGIMAGE view,'"}"]
   heading
 
 dbShowConstructorLines lines ==
@@ -1317,7 +1317,7 @@ digits2Names s ==
   for i in 0..MAXINDEX s repeat
     c := s.i
     segment :=
-      n := DIGIT_-CHAR_-P c =>
+      n := digit? c =>
         ('("Zero" "One" "Two" "Three" "Four" "Five" "Six" "Seven" "Eight" "Nine")).n
       c
     strconc(str, segment)

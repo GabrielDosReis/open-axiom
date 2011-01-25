@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -296,7 +296,7 @@ computeTypeWithVariablesTarget(p, q) ==
 bottomUpCompile t ==
   $genValue:local := false
   ms := bottomUp t
-  mutateToBackendCode objVal getValue t
+  massageBackendCode objVal getValue t
   ms
 
 bottomUpUseSubdomain t ==
@@ -579,9 +579,9 @@ removeUnionsAtStart(argl,modeSets) ==
 printableArgModeSetList() ==
   amsl := nil
   for a in reverse $origArgModeSetList repeat
-    b := prefix2String first a
+    b := first a
     if atom b then b := [b]
-    amsl := ['%l,:b,:amsl]
+    amsl := ['"%l",b,:amsl]
   if amsl then amsl := rest amsl
   amsl
 
@@ -629,7 +629,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
   (opName ~= "elt") and (opName ~= "apply") and
     isEltable(op, argl, #argl) and (u := bottomUpElt t) => u
 
-  if FIXP $HTCompanionWindowID then
+  if integer? $HTCompanionWindowID then
     mkCompanionPage('operationError, t)
 
   amsl := printableArgModeSetList()
@@ -642,7 +642,7 @@ bottomUpForm0(t,op,opName,argl,argModeSetList) ==
 
   if null(opName1) then
     opName1 :=
-        (o := getValue op0) => prefix2String objMode o
+        (o := getValue op0) => objMode o
         '"<unknown type>"
     msgKey :=
         null amsl => "S2IB0013"

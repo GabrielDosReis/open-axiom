@@ -42,7 +42,6 @@
 
 ;;; Common  Block
 
-(defconstant |$Newline| #\Newline)
 (defvar |$preserveSystemLisplib| t "if nil finalizeLisplib does MA REP")
 (defvar |$reportInstantiations| nil)
 (defvar |$reportEachInstantiation| nil)
@@ -51,7 +50,6 @@
 (defvar |$functorForm| nil "checked in addModemap0")
 (defvar |$Rep| '|$Rep| "should be bound to gensym? checked in coerce")
 (defvar |$definition| nil "checked in DomainSubstitutionFunction")
-(defvar |$getPutTrace| nil)
 (defvar |$formulaFormat| nil "if true produce script formula output")
 (defvar |$texFormat| nil "if true produce tex output")
 (defvar |$fortranFormat| nil "if true produce fortran output")
@@ -244,20 +242,6 @@
     (sort (copy-seq seq) (function (lambda (x y) (SPADCALL X Y SPADFN)))))
 
 #-Lucid
-(defun QUOTIENT2 (X Y) (values (TRUNCATE X Y)))
-
-#+Lucid
-(defun QUOTIENT2 (X Y) ; following to force error check in division by zero
-  (values (if (zerop y) (truncate 1 Y) (TRUNCATE X Y))))
-
-#-Lucid
-(define-function 'REMAINDER2 #'REM)
-
-#+Lucid
-(defun REMAINDER2 (X Y)
-  (if (zerop y) (REM 1 Y) (REM X Y)))
-
-#-Lucid
 (defun DIVIDE2 (X Y) (multiple-value-call #'cons (TRUNCATE X Y)))
 
 #+Lucid
@@ -290,7 +274,6 @@
         |$insideCategoryIfTrue| |$insideCapsuleFunctionIfTrue| |$form|
         (|$e| |$EmptyEnvironment|)
         (|$genSDVar| 0)
-        (|$VariableCount| 0)
         (|$previousTime| (TEMPUS-FUGIT)))
     (|compileParseTree| X)))
 

@@ -1,7 +1,7 @@
 /*
     Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
     All rights reserved.
-    Copyright (C) 2007-2009, Gabriel Dos Reis.
+    Copyright (C) 2007-2010, Gabriel Dos Reis.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
@@ -51,13 +51,14 @@
 #include "com.h"
 #include "bsdsignal.h"
 
-#include "openpty.H1"
-#include "prt.H1"
-#include "edin.H1"
-#include "wct.H1"
-#include "edible.H1"
-#include "fnct_key.H1"
+#include "openpty.h"
+#include "prt.h"
+#include "edin.h"
+#include "wct.h"
+#include "fnct_key.h"
 #include "cfuns.h"
+
+using namespace OpenAxiom;
 
 #ifdef AXIOM_UNLIKELY
 #define log 1
@@ -67,6 +68,13 @@
 
 
 #define Cursor_shape(x) 
+
+static void check_flip(void);
+static void catch_signals(void);
+static void init_parent(void);
+static void set_function_chars(void);
+static void flip_canonical(int );
+static void flip_raw(int );
 
 
 #ifdef siglog
@@ -129,7 +137,7 @@ main(int argc, char *argv[])
   
   
 
-  putenv("LC_ALL=C");
+  putenv((char*) "LC_ALL=C");
   setlocale(LC_ALL, "");
   /* try to get a pseudoterminal to play with */
   if (ptyopen(&contNum, &serverNum, serverPath) == -1) {
@@ -274,11 +282,11 @@ main(int argc, char *argv[])
     }
 #endif
     
-    code = select(FD_SETSIZE,(void *) &rfds, NULL, NULL, NULL);
+    code = select(FD_SETSIZE, &rfds, NULL, NULL, NULL);
     for(; code < 0 ;) {
       if(errno == EINTR) {
         check_flip();
-        code = select(FD_SETSIZE,(void *) &rfds, NULL, NULL, NULL);
+        code = select(FD_SETSIZE, &rfds, NULL, NULL, NULL);
       }
       else  {
         perror("clef select failure");
@@ -324,7 +332,7 @@ main(int argc, char *argv[])
 }
 
 
-void
+static void
 init_parent(void)
 {
   
@@ -370,7 +378,7 @@ init_parent(void)
 }
 
 
-void 
+static void 
 hangup_handler(int sig)
 {
 #ifdef siglog
@@ -392,7 +400,7 @@ hangup_handler(int sig)
   exit(-1);
 }
 
-void 
+static void 
 terminate_handler(int sig)
 {
 #ifdef siglog
@@ -414,7 +422,7 @@ terminate_handler(int sig)
   exit(0);
 }
 
-void 
+static void 
 interrupt_handler(int sig)
 {
 #ifdef siglog
@@ -426,7 +434,7 @@ interrupt_handler(int sig)
   kill(child_pid, SIGINT);
 }
 
-void 
+static void 
 child_handler(int sig)
 {
 #ifdef siglog
@@ -448,7 +456,7 @@ child_handler(int sig)
   exit(0);
 }
 
-void 
+static void 
 alarm_handler(int sig)
 {
   int newppid = getppid();
@@ -478,7 +486,7 @@ alarm_handler(int sig)
 }
 
 /* a procedure which tells my parent how to catch signals from its children */
-void
+static void
 catch_signals(void) 
 {
 #ifdef siglog
@@ -498,7 +506,7 @@ catch_signals(void)
 /* Here is where I check the child's termio settings, and try to copy them.
    I simply trace through the main modes (CLEFRAW,  CLEFCANONICAL) and
    try to simulate them */
-void 
+static void 
 check_flip(void)
 {
   return;
@@ -529,7 +537,7 @@ check_flip(void)
 
 
 
-void
+static void
 flip_raw(int chann)
 {
   
@@ -543,7 +551,7 @@ flip_raw(int chann)
 }
 
 
-void
+static void
 flip_canonical(int chann)
 {
   if(tcsetattr(0, TCSAFLUSH, &canonbuf) == -1) {
@@ -556,22 +564,10 @@ flip_canonical(int chann)
     Cursor_shape(2);
 }
 
-void
-etc_get_next_line(char * line,int * nr,int  fd)
-{
-  *nr = read(fd, line, 1024);
-  if(*nr == -1) {
-    perror("Reading /etc/master");
-  }
-  if(*nr == 0) {
-    fprintf(stderr, "Not found \n");
-  }
-}
-
 #define etc_whitespace(c) ((c == ' ' || c == '\t')?(1):(0))
 
 
-void
+static void
 set_function_chars(void)
 {
   /* get the special characters */

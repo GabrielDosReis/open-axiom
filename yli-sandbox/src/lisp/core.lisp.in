@@ -38,13 +38,12 @@
 ;; 
 ;; -*- Abstract -*-
 ;; 
-;;  This pamphlet defines the core of the system utilities for building
+;;  This file defines the core of the system utilities for building
 ;;  Boot and OpenAxiom executable.  It essentially etablishes a namespace
 ;;  (package AxiomCore) and defines some macros and functions
-;;  that need to be present during during compilation and executable
+;;  that need to be present during compilation and executable
 ;;  image construction.
 ;; 
-
 
 (defpackage "AxiomCore"
   #+:common-lisp (:use "COMMON-LISP")
@@ -95,8 +94,6 @@
 
 	   "getOptionValue"
            "getCommandLineArguments"
-           "processCommandLine"
-           "handleCommandLine"
            "$originalLispTopLevel"
            "link"
            "installDriver"
@@ -131,6 +128,10 @@
 (defconstant |$buildPlatform| "@build@")
 (defconstant |$targetPlatform| "@target@")
 
+;; How to invoke the host C++ compiler and linker flags
+(defconstant oa-cxx "@CXX@")
+(defconstant oa-ldflags "@LDFLAGS@")
+
 ;; The directory that contains the final installation directory, as
 ;; specified at configuration time (or in exoteric cases, as overriden
 ;; on the Make command line). 
@@ -143,9 +144,9 @@
 
 ;; Lisp compiler optimization settings.
 (defconstant |$LispOptimizeOptions|
-  '(@axiom_optimize_options@))
+  '(@oa_optimize_options@))
 
-(proclaim '(optimize @axiom_optimize_options@))
+(proclaim '(optimize @oa_optimize_options@))
 
 ;; Enablig profiling of generated Lisp codes.
 (defconstant |$EnableLispProfiling| @oa_enable_profiling@)
@@ -330,7 +331,7 @@
 ;;    --prologue=<lisp-code>: Run <lisp-code> just before the main entry point.
 ;;    --make: boot, lisp, or fasl files
 (defparameter |$driverTable| 
-  (make-hash-table :test #'equal :size 5))
+  (make-hash-table :test #'equal :size 10))
 
 
 ;; Look up the driver that can handle REQUEST.  Returns nil when
@@ -339,10 +340,14 @@
   (gethash request |$driverTable|))
 
 ;; Associate DRIVER with REQUEST.
+;; There can exist at most one driver per request.
 (defun |installDriver| (request driver)
   (when (|getDriver| request) 
     (|internalError| "attempt to override driver"))
   (setf (gethash request |$driverTable|) driver))
+
+(defun |useFileType?| (request)
+  (get request 'use-file-type))
 
 ;; Register DRIVER for a REQUEST for a file with FILE-TYPE extension.
 (defun |associateRequestWithFileType| (request file-type driver)
@@ -400,19 +405,34 @@
 ;; of the command line into a list.  The processing stop as soon as
 ;; a non-option form is encountered. OPTIONS-SO-FAR accumulates the
 ;; the list of processed options.
-(defun |processCommandLine| (argv options-so-far)
-  (if (and argv (>= (length (car argv)) 2)
-           (equal "--" (subseq (car argv) 0 2)))
-      (let ((option (|parseOption| (car argv))))
-        (cond ((symbolp option)
-               (|processCommandLine| (cdr argv)
-                                     (cons (cons option t) options-so-far)))
-              ((consp option) 
-               (|processCommandLine| (cdr argv) (cons option options-so-far)))
-              (t (|internalError|
-                  (format nil "processCommandLine: unknown option ~S"
-                          option)))))
-    (values options-so-far argv)))
+(defun |processCommandLine| (argv options-so-far args-so-far)
+  (cond ((null argv)
+	 ;; no more command-line argument to process
+	 (values options-so-far (nreverse args-so-far)))
+	((equal "--" (car argv))
+	 ;; end of command-line options
+	 (values options-so-far (concatenate 'list 
+					     (nreverse args-so-far)
+					     (cdr argv))))
+	((or (< (length (car argv)) 2)
+	     (not (equal "--" (subseq (car argv) 0 2))))
+	 ;; not a command-line option
+	 (|processCommandLine| (cdr argv) 
+	                       options-so-far 
+	                       (cons (car argv) args-so-far)))
+	(t (let ((option (|parseOption| (car argv))))
+	     (cond ((symbolp option)
+		    (|processCommandLine| (cdr argv)
+		                          (cons (cons option t)
+						options-so-far)
+					  args-so-far))
+		   ((consp option) 
+		    (|processCommandLine| (cdr argv) 
+		                          (cons option options-so-far)
+					  args-so-far))
+		   (t (|internalError|
+		       (format nil "processCommandLine: unknown option ~S"
+			       option))))))))
 
 ;; 
 ;; -*- Building New Lisp Images -*-
@@ -428,7 +448,7 @@
   (let ((output-option (assoc (|Option| "output") options)))
     (when output-option
         ;; If an output file name was specified on the command line, it
-        ;; is so relative to the current workding directory.  In 
+        ;; is so relative to the current working directory.  In 
         ;; particular we want to prevent overly zelous SBCL to mess
         ;; around with the output file when we call compile-file-pathname. 
         ;; The SBCL-specific hack below does not work all the time, but in
@@ -595,14 +615,14 @@
 ;; passing mechanism from the shell to the application.  That 
 ;; mechanism works fine with GCL.  Some Lisp implementations such as
 ;; SBCL or CLISP will insist on processing the command lines.  Some
-;; such CLISP will barfle when they hit an option they don't 
+;; such as CLISP will baffle when they hit an option they don't 
 ;; understand.  Which is silly.  It seems like the only common ground,
 ;; as ever, is to go with the most annoying behaviour and penalize
 ;; the good "citizen", sensible, Lisp implementations interfaces.
-;; Consequently, we have standardize on the the following practice:
+;; Consequently, we have standardized on the the following practice:
 ;; always issue a double bash (--) after the command line, and afterwards
 ;; supply options and other arguments.  The double dash has the effect
-;; of disuading the underlying lisp implementation of trying to
+;; of dissuading the underlying lisp implementation of trying to
 ;; process whatever comes after as options.  
 
 ;; Command line arguments: equivalent of traditional `argv[]' from
@@ -636,23 +656,30 @@
 			  &optional (entry-point nil) (prologue nil))
   (if (and entry-point (stringp entry-point))
       (setq entry-point `(read-from-string ,entry-point)))
-  #-:ecl (progn
-           (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
-	   (eval prologue)
-           (|saveCore| core-image entry-point))
-  #+:ecl (progn
-           (unless entry-point
-             (setq entry-point #'si::top-level))
-           (c:build-program core-image 
-                            :lisp-files 
-			    (complete-fasl-list-for-link lisp-files)
-			    :ld-flags (extra-runtime-libs)
-                            :epilogue-code 
-			    `(progn
-			       (pushnew :open-axiom-base-lisp *features*)
-			       ,prologue
-			       (funcall ,entry-point)))
-           (|coreQuit|)))
+  #-:ecl 
+  (progn
+    (mapcar #'(lambda (p) (|loadOrElse| p)) lisp-files)
+    (eval prologue)
+    (|saveCore| core-image entry-point))
+  #+:ecl 
+  (let* ((compiler::*ld* oa-cxx)
+	 (compiler::*ld-flags* (concatenate 'string 
+					    compiler::*ld-flags*
+					    " " oa-ldflags)))
+    (progn
+      (unless entry-point
+	(setq entry-point #'si::top-level))
+      (c:build-program core-image 
+		       :lisp-files 
+		       (complete-fasl-list-for-link lisp-files)
+		       :ld-flags (extra-runtime-libs)
+		       :epilogue-code 
+		       `(progn
+			  (pushnew :open-axiom-base-lisp *features*)
+			  ,prologue
+			  (funcall ,entry-point)))
+      (|coreQuit|)))
+  )
 
 
 ;; 
@@ -666,47 +693,45 @@
     (funcall driver prog-name options args)))
 
 (defun |hasHandler?| (request)
-  (|getDriver| request))
+  (or (|getDriver| request)
+      (|useFileType?| request)))
 
-(defun |useFileType?| (request)
-  (get request 'use-file-type))
+(defun run-driver (prog-name action options args)
+  (cond ((|useFileType?| (car action))
+	 ;; If the action is file-type dependent, make sure
+	 ;; we have at least one file.
+	 (unless (not (null args))
+	   (|coreError| "missing input files"))
+	 (dolist (f args t)
+	   (let* ((name (car action))
+		  (file-type (or (|getFileType| f)
+				 (|useFileType?| name)))
+		  (request (cons name file-type)))
+	     (unless (|handleRequest| prog-name request options f)
+	       (return nil)))))
+	(t (|handleRequest| prog-name (car action) options args))))
+
 
 (defun |handleCommandLine| (prog-name options args)
   (when (or options args)
-  (dolist (opt options nil)
-    (cond ((eq (car opt) (|Option| "help")) ; print help, get out of here
-           (|helpHandler| prog-name))
-       
-	  ;; If we need to do an action based on the extension of 
-	  ;; input file, make sure we have at least one.
-          ((|useFileType?| (car opt))
-	   (unless args
-	     (|coreError| "missing input files")
-	     (return t))
-           (dolist (f args)
-             (let* ((opt-name (car opt))
-		    (file-type (or (|getFileType| f) 
-				   (|useFileType?| opt-name)))
-                    (request (cons opt-name file-type)))
-               (unless (|handleRequest| prog-name request options f)
-		 (return nil))))
-	   (return t))
+    (let (action)
+      (dolist (opt options)
+	(cond ((stringp (cdr opt))
+	       ;; In general, nothing is to be done for option value 
+	       ;; specifications, except when they require special handlers.
+	       (when (|hasHandler?| (car opt))
+		 (unless (|handleRequest| prog-name (car opt) options args)
+		   (return nil))))
 
-	  ;; In general, nothing is to be done for option value 
-	  ;; specification.  However, some specifications may require
-	  ;; some special handlers.
-          ((stringp (cdr opt))
-	   (when (|hasHandler?| (car opt))
-	     (unless (|handleRequest| prog-name (car opt) options args)
-	       (return nil))))
-          
-	  ;; By now, we are assumed to execute a driver associated
-	  ;; with the option.  Hope one is installed...
-	  (t (unless (|handleRequest| prog-name (car opt) options args)
-	       (return nil))))))
-
-)
-
+	      ;; Don't allow for more than one driver request.
+	      ((|hasHandler?| (car opt))
+	       (if (not (null action))
+		   (|coreError| "multiple driver request")
+		 (setq action opt)))))
+      ;; By now, we hope to have figured out what action to perform.
+      (cond ((consp action)
+	     (run-driver prog-name action options args))
+	    (t nil)))))
 
 ;; 
 ;; -*- --help Handler -*-
@@ -726,7 +751,8 @@
   (write-line "   --load-directory=<dir>   use <dir> as search path for modules")
   (write-line "   --make                   create an executable"))
 
-(defun |helpHandler|(prog-name)
+(defun |helpHandler|(prog-name options args)
+  (declare (ignore options args))
   (|printUsage| prog-name)
   (|coreQuit|))
 
@@ -861,8 +887,8 @@
 
 ;; The top level entry point to most saved Lisp image.
 (defun |topLevel|()
-  (setq *package* (find-package "AxiomCore"))
-  (let ((command-args (|getCommandLineArguments|)))
+  (let ((*package* (find-package "AxiomCore"))
+	(command-args (|getCommandLineArguments|)))
     (when (null command-args) 
       (|internalError| "empty command line args"))
     ;; Existing system programming practive, and POSIX, have it
@@ -873,7 +899,7 @@
     ;;    (1) either one of --help or --version, or
     ;;        a filename.
     (multiple-value-bind 
-     (options args) (|processCommandLine| (cdr command-args) nil)
+     (options args) (|processCommandLine| (cdr command-args) nil nil)
 
      (setq |$sysOpts| options)
      (setq |$sysArgs| args)

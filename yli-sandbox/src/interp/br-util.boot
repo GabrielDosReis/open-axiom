@@ -123,7 +123,7 @@ escapeString com ==   --this makes changes on single comment lines
 -- was htexCom
   look := 0
   while look repeat
-    look >= SIZE com => look := []
+    look >= #com => look := []
 
 
     look := STRPOSL ('"${}#%", com, look, [])
@@ -190,7 +190,7 @@ lisp2HT u == ['"_'",:fn u] where fn u ==
 args2HtString(x,:options) ==
   null x => '""
   emList := IFCAR options
-  SUBSTRING(form2HtString(['f,:x],emList),1,nil)
+  subString(form2HtString(['f,:x],emList),1)
 
 quickForm2HtString(x) ==
   atom x => STRINGIMAGE x
@@ -372,7 +372,7 @@ asharpConstructors() ==
 extractFileNameFromPath s == fn(s,0,#s) where
   fn(s,i,m) ==
     k := charPosition(char '_/,s,i)
-    k = m => SUBSTRING(s,i,nil)
+    k = m => subString(s,i)
     fn(s,k + 1,m)
 
 bcOpTable(u,fn) ==
@@ -505,7 +505,8 @@ dbSayItems(countOrPrefix,singular,plural,:options) ==
   for x in options repeat bcHt x
   if count ~= 0 then bcHt '":"
 
-dbBasicConstructor? conname == member(dbSourceFile conname,'("catdef" "coerce"))
+dbBasicConstructor? conname ==
+  dbSourceFile conname in '("catdef" "coerce")
 
 nothingFoundPage(:options) ==
   htInitPage('"Sorry, no match found",nil)
@@ -534,7 +535,7 @@ emptySearchPage(kind,filter,:options) ==
 isLoaded? conform == GETL(constructor? opOf conform,'LOADED)
 
 string2Integer s ==
-  and/[DIGIT_-CHAR_-P (s.i) for i in 0..MAXINDEX s] => readInteger s
+  and/[digit? (s.i) for i in 0..MAXINDEX s] => readInteger s
   nil
 
 dbGetInputString htPage ==
@@ -608,12 +609,12 @@ dbKind line == line.0
 
 dbKindString kind == LASSOC(kind,$dbKindAlist)
 
-dbName line == escapeString SUBSTRING(line,1,charPosition($tick,line,1) - 1)
+dbName line == escapeString subString(line,1,charPosition($tick,line,1) - 1)
 
 dbAttr line == strconc(dbName line,escapeString dbPart(line,4,0))
 
 dbPart(line,n,k) ==  --returns part n of line (n=1,..) beginning in column k
-  n = 1 => SUBSTRING(line,k + 1,charPosition($tick,line,k + 1) - k - 1)
+  n = 1 => subString(line,k + 1,charPosition($tick,line,k + 1) - k - 1)
   dbPart(line,n - 1,charPosition($tick,line,k + 1))
 
 dbXParts(line,n,m) ==
@@ -622,7 +623,7 @@ dbXParts(line,n,m) ==
 
 dbParts(line,n,m) ==  --split line into n parts beginning in column m
   n = 0 => nil
-  [SUBSTRING(line,m,-m + (k := charPosition($tick,line,m))),
+  [subString(line,m,-m + (k := charPosition($tick,line,m))),
     :dbParts(line,n - 1,k + 1)]
 
 dbConname(line) == dbPart(line,5,1)
@@ -633,7 +634,7 @@ dbNewConname(line) == --dbName line unless kind is 'a or 'o => name in 5th pos.
   (kind := line.0) = char 'a or kind = char 'o =>
     conform := dbPart(line,5,1)
     k := charPosition(char '_(,conform,1)
-    SUBSTRING(conform,1,k - 1)
+    subString(conform,1,k - 1)
   dbName line
 
 dbTickIndex(line,n,k) == --returns index of nth tick in line starting at k
@@ -643,6 +644,18 @@ dbTickIndex(line,n,k) == --returns index of nth tick in line starting at k
 mySort u == listSort(function GLESSEQP,u)
 
 
+
+quickAnd(a,b) ==
+  a = true => b
+  b = true => a
+  a = false or b = false => false
+  simpBool ['AND,a,b]
+
+quickOr(a,b) ==
+  a = true or b = true => true
+  b = false => a
+  a = false => b
+  simpCatPredicate simpBool ['OR,a,b]
 
 
 

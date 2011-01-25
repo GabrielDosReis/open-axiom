@@ -240,7 +240,7 @@ MappingPrint(x, dom) == coerceMap2E(x)
 coerceMap2E(x) ==
   -- nrlib domain
   ARRAYP rest x => ["theMap", BPINAME first x,
-    if $testingSystem then 0 else REMAINDER(HASHEQ rest x, 1000)]
+    if $testingSystem then 0 else HASHEQ(rest x) rem 1000]
   -- aldor 
   ["theMap", BPINAME first x  ]
 
@@ -302,7 +302,7 @@ constructorCategory (title is [op,:.]) ==
   cat:=
     JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
-  cat.(0):= title
+  cat.0 := title
   cat
 
 --mkMappingFunList(nam,mapForm,e) == [[],e]

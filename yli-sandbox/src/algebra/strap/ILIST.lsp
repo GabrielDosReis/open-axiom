@@ -4,7 +4,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) (|%IntegerSection| 0))
                 |ILIST;#;$Nni;1|)) 
 
-(PUT '|ILIST;#;$Nni;1| '|SPADreplace| 'LENGTH) 
+(PUT '|ILIST;#;$Nni;1| '|SPADreplace| '|%llength|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |ILIST;concat;S2$;2|)) 
@@ -73,12 +73,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
                 |ILIST;reverse!;2$;16|)) 
 
-(PUT '|ILIST;reverse!;2$;16| '|SPADreplace| 'NREVERSE) 
+(PUT '|ILIST;reverse!;2$;16| '|SPADreplace| '|%lreverse!|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%List|)
                 |ILIST;reverse;2$;17|)) 
 
-(PUT '|ILIST;reverse;2$;17| '|SPADreplace| 'REVERSE) 
+(PUT '|ILIST;reverse;2$;17| '|SPADreplace| '|%lreverse|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Integer|)
                 |ILIST;minIndex;$I;18|)) 
@@ -121,7 +121,9 @@
                     |%List|)
                 |ILIST;mergeSort|)) 
 
-(DEFUN |ILIST;#;$Nni;1| (|x| $) (DECLARE (IGNORE $)) (LENGTH |x|)) 
+(DEFUN |ILIST;#;$Nni;1| (|x| $)
+  (DECLARE (IGNORE $))
+  (LIST-LENGTH |x|)) 
 
 (DEFUN |ILIST;concat;S2$;2| (|s| |x| $)
   (DECLARE (IGNORE $))
@@ -336,7 +338,7 @@
              (EXIT |l|)))))) 
 
 (DEFUN |ILIST;sort!;M2$;27| (|f| |l| $)
-  (|ILIST;mergeSort| |f| |l| (LENGTH |l|) $)) 
+  (|ILIST;mergeSort| |f| |l| (LIST-LENGTH |l|) $)) 
 
 (DEFUN |ILIST;merge!;M3$;28| (|f| |p| |q| $)
   (PROG (|r| |t|)
@@ -382,7 +384,7 @@
              ((< |n| 1) (|error| "index out of range"))
              (T (SEQ (SETQ |p|
                            (|ILIST;rest;$Nni$;19| |p|
-                               (LET ((#0=#:G1506 (- |n| 1)))
+                               (LET ((#0=#:G1481 (- |n| 1)))
                                  (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                $))
@@ -401,7 +403,7 @@
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|
-                                 (LET ((#0=#:G1511 (QUOTIENT2 |n| 2)))
+                                 (LET ((#0=#:G1486 (TRUNCATE |n| 2)))
                                    (|check-subtype| (NOT (MINUSP #0#))
                                     '(|NonNegativeInteger|) #0#))
                                  |ILIST;mergeSort|)
@@ -413,10 +415,10 @@
                                      $))
                            (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
-(DEFUN |IndexedList| (&REST #0=#:G1520 &AUX #1=#:G1518)
+(DEFUN |IndexedList| (&REST #0=#:G1495 &AUX #1=#:G1493)
   (DECLARE (SPECIAL |$ConstructorCache|))
   (DSETQ #1# #0#)
-  (PROG (#2=#:G1519)
+  (PROG (#2=#:G1494)
     (RETURN
       (COND
         ((SETQ #2#
@@ -431,6 +433,7 @@
                ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|IndexedList| |dv$1| |dv$2|))
          ($ (|newShell| 86))
@@ -468,7 +471,6 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedList| (LIST |dv$1| |dv$2|)

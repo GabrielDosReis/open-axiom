@@ -151,13 +151,15 @@ parseAndEvalStr string ==
   parseAndEvalStr1 string
 
 parseAndEvalStr1 string ==
-  string.0 = char '")" =>
-    doSystemCommand SUBSEQ(string, 1)
+  string.0 = char ")" =>
+    doSystemCommand subSequence(string, 1)
   processInteractive(ncParseFromString string, NIL)
 
 protectedEVAL x ==
   error := true
   val := NIL
-  UNWIND_-PROTECT((val := eval x; error := NIL),
-                   error => (resetStackLimits(); sendHTErrorSignal()))
+  try
+    val := eval x
+    error := false
+  finally (error => (resetStackLimits(); sendHTErrorSignal()))
   val

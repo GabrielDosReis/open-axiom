@@ -51,12 +51,12 @@ inputPrompt str ==
   y := $OLDLINE
   SETQ($OLDLINE,NIL)
   y => _$SHOWLINE(strconc(str,EBCDIC 19,y),p)
-  0 = SIZE str => NIL
+  0 = # str => NIL
   _$SHOWLINE(strconc(str,EBCDIC 19),p)
  
 protectedPrompt(:p) ==
   [str,:br] := p
-  0 = SIZE str => inputPrompt str
+  0 = # str => inputPrompt str
   msg := EBCDIC 29                       -- start of field
   msg :=
     if br then strconc(msg,EBCDIC 232)   -- bright write protect
@@ -73,7 +73,7 @@ MKPROMPT() ==
     strconc(STRINGIMAGE $interpreterFrameName,
       '" (",STRINGIMAGE $IOindex,'") -> ")
   strconc(STRINGIMAGE $interpreterFrameName,
-   '" [", SUBSTRING(CURRENTTIME(),8,NIL),'"] [",
+   '" [", subString(CURRENTTIME(),8),'"] [",
     STRINGIMAGE $IOindex, '"] -> ")
  
 
@@ -94,8 +94,9 @@ textEditor() ==
 $ZeroVecCache := nil
 Zeros n ==
   #$ZeroVecCache = n => $ZeroVecCache
-  $ZeroVecCache := MAKE_-VEC n
-  for i in 0..n-1 repeat $ZeroVecCache.i:=0
+  $ZeroVecCache := newVector n
+  for i in 0..n-1 repeat
+    $ZeroVecCache.i := 0
   $ZeroVecCache
  
 LZeros n ==
@@ -133,8 +134,8 @@ Undef(:u) ==
 -- OK - thefunction is now defined
     [:u'',.]:=u
     if $reportBottomUpFlag then
-      sayMessage concat ['"   Retrospective determination of slot",'%b,
-        slot,'%d,'"of",'%b,:prefix2String domain,'%d]
+      sayMessage concat ['"   Retrospective determination of slot",'"%b",
+        slot,'"%d",'"of",'"%b",:prefix2String domain,'"%d"]
     apply(first domain'.slot,[:u'',rest domain'.slot])
   throwKeyedMsg("S2IF0008",[formatOpSignature(op,sig),domain])
  

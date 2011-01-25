@@ -571,7 +571,7 @@ FiniteRankNonAssociativeAlgebra(R:CommutativeRing):
     -- conditionsForIdempotents b  ==
     --   n := rank()
     --   gamma : Vector Matrix R := structuralConstants b
-    --   listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
+    --   listOfNumbers : List String :=  [string(q)$String for q in 1..n]
     --   symbolsForCoef : Vector Symbol :=
     --     [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
     --   conditions : List Polynomial R := []
@@ -1019,7 +1019,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing): Category == _
         n := rank()
         b := basis()
         gamma : Vector Matrix R := structuralConstants b
-        listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
+        listOfNumbers : List String :=  [string(q)$String for q in 1..n]
         symbolsForCoef : Vector Symbol :=
           [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
         xx : M P R := new(1,n,0)
@@ -1052,7 +1052,7 @@ FramedNonAssociativeAlgebra(R:CommutativeRing): Category == _
         n := rank()
         b := basis()
         gamma : Vector Matrix R := structuralConstants b
-        listOfNumbers : List String :=  [STRINGIMAGE(q)$Lisp for q in 1..n]
+        listOfNumbers : List String :=  [string(q)$String for q in 1..n]
         symbolsForCoef : Vector Symbol :=
           [concat("%", concat("x", i))::Symbol  for i in listOfNumbers]
         xx : M P R := new(1,n,0)

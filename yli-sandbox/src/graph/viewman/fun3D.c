@@ -52,6 +52,8 @@
 #include "readView.H1"
 #include "cfuns.h"
 
+using namespace OpenAxiom;
+
 void 
 funView3D(int viewCommand)
 {

@@ -66,20 +66,12 @@ module includer
 --
 -- ElseLines ::= )else SimpleLine* | )elseif SimpleLine* ElseLines | empty
 
--- returns a printable representation of X, when it is a symbol
--- or a character, as string.  Otherwise, returns nil.
+++ returns a printable representation of `x', when it is a symbol
+++ or a character, as string.  Otherwise, returns nil.
 PNAME x ==
-  symbol? x => SYMBOL_-NAME x
-  CHARACTERP x => STRING x
+  symbol? x => symbolName x
+  char? x => charString x
   nil
-
--- converts X, a 1-length string, to a character.
-char x ==
-  CHAR(PNAME x, 0)
-
--- returns the string representation of object X.
-STRINGIMAGE x ==
-  WRITE_-TO_-STRING x
 
 -- close STREAM.
 shoeCLOSE stream ==
@@ -94,15 +86,15 @@ shoeNotFound fn ==
 shoeReadLispString(s,n) ==
     l:=# s
     n >= l => nil
-    READ_-FROM_-STRING strconc ( "(", SUBSTRING(s,n,l-n) ,")")
+    READ_-FROM_-STRING strconc ( "(", subString(s,n,l-n) ,")")
 
 -- read a line from stream
 shoeReadLine stream ==
-  READ_-LINE(stream, nil, nil)
+  readLine(stream, nil, nil)
 
 -- write LINE to standard terminal I/O.
 shoeConsole line ==
-  WRITE_-LINE(line, _*TERMINAL_-IO_*)
+  writeLine(line, _*TERMINAL_-IO_*)
  
 shoeSpaces n  ==  
   MAKE_-FULL_-CVEC(n, '".")
@@ -112,11 +104,11 @@ shoeSpaces n  ==
 
 diagnosticLocation tok ==
   pos := shoeTokPosn tok
-  strconc('"line ", STRINGIMAGE lineNo pos, '", column ", 
-    STRINGIMAGE lineCharacter pos)
+  strconc('"line ", toString lineNo pos, '", column ", 
+    toString lineCharacter pos)
 
 SoftShoeError(posn,key)==
-    coreError ['"in line ", STRINGIMAGE lineNo posn]
+    coreError ['"in line ", toString lineNo posn]
     shoeConsole lineString posn
     shoeConsole strconc(shoeSpaces lineCharacter posn,'"|")
     shoeConsole key
@@ -130,10 +122,10 @@ bpSpecificErrorHere(key) ==  bpSpecificErrorAtToken($stok, key)
 bpGeneralErrorHere() ==  bpSpecificErrorHere('"syntax error")
  
 bpIgnoredFromTo(pos1, pos2) ==
-    shoeConsole strconc('"ignored from line ", STRINGIMAGE lineNo pos1)
+    shoeConsole strconc('"ignored from line ", toString lineNo pos1)
     shoeConsole lineString pos1
     shoeConsole strconc(shoeSpaces lineCharacter pos1,'"|")
-    shoeConsole strconc('"ignored through line ", STRINGIMAGE lineNo pos2)
+    shoeConsole strconc('"ignored through line ", toString lineNo pos2)
     shoeConsole lineString pos2
     shoeConsole strconc(shoeSpaces lineCharacter pos2,'"|")
 
@@ -151,11 +143,11 @@ lineCharacter p ==
 shoePackageStartsAt (lines,sz,name,stream)==
   bStreamNull stream => [[],['nullstream]]
   a := CAAR stream
-  #a >= 8 and SUBSTRING(a,0,8)='")package" =>
+  #a >= 8 and subString(a,0,8)='")package" =>
     shoePackageStartsAt([CAAR stream,:lines],sz,name,rest stream)
   #a < sz =>
     shoePackageStartsAt(lines, sz,name,rest stream)
-  SUBSTRING(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
+  subString(a,0,sz)=name and (#a>sz and not shoeIdChar(a.sz)) =>
     [lines,stream]
   shoePackageStartsAt(lines,sz,name,rest stream)
  
@@ -179,9 +171,9 @@ $bStreamNil:=["nullstream"]
 bStreamNull x==
   x = nil or x is ["nullstream",:.] => true
   while x is ["nonnullstream",:.] repeat
-          st:=apply(second x,CDDR x)
-          x.first := first st
-          x.rest := rest st
+    st:=apply(second x,CDDR x)
+    x.first := first st
+    x.rest := rest st
   x is ["nullstream",:.]
  
 bMap(f,x) == 
@@ -196,8 +188,8 @@ bMap1(:z)==
 shoeFileMap(f, fn)==
   a:=shoeInputFile fn
   a = nil =>
-     shoeConsole strconc(fn,'" NOT FOUND")
-     $bStreamNil
+    shoeConsole strconc(fn,'" NOT FOUND")
+    $bStreamNil
   shoeConsole strconc('"READING ",fn)
   shoeInclude  bAddLineNumber(bMap(f,bRgen a),bIgen 0)
 
@@ -267,13 +259,13 @@ shoePrefix?(prefix,whole) ==
   #prefix > #whole => false
   good:=true
   for i in 0..#prefix-1 for j in 0.. while good repeat
-    good:= prefix.i = whole.j
-  good => SUBSTRING(whole,#prefix,nil) 
+    good := stringChar(prefix,i) = stringChar(whole,j)
+  good => subString(whole,#prefix) 
   good
  
 shoePlainLine?(s) ==
   #s = 0 =>  true
-  s.0 ~= char ")"
+  stringChar(s,0) ~= char ")"
  
 shoeSay?          s  == shoePrefix?('")say",         s)
 shoeEval?         s  == shoePrefix?('")eval",        s)
@@ -294,8 +286,8 @@ shoeBiteOff x==
   n:=STRPOSL('" ",x,0,true)
   n = nil =>  false
   n1:=STRPOSL ('" ",x,n,nil)
-  n1 = nil =>  [SUBSTRING(x,n,nil),'""]
-  [SUBSTRING(x,n,n1-n),SUBSTRING(x,n1,nil)]
+  n1 = nil =>  [subString(x,n),'""]
+  [subString(x,n,n1-n),subString(x,n1)]
  
 shoeFileName x==
   a:=shoeBiteOff x
@@ -388,19 +380,19 @@ shoeElse1(keep,b,s)==
     keep1 and b1=> shoeThen([true,:keep],[STTOMC command,:b],t)
     shoeThen([false,:keep],[false,:b],t)
   command :=shoeEndIf? string =>
-       rest b = nil =>  shoeInclude t
-       shoeThen(rest keep,rest b,t)
+    rest b = nil =>  shoeInclude t
+    shoeThen(rest keep,rest b,t)
   keep1 and b1 => bAppend(shoeSimpleLine h,shoeElse(keep,b,t))
   shoeElse(keep,b,t)
  
 shoeLineSyntaxError(h)==
   shoeConsole strconc('"INCLUSION SYNTAX ERROR IN LINE ",
-			     STRINGIMAGE rest h)
+			     toString rest h)
   shoeConsole first h
   shoeConsole '"LINE IGNORED"
  
 bPremStreamNil(h)==
-  shoeConsole strconc('"UNEXPECTED )fin IN LINE ",STRINGIMAGE rest h)
+  shoeConsole strconc('"UNEXPECTED )fin IN LINE ",toString rest h)
   shoeConsole first h
   shoeConsole '"REST OF FILE IGNORED"
   $bStreamNil

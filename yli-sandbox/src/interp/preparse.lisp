@@ -330,7 +330,7 @@
 ;;        (and (stringp line) (incf $INDEX))
 ;;        (if (NOT (STRINGP LINE)) (RETURN (CONS $INDEX LINE)))
 ;;        (setq LINE (DROPTRAILINGBLANKS LINE))
-;;        (if Echo-Meta (PUSH (COPY-SEQ LINE) $EchoLineStack))
+;;        (if |$Echo| (PUSH (COPY-SEQ LINE) $EchoLineStack))
 ;;        ; next line must evaluate $INDEX before recursive call
 ;;        (RETURN
 ;;          (CONS $INDEX
@@ -342,7 +342,7 @@
 ;;                    LINE)))))
  
 (defun PREPARSE-ECHO (linelist)
-  (if Echo-Meta (REPEAT (IN X (REVERSE $EchoLineStack))
+  (if |$Echo| (REPEAT (IN X (REVERSE $EchoLineStack))
                         (format out-stream "~&;~A~%" X)))
   (setq $EchoLineStack ()))
  

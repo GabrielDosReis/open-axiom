@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -343,8 +343,8 @@ compAtom(x,m,e) ==
       modeIsAggregateOf('Vector,m,e) is [.,R]=> compVector(x,['Vector,R],e)
     T => convert(T,m)
 -->
-  FIXP x and opOf m in '(Integer NonNegativeInteger PositiveInteger SmallInteger) => markAt [x,m,e]
---  FIXP x and (T := [x, $Integer,e]) and (T' := convert(T,m)) => markAt(T, T')
+  integer? x and opOf m in '(Integer NonNegativeInteger PositiveInteger SmallInteger) => markAt [x,m,e]
+--  integer? x and (T := [x, $Integer,e]) and (T' := convert(T,m)) => markAt(T, T')
   t:=
     IDENTP x => compSymbol(x,m,e) or return nil
     m = $Expression and primitiveType x => [x,m,e]
@@ -506,8 +506,8 @@ compMacro(form,m,e) ==
       rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
       rhs is ['add,:.]      => ['"-- the constructor capsule"]
       formatUnabbreviated rhs
-    sayBrightly ['"   processing macro definition",'%b,
-      :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
+    sayBrightly ['"   processing macro definition",'"%b",
+      :formatUnabbreviated lhs,'" ==> ",:rhs,'"%d"]
   ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
   m=$EmptyMode or m=$NoValueMode =>
     ["/throwAway",$NoValueMode,putMacro(lhs.op,rhs,e)]
@@ -521,8 +521,8 @@ compMacro(form,m,e) ==
 --    rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
 --    rhs is ['add,:.]      => ['"-- the constructor capsule"]
 --    formatUnabbreviated rhs
---  sayBrightly ['"   processing macro definition",'%b,
---    :formatUnabbreviated lhs,'" ==> ",:rhs,'%d]
+--  sayBrightly ['"   processing macro definition",'"%b",
+--    :formatUnabbreviated lhs,'" ==> ",:rhs,'"%d"]
 --  ["MDEF",lhs,signature,specialCases,rhs]:= form:= macroExpand(form,e)
 --  m=$EmptyMode or m=$NoValueMode =>
 --    rhs := markMacro(lhs,rhs)

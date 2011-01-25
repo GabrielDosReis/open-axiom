@@ -64,9 +64,9 @@
 #define Delimiter(c) (! isalnum(c) && c != '%' && c != '!' && c != '?' && c != '_')
 
 
-#include "wct.H1"
-#include "prt.H1"
-#include "edin.H1"
+#include "wct.h"
+#include "prt.h"
+#include "edin.h"
 
 
 

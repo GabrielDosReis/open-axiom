@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ reduceByGroup(htPage,opAlist) ==
   res := [[op,:newItems] for [op,:items] in opAlist | newItems] where
     newItems() ==
       null bitNumber => items
-      [x for x in items | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
+      [x for x in items | integer? (code := myLastAtom x) and LOGBITP(bitNumber,code)]
   res
 
 
@@ -370,12 +370,12 @@ dbGatherData(htPage,opAlist,which,key) ==
           u
         data := [y := [entry,exposeFlag,:tail],:data]
         y                                   --no, create new entry in DATA
-      if member(key,'(origins conditions)) then
+      if key in '(origins conditions) then
         r := CDDR newEntry
         if atom r then r := nil             --clear out possible 'ASCONST
         newEntry.rest.rest :=               --store op/sigs under key if needed
           insert([dbMakeSignature(op,item),exposeFlag,:tail],r)
-  if member(key,'(origins conditions)) then
+  if key in '(origins conditions) then
     for entry in data repeat   --sort list of entries (after the 2nd)
       tail := CDDR entry
       tail :=
@@ -618,7 +618,7 @@ dbShowOpParameters(htPage,opAlist,which,data) ==
         dbShowOpParameterJump(ops,which,count,single?)
         htSay('" {\em ",KAR KDR args,'"}")
       dbShowOpParameterJump(ops,which,count,single?)
-      tail = 'ASCONST or member(op,'(0 1)) or which = '"attribute" and null IFCAR args => 'skip
+      tail = 'ASCONST or op in '(0 1) or which = '"attribute" and null IFCAR args => 'skip
       htSay('"(")
       if IFCAR args then htSay('"{\em ",IFCAR args,'"}")
       for x in IFCDR args repeat
@@ -658,7 +658,7 @@ dbShowOpDocumentation(htPage,opAlist,which,data) ==
       exposeFlag or not $exposedOnlyIfTrue =>
         if comments ~= '"" and string? comments and (k := string2Integer comments) then
           comments :=
-            MEMQ(k,'(0 1)) => '""
+            k in '(0 1) => '""
             dbReadComments k
           tail := CDDDDR item
           tail.first := comments
@@ -846,7 +846,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
       packageSymbol := false
       domform := htpProperty(htPage,'domname) or htpProperty(htPage,'conform)
       if isDefaultPackageName opOf domform then
-         catname := intern SUBSTRING(s := PNAME opOf domform,0,MAXINDEX s)
+         catname := intern subString(s := PNAME opOf domform,0,MAXINDEX s)
          packageSymbol := second domform
          domform := [catname,:rest rest domform]  --skip first argument ($)
       docTable:= dbDocTable domform
@@ -864,7 +864,7 @@ dbExpandOpAlistIfNecessary(htPage,opAlist,which,needOrigins?,condition?) ==
             dbGetDocTable(op,sig,docTable,which,nil)
           origin := IFCAR u or origin
           docCode := IFCDR u   --> (doc . code)
---        if not FIXP rest docCode then harhar(op) -->
+--        if not integer? rest docCode then harhar(op) -->
           if null doc and which = '"attribute" then doc := getRegistry(op,sig)
           tail.rest := [origin,isExposedConstructor opOf origin,:docCode]
         $value => return $value

@@ -42,43 +42,70 @@
 #  include <windows.h>
 #endif
 
-/* A list of drivers for OpenAxiom.  */
-typedef enum openaxiom_driver {
-   openaxiom_unknown_driver,    /* unknown driver */
-   openaxiom_null_driver,       /* do nothing */
-   openaxiom_sman_driver,       /* start Superman as master process */
-   openaxiom_core_driver,       /* start the core system as master process */
-   openaxiom_script_driver,     /* start the core system in script mode. */
-   openaxiom_compiler_driver,   /* start the core system in compiler mode. */
-   openaxiom_execute_driver     /* Execute a command.  */
-} openaxiom_driver;
+#include <vector>
 
-/* A list of runtime support systems for OpenAxiom. */
-typedef enum openaxiom_runtime {
-   openaxiom_unknown_runtime,
-   openaxiom_gcl_runtime,
-   openaxiom_sbcl_runtime,
-   openaxiom_clisp_runtime,
-   openaxiom_ecl_runtime,
-   openaxiom_clozure_runtime,
-   openaxiom_bemol_runtime
-} openaxiom_runtime;
+namespace OpenAxiom {
+   // A list of drivers for OpenAxiom. 
+   enum Driver {
+      unknown_driver,    // unknown driver
+      null_driver,       // do nothing
+      config_driver,     // print out configuration information
+      sman_driver,       // start Superman as master process
+      core_driver,       // start the core system as master process
+      script_driver,     // start the core system in script mode.
+      compiler_driver,   // start the core system in compiler mode.
+      execute_driver,    // Execute a command.
+      translator_driver, // Start the core system in translator mode.
+      linker_driver      // start the core system in linking mode.
+   };
+   
+   // A list of runtime support systems for OpenAxiom.
+   enum Runtime {
+      unknown_runtime,
+      gcl_runtime,       // GCL-based runtime 
+      sbcl_runtime,      // SBCL-based runtime
+      clisp_runtime,     // CLISP-based runtime
+      ecl_runtime,       // ECL-based runtime
+      clozure_runtime,   // Clozure CL-based runtime
+      bemol_runtime      // Bemol-based runtime
+   };
 
-/* A description of external command to be executed.  */
-typedef struct openaxiom_command {
-   openaxiom_process core;      /* arguments for actual executable.  */
-   char** rt_argv;              /* arguments to the base RT, if any.  */
-   int rt_argc;                 /* number of such arguments.  */
-   const char* root_dir;        /* path to the OpenAxiom system. */
-} openaxiom_command;
+   // Command line arguments.
+   // When non empty, this vector really is of length one more than
+   // what size() reports, as it is always null-terminated, to comply
+   // with POSIX-style operating system requirements.
+   struct Arguments : std::vector<char*> {
+      explicit Arguments(int n = 0);
+      int size() const;
+      void allocate(int);
+      char* const* data() const;
+   };
+   
+   // A description of external command to be executed. 
+   struct Command {
+      Process core;           // arguments for actual executable.
+      Arguments rt_args;      // arguments to the base RT, if any. 
+      const char* root_dir;   // path to the OpenAxiom system.
+      const char* exec_path;  // path to the program to execute.
+      Command();
+   };
 
-const char* openaxiom_get_systemdir(int argc, char*[]);
-const char* openaxiom_make_path_for(const char*, openaxiom_driver);
+   const char* get_systemdir(int argc, char*[]);
+   const char* make_path_for(const char*, Driver);
 
-int openaxiom_execute_core(const openaxiom_command*, openaxiom_driver);
-void openaxiom_build_rts_options(openaxiom_command*, openaxiom_driver);
+   // Return a pointer the string value associated with an option.
+   const char* option_value(const Command*, const char*);
 
-openaxiom_driver
-  openaxiom_preprocess_arguments(openaxiom_command*, int, char**);
+   int execute_core(const Command*, Driver);
+   void build_rts_options(Command*, Driver);
+   
+   Driver preprocess_arguments(Command*, int, char**);
+
+   // Return the length of an array literal.
+   template<typename T, int N>
+   inline int length(T(&)[N]) {
+      return N;
+   }
+}
 
 #endif /* OPENAXIOM_UTILS_INCLUDED */

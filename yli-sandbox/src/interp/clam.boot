@@ -356,7 +356,7 @@ clearCategoryCaches() ==
     if getConstructorKindFromDB name = "category" then
       if BOUNDP(cacheName:= mkCacheName name)
             then setDynamicBinding(cacheName,nil)
-    if BOUNDP(cacheName:= INTERNL strconc(PNAME name,'";CAT"))
+    if BOUNDP(cacheName:= INTERNL strconc(symbolName name,'";CAT"))
           then setDynamicBinding(cacheName,nil)
  
 clearCategoryCache catName ==
@@ -365,7 +365,7 @@ clearCategoryCache catName ==
 displayHashtable x ==
   l:= nreverse SORTBY('CAR,[[opOf HGET(x,key),key] for key in HKEYS x])
   for [a,b] in l repeat
-    sayBrightlyNT ['%b,a,'%d]
+    sayBrightlyNT ['"%b",a,'"%d"]
     pp b
  
 cacheStats() ==
@@ -380,7 +380,7 @@ reportCircularCacheStats(fn,n) ==
   infovec:= GETL(fn,'cacheInfo)
   circList:= eval infovec.cacheName
   numberUsed :=
-    +/[1 for i in 1..n for x in circList while x isnt [='_$failed,:.]]
+    +/[1 for i in 1..n for x in circList while x isnt ['_$failed,:.]]
   sayBrightly ["%b",fn,"%d","has","%b",numberUsed,"%d","/ ",n," values cached"]
   displayCacheFrequency mkCircularCountAlist(circList,n)
   TERPRI()
@@ -621,7 +621,7 @@ listTruncate(l,n) ==
 lassocShift(x,l) ==
   y:= l
   while cons? y repeat
-    EQUAL(x,first first y) => return (result := first y)
+    x = first first y => return (result := first y)
     y:= rest y
   result =>
     if not EQ(y,l) then
@@ -704,5 +704,5 @@ domainEqualList(argl1,argl2) ==
  
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
-    sayBrightly ['"Un-clamming function",'%b,fun,'%d]
+    sayBrightly ['"Un-clamming function",'"%b",fun,'"%d"]
     setDynamicBinding(fun,eval INTERN strconc(STRINGIMAGE fun,'";"))

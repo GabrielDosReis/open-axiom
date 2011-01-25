@@ -258,13 +258,13 @@ bpMissingMate(close,open)==
  
 bpMissing s==
    bpSpecificErrorHere strconc(PNAME s,'" possibly missing")
-   throw TRAPPOINT "TRAPPED"
+   throw 'TRAPPED : BootParserException
  
 bpCompMissing s == bpEqKey s or bpMissing s
  
 bpTrap()==
    bpGeneralErrorHere()
-   throw TRAPPOINT "TRAPPED"
+   throw 'TRAPPED : BootParserException
  
 bpRecoverTrap()==
   bpFirstToken()
@@ -281,7 +281,9 @@ bpListAndRecover(f)==
   done := false
   c := $inputStream
   while not done repeat
-    found := try apply(f,nil) catch TRAPPOINT
+    found :=
+      try apply(f,nil)
+      catch(e: BootParserException) => e
     if found = "TRAPPED"
     then
        $inputStream:=c
@@ -370,17 +372,17 @@ bpName() ==
 ++   QUOTE S-Expression
 ++   STRING
 bpConstTok() ==
-     shoeTokType $stok in '(INTEGER FLOAT) =>
-          bpPush $ttok
-          bpNext()
-     $stok is ["LISP",:.] => bpPush %Lisp $ttok and bpNext()
-     $stok is ["LISPEXP",:.] => bpPush $ttok and bpNext()
-     $stok is ["LINE",:.] => bpPush ["+LINE", $ttok] and bpNext()
-     bpEqPeek "QUOTE" =>
-          bpNext()
-          (bpSexp() or bpTrap()) and
-               bpPush bfSymbol bpPop1()
-     bpString()
+  shoeTokType $stok in '(INTEGER FLOAT) =>
+    bpPush $ttok
+    bpNext()
+  $stok is ["LISP",:.] => bpPush %Lisp $ttok and bpNext()
+  $stok is ["LISPEXP",:.] => bpPush $ttok and bpNext()
+  $stok is ["LINE",:.] => bpPush ["+LINE", $ttok] and bpNext()
+  bpEqPeek "QUOTE" =>
+    bpNext()
+    (bpSexp() or bpTrap()) and
+         bpPush bfSymbol bpPop1()
+  bpString()
 
 
 ++ Subroutine of bpExportItem.  Parses tails of ExportItem.
@@ -513,18 +515,18 @@ bpAddTokens n==
   [shoeTokConstruct("KEY","BACKTAB",shoeTokPosn $stok),:bpAddTokens(n+1)]
  
 bpExceptions()==
-     bpEqPeek "DOT" or bpEqPeek "QUOTE" or
-          bpEqPeek "OPAREN" or bpEqPeek "CPAREN" or
-             bpEqPeek "SETTAB" or bpEqPeek "BACKTAB"
-                or bpEqPeek "BACKSET"
+  bpEqPeek "DOT" or bpEqPeek "QUOTE" or
+       bpEqPeek "OPAREN" or bpEqPeek "CPAREN" or
+          bpEqPeek "SETTAB" or bpEqPeek "BACKTAB"
+             or bpEqPeek "BACKSET"
  
  
 bpSexpKey()==
-      $stok is ["KEY",:.] and not bpExceptions()=>
-               a := $ttok has SHOEINF
-               a = nil =>  bpPush $ttok and bpNext()
-               bpPush a and bpNext()
-      false
+  $stok is ["KEY",:.] and not bpExceptions()=>
+    a := $ttok has SHOEINF
+    a = nil =>  bpPush $ttok and bpNext()
+    bpPush a and bpNext()
+  false
  
 bpAnyId()==
   bpEqKey "MINUS"  and ($stok is ["INTEGER",:.] or bpTrap()) and
@@ -595,9 +597,9 @@ bpTyping() ==
 ++ Tagged:
 ++   Name : Typing
 bpTagged()==
-      bpApplication() and
-         (bpEqKey "COLON" and (bpTyping() or bpTrap()) and
-           bpPush bfTagged(bpPop2(),bpPop1()) or true)
+  bpApplication() and
+     (bpEqKey "COLON" and (bpTyping() or bpTrap()) and
+       bpPush bfTagged(bpPop2(),bpPop1()) or true)
  
 bpExpt()== bpRightAssoc('(POWER),function bpTagged)
  
@@ -651,11 +653,14 @@ bpReduce()==
  
 bpTimes()==
     bpReduce() or bpLeftAssoc('(TIMES  SLASH),function bpExpt)
+
+bpEuclid() ==
+  bpLeftAssoc('(QUO REM),function bpTimes)
  
 bpMinus()==
-  bpInfGeneric '(MINUS) and (bpTimes() or bpTrap())
+  bpInfGeneric '(MINUS) and (bpEuclid() or bpTrap())
     and bpPush(bfApplication(bpPop2(),bpPop1()))
-      or bpTimes()
+      or bpEuclid()
  
 bpArith()==bpLeftAssoc('(PLUS MINUS),function bpMinus)
  
@@ -680,51 +685,52 @@ bpAnd() ==
   bpLeftAssoc('(AND),function bpCompare)
 
 bpThrow() ==
-  bpEqKey "THROW" and bpApplication() and 
+  bpEqKey "THROW" and bpApplication() =>
+    -- Allow user-supplied matching type tag
+    if bpEqKey "COLON" then
+      bpApplication() or bpTrap()
+      bpPush %Pretend(bpPop2(),bpPop1())
     bpPush bfThrow bpPop1()
+  nil
 
 ++  Try:
 ++    try Assign CatchItems
 bpTry() ==
-  bpEqKey "TRY" and bpAssign() and 
-    (bpEqKey "BACKSET" or true) and 
-      (bpEqKey "CATCH" or bpMissing "CATCH") and
-        (bpPiledCatchItems() or bpSimpleCatch() or bpTrap()) and
-           bpPush bfTry(bpPop2(), bpPop1())
+  bpEqKey "TRY" =>
+    bpAssign()
+    cs := []
+    while bpHandler "CATCH" repeat
+      bpCatchItem()
+      cs := [bpPop1(),:cs]
+    bpHandler "FINALLY" =>
+      bpFinally() and
+        bpPush bfTry(bpPop2(),nreverse [bpPop1(),:cs])
+    cs = nil => bpTrap() -- missing handlers
+    bpPush bfTry(bpPop1(),nreverse cs)
+  nil            
 
-++ SimpleCatch:
-++   catch Name
-bpSimpleCatch() ==
-  bpCatchItem() and bpPush [bpPop1()]
-
-bpPiledCatchItems() ==
-  bpPileBracketed function bpCatchItemList
-
-bpCatchItemList() ==
-  bpListAndRecover function bpCatchItem
-
-bpExceptionHead() ==
-  (bpName() or bpTrap()) and
-    ((bpParenthesized function bpIdList and
-      bpPush bfNameArgs (bpPop2(),bpPop1()))
-	or bpName() and bpPush bfNameArgs(bpPop2(),bpPop1()))
-          or true
-
-bpExceptionTail() ==
-  bpEqKey "EXIT" and (bpAssign() or bpTrap()) and
-    bpPush %Exit(bpPop2(),bpPop1())
-
-++ Exception:
-++   ExpcetionHead
-++   ExceptionHead => Assign
-bpException() ==
-  bpExceptionHead() and (bpExceptionTail() or true)
-
-++ Catch:
-++   catch Exception
 bpCatchItem() ==
-  (bpException() or bpTrap()) and 
-    bpPush %Catch bpPop1()
+  (bpExceptionVariable() or bpTrap()) and
+    (bpEqKey "EXIT" or bpTrap()) and
+      (bpAssign() or bpTrap()) and
+        bpPush %Catch(bpPop2(),bpPop1())
+
+bpExceptionVariable() ==
+  t := $stok
+  bpEqKey "OPAREN" and 
+    (bpSignature() or bpTrap()) and
+      (bpEqKey "CPAREN" or bpMissing t)
+        or bpTrap()
+
+bpFinally() ==
+  (bpAssign() or bpTrap()) and
+    bpPush %Finally bpPop1()
+
+bpHandler key ==
+  s := bpState()
+  (bpEqKey "BACKSET" or bpEqKey "SEMICOLON") and bpEqKey key => true
+  bpRestore s
+  false
 
 ++ Leave:
 ++   LEAVE Logical
@@ -748,9 +754,9 @@ bpReturn()==
 bpLogical()== bpLeftAssoc('(OR),function bpReturn)
  
 bpExpression()==
-     bpEqKey "COLON" and (bpLogical() and
-              bpPush bfApplication ("COLON",bpPop1())
-                    or bpTrap()) or bpLogical()
+  bpEqKey "COLON" and (bpLogical() and
+     bpPush bfApplication ("COLON",bpPop1())
+           or bpTrap()) or bpLogical()
  
 bpStatement()==
   bpConditional function bpWhere or bpLoop()  
@@ -758,13 +764,13 @@ bpStatement()==
       or bpTry()
  
 bpLoop()==
-     bpIterators() and
-      (bpCompMissing "REPEAT" and
-         (bpWhere() or bpTrap()) and
-            bpPush bfLp(bpPop2(),bpPop1()))
-                or
-                  bpEqKey "REPEAT" and (bpLogical() or bpTrap()) and
-                       bpPush bfLoop1 bpPop1 ()
+  bpIterators() and
+   (bpCompMissing "REPEAT" and
+      (bpWhere() or bpTrap()) and
+         bpPush bfLp(bpPop2(),bpPop1()))
+             or
+               bpEqKey "REPEAT" and (bpLogical() or bpTrap()) and
+                    bpPush bfLoop1 bpPop1 ()
  
 bpSuchThat()==bpAndOr("BAR",function bpWhere,function bfSuchthat)
  
@@ -835,16 +841,16 @@ bpExit()==
 bpDefinition()==
   a:=bpState()
   bpExit() =>
-       bpEqPeek "DEF" =>
-	  bpRestore a
-	  bpDef()
-       bpEqPeek "TDEF" =>
-	  bpRestore a
-	  bpTypeAliasDefition()
-       bpEqPeek "MDEF" =>
-	  bpRestore a
-	  bpMdef()
-       true
+    bpEqPeek "DEF" =>
+       bpRestore a
+       bpDef()
+    bpEqPeek "TDEF" =>
+       bpRestore a
+       bpTypeAliasDefition()
+    bpEqPeek "MDEF" =>
+       bpRestore a
+       bpMdef()
+    true
   bpRestore a
   false
  
@@ -1153,7 +1159,7 @@ bpOutItem()==
   b:=bpPop1()
   bpPush 
     b is ["+LINE",:.] => [ b ]
-    b is ["L%T",l,r] and IDENTP l => 
+    b is ["L%T",l,r] and symbol? l => 
       $InteractiveMode => [["SETQ",l,r]]
       [["DEFPARAMETER",l,r]]
     translateToplevel(b,false)

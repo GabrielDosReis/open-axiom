@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -56,9 +56,9 @@
 
 #include "util.H1"
 #include "Gfun.H1"
-#include "pixmap.H1"
-#include "XShade.H1"
-#include "XSpadFill.H1"
+#include "pixmap.h"
+#include "XShade.h"
+#include "XSpadFill.h"
 #include "all_3d.H1"
 #include "cfuns.h"
 
@@ -913,7 +913,7 @@ processEvents(void)
         break;
       }
       if (!followMouse) 
-        len=select(FD_SETSIZE,(void *)&rd,0,0,0); 
+        len=select(FD_SETSIZE, &rd,0,0,0); 
       else 
         len=1;
     }

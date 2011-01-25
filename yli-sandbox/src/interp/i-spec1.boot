@@ -153,7 +153,7 @@ compileTargetedADEF(t,vars,types,body) ==
 compileADEFBody(t,vars,types,body,computedResultType) ==
 --+
   $compiledOpNameList := [$mapName]
-  minivectorName := makeInternalMapMinivectorName PNAME $mapName
+  minivectorName := makeInternalMapMinivectorName symbolName $mapName
   body := substitute(["%dynval",MKQ minivectorName],"$$$",body)
   setDynamicBinding(minivectorName,LIST2VEC $minivector)
 
@@ -229,7 +229,7 @@ upAlgExtension t ==
   clearDependencies(a,true)
   if $printTypeIfTrue then
     sayKeyedMsg("S2IS0003",NIL)
-    sayMSG concat ['%l,'"   ",saeTypeSynonym,'" := ",
+    sayMSG concat ['"%l",'"   ",saeTypeSynonym,'" := ",
       :prefix2String objVal saeTypeSynonymValue]
     sayMSG concat ['"   ",a,'" : ",saeTypeSynonym,'" := ",a]
   putValue(op,T2)

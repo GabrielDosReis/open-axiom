@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reverved.
 
   Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,6 @@
 */
 
 #include "openaxiom-c-macros.h"
-#define _PARSE_AUX_C
-
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -44,8 +42,8 @@
 #include "lex.h"
 #include "hyper.h"
 
-#include "all_hyper_proto.H1"
-
+static void read_ht_file(HashTable * page_hash , HashTable * macro_hash , HashTable * patch_hash , FILE * db_fp , char * db_file);
+static HyperDocPage * make_special_page(int type , const char * name);
 
 extern int make_input_file;
 extern int gverify_dates;
@@ -389,7 +387,7 @@ make_paste_window(PasteNode *paste)
 /* create a HyperDoc page structure with the given type and name */
 
 static HyperDocPage *
-make_special_page(int type, char *name)
+make_special_page(int type, const char *name)
 {
     HyperDocPage *page = alloc_page(name);
 
@@ -472,9 +470,9 @@ add_dependencies(void)
 /* Returns true iff the TextNode contains a single integer */
 
 int
-is_number(char * str)
+is_number(const char * str)
 {
-    char *s;
+    const char *s;
 
     for (s = str; *s != '\0'; s++) {
         if (!(isdigit(*s) || *s == '-'))

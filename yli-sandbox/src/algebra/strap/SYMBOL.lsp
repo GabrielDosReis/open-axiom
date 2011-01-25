@@ -195,12 +195,14 @@
   (SPADCALL |x| (|getShellEntry| $ 79))) 
 
 (DEFUN |SYMBOL;syprefix| (|sc| $)
-  (LET ((|ns| (LIST (LENGTH (QVELT |sc| 3)) (LENGTH (QVELT |sc| 2))
-                    (LENGTH (QVELT |sc| 1)) (LENGTH (QVELT |sc| 0)))))
+  (LET ((|ns| (LIST (LIST-LENGTH (SVREF |sc| 3))
+                    (LIST-LENGTH (SVREF |sc| 2))
+                    (LIST-LENGTH (SVREF |sc| 1))
+                    (LIST-LENGTH (SVREF |sc| 0)))))
     (SEQ (LOOP
            (COND
              ((NOT (COND
-                     ((NOT (< (LENGTH |ns|) 2))
+                     ((NOT (< (LIST-LENGTH |ns|) 2))
                       (ZEROP (|SPADfirst| |ns|)))
                      (T NIL)))
               (RETURN NIL))
@@ -208,9 +210,9 @@
          (EXIT (SPADCALL
                    (CONS (STRCONC (|getShellEntry| $ 38)
                                   (|SYMBOL;istring|
-                                      (LENGTH (QVELT |sc| 4)) $))
-                         (LET ((#0=#:G1549 (NREVERSE |ns|))
-                               (#1=#:G1548 NIL))
+                                      (LIST-LENGTH (SVREF |sc| 4)) $))
+                         (LET ((#0=#:G1524 (NREVERSE |ns|))
+                               (#1=#:G1523 NIL))
                            (LOOP
                              (COND
                                ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -222,36 +224,36 @@
                    (|getShellEntry| $ 93)))))) 
 
 (DEFUN |SYMBOL;syscripts| (|sc| $)
-  (LET ((|all| (QVELT |sc| 3)))
+  (LET ((|all| (SVREF |sc| 3)))
     (SEQ (SETQ |all|
-               (SPADCALL (QVELT |sc| 2) |all| (|getShellEntry| $ 94)))
+               (SPADCALL (SVREF |sc| 2) |all| (|getShellEntry| $ 94)))
          (SETQ |all|
-               (SPADCALL (QVELT |sc| 1) |all| (|getShellEntry| $ 94)))
+               (SPADCALL (SVREF |sc| 1) |all| (|getShellEntry| $ 94)))
          (SETQ |all|
-               (SPADCALL (QVELT |sc| 0) |all| (|getShellEntry| $ 94)))
-         (EXIT (SPADCALL |all| (QVELT |sc| 4) (|getShellEntry| $ 94)))))) 
+               (SPADCALL (SVREF |sc| 0) |all| (|getShellEntry| $ 94)))
+         (EXIT (SPADCALL |all| (SVREF |sc| 4) (|getShellEntry| $ 94)))))) 
 
 (DEFUN |SYMBOL;script;$L$;22| (|sy| |ls| $)
   (LET ((|sc| (VECTOR NIL NIL NIL NIL NIL)))
     (SEQ (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 0 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 0) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 1 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 1) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 2 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 2) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 3 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 3) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (COND
            ((NOT (NULL |ls|))
-            (SEQ (QSETVELT |sc| 4 (|SPADfirst| |ls|))
+            (SEQ (SETF (SVREF |sc| 4) (|SPADfirst| |ls|))
                  (EXIT (SETQ |ls| (CDR |ls|))))))
          (EXIT (|SYMBOL;script;$R$;23| |sy| |sc| $))))) 
 
@@ -278,7 +280,7 @@
     (RETURN
       (LET ((|s| (PNAME (SPADCALL |e| (|getShellEntry| $ 100)))))
         (SEQ (COND
-               ((< 1 (QCSIZE |s|))
+               ((< 1 (LENGTH |s|))
                 (COND
                   ((SPADCALL (SPADCALL |s| 1 (|getShellEntry| $ 106))
                        (SPADCALL "\\" (|getShellEntry| $ 43))
@@ -289,7 +291,7 @@
                ((NOT (|SYMBOL;scripted?;$B;30| |e| $)) (EXIT |s|)))
              (LETT |ss| (|SYMBOL;scripts;$R;32| |e| $)
                    |SYMBOL;latex;$S;25|)
-             (LETT |lo| (QVELT |ss| 0) |SYMBOL;latex;$S;25|)
+             (LETT |lo| (SVREF |ss| 0) |SYMBOL;latex;$S;25|)
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "_{" |SYMBOL;latex;$S;25|)
@@ -307,7 +309,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |s| |sc|))))))
-             (SETQ |lo| (QVELT |ss| 1))
+             (SETQ |lo| (SVREF |ss| 1))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "^{" |SYMBOL;latex;$S;25|)
@@ -325,7 +327,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |s| |sc|))))))
-             (SETQ |lo| (QVELT |ss| 2))
+             (SETQ |lo| (SVREF |ss| 2))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "{}^{" |SYMBOL;latex;$S;25|)
@@ -343,7 +345,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |sc| |s|))))))
-             (SETQ |lo| (QVELT |ss| 3))
+             (SETQ |lo| (SVREF |ss| 3))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "{}_{" |SYMBOL;latex;$S;25|)
@@ -361,7 +363,7 @@
                                            (STRCONC |sc| ", ")))))))))
                      (SETQ |sc| (STRCONC |sc| "}"))
                      (EXIT (SETQ |s| (STRCONC |sc| |s|))))))
-             (SETQ |lo| (QVELT |ss| 4))
+             (SETQ |lo| (SVREF |ss| 4))
              (COND
                ((NOT (NULL |lo|))
                 (SEQ (LETT |sc| "\\left( {" |SYMBOL;latex;$S;25|)
@@ -388,7 +390,9 @@
         (LOOP
           (COND
             (NIL (RETURN NIL))
-            (T (SEQ (LETT |qr| (DIVIDE2 |n| (QCSIZE |s|))
+            (T (SEQ (LETT |qr|
+                          (MULTIPLE-VALUE-CALL #'CONS
+                              (TRUNCATE |n| (LENGTH |s|)))
                           |SYMBOL;anyRadix|)
                     (SETQ |n| (CAR |qr|))
                     (SETQ |ns|
@@ -462,7 +466,7 @@
 
 (DEFUN |SYMBOL;resetNew;V;29| ($)
   (SEQ (SPADCALL (|getShellEntry| $ 10) 0 (|getShellEntry| $ 121))
-       (EXIT (LET ((#0=#:G1550
+       (EXIT (LET ((#0=#:G1525
                        (SPADCALL (|getShellEntry| $ 13)
                            (|getShellEntry| $ 133))))
                (LOOP
@@ -487,7 +491,7 @@
                                $)
                            |SYMBOL;name;2$;31|)
                      (LET ((|i| (+ (|getShellEntry| $ 41) 1))
-                           (#0=#:G1551 (QCSIZE |str|)))
+                           (#0=#:G1526 (LENGTH |str|)))
                        (LOOP
                          (COND
                            ((> |i| #0#) (RETURN NIL))
@@ -499,7 +503,7 @@
                                  (RETURN-FROM |SYMBOL;name;2$;31|
                                    (|SYMBOL;coerce;S$;8|
                                     (SPADCALL |str|
-                                     (SPADCALL |i| (QCSIZE |str|)
+                                     (SPADCALL |i| (LENGTH |str|)
                                       (|getShellEntry| $ 141))
                                      (|getShellEntry| $ 142))
                                     $))))))
@@ -522,7 +526,7 @@
                                    (|getShellEntry| $ 137))
                                $)
                            |SYMBOL;scripts;$R;32|)
-                     (LETT |nstr| (QCSIZE |str|)
+                     (LETT |nstr| (LENGTH |str|)
                            |SYMBOL;scripts;$R;32|)
                      (LETT |m|
                            (SPADCALL |nscripts|
@@ -539,7 +543,7 @@
                                       (|getShellEntry| $ 139))))
                             (RETURN NIL))
                            (T (SPADCALL |nscripts| |i|
-                                  (LET ((#0=#:G1542
+                                  (LET ((#0=#:G1517
                                          (-
                                           (SPADCALL
                                            (SPADCALL |str| |j|
@@ -561,22 +565,22 @@
                      (SETQ |m|
                            (SPADCALL |lscripts|
                                (|getShellEntry| $ 153)))
-                     (LET ((|i| |m|) (#1=#:G1552 |nscripts|))
+                     (LET ((|i| |m|) (#1=#:G1527 |nscripts|))
                        (LOOP
                          (COND
                            ((ATOM #1#) (RETURN NIL))
                            (T (LET ((|n| (CAR #1#)))
                                 (COND
-                                  ((< (LENGTH |allscripts|) |n|)
+                                  ((< (LIST-LENGTH |allscripts|) |n|)
                                    (|error|
                                     "Improper script count in symbol"))
                                   (T (SEQ
                                       (SPADCALL |lscripts| |i|
                                        (LET
-                                        ((#2=#:G1554
+                                        ((#2=#:G1529
                                           (SPADCALL |allscripts| |n|
                                            (|getShellEntry| $ 156)))
-                                         (#3=#:G1553 NIL))
+                                         (#3=#:G1528 NIL))
                                          (LOOP
                                            (COND
                                              ((ATOM #2#)
@@ -622,7 +626,7 @@
 
 (DEFUN |Symbol| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1556)
+  (PROG (#0=#:G1531)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Symbol|))
@@ -634,9 +638,9 @@
              (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|))))))))) 
 
 (DEFUN |Symbol;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Symbol|)) ($ (|newShell| 165))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))
@@ -650,7 +654,7 @@
     (|setShellEntry| $ 20 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     (|setShellEntry| $ 21 "abcdefghijklmnopqrstuvwxyz")
     (|setShellEntry| $ 38 "*")
-    (|setShellEntry| $ 41 (QCSIZE (|getShellEntry| $ 38)))
+    (|setShellEntry| $ 41 (LENGTH (|getShellEntry| $ 38)))
     (|setShellEntry| $ 45
         (SPADCALL (SPADCALL "0" (|getShellEntry| $ 43))
             (|getShellEntry| $ 44)))

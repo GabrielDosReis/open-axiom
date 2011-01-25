@@ -185,7 +185,7 @@ pfLiteral2Sex pf ==
     MULTIPLE_-VALUE_-BIND(part1 pos1,
       readInteger(txt,KEYWORD::JUNK_-ALLOWED,true),
         if pos1 = #txt then part1
-        else readInteger(SUBSTRING(txt,pos1+1,nil),
+        else readInteger(subString(txt,pos1+1),
                KEYWORD::RADIX, part1))
   type = 'string or type = 'char =>
     pfLiteralString pf
@@ -385,15 +385,15 @@ pfSequence2Sex0 seqList ==
 float2Sex num ==
   eIndex := SEARCH('"e", num)
   mantPart :=
-    eIndex => SUBSEQ(num, 0, eIndex)
+    eIndex => subSequence(num, 0, eIndex)
     num
-  expPart := (eIndex => READ_-FROM_-STRING SUBSEQ(num, eIndex+1); 0)
+  expPart := (eIndex => READ_-FROM_-STRING subSequence(num, eIndex+1); 0)
   dotIndex := SEARCH('".", mantPart)
   intPart :=
-    dotIndex => READ_-FROM_-STRING SUBSEQ(mantPart, 0, dotIndex)
+    dotIndex => READ_-FROM_-STRING subSequence(mantPart, 0, dotIndex)
     READ_-FROM_-STRING mantPart
   fracPartString :=
-    dotIndex => SUBSEQ(mantPart, dotIndex+1)
+    dotIndex => subSequence(mantPart, dotIndex+1)
     '"0"
   bfForm := MAKE_-FLOAT(intPart, READ_-FROM_-STRING fracPartString,
     # fracPartString, expPart)

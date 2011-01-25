@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyirght (C) 2007-2008, Gabriel Dos Reis.
+  Copyirght (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,10 @@
 
 #include "openaxiom-c-macros.h"
 #include "hyper.h"
+
+extern void parse_paste(void);
+extern void parse_pastebutton(void);
+extern HyperDocPage * parse_patch(PasteNode * paste);
 
 extern short int gInPaste;
 

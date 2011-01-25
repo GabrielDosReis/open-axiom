@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,7 @@ trace1 l ==
     newOptions:= delete(a,$options)
     null l => trace1 oldL
     for x in l repeat
-      x is [domain,:opList] and VECP domain =>
+      x is [domain,:opList] and vector? domain =>
         sayKeyedMsg("S2IT0003",[devaluate domain])
       $options:= [:newOptions,:LASSOC(x,$optionAlist)]
       trace1 LIST x
@@ -199,10 +199,10 @@ getTraceOption (x is [key,:l]) ==
     l is [a] => [key,:l]
     stackTraceOptionError ["S2IT0011",[strconc('")",object2String key)]]
   key='depth =>
-    l is [n] and FIXP n => x
+    l is [n] and integer? n => x
     stackTraceOptionError ["S2IT0012",['")depth"]]
   key='count =>
-    (null l) or (l is [n] and FIXP n) => x
+    (null l) or (l is [n] and integer? n) => x
     stackTraceOptionError ["S2IT0012",['")count"]]
   key="of" =>
     ["of",:[hn y for y in l]] where
@@ -261,7 +261,7 @@ pcounters() ==
 
 transOnlyOption l ==
   l is [n,:y] =>
-    FIXP n => [n,:transOnlyOption y]
+    integer? n => [n,:transOnlyOption y]
     MEMQ(n:= UPCASE n,'(V A C)) => [n,:transOnlyOption y]
     stackTraceOptionError ["S2IT0006",[n]]
     transOnlyOption y
@@ -448,7 +448,7 @@ spadTrace(domain,options) ==
       --new form is (<op> <signature> <slotNumber> <condition> <kind>)
       for [op,sig,n,.,kind] in opStructureList | kind = 'ELT
         and (anyifTrue or MEMQ(op,listOfOperations)) and
-         FIXP n and
+         integer? n and
           isTraceable(triple:= [op,sig,n],domain)] where
             isTraceable(x is [.,.,n,:.],domain) ==
               atom domain.n => nil
@@ -633,7 +633,7 @@ letPrint3(x,xval,printfn,currentFunction) ==
          if flag='letPrint2 then print xval
       if (y:= hasPair("BREAK",y)) and
         (y="all" or MEMQ(x,y) and
-          (not MEMQ(PNAME(x).0,'($ _#)) and not GENSYMP x)) then
+          (not (PNAME(x).0 in '($ _#)) and not GENSYMP x)) then
             break [:bright currentFunction,'"breaks after",:bright x,'":= ",
               xval]
   x
@@ -641,7 +641,7 @@ letPrint3(x,xval,printfn,currentFunction) ==
 getAliasIfTracedMapParameter(x,currentFunction) ==
   isSharpVarWithNum x =>
     aliasList:= get(currentFunction,'alias,$InteractiveFrame) =>
-      aliasList.(STRING2PINT_-N(SUBSTRING(PNAME x,1,NIL),1)-1)
+      aliasList.(STRING2PINT_-N(subString(PNAME x,1,NIL),1)-1)
   x
 
 getBpiNameIfTracedMap(name) ==
@@ -666,11 +666,11 @@ getOption(opt,l) ==
 
 reportSpadTrace(header,[op,sig,n,:t]) ==
   null $traceNoisely => nil
-  msg:= [header,'%b,op,":",'%d,rest sig," -> ",first sig," in slot ",n]
+  msg:= [header,'"%b",op,":",'"%d",rest sig," -> ",first sig," in slot ",n]
   namePart:= nil --(t is (.,.,name,:.) => (" named ",name); NIL)
   tracePart:=
     t is [y,:.] and not null y =>
-      (y="all" => ['%b,"all",'%d,"vars"]; [" vars: ",y])
+      (y="all" => ['"%b","all",'"%d","vars"]; [" vars: ",y])
     NIL
   sayBrightly [:msg,:namePart,:tracePart]
 
@@ -776,7 +776,7 @@ _?t() ==
     suffix:=
       isDomain d => '"domain"
       '"package"
-    sayBrightly ['"   Functions traced in ",suffix,'%b,devaluate d,'%d,":"]
+    sayBrightly ['"   Functions traced in ",suffix,'"%b",devaluate d,'"%d",":"]
     for x in orderBySlotNumber l repeat reportSpadTrace("   ",take(4,x))
     TERPRI()
 
@@ -793,7 +793,7 @@ tracelet(fn,vars) ==
   if $letAssoc then SETLETPRINTFLAG true
   $TRACELETFLAG : local := true
   $QuickLet : local := false
-  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P SYMBOL_-FUNCTION fn
+  not MEMQ(fn,$traceletFunctions) and not IS__GENVAR fn and COMPILED_-FUNCTION_-P symbolFunction fn
     and not stupidIsSpadFunction fn and not GENSYMP fn =>
       ($traceletFunctions:= [fn,:$traceletFunctions]; compileBoot fn ;
        $traceletFunctions:= delete(fn,$traceletFunctions) )

@@ -12,9 +12,9 @@
       (|getShellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
-  (LET ((#0=#:G1402
+  (LET ((#0=#:G1377
             (MAX 1
-                 (QUOTIENT2
+                 (TRUNCATE
                      (SPADCALL 4004
                          (- (SPADCALL (|getShellEntry| $ 14)) 1)
                          (|getShellEntry| $ 16))

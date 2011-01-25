@@ -95,7 +95,7 @@ htSayExplicitExports r ==
     systemError()
 
 displayBreakIntoAnds pred ==
-  pred is [op,:u] and member(op,'(and AND)) => u
+  pred is [op,:u] and op in '(and AND) => u
   [pred]
 
 htSayValue t ==
@@ -149,7 +149,7 @@ dbGetFormFromDocumentation(op,sig,x) ==
      (stringPrefix?('"\spad{",doc) and (k := 6) or
        stringPrefix?('"\s{",doc) and (k := 3)) =>
     n := charPosition($charRbrace,doc,k)
-    s := SUBSTRING(doc,k,n - k)
+    s := subString(doc,k,n - k)
     parse := ncParseFromString s
     parse is [=op,:.] and #parse = #sig => parse
   nil
@@ -495,9 +495,9 @@ dbHeading(items,which,heading,:options) ==
   capwhich := capitalize which
   prefix :=
     count < 2 =>
-      names? => pluralSay(count,strconc(capwhich," Name"),nil)
+      names? => pluralSay(count,strconc(capwhich,'" Name"),nil)
       pluralSay(count,capwhich,nil)
-    names? => pluralSay(count,nil,strconc(capwhich," Names"))
+    names? => pluralSay(count,nil,strconc(capwhich,'" Names"))
     pluralSay(count,nil,pluralize capwhich)
   [:prefix,'" for ",:heading]
 

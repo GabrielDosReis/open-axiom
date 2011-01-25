@@ -1,16 +1,5 @@
-2010-05-07  Gabriel Dos Reis  <gdr@cse.tamu.edu>
+2011-01-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* configure.ac.pamphlet: Add new option: --enable-int-file-retention.
-
-2010-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* configure.ac.pamphlet: Check for ccl and ccl64 too.
-
-2010-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* configure.ac.pamphlet: Add support for Clozure CL.
-
-2010-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
-
-	* configure.ac.pamphlet: Add support for --enable-threads.
+	* configure.ac: Reject ECL on Mac OS X as it cannot give reliable
+	information about its binary personality.
 

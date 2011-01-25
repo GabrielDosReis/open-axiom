@@ -4,7 +4,7 @@
 (DEFPARAMETER |OrderedRing;AL| 'NIL) 
 
 (DEFUN |OrderedRing;| ()
-  (LET ((#0=#:G1403
+  (LET ((#0=#:G1378
             (|Join| (|OrderedAbelianGroup|) (|Ring|) (|Monoid|)
                     (|mkCategory| '|domain|
                         '(((|positive?| ((|Boolean|) $)) T)

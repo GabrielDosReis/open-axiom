@@ -430,7 +430,7 @@ modemapPattern(mmPattern,sig) ==
   partial := false
   for xTails in tails mmPattern repeat
     x := first xTails
-    if x is ['Union,dom,tag] and tag = '"failed" and xTails=sig then
+    if x is ['Union,dom,'"failed"] and xTails=sig then
       x := dom
       partial := true
     patvar := rassoc(x,patternAlist)
@@ -692,7 +692,7 @@ getOplistWithUniqueSignatures(op,pairlis,signatureAlist) ==
 --% Exposure Group Code
 
 dropPrefix(fn) ==
-  member(fn.0,[char "?",char "-",char "+"]) => SUBSTRING(fn,1,nil)
+  member(fn.0,[char "?",char "-",char "+"]) => subString(fn,1)
   fn
 
 --moved to util.lisp
@@ -706,7 +706,7 @@ dropPrefix(fn) ==
 --++  egFiles := NIL
 --++  while (not PLACEP (x:= readLine stream)) repeat
 --++    x := DROPTRAILINGBLANKS x
---++    SIZE(x) = 0 => 'iterate                         -- blank line
+--++    # x = 0 => 'iterate                         -- blank line
 --++    (x.0 = char "#") or (x.0 = char "*") => 'iterate    -- comment
 --++    x.0 = char " " =>
 --++       -- possible exposure group member name and library name
@@ -717,9 +717,9 @@ dropPrefix(fn) ==
 --++       p := STRPOS('" ",x,1,NIL)
 --++       null p =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
---++       n := object2Identifier SUBSTRING(x,0,p)
---++       x := dropLeadingBlanks SUBSTRING(x,p+1,NIL)
---++       SIZE(x) = 0 =>
+--++       n := object2Identifier subString(x,0,p)
+--++       x := dropLeadingBlanks subString(x,p+1)
+--++       # x = 0 =>
 --++     throwKeyedMsg("S2IZ0069B",[namestring egFile,x])
 --++       egFiles := [[n,:object2Identifier x],:egFiles]
 --++    -- have a new group name

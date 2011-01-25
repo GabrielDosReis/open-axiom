@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@ module g_-util where
   isSubDomain: (%Mode,%Mode) -> %Form
   expandToVMForm: %Thing -> %Thing
   usedSymbol?: (%Symbol,%Code) -> %Boolean
+  isDefaultPackageName: %Symbol -> %Boolean
 
 --%  
 
@@ -61,6 +62,19 @@ usedSymbol?(s,x) ==
     usedSymbol?(s,body)
   or/[usedSymbol?(s,x') for x' in x]
   
+
+++ Return the character designated by the string `s'.
+stringToChar: %String -> %Char
+stringToChar s ==
+  #s = 1 => char s
+  s = '"\a" => $Bell
+  s = '"\n" => $Newline
+  s = '"\f" => $FormFeed
+  s = '"\r" => $CarriageReturn
+  s = '"\b" => $Backspace
+  s = '"\t" => $HorizontalTab
+  s = '"\v" => $VerticalTab
+  error strconc('"invalid character designator: ", s)
   
 --% VM forms
 
@@ -253,15 +267,24 @@ expandBcompl ['%bcompl,x] ==
 
 -- Character operations
 expandCcst ['%ccst,s] ==
+  -- FIXME: this expander should return forms, instead of character constants
   not string? s => error "operand is not a string constant"
-  #s ~= 1 => error "string constant must contain exactly one character"
-  char s
+  stringToChar s
+
+++ string-to-character conversion.  
+expandS2c ['%s2c, x] ==
+  string? x => expandCcst ['%ccst, x]
+  ['stringToChar, x]
 
 -- Integer operations
 expandIneg ['%ineg,x] ==
   x := expandToVMForm x
   integer? x => -x
   ['_-,x]
+
+expandIdivide ['%idivide,x,y] ==
+  ['MULTIPLE_-VALUE_-CALL,['FUNCTION,'CONS],
+    ['TRUNCATE,expandToVMForm x,expandToVMForm y]]
 
 expandIeq ['%ieq,a,b] ==
   a := expandToVMForm a
@@ -326,6 +349,62 @@ expandFlt ['%flt,x,y] ==
 expandFgt ['%fgt,x,y] ==
   expandFlt ['%flt,y,x]
 
+expandFcstpi ['%fcstpi] ==
+  ['COERCE,'PI,quoteForm '%DoubleFloat]
+
+-- String operations
+
+++ string equality comparison
+expandStreq ['%streq,x,y] ==
+  expandToVMForm ['%not,['%peq,['STRING_=,x,y],'%nil]]
+
+++ string lexicographic comparison  
+expandStrlt ['%strlt,x,y] ==
+  expandToVMForm ['%not,['%peq,['STRING_<,x,y],'%nil]]
+
+++ deposit a character `z' at slot number `y' in string object `x'.  
+expandStrstc ['%strstc,x,y,z] ==
+  expandToVMForm ['%store,['%schar,x,y],z]
+
+-- bit vector operations
+expandBitvecnot ['%bitvecnot,x] ==
+  ['BIT_-NOT,expandToVMForm x]
+
+expandBitvecand ['%bitvecand,x,y] ==
+  ['BIT_-AND,expandToVMForm x,expandToVMForm y]
+
+expandBitvecnand ['%bitvecnand,x,y] ==
+  ['BIT_-NAND,expandToVMForm x,expandToVMForm y]
+
+expandBitvecor ['%bitvecor,x,y] ==
+  ['BIT_-IOR,expandToVMForm x,expandToVMForm y]
+
+expandBitvecnor ['%bitvecnor,x,y] ==
+  ['BIT_-NOR,expandToVMForm x,expandToVMForm y]
+
+expandBitvecxor ['%bitvecxor,x,y] ==
+  ['BIT_-XOR,expandToVMForm x,expandToVMForm y]
+
+expandBitveclength ['%bitveclength,x] ==
+  ['LENGTH,expandToVMForm x]
+
+expandBitveccopy ['%bitveccopy,x] ==
+  ['COPY_-SEQ,expandToVMForm x]
+
+expandBitvecconc ['%bitvecconc,x,y] ==
+  ['CONCATENATE, quoteForm '%BitVector,expandToVMForm x,expandToVMForm y]
+
+expandBitvecref ['%bitvecref,x,y] ==
+  ['SBIT,expandToVMForm x,expandToVMForm y]
+
+expandBitveceq ['%bitveceq,x,y] ==
+  ['EQUAL,expandToVMForm x,expandToVMForm y]
+
+expandMakebitvec ['%makebitvec,x,y] ==
+  ['MAKE_-ARRAY,['LIST,expandToVMForm x],
+     KEYWORD::ELEMENT_-TYPE,quoteForm '%Bit,
+       KEYWORD::INITIAL_-ELEMENT,expandToVMForm y]
+
 -- Local variable bindings
 expandBind ['%bind,inits,:body] ==
   body := expandToVMForm body
@@ -349,25 +428,62 @@ expandStore ["%store",place,value] ==
   cons? place => ["SETF",place,value]
   ["SETQ",place,value]
 
+-- non-local control transfer
+
+$OpenAxiomCatchTag == KEYWORD::OpenAxiomCatchPoint
+
+expandThrow ['%throw,m,x] ==
+  ['THROW,$OpenAxiomCatchTag,
+    ['CONS,$OpenAxiomCatchTag,
+      ['CONS,expandToVMForm m,expandToVMForm x]]]
+
+++ Subroutine of expandTry.  Generate code for domain matching
+++ of object `obj' with domain `dom'.
+domainMatchCode(dom,obj) ==
+  -- FIXME: Instead of domain equality, we should also consider
+  -- FIXME: cases of sub-domains, or domain schemes with constraints.
+  ['domainEqual,dom,['%head,obj]]
+
+expandTry ['%try,expr,handlers,cleanup] ==
+  g := gensym()              -- hold the exception object
+  ys := [[domainMatchCode(mode,['%tail,g]),
+          ['%bind,[[var,['%tail,['%tail,g]]]],stmt]]
+            for [.,var,mode,stmt] in handlers]
+  handlerBody :=
+    ys = nil => g
+    ys := [:ys,['%true,['THROW,$OpenAxiomCatchTag,g]]]
+    ['%when,
+      [['%and,['%pair?,g],
+        ['%peq,['%head,g],$OpenAxiomCatchTag]], ['%when,:ys]],
+          ['%true,g]]
+  tryBlock := expandBind
+    ['%bind,[[g,['CATCH,$OpenAxiomCatchTag,expr]]],handlerBody]
+  cleanup = nil => tryBlock
+  ['UNWIND_-PROTECT,tryBlock,:expandToVMForm rest cleanup]
+  
 ++ Opcodes with direct mapping to target operations.
 for x in [
     -- Boolean constants
     -- ['%false, :'NIL],
     ['%true,  :'T],
     -- unary Boolean operations
-    ['%not, :'NOT],
+    ['%not,   :'NOT],
+    ['%2bit,  :'TRUTH_-TO_-BIT],
+    ['%2bool, :'BIT_-TO_-TRUTH],
     -- binary Boolean operations
-    ['%and, :'AND],
-    ['%or,  :'OR],
+    ['%and,   :'AND],
+    ['%or,    :'OR],
 
-    -- character binary operations
-    ['%ceq, :'CHAR_=],
-    ['%clt, :'CHAR_<],
-    ['%cle, :'CHAR_<_=],
-    ['%cgt, :'CHAR_>],
-    ['%cge, :'CHAR_>_=],
-    ['%c2i, :'CHAR_-CODE],
-    ['%i2c, :'CODE_-CHAR],
+    -- character operations
+    ['%ceq,    :'CHAR_=],
+    ['%clt,    :'CHAR_<],
+    ['%cle,    :'CHAR_<_=],
+    ['%cgt,    :'CHAR_>],
+    ['%cge,    :'CHAR_>_=],
+    ['%cup,    :'CHAR_-UPCASE],
+    ['%cdown,  :'CHAR_-DOWNCASE],
+    ['%c2i,    :'CHAR_-CODE],
+    ['%i2c,    :'CODE_-CHAR],
 
     -- byte operations
     ['%beq, :'byteEqual],
@@ -379,18 +495,21 @@ for x in [
     ['%integer?,:'INTEGERP],
     ['%iodd?,   :'ODDP],
     ['%ismall?, :'FIXNUMP],
+    ['%i2s,   :'WRITE_-TO_-STRING],
     -- binary integer operations.
-    ['%iadd,:"+"],
-    ['%igcd,:'GCD],
-    ['%ige, :">="],
-    ['%iinc,:"1+"],
-    ['%ilcm,:'LCM],
-    ['%ile, :"<="],
-    ['%imax,:'MAX],
-    ['%imin,:'MIN],
-    ['%imul,:"*"],
-    ['%ipow,:'EXPT],
-    ['%isub,:"-"],
+    ['%iadd,    :"+"],
+    ['%igcd,    :'GCD],
+    ['%ige,     :">="],
+    ['%iinc,    :"1+"],
+    ['%ilcm,    :'LCM],
+    ['%ile,     :"<="],
+    ['%imax,    :'MAX],
+    ['%imin,    :'MIN],
+    ['%imul,    :"*"],
+    ['%irem,    :'REM],
+    ['%iquo,    :'TRUNCATE],
+    ['%ipow,    :'EXPT],
+    ['%isub,    :"-"],
 
     -- unary float operations.
     ['%fabs,  :'ABS],
@@ -406,6 +525,23 @@ for x in [
     ['%fmul,  :"*"],
     ['%fpow,  :'EXPT],
     ['%fsub,  :"-"],
+
+    ['%fsin,   :'SIN],
+    ['%fcos,   :'COS],
+    ['%ftan,   :'TAN],
+    ['%fcot,   :'COT],
+    ['%fsec,   :'SEC],
+    ['%fcsc,   :'CSC],
+    ['%fatan,  :'ATAN],
+    ['%facot,  :'ACOT],
+    ['%fsinh,  :'SINH],
+    ['%fcosh,  :'COSH],
+    ['%ftanh,  :'TANH],
+    ['%fcsch,  :'CSCH],
+    ['%fcoth,  :'COTH],
+    ['%fsech,  :'SECH],
+    ['%fasinh, :'ASINH],
+    ['%facsch, :'ACSCH],
 
     -- string operations
     ['%f2s,   :'DFLOAT_-FORMAT_-GENERAL],
@@ -424,20 +560,28 @@ for x in [
     ['%lthird,    :'CADDR],
     ['%pair?,     :'CONSP],
     ['%tail,      :'CDR],
+    ['%listlit,   :'LIST],
     -- binary list operations
     ['%lconcat,   :'APPEND],
 
     -- simple vector operations
     ['%vfill,     :'FILL],
     ['%vlength,   :'sizeOfSimpleArray],
-    ['%vref,      :'getSimpleArrayEntry],
+    ['%veclit,    :'VECTOR],
+    ['%vref,      :'SVREF],
+    ['%aref,      :'getSimpleArrayEntry],
+    ['%makevector,:'MAKE_-ARRAY],
 
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
     ['%sname,   :'SYMBOL_-NAME],
 
-    -- string unary functions
+    -- string functions
     ['%string?, :'STRINGP],
+    ['%strlength, :'LENGTH],
+    ['%schar,     :'CHAR],
+    ['%strconc,   :'STRCONC],
+    ['%strcopy,   :'COPY_-SEQ],
 
     -- general utility
     ['%hash,     :'SXHASH],
@@ -456,11 +600,13 @@ for x in [
    ['%bcompl,  :function expandBcompl],
 
    ['%ccst,    :function expandCcst],
+   ['%s2c,     :function expandS2c],
 
    ['%ieq,     :function expandIeq],
    ['%igt,     :function expandIgt],
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
+   ['%idivide, :function expandIdivide],
    ['%bitand,  :function expandBitand],
    ['%bitior,  :function expandBitior],
    ['%bitnot,  :function expandBitnot],
@@ -474,13 +620,33 @@ for x in [
    ['%fminval, :function expandFminval],
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
+   ['%fcstpi,  :function expandFcstpi],
+
+   ['%streq,   :function expandStreq],
+   ['%strlt,   :function expandStrlt],
+   ['%strstc,  :function expandStrstc],
+
+   ['%bitvecnot,    :function expandBitvecnot],
+   ['%bitvecand,    :function expandBitvecand],
+   ['%bitvecnand,   :function expandBitvecnand],
+   ['%bitvecor,     :function expandBitvecor],
+   ['%bitvecxor,    :function expandBitvecxor],
+   ['%bitvecnor,    :function expandBitvecnor],
+   ['%bitveclength, :function expandBitveclength],
+   ['%bitveccopy,   :function expandBitveccopy],
+   ['%bitvecconc,   :function expandBitvecconc],
+   ['%bitveceq,     :function expandBitveceq],
+   ['%bitvecref,   :function expandBitvecref],
+   ['%makebitvec,   :function expandMakebitvec],
 
    ['%peq,     :function expandPeq],
    ['%before?, :function expandBefore?],
 
    ['%bind,   :function expandBind],
    ['%store,  :function expandStore],
-   ['%dynval, :function expandDynval]
+   ['%dynval, :function expandDynval],
+   ['%throw,  :function expandThrow],
+   ['%try,    :function expandTry]
  ] repeat property(first x,'%Expander) := rest x
 
 ++ Return the expander of a middle-end opcode, or nil if there is none.
@@ -506,10 +672,10 @@ $interpOnly := false
 --% Utility Functions of General Use
 
 mkCacheName(name) ==
-  INTERN strconc(PNAME name,'";AL")
+  INTERN strconc(symbolName name,'";AL")
 
 mkAuxiliaryName(name) ==
-  INTERN strconc(PNAME name,'";AUX")
+  INTERN strconc(symbolName name,'";AUX")
 
 
 homogeneousListToVector(t,l) ==
@@ -518,15 +684,16 @@ homogeneousListToVector(t,l) ==
 
 ++ tests if x is an identifier beginning with #
 isSharpVar x ==
-  IDENTP x and SCHAR(SYMBOL_-NAME x,0) = char "#"
+  IDENTP x and stringChar(symbolName x,0) = char "#"
  
 isSharpVarWithNum x ==
   not isSharpVar x => nil
-  (n := QCSIZE(p := PNAME x)) < 2 => nil
+  p := symbolName x
+  (n := #p) < 2 => nil
   ok := true
   c := 0
   for i in 1..(n-1) while ok repeat
-    d := p.i
+    d := stringChar(p,i)
     ok := digit? d => c := 10*c + DIG2FIX d
   if ok then c else nil
 
@@ -625,7 +792,7 @@ ScanOrPairVec(f, ob) ==
                 ScanOrInner(f, first ob)
                 ScanOrInner(f, rest ob)
                 nil
-            VECP ob =>
+            vector? ob =>
                 HPUT($seen, ob, true)
                 for i in 0..#ob-1 repeat ScanOrInner(f, ob.i)
                 nil
@@ -899,12 +1066,12 @@ stringPrefix?(pref,str) ==
   -- sees if the first #pref letters of str are pref
   -- replaces STRINGPREFIXP
   not (string?(pref) and string?(str)) => NIL
-  (lp := QCSIZE pref) = 0 => true
-  lp > QCSIZE str => NIL
+  (lp := # pref) = 0 => true
+  lp > # str => NIL
   ok := true
   i := 0
   while ok and (i < lp) repeat
-    not EQ(SCHAR(pref,i),SCHAR(str,i)) => ok := NIL
+    stringChar(pref,i) ~= stringChar(str,i) => ok := NIL
     i := i + 1
   ok
 
@@ -912,22 +1079,22 @@ stringChar2Integer(str,pos) ==
   -- replaces GETSTRINGDIGIT in UT LISP
   -- returns small integer represented by character in position pos
   -- in string str. Returns NIL if not a digit or other error.
-  if IDENTP str then str := PNAME str
+  if IDENTP str then str := symbolName str
   not (string?(str) and
-    integer?(pos) and (pos >= 0) and (pos < QCSIZE(str))) => NIL
-  not digit?(d := SCHAR(str,pos)) => NIL
+    integer?(pos) and (pos >= 0) and (pos < #str)) => NIL
+  not digit?(d := stringChar(str,pos)) => NIL
   DIG2FIX d
 
 dropLeadingBlanks str ==
   str := object2String str
-  l := QCSIZE str
+  l := # str
   nb := NIL
   i := 0
-  while (i < l) and not nb repeat
-    if SCHAR(str,i) ~= char " " then nb := i
+  while (i < l) and nb = nil repeat
+    if stringChar(str,i) ~= char " " then nb := i
     else i := i + 1
   nb = 0 => str
-  nb => SUBSTRING(str,nb,NIL)
+  nb => subString(str,nb)
   '""
 
 concat(:l) == concatList l
@@ -1008,11 +1175,6 @@ isUpperCaseLetter c ==
 isLetter c ==
   alphabetic? c
 
-update() ==
-  runCommand
-    strconc(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
-  _/UPDATE()
-
 --% Inplace Merge Sort for Lists
 -- MBM April/88
 
@@ -1062,7 +1224,7 @@ mergeSort(f,g,p,n) ==
       t.rest := NIL
    if QSLESSP(n,3) then return p
    -- split the list p into p and q of equal length
-   l := QSQUOTIENT(n,2)
+   l := n quo 2
    t := p
    for i in 1..l-1 repeat t := rest t
    q := rest t
@@ -1081,46 +1243,6 @@ spadThrow() ==
 spadThrowBrightly x ==
   sayBrightly x
   spadThrow()
-
---% Type Formatting Without Abbreviation
-
-formatUnabbreviatedSig sig ==
-  null sig => ['"() -> ()"]
-  [target,:args] := dollarPercentTran sig
-  target := formatUnabbreviated target
-  null args => ['"() -> ",:target]
-  null rest args => [:formatUnabbreviated first args,'" -> ",:target]
-  args := formatUnabbreviatedTuple args
-  ['"(",:args,'") -> ",:target]
-
-formatUnabbreviatedTuple t ==
-  -- t is a list of types
-  null t => t
-  atom t => [t]
-  t0 := formatUnabbreviated t.op
-  null rest t => t0
-  [:t0,'",",:formatUnabbreviatedTuple rest t]
-
-formatUnabbreviated t ==
-  null t =>
-    ['"()"]
-  atom t =>
-    [t]
-  t is [p,sel,arg] and p = ":" =>
-    [sel,'": ",:formatUnabbreviated arg]
-  t is ['Union,:args] =>
-    ['Union,'"(",:formatUnabbreviatedTuple args,'")"]
-  t is ['Mapping,:args] =>
-    formatUnabbreviatedSig args
-  t is ['Record,:args] =>
-    ['Record,'"(",:formatUnabbreviatedTuple args,'")"]
-  t is [arg] =>
-    t
-  t is [arg,arg1] =>
-    [arg,'" ",:formatUnabbreviated arg1]
-  t is [arg,:args] =>
-    [arg,'"(",:formatUnabbreviatedTuple args,'")"]
-  t
 
 sublisNQ(al,e) ==
   atom al => e
@@ -1240,7 +1362,7 @@ leftTrim s ==
   k < 0 => s
   s.0 = $blank =>
     for i in 0..k while s.i = $blank repeat (j := i)
-    SUBSTRING(s,j + 1,nil)
+    subString(s,j + 1)
   s
 
 rightTrim s ==  -- assumed a non-empty string
@@ -1248,7 +1370,7 @@ rightTrim s ==  -- assumed a non-empty string
   k < 0 => s
   s.k = $blank =>
     for i in k..0 by -1 while s.i = $blank repeat (j := i)
-    SUBSTRING(s,0,j)
+    subString(s,0,j)
   s
 
 pp x ==
@@ -1259,18 +1381,6 @@ pr x ==
   F_,PRINT_-ONE x
   nil
 
-quickAnd(a,b) ==
-  a = true => b
-  b = true => a
-  a = false or b = false => false
-  simpBool ['AND,a,b]
-
-quickOr(a,b) ==
-  a = true or b = true => true
-  b = false => a
-  a = false => b
-  simpCatPredicate simpBool ['OR,a,b]
-
 intern x ==
   string? x =>
     digit? x.0 => string2Integer x
@@ -1278,7 +1388,7 @@ intern x ==
   x
 
 isDomain a ==
-  cons? a and VECP(first a) and
+  cons? a and vector? first a and
     member(first a.0, $domainTypeTokens)
 
 -- variables used by browser
@@ -1305,11 +1415,11 @@ $charRbrace == char '_}
 $charBack == char '_\
 $charDash == char '_-
 
-$charTab            == CODE_-CHAR(9)
-$charNewline        == CODE_-CHAR(10)
-$charFauxNewline    == CODE_-CHAR(25)
-$stringNewline      == PNAME CODE_-CHAR(10)
-$stringFauxNewline  == PNAME CODE_-CHAR(25)
+$charTab            == abstractChar 9
+$charNewline        == abstractChar 10
+$charFauxNewline    == abstractChar 25
+$stringNewline      == charString abstractChar 10
+$stringFauxNewline  == charString abstractChar 25
 
 $charExclusions == [char 'a, char 'A]
 $charQuote == char '_'
@@ -1353,8 +1463,12 @@ $beginEndList := '(
   "verbatim"
   "detail")
 
-isDefaultPackageName x == (s := PNAME x).(MAXINDEX s) = char '_&
+isDefaultPackageName x ==
+  s := symbolName x
+  stringChar(s,MAXINDEX s) = char '_&
 
+isDefaultPackageForm? x ==
+  x is [op,:.] and IDENTP op and isDefaultPackageName op
 
 -- gensym utils
 
@@ -1368,9 +1482,10 @@ charDigitVal c ==
 
 gensymInt g ==
   not GENSYMP g => error '"Need a GENSYM"
-  p := PNAME g
+  p := symbolName g
   n := 0
-  for i in 2..#p-1 repeat n := 10 * n + charDigitVal p.i
+  for i in 2..#p-1 repeat
+    n := 10 * n + charDigitVal stringChar(p,i)
   n
 
 ++ Returns a newly allocated domain shell (a simple vector) of length `n'.
@@ -1386,7 +1501,7 @@ getShellEntry(s,i) ==
 ++ sets the nth nth entry of a domain shell to an item.
 setShellEntry: (%Shell,%Short,%Thing) -> %Thing
 setShellEntry(s,i,t) ==
-  SETF(SVREF(s,i),t)
+  SVREF(s,i) := t
 
 
 -- Push into the BOOT package when invoked in batch mode.

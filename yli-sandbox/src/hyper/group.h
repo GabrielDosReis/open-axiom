@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,21 @@
 
 #include "openaxiom-c-macros.h"
 #include "hyper.h"
+
+extern void bf_top_group(void );
+extern GroupItem * copy_group_stack(void );
+extern void em_top_group(void );
+extern void free_group_stack(GroupItem * g);
+extern void init_group_stack(void );
+extern void init_top_group(void );
+extern void line_top_group(void );
+extern int pop_group_stack(void );
+extern void push_active_group(void );
+extern void push_group_stack(void );
+extern void push_spad_group(void );
+extern void rm_top_group(void );
+extern void tt_top_group(void );
+extern void center_top_group(void );
 
 extern GroupItem   *gTopOfGroupStack;
 

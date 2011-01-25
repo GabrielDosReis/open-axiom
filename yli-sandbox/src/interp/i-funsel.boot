@@ -43,7 +43,7 @@ sayFunctionSelection(op,args,target,dc,func) ==
   fsig := formatSignatureArgs args
   if not LISTP fsig then fsig := LIST fsig
   if func then func := bright ['"by ",func]
-  sayMSG concat ['%l,:bright '"Function Selection for",op,:func,'%l,
+  sayMSG concat ['"%l",:bright '"Function Selection for",op,:func,'"%l",
     '"      Arguments:",:bright fsig]
   if target then sayMSG concat ['"      Target type:",
     :bright prefix2String target]
@@ -265,7 +265,7 @@ defaultTarget(opNode,op,nargs,args) ==
     op = 'infinity =>
       putTarget(opNode, target := ['OnePointCompletion, $Integer])
       target
-    member(op, '(plusInfinity minusInfinity)) =>
+    op in '(plusInfinity minusInfinity) =>
       putTarget(opNode, target := ['OrderedCompletion, $Integer])
       target
     target
@@ -517,7 +517,7 @@ argCouldBelongToSubdomain(op, nargs) ==
   -- each signature has form
   -- [domain of implementation, target, arg1, arg2, ...]
   for [sig,cond,:.] in mms repeat
-    for t in CDDR sig for i in 0..(nargs) repeat
+    for t in CDDR sig for i in 0..nargs repeat
       CONTAINEDisDomain(t,cond) =>
           v.i := 1 + v.i
   v
@@ -755,7 +755,7 @@ selectMostGeneralMm mmList ==
   while mml repeat
     [mm,:mml] := mml
     sz := #first mm
-    if (met := ABS(sz - 3)) < min then
+    if (met := abs(sz - 3)) < min then
       min := met
       fsz := sz
   mmList := [mm for mm in mmList | (#first mm) = fsz]
@@ -773,7 +773,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
   -- tar may be NIL (= unknown)
   null isLegitimateMode(tar, nil, nil) => nil
   dcName:= first dc
-  member(dcName,'(Union Record Mapping Enumeration)) =>
+  dcName in '(Union Record Mapping Enumeration) =>
     -- First cut code that ignores args2, $Coerce and $SubDom
     -- When domains no longer have to have Set, the hard coded 6 and 7
     -- should go.
@@ -788,7 +788,7 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
         args1.0 ~= dc => NIL
         tar and tar ~= $Expression => NIL
         [[[dc, $Expression, dc], [$Expression,'$], [NIL, NIL]]]
-    member(dcName,'(Record Union)) =>
+    dcName in '(Record Union) =>
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     NIL
   fun:= NIL
@@ -952,8 +952,8 @@ matchMmSigTar(t1,t2) ==
   null t1 or
     isEqualOrSubDomain(t2,t1) => true
     if t2 is ['Union,a,b] then
-      if a='"failed" then return matchMmSigTar(t1, b)
-      if b='"failed" then return matchMmSigTar(t1, a)
+      if a is '"failed" then return matchMmSigTar(t1, b)
+      if b is '"failed" then return matchMmSigTar(t1, a)
     $Coerce and
       isPartialMode t1 => resolveTM(t2,t1)
 -- I think this should be true  -SCM
@@ -1016,7 +1016,7 @@ selectMmsGen(op,tar,args1,args2) ==
   $Subst: local := NIL
   $SymbolType: local := NIL
 
-  null (S := getModemapsFromDatabase(op,QLENGTH args1)) => NIL
+  null (S := getModemapsFromDatabase(op,#args1)) => NIL
 
   if (op = 'map) and (2 = #args1) and
     (first(args1) is ['Mapping,., elem]) and
@@ -1050,7 +1050,7 @@ selectMmsGen(op,tar,args1,args2) ==
   mmS := NIL
 
   if $reportBottomUpFlag then
-    sayMSG ['%l,:bright '"Modemaps from Associated Packages"]
+    sayMSG ['"%l",:bright '"Modemaps from Associated Packages"]
 
   if haves then
     [havesExact,havesInexact] := exact?(haves,tar,args1)
@@ -1068,7 +1068,7 @@ selectMmsGen(op,tar,args1,args2) ==
   mmS => mmS
 
   if $reportBottomUpFlag then
-    sayMSG ['%l,:bright '"Remaining General Modemaps"]
+    sayMSG ['"%l",:bright '"Remaining General Modemaps"]
   --  for mm in havenots for i in 1.. repeat sayModemapWithNumber(mm,i)
 
   if havenots then
@@ -1421,14 +1421,14 @@ hasCateSpecial(v,dom,cat,SL) ==
 
 -- to be used in $newSystem only
 hasCateSpecialNew(v,dom,cat,SL) ==
-  fe := member(cat.op, '(ElementaryFunctionCategory
+  fe := cat.op in '(ElementaryFunctionCategory
        TrigonometricFunctionCategory ArcTrigonometricFunctionCategory
         HyperbolicFunctionCategory ArcHyperbolicFunctionCategory
          PrimitiveFunctionCategory SpecialFunctionCategory Evalable
           CombinatorialOpsCategory TranscendentalFunctionCategory
            AlgebraicallyClosedFunctionSpace ExpressionSpace
-             LiouvillianFunctionCategory FunctionSpace))
-  alg := member(cat.op, '(RadicalCategory AlgebraicallyClosedField))
+             LiouvillianFunctionCategory FunctionSpace)
+  alg := cat.op in '(RadicalCategory AlgebraicallyClosedField)
   fefull := fe or alg or cat = $CombinatorialFunctionCategory
   partialResult :=
     dom is ["Variable",:.] or dom = $Symbol =>
@@ -1702,7 +1702,7 @@ printMms(mmS) ==
   sayMSG '" "
   for [sig,imp,.] in mmS for i in 1.. repeat
     istr := strconc('"[",STRINGIMAGE i,'"]")
-    if QCSIZE(istr) = 3 then istr := strconc(istr,'" ")
+    if #istr = 3 then istr := strconc(istr,'" ")
     sayMSG [:bright istr,'"signature:   ",:formatSignature rest sig]
     first sig='local =>
       sayMSG ['"      implemented: local function ",imp]

@@ -206,7 +206,7 @@ compCategories u ==
   atom v =>
     error ['"compCategories: could not get proper modemap for operator",first u]
   if rest v then
-    sayBrightly ['"compCategories: ", '%b, '"Warning", '%d,
+    sayBrightly ['"compCategories: ", '"%b", '"Warning", '"%d",
                  '"ignoring unexpected stuff at end of modemap"]
     pp rest v
   -- the next line "fixes" a bad modemap which sometimes appears ....
@@ -226,9 +226,10 @@ compCategories1(u,v) ==
   error 'compCategories1
  
 NewbFVectorCopy(u,domName) ==
-  v:= newShell SIZE u
+  v:= newShell # u
   for i in 0..5 repeat v.i:= u.i
-  for i in 6..MAXINDEX v | cons? u.i repeat v.i:= [function Undef,[domName,i],:first u.i]
+  for i in 6..MAXINDEX v | cons? u.i repeat
+    v.i:= [function Undef,[domName,i],:first u.i]
   v
  
 mkVector u ==
@@ -845,8 +846,7 @@ resolvePatternVars(p,args) ==
 --% Code Processing Packages
 
 isCategoryPackageName nam ==
-  p := PNAME opOf nam
-  p.(MAXINDEX p) = char '_&
+  isDefaultPackageName opOf nam
 
 mkOperatorEntry(opSig is [op,sig,:flag],pred,count) ==
   null flag => [opSig,pred,["ELT","$",count]]
@@ -889,10 +889,10 @@ splitEncodedFunctionName(encodedName, sep) ==
     null (p2 := STRPOS(sep0, encodedName, p1+1, '"*")) => 'inner
 --  This is picked up in compile for inner functions in partial compilation
     null (p3 := STRPOS(sep,  encodedName, p2+1, '"*")) => nil
-    s1 := SUBSTRING(encodedName, 0,    p1)
-    s2 := SUBSTRING(encodedName, p1+1, p2-p1-1)
-    s3 := SUBSTRING(encodedName, p2+1, p3-p2-1)
-    s4 := SUBSTRING(encodedName, p3+1, nil)
+    s1 := subString(encodedName, 0,    p1)
+    s2 := subString(encodedName, p1+1, p2-p1-1)
+    s3 := subString(encodedName, p2+1, p3-p2-1)
+    s4 := subString(encodedName, p3+1)
     [s1, s2, s3, s4]
  
 mkRepititionAssoc l ==
@@ -905,7 +905,7 @@ mkRepititionAssoc l ==
  
 encodeItem x ==
   x is [op,:argl] => getCaps op
-  IDENTP x => PNAME x
+  IDENTP x => symbolName x
   STRINGIMAGE x
  
 getCaps x ==

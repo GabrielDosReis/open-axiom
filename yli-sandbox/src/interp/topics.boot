@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -65,19 +65,19 @@ $topicSynonyms := '(
 $groupAssoc := '((extended . 1) (basic . 2) (hidden . 4))
 
 $topicHash := hashTable 'EQ
-SETF(GETHASH("basic",$topicHash),2)
-SETF(GETHASH("algebraic",$topicHash),4)
-SETF(GETHASH("miscellaneous",$topicHash),13)
-SETF(GETHASH("extraction",$topicHash),6)
-SETF(GETHASH("conversion",$topicHash),7)
-SETF(GETHASH("hidden",$topicHash),3)
-SETF(GETHASH("extended",$topicHash),1)
-SETF(GETHASH("destructive",$topicHash),5)
-SETF(GETHASH("transformation",$topicHash),10)
-SETF(GETHASH("hyperbolic",$topicHash),12)
-SETF(GETHASH("construct",$topicHash),9)
-SETF(GETHASH("predicate",$topicHash),8)
-SETF(GETHASH("trignometric",$topicHash),11)
+GETHASH("basic",$topicHash) := 2
+GETHASH("algebraic",$topicHash) := 4
+GETHASH("miscellaneous",$topicHash) := 13
+GETHASH("extraction",$topicHash) := 6
+GETHASH("conversion",$topicHash) := 7
+GETHASH("hidden",$topicHash) := 3
+GETHASH("extended",$topicHash) := 1
+GETHASH("destructive",$topicHash) := 5
+GETHASH("transformation",$topicHash) := 10
+GETHASH("hyperbolic",$topicHash) := 12
+GETHASH("construct",$topicHash) := 9
+GETHASH("predicate",$topicHash) := 8
+GETHASH("trignometric",$topicHash) := 11
 
 
 --=======================================================================
@@ -100,7 +100,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
     line := trimString line                   --3-n    ...
     m := MAXINDEX line                        --     (blank line) ...
     line.m ~= (char '_:) => systemError('"wrong heading")
-    con := INTERN SUBSTRING(line,0,m)
+    con := INTERN subString(line,0,m)
     alist := [lst while not EOFP instream and 
        not (blankLine? (line := READLINE instream)) and
          line.0 ~= char '_- for i in 1..
@@ -137,7 +137,7 @@ string2OpAlist s ==
   upperCase? s.k => nil       --skip constructor names
   k := 0
   while (k := skipBlanks(s,k,m)) repeat
-    acc := [INTERN SUBSTRING(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
+    acc := [INTERN subString(s,k,-k + (k := charPosition(char '_ ,s,k + 1))),:acc]
   acc := nreverse acc
   --now add defaults 
   if u := getDefaultProps first acc then acc := [first acc,:u,:rest acc]
@@ -198,7 +198,7 @@ tdAdd(con,hash) ==
   v := HGET($conTopicHash,con)
   u := addTopic2Documentation(con,v)
 --u := getConstructorDocumentationFromDB con
-  for pair in u | FIXP (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
+  for pair in u | integer? (code := myLastAtom pair) and (op := first pair) ~= 'construct repeat
     for x in (names := code2Classes code) repeat HPUT(hash,x,insert(op,HGET(hash,x)))
 
 tdPrint hash ==
@@ -221,7 +221,7 @@ topics con ==
 
 code2Classes cc ==
   cc := 2*cc
-  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := QUOTIENT(cc,2))]
+  [x while cc ~= 0 for x in $topicClasses | ODDP (cc := cc quo 2)]
   
 myLastAtom x == 
   while x is [.,:x] repeat nil
@@ -238,7 +238,7 @@ transferClassCodes(conform,opAlist) ==
 
 transferCodeCon(con,opAlist) ==
   for pair in getConstructorDocumentationFromDB con
-    | FIXP (code := myLastAtom pair) repeat
+    | integer? (code := myLastAtom pair) repeat
       u := ASSOC(pair.op,opAlist) => lastNode(u).rest := code
 
 --=======================================================================
@@ -248,12 +248,12 @@ transferCodeCon(con,opAlist) ==
 filterByTopic(opAlist,topic) ==
   bitNumber := HGET($topicHash,topic)
   [x for x in opAlist 
-    | FIXP (code := myLastAtom x) and LOGBITP(bitNumber,code)]
+    | integer? (code := myLastAtom x) and LOGBITP(bitNumber,code)]
 
 listOfTopics(conname) ==
   doc := getConstructorDocumentationFromDB conname
   u := ASSOC('constructor,doc) or return nil
   code := myLastAtom u
---null FIXP code => nil
+--not integer? code => nil
   mySort [key for key in HKEYS($topicHash) | LOGBITP(HGET($topicHash,key),code)]
 

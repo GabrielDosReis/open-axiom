@@ -73,12 +73,12 @@ wordsOfString1(s,j) ==
     tailWords:=
       upperCase? s.(k+1) =>
         n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not upperCase? s.i]
-        null n => [SUBSTRING(s,k,nil)]
-        n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
+        null n => [subString(s,k)]
+        n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
       m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | upperCase? s.i] =>
-        [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
-      [SUBSTRING(s,k,nil)]
-    k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
+        [subString(s,k,m-k),:wordsOfString1(s,m)]
+      [subString(s,k)]
+    k > j+1 => [subString(s,j,k-j),:tailWords]
     tailWords
   nil
 
@@ -170,7 +170,7 @@ findApproximateWords(word,table) ==
       
     if i = 1 and null alist then
         --no winners, so try flattening to upper case and checking again
-        wordSize := SIZE word
+        wordSize := # word
         lastThreshold := MAX(threshold - 1,wordSize/2)
         for [x,:.] in wordAlist repeat
           k := deltaWordEntry(upperWord,UPCASE x)
@@ -277,7 +277,7 @@ deltaWordEntry(word,entry) ==
   word = entry => 0
   word.0 ~= entry.0 => 1000
   #word > 2 and stringPrefix?(word,entry) => 1
-  ABS(diff := SIZE word - SIZE entry) > 4 => 1000
+  abs(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions

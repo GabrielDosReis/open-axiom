@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -41,16 +41,11 @@
  *
  ****************************************************************************/
 
-#define _GROUP_C
-
 #include "debug.h"
-
 #include "halloc.h"
 #include "sockio.h"
 #include "group.h"
 #include "initx.h"
-
-#include "all_hyper_proto.H1"
 
 GroupItem *gTopOfGroupStack = NULL;
 

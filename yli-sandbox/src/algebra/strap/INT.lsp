@@ -98,7 +98,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%String|)
                 |INT;convert;$S;26|)) 
 
-(PUT '|INT;convert;$S;26| '|SPADreplace| 'STRINGIMAGE) 
+(PUT '|INT;convert;$S;26| '|SPADreplace| '|%i2s|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%String|)
                 |INT;latex;$S;27|)) 
@@ -115,7 +115,7 @@
                 |INT;reducedSystem;MVR;30|)) 
 
 (PUT '|INT;reducedSystem;MVR;30| '|SPADreplace|
-     '(XLAM (|m| |v|) (CONS |m| '|vec|))) 
+     '(XLAM (|m| |v|) (|%makepair| |m| '|vec|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;abs;2$;31|)) 
@@ -207,17 +207,17 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Pair|)
                 |INT;divide;2$R;48|)) 
 
-(PUT '|INT;divide;2$R;48| '|SPADreplace| 'DIVIDE2) 
+(PUT '|INT;divide;2$R;48| '|SPADreplace| '|%idivide|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;quo;3$;49|)) 
 
-(PUT '|INT;quo;3$;49| '|SPADreplace| 'QUOTIENT2) 
+(PUT '|INT;quo;3$;49| '|SPADreplace| '|%iquo|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;rem;3$;50|)) 
 
-(PUT '|INT;rem;3$;50| '|SPADreplace| 'REMAINDER2) 
+(PUT '|INT;rem;3$;50| '|SPADreplace| '|%irem|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Shell|) |%Integer|)
                 |INT;shift;3$;51|)) 
@@ -263,6 +263,9 @@
 
 (PUT '|INT;negative?;$B;15| '|SPADreplace|
      '(XLAM (|x|) (|%ilt| |x| 0))) 
+
+(PUT '|INT;mulmod;4$;22| '|SPADreplace|
+     '(XLAM (|a| |b| |p|) (|%irem| (|%imul| |a| |b|) |p|))) 
 
 (PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
 
@@ -348,7 +351,8 @@
   (LET ((|c| (- |a| |b|))) (COND ((MINUSP |c|) (+ |c| |p|)) (T |c|)))) 
 
 (DEFUN |INT;mulmod;4$;22| (|a| |b| |p| $)
-  (REMAINDER2 (* |a| |b|) |p|)) 
+  (DECLARE (IGNORE $))
+  (REM (* |a| |b|) |p|)) 
 
 (DEFUN |INT;convert;$F;23| (|x| $)
   (SPADCALL |x| (|getShellEntry| $ 53))) 
@@ -362,10 +366,10 @@
 
 (DEFUN |INT;convert;$S;26| (|x| $)
   (DECLARE (IGNORE $))
-  (STRINGIMAGE |x|)) 
+  (WRITE-TO-STRING |x|)) 
 
 (DEFUN |INT;latex;$S;27| (|x| $)
-  (LET ((|s| (STRINGIMAGE |x|)))
+  (LET ((|s| (WRITE-TO-STRING |x|)))
     (SEQ (COND ((< -1 |x|) (COND ((< |x| 10) (EXIT |s|)))))
          (EXIT (STRCONC "{" (STRCONC |s| "}")))))) 
 
@@ -374,9 +378,7 @@
     (RETURN
       (COND
         ((|INT;negative?;$B;15|
-             (LETT |r| (REMAINDER2 |a| |b|)
-                   |INT;positiveRemainder;3$;28|)
-             $)
+             (LETT |r| (REM |a| |b|) |INT;positiveRemainder;3$;28|) $)
          (COND ((MINUSP |b|) (- |r| |b|)) (T (+ |r| |b|))))
         (T |r|))))) 
 
@@ -428,15 +430,13 @@
 
 (DEFUN |INT;divide;2$R;48| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (DIVIDE2 |x| |y|)) 
+  (MULTIPLE-VALUE-CALL #'CONS (TRUNCATE |x| |y|))) 
 
 (DEFUN |INT;quo;3$;49| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (QUOTIENT2 |x| |y|)) 
+  (TRUNCATE |x| |y|)) 
 
-(DEFUN |INT;rem;3$;50| (|x| |y| $)
-  (DECLARE (IGNORE $))
-  (REMAINDER2 |x| |y|)) 
+(DEFUN |INT;rem;3$;50| (|x| |y| $) (DECLARE (IGNORE $)) (REM |x| |y|)) 
 
 (DEFUN |INT;shift;3$;51| (|x| |y| $)
   (DECLARE (IGNORE $))
@@ -471,7 +471,7 @@
       (T (SPADCALL (SPADCALL |pp| (|getShellEntry| $ 109))
              (SPADCALL (CONS #'|INT;factorPolynomial!0| $)
                  (SPADCALL
-                     (LET ((#0=#:G1504
+                     (LET ((#0=#:G1479
                                (SPADCALL
                                    (SPADCALL |p|
                                     (|getShellEntry| $ 107))
@@ -500,7 +500,7 @@
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1536)
+  (PROG (#0=#:G1511)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))
@@ -512,9 +512,9 @@
              (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
 
 (DEFUN |Integer;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 140))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))

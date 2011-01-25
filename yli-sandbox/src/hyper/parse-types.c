@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,8 @@
  * Copyright The Numerical Algorithms Group Limited 1991, 1992, 1993.
  *
  ****************************************************************************/
-#define _PARSE_TYPES_C
-#include "openaxiom-c-macros.h"
 
+#include "openaxiom-c-macros.h"
 #include "debug.h"
 #include "halloc.h"
 #include "sockio.h"
@@ -53,7 +52,10 @@
 #include "extent.h"
 #include "cfuns.h"
 
-#include "all_hyper_proto.H1"
+using namespace OpenAxiom;
+
+static void parse_condnode(void );
+static void parse_hasreturnto(void );
 
 boolean gInButton = FALSE;
 boolean gInIf = FALSE;
@@ -61,7 +63,7 @@ boolean gInItems = FALSE;
 boolean gInOptional = FALSE;
 
 
-static char *errmess[] =  {
+static const char* errmess[] =  {
   "place holder",
   "parsing condition node",
   "unrecognized keyword"
@@ -78,7 +80,7 @@ static char *errmess[] =  {
  */
 
 static void
-htperror(char *msg, int erno)
+htperror(const char* msg, int erno)
 {
     char obuff[256];
 

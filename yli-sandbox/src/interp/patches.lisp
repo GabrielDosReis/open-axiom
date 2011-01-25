@@ -37,14 +37,6 @@
 (in-package "BOOT")
 ;;patches for now
 
-;; browser stuff:
-;; gdr NOTES: it is WRONG to test for platforms, when in fact
-;; gdr NOTES: one should test for functionalities.
-#+:UNIX (defvar |$standard| 't)
-#-:UNIX (defvar |$standard| 'nil)
-#+(or :UNIX :winnt) (defvar |$saturn| 'nil)
-#-(or :UNIX :winnt) (defvar |$saturn| 't)
-
 (defun CATCHALL (a &rest b) a) ;; not correct but ok for now
 (defvar |$demoFlag| nil)
 
@@ -77,21 +69,21 @@
 #+(and :GCL :IEEE-FLOATING-POINT )
  (setq system:*print-nans* T)
 
-(defun /RF (&rest foo &aux (Echo-Meta 'T))
-  (declare (special Echo-Meta))
+(defun /RF (&rest foo &aux (|$Echo| 'T))
+  (declare (special |$Echo|))
   (/RF-1 nil))
 
-(defun /RQ (&rest foo &aux (Echo-Meta nil))
-  (declare (special Echo-Meta))
+(defun /RQ (&rest foo &aux (|$Echo| nil))
+  (declare (special |$Echo|))
   (/RF-1 nil))
 
-(defun |/RQ,LIB| (&rest foo &aux (Echo-Meta nil) ($LISPLIB T))
-  (declare (special Echo-Meta $LISPLIB))
+(defun |/RQ,LIB| (&rest foo &aux (|$Echo| nil) ($LISPLIB T))
+  (declare (special |$Echo| $LISPLIB))
   (/RF-1 nil))
 
 (defun /RF-1 (ignore)
  (declare (ignore ignore))
- (declare (special echo-meta))
+ (declare (special |$Echo|))
   (let* ((input-file (make-input-filename /EDITFILE))
      (lfile ())
      (type (pathname-type input-file)))
@@ -104,7 +96,7 @@
      ((string= type "lisp") (load input-file))
      ((string= type "bbin") (load input-file))
      ((string= type "input")
-      (|ncINTERPFILE| input-file Echo-Meta))
+      (|ncINTERPFILE| input-file |$Echo|))
      (t (spad input-file)))))
 
 (defun /EF (&rest foo)

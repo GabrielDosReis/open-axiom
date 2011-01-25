@@ -51,7 +51,7 @@
 
 (DEFUN |STAGG-;first;ANniA;3| (|x| |n| $)
   (SPADCALL
-      (LET ((|i| 1) (#0=#:G1447 NIL))
+      (LET ((|i| 1) (#0=#:G1422 NIL))
         (LOOP
           (COND
             ((> |i| |n|) (RETURN (NREVERSE #0#)))
@@ -112,7 +112,7 @@
                                       (NOT (MINUSP |l|))
                                       '(|NonNegativeInteger|) |l|)
                                      (|getShellEntry| $ 25))
-                                 (LET ((#0=#:G1420 (+ (- |h| |l|) 1)))
+                                 (LET ((#0=#:G1395 (+ (- |h| |l|) 1)))
                                    (|check-subtype| (NOT (MINUSP #0#))
                                     '(|NonNegativeInteger|) #0#))
                                  (|getShellEntry| $ 35)))))))))))) 
@@ -193,7 +193,7 @@
                                   (LETT |z|
                                         (SPADCALL |y|
                                          (LET
-                                          ((#0=#:G1443
+                                          ((#0=#:G1418
                                             (+ (- |h| |l|) 1)))
                                            (|check-subtype|
                                             (NOT (MINUSP #0#))

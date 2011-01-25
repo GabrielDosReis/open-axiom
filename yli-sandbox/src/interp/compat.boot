@@ -40,11 +40,11 @@ namespace BOOT
  
 -- RREAD which takes erroval to return if key is missing
 rread(key,rstream,errorval) ==
-  if IDENTP key then key := PNAME key
+  if IDENTP key then key := symbolName key
   RREAD(key,rstream,errorval)   
 
 rwrite(key,val,stream) ==
-  if IDENTP key then key := PNAME key
+  if IDENTP key then key := symbolName key
   RWRITE(key,val,stream) 
 
 -- issuing commands to the operating system
@@ -58,6 +58,11 @@ system() ==
 
 editFile file ==
   runCommand strconc(textEditor(),'" ",namestring pathname file)
+
+update() ==
+  runCommand
+    strconc(textEditor(), '" ",STRINGIMAGE _/VERSION,'" ",STRINGIMAGE _/WSNAME,'" A")
+  _/UPDATE()
 
 makeBigFloat(mantissa,expon) ==
   [$BFtag,mantissa,:expon]

@@ -130,19 +130,20 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;pile;L$;32|)) 
 
-(PUT '|OUTFORM;pile;L$;32| '|SPADreplace| '(XLAM (|l|) (CONS 'SC |l|))) 
+(PUT '|OUTFORM;pile;L$;32| '|SPADreplace|
+     '(XLAM (|l|) (|%makepair| 'SC |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;commaSeparate;L$;33|)) 
 
 (PUT '|OUTFORM;commaSeparate;L$;33| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'AGGLST |l|))) 
+     '(XLAM (|l|) (|%makepair| 'AGGLST |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;semicolonSeparate;L$;34|)) 
 
 (PUT '|OUTFORM;semicolonSeparate;L$;34| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'AGGSET |l|))) 
+     '(XLAM (|l|) (|%makepair| 'AGGSET |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;blankSeparate;L$;35|)) 
@@ -214,7 +215,7 @@
                 |OUTFORM;hconcat;L$;49|)) 
 
 (PUT '|OUTFORM;hconcat;L$;49| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'CONCAT |l|))) 
+     '(XLAM (|l|) (|%makepair| 'CONCAT |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;vconcat;3$;50|)) 
@@ -226,7 +227,7 @@
                 |OUTFORM;vconcat;L$;51|)) 
 
 (PUT '|OUTFORM;vconcat;L$;51| '|SPADreplace|
-     '(XLAM (|l|) (CONS 'VCONCAT |l|))) 
+     '(XLAM (|l|) (|%makepair| 'VCONCAT |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;~=;3$;52|)) 
@@ -361,7 +362,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;elt;$L$;75|)) 
 
-(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| 'CONS) 
+(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| '|%makepair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;prefix;$L$;76|)) 
@@ -542,9 +543,7 @@
   (|mathprint| |x|)) 
 
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
-  (COND
-    ((SPADCALL |s| (|getShellEntry| $ 12)) (|OUTFORM;empty;$;73| $))
-    (T |s|))) 
+  (COND ((ZEROP (LENGTH |s|)) (|OUTFORM;empty;$;73| $)) (T |s|))) 
 
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
   (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 
@@ -594,8 +593,8 @@
 
 (DEFUN |OUTFORM;center;$I$;22| (|a| |w| $)
   (|OUTFORM;hconcat;3$;48|
-      (|OUTFORM;hspace;I$;29|
-          (QUOTIENT2 (- |w| (|outformWidth| |a|)) 2) $)
+      (|OUTFORM;hspace;I$;29| (TRUNCATE (- |w| (|outformWidth| |a|)) 2)
+          $)
       |a| $)) 
 
 (DEFUN |OUTFORM;left;$I$;23| (|a| |w| $)
@@ -635,7 +634,7 @@
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (LET ((|lv| (LET ((#0=#:G1554 |ll|) (#1=#:G1553 NIL))
+  (LET ((|lv| (LET ((#0=#:G1529 |ll|) (#1=#:G1528 NIL))
                 (LOOP
                   (COND
                     ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -658,7 +657,7 @@
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
   (LET ((|c| 'CONCATB) (|l1| NIL))
-    (SEQ (LET ((#0=#:G1555 (REVERSE |l|)))
+    (SEQ (LET ((#0=#:G1530 (REVERSE |l|)))
            (LOOP
              (COND
                ((ATOM #0#) (RETURN NIL))
@@ -716,7 +715,7 @@
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
-         ((ODDP (LENGTH |l|))
+         ((ODDP (LIST-LENGTH |l|))
           (SETQ |l| (APPEND |l| (LIST (|OUTFORM;empty;$;73| $))))))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
@@ -977,7 +976,7 @@
 
 (DEFUN |OutputForm| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1557)
+  (PROG (#0=#:G1532)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|OutputForm|))
@@ -991,9 +990,9 @@
                ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
 
 (DEFUN |OutputForm;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|OutputForm| NIL (CONS 1 $))

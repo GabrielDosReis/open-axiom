@@ -4,7 +4,7 @@
 (DEFPARAMETER |FloatingPointSystem;AL| 'NIL) 
 
 (DEFUN |FloatingPointSystem;| ()
-  (LET ((#0=#:G1397
+  (LET ((#0=#:G1372
             (|Join| (|RealNumberSystem|)
                     (|mkCategory| '|domain|
                         '(((|float| ($ (|Integer|) (|Integer|))) T)

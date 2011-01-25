@@ -408,7 +408,7 @@ JoinInner(l,$e) ==
       if atom at2 then at2:=[at2]
         -- the variable $Attributes is built globally, so that true
         -- attributes can be detected without calling isCategoryForm
-      QMEMQ(first at2,$Attributes) => nil
+      MEMQ(first at2,$Attributes) => nil
       null isCategoryForm(at2,$e) =>
         $Attributes:=[first at2,:$Attributes]
         nil
@@ -513,7 +513,7 @@ JoinInner(l,$e) ==
                        then attl:= [[a,condition],:attl]
                        else attl:= [[a,["and",condition,c]],:attl]
       if reallynew then
-        n:= SIZE $NewCatVec
+        n:= # $NewCatVec
         FundamentalAncestors:= [[b.0,condition,n],:FundamentalAncestors]
         $NewCatVec:= LENGTHENVEC($NewCatVec,n+1)
 -- We need to copy the vector otherwise the FundamentalAncestors

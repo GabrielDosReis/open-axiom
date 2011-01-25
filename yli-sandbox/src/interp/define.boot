@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -432,7 +432,7 @@ makeCategoryPredicates(form,u) ==
           pl
  
 mkCategoryPackage(form is [op,:argl],cat,def) ==
-  packageName:= INTERN(strconc(PNAME op,'"&"))
+  packageName:= INTERN(strconc(symbolName op,'"&"))
   packageAbb := INTERN(strconc(getConstructorAbbreviationFromDB op,'"-"))
   $options:local := []
   -- This stops the next line from becoming confused
@@ -800,12 +800,12 @@ displayMissingFunctions() ==
       loc := [[op,sig],:loc]
     exp := [[op,sig],:exp]
   if loc then
-    sayBrightly ['%l,:bright '"  Missing Local Functions:"]
+    sayBrightly ['"%l",:bright '"  Missing Local Functions:"]
     for [op,sig] in loc for i in 1.. repeat
       sayBrightly ['"      [",i,'"]",:bright op,
         ": ",:formatUnabbreviatedSig sig]
   if exp then
-    sayBrightly ['%l,:bright '"  Missing Exported Functions:"]
+    sayBrightly ['"%l",:bright '"  Missing Exported Functions:"]
     for [op,sig] in exp for i in 1.. repeat
       sayBrightly ['"      [",i,'"]",:bright op,
         ": ",:formatUnabbreviatedSig sig]
@@ -886,7 +886,7 @@ mkOpVec(dom,siglist) ==
   substargs:= [['$,:dom.0],:pairList($FormalMapVariableList,rest dom.0)]
   oplist:= getConstructorOperationsFromDB opOf dom.0
   --new form is (<op> <signature> <slotNumber> <condition> <kind>)
-  ops:= MAKE_-VEC (#siglist)
+  ops := newVector #siglist
   for (opSig:= [op,sig]) in siglist for i in 0.. repeat
     u:= ASSQ(op,oplist)
     assoc(sig,u) is [.,n,.,'ELT] => ops.i := dom.n
@@ -1123,11 +1123,11 @@ checkAndDeclare(argl,form,sig,e) ==
     m1:= getArgumentMode(a,e) =>
       not modeEqual(m1,m) =>
         stack:= ["   ",:bright a,'"must have type ",m,
-          '" not ",m1,'%l,:stack]
+          '" not ",m1,'"%l",:stack]
     e:= put(a,'mode,m,e)
   if stack then
     sayBrightly ['"   Parameters of ",:bright form.op,
-      '" are of wrong type:",'%l,:stack]
+      '" are of wrong type:",'"%l",:stack]
   e
  
 getSignature(op,argModeList,$e) ==
@@ -1214,7 +1214,7 @@ compile u ==
             DC='_$ and (opexport:=true) and
              (and/[modeEqual(x,y) for x in sig for y in $signatureOfForm])]
       isLocalFunction op =>
-        if opexport then userError ['%b,op,'%d,'" is local and exported"]
+        if opexport then userError ['"%b",op,'"%d",'" is local and exported"]
         INTERN strconc(encodeItem $prefix,'";",encodeItem op) 
       encodeFunctionName(op,$functorForm,$signatureOfForm,";",$suffix)
      where
@@ -1344,8 +1344,8 @@ bootStrapError(functorForm,sourceFile) ==
   ['COND, _
     ['$bootStrapMode, _
         ['VECTOR,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
-    [''T, ['systemError,['LIST,''%b,MKQ functorForm.op,''%d,'"from", _
-      ''%b,MKQ namestring sourceFile,''%d,'"needs to be compiled"]]]]
+    [''T, ['systemError,['LIST,'"%b",MKQ functorForm.op,'"%d",'"from", _
+      '"%b",MKQ namestring sourceFile,'"%d",'"needs to be compiled"]]]]
 
 registerInlinableDomain(x,e) ==
   x := macroExpand(x,e)
@@ -1367,8 +1367,8 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [['COND, _
        ['$bootStrapMode, _
            code],_
-       [''T, ['systemError,['LIST,''%b,MKQ $functorForm.op,''%d,'"from", _
-         ''%b,MKQ namestring _/EDITFILE,''%d,'"needs to be compiled"]]]],m,e]
+       [''T, ['systemError,['LIST,'"%b",MKQ $functorForm.op,'"%d",'"from", _
+         '"%b",MKQ namestring _/EDITFILE,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
     $NRTaddForm := domainForm
@@ -1620,7 +1620,7 @@ compJoin(["Join",:argl],m,e) ==
                 atom y =>
                   isDomainForm(y,e) => [y]
                   nil
-                y is ['LENGTH,y'] => [y,y']
+                y is [op,y'] and op in '(LENGTH %llength) => [y,y']
                 [y]
           x
         x is ["DomainSubstitutionMacro",pl,body] =>

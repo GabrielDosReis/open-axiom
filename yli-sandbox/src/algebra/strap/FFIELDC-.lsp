@@ -79,7 +79,7 @@
 
 (DEFUN |FFIELDC-;charthRoot;2S;6| (|x| $)
   (SPADCALL |x|
-      (QUOTIENT2 (SPADCALL (|getShellEntry| $ 40))
+      (TRUNCATE (SPADCALL (|getShellEntry| $ 40))
           (|spadConstant| $ 41))
       (|getShellEntry| $ 43))) 
 
@@ -127,7 +127,7 @@
                      (LETT |q| (- (SPADCALL (|getShellEntry| $ 40)) 1)
                            |FFIELDC-;primitive?;SB;9|)
                      (LETT |equalone| NIL |FFIELDC-;primitive?;SB;9|)
-                     (LET ((#0=#:G1513 |explist|) (|exp| NIL))
+                     (LET ((#0=#:G1488 |explist|) (|exp| NIL))
                        (LOOP
                          (COND
                            ((OR (ATOM #0#)
@@ -137,7 +137,7 @@
                            (T (SETQ |equalone|
                                     (SPADCALL
                                      (SPADCALL |a|
-                                      (QUOTIENT2 |q| (CAR |exp|))
+                                      (TRUNCATE |q| (CAR |exp|))
                                       (|getShellEntry| $ 58))
                                      (|getShellEntry| $ 59)))))
                          (SETQ #0# (CDR #0#))))
@@ -155,13 +155,13 @@
                            |FFIELDC-;order;SPi;10|)
                      (LETT |lof| (SPADCALL (|getShellEntry| $ 56))
                            |FFIELDC-;order;SPi;10|)
-                     (LET ((#0=#:G1514 |lof|))
+                     (LET ((#0=#:G1489 |lof|))
                        (LOOP
                          (COND
                            ((ATOM #0#) (RETURN NIL))
                            (T (LET ((|rec| (CAR #0#)))
                                 (SEQ (LETT |a|
-                                      (QUOTIENT2 |ord|
+                                      (TRUNCATE |ord|
                                        (LETT |primeDivisor| (CAR |rec|)
                                         |FFIELDC-;order;SPi;10|))
                                       |FFIELDC-;order;SPi;10|)
@@ -173,7 +173,7 @@
                                       |FFIELDC-;order;SPi;10|)
                                      (LET
                                       ((|j| 0)
-                                       (#1=#:G1515 (- (CDR |rec|) 2)))
+                                       (#1=#:G1490 (- (CDR |rec|) 2)))
                                        (LOOP
                                          (COND
                                            ((OR (> |j| #1#)
@@ -182,7 +182,7 @@
                                            (T
                                             (SEQ (SETQ |ord| |a|)
                                              (SETQ |a|
-                                              (QUOTIENT2 |ord|
+                                              (TRUNCATE |ord|
                                                |primeDivisor|))
                                              (EXIT
                                               (SETQ |goon|
@@ -224,7 +224,7 @@
                                       |FFIELDC-;discreteLog;SNni;11|)
                                      (LETT |exp| |groupord|
                                       |FFIELDC-;discreteLog;SNni;11|)
-                                     (LET ((#0=#:G1516 |faclist|))
+                                     (LET ((#0=#:G1491 |faclist|))
                                        (LOOP
                                          (COND
                                            ((ATOM #0#) (RETURN NIL))
@@ -236,7 +236,7 @@
                                                (EXIT
                                                 (LET
                                                  ((|t| 0)
-                                                  (#1=#:G1517
+                                                  (#1=#:G1492
                                                    (- (CDR |f|) 1)))
                                                   (LOOP
                                                     (COND
@@ -245,7 +245,7 @@
                                                       (T
                                                        (SEQ
                                                         (SETQ |exp|
-                                                         (QUOTIENT2
+                                                         (TRUNCATE
                                                           |exp| |fac|))
                                                         (LETT
                                                          |exptable|
@@ -267,7 +267,7 @@
                                                            $ 58))
                                                          |FFIELDC-;discreteLog;SNni;11|)
                                                         (LETT |end|
-                                                         (QUOTIENT2
+                                                         (TRUNCATE
                                                           (- |fac| 1)
                                                           |n|)
                                                          |FFIELDC-;discreteLog;SNni;11|)
@@ -330,7 +330,7 @@
                                                                       (SPADCALL
                                                                        |gen|
                                                                        (*
-                                                                        (QUOTIENT2
+                                                                        (TRUNCATE
                                                                          |groupord|
                                                                          |fac|)
                                                                         (-
@@ -392,13 +392,12 @@
              ((SPADCALL |b| |logbase| (|getShellEntry| $ 63))
               (CONS 0 1))
              (T (COND
-                  ((NOT (ZEROP (REMAINDER2
-                                   (LETT |groupord|
-                                    (SPADCALL |logbase|
-                                     (|getShellEntry| $ 19))
-                                    |FFIELDC-;discreteLog;2SU;12|)
-                                   (SPADCALL |b|
-                                    (|getShellEntry| $ 19)))))
+                  ((NOT (ZEROP (REM (LETT |groupord|
+                                     (SPADCALL |logbase|
+                                      (|getShellEntry| $ 19))
+                                     |FFIELDC-;discreteLog;2SU;12|)
+                                    (SPADCALL |b|
+                                     (|getShellEntry| $ 19)))))
                    (SEQ (SPADCALL
                             "discreteLog: second argument not in cyclic group generated by first argument"
                             (|getShellEntry| $ 83))
@@ -415,7 +414,7 @@
                           (LETT |mult| 1 |FFIELDC-;discreteLog;2SU;12|)
                           (LETT |exp| |groupord|
                                 |FFIELDC-;discreteLog;2SU;12|)
-                          (LET ((#0=#:G1518 |faclist|))
+                          (LET ((#0=#:G1493 |faclist|))
                             (LOOP
                               (COND
                                 ((ATOM #0#) (RETURN NIL))
@@ -425,20 +424,20 @@
                                        |FFIELDC-;discreteLog;2SU;12|)
                                       (LETT |primroot|
                                        (SPADCALL |logbase|
-                                        (QUOTIENT2 |groupord| |fac|)
+                                        (TRUNCATE |groupord| |fac|)
                                         (|getShellEntry| $ 58))
                                        |FFIELDC-;discreteLog;2SU;12|)
                                       (EXIT
                                        (LET
                                         ((|t| 0)
-                                         (#1=#:G1519 (- (CDR |f|) 1)))
+                                         (#1=#:G1494 (- (CDR |f|) 1)))
                                          (LOOP
                                            (COND
                                              ((> |t| #1#) (RETURN NIL))
                                              (T
                                               (SEQ
                                                (SETQ |exp|
-                                                (QUOTIENT2 |exp| |fac|))
+                                                (TRUNCATE |exp| |fac|))
                                                (LETT |rhoHelp|
                                                 (SPADCALL |primroot|
                                                  (SPADCALL |a| |exp|
@@ -498,8 +497,8 @@
                      (EXIT (SPADCALL
                                (SPADCALL (CAR |flist|)
                                    (|getShellEntry| $ 106))
-                               (LET ((#0=#:G1508 NIL) (#1=#:G1509 T)
-                                     (#2=#:G1520 (CDR |flist|)))
+                               (LET ((#0=#:G1483 NIL) (#1=#:G1484 T)
+                                     (#2=#:G1495 (CDR |flist|)))
                                  (LOOP
                                    (COND
                                      ((ATOM #2#)
@@ -510,7 +509,7 @@
                                      (T
                                       (LET ((|u| (CAR #2#)))
                                         (LET
-                                         ((#3=#:G1507
+                                         ((#3=#:G1482
                                            (SPADCALL (CAR |u|)
                                             (CDR |u|)
                                             (|getShellEntry| $ 107))))

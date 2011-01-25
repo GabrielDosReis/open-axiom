@@ -450,7 +450,7 @@ formatSEGMENT ["SEGMENT",a,b] ==
  
 formatSexpr x ==
   atom x =>
-    null x or IDENTP x => consBuffer ident2PrintImage PNAME x
+    null x or IDENTP x => consBuffer ident2PrintImage symbolName x
     consBuffer x
   spill("formatNonAtom",x)
  
@@ -496,9 +496,9 @@ consComments(s,plusPlus) ==
   while (m := MAXINDEX s) >= columnsLeft repeat
     k := or/[i for i in (columnsLeft - 1)..1 by -1 | s.i = $charBlank] 
     k := (k => k + 1; columnsLeft)
-    piece := SUBSTRING(s,0,k)
+    piece := subString(s,0,k)
     formatDoCommentLine [plusPlus,piece]
-    s := SUBSTRING(s,k,nil)
+    s := subString(s,k)
   formatDoCommentLine [plusPlus,s]
   undent()
   $m
@@ -508,7 +508,7 @@ consCommentsTran s ==
   k := or/[i for i in 0..(m - 7) | substring?('"\spad{",s,i)] =>
     r := charPosition(char '_},s,k + 6)
     r = m + 1 => s
-    strconc(SUBSTRING(s,0,k),'"`",SUBSTRING(s,k+6,r-k-6),'"'",consCommentsTran SUBSTRING(s,r+1,nil))
+    strconc(subString(s,0,k),'"`",subString(s,k+6,r-k-6),'"'",consCommentsTran subString(s,r+1))
   s
   
 formatDoCommentLine line ==
@@ -545,7 +545,7 @@ formatPileLine($m,x,newLineIfTrue) ==
 --======================================================================
 --                       Utility Functions
 --======================================================================
-nBlanks m == strconc/[char('_  ) for i in 1..m]
+nBlanks m == strconc/['" " for i in 1..m]
  
 isNewspadOperator op == GETL(op,"Led") or GETL(op,"Nud")
  
@@ -556,18 +556,18 @@ nary2Binary(u,op) ==
   errhuh()
  
 string2PrintImage s ==
-  u:= GETSTR (2*SIZE s)
+  u:= GETSTR (2*# s)
   for i in 0..MAXINDEX s repeat
-    (if MEMQ(s.i,'(_( _{ _) _} _! _")) then
+    (if s.i in '(_( _{ _) _} _! _") then
       SUFFIX('__,u); u:= SUFFIX(s.i,u))
   u
  
 ident2PrintImage s ==
   m := MAXINDEX s
-  if m > 1 and s.(m - 1) = $underScore then s := strconc(SUBSTRING(s,0,m-1),s.m)
-  u:= GETSTR (2*SIZE s)
-  if not (alphabetic? s.(0) or s.(0)=char '"$") then SUFFIX('__,u)
-  u:= SUFFIX(s.(0),u)
+  if m > 1 and s.(m - 1) = $underScore then s := strconc(subString(s,0,m-1),s.m)
+  u:= GETSTR (2*# s)
+  if not (alphabetic? s.0 or s.0 = char "$") then SUFFIX('__,u)
+  u:= SUFFIX(s.0,u)
   for i in 1..MAXINDEX s repeat
     if not (digit? s.i or alphabetic? s.i or ((c := s.i) = char '?) 
       or (c = char '_!)) then SUFFIX('__,u)
@@ -576,12 +576,12 @@ ident2PrintImage s ==
  
 isIdentifier x ==
   IDENTP x =>
-    s:= PNAME x
+    s:= symbolName x
     #s = 0 => nil
-    alphabetic? s.(0) => and/[s.i ~= char '" " for i in 1..MAXINDEX s]
+    alphabetic? s.0 => and/[s.i ~= char " " for i in 1..MAXINDEX s]
     #s>1 =>
       or/[alphabetic? s.i for i in 1..(m:= MAXINDEX s)] =>
-        and/[s.i ~= char '" " for i in 1..m] => true
+        and/[s.i ~= char " " for i in 1..m] => true
  
 isGensym x == 
   s := STRINGIMAGE x

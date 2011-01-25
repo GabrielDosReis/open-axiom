@@ -4,7 +4,7 @@
 (DEFPARAMETER |Rng;AL| 'NIL) 
 
 (DEFUN |Rng;| ()
-  (LET ((#0=#:G1397 (|Join| (|AbelianGroup|) (|SemiGroup|))))
+  (LET ((#0=#:G1372 (|Join| (|AbelianGroup|) (|SemiGroup|))))
     (|setShellEntry| #0# 0 '(|Rng|))
     #0#)) 
 

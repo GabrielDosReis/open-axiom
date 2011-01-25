@@ -38,6 +38,8 @@ import includer
 namespace BOOTTRAN
 module scanner
 
+shoeTAB == abstractChar 9
+ 
 -- converts X to double-float.
 double x ==
   FLOAT(x, 1.0)
@@ -86,9 +88,9 @@ shoeNextLine(s)==
   $n:=STRPOSL('" ",$ln,0,true)
   $sz :=# $ln
   $n = nil => true
-  QENUM($ln,$n)=shoeTAB =>
+  stringChar($ln,$n) = shoeTAB =>
     a:=MAKE_-FULL_-CVEC (7-REM($n,8) ,'" ")
-    $ln.$n:='" ".0
+    $ln.$n := char " "
     $ln := strconc(a,$ln)
     s1:=[[$ln,:rest $f],:$r]
     shoeNextLine s1
@@ -104,8 +106,7 @@ shoeLineToks(s)==
   $linepos:local:=s
   not shoeNextLine s =>  [nil,:nil]
   $n = nil => shoeLineToks $r
-  fst:=QENUM($ln,0)
-  EQL(fst,shoeCLOSEPAREN)=>
+  stringChar($ln,0) = char ")" =>
     command:=shoeLine? $ln=>
       dq:=dqUnit shoeConstructToken
 	       ($ln,$linepos,shoeLeafLine command,0)
@@ -124,7 +125,7 @@ shoeLineToks(s)==
  
 shoeLispToken(s,string)==
   string:=
-    # string=0 or EQL(QENUM(string,0),QENUM('";",0))=> '""
+    #string = 0 or stringChar(string,0) = char ";" => '""
     string
   ln:=$ln
   linepos:=$linepos
@@ -136,16 +137,15 @@ shoeAccumulateLines(s,string)==
   not shoeNextLine s =>  [s,:string]
   $n = nil => shoeAccumulateLines($r,string)
   # $ln=0 => shoeAccumulateLines($r,string)
-  fst:=QENUM($ln,0)
-  EQL(fst,shoeCLOSEPAREN)=>
+  stringChar($ln,0) = char ")" =>
     command:=shoeLisp? $ln
     command and #command>0 =>
-      EQL(QENUM(command,0),QENUM('";",0))=>
+      stringChar(command,0) = char ";" =>
 		  shoeAccumulateLines($r,string)
       a:=STRPOS('";",command,0,nil)
       a=>
 	shoeAccumulateLines($r,
-	   strconc(string,SUBSTRING(command,0,a-1)))
+	   strconc(string,subString(command,0,a-1)))
       shoeAccumulateLines($r,strconc(string,command))
     shoeAccumulateLines($r,string)
   [s,:string]
@@ -155,32 +155,30 @@ shoeCloser t ==
   shoeKeyWord t in '(CPAREN CBRACK)
  
 shoeToken () ==
-  ln:=$ln
-  c:=QENUM($ln,$n)
-  linepos:=$linepos
-  n:=$n
-  ch:=$ln.$n
+  ln := $ln
+  linepos := $linepos
+  n := $n
+  ch := stringChar($ln,$n)
   b:=
-    shoeStartsComment()          =>
-		   shoeComment()
-		   []
-    shoeStartsNegComment()       =>
-		   shoeNegComment()
-		   []
-    c=shoeLispESCAPE      =>
-		   shoeLispEscape()
-    shoePunctuation c        => shoePunct ()
-    shoeStartsId ch          => shoeWord  (false)
-    c=shoeSPACE              =>
-		   shoeSpace ()
-		   []
-    c = shoeSTRING_CHAR        => shoeString ()
-    shoeDigit ch               => shoeNumber ()
-    c=shoeESCAPE               => shoeEscape()
-    c=shoeTAB                  =>
-			       $n:=$n+1
-			       []
-    shoeError ()
+    shoeStartsComment() =>
+      shoeComment()
+      []
+    shoeStartsNegComment() =>
+      shoeNegComment()
+      []
+    ch = char "!" => shoeLispEscape()
+    shoePunctuation codePoint ch => shoePunct()
+    shoeStartsId ch => shoeWord(false)
+    ch = char " " =>
+      shoeSpace()
+      []
+    ch = char "_"" => shoeString()
+    digit? ch => shoeNumber()
+    ch = char "__" => shoeEscape()
+    ch = shoeTAB =>
+      $n:=$n+1
+      []
+    shoeError()
   b = nil => nil
   dqUnit shoeConstructToken(ln,linepos,b,n)
  
@@ -227,11 +225,11 @@ shoeLispEscape()==
   $n:=$n+1
   $n >= $sz =>
     SoftShoeError([$linepos,:$n],'"lisp escape error")
-    shoeLeafError ($ln.$n)
+    shoeLeafError stringChar($ln,$n)
   a:=shoeReadLispString($ln,$n)
   a = nil =>
     SoftShoeError([$linepos,:$n],'"lisp escape error")
-    shoeLeafError ($ln.$n)
+    shoeLeafError stringChar($ln,$n)
   [exp,n]:=a
   n = nil =>
     $n:= $sz
@@ -262,31 +260,31 @@ shoeEsc()==
  
 shoeStartsComment()==
   $n < $sz =>
-    QENUM($ln,$n) = shoePLUSCOMMENT => 
+    stringChar($ln,$n) = char "+" => 
        www:=$n+1
        www >= $sz => false
-       QENUM($ln,www) = shoePLUSCOMMENT
+       stringChar($ln,www) = char "+"
     false
   false
  
 shoeStartsNegComment()==
   $n < $sz =>
-    QENUM($ln,$n) = shoeMINUSCOMMENT =>
+    stringChar($ln,$n) = char "-" =>
       www:=$n+1
       www >= $sz => false
-      QENUM($ln,www) = shoeMINUSCOMMENT
+      stringChar($ln,www) = char "-"
     false
   false
  
 shoeNegComment()==
   n := $n
   $n := $sz
-  shoeLeafNegComment SUBSTRING($ln,n,nil)
+  shoeLeafNegComment subString($ln,n)
  
 shoeComment()==
   n := $n
   $n := $sz
-  shoeLeafComment SUBSTRING($ln,n,nil)
+  shoeLeafComment subString($ln,n)
  
 shoePunct()==
   sss := shoeMatch($ln,$n)
@@ -301,7 +299,7 @@ shoeKeyTr w==
   shoeLeafKey w
  
 shoePossFloat (w)==
-  $n>=$sz or not shoeDigit $ln.$n => shoeLeafKey w
+  $n>=$sz or not digit? stringChar($ln,$n) => shoeLeafKey w
   w := shoeInteger()
   shoeExponent('"0",w)
  
@@ -330,42 +328,35 @@ shoeS()==
   mn=$sz =>
     $n:=$sz
     SoftShoeError([$linepos,:$n],'"quote added")
-    SUBSTRING($ln,n,nil)
+    subString($ln,n)
   mn = strsym =>
     $n:=mn+1
-    SUBSTRING($ln,n,mn-n)
-  str := SUBSTRING($ln,n,mn-n)
+    subString($ln,n,mn-n)
+  str := subString($ln,n,mn-n)
   $n := mn+1
   a := shoeEsc()
   b := 
     a =>
-      str := strconc(str,$ln.$n)
+      str := strconc(str,charString stringChar($ln,$n))
       $n := $n+1
       shoeS()
     shoeS()
   strconc(str,b)
  
- 
- 
- 
 shoeIdEnd(line,n)==
-  while n<#line and shoeIdChar line.n repeat 
+  while n<#line and shoeIdChar stringChar(line,n) repeat 
     n := n+1
   n
- 
- 
-shoeDigit x== 
-  DIGIT_-CHAR_-P x
  
 shoeW(b)==
   n1 := $n
   $n := $n+1
   l := $sz
   endid := shoeIdEnd($ln,$n)
-  endid=l or QENUM($ln,endid) ~= shoeESCAPE => 
+  endid=l or stringChar($ln,endid) ~= char "__" => 
     $n := endid
-    [b,SUBSTRING($ln,n1,endid-n1)]
-  str := SUBSTRING($ln,n1,endid-n1)
+    [b,subString($ln,n1,endid-n1)]
+  str := subString($ln,n1,endid-n1)
   $n := endid+1
   a := shoeEsc()
   bb := 
@@ -389,12 +380,12 @@ shoeInteger() ==
 shoeInteger1(zro) ==
   n := $n
   l := $sz
-  while $n <l and shoeDigit($ln.$n) repeat 
+  while $n <l and digit? stringChar($ln,$n) repeat 
     $n := $n+1
-  $n=l or QENUM($ln,$n)~=shoeESCAPE =>
+  $n=l or stringChar($ln,$n) ~= char "__" =>
     n = $n and zro => '"0"
-    SUBSTRING($ln,n,$n-n)
-  str := SUBSTRING($ln,n,$n-n)
+    subString($ln,n,$n-n)
+  str := subString($ln,n,$n-n)
   $n := $n+1
   a := shoeEsc()
   bb := shoeInteger1(zro)
@@ -404,17 +395,17 @@ shoeIntValue(s) ==
   ns := #s
   ival := 0
   for i in 0..ns-1 repeat
-      d := shoeOrdToNum ELT(s,i)
-      ival := 10*ival + d
+    d := shoeOrdToNum stringChar(s,i)
+    ival := 10*ival + d
   ival
  
 shoeNumber() ==
   a := shoeInteger()
   $n >= $sz => shoeLeafInteger a
-  $floatok and QENUM($ln,$n) = shoeDOT => 
+  $floatok and stringChar($ln,$n) = char "." => 
     n := $n
     $n := $n+1
-    $n < $sz and QENUM($ln,$n)=shoeDOT =>
+    $n < $sz and stringChar($ln,$n) = char "." =>
       $n := n
       shoeLeafInteger a
     w := shoeInteger1(true)
@@ -424,26 +415,26 @@ shoeNumber() ==
 shoeExponent(a,w)==
   $n >= $sz => shoeLeafFloat(a,w,0)
   n := $n
-  c := QENUM($ln,$n)
-  c = shoeEXPONENT1 or c = shoeEXPONENT2 =>
+  c := stringChar($ln,$n)
+  c = char "E" or c = char "e" =>
     $n := $n+1
     $n >= $sz =>
       $n := n
       shoeLeafFloat(a,w,0)
-    shoeDigit($ln.$n) =>
+    digit? stringChar($ln,$n) =>
       e := shoeInteger()
       e := shoeIntValue e
       shoeLeafFloat(a,w,e)
-    c1 := QENUM($ln,$n)
-    c1 = shoePLUSCOMMENT or c1 = shoeMINUSCOMMENT =>
+    c1 := stringChar($ln,$n)
+    c1 = char "+" or c1 = char "-" =>
       $n := $n+1
       $n >= $sz =>
 	$n := n
 	shoeLeafFloat(a,w,0)
-      shoeDigit($ln.$n) =>
+      digit? stringChar($ln,$n) =>
 	e := shoeInteger()
 	e := shoeIntValue e
-	shoeLeafFloat(a,w,(c1=shoeMINUSCOMMENT => MINUS e; e))
+	shoeLeafFloat(a,w,(c1 = char "-" => MINUS e; e))
       $n := n
       shoeLeafFloat(a,w,0)
     -- FIXME: Missing alternative.
@@ -454,11 +445,11 @@ shoeError()==
   $n:=$n+1
   SoftShoeError([$linepos,:n],
     strconc( '"The character whose number is ",
-	    STRINGIMAGE QENUM($ln,n),'" is not a Boot character"))
-  shoeLeafError ($ln.n)
+	    toString codePoint stringChar($ln,n),'" is not a Boot character"))
+  shoeLeafError stringChar($ln,n)
  
 shoeOrdToNum x== 
-  DIGIT_-CHAR_-P x
+  digit? x
  
 shoeKeyWord st   == 
   GETHASH(st,shoeKeyTable)
@@ -470,19 +461,19 @@ shoeMatch(l,i) ==
   shoeSubStringMatch(l,shoeDict,i)
  
 shoeSubStringMatch (l,d,i)==
-  h := QENUM(l, i)
-  u := ELT(d,h)
-  ll := SIZE l
+  h := codePoint stringChar(l, i)
+  u := d.h
+  ll := #l
   done := false
   s1 := '""
-  for j in 0.. SIZE u - 1 while not done repeat
-    s := ELT(u,j)
-    ls := SIZE s
+  for j in 0.. #u - 1 while not done repeat
+    s := u.j
+    ls := #s
     done := 
       ls+i > ll => false
       eql := true
       for k in 1..ls-1 while eql repeat
-	 eql := EQL(QENUM(s,k),QENUM(l,k+i))
+	 eql := stringChar(s,k) = stringChar(l,k+i)
       eql => 
 	s1:=s
 	true

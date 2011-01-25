@@ -67,9 +67,6 @@
 ;; DEFMACROS
 
 
-(defmacro absval (x)
- `(abs ,x))
-
 (defmacro add1 (x)
  `(1+ ,x))
 
@@ -92,9 +89,6 @@
 
 (defmacro |copyList| (x) 
  `(copy-list ,x))
-
-(defmacro cvecp (x)
- `(stringp ,x))
 
 (defmacro dcq (&rest args)
  (cons 'setqp args))
@@ -146,9 +140,6 @@
 
 (defmacro fetchchar (x i)
  `(char ,x ,i))
-
-(defmacro fixp (x)
- `(integerp ,x))
 
 (defmacro greaterp (&rest args)
  `(> ,@args))
@@ -330,10 +321,6 @@
 (defmacro qlength (a)
  `(length ,a))
 
-; (defmacro qmemq (a b)
-; `(member ,a ,b :test #'eq))
-(defmacro qmemq (a b) `(memq ,a ,b))
-
 (defmacro qrefelt (vec ind)
  `(svref ,vec ,ind))
 
@@ -405,9 +392,6 @@
 (defmacro qstimes (x y)
  `(the fixnum (* (the fixnum ,x) (the fixnum ,y))))
 
-(defmacro qstringlength (x)
- `(the fixnum (length (the simple-string ,x))))
-
 (defmacro qszerop (x)
  `(zerop (the fixnum ,x)))
 
@@ -422,8 +406,6 @@
 
 (defmacro qvsize (x)
  `(the fixnum (length (the simple-vector ,x))))
-
-(defmacro refvecp (v) `(simple-vector-p ,v))
 
 (defmacro resetq (a b)
  `(prog1 ,a (setq ,a ,b)))
@@ -461,9 +443,6 @@
 (defmacro smintp (n)
  `(typep ,n 'fixnum))
 
-(defmacro stringlength (x)
- `(length (the string ,x)))
-
 (defmacro subrp (x)
  `(compiled-function-p ,x))
 
@@ -475,8 +454,6 @@
 
 (defmacro vec-setelt (vec ind val)
  `(setf (svref ,vec ,ind) ,val))
-
-(defmacro vecp (v) `(simple-vector-p ,v))
 
 (defmacro zero? (x)
   `(and (typep ,x 'fixnum) (zerop (the fixnum ,x))))
@@ -778,11 +755,6 @@
       (multiple-value-list (truncate x y))
       (list (QUOTIENT x y) (REMAINDER x y))))
 
-(defun QSQUOTIENT (a b) (the fixnum (truncate (the fixnum a) (the fixnum b))))
-
-(defun QSREMAINDER (a b) (the fixnum (rem (the fixnum a) (the fixnum b))))
-
-
 ; 13.3 Updating
 
 
@@ -941,11 +913,6 @@
 (define-function 'getfullstr #'make-full-cvec)
 
 ; 17.2 Accessing
-
-(defun QENUM (cvec ind) (char-code (char cvec ind)))
-
-(defun QESET (cvec ind c)
-  (setf (char cvec ind) c))
 
 (defun string2id-n (cvec sint)
   (if (< sint 1)
@@ -1519,7 +1486,7 @@
         (COND
           ( (VARP BV-LIST)
             (LIST BV-LIST) )
-          ( (REFVECP BV-LIST)
+          ( (simple-vector-p BV-LIST)
             (FLAT-BV-LIST (VEC2LIST (MAPELT #'FLAT-BV-LIST BV-LIST))) )
           ( (NOT (consp BV-LIST))
             NIL )
@@ -1527,7 +1494,7 @@
             (FLAT-BV-LIST (QCDR BV-LIST)) )
           ( (VARP TMP1)
             (CONS TMP1 (FLAT-BV-LIST (QCDR BV-LIST))) )
-          ( (AND (NOT (consp TMP1)) (NOT (REFVECP TMP1)))
+          ( (AND (NOT (consp TMP1)) (NOT (simple-vector-p TMP1)))
             (FLAT-BV-LIST (QCDR BV-LIST)) )
           ( 'T
             (NCONC (FLAT-BV-LIST TMP1) (FLAT-BV-LIST (QCDR BV-LIST))) ) )) ))
@@ -1672,13 +1639,6 @@
   #+:cmulisp
   (prog1 ext:*gc-verbose* 
     (setq ext:*gc-verbose* x))
-  )
-
-(defun reclaim ()
-  #+Lucid (system:gc)
-  #+:cmulisp (ext:gc)
-  #+(OR IBCL KCL) (gbc t)
-  #+:allegro (excl::gc t)
   )
 
 (defun bpiname (func)

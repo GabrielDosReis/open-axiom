@@ -1,7 +1,7 @@
 /*
    Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
    All rights reserved.
-   Copyright (C) 2007-2008, Gabriel Dos Reis.
+   Copyright (C) 2007-2010, Gabriel Dos Reis.
    All right reserved.
 
    Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,11 @@
 #define _TITLEBAR_H_ 1
 
 #include "hyper.h"
+
+extern void getTitleBarMinimumSize(int * width , int * height);
+extern void linkTitleBarWindows(void);
+extern void makeTitleBarWindows(void);
+extern void showTitleBar(void);
 
 extern int  twwidth, twheight;  /* the width and height for all windows in the */
                                 /* title bar */

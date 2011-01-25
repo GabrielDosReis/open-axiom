@@ -44,14 +44,9 @@ ncParseFromString s ==
   zeroOneTran packageTran CATCH($SpadReaderTag, parseFromString s)
 
 ncINTERPFILE(file, echo) ==
-  savedEcho := $EchoLines
-  savedReadingFile := $ReadingFile
-  $EchoLines: fluid := echo
-  $ReadingFile: fluid := true
-  result := SpadInterpretFile file
-  $EchoLines := savedEcho
-  $ReadingFile := savedReadingFile
-  result
+  $Echo: local := echo
+  $ReadingFile: local := true
+  SpadInterpretFile file
 
 ncGetFunction(op, dom, sig) ==
   applyInPackage(function getNCfunction,_
@@ -150,6 +145,9 @@ SpadInterpretStream(str, source, interactive?) ==
  
     -----------------------------------------------------------------
 
+SpadInterpretFile fn ==
+  SpadInterpretStream(1, fn, nil)
+
 intloopReadConsole(b, n)==
     a:= serverReadLine $InputStream
     not string? a => leaveScratchpad()
@@ -164,7 +162,7 @@ intloopReadConsole(b, n)==
              not $leanMode and printPrompt()
              intloopReadConsole('"", c)
     a:=strconc(b,a)
-    ncloopEscaped a => intloopReadConsole(SUBSEQ(a, 0, (# a) - 1),n)
+    ncloopEscaped a => intloopReadConsole(subSequence(a, 0, #a - 1),n)
     c := intloopProcessString(a, n)
     not $leanMode and printPrompt()
     intloopReadConsole('"", c)
@@ -184,7 +182,7 @@ intloopPrefix?(prefix,whole) ==
          spaces := spaces + 1
        else leading := false
      spaces = wlen => nil
-     if good then SUBSTRING(whole,spaces,nil) else good
+     if good then subString(whole,spaces) else good
  
  
 intloopProcess(n,interactive,s)==
@@ -201,7 +199,7 @@ intloopEchoParse s==
          [dq,stream]:=first s
          [lines,rest]:=ncloopDQlines(dq,$lines)
          setCurrentLine(mkLineList(lines))
-         if $EchoLines then ncloopPrintLines lines
+         if $Echo then ncloopPrintLines lines
          $lines:=rest
          [[[lines,npParse dqToList dq]],:rest s]
  
@@ -298,8 +296,8 @@ ncloopEscaped x==
      done:=false
      for i in (# x) - 1 .. 0 by -1 while not done repeat
          done:=
-              x.i='" ".0 =>false
-              x.i='"__".0=>
+              x.i = char " " => false
+              x.i = char "__" =>
                        esc:=true
                        true
               true
@@ -314,7 +312,7 @@ ncloopDQlines (dq,stream)==
 streamChop(n,s)==
     if StreamNull s
     then [nil,nil]
-    else if EQL(n,0)
+    else if n = 0
          then [nil,s]
          else
             [a,b]:= streamChop(n-1,rest s)
@@ -324,15 +322,15 @@ streamChop(n,s)==
             [[d,:a],b]
  
 ncloopPrintLines lines ==
-        for line in lines repeat writeLine rest line
-        writeLine '" "
+        for line in lines repeat writeLine(rest line,$OutputStream)
+        writeLine('" ",$OutputStream)
  
 ncloopIncFileName string==
-                fn := incFileName string
-                not fn =>
-                    writeLine (strconc(string, '" not found"))
-                    []
-                fn
+      fn := incFileName string
+      not fn =>
+          writeLine(strconc(string, '" not found"),$ErrorStream)
+          []
+      fn
 
 ncloopParse s==
          [dq,stream]:=first s
@@ -410,7 +408,7 @@ ncConversationPhase(fn, args) ==
     $ncMsgList: local := []
     $convPhase: local := 'NoPhase
  
-    UNWIND_-PROTECT( apply(fn, args), wrapup(carrier) ) where
+    (try apply(fn, args); finally wrapup(carrier)) where
         wrapup(carrier) ==
             for m in $ncMsgList repeat
                 ncPutQ(carrier, 'messages, [m, :ncEltQ(carrier, 'messages)])
@@ -420,7 +418,7 @@ ncloopPrefix?(prefix,whole) ==
      good:=true
      for i in 0..#prefix-1 for j in 0.. while good repeat
                 good:= prefix.i = whole.j
-     if good then SUBSTRING(whole,#prefix,nil) else good
+     if good then subString(whole,#prefix) else good
 
 $ncmPhase :=      NIL
  

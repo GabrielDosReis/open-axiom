@@ -1,7 +1,7 @@
 /*
   Copyright (C) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2008, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserbed.
 
   Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,16 @@
 #define _EVENT_H_ 1
 
 #include "hyper.h"
+
+extern void sigusr2_handler(int sig);
+extern void sigcld_handler(int sig);
+extern void clean_socket(void);
+extern void init_page_structs(HDWindow * w);
+extern void helpForHyperDoc(void);
+extern void quitHyperDoc(void);
+extern void exitHyperDoc(void);
+extern void mainEventLoop(void);
+extern void make_window_link(char*);
 
 extern Window gActiveWindow;
 extern int    gNeedIconName;

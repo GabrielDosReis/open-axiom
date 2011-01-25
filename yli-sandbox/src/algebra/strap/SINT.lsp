@@ -164,15 +164,17 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;quo;3$;37|)) 
 
-(PUT '|SINT;quo;3$;37| '|SPADreplace| 'QSQUOTIENT) 
+(PUT '|SINT;quo;3$;37| '|SPADreplace| '|%iquo|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;rem;3$;38|)) 
 
-(PUT '|SINT;rem;3$;38| '|SPADreplace| 'QSREMAINDER) 
+(PUT '|SINT;rem;3$;38| '|SPADreplace| '|%irem|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Pair|)
                 |SINT;divide;2$R;39|)) 
+
+(PUT '|SINT;divide;2$R;39| '|SPADreplace| '|%idivide|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;gcd;3$;40|)) 
@@ -263,7 +265,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| (|%Vector| *) |%Shell|) |%Pair|)
                 |SINT;reducedSystem;MVR;57|)) 
 
-(PUT '|SINT;reducedSystem;MVR;57| '|SPADreplace| 'CONS) 
+(PUT '|SINT;reducedSystem;MVR;57| '|SPADreplace| '|%makepair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;positiveRemainder;3$;58|)) 
@@ -413,14 +415,15 @@
 
 (DEFUN |SINT;quo;3$;37| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (QSQUOTIENT |x| |y|)) 
+  (TRUNCATE |x| |y|)) 
 
 (DEFUN |SINT;rem;3$;38| (|x| |y| $)
   (DECLARE (IGNORE $))
-  (QSREMAINDER |x| |y|)) 
+  (REM |x| |y|)) 
 
 (DEFUN |SINT;divide;2$R;39| (|x| |y| $)
-  (CONS (QSQUOTIENT |x| |y|) (QSREMAINDER |x| |y|))) 
+  (DECLARE (IGNORE $))
+  (MULTIPLE-VALUE-CALL #'CONS (TRUNCATE |x| |y|))) 
 
 (DEFUN |SINT;gcd;3$;40| (|x| |y| $)
   (DECLARE (IGNORE $))
@@ -473,7 +476,7 @@
   (+ (- |$ShortMaximum| |$ShortMinimum|) 1)) 
 
 (DEFUN |SINT;index;Pi$;55| (|i| $)
-  (LET ((#0=#:G1464 (- (+ |i| |$ShortMinimum|) 1)))
+  (LET ((#0=#:G1439 (- (+ |i| |$ShortMinimum|) 1)))
     (|check-subtype| (SMINTP #0#) '(|SingleInteger|) #0#))) 
 
 (DEFUN |SINT;lookup;$Pi;56| (|x| $)
@@ -485,7 +488,7 @@
   (CONS |m| |v|)) 
 
 (DEFUN |SINT;positiveRemainder;3$;58| (|x| |n| $)
-  (LET ((|r| (QSREMAINDER |x| |n|)))
+  (LET ((|r| (REM |x| |n|)))
     (COND
       ((QSMINUSP |r|)
        (COND ((QSMINUSP |n|) (- |x| |n|)) (T (+ |r| |n|))))
@@ -496,9 +499,8 @@
 
 (DEFUN |SINT;random;$;60| ($)
   (SEQ (|setShellEntry| $ 6
-           (REMAINDER (TIMES 314159269 (|getShellEntry| $ 6))
-               2147483647))
-       (EXIT (REMAINDER (|getShellEntry| $ 6) 67108864)))) 
+           (REM (TIMES 314159269 (|getShellEntry| $ 6)) 2147483647))
+       (EXIT (REM (|getShellEntry| $ 6) 67108864)))) 
 
 (DEFUN |SINT;random;2$;61| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 
 
@@ -507,7 +509,7 @@
 
 (DEFUN |SingleInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1499)
+  (PROG (#0=#:G1474)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|SingleInteger|))
@@ -521,9 +523,9 @@
                ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
 
 (DEFUN |SingleInteger;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 114))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|SingleInteger| NIL (CONS 1 $))
@@ -626,10 +628,11 @@
                          |AbelianGroup&| NIL NIL NIL NIL NIL
                          |AbelianMonoid&| |Monoid&| NIL NIL NIL NIL NIL
                          NIL |AbelianSemiGroup&| |SemiGroup&| NIL
-                         |Logic&| |DifferentialSpace&| |OrderedType&|
-                         |SetCategory&| NIL NIL |RetractableTo&|
-                         |DifferentialDomain&| |BasicType&| NIL NIL NIL
-                         NIL NIL NIL NIL NIL NIL NIL NIL)
+                         |BooleanLogic&| |DifferentialSpace&|
+                         |OrderedType&| |SetCategory&| |Logic&| NIL
+                         |RetractableTo&| |DifferentialDomain&|
+                         |BasicType&| NIL NIL NIL NIL NIL NIL NIL NIL
+                         NIL NIL NIL)
                       (CONS '#((|IntegerNumberSystem|)
                                (|EuclideanDomain|)
                                (|UniqueFactorizationDomain|)
@@ -657,9 +660,9 @@
                                (|LeftLinearSet| $$)
                                (|RightLinearSet| $$)
                                (|AbelianSemiGroup|) (|SemiGroup|)
-                               (|LeftLinearSet| 5) (|Logic|)
+                               (|LeftLinearSet| 5) (|BooleanLogic|)
                                (|DifferentialSpace|) (|OrderedType|)
-                               (|SetCategory|) (|BooleanLogic|)
+                               (|SetCategory|) (|Logic|)
                                (|RealConstant|) (|RetractableTo| 5)
                                (|DifferentialDomain| $$) (|BasicType|)
                                (|OpenMath|) (|ConvertibleTo| 100)

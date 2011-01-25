@@ -110,7 +110,7 @@ getVMType d ==
 
 setDynamicBinding: (%Symbol,%Thing) -> %Thing
 setDynamicBinding(s,v) ==
-  SETF(SYMBOL_-VALUE s,v)
+  symbolValue(s) := v
 
 ++ returns true if `f' is bound to a macro.
 macrop: %Thing -> %Boolean
@@ -142,7 +142,7 @@ CONTAINED(x,y) == main where
     atom y => EQ(x,y)
     eq(x, first y) or eq(x, rest y)
   equal(x,y) ==
-    atom y => EQUAL(x,y)
+    atom y => x = y
     equal(x, first y) or equal(x, rest y)
 
 ++ Returns all the keys of association list `x'
@@ -341,6 +341,12 @@ closeFile file ==
   CLOSE file
   nil
 
+--%
+stringImage x ==
+  symbol? x => symbolName x
+  string? x => strconc('"_"",x,'"_"")
+  toString x
+
 --% Socket I/O
 
 ++ Attempt to establish a client TCP/IP socket connection.  The IP numeric
@@ -365,6 +371,12 @@ writeByteToStreamSocket(s,b) ==
 --%
 makeByteBuffer(n,b == 0) ==
   MAKE_-ARRAY(n,KEYWORD::ELEMENT_-TYPE,"%Byte",KEYWORD::INITIAL_-ELEMENT,b)
+
+++ return the sub-string of `s' starting from `f'.
+++ When non-nil, `n' designates the length of the sub-string.
+subString(s,f,n == nil) ==
+  n = nil => subSequence(s,f)
+  subSequence(s,f,f + n)
 
 quoteForm t ==
   ["QUOTE",t]

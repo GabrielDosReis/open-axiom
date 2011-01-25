@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -98,8 +98,8 @@ getListOfFunctionNames(fnames) ==
     null IOSTATE(fn,'DIRECT,'_*) => 'iterate
     stream:= DEFIOSTREAM(['(MODE . INPUT),['FILE,fn,'DIRECT,'_*]],80,0)
     while (not PLACEP (x:= readLine stream)) repeat
-      (s := SIZE x) < 26 => 'iterate
-      res:= [SUBSTRING(x,26,NIL),:res]
+      (s := # x) < 26 => 'iterate
+      res:= [subString(x,26),:res]
     SHUT stream
   res
  
@@ -112,12 +112,12 @@ wordsOfString1(s,j) ==
     tailWords:=
       isBreakCharacter s.(k+1) =>
         n:= or/[i for i in (k+2)..(MAXINDEX(s)-1)|not isBreakCharacter s.i]
-        null n => [SUBSTRING(s,k,nil)]
-        n > k+1 => [SUBSTRING(s,k,n-k-1),:wordsOfString1(s,n-1)]
+        null n => [subString(s,k)]
+        n > k+1 => [subString(s,k,n-k-1),:wordsOfString1(s,n-1)]
       m := or/[i for i in (k+2)..(MAXINDEX(s)-1) | isBreakCharacter s.i] =>
-        [SUBSTRING(s,k,m-k),:wordsOfString1(s,m)]
-      [SUBSTRING(s,k,nil)]
-    k > j+1 => [SUBSTRING(s,j,k-j),:tailWords]
+        [subString(s,k,m-k),:wordsOfString1(s,m)]
+      [subString(s,k)]
+    k > j+1 => [subString(s,j,k-j),:tailWords]
     tailWords
   nil
  
@@ -186,7 +186,7 @@ pickANumber(word,list) ==
   center80 ['"Anything else means",:bright 'no]
   y := queryUser nil
   x:= string2Integer y
-  FIXP x and x >= 1 and x <= #list => list.(x-1)
+  integer? x and x >= 1 and x <= #list => list.(x-1)
   nil
  
 bootSearch word ==
@@ -268,7 +268,7 @@ findApproximateWords(word,table) ==
  
   --no winners, so try flattening to upper case and checking again
  
-  wordSize := SIZE word
+  wordSize := # word
   lastThreshold := MAX(3,wordSize/2)
   vec := GETREFV lastThreshold
   for [x,:.] in alist repeat
@@ -277,7 +277,7 @@ findApproximateWords(word,table) ==
   or/[vec.k for k in 0..MAXINDEX vec]
  
 guessFromList(key,stringList) ==
-  threshold := MAX(3,(SIZE key)/2)
+  threshold := MAX(3,(# key)/2)
   vec := GETREFV threshold
   for x in stringList repeat
     k := deltaWordEntry(key,x)
@@ -286,7 +286,7 @@ guessFromList(key,stringList) ==
  
 deltaWordEntry(word,entry) ==
   word = entry => 0
-  ABS(diff := SIZE word - SIZE entry) > 4 => 1000
+  abs(diff := # word - # entry) > 4 => 1000
   canForgeWord(word,entry)
  
 --+ Note these are optimized definitions below-- see commented out versions
@@ -376,12 +376,12 @@ maskConvert str ==
   j:= 0  --index into res
   final := MAXINDEX str
   for i in 0..final repeat
-    char := str.i
-    if char = '__ and i < final then
-      i:= i+1
-      char := str.i
-     else if char = '_? then char := '_&
-    SUFFIX(char,buf)
+    c := str.i
+    if c = char "__" and i < final then
+      i := i+1
+      c := str.i
+     else if c = char "?" then c := char "&"
+    SUFFIX(c,buf)
   buf
  
  

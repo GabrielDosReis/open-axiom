@@ -115,7 +115,7 @@ processKeyedError msg ==
     getMsgTag? msg = 'old  =>                                 --temp
         erMsg := getMsgKey msg                                --temp
         if pre := getMsgPrefix? msg then                      --temp
-          erMsg := ['%b, pre, '%d, :erMsg]                    --temp
+          erMsg := ['"%b", pre, '"%d", :erMsg]                --temp
         sayBrightly ['"old msg from ",_
           CallerName 4,:erMsg]                  --temp
     msgImPr? msg =>
@@ -166,7 +166,7 @@ processChPosesForOneLine msgList ==
         posLetter := rest assoc(poCharPosn getMsgPos msg,chPosList)
         oldPre := getMsgPrefix msg
         setMsgPrefix (msg,strconc(oldPre,_
-                     MAKE_-FULL_-CVEC ($preLength - 4 - SIZE oldPre),posLetter) )
+                     MAKE_-FULL_-CVEC ($preLength - 4 - # oldPre),posLetter) )
     leaderMsg := makeLeaderMsg chPosList
     NCONC(msgList,[leaderMsg])  --a back cons
  
@@ -383,11 +383,11 @@ getPosStL msg ==
     printedFileName :=  ['"%x2",'"[",:remLine fullPrintedPos,'"]" ]
     printedLineNum  :=  ['"%x2",'"[",:remFile fullPrintedPos,'"]" ]
     printedOrigin   :=  ['"%x2",'"[",:fullPrintedPos,'"]" ]
-    howMuch  = 'ORG  => [$optKeyBlanks,:printedOrigin, '%l]
-    howMuch  = 'LINE => [$optKeyBlanks,:printedLineNum, '%l]
-    howMuch  = 'FILE => [$optKeyBlanks,:printedFileName, '%l]
-    howMuch  = 'ALL  => [$optKeyBlanks,:printedFileName, '%l,_
-                         $optKeyBlanks,:printedLineNum,  '%l]
+    howMuch  = 'ORG  => [$optKeyBlanks,:printedOrigin, '"%l"]
+    howMuch  = 'LINE => [$optKeyBlanks,:printedLineNum, '"%l"]
+    howMuch  = 'FILE => [$optKeyBlanks,:printedFileName, '"%l"]
+    howMuch  = 'ALL  => [$optKeyBlanks,:printedFileName, '"%l",_
+                         $optKeyBlanks,:printedLineNum,  '"%l"]
     '""
  
 showMsgPos? msg ==
@@ -426,10 +426,10 @@ listDecideHowMuch(pos,oldPos) ==
 getPreStL optPre ==
     null optPre => [MAKE_-FULL_-CVEC 2]
     spses :=
-      (extraPlaces := ($preLength - (SIZE optPre) - 3)) > 0 =>
+      (extraPlaces := ($preLength - (# optPre) - 3)) > 0 =>
         MAKE_-FULL_-CVEC extraPlaces
       '""
-    ['%b, optPre,spses,'":", '%d]
+    ['"%b", optPre,spses,'":", '"%d"]
  
 -------------------
 --%   a-list stuff
@@ -518,7 +518,7 @@ makeMsgFromLine line ==
     localNumOfLine  :=
         i := poLinePosn posOfLine
         stNum := STRINGIMAGE i
-        strconc(rep(char " ", ($preLength - 7 - SIZE stNum)),_
+        strconc(rep(char " ", ($preLength - 7 - # stNum)),_
          stNum)
     ['line,posOfLine,NIL,NIL, strconc('"Line", localNumOfLine),_
         textOfLine]

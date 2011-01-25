@@ -12,31 +12,33 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;empty?;$B;3|)) 
 
+(PUT '|ISTRING;empty?;$B;3| '|SPADreplace|
+     '(XLAM (|s|) (|%ieq| (|%strlength| |s|) 0))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
                 |ISTRING;#;$Nni;4|)) 
 
-(PUT '|ISTRING;#;$Nni;4| '|SPADreplace| 'QCSIZE) 
+(PUT '|ISTRING;#;$Nni;4| '|SPADreplace| '|%strlength|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;=;2$B;5|)) 
 
-(PUT '|ISTRING;=;2$B;5| '|SPADreplace| 'EQUAL) 
+(PUT '|ISTRING;=;2$B;5| '|SPADreplace| '|%streq|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |ISTRING;<;2$B;6|)) 
 
-(PUT '|ISTRING;<;2$B;6| '|SPADreplace|
-     '(XLAM (|s| |t|) (CGREATERP |t| |s|))) 
+(PUT '|ISTRING;<;2$B;6| '|SPADreplace| '|%strlt|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |ISTRING;concat;3$;7|)) 
 
-(PUT '|ISTRING;concat;3$;7| '|SPADreplace| 'STRCONC) 
+(PUT '|ISTRING;concat;3$;7| '|SPADreplace| '|%strconc|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |ISTRING;copy;2$;8|)) 
 
-(PUT '|ISTRING;copy;2$;8| '|SPADreplace| 'COPY-SEQ) 
+(PUT '|ISTRING;copy;2$;8| '|SPADreplace| '|%strcopy|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Integer| |%Shell|)
                     |%Thing|)
@@ -56,6 +58,9 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%String|)
                 |ISTRING;latex;$S;14|)) 
+
+(PUT '|ISTRING;latex;$S;14| '|SPADreplace|
+     '(XLAM (|s|) (|%strconc| "\\mbox{``" (|%strconc| |s| "''}")))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
                     |%Thing|)
@@ -118,7 +123,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Short|)
                 |ISTRING;hash;$Si;32|)) 
 
-(PUT '|ISTRING;hash;$Si;32| '|SPADreplace| 'SXHASH) 
+(PUT '|ISTRING;hash;$Si;32| '|SPADreplace| '|%hash|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Char| |%Shell|)
                     (|%IntegerSection| 0))
@@ -134,17 +139,19 @@
 
 (DEFUN |ISTRING;empty;$;2| ($) (MAKE-FULL-CVEC 0)) 
 
-(DEFUN |ISTRING;empty?;$B;3| (|s| $) (ZEROP (QCSIZE |s|))) 
+(DEFUN |ISTRING;empty?;$B;3| (|s| $)
+  (DECLARE (IGNORE $))
+  (ZEROP (LENGTH |s|))) 
 
-(DEFUN |ISTRING;#;$Nni;4| (|s| $) (DECLARE (IGNORE $)) (QCSIZE |s|)) 
+(DEFUN |ISTRING;#;$Nni;4| (|s| $) (DECLARE (IGNORE $)) (LENGTH |s|)) 
 
 (DEFUN |ISTRING;=;2$B;5| (|s| |t| $)
   (DECLARE (IGNORE $))
-  (EQUAL |s| |t|)) 
+  (NOT (NULL (STRING= |s| |t|)))) 
 
 (DEFUN |ISTRING;<;2$B;6| (|s| |t| $)
   (DECLARE (IGNORE $))
-  (CGREATERP |t| |s|)) 
+  (NOT (NULL (STRING< |s| |t|)))) 
 
 (DEFUN |ISTRING;concat;3$;7| (|s| |t| $)
   (DECLARE (IGNORE $))
@@ -175,6 +182,7 @@
   (SPADCALL (ELT $ 40) |s| (|getShellEntry| $ 37))) 
 
 (DEFUN |ISTRING;latex;$S;14| (|s| $)
+  (DECLARE (IGNORE $))
   (STRCONC "\\mbox{``" (STRCONC |s| "''}"))) 
 
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
@@ -182,7 +190,7 @@
     (RETURN
       (LET ((|l| (- (SPADCALL |sg| (|getShellEntry| $ 44))
                     (|getShellEntry| $ 6)))
-            (|m| (QCSIZE |s|)) (|n| (QCSIZE |t|))
+            (|m| (LENGTH |s|)) (|n| (LENGTH |t|))
             (|h| (COND
                    ((SPADCALL |sg| (|getShellEntry| $ 45))
                     (- (SPADCALL |sg| (|getShellEntry| $ 46))
@@ -195,32 +203,32 @@
                 (EXIT (|error| "index out of range"))))
              (LETT |r|
                    (MAKE-FULL-CVEC
-                       (LET ((#0=#:G1444
+                       (LET ((#0=#:G1419
                                  (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
                          (|check-subtype| (NOT (MINUSP #0#))
                              '(|NonNegativeInteger|) #0#))
                        (|spadConstant| $ 53))
                    |ISTRING;replace;$Us2$;15|)
              (LETT |k| 0 |ISTRING;replace;$Us2$;15|)
-             (LET ((|i| 0) (#1=#:G1535 (- |l| 1)))
+             (LET ((|i| 0) (#1=#:G1510 (- |l| 1)))
                (LOOP
                  (COND
                    ((> |i| #1#) (RETURN NIL))
-                   (T (SEQ (QESET |r| |k| (CHAR |s| |i|))
+                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
                            (EXIT (SETQ |k| (+ |k| 1))))))
                  (SETQ |i| (+ |i| 1))))
-             (LET ((|i| 0) (#2=#:G1536 (- |n| 1)))
+             (LET ((|i| 0) (#2=#:G1511 (- |n| 1)))
                (LOOP
                  (COND
                    ((> |i| #2#) (RETURN NIL))
-                   (T (SEQ (QESET |r| |k| (CHAR |t| |i|))
+                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |t| |i|))
                            (EXIT (SETQ |k| (+ |k| 1))))))
                  (SETQ |i| (+ |i| 1))))
-             (LET ((|i| (+ |h| 1)) (#3=#:G1537 (- |m| 1)))
+             (LET ((|i| (+ |h| 1)) (#3=#:G1512 (- |m| 1)))
                (LOOP
                  (COND
                    ((> |i| #3#) (RETURN NIL))
-                   (T (SEQ (QESET |r| |k| (CHAR |s| |i|))
+                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
                            (EXIT (SETQ |k| (+ |k| 1))))))
                  (SETQ |i| (+ |i| 1))))
              (EXIT |r|)))))) 
@@ -230,16 +238,16 @@
          ((OR (< |i| (|getShellEntry| $ 6))
               (< (SPADCALL |s| (|getShellEntry| $ 47)) |i|))
           (|error| "index out of range"))
-         (T (SEQ (QESET |s| (- |i| (|getShellEntry| $ 6)) |c|)
+         (T (SEQ (SETF (CHAR |s| (- |i| (|getShellEntry| $ 6))) |c|)
                  (EXIT |c|)))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
-  (LET ((|np| (QCSIZE |part|)) (|nw| (QCSIZE |whole|)))
+  (LET ((|np| (LENGTH |part|)) (|nw| (LENGTH |whole|)))
     (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
          (EXIT (COND
                  ((MINUSP |startpos|) (|error| "index out of bounds"))
                  ((< (- |nw| |startpos|) |np|) NIL)
-                 (T (SEQ (LET ((|ip| 0) (#0=#:G1538 (- |np| 1))
+                 (T (SEQ (LET ((|ip| 0) (#0=#:G1513 (- |np| 1))
                                (|iw| |startpos|))
                            (LOOP
                              (COND
@@ -262,7 +270,7 @@
            (EXIT (COND
                    ((MINUSP |startpos|)
                     (|error| "index out of bounds"))
-                   ((NOT (< |startpos| (QCSIZE |t|)))
+                   ((NOT (< |startpos| (LENGTH |t|)))
                     (- (|getShellEntry| $ 6) 1))
                    (T (SEQ (LETT |r| (STRPOS |s| |t| |startpos| NIL)
                                  |ISTRING;position;2$2I;18|)
@@ -275,10 +283,10 @@
   (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
        (EXIT (COND
                ((MINUSP |startpos|) (|error| "index out of bounds"))
-               ((NOT (< |startpos| (QCSIZE |t|)))
+               ((NOT (< |startpos| (LENGTH |t|)))
                 (- (|getShellEntry| $ 6) 1))
                (T (SEQ (LET ((|r| |startpos|)
-                             (#0=#:G1539 (- (QCSIZE |t|) 1)))
+                             (#0=#:G1514 (- (LENGTH |t|) 1)))
                          (LOOP
                            (COND
                              ((> |r| #0#) (RETURN NIL))
@@ -294,10 +302,10 @@
   (SEQ (SETQ |startpos| (- |startpos| (|getShellEntry| $ 6)))
        (EXIT (COND
                ((MINUSP |startpos|) (|error| "index out of bounds"))
-               ((NOT (< |startpos| (QCSIZE |t|)))
+               ((NOT (< |startpos| (LENGTH |t|)))
                 (- (|getShellEntry| $ 6) 1))
                (T (SEQ (LET ((|r| |startpos|)
-                             (#0=#:G1540 (- (QCSIZE |t|) 1)))
+                             (#0=#:G1515 (- (LENGTH |t|) 1)))
                          (LOOP
                            (COND
                              ((> |r| #0#) (RETURN NIL))
@@ -488,13 +496,13 @@
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
   (LET ((|t| (SPADCALL
-                 (LET ((#0=#:G1497 NIL) (#1=#:G1498 T)
-                       (#2=#:G1542 |l|))
+                 (LET ((#0=#:G1472 NIL) (#1=#:G1473 T)
+                       (#2=#:G1517 |l|))
                    (LOOP
                      (COND
                        ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
                        (T (LET ((|s| (CAR #2#)))
-                            (LET ((#3=#:G1496
+                            (LET ((#3=#:G1471
                                       (SPADCALL |s|
                                        (|getShellEntry| $ 16))))
                               (COND
@@ -504,18 +512,18 @@
                      (SETQ #2# (CDR #2#))))
                  (|spadConstant| $ 53) (|getShellEntry| $ 9)))
         (|i| (|getShellEntry| $ 6)))
-    (SEQ (LET ((#4=#:G1541 |l|))
+    (SEQ (LET ((#4=#:G1516 |l|))
            (LOOP
              (COND
                ((ATOM #4#) (RETURN NIL))
                (T (LET ((|s| (CAR #4#)))
                     (SEQ (|ISTRING;copyInto!;2$I$;29| |t| |s| |i| $)
-                         (EXIT (SETQ |i| (+ |i| (QCSIZE |s|))))))))
+                         (EXIT (SETQ |i| (+ |i| (LENGTH |s|))))))))
              (SETQ #4# (CDR #4#))))
          (EXIT |t|)))) 
 
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)
-  (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 16))) (|n| (QCSIZE |y|)))
+  (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 16))) (|n| (LENGTH |y|)))
     (SEQ (SETQ |s| (- |s| (|getShellEntry| $ 6)))
          (COND
            ((OR (MINUSP |s|) (< |n| (+ |s| |m|)))
@@ -539,7 +547,7 @@
                (T (- (SPADCALL |s| (|getShellEntry| $ 47))
                      (|getShellEntry| $ 6))))))
     (SEQ (COND
-           ((OR (MINUSP |l|) (NOT (< |h| (QCSIZE |s|))))
+           ((OR (MINUSP |l|) (NOT (< |h| (LENGTH |s|))))
             (EXIT (|error| "index out of bound"))))
          (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1))))))) 
 
@@ -555,7 +563,7 @@
     (RETURN
       (LET ((|n| (SPADCALL |pattern| (|getShellEntry| $ 47))))
         (SEQ (LETT |p|
-                   (LET ((#0=#:G1525
+                   (LET ((#0=#:G1500
                              (|ISTRING;position;C$2I;19| |dontcare|
                                  |pattern|
                                  (LETT |m|
@@ -567,7 +575,8 @@
                          '(|NonNegativeInteger|) #0#))
                    |ISTRING;match?;2$CB;34|)
              (EXIT (COND
-                     ((EQL |p| (- |m| 1)) (EQUAL |pattern| |target|))
+                     ((EQL |p| (- |m| 1))
+                      (NOT (NULL (STRING= |pattern| |target|))))
                      (T (SEQ (COND
                                ((SPADCALL |p| |m|
                                     (|getShellEntry| $ 87))
@@ -583,7 +592,7 @@
                              (LETT |i| |p| |ISTRING;match?;2$CB;34|)
                              (LETT |q|
                                    (LET
-                                    ((#1=#:G1526
+                                    ((#1=#:G1501
                                       (|ISTRING;position;C$2I;19|
                                        |dontcare| |pattern| (+ |p| 1)
                                        $)))
@@ -605,7 +614,7 @@
                                       |ISTRING;match?;2$CB;34|)
                                      (SETQ |i|
                                       (LET
-                                       ((#2=#:G1527
+                                       ((#2=#:G1502
                                          (|ISTRING;position;2$2I;18|
                                           |s| |target| |i| $)))
                                         (|check-subtype|
@@ -620,12 +629,12 @@
                                         (T
                                          (SEQ
                                           (SETQ |i|
-                                           (+ |i| (QCSIZE |s|)))
+                                           (+ |i| (LENGTH |s|)))
                                           (SETQ |p| |q|)
                                           (EXIT
                                            (SETQ |q|
                                             (LET
-                                             ((#3=#:G1528
+                                             ((#3=#:G1503
                                                (|ISTRING;position;C$2I;19|
                                                 |dontcare| |pattern|
                                                 (+ |q| 1) $)))
@@ -647,9 +656,9 @@
                                    (EXIT NIL)))))
                              (EXIT T)))))))))) 
 
-(DEFUN |IndexedString| (#0=#:G1543)
+(DEFUN |IndexedString| (#0=#:G1518)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1544)
+  (PROG (#1=#:G1519)
     (RETURN
       (COND
         ((SETQ #1#
@@ -663,6 +672,7 @@
                ((NOT #1#) (HREM |$ConstructorCache| '|IndexedString|))))))))) 
 
 (DEFUN |IndexedString;| (|#1|)
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IndexedString| |dv$1|)) ($ (|newShell| 100))
          (|pv$| (|buildPredVector| 0 0
@@ -703,7 +713,6 @@
                                    '(|SetCategory|))
                                (|HasCategory| (|Character|)
                                    (LIST '|Evalable| '(|Character|))))))))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedString| (LIST |dv$1|)

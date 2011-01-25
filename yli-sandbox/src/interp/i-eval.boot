@@ -216,7 +216,7 @@ makeOrdinal i ==
 
 evaluateSignature sig ==
   -- calls evaluateType on a signature
-  sig is [ ='SIGNATURE,fun,sigl] =>
+  sig is ['SIGNATURE,fun,sigl] =>
     ['SIGNATURE,fun,
       [(t = '_$ => t; evaluateType(t)) for t in sigl]]
   sig
@@ -286,7 +286,7 @@ evalForm(op,opName,argl,mmS) ==
   evalFormMkValue(op,form,targetType)
 
 sideEffectedArg?(t,sig,opName) ==
-  opString := SYMBOL_-NAME opName
+  opString := symbolName opName
   (opName ~= 'setelt) and (opString.(#opString-1) ~= char '_!) => nil
   dc := first sig
   t = dc
@@ -363,7 +363,7 @@ evalFormMkValue(op,form,tm) ==
   [tm]
 
 failCheck x ==
-  x = '"failed" =>
+  x is '"failed" =>
     stopTimingProcess peekTimedName()
     THROW('interpreter,objNewWrap('"failed",$String))
   x = $coerceFailure =>

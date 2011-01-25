@@ -23,7 +23,7 @@
   (VECTOR (|spadConstant| $ 7) |x| (|spadConstant| $ 7))) 
 
 (DEFUN |INTDOM-;unitCanonical;2S;2| (|x| $)
-  (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)) 
+  (SVREF (SPADCALL |x| (|getShellEntry| $ 10)) 1)) 
 
 (DEFUN |INTDOM-;recip;SU;3| (|x| $)
   (COND
@@ -36,8 +36,8 @@
     (T T))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
-  (SPADCALL (QVELT (SPADCALL |x| (|getShellEntry| $ 10)) 1)
-      (QVELT (SPADCALL |y| (|getShellEntry| $ 10)) 1)
+  (SPADCALL (SVREF (SPADCALL |x| (|getShellEntry| $ 10)) 1)
+      (SVREF (SPADCALL |y| (|getShellEntry| $ 10)) 1)
       (|getShellEntry| $ 21))) 
 
 (DEFUN |INTDOM-;associates?;2SB;6| (|x| |y| $)

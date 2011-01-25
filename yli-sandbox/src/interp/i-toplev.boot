@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -195,14 +195,14 @@ recordAndPrint(x,md) ==
   $outputMode: local := md   --used by DEMO BOOT
   mode:= (md=$EmptyMode => quadSch(); md)
   if (md ~= $Void) or $printVoidIfTrue then
-    if null $collectOutput then TERPRI $algebraOutputStream
-    if $QuietCommand = false then
+    newlineIfDisplaying()
+    if not $QuietCommand then
       output(x',md')
   putHist('%,'value,objNewWrap(x,md),$e)
   if $printTimeIfTrue or $printTypeIfTrue then printTypeAndTime(x',md')
   if $printStorageIfTrue then printStorage()
   if $printStatisticsSummaryIfTrue then printStatisticsSummary()
-  if FIXP $HTCompanionWindowID then mkCompanionPage md
+  if integer? $HTCompanionWindowID then mkCompanionPage md
   $mkTestFlag = true => recordAndPrintTest md
   $runTestFlag =>
     $mkTestOutputType := md
@@ -210,7 +210,6 @@ recordAndPrint(x,md) ==
   'done
 
 printTypeAndTime(x,m) ==  --m is the mode/type of the result
-  $saturn => printTypeAndTimeSaturn(x, m)
   printTypeAndTimeNormal(x, m)
 
 printTypeAndTimeNormal(x,m) ==
@@ -218,7 +217,7 @@ printTypeAndTimeNormal(x,m) ==
   if m is ['Union, :argl] then
     x' := retract(objNewWrap(x,m))
     m' := objMode x'
-    m := ['Union, :[arg for arg in argl | sameUnionBranch(arg, m')], '"..."]
+    m := ['Union, :[arg for arg in argl | sameUnionBranch(arg, m')], "..."]
   if $printTimeIfTrue then
     timeString := makeLongTimeString($interpreterTimedNames,
       $interpreterTimedClasses)
@@ -233,31 +232,6 @@ printTypeAndTimeNormal(x,m) ==
     $collectOutput =>
       $outputLines := [justifyMyType msgText("S2GL0012", [m]), :$outputLines]
     sayKeyedMsg("S2GL0012",[m])
-
-printTypeAndTimeSaturn(x, m) ==
-  -- header
-  if $printTimeIfTrue then
-    timeString := makeLongTimeString($interpreterTimedNames,
-      $interpreterTimedClasses)
-  else
-    timeString := '""
-  if $printTypeIfTrue then
-    typeString := form2StringAsTeX devaluate m
-  else
-    typeString := '""
-  if $printTypeIfTrue then
-    printAsTeX('"\axPrintType{")
-    if cons? typeString then
-      MAPC(FUNCTION printAsTeX, typeString)
-    else
-      printAsTeX(typeString)
-    printAsTeX('"}")
-  if $printTimeIfTrue then
-    printAsTeX('"\axPrintTime{")
-    printAsTeX(timeString)
-    printAsTeX('"}")
-
-printAsTeX(x) == PRINC(x, $texOutputStream)
 
 sameUnionBranch(uArg, m) ==
   uArg is [":", ., t] => t = m
@@ -356,9 +330,6 @@ intProcessSynonyms str ==
 
 intInterpretPform pf ==
   processInteractive(zeroOneTran packageTran pf2Sex pf, pf)
-
-SpadInterpretFile fn ==
-  SpadInterpretStream(1, fn, nil)
 
 intNewFloat() ==
   ["Float"]

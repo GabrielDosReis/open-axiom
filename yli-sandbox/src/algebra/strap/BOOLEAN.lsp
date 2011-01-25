@@ -150,7 +150,7 @@
 
 (DEFUN |Boolean| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1424)
+  (PROG (#0=#:G1399)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|Boolean|))
@@ -162,9 +162,9 @@
              (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
 
 (DEFUN |Boolean;| ()
+  (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (DECLARE (SPECIAL |$ConstructorCache|))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))
@@ -197,14 +197,15 @@
              172 < 178 |/\\| 184)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0 0 0 0 0 0 0 0 0))
-                (CONS '#(NIL NIL NIL NIL |Logic&| |SetCategory&|
-                         |OrderedType&| NIL |BasicType&| NIL NIL NIL)
+                (CONS '#(NIL NIL NIL NIL |BooleanLogic&| |SetCategory&|
+                         |OrderedType&| |Logic&| |BasicType&| NIL NIL
+                         NIL)
                       (CONS '#((|OrderedFinite|) (|OrderedSet|)
                                (|PropositionalLogic|) (|Finite|)
-                               (|Logic|) (|SetCategory|)
-                               (|OrderedType|) (|BooleanLogic|)
-                               (|BasicType|) (|ConvertibleTo| 33)
-                               (|Type|) (|CoercibleTo| 35))
+                               (|BooleanLogic|) (|SetCategory|)
+                               (|OrderedType|) (|Logic|) (|BasicType|)
+                               (|ConvertibleTo| 33) (|Type|)
+                               (|CoercibleTo| 35))
                             (|makeByteWordVec2| 38
                                 '(1 25 18 0 26 0 27 0 29 0 25 0 31 2 0
                                   18 0 0 1 1 0 0 0 10 2 0 0 0 0 15 0 0

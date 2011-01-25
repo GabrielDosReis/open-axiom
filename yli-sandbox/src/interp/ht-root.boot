@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,20 +39,9 @@ $historyDisplayWidth := 120
 $newline := char 10
 
 downlink page ==
-  $saturn => downlinkSaturn page
   htInitPage('"Bridge",nil)
   htSay('"\replacepage{", page, '"}")
   htShowPage()
-
-downlinkSaturn fn ==
-  u := dbReadLines(fn)
-  lines := '""
-  while u is [line,:u] repeat
-    n := MAXINDEX line
-    n < 1 => nil
-    line.0 = (char '_%) => nil
-    lines := strconc(lines,line)
-  issueHTSaturn lines
 
 dbNonEmptyPattern pattern ==
   null pattern => '"*"
@@ -125,7 +114,7 @@ htSystemVariables() == main where
 htSetSystemVariableKind(htPage,[variable,name,fun]) ==
   value := htpLabelInputString(htPage,name)
   if string? value and fun then value := FUNCALL(fun,value)
---SCM::what to do???  if not FIXP value then userError ???
+--SCM::what to do???  if not integer? value then userError ???
   setDynamicBinding(variable,value)
   htSystemVariables ()
 
@@ -157,7 +146,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   null lines =>
     tryAgain? and #pattern > 0 =>
       (pattern.(k := MAXINDEX(pattern))) = char 's =>
-        htGlossPage(htPage,SUBSTRING(pattern,0,k),true)
+        htGlossPage(htPage,subString(pattern,0,k),true)
       upperCase? pattern.0 =>
         htGlossPage(htPage,DOWNCASE pattern,false)
       errorPage(htPage,['"Sorry",nil,['"\centerline{",:heading,'"}"]])
@@ -166,7 +155,7 @@ htGlossPage(htPage,pattern,tryAgain?) ==
   htSay('"\beginscroll\beginmenu")
   for line in lines repeat
     tick := charPosition($tick,line,1)
-    htSay('"\item{\em \menuitemstyle{}}\tab{0}{\em ",escapeString SUBSTRING(line,0,tick),'"} ",SUBSTRING(line,tick + 1,nil))
+    htSay('"\item{\em \menuitemstyle{}}\tab{0}{\em ",escapeString subString(line,0,tick),'"} ",subString(line,tick + 1))
   htSay '"\endmenu "
   htSay '"\endscroll\newline "
   htMakePage [['bcLinks,['"Search",'"",'htGlossSearch,nil]]]
@@ -179,18 +168,18 @@ gatherGlossLines(results,defstream) ==
   for keyline in results repeat
     --keyline := READLINE instream
     n := charPosition($tick,keyline,0)
-    keyAndTick := SUBSTRING(keyline,0,n + 1)
-    byteAddress := string2Integer SUBSTRING(keyline,n + 1,nil)
+    keyAndTick := subString(keyline,0,n + 1)
+    byteAddress := string2Integer subString(keyline,n + 1)
     FILE_-POSITION(defstream,byteAddress)
     line := READLINE defstream
     k := charPosition($tick,line,1)
-    pointer := SUBSTRING(line,0,k)
-    def := SUBSTRING(line,k + 1,nil)
+    pointer := subString(line,0,k)
+    def := subString(line,k + 1)
     xtralines := nil
     while not EOFP defstream and (x := READLINE defstream) and
-      (j := charPosition($tick,x,1)) and (nextPointer := SUBSTRING(x,0,j))
+      (j := charPosition($tick,x,1)) and (nextPointer := subString(x,0,j))
         and (nextPointer = pointer) repeat
-          xtralines := [SUBSTRING(x,j + 1,nil),:xtralines]
+          xtralines := [subString(x,j + 1),:xtralines]
     acc := [strconc(keyAndTick,def, strconc/nreverse xtralines),:acc]
   reverse acc
 
@@ -267,7 +256,7 @@ htTutorialSearch pattern ==
     errorPage(nil,['"Empty search key",nil,'"\vspace{3}\centerline{You must enter some search string"])
   s := mkUnixPattern s
   source := '"$AXIOM/share/hypertex/pages/ht.db"
-  target :='"/tmp/temp.text.$SPADNUM"
+  target := '"/tmp/temp.text.$SPADNUM"
   runCommand strconc('"$AXIOM/lib/hthits",'" _"",s,'"_" ",source,'" > ",target)
   lines := dbReadLines 'temp
   htInitPageNoScroll(nil,['"Tutorial Pages mentioning {\em ",pattern,'"}"])
@@ -282,11 +271,11 @@ mkUnixPattern s ==
   u := mkUpDownPattern s
   starPositions := reverse [i for i in 1..(-1 + MAXINDEX u) | u.i = $wild]
   for i in starPositions repeat
-    u := strconc(SUBSTRING(u,0,i),'".*",SUBSTRING(u,i + 1,nil))
+    u := strconc(subString(u,0,i),'".*",subString(u,i + 1))
   if u.0 ~= $wild then u := strconc('"[^a-zA-Z]",u)
-                  else u := SUBSTRING(u,1,nil)
+                  else u := subString(u,1)
   if u.(k := MAXINDEX u) ~= $wild then u := strconc(u,'"[^a-zA-Z]")
-                                  else u := SUBSTRING(u,0,k)
+                                  else u := subString(u,0,k)
   u
 
 

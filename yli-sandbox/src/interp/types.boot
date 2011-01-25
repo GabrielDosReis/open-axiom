@@ -52,6 +52,10 @@ namespace BOOT
 %Boolean <=> 
   BOOLEAN
 
+++ Type of a bit value.
+%Bit <=>
+  BIT
+
 ++ Type of 8-bit sized unsigned integer values.
 %Byte <=>
   UNSIGNED_-BYTE 8
@@ -114,6 +118,8 @@ namespace BOOT
   SIMPLE_-ARRAY a
 
 %Vector a <=> VECTOR a
+
+%BitVector <=> %Vector %Bit
 
 %Thing <=> true
 

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ SExprToDName(sexpr, cosigVal) ==
          [DNameStringID,: StringToCompStr '"->"],
               [DNameTupleID, : rest args],
                  [DNameTupleID, first args]]
-  name0 :=   [DNameStringID, : StringToCompStr SYMBOL_-NAME first sexpr]
+  name0 :=   [DNameStringID, : StringToCompStr symbolName first sexpr]
   first sexpr = 'Union or first sexpr = 'Record =>
     [DNameApplyID, name0, 
         [DNameTupleID,: [ SExprToDName(sx,true) for sx in rest sexpr]]]
@@ -108,10 +108,10 @@ SExprToDName(sexpr, cosigVal) ==
 
 -- local garbage because Compiler strings are null terminated
 StringToCompStr(str) == 
-   strconc(str, STRING (CODE_-CHAR 0))
+   strconc(str, charString abstractChar 0)
 
 CompStrToString(str) == 
-   SUBSTRING(str, 0, (# str - 1))
+   subString(str, 0, #str - 1)
 -- local garbage ends
 
 runOldAxiomFunctor(:allArgs) ==
@@ -123,7 +123,7 @@ runOldAxiomFunctor(:allArgs) ==
 
 makeLazyOldAxiomDispatchDomain domform ==
   attribute? domform =>
-      [$attributeDispatch, domform, hashString(SYMBOL_-NAME domform)]
+      [$attributeDispatch, domform, hashString(symbolName domform)]
   getConstructorKindFromDB opOf domform = "category" =>
       [$oldAxiomPreCategoryDispatch,: domform]
   dd := [$lazyOldAxiomDomainDispatch, hashTypeForm(domform,0), domform]
@@ -135,7 +135,7 @@ makeOldAxiomDispatchDomain dom ==
   [$oldAxiomDomainDispatch,hashTypeForm(dom.0,0),:dom]
 
 closeOldAxiomFunctor(name) ==
-   [function runOldAxiomFunctor,:SYMBOL_-FUNCTION name]
+   [function runOldAxiomFunctor,:symbolFunction name]
 
 lazyOldAxiomDomainLookupExport(domenv, self, op, sig, box, skipdefaults, env) ==
   dom := instantiate domenv
@@ -232,7 +232,7 @@ $oldAxiomCategoryDispatch :=
 
 attributeDevaluate(attrObj, env) ==
    [name, hash] := attrObj
-   StringToCompStr SYMBOL_-NAME name
+   StringToCompStr symbolName name
 
 attributeLookupExport(attrObj, self, op, sig, box, env) ==
    [name, hash] := attrObj
@@ -278,10 +278,10 @@ instantiate domenv ==
   oldDom := CDDR domenv
   [functor,:args] := callForm
 --  if null(fn := GETL(functor,'instantiate)) then
---     ofn := SYMBOL_-FUNCTION functor
+--     ofn := symbolFunction functor
 --     loadFunctor functor
---     fn := SYMBOL_-FUNCTION functor
---     SETF(SYMBOL_-FUNCTION functor, ofn)
+--     fn := symbolFunction functor
+--     symbolFunction(functor) := ofn
 --     PUT(functor, 'instantiate, fn)
 --  domvec := apply(fn, args)
   domvec := apply(functor, args)
@@ -353,7 +353,7 @@ basicLookupCheckDefaults(op,sig,domain,dollar) ==
          hashCode? sig => sig
          hashType( ['Mapping,:sig], hashPercent)
 
-       if symbol? op then op := hashString SYMBOL_-NAME op
+       if symbol? op then op := hashString symbolName op
        first SPADCALL(rest dollar, dollar, op, hashSig, box, not $lookupDefaults, lookupFun)
   first SPADCALL(rest dollar, dollar, op, sig, box, not $lookupDefaults, lookupFun)
 
@@ -463,7 +463,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
 hashNewLookupInCategories(op,sig,dom,dollar) ==
   slot4 := dom.4
   catVec := second slot4
-  SIZE catVec = 0 => nil                      --early exit if no categories
+  # catVec = 0 => nil                      --early exit if no categories
   integer? KDR catVec.0 =>
     newLookupInCategories1(op,sig,dom,dollar) --old style
   $lookupDefaults : local := nil
@@ -497,7 +497,7 @@ hashNewLookupInCategories(op,sig,dom,dollar) ==
             null code => nil
             byteVector := CDDDR infovec.3
             endPos :=
-              code+2 > max => SIZE byteVector
+              code+2 > max => # byteVector
               opvec.(code+2)
             --not nrunNumArgCheck(#sig.source,byteVector,opvec.code,endPos) => nil
             --numOfArgs := byteVector.(opvec.code)
@@ -540,7 +540,7 @@ HasAttribute(domain,attrib) ==
        vector? domain => hashType(domain.0,0)
        hashType(domain,0)
   isDomain domain =>
-     FIXP((first domain).0) => 
+     integer?((first domain).0) => 
         -- following call to hashType was missing 2nd arg. 
         -- getDomainHash domain added on 4/01/94 by RSS
         basicLookup("%%",hashType(attrib, hashPercent),domain,domain)
@@ -593,7 +593,7 @@ HasCategory(domain,catform') ==
   catform' is ['SIGNATURE,:f] => HasSignature(domain,f)
   catform' is ['ATTRIBUTE,f] => HasAttribute(domain,f)
   isDomain domain =>
-     FIXP((first domain).0) =>
+     integer?((first domain).0) =>
         catform' := devaluate catform'
         basicLookup("%%",catform',domain,domain)
      HasCategory(CDDR domain, catform')
@@ -608,7 +608,7 @@ HasCategory(domain,catform') ==
 
 --systemDependentMkAutoload(fn,cnam) ==
 --    FBOUNDP(cnam) => "next"
---    SETF(SYMBOL_-FUNCTION cnam,mkAutoLoad(fn, cnam))
+--    symbolFunction(cnam) := mkAutoLoad(fn, cnam)
 
 domainEqual(a,b) == 
   vector? a and vector? b and a.0 = b.0

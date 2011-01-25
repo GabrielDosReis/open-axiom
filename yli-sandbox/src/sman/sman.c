@@ -1,7 +1,7 @@
 /*
   Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
   All rights reserved.
-  Copyright (C) 2007-2009, Gabriel Dos Reis.
+  Copyright (C) 2007-2010, Gabriel Dos Reis.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -53,31 +53,33 @@
 #include "sman.h"
 
 #include "sockio.h"
-#include "openpty.H1"
+#include "openpty.h"
 #include "cfuns.h"
 #include "utils.h"
 
-static void process_arguments(openaxiom_command*, int, char**);
+using namespace OpenAxiom;
+
+static void process_arguments(Command*, int, char**);
 static int in_X(void);
 static void set_up_defaults(void);
-static void process_options(openaxiom_command*, int, char**);
+static void process_options(Command*, int, char**);
 static void death_handler(int);
 static void sman_catch_signals(void);
 static void fix_env(int);
 static void init_term_io(void);
-static char* strPrefix(char* , char*);
-static void check_spad_proc(char* , char*);
+static const char* strPrefix(const char* , const char*);
+static void check_spad_proc(const char* , const char*);
 static void clean_up_old_sockets(void);
 static SpadProcess* fork_you(int);
-static void exec_command_env(char*);
-static SpadProcess* spawn_of_hell(char* , int);
+static void exec_command_env(const char*);
+static SpadProcess* spawn_of_hell(const char* , int);
 static void start_the_spadclient(void);
 static void start_the_local_spadclient(void);
 static void start_the_session_manager(void);
 static void start_the_hypertex(void);
 static void start_the_graphics(void);
-static void fork_Axiom(openaxiom_command*);
-static void start_the_Axiom(openaxiom_command*);
+static void fork_Axiom(Command*);
+static void start_the_Axiom(Command*);
 static void clean_up_sockets(void);
 static void clean_hypertex_socket(void);
 static void read_from_spad_io(int);
@@ -104,12 +106,12 @@ int server_num;                 /* OpenAxiom server number */
 /* definitions of programs which sman can start */
 /************************************************/
 
-char    *GraphicsProgram        = "$AXIOM/lib/viewman";
-char    *HypertexProgram        = "$AXIOM/lib/hypertex -s";
-char    *ClefProgram            = 
+const char    *GraphicsProgram        = "$AXIOM/lib/viewman";
+const char    *HypertexProgram        = "$AXIOM/lib/hypertex -s";
+const char    *ClefProgram            = 
            "$AXIOM/bin/clef -f $AXIOM/lib/command.list -e ";
-char    *SessionManagerProgram  = "$AXIOM/lib/session";
-char    *SpadClientProgram      = "$AXIOM/lib/spadclient";
+const char    *SessionManagerProgram  = "$AXIOM/lib/session";
+const char    *SpadClientProgram      = "$AXIOM/lib/spadclient";
 char    *PasteFile              = NULL;
 char    *MakeRecordFile         = NULL;
 char    *VerifyRecordFile       = NULL;
@@ -149,7 +151,7 @@ struct termios childbuf;         /* terminal structure for user i/o */
 int death_signal = 0;
 
 static void
-process_arguments(openaxiom_command* command, int argc,char ** argv)
+process_arguments(Command* command, int argc,char ** argv)
 {
   int arg;
   int other = 0;
@@ -246,7 +248,7 @@ set_up_defaults(void)
 }
 
 static void
-process_options(openaxiom_command* command, int argc, char **argv)
+process_options(Command* command, int argc, char **argv)
 {
   set_up_defaults();
   process_arguments(command, argc, argv);
@@ -319,8 +321,8 @@ init_term_io(void)
   _EOL = oldbuf.c_cc[VEOL];
 }
 
-static char *
-strPrefix(char *prefix,char * s)
+static const char*
+strPrefix(const char* prefix, const char* s)
 {
   while (*prefix != '\0' && *prefix == *s) {
     prefix++;
@@ -331,9 +333,9 @@ strPrefix(char *prefix,char * s)
 }
 
 static void
-check_spad_proc(char *file, char *prefix)
+check_spad_proc(const char *file, const char *prefix)
 {
-  char *num;
+  const char *num;
   int pid;
   if ((num = strPrefix(prefix, file))) {
     pid = atoi(num);
@@ -392,7 +394,7 @@ fork_you(int death_action)
 }
 
 static void
-exec_command_env(char *command)
+exec_command_env(const char *command)
 {
   char new_command[512];
   sprintf(new_command, "exec %s", command);
@@ -400,7 +402,7 @@ exec_command_env(char *command)
 }
 
 static SpadProcess *
-spawn_of_hell(char *command, int death_action)
+spawn_of_hell(const char *command, int death_action)
 {
   SpadProcess *proc = fork_you(death_action);
   if (proc != NULL) {
@@ -472,7 +474,7 @@ start_the_graphics(void)
 /* Start the core executable session in a separate process, */
 /* using a pseudo-terminal to catch all input and output */
 static void 
-fork_Axiom(openaxiom_command* cmd)
+fork_Axiom(Command* cmd)
 {
   SpadProcess *proc;
 
@@ -528,15 +530,14 @@ fork_Axiom(openaxiom_command* cmd)
 
     /* Tell the Core that it is being invoked in server mode.   */
     oa_allocate_process_argv(&cmd->core, 2);
-    cmd->core.argv[0] =
-       openaxiom_make_path_for(cmd->root_dir, openaxiom_core_driver);
-    cmd->core.argv[1] = "--role=server";
-    openaxiom_execute_core(cmd, openaxiom_core_driver);
+    cmd->core.argv[0] = (char*) make_path_for(cmd->root_dir, core_driver);
+    cmd->core.argv[1] = (char*) "--role=server";
+    execute_core(cmd, core_driver);
   }
 }
 
 static void
-start_the_Axiom(openaxiom_command* cmd)
+start_the_Axiom(Command* cmd)
 {
   server_num = make_server_number();
   clean_up_old_sockets();
@@ -598,7 +599,7 @@ read_from_spad_io(int ptcNum)
     }
   }
   else
-    ret_code = swrite(session_io, oa_buffer_address(big_bad_buf), ret_code,
+    ret_code = swrite(session_io, byte_address(big_bad_buf), ret_code,
                       "writing to session man");
   if (ret_code == -1) {
     perror("writing output to session manager");
@@ -611,7 +612,7 @@ static void
 read_from_manager(int ptcNum)
 {
   int ret_code;
-  ret_code = sread(session_io, oa_buffer_address(big_bad_buf), BufSize,
+  ret_code = sread(session_io, byte_address(big_bad_buf), BufSize,
                    "reading session io");
   if (ret_code == -1) {
     return;
@@ -758,11 +759,11 @@ monitor_children(void)
 int
 main(int argc, char *argv[])
 {
-   openaxiom_command command = { };
-   command.root_dir = openaxiom_get_systemdir(argc, argv);
+   Command command;
+   command.root_dir = get_systemdir(argc, argv);
    process_options(&command, argc, argv);
 
-  putenv("LC_ALL=C");
+  putenv((char*) "LC_ALL=C");
   setlocale(LC_ALL, "");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
   init_term_io();

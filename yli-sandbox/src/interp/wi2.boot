@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -137,7 +137,7 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
       then $e:= augModemapsFromCategoryRep('_$,ab,cb,target,$e)
       else $e:= augModemapsFromCategory('_$,'_$,'_$,target,$e)
     $signature:= signature'
-    operationAlist:= SUBLIS($pairlis,$domainShell.(1))
+    operationAlist:= SUBLIS($pairlis,$domainShell.1)
     parSignature:= SUBLIS($pairlis,signature')
     parForm:= SUBLIS($pairlis,form)
  
@@ -477,7 +477,7 @@ compFormWithModemap1(form,m,e,modemap,Rep2Dollar?) ==
       Tl => (LAST Tl).env
       e
     [x',m',e'] where
-      m':= SUBLIS(sl,map.(1))
+      m':= SUBLIS(sl,map.1)
       x':=
         form':= [f,:[t.expr for t in Tl]]
         m'=$Category or isCategoryForm(m',e) => form'
@@ -509,7 +509,7 @@ compElt(origForm,m,E) ==
     mmList:= getModemapListFromDomain(anOp,0,aDomain,E)
     modemap:=
       n:=#mmList
-      1=n => mmList.(0)
+      1=n => mmList.0
       0=n =>
         return
           stackMessage ['"Operation ","%b",anOp,"%d",
@@ -517,7 +517,7 @@ compElt(origForm,m,E) ==
       stackWarning ['"more than 1 modemap for: ",anOp,
                   '" with dc=",aDomain,'" ===>"
         ,mmList]
-      mmList.(0)
+      mmList.0
 ----------> new: <-----------
     if aDomain = 'Rep then
       modemap := SUBST('Rep,'_$,modemap)
@@ -588,12 +588,12 @@ compMapCond''(cexpr,dc) ==
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
         --for the time being we'll stop here - shouldn't happen so far
         --$disregardConditionIfTrue => true
-        --stackSemanticError(("not known that",'%b,name,
-        -- '%d,"has",'%b,cat,'%d),nil)
+        --stackSemanticError(("not known that",'"%b",name,
+        -- '"%d","has",'"%b",cat,'"%d"),nil)
   --now it must be an attribute
   member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
   --for the time being we'll stop here - shouldn't happen so far
-  stackMessage ["not known that",'%b,dc,'%d,"has",'%b,cexpr,'%d]
+  stackMessage ["not known that",'"%b",dc,'"%d","has",'"%b",cexpr,'"%d"]
   false
  
 --======================================================================
@@ -736,7 +736,7 @@ compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   markImport m
   [collectOp,:itl,body]:= collectForm
   $e:= e
-  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").(0) for x in itl]
+  itl:= [([.,$e]:= compIterator(x,$e) or return "failed").0 for x in itl]
   itl="failed" => return nil
   e:= $e
   T0 := comp0(body,m,e) or return nil
@@ -832,8 +832,8 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
   null (start':= comp(start,$SmallInteger,e)) => nil
   null (inc':= comp(inc,$SmallInteger,start'.env)) => nil
   if optFinal is [final] and not (final':= comp(final,$SmallInteger,inc'.env)) then
---    not (FIXP startNum and FIXP incNum) => return nil
---    null FIXP startNum or ABSVAL startNum > 100 => return nil
+--    not (integer? startNum and integer? incNum) => return nil
+--    null integer? startNum or abs startNum > 100 => return nil
     -----> assume that optFinal is $SmallInteger
     T := comp(final,$EmptyMode,inc'.env) or return nil
     final' := T
@@ -843,7 +843,7 @@ smallIntegerStep(it,index,start,inc,optFinal,e) ==
   [.,.,e]:= compMakeDeclaration(index,indexmode,
      (final' => final'.env; inc'.env)) or return nil
   range :=
-    FIXP startNum and FIXP incNum =>
+    integer? startNum and integer? incNum =>
       startNum >  0 and incNum > 0 => $PositiveInteger
       startNum <  0 and incNum < 0 => $NegativeInteger
       incNum >  0 => $NonNegativeInteger   --startNum = 0

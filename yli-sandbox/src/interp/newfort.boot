@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -240,7 +240,7 @@ exp2FortOptimizeCS1 e ==
       f := NIL
     f := g
 
-  MEMQ(object2Identifier first e,'(ROW AGGLST)) => e
+  object2Identifier first e in '(ROW AGGLST) => e
 
   -- see if we have already seen this expression
   n := HGET($fortCsHash,e)
@@ -265,7 +265,7 @@ exp2FortOptimizeArray e ==
       $exprStack := [[op,var,['AGGLST,:exp2FortOptimizeArray elts]],
         :$exprStack]
       var
-  EQ(op1,'MATRIX) =>
+  op1 = 'MATRIX =>
     -- var := newFortranTempVar()
     var := $fortName
     -- args looks like [NIL,[ROW,...],[ROW,...]]
@@ -307,7 +307,7 @@ fortran2Lines1 f ==
     line := normPref
     ff := first f
     while ok repeat
-      (ll + (sff := SIZE ff)) <= $fortLength =>
+      (ll + (sff := # ff)) <= $fortLength =>
         ll := ll + sff
         line := strconc(line,ff)
         f := rest f
@@ -320,8 +320,8 @@ fortran2Lines1 f ==
       -- legal format. MCD
       if (ll < $fortLength) and (ll + sff) > $fortLength then
         spaceLeft := $fortLength - ll
-        line := strconc(line,SUBSEQ(ff,0,spaceLeft))
-        ff := SUBSEQ(ff,spaceLeft)
+        line := strconc(line,subSequence(ff,0,spaceLeft))
+        ff := subSequence(ff,spaceLeft)
       lines := [line,:lines]
       ll := $fortIndent
       line := contPref
@@ -337,7 +337,7 @@ fortError1 u ==
  
 fortError(u,v) ==
   $fortError := "t"
-  msg := strconc("   ",STRINGIMAGE u);
+  msg := strconc('"   ",STRINGIMAGE u);
   sayErrorly("Fortran translation error",msg)
   mathPrint v
  
@@ -364,10 +364,10 @@ fortexp0 x ==
     l := [t,:l]
   nreverse ['"...",:l]
 
-++ This formating routine is essentially used to print
-++ values/expreions used to instantiate constructors.
-formatAsFortranExpresion x ==
-  $fortInts2Floats := false
+++ This formatting routine is essentially used to print
+++ values/expressions used to instantiate constructors.
+formatAsFortranExpression x ==
+  $fortInts2Floats: local := false
   fortranCleanUp exp2Fort1 segment fortPre outputTran x
 
  
@@ -619,7 +619,7 @@ fortFormatLabelledIfGoto(switch,label1,label2) ==
   labString := STRINGIMAGE label1
   for i in #(labString)..5 repeat labString := strconc(labString,'" ")
   lines := fortran2Lines nreverse [:nreverse l,'"IF(",:r]
-  lines := [strconc(labString,SUBSEQ(first lines,6)),:rest lines]
+  lines := [strconc(labString,subSequence(first lines,6)),:rest lines]
   checkLines lines
 
 fortFormatIf(switch) ==
@@ -796,14 +796,14 @@ fortPre1 e ==
   imags := ['"%i","%i"]
   member(e, imags) => ['"CMPLX",fortPre1(0),fortPre1(1)]
   -- other special objects
-  STRINGIMAGE(e).0 = "%" => SUBSEQ(STRINGIMAGE e,1)
+  STRINGIMAGE(e).0 = char "%" => subSequence(STRINGIMAGE e,1)
   atom e => e
   [op, :args] := e
   member(op,["**" , '"**"]) =>
     [rand,exponent] := args
     rand = "%e" => fortPre1 ["exp", exponent]
     (IDENTP rand or string? rand) and exponent=2 => ["*", rand, rand]
-    (FIXP exponent and ABS(exponent) < 32768) => ["**",fortPre1 rand,exponent]
+    (integer? exponent and abs(exponent) < 32768) => ["**",fortPre1 rand,exponent]
     ["**", fortPre1 rand,fortPre1 exponent]
   op = "ROOT" =>
     #args = 1 => fortPreRoot ["sqrt", first args]
@@ -844,23 +844,23 @@ fortPreRoot e ==
 fix2FortranFloat e ==
   -- Return a Fortran float for a given integer.
   $fortranPrecision = "double" => strconc(STRINGIMAGE(e),".0D0")
-  strconc(STRINGIMAGE(e),".")
+  strconc(STRINGIMAGE(e),'".")
  
 isFloat e ==
   FLOATP(e) or string?(e) and FIND(char ".",e)
  
 checkPrecision e ==
   -- Do we have a string?
-  string?(e) and CHAR_-CODE(CHAR(e,0)) = 34 => e
+  string?(e) and codePoint CHAR(e,0) = 34 => e
   e := delete(char " ",STRINGIMAGE e)
   $fortranPrecision = "double" =>
-    iPart := SUBSEQ(e,0,(period:=POSITION(char ".",e))+1)
-    expt  := if ePos := POSITION(char "E",e) then SUBSEQ(e,ePos+1) else "0"
+    iPart := subSequence(e,0,(period:=POSITION(char ".",e))+1)
+    expt  := if ePos := POSITION(char "E",e) then subSequence(e,ePos+1) else "0"
     rPart :=
-      ePos => SUBSEQ(e,period+1,ePos)
-      period+1 < # e => SUBSEQ(e,period+1)
+      ePos => subSequence(e,period+1,ePos)
+      period+1 < # e => subSequence(e,period+1)
       "0"
-    strconc(iPart,rPart,"D",expt)
+    strconc(iPart,rPart,'"D",expt)
   e
  
 ----------------- segment.boot -----------------------

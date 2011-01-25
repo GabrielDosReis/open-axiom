@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -297,7 +297,7 @@ compileTimeBindingOf u ==
  
 optMkRecord ["mkRecord",:u] ==
   u is [x] => ["LIST",x]
-  #u=2 => ["CONS",:u]
+  #u=2 => ['%makepair,:u]
   ["VECTOR",:u]
  
 optCond (x is ['COND,:l]) ==
@@ -407,21 +407,21 @@ optRECORDELT ["RECORDELT",name,ind,len] ==
     ind=0 => ['%head,name]
     ind=1 => ['%tail,name]
     keyedSystemError("S2OO0002",[ind])
-  ["QVELT",name,ind]
+  ['%vref,name,ind]
  
 optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   len=1 =>
-    ind=0 => ["PROGN",["RPLACA",name,expr],['%head,name]]
+    ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
     keyedSystemError("S2OO0002",[ind])
   len=2 =>
-    ind=0 => ["PROGN",['%store,['%head,name],expr],['%head,name]]
-    ind=1 => ["PROGN",['%store,['%tail,name],expr],['%tail,name]]
+    ind = 0 => ['SEQ,['%store,['%head,name],expr],['EXIT,['%head,name]]]
+    ind = 1 => ['SEQ,['%store,['%tail,name],expr],['EXIT,['%tail,name]]]
     keyedSystemError("S2OO0002",[ind])
-  ["QSETVELT",name,ind,expr]
+  ['%store,['%vref,name,ind],expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len=1 => ["LIST",['%head,name]]
-  len=2 => ["CONS",['%head,name],['%tail,name]]
+  len = 1 => ["LIST",['%head,name]]
+  len = 2 => ['%makepair,['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
@@ -439,22 +439,31 @@ $VMsideEffectFreeOperators ==
      QEQCAR QCDR QCAR IDENTP SYMBOLP
       GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
        CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
+       %2bit %2bool
         %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
         %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
         %icst0 %icst1
         %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
+        %irem %iquo %idivide
         %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
         %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
-        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
+        %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
+        %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
+        %nil %pair? %lconcat %llength %lfirst %lsecond %lthird %listlit
         %lreverse %lempty? %hash %ismall? %string? %f2s
-        %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %sname
-        %vref %vlength %before?)
+        %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
+        %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
+        %aref %vref %vlength %veclit
+        %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
+        %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
+        %before?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
     ['CONS,'LIST,'VECTOR,'STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
-      "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
+      '%strstc,'%makebitvec,'%makevector,
+        "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
 ++ to the list of operators `ops'.
@@ -591,6 +600,10 @@ optBind form ==
   null inits => third form                        -- no local var left
   second(form) := inits
   form
+
+optTry form ==
+  form isnt ['try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
+  e
 
 optLIST form ==
   form is ["LIST"] => nil
@@ -732,6 +745,26 @@ optIneg(x is ['%ineg,a]) ==
   integer? a => -a
   x
 
+optIrem(x is ['%irem,a,b]) ==
+  integer? a and integer? b => a rem b
+  x
+
+optIquo(x is ['%iquo,a,b]) ==
+  integer? a and integer? b => a quo b
+  x
+
+-- Boolean <-> bit conversion.
+opt2bit(x is ['%2bit,a]) ==
+  a is '%true => 1
+  a is '%false => 0
+  x
+
+opt2bool(x is ['%2bool,a]) ==
+  integer? a =>
+    a = 1 => '%true
+    '%false
+  x
+
 --%  
 --% optimizer hash table
 --%
@@ -741,6 +774,7 @@ for x in '( (%call         optCall) _
            (LET          optLET)_
            (LET_*        optLET_*)_
            (%bind        optBind)_
+           (%try         optTry)_
            (%not         optNot)_
            (%and         optAnd)_
            (%or          optOr)_
@@ -755,7 +789,11 @@ for x in '( (%call         optCall) _
            (%ineg        optIneg)_
            (%iadd        optIadd)_
            (%isub        optIsub)_
+           (%irem        optIrem)_
+           (%iquo        optIquo)_
            (%imul        optImul)_
+           (%2bit        opt2bit)_
+           (%2bool       opt2bool)_
            (LIST         optLIST)_
            (QSMINUS      optQSMINUS)_
            (SPADCALL     optSPADCALL)_

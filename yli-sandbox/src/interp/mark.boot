@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -284,7 +284,7 @@ markImport(d,:option) ==   --from compFormWithModemap/genDeltaEntry/compImport
   declared? := IFCAR option
   null d or d = $Representation => nil
   d is [op,:.] and op in '(Boolean Mapping Void Segment UniversalSegment) => nil
-  string? d or (IDENTP d and (PNAME d).0 = char '_#) => nil
+  string? d or (IDENTP d and stringchar(symbolName d,0) = char '_#) => nil
   d in '(_$ _$NoValueMode _$EmptyMode Void) => nil
 -------=======+> WHY DOESN'T THIS WORK????????????
 --if (d' := macroExpand(d,$e)) ~= d then markImport(d',declared?)
@@ -515,10 +515,10 @@ markOrigName x ==
     op = 'TAGGEDreturn and x is [.,a,[y,:.]] => markOrigName y
     for y in r repeat markOrigName y     
     IDENTP op =>
-      s := PNAME op
+      s := symbolName op
       k := charPosition(char '_;, s, 0)
       k > MAXINDEX s => nil
-      origName := INTERN SUBSTRING(s, k + 1, nil)
+      origName := INTERN subString(s, k + 1)
       property(op, 'ORIGNAME) := origName
       REMPROP(op,'PNAME)
     markOrigName op
@@ -564,8 +564,8 @@ markRecord(source,target,u) ==
   if source='Rep and target='_$ then
     target := 'per
   item := first u
-  FIXP item or item = $One or item = $Zero => nil
-  item is ["-",a] and (FIXP a or a = $One or a = $Zero) => nil
+  integer? item or item = $One or item = $Zero => nil
+  item is ["-",a] and (integer? a or a = $One or a = $Zero) => nil
   string? item => nil
   item is [op,.,t] and op in '( _:_: _@ _pretend)
     and macroExpand(t,$e) = target => nil
@@ -702,7 +702,7 @@ markPathsEqual(x,y) ==
     y is ['PROGN,.,repeet,:.] and repeet is ['REPEAT,:v] => markPathsEqual(u,v)
   atom y or atom x => 
     IDENTP y and IDENTP x and y = GETL(x,'ORIGNAME)  => true --> see 
---  IDENTP y and IDENTP x and anySubstring?(PNAME y,PNAME x,0) => true
+--  IDENTP y and IDENTP x and anySubstring?(symbolName y,symbolName x,0) => true
     IDENTP y and (z := markPathsMacro y) => markPathsEqual(x,z)
     false
   "and"/[markPathsEqual(u,v) for u in x for v in y]
@@ -786,7 +786,7 @@ markInsertChanges(code,form,t,loc) ==
       op in '(_: _pretend) => form
       op = code and b = t => form
       markNumCheck(code,form,t)
-    FIXP form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
+    integer? form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
     [code,form,t]
   code in '(_@ _:_: _:) and form is [op,a] and 
     (op='rep and t = 'Rep or op='per and t = "$") => form
@@ -798,15 +798,15 @@ markInsertChanges(code,form,t,loc) ==
     t = 'per and form is ["rep",:.] => second form
     [t,form]
   code is [op,x,t1] and op in '(_@ _: _:_: _pretend) and t1 = t => form
-  FIXP form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
+  integer? form and MEMQ(opOf t,$markPrimitiveNumbers) => ['_@,form,t]
   markNumCheck("::",form,t)
 
 markNumCheck(op,form,t) ==
   op = "::" and opOf t in '(Integer) =>
      s := form = $One and 1 or form = $Zero and 0 => ['DOLLAR, s , t]
-     FIXP form                   => ["@", form, t]
-     form is ["-", =$One]        => ['DOLLAR, -1,   t]
-     form is ["-", n] and FIXP n => ["@", MINUS n, t]
+     integer? form                   => ["@", form, t]
+     form is ["-", =$One]            => ['DOLLAR, -1,   t]
+     form is ["-", n] and integer? n => ["@", MINUS n, t]
      [op, form, t]
   [op,form,t]
 
@@ -1250,7 +1250,7 @@ changeToEqualEqual lines ==
     while (m := m + 1) <= N and alphabetic? (x . m) repeat nil
     m = n + 2 => nil
     not upperCase? (x . (n + 4)) => nil
-    word := INTERN SUBSTRING(x, n + 4, m - n - 4)
+    word := INTERN subString(x, n + 4, m - n - 4)
     expandedWord := macroExpand(word,$e)
     not (word in '(Record Union Mapping)
       or getConstructorFormFromDB opOf expandedWord) => nil
@@ -1275,10 +1275,10 @@ moveImportsAfterDefinitions lines ==
     m < 0 => nil
     ((n := charPosition($blank ,x,1 + m)) < N) and
       substring?('"== ", x, n+1) => 
-        name := SUBSTRING(x, m, n - m)
+        name := subString(x, m, n - m)
         defineAlist := [[name, :i], :defineAlist]
     (k := leadingSubstring?('"import from ",x, 0)) =>
-      importAlist := [[SUBSTRING(x,k + 12,nil), :i], :importAlist]
+      importAlist := [[subString(x,k + 12), :i], :importAlist]
 --  pp defineAlist
 --  pp importAlist
   for [name, :i] in defineAlist repeat
@@ -1469,7 +1469,7 @@ buildNewDefinition(op,theSig,formPredAlist) ==
   theAlist := [[pred, first form, :theArgl] for [pred,:form] in alist]
   theNils := [nil for x in theForm]
   thePred :=
-     member(outerPred, '(T %true)) => nil
+     outerPred in '(T %true) => nil
      outerPred
   def := ['DEF, theForm, theSig, theNils, ifize theAlist]
   value :=

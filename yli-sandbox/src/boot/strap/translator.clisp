@@ -506,7 +506,18 @@
         (SETQ |$bpCount| 0)
         (SETQ |$bpParenCount| 0)
         (|bpFirstTok|)
-        (SETQ |found| (CATCH 'TRAPPOINT (|bpOutItem|)))
+        (SETQ |found|
+              (LET ((#0=#:G1356
+                        (CATCH :OPEN-AXIOM-CATCH-POINT (|bpOutItem|))))
+                (COND
+                  ((AND (CONSP #0#)
+                        (EQUAL (CAR #0#) :OPEN-AXIOM-CATCH-POINT))
+                   (COND
+                     ((EQUAL (CAR #1=(CDR #0#))
+                             '(|BootParserException|))
+                      (LET ((|e| (CDR #1#))) |e|))
+                     (T (THROW :OPEN-AXIOM-CATCH-POINT #0#))))
+                  (T #0#))))
         (COND
           ((EQ |found| 'TRAPPED) NIL)
           ((NOT (|bStreamNull| |$inputStream|)) (|bpGeneralErrorHere|)
@@ -593,7 +604,7 @@
                    (PROGN
                      (SETQ |$currentModuleName| |m|)
                      (SETQ |$foreignsDefsForCLisp| NIL)
-                     (CONS (LIST 'PROVIDE (STRING |m|))
+                     (CONS (LIST 'PROVIDE (SYMBOL-NAME |m|))
                            (LET ((|bfVar#11| NIL) (|bfVar#10| |ds|)
                                  (|d| NIL))
                              (LOOP
@@ -612,10 +623,10 @@
                  (LET ((|m| (CADR |b|)))
                    (PROGN
                      (COND
-                       ((NOT (EQUAL (|getOptionValue| '|import|)
-                                    "skip"))
-                        (|bootImport| (STRING |m|))))
-                     (LIST (LIST 'IMPORT-MODULE (STRING |m|))))))
+                       ((NOT (STRING= (|getOptionValue| '|import|)
+                                      "skip"))
+                        (|bootImport| (SYMBOL-NAME |m|))))
+                     (LIST (LIST 'IMPORT-MODULE (SYMBOL-NAME |m|))))))
              (|%ImportSignature|
                  (LET ((|x| (CADR |b|)) (|sig| (CADDR |b|)))
                    (|genImportDeclaration| |x| |sig|)))
@@ -691,8 +702,8 @@
              (|%Namespace|
                  (LET ((|n| (CADR |b|)))
                    (PROGN
-                     (SETQ |$activeNamespace| (STRING |n|))
-                     (LIST (LIST 'IN-PACKAGE (STRING |n|))))))
+                     (SETQ |$activeNamespace| (SYMBOL-NAME |n|))
+                     (LIST (LIST 'IN-PACKAGE (SYMBOL-NAME |n|))))))
              (|%Lisp| (LET ((|s| (CADR |b|)))
                         (|shoeReadLispString| |s| 0)))
              (T (LIST (|translateToplevelExpression| |b|)))))))))
@@ -714,7 +725,7 @@
     (RETURN
       (PROGN
         (SETQ |n| (SEARCH |str| |s| :FROM-END T))
-        (COND ((NULL |n|) |s|) (T (SUBSTRING |s| 0 |n|)))))))
+        (COND ((NULL |n|) |s|) (T (|subString| |s| 0 |n|)))))))
 
 (DEFUN DEFUSE (|fn|)
   (PROG (|infn|)
@@ -909,7 +920,7 @@
       (COND
         ((ATOM |y|)
          (COND
-           ((IDENTP |y|)
+           ((SYMBOLP |y|)
             (SETQ |$used|
                   (COND
                     ((MEMQ |y| |e|) |$used|)
@@ -1076,7 +1087,7 @@
                   (|shoeFindName2| |fn| |name| |a|)))
         (SETQ |filename|
               (COND
-                ((< 8 (LENGTH |name|)) (SUBSTRING |name| 0 8))
+                ((< 8 (LENGTH |name|)) (|subString| |name| 0 8))
                 (T |name|)))
         (COND (|a| (FUNCALL |f| (CONCAT "/tmp/" |filename|))) (T NIL))))))
 
@@ -1089,7 +1100,7 @@
           (|lines| (SETQ |filename|
                          (COND
                            ((< 8 (LENGTH |name|))
-                            (SUBSTRING |name| 0 8))
+                            (|subString| |name| 0 8))
                            (T |name|)))
                    (SETQ |filename|
                          (CONCAT "/tmp/" |filename| ".boot"))
@@ -1137,7 +1148,7 @@
   (COND
     ((ATOM |x|)
      (COND
-       ((IDENTP |x|)
+       ((SYMBOLP |x|)
         (COND
           ((EQUAL (SYMBOL-PACKAGE |x|) |bt|) (INTERN (PNAME |x|) |pk|))
           (T |x|)))
@@ -1219,7 +1230,7 @@
              (COND
                (|b| (SETQ |stream| *TERMINAL-IO*)
                     (PSTTOMC (|bRgen| |stream|)) (BOOTLOOP))
-               ((EQUAL (ELT |a| 0) (ELT "]" 0)) NIL)
+               ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
                (T (PSTTOMC (LIST |a|)) (BOOTLOOP)))))))))
 
 (DEFUN BOOTPO ()
@@ -1234,7 +1245,7 @@
              (COND
                (|b| (SETQ |stream| *TERMINAL-IO*)
                     (PSTOUT (|bRgen| |stream|)) (BOOTPO))
-               ((EQUAL (ELT |a| 0) (ELT "]" 0)) NIL)
+               ((CHAR= (SCHAR |a| 0) (|char| '])) NIL)
                (T (PSTOUT (LIST |a|)) (BOOTPO)))))))))
 
 (DEFUN PSTOUT (|string|)
@@ -1325,6 +1336,5 @@
   (COND
     ((OR (|%hasFeature| :ECL) (|%hasFeature| :GCL)) NIL)
     (T (|loadNativeModule|
-           (CONCAT (|systemLibraryDirectory|) "libopen-axiom-core"
-                   |$NativeModuleExt|)))))
+           (CONCAT "libopen-axiom-core" |$NativeModuleExt|)))))
 

@@ -1006,8 +1006,8 @@ compMacro(form,m,e) ==
       rhs is ['CAPSULE,:.]  => ['"-- the constructor capsule"]
       rhs is ['add,:.]      => ['"-- the constructor capsule"]
       formatUnabbreviated rhs
-    sayBrightly ['"   processing macro definition",'%b,
-      :formatUnabbreviated lhs,'" ==> ",:prhs,'%d]
+    sayBrightly ['"   processing macro definition",'"%b",
+      :formatUnabbreviated lhs,'" ==> ",:prhs,'"%d"]
   m=$EmptyMode or m=$NoValueMode =>
     -- Macro names shall be identifiers.
     not IDENTP lhs.op =>
@@ -1040,7 +1040,7 @@ compSeq1(l,$exitModeStack,e) ==
   if c="failed" then return nil
   catchTag:= MKQ gensym()
   form:= ["SEQ",:replaceExitEtc(c,catchTag,"TAGGEDexit",$exitModeStack.(0))]
-  [["CATCH",catchTag,form],$exitModeStack.(0),$finalEnv]
+  [["CATCH",catchTag,form],$exitModeStack.0,$finalEnv]
 
 compSeqItem(x,m,e) == 
   comp(macroExpand(x,e),m,e)
@@ -1148,6 +1148,30 @@ compReturn(["return",x],m,e) ==
     modifyModeStack(m',index)
   [["TAGGEDreturn",0,u],m,e']
 
+--% throw expressions
+
+compThrow: (%Form,%Mode,%Env) -> %Maybe %Triple
+compThrow(["%Throw",x],m,e) ==
+  T := compOrCroak(x,$EmptyMode,e)
+  -- An exception does not use the normal exit/return route, so
+  -- we don't take into account neither $exitModeStack nor $returnMode.
+  [['%throw,T.mode,T.expr],$NoValueMode,T.env]
+
+compCatch: (%Form,%Mode,%Env) -> %Maybe %Triple
+compCatch([x,s],m,e) ==
+  [.,m',e] := compMakeDeclaration(second x, third x,e)
+  T := compOrCroak(s,m,e)
+  [['%catch,second x,m',T.expr],T.mode,T.env]
+  
+compTry: (%Form,%Mode,%Env) -> %Maybe %Triple
+compTry(['%Try,x,ys,z],m,e) ==
+  x' := compOrCroak(x,m,e).expr
+  ys' := [compCatch(y,m,e).expr for y in ys]
+  z' :=
+    z = nil => nil
+    ['%finally,compOrCroak(z,$NoValueMode,e).expr]
+  [['%try,x',ys',z'],m,e]
+  
 --% ELT
 
 ++ `op' supposedly designate an external entity with language linkage
@@ -1176,14 +1200,14 @@ compElt(form,m,E) ==
     modemap:=
       -- FIXME: do this only for constants.
       n:=#mmList
-      1=n => mmList.(0)
+      1=n => mmList.0
       0=n =>
         return
           stackMessage('"Operation %1b missing from domain: %2p",
             [anOp,aDomain])
       stackWarning('"more than 1 modemap for: %1 with dc = %2p ===> %3",
         [anOp,aDomain,mmList])
-      mmList.(0)
+      mmList.0
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry([opOf anOp,:modemap],E)
@@ -1314,7 +1338,7 @@ compImport(["import",:doms],m,e) ==
 
 bootDenotation: %Symbol -> %Symbol
 bootDenotation s == 
-  INTERN(SYMBOL_-NAME s,"BOOTTRAN")
+  INTERN(symbolName s,"BOOTTRAN")
 
 ++ Return the Boot denotation of a basic FFI type.
 getBasicFFIType: %Mode -> %Symbol
@@ -1373,7 +1397,7 @@ getBootType t ==
       getBasicFFIType ret or return nil
     args' := [getFFIDatatype arg or return "failed" for arg in args]
     args' = "failed" => return nil
-    [bootDenotation "Mapping",ret',args']
+    [bootDenotation "%Mapping",ret',args']
   nil
 
 ++ Verify that mode `t' is admissible in an external entity signature
@@ -1402,10 +1426,10 @@ checkExternalEntity(id,type,lang,e) ==
   -- Only functions are accepted at the moment.  And all mentioned
   -- types must be those that are supported by the FFI.
   type' := checkExternalEntityType(type,e) 
-  type' isnt [=bootDenotation "Mapping",:.] =>
+  type' isnt [=bootDenotation "%Mapping",:.] =>
     stackAndThrow('"Signature for external entity must be a Mapping type",nil)
   id' := encodeLocalFunctionName id
-  [def] := genImportDeclaration(id',[bootDenotation "Signature",id,type'])
+  [def] := genImportDeclaration(id',[bootDenotation "%Signature",id,type'])
   compileLispDefinition(id,def)
   id'
 
@@ -1933,8 +1957,8 @@ compMapCond'(cexpr,dc) ==
   cexpr is ["has",name,cat] => (knownInfo cexpr => true; false)
         --for the time being we'll stop here - shouldn't happen so far
         --$disregardConditionIfTrue => true
-        --stackSemanticError(("not known that",'%b,name,
-        -- '%d,"has",'%b,cat,'%d),nil)
+        --stackSemanticError(("not known that",'"%b",name,
+        -- '"%d","has",'"%b",cat,'"%d"),nil)
   --now it must be an attribute
   member(["ATTRIBUTE",dc,cexpr],get("$Information","special",$e)) => true
   --for the time being we'll stop here - shouldn't happen so far
@@ -2660,7 +2684,6 @@ for x in [["|", :"compSuchthat"],_
 	  ["REPEAT", :"compRepeatOrCollect"],_
 	  ["return", :"compReturn"],_
 	  ["SEQ", :"compSeq"],_
-	  ["SETQ", :"compSetq"],_
 	  ["SubDomain", :"compSubDomain"],_
 	  ["SubsetCategory", :"compSubsetCategory"],_
 	  ["Union", :"compCat"],_
@@ -2674,5 +2697,7 @@ for x in [["|", :"compSuchthat"],_
           ["%Forall", : "compSceheme"] , _
           ["%Match",:"compMatch"],_
           ["%SignatureImport",:"compSignatureImport"],_
+          ['%Throw,:'compThrow],
+          ['%Try, :'compTry],
           ["[||]", :"compileQuasiquote"]] repeat
   property(first x, 'SPECIAL) := rest x

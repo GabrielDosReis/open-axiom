@@ -455,7 +455,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   $template := newShell ($NRTbase + $NRTdeltaLength)
   $catvecList:= [domainShell,:[emptyVector for u in second domainShell.4]]
   $catNames := ['$] -- for DescendCode -- to be changed below for slot 4
-  $SetFunctions:= newShell SIZE domainShell
+  $SetFunctions:= newShell # domainShell
   $catNames:= ['$,:[genvar() for u in rest catvecListMaker]]
   domname:='dv_$
 
@@ -528,7 +528,7 @@ NRTcheckVector domainShell ==
     alist := [[first v,:$SetFunctions.i],:alist]
   alist
 
-mkDomainCatName id == INTERN strconc(id,";CAT")
+mkDomainCatName id == INTERN strconc(id,'";CAT")
 
 NRTsetVector4Part1(siglist,formlist,condlist) ==
   $uncondList: local := nil
@@ -657,7 +657,7 @@ deepChaseInferences(pred,$e) ==
 
 vectorLocation(op,sig) ==
   u := or/[i for i in 1.. for u in $NRTdeltaList
-        | u is [=op,[='$,: xsig],:.] and sig=NRTsubstDelta(xsig) ]
+        | u is [=op,['$,: xsig],:.] and sig=NRTsubstDelta(xsig) ]
   u => $NRTdeltaLength - u + $NRTbase 
   nil    -- this signals that calls should be forwarded
 

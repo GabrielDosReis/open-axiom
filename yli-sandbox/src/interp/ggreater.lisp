@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007, Gabriel Dos Reis.
+;; Copyright (C) 2007-2010, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -50,11 +50,11 @@
       ((consp COMPERAND-2) NIL)
       ((NULL COMPERAND-1) 'T )
       ((NULL COMPERAND-2) NIL)
-      ((VECP COMPERAND-1)
+      ((simple-vector-p COMPERAND-1)
         (COND
-          ((VECP COMPERAND-2) (LEXVGREATERP COMPERAND-1 COMPERAND-2) )
+          ((simple-vector-p COMPERAND-2) (LEXVGREATERP COMPERAND-1 COMPERAND-2) )
           ('else t)))
-      ((VECP COMPERAND-2) NIL)
+      ((simple-vector-p COMPERAND-2) NIL)
       ((OR (IVECP COMPERAND-1) (RVECP COMPERAND-1))
         (COND
           ( (OR (IVECP COMPERAND-2) (RVECP COMPERAND-2))
@@ -140,11 +140,11 @@
       ((consp COMPERAND-2) NIL)
       ((NULL COMPERAND-1) 'T )
       ((NULL COMPERAND-2) NIL)
-      ((VECP COMPERAND-1)
+      ((simple-vector-p COMPERAND-1)
         (COND
-          ((VECP COMPERAND-2) (VGREATERP COMPERAND-1 COMPERAND-2) )
+          ((simple-vector-p COMPERAND-2) (VGREATERP COMPERAND-1 COMPERAND-2) )
           ('else t)))
-      ((VECP COMPERAND-2) NIL)
+      ((simple-vector-p COMPERAND-2) NIL)
       ((OR (IVECP COMPERAND-1) (RVECP COMPERAND-1))
         (COND
           ( (OR (IVECP COMPERAND-2) (RVECP COMPERAND-2))

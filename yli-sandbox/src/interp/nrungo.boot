@@ -104,12 +104,12 @@ goGet(:l) ==
   [:arglist,env] := l
   arglist is ['goGet,:.] => stop()
   [[.,[op,initSig,:code]],thisDomain] := env
-  domainSlot := QSQUOTIENT(code,8192)
-  code1 := QSREMAINDER(code,8192)
+  domainSlot := code quo 8192
+  code1 := code rem 8192
   if QSODDP code1 then isConstant := true
-  code2 := QSQUOTIENT(code1,2)
+  code2 := code1 quo 2
   if QSODDP code2 then explicitLookupDomainIfTrue := true
-  index := QSQUOTIENT(code2,2)
+  index := code2 quo 2
   kind := (isConstant = true => 'CONST; 'ELT)
   sig := [NRTreplaceLocalTypes(s,thisDomain) for s in initSig]
   sig := substDomainArgs(thisDomain,sig)
@@ -157,10 +157,10 @@ lookupInTable(op,sig,dollar,[domain,table]) ==
                EQSUBSTLIST(rest(domain.0),$FormalMapVariableList,a)
             someMatch:=true
             false
-      predIndex := QSQUOTIENT(code,8192)
+      predIndex := code quo 8192
       predIndex ~= 0 and not lookupPred($predVector.predIndex,dollar,domain)
         => false
-      loc := QSQUOTIENT(QSREMAINDER(code,8192),2)
+      loc := (code rem 8192) quo 2
       loc = 0 =>
         someMatch := true
         nil
@@ -194,8 +194,7 @@ defaultingFunction op ==
   not (#dom > 0) => false
   not (dom.0 is [packageName,:.]) => false
   not IDENTP packageName => false
-  pname := PNAME packageName
-  pname.(MAXINDEX pname) = char "&"
+  isDefaultPackageName packageName
 
 --=======================================================
 --   Lookup In Domain (from lookupInAddChain)
@@ -284,18 +283,18 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
 
 
 compareSigEqual(s,t,dollar,domain) ==
-  EQUAL(s,t) => true
+  s = t => true
   atom t =>
     u :=
       t='$ => dollar
       isSharpVar t =>
         vector? domain => rest(domain.0).(POSN1(t,$FormalMapVariableList))
         rest(domain).(POSN1(t,$FormalMapVariableList))
-      string? t and IDENTP s => (s := PNAME s; t)
+      string? t and IDENTP s => (s := symbolName s; t)
       nil
     s = '$ => compareSigEqual(dollar,u,dollar,domain)
     u => compareSigEqual(s,u,dollar,domain)
-    EQUAL(s,u)
+    s = u
   s='$ => compareSigEqual(dollar,t,dollar,domain)
   atom s => nil
   #s ~= #t => nil

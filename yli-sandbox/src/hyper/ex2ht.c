@@ -50,6 +50,8 @@
 #include "cfuns.h"
 
 
+using namespace OpenAxiom;
+
 #define MaxLineLength 512
 #define MaxFiles      100
 
@@ -164,7 +166,7 @@ emitFooter(FILE *outFile)
 
 
 static char *
-strPrefix(char* prefix, char *s)
+strPrefix(const char* prefix, char *s)
 {
     while (*prefix != '\0' && *prefix == *s) {
         prefix++;

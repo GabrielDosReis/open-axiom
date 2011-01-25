@@ -144,7 +144,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
     ud := nil
     bad := nil
     for d in doms while not bad repeat
-      d = '"failed" => ud := [d,:ud]
+      d is '"failed" => ud := [d,:ud]
       null (d' := resolveTT(d,t2)) => bad := true
       ud := [d',:ud]
     bad => NIL
@@ -152,7 +152,7 @@ resolveTTUnion(t1 is ['Union,:doms],t2) ==
   ud := nil
   bad := nil
   for d in doms2 while not bad repeat
-    d = '"failed" => ud := append(ud,[d])
+    d is '"failed" => ud := append(ud,[d])
     null (d' := resolveTTUnion(t1,d)) => bad := true
     ud := append(ud,rest d')
   bad => NIL
@@ -373,8 +373,8 @@ resolveTCat(t,c) ==
 
   sd := superType t => resolveTCat(sd,c)
 
-  SIZE(td := deconstructT t) ~= 2=> NIL
-  SIZE(tc := deconstructT c) ~= 2 => NIL
+  #(td := deconstructT t) ~= 2=> NIL
+  #(tc := deconstructT c) ~= 2 => NIL
   ut := underDomainOf t
   null isValidType(uc := last tc) => NIL
   null canCoerceFrom(ut,uc) => NIL
@@ -441,10 +441,10 @@ matchUpToPatternVars(pat,form,patAlist) ==
   -- against expressions in form. If one is found, it is checked
   -- against the patAlist to make sure we are using the same expression
   -- each time.
-  EQUAL(pat,form) => true
+  pat = form => true
   isSharpVarWithNum(pat) =>
     -- see is pattern variable is in alist
-    (p := assoc(pat,patAlist)) => EQUAL(form,rest p)
+    (p := assoc(pat,patAlist)) => form = rest p
     patAlist := [[pat,:form],:patAlist]
     true
   cons?(pat) =>
@@ -580,7 +580,7 @@ resolveTMEq(t,m) ==
     b :=
       c =>
         SL := resolveTMEq1(ct,cm)
-        not EQ(SL,'failed)
+        SL ~= 'failed
       ct=cm
     not b =>
       TL := [ct,argt,:TL]
