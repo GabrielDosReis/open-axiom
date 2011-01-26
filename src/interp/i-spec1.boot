@@ -1084,9 +1084,9 @@ upRecordConstruct(op,l,tar) ==
         for arg in l for ['_:,.,type] in types]
   len := #l
   code :=
-    (len = 1) => ["CONS", :argCode, '()]
-    (len = 2) => ["CONS",:argCode]
-    ['VECTOR,:argCode]
+    (len = 1) => ['%listlit,:argCode]
+    (len = 2) => ['%makepair,:argCode]
+    ['%veclit,:argCode]
   putValue(op,object(code,tar))
   putModeSet(op,[tar])
 

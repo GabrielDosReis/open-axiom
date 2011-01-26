@@ -1343,7 +1343,7 @@ uncons x ==
 bootStrapError(functorForm,sourceFile) ==
   ['COND, _
     ['$bootStrapMode, _
-        ['VECTOR,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
+        ['%veclit,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
     [''T, ['systemError,['%listlit,'"%b",MKQ functorForm.op,'"%d",'"from", _
       '"%b",MKQ namestring sourceFile,'"%d",'"needs to be compiled"]]]]
 

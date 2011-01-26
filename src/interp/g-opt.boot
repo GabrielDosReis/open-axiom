@@ -298,7 +298,7 @@ compileTimeBindingOf u ==
 optMkRecord ["mkRecord",:u] ==
   u is [x] => ['%listlit,x]
   #u=2 => ['%makepair,:u]
-  ["VECTOR",:u]
+  ['%veclit,:u]
  
 optCond (x is ['COND,:l]) ==
   if l is [a,[aa,b]] and aa = '%true and b is ['COND,:c] then
@@ -461,8 +461,8 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['CONS,'LIST,'VECTOR,'STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
-      '%strstc,'%makebitvec,'%makevector,
+    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
+      '%strstc,'%makepair,'%makebitvec,'%makevector,
         "MAKE-FULL-CVEC","BVEC-MAKE-FULL","COND"])
 
 ++ Return true if the `form' is semi-simple with respect to
