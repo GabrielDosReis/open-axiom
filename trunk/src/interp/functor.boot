@@ -233,7 +233,7 @@ NewbFVectorCopy(u,domName) ==
   v
  
 mkVector u ==
-  u => ['VECTOR,:u]
+  u => ['%veclit,:u]
   nil
  
 optFunctorBody x ==
@@ -412,7 +412,7 @@ mkVectorWithDeferral(objects,tag) ==
 -- Basically a mkVector, but spots things that aren't safe to instantiate
 -- and places them at the end of $ConstantAssignments, so that they get
 -- called AFTER the constants of $ have been set up.   JHD 26.July.89
-  ['VECTOR,:
+  ['%veclit,:
    [if CONTAINED('$,u) then -- It's not safe to instantiate this now
       $ConstantAssignments:=[:$ConstantAssignments,
                              ["setShellEntry",
