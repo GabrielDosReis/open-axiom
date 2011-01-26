@@ -247,6 +247,12 @@ expandCollect ['%collect,:iters,body] ==
   -- in reverse order.
   expandLoop ['%loop,:iters,["%init",val,nil],body,["NREVERSE",val]]
 
+expandListlit(x is ['%listlit,:args]) ==
+  args := [expandToVMForm arg for arg in args]
+  args = nil => nil
+  and/[integer? arg or string? arg for arg in args] => quoteForm args
+  ['LIST,:args]
+
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
   ['RETURN_-FROM,$FUNNAME,expandToVMForm y]
@@ -560,7 +566,6 @@ for x in [
     ['%lthird,    :'CADDR],
     ['%pair?,     :'CONSP],
     ['%tail,      :'CDR],
-    ['%listlit,   :'LIST],
     -- binary list operations
     ['%lconcat,   :'APPEND],
 
@@ -593,6 +598,7 @@ for x in [
 
 ++ Table of opcode-expander pairs.  
 for x in [
+   ['%listlit, :function expandListlit],
    ['%collect, :function expandCollect],
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],
@@ -701,7 +707,6 @@ isSharpVarWithNum x ==
 atomic? x ==
   not cons? x or x.op = 'QUOTE
 
-
 --% Sub-domains information handlers
 
 ++ If `dom' is a subdomain, return its immediate super-domain.  
@@ -767,7 +772,7 @@ isSubDomain(d1,d2) ==
 --%
 
 mkList u ==
-  u => ["LIST",:u]
+  u => ['%listlit,:u]
   nil
 
 ELEMN(x, n, d) ==
@@ -1183,11 +1188,11 @@ isLetter c ==
 -- the key function extracts the key from an item for comparison by pred
 
 listSort(pred,list,:optional) ==
-   NOT functionp pred => error "listSort: first arg must be a function"
-   NOT LISTP list => error "listSort: second argument must be a list"
-   null optional => mergeSort(pred,function Identity,list,# list)
+   not functionp pred => error "listSort: first arg must be a function"
+   not LISTP list => error "listSort: second argument must be a list"
+   optional = nil => mergeSort(pred,function Identity,list,# list)
    key := first optional
-   NOT functionp key => error "listSort: last arg must be a function"
+   not functionp key => error "listSort: last arg must be a function"
    mergeSort(pred,key,list,# list)
 
 -- non-destructive merge sort using NOT GGREATERP as predicate
