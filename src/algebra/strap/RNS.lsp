@@ -7,8 +7,8 @@
   (LET ((#0=#:G1381
             (|sublisV|
                 (PAIR '(#1=#:G1377 #2=#:G1378 #3=#:G1379 #4=#:G1380)
-                      (LIST '(|Integer|) '(|Fraction| (|Integer|))
-                            '(|Pattern| (|Float|)) '(|Float|)))
+                      '((|Integer|) (|Fraction| (|Integer|))
+                        (|Pattern| (|Float|)) (|Float|)))
                 (|Join| (|Field|) (|OrderedRing|) (|RealConstant|)
                         (|RetractableTo| '#1#) (|RetractableTo| '#2#)
                         (|RadicalCategory|) (|ConvertibleTo| '#3#)

@@ -60,9 +60,9 @@
                                     (LIST '|Evalable|
                                      (|devaluate| |#1|))))
                               (|HasCategory| |#1|
-                                  (LIST '|CoercibleTo| '(|OutputForm|))))
+                                  '(|CoercibleTo| (|OutputForm|))))
                           (|HasCategory| |#1|
-                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                              '(|ConvertibleTo| (|InputForm|)))
                           (OR (|HasCategory| |#1| '(|OrderedSet|))
                               (|HasCategory| |#1| '(|SetCategory|)))
                           (|HasCategory| |#1| '(|OrderedSet|))
@@ -80,7 +80,7 @@
                                    '(|RadicalCategory|))
                                (|HasCategory| |#1| '(|Ring|)))
                           (|HasCategory| |#1|
-                              (LIST '|CoercibleTo| '(|OutputForm|)))
+                              '(|CoercibleTo| (|OutputForm|)))
                           (|HasCategory| |#1| '(|BasicType|))
                           (AND (|HasCategory| |#1| '(|SetCategory|))
                                (|HasCategory| |#1|

@@ -131,7 +131,7 @@
          ($ (|newShell| 45))
          (|pv$| (|buildPredVector| 0 0
                     (LIST (|HasCategory| |#2|
-                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                              '(|ConvertibleTo| (|InputForm|)))
                           (|HasCategory| |#2| '(|SetCategory|))
                           (|HasAttribute| |#1| '|finiteAggregate|)))))
     (|setShellEntry| $ 0 |dv$|)

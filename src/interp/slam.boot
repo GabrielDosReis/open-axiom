@@ -262,7 +262,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   extraArgumentCode :=
     extraArguments := [x for x in argl | x ~= sharpArg] =>
       extraArguments is [x] => x
-      ['LIST,:extraArguments]
+      ['%listlit,:extraArguments]
     nil
   g:= gensym()
   gIndex:= gensym()

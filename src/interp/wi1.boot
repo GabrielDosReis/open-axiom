@@ -1211,9 +1211,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       for u in $extraParms repeat
         formals:=[first u,:formals]
         actuals:=[MKQ rest u,:actuals]
-      body := ['sublisV,['PAIR,['QUOTE,formals],['LIST,:actuals]],body]
+      body := ['sublisV,['PAIR,['QUOTE,formals],['%listlit,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
-        ['sublisV,['PAIR,['QUOTE,sargl],['LIST,:
+        ['sublisV,['PAIR,['QUOTE,sargl],['%listlit,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ['PROG1,["%LET",g:= gensym(),body],

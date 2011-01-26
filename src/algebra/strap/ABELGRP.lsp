@@ -5,12 +5,12 @@
 
 (DEFUN |AbelianGroup;| ()
   (LET ((#0=#:G1374
-            (|sublisV| (PAIR '(#1=#:G1373) (LIST '(|Integer|)))
-                       (|Join| (|CancellationAbelianMonoid|)
-                               (|LeftLinearSet| '#1#)
-                               (|mkCategory| '|domain|
-                                   '(((- ($ $)) T) ((- ($ $ $)) T)) NIL
-                                   'NIL NIL)))))
+            (|sublisV| (PAIR '(#1=#:G1373) '((|Integer|)))
+                (|Join| (|CancellationAbelianMonoid|)
+                        (|LeftLinearSet| '#1#)
+                        (|mkCategory| '|domain|
+                            '(((- ($ $)) T) ((- ($ $ $)) T)) NIL 'NIL
+                            NIL)))))
     (|setShellEntry| #0# 0 '(|AbelianGroup|))
     #0#)) 
 

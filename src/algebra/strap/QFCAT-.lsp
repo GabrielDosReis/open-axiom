@@ -288,18 +288,18 @@
                           (|HasCategory| |#2| '(|IntegerNumberSystem|))
                           (|HasCategory| |#2| '(|EuclideanDomain|))
                           (|HasCategory| |#2|
-                              (LIST '|RetractableTo| '(|Symbol|)))
+                              '(|RetractableTo| (|Symbol|)))
                           (|HasCategory| |#2|
                               '(|CharacteristicNonZero|))
                           (|HasCategory| |#2| '(|CharacteristicZero|))
                           (|HasCategory| |#2|
-                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                              '(|ConvertibleTo| (|InputForm|)))
                           (|HasCategory| |#2| '(|RealConstant|))
                           (|HasCategory| |#2|
                               '(|OrderedIntegralDomain|))
                           (|HasCategory| |#2| '(|OrderedSet|))
                           (|HasCategory| |#2|
-                              (LIST '|RetractableTo| '(|Integer|)))
+                              '(|RetractableTo| (|Integer|)))
                           (|HasCategory| |#2| '(|StepThrough|))))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)

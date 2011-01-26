@@ -53,7 +53,7 @@
 (DEFUN |IntegralDomain&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IntegralDomain&| |dv$1|)) ($ (|newShell| 23))
-         (|pv$| (|buildPredVector| 0 0 (LIST))))
+         (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

@@ -12,8 +12,8 @@
                       (LIST (|devaluate| |t#1|) (|devaluate| |t#2|)))
                 (|sublisV|
                     (PAIR '(#1=#:G1373)
-                          (LIST '(|Record| (|:| |key| |t#1|)
-                                     (|:| |entry| |t#2|))))
+                          '((|Record| (|:| |key| |t#1|)
+                                (|:| |entry| |t#2|))))
                     (COND
                       (|AssociationListAggregate;CAT|)
                       (T (SETQ |AssociationListAggregate;CAT|

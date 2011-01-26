@@ -639,8 +639,8 @@
 
 (DEFUN |Symbol;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((|dv$| (LIST '|Symbol|)) ($ (|newShell| 165))
-        (|pv$| (|buildPredVector| 0 0 (LIST))))
+  (LET ((|dv$| '(|Symbol|)) ($ (|newShell| 165))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))

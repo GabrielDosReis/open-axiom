@@ -492,7 +492,7 @@ compArgumentsAndTryAgain(form is [.,:argl],m,e) ==
 outputComp(x,e) ==
   u:=comp(['_:_:,x,$OutputForm],$OutputForm,e) => u
   x is ['construct,:argl] =>
-    [['LIST,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],$OutputForm,e]
+    [['%listlit,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],$OutputForm,e]
   (v:= get(x,"value",e)) and (v.mode is ['Union,:l]) =>
     [['coerceUn2E,x,v.mode],$OutputForm,e]
   [x,$OutputForm,e]

@@ -305,7 +305,7 @@
 (DEFUN |IntegerNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IntegerNumberSystem&| |dv$1|))
-         ($ (|newShell| 93)) (|pv$| (|buildPredVector| 0 0 (LIST))))
+         ($ (|newShell| 93)) (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

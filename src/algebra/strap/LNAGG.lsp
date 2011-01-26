@@ -10,8 +10,8 @@
             (|sublisV| (PAIR '(|t#1|) (LIST (|devaluate| |t#1|)))
                 (|sublisV|
                     (PAIR '(#1=#:G1373 #2=#:G1374)
-                          (LIST '(|Integer|)
-                                '(|UniversalSegment| (|Integer|))))
+                          '((|Integer|)
+                            (|UniversalSegment| (|Integer|))))
                     (COND
                       (|LinearAggregate;CAT|)
                       (T (SETQ |LinearAggregate;CAT|
