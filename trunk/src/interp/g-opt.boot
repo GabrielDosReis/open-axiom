@@ -296,7 +296,7 @@ compileTimeBindingOf u ==
   name
  
 optMkRecord ["mkRecord",:u] ==
-  u is [x] => ["LIST",x]
+  u is [x] => ['%listlit,x]
   #u=2 => ['%makepair,:u]
   ["VECTOR",:u]
  
@@ -420,7 +420,7 @@ optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   ['%store,['%vref,name,ind],expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len = 1 => ["LIST",['%head,name]]
+  len = 1 => ['%listlit,['%head,name]]
   len = 2 => ['%makepair,['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
  
@@ -605,8 +605,8 @@ optTry form ==
   form isnt ['try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
   e
 
-optLIST form ==
-  form is ["LIST"] => nil
+optListlit form ==
+  form is ['%listlit] => nil
   form
 
 optCollectVector form ==
@@ -794,7 +794,7 @@ for x in '( (%call         optCall) _
            (%imul        optImul)_
            (%2bit        opt2bit)_
            (%2bool       opt2bool)_
-           (LIST         optLIST)_
+           (%listlit     optListlit)_
            (QSMINUS      optQSMINUS)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_

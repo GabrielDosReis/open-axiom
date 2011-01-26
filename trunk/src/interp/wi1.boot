@@ -689,7 +689,7 @@ compList(l,m is ["List",mUnder],e) ==
   Tl:= [[.,mUnder,e]:=
     comp(x,mUnder,e) or return "failed" for i in 1.. for x in l]
   Tl="failed" => nil
-  T:= [["LIST",:[T.expr for T in Tl]],["List",mUnder],e]
+  T:= [['%listlit,:[T.expr for T in Tl]],["List",mUnder],e]
 
 compVector(l,m is ["Vector",mUnder],e) ==
   markImport m

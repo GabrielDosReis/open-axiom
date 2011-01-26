@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -260,8 +260,8 @@ timedEVALFUN(code) ==
   r
  
 timedEvaluate code ==
-  code is ["LIST",:a] and #a > 200 =>
-    "append"/[eval ["LIST",:x] for x in splitIntoBlocksOf200 a]
+  code is ['%listlit,:a] and #a > 200 =>
+    "append"/[eval ['%listlit,:x] for x in splitIntoBlocksOf200 a]
   eval code
  
 displayHeapStatsIfWanted() ==

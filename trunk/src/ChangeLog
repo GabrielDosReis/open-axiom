@@ -1,3 +1,21 @@
+2011-01-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compForm1): Use %listlit form.
+	(compExpressionList): Likewise.
+	(compCons1): Likewise.
+	(compList): Likewise.
+	(compVector): Likewise.
+	* interp/g-timer.boot (timedEvaluate): Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/i-object.boot: Likewise.
+	* interp/g-opt.boot (optMkRecord): Likewise.
+	(optRECORDCOPY): Likewise.
+	(optLIST): Remove.
+	(optListlit): New.
+	* interp/g-util.boot (optListlit): New.  Expand %listlit forms.
+
 2011-01-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optMkRecord): Generate %makepair forms.

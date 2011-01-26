@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -525,7 +525,7 @@ compForm1(form is [op,:argl],m,e) ==
 compExpressionList(argl,m,e) ==
   Tl:= [[.,.,e]:= comp(x,$Expression,e) or return "failed" for x in argl]
   Tl="failed" => nil
-  convert([["LIST",:[y.expr for y in Tl]],$Expression,e],m)
+  convert([['%listlit,:[y.expr for y in Tl]],$Expression,e],m)
 
 compForm2(form is [op,:argl],m,e,modemapList) ==
   sargl:= TAKE(# argl, $TriangleVariableList)
@@ -769,14 +769,14 @@ compCons(form,m,e) == compCons1(form,m,e) or compForm(form,m,e)
 
 compCons1(["CONS",x,y],m,e) ==
   [x,mx,e]:= comp(x,$EmptyMode,e) or return nil
-  null y => convert([["LIST",x],["List",mx],e],m)
+  null y => convert([['%listlit,x],["List",mx],e],m)
   yt:= [y,my,e]:= comp(y,$EmptyMode,e) or return nil
   T:=
     my is ["List",m',:.] =>
       mr:= ["List",resolve(m',mx) or return nil]
       yt':= convert(yt,mr) or return nil
       [x,.,e]:= convert([x,mx,yt'.env],second mr) or return nil
-      yt'.expr is ["LIST",:.] => [["LIST",x,:rest yt'.expr],mr,e]
+      yt'.expr is ['%listlit,:.] => [['%listlit,x,:rest yt'.expr],mr,e]
       [["CONS",x,yt'.expr],mr,e]
     [["CONS",x,y],["Pair",mx,my],e]
   convert(T,m)
@@ -982,14 +982,14 @@ compList(l,m is ["List",mUnder],e) ==
   null l => [NIL,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
-  T:= [["LIST",:[T.expr for T in Tl]],["List",mUnder],e]
+  T:= [['%listlit,:[T.expr for T in Tl]],["List",mUnder],e]
 
 compVector: (%Form,%Mode,%Env) -> %Maybe %Triple
 compVector(l,m is ["Vector",mUnder],e) ==
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
   [["MAKE-ARRAY", #Tl, KEYWORD::ELEMENT_-TYPE, quoteForm getVMType mUnder,
-     KEYWORD::INITIAL_-CONTENTS, ["LIST", :[T.expr for T in Tl]]],m,e]
+     KEYWORD::INITIAL_-CONTENTS, ['%listlit, :[T.expr for T in Tl]]],m,e]
 
 --% MACROS
 

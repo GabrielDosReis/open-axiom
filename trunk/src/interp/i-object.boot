@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -145,7 +145,7 @@ asTupleNew0(eltType,listOfElts) ==
   [#listOfElts,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNewCode(eltType, size, listOfElts) == 
-  ["asTupleNew", quoteForm getVMType eltType, size, ["LIST", :listOfElts]]
+  ["asTupleNew", quoteForm getVMType eltType, size, ['%listlit, :listOfElts]]
 
 asTupleNewCode0(eltType,listForm) == 
   ["asTupleNew0", quoteForm getVMType eltType, listForm]
