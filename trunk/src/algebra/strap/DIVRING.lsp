@@ -5,13 +5,12 @@
 
 (DEFUN |DivisionRing;| ()
   (LET ((#0=#:G1375
-            (|sublisV|
-                (PAIR '(#1=#:G1374) (LIST '(|Fraction| (|Integer|))))
-                (|Join| (|EntireRing|) (|Algebra| '#1#)
-                        (|mkCategory| '|domain|
-                            '(((** ($ $ (|Integer|))) T)
-                              ((|inv| ($ $)) T))
-                            NIL '((|Integer|)) NIL)))))
+            (|sublisV| (PAIR '(#1=#:G1374) '((|Fraction| (|Integer|))))
+                       (|Join| (|EntireRing|) (|Algebra| '#1#)
+                               (|mkCategory| '|domain|
+                                   '(((** ($ $ (|Integer|))) T)
+                                     ((|inv| ($ $)) T))
+                                   NIL '((|Integer|)) NIL)))))
     (|setShellEntry| #0# 0 '(|DivisionRing|))
     #0#)) 
 

@@ -524,8 +524,8 @@
 
 (DEFUN |SingleInteger;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((|dv$| (LIST '|SingleInteger|)) ($ (|newShell| 114))
-        (|pv$| (|buildPredVector| 0 0 (LIST))))
+  (LET ((|dv$| '(|SingleInteger|)) ($ (|newShell| 114))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|SingleInteger| NIL (CONS 1 $))

@@ -513,8 +513,8 @@
 
 (DEFUN |Integer;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((|dv$| (LIST '|Integer|)) ($ (|newShell| 140))
-        (|pv$| (|buildPredVector| 0 0 (LIST))))
+  (LET ((|dv$| '(|Integer|)) ($ (|newShell| 140))
+        (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))

@@ -497,12 +497,12 @@ formatJoinKey(r,key) ==
   key = 'mkCategory =>
     r is [opPart,catPart,:.] =>
       opString :=
-        opPart is ['LIST,:u] =>
+        opPart is ['%listlit,:u] =>
           "append"/[concat("%l",formatOpSignature(op,sig),formatIf pred)
             for ['QUOTE,[[op,sig],pred]] in u]
         nil
       catString :=
-        catPart is ['LIST,:u] =>
+        catPart is ['%listlit,:u] =>
           "append"/[concat("%l",'" ",form2StringLocal con,formatIf pred)
             for ['QUOTE,[con,pred]] in u]
         nil
@@ -689,7 +689,7 @@ formatIf pred ==
 
 formatPredParts s ==
   s is ['QUOTE,s1] => formatPredParts s1
-  s is ['LIST,:s1] => [formatPredParts s2 for s2 in s1]
+  s is ['%listlit,:s1] => [formatPredParts s2 for s2 in s1]
   s is ['devaluate,s1] => formatPredParts s1
   s is ['getDomainView,s1,.] => formatPredParts s1
   s is ['SUBST,a,b,c] =>    -- this is a signature

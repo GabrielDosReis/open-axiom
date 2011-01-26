@@ -165,8 +165,8 @@ mkDevaluate a ==
   null a => nil
   a is ['QUOTE,a'] => (a' => a; nil)
   a='$ => MKQ '$
-  a is ['LIST] => nil
-  a is ['LIST,:.] => a
+  a is ['%listlit] => nil
+  a is ['%listlit,:.] => a
   ['devaluate,a]
  
 getDomainView(domain,catform) ==
@@ -187,7 +187,7 @@ getPrincipalView domain ==
  
 CategoriesFromGDC x ==
   atom x => nil
-  x is ['LIST,a,:b] and a is ['QUOTE,a'] =>
+  x is ['%listlit,a,:b] and a is ['QUOTE,a'] =>
     union(LIST LIST a',"union"/[CategoriesFromGDC u for u in b])
   x is ['QUOTE,a] and a is [b] => [a]
  
@@ -241,13 +241,13 @@ optFunctorBody x ==
   x is ['QUOTE,:l] => x
   x is ['DomainSubstitutionMacro,parms,body] =>
     optFunctorBody DomainSubstitutionFunction(parms,body)
-  x is ['LIST,:l] =>
+  x is ['%listlit,:l] =>
     null l => nil
     l:= [optFunctorBody u for u in l]
     and/[optFunctorBodyQuotable u for u in l] =>
       ['QUOTE,[optFunctorBodyRequote u for u in l]]
     l=rest x => x --CONS-saving hack
-    ['LIST,:l]
+    ['%listlit,:l]
   x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]
   x is ['COND,:l] =>
     l:=
@@ -290,7 +290,7 @@ optFunctorPROGN l ==
 worthlessCode x ==
   x is ['COND,:l] and (and/[x is [.,y] and worthlessCode y for x in l]) => true
   x is ['PROGN,:l] => (null (l':= optFunctorPROGN l) => true; false)
-  x is ['LIST] => true
+  x is ['%listlit] => true
   null x => true
   false
  
@@ -323,7 +323,7 @@ setVector12 args ==
   freeof($domainShell.1,args1) and
       freeof($domainShell.2,args1) and
           freeof($domainShell.4,args1) => nil  
-  [['SetDomainSlots124,'$,['QUOTE,args1],['LIST,:args2]]]
+  [['SetDomainSlots124,'$,['QUOTE,args1],['%listlit,:args2]]]
  where freeof(a,b) ==
          atom a => null MEMQ(a,b)
          freeof(first a,b) => freeof(rest a,b)
@@ -379,20 +379,20 @@ mkDomainFormer x ==
 mkTypeForm x ==
   atom x => mkDevaluate x
   x is ['Join] => nil
-  x is ['LIST] => nil
+  x is ['%listlit] => nil
   x is ['CATEGORY,:.] => MKQ x
   x is ['mkCategory,:.] => MKQ x
   x is ['_:,selector,dom] =>
-    ['LIST,MKQ '_:,MKQ selector,mkTypeForm dom]
+    ['%listlit,MKQ '_:,MKQ selector,mkTypeForm dom]
   x is ['Record,:argl] =>
-    ['LIST,MKQ 'Record,:[mkTypeForm y for y in argl]]
+    ['%listlit,MKQ 'Record,:[mkTypeForm y for y in argl]]
   x is ['Join,:argl] =>
-    ['LIST,MKQ 'Join,:[mkTypeForm y for y in argl]]
+    ['%listlit,MKQ 'Join,:[mkTypeForm y for y in argl]]
   x is ['%call,:argl] => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD
   x is [op] => MKQ x
-  x is [op,:argl] => ['LIST,MKQ op,:[mkTypeForm a for a in argl]]
+  x is [op,:argl] => ['%listlit,MKQ op,:[mkTypeForm a for a in argl]]
  
 PrepareConditional u == u
  
@@ -558,9 +558,9 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
-  code is ['_:,:.] => (code.first := 'LIST; code.rest := NIL)
+  code is ['_:,:.] => (code.first := '%listlit; code.rest := NIL)
       --Yes, I know that's a hack, but how else do you kill a line?
-  code is ['LIST,:.] => nil
+  code is ['%listlit,:.] => nil
   code is ['devaluate,:.] => nil
   code is ['MDEF,:.] => nil
   code is ['%call,:.] => code

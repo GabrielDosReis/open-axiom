@@ -5,7 +5,7 @@
 
 (DEFUN |Ring;| ()
   (LET ((#0=#:G1373
-            (|sublisV| (PAIR '(#1=#:G1372) (LIST '(|Integer|)))
+            (|sublisV| (PAIR '(#1=#:G1372) '((|Integer|)))
                 (|Join| (|Rng|) (|Monoid|) (|LeftModule| '$)
                         (|CoercibleFrom| '#1#)
                         (|mkCategory| '|package|

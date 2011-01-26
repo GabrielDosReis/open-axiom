@@ -1103,29 +1103,27 @@
                           (|HasCategory| |#2| '(|GcdDomain|))
                           (|HasCategory| |#2| '(|CommutativeRing|))
                           (|HasCategory| |#4|
-                              (LIST '|PatternMatchable| '(|Float|)))
+                              '(|PatternMatchable| (|Float|)))
                           (|HasCategory| |#2|
-                              (LIST '|PatternMatchable| '(|Float|)))
+                              '(|PatternMatchable| (|Float|)))
                           (|HasCategory| |#4|
-                              (LIST '|PatternMatchable| '(|Integer|)))
+                              '(|PatternMatchable| (|Integer|)))
                           (|HasCategory| |#2|
-                              (LIST '|PatternMatchable| '(|Integer|)))
+                              '(|PatternMatchable| (|Integer|)))
                           (|HasCategory| |#4|
-                              (LIST '|ConvertibleTo|
-                                    (LIST '|Pattern| '(|Float|))))
+                              '(|ConvertibleTo| (|Pattern| (|Float|))))
                           (|HasCategory| |#2|
-                              (LIST '|ConvertibleTo|
-                                    (LIST '|Pattern| '(|Float|))))
+                              '(|ConvertibleTo| (|Pattern| (|Float|))))
                           (|HasCategory| |#4|
-                              (LIST '|ConvertibleTo|
-                                    (LIST '|Pattern| '(|Integer|))))
+                              '(|ConvertibleTo|
+                                   (|Pattern| (|Integer|))))
                           (|HasCategory| |#2|
-                              (LIST '|ConvertibleTo|
-                                    (LIST '|Pattern| '(|Integer|))))
+                              '(|ConvertibleTo|
+                                   (|Pattern| (|Integer|))))
                           (|HasCategory| |#4|
-                              (LIST '|ConvertibleTo| '(|InputForm|)))
+                              '(|ConvertibleTo| (|InputForm|)))
                           (|HasCategory| |#2|
-                              (LIST '|ConvertibleTo| '(|InputForm|)))))))
+                              '(|ConvertibleTo| (|InputForm|)))))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

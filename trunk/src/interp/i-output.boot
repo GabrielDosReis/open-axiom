@@ -517,7 +517,7 @@ outputTran x ==
   x is ['matrix,['construct,c]] and
     c is ['COLLECT,:m,d] and d is ['construct,e] and e is ['COLLECT,:.] =>
       outputTran ['COLLECT,:m,e]
-  x is ['LIST,:l] => outputTran ['BRACKET,['AGGLST,:l]]
+  x is ['%listlit,:l] => outputTran ['BRACKET,['AGGLST,:l]]
   x is ["%Map",:l] => outputMapTran l
   x is ['brace, :l]    =>
     ['BRACE,  ['AGGLST,:[outputTran y for y in l]]]

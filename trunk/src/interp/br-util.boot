@@ -178,7 +178,7 @@ htPred2English(x,:options) ==
 
 unMkEvalable u ==
  u is ['QUOTE,a] => a
- u is ['LIST,:r] => [unMkEvalable x for x in r]
+ u is ['%listlit,:r] => [unMkEvalable x for x in r]
  u
 
 lisp2HT u == ['"_'",:fn u] where fn u ==

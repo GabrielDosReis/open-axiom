@@ -529,7 +529,7 @@
 (DEFUN |FiniteFieldCategory&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|FiniteFieldCategory&| |dv$1|))
-         ($ (|newShell| 115)) (|pv$| (|buildPredVector| 0 0 (LIST))))
+         ($ (|newShell| 115)) (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

@@ -8,9 +8,9 @@
             (|sublisV|
                 (PAIR '(#1=#:G1383 #2=#:G1384 #3=#:G1385 #4=#:G1386
                            #5=#:G1387 #6=#:G1388)
-                      (LIST '(|Integer|) '(|Integer|) '(|Integer|)
-                            '(|InputForm|) '(|Pattern| (|Integer|))
-                            '(|Integer|)))
+                      '((|Integer|) (|Integer|) (|Integer|)
+                        (|InputForm|) (|Pattern| (|Integer|))
+                        (|Integer|)))
                 (|Join| (|UniqueFactorizationDomain|)
                         (|EuclideanDomain|) (|OrderedIntegralDomain|)
                         (|DifferentialRing|) (|ConvertibleTo| '#1#)

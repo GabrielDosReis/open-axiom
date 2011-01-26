@@ -266,7 +266,7 @@ makePredicateBitVector pl ==   --called by buildFunctor
   [$lisplibPredicates,firstCode,:lastCode]  --$pairlis set by compDefineFunctor1
 
 augmentPredCode(n,lastPl) ==
-  ['LIST,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
+  ['%listlit,:pl] := mungeAddGensyms(lastPl,$predGensymAlist)
   delta := 2 ** n
   l := [(u := MKPF([x,['augmentPredVector,"$",delta]],'AND); 
          delta:=2 * delta; u) for x in pl]
@@ -308,7 +308,7 @@ transHasCode x ==
   [transHasCode y for y in x]
  
 mungeAddGensyms(u,gal) ==
-  ['LIST,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
+  ['%listlit,:[fn(x,gal,0) for x in u]] where fn(x,gal,n) ==
     atom x => x
     g := LASSOC(x,gal) =>
       n = 0 => ["%LET",g,x]

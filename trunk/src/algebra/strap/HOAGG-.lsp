@@ -153,7 +153,7 @@
                           (|HasCategory| |#2| '(|SetCategory|))
                           (|HasCategory| |#2| '(|BasicType|))
                           (|HasCategory| |#2|
-                              (LIST '|CoercibleTo| '(|OutputForm|)))))))
+                              '(|CoercibleTo| (|OutputForm|)))))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

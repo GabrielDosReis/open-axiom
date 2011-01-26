@@ -606,7 +606,7 @@ optTry form ==
   e
 
 optListlit form ==
-  form is ['%listlit] => nil
+  form is ['%listlit] => '%nil
   form
 
 optCollectVector form ==

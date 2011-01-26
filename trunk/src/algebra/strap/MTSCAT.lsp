@@ -11,8 +11,7 @@
                 (PAIR '(|t#1| |t#2|)
                       (LIST (|devaluate| |t#1|) (|devaluate| |t#2|)))
                 (|sublisV|
-                    (PAIR '(#1=#:G1373)
-                          (LIST '(|IndexedExponents| |t#2|)))
+                    (PAIR '(#1=#:G1373) '((|IndexedExponents| |t#2|)))
                     (COND
                       (|MultivariateTaylorSeriesCategory;CAT|)
                       (T (SETQ |MultivariateTaylorSeriesCategory;CAT|

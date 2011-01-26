@@ -123,7 +123,7 @@
 (DEFUN |RealNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|RealNumberSystem&| |dv$1|)) ($ (|newShell| 58))
-         (|pv$| (|buildPredVector| 0 0 (LIST))))
+         (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)
