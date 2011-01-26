@@ -30,7 +30,7 @@
 
 (DEFUN |Monoid&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Monoid&| |dv$1|))
-         ($ (|newShell| 21)) (|pv$| (|buildPredVector| 0 0 NIL)))
+         ($ (|newShell| 21)) (|pv$| (|buildPredVector| 0 0 (LIST))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

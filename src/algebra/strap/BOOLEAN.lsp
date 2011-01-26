@@ -164,7 +164,7 @@
 (DEFUN |Boolean;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Boolean|)) ($ (|newShell| 39))
-        (|pv$| (|buildPredVector| 0 0 NIL)))
+        (|pv$| (|buildPredVector| 0 0 (LIST))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Boolean| NIL (CONS 1 $))

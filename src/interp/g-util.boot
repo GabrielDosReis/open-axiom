@@ -250,8 +250,13 @@ expandCollect ['%collect,:iters,body] ==
 expandListlit(x is ['%listlit,:args]) ==
   args := [expandToVMForm arg for arg in args]
   args = nil => nil
-  and/[integer? arg or string? arg for arg in args] => quoteForm args
-  ['LIST,:args]
+  args' := [simpleValue? arg or leave 'failed for arg in args]
+     where simpleValue? arg ==
+             integer? arg or string? arg => arg
+             arg is ['QUOTE,form] => form
+             nil
+  args' = 'failed => ['LIST,:args]
+  quoteForm args'
 
 expandReturn(x is ['%return,.,y]) ==
   $FUNNAME = nil => systemErrorHere ['expandReturn,x]
