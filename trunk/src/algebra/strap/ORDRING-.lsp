@@ -37,7 +37,7 @@
 (DEFUN |OrderedRing&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|OrderedRing&| |dv$1|)) ($ (|newShell| 24))
-         (|pv$| (|buildPredVector| 0 0 NIL)))
+         (|pv$| (|buildPredVector| 0 0 (LIST))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)

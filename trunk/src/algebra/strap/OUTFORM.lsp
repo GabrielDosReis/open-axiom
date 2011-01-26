@@ -562,7 +562,7 @@
   (|mathprint| |x|)) 
 
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
-  (COND ((ZEROP (LENGTH |s|)) (LIST 'NOTHING)) (T |s|))) 
+  (COND ((ZEROP (LENGTH |s|)) '(NOTHING)) (T |s|))) 
 
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
   (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 
@@ -637,16 +637,15 @@
     ((PLUSP |n|)
      (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
          $))
-    (T (LIST 'NOTHING)))) 
+    (T '(NOTHING)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
-  (COND ((PLUSP |n|) (|fillerSpaces| |n|)) (T (LIST 'NOTHING)))) 
+  (COND ((PLUSP |n|) (|fillerSpaces| |n|)) (T '(NOTHING)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
   (SEQ (COND
-         ((PLUSP |n|)
-          (COND ((NOT (PLUSP |m|)) (EXIT (LIST 'NOTHING)))))
-         (T (EXIT (LIST 'NOTHING))))
+         ((PLUSP |n|) (COND ((NOT (PLUSP |m|)) (EXIT '(NOTHING)))))
+         (T (EXIT '(NOTHING))))
        (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
@@ -733,7 +732,7 @@
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
          ((ODDP (LIST-LENGTH |l|))
-          (SETQ |l| (APPEND |l| (LIST (LIST 'NOTHING))))))
+          (SETQ |l| (APPEND |l| '((NOTHING))))))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;hconcat;3$;48| (|a| |b| $)
@@ -834,7 +833,7 @@
   (DECLARE (IGNORE $))
   (LIST 'BINOMIAL |a| |b|)) 
 
-(DEFUN |OUTFORM;empty;$;73| ($) (DECLARE (IGNORE $)) (LIST 'NOTHING)) 
+(DEFUN |OUTFORM;empty;$;73| ($) (DECLARE (IGNORE $)) '(NOTHING)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
   (LET ((|e| (COND
@@ -855,7 +854,7 @@
 
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
-    ((NULL |l|) (LIST 'NOTHING))
+    ((NULL |l|) '(NOTHING))
     ((NULL (CDR |l|)) (SPADCALL |l| (|getShellEntry| $ 78)))
     ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
     (T (|OUTFORM;hconcat;L$;49|
@@ -961,7 +960,7 @@
 
 (DEFUN |OUTFORM;sum;2$;98| (|a| $)
   (DECLARE (IGNORE $))
-  (LIST 'SIGMA (LIST 'NOTHING) |a|)) 
+  (LIST 'SIGMA '(NOTHING) |a|)) 
 
 (DEFUN |OUTFORM;sum;3$;99| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -973,7 +972,7 @@
 
 (DEFUN |OUTFORM;prod;2$;101| (|a| $)
   (DECLARE (IGNORE $))
-  (LIST 'PI (LIST 'NOTHING) |a|)) 
+  (LIST 'PI '(NOTHING) |a|)) 
 
 (DEFUN |OUTFORM;prod;3$;102| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -985,11 +984,11 @@
 
 (DEFUN |OUTFORM;int;2$;104| (|a| $)
   (DECLARE (IGNORE $))
-  (LIST 'INTSIGN (LIST 'NOTHING) (LIST 'NOTHING) |a|)) 
+  (LIST 'INTSIGN '(NOTHING) '(NOTHING) |a|)) 
 
 (DEFUN |OUTFORM;int;3$;105| (|a| |b| $)
   (DECLARE (IGNORE $))
-  (LIST 'INTSIGN |b| (LIST 'NOTHING) |a|)) 
+  (LIST 'INTSIGN |b| '(NOTHING) |a|)) 
 
 (DEFUN |OUTFORM;int;4$;106| (|a| |b| |c| $)
   (DECLARE (IGNORE $))
@@ -1013,7 +1012,7 @@
 (DEFUN |OutputForm;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|OutputForm|)) ($ (|newShell| 150))
-        (|pv$| (|buildPredVector| 0 0 NIL)))
+        (|pv$| (|buildPredVector| 0 0 (LIST))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|OutputForm| NIL (CONS 1 $))

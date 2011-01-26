@@ -516,7 +516,7 @@
       (SEQ (COND
              ((NOT (|SYMBOL;scripted?;$B;30| |sy| $))
               (VECTOR NIL NIL NIL NIL NIL))
-             (T (SEQ (LETT |nscripts| (LIST 0 0 0 0 0)
+             (T (SEQ (LETT |nscripts| '(0 0 0 0 0)
                            |SYMBOL;scripts;$R;32|)
                      (LETT |lscripts| (LIST NIL NIL NIL NIL NIL)
                            |SYMBOL;scripts;$R;32|)
@@ -640,7 +640,7 @@
 (DEFUN |Symbol;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| (LIST '|Symbol|)) ($ (|newShell| 165))
-        (|pv$| (|buildPredVector| 0 0 NIL)))
+        (|pv$| (|buildPredVector| 0 0 (LIST))))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|haddProp| |$ConstructorCache| '|Symbol| NIL (CONS 1 $))
@@ -648,7 +648,7 @@
     (|setShellEntry| $ 10 (SPADCALL 0 (|getShellEntry| $ 9)))
     (|setShellEntry| $ 13 (SPADCALL (|getShellEntry| $ 12)))
     (|setShellEntry| $ 18
-        (SPADCALL (LIST "0" "1" "2" "3" "4" "5" "6" "7" "8" "9")
+        (SPADCALL '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9")
             (|getShellEntry| $ 17)))
     (|setShellEntry| $ 19 "0123456789")
     (|setShellEntry| $ 20 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
