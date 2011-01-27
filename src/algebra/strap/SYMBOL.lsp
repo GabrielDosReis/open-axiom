@@ -208,7 +208,7 @@
               (RETURN NIL))
              (T (SETQ |ns| (CDR |ns|)))))
          (EXIT (SPADCALL
-                   (CONS (STRCONC (|getShellEntry| $ 38)
+                   (CONS (STRCONC (SVREF $ 38)
                                   (|SYMBOL;istring|
                                       (LIST-LENGTH (SVREF |sc| 4)) $))
                          (LET ((#0=#:G1524 (NREVERSE |ns|))
@@ -409,13 +409,10 @@
 
 (DEFUN |SYMBOL;new;$;27| ($)
   (LET ((|sym| (|SYMBOL;anyRadix|
-                   (SPADCALL (|getShellEntry| $ 10)
-                       (|getShellEntry| $ 120))
-                   (|getShellEntry| $ 20) $)))
-    (SEQ (SPADCALL (|getShellEntry| $ 10)
-             (+ (SPADCALL (|getShellEntry| $ 10)
-                    (|getShellEntry| $ 120))
-                1)
+                   (SPADCALL (SVREF $ 10) (|getShellEntry| $ 120))
+                   (SVREF $ 20) $)))
+    (SEQ (SPADCALL (SVREF $ 10)
+             (+ (SPADCALL (SVREF $ 10) (|getShellEntry| $ 120)) 1)
              (|getShellEntry| $ 121))
          (EXIT (|SYMBOL;coerce;S$;8| (STRCONC "%" |sym|) $))))) 
 
@@ -424,15 +421,14 @@
     (RETURN
       (SEQ (LETT |n|
                  (SEQ (LETT |u|
-                            (SPADCALL |x| (|getShellEntry| $ 13)
+                            (SPADCALL |x| (SVREF $ 13)
                                 (|getShellEntry| $ 124))
                             |SYMBOL;new;2$;28|)
                       (EXIT (COND
                               ((EQL (CAR |u|) 1) 0)
                               (T (+ (CDR |u|) 1)))))
                  |SYMBOL;new;2$;28|)
-           (SPADCALL (|getShellEntry| $ 13) |x| |n|
-               (|getShellEntry| $ 127))
+           (SPADCALL (SVREF $ 13) |x| |n| (|getShellEntry| $ 127))
            (LETT |xx|
                  (COND
                    ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
@@ -448,16 +444,13 @@
                                     (SPADCALL |xx|
                                      (|getShellEntry| $ 128))
                                     (|getShellEntry| $ 106))
-                                (|getShellEntry| $ 19)
-                                (|getShellEntry| $ 129))
-                            (SPADCALL (|getShellEntry| $ 19)
+                                (SVREF $ 19) (|getShellEntry| $ 129))
+                            (SPADCALL (SVREF $ 19)
                                 (|getShellEntry| $ 117))))
                     (STRCONC |xx|
-                             (|SYMBOL;anyRadix| |n|
-                                 (|getShellEntry| $ 21) $)))
+                             (|SYMBOL;anyRadix| |n| (SVREF $ 21) $)))
                    (T (STRCONC |xx|
-                               (|SYMBOL;anyRadix| |n|
-                                   (|getShellEntry| $ 19) $)))))
+                               (|SYMBOL;anyRadix| |n| (SVREF $ 19) $)))))
            (COND
              ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
               (EXIT (|SYMBOL;coerce;S$;8| |xx| $))))
@@ -465,15 +458,14 @@
                      (|SYMBOL;scripts;$R;32| |x| $) $)))))) 
 
 (DEFUN |SYMBOL;resetNew;V;29| ($)
-  (SEQ (SPADCALL (|getShellEntry| $ 10) 0 (|getShellEntry| $ 121))
+  (SEQ (SPADCALL (SVREF $ 10) 0 (|getShellEntry| $ 121))
        (EXIT (LET ((#0=#:G1525
-                       (SPADCALL (|getShellEntry| $ 13)
-                           (|getShellEntry| $ 133))))
+                       (SPADCALL (SVREF $ 13) (|getShellEntry| $ 133))))
                (LOOP
                  (COND
                    ((ATOM #0#) (RETURN NIL))
                    (T (LET ((|k| (CAR #0#)))
-                        (SPADCALL |k| (|getShellEntry| $ 13)
+                        (SPADCALL |k| (SVREF $ 13)
                             (|getShellEntry| $ 134)))))
                  (SETQ #0# (CDR #0#))))))) 
 
@@ -490,7 +482,7 @@
                                    (|getShellEntry| $ 137))
                                $)
                            |SYMBOL;name;2$;31|)
-                     (LET ((|i| (+ (|getShellEntry| $ 41) 1))
+                     (LET ((|i| (+ (SVREF $ 41) 1))
                            (#0=#:G1526 (LENGTH |str|)))
                        (LOOP
                          (COND
@@ -532,8 +524,7 @@
                            (SPADCALL |nscripts|
                                (|getShellEntry| $ 144))
                            |SYMBOL;scripts;$R;32|)
-                     (LET ((|i| |m|)
-                           (|j| (+ (|getShellEntry| $ 41) 1)))
+                     (LET ((|i| |m|) (|j| (+ (SVREF $ 41) 1)))
                        (LOOP
                          (COND
                            ((OR (> |j| |nstr|)
@@ -549,7 +540,7 @@
                                            (SPADCALL |str| |j|
                                             (|getShellEntry| $ 106))
                                            (|getShellEntry| $ 44))
-                                          (|getShellEntry| $ 45))))
+                                          (SVREF $ 45))))
                                     (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                   (|getShellEntry| $ 148))))
@@ -614,7 +605,7 @@
 (DEFUN |SYMBOL;istring| (|n| $)
   (COND
     ((< 9 |n|) (|error| "Can have at most 9 scripts of each kind"))
-    (T (|getSimpleArrayEntry| (|getShellEntry| $ 18) |n|)))) 
+    (T (|getSimpleArrayEntry| (SVREF $ 18) |n|)))) 
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
@@ -654,7 +645,7 @@
     (|setShellEntry| $ 20 "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     (|setShellEntry| $ 21 "abcdefghijklmnopqrstuvwxyz")
     (|setShellEntry| $ 38 "*")
-    (|setShellEntry| $ 41 (LENGTH (|getShellEntry| $ 38)))
+    (|setShellEntry| $ 41 (LENGTH (SVREF $ 38)))
     (|setShellEntry| $ 45
         (SPADCALL (SPADCALL "0" (|getShellEntry| $ 43))
             (|getShellEntry| $ 44)))

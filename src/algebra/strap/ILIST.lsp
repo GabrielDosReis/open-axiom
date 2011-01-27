@@ -181,7 +181,7 @@
   (DECLARE (IGNORE $))
   (REVERSE |x|)) 
 
-(DEFUN |ILIST;minIndex;$I;18| (|x| $) (|getShellEntry| $ 7)) 
+(DEFUN |ILIST;minIndex;$I;18| (|x| $) (SVREF $ 7)) 
 
 (DEFUN |ILIST;rest;$Nni$;19| (|x| |n| $)
   (SEQ (LET ((|i| 1))

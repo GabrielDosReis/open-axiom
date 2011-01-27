@@ -306,8 +306,7 @@
 
 (DEFUN |POLYCAT-;retract;SVarSet;9| (|p| $)
   (LET ((|q| (LET ((#0=#:G1453 (SPADCALL |p| (|getShellEntry| $ 53))))
-               (|check-union| (ZEROP (CAR #0#)) (|getShellEntry| $ 9)
-                   #0#)
+               (|check-union| (ZEROP (CAR #0#)) (SVREF $ 9) #0#)
                (CDR #0#))))
     (COND
       ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 72)) |p|
@@ -360,7 +359,7 @@
                                       (SPADCALL |p|
                                        (|getShellEntry| $ 53))))
                                  (|check-union| (ZEROP (CAR #0#))
-                                     (|getShellEntry| $ 9) #0#)
+                                     (SVREF $ 9) #0#)
                                  (CDR #0#))
                                (|getShellEntry| $ 59))
                            |POLYCAT-;totalDegree;SNni;13|)
@@ -397,7 +396,7 @@
                                         (SPADCALL |p|
                                          (|getShellEntry| $ 53))))
                                        (|check-union| (ZEROP (CAR #0#))
-                                        (|getShellEntry| $ 9) #0#)
+                                        (SVREF $ 9) #0#)
                                        (CDR #0#))
                                      |POLYCAT-;totalDegree;SLNni;14|)
                                (|getShellEntry| $ 59))
@@ -1041,8 +1040,7 @@
                        (SPADCALL |p|
                            (SPADCALL |p| (|getShellEntry| $ 206))
                            (|getShellEntry| $ 207))))
-               (|check-union| (ZEROP (CAR #0#)) (|getShellEntry| $ 6)
-                   #0#)
+               (|check-union| (ZEROP (CAR #0#)) (SVREF $ 6) #0#)
                (CDR #0#))
              (|getShellEntry| $ 209))
          1)) 
@@ -1053,8 +1051,7 @@
                        (SPADCALL |p|
                            (SPADCALL |p| |v| (|getShellEntry| $ 211))
                            (|getShellEntry| $ 212))))
-               (|check-union| (ZEROP (CAR #0#)) (|getShellEntry| $ 6)
-                   #0#)
+               (|check-union| (ZEROP (CAR #0#)) (SVREF $ 6) #0#)
                (CDR #0#))
              (|getShellEntry| $ 209))
          1)) 
