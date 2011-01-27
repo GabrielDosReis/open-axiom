@@ -499,8 +499,8 @@
 
 (DEFUN |SINT;random;$;60| ($)
   (SEQ (|setShellEntry| $ 6
-           (REM (TIMES 314159269 (|getShellEntry| $ 6)) 2147483647))
-       (EXIT (REM (|getShellEntry| $ 6) 67108864)))) 
+           (REM (TIMES 314159269 (SVREF $ 6)) 2147483647))
+       (EXIT (REM (SVREF $ 6) 67108864)))) 
 
 (DEFUN |SINT;random;2$;61| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 
 

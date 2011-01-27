@@ -60,7 +60,7 @@
                                       (|getShellEntry| $ 27))))
                              (|check-union| (ZEROP (CAR #0#))
                                  (|SparseUnivariatePolynomial|
-                                     (|getShellEntry| $ 6))
+                                     (SVREF $ 6))
                                  #0#)
                              (CDR #0#)))
                      (SETQ |p2|
@@ -68,7 +68,7 @@
                                        (|getShellEntry| $ 27))))
                              (|check-union| (ZEROP (CAR #0#))
                                  (|SparseUnivariatePolynomial|
-                                     (|getShellEntry| $ 6))
+                                     (SVREF $ 6))
                                  #0#)
                              (CDR #0#)))
                      (SEQ (LETT |e1|
@@ -85,7 +85,7 @@
                                         (|getShellEntry| $ 35))))
                                       (|check-union| (ZEROP (CAR #0#))
                                        (|SparseUnivariatePolynomial|
-                                        (|getShellEntry| $ 6))
+                                        (SVREF $ 6))
                                        #0#)
                                       (CDR #0#)))))))
                      (SEQ (LETT |e2|
@@ -102,7 +102,7 @@
                                         (|getShellEntry| $ 35))))
                                       (|check-union| (ZEROP (CAR #0#))
                                        (|SparseUnivariatePolynomial|
-                                        (|getShellEntry| $ 6))
+                                        (SVREF $ 6))
                                        #0#)
                                       (CDR #0#)))))))
                      (LETT |e1| (MIN |e1| |e2|)
@@ -154,7 +154,7 @@
                                                 (|check-union|
                                                  (ZEROP (CAR #0#))
                                                  (|SparseUnivariatePolynomial|
-                                                  (|getShellEntry| $ 6))
+                                                  (SVREF $ 6))
                                                  #0#)
                                                 (CDR #0#))
                                               (|getShellEntry| $ 42))

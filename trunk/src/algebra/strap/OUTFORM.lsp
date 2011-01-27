@@ -546,7 +546,7 @@
             (|%listlit| 'INTSIGN |b| (|%listlit| 'NOTHING) |a|))) 
 
 (DEFUN |OUTFORM;doubleFloatFormat;2S;1| (|s| $)
-  (LET ((|ss| (|getShellEntry| $ 6)))
+  (LET ((|ss| (SVREF $ 6)))
     (SEQ (|setShellEntry| $ 6 |s|) (EXIT |ss|)))) 
 
 (DEFUN |OUTFORM;sform| (|s| $) (DECLARE (IGNORE $)) |s|) 

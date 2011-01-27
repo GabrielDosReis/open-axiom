@@ -689,8 +689,8 @@ NRTputInHead bod ==
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and not (dom='$) and elt in '(getShellEntry ELT QREFELT CONST) =>
-      k:= NRTassocIndex dom => lastNode(bod).first := [$elt,'_$,k]
+    fn is [elt,dom,ind] and dom ~='$ and elt in '(getShellEntry ELT QREFELT CONST) =>
+      k := NRTassocIndex dom => lastNode(bod).first := ['%vref,'_$,k]
       nil
     NRTputInHead fn
     bod
@@ -699,9 +699,6 @@ NRTputInHead bod ==
     bod
   bod is ["QUOTE",:.] => bod
   bod is ["CLOSEDFN",:.] => bod
-  bod is ["SPADCONST",dom,ind] =>
-    keyedSystemError("S2GE0016",['"NRTputInHead",
-       '"unexpected SPADCONST form"])
   NRTputInHead first bod
   NRTputInTail rest bod
   bod
@@ -711,7 +708,7 @@ NRTputInTail x ==
     atom (u := first y) =>
       u='$ or LASSOC(u,$devaluateList) => nil
       k:= NRTassocIndex u =>
-        atom u => y.first := [$elt,'_$,k]
+        atom u => y.first := ['%vref,'_$,k]
         -- u atomic means that the slot will always contain a vector
         y.first := ['SPADCHECKELT,'_$,k]
       --this reference must check that slot is a vector
