@@ -578,12 +578,12 @@ newHasCategory(domain,catform) ==
     predIndex := lazyMatchAssocV1(catform,catvec,domain)
     null predIndex => false
     predIndex = 0 => true
-    predvec := QVELT(domain,3)
+    predvec := vectorRef(domain,3)
     testBitVector(predvec,predIndex)
   lazyMatchAssocV(catform,auxvec,catvec,domain)         --new style
 
 getCatForm(catvec, index, domain) ==
-   integer?(form := QVELT(catvec,index)) => domain.form
+   integer?(form := vectorRef(catvec,index)) => domain.form
    form
 
 HasSignature(domain,[op,sig]) ==

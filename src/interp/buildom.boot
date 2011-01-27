@@ -85,23 +85,24 @@ Record(:args) ==
   nargs := #args
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
-  dom.0 := ["Record", :srcArgs]
-  dom.1 :=
+  vectorRef(dom,0) := ["Record", :srcArgs]
+  vectorRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]], 
             ["hash",[[$SingleInteger,"$"],:0]],
                ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := nil
-  dom.3 := ["RecordCategory",:rest dom.0]
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := third a
-  dom.($FirstParamSlot + nargs) := [function RecordEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
+  vectorRef(dom,2) := nil
+  vectorRef(dom,3) := ["RecordCategory",:rest dom.0]
+  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  vectorRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    vectorRef(dom,i) := third a
+  vectorRef(dom,$FirstParamSlot + nargs) := [function RecordEqual, :dom]
+  vectorRef(dom,$FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
+  vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
 -- following is cache for equality functions
-  dom.($FirstParamSlot + nargs + 3) := if nargs <= 2
+  vectorRef(dom,$FirstParamSlot + nargs + 3) := if nargs <= 2
 	    then [nil,:nil]
 	    else newShell nargs
   -- remember this instantiation for future re-use.
@@ -160,26 +161,27 @@ Union(:args) ==
           "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell (nargs + 9)
-  dom.0 := ["Union", :srcArgs]
-  dom.1 :=
+  vectorRef(dom,0) := ["Union", :srcArgs]
+  vectorRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode (nargs+1)]]]]
-  dom.2 := nil
-  dom.3 := ["UnionCategory",:rest dom.0]
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := a
-  dom.($FirstParamSlot + nargs) := [function UnionEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
+  vectorRef(dom,2) := nil
+  vectorRef(dom,3) := ["UnionCategory",:rest dom.0]
+  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  vectorRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    vectorRef(dom,i) := a
+  vectorRef(dom,$FirstParamSlot + nargs) := [function UnionEqual, :dom]
+  vectorRef(dom,$FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
+  vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   haddProp($ConstructorCache,"Union",srcArgs,[1,:dom])
   dom
 
 UnionEqual(x, y, dom) ==
-  ["Union",:branches] := dom.0
+  ["Union",:branches] := vectorRef(dom,0)
   predlist := mkPredList branches
   same := false
   for b in stripUnionTags branches for p in predlist while not same repeat
@@ -216,21 +218,22 @@ Mapping(:args) ==
           "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 9)
-  dom.0 := ["Mapping", :srcArgs]
-  dom.1 :=
+  vectorRef(dom,0) := ["Mapping", :srcArgs]
+  vectorRef(dom,1) :=
     ["lookupInTable",dom,
        [["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	 ["~=",[[$Boolean,"$","$"],:0]],
            ["hash", [[$SingleInteger,"$"],:0]],
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs + 1)]]]]
-  dom.2 := nil
-  dom.3 := $SetCategory
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
-  for i in $FirstParamSlot.. for a in args repeat dom.i := a
-  dom.($FirstParamSlot + nargs) := [function MappingEqual, :dom]
-  dom.($FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
-  dom.($FirstParamSlot + nargs + 2) := [function Undef, :dom]
+  vectorRef(dom,2) := nil
+  vectorRef(dom,3) := $SetCategory
+  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  vectorRef(dom,5) := nil
+  for i in $FirstParamSlot.. for a in args repeat
+    vectorRef(dom,i) := a
+  vectorRef(dom,$FirstParamSlot + nargs) := [function MappingEqual, :dom]
+  vectorRef(dom,$FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
+  vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
   haddProp($ConstructorCache,"Mapping",srcArgs,[1,:dom])
   dom
 
@@ -252,8 +255,8 @@ Enumeration(:"args") ==
   nargs := #args
   dom := newShell(nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
-  dom.0 := ["Enumeration", :args]
-  dom.1 :=
+  vectorRef(dom,0) := ["Enumeration", :args]
+  vectorRef(dom,1) :=
     ["lookupInTable",dom,
 	[["=",[[$Boolean,"$","$"],:oldSlotCode nargs]],
 	  ["~=",[[$Boolean,"$","$"],:0]],
@@ -261,10 +264,10 @@ Enumeration(:"args") ==
               ["coerce",[[$OutputForm,"$"],:oldSlotCode(nargs+1)], 
                 [["$", $Symbol], :oldSlotCode(nargs+2)]]
                   ]]
-  dom.2 := nil
-  dom.3 := ["EnumerationCategory",:rest dom.0]
-  dom.4 := [$commonCategoryDefaults, $commonCategoryAncestors]
-  dom.5 := nil
+  vectorRef(dom,2) := nil
+  vectorRef(dom,3) := ["EnumerationCategory",:rest dom.0]
+  vectorRef(dom,4) := [$commonCategoryDefaults, $commonCategoryAncestors]
+  vectorRef(dom,5) := nil
   for i in $FirstParamSlot.. for a in args repeat dom.i := a
   dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
@@ -276,10 +279,10 @@ EnumEqual(e1,e2,dom) ==
   e1=e2
 
 EnumPrint(enum, dom) == 
-  (rest(dom.0)).enum
+  rest(vectorRef(dom,0)).enum
 
 createEnum(sym, dom) ==
-  args := rest(dom.0)
+  args := vectorRef(dom,0).args
   val := -1
   for v in args for i in 0.. repeat
      sym=v => return(val:=i)
@@ -302,7 +305,7 @@ constructorCategory (title is [op,:.]) ==
   cat:=
     JoinInner([eval $SetCategory,mkCategory("domain",oplist,nil,nil,nil)],
       $EmptyEnvironment)
-  cat.0 := title
+  vectorRef(cat,0) := title
   cat
 
 --mkMappingFunList(nam,mapForm,e) == [[],e]

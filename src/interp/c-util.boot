@@ -179,10 +179,9 @@ declareUnusedParameters x == (augment x; x) where
 
 devaluate d ==
   not vector? d => d
-  QSGREATERP(QVSIZE d,5) and getShellEntry(d,3) is ['Category] => 
-    getShellEntry(d,0)
-  QSGREATERP(QVSIZE d,0) =>
-    d':=getShellEntry(d,0)
+  QVSIZE d > 5 and vectorRef(d,3) is ['Category] => vectorRef(d,0)
+  QVSIZE d > 0 =>
+    d' := vectorRef(d,0)
     isFunctor d' => d'
     d
   d
@@ -1629,7 +1628,7 @@ expandFormTemplate(shell,args,slot) ==
   integer? slot =>
     slot = 0 => "$"
     slot = 2 => "$$"
-    expandFormTemplate(shell,args,getShellEntry(shell,slot))
+    expandFormTemplate(shell,args,vectorRef(shell,slot))
   atom slot => slot
   slot is ["local",parm] and (n := isFormal parm) => 
     args.n   -- FIXME: we should probably expand with dual signature
@@ -1645,7 +1644,7 @@ equalFormTemplate(shell,args,slot,form) ==
   integer? slot =>
     slot = 0 => form = "$"
     slot = 2 => form = "$$"
-    equalFormTemplate(shell,args,getShellEntry(shell,slot),form)
+    equalFormTemplate(shell,args,vectorRef(shell,slot),form)
   slot is ["local",parm] and (n := isFormal parm) => 
     equalFormTemplate(shell,args,args.n,form)
   slot is ["NTREVAL",val] => form = val

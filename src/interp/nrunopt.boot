@@ -272,7 +272,7 @@ augmentPredCode(n,lastPl) ==
          delta:=2 * delta; u) for x in pl]
 
 augmentPredVector(dollar,value) ==
-  setShellEntry(dollar,3,value + QVELT(dollar,3))
+  vectorRef(dollar,3) := value + vectorRef(dollar,3)
 
 isHasDollarPred pred ==
   pred is [op,:r] =>
