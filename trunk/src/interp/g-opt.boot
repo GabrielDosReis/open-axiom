@@ -435,7 +435,7 @@ optQSMINUS u ==
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
-    SPADfirst QVELT _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
+    SPADfirst _+ _- _* _< _= _<_= _> _>_= ASH INTEGER_-LENGTH
      QEQCAR QCDR QCAR IDENTP SYMBOLP
       GREATERP ZEROP ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
        CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true

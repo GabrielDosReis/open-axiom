@@ -84,7 +84,7 @@ getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise
   res := nil
   for i in 0..max by 2 repeat
-    EQ(QVELT(vec,i),op) => return (res := QSADD1 i)
+    EQ(vectorRef(vec,i),op) => return (res := QSADD1 i)
   res
 
 evalSlotDomain(u,dollar) ==
@@ -157,7 +157,7 @@ replaceGoGetSlot env ==
     keyedSystemError("S2NR0001",[op,sig,goGetDomain.0])
   if $monitorNewWorld then
     sayLooking1(['"goget stuffing slot",:bright thisSlot,'"of "],thisDomain)
-  setShellEntry(thisDomain,thisSlot,slot)
+  vectorRef(thisDomain,thisSlot) := slot
   if $monitorNewWorld then
     sayLooking1('"<------",[first slot,:devaluate rest slot])
   slot
@@ -601,7 +601,7 @@ lazyDomainSet(lazyForm,thisDomain,slot) ==
     sayLooking1(concat(form2String devaluate thisDomain,
       '" activating lazy slot ",slot,'": "),slotDomain)
   name := first form
-  setShellEntry(thisDomain,slot,slotDomain)
+  vectorRef(thisDomain,slot) := slotDomain
  
 
 ++ Return a type form where all niladic constructors are
@@ -676,13 +676,13 @@ lazyMatchAssocV(x,auxvec,catvec,domain) ==      --new style slot4
   n := MAXINDEX catvec
   xop := first x
   or/[auxvec.i for i in 0..n |
-    xop = first (lazyt := QVELT(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
+    xop = first (lazyt := vectorRef(catvec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 lazyMatchAssocV1(x,vec,domain) ==               --old style slot4
   n  := MAXINDEX vec
   xop := first x
-  or/[rest QVELT(vec,i) for i in 0..n |
-    xop = first (lazyt := first QVELT(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
+  or/[rest vectorRef(vec,i) for i in 0..n |
+    xop = first (lazyt := first vectorRef(vec,i)) and lazyMatch(x,lazyt,domain,domain)]
  
 --=======================================================
 --                   Utility Functions

@@ -2080,7 +2080,7 @@ writify ob ==
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 for i in 0..n repeat
-                    QSETVELT(nob, i, writifyInner QVELT(ob,i))
+                    vectorRef(nob, i) := writifyInner vectorRef(ob,i)
                 nob
             ob = 'WRITIFIED_!_! =>
                 ['WRITIFIED_!_!, 'SELF]
@@ -2223,7 +2223,7 @@ dewritify ob ==
                 HPUT($seen, ob, nob)
                 HPUT($seen, nob, nob)
                 for i in 0..n repeat
-                    QSETVELT(nob, i, dewritifyInner QVELT(ob,i))
+                    vectorRef(nob,i) := dewritifyInner vectorRef(ob,i)
                 nob
             -- Default case: return the object itself.
             ob

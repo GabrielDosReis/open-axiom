@@ -195,7 +195,7 @@ pushDownOp?(op,n) ==
   numMms := # ops
   for [.,targ,:argl] in ops repeat
     for arg in argl for i in 0.. repeat
-      targ = arg => setShellEntry(sameAsTarg,i,1 + sameAsTarg.i)
+      targ = arg => vectorRef(sameAsTarg,i) := 1 + sameAsTarg.i
   -- now see which args have their count = numMms
   ok := NIL
   for i in 0..(n-1) repeat
