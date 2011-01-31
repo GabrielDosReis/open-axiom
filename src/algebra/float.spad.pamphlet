@@ -179,7 +179,7 @@ Float():
   == add
    BASE ==> 2
    BITS:Reference(PI) := ref 68 -- 20 digits
-   LENGTH ==> INTEGER_-LENGTH$Lisp
+   LENGTH ==> %ilength$Foreign(Builtin)
    ISQRT ==> approxSqrt$IntegerRoots(I)
    Rep := Record( mantissa:I, exponent:I )
    StoredConstant ==> Record( precision:PI, value:% )

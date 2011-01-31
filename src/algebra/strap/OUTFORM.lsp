@@ -37,7 +37,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |OUTFORM;=;2$B;9|)) 
 
-(PUT '|OUTFORM;=;2$B;9| '|SPADreplace| 'EQUAL) 
+(PUT '|OUTFORM;=;2$B;9| '|SPADreplace| '|%equal|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;=;3$;10|)) 

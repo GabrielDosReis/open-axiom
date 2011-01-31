@@ -181,9 +181,9 @@ IntegerNumberSystem(): Category ==
 
 
 -- Lisp dependencies
--- ABSVAL, TIMES, INTEGER-LENGTH,
+-- ABSVAL, TIMES,
 -- QSLESSP, QSGREATERP, QSMINUS, QSPLUS, QSDIFFERENCE
--- QSTIMES,, QSODDP, QSZEROP, QSMAX, QSMIN, QSNOT, QSAND
+-- QSTIMES,, QSODDP, QSNOT, QSAND
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
@@ -225,6 +225,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    import %imin: (%,%) -> %         from Foreign Builtin
    import %igcd: (%,%) -> %         from Foreign Builtin
    import %hash: % -> SingleInteger from Foreign Builtin
+   import %ilength: % -> %          from Foreign Builtin
    import %iodd?: % -> Boolean      from Foreign Builtin
    import %ieq: (%,%) -> Boolean    from Foreign Builtin
    import %ilt: (%,%) -> Boolean    from Foreign Builtin
@@ -322,12 +323,12 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    gcd(x,y)  == %igcd(x,y)
    abs(x)    == %iabs x
    odd?(x)   == %iodd? x
-   zero?(x)  == QSZEROP(x)$Lisp
-   one?(x)   == x = 1@%
+   zero?(x)  == %ieq(x,%icst0)
+   one?(x)   == %ieq(x,%icst1)
    max(x,y)  == %imax(x,y)
    min(x,y)  == %imin(x,y)
    hash(x)   == %hash x
-   length(x) == INTEGER_-LENGTH(x)$Lisp
+   length(x) == %ilength x
    shift(x,n)    == QSLEFTSHIFT(x,n)$Lisp
    mulmod(a,b,p) == QSMULTMOD(a,b,p)$Lisp
    addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp

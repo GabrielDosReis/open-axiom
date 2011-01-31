@@ -1,3 +1,24 @@
+2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove QCDR,
+	QCAR. SYMBOLP, GREATERP. 
+	Add %ibit, %ilength, %ident, %equal.
+	* interp/g-util.boot: Expand them
+	* algebra/any.spad.pamphlet: Tidy.
+	* algebra/catdef.spad.pamphlet: Likewise.
+	* algebra/data.spad.pamphlet: Likewise.
+	* algebra/domain.spad.pamphlet: Likewise.
+	* algebra/float.spad.pamphlet: Likewise.
+	* algebra/fname.spad.pamphlet: Likewise.
+	* algebra/integer.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Likewise.
+	* algebra/outform.spad.pamphlet: Likewise.
+	* algebra/random.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/symbol.spad.pamphlet: Likewise.
+	* algebra/syntax.spad.pamphlet: Likewise.
+
 2011-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/vmlisp.lisp: Remove QREFELT, QSDEC1, QSETREFV, QSETVELT,

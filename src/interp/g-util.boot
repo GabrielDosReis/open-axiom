@@ -507,6 +507,8 @@ for x in [
     ['%iodd?,   :'ODDP],
     ['%ismall?, :'FIXNUMP],
     ['%i2s,   :'WRITE_-TO_-STRING],
+    ['%ilength, :'INTEGER_-LENGTH],
+    ['%ibit,    :'INTEGER_-BIT],
     -- binary integer operations.
     ['%iadd,    :"+"],
     ['%igcd,    :'GCD],
@@ -586,6 +588,7 @@ for x in [
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
     ['%sname,   :'SYMBOL_-NAME],
+    ['%ident?,  :'SYMBOLP],
 
     -- string functions
     ['%string?, :'STRINGP],
@@ -596,6 +599,7 @@ for x in [
 
     -- general utility
     ['%hash,     :'SXHASH],
+    ['%equal,    :'EQUAL],
     ['%lam,      :'LAMBDA],
     ['%leave,    :'RETURN],
     ['%otherwise,:'T],

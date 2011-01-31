@@ -1917,7 +1917,9 @@ SetCategory(): Category == Join(BasicType,CoercibleTo OutputForm) with
       latex: % -> String       ++ latex(s) returns a LaTeX-printable output
                                ++ representation of s.
   add
-      hash(s : %):  SingleInteger == SXHASH(s)$Lisp
+      import %hash: % -> SingleInteger from Foreign Builtin
+
+      hash(s : %):  SingleInteger == %hash s
       latex(s : %): String       == "\mbox{\bf Unimplemented}"
 @
 

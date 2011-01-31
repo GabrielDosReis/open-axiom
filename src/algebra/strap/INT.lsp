@@ -70,7 +70,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;length;2$;19|)) 
 
-(PUT '|INT;length;2$;19| '|SPADreplace| 'INTEGER-LENGTH) 
+(PUT '|INT;length;2$;19| '|SPADreplace| '|%ilength|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Integer| |%Integer| |%Shell|)
                     |%Integer|)

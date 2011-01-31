@@ -476,6 +476,7 @@ OutputForm(): SetCategory with
 
     == add
         import NumberFormats
+        import %equal: (%,%) -> Boolean from Foreign Builtin
 
         -- Todo:
         --   program forms, greek letters
@@ -510,7 +511,7 @@ OutputForm(): SetCategory with
         print x              == mathprint(x)$Lisp
         message s            == (empty? s => empty(); s pretend %)
         messagePrint s       == print message s
-        (a:% = b:%): Boolean == EQUAL(a, b)$Lisp
+        (a:% = b:%): Boolean == %equal(a,b)
         (a:% = b:%):%        == bless [eform '=,     a, b]
         coerce(a):OutputForm  == a pretend OutputForm
         outputForm n          == n pretend %
