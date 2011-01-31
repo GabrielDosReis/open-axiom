@@ -44,9 +44,9 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
 -- a knowledgeable person wants to update it:
 --   The following LISP dependencies are divided into two groups
 --   Those that are required
---   CONS, EQ, NIL, NULL, QCAR, QCDR, RPLACA, RPLACD
+--   CONS, EQ, NIL, NULL, RPLACA, RPLACD
 --   Those that are included for efficiency only
---   LIST, CAR, CDR, NCONC2, NREVERSE, LENGTH
+--   LIST, NCONC2, LENGTH
 --   Also REVERSE, since it's called in Polynomial Ring
 
  Qnull   ==> NULL$Lisp

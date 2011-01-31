@@ -114,12 +114,13 @@ Syntax(): Public == Private where
       ++ x case String is true if `x' really is a String
 
   Private == add
-    import %integer?: % -> Boolean from Foreign Builtin
-    import %float?: % -> Boolean   from Foreign Builtin
-    import %string?: % -> Boolean  from Foreign Builtin
+    import %integer?: % -> Boolean   from Foreign Builtin
+    import %float?: % -> Boolean     from Foreign Builtin
+    import %string?: % -> Boolean    from Foreign Builtin
+    import %equal: (%,%) -> Boolean  from Foreign Builtin
 
     x = y ==
-      EQUAL(x,y)$Lisp
+      %equal(x,y)
    
     s case Integer ==
       %integer? s
@@ -625,10 +626,12 @@ ParameterAst(): Public == Private where
       ++ object \spad{x} to \spadtype{String}.  This function
       ++ is left at the discretion of the compiler.
   Private == add
-    import %string?: % -> Boolean from Foreign Builtin
+    import %string?: % -> Boolean   from Foreign Builtin
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+    import %ident?: % -> Boolean    from Foreign Builtin
 
     x case Identifier ==
-      SYMBOLP(x)$Foreign(Builtin)
+      %ident? x
 
     autoCoerce(x: %): Identifier ==
       x : Identifier
@@ -640,7 +643,7 @@ ParameterAst(): Public == Private where
       x : String
 
     x = y ==
-      EQUAL(x,y)$Foreign(Builtin)
+      %equal(x,y)
 
     coerce(x: %): OutputForm ==
       case x is 

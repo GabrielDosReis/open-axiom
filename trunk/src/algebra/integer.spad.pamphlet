@@ -101,6 +101,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       import %ile: (%,%) -> Boolean    from Foreign Builtin
       import %igt: (%,%) -> Boolean    from Foreign Builtin
       import %ige: (%,%) -> Boolean    from Foreign Builtin
+      import %ilength: % -> %          from Foreign Builtin
 
       x,y: %
       n: NonNegativeInteger
@@ -161,7 +162,7 @@ Integer: Join(IntegerNumberSystem, ConvertibleTo String, OpenMath) with
       coerce(x):OutputForm == outputForm(x pretend Integer)
       coerce(m:Integer):% == m pretend %
       convert(x:%):Integer == x pretend Integer
-      length a == INTEGER_-LENGTH(a)$Lisp
+      length a == %ilength a
       addmod(a, b, p) ==
          c := %iadd(a,b)
          c >= p => c - p

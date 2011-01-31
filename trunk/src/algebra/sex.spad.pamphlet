@@ -94,14 +94,15 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
     Decl ==> SExpressionCategory(Str, Sym, Int, Flt, Expr)
 
     Body ==> add
-        import %integer?: % -> Boolean from Foreign Builtin
-        import %string?: % -> Boolean  from Foreign Builtin
-        import %pair?: % -> Boolean    from Foreign Builtin
-        import %peq: (%,%) -> Boolean  from Foreign Builtin
-        import %head: % -> %           from Foreign Builtin
-        import %tail: % -> %           from Foreign Builtin
-        import %llength: % -> Integer  from Foreign Builtin
-        import %nil: %                 from Foreign Builtin
+        import %integer?: % -> Boolean  from Foreign Builtin
+        import %string?: % -> Boolean   from Foreign Builtin
+        import %pair?: % -> Boolean     from Foreign Builtin
+        import %peq: (%,%) -> Boolean   from Foreign Builtin
+        import %head: % -> %            from Foreign Builtin
+        import %tail: % -> %            from Foreign Builtin
+        import %llength: % -> Integer   from Foreign Builtin
+        import %nil: %                  from Foreign Builtin
+        import %equal: (%,%) -> Boolean from Foreign Builtin
 
         Rep := Expr
 
@@ -120,7 +121,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
             #l = 2 and (first(l1) = QUOTE)@Boolean => quote first rest l1
             paren blankSeparate l1
 
-        b1 = b2        == EQUAL(b1,b2)$Lisp
+        b1 = b2        == %equal(b1,b2)
         eq(b1, b2)     == %peq(b1,b2)
 
         null? b      == %peq(b,%nil)

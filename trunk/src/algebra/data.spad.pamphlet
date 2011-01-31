@@ -401,6 +401,8 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
       ++ setelt(b,i,x) sets the ith entry of data buffer `b' to `x'.
       ++ Indexing is 0-based.
   Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
     new() == 
       makeSimpleArray(getVMType(T)$Foreign(Builtin),N)$Foreign(Builtin)
 
@@ -411,7 +413,7 @@ DataArray(N: PositiveInteger, T: SetCategory): Public == Private where
       setSimpleArrayEntry(b,i,x)$Foreign(Builtin)
 
     x = y ==
-      EQUAL(x,y)$Foreign(Builtin)
+      %equal(x,y)
 
     coerce(b: %): OutputForm ==
       bracket([qelt(b,i)::OutputForm for i in 0..(N-1)])

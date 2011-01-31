@@ -377,7 +377,7 @@ Contour(): Public == Private where
       nothing
 
     push(b,c) ==
-      CONS(b,c)$Lisp pretend %
+      %makepair(b,c)$Foreign(Builtin)
 
     coerce c ==
       (bindings c)::OutputForm

@@ -52,8 +52,10 @@ FunctionDescriptor(): Public == Private where
       ++ \spad{signature(x)} returns the signature of function
       ++ described by \spad{x}.
   Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
     signature x == %head(x)$Foreign(Builtin)
-    x = y == EQUAL(x,y)$Lisp
+    x = y == %equal(x,y)
     coerce x == (x : Syntax)::OutputForm
 
 @
@@ -165,8 +167,9 @@ ConstructorCall(C: ConstructorCategory): Public == Private where
       ++ arguments used to invoke the constructor.
 
   Private == add
-    import %head: % -> C from Foreign Builtin
-    import %tail: % -> List Syntax from Foreign Builtin
+    import %head: % -> C            from Foreign Builtin
+    import %tail: % -> List Syntax  from Foreign Builtin
+    import %equal: (%,%) -> Boolean from Foreign Builtin
 
     constructor x ==
       %head x 
@@ -175,7 +178,7 @@ ConstructorCall(C: ConstructorCategory): Public == Private where
       %tail x
 
     x = y ==
-      EQUAL(x,y)$Lisp
+      %equal(x,y)
 
     coerce(x: %): OutputForm ==
       outputDomainConstructor(x)$Foreign(Builtin)
@@ -247,6 +250,8 @@ FunctorData(): Public == Private where
       ++ \spad{lookupFunction x} returns the name of the lookup
       ++ function associated with the functor data \spad{x}.
   Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
     domainTemplate x == %head(x)$Foreign(Builtin)
     attributeData x == CADDR(x)$Foreign(Builtin)
    
@@ -256,7 +261,7 @@ FunctorData(): Public == Private where
     encodingDirectory x == CDDDR(part3Data x)$Foreign(Builtin)
     lookupFunction x == CADDDDR(x)$Foreign(Builtin)
 
-    x = y == EQUAL(x,y)$Foreign(Builtin)
+    x = y == %equal(x,y)
     coerce(x: %): OutputForm ==
       import SExpression
       (x pretend SExpression)::OutputForm
@@ -336,10 +341,12 @@ OperatorSignature(): Public == Private where
       ++ construct(op,sig) construct a signature-operator with
       ++ operator name `op', and signature `sig'.
   Private == add
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
     construct(o,s) == LIST(o,s)$Lisp
     name x == %head(x)$Foreign(Builtin)
     signature x == CADR(x)$Lisp
-    x = y == EQUAL(x,y)$Lisp
+    x = y == %equal(x,y)
     arity x == (#source signature x)::Arity
     coerce(x: %): OutputForm ==
       infix('_:::OutputForm, name(x)::OutputForm, 
@@ -354,7 +361,9 @@ OperatorSignature(): Public == Private where
 SystemPredicate(): Public == Private where
   Public == SetCategory
   Private == add
-    x = y == EQUAL(x,y)$Lisp
+    import %equal: (%,%) -> Boolean from Foreign Builtin
+
+    x = y == %equal(x,y)
     coerce(x: %): OutputForm ==
       %not(x)$Foreign(Builtin) => 'false::OutputForm
       %peq(x,'T)$Foreign(Builtin) => 'true::OutputForm

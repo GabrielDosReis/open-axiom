@@ -150,9 +150,12 @@ IntegerBits: with
 		++ bitTruth(n,m) returns true if coefficient of 2**m in abs(n) is 1
  
     == add
-        bitLength n   == INTEGER_-LENGTH(n)$Lisp
-        bitCoef (n,i) == if INTEGER_-BIT(n,i)$Lisp then 1 else 0
-        bitTruth(n,i) == INTEGER_-BIT(n,i)$Lisp
+        import %ilength: Integer -> Integer        from Foreign Builtin
+        import %ibit: (Integer,Integer) -> Boolean from Foreign Builtin
+
+        bitLength n   == %ilength n
+        bitCoef (n,i) == if %ibit(n,i) then 1 else 0
+        bitTruth(n,i) == %ibit(n,i)
 
 @
 \section{package RIDIST RandomIntegerDistributions}
