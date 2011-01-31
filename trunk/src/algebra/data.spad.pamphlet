@@ -269,7 +269,8 @@ UInt64() == SystemNonNegativeInteger 64
 ++   This domain is a datatype system-level pointer values.
 SystemPointer(): SetCategory
   == add
-    x = y == EQL(x,y)$Foreign(Builtin)
+    import %sptreq: (%,%) -> Boolean from Foreign Builtin
+    x = y == %sptreq(x,y)
     coerce(x:%): OutputForm ==
       FORMAT(NIL$Foreign(Builtin),"~A",x)$Foreign(Builtin)
 @

@@ -426,18 +426,12 @@ optRECORDCOPY ["RECORDCOPY",name,len] ==
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
-optQSMINUS u ==
-  u is ['QSMINUS,v] =>
-    integer? v => -v
-    u
-  u
- 
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(CAR CDR LENGTH SIZE EQUAL EQL EQ NOT NULL OR AND
+  '(CAR CDR LENGTH SIZE EQ NOT NULL OR AND
     SPADfirst _+ _- _* _< _= _<_= _> _>_= ASH
      QEQCAR QCDR QCAR IDENTP
-      ODDP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+      FLOAT_-RADIX FLOAT FLOAT_-SIGN
       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
       %2bit %2bool
       %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
@@ -456,7 +450,7 @@ $VMsideEffectFreeOperators ==
       %aref %vref %vlength %veclit
       %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
       %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
-      %before? %equal %ident?)
+      %before? %equal %sptreq %ident?)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
@@ -795,7 +789,6 @@ for x in '( (%call         optCall) _
            (%2bit        opt2bit)_
            (%2bool       opt2bool)_
            (%listlit     optListlit)_
-           (QSMINUS      optQSMINUS)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
            (CATCH        optCatch)_

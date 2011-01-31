@@ -247,7 +247,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Boolean|)
                 |SINT;negative?;$B;53|)) 
 
-(PUT '|SINT;negative?;$B;53| '|SPADreplace| 'QSMINUSP) 
+(PUT '|SINT;negative?;$B;53| '|SPADreplace|
+     '(XLAM (|x|) (|%ilt| |x| 0))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
                 |SINT;size;Nni;54|)) 
@@ -291,7 +292,7 @@
 
 (DEFUN |SINT;writeOMSingleInt| (|dev| |x| $)
   (SEQ (COND
-         ((QSMINUSP |x|)
+         ((MINUSP |x|)
           (SEQ (SPADCALL |dev| (|getShellEntry| $ 11))
                (SPADCALL |dev| "arith1" "unaryminus"
                    (|getShellEntry| $ 13))
@@ -469,7 +470,7 @@
 
 (DEFUN |SINT;negative?;$B;53| (|x| $)
   (DECLARE (IGNORE $))
-  (QSMINUSP |x|)) 
+  (MINUSP |x|)) 
 
 (DEFUN |SINT;size;Nni;54| ($)
   (DECLARE (IGNORE $))
@@ -490,8 +491,7 @@
 (DEFUN |SINT;positiveRemainder;3$;58| (|x| |n| $)
   (LET ((|r| (REM |x| |n|)))
     (COND
-      ((QSMINUSP |r|)
-       (COND ((QSMINUSP |n|) (- |x| |n|)) (T (+ |r| |n|))))
+      ((MINUSP |r|) (COND ((MINUSP |n|) (- |x| |n|)) (T (+ |r| |n|))))
       (T |r|)))) 
 
 (DEFUN |SINT;coerce;I$;59| (|x| $)
@@ -505,11 +505,11 @@
 (DEFUN |SINT;random;2$;61| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 
 
 (DEFUN |SINT;unitNormal;$R;62| (|x| $)
-  (COND ((QSMINUSP |x|) (VECTOR -1 (- |x|) -1)) (T (VECTOR 1 |x| 1)))) 
+  (COND ((MINUSP |x|) (VECTOR -1 (- |x|) -1)) (T (VECTOR 1 |x| 1)))) 
 
 (DEFUN |SingleInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1474)
+  (PROG (#0=#:G1478)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|SingleInteger|))
