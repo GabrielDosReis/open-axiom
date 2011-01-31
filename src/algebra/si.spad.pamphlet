@@ -182,8 +182,8 @@ IntegerNumberSystem(): Category ==
 
 -- Lisp dependencies
 -- ABSVAL, TIMES,
--- QSLESSP, QSGREATERP, QSMINUS, QSPLUS, QSDIFFERENCE
--- QSTIMES,, QSODDP, QSNOT, QSAND
+-- QSLESSP, QSGREATERP, QSDIFFERENCE
+-- QSNOT, QSAND
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
 
@@ -333,7 +333,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    mulmod(a,b,p) == QSMULTMOD(a,b,p)$Lisp
    addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
-   negative?(x)  == QSMINUSP$Lisp x
+   negative?(x)  == %ilt(x,%icst0)
    size() == (MAXINT -$Lisp MININT +$Lisp %icst1)  pretend NonNegativeInteger
    index i == per(i + MININT - 1$Lisp)
    lookup x ==

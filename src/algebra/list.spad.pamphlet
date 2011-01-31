@@ -44,12 +44,11 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
 -- a knowledgeable person wants to update it:
 --   The following LISP dependencies are divided into two groups
 --   Those that are required
---   CONS, EQ, NIL, NULL, RPLACA, RPLACD
+--   CONS, EQ, NIL, RPLACA, RPLACD
 --   Those that are included for efficiency only
 --   LIST, NCONC2, LENGTH
 --   Also REVERSE, since it's called in Polynomial Ring
 
- Qnull   ==> NULL$Lisp
  Qpush   ==> PUSH$Lisp
  
  Exports ==> ListAggregate S 
@@ -94,13 +93,13 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
 
    rest(x, n) ==
       for i in 1..n repeat
-         if Qnull x then error "index out of range"
+         if empty? x then error "index out of range"
          x := %tail x
       x
 
    copy x ==
       y := empty()
-      for i in 0.. while not Qnull x repeat
+      for i in 0.. while not empty? x repeat
          if i = cycleMax and cyclic? x then error "cyclic list"
          y := %makepair(%head x,y)
          x := %tail x
@@ -126,35 +125,35 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    if S has SetCategory then
      x = y ==
        %peq(x,y) => true
-       while not Qnull x and not Qnull y repeat
+       while not empty? x and not empty? y repeat
           %head x ~=$S %head y => return false
           x := %tail x
           y := %tail y
-       Qnull x and Qnull y
+       empty? x and empty? y
 
      latex(x : %): String ==
        s : String := "\left["
-       while not Qnull x repeat
+       while not empty? x repeat
          s := concat(s, latex(%head x)$S)$String
          x := %tail x
-         if not Qnull x then s := concat(s, ", ")$String
+         if not empty? x then s := concat(s, ", ")$String
        concat(s, " \right]")$String
 
      member?(s,x) ==
-        while not Qnull x repeat
+        while not empty? x repeat
            if s = %head x then return true else x := %tail x
         false
 
    -- Lots of code from parts of AGGCAT, repeated here to
    -- get faster compilation
    concat!(x:%,y:%) ==
-      Qnull x => 
-        Qnull y => x
+      empty? x => 
+        empty? y => x
         Qpush(first y,x)
         QRPLACD(x,rest y)$Lisp
         x
       z:=x
-      while not Qnull %tail z repeat
+      while not empty? %tail z repeat
         z:=%tail z
       QRPLACD(z,y)$Lisp
       x
@@ -163,13 +162,13 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    if S has SetCategory then
      removeDuplicates! l ==
        p := l
-       while not Qnull p repeat
+       while not empty? p repeat
 --       p := setrest!(p, remove!(#1 = %head p, %tail p))
 -- far too expensive - builds closures etc.
          pp:=p
          f:S:=%head p
          p:=%tail p
-         while not Qnull (pr:=%tail pp) repeat
+         while not empty? (pr:=%tail pp) repeat
            if (%head pr)@S = f then QRPLACD(pp,%tail pr)$Lisp
            else pp:=pr
        l
@@ -180,17 +179,17 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    sort!(f, l)       == mergeSort(f, l, #l)
 
    merge!(f, p, q) ==
-     Qnull p => q
-     Qnull q => p
+     empty? p => q
+     empty? q => p
      %peq(p, q) => error "cannot merge a list into itself"
      if f(%head p, %head q)
        then (r := t := p; p := %tail p)
        else (r := t := q; q := %tail q)
-     while not Qnull p and not Qnull q repeat
+     while not empty? p and not empty? q repeat
        if f(%head p, %head q)
          then (QRPLACD(t, p)$Lisp; t := p; p := %tail p)
          else (QRPLACD(t, q)$Lisp; t := q; q := %tail q)
-     QRPLACD(t, if Qnull p then q else p)$Lisp
+     QRPLACD(t, if empty? p then q else p)$Lisp
      r
 
    split!(p, n) ==

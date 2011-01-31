@@ -1,5 +1,15 @@
 2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optQSMINUS): Remove.
+	* algebra/data.spad.pamphlet: Tidy.
+	* algebra/plot.spad.pamphlet: Likewise.
+	* algebra/plot3d.spad.pamphlet: Likewise.
+	* algebra/si.spad.pamphlet: Likewise.
+	* algebra/syntax.spad.pamphlet: Likewise.
+	* algebra/list.spad.pamphlet: Remove use of NULL$Lisp.
+
+2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove QCDR,
 	QCAR. SYMBOLP, GREATERP. 
 	Add %ibit, %ilength, %ident, %equal.

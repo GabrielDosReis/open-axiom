@@ -114,6 +114,8 @@ Syntax(): Public == Private where
       ++ x case String is true if `x' really is a String
 
   Private == add
+    import %nil: %                   from Foreign Builtin
+    import %peq: (%,%) -> Boolean    from Foreign Builtin
     import %integer?: % -> Boolean   from Foreign Builtin
     import %float?: % -> Boolean     from Foreign Builtin
     import %string?: % -> Boolean    from Foreign Builtin
@@ -209,7 +211,7 @@ Syntax(): Public == Private where
       %makepair(op,l)$Foreign(Builtin)
 
     nil? x ==
-      NULL(x)$Lisp
+      %peq(x,%nil)
 
     atom?(x: %): Boolean ==
       ATOM(x)$Lisp
