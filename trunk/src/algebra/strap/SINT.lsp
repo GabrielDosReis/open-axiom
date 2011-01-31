@@ -131,12 +131,12 @@
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
                 |SINT;inc;2$;30|)) 
 
-(PUT '|SINT;inc;2$;30| '|SPADreplace| 'QSADD1) 
+(PUT '|SINT;inc;2$;30| '|SPADreplace| '|%iinc|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
                 |SINT;dec;2$;31|)) 
 
-(PUT '|SINT;dec;2$;31| '|SPADreplace| 'QSSUB1) 
+(PUT '|SINT;dec;2$;31| '|SPADreplace| '|%idec|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|) |SINT;-;2$;32|)) 
 
@@ -398,9 +398,9 @@
   (DECLARE (IGNORE $))
   (NOT (< |x| |y|))) 
 
-(DEFUN |SINT;inc;2$;30| (|x| $) (DECLARE (IGNORE $)) (QSADD1 |x|)) 
+(DEFUN |SINT;inc;2$;30| (|x| $) (DECLARE (IGNORE $)) (1+ |x|)) 
 
-(DEFUN |SINT;dec;2$;31| (|x| $) (DECLARE (IGNORE $)) (QSSUB1 |x|)) 
+(DEFUN |SINT;dec;2$;31| (|x| $) (DECLARE (IGNORE $)) (1- |x|)) 
 
 (DEFUN |SINT;-;2$;32| (|x| $) (DECLARE (IGNORE $)) (- |x|)) 
 

@@ -681,7 +681,6 @@ NRTsubstDelta(initSig) ==
 updateSlot1DataBase [name,info] == HPUT($Slot1DataBase,name,info)
 
 NRTputInLocalReferences bod ==
-  $elt: local := "getShellEntry"
   NRTputInHead bod
 
 NRTputInHead bod ==

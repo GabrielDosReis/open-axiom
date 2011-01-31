@@ -246,7 +246,7 @@ countCircularAlist(cal,n) ==
   +/[nodeCount x for x in cal for i in 1..n]
  
 predCircular(al,n) ==
-  for i in 1..QSSUB1 n repeat al:= rest al
+  for i in 1..(n - 1) repeat al:= rest al
   al
  
 assocCircular(x,al) ==  --like ASSOC except that al is circular

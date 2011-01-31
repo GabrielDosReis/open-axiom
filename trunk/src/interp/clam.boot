@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -608,10 +608,10 @@ hputNewProp(ht,op,argList,val) ==
  
 listTruncate(l,n) ==
   u:= l
-  n:= QSSUB1 n
+  n:= n - 1
   while n ~= 0 and cons? u repeat
-    n:= QSSUB1 n
-    u:= rest u
+    n := n - 1
+    u := rest u
   if cons? u then
     if cons? rest u and $reportInstantiations = true then
       recordInstantiation($op,CAADR u,true)

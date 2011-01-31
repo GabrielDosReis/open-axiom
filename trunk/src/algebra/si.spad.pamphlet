@@ -181,8 +181,8 @@ IntegerNumberSystem(): Category ==
 
 
 -- Lisp dependencies
--- EQ, ABSVAL, TIMES, INTEGER-LENGTH, HASHEQ, 
--- QSLESSP, QSGREATERP, QSADD1, QSSUB1, QSMINUS, QSPLUS, QSDIFFERENCE
+-- ABSVAL, TIMES, INTEGER-LENGTH,
+-- QSLESSP, QSGREATERP, QSMINUS, QSPLUS, QSDIFFERENCE
 -- QSTIMES,, QSODDP, QSZEROP, QSMAX, QSMIN, QSNOT, QSAND
 -- QSOR, QSXOR, QSLEFTSHIFT, QSADDMOD, QSDIFMOD, QSMULTMOD
 
@@ -218,6 +218,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    import %irem: (%,%) -> %         from Foreign Builtin
    import %iquo: (%,%) -> %         from Foreign Builtin
    import %ineg: % -> %             from Foreign Builtin
+   import %iinc: % -> %             from Foreign Builtin
+   import %idec: % -> %             from Foreign Builtin
    import %iabs: % -> %             from Foreign Builtin
    import %imax: (%,%) -> %         from Foreign Builtin
    import %imin: (%,%) -> %         from Foreign Builtin
@@ -306,8 +308,8 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    x > y     == %igt(x,y)
    x <= y    == %ile(x,y)
    x >= y    == %ige(x,y)
-   inc x     == QSADD1(x)$Lisp
-   dec x     == QSSUB1(x)$Lisp
+   inc x     == %iinc x
+   dec x     == %idec x
    - x       == %ineg x
    x + y     == %iadd(x,y)
    x:% - y:% == %isub(x,y)
@@ -331,10 +333,10 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
    negative?(x)  == QSMINUSP$Lisp x
-   size() == (MAXINT -$Lisp MININT +$Lisp 1$Lisp)  pretend NonNegativeInteger
+   size() == (MAXINT -$Lisp MININT +$Lisp %icst1)  pretend NonNegativeInteger
    index i == per(i + MININT - 1$Lisp)
    lookup x ==
-     (x -$Lisp MININT +$Lisp 1$Lisp) pretend PositiveInteger
+     (x -$Lisp MININT +$Lisp %icst1) pretend PositiveInteger
 
 
    reducedSystem(m: Matrix %, v: Vector %) ==

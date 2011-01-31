@@ -444,7 +444,7 @@ $VMsideEffectFreeOperators ==
         %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl
         %icst0 %icst1
         %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-        %irem %iquo %idivide
+        %irem %iquo %idivide %idec
         %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
         %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
         %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot

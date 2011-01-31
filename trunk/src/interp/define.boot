@@ -1195,7 +1195,6 @@ addArgumentConditions($body,$functionName) ==
   $body
  
 putInLocalDomainReferences (def := [opName,[lam,varl,body]]) ==
-  $elt: local := "getShellEntry"
   NRTputInTail CDDADR def
   def
  

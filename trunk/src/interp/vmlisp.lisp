@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2010, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -321,9 +321,6 @@
 (defmacro qlength (a)
  `(length ,a))
 
-(defmacro qrefelt (vec ind)
- `(svref ,vec ,ind))
-
 (defmacro qrplaca (a b)
  `(rplaca (the cons ,a) ,b))
 
@@ -338,26 +335,11 @@
 (defmacro qsadd1 (x)
  `(the fixnum (1+ (the fixnum ,x))))
 
-(defmacro qsdec1 (x)
- `(the fixnum (1- (the fixnum ,x))))
-
 (defmacro qsdifference (x y)
  `(the fixnum (- (the fixnum ,x) (the fixnum ,y))))
 
-(defmacro qsetrefv (vec ind val)
- `(setf (svref ,vec (the fixnum ,ind)) ,val))
-
-(defmacro qsetvelt (vec ind val)
- `(setf (svref ,vec (the fixnum ,ind)) ,val))
-
-(defmacro qsetvelt-1 (vec ind val)
- `(setf (svref ,vec (the fixnum (1- (the fixnum ,ind)))) ,val))
-
 (defmacro qsgreaterp (a b)
  `(> (the fixnum ,a) (the fixnum ,b)))
-
-(defmacro qsinc1 (x)
- `(the fixnum (1+ (the fixnum ,x))))
 
 (defmacro qsleftshift (a b)
  `(the fixnum (ash (the fixnum ,a) (the fixnum ,b))))
@@ -394,12 +376,6 @@
 
 (defmacro qszerop (x)
  `(zerop (the fixnum ,x)))
-
-(defmacro qvelt (vec ind)
- `(svref ,vec (the fixnum ,ind)))
-
-(defmacro qvelt-1 (vec ind)
- `(svref ,vec (the fixnum (1- (the fixnum ,ind)))))
 
 (defmacro qvmaxindex (x)
  `(the fixnum (1- (the fixnum (length (the simple-vector ,x))))))
