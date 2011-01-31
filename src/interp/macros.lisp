@@ -555,7 +555,7 @@ terminals and empty or at-end files.  In Common Lisp, we must assume record size
 ;      (spadcall 
 ;       (cons (|function| (lambda (#:G1420 |envArg|) #:G1420)) (vector))
 ;       |#1|
-;       (qrefelt |*1;f;1;initial;MV| 0))))))
+;       (svref |*1;f;1;initial;MV| 0))))))
 ;
 ; the (|function| (lambda form used to cause an infinite expansion loop
 ;      

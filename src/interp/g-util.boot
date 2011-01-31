@@ -512,6 +512,7 @@ for x in [
     ['%igcd,    :'GCD],
     ['%ige,     :">="],
     ['%iinc,    :"1+"],
+    ['%idec,    :"1-"],
     ['%ilcm,    :'LCM],
     ['%ile,     :"<="],
     ['%imax,    :'MAX],

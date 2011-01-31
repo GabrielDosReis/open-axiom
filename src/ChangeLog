@@ -1,3 +1,9 @@
+2011-01-29  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/vmlisp.lisp: Remove QREFELT, QSDEC1, QSETREFV, QSETVELT,
+	QSETVELT-1, QSINC1, QVELT, QVELT-1.
+	* algebra/si.spad.pamphlet: Use %iinc and %idec forms.
+
 2011-01-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/nruncomp.boot (NRTputInHead): Tidy.

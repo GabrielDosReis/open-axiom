@@ -777,8 +777,8 @@ compCons1(["CONS",x,y],m,e) ==
       yt':= convert(yt,mr) or return nil
       [x,.,e]:= convert([x,mx,yt'.env],second mr) or return nil
       yt'.expr is ['%listlit,:.] => [['%listlit,x,:rest yt'.expr],mr,e]
-      [["CONS",x,yt'.expr],mr,e]
-    [["CONS",x,y],["Pair",mx,my],e]
+      [['%makepair,x,yt'.expr],mr,e]
+    [['%makepair,x,y],["Pair",mx,my],e]
   convert(T,m)
 
 --% SETQ
