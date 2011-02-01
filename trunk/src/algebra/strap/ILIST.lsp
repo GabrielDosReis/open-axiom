@@ -150,24 +150,24 @@
 (DEFUN |ILIST;elt;$rest$;9| (|x| T1 $) (DECLARE (IGNORE $)) (CDR |x|)) 
 
 (DEFUN |ILIST;setfirst!;$2S;10| (|x| |s| $)
-  (COND
-    ((NULL |x|) (|error| "Cannot update an empty list"))
-    (T (CAR (RPLACA |x| |s|))))) 
+  (SEQ (COND
+         ((NULL |x|) (|error| "Cannot update an empty list"))
+         (T (SEQ (RPLACA |x| |s|) (EXIT |s|)))))) 
 
 (DEFUN |ILIST;setelt;$first2S;11| (|x| T2 |s| $)
-  (COND
-    ((NULL |x|) (|error| "Cannot update an empty list"))
-    (T (CAR (RPLACA |x| |s|))))) 
+  (SEQ (COND
+         ((NULL |x|) (|error| "Cannot update an empty list"))
+         (T (SEQ (RPLACA |x| |s|) (EXIT |s|)))))) 
 
 (DEFUN |ILIST;setrest!;3$;12| (|x| |y| $)
-  (COND
-    ((NULL |x|) (|error| "Cannot update an empty list"))
-    (T (CDR (RPLACD |x| |y|))))) 
+  (SEQ (COND
+         ((NULL |x|) (|error| "Cannot update an empty list"))
+         (T (SEQ (RPLACD |x| |y|) (EXIT (CDR |x|))))))) 
 
 (DEFUN |ILIST;setelt;$rest2$;13| (|x| T3 |y| $)
-  (COND
-    ((NULL |x|) (|error| "Cannot update an empty list"))
-    (T (CDR (RPLACD |x| |y|))))) 
+  (SEQ (COND
+         ((NULL |x|) (|error| "Cannot update an empty list"))
+         (T (SEQ (RPLACD |x| |y|) (EXIT (CDR |x|))))))) 
 
 (DEFUN |ILIST;construct;L$;14| (|l| $) (DECLARE (IGNORE $)) |l|) 
 
@@ -301,13 +301,13 @@
               (COND
                 ((NULL |y|) |x|)
                 (T (SEQ (PUSH (|SPADfirst| |y|) |x|)
-                        (QRPLACD |x| (CDR |y|)) (EXIT |x|)))))
+                        (RPLACD |x| (CDR |y|)) (EXIT |x|)))))
              (T (SEQ (LETT |z| |x| |ILIST;concat!;3$;25|)
                      (LOOP
                        (COND
                          ((NOT (NOT (NULL (CDR |z|)))) (RETURN NIL))
                          (T (SETQ |z| (CDR |z|)))))
-                     (QRPLACD |z| |y|) (EXIT |x|)))))))) 
+                     (RPLACD |z| |y|) (EXIT |x|)))))))) 
 
 (DEFUN |ILIST;removeDuplicates!;2$;26| (|l| $)
   (PROG (|pp| |f| |pr|)
@@ -333,7 +333,7 @@
                                     (COND
                                       ((SPADCALL (CAR |pr|) |f|
                                         (|getShellEntry| $ 59))
-                                       (QRPLACD |pp| (CDR |pr|)))
+                                       (RPLACD |pp| (CDR |pr|)))
                                       (T (SETQ |pp| |pr|)))))))))))
              (EXIT |l|)))))) 
 
@@ -366,15 +366,15 @@
                           (RETURN NIL))
                          (T (COND
                               ((SPADCALL (CAR |p|) (CAR |q|) |f|)
-                               (SEQ (QRPLACD |t| |p|)
+                               (SEQ (RPLACD |t| |p|)
                                     (LETT |t| |p|
                                      |ILIST;merge!;M3$;28|)
                                     (EXIT (SETQ |p| (CDR |p|)))))
-                              (T (SEQ (QRPLACD |t| |q|)
+                              (T (SEQ (RPLACD |t| |q|)
                                       (LETT |t| |q|
                                        |ILIST;merge!;M3$;28|)
                                       (EXIT (SETQ |q| (CDR |q|)))))))))
-                     (QRPLACD |t| (COND ((NULL |p|) |q|) (T |p|)))
+                     (RPLACD |t| (COND ((NULL |p|) |q|) (T |p|)))
                      (EXIT |r|)))))))) 
 
 (DEFUN |ILIST;split!;$I$;29| (|p| |n| $)
@@ -384,12 +384,12 @@
              ((< |n| 1) (|error| "index out of range"))
              (T (SEQ (SETQ |p|
                            (|ILIST;rest;$Nni$;19| |p|
-                               (LET ((#0=#:G1481 (- |n| 1)))
+                               (LET ((#0=#:G1485 (- |n| 1)))
                                  (|check-subtype| (NOT (MINUSP #0#))
                                      '(|NonNegativeInteger|) #0#))
                                $))
                      (LETT |q| (CDR |p|) |ILIST;split!;$I$;29|)
-                     (QRPLACD |p| NIL) (EXIT |q|)))))))) 
+                     (RPLACD |p| NIL) (EXIT |q|)))))))) 
 
 (DEFUN |ILIST;mergeSort| (|f| |p| |n| $)
   (PROG (|l| |q|)
@@ -403,7 +403,7 @@
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|
-                                 (LET ((#0=#:G1486 (TRUNCATE |n| 2)))
+                                 (LET ((#0=#:G1490 (TRUNCATE |n| 2)))
                                    (|check-subtype| (NOT (MINUSP #0#))
                                     '(|NonNegativeInteger|) #0#))
                                  |ILIST;mergeSort|)
@@ -415,10 +415,10 @@
                                      $))
                            (EXIT (|ILIST;merge!;M3$;28| |f| |p| |q| $)))))))))) 
 
-(DEFUN |IndexedList| (&REST #0=#:G1495 &AUX #1=#:G1493)
+(DEFUN |IndexedList| (&REST #0=#:G1499 &AUX #1=#:G1497)
   (DECLARE (SPECIAL |$ConstructorCache|))
   (DSETQ #1# #0#)
-  (PROG (#2=#:G1494)
+  (PROG (#2=#:G1498)
     (RETURN
       (COND
         ((SETQ #2#
