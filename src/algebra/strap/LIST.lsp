@@ -19,7 +19,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
                 |LIST;append;3$;4|)) 
 
-(PUT '|LIST;append;3$;4| '|SPADreplace| 'APPEND) 
+(PUT '|LIST;append;3$;4| '|SPADreplace| '|%lconcat|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Void|)
                 |LIST;writeOMList|)) 

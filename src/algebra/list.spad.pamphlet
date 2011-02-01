@@ -44,7 +44,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
 -- a knowledgeable person wants to update it:
 --   The following LISP dependencies are divided into two groups
 --   Those that are required
---   CONS, EQ, NIL, RPLACA, RPLACD
+--   CONS, EQ, NIL, 
 --   Those that are included for efficiency only
 --   LIST, NCONC2, LENGTH
 --   Also REVERSE, since it's called in Polynomial Ring
@@ -75,16 +75,20 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    elt(x,"rest")       == %tail x
    setfirst!(x,s)     ==
       empty? x => error "Cannot update an empty list"
-      %head RPLACA(x,s)$Lisp
+      %store(%head x,s)$Foreign(Builtin)
+      s
    setelt(x,"first",s) ==
       empty? x => error "Cannot update an empty list"
-      %head RPLACA(x,s)$Lisp
+      %store(%head x,s)$Foreign(Builtin)
+      s
    setrest!(x,y)      ==
       empty? x => error "Cannot update an empty list"
-      %tail RPLACD(x,y)$Lisp
+      %store(%tail x,y)$Foreign(Builtin)
+      %tail x
    setelt(x,"rest",y)  ==
       empty? x => error "Cannot update an empty list"
-      %tail RPLACD(x,y)$Lisp
+      %store(%tail x,y)$Foreign(Builtin)
+      %tail x
    construct l         == l pretend %
    parts s             == s pretend List S
    reverse! x         == %lreverse! x
@@ -150,12 +154,12 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
       empty? x => 
         empty? y => x
         Qpush(first y,x)
-        QRPLACD(x,rest y)$Lisp
+        %store(%tail x,rest y)$Foreign(Builtin)
         x
       z:=x
       while not empty? %tail z repeat
         z:=%tail z
-      QRPLACD(z,y)$Lisp
+      %store(%tail z,y)$Foreign(Builtin)
       x
 
    -- Then a quicky:
@@ -169,7 +173,8 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
          f:S:=%head p
          p:=%tail p
          while not empty? (pr:=%tail pp) repeat
-           if (%head pr)@S = f then QRPLACD(pp,%tail pr)$Lisp
+           if (%head pr)@S = f then
+             %store(%tail pp,%tail pr)$Foreign(Builtin)
            else pp:=pr
        l
 
@@ -187,16 +192,16 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
        else (r := t := q; q := %tail q)
      while not empty? p and not empty? q repeat
        if f(%head p, %head q)
-         then (QRPLACD(t, p)$Lisp; t := p; p := %tail p)
-         else (QRPLACD(t, q)$Lisp; t := q; q := %tail q)
-     QRPLACD(t, if empty? p then q else p)$Lisp
+         then (%store(%tail t, p)$Foreign(Builtin); t := p; p := %tail p)
+         else (%store(%tail t, q)$Foreign(Builtin); t := q; q := %tail q)
+     %store(%tail t, if empty? p then q else p)$Foreign(Builtin)
      r
 
    split!(p, n) ==
       n < 1 => error "index out of range"
       p := rest(p, (n - 1)::NonNegativeInteger)
       q := %tail p
-      QRPLACD(p,%nil)$Lisp
+      %store(%tail p,%nil)$Foreign(Builtin)
       q
 
    mergeSort(f, p, n) ==
@@ -271,11 +276,12 @@ List(S:Type): Exports == Implementation where
       import %nil: %                 from Foreign Builtin
       import %peq: (%,%) -> Boolean  from Foreign Builtin
       import %makepair: (S,%) -> %   from Foreign Builtin
+      import %lconcat: (%,%) -> %    from Foreign Builtin
 
       nil                      == %nil
       null l                   == %peq(l,%nil)
       cons(s, l)               == %makepair(s,l)
-      append(l:%, t:%)         == APPEND(l, t)$Lisp
+      append(l:%, t:%)         == %lconcat(l,t)
 
       if S has OpenMath then
         writeOMList(dev: OpenMathDevice, x: %): Void ==
