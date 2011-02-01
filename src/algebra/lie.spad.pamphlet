@@ -56,10 +56,9 @@ AssociatedLieAlgebra(R:CommutativeRing,A:NonAssociativeAlgebra R):
       FiniteRankNonAssociativeAlgebra(R)
 
   private ==> A add
-    Rep := A
-    (a:%) * (b:%) == (a::Rep) * $Rep (b::Rep) -$Rep (b::Rep) * $Rep (a::Rep)
-    coerce(a:%):A == a :: Rep
-    coerce(a:A):% == a :: %
+    (a:%) * (b:%) == per(rep a * rep b - rep b * rep a)
+    coerce(a:%):A == rep a
+    coerce(a:A):% == per a
     (a:%) ** (n:PositiveInteger) ==
       n = 1 => a
       0
@@ -112,16 +111,13 @@ AssociatedJordanAlgebra(R:CommutativeRing,A:NonAssociativeAlgebra R):
       FiniteRankNonAssociativeAlgebra(R)
 
   private ==> A add
-    Rep := A
-    two  : R := (1$R + 1$R)
-    oneHalf : R := (recip two) :: R
+    oneHalf : R := recip(1$R + 1$R) :: R
     (a:%) * (b:%) ==
-      zero? two => error
-        "constructor must no be called with Ring of characteristic 2"
-      ((a::Rep) * $Rep (b::Rep) +$Rep (b::Rep) * $Rep (a::Rep)) * oneHalf
-      -- (a::Rep) * $Rep (b::Rep) +$Rep (b::Rep) * $Rep (a::Rep)
-    coerce(a:%):A == a :: Rep
-    coerce(a:A):% == a :: %
+      characteristic$R = 2 => error
+        "constructor must not be called with Ring of characteristic 2"
+      per((rep a * rep b + rep b * rep a) * oneHalf)
+    coerce(a:%):A == rep a
+    coerce(a:A):% == per a
     (a:%) ** (n:PositiveInteger) == a
 
 @
@@ -155,8 +151,6 @@ LieSquareMatrix(n,R): Exports == Implementation where
       FramedNonAssociativeAlgebra R) --with
 
   Implementation ==> AssociatedLieAlgebra (R,SquareMatrix(n, R)) add
-
-    Rep :=  AssociatedLieAlgebra (R,SquareMatrix(n, R))
       -- local functions
     n2 : PositiveInteger := n*n
 
@@ -185,8 +179,7 @@ LieSquareMatrix(n,R): Exports == Implementation where
 
 
     convDM v ==
-      sq := conv v
-      coerce(sq)$Rep :: %
+      per(conv(v)::Rep)
 
     basis() ==
       n2 : PositiveInteger := n*n
