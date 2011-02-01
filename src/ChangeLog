@@ -1,5 +1,10 @@
 2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/nrunopt.boot (NRTgetLookupFunction): Explain reason for
+	non-extension. 
+
+2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compList): Use %nil form, not NIL.
 
 2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
