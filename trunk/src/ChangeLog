@@ -1,5 +1,12 @@
 2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (optCallSpecially): Remove.
+	(optSpeciallCall): Likeise.
+	(optCall): Adjust.
+	(optCallEval): Move to wi2.boot, sole user.
+
+2011-01-31  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optQSMINUS): Remove.
 	* algebra/data.spad.pamphlet: Tidy.
 	* algebra/plot.spad.pamphlet: Likewise.
