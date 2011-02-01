@@ -1,5 +1,12 @@
 2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/files.spad.pamphlet (Library): Remove assignment to Rep.
+	* algebra/lie.spad.pamphlet (AssociatedLieAlgebra): Likewise.
+	(AssociatedJordanAlgebra): Likewise.
+	(LieSquareMatrix): Likewise.
+
+2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/nrunopt.boot (NRTgetLookupFunction): Explain reason for
 	non-extension. 
 

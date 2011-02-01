@@ -437,10 +437,9 @@ Library(): Join(TableAggregate(String, Any),Eltable(Symbol,Any)) with
              ++ \spad{lib}.  It can later be extracted using the key \spad{k}.
 
     == KeyedAccessFile(Any) add
-         Rep := KeyedAccessFile(Any)
-         library f == open f
-         elt(f:%,v:Symbol) == elt(f, string v)
-         setelt(f:%, v:Symbol, val:Any) == setelt(f, string v, val)
+         library f == per open f
+         elt(f:%,v:Symbol) == elt(rep f, string v)
+         setelt(f:%, v:Symbol, val:Any) == setelt(rep f, string v, val)
 
 @
 \section{License}
