@@ -883,8 +883,8 @@ setqMultiple(nameList,val,m,e) ==
   assignList:=
     [([.,.,e]:= compSetq1(x,["elt",g,y],z,e) or return "failed").expr
       for x in nameList for [y,:z] in selectorModePairs]
-  if assignList="failed" then NIL
-  else [mkpf([x,:assignList,g],'PROGN),m',e]
+  assignList="failed" => nil
+  [mkpf([x,:assignList,g],'PROGN),m',e]
 
 setqMultipleExplicit(nameList,valList,m,e) ==
   #nameList~=#valList =>
@@ -979,7 +979,7 @@ compQuote(expr,m,e) ==
 
 compList: (%Form,%Mode,%Env) -> %Maybe %Triple
 compList(l,m is ["List",mUnder],e) ==
-  null l => [NIL,m,e]
+  null l => ['%nil,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
   T:= [['%listlit,:[T.expr for T in Tl]],["List",mUnder],e]
@@ -1035,7 +1035,7 @@ compSeq1(l,$exitModeStack,e) ==
   c:=
     [([.,.,e]:=
       --this used to be compOrCroak-- but changed so we can back out
-        ($insideExpressionIfTrue:= NIL; compSeqItem(x,$NoValueMode,e) or return
+        ($insideExpressionIfTrue:= false; compSeqItem(x,$NoValueMode,e) or return
           "failed")).expr for x in l]
   if c="failed" then return nil
   catchTag:= MKQ gensym()
