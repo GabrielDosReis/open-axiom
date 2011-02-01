@@ -599,6 +599,14 @@ compMapCond''(cexpr,dc) ==
 --======================================================================
 --                    From nruncomp.boot
 --======================================================================
+optCallEval u ==
+  u is ["List",:.] => List Integer()
+  u is ["Vector",:.] => Vector Integer()
+  u is ["PrimitiveArray",:.] => PrimitiveArray Integer()
+  u is ["FactoredForm",:.] => FactoredForm Integer()
+  u is ["Matrix",:.] => Matrix Integer()
+  eval u
+ 
 optDeltaEntry(op,sig,dc,eltOrConst) ==
   return nil    --------> kill it
   $killOptimizeIfTrue = true => nil

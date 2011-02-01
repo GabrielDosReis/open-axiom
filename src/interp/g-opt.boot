@@ -243,24 +243,9 @@ optCall (x is ['%call,:u]) ==
     x.rest := [:a,name]
     x
   fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
-    not $bootStrapMode and (w := optCallSpecially(q,x,n,R)) => resetTo(x,w)
     q = 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)
   systemErrorHere ['optCall,x]
- 
-optCallSpecially(q,x,n,R) ==
-    optimizableDomain? R => optSpecialCall(x,R,n)
-    (y:= get(R,"value",$e)) and optimizableDomain? y.expr =>
-        optSpecialCall(x,y.expr,n)
-    nil
- 
-optCallEval u ==
-  u is ["List",:.] => List Integer()
-  u is ["Vector",:.] => Vector Integer()
-  u is ["PrimitiveArray",:.] => PrimitiveArray Integer()
-  u is ["FactoredForm",:.] => FactoredForm Integer()
-  u is ["Matrix",:.] => Matrix Integer()
-  eval u
  
 optCons (x is ["CONS",a,b]) ==
   a="NIL" =>
@@ -272,23 +257,6 @@ optCons (x is ["CONS",a,b]) ==
     b is ['QUOTE,:c] => (x.first := 'QUOTE; x.rest := [a',:c]; x)
     x
   x
- 
-optSpecialCall(x,y,n) ==
-  yval := optCallEval y
-  CAAAR x="CONST" =>
-    KAR yval.n = function Undef =>
-      keyedSystemError("S2GE0016",['"optSpecialCall",
-        '"invalid constant"])
-    MKQ yval.n
-  fn := getFunctionReplacement compileTimeBindingOf first yval.n =>
-    x.rest := CDAR x
-    x.first := fn
-    if fn is ["XLAM",:.] then x := simplifyVMForm x
-    x is ["EQUAL",:args] => resetTo(x,DEF_-EQUAL args)
-                --DEF-EQUAL is really an optimiser
-    x
-  [fn,:a]:= first x
-  emitIndirectCall(fn,a,x)
  
 compileTimeBindingOf u ==
   null(name:= BPINAME u)  => keyedSystemError("S2OO0001",[u])
