@@ -807,11 +807,12 @@ NRTgetLookupFunction(domform,exCategory,addForm) ==
   if null extends then 
     [u,msg,:v] := $why
     SAY '"--------------non extending category----------------------"
-    compilerMessage('"%1p of category %2p", [domform,u])
+    sayPatternMsg('"%1p of category %2p", [domform,u])
     if v ~= nil then
-      compilerMessage('"%1b %2p",[msg,first v])
+      sayPatternMsg('"%1b %2p",[msg,first v])
     else
-      compilerMessage('"%1b",[msg])
+      sayPatternMsg('"%1b",[msg])
+    SAY '"----------------------------------------------------------"
   extends => 'lookupIncomplete
   'lookupComplete
 
