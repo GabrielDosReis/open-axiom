@@ -1456,7 +1456,7 @@ compSingleCapsuleItem(item,$predl,$e) ==
 ++ subroutine of doIt.  Called to generate runtime noop insn.
 mutateToNothing item ==
   item.op := 'PROGN
-  item.rest := NIL
+  item.rest := nil
 
 doIt(item,$predl) ==
   $GENNO: local:= 0
@@ -1572,7 +1572,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   item.op := "COND"
   item.rest := [[p',x,:x'],['%true,y,:y']]
  where localExtras(oldFLP) ==
-   EQ(oldFLP,$functorLocalParameters) => NIL
+   EQ(oldFLP,$functorLocalParameters) => nil
    flp1:=$functorLocalParameters
    oldFLP':=oldFLP
    n:=0
