@@ -1,4 +1,4 @@
--- Copyright (C) 2007-2010 Gabriel Dos Reis.
+-- Copyright (C) 2007-2011 Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,14 +39,7 @@ import hash
 namespace BOOT
 
 module sys_-utility where
-  eval: %Thing -> %Thing
   probleReadableFile : %String -> %Maybe %String
-
-
-++ Evaluate an OpenAxiom VM form.  Eventually, this function is
-++ to be provided as a builtin by a OpenAxiom target machine.
-eval x ==
-  EVAL expandToVMForm x
 
 --%
 $COMBLOCKLIST := nil

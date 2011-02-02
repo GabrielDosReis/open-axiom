@@ -333,7 +333,7 @@ clearClams() ==
 clearClam fn ==
   infovec:= GETL(fn,'cacheInfo) or keyedSystemError("S2GE0003",[fn])
   eval infovec.cacheReset
- 
+
 reportAndClearClams() ==
   cacheStats()
   clearClams()
