@@ -1,3 +1,10 @@
+2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/lisp-backend.boot: New file.  Consolidate Common Lisp
+	backend module.
+	* interp/Makefile.in (OBJS): Include it.
+	(lisp-backend.$(FASLEXT)): New rule.
+
 2011-02-01  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* algebra/files.spad.pamphlet (Library): Remove assignment to Rep.
