@@ -109,8 +109,8 @@ compClam(op,argl,body,$clamList) ==
     callCounter:= INTERNL(op,'";calls")
     setDynamicBinding(hitCounter,0)
     setDynamicBinding(callCounter,0)
-    callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
-    hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
+    callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
+    hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --length of cache or arg-value pair
   g3:= gensym()  --value computed by calling function
   lookUpFunction:=
@@ -121,28 +121,28 @@ compClam(op,argl,body,$clamList) ==
     'assocCache
   returnFoundValue:=
     countFl => ['CDDR,g3]
-    ['CDR,g3]
+    ['%tail,g3]
   namePart:=
     countFl => cacheName
     MKQ cacheName
   secondPredPair:=
 --   null argl => [cacheName]
-    [['SETQ,g3,[lookUpFunction,g1,namePart,eqEtc]],
+    [['%store,g3,[lookUpFunction,g1,namePart,eqEtc]],
       :hitCountCode,
         returnFoundValue]
   resetCacheEntry:=
-    countFl => ['CONS,1,g2]
+    countFl => ['%makepair,1,g2]
     g2
   thirdPredPair:=
     ['%true,
       ['%store,g2,computeValue],
-        ['%store,g3,['CAR,cacheName]],
-          ['RPLACA,g3,g1],
-            ['RPLACD,g3,resetCacheEntry],
+        ['%store,g3,['%head,cacheName]],
+          ['%store,['%head,g3],g1],
+            ['%store,['%tail,g3],resetCacheEntry],
               g2]
   codeBody:= ['PROG,[g2,g3],
                 :callCountCode,
-                  ['RETURN,['COND,secondPredPair,thirdPredPair]]]
+                  ['RETURN,['%when,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
@@ -157,7 +157,7 @@ compClam(op,argl,body,$clamList) ==
   compileQuietly [computeFunction]
  
   cacheType:= 'function
-  cacheResetCode:= ['SETQ,cacheName,['initCache,cacheCount]]
+  cacheResetCode:= ['%store,cacheName,['initCache,cacheCount]]
   cacheCountCode:= ['countCircularAlist,cacheName,cacheCount]
   cacheVector:= mkCacheVec(op,cacheName,cacheType,
     cacheResetCode,cacheCountCode)
@@ -199,7 +199,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     null argl => [nil,nil,[auxfn]]
     argl is [.] =>
       key:= (cacheNameOrNil => ['devaluate,g1]; g1)
-      [[g1],['LIST,key],[auxfn,g1]]  --g1 is a parameter
+      [[g1],['%listlit,key],[auxfn,g1]]  --g1 is a parameter
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName:= cacheNameOrNil or mkCacheName op
@@ -208,8 +208,8 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     callCounter:= INTERNL(op,'";calls")
     setDynamicBinding(hitCounter,0)
     setDynamicBinding(callCounter,0)
-    callCountCode:= [['SETQ,callCounter,['QSADD1,callCounter]]]
-    hitCountCode:=  [['SETQ,hitCounter,['QSADD1,hitCounter]]]
+    callCountCode:= [['%store,callCounter,['%iinc,callCounter]]]
+    hitCountCode:=  [['%store,hitCounter,['%iinc,hitCounter]]]
   g2:= gensym()  --value computed by calling function
   returnFoundValue:=
     null argl =>
@@ -229,26 +229,26 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
           ['HGET,cacheNameOrNil,MKQ op],MKQ eqEtc]
       ['lassocShift,cacheArgKey,['HGET,cacheNameOrNil,MKQ op]]
     ['HGET,cacheName,g1]
-  secondPredPair:= [['SETQ,g2,getCode],:hitCountCode,returnFoundValue]
+  secondPredPair:= [['%store,g2,getCode],:hitCountCode,returnFoundValue]
   putCode:=
     null argl =>
       cacheNameOrNil =>
-        countFl => ['CDDAR,['HPUT,cacheNameOrNil,MKQ op,
-                      ['LIST,['CONS,nil,['CONS,1,computeValue]]]]]
-        ['HPUT,cacheNameOrNil,MKQ op,['LIST,['CONS,nil,computeValue]]]
+        countFl =>
+          ['CDDAR,['HPUT,cacheNameOrNil,MKQ op,
+            ['%listlit,['%makepair,'%nil,['%makepair,1,computeValue]]]]]
+        ['HPUT,cacheNameOrNil,MKQ op,
+          ['%listlit,['%makepair,'%nil,computeValue]]]
       systemError '"unexpected"
     cacheNameOrNil => computeValue
-    --countFl => ['CDR,['hputNewProp,cacheNameOrNil,MKQ op,cacheArgKey, --***
-    --             ['CONS,1,computeValue]]]                             --***
-    --['hputNewProp,cacheNameOrNil,MKQ op,cacheArgKey,computeValue]    --***
-    countFl => ['CDR,['HPUT,cacheName,g1,['CONS,1,computeValue]]]
+    countFl => ['%tail,['HPUT,cacheName,g1,['%makepair,1,computeValue]]]
     ['HPUT,cacheName,g1,computeValue]
   if cacheNameOrNil then putCode :=
-     ['UNWIND_-PROTECT,['PROG1,putCode,['SETQ,g2,'T]],
-                  ['COND,[['NOT,g2],['HREM,cacheName,MKQ op]]]]
+     ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
+                  ['%when,[['%not,g2],['HREM,cacheName,MKQ op]]]]
   thirdPredPair:= ['%true,putCode]
-  codeBody:= ['PROG,[g2],
-               :callCountCode,['RETURN,['COND,secondPredPair,thirdPredPair]]]
+  codeBody:=
+    ['PROG,[g2],
+      :callCountCode,['RETURN,['%when,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
@@ -299,12 +299,12 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
     g2
   getCode:= ['HGET,cacheName,cacheArgKey]
   secondPredPair:= [['%store,g2,getCode],returnFoundValue]
-  putForm:= ['CONS,MKQ op,g1]
+  putForm:= ['%makepair,MKQ op,g1]
   putCode:=
-    countFl => ['HPUT,cacheName,putForm,['CONS,1,computeValue]]
+    countFl => ['HPUT,cacheName,putForm,['%makepair,1,computeValue]]
     ['HPUT,cacheName,putForm,computeValue]
   thirdPredPair:= ['%true,putCode]
-  codeBody:= ['PROG,[g2], ['RETURN,['COND,secondPredPair,thirdPredPair]]]
+  codeBody:= ['PROG,[g2], ['RETURN,['%when,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]

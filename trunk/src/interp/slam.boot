@@ -184,7 +184,7 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
             ["RPLACD",g3,g2],
               g2]
   codeBody:=
-    ["PROG",[g2,g3],["RETURN",["COND",secondPredPair,thirdPredPair]]]
+    ["PROG",[g2,g3],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   -- cannot use envArg in next statement without redoing much
   -- of above.
   lamex:= ["LAM",arg,codeBody]
@@ -217,9 +217,9 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   if null argl then g1:=nil
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function
-  secondPredPair:= [["SETQ",g2,["HGET",["%dynval",MKQ cacheName],g1]],g2]
+  secondPredPair:= [['%store,g2,["HGET",['%dynval,MKQ cacheName],g1]],g2]
   thirdPredPair:= ['%true,["HPUT",['%dynval,MKQ cacheName],g1,computeValue]]
-  codeBody:= ["PROG",[g2],["RETURN",["COND",secondPredPair,thirdPredPair]]]
+  codeBody:= ["PROG",[g2],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
   parms := [:argl, "envArg"]
@@ -227,7 +227,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   compileInteractive mainFunction
   compileInteractive computeFunction
   cacheType:= 'hash_-table
-  cacheResetCode:= ["%store",["%dynval",MKQ cacheName],['hashTable,''EQUAL]]
+  cacheResetCode:= ['%store,['%dynval,MKQ cacheName],['hashTable,''EQUAL]]
   cacheCountCode:= ['hashCount,cacheName]
   cacheVector:=
     mkCacheVec(op,cacheName,cacheType,cacheResetCode,cacheCountCode)
@@ -290,10 +290,10 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
     returnValue:= ["PROGN",newStateCode,first gsList]
     cbody:=
       endTest:=
-        ["COND", [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
+        ['%when, [["EQL",sharpArg,gIndex],['RETURN,returnValue]]]
       newValueCode:= ["%LET",g,substitute(gIndex,sharpArg,
         EQSUBSTLIST(gsList,rest $TriangleVariableList,body))]
-      ["%bind",decomposeBindings,
+      ['%bind,decomposeBindings,
         ['%loop,["WHILE",true],["PROGN",endTest,advanceCode,
           newValueCode,:rotateCode],voidValue()]]
   fromScratchInit:=
@@ -304,7 +304,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   mainFunction:= [nam,["LAM",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= gensym()
-    tripleCode := ["CONS",n,['%listlit,:initCode]]
+    tripleCode := ['%makepair,n,['%listlit,:initCode]]
  
     -- initialSetCode initializes the global variable if necessary and
     --  also binds "stateVar" to its current value
@@ -312,31 +312,31 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       initialValueCode :=
         extraArguments => ["hashTable",''EQUAL]
         tripleCode
-      cacheResetCode := ["%store",["%dynval", MKQ stateNam],initialValueCode]
-      ["COND",[["%not",["%and",["BOUNDP",MKQ stateNam], _
-                          ["CONSP",["%dynval",MKQ stateNam]]]],    _
+      cacheResetCode := ['%store,['%dynval, MKQ stateNam],initialValueCode]
+      ['%when,[['%not,['%and,["BOUNDP",MKQ stateNam], _
+                          ['%pair?,['%dynval,MKQ stateNam]]]],    _
                  ["%LET",stateVar,cacheResetCode]], _
-             [''T, ["%LET",stateVar,["%dynval",MKQ stateNam]]]]
+             ['%true, ["%LET",stateVar,['%dynval,MKQ stateNam]]]]
  
     -- when there are extra arguments, initialResetCode resets "stateVar"
     --  to the hashtable entry for the extra arguments
     initialResetCode :=
       null extraArguments => nil
-      [["%LET",stateVar,["OR",
+      [["%LET",stateVar,['%or,
          ["HGET",stateVar,extraArgumentCode],
           ["HPUT",stateVar,extraArgumentCode,tripleCode]]]]
  
     mbody :=
       preset := [initialSetCode,:initialResetCode,["%LET",max,["ELT",stateVar,0]]]
-      phrase1:= [["%and",["%LET",max,["ELT",stateVar,0]],["%ige",sharpArg,max]],
+      phrase1:= [['%and,["%LET",max,["ELT",stateVar,0]],['%ige,sharpArg,max]],
                   [auxfn,:argl,stateVar]]
-      phrase2:= [["%igt",sharpArg,["SETQ",max,["DIFFERENCE",max,k]]],
-                  ["ELT",stateVar,["QSADD1",["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]
-      phrase3:= [["%igt",sharpArg,n],[auxfn,:argl,['%listlit,n,:initCode]]]
-      phrase4:= [["%igt",sharpArg,n-k],
+      phrase2:= [['%igt,sharpArg,['%store,max,["DIFFERENCE",max,k]]],
+                  ["ELT",stateVar,['%iinc,["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]
+      phrase3:= [['%igt,sharpArg,n],[auxfn,:argl,['%listlit,n,:initCode]]]
+      phrase4:= [['%igt,sharpArg,n-k],
         ["ELT",['%listlit,:initCode],["QSDIFFERENCE",n,sharpArg]]]
       phrase5:= ['%true,['recurrenceError,MKQ op,sharpArg]]
-      ['PROGN,:preset,['COND,phrase1,phrase2,phrase3,phrase4,phrase5]]
+      ['PROGN,:preset,['%when,phrase1,phrase2,phrase3,phrase4,phrase5]]
   if $verbose then
     sayKeyedMsg("S2IX0001",[op])
   compileInteractive computeFunction

@@ -1,5 +1,10 @@
 2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/clam.boot: Tidy.
+	* interp/slam.boot: Likewise.
+
+2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisp-backend.boot: New file.  Consolidate Common Lisp
 	backend module.
 	* interp/Makefile.in (OBJS): Include it.
