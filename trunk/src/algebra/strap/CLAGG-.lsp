@@ -112,8 +112,7 @@
       (|getShellEntry| $ 39))) 
 
 (DEFUN |CLAGG-;remove;S2A;10!0| (|#1| $$)
-  (SPADCALL |#1| (|getShellEntry| $$ 1)
-      (|getShellEntry| (|getShellEntry| $$ 0) 38))) 
+  (SPADCALL |#1| (SVREF $$ 1) (|getShellEntry| (SVREF $$ 0) 38))) 
 
 (DEFUN |CLAGG-;reduce;MA3S;11| (|f| |x| |s1| |s2| $)
   (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s1| |s2|

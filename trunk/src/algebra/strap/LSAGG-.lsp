@@ -642,9 +642,8 @@
          (EXIT |l|)))) 
 
 (DEFUN |LSAGG-;removeDuplicates!;2A;24!0| (|#1| $$)
-  (LET (($ (|getShellEntry| $$ 0)))
-    (SPADCALL |#1|
-        (SPADCALL (|getShellEntry| $$ 1) (|getShellEntry| $ 18))
+  (LET (($ (SVREF $$ 0)))
+    (SPADCALL |#1| (SPADCALL (SVREF $$ 1) (|getShellEntry| $ 18))
         (|getShellEntry| $ 72)))) 
 
 (DEFUN |LSAGG-;<;2AB;25| (|x| |y| $)

@@ -38,8 +38,7 @@
       (|getShellEntry| $ 12))) 
 
 (DEFUN |HOAGG-;eval;ALA;1!0| (|#1| $$)
-  (SPADCALL |#1| (|getShellEntry| $$ 1)
-      (|getShellEntry| (|getShellEntry| $$ 0) 10))) 
+  (SPADCALL |#1| (SVREF $$ 1) (|getShellEntry| (SVREF $$ 0) 10))) 
 
 (DEFUN |HOAGG-;#;ANni;2| (|c| $)
   (LIST-LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
@@ -114,16 +113,14 @@
       (|getShellEntry| $ 36))) 
 
 (DEFUN |HOAGG-;count;SANni;8!0| (|#1| $$)
-  (SPADCALL (|getShellEntry| $$ 1) |#1|
-      (|getShellEntry| (|getShellEntry| $$ 0) 34))) 
+  (SPADCALL (SVREF $$ 1) |#1| (|getShellEntry| (SVREF $$ 0) 34))) 
 
 (DEFUN |HOAGG-;member?;SAB;9| (|e| |c| $)
   (SPADCALL (CONS #'|HOAGG-;member?;SAB;9!0| (VECTOR $ |e|)) |c|
       (|getShellEntry| $ 38))) 
 
 (DEFUN |HOAGG-;member?;SAB;9!0| (|#1| $$)
-  (SPADCALL (|getShellEntry| $$ 1) |#1|
-      (|getShellEntry| (|getShellEntry| $$ 0) 34))) 
+  (SPADCALL (SVREF $$ 1) |#1| (|getShellEntry| (SVREF $$ 0) 34))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
   (SPADCALL
