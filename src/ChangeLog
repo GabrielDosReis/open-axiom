@@ -1,5 +1,10 @@
 2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* algebra/stream.spad.pamphlet (Stream): Remove bogus assignment
+	to Rep. Rework local function definitions.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot: Replace COND with %when throught.
 	Use %otherwise instead of %true where appropriate.
 	* interp/define.boot: Likewise.

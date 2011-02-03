@@ -549,9 +549,6 @@ CyclicStreamTools(S,ST): Exports == Implementation where
 @
 \section{domain STREAM Stream}
 <<domain STREAM Stream>>=
--- As explained below, in the capsule, the Rep for STREAM is actually
--- a half lie.  So, the system should not be allowed to trust it.
-)boot $optProclaim := false
 import Void
 import Boolean
 import Integer
@@ -652,41 +649,42 @@ Stream(S): Exports == Implementation where
 
 --% representation
 
-    -- This description of the rep is not quite true.
     -- The Rep is a pair of one of three forms:
     --    [value: S,             rest: %]
     --    [nullstream:    Magic, NIL    ]
     --    [nonnullstream: Magic, fun: () -> %]
     -- Could use a record of unions if we could guarantee no tags.
 
-    NullStream:    S := _$NullStream$Lisp    pretend S
-    NonNullStream: S := _$NonNullStream$Lisp pretend S
+    macro NullStream == _$NullStream$Foreign(Builtin)
+    macro NonNullStream == _$NonNullStream$Foreign(Builtin)
 
-    Rep := Record(firstElt: S, restOfStream: %)
+    import %head: % -> S from Foreign Builtin
+    import %tail: % -> % from Foreign Builtin
 
     explicitlyEmpty? x == %peq(frst x,NullStream)$Foreign(Builtin)
     lazy? x            == %peq(frst x,NonNullStream)$Foreign(Builtin)
 
 --% signatures of local functions
 
-    setfrst!     : (%,S) -> S
-    setrst!      : (%,%) -> %
-    setToNil!    : % -> %
-    setrestt!    : (%,I,%) -> %
-    lazyEval      : % -> %
     expand!      : (%,I) -> %
 
 --% functions to access or change record fields without lazy evaluation
 
-    frst x == x.firstElt
-    rst  x == x.restOfStream
+    frst x == %head x
+    rst  x == %tail x
 
-    setfrst!(x,s) == x.firstElt := s
-    setrst!(x,y)  == x.restOfStream := y
+    setfrst!(x: %,s: S): S ==
+      %store(%head x,s)$Foreign(Builtin)
+      %head x
 
-    setToNil! x ==
+    setrst!(x:%,y: %): % ==
+      %store(%tail x,y)$Foreign(Builtin)
+      %tail x
+
     -- destructively changes x to a null stream
-      setfrst!(x,NullStream); setrst!(x,NIL$Lisp)
+    setToNil!(x: %): % ==
+      setfrst!(x,NullStream)
+      setrst!(x,%nil$Foreign(Builtin))
       x
 
 --% SETCAT functions
@@ -915,9 +913,11 @@ Stream(S): Exports == Implementation where
 
 --% RCAGG functions
 
-    empty() == [NullStream, NIL$Lisp]
+    empty() ==
+      %makepair(NullStream,%nil$Foreign(Builtin))$Foreign(Builtin)
 
-    lazyEval x == (rst(x):(()-> %)) ()
+    lazyEval(x: %): % ==
+      (rst(x):(()-> %)) ()
 
     lazyEvaluate x ==
       st := lazyEval x
@@ -948,7 +948,9 @@ Stream(S): Exports == Implementation where
       n = 0 or empty? x => empty()
       (concat(frst x, first(rst x,(n-1) :: NNI)))
 
-    concat(s:S,x:%) == [s,x]
+    concat(s:S,x:%) ==
+      %makepair(s,x)$Foreign(Builtin)
+
     cons(s,x) == concat(s,x)
 
     cycleSplit! x ==
@@ -1067,9 +1069,8 @@ Stream(S): Exports == Implementation where
       while not eq?(x,xp) repeat (x := rst x; xp := rst xp; npp := npp+1)
       [true, npp, periode]
 
-    delay(fs:()->%) == [NonNullStream, fs pretend %]
-
---     explicitlyEmpty? x == markedNull? x
+    delay(fs:()->%) ==
+      %makepair(NonNullStream,fs)$Foreign(Builtin)
 
     explicitEntries? x ==
       not explicitlyEmpty? x and not lazy? x
@@ -1085,7 +1086,7 @@ Stream(S): Exports == Implementation where
         mathPrint(frst(x)::OUT)$Lisp
         output(n-1, rst x)
 
-    setrestt!(x,n,y) ==
+    setrestt!(x: %,n: I,y: %): % ==
       n = 0 => setrst!(x,y)
       setrestt!(rst x,n-1,y)
 
