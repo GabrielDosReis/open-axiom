@@ -1,5 +1,7 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
+-- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
 -- modification, are permitted provided that the following conditions are
@@ -72,8 +74,8 @@ intCodeGenCOERCE(triple,t2) ==
     objNew(['PROGN,:code,getValueNormalForm
       intCodeGenCOERCE(objNew(lastCode,t1),t2)],t2)
 
-  val is ['COND,:conds] =>
-    objNew(['COND,
+  val is ['%when,:conds] =>
+    objNew(['%when,
       :[[p,getValueNormalForm intCodeGenCOERCE(objNew(v,t1),t2)]
         for [p,v] in conds]],t2)
 
@@ -92,10 +94,10 @@ intCodeGenCOERCE(triple,t2) ==
     coerceByFunction(triple,t2)
 
   -- next is hack for if-then-elses
-  (t1 = '$NoValueMode) and (val is ['COND,pred]) =>
+  (t1 = '$NoValueMode) and (val is ['%when,pred]) =>
     code :=
-      ['COND,pred,
-        [MKQ true,['throwKeyedMsg,MKQ "S2IM0016",MKQ $mapName]]]
+      ['%when,pred,
+        ['%otherwise,['throwKeyedMsg,MKQ "S2IM0016",MKQ $mapName]]]
     objNew(code,t2)
 
   -- optimize coerces to Expression

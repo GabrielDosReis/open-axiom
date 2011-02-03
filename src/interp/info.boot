@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2009, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@
 --%  (has domainname categoryexpression)
 --%              --These are also stored as 'value' properties
 --% Conditional attributes are of the form
---%  (COND
+--%  (%when
 --%  (condition info info ...)
 --%  ... )
 --% where the condition looks like a 'has' clause, or the 'and' of several
@@ -93,14 +93,14 @@ formatInfo u ==
     isCategoryForm(v,$e) => ["has","$",v]
     ["ATTRIBUTE","$",v]
   u is ["IF",a,b,c] =>
-    c="%noBranch" => ["COND",:liftCond [formatPred a,formatInfo b]]
-    b="%noBranch" => ["COND",:liftCond [["not",formatPred a],formatInfo c]]
-    ["COND",:liftCond [formatPred a,formatInfo b],:
+    c="%noBranch" => ['%when,:liftCond [formatPred a,formatInfo b]]
+    b="%noBranch" => ['%when,:liftCond [["not",formatPred a],formatInfo c]]
+    ['%when,:liftCond [formatPred a,formatInfo b],:
       liftCond [["not",formatPred a],formatInfo c]]
   systemError ['"formatInfo",u]
  
 liftCond (clause is [ante,conseq]) ==
-  conseq is ["COND",:l] =>
+  conseq is ['%when,:l] =>
     [[lcAnd(ante,a),:b] for [a,:b] in l] where
       lcAnd(pred,conj) ==
         conj is ["and",:ll] => ["and",pred,:ll]
@@ -127,7 +127,7 @@ chaseInferences(pred,$e) ==
       $e:= actOnInfo(pred,$e)
       pred:= infoToHas pred
       for u in get("$Information","special",$e) repeat
-        u is ["COND",:l] =>
+        u is ['%when,:l] =>
           for [ante,:conseq] in l repeat
             ante=pred => [foo w for w in conseq]
             ante is ["and",:ante'] and member(pred,ante') =>
@@ -135,7 +135,7 @@ chaseInferences(pred,$e) ==
               v':=
                 # ante'=1 => first ante'
                 ["and",:ante']
-              v':= ["COND",[v',:conseq]]
+              v':= ['%when,[v',:conseq]]
               member(v',get("$Information","special",$e)) => nil
               $e:=
                 put("$Information","special",[v',:
@@ -212,7 +212,7 @@ actOnInfo(u,$e) ==
   $e:=
     put("$Information","special",Info:= [u,:get("$Information","special",$e)],$e
       )
-  u is ["COND",:l] =>
+  u is ['%when,:l] =>
       --there is nowhere %else that this sort of thing exists
     for [ante,:conseq] in l repeat
       if member(hasToInfo ante,Info) then for v in conseq repeat

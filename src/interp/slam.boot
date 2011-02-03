@@ -46,13 +46,13 @@ isRecurrenceRelation(op,body,minivectorName) ==
   -- p1,...,pk respectively; body has #2,#3,... in place of
   -- f(k-1),f(k-2),...
 
-  body isnt ['COND,:pcl] => false
+  body isnt ['%when,:pcl] => false
   -- body should have a conditional expression which
   -- gives k boundary values, one general term plus possibly an
   -- "out of domain" condition
   --pcl is [:.,[ ''T,:mess]] and not (CONTAINED('throwMessage,mess) or
   --  CONTAINED('throwKeyedMsg,mess)) => NIL
-  pcl := [x for x in pcl | not (x is [''T,:mess] and
+  pcl := [x for x in pcl | not (x is ['%otherwise,:mess] and
     (CONTAINED('throwMessage,mess) or
       CONTAINED('throwKeyedMsg,mess)))]
   integer := eval $Integer
@@ -125,7 +125,7 @@ mkDiffAssoc(op,body,k,sharpPosition,sharpArg,diffSlot,vecname) ==
   -- ( ((f (,DIFFERENCE #1 1)) . #2) ((f (,DIFFERENCE #1 2)) . #3) ...)
   --   but also checking that all difference values lie in 1..k
   atom body => nil
-  body is ['COND,:pl] =>
+  body is ['%when,:pl] =>
     "union"/[mkDiffAssoc(op,c,k,sharpPosition,sharpArg,diffSlot,vecname) for [p,c] in pl]
   body is [fn,:argl] =>
     (fn = op) and argl.(sharpPosition-1) is

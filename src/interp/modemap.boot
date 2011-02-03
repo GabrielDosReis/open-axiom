@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -277,7 +277,7 @@ AMFCR_,redefined(opname,u) ==
   not(u is [op,:l]) => nil
   op = 'DEF => opname = CAAR l
   op in '(PROGN SEQ) => AMFCR_,redefinedList(opname,l)
-  op = 'COND => "OR"/[AMFCR_,redefinedList(opname,rest u) for u in l]
+  op = '%when => "OR"/[AMFCR_,redefinedList(opname,rest u) for u in l]
  
 augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)

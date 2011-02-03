@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -347,10 +347,10 @@ upcase t ==
         rhstag = first unwrap objVal triple => code := wrap true
         code := wrap false
      code :=
-        ["COND",
+        ['%when,
           [["EQL",rhstag,["CAR",["unwrap",objVal triple]]],
             true],
-              [''T,false]]
+              ['%otherwise,false]]
   else
     $genValue =>
         t' := coerceUnion2Branch triple
@@ -358,10 +358,10 @@ upcase t ==
         code := wrap false
     triple' := objNewCode(["wrap",objVal triple],objMode triple)
     code :=
-        ["COND",
+        ['%when,
           [["EQUAL",MKQ rhs,["objMode",['coerceUnion2Branch,triple']]],
             true],
-              [''T,false]]
+              ['%otherwise,false]]
   putValue(op,objNew(code,$Boolean))
   putModeSet(op,[$Boolean])
 

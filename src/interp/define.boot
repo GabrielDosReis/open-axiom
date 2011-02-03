@@ -1187,8 +1187,8 @@ addArgumentConditions($body,$functionName) ==
     fn $argumentConditionList where
       fn clist ==
         clist is [[n,untypedCondition,typedCondition],:.] =>
-          ['COND,[typedCondition,fn rest clist],
-            ['%true,["argumentDataError",n,
+          ['%when,[typedCondition,fn rest clist],
+            ['%otherwise,["argumentDataError",n,
               MKQ untypedCondition,MKQ $functionName]]]
         null clist => $body
         systemErrorHere ["addArgumentConditions",clist]
@@ -1340,10 +1340,10 @@ uncons x ==
 --% CAPSULE
  
 bootStrapError(functorForm,sourceFile) ==
-  ['COND, _
+  ['%when, _
     ['$bootStrapMode, _
         ['%veclit,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
-    [''T, ['systemError,['%listlit,'"%b",MKQ functorForm.op,'"%d",'"from", _
+    ['%otherwise, ['systemError,['%listlit,'"%b",MKQ functorForm.op,'"%d",'"from", _
       '"%b",MKQ namestring sourceFile,'"%d",'"needs to be compiled"]]]]
 
 registerInlinableDomain(x,e) ==
@@ -1363,10 +1363,10 @@ compAdd(['add,$addForm,capsule],m,e) ==
   $bootStrapMode = true =>
     if $addForm is ["%Comma",:.] then code := nil
        else [code,m,e]:= comp($addForm,m,e)
-    [['COND, _
+    [['%when, _
        ['$bootStrapMode, _
            code],_
-       [''T, ['systemError,['%listlit,'"%b",MKQ $functorForm.op,'"%d",'"from", _
+       ['%otherwise, ['systemError,['%listlit,'"%b",MKQ $functorForm.op,'"%d",'"from", _
          '"%b",MKQ namestring _/EDITFILE,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
@@ -1569,8 +1569,8 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
   if y~="%noBranch" then
     compSingleCapsuleItem(y,[["not",p],:$predl],getInverseEnvironment(p,olde))
     y':=localExtras(oldFLP)
-  item.op := "COND"
-  item.rest := [[p',x,:x'],['%true,y,:y']]
+  item.op := '%when
+  item.rest := [[p',x,:x'],['%otherwise,y,:y']]
  where localExtras(oldFLP) ==
    EQ(oldFLP,$functorLocalParameters) => nil
    flp1:=$functorLocalParameters
@@ -1691,7 +1691,7 @@ DomainSubstitutionFunction(parameters,body) ==
            --should not bother if it will only be called once
   name:= INTERN strconc(KAR $definition,";CAT")
   SETANDFILE(name,nil)
-  body:= ["COND",[name],['%true,['%store,name,body]]]
+  body:= ['%when,[name],['%otherwise,['%store,name,body]]]
   body
 
 
@@ -1712,7 +1712,7 @@ compSignature(opsig,pred,env) ==
 compCategoryItem(x,predl,env) ==
   x is nil => nil
   --1. if x is a conditional expression, recurse; otherwise, form the predicate
-  x is ["COND",[p,e]] =>
+  x is ['%when,[p,e]] =>
     predl':= [p,:predl]
     e is ["PROGN",:l] =>
       for y in l repeat compCategoryItem(y,predl',env)

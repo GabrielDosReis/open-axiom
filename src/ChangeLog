@@ -1,5 +1,27 @@
 2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot: Replace COND with %when throught.
+	Use %otherwise instead of %true where appropriate.
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/g-opt.boot: Likewise.
+	* interp/i-code.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-spec2.boot: Likewise.
+	* interp/i-util.boot: Likewise.
+	* interp/info.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/slam.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/compiler.boot (canReturn): Don't test for COND anymore.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/slam.boot (reportFunctionCompilation): Use %otherwise,
 	not %true for default cases.
 	(reportFunctionCacheAll): Likewise.

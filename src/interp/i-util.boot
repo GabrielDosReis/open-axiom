@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -160,18 +160,18 @@ validateVariableNameOrElse var ==
 --%
 
 flattenCOND body ==
-  -- transforms nested COND clauses to flat ones, if possible
-  body isnt ['COND,:.] => body
-  ['COND,:extractCONDClauses body]
+  -- transforms nested conditional clauses to flat ones, if possible
+  body isnt ['%when,:.] => body
+  ['%when,:extractCONDClauses body]
  
 extractCONDClauses clauses ==
-  -- extracts nested COND clauses into a flat structure
-  clauses is ['COND, [pred1,:act1],:restClauses] =>
+  -- extracts nested conditional clauses into a flat structure
+  clauses is ['%when, [pred1,:act1],:restClauses] =>
     if act1 is [['PROGN,:acts]] then act1 := acts
-    restClauses is [[''T,restCond]] =>
+    restClauses is [['%otherwise,restCond]] =>
       [[pred1,:act1],:extractCONDClauses restCond]
     [[pred1,:act1],:restClauses]
-  [[''T,clauses]]
+  [['%otherwise,clauses]]
  
 ++ Returns true if symbol `id' is either a local variable
 ++ or an iterator variable.

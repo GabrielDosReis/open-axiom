@@ -1029,10 +1029,10 @@ updateCapsuleDirectory(item,pred) ==
 
 --% Tree walkers
 
-++ Walk VM COND-form mutating sub-forms with unary
+++ Walk VM conditional forms mutating sub-forms with the unary
 ++ function `fun'
 mutateCONDFormWithUnaryFunction(form,fun) ==
-  form isnt ["COND",:body] => form
+  form isnt ['%when,:body] => form
   for clauses in tails body repeat
     -- a clause is a list of forms
     for subForms in tails first clauses repeat
@@ -1106,7 +1106,7 @@ eqSubst(args,parms,body) ==
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   atomic? form => form
-  form is ["COND",:body] =>
+  form is ['%when,:body] =>
     mutateCONDFormWithUnaryFunction(form,"replaceSimpleFunctions")
   form is ["LET",:.] =>
     optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
@@ -1198,7 +1198,7 @@ foldSpadcall form ==
   form is ["DECLARE",:.] => form      -- don't walk declarations
   form is ["LET",inits,:body] =>
     mutateLETFormWithUnaryFunction(form,"foldSpadcall")
-  form is ["COND",:stmts] =>
+  form is ['%when,:stmts] =>
     mutateCONDFormWithUnaryFunction(form,"foldSpadcall")
   for args in tails rest form repeat
     foldSpadcall first args
