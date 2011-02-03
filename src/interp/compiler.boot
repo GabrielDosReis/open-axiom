@@ -2155,7 +2155,7 @@ compAlternativeGuard(sn,sm,pat,e) ==
     if $catchAllCount > 0 then
       warnTooManyOtherwise()
     $catchAllCount := $catchAllCount + 1
-    [true,nil,e,e]
+    ['%otherwise,nil,e,e]
   cons? sn =>
     pat isnt ["%Comma",:.] =>
       stackAndThrow('"Pattern must be a tuple for a tuple scrutinee",nil)
@@ -2170,7 +2170,7 @@ compAlternativeGuard(sn,sm,pat,e) ==
         guards := [guard,:guards]
         inits := [init,:inits]
       ok := false
-    ok => [["AND",:nreverse guards],append/nreverse inits,e,originalEnv]
+    ok => [['%and,:nreverse guards],append/nreverse inits,e,originalEnv]
     nil
   compAlternativeGuardItem(sn,sm,pat,e)
 

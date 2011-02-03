@@ -380,11 +380,11 @@ expandTry ['%try,expr,handlers,cleanup] ==
             for [.,var,mode,stmt] in handlers]
   handlerBody :=
     ys = nil => g
-    ys := [:ys,['%true,['THROW,$OpenAxiomCatchTag,g]]]
+    ys := [:ys,['%otherwise,['THROW,$OpenAxiomCatchTag,g]]]
     ['%when,
       [['%and,['%pair?,g],
         ['%peq,['%head,g],$OpenAxiomCatchTag]], ['%when,:ys]],
-          ['%true,g]]
+          ['%otherwise,g]]
   tryBlock := expandBind
     ['%bind,[[g,['CATCH,$OpenAxiomCatchTag,expr]]],handlerBody]
   cleanup = nil => tryBlock

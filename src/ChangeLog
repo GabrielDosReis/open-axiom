@@ -1,3 +1,17 @@
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/slam.boot (reportFunctionCompilation): Use %otherwise,
+	not %true for default cases.
+	(reportFunctionCacheAll): Likewise.
+	(compileRecurrenceRelation): Likewise.
+	* interp/lisp-backend.boot (expandTry): Tidy.
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include %otherwise.
+	* interp/compiler.boot (compAlternativeGuard): Emit %otherwise
+	form, not Lisp level T form.
+	* interp/clam.boot (compClam): Tidy.
+	(compHash): Likewise.
+	(compHashGlobal): Likewise.
+
 2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (finishLambdaExpression): Tidy.  Don't

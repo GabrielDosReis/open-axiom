@@ -134,7 +134,7 @@ compClam(op,argl,body,$clamList) ==
     countFl => ['%makepair,1,g2]
     g2
   thirdPredPair:=
-    ['%true,
+    ['%otherwise,
       ['%store,g2,computeValue],
         ['%store,g3,['%head,cacheName]],
           ['%store,['%head,g3],g1],
@@ -245,7 +245,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
   if cacheNameOrNil then putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
                   ['%when,[['%not,g2],['HREM,cacheName,MKQ op]]]]
-  thirdPredPair:= ['%true,putCode]
+  thirdPredPair:= ['%otherwise,putCode]
   codeBody:=
     ['PROG,[g2],
       :callCountCode,['RETURN,['%when,secondPredPair,thirdPredPair]]]
@@ -303,7 +303,7 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
   putCode:=
     countFl => ['HPUT,cacheName,putForm,['%makepair,1,computeValue]]
     ['HPUT,cacheName,putForm,computeValue]
-  thirdPredPair:= ['%true,putCode]
+  thirdPredPair:= ['%otherwise,putCode]
   codeBody:= ['PROG,[g2], ['RETURN,['%when,secondPredPair,thirdPredPair]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
