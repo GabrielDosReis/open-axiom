@@ -331,25 +331,19 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
       ["LAMBDA",[:vars,var],:CDDR expandedFunction]
     scode := nil   -- list of multiple used variables, need local bindings.
     slist := nil   -- list of single used variables, no local bindings.
-    i := -1
-    for v in frees repeat
-      i := i+1
+    for v in frees for i in 0.. repeat
+      val := ['%vref,"$$",i]
       vec := [first v,:vec]
-      rest v = 1 => slist := [[first v,"getShellEntry","$$",i],:slist]
-      scode := [[first v,["getShellEntry","$$",i]],:scode]
+      rest v = 1 => slist := [[first v,:val],:slist]
+      scode := [[first v,val],:scode]
     body :=
       slist => SUBLISNQ(slist,CDDR expandedFunction)
       CDDR expandedFunction
     if scode ~= nil then
-      body := 
-        body is [["DECLARE",:.],:.] =>
-          [first body,["PROG",nreverse scode,
-            ["RETURN",["PROGN",:rest body]]]]
-        [["LET",nreverse scode,:body]]
-    vec := ["VECTOR",:nreverse vec]
+      body := [['%bind,nreverse scode,:body]]
+    vec := ['%veclit,:nreverse vec]
     ["LAMBDA",[:vars,"$$"],:body]
   fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
-  frees = nil => ["LIST",fname]
   ["CONS",fname,vec]
 
 compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
@@ -1261,7 +1255,8 @@ compIf(["IF",a,b,c],m,E) ==
 
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
   atom expr => ValueFlag and level=exitCount
-  (op:= expr.op)="QUOTE" => ValueFlag and level=exitCount
+  op := expr.op
+  op in '(QUOTE CLOSEDFN) => ValueFlag and level=exitCount
   op="TAGGEDexit" =>
     expr is [.,count,data] => canReturn(data.expr,level,count,count=level)
   level=exitCount and not ValueFlag => nil

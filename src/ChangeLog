@@ -1,5 +1,11 @@
 2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (finishLambdaExpression): Tidy.  Don't
+	generate Lisp code directly.
+	(canReturn): Don't look into CLOSEDFN forms.
+
+2011-02-02  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/clam.boot: Tidy.
 	* interp/slam.boot: Likewise.
 
