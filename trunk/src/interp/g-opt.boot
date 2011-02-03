@@ -401,7 +401,7 @@ $VMsideEffectFreeOperators ==
      QEQCAR QCDR QCAR IDENTP
       FLOAT_-RADIX FLOAT FLOAT_-SIGN
       CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
-      %2bit %2bool
+      %otherwise %2bit %2bool
       %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
       %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl %ilength
       %ibit %icst0 %icst1

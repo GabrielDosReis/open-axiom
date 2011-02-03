@@ -175,8 +175,9 @@ reportFunctionCompilation(op,nam,argl,body,isRecursive) ==
     null argl => [cacheName]
     [["%store",g3,['assocCircular,g1,["%dynval",MKQ cacheName]]],['CDR,g3]]
   thirdPredPair:=
-    null argl => ['%true,[['%store,['%dynval,MKQ cacheName],computeValue]]]
-    ['%true,
+    null argl =>
+      ['%otherwise,[['%store,['%dynval,MKQ cacheName],computeValue]]]
+    ['%otherwise,
       ['%store,g2,computeValue],
         ["SETQ",g3,
             ["CAR",["%store",["%dynval",MKQ cacheName],['predCircular,["%dynval",cacheName],cacheCount]]]],
@@ -218,7 +219,7 @@ reportFunctionCacheAll(op,nam,argl,body) ==
   cacheName:= mkCacheName nam
   g2:= gensym()  --value computed by calling function
   secondPredPair:= [['%store,g2,["HGET",['%dynval,MKQ cacheName],g1]],g2]
-  thirdPredPair:= ['%true,["HPUT",['%dynval,MKQ cacheName],g1,computeValue]]
+  thirdPredPair:= ['%otherwise,["HPUT",['%dynval,MKQ cacheName],g1,computeValue]]
   codeBody:= ["PROG",[g2],["RETURN",['%when,secondPredPair,thirdPredPair]]]
   lamex:= ["LAM",arg,codeBody]
   mainFunction:= [nam,lamex]
@@ -316,7 +317,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       ['%when,[['%not,['%and,["BOUNDP",MKQ stateNam], _
                           ['%pair?,['%dynval,MKQ stateNam]]]],    _
                  ["%LET",stateVar,cacheResetCode]], _
-             ['%true, ["%LET",stateVar,['%dynval,MKQ stateNam]]]]
+             ['%otherwise, ["%LET",stateVar,['%dynval,MKQ stateNam]]]]
  
     -- when there are extra arguments, initialResetCode resets "stateVar"
     --  to the hashtable entry for the extra arguments
@@ -335,7 +336,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
       phrase3:= [['%igt,sharpArg,n],[auxfn,:argl,['%listlit,n,:initCode]]]
       phrase4:= [['%igt,sharpArg,n-k],
         ["ELT",['%listlit,:initCode],["QSDIFFERENCE",n,sharpArg]]]
-      phrase5:= ['%true,['recurrenceError,MKQ op,sharpArg]]
+      phrase5:= ['%otherwise,['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['%when,phrase1,phrase2,phrase3,phrase4,phrase5]]
   if $verbose then
     sayKeyedMsg("S2IX0001",[op])
