@@ -927,7 +927,7 @@ chaseInferences(origPred,$e) ==
       $e:= actOnInfo(pred,$e)
       pred:= infoToHas pred
       for u in get("$Information","special",$e) repeat
-        u is ["COND",:l] =>
+        u is ['%when,:l] =>
           for [ante,:conseq] in l repeat
             ante=pred => [foo w for w in conseq]
             ante is ["and",:ante'] and member(pred,ante') =>
@@ -935,7 +935,7 @@ chaseInferences(origPred,$e) ==
               v':=
                 # ante'=1 => first ante'
                 ["and",:ante']
-              v':= ["COND",[v',:conseq]]
+              v':= ['%when,[v',:conseq]]
               member(v',get("$Information","special",$e)) => nil
               $e:=
                 put("$Information","special",[v',:
@@ -1013,7 +1013,7 @@ doItIf(item is [.,p,x,y],$predl,$e) ==
     qe(21,compSingleCapsuleItem(y,[['not, p],:$predl],getInverseEnvironment(markKillAll p,olde)))
 -->                                                      ----------- 
     y':=localExtras(oldFLP)
-  wiReplaceNode(item,["COND",[p',x,:x'],['%true,y,:y']],12)
+  wiReplaceNode(item,['%when,[p',x,:x'],['%otherwise,y,:y']],12)
 
 doItSeq item == 
   ['SEQ,:l,['exit,1,x]] := item

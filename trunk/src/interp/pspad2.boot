@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -298,7 +298,7 @@ formatColonWith(form,a,b) ==
         and format a and format " with ",first b,"with","Led")
   tryBreak(formatDefForm form and format ": with ",a,"with","Nud")
 
-formatCOND ["COND",:l] ==
+formatCOND ['%when,:l] ==
   originalC:= $c
   and/[x is [a,[.,.,b]] for x in l] =>
     (originalC=$m or indent() and newLine()) and first l is [a,[.,.,b]] and

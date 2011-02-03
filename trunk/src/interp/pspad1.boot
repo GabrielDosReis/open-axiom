@@ -524,7 +524,7 @@ pspadBindingPowerOf(key,x) ==
   --binding powers can be found in file NEWAUX LISP
   x is ['REDUCE,:.] => (key='left => 130; key='right => 0)
   x is ["REPEAT",:.] => (key="left" => 130; key="right" => 0)
-  x is ["COND",:.] => (key="left" => 130; key="right" => 0)
+  x is ['%when,:.] => (key="left" => 130; key="right" => 0)
   x is [op,:argl] =>
     if op is [a,:.] then op:= a
     op = 'SLASH => pspadBindingPowerOf(key,["/",:argl]) - 1

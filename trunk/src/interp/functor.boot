@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -249,22 +249,22 @@ optFunctorBody x ==
     l=rest x => x --CONS-saving hack
     ['%listlit,:l]
   x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]
-  x is ['COND,:l] =>
+  x is ['%when,:l] =>
     l:=
       [CondClause u for u in l | u and first u] where
         CondClause [pred,:conseq] ==
           [optFunctorBody pred,:optFunctorPROGN conseq]
-    l:= EFFACE(['%true],l) --delete any trailing ("T)
+    l:= EFFACE(['%otherwise],l) --delete any trailing default statement
     null l => nil
-    CAAR l='%true =>
+    CAAR l='%otherwise =>
       (null CDAR l => nil; null CDDAR l => CADAR l; ["PROGN",:CDAR l])
     null rest l and null CDAR l =>
-            --there is no meat to this COND
+            --there is no meat to this conditional form
       pred:= CAAR l
       atom pred => nil
       first pred="HasCategory" => nil
-      ['COND,:l]
-    ['COND,:l]
+      ['%when,:l]
+    ['%when,:l]
   [optFunctorBody u for u in x]
  
 optFunctorBodyQuotable u ==
@@ -288,7 +288,7 @@ optFunctorPROGN l ==
   l
  
 worthlessCode x ==
-  x is ['COND,:l] and (and/[x is [.,y] and worthlessCode y for x in l]) => true
+  x is ['%when,:l] and (and/[x is [.,y] and worthlessCode y for x in l]) => true
   x is ['PROGN,:l] => (null (l':= optFunctorPROGN l) => true; false)
   x is ['%listlit] => true
   null x => true
@@ -509,7 +509,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
             --Two REVERSEs leave original order, but ensure last guy wins
       nreverse [v for u in reverse codelist |
                     (v:= DescendCode(u,flag,viewAssoc,EnvToPass))~=nil]]
-  code is ['COND,:condlist] =>
+  code is ['%when,:condlist] =>
     c:= [[u2:= ProcessCond first u,:q] for u in condlist] where q() ==
           null u2 => nil
           f:=
@@ -529,7 +529,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
                    --strip out some worthless junk at the end
         c:=nreverse rest nreverse c
     null c => '(LIST)
-    ['COND,:c]
+    ['%when,:c]
   code is ["%LET",name,body,:.] =>
                     --only keep the names that are useful
     u:=member(name,$locals) =>
@@ -538,7 +538,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
           code:=["setShellEntry",["getShellEntry",'$,5],#$locals-#u,code]
           $epilogue:=
             TruthP flag => [code,:$epilogue]
-            [['COND,[ProcessCond  flag,code]],:$epilogue]
+            [['%when,[ProcessCond  flag,code]],:$epilogue]
           nil
         code
     code -- doItIf deletes entries from $locals so can't optimize this
@@ -554,7 +554,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
     if not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory(rest u, flag)
     ConstantCreator u =>
-      if not (flag=true) then u:= ['COND,[ProcessCond flag,u]]
+      if not (flag=true) then u:= ['%when,[ProcessCond flag,u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
@@ -744,8 +744,8 @@ InvestigateConditions catvecListMaker ==
   -- here we build the code necessary to remove spurious extensions
   ($HackSlot4:= [reshape u for u in $HackSlot4]) where
     reshape u ==
-      ['COND,[TryGDC ICformat rest u],
-             ['%true,['RPLACA,'(CAR TrueDomain),
+      ['%when,[TryGDC ICformat rest u],
+             ['%otherwise,['RPLACA,'(CAR TrueDomain),
                              ['delete,['QUOTE,first u],'(CAAR TrueDomain)]]]]
   $supplementaries:=
     [u

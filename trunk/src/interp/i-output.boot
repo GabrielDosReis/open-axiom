@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -971,7 +971,7 @@ getBindingPowerOf(key,x) ==
   --binding powers can be found in file NEWAUX LISP
   x is ['REDUCE,:.] => (key='left => 130; key='right => 0)
   x is ["REPEAT",:.] => (key="left" => 130; key="right" => 0)
-  x is ["COND",:.] => (key="left" => 130; key="right" => 0)
+  x is ['%when,:.] => (key="left" => 130; key="right" => 0)
   x is [op,:argl] =>
     if op is [a,:.] then op:= a
     op = 'SLASH => getBindingPowerOf(key,["/",:argl]) - 1

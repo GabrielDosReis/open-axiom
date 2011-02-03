@@ -1273,7 +1273,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
           or/[findThrow(gs,u,level+1,exitCount,ValueFlag) for u in l]
         or/[findThrow(gs,u,level,exitCount,ValueFlag) for u in rest expr]
     canReturn(data,level,exitCount,ValueFlag)
-  op = "COND" or op = '%when =>
+  op = '%when =>
     level = exitCount =>
       or/[canReturn(last u,level,exitCount,ValueFlag) for u in rest expr]
     or/[or/[canReturn(u,level,exitCount,ValueFlag) for u in v]

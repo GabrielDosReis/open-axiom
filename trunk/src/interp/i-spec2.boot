@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -294,7 +294,7 @@ evalIF(op,[cond,a,b],m) ==
       $lastLineInSEQ => [[MKQ true,["voidValue"]]]
       NIL
     [[MKQ true,genIFvalCode(b,m)]]
-  code:=["COND",[getArgValue(cond,$Boolean),
+  code:=['%when,[getArgValue(cond,$Boolean),
     genIFvalCode(a,m)],:elseCode]
   triple:= objNew(code,m)
   putValue(op,triple)
@@ -312,14 +312,14 @@ IFcodeTran(code,m,m1) ==
   null code => code
   code is ["spadThrowBrightly",:.] => code
   m1 = $Exit => code
-  code isnt ["COND",[p1,a1],[''T,a2]] =>
+  code isnt ['%when,[p1,a1],['%otherwise,a2]] =>
     m = $Void => code
     code' := coerceInteractive(objNew(quote2Wrapped code,m1),m) =>
       getValueNormalForm code'
     throwKeyedMsgCannotCoerceWithValue(quote2Wrapped code,m1,m)
   a1:=IFcodeTran(a1,m,m1)
   a2:=IFcodeTran(a2,m,m1)
-  ['COND,[p1,a1],[''T,a2]]
+  ['%when,[p1,a1],['%otherwise,a2]]
 
 interpIF(op,cond,a,b) ==
   -- non-compiled version of IF type analyzer.  Doesn't resolve accross
@@ -402,8 +402,8 @@ compileIs(val,pattern) ==
   for var in removeDuplicates vars repeat
     assignCode:=[["%LET",var,["CDR",["ASSQ",MKQ var,g]]],:assignCode]
   null $opIsIs =>
-    ["COND",[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,MKQ 'T]]]
-  ["COND",[["NOT",["EQ",predCode,MKQ "failed"]],["SEQ",:assignCode,MKQ 'T]]]
+    ['%when,[["EQ",predCode,MKQ "failed"],["SEQ",:assignCode,'%true]]]
+  ['%when,[['%not,["EQ",predCode,MKQ "failed"]],["SEQ",:assignCode,'%true]]]
 
 evalIsPredicate(value,pattern,mode) ==
   --This function pattern matches value to pattern, and returns
@@ -606,7 +606,7 @@ upLETWithPatternOnLhs(t := [op,pattern,a]) ==
       null objValUnwrap object => eval failCode
       putValue(op,getValue a)
     else
-      code := ['COND,[objVal object,objVal getValue a],[''T,failCode]]
+      code := ['%when,[objVal object,objVal getValue a],['%otherwise,failCode]]
       putValue(op,objNew(code,m))
   putModeSet(op,[m])
 
