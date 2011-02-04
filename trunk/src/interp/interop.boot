@@ -418,7 +418,7 @@ hashNewLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     PROGN
       i := start
       numTableArgs :=numvec.i
-      predIndex := numvec.(i := QSADD1 i)
+      predIndex := numvec.(i := i + 1)
       (predIndex ~= 0) and null testBitVector(predvec,predIndex) => nil
       exportSig :=
           [newExpandTypeSlot(numvec.(i + j + 1),

@@ -318,12 +318,12 @@ consForHashLookup(a,b) ==
   $hashNode
  
 CDRwithIncrement x ==
-  x.first := QSADD1 first x
+  x.first := first x + 1
   rest x
  
 HGETandCount(hashTable,prop) ==
   u:= HGET(hashTable,prop) or return nil
-  u.first := QSADD1 first u
+  u.first := first u + 1
   u
  
 clearClams() ==
@@ -472,7 +472,7 @@ assocCacheShiftCount(x,al,fn) ==
   until EQ(forwardPointer,al) repeat
     FUNCALL(fn, first (y:=first forwardPointer),x) =>
       newFrontPointer := forwardPointer
-      y.rest.first := QSADD1 second y         --increment use count
+      y.rest.first := second y + 1         --increment use count
       return (val:= y)
     if QSLESSP(c := second y,minCount) then --initial c is 1 so is true 1st time
       minCount := c

@@ -84,7 +84,7 @@ getOpCode(op,vec,max) ==
 --search Op vector for "op" returning code if found, nil otherwise
   res := nil
   for i in 0..max by 2 repeat
-    EQ(vectorRef(vec,i),op) => return (res := QSADD1 i)
+    EQ(vectorRef(vec,i),op) => return (res := i + 1)
   res
 
 evalSlotDomain(u,dollar) ==
@@ -135,16 +135,16 @@ replaceGoGetSlot env ==
   thisDomainForm := devaluate thisDomain
   bytevec := getDomainByteVector thisDomain
   numOfArgs := bytevec.index
-  goGetDomainSlotIndex := bytevec.(index := QSADD1 index)
+  goGetDomainSlotIndex := bytevec.(index := index + 1)
   goGetDomain :=
      goGetDomainSlotIndex = 0 => thisDomain
      thisDomain.goGetDomainSlotIndex
   if cons? goGetDomain then
      goGetDomain := lazyDomainSet(goGetDomain,thisDomain,goGetDomainSlotIndex)
   sig :=
-    [newExpandTypeSlot(bytevec.(index := QSADD1 index),thisDomain,thisDomain)
+    [newExpandTypeSlot(bytevec.(index := index + 1),thisDomain,thisDomain)
       for i in 0..numOfArgs]
-  thisSlot := bytevec.(QSADD1 index)
+  thisSlot := bytevec.(index + 1)
   if $monitorNewWorld then
     sayLooking(concat('"%l","..",form2String thisDomainForm,
       '" wants",'"%l",'"  "),op,sig,goGetDomain)
@@ -204,9 +204,9 @@ newLookupInTable(op,sig,dollar,[domain,opvec],flag) ==
     PROGN
       i := start
       numArgs ~= (numTableArgs :=numvec.i) => nil
-      predIndex := numvec.(i := QSADD1 i)
+      predIndex := numvec.(i := i + 1)
       NE(predIndex,0) and not testBitVector(predvec,predIndex) => nil
-      loc := newCompareSig(sig,numvec,(i := QSADD1 i),dollar,domain)
+      loc := newCompareSig(sig,numvec,(i := i + 1),dollar,domain)
       null loc => nil  --signifies no match
       loc = 1 => (someMatch := true)
       loc = 0 =>
@@ -521,7 +521,7 @@ lookupInDomainByName(op,domain,arg) ==
   while finish > start repeat
     i := start
     numberOfArgs :=numvec.i
-    predIndex := numvec.(i := QSADD1 i)
+    predIndex := numvec.(i := i + 1)
     NE(predIndex,0) and not testBitVector(predvec,predIndex) => nil
     slotIndex := numvec.(i + 2 + numberOfArgs)
     newStart := QSPLUS(start,QSPLUS(numberOfArgs,4))
