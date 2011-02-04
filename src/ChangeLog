@@ -1,5 +1,13 @@
 2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (mutateConditionalFormWithUnaryFunction):
+	Rename from mutateCONDFormWithUnaryFunction.  Update callers
+	(mutateBindingFormWithUnaryFunction): Rename from
+	mutateLETFormWithUnaryFunction.  Allow %bind form too.
+	Update callers.
+
+2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/stream.spad.pamphlet (Stream): Remove bogus assignment
 	to Rep. Rework local function definitions.
 
