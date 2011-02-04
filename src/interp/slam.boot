@@ -273,7 +273,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   stateNam:= GENVAR()
   stateVar:= gensym()
   stateVal:= gensym()
-  lastArg := INTERNL strconc('"#",STRINGIMAGE QSADD1 # argl)
+  lastArg := INTERNL strconc('"#",STRINGIMAGE(#argl + 1))
   decomposeBindings:=
     [[gIndex,["ELT",lastArg,0]],:[[g,["ELT",lastArg,i]]
       for g in gsList for i in 1..]]

@@ -288,14 +288,14 @@ canForgeWord(word,entry) ==
 forge(word,w,W,entry,e,E,n) ==
   w > W =>
     e > E => n
-    QSADD1 QSPLUS(E-e,n)
-  e > E => QSADD1 QSPLUS(W-w,n)
+    QSPLUS(E-e,n) + 1
+  e > E => QSPLUS(W-w,n) + 1
   word.w = entry.e => forge(word,w+1,W,entry,e+1,E,n)
-  w=W or e=E => forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+  w=W or e=E => forge(word,w+1,W,entry,e+1,E,n + 1)
   word.w=entry.(e+1) =>
-    word.(w+1) = entry.e => forge(word,w+2,W,entry,e+2,E,QSADD1 n)
-    forge(word,w+1,W,entry,e+2,E,QSADD1 n)
-  word.(w+1)=entry.e => forge(word,w+2,W,entry,e+1,E,QSADD1 n)
+    word.(w+1) = entry.e => forge(word,w+2,W,entry,e+2,E,n + 1)
+    forge(word,w+1,W,entry,e+2,E,n + 1)
+  word.(w+1)=entry.e => forge(word,w+2,W,entry,e+1,E,n + 1)
  
   (deltaW := W-w) > 1 and (deltaE := E-e) > 1 =>
     --if word is long, can we delete chars to match 2 consective chars
@@ -308,9 +308,9 @@ forge(word,w,W,entry,e,E,n) ==
       (k := or/[j for j in (e+2)..(E-1) | word.w = entry.j])
         and word.(w+1) = entry.(k+1) =>
           forge(word,w+2,W,entry,k+2,E,QSPLUS(n,k-e))
-    forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+    forge(word,w+1,W,entry,e+1,E,n + 1)
   --check for two consecutive matches down the line
-  forge(word,w+1,W,entry,e+1,E,QSADD1 n)
+  forge(word,w+1,W,entry,e+1,E,n + 1)
  
 --+ DO NOT REMOVE DEFINITIONS BELOW which explain the algorithm
 --+ canForgeWord(word,entry) ==--
