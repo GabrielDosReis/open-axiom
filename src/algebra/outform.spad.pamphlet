@@ -622,7 +622,7 @@ OutputForm(): SetCategory with
                 IDENTP$Lisp a => a
                 STRINGP$Lisp a => INTERN$Lisp a
                 return false
-            if GET(e,QUOTE(INFIXOP$Lisp)$Lisp)$Lisp then true else false
+            if %property(e,'INFIXOP)$Foreign(Builtin) then true else false
 
         elt(a, l) ==
             cons(a, l)

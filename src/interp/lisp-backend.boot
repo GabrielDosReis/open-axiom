@@ -329,6 +329,9 @@ expandBitvecref ['%bitvecref,x,y] ==
 expandBitveceq ['%bitveceq,x,y] ==
   ['EQUAL,expandToVMForm x,expandToVMForm y]
 
+expandBitveclt ['%bitveclt,x,y] ==
+  ['BVEC_-GREATER,expandToVMForm y,expandToVMForm x]
+
 expandMakebitvec ['%makebitvec,x,y] ==
   ['MAKE_-ARRAY,['LIST,expandToVMForm x],
      KEYWORD::ELEMENT_-TYPE,quoteForm '%Bit,
@@ -423,7 +426,7 @@ for x in [
     ['%ieven?,  :'EVENP],
     ['%integer?,:'INTEGERP],
     ['%iodd?,   :'ODDP],
-    ['%ismall?, :'FIXNUMP],
+    ['%ismall?, :'SMINTP],
     ['%i2s,   :'WRITE_-TO_-STRING],
     ['%ilength, :'INTEGER_-LENGTH],
     ['%ibit,    :'INTEGER_-BIT],
@@ -507,6 +510,7 @@ for x in [
     ['%gensym,  :'GENSYM],
     ['%sname,   :'SYMBOL_-NAME],
     ['%ident?,  :'SYMBOLP],
+    ['%property,:'GET],
 
     -- string functions
     ['%string?, :'STRINGP],
@@ -571,6 +575,7 @@ for x in [
    ['%bitveccopy,   :function expandBitveccopy],
    ['%bitvecconc,   :function expandBitvecconc],
    ['%bitveceq,     :function expandBitveceq],
+   ['%bitveclt,     :function expandBitveclt],
    ['%bitvecref,   :function expandBitvecref],
    ['%makebitvec,   :function expandMakebitvec],
 
