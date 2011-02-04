@@ -398,11 +398,8 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
  
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
-  '(CAR CDR LENGTH SIZE EQ NOT NULL OR AND
-    SPADfirst _+ _- _* _< _= _<_= _> _>_= ASH
-     QEQCAR QCDR QCAR IDENTP
-      FLOAT_-RADIX FLOAT FLOAT_-SIGN
-      CGREATERP GGREATERP CHAR GET BVEC_-GREATER %when %false %true
+  '(SPADfirst ASH IDENTP FLOAT_-RADIX FLOAT FLOAT_-SIGN
+      CGREATERP GGREATERP %when %false %true
       %otherwise %2bit %2bool
       %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
       %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl %ilength
@@ -419,8 +416,8 @@ $VMsideEffectFreeOperators ==
       %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
       %aref %vref %vlength %veclit
       %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
-      %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq
-      %before? %equal %sptreq %ident?)
+      %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
+      %before? %equal %sptreq %ident? %property)
 
 ++ List of simple VM operators
 $simpleVMoperators == 

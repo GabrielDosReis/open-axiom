@@ -1,3 +1,13 @@
+2011-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove more Lisp
+	level operators.  Include %property and %bitveclt.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/si.spad.pamphlet (SingleInteger): Tidy.  Use %ismall?.
+	* algebra/domain.spad.pamphlet (DomainConstructo): Use %property.
+	* algebra/outform.spad.pamphlet (OutputForm): Likewise.
+	* algebra/boolean.spad.pamphlet (IndexedBits): Use %bitveclt.
+
 2011-02-03  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (mutateConditionalFormWithUnaryFunction):

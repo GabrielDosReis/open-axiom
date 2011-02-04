@@ -208,7 +208,7 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
       ++ Or(n,m)  returns the bit-by-bit logical {\em or} of
       ++ the single integers n and m.
 
- == SubDomain(Integer, SMINTP(#1)$Lisp) add
+ == SubDomain(Integer, %ismall?(#1)$Foreign(Builtin)) add
 
    import %icst0: %                 from Foreign Builtin
    import %icst1: %                 from Foreign Builtin
@@ -334,10 +334,11 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    addmod(a,b,p) == QSADDMOD(a,b,p)$Lisp
    submod(a,b,p) == QSDIFMOD(a,b,p)$Lisp
    negative?(x)  == %ilt(x,%icst0)
-   size() == (MAXINT -$Lisp MININT +$Lisp %icst1)  pretend NonNegativeInteger
-   index i == per(i + MININT - 1$Lisp)
+   size() ==
+     (MAXINT - MININT + 1)  pretend NonNegativeInteger
+   index i == per(i + MININT - 1)
    lookup x ==
-     (x -$Lisp MININT +$Lisp %icst1) pretend PositiveInteger
+     (x - MININT + 1) pretend PositiveInteger
 
 
    reducedSystem(m: Matrix %, v: Vector %) ==
