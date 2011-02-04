@@ -195,7 +195,7 @@
        (EXIT |x|))) 
 
 (DEFUN |ILIST;copy;2$;20| (|x| $)
-  (LET ((|y| (SPADCALL (|getShellEntry| $ 16))))
+  (LET ((|y| NIL))
     (SEQ (LET ((|i| 0))
            (LOOP
              (COND

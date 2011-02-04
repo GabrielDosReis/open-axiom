@@ -1031,7 +1031,7 @@ updateCapsuleDirectory(item,pred) ==
 
 ++ Walk VM conditional forms mutating sub-forms with the unary
 ++ function `fun'
-mutateCONDFormWithUnaryFunction(form,fun) ==
+mutateConditionalFormWithUnaryFunction(form,fun) ==
   form isnt ['%when,:body] => form
   for clauses in tails body repeat
     -- a clause is a list of forms
@@ -1039,12 +1039,12 @@ mutateCONDFormWithUnaryFunction(form,fun) ==
       subForms.first := FUNCALL(fun, first subForms)
   form
 
-++ Walk VM LET-form mutating enclosed expression forms with
-++ unary function `fun'.  Every sub-form is visited except
+++ Walk VM a binding-form mutating enclosed expression forms with
+++ the unary function `fun'.  Every sub-form is visited except
 ++ local variable declarations, though their initializers
 ++ are visited.
-mutateLETFormWithUnaryFunction(form,fun) ==
-  form isnt ["LET",inits,:body] => form
+mutateBindingFormWithUnaryFunction(form,fun) ==
+  form isnt [op,inits,:body] and op in '(LET %bind) => form
   for defs in tails inits repeat
     def := first defs
     atom def => nil -- no initializer
@@ -1106,10 +1106,10 @@ eqSubst(args,parms,body) ==
 ++ Walk `form' and replace simple functions as appropriate.
 replaceSimpleFunctions form ==
   atomic? form => form
-  form is ['%when,:body] =>
-    mutateCONDFormWithUnaryFunction(form,"replaceSimpleFunctions")
-  form is ["LET",:.] =>
-    optLET mutateLETFormWithUnaryFunction(form,"replaceSimpleFunctions")
+  form.op is '%when =>
+    mutateConditionalFormWithUnaryFunction(form,function replaceSimpleFunctions)
+  form.op is "LET" =>
+    optLET mutateBindingFormWithUnaryFunction(form,function replaceSimpleFunctions)
   form is ["spadConstant","$",n] =>
     null(op := getCapsuleDirectoryEntry n) => form
     -- Conservatively preserve object identity and storage 
@@ -1194,15 +1194,15 @@ expandableDefinition?(vars,body) ==
 ++ domain.  Conditional operations are not folded.
 foldSpadcall: %Form -> %Form
 foldSpadcall form ==
-  atomic? form => form           -- leave atomic forms alone
-  form is ["DECLARE",:.] => form      -- don't walk declarations
-  form is ["LET",inits,:body] =>
-    mutateLETFormWithUnaryFunction(form,"foldSpadcall")
-  form is ['%when,:stmts] =>
-    mutateCONDFormWithUnaryFunction(form,"foldSpadcall")
+  atomic? form => form             -- leave atomic forms alone
+  form.op is 'DECLARE => form      -- don't walk declarations
+  form.op in '(LET %bind) =>
+    mutateBindingFormWithUnaryFunction(form,function foldSpadcall)
+  form.op is '%when =>
+    mutateConditionalFormWithUnaryFunction(form,function foldSpadcall)
   for args in tails rest form repeat
     foldSpadcall first args
-  first form ~= "SPADCALL" => form
+  form.op isnt 'SPADCALL => form
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
   null (op := getCapsuleDirectoryEntry slot) => form

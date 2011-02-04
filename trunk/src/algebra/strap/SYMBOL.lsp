@@ -278,7 +278,7 @@
 (DEFUN |SYMBOL;latex;$S;25| (|e| $)
   (PROG (|ss| |lo| |sc|)
     (RETURN
-      (LET ((|s| (PNAME (SPADCALL |e| (|getShellEntry| $ 100)))))
+      (LET ((|s| (PNAME (|SYMBOL;name;2$;31| |e| $))))
         (SEQ (COND
                ((< 1 (LENGTH |s|))
                 (COND

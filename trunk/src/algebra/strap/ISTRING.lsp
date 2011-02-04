@@ -487,22 +487,20 @@
                    $))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
-  (LET ((|t| (SPADCALL
+  (LET ((|t| (MAKE-FULL-CVEC
                  (LET ((#0=#:G1472 NIL) (#1=#:G1473 T)
                        (#2=#:G1517 |l|))
                    (LOOP
                      (COND
                        ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
                        (T (LET ((|s| (CAR #2#)))
-                            (LET ((#3=#:G1471
-                                      (SPADCALL |s|
-                                       (|getShellEntry| $ 16))))
+                            (LET ((#3=#:G1471 (LENGTH |s|)))
                               (COND
                                 (#1# (SETQ #0# #3#))
                                 (T (SETQ #0# (+ #0# #3#))))
                               (SETQ #1# NIL)))))
                      (SETQ #2# (CDR #2#))))
-                 (|spadConstant| $ 53) (|getShellEntry| $ 9)))
+                 (|spadConstant| $ 53)))
         (|i| (SVREF $ 6)))
     (SEQ (LET ((#4=#:G1516 |l|))
            (LOOP
@@ -515,7 +513,7 @@
          (EXIT |t|)))) 
 
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)
-  (LET ((|m| (SPADCALL |x| (|getShellEntry| $ 16))) (|n| (LENGTH |y|)))
+  (LET ((|m| (LENGTH |x|)) (|n| (LENGTH |y|)))
     (SEQ (SETQ |s| (- |s| (SVREF $ 6)))
          (COND
            ((OR (MINUSP |s|) (< |n| (+ |s| |m|)))
