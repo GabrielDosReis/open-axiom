@@ -62,48 +62,52 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|) |SINT;~;2$;16|)) 
 
-(PUT '|SINT;~;2$;16| '|SPADreplace| 'LOGNOT) 
+(PUT '|SINT;~;2$;16| '|SPADreplace| '|%bitnot|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
                 |SINT;not;2$;17|)) 
 
-(PUT '|SINT;not;2$;17| '|SPADreplace| 'LOGNOT) 
+(PUT '|SINT;not;2$;17| '|SPADreplace| '|%bitnot|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;/\\;3$;18|)) 
 
-(PUT '|SINT;/\\;3$;18| '|SPADreplace| 'LOGAND) 
+(PUT '|SINT;/\\;3$;18| '|SPADreplace| '|%bitand|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;\\/;3$;19|)) 
 
-(PUT '|SINT;\\/;3$;19| '|SPADreplace| 'LOGIOR) 
+(PUT '|SINT;\\/;3$;19| '|SPADreplace| '|%bitior|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Short|)
                 |SINT;Not;2$;20|)) 
 
-(PUT '|SINT;Not;2$;20| '|SPADreplace| 'LOGNOT) 
+(PUT '|SINT;Not;2$;20| '|SPADreplace| '|%bitnot|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;And;3$;21|)) 
 
-(PUT '|SINT;And;3$;21| '|SPADreplace| 'LOGAND) 
+(PUT '|SINT;And;3$;21| '|SPADreplace| '|%bitand|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;and;3$;22|)) 
 
+(PUT '|SINT;and;3$;22| '|SPADreplace| '|%bitand|) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;Or;3$;23|)) 
 
-(PUT '|SINT;Or;3$;23| '|SPADreplace| 'LOGIOR) 
+(PUT '|SINT;Or;3$;23| '|SPADreplace| '|%bitior|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;or;3$;24|)) 
 
+(PUT '|SINT;or;3$;24| '|SPADreplace| '|%bitior|) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;xor;3$;25|)) 
 
-(PUT '|SINT;xor;3$;25| '|SPADreplace| 'LOGXOR) 
+(PUT '|SINT;xor;3$;25| '|SPADreplace| '|%bitxor|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Boolean|)
                 |SINT;<;2$B;26|)) 
@@ -279,10 +283,6 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Shell|) |%Shell|)
                 |SINT;unitNormal;$R;62|)) 
-
-(PUT '|SINT;and;3$;22| '|SPADreplace| 'LOGAND) 
-
-(PUT '|SINT;or;3$;24| '|SPADreplace| 'LOGIOR) 
 
 (PUT '|SINT;size;Nni;54| '|SPADreplace|
      '(XLAM NIL (|%iadd| (|%isub| |$ShortMaximum| |$ShortMinimum|) 1))) 

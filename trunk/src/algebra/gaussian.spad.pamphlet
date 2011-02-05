@@ -378,25 +378,25 @@ ComplexCategory(R:CommutativeRing): Category ==
          pi()  == pi()$R :: %
 
          if R is DoubleFloat then
-            stoc ==> S_-TO_-C$Lisp
-            ctos ==> C_-TO_-S$Lisp
+            stoc ==> %val2z$Foreign(Builtin)
+            ctos ==> %z2val$Foreign(Builtin)
 
-            exp   x == ctos EXP(stoc x)$Lisp
-            log   x == ctos LOG(stoc x)$Lisp
+            exp   x == ctos %zexp(stoc x)$Foreign(Builtin)
+            log   x == ctos %zlog(stoc x)$Foreign(Builtin)
 
-            sin   x == ctos SIN(stoc x)$Lisp
-            cos   x == ctos COS(stoc x)$Lisp
-            tan   x == ctos TAN(stoc x)$Lisp
-            asin  x == ctos ASIN(stoc x)$Lisp
-            acos  x == ctos ACOS(stoc x)$Lisp
-            atan  x == ctos ATAN(stoc x)$Lisp
+            sin   x == ctos %zsin(stoc x)$Foreign(Builtin)
+            cos   x == ctos %zcos(stoc x)$Foreign(Builtin)
+            tan   x == ctos %ztan(stoc x)$Foreign(Builtin)
+            asin  x == ctos %zasin(stoc x)$Foreign(Builtin)
+            acos  x == ctos %zacos(stoc x)$Foreign(Builtin)
+            atan  x == ctos %zatan(stoc x)$Foreign(Builtin)
 
-            sinh  x == ctos SINH(stoc x)$Lisp
-            cosh  x == ctos COSH(stoc x)$Lisp
-            tanh  x == ctos TANH(stoc x)$Lisp
-            asinh x == ctos ASINH(stoc x)$Lisp
-            acosh x == ctos ACOSH(stoc x)$Lisp
-            atanh x == ctos ATANH(stoc x)$Lisp
+            sinh  x == ctos %zsinh(stoc x)$Foreign(Builtin)
+            cosh  x == ctos %zcosh(stoc x)$Foreign(Builtin)
+            tanh  x == ctos %ztanh(stoc x)$Foreign(Builtin)
+            asinh x == ctos %zasinh(stoc x)$Foreign(Builtin)
+            acosh x == ctos %zacosh(stoc x)$Foreign(Builtin)
+            atanh x == ctos %zatanh(stoc x)$Foreign(Builtin)
 
          else
            atan x ==

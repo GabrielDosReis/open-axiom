@@ -232,6 +232,10 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    import %ile: (%,%) -> Boolean    from Foreign Builtin
    import %igt: (%,%) -> Boolean    from Foreign Builtin
    import %ige: (%,%) -> Boolean    from Foreign Builtin
+   import %bitnot: % -> %           from Foreign Builtin
+   import %bitand: (%,%) -> %       from Foreign Builtin
+   import %bitior: (%,%) -> %       from Foreign Builtin
+   import %bitxor: (%,%) -> %       from Foreign Builtin
 
    seed : % := %icst1               -- for random()
    MAXINT ==> _$ShortMaximum$Lisp
@@ -295,16 +299,16 @@ SingleInteger(): Join(IntegerNumberSystem,OrderedFinite,BooleanLogic,Logic,OpenM
    max()     == MAXINT
    min()     == MININT
    x = y     == %ieq(x,y)
-   ~ x       == LOGNOT(x)$Lisp
-   not(x)    == LOGNOT(x)$Lisp
-   x /\ y    == LOGAND(x,y)$Lisp
-   x \/ y    == LOGIOR(x,y)$Lisp
-   Not(x)    == LOGNOT(x)$Lisp
-   And(x,y)  == LOGAND(x,y)$Lisp
-   x and y   == And(x,y)
-   Or(x,y)   == LOGIOR(x,y)$Lisp
-   x or y    == Or(x,y)
-   xor(x,y)  == LOGXOR(x,y)$Lisp
+   ~ x       == %bitnot x
+   not(x)    == %bitnot x
+   x /\ y    == %bitand(x,y)
+   x \/ y    == %bitior(x,y)
+   Not(x)    == %bitnot x
+   And(x,y)  == %bitand(x,y)
+   x and y   == %bitand(x,y)
+   Or(x,y)   == %bitior(x,y)
+   x or y    == %bitior(x,y)
+   xor(x,y)  == %bitxor(x,y)
    x < y     == %ilt(x,y)
    x > y     == %igt(x,y)
    x <= y    == %ile(x,y)
