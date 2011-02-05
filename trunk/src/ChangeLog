@@ -1,3 +1,10 @@
+2011-02-05  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Include inverse
+	hyperbolic functions.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/sf.spad.pamphlet: Use them.
+
 2011-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove CGREATERP
