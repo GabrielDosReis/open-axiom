@@ -289,9 +289,11 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fneg: % -> %                 from Foreign Builtin
    import %ftrunc: % -> Integer         from Foreign Builtin
    import %fmul: (%,%) -> %             from Foreign Builtin
+   import %imulf: (Integer,%) -> %      from Foreign Builtin
    import %fadd: (%,%) -> %             from Foreign Builtin
    import %fsub: (%,%) -> %             from Foreign Builtin
    import %fdiv: (%,%) -> %             from Foreign Builtin
+   import %fdivi: (%,Integer) -> %      from Foreign Builtin
    import %fmin: (%,%) -> %             from Foreign Builtin
    import %fmax: (%,%) -> %             from Foreign Builtin
    import %feq: (%,%) -> Boolean        from Foreign Builtin
@@ -299,14 +301,25 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fle: (%,%) -> Boolean        from Foreign Builtin
    import %fgt: (%,%) -> Boolean        from Foreign Builtin
    import %fge: (%,%) -> Boolean        from Foreign Builtin
+   import %fpowi: (%,Integer) -> %      from Foreign Builtin
+   import %fpowf: (%,%) -> %            from Foreign Builtin
+   import %fsqrt: % -> %                from Foreign Builtin
+   import %fexp: % -> %                 from Foreign Builtin
+   import %flog: % -> %                 from Foreign Builtin
+   import %flog2: % -> %                from Foreign Builtin
+   import %flog10: % -> %               from Foreign Builtin
    import %fsin: % -> %                 from Foreign Builtin
    import %fcos: % -> %                 from Foreign Builtin
    import %ftan: % -> %                 from Foreign Builtin
    import %fcot: % -> %                 from Foreign Builtin
    import %fsec: % -> %                 from Foreign Builtin
    import %fcsc: % -> %                 from Foreign Builtin
+   import %fasin: % -> %                from Foreign Builtin
+   import %facos: % -> %                from Foreign Builtin
    import %fatan: % -> %                from Foreign Builtin
    import %facot: % -> %                from Foreign Builtin
+   import %fasec: % -> %                from Foreign Builtin
+   import %facsc: % -> %                from Foreign Builtin
    import %fsinh: % -> %                from Foreign Builtin
    import %fcosh: % -> %                from Foreign Builtin
    import %ftanh: % -> %                from Foreign Builtin
@@ -314,7 +327,11 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fcoth: % -> %                from Foreign Builtin
    import %fsech: % -> %                from Foreign Builtin
    import %fasinh: % -> %               from Foreign Builtin
+   import %facosh: % -> %               from Foreign Builtin
+   import %fatanh: % -> %               from Foreign Builtin
    import %facsch: % -> %               from Foreign Builtin
+   import %facoth: % -> %               from Foreign Builtin
+   import %fasech: % -> %               from Foreign Builtin
    import %fcstpi: () -> %              from Foreign Builtin
 
    manexp: % -> MER
@@ -355,11 +372,6 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
      if wholeObj then
        OMputEndObject(dev)
 
-   checkComplex(x:%):% == C_-TO_-R(x)$Lisp
-   -- In AKCL we used to have to make the arguments to ASIN ACOS ACOSH ATANH
-   -- complex to get the correct behaviour.
-   --makeComplex(x: %):% == COMPLEX(x, 0$%)$Lisp
-
    base()           == %fbase()
    mantissa x       == manexp(x).MANTISSA
    exponent x       == manexp(x).EXPONENT
@@ -386,31 +398,31 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    x + y            == %fadd(x,y)
    x:% - y:%        == %fsub(x,y)
    x:% * y:%        == %fmul(x,y)
-   i:Integer * x:%  == (i*x)$Lisp
+   i:Integer * x:%  == %imulf(i,x)
    max(x,y)         == %fmax(x,y)
    min(x,y)         == %fmin(x,y)
    x = y            == %feq(x,y)
-   x:% / i:Integer  == (x/i)$Lisp
-   sqrt x           == checkComplex SQRT(x)$Lisp
-   log10 x          == checkComplex log(x)$Lisp
-   x:% ** i:Integer == EXPT(x,i)$Lisp
-   x:% ** y:%       == checkComplex EXPT(x,y)$Lisp
+   x:% / i:Integer  == %fdivi(x,i)
+   sqrt x           == %fsqrt x
+   log10 x          == %flog10 x
+   x:% ** i:Integer == %fpowi(x,i)
+   x:% ** y:%       == %fpowf(x,y)
    coerce(i:Integer):% == %i2f i
-   exp x            == EXP(x)$Lisp
-   log x            == checkComplex LN(x)$Lisp
-   log2 x           == checkComplex LOG2(x)$Lisp
+   exp x            == %fexp x
+   log x            == %flog x
+   log2 x           == %flog2 x
    sin x            == %fsin x
    cos x            == %fcos x
    tan x            == %ftan x
    cot x            == %fcot x
    sec x            == %fsec x
    csc x            == %fcsc x
-   asin x           == checkComplex ASIN(x)$Lisp -- can be complex
-   acos x           == checkComplex ACOS(x)$Lisp -- can be complex
+   asin x           == %fasin x
+   acos x           == %facos x
    atan x           == %fatan x
-   acsc x           == checkComplex ACSC(x)$Lisp
+   acsc x           == %facsc x
    acot x           == %facot x
-   asec x           == checkComplex ASEC(x)$Lisp
+   asec x           == %fasec x
    sinh x           == %fsinh x
    cosh x           == %fcosh x
    tanh x           == %ftanh x
@@ -418,11 +430,11 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    coth x           == %fcoth x
    sech x           == %fsech x
    asinh x          == %fasinh x
-   acosh x          == checkComplex ACOSH(x)$Lisp -- can be complex
-   atanh x          == checkComplex ATANH(x)$Lisp -- can be complex
+   acosh x          == %facosh x
+   atanh x          == %fatanh x
    acsch x          == %facsch x
-   acoth x          == checkComplex ACOTH(x)$Lisp
-   asech x          == checkComplex ASECH(x)$Lisp
+   acoth x          == %facoth x
+   asech x          == %fasech x
    x:% / y:%        == %fdiv(x,y)
    negative? x      == x < 0
    zero? x          == x = 0

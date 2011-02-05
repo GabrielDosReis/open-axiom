@@ -272,6 +272,46 @@ expandFgt ['%fgt,x,y] ==
 expandFcstpi ['%fcstpi] ==
   ['COERCE,'PI,quoteForm '%DoubleFloat]
 
+expandFsqrt ['%fsqrt,x] ==
+  ['C_-TO_-R,['SQRT,expandToVMForm x]]
+
+expandFpowf ['%fpowf,x,y] ==
+  ['C_-TO_-R,['EXPT,expandToVMForm x,expandToVMForm y]]
+
+expandFlog ['%flog,x] ==
+  ['C_-TO_-R,['LOG,expandToVMForm x]]
+
+expandFlog2 ['%flog2,x] ==
+  ['C_-TO_-R,['LOG,expandToVMForm x,2]]
+
+expandFlog10 ['%flog10,x] ==
+  ['C_-TO_-R,['LOG,expandToVMForm x,10]]
+
+expandFasin ['%fasin,x] ==
+  ['C_-TO_-R,['ASIN,expandToVMForm x]]
+
+expandFacos ['%facos,x] ==
+  ['C_-TO_-R,['ACOS,expandToVMForm x]]
+
+expandFasec ['%fasec,x] ==
+  ['C_-TO_-R,['ASEC,expandToVMForm x]]
+
+expandFacsc ['%facsc,x] ==
+  ['C_-TO_-R,['ACSC,expandToVMForm x]]
+
+expandFacosh ['%facosh,x] ==
+  ['C_-TO_-R,['ACOSH,expandToVMForm x]]
+
+expandFatanh ['%fatanh,x] ==
+  ['C_-TO_-R,['ATANH,expandToVMForm x]]
+
+expandFacoth ['%facoth,x] ==
+  ['C_-TO_-R,['ACOTH,expandToVMForm x]]
+
+expandFasech ['%fasech,x] ==
+  ['C_-TO_-R,['ASECH,expandToVMForm x]]
+
+
 -- String operations
 
 ++ string equality comparison
@@ -450,6 +490,7 @@ for x in [
     ['%imax,    :'MAX],
     ['%imin,    :'MIN],
     ['%imul,    :"*"],
+    ['%imulf,   :"*"],                   -- integer * float
     ['%irem,    :'REM],
     ['%iquo,    :'TRUNCATE],
     ['%ipow,    :'EXPT],
@@ -466,14 +507,16 @@ for x in [
     -- binary float operations.
     ['%fadd,  :"+"],
     ['%fdiv,  :"/"],
+    ['%fdivi, :"/"],                     -- float / integer
     ['%fge,   :">="],
     ['%fle,   :"<="],
     ['%fmax,  :'MAX],
     ['%fmin,  :'MIN],
     ['%fmul,  :"*"],
-    ['%fpow,  :'EXPT],
+    ['%fpowi, :'EXPT],
     ['%fsub,  :"-"],
 
+    ['%fexp,   :'EXP],
     ['%fsin,   :'SIN],
     ['%fcos,   :'COS],
     ['%ftan,   :'TAN],
@@ -489,6 +532,7 @@ for x in [
     ['%fcoth,  :'COTH],
     ['%fsech,  :'SECH],
     ['%fasinh, :'ASINH],
+    ['%fasech, :'ASECH],
     ['%facsch, :'ACSCH],
 
     -- complex number operations
@@ -589,6 +633,18 @@ for x in [
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
    ['%fcstpi,  :function expandFcstpi],
+   ['%fsqrt,   :function expandFsqrt],
+   ['%fpowf,   :function expandFpowf],
+   ['%flog,    :function expandFlog],
+   ['%flog2,   :function expandFlog2],
+   ['%flog10,  :function expandFlog10],
+   ['%fasin,   :function expandFasin],
+   ['%facos,   :function expandFacos],
+   ['%fasec,   :function expandFasec],
+   ['%facsc,   :function expandFacsc],
+   ['%facosh,  :function expandFacosh],
+   ['%fatanh,  :function expandFatanh],
+   ['%facoth,  :function expandFacoth],
 
    ['%z2val,   :function expandZ2val],
    ['%val2z,   :function expandVal2z],
