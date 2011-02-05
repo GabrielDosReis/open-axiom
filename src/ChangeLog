@@ -1,5 +1,16 @@
 2011-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove CGREATERP
+	and GGREATERP.  Add VM-level complex number operators.
+	* interp/lisp-backend.boot: Expand them.
+	* algebra/gaussian.spad.pamphlet (ComplexCategory): Use VM form
+	instead of Lisp level forms.
+	* algebra/pfr.spad.pamphlet (PartialFraction): Likewise.
+	* algebra/si.spad.pamphlet (SingleInteger): Likewise.
+	* algebra/symbol.spad.pamphlet (Symbol): Likewise.
+
+2011-02-04  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot ($VMsideEffectFreeOperators): Remove more Lisp
 	level operators.  Include %property and %bitveclt.
 	* interp/lisp-backend.boot: Expand them.

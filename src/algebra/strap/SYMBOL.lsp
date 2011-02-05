@@ -36,8 +36,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Boolean|)
                 |SYMBOL;<;2$B;10|)) 
 
-(PUT '|SYMBOL;<;2$B;10| '|SPADreplace|
-     '(XLAM (|x| |y|) (GGREATERP |y| |x|))) 
+(PUT '|SYMBOL;<;2$B;10| '|SPADreplace| '|%before?|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |SYMBOL;coerce;$Of;11|)) 

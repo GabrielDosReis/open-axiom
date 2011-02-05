@@ -475,10 +475,12 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    
    manexp(x) ==
       zero? x => [0,0]
-      s := sign x; x := abs x
-      if x > max()$% then return [s*mantissa(max())+1,exponent max()]
-      me:Record(man:%,exp:Integer) := MANEXP(x)$Lisp 
-      two53:= base()**precision()
+      s := sign x
+      x := abs x
+      if x > max()$% then
+        return [s*mantissa(max())+1,exponent max()]
+      me: Record(man:%,exp:Integer) := MANEXP(x)$Lisp 
+      two53 := base()**precision()
       [s*wholePart(two53 * me.man ),me.exp-precision()]
 
 -- rationalApproximation(y,d,b) ==

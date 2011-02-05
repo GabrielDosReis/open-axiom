@@ -399,25 +399,27 @@ optSuchthat [.,:u] == ["SUCHTHAT",:u]
 ++ List of VM side effect free operators.
 $VMsideEffectFreeOperators ==
   '(SPADfirst ASH IDENTP FLOAT_-RADIX FLOAT FLOAT_-SIGN
-      CGREATERP GGREATERP %when %false %true
-      %otherwise %2bit %2bool
-      %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
-      %beq %blt %ble %bgt %bge %bitand %bitior %bitnot %bcompl %ilength
-      %ibit %icst0 %icst1
-      %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
-      %irem %iquo %idivide %idec
-      %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
-      %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
-      %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
-      %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
-      %nil %pair? %lconcat %llength %lfirst %lsecond %lthird %listlit
-      %lreverse %lempty? %hash %ismall? %string? %f2s
-      %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
-      %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
-      %aref %vref %vlength %veclit
-      %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
-      %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
-      %before? %equal %sptreq %ident? %property)
+    %when %false %true %otherwise %2bit %2bool
+    %and %or %not %peq %ieq %ilt %ile %igt %ige %head %tail %integer?
+    %beq %blt %ble %bgt %bge %bitand %bitior %bitxor %bitnot %bcompl
+    %ilength %ibit %icst0 %icst1
+    %imul %iadd %isub %igcd %ilcm %ipow %imin %imax %ieven? %iodd? %iinc
+    %irem %iquo %idivide %idec
+    %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
+    %fpow %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
+    %fsin %fcos %ftan %fcot %fsec %fcsc %fatan %facot
+    %fsinh %fcosh %ftanh %fcsch %fcoth %fsech %fasinh %facsch
+    %val2z %z2val %zlit %zreal %zimag
+    %zexp %zlog %zsin %zcos %ztan %zasin %zacos %zatan
+    %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
+    %nil %pair? %lconcat %llength %lfirst %lsecond %lthird %listlit
+    %lreverse %lempty? %hash %ismall? %string? %f2s
+    %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
+    %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
+    %aref %vref %vlength %veclit
+    %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
+    %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
+    %before? %equal %sptreq %ident? %property)
 
 ++ List of simple VM operators
 $simpleVMoperators == 

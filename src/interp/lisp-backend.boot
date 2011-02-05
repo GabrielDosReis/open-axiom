@@ -234,15 +234,6 @@ expandIlt ['%ilt,x,y] ==
 expandIgt ['%igt,x,y] ==
   expandIlt ['%ilt,y,x]
 
-expandBitand ['%bitand,x,y] ==
-  ['BOOLE,'BOOLE_-AND,expandToVMForm x,expandToVMForm y]
-
-expandBitior ['%bitior,x,y] ==
-  ['BOOLE,'BOOLE_-IOR,expandToVMForm x,expandToVMForm y]
-
-expandBitnot ['%bitnot,x] ==
-  ['LOGNOT,expandToVMForm x]
-
 -- Floating point support
 
 expandFbase ['%fbase] ==
@@ -336,6 +327,24 @@ expandMakebitvec ['%makebitvec,x,y] ==
   ['MAKE_-ARRAY,['LIST,expandToVMForm x],
      KEYWORD::ELEMENT_-TYPE,quoteForm '%Bit,
        KEYWORD::INITIAL_-ELEMENT,expandToVMForm y]
+
+--% complex number conversions
+--% An OpenAxiom complex number is a pair (real and imaginary parts.)
+
+-- convert an OpenAxiom complex number to a Lisp complex number
+expandVal2z ['%val2z,x] ==
+  cons? x =>
+    g := gensym()
+    expandToVMForm ['%bind,[[g,x]],['%zlit,['%head,g],['%tail,g]]]
+  expandToVMForm ['%zlit,['%head,x],['%tail,x]]
+
+-- convert a Lisp complex number to an OpenAxiom complex number
+expandZ2val ['%z2val,x] ==
+  cons? x =>
+    g := gensym()
+    expandToVMForm ['%bind,[[g,x]],['%makepair,['%zreal,g],['%zimag,g]]]
+  expandToVMForm ['%makepair,['%zreal,x],['%zimag,x]]
+  
 
 -- Local variable bindings
 expandBind ['%bind,inits,:body] ==
@@ -445,6 +454,10 @@ for x in [
     ['%iquo,    :'TRUNCATE],
     ['%ipow,    :'EXPT],
     ['%isub,    :"-"],
+    ['%bitand,  :'LOGAND],
+    ['%bitior,  :'LOGIOR],
+    ['%bitxor,  :'LOGXOR],
+    ['%bitnot,  :'LOGNOT],
 
     -- unary float operations.
     ['%fabs,  :'ABS],
@@ -477,6 +490,25 @@ for x in [
     ['%fsech,  :'SECH],
     ['%fasinh, :'ASINH],
     ['%facsch, :'ACSCH],
+
+    -- complex number operations
+    ['%zlit,     :'COMPLEX],
+    ['%zreal,    :'REALPART],
+    ['%zimag,    :'IMAGPART],
+    ['%zexp,     :'EXP],
+    ['%zlog,     :'LOG],
+    ['%zsin,     :'SIN],
+    ['%zcos,     :'COS],
+    ['%ztan,     :'TAN],
+    ['%zasin,    :'ASIN],
+    ['%zacos,    :'ACOS],
+    ['%zatan,    :'ATAN],
+    ['%zsinh,    :'SINH],
+    ['%zcosh,    :'COSH],
+    ['%ztanh,    :'TANH],
+    ['%zasinh,   :'ASINH],
+    ['%zacosh,   :'ACOSH],
+    ['%zatanh,   :'ATANH],
 
     -- string operations
     ['%f2s,   :'DFLOAT_-FORMAT_-GENERAL],
@@ -546,9 +578,6 @@ for x in [
    ['%ilt,     :function expandIlt],
    ['%ineg,    :function expandIneg],
    ['%idivide, :function expandIdivide],
-   ['%bitand,  :function expandBitand],
-   ['%bitior,  :function expandBitior],
-   ['%bitnot,  :function expandBitnot],
 
    ['%i2f,     :function expandI2f],
    ['%fbase,   :function expandFbase],
@@ -560,6 +589,9 @@ for x in [
    ['%fneg,    :function expandFneg],
    ['%fprec,   :function expandFprec],
    ['%fcstpi,  :function expandFcstpi],
+
+   ['%z2val,   :function expandZ2val],
+   ['%val2z,   :function expandVal2z],
 
    ['%streq,   :function expandStreq],
    ['%strlt,   :function expandStrlt],
