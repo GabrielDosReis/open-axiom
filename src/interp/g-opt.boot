@@ -407,7 +407,7 @@ $VMsideEffectFreeOperators ==
     %irem %iquo %idivide %idec
     %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
     %fpowi %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
-    %fsqrt %fpowf %flog %flog2 %flog10
+    %fsqrt %fpowf %flog %flog2 %flog10 %fmanexp
     %fsin  %fcos  %ftan  %fcot  %fsec  %fcsc
     %fasin %facos %fatan %facot %fasec %facsc
     %fsinh  %fcosh  %ftanh  %fcsch  %fcoth  %fsech
@@ -435,8 +435,12 @@ $simpleVMoperators ==
 ++ to the list of operators `ops'.
 semiSimpleRelativeTo?(form,ops) ==
   atomic? form => true
-  form isnt [op,:args] or not MEMQ(op,ops) => false
+  form isnt [op,:args] or not symbol? op or not MEMQ(op,ops) => false
   and/[semiSimpleRelativeTo?(f,ops) for f in args]
+
+++ Return true if `form' os a side-effect free form.  
+sideEffectFree? form ==
+  semiSimpleRelativeTo?(form,$VMsideEffectFreeOperators)
 
 ++ Return true if `form' is a simple VM form.
 ++ See $simpleVMoperators for the definition of simple operators.
@@ -449,8 +453,8 @@ isFloatableVMForm: %Code -> %Boolean
 isFloatableVMForm form ==
   atom form => form ~= "$"
   form is ["QUOTE",:.] => true
-  MEMQ(first form, $simpleVMoperators) and
-    "and"/[isFloatableVMForm arg for arg in rest form]
+  MEMQ(form.op, $simpleVMoperators) and
+    "and"/[isFloatableVMForm arg for arg in form.args]
     
 
 ++ Return true if the VM form `form' is one that we certify to 
@@ -476,16 +480,32 @@ findVMFreeVars form ==
 ++ in `form'.
 varIsAssigned(var,form) ==
   atomic? form => false
-  form is [op,=var,:.] and op in '(%LET LETT SETQ %store) => true
+  form is [op,var',:.] and op in '(%LET LETT SETQ %store) =>
+    symbol? var' => var' = var   -- whole var is assigned
+    var' is [.,=var]             -- only part of it is modified
   or/[varIsAssigned(var,f) for f in form]
 
-++ Subroutine of optLET.  Return true if the variable `var' locally
-++ defined in the LET-form can be safely replaced by its initalization
-++ `expr' in the `body' of the LET-form.
+++ Subroutine of optLET and optBind.  Return true if the variable `var' locally
+++ defined in a binding form can be safely replaced by its initalization
+++ `expr' in the `body' of the binding form.
 canInlineVarDefinition(var,expr,body) ==
+  -- If the variable is assigned to, that is a no no.
   varIsAssigned(var,body) => false
-  numOfOccurencesOf(var,body) < 2 => true
-  atom expr and not varIsAssigned(expr,body)
+  -- Similarly, if the variable is initialized from a variable that
+  -- is latter assigned, it is a no no.
+  IDENTP expr and varIsAssigned(expr,body) => false
+  -- Conversatively preserve order of inialization
+  body is ['%bind,:.] => false
+  -- Linearly used internal temporaries should be replaced, and
+  -- so should side-effet free initializers for linear variables.
+  usageCount := numOfOccurencesOf(var,body)
+  usageCount < 2 and (gensym? var or sideEffectFree? expr) => true
+  -- If the initializer is a variable and the body is
+  -- a series of choices with side-effect free predicates, then
+  -- no harm is done by removing the local `var'.
+  IDENTP expr and body is ['%when,:branches] =>
+    and/[sideEffectFree? pred for [pred,:.] in branches]
+  false
 
 ++ Implement simple-minded LET-inlining.  It seems we can't count
 ++ on Lisp implementations to do this simple transformation.

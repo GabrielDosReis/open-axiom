@@ -1,6 +1,6 @@
 ;; Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 ;; All rights reserved.
-;; Copyright (C) 2007-2009, Gabriel Dos Reis.
+;; Copyright (C) 2007-2011, Gabriel Dos Reis.
 ;; All rights reserved.
 ;;
 ;; Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,9 @@
  #-:common-lisp (compile load eval)
  (defun define-function (f v)
    (setf (symbol-function f) v)))
+
+(defun |gensym?| (s)
+  (null (symbol-package s)))
 
 ;; Below are some missing functions.  There here for lack of better
 ;; place (sys-funs.lisp?)

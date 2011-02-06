@@ -1163,6 +1163,11 @@ usesVariablesLinearly?(form,vars) ==
   atomic? form => true
   and/[numOfOccurencesOf(var,form) < 2 for var in vars] 
 
+++ List of builtin operators we should not attempt to promote
+++ to inlinable status.
+$NonExpandableOperators ==
+  '(%store %LET SPADCALL %bind LET)
+
 ++ We are processing a function definition with parameter list `vars'
 ++ and body given by `body'.  If `body' is a form that can be inlined,
 ++ then return the inline form.  Otherwise, return nil.
@@ -1176,11 +1181,11 @@ expandableDefinition?(vars,body) ==
     -- we want to avoid disturbing object identity, so we rule
     -- out use of side-effect full operators.  
     -- FIXME: This should be done only for constant creators.
-    null vars' => semiSimpleRelativeTo?(body,$VMsideEffectFreeOperators)
+    null vars' => sideEffectFree? body
 
     atomic? body => true
     [op,:args] := body
-    not IDENTP op => false
+    not IDENTP op or op in $NonExpandableOperators => false
     and/[atomic? x for x in args] 
       or semiSimpleRelativeTo?(body,$simpleVMoperators) =>
                 usesVariablesLinearly?(body,vars')

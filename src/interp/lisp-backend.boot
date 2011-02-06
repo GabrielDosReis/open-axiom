@@ -515,6 +515,7 @@ for x in [
     ['%fmul,  :"*"],
     ['%fpowi, :'EXPT],
     ['%fsub,  :"-"],
+    ['%fmanexp, :'MANEXP],               -- (mantissa, exponent) pair.
 
     ['%fexp,   :'EXP],
     ['%fsin,   :'SIN],
