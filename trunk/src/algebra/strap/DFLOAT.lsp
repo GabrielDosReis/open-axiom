@@ -209,12 +209,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sec;2$;44|)) 
 
-(PUT '|DFLOAT;sec;2$;44| '|SPADreplace| '|%fsec|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;csc;2$;45|)) 
-
-(PUT '|DFLOAT;csc;2$;45| '|SPADreplace| '|%fcsc|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asin;2$;46|)) 
@@ -234,8 +230,6 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acsc;2$;49|)) 
 
-(PUT '|DFLOAT;acsc;2$;49| '|SPADreplace| '|%facsc|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acot;2$;50|)) 
 
@@ -243,8 +237,6 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asec;2$;51|)) 
-
-(PUT '|DFLOAT;asec;2$;51| '|SPADreplace| '|%fasec|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sinh;2$;52|)) 
@@ -264,17 +256,11 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;csch;2$;55|)) 
 
-(PUT '|DFLOAT;csch;2$;55| '|SPADreplace| '|%fcsch|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;coth;2$;56|)) 
 
-(PUT '|DFLOAT;coth;2$;56| '|SPADreplace| '|%fcoth|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;sech;2$;57|)) 
-
-(PUT '|DFLOAT;sech;2$;57| '|SPADreplace| '|%fsech|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asinh;2$;58|)) 
@@ -294,17 +280,11 @@
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acsch;2$;61|)) 
 
-(PUT '|DFLOAT;acsch;2$;61| '|SPADreplace| '|%facsch|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;acoth;2$;62|)) 
 
-(PUT '|DFLOAT;acoth;2$;62| '|SPADreplace| '|%facoth|) 
-
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%Shell|) |%DoubleFloat|)
                 |DFLOAT;asech;2$;63|)) 
-
-(PUT '|DFLOAT;asech;2$;63| '|SPADreplace| '|%fasech|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%DoubleFloat| |%DoubleFloat| |%Shell|)
                     |%DoubleFloat|)
@@ -402,6 +382,36 @@
 
 (PUT '|DFLOAT;exp1;$;15| '|SPADreplace|
      '(XLAM NIL (|%fdiv| (|%i2f| 534625820200) (|%i2f| 196677847971)))) 
+
+(PUT '|DFLOAT;sec;2$;44| '|SPADreplace|
+     '(XLAM (|x|) (|%fdiv| (|%i2f| 1) (|%fcos| |x|)))) 
+
+(PUT '|DFLOAT;csc;2$;45| '|SPADreplace|
+     '(XLAM (|x|) (|%fdiv| (|%i2f| 1) (|%fsin| |x|)))) 
+
+(PUT '|DFLOAT;acsc;2$;49| '|SPADreplace|
+     '(XLAM (|x|) (|%fasin| (|%fdiv| (|%i2f| 1) |x|)))) 
+
+(PUT '|DFLOAT;asec;2$;51| '|SPADreplace|
+     '(XLAM (|x|) (|%facos| (|%fdiv| (|%i2f| 1) |x|)))) 
+
+(PUT '|DFLOAT;csch;2$;55| '|SPADreplace|
+     '(XLAM (|x|) (|%fdiv| (|%i2f| 1) (|%fsinh| |x|)))) 
+
+(PUT '|DFLOAT;coth;2$;56| '|SPADreplace|
+     '(XLAM (|x|) (|%fdiv| (|%i2f| 1) (|%ftanh| |x|)))) 
+
+(PUT '|DFLOAT;sech;2$;57| '|SPADreplace|
+     '(XLAM (|x|) (|%fdiv| (|%i2f| 1) (|%fcosh| |x|)))) 
+
+(PUT '|DFLOAT;acsch;2$;61| '|SPADreplace|
+     '(XLAM (|x|) (|%fasinh| (|%fdiv| (|%i2f| 1) |x|)))) 
+
+(PUT '|DFLOAT;acoth;2$;62| '|SPADreplace|
+     '(XLAM (|x|) (|%fatanh| (|%fdiv| (|%i2f| 1) |x|)))) 
+
+(PUT '|DFLOAT;asech;2$;63| '|SPADreplace|
+     '(XLAM (|x|) (|%facosh| (|%fdiv| (|%i2f| 1) |x|)))) 
 
 (PUT '|DFLOAT;negative?;$B;65| '|SPADreplace|
      '(XLAM (|x|) (|%flt| |x| (|%i2f| 0)))) 
@@ -569,9 +579,13 @@
 
 (DEFUN |DFLOAT;cot;2$;43| (|x| $) (DECLARE (IGNORE $)) (COT |x|)) 
 
-(DEFUN |DFLOAT;sec;2$;44| (|x| $) (DECLARE (IGNORE $)) (SEC |x|)) 
+(DEFUN |DFLOAT;sec;2$;44| (|x| $)
+  (DECLARE (IGNORE $))
+  (/ 1.0 (COS |x|))) 
 
-(DEFUN |DFLOAT;csc;2$;45| (|x| $) (DECLARE (IGNORE $)) (CSC |x|)) 
+(DEFUN |DFLOAT;csc;2$;45| (|x| $)
+  (DECLARE (IGNORE $))
+  (/ 1.0 (SIN |x|))) 
 
 (DEFUN |DFLOAT;asin;2$;46| (|x| $)
   (DECLARE (IGNORE $))
@@ -585,13 +599,13 @@
 
 (DEFUN |DFLOAT;acsc;2$;49| (|x| $)
   (DECLARE (IGNORE $))
-  (C-TO-R (ACSC |x|))) 
+  (C-TO-R (ASIN (/ 1.0 |x|)))) 
 
 (DEFUN |DFLOAT;acot;2$;50| (|x| $) (DECLARE (IGNORE $)) (ACOT |x|)) 
 
 (DEFUN |DFLOAT;asec;2$;51| (|x| $)
   (DECLARE (IGNORE $))
-  (C-TO-R (ASEC |x|))) 
+  (C-TO-R (ACOS (/ 1.0 |x|)))) 
 
 (DEFUN |DFLOAT;sinh;2$;52| (|x| $) (DECLARE (IGNORE $)) (SINH |x|)) 
 
@@ -599,11 +613,17 @@
 
 (DEFUN |DFLOAT;tanh;2$;54| (|x| $) (DECLARE (IGNORE $)) (TANH |x|)) 
 
-(DEFUN |DFLOAT;csch;2$;55| (|x| $) (DECLARE (IGNORE $)) (CSCH |x|)) 
+(DEFUN |DFLOAT;csch;2$;55| (|x| $)
+  (DECLARE (IGNORE $))
+  (/ 1.0 (SINH |x|))) 
 
-(DEFUN |DFLOAT;coth;2$;56| (|x| $) (DECLARE (IGNORE $)) (COTH |x|)) 
+(DEFUN |DFLOAT;coth;2$;56| (|x| $)
+  (DECLARE (IGNORE $))
+  (/ 1.0 (TANH |x|))) 
 
-(DEFUN |DFLOAT;sech;2$;57| (|x| $) (DECLARE (IGNORE $)) (SECH |x|)) 
+(DEFUN |DFLOAT;sech;2$;57| (|x| $)
+  (DECLARE (IGNORE $))
+  (/ 1.0 (COSH |x|))) 
 
 (DEFUN |DFLOAT;asinh;2$;58| (|x| $) (DECLARE (IGNORE $)) (ASINH |x|)) 
 
@@ -615,13 +635,17 @@
   (DECLARE (IGNORE $))
   (C-TO-R (ATANH |x|))) 
 
-(DEFUN |DFLOAT;acsch;2$;61| (|x| $) (DECLARE (IGNORE $)) (ACSCH |x|)) 
+(DEFUN |DFLOAT;acsch;2$;61| (|x| $)
+  (DECLARE (IGNORE $))
+  (ASINH (/ 1.0 |x|))) 
 
 (DEFUN |DFLOAT;acoth;2$;62| (|x| $)
   (DECLARE (IGNORE $))
-  (C-TO-R (ACOTH |x|))) 
+  (C-TO-R (ATANH (/ 1.0 |x|)))) 
 
-(DEFUN |DFLOAT;asech;2$;63| (|x| $) (DECLARE (IGNORE $)) (ASECH |x|)) 
+(DEFUN |DFLOAT;asech;2$;63| (|x| $)
+  (DECLARE (IGNORE $))
+  (C-TO-R (ACOSH (/ 1.0 |x|)))) 
 
 (DEFUN |DFLOAT;/;3$;64| (|x| |y| $) (DECLARE (IGNORE $)) (/ |x| |y|)) 
 

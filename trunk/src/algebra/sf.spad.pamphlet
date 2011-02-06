@@ -313,26 +313,16 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    import %fcos: % -> %                 from Foreign Builtin
    import %ftan: % -> %                 from Foreign Builtin
    import %fcot: % -> %                 from Foreign Builtin
-   import %fsec: % -> %                 from Foreign Builtin
-   import %fcsc: % -> %                 from Foreign Builtin
    import %fasin: % -> %                from Foreign Builtin
    import %facos: % -> %                from Foreign Builtin
    import %fatan: % -> %                from Foreign Builtin
    import %facot: % -> %                from Foreign Builtin
-   import %fasec: % -> %                from Foreign Builtin
-   import %facsc: % -> %                from Foreign Builtin
    import %fsinh: % -> %                from Foreign Builtin
    import %fcosh: % -> %                from Foreign Builtin
    import %ftanh: % -> %                from Foreign Builtin
-   import %fcsch: % -> %                from Foreign Builtin
-   import %fcoth: % -> %                from Foreign Builtin
-   import %fsech: % -> %                from Foreign Builtin
    import %fasinh: % -> %               from Foreign Builtin
    import %facosh: % -> %               from Foreign Builtin
    import %fatanh: % -> %               from Foreign Builtin
-   import %facsch: % -> %               from Foreign Builtin
-   import %facoth: % -> %               from Foreign Builtin
-   import %fasech: % -> %               from Foreign Builtin
    import %fcstpi: () -> %              from Foreign Builtin
 
    manexp: % -> MER
@@ -416,26 +406,26 @@ DoubleFloat(): Join(FloatingPointSystem, DifferentialRing, OpenMath,
    cos x            == %fcos x
    tan x            == %ftan x
    cot x            == %fcot x
-   sec x            == %fsec x
-   csc x            == %fcsc x
+   sec x            == 1/cos(x)
+   csc x            == 1/sin(x)
    asin x           == %fasin x
    acos x           == %facos x
    atan x           == %fatan x
-   acsc x           == %facsc x
+   acsc x           == asin(1/x)
    acot x           == %facot x
-   asec x           == %fasec x
+   asec x           == acos(1/x)
    sinh x           == %fsinh x
    cosh x           == %fcosh x
    tanh x           == %ftanh x
-   csch x           == %fcsch x
-   coth x           == %fcoth x
-   sech x           == %fsech x
+   csch x           == 1/sinh(x)
+   coth x           == 1/tanh(x)
+   sech x           == 1/cosh(x)
    asinh x          == %fasinh x
    acosh x          == %facosh x
    atanh x          == %fatanh x
-   acsch x          == %facsch x
-   acoth x          == %facoth x
-   asech x          == %fasech x
+   acsch x          == asinh(1/x)
+   acoth x          == atanh(1/x)
+   asech x          == acosh(1/x)
    x:% / y:%        == %fdiv(x,y)
    negative? x      == x < 0
    zero? x          == x = 0

@@ -408,10 +408,10 @@ $VMsideEffectFreeOperators ==
     %feq %flt %fle %fgt %fge %fmul %fadd %fsub %fexp %fmin %fmax %float?
     %fpowi %fdiv %fneg %i2f %fminval %fmaxval %fbase %fprec %ftrunc
     %fsqrt %fpowf %flog %flog2 %flog10 %fmanexp
-    %fsin  %fcos  %ftan  %fcot  %fsec  %fcsc
-    %fasin %facos %fatan %facot %fasec %facsc
-    %fsinh  %fcosh  %ftanh  %fcsch  %fcoth  %fsech
-    %fasinh %facosh %fatanh %facsch %facoth %fasech
+    %fsin  %fcos  %ftan  %fcot  
+    %fasin %facos %fatan %facot 
+    %fsinh  %fcosh  %ftanh 
+    %fasinh %facosh %fatanh
     %val2z %z2val %zlit %zreal %zimag
     %zexp %zlog %zsin %zcos %ztan %zasin %zacos %zatan
     %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
