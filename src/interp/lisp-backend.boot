@@ -293,12 +293,6 @@ expandFasin ['%fasin,x] ==
 expandFacos ['%facos,x] ==
   ['C_-TO_-R,['ACOS,expandToVMForm x]]
 
-expandFasec ['%fasec,x] ==
-  ['C_-TO_-R,['ASEC,expandToVMForm x]]
-
-expandFacsc ['%facsc,x] ==
-  ['C_-TO_-R,['ACSC,expandToVMForm x]]
-
 expandFacosh ['%facosh,x] ==
   ['C_-TO_-R,['ACOSH,expandToVMForm x]]
 
@@ -307,9 +301,6 @@ expandFatanh ['%fatanh,x] ==
 
 expandFacoth ['%facoth,x] ==
   ['C_-TO_-R,['ACOTH,expandToVMForm x]]
-
-expandFasech ['%fasech,x] ==
-  ['C_-TO_-R,['ASECH,expandToVMForm x]]
 
 
 -- String operations
@@ -522,19 +513,12 @@ for x in [
     ['%fcos,   :'COS],
     ['%ftan,   :'TAN],
     ['%fcot,   :'COT],
-    ['%fsec,   :'SEC],
-    ['%fcsc,   :'CSC],
     ['%fatan,  :'ATAN],
     ['%facot,  :'ACOT],
     ['%fsinh,  :'SINH],
     ['%fcosh,  :'COSH],
     ['%ftanh,  :'TANH],
-    ['%fcsch,  :'CSCH],
-    ['%fcoth,  :'COTH],
-    ['%fsech,  :'SECH],
     ['%fasinh, :'ASINH],
-    ['%fasech, :'ASECH],
-    ['%facsch, :'ACSCH],
 
     -- complex number operations
     ['%zlit,     :'COMPLEX],
@@ -641,8 +625,6 @@ for x in [
    ['%flog10,  :function expandFlog10],
    ['%fasin,   :function expandFasin],
    ['%facos,   :function expandFacos],
-   ['%fasec,   :function expandFasec],
-   ['%facsc,   :function expandFacsc],
    ['%facosh,  :function expandFacosh],
    ['%fatanh,  :function expandFatanh],
    ['%facoth,  :function expandFacoth],

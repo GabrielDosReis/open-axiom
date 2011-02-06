@@ -71,17 +71,6 @@
 
 ;; Contributed by Juergen Weiss from a suggestion by Arthur Norman.
 
-(defun sec (x) (/ 1 (cos x)))
-(defun csc (x) (/ 1 (sin x)))
-(defun acsc (x) (asin (/ 1 x)))
-(defun asec (x) (acos (/ 1 x)))
-(defun csch (x) (/ 1 (sinh x)))
-(defun coth (x) (* (cosh x) (csch x)))
-(defun sech (x) (/ 1 (cosh x)))
-(defun acsch (x) (asinh (/ 1 x)))
-(defun acoth (x) (atanh (/ 1 x)))
-(defun asech (x) (acosh (/ 1 x)))
-
 (defun cot (a)
   (if (or (> a 1000.0) (< a -1000.0))
     (/ (cos a) (sin a))
