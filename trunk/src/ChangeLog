@@ -1,5 +1,9 @@
 2011-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: arrayRef is now a builtin function.
+
+2011-02-07  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/ituple.spad.pamphlet (InfiniteTuple): Use Stream S as
 	representation, not extended domain (default search does not
 	work for the non-extending categories.)

@@ -245,6 +245,7 @@ for i in [ _
   ["and",          "AND"]  , _
   ["append",    "APPEND"]  , _
   ["apply",      "APPLY"]  , _
+  ["arrayRef",    "AREF"]  , _
   ["atom",        "ATOM"]  , _
   ["bitmask",   "SBIT"] , _
   ["canonicalFilename", "PROBE-FILE"], _
