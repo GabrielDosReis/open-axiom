@@ -593,7 +593,7 @@ optBind form ==
   form
 
 optTry form ==
-  form isnt ['try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
+  form isnt ['%try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
   e
 
 optListlit form ==
