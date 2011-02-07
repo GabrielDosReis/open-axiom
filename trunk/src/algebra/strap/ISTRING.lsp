@@ -233,11 +233,11 @@
              (EXIT |r|)))))) 
 
 (DEFUN |ISTRING;setelt;$I2C;16| (|s| |i| |c| $)
-  (SEQ (COND
-         ((OR (< |i| (SVREF $ 6))
-              (< (SPADCALL |s| (|getShellEntry| $ 47)) |i|))
-          (|error| "index out of range"))
-         (T (SEQ (SETF (CHAR |s| (- |i| (SVREF $ 6))) |c|) (EXIT |c|)))))) 
+  (COND
+    ((OR (< |i| (SVREF $ 6))
+         (< (SPADCALL |s| (|getShellEntry| $ 47)) |i|))
+     (|error| "index out of range"))
+    (T (SEQ (SETF (CHAR |s| (- |i| (SVREF $ 6))) |c|) (EXIT |c|))))) 
 
 (DEFUN |ISTRING;substring?;2$IB;17| (|part| |whole| |startpos| $)
   (LET ((|np| (LENGTH |part|)) (|nw| (LENGTH |whole|)))

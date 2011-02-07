@@ -270,14 +270,14 @@
 (PUT '|INT;unitCanonical;2$;55| '|SPADreplace| '|%iabs|) 
 
 (DEFUN |INT;writeOMInt| (|dev| |x| $)
-  (SEQ (COND
-         ((MINUSP |x|)
-          (SEQ (SPADCALL |dev| (|getShellEntry| $ 10))
-               (SPADCALL |dev| "arith1" "unary_minus"
-                   (|getShellEntry| $ 12))
-               (SPADCALL |dev| (- |x|) (|getShellEntry| $ 15))
-               (EXIT (SPADCALL |dev| (|getShellEntry| $ 16)))))
-         (T (SPADCALL |dev| |x| (|getShellEntry| $ 15)))))) 
+  (COND
+    ((MINUSP |x|)
+     (SEQ (SPADCALL |dev| (|getShellEntry| $ 10))
+          (SPADCALL |dev| "arith1" "unary_minus"
+              (|getShellEntry| $ 12))
+          (SPADCALL |dev| (- |x|) (|getShellEntry| $ 15))
+          (EXIT (SPADCALL |dev| (|getShellEntry| $ 16)))))
+    (T (SPADCALL |dev| |x| (|getShellEntry| $ 15))))) 
 
 (DEFUN |INT;OMwrite;$S;2| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))

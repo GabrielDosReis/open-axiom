@@ -1499,9 +1499,17 @@ declareGlobalVariables: %List -> %List
 declareGlobalVariables vars ==
   ["DECLARE",["SPECIAL",:vars]]
 
+++ Return true if `form' contains an EXIT-form that matches
+++ the parent node of `form'.
+matchingEXIT form ==
+  atomic? form or form.op is 'SEQ => false
+  form.op is 'EXIT => true
+  or/[matchingEXIT x for x in form]
+
 simplifySEQ form ==
   atomic? form => form
   form is ["SEQ",[op,a]] and op in '(EXIT RETURN) => simplifySEQ a
+  form is ['SEQ,s] and not matchingEXIT s => simplifySEQ s
   for stmts in tails form repeat
     stmts.first := simplifySEQ first stmts
   form
