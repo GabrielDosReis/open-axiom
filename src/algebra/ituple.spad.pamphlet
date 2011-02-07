@@ -13,7 +13,6 @@
 \section{domain ITUPLE InfiniteTuple}
 
 <<domain ITUPLE InfiniteTuple>>=
-import Type
 import CoercibleTo OutputForm
 import Boolean
 import Stream
@@ -21,15 +20,15 @@ import Stream
 ++ Infinite tuples for the interpreter
 ++ Author: Clifton J. Williamson
 ++ Date Created: 16 February 1990
-++ Date Last Updated: 16 February 1990
+++ Date Last Updated: February 5, 2011
 ++ Keywords:
 ++ Examples:
 ++ References:
+++ Description:
+++   This package implements 'infinite tuples' for the interpreter.
+++   The representation is a stream.
 InfiniteTuple(S:Type): Exports == Implementation where
-  ++ This package implements 'infinite tuples' for the interpreter.
-  ++ The representation is a stream.
-
-  Exports ==> CoercibleTo OutputForm with
+  Exports == CoercibleTo OutputForm with
     map: (S -> S, %) -> %
       ++ map(f,t) replaces the tuple t
       ++ by \spad{[f(x) for x in t]}.
@@ -43,13 +42,15 @@ InfiniteTuple(S:Type): Exports == Implementation where
       ++ generate(f,s) returns \spad{[s,f(s),f(f(s)),...]}.
     construct: % -> Stream S
       ++ construct(t) converts an infinite tuple to a stream.
-
-  Implementation ==> Stream S add
+  Implementation == add
+    Rep == Stream S
     generate(f,x) == per generate(f,x)$Stream(S)
     filterWhile(f, x) == per filterWhile(f,rep x)$Stream(S)
     filterUntil(f, x) == per filterUntil(f,rep x)$Stream(S)
     select(f, x) == per select(f,rep x)$Stream(S)
     construct x == rep x
+    map(f,x) == per map(f, rep x)$Stream(S)
+    coerce(x: %): OutputForm == rep(x)::OutputForm
 
 @
 
@@ -60,15 +61,14 @@ import Type
 import InfiniteTuple
 import Stream
 )abbrev package ITFUN2 InfiniteTupleFunctions2
+++ Description:
+++   Functions defined on streams with entries in two sets.
 InfiniteTupleFunctions2(A:Type,B:Type): Exports == Implementation where
-  ++ Functions defined on streams with entries in two sets.
-  IT   ==> InfiniteTuple
-
-  Exports ==> with
+  macro IT == InfiniteTuple
+  Exports == Type with
     map: ((A -> B),IT A) -> IT B
       ++ \spad{map(f,[x0,x1,x2,...])} returns \spad{[f(x0),f(x1),f(x2),..]}.
-
-  Implementation ==> add
+  Implementation == add
 
     map(f,x) ==
       map(f,x pretend Stream(A))$StreamFunctions2(A,B) pretend IT(B)
