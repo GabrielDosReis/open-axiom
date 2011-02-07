@@ -1,5 +1,10 @@
 2011-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/g-opt.boot (groupVariableDefinitions): Look into clauses
+	of conditional too.
+
+2011-02-06  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/c-util.boot (matchingEXIT): New.
 	(simplifySEQ): Use it.
 

@@ -100,24 +100,20 @@
       (T |x1|)))) 
 
 (DEFUN |RNS-;patternMatch;SP2Pmr;10| (|x| |p| |l| $)
-  (PROG (|r|)
-    (RETURN
-      (COND
-        ((SPADCALL |p| (|getShellEntry| $ 46))
-         (SPADCALL |p| |x| |l| (|getShellEntry| $ 48)))
-        ((SPADCALL |p| (|getShellEntry| $ 49))
-         (SEQ (LETT |r| (SPADCALL |p| (|getShellEntry| $ 51))
-                    |RNS-;patternMatch;SP2Pmr;10|)
-              (EXIT (COND
-                      ((ZEROP (CAR |r|))
-                       (COND
-                         ((SPADCALL
-                              (SPADCALL |x| (|getShellEntry| $ 33))
-                              (CDR |r|) (|getShellEntry| $ 52))
-                          |l|)
-                         (T (SPADCALL (|getShellEntry| $ 53)))))
-                      (T (SPADCALL (|getShellEntry| $ 53)))))))
-        (T (SPADCALL (|getShellEntry| $ 53))))))) 
+  (COND
+    ((SPADCALL |p| (|getShellEntry| $ 46))
+     (SPADCALL |p| |x| |l| (|getShellEntry| $ 48)))
+    ((SPADCALL |p| (|getShellEntry| $ 49))
+     (LET ((|r| (SPADCALL |p| (|getShellEntry| $ 51))))
+       (COND
+         ((ZEROP (CAR |r|))
+          (COND
+            ((SPADCALL (SPADCALL |x| (|getShellEntry| $ 33)) (CDR |r|)
+                 (|getShellEntry| $ 52))
+             |l|)
+            (T (SPADCALL (|getShellEntry| $ 53)))))
+         (T (SPADCALL (|getShellEntry| $ 53))))))
+    (T (SPADCALL (|getShellEntry| $ 53))))) 
 
 (DEFUN |RealNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
