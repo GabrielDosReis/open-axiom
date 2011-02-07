@@ -219,11 +219,11 @@
                                   (EXIT |s|)))))))))))) 
 
 (DEFUN |STAGG-;concat!;3A;13| (|x| |y| $)
-  (SEQ (COND
-         ((SPADCALL |x| (|getShellEntry| $ 18)) |y|)
-         (T (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 54)) |y|
-                     (|getShellEntry| $ 55))
-                 (EXIT |x|)))))) 
+  (COND
+    ((SPADCALL |x| (|getShellEntry| $ 18)) |y|)
+    (T (SEQ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 54)) |y|
+                (|getShellEntry| $ 55))
+            (EXIT |x|))))) 
 
 (DEFUN |StreamAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

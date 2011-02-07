@@ -16,23 +16,20 @@
 (DEFUN |GCDDOM-;lcm;3S;1| (|x| |y| $)
   (PROG (LCM)
     (RETURN
-      (SEQ (COND
-             ((OR (SPADCALL |y| (|spadConstant| $ 7)
-                      (|getShellEntry| $ 9))
-                  (SPADCALL |x| (|spadConstant| $ 7)
-                      (|getShellEntry| $ 9)))
-              (|spadConstant| $ 7))
-             (T (SEQ (LETT LCM
-                           (SPADCALL |y|
-                               (SPADCALL |x| |y|
-                                   (|getShellEntry| $ 10))
-                               (|getShellEntry| $ 12))
-                           |GCDDOM-;lcm;3S;1|)
-                     (EXIT (COND
-                             ((ZEROP (CAR LCM))
-                              (SPADCALL |x| (CDR LCM)
-                                  (|getShellEntry| $ 13)))
-                             (T (|error| "bad gcd in lcm computation"))))))))))) 
+      (COND
+        ((OR (SPADCALL |y| (|spadConstant| $ 7) (|getShellEntry| $ 9))
+             (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9)))
+         (|spadConstant| $ 7))
+        (T (SEQ (LETT LCM
+                      (SPADCALL |y|
+                          (SPADCALL |x| |y| (|getShellEntry| $ 10))
+                          (|getShellEntry| $ 12))
+                      |GCDDOM-;lcm;3S;1|)
+                (EXIT (COND
+                        ((ZEROP (CAR LCM))
+                         (SPADCALL |x| (CDR LCM)
+                             (|getShellEntry| $ 13)))
+                        (T (|error| "bad gcd in lcm computation")))))))))) 
 
 (DEFUN |GCDDOM-;lcm;LS;2| (|l| $)
   (SPADCALL (ELT $ 15) |l| (|spadConstant| $ 16) (|spadConstant| $ 7)
@@ -45,38 +42,35 @@
 (DEFUN |GCDDOM-;gcdPolynomial;3Sup;4| (|p1| |p2| $)
   (PROG (|c1| |c2| |e2| |e1| |p|)
     (RETURN
-      (SEQ (COND
-             ((SPADCALL |p1| (|getShellEntry| $ 24))
-              (SPADCALL |p2| (|getShellEntry| $ 25)))
-             ((SPADCALL |p2| (|getShellEntry| $ 24))
-              (SPADCALL |p1| (|getShellEntry| $ 25)))
-             (T (SEQ (LETT |c1| (SPADCALL |p1| (|getShellEntry| $ 26))
+      (COND
+        ((SPADCALL |p1| (|getShellEntry| $ 24))
+         (SPADCALL |p2| (|getShellEntry| $ 25)))
+        ((SPADCALL |p2| (|getShellEntry| $ 24))
+         (SPADCALL |p1| (|getShellEntry| $ 25)))
+        (T (SEQ (LETT |c1| (SPADCALL |p1| (|getShellEntry| $ 26))
+                      |GCDDOM-;gcdPolynomial;3Sup;4|)
+                (LETT |c2| (SPADCALL |p2| (|getShellEntry| $ 26))
+                      |GCDDOM-;gcdPolynomial;3Sup;4|)
+                (SETQ |p1|
+                      (LET ((#0=#:G1393
+                                (SPADCALL |p1| |c1|
+                                    (|getShellEntry| $ 27))))
+                        (|check-union| (ZEROP (CAR #0#))
+                            (|SparseUnivariatePolynomial| (SVREF $ 6))
+                            #0#)
+                        (CDR #0#)))
+                (SETQ |p2|
+                      (LET ((#0# (SPADCALL |p2| |c2|
+                                     (|getShellEntry| $ 27))))
+                        (|check-union| (ZEROP (CAR #0#))
+                            (|SparseUnivariatePolynomial| (SVREF $ 6))
+                            #0#)
+                        (CDR #0#)))
+                (SEQ (LETT |e1| (SPADCALL |p1| (|getShellEntry| $ 29))
                            |GCDDOM-;gcdPolynomial;3Sup;4|)
-                     (LETT |c2| (SPADCALL |p2| (|getShellEntry| $ 26))
-                           |GCDDOM-;gcdPolynomial;3Sup;4|)
-                     (SETQ |p1|
-                           (LET ((#0=#:G1393
-                                     (SPADCALL |p1| |c1|
-                                      (|getShellEntry| $ 27))))
-                             (|check-union| (ZEROP (CAR #0#))
-                                 (|SparseUnivariatePolynomial|
-                                     (SVREF $ 6))
-                                 #0#)
-                             (CDR #0#)))
-                     (SETQ |p2|
-                           (LET ((#0# (SPADCALL |p2| |c2|
-                                       (|getShellEntry| $ 27))))
-                             (|check-union| (ZEROP (CAR #0#))
-                                 (|SparseUnivariatePolynomial|
-                                     (SVREF $ 6))
-                                 #0#)
-                             (CDR #0#)))
-                     (SEQ (LETT |e1|
-                                (SPADCALL |p1| (|getShellEntry| $ 29))
-                                |GCDDOM-;gcdPolynomial;3Sup;4|)
-                          (EXIT (COND
-                                  ((PLUSP |e1|)
-                                   (SETQ |p1|
+                     (EXIT (COND
+                             ((PLUSP |e1|)
+                              (SETQ |p1|
                                     (LET
                                      ((#0#
                                        (SPADCALL |p1|
@@ -88,12 +82,11 @@
                                         (SVREF $ 6))
                                        #0#)
                                       (CDR #0#)))))))
-                     (SEQ (LETT |e2|
-                                (SPADCALL |p2| (|getShellEntry| $ 29))
-                                |GCDDOM-;gcdPolynomial;3Sup;4|)
-                          (EXIT (COND
-                                  ((PLUSP |e2|)
-                                   (SETQ |p2|
+                (SEQ (LETT |e2| (SPADCALL |p2| (|getShellEntry| $ 29))
+                           |GCDDOM-;gcdPolynomial;3Sup;4|)
+                     (EXIT (COND
+                             ((PLUSP |e2|)
+                              (SETQ |p2|
                                     (LET
                                      ((#0#
                                        (SPADCALL |p2|
@@ -105,23 +98,21 @@
                                         (SVREF $ 6))
                                        #0#)
                                       (CDR #0#)))))))
-                     (LETT |e1| (MIN |e1| |e2|)
-                           |GCDDOM-;gcdPolynomial;3Sup;4|)
-                     (SETQ |c1|
-                           (SPADCALL |c1| |c2| (|getShellEntry| $ 10)))
-                     (SETQ |p1|
-                           (COND
-                             ((OR (ZEROP (SPADCALL |p1|
-                                          (|getShellEntry| $ 37)))
-                                  (ZEROP (SPADCALL |p2|
-                                          (|getShellEntry| $ 37))))
-                              (SPADCALL |c1| 0 (|getShellEntry| $ 34)))
-                             (T (SEQ (LETT |p|
+                (LETT |e1| (MIN |e1| |e2|)
+                      |GCDDOM-;gcdPolynomial;3Sup;4|)
+                (SETQ |c1| (SPADCALL |c1| |c2| (|getShellEntry| $ 10)))
+                (SETQ |p1|
+                      (COND
+                        ((OR (ZEROP (SPADCALL |p1|
+                                     (|getShellEntry| $ 37)))
+                             (ZEROP (SPADCALL |p2|
+                                     (|getShellEntry| $ 37))))
+                         (SPADCALL |c1| 0 (|getShellEntry| $ 34)))
+                        (T (SEQ (LETT |p|
                                       (SPADCALL |p1| |p2|
                                        (|getShellEntry| $ 39))
                                       |GCDDOM-;gcdPolynomial;3Sup;4|)
-                                     (EXIT
-                                      (COND
+                                (EXIT (COND
                                         ((ZEROP
                                           (SPADCALL |p|
                                            (|getShellEntry| $ 37)))
@@ -160,12 +151,12 @@
                                               (|getShellEntry| $ 42))
                                              (|getShellEntry| $ 41))
                                             (|getShellEntry| $ 25)))))))))))
-                     (EXIT (COND
-                             ((ZEROP |e1|) |p1|)
-                             (T (SPADCALL
-                                    (SPADCALL (|spadConstant| $ 16)
-                                     |e1| (|getShellEntry| $ 34))
-                                    |p1| (|getShellEntry| $ 44)))))))))))) 
+                (EXIT (COND
+                        ((ZEROP |e1|) |p1|)
+                        (T (SPADCALL
+                               (SPADCALL (|spadConstant| $ 16) |e1|
+                                   (|getShellEntry| $ 34))
+                               |p1| (|getShellEntry| $ 44))))))))))) 
 
 (DEFUN |GcdDomain&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

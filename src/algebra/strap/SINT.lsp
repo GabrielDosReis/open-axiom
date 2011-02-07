@@ -291,14 +291,13 @@
      '(XLAM (|x|) (|%iadd| (|%isub| |x| |$ShortMinimum|) 1))) 
 
 (DEFUN |SINT;writeOMSingleInt| (|dev| |x| $)
-  (SEQ (COND
-         ((MINUSP |x|)
-          (SEQ (SPADCALL |dev| (|getShellEntry| $ 11))
-               (SPADCALL |dev| "arith1" "unaryminus"
-                   (|getShellEntry| $ 13))
-               (SPADCALL |dev| (- |x|) (|getShellEntry| $ 16))
-               (EXIT (SPADCALL |dev| (|getShellEntry| $ 17)))))
-         (T (SPADCALL |dev| |x| (|getShellEntry| $ 16)))))) 
+  (COND
+    ((MINUSP |x|)
+     (SEQ (SPADCALL |dev| (|getShellEntry| $ 11))
+          (SPADCALL |dev| "arith1" "unaryminus" (|getShellEntry| $ 13))
+          (SPADCALL |dev| (- |x|) (|getShellEntry| $ 16))
+          (EXIT (SPADCALL |dev| (|getShellEntry| $ 17)))))
+    (T (SPADCALL |dev| |x| (|getShellEntry| $ 16))))) 
 
 (DEFUN |SINT;OMwrite;$S;2| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
