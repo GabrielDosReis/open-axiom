@@ -686,22 +686,18 @@
   (|DFLOAT;rationalApproximation;$2NniF;86| |x| |d| 10 $)) 
 
 (DEFUN |DFLOAT;atan;3$;78| (|x| |y| $)
-  (PROG (|theta|)
-    (RETURN
-      (COND
-        ((ZEROP |x|)
-         (COND
-           ((PLUSP |y|) (/ (COERCE PI '|%DoubleFloat|) 2))
-           ((MINUSP |y|) (- (/ (COERCE PI '|%DoubleFloat|) 2)))
-           (T 0.0)))
-        (T (SEQ (LETT |theta| (ATAN (ABS (/ |y| |x|)))
-                      |DFLOAT;atan;3$;78|)
-                (COND
-                  ((MINUSP |x|)
-                   (SETQ |theta|
-                         (- (COERCE PI '|%DoubleFloat|) |theta|))))
-                (COND ((MINUSP |y|) (SETQ |theta| (- |theta|))))
-                (EXIT |theta|))))))) 
+  (COND
+    ((ZEROP |x|)
+     (COND
+       ((PLUSP |y|) (/ (COERCE PI '|%DoubleFloat|) 2))
+       ((MINUSP |y|) (- (/ (COERCE PI '|%DoubleFloat|) 2)))
+       (T 0.0)))
+    (T (LET ((|theta| (ATAN (ABS (/ |y| |x|)))))
+         (SEQ (COND
+                ((MINUSP |x|)
+                 (SETQ |theta| (- (COERCE PI '|%DoubleFloat|) |theta|))))
+              (COND ((MINUSP |y|) (SETQ |theta| (- |theta|))))
+              (EXIT |theta|)))))) 
 
 (DEFUN |DFLOAT;retract;$F;79| (|x| $)
   (|DFLOAT;rationalApproximation;$2NniF;86| |x|
@@ -745,25 +741,25 @@
 (DEFUN |DFLOAT;abs;2$;84| (|x| $) (DECLARE (IGNORE $)) (ABS |x|)) 
 
 (DEFUN |DFLOAT;manexp| (|x| $)
-  (PROG (|s| |me| |two53|)
+  (PROG (|me| |two53|)
     (RETURN
       (COND
         ((ZEROP |x|) (CONS 0 0))
-        (T (SEQ (LETT |s| (|DFLOAT;sign;$I;83| |x| $) |DFLOAT;manexp|)
-                (SETQ |x| (ABS |x|))
-                (COND
-                  ((< |$DoubleFloatMaximum| |x|)
-                   (RETURN-FROM |DFLOAT;manexp|
-                     (CONS (+ (* |s|
-                                 (|DFLOAT;mantissa;$I;6|
-                                     |$DoubleFloatMaximum| $))
-                              1)
-                           (|DFLOAT;exponent;$I;7|
-                               |$DoubleFloatMaximum| $)))))
-                (LETT |me| (MANEXP |x|) |DFLOAT;manexp|)
-                (LETT |two53| (EXPT 2 53) |DFLOAT;manexp|)
-                (EXIT (CONS (* |s| (TRUNCATE (* |two53| (CAR |me|))))
-                            (- (CDR |me|) 53))))))))) 
+        (T (LET ((|s| (|DFLOAT;sign;$I;83| |x| $)))
+             (SEQ (SETQ |x| (ABS |x|))
+                  (COND
+                    ((< |$DoubleFloatMaximum| |x|)
+                     (RETURN-FROM |DFLOAT;manexp|
+                       (CONS (+ (* |s|
+                                   (|DFLOAT;mantissa;$I;6|
+                                    |$DoubleFloatMaximum| $))
+                                1)
+                             (|DFLOAT;exponent;$I;7|
+                                 |$DoubleFloatMaximum| $)))))
+                  (LETT |me| (MANEXP |x|) |DFLOAT;manexp|)
+                  (LETT |two53| (EXPT 2 53) |DFLOAT;manexp|)
+                  (EXIT (CONS (* |s| (TRUNCATE (* |two53| (CAR |me|))))
+                              (- (CDR |me|) 53)))))))))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$2NniF;86| (|f| |d| |b| $)
   (PROG (BASE |de| |tol| |s| |t| |p0| |p1| |q0| |q1| |#G106| |q| |r|
@@ -867,38 +863,33 @@
                                                  (SETQ |t| |#G112|))))))))))))))))))))) 
 
 (DEFUN |DFLOAT;**;$F$;87| (|x| |r| $)
-  (PROG (|n| |d|)
-    (RETURN
-      (COND
-        ((ZEROP |x|)
+  (COND
+    ((ZEROP |x|)
+     (COND
+       ((SPADCALL |r| (|getShellEntry| $ 145))
+        (|error| "0**0 is undefined"))
+       ((SPADCALL |r| (|getShellEntry| $ 146))
+        (|error| "division by 0"))
+       (T 0.0)))
+    ((OR (SPADCALL |r| (|getShellEntry| $ 145)) (= |x| 1.0)) 1.0)
+    ((SPADCALL |r| (|getShellEntry| $ 147)) |x|)
+    (T (LET ((|n| (SPADCALL |r| (|getShellEntry| $ 148)))
+             (|d| (SPADCALL |r| (|getShellEntry| $ 149))))
          (COND
-           ((SPADCALL |r| (|getShellEntry| $ 145))
-            (|error| "0**0 is undefined"))
-           ((SPADCALL |r| (|getShellEntry| $ 146))
-            (|error| "division by 0"))
-           (T 0.0)))
-        ((OR (SPADCALL |r| (|getShellEntry| $ 145)) (= |x| 1.0)) 1.0)
-        ((SPADCALL |r| (|getShellEntry| $ 147)) |x|)
-        (T (SEQ (LETT |n| (SPADCALL |r| (|getShellEntry| $ 148))
-                      |DFLOAT;**;$F$;87|)
-                (LETT |d| (SPADCALL |r| (|getShellEntry| $ 149))
-                      |DFLOAT;**;$F$;87|)
-                (EXIT (COND
-                        ((MINUSP |x|)
-                         (COND
-                           ((ODDP |d|)
-                            (COND
-                              ((ODDP |n|)
-                               (RETURN-FROM |DFLOAT;**;$F$;87|
-                                 (- (|DFLOAT;**;$F$;87| (- |x|) |r| $))))
-                              (T (RETURN-FROM |DFLOAT;**;$F$;87|
-                                   (|DFLOAT;**;$F$;87| (- |x|) |r| $)))))
-                           (T (|error| "negative root"))))
-                        ((EQL |d| 2) (EXPT (C-TO-R (SQRT |x|)) |n|))
-                        (T (C-TO-R (EXPT |x|
-                                    (/
-                                     (FLOAT |n| |$DoubleFloatMaximum|)
-                                     (FLOAT |d| |$DoubleFloatMaximum|))))))))))))) 
+           ((MINUSP |x|)
+            (COND
+              ((ODDP |d|)
+               (COND
+                 ((ODDP |n|)
+                  (RETURN-FROM |DFLOAT;**;$F$;87|
+                    (- (|DFLOAT;**;$F$;87| (- |x|) |r| $))))
+                 (T (RETURN-FROM |DFLOAT;**;$F$;87|
+                      (|DFLOAT;**;$F$;87| (- |x|) |r| $)))))
+              (T (|error| "negative root"))))
+           ((EQL |d| 2) (EXPT (C-TO-R (SQRT |x|)) |n|))
+           (T (C-TO-R (EXPT |x|
+                            (/ (FLOAT |n| |$DoubleFloatMaximum|)
+                               (FLOAT |d| |$DoubleFloatMaximum|)))))))))) 
 
 (DEFUN |DoubleFloat| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

@@ -411,29 +411,25 @@
                                      (|getShellEntry| $ 23))))))))))) 
 
 (DEFUN |LSAGG-;sorted?;MAB;15| (|f| |l| $)
-  (PROG (|p|)
-    (RETURN
-      (COND
-        ((SPADCALL |l| (|getShellEntry| $ 16)) T)
-        (T (SEQ (LETT |p| (SPADCALL |l| (|getShellEntry| $ 17))
-                      |LSAGG-;sorted?;MAB;15|)
-                (LOOP
-                  (COND
-                    ((NOT (NOT (SPADCALL |p| (|getShellEntry| $ 16))))
-                     (RETURN NIL))
-                    (T (SEQ (COND
-                              ((NOT (SPADCALL
-                                     (SPADCALL |l|
-                                      (|getShellEntry| $ 18))
-                                     (SPADCALL |p|
-                                      (|getShellEntry| $ 18))
-                                     |f|))
-                               (RETURN-FROM |LSAGG-;sorted?;MAB;15|
-                                 NIL)))
-                            (EXIT (SETQ |p|
-                                        (SPADCALL (SETQ |l| |p|)
-                                         (|getShellEntry| $ 17))))))))
-                (EXIT T))))))) 
+  (COND
+    ((SPADCALL |l| (|getShellEntry| $ 16)) T)
+    (T (LET ((|p| (SPADCALL |l| (|getShellEntry| $ 17))))
+         (SEQ (LOOP
+                (COND
+                  ((NOT (NOT (SPADCALL |p| (|getShellEntry| $ 16))))
+                   (RETURN NIL))
+                  (T (SEQ (COND
+                            ((NOT (SPADCALL
+                                      (SPADCALL |l|
+                                       (|getShellEntry| $ 18))
+                                      (SPADCALL |p|
+                                       (|getShellEntry| $ 18))
+                                      |f|))
+                             (RETURN-FROM |LSAGG-;sorted?;MAB;15| NIL)))
+                          (EXIT (SETQ |p|
+                                      (SPADCALL (SETQ |l| |p|)
+                                       (|getShellEntry| $ 17))))))))
+              (EXIT T)))))) 
 
 (DEFUN |LSAGG-;reduce;MA2S;16| (|f| |x| |i| $)
   (LET ((|r| |i|))

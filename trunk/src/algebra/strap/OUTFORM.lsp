@@ -942,20 +942,15 @@
   (LIST 'RARROW |a| |b|)) 
 
 (DEFUN |OUTFORM;differentiate;$Nni$;97| (|a| |nn| $)
-  (PROG (|r| |s|)
-    (RETURN
-      (COND
-        ((ZEROP |nn|) |a|)
-        ((< |nn| 4) (|OUTFORM;prime;$Nni$;86| |a| |nn| $))
-        (T (SEQ (LETT |r|
-                      (SPADCALL
-                          (|check-subtype| (PLUSP |nn|)
-                              '(|PositiveInteger|) |nn|)
-                          (|getShellEntry| $ 137))
-                      |OUTFORM;differentiate;$Nni$;97|)
-                (LETT |s| (SPADCALL |r| (|getShellEntry| $ 138))
-                      |OUTFORM;differentiate;$Nni$;97|)
-                (EXIT (|OUTFORM;super;3$;43| |a| (LIST 'PAREN |s|) $)))))))) 
+  (COND
+    ((ZEROP |nn|) |a|)
+    ((< |nn| 4) (|OUTFORM;prime;$Nni$;86| |a| |nn| $))
+    (T (LET* ((|r| (SPADCALL
+                       (|check-subtype| (PLUSP |nn|)
+                           '(|PositiveInteger|) |nn|)
+                       (|getShellEntry| $ 137)))
+              (|s| (SPADCALL |r| (|getShellEntry| $ 138))))
+         (|OUTFORM;super;3$;43| |a| (LIST 'PAREN |s|) $))))) 
 
 (DEFUN |OUTFORM;sum;2$;98| (|a| $)
   (DECLARE (IGNORE $))

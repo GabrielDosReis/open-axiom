@@ -292,20 +292,18 @@
        (EXIT NIL))) 
 
 (DEFUN |ILIST;concat!;3$;25| (|x| |y| $)
-  (PROG (|z|)
-    (RETURN
-      (COND
-        ((NULL |x|)
-         (COND
-           ((NULL |y|) |x|)
-           (T (SEQ (PUSH (|SPADfirst| |y|) |x|) (RPLACD |x| (CDR |y|))
-                   (EXIT |x|)))))
-        (T (SEQ (LETT |z| |x| |ILIST;concat!;3$;25|)
-                (LOOP
-                  (COND
-                    ((NOT (NOT (NULL (CDR |z|)))) (RETURN NIL))
-                    (T (SETQ |z| (CDR |z|)))))
-                (RPLACD |z| |y|) (EXIT |x|))))))) 
+  (COND
+    ((NULL |x|)
+     (COND
+       ((NULL |y|) |x|)
+       (T (SEQ (PUSH (|SPADfirst| |y|) |x|) (RPLACD |x| (CDR |y|))
+               (EXIT |x|)))))
+    (T (LET ((|z| |x|))
+         (SEQ (LOOP
+                (COND
+                  ((NOT (NOT (NULL (CDR |z|)))) (RETURN NIL))
+                  (T (SETQ |z| (CDR |z|)))))
+              (RPLACD |z| |y|) (EXIT |x|)))))) 
 
 (DEFUN |ILIST;removeDuplicates!;2$;26| (|l| $)
   (PROG (|pp| |f| |pr|)

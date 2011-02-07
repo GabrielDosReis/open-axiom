@@ -95,6 +95,11 @@ singleAssignment? form ==
 ++ a sequence of first-time variable definitions.
 groupVariableDefinitions form ==
   atomic? form => form
+  form.op is '%when =>
+    -- FIXME: we should not be generating store-modifying predicates
+    for clause in form.args while not CONTAINED('%LET, first clause) repeat
+      second(clause) := groupVariableDefinitions second clause
+    form
   form isnt ['SEQ,:stmts,['EXIT,val]] => form
   defs := nil
   for x in stmts while singleAssignment? x  repeat
