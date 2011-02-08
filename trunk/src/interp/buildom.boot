@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -78,10 +78,6 @@ oldSlotCode n ==
 
 Record(:args) ==
   srcArgs := [[":", second a, devaluate third a] for a in args]
-  -- if we already have this instantiation in store, just hand it back.
-  t := lassocShiftWithFunction(srcArgs,
-         HGET($ConstructorCache,"Record"), "domainEqualList") =>
-    CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 10)
   -- JHD added an extra slot to cache EQUAL methods
@@ -101,12 +97,10 @@ Record(:args) ==
   vectorRef(dom,$FirstParamSlot + nargs) := [function RecordEqual, :dom]
   vectorRef(dom,$FirstParamSlot + nargs + 1) := [function RecordPrint, :dom]
   vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
--- following is cache for equality functions
+  -- following is cache for equality functions
   vectorRef(dom,$FirstParamSlot + nargs + 3) := if nargs <= 2
 	    then [nil,:nil]
 	    else newShell nargs
-  -- remember this instantiation for future re-use.
-  haddProp($ConstructorCache,"Record",srcArgs,[1,:dom])
   dom
 
 RecordEqual(x,y,dom) ==
@@ -157,8 +151,6 @@ coerceRe2E(x,source) ==
 Union(:args) ==
   srcArgs := [(a is [":",tag,d] => [":",tag,devaluate d]; devaluate a)
                  for a in args]
-  t := lassocShiftWithFunction(srcArgs,HGET($ConstructorCache,"Union"),
-          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell (nargs + 9)
   vectorRef(dom,0) := ["Union", :srcArgs]
@@ -177,7 +169,6 @@ Union(:args) ==
   vectorRef(dom,$FirstParamSlot + nargs) := [function UnionEqual, :dom]
   vectorRef(dom,$FirstParamSlot + nargs + 1) := [function UnionPrint, :dom]
   vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
-  haddProp($ConstructorCache,"Union",srcArgs,[1,:dom])
   dom
 
 UnionEqual(x, y, dom) ==
@@ -214,8 +205,6 @@ coerceUn2E(x,source) ==
 
 Mapping(:args) ==
   srcArgs := [devaluate a for a in args]
-  t := lassocShiftWithFunction(srcArgs,HGET($ConstructorCache,"Mapping"),
-          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 9)
   vectorRef(dom,0) := ["Mapping", :srcArgs]
@@ -234,7 +223,6 @@ Mapping(:args) ==
   vectorRef(dom,$FirstParamSlot + nargs) := [function MappingEqual, :dom]
   vectorRef(dom,$FirstParamSlot + nargs + 1) := [function MappingPrint, :dom]
   vectorRef(dom,$FirstParamSlot + nargs + 2) := [function Undef, :dom]
-  haddProp($ConstructorCache,"Mapping",srcArgs,[1,:dom])
   dom
 
 MappingEqual(x, y, dom) == EQ(x,y)
@@ -250,8 +238,6 @@ coerceMap2E(x) ==
 --% Enumeration
 
 Enumeration(:"args") ==
-  t := lassocShiftWithFunction(args,HGET($ConstructorCache,"Enumeration"),
-          "domainEqualList") => CDRwithIncrement t
   nargs := #args
   dom := newShell(nargs + 9)
   -- JHD added an extra slot to cache EQUAL methods
@@ -272,7 +258,6 @@ Enumeration(:"args") ==
   dom.($FirstParamSlot + nargs) := [function EnumEqual, :dom]
   dom.($FirstParamSlot + nargs + 1) := [function EnumPrint, :dom]
   dom.($FirstParamSlot + nargs + 2) := [function createEnum, :dom]
-  haddProp($ConstructorCache,"Enumeration",args,[1,:dom])
   dom
 
 EnumEqual(e1,e2,dom) == 

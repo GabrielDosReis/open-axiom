@@ -1,5 +1,10 @@
 2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot: Don't cache instantiation of builtin
+	domains, as the comment at the top of the file says.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/lisp-backend.boot: Translate %ident? to IDENTP, not SYMBOLP.
 	* interp/compiler.boot (compMatch): test for identifier, not
 	atomic value.
