@@ -570,7 +570,7 @@ for x in [
     -- symbol unary functions
     ['%gensym,  :'GENSYM],
     ['%sname,   :'SYMBOL_-NAME],
-    ['%ident?,  :'SYMBOLP],
+    ['%ident?,  :'IDENTP],
     ['%property,:'GET],
 
     -- string functions
