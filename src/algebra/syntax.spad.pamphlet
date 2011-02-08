@@ -119,7 +119,11 @@ Syntax(): Public == Private where
     import %integer?: % -> Boolean   from Foreign Builtin
     import %float?: % -> Boolean     from Foreign Builtin
     import %string?: % -> Boolean    from Foreign Builtin
+    import %ident?: % -> Boolean     from Foreign Builtin
+    import %pair?: % -> Boolean      from Foreign Builtin
     import %equal: (%,%) -> Boolean  from Foreign Builtin
+    import %head: % -> %             from Foreign Builtin
+    import %tail: % -> List %        from Foreign Builtin
 
     x = y ==
       %equal(x,y)
@@ -134,7 +138,7 @@ Syntax(): Public == Private where
       %string? s
 
     s case Identifier ==
-      IDENTP(s)$Lisp
+      %ident? s
 
     coerce(x: %): OutputForm ==
       -- For the moment, print syntax as s-expression.
@@ -214,23 +218,23 @@ Syntax(): Public == Private where
       %peq(x,%nil)
 
     atom?(x: %): Boolean ==
-      ATOM(x)$Lisp
+      not %pair? x
 
     getOperator x ==
       atom? x => userError "atom as operand to getOperator"
-      op: % := %head(x)$Foreign(Builtin)
-      op case Identifier => op@Identifier
-      op case Integer => op@Integer
-      op case DoubleFloat => op@DoubleFloat
-      op case String => op@String
-      op
+      case (op := %head x) is
+        s@Identifier => s
+        i@Integer => i
+        d@DoubleFloat => d
+        s@String => s
+        otherwise => op
    
     compound? x ==
-      CONSP(x)$Lisp
+      %pair? x
 
     getOperands x ==
       atom? x => []
-      %tail(x)$Foreign(Builtin)
+      %tail x
 
     coerce(x: %): InputForm ==
       x : InputForm

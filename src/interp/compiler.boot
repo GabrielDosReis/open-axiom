@@ -2213,7 +2213,7 @@ compMatch(["%Match",subject,altBlock],m,env) ==
   $catchAllCount = 0 => 
     stackAndThrow('"missing %b otherwise %d alternative in case pattern",nil)
   code := 
-    atom sn => ['%bind,[[sn,se]],['%when,:nreverse altsCode]]
+    IDENTP sn => ['%bind,[[sn,se]],['%when,:nreverse altsCode]]
     ["%bind",[[n,e] for n in sn for e in rest se], 
        ['%when,:nreverse altsCode]]
   [code,m,savedEnv]
