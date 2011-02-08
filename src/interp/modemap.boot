@@ -260,7 +260,7 @@ substituteCategoryArguments(argl,catform) ==
 augModemapsFromCategoryRep(domainName,repDefn,functorBody,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainName,domainName,categoryForm,e)
   [repFnAlist,e]:= evalAndSub("Rep","Rep",repDefn,getmode(repDefn,e),e)
-  catform:= (isCategory categoryForm => categoryForm.0; categoryForm)
+  catform:= (categoryObject? categoryForm => categoryForm.0; categoryForm)
   compilerMessage('"Adding %1p modemaps",[domainName])
   e:= putDomainsInScope(domainName,e)
   for [lhs:=[op,sig,:.],cond,fnsel] in fnAlist repeat
@@ -281,7 +281,7 @@ AMFCR_,redefined(opname,u) ==
  
 augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
   [fnAlist,e]:= evalAndSub(domainName,domainView,functorForm,categoryForm,e)
-  --  catform:= (isCategory categoryForm => categoryForm.0; categoryForm)
+  --  catform:= (categoryObject? categoryForm => categoryForm.0; categoryForm)
   -- catform appears not to be used, so why set it?
   --if not $InteractiveMode then
   compilerMessage('"Adding %1p modemaps",[domainName])
@@ -314,7 +314,7 @@ augModemapsFromCategory(domainName,domainView,functorForm,categoryForm,e) ==
  
 evalAndSub(domainName,viewName,functorForm,form,$e) ==
   $lhsOfColon: local:= domainName
-  isCategory form => [substNames(domainName,viewName,functorForm,form.1),$e]
+  categoryObject? form => [substNames(domainName,viewName,functorForm,form.1),$e]
   --next lines necessary-- see MPOLY for which $ is actual arg. --- RDJ 3/83
   if CONTAINED("$$",form) then $e:= put("$$","mode",get("$","mode",$e),$e)
   opAlist:= getOperationAlist(domainName,functorForm,form)

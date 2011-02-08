@@ -57,7 +57,7 @@ DomainPrint(D,brief) ==
   env:=
     null $e => $EmptyEnvironment
     $e --in case we are called from top level
-  isCategory D => CategoryPrint(D,env)
+  categoryObject? D => CategoryPrint(D,env)
   $Sublis:= [[keyItem D,:'original]]
   SAY '"-----------------------------------------------------------------------"
   DomainPrint1(D,NIL,env)

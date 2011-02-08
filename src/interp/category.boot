@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,8 +46,8 @@ $NewCatVec := nil
 --%
 
 ++ Returns true if `a' is a category (runtime) object.
-isCategory: %Thing -> %Boolean
-isCategory a == 
+categoryObject?: %Thing -> %Boolean
+categoryObject? a == 
   vector? a and #a > 5 and vectorRef(a,3) = $Category
 
 ++ Return true if the form `x' designates an instantiaion of a
