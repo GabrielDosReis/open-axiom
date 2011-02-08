@@ -361,13 +361,13 @@ OperatorSignature(): Public == Private where
 SystemPredicate(): Public == Private where
   Public == SetCategory
   Private == add
-    import %equal: (%,%) -> Boolean from Foreign Builtin
-
-    x = y == %equal(x,y)
+    Rep == Syntax
+    x = y == rep x = rep y
     coerce(x: %): OutputForm ==
-      %not(x)$Foreign(Builtin) => 'false::OutputForm
-      %peq(x,'T)$Foreign(Builtin) => 'true::OutputForm
-      EQCAR(x,'NOT)$Lisp => not(CADR(x)$Lisp : % :: OutputForm)
+      nil? rep x => 'false::OutputForm
+      case rep x is
+         y@Identifier => (y = 'T => 'true::OutputForm; y::OutputForm)
+         otherwise => y::OutputForm
 
 @
 
