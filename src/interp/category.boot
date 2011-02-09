@@ -113,16 +113,17 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
     NewLocals:= union(NewLocals,Prepare s.mmTarget) where
       Prepare u == "union"/[Prepare2 v for v in u]
       Prepare2 v ==
-        v is "$" => nil
+        v is '$ => nil
         string? v => nil
         atom v => [v]
-        MEMQ(first v,$PrimitiveDomainNames) => nil
+        MEMQ(v.op,$PrimitiveDomainNames) => nil
           --This variable is set in INIT LISP
           --It is a list of all the domains that we need not cache
-        v is ["Union",:w] =>
-          "union"/[Prepare2 x for x in stripUnionTags w]
-        v is ["Mapping",:w] => "union"/[Prepare2 x for x in w]
-        v is ["Record",.,:w] => "union"/[Prepare2 third x for x in w]
+        v.op is 'Union =>
+          "union"/[Prepare2 x for x in stripUnionTags v.args]
+        v.op is 'Mapping => "union"/[Prepare2 x for x in v.args]
+        v.op is 'Record => "union"/[Prepare2 third x for x in v.args]
+        v.op is 'Enumeration => nil
         [v]
   OldLocals:= nil
   -- Remove possible duplicate local domain caches.
