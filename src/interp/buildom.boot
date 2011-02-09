@@ -203,6 +203,20 @@ coerceUn2E(x,source) ==
 --% Mapping
 --  Want to eventually have elt: ($, args) -> target
 
+++ Implementation of the `MappinCategory' as builtin.
+++ A domain that satisfy this predicate provides implementation
+++ to abstraction that map values from some type to values
+++ of another type.
+MappingCategory(:"sig") ==       
+  sig = nil =>
+    error '"MappingCategory requires at least one argument"
+  cat := eval ['Join,$Type,
+                ['mkCategory,quoteForm 'domain,
+                   quoteForm [[['elt,[first sig,'$,:rest sig]],true]],
+                     [], [], nil]]
+  vectorRef(cat,0) := ['MappingCategory,:sig]
+  cat
+
 Mapping(:args) ==
   srcArgs := [devaluate a for a in args]
   nargs := #args

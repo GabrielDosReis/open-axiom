@@ -533,7 +533,8 @@ $CategoryNames ==
     Join _
     EnumerationCategory _
     SubsetCategory _
-    UnionCategory)
+    UnionCategory _
+    MappingCategory)
 
 ++ List of domain constructors that do not have entries in the constructor
 ++ database. So, they are mostly recognized by their names.

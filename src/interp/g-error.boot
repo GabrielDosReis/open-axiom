@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -79,9 +79,9 @@ errorSupervisor(errorType,errorMsg) ==
   errorSupervisor1(errorType,errorMsg,$BreakMode)
 
 needsToSplitMessage msg ==
-  "%b" in msg or '"%b" in msg => false
-  "%d" in msg or '"%d" in msg => false
-  "%l" in msg or '"%l" in msg => false
+  member("%b",msg) or member('"%b",msg) => false
+  member("%d",msg) or member('"%d",msg) => false
+  member("%l",msg) or member('"%l",msg) => false
   true
 
 errorSupervisor1(errorType,errorMsg,$BreakMode) ==

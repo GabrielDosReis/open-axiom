@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -200,10 +200,11 @@ unabbrev1(u,modeIfTrue) ==
   u
  
 unabbrevSpecialForms(op,arglist,modeIfTrue) ==
-  op = 'Mapping => [op,:[unabbrev1(a,modeIfTrue) for a in arglist]]
-  op = 'Union   =>
+  op in '(Mapping MappingCategory) =>
+    [op,:[unabbrev1(a,modeIfTrue) for a in arglist]]
+  op in '(Union UnionCategory)  =>
     [op,:[unabbrevUnionComponent(a,modeIfTrue) for a in arglist]]
-  op = 'Record =>
+  op in '(Record RecordCategory) =>
     [op,:[unabbrevRecordComponent(a,modeIfTrue) for a in arglist]]
   nil
  
