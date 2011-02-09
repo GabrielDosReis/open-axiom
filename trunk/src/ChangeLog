@@ -1,5 +1,11 @@
 2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/sys-constants.boot ($PrimitiveDomainNames): Remove.
+	* interp/category.boot (mkCategory): Drop test for primitive
+	domains.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/category.boot (mkCategory): Don't single out List
 	instantiations in determining NewLocals.
 
