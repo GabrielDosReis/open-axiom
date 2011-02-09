@@ -2683,6 +2683,7 @@ for x in [["|", :"compSuchthat"],_
 	  ["SubsetCategory", :"compSubsetCategory"],_
 	  ["Union", :"compCat"],_
 	  ["Mapping", :"compCat"],_
+          ["MappingCategory", :"compConstructorCategory"],_
 	  ["UnionCategory", :"compConstructorCategory"],_
 	  ["where", :"compWhere"],_
           ["per",:"compPer"],_

@@ -463,14 +463,24 @@ lazyMatchArg2(s,a,dollar,domain,typeFlag) ==
   lazyMatch(s,a,dollar,domain)
   --above line is temporarily necessary until system is compiled 8/15/90
 --s = a
- 
+
+++ Return true if the symbol `s' designates a builtin constructor.
+builtinConstructor? s ==
+  s in $BuiltinConstructorNames
+
+++ Return true if the symbol `s' designates a generalized builtin
+++ constructor, that is a builtin constructor or any operator we
+++ deem as a constructor from the domain slot-filling machinery perspective.
+generalizedBuiltinConstructor? s ==
+  builtinConstructor? s or s is "QUOTE" or s is "[||]"
+
 lazyMatch(source,lazyt,dollar,domain) ==
   lazyt is [op,:argl] and cons? source and op=first source
     and #(sargl := rest source) = #argl =>
-      op in '(Record Union) and first argl is [":",:.] =>
+      builtinConstructor? op and first argl is [":",:.] =>
         and/[stag = atag and lazyMatchArg(s,a,dollar,domain)
               for [.,stag,s] in sargl for [.,atag,a] in argl]
-      op in '(Union Mapping _[_|_|_] QUOTE Enumeration) =>
+      generalizedBuiltinConstructor? op =>
          and/[lazyMatchArg(s,a,dollar,domain) for s in sargl for a in argl]
       coSig := getDualSignatureFromDB op
       null coSig => error ["bad Constructor op", op]
@@ -644,7 +654,7 @@ newHasTest(domform,catOrAtt) ==
 -- we will refuse to say yes for 'Cat has Cat'
 --getConstructorKindFromDB opOf domform = "category" => throwKeyedMsg("S2IS0025",NIL)
 -- on second thoughts we won't!
-  getConstructorKindFromDB opOf domform = "category" =>
+  categoryForm? domform =>
       domform = catOrAtt => 'T
       for [aCat,:cond] in [:ancestorsOf(domform,NIL),:SUBLISLIS (rest domform,$FormalMapVariableList,getConstructorAttributesFromDB(opOf domform))] |  aCat = catOrAtt  repeat
          return evalCond cond where
@@ -658,7 +668,7 @@ newHasTest(domform,catOrAtt) ==
              pred in '(OR or %or) => or/[evalCond i for i in l]
              pred in '(AND and %and) => and/[evalCond i for i in l]
              x  
-  not isAtom and constructor? op  =>
+  not isAtom and categoryForm? catOrAtt  =>
     domain := eval mkEvalable domform
     newHasCategory(domain,catOrAtt)
   catOrAtt is [":",op,type] =>

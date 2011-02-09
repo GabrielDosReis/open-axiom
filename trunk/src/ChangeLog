@@ -1,3 +1,18 @@
+2011-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	Add MappingCategory as a (builtin) category.
+	* interp/sys-constants.boot ($CategoryNames): Include MappingCategory.
+	* interp/g-cndata.boot (unabbrevSpecialForms): Handle
+	MappingCategory, RecordCategory, and UnionCategory.
+	* interp/buildom.boot (MappingCategory): New.
+	* interp/compiler.boot: Elaboration MappingCategory forms. 
+	* interp/g-error.boot (needsToSplitMessage): Fix thinko from
+	type-based dispatch done by the Boot translator.
+	* interp/nrunfast.boot (builtinConstructor?): New.
+	(generalizedBuiltinConstructor?): Likewise.
+	(lazyMatch): Use them.
+	(newHasTest): Properly recognize all flavours of category forms.
+
 2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/sys-constants.boot ($PrimitiveDomainNames): Remove.
