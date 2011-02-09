@@ -122,7 +122,6 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
         v is ["Union",:w] =>
           "union"/[Prepare2 x for x in stripUnionTags w]
         v is ["Mapping",:w] => "union"/[Prepare2 x for x in w]
-        v is ["List",w] => Prepare2 w
         v is ["Record",.,:w] => "union"/[Prepare2 third x for x in w]
         [v]
   OldLocals:= nil

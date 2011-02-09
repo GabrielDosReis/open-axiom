@@ -1,6 +1,11 @@
 2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
-	* interp/category.boot(categoryObject?): Rename from isCategory. 
+	* interp/category.boot (mkCategory): Don't single out List
+	instantiations in determining NewLocals.
+
+2011-02-08  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/category.boot(categoryObject?): Rename from isCategory.
 	* interp/c-util.boot: Adjust use.
 	* interp/functor.boot: Likewise.
 	* interp/modemap.boot: Likewise.
