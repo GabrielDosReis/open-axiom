@@ -116,9 +116,6 @@ mkCategory(domainOrPackage,sigList,attList,domList,PrincipalAncestor) ==
         v is '$ => nil
         string? v => nil
         atom v => [v]
-        MEMQ(v.op,$PrimitiveDomainNames) => nil
-          --This variable is set in INIT LISP
-          --It is a list of all the domains that we need not cache
         v.op is 'Union =>
           "union"/[Prepare2 x for x in stripUnionTags v.args]
         v.op is 'Mapping => "union"/[Prepare2 x for x in v.args]
