@@ -361,7 +361,9 @@ addConstructorModemaps(name,form is [functorName,:.],e) ==
  
  
 --The way XLAMs work:
---  ((XLAM ($1 $2 $3) (SETELT $1 0 $3)) X "c" V) ==> (SETELT X 0 V)
+--  ((XLAM ($1 $2 $3) (%store (%vref $1 0) $3)) X "c" V) ==>
+--               (%store (%vref X 0) V)
+--
  
 getDomainsInScope e ==
   $insideCapsuleFunctionIfTrue=true => $CapsuleDomainsInScope

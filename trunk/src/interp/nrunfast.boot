@@ -98,7 +98,6 @@ evalSlotDomain(u,dollar) ==
     vector? y => y
     y is ["setShellEntry",:.] => eval y
              --lazy domains need to marked; this is dangerous?
-    y is ['SETELT,:.] => systemErrorHere "evalSlotDomain"
     y is [v,:.] =>
       vector? v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]
       IDENTP v and constructor? v 
