@@ -1,3 +1,11 @@
+2011-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-globals.boot ($evalDomain): Remove.
+	* interp/nrungo.boot (NRTevalDomain): Likewise.  Fix callers to call
+	evalDomain. 
+	* interp/i-eval.boot (evalDomain): Don't check for $evalDomain
+	anymore. Handle assignment to domain object forms.
+
 2011-02-09  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	Add MappingCategory as a (builtin) category.

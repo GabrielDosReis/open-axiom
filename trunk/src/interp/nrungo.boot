@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -59,16 +59,11 @@ isInstantiated [op,:argl] ==
 --             Lookup From Interpreter
 --=======================================================
 
-NRTevalDomain form ==
-  form is ["setShellEntry",:.] => eval form
-  form is ['SETELT,:.] => systemErrorHere ["NRTevalDomain",form]
-  evalDomain form
-
 --------------------> NEW DEFINITION (see interop.boot.pamphlet)
 compiledLookup(op,sig,dollar) ==
 --called by coerceByFunction, evalForm, findEqualFun, findUniqueOpInDomain,
 --  getFunctionFromDomain, optDeltaEntry, retractByFunction
-  if not vector? dollar then dollar := NRTevalDomain dollar
+  if not vector? dollar then dollar := evalDomain dollar
   -- "^" is an alternate name for "**" in OpenAxiom libraries.
   -- ??? When, we get to support Aldor libraries and the equivalence
   -- ??? does not hold, we may want to do the reverse lookup too.
@@ -116,11 +111,11 @@ goGet(:l) ==
   lookupDomain :=
      domainSlot = 0 => thisDomain
      thisDomain.domainSlot -- where we look for the operation
-  if cons? lookupDomain then lookupDomain := NRTevalDomain lookupDomain
+  if cons? lookupDomain then lookupDomain := evalDomain lookupDomain
   dollar :=                             -- what matches $ in signatures
     explicitLookupDomainIfTrue => lookupDomain
     thisDomain
-  if cons? dollar then dollar := NRTevalDomain dollar
+  if cons? dollar then dollar := evalDomain dollar
   fn:= basicLookup(op,sig,lookupDomain,dollar)
   fn = nil => keyedSystemError("S2NR0001",[op,sig,lookupDomain.0])
   val:= apply(first fn,[:arglist,rest fn])
@@ -131,7 +126,7 @@ NRTreplaceLocalTypes(t,dom) ==
    atom t =>
      not integer? t => t
      t:= dom.t
-     if cons? t then t:= NRTevalDomain t
+     if cons? t then t:= evalDomain t
      t.0
    first t in '(Mapping Union Record _:) =>
       [first t,:[NRTreplaceLocalTypes(x,dom) for x in rest t]]
@@ -277,7 +272,7 @@ lazyCompareSigEqual(s,tslot,dollar,domain) ==
   integer? tslot and cons?(lazyt:=domain.tslot) and cons? s =>
       lazyt is [.,.,.,[.,item,.]] and
         item is [.,[functorName,:.]] and functorName = first s =>
-          compareSigEqual(s,(NRTevalDomain lazyt).0,dollar,domain)
+          compareSigEqual(s,(evalDomain lazyt).0,dollar,domain)
       nil
   compareSigEqual(s,NRTreplaceLocalTypes(tslot,domain),dollar,domain)
 

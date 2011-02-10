@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,9 @@ namespace BOOT
 $noEvalTypeMsg := nil
 
 evalDomain form ==
-  if $evalDomain then
-    sayMSG concat('"   instantiating","%b",prefix2String form,"%d")
   startTimingProcess 'instantiation
   newType? form => form
+  form is ['setShellEntry,:.] => eval form
   result := eval mkEvalable form
   stopTimingProcess 'instantiation
   result
