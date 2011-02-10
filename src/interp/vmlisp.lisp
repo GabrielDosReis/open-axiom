@@ -428,9 +428,6 @@
 (defmacro times (&rest args)
  `(* ,@args))
 
-(defmacro vec-setelt (vec ind val)
- `(setf (svref ,vec ,ind) ,val))
-
 (defmacro zero? (x)
   `(and (typep ,x 'fixnum) (zerop (the fixnum ,x))))
 

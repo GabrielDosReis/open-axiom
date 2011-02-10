@@ -1,5 +1,13 @@
 2011-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/vmlisp.lisp (VEC-SETELT): Remove.
+	* interp/scan.boot (scanInserts): Use vectorRef.
+	* interp/functor.boot (DescendCode): Don't check for SETELT or
+	QSETREFV forms.
+	* interp/nrunfast.boot (evalSlotDomain): Likewise.
+
+2011-02-10  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-globals.boot ($evalDomain): Remove.
 	* interp/nrungo.boot (NRTevalDomain): Likewise.  Fix callers to call
 	evalDomain. 

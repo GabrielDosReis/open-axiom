@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -168,11 +168,11 @@ scanInsert(s,d) ==
     k := k+1
   v := newVector(n+1)
   for i in 0..k-1 repeat
-    VEC_-SETELT(v,i,u.i)
-  VEC_-SETELT(v,k,s)
+    vectorRef(v,i) := u.i
+  vectorRef(v,k) := s
   for i in k..n-1 repeat
-    VEC_-SETELT(v,i+1,u.i)
-  VEC_-SETELT(d,h,v)
+    vectorRef(v,i+1) := u.i
+  vectorRef(d,h) := v
   s
 
 scanDictCons()==
@@ -180,9 +180,9 @@ scanDictCons()==
   d :=
     a := newVector 256
     b := newVector 1
-    VEC_-SETELT(b,0,MAKE_-CVEC 0)
+    vectorRef(b,0) := MAKE_-CVEC 0
     for i in 0..255 repeat
-      VEC_-SETELT(a,i,b)
+      vectorRef(a,i) := b
     a
   for s in l repeat
     scanInsert(s,d)
