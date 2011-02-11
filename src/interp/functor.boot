@@ -54,9 +54,7 @@ DomainPrint(D,brief) ==
   $WhereList: local := nil
   $Sublis: local := nil
   $WhereCounter: local := 1
-  env:=
-    null $e => $EmptyEnvironment
-    $e --in case we are called from top level
+  env:= $e or $EmptyEnvironment --in case we are called from top level
   categoryObject? D => CategoryPrint(D,env)
   $Sublis:= [[keyItem D,:'original]]
   SAY '"-----------------------------------------------------------------------"
@@ -162,11 +160,14 @@ DomainPrintSubst(item,Sublis) ==
 --%  Utilities
  
 mkDevaluate a ==
-  null a => nil
-  a is ['QUOTE,a'] => (a' => a; nil)
-  a='$ => MKQ '$
-  a is ['%listlit] => nil
-  a is ['%listlit,:.] => a
+  a = nil => nil
+  a is ['QUOTE,a'] =>
+    a' = nil => nil
+    a
+  a = '$ => MKQ '$
+  a is ['%listlit,:.] =>
+    a.args = nil => nil
+    a
   ['devaluate,a]
  
 getDomainView(domain,catform) ==
@@ -182,13 +183,15 @@ getDomainView(domain,catform) ==
  
 getPrincipalView domain ==
   pview:= domain
-  for [.,:view] in domain.4 repeat if #view>#pview then pview:= view
+  for [.,:view] in domain.4 repeat
+    if #view > #pview then
+      pview := view
   pview
  
 CategoriesFromGDC x ==
   atom x => nil
   x is ['%listlit,a,:b] and a is ['QUOTE,a'] =>
-    union(LIST LIST a',"union"/[CategoriesFromGDC u for u in b])
+    union([[a']],"union"/[CategoriesFromGDC u for u in b])
   x is ['QUOTE,a] and a is [b] => [a]
  
 compCategories u ==
@@ -232,13 +235,8 @@ NewbFVectorCopy(u,domName) ==
     v.i:= [function Undef,[domName,i],:first u.i]
   v
  
-mkVector u ==
-  u => ['%veclit,:u]
-  nil
- 
 optFunctorBody x ==
-  atom x => x
-  x is ['QUOTE,:l] => x
+  atomic? x => x
   x is ['DomainSubstitutionMacro,parms,body] =>
     optFunctorBody DomainSubstitutionFunction(parms,body)
   x is ['%listlit,:l] =>
@@ -246,16 +244,17 @@ optFunctorBody x ==
     l:= [optFunctorBody u for u in l]
     and/[optFunctorBodyQuotable u for u in l] =>
       ['QUOTE,[optFunctorBodyRequote u for u in l]]
-    l=rest x => x --CONS-saving hack
     ['%listlit,:l]
   x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]
   x is ['%when,:l] =>
-    l:=
-      [CondClause u for u in l | u and first u] where
-        CondClause [pred,:conseq] ==
-          [optFunctorBody pred,:optFunctorPROGN conseq]
-    l:= EFFACE(['%otherwise],l) --delete any trailing default statement
-    null l => nil
+    l := [v for u in l | v := relevantClause u] where
+            relevantClause u ==
+              u is [pred,:conseq] =>
+                u := [optFunctorBody pred,:optFunctorPROGN conseq]
+                u is ['%otherwise] => nil
+                u
+              nil
+    l = nil => nil
     CAAR l='%otherwise =>
       (null CDAR l => nil; null CDDAR l => CADAR l; ["PROGN",:CDAR l])
     null rest l and null CDAR l =>
@@ -268,11 +267,10 @@ optFunctorBody x ==
   [optFunctorBody u for u in x]
  
 optFunctorBodyQuotable u ==
-  null u => true
-  integer? u => true
-  atom u => nil
+  u = nil or integer? u or string? u => true
+  atom u => false
   u is ['QUOTE,:.] => true
-  nil
+  false
  
 optFunctorBodyRequote u ==
   atom u => u
@@ -283,7 +281,7 @@ optFunctorPROGN l ==
   l is [x,:l'] =>
     worthlessCode x => optFunctorPROGN l'
     l':= optFunctorBody l'
-    l'=[nil] => [optFunctorBody x]
+    l' is [nil] => [optFunctorBody x]
     [optFunctorBody x,:l']
   l
  
@@ -318,8 +316,8 @@ setVector12 args ==
             --DomainSubstitutionFunction, would be (gensym) cons
             --(category parameter), e.g. DirectProduct(length vl,NNI)
             --as in DistributedMultivariatePolynomial
-    args1:=[first u,:args1]
-    args2:=[rest u,:args2]
+    args1:=[u.op,:args1]
+    args2:=[u.args,:args2]
   freeof($domainShell.1,args1) and
       freeof($domainShell.2,args1) and
           freeof($domainShell.4,args1) => nil  
@@ -330,7 +328,7 @@ setVector12 args ==
          false
  
 SetDomainSlots124(vec,names,vals) ==
-  l:= PAIR(names,vals)
+  l:= pairList(names,vals)
   vec.1:= sublisProp(l,vec.1)
   vec.2:= sublisProp(l,vec.2)
   l:= [[a,:devaluate b] for a in names for b in vals]
@@ -378,23 +376,18 @@ mkDomainFormer x ==
  
 mkTypeForm x ==
   atom x => mkDevaluate x
-  x is ['Join] => nil
-  x is ['%listlit] => nil
-  x is ['CATEGORY,:.] => MKQ x
-  x is ['mkCategory,:.] => MKQ x
+  x.op in '(CATEGORY mkCategory) => MKQ x
   x is ['_:,selector,dom] =>
     ['%listlit,MKQ '_:,MKQ selector,mkTypeForm dom]
-  x is ['Record,:argl] =>
-    ['%listlit,MKQ 'Record,:[mkTypeForm y for y in argl]]
-  x is ['Join,:argl] =>
-    ['%listlit,MKQ 'Join,:[mkTypeForm y for y in argl]]
-  x is ['%call,:argl] => ['MKQ, optCall x]
+  x.op is 'Record =>
+    ['%listlit,MKQ 'Record,:[mkTypeForm y for y in x.args]]
+  x.op is '%call => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD
-  x is [op] => MKQ x
-  x is [op,:argl] => ['%listlit,MKQ op,:[mkTypeForm a for a in argl]]
- 
-PrepareConditional u == u
+  x is [op] =>
+    op in '(Join %listlit) => nil
+    MKQ x
+  ['%listlit,MKQ x.op,:[mkTypeForm a for a in x.args]]
  
 setVector5(catNames,locals) ==
   generated:= nil
@@ -409,7 +402,7 @@ setVector5(catNames,locals) ==
           for u in generated]
  
 mkVectorWithDeferral(objects,tag) ==
--- Basically a mkVector, but spots things that aren't safe to instantiate
+-- Construct a %veclit form, but spots things that aren't safe to instantiate
 -- and places them at the end of $ConstantAssignments, so that they get
 -- called AFTER the constants of $ have been set up.   JHD 26.July.89
   ['%veclit,:
@@ -554,7 +547,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
     if not $insideCategoryPackageIfTrue then
       updateCapsuleDirectory(rest u, flag)
     ConstantCreator u =>
-      if not (flag=true) then u:= ['%when,[ProcessCond flag,u]]
+      if flag ~=true then u:= ['%when,[ProcessCond flag,u]]
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
@@ -585,10 +578,11 @@ TryGDC cond ==
             --information in $getDomainCode
   atom cond => cond
   cond is ['HasCategory,:l] =>
-    solved:= nil
-    for u in $getDomainCode | not solved repeat
-      if u is ["%LET",name, =cond] then solved:= name
-    solved => solved
+    solved := nil
+    for u in $getDomainCode while solved = nil repeat
+      if u is ["%LET",name, =cond] then
+        solved := name
+    solved ~= nil => solved
     cond
   cond
  
