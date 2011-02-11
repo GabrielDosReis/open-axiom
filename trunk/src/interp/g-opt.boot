@@ -490,15 +490,31 @@ varIsAssigned(var,form) ==
     var' is [.,=var]             -- only part of it is modified
   or/[varIsAssigned(var,f) for f in form]
 
+
+++ Return the list of variables referenced in `expr'.  
+dependentVars expr == main(expr,nil) where
+  main(x,vars) ==
+    IDENTP x =>
+      MEMQ(x,vars) => vars
+      [x,:vars]
+    atomic? x => vars
+    x' :=
+      cons? x.op => x
+      x.args
+    for y in x' repeat
+      vars := main(y,vars)
+    vars
+
 ++ Subroutine of optLET and optBind.  Return true if the variable `var' locally
 ++ defined in a binding form can be safely replaced by its initalization
 ++ `expr' in the `body' of the binding form.
 canInlineVarDefinition(var,expr,body) ==
+  -- FIXME: We should not be inlining a side-effecting initializer.
   -- If the variable is assigned to, that is a no no.
   varIsAssigned(var,body) => false
-  -- Similarly, if the variable is initialized from a variable that
-  -- is latter assigned, it is a no no.
-  IDENTP expr and varIsAssigned(expr,body) => false
+  -- Similarly, if the initial value depends on variables that are
+  -- side-effected latter, it is alos a no no.
+  or/[varIsAssigned(x,body) for x in dependentVars expr] => false
   -- Conversatively preserve order of inialization
   body is ['%bind,:.] => false
   -- Linearly used internal temporaries should be replaced, and
