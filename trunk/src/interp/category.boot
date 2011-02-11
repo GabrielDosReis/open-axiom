@@ -354,7 +354,7 @@ CatEval x ==
   e := 
     $InteractiveMode => $CategoryFrame
     $e
-  (compMakeCategoryObject(x,e)).expr
+  compMakeCategoryObject(x,e).expr
  
 --RemovePrinAncs(l,leaves) ==
 --  l=nil => nil
@@ -433,7 +433,6 @@ JoinInner(l,$e) ==
     [[$NewCatVec.0],:FundamentalAncestors]
                     --principal ancestor . all those already included
   copied:= nil
-  originalVector:= true
   -- we can not decide to extend the vector in multiple ways
   -- this flag helps us detect this case
   originalVector := false
