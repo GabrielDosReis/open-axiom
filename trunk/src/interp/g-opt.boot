@@ -568,15 +568,6 @@ optLET u ==
     def.rest := second def
   SUBLIS(inits,body)
 
-optLET_* form ==
-  form isnt ["LET*",:.] => form
-  ok := true
-  while ok for [[var,.],:inits] in tails second form repeat
-    if CONTAINED(var,inits) then ok := false
-  not ok => form
-  form.first := "LET"
-  optLET form
-
 optBind form ==
   form isnt ['%bind,inits,.] => form           -- accept only simple bodies
   ok := true
@@ -638,7 +629,7 @@ optCollectVector form ==
     index := gensym()
     iters := [:iters,['STEP,index,0,1]]
   vec := gensym()
-  ["LET",[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
+  ['%bind,[[vec,["makeSimpleArray",["getVMType",eltType],vecSize]]],
     ['%loop,:iters,["setSimpleArrayEntry",vec,index,body],vec]]
 
 ++ Translate retraction of a value denoted by `e' to sub-domain `m'
@@ -649,7 +640,7 @@ optRetract ["%retract",e,m,pred] ==
     cond = '%true => e
     ["check-subtype",cond,MKQ m,e]
   g := gensym()
-  ["LET",[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
+  ['%bind,[[g,e]],["check-subtype",substitute(g,"#1",pred),MKQ m,g]]
 
 
 --%  Boolean expression transformers
@@ -763,7 +754,6 @@ opt2bool(x is ['%2bool,a]) ==
 for x in '( (%call         optCall) _
            (SEQ          optSEQ)_
            (LET          optLET)_
-           (LET_*        optLET_*)_
            (%bind        optBind)_
            (%try         optTry)_
            (%not         optNot)_

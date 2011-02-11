@@ -1285,7 +1285,7 @@ canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends
       pp expr
     canReturn(a,level,exitCount,nil) or canReturn(b,level,exitCount,ValueFlag)
       or canReturn(c,level,exitCount,ValueFlag)
-  op in '(LET LET_* %bind) =>
+  op in '(LET %bind) =>
     or/[canReturn(init,level,exitCount,false) for [.,init] in second expr]
        or canReturn(third expr,level,exitCount,ValueFlag)
   --now we have an ordinary form

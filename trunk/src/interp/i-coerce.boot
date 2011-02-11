@@ -966,7 +966,7 @@ coerceIntAlgebraicConstant(object,t2) ==
 ++ returns true if `val' belongs to the Union branch guarded by `pred'.
 thisUnionBranch?: (%Code,%Thing) -> %Boolean
 thisUnionBranch?(pred,val) ==
-  eval ["LET",[["#1",MKQ val]],pred]
+  eval ['%bind,[["#1",MKQ val]],pred]
 
 coerceUnion2Branch(object) ==
   [.,:doms] := objMode object
