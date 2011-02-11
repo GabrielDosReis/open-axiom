@@ -587,6 +587,7 @@ for x in [
     ['%lam,      :'LAMBDA],
     ['%leave,    :'RETURN],
     ['%otherwise,:'T],
+    ['%funcall,  :'FUNCALL],
     ['%when,     :'COND]
   ] repeat property(first x,'%Rename) := rest x
 
