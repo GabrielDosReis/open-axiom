@@ -289,7 +289,9 @@ MakeUnaryCompiledFunction(S, D, I): Exports == Implementation where
 
     func: (SY, D) -> I
 
-    func(name, x)       == FUNCALL(name, x, NIL$Lisp)$Lisp
+    func(name: SY, x: D): I ==
+      %funcall(name, x, %nil$Foreign(Builtin))$Foreign(Builtin)
+
     unaryFunction name  == func(name, #1)
 
     compiledFunction(e:S, x:SY) ==
@@ -330,9 +332,9 @@ MakeBinaryCompiledFunction(S, D1, D2, I):Exports == Implementation where
   Implementation ==> add
     import MakeFunction(S)
 
-    func: (SY, D1, D2) -> I
+    func(name: SY, x: D1, y: D2): I ==
+      %funcall(name, x, y, %nil$Foreign(Builtin))$Foreign(Builtin)
 
-    func(name, x, y)   == FUNCALL(name, x, y, NIL$Lisp)$Lisp
     binaryFunction name == func(name, #1, #2)
 
     compiledFunction(e, x, y) ==
