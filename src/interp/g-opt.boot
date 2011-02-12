@@ -105,13 +105,14 @@ changeVariableDefinitionToStore(form,vars) ==
 jumpToToplevel? x ==
   atomic? x => false
   op := x.op
-  op = 'SEQ => CONTAINED('THROW,x.args)
+  op = 'SEQ => CONTAINED('THROW,x.args) -- FIXME: what about GO?
   op in '(EXIT THROW %leave) => true
   or/[jumpToToplevel? x' for x' in x]
 
 ++ Return true if `form' is just one assignment expression.
-singleAssignment? form ==
-  form is ['%LET,.,rhs] and not CONTAINED('%LET,rhs)
+nonExitingSingleAssignment? form ==
+  form is ['%LET,.,rhs]
+    and not CONTAINED('%LET,rhs) and not jumpToToplevel? rhs
 
 ++ Turns `form' into a `%bind'-expression if it starts with a
 ++ a sequence of first-time variable definitions.
@@ -124,7 +125,7 @@ groupVariableDefinitions form ==
     form
   form isnt ['SEQ,:stmts,['EXIT,val]] => form
   defs := nil
-  for x in stmts while singleAssignment? x  repeat
+  for x in stmts while nonExitingSingleAssignment? x  repeat
     defs := [x.args,:defs]
   defs = nil or jumpToToplevel? defs => form
   stmts := drop(#defs,stmts)
