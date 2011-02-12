@@ -756,17 +756,17 @@ compCons(form,m,e) == compCons1(form,m,e) or compForm(form,m,e)
 
 compCons1(["CONS",x,y],m,e) ==
   [x,mx,e]:= comp(x,$EmptyMode,e) or return nil
-  null y => convert([['%listlit,x],["List",mx],e],m)
+  null y => coerce([['%listlit,x],["List",mx],e],m)
   yt:= [y,my,e]:= comp(y,$EmptyMode,e) or return nil
   T:=
     my is ["List",m',:.] =>
       mr:= ["List",resolve(m',mx) or return nil]
-      yt':= convert(yt,mr) or return nil
-      [x,.,e]:= convert([x,mx,yt'.env],second mr) or return nil
+      yt':= coerce(yt,mr) or return nil
+      [x,.,e]:= coerce([x,mx,yt'.env],second mr) or return nil
       yt'.expr is ['%listlit,:.] => [['%listlit,x,:rest yt'.expr],mr,e]
       [['%makepair,x,yt'.expr],mr,e]
     [['%makepair,x,y],["Pair",mx,my],e]
-  convert(T,m)
+  coerce(T,m)
 
 --% SETQ
 
@@ -810,7 +810,7 @@ setqSingle(id,val,m,E) ==
            (T:=comp(val,maxm'',E)) => T
         (T:= comp(val,$EmptyMode,E)) and getmode(T.mode,E) =>
           assignError(val,T.mode,id,m'')
-  T':= [x,m',e']:= convert(T,m) or return nil
+  T':= [x,m',e']:= coerce(T,m) or return nil
   if $profileCompiler = true then
     not IDENTP id => nil
     key :=
@@ -849,12 +849,12 @@ setqMultiple(nameList,val,m,e) ==
   e:= addBinding(g,nil,e)
   T:= [.,m1,.]:= compSetq1(g,val,$EmptyMode,e) or return nil
   e:= put(g,"mode",m1,e)
-  [x,m',e]:= convert(T,m) or return nil
+  [x,m',e]:= coerce(T,m) or return nil
   -- 1.1. exit if result is a list
   m1 is ["List",D] =>
     for y in nameList repeat 
       e:= giveVariableSomeValue(y,D,e)
-    convert([["PROGN",x,["%LET",nameList,g],g],m',e],m)
+    coerce([["PROGN",x,["%LET",nameList,g],g],m',e],m)
   -- 2. verify that the #nameList = number of parts of right-hand-side
   selectorModePairs:=
                                                 --list of modes
@@ -940,18 +940,18 @@ compWhere([.,form,:exprList],m,eInit) ==
 compConstruct: (%Form,%Mode,%Env) -> %Maybe %Triple
 compConstruct(form is ["construct",:l],m,e) ==
   y:= modeIsAggregateOf("List",m,e) =>
-    T:= compList(l,["List",second y],e) => convert(T,m)
+    T:= compList(l,["List",second y],e) => coerce(T,m)
     compForm(form,m,e)
   y:= modeIsAggregateOf("Vector",m,e) =>
-    T:= compVector(l,["Vector",second y],e) => convert(T,m)
+    T:= compVector(l,["Vector",second y],e) => coerce(T,m)
     compForm(form,m,e)
   T:= compForm(form,m,e) => T
   for D in getDomainsInScope e repeat
     (y:=modeIsAggregateOf("List",D,e)) and
-      (T:= compList(l,["List",second y],e)) and (T':= convert(T,m)) =>
+      (T:= compList(l,["List",second y],e)) and (T':= coerce(T,m)) =>
          return T'
     (y:=modeIsAggregateOf("Vector",D,e)) and
-      (T:= compVector(l,["Vector",second y],e)) and (T':= convert(T,m)) =>
+      (T:= compVector(l,["Vector",second y],e)) and (T':= coerce(T,m)) =>
          return T'
 
 ++ Compile a literal (quoted) symbol.
@@ -961,7 +961,7 @@ compQuote(expr,m,e) ==
     -- Ideally, Identifier should be the default type.  However, for
     -- historical reasons we cannot afford that luxury yet.
     m = $Identifier or member(m,$IOFormDomains) => [expr,m,e]
-    convert([expr,$Symbol,e],m)
+    coerce([expr,$Symbol,e],m)
   stackAndThrow('"%1b is not a literal symbol.",[x])
 
 compList: (%Form,%Mode,%Env) -> %Maybe %Triple
@@ -1180,7 +1180,7 @@ compElt(form,m,E) ==
   lang ~= nil =>
     opMode := getExternalSymbolMode(anOp,lang,E)
     op := get(anOp,"%Link",E) or anOp
-    convert([op,opMode,E],m)
+    coerce([op,opMode,E],m)
   isDomainForm(aDomain,E) =>
     E:= addDomain(aDomain,E)
     mmList:= getModemapListFromDomain(anOp,0,aDomain,E)
@@ -1198,7 +1198,7 @@ compElt(form,m,E) ==
     [sig,[pred,val]]:= modemap
     #sig ~= 2 and val isnt ["CONST",:.] => nil
     val := genDeltaEntry([opOf anOp,:modemap],E)
-    convert([['%call,val],second sig,E], m)
+    coerce([['%call,val],second sig,E], m)
   compForm(form,m,E)
 
 --% HAS
@@ -1452,7 +1452,7 @@ compSignatureImport(["%SignatureImport",id,type,home],m,e) ==
   if T.mode isnt ['Mapping,:.] then
     e := put(id,"value",[id',T.mode,nil],e)
   T.env := e
-  convert(T,m)
+  coerce(T,m)
 
 
 ++ Compile package call to an external function.  
@@ -1836,12 +1836,12 @@ compComma(form,m,e) ==
   -- there should be no difference, but it makes the compiler code
   -- less regular, with duplicated effort.
   m is ["Tuple",t] =>
-    Tl' := [convert(T,t) or return "failed" for T in Tl]
+    Tl' := [coerce(T,t) or return "failed" for T in Tl]
     Tl' = "failed" => nil
     [["asTupleNew0", ["getVMType",t], [T.expr for T in Tl']], m, e]
   T := [["LIST2VEC", [T.expr for T in Tl]], 
         ["Cross",:[T.mode for T in Tl]], e]
-  convert(T,m)
+  coerce(T,m)
 
 --% Very old resolve
 -- should only be used in the old (preWATT) compiler

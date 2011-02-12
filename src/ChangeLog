@@ -1,5 +1,16 @@
 2011-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/compiler.boot (compCons1): Use coerce not convert.
+	(setqSingle): Likewise.
+	(setqMultiple): Likewise.
+	(compConstruct): Likewise.
+	(compQuote): Likewise.
+	(compElt): Likewise.
+	(compSignatureImport): Likewise.
+	(compComma): Likewise.
+
+2011-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/compiler.boot (compExpressionList): Remove.
 	(compForm1): Don't call it.
 
