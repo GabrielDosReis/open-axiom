@@ -63,7 +63,6 @@ compForm1: (%Form,%Mode,%Env) -> %Maybe %Triple
 compForm2: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 compForm3: (%Form,%Mode,%Env,%List) -> %Maybe %Triple
 compArgumentsAndTryAgain: (%Form,%Mode,%Env) -> %Maybe %Triple
-compExpressionList: (%List,%Mode,%Env) -> %Maybe %Triple
 compWithMappingMode: (%Form,%Mode,%List) -> %List
 compFormMatch: (%Modemap,%List) -> %Boolean
 compFormWithModemap: (%Form,%Mode,%Env,%Modemap) -> %Maybe %Triple
@@ -498,7 +497,6 @@ compForm1(form is [op,:argl],m,e) ==
     domain="Lisp" =>
       --op'='QUOTE and null rest argl => [first argl,m,e]
       [[op',:[([.,.,e]:= compOrCroak(x,$EmptyMode,e)).expr for x in argl]],m,e]
-    domain=$Expression and op'="construct" => compExpressionList(argl,m,e)
     domain is ["Foreign",lang] => compForeignPackageCall(lang,op',argl,m,e)
     (op'="COLLECT") and coerceable(domain,m,e) =>
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
@@ -515,11 +513,6 @@ compForm1(form is [op,:argl],m,e) ==
 
   (mmList:= getFormModemaps(form,e)) and (T:= compForm2(form,m,e,mmList)) => T
   compToApply(op,argl,m,e)
-
-compExpressionList(argl,m,e) ==
-  Tl:= [[.,.,e]:= comp(x,$Expression,e) or return "failed" for x in argl]
-  Tl="failed" => nil
-  convert([['%listlit,:[y.expr for y in Tl]],$Expression,e],m)
 
 compForm2(form is [op,:argl],m,e,modemapList) ==
   sargl:= TAKE(# argl, $TriangleVariableList)

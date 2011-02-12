@@ -1,3 +1,8 @@
+2011-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (compExpressionList): Remove.
+	(compForm1): Don't call it.
+
 2011-02-11  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (changeVariableDefinitionToStore): Tidy.
