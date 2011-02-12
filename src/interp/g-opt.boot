@@ -70,14 +70,36 @@ emitIndirectCall(fn,args,x) ==
 ++ updated as opposed to being defined. `vars' is the list of
 ++ all variable definitions in scope.
 changeVariableDefinitionToStore(form,vars) ==
-  atomic? form => nil
+  atomic? form or form.op is 'CLOSEDFN => vars
   form is ['%LET,v,expr] =>
-    changeVariableDefinitionToStore(expr,vars)
-    if v in vars then form.op := '%store
-  for x in form repeat
-    changeVariableDefinitionToStore(x,vars)
-    x is ['%LET,v,:.] and not (v in vars) =>
+    vars := changeVariableDefinitionToStore(expr,vars)
+    if v in vars then
+      form.op := '%store
+    else
       vars := [v,:vars]
+    vars
+  form.op is '%when =>
+    for clause in form.args repeat
+      -- variable defined in clause predicates are visible
+      -- subsequent predicates
+      vars := changeVariableDefinitionToStore(first clause,vars)
+      -- but those defined in branches are local.
+      changeVariableDefinitionToStore(rest clause,vars)
+    vars
+  -- local bindings are, well, local.
+  form.op in '(%bind LET) =>
+    vars' := vars
+    for [v,init] in second form repeat
+      vars' := changeVariableDefinitionToStore(init,vars')
+      vars' := [v,:vars']
+    changeVariableDefinitionToStore(third form,vars')
+    vars
+  form.op in $AbstractionOperator =>
+    changeVariableDefinitionToStore(third form,[:second form,:vars])
+    vars
+  for x in form repeat
+    vars := changeVariableDefinitionToStore(x,vars)
+  vars
 
 ++ Return true if `x' contains control transfer to a point outside itself.
 jumpToToplevel? x ==
