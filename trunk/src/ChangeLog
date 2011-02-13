@@ -1,3 +1,11 @@
+2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCond): Get rid of double negatives when
+	possible. 
+	* interp/g-util.boot (assumeProperty): Remove.
+	(flattenVMForm): Likewise.
+	(mkVMForm): Likewise.
+
 2011-02-12  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (compCons1): Use coerce not convert.

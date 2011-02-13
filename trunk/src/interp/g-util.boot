@@ -75,51 +75,6 @@ stringToChar s ==
   s = '"\v" => $VerticalTab
   error strconc('"invalid character designator: ", s)
   
---% VM forms
-
-++ Make the assumption named `prop' for all symbols
-++ on the lis `syms'.
-assumeProperty(syms,prop) ==
-  for s in syms repeat
-    property(s,prop) := true
-
-assumeProperty('(%and %or),'%nary)
-
-++ We are about to construct a middle end expression
-++ with operator `op, and aguments `form'.  Try to
-++ simplify the structure of the expression.
-flattenVMForm(form,op) == main where
-  main() ==
-    atom form => form
-    EQ(form.op,op) => [op,:flatten(form.args,op,nil)]
-    [flattenVMForm(form.op,op),:flattenVMForm(form.args,op)]
-  flatten(forms,op,accu) ==
-    forms = nil => accu
-    x := flattenVMForm(first forms,op)
-    cons? x and EQ(x.op,op) => flatten(rest forms,op,[:accu,:x.args])
-    flatten(rest forms,op,[:accu,x])
-
-++ Build a midde end expression with given operator and arguments.    
-mkVMForm(op,args) ==
-  if op has %nary then
-    args := flattenVMForm(args,op)
-  op = '%or =>
-    args := REMOVE('%false,args)
-    args = nil => '%false
-    args is [arg] => arg
-    [op,:args]
-  op = '%and =>
-    args := REMOVE('%true,args)
-    args = nil => '%true
-    args is [arg] => arg
-    [op,:args]
-  op = '%not =>
-    [arg] := args
-    arg = '%false => '%true
-    arg = '%true => '%false
-    arg is ['%not,arg'] => arg'
-    ['%not,:args]
-
 ++
 $interpOnly := false
 
