@@ -351,7 +351,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
 	    [[["construct",[name,type],["XLAM",["#1"],["%makepair",i,"#1"]]],
 	      ["elt",[type,name,tag],cdownFun],
 		["case",[$Boolean,name,tag],
-		   ["XLAM",["#1"],['%ieq,['%head,"#1"],i]]]]
+		   ["XLAM",["#1","#2"],['%ieq,['%head,"#1"],i]]]]
 		     for [.,tag,type] in listOfEntries for i in 0..])] where
 		       cdownFun() ==
 			gg:=gensym()
@@ -413,8 +413,8 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 		   ["XLAM",["#1"],"#1"]
 		typeFun() ==
 		   p is ['%ieq,['%head,x],n] =>
-		     ["XLAM",["#1"],['%ieq,['%head,x],n]]
-		   ["XLAM",["#1"],p]
+		     ["XLAM",["#1","#2"],['%ieq,['%head,x],n]]
+		   ["XLAM",["#1","#2"],p]
   cList:= substitute(dollarIfRepHack op,g,cList)
   [cList,e]
 

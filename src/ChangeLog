@@ -1,5 +1,14 @@
 2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/buildom.boot (mkNewUnionFunList): Align arity of
+	'case' implementation to declared signature.
+	(mkUnionFunList): Likewise.
+	* interp/compiler.boot (compCase1): 'case' is now unconditionally
+	binary. 
+	* interp/g-opt.boot (optCond): Fix thinko.
+
+2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/g-opt.boot (optCond): Get rid of double negatives when
 	possible. 
 	* interp/g-util.boot (assumeProperty): Remove.

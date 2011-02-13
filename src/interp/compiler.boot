@@ -1529,10 +1529,8 @@ compCase1(x,m,e) ==
             and modeEqual(s,m')] or return nil
   fn:= (or/[mm for (mm := [.,[cond,selfn]]) in u | cond=true]) or return nil
   fn := genDeltaEntry(["case",:fn],e)
-  -- user-defined `case' functions really are binary, as opposed to
-  -- the compiler-synthetized versions for Union instances.  
-  not isUnionMode(m',e') => [['%call,fn,x',MKQ m],$Boolean,e']
-  [['%call,fn,x'],$Boolean,e']
+  [['%call,fn,x',MKQ m],$Boolean,e']
+
 
 
 ++ For `case' operation implemented in library, the second operand
