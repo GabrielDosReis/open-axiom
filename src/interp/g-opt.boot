@@ -312,6 +312,9 @@ optCond (x is ['%when,:l]) ==
       optCond ['%when,[['%or,p1,p2],:c1],['%otherwise,:c3]]
     x
   for y in tails l repeat
+    c := first c
+    if c is [['%not,['%not,p]],:.] then
+      c.first := p
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
       a := ['%or,a1,a2]
       first(y).first := a
