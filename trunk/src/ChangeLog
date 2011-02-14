@@ -1,5 +1,11 @@
 2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/c-util.boot (getSuccessEnvironment): Follow through
+	temporaries designating result of assignment.
+	(getInverseEnvironment): Likewise.
+
+2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/buildom.boot (mkNewUnionFunList): Align arity of
 	'case' implementation to declared signature.
 	(mkUnionFunList): Likewise.

@@ -460,7 +460,7 @@ mkUnion(a,b) ==
 hasType(x,e) ==
   fn get(x,"condition",e) where
     fn x ==
-      null x => nil
+      x = nil => nil
       x is [["case",.,y],:.] => y
       fn rest x
 
@@ -1711,12 +1711,12 @@ coerceHard(T,m) ==
 coerceExtraHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceExtraHard(T is [x,m',e],m) ==
   T':= autoCoerceByModemap(T,m) => T'
-  isUnionMode(m',e) is ["Union",:l] and (t:= hasType(x,e)) and
+  (t:= hasType(x,e)) and isUnionMode(m',e) is ["Union",:l] and 
     member(t,l) and (T':= autoCoerceByModemap(T,t)) and
       (T'':= coerce(T',m)) => T''
   m' is ['Record,:.] and m = $Expression =>
       [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
-  belongsTo?(m',["UnionType"],e) and hasUniqueCaseView(x,m,e) =>
+  hasUniqueCaseView(x,m,e) and belongsTo?(m',["UnionType"],e) =>
     autoCoerceByModemap(T,m)
   -- Domain instantiations are first class objects
   m = $Domain =>
