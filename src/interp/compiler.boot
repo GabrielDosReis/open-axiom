@@ -1300,19 +1300,6 @@ compPredicate(p,E) ==
   [p',m,E] := comp(p,$Boolean,E) or return nil
   [p',m,getSuccessEnvironment(p,E),getInverseEnvironment(p,E)]
 
-getUnionMode(x,e) ==
-  m:=
-    atom x => getmode(x,e)
-    return nil
-  isUnionMode(m,e)
-
-isUnionMode(m,e) ==
-  m is ["Union",:.] => m
-  (m':= getmode(m,e)) is ["Mapping",["UnionCategory",:.]] => second m'
-  v:= get(RepIfRepHack m,"value",e) =>
-    (v.expr is ["Union",:.] => v.expr; nil)
-  nil
-
 compFromIf(a,m,E) ==
   a="%noBranch" => ["%noBranch",m,E]
   comp(a,m,E)
@@ -1710,29 +1697,26 @@ coerceHard(T,m) ==
 
 coerceExtraHard: (%Triple,%Mode) -> %Maybe %Triple
 coerceExtraHard(T is [x,m',e],m) ==
-  T':= autoCoerceByModemap(T,m) => T'
-  (t:= hasType(x,e)) and isUnionMode(m',e) is ["Union",:l] and 
-    member(t,l) and (T':= autoCoerceByModemap(T,t)) and
-      (T'':= coerce(T',m)) => T''
+  -- Allow implicit injection into Union, if that is
+  -- clear from the context
+  isUnionMode(m,e) is ['Union,:l] and member(m',l) =>
+    autoCoerceByModemap(T,m)
+  -- For values from domains satisfying Union-like properties, apply
+  -- implicit retraction if clear from context.
+  (t := hasType(x,e)) and unionLike?(m',e) is ['UnionCategory,:l]
+     and member(t,l) => coerce(autoCoerceByModemap(T,t),m)
+  -- Give it one last chance.
+  -- FIXME: really, we shouldn't.  Codes relying on this are
+  -- FIXME: inherently difficult to comprehend and likely broken.
+  T' := autoCoerceByModemap(T,m) => T'
   m' is ['Record,:.] and m = $Expression =>
       [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
-  hasUniqueCaseView(x,m,e) and belongsTo?(m',["UnionType"],e) =>
-    autoCoerceByModemap(T,m)
   -- Domain instantiations are first class objects
   m = $Domain =>
     m' = $Category => nil
     isCategoryForm(m',e) => [x,m',e]
     nil
   nil
-
-++ returns true if mode `m' is known to belong to category `cat' in
-++ the environment `e'.  This function is different from its cousines
-++ `ofCategory', or `has'.  The latter perform runtime checks.  Here,
-++ we are interested in a static approximation.  So, use with care.
-belongsTo?(m,cat,e) ==
-  c := get(m,"mode",e)
-  c isnt ["Join",:cats] => nil
-  member(cat,cats)
 
 coerceable(m,m',e) ==
   m=m' => m
