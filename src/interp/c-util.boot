@@ -437,6 +437,8 @@ getSuccessEnvironment(a,e) ==
       e := getSuccessEnvironment(form,e)
     e
   a is ["not",a'] => getInverseEnvironment(a',e)
+  -- Follow temporaries in complex conditionals
+  symbol? a and (T := get(a,"value",e)) => getSuccessEnvironment(T.expr,e)
   e
 
 getInverseEnvironment(a,e) ==
@@ -453,6 +455,8 @@ getInverseEnvironment(a,e) ==
       put(x,"condition",[newpred,:get(x,"condition",e)],e)
     e
   a is ["not",a'] => getSuccessEnvironment(a',e)
+  -- Follow temporaries in complex conditionals
+  symbol? a and (T := get(a,"value",e)) => getInverseEnvironment(T.expr,e)
   e
 
 ++ Give some abstract value to the variable `v' of mode `m' in `e'.
