@@ -441,13 +441,39 @@ getSuccessEnvironment(a,e) ==
   symbol? a and (T := get(a,"value",e)) => getSuccessEnvironment(T.expr,e)
   e
 
+isUnionMode(m,e) ==
+  m is ["Union",:.] => m
+  v := get(RepIfRepHack m,"value",e) =>
+    (v.expr is ["Union",:.] => v.expr; nil)
+  nil
+
+++ Return the UnionCategory of `m' in the environment `e', if known.
+unionLike?(m,e) ==
+  isUnionMode(m,e) is ['Union,:branches] => ['UnionCategory,:branches]
+  -- Take a cheap approximation at domains with Union-like flavour.
+  T := compForMode(m,$EmptyMode,e) or return nil
+  T.expr is ['Union,:branches] => ['UnionCategory,:T.expr.args]
+  T.mode is ['UnionCategory,:.] => T.mode
+  T.mode is ['UnionType] => ['UnionCategory]
+  T.mode isnt ['Join,:cats,['CATEGORY,.,:sigs]] => nil
+  member(['UnionType],cats) =>
+    ['UnionCategory,
+      :[b for ['SIGNATURE,"case",[=$Boolean,'$,["[||]",b]]] in sigs]]
+  nil
+
+++ If `x' designates a store with multiple views, e.g. Union, return
+++ the collection of those modes.
+unionProperty(x,e) ==
+  atom x => unionLike?(getmode(x,e),e)
+  nil
+
 getInverseEnvironment(a,e) ==
   a is ["case",x,m] and (x := lhsOfAssignment x) and IDENTP x =>
     --the next two lines are necessary to get 3-branched Unions to work
     -- old-style unions, that is
     (get(x,"condition",e) is [["OR",:oldpred]]) and member(a,oldpred) =>
       put(x,"condition",[MKPF(delete(a,oldpred),"OR")],e)
-    getUnionMode(x,e) is ["Union",:l] =>
+    unionProperty(x,e) is ['UnionCategory,:l] =>
       l':= delete(m,l)
       for u in l' repeat
 	 if u is ['_:,=m,:.] then l':= delete(u,l')

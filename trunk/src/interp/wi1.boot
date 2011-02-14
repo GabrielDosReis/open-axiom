@@ -882,7 +882,7 @@ coerceHard(T,m) ==
 
 coerceExtraHard(T is [x,m',e],m) ==
   T':= autoCoerceByModemap(T,m) => T'
-  isUnionMode(m',e) is ["Union",:l] and (t:= hasType(x,e)) and
+  unionLike?(m',e) is ['UnionCategory,:l] and (t:= hasType(x,e)) and
     member(t,l) and (T':= autoCoerceByModemap(T,t)) and
       (T'':= coerce(T',m)) => T''
   m' is ['Record,:.] and m = $Expression =>

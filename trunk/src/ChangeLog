@@ -1,3 +1,14 @@
+2011-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (getUnionMode): Remove.
+	(isUnionMode): Move to c-util.boot.
+	(coerceExtraHard): Rework.
+	(belongsTo?): Remove.
+	* interp/c-util.boot (isUnionMode): Moved from compiler.boot.
+	(unionLike?): New.
+	(unionProperty): Likewise.
+	(getInverseEnvironment): Use unionProperty instead of getUnionMode.
+
 2011-02-13  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (getSuccessEnvironment): Follow through
