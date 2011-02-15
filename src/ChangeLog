@@ -1,3 +1,8 @@
+2011-02-15  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/compiler.boot (coerceExtraHard): Explicitly fail if
+	autoCoerceByModemap fails.
+
 2011-02-14  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/compiler.boot (getUnionMode): Remove.

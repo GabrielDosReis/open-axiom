@@ -1704,7 +1704,9 @@ coerceExtraHard(T is [x,m',e],m) ==
   -- For values from domains satisfying Union-like properties, apply
   -- implicit retraction if clear from context.
   (t := hasType(x,e)) and unionLike?(m',e) is ['UnionCategory,:l]
-     and member(t,l) => coerce(autoCoerceByModemap(T,t),m)
+     and member(t,l) =>
+       T' := autoCoerceByModemap(T,t) => coerce(T',m)
+       nil
   -- Give it one last chance.
   -- FIXME: really, we shouldn't.  Codes relying on this are
   -- FIXME: inherently difficult to comprehend and likely broken.
