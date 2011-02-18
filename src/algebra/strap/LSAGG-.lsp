@@ -494,7 +494,7 @@
          (EXIT (SPADCALL |z| (|getShellEntry| $ 55)))))) 
 
 (DEFUN |LSAGG-;reverse!;2A;20| (|x| $)
-  (PROG (|z| |y|)
+  (PROG (|y| |z|)
     (RETURN
       (COND
         ((OR (SPADCALL |x| (|getShellEntry| $ 16))
@@ -513,9 +513,7 @@
                                   (SPADCALL |y| (|getShellEntry| $ 17))
                                   |LSAGG-;reverse!;2A;20|)
                             (SPADCALL |y| |x| (|getShellEntry| $ 27))
-                            (SETQ |x| |y|)
-                            (EXIT (LETT |y| |z|
-                                        |LSAGG-;reverse!;2A;20|))))))
+                            (SETQ |x| |y|) (EXIT (SETQ |y| |z|))))))
                 (EXIT |x|))))))) 
 
 (DEFUN |LSAGG-;copy;2A;21| (|x| $)

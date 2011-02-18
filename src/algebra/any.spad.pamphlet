@@ -377,7 +377,7 @@ Contour(): Public == Private where
       nothing
 
     push(b,c) ==
-      %makepair(b,c)$Foreign(Builtin)
+      %pair(b,c)$Foreign(Builtin)
 
     coerce c ==
       (bindings c)::OutputForm

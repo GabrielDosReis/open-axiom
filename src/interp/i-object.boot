@@ -145,7 +145,7 @@ asTupleNew0(eltType,listOfElts) ==
   [#listOfElts,:makeSimpleArrayFromList(eltType,listOfElts)]
 
 asTupleNewCode(eltType, size, listOfElts) == 
-  ["asTupleNew", quoteForm getVMType eltType, size, ['%listlit, :listOfElts]]
+  ["asTupleNew", quoteForm getVMType eltType, size, ['%list, :listOfElts]]
 
 asTupleNewCode0(eltType,listForm) == 
   ["asTupleNew0", quoteForm getVMType eltType, listForm]

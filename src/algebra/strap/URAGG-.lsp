@@ -263,7 +263,7 @@
          (EXIT |y|)))) 
 
 (DEFUN |URAGG-;cycleTail;2A;18| (|x| $)
-  (PROG (|z| |y|)
+  (PROG (|y| |z|)
     (RETURN
       (COND
         ((SPADCALL
@@ -278,14 +278,14 @@
                     ((NOT (NOT (SPADCALL |x| |z|
                                    (|getShellEntry| $ 54))))
                      (RETURN NIL))
-                    (T (SEQ (LETT |y| |z| |URAGG-;cycleTail;2A;18|)
+                    (T (SEQ (SETQ |y| |z|)
                             (EXIT (SETQ |z|
                                         (SPADCALL |z|
                                          (|getShellEntry| $ 14))))))))
                 (EXIT |y|))))))) 
 
 (DEFUN |URAGG-;cycleEntry;2A;19| (|x| $)
-  (PROG (|z| |l| |y|)
+  (PROG (|y| |z| |l|)
     (RETURN
       (COND
         ((SPADCALL |x| (|getShellEntry| $ 20)) |x|)
@@ -305,7 +305,7 @@
                     (T (SEQ (SETQ |z|
                                   (SPADCALL |z| (|getShellEntry| $ 14)))
                             (EXIT (SETQ |l| (+ |l| 1)))))))
-                (LETT |y| |x| |URAGG-;cycleEntry;2A;19|)
+                (SETQ |y| |x|)
                 (LET ((|k| 1))
                   (LOOP
                     (COND

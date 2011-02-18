@@ -175,7 +175,7 @@ isSubDomain(d1,d2) ==
 --%
 
 mkList u ==
-  u => ['%listlit,:u]
+  u => ['%list,:u]
   nil
 
 ELEMN(x, n, d) ==

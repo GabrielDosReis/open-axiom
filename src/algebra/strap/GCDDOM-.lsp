@@ -35,7 +35,7 @@
       (|getShellEntry| $ 19))) 
 
 (DEFUN |GCDDOM-;gcdPolynomial;3Sup;4| (|p1| |p2| $)
-  (PROG (|e2| |e1| |p|)
+  (PROG (|e1| |e2| |p|)
     (RETURN
       (COND
         ((SPADCALL |p1| (|getShellEntry| $ 24))
@@ -99,8 +99,7 @@
                                           (SVREF $ 6))
                                          #0#)
                                         (CDR #0#)))))))
-                  (LETT |e1| (MIN |e1| |e2|)
-                        |GCDDOM-;gcdPolynomial;3Sup;4|)
+                  (SETQ |e1| (MIN |e1| |e2|))
                   (SETQ |c1|
                         (SPADCALL |c1| |c2| (|getShellEntry| $ 10)))
                   (SETQ |p1|

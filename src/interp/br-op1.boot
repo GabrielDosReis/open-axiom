@@ -980,7 +980,7 @@ evalDomainOpPred(dom,pred) == process(dom,pred) where
     systemError nil
   convertCatArg p ==
     atom p or #p = 1 => MKQ p
-    ['%listlit,MKQ first p,:[convertCatArg x for x in rest p]]
+    ['%list,MKQ first p,:[convertCatArg x for x in rest p]]
   evpred(dom,pred) ==
     k := POSN1(pred,$predicateList) => testBitVector(dom.3,k + 1)
     evpred1(dom,pred)

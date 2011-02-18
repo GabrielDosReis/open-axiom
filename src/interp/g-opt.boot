@@ -292,9 +292,9 @@ compileTimeBindingOf u ==
   name
  
 optMkRecord ["mkRecord",:u] ==
-  u is [x] => ['%listlit,x]
-  #u=2 => ['%makepair,:u]
-  ['%veclit,:u]
+  u is [x] => ['%list,x]
+  #u=2 => ['%pair,:u]
+  ['%vector,:u]
  
 optCond (x is ['%when,:l]) ==
   if l is [a,[aa,b]] and aa = '%otherwise and b is ['%when,:c] then
@@ -421,8 +421,8 @@ optSETRECORDELT ["SETRECORDELT",name,ind,len,expr] ==
   ['%store,['%vref,name,ind],expr]
  
 optRECORDCOPY ["RECORDCOPY",name,len] ==
-  len = 1 => ['%listlit,['%head,name]]
-  len = 2 => ['%makepair,['%head,name],['%tail,name]]
+  len = 1 => ['%list,['%head,name]]
+  len = 2 => ['%pair,['%head,name],['%tail,name]]
   ["REPLACE",["MAKE_-VEC",len],name]
  
 optSuchthat [.,:u] == ["SUCHTHAT",:u]
@@ -446,11 +446,11 @@ $VMsideEffectFreeOperators ==
     %val2z %z2val %zlit %zreal %zimag
     %zexp %zlog %zsin %zcos %ztan %zasin %zacos %zatan
     %zsinh %zcosh %ztanh %zasinh %zacosh %zatanh
-    %nil %pair? %lconcat %llength %lfirst %lsecond %lthird %listlit
+    %nil %pair? %lconcat %llength %lfirst %lsecond %lthird
     %lreverse %lempty? %hash %ismall? %string? %f2s
     %ccst %ceq %clt %cle %cgt %cge %c2i %i2c %s2c %cup %cdown %sname
-    %strlength %streq %i2s %schar %strlt %strconc %strcopy %strstc
-    %aref %vref %vlength %veclit
+    %strlength %streq %i2s %schar %strlt %strconc %strcopy
+    %aref %vref %vlength
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
     %before? %equal %sptreq %ident? %property)
@@ -458,8 +458,8 @@ $VMsideEffectFreeOperators ==
 ++ List of simple VM operators
 $simpleVMoperators == 
   append($VMsideEffectFreeOperators,
-    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,
-      '%strstc,'%makepair,'%makebitvec,'%makevector,
+    ['STRINGIMAGE,'FUNCALL,'%gensym, '%lreverse_!,'%pair,'%list,
+      '%strstc,'%makebitvec,'%makevector,'%vector,
         "MAKE-FULL-CVEC","BVEC-MAKE-FULL"])
 
 ++ Return true if the `form' is semi-simple with respect to
@@ -629,8 +629,8 @@ optTry form ==
   form isnt ['%try,e,hs,f] or not(isFloatableVMForm e) or f ~= nil => form
   e
 
-optListlit form ==
-  form is ['%listlit] => '%nil
+optList form ==
+  form is ['%list] => '%nil
   form
 
 optCollectVector form ==
@@ -817,7 +817,7 @@ for x in '( (%call         optCall) _
            (%imul        optImul)_
            (%2bit        opt2bit)_
            (%2bool       opt2bool)_
-           (%listlit     optListlit)_
+           (%list        optList)_
            (SPADCALL     optSPADCALL)_
            (_|           optSuchthat)_
            (CATCH        optCatch)_

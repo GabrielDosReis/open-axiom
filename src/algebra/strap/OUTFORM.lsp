@@ -43,7 +43,7 @@
                 |OUTFORM;=;3$;10|)) 
 
 (PUT '|OUTFORM;=;3$;10| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '= |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '= |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;coerce;2$;11|)) 
@@ -131,19 +131,19 @@
                 |OUTFORM;pile;L$;32|)) 
 
 (PUT '|OUTFORM;pile;L$;32| '|SPADreplace|
-     '(XLAM (|l|) (|%makepair| 'SC |l|))) 
+     '(XLAM (|l|) (|%pair| 'SC |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;commaSeparate;L$;33|)) 
 
 (PUT '|OUTFORM;commaSeparate;L$;33| '|SPADreplace|
-     '(XLAM (|l|) (|%makepair| 'AGGLST |l|))) 
+     '(XLAM (|l|) (|%pair| 'AGGLST |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;semicolonSeparate;L$;34|)) 
 
 (PUT '|OUTFORM;semicolonSeparate;L$;34| '|SPADreplace|
-     '(XLAM (|l|) (|%makepair| 'AGGSET |l|))) 
+     '(XLAM (|l|) (|%pair| 'AGGSET |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;blankSeparate;L$;35|)) 
@@ -152,7 +152,7 @@
                 |OUTFORM;brace;2$;36|)) 
 
 (PUT '|OUTFORM;brace;2$;36| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'BRACE |a|))) 
+     '(XLAM (|a|) (|%list| 'BRACE |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;brace;L$;37|)) 
@@ -161,7 +161,7 @@
                 |OUTFORM;bracket;2$;38|)) 
 
 (PUT '|OUTFORM;bracket;2$;38| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'BRACKET |a|))) 
+     '(XLAM (|a|) (|%list| 'BRACKET |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;bracket;L$;39|)) 
@@ -170,7 +170,7 @@
                 |OUTFORM;paren;2$;40|)) 
 
 (PUT '|OUTFORM;paren;2$;40| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'PAREN |a|))) 
+     '(XLAM (|a|) (|%list| 'PAREN |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;paren;L$;41|)) 
@@ -179,25 +179,25 @@
                 |OUTFORM;sub;3$;42|)) 
 
 (PUT '|OUTFORM;sub;3$;42| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SUB |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'SUB |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;super;3$;43|)) 
 
 (PUT '|OUTFORM;super;3$;43| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SUPERSUB |a| " " |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'SUPERSUB |a| " " |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;presub;3$;44|)) 
 
 (PUT '|OUTFORM;presub;3$;44| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SUPERSUB |a| " " " " " " |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'SUPERSUB |a| " " " " " " |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;presuper;3$;45|)) 
 
 (PUT '|OUTFORM;presuper;3$;45| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SUPERSUB |a| " " " " |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'SUPERSUB |a| " " " " |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;scripts;$L$;46|)) 
@@ -209,156 +209,152 @@
                 |OUTFORM;hconcat;3$;48|)) 
 
 (PUT '|OUTFORM;hconcat;3$;48| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'CONCAT |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'CONCAT |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;hconcat;L$;49|)) 
 
 (PUT '|OUTFORM;hconcat;L$;49| '|SPADreplace|
-     '(XLAM (|l|) (|%makepair| 'CONCAT |l|))) 
+     '(XLAM (|l|) (|%pair| 'CONCAT |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;vconcat;3$;50|)) 
 
 (PUT '|OUTFORM;vconcat;3$;50| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'VCONCAT |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'VCONCAT |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%Shell|) |%Thing|)
                 |OUTFORM;vconcat;L$;51|)) 
 
 (PUT '|OUTFORM;vconcat;L$;51| '|SPADreplace|
-     '(XLAM (|l|) (|%makepair| 'VCONCAT |l|))) 
+     '(XLAM (|l|) (|%pair| 'VCONCAT |l|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;~=;3$;52|)) 
 
 (PUT '|OUTFORM;~=;3$;52| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '~= |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '~= |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;<;3$;53|)) 
 
 (PUT '|OUTFORM;<;3$;53| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '< |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '< |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;>;3$;54|)) 
 
 (PUT '|OUTFORM;>;3$;54| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '> |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '> |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;<=;3$;55|)) 
 
 (PUT '|OUTFORM;<=;3$;55| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '<= |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '<= |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;>=;3$;56|)) 
 
 (PUT '|OUTFORM;>=;3$;56| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '>= |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '>= |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;+;3$;57|)) 
 
 (PUT '|OUTFORM;+;3$;57| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '+ |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '+ |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;-;3$;58|)) 
 
 (PUT '|OUTFORM;-;3$;58| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '- |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '- |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;-;2$;59|)) 
 
-(PUT '|OUTFORM;-;2$;59| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| '- |a|))) 
+(PUT '|OUTFORM;-;2$;59| '|SPADreplace| '(XLAM (|a|) (|%list| '- |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;*;3$;60|)) 
 
 (PUT '|OUTFORM;*;3$;60| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '* |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '* |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;/;3$;61|)) 
 
 (PUT '|OUTFORM;/;3$;61| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '/ |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '/ |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;**;3$;62|)) 
 
 (PUT '|OUTFORM;**;3$;62| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '** |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '** |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;div;3$;63|)) 
 
 (PUT '|OUTFORM;div;3$;63| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '|div| |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '|div| |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;rem;3$;64|)) 
 
 (PUT '|OUTFORM;rem;3$;64| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '|rem| |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '|rem| |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;quo;3$;65|)) 
 
 (PUT '|OUTFORM;quo;3$;65| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '|quo| |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '|quo| |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;exquo;3$;66|)) 
 
 (PUT '|OUTFORM;exquo;3$;66| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '|exquo| |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '|exquo| |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;and;3$;67|)) 
 
 (PUT '|OUTFORM;and;3$;67| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '|and| |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '|and| |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;or;3$;68|)) 
 
 (PUT '|OUTFORM;or;3$;68| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '|or| |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '|or| |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;not;2$;69|)) 
 
 (PUT '|OUTFORM;not;2$;69| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| '|not| |a|))) 
+     '(XLAM (|a|) (|%list| '|not| |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;SEGMENT;3$;70|)) 
 
 (PUT '|OUTFORM;SEGMENT;3$;70| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SEGMENT |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'SEGMENT |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;SEGMENT;2$;71|)) 
 
 (PUT '|OUTFORM;SEGMENT;2$;71| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'SEGMENT |a|))) 
+     '(XLAM (|a|) (|%list| 'SEGMENT |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;binomial;3$;72|)) 
 
 (PUT '|OUTFORM;binomial;3$;72| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'BINOMIAL |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'BINOMIAL |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) |%Thing|) |OUTFORM;empty;$;73|)) 
-
-(PUT '|OUTFORM;empty;$;73| '|SPADreplace|
-     '(XLAM NIL (|%listlit| 'NOTHING))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |OUTFORM;infix?;$B;74|)) 
@@ -366,7 +362,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;elt;$L$;75|)) 
 
-(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| '|%makepair|) 
+(PUT '|OUTFORM;elt;$L$;75| '|SPADreplace| '|%pair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%Thing|)
                 |OUTFORM;prefix;$L$;76|)) 
@@ -385,19 +381,19 @@
                 |OUTFORM;string;2$;80|)) 
 
 (PUT '|OUTFORM;string;2$;80| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'STRING |a|))) 
+     '(XLAM (|a|) (|%list| 'STRING |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;quote;2$;81|)) 
 
 (PUT '|OUTFORM;quote;2$;81| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'QUOTE |a|))) 
+     '(XLAM (|a|) (|%list| 'QUOTE |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;overbar;2$;82|)) 
 
 (PUT '|OUTFORM;overbar;2$;82| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'OVERBAR |a|))) 
+     '(XLAM (|a|) (|%list| 'OVERBAR |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;dot;2$;83|)) 
@@ -417,61 +413,61 @@
                 |OUTFORM;overlabel;3$;87|)) 
 
 (PUT '|OUTFORM;overlabel;3$;87| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'OVERLABEL |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'OVERLABEL |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;box;2$;88|)) 
 
 (PUT '|OUTFORM;box;2$;88| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'BOX |a|))) 
+     '(XLAM (|a|) (|%list| 'BOX |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;zag;3$;89|)) 
 
 (PUT '|OUTFORM;zag;3$;89| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'ZAG |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'ZAG |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;root;2$;90|)) 
 
 (PUT '|OUTFORM;root;2$;90| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'ROOT |a|))) 
+     '(XLAM (|a|) (|%list| 'ROOT |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;root;3$;91|)) 
 
 (PUT '|OUTFORM;root;3$;91| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'ROOT |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'ROOT |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;over;3$;92|)) 
 
 (PUT '|OUTFORM;over;3$;92| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'OVER |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'OVER |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;slash;3$;93|)) 
 
 (PUT '|OUTFORM;slash;3$;93| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SLASH |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'SLASH |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;assign;3$;94|)) 
 
 (PUT '|OUTFORM;assign;3$;94| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| '%LET |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| '%LET |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;label;3$;95|)) 
 
 (PUT '|OUTFORM;label;3$;95| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'EQUATNUM |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'EQUATNUM |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;rarrow;3$;96|)) 
 
 (PUT '|OUTFORM;rarrow;3$;96| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'RARROW |a| |b|))) 
+     '(XLAM (|a| |b|) (|%list| 'RARROW |a| |b|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| (|%IntegerSection| 0) |%Shell|)
                     |%Thing|)
@@ -484,14 +480,14 @@
                 |OUTFORM;sum;3$;99|)) 
 
 (PUT '|OUTFORM;sum;3$;99| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'SIGMA |b| |a|))) 
+     '(XLAM (|a| |b|) (|%list| 'SIGMA |b| |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
                     |%Thing|)
                 |OUTFORM;sum;4$;100|)) 
 
 (PUT '|OUTFORM;sum;4$;100| '|SPADreplace|
-     '(XLAM (|a| |b| |c|) (|%listlit| 'SIGMA2 |b| |c| |a|))) 
+     '(XLAM (|a| |b| |c|) (|%list| 'SIGMA2 |b| |c| |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;prod;2$;101|)) 
@@ -500,14 +496,14 @@
                 |OUTFORM;prod;3$;102|)) 
 
 (PUT '|OUTFORM;prod;3$;102| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'PI |b| |a|))) 
+     '(XLAM (|a| |b|) (|%list| 'PI |b| |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Thing| |%Thing| |%Shell|)
                     |%Thing|)
                 |OUTFORM;prod;4$;103|)) 
 
 (PUT '|OUTFORM;prod;4$;103| '|SPADreplace|
-     '(XLAM (|a| |b| |c|) (|%listlit| 'PI2 |b| |c| |a|))) 
+     '(XLAM (|a| |b| |c|) (|%list| 'PI2 |b| |c| |a|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |OUTFORM;int;2$;104|)) 
@@ -520,30 +516,16 @@
                 |OUTFORM;int;4$;106|)) 
 
 (PUT '|OUTFORM;int;4$;106| '|SPADreplace|
-     '(XLAM (|a| |b| |c|) (|%listlit| 'INTSIGN |b| |c| |a|))) 
+     '(XLAM (|a| |b| |c|) (|%list| 'INTSIGN |b| |c| |a|))) 
 
 (PUT '|OUTFORM;postfix;3$;79| '|SPADreplace|
-     '(XLAM (|a| |b|) (|%listlit| 'CONCAT |b| |a|))) 
+     '(XLAM (|a| |b|) (|%list| 'CONCAT |b| |a|))) 
 
 (PUT '|OUTFORM;dot;2$;83| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'SUPERSUB |a| " " '|.|))) 
+     '(XLAM (|a|) (|%list| 'SUPERSUB |a| " " '|.|))) 
 
 (PUT '|OUTFORM;prime;2$;84| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'SUPERSUB |a| " " '|,|))) 
-
-(PUT '|OUTFORM;sum;2$;98| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'SIGMA (|%listlit| 'NOTHING) |a|))) 
-
-(PUT '|OUTFORM;prod;2$;101| '|SPADreplace|
-     '(XLAM (|a|) (|%listlit| 'PI (|%listlit| 'NOTHING) |a|))) 
-
-(PUT '|OUTFORM;int;2$;104| '|SPADreplace|
-     '(XLAM (|a|)
-            (|%listlit| 'INTSIGN #0=(|%listlit| 'NOTHING) #0# |a|))) 
-
-(PUT '|OUTFORM;int;3$;105| '|SPADreplace|
-     '(XLAM (|a| |b|)
-            (|%listlit| 'INTSIGN |b| (|%listlit| 'NOTHING) |a|))) 
+     '(XLAM (|a|) (|%list| 'SUPERSUB |a| " " '|,|))) 
 
 (DEFUN |OUTFORM;doubleFloatFormat;2S;1| (|s| $)
   (LET ((|ss| (SVREF $ 6)))
@@ -562,7 +544,7 @@
   (|mathprint| |x|)) 
 
 (DEFUN |OUTFORM;message;S$;7| (|s| $)
-  (COND ((ZEROP (LENGTH |s|)) '(NOTHING)) (T |s|))) 
+  (COND ((ZEROP (LENGTH |s|)) (|OUTFORM;empty;$;73| $)) (T |s|))) 
 
 (DEFUN |OUTFORM;messagePrint;SV;8| (|s| $)
   (|mathprint| (|OUTFORM;message;S$;7| |s| $))) 
@@ -637,15 +619,18 @@
     ((PLUSP |n|)
      (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
          $))
-    (T '(NOTHING)))) 
+    (T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
-  (COND ((PLUSP |n|) (|fillerSpaces| |n|)) (T '(NOTHING)))) 
+  (COND
+    ((PLUSP |n|) (|fillerSpaces| |n|))
+    (T (|OUTFORM;empty;$;73| $)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
   (SEQ (COND
-         ((PLUSP |n|) (COND ((NOT (PLUSP |m|)) (EXIT '(NOTHING)))))
-         (T (EXIT '(NOTHING))))
+         ((PLUSP |n|)
+          (COND ((NOT (PLUSP |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
+         (T (EXIT (|OUTFORM;empty;$;73| $))))
        (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
                  (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
@@ -732,7 +717,7 @@
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
   (SEQ (COND
          ((ODDP (LIST-LENGTH |l|))
-          (SETQ |l| (APPEND |l| '((NOTHING))))))
+          (SETQ |l| (APPEND |l| (LIST (|OUTFORM;empty;$;73| $))))))
        (EXIT (CONS 'ALTSUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;hconcat;3$;48| (|a| |b| $)
@@ -833,7 +818,7 @@
   (DECLARE (IGNORE $))
   (LIST 'BINOMIAL |a| |b|)) 
 
-(DEFUN |OUTFORM;empty;$;73| ($) (DECLARE (IGNORE $)) '(NOTHING)) 
+(DEFUN |OUTFORM;empty;$;73| ($) '(NOTHING)) 
 
 (DEFUN |OUTFORM;infix?;$B;74| (|a| $)
   (LET ((|e| (COND
@@ -854,7 +839,7 @@
 
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
-    ((NULL |l|) '(NOTHING))
+    ((NULL |l|) (|OUTFORM;empty;$;73| $))
     ((NULL (CDR |l|)) (SPADCALL |l| (|getShellEntry| $ 78)))
     ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
     (T (|OUTFORM;hconcat;L$;49|
@@ -953,8 +938,7 @@
          (|OUTFORM;super;3$;43| |a| (LIST 'PAREN |s|) $))))) 
 
 (DEFUN |OUTFORM;sum;2$;98| (|a| $)
-  (DECLARE (IGNORE $))
-  (LIST 'SIGMA '(NOTHING) |a|)) 
+  (LIST 'SIGMA (|OUTFORM;empty;$;73| $) |a|)) 
 
 (DEFUN |OUTFORM;sum;3$;99| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -965,8 +949,7 @@
   (LIST 'SIGMA2 |b| |c| |a|)) 
 
 (DEFUN |OUTFORM;prod;2$;101| (|a| $)
-  (DECLARE (IGNORE $))
-  (LIST 'PI '(NOTHING) |a|)) 
+  (LIST 'PI (|OUTFORM;empty;$;73| $) |a|)) 
 
 (DEFUN |OUTFORM;prod;3$;102| (|a| |b| $)
   (DECLARE (IGNORE $))
@@ -977,12 +960,10 @@
   (LIST 'PI2 |b| |c| |a|)) 
 
 (DEFUN |OUTFORM;int;2$;104| (|a| $)
-  (DECLARE (IGNORE $))
-  (LIST 'INTSIGN '(NOTHING) '(NOTHING) |a|)) 
+  (LIST 'INTSIGN (|OUTFORM;empty;$;73| $) (|OUTFORM;empty;$;73| $) |a|)) 
 
 (DEFUN |OUTFORM;int;3$;105| (|a| |b| $)
-  (DECLARE (IGNORE $))
-  (LIST 'INTSIGN |b| '(NOTHING) |a|)) 
+  (LIST 'INTSIGN |b| (|OUTFORM;empty;$;73| $) |a|)) 
 
 (DEFUN |OUTFORM;int;4$;106| (|a| |b| |c| $)
   (DECLARE (IGNORE $))

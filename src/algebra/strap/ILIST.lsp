@@ -9,7 +9,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |ILIST;concat;S2$;2|)) 
 
-(PUT '|ILIST;concat;S2$;2| '|SPADreplace| '|%makepair|) 
+(PUT '|ILIST;concat;S2$;2| '|SPADreplace| '|%pair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%Boolean|)
                 |ILIST;eq?;2$B;3|)) 

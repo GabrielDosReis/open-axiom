@@ -260,8 +260,8 @@ timedEVALFUN(code) ==
   r
  
 timedEvaluate code ==
-  code is ['%listlit,:a] and #a > 200 =>
-    "append"/[eval ['%listlit,:x] for x in splitIntoBlocksOf200 a]
+  code is ['%list,:a] and #a > 200 =>
+    "append"/[eval ['%list,:x] for x in splitIntoBlocksOf200 a]
   eval code
  
 displayHeapStatsIfWanted() ==

@@ -92,7 +92,7 @@
                             |c|))))))) 
 
 (DEFUN |EUCDOM-;extendedEuclidean;2SR;7| (|x| |y| $)
-  (PROG (|s3| |qr|)
+  (PROG (|qr| |s3|)
     (RETURN
       (LET ((|s1| (|EUCDOM-;unitNormalizeIdealElt|
                       (VECTOR (|spadConstant| $ 30)
@@ -139,10 +139,9 @@
                      (COND
                        ((NOT (SPADCALL (SVREF |s1| 0) |y|
                                  (|getShellEntry| $ 32)))
-                        (SEQ (LETT |qr|
+                        (SEQ (SETQ |qr|
                                    (SPADCALL (SVREF |s1| 0) |y|
-                                    (|getShellEntry| $ 16))
-                                   |EUCDOM-;extendedEuclidean;2SR;7|)
+                                    (|getShellEntry| $ 16)))
                              (SETF (SVREF |s1| 0) (CDR |qr|))
                              (SETF (SVREF |s1| 1)
                                    (SPADCALL (SVREF |s1| 1)

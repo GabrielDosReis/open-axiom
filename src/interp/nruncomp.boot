@@ -333,7 +333,7 @@ consDomainName(x,dc) ==
   x is [op,:argl] =>
     (op = 'Record) or (op = 'Union and argl is [[":",:.],:.])  =>
        mkList [MKQ op,
-         :[['%listlit,MKQ '_:,MKQ tag,consDomainName(dom,dc)]
+         :[['%list,MKQ '_:,MKQ tag,consDomainName(dom,dc)]
                    for [.,tag,dom] in argl]]
     isFunctor op or op = 'Mapping or constructor? op =>
          -- call to constructor? needed if op was compiled in $bootStrapMode
@@ -364,10 +364,10 @@ consDomainForm(x,dc) ==
 ++ of compiled functions
 NRTdescendCodeTran(u,condList) ==
   null u => nil
-  u is ['%listlit] => nil
+  u is ['%list] => nil
   u is [op,.,i,a] and op in '(setShellEntry QSETREFV) =>
     null condList and a is ['CONS,fn,:.] =>
-      u.first := '%listlit
+      u.first := '%list
       u.rest := nil
       $template.i :=
         fn = 'IDENTITY => a
@@ -397,7 +397,7 @@ washFunctorBody form == main form where
       stmts = nil => nil
       rest stmts = nil => first stmts
       ["PROGN",:stmts]
-    x is ['%listlit] => nil
+    x is ['%list] => nil
     x
 
 buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
@@ -486,7 +486,7 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
                  createViewCode,createPredVecCode] where
     devaluateCode:= [[b,["devaluate",a]] for [a,:b] in $devaluateList]
     createDomainCode:=
-      [domname,['%listlit,MKQ name,:ASSOCRIGHT $devaluateList]]
+      [domname,['%list,MKQ name,:ASSOCRIGHT $devaluateList]]
     createViewCode:= ["$",["newShell", $NRTbase + $NRTdeltaLength]]
     createPredVecCode := ["pv$",predBitVectorCode1]
 
@@ -610,7 +610,7 @@ NRToptimizeHas u ==
 NRTaddToSlam([name,:argnames],shell) ==
   $mutableDomain => return nil
   null argnames => addToConstructorCache(name,nil,shell)
-  args:= ['%listlit,:ASSOCRIGHT $devaluateList]
+  args:= ['%list,:ASSOCRIGHT $devaluateList]
   addToConstructorCache(name,args,shell)
 
 changeDirectoryInSlot1() ==  --called by buildFunctor

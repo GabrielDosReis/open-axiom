@@ -348,7 +348,7 @@ mkNewUnionFunList(name,form is ["Union",:listOfEntries],e) ==
         ["hash",[$SingleInteger,name],["ELT",dc,0]],
 	 ["coerce",[$OutputForm,name],["ELT",dc,$FirstParamSlot+nargs+1]],:
 	   ("append"/
-	    [[["construct",[name,type],["XLAM",["#1"],["%makepair",i,"#1"]]],
+	    [[["construct",[name,type],["XLAM",["#1"],["%pair",i,"#1"]]],
 	      ["elt",[type,name,tag],cdownFun],
 		["case",[$Boolean,name,tag],
 		   ["XLAM",["#1","#2"],['%ieq,['%head,"#1"],i]]]]
@@ -395,7 +395,7 @@ mkUnionFunList(op,form is ["Union",:listOfEntries],e) ==
 	     for p in predList for t in listOfEntries])] where
 		upFun() ==
 		  p is ['%ieq,['%head,x],n] =>
-                    ["XLAM",["#1"],["%makepair",n,"#1"]]
+                    ["XLAM",["#1"],["%pair",n,"#1"]]
 		  ["XLAM",["#1"],"#1"]
 		cdownFun() ==
 		  gg:=gensym()
