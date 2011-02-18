@@ -115,7 +115,7 @@
                 |INT;reducedSystem;MVR;30|)) 
 
 (PUT '|INT;reducedSystem;MVR;30| '|SPADreplace|
-     '(XLAM (|m| |v|) (|%makepair| |m| '|vec|))) 
+     '(XLAM (|m| |v|) (|%pair| |m| '|vec|))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Integer| |%Shell|) |%Integer|)
                 |INT;abs;2$;31|)) 

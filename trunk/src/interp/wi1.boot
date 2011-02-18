@@ -689,7 +689,7 @@ compList(l,m is ["List",mUnder],e) ==
   Tl:= [[.,mUnder,e]:=
     comp(x,mUnder,e) or return "failed" for i in 1.. for x in l]
   Tl="failed" => nil
-  T:= [['%listlit,:[T.expr for T in Tl]],["List",mUnder],e]
+  T:= [['%list,:[T.expr for T in Tl]],["List",mUnder],e]
 
 compVector(l,m is ["Vector",mUnder],e) ==
   markImport m
@@ -1211,9 +1211,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       for u in $extraParms repeat
         formals:=[first u,:formals]
         actuals:=[MKQ rest u,:actuals]
-      body := ['sublisV,['PAIR,['QUOTE,formals],['%listlit,:actuals]],body]
+      body := ['sublisV,['PAIR,['QUOTE,formals],['%list,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
-        ['sublisV,['PAIR,['QUOTE,sargl],['%listlit,:
+        ['sublisV,['PAIR,['QUOTE,sargl],['%list,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ['PROG1,["%LET",g:= gensym(),body],

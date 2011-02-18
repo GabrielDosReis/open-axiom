@@ -263,7 +263,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   extraArgumentCode :=
     extraArguments := [x for x in argl | x ~= sharpArg] =>
       extraArguments is [x] => x
-      ['%listlit,:extraArguments]
+      ['%list,:extraArguments]
     nil
   g:= gensym()
   gIndex:= gensym()
@@ -281,7 +281,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   rotateCode:= [["%LET",p,q] for p in gsRev for q in [:rest gsRev,g]]
   advanceCode:= ["%LET",gIndex,['ADD1,gIndex]]
  
-  newTripleCode := ['%listlit,sharpArg,:gsList]
+  newTripleCode := ['%list,sharpArg,:gsList]
   newStateCode :=
     null extraArguments => ["%store",["%dynval", MKQ stateNam],newTripleCode]
     ["HPUT",["%dynval", MKQ stateNam],extraArgumentCode,newTripleCode]
@@ -305,7 +305,7 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
   mainFunction:= [nam,["LAM",margl,mbody]] where
     margl:= [:argl,'envArg]
     max:= gensym()
-    tripleCode := ['%makepair,n,['%listlit,:initCode]]
+    tripleCode := ['%pair,n,['%list,:initCode]]
  
     -- initialSetCode initializes the global variable if necessary and
     --  also binds "stateVar" to its current value
@@ -333,9 +333,9 @@ compileRecurrenceRelation(op,nam,argl,junk,[body,sharpArg,n,:initCode]) ==
                   [auxfn,:argl,stateVar]]
       phrase2:= [['%igt,sharpArg,['%store,max,["DIFFERENCE",max,k]]],
                   ["ELT",stateVar,['%iinc,["QSDIFFERENCE",k,["DIFFERENCE",sharpArg,max]]]]]
-      phrase3:= [['%igt,sharpArg,n],[auxfn,:argl,['%listlit,n,:initCode]]]
+      phrase3:= [['%igt,sharpArg,n],[auxfn,:argl,['%list,n,:initCode]]]
       phrase4:= [['%igt,sharpArg,n-k],
-        ["ELT",['%listlit,:initCode],["QSDIFFERENCE",n,sharpArg]]]
+        ["ELT",['%list,:initCode],["QSDIFFERENCE",n,sharpArg]]]
       phrase5:= ['%otherwise,['recurrenceError,MKQ op,sharpArg]]
       ['PROGN,:preset,['%when,phrase1,phrase2,phrase3,phrase4,phrase5]]
   if $verbose then

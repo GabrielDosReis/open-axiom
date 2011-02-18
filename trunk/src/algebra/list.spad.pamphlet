@@ -55,7 +55,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
  Implementation ==>
   add
    import %nil: %                           from Foreign Builtin
-   import %makepair: (S,%) -> %             from Foreign Builtin
+   import %pair: (S,%) -> %                 from Foreign Builtin
    import %peq: (%,%) -> Boolean            from Foreign Builtin
    import %lempty?: % -> Boolean            from Foreign Builtin
    import %head: % -> S                     from Foreign Builtin
@@ -65,7 +65,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
    import %llength: % -> NonNegativeInteger from Foreign Builtin
    
    #x                  == %llength x
-   concat(s:S,x:%)     == %makepair(s,x)
+   concat(s:S,x:%)     == %pair(s,x)
    eq?(x,y)            == %peq(x,y)
    first x             == SPADfirst(x)$Lisp
    elt(x,"first")      == SPADfirst(x)$Lisp
@@ -105,7 +105,7 @@ IndexedList(S:Type, mn:Integer): Exports == Implementation where
       y := empty()
       for i in 0.. while not empty? x repeat
          if i = cycleMax and cyclic? x then error "cyclic list"
-         y := %makepair(%head x,y)
+         y := %pair(%head x,y)
          x := %tail x
       %lreverse! y
 
@@ -275,12 +275,12 @@ List(S:Type): Exports == Implementation where
    IndexedList(S, LISTMININDEX) add
       import %nil: %                 from Foreign Builtin
       import %peq: (%,%) -> Boolean  from Foreign Builtin
-      import %makepair: (S,%) -> %   from Foreign Builtin
+      import %pair: (S,%) -> %       from Foreign Builtin
       import %lconcat: (%,%) -> %    from Foreign Builtin
 
       nil                      == %nil
       null l                   == %peq(l,%nil)
-      cons(s, l)               == %makepair(s,l)
+      cons(s, l)               == %pair(s,l)
       append(l:%, t:%)         == %lconcat(l,t)
 
       if S has OpenMath then

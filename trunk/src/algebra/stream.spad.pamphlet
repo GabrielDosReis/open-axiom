@@ -914,7 +914,7 @@ Stream(S): Exports == Implementation where
 --% RCAGG functions
 
     empty() ==
-      %makepair(NullStream,%nil$Foreign(Builtin))$Foreign(Builtin)
+      %pair(NullStream,%nil$Foreign(Builtin))$Foreign(Builtin)
 
     lazyEval(x: %): % ==
       (rst(x):(()-> %)) ()
@@ -949,7 +949,7 @@ Stream(S): Exports == Implementation where
       (concat(frst x, first(rst x,(n-1) :: NNI)))
 
     concat(s:S,x:%) ==
-      %makepair(s,x)$Foreign(Builtin)
+      %pair(s,x)$Foreign(Builtin)
 
     cons(s,x) == concat(s,x)
 
@@ -1070,7 +1070,7 @@ Stream(S): Exports == Implementation where
       [true, npp, periode]
 
     delay(fs:()->%) ==
-      %makepair(NonNullStream,fs)$Foreign(Builtin)
+      %pair(NonNullStream,fs)$Foreign(Builtin)
 
     explicitEntries? x ==
       not explicitlyEmpty? x and not lazy? x

@@ -42,14 +42,14 @@ ParadoxicalCombinatorsForStreams(A):Exports == Implementation where
     import %tail: ST A -> ST A from Foreign Builtin
  
     Y f ==
-      y : ST A := %makepair(0$I,0$I)$Foreign(Builtin)
+      y : ST A := %pair(0$I,0$I)$Foreign(Builtin)
       j := f y
       %store(%head y,frst j)$Foreign(Builtin)
       %store(%tail y,rst j)$Foreign(Builtin)
       y
  
     Y(g,n) ==
-      x : L ST A := [%makepair(0$I,0$I)$Foreign(Builtin) for i in 1..n]
+      x : L ST A := [%pair(0$I,0$I)$Foreign(Builtin) for i in 1..n]
       j := g x
       for xi in x for ji in j repeat
         %store(%head xi,frst ji)$Foreign(Builtin)

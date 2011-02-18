@@ -266,7 +266,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| (|%Vector| *) |%Shell|) |%Pair|)
                 |SINT;reducedSystem;MVR;57|)) 
 
-(PUT '|SINT;reducedSystem;MVR;57| '|SPADreplace| '|%makepair|) 
+(PUT '|SINT;reducedSystem;MVR;57| '|SPADreplace| '|%pair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Short| |%Short| |%Shell|) |%Short|)
                 |SINT;positiveRemainder;3$;58|)) 

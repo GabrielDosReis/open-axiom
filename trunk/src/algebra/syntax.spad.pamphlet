@@ -209,10 +209,10 @@ Syntax(): Public == Private where
 
     --% syntax construction
     buildSyntax(s: Identifier, l: List %): % ==
-      %makepair(s,l)$Foreign(Builtin)
+      %pair(s,l)$Foreign(Builtin)
 
     buildSyntax(op: %, l: List %): % ==
-      %makepair(op,l)$Foreign(Builtin)
+      %pair(op,l)$Foreign(Builtin)
 
     nil? x ==
       %peq(x,%nil)

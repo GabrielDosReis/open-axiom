@@ -131,7 +131,7 @@ compClam(op,argl,body,$clamList) ==
       :hitCountCode,
         returnFoundValue]
   resetCacheEntry:=
-    countFl => ['%makepair,1,g2]
+    countFl => ['%pair,1,g2]
     g2
   thirdPredPair:=
     ['%otherwise,
@@ -199,7 +199,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
     null argl => [nil,nil,[auxfn]]
     argl is [.] =>
       key:= (cacheNameOrNil => ['devaluate,g1]; g1)
-      [[g1],['%listlit,key],[auxfn,g1]]  --g1 is a parameter
+      [[g1],['%list,key],[auxfn,g1]]  --g1 is a parameter
     key:= (cacheNameOrNil => ['devaluateList,g1] ; g1)
     [g1,key,['APPLY,['function,auxfn],g1]]   --g1 is a parameter list
   cacheName:= cacheNameOrNil or mkCacheName op
@@ -235,12 +235,12 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
       cacheNameOrNil =>
         countFl =>
           ['CDDAR,['HPUT,cacheNameOrNil,MKQ op,
-            ['%listlit,['%makepair,'%nil,['%makepair,1,computeValue]]]]]
+            ['%list,['%pair,'%nil,['%pair,1,computeValue]]]]]
         ['HPUT,cacheNameOrNil,MKQ op,
-          ['%listlit,['%makepair,'%nil,computeValue]]]
+          ['%list,['%pair,'%nil,computeValue]]]
       systemError '"unexpected"
     cacheNameOrNil => computeValue
-    countFl => ['%tail,['HPUT,cacheName,g1,['%makepair,1,computeValue]]]
+    countFl => ['%tail,['HPUT,cacheName,g1,['%pair,1,computeValue]]]
     ['HPUT,cacheName,g1,computeValue]
   if cacheNameOrNil then putCode :=
      ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
@@ -299,9 +299,9 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
     g2
   getCode:= ['HGET,cacheName,cacheArgKey]
   secondPredPair:= [['%store,g2,getCode],returnFoundValue]
-  putForm:= ['%makepair,MKQ op,g1]
+  putForm:= ['%pair,MKQ op,g1]
   putCode:=
-    countFl => ['HPUT,cacheName,putForm,['%makepair,1,computeValue]]
+    countFl => ['HPUT,cacheName,putForm,['%pair,1,computeValue]]
     ['HPUT,cacheName,putForm,computeValue]
   thirdPredPair:= ['%otherwise,putCode]
   codeBody:= ['PROG,[g2], ['RETURN,['%when,secondPredPair,thirdPredPair]]]

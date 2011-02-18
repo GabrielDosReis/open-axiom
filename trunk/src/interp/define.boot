@@ -507,9 +507,9 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
       for u in $extraParms repeat
         formals:=[first u,:formals]
         actuals:=[MKQ rest u,:actuals]
-      body := ['sublisV,['PAIR,['QUOTE,formals],['%listlit,:actuals]],body]
+      body := ['sublisV,['PAIR,['QUOTE,formals],['%list,:actuals]],body]
     if argl then body:=  -- always subst for args after extraparms
-        ['sublisV,['PAIR,['QUOTE,sargl],['%listlit,:
+        ['sublisV,['PAIR,['QUOTE,sargl],['%list,:
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ["%bind",[[g:= gensym(),body]],
@@ -554,7 +554,7 @@ mkConstructor: %Form -> %Form
 mkConstructor form ==
   atom form => ['devaluate,form]
   null form.args => ['QUOTE,[form.op]]
-  ['%listlit,MKQ form.op,:[mkConstructor x for x in form.args]]
+  ['%list,MKQ form.op,:[mkConstructor x for x in form.args]]
  
 compDefineCategory(df,m,e,prefix,fal) ==
   $domainShell: local := nil -- holds the category of the object being compiled
@@ -855,8 +855,8 @@ genDomainOps(viewName,dom,cat) ==
   siglist:= [sig for [sig,:.] in oplist]
   oplist:= substNames(dom,viewName,dom,oplist)
   cd:=
-    ["%LET",viewName,['mkOpVec,dom,['%listlit,:
-      [['%listlit,MKQ op,['%listlit,:[mkTypeForm mode for mode in sig]]]
+    ["%LET",viewName,['mkOpVec,dom,['%list,:
+      [['%list,MKQ op,['%list,:[mkTypeForm mode for mode in sig]]]
         for [op,sig] in siglist]]]]
   $getDomainCode:= [cd,:$getDomainCode]
   for [opsig,cond,:.] in oplist for i in 0.. repeat
@@ -1342,8 +1342,8 @@ uncons x ==
 bootStrapError(functorForm,sourceFile) ==
   ['%when, _
     ['$bootStrapMode, _
-        ['%veclit,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
-    ['%otherwise, ['systemError,['%listlit,'"%b",MKQ functorForm.op,'"%d",'"from", _
+        ['%vector,mkTypeForm functorForm,nil,nil,nil,nil,nil]],
+    ['%otherwise, ['systemError,['%list,'"%b",MKQ functorForm.op,'"%d",'"from", _
       '"%b",MKQ namestring sourceFile,'"%d",'"needs to be compiled"]]]]
 
 registerInlinableDomain(x,e) ==
@@ -1366,7 +1366,7 @@ compAdd(['add,$addForm,capsule],m,e) ==
     [['%when, _
        ['$bootStrapMode, _
            code],_
-       ['%otherwise, ['systemError,['%listlit,'"%b",MKQ $functorForm.op,'"%d",'"from", _
+       ['%otherwise, ['systemError,['%list,'"%b",MKQ $functorForm.op,'"%d",'"from", _
          '"%b",MKQ namestring _/EDITFILE,'"%d",'"needs to be compiled"]]]],m,e]
   $addFormLhs: local:= $addForm
   if $addForm is ["SubDomain",domainForm,predicate] then
@@ -1652,8 +1652,8 @@ wrapDomainSub(parameters,x) ==
  
 mkExplicitCategoryFunction(domainOrPackage,sigList,atList) ==
   body:=
-    ["mkCategory",MKQ domainOrPackage,['%listlit,:reverse sigList],
-      ['%listlit,:reverse atList],MKQ domList,nil] where
+    ["mkCategory",MKQ domainOrPackage,['%list,:reverse sigList],
+      ['%list,:reverse atList],MKQ domList,nil] where
         domList() ==
           ("union"/[fn sig for ["QUOTE",[[.,sig,:.],:.]] in sigList]) where
             fn sig == [D for D in sig | mustInstantiate D]

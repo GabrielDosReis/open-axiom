@@ -165,7 +165,7 @@ mkDevaluate a ==
     a' = nil => nil
     a
   a = '$ => MKQ '$
-  a is ['%listlit,:.] =>
+  a is ['%list,:.] =>
     a.args = nil => nil
     a
   ['devaluate,a]
@@ -190,7 +190,7 @@ getPrincipalView domain ==
  
 CategoriesFromGDC x ==
   atom x => nil
-  x is ['%listlit,a,:b] and a is ['QUOTE,a'] =>
+  x is ['%list,a,:b] and a is ['QUOTE,a'] =>
     union([[a']],"union"/[CategoriesFromGDC u for u in b])
   x is ['QUOTE,a] and a is [b] => [a]
  
@@ -239,12 +239,12 @@ optFunctorBody x ==
   atomic? x => x
   x is ['DomainSubstitutionMacro,parms,body] =>
     optFunctorBody DomainSubstitutionFunction(parms,body)
-  x is ['%listlit,:l] =>
+  x is ['%list,:l] =>
     null l => nil
     l:= [optFunctorBody u for u in l]
     and/[optFunctorBodyQuotable u for u in l] =>
       ['QUOTE,[optFunctorBodyRequote u for u in l]]
-    ['%listlit,:l]
+    ['%list,:l]
   x is ['PROGN,:l] => ['PROGN,:optFunctorPROGN l]
   x is ['%when,:l] =>
     l := [v for u in l | v := relevantClause u] where
@@ -288,7 +288,7 @@ optFunctorPROGN l ==
 worthlessCode x ==
   x is ['%when,:l] and (and/[x is [.,y] and worthlessCode y for x in l]) => true
   x is ['PROGN,:l] => (null (l':= optFunctorPROGN l) => true; false)
-  x is ['%listlit] => true
+  x is ['%list] => true
   null x => true
   false
  
@@ -321,7 +321,7 @@ setVector12 args ==
   freeof($domainShell.1,args1) and
       freeof($domainShell.2,args1) and
           freeof($domainShell.4,args1) => nil  
-  [['SetDomainSlots124,'$,['QUOTE,args1],['%listlit,:args2]]]
+  [['SetDomainSlots124,'$,['QUOTE,args1],['%list,:args2]]]
  where freeof(a,b) ==
          atom a => null MEMQ(a,b)
          freeof(first a,b) => freeof(rest a,b)
@@ -378,16 +378,16 @@ mkTypeForm x ==
   atom x => mkDevaluate x
   x.op in '(CATEGORY mkCategory) => MKQ x
   x is ['_:,selector,dom] =>
-    ['%listlit,MKQ '_:,MKQ selector,mkTypeForm dom]
+    ['%list,MKQ '_:,MKQ selector,mkTypeForm dom]
   x.op is 'Record =>
-    ['%listlit,MKQ 'Record,:[mkTypeForm y for y in x.args]]
+    ['%list,MKQ 'Record,:[mkTypeForm y for y in x.args]]
   x.op is '%call => ['MKQ, optCall x]
         --The previous line added JHD/BMT 20/3/84
         --Necessary for proper compilation of DPOLY SPAD
   x is [op] =>
-    op in '(Join %listlit) => nil
+    op in '(Join %list) => nil
     MKQ x
-  ['%listlit,MKQ x.op,:[mkTypeForm a for a in x.args]]
+  ['%list,MKQ x.op,:[mkTypeForm a for a in x.args]]
  
 setVector5(catNames,locals) ==
   generated:= nil
@@ -402,10 +402,10 @@ setVector5(catNames,locals) ==
           for u in generated]
  
 mkVectorWithDeferral(objects,tag) ==
--- Construct a %veclit form, but spots things that aren't safe to instantiate
+-- Construct a %vector form, but spots things that aren't safe to instantiate
 -- and places them at the end of $ConstantAssignments, so that they get
 -- called AFTER the constants of $ have been set up.   JHD 26.July.89
-  ['%veclit,:
+  ['%vector,:
    [if CONTAINED('$,u) then -- It's not safe to instantiate this now
       $ConstantAssignments:=[:$ConstantAssignments,
                              ["setShellEntry",
@@ -551,9 +551,9 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
       $ConstantAssignments:= [u,:$ConstantAssignments]
       nil
     u
-  code is ['_:,:.] => (code.first := '%listlit; code.rest := NIL)
+  code is ['_:,:.] => (code.first := '%list; code.rest := NIL)
       --Yes, I know that's a hack, but how else do you kill a line?
-  code is ['%listlit,:.] => nil
+  code is ['%list,:.] => nil
   code is ['devaluate,:.] => nil
   code is ['MDEF,:.] => nil
   code is ['%call,:.] => code

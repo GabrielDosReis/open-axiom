@@ -165,7 +165,7 @@ expandCollect ['%collect,:iters,body] ==
   -- in reverse order.
   expandLoop ['%loop,:iters,["%init",val,nil],body,["NREVERSE",val]]
 
-expandListlit(x is ['%listlit,:args]) ==
+expandList(x is ['%list,:args]) ==
   args := [expandToVMForm arg for arg in args]
   args = nil => nil
   args' := [simpleValue? arg or leave 'failed for arg in args]
@@ -373,8 +373,8 @@ expandVal2z ['%val2z,x] ==
 expandZ2val ['%z2val,x] ==
   cons? x =>
     g := gensym()
-    expandToVMForm ['%bind,[[g,x]],['%makepair,['%zreal,g],['%zimag,g]]]
-  expandToVMForm ['%makepair,['%zreal,x],['%zimag,x]]
+    expandToVMForm ['%bind,[[g,x]],['%pair,['%zreal,g],['%zimag,g]]]
+  expandToVMForm ['%pair,['%zreal,x],['%zimag,x]]
   
 
 -- Local variable bindings
@@ -546,7 +546,7 @@ for x in [
     -- ['%nil, :'NIL],
     -- unary list operations
     ['%head,      :'CAR],
-    ['%makepair,  :'CONS],
+    ['%pair,  :'CONS],
     ['%lempty?,   :'NULL],
     ['%lfirst,    :'CAR],
     ['%llength,   :'LIST_-LENGTH],
@@ -562,7 +562,7 @@ for x in [
     -- simple vector operations
     ['%vfill,     :'FILL],
     ['%vlength,   :'sizeOfSimpleArray],
-    ['%veclit,    :'VECTOR],
+    ['%vector,    :'VECTOR],
     ['%vref,      :'SVREF],
     ['%aref,      :'getSimpleArrayEntry],
     ['%makevector,:'MAKE_-ARRAY],
@@ -593,7 +593,7 @@ for x in [
 
 ++ Table of opcode-expander pairs.  
 for x in [
-   ['%listlit, :function expandListlit],
+   ['%list,    :function expandList],
    ['%collect, :function expandCollect],
    ['%loop,    :function expandLoop],
    ['%return,  :function expandReturn],

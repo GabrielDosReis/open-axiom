@@ -14,7 +14,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%List| |%Shell|) |%List|)
                 |LIST;cons;S2$;3|)) 
 
-(PUT '|LIST;cons;S2$;3| '|SPADreplace| '|%makepair|) 
+(PUT '|LIST;cons;S2$;3| '|SPADreplace| '|%pair|) 
 
 (DECLAIM (FTYPE (FUNCTION (|%List| |%List| |%Shell|) |%List|)
                 |LIST;append;3$;4|)) 

@@ -340,7 +340,7 @@ finishLambdaExpression(expr is ["LAMBDA",vars,.],env) ==
       CDDR expandedFunction
     if scode ~= nil then
       body := [['%bind,nreverse scode,:body]]
-    vec := ['%veclit,:nreverse vec]
+    vec := ['%vector,:nreverse vec]
     ["LAMBDA",[:vars,"$$"],:body]
   fname := ["CLOSEDFN",expandedFunction] --Like QUOTE, but gets compiled
   ["CONS",fname,vec]
@@ -485,7 +485,7 @@ compArgumentsAndTryAgain(form is [.,:argl],m,e) ==
 outputComp(x,e) ==
   u:=comp(['_:_:,x,$OutputForm],$OutputForm,e) => u
   x is ['construct,:argl] =>
-    [['%listlit,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],$OutputForm,e]
+    [['%list,:[([.,.,e]:=outputComp(x,e)).expr for x in argl]],$OutputForm,e]
   (v:= get(x,"value",e)) and (v.mode is ['Union,:l]) =>
     [['coerceUn2E,x,v.mode],$OutputForm,e]
   [x,$OutputForm,e]
@@ -756,16 +756,16 @@ compCons(form,m,e) == compCons1(form,m,e) or compForm(form,m,e)
 
 compCons1(["CONS",x,y],m,e) ==
   [x,mx,e]:= comp(x,$EmptyMode,e) or return nil
-  null y => coerce([['%listlit,x],["List",mx],e],m)
+  null y => coerce([['%list,x],["List",mx],e],m)
   yt:= [y,my,e]:= comp(y,$EmptyMode,e) or return nil
   T:=
     my is ["List",m',:.] =>
       mr:= ["List",resolve(m',mx) or return nil]
       yt':= coerce(yt,mr) or return nil
       [x,.,e]:= coerce([x,mx,yt'.env],second mr) or return nil
-      yt'.expr is ['%listlit,:.] => [['%listlit,x,:rest yt'.expr],mr,e]
-      [['%makepair,x,yt'.expr],mr,e]
-    [['%makepair,x,y],["Pair",mx,my],e]
+      yt'.expr is ['%list,:.] => [['%list,x,:rest yt'.expr],mr,e]
+      [['%pair,x,yt'.expr],mr,e]
+    [['%pair,x,y],["Pair",mx,my],e]
   coerce(T,m)
 
 --% SETQ
@@ -969,14 +969,14 @@ compList(l,m is ["List",mUnder],e) ==
   null l => ['%nil,m,e]
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
-  T:= [['%listlit,:[T.expr for T in Tl]],["List",mUnder],e]
+  T:= [['%list,:[T.expr for T in Tl]],["List",mUnder],e]
 
 compVector: (%Form,%Mode,%Env) -> %Maybe %Triple
 compVector(l,m is ["Vector",mUnder],e) ==
   Tl:= [[.,mUnder,e]:= comp(x,mUnder,e) or return "failed" for x in l]
   Tl="failed" => nil
   [["MAKE-ARRAY", #Tl, KEYWORD::ELEMENT_-TYPE, quoteForm getVMType mUnder,
-     KEYWORD::INITIAL_-CONTENTS, ['%listlit, :[T.expr for T in Tl]]],m,e]
+     KEYWORD::INITIAL_-CONTENTS, ['%list, :[T.expr for T in Tl]]],m,e]
 
 --% MACROS
 
