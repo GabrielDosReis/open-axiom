@@ -1,4 +1,4 @@
-dnl Copyright (C) 2006-2010, Gabriel Dos Reis.
+dnl Copyright (C) 2006-2011, Gabriel Dos Reis.
 dnl All rights reserved.
 dnl
 dnl Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ dnl  Makefiles for building OpenAxiom interpreter, compiler, libraries, and
 dnl  auxiliary tools where appropriate.
 dnl
 
-AC_INIT([OpenAxiom], [1.4.0-2011-02-08], 
+AC_INIT([OpenAxiom], [1.4.0-2011-02-20], 
         [open-axiom-bugs@lists.sf.net])
 
 dnl Most of the macros used in this configure.ac are defined in files
