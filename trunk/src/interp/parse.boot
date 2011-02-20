@@ -390,6 +390,8 @@ transSeq l ==
     ["IF",decExitLevel a,decExitLevel b,transSeq tail]
   item is ["IF",a,"%noBranch",["exit",1,b]] =>
     ["IF",decExitLevel a,transSeq tail,decExitLevel b]
+  item is ["IF",a,["exit",1,b],c] =>
+    ["IF",decExitLevel a,decExitLevel b,transSeq [c,:tail]]
   (y:= transSeq tail) is ["SEQ",:s] => ["SEQ",item,:s]
   ["SEQ",item,["exit",1,incExitLevel y]]
  
