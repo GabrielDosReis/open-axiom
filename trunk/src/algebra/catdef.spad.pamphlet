@@ -272,7 +272,7 @@ OrderedType(): Category == BasicType with
     x > y  == y < x
     x <= y == not(y < x)
     x >= y == not(x < y)
-    x = y  == not(x < y) and not(y < x)
+    x = y  == not(x < y or y < x)
     max(x,y) ==
       x < y => y
       x
