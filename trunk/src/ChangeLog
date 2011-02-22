@@ -1,3 +1,8 @@
+2011-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/g-opt.boot (optCond): Recognize conjunctive guard as
+	nested conditionals.
+
 2011-02-20  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/parse.boot (transSeq): Aggregate branches of toplevel
