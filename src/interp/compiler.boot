@@ -376,7 +376,7 @@ extractCodeAndConstructTriple(u, m, oldE) ==
 compExpression(x,m,e) ==
   $insideExpressionIfTrue: local:= true
   -- special forms have dedicated compilers.
-  (op := x.op) and IDENTP op and (fn := GET(op,"SPECIAL")) =>
+  (op := x.op) and IDENTP op and (fn := property(op,'SPECIAL)) =>
     FUNCALL(fn,x,m,e)
   compForm(x,m,e)
 
@@ -385,8 +385,8 @@ compExpression(x,m,e) ==
 compAtomWithModemap: (%Symbol,%Mode,%Env,%List) -> %Maybe %Triple
 compAtomWithModemap(x,m,e,mmList) ==
   -- 1. Get out of here f `x' cannot possibly be a constant.
-  mmList := [mm for mm in mmList | second mm is [.,["CONST",:.]]]
-  null mmList => nil
+  mmList := [mm for mm in mmList | mm.mmImplementation is ['CONST,:.]]
+  mmList = nil => nil
   -- 2. If the context is not specified, give up on ambigiuity.
   $compUniquelyIfTrue: local := m = $EmptyMode or m = $NoValueMode
   CATCH("compUniquely", compForm3([x],m,e,mmList))
@@ -504,9 +504,9 @@ compForm1(form is [op,:argl],m,e) ==
     -- since addDomain refuses to add modemaps from Mapping
     (domain is ['Mapping,:.]) and
       (ans := compForm2([op',:argl],m,e:= augModemapsFromDomain1(domain,domain,e),
-        [x for x in getFormModemaps([op',:argl],e) | x is [[ =domain,:.],:.]]))             => ans
+        [x for x in getFormModemaps([op',:argl],e) | x.mmDC = domain]))             => ans
     ans := compForm2([op',:argl],m,e:= addDomain(domain,e),
-      [x for x in getFormModemaps([op',:argl],e) | x is [[ =domain,:.],:.]])             => ans
+      [x for x in getFormModemaps([op',:argl],e) | x.mmDC = domain])             => ans
     (op'="construct") and coerceable(domain,m,e) =>
       (T:= comp([op',:argl],domain,e) or return nil; coerce(T,m))
     nil
@@ -515,10 +515,9 @@ compForm1(form is [op,:argl],m,e) ==
   compToApply(op,argl,m,e)
 
 compForm2(form is [op,:argl],m,e,modemapList) ==
-  sargl:= TAKE(# argl, $TriangleVariableList)
-  aList:= [[sa,:a] for a in argl for sa in sargl]
-  modemapList:= SUBLIS(aList,modemapList)
-  deleteList:=[]
+  aList := pairList($TriangleVariableList,argl)
+  modemapList := SUBLIS(aList,modemapList)
+  deleteList := []
   newList := []
   -- now delete any modemaps that are subsumed by something else, 
   -- provided the conditions are right (i.e. subsumer true 
@@ -526,10 +525,10 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
   for u in modemapList repeat
     if u is [[dc,:.],[cond,["Subsumed",.,nsig]]] and
        (v:=assoc([dc,:nsig],modemapList)) and v is [.,[ncond,:.]] then
-           deleteList:=[u,:deleteList]
+           deleteList := [u,:deleteList]
            if not PredImplies(ncond,cond) then
              newList := [[first u,[cond,['ELT,dc,nil]]],:newList]
-  if deleteList then 
+  if deleteList ~= nil then 
     modemapList := [u for u in modemapList | not MEMQ(u,deleteList)]
   -- We can use MEMQ since deleteList was built out of members of modemapList
   -- its important that subsumed ops (newList) be considered last
@@ -539,16 +538,17 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
   -- The calling convention vector is used to determine when it is
   -- appropriate to infer type by compiling the argument vs. just
   -- looking up the parameter type for flag arguments.
-  cc := checkCallingConvention([sig for [[.,:sig],:.] in modemapList], #argl)
-  Tl:=
-    [[.,.,e]:= T for x in argl for i in 0..
+  cc := checkCallingConvention([mm.mmSignature for mm in modemapList], #argl)
+  Tl :=
+    [[.,.,e] := T for x in argl for i in 0..
        while (T := inferMode(x,cc.i > 0,e))] where
       inferMode(x,flag,e) ==
         flag => [x,quasiquote x,e]
-        isSimple x and compUniquely(x,$EmptyMode,e)
+        isSimple x => compUniquely(x,$EmptyMode,e)
+        nil
 
   or/[x for x in Tl] =>
-    partialModeList:= [(x => x.mode; nil) for x in Tl]
+    partialModeList := [(x => x.mode; nil) for x in Tl]
     compFormPartiallyBottomUp(form,m,e,modemapList,partialModeList) or
       compForm3(form,m,e,modemapList)
   compForm3(form,m,e,modemapList)
@@ -558,19 +558,20 @@ compForm2(form is [op,:argl],m,e,modemapList) ==
 ++ corresponding expected type in the callee's modemap.
 compFormMatch(mm,partialModeList) == main where
   main() ==
-    mm is [[.,.,:argModeList],:.] and match(argModeList,partialModeList) 
-      or wantArgumentsAsTuple(partialModeList,argModeList)
+    match(mm.mmSource,partialModeList) 
+      or wantArgumentsAsTuple(partialModeList,mm.mmSource)
   match(a,b) ==
-    null b => true
-    null first b => match(rest a,rest b)
+    b = nil => true
+    first b = nil => match(rest a,rest b)
     first a=first b and match(rest a,rest b)
 
 compFormPartiallyBottomUp(form,m,e,modemapList,partialModeList) ==
-  mmList:= [mm for mm in modemapList | compFormMatch(mm,partialModeList)] =>
+  mmList := [mm for mm in modemapList | compFormMatch(mm,partialModeList)] =>
     compForm3(form,m,e,mmList)
+  nil
 
 compForm3(form is [op,:argl],m,e,modemapList) ==
-  T:=
+  T :=
     or/
       [compFormWithModemap(form,m,e,first (mml:= ml))
         for ml in tails modemapList]
@@ -587,7 +588,7 @@ compFormWithModemap(form,m,e,modemap) ==
   if isCategoryForm(target,e) and isFunctor op then
     [modemap,e]:= substituteIntoFunctorModemap(argl,modemap,e) or return nil
     [map:= [.,target,:.],:cexpr]:= modemap
-  sv:=listOfSharpVars map
+  sv := listOfSharpVars map
   if sv then
      -- SAY [ "compiling ", op, " in compFormWithModemap,
      -- mode= ",map," sharp vars=",sv]
@@ -596,17 +597,17 @@ compFormWithModemap(form,m,e,modemap) ==
         [map:= [.,target,:.],:cexpr]:= modemap :=SUBST(x,ss,modemap)
         -- SAY ["new map is",map]
   not coerceable(target,m,e) => nil
-  [f,Tl]:= compApplyModemap(form,modemap,e) or return nil
+  [f,Tl] := compApplyModemap(form,modemap,e) or return nil
 
   --generate code; return
-  T:=
+  T :=
     [x',target,e'] where
       x':=
         form':= [f,:[t.expr for t in Tl]]
         target=$Category or isCategoryForm(target,e) => form'
         -- try to deal with new-style Unions where we know the conditions
         op = "elt" and f is ['XLAM,:.] and IDENTP(z := first argl) and
-          (c:=get(z,'condition,e)) and
+          (c := get(z,'condition,e)) and
             c is [["case",=z,c1]] and
               (c1 is [":",=(second argl),=m] or EQ(c1,second argl) ) =>
       -- first is a full tag, as placed by getInverseEnvironment
@@ -614,7 +615,7 @@ compFormWithModemap(form,m,e,modemap) ==
                 ['%tail,z]
         ['%call,:form']
       e':=
-        Tl => (LAST Tl).env
+        Tl ~= nil => last(Tl).env
         e
   convert(T,m)
 
@@ -625,21 +626,21 @@ compFormWithModemap(form,m,e,modemap) ==
 ++ In that case, it matches any number of supplied arguments.
 getFormModemaps(form is [op,:argl],e) ==
   op is ["elt",domain,op1] =>
-    [x for x in getFormModemaps([op1,:argl],e) | x is [[ =domain,:.],:.]]
+    [x for x in getFormModemaps([op1,:argl],e) | x.mmDC = domain]
   cons? op => nil
   modemapList:= get(op,"modemap",e)
   -- Within default implementations, modemaps cannot mention the
   -- current domain. 
   if $insideCategoryPackageIfTrue then
-    modemapList := [x for x in modemapList | x is [[dom,:.],:.] and dom ~= '$]
+    modemapList := [x for x in modemapList | x.mmDC isnt '$]
   if op="elt"
-     then modemapList:= eltModemapFilter(LAST argl,modemapList,e) or return nil
+     then modemapList:= eltModemapFilter(last argl,modemapList,e) or return nil
      else
       if op="setelt" then modemapList:=
         seteltModemapFilter(second argl,modemapList,e) or return nil
-  nargs:= #argl
-  finalModemapList:= [mm for (mm:= [[.,.,:sig],:.]) in modemapList 
-                       | enoughArguments(argl,sig)]
+  nargs := #argl
+  finalModemapList:= [mm for mm in modemapList 
+                       | enoughArguments(argl,mm.mmSource)]
   modemapList and null finalModemapList =>
     stackMessage('"no modemap for %1b with %2 arguments", [op,nargs])
   finalModemapList
@@ -668,7 +669,7 @@ checkCallingConvention(sigs,nargs) ==
 
 eltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
-    l:= [mm for mm in mmList | mm is [[.,.,.,sel,:.],:.] and sel=name] => l
+    l:= [mm for mm in mmList | second mm.mmSource = name] => l
             --there are elts with extra parameters
     stackMessage('"selector variable: %1b is undeclared and unbound",[name])
     nil
@@ -676,7 +677,7 @@ eltModemapFilter(name,mmList,e) ==
 
 seteltModemapFilter(name,mmList,e) ==
   isConstantId(name,e) =>
-    l:= [mm for (mm:= [[.,.,.,sel,:.],:.]) in mmList | sel=name] => l
+    l:= [mm for mm in mmList | second mm.mmSource = name] => l
             --there are setelts with extra parameters
     stackMessage('"selector variable: %1b is undeclared and unbound",[name])
     nil
@@ -719,12 +720,12 @@ substituteIntoFunctorModemap(argl,modemap is [[dc,:sig],:.],e) ==
   #dc~=#sig =>
     keyedSystemError("S2GE0016",['"substituteIntoFunctorModemap",
       '"Incompatible maps"])
-  #argl=#rest sig =>
+  #argl=#sig.source =>
                         --here, we actually have a functor form
-    sig:= EQSUBSTLIST(argl,rest dc,sig)
+    sig:= EQSUBSTLIST(argl,dc.args,sig)
       --make new modemap, subst. actual for formal parametersinto modemap
     Tl:= [[.,.,e]:= compOrCroak(a,m,e) for a in argl for m in rest sig]
-    substitutionList:= [[x,:T.expr] for x in rest dc for T in Tl]
+    substitutionList:= [[x,:T.expr] for x in dc.args for T in Tl]
     [SUBLIS(substitutionList,modemap),e]
   nil
 
@@ -887,7 +888,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
       for g in gensymList for name in nameList]
   reAssignList="failed" => nil
   [["PROGN",:[T.expr for T in assignList],:[T.expr for T in reAssignList]],
-    $NoValueMode, (LAST reAssignList).env]
+    $NoValueMode, last(reAssignList).env]
 
 --% Quasiquotation
 
@@ -1508,13 +1509,12 @@ compCase(["case",x,m'],m,e) ==
   nil
 
 compCase1(x,m,e) ==
-  [x',m',e']:= comp(x,$EmptyMode,e) or return nil
-  u:=
-    [modemap
-      for (modemap := [map,cexpr]) in getModemapList("case",2,e') 
-        | map is [.,=$Boolean,s,t] and modeEqual(maybeSpliceMode t,m) 
+  [x',m',e'] := comp(x,$EmptyMode,e) or return nil
+  u :=
+    [mm for mm in getModemapList("case",2,e') 
+      | mm.mmSignature is [=$Boolean,s,t] and modeEqual(maybeSpliceMode t,m) 
             and modeEqual(s,m')] or return nil
-  fn:= (or/[mm for (mm := [.,[cond,selfn]]) in u | cond=true]) or return nil
+  fn := (or/[mm for mm in u | mm.mmCondition = true]) or return nil
   fn := genDeltaEntry(["case",:fn],e)
   [['%call,fn,x',MKQ m],$Boolean,e']
 
@@ -1775,11 +1775,9 @@ compCoerce1(x,m',e) ==
   nil
 
 coerceByModemap([x,m,e],m') ==
---+ modified 6/27 for new runtime system
-  u:=
-    [modemap
-      for (modemap:= [map,cexpr]) in getModemapList("coerce",1,e) | map is [.,t,
-        s] and (modeEqual(t,m') or isSubset(t,m',e))
+  u :=
+    [mm for mm in getModemapList("coerce",1,e)
+      | mm.mmSignature is [t,s] and (modeEqual(t,m') or isSubset(t,m',e))
            and (modeEqual(s,m) or isSubset(m,s,e))] or return nil
 
   --mm:= (or/[mm for (mm:=[.,[cond,.]]) in u | cond=true]) or return nil
@@ -1788,12 +1786,11 @@ coerceByModemap([x,m,e],m') ==
   [['%call,fn,x],m',e]
 
 autoCoerceByModemap([x,source,e],target) ==
-  u:=
-    [modemap
-      for (modemap:= [map,cexpr]) in getModemapList("autoCoerce",1,e)
-        | map is [.,t,s] and modeEqual(t,target) 
-            and modeEqual(s,source)] or return nil
-  fn:= (or/[mm for (mm := [.,[cond,selfn]]) in u | cond=true]) or return nil
+  u :=
+    [mm for mm in getModemapList("autoCoerce",1,e)
+      | mm.mmSignature is [t,s] and modeEqual(t,target) 
+          and modeEqual(s,source)] or return nil
+  fn := (or/[mm for mm in u | mm.mmCondition=true]) or return nil
 
   source is ["Union",:l] and member(target,l) =>
     (y:= get(x,"condition",e)) and (or/[u is ["case",., =target] for u in y])

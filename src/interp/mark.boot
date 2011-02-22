@@ -594,7 +594,7 @@ markRecord(source,target,u) ==
 --  Capsule Function: Find dewey decimal path across a list
 --======================================================================
 markPath u ==        --u has nested structure: u0 < u1 < u2 ...
-  whole := LAST u
+  whole := last u
   part  := first u
   $path := u
   u is [.] => 0      --means THE WHOLE THING
@@ -930,11 +930,11 @@ markPrintAttributes addForm ==
   capsule :=
     addForm is ['add,a,:.] => 
       a is ['CATEGORY,:.] => a
-      a is ['Join,:.] => first LASTNODE a
-      first LASTNODE addForm
+      a is ['Join,:.] => first lastNode a
+      first lastNode addForm
     addForm
   if capsule is ['CAPSULE,:r] then
-    capsule := first LASTNODE r
+    capsule := first lastNode r
   capsule isnt ['CATEGORY,.,:lst] => nil
   for x in lst | x is ['ATTRIBUTE,att] repeat
     markSay(form2String att)

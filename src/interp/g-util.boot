@@ -272,7 +272,7 @@ putIntSymTab(x,prop,val,e) ==
     u := ASSQ(prop,pl) =>
       u.rest := val
       pl
-    lp := LASTPAIR pl
+    lp := lastNode pl
     u := [[prop,:val]]
     lp.rest := u
     pl
@@ -397,7 +397,7 @@ PUTALIST(alist,prop,val) ==
     -- else we fall over Lucid's read-only storage feature again
     pair.rest := val
     alist
-  LASTPAIR(alist).rest := [[prop,:val]]
+  lastNode(alist).rest := [[prop,:val]]
   alist
 
 REMALIST(alist,prop) ==

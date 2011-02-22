@@ -641,7 +641,7 @@ setqMultipleExplicit(nameList,valList,m,e) ==
       for g in gensymList for name in nameList]
   reAssignList="failed" => nil
   T := [["PROGN",:[T.expr for T in assignList],
-    :[T.expr for T in reAssignList]], $NoValueMode, (LAST reAssignList).env]
+    :[T.expr for T in reAssignList]], $NoValueMode, (last reAssignList).env]
   markMultipleExplicit(nameList,valList,T)
 
 canReturn(expr,level,exitCount,ValueFlag) ==  --SPAD: exit and friends

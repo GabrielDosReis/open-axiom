@@ -505,9 +505,9 @@ checkGetStringBeforeRightBrace u ==
 --    nreverse acc
 
 appendOver [head,:tail] ==
- acc := LASTNODE head
+ acc := lastNode head
  for x in tail repeat
-   end := LASTNODE x
+   end := lastNode x
    acc.rest := x
    acc := end
  head
