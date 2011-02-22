@@ -517,7 +517,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
               then [[dom,:cat],:viewAssoc]
               else viewAssoc,EnvToPass) for v in rest u]
     TruthP CAAR c => ['PROGN,:CDAR c]
-    while (c and (LAST c is [c1] or LAST c is [c1,[]]) and
+    while (c and (last c is [c1] or last c is [c1,[]]) and
             (c1 = '%true or c1 is ['HasAttribute,:.])) repeat
                    --strip out some worthless junk at the end
         c:=nreverse rest nreverse c

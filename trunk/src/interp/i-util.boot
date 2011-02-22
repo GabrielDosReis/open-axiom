@@ -127,7 +127,7 @@ newType? t == nil
 -- functions used at run-time which were formerly in the compiler files
 
 Undef(:u) ==
-  u':= LAST u
+  u':= last u
   [[domain,slot],op,sig]:= u'
   domain':=eval mkEvalable domain
   not EQ(first domain'.slot, function Undef) =>

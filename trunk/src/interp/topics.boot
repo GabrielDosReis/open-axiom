@@ -109,7 +109,7 @@ mkTopicHashTable() ==                         --given $groupAssoc = ((extended .
   --initialize table of topic classes
   $topicHash := hashTable 'EQ           --$topicHash has keys: topic and value: index
   for [x,:c] in $groupAssoc repeat HPUT($topicHash,x,c)
-  $topicIndex := rest LAST $groupAssoc
+  $topicIndex := rest last $groupAssoc
 
   --replace each property list by a topic code
   --store under each construct an OR of all codes

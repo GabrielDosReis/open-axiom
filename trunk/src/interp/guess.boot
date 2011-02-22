@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -113,7 +113,7 @@ findWords(word,table) ==
     $countThreshold := $countThreshold + 2
     res := findApproximateWords(word,table) 
   $lastAlist := mySort res =>
---    $lastMinimum := first LAST $lastAlist
+--    $lastMinimum := first last $lastAlist
 --    $lastWords := wordSort CDAR $lastAlist
 --    $totalWords:= $lastWords
 --    $lastAlist := rest  $lastAlist
@@ -131,7 +131,7 @@ more() == moreWords($lastWord,$lastTable)
 
 moreWords(word,table) ==
   $lastAlist =>
-     $lastMinimum := first LAST pp $lastAlist
+     $lastMinimum := first last pp $lastAlist
      numberOfLastWords := #$lastWords
      $lastWords := "append"/(ASSOCRIGHT $lastAlist)
      if #$lastWords > numberOfLastWords then 

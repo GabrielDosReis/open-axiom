@@ -356,6 +356,7 @@ for i in [ _
   ["mmImplementation","CADADR"] , _
   ["mmSignature",       "CDAR"] , _
   ["mmTarget",         "CADAR"] , _
+  ["mmSource",         "CDDAR"] , _
   ["mode",              "CADR"] , _
   ["op",                 "CAR"] , _
   ["opcode",            "CADR"] , _

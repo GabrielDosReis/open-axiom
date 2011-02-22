@@ -2351,7 +2351,7 @@ bracketagglist(u, start, linelength, tchr, open, close) ==
        true => ((nextu := lastx); PREDECESSOR(lastx, u).rest := nil)
     for x in tails u repeat
            x.first := ['CONCAT, first x, tchr]
-    if null nextu then LAST(u).rest.rest.first := close
+    if null nextu then last(u).rest.rest.first := close
     x := ASSOCIATER('CONCAT, [ichr,:u])
     charybdis(ASSOCIATER('CONCAT, u), start, linelength)
     newlineIfDisplaying()
@@ -2424,7 +2424,7 @@ superSubApp(u, x, y, di) ==
 
 stringer x ==
   string? x => x
-  '_| = FETCHCHAR(s:= STRINGIMAGE x, 0) =>
+  char "|" = stringChar(s := STRINGIMAGE x, 0) =>
     RPLACSTR(s, 0, 1, "", nil, nil)
   s
 
