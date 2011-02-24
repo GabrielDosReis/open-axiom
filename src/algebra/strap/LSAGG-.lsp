@@ -384,13 +384,12 @@
   (PROG (|l| |q|)
     (RETURN
       (SEQ (COND
-             ((EQL |n| 2)
-              (COND
-                ((SPADCALL
-                     (SPADCALL (SPADCALL |p| (|getShellEntry| $ 17))
-                         (|getShellEntry| $ 18))
-                     (SPADCALL |p| (|getShellEntry| $ 18)) |f|)
-                 (SETQ |p| (SPADCALL |p| (|getShellEntry| $ 55)))))))
+             ((AND (EQL |n| 2)
+                   (SPADCALL
+                       (SPADCALL (SPADCALL |p| (|getShellEntry| $ 17))
+                           (|getShellEntry| $ 18))
+                       (SPADCALL |p| (|getShellEntry| $ 18)) |f|))
+              (SETQ |p| (SPADCALL |p| (|getShellEntry| $ 55)))))
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|
@@ -523,18 +522,18 @@
              (COND
                ((NOT (NOT (SPADCALL |x| (|getShellEntry| $ 16))))
                 (RETURN NIL))
-               (T (SEQ (COND
-                         ((EQL |k| 1000)
-                          (COND
-                            ((SPADCALL |x| (|getShellEntry| $ 67))
-                             (EXIT (|error| "cyclic list"))))))
-                       (SETQ |y|
-                             (SPADCALL
-                                 (SPADCALL |x| (|getShellEntry| $ 18))
-                                 |y| (|getShellEntry| $ 14)))
-                       (EXIT (SETQ |x|
-                                   (SPADCALL |x|
-                                    (|getShellEntry| $ 17)))))))
+               (T (COND
+                    ((AND (EQL |k| 1000)
+                          (SPADCALL |x| (|getShellEntry| $ 67)))
+                     (|error| "cyclic list"))
+                    (T (SEQ (SETQ |y|
+                                  (SPADCALL
+                                      (SPADCALL |x|
+                                       (|getShellEntry| $ 18))
+                                      |y| (|getShellEntry| $ 14)))
+                            (EXIT (SETQ |x|
+                                        (SPADCALL |x|
+                                         (|getShellEntry| $ 17)))))))))
              (SETQ |k| (+ |k| 1))))
          (EXIT (SPADCALL |y| (|getShellEntry| $ 55)))))) 
 

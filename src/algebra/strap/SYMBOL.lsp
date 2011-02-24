@@ -98,6 +98,8 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |SYMBOL;scripted?;$B;30|)) 
 
+(PUT '|SYMBOL;scripted?;$B;30| '|SPADreplace| '|%pair?|) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
                 |SYMBOL;name;2$;31|)) 
 
@@ -116,7 +118,7 @@
 
 (DEFUN |SYMBOL;writeOMSym| (|dev| |x| $)
   (COND
-    ((|SYMBOL;scripted?;$B;30| |x| $)
+    ((CONSP |x|)
      (|error| "Cannot convert a scripted symbol to OpenMath"))
     (T (SPADCALL |dev| |x| (|getShellEntry| $ 27))))) 
 
@@ -258,8 +260,7 @@
 
 (DEFUN |SYMBOL;script;$R$;23| (|sy| |sc| $)
   (COND
-    ((|SYMBOL;scripted?;$B;30| |sy| $)
-     (|error| "Cannot add scripts to a scripted symbol"))
+    ((CONSP |sy|) (|error| "Cannot add scripts to a scripted symbol"))
     (T (CONS (|SYMBOL;coerce;$Of;11|
                  (|SYMBOL;coerce;S$;8|
                      (STRCONC (|SYMBOL;syprefix| |sc| $)
@@ -271,7 +272,7 @@
 
 (DEFUN |SYMBOL;string;$S;24| (|e| $)
   (COND
-    ((NOT (|SYMBOL;scripted?;$B;30| |e| $)) (PNAME |e|))
+    ((NOT (CONSP |e|)) (PNAME |e|))
     (T (|error| "Cannot form string from non-atomic symbols.")))) 
 
 (DEFUN |SYMBOL;latex;$S;25| (|e| $)
@@ -279,15 +280,12 @@
     (RETURN
       (LET ((|s| (PNAME (|SYMBOL;name;2$;31| |e| $))))
         (SEQ (COND
-               ((< 1 (LENGTH |s|))
-                (COND
-                  ((SPADCALL (SPADCALL |s| 1 (|getShellEntry| $ 106))
-                       (SPADCALL "\\" (|getShellEntry| $ 43))
-                       (|getShellEntry| $ 107))
-                   (SETQ |s|
-                         (STRCONC "\\mbox{\\it " (STRCONC |s| "}")))))))
-             (COND
-               ((NOT (|SYMBOL;scripted?;$B;30| |e| $)) (EXIT |s|)))
+               ((AND (< 1 (LENGTH |s|))
+                     (SPADCALL (SPADCALL |s| 1 (|getShellEntry| $ 106))
+                         (SPADCALL "\\" (|getShellEntry| $ 43))
+                         (|getShellEntry| $ 107)))
+                (SETQ |s| (STRCONC "\\mbox{\\it " (STRCONC |s| "}")))))
+             (COND ((NOT (CONSP |e|)) (EXIT |s|)))
              (LETT |ss| (|SYMBOL;scripts;$R;32| |e| $)
                    |SYMBOL;latex;$S;25|)
              (LETT |lo| (SVREF |ss| 0) |SYMBOL;latex;$S;25|)
@@ -430,8 +428,7 @@
            (SPADCALL (SVREF $ 13) |x| |n| (|getShellEntry| $ 127))
            (LETT |xx|
                  (COND
-                   ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
-                    (|SYMBOL;string;$S;24| |x| $))
+                   ((NOT (CONSP |x|)) (|SYMBOL;string;$S;24| |x| $))
                    (T (|SYMBOL;string;$S;24|
                           (|SYMBOL;name;2$;31| |x| $) $)))
                  |SYMBOL;new;2$;28|)
@@ -451,8 +448,7 @@
                    (T (STRCONC |xx|
                                (|SYMBOL;anyRadix| |n| (SVREF $ 19) $)))))
            (COND
-             ((NOT (|SYMBOL;scripted?;$B;30| |x| $))
-              (EXIT (|SYMBOL;coerce;S$;8| |xx| $))))
+             ((NOT (CONSP |x|)) (EXIT (|SYMBOL;coerce;S$;8| |xx| $))))
            (EXIT (|SYMBOL;script;$R$;23| (|SYMBOL;coerce;S$;8| |xx| $)
                      (|SYMBOL;scripts;$R;32| |x| $) $)))))) 
 
@@ -468,11 +464,13 @@
                             (|getShellEntry| $ 134)))))
                  (SETQ #0# (CDR #0#))))))) 
 
-(DEFUN |SYMBOL;scripted?;$B;30| (|sy| $) (NOT (ATOM |sy|))) 
+(DEFUN |SYMBOL;scripted?;$B;30| (|sy| $)
+  (DECLARE (IGNORE $))
+  (CONSP |sy|)) 
 
 (DEFUN |SYMBOL;name;2$;31| (|sy| $)
   (COND
-    ((NOT (|SYMBOL;scripted?;$B;30| |sy| $)) |sy|)
+    ((NOT (CONSP |sy|)) |sy|)
     (T (LET ((|str| (|SYMBOL;string;$S;24|
                         (SPADCALL (|SYMBOL;list;$L;34| |sy| $)
                             (|getShellEntry| $ 137))
@@ -501,8 +499,7 @@
   (PROG (|allscripts|)
     (RETURN
       (COND
-        ((NOT (|SYMBOL;scripted?;$B;30| |sy| $))
-         (VECTOR NIL NIL NIL NIL NIL))
+        ((NOT (CONSP |sy|)) (VECTOR NIL NIL NIL NIL NIL))
         (T (LET* ((|nscripts| '(0 0 0 0 0))
                   (|lscripts| (LIST NIL NIL NIL NIL NIL))
                   (|str| (|SYMBOL;string;$S;24|
@@ -592,7 +589,7 @@
 
 (DEFUN |SYMBOL;list;$L;34| (|sy| $)
   (COND
-    ((NOT (|SYMBOL;scripted?;$B;30| |sy| $))
+    ((NOT (CONSP |sy|))
      (|error| "Cannot convert a symbol to a list if it is not subscripted"))
     (T |sy|))) 
 

@@ -201,10 +201,9 @@
              (COND
                ((NOT (NOT (NULL |x|))) (RETURN NIL))
                (T (SEQ (COND
-                         ((EQL |i| 1000)
-                          (COND
-                            ((SPADCALL |x| (|getShellEntry| $ 35))
-                             (|error| "cyclic list")))))
+                         ((AND (EQL |i| 1000)
+                               (SPADCALL |x| (|getShellEntry| $ 35)))
+                          (|error| "cyclic list")))
                        (SETQ |y| (CONS (CAR |x|) |y|))
                        (EXIT (SETQ |x| (CDR |x|))))))
              (SETQ |i| (+ |i| 1))))
@@ -385,11 +384,10 @@
   (PROG (|l| |q|)
     (RETURN
       (SEQ (COND
-             ((EQL |n| 2)
-              (COND
-                ((SPADCALL (|SPADfirst| (CDR |p|)) (|SPADfirst| |p|)
-                     |f|)
-                 (SETQ |p| (NREVERSE |p|))))))
+             ((AND (EQL |n| 2)
+                   (SPADCALL (|SPADfirst| (CDR |p|)) (|SPADfirst| |p|)
+                       |f|))
+              (SETQ |p| (NREVERSE |p|))))
            (EXIT (COND
                    ((< |n| 3) |p|)
                    (T (SEQ (LETT |l|

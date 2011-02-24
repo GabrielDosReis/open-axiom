@@ -590,7 +590,7 @@ returning Void.  I really only need the one coerce function.
       a : E
       expr := precondition expr
 --      sayTeX$Lisp "0: "stringify expr
-      (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") => 
+      (not %pair?(expr)$Foreign(Builtin)) or (stringify expr = "NOTHING") => 
         concat ["{",stringify expr,"}"]      
       le : L E := (expr pretend L E)
       op := first le
@@ -751,7 +751,7 @@ have to be switched by swapping names.
       le : L E := nil()
       a : E
       letmp : L E
-      (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") => 
+      (not %pair?(expr)$Foreign(Builtin)) or (stringify expr = "NOTHING") => 
         le := append(le,list(expr))
       letmp := expr pretend L E
       for a in letmp repeat
@@ -1197,7 +1197,7 @@ have to be switched by swapping names.
       p < 1 => error "unknown binary op"
       opPrec := binaryPrecs.p
       -- if base op is product or sum need to add parentheses
-      if ATOM(first args)$Lisp@Boolean then
+      if not %pair?(first args)$Foreign(Builtin) then
         opa:S := stringify first args
       else
         la : L E := (first args pretend L E)
@@ -1289,7 +1289,7 @@ have to be switched by swapping names.
         if checkargs then
           if count < #args then
             -- check here for sum or product
-            if ATOM(a)$Lisp@Boolean then
+            if not %pair?(a)$Foreign(Builtin) then
               opa:S := stringify a
             else
               la : L E := (a pretend L E)
@@ -1329,7 +1329,7 @@ have to be switched by swapping names.
     formatMml(expr : E,prec : I) ==
       i,len : Integer
       intSplitLen : Integer := 20
-      ATOM(expr)$Lisp@Boolean =>
+      not %pair?(expr)$Foreign(Builtin) =>
         str := stringify expr
         len := #str
         -- this bit seems to deal with integers

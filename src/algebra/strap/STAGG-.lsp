@@ -73,17 +73,17 @@
 
 (DEFUN |STAGG-;elt;AIS;5| (|x| |i| $)
   (SEQ (SETQ |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21))))
-       (COND
-         ((OR (MINUSP |i|)
-              (SPADCALL
-                  (SETQ |x|
-                        (SPADCALL |x|
-                            (|check-subtype| (NOT (MINUSP |i|))
-                                '(|NonNegativeInteger|) |i|)
-                            (|getShellEntry| $ 25)))
-                  (|getShellEntry| $ 18)))
-          (EXIT (|error| "index out of range"))))
-       (EXIT (SPADCALL |x| (|getShellEntry| $ 19))))) 
+       (EXIT (COND
+               ((OR (MINUSP |i|)
+                    (SPADCALL
+                        (SETQ |x|
+                              (SPADCALL |x|
+                                  (|check-subtype| (NOT (MINUSP |i|))
+                                      '(|NonNegativeInteger|) |i|)
+                                  (|getShellEntry| $ 25)))
+                        (|getShellEntry| $ 18)))
+                (|error| "index out of range"))
+               (T (SPADCALL |x| (|getShellEntry| $ 19))))))) 
 
 (DEFUN |STAGG-;elt;AUsA;6| (|x| |i| $)
   (PROG (|h|)
@@ -155,17 +155,17 @@
 
 (DEFUN |STAGG-;setelt;AI2S;11| (|x| |i| |s| $)
   (SEQ (SETQ |i| (- |i| (SPADCALL |x| (|getShellEntry| $ 21))))
-       (COND
-         ((OR (MINUSP |i|)
-              (SPADCALL
-                  (SETQ |x|
-                        (SPADCALL |x|
-                            (|check-subtype| (NOT (MINUSP |i|))
-                                '(|NonNegativeInteger|) |i|)
-                            (|getShellEntry| $ 25)))
-                  (|getShellEntry| $ 18)))
-          (EXIT (|error| "index out of range"))))
-       (EXIT (SPADCALL |x| |s| (|getShellEntry| $ 46))))) 
+       (EXIT (COND
+               ((OR (MINUSP |i|)
+                    (SPADCALL
+                        (SETQ |x|
+                              (SPADCALL |x|
+                                  (|check-subtype| (NOT (MINUSP |i|))
+                                      '(|NonNegativeInteger|) |i|)
+                                  (|getShellEntry| $ 25)))
+                        (|getShellEntry| $ 18)))
+                (|error| "index out of range"))
+               (T (SPADCALL |x| |s| (|getShellEntry| $ 46))))))) 
 
 (DEFUN |STAGG-;setelt;AUs2S;12| (|x| |i| |s| $)
   (PROG (|h| |y| |z|)

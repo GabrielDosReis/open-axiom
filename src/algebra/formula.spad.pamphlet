@@ -398,7 +398,7 @@ ScriptFormulaFormat(): public == private where
 
     formatFormula(expr,prec) ==
       i : Integer
-      ATOM(expr)$Lisp pretend Boolean =>
+      not %pair?(expr)$Foreign(Builtin) =>
         str := stringify expr
         %integer?(expr)$Foreign(Builtin) =>
           i := expr : Integer

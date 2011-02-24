@@ -325,10 +325,8 @@ $SideEffectFreeFunctionList ==
     _>_=     _
     _<       _
     _<_=     _
-    MEMBER   _
     _is      _
-    _isnt    _
-    ATOM)
+    _isnt)
 
 --% Types
 

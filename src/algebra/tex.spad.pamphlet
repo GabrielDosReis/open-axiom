@@ -580,7 +580,7 @@ TexFormat(): public == private where
     formatTex(expr,prec) ==
       i,len : Integer
       intSplitLen : Integer := 20
-      ATOM(expr)$Lisp pretend Boolean =>
+      not %pair?(expr)$Foreign(Builtin) pretend Boolean =>
         str := stringify expr
         len := #str
         %integer?(expr)$Foreign(Builtin) =>

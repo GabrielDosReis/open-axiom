@@ -43,7 +43,7 @@
 (DEFUN |Vector;| (|#1|)
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Vector| |dv$1|))
-         ($ (|newShell| 36))
+         ($ (|newShell| 37))
          (|pv$| (|buildPredVector| 0 0
                     (LIST (OR (AND (|HasCategory| |#1| '(|OrderedSet|))
                                    (|HasCategory| |#1|
@@ -101,13 +101,13 @@
     (LIST '#(NIL NIL NIL NIL NIL (|IndexedVector| 6 (NRTEVAL 1))
              (|local| |#1|) (|Integer|) (0 . |One|) (|List| 6)
              (4 . |construct|) |VECTOR;vector;L$;1|
-             |VECTOR;maxIndex;$I;2| (|OutputForm|) (|InputForm|)
+             |VECTOR;maxIndex;$I;2| (|Symbol|) (|InputForm|)
              (9 . |convert|) (14 . |parts|) (19 . |convert|) (|List| $)
              (24 . |convert|) (29 . |convert|) (|Mapping| 6 6 6)
              (|Boolean|) (|NonNegativeInteger|) (|Equation| 6)
              (|List| 24) (|Mapping| 22 6) (|Mapping| 22 6 6)
              (|UniversalSegment| 7) (|Void|) (|Mapping| 6 6)
-             (|Matrix| 6) (|String|) (|SingleInteger|)
+             (|OutputForm|) (|Matrix| 6) (|String|) (|SingleInteger|)
              (|Union| 6 '"failed") (|List| 7))
           '#(|vector| 34 |parts| 39 |maxIndex| 44 |convert| 49
              |construct| 54)
@@ -135,7 +135,7 @@
                                (|Eltable| 28 $$) (|Aggregate|)
                                (|Eltable| 7 6) (|Evalable| 6)
                                (|BasicType|) (|Type|)
-                               (|InnerEvalable| 6 6) (|CoercibleTo| 13)
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 31)
                                (|ConvertibleTo| 14))
                             (|makeByteWordVec2| 20
                                 '(0 7 0 8 1 0 0 9 10 1 14 0 13 15 1 0 9

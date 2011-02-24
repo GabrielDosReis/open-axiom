@@ -370,7 +370,7 @@
 
 (DEFUN |INT;latex;$S;27| (|x| $)
   (LET ((|s| (WRITE-TO-STRING |x|)))
-    (SEQ (COND ((< -1 |x|) (COND ((< |x| 10) (EXIT |s|)))))
+    (SEQ (COND ((AND (< -1 |x|) (< |x| 10)) (EXIT |s|)))
          (EXIT (STRCONC "{" (STRCONC |s| "}")))))) 
 
 (DEFUN |INT;positiveRemainder;3$;28| (|a| |b| $)

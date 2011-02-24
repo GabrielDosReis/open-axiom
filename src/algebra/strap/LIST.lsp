@@ -184,7 +184,7 @@
 (DEFUN |List;| (|#1|)
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|List| |dv$1|))
-         ($ (|newShell| 70))
+         ($ (|newShell| 71))
          (|pv$| (|buildPredVector| 0 0
                     (LIST (OR (AND (|HasCategory| |#1| '(|OrderedSet|))
                                    (|HasCategory| |#1|
@@ -268,14 +268,14 @@
              (96 . |concat|) (102 . |removeDuplicates|)
              (107 . |setUnion|) (113 . |empty|) (117 . |empty?|)
              (122 . |member?|) (128 . |setIntersection|) (134 . |elt|)
-             (140 . |concat|) (146 . |setDifference|) (|OutputForm|)
+             (140 . |concat|) (146 . |setDifference|) (|Symbol|)
              (|InputForm|) (152 . |convert|) (157 . |convert|)
              (|List| 46) (162 . |concat|) (|List| $) (168 . |convert|)
              (173 . |convert|) (|Mapping| 6 6 6) (|NonNegativeInteger|)
              (|List| 6) (|Equation| 6) (|List| 57) (|Mapping| 10 6)
              (|Mapping| 10 6 6) (|UniversalSegment| 7) '"last" '"rest"
-             '"first" '"value" (|Mapping| 6 6) (|SingleInteger|)
-             (|List| 7) (|Union| 6 '"failed"))
+             '"first" '"value" (|Mapping| 6 6) (|OutputForm|)
+             (|SingleInteger|) (|List| 7) (|Union| 6 '"failed"))
           '#(|setUnion| 178 |setIntersection| 184 |setDifference| 190
              |rest| 196 |removeDuplicates| 201 |null| 206 |nil| 211
              |member?| 215 |first| 221 |empty?| 226 |empty| 231 |elt|
@@ -309,7 +309,7 @@
                                (|Eltable| 61 $$) (|Aggregate|)
                                (|Eltable| 7 6) (|Evalable| 6)
                                (|BasicType|) (|Type|)
-                               (|InnerEvalable| 6 6) (|CoercibleTo| 45)
+                               (|InnerEvalable| 6 6) (|CoercibleTo| 67)
                                (|ConvertibleTo| 46) (|OpenMath|))
                             (|makeByteWordVec2| 53
                                 '(0 7 0 8 1 15 14 0 16 3 15 14 0 17 17

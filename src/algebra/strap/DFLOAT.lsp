@@ -780,7 +780,7 @@
                           (|getShellEntry| $ 134)))
                      (T (SEQ (LETT |de|
                                    (EXPT BASE
-                                    (LET ((#0=#:G1524 (- |ex|)))
+                                    (LET ((#0=#:G1525 (- |ex|)))
                                       (|check-subtype|
                                        (NOT (MINUSP #0#))
                                        '(|NonNegativeInteger|) #0#)))
@@ -826,41 +826,46 @@
                                               (LETT |q2|
                                                (+ (* |q| |q1|) |q0|)
                                                |DFLOAT;rationalApproximation;$2NniF;86|)
-                                              (COND
-                                                ((OR (ZEROP |r|)
-                                                  (<
-                                                   (SPADCALL |tol|
-                                                    (ABS
-                                                     (- (* |nu| |q2|)
-                                                      (* |de| |p2|)))
-                                                    (|getShellEntry| $
-                                                     143))
-                                                   (* |de| (ABS |p2|))))
-                                                 (RETURN-FROM
-                                                  |DFLOAT;rationalApproximation;$2NniF;86|
-                                                   (SPADCALL |p2| |q2|
-                                                    (|getShellEntry| $
-                                                     141)))))
-                                              (LETT |#G107| |p1|
-                                               |DFLOAT;rationalApproximation;$2NniF;86|)
-                                              (LETT |#G108| |p2|
-                                               |DFLOAT;rationalApproximation;$2NniF;86|)
-                                              (SETQ |p0| |#G107|)
-                                              (SETQ |p1| |#G108|)
-                                              (LETT |#G109| |q1|
-                                               |DFLOAT;rationalApproximation;$2NniF;86|)
-                                              (LETT |#G110| |q2|
-                                               |DFLOAT;rationalApproximation;$2NniF;86|)
-                                              (SETQ |q0| |#G109|)
-                                              (SETQ |q1| |#G110|)
                                               (EXIT
-                                               (PROGN
-                                                 (LETT |#G111| |t|
-                                                  |DFLOAT;rationalApproximation;$2NniF;86|)
-                                                 (LETT |#G112| |r|
-                                                  |DFLOAT;rationalApproximation;$2NniF;86|)
-                                                 (SETQ |s| |#G111|)
-                                                 (SETQ |t| |#G112|))))))))))))))))))))) 
+                                               (COND
+                                                 ((OR (ZEROP |r|)
+                                                   (<
+                                                    (SPADCALL |tol|
+                                                     (ABS
+                                                      (- (* |nu| |q2|)
+                                                       (* |de| |p2|)))
+                                                     (|getShellEntry| $
+                                                      143))
+                                                    (* |de| (ABS |p2|))))
+                                                  (RETURN-FROM
+                                                   |DFLOAT;rationalApproximation;$2NniF;86|
+                                                    (SPADCALL |p2| |q2|
+                                                     (|getShellEntry| $
+                                                      141))))
+                                                 (T
+                                                  (SEQ
+                                                   (LETT |#G107| |p1|
+                                                    |DFLOAT;rationalApproximation;$2NniF;86|)
+                                                   (LETT |#G108| |p2|
+                                                    |DFLOAT;rationalApproximation;$2NniF;86|)
+                                                   (SETQ |p0| |#G107|)
+                                                   (SETQ |p1| |#G108|)
+                                                   (LETT |#G109| |q1|
+                                                    |DFLOAT;rationalApproximation;$2NniF;86|)
+                                                   (LETT |#G110| |q2|
+                                                    |DFLOAT;rationalApproximation;$2NniF;86|)
+                                                   (SETQ |q0| |#G109|)
+                                                   (SETQ |q1| |#G110|)
+                                                   (EXIT
+                                                    (PROGN
+                                                      (LETT |#G111| |t|
+                                                       |DFLOAT;rationalApproximation;$2NniF;86|)
+                                                      (LETT |#G112| |r|
+                                                       |DFLOAT;rationalApproximation;$2NniF;86|)
+                                                      (SETQ |s|
+                                                       |#G111|)
+                                                      (SETQ |t|
+                                                       |#G112|))))))))))))))))))))))))) 
 
 (DEFUN |DFLOAT;**;$F$;87| (|x| |r| $)
   (COND
@@ -893,7 +898,7 @@
 
 (DEFUN |DoubleFloat| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1555)
+  (PROG (#0=#:G1556)
     (RETURN
       (COND
         ((SETQ #0# (HGET |$ConstructorCache| '|DoubleFloat|))

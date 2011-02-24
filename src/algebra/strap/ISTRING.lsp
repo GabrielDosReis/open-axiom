@@ -196,41 +196,40 @@
                        (SVREF $ 6)))
                    (T (- (SPADCALL |s| (|getShellEntry| $ 47))
                          (SVREF $ 6))))))
-        (SEQ (COND
-               ((OR (OR (MINUSP |l|) (NOT (< |h| |m|)))
-                    (< |h| (- |l| 1)))
-                (EXIT (|error| "index out of range"))))
-             (LETT |r|
-                   (MAKE-FULL-CVEC
-                       (LET ((#0=#:G1419
-                                 (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
-                         (|check-subtype| (NOT (MINUSP #0#))
-                             '(|NonNegativeInteger|) #0#))
-                       (|spadConstant| $ 53))
-                   |ISTRING;replace;$Us2$;15|)
-             (LETT |k| 0 |ISTRING;replace;$Us2$;15|)
-             (LET ((|i| 0) (#1=#:G1510 (- |l| 1)))
-               (LOOP
-                 (COND
-                   ((> |i| #1#) (RETURN NIL))
-                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
-                           (EXIT (SETQ |k| (+ |k| 1))))))
-                 (SETQ |i| (+ |i| 1))))
-             (LET ((|i| 0) (#2=#:G1511 (- |n| 1)))
-               (LOOP
-                 (COND
-                   ((> |i| #2#) (RETURN NIL))
-                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |t| |i|))
-                           (EXIT (SETQ |k| (+ |k| 1))))))
-                 (SETQ |i| (+ |i| 1))))
-             (LET ((|i| (+ |h| 1)) (#3=#:G1512 (- |m| 1)))
-               (LOOP
-                 (COND
-                   ((> |i| #3#) (RETURN NIL))
-                   (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
-                           (EXIT (SETQ |k| (+ |k| 1))))))
-                 (SETQ |i| (+ |i| 1))))
-             (EXIT |r|)))))) 
+        (COND
+          ((OR (OR (MINUSP |l|) (NOT (< |h| |m|))) (< |h| (- |l| 1)))
+           (|error| "index out of range"))
+          (T (SEQ (LETT |r|
+                        (MAKE-FULL-CVEC
+                            (LET ((#0=#:G1420
+                                      (+ (- |m| (+ (- |h| |l|) 1)) |n|)))
+                              (|check-subtype| (NOT (MINUSP #0#))
+                                  '(|NonNegativeInteger|) #0#))
+                            (|spadConstant| $ 53))
+                        |ISTRING;replace;$Us2$;15|)
+                  (LETT |k| 0 |ISTRING;replace;$Us2$;15|)
+                  (LET ((|i| 0) (#1=#:G1511 (- |l| 1)))
+                    (LOOP
+                      (COND
+                        ((> |i| #1#) (RETURN NIL))
+                        (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
+                                (EXIT (SETQ |k| (+ |k| 1))))))
+                      (SETQ |i| (+ |i| 1))))
+                  (LET ((|i| 0) (#2=#:G1512 (- |n| 1)))
+                    (LOOP
+                      (COND
+                        ((> |i| #2#) (RETURN NIL))
+                        (T (SEQ (SETF (CHAR |r| |k|) (CHAR |t| |i|))
+                                (EXIT (SETQ |k| (+ |k| 1))))))
+                      (SETQ |i| (+ |i| 1))))
+                  (LET ((|i| (+ |h| 1)) (#3=#:G1513 (- |m| 1)))
+                    (LOOP
+                      (COND
+                        ((> |i| #3#) (RETURN NIL))
+                        (T (SEQ (SETF (CHAR |r| |k|) (CHAR |s| |i|))
+                                (EXIT (SETQ |k| (+ |k| 1))))))
+                      (SETQ |i| (+ |i| 1))))
+                  (EXIT |r|)))))))) 
 
 (DEFUN |ISTRING;setelt;$I2C;16| (|s| |i| |c| $)
   (COND
@@ -245,7 +244,7 @@
          (EXIT (COND
                  ((MINUSP |startpos|) (|error| "index out of bounds"))
                  ((< (- |nw| |startpos|) |np|) NIL)
-                 (T (SEQ (LET ((|ip| 0) (#0=#:G1513 (- |np| 1))
+                 (T (SEQ (LET ((|ip| 0) (#0=#:G1514 (- |np| 1))
                                (|iw| |startpos|))
                            (LOOP
                              (COND
@@ -282,7 +281,7 @@
                ((MINUSP |startpos|) (|error| "index out of bounds"))
                ((NOT (< |startpos| (LENGTH |t|))) (- (SVREF $ 6) 1))
                (T (SEQ (LET ((|r| |startpos|)
-                             (#0=#:G1514 (- (LENGTH |t|) 1)))
+                             (#0=#:G1515 (- (LENGTH |t|) 1)))
                          (LOOP
                            (COND
                              ((> |r| #0#) (RETURN NIL))
@@ -300,7 +299,7 @@
                ((MINUSP |startpos|) (|error| "index out of bounds"))
                ((NOT (< |startpos| (LENGTH |t|))) (- (SVREF $ 6) 1))
                (T (SEQ (LET ((|r| |startpos|)
-                             (#0=#:G1515 (- (LENGTH |t|) 1)))
+                             (#0=#:G1516 (- (LENGTH |t|) 1)))
                          (LOOP
                            (COND
                              ((> |r| #0#) (RETURN NIL))
@@ -488,13 +487,13 @@
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
   (LET ((|t| (MAKE-FULL-CVEC
-                 (LET ((#0=#:G1472 NIL) (#1=#:G1473 T)
-                       (#2=#:G1517 |l|))
+                 (LET ((#0=#:G1473 NIL) (#1=#:G1474 T)
+                       (#2=#:G1518 |l|))
                    (LOOP
                      (COND
                        ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
                        (T (LET ((|s| (CAR #2#)))
-                            (LET ((#3=#:G1471 (LENGTH |s|)))
+                            (LET ((#3=#:G1472 (LENGTH |s|)))
                               (COND
                                 (#1# (SETQ #0# #3#))
                                 (T (SETQ #0# (+ #0# #3#))))
@@ -502,7 +501,7 @@
                      (SETQ #2# (CDR #2#))))
                  (|spadConstant| $ 53)))
         (|i| (SVREF $ 6)))
-    (SEQ (LET ((#4=#:G1516 |l|))
+    (SEQ (LET ((#4=#:G1517 |l|))
            (LOOP
              (COND
                ((ATOM #4#) (RETURN NIL))
@@ -515,10 +514,10 @@
 (DEFUN |ISTRING;copyInto!;2$I$;29| (|y| |x| |s| $)
   (LET ((|m| (LENGTH |x|)) (|n| (LENGTH |y|)))
     (SEQ (SETQ |s| (- |s| (SVREF $ 6)))
-         (COND
-           ((OR (MINUSP |s|) (< |n| (+ |s| |m|)))
-            (EXIT (|error| "index out of range"))))
-         (RPLACSTR |y| |s| |m| |x| 0 |m|) (EXIT |y|)))) 
+         (EXIT (COND
+                 ((OR (MINUSP |s|) (< |n| (+ |s| |m|)))
+                  (|error| "index out of range"))
+                 (T (SEQ (RPLACSTR |y| |s| |m| |x| 0 |m|) (EXIT |y|)))))))) 
 
 (DEFUN |ISTRING;elt;$IC;30| (|s| |i| $)
   (COND
@@ -533,10 +532,10 @@
                ((SPADCALL |sg| (|getShellEntry| $ 45))
                 (- (SPADCALL |sg| (|getShellEntry| $ 46)) (SVREF $ 6)))
                (T (- (SPADCALL |s| (|getShellEntry| $ 47)) (SVREF $ 6))))))
-    (SEQ (COND
-           ((OR (MINUSP |l|) (NOT (< |h| (LENGTH |s|))))
-            (EXIT (|error| "index out of bound"))))
-         (EXIT (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1))))))) 
+    (COND
+      ((OR (MINUSP |l|) (NOT (< |h| (LENGTH |s|))))
+       (|error| "index out of bound"))
+      (T (SUBSTRING |s| |l| (MAX 0 (+ (- |h| |l|) 1))))))) 
 
 (DEFUN |ISTRING;hash;$Si;32| (|s| $)
   (DECLARE (IGNORE $))
@@ -550,7 +549,7 @@
     (RETURN
       (LET ((|n| (SPADCALL |pattern| (|getShellEntry| $ 47))))
         (SEQ (LETT |p|
-                   (LET ((#0=#:G1500
+                   (LET ((#0=#:G1501
                              (|ISTRING;position;C$2I;19| |dontcare|
                                  |pattern|
                                  (LETT |m|
@@ -564,22 +563,18 @@
              (EXIT (COND
                      ((EQL |p| (- |m| 1))
                       (NOT (NULL (STRING= |pattern| |target|))))
-                     (T (SEQ (COND
-                               ((SPADCALL |p| |m|
-                                    (|getShellEntry| $ 87))
-                                (COND
-                                  ((NOT
-                                    (SPADCALL
-                                     (|ISTRING;elt;$Us$;31| |pattern|
-                                      (SPADCALL |m| (- |p| 1)
-                                       (|getShellEntry| $ 24))
-                                      $)
-                                     |target| (|getShellEntry| $ 88)))
-                                   (EXIT NIL)))))
-                             (LETT |i| |p| |ISTRING;match?;2$CB;34|)
+                     ((AND (SPADCALL |p| |m| (|getShellEntry| $ 87))
+                           (NOT (SPADCALL
+                                    (|ISTRING;elt;$Us$;31| |pattern|
+                                     (SPADCALL |m| (- |p| 1)
+                                      (|getShellEntry| $ 24))
+                                     $)
+                                    |target| (|getShellEntry| $ 88))))
+                      NIL)
+                     (T (SEQ (LETT |i| |p| |ISTRING;match?;2$CB;34|)
                              (LETT |q|
                                    (LET
-                                    ((#1=#:G1501
+                                    ((#1=#:G1502
                                       (|ISTRING;position;C$2I;19|
                                        |dontcare| |pattern| (+ |p| 1)
                                        $)))
@@ -601,7 +596,7 @@
                                       |ISTRING;match?;2$CB;34|)
                                      (SETQ |i|
                                       (LET
-                                       ((#2=#:G1502
+                                       ((#2=#:G1503
                                          (|ISTRING;position;2$2I;18|
                                           |s| |target| |i| $)))
                                         (|check-subtype|
@@ -621,7 +616,7 @@
                                           (EXIT
                                            (SETQ |q|
                                             (LET
-                                             ((#3=#:G1503
+                                             ((#3=#:G1504
                                                (|ISTRING;position;C$2I;19|
                                                 |dontcare| |pattern|
                                                 (+ |q| 1) $)))
@@ -630,22 +625,21 @@
                                                '(|NonNegativeInteger|)
                                                #3#))))))))))))
                              (COND
-                               ((SPADCALL |p| |n|
-                                    (|getShellEntry| $ 87))
-                                (COND
-                                  ((NOT
-                                    (|ISTRING;suffix?;2$B;21|
-                                     (|ISTRING;elt;$Us$;31| |pattern|
-                                      (SPADCALL (+ |p| 1) |n|
-                                       (|getShellEntry| $ 24))
-                                      $)
-                                     |target| $))
-                                   (EXIT NIL)))))
+                               ((AND (SPADCALL |p| |n|
+                                      (|getShellEntry| $ 87))
+                                     (NOT
+                                      (|ISTRING;suffix?;2$B;21|
+                                       (|ISTRING;elt;$Us$;31| |pattern|
+                                        (SPADCALL (+ |p| 1) |n|
+                                         (|getShellEntry| $ 24))
+                                        $)
+                                       |target| $)))
+                                (EXIT NIL)))
                              (EXIT T)))))))))) 
 
-(DEFUN |IndexedString| (#0=#:G1518)
+(DEFUN |IndexedString| (#0=#:G1519)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1519)
+  (PROG (#1=#:G1520)
     (RETURN
       (COND
         ((SETQ #1#

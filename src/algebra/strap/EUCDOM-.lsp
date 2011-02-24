@@ -134,23 +134,22 @@
                                      (|EUCDOM-;unitNormalizeIdealElt|
                                       |s3| $)))))))
                   (COND
-                    ((NOT (SPADCALL (SVREF |s1| 0)
-                              (|getShellEntry| $ 8)))
-                     (COND
-                       ((NOT (SPADCALL (SVREF |s1| 0) |y|
-                                 (|getShellEntry| $ 32)))
-                        (SEQ (SETQ |qr|
-                                   (SPADCALL (SVREF |s1| 0) |y|
+                    ((AND (NOT (SPADCALL (SVREF |s1| 0)
+                                   (|getShellEntry| $ 8)))
+                          (NOT (SPADCALL (SVREF |s1| 0) |y|
+                                   (|getShellEntry| $ 32))))
+                     (SEQ (SETQ |qr|
+                                (SPADCALL (SVREF |s1| 0) |y|
                                     (|getShellEntry| $ 16)))
-                             (SETF (SVREF |s1| 0) (CDR |qr|))
-                             (SETF (SVREF |s1| 1)
-                                   (SPADCALL (SVREF |s1| 1)
+                          (SETF (SVREF |s1| 0) (CDR |qr|))
+                          (SETF (SVREF |s1| 1)
+                                (SPADCALL (SVREF |s1| 1)
                                     (SPADCALL (CAR |qr|) |x|
                                      (|getShellEntry| $ 29))
                                     (|getShellEntry| $ 33)))
-                             (EXIT (SETQ |s1|
-                                    (|EUCDOM-;unitNormalizeIdealElt|
-                                     |s1| $))))))))
+                          (EXIT (SETQ |s1|
+                                      (|EUCDOM-;unitNormalizeIdealElt|
+                                       |s1| $))))))
                   (EXIT |s1|)))))))) 
 
 (DEFUN |EUCDOM-;extendedEuclidean;3SU;8| (|x| |y| |z| $)

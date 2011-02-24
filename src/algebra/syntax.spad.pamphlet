@@ -282,7 +282,7 @@ ElaboratedExpression(): Public == Private where
     import %peq: (%,%) -> Boolean from Foreign Builtin
     import %pair?: % -> Boolean  from Foreign Builtin
     isAtomic(x: %): Boolean ==
-      ATOM(x)$Lisp
+      not %pair? x
 
     type x ==
       getMode(x)$Lisp
