@@ -270,7 +270,7 @@ optCall (x is ['%call,:u]) ==
     x.first := 'SPADCALL
     x.rest := [:a,name]
     x
-  fn is [q,R,n] and q in '(getShellEntry ELT QREFELT CONST) =>
+  fn is [q,R,n] and q in '(getShellEntry ELT CONST) =>
     q = 'CONST => ['spadConstant,R,n]
     emitIndirectCall(fn,a,x)
   systemErrorHere ['optCall,x]

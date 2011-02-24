@@ -365,7 +365,7 @@ consDomainForm(x,dc) ==
 NRTdescendCodeTran(u,condList) ==
   null u => nil
   u is ['%list] => nil
-  u is [op,.,i,a] and op in '(setShellEntry QSETREFV) =>
+  u is ['setShellEntry,.,i,a] =>
     null condList and a is ['CONS,fn,:.] =>
       u.first := '%list
       u.rest := nil
@@ -688,7 +688,7 @@ NRTputInHead bod ==
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and dom ~='$ and elt in '(getShellEntry ELT QREFELT CONST) =>
+    fn is [elt,dom,ind] and dom ~='$ and elt in '(getShellEntry ELT CONST) =>
       k := NRTassocIndex dom => lastNode(bod).first := ['%vref,'_$,k]
       nil
     NRTputInHead fn

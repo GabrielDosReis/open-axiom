@@ -460,10 +460,10 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
       atom code =>nil
-      code.op in '(getShellEntry ELT QREFELT) =>
+      code.op in '(getShellEntry ELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
-      code is [x,name,number,u'] and x in '(setShellEntry QSETREFV) =>
+      code is ['setShellEntry,name,number,u'] =>
         update(u',copyvec,[[name,:number],:sofar])
   for i in 6..n repeat
     for u in copyvec.i repeat
@@ -563,7 +563,7 @@ DescendCode(code,flag,viewAssoc,EnvToPass) ==
  
 ConstantCreator u ==
   null u => false
-  u is [q,.,.,u'] and (q in '(setShellEntry QSETREFV)) => 
+  u is ['setShellEntry,.,.,u'] => 
     ConstantCreator u'
   u is ['CONS,:.] => false
   true
