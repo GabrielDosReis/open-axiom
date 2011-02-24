@@ -376,7 +376,8 @@ $(OUT)/KDAGG.$(FASLEXT): $(OUT)/DIAGG.$(FASLEXT)
 $(OUT)/TBAGG.$(FASLEXT): $(OUT)/KDAGG.$(FASLEXT)
 $(OUT)/ALAGG.$(FASLEXT): $(OUT)/TBAGG.$(FASLEXT)
 $(OUT)/ILIST.$(FASLEXT): $(OUT)/LSAGG.$(FASLEXT)
-$(OUT)/LIST.$(FASLEXT): $(OUT)/ILIST.$(FASLEXT)
+$(OUT)/LIST.$(FASLEXT): $(OUT)/ILIST.$(FASLEXT) $(OUT)/REF.$(FASLEXT) \
+	$(OUT)/ALIST.$(FASLEXT) $(OUT)/PRIMARR.$(FASLEXT)
 
 $(OUT)/MSYSCMD.$(FASLEXT): $(OUT)/TYPE.$(FASLEXT)
 
@@ -475,7 +476,7 @@ axiom_algebra_layer_0 = \
   LINEXP   PATMAB   REAL     CHARZ    LOGIC    LOGIC-   \
   RTVALUE  SYSPTR   PDDOM    PDDOM-   PDSPC    PDSPC-   \
   DSEXT    DSEXT-   ORDTYPE  ORDTYPE- ORDSTRCT          \
-  BOOLE    BOOLE-
+  BOOLE    BOOLE-   REF      ALIST    PRIMARR
 
 axiom_algebra_layer_0_nrlibs = \
 	$(addsuffix .NRLIB/code.$(FASLEXT),$(axiom_algebra_layer_0))
@@ -542,8 +543,8 @@ axiom_algebra_layer_1 = \
   CABMON   MONOID   MONOID-  RING     RING-     COMRING  \
   DIFRING           ENTIRER  INTDOM   INTDOM-   OINTDOM  \
   GCDDOM   GCDDOM-  UFD      UFD-     ES        ES-      \
-  PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC   REF      \
-  IDENT             BINDING  ALIST    BOOLEAN   PRIMARR  \
+  PATAB    PPCURVE  PSCURVE  CACHSET  RESLATC            \
+  IDENT             BINDING           BOOLEAN            \
   ORDRING  ORDRING-          FEVALAB  FEVALAB-  IARRAY1  \
   OSGROUP  MAYBE    DATAARY  PROPLOG  HOMOTOP   BYTEORD  \
   FIELD    FIELD-   VECTCAT  VECTCAT- \
