@@ -459,31 +459,31 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedList| (LIST |dv$1| |dv$2|)
         (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     (COND
       ((|testBitVector| |pv$| 9)
-       (|setShellEntry| $ 50
-           (CONS (|dispatchFunction| |ILIST;coerce;$Of;21|) $))))
+       (SETF (|shellEntry| $ 50)
+             (CONS (|dispatchFunction| |ILIST;coerce;$Of;21|) $))))
     (COND
       ((|testBitVector| |pv$| 8)
        (PROGN
-         (|setShellEntry| $ 54
-             (CONS (|dispatchFunction| |ILIST;=;2$B;22|) $))
-         (|setShellEntry| $ 58
-             (CONS (|dispatchFunction| |ILIST;latex;$S;23|) $))
-         (|setShellEntry| $ 60
-             (CONS (|dispatchFunction| |ILIST;member?;S$B;24|) $)))))
+         (SETF (|shellEntry| $ 54)
+               (CONS (|dispatchFunction| |ILIST;=;2$B;22|) $))
+         (SETF (|shellEntry| $ 58)
+               (CONS (|dispatchFunction| |ILIST;latex;$S;23|) $))
+         (SETF (|shellEntry| $ 60)
+               (CONS (|dispatchFunction| |ILIST;member?;S$B;24|) $)))))
     (COND
       ((|testBitVector| |pv$| 8)
-       (|setShellEntry| $ 62
-           (CONS (|dispatchFunction| |ILIST;removeDuplicates!;2$;26|)
-                 $))))
+       (SETF (|shellEntry| $ 62)
+             (CONS (|dispatchFunction| |ILIST;removeDuplicates!;2$;26|)
+                   $))))
     $)) 
 
 (MAKEPROP '|IndexedList| '|infovec|

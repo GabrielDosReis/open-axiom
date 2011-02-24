@@ -74,8 +74,8 @@
                                     '((|Integer|)
                                       (|NonNegativeInteger|))
                                     NIL))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|UnaryRecursiveAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |UnaryRecursiveAggregate| (#0=#:G1401)

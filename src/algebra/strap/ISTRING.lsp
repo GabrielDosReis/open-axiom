@@ -694,12 +694,12 @@
                                    '(|SetCategory|))
                                (|HasCategory| (|Character|)
                                    '(|Evalable| (|Character|))))))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|IndexedString| (LIST |dv$1|)
         (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     $)) 
 
 (MAKEPROP '|IndexedString| '|infovec|

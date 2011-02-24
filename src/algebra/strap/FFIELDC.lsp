@@ -43,7 +43,7 @@
                                       (|:| |exponent| (|Integer|))))
                           (|Matrix| $))
                         NIL))))
-    (|setShellEntry| #0# 0 '(|FiniteFieldCategory|))
+    (SETF (|shellEntry| #0# 0) '(|FiniteFieldCategory|))
     #0#)) 
 
 (DEFUN |FiniteFieldCategory| ()

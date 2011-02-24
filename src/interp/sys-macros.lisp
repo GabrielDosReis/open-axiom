@@ -1262,3 +1262,6 @@
 
 (defmacro |getShellEntry| (dollar n)
   `(svref ,dollar ,n))
+
+(defmacro |shellEntry| (dollar n)
+  `(svref ,dollar ,n))

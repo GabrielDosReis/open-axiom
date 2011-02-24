@@ -497,8 +497,8 @@
   (|check-subtype| (SMINTP |x|) '(|SingleInteger|) |x|)) 
 
 (DEFUN |SINT;random;$;60| ($)
-  (SEQ (|setShellEntry| $ 6
-           (REM (TIMES 314159269 (SVREF $ 6)) 2147483647))
+  (SEQ (SETF (|shellEntry| $ 6)
+             (REM (TIMES 314159269 (SVREF $ 6)) 2147483647))
        (EXIT (REM (SVREF $ 6) 67108864)))) 
 
 (DEFUN |SINT;random;2$;61| (|n| $) (DECLARE (IGNORE $)) (RANDOM |n|)) 
@@ -525,11 +525,11 @@
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| '(|SingleInteger|)) ($ (|newShell| 115))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|SingleInteger| NIL (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 1)
+    (SETF (|shellEntry| $ 6) 1)
     $)) 
 
 (MAKEPROP '|SingleInteger| '|infovec|

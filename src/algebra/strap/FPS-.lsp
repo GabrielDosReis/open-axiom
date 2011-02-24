@@ -29,10 +29,10 @@
          (|pv$| (|buildPredVector| 0 0
                     (LIST (|HasAttribute| |#1| '|arbitraryExponent|)
                           (|HasAttribute| |#1| '|arbitraryPrecision|)))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     $)) 
 
 (MAKEPROP '|FloatingPointSystem&| '|infovec|

@@ -229,28 +229,28 @@
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|StreamAggregate&| |dv$1| |dv$2|))
          ($ (|newShell| 61)) (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     (COND
       ((|HasAttribute| |#1| '|shallowlyMutable|)
        (PROGN
-         (|setShellEntry| $ 38
-             (CONS (|dispatchFunction| |STAGG-;concat;3A;7|) $))
-         (|setShellEntry| $ 45
-             (CONS (|dispatchFunction| |STAGG-;concat;LA;8|) $))
-         (|setShellEntry| $ 48
-             (CONS (|dispatchFunction| |STAGG-;map!;M2A;9|) $))
-         (|setShellEntry| $ 49
-             (CONS (|dispatchFunction| |STAGG-;fill!;ASA;10|) $))
-         (|setShellEntry| $ 50
-             (CONS (|dispatchFunction| |STAGG-;setelt;AI2S;11|) $))
-         (|setShellEntry| $ 53
-             (CONS (|dispatchFunction| |STAGG-;setelt;AUs2S;12|) $))
-         (|setShellEntry| $ 56
-             (CONS (|dispatchFunction| |STAGG-;concat!;3A;13|) $)))))
+         (SETF (|shellEntry| $ 38)
+               (CONS (|dispatchFunction| |STAGG-;concat;3A;7|) $))
+         (SETF (|shellEntry| $ 45)
+               (CONS (|dispatchFunction| |STAGG-;concat;LA;8|) $))
+         (SETF (|shellEntry| $ 48)
+               (CONS (|dispatchFunction| |STAGG-;map!;M2A;9|) $))
+         (SETF (|shellEntry| $ 49)
+               (CONS (|dispatchFunction| |STAGG-;fill!;ASA;10|) $))
+         (SETF (|shellEntry| $ 50)
+               (CONS (|dispatchFunction| |STAGG-;setelt;AI2S;11|) $))
+         (SETF (|shellEntry| $ 53)
+               (CONS (|dispatchFunction| |STAGG-;setelt;AUs2S;12|) $))
+         (SETF (|shellEntry| $ 56)
+               (CONS (|dispatchFunction| |STAGG-;concat!;3A;13|) $)))))
     $)) 
 
 (MAKEPROP '|StreamAggregate&| '|infovec|

@@ -5,7 +5,7 @@
 
 (DEFUN |Rng;| ()
   (LET ((#0=#:G1372 (|Join| (|AbelianGroup|) (|SemiGroup|))))
-    (|setShellEntry| #0# 0 '(|Rng|))
+    (SETF (|shellEntry| #0# 0) '(|Rng|))
     #0#)) 
 
 (DEFUN |Rng| () (COND (|Rng;AL|) (T (SETQ |Rng;AL| (|Rng;|))))) 

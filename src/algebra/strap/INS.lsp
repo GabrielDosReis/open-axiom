@@ -50,7 +50,7 @@
                               (|canonicalUnitNormal| T))
                             '((|Fraction| (|Integer|)) (|Boolean|))
                             NIL)))))
-    (|setShellEntry| #0# 0 '(|IntegerNumberSystem|))
+    (SETF (|shellEntry| #0# 0) '(|IntegerNumberSystem|))
     #0#)) 
 
 (DEFUN |IntegerNumberSystem| ()

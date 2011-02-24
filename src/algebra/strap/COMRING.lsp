@@ -8,7 +8,7 @@
             (|Join| (|Ring|) (|BiModule| '$ '$)
                     (|mkCategory| '|package| NIL
                         '(((|commutative| "*") T)) 'NIL NIL))))
-    (|setShellEntry| #0# 0 '(|CommutativeRing|))
+    (SETF (|shellEntry| #0# 0) '(|CommutativeRing|))
     #0#)) 
 
 (DEFUN |CommutativeRing| ()

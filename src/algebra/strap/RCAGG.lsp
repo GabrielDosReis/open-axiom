@@ -41,8 +41,8 @@
                                     '((|List| $) (|Boolean|)
                                       (|Integer|) (|List| |t#1|))
                                     NIL))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|RecursiveAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|RecursiveAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |RecursiveAggregate| (#0=#:G1373)

@@ -96,7 +96,7 @@ evalSlotDomain(u,dollar) ==
   integer? u =>
     y := dollar.u
     vector? y => y
-    y is ["setShellEntry",:.] => eval y
+    y is ['%store,:.] => eval y
              --lazy domains need to marked; this is dangerous?
     y is [v,:.] =>
       vector? v => lazyDomainSet(y,dollar,u)   --old style has [$,code,:lazyt]

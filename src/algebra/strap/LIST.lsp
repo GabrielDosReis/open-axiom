@@ -220,35 +220,36 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|List| (LIST |dv$1|) (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     (COND
       ((|testBitVector| |pv$| 7)
        (PROGN
-         (|setShellEntry| $ 31
-             (CONS (|dispatchFunction| |LIST;OMwrite;$S;6|) $))
-         (|setShellEntry| $ 32
-             (CONS (|dispatchFunction| |LIST;OMwrite;$BS;7|) $))
-         (|setShellEntry| $ 33
-             (CONS (|dispatchFunction| |LIST;OMwrite;Omd$V;8|) $))
-         (|setShellEntry| $ 34
-             (CONS (|dispatchFunction| |LIST;OMwrite;Omd$BV;9|) $)))))
+         (SETF (|shellEntry| $ 31)
+               (CONS (|dispatchFunction| |LIST;OMwrite;$S;6|) $))
+         (SETF (|shellEntry| $ 32)
+               (CONS (|dispatchFunction| |LIST;OMwrite;$BS;7|) $))
+         (SETF (|shellEntry| $ 33)
+               (CONS (|dispatchFunction| |LIST;OMwrite;Omd$V;8|) $))
+         (SETF (|shellEntry| $ 34)
+               (CONS (|dispatchFunction| |LIST;OMwrite;Omd$BV;9|) $)))))
     (COND
       ((|testBitVector| |pv$| 9)
        (PROGN
-         (|setShellEntry| $ 37
-             (CONS (|dispatchFunction| |LIST;setUnion;3$;10|) $))
-         (|setShellEntry| $ 41
-             (CONS (|dispatchFunction| |LIST;setIntersection;3$;11|) $))
-         (|setShellEntry| $ 44
-             (CONS (|dispatchFunction| |LIST;setDifference;3$;12|) $)))))
+         (SETF (|shellEntry| $ 37)
+               (CONS (|dispatchFunction| |LIST;setUnion;3$;10|) $))
+         (SETF (|shellEntry| $ 41)
+               (CONS (|dispatchFunction| |LIST;setIntersection;3$;11|)
+                     $))
+         (SETF (|shellEntry| $ 44)
+               (CONS (|dispatchFunction| |LIST;setDifference;3$;12|) $)))))
     (COND
       ((|testBitVector| |pv$| 3)
-       (|setShellEntry| $ 53
-           (CONS (|dispatchFunction| |LIST;convert;$If;13|) $))))
+       (SETF (|shellEntry| $ 53)
+             (CONS (|dispatchFunction| |LIST;convert;$If;13|) $))))
     $)) 
 
 (MAKEPROP '|List| '|infovec|

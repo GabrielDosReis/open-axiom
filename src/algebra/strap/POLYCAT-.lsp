@@ -1097,66 +1097,69 @@
                               '(|ConvertibleTo| (|InputForm|)))
                           (|HasCategory| |#2|
                               '(|ConvertibleTo| (|InputForm|)))))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
-    (|setShellEntry| $ 8 |#3|)
-    (|setShellEntry| $ 9 |#4|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
+    (SETF (|shellEntry| $ 8) |#3|)
+    (SETF (|shellEntry| $ 9) |#4|)
     (COND
       ((|testBitVector| |pv$| 4)
        (PROGN
-         (|setShellEntry| $ 95
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;resultant;2SVarSetS;15|)
-                   $))
-         (|setShellEntry| $ 97
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;discriminant;SVarSetS;16|)
-                   $)))))
+         (SETF (|shellEntry| $ 95)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;resultant;2SVarSetS;15|)
+                     $))
+         (SETF (|shellEntry| $ 97)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;discriminant;SVarSetS;16|)
+                     $)))))
     (COND
       ((|HasCategory| |#2| '(|IntegralDomain|))
        (PROGN
-         (|setShellEntry| $ 121
-             (CONS (|dispatchFunction| |POLYCAT-;reducedSystem;MM;20|)
-                   $))
-         (|setShellEntry| $ 131
-             (CONS (|dispatchFunction| |POLYCAT-;reducedSystem;MVR;21|)
-                   $)))))
+         (SETF (|shellEntry| $ 121)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;reducedSystem;MM;20|)
+                     $))
+         (SETF (|shellEntry| $ 131)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;reducedSystem;MVR;21|)
+                     $)))))
     (COND
       ((|testBitVector| |pv$| 1)
        (PROGN
-         (|setShellEntry| $ 134
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;gcdPolynomial;3Sup;22|)
-                   $))
-         (|setShellEntry| $ 141
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;solveLinearPolynomialEquation;LSupU;23|)
-                   $))
-         (|setShellEntry| $ 145
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;factorPolynomial;SupF;24|)
-                   $))
-         (|setShellEntry| $ 147
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;factorSquareFreePolynomial;SupF;25|)
-                   $))
-         (|setShellEntry| $ 165
-             (CONS (|dispatchFunction| |POLYCAT-;factor;SF;26|) $))
+         (SETF (|shellEntry| $ 134)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;gcdPolynomial;3Sup;22|)
+                     $))
+         (SETF (|shellEntry| $ 141)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;solveLinearPolynomialEquation;LSupU;23|)
+                     $))
+         (SETF (|shellEntry| $ 145)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;factorPolynomial;SupF;24|)
+                     $))
+         (SETF (|shellEntry| $ 147)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;factorSquareFreePolynomial;SupF;25|)
+                     $))
+         (SETF (|shellEntry| $ 165)
+               (CONS (|dispatchFunction| |POLYCAT-;factor;SF;26|) $))
          (COND
            ((|HasCategory| |#2| '(|CharacteristicNonZero|))
             (PROGN
-              (|setShellEntry| $ 184
-                  (CONS (|dispatchFunction|
-                            |POLYCAT-;conditionP;MU;27|)
-                        $))))))))
+              (SETF (|shellEntry| $ 184)
+                    (CONS (|dispatchFunction|
+                              |POLYCAT-;conditionP;MU;27|)
+                          $))))))))
     (COND
       ((|HasCategory| |#2| '(|CharacteristicNonZero|))
        (PROGN
-         (|setShellEntry| $ 186
-             (CONS (|dispatchFunction| |POLYCAT-;charthRoot;SU;28|) $)))))
+         (SETF (|shellEntry| $ 186)
+               (CONS (|dispatchFunction| |POLYCAT-;charthRoot;SU;28|)
+                     $)))))
     (COND
       ((|testBitVector| |pv$| 3)
        (PROGN
@@ -1164,53 +1167,58 @@
            ((|HasCategory| |#2| '(|EuclideanDomain|))
             (COND
               ((|HasCategory| |#2| '(|CharacteristicZero|))
-               (|setShellEntry| $ 195
-                   (CONS (|dispatchFunction|
-                             |POLYCAT-;squareFree;SF;31|)
-                         $)))
-              (T (|setShellEntry| $ 195
+               (SETF (|shellEntry| $ 195)
                      (CONS (|dispatchFunction|
-                               |POLYCAT-;squareFree;SF;32|)
-                           $)))))
-           (T (|setShellEntry| $ 195
-                  (CONS (|dispatchFunction|
-                            |POLYCAT-;squareFree;SF;33|)
-                        $))))
-         (|setShellEntry| $ 203
-             (CONS (|dispatchFunction| |POLYCAT-;squareFreePart;2S;34|)
-                   $))
-         (|setShellEntry| $ 205
-             (CONS (|dispatchFunction| |POLYCAT-;content;SVarSetS;35|)
-                   $))
-         (|setShellEntry| $ 210
-             (CONS (|dispatchFunction| |POLYCAT-;primitivePart;2S;36|)
-                   $))
-         (|setShellEntry| $ 213
-             (CONS (|dispatchFunction|
-                       |POLYCAT-;primitivePart;SVarSetS;37|)
-                   $)))))
+                               |POLYCAT-;squareFree;SF;31|)
+                           $)))
+              (T (SETF (|shellEntry| $ 195)
+                       (CONS (|dispatchFunction|
+                                 |POLYCAT-;squareFree;SF;32|)
+                             $)))))
+           (T (SETF (|shellEntry| $ 195)
+                    (CONS (|dispatchFunction|
+                              |POLYCAT-;squareFree;SF;33|)
+                          $))))
+         (SETF (|shellEntry| $ 203)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;squareFreePart;2S;34|)
+                     $))
+         (SETF (|shellEntry| $ 205)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;content;SVarSetS;35|)
+                     $))
+         (SETF (|shellEntry| $ 210)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;primitivePart;2S;36|)
+                     $))
+         (SETF (|shellEntry| $ 213)
+               (CONS (|dispatchFunction|
+                         |POLYCAT-;primitivePart;SVarSetS;37|)
+                     $)))))
     (COND
       ((AND (|testBitVector| |pv$| 8) (|testBitVector| |pv$| 7))
-       (|setShellEntry| $ 222
-           (CONS (|dispatchFunction| |POLYCAT-;patternMatch;SP2Pmr;39|)
-                 $))))
+       (SETF (|shellEntry| $ 222)
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;patternMatch;SP2Pmr;39|)
+                   $))))
     (COND
       ((AND (|testBitVector| |pv$| 6) (|testBitVector| |pv$| 5))
-       (|setShellEntry| $ 229
-           (CONS (|dispatchFunction| |POLYCAT-;patternMatch;SP2Pmr;40|)
-                 $))))
+       (SETF (|shellEntry| $ 229)
+             (CONS (|dispatchFunction|
+                       |POLYCAT-;patternMatch;SP2Pmr;40|)
+                   $))))
     (COND
       ((AND (|testBitVector| |pv$| 12) (|testBitVector| |pv$| 11))
-       (|setShellEntry| $ 236
-           (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|) $))))
+       (SETF (|shellEntry| $ 236)
+             (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|) $))))
     (COND
       ((AND (|testBitVector| |pv$| 10) (|testBitVector| |pv$| 9))
-       (|setShellEntry| $ 243
-           (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|) $))))
+       (SETF (|shellEntry| $ 243)
+             (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|) $))))
     (COND
       ((AND (|testBitVector| |pv$| 14) (|testBitVector| |pv$| 13))
-       (|setShellEntry| $ 251
-           (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|) $))))
+       (SETF (|shellEntry| $ 251)
+             (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|) $))))
     $)) 
 
 (MAKEPROP '|PolynomialCategory&| '|infovec|

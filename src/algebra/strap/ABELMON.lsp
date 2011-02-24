@@ -12,7 +12,7 @@
                           ((|zero?| ((|Boolean|) $)) T)
                           ((* ($ (|NonNegativeInteger|) $)) T))
                         NIL '((|NonNegativeInteger|) (|Boolean|)) NIL))))
-    (|setShellEntry| #0# 0 '(|AbelianMonoid|))
+    (SETF (|shellEntry| #0# 0) '(|AbelianMonoid|))
     #0#)) 
 
 (DEFUN |AbelianMonoid| ()

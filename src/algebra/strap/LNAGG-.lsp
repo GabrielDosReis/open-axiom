@@ -58,15 +58,15 @@
          ($ (|newShell| 33))
          (|pv$| (|buildPredVector| 0 0
                     (LIST (|HasAttribute| |#1| '|shallowlyMutable|)))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     (COND
       ((|HasAttribute| |#1| '|finiteAggregate|)
-       (|setShellEntry| $ 31
-           (CONS (|dispatchFunction| |LNAGG-;maxIndex;AI;6|) $))))
+       (SETF (|shellEntry| $ 31)
+             (CONS (|dispatchFunction| |LNAGG-;maxIndex;AI;6|) $))))
     $)) 
 
 (MAKEPROP '|LinearAggregate&| '|infovec|

@@ -86,15 +86,15 @@
                                (|HasCategory| |#1|
                                    (LIST '|Evalable|
                                     (|devaluate| |#1|))))))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|Vector| (LIST |dv$1|) (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     (COND
       ((|testBitVector| |pv$| 3)
-       (|setShellEntry| $ 20
-           (CONS (|dispatchFunction| |VECTOR;convert;$If;3|) $))))
+       (SETF (|shellEntry| $ 20)
+             (CONS (|dispatchFunction| |VECTOR;convert;$If;3|) $))))
     $)) 
 
 (MAKEPROP '|Vector| '|infovec|

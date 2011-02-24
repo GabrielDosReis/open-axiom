@@ -12,7 +12,7 @@
                           ((|squareFreePart| ($ $)) T)
                           ((|factor| ((|Factored| $) $)) T))
                         NIL '((|Factored| $) (|Boolean|)) NIL))))
-    (|setShellEntry| #0# 0 '(|UniqueFactorizationDomain|))
+    (SETF (|shellEntry| #0# 0) '(|UniqueFactorizationDomain|))
     #0#)) 
 
 (DEFUN |UniqueFactorizationDomain| ()

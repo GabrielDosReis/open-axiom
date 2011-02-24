@@ -12,7 +12,7 @@
                           ((|sign| ((|Integer|) $)) T)
                           ((|abs| ($ $)) T))
                         NIL '((|Integer|) (|Boolean|)) NIL))))
-    (|setShellEntry| #0# 0 '(|OrderedRing|))
+    (SETF (|shellEntry| #0# 0) '(|OrderedRing|))
     #0#)) 
 
 (DEFUN |OrderedRing| ()

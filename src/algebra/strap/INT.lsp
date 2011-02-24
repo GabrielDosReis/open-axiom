@@ -515,13 +515,13 @@
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| '(|Integer|)) ($ (|newShell| 140))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|Integer| NIL (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 82
-        (|setShellEntry| $ 81
-            (CONS (|dispatchFunction| |INT;*;3$;43|) $)))
+    (SETF (|shellEntry| $ 82)
+          (SETF (|shellEntry| $ 81)
+                (CONS (|dispatchFunction| |INT;*;3$;43|) $)))
     $)) 
 
 (MAKEPROP '|Integer| '|infovec|

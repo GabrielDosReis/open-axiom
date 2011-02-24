@@ -35,14 +35,14 @@
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|AbelianGroup&| |dv$1|)) ($ (|newShell| 27))
          (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     (COND
       ((|HasCategory| |#1| '(|Ring|)))
-      (T (|setShellEntry| $ 26
-             (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) $))))
+      (T (SETF (|shellEntry| $ 26)
+               (CONS (|dispatchFunction| |ABELGRP-;*;I2S;4|) $))))
     $)) 
 
 (MAKEPROP '|AbelianGroup&| '|infovec|

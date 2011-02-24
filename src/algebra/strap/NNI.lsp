@@ -60,8 +60,8 @@
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| '(|NonNegativeInteger|)) ($ (|newShell| 22))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|NonNegativeInteger| NIL
         (CONS 1 $))
     (|stuffDomainSlots| $)

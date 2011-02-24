@@ -30,7 +30,8 @@
                                       ((|union| ($ |t#1| $)) T))
                                     '((|partiallyOrderedSet| T))
                                     '((|Boolean|) (|List| |t#1|)) NIL))))))))
-    (|setShellEntry| #0# 0 (LIST '|SetAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|SetAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |SetAggregate| (#0=#:G1373)

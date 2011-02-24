@@ -80,9 +80,9 @@
                                           (|List|
                                            (|NonNegativeInteger|)))
                                         NIL)))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|MultivariateTaylorSeriesCategory| (|devaluate| |t#1|)
-              (|devaluate| |t#2|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|MultivariateTaylorSeriesCategory| (|devaluate| |t#1|)
+                (|devaluate| |t#2|)))
     #0#)) 
 
 (DEFUN |MultivariateTaylorSeriesCategory|

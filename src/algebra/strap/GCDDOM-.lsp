@@ -163,10 +163,10 @@
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|GcdDomain&| |dv$1|)) ($ (|newShell| 47))
          (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     $)) 
 
 (MAKEPROP '|GcdDomain&| '|infovec|

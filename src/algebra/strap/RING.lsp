@@ -14,7 +14,7 @@
                                T))
                             '((|unitsKnown| T))
                             '((|NonNegativeInteger|)) NIL)))))
-    (|setShellEntry| #0# 0 '(|Ring|))
+    (SETF (|shellEntry| #0# 0) '(|Ring|))
     #0#)) 
 
 (DEFUN |Ring| () (COND (|Ring;AL|) (T (SETQ |Ring;AL| (|Ring;|))))) 

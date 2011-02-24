@@ -11,7 +11,7 @@
                         (|mkCategory| '|domain|
                             '(((- ($ $)) T) ((- ($ $ $)) T)) NIL 'NIL
                             NIL)))))
-    (|setShellEntry| #0# 0 '(|AbelianGroup|))
+    (SETF (|shellEntry| #0# 0) '(|AbelianGroup|))
     #0#)) 
 
 (DEFUN |AbelianGroup| ()

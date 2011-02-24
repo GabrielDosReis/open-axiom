@@ -73,8 +73,8 @@
                                       (|NonNegativeInteger|)
                                       (|List| |t#1|))
                                     NIL))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|HomogeneousAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|HomogeneousAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |HomogeneousAggregate| (#0=#:G1374)

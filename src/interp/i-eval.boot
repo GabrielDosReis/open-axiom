@@ -42,7 +42,7 @@ $noEvalTypeMsg := nil
 evalDomain form ==
   startTimingProcess 'instantiation
   newType? form => form
-  form is ['setShellEntry,:.] => eval form
+  form is ['%store,:.] => eval form
   result := eval mkEvalable form
   stopTimingProcess 'instantiation
   result
