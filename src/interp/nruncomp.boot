@@ -688,7 +688,7 @@ NRTputInHead bod ==
   bod is ['SPADCALL,:args,fn] =>
     NRTputInTail rest bod --NOTE: args = COPY of rest bod
     -- The following test allows function-returning expressions
-    fn is [elt,dom,ind] and dom ~='$ and elt in '(getShellEntry ELT CONST) =>
+    fn is [elt,dom,ind] and dom ~='$ and elt in '(ELT CONST) =>
       k := NRTassocIndex dom => lastNode(bod).first := ['%vref,'_$,k]
       nil
     NRTputInHead fn
