@@ -1,3 +1,11 @@
+2011-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/c-util.boot (isSimple): Accept constructor instantiations.
+	* algebra/formula.spad.pamphlet: Avoid Lispisms.
+	* algebra/mathml.spad.pamphlet: Likewise.
+	* algebra/op.spad.pamphlet: Likewise.
+	* algebra/sex.spad.pamphlet: Likewise.
+
 2011-02-22  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* boot/tokens.boot: mmSource is a new selector for modemap datatype.

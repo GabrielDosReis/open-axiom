@@ -691,9 +691,9 @@ isDomainInScope(domain,e) ==
   true --is not a functor
  
 isSimple x ==
-  atom x or $InteractiveMode => true
-  x is [op,:argl] and
-    isSideEffectFree op and (and/[isSimple y for y in argl])
+  atomic? x => true
+  constructor? x.op or
+    isSideEffectFree x.op and (and/[isSimple y for y in x.args])
  
 isSideEffectFree op ==
   member(op,$SideEffectFreeFunctionList) or op is ["elt",.,op'] and

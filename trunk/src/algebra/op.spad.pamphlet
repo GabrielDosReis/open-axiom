@@ -452,7 +452,7 @@ CommonOperators(): Exports == Implementation where
       operator(s)$OP
 
     dpi l    == '%pi::O
-    dfact x  == postfix("!"::Symbol::O, (ATOM(x)$Lisp => x; paren x))
+    dfact x  == postfix("!"::Symbol::O, (not %pair?(x)$Foreign(Builtin) => x; paren x))
     dquote l == prefix(quote(first(l)::O), rest l)
     dgamma l == prefix(hconcat("|"::Symbol::O, overbar(" "::Symbol::O)), l)
     setDummyVar(op, n) == setProperty(op, DUMMYVAR, n pretend None)

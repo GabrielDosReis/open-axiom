@@ -278,7 +278,7 @@ Symbol(): Exports == Implementation where
       for k in keys xcount repeat remove!(k, xcount)
 
     scripted? sy ==
-      not ATOM(sy)$Lisp
+      %pair?(sy)$Foreign(Builtin)
 
     name sy ==
       not scripted? sy => sy

@@ -212,13 +212,13 @@
            (COND
              ((NOT (NOT (SPADCALL |x| (|getShellEntry| $ 20))))
               (RETURN NIL))
-             (T (SEQ (COND
-                       ((EQL |k| 1000)
-                        (COND
-                          ((SPADCALL |x| (|getShellEntry| $ 48))
-                           (EXIT (|error| "cyclic list"))))))
-                     (SETQ |x| (SPADCALL |x| (|getShellEntry| $ 14)))
-                     (EXIT (SETQ |k| (+ |k| 1)))))))
+             (T (COND
+                  ((AND (EQL |k| 1000)
+                        (SPADCALL |x| (|getShellEntry| $ 48)))
+                   (|error| "cyclic list"))
+                  (T (SEQ (SETQ |x|
+                                (SPADCALL |x| (|getShellEntry| $ 14)))
+                          (EXIT (SETQ |k| (+ |k| 1)))))))))
          (EXIT |k|)))) 
 
 (DEFUN |URAGG-;tail;2A;16| (|x| $)
@@ -230,14 +230,13 @@
                   (COND
                     ((NOT (NOT (SPADCALL |y| (|getShellEntry| $ 20))))
                      (RETURN NIL))
-                    (T (SEQ (COND
-                              ((EQL |k| 1000)
-                               (COND
-                                 ((SPADCALL |x| (|getShellEntry| $ 48))
-                                  (EXIT (|error| "cyclic list"))))))
-                            (EXIT (SETQ |y|
-                                        (SPADCALL (SETQ |x| |y|)
-                                         (|getShellEntry| $ 14)))))))
+                    (T (COND
+                         ((AND (EQL |k| 1000)
+                               (SPADCALL |x| (|getShellEntry| $ 48)))
+                          (|error| "cyclic list"))
+                         (T (SETQ |y|
+                                  (SPADCALL (SETQ |x| |y|)
+                                      (|getShellEntry| $ 14)))))))
                   (SETQ |k| (+ |k| 1))))
               (EXIT |x|)))))) 
 
@@ -375,27 +374,20 @@
                           ((SPADCALL |x| (|getShellEntry| $ 20)) NIL)
                           (T (NOT (SPADCALL |y| (|getShellEntry| $ 20))))))
                    (RETURN NIL))
-                  (T (SEQ (COND
-                            ((EQL |k| 1000)
-                             (COND
-                               ((SPADCALL |x| (|getShellEntry| $ 48))
-                                (EXIT (|error| "cyclic list"))))))
-                          (EXIT (COND
-                                  ((SPADCALL
-                                    (SPADCALL |x|
-                                     (|getShellEntry| $ 8))
-                                    (SPADCALL |y|
-                                     (|getShellEntry| $ 8))
-                                    (|getShellEntry| $ 66))
-                                   (RETURN-FROM |URAGG-;=;2AB;23| NIL))
-                                  (T (SEQ
-                                      (SETQ |x|
-                                       (SPADCALL |x|
-                                        (|getShellEntry| $ 14)))
-                                      (EXIT
-                                       (SETQ |y|
-                                        (SPADCALL |y|
-                                         (|getShellEntry| $ 14)))))))))))
+                  (T (COND
+                       ((AND (EQL |k| 1000)
+                             (SPADCALL |x| (|getShellEntry| $ 48)))
+                        (|error| "cyclic list"))
+                       ((SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
+                            (SPADCALL |y| (|getShellEntry| $ 8))
+                            (|getShellEntry| $ 66))
+                        (RETURN-FROM |URAGG-;=;2AB;23| NIL))
+                       (T (SEQ (SETQ |x|
+                                     (SPADCALL |x|
+                                      (|getShellEntry| $ 14)))
+                               (EXIT (SETQ |y|
+                                      (SPADCALL |y|
+                                       (|getShellEntry| $ 14)))))))))
                 (SETQ |k| (+ |k| 1))))
             (EXIT (COND
                     ((SPADCALL |x| (|getShellEntry| $ 20))
@@ -411,14 +403,10 @@
              (T (COND
                   ((SPADCALL |u| |v| (|getShellEntry| $ 68))
                    (RETURN-FROM |URAGG-;node?;2AB;24| T))
-                  (T (SEQ (COND
-                            ((EQL |k| 1000)
-                             (COND
-                               ((SPADCALL |v| (|getShellEntry| $ 48))
-                                (EXIT (|error| "cyclic list"))))))
-                          (EXIT (SETQ |v|
-                                      (SPADCALL |v|
-                                       (|getShellEntry| $ 14)))))))))
+                  ((AND (EQL |k| 1000)
+                        (SPADCALL |v| (|getShellEntry| $ 48)))
+                   (|error| "cyclic list"))
+                  (T (SETQ |v| (SPADCALL |v| (|getShellEntry| $ 14)))))))
            (SETQ |k| (+ |k| 1))))
        (EXIT (SPADCALL |u| |v| (|getShellEntry| $ 68))))) 
 

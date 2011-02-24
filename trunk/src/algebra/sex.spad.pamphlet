@@ -125,7 +125,7 @@ SExpressionOf(Str, Sym, Int, Flt, Expr): Decl == Body where
         eq(b1, b2)     == %peq(b1,b2)
 
         null? b      == %peq(b,%nil)
-        atom? b      == ATOM(b)$Lisp
+        atom? b      == not pair? b
         pair? b      == %pair? b
 
         list?    b   == pair? b or null? b

@@ -402,8 +402,11 @@
                                                  (T
                                                   (SEQ
                                                    (LETT |rho|
-                                                    (* (CDR |rhoHelp|)
-                                                     |mult|)
+                                                    (SPADCALL
+                                                     (CDR |rhoHelp|)
+                                                     |mult|
+                                                     (|getShellEntry| $
+                                                      92))
                                                     |FFIELDC-;discreteLog;2SU;12|)
                                                    (SETQ |disclog|
                                                     (+ |disclog| |rho|))
@@ -424,44 +427,44 @@
                      (EXIT (CONS 0 |disclog|)))))))))) 
 
 (DEFUN |FFIELDC-;squareFreePolynomial| (|f| $)
-  (SPADCALL |f| (|getShellEntry| $ 96))) 
+  (SPADCALL |f| (|getShellEntry| $ 97))) 
 
 (DEFUN |FFIELDC-;factorPolynomial| (|f| $)
-  (SPADCALL |f| (|getShellEntry| $ 98))) 
+  (SPADCALL |f| (|getShellEntry| $ 99))) 
 
 (DEFUN |FFIELDC-;factorSquareFreePolynomial| (|f| $)
   (COND
-    ((SPADCALL |f| (|spadConstant| $ 99) (|getShellEntry| $ 100))
-     (|spadConstant| $ 101))
-    (T (LET ((|flist| (SPADCALL |f| T (|getShellEntry| $ 105))))
-         (SPADCALL (SPADCALL (CAR |flist|) (|getShellEntry| $ 106))
+    ((SPADCALL |f| (|spadConstant| $ 100) (|getShellEntry| $ 101))
+     (|spadConstant| $ 102))
+    (T (LET ((|flist| (SPADCALL |f| T (|getShellEntry| $ 106))))
+         (SPADCALL (SPADCALL (CAR |flist|) (|getShellEntry| $ 107))
              (LET ((#0=#:G1483 NIL) (#1=#:G1484 T)
                    (#2=#:G1495 (CDR |flist|)))
                (LOOP
                  (COND
                    ((ATOM #2#)
                     (RETURN
-                      (COND (#1# (|spadConstant| $ 109)) (T #0#))))
+                      (COND (#1# (|spadConstant| $ 110)) (T #0#))))
                    (T (LET ((|u| (CAR #2#)))
                         (LET ((#3=#:G1482
                                   (SPADCALL (CAR |u|) (CDR |u|)
-                                      (|getShellEntry| $ 107))))
+                                      (|getShellEntry| $ 108))))
                           (COND
                             (#1# (SETQ #0# #3#))
                             (T (SETQ #0#
                                      (SPADCALL #0# #3#
-                                      (|getShellEntry| $ 108)))))
+                                      (|getShellEntry| $ 109)))))
                           (SETQ #1# NIL)))))
                  (SETQ #2# (CDR #2#))))
-             (|getShellEntry| $ 110)))))) 
+             (|getShellEntry| $ 111)))))) 
 
 (DEFUN |FFIELDC-;gcdPolynomial;3Sup;16| (|f| |g| $)
-  (SPADCALL |f| |g| (|getShellEntry| $ 112))) 
+  (SPADCALL |f| |g| (|getShellEntry| $ 113))) 
 
 (DEFUN |FiniteFieldCategory&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|FiniteFieldCategory&| |dv$1|))
-         ($ (|newShell| 115)) (|pv$| (|buildPredVector| 0 0 NIL)))
+         ($ (|newShell| 116)) (|pv$| (|buildPredVector| 0 0 NIL)))
     (|setShellEntry| $ 0 |dv$|)
     (|setShellEntry| $ 3 |pv$|)
     (|stuffDomainSlots| $)
@@ -503,27 +506,27 @@
              (225 . |rem|) (231 . |zero?|) (|Factored| $)
              (236 . |factor|) (|Factored| 20) (241 . |factors|)
              (|DiscreteLogarithmPackage| 6)
-             (246 . |shanksDiscLogAlgorithm|)
+             (246 . |shanksDiscLogAlgorithm|) (253 . *)
              |FFIELDC-;discreteLog;2SU;12|
-             (|SparseUnivariatePolynomial| 6) (|Factored| 93)
-             (|UnivariatePolynomialSquareFree| 6 93)
-             (253 . |squareFree|) (|DistinctDegreeFactorize| 6 93)
-             (258 . |factor|) (263 . |Zero|) (267 . =) (273 . |Zero|)
-             (|Record| (|:| |irr| 93) (|:| |pow| 20)) (|List| 102)
-             (|Record| (|:| |cont| 6) (|:| |factors| 103))
-             (277 . |distdfact|) (283 . |coerce|) (288 . |primeFactor|)
-             (294 . *) (300 . |One|) (304 . *) (|EuclideanDomain&| 93)
-             (310 . |gcd|) (|SparseUnivariatePolynomial| $)
+             (|SparseUnivariatePolynomial| 6) (|Factored| 94)
+             (|UnivariatePolynomialSquareFree| 6 94)
+             (259 . |squareFree|) (|DistinctDegreeFactorize| 6 94)
+             (264 . |factor|) (269 . |Zero|) (273 . =) (279 . |Zero|)
+             (|Record| (|:| |irr| 94) (|:| |pow| 20)) (|List| 103)
+             (|Record| (|:| |cont| 6) (|:| |factors| 104))
+             (283 . |distdfact|) (289 . |coerce|) (294 . |primeFactor|)
+             (300 . *) (306 . |One|) (310 . *) (|EuclideanDomain&| 94)
+             (316 . |gcd|) (|SparseUnivariatePolynomial| $)
              |FFIELDC-;gcdPolynomial;3Sup;16|)
-          '#(|primitive?| 316 |order| 321 |nextItem| 331 |init| 336
-             |gcdPolynomial| 340 |discreteLog| 346 |differentiate| 357
-             |createPrimitiveElement| 362 |conditionP| 366 |charthRoot|
-             371)
+          '#(|primitive?| 322 |order| 327 |nextItem| 337 |init| 342
+             |gcdPolynomial| 346 |discreteLog| 352 |differentiate| 363
+             |createPrimitiveElement| 368 |conditionP| 372 |charthRoot|
+             377)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 114
+                            (|makeByteWordVec2| 115
                                 '(0 6 0 7 1 6 10 0 11 0 10 0 12 2 10 0
                                   0 0 13 1 6 0 10 14 1 6 15 0 16 1 6 10
                                   0 19 1 21 0 20 22 1 26 25 0 27 1 25
@@ -540,14 +543,14 @@
                                   2 20 0 20 0 75 1 20 0 0 76 2 6 0 0 0
                                   77 2 20 0 0 0 78 1 82 80 81 83 2 39 0
                                   0 0 84 1 39 15 0 85 1 20 86 0 87 1 88
-                                  55 0 89 3 90 70 6 6 39 91 1 95 94 93
-                                  96 1 97 94 93 98 0 93 0 99 2 93 15 0
-                                  0 100 0 94 0 101 2 97 104 93 15 105 1
-                                  93 0 6 106 2 94 0 93 20 107 2 94 0 0
-                                  0 108 0 94 0 109 2 94 0 93 0 110 2
-                                  111 0 0 0 112 1 0 15 0 60 1 0 10 0 64
-                                  1 0 21 0 23 1 0 17 0 18 0 0 0 9 2 0
-                                  113 113 113 114 1 0 39 0 79 2 0 70 0
-                                  0 92 1 0 0 0 8 0 0 0 53 1 0 36 37 38
-                                  1 0 0 0 44 1 0 17 0 45)))))
+                                  55 0 89 3 90 70 6 6 39 91 2 20 0 39 0
+                                  92 1 96 95 94 97 1 98 95 94 99 0 94 0
+                                  100 2 94 15 0 0 101 0 95 0 102 2 98
+                                  105 94 15 106 1 94 0 6 107 2 95 0 94
+                                  20 108 2 95 0 0 0 109 0 95 0 110 2 95
+                                  0 94 0 111 2 112 0 0 0 113 1 0 15 0
+                                  60 1 0 10 0 64 1 0 21 0 23 1 0 17 0
+                                  18 0 0 0 9 2 0 114 114 114 115 1 0 39
+                                  0 79 2 0 70 0 0 93 1 0 0 0 8 0 0 0 53
+                                  1 0 36 37 38 1 0 0 0 44 1 0 17 0 45)))))
           '|lookupComplete|)) 

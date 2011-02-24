@@ -315,16 +315,15 @@
                                  (SPADCALL |p| (|getShellEntry| $ 53))
                                  |POLYCAT-;retractIfCan;SU;10|)
                            (EXIT (COND
-                                   ((ZEROP (CAR |q|))
-                                    (COND
-                                      ((SPADCALL
-                                        (SPADCALL (CDR |q|)
-                                         (|getShellEntry| $ 72))
-                                        |p| (|getShellEntry| $ 54))
-                                       (PROGN
-                                         (LETT #0# |q|
-                                          |POLYCAT-;retractIfCan;SU;10|)
-                                         (GO #0#))))))))
+                                   ((AND (ZEROP (CAR |q|))
+                                     (SPADCALL
+                                      (SPADCALL (CDR |q|)
+                                       (|getShellEntry| $ 72))
+                                      |p| (|getShellEntry| $ 54)))
+                                    (PROGN
+                                      (LETT #0# |q|
+                                       |POLYCAT-;retractIfCan;SU;10|)
+                                      (GO #0#))))))
                       (EXIT (CONS 1 "failed"))))
            #0# (EXIT #0#))))) 
 
@@ -1191,39 +1190,27 @@
                        |POLYCAT-;primitivePart;SVarSetS;37|)
                    $)))))
     (COND
-      ((|testBitVector| |pv$| 8)
-       (COND
-         ((|testBitVector| |pv$| 7)
-          (|setShellEntry| $ 222
-              (CONS (|dispatchFunction|
-                        |POLYCAT-;patternMatch;SP2Pmr;39|)
-                    $))))))
+      ((AND (|testBitVector| |pv$| 8) (|testBitVector| |pv$| 7))
+       (|setShellEntry| $ 222
+           (CONS (|dispatchFunction| |POLYCAT-;patternMatch;SP2Pmr;39|)
+                 $))))
     (COND
-      ((|testBitVector| |pv$| 6)
-       (COND
-         ((|testBitVector| |pv$| 5)
-          (|setShellEntry| $ 229
-              (CONS (|dispatchFunction|
-                        |POLYCAT-;patternMatch;SP2Pmr;40|)
-                    $))))))
+      ((AND (|testBitVector| |pv$| 6) (|testBitVector| |pv$| 5))
+       (|setShellEntry| $ 229
+           (CONS (|dispatchFunction| |POLYCAT-;patternMatch;SP2Pmr;40|)
+                 $))))
     (COND
-      ((|testBitVector| |pv$| 12)
-       (COND
-         ((|testBitVector| |pv$| 11)
-          (|setShellEntry| $ 236
-              (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|) $))))))
+      ((AND (|testBitVector| |pv$| 12) (|testBitVector| |pv$| 11))
+       (|setShellEntry| $ 236
+           (CONS (|dispatchFunction| |POLYCAT-;convert;SP;41|) $))))
     (COND
-      ((|testBitVector| |pv$| 10)
-       (COND
-         ((|testBitVector| |pv$| 9)
-          (|setShellEntry| $ 243
-              (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|) $))))))
+      ((AND (|testBitVector| |pv$| 10) (|testBitVector| |pv$| 9))
+       (|setShellEntry| $ 243
+           (CONS (|dispatchFunction| |POLYCAT-;convert;SP;42|) $))))
     (COND
-      ((|testBitVector| |pv$| 14)
-       (COND
-         ((|testBitVector| |pv$| 13)
-          (|setShellEntry| $ 251
-              (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|) $))))))
+      ((AND (|testBitVector| |pv$| 14) (|testBitVector| |pv$| 13))
+       (|setShellEntry| $ 251
+           (CONS (|dispatchFunction| |POLYCAT-;convert;SIf;43|) $))))
     $)) 
 
 (MAKEPROP '|PolynomialCategory&| '|infovec|
