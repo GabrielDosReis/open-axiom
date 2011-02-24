@@ -803,7 +803,7 @@ asySig1(u,name?,target?) ==
     asyComma? fn =>
       u := [asySig(x,name?) for x in r]
       target? =>
-        null u => '(Void)
+        null u => $Void
         -- this implies a multiple value return, not currently supported
         -- in the interpreter
         ['Multi,:u]
@@ -820,7 +820,7 @@ asySig1(u,name?,target?) ==
         asySig1(typ, name?, target?)
     x is '(_%) => '(_$)
     [fn,:[asySig(x,name?) for x in r]]
---x = 'Type => '(Type)
+--x = 'Type => $Type
   x = '_% => '_$
   x
 
@@ -857,7 +857,7 @@ asyType x ==
 --  fn = 'Declare and r is [name,typ,:.] => typ
     x is '(_%) => '(_$)
     x
---x = 'Type => '(Type)
+--x = 'Type => $Type
   x = '_% => '_$
   x
 
@@ -926,7 +926,7 @@ asyTypeUnit x ==
     x is '(_%) => '(_$)
     [fn,:asyTypeUnitList r]
   GETL(x,"NILADIC") => [x]
---x = 'Type => '(Type)
+--x = 'Type => $Type
   x = '_% => '_$
   x
 

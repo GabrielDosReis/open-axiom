@@ -328,14 +328,7 @@ $SideEffectFreeFunctionList ==
     MEMBER   _
     _is      _
     _isnt    _
-    ATOM     _
-    $_=      _
-    $_>      _
-    $_>_=    _
-    $_<      _
-    $_<_=    _
-    $_^_=    _
-    $MEMBER)
+    ATOM)
 
 --% Types
 
@@ -346,11 +339,23 @@ $Field ==
 $DivisionRing ==
   '(DivisionRing)
 
+$IntegralDomain ==
+  '(IntegralDomain)
+
 $CombinatorialFunctionCategory ==
   '(CombinatorialFunctionCategory)
 
+$Ring ==
+  '(Ring)
+
 $Group ==
   '(Group)
+
+$AbelianMonoid ==
+  '(AbelianMonoid)
+
+$Monoid ==
+  '(Monoid)
 
 ++ The Void domain constructor form
 $Void ==
@@ -367,6 +372,12 @@ $None ==
 ++ The Syntax domain constructor form
 $Syntax ==
   '(Syntax)
+
+$BasicOperator ==
+  '(BasicOperator)
+
+$AlgebraicNumber ==
+  '(AlgebraicNumber)
 
 ++ Boolean domain constructor form
 $Boolean ==
@@ -464,9 +475,11 @@ $InputForm ==
 $FunctionalExpression ==
   'Expression
 
-++ Expression domain constructor form
-$Expression ==
-  '(OutputForm)
+$TexFormat ==
+  '(TexFormat)
+
+$MathMLFormat ==
+  '(MathMLFormat)
 
 ++ The constructor form for unnamed functions.
 $AnonymousFunction ==

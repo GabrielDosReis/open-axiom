@@ -1532,7 +1532,7 @@ formulaFormat expr ==
   NIL
 
 texFormat expr ==
-  tf := '(TexFormat)
+  tf := $TexFormat
   formatFn := 
     getFunctionFromDomain("convert",tf,[$OutputForm,$Integer])
   displayFn := getFunctionFromDomain("display",tf,[tf])
@@ -1542,7 +1542,7 @@ texFormat expr ==
   NIL
 
 texFormat1 expr ==
-  tf := '(TexFormat)
+  tf := $TexFormat
   formatFn := getFunctionFromDomain("coerce",tf, [$OutputForm])
   displayFn := getFunctionFromDomain("display",tf,[tf])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
@@ -1551,8 +1551,8 @@ texFormat1 expr ==
   NIL
 
 mathmlFormat expr ==
-  mml := '(MathMLFormat)
-  mmlrep := '(String)
+  mml := $MathMLFormat
+  mmlrep := $String
   formatFn := getFunctionFromDomain("coerce",mml,[$OutputForm])
   displayFn := getFunctionFromDomain("display",mml,[mmlrep])
   SPADCALL(SPADCALL(expr,formatFn),displayFn)
@@ -1683,8 +1683,8 @@ printMap1(x,initialFlag) ==
   printBasic second x
 
 printBasic x ==
-  x='(One) => PRIN1(1,$algebraOutputStream)
-  x='(Zero) => PRIN1(0,$algebraOutputStream)
+  x=$One => PRIN1(1,$algebraOutputStream)
+  x=$Zero => PRIN1(0,$algebraOutputStream)
   IDENTP x => PRINTEXP(symbolName x,$algebraOutputStream)
   atom x => PRIN1(x,$algebraOutputStream)
   PRIN1(x,$algebraOutputStream)

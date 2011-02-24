@@ -707,8 +707,8 @@ upTableSetelt(op,lhs is [htOp,:args],rhs) ==
     throwKeyedMsg("S2IS0041",[[getUnname htOp,'".[",
       getUnname first args,
         ['",",getUnname arg for arg in rest args],'"]"]])
-  keyMode := '(Any)
-  putMode (htOp,['Table,keyMode,'(Any)])
+  keyMode := $Any
+  putMode (htOp,['Table,keyMode,$Any])
   -- if we are to use a new table, we must call the "table"
   -- function to give it an initial value.
   bottomUp [mkAtreeNode "%LET",htOp,[mkAtreeNode 'table]]

@@ -324,7 +324,7 @@ defaultTarget(opNode,op,nargs,args) ==
 
   nargs = 2 =>
     op = "elt" =>
-        a1 = '(BasicOperator) and a2 is ['List, ['OrderedVariableList, .]] =>
+        a1 = $BasicOperator and a2 is ['List, ['OrderedVariableList, .]] =>
            ['Expression, $Integer]
         target
 
@@ -355,20 +355,20 @@ defaultTarget(opNode,op,nargs,args) ==
 
     op = "**" or op = "^" =>
       a2 = $Integer =>
-        if (target := resolveTCat(a1,'(Field))) then
+        if (target := resolveTCat(a1,$Field)) then
           putTarget(opNode,target)
         target
-      a1 = '(AlgebraicNumber) and (a2 = $Float or a2 = $DoubleFloat) =>
+      a1 = $AlgebraicNumber and (a2 = $Float or a2 = $DoubleFloat) =>
           target := ['Expression, a2]
           putTarget(opNode,target)
           target
-      a1 = '(AlgebraicNumber) and a2 is ['Complex, a3] and (a3 = $Float or a3 = $DoubleFloat) =>
+      a1 = $AlgebraicNumber and a2 is ['Complex, a3] and (a3 = $Float or a3 = $DoubleFloat) =>
           target := ['Expression, a3]
           putTarget(opNode,target)
           target
       ((a2 = $RationalNumber) and
         (typeIsASmallInteger(a1) or isEqualOrSubDomain(a1,$Integer))) =>
-            putTarget(opNode, target := '(AlgebraicNumber))
+            putTarget(opNode, target := $AlgebraicNumber)
             target
       ((a2 = $RationalNumber) and (isAVariableType(a1)
           or a1 is ['Polynomial,.] or a1 is ['RationalFunction,.])) =>
@@ -401,14 +401,14 @@ defaultTarget(opNode,op,nargs,args) ==
         putTarget(opNode, target := $RationalNumber)
         target
       a1 = a2 =>
-        if (target := resolveTCat(first args,'(Field))) then
+        if (target := resolveTCat(first args,$Field)) then
           putTarget(opNode,target)
         target
       a1 is ['Variable,.] and a2 is ['Variable,.] =>
-        putTarget(opNode,target := mkRationalFunction  '(Integer))
+        putTarget(opNode,target := mkRationalFunction $Integer)
         target
       isEqualOrSubDomain(a1,$Integer) and a2 is ['Variable,.] =>
-        putTarget(opNode,target := mkRationalFunction '(Integer))
+        putTarget(opNode,target := mkRationalFunction $Integer)
         target
       a1 is ['Variable,.] and
         a2 is ['Polynomial,D] =>
@@ -446,7 +446,7 @@ defaultTargetFE(a,:options) ==
   a is ['Variable,.] or a = $RationalNumber or MEMQ(a.op,
     [$Symbol.op, 'RationalRadicals,
      'Pi]) or typeIsASmallInteger(a) or isEqualOrSubDomain(a, $Integer) or
-       a = '(AlgebraicNumber) =>
+       a = $AlgebraicNumber =>
           IFCAR options => [$FunctionalExpression, ['Complex, $Integer]]
           [$FunctionalExpression, $Integer]
   a is ['Complex,uD] => defaultTargetFE(uD, true)
@@ -786,8 +786,8 @@ findFunctionInDomain(op,dc,tar,args1,args2,$Coerce,$SubDom) ==
         dcName='Enumeration and (args1.0=$Symbol or tar=dc)=>
            [[[dc, dc, $Symbol], ['$,$Symbol], [NIL, NIL]]]
         args1.0 ~= dc => NIL
-        tar and tar ~= $Expression => NIL
-        [[[dc, $Expression, dc], [$Expression,'$], [NIL, NIL]]]
+        tar and tar ~= $OutputForm => NIL
+        [[[dc, $OutputForm, dc], [$OutputForm,'$], [NIL, NIL]]]
     dcName in '(Record Union) =>
       findFunctionInCategory(op,dc,tar,args1,args2,$Coerce,$SubDom)
     NIL
@@ -1401,13 +1401,13 @@ hasCateSpecial(v,dom,cat,SL) ==
   dom is ['FactoredForm,arg] =>
     if isSubDomain(arg,$Integer) then arg := $Integer
     d := ['FactoredRing,arg]
-    SL:= hasCate(arg,'(Ring),augmentSub(v,d,SL))
+    SL:= hasCate(arg,$Ring,augmentSub(v,d,SL))
     SL = 'failed => 'failed
     hasCaty(d,cat,SL)
   cat = $Field or cat = $DivisionRing =>
     if isSubDomain(dom,$Integer) then dom := $Integer
     d:= eqType [$QuotientField, dom]
-    hasCaty(dom,'(IntegralDomain),augmentSub(v,d,SL))
+    hasCaty(dom,$IntegralDomain,augmentSub(v,d,SL))
   cat is ['PolynomialCategory, d, :.] =>
     dom' := ['Polynomial, d]
     (containsVars d or canCoerceFrom(dom, dom'))
@@ -1449,7 +1449,7 @@ hasCateSpecialNew(v,dom,cat,SL) ==
         d := defaultTargetFE $Integer
         augmentSub(v, d, SL)
       alg =>
-        d := '(AlgebraicNumber)
+        d := $AlgebraicNumber
         --d := defaultTargetFE $Integer
         augmentSub(v, d, SL)
       'failed
