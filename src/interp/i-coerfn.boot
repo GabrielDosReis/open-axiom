@@ -294,7 +294,7 @@ Dmp2Up(u, source is [dmp,vl,S],target is [up,var,T]) ==
 
   S1 := [dmp,vl',S]
   plusfunc:= getFunctionFromDomain('_+,T,[T,T])
-  zero := getConstantFromDomain('(Zero),T)
+  zero := getConstantFromDomain($Zero,T)
   x := NIL
   pos:= POSN1(var,vl)
   for [e,:c] in u until not y repeat
@@ -1261,7 +1261,7 @@ SUP2Up(u,source is [.,S],target is [.,x,T]) ==
   null (u' := coerceInt(objNewWrap(u,source),T)) =>
     -- must be careful in case any of the coeffs come back 0
     u' := NIL
-    zero := getConstantFromDomain('(Zero),T)
+    zero := getConstantFromDomain($Zero,T)
     for [e,:c] in u repeat
       c' := objValUnwrap (coerceInt(objNewWrap(c,S),T) or
         coercionFailure())
@@ -1491,7 +1491,7 @@ Up2SUP(u,source is [.,x,S],target is [.,T]) ==
   -- try to go underneath first
   null (u' := coerceInt(objNewWrap(u,source),T)) =>
     u' := NIL
-    zero := getConstantFromDomain('(Zero),T)
+    zero := getConstantFromDomain($Zero,T)
     for [e,:c] in u repeat
       c' := objValUnwrap (coerceInt(objNewWrap(c,S),T) or
         coercionFailure())
@@ -1545,7 +1545,7 @@ Var2Dmp(u,source,target is [dmp,vl,S]) ==
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
     LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain('(One),S)]
+      :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
 
@@ -1556,7 +1556,7 @@ Var2Gdmp(u,source,target is [dmp,vl,S]) ==
   len := #vl
   -1 ~= (n:= position(sym,vl)) =>
     LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain('(One),S)]
+      :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap u]]
 
@@ -1564,7 +1564,7 @@ Var2Mp(u,source,target is [mp,vl,S]) ==
   sym := second source
   u = '_$fromCoerceable_$ => member(sym,vl) or canCoerce(source,S)
   (n:= position1(u,vl)) ~= 0 =>
-    [1,n,[1,0,:getConstantFromDomain('(One),S)]]
+    [1,n,[1,0,:getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [0,:objValUnwrap u]
 
@@ -1575,7 +1575,7 @@ Var2NDmp(u,source,target is [ndmp,vl,S]) ==
   len:= #vl
   -1 ~= (n:= position(u,vl)) =>
     LIST [LIST2VEC [(n=i => 1; 0) for i in 0..len-1],
-      :getConstantFromDomain('(One),S)]
+      :getConstantFromDomain($One,S)]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[Zeros len,:objValUnwrap(u)]]
 
@@ -1588,7 +1588,7 @@ Var2P(u,source,target is [poly,S]) ==
     u' := coerceInt(objNewWrap(u,source),S)
     if u' then return [0,:objValUnwrap(u')]
   -- if that failed, return it as a polynomial variable
-  [1,sym,[1,0,:getConstantFromDomain('(One),S)]]
+  [1,sym,[1,0,:getConstantFromDomain($One,S)]]
 
 Var2QF(u,source,target is [qf,S]) ==
   u = '_$fromCoerceable_$ => canCoerce(source,S)
@@ -1596,7 +1596,7 @@ Var2QF(u,source,target is [qf,S]) ==
   S = $Integer => coercionFailure()
   sym := second source
   (u' := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
-  [objValUnwrap u',:getConstantFromDomain('(One),S)]
+  [objValUnwrap u',:getConstantFromDomain($One,S)]
 
 Var2FS(u,source,target is [fs,S]) ==
   u = '_$fromCoerceable_$ => true
@@ -1609,7 +1609,7 @@ Var2Up(u,source,target is [up,x,S]) ==
   sym := second source
   u = '_$fromCoerceable_$ => (sym = x) or canCoerce(source,S)
 
-  x=sym => [[1,:getConstantFromDomain('(One),S)]]
+  x=sym => [[1,:getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[0,:objValUnwrap u]]
 
@@ -1617,7 +1617,7 @@ Var2SUP(u,source,target is [sup,S]) ==
   sym := second source
   u = '_$fromCoerceable_$ => (sym = "?") or canCoerce(source,S)
 
-  sym = "?" => [[1,:getConstantFromDomain('(One),S)]]
+  sym = "?" => [[1,:getConstantFromDomain($One,S)]]
   (u := coerceInt(objNewWrap(u,source),S)) or coercionFailure()
   [[0,:objValUnwrap u]]
 
@@ -1769,10 +1769,10 @@ commuteQuaternion(u,source,S,target,T) ==
 
 commuteFraction(u,source,S,target,T) ==
   u = '_$fromCoerceable_$ =>
-    ofCategory(target,'(Field)) => canCoerce(S,target)
+    ofCategory(target,$Field) => canCoerce(S,target)
     canCoerce(S,T) and canCoerce(T,target)
   [n,:d] := u
-  ofCategory(target,'(Field)) =>
+  ofCategory(target,$Field) =>
     -- see if denominator can go over to target
     (d' := coerceInt(objNewWrap(d,S),target)) or coercionFailure()
     -- if so, try to invert it

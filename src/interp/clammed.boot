@@ -100,7 +100,7 @@ isValidType form ==
   form is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => NIL
 
   form is [=$QuotientField,D] and not isPartialMode(D) and
-    ofCategory(D,'(Field)) => NIL
+    ofCategory(D,$Field) => NIL
   form is ['UnivariatePolynomial, x, ['UnivariatePolynomial, y, .]] and x=y =>
     NIL
   form = '(Complex (AlgebraicNumber)) => NIL
@@ -170,7 +170,7 @@ isLegitimateMode(t,hasPolyMode,polyVarList) ==
   t is [T1, [T2, :.]] and T1 = T2 and member(T1, badDoubles) => false
 
   t is [=$QuotientField,D] and not isPartialMode(D) and
-    ofCategory(D,'(Field)) => false
+    ofCategory(D,$Field) => false
   t = '(Complex (AlgebraicNumber)) => false
 
   t := equiType t

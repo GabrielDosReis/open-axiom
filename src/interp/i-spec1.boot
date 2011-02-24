@@ -213,14 +213,14 @@ upAlgExtension t ==
     throwKeyedMsgCannotCoerceWithValue(objVal(triple),
       objMode(triple),upmode)
   newmode := objMode T
-  (field := resolveTCat(third newmode,'(Field))) or
+  (field := resolveTCat(third newmode,$Field)) or
     throwKeyedMsg("S2IS0002",[eq])
   pd:= ['UnivariatePolynomial,a,field]
   null (canonicalAE:= coerceInteractive(T,pd)) =>
     throwKeyedMsgCannotCoerceWithValue(objVal T,objMode T,pd)
   sae:= ['SimpleAlgebraicExtension,field,pd,objValUnwrap canonicalAE]
   saeTypeSynonym := INTERN strconc('"SAE",STRINGIMAGE a)
-  saeTypeSynonymValue := objNew(sae,'(Domain))
+  saeTypeSynonymValue := objNew(sae,$Domain)
   fun := getFunctionFromDomain('generator,sae,NIL)
   expr:= wrap SPADCALL(fun)
   putHist(saeTypeSynonym,'value,saeTypeSynonymValue,$e)
@@ -1166,7 +1166,7 @@ declareMap(var,mode) ==
 
 getAndEvalConstructorArgument tree ==
   triple := getValue tree
-  objMode triple = '(Domain) => triple
+  objMode triple = $Domain => triple
   isWrapped objVal(triple) => triple
   isLocallyBound objVal triple =>
     compFailure('"   Local variable or parameter used in type")

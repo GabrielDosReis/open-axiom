@@ -76,8 +76,8 @@ resolveTT1(t1,t2) ==
   (t1 = '$NoValueMode) or (t2 = '$NoValueMode) => NIL
   (t1 = $Void) or (t2 = $Void) => $Void
   (t1 = $Any) or (t2 = $Any) => $Any
-  t1 = '(Exit) => t2
-  t2 = '(Exit) => t1
+  t1 = $Exit => t2
+  t2 = $Exit => t1
   t1 is ['Union,:.] => resolveTTUnion(t1,t2)
   t2 is ['Union,:.] => resolveTTUnion(t2,t1)
   string?(t1) =>
@@ -170,12 +170,12 @@ resolveTTSpecial(t1,t2) ==
   (t1 = $Symbol) and ofCategory(t2, '(IntegerNumberSystem)) =>
     resolveTT1(['Polynomial, t2], t2)
 
-  t1 = '(AlgebraicNumber) and (t2 = $Float or t2 = $DoubleFloat) =>
+  t1 = $AlgebraicNumber and (t2 = $Float or t2 = $DoubleFloat) =>
     ['Expression, t2]
-  t1 = '(AlgebraicNumber) and (t2 = ['Complex, $Float] or t2 = ['Complex, $DoubleFloat]) =>
+  t1 = $AlgebraicNumber and (t2 = ['Complex, $Float] or t2 = ['Complex, $DoubleFloat]) =>
     ['Expression, second t2]
 
-  t1 = '(AlgebraicNumber) and t2 is ['Complex,.] =>
+  t1 = $AlgebraicNumber and t2 is ['Complex,.] =>
     resolveTT1('(Expression (Integer)), t2)
 
   t1 is ['SimpleAlgebraicExtension,F,Rep,poly] =>
@@ -189,13 +189,13 @@ resolveTTSpecial(t1,t2) ==
       ['Polynomial,t1]
     canCoerceFrom(t2,F) => t1
     nil
-  t1 = $PositiveInteger and ofCategory(t2,'(Ring)) =>
+  t1 = $PositiveInteger and ofCategory(t2,$Ring) =>
     resolveTT1($Integer,t2)
-  t1 = $NonNegativeInteger and ofCategory(t2,'(Ring)) =>
+  t1 = $NonNegativeInteger and ofCategory(t2,$Ring) =>
     resolveTT1($Integer,t2)
   t1 is ['OrderedVariableList,[x]] => resolveTTSpecial(['Variable, x], t2)
   t1 is ['OrderedVariableList,vl] =>
-    ofCategory(t2,'(Ring)) => resolveTT(['Polynomial,$Integer],t2)
+    ofCategory(t2,$Ring) => resolveTT(['Polynomial,$Integer],t2)
     resolveTT($Symbol,t2)
   t1 is ['Variable,x] =>
     t2 is ["SimpleAlgebraicExtension",:.] => resolveTTSpecial(t2,t1)
@@ -367,9 +367,9 @@ resolveTCat(t,c) ==
   member(c,'((Field) (EuclideanDomain))) and ofCategory(t,'(IntegralDomain))=>
     eqType [$QuotientField, t]
 
-  c = '(Field) and t = $Symbol => ['RationalFunction,$Integer]
+  c = $Field and t = $Symbol => ['RationalFunction,$Integer]
 
-  c = '(Ring) and t is ['FactoredForm,t0] => ['FactoredRing,t0]
+  c = $Ring and t is ['FactoredForm,t0] => ['FactoredRing,t0]
 
   sd := superType t => resolveTCat(sd,c)
 
@@ -479,9 +479,9 @@ resolveTM1(t,m) ==
   -- a tower
   t=m => t
   m is ['Union,:.] => resolveTMUnion(t,m)
-  m = '(Void) => m
-  m = '(Any) => m
-  m = '(Exit) => t
+  m = $Void => m
+  m = $Any => m
+  m = $Exit => t
   containsVars m =>
     isPatternVar m =>
       p := ASSQ(m,$Subst) =>

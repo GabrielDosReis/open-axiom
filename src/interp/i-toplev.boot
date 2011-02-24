@@ -186,7 +186,7 @@ recordAndPrint(x,md) ==
   --  Prints out the value x which is of type m, and records the changes
   --  in environment $e into $InteractiveFrame
   --  $printAnyIfTrue  is documented in setvart.boot. controlled with )se me any
-  if md = '(Any) and $printAnyIfTrue  then
+  if md = $Any and $printAnyIfTrue  then
     md' := first  x
     x' := rest x
   else

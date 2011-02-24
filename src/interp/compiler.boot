@@ -1711,7 +1711,7 @@ coerceExtraHard(T is [x,m',e],m) ==
   -- FIXME: really, we shouldn't.  Codes relying on this are
   -- FIXME: inherently difficult to comprehend and likely broken.
   T' := autoCoerceByModemap(T,m) => T'
-  m' is ['Record,:.] and m = $Expression =>
+  m' is ['Record,:.] and m = $OutputForm =>
       [['coerceRe2E,x,['ELT,COPY m',0]],m,e]
   -- Domain instantiations are first class objects
   m = $Domain =>

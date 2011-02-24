@@ -368,8 +368,8 @@ formatForm (u) ==
     $fieldNames := union(getFieldNames argl,$fieldNames)
   op in '(true %true) => format "true"
   op in '(false nil) => format op
-  u='(Zero) => format 0
-  u='(One) => format 1
+  u=$Zero => format 0
+  u=$One => format 1
   1=#argl => formatApplication u
   formatFunctionCall u
  

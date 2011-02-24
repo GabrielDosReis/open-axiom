@@ -340,19 +340,19 @@ getConstantFromDomain(form,domainForm) ==
     SPADCALL compiledLookupCheck(key,sig,domain)
 
 
-domainOne(domain) == getConstantFromDomain('(One),domain)
+domainOne(domain) == getConstantFromDomain($One,domain)
 
-domainZero(domain) == getConstantFromDomain('(Zero),domain)
+domainZero(domain) == getConstantFromDomain($Zero,domain)
 
 equalOne(object, domain) ==
   -- tries using constant One and "=" from domain
   -- object should not be wrapped
-  algEqual(object, getConstantFromDomain('(One),domain), domain)
+  algEqual(object, getConstantFromDomain($One,domain), domain)
 
 equalZero(object, domain) ==
   -- tries using constant Zero and "=" from domain
   -- object should not be wrapped
-  algEqual(object, getConstantFromDomain('(Zero),domain), domain)
+  algEqual(object, getConstantFromDomain($Zero,domain), domain)
 
 algEqual(object1, object2, domain) ==
   -- sees if 2 objects of the same domain are equal by using the
@@ -443,9 +443,9 @@ canCoerce1(t1,t2) ==
     t1 is ['Segment, s1] and t2 is ['UniversalSegment, s2] and
         (isEqualOrSubDomain(s1, s2) or canCoerce(s1, s2)) => true
 
-    t1 is ['Tuple,S] and t2 ~= '(OutputForm) => canCoerce(['List, S], t2)
+    t1 is ['Tuple,S] and t2 ~= $OutputForm => canCoerce(['List, S], t2)
 
-    isRingT2 := ofCategory(t2,'(Ring))
+    isRingT2 := ofCategory(t2,$Ring)
     isRingT2 and isEqualOrSubDomain(t1,$Integer) => true
     (ans := canCoerceTopMatching(t1,t2,nt1,nt2)) ~= 'maybe => ans
     t2 = $Integer => canCoerceLocal(t1,t2)   -- is true
@@ -782,7 +782,7 @@ coerceInt0(triple,t2) ==
     s1 := equiType(t1)
     s2 := equiType(t2)
     s1 = s2 => return objNew(val,t2)
-  -- t1 is ['Mapping,:.] and t2 ~= '(Any) => NIL
+  -- t1 is ['Mapping,:.] and t2 ~= $Any => NIL
   -- note: may be able to coerce TO mapping
   -- treat Exit like Any
   -- handle case where we must generate code
@@ -955,12 +955,12 @@ coerceIntAlgebraicConstant(object,t2) ==
   -- should use = from domain, but have to check on defaults code
   t1 := objMode object
   val := objValUnwrap object
-  ofCategory(t1,'(Monoid)) and ofCategory(t2,'(Monoid)) and
-    val = getConstantFromDomain('(One),t1) =>
-      objNewWrap(getConstantFromDomain('(One),t2),t2)
-  ofCategory(t1,'(AbelianMonoid)) and ofCategory(t2,'(AbelianMonoid)) and
-    val = getConstantFromDomain('(Zero),t1) =>
-      objNewWrap(getConstantFromDomain('(Zero),t2),t2)
+  ofCategory(t1,$Monoid) and ofCategory(t2,$Monoid) and
+    val = getConstantFromDomain($One,t1) =>
+      objNewWrap(getConstantFromDomain($One,t2),t2)
+  ofCategory(t1,$AbelianMonoid) and ofCategory(t2,$AbelianMonoid) and
+    val = getConstantFromDomain($Zero,t1) =>
+      objNewWrap(getConstantFromDomain($Zero,t2),t2)
   NIL
 
 ++ returns true if `val' belongs to the Union branch guarded by `pred'.

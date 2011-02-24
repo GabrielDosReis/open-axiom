@@ -110,7 +110,7 @@ printRecordFile(pathname,:option) ==
     for x in i repeat sayBrightly x
     sayNewLine()
     for x in o repeat maPrin x
-    if t ~= '(Void) then printTypeAndTime(nil,t)
+    if t ~= $Void then printTypeAndTime(nil,t)
  
 testPrin(u,w) == --same as maPrin but lines are stored in $testOutputLineList
                  --these lines are needed for pasting into HT files
