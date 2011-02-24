@@ -1141,7 +1141,8 @@ replaceSimpleFunctions form ==
   form.op is "LET" =>
     optLET mutateBindingFormWithUnaryFunction(form,function replaceSimpleFunctions)
   form is ["spadConstant","$",n] =>
-    null(op := getCapsuleDirectoryEntry n) => form
+    op := getCapsuleDirectoryEntry n
+    op = nil => form
     -- Conservatively preserve object identity and storage 
     -- consumption by not folding non-atomic constant forms.
     getFunctionReplacement op isnt ['XLAM,=nil,body] => form
@@ -1149,13 +1150,14 @@ replaceSimpleFunctions form ==
     form
   -- 1. process argument first.
   for args in tails rest form repeat
-    arg' := replaceSimpleFunctions(arg := first args)
-    not EQ(arg',arg) =>
-      args.first := arg'
+    arg := first args
+    arg' := replaceSimpleFunctions arg
+    not EQ(arg',arg) => args.first := arg'
   -- 2. see if we know something about this function.
   [fun,:args] := form
   atom fun =>
-    null (fun' := getFunctionReplacement fun) => form
+    fun' := getFunctionReplacement fun
+    fun' = nil => form
     -- 2.1. the renaming case.
     atom fun' =>
       form.first := fun'
@@ -1235,12 +1237,13 @@ foldSpadcall form ==
     mutateBindingFormWithUnaryFunction(form,function foldSpadcall)
   form.op is '%when =>
     mutateConditionalFormWithUnaryFunction(form,function foldSpadcall)
-  for args in tails rest form repeat
-    foldSpadcall first args
+  for x in form repeat
+    foldSpadcall x
   form.op isnt 'SPADCALL => form
   fun := lastNode form
   fun isnt [["getShellEntry","$",slot]] => form
-  null (op := getCapsuleDirectoryEntry slot) => form
+  op := getCapsuleDirectoryEntry slot
+  op = nil => form
   fun.first := "$"
   form.first := op
 
