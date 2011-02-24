@@ -1240,7 +1240,7 @@ foldSpadcall form ==
     foldSpadcall x
   form.op isnt 'SPADCALL => form
   fun := lastNode form
-  fun isnt [["getShellEntry","$",slot]] => form
+  fun isnt [['%tref,'$,slot]] => form
   op := getCapsuleDirectoryEntry slot
   op = nil => form
   fun.first := "$"

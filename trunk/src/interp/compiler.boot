@@ -2274,7 +2274,7 @@ numberize x ==
 ++ If there is a local reference to mode `m', return it.  
 localReferenceIfThere m ==
   m = "$" => m
-  idx := NRTassocIndex m => ["getShellEntry","$",idx]
+  idx := NRTassocIndex m => ['%tref,'$,idx]
   quoteForm m
 
 massageLoop x == main x where

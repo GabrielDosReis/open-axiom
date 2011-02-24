@@ -42,11 +42,11 @@
                 |CLAGG-;removeDuplicates;2A;12|)) 
 
 (DEFUN |CLAGG-;#;ANni;1| (|c| $)
-  (LIST-LENGTH (SPADCALL |c| (|getShellEntry| $ 9)))) 
+  (LIST-LENGTH (SPADCALL |c| (|shellEntry| $ 9)))) 
 
 (DEFUN |CLAGG-;count;MANni;2| (|f| |c| $)
   (LET ((#0=#:G1377 NIL) (#1=#:G1378 T)
-        (#2=#:G1404 (SPADCALL |c| (|getShellEntry| $ 9))))
+        (#2=#:G1404 (SPADCALL |c| (|shellEntry| $ 9))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
@@ -61,7 +61,7 @@
 
 (DEFUN |CLAGG-;any?;MAB;3| (|f| |c| $)
   (LET ((#0=#:G1382 NIL) (#1=#:G1383 T)
-        (#2=#:G1405 (SPADCALL |c| (|getShellEntry| $ 9))))
+        (#2=#:G1405 (SPADCALL |c| (|shellEntry| $ 9))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# NIL) (T #0#))))
@@ -73,7 +73,7 @@
 
 (DEFUN |CLAGG-;every?;MAB;4| (|f| |c| $)
   (LET ((#0=#:G1386 NIL) (#1=#:G1387 T)
-        (#2=#:G1406 (SPADCALL |c| (|getShellEntry| $ 9))))
+        (#2=#:G1406 (SPADCALL |c| (|shellEntry| $ 9))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# T) (T #0#))))
@@ -86,43 +86,40 @@
       (SETQ #2# (CDR #2#))))) 
 
 (DEFUN |CLAGG-;find;MAU;5| (|f| |c| $)
-  (SPADCALL |f| (SPADCALL |c| (|getShellEntry| $ 9))
-      (|getShellEntry| $ 26))) 
+  (SPADCALL |f| (SPADCALL |c| (|shellEntry| $ 9)) (|shellEntry| $ 26))) 
 
 (DEFUN |CLAGG-;reduce;MAS;6| (|f| |x| $)
-  (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
-      (|getShellEntry| $ 29))) 
+  (SPADCALL |f| (SPADCALL |x| (|shellEntry| $ 9)) (|shellEntry| $ 29))) 
 
 (DEFUN |CLAGG-;reduce;MA2S;7| (|f| |x| |s| $)
-  (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s|
-      (|getShellEntry| $ 31))) 
+  (SPADCALL |f| (SPADCALL |x| (|shellEntry| $ 9)) |s|
+      (|shellEntry| $ 31))) 
 
 (DEFUN |CLAGG-;remove;M2A;8| (|f| |x| $)
-  (SPADCALL (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
-                (|getShellEntry| $ 33))
-            (|getShellEntry| $ 34))) 
+  (SPADCALL (SPADCALL |f| (SPADCALL |x| (|shellEntry| $ 9))
+                (|shellEntry| $ 33))
+            (|shellEntry| $ 34))) 
 
 (DEFUN |CLAGG-;select;M2A;9| (|f| |x| $)
-  (SPADCALL (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9))
-                (|getShellEntry| $ 36))
-            (|getShellEntry| $ 34))) 
+  (SPADCALL (SPADCALL |f| (SPADCALL |x| (|shellEntry| $ 9))
+                (|shellEntry| $ 36))
+            (|shellEntry| $ 34))) 
 
 (DEFUN |CLAGG-;remove;S2A;10| (|s| |x| $)
   (SPADCALL (CONS #'|CLAGG-;remove;S2A;10!0| (VECTOR $ |s|)) |x|
-      (|getShellEntry| $ 39))) 
+      (|shellEntry| $ 39))) 
 
 (DEFUN |CLAGG-;remove;S2A;10!0| (|#1| $$)
-  (SPADCALL |#1| (SVREF $$ 1) (|getShellEntry| (SVREF $$ 0) 38))) 
+  (SPADCALL |#1| (SVREF $$ 1) (|shellEntry| (SVREF $$ 0) 38))) 
 
 (DEFUN |CLAGG-;reduce;MA3S;11| (|f| |x| |s1| |s2| $)
-  (SPADCALL |f| (SPADCALL |x| (|getShellEntry| $ 9)) |s1| |s2|
-      (|getShellEntry| $ 41))) 
+  (SPADCALL |f| (SPADCALL |x| (|shellEntry| $ 9)) |s1| |s2|
+      (|shellEntry| $ 41))) 
 
 (DEFUN |CLAGG-;removeDuplicates;2A;12| (|x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 9))
-          (|getShellEntry| $ 43))
-      (|getShellEntry| $ 34))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 9)) (|shellEntry| $ 43))
+      (|shellEntry| $ 34))) 
 
 (DEFUN |Collection&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

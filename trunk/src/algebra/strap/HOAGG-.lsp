@@ -35,17 +35,17 @@
 
 (DEFUN |HOAGG-;eval;ALA;1| (|u| |l| $)
   (SPADCALL (CONS #'|HOAGG-;eval;ALA;1!0| (VECTOR $ |l|)) |u|
-      (|getShellEntry| $ 12))) 
+      (|shellEntry| $ 12))) 
 
 (DEFUN |HOAGG-;eval;ALA;1!0| (|#1| $$)
-  (SPADCALL |#1| (SVREF $$ 1) (|getShellEntry| (SVREF $$ 0) 10))) 
+  (SPADCALL |#1| (SVREF $$ 1) (|shellEntry| (SVREF $$ 0) 10))) 
 
 (DEFUN |HOAGG-;#;ANni;2| (|c| $)
-  (LIST-LENGTH (SPADCALL |c| (|getShellEntry| $ 15)))) 
+  (LIST-LENGTH (SPADCALL |c| (|shellEntry| $ 15)))) 
 
 (DEFUN |HOAGG-;any?;MAB;3| (|f| |c| $)
   (LET ((#0=#:G1380 NIL) (#1=#:G1381 T)
-        (#2=#:G1403 (SPADCALL |c| (|getShellEntry| $ 15))))
+        (#2=#:G1403 (SPADCALL |c| (|shellEntry| $ 15))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# NIL) (T #0#))))
@@ -57,7 +57,7 @@
 
 (DEFUN |HOAGG-;every?;MAB;4| (|f| |c| $)
   (LET ((#0=#:G1385 NIL) (#1=#:G1386 T)
-        (#2=#:G1404 (SPADCALL |c| (|getShellEntry| $ 15))))
+        (#2=#:G1404 (SPADCALL |c| (|shellEntry| $ 15))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# T) (T #0#))))
@@ -71,7 +71,7 @@
 
 (DEFUN |HOAGG-;count;MANni;5| (|f| |c| $)
   (LET ((#0=#:G1389 NIL) (#1=#:G1390 T)
-        (#2=#:G1405 (SPADCALL |c| (|getShellEntry| $ 15))))
+        (#2=#:G1405 (SPADCALL |c| (|shellEntry| $ 15))))
     (LOOP
       (COND
         ((ATOM #2#) (RETURN (COND (#1# 0) (T #0#))))
@@ -85,21 +85,21 @@
       (SETQ #2# (CDR #2#))))) 
 
 (DEFUN |HOAGG-;members;AL;6| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 15))) 
+  (SPADCALL |x| (|shellEntry| $ 15))) 
 
 (DEFUN |HOAGG-;=;2AB;7| (|x| |y| $)
   (COND
-    ((SPADCALL |x| (SPADCALL |y| (|getShellEntry| $ 32))
-         (|getShellEntry| $ 33))
+    ((SPADCALL |x| (SPADCALL |y| (|shellEntry| $ 32))
+         (|shellEntry| $ 33))
      (LET ((#0=#:G1394 NIL) (#1=#:G1395 T)
-           (#2=#:G1406 (SPADCALL |x| (|getShellEntry| $ 15)))
-           (#3=#:G1407 (SPADCALL |y| (|getShellEntry| $ 15))))
+           (#2=#:G1406 (SPADCALL |x| (|shellEntry| $ 15)))
+           (#3=#:G1407 (SPADCALL |y| (|shellEntry| $ 15))))
        (LOOP
          (COND
            ((OR (ATOM #2#) (ATOM #3#)) (RETURN (COND (#1# T) (T #0#))))
            (T (LET ((|a| (CAR #2#)) (|b| (CAR #3#)))
-                (LET ((#4=#:G1393
-                          (SPADCALL |a| |b| (|getShellEntry| $ 34))))
+                (LET ((#4=#:G1393 (SPADCALL |a| |b|
+                                      (|shellEntry| $ 34))))
                   (COND
                     (#1# (SETQ #0# #4#))
                     (T (SETQ #0# (AND #0# #4#))))
@@ -110,33 +110,33 @@
 
 (DEFUN |HOAGG-;count;SANni;8| (|s| |x| $)
   (SPADCALL (CONS #'|HOAGG-;count;SANni;8!0| (VECTOR $ |s|)) |x|
-      (|getShellEntry| $ 36))) 
+      (|shellEntry| $ 36))) 
 
 (DEFUN |HOAGG-;count;SANni;8!0| (|#1| $$)
-  (SPADCALL (SVREF $$ 1) |#1| (|getShellEntry| (SVREF $$ 0) 34))) 
+  (SPADCALL (SVREF $$ 1) |#1| (|shellEntry| (SVREF $$ 0) 34))) 
 
 (DEFUN |HOAGG-;member?;SAB;9| (|e| |c| $)
   (SPADCALL (CONS #'|HOAGG-;member?;SAB;9!0| (VECTOR $ |e|)) |c|
-      (|getShellEntry| $ 38))) 
+      (|shellEntry| $ 38))) 
 
 (DEFUN |HOAGG-;member?;SAB;9!0| (|#1| $$)
-  (SPADCALL (SVREF $$ 1) |#1| (|getShellEntry| (SVREF $$ 0) 34))) 
+  (SPADCALL (SVREF $$ 1) |#1| (|shellEntry| (SVREF $$ 0) 34))) 
 
 (DEFUN |HOAGG-;coerce;AOf;10| (|x| $)
   (SPADCALL
       (SPADCALL
-          (LET ((#0=#:G1409 (SPADCALL |x| (|getShellEntry| $ 15)))
+          (LET ((#0=#:G1409 (SPADCALL |x| (|shellEntry| $ 15)))
                 (#1=#:G1408 NIL))
             (LOOP
               (COND
                 ((ATOM #0#) (RETURN (NREVERSE #1#)))
                 (T (LET ((|a| (CAR #0#)))
                      (SETQ #1#
-                           (CONS (SPADCALL |a| (|getShellEntry| $ 41))
+                           (CONS (SPADCALL |a| (|shellEntry| $ 41))
                                  #1#)))))
               (SETQ #0# (CDR #0#))))
-          (|getShellEntry| $ 43))
-      (|getShellEntry| $ 44))) 
+          (|shellEntry| $ 43))
+      (|shellEntry| $ 44))) 
 
 (DEFUN |HomogeneousAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

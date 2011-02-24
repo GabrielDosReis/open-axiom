@@ -23,30 +23,27 @@
   (VECTOR (|spadConstant| $ 7) |x| (|spadConstant| $ 7))) 
 
 (DEFUN |INTDOM-;unitCanonical;2S;2| (|x| $)
-  (SVREF (SPADCALL |x| (|getShellEntry| $ 10)) 1)) 
+  (SVREF (SPADCALL |x| (|shellEntry| $ 10)) 1)) 
 
 (DEFUN |INTDOM-;recip;SU;3| (|x| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 13)) (CONS 1 "failed"))
-    (T (SPADCALL (|spadConstant| $ 7) |x| (|getShellEntry| $ 15))))) 
+    ((SPADCALL |x| (|shellEntry| $ 13)) (CONS 1 "failed"))
+    (T (SPADCALL (|spadConstant| $ 7) |x| (|shellEntry| $ 15))))) 
 
 (DEFUN |INTDOM-;unit?;SB;4| (|x| $)
-  (COND
-    ((EQL (CAR (SPADCALL |x| (|getShellEntry| $ 17))) 1) NIL)
-    (T T))) 
+  (COND ((EQL (CAR (SPADCALL |x| (|shellEntry| $ 17))) 1) NIL) (T T))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
-  (SPADCALL (SVREF (SPADCALL |x| (|getShellEntry| $ 10)) 1)
-      (SVREF (SPADCALL |y| (|getShellEntry| $ 10)) 1)
-      (|getShellEntry| $ 21))) 
+  (SPADCALL (SVREF (SPADCALL |x| (|shellEntry| $ 10)) 1)
+      (SVREF (SPADCALL |y| (|shellEntry| $ 10)) 1) (|shellEntry| $ 21))) 
 
 (DEFUN |INTDOM-;associates?;2SB;6| (|x| |y| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 13))
-     (SPADCALL |y| (|getShellEntry| $ 13)))
-    ((OR (SPADCALL |y| (|getShellEntry| $ 13))
-         (OR (EQL (CAR (SPADCALL |x| |y| (|getShellEntry| $ 15))) 1)
-             (EQL (CAR (SPADCALL |y| |x| (|getShellEntry| $ 15))) 1)))
+    ((SPADCALL |x| (|shellEntry| $ 13))
+     (SPADCALL |y| (|shellEntry| $ 13)))
+    ((OR (SPADCALL |y| (|shellEntry| $ 13))
+         (OR (EQL (CAR (SPADCALL |x| |y| (|shellEntry| $ 15))) 1)
+             (EQL (CAR (SPADCALL |y| |x| (|shellEntry| $ 15))) 1)))
      NIL)
     (T T))) 
 

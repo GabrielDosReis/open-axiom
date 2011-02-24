@@ -214,22 +214,22 @@
 (DEFUN |CHAR;coerce;$Of;23| (|c| $) (DECLARE (IGNORE $)) |c|) 
 
 (DEFUN |CHAR;digit?;$B;24| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 40) (|getShellEntry| $ 42))) 
+  (SPADCALL |c| (|spadConstant| $ 40) (|shellEntry| $ 42))) 
 
 (DEFUN |CHAR;hexDigit?;$B;25| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 44) (|getShellEntry| $ 42))) 
+  (SPADCALL |c| (|spadConstant| $ 44) (|shellEntry| $ 42))) 
 
 (DEFUN |CHAR;upperCase?;$B;26| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 46) (|getShellEntry| $ 42))) 
+  (SPADCALL |c| (|spadConstant| $ 46) (|shellEntry| $ 42))) 
 
 (DEFUN |CHAR;lowerCase?;$B;27| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 48) (|getShellEntry| $ 42))) 
+  (SPADCALL |c| (|spadConstant| $ 48) (|shellEntry| $ 42))) 
 
 (DEFUN |CHAR;alphabetic?;$B;28| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 50) (|getShellEntry| $ 42))) 
+  (SPADCALL |c| (|spadConstant| $ 50) (|shellEntry| $ 42))) 
 
 (DEFUN |CHAR;alphanumeric?;$B;29| (|c| $)
-  (SPADCALL |c| (|spadConstant| $ 52) (|getShellEntry| $ 42))) 
+  (SPADCALL |c| (|spadConstant| $ 52) (|shellEntry| $ 42))) 
 
 (DEFUN |CHAR;latex;$S;30| (|c| $)
   (DECLARE (IGNORE $))

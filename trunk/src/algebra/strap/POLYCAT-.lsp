@@ -154,9 +154,8 @@
                            (COND
                              ((EQL (CAR
                                     (SPADCALL
-                                     (SPADCALL |e|
-                                      (|getShellEntry| $ 14))
-                                     (|getShellEntry| $ 16)))
+                                     (SPADCALL |e| (|shellEntry| $ 14))
+                                     (|shellEntry| $ 16)))
                                    1)
                               (RETURN
                                 (|error| "cannot find a variable to evaluate")))))))
@@ -171,8 +170,8 @@
                                        (CONS
                                         (SPADCALL
                                          (SPADCALL |e|
-                                          (|getShellEntry| $ 14))
-                                         (|getShellEntry| $ 17))
+                                          (|shellEntry| $ 14))
+                                         (|shellEntry| $ 17))
                                         #2#)))))
                           (SETQ #1# (CDR #1#))))
                       |POLYCAT-;eval;SLS;1|)
@@ -185,30 +184,30 @@
                                      (SETQ #4#
                                       (CONS
                                        (SPADCALL |e|
-                                        (|getShellEntry| $ 18))
+                                        (|shellEntry| $ 18))
                                        #4#)))))
                               (SETQ #3# (CDR #3#))))
-                          (|getShellEntry| $ 21))))))))) 
+                          (|shellEntry| $ 21))))))))) 
 
 (DEFUN |POLYCAT-;monomials;SL;2| (|p| $)
   (LET ((|ml| NIL))
     (SEQ (LOOP
            (COND
              ((NOT (SPADCALL |p| (|spadConstant| $ 27)
-                       (|getShellEntry| $ 29)))
+                       (|shellEntry| $ 29)))
               (RETURN NIL))
              (T (SEQ (SETQ |ml|
-                           (CONS (SPADCALL |p| (|getShellEntry| $ 30))
+                           (CONS (SPADCALL |p| (|shellEntry| $ 30))
                                  |ml|))
                      (EXIT (SETQ |p|
-                                 (SPADCALL |p| (|getShellEntry| $ 32))))))))
+                                 (SPADCALL |p| (|shellEntry| $ 32))))))))
          (EXIT (REVERSE |ml|))))) 
 
 (DEFUN |POLYCAT-;isPlus;SU;3| (|p| $)
   (PROG (|l|)
     (RETURN
       (COND
-        ((NULL (CDR (LETT |l| (SPADCALL |p| (|getShellEntry| $ 35))
+        ((NULL (CDR (LETT |l| (SPADCALL |p| (|shellEntry| $ 35))
                           |POLYCAT-;isPlus;SU;3|)))
          (CONS 1 "failed"))
         (T (CONS 0 |l|)))))) 
@@ -217,9 +216,9 @@
   (PROG (|lv| |l| |r|)
     (RETURN
       (COND
-        ((OR (NULL (LETT |lv| (SPADCALL |p| (|getShellEntry| $ 40))
+        ((OR (NULL (LETT |lv| (SPADCALL |p| (|shellEntry| $ 40))
                          |POLYCAT-;isTimes;SU;4|))
-             (NOT (SPADCALL |p| (|getShellEntry| $ 42))))
+             (NOT (SPADCALL |p| (|shellEntry| $ 42))))
          (CONS 1 "failed"))
         (T (SEQ (LETT |l|
                       (LET ((#0=#:G1672 |lv|) (#1=#:G1671 NIL))
@@ -232,46 +231,45 @@
                                         (SPADCALL (|spadConstant| $ 43)
                                          |v|
                                          (SPADCALL |p| |v|
-                                          (|getShellEntry| $ 46))
-                                         (|getShellEntry| $ 47))
+                                          (|shellEntry| $ 46))
+                                         (|shellEntry| $ 47))
                                         #1#)))))
                           (SETQ #0# (CDR #0#))))
                       |POLYCAT-;isTimes;SU;4|)
                 (EXIT (COND
                         ((SPADCALL
                              (LETT |r|
-                                   (SPADCALL |p|
-                                    (|getShellEntry| $ 48))
+                                   (SPADCALL |p| (|shellEntry| $ 48))
                                    |POLYCAT-;isTimes;SU;4|)
-                             (|getShellEntry| $ 49))
+                             (|shellEntry| $ 49))
                          (COND
                            ((NULL (CDR |lv|)) (CONS 1 "failed"))
                            (T (CONS 0 |l|))))
                         (T (CONS 0
                                  (CONS (SPADCALL |r|
-                                        (|getShellEntry| $ 51))
+                                        (|shellEntry| $ 51))
                                        |l|))))))))))) 
 
 (DEFUN |POLYCAT-;isExpt;SU;5| (|p| $)
   (PROG (|d|)
     (RETURN
-      (LET ((|u| (SPADCALL |p| (|getShellEntry| $ 53))))
+      (LET ((|u| (SPADCALL |p| (|shellEntry| $ 53))))
         (COND
           ((OR (EQL (CAR |u|) 1)
                (NOT (SPADCALL |p|
                         (SPADCALL (|spadConstant| $ 43) (CDR |u|)
                             (LETT |d|
                                   (SPADCALL |p| (CDR |u|)
-                                      (|getShellEntry| $ 46))
+                                      (|shellEntry| $ 46))
                                   |POLYCAT-;isExpt;SU;5|)
-                            (|getShellEntry| $ 47))
-                        (|getShellEntry| $ 54))))
+                            (|shellEntry| $ 47))
+                        (|shellEntry| $ 54))))
            (CONS 1 "failed"))
           (T (CONS 0 (CONS (CDR |u|) |d|)))))))) 
 
 (DEFUN |POLYCAT-;coefficient;SVarSetNniS;6| (|p| |v| |n| $)
-  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 59)) |n|
-      (|getShellEntry| $ 61))) 
+  (SPADCALL (SPADCALL |p| |v| (|shellEntry| $ 59)) |n|
+      (|shellEntry| $ 61))) 
 
 (DEFUN |POLYCAT-;coefficient;SLLS;7| (|p| |lv| |ln| $)
   (COND
@@ -282,9 +280,9 @@
     ((NULL |ln|) (|error| "mismatched lists in coefficient"))
     (T (SPADCALL
            (SPADCALL
-               (SPADCALL |p| (|SPADfirst| |lv|) (|getShellEntry| $ 59))
-               (|SPADfirst| |ln|) (|getShellEntry| $ 61))
-           (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 68))))) 
+               (SPADCALL |p| (|SPADfirst| |lv|) (|shellEntry| $ 59))
+               (|SPADfirst| |ln|) (|shellEntry| $ 61))
+           (CDR |lv|) (CDR |ln|) (|shellEntry| $ 68))))) 
 
 (DEFUN |POLYCAT-;monomial;SLLS;8| (|p| |lv| |ln| $)
   (COND
@@ -295,31 +293,30 @@
     ((NULL |ln|) (|error| "mismatched lists in monomial"))
     (T (SPADCALL
            (SPADCALL |p| (|SPADfirst| |lv|) (|SPADfirst| |ln|)
-               (|getShellEntry| $ 47))
-           (CDR |lv|) (CDR |ln|) (|getShellEntry| $ 70))))) 
+               (|shellEntry| $ 47))
+           (CDR |lv|) (CDR |ln|) (|shellEntry| $ 70))))) 
 
 (DEFUN |POLYCAT-;retract;SVarSet;9| (|p| $)
-  (LET ((|q| (LET ((#0=#:G1453 (SPADCALL |p| (|getShellEntry| $ 53))))
+  (LET ((|q| (LET ((#0=#:G1453 (SPADCALL |p| (|shellEntry| $ 53))))
                (|check-union| (ZEROP (CAR #0#)) (SVREF $ 9) #0#)
                (CDR #0#))))
     (COND
-      ((SPADCALL (SPADCALL |q| (|getShellEntry| $ 72)) |p|
-           (|getShellEntry| $ 54))
+      ((SPADCALL (SPADCALL |q| (|shellEntry| $ 72)) |p|
+           (|shellEntry| $ 54))
        |q|)
       (T (|error| "Polynomial is not a single variable"))))) 
 
 (DEFUN |POLYCAT-;retractIfCan;SU;10| (|p| $)
   (PROG (|q| #0=#:G1461)
     (RETURN
-      (SEQ (EXIT (SEQ (SEQ (LETT |q|
-                                 (SPADCALL |p| (|getShellEntry| $ 53))
+      (SEQ (EXIT (SEQ (SEQ (LETT |q| (SPADCALL |p| (|shellEntry| $ 53))
                                  |POLYCAT-;retractIfCan;SU;10|)
                            (EXIT (COND
                                    ((AND (ZEROP (CAR |q|))
                                      (SPADCALL
                                       (SPADCALL (CDR |q|)
-                                       (|getShellEntry| $ 72))
-                                      |p| (|getShellEntry| $ 54)))
+                                       (|shellEntry| $ 72))
+                                      |p| (|shellEntry| $ 54)))
                                     (PROGN
                                       (LETT #0# |q|
                                        |POLYCAT-;retractIfCan;SU;10|)
@@ -328,11 +325,11 @@
            #0# (EXIT #0#))))) 
 
 (DEFUN |POLYCAT-;mkPrim| (|p| $)
-  (SPADCALL (|spadConstant| $ 44) (SPADCALL |p| (|getShellEntry| $ 75))
-      (|getShellEntry| $ 76))) 
+  (SPADCALL (|spadConstant| $ 44) (SPADCALL |p| (|shellEntry| $ 75))
+      (|shellEntry| $ 76))) 
 
 (DEFUN |POLYCAT-;primitiveMonomials;SL;12| (|p| $)
-  (LET ((#0=#:G1674 (SPADCALL |p| (|getShellEntry| $ 35)))
+  (LET ((#0=#:G1674 (SPADCALL |p| (|shellEntry| $ 35)))
         (#1=#:G1673 NIL))
     (LOOP
       (COND
@@ -343,84 +340,83 @@
 
 (DEFUN |POLYCAT-;totalDegree;SNni;13| (|p| $)
   (COND
-    ((SPADCALL |p| (|getShellEntry| $ 78)) 0)
+    ((SPADCALL |p| (|shellEntry| $ 78)) 0)
     (T (LET ((|u| (SPADCALL |p|
                       (LET ((#0=#:G1467
-                                (SPADCALL |p| (|getShellEntry| $ 53))))
+                                (SPADCALL |p| (|shellEntry| $ 53))))
                         (|check-union| (ZEROP (CAR #0#)) (SVREF $ 9)
                             #0#)
                         (CDR #0#))
-                      (|getShellEntry| $ 59)))
+                      (|shellEntry| $ 59)))
              (|d| 0))
          (SEQ (LOOP
                 (COND
                   ((NOT (SPADCALL |u| (|spadConstant| $ 80)
-                            (|getShellEntry| $ 81)))
+                            (|shellEntry| $ 81)))
                    (RETURN NIL))
                   (T (SEQ (SETQ |d|
                                 (MAX |d|
                                      (+
                                       (SPADCALL |u|
-                                       (|getShellEntry| $ 82))
+                                       (|shellEntry| $ 82))
                                       (SPADCALL
                                        (SPADCALL |u|
-                                        (|getShellEntry| $ 83))
-                                       (|getShellEntry| $ 84)))))
+                                        (|shellEntry| $ 83))
+                                       (|shellEntry| $ 84)))))
                           (EXIT (SETQ |u|
                                       (SPADCALL |u|
-                                       (|getShellEntry| $ 87))))))))
+                                       (|shellEntry| $ 87))))))))
               (EXIT |d|)))))) 
 
 (DEFUN |POLYCAT-;totalDegree;SLNni;14| (|p| |lv| $)
   (PROG (|v| |u| |d| |w|)
     (RETURN
       (COND
-        ((SPADCALL |p| (|getShellEntry| $ 78)) 0)
+        ((SPADCALL |p| (|shellEntry| $ 78)) 0)
         (T (SEQ (LETT |u|
                       (SPADCALL |p|
                           (LETT |v|
                                 (LET ((#0=#:G1475
                                        (SPADCALL |p|
-                                        (|getShellEntry| $ 53))))
+                                        (|shellEntry| $ 53))))
                                   (|check-union| (ZEROP (CAR #0#))
                                       (SVREF $ 9) #0#)
                                   (CDR #0#))
                                 |POLYCAT-;totalDegree;SLNni;14|)
-                          (|getShellEntry| $ 59))
+                          (|shellEntry| $ 59))
                       |POLYCAT-;totalDegree;SLNni;14|)
                 (LETT |d| 0 |POLYCAT-;totalDegree;SLNni;14|)
                 (LETT |w| 0 |POLYCAT-;totalDegree;SLNni;14|)
                 (COND
-                  ((SPADCALL |v| |lv| (|getShellEntry| $ 89))
+                  ((SPADCALL |v| |lv| (|shellEntry| $ 89))
                    (SETQ |w| 1)))
                 (LOOP
                   (COND
                     ((NOT (SPADCALL |u| (|spadConstant| $ 80)
-                              (|getShellEntry| $ 81)))
+                              (|shellEntry| $ 81)))
                      (RETURN NIL))
                     (T (SEQ (SETQ |d|
                                   (MAX |d|
                                        (+
                                         (* |w|
                                          (SPADCALL |u|
-                                          (|getShellEntry| $ 82)))
+                                          (|shellEntry| $ 82)))
                                         (SPADCALL
                                          (SPADCALL |u|
-                                          (|getShellEntry| $ 83))
-                                         |lv| (|getShellEntry| $ 92)))))
+                                          (|shellEntry| $ 83))
+                                         |lv| (|shellEntry| $ 92)))))
                             (EXIT (SETQ |u|
                                         (SPADCALL |u|
-                                         (|getShellEntry| $ 87))))))))
+                                         (|shellEntry| $ 87))))))))
                 (EXIT |d|))))))) 
 
 (DEFUN |POLYCAT-;resultant;2SVarSetS;15| (|p1| |p2| |mvar| $)
-  (SPADCALL (SPADCALL |p1| |mvar| (|getShellEntry| $ 59))
-      (SPADCALL |p2| |mvar| (|getShellEntry| $ 59))
-      (|getShellEntry| $ 94))) 
+  (SPADCALL (SPADCALL |p1| |mvar| (|shellEntry| $ 59))
+      (SPADCALL |p2| |mvar| (|shellEntry| $ 59)) (|shellEntry| $ 94))) 
 
 (DEFUN |POLYCAT-;discriminant;SVarSetS;16| (|p| |var| $)
-  (SPADCALL (SPADCALL |p| |var| (|getShellEntry| $ 59))
-      (|getShellEntry| $ 96))) 
+  (SPADCALL (SPADCALL |p| |var| (|shellEntry| $ 59))
+      (|shellEntry| $ 96))) 
 
 (DEFUN |POLYCAT-;allMonoms| (|l| $)
   (SPADCALL
@@ -431,24 +427,23 @@
                 ((ATOM #0#) (RETURN (NREVERSE #1#)))
                 (T (LET ((|p| (CAR #0#)))
                      (SETQ #1#
-                           (CONS (SPADCALL |p| (|getShellEntry| $ 98))
+                           (CONS (SPADCALL |p| (|shellEntry| $ 98))
                                  #1#)))))
               (SETQ #0# (CDR #0#))))
-          (|getShellEntry| $ 99))
-      (|getShellEntry| $ 100))) 
+          (|shellEntry| $ 99))
+      (|shellEntry| $ 100))) 
 
 (DEFUN |POLYCAT-;P2R| (|p| |b| |n| $)
-  (LET ((|w| (SPADCALL |n| (|spadConstant| $ 28)
-                 (|getShellEntry| $ 102))))
-    (SEQ (LET ((|i| (SPADCALL |w| (|getShellEntry| $ 104)))
+  (LET ((|w| (SPADCALL |n| (|spadConstant| $ 28) (|shellEntry| $ 102))))
+    (SEQ (LET ((|i| (SPADCALL |w| (|shellEntry| $ 104)))
                (#0=#:G1677 (|sizeOfSimpleArray| |w|)) (#1=#:G1678 |b|))
            (LOOP
              (COND
                ((OR (> |i| #0#) (ATOM #1#)) (RETURN NIL))
                (T (LET ((|bj| (CAR #1#)))
                     (SPADCALL |w| |i|
-                        (SPADCALL |p| |bj| (|getShellEntry| $ 106))
-                        (|getShellEntry| $ 107)))))
+                        (SPADCALL |p| |bj| (|shellEntry| $ 106))
+                        (|shellEntry| $ 107)))))
              (SETQ |i| (+ |i| 1))
              (SETQ #1# (CDR #1#))))
          (EXIT |w|)))) 
@@ -470,15 +465,15 @@
                                       (SETQ #3#
                                        (CONS
                                         (SPADCALL |p| |bj|
-                                         (|getShellEntry| $ 106))
+                                         (|shellEntry| $ 106))
                                         #3#)))))
                                  (SETQ #2# (CDR #2#))))
                              #1#)))))
           (SETQ #0# (CDR #0#))))
-      (|getShellEntry| $ 111))) 
+      (|shellEntry| $ 111))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MM;20| (|m| $)
-  (LET* ((|l| (SPADCALL |m| (|getShellEntry| $ 114)))
+  (LET* ((|l| (SPADCALL |m| (|shellEntry| $ 114)))
          (|b| (SPADCALL
                   (SPADCALL
                       (LET ((#0=#:G1684 |l|) (#1=#:G1683 NIL))
@@ -491,8 +486,8 @@
                                         (|POLYCAT-;allMonoms| |r| $)
                                         #1#)))))
                           (SETQ #0# (CDR #0#))))
-                      (|getShellEntry| $ 99))
-                  (|getShellEntry| $ 100)))
+                      (|shellEntry| $ 99))
+                  (|shellEntry| $ 100)))
          (|d| (LET ((#2=#:G1686 |b|) (#3=#:G1685 NIL))
                 (LOOP
                   (COND
@@ -500,7 +495,7 @@
                     (T (LET ((|bj| (CAR #2#)))
                          (SETQ #3#
                                (CONS (SPADCALL |bj|
-                                      (|getShellEntry| $ 75))
+                                      (|shellEntry| $ 75))
                                      #3#)))))
                   (SETQ #2# (CDR #2#)))))
          (|mm| (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d| $)))
@@ -512,13 +507,13 @@
                            (SPADCALL |mm|
                                (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d|
                                    $)
-                               (|getShellEntry| $ 119)))
+                               (|shellEntry| $ 119)))
                      (EXIT (SETQ |l| (CDR |l|)))))))
          (EXIT |mm|)))) 
 
 (DEFUN |POLYCAT-;reducedSystem;MVR;21| (|m| |v| $)
-  (LET* ((|l| (SPADCALL |m| (|getShellEntry| $ 114)))
-         (|r| (SPADCALL |v| (|getShellEntry| $ 123)))
+  (LET* ((|l| (SPADCALL |m| (|shellEntry| $ 114)))
+         (|r| (SPADCALL |v| (|shellEntry| $ 123)))
          (|b| (SPADCALL
                   (SPADCALL (|POLYCAT-;allMonoms| |r| $)
                       (SPADCALL
@@ -532,9 +527,9 @@
                                        (|POLYCAT-;allMonoms| |s| $)
                                        #1#)))))
                               (SETQ #0# (CDR #0#))))
-                          (|getShellEntry| $ 99))
-                      (|getShellEntry| $ 124))
-                  (|getShellEntry| $ 100)))
+                          (|shellEntry| $ 99))
+                      (|shellEntry| $ 124))
+                  (|shellEntry| $ 100)))
          (|d| (LET ((#2=#:G1690 |b|) (#3=#:G1689 NIL))
                 (LOOP
                   (COND
@@ -542,7 +537,7 @@
                     (T (LET ((|bj| (CAR #2#)))
                          (SETQ #3#
                                (CONS (SPADCALL |bj|
-                                      (|getShellEntry| $ 75))
+                                      (|shellEntry| $ 75))
                                      #3#)))))
                   (SETQ #2# (CDR #2#)))))
          (|n| (LIST-LENGTH |d|))
@@ -556,44 +551,44 @@
                            (SPADCALL |mm|
                                (|POLYCAT-;eq2R| (|SPADfirst| |l|) |d|
                                    $)
-                               (|getShellEntry| $ 119)))
+                               (|shellEntry| $ 119)))
                      (SETQ |w|
                            (SPADCALL |w|
                                (|POLYCAT-;P2R| (|SPADfirst| |r|) |d|
                                    |n| $)
-                               (|getShellEntry| $ 128)))
+                               (|shellEntry| $ 128)))
                      (SETQ |l| (CDR |l|)) (EXIT (SETQ |r| (CDR |r|)))))))
          (EXIT (CONS |mm| |w|))))) 
 
 (DEFUN |POLYCAT-;gcdPolynomial;3Sup;22| (|pp| |qq| $)
-  (SPADCALL |pp| |qq| (|getShellEntry| $ 133))) 
+  (SPADCALL |pp| |qq| (|shellEntry| $ 133))) 
 
 (DEFUN |POLYCAT-;solveLinearPolynomialEquation;LSupU;23| (|lpp| |pp| $)
-  (SPADCALL |lpp| |pp| (|getShellEntry| $ 138))) 
+  (SPADCALL |lpp| |pp| (|shellEntry| $ 138))) 
 
 (DEFUN |POLYCAT-;factorPolynomial;SupF;24| (|pp| $)
-  (SPADCALL |pp| (|getShellEntry| $ 143))) 
+  (SPADCALL |pp| (|shellEntry| $ 143))) 
 
 (DEFUN |POLYCAT-;factorSquareFreePolynomial;SupF;25| (|pp| $)
-  (SPADCALL |pp| (|getShellEntry| $ 146))) 
+  (SPADCALL |pp| (|shellEntry| $ 146))) 
 
 (DEFUN |POLYCAT-;factor;SF;26| (|p| $)
   (PROG (|ansR| |up| |ansSUP|)
     (RETURN
-      (LET ((|v| (SPADCALL |p| (|getShellEntry| $ 53))))
+      (LET ((|v| (SPADCALL |p| (|shellEntry| $ 53))))
         (COND
           ((EQL (CAR |v|) 1)
            (SEQ (LETT |ansR|
-                      (SPADCALL (SPADCALL |p| (|getShellEntry| $ 48))
-                          (|getShellEntry| $ 149))
+                      (SPADCALL (SPADCALL |p| (|shellEntry| $ 48))
+                          (|shellEntry| $ 149))
                       |POLYCAT-;factor;SF;26|)
                 (EXIT (SPADCALL
                           (SPADCALL
-                              (SPADCALL |ansR| (|getShellEntry| $ 151))
-                              (|getShellEntry| $ 51))
+                              (SPADCALL |ansR| (|shellEntry| $ 151))
+                              (|shellEntry| $ 51))
                           (LET ((#0=#:G1692
                                     (SPADCALL |ansR|
-                                     (|getShellEntry| $ 155)))
+                                     (|shellEntry| $ 155)))
                                 (#1=#:G1691 NIL))
                             (LOOP
                               (COND
@@ -603,25 +598,24 @@
                                       (CONS
                                        (VECTOR (SVREF |w| 0)
                                         (SPADCALL (SVREF |w| 1)
-                                         (|getShellEntry| $ 51))
+                                         (|shellEntry| $ 51))
                                         (SVREF |w| 2))
                                        #1#)))))
                               (SETQ #0# (CDR #0#))))
-                          (|getShellEntry| $ 159)))))
+                          (|shellEntry| $ 159)))))
           (T (SEQ (LETT |up|
-                        (SPADCALL |p| (CDR |v|) (|getShellEntry| $ 59))
+                        (SPADCALL |p| (CDR |v|) (|shellEntry| $ 59))
                         |POLYCAT-;factor;SF;26|)
-                  (LETT |ansSUP|
-                        (SPADCALL |up| (|getShellEntry| $ 143))
+                  (LETT |ansSUP| (SPADCALL |up| (|shellEntry| $ 143))
                         |POLYCAT-;factor;SF;26|)
                   (EXIT (SPADCALL
                             (SPADCALL
                                 (SPADCALL |ansSUP|
-                                    (|getShellEntry| $ 160))
-                                (CDR |v|) (|getShellEntry| $ 161))
+                                    (|shellEntry| $ 160))
+                                (CDR |v|) (|shellEntry| $ 161))
                             (LET ((#2=#:G1694
                                       (SPADCALL |ansSUP|
-                                       (|getShellEntry| $ 164)))
+                                       (|shellEntry| $ 164)))
                                   (#3=#:G1693 NIL))
                               (LOOP
                                 (COND
@@ -632,17 +626,17 @@
                                          (VECTOR (SVREF |ww| 0)
                                           (SPADCALL (SVREF |ww| 1)
                                            (CDR |v|)
-                                           (|getShellEntry| $ 161))
+                                           (|shellEntry| $ 161))
                                           (SVREF |ww| 2))
                                          #3#)))))
                                 (SETQ #2# (CDR #2#))))
-                            (|getShellEntry| $ 159)))))))))) 
+                            (|shellEntry| $ 159)))))))))) 
 
 (DEFUN |POLYCAT-;conditionP;MU;27| (|mat| $)
   (PROG (|nd| |vars| |degs| |deg1| |mons| |redmons| |ans| |i|)
     (RETURN
-      (LET* ((|ll| (SPADCALL (SPADCALL |mat| (|getShellEntry| $ 166))
-                       (|getShellEntry| $ 114)))
+      (LET* ((|ll| (SPADCALL (SPADCALL |mat| (|shellEntry| $ 166))
+                       (|shellEntry| $ 114)))
              (|llR| (LET ((#0=#:G1706 (|SPADfirst| |ll|))
                           (#1=#:G1705 NIL))
                       (LOOP
@@ -675,14 +669,13 @@
                                             (LET
                                              ((#6=#:G1556
                                                (SPADCALL |u|
-                                                (|getShellEntry| $ 98))))
+                                                (|shellEntry| $ 98))))
                                               (COND
                                                 (#4# (SETQ #3# #6#))
                                                 (T
                                                  (SETQ #3#
                                                   (SPADCALL #3# #6#
-                                                   (|getShellEntry| $
-                                                    170)))))
+                                                   (|shellEntry| $ 170)))))
                                               (SETQ #4# NIL)))))
                                        (SETQ #5# (CDR #5#))))
                                    |POLYCAT-;conditionP;MU;27|)
@@ -697,11 +690,11 @@
                                       (SEQ
                                        (LETT |vars|
                                         (SPADCALL |m|
-                                         (|getShellEntry| $ 40))
+                                         (|shellEntry| $ 40))
                                         |POLYCAT-;conditionP;MU;27|)
                                        (LETT |degs|
                                         (SPADCALL |m| |vars|
-                                         (|getShellEntry| $ 171))
+                                         (|shellEntry| $ 171))
                                         |POLYCAT-;conditionP;MU;27|)
                                        (LETT |deg1|
                                         (LET
@@ -718,8 +711,8 @@
                                                    (SEQ
                                                     (LETT |nd|
                                                      (SPADCALL |d| |ch|
-                                                      (|getShellEntry|
-                                                       $ 173))
+                                                      (|shellEntry| $
+                                                       173))
                                                      |POLYCAT-;conditionP;MU;27|)
                                                     (EXIT
                                                      (COND
@@ -746,8 +739,7 @@
                                         (CONS
                                          (SPADCALL
                                           (|spadConstant| $ 43) |vars|
-                                          |deg1|
-                                          (|getShellEntry| $ 70))
+                                          |deg1| (|shellEntry| $ 70))
                                          |redmons|))
                                        (EXIT
                                         (SETQ |llR|
@@ -771,10 +763,10 @@
                                                      (SPADCALL
                                                       (SPADCALL |u|
                                                        |vars| |degs|
-                                                       (|getShellEntry|
-                                                        $ 68))
-                                                      (|getShellEntry|
-                                                       $ 175))
+                                                       (|shellEntry| $
+                                                        68))
+                                                      (|shellEntry| $
+                                                       175))
                                                      |v|)
                                                     #13#)))))
                                              (SETQ #11# (CDR #11#))
@@ -785,10 +777,9 @@
                  (SETQ #2# (CDR #2#))))
              (LETT |ans|
                    (SPADCALL
-                       (SPADCALL
-                           (SPADCALL |llR| (|getShellEntry| $ 111))
-                           (|getShellEntry| $ 178))
-                       (|getShellEntry| $ 180))
+                       (SPADCALL (SPADCALL |llR| (|shellEntry| $ 111))
+                           (|shellEntry| $ 178))
+                       (|shellEntry| $ 180))
                    |POLYCAT-;conditionP;MU;27|)
              (EXIT (COND
                      ((EQL (CAR |ans|) 1) (CONS 1 "failed"))
@@ -798,7 +789,7 @@
                                      ((#14=#:G1587
                                        (|makeSimpleArray|
                                         (|getVMType|
-                                         (|getShellEntry| $ 6))
+                                         (|shellEntry| $ 6))
                                         (SIZE |monslist|))))
                                       (LET
                                        ((#15=#:G1703 |monslist|)
@@ -839,11 +830,11 @@
                                                                 |i|
                                                                 (+ |i|
                                                                  1))
-                                                               (|getShellEntry|
+                                                               (|shellEntry|
                                                                 $ 181))
-                                                              (|getShellEntry|
+                                                              (|shellEntry|
                                                                $ 51))
-                                                             (|getShellEntry|
+                                                             (|shellEntry|
                                                               $ 182))))
                                                            (COND
                                                              (#18#
@@ -856,7 +847,7 @@
                                                                (SPADCALL
                                                                 #17#
                                                                 #20#
-                                                                (|getShellEntry|
+                                                                (|shellEntry|
                                                                  $ 183)))))
                                                            (SETQ #18#
                                                             NIL)))))
@@ -868,18 +859,18 @@
 (DEFUN |POLYCAT-;charthRoot;SU;28| (|p| $)
   (PROG (|ans| |ch|)
     (RETURN
-      (LET ((|vars| (SPADCALL |p| (|getShellEntry| $ 40))))
+      (LET ((|vars| (SPADCALL |p| (|shellEntry| $ 40))))
         (COND
           ((NULL |vars|)
            (SEQ (LETT |ans|
-                      (SPADCALL (SPADCALL |p| (|getShellEntry| $ 175))
-                          (|getShellEntry| $ 185))
+                      (SPADCALL (SPADCALL |p| (|shellEntry| $ 175))
+                          (|shellEntry| $ 185))
                       |POLYCAT-;charthRoot;SU;28|)
                 (EXIT (COND
                         ((EQL (CAR |ans|) 1) (CONS 1 "failed"))
                         (T (CONS 0
                                  (SPADCALL (CDR |ans|)
-                                     (|getShellEntry| $ 51))))))))
+                                     (|shellEntry| $ 51))))))))
           (T (SEQ (LETT |ch| (|spadConstant| $ 169)
                         |POLYCAT-;charthRoot;SU;28|)
                   (EXIT (|POLYCAT-;charthRootlv| |p| |vars| |ch| $))))))))) 
@@ -889,14 +880,14 @@
     (RETURN
       (COND
         ((NULL |vars|)
-         (LET ((|ans| (SPADCALL (SPADCALL |p| (|getShellEntry| $ 175))
-                          (|getShellEntry| $ 185))))
+         (LET ((|ans| (SPADCALL (SPADCALL |p| (|shellEntry| $ 175))
+                          (|shellEntry| $ 185))))
            (COND
              ((EQL (CAR |ans|) 1) (CONS 1 "failed"))
-             (T (CONS 0 (SPADCALL (CDR |ans|) (|getShellEntry| $ 51)))))))
+             (T (CONS 0 (SPADCALL (CDR |ans|) (|shellEntry| $ 51)))))))
         (T (LET ((|v| (|SPADfirst| |vars|)))
              (SEQ (SETQ |vars| (CDR |vars|))
-                  (LETT |d| (SPADCALL |p| |v| (|getShellEntry| $ 46))
+                  (LETT |d| (SPADCALL |p| |v| (|shellEntry| $ 46))
                         |POLYCAT-;charthRootlv|)
                   (LETT |ans| (|spadConstant| $ 27)
                         |POLYCAT-;charthRootlv|)
@@ -905,7 +896,7 @@
                       ((NOT (PLUSP |d|)) (RETURN NIL))
                       (T (SEQ (LETT |dd|
                                     (SPADCALL |d| |ch|
-                                     (|getShellEntry| $ 173))
+                                     (|shellEntry| $ 173))
                                     |POLYCAT-;charthRootlv|)
                               (EXIT (COND
                                       ((EQL (CAR |dd|) 1)
@@ -916,13 +907,13 @@
                                        (SEQ
                                         (LETT |cp|
                                          (SPADCALL |p| |v| |d|
-                                          (|getShellEntry| $ 188))
+                                          (|shellEntry| $ 188))
                                          |POLYCAT-;charthRootlv|)
                                         (SETQ |p|
                                          (SPADCALL |p|
                                           (SPADCALL |cp| |v| |d|
-                                           (|getShellEntry| $ 47))
-                                          (|getShellEntry| $ 189)))
+                                           (|shellEntry| $ 47))
+                                          (|shellEntry| $ 189)))
                                         (LETT |ansx|
                                          (|POLYCAT-;charthRootlv| |cp|
                                           |vars| |ch| $)
@@ -937,7 +928,7 @@
                                             (SEQ
                                              (SETQ |d|
                                               (SPADCALL |p| |v|
-                                               (|getShellEntry| $ 46)))
+                                               (|shellEntry| $ 46)))
                                              (EXIT
                                               (SETQ |ans|
                                                (SPADCALL |ans|
@@ -950,8 +941,8 @@
                                                     (NOT (MINUSP #0#))
                                                     '(|NonNegativeInteger|)
                                                     #0#))
-                                                 (|getShellEntry| $ 47))
-                                                (|getShellEntry| $ 183))))))))))))))))
+                                                 (|shellEntry| $ 47))
+                                                (|shellEntry| $ 183))))))))))))))))
                   (LETT |ansx|
                         (|POLYCAT-;charthRootlv| |p| |vars| |ch| $)
                         |POLYCAT-;charthRootlv|)
@@ -962,35 +953,35 @@
                           (T (RETURN-FROM |POLYCAT-;charthRootlv|
                                (CONS 0
                                      (SPADCALL |ans| (CDR |ansx|)
-                                      (|getShellEntry| $ 183)))))))))))))) 
+                                      (|shellEntry| $ 183)))))))))))))) 
 
 (DEFUN |POLYCAT-;monicDivide;2SVarSetR;30| (|p1| |p2| |mvar| $)
   (LET ((|result|
-            (SPADCALL (SPADCALL |p1| |mvar| (|getShellEntry| $ 59))
-                (SPADCALL |p2| |mvar| (|getShellEntry| $ 59))
-                (|getShellEntry| $ 191))))
-    (CONS (SPADCALL (CAR |result|) |mvar| (|getShellEntry| $ 161))
-          (SPADCALL (CDR |result|) |mvar| (|getShellEntry| $ 161))))) 
+            (SPADCALL (SPADCALL |p1| |mvar| (|shellEntry| $ 59))
+                (SPADCALL |p2| |mvar| (|shellEntry| $ 59))
+                (|shellEntry| $ 191))))
+    (CONS (SPADCALL (CAR |result|) |mvar| (|shellEntry| $ 161))
+          (SPADCALL (CDR |result|) |mvar| (|shellEntry| $ 161))))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;31| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 194))) 
+  (SPADCALL |p| (|shellEntry| $ 194))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;32| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 197))) 
+  (SPADCALL |p| (|shellEntry| $ 197))) 
 
 (DEFUN |POLYCAT-;squareFree;SF;33| (|p| $)
-  (SPADCALL |p| (|getShellEntry| $ 197))) 
+  (SPADCALL |p| (|shellEntry| $ 197))) 
 
 (DEFUN |POLYCAT-;squareFreePart;2S;34| (|p| $)
   (PROG (|s|)
     (RETURN
       (SPADCALL
           (SPADCALL
-              (LETT |s| (SPADCALL |p| (|getShellEntry| $ 198))
+              (LETT |s| (SPADCALL |p| (|shellEntry| $ 198))
                     |POLYCAT-;squareFreePart;2S;34|)
-              (|getShellEntry| $ 199))
+              (|shellEntry| $ 199))
           (LET ((#0=#:G1628 NIL) (#1=#:G1629 T)
-                (#2=#:G1707 (SPADCALL |s| (|getShellEntry| $ 202))))
+                (#2=#:G1707 (SPADCALL |s| (|shellEntry| $ 202))))
             (LOOP
               (COND
                 ((ATOM #2#)
@@ -1001,67 +992,66 @@
                          (#1# (SETQ #0# #3#))
                          (T (SETQ #0#
                                   (SPADCALL #0# #3#
-                                      (|getShellEntry| $ 182)))))
+                                      (|shellEntry| $ 182)))))
                        (SETQ #1# NIL)))))
               (SETQ #2# (CDR #2#))))
-          (|getShellEntry| $ 182))))) 
+          (|shellEntry| $ 182))))) 
 
 (DEFUN |POLYCAT-;content;SVarSetS;35| (|p| |v| $)
-  (SPADCALL (SPADCALL |p| |v| (|getShellEntry| $ 59))
-      (|getShellEntry| $ 204))) 
+  (SPADCALL (SPADCALL |p| |v| (|shellEntry| $ 59))
+      (|shellEntry| $ 204))) 
 
 (DEFUN |POLYCAT-;primitivePart;2S;36| (|p| $)
   (SVREF (SPADCALL
              (LET ((#0=#:G1633
                        (SPADCALL |p|
-                           (SPADCALL |p| (|getShellEntry| $ 206))
-                           (|getShellEntry| $ 207))))
+                           (SPADCALL |p| (|shellEntry| $ 206))
+                           (|shellEntry| $ 207))))
                (|check-union| (ZEROP (CAR #0#)) (SVREF $ 6) #0#)
                (CDR #0#))
-             (|getShellEntry| $ 209))
+             (|shellEntry| $ 209))
          1)) 
 
 (DEFUN |POLYCAT-;primitivePart;SVarSetS;37| (|p| |v| $)
   (SVREF (SPADCALL
              (LET ((#0=#:G1639
                        (SPADCALL |p|
-                           (SPADCALL |p| |v| (|getShellEntry| $ 211))
-                           (|getShellEntry| $ 212))))
+                           (SPADCALL |p| |v| (|shellEntry| $ 211))
+                           (|shellEntry| $ 212))))
                (|check-union| (ZEROP (CAR #0#)) (SVREF $ 6) #0#)
                (CDR #0#))
-             (|getShellEntry| $ 209))
+             (|shellEntry| $ 209))
          1)) 
 
 (DEFUN |POLYCAT-;before?;2SB;38| (|p| |q| $)
-  (LET ((|dp| (SPADCALL |p| (|getShellEntry| $ 75)))
-        (|dq| (SPADCALL |q| (|getShellEntry| $ 75))))
+  (LET ((|dp| (SPADCALL |p| (|shellEntry| $ 75)))
+        (|dq| (SPADCALL |q| (|shellEntry| $ 75))))
     (COND
-      ((SPADCALL |dp| |dq| (|getShellEntry| $ 214))
+      ((SPADCALL |dp| |dq| (|shellEntry| $ 214))
        (SPADCALL (|spadConstant| $ 28)
-           (SPADCALL |q| (|getShellEntry| $ 48))
-           (|getShellEntry| $ 215)))
-      ((SPADCALL |dq| |dp| (|getShellEntry| $ 214))
-       (SPADCALL (SPADCALL |p| (|getShellEntry| $ 48))
-           (|spadConstant| $ 28) (|getShellEntry| $ 215)))
+           (SPADCALL |q| (|shellEntry| $ 48)) (|shellEntry| $ 215)))
+      ((SPADCALL |dq| |dp| (|shellEntry| $ 214))
+       (SPADCALL (SPADCALL |p| (|shellEntry| $ 48))
+           (|spadConstant| $ 28) (|shellEntry| $ 215)))
       (T (SPADCALL
-             (SPADCALL (SPADCALL |p| |q| (|getShellEntry| $ 189))
-                 (|getShellEntry| $ 48))
-             (|spadConstant| $ 28) (|getShellEntry| $ 215)))))) 
+             (SPADCALL (SPADCALL |p| |q| (|shellEntry| $ 189))
+                 (|shellEntry| $ 48))
+             (|spadConstant| $ 28) (|shellEntry| $ 215)))))) 
 
 (DEFUN |POLYCAT-;patternMatch;SP2Pmr;39| (|p| |pat| |l| $)
-  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 220))) 
+  (SPADCALL |p| |pat| |l| (|shellEntry| $ 220))) 
 
 (DEFUN |POLYCAT-;patternMatch;SP2Pmr;40| (|p| |pat| |l| $)
-  (SPADCALL |p| |pat| |l| (|getShellEntry| $ 227))) 
+  (SPADCALL |p| |pat| |l| (|shellEntry| $ 227))) 
 
 (DEFUN |POLYCAT-;convert;SP;41| (|x| $)
-  (SPADCALL (ELT $ 230) (ELT $ 231) |x| (|getShellEntry| $ 235))) 
+  (SPADCALL (ELT $ 230) (ELT $ 231) |x| (|shellEntry| $ 235))) 
 
 (DEFUN |POLYCAT-;convert;SP;42| (|x| $)
-  (SPADCALL (ELT $ 237) (ELT $ 238) |x| (|getShellEntry| $ 242))) 
+  (SPADCALL (ELT $ 237) (ELT $ 238) |x| (|shellEntry| $ 242))) 
 
 (DEFUN |POLYCAT-;convert;SIf;43| (|p| $)
-  (SPADCALL (ELT $ 245) (ELT $ 246) |p| (|getShellEntry| $ 250))) 
+  (SPADCALL (ELT $ 245) (ELT $ 246) |p| (|shellEntry| $ 250))) 
 
 (DEFUN |PolynomialCategory&| (|#1| |#2| |#3| |#4|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

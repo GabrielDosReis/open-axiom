@@ -15,21 +15,20 @@
                 |ABELGRP-;*;I2S;4|)) 
 
 (DEFUN |ABELGRP-;-;3S;1| (|x| |y| $)
-  (SPADCALL |x| (SPADCALL |y| (|getShellEntry| $ 7))
-      (|getShellEntry| $ 8))) 
+  (SPADCALL |x| (SPADCALL |y| (|shellEntry| $ 7)) (|shellEntry| $ 8))) 
 
 (DEFUN |ABELGRP-;subtractIfCan;2SU;2| (|x| |y| $)
-  (CONS 0 (SPADCALL |x| |y| (|getShellEntry| $ 10)))) 
+  (CONS 0 (SPADCALL |x| |y| (|shellEntry| $ 10)))) 
 
 (DEFUN |ABELGRP-;*;Nni2S;3| (|n| |x| $)
-  (SPADCALL |n| |x| (|getShellEntry| $ 14))) 
+  (SPADCALL |n| |x| (|shellEntry| $ 14))) 
 
 (DEFUN |ABELGRP-;*;I2S;4| (|n| |x| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 19))
-    ((PLUSP |n|) (SPADCALL |n| |x| (|getShellEntry| $ 24)))
-    (T (SPADCALL (- |n|) (SPADCALL |x| (|getShellEntry| $ 7))
-           (|getShellEntry| $ 24))))) 
+    ((PLUSP |n|) (SPADCALL |n| |x| (|shellEntry| $ 24)))
+    (T (SPADCALL (- |n|) (SPADCALL |x| (|shellEntry| $ 7))
+           (|shellEntry| $ 24))))) 
 
 (DEFUN |AbelianGroup&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

@@ -427,34 +427,33 @@
 
 (DEFUN |DFLOAT;OMwrite;$S;1| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
-         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 7))
-                    (|getShellEntry| $ 10))))
-    (SEQ (SPADCALL |dev| (|getShellEntry| $ 12))
-         (SPADCALL |dev| |x| (|getShellEntry| $ 15))
-         (SPADCALL |dev| (|getShellEntry| $ 16))
-         (SPADCALL |dev| (|getShellEntry| $ 17))
+         (|dev| (SPADCALL |sp| (SPADCALL (|shellEntry| $ 7))
+                    (|shellEntry| $ 10))))
+    (SEQ (SPADCALL |dev| (|shellEntry| $ 12))
+         (SPADCALL |dev| |x| (|shellEntry| $ 15))
+         (SPADCALL |dev| (|shellEntry| $ 16))
+         (SPADCALL |dev| (|shellEntry| $ 17))
          (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |DFLOAT;OMwrite;$BS;2| (|x| |wholeObj| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
-         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 7))
-                    (|getShellEntry| $ 10))))
-    (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 12))))
-         (SPADCALL |dev| |x| (|getShellEntry| $ 15))
-         (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 16))))
-         (SPADCALL |dev| (|getShellEntry| $ 17))
+         (|dev| (SPADCALL |sp| (SPADCALL (|shellEntry| $ 7))
+                    (|shellEntry| $ 10))))
+    (SEQ (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 12))))
+         (SPADCALL |dev| |x| (|shellEntry| $ 15))
+         (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 16))))
+         (SPADCALL |dev| (|shellEntry| $ 17))
          (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |DFLOAT;OMwrite;Omd$V;3| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (|getShellEntry| $ 12))
-       (SPADCALL |dev| |x| (|getShellEntry| $ 15))
-       (EXIT (SPADCALL |dev| (|getShellEntry| $ 16))))) 
+  (SEQ (SPADCALL |dev| (|shellEntry| $ 12))
+       (SPADCALL |dev| |x| (|shellEntry| $ 15))
+       (EXIT (SPADCALL |dev| (|shellEntry| $ 16))))) 
 
 (DEFUN |DFLOAT;OMwrite;Omd$BV;4| (|dev| |x| |wholeObj| $)
-  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 12))))
-       (SPADCALL |dev| |x| (|getShellEntry| $ 15))
-       (EXIT (COND
-               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 16))))))) 
+  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 12))))
+       (SPADCALL |dev| |x| (|shellEntry| $ 15))
+       (EXIT (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 16))))))) 
 
 (DEFUN |DFLOAT;base;Pi;5| ($) (DECLARE (IGNORE $)) 2) 
 
@@ -473,7 +472,7 @@
                      (SPADCALL 53
                          (C-TO-R (LOG (FLOAT 2 |$DoubleFloatMaximum|)
                                       2))
-                         (|getShellEntry| $ 32)))))
+                         (|shellEntry| $ 32)))))
          (|check-subtype| (AND (NOT (MINUSP #0#)) (PLUSP #0#))
              '(|PositiveInteger|) #0#))))) 
 
@@ -502,10 +501,10 @@
   (COERCE PI '|%DoubleFloat|)) 
 
 (DEFUN |DFLOAT;coerce;$Of;17| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 48))) 
+  (SPADCALL |x| (|shellEntry| $ 48))) 
 
 (DEFUN |DFLOAT;convert;$If;18| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 51))) 
+  (SPADCALL |x| (|shellEntry| $ 51))) 
 
 (DEFUN |DFLOAT;<;2$B;19| (|x| |y| $) (DECLARE (IGNORE $)) (< |x| |y|)) 
 
@@ -665,10 +664,10 @@
 (DEFUN |DFLOAT;differentiate;2$;70| (|x| $) (DECLARE (IGNORE $)) 0.0) 
 
 (DEFUN |DFLOAT;Gamma;2$;71| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 106))) 
+  (SPADCALL |x| (|shellEntry| $ 106))) 
 
 (DEFUN |DFLOAT;Beta;3$;72| (|x| |y| $)
-  (SPADCALL |x| |y| (|getShellEntry| $ 108))) 
+  (SPADCALL |x| |y| (|shellEntry| $ 108))) 
 
 (DEFUN |DFLOAT;wholePart;$I;73| (|x| $)
   (DECLARE (IGNORE $))
@@ -680,7 +679,7 @@
 (DEFUN |DFLOAT;convert;2$;75| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |DFLOAT;convert;$F;76| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 112))) 
+  (SPADCALL |x| (|shellEntry| $ 112))) 
 
 (DEFUN |DFLOAT;rationalApproximation;$NniF;77| (|x| |d| $)
   (|DFLOAT;rationalApproximation;$2NniF;86| |x| |d| 10 $)) 
@@ -777,7 +776,7 @@
                              (EXPT BASE
                                    (|check-subtype| (NOT (MINUSP |ex|))
                                     '(|NonNegativeInteger|) |ex|)))
-                          (|getShellEntry| $ 134)))
+                          (|shellEntry| $ 134)))
                      (T (SEQ (LETT |de|
                                    (EXPT BASE
                                     (LET ((#0=#:G1525 (- |ex|)))
@@ -834,13 +833,13 @@
                                                      (ABS
                                                       (- (* |nu| |q2|)
                                                        (* |de| |p2|)))
-                                                     (|getShellEntry| $
+                                                     (|shellEntry| $
                                                       143))
                                                     (* |de| (ABS |p2|))))
                                                   (RETURN-FROM
                                                    |DFLOAT;rationalApproximation;$2NniF;86|
                                                     (SPADCALL |p2| |q2|
-                                                     (|getShellEntry| $
+                                                     (|shellEntry| $
                                                       141))))
                                                  (T
                                                   (SEQ
@@ -871,15 +870,14 @@
   (COND
     ((ZEROP |x|)
      (COND
-       ((SPADCALL |r| (|getShellEntry| $ 145))
+       ((SPADCALL |r| (|shellEntry| $ 145))
         (|error| "0**0 is undefined"))
-       ((SPADCALL |r| (|getShellEntry| $ 146))
-        (|error| "division by 0"))
+       ((SPADCALL |r| (|shellEntry| $ 146)) (|error| "division by 0"))
        (T 0.0)))
-    ((OR (SPADCALL |r| (|getShellEntry| $ 145)) (= |x| 1.0)) 1.0)
-    ((SPADCALL |r| (|getShellEntry| $ 147)) |x|)
-    (T (LET ((|n| (SPADCALL |r| (|getShellEntry| $ 148)))
-             (|d| (SPADCALL |r| (|getShellEntry| $ 149))))
+    ((OR (SPADCALL |r| (|shellEntry| $ 145)) (= |x| 1.0)) 1.0)
+    ((SPADCALL |r| (|shellEntry| $ 147)) |x|)
+    (T (LET ((|n| (SPADCALL |r| (|shellEntry| $ 148)))
+             (|d| (SPADCALL |r| (|shellEntry| $ 149))))
          (COND
            ((MINUSP |x|)
             (COND

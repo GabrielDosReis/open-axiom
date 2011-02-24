@@ -10,22 +10,22 @@
 (DEFUN |DIVRING-;**;SIS;1| (|x| |n| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 10))
-    ((SPADCALL |x| (|getShellEntry| $ 11))
+    ((SPADCALL |x| (|shellEntry| $ 11))
      (COND ((MINUSP |n|) (|error| "division by zero")) (T |x|)))
     ((MINUSP |n|)
-     (SPADCALL (SPADCALL |x| (|getShellEntry| $ 15)) (- |n|)
-         (|getShellEntry| $ 19)))
-    (T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
+     (SPADCALL (SPADCALL |x| (|shellEntry| $ 15)) (- |n|)
+         (|shellEntry| $ 19)))
+    (T (SPADCALL |x| |n| (|shellEntry| $ 19))))) 
 
 (DEFUN |DIVRING-;*;F2S;2| (|q| |x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |q| (|getShellEntry| $ 22))
+      (SPADCALL (SPADCALL |q| (|shellEntry| $ 22))
           (SPADCALL
-              (SPADCALL (SPADCALL |q| (|getShellEntry| $ 23))
-                  (|getShellEntry| $ 24))
-              (|getShellEntry| $ 15))
-          (|getShellEntry| $ 25))
-      |x| (|getShellEntry| $ 26))) 
+              (SPADCALL (SPADCALL |q| (|shellEntry| $ 23))
+                  (|shellEntry| $ 24))
+              (|shellEntry| $ 15))
+          (|shellEntry| $ 25))
+      |x| (|shellEntry| $ 26))) 
 
 (DEFUN |DivisionRing&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

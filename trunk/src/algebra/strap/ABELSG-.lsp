@@ -6,7 +6,7 @@
                 |ABELSG-;*;Pi2S;1|)) 
 
 (DEFUN |ABELSG-;*;Pi2S;1| (|n| |x| $)
-  (SPADCALL |n| |x| (|getShellEntry| $ 9))) 
+  (SPADCALL |n| |x| (|shellEntry| $ 9))) 
 
 (DEFUN |AbelianSemiGroup&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

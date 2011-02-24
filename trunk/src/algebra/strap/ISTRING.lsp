@@ -164,22 +164,22 @@
 (DEFUN |ISTRING;insert;2$I$;9| (|s| |t| |i| $)
   (STRCONC (STRCONC (|ISTRING;elt;$Us$;31| |s|
                         (SPADCALL (SVREF $ 6) (- |i| 1)
-                            (|getShellEntry| $ 24))
+                            (|shellEntry| $ 24))
                         $)
                     |t|)
            (|ISTRING;elt;$Us$;31| |s|
-               (SPADCALL |i| (|getShellEntry| $ 26)) $))) 
+               (SPADCALL |i| (|shellEntry| $ 26)) $))) 
 
 (DEFUN |ISTRING;coerce;$Of;10| (|s| $)
-  (SPADCALL |s| (|getShellEntry| $ 30))) 
+  (SPADCALL |s| (|shellEntry| $ 30))) 
 
 (DEFUN |ISTRING;minIndex;$I;11| (|s| $) (SVREF $ 6)) 
 
 (DEFUN |ISTRING;upperCase!;2$;12| (|s| $)
-  (SPADCALL (ELT $ 35) |s| (|getShellEntry| $ 37))) 
+  (SPADCALL (ELT $ 35) |s| (|shellEntry| $ 37))) 
 
 (DEFUN |ISTRING;lowerCase!;2$;13| (|s| $)
-  (SPADCALL (ELT $ 40) |s| (|getShellEntry| $ 37))) 
+  (SPADCALL (ELT $ 40) |s| (|shellEntry| $ 37))) 
 
 (DEFUN |ISTRING;latex;$S;14| (|s| $)
   (DECLARE (IGNORE $))
@@ -188,13 +188,12 @@
 (DEFUN |ISTRING;replace;$Us2$;15| (|s| |sg| |t| $)
   (PROG (|r| |k|)
     (RETURN
-      (LET ((|l| (- (SPADCALL |sg| (|getShellEntry| $ 44)) (SVREF $ 6)))
+      (LET ((|l| (- (SPADCALL |sg| (|shellEntry| $ 44)) (SVREF $ 6)))
             (|m| (LENGTH |s|)) (|n| (LENGTH |t|))
             (|h| (COND
-                   ((SPADCALL |sg| (|getShellEntry| $ 45))
-                    (- (SPADCALL |sg| (|getShellEntry| $ 46))
-                       (SVREF $ 6)))
-                   (T (- (SPADCALL |s| (|getShellEntry| $ 47))
+                   ((SPADCALL |sg| (|shellEntry| $ 45))
+                    (- (SPADCALL |sg| (|shellEntry| $ 46)) (SVREF $ 6)))
+                   (T (- (SPADCALL |s| (|shellEntry| $ 47))
                          (SVREF $ 6))))))
         (COND
           ((OR (OR (MINUSP |l|) (NOT (< |h| |m|))) (< |h| (- |l| 1)))
@@ -234,7 +233,7 @@
 (DEFUN |ISTRING;setelt;$I2C;16| (|s| |i| |c| $)
   (COND
     ((OR (< |i| (SVREF $ 6))
-         (< (SPADCALL |s| (|getShellEntry| $ 47)) |i|))
+         (< (SPADCALL |s| (|shellEntry| $ 47)) |i|))
      (|error| "index out of range"))
     (T (SEQ (SETF (CHAR |s| (- |i| (SVREF $ 6))) |c|) (EXIT |c|))))) 
 
@@ -305,7 +304,7 @@
                              ((> |r| #0#) (RETURN NIL))
                              (T (COND
                                   ((SPADCALL (CHAR |t| |r|) |cc|
-                                    (|getShellEntry| $ 65))
+                                    (|shellEntry| $ 65))
                                    (RETURN-FROM
                                     |ISTRING;position;Cc$2I;20|
                                      (+ |r| (SVREF $ 6)))))))
@@ -313,8 +312,8 @@
                        (EXIT (- (SVREF $ 6) 1)))))))) 
 
 (DEFUN |ISTRING;suffix?;2$B;21| (|s| |t| $)
-  (LET ((|m| (SPADCALL |s| (|getShellEntry| $ 47)))
-        (|n| (SPADCALL |t| (|getShellEntry| $ 47))))
+  (LET ((|m| (SPADCALL |s| (|shellEntry| $ 47)))
+        (|n| (SPADCALL |t| (|shellEntry| $ 47))))
     (COND
       ((< |n| |m|) NIL)
       (T (|ISTRING;substring?;2$IB;17| |s| |t|
@@ -323,14 +322,13 @@
 (DEFUN |ISTRING;split;$CL;22| (|s| |c| $)
   (PROG (|l| |j|)
     (RETURN
-      (LET ((|n| (SPADCALL |s| (|getShellEntry| $ 47)))
-            (|i| (SVREF $ 6)))
+      (LET ((|n| (SPADCALL |s| (|shellEntry| $ 47))) (|i| (SVREF $ 6)))
         (SEQ (LOOP
                (COND
                  ((NOT (COND
                          ((< |n| |i|) NIL)
                          (T (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $)
-                                |c| (|getShellEntry| $ 69)))))
+                                |c| (|shellEntry| $ 69)))))
                   (RETURN NIL))
                  (T (SETQ |i| (+ |i| 1)))))
              (LETT |l| NIL |ISTRING;split;$CL;22|)
@@ -345,11 +343,12 @@
                                     (SVREF $ 6))))))
                   (RETURN NIL))
                  (T (SEQ (SETQ |l|
-                               (SPADCALL (|ISTRING;elt;$Us$;31| |s|
-                                          (SPADCALL |i| (- |j| 1)
-                                           (|getShellEntry| $ 24))
-                                          $)
-                                         |l| (|getShellEntry| $ 72)))
+                               (SPADCALL
+                                   (|ISTRING;elt;$Us$;31| |s|
+                                    (SPADCALL |i| (- |j| 1)
+                                     (|shellEntry| $ 24))
+                                    $)
+                                   |l| (|shellEntry| $ 72)))
                          (SETQ |i| |j|)
                          (EXIT (LOOP
                                  (COND
@@ -360,7 +359,7 @@
                                         (SPADCALL
                                          (|ISTRING;elt;$IC;30| |s| |i|
                                           $)
-                                         |c| (|getShellEntry| $ 69)))))
+                                         |c| (|shellEntry| $ 69)))))
                                     (RETURN NIL))
                                    (T (SETQ |i| (+ |i| 1))))))))))
              (COND
@@ -368,22 +367,20 @@
                 (SETQ |l|
                       (SPADCALL
                           (|ISTRING;elt;$Us$;31| |s|
-                              (SPADCALL |i| |n| (|getShellEntry| $ 24))
-                              $)
-                          |l| (|getShellEntry| $ 72)))))
+                              (SPADCALL |i| |n| (|shellEntry| $ 24)) $)
+                          |l| (|shellEntry| $ 72)))))
              (EXIT (NREVERSE |l|))))))) 
 
 (DEFUN |ISTRING;split;$CcL;23| (|s| |cc| $)
   (PROG (|l| |j|)
     (RETURN
-      (LET ((|n| (SPADCALL |s| (|getShellEntry| $ 47)))
-            (|i| (SVREF $ 6)))
+      (LET ((|n| (SPADCALL |s| (|shellEntry| $ 47))) (|i| (SVREF $ 6)))
         (SEQ (LOOP
                (COND
                  ((NOT (COND
                          ((< |n| |i|) NIL)
                          (T (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $)
-                                |cc| (|getShellEntry| $ 65)))))
+                                |cc| (|shellEntry| $ 65)))))
                   (RETURN NIL))
                  (T (SETQ |i| (+ |i| 1)))))
              (LETT |l| NIL |ISTRING;split;$CcL;23|)
@@ -401,9 +398,9 @@
                                (SPADCALL
                                    (|ISTRING;elt;$Us$;31| |s|
                                     (SPADCALL |i| (- |j| 1)
-                                     (|getShellEntry| $ 24))
+                                     (|shellEntry| $ 24))
                                     $)
-                                   |l| (|getShellEntry| $ 72)))
+                                   |l| (|shellEntry| $ 72)))
                          (SETQ |i| |j|)
                          (EXIT (LOOP
                                  (COND
@@ -414,7 +411,7 @@
                                         (SPADCALL
                                          (|ISTRING;elt;$IC;30| |s| |i|
                                           $)
-                                         |cc| (|getShellEntry| $ 65)))))
+                                         |cc| (|shellEntry| $ 65)))))
                                     (RETURN NIL))
                                    (T (SETQ |i| (+ |i| 1))))))))))
              (COND
@@ -422,67 +419,66 @@
                 (SETQ |l|
                       (SPADCALL
                           (|ISTRING;elt;$Us$;31| |s|
-                              (SPADCALL |i| |n| (|getShellEntry| $ 24))
-                              $)
-                          |l| (|getShellEntry| $ 72)))))
+                              (SPADCALL |i| |n| (|shellEntry| $ 24)) $)
+                          |l| (|shellEntry| $ 72)))))
              (EXIT (NREVERSE |l|))))))) 
 
 (DEFUN |ISTRING;leftTrim;$C$;24| (|s| |c| $)
-  (LET ((|n| (SPADCALL |s| (|getShellEntry| $ 47))) (|i| (SVREF $ 6)))
+  (LET ((|n| (SPADCALL |s| (|shellEntry| $ 47))) (|i| (SVREF $ 6)))
     (SEQ (LOOP
            (COND
              ((NOT (COND
                      ((< |n| |i|) NIL)
                      (T (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $) |c|
-                            (|getShellEntry| $ 69)))))
+                            (|shellEntry| $ 69)))))
               (RETURN NIL))
              (T (SETQ |i| (+ |i| 1)))))
          (EXIT (|ISTRING;elt;$Us$;31| |s|
-                   (SPADCALL |i| |n| (|getShellEntry| $ 24)) $))))) 
+                   (SPADCALL |i| |n| (|shellEntry| $ 24)) $))))) 
 
 (DEFUN |ISTRING;leftTrim;$Cc$;25| (|s| |cc| $)
-  (LET ((|n| (SPADCALL |s| (|getShellEntry| $ 47))) (|i| (SVREF $ 6)))
+  (LET ((|n| (SPADCALL |s| (|shellEntry| $ 47))) (|i| (SVREF $ 6)))
     (SEQ (LOOP
            (COND
              ((NOT (COND
                      ((< |n| |i|) NIL)
                      (T (SPADCALL (|ISTRING;elt;$IC;30| |s| |i| $) |cc|
-                            (|getShellEntry| $ 65)))))
+                            (|shellEntry| $ 65)))))
               (RETURN NIL))
              (T (SETQ |i| (+ |i| 1)))))
          (EXIT (|ISTRING;elt;$Us$;31| |s|
-                   (SPADCALL |i| |n| (|getShellEntry| $ 24)) $))))) 
+                   (SPADCALL |i| |n| (|shellEntry| $ 24)) $))))) 
 
 (DEFUN |ISTRING;rightTrim;$C$;26| (|s| |c| $)
-  (LET ((|j| (SPADCALL |s| (|getShellEntry| $ 47))))
+  (LET ((|j| (SPADCALL |s| (|shellEntry| $ 47))))
     (SEQ (LOOP
            (COND
              ((NOT (COND
                      ((NOT (< |j| (SVREF $ 6)))
                       (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $) |c|
-                          (|getShellEntry| $ 69)))
+                          (|shellEntry| $ 69)))
                      (T NIL)))
               (RETURN NIL))
              (T (SETQ |j| (- |j| 1)))))
          (EXIT (|ISTRING;elt;$Us$;31| |s|
                    (SPADCALL (|ISTRING;minIndex;$I;11| |s| $) |j|
-                       (|getShellEntry| $ 24))
+                       (|shellEntry| $ 24))
                    $))))) 
 
 (DEFUN |ISTRING;rightTrim;$Cc$;27| (|s| |cc| $)
-  (LET ((|j| (SPADCALL |s| (|getShellEntry| $ 47))))
+  (LET ((|j| (SPADCALL |s| (|shellEntry| $ 47))))
     (SEQ (LOOP
            (COND
              ((NOT (COND
                      ((NOT (< |j| (SVREF $ 6)))
                       (SPADCALL (|ISTRING;elt;$IC;30| |s| |j| $) |cc|
-                          (|getShellEntry| $ 65)))
+                          (|shellEntry| $ 65)))
                      (T NIL)))
               (RETURN NIL))
              (T (SETQ |j| (- |j| 1)))))
          (EXIT (|ISTRING;elt;$Us$;31| |s|
                    (SPADCALL (|ISTRING;minIndex;$I;11| |s| $) |j|
-                       (|getShellEntry| $ 24))
+                       (|shellEntry| $ 24))
                    $))))) 
 
 (DEFUN |ISTRING;concat;L$;28| (|l| $)
@@ -522,16 +518,16 @@
 (DEFUN |ISTRING;elt;$IC;30| (|s| |i| $)
   (COND
     ((OR (< |i| (SVREF $ 6))
-         (< (SPADCALL |s| (|getShellEntry| $ 47)) |i|))
+         (< (SPADCALL |s| (|shellEntry| $ 47)) |i|))
      (|error| "index out of range"))
     (T (CHAR |s| (- |i| (SVREF $ 6)))))) 
 
 (DEFUN |ISTRING;elt;$Us$;31| (|s| |sg| $)
-  (LET ((|l| (- (SPADCALL |sg| (|getShellEntry| $ 44)) (SVREF $ 6)))
+  (LET ((|l| (- (SPADCALL |sg| (|shellEntry| $ 44)) (SVREF $ 6)))
         (|h| (COND
-               ((SPADCALL |sg| (|getShellEntry| $ 45))
-                (- (SPADCALL |sg| (|getShellEntry| $ 46)) (SVREF $ 6)))
-               (T (- (SPADCALL |s| (|getShellEntry| $ 47)) (SVREF $ 6))))))
+               ((SPADCALL |sg| (|shellEntry| $ 45))
+                (- (SPADCALL |sg| (|shellEntry| $ 46)) (SVREF $ 6)))
+               (T (- (SPADCALL |s| (|shellEntry| $ 47)) (SVREF $ 6))))))
     (COND
       ((OR (MINUSP |l|) (NOT (< |h| (LENGTH |s|))))
        (|error| "index out of bound"))
@@ -547,7 +543,7 @@
 (DEFUN |ISTRING;match?;2$CB;34| (|pattern| |target| |dontcare| $)
   (PROG (|m| |p| |i| |q| |s|)
     (RETURN
-      (LET ((|n| (SPADCALL |pattern| (|getShellEntry| $ 47))))
+      (LET ((|n| (SPADCALL |pattern| (|shellEntry| $ 47))))
         (SEQ (LETT |p|
                    (LET ((#0=#:G1501
                              (|ISTRING;position;C$2I;19| |dontcare|
@@ -563,13 +559,13 @@
              (EXIT (COND
                      ((EQL |p| (- |m| 1))
                       (NOT (NULL (STRING= |pattern| |target|))))
-                     ((AND (SPADCALL |p| |m| (|getShellEntry| $ 87))
+                     ((AND (SPADCALL |p| |m| (|shellEntry| $ 87))
                            (NOT (SPADCALL
                                     (|ISTRING;elt;$Us$;31| |pattern|
                                      (SPADCALL |m| (- |p| 1)
-                                      (|getShellEntry| $ 24))
+                                      (|shellEntry| $ 24))
                                      $)
-                                    |target| (|getShellEntry| $ 88))))
+                                    |target| (|shellEntry| $ 88))))
                       NIL)
                      (T (SEQ (LETT |i| |p| |ISTRING;match?;2$CB;34|)
                              (LETT |q|
@@ -585,13 +581,13 @@
                              (LOOP
                                (COND
                                  ((NOT (SPADCALL |q| (- |m| 1)
-                                        (|getShellEntry| $ 87)))
+                                        (|shellEntry| $ 87)))
                                   (RETURN NIL))
                                  (T (SEQ
                                      (LETT |s|
                                       (|ISTRING;elt;$Us$;31| |pattern|
                                        (SPADCALL (+ |p| 1) (- |q| 1)
-                                        (|getShellEntry| $ 24))
+                                        (|shellEntry| $ 24))
                                        $)
                                       |ISTRING;match?;2$CB;34|)
                                      (SETQ |i|
@@ -626,12 +622,12 @@
                                                #3#))))))))))))
                              (COND
                                ((AND (SPADCALL |p| |n|
-                                      (|getShellEntry| $ 87))
+                                      (|shellEntry| $ 87))
                                      (NOT
                                       (|ISTRING;suffix?;2$B;21|
                                        (|ISTRING;elt;$Us$;31| |pattern|
                                         (SPADCALL (+ |p| 1) |n|
-                                         (|getShellEntry| $ 24))
+                                         (|shellEntry| $ 24))
                                         $)
                                        |target| $)))
                                 (EXIT NIL)))

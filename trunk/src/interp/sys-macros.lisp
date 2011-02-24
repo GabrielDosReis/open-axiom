@@ -1260,8 +1260,5 @@
 (defmacro |spadConstant| (dollar n)
  `(spadcall (svref ,dollar (the fixnum ,n))))
 
-(defmacro |getShellEntry| (dollar n)
-  `(svref ,dollar ,n))
-
 (defmacro |shellEntry| (dollar n)
   `(svref ,dollar ,n))

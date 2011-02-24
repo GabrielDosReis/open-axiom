@@ -202,7 +202,7 @@
                ((NOT (NOT (NULL |x|))) (RETURN NIL))
                (T (SEQ (COND
                          ((AND (EQL |i| 1000)
-                               (SPADCALL |x| (|getShellEntry| $ 35)))
+                               (SPADCALL |x| (|shellEntry| $ 35)))
                           (|error| "cyclic list")))
                        (SETQ |y| (CONS (CAR |x|) |y|))
                        (EXIT (SETQ |x| (CDR |x|))))))
@@ -212,23 +212,23 @@
 (DEFUN |ILIST;coerce;$Of;21| (|x| $)
   (PROG (|z|)
     (RETURN
-      (LET ((|y| NIL) (|s| (SPADCALL |x| (|getShellEntry| $ 40))))
+      (LET ((|y| NIL) (|s| (SPADCALL |x| (|shellEntry| $ 40))))
         (SEQ (LOOP
                (COND
                  ((NOT (NOT (EQ |x| |s|))) (RETURN NIL))
                  (T (SEQ (SETQ |y|
                                (CONS (SPADCALL (|SPADfirst| |x|)
-                                      (|getShellEntry| $ 41))
+                                      (|shellEntry| $ 41))
                                      |y|))
                          (EXIT (SETQ |x| (CDR |x|)))))))
              (SETQ |y| (NREVERSE |y|))
              (EXIT (COND
-                     ((NULL |s|) (SPADCALL |y| (|getShellEntry| $ 45)))
+                     ((NULL |s|) (SPADCALL |y| (|shellEntry| $ 45)))
                      (T (SEQ (LETT |z|
                                    (SPADCALL
                                     (SPADCALL (|SPADfirst| |x|)
-                                     (|getShellEntry| $ 41))
-                                    (|getShellEntry| $ 46))
+                                     (|shellEntry| $ 41))
+                                    (|shellEntry| $ 46))
                                    |ILIST;coerce;$Of;21|)
                              (LOOP
                                (COND
@@ -239,16 +239,16 @@
                                       (SETQ |z|
                                        (CONS
                                         (SPADCALL (|SPADfirst| |x|)
-                                         (|getShellEntry| $ 41))
+                                         (|shellEntry| $ 41))
                                         |z|)))))))
                              (EXIT (SPADCALL
                                     (SPADCALL |y|
                                      (SPADCALL
                                       (SPADCALL (NREVERSE |z|)
-                                       (|getShellEntry| $ 47))
-                                      (|getShellEntry| $ 48))
-                                     (|getShellEntry| $ 49))
-                                    (|getShellEntry| $ 45)))))))))))) 
+                                       (|shellEntry| $ 47))
+                                      (|shellEntry| $ 48))
+                                     (|shellEntry| $ 49))
+                                    (|shellEntry| $ 45)))))))))))) 
 
 (DEFUN |ILIST;=;2$B;22| (|x| |y| $)
   (COND
@@ -259,7 +259,7 @@
                  (RETURN NIL))
                 (T (COND
                      ((SPADCALL (CAR |x|) (CAR |y|)
-                          (|getShellEntry| $ 53))
+                          (|shellEntry| $ 53))
                       (RETURN-FROM |ILIST;=;2$B;22| NIL))
                      (T (SEQ (SETQ |x| (CDR |x|))
                              (EXIT (SETQ |y| (CDR |y|)))))))))
@@ -273,7 +273,7 @@
              (T (SEQ (SETQ |s|
                            (STRCONC |s|
                                     (SPADCALL (CAR |x|)
-                                     (|getShellEntry| $ 56))))
+                                     (|shellEntry| $ 56))))
                      (SETQ |x| (CDR |x|))
                      (EXIT (COND
                              ((NOT (NULL |x|))
@@ -285,7 +285,7 @@
          (COND
            ((NOT (NOT (NULL |x|))) (RETURN NIL))
            (T (COND
-                ((SPADCALL |s| (CAR |x|) (|getShellEntry| $ 59))
+                ((SPADCALL |s| (CAR |x|) (|shellEntry| $ 59))
                  (RETURN-FROM |ILIST;member?;S$B;24| T))
                 (T (SETQ |x| (CDR |x|)))))))
        (EXIT NIL))) 
@@ -327,7 +327,7 @@
                                    (T
                                     (COND
                                       ((SPADCALL (CAR |pr|) |f|
-                                        (|getShellEntry| $ 59))
+                                        (|shellEntry| $ 59))
                                        (RPLACD |pp| (CDR |pr|)))
                                       (T (SETQ |pp| |pr|)))))))))))
              (EXIT |l|)))))) 
