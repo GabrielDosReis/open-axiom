@@ -454,7 +454,7 @@ $VMsideEffectFreeOperators ==
     %aref %vref %vlength
     %bitvecnot %bitvecand %bitvecnand %bivecor %bitvecnor %bitvecxor
     %bitveccopy %bitvecconc %bitveclength %bitvecref %bitveceq %bitveclt
-    %before? %equal %sptreq %ident? %property)
+    %before? %equal %sptreq %ident? %property %tref)
 
 ++ List of simple VM operators
 $simpleVMoperators == 
