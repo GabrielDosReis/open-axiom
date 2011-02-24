@@ -60,7 +60,7 @@ getDomainTemplate dom ==
 ++ This is usually the case for exported functions.
 emitIndirectCall(fn,args,x) ==
   x.first := "SPADCALL"
-  fn.first := "getShellEntry"
+  fn.first := '%tref
   x.rest := [:args,fn]
   x
 

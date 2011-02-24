@@ -14,19 +14,19 @@
                 |MONOID-;**;SNniS;4|)) 
 
 (DEFUN |MONOID-;one?;SB;1| (|x| $)
-  (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
+  (SPADCALL |x| (|spadConstant| $ 7) (|shellEntry| $ 9))) 
 
 (DEFUN |MONOID-;sample;S;2| ($) (|spadConstant| $ 7)) 
 
 (DEFUN |MONOID-;recip;SU;3| (|x| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 12)) (CONS 0 |x|))
+    ((SPADCALL |x| (|shellEntry| $ 12)) (CONS 0 |x|))
     (T (CONS 1 "failed")))) 
 
 (DEFUN |MONOID-;**;SNniS;4| (|x| |n| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 7))
-    (T (SPADCALL |x| |n| (|getShellEntry| $ 19))))) 
+    (T (SPADCALL |x| |n| (|shellEntry| $ 19))))) 
 
 (DEFUN |Monoid&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Monoid&| |dv$1|))

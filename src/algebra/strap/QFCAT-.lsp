@@ -83,173 +83,154 @@
                 |QFCAT-;reducedSystem;MVR;27|)) 
 
 (DEFUN |QFCAT-;numerator;2A;1| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8)) (|getShellEntry| $ 9))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) (|shellEntry| $ 9))) 
 
 (DEFUN |QFCAT-;denominator;2A;2| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-      (|getShellEntry| $ 9))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 9))) 
 
 (DEFUN |QFCAT-;init;A;3| ($)
   (SPADCALL (|spadConstant| $ 13) (|spadConstant| $ 14)
-      (|getShellEntry| $ 15))) 
+      (|shellEntry| $ 15))) 
 
 (DEFUN |QFCAT-;nextItem;AU;4| (|n| $)
-  (LET ((|m| (SPADCALL (SPADCALL |n| (|getShellEntry| $ 8))
-                 (|getShellEntry| $ 18))))
+  (LET ((|m| (SPADCALL (SPADCALL |n| (|shellEntry| $ 8))
+                 (|shellEntry| $ 18))))
     (COND
       ((EQL (CAR |m|) 1)
        (|error| "We seem to have a Fraction of a finite object"))
       (T (CONS 0
                (SPADCALL (CDR |m|) (|spadConstant| $ 14)
-                   (|getShellEntry| $ 15))))))) 
+                   (|shellEntry| $ 15))))))) 
 
 (DEFUN |QFCAT-;map;M2A;5| (|fn| |x| $)
-  (SPADCALL (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8)) |fn|)
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11)) |fn|)
-      (|getShellEntry| $ 15))) 
+  (SPADCALL (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) |fn|)
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) |fn|)
+      (|shellEntry| $ 15))) 
 
 (DEFUN |QFCAT-;reducedSystem;MM;6| (|m| $)
-  (SPADCALL |m| (|getShellEntry| $ 26))) 
+  (SPADCALL |m| (|shellEntry| $ 26))) 
 
 (DEFUN |QFCAT-;characteristic;Nni;7| ($) (|spadConstant| $ 30)) 
 
 (DEFUN |QFCAT-;differentiate;AMA;8| (|x| |deriv| $)
-  (LET ((|n| (SPADCALL |x| (|getShellEntry| $ 8)))
-        (|d| (SPADCALL |x| (|getShellEntry| $ 11))))
+  (LET ((|n| (SPADCALL |x| (|shellEntry| $ 8)))
+        (|d| (SPADCALL |x| (|shellEntry| $ 11))))
     (SPADCALL
         (SPADCALL
-            (SPADCALL (SPADCALL |n| |deriv|) |d|
-                (|getShellEntry| $ 32))
-            (SPADCALL |n| (SPADCALL |d| |deriv|)
-                (|getShellEntry| $ 32))
-            (|getShellEntry| $ 33))
-        (SPADCALL |d| 2 (|getShellEntry| $ 35)) (|getShellEntry| $ 15)))) 
+            (SPADCALL (SPADCALL |n| |deriv|) |d| (|shellEntry| $ 32))
+            (SPADCALL |n| (SPADCALL |d| |deriv|) (|shellEntry| $ 32))
+            (|shellEntry| $ 33))
+        (SPADCALL |d| 2 (|shellEntry| $ 35)) (|shellEntry| $ 15)))) 
 
 (DEFUN |QFCAT-;convert;AIf;9| (|x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-          (|getShellEntry| $ 38))
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-          (|getShellEntry| $ 38))
-      (|getShellEntry| $ 39))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) (|shellEntry| $ 38))
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 38))
+      (|shellEntry| $ 39))) 
 
 (DEFUN |QFCAT-;convert;AF;10| (|x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-          (|getShellEntry| $ 42))
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-          (|getShellEntry| $ 42))
-      (|getShellEntry| $ 43))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) (|shellEntry| $ 42))
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 42))
+      (|shellEntry| $ 43))) 
 
 (DEFUN |QFCAT-;convert;ADf;11| (|x| $)
-  (/ (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-         (|getShellEntry| $ 46))
-     (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-         (|getShellEntry| $ 46)))) 
+  (/ (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) (|shellEntry| $ 46))
+     (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 46)))) 
 
 (DEFUN |QFCAT-;<;2AB;12| (|x| |y| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-          (SPADCALL |y| (|getShellEntry| $ 11)) (|getShellEntry| $ 32))
-      (SPADCALL (SPADCALL |y| (|getShellEntry| $ 8))
-          (SPADCALL |x| (|getShellEntry| $ 11)) (|getShellEntry| $ 32))
-      (|getShellEntry| $ 50))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 8))
+          (SPADCALL |y| (|shellEntry| $ 11)) (|shellEntry| $ 32))
+      (SPADCALL (SPADCALL |y| (|shellEntry| $ 8))
+          (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 32))
+      (|shellEntry| $ 50))) 
 
 (DEFUN |QFCAT-;<;2AB;13| (|x| |y| $)
   (PROG (|#G19| |#G20| |#G21| |#G22|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-                  (|spadConstant| $ 52) (|getShellEntry| $ 50))
+             ((SPADCALL (SPADCALL |x| (|shellEntry| $ 11))
+                  (|spadConstant| $ 52) (|shellEntry| $ 50))
               (PROGN
                 (LETT |#G19| |y| |QFCAT-;<;2AB;13|)
                 (LETT |#G20| |x| |QFCAT-;<;2AB;13|)
                 (SETQ |x| |#G19|)
                 (SETQ |y| |#G20|))))
            (COND
-             ((SPADCALL (SPADCALL |y| (|getShellEntry| $ 11))
-                  (|spadConstant| $ 52) (|getShellEntry| $ 50))
+             ((SPADCALL (SPADCALL |y| (|shellEntry| $ 11))
+                  (|spadConstant| $ 52) (|shellEntry| $ 50))
               (PROGN
                 (LETT |#G21| |y| |QFCAT-;<;2AB;13|)
                 (LETT |#G22| |x| |QFCAT-;<;2AB;13|)
                 (SETQ |x| |#G21|)
                 (SETQ |y| |#G22|))))
            (EXIT (SPADCALL
-                     (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-                         (SPADCALL |y| (|getShellEntry| $ 11))
-                         (|getShellEntry| $ 32))
-                     (SPADCALL (SPADCALL |y| (|getShellEntry| $ 8))
-                         (SPADCALL |x| (|getShellEntry| $ 11))
-                         (|getShellEntry| $ 32))
-                     (|getShellEntry| $ 50))))))) 
+                     (SPADCALL (SPADCALL |x| (|shellEntry| $ 8))
+                         (SPADCALL |y| (|shellEntry| $ 11))
+                         (|shellEntry| $ 32))
+                     (SPADCALL (SPADCALL |y| (|shellEntry| $ 8))
+                         (SPADCALL |x| (|shellEntry| $ 11))
+                         (|shellEntry| $ 32))
+                     (|shellEntry| $ 50))))))) 
 
 (DEFUN |QFCAT-;<;2AB;14| (|x| |y| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-          (SPADCALL |y| (|getShellEntry| $ 11)) (|getShellEntry| $ 32))
-      (SPADCALL (SPADCALL |y| (|getShellEntry| $ 8))
-          (SPADCALL |x| (|getShellEntry| $ 11)) (|getShellEntry| $ 32))
-      (|getShellEntry| $ 50))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 8))
+          (SPADCALL |y| (|shellEntry| $ 11)) (|shellEntry| $ 32))
+      (SPADCALL (SPADCALL |y| (|shellEntry| $ 8))
+          (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 32))
+      (|shellEntry| $ 50))) 
 
 (DEFUN |QFCAT-;fractionPart;2A;15| (|x| $)
   (SPADCALL |x|
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 53))
-          (|getShellEntry| $ 9))
-      (|getShellEntry| $ 54))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 53)) (|shellEntry| $ 9))
+      (|shellEntry| $ 54))) 
 
 (DEFUN |QFCAT-;coerce;SA;16| (|s| $)
-  (SPADCALL (SPADCALL |s| (|getShellEntry| $ 57))
-      (|getShellEntry| $ 9))) 
+  (SPADCALL (SPADCALL |s| (|shellEntry| $ 57)) (|shellEntry| $ 9))) 
 
 (DEFUN |QFCAT-;retract;AS;17| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 59))
-      (|getShellEntry| $ 60))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 59)) (|shellEntry| $ 60))) 
 
 (DEFUN |QFCAT-;retractIfCan;AU;18| (|x| $)
-  (LET ((|r| (SPADCALL |x| (|getShellEntry| $ 63))))
+  (LET ((|r| (SPADCALL |x| (|shellEntry| $ 63))))
     (COND
       ((EQL (CAR |r|) 1) (CONS 1 "failed"))
-      (T (SPADCALL (CDR |r|) (|getShellEntry| $ 65)))))) 
+      (T (SPADCALL (CDR |r|) (|shellEntry| $ 65)))))) 
 
 (DEFUN |QFCAT-;convert;AP;19| (|x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-          (|getShellEntry| $ 69))
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-          (|getShellEntry| $ 69))
-      (|getShellEntry| $ 70))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) (|shellEntry| $ 69))
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 69))
+      (|shellEntry| $ 70))) 
 
 (DEFUN |QFCAT-;patternMatch;AP2Pmr;20| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (|getShellEntry| $ 74))) 
+  (SPADCALL |x| |p| |l| (|shellEntry| $ 74))) 
 
 (DEFUN |QFCAT-;convert;AP;21| (|x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 8))
-          (|getShellEntry| $ 78))
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 11))
-          (|getShellEntry| $ 78))
-      (|getShellEntry| $ 79))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 8)) (|shellEntry| $ 78))
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 11)) (|shellEntry| $ 78))
+      (|shellEntry| $ 79))) 
 
 (DEFUN |QFCAT-;patternMatch;AP2Pmr;22| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (|getShellEntry| $ 83))) 
+  (SPADCALL |x| |p| |l| (|shellEntry| $ 83))) 
 
 (DEFUN |QFCAT-;coerce;FA;23| (|x| $)
   (SPADCALL
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 87))
-          (|getShellEntry| $ 88))
-      (SPADCALL (SPADCALL |x| (|getShellEntry| $ 89))
-          (|getShellEntry| $ 88))
-      (|getShellEntry| $ 90))) 
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 87)) (|shellEntry| $ 88))
+      (SPADCALL (SPADCALL |x| (|shellEntry| $ 89)) (|shellEntry| $ 88))
+      (|shellEntry| $ 90))) 
 
 (DEFUN |QFCAT-;retract;AI;24| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 59))
-      (|getShellEntry| $ 92))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 59)) (|shellEntry| $ 92))) 
 
 (DEFUN |QFCAT-;retractIfCan;AU;25| (|x| $)
-  (LET ((|u| (SPADCALL |x| (|getShellEntry| $ 63))))
+  (LET ((|u| (SPADCALL |x| (|shellEntry| $ 63))))
     (COND
       ((EQL (CAR |u|) 1) (CONS 1 "failed"))
-      (T (SPADCALL (CDR |u|) (|getShellEntry| $ 95)))))) 
+      (T (SPADCALL (CDR |u|) (|shellEntry| $ 95)))))) 
 
 (DEFUN |QFCAT-;random;A;26| ($)
   (PROG (|d|)
@@ -257,26 +238,25 @@
       (SEQ (LOOP
              (COND
                ((NOT (SPADCALL
-                         (LETT |d| (SPADCALL (|getShellEntry| $ 97))
+                         (LETT |d| (SPADCALL (|shellEntry| $ 97))
                                |QFCAT-;random;A;26|)
-                         (|getShellEntry| $ 98)))
+                         (|shellEntry| $ 98)))
                 (RETURN NIL))
                (T |d|)))
-           (EXIT (SPADCALL (SPADCALL (|getShellEntry| $ 97)) |d|
-                     (|getShellEntry| $ 15))))))) 
+           (EXIT (SPADCALL (SPADCALL (|shellEntry| $ 97)) |d|
+                     (|shellEntry| $ 15))))))) 
 
 (DEFUN |QFCAT-;reducedSystem;MVR;27| (|m| |v| $)
   (LET ((|n| (SPADCALL
-                 (SPADCALL (SPADCALL |v| (|getShellEntry| $ 101)) |m|
-                     (|getShellEntry| $ 102))
-                 (|getShellEntry| $ 103))))
-    (CONS (SPADCALL |n| (SPADCALL |n| (|getShellEntry| $ 104))
-              (SPADCALL |n| (|getShellEntry| $ 105))
-              (+ 1 (SPADCALL |n| (|getShellEntry| $ 107)))
-              (SPADCALL |n| (|getShellEntry| $ 109))
-              (|getShellEntry| $ 110))
-          (SPADCALL |n| (SPADCALL |n| (|getShellEntry| $ 107))
-              (|getShellEntry| $ 112))))) 
+                 (SPADCALL (SPADCALL |v| (|shellEntry| $ 101)) |m|
+                     (|shellEntry| $ 102))
+                 (|shellEntry| $ 103))))
+    (CONS (SPADCALL |n| (SPADCALL |n| (|shellEntry| $ 104))
+              (SPADCALL |n| (|shellEntry| $ 105))
+              (+ 1 (SPADCALL |n| (|shellEntry| $ 107)))
+              (SPADCALL |n| (|shellEntry| $ 109)) (|shellEntry| $ 110))
+          (SPADCALL |n| (SPADCALL |n| (|shellEntry| $ 107))
+              (|shellEntry| $ 112))))) 
 
 (DEFUN |QuotientFieldCategory&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

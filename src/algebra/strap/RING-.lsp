@@ -5,7 +5,7 @@
                 |RING-;coerce;IS;1|)) 
 
 (DEFUN |RING-;coerce;IS;1| (|n| $)
-  (SPADCALL |n| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
+  (SPADCALL |n| (|spadConstant| $ 7) (|shellEntry| $ 9))) 
 
 (DEFUN |Ring&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$| (LIST '|Ring&| |dv$1|))

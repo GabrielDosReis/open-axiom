@@ -62,110 +62,103 @@
   (APPEND |l| |t|)) 
 
 (DEFUN |LIST;writeOMList| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (|getShellEntry| $ 16))
-       (SPADCALL |dev| "list1" "list" (|getShellEntry| $ 18))
+  (SEQ (SPADCALL |dev| (|shellEntry| $ 16))
+       (SPADCALL |dev| "list1" "list" (|shellEntry| $ 18))
        (LOOP
          (COND
            ((NOT (NOT (NULL |x|))) (RETURN NIL))
-           (T (SEQ (SPADCALL |dev|
-                       (SPADCALL |x| (|getShellEntry| $ 20)) NIL
-                       (|getShellEntry| $ 22))
-                   (EXIT (SETQ |x|
-                               (SPADCALL |x| (|getShellEntry| $ 23))))))))
-       (EXIT (SPADCALL |dev| (|getShellEntry| $ 24))))) 
+           (T (SEQ (SPADCALL |dev| (SPADCALL |x| (|shellEntry| $ 20))
+                       NIL (|shellEntry| $ 22))
+                   (EXIT (SETQ |x| (SPADCALL |x| (|shellEntry| $ 23))))))))
+       (EXIT (SPADCALL |dev| (|shellEntry| $ 24))))) 
 
 (DEFUN |LIST;OMwrite;$S;6| (|x| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
-         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 26))
-                    (|getShellEntry| $ 27))))
-    (SEQ (SPADCALL |dev| (|getShellEntry| $ 28))
+         (|dev| (SPADCALL |sp| (SPADCALL (|shellEntry| $ 26))
+                    (|shellEntry| $ 27))))
+    (SEQ (SPADCALL |dev| (|shellEntry| $ 28))
          (|LIST;writeOMList| |dev| |x| $)
-         (SPADCALL |dev| (|getShellEntry| $ 29))
-         (SPADCALL |dev| (|getShellEntry| $ 30))
+         (SPADCALL |dev| (|shellEntry| $ 29))
+         (SPADCALL |dev| (|shellEntry| $ 30))
          (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |LIST;OMwrite;$BS;7| (|x| |wholeObj| $)
   (LET* ((|s| "") (|sp| (OM-STRINGTOSTRINGPTR |s|))
-         (|dev| (SPADCALL |sp| (SPADCALL (|getShellEntry| $ 26))
-                    (|getShellEntry| $ 27))))
-    (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 28))))
+         (|dev| (SPADCALL |sp| (SPADCALL (|shellEntry| $ 26))
+                    (|shellEntry| $ 27))))
+    (SEQ (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 28))))
          (|LIST;writeOMList| |dev| |x| $)
-         (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 29))))
-         (SPADCALL |dev| (|getShellEntry| $ 30))
+         (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 29))))
+         (SPADCALL |dev| (|shellEntry| $ 30))
          (SETQ |s| (OM-STRINGPTRTOSTRING |sp|)) (EXIT |s|)))) 
 
 (DEFUN |LIST;OMwrite;Omd$V;8| (|dev| |x| $)
-  (SEQ (SPADCALL |dev| (|getShellEntry| $ 28))
+  (SEQ (SPADCALL |dev| (|shellEntry| $ 28))
        (|LIST;writeOMList| |dev| |x| $)
-       (EXIT (SPADCALL |dev| (|getShellEntry| $ 29))))) 
+       (EXIT (SPADCALL |dev| (|shellEntry| $ 29))))) 
 
 (DEFUN |LIST;OMwrite;Omd$BV;9| (|dev| |x| |wholeObj| $)
-  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 28))))
+  (SEQ (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 28))))
        (|LIST;writeOMList| |dev| |x| $)
-       (EXIT (COND
-               (|wholeObj| (SPADCALL |dev| (|getShellEntry| $ 29))))))) 
+       (EXIT (COND (|wholeObj| (SPADCALL |dev| (|shellEntry| $ 29))))))) 
 
 (DEFUN |LIST;setUnion;3$;10| (|l1| |l2| $)
-  (SPADCALL (SPADCALL |l1| |l2| (|getShellEntry| $ 35))
-            (|getShellEntry| $ 36))) 
+  (SPADCALL (SPADCALL |l1| |l2| (|shellEntry| $ 35))
+            (|shellEntry| $ 36))) 
 
 (DEFUN |LIST;setIntersection;3$;11| (|l1| |l2| $)
-  (LET ((|u| (SPADCALL (|getShellEntry| $ 38))))
-    (SEQ (SETQ |l1| (SPADCALL |l1| (|getShellEntry| $ 36)))
+  (LET ((|u| (SPADCALL (|shellEntry| $ 38))))
+    (SEQ (SETQ |l1| (SPADCALL |l1| (|shellEntry| $ 36)))
          (LOOP
            (COND
-             ((NOT (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
+             ((NOT (NOT (SPADCALL |l1| (|shellEntry| $ 39))))
               (RETURN NIL))
              (T (SEQ (COND
-                       ((SPADCALL
-                            (SPADCALL |l1| (|getShellEntry| $ 20)) |l2|
-                            (|getShellEntry| $ 40))
+                       ((SPADCALL (SPADCALL |l1| (|shellEntry| $ 20))
+                            |l2| (|shellEntry| $ 40))
                         (SETQ |u|
-                              (CONS (SPADCALL |l1|
-                                     (|getShellEntry| $ 20))
+                              (CONS (SPADCALL |l1| (|shellEntry| $ 20))
                                     |u|))))
                      (EXIT (SETQ |l1|
-                                 (SPADCALL |l1| (|getShellEntry| $ 23))))))))
+                                 (SPADCALL |l1| (|shellEntry| $ 23))))))))
          (EXIT |u|)))) 
 
 (DEFUN |LIST;setDifference;3$;12| (|l1| |l2| $)
   (PROG (|lu| |l11|)
     (RETURN
-      (SEQ (SETQ |l1| (SPADCALL |l1| (|getShellEntry| $ 36)))
-           (LETT |lu| (SPADCALL (|getShellEntry| $ 38))
+      (SEQ (SETQ |l1| (SPADCALL |l1| (|shellEntry| $ 36)))
+           (LETT |lu| (SPADCALL (|shellEntry| $ 38))
                  |LIST;setDifference;3$;12|)
            (LOOP
              (COND
-               ((NOT (NOT (SPADCALL |l1| (|getShellEntry| $ 39))))
+               ((NOT (NOT (SPADCALL |l1| (|shellEntry| $ 39))))
                 (RETURN NIL))
                (T (SEQ (LETT |l11|
-                             (SPADCALL |l1| 1 (|getShellEntry| $ 42))
+                             (SPADCALL |l1| 1 (|shellEntry| $ 42))
                              |LIST;setDifference;3$;12|)
                        (COND
                          ((NOT (SPADCALL |l11| |l2|
-                                   (|getShellEntry| $ 40)))
+                                   (|shellEntry| $ 40)))
                           (SETQ |lu|
                                 (SPADCALL |l11| |lu|
-                                    (|getShellEntry| $ 43)))))
+                                    (|shellEntry| $ 43)))))
                        (EXIT (SETQ |l1|
-                                   (SPADCALL |l1|
-                                    (|getShellEntry| $ 23))))))))
+                                   (SPADCALL |l1| (|shellEntry| $ 23))))))))
            (EXIT |lu|))))) 
 
 (DEFUN |LIST;convert;$If;13| (|x| $)
-  (SPADCALL
-      (CONS (SPADCALL '|construct| (|getShellEntry| $ 47))
-            (LET ((#0=#:G1420 |x|) (#1=#:G1419 NIL))
-              (LOOP
-                (COND
-                  ((ATOM #0#) (RETURN (NREVERSE #1#)))
-                  (T (LET ((|a| (CAR #0#)))
-                       (SETQ #1#
-                             (CONS (SPADCALL |a|
-                                    (|getShellEntry| $ 48))
-                                   #1#)))))
-                (SETQ #0# (CDR #0#)))))
-      (|getShellEntry| $ 52))) 
+  (SPADCALL (CONS (SPADCALL '|construct| (|shellEntry| $ 47))
+                  (LET ((#0=#:G1420 |x|) (#1=#:G1419 NIL))
+                    (LOOP
+                      (COND
+                        ((ATOM #0#) (RETURN (NREVERSE #1#)))
+                        (T (LET ((|a| (CAR #0#)))
+                             (SETQ #1#
+                                   (CONS
+                                    (SPADCALL |a| (|shellEntry| $ 48))
+                                    #1#)))))
+                      (SETQ #0# (CDR #0#)))))
+            (|shellEntry| $ 52))) 
 
 (DEFUN |List| (#0=#:G1421)
   (DECLARE (SPECIAL |$ConstructorCache|))

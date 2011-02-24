@@ -8,16 +8,16 @@
                 |FPS-;digits;Pi;2|)) 
 
 (DEFUN |FPS-;float;2IS;1| (|ma| |ex| $)
-  (SPADCALL |ma| |ex| (SPADCALL (|getShellEntry| $ 8))
-      (|getShellEntry| $ 10))) 
+  (SPADCALL |ma| |ex| (SPADCALL (|shellEntry| $ 8))
+      (|shellEntry| $ 10))) 
 
 (DEFUN |FPS-;digits;Pi;2| ($)
   (LET ((#0=#:G1377
             (MAX 1
                  (TRUNCATE
                      (SPADCALL 4004
-                         (- (SPADCALL (|getShellEntry| $ 14)) 1)
-                         (|getShellEntry| $ 16))
+                         (- (SPADCALL (|shellEntry| $ 14)) 1)
+                         (|shellEntry| $ 16))
                      13301))))
     (|check-subtype| (AND (NOT (MINUSP #0#)) (PLUSP #0#))
         '(|PositiveInteger|) #0#))) 

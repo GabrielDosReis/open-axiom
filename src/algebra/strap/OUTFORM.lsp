@@ -569,8 +569,8 @@
 
 (DEFUN |OUTFORM;outputForm;S$;15| (|s| $)
   (SPADCALL (|spadConstant| $ 27)
-            (SPADCALL |s| (|spadConstant| $ 27) (|getShellEntry| $ 28))
-            (|getShellEntry| $ 29))) 
+            (SPADCALL |s| (|spadConstant| $ 27) (|shellEntry| $ 28))
+            (|shellEntry| $ 29))) 
 
 (DEFUN |OUTFORM;width;$I;16| (|a| $)
   (DECLARE (IGNORE $))
@@ -711,7 +711,7 @@
   (COND
     ((NULL |l|) |a|)
     ((NULL (CDR |l|))
-     (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|getShellEntry| $ 78)) $))
+     (|OUTFORM;sub;3$;42| |a| (SPADCALL |l| (|shellEntry| $ 78)) $))
     (T (CONS 'SUPERSUB (CONS |a| |l|))))) 
 
 (DEFUN |OUTFORM;supersub;$L$;47| (|a| |l| $)
@@ -840,10 +840,10 @@
 (DEFUN |OUTFORM;infix;$L$;77| (|a| |l| $)
   (COND
     ((NULL |l|) (|OUTFORM;empty;$;73| $))
-    ((NULL (CDR |l|)) (SPADCALL |l| (|getShellEntry| $ 78)))
+    ((NULL (CDR |l|)) (SPADCALL |l| (|shellEntry| $ 78)))
     ((|OUTFORM;infix?;$B;74| |a| $) (CONS |a| |l|))
     (T (|OUTFORM;hconcat;L$;49|
-           (LIST (SPADCALL |l| (|getShellEntry| $ 78)) |a|
+           (LIST (SPADCALL |l| (|shellEntry| $ 78)) |a|
                  (|OUTFORM;infix;$L$;77| |a| (CDR |l|) $))
            $)))) 
 
@@ -877,13 +877,11 @@
   (LIST 'SUPERSUB |a| " " '|,|)) 
 
 (DEFUN |OUTFORM;dot;$Nni$;85| (|a| |nn| $)
-  (LET ((|s| (MAKE-FULL-CVEC |nn|
-                 (SPADCALL "." (|getShellEntry| $ 119)))))
+  (LET ((|s| (MAKE-FULL-CVEC |nn| (SPADCALL "." (|shellEntry| $ 119)))))
     (LIST 'SUPERSUB |a| " " |s|))) 
 
 (DEFUN |OUTFORM;prime;$Nni$;86| (|a| |nn| $)
-  (LET ((|s| (MAKE-FULL-CVEC |nn|
-                 (SPADCALL "," (|getShellEntry| $ 119)))))
+  (LET ((|s| (MAKE-FULL-CVEC |nn| (SPADCALL "," (|shellEntry| $ 119)))))
     (LIST 'SUPERSUB |a| " " |s|))) 
 
 (DEFUN |OUTFORM;overlabel;3$;87| (|a| |b| $)
@@ -933,8 +931,8 @@
     (T (LET* ((|r| (SPADCALL
                        (|check-subtype| (PLUSP |nn|)
                            '(|PositiveInteger|) |nn|)
-                       (|getShellEntry| $ 137)))
-              (|s| (SPADCALL |r| (|getShellEntry| $ 138))))
+                       (|shellEntry| $ 137)))
+              (|s| (SPADCALL |r| (|shellEntry| $ 138))))
          (|OUTFORM;super;3$;43| |a| (LIST 'PAREN |s|) $))))) 
 
 (DEFUN |OUTFORM;sum;2$;98| (|a| $)

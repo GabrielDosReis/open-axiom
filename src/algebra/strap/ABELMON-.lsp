@@ -15,17 +15,17 @@
                 |ABELMON-;*;Nni2S;4|)) 
 
 (DEFUN |ABELMON-;zero?;SB;1| (|x| $)
-  (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
+  (SPADCALL |x| (|spadConstant| $ 7) (|shellEntry| $ 9))) 
 
 (DEFUN |ABELMON-;*;Pi2S;2| (|n| |x| $)
-  (SPADCALL |n| |x| (|getShellEntry| $ 12))) 
+  (SPADCALL |n| |x| (|shellEntry| $ 12))) 
 
 (DEFUN |ABELMON-;sample;S;3| ($) (|spadConstant| $ 7)) 
 
 (DEFUN |ABELMON-;*;Nni2S;4| (|n| |x| $)
   (COND
     ((ZEROP |n|) (|spadConstant| $ 7))
-    (T (SPADCALL |n| |x| (|getShellEntry| $ 18))))) 
+    (T (SPADCALL |n| |x| (|shellEntry| $ 18))))) 
 
 (DEFUN |AbelianMonoid&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

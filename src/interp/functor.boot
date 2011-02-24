@@ -456,8 +456,8 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
   (for u in code repeat
       if update(u,copyvec,[]) then code:=delete(u,code))
     where update(code,copyvec,sofar) ==
-      atom code =>nil
-      code.op in '(getShellEntry ELT) =>
+      atom code => nil
+      code.op in '(%tref ELT) =>
           copyvec.(third code):=union(copyvec.(third code), sofar)
           true
       code is ['%store,['%tref,name,number],u'] =>
@@ -476,7 +476,7 @@ DescendCodeAdd1(base,flag,target,formalArgs,formalArgModes) ==
                   KEYWORD::START2, i,
                    KEYWORD::END2, j+1],:code]
     copyvec.i =>
-      v:=["getShellEntry",instantiatedBase,i]
+      v:=['%tref,instantiatedBase,i]
       for u in copyvec.i repeat
         [name,:count]:=u
         v:=['%store,['%tref,name,count],v]

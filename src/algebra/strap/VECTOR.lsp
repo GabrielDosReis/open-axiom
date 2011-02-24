@@ -13,7 +13,7 @@
                 |VECTOR;convert;$If;3|)) 
 
 (DEFUN |VECTOR;vector;L$;1| (|l| $)
-  (SPADCALL |l| (|getShellEntry| $ 10))) 
+  (SPADCALL |l| (|shellEntry| $ 10))) 
 
 (DEFUN |VECTOR;maxIndex;$I;2| (|x| $)
   (DECLARE (IGNORE $))
@@ -21,10 +21,10 @@
 
 (DEFUN |VECTOR;convert;$If;3| (|x| $)
   (SPADCALL
-      (LIST (SPADCALL '|vector| (|getShellEntry| $ 15))
-            (SPADCALL (SPADCALL |x| (|getShellEntry| $ 16))
-                      (|getShellEntry| $ 17)))
-      (|getShellEntry| $ 19))) 
+      (LIST (SPADCALL '|vector| (|shellEntry| $ 15))
+            (SPADCALL (SPADCALL |x| (|shellEntry| $ 16))
+                (|shellEntry| $ 17)))
+      (|shellEntry| $ 19))) 
 
 (DEFUN |Vector| (#0=#:G1383)
   (DECLARE (SPECIAL |$ConstructorCache|))

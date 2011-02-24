@@ -135,12 +135,12 @@
 (DEFUN |BOOLEAN;size;Nni;17| ($) (DECLARE (IGNORE $)) 2) 
 
 (DEFUN |BOOLEAN;index;Pi$;18| (|i| $)
-  (COND ((SPADCALL |i| (|getShellEntry| $ 26)) NIL) (T T))) 
+  (COND ((SPADCALL |i| (|shellEntry| $ 26)) NIL) (T T))) 
 
 (DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) (T 2))) 
 
 (DEFUN |BOOLEAN;random;$;20| ($)
-  (COND ((SPADCALL (|random|) (|getShellEntry| $ 26)) NIL) (T T))) 
+  (COND ((SPADCALL (|random|) (|shellEntry| $ 26)) NIL) (T T))) 
 
 (DEFUN |BOOLEAN;convert;$If;21| (|x| $)
   (COND (|x| '|true|) (T '|false|))) 

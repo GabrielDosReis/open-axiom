@@ -14,20 +14,20 @@
                 |SETAGG-;difference;ASA;4|)) 
 
 (DEFUN |SETAGG-;symmetricDifference;3A;1| (|x| |y| $)
-  (SPADCALL (SPADCALL |x| |y| (|getShellEntry| $ 8))
-      (SPADCALL |y| |x| (|getShellEntry| $ 8)) (|getShellEntry| $ 9))) 
+  (SPADCALL (SPADCALL |x| |y| (|shellEntry| $ 8))
+      (SPADCALL |y| |x| (|shellEntry| $ 8)) (|shellEntry| $ 9))) 
 
 (DEFUN |SETAGG-;union;ASA;2| (|s| |x| $)
-  (SPADCALL |s| (SPADCALL (LIST |x|) (|getShellEntry| $ 12))
-      (|getShellEntry| $ 9))) 
+  (SPADCALL |s| (SPADCALL (LIST |x|) (|shellEntry| $ 12))
+      (|shellEntry| $ 9))) 
 
 (DEFUN |SETAGG-;union;S2A;3| (|x| |s| $)
-  (SPADCALL |s| (SPADCALL (LIST |x|) (|getShellEntry| $ 12))
-      (|getShellEntry| $ 9))) 
+  (SPADCALL |s| (SPADCALL (LIST |x|) (|shellEntry| $ 12))
+      (|shellEntry| $ 9))) 
 
 (DEFUN |SETAGG-;difference;ASA;4| (|s| |x| $)
-  (SPADCALL |s| (SPADCALL (LIST |x|) (|getShellEntry| $ 12))
-      (|getShellEntry| $ 8))) 
+  (SPADCALL |s| (SPADCALL (LIST |x|) (|shellEntry| $ 12))
+      (|shellEntry| $ 8))) 
 
 (DEFUN |SetAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

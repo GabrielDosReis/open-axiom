@@ -100,175 +100,165 @@
 (DEFUN |INS-;differentiate;2S;2| (|x| $) (|spadConstant| $ 10)) 
 
 (DEFUN |INS-;even?;SB;3| (|x| $)
-  (NOT (SPADCALL |x| (|getShellEntry| $ 13)))) 
+  (NOT (SPADCALL |x| (|shellEntry| $ 13)))) 
 
 (DEFUN |INS-;positive?;SB;4| (|x| $)
-  (SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 16))) 
+  (SPADCALL |x| (|spadConstant| $ 10) (|shellEntry| $ 16))) 
 
 (DEFUN |INS-;copy;2S;5| (|x| $) (DECLARE (IGNORE $)) |x|) 
 
 (DEFUN |INS-;bit?;2SB;6| (|x| |i| $)
   (SPADCALL
-      (SPADCALL |x| (SPADCALL |i| (|getShellEntry| $ 19))
-          (|getShellEntry| $ 20))
-      (|getShellEntry| $ 13))) 
+      (SPADCALL |x| (SPADCALL |i| (|shellEntry| $ 19))
+          (|shellEntry| $ 20))
+      (|shellEntry| $ 13))) 
 
 (DEFUN |INS-;mask;2S;7| (|n| $)
-  (SPADCALL (SPADCALL (|spadConstant| $ 22) |n| (|getShellEntry| $ 20))
-      (|getShellEntry| $ 23))) 
+  (SPADCALL (SPADCALL (|spadConstant| $ 22) |n| (|shellEntry| $ 20))
+      (|shellEntry| $ 23))) 
 
 (DEFUN |INS-;rational?;SB;8| (|x| $) (DECLARE (IGNORE $)) T) 
 
 (DEFUN |INS-;euclideanSize;SNni;9| (|x| $)
   (COND
-    ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 27))
+    ((SPADCALL |x| (|spadConstant| $ 10) (|shellEntry| $ 27))
      (|error| "euclideanSize called on zero"))
-    ((SPADCALL |x| (|spadConstant| $ 10) (|getShellEntry| $ 28))
-     (LET ((#0=#:G1401 (- (SPADCALL |x| (|getShellEntry| $ 30)))))
+    ((SPADCALL |x| (|spadConstant| $ 10) (|shellEntry| $ 28))
+     (LET ((#0=#:G1401 (- (SPADCALL |x| (|shellEntry| $ 30)))))
        (|check-subtype| (NOT (MINUSP #0#)) '(|NonNegativeInteger|) #0#)))
-    (T (LET ((#1=#:G1402 (SPADCALL |x| (|getShellEntry| $ 30))))
+    (T (LET ((#1=#:G1402 (SPADCALL |x| (|shellEntry| $ 30))))
          (|check-subtype| (NOT (MINUSP #1#)) '(|NonNegativeInteger|)
              #1#))))) 
 
 (DEFUN |INS-;convert;SF;10| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))
-      (|getShellEntry| $ 34))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 30)) (|shellEntry| $ 34))) 
 
 (DEFUN |INS-;convert;SDf;11| (|x| $)
-  (FLOAT (SPADCALL |x| (|getShellEntry| $ 30)) |$DoubleFloatMaximum|)) 
+  (FLOAT (SPADCALL |x| (|shellEntry| $ 30)) |$DoubleFloatMaximum|)) 
 
 (DEFUN |INS-;convert;SIf;12| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))
-      (|getShellEntry| $ 40))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 30)) (|shellEntry| $ 40))) 
 
 (DEFUN |INS-;retract;SI;13| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 30))) 
+  (SPADCALL |x| (|shellEntry| $ 30))) 
 
 (DEFUN |INS-;convert;SP;14| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))
-      (|getShellEntry| $ 44))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 30)) (|shellEntry| $ 44))) 
 
-(DEFUN |INS-;factor;SF;15| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 48))) 
+(DEFUN |INS-;factor;SF;15| (|x| $) (SPADCALL |x| (|shellEntry| $ 48))) 
 
 (DEFUN |INS-;squareFree;SF;16| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 51))) 
+  (SPADCALL |x| (|shellEntry| $ 51))) 
 
-(DEFUN |INS-;prime?;SB;17| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 54))) 
+(DEFUN |INS-;prime?;SB;17| (|x| $) (SPADCALL |x| (|shellEntry| $ 54))) 
 
 (DEFUN |INS-;factorial;2S;18| (|x| $)
-  (SPADCALL |x| (|getShellEntry| $ 57))) 
+  (SPADCALL |x| (|shellEntry| $ 57))) 
 
 (DEFUN |INS-;binomial;3S;19| (|n| |m| $)
-  (SPADCALL |n| |m| (|getShellEntry| $ 59))) 
+  (SPADCALL |n| |m| (|shellEntry| $ 59))) 
 
 (DEFUN |INS-;permutation;3S;20| (|n| |m| $)
-  (SPADCALL |n| |m| (|getShellEntry| $ 61))) 
+  (SPADCALL |n| |m| (|shellEntry| $ 61))) 
 
 (DEFUN |INS-;retractIfCan;SU;21| (|x| $)
-  (CONS 0 (SPADCALL |x| (|getShellEntry| $ 30)))) 
+  (CONS 0 (SPADCALL |x| (|shellEntry| $ 30)))) 
 
 (DEFUN |INS-;init;S;22| ($) (|spadConstant| $ 10)) 
 
 (DEFUN |INS-;nextItem;SU;23| (|n| $)
   (COND
-    ((SPADCALL |n| (|getShellEntry| $ 66))
-     (CONS 0 (|spadConstant| $ 22)))
-    ((SPADCALL |n| (|spadConstant| $ 10) (|getShellEntry| $ 16))
-     (CONS 0 (SPADCALL |n| (|getShellEntry| $ 19))))
+    ((SPADCALL |n| (|shellEntry| $ 66)) (CONS 0 (|spadConstant| $ 22)))
+    ((SPADCALL |n| (|spadConstant| $ 10) (|shellEntry| $ 16))
+     (CONS 0 (SPADCALL |n| (|shellEntry| $ 19))))
     (T (CONS 0
-             (SPADCALL (|spadConstant| $ 22) |n|
-                 (|getShellEntry| $ 67)))))) 
+             (SPADCALL (|spadConstant| $ 22) |n| (|shellEntry| $ 67)))))) 
 
 (DEFUN |INS-;patternMatch;SP2Pmr;24| (|x| |p| |l| $)
-  (SPADCALL |x| |p| |l| (|getShellEntry| $ 72))) 
+  (SPADCALL |x| |p| |l| (|shellEntry| $ 72))) 
 
 (DEFUN |INS-;rational;SF;25| (|x| $)
-  (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))
-      (|getShellEntry| $ 76))) 
+  (SPADCALL (SPADCALL |x| (|shellEntry| $ 30)) (|shellEntry| $ 76))) 
 
 (DEFUN |INS-;rationalIfCan;SU;26| (|x| $)
   (CONS 0
-        (SPADCALL (SPADCALL |x| (|getShellEntry| $ 30))
-            (|getShellEntry| $ 76)))) 
+        (SPADCALL (SPADCALL |x| (|shellEntry| $ 30))
+            (|shellEntry| $ 76)))) 
 
 (DEFUN |INS-;symmetricRemainder;3S;27| (|x| |n| $)
-  (LET ((|r| (SPADCALL |x| |n| (|getShellEntry| $ 80))))
+  (LET ((|r| (SPADCALL |x| |n| (|shellEntry| $ 80))))
     (COND
-      ((SPADCALL |r| (|spadConstant| $ 10) (|getShellEntry| $ 27)) |r|)
+      ((SPADCALL |r| (|spadConstant| $ 10) (|shellEntry| $ 27)) |r|)
       (T (SEQ (COND
                 ((SPADCALL |n| (|spadConstant| $ 10)
-                     (|getShellEntry| $ 28))
-                 (SETQ |n| (SPADCALL |n| (|getShellEntry| $ 19)))))
+                     (|shellEntry| $ 28))
+                 (SETQ |n| (SPADCALL |n| (|shellEntry| $ 19)))))
               (EXIT (COND
                       ((SPADCALL |r| (|spadConstant| $ 10)
-                           (|getShellEntry| $ 16))
+                           (|shellEntry| $ 16))
                        (COND
                          ((SPADCALL
-                              (SPADCALL 2 |r| (|getShellEntry| $ 82))
-                              |n| (|getShellEntry| $ 16))
-                          (SPADCALL |r| |n| (|getShellEntry| $ 67)))
+                              (SPADCALL 2 |r| (|shellEntry| $ 82)) |n|
+                              (|shellEntry| $ 16))
+                          (SPADCALL |r| |n| (|shellEntry| $ 67)))
                          (T |r|)))
                       ((NOT (SPADCALL
                                 (SPADCALL
                                     (SPADCALL 2 |r|
-                                     (|getShellEntry| $ 82))
-                                    |n| (|getShellEntry| $ 83))
+                                     (|shellEntry| $ 82))
+                                    |n| (|shellEntry| $ 83))
                                 (|spadConstant| $ 10)
-                                (|getShellEntry| $ 16)))
-                       (SPADCALL |r| |n| (|getShellEntry| $ 83)))
+                                (|shellEntry| $ 16)))
+                       (SPADCALL |r| |n| (|shellEntry| $ 83)))
                       (T |r|)))))))) 
 
 (DEFUN |INS-;invmod;3S;28| (|a| |b| $)
   (PROG (|c| |c1| |d| |d1| |q| |r| |r1|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |a| (|getShellEntry| $ 85))
-              (SETQ |a| (SPADCALL |a| |b| (|getShellEntry| $ 86)))))
+             ((SPADCALL |a| (|shellEntry| $ 85))
+              (SETQ |a| (SPADCALL |a| |b| (|shellEntry| $ 86)))))
            (LETT |c| |a| |INS-;invmod;3S;28|)
            (LETT |c1| (|spadConstant| $ 22) |INS-;invmod;3S;28|)
            (LETT |d| |b| |INS-;invmod;3S;28|)
            (LETT |d1| (|spadConstant| $ 10) |INS-;invmod;3S;28|)
            (LOOP
              (COND
-               ((NOT (NOT (SPADCALL |d| (|getShellEntry| $ 66))))
+               ((NOT (NOT (SPADCALL |d| (|shellEntry| $ 66))))
                 (RETURN NIL))
-               (T (SEQ (LETT |q|
-                             (SPADCALL |c| |d| (|getShellEntry| $ 87))
+               (T (SEQ (LETT |q| (SPADCALL |c| |d| (|shellEntry| $ 87))
                              |INS-;invmod;3S;28|)
                        (LETT |r|
                              (SPADCALL |c|
-                                 (SPADCALL |q| |d|
-                                     (|getShellEntry| $ 88))
-                                 (|getShellEntry| $ 67))
+                                 (SPADCALL |q| |d| (|shellEntry| $ 88))
+                                 (|shellEntry| $ 67))
                              |INS-;invmod;3S;28|)
                        (LETT |r1|
                              (SPADCALL |c1|
                                  (SPADCALL |q| |d1|
-                                     (|getShellEntry| $ 88))
-                                 (|getShellEntry| $ 67))
+                                     (|shellEntry| $ 88))
+                                 (|shellEntry| $ 67))
                              |INS-;invmod;3S;28|)
                        (SETQ |c| |d|) (SETQ |c1| |d1|) (SETQ |d| |r|)
                        (EXIT (SETQ |d1| |r1|))))))
            (COND
-             ((NOT (SPADCALL |c| (|getShellEntry| $ 89)))
+             ((NOT (SPADCALL |c| (|shellEntry| $ 89)))
               (EXIT (|error| "inverse does not exist"))))
            (EXIT (COND
-                   ((SPADCALL |c1| (|getShellEntry| $ 85))
-                    (SPADCALL |c1| |b| (|getShellEntry| $ 83)))
+                   ((SPADCALL |c1| (|shellEntry| $ 85))
+                    (SPADCALL |c1| |b| (|shellEntry| $ 83)))
                    (T |c1|))))))) 
 
 (DEFUN |INS-;powmod;4S;29| (|x| |n| |p| $)
   (PROG (|y| |z|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |x| (|getShellEntry| $ 85))
-              (SETQ |x| (SPADCALL |x| |p| (|getShellEntry| $ 86)))))
+             ((SPADCALL |x| (|shellEntry| $ 85))
+              (SETQ |x| (SPADCALL |x| |p| (|shellEntry| $ 86)))))
            (EXIT (COND
-                   ((SPADCALL |x| (|getShellEntry| $ 66))
+                   ((SPADCALL |x| (|shellEntry| $ 66))
                     (|spadConstant| $ 10))
-                   ((SPADCALL |n| (|getShellEntry| $ 66))
+                   ((SPADCALL |n| (|shellEntry| $ 66))
                     (|spadConstant| $ 22))
                    (T (SEQ (LETT |y| (|spadConstant| $ 22)
                                  |INS-;powmod;4S;29|)
@@ -280,10 +270,10 @@
                                       (SEQ
                                        (COND
                                          ((SPADCALL |n|
-                                           (|getShellEntry| $ 13))
+                                           (|shellEntry| $ 13))
                                           (SETQ |y|
                                            (SPADCALL |y| |z| |p|
-                                            (|getShellEntry| $ 91)))))
+                                            (|shellEntry| $ 91)))))
                                        (EXIT
                                         (COND
                                           ((SPADCALL
@@ -291,16 +281,16 @@
                                              (SPADCALL |n|
                                               (SPADCALL
                                                (|spadConstant| $ 22)
-                                               (|getShellEntry| $ 19))
-                                              (|getShellEntry| $ 20)))
-                                            (|getShellEntry| $ 66))
+                                               (|shellEntry| $ 19))
+                                              (|shellEntry| $ 20)))
+                                            (|shellEntry| $ 66))
                                            (RETURN-FROM
                                             |INS-;powmod;4S;29|
                                              |y|))
                                           (T
                                            (SETQ |z|
                                             (SPADCALL |z| |z| |p|
-                                             (|getShellEntry| $ 91))))))))))))))))))) 
+                                             (|shellEntry| $ 91))))))))))))))))))) 
 
 (DEFUN |IntegerNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

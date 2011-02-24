@@ -21,8 +21,8 @@
                 |LNAGG-;maxIndex;AI;6|)) 
 
 (DEFUN |LNAGG-;indices;AL;1| (|a| $)
-  (LET ((|i| (SPADCALL |a| (|getShellEntry| $ 9)))
-        (#0=#:G1387 (SPADCALL |a| (|getShellEntry| $ 10)))
+  (LET ((|i| (SPADCALL |a| (|shellEntry| $ 9)))
+        (#0=#:G1387 (SPADCALL |a| (|shellEntry| $ 10)))
         (#1=#:G1386 NIL))
     (LOOP
       (COND
@@ -32,25 +32,25 @@
 
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
   (COND
-    ((NOT (< |i| (SPADCALL |a| (|getShellEntry| $ 9))))
-     (NOT (< (SPADCALL |a| (|getShellEntry| $ 10)) |i|)))
+    ((NOT (< |i| (SPADCALL |a| (|shellEntry| $ 9))))
+     (NOT (< (SPADCALL |a| (|shellEntry| $ 10)) |i|)))
     (T NIL))) 
 
 (DEFUN |LNAGG-;concat;ASA;3| (|a| |x| $)
-  (SPADCALL |a| (SPADCALL 1 |x| (|getShellEntry| $ 22))
-      (|getShellEntry| $ 23))) 
+  (SPADCALL |a| (SPADCALL 1 |x| (|shellEntry| $ 22))
+      (|shellEntry| $ 23))) 
 
 (DEFUN |LNAGG-;concat;S2A;4| (|x| |y| $)
-  (SPADCALL (SPADCALL 1 |x| (|getShellEntry| $ 22)) |y|
-      (|getShellEntry| $ 23))) 
+  (SPADCALL (SPADCALL 1 |x| (|shellEntry| $ 22)) |y|
+      (|shellEntry| $ 23))) 
 
 (DEFUN |LNAGG-;insert;SAIA;5| (|x| |a| |i| $)
-  (SPADCALL (SPADCALL 1 |x| (|getShellEntry| $ 22)) |a| |i|
-      (|getShellEntry| $ 26))) 
+  (SPADCALL (SPADCALL 1 |x| (|shellEntry| $ 22)) |a| |i|
+      (|shellEntry| $ 26))) 
 
 (DEFUN |LNAGG-;maxIndex;AI;6| (|l| $)
-  (+ (- (SPADCALL |l| (|getShellEntry| $ 28)) 1)
-     (SPADCALL |l| (|getShellEntry| $ 9)))) 
+  (+ (- (SPADCALL |l| (|shellEntry| $ 28)) 1)
+     (SPADCALL |l| (|shellEntry| $ 9)))) 
 
 (DEFUN |LinearAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

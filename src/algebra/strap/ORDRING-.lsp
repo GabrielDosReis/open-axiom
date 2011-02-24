@@ -14,24 +14,24 @@
                 |ORDRING-;abs;2S;4|)) 
 
 (DEFUN |ORDRING-;positive?;SB;1| (|x| $)
-  (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 9))) 
+  (SPADCALL |x| (|spadConstant| $ 7) (|shellEntry| $ 9))) 
 
 (DEFUN |ORDRING-;negative?;SB;2| (|x| $)
-  (SPADCALL |x| (|spadConstant| $ 7) (|getShellEntry| $ 11))) 
+  (SPADCALL |x| (|spadConstant| $ 7) (|shellEntry| $ 11))) 
 
 (DEFUN |ORDRING-;sign;SI;3| (|x| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 13)) 1)
-    ((SPADCALL |x| (|getShellEntry| $ 16)) -1)
-    ((SPADCALL |x| (|getShellEntry| $ 19)) 0)
+    ((SPADCALL |x| (|shellEntry| $ 13)) 1)
+    ((SPADCALL |x| (|shellEntry| $ 16)) -1)
+    ((SPADCALL |x| (|shellEntry| $ 19)) 0)
     (T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |ORDRING-;abs;2S;4| (|x| $)
   (COND
-    ((SPADCALL |x| (|getShellEntry| $ 13)) |x|)
-    ((SPADCALL |x| (|getShellEntry| $ 16))
-     (SPADCALL |x| (|getShellEntry| $ 22)))
-    ((SPADCALL |x| (|getShellEntry| $ 19)) (|spadConstant| $ 7))
+    ((SPADCALL |x| (|shellEntry| $ 13)) |x|)
+    ((SPADCALL |x| (|shellEntry| $ 16))
+     (SPADCALL |x| (|shellEntry| $ 22)))
+    ((SPADCALL |x| (|shellEntry| $ 19)) (|spadConstant| $ 7))
     (T (|error| "x satisfies neither positive?, negative? or zero?")))) 
 
 (DEFUN |OrderedRing&| (|#1|)

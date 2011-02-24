@@ -12,11 +12,11 @@
     (RETURN
       (SPADCALL
           (SPADCALL
-              (LETT |s| (SPADCALL |x| (|getShellEntry| $ 8))
+              (LETT |s| (SPADCALL |x| (|shellEntry| $ 8))
                     |UFD-;squareFreePart;2S;1|)
-              (|getShellEntry| $ 10))
+              (|shellEntry| $ 10))
           (LET ((#0=#:G1380 NIL) (#1=#:G1381 T)
-                (#2=#:G1394 (SPADCALL |s| (|getShellEntry| $ 14))))
+                (#2=#:G1394 (SPADCALL |s| (|shellEntry| $ 14))))
             (LOOP
               (COND
                 ((ATOM #2#)
@@ -27,15 +27,15 @@
                          (#1# (SETQ #0# #3#))
                          (T (SETQ #0#
                                   (SPADCALL #0# #3#
-                                      (|getShellEntry| $ 15)))))
+                                      (|shellEntry| $ 15)))))
                        (SETQ #1# NIL)))))
               (SETQ #2# (CDR #2#))))
-          (|getShellEntry| $ 15))))) 
+          (|shellEntry| $ 15))))) 
 
 (DEFUN |UFD-;prime?;SB;2| (|x| $)
   (EQL (LIST-LENGTH
-           (SPADCALL (SPADCALL |x| (|getShellEntry| $ 18))
-               (|getShellEntry| $ 22)))
+           (SPADCALL (SPADCALL |x| (|shellEntry| $ 18))
+               (|shellEntry| $ 22)))
        1)) 
 
 (DEFUN |UniqueFactorizationDomain&| (|#1|)

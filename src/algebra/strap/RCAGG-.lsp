@@ -12,14 +12,13 @@
                 |RCAGG-;child?;2AB;3|)) 
 
 (DEFUN |RCAGG-;elt;AvalueS;1| (|x| T0 $)
-  (SPADCALL |x| (|getShellEntry| $ 8))) 
+  (SPADCALL |x| (|shellEntry| $ 8))) 
 
 (DEFUN |RCAGG-;setelt;Avalue2S;2| (|x| T1 |y| $)
-  (SPADCALL |x| |y| (|getShellEntry| $ 11))) 
+  (SPADCALL |x| |y| (|shellEntry| $ 11))) 
 
 (DEFUN |RCAGG-;child?;2AB;3| (|x| |l| $)
-  (SPADCALL |x| (SPADCALL |l| (|getShellEntry| $ 14))
-      (|getShellEntry| $ 17))) 
+  (SPADCALL |x| (SPADCALL |l| (|shellEntry| $ 14)) (|shellEntry| $ 17))) 
 
 (DEFUN |RecursiveAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
