@@ -49,7 +49,7 @@
                                         (ATTRIBUTE |arbitraryExponent|))))))
                         '((|approximate| T))
                         '((|PositiveInteger|) (|Integer|)) NIL))))
-    (|setShellEntry| #0# 0 '(|FloatingPointSystem|))
+    (SETF (|shellEntry| #0# 0) '(|FloatingPointSystem|))
     #0#)) 
 
 (DEFUN |FloatingPointSystem| ()

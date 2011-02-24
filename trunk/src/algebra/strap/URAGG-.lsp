@@ -488,43 +488,45 @@
          ($ (|newShell| 88))
          (|pv$| (|buildPredVector| 0 0
                     (LIST (|HasAttribute| |#1| '|shallowlyMutable|)))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     (COND
       ((|HasAttribute| |#1| '|finiteAggregate|)
-       (|setShellEntry| $ 64
-           (CONS (|dispatchFunction| |URAGG-;last;ANniA;22|) $))))
+       (SETF (|shellEntry| $ 64)
+             (CONS (|dispatchFunction| |URAGG-;last;ANniA;22|) $))))
     (COND
       ((|HasCategory| |#2| '(|SetCategory|))
        (PROGN
-         (|setShellEntry| $ 67
-             (CONS (|dispatchFunction| |URAGG-;=;2AB;23|) $))
-         (|setShellEntry| $ 69
-             (CONS (|dispatchFunction| |URAGG-;node?;2AB;24|) $)))))
+         (SETF (|shellEntry| $ 67)
+               (CONS (|dispatchFunction| |URAGG-;=;2AB;23|) $))
+         (SETF (|shellEntry| $ 69)
+               (CONS (|dispatchFunction| |URAGG-;node?;2AB;24|) $)))))
     (COND
       ((|testBitVector| |pv$| 1)
        (PROGN
-         (|setShellEntry| $ 71
-             (CONS (|dispatchFunction| |URAGG-;setelt;Afirst2S;25|) $))
-         (|setShellEntry| $ 73
-             (CONS (|dispatchFunction| |URAGG-;setelt;Alast2S;26|) $))
-         (|setShellEntry| $ 75
-             (CONS (|dispatchFunction| |URAGG-;setelt;Arest2A;27|) $))
-         (|setShellEntry| $ 77
-             (CONS (|dispatchFunction| |URAGG-;concat;3A;28|) $))
-         (|setShellEntry| $ 78
-             (CONS (|dispatchFunction| |URAGG-;setlast!;A2S;29|) $))
-         (|setShellEntry| $ 81
-             (CONS (|dispatchFunction| |URAGG-;setchildren!;ALA;30|) $))
-         (|setShellEntry| $ 82
-             (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|) $))
-         (|setShellEntry| $ 85
-             (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
-         (|setShellEntry| $ 86
-             (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|) $)))))
+         (SETF (|shellEntry| $ 71)
+               (CONS (|dispatchFunction| |URAGG-;setelt;Afirst2S;25|)
+                     $))
+         (SETF (|shellEntry| $ 73)
+               (CONS (|dispatchFunction| |URAGG-;setelt;Alast2S;26|) $))
+         (SETF (|shellEntry| $ 75)
+               (CONS (|dispatchFunction| |URAGG-;setelt;Arest2A;27|) $))
+         (SETF (|shellEntry| $ 77)
+               (CONS (|dispatchFunction| |URAGG-;concat;3A;28|) $))
+         (SETF (|shellEntry| $ 78)
+               (CONS (|dispatchFunction| |URAGG-;setlast!;A2S;29|) $))
+         (SETF (|shellEntry| $ 81)
+               (CONS (|dispatchFunction| |URAGG-;setchildren!;ALA;30|)
+                     $))
+         (SETF (|shellEntry| $ 82)
+               (CONS (|dispatchFunction| |URAGG-;setvalue!;A2S;31|) $))
+         (SETF (|shellEntry| $ 85)
+               (CONS (|dispatchFunction| |URAGG-;split!;AIA;32|) $))
+         (SETF (|shellEntry| $ 86)
+               (CONS (|dispatchFunction| |URAGG-;cycleSplit!;2A;33|) $)))))
     $)) 
 
 (MAKEPROP '|UnaryRecursiveAggregate&| '|infovec|

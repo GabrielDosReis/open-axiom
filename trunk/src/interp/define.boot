@@ -73,7 +73,6 @@ $lisplibCategory := nil
 $lisplibAncestors := nil
 $lisplibAbbreviation := nil
 $CheckVectorList := []
-$setelt := nil
 $pairlis := []
 $functorTarget := nil
 $condAlist := []
@@ -513,7 +512,7 @@ compDefineCategory2(form,signature,specialCases,body,m,e,
           [['devaluate,u] for u in sargl]]],body]
     body:=
       ["%bind",[[g:= gensym(),body]],
-         ["setShellEntry",g,0,mkConstructor $form],g]
+         ['%store,['%tref,g,0],mkConstructor $form],g]
     fun:= compile [op',["LAM",sargl,body]]
  
     -- 5. give operator a 'modemap property
@@ -630,7 +629,6 @@ compDefineFunctor1(df is ['DEF,form,signature,nils,body],
     $CheckVectorList: local := nil
     $getDomainCode: local := nil -- code for getting views
     $insideFunctorIfTrue: local:= true
-    $setelt: local := "setShellEntry"
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
@@ -1494,9 +1492,9 @@ doIt(item,$predl) ==
         if $optimizeRep then
           registerInlinableDomain($Representation,$e)
     code is ["%LET",:.] =>
-      item.op := "setShellEntry"
+      item.op := '%store
       rhsCode := rhs'
-      item.rest := ['$,NRTgetLocalIndex lhs,rhsCode]
+      item.args := [['%tref,'$,NRTgetLocalIndex lhs],rhsCode]
     item.op := code.op
     item.rest := rest code
   item is [":",a,t] => [.,.,$e]:= compOrCroak(item,$EmptyMode,$e)

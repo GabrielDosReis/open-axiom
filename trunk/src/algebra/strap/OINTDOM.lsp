@@ -5,7 +5,7 @@
 
 (DEFUN |OrderedIntegralDomain;| ()
   (LET ((#0=#:G1372 (|Join| (|IntegralDomain|) (|OrderedRing|))))
-    (|setShellEntry| #0# 0 '(|OrderedIntegralDomain|))
+    (SETF (|shellEntry| #0# 0) '(|OrderedIntegralDomain|))
     #0#)) 
 
 (DEFUN |OrderedIntegralDomain| ()

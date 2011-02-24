@@ -11,7 +11,7 @@
                                    '(((** ($ $ (|Integer|))) T)
                                      ((|inv| ($ $)) T))
                                    NIL '((|Integer|)) NIL)))))
-    (|setShellEntry| #0# 0 '(|DivisionRing|))
+    (SETF (|shellEntry| #0# 0) '(|DivisionRing|))
     #0#)) 
 
 (DEFUN |DivisionRing| ()

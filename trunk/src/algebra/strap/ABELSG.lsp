@@ -10,7 +10,7 @@
                         '(((+ ($ $ $)) T)
                           ((* ($ (|PositiveInteger|) $)) T))
                         NIL '((|PositiveInteger|)) NIL))))
-    (|setShellEntry| #0# 0 '(|AbelianSemiGroup|))
+    (SETF (|shellEntry| #0# 0) '(|AbelianSemiGroup|))
     #0#)) 
 
 (DEFUN |AbelianSemiGroup| ()

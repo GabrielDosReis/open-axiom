@@ -21,8 +21,8 @@
                                         ((|Boolean|) $))
                                        T))
                                     NIL '((|Boolean|)) NIL))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|StreamAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|StreamAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |StreamAggregate| (#0=#:G1380)

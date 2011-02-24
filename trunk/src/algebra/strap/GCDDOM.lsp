@@ -19,7 +19,7 @@
                         NIL
                         '((|SparseUnivariatePolynomial| $) (|List| $))
                         NIL))))
-    (|setShellEntry| #0# 0 '(|GcdDomain|))
+    (SETF (|shellEntry| #0# 0) '(|GcdDomain|))
     #0#)) 
 
 (DEFUN |GcdDomain| ()

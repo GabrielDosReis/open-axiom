@@ -36,7 +36,7 @@
                         '((|List| $) (|NonNegativeInteger|)
                           (|Boolean|))
                         NIL))))
-    (|setShellEntry| #0# 0 '(|EuclideanDomain|))
+    (SETF (|shellEntry| #0# 0) '(|EuclideanDomain|))
     #0#)) 
 
 (DEFUN |EuclideanDomain| ()

@@ -193,9 +193,9 @@
                                        |t#1|)
                                       (|List| (|NonNegativeInteger|)))
                                     NIL))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|PolynomialCategory| (|devaluate| |t#1|)
-              (|devaluate| |t#2|) (|devaluate| |t#3|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|PolynomialCategory| (|devaluate| |t#1|)
+                (|devaluate| |t#2|) (|devaluate| |t#3|)))
     #0#)) 
 
 (DEFUN |PolynomialCategory| (&REST #0=#:G1394 &AUX #1=#:G1392)

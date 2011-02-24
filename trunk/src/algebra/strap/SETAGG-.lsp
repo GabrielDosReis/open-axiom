@@ -33,11 +33,11 @@
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|SetAggregate&| |dv$1| |dv$2|))
          ($ (|newShell| 16)) (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     $)) 
 
 (MAKEPROP '|SetAggregate&| '|infovec|

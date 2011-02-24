@@ -66,7 +66,8 @@
                                        (|has| |t#1|
                                         (|ConvertibleTo| (|InputForm|)))))
                                     '((|List| |t#1|)) NIL))))))))
-    (|setShellEntry| #0# 0 (LIST '|Collection| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|Collection| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |Collection| (#0=#:G1373)

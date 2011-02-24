@@ -28,19 +28,19 @@
          (|pv$| (|buildPredVector| 0 0
                     (LIST (|HasAttribute| |#1| '|shallowlyMutable|)
                           (|HasCategory| |#2| '(|SetCategory|))))))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     (COND
       ((|testBitVector| |pv$| 1)
-       (|setShellEntry| $ 12
-           (CONS (|dispatchFunction| |RCAGG-;setelt;Avalue2S;2|) $))))
+       (SETF (|shellEntry| $ 12)
+             (CONS (|dispatchFunction| |RCAGG-;setelt;Avalue2S;2|) $))))
     (COND
       ((|testBitVector| |pv$| 2)
-       (|setShellEntry| $ 18
-           (CONS (|dispatchFunction| |RCAGG-;child?;2AB;3|) $))))
+       (SETF (|shellEntry| $ 18)
+             (CONS (|dispatchFunction| |RCAGG-;child?;2AB;3|) $))))
     $)) 
 
 (MAKEPROP '|RecursiveAggregate&| '|infovec|

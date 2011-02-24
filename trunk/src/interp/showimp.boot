@@ -197,11 +197,11 @@ getDomainRefName(dom,nam) ==
   not integer? nam => nam
   slot := dom.nam
   vector? slot => slot.0
-  slot is ["setShellEntry",:.] => 
+  slot is ['%store,:.] => 
     getDomainRefName(dom,getDomainSeteltForm slot)
   slot
 
-getDomainSeteltForm ["setShellEntry",.,.,form] ==
+getDomainSeteltForm ['%store,.,form] ==
   form is ['evalSlotDomain,u,d] => devaluateSlotDomain(u,d)
   vector? form => systemError()
   form

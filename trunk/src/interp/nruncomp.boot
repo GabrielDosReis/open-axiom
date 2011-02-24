@@ -365,7 +365,7 @@ consDomainForm(x,dc) ==
 NRTdescendCodeTran(u,condList) ==
   null u => nil
   u is ['%list] => nil
-  u is ['setShellEntry,.,i,a] =>
+  u is ['%store,['%tref,.,i],a] =>
     null condList and a is ['CONS,fn,:.] =>
       u.first := '%list
       u.rest := nil
@@ -472,11 +472,11 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
   NRTdescendCodeTran(storeOperationCode,nil) --side effects storeOperationCode
   codePart2:=
     argStuffCode :=
-      [[$setelt,'$,i,v] for i in $NRTbase.. for v in $FormalMapVariableList
+      [['%store,['%tref,'$,i],v] for i in $NRTbase.. for v in $FormalMapVariableList
 	for arg in args]
     if MEMQ($NRTaddForm,$locals) then
        addargname := $FormalMapVariableList.(POSN1($NRTaddForm,$locals))
-       argStuffCode := [[$setelt,'$,5,addargname],:argStuffCode]
+       argStuffCode := [['%store,['%tref,'$,5],addargname],:argStuffCode]
     [['stuffDomainSlots,'$],:argStuffCode,
        :predBitVectorCode2,storeOperationCode]
 
@@ -492,8 +492,8 @@ buildFunctor($definition is [name,:args],sig,code,$locals,$e) ==
 
   --CODE: part 1
   codePart1:= [setVector0Code, slot3Code,:slamCode] where
-    setVector0Code:=[$setelt,"$",0,"dv$"]
-    slot3Code := [$setelt,"$",3,"pv$"]
+    setVector0Code:=['%store,['%tref,"$",0],"dv$"]
+    slot3Code := ['%store,['%tref,"$",3],"pv$"]
     slamCode:=
       isCategoryPackageName name => nil
       [NRTaddToSlam($definition,"$")]

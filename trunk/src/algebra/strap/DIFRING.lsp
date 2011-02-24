@@ -5,7 +5,7 @@
 
 (DEFUN |DifferentialRing;| ()
   (LET ((#0=#:G1372 (|Join| (|Ring|) (|DifferentialSpace|))))
-    (|setShellEntry| #0# 0 '(|DifferentialRing|))
+    (SETF (|shellEntry| #0# 0) '(|DifferentialRing|))
     #0#)) 
 
 (DEFUN |DifferentialRing| ()

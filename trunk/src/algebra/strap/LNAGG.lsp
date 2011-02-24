@@ -60,8 +60,8 @@
                                           (|Integer|) (|List| $)
                                           (|NonNegativeInteger|))
                                         NIL)))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|LinearAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|LinearAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |LinearAggregate| (#0=#:G1376)

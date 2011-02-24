@@ -29,9 +29,9 @@
                                              |t#1| $))
                                            T))
                                         NIL 'NIL NIL)))))))))
-    (|setShellEntry| #0# 0
-        (LIST '|AssociationListAggregate| (|devaluate| |t#1|)
-              (|devaluate| |t#2|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|AssociationListAggregate| (|devaluate| |t#1|)
+                (|devaluate| |t#2|)))
     #0#)) 
 
 (DEFUN |AssociationListAggregate| (&REST #0=#:G1377 &AUX #1=#:G1375)

@@ -22,7 +22,7 @@
                               ((|truncate| ($ $)) T)
                               ((|round| ($ $)) T) ((|abs| ($ $)) T))
                             NIL '((|Integer|)) NIL)))))
-    (|setShellEntry| #0# 0 '(|RealNumberSystem|))
+    (SETF (|shellEntry| #0# 0) '(|RealNumberSystem|))
     #0#)) 
 
 (DEFUN |RealNumberSystem| ()

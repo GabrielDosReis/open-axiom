@@ -529,7 +529,7 @@
 
 (DEFUN |OUTFORM;doubleFloatFormat;2S;1| (|s| $)
   (LET ((|ss| (SVREF $ 6)))
-    (SEQ (|setShellEntry| $ 6 |s|) (EXIT |ss|)))) 
+    (SEQ (SETF (|shellEntry| $ 6) |s|) (EXIT |ss|)))) 
 
 (DEFUN |OUTFORM;sform| (|s| $) (DECLARE (IGNORE $)) |s|) 
 
@@ -988,11 +988,11 @@
   (DECLARE (SPECIAL |$ConstructorCache|))
   (LET ((|dv$| '(|OutputForm|)) ($ (|newShell| 150))
         (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|haddProp| |$ConstructorCache| '|OutputForm| NIL (CONS 1 $))
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 "~G")
+    (SETF (|shellEntry| $ 6) "~G")
     $)) 
 
 (MAKEPROP '|OutputForm| '|infovec|

@@ -18,7 +18,7 @@
                           ((|associates?| ((|Boolean|) $ $)) T)
                           ((|unit?| ((|Boolean|) $)) T))
                         NIL '((|Boolean|)) NIL))))
-    (|setShellEntry| #0# 0 '(|IntegralDomain|))
+    (SETF (|shellEntry| #0# 0) '(|IntegralDomain|))
     #0#)) 
 
 (DEFUN |IntegralDomain| ()

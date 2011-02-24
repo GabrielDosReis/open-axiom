@@ -73,7 +73,6 @@ compDefineFunctor1(df, m,$e,$prefix,$formalArgList) ==
                   --prevents CheckVector from printing out same message twice
     $getDomainCode: local -- code for getting views
     $insideFunctorIfTrue: local:= true
-    $setelt: local := "setShellEntry"
     $genSDVar: local:= 0
     originale:= $e
     [$op,:argl]:= form
@@ -1067,8 +1066,8 @@ doItLet1 item ==
   qe(6,$e)
   code is ["%LET",:.] =>
       rhsCode:= rhs'
-      op := "setShellEntry"
-      wiReplaceNode(item,[op,'$,NRTgetLocalIndex lhs,rhsCode], 16)
+      op := '%store
+      wiReplaceNode(item,[op,['%tref,'$,NRTgetLocalIndex lhs],rhsCode], 16)
   wiReplaceNode(item, code, 18)
 
 rhsOfLetIsDomainForm code ==

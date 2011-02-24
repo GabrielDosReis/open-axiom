@@ -13,7 +13,7 @@
                           ((** ($ $ (|NonNegativeInteger|))) T)
                           ((|recip| ((|Union| $ "failed") $)) T))
                         NIL '((|NonNegativeInteger|) (|Boolean|)) NIL))))
-    (|setShellEntry| #0# 0 '(|Monoid|))
+    (SETF (|shellEntry| #0# 0) '(|Monoid|))
     #0#)) 
 
 (DEFUN |Monoid| ()

@@ -54,20 +54,21 @@
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IntegralDomain&| |dv$1|)) ($ (|newShell| 23))
          (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     (COND
       ((|HasCategory| |#1| '(|Field|)))
-      (T (|setShellEntry| $ 9
-             (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
+      (T (SETF (|shellEntry| $ 9)
+               (CONS (|dispatchFunction| |INTDOM-;unitNormal;SR;1|) $))))
     (COND
       ((|HasAttribute| |#1| '|canonicalUnitNormal|)
-       (|setShellEntry| $ 22
-           (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|) $)))
-      (T (|setShellEntry| $ 22
-             (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|) $))))
+       (SETF (|shellEntry| $ 22)
+             (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;5|) $)))
+      (T (SETF (|shellEntry| $ 22)
+               (CONS (|dispatchFunction| |INTDOM-;associates?;2SB;6|)
+                     $))))
     $)) 
 
 (MAKEPROP '|IntegralDomain&| '|infovec|

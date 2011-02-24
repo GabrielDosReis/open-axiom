@@ -31,14 +31,14 @@
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|AbelianMonoid&| |dv$1|)) ($ (|newShell| 20))
          (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
+    (SETF (|shellEntry| $ 6) |#1|)
     (COND
       ((|HasCategory| |#1| '(|Ring|)))
-      (T (|setShellEntry| $ 19
-             (CONS (|dispatchFunction| |ABELMON-;*;Nni2S;4|) $))))
+      (T (SETF (|shellEntry| $ 19)
+               (CONS (|dispatchFunction| |ABELMON-;*;Nni2S;4|) $))))
     $)) 
 
 (MAKEPROP '|AbelianMonoid&| '|infovec|

@@ -17,7 +17,8 @@
                                    (|mkCategory| '|domain|
                                     '(((|list| ($ |t#1|)) T)) NIL 'NIL
                                     NIL))))))))
-    (|setShellEntry| #0# 0 (LIST '|ListAggregate| (|devaluate| |t#1|)))
+    (SETF (|shellEntry| #0# 0)
+          (LIST '|ListAggregate| (|devaluate| |t#1|)))
     #0#)) 
 
 (DEFUN |ListAggregate| (#0=#:G1406)

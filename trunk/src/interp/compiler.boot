@@ -830,7 +830,7 @@ setqSingle(id,val,m,E) ==
       --all we do now is to allocate a slot number for lhs
       --e.g. the %LET form below will be changed by putInLocalDomainReferences
   form :=
-    k := NRTassocIndex(id) => ["setShellEntry","$",k,x]
+    k := NRTassocIndex(id) => ['%store,['%tref,'$,k],x]
     ["%LET",id,x]
   [form,m',e']
 

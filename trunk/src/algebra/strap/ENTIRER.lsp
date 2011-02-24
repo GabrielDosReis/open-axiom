@@ -8,7 +8,7 @@
             (|Join| (|Ring|) (|BiModule| '$ '$)
                     (|mkCategory| '|package| NIL
                         '((|noZeroDivisors| T)) 'NIL NIL))))
-    (|setShellEntry| #0# 0 '(|EntireRing|))
+    (SETF (|shellEntry| #0# 0) '(|EntireRing|))
     #0#)) 
 
 (DEFUN |EntireRing| ()

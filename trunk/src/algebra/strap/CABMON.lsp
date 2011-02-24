@@ -10,7 +10,7 @@
                         '(((|subtractIfCan| ((|Union| $ "failed") $ $))
                            T))
                         NIL 'NIL NIL))))
-    (|setShellEntry| #0# 0 '(|CancellationAbelianMonoid|))
+    (SETF (|shellEntry| #0# 0) '(|CancellationAbelianMonoid|))
     #0#)) 
 
 (DEFUN |CancellationAbelianMonoid| ()

@@ -692,12 +692,11 @@ isDomainInScope(domain,e) ==
  
 isSimple x ==
   atomic? x => true
-  constructor? x.op or
-    isSideEffectFree x.op and (and/[isSimple y for y in x.args])
+  isSideEffectFree x.op and (and/[isSimple y for y in x.args])
  
 isSideEffectFree op ==
-  member(op,$SideEffectFreeFunctionList) or op is ["elt",.,op'] and
-    isSideEffectFree op'
+  op is ["elt",.,op'] => isSideEffectFree op'
+  member(op,$SideEffectFreeFunctionList)
  
 isAlmostSimple x ==
   --returns (<new predicate> . <list of assignments>) or nil
@@ -1047,9 +1046,9 @@ getCapsuleDirectoryEntry slot ==
 updateCapsuleDirectory(item,pred) ==
   pred ~= true => nil
   entry :=
-    item is ["$",slot,["CONS",["dispatchFunction",fun],:.],:.] => [slot,:fun]
-    item is ["$",slot,["CONS","IDENTITY",
-              ["FUNCALL",["dispatchFunction",fun],"$"]]] => [slot,:fun]
+    item is [['$,slot],['CONS,['dispatchFunction,fun],:.],:.] => [slot,:fun]
+    item is [['$,slot],['CONS,'IDENTITY,
+              ['FUNCALL,['dispatchFunction,fun],'$]]] => [slot,:fun]
     nil
   entry = nil => nil
   $capsuleDirectory := [entry,:$capsuleDirectory]

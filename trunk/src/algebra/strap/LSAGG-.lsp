@@ -651,28 +651,28 @@
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))
          (|dv$| (LIST '|ListAggregate&| |dv$1| |dv$2|))
          ($ (|newShell| 78)) (|pv$| (|buildPredVector| 0 0 NIL)))
-    (|setShellEntry| $ 0 |dv$|)
-    (|setShellEntry| $ 3 |pv$|)
+    (SETF (|shellEntry| $ 0) |dv$|)
+    (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
-    (|setShellEntry| $ 6 |#1|)
-    (|setShellEntry| $ 7 |#2|)
+    (SETF (|shellEntry| $ 6) |#1|)
+    (SETF (|shellEntry| $ 7) |#2|)
     (COND
       ((|HasCategory| |#2| '(|SetCategory|))
-       (|setShellEntry| $ 62
-           (CONS (|dispatchFunction| |LSAGG-;reduce;MA3S;17|) $))))
+       (SETF (|shellEntry| $ 62)
+             (CONS (|dispatchFunction| |LSAGG-;reduce;MA3S;17|) $))))
     (COND
       ((|HasCategory| |#2| '(|SetCategory|))
        (PROGN
-         (|setShellEntry| $ 71
-             (CONS (|dispatchFunction| |LSAGG-;position;SA2I;23|) $))
-         (|setShellEntry| $ 74
-             (CONS (|dispatchFunction|
-                       |LSAGG-;removeDuplicates!;2A;24|)
-                   $)))))
+         (SETF (|shellEntry| $ 71)
+               (CONS (|dispatchFunction| |LSAGG-;position;SA2I;23|) $))
+         (SETF (|shellEntry| $ 74)
+               (CONS (|dispatchFunction|
+                         |LSAGG-;removeDuplicates!;2A;24|)
+                     $)))))
     (COND
       ((|HasCategory| |#2| '(|OrderedSet|))
-       (|setShellEntry| $ 76
-           (CONS (|dispatchFunction| |LSAGG-;<;2AB;25|) $))))
+       (SETF (|shellEntry| $ 76)
+             (CONS (|dispatchFunction| |LSAGG-;<;2AB;25|) $))))
     $)) 
 
 (MAKEPROP '|ListAggregate&| '|infovec|

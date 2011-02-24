@@ -1,3 +1,18 @@
+2011-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* interp/sys-macros.lisp (shellEntry): New.
+	* interp/g-util.boot (setShellEntry): Remove.
+	* interp/compiler.boot: Use %store to %tref forms instead of
+	setHSellEntry. 
+	* interp/define.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/nrunfast.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/c-util.boot (isSimple): Tidy.
+	(isSideEffectFree): Likewise.
+	(updateCapsuleDirectory): Likewise.
+
 2011-02-23  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/c-util.boot (isSimple): Accept constructor instantiations.
