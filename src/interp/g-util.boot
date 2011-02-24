@@ -901,11 +901,6 @@ newShell: %Short -> SIMPLE_-ARRAY
 newShell n ==
   MAKE_-ARRAY(n,KEYWORD::INITIAL_-ELEMENT,nil)
 
-++ fetchs the item in the nth entry of a domain shell.
-getShellEntry: (%Shell,%Short) -> %Thing
-getShellEntry(s,i) ==
-  SVREF(s,i)
-
 ++ sets the nth nth entry of a domain shell to an item.
 setShellEntry: (%Shell,%Short,%Thing) -> %Thing
 setShellEntry(s,i,t) ==

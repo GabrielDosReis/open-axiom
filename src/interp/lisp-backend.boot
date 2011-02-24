@@ -583,6 +583,7 @@ for x in [
     -- general utility
     ['%hash,     :'SXHASH],
     ['%equal,    :'EQUAL],
+    ['%tref,     :'getShellEntry],
     ['%sptreq,    :'EQL],               -- system pointer equality
     ['%lam,      :'LAMBDA],
     ['%leave,    :'RETURN],
