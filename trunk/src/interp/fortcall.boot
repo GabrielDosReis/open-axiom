@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -107,7 +107,7 @@ writeCFile(name,args,fortranArgs,dummies,decls,results,returnType,asps,fp) ==
     routineName := name
   -- If it is a function then give it somewhere to stick its result:
   if returnType then
-    returnName := INTERN strconc(name,'"__result")
+    returnName := makeSymbol strconc(name,'"__result")
     wl(['"    ",getCType returnType,'" ",returnName,'",",routineName,'"();"],fp)
   -- print out type declarations for the Fortran parameters, and build an
   -- ordered list of pairs [<parameter> , <type>]
@@ -300,18 +300,18 @@ makeSpadFun(name,userArgs,args,dummies,decls,results,returnType,asps,aspInfo,
 
   -- To make sure the spad interpreter isn't confused:
   if returnType then
-    returnName := INTERN strconc(name,'"Result")
+    returnName := makeSymbol strconc(name,'"Result")
     decls := [[returnType,returnName], :decls]
     results := [returnName, :results]
-  argNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in userArgs]
+  argNames := [makeSymbol strconc(STRINGIMAGE(u),'"__arg") for u in userArgs]
   aType := [axiomType(a,decls,asps,aspInfo) for a in userArgs]
   aspTypes := [second NTH(POSITION(u,userArgs),aType) for u in asps]
   nilLst := MAKE_-LIST(#args+1)
   decPar := [["$elt","Lisp","construct"],:makeLispList decls]
-  fargNames := [INTERN strconc(STRINGIMAGE(u),'"__arg") for u in args |
+  fargNames := [makeSymbol strconc(STRINGIMAGE(u),'"__arg") for u in args |
                  not (MEMQ(u,dummies) or MEMQ(u,asps)) ]
   for u in asps repeat
-    fargNames := delete(INTERN strconc(STRINGIMAGE(u),'"__arg"),fargNames)
+    fargNames := delete(makeSymbol strconc(STRINGIMAGE(u),'"__arg"),fargNames)
   resPar := ["construct",["@",["construct",:fargNames],_
              ["List",["Any"]]]]
   call := [["$elt","Lisp","invokeFortran"],strconc(file,'".spadexe"),_
@@ -363,7 +363,7 @@ makeAspGenerators(asps,types,aspId) ==
 makeAspGenerators1(asp,type,aspId) ==
   [[["$elt","FOP","pushFortranOutputStack"] ,_
     ["filename",'"",strconc(STRINGIMAGE asp,aspId),'"f"]] , _
-   makeOutputAsFortran INTERN strconc(STRINGIMAGE(asp),'"__arg"), _
+   makeOutputAsFortran makeSymbol strconc(STRINGIMAGE(asp),'"__arg"), _
    [["$elt","FOP","popFortranOutputStack"]]   _
   ]
 

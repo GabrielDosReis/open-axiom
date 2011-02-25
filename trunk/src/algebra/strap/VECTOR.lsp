@@ -28,17 +28,15 @@
 
 (DEFUN |Vector| (#0=#:G1383)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1384)
-    (RETURN
-      (COND
-        ((SETQ #1#
-               (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
-                   (HGET |$ConstructorCache| '|Vector|)
-                   '|domainEqualList|))
-         (|CDRwithIncrement| #1#))
-        (T (UNWIND-PROTECT
-             (PROG1 (|Vector;| #0#) (SETQ #1# T))
-             (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|))))))))) 
+  (LET ((#1=#:G1384
+            (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
+                (HGET |$ConstructorCache| '|Vector|)
+                '|domainEqualList|)))
+    (COND
+      (#1# (|CDRwithIncrement| #1#))
+      (T (UNWIND-PROTECT
+           (PROG1 (|Vector;| #0#) (SETQ #1# T))
+           (COND ((NOT #1#) (HREM |$ConstructorCache| '|Vector|)))))))) 
 
 (DEFUN |Vector;| (|#1|)
   (DECLARE (SPECIAL |$ConstructorCache|))

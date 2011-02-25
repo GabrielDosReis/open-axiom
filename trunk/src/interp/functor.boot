@@ -74,7 +74,7 @@ DomainPrint1(D,brief,$e) ==
              --if we were passed a vector, go to the domain
   Sublis:=
     [:
-      [[rest u,:INTERNL strconc('"View",STRINGIMAGE i)]
+      [[rest u,:makeSymbol strconc('"View",STRINGIMAGE i)]
         for u in D for i in 1..],:$Sublis]
   for u in D for i in 1.. repeat
     brief and i>1 => nil
@@ -865,7 +865,7 @@ encodeLocalFunctionName op ==
     $prefix => $prefix
     $functorForm => getConstructorAbbreviationFromDB first $functorForm
     stackAndThrow('"There is no context for local function %1b",[op]) 
-  INTERN strconc(prefix,'";",encodeItem op)
+  makeSymbol strconc(prefix,'";",encodeItem op)
  
 splitEncodedFunctionName(encodedName, sep) ==
     -- [encodedPackage, encodedItem, encodedSig, sequenceNo] or NIL
@@ -930,6 +930,6 @@ alistSize c ==
  
 addSuffix(n,u) ==
   alphabetic?((s:= STRINGIMAGE u).(MAXINDEX s)) => 
-    INTERN strconc(s,STRINGIMAGE n)
+    makeSymbol strconc(s,STRINGIMAGE n)
   INTERNL strconc(s,STRINGIMAGE ";",STRINGIMAGE n)
  

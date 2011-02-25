@@ -433,7 +433,7 @@ applyMapping([op,:argl],m,e,ml) ==
    -- following needed for referencing local funs at capsule level
         getAbbreviation($op,#rest $form)
       [op',:argl',"$"] where
-        op':= INTERN strconc(encodeItem nprefix,";",encodeItem op)
+        op':= makeSymbol strconc(encodeItem nprefix,";",encodeItem op)
     ['%call,['applyFun,op],:argl']
   pairlis := pairList(argl',$FormalMapVariableList)
   convert([form,SUBLIS(pairlis,first ml),e],m)

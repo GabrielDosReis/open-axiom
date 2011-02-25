@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis
+-- Copyright (C) 2007-2011, Gabriel Dos Reis
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -161,11 +161,11 @@ incFileName x == first incBiteOff x
 fileNameStrings fn==[PNAME(fn.0),PNAME(fn.1),PNAME(fn.2)]
  
 ifCond(s, info) ==
-    word := INTERN StringTrim(incCommandTail(s, info), WhiteSpaceCset)
+    word := makeSymbol StringTrim(incCommandTail(s, info), WhiteSpaceCset)
     ListMemberQ?(word, $inclAssertions)
  
 assertCond(s, info) ==
-    word := INTERN StringTrim(incCommandTail(s, info), WhiteSpaceCset)
+    word := makeSymbol StringTrim(incCommandTail(s, info), WhiteSpaceCset)
     if not ListMemberQ?(word, $inclAssertions) then
         $inclAssertions := [word, :$inclAssertions]
  

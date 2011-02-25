@@ -85,7 +85,7 @@ formatDeftran(u,SEQflag) ==
     ['IF,a,b,c]
   u is ['Union,:argl] => 
     ['Union,:[x for a in argl 
-      | x := (string? a => [":",INTERN a,'Branch]; formatDeftran(a,nil))]]
+      | x := (string? a => [":",makeSymbol a,'Branch]; formatDeftran(a,nil))]]
   u is [op,:itl,body] and op in '(REPEAT COLLECT) and
     ([nitl,:nbody] := formatDeftranREPEAT(itl,body)) =>
       formatDeftran([op,:nitl,nbody],SEQflag)
@@ -398,7 +398,7 @@ formatREDUCE ["REDUCE",op,.,u] == formatReduce1(op,u)
 formatreduce ["reduce",op,u] == formatReduce1(op,u)
 
 formatReduce1(op,u) ==
-  if string? op then op := INTERN op
+  if string? op then op := makeSymbol op
   id := LASSOC(op,
     '((_+ Zero)(_* One)(append . NIL)(gcd Zero) (lcm One) (strconc . "")(lcm One)))
   formatFunctionCall
@@ -572,7 +572,7 @@ ident2PrintImage s ==
     if not (digit? s.i or alphabetic? s.i or ((c := s.i) = char '?) 
       or (c = char '_!)) then SUFFIX('__,u)
     u:= SUFFIX(s.i,u)
-  INTERN u
+  makeSymbol u
  
 isIdentifier x ==
   IDENTP x =>

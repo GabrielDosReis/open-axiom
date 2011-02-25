@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -489,7 +489,7 @@ postSignature t ==
   t isnt ["%Signature",op,sig] => systemErrorHere ["postSignature",t]
   sig is ["->",:.] =>
     sig1:= postType sig
-    op:= postAtom (string? op => INTERN op; op)
+    op:= postAtom (string? op => makeSymbol op; op)
     ["SIGNATURE",op,:removeSuperfluousMapping killColons sig1]
   ["SIGNATURE",postAtom op,:postType ["->","constant",sig]]
 
@@ -503,7 +503,7 @@ killColons x ==
 postSlash: %ParseTree -> %ParseForm
 postSlash t ==
   t isnt ['_/,a,b] => systemErrorHere ["postSlash",t]
-  string? a => postTran ["%Reduce",INTERN a,b]
+  string? a => postTran ["%Reduce",makeSymbol a,b]
   ['_/,postTran a,postTran b]
 
 removeSuperfluousMapping: %ParseTree -> %ParseForm

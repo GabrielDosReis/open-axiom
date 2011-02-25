@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -269,7 +269,7 @@ coerceRetract(object,t2) ==
   (c := retractByFunction(object, t2)) => c
   t1 is [D,:.] =>
     fun := GETL(D,'retract) or
-           INTERN strconc('"retract",STRINGIMAGE D)
+           makeSymbol strconc('"retract",STRINGIMAGE D)
     functionp fun =>
       PUT(D,'retract,fun)
       c := CATCH('coerceFailure,FUNCALL(fun,object,t2))
@@ -1168,7 +1168,7 @@ coerceIntCommute(obj,target) ==
 
   source is [D,:.] =>
     fun := GETL(D,'coerceCommute) or
-           INTERN strconc('"commute",STRINGIMAGE D)
+           makeSymbol strconc('"commute",STRINGIMAGE D)
     functionp fun =>
       PUT(D,'coerceCommute,fun)
       u := objValUnwrap obj

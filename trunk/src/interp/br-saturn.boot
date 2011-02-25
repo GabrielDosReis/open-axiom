@@ -627,7 +627,7 @@ kPage(line,:options) == --any cat, dom, package, default package
   conname         := opOf conform
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := dbSourceFile INTERN name
+  sourceFileName  := dbSourceFile makeSymbol name
   constrings      :=
     KDR form => dbConformGenUnder form
     [strconc(name,args)]
@@ -1717,7 +1717,7 @@ purgeNewConstructorLines(lines, conlist) ==
 -- screenLocalLine1(line, conlist) ==
 screenLocalLine(line, conlist) ==
   k := dbKind line
-  con := INTERN
+  con := makeSymbol
     k = char 'o or k = char 'a =>
       s := dbPart(line,5,1)
       k := charPosition(char '_(,s,1)

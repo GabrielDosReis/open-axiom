@@ -148,7 +148,7 @@ removeAttributes msg ==
     until item = '"%atend" repeat
         msg     := rest  msg
         item    := first msg
-        attList := [INTERN item,:attList]
+        attList := [makeSymbol item,:attList]
     msg := rest msg
     attList := rest attList
     [msg,attList]
@@ -182,7 +182,7 @@ substituteSegmentedMsg(msg,args) ==
         l := NCONC(nreverse pkey subString(x,2),l)
 
     -- ?name gets replaced by '"Push PF10" or '"Type >b (enter)"
-    (x.0 = char "?") and n > 1 and (v := pushOrTypeFuture(INTERN x,nil)) =>
+    (x.0 = char "?") and n > 1 and (v := pushOrTypeFuture(makeSymbol x,nil)) =>
       l := NCONC(nreverse v,l)
 
     -- x requires parameter substitution

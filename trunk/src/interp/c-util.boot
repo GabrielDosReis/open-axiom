@@ -264,7 +264,7 @@ mkErrorExpr level ==
           highlight(b,a) ==
             atom b =>
               substitute(var,b,a) where
-                var:= INTERN strconc(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
+                var:= makeSymbol strconc(STRINGIMAGE $bright,STRINGIMAGE b,STRINGIMAGE $dim)
             highlight1(b,a) where
               highlight1(b,a) ==
                 atom a => a

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -149,7 +149,7 @@ quote x ==
 bfGenSymbol: () -> %Symbol 
 bfGenSymbol()==
     $GenVarCounter := $GenVarCounter+1
-    INTERN strconc('"bfVar#",toString $GenVarCounter)
+    makeSymbol strconc('"bfVar#",toString $GenVarCounter)
 
 bfColon: %Thing -> %List
 bfColon x== 
@@ -159,7 +159,7 @@ bfColonColon: (%Symbol,%Symbol) -> %Symbol
 bfColonColon(package, name) == 
   %hasFeature KEYWORD::CLISP and package in '(EXT FFI) =>
     FIND_-SYMBOL(PNAME name,package)
-  INTERN(PNAME name, package)
+  makeSymbol(PNAME name, package)
 
 bfSymbol: %Thing -> %Thing 
 bfSymbol x==
@@ -497,7 +497,7 @@ defSheepAndGoats(x)==
       argl = nil =>
 	opassoc := [[op,:body]]
 	[opassoc,[],[]]
-      op1 := INTERN strconc(PNAME $op,'",",PNAME op)
+      op1 := makeSymbol strconc(PNAME $op,'",",PNAME op)
       opassoc := [[op,:op1]]
       defstack := [[op1,args,body]]
       [opassoc,defstack,[]]
@@ -531,7 +531,7 @@ bfLET1(lhs,rhs) ==
     l2 is ["PROGN",:.] => bfMKPROGN [l1,:rest l2]
     if symbol? first l2 then l2 := [l2,:nil]
     bfMKPROGN [l1,:l2,name]
-  g := INTERN strconc('"LETTMP#",toString $letGenVarCounter)
+  g := makeSymbol strconc('"LETTMP#",toString $letGenVarCounter)
   $letGenVarCounter := $letGenVarCounter + 1
   rhs1 := ['L%T,g,rhs]
   let1 := bfLET1(lhs,g)
@@ -568,7 +568,7 @@ bfLET2(lhs,rhs) ==
   lhs is ['APPEND,var1,var2] =>
     patrev := bfISReverse(var2,var1)
     rev := ['REVERSE,rhs]
-    g := INTERN strconc('"LETTMP#", toString $letGenVarCounter)
+    g := makeSymbol strconc('"LETTMP#", toString $letGenVarCounter)
     $letGenVarCounter := $letGenVarCounter + 1
     l2 := bfLET2(patrev,g)
     if cons? l2 and atom first l2 then l2 := [l2,:nil]
@@ -653,7 +653,7 @@ bfIS1(lhs,rhs) ==
     bfAND [bfIS1(lhs,d),bfMKPROGN [l,'T]]
   rhs is ["EQUAL",a] => bfQ(lhs,a)
   cons? lhs =>
-    g := INTERN strconc('"ISTMP#",toString $isGenVarCounter)
+    g := makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     bfMKPROGN [['L%T,g,lhs],bfIS1(g,rhs)]
   rhs is ['CONS,a,b] =>
@@ -670,7 +670,7 @@ bfIS1(lhs,rhs) ==
     bfAND [['CONSP,lhs],a1,b1]
   rhs is ['APPEND,a,b] =>
     patrev := bfISReverse(b,a)
-    g := INTERN strconc('"ISTMP#",toString $isGenVarCounter)
+    g := makeSymbol strconc('"ISTMP#",toString $isGenVarCounter)
     $isGenVarCounter := $isGenVarCounter + 1
     rev := bfAND [['CONSP,lhs],['PROGN,['L%T,g,['REVERSE,lhs]],'T]]
     l2 := bfIS1(g,patrev)
@@ -810,7 +810,7 @@ bfDef1 [op,args,body] ==
  
 shoeLAM (op,args,control,body)==
   margs :=bfGenSymbol()
-  innerfunc:=INTERN strconc(PNAME op,",LAM")
+  innerfunc:= makeSymbol strconc(PNAME op,",LAM")
   [[innerfunc,["LAMBDA",args,body]],
      [op,["MLAMBDA",["&REST",margs],["CONS",["QUOTE", innerfunc],
                     ["WRAP",margs, ["QUOTE", control]]]]]]
@@ -1077,7 +1077,7 @@ bfWhere (context,expr)==
 --    [exp,:shoeReadLispString(s,ind)]
  
 bfCompHash(op,argl,body) ==
-  auxfn:= INTERN strconc(PNAME op,'";")
+  auxfn:= makeSymbol strconc(PNAME op,'";")
   computeFunction:= ["DEFUN",auxfn,argl,:body]
   bfTuple [computeFunction,:bfMain(auxfn,op)]
  
@@ -1091,7 +1091,7 @@ bfMain(auxfn,op)==
   g1:= bfGenSymbol()
   arg:=["&REST",g1]
   computeValue := ['APPLY,["FUNCTION",auxfn],g1]
-  cacheName:= INTERN strconc(PNAME op,'";AL")
+  cacheName:= makeSymbol strconc(PNAME op,'";AL")
   g2:= bfGenSymbol()
   getCode:=   ['GETHASH,g1,cacheName]
   secondPredPair:= [['SETQ,g2,getCode],g2]
@@ -1163,7 +1163,7 @@ bfCI(g,x,y)==
 
 bfCARCDR: (%Short,%Thing) -> %List 
 bfCARCDR(n,g) ==
-  [INTERN strconc('"CA",bfDs n,'"R"),g]
+  [makeSymbol strconc('"CA",bfDs n,'"R"),g]
 
 bfDs: %Short -> %String 
 bfDs n == 
@@ -1313,11 +1313,11 @@ isSimpleNativeType t ==
 
 coreSymbol: %Symbol -> %Symbol
 coreSymbol s ==
-  INTERN(PNAME s, "AxiomCore")
+  makeSymbol(PNAME s, "AxiomCore")
 
 bootSymbol: %Symbol -> %Symbol
 bootSymbol s ==
-  INTERN PNAME s
+  makeSymbol PNAME s
 
 
 unknownNativeTypeError t ==
@@ -1550,7 +1550,7 @@ genCLISPnativeTranslation(op,s,t,op') ==
   -- from the same class.  Consequently, we must allocate C-storage,
   -- copy data there, pass pointers to them, and possibly copy
   -- them back.  Ugh.  
-  n := INTERN strconc(PNAME op, '"%clisp-hack")
+  n := makeSymbol strconc(PNAME op, '"%clisp-hack")
   parms := [gensym '"parm" for x in s]  -- parameters of the forward decl.
 
   -- Now, separate non-simple data from the rest.  This is a triple-list
@@ -1624,13 +1624,13 @@ genSBCLnativeTranslation(op,s,t,op') ==
     
   unstableArgs = nil =>
     [["DEFUN",op,args,
-      [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
-	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"), op',
+      [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
+	[makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), op',
 	  ["FUNCTION",rettype,:argtypes]], :args]]]
   [["DEFUN",op,args,
     [bfColonColon("SB-SYS","WITH-PINNED-OBJECTS"), nreverse unstableArgs,
-      [INTERN('"ALIEN-FUNCALL",'"SB-ALIEN"),
-	[INTERN('"EXTERN-ALIEN",'"SB-ALIEN"), op',
+      [makeSymbol('"ALIEN-FUNCALL",'"SB-ALIEN"),
+	[makeSymbol('"EXTERN-ALIEN",'"SB-ALIEN"), op',
 	  ["FUNCTION",rettype,:argtypes]], :nreverse newArgs]]]]
 
 

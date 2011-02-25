@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ genModuleFinalization(stream) ==
     $currentModuleName = nil =>
        coreError '"current module has no name"
     init := 
-      ["DEFUN", INTERN strconc($currentModuleName,"InitCLispFFI"), nil,
+      ["DEFUN", makeSymbol strconc($currentModuleName,"InitCLispFFI"), nil,
         ["MAPC",["FUNCTION", "FMAKUNBOUND"],
           ["QUOTE",[second d for d in $foreignsDefsForCLisp]]],
           :[["EVAL",["QUOTE",d]] for d in $foreignsDefsForCLisp]]
@@ -657,7 +657,7 @@ shoeItem (str)==
 stripm (x,pk,bt)==
   atom x =>
     symbol? x =>
-      SYMBOL_-PACKAGE x = bt => INTERN(PNAME x,pk)
+      SYMBOL_-PACKAGE x = bt => makeSymbol(PNAME x,pk)
       x
     x
   [stripm(first x,pk,bt),:stripm(rest x,pk,bt)]

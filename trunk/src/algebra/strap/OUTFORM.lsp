@@ -969,18 +969,15 @@
 
 (DEFUN |OutputForm| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1532)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|OutputForm|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
-                                 (LIST (CONS NIL
-                                        (CONS 1 (|OutputForm;|))))))
-               (SETQ #0# T))
-             (COND
-               ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|))))))))) 
+  (LET ((#0=#:G1532 (HGET |$ConstructorCache| '|OutputForm|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|OutputForm|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|OutputForm;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|OutputForm|)))))))) 
 
 (DEFUN |OutputForm;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

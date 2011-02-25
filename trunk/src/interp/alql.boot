@@ -38,7 +38,7 @@ namespace BOOT
 getBrowseDatabase(kind) ==
   $includeUnexposed? : local := true
   not (kind in '("o" "k" "c" "d" "p")) => nil
-  grepConstruct('"*",INTERN kind)
+  grepConstruct('"*",makeSymbol kind)
 
 stringMatches?(pattern,subject) ==
   integer? basicMatch?(pattern,subject) => true

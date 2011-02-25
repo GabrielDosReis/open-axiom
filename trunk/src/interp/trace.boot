@@ -231,33 +231,33 @@ traceOptionError(opt,keys) ==
 
 resetTimers () ==
   for timer in _/TIMERLIST repeat
-    setDynamicBinding(INTERN strconc(timer,'"_,TIMER"),0)
+    setDynamicBinding(makeSymbol strconc(timer,'"_,TIMER"),0)
 
 resetSpacers () ==
   for spacer in _/SPACELIST repeat
-    setDynamicBinding(INTERN strconc(spacer,'"_,SPACE"),0)
+    setDynamicBinding(makeSymbol strconc(spacer,'"_,SPACE"),0)
 
 resetCounters () ==
   for k in _/COUNTLIST repeat
-    setDynamicBinding(INTERN strconc(k,'"_,COUNT"),0)
+    setDynamicBinding(makeSymbol strconc(k,'"_,COUNT"),0)
 
 ptimers() ==
   null _/TIMERLIST => sayBrightly '"   no functions are timed"
   for timer in _/TIMERLIST repeat
     sayBrightly ["  ",:bright timer,'_:,'" ",
-      eval(INTERN strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
+      eval(makeSymbol strconc(timer,'"_,TIMER")) / float $timerTicksPerSecond,'" sec."]
 
 pspacers() ==
   null _/SPACELIST => sayBrightly '"   no functions have space monitored"
   for spacer in _/SPACELIST repeat
     sayBrightly ["  ",:bright spacer,'_:,'" ",
-      eval INTERN strconc(spacer,'"_,SPACE"),'" bytes"]
+      eval makeSymbol strconc(spacer,'"_,SPACE"),'" bytes"]
 
 pcounters() ==
   null _/COUNTLIST => sayBrightly '"   no functions are being counted"
   for k in _/COUNTLIST repeat
     sayBrightly ["  ",:bright k,'_:,'" ",
-      eval INTERN strconc(k,'"_,COUNT"),'" times"]
+      eval makeSymbol strconc(k,'"_,COUNT"),'" times"]
 
 transOnlyOption l ==
   l is [n,:y] =>
@@ -431,7 +431,7 @@ spadTrace(domain,options) ==
   listOfOperations:=
     [g x for x in getOption("OPS",options)] where
       g x ==
-        string? x => INTERN x
+        string? x => makeSymbol x
         x
   if listOfVariables := getOption("VARS",options) then
     options := removeOption("VARS",options)
@@ -497,7 +497,7 @@ traceDomainLocalOps(dom,lops,options) ==
 --  lops = 'all => _/TRACE_,1(actualLops,options)
 --  l := NIL
 --  for lop in lops repeat
---    internalName := INTERN strconc(PNAME abb,'";",PNAME lop)
+--    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
 --    not MEMQ(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
@@ -517,7 +517,7 @@ untraceDomainLocalOps(dom,lops) ==
 --    sayMSG ['"  ",:bright abb,'"has no local functions to untrace."]
 --  l := NIL
 --  for lop in lops repeat
---    internalName := INTERN strconc(PNAME abb,'";",PNAME lop)
+--    internalName := makeSymbol strconc(PNAME abb,'";",PNAME lop)
 --    not MEMQ(internalName,actualLops) =>
 --      sayMSG ['"  ",:bright abb,'"does not have a local",
 --        '" function called",:bright lop]
@@ -545,7 +545,7 @@ traceDomainConstructor(domainConstructor,options) ==
   for [argl,.,:domain] in HGET($ConstructorCache,domainConstructor)
     repeat spadTrace(domain,options)
   SETQ(_/TRACENAMES,[domainConstructor,:_/TRACENAMES])
-  innerDomainConstructor := INTERN strconc(domainConstructor,'";")
+  innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then domainConstructor := innerDomainConstructor
   EMBED(domainConstructor,
     ['LAMBDA, ['_&REST, 'args],
@@ -565,7 +565,7 @@ untraceDomainConstructor domainConstructor ==
                false
         true
   untraceAllDomainLocalOps domainConstructor
-  innerDomainConstructor := INTERN strconc(domainConstructor,'";")
+  innerDomainConstructor := makeSymbol strconc(domainConstructor,'";")
   if FBOUNDP innerDomainConstructor then UNEMBED innerDomainConstructor
     else UNEMBED domainConstructor
   SETQ(_/TRACENAMES,delete(domainConstructor,_/TRACENAMES))

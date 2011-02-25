@@ -150,16 +150,14 @@
 
 (DEFUN |Boolean| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1399)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|Boolean|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
-                                 (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
-               (SETQ #0# T))
-             (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|))))))))) 
+  (LET ((#0=#:G1399 (HGET |$ConstructorCache| '|Boolean|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Boolean|
+                               (LIST (CONS NIL (CONS 1 (|Boolean;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Boolean|)))))))) 
 
 (DEFUN |Boolean;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

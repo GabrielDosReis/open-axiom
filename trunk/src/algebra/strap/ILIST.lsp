@@ -406,19 +406,17 @@
 (DEFUN |IndexedList| (&REST #0=#:G1499 &AUX #1=#:G1497)
   (DECLARE (SPECIAL |$ConstructorCache|))
   (DSETQ #1# #0#)
-  (PROG (#2=#:G1498)
-    (RETURN
-      (COND
-        ((SETQ #2#
-               (|lassocShiftWithFunction| (|devaluateList| #1#)
-                   (HGET |$ConstructorCache| '|IndexedList|)
-                   '|domainEqualList|))
-         (|CDRwithIncrement| #2#))
-        (T (UNWIND-PROTECT
-             (PROG1 (APPLY (|function| |IndexedList;|) #1#)
-               (SETQ #2# T))
-             (COND
-               ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|))))))))) 
+  (LET ((#2=#:G1498
+            (|lassocShiftWithFunction| (|devaluateList| #1#)
+                (HGET |$ConstructorCache| '|IndexedList|)
+                '|domainEqualList|)))
+    (COND
+      (#2# (|CDRwithIncrement| #2#))
+      (T (UNWIND-PROTECT
+           (PROG1 (APPLY (|function| |IndexedList;|) #1#)
+             (SETQ #2# T))
+           (COND
+             ((NOT #2#) (HREM |$ConstructorCache| '|IndexedList|)))))))) 
 
 (DEFUN |IndexedList;| (|#1| |#2|)
   (DECLARE (SPECIAL |$ConstructorCache|))

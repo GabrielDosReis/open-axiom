@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -396,7 +396,7 @@ htMakeTemplates(templateList, numLabels) ==
   [[substLabel(i, template) for template in templateList]
     for i in 1..numLabels] where substLabel(i, template) ==
       cons? template =>
-        INTERN strconc(first template, toString i, rest template)
+        makeSymbol strconc(first template, toString i, rest template)
       template
 
 templateParts template ==

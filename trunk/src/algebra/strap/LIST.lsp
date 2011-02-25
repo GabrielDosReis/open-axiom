@@ -162,17 +162,14 @@
 
 (DEFUN |List| (#0=#:G1421)
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#1=#:G1422)
-    (RETURN
-      (COND
-        ((SETQ #1#
-               (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
-                   (HGET |$ConstructorCache| '|List|)
-                   '|domainEqualList|))
-         (|CDRwithIncrement| #1#))
-        (T (UNWIND-PROTECT
-             (PROG1 (|List;| #0#) (SETQ #1# T))
-             (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|))))))))) 
+  (LET ((#1=#:G1422
+            (|lassocShiftWithFunction| (LIST (|devaluate| #0#))
+                (HGET |$ConstructorCache| '|List|) '|domainEqualList|)))
+    (COND
+      (#1# (|CDRwithIncrement| #1#))
+      (T (UNWIND-PROTECT
+           (PROG1 (|List;| #0#) (SETQ #1# T))
+           (COND ((NOT #1#) (HREM |$ConstructorCache| '|List|)))))))) 
 
 (DEFUN |List;| (|#1|)
   (DECLARE (SPECIAL |$ConstructorCache|))

@@ -77,7 +77,7 @@ conPageFastPath x == --called by conPage and constructorSearch
 --gets line quickly for constructor name or abbreviation
   s := STRINGIMAGE x
   charPosition(char '_*,s,0) < #s => nil     --quit if name has * in it
-  name := (string? x => INTERN x; x)
+  name := (string? x => makeSymbol x; x)
   entry := HGET($lowerCaseConTb,name) or return nil
   lineNumber := LASSQ('dbLineNumber,CDDR entry) =>
     --'dbLineNumbers property is set by function dbAugmentConstructorDataTable
@@ -110,7 +110,7 @@ conPageConEntry entry ==
 --%   conname         := opOf conform
 --%   capitalKind     := capitalize kind
 --%   signature       := ncParseFromString sig
---%   sourceFileName  := dbSourceFile INTERN name
+--%   sourceFileName  := dbSourceFile makeSymbol name
 --%   constrings      :=
 --%     KDR form => dbConformGenUnder form
 --%     [strconc(name,args)]
@@ -176,8 +176,8 @@ kdPageInfo(name,abbrev,nargs,conform,signature,file?) ==
   if nargs > 0 then kPageArgs(conform,signature)
   htSayStandard '"\indentrel{-2}"
   if name.(#name-1) = char "&" then name := subSequence(name, 0, #name-1)
---sourceFileName := dbSourceFile INTERN name
-  sourceFileName := getConstructorSourceFileFromDB INTERN name
+--sourceFileName := dbSourceFile makeSymbol name
+  sourceFileName := getConstructorSourceFileFromDB makeSymbol name
   filename := extractFileNameFromPath sourceFileName
   if filename ~= '"" then
     htSayStandard '"\newline{}"
@@ -577,13 +577,13 @@ augmentHasArgs(alist,conform) ==
 
 kcdePage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  conname         := INTERN name
+  conname         := makeSymbol name
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc('"d",args)]  --because of &
+    [makeSymbol name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
---  kind = '"category" => INTERN strconc(name,'"&")
+--  kind = '"category" => makeSymbol strconc(name,'"&")
     opOf conform
   domList := getDependentsOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -593,13 +593,13 @@ kcdePage(htPage,junk) ==
 
 kcuPage(htPage,junk) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
-  conname         := INTERN name
+  conname         := makeSymbol name
   constring       := strconc(name,args)
   conform         :=
     kind ~= '"default package" => ncParseFromString constring
-    [INTERN name,:rest ncParseFromString strconc('"d",args)]  --because of &
+    [makeSymbol name,:rest ncParseFromString strconc('"d",args)]  --because of &
   pakname         :=
-    kind = '"category" => INTERN strconc(name,'"&")
+    kind = '"category" => makeSymbol strconc(name,'"&")
     opOf conform
   domList := getUsersOfConstructor pakname
   cAlist := [[getConstructorForm x,:true] for x in domList]
@@ -620,7 +620,7 @@ kcnPage(htPage,junk) ==
     htpSetProperty(htPage,'heading,heading)
   conform:= htpProperty(htPage,'conform)
   pakname         :=
-    kind = '"category" => INTERN strconc(PNAME name,'"&")
+    kind = '"category" => makeSymbol strconc(PNAME name,'"&")
     opOf conform
   domList := getImports pakname
   if domname then
@@ -631,7 +631,7 @@ kcnPage(htPage,junk) ==
   dbShowCons(htPage,'names)
 
 koPageInputAreaUnchanged?(htPage, nargs) ==
-  [htpLabelInputString(htPage,INTERN strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
+  [htpLabelInputString(htPage,makeSymbol strconc('"*",STRINGIMAGE i)) for i in 1..nargs]
       = htpProperty(htPage,'inputAreaList)
 
 kDomainName(htPage,kind,name,nargs) ==
@@ -639,7 +639,7 @@ kDomainName(htPage,kind,name,nargs) ==
   inputAreaList :=
     [htpLabelInputString(htPage,var) for i in 1..nargs for var in $PatternVariableList]
   htpSetProperty(htPage,'inputAreaList,inputAreaList)
-  conname := INTERN name
+  conname := makeSymbol name
   args := [kArgumentCheck(domain?,x) or nil for x in inputAreaList
               for domain? in rest getDualSignatureFromDB conname]
   or/[null x for x in args] =>
@@ -711,7 +711,7 @@ mkConform(kind,name,argString) ==
       systemError '"Keywords in argument list?"
     atom parse => [parse]
     parse
-  [INTERN name,:rest ncParseFromString strconc('"d",argString)]  --& case
+  [makeSymbol name,:rest ncParseFromString strconc('"d",argString)]  --& case
 
 --=======================================================================
 --           Operation Page for a Domain Form from Scratch
@@ -754,7 +754,7 @@ conOpPage1(conform,:options) ==
   conform         := mkConform(kind,name,args)
   capitalKind     := capitalize kind
   signature       := ncParseFromString sig
-  sourceFileName  := dbSourceFile INTERN name
+  sourceFileName  := dbSourceFile makeSymbol name
   emString        := ['"{\sf ",constring,'"}"]
   heading := [capitalKind,'" ",:emString]
   if not isExposedConstructor conname then heading := ['"Unexposed ",:heading]
@@ -778,7 +778,7 @@ conOpPage1(conform,:options) ==
 koPage(htPage,which) ==
   [kind,name,nargs,xflag,sig,args,abbrev,comments] := htpProperty(htPage,'parts)
   constring       := strconc(name,args)
-  conname         := INTERN name
+  conname         := makeSymbol name
   domname         :=
     (u := htpProperty(htPage,'domname)) is [=conname,:.]
       and  (htpProperty(htPage,'fromConOpPage1) = true or
@@ -1308,7 +1308,7 @@ PUT('Enumeration, 'documentation, substitute(MESSAGE, 'MESSAGE, '(
 
 
 mkConArgSublis args ==
-  [[arg,:INTERN digits2Names PNAME arg] for arg in args
+  [[arg,:makeSymbol digits2Names PNAME arg] for arg in args
      | (s := PNAME arg) and "or"/[digit? s.i for i in 0..MAXINDEX s]]
 
 digits2Names s ==

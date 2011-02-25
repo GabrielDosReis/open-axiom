@@ -143,7 +143,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
    --add flag identifiers as literals in the envir
   op='elt and sig is [:lt,sel] =>
     string? sel =>
-      id:= INTERN sel
+      id:= makeSymbol sel
       if $insideCapsuleFunctionIfTrue=true
          then $e:= makeLiteral(id,$e)
          else e:= makeLiteral(id,e)
@@ -152,7 +152,7 @@ addEltModemap(op,mc,sig,pred,fn,e) ==
     addModemap1(op,mc,sig,pred,fn,e)
   op='setelt and sig is [:lt,sel,v] =>
     string? sel =>
-      id:= INTERN sel
+      id:= makeSymbol sel
       if $insideCapsuleFunctionIfTrue=true
          then $e:= makeLiteral(id,$e)
          else e:= makeLiteral(id,e)

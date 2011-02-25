@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -272,7 +272,7 @@ htCheck(checker,value) ==
 parseWord x ==
   string? x =>
     and/[digit? x.i for i in 0..MAXINDEX x] => readInteger x
-    INTERN x
+    makeSymbol x
   x
 
 htCheckList(checker,value) ==
@@ -334,7 +334,7 @@ chkAllNonNegativeInteger s ==
 
 htMakePathKey path ==
   null path => systemError '"path is not set"
-  INTERN fn(PNAME first path,rest path) where
+  makeSymbol fn(PNAME first path,rest path) where
     fn(a,b) ==
       null b => a
       fn(strconc(a,'".",PNAME first b),rest b)
@@ -422,14 +422,14 @@ htCacheAddChoice htPage ==
   htSetvarDoneButton('"Select to Set Values",'htCacheSet)
   htShowPage()
 
-htMakeLabel(prefix,i) == INTERN strconc(prefix,stringize i)
+htMakeLabel(prefix,i) == makeSymbol strconc(prefix,stringize i)
 
 htCacheSet htPage ==
   names := htpProperty(htPage,'names)
   for i in 1.. for name in names repeat
     num := chkAllNonNegativeInteger
              htpLabelInputString(htPage,htMakeLabel('"c",i))
-    $cacheAlist := ADDASSOC(INTERN name,num,$cacheAlist)
+    $cacheAlist := ADDASSOC(makeSymbol name,num,$cacheAlist)
   if (n := LASSOC('all,$cacheAlist)) then
     $cacheCount := n
     $cacheAlist := deleteAssoc('all,$cacheAlist)

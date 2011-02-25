@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -175,7 +175,7 @@ reportOpSymbol op1 ==
   if op1 = "^" then
     sayMessage ['"  ",op1, '" is another name for", :bright '"**"]
     op1 := "**"
-  op := (string? op1 => INTERN op1; op1)
+  op := (string? op1 => makeSymbol op1; op1)
   modemaps := getAllModemapsFromDatabase(op,nil)
   null modemaps =>
     ok := true
@@ -587,7 +587,7 @@ linearFormatForm(op,argl) ==
   s:= PNAME op
   indexList:= [readInteger PNAME d for i in 1.. while
     (digit? (d:= s.(maxIndex:= i)))]
-  cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
+  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   fnArgs:=
     indexList.0 > 0 =>
       concat('"(",formatArgList take(-indexList.0,argl),'")")
@@ -744,7 +744,7 @@ object2String x ==
 
 object2Identifier x ==
   IDENTP x  => x
-  INTERN object2String x
+  makeSymbol object2String x
 
 blankList x == "append"/[[BLANK,y] for y in x]
 

@@ -506,18 +506,16 @@
 
 (DEFUN |SingleInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1478)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|SingleInteger|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
-                                 (LIST (CONS NIL
-                                        (CONS 1 (|SingleInteger;|))))))
-               (SETQ #0# T))
-             (COND
-               ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|))))))))) 
+  (LET ((#0=#:G1478 (HGET |$ConstructorCache| '|SingleInteger|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|SingleInteger|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|SingleInteger;|))))))
+             (SETQ #0# T))
+           (COND
+             ((NOT #0#) (HREM |$ConstructorCache| '|SingleInteger|)))))))) 
 
 (DEFUN |SingleInteger;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
