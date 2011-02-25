@@ -231,7 +231,7 @@ dbAugmentConstructorDataTable() ==
   while not EOFP instream repeat
     fp   := FILE_-POSITION instream
     line := READLINE instream
-    cname := INTERN dbName line
+    cname := makeSymbol dbName line
     entry := getCDTEntry(cname,true) =>  --skip over Mapping, Union, Record
        [name,abb,:.] := entry
        entry.rest.rest := PUTALIST(CDDR entry,'dbLineNumber,fp)
@@ -247,7 +247,7 @@ dbHasExamplePage conname ==
   abb      := constructor? conname
   ucname   := UPCASE STRINGIMAGE abb
   pathname :=strconc(systemRootDirectory(),'"/share/hypertex/pages/",ucname,'".ht")
-  isExistingFile pathname => INTERN strconc(sname,'"XmpPage")
+  isExistingFile pathname => makeSymbol strconc(sname,'"XmpPage")
   nil
 
 dbRead(n) ==
@@ -433,9 +433,9 @@ mkUsersHashTable() ==  --called by buildDatabase (database.boot)
   $usersTb
 
 getDefaultPackageClients con ==  --called by mkUsersHashTable
-  catname := INTERN subString(s := PNAME con,0,MAXINDEX s)
+  catname := makeSymbol subString(s := PNAME con,0,MAXINDEX s)
   for [catAncestor,:.] in childrenOf([catname]) repeat
-    pakname := INTERN strconc(PNAME catAncestor,'"&")
+    pakname := makeSymbol strconc(PNAME catAncestor,'"&")
     if getCDTEntry(pakname,true) then acc := [pakname,:acc]
     acc := union([CAAR x for x in domainsOf([catAncestor],nil)],acc)
   listSort(function GLESSEQP,acc)

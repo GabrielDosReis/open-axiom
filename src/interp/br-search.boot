@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,7 @@ grepConstructDo(x, key) ==
   grepf(x,key,false)
 
 dbExposed?(line,kind) == -- does line come from an unexposed constructor?
-  conname := INTERN
+  conname := makeSymbol
     kind = char 'a or kind = char 'o => dbNewConname line --get conname from middle
     dbName line
   isExposedConstructor conname
@@ -655,7 +655,7 @@ constructorSearch(filter,key,kind) ==
   (parse := conSpecialString? filter) => conPage parse
   pageName := LASSOC(DOWNCASE filter,'(("union" . DomainUnion)("record" . DomainRecord)("mapping" . DomainMapping) ("enumeration" . DomainEnumeration))) =>
     downlink pageName
-  name := (string? filter => INTERN filter; filter)
+  name := (string? filter => makeSymbol filter; filter)
   if u := HGET($lowerCaseConTb,name) then filter := STRINGIMAGE first u
   line := conPageFastPath DOWNCASE filter =>
     code := dbKind line
@@ -719,7 +719,7 @@ conLowerCaseConTran x ==
 
 string2Constructor x ==
   not string? x => x
-  IFCAR HGET($lowerCaseConTb, INTERN DOWNCASE x) or x
+  IFCAR HGET($lowerCaseConTb, makeSymbol DOWNCASE x) or x
 
 conLowerCaseConTranTryHarder x ==
   IDENTP x => IFCAR HGET($lowerCaseConTb,DOWNCASE x) or x
@@ -933,7 +933,7 @@ dbGetCommentOrigin line ==
 --Comment lines have format  [dcpxoa]xxxxxx`ccccc... where
 --x's give pointer into libdb, c's are comments
   firstPart := dbPart(line,1,-1)
-  key := INTERN subString(firstPart,0,1)    --extract this and throw away
+  key := makeSymbol subString(firstPart,0,1)    --extract this and throw away
   address := subString(firstPart, 1)        --address in libdb
   instream := OPEN grepSource key           --this always returns libdb now
   FILE_-POSITION(instream,readInteger address)

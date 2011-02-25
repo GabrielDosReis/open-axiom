@@ -138,7 +138,7 @@ add2WordFunctionTable fn ==
 --                       Guess Function Name
 --=======================================================================
 guess word ==
-  u := bootFind word => INTERN u
+  u := bootFind word => makeSymbol u
   nil
  
 bootFind word ==
@@ -361,7 +361,7 @@ forge(word,w,W,entry,e,E,n) ==
 patternTran pattern ==
   not hasWildCard? pattern and LITER pattern.0 and
     UPCASE copy pattern = pattern =>
-      name:= abbreviation? INTERN pattern
+      name:= abbreviation? makeSymbol pattern
         or browseError [:bright pattern,
           '"is not a constructor abbreviation"]
       DOWNCASE PNAME name

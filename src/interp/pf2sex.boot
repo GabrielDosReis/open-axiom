@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@
 import ptrees
 namespace BOOT
 
-$dotdot := INTERN('"..", '"BOOT")
+$dotdot := makeSymbol('"..", '"BOOT")
 $specificMsgTags := nil
 
 ++ nonzero means we are processing an Application parse form

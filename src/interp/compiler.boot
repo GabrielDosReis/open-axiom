@@ -258,7 +258,7 @@ applyMapping([op,:argl],m,e,ml) ==
 --   form:=
 --     not MEMQ(op,$formalArgList) and atom op =>
 --       [op',:argl',"$"] where
---         op':= INTERN strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
+--         op':= makeSymbol strconc(STRINGIMAGE $prefix,";",STRINGIMAGE op)
 --     ['%call,["applyFun",op],:argl']
 --   pairlis:= [[v,:a] for a in argl' for v in $FormalMapVariableList]
 --   convert([form,SUBLIS(pairlis,first ml),e],m)
@@ -353,7 +353,7 @@ compWithMappingMode(x,m is ["Mapping",m',:sl],oldE) ==
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
   x is ["+->",:.] => compLambda(x,m,oldE)
-  if string? x then x:= INTERN x
+  if string? x then x:= makeSymbol x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   (vl ~= nil) and not hasFormalMapVariable(x, vl) => return
@@ -1314,7 +1314,7 @@ compImport(["import",:doms],m,e) ==
 
 bootDenotation: %Symbol -> %Symbol
 bootDenotation s == 
-  INTERN(symbolName s,"BOOTTRAN")
+  makeSymbol(symbolName s,"BOOTTRAN")
 
 ++ Return the Boot denotation of a basic FFI type.
 getBasicFFIType: %Mode -> %Symbol
@@ -2223,7 +2223,7 @@ compReduce(form,m,e) ==
 
 compReduce1(form is ["REDUCE",op,.,collectForm],m,e,$formalArgList) ==
   [collectOp,:itl,body] := collectForm
-  if string? op then op := INTERN op
+  if string? op then op := makeSymbol op
   collectOp ~= "COLLECT" => systemError ['"illegal reduction form:",form]
   $until: local := nil
   oldEnv := e

@@ -175,7 +175,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
 --        (<argument list>, <reference count>,:<value>)
 --   where the reference count is optional
  
-  if cacheNameOrNil and cacheNameOrNil~='_$ConstructorCache then
+  if cacheNameOrNil and cacheNameOrNil ~= '_$ConstructorCache then
     keyedSystemError("S2GE0010",[op])
     --restriction due to omission of call to hputNewValue (see *** lines below)
  
@@ -229,7 +229,7 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
           ['HGET,cacheNameOrNil,MKQ op],MKQ eqEtc]
       ['lassocShift,cacheArgKey,['HGET,cacheNameOrNil,MKQ op]]
     ['HGET,cacheName,g1]
-  secondPredPair:= [['%store,g2,getCode],:hitCountCode,returnFoundValue]
+  secondPredPair:= [g2,optSEQ ['SEQ,:hitCountCode,['EXIT,returnFoundValue]]]
   putCode:=
     null argl =>
       cacheNameOrNil =>
@@ -246,9 +246,9 @@ compHash(op,argl,body,cacheNameOrNil,eqEtc,countFl) ==
      ['UNWIND_-PROTECT,['PROG1,putCode,['%store,g2,'%true]],
                   ['%when,[['%not,g2],['HREM,cacheName,MKQ op]]]]
   thirdPredPair:= ['%otherwise,putCode]
-  codeBody:=
-    ['PROG,[g2],
-      :callCountCode,['RETURN,['%when,secondPredPair,thirdPredPair]]]
+  codeBody:= optSEQ
+    ['SEQ,:callCountCode,
+      ['EXIT,['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]]]
   lamex:= ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
@@ -293,19 +293,19 @@ compHashGlobal(op,argl,body,cacheName,eqEtc,countFl) ==
       argl is [.] => [auxfn,g1]  --g1 is a parameter
       ['APPLX,['function,auxfn],g1]          --g1 is a parameter list
     [g1,['consForHashLookup,MKQ op,g1],application]
-  g2:= gensym()  --value computed by calling function
+  g2 := gensym()  --value computed by calling function
   returnFoundValue:=
     countFl => ['CDRwithIncrement,g2]
     g2
   getCode:= ['HGET,cacheName,cacheArgKey]
-  secondPredPair:= [['%store,g2,getCode],returnFoundValue]
+  secondPredPair:= [g2,returnFoundValue]
   putForm:= ['%pair,MKQ op,g1]
   putCode:=
     countFl => ['HPUT,cacheName,putForm,['%pair,1,computeValue]]
     ['HPUT,cacheName,putForm,computeValue]
-  thirdPredPair:= ['%otherwise,putCode]
-  codeBody:= ['PROG,[g2], ['RETURN,['%when,secondPredPair,thirdPredPair]]]
-  lamex:= ['LAM,arg,codeBody]
+  thirdPredPair := ['%otherwise,putCode]
+  codeBody := ['%bind,[[g2,getCode]],['%when,secondPredPair,thirdPredPair]]
+  lamex := ['LAM,arg,codeBody]
   mainFunction:= [op,lamex]
   computeFunction:= [auxfn,['LAMBDA,argl,:body]]
   compileInteractive mainFunction
@@ -705,4 +705,4 @@ domainEqualList(argl1,argl2) ==
 removeAllClams() ==
   for [fun,:.] in $clamList repeat
     sayBrightly ['"Un-clamming function",'"%b",fun,'"%d"]
-    setDynamicBinding(fun,eval INTERN strconc(STRINGIMAGE fun,'";"))
+    setDynamicBinding(fun,eval makeSymbol strconc(STRINGIMAGE fun,'";"))

@@ -81,10 +81,10 @@ $interpOnly := false
 --% Utility Functions of General Use
 
 mkCacheName(name) ==
-  INTERN strconc(symbolName name,'";AL")
+  makeSymbol strconc(symbolName name,'";AL")
 
 mkAuxiliaryName(name) ==
-  INTERN strconc(symbolName name,'";AUX")
+  makeSymbol strconc(symbolName name,'";AUX")
 
 
 homogeneousListToVector(t,l) ==
@@ -792,7 +792,7 @@ pr x ==
 intern x ==
   string? x =>
     digit? x.0 => string2Integer x
-    INTERN x
+    makeSymbol x
   x
 
 isDomain a ==

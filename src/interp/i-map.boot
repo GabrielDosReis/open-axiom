@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ makeInternalMapName(userName,numArgs,numMms,extraPart) ==
   if extraPart then name := strconc(name,'";",extraPart)
   if $specialMapNameSuffix then
     name := strconc(name,'";",$specialMapNameSuffix)
-  INTERN name
+  makeSymbol name
 
 isInternalMapName name ==
   -- this only returns true or false as a "best guess"
@@ -67,8 +67,8 @@ isInternalMapName name ==
 
 makeInternalMapMinivectorName(name) ==
   string? name =>
-    INTERN strconc(name,'";MV")
-  INTERN strconc(symbolName name,'";MV")
+    makeSymbol strconc(name,'";MV")
+  makeSymbol strconc(symbolName name,'";MV")
 
 --% Adding a function definition
 
@@ -485,7 +485,7 @@ getEqualSublis pred == fn(pred,nil) where fn(x,sl) ==
 --% User function analysis
 
 mapCatchName mapname ==
-   INTERN strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
+   makeSymbol strconc('"$",STRINGIMAGE mapname,'"CatchMapIdentifier$")
 
 analyzeMap(op,argTypes,mapDef, tar) ==
   -- Top level enty point for map type analysis.  Sets up catch point
@@ -989,7 +989,7 @@ mkValCheck(val,i) ==
 
 mkSharpVar i ==
   -- create #i
-  INTERN strconc('"#",STRINGIMAGE i)
+  makeSymbol strconc('"#",STRINGIMAGE i)
 
 mapPredTran pred ==
   -- transforms "x in i..j" to "x>=i and x<=j"

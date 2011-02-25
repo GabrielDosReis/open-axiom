@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -629,7 +629,7 @@ bpLeftAssoc(operations,parser)==
  
 bpString()==
   shoeTokType $stok = "STRING" and
-    bpPush(["QUOTE",INTERN $ttok]) and bpNext()
+    bpPush(["QUOTE",makeSymbol $ttok]) and bpNext()
  
 bpThetaName() ==
   $stok is ["ID",:.] and $ttok has SHOETHETA =>
@@ -1050,7 +1050,7 @@ bpRegularBVItem() ==
  
 bpBVString()==
   shoeTokType $stok = "STRING" and
-      bpPush(["BVQUOTE",INTERN $ttok]) and bpNext()
+      bpPush(["BVQUOTE",makeSymbol $ttok]) and bpNext()
  
 bpRegularBVItemL() ==
   bpRegularBVItem() and bpPush [bpPop1()]

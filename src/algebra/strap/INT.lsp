@@ -494,16 +494,14 @@
 
 (DEFUN |Integer| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1511)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|Integer|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
-                                 (LIST (CONS NIL (CONS 1 (|Integer;|))))))
-               (SETQ #0# T))
-             (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|))))))))) 
+  (LET ((#0=#:G1511 (HGET |$ConstructorCache| '|Integer|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Integer|
+                               (LIST (CONS NIL (CONS 1 (|Integer;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Integer|)))))))) 
 
 (DEFUN |Integer;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

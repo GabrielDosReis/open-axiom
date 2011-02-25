@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ setExtendedDomains(l) ==
         $extendedDomains := l
 
 fileConstructors name ==
-   [INTERN(con,"BOOT") for con in SRCABBREVS SOURCEPATH STRING name]
+   [makeSymbol(con,"BOOT") for con in SRCABBREVS SOURCEPATH STRING name]
 
 makeAxFile(filename, constructors) ==
   $defaultFlag : local := false
@@ -121,7 +121,7 @@ modemapToAx(modemap) ==
      null args =>
         ['Extend, ['Define, ['Declare, constructor, resultType],
             ['Add, ['PretendTo, ['Add, [], []], resultType], []]]]
-     conscat := INTERN(strconc(symbolName(constructor), "ExtendCategory"),"BOOT")
+     conscat := makeSymbol(strconc(symbolName(constructor), "ExtendCategory"),"BOOT")
      rtype := ['Apply, conscat, :args]
 --     if resultType is ['With,a,b] then
 --        if not(b is ['Sequence,:withseq]) then withseq := [b]
@@ -167,7 +167,7 @@ axFormatType(typeform) ==
   atom typeform =>
      typeform = '$ => '%
      string? typeform =>
-        ['Apply,'Enumeration, INTERN typeform]
+        ['Apply,'Enumeration, makeSymbol typeform]
      integer? typeform =>
        -- need to test for PositiveInteger vs Integer
         axAddLiteral('integer, 'PositiveInteger, 'Literal)
@@ -211,8 +211,8 @@ axFormatType(typeform) ==
       valueCount := 0
       for x in args repeat
           tag :=
-            string? x => INTERN x
-            x is ['QUOTE,val] and string? val => INTERN val
+            string? x => makeSymbol x
+            x is ['QUOTE,val] and string? val => makeSymbol val
             valueCount := valueCount + 1
             INTERNL("value", STRINGIMAGE valueCount)
           taglist := [tag ,: taglist]

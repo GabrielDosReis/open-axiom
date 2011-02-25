@@ -269,6 +269,7 @@ for i in [ _
   ["LAST",        "last"] , _
   ["list",        "LIST"]  , _
   ["lowerCase?", "LOWER-CASE-P"], _
+  ["makeSymbol", "INTERN"] , _
   ["mkpf",        "MKPF"]  , _
   ["nconc",      "NCONC"]  , _
   ["newString", "MAKE-STRING"], _

@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -1143,7 +1143,7 @@ checkTransformFirsts(opname,u,margin) ==
          u
       strconc('"\spad{",subString(u,0,k + 1),'"}",subString(u,k + 1))
     k := checkSkipToken(u,j,m) or return u
-    infixOp := INTERN subString(u,j,k - j)
+    infixOp := makeSymbol subString(u,j,k - j)
     not GETL(infixOp,'Led) =>                                     --case 3
       namestring ~= (firstWord := subString(u,0,i)) =>
         checkDocError ['"Improper first word in comments: ",firstWord]
@@ -1165,7 +1165,7 @@ checkTransformFirsts(opname,u,margin) ==
     namestring ~= (firstWord := subString(u,0,i)) =>
       checkDocError ['"Improper first word in comments: ",firstWord]
       u
-    prefixOp := INTERN subString(u,0,i)
+    prefixOp := makeSymbol subString(u,0,i)
     not GETL(prefixOp,'Nud) =>
       u ---what could this be?
     j := checkSkipBlanks(u,i,m) or return u

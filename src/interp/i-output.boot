@@ -168,7 +168,7 @@ $plainRTspecialCharacters == [
 ++ Stream in lean mode.
 $RecordSeparator == abstractChar 30
 
-makeCharacter n ==> INTERN(charString abstractChar n)
+makeCharacter n ==> makeSymbol(charString abstractChar n)
 
 $RTspecialCharacters == [
     makeCharacter 218,      -- upper left corner   (+)
@@ -535,7 +535,7 @@ outputTran x ==
 
   [op,:l]:= flattenOps x
   --needed since "op" is string in some spad code
-  if string? op then (op := INTERN op; x:= [op,:l])
+  if string? op then (op := makeSymbol op; x:= [op,:l])
   op = 'LAMBDA_-CLOSURE => 'Closure
   x is ['break,:.] => 'break
   x is ['SEGMENT,a] =>
@@ -748,7 +748,7 @@ mkSuperSub(op,argl) ==
   s:= PNAME op
   indexList:= [readInteger PNAME d for i in 1.. while
     (digit? (d:= s.(maxIndex:= i)))]
-  cleanOp:= INTERN (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
+  cleanOp:= makeSymbol (strconc/[PNAME s.i for i in maxIndex..MAXINDEX s])
   -- if there is just a subscript use the SUB special form
   #indexList=2 =>
     subPart:= ['SUB,cleanOp,:take(indexList.1,argl)]
@@ -1657,7 +1657,7 @@ outputOp x ==
     n:=
       GETL(op,"NARY") => 2
       #args
-    newop:= INTERN strconc('"*",STRINGIMAGE n,PNAME op)
+    newop:= makeSymbol strconc('"*",STRINGIMAGE n,PNAME op)
     [newop,:[outputOp y for y in args]]
   x
 
@@ -2712,7 +2712,7 @@ inputForm2String x ==
   callForm2String x
 
 inputForm2OutputForm x ==
-  INTERN inputForm2String x
+  makeSymbol inputForm2String x
 
 -- function for turning strings in tex format
 

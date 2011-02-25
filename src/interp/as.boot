@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -109,7 +109,7 @@ asySubstMapping u ==
   u
 
 --asyFilePackage asyFile ==
---  name := INTERN PATHNAME_-NAME asyFile
+--  name := makeSymbol PATHNAME_-NAME asyFile
 --  modemap :=
 --    [[[name],['CATEGORY,'domain,
 --      :[asyMkSignature(con,CDAR mm) for [con,:mm] in $mmAlist]]],['T,name]]
@@ -701,12 +701,12 @@ asyAbbreviation(id,n) ==  chk(id,main) where   --> n = number of arguments
   main() ==
     a := createAbbreviation id => a
     name := PNAME id
---  #name < 8 => INTERN UPCASE name
+--  #name < 8 => makeSymbol UPCASE name
     parts := asySplit(name,MAXINDEX name)
     newname := strconc/[asyShorten x for x in parts]
-    #newname < 8 => INTERN newname
+    #newname < 8 => makeSymbol newname
     tryname := subString(name,0,7)
-    not createAbbreviation tryname => INTERN UPCASE tryname
+    not createAbbreviation tryname => makeSymbol UPCASE tryname
     nil
   chk(conname,abb) ==
     (xx := asyGetAbbrevFromComments conname) => xx
@@ -753,7 +753,7 @@ asySplit(name,end) ==
   [subString(name,0,k),:asySplit(subString(name,k),end-k)]
 
 createAbbreviation s ==
-  if string? s then s := INTERN s
+  if string? s then s := makeSymbol s
   a := constructor? s
   a ~= s => a
   nil

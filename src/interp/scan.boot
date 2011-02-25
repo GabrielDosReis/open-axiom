@@ -312,9 +312,9 @@ scanToken() ==
 
 -- to pair badge and badgee
 
--- lfid x== ["id",INTERN x]
+-- lfid x== ["id",makeSymbol x]
 lfid x ==
-  ["id",INTERN(x, '"BOOT")]
+  ["id",makeSymbol(x, '"BOOT")]
 
 lfkey x ==
   ["key",keyword x]
@@ -322,9 +322,9 @@ lfkey x ==
 lfinteger x==
            ["integer",x]
 --     if x = '"0"
---     then ["id",INTERN x]
+--     then ["id",makeSymbol x]
 --     else if x = '"1"
---          then ["id",INTERN x]
+--          then ["id",makeSymbol x]
 --          else ["integer",x]
 
 lfrinteger (r,x)==

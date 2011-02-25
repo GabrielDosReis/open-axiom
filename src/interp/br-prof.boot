@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ dbShowInfoOp(htPage,op,sig,alist) ==
   kind     := getConstructorKindFromDB conname
   honestConform :=
     kind = 'category =>
-      [INTERN strconc(PNAME conname,'"&"),"$",:rest conform]
+      [makeSymbol strconc(PNAME conname,'"&"),"$",:rest conform]
     conform
   faTypes  := CDDAR getConstructorModemapFromDB conname
 
@@ -252,7 +252,7 @@ hasNewInfoText u ==
 
 getInfoAlist conname ==
   cat? := getConstructorKindFromDB conname = "category"
-  if cat? then conname := INTERN strconc(STRINGIMAGE conname,'"&")
+  if cat? then conname := makeSymbol strconc(STRINGIMAGE conname,'"&")
   abb := constructor? conname or return '"not a constructor"
   fs  := strconc(PNAME abb,'".NRLIB/info")
   inStream :=

@@ -338,9 +338,9 @@ formatUnion(['Union,:r]) ==
   $count : local := 0
   formatFormNoColonDecl formatTestForPartial ['Union,:[fn x for x in r]] where fn x ==
     x is [":",y,'Branch] => fn STRINGIMAGE y
-    string? x => [":", INTERN x, ['Enumeration,x]]
+    string? x => [":", makeSymbol x, ['Enumeration,x]]
     x is [":",:.] => x
-    tag := INTERN strconc('"value",STRINGIMAGE ($count := $count + 1))
+    tag := makeSymbol strconc('"value",STRINGIMAGE ($count := $count + 1))
     [":", tag, x]      
 
 formatTestForPartial u ==
@@ -349,7 +349,7 @@ formatTestForPartial u ==
   u
 
 formatEnumeration(y is ['Enumeration,:r]) ==
-  r is [x] => format "'" and format INTERN STRINGIMAGE x and format "'"
+  r is [x] => format "'" and format makeSymbol STRINGIMAGE x and format "'"
   formatForm y
 
 formatRecord(u) == formatFormNoColonDecl u

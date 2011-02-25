@@ -595,16 +595,14 @@
 
 (DEFUN |Symbol| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1531)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|Symbol|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Symbol|
-                                 (LIST (CONS NIL (CONS 1 (|Symbol;|))))))
-               (SETQ #0# T))
-             (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|))))))))) 
+  (LET ((#0=#:G1531 (HGET |$ConstructorCache| '|Symbol|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Symbol|
+                               (LIST (CONS NIL (CONS 1 (|Symbol;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Symbol|)))))))) 
 
 (DEFUN |Symbol;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

@@ -219,7 +219,7 @@ upAlgExtension t ==
   null (canonicalAE:= coerceInteractive(T,pd)) =>
     throwKeyedMsgCannotCoerceWithValue(objVal T,objMode T,pd)
   sae:= ['SimpleAlgebraicExtension,field,pd,objValUnwrap canonicalAE]
-  saeTypeSynonym := INTERN strconc('"SAE",STRINGIMAGE a)
+  saeTypeSynonym := makeSymbol strconc('"SAE",STRINGIMAGE a)
   saeTypeSynonymValue := objNew(sae,$Domain)
   fun := getFunctionFromDomain('generator,sae,NIL)
   expr:= wrap SPADCALL(fun)

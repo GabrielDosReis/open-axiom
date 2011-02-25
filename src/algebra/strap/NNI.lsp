@@ -40,21 +40,18 @@
 
 (DEFUN |NonNegativeInteger| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1384)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|NonNegativeInteger|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache|
-                                 '|NonNegativeInteger|
-                                 (LIST (CONS NIL
-                                        (CONS 1
-                                         (|NonNegativeInteger;|))))))
-               (SETQ #0# T))
-             (COND
-               ((NOT #0#)
-                (HREM |$ConstructorCache| '|NonNegativeInteger|))))))))) 
+  (LET ((#0=#:G1384 (HGET |$ConstructorCache| '|NonNegativeInteger|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache|
+                               '|NonNegativeInteger|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|NonNegativeInteger;|))))))
+             (SETQ #0# T))
+           (COND
+             ((NOT #0#)
+              (HREM |$ConstructorCache| '|NonNegativeInteger|)))))))) 
 
 (DEFUN |NonNegativeInteger;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

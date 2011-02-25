@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical Algorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ shoeIntern (s)==
    f:=first s
    # f < 8 => shoeIntern rest s
    f.0=char " " =>shoeIntern rest s
-   a:=INTERN subString(f,0,8)
+   a:=makeSymbol subString(f,0,8)
    [b,c]:= shoeStrings rest s
    GET(a,"MSGS") := b
    shoeIntern c

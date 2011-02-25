@@ -63,7 +63,7 @@ DNameOtherID  := 3
 DNameToSExpr1 dname ==
   null dname => error "unexpected domain name"
   first dname = DNameStringID => 
-    INTERN(CompStrToString rest dname)
+    makeSymbol(CompStrToString rest dname)
   name0 := DNameToSExpr1 second dname
   args  := rest rest dname
   name0 = '_-_> => 

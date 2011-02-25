@@ -896,18 +896,16 @@
 
 (DEFUN |DoubleFloat| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1556)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|DoubleFloat|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|DoubleFloat|
-                                 (LIST (CONS NIL
-                                        (CONS 1 (|DoubleFloat;|))))))
-               (SETQ #0# T))
-             (COND
-               ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|))))))))) 
+  (LET ((#0=#:G1556 (HGET |$ConstructorCache| '|DoubleFloat|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|DoubleFloat|
+                               (LIST (CONS NIL
+                                      (CONS 1 (|DoubleFloat;|))))))
+             (SETQ #0# T))
+           (COND
+             ((NOT #0#) (HREM |$ConstructorCache| '|DoubleFloat|)))))))) 
 
 (DEFUN |DoubleFloat;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

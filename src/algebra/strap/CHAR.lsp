@@ -249,18 +249,14 @@
 
 (DEFUN |Character| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (PROG (#0=#:G1408)
-    (RETURN
-      (COND
-        ((SETQ #0# (HGET |$ConstructorCache| '|Character|))
-         (|CDRwithIncrement| (CDAR #0#)))
-        (T (UNWIND-PROTECT
-             (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
-                                 (LIST (CONS NIL
-                                        (CONS 1 (|Character;|))))))
-               (SETQ #0# T))
-             (COND
-               ((NOT #0#) (HREM |$ConstructorCache| '|Character|))))))))) 
+  (LET ((#0=#:G1408 (HGET |$ConstructorCache| '|Character|)))
+    (COND
+      (#0# (|CDRwithIncrement| (CDAR #0#)))
+      (T (UNWIND-PROTECT
+           (PROG1 (CDDAR (HPUT |$ConstructorCache| '|Character|
+                               (LIST (CONS NIL (CONS 1 (|Character;|))))))
+             (SETQ #0# T))
+           (COND ((NOT #0#) (HREM |$ConstructorCache| '|Character|)))))))) 
 
 (DEFUN |Character;| ()
   (DECLARE (SPECIAL |$ConstructorCache|))

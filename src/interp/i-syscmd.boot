@@ -334,7 +334,7 @@ clearCmdParts(l is [opt,:vl]) ==
   -- clears the bindings indicated by opt of all variables in vl
 
   option:= selectOptionLC(opt,$clearOptions,'optionError)
-  option:= INTERN PNAME option
+  option:= makeSymbol PNAME option
 
   -- the option can be plural but the key in the alist is sometimes
   -- singular
@@ -3145,7 +3145,7 @@ handleNoParseCommands(unab, string) ==
              copyright ) => 
     sayKeyedMsg("S2IV0005", NIL)
     nil
-  funName := INTERN strconc('"np",STRING unab)
+  funName := makeSymbol strconc('"np",STRING unab)
   FUNCALL(funName, subSequence(string, spaceIndex+1))
 
 
@@ -3194,7 +3194,7 @@ tokTran tok ==
     isIntegerString tok => READ_-FROM_-STRING tok
     tok.0 = char "_"" =>
       subSequence(tok, 1, #tok-1)
-    INTERN tok
+    makeSymbol tok
   tok
 
 isIntegerString tok ==

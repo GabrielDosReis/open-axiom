@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -146,8 +146,8 @@ bcInputEquations(htPage,solutionMethod) ==
       spacer := (i > 99 => 0; i > 9 => 1; 2)
       prefix := strconc('"\newline\tab{2}{\em Equation ",STRINGIMAGE i,'":}")
       prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      lnam := INTERN strconc('"l",STRINGIMAGE i)
-      rnam := INTERN strconc('"r",STRINGIMAGE i)
+      lnam := makeSymbol strconc('"l",STRINGIMAGE i)
+      rnam := makeSymbol strconc('"r",STRINGIMAGE i)
       var:= 
         linearp => bcMakeLinearEquations(i,n)
         bcMakeEquations(i,n)
@@ -278,7 +278,7 @@ bcLinearSolveMatrixInhomo(htPage,junk) ==
       prefix := strconc('"{\em Coefficient ",STRINGIMAGE i,'":}")
       if spacer ~= 0 then
         prefix := strconc(prefix,'"\space{",STRINGIMAGE spacer,'"}")
-      name := INTERN strconc('"c",STRINGIMAGE i)
+      name := makeSymbol strconc('"c",STRINGIMAGE i)
       [prefix,"",30, 0,name, 'P]
   page := htInitPage('"Linear Solve Basic Command",htpPropertyList htPage)
   htpSetProperty(page,'matrix,htpProperty(htPage,'matrix))

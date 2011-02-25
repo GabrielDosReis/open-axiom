@@ -172,7 +172,7 @@ markAutoCoerceDown(x,tag,T,killColonColon?) ==
 markAutoCoerceUp(x,T) ==
 --  y := getSourceWI x
 --  y := 
---    string? y => INTERN y
+--    string? y => makeSymbol y
 --    y   
   tcheck T  
   [mkWi('coerceExtraHard,'LAMBDA, nil,["REPLACE",['construct, "##1"]],T.expr),
@@ -518,7 +518,7 @@ markOrigName x ==
       s := symbolName op
       k := charPosition(char '_;, s, 0)
       k > MAXINDEX s => nil
-      origName := INTERN subString(s, k + 1)
+      origName := makeSymbol subString(s, k + 1)
       property(op, 'ORIGNAME) := origName
       REMPROP(op,'PNAME)
     markOrigName op
@@ -1250,7 +1250,7 @@ changeToEqualEqual lines ==
     while (m := m + 1) <= N and alphabetic? (x . m) repeat nil
     m = n + 2 => nil
     not upperCase? (x . (n + 4)) => nil
-    word := INTERN subString(x, n + 4, m - n - 4)
+    word := makeSymbol subString(x, n + 4, m - n - 4)
     expandedWord := macroExpand(word,$e)
     not (word in '(Record Union Mapping)
       or getConstructorFormFromDB opOf expandedWord) => nil
@@ -1440,7 +1440,7 @@ combineDefinitions() ==
         [predl,.,:def]    := item
         ['DEF, form, :.] := def
         ops := PNAME op
-        opName := INTERN(strconc(ops,'"X",STRINGIMAGE i))
+        opName := makeSymbol(strconc(ops,'"X",STRINGIMAGE i))
         form.first := opName
 --      rplacaSubst(op, opName, def)
         $acc := [[form,:predl], :$acc]

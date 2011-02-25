@@ -52,7 +52,7 @@ tr fn ==
   markSay '"#pile"
   markSay('"#include _"axiom.as_"")
   markTerpri()
-  CATCH($SpadReaderTag,compiler [INTERN sfn])
+  CATCH($SpadReaderTag,compiler [makeSymbol sfn])
   SHUT $outStream
 
 ppFull x ==
@@ -318,7 +318,7 @@ compWithMappingMode(x,m,oldE) ==
     if get(x,"modemap",$CategoryFrame) is [[[.,target,:argModeList],.],:.] and
       (and/[extendsCategoryForm("$",s,mode) for mode in argModeList for s in sl]
         ) and extendsCategoryForm("$",target,m') then return [x,m,e]
-  if string? x then x:= INTERN x
+  if string? x then x:= makeSymbol x
   for m in sl for v in (vl:= take(#sl,$FormalMapVariableList)) repeat
     [.,.,e]:= compMakeDeclaration(v,m,e)
   not null vl and not hasFormalMapVariable(x, vl) => return
@@ -1012,8 +1012,8 @@ compCase1(x,m,e) ==
 genCaseTag(t,l,n) ==
   l is [x, :l] =>
     x = t     => 
-      string? x => INTERN x
-      INTERN strconc("value", STRINGIMAGE n)
+      string? x => makeSymbol x
+      makeSymbol strconc("value", STRINGIMAGE n)
     x is ["::",=t,:.] => t
     string? x => genCaseTag(t, l, n)
     genCaseTag(t, l, n + 1)
@@ -1106,7 +1106,7 @@ compDefine1(form,m,e) ==
       $formalArgList)
   null $form => stackAndThrow ['"bad == form ",form]
   newPrefix:=
-    $prefix => INTERN strconc(encodeItem $prefix,'",",encodeItem $op)
+    $prefix => makeSymbol strconc(encodeItem $prefix,'",",encodeItem $op)
     getAbbreviation($op,#rest $form)
   compDefineCapsuleFunction(form,m,e,newPrefix,$formalArgList)
 

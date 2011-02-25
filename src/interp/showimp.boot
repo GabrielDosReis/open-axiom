@@ -81,7 +81,7 @@ showImp(dom,:options) ==
   u := SORTBY('CDDR,defexports)
   while u repeat
     [.,.,:key] := first u
-    defop := INTERN(subString((s := PNAME first key),0,MAXINDEX s))
+    defop := makeSymbol(subString((s := PNAME first key),0,MAXINDEX s))
     domainForm := [defop,:CDDR key]
     sayBrightly ["Default functions from",:bright form2String domainForm,'":"]
     u := showDomainsOp1(u,key)

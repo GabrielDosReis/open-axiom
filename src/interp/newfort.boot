@@ -79,7 +79,7 @@ expression2Fortran1(name,e) ==
 
 newFortranTempVar() ==
   $exp2FortTempVarIndex := 1 + $exp2FortTempVarIndex
-  newVar := INTERN strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
+  newVar := makeSymbol strconc('"T",STRINGIMAGE $exp2FortTempVarIndex)
   updateSymbolTable(newVar,$defaultFortranType)
   newVar
  
@@ -374,7 +374,7 @@ formatAsFortranExpression x ==
 dispfortexp x ==
   if atom(x) or x is [op,:.] and not object2Identifier op in
     '(_= MATRIX construct ) then
-      var := INTERN strconc('"R",object2String $IOindex)
+      var := makeSymbol strconc('"R",object2String $IOindex)
       x := ['"=",var,x]
   dispfortexp1 x
  

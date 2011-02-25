@@ -1,5 +1,62 @@
 2011-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* boot/tokens.boot: makeSymbol is not a builtin function.
+	* boot/ast.boot: Use makeSymbol in place of INTERN.
+	* boot/parser.boot: Likewise.
+	* boot/scanner.boot: Likewise.
+	* boot/translator.boot: Likewise.
+	* interp/alql.boot: Likewise.
+	* interp/as.boot: Likewise.
+	* interp/ax.boot: Likewise.
+	* interp/bc-matrix.boot: Likewise.
+	* interp/bc-solve.boot: Likewise.
+	* interp/br-con.boot: Likewise.
+	* interp/br-data.boot: Likewise.
+	* interp/br-op2.boot: Likewise.
+	* interp/br-prof.boot: Likewise.
+	* interp/br-search.boot: Likewise.
+	* interp/c-doc.boot: Likewise.
+	* interp/c-util.boot: Likewise.
+	* interp/clam.boot: Likewise.
+	* interp/compiler.boot: Likewise.
+	* interp/define.boot: Likewise.
+	* interp/format.boot: Likewise.
+	* interp/fortcall.boot: Likewise.
+	* interp/i-syscmd.boot: Likewise.
+	* interp/i-spec1.boot: Likewise.
+	* interp/i-output.boot: Likewise.
+	* interp/i-coerce.boot: Likewise.
+	* interp/i-map.boot: Likewise.
+	* interp/htsetvar.boot: Likewise.
+	* interp/ht-util.boot: Likewise.
+	* interp/g-util.boot: Likewise.
+	* interp/functor.boot: Likewise.
+	* interp/pspad1.boot: Likewise.
+	* interp/pspad2.boot: Likewise.
+	* interp/postpar.boot: Likewise.
+	* interp/pf2sex.boot: Likewise.
+	* interp/parse.boot: Likewise.
+	* interp/packtran.boot: Likewise.
+	* interp/nrunopt.boot: Likewise.
+	* interp/nruncomp.boot: Likewise.
+	* interp/newfort.boot: Likewise.
+	* interp/msgdb.boot: Likewise.
+	* interp/modemap.boot: Likewise.
+	* interp/mark.boot: Likewise.
+	* interp/intfile.boot: Likewise.
+	* interp/interop.boot: Likewise.
+	* interp/incl.boot: Likewise.
+	* interp/word.boot: Likewise.
+	* interp/wi2.boot: Likewise.
+	* interp/wi1.boot: Likewise.
+	* interp/trace.boot: Likewise.
+	* interp/topics.boot: Likewise.
+	* interp/sys-constants.boot: Likewise.
+	* interp/showimp.boot: Likewise.
+	* interp/scan.boot: Likewise.
+
+2011-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* interp/sys-macros.lisp (shellEntry): New.
 	* interp/g-util.boot (setShellEntry): Remove.
 	* interp/compiler.boot: Use %store to %tref forms instead of

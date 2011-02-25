@@ -1,6 +1,6 @@
 -- Copyright (c) 1991-2002, The Numerical ALgorithms Group Ltd.
 -- All rights reserved.
--- Copyright (C) 2007-2010, Gabriel Dos Reis.
+-- Copyright (C) 2007-2011, Gabriel Dos Reis.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -545,7 +545,7 @@ opPageFastPath opstring ==
 --return nil
   x := STRINGIMAGE opstring
   charPosition(char '_*,x,0) < #x => nil     --quit if name has * in it
-  op := (string? x => INTERN x; x)
+  op := (string? x => makeSymbol x; x)
   mmList := getAllModemapsFromDatabase(op,nil) or return nil
   opAlist := [[op,:[item for mm in mmList]]] where item() ==
     [predList, origin, sig] := modemap2Sig(op, mm)
