@@ -696,6 +696,7 @@ isSimple x ==
  
 isSideEffectFree op ==
   op is ["elt",.,op'] => isSideEffectFree op'
+  not IDENTP op => false
   member(op,$SideEffectFreeFunctionList) or constructor? op
  
 isAlmostSimple x ==
