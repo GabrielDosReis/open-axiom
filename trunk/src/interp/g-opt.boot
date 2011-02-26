@@ -308,14 +308,11 @@ optCond (x is ['%when,:l]) ==
   l is [[p1,['%when,[p2,c2]]]] => optCond ['%when,[['%and,p1,p2],c2]]
   l is [[p1,:c1],[p2,:c2],[p3,:c3]] and p3 = '%otherwise =>
     EqualBarGensym(c1,c3) =>
-      optCond ['%when,[['%or,p1,['%not,p2]],:c1],['%otherwise,:c2]]
+      optCond ['%when,[['%or,p1,optNot ['%not,p2]],:c1],['%otherwise,:c2]]
     EqualBarGensym(c1,c2) =>
       optCond ['%when,[['%or,p1,p2],:c1],['%otherwise,:c3]]
     x
   for y in tails l repeat
-    c := first y
-    if c is [['%not,['%not,p]],:.] then
-      c.first := p
     while y is [[a1,c1],[a2,c2],:y'] and EqualBarGensym(c1,c2) repeat
       a := ['%or,a1,a2]
       first(y).first := a
@@ -692,6 +689,8 @@ optNot(x is ['%not,a]) ==
   a = '%true => '%false
   a = '%false => '%true
   a is ['%not,b] => b
+  a is ['%when,:.] =>
+    optCond [a.op, :[[p,optNot ['%not,c]] for [p,c] in a.args]]
   x
 
 optAnd(x is ['%and,a,b]) ==
