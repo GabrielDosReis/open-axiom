@@ -616,26 +616,23 @@
 
 (DEFUN |OUTFORM;vspace;I$;28| (|n| $)
   (COND
-    ((PLUSP |n|)
-     (|OUTFORM;vconcat;3$;50| " " (|OUTFORM;vspace;I$;28| (- |n| 1) $)
-         $))
-    (T (|OUTFORM;empty;$;73| $)))) 
+    ((NOT (PLUSP |n|)) (|OUTFORM;empty;$;73| $))
+    (T (|OUTFORM;vconcat;3$;50| " "
+           (|OUTFORM;vspace;I$;28| (- |n| 1) $) $)))) 
 
 (DEFUN |OUTFORM;hspace;I$;29| (|n| $)
   (COND
-    ((PLUSP |n|) (|fillerSpaces| |n|))
-    (T (|OUTFORM;empty;$;73| $)))) 
+    ((NOT (PLUSP |n|)) (|OUTFORM;empty;$;73| $))
+    (T (|fillerSpaces| |n|)))) 
 
 (DEFUN |OUTFORM;rspace;2I$;30| (|n| |m| $)
-  (SEQ (COND
-         ((PLUSP |n|)
-          (COND ((NOT (PLUSP |m|)) (EXIT (|OUTFORM;empty;$;73| $)))))
-         (T (EXIT (|OUTFORM;empty;$;73| $))))
-       (EXIT (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
-                 (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
+  (COND
+    ((OR (NOT (PLUSP |n|)) (NOT (PLUSP |m|))) (|OUTFORM;empty;$;73| $))
+    (T (|OUTFORM;vconcat;3$;50| (|OUTFORM;hspace;I$;29| |n| $)
+           (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (LET ((|lv| (LET ((#0=#:G1529 |ll|) (#1=#:G1528 NIL))
+  (LET ((|lv| (LET ((#0=#:G1528 |ll|) (#1=#:G1527 NIL))
                 (LOOP
                   (COND
                     ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -658,7 +655,7 @@
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
   (LET ((|c| 'CONCATB) (|l1| NIL))
-    (SEQ (LET ((#0=#:G1530 (REVERSE |l|)))
+    (SEQ (LET ((#0=#:G1529 (REVERSE |l|)))
            (LOOP
              (COND
                ((ATOM #0#) (RETURN NIL))
@@ -969,7 +966,7 @@
 
 (DEFUN |OutputForm| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((#0=#:G1532 (HGET |$ConstructorCache| '|OutputForm|)))
+  (LET ((#0=#:G1531 (HGET |$ConstructorCache| '|OutputForm|)))
     (COND
       (#0# (|CDRwithIncrement| (CDAR #0#)))
       (T (UNWIND-PROTECT
@@ -1009,7 +1006,7 @@
              |OUTFORM;left;$I$;23| |OUTFORM;right;$I$;24|
              |OUTFORM;center;2$;25| |OUTFORM;left;2$;26|
              |OUTFORM;right;2$;27| (|NonNegativeInteger|) (33 . |Zero|)
-             (37 . |Zero|) (41 . >) (47 . |One|) (51 . |One|)
+             (37 . |Zero|) (41 . <=) (47 . |One|) (51 . |One|)
              |OUTFORM;vspace;I$;28| |OUTFORM;vconcat;3$;50|
              |OUTFORM;rspace;2I$;30| (|List| $) (|List| 56)
              |OUTFORM;matrix;L$;31| |OUTFORM;pile;L$;32|

@@ -202,13 +202,11 @@
                               (|shellEntry| $ 16))
                           (SPADCALL |r| |n| (|shellEntry| $ 67)))
                          (T |r|)))
-                      ((NOT (SPADCALL
-                                (SPADCALL
-                                    (SPADCALL 2 |r|
-                                     (|shellEntry| $ 82))
-                                    |n| (|shellEntry| $ 83))
-                                (|spadConstant| $ 10)
-                                (|shellEntry| $ 16)))
+                      ((SPADCALL
+                           (SPADCALL (SPADCALL 2 |r|
+                                      (|shellEntry| $ 82))
+                                     |n| (|shellEntry| $ 83))
+                           (|spadConstant| $ 10) (|shellEntry| $ 84))
                        (SPADCALL |r| |n| (|shellEntry| $ 83)))
                       (T |r|)))))))) 
 
@@ -216,8 +214,8 @@
   (PROG (|c| |c1| |d| |d1| |q| |r| |r1|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |a| (|shellEntry| $ 85))
-              (SETQ |a| (SPADCALL |a| |b| (|shellEntry| $ 86)))))
+             ((SPADCALL |a| (|shellEntry| $ 86))
+              (SETQ |a| (SPADCALL |a| |b| (|shellEntry| $ 87)))))
            (LETT |c| |a| |INS-;invmod;3S;28|)
            (LETT |c1| (|spadConstant| $ 22) |INS-;invmod;3S;28|)
            (LETT |d| |b| |INS-;invmod;3S;28|)
@@ -226,26 +224,26 @@
              (COND
                ((NOT (NOT (SPADCALL |d| (|shellEntry| $ 66))))
                 (RETURN NIL))
-               (T (SEQ (LETT |q| (SPADCALL |c| |d| (|shellEntry| $ 87))
+               (T (SEQ (LETT |q| (SPADCALL |c| |d| (|shellEntry| $ 88))
                              |INS-;invmod;3S;28|)
                        (LETT |r|
                              (SPADCALL |c|
-                                 (SPADCALL |q| |d| (|shellEntry| $ 88))
+                                 (SPADCALL |q| |d| (|shellEntry| $ 89))
                                  (|shellEntry| $ 67))
                              |INS-;invmod;3S;28|)
                        (LETT |r1|
                              (SPADCALL |c1|
                                  (SPADCALL |q| |d1|
-                                     (|shellEntry| $ 88))
+                                     (|shellEntry| $ 89))
                                  (|shellEntry| $ 67))
                              |INS-;invmod;3S;28|)
                        (SETQ |c| |d|) (SETQ |c1| |d1|) (SETQ |d| |r|)
                        (EXIT (SETQ |d1| |r1|))))))
            (COND
-             ((NOT (SPADCALL |c| (|shellEntry| $ 89)))
+             ((NOT (SPADCALL |c| (|shellEntry| $ 90)))
               (EXIT (|error| "inverse does not exist"))))
            (EXIT (COND
-                   ((SPADCALL |c1| (|shellEntry| $ 85))
+                   ((SPADCALL |c1| (|shellEntry| $ 86))
                     (SPADCALL |c1| |b| (|shellEntry| $ 83)))
                    (T |c1|))))))) 
 
@@ -253,8 +251,8 @@
   (PROG (|y| |z|)
     (RETURN
       (SEQ (COND
-             ((SPADCALL |x| (|shellEntry| $ 85))
-              (SETQ |x| (SPADCALL |x| |p| (|shellEntry| $ 86)))))
+             ((SPADCALL |x| (|shellEntry| $ 86))
+              (SETQ |x| (SPADCALL |x| |p| (|shellEntry| $ 87)))))
            (EXIT (COND
                    ((SPADCALL |x| (|shellEntry| $ 66))
                     (|spadConstant| $ 10))
@@ -273,7 +271,7 @@
                                            (|shellEntry| $ 13))
                                           (SETQ |y|
                                            (SPADCALL |y| |z| |p|
-                                            (|shellEntry| $ 91)))))
+                                            (|shellEntry| $ 92)))))
                                        (EXIT
                                         (COND
                                           ((SPADCALL
@@ -290,12 +288,12 @@
                                           (T
                                            (SETQ |z|
                                             (SPADCALL |z| |z| |p|
-                                             (|shellEntry| $ 91))))))))))))))))))) 
+                                             (|shellEntry| $ 92))))))))))))))))))) 
 
 (DEFUN |IntegerNumberSystem&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))
          (|dv$| (LIST '|IntegerNumberSystem&| |dv$1|))
-         ($ (|newShell| 93)) (|pv$| (|buildPredVector| 0 0 NIL)))
+         ($ (|newShell| 94)) (|pv$| (|buildPredVector| 0 0 NIL)))
     (SETF (|shellEntry| $ 0) |dv$|)
     (SETF (|shellEntry| $ 3) |pv$|)
     (|stuffDomainSlots| $)
@@ -334,23 +332,23 @@
              (140 . |coerce|) |INS-;rational;SF;25|
              (|Union| 75 '"failed") |INS-;rationalIfCan;SU;26|
              (145 . |rem|) (|PositiveInteger|) (151 . *) (157 . +)
-             |INS-;symmetricRemainder;3S;27| (163 . |negative?|)
-             (168 . |positiveRemainder|) (174 . |quo|) (180 . *)
-             (186 . |one?|) |INS-;invmod;3S;28| (191 . |mulmod|)
-             |INS-;powmod;4S;29|)
-          '#(|symmetricRemainder| 198 |squareFree| 204 |retractIfCan|
-             209 |retract| 214 |rationalIfCan| 219 |rational?| 224
-             |rational| 229 |prime?| 234 |powmod| 239 |positive?| 246
-             |permutation| 251 |patternMatch| 257 |nextItem| 264 |mask|
-             269 |invmod| 274 |init| 280 |factorial| 284 |factor| 289
-             |even?| 294 |euclideanSize| 299 |differentiate| 304 |copy|
-             309 |convert| 314 |characteristic| 334 |bit?| 338
-             |binomial| 344)
+             (163 . <=) |INS-;symmetricRemainder;3S;27|
+             (169 . |negative?|) (174 . |positiveRemainder|)
+             (180 . |quo|) (186 . *) (192 . |one?|) |INS-;invmod;3S;28|
+             (197 . |mulmod|) |INS-;powmod;4S;29|)
+          '#(|symmetricRemainder| 204 |squareFree| 210 |retractIfCan|
+             215 |retract| 220 |rationalIfCan| 225 |rational?| 230
+             |rational| 235 |prime?| 240 |powmod| 245 |positive?| 252
+             |permutation| 257 |patternMatch| 263 |nextItem| 270 |mask|
+             275 |invmod| 280 |init| 286 |factorial| 290 |factor| 295
+             |even?| 300 |euclideanSize| 305 |differentiate| 310 |copy|
+             315 |convert| 320 |characteristic| 340 |bit?| 344
+             |binomial| 350)
           'NIL
           (CONS (|makeByteWordVec2| 1 'NIL)
                 (CONS '#()
                       (CONS '#()
-                            (|makeByteWordVec2| 92
+                            (|makeByteWordVec2| 93
                                 '(0 7 0 8 0 6 0 10 1 6 12 0 13 1 12 0 0
                                   14 2 6 12 0 0 16 1 6 0 0 19 2 6 0 0 0
                                   20 0 6 0 22 1 6 0 0 23 0 12 0 25 2 6
@@ -361,16 +359,17 @@
                                   2 56 6 6 6 59 2 56 6 6 6 61 1 6 12 0
                                   66 2 6 0 0 0 67 3 71 70 6 43 70 72 1
                                   75 0 29 76 2 6 0 0 0 80 2 6 0 81 0 82
-                                  2 6 0 0 0 83 1 6 12 0 85 2 6 0 0 0 86
-                                  2 6 0 0 0 87 2 6 0 0 0 88 1 6 12 0 89
-                                  3 6 0 0 0 0 91 2 0 0 0 0 84 1 0 49 0
-                                  52 1 0 63 0 64 1 0 29 0 42 1 0 78 0
-                                  79 1 0 12 0 26 1 0 75 0 77 1 0 12 0
-                                  55 3 0 0 0 0 0 92 1 0 12 0 17 2 0 0 0
-                                  0 62 3 0 73 0 43 73 74 1 0 68 0 69 1
-                                  0 0 0 24 2 0 0 0 0 90 0 0 0 65 1 0 0
-                                  0 58 1 0 49 0 50 1 0 12 0 15 1 0 7 0
-                                  32 1 0 0 0 11 1 0 0 0 18 1 0 36 0 38
-                                  1 0 33 0 35 1 0 43 0 45 1 0 39 0 41 0
-                                  0 7 9 2 0 12 0 0 21 2 0 0 0 0 60)))))
+                                  2 6 0 0 0 83 2 6 12 0 0 84 1 6 12 0
+                                  86 2 6 0 0 0 87 2 6 0 0 0 88 2 6 0 0
+                                  0 89 1 6 12 0 90 3 6 0 0 0 0 92 2 0 0
+                                  0 0 85 1 0 49 0 52 1 0 63 0 64 1 0 29
+                                  0 42 1 0 78 0 79 1 0 12 0 26 1 0 75 0
+                                  77 1 0 12 0 55 3 0 0 0 0 0 93 1 0 12
+                                  0 17 2 0 0 0 0 62 3 0 73 0 43 73 74 1
+                                  0 68 0 69 1 0 0 0 24 2 0 0 0 0 91 0 0
+                                  0 65 1 0 0 0 58 1 0 49 0 50 1 0 12 0
+                                  15 1 0 7 0 32 1 0 0 0 11 1 0 0 0 18 1
+                                  0 36 0 38 1 0 33 0 35 1 0 43 0 45 1 0
+                                  39 0 41 0 0 7 9 2 0 12 0 0 21 2 0 0 0
+                                  0 60)))))
           '|lookupComplete|)) 
