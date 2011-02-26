@@ -1,5 +1,9 @@
 2011-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
+	* interp/parse.boot (parseLessEqual): Remove.
+
+2011-02-25  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
 	* algebra/fmod.spad.pamphlet (IntegerMod): Simplify implementation.
 
 2011-02-24  Gabriel Dos Reis  <gdr@cs.tamu.edu>

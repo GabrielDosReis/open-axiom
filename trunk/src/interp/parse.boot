@@ -45,10 +45,10 @@ $defOp := nil
 ++ When true, means that we are building a compile time value.  For
 ++ the parse tree transformer, this means that some assumtpions
 ++ are made about certain operators, regardless of their types
-++ and semantics.  For example `x >= y' is assumed to have the
-++ same semantics as `not(x < y)'.  Note that this normalization
-++ is also done when this parser is used to translate Boot codes
-++ to Lisp.  That usage is being phased out though.
+++ and semantics.  For example, in `a and b => x' the guard `a and b'
+++ is assumed to have the standard semantics of (short-circuted)
+++ conjunction of two Boolean expressions.
+++ That usage is being phased out though.
 $normalizeTree := false
 
 ++ True if we know we are parsing a form supposed to designate a type.
@@ -247,11 +247,6 @@ parseCategory t ==
     'package
   ["CATEGORY",key,:l]
  
-
-parseLessEqual: %ParseForm -> %Form
-parseLessEqual u == 
-  parseTran ["not",[substitute(">","<=",first u),:rest u]]
-
 parseAnd: %ParseForm -> %Form 
 parseAnd t ==
   t isnt ["and",:u] => systemErrorHere ["parseAnd",t]
@@ -446,8 +441,7 @@ parseVCONS l ==
 
 --% Register special parsers.
 
-for x in [["<=", :"parseLessEqual"],_
-	  [":", :"parseColon"],_
+for x in [[":", :"parseColon"],_
 	  ["::", :"parseCoerce"],_
 	  ["@", :"parseAtSign"],_
 	  ["and", :"parseAnd"],_
