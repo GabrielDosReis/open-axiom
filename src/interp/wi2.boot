@@ -641,7 +641,7 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
      hehe fn
      [op]                    -----------> return just the op here
 --   ['XLAM,'ignore,MKQ SPADCALL fn]
-  getFunctionReplacement compileTimeBindingOf first fn
+  getFunctionReplacement first fn
  
 genDeltaEntry(opMmPair,e) ==
 --called from compApplyModemap

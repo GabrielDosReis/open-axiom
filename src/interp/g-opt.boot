@@ -286,11 +286,6 @@ optCons (x is ["CONS",a,b]) ==
     x
   x
  
-compileTimeBindingOf u ==
-  null(name:= BPINAME u)  => keyedSystemError("S2OO0001",[u])
-  name="Undef" => MOAN "optimiser found unknown function"
-  name
- 
 optMkRecord ["mkRecord",:u] ==
   u is [x] => ['%list,x]
   #u=2 => ['%pair,:u]

@@ -1108,13 +1108,18 @@ middleEndExpand x ==
   [a,:b]
 
 
--- A function is simple if it looks like a super combinator, and it
--- does not use its environment argument.  They can be safely replaced
--- by more efficient (hopefully) functions.
+--% A function is simple if it looks like a super combinator, and it
+--% does not use its environment argument.  They can be safely replaced
+--% by more efficient (hopefully) functions.
 
-getFunctionReplacement: %Symbol -> %Form
+compileTimeBindingOf u ==
+  symbol? u => u
+  null(name:= BPINAME u)  => keyedSystemError("S2OO0001",[u])
+  name="Undef" => MOAN "optimiser found unknown function"
+  name
+ 
 getFunctionReplacement name ==
-  GET(name, "SPADreplace")
+  property(compileTimeBindingOf name,'SPADreplace)
 
 ++ remove any replacement info possibly associated with `name'.
 clearReplacement name ==
@@ -1749,18 +1754,18 @@ lookupDefiningFunction(op,sig,dc) ==
   --      FIXME: However, there may be cylic dependencies
   --      such as AN ~> IAN ~> EXPR INT ~> AN that prevents
   --      us from full evaluation.  
-  null args and ctor in $SystemInlinableConstructorNames =>
+  args = nil and ctor in $SystemInlinableConstructorNames =>
     compiledLookup(op,sig,dc)
   -- 1.2. Don't look into defaulting package
   isDefaultPackageName ctor => nil
   -- 1.2. Silently give up if the constructor is just not there
   loadLibIfNotLoaded ctor
-  infovec := GET(ctor, "infovec") or return nil
+  infovec := property(ctor,'infovec) or return nil
   -- 1.3. We need information about the original domain template
   shell := first infovec               -- domain template
   opTable := second infovec            -- operator-code table
   opTableLength := #opTable
-  forgetful := infovec.4 = "lookupIncomplete"
+  forgetful := infovec.4 is 'lookupIncomplete
 
   -- 2. Get the address range of op's descriptor set
   [.,.,.,:funDesc] := fourth infovec
@@ -1781,12 +1786,12 @@ lookupDefiningFunction(op,sig,dc) ==
   loc = nil => lookupInheritedDefiningFunction(op,sig,shell,args,shell.5)
 
   -- 5. Give up if the operation is overloaded on semantics predicates.
-  loc = "ambiguous" => nil
+  loc is 'ambiguous => nil
 
   -- 6. We have a location to a function descriptor.
   fun := shell.loc
   -- 6.1. A constant producing functions?
-  fun is [.,.,[.,["dispatchFunction",fun'],.]] => fun'
+  fun is [.,.,[.,['dispatchFunction,fun'],.]] => fun'
   -- 6.2. An inherited function?
   fun is [idx,:.] => 
     not integer? idx => nil          -- a UFO?

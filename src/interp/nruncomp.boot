@@ -185,10 +185,14 @@ optDeltaEntry(op,sig,dc,eltOrConst) ==
          MKQ x
      fun := lookupDefiningFunction(op,nsig,ndc)
   fun = nil => nil
-  if cons? fun then
-    eltOrConst = "CONST" => return ['XLAM,'ignore, SPADCALL fun]
-    fun := first fun
-  getFunctionReplacement compileTimeBindingOf fun
+  fun :=
+    fun is ['makeSpadConstant,:.] and
+      (fun' := getFunctionReplacement second fun) =>
+         return fun'
+    --eltOrConst = 'CONST => return ['XLAM,nil, SPADCALL fun]
+    cons? fun => first fun
+    fun
+  getFunctionReplacement fun
 
 genDeltaEntry(opMmPair,e) ==
 --called from compApplyModemap
