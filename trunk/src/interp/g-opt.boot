@@ -540,7 +540,7 @@ canInlineVarDefinition(var,expr,body) ==
   -- side-effected latter, it is alos a no no.
   or/[varIsAssigned(x,body) for x in dependentVars expr] => false
   -- Conversatively preserve order of inialization
-  body is ['%bind,:.] => false
+  cons? body and body.op in '(%bind LET %loop %collect) => false
   -- Linearly used internal temporaries should be replaced, and
   -- so should side-effet free initializers for linear variables.
   usageCount := numOfOccurencesOf(var,body)
