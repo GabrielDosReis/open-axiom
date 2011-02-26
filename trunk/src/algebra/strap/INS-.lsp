@@ -29,7 +29,7 @@
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Boolean|)
                 |INS-;rational?;SB;8|)) 
 
-(PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) T)) 
+(PUT '|INS-;rational?;SB;8| '|SPADreplace| '(XLAM (|x|) |%true|)) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) (|%IntegerSection| 0))
                 |INS-;euclideanSize;SNni;9|)) 
