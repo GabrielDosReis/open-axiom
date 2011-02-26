@@ -614,10 +614,8 @@
                 (T (SEQ (SETQ |x| (SPADCALL |x| (|shellEntry| $ 17)))
                         (EXIT (SETQ |y|
                                     (SPADCALL |y| (|shellEntry| $ 17))))))))))
-       (EXIT (COND
-               ((SPADCALL |x| (|shellEntry| $ 16))
-                (NOT (SPADCALL |y| (|shellEntry| $ 16))))
-               (T NIL))))) 
+       (EXIT (AND (SPADCALL |x| (|shellEntry| $ 16))
+                  (NOT (SPADCALL |y| (|shellEntry| $ 16))))))) 
 
 (DEFUN |ListAggregate&| (|#1| |#2|)
   (LET* ((|dv$1| (|devaluate| |#1|)) (|dv$2| (|devaluate| |#2|))

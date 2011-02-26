@@ -822,7 +822,7 @@
                ((IDENTP |a|) |a|)
                ((STRINGP |a|) (INTERN |a|))
                (T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))))
-    (COND ((GET |e| 'INFIXOP) T) (T NIL)))) 
+    (GET |e| 'INFIXOP))) 
 
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)
   (DECLARE (IGNORE $))
