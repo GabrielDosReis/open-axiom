@@ -31,10 +31,8 @@
       (SETQ |i| (+ |i| 1))))) 
 
 (DEFUN |LNAGG-;index?;IAB;2| (|i| |a| $)
-  (COND
-    ((NOT (< |i| (SPADCALL |a| (|shellEntry| $ 9))))
-     (NOT (< (SPADCALL |a| (|shellEntry| $ 10)) |i|)))
-    (T NIL))) 
+  (AND (NOT (< |i| (SPADCALL |a| (|shellEntry| $ 9))))
+       (NOT (< (SPADCALL |a| (|shellEntry| $ 10)) |i|)))) 
 
 (DEFUN |LNAGG-;concat;ASA;3| (|a| |x| $)
   (SPADCALL |a| (SPADCALL 1 |x| (|shellEntry| $ 21))

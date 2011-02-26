@@ -163,10 +163,8 @@
   (LET ((|i| |n|))
     (SEQ (LOOP
            (COND
-             ((NOT (COND
-                     ((PLUSP |i|)
-                      (NOT (SPADCALL |l| (|shellEntry| $ 20))))
-                     (T NIL)))
+             ((NOT (AND (PLUSP |i|)
+                        (NOT (SPADCALL |l| (|shellEntry| $ 20)))))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|shellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
@@ -176,16 +174,13 @@
   (LET ((|i| |n|))
     (SEQ (LOOP
            (COND
-             ((NOT (COND
-                     ((PLUSP |i|)
-                      (NOT (SPADCALL |l| (|shellEntry| $ 20))))
-                     (T NIL)))
+             ((NOT (AND (PLUSP |i|)
+                        (NOT (SPADCALL |l| (|shellEntry| $ 20)))))
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|shellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
-         (EXIT (COND
-                 ((ZEROP |i|) (NOT (SPADCALL |l| (|shellEntry| $ 20))))
-                 (T NIL)))))) 
+         (EXIT (AND (ZEROP |i|)
+                    (NOT (SPADCALL |l| (|shellEntry| $ 20)))))))) 
 
 (DEFUN |URAGG-;size?;ANniB;14| (|l| |n| $)
   (LET ((|i| |n|))
@@ -197,9 +192,7 @@
               (RETURN NIL))
              (T (SEQ (SETQ |l| (SPADCALL |l| (|shellEntry| $ 14)))
                      (EXIT (SETQ |i| (- |i| 1)))))))
-         (EXIT (COND
-                 ((SPADCALL |l| (|shellEntry| $ 20)) (ZEROP |i|))
-                 (T NIL)))))) 
+         (EXIT (AND (SPADCALL |l| (|shellEntry| $ 20)) (ZEROP |i|)))))) 
 
 (DEFUN |URAGG-;#;ANni;15| (|x| $)
   (LET ((|k| 0))
@@ -377,10 +370,8 @@
                                       (SPADCALL |y|
                                        (|shellEntry| $ 14)))))))))
                 (SETQ |k| (+ |k| 1))))
-            (EXIT (COND
-                    ((SPADCALL |x| (|shellEntry| $ 20))
-                     (SPADCALL |y| (|shellEntry| $ 20)))
-                    (T NIL))))))) 
+            (EXIT (AND (SPADCALL |x| (|shellEntry| $ 20))
+                       (SPADCALL |y| (|shellEntry| $ 20)))))))) 
 
 (DEFUN |URAGG-;node?;2AB;24| (|u| |v| $)
   (SEQ (LET ((|k| 0))

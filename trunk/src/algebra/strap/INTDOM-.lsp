@@ -31,7 +31,7 @@
     (T (SPADCALL (|spadConstant| $ 7) |x| (|shellEntry| $ 15))))) 
 
 (DEFUN |INTDOM-;unit?;SB;4| (|x| $)
-  (COND ((EQL (CAR (SPADCALL |x| (|shellEntry| $ 17))) 1) NIL) (T T))) 
+  (NOT (EQL (CAR (SPADCALL |x| (|shellEntry| $ 17))) 1))) 
 
 (DEFUN |INTDOM-;associates?;2SB;5| (|x| |y| $)
   (SPADCALL (SVREF (SPADCALL |x| (|shellEntry| $ 10)) 1)
@@ -42,10 +42,9 @@
     ((SPADCALL |x| (|shellEntry| $ 13))
      (SPADCALL |y| (|shellEntry| $ 13)))
     ((OR (SPADCALL |y| (|shellEntry| $ 13))
-         (OR (EQL (CAR (SPADCALL |x| |y| (|shellEntry| $ 15))) 1)
-             (EQL (CAR (SPADCALL |y| |x| (|shellEntry| $ 15))) 1)))
+         (EQL (CAR (SPADCALL |x| |y| (|shellEntry| $ 15))) 1))
      NIL)
-    (T T))) 
+    (T (NOT (EQL (CAR (SPADCALL |y| |x| (|shellEntry| $ 15))) 1))))) 
 
 (DEFUN |IntegralDomain&| (|#1|)
   (LET* ((|dv$1| (|devaluate| |#1|))

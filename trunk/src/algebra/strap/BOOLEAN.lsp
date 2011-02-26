@@ -53,6 +53,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;nand;3$;12|)) 
 
+(PUT '|BOOLEAN;nand;3$;12| '|SPADreplace|
+     '(XLAM (|a| |b|) (|%or| (|%not| |a|) (|%not| |b|)))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;=;3$;13|)) 
 
@@ -61,6 +64,9 @@
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;implies;3$;14|)) 
 
+(PUT '|BOOLEAN;implies;3$;14| '|SPADreplace|
+     '(XLAM (|a| |b|) (|%or| (|%not| |a|) |b|))) 
+
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;equiv;3$;15|)) 
 
@@ -68,6 +74,9 @@
 
 (DECLAIM (FTYPE (FUNCTION (|%Boolean| |%Boolean| |%Shell|) |%Boolean|)
                 |BOOLEAN;<;3$;16|)) 
+
+(PUT '|BOOLEAN;<;3$;16| '|SPADreplace|
+     '(XLAM (|a| |b|) (|%and| |b| (|%not| |a|)))) 
 
 (DECLAIM (FTYPE (FUNCTION (|%Shell|) (|%IntegerSection| 0))
                 |BOOLEAN;size;Nni;17|)) 
@@ -118,29 +127,35 @@
 
 (DEFUN |BOOLEAN;nor;3$;11| (|a| |b| $) (COND (|a| NIL) (T (NOT |b|)))) 
 
-(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $) (COND (|a| (NOT |b|)) (T T))) 
+(DEFUN |BOOLEAN;nand;3$;12| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (OR (NOT |a|) (NOT |b|))) 
 
 (DEFUN |BOOLEAN;=;3$;13| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $) (COND (|a| |b|) (T T))) 
+(DEFUN |BOOLEAN;implies;3$;14| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (OR (NOT |a|) |b|)) 
 
 (DEFUN |BOOLEAN;equiv;3$;15| (|a| |b| $)
   (DECLARE (IGNORE $))
   (EQ |a| |b|)) 
 
-(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $) (COND (|b| (NOT |a|)) (T NIL))) 
+(DEFUN |BOOLEAN;<;3$;16| (|a| |b| $)
+  (DECLARE (IGNORE $))
+  (AND |b| (NOT |a|))) 
 
 (DEFUN |BOOLEAN;size;Nni;17| ($) (DECLARE (IGNORE $)) 2) 
 
 (DEFUN |BOOLEAN;index;Pi$;18| (|i| $)
-  (COND ((SPADCALL |i| (|shellEntry| $ 26)) NIL) (T T))) 
+  (NOT (SPADCALL |i| (|shellEntry| $ 26)))) 
 
 (DEFUN |BOOLEAN;lookup;$Pi;19| (|a| $) (COND (|a| 1) (T 2))) 
 
 (DEFUN |BOOLEAN;random;$;20| ($)
-  (COND ((SPADCALL (|random|) (|shellEntry| $ 26)) NIL) (T T))) 
+  (NOT (SPADCALL (|random|) (|shellEntry| $ 26)))) 
 
 (DEFUN |BOOLEAN;convert;$If;21| (|x| $)
   (COND (|x| '|true|) (T '|false|))) 

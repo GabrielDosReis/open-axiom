@@ -201,10 +201,8 @@
                     (LIST-LENGTH (SVREF |sc| 0)))))
     (SEQ (LOOP
            (COND
-             ((NOT (COND
-                     ((NOT (< (LIST-LENGTH |ns|) 2))
-                      (ZEROP (|SPADfirst| |ns|)))
-                     (T NIL)))
+             ((NOT (AND (NOT (< (LIST-LENGTH |ns|) 2))
+                        (ZEROP (|SPADfirst| |ns|))))
               (RETURN NIL))
              (T (SETQ |ns| (CDR |ns|)))))
          (EXIT (SPADCALL

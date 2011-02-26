@@ -263,7 +263,7 @@
                       (RETURN-FROM |ILIST;=;2$B;22| NIL))
                      (T (SEQ (SETQ |x| (CDR |x|))
                              (EXIT (SETQ |y| (CDR |y|)))))))))
-            (EXIT (COND ((NULL |x|) (NULL |y|)) (T NIL))))))) 
+            (EXIT (AND (NULL |x|) (NULL |y|))))))) 
 
 (DEFUN |ILIST;latex;$S;23| (|x| $)
   (LET ((|s| "\\left["))

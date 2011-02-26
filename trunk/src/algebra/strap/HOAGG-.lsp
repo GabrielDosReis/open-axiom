@@ -88,25 +88,24 @@
   (SPADCALL |x| (|shellEntry| $ 15))) 
 
 (DEFUN |HOAGG-;=;2AB;7| (|x| |y| $)
-  (COND
-    ((SPADCALL |x| (SPADCALL |y| (|shellEntry| $ 32))
-         (|shellEntry| $ 33))
-     (LET ((#0=#:G1394 NIL) (#1=#:G1395 T)
-           (#2=#:G1406 (SPADCALL |x| (|shellEntry| $ 15)))
-           (#3=#:G1407 (SPADCALL |y| (|shellEntry| $ 15))))
-       (LOOP
-         (COND
-           ((OR (ATOM #2#) (ATOM #3#)) (RETURN (COND (#1# T) (T #0#))))
-           (T (LET ((|a| (CAR #2#)) (|b| (CAR #3#)))
-                (LET ((#4=#:G1393 (SPADCALL |a| |b|
-                                      (|shellEntry| $ 34))))
-                  (COND
-                    (#1# (SETQ #0# #4#))
-                    (T (SETQ #0# (AND #0# #4#))))
-                  (SETQ #1# NIL)))))
-         (SETQ #2# (CDR #2#))
-         (SETQ #3# (CDR #3#)))))
-    (T NIL))) 
+  (AND (SPADCALL |x| (SPADCALL |y| (|shellEntry| $ 32))
+           (|shellEntry| $ 33))
+       (LET ((#0=#:G1394 NIL) (#1=#:G1395 T)
+             (#2=#:G1406 (SPADCALL |x| (|shellEntry| $ 15)))
+             (#3=#:G1407 (SPADCALL |y| (|shellEntry| $ 15))))
+         (LOOP
+           (COND
+             ((OR (ATOM #2#) (ATOM #3#))
+              (RETURN (COND (#1# T) (T #0#))))
+             (T (LET ((|a| (CAR #2#)) (|b| (CAR #3#)))
+                  (LET ((#4=#:G1393
+                            (SPADCALL |a| |b| (|shellEntry| $ 34))))
+                    (COND
+                      (#1# (SETQ #0# #4#))
+                      (T (SETQ #0# (AND #0# #4#))))
+                    (SETQ #1# NIL)))))
+           (SETQ #2# (CDR #2#))
+           (SETQ #3# (CDR #3#)))))) 
 
 (DEFUN |HOAGG-;count;SANni;8| (|s| |x| $)
   (SPADCALL (CONS #'|HOAGG-;count;SANni;8!0| (VECTOR $ |s|)) |x|
