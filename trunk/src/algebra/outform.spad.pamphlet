@@ -476,7 +476,12 @@ OutputForm(): SetCategory with
 
     == add
         import NumberFormats
-        import %equal: (%,%) -> Boolean from Foreign Builtin
+        import %peq: (%,%) -> Boolean         from Foreign Builtin
+        import %equal: (%,%) -> Boolean       from Foreign Builtin
+        import %string?: % -> Boolean         from Foreign Builtin
+        import %ident?: % -> Boolean          from Foreign Builtin
+        import %nil: %                        from Foreign Builtin
+        import %property: (%,Identifier) -> % from Foreign Builtin
 
         -- Todo:
         --   program forms, greek letters
@@ -503,7 +508,7 @@ OutputForm(): SetCategory with
         nn:NonNegativeInteger
 
         sform(s: String): % == s pretend %
-        eform(e: Symbol): % == e pretend %
+        eform(e: Identifier): % == e pretend %
         iform(i: Integer): % == i pretend %
 
         bless(x: List %): % == x pretend %
@@ -519,7 +524,6 @@ OutputForm(): SetCategory with
         outputForm(f:DoubleFloat) == 
           -- ??? this really should be rendered in as a sequence of
           -- ??? OutputForm bytecodes, not hardcoded here.
-          -- ??? FORMAT(NIL$Lisp,format,f)$Lisp
           DFLOAT_-FORMAT_-GENERAL(f)$Lisp
 
         outputForm s ==
@@ -619,10 +623,10 @@ OutputForm(): SetCategory with
 
         infix? a ==
             e:$ :=
-                IDENTP$Lisp a => a
-                STRINGP$Lisp a => INTERN$Lisp a
+                %ident? a => a
+                %string? a => INTERN$Lisp a
                 return false
-            if %property(e,'INFIXOP)$Foreign(Builtin) then true else false
+            not %peq(%property(e,'INFIXOP),%nil)
 
         elt(a, l) ==
             cons(a, l)

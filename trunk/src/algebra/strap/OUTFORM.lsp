@@ -9,7 +9,7 @@
 
 (PUT '|OUTFORM;sform| '|SPADreplace| '(XLAM (|s|) |s|)) 
 
-(DECLAIM (FTYPE (FUNCTION (|%Thing| |%Shell|) |%Thing|)
+(DECLAIM (FTYPE (FUNCTION (|%Symbol| |%Shell|) |%Thing|)
                 |OUTFORM;eform|)) 
 
 (PUT '|OUTFORM;eform| '|SPADreplace| '(XLAM (|e|) |e|)) 
@@ -632,7 +632,7 @@
            (|OUTFORM;rspace;2I$;30| |n| (- |m| 1) $) $)))) 
 
 (DEFUN |OUTFORM;matrix;L$;31| (|ll| $)
-  (LET ((|lv| (LET ((#0=#:G1528 |ll|) (#1=#:G1527 NIL))
+  (LET ((|lv| (LET ((#0=#:G1527 |ll|) (#1=#:G1526 NIL))
                 (LOOP
                   (COND
                     ((ATOM #0#) (RETURN (NREVERSE #1#)))
@@ -655,7 +655,7 @@
 
 (DEFUN |OUTFORM;blankSeparate;L$;35| (|l| $)
   (LET ((|c| 'CONCATB) (|l1| NIL))
-    (SEQ (LET ((#0=#:G1529 (REVERSE |l|)))
+    (SEQ (LET ((#0=#:G1528 (REVERSE |l|)))
            (LOOP
              (COND
                ((ATOM #0#) (RETURN NIL))
@@ -822,7 +822,7 @@
                ((IDENTP |a|) |a|)
                ((STRINGP |a|) (INTERN |a|))
                (T (RETURN-FROM |OUTFORM;infix?;$B;74| NIL)))))
-    (GET |e| 'INFIXOP))) 
+    (NOT (NULL (GET |e| 'INFIXOP))))) 
 
 (DEFUN |OUTFORM;elt;$L$;75| (|a| |l| $)
   (DECLARE (IGNORE $))
@@ -966,7 +966,7 @@
 
 (DEFUN |OutputForm| ()
   (DECLARE (SPECIAL |$ConstructorCache|))
-  (LET ((#0=#:G1531 (HGET |$ConstructorCache| '|OutputForm|)))
+  (LET ((#0=#:G1530 (HGET |$ConstructorCache| '|OutputForm|)))
     (COND
       (#0# (|CDRwithIncrement| (CDAR #0#)))
       (T (UNWIND-PROTECT
@@ -1030,45 +1030,45 @@
              |OUTFORM;exquo;3$;66| |OUTFORM;and;3$;67|
              |OUTFORM;or;3$;68| |OUTFORM;not;2$;69|
              |OUTFORM;SEGMENT;3$;70| |OUTFORM;SEGMENT;2$;71|
-             |OUTFORM;binomial;3$;72| (91 . |false|) (95 . |true|)
+             |OUTFORM;binomial;3$;72| (91 . |false|) (95 . |not|)
              |OUTFORM;infix?;$B;74| |OUTFORM;elt;$L$;75|
              |OUTFORM;prefix;$L$;76| |OUTFORM;infix;$L$;77|
              |OUTFORM;infix;4$;78| |OUTFORM;postfix;3$;79|
              |OUTFORM;string;2$;80| |OUTFORM;quote;2$;81|
              |OUTFORM;overbar;2$;82| |OUTFORM;dot;2$;83|
-             |OUTFORM;prime;2$;84| (99 . |char|) (104 . |new|)
+             |OUTFORM;prime;2$;84| (100 . |char|) (105 . |new|)
              |OUTFORM;dot;$Nni$;85| |OUTFORM;prime;$Nni$;86|
              |OUTFORM;overlabel;3$;87| |OUTFORM;box;2$;88|
              |OUTFORM;zag;3$;89| |OUTFORM;root;2$;90|
              |OUTFORM;root;3$;91| |OUTFORM;over;3$;92|
              |OUTFORM;slash;3$;93| |OUTFORM;assign;3$;94|
              |OUTFORM;label;3$;95| |OUTFORM;rarrow;3$;96|
-             (110 . |zero?|) (115 . <) (|PositiveInteger|)
-             (|NumberFormats|) (121 . |FormatRoman|)
-             (126 . |lowerCase|) |OUTFORM;differentiate;$Nni$;97|
+             (111 . |zero?|) (116 . <) (|PositiveInteger|)
+             (|NumberFormats|) (122 . |FormatRoman|)
+             (127 . |lowerCase|) |OUTFORM;differentiate;$Nni$;97|
              |OUTFORM;sum;2$;98| |OUTFORM;sum;3$;99|
              |OUTFORM;sum;4$;100| |OUTFORM;prod;2$;101|
              |OUTFORM;prod;3$;102| |OUTFORM;prod;4$;103|
              |OUTFORM;int;2$;104| |OUTFORM;int;3$;105|
              |OUTFORM;int;4$;106| (|SingleInteger|))
-          '#(~= 131 |zag| 143 |width| 149 |vspace| 158 |vconcat| 163
-             |supersub| 174 |superHeight| 180 |super| 185 |sum| 191
-             |subHeight| 209 |sub| 214 |string| 220 |slash| 225
-             |semicolonSeparate| 231 |scripts| 236 |rspace| 242 |root|
-             248 |right| 259 |rem| 270 |rarrow| 276 |quote| 282 |quo|
-             287 |prod| 293 |print| 311 |prime| 316 |presuper| 327
-             |presub| 333 |prefix| 339 |postfix| 345 |pile| 351 |paren|
-             356 |overlabel| 366 |overbar| 372 |over| 377 |outputForm|
-             383 |or| 403 |not| 409 |messagePrint| 414 |message| 419
-             |matrix| 424 |left| 429 |latex| 440 |label| 445 |int| 451
-             |infix?| 469 |infix| 474 |hspace| 487 |height| 492
-             |hconcat| 501 |hash| 512 |exquo| 517 |empty| 523 |elt| 527
-             |doubleFloatFormat| 533 |dot| 538 |div| 549
-             |differentiate| 555 |commaSeparate| 561 |coerce| 566
-             |center| 571 |bracket| 582 |brace| 592 |box| 602
-             |blankSeparate| 607 |binomial| 612 |before?| 618 |assign|
-             624 |and| 630 SEGMENT 636 >= 647 > 653 = 659 <= 671 < 677
-             / 683 - 689 + 700 ** 706 * 712)
+          '#(~= 132 |zag| 144 |width| 150 |vspace| 159 |vconcat| 164
+             |supersub| 175 |superHeight| 181 |super| 186 |sum| 192
+             |subHeight| 210 |sub| 215 |string| 221 |slash| 226
+             |semicolonSeparate| 232 |scripts| 237 |rspace| 243 |root|
+             249 |right| 260 |rem| 271 |rarrow| 277 |quote| 283 |quo|
+             288 |prod| 294 |print| 312 |prime| 317 |presuper| 328
+             |presub| 334 |prefix| 340 |postfix| 346 |pile| 352 |paren|
+             357 |overlabel| 367 |overbar| 373 |over| 378 |outputForm|
+             384 |or| 404 |not| 410 |messagePrint| 415 |message| 420
+             |matrix| 425 |left| 430 |latex| 441 |label| 446 |int| 452
+             |infix?| 470 |infix| 475 |hspace| 488 |height| 493
+             |hconcat| 502 |hash| 513 |exquo| 518 |empty| 524 |elt| 528
+             |doubleFloatFormat| 534 |dot| 539 |div| 550
+             |differentiate| 556 |commaSeparate| 562 |coerce| 567
+             |center| 572 |bracket| 583 |brace| 593 |box| 603
+             |blankSeparate| 608 |binomial| 613 |before?| 619 |assign|
+             625 |and| 631 SEGMENT 637 >= 648 > 654 = 660 <= 672 < 678
+             / 684 - 690 + 701 ** 707 * 713)
           'NIL
           (CONS (|makeByteWordVec2| 1 '(0 0 0 0))
                 (CONS '#(|SetCategory&| |BasicType&| NIL NIL)
@@ -1081,11 +1081,11 @@
                                   0 47 0 51 0 20 0 52 1 62 0 0 63 2 62
                                   0 0 0 64 1 62 11 0 76 1 62 0 0 77 1
                                   62 2 0 78 1 62 47 0 80 1 20 11 0 81 0
-                                  11 0 106 0 11 0 107 1 26 0 7 119 2 7
-                                  0 47 26 120 1 47 11 0 133 2 47 11 0 0
-                                  134 1 136 7 135 137 1 7 0 0 138 2 0 0
-                                  0 0 85 2 0 11 0 0 1 2 0 0 0 0 125 0 0
-                                  20 36 1 0 20 0 31 1 0 0 20 53 1 0 0
+                                  11 0 106 1 11 0 0 107 1 26 0 7 119 2
+                                  7 0 47 26 120 1 47 11 0 133 2 47 11 0
+                                  0 134 1 136 7 135 137 1 7 0 0 138 2 0
+                                  0 0 0 85 2 0 11 0 0 1 2 0 0 0 0 125 0
+                                  0 20 36 1 0 20 0 31 1 0 0 20 53 1 0 0
                                   56 84 2 0 0 0 0 54 2 0 0 0 56 82 1 0
                                   20 0 34 2 0 0 0 0 73 2 0 0 0 0 141 3
                                   0 0 0 0 0 142 1 0 0 0 140 1 0 20 0 33
