@@ -1,3 +1,7 @@
+2011-02-27  Gabriel Dos Reis  <gdr@cs.tamu.edu>
+
+	* algebra/outform.spad.pamphlet (OutputForm) [infix?]: Rewrite.
+
 2011-02-26  Gabriel Dos Reis  <gdr@cs.tamu.edu>
 
 	* interp/g-opt.boot (optCond): Recognize conjunction and
